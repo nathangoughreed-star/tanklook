@@ -51,7 +51,8 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
   `applesnail`, 2.73 -> 5.45 mg TAN/day); other snails keep `shell`. Notes and sources: research/snail-load.md; test/snailload.test.ts.
 - tankFor at 50: mystery 10 -> 30 breeder, nerite 2.5 -> 20 long, ramshorn 2.5 -> 5, turbo 75 -> 180; trumpets, shrimp, hermits unchanged.
   Starters' max Full % unchanged, examples unchanged.
-- Open: bodymass a-values look high for turbo (68.6 g at 70 mm vs note 25 g) and nerite (8.4 g vs 4 g); filters absorb huge TAN in
+- Masses checked (follow-up): not inflated, the notes were for pre-CB lengths; turbo now cites T. cornutus (SeaLifeBase), mystery kept
+  at 14.4 g by Nathan (congeners say 23-35 g). Open: filters absorb huge TAN in
   small tanks (before SN, 50 mysteries' 136 mg TAN/day read 98 % in a 10 gal), so Filtration rarely binds tankFor.
 ## CF: S207 review fixes (2026-10-22, done in Coordinator 8 at Nathan's request, branch `cf`)
 - Fixed, tests in test/cf.test.ts: the no-heater line in plan.ts reads the Tech-menu room temperature (was always 21 C) and says "too warm" when the

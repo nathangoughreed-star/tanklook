@@ -78,6 +78,7 @@ export const RULES: Record<string, Rule[]> = {
   BODYMASS: Object.entries(MASS).map(([id, m]): Rule =>
     m.src === 'fishbase-bayes' ? { path: `${id}.*`, status: 'cited', basis: 'source-stated', says: "FishBase species summary: a and b of the length-weight relationship (Bayesian body-shape estimate)", src: ['fishbase-lw-bayes'], why: 'a, b from the FishBase species summary (scripts/lw-sources.json)' }
     : m.src === 'fishbase-measured' ? { path: `${id}.*`, status: 'cited', basis: 'measured', says: "FishBase: a and b fitted to a measured population (Florida)", src: ['fishbase-lw-measured'], why: 'a, b of a measured FishBase population' }
+    : m.src === 'sealifebase-congener' ? { path: `${id}.*`, status: 'cited', basis: 'source-stated', says: "SeaLifeBase: a and b of a congener's measured length-weight relationship", src: ['sealifebase-lw-congener'], why: 'a, b of a congener measured by SeaLifeBase (turbo: Turbo cornutus; research/snail-load.md)' }
     : { path: `${id}.*`, status: 'claimed', basis: 'interpretation', why: 'FishBase has no length-weight row (shrimp, snails, herps): a "keeper-reference" typical adult mass turned into a, b; the reference was not recorded' }),
   SPACE_FACTOR: [{ path: '**', status: 'fitted', basis: 'derived', src: ['aqadvisor', 'aq-compare'], why: 'AqAdvisor % over ours for a one-species 55 gal tank (scripts/space-factors.mjs)' }],
   SPACE_FACTOR_CLASS: [{ path: '**', status: 'fitted', basis: 'derived', src: ['aqadvisor', 'aq-compare'], why: 'median of the fitted species factors in each class' }],

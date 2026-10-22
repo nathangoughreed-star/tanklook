@@ -335,25 +335,25 @@
    "a": 0.256,
    "b": 3,
    "src": "estimate",
-   "note": "typical adult mass 4 g (keeper references, not FishBase)"
+   "note": "typical adult mass 4 g at 25 mm (keeper references, not FishBase); scales with length cubed, so the species tl set by lane CB gives a different mass (lane SN 2026-10-22)"
   },
   "mystery": {
    "a": 0.1082,
    "b": 3,
    "src": "estimate",
-   "note": "typical adult mass 18 g (keeper references, not FishBase)"
+   "note": "typical adult mass 18 g at 55 mm (keeper references, not FishBase); scales with length cubed, so the species tl set by lane CB gives a different mass (lane SN 2026-10-22)"
   },
   "ramshorn": {
    "a": 0.125,
    "b": 3,
    "src": "estimate",
-   "note": "typical adult mass 1 g (keeper references, not FishBase)"
+   "note": "typical adult mass 1 g at 20 mm (keeper references, not FishBase); scales with length cubed, so the species tl set by lane CB gives a different mass (lane SN 2026-10-22)"
   },
   "trumpet": {
    "a": 0.0384,
    "b": 3,
    "src": "estimate",
-   "note": "typical adult mass 0.6 g (keeper references, not FishBase)"
+   "note": "typical adult mass 0.6 g at 25 mm (keeper references, not FishBase); scales with length cubed, so the species tl set by lane CB gives a different mass (lane SN 2026-10-22)"
   },
   "ocellaris": {
    "a": 0.01445,
@@ -428,10 +428,10 @@
    "note": "typical adult mass 2 g (keeper references, not FishBase)"
   },
   "turbo": {
-   "a": 0.2,
-   "b": 3,
-   "src": "estimate",
-   "note": "typical adult mass 25 g (keeper references, not FishBase)"
+   "a": 0.25579,
+   "b": 2.94,
+   "src": "sealifebase-congener",
+   "note": "congener Turbo cornutus, SW Korea, shell length 4.9-11.2 cm, n 42 (SeaLifeBase); 78 g at 70 mm (lane SN 2026-10-22)"
   },
   "hermit": {
    "a": 0.07407,

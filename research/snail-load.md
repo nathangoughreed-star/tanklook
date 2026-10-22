@@ -28,4 +28,9 @@ mystery 2.5 x5, 10 -> 2.5 2.5 2.5 5 15 30b; nerite 2.5 all -> 2.5 2.5 2.5 3c 8c 
 turbo 2.5 2.5 2.5 15 37 75 -> 2.5 3c 8c 20L 60b 180. Shrimp and hermits unchanged. Starters at Full: max unchanged, mean <= 0.7 pt.
 Examples: no change.
 
-Open: bodymass a-values look high for turbo (68.6 g at 70 mm vs its note "25 g") and nerite (8.4 g vs "4 g"); not changed here.
+## Masses (follow-up, 2026-10-22, coordinator 8's request; notes in side-session-notes SN-snail-mass-research.md)
+The "25 g" / "4 g" notes were for the lengths before lane CB (91c4289: turbo 50 -> 70 mm, nerite 25 -> 32); mass scales with length cubed,
+so 68.6 g and 8.4 g were not inflated. Turbo now uses the congener Turbo cornutus relation (SeaLifeBase a 0.25579, b 2.94, 4.9-11.2 cm):
+28 g at 50 mm, 78 g at 70 mm; tankFor moves only at n = 3 (3 gal cube -> 5 gal). Nerite, ramshorn: no length-weight source found, kept.
+Mystery: Pomacea congeners give 23-35 g at 51 mm (P. urceus, P. canaliculata) vs our 14.4 g; Nathan kept 14.4 g (P. diffusa is the
+slighter species; 24 g would move 50 snails from a 30 to a 40 breeder).
