@@ -66,6 +66,7 @@ export const SPACE_FACTOR: Record<string, [number, string]> = {
  *  not listed. Judgment constants (est), not fits: no source gives a per-fish floor figure for a species that piles up. */
 export const FLOOR_FACTOR: Record<string, [number, string]> = {
   kuhli: [0.6, 'eel-shaped and gregarious: kuhlis pile into one shared cave or root tangle instead of spreading over the floor (Seriously Fish; Aquarium Co-Op keeps 3-6 in a 20 gal and more in bigger tanks). At 1.0, 17 kuhlis read 95 % of a 36 x 18 in floor; the floor stays linear in count (audit F), 2026-10-22'],
+  whitecloud: [0, 'upper and middle water (Seriously Fish), never on the floor (2026-10-22). Floor only: its zone stays all, which also sets its height curve and water reading'],
 };
 // Hand-set multipliers on top of the AqAdvisor fit (Nathan's targets, not a fit): the species' space load is multiplied by both.
 // Like FLOOR_FACTOR, re-add this block after a rebuild (scripts/space-factors.mjs writes only the tables above).
