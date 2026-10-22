@@ -1,7 +1,7 @@
 // Pure logic for the stocking screen and the fork card (lane P5, 2026-10-20): picks and counts, tankmate ranking, the tank the picks need,
 // fork options. No DOM; src/ui/stockPlan.ts draws it. Reads CARE (with the P1 group data merged in) and the P2 engine (scene/tankfit.ts).
 import { CARE } from '../data/care';
-import { bandMessage, bandOf, fightsOverCount, mostFor, type GroupBand } from '../data/groups';
+import { bandMessage, bandOf, fightsOverCount, malesWarning, mostFor, mostMalesFor, type GroupBand } from '../data/groups';
 import { needLine, needsOf, type NeedSeverity } from '../data/careNeeds';
 import { getSpecies, SPECIES, type Species } from '../data/species';
 import { TANK_MODELS, tankFromModel, type TankModel } from '../data/tanks';
@@ -53,8 +53,12 @@ export function bump(p: Pk, which: 'n' | 'f' | 'u', d: number): Pk {
  *  undefined. With the tank's litres, the most scales with the tank where the sources give a rule (S196, data/groups.ts territory). */
 export function overWarn(p: Pk, litres?: number): string | undefined {
   const c = CARE[p.id], n = totalOf(p), mx = mostFor(c, litres) ?? (c?.solo ? 1 : undefined);
-  if (!mx || n <= mx || !fightsOverCount(c)) return undefined; // fighting only: room is the stocking percent's job (lane CW)
   const name = getSpecies(p.id)?.name ?? p.id;
+  if (!mx || n <= mx || !fightsOverCount(c)) {
+    // males past their own limit (lane CW): a sexed species counts its males; an unsexed one may be all males (shops sell mostly males)
+    const mm = mostMalesFor(c, litres), males = c?.sexed ? p.n : n - (p.f ?? 0);
+    return mm !== undefined && males > mm ? malesWarning(name, males, mm, !!c?.sexed || (p.f ?? 0) > 0, c!.males!.each) : undefined;
+  }
   return mx === 1 ? `${name} is best kept one to a tank: expect fighting. The tank shown is sized for all of them` : c?.territory && litres ? `More than about ${mx} ${name} in a tank this size may fight${c.territory.note ? `: ${c.territory.note}` : c.sexed ? `; keep ${c.sexed.ratio[0]} male to ${c.sexed.ratio[1]} females` : ''}` : `More than ${mx} ${name} in one tank may fight`;
 }
 

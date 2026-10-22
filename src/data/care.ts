@@ -44,7 +44,7 @@ export const CARE: Record<string, AnimalCare> = {
   harlequin: A(1, 54, 0, [22, 27]), chili: A(2, 20, 0, [22, 28]), danio: A(1, 40, 0, [18, 25], { nip: true }), whitecloud: A(1, 54, 0, [16, 22]),
   cpd: A(1, 40, 0, [22, 26]), hatchet: A(1, 68, 0, [23, 27]), cherrybarb: A(1, 54, 0, [22, 27]), tigerbarb: A(1, 72, 2, [20, 26], { nip: true }),
   boesemani: A(2, 110, 0, [24, 27]), guppy: A(1, 19, 0, [22, 28], { slow: true }), platy: A(1, 38, 0, [18, 26]), molly: A(1, 80, 0, [22, 28]),
-  swordtail: A(2, 57, 1, [18, 26]), betta: A(2, 20, 1, [24, 28], { solo: true, slow: true }), dwarfgourami: A(1, 56, 1, [24, 28], { solo: true }),
+  swordtail: A(2, 57, 1, [18, 26]), betta: A(2, 20, 1, [24, 28], { solo: true, slow: true }), dwarfgourami: A(1, 56, 1, [24, 28]), // not solo since S196 / lane CW: males are limited by groups.ts `males`
   honeygourami: A(1, 19, 0, [22, 28]), gourami: A(1, 81, 0, [24, 28]), gbr: A(2, 76, 0, [26, 30]), bolivianram: A(2, 110, 0, [22, 26]),
   kribensis: A(1, 71, 1, [22, 26]), cockatoo: A(2, 54, 1, [22, 26]), yellowlab: A(1, 150, 1, [24, 28]),
   peacock: A(2, 243, 0, [24, 28]), demasoni: A(2, 200, 2, [24, 28]), kadango: A(2, 280, 0, [24, 28]), syno: A(2, 108, 1, [24, 28]),

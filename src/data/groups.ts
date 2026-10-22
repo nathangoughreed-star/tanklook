@@ -21,6 +21,9 @@ export interface GroupCare {
    *  job); past the last step one more animal per `each` gal (`per` at a time, 2 for pairs). Where present
    *  it replaces `max` for a known tank size. A warning only: the stocking percent never reads it. */
   territory?: { at: [number, number][]; each?: number; per?: number; /** advice shown with the warning */ note?: string };
+  /** MALES before they fight (lane CW, Nathan 2026-10-22): one male from `at` US gal, one more per `each` gal. Females never count.
+   *  A warning only, like `territory`; the stocking percent never reads it. */
+  males?: { at: number; each: number };
   /** usually kept by sex in the hobby: recommended males : females, and why */
   sexed?: { ratio: [number, number]; note?: string };
   /** MAXIMUM WATER DEPTH, mm: the deepest water the animal can live in (it must reach the surface to breathe, or the shore). Not a
@@ -59,9 +62,18 @@ export function mostFor(g: GroupCare | undefined, litres?: number): number | und
   // never below the group the same species' bands ask for (a pair of rams must not read "keep one", Coordinator 8 2026-10-22)
   return Math.max(n, recommendedMin(g, (g as { group?: number }).group));
 }
+/** The most MALES one tank of `litres` takes before they fight (`males` rule), else undefined. */
+export function mostMalesFor(g: GroupCare | undefined, litres?: number): number | undefined {
+  const m = g?.males;
+  if (!m || litres === undefined) return undefined;
+  return 1 + Math.max(0, Math.floor((litres / 3.785 - m.at) / m.each + 1e-9));
+}
 /** A species whose count is limited by fighting, not room (Nathan 2026-10-22: schools number in the thousands in the wild; their
  *  limit is the stocking percent): a sourced size-scaled `territory` rule, one to a tank, or a `max` (which is a fighting limit only). */
-export const fightsOverCount = (g: (GroupCare & { solo?: boolean }) | undefined) => !!(g?.territory || g?.solo || g?.max !== undefined);
+export const fightsOverCount = (g: (GroupCare & { solo?: boolean }) | undefined) => !!(g?.territory || g?.males || g?.solo || g?.max !== undefined);
+/** The males warning's text: `males` males (or animals, when they are not sexed) past the most this tank takes. */
+export const malesWarning = (name: string, males: number, most: number, sexed: boolean, each = 15) =>
+  `${name} males fight: a tank this size takes ${most === 1 ? 'one male' : `at most ${most} males`} (one more per ${each} gal)${sexed ? `, you have ${males}` : `; if more than ${most} of these ${males} are males, expect fighting`}. Females do not count.`;
 /** Which band a count of animals falls in (no bands = always 'ok'). */
 export function bandOf(g: GroupCare | undefined, n: number): GroupBand {
   const b = g?.bands;
@@ -97,7 +109,7 @@ export const GROUPS: Record<string, GroupCare> = {
   molly: { bands: { ok: 3, good: 4, great: 6 }, msg: { avoid: 'A lone molly or a male with one female gets harassed; keep 1 male : 2-3 females' }, sexed: { ratio: [1, 3], note: 'Keep more females than males so one female is not hounded' }, flow: 'medium', zone: 'middle', minLengthMm: 750, appeal: ['livebearer', 'colour', 'easy'] },
   swordtail: { bands: { ok: 3, good: 4, great: 6 }, msg: { avoid: 'Males chase females hard; keep 1 male : 3 females' }, sexed: { ratio: [1, 3], note: 'One male to several females disperses harassment; avoid several males' }, flow: 'medium', zone: 'top', minLengthMm: 800, minAreaCm2: 3600, appeal: ['colour', 'easy', 'personality', 'shoal'] },
   betta: { bands: { ok: 1, good: 1, great: 1 }, msg: { ok: 'Keep one male per tank; males fight to the death' }, max: 1, flow: 'low', zone: 'top', minLengthMm: 300, appeal: ['finnage', 'showpiece', 'colour', 'personality', 'hands-on'] },
-  dwarfgourami: { bands: { ok: 1, good: 1, great: 1 }, msg: { ok: 'One male alone is safest; a pair needs plants to break sight lines' }, max: 1, territory: { at: [[10, 3]], each: 5, note: 'shops sell mostly males: keep at least 2 females per male' }, flow: 'low', zone: 'top', minLengthMm: 600, appeal: ['showpiece', 'colour', 'peaceful'] },
+  dwarfgourami: { bands: { ok: 1, good: 1, great: 1 }, msg: { ok: 'One male alone is safest; a pair needs plants to break sight lines' }, territory: { at: [[10, 3]], each: 5, note: 'shops sell mostly males: keep at least 2 females per male' }, males: { at: 10, each: 15 }, flow: 'low', zone: 'top', minLengthMm: 600, appeal: ['showpiece', 'colour', 'peaceful'] },
   honeygourami: { bands: { ok: 1, good: 2, great: 4 }, msg: { ok: 'Peaceful; fine alone but happier as a pair or small group' }, flow: 'low', zone: 'top', minLengthMm: 450, appeal: ['easy', 'colour', 'personality'] },
   gourami: { bands: { ok: 1, good: 2, great: 4 }, msg: { ok: 'One male only unless tank is 120 cm+; add females' }, sexed: { ratio: [1, 3], note: 'Males are territorial with each other; one male to 2-3 females' }, flow: 'low', zone: 'top', minLengthMm: 900, appeal: ['showpiece', 'finnage', 'personality'] },
   gbr: { bands: { ok: 2, good: 2, great: 2 }, msg: { avoid: 'Singles are shy; keep a bonded pair' }, max: 2, flow: 'low', zone: 'bottom', minLengthMm: 600, appeal: ['showpiece', 'colour', 'hands-on'] },

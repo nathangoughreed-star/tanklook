@@ -1,7 +1,7 @@
 // Size-scaled fighting limits (S196, Nathan 2026-10-22: warn, scaled with the tank; research/territory-caps.md).
 import { describe, expect, it } from 'vitest';
 import { CARE } from '../src/data/care';
-import { mostFor } from '../src/data/groups';
+import { mostFor, mostMalesFor } from '../src/data/groups';
 import { crowdWarnings } from '../src/scene/territory';
 import { stockingOf } from '../src/scene/stocking';
 import { notesOf, overWarn } from '../src/ui/stockPlanLogic';
@@ -27,16 +27,27 @@ describe('territory caps', () => {
     expect(notesOf({ id: 'banggai', n: 5 }).line).toMatch(/pair is best/); // the group line never praises a group the warning says fights
   });
   it('fall back to the flat max without a tank size, or without a rule', () => {
-    expect(mostFor(CARE.dwarfgourami)).toBe(1);
+    expect(mostFor(CARE.dwarfgourami)).toBeUndefined(); // lane CW: no flat max; the males rule needs a tank size too
     expect(mostFor(CARE.neon, L(125))).toBe(CARE.neon.max);
   });
   it('warn on the stocking screen and in the sidebar, never in the percent', () => {
     expect(overWarn({ id: 'dwarfgourami', n: 43 }, L(125))).toMatch(/about 26 .*may fight: shops sell mostly males/);
-    expect(overWarn({ id: 'dwarfgourami', n: 20 }, L(125))).toBeUndefined();
+    expect(overWarn({ id: 'dwarfgourami', n: 20 }, L(125))).toMatch(/at most 8 males.*if more than 8 of these 20 are males/); // unsexed: may all be males
     const big = comboTank({ name: '', tank: [72, 18, 21], stock: [['dwarfgourami', 43]] });
     expect(crowdWarnings(big).join()).toMatch(/43 Dwarf gouramis.*may fight/);
-    expect(crowdWarnings(comboTank({ name: '', tank: [72, 18, 21], stock: [['dwarfgourami', 20]] }))).toEqual([]);
+    const tank20 = comboTank({ name: '', tank: [72, 18, 21], stock: [['dwarfgourami', 20]] }); // all drawn as males (no sex set)
+    expect(crowdWarnings(tank20).join()).toMatch(/males fight: a tank this size takes at most \d+ males.*you have 20/);
+    tank20.fish.forEach((x, i) => { if (i >= 2) x.sex = 'f'; });
+    expect(crowdWarnings(tank20)).toEqual([]); // 2 males and 18 females
     expect(stockingOf(big).reasons.join()).not.toMatch(/fight/);
+  });
+  it('dwarf gourami males: one from 10 gal, one more per 15 gal (Nathan 2026-10-22)', () => {
+    expect(mostMalesFor(CARE.dwarfgourami, L(20))).toBe(1);
+    expect(mostMalesFor(CARE.dwarfgourami, L(25))).toBe(2);
+    expect(mostMalesFor(CARE.dwarfgourami, L(40))).toBe(3);
+    expect(overWarn({ id: 'dwarfgourami', n: 2 }, L(20))).toMatch(/takes one male/);
+    expect(overWarn({ id: 'dwarfgourami', n: 2 }, L(29))).toBeUndefined();
+    expect(overWarn({ id: 'betta', n: 2 }, L(40))).toMatch(/one to a tank/); // other fighters unchanged
   });
   it('never fall below the group the bands ask for, and only room rules are left out (Coordinator 8, 2026-10-22)', () => {
     expect(overWarn({ id: 'bolivianram', n: 2 }, L(29))).toBeUndefined();      // a pair, bands ok 2

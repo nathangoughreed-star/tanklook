@@ -11,8 +11,8 @@ when it carries the url of the listing it was read from and does not mark the fi
 
 | | values | cited | fitted | derived | researched | claimed | assumption | unsourced | strong |
 |---|---|---|---|---|---|---|---|---|---|
-| **all data** | 5452 | 2486 (46 %) | 59 (1 %) | 220 (4 %) | 814 (15 %) | 609 (11 %) | 785 (14 %) | 479 (9 %) | 51 % |
-| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 1256 | 318 |  | 71 | 455 | 363 | 48 | 1 | 31 % |
+| **all data** | 5452 | 2485 (46 %) | 59 (1 %) | 220 (4 %) | 814 (15 %) | 608 (11 %) | 787 (14 %) | 479 (9 %) | 51 % |
+| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 1256 | 317 |  | 71 | 455 | 362 | 50 | 1 | 31 % |
 | Tank minimum red / green lines, heights, depth notes, advisory gallons (tankmin.json, lane MM) | 275 | 153 |  | 74 | 48 |  |  |  | 83 % |
 | Adult length per species (species.json tl) | 108 | 42 |  | 30 | 21 |  | 15 |  | 67 % |
 | Marine pH band (data/waterchem.ts) | 2 | 2 |  |  |  |  |  |  | 100 % |
@@ -43,8 +43,8 @@ when a page is cited beside it, and `says` in src/data/provenance.ts keeps the p
 
 | | measured | source-stated | TankLook interpretation | derived calculation | conservative default | unsourced |
 |---|---|---|---|---|---|---|
-| **all data** | 2 (0 %) | 2546 (47 %) | 2116 (39 %) | 279 (5 %) | 30 (1 %) | 479 (9 %) |
-| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) |  | 362 | 794 | 71 | 28 | 1 |
+| **all data** | 2 (0 %) | 2545 (47 %) | 2117 (39 %) | 279 (5 %) | 30 (1 %) | 479 (9 %) |
+| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) |  | 361 | 795 | 71 | 28 | 1 |
 | Tank minimum red / green lines, heights, depth notes, advisory gallons (tankmin.json, lane MM) |  | 153 | 48 | 74 |  |  |
 | Adult length per species (species.json tl) |  | 63 | 15 | 30 |  |  |
 | Marine pH band (data/waterchem.ts) |  |  |  |  | 2 |  |
@@ -173,7 +173,7 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | `CARE *.minLengthMm` | 57 | group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named https://petfishonline.com/neon-tetra-tank-size/ |
 | `CARE *.sexed.ratio.*` | 38 | group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named https://guidarium.com/fishes/celestial-pearl-danio-galaxy-rasbora |
 | `CARE *.ph.*` | 18 | FishBase pH / dH range where it lists one, otherwise practice; which rows are which was not recorded |
-| `CARE *.max` | 13 | group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named https://guidarium.com/fishes/dwarf-gourami |
+| `CARE *.max` | 12 | group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named https://modestfish.com/german-blue-ram/ |
 | `CARE *.maxDepthMm` | 3 | group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named https://training.joshsfrogs.com/care-sheet/fire-bellied-toad-care-sheet |
 | `NEEDS *.par.*` | 62 | band, CO2 and ferts per plant after the planted-tank ratings; no per-plant page recorded |
 | `NEEDS *.band` | 44 | band, CO2 and ferts per plant after the planted-tank ratings; no per-plant page recorded |
