@@ -124,3 +124,13 @@ describe('S207 (2026-10-22): tankmates and swaps are judged in the chosen tank i
     for (const s of f.swaps) expect(fitIn([{ species: s.to.id, n: s.n }], s.tank)?.fails).toEqual([]);
   });
 });
+
+describe('the tank list sizes females at their own length (2026-10-22)', () => {
+  it('1 male + 4 female mollies read fuller than 5 at the male length, as the tile does; unsexed picks are unchanged', () => {
+    const picks = [{ id: 'molly', n: 1, f: 4 }];
+    expect(animalsOf(picks)).toEqual([{ species: 'molly', n: 5, f: 4 }]);
+    expect(animalsOf([{ id: 'neon', n: 6 }])).toEqual([{ species: 'neon', n: 6 }]);
+    const sexed = fitIn(animalsOf(picks), 'g8c')!.spacePct, flat = fitIn([{ species: 'molly', n: 5 }], 'g8c')!.spacePct;
+    expect(sexed / flat).toBeGreaterThan(1.08); expect(sexed / flat).toBeLessThan(1.2);
+  });
+});

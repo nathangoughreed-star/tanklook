@@ -34,7 +34,8 @@ export const maxOf = (id: string, litres?: number, lengthMm?: number) => mostFor
 export const minOf = (id: string) => CARE[id]?.bands?.ok ?? CARE[id]?.group ?? 1;
 
 /** The picks as the tank-fit engine wants them (males and females together). */
-export const animalsOf = (picks: Pk[]): AnimalCount[] => picks.filter(p => totalOf(p) > 0).map(p => ({ species: p.id, n: totalOf(p) }));
+/** The picks as counts for the tank engine; females counted apart so they are sized at the female length (unsexed at the species length). */
+export const animalsOf = (picks: Pk[]): AnimalCount[] => picks.filter(p => totalOf(p) > 0).map(p => ({ species: p.id, n: totalOf(p), ...(p.f ? { f: p.f } : {}) }));
 
 /** A species added at its recommended minimum; a sexed one at the smallest whole multiple of its ratio that reaches that minimum. */
 export function startPick(id: string): Pk {

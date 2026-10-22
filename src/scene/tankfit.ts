@@ -20,7 +20,7 @@ import { applyPreset, optionCost, PRESETS, ROOM_C, rowsFor, stockCapacity, tempF
 import type { Fish, TankSetup, Units } from './types';
 
 /** What the user has picked: n animals of a species, each at `tl` mm (the adult length when omitted). */
-export interface AnimalCount { species: string; n: number; tl?: number }
+export interface AnimalCount { species: string; n: number; tl?: number; /** how many of the n are females, drawn at the female's adult length (the rest at tl or the species length) */ f?: number }
 export { careOf, recommendedMin, zoneOf, type Zone } from './zone';
 
 
@@ -74,7 +74,9 @@ function setupFor(c: Candidate, animals: AnimalCount[], build: BuildKind): TankS
   S.tank = c.T;
   S.water.on = true; S.water.level = WATER_LEVEL; S.water.salt = salt;
   let id = 1;
-  S.fish = animals.flatMap(a => Array.from({ length: Math.max(0, a.n) }, (): Fish => ({ id: id++, species: a.species, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0, ...(a.tl ? { tl: a.tl } : {}) })));
+  // females at their own adult length (a molly female is 96 mm to the male's 85): the tank list then reads what the tile reads
+  S.fish = animals.flatMap(a => { const fem = getSpecies(a.species)?.female; return Array.from({ length: Math.max(0, a.n) }, (_, i): Fish => ({ id: id++, species: a.species, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0,
+    ...(fem && i < (a.f ?? 0) ? { sex: 'f' as const, tl: fem.tl } : a.tl ? { tl: a.tl } : {}) })); });
   const preset = BASE_PRESET[salt ? 'salt' : 'fresh'];
   if (PRESETS.some(p => p.id === preset)) S.tech = applyPreset(S, preset);
   S.light = { ...S.light, type: 'led', tech: 'led-white', count: 1, watts: undefined };
