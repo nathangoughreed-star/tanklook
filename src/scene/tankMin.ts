@@ -13,6 +13,7 @@ import { careOf, zoneOf } from './zone';
 import { tankExtent } from './space';
 import { footprint } from './shape';
 import { countsAgainstWater } from './stocking';
+import { MIN_SLACK_PCT } from './animalfit';
 import { SUBSTRATE_CAP, volume, waterY } from './physics';
 import type { TankSetup } from './types';
 
@@ -156,7 +157,8 @@ export interface TankMinimum {
   /** species by percent, most demanding first */
   rows: MinRow[];
   /** Pass / fail limits the tank-fit engine reads (lane HB, 2026-10-21; they used to live in tankfit.ts): the tank is shorter than some
-   *  species' red-line length (no slack: a step-up may be over its minimum on space, never short), and its water is deeper than some species
+   *  species' red-line length by more than the 10 % slack every red line gets (MIN_SLACK_PCT; S207 2026-10-22: strict, it failed the 29 gal
+   *  for rummynose on a line derived from the 20 long, 756 vs 765 mm inside, while the tile passed it at 101 %), and its water is deeper than some species
    *  tolerates. `depthMm` is the usable water depth, `maxDepthMm` the shallowest limit (Infinity = none). */
   lengthShort: boolean; tooDeep: boolean; depthMm: number; maxDepthMm: number;
 }
@@ -184,7 +186,7 @@ export function tankMinimum(S: TankSetup): TankMinimum {
   const rows = [...by.values()].sort((a, b) => b.pct - a.pct);
   const depthMm = depthOf(g), maxDepthMm = Math.min(Infinity, ...rows.map(r => r.maxDepthMm));
   return { percent: rows[0]?.pct ?? 0, comfortPercent: Math.max(0, ...rows.map(r => r.comfortPct)), litres: g.litres, lengthMm: g.lengthMm, rows,
-    lengthShort: rows.some(r => r.minLengthMm > g.lengthMm), tooDeep: depthMm > maxDepthMm, depthMm, maxDepthMm };
+    lengthShort: rows.some(r => r.minLengthMm / Math.max(1, g.lengthMm) * 100 > MIN_SLACK_PCT), tooDeep: depthMm > maxDepthMm, depthMm, maxDepthMm };
 }
 
 /** The animal gate's view of a tank: each species against this tank's geometry (pass as AnimalEnv.fit). */

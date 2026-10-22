@@ -8,7 +8,7 @@ import { TANK_MODELS, tankFromModel, type TankModel } from '../data/tanks';
 import { whyAnimal } from '../scene/animalfit';
 import { volume } from '../scene/physics';
 import { spaceFit, tankExtent } from '../scene/space';
-import { buildSpan, lenTxt, stepUps, tankFor, tankLabel, tankOptions, zoneOf, type AnimalCount, type BuildSpan, type TankFit } from '../scene/tankfit';
+import { buildSpan, fitIn, lenTxt, stepUps, tankFor, tankLabel, tankOptions, zoneOf, type AnimalCount, type BuildSpan, type TankFit } from '../scene/tankfit';
 import { countsAgainstWater } from '../scene/stocking';
 import { minDataOf } from '../scene/tankMin';
 import type { Fish, SpaceLimit, Tank, Units } from '../scene/types';
@@ -119,7 +119,8 @@ export function conflictOf(picks: Pk[], id: string): string | undefined {
 // ---------- tankmates ----------
 export interface Mate {
   sp: Species; ok: boolean; why: string; score: number; n: number;
-  /** compatible AND, added at its smallest group, still inside the stocking limit of the current tank */
+  /** compatible AND, added at its smallest group, the current tank still holds every animal (judged in that tank itself: a tank with more
+   *  litres can fail where a smaller one holds them, so this is not a litre comparison; S207 2026-10-22) */
   fits: boolean;
   /** compatible but the current tank is too small for it: the smallest tank that holds picks + it */
   bigger?: TankModel;
@@ -132,7 +133,7 @@ const overlap = (a?: [number, number], b?: [number, number]) => a && b ? Math.ma
 export function rankTankmates(picks: Pk[], tank?: TankModel): Mate[] {
   const have = picks.filter(p => totalOf(p) > 0).map(p => getSpecies(p.id)).filter((s): s is Species => !!s);
   if (!have.length) return [];
-  const animals = animalsOf(picks), curL = tank ? litresOf(tank) : Infinity;
+  const animals = animalsOf(picks);
   const taken = new Set(have.map(s => s.id)), zones = new Set(have.map(zoneOf));
   const out: Mate[] = [];
   for (const sp of SPECIES) {
@@ -150,9 +151,10 @@ export function rankTankmates(picks: Pk[], tank?: TankModel): Mate[] {
     const n = minOf(sp.id);
     let fits = false, bigger: TankModel | undefined;
     if (!why) {
-      const t = tankFor([...animals, { species: sp.id, n }]);
-      fits = !!t && !t.fails.length && litresOf(t.tank) <= curL * 1.001;
-      if (!fits && t) bigger = t.tank;
+      const all = [...animals, { species: sp.id, n }];
+      const here = tank ? fitIn(all, tank) : tankFor(all); // the chosen tank with the mate in it; no tank chosen yet: the smallest that holds them
+      fits = !!here && !here.fails.length;
+      if (!fits) bigger = (tank ? tankFor(all) : here)?.tank;
     }
     out.push({ sp, ok: !why, why, score, n, fits, ...(bigger ? { bigger } : {}) });
   }
@@ -246,7 +248,8 @@ export function forkOptions(animals: AnimalCount[], limit: SpaceLimit, current?:
   }
   const inTank = [...RECT].reverse().find(m => spaceFit(tankFromModel(m), limit).fits);
   const inSpace = inTank ? optionOf(inTank, animals, undefined, u) : undefined;
-  const fitsAsIs = !need || (!!inTank && need.fails.length === 0 && litresOf(need.tank) <= litresOf(inTank) * 1.001);
+  const inFit = inTank && fitIn(animals, inTank); // judged in that tank itself (S207), not by litres against the smallest tank that holds them
+  const fitsAsIs = !need || (!!inFit && inFit.fails.length === 0);
   const swaps: SwapOption[] = [];
   if (!fitsAsIs && inTank) {
     const litres = litresOf(inTank), salt = wet.some(a => getSpecies(a.species)?.salt);
@@ -258,8 +261,8 @@ export function forkOptions(animals: AnimalCount[], limit: SpaceLimit, current?:
         if (sp.id === a.species || !!sp.salt !== salt || !countsAgainstWater(sp) || animals.some(x => x.species === sp.id)) continue;
         const shared = (CARE[sp.id]?.appeal ?? []).filter(t => mine.includes(t));
         if (!shared.length || (present.length && whyAnimal(sp, litres, 3, present))) continue;
-        const n = minOf(sp.id), t = tankFor([...rest, { species: sp.id, n }]);
-        if (t && !t.fails.length && litresOf(t.tank) <= litres * 1.001) cands.push({ from: from.name, to: sp, n, shared, tank: inTank });
+        const n = minOf(sp.id), t = fitIn([...rest, { species: sp.id, n }], inTank);
+        if (t && !t.fails.length) cands.push({ from: from.name, to: sp, n, shared, tank: inTank });
       }
       cands.sort((x, y) => y.shared.length - x.shared.length || Math.abs(x.to.tl - from.tl) - Math.abs(y.to.tl - from.tl));
       swaps.push(...cands.slice(0, 4));

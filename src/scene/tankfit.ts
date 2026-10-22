@@ -125,7 +125,7 @@ function fitOf(c: Candidate, animals: AnimalCount[]): Fit {
   if (r.filtrationPercent > 100) fails.push('filtration');
   const tm = tankMinimum(S);
   if (tm.percent > MIN_SLACK_PCT) fails.push('minimum'); // the Fullness tile's own red lines (length, width, floor area, height; tankMin.ts), 10 % slack
-  // lane HB: every limit is the engines' own (stockingOf: water and floor; tankMinimum: red lines, strict length, depth); no math here
+  // lane HB: every limit is the engines' own (stockingOf: water and floor; tankMinimum: red lines, length with the same 10 % slack (S207), depth); no math here
   if (tm.lengthShort) fails.push('length');
   if (tm.tooDeep) fails.push('depth');
   return { spacePct: r.spacePercent, filtrationPct: r.filtrationPercent, minPct: tm.percent, cramped: tm.comfortPercent > 100, fails };
@@ -155,6 +155,18 @@ export function tankOptions(animals: AnimalCount[]): TankFit[] {
   return CANDIDATES.map(c => fitOfTank(c, animals, needs));
 }
 
+/** A model as a candidate: its catalogue entry, else (the editor's own tank) built from the model. */
+const candidateOf = (m: TankModel): Candidate => CANDIDATES.find(c => c.m.id === m.id) ?? { m, T: tankFromModel(m), litres: volume(tankFromModel(m)).litres };
+
+/** These animals judged in ONE given tank (the verdict tankOptions gives that size): the chosen tank with a tankmate added, the fork card's
+ *  in-space tank. A tank with more litres can still fail where a smaller one holds them (cubes and talls fail length / minimum), so comparing
+ *  litres against tankFor's answer is not a fit (S207 2026-10-22). Undefined with no animals in the water. */
+export function fitIn(animals: AnimalCount[], tank: TankModel | string): TankFit | undefined {
+  const m = typeof tank === 'string' ? getTankModel(tank) : tank;
+  if (!m || !wet(animals).length) return undefined;
+  return fitOfTank(candidateOf(m), animals, needsOf(animals));
+}
+
 export interface StepUp {
   tank: TankModel;
   litres: number;
@@ -170,7 +182,7 @@ const STEP_RATIO = 1.25;
 export function stepUps(animals: AnimalCount[], current: TankModel | string, n = 3, ratio = STEP_RATIO): StepUp[] {
   const cur = typeof current === 'string' ? getTankModel(current) : current;
   if (!cur || !wet(animals).length) return [];
-  const c0 = CANDIDATES.find(c => c.m.id === cur.id) ?? { m: cur, T: tankFromModel(cur), litres: volume(tankFromModel(cur)).litres };
+  const c0 = candidateOf(cur);
   const base = setupUsd(c0, animals, 'balanced'), out: StepUp[] = [];
   let from = c0.litres, room = fitOf(c0, animals).spacePct;
   for (const c of CANDIDATES) {
@@ -201,7 +213,7 @@ export interface BuildSpan {
 export function buildSpan(animals: AnimalCount[], tank: TankModel | string): BuildSpan | undefined {
   const m = typeof tank === 'string' ? getTankModel(tank) : tank;
   if (!m) return undefined;
-  const c = CANDIDATES.find(x => x.m.id === m.id) ?? { m, T: tankFromModel(m), litres: volume(tankFromModel(m)).litres };
+  const c = candidateOf(m);
   const a = demand(c, animals, 'cheapest'), b = demand(c, animals, 'balanced');
   return { setupUsd: { cheapest: Math.round(a.setupUsd), balanced: Math.round(b.setupUsd) }, minPerWeek: { cheapest: Math.round(a.minPerWeek), balanced: Math.round(b.minPerWeek) } };
 }

@@ -2,7 +2,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { CARE } from '../src/data/care';
 import { getTankModel, tankFromModel } from '../src/data/tanks';
-import { buildSpan, needsOf, recommendedMin, stepUps, tankFor, tankLabel, type AnimalCount } from '../src/scene/tankfit';
+import { buildSpan, fitIn, needsOf, recommendedMin, stepUps, tankFor, tankLabel, tankOptions, type AnimalCount } from '../src/scene/tankfit';
 import { getSpecies } from '../src/data/species';
 import { bareSetup } from '../src/scene/defaults';
 import { geometryOf, minDataOf, speciesMinimum } from '../src/scene/tankMin';
@@ -106,4 +106,26 @@ describe('tank fit engine (lane P2)', () => {
   // restore the real values (deleting them took the ADF's depth limit away from every later test)
   const keep = { danioLen: care.danio?.minLengthMm, adfDepth: care.adf?.maxDepthMm };
   afterEach(() => { if (care.danio) care.danio.minLengthMm = keep.danioLen; if (care.adf) care.adf.maxDepthMm = keep.adfDepth; });
+});
+
+describe('S207 (2026-10-22): the length gate carries the same 10 % slack as the minimum bar; one tank can be judged on its own', () => {
+  it('a tank a few mm short of a derived red line passes (29 gal for 10 rummynose: 756 vs 765 mm inside); one well short still fails, and then the minimum fails with it', () => {
+    const o = tankOptions([{ species: 'rummynose', n: 10 }]), by = (id: string) => o.find(x => x.tank.id === id)!;
+    expect(by('g20l').fails).toEqual([]);
+    expect(by('g29').fails).toEqual([]); // was ['length'] alone at minPct 101: greyed "too short" while the tile's red line passed it
+    expect(by('g37').fails).toEqual([]);
+    expect(by('g20h').fails).toContain('length'); // 24 in long: short by more than the slack
+    expect(by('g20h').fails).toContain('minimum');
+    for (const x of o) if (x.fails.includes('length')) expect(x.minPct).toBeGreaterThan(MIN_SLACK_PCT); // never 'length' inside the slack
+    const g = tankOptions([{ species: 'goldfish', n: 2 }]);
+    expect(g.find(x => x.tank.id === 'g29')!.fails).toEqual([]);
+  });
+  it('fitIn judges the given tank itself and agrees with tankOptions for that size', () => {
+    const a: AnimalCount[] = [{ species: 'honeygourami', n: 1 }, { species: 'cherryshrimp', n: 10 }];
+    const all = tankOptions(a);
+    for (const id of ['g5', 'g6c', 'g8c', 'g10']) expect(fitIn(a, id)?.fails).toEqual(all.find(x => x.tank.id === id)!.fails);
+    expect(fitIn(a, 'g5')?.fails).toEqual([]);
+    expect(fitIn(a, 'g6c')?.fails.length).toBeGreaterThan(0); // more litres than the 5 gal, yet too short for the gourami's red line
+    expect(fitIn([{ species: 'leopardgecko', n: 1 }], 'g20l')).toBeUndefined(); // nothing in the water: nothing to judge
+  });
 });

@@ -45,6 +45,25 @@ models on /review.html (and its drawImage error), TG leftovers (heater product p
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
+## S207: Code review fixes (2026-10-22, branch `s207`, worktree `.claude/worktrees/s207`; the review: chat S207, 20 findings on main b0a07bb, two confirmed by running the engine)
+- **Length gate gets the 10 % slack (tankMin.ts `lengthShort`, read by tankfit `fitOf`):** it was strict while the same red-line length already sits in
+  `tankMinimum.percent` with MIN_SLACK_PCT, so a tank a few mm under a line DERIVED from another catalogue tank was greyed "too short" where the
+  tile's red line passed it: 10 rummynose in the 29 gal (756 vs 765 mm inside, 101 %); also goldfish x2, hatchet, tiger barb, bronze cory (29 / 37 gal),
+  angel (30 / 40 / 50 breeder, 111 %), discus and livingstonii (90 / 120). Now 'length' fails only past the slack, when 'minimum' fails with it. Lane HB's
+  rounding (the 0.3 mm case) covered the 20 long only.
+- **Tankmates and swaps judged in the chosen tank (stockPlanLogic `rankTankmates`, `forkOptions`; new `tankfit.fitIn(animals, tank)`):** `fits` compared
+  the litres of the smallest holding tank with the chosen one, but 25 catalogue cases hold in a smaller tank and fail a bigger one (cubes and talls:
+  length / minimum). A honey gourami read as fitting a 6 gal cube with 10 cherry shrimp (the 5 gal, 19 L, holds both) though the cube fails its red line
+  at 128 %; the fork card's "fits as it is" and its swaps had the same shortcut. `candidateOf` in tankfit replaces two copies of the catalogue lookup.
+- Tests: S207 blocks in test/tankfit.test.ts and test/stockplan.test.ts. No threshold or data changed; what moves: the greyed sizes above open, tankmate
+  badges on cubes / talls, the fork card's as-is answer.
+- Open from the review, not done here (ranked): the ghost box's 0.7 x dims leak into the editor when every pick is removed before closing (stockPlan.ts
+  settle / sync); plan.ts "too cold" reads ROOM_C, not the tank's roomC (tech.ts unheatedC does it); tankfit's filter loop may pass a tank on a sump that
+  builds.ts never offers; planFor runs up to 8x per keystroke on the stocking screen (once per pick row); `filterless` survives a filter added by
+  withChoice / kitTech (only withUnits clears it); nitrogen.ts light-off factor is dead (LightSettings has no `on`); a female-only sexed group reads
+  "short on females"; stockingMemo's key lacks grow.feed (older files without tech). Cleanups: needsOf's unread fields and the dead 'floor' fail,
+  capacityOf's unused LU figures, three copies of recommendedMin, esc / usd in 12 files, builds.ts baseSetup duplicating tankfit's setupFor.
+
 ## Lane RF: Path 1 Rule Fixes (2026-10-22, branch `rf`, worktree `.claude/worktrees/rf`, port 5911; prompt prompts/lane-RF-path1-rule-fixes.md)
 Software fixes from research/rules-spec.md section 6; no threshold changed. Benchmark before / after: research/benchmark-baseline.md (regenerate with `GEN_BENCH=1 npx vitest run test/benchmarkBaseline.test.ts`). Tests: test/path1Rules.test.ts.
 - **1 Care needs on their own path:** new `src/data/careNeeds.ts` (`NEEDS`, `needsOf`, `needLine`): feeding / maturity / environment conditions with a severity, evaluated apart from the count. All are `unchecked` today (no food-supply or tank-age model), so the line says "Not checked: ... confirm it before buying". Shown on every pick row (`notesOf().needs`) and in a plan-sheet section "Care needs the tool cannot check" (verdict reads "It fits the tank, with care needs to confirm"; .txt too, `planTextWithNeeds`). Moved out of band messages: mandarin pods + maturity, hatchetfish lid, hermit shells. FORMULAS entry in provenance.ts (claimed, wording only).

@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { CARE } from '../src/data/care';
 import { SPECIES } from '../src/data/species';
 import { spaceFit } from '../src/scene/space';
-import { tankFromModel } from '../src/data/tanks';
+import { getTankModel, tankFromModel } from '../src/data/tanks';
+import { fitIn } from '../src/scene/tankfit';
 import { animalsOf, bump, conflictOf, forkOptions, maxOf, minOf, notesOf, overWarn, planFor, rankTankmates, startPick, totalOf } from '../src/ui/stockPlanLogic';
 
 describe('stocking screen logic (lane P5, 2026-10-20)', () => {
@@ -96,5 +97,27 @@ describe('stocking screen logic (lane P5, 2026-10-20)', () => {
     expect(five.need!.litres).toBeGreaterThanOrEqual(one.need!.litres); // lane HC: with the oscar's height credit 5 oscars read 73 % of the smallest catalogue size that fits one (21 %)
     expect(five.options.find(o => !o.fails.length)!.spacePct).toBeGreaterThan(one.options.find(o => !o.fails.length)!.spacePct);
     for (const p of [one, three, five]) for (const o of p.options.filter(o => !o.fails.length)) expect(o.spacePct).toBeLessThanOrEqual(100);
+  });
+});
+
+describe('S207 (2026-10-22): tankmates and swaps are judged in the chosen tank itself, not by litres', () => {
+  it('a honey gourami does not fit a 6 gal cube holding 10 cherry shrimp (too short for its red line) although the 5 gal that holds both is smaller', () => {
+    const picks = [{ id: 'cherryshrimp', n: 10 }];
+    const cube = rankTankmates(picks, getTankModel('g6c')!).find(m => m.sp.id === 'honeygourami')!;
+    expect(cube.ok).toBe(true); expect(cube.fits).toBe(false); expect(cube.bigger?.id).toBe('g5'); // the smallest tank that holds them, whatever its litres
+    const five = rankTankmates(picks, getTankModel('g5')!).find(m => m.sp.id === 'honeygourami')!;
+    expect(five.fits).toBe(true); expect(five.bigger).toBeUndefined();
+    // every mate marked as fitting really holds in the chosen tank, and the fits come first
+    const list = rankTankmates(picks, getTankModel('g8c')!);
+    for (const m of list.filter(m => m.fits)) expect(fitIn([...animalsOf(picks), { species: m.sp.id, n: m.n }], 'g8c')?.fails).toEqual([]);
+    expect(list.findIndex(m => !m.fits)).toBe(list.filter(m => m.fits).length);
+  });
+  it('the fork card: "fits as it is" and every swap hold in the in-space tank itself', () => {
+    const animals = [{ species: 'honeygourami', n: 1 }], limit = { w: 330, d: 330 }; // room for a 6 gal cube, not for the 5 gal (16 in) the gourami needs
+    const f = forkOptions(animals, limit);
+    expect(f.inSpace?.tank.id).toBe('g6c');
+    expect(f.fitsAsIs).toBe(false); // the litre shortcut said yes: 5 gal (19 L) under the cube (24 L)
+    expect(f.swaps.length).toBeGreaterThan(0);
+    for (const s of f.swaps) expect(fitIn([{ species: s.to.id, n: s.n }], s.tank)?.fails).toEqual([]);
   });
 });
