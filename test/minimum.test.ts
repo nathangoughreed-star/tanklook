@@ -198,7 +198,7 @@ describe('13 kuhlis in a 20 long (S188 acceptance)', () => {
   it('no red minimum, at most the yellow Recommended note', () => {
     const m = tankMinimum(S), w = minWarnings(m, 'in');
     expect(m.rows[0].pct).toBeLessThanOrEqual(100); expect(m.rows[0].assessed).toBe(true);
-    expect(w).toEqual([]); expect(minBar(m).level).toBe('near'); // 77 cm < the 80 cm Recommended mark
+    expect(w.map(x => x.level)).toEqual(['near']); expect(w[0].text).toMatch(/^13 Kuhli loaches: below the recommended size/); expect(minBar(m).level).toBe('near'); // 77 cm < the 80 cm Recommended mark
     expect(topMin(m, 'in')[0].note).toMatch(/^at least 23.6" x 11.8"; Recommended 31.5" long$/);
   });
   it('the tank minimum never fails it, and since 2026-10-22 neither does the Space bar: 13 kuhlis read cramped but doable (about 74 % since S253, 96 % before) by the floor / water limit, no longer 131 % by floor (kuhlis pile up, FLOOR_FACTOR 0.6)', () => {
@@ -221,9 +221,9 @@ describe('wording (lane MM)', () => {
     expect(minDataOf('kuhli')!.red!.mark).toBe('sourced');
     expect(tankMinimum(one('kuhli', 12, 8)).rows[0].reason).toMatch(/^wants (a tank )?at least .* \(Seriously Fish\)/);
   });
-  it('between the lines the bar is yellow and lists "at least X; Recommended Y" (never "comfortable" or "cramped"); no red line (Nathan: "Bar back, keep lines")', () => {
+  it('between the lines the bar is yellow, lists "at least X; Recommended Y" (never "comfortable" or "cramped") and says why in a yellow line, never a red one', () => {
     const m = tankMinimum(one('danio', 24, 12)), top = topMin(m, 'in');
-    expect(minWarnings(m, 'in')).toEqual([]); expect(minBar(m).level).toBe('near');
+    expect(minWarnings(m, 'in').map(w => w.level)).toEqual(['near']); expect(minWarnings(tankMinimum(one('danio', 48, 13)), 'in')).toEqual([]); expect(minBar(m).level).toBe('near');
     expect(top[0].note).toBe('at least 19.8" x 10.1" (est. from gallons); Recommended 35.4" x 11.8"');
     expect(m.rows[0].comfortReason).toMatch(/^below the recommended size: Seriously Fish recommends 35.4" long|^below the recommended size: Seriously Fish recommends 90 cm long/);
     expect(top.some(x => /comfortable|cramped|happier/.test(x.note ?? ''))).toBe(false);

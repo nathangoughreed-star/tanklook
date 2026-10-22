@@ -11,7 +11,7 @@ import { whysAnimal } from '../scene/animalfit';
 import { volume } from '../scene/physics';
 import { pairingIn } from '../scene/pairs';
 import { IDEAL_MAX, isOver, countsAgainstWater, stockingMemo, type Stocking } from '../scene/stocking';
-import { notesIn, reasonIn, tankMinimum, type MinRow, type TankMinimum } from '../scene/tankMin';
+import { notesIn, reasonIn, recommendedOf, tankMinimum, type MinRow, type TankMinimum } from '../scene/tankMin';
 import { MIN_SLACK_PCT } from '../scene/animalfit';
 import { groupMinimum, stockingGroupMinimum } from '../scene/groupMin';
 import { plural } from '../scene/stocking';
@@ -175,13 +175,17 @@ export const fmtOf = (units: Units) => ({ len: (mm: number) => `${toUnits(mm, un
 /**
  * The tank-minimum lines under the bar (Nathan 2026-10-21): a red line per species below its minimum (or that cannot be assessed),
  * naming the unmet measure, sourced or "estimated from a gallon figure"; a yellow line for advisories (deeper water than advised).
- * Below the recommended size is said by the yellow bar and its list, not by a line. Same 10 % slack as the animal gate and the
- * tank-fit engine (MIN_SLACK_PCT) on the red line.
+ * A yellow line too for a species below its recommended size (Nathan 2026-10-22, reversing "Bar back, keep lines": a yellow bar at
+ * 66 % read as a contradiction with nothing under it to say why), one line per species with any advisory. Same 10 % slack as the
+ * animal gate and the tank-fit engine (MIN_SLACK_PCT) on the red line.
  */
 export function minWarnings(m: TankMinimum, units: Units): MinWarn[] {
   const f = fmtOf(units), name = (x: MinRow) => plural(x.n, x.name), out: MinWarn[] = [];
   for (const x of [...m.rows].sort((a, b) => b.pct - a.pct)) if (x.pct > MIN_SLACK_PCT) out.push({ level: 'over', text: `${name(x)}: ${reasonIn(x, f)}` });
-  for (const x of m.rows) if (x.pct <= MIN_SLACK_PCT) for (const n of notesIn(x, f)) out.push({ level: 'near', text: `${name(x)}: ${n}` });
+  for (const x of [...m.rows].sort((a, b) => b.comfortPct - a.comfortPct)) if (x.pct <= MIN_SLACK_PCT) {
+    const near = [...(x.comfortPct > 100 ? [recommendedOf(x.comfort, f)] : []), ...notesIn(x, f)];
+    if (near.length) out.push({ level: 'near', text: `${name(x)}: ${near.join('; ')}` });
+  }
   return out;
 }
 
