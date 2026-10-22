@@ -124,13 +124,17 @@ export const FLOOR_SQIN_PER_IN = 15;
  * swimmer's room is floor area x credited height, Hs x (1 - exp(-H / Hs)) for water height H (with Hs 12 in: 6/12/18/24/30 in credit
  * 4.7/7.6/9.3/10.4/11.0 in). Hs is per species (Nathan: "an oscar going from 12 to 18 inches is a lot more helpful than a school of
  * danios"): HS_K x body depth (card height, fins included), never under HS_MIN_CM (12 in), times a class multiplier: low (HS_LOW) for
- * fast horizontal schoolers and surface fish, high (HS_HIGH) for tall-bodied fish, gouramis and big cichlids. Middle, top and bottom
- * fish use the curve in full (bottom dwellers: height does not help them either; their floor limit is separate); "all"-zone fish use
+ * fast horizontal schoolers and surface fish, high (HS_HIGH) for tall-bodied fish, gouramis and big cichlids. Middle and top
+ * fish use the curve in full; bottom dwellers are credited the curve at BOTTOM_REF_CM whatever the depth (height does not help them); "all"-zone fish use
  * half curve, half raw height (ALL_CURVE). Constants chosen on the 37 published lists (research/height-curve.md): the experts do not
  * separate the classes (sdlog of percent at the published max 0.474 vs 0.463 for raw litres), so the classes are Nathan's call, not a fit.
  * In a mixed tank each species is divided by its own effective room. SPACE_PER_L carries the re-fit.
  */
 export const HS_MIN_CM = 30.5, HS_K = 8, HS_LOW = 0.7, HS_HIGH = 1.5, ALL_CURVE = 0.5;
+/** Bottom dwellers (Nathan 2026-10-22, after 10 kuhlis read 146 % in a 30 x 12 x 6 in tank and 54 % in a 30 x 12 x 50 in): they do not use
+ *  the height, so their water room is floor area x the credited height at BOTTOM_REF_CM of water, whatever the tank's depth; their reading
+ *  depends on the floor only. 35 cm (about 14 in of water) is the depth at which every calibration test still passes (33 and 37 each fail one). */
+export const BOTTOM_REF_CM = 35;
 /** Class by id (lane HC, Nathan 2026-10-21: "an oscar going from 12 to 18 inches is a lot more helpful than a school of danios"):
  *  fast horizontal schoolers and surface fish use little of the height (low); tall-bodied fish, hoverers and big cichlids use more (high). */
 const HS_LOW_IDS = new Set(['danio', 'whitecloud', 'cpd', 'harlequin', 'chili', 'tigerbarb', 'cherrybarb', 'sae']);
@@ -143,7 +147,9 @@ export const hsCm = (sp: Species) => { const c = heightClass(sp); return Math.ma
 /** What one litre of this animal's water counts for in the water limit: raw height over credited height (1 at no height, grows with a tall tank). */
 export function heightMul(sp: Species, meanDepthCm: number): number {
   if (!(meanDepthCm > 0)) return 1;
-  const hs = hsCm(sp), r = hs * (1 - Math.exp(-meanDepthCm / hs)) / meanDepthCm;
+  const hs = hsCm(sp);
+  if (zoneOf(sp) === 'bottom') return meanDepthCm / (hs * (1 - Math.exp(-BOTTOM_REF_CM / hs)));
+  const r = hs * (1 - Math.exp(-meanDepthCm / hs)) / meanDepthCm;
   const w = zoneOf(sp) === 'all' ? ALL_CURVE : 1;
   return 1 / (w * r + (1 - w));
 }
