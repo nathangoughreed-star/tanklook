@@ -2,6 +2,7 @@
 // fork options. No DOM; src/ui/stockPlan.ts draws it. Reads CARE (with the P1 group data merged in) and the P2 engine (scene/tankfit.ts).
 import { CARE } from '../data/care';
 import { bandMessage, bandOf, type GroupBand } from '../data/groups';
+import { needLine, needsOf, type NeedSeverity } from '../data/careNeeds';
 import { getSpecies, SPECIES, type Species } from '../data/species';
 import { TANK_MODELS, tankFromModel, type TankModel } from '../data/tanks';
 import { whyAnimal } from '../scene/animalfit';
@@ -46,8 +47,9 @@ export function overWarn(p: Pk): string | undefined {
   return mx === 1 ? `${name} is best kept one to a tank: expect fighting. The tank shown is sized for all of them` : `More than ${mx} ${name} in one tank is not advised: expect fighting or crowding`;
 }
 
-/** The band message for the total count, plus the sex-ratio line for sexed species. */
-export interface PickNotes { band: GroupBand; line: string; ratio?: string; habitat: string[] }
+/** The band message for the total count, plus the sex-ratio line for sexed species. `needs`: the species' essential care conditions
+ *  (data/careNeeds.ts), evaluated apart from the count, so they show whatever band the group lands in. */
+export interface PickNotes { band: GroupBand; line: string; ratio?: string; habitat: string[]; needs: { severity: NeedSeverity; text: string }[] }
 export function notesOf(p: Pk, u: Units = 'cm'): PickNotes {
   const c = CARE[p.id], n = totalOf(p);
   const band = bandOf(c, n), line = n === 0 ? '' : c?.max && c.max > 1 && n === c.max ? `${bandMessage(c, n)} (at the most one tank takes: ${c.max})` : bandMessage(c, n);
@@ -68,7 +70,8 @@ export function notesOf(p: Pk, u: Units = 'cm'): PickNotes {
   if (sp) { const z = zoneOf(sp); if (z !== 'all') habitat.push(`Lives in the ${z === 'bottom' ? 'bottom' : z === 'top' ? 'top' : 'middle'} of the tank`); }
   if (md?.red) habitat.push(`Tank at least ${lenTxt(md.red.L, u)} long${md.red.mark === 'derived (est)' ? ' (estimated from a gallon figure)' : ''}`);
   if (md?.green) habitat.push(`Recommended: ${lenTxt(md.green.L, u)} long (${md.green.site})`);
-  return { band, line, ...(ratio ? { ratio } : {}), habitat };
+  const needs = needsOf(p.id).map(x => ({ severity: x.severity, text: needLine(x) }));
+  return { band, line, ...(ratio ? { ratio } : {}), habitat, needs };
 }
 
 /** Why this pick does not suit the others on the list (first reason), or undefined. Advice only: nothing is blocked. */

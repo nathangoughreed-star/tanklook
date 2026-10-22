@@ -25,6 +25,7 @@ function judge(name: string, picks: Pk[], want: string, gal: number): string[] {
   for (const p of picks) {
     const n = notesOf(p, 'in');
     lines.push(`  - ${p.id} x${p.n}${p.f !== undefined ? ` + ${p.f} f` : ''}: band ${n.band}, "${n.line}"${n.ratio ? `, ratio "${n.ratio}"` : ''}${n.habitat.length ? `, habitat: ${n.habitat.join(' / ')}` : ''}`);
+    for (const x of n.needs) lines.push(`    care need (${x.severity}, shown at any count): ${x.text}`);
     const others = picks.filter(q => q !== p).map(q => getSpecies(q.id)!).filter(Boolean);
     const w = whyAnimal(getSpecies(p.id)!, plan.litres, 1, others);
     if (w) lines.push(`    compat/size note (beginner): ${w.kind}: ${w.text}`);

@@ -711,7 +711,7 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 #sheetView .sheetBar .grow { flex: 1 }
 #sheetView .planBar { display: grid; grid-template-columns: 80px 1fr 46px; gap: 8px; align-items: center; margin: 4px 0 } #sheetView .planBar div { height: 12px; background: #e3e6eb; border-radius: 6px; overflow: hidden } #sheetView .planBar i { display: block; height: 100% } #sheetView .planBar b { text-align: right }
 #sheetView i.ok { background: #2e9e5b } #sheetView i.warn { background: #d9a21b } #sheetView i.bad { background: #c0392b }
-#sheetView .planVerdict { margin: 4px 0; font-size: 15px } #sheetView .planVerdict.ok b { color: #2e7d32 } #sheetView .planVerdict.bad b { color: #c0392b }
+#sheetView .planVerdict { margin: 4px 0; font-size: 15px } #sheetView .planVerdict.ok b { color: #2e7d32 } #sheetView .planVerdict.bad b { color: #c0392b } #sheetView .planVerdict.warn b { color: #b8860b }
 #sheetView .planTruths, #sheetView .planDeals { margin: 6px 0; padding-left: 18px } #sheetView .planTruths { list-style: none; padding: 0 } #sheetView .planTruths li.bad b { color: #c0392b } #sheetView .planTruths li.warn b { color: #b8860b } #sheetView .planDeals li { color: #2f7a4a }
 #sheetView tr.extra th, #sheetView tr.extra td { color: #b8860b } #sheetView tr.look td:last-child { color: #5d6676 }
 #sheetView .planCycle { margin-top: 18px; padding: 8px 10px; border-left: 4px solid #2a9bb0; background: #eef6f8 }

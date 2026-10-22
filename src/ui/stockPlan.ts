@@ -103,7 +103,7 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
       `<span class="spStep"><span class="spLab">${label}</span><button type="button" data-act="dec" data-id="${p.id}" data-w="${which}" aria-label="One fewer ${esc(label || sp.name)}"${v <= 0 ? ' disabled' : ''}>−</button><b>${v}</b><button type="button" data-act="inc" data-id="${p.id}" data-w="${which}" aria-label="One more ${esc(label || sp.name)}">+</button></span>`;
     return `<li class="spPick"><div class="spName"><b>${esc(sp.name)}</b><i>${esc(sp.sci)}</i><button type="button" class="spX" data-act="del" data-id="${p.id}" aria-label="Take ${esc(sp.name)} out">✕</button></div>
 <div class="spSteps">${sexed ? step('n', 'Males', p.n) + step('f', 'Females', p.f ?? 0) : step('n', '', p.n)}</div>
-${overWarn(p) ? `<div class="spWarn">${esc(overWarn(p)!)}</div>` : ''}${hungry ? `<div class="spWarn">${esc(hungry.replace(/^algae: /, 'Algae: '))}</div>` : ''}${conflictOf(picks, p.id) ? `<div class="spWarn">${esc(conflictOf(picks, p.id)!)}</div>` : ''}<div class="spMsg ${bandClass(nt.band)}">${esc(nt.line)}</div>${nt.ratio ? `<div class="spNote">${esc(nt.ratio)}</div>` : ''}
+${overWarn(p) ? `<div class="spWarn">${esc(overWarn(p)!)}</div>` : ''}${hungry ? `<div class="spWarn">${esc(hungry.replace(/^algae: /, 'Algae: '))}</div>` : ''}${conflictOf(picks, p.id) ? `<div class="spWarn">${esc(conflictOf(picks, p.id)!)}</div>` : ''}${nt.needs.map(x => `<div class="${x.severity === 'S3' ? 'spWarn' : 'spNote'} spNeed">${esc(x.text)}</div>`).join('')}<div class="spMsg ${bandClass(nt.band)}">${esc(nt.line)}</div>${nt.ratio ? `<div class="spNote">${esc(nt.ratio)}</div>` : ''}
 ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</div>` : ''}</li>`;
   };
 
