@@ -76,7 +76,7 @@ export type SetpointState = 'inside' | 'outside' | 'unchecked';
 export type Setpoint = { kind: 'room'; c: number; set: boolean } | { kind: 'heater'; c?: number };
 
 /** Output 2, kept apart from output 1: does the plan run inside the shared range? A broad range still fails at a setpoint outside
- *  it, and the fix is offered (`fix`: set the heater, or add one / change the room); the species combination is not at fault.
+ *  it, and the correction is offered in the mismatch's direction (`fix`: raise = heater, lower = fan / chiller / cooler room); the species combination is not at fault.
  *  A setpoint the plan does not record (or an assumed room) is unchecked, never passed. */
 export function setpointCheck(r: SharedRange, at?: Setpoint): { state: SetpointState; text: string; fix?: string } {
   const inRange = r.range ? `set it inside ${fmtC(r.range)}` : 'there is no shared range to set';
@@ -86,9 +86,10 @@ export function setpointCheck(r: SharedRange, at?: Setpoint): { state: SetpointS
   if (!r.range) return { state: 'unchecked', text: `Setpoint: ${where}; ${inRange}` };
   const c = at.c!, [lo, hi] = r.range, band = fmtC(r.range);
   if (c < lo || c > hi) {
-    const fix = at.kind === 'heater' ? `set the heater to ${band}`
-      : c < lo ? `add a heater and set it to ${band}${at.set ? `, or keep the room inside ${band}` : ''}`
-      : `cool the room to ${band}, or add a chiller set to ${band}`;
+    // a correction in the direction of the mismatch: below the range warms (a heater), above it cools (never a heater)
+    const fix = c < lo
+      ? `raise the temperature to ${band}: ${at.kind === 'heater' ? 'turn the heater up' : `add a heater set to ${band}${at.set ? ', or a warmer room' : ''}`}`
+      : `lower the temperature to ${band}: ${at.kind === 'heater' ? 'turn the heater down; if the room is warmer than that, cool it with ' : 'cool it with '}a fan, a chiller or a cooler room`;
     return { state: 'outside', fix, text: `Setpoint: ${where}, outside the shared range ${band}: ${fix}. The animals are not at fault, the setting is` };
   }
   if (at.kind === 'room' && !at.set) return { state: 'unchecked', text: `Setpoint: unchecked, the room temperature is not set (${c} °C assumed, inside ${band})` };

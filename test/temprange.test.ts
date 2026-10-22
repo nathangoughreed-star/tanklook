@@ -74,9 +74,13 @@ describe('setpoint: a separate output', () => {
       expect(v.text).toMatch(/^Temperature: shared range 21–25 °C; this plan runs outside it/);
       expect(chk.text).not.toMatch(/incompatib|cannot share|No suitable shared/i);
     }
-    expect(setpointCheck(broad, { kind: 'heater', c: 27 }).fix).toBe('set the heater to 21–25 °C');
-    expect(setpointCheck(broad, { kind: 'room', c: 19, set: true }).fix).toBe('add a heater and set it to 21–25 °C, or keep the room inside 21–25 °C');
-    expect(setpointCheck(broad, { kind: 'room', c: 28, set: false }).fix).toMatch(/chiller set to 21–25 °C/);
+    // the correction follows the direction of the mismatch
+    expect(setpointCheck(broad, { kind: 'room', c: 19, set: true }).fix).toBe('raise the temperature to 21–25 °C: add a heater set to 21–25 °C, or a warmer room');
+    expect(setpointCheck(broad, { kind: 'heater', c: 19 }).fix).toBe('raise the temperature to 21–25 °C: turn the heater up');
+    const warmRoom = setpointCheck(broad, { kind: 'room', c: 28, set: false }).fix!;
+    expect(warmRoom).toBe('lower the temperature to 21–25 °C: cool it with a fan, a chiller or a cooler room');
+    expect(warmRoom).not.toMatch(/heater/); // an unheated tank in a warm room is never told to add a heater
+    expect(setpointCheck(broad, { kind: 'heater', c: 27 }).fix).toMatch(/^lower the temperature to 21–25 °C: turn the heater down/);
     // the species combination itself passes temperature: no blocking reason and no temperature concern
     expect(whyAnimal(fake('tA'), 1e9, 3, [fake('tB4')])).toBeNull();
     expect(whysAnimal(fake('tA'), 1e9, 3, [fake('tB4')]).filter(w => w.temp)).toEqual([]);
@@ -128,7 +132,7 @@ describe('the plan sheet: the two outputs, said once for the whole stocking', ()
   it('betta, no heater, the room set to 20 °C: a broad range that the setpoint misses', () => {
     const S = { ...tank('betta'), tech: { rows: {}, roomC: 20 } } as ReturnType<typeof tank>, t = hardTruths(S, animalsOfSetup(S), false);
     expect(t.find(x => /^Temperature: /.test(x.text))).toMatchObject({ level: 'warn', text: expect.stringMatching(/^Temperature: shared range 24–27 °C; this plan runs outside it/) });
-    expect(t.find(x => /^Setpoint: /.test(x.text))).toMatchObject({ level: 'bad', text: expect.stringMatching(/20 °C room, outside the shared range 24–27 °C: add a heater and set it to 24–27 °C/) });
+    expect(t.find(x => /^Setpoint: /.test(x.text))).toMatchObject({ level: 'bad', text: expect.stringMatching(/20 °C room, outside the shared range 24–27 °C: raise the temperature to 24–27 °C: add a heater/) });
     expect(t.some(x => /incompatib|No suitable shared/i.test(x.text))).toBe(false);
   });
 });
