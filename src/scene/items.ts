@@ -340,6 +340,14 @@ export function itemSink(it: Item): number {
 /** How far a piece may be pushed down into the substrate, fraction of the tank height (the deepest substrate is 0.5 H). */
 export const LIFT_SINK = 0.5;
 
+/** The largest a stone may be in this tank, mm (its length): its box at most STONE_FIT of the tank's length, height and
+ *  depth (a slab may run longer, as a shelf). One rock no longer fills the tank (Nathan 2026-10-22). */
+export const STONE_FIT = { L: 0.6, H: 0.7, D: 0.6, slabL: 0.9 };
+export function stoneMax(variant: string, seed: number, T: Tank) {
+  const [, h, w] = stoneDims(variant, seed, 1), slab = variant === 'slate' || variant === 'ledge';
+  return Math.min(T.L * (slab ? STONE_FIT.slabL : STONE_FIT.L), T.H * STONE_FIT.H / h, T.D * STONE_FIT.D / w);
+}
+
 /**
  * Keep a piece's anchor inside the glass (plants by most of their half-width; hardscape may run through it) and its size
  * within its variant's range and the tank. Pass the ground `g` wherever there is one: a bowl's glass at the substrate is
@@ -351,6 +359,7 @@ export function clampItem(it: Item, T: Tank, g?: Ground) {
     let max = v.max;
     if (it.kind === 'plant' && !isPatch(it.variant)) max = Math.min(max, (Math.min(T.L, T.D) - 6) * PLANT_ASPECT[it.variant as PlantType], T.H * 1.5);
     else if (it.kind === 'artificial' && v.fake?.form !== 'mat') max = Math.min(max, T.H * 1.2, (Math.min(T.L, T.D) - 6) / FAKE_ASPECT[v.fake?.form ?? 'stem']);
+    else if (it.kind === 'stone') max = Math.min(max, stoneMax(it.variant, it.seed, T));
     else max = Math.min(max, Math.max(T.L, T.D) * 1.1);
     it.size = Math.round(clamp(it.size, Math.min(v.min, max), max));
   }

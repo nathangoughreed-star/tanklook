@@ -131,4 +131,13 @@ describe('aquascape items (scene v9)', () => {
     st.undo(); expect(st.tank.items.length).toBeGreaterThan(0);
     const it = st.tank.items[0]; it.x = -100; clampItem(it, st.tank.tank); expect(it.x).toBeGreaterThan(0);
   });
+
+  it('a stone is capped by the tank: its box fits within STONE_FIT of the length, height and depth', () => {
+    const T = new Store(defaultScene()).tank.tank;
+    for (const v of ['river', 'seiryu', 'dragon', 'lava', 'slate', 'ledge']) for (const seed of [1, 2, 3, 7]) {
+      const it = makeItem(T, v, 1, seed, T.L / 2, T.D / 2, { size: 5000 }); clampItem(it, T);
+      const [l, h, w] = itemDims(it), slab = v === 'slate' || v === 'ledge';
+      expect(l).toBeLessThanOrEqual(T.L * (slab ? 0.9 : 0.6) + 1); expect(h).toBeLessThanOrEqual(T.H * 0.7 + 1); expect(w).toBeLessThanOrEqual(T.D * 0.6 + 1);
+    }
+  });
 });
