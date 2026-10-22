@@ -7,19 +7,21 @@ Nathan 2026-10-22: "yea this should be an additional section in the 'tech'. Reus
 - **Its water**: volume x 0.5 (SUMP_FILL: half full, the rest is drain-down room) is added to the litres the nitrogen budget works on (filtration %, nitrate, sump media). **Not** to Space or the tank minimum (no fish swims in the sump). The weekly water change is a share of display + sump water (the gallons changed come out about the same: more water at a lower share).
 - **Price**: three gear rows in the Filtration line: sump tank (a bare glass tank of its gallons, the tank:N rows; not the catalogue listings, which are display tanks), sump plumbing (new row gear:sump-plumbing, $69.95 cited: Custom Aquariums Ultimate 4 Hole 3600GPH Plumbing Kit, https://www.customaquariums.com/?p=11463; lo $40 = their 2 hole kit, hi $150 = with an overflow box, judgement), return pump (as before). Before, the sump was the gear:sump "sump box" row ($300 at 55 gal, scaled).
 - **Offered** (`sumpOffered`, one rule for tankfit and builds): salt from 29 gal (the option's minGal already in tech.json), fresh from 75 gal (proposal; the catalogue's reef-ready tanks start at 65 gal). Before: tankfit allowed a sump on any tank, builds never offered one.
-- New constants SUMP_FILL, SUMP_SHARE, SUMP_FRESH_GAL are assumptions in provenance.ts FORMULAS (ratchet passes).
+- **Sizes**: the sump picker and the default start at 10 gal (SUMP_MIN_GAL); a typed custom size can be anything 50-3000 mm a side.
+- **Counted once**: the sump tank, plumbing and pump are one unit of the Filtration row (its total includes them); the Sump row reads "in Filtration" (test: canister + sump costs the canister plus the sump unit).
+- New constants SUMP_MIN_GAL, SUMP_FILL, SUMP_SHARE, SUMP_FRESH_GAL are assumptions in provenance.ts FORMULAS (ratchet passes).
 
 ## Tank picks that move (tankFor, 73 water species x 1/3/6/12/25/50 = 438 cases)
 | species x count | before tank | filtration | fails | after tank | filtration | fails |
 |---|---|---|---|---|---|---|
 | mystery x50 | g10 | 98 % | - | g2_5 | 80 % | - |
 | bluetang x12 | g300 | 85 % | - | c6 | 99 % | - |
-| turbo x12 | g15 | 97 % | - | g29 | 46 % | - |
-| turbo x25 | g37 | 85 % | - | g29 | 96 % | - |
+| turbo x12 | g15 | 97 % | - | g29 | 44 % | - |
+| turbo x25 | g37 | 85 % | - | g29 | 92 % | - |
 | turbo x50 | g75 | 81 % | - | g55 | 99 % | - |
 | axolotl x6 | g60b | 40 % | - | g75 | 26 % | - |
 
-Notes: 12 turbo snails now need 29 gal (no sump under 29 gal), but 25 and 50 drop a size because a 29 / 55 gal salt tank now counts its sump water. 6 axolotls: a fresh 60 gal breeder gets no sump. 12 blue tangs: the 6 ft custom (205 gal) now passes with its sump water (before: 300 gal). **50 mystery snails drop to 2.5 gal**: before, tankfit took a sump as the "strongest" filter on tiny tanks (by its 1.3 capacity) though its media is 5 % of a few litres, so the 2.5-7 gal tanks failed filtration; without it the canister passes. That is CF's "snail bioload looks too low", now visible: it needs its own look.
+Notes: 12 turbo snails now need 29 gal (no sump under 29 gal), but 25 and 50 drop a size because a 29 / 55 gal salt tank now counts its sump water. 6 axolotls: a fresh 60 gal breeder gets no sump. 12 blue tangs: the 6 ft custom (205 gal) now passes with its sump water (before: 300 gal). **50 mystery snails drop to 2.5 gal**: the sumpOffered gate already covers tankfit's strongest-filter fallback (the filter loop skips the sump before "strongest" is chosen). On main, that fallback took a sump on the 2.5-8 gal tanks (by its 1.3 capacity, though its media is 5 % of a few litres) and judged 2.5 gal at 426 %, while main's own builds for 2.5 gal already gave a canister at 80 %. Now tankfit agrees with the builds (80 %). The 2.5 gal answer is the snail bioload question (CF: "looks too low"), for Nathan, not changed here.
 
 ## Filtration % that moves with the same tank (54 cases; the tank pick holds)
 Large tanks read lower (their sump water dilutes); fresh 40-60 gal tanks that used to count a sump read higher (no sump offered there). Every one still fits.
@@ -136,4 +138,4 @@ Every tankFor pick that fits (412) now has a build at or under 100 % filtration 
 | axolotl x25 | c8 | canister $6193 130% | sump $6513 24% |
 | axolotl x50 | c8 | canister $8469 261% | sump $8789 49% |
 
-Example scenes as saved: no number moves (none uses a sump). With the SPS preset (a sump) the reef scene's set-up drops $4847 -> $4415 and clownnano's $2616 -> $2474 (a plain tank + plumbing is cheaper than the old sump-box row); stocking, filtration and $/month unchanged.
+Example scenes as saved: no number moves (none uses a sump). With the SPS preset (a sump) the reef scene's set-up drops $4847 -> $4415 and clownnano's $2616 -> $2478 (filtration 4 -> 3 %) (a plain tank + plumbing is cheaper than the old sump-box row); stocking, filtration and $/month unchanged.

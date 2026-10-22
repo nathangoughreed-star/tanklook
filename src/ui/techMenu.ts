@@ -214,7 +214,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
   const sumpTitle = (z: SumpSize) => z.model ? sumpName(z) : `${lenIn(z.L)} × ${lenIn(z.D)} × ${lenIn(z.H)} ${fahr() ? 'in' : 'cm'} tank, ${Math.round(z.L * z.D * z.H / 1e6 * SUMP_FILL)} L of water`;
   const sumpRow = (S: TankSetup, t: TechSetup): string => {
     const z = sumpOf(S), isOpen = open === 'sump', c = z ? optionCost(S, 'filter', 'sump', { tech: singleFilter(t, { kind: 'sump' }), kwhUsd: kwhUsd() }) : undefined;
-    let html = `<div class="trow${isOpen ? ' open' : ''}" data-row="sump"><button type="button" class="thead" aria-expanded="${isOpen}"><span class="tlab">Sump</span><span class="tcur">${z ? esc(sumpTitle(z)) : 'None'}</span>${c ? range(c) : ''}</button>`;
+    let html = `<div class="trow${isOpen ? ' open' : ''}" data-row="sump"><button type="button" class="thead" aria-expanded="${isOpen}"><span class="tlab">Sump</span><span class="tcur">${z ? esc(sumpTitle(z)) : 'None'}</span>${c ? '<span class="tcost" title="The sump tank, its plumbing and the return pump are priced in the Filtration row">in Filtration</span>' : ''}</button>`;
     if (!isOpen) return html + '</div>';
     html += '<div class="topts">';
     const offered = sumpOffered(S) ? '' : `<div class="hint">Usually on salt tanks from 29 gal and fresh ones from 75 gal: the display needs drilling or an overflow box.</div>`;
@@ -224,7 +224,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     const body = `<div class="tsz" title="Inside size; type to make it a custom size">${z.model ? 'Inside' : 'Custom, inside'} ${size} ${u}</div>`
       + `<span class="tchips"><span class="tchip good" title="${esc(`Its water dilutes the waste with the display's (run ${Math.round(SUMP_FILL * 100)} % full: the rest is room for what drains down when the pump stops). It adds no swimming room.`)}">+${Math.round(water)} L of water</span></span>`
       + `<div class="tstep"><button type="button" data-act="sump|pick">Pick a size…</button></div>`;
-    html += `<div class="tunits">${card(esc(sumpTitle(z)), c, false, 'sump|del', body)}</div>${offered}`;
+    html += `<div class="tunits">${card(esc(sumpTitle(z)), c, false, 'sump|del', body)}</div><div class="hint">Sump tank, plumbing and return pump: part of the Filtration total above, not added again.</div>${offered}`;
     return html + `<div class="hint">${esc(optionDef('filter', 'sump')?.note ?? '')}</div></div></div>`;
   };
 

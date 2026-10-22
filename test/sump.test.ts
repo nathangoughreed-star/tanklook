@@ -6,7 +6,7 @@ import { stockingOf } from '../src/scene/stocking';
 import { tankMinimum } from '../src/scene/tankMin';
 import { tankFor, type AnimalCount } from '../src/scene/tankfit';
 import { buildsFor } from '../src/scene/builds';
-import { applyPreset, optionCost, parseTech, sumpLitres, sumpOf, sumpOffered, withUnits, type TechSetup } from '../src/scene/tech';
+import { applyPreset, optionCost, parseTech, SUMP_MODELS, sumpLitres, sumpOf, sumpOffered, withUnits, type TechSetup } from '../src/scene/tech';
 import { demandOf, defaultProfile } from '../src/demand';
 import type { Fish, TankSetup } from '../src/scene/types';
 
@@ -107,5 +107,20 @@ describe('SU: tankfit and the builds offer a sump on the same tanks', () => {
     expect(b.gear[0]).toMatch(/^Filter: Sump \(15 gal tank, \d+ L of water\) \+ return pump$/);
     // a fresh 55 gal is not offered one: its builds and its tank pick both go without
     expect(buildsFor([{ species: 'discus', n: 6 }], getTankModel('g55')!, NOW).some(x => x.setup.tech?.rows.filter === 'sump')).toBe(false);
+  });
+});
+
+describe('SU: coordinator review', () => {
+  it('the plan counts the sump once (in the Filtration row): canister + sump costs the canister plus the sump unit', () => {
+    const can = tankOf('g75', [], true, withUnits({ rows: {} }, 'filter', [{ kind: 'canister' }]));
+    const both = tankOf('g75', [], true, { ...withUnits({ rows: {} }, 'filter', [{ kind: 'canister' }, { kind: 'sump' }]), sump: { model: 'g20h', ...tankFromModel(getTankModel('g20h')!) } });
+    const usd = (S: TankSetup) => demandOf(S, defaultProfile(), { now: NOW }).totals.setupUsd;
+    const sumpUnit = optionCost(both, 'filter', 'sump', { tech: { ...both.tech!, filters: [{ kind: 'sump' }] } });
+    const mean = (r: { lo: number; mode: number; hi: number }) => (r.lo + r.mode + r.hi) / 3;
+    expect(Math.abs(usd(both) - usd(can) - mean(sumpUnit.setup))).toBeLessThan(mean(sumpUnit.setup) * 0.05);
+  });
+  it('the sump sizes start at 10 gal', () => {
+    expect(Math.min(...SUMP_MODELS.map(m => m.ratedGal))).toBe(10);
+    expect(parseTech({ rows: {}, sump: { model: 'g2_5' } })?.sump).toBeUndefined();
   });
 });

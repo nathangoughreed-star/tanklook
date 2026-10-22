@@ -437,8 +437,10 @@ export const SUMP_FILL = 0.5;
 export const SUMP_SHARE = 0.25;
 /** Where a sump is offered (tankfit and the builds): salt water from the option's minGal (29 gal), fresh water from 75 gal, where the catalogue's reef-ready (drilled) tanks are. */
 export const SUMP_FRESH_GAL = 75;
-/** The plain glass sizes a sump is picked from (tankfit's own list: rectangles with a generic name). */
-export const SUMP_MODELS: TankModel[] = TANK_MODELS.filter(m => !m.terrarium && (m.shape ?? 'rect') === 'rect' && /^[\d.]+ (gal|ft)/.test(m.name));
+/** The smallest catalogue size offered as a sump: a 10 gal, the smallest plain tank commonly used as one (smaller holds too little for the drain-down). */
+export const SUMP_MIN_GAL = 10;
+/** The plain glass sizes a sump is picked from (tankfit's own list: rectangles with a generic name), from SUMP_MIN_GAL up. */
+export const SUMP_MODELS: TankModel[] = TANK_MODELS.filter(m => !m.terrarium && (m.shape ?? 'rect') === 'rect' && /^[\d.]+ (gal|ft)/.test(m.name) && m.ratedGal >= SUMP_MIN_GAL);
 const boxLitres = (z: { L: number; D: number; H: number }) => z.L * z.D * z.H / 1e6;
 /** A catalogue size as a sump size. */
 export const sumpFromModel = (m: TankModel): SumpSize => { const T = tankFromModel(m); return { model: m.id, L: T.L, D: T.D, H: T.H }; };
