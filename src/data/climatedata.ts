@@ -71,6 +71,8 @@ export const WATER: Record<string, { ok: R; tol: R; est?: true }> = {
   sae: { ok: [22,26], tol: [20,28] },
   hillstream: { ok: [20,25], tol: [18,27] },
   peapuffer: { ok: [24,28], tol: [22,30] },
+  sterbai: { ok: [24,28], tol: [21,30] },
+  dwarfpencil: { ok: [24,28], tol: [22,29] },
 };
 export const AIRDATA: Record<string, { c: R; tol: R; rh?: R; rhTol?: R; warm?: R; night?: R; est?: true }> = {
   dartfrog: { c: [21,26], tol: [18,27], rh: [80,100], rhTol: [60,100], night: [18,21] },

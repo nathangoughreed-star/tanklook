@@ -1820,6 +1820,30 @@
     "url": "https://dubiaroaches.com/blogs/invert-care/chaco-golden-knee-tarantula-care-sheet"
    },
    "why": "MX8: 20 x 10 in floor (Dubia Roaches); Josh's Frogs rule 4 x diagonal leg span, 7 in adult span on the same page = 28 in (derived, est)"
+  },
+  "sterbai": {
+   "red": {
+    "L": 450,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/corydoras-sterbai/",
+    "states": "45 ∗ 30 ∗ 30 cm",
+    "from": "footprint"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "dwarfpencil": {
+   "red": {
+    "L": 450,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/nannostomus-marginatus/",
+    "states": "45 ∗ 30 cm",
+    "from": "footprint"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
   }
  }
 }

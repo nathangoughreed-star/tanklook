@@ -55,7 +55,7 @@ export interface AnimalCare extends GroupCare {
 export const SHRIMP: ReadonlySet<string> = new Set(['cherryshrimp', 'amano', 'cleanershrimp']);
 const A = (care: Expertise, minL: number, temper: 0 | 1 | 2, temp?: [number, number], x: Partial<AnimalCare> = {}): AnimalCare => ({ care, minL, temper, ...(temp ? { temp } : {}), ...x });
 export const CARE: Record<string, AnimalCare> = {
-  neon: A(1, 54, 0, [21, 25], { tol: [20, 26] }), cardinal: A(1, 54, 0, [24, 28]), ember: A(1, 41, 0, [23, 28]), rummynose: A(1, 76, 0, [24, 28]),
+  neon: A(1, 54, 0, [21, 25], { tol: [20, 26] }), cardinal: A(1, 54, 0, [24, 28]), ember: A(1, 41, 0, [23, 28]), dwarfpencil: A(2, 41, 0, [24, 28]), rummynose: A(1, 76, 0, [24, 28]),
   harlequin: A(1, 54, 0, [22, 27]), chili: A(2, 20, 0, [22, 28]), danio: A(1, 40, 0, [18, 25], { nip: true }), whitecloud: A(1, 54, 0, [16, 22]),
   cpd: A(1, 40, 0, [22, 26]), hatchet: A(1, 68, 0, [23, 27]), cherrybarb: A(1, 54, 0, [22, 27]), tigerbarb: A(1, 72, 2, [20, 26], { nip: true }),
   boesemani: A(2, 110, 0, [24, 27]), guppy: A(1, 19, 0, [22, 28], { slow: true }), platy: A(1, 38, 0, [18, 26]), molly: A(1, 80, 0, [22, 28]),
@@ -66,7 +66,7 @@ export const CARE: Record<string, AnimalCare> = {
   labeo: A(2, 200, 2, [24, 28]), auratus: A(2, 205, 2, [24, 28]), livingstonii: A(2, 470, 2, [24, 28], { prey: { mm: 80 } }), afra: A(2, 200, 2, [24, 28]),
   angel: A(1, 200, 1, [24, 28], { prey: { mm: 30, inverts: 'shrimp' }, slow: true, guard: 2400 }), discus: A(2, 250, 0, [26, 30], { slow: true, tol: [26, 30] }),
   oscar: A(2, 540, 1, [22, 28], { prey: { mm: 100 } }), goldfish: A(1, 75, 0, [16, 23]), comet: A(1, 300, 0, [18, 22], { tol: [15.6, 26.7] }),
-  bronzecory: A(1, 72, 0, [22, 26]), pandacory: A(1, 41, 0, [20, 24]), pygmycory: A(1, 38, 0, [22, 26]), bristlenose: A(1, 80, 0, [22, 27]),
+  bronzecory: A(1, 72, 0, [22, 26]), sterbai: A(1, 41, 0, [24, 28]), pandacory: A(1, 41, 0, [20, 24]), pygmycory: A(1, 38, 0, [22, 26]), bristlenose: A(1, 80, 0, [22, 27]),
   oto: A(2, 40, 0, [22, 26]), kuhli: A(1, 80, 0, [24, 28]), clownloach: A(2, 284, 0, [24, 28], { prey: { mm: 30, cats: ['fw-invert'] } }),
   sae: A(1, 93, 0, [22, 26]), hillstream: A(2, 60, 0, [18, 24]), peapuffer: A(2, 20, 2, [24, 28], { prey: { mm: 45, cats: ['fw-invert'] }, nip: true, alone: true, cover: 'plants' }),
   cherryshrimp: A(1, 20, 0, [18, 26]), amano: A(1, 40, 0, [18, 26]), nerite: A(1, 8, 0, [22, 28]), mystery: A(1, 19, 0, [20, 26]),

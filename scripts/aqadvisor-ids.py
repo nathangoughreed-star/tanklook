@@ -13,6 +13,8 @@ NAMES = {
     'neon': 'Neon Tetra (Paracheirodon innesi)',
     'cardinal': 'Cardinal Tetra (Paracheirodon axelrodi)',
     'ember': 'Ember Tetra (Hyphessobrycon amandae)',
+    'dwarfpencil': 'Dwarf Pencilfish (Nannostomus marginatus)',  # added 2026-10-22
+    'sterbai': 'Sterbai Cory (Corydoras sterbai)',  # added 2026-10-22
     'rummynose': 'Rummynose Tetra (Hemigrammus bleheri)',
     'harlequin': 'Harlequin Rasbora (Trigonostigma heteromorpha)',
     'chili': 'Chili Rasbora (Boraras brigittae)',

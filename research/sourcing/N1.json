@@ -1,0 +1,169 @@
+{
+ "batch": "N1",
+ "agent_notes": "Lane add-sterbai-pencil (2026-10-22): Seriously Fish and FishBase pages fetched; every quote string-matched against the fetched page text.",
+ "species": {
+  "sterbai": {
+   "sci": "Corydoras sterbai",
+   "fields": {
+    "tl": {
+     "ours": 65,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/corydoras-sterbai/",
+       "site": "Seriously Fish",
+       "states": "65 mm SL max",
+       "quote": "Max size 65 mm SL"
+      },
+      {
+       "url": "https://www.fishbase.se/summary/Corydoras-sterbai.html",
+       "site": "FishBase",
+       "states": "6.8 cm SL max",
+       "quote": "Max length : 6.8 cm SL male/unsexed;"
+      }
+     ],
+     "note": "SL figures; ours 65 = SF, as bronzecory takes SF's SL."
+    },
+    "care": {
+     "ours": 1,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/corydoras-sterbai/",
+       "site": "Seriously Fish",
+       "states": "Easy",
+       "quote": "Easy"
+      }
+     ],
+     "note": "SF difficulty: 5 of 8 measures, Easy."
+    },
+    "minL": {
+     "ours": 41,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/corydoras-sterbai/",
+       "site": "Seriously Fish",
+       "states": "45 x 30 x 30 cm, ~41 L",
+       "quote": "Volume ~41 litres"
+      }
+     ],
+     "note": "SF: big enough for a small group."
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/corydoras-sterbai/",
+       "site": "Seriously Fish",
+       "states": "very peaceful",
+       "quote": "Very peaceful and suitable for many community tanks"
+      }
+     ],
+     "note": "0 = peaceful."
+    },
+    "group": {
+     "ours": 6,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/corydoras-sterbai/",
+       "site": "Seriously Fish",
+       "states": "at least 6",
+       "quote": "group of at least six is best"
+      }
+     ],
+     "note": ""
+    }
+   }
+  },
+  "dwarfpencil": {
+   "sci": "Nannostomus marginatus",
+   "fields": {
+    "tl": {
+     "ours": 35,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Nannostomus-marginatus.html",
+       "site": "FishBase",
+       "states": "3.5 cm TL max",
+       "quote": "Max length : 3.5 cm TL male/unsexed;"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/nannostomus-marginatus/",
+       "site": "Seriously Fish",
+       "states": "25 mm SL max",
+       "quote": "Max size 25 mm SL"
+      }
+     ],
+     "note": "FishBase TL taken; SF 25 mm SL is about 30 mm TL."
+    },
+    "care": {
+     "ours": 2,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/nannostomus-marginatus/",
+       "site": "Seriously Fish",
+       "states": "Moderate",
+       "quote": "Moderate"
+      }
+     ],
+     "note": "SF difficulty: 7 of 8 measures, Moderate (soft acidic water, timid)."
+    },
+    "minL": {
+     "ours": 41,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/nannostomus-marginatus/",
+       "site": "Seriously Fish",
+       "states": "45 x 30 cm, ~41 L",
+       "quote": "Volume ~41 litres"
+      }
+     ],
+     "note": ""
+    },
+    "temper": {
+     "ours": 0,
+     "verdict": "agrees",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/nannostomus-marginatus/",
+       "site": "Seriously Fish",
+       "states": "very peaceful",
+       "quote": "Very peaceful"
+      }
+     ],
+     "note": "0 = peaceful; SF adds that it is too small and timid for a boisterous community."
+    },
+    "group": {
+     "ours": 8,
+     "verdict": "kept",
+     "suggest": null,
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/nannostomus-marginatus/",
+       "site": "Seriously Fish",
+       "states": "ideally 10 or more",
+       "quote": "ideally 10 or more"
+      }
+     ],
+     "note": "",
+     "decision": "kept, 8 as the minimum (one care guide in a search summary says at least 8, page not opened; judgement); SF's ideal 10 or more is the good band in groups.ts"
+    }
+   }
+  }
+ }
+}

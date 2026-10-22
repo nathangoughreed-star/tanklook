@@ -1,0 +1,28 @@
+[
+ {
+  "id": "sterbai",
+  "ok": [24, 28],
+  "tol": [21, 30],
+  "sourcesOpened": 2,
+  "sourcesSnippet": 3,
+  "confidence": "medium",
+  "note": "Seriously Fish 24-28 (steady); FishBase 21-25; hobby care guides mostly 22-26 but keepers report sterbai long-term at 28-30 with rams and discus. Comfortable = SF; tolerable low = FishBase, high = keeper reports (judgement).",
+  "rh": null,
+  "rhTol": null,
+  "warm": null,
+  "night": null
+ },
+ {
+  "id": "dwarfpencil",
+  "ok": [24, 28],
+  "tol": [22, 29],
+  "sourcesOpened": 2,
+  "sourcesSnippet": 3,
+  "confidence": "medium",
+  "note": "Seriously Fish 22-28; FishBase 24-26; Gensou 24-28; most care guides 22-28. Comfortable 24-28 (FishBase/Gensou low end, SF high end); tolerable 22 = SF low, 29 = judgement.",
+  "rh": null,
+  "rhTol": null,
+  "warm": null,
+  "night": null
+ }
+]

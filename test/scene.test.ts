@@ -150,7 +150,7 @@ describe('species search', () => {
     expect(searchSpecies('NEON')[0].id).toBe('neon');
     expect(searchSpecies('pterophyllum')[0].id).toBe('angel');
     expect(searchSpecies('pearl gour')[0].id).toBe('gourami');
-    expect(searchSpecies('cory').map(s => s.id).sort()).toEqual(['bronzecory', 'pandacory', 'pygmycory']);
+    expect(searchSpecies('cory').map(s => s.id).sort()).toEqual(['bronzecory', 'pandacory', 'pygmycory', 'sterbai']);
     expect(searchSpecies('snail').every(s => s.kind === 'snail')).toBe(true);
     expect(searchSpecies('zzz')).toEqual([]);
     expect(searchSpecies('').length).toBe(SPECIES.length);

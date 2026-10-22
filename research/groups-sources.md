@@ -7,6 +7,7 @@ practice rather than quoted from the source. Researched by Sonnet agents with we
 - **neon** (Neon tetra): https://petfishonline.com/neon-tetra-tank-size/ (est). Note: Length 450 mm (Seriously Fish 45x30x30 cm); one retailer said 60 cm.
 - **cardinal** (Cardinal tetra): https://articles.hepper.com/cardinal-tetra/ (est). Note: Sources give tank size (20 gal) but no firm group number; bands are judgement. ok=6 matches app.
 - **ember** (Ember tetra): https://gensou.sg/ember-tetra-complete-care-guide/ (est). Note: Sources say 6-8 min, one says 10; ok=8 kept per app.
+- **dwarfpencil** (Dwarf pencilfish): https://www.seriouslyfish.com/species/nannostomus-marginatus/. Note: SF 'ideally 10 or more' sets good=10; ok=8 judgement (care guides say 8+); zone middle (SF middle to upper); flow low judgement; length 450 mm from SF 45 x 30 cm (2026-10-22).
 - **rummynose** (Rummy-nose tetra): https://seriouslyfish.com/species/hemigrammus-rhodostomus. Note: Seriously Fish says buy at least 10; app minimum is 8, so ok=8 kept but good=10 reflects the source.
 - **harlequin** (Harlequin rasbora): https://gensou.sg/rasboras/harlequin-rasbora/ (est). Note: Sources range 4-6 min to 8+; ok=8 kept per app (stricter than most guides).
 - **chili** (Chili rasbora): https://www.practicalfishkeeping.co.uk/features/chilli-rasbora-care-guide-boraras-brigittae/ (est). Note: Sources say 6+ (one says 10, 20+ ideal); ok=8 kept per app.
@@ -46,6 +47,7 @@ practice rather than quoted from the source. Researched by Sonnet agents with we
 - **comet** (Comet goldfish): https://www.fishkeeping.co.uk/articles_74/goldfish-size-life-expectancy.htm (est). Note: Search rate-limited; figures are judgement (single-tailed goldfish reach ~30 cm, need pond or 1500 mm+ tank). Not verified against Seriously Fish.
 - **bronzecory** (Bronze corydoras): https://www.seriouslyfish.com/species/corydoras-aeneus/ (est). Note: Search rate-limited; ok=6 matches existing app data. Seriously Fish URL not fetched. Fine sand substrate.
 - **pandacory** (Panda corydoras): https://www.seriouslyfish.com/species/corydoras-panda/ (est). Note: Search not completed (rate-limited); ok=6 matches app data. Prefers cooler, soft water; fine sand.
+- **sterbai** (Sterba's corydoras): https://www.seriouslyfish.com/species/corydoras-sterbai/. Note: SF 'A group of at least six is best' sets ok=6; good/great judgement as panda; length 450 mm from SF 45 x 30 x 30 cm (2026-10-22).
 - **pygmycory** (Pygmy corydoras): https://www.seriouslyfish.com/species/corydoras-pygmaeus/ (est). Note: Search returned only unverified general knowledge (6+); kept ok=8 per existing app data, not contradicted by sources. Often swim mid-water.
 - **bristlenose** (Bristlenose pleco): https://gensou.sg/bristlenose-pleco-complete-care-guide/. Note: Guides: 75 L single, 100 L pair; one male per territory; at least one cave per fish.
 - **oto** (Otocinclus): https://guidarium.com/fishes/otocinclus. Note: Sources agree on 6 minimum (matches app data), 8+ ideal; min length 45 cm, 38-40 L. Needs mature algae-rich tank.

@@ -1138,5 +1138,31 @@
   "prior": [
    "https://dubiaroaches.com/blogs/invert-care/chaco-golden-knee-tarantula-care-sheet | 20x10x18 in or 15 gal 'high' = ~57-59 L"
   ]
+ },
+ {
+  "id": "sterbai",
+  "name": "Sterba's corydoras",
+  "sci": "Corydoras sterbai",
+  "zone": "bottom",
+  "tl_mm": 65,
+  "minL": 41,
+  "minLengthMm": 450,
+  "groupOk": 6,
+  "prior": [
+   "https://www.seriouslyfish.com/species/corydoras-sterbai/ | 45 x 30 x 30 cm ~41 L / 11 US gal"
+  ]
+ },
+ {
+  "id": "dwarfpencil",
+  "name": "Dwarf pencilfish",
+  "sci": "Nannostomus marginatus",
+  "zone": "middle",
+  "tl_mm": 35,
+  "minL": 41,
+  "minLengthMm": 450,
+  "groupOk": 8,
+  "prior": [
+   "https://www.seriouslyfish.com/species/nannostomus-marginatus/ | 45 x 30 cm ~41 L / 11 US gal"
+  ]
  }
 ]

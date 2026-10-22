@@ -1,0 +1,20 @@
+[
+ {
+  "id": "sterbai",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/corydoras-sterbai/",
+  "result": "exact",
+  "score": 1,
+  "quote": "A tank measuring 45 ∗ 30 ∗ 30 cm"
+ },
+ {
+  "id": "dwarfpencil",
+  "field": "footprint",
+  "verdict": "sourced",
+  "url": "https://www.seriouslyfish.com/species/nannostomus-marginatus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Base dimensions of at least 45 ∗ 30 cm"
+ }
+]

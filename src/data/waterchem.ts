@@ -6,6 +6,8 @@ type R = [number, number];
 /** Comfortable pH, and general hardness in dGH where sources agree (absent = no hardness check). Freshwater only. */
 export const CHEM: Record<string, { ph: R; gh?: R }> = {
   neon: { ph: [5.0, 7.0], gh: [1, 10] }, cardinal: { ph: [3.5, 7.5], gh: [1, 8] }, ember: { ph: [5.0, 7.0], gh: [1, 10] },
+  // dwarf pencilfish: FishBase pH 5.8-7.5, dH to 15; low end widened to 5.0 inside Seriously Fish's 4.0-7.0 (wild water 4-6), GH from 1 (SF 1-10)
+  dwarfpencil: { ph: [5.0, 7.5], gh: [1, 15] }, sterbai: { ph: [6.0, 8.0], gh: [2, 25] },
   rummynose: { ph: [5.5, 7.0], gh: [1, 10] }, harlequin: { ph: [5.0, 7.0], gh: [1, 12] }, chili: { ph: [5.0, 7.0], gh: [1, 8] },
   danio: { ph: [6.0, 8.0] }, whitecloud: { ph: [6, 8.3] }, cpd: { ph: [6.5, 7.5] }, hatchet: { ph: [5, 7], gh: [1, 10] },
   cherrybarb: { ph: [6, 8] }, tigerbarb: { ph: [6, 8] }, boesemani: { ph: [7.0, 8.0], gh: [9, 19] },
@@ -32,6 +34,6 @@ export const MARINE_PH: R = [8.0, 8.4];
 /** The smallest group a shoaling or schooling species is kept in (fewer = stressed, shy or nippy). Advice only. */
 export const GROUP: Record<string, number> = {
   neon: 8, cardinal: 8, ember: 8, rummynose: 10, harlequin: 8, chili: 8, danio: 8, whitecloud: 6, cpd: 6, hatchet: 6,
-  cherrybarb: 6, tigerbarb: 8, boesemani: 6, bronzecory: 4, pandacory: 6, pygmycory: 6, oto: 6, kuhli: 5,
+  cherrybarb: 6, tigerbarb: 8, boesemani: 6, bronzecory: 4, sterbai: 6, dwarfpencil: 8, pandacory: 6, pygmycory: 6, oto: 6, kuhli: 5,
   clownloach: 5, cherryshrimp: 10, amano: 6, chromis: 6,
 };

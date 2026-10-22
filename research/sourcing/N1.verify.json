@@ -1,0 +1,110 @@
+[
+ {
+  "id": "sterbai",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/corydoras-sterbai/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Max size 65 mm SL"
+ },
+ {
+  "id": "sterbai",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Corydoras-sterbai.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Max length : 6.8 cm SL male/unsexed;"
+ },
+ {
+  "id": "sterbai",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/corydoras-sterbai/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Easy"
+ },
+ {
+  "id": "sterbai",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/corydoras-sterbai/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Volume ~41 litres"
+ },
+ {
+  "id": "sterbai",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/corydoras-sterbai/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Very peaceful and suitable for many community tanks"
+ },
+ {
+  "id": "sterbai",
+  "field": "group",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/corydoras-sterbai/",
+  "result": "exact",
+  "score": 1,
+  "quote": "group of at least six is best"
+ },
+ {
+  "id": "dwarfpencil",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.fishbase.se/summary/Nannostomus-marginatus.html",
+  "result": "exact",
+  "score": 1,
+  "quote": "Max length : 3.5 cm TL male/unsexed;"
+ },
+ {
+  "id": "dwarfpencil",
+  "field": "tl",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/nannostomus-marginatus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Max size 25 mm SL"
+ },
+ {
+  "id": "dwarfpencil",
+  "field": "care",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/nannostomus-marginatus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Moderate"
+ },
+ {
+  "id": "dwarfpencil",
+  "field": "minL",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/nannostomus-marginatus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Volume ~41 litres"
+ },
+ {
+  "id": "dwarfpencil",
+  "field": "temper",
+  "verdict": "agrees",
+  "url": "https://www.seriouslyfish.com/species/nannostomus-marginatus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "Very peaceful"
+ },
+ {
+  "id": "dwarfpencil",
+  "field": "group",
+  "verdict": "kept",
+  "url": "https://www.seriouslyfish.com/species/nannostomus-marginatus/",
+  "result": "exact",
+  "score": 1,
+  "quote": "ideally 10 or more"
+ }
+]

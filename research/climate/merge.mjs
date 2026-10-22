@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 const AIR_IDS = new Set(['dartfrog', 'treefrog', 'crestedgecko', 'crestedharlequin', 'regaljumper', 'chacogoldenknee', 'firetoad', 'firenewt']);
 const all = [];
-for (let i = 1; i <= 10; i++) all.push(...JSON.parse(fs.readFileSync(`research/climate/batch-${i}.json`, 'utf8')));
+for (let i = 1; i <= 11; i++) all.push(...JSON.parse(fs.readFileSync(`research/climate/batch-${i}.json`, 'utf8')));
 const J = v => JSON.stringify(v);
 const water = [], air = [];
 for (const x of all) {

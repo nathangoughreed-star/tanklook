@@ -468,5 +468,19 @@
    "sci": "Carinotetraodon travancoricus",
    "cat": "?"
   }
+ ],
+ [
+  {
+   "id": "sterbai",
+   "name": "Sterba's corydoras",
+   "sci": "Corydoras sterbai",
+   "cat": "fw-fish"
+  },
+  {
+   "id": "dwarfpencil",
+   "name": "Dwarf pencilfish",
+   "sci": "Nannostomus marginatus",
+   "cat": "fw-fish"
+  }
  ]
 ]

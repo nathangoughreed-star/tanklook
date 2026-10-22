@@ -1,0 +1,84 @@
+{
+ "batch": "M10",
+ "species": {
+  "sterbai": {
+   "sci": "Corydoras sterbai",
+   "fields": {
+    "footprint": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/corydoras-sterbai/",
+       "site": "Seriously Fish",
+       "states": "45 ∗ 30 ∗ 30 cm",
+       "quote": "A tank measuring 45 ∗ 30 ∗ 30 cm",
+       "value": [
+        45,
+        30
+       ],
+       "unit": "cm",
+       "group": "small group",
+       "stage": "adult",
+       "kind": "min",
+       "est": false,
+       "credibility": "high",
+       "conditions": "'big enough for a small group'; group of at least six best"
+      }
+     ],
+     "note": "Quick facts: 45 x 30 cm. Retail pages range 15 gal to 75 L; not used."
+    }
+   },
+   "pick": {
+    "footprint": {
+     "source": 0,
+     "why": "high credibility"
+    }
+   },
+   "conflict": null,
+   "checked": [
+    "https://www.seriouslyfish.com/species/corydoras-sterbai/",
+    "https://www.fishbase.se/summary/Corydoras-sterbai.html"
+   ]
+  },
+  "dwarfpencil": {
+   "sci": "Nannostomus marginatus",
+   "fields": {
+    "footprint": {
+     "verdict": "sourced",
+     "sources": [
+      {
+       "url": "https://www.seriouslyfish.com/species/nannostomus-marginatus/",
+       "site": "Seriously Fish",
+       "states": "45 ∗ 30 cm",
+       "quote": "Base dimensions of at least 45 ∗ 30 cm",
+       "value": [
+        45,
+        30
+       ],
+       "unit": "cm",
+       "group": "10+",
+       "stage": "adult",
+       "kind": "min",
+       "est": false,
+       "credibility": "high",
+       "conditions": "'or equivalent are necessary'; ideally 10 or more"
+      }
+     ],
+     "note": "Care guides range 20-60 L; not used."
+    }
+   },
+   "pick": {
+    "footprint": {
+     "source": 0,
+     "why": "high credibility"
+    }
+   },
+   "conflict": null,
+   "checked": [
+    "https://www.seriouslyfish.com/species/nannostomus-marginatus/",
+    "https://www.fishbase.se/summary/Nannostomus-marginatus.html"
+   ]
+  }
+ },
+ "agent_notes": "Lane add-sterbai-pencil (2026-10-22): pages opened by hand, quotes re-read on the page."
+}

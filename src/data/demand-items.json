@@ -233,6 +233,20 @@
    "unit": "each; Aquatics Unlimited $10-15, Flip $16.99",
    "url": "https://aquaticsunlimited.com/product-category/freshwater-livestock/freshwater-fish/gouramis/"
   },
+  "animal:sterbai": {
+   "lo": 6,
+   "mode": 12,
+   "hi": 30,
+   "unit": "each; Nuaqua $11.69, Aquatics Unlimited $12.99-29.99 by size; lo judgement",
+   "url": "https://nuaquashop.com/products/sterbai-cory"
+  },
+  "animal:dwarfpencil": {
+   "lo": 4,
+   "mode": 6,
+   "hi": 10,
+   "unit": "each; Nuaqua $5.99, UK listings GBP4-10; lo/hi judgement",
+   "url": "https://nuaquashop.com/products/peruvian-dwarf-pencilfush"
+  },
   "animal:ember": {
    "lo": 3,
    "mode": 8,

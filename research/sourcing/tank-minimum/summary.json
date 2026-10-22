@@ -6350,6 +6350,92 @@
     "heightGreen": null,
     "depth": null
    }
+  },
+  "sterbai": {
+   "batch": "M10",
+   "sci": "Corydoras sterbai",
+   "measures": {
+    "footprint": {
+     "value": [
+      450,
+      300
+     ],
+     "unit": "mm",
+     "kind": "min",
+     "url": "https://www.seriouslyfish.com/species/corydoras-sterbai/",
+     "site": "Seriously Fish",
+     "quote": "A tank measuring 45 ∗ 30 ∗ 30 cm",
+     "conditions": "group small group; adult; 'big enough for a small group'; group of at least six best",
+     "mark": "sourced",
+     "single": true,
+     "check": "exact",
+     "credibility": "high",
+     "spread": 0,
+     "n": 1
+    }
+   },
+   "conflict": null,
+   "checked": 2,
+   "lines": {
+    "red": {
+     "L": 450,
+     "W": 300,
+     "mark": "sourced",
+     "site": "Seriously Fish",
+     "url": "https://www.seriouslyfish.com/species/corydoras-sterbai/",
+     "states": "45 ∗ 30 ∗ 30 cm",
+     "quote": "A tank measuring 45 ∗ 30 ∗ 30 cm",
+     "from": "footprint"
+    },
+    "green": null,
+    "why": "one geometry page: it or the gallon figure's tank, whichever is lower",
+    "heightRed": null,
+    "heightGreen": null,
+    "depth": null
+   }
+  },
+  "dwarfpencil": {
+   "batch": "M10",
+   "sci": "Nannostomus marginatus",
+   "measures": {
+    "footprint": {
+     "value": [
+      450,
+      300
+     ],
+     "unit": "mm",
+     "kind": "min",
+     "url": "https://www.seriouslyfish.com/species/nannostomus-marginatus/",
+     "site": "Seriously Fish",
+     "quote": "Base dimensions of at least 45 ∗ 30 cm",
+     "conditions": "group 10+; adult; 'or equivalent are necessary'; ideally 10 or more",
+     "mark": "sourced",
+     "single": true,
+     "check": "exact",
+     "credibility": "high",
+     "spread": 0,
+     "n": 1
+    }
+   },
+   "conflict": null,
+   "checked": 2,
+   "lines": {
+    "red": {
+     "L": 450,
+     "W": 300,
+     "mark": "sourced",
+     "site": "Seriously Fish",
+     "url": "https://www.seriouslyfish.com/species/nannostomus-marginatus/",
+     "states": "45 ∗ 30 cm",
+     "quote": "Base dimensions of at least 45 ∗ 30 cm",
+     "from": "footprint"
+    },
+    "green": null,
+    "why": "one geometry page: it or the gallon figure's tank, whichever is lower",
+    "heightRed": null,
+    "heightGreen": null,
+    "depth": null
+   }
   }
  },
  "flags": [

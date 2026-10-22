@@ -84,3 +84,5 @@
 | regaljumper | none | - | - / 8 The Tarantula Collective |  |  | 10 / 0.5 |
 | ballpython | 48 x 24 ReptiFiles | - | 24 ReptiFiles / - |  | 40 1src | 48 / 118.9 |
 | chacogoldenknee | 20 x 10 Dubia Roaches | 28 x 28 DERIVED (est) Josh's Frogs | 18 Dubia Roaches / - |  | 15 1src | 17.5 / 15.1 |
+| sterbai | 17.5 x 12 Seriously Fish | - | - / - |  |  | 17.5 / 10.8 |
+| dwarfpencil | 17.5 x 12 Seriously Fish | - | - / - |  |  | 17.5 / 10.8 |
