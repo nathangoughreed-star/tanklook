@@ -19,33 +19,33 @@ Nathan 2026-10-22: "yea this should be an additional section in the 'tech'. Reus
 | turbo x12 | g20l | 72 % | - | g29 | 44 % | - |
 | axolotl x6 | g60b | 40 % | - | g75 | 26 % | - |
 
-Against main 273bd21 (after lane SN's snail floor and waste). 12 turbo snails need 29 gal (no sump under 29 gal; before, a 20 gal long counted one). 6 axolotls: a fresh 60 gal breeder gets no sump. 12 blue tangs: the 6 ft custom (205 gal) now passes with its sump water (before: 300 gal). **50 mystery snails: 30 gal breeder -> 75 gal.** On main the 30-60 gal fresh tanks held them only with a counted sump (30 breeder 67 %), which the builds never offered; without it the best filter leaves them at 122-138 % (filtration fails), so the first tank that fits is the 75 gal, where a fresh sump is offered (70 %, unchanged from main). The sumpOffered gate covers tankfit's strongest-filter fallback too.
+Against main 8ad16ea (after SN snail floor and waste, S211 school discount and SPACE_PER_L). 12 turbo snails need 29 gal (no sump under 29 gal; before, a 20 gal long counted one). 6 axolotls: a fresh 60 gal breeder gets no sump. 12 blue tangs: the 6 ft custom (205 gal) now passes with its sump water (before: 300 gal). **50 mystery snails: 30 gal breeder -> 75 gal.** On main the 30-60 gal fresh tanks held them only with a counted sump (30 breeder 67 %), which the builds never offered; without it the best filter leaves them at 122-138 % (filtration fails), so the first tank that fits is the 75 gal, where a fresh sump is offered (70 %, unchanged from main). The sumpOffered gate covers tankfit's strongest-filter fallback too.
 
-## Filtration % that moves with the same tank (58 cases; the tank pick holds)
+## Filtration % that moves with the same tank (59 cases; the tank pick holds)
 Large tanks read lower (their sump water dilutes); fresh 40-60 gal tanks that used to count a sump read higher (no sump offered there). Every one still fits.
 
 | species x count | before tank | filtration | fails | after tank | filtration | fails |
 |---|---|---|---|---|---|---|
-| gourami x50 | g150 | 27 % | - | g150 | 24 % | - |
+| gourami x50 | g125 | 33 % | - | g125 | 29 % | - |
 | peacock x50 | g180 | 19 % | - | g180 | 17 % | - |
 | kadango x12 | g55 | 22 % | - | g55 | 72 % | - |
-| kadango x25 | g120 | 23 % | - | g120 | 20 % | - |
-| kadango x50 | g210 | 26 % | - | g210 | 23 % | - |
+| kadango x25 | g90 | 28 % | - | g90 | 24 % | - |
+| kadango x50 | g180 | 30 % | - | g180 | 27 % | - |
 | livingstonii x3 | g55 | 26 % | - | g55 | 87 % | - |
-| livingstonii x6 | g90 | 32 % | - | g90 | 27 % | - |
-| livingstonii x12 | g180 | 35 % | - | g180 | 31 % | - |
+| livingstonii x6 | g120 | 26 % | - | g120 | 23 % | - |
+| livingstonii x12 | g210 | 30 % | - | g210 | 27 % | - |
 | livingstonii x25 | c8 | 36 % | - | c8 | 31 % | - |
 | livingstonii x50 | c8 | 71 % | space | c8 | 62 % | space |
 | syno x25 | g240 | 21 % | - | g240 | 18 % | - |
 | syno x50 | c8 | 27 % | space | c8 | 24 % | space |
-| angel x6 | g40b | 35 % | - | g40b | 93 % | - |
+| angel x6 | g50b | 30 % | - | g50b | 90 % | - |
 | angel x12 | g90 | 32 % | - | g90 | 28 % | - |
 | angel x25 | g180 | 37 % | - | g180 | 32 % | - |
-| angel x50 | c8 | 36 % | - | c8 | 31 % | - |
+| angel x50 | g300 | 46 % | - | g300 | 39 % | - |
 | discus x6 | g55 | 26 % | - | g55 | 84 % | - |
 | discus x12 | g75 | 36 % | - | g75 | 32 % | - |
-| discus x25 | g135 | 48 % | - | g135 | 42 % | - |
-| discus x50 | g240 | 54 % | - | g240 | 47 % | - |
+| discus x25 | g125 | 51 % | - | g125 | 45 % | - |
+| discus x50 | g210 | 61 % | - | g210 | 54 % | - |
 | oscar x3 | g180 | 33 % | - | g180 | 29 % | - |
 | oscar x6 | g180 | 66 % | - | g180 | 58 % | - |
 | oscar x12 | c8 | 65 % | - | c8 | 56 % | - |
@@ -56,7 +56,7 @@ Large tanks read lower (their sump water dilutes); fresh 40-60 gal tanks that us
 | comet x3 | g50b | 27 % | - | g50b | 83 % | - |
 | comet x6 | g120 | 25 % | - | g120 | 21 % | - |
 | comet x12 | g210 | 28 % | - | g210 | 25 % | - |
-| comet x25 | c8 | 33 % | space | c8 | 29 % | space |
+| comet x25 | c8 | 33 % | - | c8 | 29 % | - |
 | comet x50 | c8 | 66 % | space | c8 | 58 % | space |
 | clownloach x6 | g180 | 20 % | - | g180 | 18 % | - |
 | clownloach x12 | c8 | 20 % | - | c8 | 17 % | - |
@@ -64,10 +64,10 @@ Large tanks read lower (their sump water dilutes); fresh 40-60 gal tanks that us
 | clownloach x50 | c8 | 82 % | space | c8 | 72 % | space |
 | nerite x25 | g8c | 40 % | - | g8c | 24 % | - |
 | mystery x25 | g15 | 67 % | - | g15 | 75 % | - |
-| ocellaris x50 | g210 | 16 % | - | g210 | 14 % | - |
+| ocellaris x50 | g180 | 19 % | - | g180 | 17 % | - |
 | yellowtang x3 | g55 | 27 % | - | g55 | 24 % | - |
 | yellowtang x6 | g55 | 55 % | - | g55 | 48 % | - |
-| yellowtang x12 | g90 | 67 % | - | g90 | 57 % | - |
+| yellowtang x12 | g120 | 55 % | - | g120 | 48 % | - |
 | yellowtang x25 | g180 | 76 % | - | g180 | 67 % | - |
 | yellowtang x50 | c8 | 74 % | - | c8 | 64 % | - |
 | bluetang x3 | g125 | 50 % | - | g125 | 43 % | - |
@@ -75,6 +75,7 @@ Large tanks read lower (their sump water dilutes); fresh 40-60 gal tanks that us
 | bluetang x25 | c8 | 139 % | filtration | c8 | 121 % | filtration |
 | bluetang x50 | c8 | 279 % | space,filtration | c8 | 243 % | space,filtration |
 | banggai x50 | g120 | 21 % | - | g120 | 18 % | - |
+| chromis x50 | g240 | 54 % | - | g240 | 14 % | - |
 | coralbeauty x12 | g60b | 28 % | - | g60b | 24 % | - |
 | coralbeauty x25 | g180 | 20 % | - | g180 | 18 % | - |
 | coralbeauty x50 | c8 | 20 % | space | c8 | 17 % | space |
@@ -86,27 +87,27 @@ Large tanks read lower (their sump water dilutes); fresh 40-60 gal tanks that us
 | axolotl x50 | c8 | 56 % | space | c8 | 49 % | space |
 
 ## Builds: the mismatch is gone
-Every tankFor pick that fits (412) now has a build at or under 100 % filtration (before, picks like 3 oscars in 180 gal had only builds at 130 %). 101 picks get a sump build. Balanced builds that switch to a sump (same tank), before -> after (filter, set-up $, filtration):
+Every tankFor pick that fits (414) now has a build at or under 100 % filtration (before, picks like 3 oscars in 180 gal had only builds at 130 %). 98 picks get a sump build. Balanced builds that switch to a sump (same tank), before -> after (filter, set-up $, filtration):
 
 | species x count | tank | before | after |
 |---|---|---|---|
 | gourami x25 | g75 | canister $1200 63% | sump $1195 21% |
-| gourami x50 | g150 | canister $2246 110% | sump $2366 24% |
+| gourami x50 | g125 | canister $2192 116% | sump $2268 29% |
 | peacock x50 | g180 | hob $3192 75% | sump $3523 17% |
-| kadango x25 | g120 | canister $2152 78% | sump $2222 20% |
-| kadango x50 | g210 | hob $3587 114% | sump $3983 23% |
-| livingstonii x6 | g90 | canister $1112 95% | sump $1161 27% |
-| livingstonii x12 | g180 | hob $2282 138% | sump $2613 31% |
+| kadango x25 | g90 | canister $1637 82% | sump $1686 24% |
+| kadango x50 | g180 | hob $3332 119% | sump $3663 27% |
+| livingstonii x6 | g120 | canister $1627 91% | sump $1697 23% |
+| livingstonii x12 | g210 | hob $2537 132% | sump $2933 27% |
 | livingstonii x25 | c8 | canister $4604 166% | sump $4924 31% |
 | livingstonii x50 | c8 | canister $5260 331% | sump $5580 62% |
 | syno x25 | g240 | canister $3551 72% | sump $3469 18% |
 | syno x50 | c8 | canister $5024 126% | sump $5344 24% |
 | angel x12 | g90 | canister $1202 96% | sump $1251 28% |
 | angel x25 | g180 | hob $2484 145% | sump $2815 32% |
-| angel x50 | c8 | canister $4981 167% | sump $5301 31% |
+| angel x50 | g300 | canister $4429 180% | sump $4625 39% |
 | discus x12 | g75 | canister $1803 95% | sump $1797 32% |
-| discus x25 | g135 | canister $3489 177% | sump $3574 42% |
-| discus x50 | g240 | canister $6689 183% | sump $6607 47% |
+| discus x25 | g125 | canister $3469 181% | sump $3546 45% |
+| discus x50 | g210 | hob $5898 266% | sump $6294 54% |
 | oscar x3 | g180 | hob $2082 130% | sump $2414 29% |
 | oscar x6 | g180 | hob $2198 261% | sump $2529 58% |
 | oscar x12 | c8 | canister $4410 301% | sump $4730 56% |
@@ -122,10 +123,10 @@ Every tankFor pick that fits (412) now has a build at or under 100 % filtration 
 | clownloach x12 | c8 | canister $4212 92% | sump $4532 17% |
 | clownloach x25 | c8 | canister $4499 191% | sump $4819 36% |
 | clownloach x50 | c8 | canister $5050 383% | sump $5370 72% |
-| ocellaris x50 | g210 | hob $5097 71% | sump $5493 14% |
+| ocellaris x50 | g180 | hob $4784 74% | sump $5115 17% |
 | yellowtang x3 | g55 | sponge $2193 82% | sump $2418 24% |
 | yellowtang x6 | g55 | sponge $3074 164% | sump $3299 48% |
-| yellowtang x12 | g90 | canister $5496 197% | sump $5545 57% |
+| yellowtang x12 | g120 | canister $6010 188% | sump $6079 48% |
 | yellowtang x25 | g180 | hob $10341 298% | sump $10672 67% |
 | yellowtang x50 | c8 | canister $20001 344% | sump $20321 64% |
 | bluetang x3 | g125 | canister $3228 176% | sump $3304 43% |
@@ -133,6 +134,7 @@ Every tankFor pick that fits (412) now has a build at or under 100 % filtration 
 | bluetang x25 | c8 | canister $10302 649% | sump $10622 121% |
 | bluetang x50 | c8 | canister $15289 1297% | sump $15609 243% |
 | banggai x50 | g120 | canister $4796 72% | sump $4866 18% |
+| chromis x50 | g240 | canister $4994 54% | sump $4912 14% |
 | coralbeauty x12 | g60b | sponge $2400 87% | sump $2629 24% |
 | coralbeauty x25 | g180 | hob $5230 80% | sump $5561 18% |
 | coralbeauty x50 | c8 | canister $9778 92% | sump $10099 17% |
