@@ -1,6 +1,6 @@
 # Benchmark baseline: what path 1 says TODAY (generated, do not edit)
 
-Tested commit 1f047ef (build 1124), WITH UNCOMMITTED CHANGES: M src/data/groups.ts;  M src/scene/tankMin.ts;  M src/scene/tankfit.ts;  M src/ui/stockPlanLogic.ts;  M test/path1Rules.test.ts;  M test/stockplan.test.ts;  M test/tankfit.test.ts.
+Tested commit 8ce731f (build 1125), clean checkout.
 
 Generated 2026-10-22 by test/benchmarkBaseline.test.ts. Expected verdicts live in research/rules-spec.md section 5; this is the engine's current answer only.
 
