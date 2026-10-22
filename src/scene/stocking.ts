@@ -22,7 +22,7 @@ import { getSpecies, type Species } from '../data/species';
 import { FLOOR_FACTOR, SPACE_FACTOR, SPACE_FACTOR_CLASS, SPACE_NUDGE } from '../data/spacefactor';
 import { bioloadLitres } from './starter';
 import { feedingOf, isLivePlantPatch, nitrogenBudget, tanOf, type Nitrogen } from './nitrogen';
-import { heatLoss, rowsFor, setWaterChangeFraction, stockCapacity } from './tech';
+import { heatLoss, rowsFor, setWaterChangeFraction, stockCapacity, sumpLitres } from './tech';
 import { floorOf } from './tankMin';
 import { zoneOf, type Zone } from './zone';
 import type { Fish, TankSetup } from './types';
@@ -257,7 +257,8 @@ export function stockingOf(S: TankSetup): Stocking {
   const pc = (l: number, cp: number) => cp > 0 ? l / cp * 100 : l > 0 ? Infinity : 0;
   const areaCm2 = floorOf(S.tank).areaCm2, waterPercent = pc(spaceLoad, cap.space), floorPercent = pc(floorUse, areaCm2);
   const spaceBy = floorPercent > waterPercent ? 'floor' as const : 'water' as const, spacePercent = Math.max(waterPercent, floorPercent);
-  const nitrogen = nitrogenBudget(S, cap.litres, cap.tempC, load), filtrationPercent = nitrogen.ammoniaPercent, percent = Math.max(spacePercent, filtrationPercent);
+  const nitrogen = nitrogenBudget(S, cap.litres + sumpLitres(S), cap.tempC, load), // lane SU: the sump's water dilutes the waste too (not the swimming room)
+    filtrationPercent = nitrogen.ammoniaPercent, percent = Math.max(spacePercent, filtrationPercent);
   // shares are of the limit that binds
   const bySpace = spacePercent >= filtrationPercent;
   const contributors = [...by.values()].sort((a, b) => bySpace ? b.space - a.space : b.load - a.load);
@@ -276,7 +277,7 @@ export function stockingOf(S: TankSetup): Stocking {
     else {
       const fr = rowsFor(S).find(r => r.id === 'filter');
       for (const o of [...(fr?.options ?? [])].sort((a, b) => (a.capacity ?? 1) - (b.capacity ?? 1))) {
-        const p = Math.max(nitrogenBudget(S, cap.litres, cap.tempC, load, o.id).ammoniaPercent, spacePercent);
+        const p = Math.max(nitrogenBudget(S, cap.litres + (o.id === 'sump' ? sumpLitres(S, true) : 0), cap.tempC, load, o.id).ammoniaPercent, spacePercent);
         if (!isOver(p)) { fixFilter = { option: o.id, percent: Math.round(p) }; reasons.push(`A ${o.label.toLowerCase()} would bring it to ${Math.round(p)}%.`); break; }
       }
       if (!fixFilter) reasons.push(`Even the best filter leaves ammonia high: it needs fewer animals, more plants, lighter feeding or a bigger tank.`);

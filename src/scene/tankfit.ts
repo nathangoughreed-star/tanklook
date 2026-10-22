@@ -16,7 +16,7 @@ import { volume } from './physics';
 import { countsAgainstWater, isOver, stockingOf } from './stocking';
 import { MIN_SLACK_PCT } from './animalfit';
 import { minDataOf, tankMinimum } from './tankMin';
-import { applyPreset, optionCost, PRESETS, ROOM_C, rowsFor, stockCapacity, tempFit, withChoice } from './tech';
+import { applyPreset, optionCost, PRESETS, ROOM_C, rowsFor, stockCapacity, sumpOffered, tempFit, withChoice } from './tech';
 import type { Fish, TankSetup, Units } from './types';
 
 /** What the user has picked: n animals of a species, each at `tl` mm (the adult length when omitted). */
@@ -84,7 +84,7 @@ function setupFor(c: Candidate, animals: AnimalCount[], build: BuildKind): TankS
   const options = rowsFor(S).find(r => r.id === 'filter')?.options ?? [];
   let best: { opt: string; usd: number } | undefined, strongest: { opt: string; cap: number } | undefined;
   for (const o of options) {
-    if (o.id === 'none') continue;
+    if (o.id === 'none' || (o.id === 'sump' && !sumpOffered(S))) continue; // a sump only where the builds offer one (lane SU)
     const t = withChoice(S, 'filter', o.id), usd = optionCost(S, 'filter', o.id).setup.mode, cap = stockCapacity({ ...S, tech: t });
     if (!strongest || cap > strongest.cap) strongest = { opt: o.id, cap };
     if ((build === 'cheapest' || (o.capacity ?? 1) >= 1) && stockingOf({ ...S, tech: t }).filtrationPercent <= FILTRATION_TARGET[build] && (!best || usd < best.usd)) best = { opt: o.id, usd };

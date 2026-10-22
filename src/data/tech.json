@@ -14,7 +14,7 @@
    { "id": "internal", "label": "Internal filter", "parts": ["filter"], "kind": "internal", "capacity": 0.9, "risk": 0.2 },
    { "id": "hob", "label": "Hang-on-back filter", "parts": ["filter"], "kind": "hob", "capacity": 1, "risk": 0.1 },
    { "id": "canister", "label": "Canister filter", "parts": ["filter"], "kind": "canister", "capacity": 1.15, "risk": 0.2, "note": "Hoses under the tank: a leak risk if a fitting slips." },
-   { "id": "sump", "label": "Sump + return pump", "parts": ["sump", "returnpump"], "capacity": 1.3, "risk": 0.3, "minGal": 29, "note": "Hides the heater and skimmer below; needs a drilled tank or an overflow box." }
+   { "id": "sump", "label": "Sump + return pump", "parts": ["sump", "plumbing", "returnpump"], "capacity": 1.3, "risk": 0.3, "minGal": 29, "note": "A second tank under the display (its size in the Sump section): hides the heater and skimmer below and adds its water; needs a drilled tank or an overflow box." }
   ]},
   { "id": "heater", "label": "Heating", "water": "wet", "options": [
    { "id": "none", "label": "No heater", "parts": [], "note": "Water follows the room: only species whose range holds the room temperature." },
@@ -92,7 +92,8 @@
  ],
  "gear": {
   "filter":       { "label": "Filter", "sized": "filter", "minutes": { "lo": 1, "mode": 2, "hi": 4 }, "byKind": { "sponge": 1, "internal": 1, "hob": 1.2, "canister": 2 }, "monthly": { "lo": 1, "mode": 3, "hi": 7 }, "modelPriceK": { "canister-l": 1.6 }, "exp": { "minutes": 0.3, "monthly": 0.5 }, "ref": 20 },
-  "sump": { "label": "Sump", "price": { "key": "gear:sump" }, "minutes": { "lo": 2, "mode": 4, "hi": 8 }, "ref": 55, "exp": { "price": 0.6, "minutes": 0.3 } },
+  "sump": { "label": "Sump tank", "price": { "key": "gear:sump" }, "minutes": { "lo": 2, "mode": 4, "hi": 8 }, "ref": 55, "exp": { "price": 0.6, "minutes": 0.3 } },
+  "plumbing": { "label": "Sump plumbing (drain, return, valves)", "price": { "key": "gear:sump-plumbing" } },
   "returnpump": { "label": "Return pump", "price": { "key": "gear:return-pump" }, "watts": 23, "hours": 24, "gphPerGal": 6, "ref": 55, "exp": { "price": 0.5, "watts": 0.8 } },
   "heater":       { "label": "Heater", "sized": "heater" },
   "chiller": { "label": "Chiller", "price": { "key": "gear:chiller" }, "ref": 55, "exp": { "price": 0.5 }, "minutes": { "lo": 0.2, "mode": 0.5, "hi": 1 } },

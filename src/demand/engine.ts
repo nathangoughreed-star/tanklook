@@ -20,12 +20,12 @@ import { tankSaleFor } from '../data/tanks';
 import { groundVolume, pieceKg } from '../scene/setupsheet';
 import { standAsked, type TankSetup } from '../scene/types';
 import { add3, mean3, r3, scale3, widen3 } from './range';
-import { interp, price as rowPrice, priceRow } from './prices';
+import { interp, price as rowPrice, priceRow, tankRowPrice } from './prices';
 import { defaultFilter, defaultHeater, filterName, matchFilter, matchHeater, type FilterSpec } from './gear';
 import { techDemand } from './tech';
 import { isLivePlantPatch, PATCH_PLANTS } from '../scene/nitrogen';
 import { waterChangeFraction } from '../scene/stocking';
-import { techOf } from '../scene/tech';
+import { sumpLitres, techOf } from '../scene/tech';
 import type { Contribution, Demand, Domain, Group, Range3, Rangeish, UserProfile } from './types';
 
 export const FACTORS = factorsJson;
@@ -96,8 +96,8 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
 
   // ---- tank, stand, lid, substrate, gear
   const tank = opts.tankPrice?.(S, gal), band = G.tank.find(b => gal <= b.maxGal) ?? G.tank[G.tank.length - 1];
-  const catTank = interp('tank:', [5, 10, 20, 29, 40, 55, 75, 125], gal), big = gal > 125 ? gal / 125 : gal < 5 ? Math.max(0.3, gal / 5) : 1;
-  const tankTypical = tank !== undefined ? r3(tank)! : catTank ? scale3(catTank, big) : scale3(pick(band.perGal), gal);
+  const catTank = tankRowPrice(gal);
+  const tankTypical = tank !== undefined ? r3(tank)! : catTank ?? scale3(pick(band.perGal), gal);
   // a bare tank of this size on sale right now (read from a retailer page) is what buying the parts would cost
   const tSale = tank === undefined && wet ? tankSaleFor(gal, S.tank.shape ?? 'rect', opts.now ?? Date.now(), undefined, undefined, S.tank) : undefined;
   if (tSale && tSale.usd < tankTypical.mode) add('tank', `Tank (${Math.round(gal)} gal; on sale at ${tSale.retailer} $${Math.round(tSale.usd)}, was $${Math.round(tSale.regularUsd)}${tSale.saleEnds ? ', ends ' + tSale.saleEnds : ''})`, 'tank', { setup: price({ lo: tSale.usd * 0.97, mode: tSale.usd, hi: Math.min(tankTypical.mode, tSale.usd * 1.15) }) });
@@ -187,7 +187,7 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   if (!wet) add('mist', 'Misting and upkeep', 'work', { minutes: pick(T.terrariumMistMin) });
   else {
     // the share of the tank to change comes from the nitrogen budget (plants and the filter take part of it away), floored and capped
-    const frac = waterChangeFraction(S), galWk = gal * frac;
+    const frac = waterChangeFraction(S), galWk = (gal + sumpLitres(S) / 3.785) * frac; // lane SU: the change is a share of all the water, the sump's too
     const hose = techOf(S).rows.wcmethod === 'hose';
     const water = (P.waterSource === 'bought-ro' ? rowPrice('gear:ro-bought') : undefined) ?? pick((FACTORS.waterUsdPerGal as Record<string, Range3>)[P.waterSource]), per = salt ? add3(water, rowPrice('gear:salt-mix') ?? pick(FACTORS.saltMixUsdPerGal)) : water;
     if (P.waterSource === 'own-ro' && rowPrice('gear:ro-unit')) add('rounit', 'RO unit', 'gear', { setup: price(rowPrice('gear:ro-unit')!) });

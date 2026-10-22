@@ -1421,6 +1421,13 @@
    "unit": "sump box; BRS 40br/75g drop-in $153-306, Trigger Platinum 39 V2 $940",
    "url": "https://www.bulkreefsupply.com/filtration/sumps.html"
   },
+  "gear:sump-plumbing": {
+   "lo": 40,
+   "mode": 69.95,
+   "hi": 150,
+   "unit": "set; Custom Aquariums Ultimate 4 Hole 3600GPH Plumbing Kit $69.95 (sale, list $78.70: ball valves, couplers, PVC), 2 Hole kit $39.95; overflow box and bulkheads extra (hi judgement)",
+   "url": "https://www.customaquariums.com/?p=11463"
+  },
   "gear:two-part": {
    "lo": 44,
    "mode": 55,

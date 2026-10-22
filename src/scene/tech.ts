@@ -9,11 +9,12 @@ import { CARE } from '../data/care';
 import { climateOf } from '../data/climate';
 import { getSpecies } from '../data/species';
 import { FILTER_MODELS, HEATER_MODELS, matchHeater, type FilterKind, type FilterModel, type HeaterModel } from '../demand/gear';
-import { price as rowPrice } from '../demand/prices';
+import { price as rowPrice, tankRowPrice } from '../demand/prices';
 import type { Range3 } from '../demand/types';
 import { volume } from './physics';
 import { filterProduct, genericHeaterW, heaterProduct, listedPrice, type FilterProduct, type HeaterProduct } from '../data/gearCatalog';
 import { footprint } from './shape';
+import { getTankModel, TANK_MODELS, tankFromModel, type TankModel } from '../data/tanks';
 import type { GrowFeed, TankSetup } from './types';
 import type { TempEvidence } from './temprange';
 
@@ -65,7 +66,12 @@ export interface TechSetup {
   /** the filtration, one entry per unit, each of a filter kind (tech.json filter option id), generic or a product;
    *  absent = the older fields (rows.filter, filterModel, filterProduct). rows.filter follows the main unit (withUnits). */
   filters?: FilterUnit[];
+  /** the sump (lane SU, Nathan 2026-10-22): a second tank under the display, interior mm like the display's; `model` = the tank
+   *  catalogue size it was picked from (absent = a custom size). Counts only while a sump is in the filtration; absent = sumpDefault. */
+  sump?: SumpSize;
 }
+/** A sump's size: interior mm, and the catalogue model it came from, if any. */
+export interface SumpSize { model?: string; L: number; D: number; H: number }
 /** One heater: a catalogue product, or a generic one of `w` watts (absent = sized to the tank's need). `kit`: the one the
  *  bundle the tank was started from ships (its price is in the bundle's while the bundle is pinned). */
 export interface HeaterUnit { product?: string; w?: number; kit?: boolean }
@@ -317,7 +323,7 @@ export function applyPreset(S: TankSetup, id: string): TechSetup {
   const p = PRESETS.find(x => x.id === id);
   const t = techOf(S);
   if (!p) return t;
-  return { rows: { ...inferTech(S).rows, ...p.rows }, preset: id, ...(t.roomC !== undefined ? { roomC: t.roomC } : {}), ...(t.targetC !== undefined ? { targetC: t.targetC } : {}), ...(t.measuredC !== undefined ? { measuredC: t.measuredC } : {}), ...(t.place ? { place: t.place } : {}) };
+  return { rows: { ...inferTech(S).rows, ...p.rows }, preset: id, ...(t.roomC !== undefined ? { roomC: t.roomC } : {}), ...(t.targetC !== undefined ? { targetC: t.targetC } : {}), ...(t.measuredC !== undefined ? { measuredC: t.measuredC } : {}), ...(t.place ? { place: t.place } : {}), ...(t.sump ? { sump: t.sump } : {}) };
 }
 export const presetsFor = (S: TankSetup) => !S.water.on ? [] : PRESETS.filter(p => p.water === (isSalt(S) ? 'salt' : 'fresh'));
 
@@ -423,6 +429,48 @@ export const offerTwoHeaters = (S: TankSetup) => heatLoss(S).needW > HEAT.twoAbo
 /** Offer a chiller: the room runs warmer than the target by over a degree. */
 export const offerChiller = (S: TankSetup) => { const h = heatLoss(S); return h.roomC > h.targetC + 1; };
 
+// ---- the sump (lane SU, Nathan 2026-10-22: "an additional section in the 'tech'. Reuse the same presets or custom size tanks for it.")
+
+/** The share of the sump's own volume that holds water while the return pump runs: the rest is room for what drains down from the display when the power goes. */
+export const SUMP_FILL = 0.5;
+/** A sump picked for the display when none is chosen: at least this share of the display's volume, and no longer than the display (it stands in the stand). */
+export const SUMP_SHARE = 0.25;
+/** Where a sump is offered (tankfit and the builds): salt water from the option's minGal (29 gal), fresh water from 75 gal, where the catalogue's reef-ready (drilled) tanks are. */
+export const SUMP_FRESH_GAL = 75;
+/** The plain glass sizes a sump is picked from (tankfit's own list: rectangles with a generic name). */
+export const SUMP_MODELS: TankModel[] = TANK_MODELS.filter(m => !m.terrarium && (m.shape ?? 'rect') === 'rect' && /^[\d.]+ (gal|ft)/.test(m.name));
+const boxLitres = (z: { L: number; D: number; H: number }) => z.L * z.D * z.H / 1e6;
+/** A catalogue size as a sump size. */
+export const sumpFromModel = (m: TankModel): SumpSize => { const T = tankFromModel(m); return { model: m.id, L: T.L, D: T.D, H: T.H }; };
+/** The sump this display gets when none is chosen: the smallest plain size of at least SUMP_SHARE of its volume that fits its length, else the largest that fits. */
+export function sumpDefault(S: TankSetup): SumpSize {
+  const want = SUMP_SHARE * volume(S.tank).litres, all = SUMP_MODELS.map(sumpFromModel).sort((a, b) => boxLitres(a) - boxLitres(b));
+  const fit = all.filter(z => z.L <= S.tank.L);
+  return fit.find(z => boxLitres(z) >= want) ?? fit.at(-1) ?? all[0];
+}
+const hasSump = (t: TechSetup) => filterUnits(t).some(u => u.kind === 'sump');
+/** The tank's sump: its own size, else the default; undefined with no sump in the filtration (or `asIf` forces one, to judge the option). */
+export function sumpOf(S: TankSetup, asIf = false): SumpSize | undefined {
+  if (!S.water.on) return undefined;
+  const t = techOf(S);
+  return hasSump(t) || asIf ? t.sump ?? sumpDefault(S) : undefined;
+}
+/** Litres of water the sump adds to the system (its volume x SUMP_FILL); 0 without one. */
+export const sumpLitres = (S: TankSetup, asIf = false): number => { const z = sumpOf(S, asIf); return z ? boxLitres(z) * SUMP_FILL : 0; };
+/** "20 gal long tank, 57 L of water" style name: the catalogue size, else the custom size in cm. */
+export const sumpName = (z: SumpSize) => `${getTankModel(z.model ?? '')?.name ?? `${Math.round(z.L / 10)} x ${Math.round(z.D / 10)} x ${Math.round(z.H / 10)} cm`} tank, ${Math.round(boxLitres(z) * SUMP_FILL)} L of water`;
+/** True where tankfit and the builds may pick a sump: salt water from minGal, fresh from SUMP_FRESH_GAL. */
+export function sumpOffered(S: TankSetup): boolean {
+  if (!S.water.on) return false;
+  const gal = Math.round(galOf(S));
+  return gal >= (isSalt(S) ? optionDef('filter', 'sump')?.minGal ?? 29 : SUMP_FRESH_GAL);
+}
+/** The sump tank's price: its catalogue size's listed products (median), else the bare-tank rows by its gallons. */
+function sumpTankPrice(z: SumpSize): Range3 | undefined {
+  const ps = (getTankModel(z.model ?? '')?.variants ?? []).filter(v => !v.discontinued && v.price_usd && v.price_kind !== 'kit').map(v => v.price_usd!).sort((a, b) => a - b);
+  return ps.length ? pricePoint(ps[Math.floor(ps.length / 2)]) : tankRowPrice(boxLitres(z) / 3.785);
+}
+
 // ---- what one option costs this tank
 
 export interface PartCost {
@@ -452,7 +500,7 @@ const KWH_USD = 0.17;
 /** Registered by scene/stocking.ts (it imports this file, so this file cannot import it): the share of the tank changed a week. */
 let wcFraction: (S: TankSetup) => number = () => 0.1;
 export const setWaterChangeFraction = (f: (S: TankSetup) => number) => { wcFraction = f; };
-const wcGalWk = (S: TankSetup) => galOf(S) * wcFraction(S);
+const wcGalWk = (S: TankSetup) => (galOf(S) + sumpLitres(S) / 3.785) * wcFraction(S); // lane SU: all the water, the sump's too
 
 /** Setup, consumables, power and minutes of one row's option on this tank (every figure sized to it). */
 export function optionCost(S: TankSetup, row: string, opt: string, o: { kwhUsd?: number; tech?: TechSetup } = {}): OptionCost {
@@ -481,6 +529,9 @@ export function optionCost(S: TankSetup, row: string, opt: string, o: { kwhUsd?:
       const h = heatLoss(S, t), each = h.units.map(heaterPrice);
       n = h.n; watts = h.totalW / Math.max(n, 1); kwhMo = h.kwhMo / Math.max(n, 1);
       if (n && each.every(Boolean)) setup = s3(each.reduce<Range3>((a, r) => a3(a, r!), Z), 1 / n);
+    } else if (id === 'sump') {
+      const p = sumpTankPrice(t.sump ?? sumpDefault(S)); // the sump is a tank of its own size (lane SU), not scaled from the display
+      if (p) setup = p;
     } else if (id === 'chiller') {
       const h = heatLoss(S, t);
       kwhMo = h.chillerKwhMo; watts = h.coolW / HEAT.chillerCop;
@@ -613,6 +664,15 @@ export function techParts(S: TankSetup): TechPiece[] {
 // ---- file
 
 const WALLS = new Set(['back', 'left', 'right', 'floor']);
+/** A saved sump: a catalogue size by its id (its size re-read from the catalogue), else a custom size, each side 50-3000 mm. */
+function parseSump(raw: unknown): SumpSize | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const z = raw as Partial<SumpSize>;
+  if (typeof z.model === 'string') { const m = SUMP_MODELS.find(x => x.id === z.model); return m ? sumpFromModel(m) : undefined; }
+  const side = (v: unknown) => typeof v === 'number' && isFinite(v) ? Math.min(3000, Math.max(50, Math.round(v))) : undefined;
+  const L = side(z.L), D = side(z.D), H = side(z.H);
+  return L && D && H ? { L, D, H } : undefined;
+}
 /** Read a saved `tech` (validate.ts): unknown rows / options dropped, numbers clamped. Undefined when absent or empty. */
 export function parseTech(raw: unknown): TechSetup | undefined {
   if (!raw || typeof raw !== 'object') return undefined;
@@ -635,6 +695,8 @@ export function parseTech(raw: unknown): TechSetup | undefined {
   if (t.heaters) rows.heater = heaterRow(t.heaters.length);
   if (t.filters) rows.filter = filterRow(t.filters);
   if (r.filterless === true && !t.filters?.length) t.filterless = true;
+  const sump = parseSump(r.sump);
+  if (sump) t.sump = sump;
   if (typeof r.roomC === 'number' && isFinite(r.roomC)) t.roomC = Math.min(40, Math.max(0, r.roomC));
   if (typeof r.targetC === 'number' && isFinite(r.targetC)) t.targetC = Math.min(40, Math.max(0, r.targetC));
   if (typeof r.measuredC === 'number' && isFinite(r.measuredC)) t.measuredC = Math.min(40, Math.max(0, r.measuredC));
@@ -650,5 +712,5 @@ export function parseTech(raw: unknown): TechSetup | undefined {
     }
     if (Object.keys(place).length) t.place = place;
   }
-  return Object.keys(rows).length || t.preset || t.heaters || t.filters || t.filterless ? t : undefined;
+  return Object.keys(rows).length || t.preset || t.heaters || t.filters || t.filterless || t.sump ? t : undefined;
 }

@@ -24,3 +24,10 @@ export function interp(prefix: string, xs: number[], x: number): Range3 | undefi
   }
   return pts[pts.length - 1].p;
 }
+
+/** A bare glass tank's typical price at `gal` gallons: the tank:N rows between 5 and 125 gal, scaled in proportion past either end
+ *  (the demand engine's own tank rule; the sump tank is priced by it too, lane SU). */
+export function tankRowPrice(gal: number): Range3 | undefined {
+  const r = interp('tank:', [5, 10, 20, 29, 40, 55, 75, 125], gal), k = gal > 125 ? gal / 125 : gal < 5 ? Math.max(0.3, gal / 5) : 1;
+  return r && { lo: r.lo * k, mode: r.mode * k, hi: r.hi * k };
+}

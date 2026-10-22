@@ -17,7 +17,7 @@ import { kitTech } from '../demand/tech';
 import { bareSetup } from './defaults';
 import { volume } from './physics';
 import { countsAgainstWater, stockingOf } from './stocking';
-import { filterFor, filterUnits, heaterUnits, heatLoss, applyPreset, PRESETS, ROOM_C, rowsFor, techOf, tempFit, withChoice } from './tech';
+import { filterFor, filterUnits, heaterUnits, heatLoss, applyPreset, PRESETS, ROOM_C, rowsFor, sumpName, sumpOf, sumpOffered, techOf, tempFit, withChoice } from './tech';
 import { needsOf, type AnimalCount } from './tankfit';
 import type { Fish, TankSetup } from './types';
 
@@ -110,12 +110,13 @@ function price(S0: TankSetup, now: number, bundle?: Deal, withGearDeals = true):
 
 interface Candidate { opt: string; S: TankSetup; usd: number; min: number; filtration: number; capacity: number }
 
-/** Every filter the Tech menu offers this tank (not "none" or a sump, which needs a drilled tank), priced and judged. */
+/** Every filter the Tech menu offers this tank, priced and judged: not "none", and a sump only where sumpOffered (a large or salt tank,
+ *  drilled or with an overflow box; lane SU), the same tanks tankfit counts one on. */
 function filterCandidates(base: TankSetup, now: number): Candidate[] {
   const out: Candidate[] = [];
   const opts = rowsFor(base).find(r => r.id === 'filter')?.options ?? [];
   for (const o of opts) {
-    if (o.id === 'none' || o.id === 'sump') continue;
+    if (o.id === 'none' || (o.id === 'sump' && !sumpOffered(base))) continue;
     const S = { ...base, tech: withChoice(base, 'filter', o.id) };
     const p = price(S, now, undefined, false);
     out.push({ opt: o.id, S, usd: p.D.totals.setupUsd, min: p.D.totals.minPerWeek, filtration: p.filtrationPct, capacity: o.capacity ?? 1 });
@@ -151,7 +152,8 @@ const gearLines = (S: TankSetup): string[] => {
   const lines: string[] = [];
   const t = techOf(S);
   const fs = filterUnits(t);
-  if (fs.length) lines.push(`Filter: ${fs.map(u => { const f = filterFor(S, u.kind as never, u.model, u.product); return f.product ? productName(f.product) : filterName(f.model); }).join(' + ')}`);
+  const sump = sumpOf(S);
+  if (fs.length) lines.push(`Filter: ${fs.map(u => { if (u.kind === 'sump') return `Sump (${sumpName(sump!)}) + return pump`; const f = filterFor(S, u.kind as never, u.model, u.product); return f.product ? productName(f.product) : filterName(f.model); }).join(' + ')}`);
   const hs = heaterUnits(t);
   if (t.rows.heater && t.rows.heater !== 'none' && hs.length) lines.push(`Heater: about ${Math.round(heatLoss(S, t).heater.watts)} W${hs.length > 1 ? ' x ' + hs.length : ''}`);
   else lines.push('No heater: these animals are comfortable at room temperature');
