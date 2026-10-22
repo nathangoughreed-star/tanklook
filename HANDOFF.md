@@ -110,6 +110,9 @@ The pairwise "share under 2 °C = incompatible" rule is gone. `src/scene/tempran
   narrowest pair's overlap (Helly), so whole-stock never finds an empty set the pairs miss; it adds the range, the tier and the setpoint check.
 - **Setpoint:** known only with no heater (water follows the Tech-menu room). A heated tank records no heater setting (heatLoss targetC is the
   tool's own pick, inside the range by construction): "unchecked". An assumed (default) room inside the range is also unchecked; outside fails.
+  Reviewer tightening (2026-10-22): a setpoint OUTSIDE a valid shared range keeps the range line from reading positive (`rangeVerdict`:
+  warn, "this plan runs outside it until the setpoint changes") and the setpoint line offers the fix ("set the heater to X–Y °C"; no heater:
+  "add a heater and set it to X–Y °C", or keep / cool the room). The species combination is not flagged; only no shared range blocks it.
 - `whysAnimal` returns every reason (blocking first, `concern` after); `whyAnimal` = first blocking. Shown: stock planner per pick (main in red,
   "Also:" under it) + two whole-list lines; plan sheet one line per species with all blocking reasons + the two temperature lines once;
   the species list gate "(+N more)" with the rest in the tooltip. Climate chart: "ideal" -> "in range".

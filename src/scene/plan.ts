@@ -7,7 +7,7 @@ import type { Contribution, Demand } from '../demand/types';
 import { mean3 } from '../demand/range';
 import { GEAR_SLOT_NAME, gearOffers } from '../demand/gearDeals';
 import { whysAnimal } from './animalfit';
-import { rangeLine, setpointCheck, sharedRange } from './temprange';
+import { rangeVerdict, setpointCheck, sharedRange } from './temprange';
 import { LIBRARY } from './items';
 import type { Build } from './builds';
 import { finSensitiveNames, plantNeeds, priceScape } from './scapes';
@@ -79,8 +79,8 @@ export function hardTruths(S: TankSetup, animals: AnimalCount[], heater: boolean
   // water temperature, two separate outputs (temprange.ts): the shared range of every aquatic species, then whether the plan runs inside it
   const shared = sharedRange(sp);
   if (shared.state !== 'unknown') {
-    out.push({ text: rangeLine(shared), level: shared.state === 'none' ? 'bad' : shared.state === 'narrow' ? 'warn' : 'ok' });
     const at = setpointCheck(shared, !heater && !salt ? { kind: 'room', c: room, set: S.tech?.roomC !== undefined } : { kind: 'heater' });
+    out.push(rangeVerdict(shared, at)); // never positive while the setpoint is outside the range
     out.push({ text: at.text, level: at.state === 'outside' ? 'bad' : at.state === 'unchecked' ? 'warn' : 'ok' });
   }
   if (!heater && !salt) for (const s of sp.filter(x => countsAgainstWater(x))) if (tempFit(s.id, room) === 'out') out.push({ text: `${s.name} is too ${room > (CARE[s.id]?.temp?.[1] ?? Infinity) ? 'warm' : 'cold'} at room temperature (${room} C) and the tank has no heater`, level: 'bad' });

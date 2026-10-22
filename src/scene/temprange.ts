@@ -72,18 +72,34 @@ export function rangeLine(r: SharedRange): string {
 
 export type SetpointState = 'inside' | 'outside' | 'unchecked';
 /** Where the water temperature of the plan comes from. `room`: no heater, the water follows the room (`set`: the user entered it;
- *  otherwise the default room is assumed). `heater`: heated, no heater setting recorded. Absent: no tank set up. */
-export type Setpoint = { kind: 'room'; c: number; set: boolean } | { kind: 'heater' };
+ *  otherwise the default room is assumed). `heater`: heated; `c` is the heater's setting when the plan records one. Absent: no tank set up. */
+export type Setpoint = { kind: 'room'; c: number; set: boolean } | { kind: 'heater'; c?: number };
 
 /** Output 2, kept apart from output 1: does the plan run inside the shared range? A broad range still fails at a setpoint outside
- *  it; a setpoint the plan does not record (or an assumed room) is unchecked, never passed. */
-export function setpointCheck(r: SharedRange, at?: Setpoint): { state: SetpointState; text: string } {
+ *  it, and the fix is offered (`fix`: set the heater, or add one / change the room); the species combination is not at fault.
+ *  A setpoint the plan does not record (or an assumed room) is unchecked, never passed. */
+export function setpointCheck(r: SharedRange, at?: Setpoint): { state: SetpointState; text: string; fix?: string } {
   const inRange = r.range ? `set it inside ${fmtC(r.range)}` : 'there is no shared range to set';
   if (!at) return { state: 'unchecked', text: `Setpoint: unchecked, no tank set up yet (${inRange})` };
-  if (at.kind === 'heater') return { state: 'unchecked', text: `Setpoint: unchecked, the plan records no heater setting (${inRange})` };
-  const where = `no heater, the water follows the ${at.set ? '' : 'assumed '}${at.c} °C room`;
+  if (at.kind === 'heater' && at.c === undefined) return { state: 'unchecked', text: `Setpoint: unchecked, the plan records no heater setting (${inRange})` };
+  const where = at.kind === 'heater' ? `the heater is set to ${at.c} °C` : `no heater, the water follows the ${at.set ? '' : 'assumed '}${at.c} °C room`;
   if (!r.range) return { state: 'unchecked', text: `Setpoint: ${where}; ${inRange}` };
-  if (at.c < r.range[0] || at.c > r.range[1]) return { state: 'outside', text: `Setpoint: ${where}, outside the shared range ${fmtC(r.range)}` };
-  if (!at.set) return { state: 'unchecked', text: `Setpoint: unchecked, the room temperature is not set (${at.c} °C assumed, inside ${fmtC(r.range)})` };
-  return { state: 'inside', text: `Setpoint: ${where}, inside the shared range ${fmtC(r.range)}` };
+  const c = at.c!, [lo, hi] = r.range, band = fmtC(r.range);
+  if (c < lo || c > hi) {
+    const fix = at.kind === 'heater' ? `set the heater to ${band}`
+      : c < lo ? `add a heater and set it to ${band}${at.set ? `, or keep the room inside ${band}` : ''}`
+      : `cool the room to ${band}, or add a chiller set to ${band}`;
+    return { state: 'outside', fix, text: `Setpoint: ${where}, outside the shared range ${band}: ${fix}. The animals are not at fault, the setting is` };
+  }
+  if (at.kind === 'room' && !at.set) return { state: 'unchecked', text: `Setpoint: unchecked, the room temperature is not set (${c} °C assumed, inside ${band})` };
+  return { state: 'inside', text: `Setpoint: ${where}, inside the shared range ${band}` };
+}
+
+/** The level of the shared-range line once the setpoint is known: no shared range blocks; a valid range is never shown as positive
+ *  while the plan's setpoint lies outside it (the line then says so, about this plan, not the species); a narrow one is a margin. */
+export function rangeVerdict(r: SharedRange, at: { state: SetpointState }): { level: 'ok' | 'warn' | 'bad'; text: string } {
+  const text = rangeLine(r);
+  if (r.state === 'none') return { level: 'bad', text };
+  if (at.state === 'outside') return { level: 'warn', text: `${text}; this plan runs outside it until the setpoint changes (see Setpoint)` };
+  return { level: r.state === 'broad' ? 'ok' : 'warn', text };
 }
