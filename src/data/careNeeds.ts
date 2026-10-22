@@ -23,6 +23,8 @@ export const NEEDS: Record<string, CareNeed[]> = {
   ],
   hatchet: [{ kind: 'environment', severity: 'S3', text: 'Lid: hatchetfish jump; needs a tight lid' }],
   hermit: [{ kind: 'environment', severity: 'S2', text: 'Shells: needs a spare shell each; short of shells they can attack snails' }],
+  // an advisory, not a computed result: the engine does not model territorial behaviour (gbr review 2026-10-22)
+  gbr: [{ kind: 'environment', severity: 'S1', text: 'Breeding territory: when breeding, rams may chase other bottom-dwelling fish; provide separate sheltered areas and watch for any fish kept away from food or cover' }],
 };
 
 const KIND_NAME: Record<NeedKind, string> = { feeding: 'food supply', maturity: 'tank age', environment: 'fixture' };

@@ -26,6 +26,7 @@ practice rather than quoted from the source. Researched by Sonnet agents with we
 - **honeygourami** (Honey gourami): https://guidarium.com/fishes/honey-gourami (est).
 - **gourami** (Pearl gourami): https://www.seriouslyfish.com/species/trichopodus-leerii (est). Note: Seriously Fish gives 90x30 cm base but lists social behaviour as unknown; bands are judgement
 - **gbr** (German blue ram): https://modestfish.com/german-blue-ram/ (est). Note: Needs warm (26-30C), stable, mature water; pair in 75 L+
+  - 2026-10-22 review (est, keeper judgement backed by Aquarium Co-Op / Seriously Fish care pages): a single ram is a valid keep (ok 1); two count as a pair only when the user says it is established (msg.unpaired otherwise); max 2 kept provisional, since two pairs depend on footprint, layout and pairing, not a gallon figure.
 - **bolivianram** (Bolivian ram): https://guidarium.com/fishes/bolivian-ram (est). Note: Sources vary: single, pair, or group of 6-8; bands are judgement. Needs soft sand.
 - **kribensis** (Kribensis): https://www.thetropicaltank.co.uk/Fishindx/kribensi.htm. Note: 60 cm minimum for a pair; 90 cm+ for community (sera says 80-100 cm).
 - **cockatoo** (Cockatoo dwarf cichlid): https://apistogramma.com/forum/threads/how-many-dwarfs-in-a-29-gallon.3067/post-18088 (est). Note: Forum opinion, roughly 1 fish per 30 cm of tank length.

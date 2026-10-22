@@ -9,8 +9,10 @@ export interface GroupCare {
    *  n < ok = 'avoid' (too few), ok <= n < good = 'ok', good <= n < great = 'good', n >= great = 'great'. Must hold ok <= good <= great,
    *  and great <= max where a max is given (a "best" group the species should not be kept at is a contradiction). */
   bands?: { ok: number; good: number; great: number };
-  /** one line per band, about the GROUP only (no tank size, no care condition); defaults are generated from the numbers when absent */
-  msg?: { avoid?: string; ok?: string; good?: string; great?: string };
+  /** one line per band, about the GROUP only (no tank size, no care condition); defaults are generated from the numbers when absent.
+   *  `unpaired`: for a pair species (stockPlanLogic PAIR_FORMERS), the line for two animals whose pairing is unknown or unconfirmed; it
+   *  replaces the band line and caps the band at 'ok', so two of them never read "good" until the user says they are a pair. */
+  msg?: { avoid?: string; ok?: string; good?: string; great?: string; unpaired?: string };
   /** FIGHTING LIMIT only: the most of this species one tank takes before they fight, whatever its size (solo species = 1; a bonded
    *  pair = 2; a few herps by the herp research). A shorthand: a very large tank may hold more, at a size no source gives (Nathan
    *  2026-10-22). Past it the app warns, never blocks. Room is never a max: the stocking percent measures it, so schools and other
@@ -112,7 +114,9 @@ export const GROUPS: Record<string, GroupCare> = {
   dwarfgourami: { bands: { ok: 1, good: 1, great: 1 }, msg: { ok: 'One male alone is safest; a pair needs plants to break sight lines' }, territory: { at: [[10, 3]], each: 5, note: 'shops sell mostly males: keep at least 2 females per male' }, males: { at: 10, each: 15 }, flow: 'low', zone: 'top', minLengthMm: 600, appeal: ['showpiece', 'colour', 'peaceful'] },
   honeygourami: { bands: { ok: 1, good: 2, great: 4 }, msg: { ok: 'Peaceful; fine alone but happier as a pair or small group' }, flow: 'low', zone: 'top', minLengthMm: 450, appeal: ['easy', 'colour', 'personality'] },
   gourami: { bands: { ok: 1, good: 2, great: 4 }, msg: { ok: 'One male only unless tank is 120 cm+; add females' }, sexed: { ratio: [1, 3], note: 'Males are territorial with each other; one male to 2-3 females' }, flow: 'low', zone: 'top', minLengthMm: 900, appeal: ['showpiece', 'finnage', 'personality'] },
-  gbr: { bands: { ok: 2, good: 2, great: 2 }, msg: { avoid: 'Singles are shy; keep a bonded pair' }, max: 2, flow: 'low', zone: 'bottom', minLengthMm: 600, appeal: ['showpiece', 'colour', 'hands-on'] },
+  // gbr reviewed 2026-10-22 (Nathan): a single ram is a valid keep, two are a pair only when the user says so. max 2 stays PROVISIONAL:
+  // two pairs need room for separate territories, which footprint, layout and pairing decide, not a gallon figure.
+  gbr: { bands: { ok: 1, good: 2, great: 2 }, msg: { ok: 'Suitable singly', good: 'Suitable pair; may defend a breeding territory', great: 'Suitable pair; may defend a breeding territory', unpaired: 'Compatibility unconfirmed; monitor aggression and provide a separation option' }, max: 2, flow: 'low', zone: 'bottom', minLengthMm: 600, appeal: ['showpiece', 'colour', 'hands-on'] },
   bolivianram: { bands: { ok: 2, good: 4, great: 6 }, msg: { avoid: 'Singles do best only if tank is peaceful; a pair or small group is better' }, max: 8, territory: { at: [[30, 1]], each: 7.5 }, flow: 'low', zone: 'bottom', minLengthMm: 600, appeal: ['personality', 'colour', 'easy'] },
   kribensis: { bands: { ok: 2, good: 2, great: 2 }, msg: { avoid: 'A lone krib is fine but a male/female pair shows the real behaviour' }, max: 2, territory: { at: [[20, 2]], each: 12.5, per: 2 }, sexed: { ratio: [1, 1], note: 'Keep as one male/female pair; breeding pairs are territorial and need hiding caves' }, flow: 'low', zone: 'bottom', minLengthMm: 600, appeal: ['personality', 'colour', 'easy'] },
   cockatoo: { bands: { ok: 2, good: 3, great: 4 }, msg: { avoid: 'A lone male is fine but a harem is the natural way', great: '1 male with 3 females needs dense caves and a 90 cm footprint' }, sexed: { ratio: [1, 3], note: 'One male to 2-3 females; never two males in a small tank; add males after females settle' }, flow: 'low', zone: 'bottom', minLengthMm: 900, appeal: ['personality', 'colour', 'showpiece'] },

@@ -69,9 +69,12 @@ export interface PickNotes { band: GroupBand; line: string; ratio?: string; habi
 export function notesOf(p: Pk, u: Units = 'cm'): PickNotes {
   const c = CARE[p.id], n = totalOf(p);
   // labelled as the GROUP-SIZE assessment (rules-spec section 6): it judges the count only, never the tank (groupLineIn adds that)
-  const band = bandOf(c, n), msg = c?.max && c.max > 1 && n === c.max ? `${bandMessage(c, n)} (the most before they fight: ${c.max})` : bandMessage(c, n);
   const pairing = asksPairing(p) ? pairingOf(p.pair ?? 'unknown') : undefined;
-  const line = n === 0 || !msg ? '' : `Group size: ${msg}${pairing && pairing.status !== 'established' ? ' (only if they are a pair)' : ''}`;
+  // two of a pair species not known to be a pair: the species' own `unpaired` line, and never better than 'ok' (gbr review 2026-10-22)
+  const unpaired = pairing && pairing.status !== 'established' ? c?.msg?.unpaired : undefined;
+  const band = unpaired && bandOf(c, n) !== 'avoid' ? 'ok' : bandOf(c, n);
+  const msg = unpaired ?? (c?.max && c.max > 1 && n === c.max ? `${bandMessage(c, n)} (the most before they fight: ${c.max})` : bandMessage(c, n));
+  const line = n === 0 || !msg ? '' : `Group size: ${msg}${pairing && pairing.status !== 'established' && !unpaired ? ' (only if they are a pair)' : ''}`;
   let ratio: string | undefined;
   const r = c?.sexed;
   if (r) {

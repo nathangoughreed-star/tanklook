@@ -25,7 +25,7 @@ export const WATER: Record<string, { ok: R; tol: R; est?: true }> = {
   firetoad: { ok: [18,24], tol: [15,27] },
   firenewt: { ok: [16,22], tol: [10,24] },
   adf: { ok: [22,26], tol: [20,29] },
-  cardinal: { ok: [24,28], tol: [22,30] },
+  cardinal: { ok: [23,29], tol: [22,30] },
   ember: { ok: [23,27], tol: [20,29] },
   rummynose: { ok: [24,27], tol: [22,29] },
   harlequin: { ok: [22,26], tol: [20,28] },

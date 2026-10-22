@@ -62,6 +62,22 @@ describe('sex and pairing are separate inputs (lane RF item 4)', () => {
     expect(notes({ id: 'bolivianram', n: 4 }).pairing).toBeUndefined();
     expect(notes({ id: 'neon', n: 2 }).pairing).toBeUndefined();
   });
+  it('German blue rams: one is suitable singly, two read as a pair only when established (gbr review 2026-10-22)', async () => {
+    const { notesOf: notes } = await import('../src/ui/stockPlanLogic');
+    const one = notes({ id: 'gbr', n: 1 });
+    expect(one.band).toBe('ok');
+    expect(one.line).toMatch(/Suitable singly/);
+    for (const pair of [undefined, 'unconfirmed'] as const) {
+      const two = notes({ id: 'gbr', n: 2, pair });
+      expect(two.band).toBe('ok');
+      expect(two.line).toMatch(/Compatibility unconfirmed/);
+      expect(two.line).not.toMatch(/only if/);
+    }
+    const est = notes({ id: 'gbr', n: 2, pair: 'established' });
+    expect(est.band).not.toBe('ok');
+    expect(est.line).toMatch(/Suitable pair; may defend a breeding territory/);
+    expect(one.needs.some(x => /Breeding territory/.test(x.text))).toBe(true);
+  });
   it('the pair list follows the data: every "bonded" or "male/female pair" species is on it', async () => {
     const { PAIR_FORMERS } = await import('../src/ui/stockPlanLogic');
     for (const [id, g] of Object.entries(GROUPS)) if (/bonded|male\/female pair/i.test([...Object.values(g.msg ?? {}), g.sexed?.note ?? ''].join(' '))) expect(PAIR_FORMERS.has(id), id).toBe(true);

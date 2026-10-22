@@ -61,7 +61,7 @@ Synthesis: comfortable 21-26, RH 55-70 (dry substrate + water dish); tolerable 1
 | Barcelos igarape study (via search) | wild 22-24 rainy, 28-30 dry | W | search snippet | S |
 | Wikipedia | lethal 19.6 / 33.7 only | lab | https://en.wikipedia.org/wiki/Cardinal_tetra | O |
 
-Synthesis: comfortable 24-28; tolerable 22-30 (acute mortality at 21 and 31 over 96 h). Authors say keep at high temperatures; cold is the risk. Disagreement: 23-27 versus wild 25-30.
+Synthesis: comfortable 23-29 (was 24-28 until 2026-10-22: the captive sources all start at 23, and Seriously Fish and the wild range reach 29); tolerable 22-30 (acute mortality at 21 and 31 over 96 h). Authors say keep at high temperatures; cold is the risk. Disagreement: 23-27 versus wild 25-30.
 
 ## 7. Ember tetra (Hyphessobrycon amandae), water
 | Source | Range C | URL | O/S |
