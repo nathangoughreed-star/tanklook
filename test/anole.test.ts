@@ -103,7 +103,7 @@ describe('anoles in the tank: on their anchors, out of the glass and the bark', 
       });
     }
     for (const k of ['glass', 'branch', 'floor']) expect(seen.has(k), k).toBe(true);
-  }, 60000);
+  });
   it('an anole on the glass lies on the pane, nothing through it', () => {
     let n = 0;
     for (const seed of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) {
@@ -119,8 +119,8 @@ describe('anoles in the tank: on their anchors, out of the glass and the bark', 
       }
     }
     expect(n).toBeGreaterThan(0);
-  }, 60000);
-  it('in a paludarium an anole never ends up in the water', { timeout: 60000 }, () => {
+  });
+  it('in a paludarium an anole never ends up in the water', () => {
     const S = scene(); S.water.on = true; S.water.level = 0.35;
     for (const seed of [1, 2, 3, 4, 5, 6]) {
       shuffleFish(S, rng(seed));

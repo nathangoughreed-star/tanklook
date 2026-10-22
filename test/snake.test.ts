@@ -125,9 +125,10 @@ describe('snakes in the tank', () => {
     return S;
   };
   const meshes = (S: TankSetup) => buildTank({ ...S, units: 'cm' }, S.tank, null).fishMeshes;
-  it('Shuffle gives each snake a size that fits the tank and a spread of poses; all identical through save and load', () => {
-    const poses = new Set<string>(), kinds = new Set<string>();
-    for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
+  // one test per seed (2026-10-22): the 8 seeds in one test took ~61 s alone and hit the 120 s timeout under full-suite load
+  const poses = new Set<string>(), kinds = new Set<string>();
+  it.each([1, 2, 3, 4, 5, 6, 7, 8])('Shuffle seed %i: each snake fits the tank, and it is identical through save and load', seed => {
+    {
       const S = scene(); shuffleFish(S, rng(seed));
       for (const f of S.fish) {
         expect(fishTL(f, getSpecies('ballpython')!)).toBeLessThanOrEqual(S.tank.L); // 600 mm tank: a juvenile, not the 1.2 m adult
@@ -148,6 +149,8 @@ describe('snakes in the tank', () => {
         expect(Math.abs(n.quaternion.dot(m.quaternion))).toBeGreaterThan(0.99999);
       });
     }
+  });
+  it('across the seeds Shuffle gives a spread of poses and a branch perch', () => {
     for (const k of ['ball', 'coiled', 'extended', 'alert', 'wrap']) expect(poses.has(k), k).toBe(true);
     expect(kinds.has('branch')).toBe(true);
   });

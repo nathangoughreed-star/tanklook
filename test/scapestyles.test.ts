@@ -32,7 +32,7 @@ describe('new scape styles and the composition picker (lane SS)', () => {
         expect(it.lift).toBeGreaterThanOrEqual(0);
       }
     }
-  }, 60000);
+  });
   it('the same seed, composition and stops give the same tank', () => {
     for (const id of NEW) for (const comp of COMP_IDS) {
       const d = { hard: 1, plant: 3, animal: 0 };

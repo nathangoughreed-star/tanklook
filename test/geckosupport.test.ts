@@ -40,7 +40,7 @@ describe('geckos never take a leaf', () => {
       for (const f of S.fish) expect(f.surface, `seed ${seed} ${f.species}`).not.toBe('under');
       for (const m of buildTank({ ...S, units: 'cm' }, S.tank, null).fishMeshes) expect(m.userData.perch, `seed ${seed}`).not.toBe('leaf');
     }
-  }, 60000);
+  });
   it('the leopard gecko does not climb glass; the crested gecko does', () => {
     expect(getSpecies('leopardgecko')!.surfaces).not.toContain('glass');
     expect(getSpecies('crestedgecko')!.surfaces).toContain('glass');
