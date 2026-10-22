@@ -16,10 +16,10 @@ Nathan 2026-10-22: "yea this should be an additional section in the 'tech'. Reus
 |---|---|---|---|---|---|---|
 | mystery x50 | g30b | 67 % | - | g75 | 70 % | - |
 | bluetang x12 | g300 | 85 % | - | c6 | 99 % | - |
-| turbo x12 | g20l | 72 % | - | g29 | 44 % | - |
+| turbo x12 | g20l | 81 % | - | g29 | 50 % | - |
 | axolotl x6 | g60b | 40 % | - | g75 | 26 % | - |
 
-Against main 8ad16ea (after SN snail floor and waste, S211 school discount and SPACE_PER_L). 12 turbo snails need 29 gal (no sump under 29 gal; before, a 20 gal long counted one). 6 axolotls: a fresh 60 gal breeder gets no sump. 12 blue tangs: the 6 ft custom (205 gal) now passes with its sump water (before: 300 gal). **50 mystery snails: 30 gal breeder -> 75 gal.** On main the 30-60 gal fresh tanks held them only with a counted sump (30 breeder 67 %), which the builds never offered; without it the best filter leaves them at 122-138 % (filtration fails), so the first tank that fits is the 75 gal, where a fresh sump is offered (70 %, unchanged from main). The sumpOffered gate covers tankfit's strongest-filter fallback too.
+Against main 5f2ad4c (after SN snail floor, waste and turbo mass, S211 school discount and SPACE_PER_L). 12 turbo snails need 29 gal (no sump under 29 gal; before, a 20 gal long counted one). 6 axolotls: a fresh 60 gal breeder gets no sump. 12 blue tangs: the 6 ft custom (205 gal) now passes with its sump water (before: 300 gal). **50 mystery snails: 30 gal breeder -> 75 gal.** On main the 30-60 gal fresh tanks held them only with a counted sump (30 breeder 67 %), which the builds never offered; without it the best filter leaves them at 122-138 % (filtration fails), so the first tank that fits is the 75 gal, where a fresh sump is offered (70 %, unchanged from main). 6 angelfish in a 50 gal breeder read 30 -> 90 % for the same reason (main counted a fresh sump its builds never offered; its builds there were already 81-90 %). The sumpOffered gate covers tankfit's strongest-filter fallback too.
 
 ## Filtration % that moves with the same tank (59 cases; the tank pick holds)
 Large tanks read lower (their sump water dilutes); fresh 40-60 gal tanks that used to count a sump read higher (no sump offered there). Every one still fits.
@@ -79,8 +79,8 @@ Large tanks read lower (their sump water dilutes); fresh 40-60 gal tanks that us
 | coralbeauty x12 | g60b | 28 % | - | g60b | 24 % | - |
 | coralbeauty x25 | g180 | 20 % | - | g180 | 18 % | - |
 | coralbeauty x50 | c8 | 20 % | space | c8 | 17 % | space |
-| turbo x25 | g60b | 54 % | - | g60b | 47 % | - |
-| turbo x50 | g180 | 38 % | - | g180 | 33 % | - |
+| turbo x25 | g60b | 61 % | - | g60b | 53 % | - |
+| turbo x50 | g180 | 43 % | - | g180 | 37 % | - |
 | axolotl x3 | g40b | 28 % | - | g40b | 73 % | - |
 | axolotl x12 | g180 | 28 % | - | g180 | 24 % | - |
 | axolotl x25 | c8 | 28 % | space | c8 | 24 % | space |
@@ -138,8 +138,8 @@ Every tankFor pick that fits (414) now has a build at or under 100 % filtration 
 | coralbeauty x12 | g60b | sponge $2400 87% | sump $2629 24% |
 | coralbeauty x25 | g180 | hob $5230 80% | sump $5561 18% |
 | coralbeauty x50 | c8 | canister $9778 92% | sump $10099 17% |
-| turbo x25 | g60b | sponge $1487 168% | sump $1716 47% |
-| turbo x50 | g180 | hob $3288 149% | sump $3620 33% |
+| turbo x25 | g60b | sponge $1487 189% | sump $1716 53% |
+| turbo x50 | g180 | hob $3288 167% | sump $3620 37% |
 | axolotl x12 | g180 | hob $3029 109% | sump $3360 24% |
 | axolotl x25 | c8 | canister $6193 130% | sump $6513 24% |
 | axolotl x50 | c8 | canister $8469 261% | sump $8789 49% |
