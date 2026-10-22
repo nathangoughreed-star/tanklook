@@ -147,6 +147,11 @@ describe('tank-wide school discount and the kuhli floor factor (2026-10-22)', ()
     const f = stockingOf(tank(20, 10, 12, [['neon', 12]])).waterPercent, fs = stockingOf(tank(20, 10, 12, [['neon', 12], ['nerite', 10]])).waterPercent;
     expect(fs).toBeCloseTo(f, 6);
   });
+  it('bottom dwellers read the same at any height (Nathan 2026-10-22: 10 kuhli read 146 % at 6 in, 54 % at 50 in)', () => {
+    const w = [6, 12, 24, 50].map(H => stockingOf(tank(30, 12, H, [['kuhli', 10]])).waterPercent);
+    for (const v of w) expect(v).toBeCloseTo(w[0], 0);
+    expect(w[0]).toBeGreaterThan(60); expect(w[0]).toBeLessThan(90);
+  });
   it('6 kuhli stay inside the floor of their Seriously Fish minimum tank (24 x 12 in base), and the floor stays linear in count', () => {
     const r = stockingOf(tank(24, 12, 12, [['kuhli', 6]]));
     expect(r.floorPercent).toBeGreaterThan(30); expect(r.floorPercent).toBeLessThan(100);

@@ -118,3 +118,11 @@ A load-weighted count is the refinement if a case shows it wrong.
 space first (`schoolShare`, scene/stocking.ts): a single species reads exactly as before, a big fish keeps its full count, and no addition
 lowers the reading (test/stocking.test.ts). The AqAdvisor and published-list tests pass unchanged; SPACE_PER_L not re-centred.
 
+**2026-10-22, bottom dwellers and height (Nathan, from two screenshots).** 10 kuhli on a 30 x 12 in floor read water 146 % at 6 in tall
+and 54 % at 50 in, floor 61 % in both: the water limit still gave bottom dwellers the lane HC height curve (room = floor x credited height),
+so a shallow tank was punished and a tall one credited height the loaches never use. Now a bottom-zone animal is credited the curve at
+`BOTTOM_REF_CM` 35 cm of water whatever the depth, so its water reading depends on the floor only (10 kuhli: 76 % at every height;
+8 neon + 4 bronze cory + 1 bristlenose in 30 x 12 in: 6 in 163 -> 110 %, 16 in 79 -> 80 %, 50 in 49 -> 71 %). Measured 30 / 33 / 35 /
+37 / 40 cm against the full suite: 33 and under fail the 17 kuhli + 15 danio test (over 92 %), 37 and over the 13-kuhlis-in-a-20-long
+test; 35 passes every AqAdvisor, published-list and audit test unchanged. Dropping bottom fish from the water limit stays rejected (above).
+"All"-zone fish keep the half curve.
