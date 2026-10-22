@@ -45,6 +45,13 @@ models on /review.html (and its drawImage error), TG leftovers (heater product p
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
+## CP: compatibility gaps from a stocking audit (2026-10-22, Nathan's own chat opened from Glass-Box-stocking; branch `compat-puffer-krib`, worktree C:/Users/nreed/Glass-Box-compat)
+Outside audit: 28 x 15 x 12 in (21.8 gal), 1 male + 3 female pea puffers, 1 male dwarf gourami, a mated krib pair. The tile said "Room for about 17% more" and no gate fired (puffer temper 2 + nip only hit `slow` fish or temper 0; gourami and kribs are temper 1).
+- care.ts: `feelers` (dwarf, honey, pearl gourami): hit by `nip` only, blocking for a temper-2 nipper (tiger barb, pea puffer), a concern for danio; `slow` still means long fins, so kribs + gourami stay clean. `alone` (pea puffer): concern beside any other fish (inverts are the prey rule's). `guard` cm2 (kribensis 1800, about 2 x 1 ft): a sexed or established pair with other fish on a floor under twice that is a concern.
+- territory.ts `compatRisks(S)` / `compatLine`: whole-stock compat, each pair once from the acting side, a blocked pair said by its blocker only; `high` when any blocker. Temperature, size, expertise stay elsewhere.
+- fullnessTile.ts: the line leads the tile (red for high, amber for concern) and the pill adds "· compat risk"; bars and percents unchanged (load and compatibility kept apart, as the audit asked). Test: test/compatrisk.test.ts.
+- Not done: cover advice (caves / dense planting) for puffers or a krib pair in a bare scape; `guard` for other pair cichlids (rams, cockatoo, angels) not set.
+
 ## SN: Snail waste and space (2026-10-22, branch `sn`, worktree `.claude/worktrees/sn`; chat SN, Nathan's yes on the numbers in chat)
 - Snails take floor (HB floor side; water space stays 0): footprint 3.2 x mass^(2/3) cm2 x SNAIL_ROOM 3 (Nathan picked 3 of 2 / 3 / 5);
   small snails stay nearly free (10 trumpets in a 5 gal ~4 % of the floor). Mystery snails waste like a fish of their mass (MET_CLASS

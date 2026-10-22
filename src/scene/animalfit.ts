@@ -68,8 +68,15 @@ export function whysAnimal(sp: Species, litres: number, expertise: Expertise, pr
     if (sp.habitat !== 'land' && o.habitat !== 'land') {
       if (c.temper >= 1 && oc.slow || c.nip && oc.slow) bad('would harass its long fins');
       if (oc.temper >= 1 && c.slow || oc.nip && c.slow) bad("it would harass this one's long fins");
+      // lane CP (2026-10-22): gourami feelers draw nippers only; an aggressive nipper (tiger barb, pea puffer) blocks, a mild one is a concern
+      if (c.nip && oc.feelers) bad('would nip its feelers', c.temper < 2 || undefined);
+      if (oc.nip && c.feelers) bad("it would nip this one's feelers", oc.temper < 2 || undefined);
       if (c.temper === 2 && oc.temper === 0) bad('too aggressive for it');
       if (oc.temper === 2 && c.temper === 0) bad('it is too aggressive for this one');
+      // a species-tank animal (pea puffer) beside any other fish; invertebrates are the prey rule's
+      const fish = (x: Species) => x.cat.endsWith('-fish');
+      if (c.alone && fish(o)) bad('best kept in a species-only tank', true);
+      if (oc.alone && fish(sp)) bad('it is best kept in a species-only tank', true);
       if (c.ph && oc.ph && shared(c.ph, oc.ph) < 0.2) bad(`water chemistry: pH ${band(c.ph, 1)} against its ${band(oc.ph, 1)}`);
       if (c.gh && oc.gh && shared(c.gh, oc.gh) < 2) bad(`water hardness: GH ${band(c.gh)} against its ${band(oc.gh)}`);
     }

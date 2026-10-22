@@ -6,6 +6,8 @@ import { getSpecies } from '../data/species';
 import { volume } from './physics';
 import { countsAgainstWater, plural } from './stocking';
 import { pairingIn } from './pairs';
+import { whysAnimal } from './animalfit';
+import { floorOf } from './tankMin';
 import type { TankSetup } from './types';
 
 export function crowdWarnings(S: TankSetup): string[] {
@@ -29,3 +31,33 @@ export function crowdWarnings(S: TankSetup): string[] {
   }
   return out;
 }
+
+/** The stocking's compatibility risks for the tank (lane CP 2026-10-22, from an outside audit: the bars said "room for 17 % more"
+ *  over pea puffers, a dwarf gourami and a breeding krib pair). Kept apart from the percents: load and compatibility are separate.
+ *  `high`: any blocking pair (each pair said once, from the side that acts), else `concern`; the breeding-pair floor rule (care
+ *  `guard`) is a concern. Null when nothing applies. Temperature, size and expertise are said elsewhere. */
+export function compatRisks(S: TankSetup): { level: 'high' | 'concern'; items: string[] } | null {
+  const ids = [...new Set(S.fish.map(f => f.species))], sp = ids.flatMap(id => { const s = getSpecies(id); return s && s.habitat !== 'land' ? [s] : []; });
+  const block: string[] = [], concern: string[] = [];
+  for (const s of sp) for (const o of sp) {
+    if (o === s) continue;
+    const ws = whysAnimal(s, Infinity, 3, [o]), blocked = ws.some(w => !w.concern && !w.temp);
+    for (const w of ws) {
+      if (w.concern && blocked) continue; // a blocked pair is said by its blocker alone
+      const t = w.text.replace(/^compatibility: /, '');
+      // the passive mirror ("it would ...") is the other side's line; chemistry is symmetric, said once
+      if (w.kind !== 'compat' || w.temp || /^it /.test(t) || (/^water (chemistry|hardness)/.test(t) && s.id > o.id)) continue;
+      (w.concern ? concern : block).push(`${s.name} with ${o.name}: ${t.replace(/ \([^)]*\)$/, '')}`);
+    }
+  }
+  const area = floorOf(S.tank).areaCm2;
+  for (const s of sp) {
+    const g = CARE[s.id]?.guard, mine = S.fish.filter(f => f.species === s.id);
+    if (!g || area >= 2 * g || !sp.some(o => o !== s && o.cat.endsWith('-fish'))) continue;
+    const pair = pairingIn(S, s.id) === 'established' || (mine.some(f => f.sex === 'f') && mine.some(f => f.sex !== 'f'));
+    if (pair) concern.push(`${s.name} breeding pair defends much of this floor (${Math.round(area / 6.4516)} sq in): tankmates need caves and sight breaks elsewhere`);
+  }
+  return block.length ? { level: 'high', items: [...block, ...concern] } : concern.length ? { level: 'concern', items: concern } : null;
+}
+/** The tile's headline line for compatRisks. */
+export const compatLine = (r: NonNullable<ReturnType<typeof compatRisks>>) => `${r.level === 'high' ? 'High compatibility risk' : 'Compatibility concern'}: ${r.items.join('; ')}.`;
