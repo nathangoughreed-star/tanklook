@@ -295,8 +295,8 @@ export const FORMULAS: Formula[] = [
   // climate, tanks, weight
   { file: 'src/data/climate.ts', symbols: ['FINE'], status: 'assumption', basis: 'interpretation', why: 'a compromise a third of the way into the tolerable margin is still fine long term' },
   { file: 'src/scene/builds.ts', symbols: ['FILTRATION_LIMIT'], status: 'assumption', basis: 'conservative-default', why: 'cheapest and least-work builds keep filtration at or under 100 % (the stocking engine limit itself); balanced keeps 70 % or less, headroom for a missed water change (same as tankfit FILTRATION_TARGET)' },
-  { file: 'src/scene/builds.ts', symbols: ['WATER_LEVEL', 'BASE_PRESET'], status: 'assumption', basis: 'interpretation', why: 'tank filled to 90 %; the starting gear is the bare-minimum preset (low-tech fresh, fish-only salt), as in tankfit' },
-  { file: 'src/scene/tankfit.ts', symbols: ['WATER_LEVEL', 'STEP_RATIO'], status: 'assumption', basis: 'interpretation', why: 'tank filled to 90 %; a next size must hold 25 % more water' },
+  { file: 'src/scene/builds.ts', symbols: ['WATER_LEVEL', 'BASE_PRESET'], status: 'assumption', basis: 'interpretation', why: 'tank filled to the top; the starting gear is the bare-minimum preset (low-tech fresh, fish-only salt), as in tankfit' },
+  { file: 'src/scene/tankfit.ts', symbols: ['WATER_LEVEL', 'STEP_RATIO'], status: 'assumption', basis: 'interpretation', why: 'tank filled to the top; a next size must hold 25 % more water' },
   { file: 'src/data/tankcheck.ts', symbols: ['VOL_TOL'], status: 'assumption', basis: 'interpretation', why: 'catalogue check: interior volume within 8 % of the label' },
   { file: 'src/scene/weight.ts', symbols: ['DENSITY'], status: 'cited', basis: 'source-stated', says: "water 0.998 kg/L at 20 C; glass 2.4-2.8; dry gravel / sand 1.56-1.68; porosity 0.36-0.43", src: ['engineeringtoolbox.com', 'sera.de', 'wikipedia.org'], why: 'water 0.998 kg/L at 20 C, glass 2.4-2.8, gravel / sand 1.56-1.68 dry, porosity 0.36-0.43 (research/sourcing/other/E2.json)' },
   { file: 'src/scene/weight.ts', symbols: ['LID_GLASS'], status: 'assumption', basis: 'interpretation', why: 'lid panels drawn as 4 mm glass' },

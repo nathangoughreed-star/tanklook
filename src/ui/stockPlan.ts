@@ -24,7 +24,7 @@ const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;
 const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
 const range = (a: number, b: number, f: (n: number) => string) => a === b ? f(a) : `${f(Math.min(a, b))} to ${f(Math.max(a, b))}`;
 const signed = (n: number) => n >= 0 ? `+${usd(n)}` : `-${usd(-n)}`;
-const WATER_LEVEL = 0.9;
+const WATER_LEVEL = 1; // tanks start full (Nathan 2026-10-22)
 const PAIR_OPTS: [Pairing, string][] = [['established', 'Established'], ['unconfirmed', 'Not confirmed'], ['unknown', "Don't know"]];
 
 export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string, bad?: boolean) => void, openBtn: HTMLElement) {

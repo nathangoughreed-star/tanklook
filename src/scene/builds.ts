@@ -29,7 +29,7 @@ export const BUILD_BLURB: Record<BuildId, string> = {
   balanced: 'Filter headroom (at 70 % or less of its limit) for a missed water change, at a fair price.',
 };
 
-const WATER_LEVEL = 0.9;
+const WATER_LEVEL = 1; // tanks start full (Nathan 2026-10-22)
 const BASE_PRESET = { fresh: 'lowtech', salt: 'fowlr' } as const;
 /** The filtration limit each build keeps the stocking under, percent. */
 export const FILTRATION_LIMIT: Record<BuildId, number> = { cheapest: 100, leastWork: 100, balanced: 70 };

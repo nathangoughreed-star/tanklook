@@ -48,7 +48,7 @@ export function needsOf(animals: AnimalCount[]): Needs {
 }
 
 /** A tank candidate: a plain rectangular catalogue size (round, bow, pie and bowl shapes and the terrariums are not offered as steps). */
-const WATER_LEVEL = 0.9;
+const WATER_LEVEL = 1; // tanks start full (Nathan 2026-10-22)
 const CANDIDATES = TANK_MODELS.filter(m => !m.terrarium && (m.shape ?? 'rect') === 'rect' && /^[\d.]+ (gal|ft)/.test(m.name)) // generic sizes, not one maker's product
   .map(m => { const T = tankFromModel(m); return { m, T, litres: volume(T).litres }; })
   .sort((a, b) => a.litres - b.litres || a.m.id.localeCompare(b.m.id));
