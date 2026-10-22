@@ -720,6 +720,8 @@
    "kind": "consensus",
    "note": "per-value page url and verbatim quote in research/sourcing/<batch>.json, checked by scripts/verify-quotes.mjs"
   },
+  "petfishonline.com": { "title": "PetFishOnline: how many mystery snails per gallon", "by": "PetFishOnline", "url": "https://petfishonline.com/how-many-mystery-snails/", "accessed": "2026-10-22", "kind": "reference", "note": "\"Each mystery snail requires two and a half gallons of water\"; quoted in research/snail-load.md" },
+  "snail-load": { "title": "Snail waste and space (lane SN)", "by": "Glass Box lane SN (Sonnet research agent)", "url": "research/snail-load.md", "accessed": "2026-10-22", "kind": "internal", "note": "footprint model, waste class and their sources; approved by Nathan 2026-10-22" },
   "habitat-model": {
    "title": "Habitat model for the Space bar: floor area for bottom dwellers, run, height, activity",
    "by": "Glass Box lane HB (Sonnet research agents)",

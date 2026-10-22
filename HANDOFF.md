@@ -45,6 +45,14 @@ models on /review.html (and its drawImage error), TG leftovers (heater product p
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
+## SN: Snail waste and space (2026-10-22, branch `sn`, worktree `.claude/worktrees/sn`; chat SN, Nathan's yes on the numbers in chat)
+- Snails take floor (HB floor side; water space stays 0): footprint 3.2 x mass^(2/3) cm2 x SNAIL_ROOM 3 (Nathan picked 3 of 2 / 3 / 5);
+  small snails stay nearly free (10 trumpets in a 5 gal ~4 % of the floor). Mystery snails waste like a fish of their mass (MET_CLASS
+  `applesnail`, 2.73 -> 5.45 mg TAN/day); other snails keep `shell`. Notes and sources: research/snail-load.md; test/snailload.test.ts.
+- tankFor at 50: mystery 10 -> 30 breeder, nerite 2.5 -> 20 long, ramshorn 2.5 -> 5, turbo 75 -> 180; trumpets, shrimp, hermits unchanged.
+  Starters' max Full % unchanged, examples unchanged.
+- Open: bodymass a-values look high for turbo (68.6 g at 70 mm vs note 25 g) and nerite (8.4 g vs 4 g); filters absorb huge TAN in
+  small tanks (before SN, 50 mysteries' 136 mg TAN/day read 98 % in a 10 gal), so Filtration rarely binds tankFor.
 ## Kuhli sanity check -> tank-wide school discount + kuhli floor factor (2026-10-22, Nathan's own chat, no lane ID; branch `kuhli-floor-school` in a scratch worktree, pushed to main)
 - **Why:** 17 kuhli + 15 zebra danio in a 50 gal (36 x 18 x 18 in) read Stocking 100 % (water 100, floor 96); AqAdvisor read the same tank 74 %.
   research/habitat-model.md (2026-10-22 section) has the findings, the candidate matrix and the decision.
