@@ -2,7 +2,7 @@
 // test: it records behaviour so the expected verdicts can be reviewed independently and compared before / after the rules
 // work. Run: GEN_BENCH=1 npx vitest run test/benchmarkBaseline.test.ts  -> research/benchmark-baseline.md
 import { describe, it } from 'vitest';
-import { planFor, notesOf, startPick, type Pk } from '../src/ui/stockPlanLogic';
+import { planFor, notesOf, groupLineIn, startPick, type Pk } from '../src/ui/stockPlanLogic';
 import { tankOptions, tankLabel, type TankFit } from '../src/scene/tankfit';
 import { buildsFor } from '../src/scene/builds';
 import { getSpecies } from '../src/data/species';
@@ -25,6 +25,7 @@ function judge(name: string, picks: Pk[], want: string, gal: number): string[] {
   for (const p of picks) {
     const n = notesOf(p, 'in');
     lines.push(`  - ${p.id} x${p.n}${p.f !== undefined ? ` + ${p.f} f` : ''}: band ${n.band}, "${n.line}"${n.ratio ? `, ratio "${n.ratio}"` : ''}${n.habitat.length ? `, habitat: ${n.habitat.join(' / ')}` : ''}`);
+    { const g = groupLineIn(n, plan); if (g.held) lines.push(`    beside this tank (held, the tank verdict comes first): "${g.text}"`); }
     for (const x of n.needs) lines.push(`    care need (${x.severity}, shown at any count): ${x.text}`);
     const others = picks.filter(q => q !== p).map(q => getSpecies(q.id)!).filter(Boolean);
     const w = whyAnimal(getSpecies(p.id)!, plan.litres, 1, others);

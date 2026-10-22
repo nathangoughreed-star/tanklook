@@ -52,7 +52,9 @@ export function overWarn(p: Pk): string | undefined {
 export interface PickNotes { band: GroupBand; line: string; ratio?: string; habitat: string[]; needs: { severity: NeedSeverity; text: string }[] }
 export function notesOf(p: Pk, u: Units = 'cm'): PickNotes {
   const c = CARE[p.id], n = totalOf(p);
-  const band = bandOf(c, n), line = n === 0 ? '' : c?.max && c.max > 1 && n === c.max ? `${bandMessage(c, n)} (at the most one tank takes: ${c.max})` : bandMessage(c, n);
+  // labelled as the GROUP-SIZE assessment (rules-spec section 6): it judges the count only, never the tank (groupLineIn adds that)
+  const band = bandOf(c, n), msg = c?.max && c.max > 1 && n === c.max ? `${bandMessage(c, n)} (at the most one tank takes: ${c.max})` : bandMessage(c, n);
+  const line = n === 0 || !msg ? '' : `Group size: ${msg}`;
   let ratio: string | undefined;
   const r = c?.sexed;
   if (r) {
@@ -72,6 +74,14 @@ export function notesOf(p: Pk, u: Units = 'cm'): PickNotes {
   if (md?.green) habitat.push(`Recommended: ${lenTxt(md.green.L, u)} long (${md.green.site})`);
   const needs = needsOf(p.id).map(x => ({ severity: x.severity, text: needLine(x) }));
   return { band, line, ...(ratio ? { ratio } : {}), habitat, needs };
+}
+
+/** The group-size line as it reads beside a chosen tank: when the tank fails (space, minimum, length, depth, floor, filtration) the overall
+ *  verdict takes precedence, so the line says it judges the group only and is not shown in a "good" colour (`held`). */
+export function groupLineIn(nt: PickNotes, plan: Plan): { text: string; held: boolean } {
+  const fails = plan.fit?.fails ?? [];
+  if (!fails.length || !nt.line) return { text: nt.line, held: false };
+  return { text: `${nt.line}. That is the group only: this tank fails (${fails.map(f => FAIL_WORD[f] ?? f).join(', ')}), see the tank verdict`, held: true };
 }
 
 /** Why this pick does not suit the others on the list (first reason), or undefined. Advice only: nothing is blocked. */
@@ -150,6 +160,8 @@ const litresOf = (m: TankModel) => volume(tankFromModel(m)).litres;
 /** The litres of the tank the plan shows: the chosen one, else the smallest that fits (0 when none). */
 export const shownLitres = (plan: Plan) => plan.tank ? plan.litres : plan.need ? litresOf(plan.need.tank) : 0;
 
+/** each tank failure in a few words */
+export const FAIL_WORD: Record<string, string> = { space: 'too full', filtration: 'no filter carries it', minimum: 'too small for them', length: 'too short', depth: 'too deep', floor: 'not enough floor' };
 const FAIL_TEXT: Record<string, string> = {
   filtration: 'No filter can carry this many animals; take fewer',
   space: 'Too many animals for this tank; take fewer or pick a bigger tank',
