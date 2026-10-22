@@ -206,4 +206,9 @@ describe('the plan sheet: the two outputs, said once for the whole stocking', ()
     expect(whyAnimal(sp('gbr'), 1e9, 3, [sp('cardinal')])).toBeNull();
     expect(whysAnimal(sp('gbr'), 1e9, 3, [sp('cardinal')])).toEqual([expect.objectContaining({ concern: true, text: expect.stringMatching(/narrow margin/) })]);
   });
+  it('a combination with no shared range leads with that, ahead of the setup fix (found in the browser check)', () => {
+    const w = whysAnimal(sp('gbr'), 1e9, 3, [sp('amano')], { water: { heater: true, chiller: false, room: 21, roomSet: true, target: 24 } }).filter(x => !x.concern);
+    expect(w[0].text).toMatch(/No suitable shared temperature identified/);
+    expect(w[1].text).toMatch(/requires heating/);
+  });
 });

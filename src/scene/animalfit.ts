@@ -38,7 +38,6 @@ export function whysAnimal(sp: Species, litres: number, expertise: Expertise, pr
   if (c.care > expertise) out.push({ kind: 'expertise', text: `expertise: ${EXPERTISE_NAME[c.care].toLowerCase()} animal, you chose ${EXPERTISE_NAME[expertise].toLowerCase()}` });
   if (env.fit) { const m = env.fit(sp); if (m.pct > MIN_SLACK_PCT) out.push({ kind: 'size', text: `tank size: ${m.reason}` }); }
   else if (litres < c.minL) out.push({ kind: 'size', text: `tank size: wants at least ${c.minL} L, this tank is ${Math.round(litres)} L` });
-  const setup = setupTemp(sp, env.water); if (setup) out.push(setup); // the setup, not the combination: fixable, said with the fix
   if (c.coral && env.corals) out.push({ kind: 'compat', text: c.coral === 2 ? 'compatibility: eats corals, not for a reef tank' : 'compatibility: may nip the corals, add with caution' });
   for (const o of present) {
     const oc = CARE[o.id];
@@ -63,7 +62,8 @@ export function whysAnimal(sp: Species, litres: number, expertise: Expertise, pr
       if (c.gh && oc.gh && shared(c.gh, oc.gh) < 2) bad(`water hardness: GH ${band(c.gh)} against its ${band(oc.gh)}`);
     }
   }
-  out.push(...tempWhys(sp, present));
+  out.push(...tempWhys(sp, present)); // the combination first: no setting fixes it
+  const setup = setupTemp(sp, env.water); if (setup) out.push(setup); // then the setup, not the combination: fixable, said with the fix
   return [...out.filter(w => !w.concern), ...out.filter(w => w.concern)];
 }
 
