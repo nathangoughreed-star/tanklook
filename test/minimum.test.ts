@@ -198,13 +198,15 @@ describe('13 kuhlis in a 20 long (S188 acceptance)', () => {
     expect(w).toEqual([]); expect(minBar(m).level).toBe('near'); // 77 cm < the 80 cm Recommended mark
     expect(topMin(m, 'in')[0].note).toMatch(/^at least 23.6" x 11.8"; Recommended 31.5" long$/);
   });
-  it('the tank minimum never fails it; since lane HB (Nathan 2026-10-21) the floor limit of the Space bar does: 13 kuhlis use more floor than a 20 long has', () => {
-    // 15 sq in of floor per inch of mass-equivalent length (research/habitat-model.md): 13 kuhlis want ~440 sq in, the 20 long has 360
-    expect(needsOf([{ species: 'kuhli', n: 13 }]).floorCm2.bottom).toBeGreaterThan(floorOf(S.tank).areaCm2);
+  it('the tank minimum never fails it, and since 2026-10-22 neither does the Space bar: 13 kuhlis read cramped but doable (about 96 %) by the water limit, no longer 131 % by floor (kuhlis pile up, FLOOR_FACTOR 0.6)', () => {
+    // 15 sq in of floor per inch of mass-equivalent length x FLOOR_FACTOR 0.6 (research/habitat-model.md, 2026-10-22): 13 kuhlis want ~264 sq in of the 20 long's 360
+    // (lane HB's 440 sq in read 131 % on floor); the water limit, one school curve over the tank, reads them about 96 % in the catalogue 20 long.
+    expect(needsOf([{ species: 'kuhli', n: 13 }]).floorCm2.bottom).toBeLessThan(floorOf(S.tank).areaCm2);
     const at20 = tankOptions([{ species: 'kuhli', n: 13 }]).find(o => o.tank.id === 'g20l')!;
-    expect(at20.fails).toEqual(['space']); expect(at20.minPct).toBeLessThanOrEqual(100);
-    expect(planFor([{ id: 'kuhli', n: 13 }], 'g20l').fit!.fails).toEqual(['space']); // the stocking screen reads the same result
-    expect(tankOptions([{ species: 'kuhli', n: 8 }]).find(o => o.tank.id === 'g20l')!.fails).toEqual([]); // 8 fit its floor
+    expect(at20.fails).toEqual([]); expect(at20.spacePct).toBeGreaterThan(85); expect(at20.spacePct).toBeLessThanOrEqual(100); expect(at20.minPct).toBeLessThanOrEqual(100);
+    expect(planFor([{ id: 'kuhli', n: 13 }], 'g20l').fit!.fails).toEqual([]); // the stocking screen reads the same result
+    const at8 = tankOptions([{ species: 'kuhli', n: 8 }]).find(o => o.tank.id === 'g20l')!;
+    expect(at8.fails).toEqual([]); expect(at8.spacePct).toBeLessThan(80); // 8 fit it with room
   });
 });
 

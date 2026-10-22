@@ -39,6 +39,14 @@ export const COMBOS: Combo[] = [
   { name: '75 gal, 1 syno 1 pleco 12 danio 6 cory', tank: [48, 18, 21], stock: [['syno', 1], ['bristlenose', 1], ['danio', 12], ['bronzecory', 6]] },
   { name: '125 gal, 4 oscar', tank: [72, 18, 22], stock: [['oscar', 4]] },
   { name: '125 gal, 20 rummynose 20 harlequin 6 angelfish', tank: [72, 18, 22], stock: [['rummynose', 20], ['harlequin', 20], ['angel', 6]] },
+  // 2026-10-22 (kuhli sanity check, Nathan's chat): one tank, six count mixes, to see how AqAdvisor combines two schools (it is concave in the whole load)
+  { name: '50 gal, 17 kuhli 15 danio', tank: [36, 18, 18], stock: [['kuhli', 17], ['danio', 15]] },
+  { name: '50 gal, 17 kuhli', tank: [36, 18, 18], stock: [['kuhli', 17]] },
+  { name: '50 gal, 15 danio', tank: [36, 18, 18], stock: [['danio', 15]] },
+  { name: '50 gal, 8 kuhli 8 danio', tank: [36, 18, 18], stock: [['kuhli', 8], ['danio', 8]] },
+  { name: '50 gal, 17 kuhli 1 danio', tank: [36, 18, 18], stock: [['kuhli', 17], ['danio', 1]] },
+  { name: '50 gal, 1 kuhli 15 danio', tank: [36, 18, 18], stock: [['kuhli', 1], ['danio', 15]] },
+  { name: '65 gal, 17 kuhli 15 danio', tank: [48, 18, 18], stock: [['kuhli', 17], ['danio', 15]] },
 ];
 
 export function comboTank(c: Combo): TankSetup {

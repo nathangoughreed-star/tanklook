@@ -12,11 +12,14 @@ import dd from '../data/demand-defaults.json';
 //                  area the bottom dwellers use (FLOOR_SQIN_PER_IN of floor per inch of mass-equivalent length) over the tank's floor, so a
 //                  taller tank on the same floor gives bottom dwellers no more room. The water limit keeps its AqAdvisor fit.
 //   percent      = the larger of the two (over 100 = overstocked). Compatibility (waterchem, animalfit, group minimums) stays separate.
+//   2026-10-22 (Nathan, after the kuhli sanity check, research/habitat-model.md): the school discount in SPACE is one curve over all the
+//              fish in the water (AqAdvisor is concave in the whole tank's load, not per species), and a species that piles into shared
+//              caves (kuhli) uses FLOOR_FACTOR of its floor footprint.
 // Mass is FishBase length-weight at the animal's length (data/bodymass.json; shrimp, snails and herps are keeper-reference
 // estimates, marked 'estimate'). The 3D bodies' volume is only the cross-check that flags outliers (scripts/body-mass.mjs).
 import bm from '../data/bodymass.json';
 import { getSpecies, type Species } from '../data/species';
-import { SPACE_FACTOR, SPACE_FACTOR_CLASS } from '../data/spacefactor';
+import { FLOOR_FACTOR, SPACE_FACTOR, SPACE_FACTOR_CLASS } from '../data/spacefactor';
 import { bioloadLitres } from './starter';
 import { feedingOf, isLivePlantPatch, nitrogenBudget, tanOf, type Nitrogen } from './nitrogen';
 import { heatLoss, rowsFor, setWaterChangeFraction, stockCapacity } from './tech';
@@ -69,7 +72,7 @@ export const LU_PER_L = 0.3;
  *  24 AqAdvisor combinations, scripts/aq-compare.mjs; with it the median of ours / AqAdvisor is 1.0). */
 /** Animals that live in the water load it; land animals (geckos, anoles, snakes, spiders, tree frogs) do not. */
 export function countsAgainstWater(sp: Species) { return sp.habitat !== 'land'; }
-export const SPACE_EXP = 0.45, SPACE_PER_L = 1.564 / 3.96; // per effective litre (floor area x credited height, lane HC); 1/3.96 was per raw litre (4.242 before the per-species factors, /1.07 re-centred the 24 AqAdvisor combinations); x1.564 holds the 37 published lists at their median 74 % at the published max
+export const SPACE_EXP = 0.45, SPACE_PER_L = 1.564 * 0.9374 / 3.96; // per effective litre (floor area x credited height, lane HC); 1/3.96 was per raw litre (4.242 before the per-species factors, /1.07 re-centred the 24 AqAdvisor combinations); x1.564 held the 37 published lists at their median 74 % at the published max; x0.9374 re-centred 2026-10-22 when the school discount became tank-wide (median 71.1 -> 74.2 % again)
 /** Fitted-to-AqAdvisor multiplier on a species' space load (data/spacefactor.ts): its own row, else its class (tiny / mid / big fish, invert, amphibian). */
 /** Published stockings (research/expert-stockings.md, 2026-10-21; Nathan: trust the experts over AqAdvisor) read nano schools 100-145 %:
  *  animals under 2 g count TINY_EXPERT of their AqAdvisor-fitted space. */
@@ -88,13 +91,16 @@ function spaceFactorAq(sp: Species, g: number): number {
 // Snails crawl on the glass and substrate and take no swimming room (2026-10-21: the AqAdvisor fit read 10 trumpet snails as 109 % of a
 // 5 gal); their waste counts in filtration and their footprint on the floor (snailFloorCm2, lane SN).
 export const spaceOf = (sp: Species, tlMm: number) => sp.kind === 'snail' ? 0 : massG(sp.id, tlMm) ** SPACE_EXP * spaceFactor(sp);
-/** Water space is not linear in count (Nathan 2026-10-21): above SCHOOL_REF fish of one species a group of n takes
+/** Water space is not linear in count (Nathan 2026-10-21): above SCHOOL_REF fish in the water, n fish take
  *  SCHOOL_REF x (n / SCHOOL_REF)^SCHOOL_EXP fish's worth of room, so later fish add less; up to SCHOOL_REF each fish counts in full
  *  (only AqAdvisor reads lone fish higher; the experts' single-fish rules, e.g. one fancy goldfish per 20 gal, do not). Waste
  *  (filtration) and floor stay linear.
- *  Fit: published lists + 24 AqAdvisor combinations (research/expert-stockings.md); expert counts across tank sizes grow as
- *  gallons^0.79 within one source (research/expert-curve.md). */
-export const SCHOOL_EXP = 0.85, SCHOOL_REF = 10;
+ *  2026-10-22 (Nathan's decision after the kuhli sanity check): ONE curve over every fish in the water, not one per species. Six
+ *  AqAdvisor answers for the same 36 x 18 x 18 in tank (17 kuhli 49 %, 15 danio 41 %, 8 + 8 45 %, 17 + 1 50 %, 1 + 15 43 %, but
+ *  17 + 15 74 %, not 90 %) fit one curve, stocking ~ (weighted fish)^0.72 across species; the per-species rule (exp 0.85, fitted
+ *  2026-10-21 on the published lists and 24 AqAdvisor mixes) added the two schools linearly and read that tank 104 %. SPACE_PER_L
+ *  was re-centred with it so the 37 published lists keep their median 74 % at the published max (research/habitat-model.md). */
+export const SCHOOL_EXP = 0.72, SCHOOL_REF = 10;
 export const schoolScale = (n: number) => n > SCHOOL_REF ? (n / SCHOOL_REF) ** (SCHOOL_EXP - 1) : 1;
 /**
  * Floor (lane HB, research/habitat-model.md, Nathan's yes 2026-10-21): a bottom dweller uses FLOOR_SQIN_PER_IN sq in of floor per inch
@@ -103,7 +109,8 @@ export const schoolScale = (n: number) => n > SCHOOL_REF ? (n / SCHOOL_REF) ** (
  * roomier than a tall one of equal water, and leaves the AqAdvisor median at 1.03. The length is mass-equivalent: the length of a
  * bronze cory of the same mass (an eel-shaped kuhli is long but light; by its total length 6 kuhlis would overfill Seriously Fish's own
  * minimum tank for them). "All"-zone fish use the floor half the time (est); midwater and top fish none. Snails count their footprint (snailFloorCm2, lane SN);
- * other invertebrates and land animals count 0 (no source counts them, MX6).
+ * other invertebrates and land animals count 0 (no source counts them, MX6). A species in FLOOR_FACTOR (data/spacefactor.ts) spreads over that
+ * share of its footprint (kuhli 0.6: piles into shared caves; est, Nathan 2026-10-22); the floor stays linear in count (audit F).
  */
 export const FLOOR_SQIN_PER_IN = 15;
 /**
@@ -150,7 +157,7 @@ export const SNAIL_FOOT_K = 3.2, SNAIL_ROOM = 3;
 export const snailFloorCm2 = (sp: Species, tlMm: number) => SNAIL_FOOT_K * massG(sp.id, tlMm) ** (2 / 3) * SNAIL_ROOM;
 /** Floor area one animal uses, cm2 (0 for swimmers, non-snail invertebrates and land animals; snails by footprint, lane SN). */
 export const floorUseCm2 = (sp: Species, tlMm: number) => !countsAgainstWater(sp) ? 0 : sp.kind === 'snail' ? snailFloorCm2(sp, tlMm) : isInvert(sp) ? 0
-  : FLOOR_SHARE[zoneOf(sp)] * FLOOR_SQIN_PER_IN * SQIN_CM2 * habitatLengthMm(sp, tlMm) / IN_MM;
+  : FLOOR_SHARE[zoneOf(sp)] * FLOOR_SQIN_PER_IN * SQIN_CM2 * habitatLengthMm(sp, tlMm) / IN_MM * (FLOOR_FACTOR[sp.id]?.[0] ?? 1);
 /** Live plants take up nitrogen: up to +25 % at 15 plants per 100 L (a painted patch counts as 3 plants). A documented guess. */
 const PLANT_MAX = 0.25, PLANTS_PER_100L_FULL = 15, PATCH_PLANTS = 3;
 
@@ -222,7 +229,8 @@ export function stockingOf(S: TankSetup): Stocking {
     const fl = floorUseCm2(sp, f.tl ?? sp.tl);
     c.n++; c.load += l; c.space += spaceOf(sp, f.tl ?? sp.tl) * heightMul(sp, meanDepthCm); c.floor += fl; floorUse += fl; c.grams += massG(sp.id, f.tl ?? sp.tl); by.set(sp.id, c);
   }
-  for (const c of by.values()) { c.space *= schoolScale(c.n); spaceLoad += c.space; }
+  const inWater = [...by.values()].reduce((a, c) => a + (c.space > 0 ? c.n : 0), 0), school = schoolScale(inWater); // one discount over every fish that takes room (2026-10-22), not per species; snails take none
+  for (const c of by.values()) { c.space *= school; spaceLoad += c.space; }
   const pc = (l: number, cp: number) => cp > 0 ? l / cp * 100 : l > 0 ? Infinity : 0;
   const areaCm2 = floorOf(S.tank).areaCm2, waterPercent = pc(spaceLoad, cap.space), floorPercent = pc(floorUse, areaCm2);
   const spaceBy = floorPercent > waterPercent ? 'floor' as const : 'water' as const, spacePercent = Math.max(waterPercent, floorPercent);

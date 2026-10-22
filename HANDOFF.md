@@ -54,6 +54,21 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 - Masses checked (follow-up): not inflated, the notes were for pre-CB lengths; turbo now cites T. cornutus (SeaLifeBase), mystery kept
   at 14.4 g by Nathan (congeners say 23-35 g). Open: filters absorb huge TAN in
   small tanks (before SN, 50 mysteries' 136 mg TAN/day read 98 % in a 10 gal), so Filtration rarely binds tankFor.
+## Kuhli sanity check -> tank-wide school discount + kuhli floor factor (2026-10-22, Nathan's own chat, no lane ID; branch `kuhli-floor-school` in a scratch worktree, pushed to main)
+- **Why:** 17 kuhli + 15 zebra danio in a 50 gal (36 x 18 x 18 in) read Stocking 100 % (water 100, floor 96); AqAdvisor read the same tank 74 %.
+  research/habitat-model.md (2026-10-22 section) has the findings, the candidate matrix and the decision.
+- **Model (Nathan's decision, option C):** (1) the water limit's school discount is ONE curve over every fish that takes room (snails excluded),
+  `SCHOOL_EXP` 0.72 (was 0.85 per species): six AqAdvisor answers for one tank fit stocking ~ (weighted fish)^0.72 across species, and the
+  per-species rule added two schools linearly. (2) `FLOOR_FACTOR` (data/spacefactor.ts): kuhli 0.6 (est, piles into shared caves); the floor
+  stays linear in count (audit F). (3) `SPACE_PER_L` x 0.9374 so the 37 published lists keep their median 74 % at the published max.
+- **What moves:** that tank reads 86 % (water 86, floor 57); 13 kuhlis in the catalogue 20 long 96 % by water, cramped but doable, no longer failing (was 131 by floor;
+  S188 test re-worded); two-school communities read lower (published lists over 100 %: 12 -> 10); AqAdvisor median over 31 combinations 1.01 (7 new
+  answers in research/aq-compare.json, COMBOS in test/aqcompare.test.ts). The starters' litres per animal shrink 6 % with SPACE_PER_L. No UI change.
+- Files: scene/stocking.ts, data/spacefactor.ts, data/provenance.ts, test/stocking.test.ts (new block), test/minimum.test.ts, test/aqcompare.test.ts,
+  research/aq-compare.{json,md}, expert-stockings.md, space-audit.md, habitat-model.md, scripts/aq-queries.json.
+- Open: a lone big fish among many small ones gets the same tank-wide discount (AqAdvisor's curve does the same in effect); a load-weighted count
+  is the refinement if a case shows it wrong.
+
 ## CF: S207 review fixes (2026-10-22, done in Coordinator 8 at Nathan's request, branch `cf`)
 - Fixed, tests in test/cf.test.ts: the no-heater line in plan.ts reads the Tech-menu room temperature (was always 21 C) and says "too warm" when the
   room is above the range; withChoice clears `filterless` when a filter is chosen (kitTech builds a fresh tech, so it never carried it); an all-female

@@ -61,3 +61,9 @@ export const SPACE_FACTOR: Record<string, [number, string]> = {
   afra: [1.02, 'mid body; one-species tank: AqAdvisor 104% vs ours 102% with 15'],
   livingstonii: [1.48, 'big body; one-species tank: AqAdvisor 154% vs ours 104% with 6'],
 };
+
+/** Share of the floor-model footprint a species really spreads over (scene/stocking.ts floorUseCm2): 1 for every bottom dweller
+ *  not listed. Judgment constants (est), not fits: no source gives a per-fish floor figure for a species that piles up. */
+export const FLOOR_FACTOR: Record<string, [number, string]> = {
+  kuhli: [0.6, 'eel-shaped and gregarious: kuhlis pile into one shared cave or root tangle instead of spreading over the floor (Seriously Fish; Aquarium Co-Op keeps 3-6 in a 20 gal and more in bigger tanks). At 1.0, 17 kuhlis read 95 % of a 36 x 18 in floor; the floor stays linear in count (audit F), 2026-10-22'],
+};
