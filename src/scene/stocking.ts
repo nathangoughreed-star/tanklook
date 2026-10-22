@@ -39,7 +39,7 @@ export function massG(id: string, tlMm?: number): number {
  * activity and diet classes after the usual bioload rules of thumb (goldfish and big predatory cichlids are the messy ones;
  * schooling swimmers, rainbowfish and tangs run hot; sit-and-wait and algae-grazing species and cold-blooded herps run low).
  */
-export const MET_CLASS = { messy: 1.5, active: 1.2, normal: 1, sedentary: 0.7, grazer: 0.6, shrimp: 0.5, shell: 0.3, herp: 0.4 } as const;
+export const MET_CLASS = { messy: 1.5, active: 1.2, normal: 1, sedentary: 0.7, grazer: 0.6, shrimp: 0.5, shell: 0.3, applesnail: 0.6, herp: 0.4 } as const;
 export type MetClass = keyof typeof MET_CLASS;
 const MET_BY_ID: Record<string, MetClass> = {
   goldfish: 'messy', comet: 'messy', oscar: 'messy', clownloach: 'active',
@@ -49,6 +49,9 @@ const MET_BY_ID: Record<string, MetClass> = {
   watchman: 'sedentary', discus: 'sedentary', gbr: 'sedentary', angel: 'sedentary', kuhli: 'sedentary', peapuffer: 'sedentary', firefish: 'sedentary',
   axolotl: 'herp', firenewt: 'herp', adf: 'herp', firetoad: 'herp',
   hermit: 'shell',
+  // lane SN (2026-10-22): apple snails eat and foul like small fish ("waste equivalent to several small fish", furrycritter; "excrete a lot of
+  // waste", petfishonline), so they waste like a fish of their mass; the small snails keep the shell class ("minimal waste", furrycritter)
+  mystery: 'applesnail',
 };
 /** Class of a species: by id, else by category (shrimp, snails), else normal. */
 export function metClass(sp: Species): MetClass {
@@ -83,7 +86,7 @@ function spaceFactorAq(sp: Species, g: number): number {
   return SPACE_FACTOR_CLASS[k]?.[0] ?? 1;
 }
 // Snails crawl on the glass and substrate and take no swimming room (2026-10-21: the AqAdvisor fit read 10 trumpet snails as 109 % of a
-// 5 gal); their waste still counts in filtration, which is what limits the big ones (mystery snails).
+// 5 gal); their waste counts in filtration and their footprint on the floor (snailFloorCm2, lane SN).
 export const spaceOf = (sp: Species, tlMm: number) => sp.kind === 'snail' ? 0 : massG(sp.id, tlMm) ** SPACE_EXP * spaceFactor(sp);
 /** Water space is not linear in count (Nathan 2026-10-21): above SCHOOL_REF fish of one species a group of n takes
  *  SCHOOL_REF x (n / SCHOOL_REF)^SCHOOL_EXP fish's worth of room, so later fish add less; up to SCHOOL_REF each fish counts in full
@@ -99,8 +102,8 @@ export const schoolScale = (n: number) => n > SCHOOL_REF ? (n / SCHOOL_REF) ** (
  * Fish's footprints for a group of bronze cory ~20, kuhli ~12, clown loach 10-17); 15 is the smallest value that reads a shallow-wide tank
  * roomier than a tall one of equal water, and leaves the AqAdvisor median at 1.03. The length is mass-equivalent: the length of a
  * bronze cory of the same mass (an eel-shaped kuhli is long but light; by its total length 6 kuhlis would overfill Seriously Fish's own
- * minimum tank for them). "All"-zone fish use the floor half the time (est); midwater and top fish none. Invertebrates and land animals
- * count 0 (no source counts them, MX6).
+ * minimum tank for them). "All"-zone fish use the floor half the time (est); midwater and top fish none. Snails count their footprint (snailFloorCm2, lane SN);
+ * other invertebrates and land animals count 0 (no source counts them, MX6).
  */
 export const FLOOR_SQIN_PER_IN = 15;
 /**
@@ -136,8 +139,17 @@ const FLOOR_REF = { id: 'bronzecory', tlMm: 65 }, SQIN_CM2 = 6.4516, IN_MM = 25.
 const isInvert = (sp: Species) => sp.kind === 'snail' || sp.cat.endsWith('invert');
 /** The length of a bronze cory with this animal's mass, mm (the floor model's body length). */
 export const habitatLengthMm = (sp: Species, tlMm: number) => FLOOR_REF.tlMm * (massG(sp.id, tlMm) / massG(FLOOR_REF.id, FLOOR_REF.tlMm)) ** (1 / 3);
-/** Floor area one animal uses, cm2 (0 for swimmers, invertebrates and land animals). */
-export const floorUseCm2 = (sp: Species, tlMm: number) => !countsAgainstWater(sp) || isInvert(sp) ? 0
+/**
+ * Snails on the floor (lane SN, Nathan 2026-10-22: "realistically they dont need much space, I feel like most fish probably treat them as
+ * hardscape ... they should take up SOME space, relative to their adult size"): a snail's footprint, SNAIL_FOOT_K x mass^(2/3) cm2 (its
+ * shell's ground plan: 19 cm2 for a 51 mm mystery snail, 1.3 cm2 for a 19 mm trumpet snail), times SNAIL_ROOM footprints of floor each.
+ * Area by mass^(2/3), not by length like a fish, so small snails stay nearly free (S187) and a big one counts. They use the glass too,
+ * which the room factor absorbs. Water space stays 0 (spaceOf).
+ */
+export const SNAIL_FOOT_K = 3.2, SNAIL_ROOM = 3;
+export const snailFloorCm2 = (sp: Species, tlMm: number) => SNAIL_FOOT_K * massG(sp.id, tlMm) ** (2 / 3) * SNAIL_ROOM;
+/** Floor area one animal uses, cm2 (0 for swimmers, non-snail invertebrates and land animals; snails by footprint, lane SN). */
+export const floorUseCm2 = (sp: Species, tlMm: number) => !countsAgainstWater(sp) ? 0 : sp.kind === 'snail' ? snailFloorCm2(sp, tlMm) : isInvert(sp) ? 0
   : FLOOR_SHARE[zoneOf(sp)] * FLOOR_SQIN_PER_IN * SQIN_CM2 * habitatLengthMm(sp, tlMm) / IN_MM;
 /** Live plants take up nitrogen: up to +25 % at 15 plants per 100 L (a painted patch counts as 3 plants). A documented guess. */
 const PLANT_MAX = 0.25, PLANTS_PER_100L_FULL = 15, PATCH_PLANTS = 3;

@@ -100,9 +100,9 @@ describe('stocking engine (lane SE)', () => {
     expect(r.nitrogen.tan).toBeCloseTo(r.load, 9);
     expect(r.contributors.reduce((a, x) => a + x.load, 0)).toBeCloseTo(r.load, 9);
   });
-  it('snails take no swimming room: 10 trumpet snails in a 5 gal read Space 0 %, their waste still counts in filtration', () => {
+  it('snails take no swimming room: 10 trumpet snails in a 5 gal read water space 0 % and a little floor (lane SN), their waste counts in filtration', () => {
     const r = stockingOf(tank(16, 8, 10, [['trumpet', 10]]));
-    expect(r.spacePercent).toBe(0); expect(r.filtrationPercent).toBeGreaterThan(0); expect(r.percent).toBeLessThan(100);
+    expect(r.waterPercent).toBe(0); expect(r.floorPercent).toBeGreaterThan(0); expect(r.spacePercent).toBeLessThan(10); expect(r.filtrationPercent).toBeGreaterThan(0); expect(r.percent).toBeLessThan(100);
   });
 });
 

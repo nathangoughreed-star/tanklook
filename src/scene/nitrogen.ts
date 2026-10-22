@@ -37,7 +37,7 @@ export const feedingOf = (S: TankSetup): Feeding => S.feeding ?? 'normal';
 const BASE = 0.00035, TAN_PER_FEED = 0.02;
 /** g TAN a day from one animal of mass `w` g at `tempC`: fasted base plus the feed. */
 export function tanOf(sp: Species, w: number, feeding: Feeding, tempC: number, salt: boolean): number {
-  const cls = metClass(sp), invert = cls === 'shrimp' || cls === 'shell' || cls === 'herp';
+  const cls = metClass(sp), invert = cls === 'shrimp' || cls === 'shell' || cls === 'applesnail' || cls === 'herp';
   const f = cls === 'grazer' ? 0.75 : invert ? MET_CLASS[cls] / 0.6 : 1;
   return (BASE * w ** 0.75 + TAN_PER_FEED * (FEED_PCT[feeding] / 100) * w) * tempFactor(tempC) * f * (salt && sp.salt ? 1.5 : 1);
 }

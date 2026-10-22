@@ -45,6 +45,14 @@ models on /review.html (and its drawImage error), TG leftovers (heater product p
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
+## SN: Snail waste and space (2026-10-22, branch `sn`, worktree `.claude/worktrees/sn`; chat SN, Nathan's yes on the numbers in chat)
+- Snails take floor (HB floor side; water space stays 0): footprint 3.2 x mass^(2/3) cm2 x SNAIL_ROOM 3 (Nathan picked 3 of 2 / 3 / 5);
+  small snails stay nearly free (10 trumpets in a 5 gal ~4 % of the floor). Mystery snails waste like a fish of their mass (MET_CLASS
+  `applesnail`, 2.73 -> 5.45 mg TAN/day); other snails keep `shell`. Notes and sources: research/snail-load.md; test/snailload.test.ts.
+- tankFor at 50: mystery 10 -> 30 breeder, nerite 2.5 -> 20 long, ramshorn 2.5 -> 5, turbo 75 -> 180; trumpets, shrimp, hermits unchanged.
+  Starters' max Full % unchanged, examples unchanged.
+- Open: bodymass a-values look high for turbo (68.6 g at 70 mm vs note 25 g) and nerite (8.4 g vs 4 g); filters absorb huge TAN in
+  small tanks (before SN, 50 mysteries' 136 mg TAN/day read 98 % in a 10 gal), so Filtration rarely binds tankFor.
 ## CF: S207 review fixes (2026-10-22, done in Coordinator 8 at Nathan's request, branch `cf`)
 - Fixed, tests in test/cf.test.ts: the no-heater line in plan.ts reads the Tech-menu room temperature (was always 21 C) and says "too warm" when the
   room is above the range; withChoice clears `filterless` when a filter is chosen (kitTech builds a fresh tech, so it never carried it); an all-female
