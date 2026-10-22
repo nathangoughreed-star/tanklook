@@ -1,6 +1,7 @@
 // The first screen of path 1, "An animal I want": before any animal is picked there is no tank to look at, only the animals. A big
 // collage of every kind we carry (fish, shrimp and snails, frogs, lizards, snakes, spiders), then tile cards to browse by group or by
-// search. Each picture is a still of the same 3D model the tank draws, made once on a small renderer and kept. Picking a tile hands
+// search. Each picture is a still of the same 3D model the tank draws, baked ahead of time into public/gallery/<look>.webp so the page
+// loads pictures, not 3D (live renders took ~20 s for all 84); an animal with no baked file is drawn live once and kept. Picking a tile hands
 // the id to the stocking screen, which then shows the bare tank sized for it.
 import { CARE } from '../data/care';
 import type { Units } from '../scene/types';
@@ -16,6 +17,7 @@ const HERO = ['betta', 'regaljumper', 'ocellaris', 'axolotl', 'crestedgecko', 'd
 const TILE = [320, 200] as const, BIG = [480, 300] as const;
 const stills = new Map<string, string>(); // `${look}@${width}` -> data URL; the same still is reused for the life of the page
 const stillDims = new Map<string, [number, number]>(); // the same keys -> the still's pixel size, for the scale bar
+const noBake = new Set<string>(); // looks with no baked file in public/gallery (a new animal not yet baked): drawn live instead
 /** A tile's scale bar is always one unit long (Nathan 2026-10-21): 1 in, or 1 cm in metric, scaled to the animal. */
 const RULER: Record<Units, [number, string]> = { in: [25.4, '1 in'], cm: [10, '1 cm'] };
 /** "1.6 in" / "14 in" / "3.5 ft" for a length in mm. */
@@ -82,6 +84,12 @@ export function attachStockGallery(view: HTMLElement, pick: (id: string) => void
   const want = (img: HTMLImageElement, sp: Species, size: readonly [number, number]) => {
     const key = `${sp.look}@${size[0]}`, have = stills.get(key);
     if (have) { img.src = have; img.classList.add('ready'); ruler(img, sp, stillDims.get(key)!); return; }
+    if (!noBake.has(sp.look)) { // the baked still first; a missing file falls through to a live render
+      const url = `${import.meta.env.BASE_URL}gallery/${encodeURIComponent(sp.look)}.webp`;
+      img.onload = () => { img.onload = img.onerror = null; const d: [number, number] = [img.naturalWidth, img.naturalHeight]; stills.set(key, url); stillDims.set(key, d); img.classList.add('ready'); ruler(img, sp, d); };
+      img.onerror = () => { img.onload = img.onerror = null; noBake.add(sp.look); img.removeAttribute('src'); want(img, sp, size); };
+      img.src = url; return;
+    }
     queue.push(() => {
       let url = stills.get(key);
       if (!url) {
