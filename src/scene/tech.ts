@@ -465,10 +465,10 @@ export function sumpOffered(S: TankSetup): boolean {
   const gal = Math.round(galOf(S));
   return gal >= (isSalt(S) ? optionDef('filter', 'sump')?.minGal ?? 29 : SUMP_FRESH_GAL);
 }
-/** The sump tank's price: its catalogue size's listed products (median), else the bare-tank rows by its gallons. */
+/** The sump tank's price: a bare glass tank of its gallons (the tank:N rows; a catalogue size by its rated gallons). Not its catalogue
+ *  listings: those are display tanks (rimless, reef-ready, kits), dearer than the plain glass box a sump is. */
 function sumpTankPrice(z: SumpSize): Range3 | undefined {
-  const ps = (getTankModel(z.model ?? '')?.variants ?? []).filter(v => !v.discontinued && v.price_usd && v.price_kind !== 'kit').map(v => v.price_usd!).sort((a, b) => a - b);
-  return ps.length ? pricePoint(ps[Math.floor(ps.length / 2)]) : tankRowPrice(boxLitres(z) / 3.785);
+  return tankRowPrice(getTankModel(z.model ?? '')?.ratedGal ?? boxLitres(z) / 3.785);
 }
 
 // ---- what one option costs this tank
