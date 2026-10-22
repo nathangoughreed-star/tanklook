@@ -60,7 +60,7 @@ export function attachBuildPick(store: Store, viewer: Viewer, status: (m: string
   // the stocking screen's animals as they were when this screen opened: the previews (show) copy each build's fresh fish over the live
   // tank, so by the pick the live tank no longer holds the owner's sexes and pairings (2026-10-22, found in the app)
   let source: Pick<TankSetup, 'fish' | 'pairs'> | undefined;
-  const close = () => { el.hidden = true; side(false); };
+  const close = () => { el.hidden = true; side(false); source = undefined; }; // a snapshot belongs to one opening: Back, then Continue, takes a fresh one
 
   /** Show build `i` live in the viewer. */
   const show = (i: number) => {

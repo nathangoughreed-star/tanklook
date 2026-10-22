@@ -42,7 +42,11 @@ export function sexFish(have: Fish[], p: Pk): void {
   });
 }
 /** The picks a tank holds, read back from its animals (the editor's view of the stocking screen's inputs): species kept by sex count
- *  males, females and unsexed from the tracked sex alone (absent = unsexed, never inferred); pair species carry the tank's pairing. */
+ *  males, females and unsexed from the tracked sex alone (absent = unsexed); pair species carry the tank's pairing.
+ *  Older saves are not migrated from the drawn sex (`sex`), by its provenance (reviewed 2026-10-22): it was written by explicit choices
+ *  (the editor's Sex buttons, a female row in the Animals list, the stocking screen's female count) but also by Shuffle's starter
+ *  (scene/starter.ts: every second dimorphic animal drawn female, automatically), and an absent value only means "drawn male". A save
+ *  cannot tell the two apart, so a drawn sex without a tracked sex loads as unsexed. */
 export function picksFromTank(T: Pick<TankSetup, 'fish' | 'pairs'>): Pk[] {
   const out = new Map<string, Pk>();
   for (const f of T.fish) {
