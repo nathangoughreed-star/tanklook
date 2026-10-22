@@ -16,7 +16,7 @@ import type { Store } from '../scene/store';
 import {
   ROOM_C, applyPreset, feedFor, feedOf, filterFor, filterSteps, filterUnits, heatLoss, offerChiller,
   optionCost, optionDef, presetsFor, reefFeedOf, rowsFor, setFeed, singleFilter, stockCapacity, techOf, tempEvidence, unitCosts, walstadGaps, withChoice,
-  withUnits, withoutUnit, type FilterUnit, type HeaterUnit, type OptionCost, type TechSetup,
+  withUnits, withoutUnit, sumpDefault, sumpFromModel, sumpLitres, sumpName, sumpOf, sumpOffered, SUMP_FILL, type FilterUnit, type SumpSize, type HeaterUnit, type OptionCost, type TechSetup,
 } from '../scene/tech';
 import { FILTER_PRODUCTS, HEATER_PRODUCTS, filtersNear, genericHeaterW, heatersNear, lightProduct, lightsFor, productName, type FilterProduct, type HeaterProduct, type LightProduct } from '../data/gearCatalog';
 import { applyLightProduct, lightProductNote, productOn } from '../scene/lightproduct';
@@ -27,6 +27,7 @@ import { volume } from '../scene/physics';
 import type { TankSetup } from '../scene/types';
 import { getSpecies } from '../data/species';
 import { holdCheck, measuredCheck, operatingCheck, sharedRange } from '../scene/temprange';
+import type { TankModel } from '../data/tanks';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
 const usd = (v: number) => v >= 100 ? `$${Math.round(v / 5) * 5}` : v >= 10 ? `$${Math.round(v)}` : `$${v.toFixed(v < 1 ? 2 : 1)}`;
@@ -39,7 +40,7 @@ type UnitRow = 'heater' | 'filter';
 
 interface Totals { setup: number; upkeep: number; minutes: number; risk: number }
 
-export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: () => UserProfile | undefined }) {
+export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: () => UserProfile | undefined; /** lane SU: opens the tank-size picker for the sump */ pickSump?: (done: (m: TankModel) => void) => void }) {
   let open: string | null = null, base: Totals | null = null, baseKey = '';
   /** the Add picker open under Heating / Filtration (for filters: the type picked, then generic or a product) */
   let adding: { row: UnitRow; kind?: string } | null = null;
@@ -122,6 +123,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
   /** The heaters as saved units, each at the size it has now (a heater sized to the need keeps that size once another is added). */
   const heatersNow = (S: TankSetup, t: TechSetup): HeaterUnit[] => heatLoss(S, t).units.map(u => ({ ...(u.product ? { product: u.product.id } : { w: u.watts }), ...(u.kit ? { kit: true } : {}) }));
   const filterLabel = (S: TankSetup, u: FilterUnit) => {
+    if (u.kind === 'sump') return `Sump · ${sumpTitle(sumpOf(S, true)!)}`;
     const kind = optionDef('filter', u.kind)?.kind;
     if (!kind) return optionDef('filter', u.kind)?.label ?? u.kind;
     const f = filterFor(S, kind, u.model, u.product), n = f.n > 1 ? ` × ${f.n}` : '';
@@ -135,6 +137,8 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     if (a === 'del') return b === 'heater' ? withoutUnit({ ...t, heaters: heatersNow(S, t) }, 'heater', +c) : withoutUnit(t, 'filter', +c);
     if (a === 'addh') return withUnits(t, 'heater', [...heatersNow(S, t), b ? { product: b } : { w: nextHeaterW(S, t) }]);
     if (a === 'addf') return withUnits(t, 'filter', [...filterUnits(t), { kind: b, ...(c ? { product: c } : {}) }]);
+    if (a === 'sump' && b === 'add') return { ...withUnits(t, 'filter', [...filterUnits(t), { kind: 'sump' }]), sump: t.sump ?? sumpDefault(S) };
+    if (a === 'sump' && b === 'del') return withoutUnit(t, 'filter', filterUnits(t).findIndex(u => u.kind === 'sump'));
     if (a === 'fm') return withUnits(t, 'filter', filterUnits(t).map((u, i) => i === +b ? { ...u, model: c } : u));
     return undefined;
   };
@@ -192,7 +196,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
       for (const op of rowDef.options) {
         if (op.id === 'none') continue;
         const oc = optionCost(S, 'filter', op.id, { tech: singleFilter(t, { kind: op.id }), kwhUsd: kwhUsd() });
-        html += `<button type="button" class="topt" data-act="${op.id === 'sump' ? 'addf|sump' : `adding|filter|${op.id}`}"><span class="tol">${esc(op.label)}</span>${range(oc)}</button>`;
+        html += `<button type="button" class="topt" data-act="${op.id === 'sump' ? 'sump|add' : `adding|filter|${op.id}`}"><span class="tol">${esc(op.label)}</span>${range(oc)}</button>`;
       }
       return html + '<button type="button" class="tcancel" data-act="adding">Cancel</button></div>';
     }
@@ -202,6 +206,26 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     html += `<div class="tstep">${prodBtn(`addf|${k}|`, `Generic · ${gen.model.gph} gph${gen.n > 1 ? ` × ${gen.n}` : ''}`, undefined, 'Sized for this tank; step it smaller or larger once added')}${near.map(filterBtn).join('')}</div>`;
     if (rest.length) html += `<details><summary>All ${rest.length} other ${KIND_NAME[k]}s</summary><div class="tstep">${rest.map(filterBtn).join('')}</div></details>`;
     return html + '<button type="button" class="tcancel" data-act="adding|filter">Back</button></div>';
+  };
+
+  // ---- the sump (lane SU, Nathan 2026-10-22): a second tank under the display, sized from the tank presets or a custom size
+  const lenIn = (mm: number) => fahr() ? `${Math.round(mm / 25.4 * 10) / 10}` : `${Math.round(mm / 10 * 10) / 10}`;
+  /** "20 gal high tank, 39 L of water"; a custom size in the viewer's units. */
+  const sumpTitle = (z: SumpSize) => z.model ? sumpName(z) : `${lenIn(z.L)} × ${lenIn(z.D)} × ${lenIn(z.H)} ${fahr() ? 'in' : 'cm'} tank, ${Math.round(z.L * z.D * z.H / 1e6 * SUMP_FILL)} L of water`;
+  const sumpRow = (S: TankSetup, t: TechSetup): string => {
+    const z = sumpOf(S), isOpen = open === 'sump', c = z ? optionCost(S, 'filter', 'sump', { tech: singleFilter(t, { kind: 'sump' }), kwhUsd: kwhUsd() }) : undefined;
+    let html = `<div class="trow${isOpen ? ' open' : ''}" data-row="sump"><button type="button" class="thead" aria-expanded="${isOpen}"><span class="tlab">Sump</span><span class="tcur">${z ? esc(sumpTitle(z)) : 'None'}</span>${c ? range(c) : ''}</button>`;
+    if (!isOpen) return html + '</div>';
+    html += '<div class="topts">';
+    const offered = sumpOffered(S) ? '' : `<div class="hint">Usually on salt tanks from 29 gal and fresh ones from 75 gal: the display needs drilling or an overflow box.</div>`;
+    if (!z) return html + `<div class="hint">A second tank in the stand: the display drains into it and a return pump sends the water back. It hides the heater and skimmer and adds its water to the system.</div>${offered}<button type="button" class="tadd" data-act="sump|add">+ Add a sump</button></div></div>`;
+    const u = fahr() ? 'in' : 'cm', water = sumpLitres(S);
+    const size = ['L', 'D', 'H'].map(k => `<input type="number" data-sz="${k}" min="1" step="${fahr() ? 0.5 : 1}" value="${lenIn(z[k as 'L' | 'D' | 'H'])}" aria-label="${{ L: 'Length', D: 'Depth', H: 'Height' }[k]}" title="${{ L: 'Length', D: 'Depth (front to back)', H: 'Height' }[k]}">`).join(' × ');
+    const body = `<div class="tsz" title="Inside size; type to make it a custom size">${z.model ? 'Inside' : 'Custom, inside'} ${size} ${u}</div>`
+      + `<span class="tchips"><span class="tchip good" title="${esc(`Its water dilutes the waste with the display's (run ${Math.round(SUMP_FILL * 100)} % full: the rest is room for what drains down when the pump stops). It adds no swimming room.`)}">+${Math.round(water)} L of water</span></span>`
+      + `<div class="tstep"><button type="button" data-act="sump|pick">Pick a size…</button></div>`;
+    html += `<div class="tunits">${card(esc(sumpTitle(z)), c, false, 'sump|del', body)}</div>${offered}`;
+    return html + `<div class="hint">${esc(optionDef('filter', 'sump')?.note ?? '')}</div></div></div>`;
   };
 
   const delta = (d: Totals, b: Totals) => {
@@ -244,6 +268,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
       if ((r.id === 'filter' && locksOf(S)?.filter) || (r.id === 'heater' && locksOf(S)?.heater)) { html += `<div class="hint">${esc(lockNote(S, r.id))}</div></div>`; continue; }
       if (open === r.id && (r.id === 'heater' || r.id === 'filter')) {
         html += `<div class="topts">${r.id === 'heater' ? heaterBody(S, t, cur, c) : filterBody(S, t, cur, c, r)}${def?.note ? `<div class="hint">${esc(def.note)}</div>` : ''}</div></div>`;
+        if (r.id === 'filter') html += sumpRow(S, t);
         continue;
       }
       if (open === r.id) {
@@ -256,6 +281,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
         html += '</div>';
       }
       html += '</div>';
+      if (r.id === 'filter') html += sumpRow(S, t);
     }
     mount.innerHTML = html;
   }
@@ -299,6 +325,8 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
       const [a, b, c] = act.split('|');
       if (a === 'adding') { adding = b ? { row: b as UnitRow, ...(c ? { kind: c } : {}) } : null; render(); return; }
       if (a === 'addh' || a === 'addf') adding = null;
+      if (a === 'sump' && b === 'pick') { o.pickSump?.(m => edit(s => ({ ...techOf(s), sump: sumpFromModel(m) }))); return; }
+      if (a === 'sump' && b === 'add') { open = 'sump'; adding = null; }
       if (candidate(act, store.tank)) edit(s => candidate(act, s)!);
       return;
     }
@@ -310,6 +338,11 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     if (el.dataset.hw !== undefined) { // a generic heater's watts
       const i = +el.dataset.hw, w = Math.round(+el.value);
       if (el.value !== '' && isFinite(w)) edit(s => { const t = techOf(s); return withUnits(t, 'heater', heatersNow(s, t).map((u, k) => k === i ? { ...u, w: Math.min(2000, Math.max(5, w)) } : u)); });
+      return;
+    }
+    if (el.dataset.sz) { // a custom sump size, in the viewer's units
+      const v = +el.value, k = el.dataset.sz as 'L' | 'D' | 'H';
+      if (el.value !== '' && isFinite(v) && v > 0) edit(s => { const t = techOf(s), z = sumpOf(s, true)!, mm = Math.min(3000, Math.max(50, Math.round(v * (fahr() ? 25.4 : 10)))); return { ...t, sump: { L: z.L, D: z.D, H: z.H, [k]: mm } }; });
       return;
     }
     if ((el.id === 'tTarget' || el.id === 'tMeasured') && (el.value === '' || isFinite(+el.value))) { // empty clears it

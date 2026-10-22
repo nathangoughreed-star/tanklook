@@ -4,7 +4,7 @@ import { FOCUS_SECS, type FocusSec } from '../render/menuFocus';
 import { attachDemandPanel } from './demandPanel';
 import { fitToLimits, hasLimits } from '../demand/fit';
 import { attachTechMenu } from './techMenu';
-import { tempEvidence } from '../scene/tech';
+import { SUMP_MODELS, tempEvidence } from '../scene/tech';
 import { renderFeaturedDeals } from './featuredDeals';
 import { startDeals, visibleTabs, pickTab, sortDeals, DEFAULT_SORT, type DealSort, type StartTab, type StartMenu } from './startEntries';
 import { DEALS_AS_OF, DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
@@ -374,6 +374,8 @@ Cancel, then change the name, to keep both.`)) return;
   // ---------- Tank ----------
   // the tank catalog as a full-window picker (lane KA); each size lists the real products that come in it, with maker and price.
   // tankChoices() is still what the guided-start wizard calls.
+  // Lane SU: the Tech menu's Sump section borrows the picker (openSumpPicker): the plain sizes only, and a pick sets the sump, not the tank.
+  let openSumpPicker: ((done: (m: TankModel) => void) => void) | undefined;
   {
     const dlg = $<HTMLDialogElement>('tankDlg'), list = $('tankList'), q = $<HTMLInputElement>('tankQ'), terra = $<HTMLInputElement>('tankTerra');
     const $r = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
@@ -396,19 +398,22 @@ Cancel, then change the name, to keep both.`)) return;
       const t = tankSaleFor(m.ratedGal, m.shape, Date.now(), undefined, undefined, tankFromModel(m));
       return t && { product: t.product, retailer: t.retailer, usd: t.usd };
     };
-    const apply = (m: TankModel, v?: TankVariant) => { const mm = v ? modelOfVariant(m, v) : m; setTank(() => tankFromModel(mm), undefined, mm.glassMm, standFor(v)); pinPreset(store.scene.active, store.tank, saleOf(m, v)); dlg.close(); };
+    let sumpDone: ((m: TankModel) => void) | null = null;
+    dlg.addEventListener('close', () => { sumpDone = null; $('tankDlgTitle').textContent = 'Tank sizes'; });
+    const apply = (m: TankModel, v?: TankVariant) => { if (sumpDone) { sumpDone(m); dlg.close(); return; } const mm = v ? modelOfVariant(m, v) : m; setTank(() => tankFromModel(mm), undefined, mm.glassMm, standFor(v)); pinPreset(store.scene.active, store.tank, saleOf(m, v)); dlg.close(); };
     const draw = () => {
       const needle = q.value.trim().toLowerCase();
       const hit = (m: TankModel) => !needle || [m.name, m.shape, ...(m.tags ?? []), ...(m.variants ?? []).flatMap(v => [v.brand, v.line ?? ''])].join(' ').toLowerCase().includes(needle);
       list.textContent = '';
-      const groups: [string, TankModel[]][] = BANDS.map(([b, t]) => [t, TANK_MODELS.filter(m => !m.terrarium && m.band === b && hit(m)).sort((a, c) => a.ratedGal - c.ratedGal)]); // by size (stable: file order within a size)
-      if (terra.checked) groups.push(['Terrariums', TANK_MODELS.filter(m => m.terrarium && hit(m))]);
+      const pool = sumpDone ? SUMP_MODELS : TANK_MODELS;
+      const groups: [string, TankModel[]][] = BANDS.map(([b, t]) => [t, pool.filter(m => !m.terrarium && m.band === b && hit(m)).sort((a, c) => a.ratedGal - c.ratedGal)]); // by size (stable: file order within a size)
+      if (terra.checked && !sumpDone) groups.push(['Terrariums', TANK_MODELS.filter(m => m.terrarium && hit(m))]);
       for (const [title, ms] of groups) {
         if (!ms.length) continue;
         const h = document.createElement('h3'); h.textContent = title; list.append(h);
         for (const m of ms) {
           const row = document.createElement('div'); row.className = 'tankrow';
-          const vs = m.variants ?? [];
+          const vs = sumpDone ? [] : m.variants ?? []; // a sump is a plain glass box: no makers' display tanks
           const head = document.createElement('button'); head.className = 'tankgen';
           head.innerHTML = `<b>${esc(m.name)}</b><span>${dimsInches(m.outer)} in generic${/^estimate/.test(m.source) ? ' (estimated size)' : ''}${vs.length ? ` · ${vs.length} product${vs.length > 1 ? 's' : ''}` : ''}</span>`;
           head.onclick = () => apply(m);
@@ -427,7 +432,8 @@ Cancel, then change the name, to keep both.`)) return;
       if (!list.firstChild) list.innerHTML = '<p class="hint">No tank matches that search.</p>';
     };
     q.oninput = draw; terra.onchange = draw;
-    $('presetA').onclick = () => { draw(); dlg.showModal(); q.focus(); };
+    $('presetA').onclick = () => { sumpDone = null; draw(); dlg.showModal(); q.focus(); };
+    openSumpPicker = done => { sumpDone = done; $('tankDlgTitle').textContent = 'Sump size'; q.value = ''; draw(); dlg.showModal(); q.focus(); };
   }
   /** Resize / reshape each edited tank from its own current size (so ticking both changes only what was set). */
   function setTank(next: (T: Tank) => Tank, coalesce?: string, glass?: number, also?: (s: TankSetup) => void) {
@@ -2301,7 +2307,7 @@ Cancel, then change the name, to keep both.`)) return;
   addEventListener('pagehide', () => { if (saveTimer) { clearTimeout(saveTimer); store.saveLocal(); } });
 
   demand = attachDemandPanel(store, $('demandPanel')); // lane KK: the three demand readouts at the top of Quick Setup
-  attachTechMenu(store, $('techMenu'), { profile: () => demand?.profile() }); // lane TM: the Tech section (Lighting inside it)
+  attachTechMenu(store, $('techMenu'), { profile: () => demand?.profile(), pickSump: done => openSumpPicker?.(done) }); // lane TM: the Tech section (Lighting inside it)
   renderResults();
   sync();
   return { status, showStart, openShared };
