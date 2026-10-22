@@ -102,23 +102,27 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
   capacityOf's unused LU figures, three copies of recommendedMin, esc / usd in 12 files, builds.ts baseSetup duplicating tankfit's setupFor.
 
 ## Temperature tiers (2026-10-22, branch `temp-tiers`; mandatory follow-up to the German blue ram review; NOT merged, awaiting Nathan)
-The pairwise "share under 2 °C = incompatible" rule is gone. `src/scene/temprange.ts` gives two SEPARATE outputs:
-- **Shared range:** intersection of every aquatic species' recorded comfortable range (CARE.temp). `none` (empty, or one value) = "No suitable
-  shared temperature identified", the only blocking temperature verdict; `narrow` = 2 °C wide OR LESS (`NARROW_C`; the cardinal 23-29 against
-  gbr / neon / panda cory / CPD / hillstream / cherry shrimp lands exactly at 2), a concern worded as a limited margin, never incompatibility;
-  `broad` = wider. Passing reads "temperature: shared range X–Y °C", never "compatible". For intervals the whole-stock width equals the
-  narrowest pair's overlap (Helly), so whole-stock never finds an empty set the pairs miss; it adds the range, the tier and the setpoint check.
-- **Setpoint:** known only with no heater (water follows the Tech-menu room). A heated tank records no heater setting (heatLoss targetC is the
-  tool's own pick, inside the range by construction): "unchecked". An assumed (default) room inside the range is also unchecked; outside fails.
-  Reviewer tightening (2026-10-22): a setpoint OUTSIDE a valid shared range keeps the range line from reading positive (`rangeVerdict`:
-  warn, "this plan runs outside it until the setpoint changes") and the setpoint line offers a correction in the mismatch's direction: below
-  "raise the temperature to X–Y °C" (heater up, or add one), above "lower the temperature to X–Y °C" (fan, chiller, cooler room; never a heater). The species combination is not flagged; only no shared range blocks it.
+The pairwise "share under 2 °C = incompatible" rule is gone. `src/scene/temprange.ts` (its header holds the definitions) keeps apart:
+- **Shared range (about the species):** intersection of every aquatic species' recorded comfortable range (CARE.temp). `none` (no overlap):
+  "No suitable shared temperature identified"; `single` (they meet at one value): "Only one shared temperature; no operating margin";
+  both block. `narrow` = 2 °C wide OR LESS (`NARROW_C`; the cardinal 23-29 against gbr / neon / panda cory / CPD / hillstream / cherry shrimp
+  lands at 2): a concern worded as a limited margin, never incompatibility, NO risk points (reviewer: width cannot tell mid-range from edge;
+  a future penalty = target's distance to the nearest bound + expected variation, charged once per tank). `broad` = wider. Passing reads
+  "temperature: shared range X–Y °C", never "compatible". Pairwise overlap guarantees an intersection for intervals.
+- **This plan's water (about the plan), three inputs (Tech menu, `TechSetup.targetC` / `measuredC`, `tech.ts tempEvidence`):**
+  target water temperature (`operatingCheck`: does the intended temperature fit), equipment + room (`holdCheck`: expected to hold it;
+  a heater setting alone is never green), measured (`measuredCheck`: the observation). No target and no heater: the water is MODELLED from
+  the room, labelled an estimate; an entered room is assessed, the default room gives only a conditional concern; no target with a heater
+  = unchecked. A definitive outside keeps the range line from reading positive. Corrections follow the mismatch: below "raise ... (heater)",
+  above "lower ... (a fan, a chiller or a cooler room)", never a heater for a warm room. heatLoss sizes for the target when set.
+- The species gate, the plan sheet and the Tech menu's no-heater chip use the same check (the old per-species room loop is gone): the card
+  says "requires heating / cooling" with the fix (the setup, not the combination); an assumed room is a concern only.
 - `whysAnimal` returns every reason (blocking first, `concern` after); `whyAnimal` = first blocking. Shown: stock planner per pick (main in red,
-  "Also:" under it) + two whole-list lines; plan sheet one line per species with all blocking reasons + the two temperature lines once;
-  the species list gate "(+N more)" with the rest in the tooltip. Climate chart: "ideal" -> "in range".
-- Re-blessed: reef risk 8.608 -> 6.451, paludarium 7.992 -> 7.467 (their 1 °C pairs no longer add compat risk). demand.test "reef riskier than
-  planted" held only through those flags; now asserts reef > betta. OPEN (Nathan): should a narrow range carry risk points? Should the Tech
-  menu record a heater setpoint so the setpoint check can run on heated tanks? Most starter examples are narrow (reef 24-25, planted 23-25).
+  "Also:" under it) + whole-list lines; plan sheet one line per species with all blocking reasons + the temperature lines once; the species
+  list gate "(+N more)" with the rest in the tooltip. Climate chart: "ideal" -> "in range".
+- Re-blessed: reef risk 8.608 -> 6.451, paludarium 7.992 -> 7.467 (false 1 °C clashes removed). The "reef riskier than planted" ranking had no
+  independent reason and is dropped; demand.test now tests the mechanism (narrow: no points; a real clash: points; other rows unchanged).
+- Left alone: demand/tech.ts still adds no-heater risk per species via coldSpecies (tolerable bounds, room assumed or not).
 
 ## Lane RF: Path 1 Rule Fixes (2026-10-22, branch `rf`, worktree `.claude/worktrees/rf`, port 5911; prompt prompts/lane-RF-path1-rule-fixes.md)
 Software fixes from research/rules-spec.md section 6; no threshold changed. Benchmark before / after: research/benchmark-baseline.md (regenerate with `GEN_BENCH=1 npx vitest run test/benchmarkBaseline.test.ts`). Tests: test/path1Rules.test.ts.

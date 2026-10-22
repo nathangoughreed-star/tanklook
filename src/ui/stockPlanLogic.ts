@@ -6,7 +6,7 @@ import { needLine, needsOf, type NeedSeverity } from '../data/careNeeds';
 import { getSpecies, SPECIES, type Species } from '../data/species';
 import { TANK_MODELS, tankFromModel, type TankModel } from '../data/tanks';
 import { whyAnimal, whysAnimal } from '../scene/animalfit';
-import { rangeLine, setpointCheck, sharedRange } from '../scene/temprange';
+import { operatingCheck, rangeLine, sharedRange } from '../scene/temprange';
 import { volume } from '../scene/physics';
 import { spaceFit, tankExtent } from '../scene/space';
 import { buildSpan, fitIn, lenTxt, stepUps, tankFor, tankLabel, tankOptions, zoneOf, type AnimalCount, type BuildSpan, type TankFit } from '../scene/tankfit';
@@ -141,7 +141,7 @@ export function conflictsOf(picks: Pk[], id: string): { text: string; block: boo
 export function tempLinesOf(picks: Pk[]): { range: string; rangeState: string; setpoint: string } | null {
   const r = sharedRange(picks.filter(p => totalOf(p) > 0).map(p => getSpecies(p.id)).filter((x): x is Species => !!x));
   if (r.state === 'unknown' && !r.unrecorded.length) return null;
-  return { range: rangeLine(r), rangeState: r.state, setpoint: setpointCheck(r).text };
+  return { range: rangeLine(r), rangeState: r.state, setpoint: operatingCheck(r).text };
 }
 
 // ---------- tankmates ----------

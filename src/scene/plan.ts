@@ -7,13 +7,12 @@ import type { Contribution, Demand } from '../demand/types';
 import { mean3 } from '../demand/range';
 import { GEAR_SLOT_NAME, gearOffers } from '../demand/gearDeals';
 import { whysAnimal } from './animalfit';
-import { rangeVerdict, setpointCheck, sharedRange } from './temprange';
+import { checkLevel, holdCheck, measuredCheck, operatingCheck, rangeVerdict, sharedRange } from './temprange';
 import { LIBRARY } from './items';
 import type { Build } from './builds';
 import { finSensitiveNames, plantNeeds, priceScape } from './scapes';
 import { countsAgainstWater, stockingOf } from './stocking';
-import { CARE } from '../data/care';
-import { ROOM_C, techOf, tempFit } from './tech';
+import { ROOM_C, techOf, tempEvidence, tempFit } from './tech';
 import { lenTxt, sizeTxt, tankLabel, type AnimalCount } from './tankfit';
 import { volume } from './physics';
 import { minFit, tankMinimum } from './tankMin';
@@ -75,15 +74,14 @@ export function hardTruths(S: TankSetup, animals: AnimalCount[], heater: boolean
   }
   const tm = tankMinimum({ ...S, fish: sp.map((s, i) => ({ id: i + 1, species: s.id, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0 })) }); // lane HB: the same depth limit the tank fit reads
   if (tm.tooDeep) out.push({ text: `Some of your animals need shallow water (${lenTxt(tm.maxDepthMm, u)} at most); this tank's water is ${lenTxt(tm.depthMm, u)} deep`, level: 'bad' });
-  const room = roomOf(S); // the room the user set (Tech menu), else tech.json's 21 C (S207 review)
-  // water temperature, two separate outputs (temprange.ts): the shared range of every aquatic species, then whether the plan runs inside it
+  // water temperature (temprange.ts), kept apart: the shared range of every aquatic species, then this plan's water: its target (or, with
+  // no heater, the room it is modelled to follow: who it is too cold or warm for), whether the setup holds it, and a measurement
   const shared = sharedRange(sp);
   if (shared.state !== 'unknown') {
-    const at = setpointCheck(shared, !heater && !salt ? { kind: 'room', c: room, set: S.tech?.roomC !== undefined } : { kind: 'heater' });
-    out.push(rangeVerdict(shared, at)); // never positive while the setpoint is outside the range
-    out.push({ text: at.text, level: at.state === 'outside' ? 'bad' : at.state === 'unchecked' ? 'warn' : 'ok' });
+    const ev = tempEvidence(S, heater || salt), checks = ev ? [operatingCheck(shared, ev), holdCheck(ev), measuredCheck(shared, ev)] : [];
+    out.push(rangeVerdict(shared, checks)); // never positive while the plan's water is definitively outside the range
+    for (const k of checks) if (k) out.push({ text: k.text, level: checkLevel(k) });
   }
-  if (!heater && !salt) for (const s of sp.filter(x => countsAgainstWater(x))) if (tempFit(s.id, room) === 'out') out.push({ text: `${s.name} is too ${room > (CARE[s.id]?.temp?.[1] ?? Infinity) ? 'warm' : 'cold'} at room temperature (${room} C) and the tank has no heater`, level: 'bad' });
   const longFinned = finSensitiveNames(animals);
   if (longFinned.length && S.items.some(it => it.variant.startsWith('plastic'))) out.push({ text: `Hard plastic leaves can tear the long fins of ${longFinned.join(', ')}: use silk plants`, level: 'warn' });
   return out;

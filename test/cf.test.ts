@@ -13,13 +13,13 @@ const G75 = (tech?: TankSetup['tech']): TankSetup => {
   if (tech) S.tech = tech;
   return S;
 };
-const roomLine = (S: TankSetup, species: string) => hardTruths(S, [{ species, n: 1 }], false).map(t => t.text).find(t => t.includes('room temperature'));
+const roomLine = (S: TankSetup, species: string) => hardTruths(S, [{ species, n: 1 }], false).find(t => t.text.startsWith('Water temperature'));
 
 describe('CF: S207 review fixes', () => {
-  it('the no-heater check reads the room the user set, and says too warm when it is', () => {
-    expect(roomLine(G75(), 'discus')).toMatch(/too cold at room temperature \(21 C\)/);
-    expect(roomLine(G75({ rows: {}, roomC: 29 }), 'discus')).toBeUndefined();
-    expect(roomLine(G75({ rows: {}, roomC: 30 }), 'goldfish')).toMatch(/too warm at room temperature \(30 C\)/);
+  it('the no-heater check reads the room the user set, says too warm when it is, and only qualifies an assumed room (temp-tiers)', () => {
+    expect(roomLine(G75(), 'discus')).toMatchObject({ level: 'warn', text: expect.stringMatching(/if the room is about 21 °C \(assumed, not entered\).*too cold for Discus/) });
+    expect(roomLine(G75({ rows: {}, roomC: 29 }), 'discus')).toMatchObject({ level: 'ok' });
+    expect(roomLine(G75({ rows: {}, roomC: 30 }), 'goldfish')).toMatchObject({ level: 'bad', text: expect.stringMatching(/30 °C room.*too warm for Fancy goldfish/) });
   });
   it('choosing a filter in the Tech menu clears the "no filter" tick', () => {
     const S = G75({ rows: { filter: 'none' }, filters: [], filterless: true });

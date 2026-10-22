@@ -4,7 +4,7 @@
 // blocks adding it. Temperature is judged on the whole stocking (temprange.ts), not pair by pair (2026-10-22).
 import { CARE, EXPERTISE_NAME, type Expertise } from '../data/care';
 import type { Species } from '../data/species';
-import { fmtC, sharedRange, NARROW_C } from './temprange';
+import { fmtC, operatingCheck, sharedRange, NARROW_C, type TempEvidence } from './temprange';
 
 /** A species' smallest tank is allowed 10 % slack (a 5 gal, 19 L, takes a 20 L species); shared by the animal gate, the tank-fit engine and the hard truths. */
 export const MIN_SLACK_PCT = 100 / 0.9;
@@ -22,7 +22,7 @@ const meet = (a: Species, b: Species) => !((a.habitat === 'land' && b.habitat ==
 const shared = (a: [number, number], b: [number, number]) => Math.min(a[1], b[1]) - Math.max(a[0], b[0]);
 const band = (r: [number, number], d = 0) => `${r[0].toFixed(d)}-${r[1].toFixed(d)}`;
 /** The tank around the animal: `corals`: any coral in it (not macroalgae or the anemone). */
-export interface AnimalEnv { /** the tank's own answer (tankMin.ts minFit): size is judged by floor area, length and water, not litres alone; absent = litres only */ fit?: (sp: Species) => { pct: number; reason: string }; corals?: boolean; /** no heater (lane TM): the water stays at this room temperature, deg C */ unheatedC?: number }
+export interface AnimalEnv { /** the tank's own answer (tankMin.ts minFit): size is judged by floor area, length and water, not litres alone; absent = litres only */ fit?: (sp: Species) => { pct: number; reason: string }; corals?: boolean; /** this tank's water temperature inputs (tech.ts tempEvidence): its target, or with no heater the room it follows */ water?: TempEvidence }
 
 /** `litres`: the tank's volume; `present`: the species already stocked (one entry per species). The main blocking reason, or null. */
 export function whyAnimal(sp: Species, litres: number, expertise: Expertise, present: Species[], env: AnimalEnv = {}): AnimalWhy | null {
@@ -38,7 +38,7 @@ export function whysAnimal(sp: Species, litres: number, expertise: Expertise, pr
   if (c.care > expertise) out.push({ kind: 'expertise', text: `expertise: ${EXPERTISE_NAME[c.care].toLowerCase()} animal, you chose ${EXPERTISE_NAME[expertise].toLowerCase()}` });
   if (env.fit) { const m = env.fit(sp); if (m.pct > MIN_SLACK_PCT) out.push({ kind: 'size', text: `tank size: ${m.reason}` }); }
   else if (litres < c.minL) out.push({ kind: 'size', text: `tank size: wants at least ${c.minL} L, this tank is ${Math.round(litres)} L` });
-  if (env.unheatedC !== undefined && c.temp && (env.unheatedC < c.temp[0] || env.unheatedC > c.temp[1])) out.push({ kind: 'compat', temp: true, text: `water temperature: wants ${c.temp[0]}-${c.temp[1]} C, no heater in a ${env.unheatedC} C room` }); // lane TM
+  const setup = setupTemp(sp, env.water); if (setup) out.push(setup); // the setup, not the combination: fixable, said with the fix
   if (c.coral && env.corals) out.push({ kind: 'compat', text: c.coral === 2 ? 'compatibility: eats corals, not for a reef tank' : 'compatibility: may nip the corals, add with caution' });
   for (const o of present) {
     const oc = CARE[o.id];
@@ -67,6 +67,18 @@ export function whysAnimal(sp: Species, litres: number, expertise: Expertise, pr
   return [...out.filter(w => !w.concern), ...out.filter(w => w.concern)];
 }
 
+/** This species against this setup's water (the same assessment as the plan sheet's, temprange.ts operatingCheck on its own range):
+ *  outside = the setup as configured does not suit it, said as what it requires and the fix; an assumed room = a concern only. */
+function setupTemp(sp: Species, water?: TempEvidence): AnimalWhy | null {
+  const t = CARE[sp.id]?.temp;
+  if (!t || !water || sp.habitat === 'land') return null;
+  const k = operatingCheck(sharedRange([sp]), water);
+  if (k.state !== 'outside' && k.state !== 'conditional') return null;
+  const at = water.target ?? water.room, need = at < t[0] ? 'requires heating' : 'requires cooling';
+  const why = water.target !== undefined ? `the target is ${at} °C` : `no heater, the water is estimated at the ${water.roomSet ? '' : 'assumed '}${at} °C room`;
+  return { kind: 'compat', temp: true, ...(k.state === 'conditional' ? { concern: true as const } : {}), text: `water temperature: ${need}, wants ${fmtC(t)}, ${why}: ${k.fix}` };
+}
+
 /** Water temperature on the whole stocking (temprange.ts): adding `sp` empties the shared comfortable range (blocking), or leaves it
  *  NARROW_C wide or less (a concern, not an incompatibility). When the others already share nothing, `sp` is judged against each. */
 function tempWhys(sp: Species, present: Species[]): AnimalWhy[] {
@@ -75,9 +87,10 @@ function tempWhys(sp: Species, present: Species[]): AnimalWhy[] {
   const others = sharedRange(present.filter(o => o.id !== sp.id));
   if (others.state === 'unknown') return [];
   const none = (o: Species) => ({ kind: 'compat' as const, temp: true as const, text: `water temperature: No suitable shared temperature identified: its ${fmtC(t)} against ${fmtC(CARE[o.id].temp!)} (${o.name})` });
-  if (others.state === 'none') return others.counted.filter(o => Math.min(t[1], CARE[o.id].temp![1]) <= Math.max(t[0], CARE[o.id].temp![0])).map(none);
+  if (others.state === 'none' || others.state === 'single') return others.counted.filter(o => Math.min(t[1], CARE[o.id].temp![1]) < Math.max(t[0], CARE[o.id].temp![0])).map(none);
   const all = sharedRange([sp, ...others.counted]);
-  if (all.state === 'none') return [none(t[1] <= others.range![0] ? others.floor! : others.ceiling!)];
+  if (all.state === 'none') return [none(t[1] < others.range![0] ? others.floor! : others.ceiling!)];
+  if (all.state === 'single') return [{ kind: 'compat', temp: true, text: `water temperature: Only one shared temperature (${all.range![0]} °C); no operating margin (${(t[1] <= others.range![0] ? others.floor! : others.ceiling!).name})` }];
   if (all.state === 'narrow') return [{ kind: 'compat', temp: true, concern: true, text: `temperature: shared range ${fmtC(all.range!)}, a narrow margin (${NARROW_C} °C or less), not an incompatibility` }];
   return [];
 }

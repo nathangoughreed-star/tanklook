@@ -15,6 +15,7 @@ import { volume } from './physics';
 import { filterProduct, genericHeaterW, heaterProduct, listedPrice, type FilterProduct, type HeaterProduct } from '../data/gearCatalog';
 import { footprint } from './shape';
 import type { GrowFeed, TankSetup } from './types';
+import type { TempEvidence } from './temprange';
 
 // ---- types (the saved field; lane TG builds against TechSetup / GearPlace / TechPiece)
 
@@ -51,6 +52,11 @@ export interface TechSetup {
   heaterProduct?: string;
   /** room temperature, deg C, where the tank stands; absent = tech.json roomC (21) */
   roomC?: number;
+  /** the tank's target water temperature, deg C (the intended operating temperature, whatever holds it: heater, cooling or the room);
+   *  absent = not set (the heater is sized for the climate's recommendation, and the temperature checks say unchecked) */
+  targetC?: number;
+  /** a measured water temperature, deg C (an existing tank); absent = none supplied */
+  measuredC?: number;
   /** where lane TG draws each row's gear (row id -> place; a second unit of a row is 'heater.1', 'filter.1', ...); absent = TG's default side */
   place?: Record<string, GearPlace>;
   /** the heaters, one entry each (Nathan 2026-10-20: add as many as you like, each generic or a catalogue product);
@@ -206,8 +212,17 @@ export function setFeed(t: TechSetup, feed: GrowFeed, salt = false): TechSetup {
   return { ...t, rows, preset: 'custom' };
 }
 
-/** No heater: the water temperature the animals live at (the room's), for the Animals gate; undefined with a heater. */
-export const unheatedC = (S: TankSetup): number | undefined => { const t = techOf(S); return S.water.on && S.tech && t.rows.heater === 'none' ? t.roomC ?? ROOM_C : undefined; };
+/** This tank's water temperature inputs for the temperature checks (temprange.ts): the target, a measurement, the heater and chiller,
+ *  the room (entered or assumed). Undefined for a dry tank. `heater` overrides the tech's heater row (the plan sheet passes the shopping
+ *  list's); a tank with no tech chosen counts as heated (the inferred tech has one). */
+export function tempEvidence(S: TankSetup, heater?: boolean): TempEvidence | undefined {
+  if (!S.water.on) return undefined;
+  const t = techOf(S), heated = heater ?? (!S.tech || (t.rows.heater ?? 'one') !== 'none');
+  const ev: TempEvidence = { heater: heated, chiller: t.rows.chiller === 'chiller', room: t.roomC ?? ROOM_C, roomSet: S.tech?.roomC !== undefined };
+  if (S.tech?.targetC !== undefined) { ev.target = S.tech.targetC; if (heated) { const h = heatLoss(S, t); ev.heatHolds = h.totalW >= h.lossW; } }
+  if (S.tech?.measuredC !== undefined) ev.measured = S.tech.measuredC;
+  return ev;
+}
 
 /** One row changed by hand: the tech is now custom. Choosing an option that needs another row's option sets that too. */
 export function withChoice(S: TankSetup, row: string, opt: string): TechSetup {
@@ -297,12 +312,12 @@ export function kitUnitSig(t: TechSetup, row: 'heater' | 'filter'): unknown[] {
   return u ? [JSON.stringify({ ...u, kit: undefined })] : ['none'];
 }
 
-/** A preset's rows for this tank (the tank's room temperature and gear places kept). */
+/** A preset's rows for this tank (the tank's room, target and measured temperatures and gear places kept). */
 export function applyPreset(S: TankSetup, id: string): TechSetup {
   const p = PRESETS.find(x => x.id === id);
   const t = techOf(S);
   if (!p) return t;
-  return { rows: { ...inferTech(S).rows, ...p.rows }, preset: id, ...(t.roomC !== undefined ? { roomC: t.roomC } : {}), ...(t.place ? { place: t.place } : {}) };
+  return { rows: { ...inferTech(S).rows, ...p.rows }, preset: id, ...(t.roomC !== undefined ? { roomC: t.roomC } : {}), ...(t.targetC !== undefined ? { targetC: t.targetC } : {}), ...(t.measuredC !== undefined ? { measuredC: t.measuredC } : {}), ...(t.place ? { place: t.place } : {}) };
 }
 export const presetsFor = (S: TankSetup) => !S.water.on ? [] : PRESETS.filter(p => p.water === (isSalt(S) ? 'salt' : 'fresh'));
 
@@ -379,13 +394,14 @@ export interface HeatLoss {
   coolW: number; chillerKwhMo: number;
 }
 /** Heat loss through the glass and the water surface (Nathan 2026-10-19: area, tank temperature, room temperature; not
- *  gallons). Target = the water temperature the stocked species agree on (climate.ts); the lid sets the surface loss. */
+ *  gallons). Target = the user's target water temperature (Tech menu), else the one the stocked species agree on (climate.ts); the lid
+ *  sets the surface loss. */
 export function heatLoss(S: TankSetup, t: TechSetup = techOf(S)): HeatLoss {
   const fp = footprint(S.tank), hw = S.tank.H * Math.min(1, Math.max(0, S.water.level)) / 1000;
   const wallM2 = fp.perimeter / 1000 * hw, floorM2 = fp.area / 1e6, surfaceM2 = floorM2;
   const surf = (HEAT.surface as Record<string, number>)[S.lid] ?? HEAT.surface.open;
   const wPerK = HEAT.wall * wallM2 + HEAT.bottom * floorM2 + surf * surfaceM2;
-  const targetC = climateOf(S).find(c => c.label === 'Water')?.at ?? (isSalt(S) ? 25.5 : 24), roomC = t.roomC ?? ROOM_C;
+  const targetC = t.targetC ?? climateOf(S).find(c => c.label === 'Water')?.at ?? (isSalt(S) ? 25.5 : 24), roomC = t.roomC ?? ROOM_C;
   const dT = targetC - roomC, lossW = Math.max(0, wPerK * dT), needW = Math.max(0, wPerK * (dT + HEAT.nightDropK) * HEAT.headroom);
   const us = heaterUnits(t), n = us.length;
   const units = us.map(u => {
@@ -620,6 +636,8 @@ export function parseTech(raw: unknown): TechSetup | undefined {
   if (t.filters) rows.filter = filterRow(t.filters);
   if (r.filterless === true && !t.filters?.length) t.filterless = true;
   if (typeof r.roomC === 'number' && isFinite(r.roomC)) t.roomC = Math.min(40, Math.max(0, r.roomC));
+  if (typeof r.targetC === 'number' && isFinite(r.targetC)) t.targetC = Math.min(40, Math.max(0, r.targetC));
+  if (typeof r.measuredC === 'number' && isFinite(r.measuredC)) t.measuredC = Math.min(40, Math.max(0, r.measuredC));
   if (r.place && typeof r.place === 'object') {
     const place: Record<string, GearPlace> = {};
     for (const [k, v] of Object.entries(r.place as Record<string, unknown>)) {

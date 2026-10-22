@@ -5,7 +5,7 @@ import { FOCUS_SECS, type FocusSec } from '../render/menuFocus';
 import { attachDemandPanel } from './demandPanel';
 import { fitToLimits, hasLimits } from '../demand/fit';
 import { attachTechMenu } from './techMenu';
-import { filterState, unheatedC } from '../scene/tech';
+import { filterState, tempEvidence } from '../scene/tech';
 import { renderFeaturedDeals } from './featuredDeals';
 import { startDeals, visibleTabs, pickTab, sortDeals, DEFAULT_SORT, type DealSort, type StartTab, type StartMenu } from './startEntries';
 import { DEALS_AS_OF, DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
@@ -665,7 +665,7 @@ Cancel, then change the name, to keep both.`)) return;
     hint.hidden = !on; hint.textContent = on ? 'Grayed in the list: does not suit this tank, the care level or the animals already in it. They can still be added.' : '';
     if (!on) return null;
     const litres = volume(s.tank).litres, present = [...new Set(s.fish.map(f => f.species))].map(getSpecies).filter((x): x is Species => !!x);
-    const env = { corals: hasCorals(s.items), unheatedC: unheatedC(s), fit: minFit(s) }; // lane TM: no heater = the room's temperature
+    const env = { corals: hasCorals(s.items), water: s.tech ? tempEvidence(s) : undefined, fit: minFit(s) }; // the tank's target, or with no heater the room it follows
     // the main blocking reason, and how many other material concerns stand under it (all of them in the tooltip)
     return sp => { const all = whysAnimal(sp, litres, ex, present, env), main = all.find(w => !w.concern); return main ? { ...main, more: all.filter(w => w !== main).map(w => w.text) } : null; };
   }

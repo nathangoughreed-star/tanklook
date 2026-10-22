@@ -14,8 +14,8 @@ import { defaultProfile, type UserProfile } from '../demand/types';
 import { FEED_NAMES, GROW_RATE } from '../scene/growtime';
 import type { Store } from '../scene/store';
 import {
-  ROOM_C, applyPreset, coldSpecies, feedFor, feedOf, filterFor, filterSteps, filterUnits, heatLoss, offerChiller,
-  optionCost, optionDef, presetsFor, reefFeedOf, rowsFor, setFeed, singleFilter, stockCapacity, techOf, unitCosts, walstadGaps, withChoice,
+  ROOM_C, applyPreset, feedFor, feedOf, filterFor, filterSteps, filterUnits, heatLoss, offerChiller,
+  optionCost, optionDef, presetsFor, reefFeedOf, rowsFor, setFeed, singleFilter, stockCapacity, techOf, tempEvidence, unitCosts, walstadGaps, withChoice,
   withUnits, withoutUnit, type FilterUnit, type HeaterUnit, type OptionCost, type TechSetup,
 } from '../scene/tech';
 import { FILTER_PRODUCTS, HEATER_PRODUCTS, filtersNear, genericHeaterW, heatersNear, lightProduct, lightsFor, productName, type FilterProduct, type HeaterProduct, type LightProduct } from '../data/gearCatalog';
@@ -25,6 +25,8 @@ import { integratedKit, lockNote, locksOf } from '../scene/integrated';
 import type { FilterKind } from '../demand/gear';
 import { volume } from '../scene/physics';
 import type { TankSetup } from '../scene/types';
+import { getSpecies } from '../data/species';
+import { holdCheck, measuredCheck, operatingCheck, sharedRange } from '../scene/temprange';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
 const usd = (v: number) => v >= 100 ? `$${Math.round(v / 5) * 5}` : v >= 10 ? `$${Math.round(v)}` : `$${v.toFixed(v < 1 ? 2 : 1)}`;
@@ -87,9 +89,12 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
       chip(f === 'co2' ? 'good' : f === 'ferts' ? '' : 'mute', `Corals: ${REEF_NAME[f]}`, 'The corals this gear keeps: the lowest of skimmer, water movement and calcium / alkalinity dosing sets it (light still has to match)');
     }
     if (row === 'heater' && opt === 'none') {
-      const cold = coldSpecies({ ...S, tech: t }, t);
-      if (cold.length) chip('warn', `${cold.length} species too cold at ${room(t)}`, cold.map(x => x.name).join(', '));
-      else if (S.fish.length) chip('good', `Everyone fine at ${room(t)}`);
+      // no heater: the water is modelled from the room (temprange.ts operatingCheck, the plan sheet's own check), never passed on an assumed room
+      const ev = tempEvidence({ ...S, tech: { ...t, rows: { ...t.rows, heater: 'none' } } }, false), shared = sharedRange([...new Set(S.fish.map(f => f.species))].map(getSpecies).filter((x): x is NonNullable<typeof x> => !!x));
+      const k = ev && shared.range && ev.target === undefined ? operatingCheck(shared, ev) : null;
+      if (k?.state === 'outside' || k?.state === 'conditional') chip('warn', `${k.state === 'conditional' ? 'If the room is ' : ''}${room(t)} room: outside the shared range${k.state === 'conditional' ? ' (assumed)' : ' (estimate)'}`, k.text);
+      else if (k?.state === 'inside') chip('good', `In range at the ${room(t)} room (estimate)`, k.text);
+      else if (k) chip('mute', 'Enter the room temperature to check', k.text);
     }
     if (row === 'heater' && opt !== 'none') { const h = heatLoss(S, t); if (h.n) chip('', `${h.n > 1 ? h.n + ' × ' : ''}${h.heater.watts} W, on ${Math.round(h.duty * 100)} % of the time`, `The tank loses about ${Math.round(h.lossW)} W at ${tempTxt(h.targetC)} in a ${tempTxt(h.roomC)} room; sized for a night ${3} °C colder`); }
     if ((def?.risk ?? 0) >= 0.25) chip('warn', 'Harder +', def?.note ?? ''); // small risks (a HOB's 0.1) are not worth a flag
@@ -211,11 +216,15 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     const shownPreset = S.tech ? (t.preset ?? 'custom') : '';
     let html = `<div class="tpre" role="group" aria-label="Tech presets">${presets.map(p => `<button type="button" data-pre="${p.id}" class="${shownPreset === p.id ? 'on' : ''}">${esc(p.label)}</button>`).join('')}<span class="tcustom">${shownPreset === 'custom' ? 'Custom' : !S.tech ? 'Not set: the usual gear for this tank' : ''}</span></div>`;
     html += `<div class="trow2"><label for="tRoom" title="Where the tank stands: the heater makes up the difference to the tank temperature, and with no heater the water follows the room">Room temperature</label><input id="tRoom" type="number" step="${fahr() ? 1 : 0.5}" value="${fahr() ? toF(t.roomC ?? ROOM_C) : t.roomC ?? ROOM_C}"><span>${fahr() ? '°F' : '°C'}</span></div>`;
-    html += `<div class="hint">Tank ${tempTxt(h.targetC)} (what its animals agree on). ${h.lossW > 0.5 ? `It loses about ${Math.round(h.lossW)} W through ${(h.wallM2 + h.floorM2).toFixed(2)} m² of glass and ${h.surfaceM2.toFixed(2)} m² of ${S.lid === 'open' ? 'open ' : ''}water surface.` : h.coolW > 0.5 ? `The room is warmer than the tank: ${Math.round(h.coolW)} W to take out.` : 'The room holds it there: no heat needed.'}</div>`;
+    const tv = (c?: number) => c === undefined ? '' : String(fahr() ? toF(c) : c);
+    html += `<div class="trow2"><label for="tTarget" title="The water temperature this tank is meant to run at, whatever holds it (heater, cooling or the room). Checked against the shared range of its animals; empty = not set">Target water temperature</label><input id="tTarget" type="number" step="${fahr() ? 1 : 0.5}" placeholder="not set" value="${tv(t.targetC)}"><span>${fahr() ? '°F' : '°C'}</span></div>`;
+    html += `<div class="trow2"><label for="tMeasured" title="An existing tank: the water temperature you measured. Checked as it is; empty = none">Measured water temperature</label><input id="tMeasured" type="number" step="${fahr() ? 1 : 0.5}" placeholder="optional" value="${tv(t.measuredC)}"><span>${fahr() ? '°F' : '°C'}</span></div>`;
+    html += `<div class="hint">Tank ${tempTxt(h.targetC)} (${t.targetC !== undefined ? 'your target' : 'what its animals agree on; set a target above'}). ${h.lossW > 0.5 ? `It loses about ${Math.round(h.lossW)} W through ${(h.wallM2 + h.floorM2).toFixed(2)} m² of glass and ${h.surfaceM2.toFixed(2)} m² of ${S.lid === 'open' ? 'open ' : ''}water surface.` : h.coolW > 0.5 ? `The room is warmer than the tank: ${Math.round(h.coolW)} W to take out.` : 'The room holds it there: no heat needed.'}</div>`;
     const warn: string[] = [];
     if (t.rows.filter === 'none' || shownPreset === 'walstad') warn.push(...walstadGaps(S));
-    const cold = coldSpecies(S, t);
-    if (cold.length) warn.push(`No heater at ${room(t)}: too cold for ${cold.map(x => x.name).join(', ')}.`);
+    // the same temperature checks as the plan sheet (temprange.ts): the target or the modelled unheated water, holding it, a measurement
+    const shared = sharedRange([...new Set(S.fish.map(f => f.species))].map(getSpecies).filter((x): x is NonNullable<typeof x> => !!x)), ev = tempEvidence(S);
+    if (ev && shared.range) for (const k of [operatingCheck(shared, ev), holdCheck(ev), measuredCheck(shared, ev)]) if (k && (k.state === 'outside' || k.state === 'conditional')) warn.push(`${k.text}.`);
     if (offerChiller(S) && t.rows.chiller !== 'chiller') warn.push(`The room (${room(t)}) is warmer than the tank should be (${tempTxt(h.targetC)}): a chiller, or a cooler room.`);
     if (t.rows.co2 === 'pressurized' && t.rows.air === 'airstone') warn.push('An airstone running by day blows off the injected CO2: put it on a timer for the night.');
     if (warn.length) html += `<div class="hint why">${warn.map(esc).join('<br>')}</div>`;
@@ -301,6 +310,11 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     if (el.dataset.hw !== undefined) { // a generic heater's watts
       const i = +el.dataset.hw, w = Math.round(+el.value);
       if (el.value !== '' && isFinite(w)) edit(s => { const t = techOf(s); return withUnits(t, 'heater', heatersNow(s, t).map((u, k) => k === i ? { ...u, w: Math.min(2000, Math.max(5, w)) } : u)); });
+      return;
+    }
+    if ((el.id === 'tTarget' || el.id === 'tMeasured') && (el.value === '' || isFinite(+el.value))) { // empty clears it
+      const key = el.id === 'tTarget' ? 'targetC' : 'measuredC';
+      edit(s => { const t = { ...techOf(s) }; if (el.value === '') delete t[key]; else t[key] = Math.min(40, Math.max(0, fahr() ? fromF(+el.value) : +el.value)); return t; });
       return;
     }
     if (el.id !== 'tRoom' || !isFinite(+el.value) || el.value === '') return;

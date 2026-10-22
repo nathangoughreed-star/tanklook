@@ -38,9 +38,30 @@ describe('demandOf on the starter examples', () => {
     expect(planted.D.totals.minPerWeek).toBeGreaterThan(20); expect(planted.D.totals.minPerWeek).toBeLessThan(180);
     expect(reef.D.totals.setupUsd).toBeGreaterThan(planted.D.totals.setupUsd); // salt costs more
     expect(reef.D.totals.minPerWeek).toBeGreaterThan(planted.D.totals.minPerWeek * 0.8);
-    // reef above planted held only through five reef species flagged as temperature clashes (pairs sharing 1 °C); since temp-tiers
-    // (2026-10-22) a narrow shared range is a margin, not a clash, and carries no risk points. Whether it should is open (Nathan).
-    expect(reef.D.totals.risk).toBeGreaterThan(run('betta').D.totals.risk);
+    // (reef above planted held only through five reef species wrongly flagged as temperature clashes; no independent reason keeps that
+    // ranking, so the mechanism is tested below instead: temp-tiers 2026-10-22)
+  });
+  it('temperature risk: a narrow overlap carries no incompatibility points, a genuine clash still does, the rest is untouched', () => {
+    // the planted tank with its fish replaced: the same animal rows with and without a tankmate whose range meets theirs narrowly or not at all
+    const withFish = (...ids: [string, number][]) => {
+      const S = structuredClone(parseScene(SCENES.planted).scene.tanks[0]); let k = 1;
+      S.fish = ids.flatMap(([species, n]) => Array.from({ length: n }, () => ({ id: k++, species, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0 })));
+      return demandOf(S, defaultProfile(), { now: NOW });
+    };
+    const rowRisk = (D: ReturnType<typeof demandOf>, id: string) => D.items.find(r => r.key === `animal:${id}`)!.risk;
+    const temps = (D: ReturnType<typeof demandOf>) => D.warnings.filter(w => /temperature/.test(w));
+    // cardinal 23-29 and German blue ram 27-30 share 27-29: narrow, no warning, the cardinal's row carries the same risk as alone
+    const alone = withFish(['cardinal', 6]), narrow = withFish(['cardinal', 6], ['gbr', 2]);
+    expect(temps(narrow)).toEqual([]);
+    expect(rowRisk(narrow, 'cardinal')).toBeCloseTo(rowRisk(alone, 'cardinal'), 9);
+    // goldfish and discus share nothing: the goldfish row warns and gains the compatibility points (the engine records each species'
+    // main blocking reason; the discus's main one is not temperature)
+    const gold = withFish(['goldfish', 2]), clash = withFish(['goldfish', 2], ['discus', 5]);
+    expect(temps(clash)).toEqual([expect.stringMatching(/^Fancy goldfish: water temperature: No suitable shared temperature identified/)]);
+    expect(rowRisk(clash, 'goldfish')).toBeGreaterThan(rowRisk(gold, 'goldfish'));
+    // what is not temperature stays: the tank, filter and routine rows are the same with or without the narrow tankmate
+    const rest = (D: ReturnType<typeof demandOf>) => D.items.filter(r => !r.key.startsWith('animal:')).map(r => [r.key, r.risk]);
+    expect(rest(narrow).filter(([k]) => !/^(food|feed|water|nitro|bio)/.test(String(k)))).toEqual(rest(alone).filter(([k]) => !/^(food|feed|water|nitro|bio)/.test(String(k))));
   });
   it('risk falls with skill and the salt multiplier shows up', () => {
     const novice = run('reef').D.totals.risk, expert = run('reef', p => { p.skill = { fundamentals: 2, fish: 2, planted: 2, salt: 2, terrarium: 2 }; }).D.totals.risk;

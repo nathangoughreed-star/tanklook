@@ -9,7 +9,7 @@ import type { TankSetup } from '../src/scene/types';
 import { getSpecies } from '../src/data/species';
 import { whyAnimal } from '../src/scene/animalfit';
 import { whyNot } from '../src/scene/plantfit';
-import { reefFeedOf, unheatedC } from '../src/scene/tech';
+import { reefFeedOf, tempEvidence } from '../src/scene/tech';
 import { demandOf } from '../src/demand/engine';
 import { defaultProfile } from '../src/demand/types';
 
@@ -198,11 +198,12 @@ describe('benefits wired (lane TM step 5)', () => {
   it('no heater: the Animals gate flags species the room is too cold for', () => {
     const neon = getSpecies('neon')!;
     expect(neon).toBeTruthy();
-    expect(whyAnimal(neon, 200, 3, [], { unheatedC: 17 })?.text).toMatch(/no heater/);
+    const S = sized(762, 305, 305, { fish: true }), cold = tempEvidence({ ...S, tech: { rows: { heater: 'none' }, roomC: 17 } });
+    expect(cold).toMatchObject({ heater: false, room: 17, roomSet: true });
+    expect(whyAnimal(neon, 200, 3, [], { water: cold })?.text).toMatch(/requires heating.*no heater/);
     expect(whyAnimal(neon, 200, 3, [], {})).toBeNull();
-    const S = sized(762, 305, 305, { fish: true });
-    expect(unheatedC({ ...S, tech: { rows: { heater: 'none' }, roomC: 18 } })).toBe(18);
-    expect(unheatedC({ ...S, tech: { rows: { heater: 'one' } } })).toBeUndefined();
+    expect(tempEvidence({ ...S, tech: { rows: { heater: 'one' } } })).toMatchObject({ heater: true, roomSet: false });
+    expect(tempEvidence({ ...S, tech: { rows: { heater: 'one' }, targetC: 25, measuredC: 24 } })).toMatchObject({ target: 25, measured: 24 });
   });
   it('no heater in a cold room raises the risk of a tropical stocking', () => {
     const S = sized(762, 305, 305, { fish: true });
