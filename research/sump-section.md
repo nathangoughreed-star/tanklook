@@ -14,16 +14,14 @@ Nathan 2026-10-22: "yea this should be an additional section in the 'tech'. Reus
 ## Tank picks that move (tankFor, 73 water species x 1/3/6/12/25/50 = 438 cases)
 | species x count | before tank | filtration | fails | after tank | filtration | fails |
 |---|---|---|---|---|---|---|
-| mystery x50 | g10 | 98 % | - | g2_5 | 80 % | - |
+| mystery x50 | g30b | 67 % | - | g75 | 70 % | - |
 | bluetang x12 | g300 | 85 % | - | c6 | 99 % | - |
-| turbo x12 | g15 | 97 % | - | g29 | 44 % | - |
-| turbo x25 | g37 | 85 % | - | g29 | 92 % | - |
-| turbo x50 | g75 | 81 % | - | g55 | 99 % | - |
+| turbo x12 | g20l | 72 % | - | g29 | 44 % | - |
 | axolotl x6 | g60b | 40 % | - | g75 | 26 % | - |
 
-Notes: 12 turbo snails now need 29 gal (no sump under 29 gal), but 25 and 50 drop a size because a 29 / 55 gal salt tank now counts its sump water. 6 axolotls: a fresh 60 gal breeder gets no sump. 12 blue tangs: the 6 ft custom (205 gal) now passes with its sump water (before: 300 gal). **50 mystery snails drop to 2.5 gal**: the sumpOffered gate already covers tankfit's strongest-filter fallback (the filter loop skips the sump before "strongest" is chosen). On main, that fallback took a sump on the 2.5-8 gal tanks (by its 1.3 capacity, though its media is 5 % of a few litres) and judged 2.5 gal at 426 %, while main's own builds for 2.5 gal already gave a canister at 80 %. Now tankfit agrees with the builds (80 %). The 2.5 gal answer is the snail bioload question (CF: "looks too low"), for Nathan, not changed here.
+Against main 273bd21 (after lane SN's snail floor and waste). 12 turbo snails need 29 gal (no sump under 29 gal; before, a 20 gal long counted one). 6 axolotls: a fresh 60 gal breeder gets no sump. 12 blue tangs: the 6 ft custom (205 gal) now passes with its sump water (before: 300 gal). **50 mystery snails: 30 gal breeder -> 75 gal.** On main the 30-60 gal fresh tanks held them only with a counted sump (30 breeder 67 %), which the builds never offered; without it the best filter leaves them at 122-138 % (filtration fails), so the first tank that fits is the 75 gal, where a fresh sump is offered (70 %, unchanged from main). The sumpOffered gate covers tankfit's strongest-filter fallback too.
 
-## Filtration % that moves with the same tank (54 cases; the tank pick holds)
+## Filtration % that moves with the same tank (58 cases; the tank pick holds)
 Large tanks read lower (their sump water dilutes); fresh 40-60 gal tanks that used to count a sump read higher (no sump offered there). Every one still fits.
 
 | species x count | before tank | filtration | fails | after tank | filtration | fails |
@@ -64,6 +62,8 @@ Large tanks read lower (their sump water dilutes); fresh 40-60 gal tanks that us
 | clownloach x12 | c8 | 20 % | - | c8 | 17 % | - |
 | clownloach x25 | c8 | 41 % | space | c8 | 36 % | space |
 | clownloach x50 | c8 | 82 % | space | c8 | 72 % | space |
+| nerite x25 | g8c | 40 % | - | g8c | 24 % | - |
+| mystery x25 | g15 | 67 % | - | g15 | 75 % | - |
 | ocellaris x50 | g210 | 16 % | - | g210 | 14 % | - |
 | yellowtang x3 | g55 | 27 % | - | g55 | 24 % | - |
 | yellowtang x6 | g55 | 55 % | - | g55 | 48 % | - |
@@ -78,6 +78,8 @@ Large tanks read lower (their sump water dilutes); fresh 40-60 gal tanks that us
 | coralbeauty x12 | g60b | 28 % | - | g60b | 24 % | - |
 | coralbeauty x25 | g180 | 20 % | - | g180 | 18 % | - |
 | coralbeauty x50 | c8 | 20 % | space | c8 | 17 % | space |
+| turbo x25 | g60b | 54 % | - | g60b | 47 % | - |
+| turbo x50 | g180 | 38 % | - | g180 | 33 % | - |
 | axolotl x3 | g40b | 28 % | - | g40b | 73 % | - |
 | axolotl x12 | g180 | 28 % | - | g180 | 24 % | - |
 | axolotl x25 | c8 | 28 % | space | c8 | 24 % | space |
@@ -134,6 +136,8 @@ Every tankFor pick that fits (412) now has a build at or under 100 % filtration 
 | coralbeauty x12 | g60b | sponge $2400 87% | sump $2629 24% |
 | coralbeauty x25 | g180 | hob $5230 80% | sump $5561 18% |
 | coralbeauty x50 | c8 | canister $9778 92% | sump $10099 17% |
+| turbo x25 | g60b | sponge $1487 168% | sump $1716 47% |
+| turbo x50 | g180 | hob $3288 149% | sump $3620 33% |
 | axolotl x12 | g180 | hob $3029 109% | sump $3360 24% |
 | axolotl x25 | c8 | canister $6193 130% | sump $6513 24% |
 | axolotl x50 | c8 | canister $8469 261% | sump $8789 49% |
