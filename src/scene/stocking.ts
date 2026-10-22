@@ -118,7 +118,7 @@ export const HS_MIN_CM = 30.5, HS_K = 8, HS_LOW = 0.7, HS_HIGH = 1.5, ALL_CURVE 
 /** Class by id (lane HC, Nathan 2026-10-21: "an oscar going from 12 to 18 inches is a lot more helpful than a school of danios"):
  *  fast horizontal schoolers and surface fish use little of the height (low); tall-bodied fish, hoverers and big cichlids use more (high). */
 const HS_LOW_IDS = new Set(['danio', 'whitecloud', 'cpd', 'harlequin', 'chili', 'tigerbarb', 'cherrybarb', 'sae']);
-const HS_HIGH_IDS = new Set(['gourami', 'dwarfgourami', 'honeygourami', 'oscar', 'livingstonii', 'kadango']);
+const HS_HIGH_IDS = new Set(['gourami', 'dwarfgourami', 'honeygourami', 'livingstonii', 'kadango']);
 export function heightClass(sp: Species): 'low' | 'mid' | 'high' {
   return HS_HIGH_IDS.has(sp.id) || sp.aspect >= 0.9 ? 'high' : HS_LOW_IDS.has(sp.id) || zoneOf(sp) === 'top' ? 'low' : 'mid';
 }
