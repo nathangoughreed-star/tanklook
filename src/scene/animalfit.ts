@@ -95,6 +95,13 @@ function tempWhys(sp: Species, present: Species[]): AnimalWhy[] {
   return [];
 }
 
+/** What the species list shows for a species (ui/panels.ts): a blocker = the first blocking reason, prominent (the item grayed), the
+ *  others under it; concerns only = the first concern as a note, the animal still selectable; no reasons = nothing. */
+export function gateOf(all: AnimalWhy[]): (AnimalWhy & { block: boolean; more: string[] }) | null {
+  const main = all.find(w => !w.concern) ?? all[0];
+  return main ? { ...main, block: !main.concern, more: all.filter(w => w !== main).map(w => w.text) } : null;
+}
+
 /** Group advice for a stocked species (lane CG): `n` of it in the tank, under its smallest group. Null when it is fine. */
 export function groupShort(sp: Species, n: number): string | null {
   const g = CARE[sp.id]?.group;

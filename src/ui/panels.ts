@@ -20,7 +20,7 @@ import { BACKDROPS } from '../render/backdrop';
 import { gearShown, setGearShown } from '../render/gear3d';
 import { MAP_DIV, MAP_STEP, emitters, mapStepOf } from '../render/lighting';
 import { darkOf, darkStats } from '../render/lightShells';
-import { hasCorals, whysAnimal, type AnimalWhy } from '../scene/animalfit';
+import { gateOf, hasCorals, whysAnimal, type AnimalWhy } from '../scene/animalfit';
 import { minFit } from '../scene/tankMin';
 import { EXPERTISE_NAME } from '../data/care';
 import { CARE_NAME, FIT_PAR, fitCaption, whyNot, type FitLight } from '../scene/plantfit';
@@ -668,7 +668,7 @@ Cancel, then change the name, to keep both.`)) return;
     const env = { corals: hasCorals(s.items), water: s.tech ? tempEvidence(s) : undefined, fit: minFit(s) }; // the tank's target, or with no heater the room it follows
     // the main blocking reason, and how many other material concerns stand under it (all of them in the tooltip); with no blocker the
     // first concern is the visible message (a note, the item not grayed), so an advisory never hides behind a clean-looking row
-    return sp => { const all = whysAnimal(sp, litres, ex, present, env), main = all.find(w => !w.concern) ?? all[0]; return main ? { ...main, block: !main.concern, more: all.filter(w => w !== main).map(w => w.text) } : null; };
+    return sp => gateOf(whysAnimal(sp, litres, ex, present, env));
   }
   $('gateAnimals').onchange = e => store.edit(s => { if ((e.target as HTMLInputElement).checked) s.layout.gateAnimals = true; else delete s.layout.gateAnimals; });
   function renderResults() {

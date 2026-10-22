@@ -3,7 +3,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { CARE } from '../src/data/care';
 import { getSpecies, type Species } from '../src/data/species';
-import { whyAnimal, whysAnimal } from '../src/scene/animalfit';
+import { gateOf, whyAnimal, whysAnimal } from '../src/scene/animalfit';
 import { checkLevel, holdCheck, measuredCheck, NARROW_C, operatingCheck, rangeLine, rangeVerdict, sharedRange, type TempEvidence } from '../src/scene/temprange';
 import { conflictsOf, tempLinesOf } from '../src/ui/stockPlanLogic';
 import { animalsOfSetup, hardTruths, planOf } from '../src/scene/plan';
@@ -211,4 +211,20 @@ describe('the plan sheet: the two outputs, said once for the whole stocking', ()
     expect(w[0].text).toMatch(/No suitable shared temperature identified/);
     expect(w[1].text).toMatch(/requires heating/);
   });
+});
+
+describe('species list (panels.ts animalGate via gateOf): blocker, concerns only, nothing', () => {
+  it('a blocker is shown first and grays the item, the rest stay accessible', () => {
+    const g = gateOf(whysAnimal(fake('tA'), 1e9, 3, [fake('tD'), sp('oscar')]))!;
+    expect(g.block).toBe(true); expect(g.more.length).toBeGreaterThan(0);
+  });
+  it('a lone narrow-temperature concern is the visible note, the animal not grayed', () => {
+    const g = gateOf(whysAnimal(sp('gbr'), 1e9, 3, [sp('cardinal')]))!;
+    expect(g).toMatchObject({ block: false, concern: true, more: [] });
+    expect(g.text).toMatch(/narrow margin/);
+  });
+  it('a lone advisory of any kind (e.g. the Amano predation note on invert-prey) is shown the same way', () => {
+    expect(gateOf([{ kind: 'compat', concern: true, text: 'compatibility: may eat its small ones (Amano shrimp)' }])).toMatchObject({ block: false, text: expect.stringMatching(/Amano/) });
+  });
+  it('no reasons: nothing shown', () => { expect(gateOf(whysAnimal(fake('tA'), 1e9, 3, [fake('tB4')]))).toBeNull(); });
 });
