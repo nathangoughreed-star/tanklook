@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { CARE, SHRIMP } from '../src/data/care';
 import { SPECIES, getSpecies } from '../src/data/species';
 import { preyRisk, whyAnimal, whysAnimal } from '../src/scene/animalfit';
+import { conflictsOf } from '../src/ui/stockPlanLogic';
 
 const sp = (id: string) => getSpecies(id)!;
 const saved = new Map<string, [number, number] | undefined>();
@@ -29,14 +30,24 @@ describe('invertebrate predation', () => {
     for (const [add, have] of [['amano', 'gbr'], ['gbr', 'amano']]) {
       const prey = preyWhys(add, have);
       expect(prey.map(w => w.concern), add).toEqual([true]);
-      expect(prey[0].text, add).toMatch(/large adults only/);
+      expect(prey[0].text, add).toMatch(/only consider large adults; smaller ones remain at risk/);
       expect(why(add, have) ?? '', add).not.toMatch(/eat/);   // a concern is not the gate
     }
   });
   it('the Amano concern never hides a harder reason', () => {
     const all = whys('amano', 'gbr');   // real bands: 18-26 against 26-30
     expect(all[0].text).toMatch(/temperature/);
-    expect(all.at(-1)).toMatchObject({ concern: true, text: expect.stringMatching(/large adults only/) });
+    expect(all.at(-1)).toMatchObject({ concern: true, text: expect.stringMatching(/only consider large adults; smaller ones remain at risk/) });
+  });
+  it('stock plan: a lone Amano concern is the visible message; with a blocker it stands under it', () => {
+    const picks = [{ id: 'gbr', n: 2 }, { id: 'amano', n: 4 }], risk = /only consider large adults; smaller ones remain at risk/;
+    const real = conflictsOf(picks, 'amano');   // real bands 18-26 against 26-30: temperature blocks, the concern follows
+    expect(real[0]).toMatchObject({ block: true, text: expect.stringMatching(/temperature/) });
+    expect(real.at(-1)).toMatchObject({ block: false, text: expect.stringMatching(risk) });
+    sameWater('gbr', 'amano');
+    const alone = conflictsOf(picks, 'amano');   // matching water: the concern is all there is, and it is shown first
+    expect(alone.filter(w => w.block)).toEqual([]);
+    expect(alone[0]).toMatchObject({ block: false, text: expect.stringMatching(risk) });
   });
   it('rams leave snails alone', () => {
     for (const id of ['ramshorn', 'trumpet', 'nerite', 'mystery']) {

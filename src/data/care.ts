@@ -24,7 +24,7 @@ export interface AnimalCare extends GroupCare {
   /** eats animals up to this length (mm), optionally only of these groups. `inverts: 'shrimp'`: of the invertebrates it takes only
    *  shrimp (SHRIMP), since shrimp and snails share 'fw-invert'; without it every invertebrate in range counts, snails included
    *  (lane IP 2026-10-22). `young`: past `mm` and up to this adult length it still takes the young and small ones, an advisory
-   *  (keep large adults only), not "would eat it". */
+   *  (only consider large adults; the plan does not know their size, so it never says they are safe), not "would eat it". */
   prey?: { mm: number; cats?: Category[]; inverts?: 'shrimp'; young?: number };
   /** one of its kind per tank (a bonded pair is fine); `fam` extends that to look-alike rivals (tangs) */
   solo?: true;

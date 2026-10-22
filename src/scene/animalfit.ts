@@ -63,8 +63,8 @@ export function whysAnimal(sp: Species, litres: number, expertise: Expertise, pr
     const eats = preyRisk(sp, o), eaten = preyRisk(o, sp);   // lane IP: blocking when it takes the adults, a concern when only the young
     if (eats === 'eats') bad('would eat it');
     if (eaten === 'eats') bad('it would eat this one');
-    if (eats === 'young') bad('would eat its young and small ones, keep large adults only', true);
-    if (eaten === 'young') bad('it would eat young and small ones of this, keep large adults only', true);
+    if (eats === 'young') bad('may eat its small ones: only consider large adults; smaller ones remain at risk', true);
+    if (eaten === 'young') bad('it may eat small ones of this: only consider large adults; smaller ones remain at risk', true);
     if (sp.habitat !== 'land' && o.habitat !== 'land') {
       if (c.temper >= 1 && oc.slow || c.nip && oc.slow) bad('would harass its long fins');
       if (oc.temper >= 1 && c.slow || oc.nip && c.slow) bad("it would harass this one's long fins");
