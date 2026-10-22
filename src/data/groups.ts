@@ -14,6 +14,11 @@ export interface GroupCare {
   /** the most of this species advised in ONE tank, whatever its size (solo species = 1; a bonded pair = 2). Past it the stocking screen
    *  warns (overWarn), never blocks. Absent = no stated cap (a `solo` species reads as 1). Not a density: room is the tank fit's job. */
   max?: number;
+  /** The most before fighting, scaled with the tank (S196, Nathan 2026-10-22; research/territory-caps.md): `at` = [US gal, animals]
+   *  steps as the sources state them (fighting limits only: room rules such as "+3 gal per tiger barb" are the stocking percent's
+   *  job); past the last step one more animal per `each` gal (`per` at a time, 2 for pairs). Where present
+   *  it replaces `max` for a known tank size. A warning only: the stocking percent never reads it. */
+  territory?: { at: [number, number][]; each?: number; per?: number; /** advice shown with the warning */ note?: string };
   /** usually kept by sex in the hobby: recommended males : females, and why */
   sexed?: { ratio: [number, number]; note?: string };
   /** MAXIMUM WATER DEPTH, mm: the deepest water the animal can live in (it must reach the surface to breathe, or the shore). Not a
@@ -41,6 +46,20 @@ export interface GroupCare {
 export type GroupBand = 'avoid' | 'ok' | 'good' | 'great';
 /** Recommended minimum group: bands.ok, else the older CARE.group, else 1. */
 export const recommendedMin = (g: GroupCare | undefined, careGroup?: number) => g?.bands?.ok ?? careGroup ?? 1;
+/** The most one tank of `litres` takes before fighting: the size-scaled `territory` rule, else the flat `max`. */
+export function mostFor(g: GroupCare | undefined, litres?: number): number | undefined {
+  const t = g?.territory;
+  if (!t || litres === undefined) return g?.max;
+  const gal = litres / 3.785;
+  let [at, n] = t.at[0];
+  for (const s of t.at) if (gal >= s[0]) [at, n] = s;
+  if (t.each && gal > at) n += Math.floor((gal - at) / t.each + 1e-9) * (t.per ?? 1);
+  // never below the group the same species' bands ask for (a pair of rams must not read "keep one", Coordinator 8 2026-10-22)
+  return Math.max(n, recommendedMin(g, (g as { group?: number }).group));
+}
+/** A species whose count is limited by fighting, not room (Nathan 2026-10-22: schools number in the thousands in the wild; their
+ *  limit is the stocking percent): a sourced size-scaled `territory` rule, one to a tank, or a pair at most. */
+export const fightsOverCount = (g: (GroupCare & { solo?: boolean }) | undefined) => !!(g?.territory || g?.solo || (g?.max ?? 99) <= 2);
 /** Which band a count of animals falls in (no bands = always 'ok'). */
 export function bandOf(g: GroupCare | undefined, n: number): GroupBand {
   const b = g?.bands;
@@ -76,12 +95,12 @@ export const GROUPS: Record<string, GroupCare> = {
   molly: { bands: { ok: 3, good: 4, great: 6 }, msg: { avoid: 'A lone molly or a male with one female gets harassed; keep 1 male : 2-3 females' }, max: 12, sexed: { ratio: [1, 3], note: 'Keep more females than males so one female is not hounded' }, flow: 'medium', zone: 'middle', minLengthMm: 750, appeal: ['livebearer', 'colour', 'easy'] },
   swordtail: { bands: { ok: 3, good: 4, great: 6 }, msg: { avoid: 'Males chase females hard; keep 1 male : 3 females' }, max: 10, sexed: { ratio: [1, 3], note: 'One male to several females disperses harassment; avoid several males' }, flow: 'medium', zone: 'top', minLengthMm: 800, minAreaCm2: 3600, appeal: ['colour', 'easy', 'personality', 'shoal'] },
   betta: { bands: { ok: 1, good: 1, great: 1 }, msg: { ok: 'Keep one male per tank; males fight to the death' }, max: 1, flow: 'low', zone: 'top', minLengthMm: 300, appeal: ['finnage', 'showpiece', 'colour', 'personality', 'hands-on'] },
-  dwarfgourami: { bands: { ok: 1, good: 1, great: 1 }, msg: { ok: 'One male alone is safest; a pair needs plants to break sight lines' }, max: 1, flow: 'low', zone: 'top', minLengthMm: 600, appeal: ['showpiece', 'colour', 'peaceful'] },
+  dwarfgourami: { bands: { ok: 1, good: 1, great: 1 }, msg: { ok: 'One male alone is safest; a pair needs plants to break sight lines' }, max: 1, territory: { at: [[10, 3]], each: 5, note: 'shops sell mostly males: keep at least 2 females per male' }, flow: 'low', zone: 'top', minLengthMm: 600, appeal: ['showpiece', 'colour', 'peaceful'] },
   honeygourami: { bands: { ok: 1, good: 2, great: 4 }, msg: { ok: 'Peaceful; fine alone but happier as a pair or small group' }, max: 6, flow: 'low', zone: 'top', minLengthMm: 450, appeal: ['easy', 'colour', 'personality'] },
   gourami: { bands: { ok: 1, good: 2, great: 4 }, msg: { ok: 'One male only unless tank is 120 cm+; add females' }, max: 5, sexed: { ratio: [1, 3], note: 'Males are territorial with each other; one male to 2-3 females' }, flow: 'low', zone: 'top', minLengthMm: 900, appeal: ['showpiece', 'finnage', 'personality'] },
   gbr: { bands: { ok: 2, good: 2, great: 2 }, msg: { avoid: 'Singles are shy; keep a bonded pair' }, max: 2, flow: 'low', zone: 'bottom', minLengthMm: 600, appeal: ['showpiece', 'colour', 'hands-on'] },
-  bolivianram: { bands: { ok: 2, good: 4, great: 6 }, msg: { avoid: 'Singles do best only if tank is peaceful; a pair or small group is better' }, max: 8, flow: 'low', zone: 'bottom', minLengthMm: 600, appeal: ['personality', 'colour', 'easy'] },
-  kribensis: { bands: { ok: 2, good: 2, great: 2 }, msg: { avoid: 'A lone krib is fine but a male/female pair shows the real behaviour' }, max: 2, sexed: { ratio: [1, 1], note: 'Keep as one male/female pair; breeding pairs are territorial and need hiding caves' }, flow: 'low', zone: 'bottom', minLengthMm: 600, appeal: ['personality', 'colour', 'easy'] },
+  bolivianram: { bands: { ok: 2, good: 4, great: 6 }, msg: { avoid: 'Singles do best only if tank is peaceful; a pair or small group is better' }, max: 8, territory: { at: [[30, 1]], each: 7.5 }, flow: 'low', zone: 'bottom', minLengthMm: 600, appeal: ['personality', 'colour', 'easy'] },
+  kribensis: { bands: { ok: 2, good: 2, great: 2 }, msg: { avoid: 'A lone krib is fine but a male/female pair shows the real behaviour' }, max: 2, territory: { at: [[20, 2]], each: 12.5, per: 2 }, sexed: { ratio: [1, 1], note: 'Keep as one male/female pair; breeding pairs are territorial and need hiding caves' }, flow: 'low', zone: 'bottom', minLengthMm: 600, appeal: ['personality', 'colour', 'easy'] },
   cockatoo: { bands: { ok: 2, good: 3, great: 4 }, msg: { avoid: 'A lone male is fine but a harem is the natural way', great: '1 male with 3 females needs dense caves and a 90 cm footprint' }, max: 5, sexed: { ratio: [1, 3], note: 'One male to 2-3 females; never two males in a small tank; add males after females settle' }, flow: 'low', zone: 'bottom', minLengthMm: 900, appeal: ['personality', 'colour', 'showpiece'] },
   yellowlab: { bands: { ok: 4, good: 6, great: 8 }, msg: { avoid: 'A lone fish or a male with too few females gets harassed or harasses' }, max: 12, sexed: { ratio: [1, 4], note: 'One male to several females to spread male aggression' }, flow: 'medium', zone: 'all', minLengthMm: 900, appeal: ['colour', 'easy', 'personality'] },
   peacock: { bands: { ok: 3, good: 4, great: 6 }, msg: { avoid: 'Singles and pairs get chased hard; keep one male with several females' }, max: 8, sexed: { ratio: [1, 3], note: 'One male to 2-4 females; two males fight unless tank is very large' }, flow: 'medium', zone: 'middle', minLengthMm: 1200, appeal: ['colour', 'showpiece', 'personality'] },
@@ -106,7 +125,7 @@ export const GROUPS: Record<string, GroupCare> = {
   clownloach: { bands: { ok: 5, good: 6, great: 8 }, msg: { avoid: 'Shy, stressed and sickly in small groups', great: 'Adults reach 25-30 cm; group needs a large tank' }, flow: 'medium', zone: 'bottom', minLengthMm: 1200, appeal: ['shoal', 'active', 'personality', 'size'] },
   sae: { bands: { ok: 3, good: 5, great: 6 }, msg: { avoid: 'Singles turn territorial and chase tankmates', ok: 'Adults squabble; more fish spread the aggression' }, flow: 'medium', zone: 'bottom', minLengthMm: 900, appeal: ['cleanup', 'easy', 'personality'] },
   hillstream: { bands: { ok: 3, good: 5, great: 6 }, msg: { avoid: 'Do poorly alone; need company and strong flow' }, flow: 'high', zone: 'bottom', minLengthMm: 750, appeal: ['oddball', 'showpiece', 'personality'] },
-  peapuffer: { bands: { ok: 1, good: 3, great: 5 }, msg: { ok: 'Solo is fine in a small tank', good: 'Keep one male to several females; males fight', great: 'Needs dense planting and 15+ gal' }, max: 8, sexed: { ratio: [1, 3], note: 'One male to 2-3 females or single-sex; multiple males fight' }, flow: 'low', zone: 'all', minLengthMm: 300, appeal: ['personality', 'hands-on', 'oddball', 'size'] },
+  peapuffer: { bands: { ok: 1, good: 3, great: 5 }, msg: { ok: 'Solo is fine in a small tank', good: 'Keep one male to several females; males fight', great: 'Needs dense planting and 15+ gal' }, max: 8, territory: { at: [[5, 1]], each: 3 }, sexed: { ratio: [1, 3], note: 'One male to 2-3 females or single-sex; multiple males fight' }, flow: 'low', zone: 'all', minLengthMm: 300, appeal: ['personality', 'hands-on', 'oddball', 'size'] },
   cherryshrimp: { bands: { ok: 10, good: 15, great: 25 }, max: 100, sexed: { ratio: [1, 2], note: 'More females than males helps a breeding colony' }, flow: 'low', zone: 'all', minLengthMm: 400, appeal: ['shoal', 'colour', 'cleanup'] },
   amano: { bands: { ok: 6, good: 8, great: 10 }, msg: { great: 'Colony behaviour at 10+; cannot breed in freshwater' }, flow: 'medium', zone: 'all', minLengthMm: 450, appeal: ['cleanup', 'easy', 'personality'] },
   nerite: { bands: { ok: 1, good: 1, great: 1 }, flow: 'medium', zone: 'all', minLengthMm: 300, appeal: ['cleanup', 'easy', 'peaceful'] },
@@ -114,14 +133,14 @@ export const GROUPS: Record<string, GroupCare> = {
   ramshorn: { bands: { ok: 1, good: 3, great: 6 }, msg: { great: 'Breeds fast; numbers track feeding, watch for a population boom' }, flow: 'low', zone: 'all', minLengthMm: 400, appeal: ['easy', 'cleanup', 'oddball'] },
   trumpet: { bands: { ok: 1, good: 5, great: 10 }, msg: { great: 'Colony self-grows; limit feeding to keep it in check' }, flow: 'low', zone: 'bottom', minLengthMm: 300, appeal: ['easy', 'cleanup', 'nocturnal'] },
   ocellaris: { bands: { ok: 2, good: 2, great: 2 }, msg: { avoid: 'A lone clown is hardy but the classic keep is a bonded pair', ok: 'A pair; more than two will fight' }, max: 2, flow: 'medium', zone: 'middle', minLengthMm: 600, appeal: ['personality', 'colour', 'showpiece', 'easy'] },
-  royalgramma: { bands: { ok: 1, good: 1, great: 1 }, msg: { ok: 'Keep one; several adults need 55 gal+ and fight' }, max: 1, flow: 'medium', zone: 'bottom', minLengthMm: 900, appeal: ['colour', 'personality', 'easy'] },
+  royalgramma: { bands: { ok: 1, good: 1, great: 1 }, msg: { ok: 'Keep one; several adults need 55 gal+ and fight' }, max: 1, territory: { at: [[30, 1], [50, 2], [100, 3]] }, flow: 'medium', zone: 'bottom', minLengthMm: 900, appeal: ['colour', 'personality', 'easy'] },
   yellowtang: { bands: { ok: 1, good: 1, great: 1 }, msg: { ok: 'Keep one; groups only in very large tanks, added together' }, max: 1, flow: 'high', zone: 'all', minLengthMm: 1200, appeal: ['colour', 'showpiece', 'size', 'personality'] },
   bluetang: { bands: { ok: 1, good: 1, great: 1 }, msg: { ok: 'Keep one; very large tank and long footprint needed' }, max: 1, flow: 'high', zone: 'all', minLengthMm: 1500, appeal: ['colour', 'showpiece', 'size', 'personality'] },
   firefish: { bands: { ok: 1, good: 2, great: 2 }, msg: { good: 'A pair bought together; unrelated adults often fight' }, max: 2, flow: 'medium', zone: 'middle', minLengthMm: 600, appeal: ['colour', 'personality', 'easy'] },
   banggai: { bands: { ok: 2, good: 2, great: 5 }, msg: { avoid: 'Lone Banggai are stressed; keep a bonded pair', good: 'A pair is the safest arrangement', great: 'Groups of 5+ need 55 gal+ and hiding spots; extra males squabble' }, max: 6, flow: 'low', zone: 'middle', minLengthMm: 600, appeal: ['colour', 'easy', 'personality'] },
   sixline: { bands: { ok: 1, good: 1, great: 1 }, msg: { ok: 'One per tank; a second is usually harassed' }, max: 1, flow: 'medium', zone: 'middle', minLengthMm: 900, appeal: ['personality', 'colour', 'cleanup'] },
   chromis: { bands: { ok: 6, good: 7, great: 9 }, msg: { avoid: 'Fewer than 6 and the dominant fish bullies the rest', great: '9+ makes a true school; needs 400 L+' }, flow: 'high', zone: 'top', minLengthMm: 900, appeal: ['shoal', 'colour', 'easy'] },
-  coralbeauty: { bands: { ok: 1, good: 1, great: 1 }, msg: { ok: 'One per tank; a second angel fights unless the tank is very large' }, max: 1, flow: 'medium', zone: 'bottom', minLengthMm: 900, appeal: ['colour', 'personality', 'showpiece'] },
+  coralbeauty: { bands: { ok: 1, good: 1, great: 1 }, msg: { ok: 'One per tank; a second angel fights unless the tank is very large' }, max: 1, territory: { at: [[70, 1], [180, 2]] }, flow: 'medium', zone: 'bottom', minLengthMm: 900, appeal: ['colour', 'personality', 'showpiece'] },
   watchman: { bands: { ok: 1, good: 2, great: 2 }, msg: { ok: 'A single is fine; a pair needs 55 gal+', good: 'A bonded pair shares one burrow' }, max: 2, flow: 'medium', zone: 'bottom', minLengthMm: 900, appeal: ['personality', 'hands-on', 'oddball'] },
   mandarin: { bands: { ok: 1, good: 1, great: 1 }, msg: { ok: 'One male per tank; males fight' }, max: 2, flow: 'low', zone: 'bottom', minLengthMm: 1000, appeal: ['colour', 'oddball', 'hands-on', 'showpiece'] },
   cleanershrimp: { bands: { ok: 1, good: 2, great: 3 }, msg: { ok: 'Fine alone, happier in a pair', great: 'Groups of 3+ in larger tanks' }, max: 4, flow: 'medium', zone: 'bottom', minLengthMm: 600, appeal: ['cleanup', 'personality', 'hands-on'] },

@@ -1,5 +1,6 @@
 // Sidebar wiring. Inputs write through store.update(); one sync() pulls every control back from the scene,
 // so undo/redo, file open and pointer drags all refresh the panels the same way.
+import { crowdWarnings } from '../scene/territory';
 import { FOCUS_SECS, type FocusSec } from '../render/menuFocus';
 import { attachDemandPanel } from './demandPanel';
 import { fitToLimits, hasLimits } from '../demand/fit';
@@ -1750,7 +1751,7 @@ Cancel, then change the name, to keep both.`)) return;
     if (!r || !r.contributors.length) { $('stkWhy').textContent = ''; return; }
     $('stkOut').textContent = stockingLine(r);
     $('stkOut').className = r.percent > 100 ? 'bad' : '';
-    $('stkWhy').textContent = r.reasons.join(' ');
+    $('stkWhy').textContent = [...r.reasons, ...crowdWarnings(s)].join(' '); // S196: fighting limits, a warning beside the percent
     syncNitrogen(r);
     $('stkBody').innerHTML = stockingDetail(r).map(t => `<li>${esc(t)}</li>`).join('') + `<li class="dim">Water ${store.scene.units === 'in' ? `${Math.round(r.capacity.litres / 3.785)} gal` : `${Math.round(r.capacity.litres)} L`}, filter x${r.capacity.filter.toFixed(2)}${r.capacity.plantCount ? `, plants x${r.capacity.plants.toFixed(2)}` : ''}, ${store.scene.units === 'in' ? `${Math.round(r.capacity.tempC * 9 / 5 + 32)} °F` : `${Math.round(r.capacity.tempC)} °C`}.</li>`;
   }

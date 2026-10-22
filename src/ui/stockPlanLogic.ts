@@ -1,7 +1,7 @@
 // Pure logic for the stocking screen and the fork card (lane P5, 2026-10-20): picks and counts, tankmate ranking, the tank the picks need,
 // fork options. No DOM; src/ui/stockPlan.ts draws it. Reads CARE (with the P1 group data merged in) and the P2 engine (scene/tankfit.ts).
 import { CARE } from '../data/care';
-import { bandMessage, bandOf, type GroupBand } from '../data/groups';
+import { bandMessage, bandOf, mostFor, type GroupBand } from '../data/groups';
 import { needLine, needsOf, type NeedSeverity } from '../data/careNeeds';
 import { getSpecies, SPECIES, type Species } from '../data/species';
 import { TANK_MODELS, tankFromModel, type TankModel } from '../data/tanks';
@@ -27,8 +27,8 @@ export const PAIR_FORMERS = new Set(['gbr', 'bolivianram', 'kribensis', 'angel',
 export const pairRule = (id: string) => PAIR_FORMERS.has(id);
 /** The pairing question is asked: a pair species with exactly two animals on the list. */
 export const asksPairing = (p: Pk) => pairRule(p.id) && totalOf(p) === 2;
-/** The most one tank is advised to take (a warning past it, never a block). */
-export const maxOf = (id: string) => CARE[id]?.max ?? 99;
+/** The most one tank is advised to take (a warning past it, never a block); with the tank's litres, the size-scaled rule (S196). */
+export const maxOf = (id: string, litres?: number) => mostFor(CARE[id], litres) ?? 99;
 export const minOf = (id: string) => CARE[id]?.bands?.ok ?? CARE[id]?.group ?? 1;
 
 /** The picks as the tank-fit engine wants them (males and females together). */
@@ -49,12 +49,13 @@ export function bump(p: Pk, which: 'n' | 'f' | 'u', d: number): Pk {
   return { ...p, [which]: v };
 }
 
-/** The warning for keeping more of a species than advised (more than the advised most, or more than one of a keep-one animal), else undefined. */
-export function overWarn(p: Pk): string | undefined {
-  const c = CARE[p.id], n = totalOf(p), mx = c?.max ?? (c?.solo ? 1 : undefined);
+/** The warning for keeping more of a species than advised (more than the advised most, or more than one of a keep-one animal), else
+ *  undefined. With the tank's litres, the most scales with the tank where the sources give a rule (S196, data/groups.ts territory). */
+export function overWarn(p: Pk, litres?: number): string | undefined {
+  const c = CARE[p.id], n = totalOf(p), mx = mostFor(c, litres) ?? (c?.solo ? 1 : undefined);
   if (!mx || n <= mx) return undefined;
   const name = getSpecies(p.id)?.name ?? p.id;
-  return mx === 1 ? `${name} is best kept one to a tank: expect fighting. The tank shown is sized for all of them` : `More than ${mx} ${name} in one tank is not advised: expect fighting or crowding`;
+  return mx === 1 ? `${name} is best kept one to a tank: expect fighting. The tank shown is sized for all of them` : c?.territory && litres ? `More than about ${mx} ${name} in a tank this size may fight${c.territory.note ? `: ${c.territory.note}` : c.sexed ? `; keep ${c.sexed.ratio[0]} male to ${c.sexed.ratio[1]} females` : ''}` : `More than ${mx} ${name} in one tank is not advised: expect fighting or crowding`;
 }
 
 /** The band message for the total count, plus the sex-ratio line for sexed species. `needs`: the species' essential care conditions

@@ -1,5 +1,7 @@
 # Temperament caps: a sketch (2026-10-21, not built)
 
+_Superseded 2026-10-22: built in a simpler form (size-scaled `territory` steps on the existing group data, warning only). See territory-caps.md and HANDOFF.md section S196._
+
 ## Why
 The experts' maximum stockings read a 59 % median in our engine (research/expert-curve.md). For territorial fish the count is limited by peace, not room. Examples: 8 dwarf gouramis in 55 gal reads 31 %, 4 angelfish in 75 gal 52 %, 3 chromis in 75 gal 12 %. The stocking percent cannot say this, so it needs its own rule. Bioload stays as it is.
 

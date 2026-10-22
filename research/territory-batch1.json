@@ -1,0 +1,913 @@
+[
+ {
+  "species": "dwarfgourami",
+  "unit": "male",
+  "femalesPerMale": 2,
+  "basis": "volume",
+  "rule": {
+   "first": "10 gal",
+   "each": "5 gal",
+   "text": "Fishkeeping World: 2-3 fish in 10 gal, add 5 gal per extra fish; Aquarium Source table 3 fish at 10 gal, +5 gal each (counts fish, not males)"
+  },
+  "points": [
+   {
+    "source": "Fishkeeping World",
+    "url": "https://fishkeepingworld.com/dwarf-gourami/",
+    "gal": 10,
+    "dims_in": null,
+    "count": 3,
+    "countUnit": "fish",
+    "kind": "max",
+    "quote": "Two or three gouramis can be easily kept in a 10-gallon tank."
+   },
+   {
+    "source": "Fishkeeping World",
+    "url": "https://fishkeepingworld.com/dwarf-gourami/",
+    "gal": null,
+    "dims_in": null,
+    "count": null,
+    "countUnit": "fish",
+    "kind": "rule",
+    "quote": "For each additional fish make sure to add 5 gallons."
+   },
+   {
+    "source": "Fishkeeping World",
+    "url": "https://fishkeepingworld.com/dwarf-gourami/",
+    "gal": null,
+    "dims_in": null,
+    "count": null,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "Keep at least a couple of females for every male."
+   },
+   {
+    "source": "Aquarium Source",
+    "url": "https://www.aquariumsource.com/dwarf-gourami/",
+    "gal": 10,
+    "dims_in": null,
+    "count": 3,
+    "countUnit": "fish",
+    "kind": "rule",
+    "quote": "add an additional 5 gallons for each new fish"
+   },
+   {
+    "source": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/trichogaster-lalius/",
+    "gal": 14,
+    "dims_in": [
+     24,
+     12,
+     12
+    ],
+    "count": 2,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "just about big enough for a pair"
+   },
+   {
+    "source": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/trichogaster-lalius/",
+    "gal": null,
+    "dims_in": null,
+    "count": null,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "It's generally not a good idea to keep a group of dwarf gouramis together."
+   },
+   {
+    "source": "Aquarium Co-Op",
+    "url": "https://www.aquariumcoop.com/blogs/aquarium/dwarf-gourami",
+    "gal": 10,
+    "dims_in": null,
+    "count": 1,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "one as a centerpiece fish with other community tank mates"
+   }
+  ],
+  "confidence": "medium",
+  "notes": "AMBIGUOUS: Fishkeeping World and Aquarium Source scale fish count by volume (no male limit); Seriously Fish and Aquarium Co-Op say one male or one pair only and warn against groups. The volume rule is a fish-count rule; male territory is not quantified. Seriously Fish 56 L = about 14 gal."
+ },
+ {
+  "species": "gbr",
+  "unit": "pair",
+  "femalesPerMale": null,
+  "basis": "footprint",
+  "rule": null,
+  "points": [
+   {
+    "source": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/mikrogeophagus-ramirezi/",
+    "gal": 14,
+    "dims_in": [
+     24,
+     12,
+     null
+    ],
+    "count": 1,
+    "countUnit": "pairs",
+    "kind": "max",
+    "quote": "sufficient for a single pair"
+   },
+   {
+    "source": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/mikrogeophagus-ramirezi/",
+    "gal": null,
+    "dims_in": null,
+    "count": 1,
+    "countUnit": "pairs",
+    "kind": "rec",
+    "quote": "command a territory a couple of feet across when breeding"
+   }
+  ],
+  "confidence": "low",
+  "notes": "Only one pair per 24x12 in, territory about 2 ft across when breeding (inference: +1 pair per about 24 in length, not stated). No per-additional-pair rule found. Quotes are fragments the fetch tool returned in quotation marks. Use existing expert-curve points for counts."
+ },
+ {
+  "species": "kribensis",
+  "unit": "pair",
+  "femalesPerMale": null,
+  "basis": "footprint",
+  "rule": {
+   "first": "20 gal",
+   "each": "10-15 gal",
+   "text": "Furry Critter: adding ten to fifteen gallons per additional pair, from a 20 gal first pair (retailer site, single source)"
+  },
+  "points": [
+   {
+    "source": "Furry Critter Network",
+    "url": "https://www.furrycritter.com/pages/products_gear/fish/kribensis_housing.htm",
+    "gal": 20,
+    "dims_in": null,
+    "count": 1,
+    "countUnit": "pairs",
+    "kind": "rule",
+    "quote": "adding ten to fifteen gallons per additional pair is a reasonable guideline"
+   },
+   {
+    "source": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/kribensis/",
+    "gal": 20,
+    "dims_in": null,
+    "count": 1,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "Start with a minimum tank size of 20 gallons."
+   },
+   {
+    "source": "Fishkeeping World",
+    "url": "https://www.fishkeepingworld.com/kribensis/",
+    "gal": 30,
+    "dims_in": null,
+    "count": 2,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "For more than one kribensis cichlid, start with a 30-gallon tank."
+   },
+   {
+    "source": "TFH Magazine",
+    "url": "https://www.tfhmagazine.com/articles/freshwater/keeping-kribs-the-culture-of-pelvicachromis-cichlids-full",
+    "gal": 10,
+    "dims_in": null,
+    "count": 1,
+    "countUnit": "pairs",
+    "kind": "max",
+    "quote": "A 10-gallon (38-liter) aquarium is large enough for a single pair."
+   },
+   {
+    "source": "TFH Magazine",
+    "url": "https://www.tfhmagazine.com/articles/freshwater/keeping-kribs-the-culture-of-pelvicachromis-cichlids-full",
+    "gal": null,
+    "dims_in": null,
+    "count": null,
+    "countUnit": "pairs",
+    "kind": "rec",
+    "quote": "it is even possible to house several couples in the same tank"
+   },
+   {
+    "source": "Practical Fishkeeping",
+    "url": "https://www.practicalfishkeeping.co.uk/features/kribensis-the-river-rainbows/",
+    "gal": null,
+    "dims_in": [
+     36,
+     null,
+     null
+    ],
+    "count": 1,
+    "countUnit": "pairs",
+    "kind": "rec",
+    "quote": "no less than 90cm/36\" long"
+   },
+   {
+    "source": "Gensou",
+    "url": "https://gensou.sg/kribensis-cichlid-care-guide/",
+    "gal": 16,
+    "dims_in": null,
+    "count": 1,
+    "countUnit": "pairs",
+    "kind": "rec",
+    "quote": "A single pair does well in a 60-litre tank."
+   }
+  ],
+  "confidence": "medium",
+  "notes": "Spawning territory radius about 20-30 cm (Gensou, paraphrased). Per-pair increment rests on one retailer source; first-pair size varies 10 gal (TFH), 16 (Gensou), 20 (FW, Furry Critter). TFH says several couples are possible with caves."
+ },
+ {
+  "species": "cockatoo",
+  "unit": "male",
+  "femalesPerMale": 2.5,
+  "basis": "footprint",
+  "rule": null,
+  "points": [
+   {
+    "source": "Aquarium Co-Op",
+    "url": "https://www.aquariumcoop.com/blogs/aquarium/apistogramma-dwarf-cichlid",
+    "gal": 20,
+    "dims_in": null,
+    "count": 1,
+    "countUnit": "males",
+    "kind": "rec",
+    "quote": "One male for every two to three females is a good ratio."
+   },
+   {
+    "source": "Aquarium Co-Op",
+    "url": "https://www.aquariumcoop.com/blogs/aquarium/apistogramma-dwarf-cichlid",
+    "gal": 20,
+    "dims_in": null,
+    "count": 1,
+    "countUnit": "males",
+    "kind": "rec",
+    "quote": "would do best in a 20-gallon aquarium or larger"
+   },
+   {
+    "source": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/apistogramma-cacatuoides/",
+    "gal": 14,
+    "dims_in": [
+     24,
+     12,
+     null
+    ],
+    "count": 1,
+    "countUnit": "pairs",
+    "kind": "rec",
+    "quote": "60 x 30 cm (24 x 12 in) or more, acceptable for a single pair"
+   }
+  ],
+  "confidence": "low",
+  "notes": "Seriously Fish quote is a paraphrase by the fetch tool. One male with 2-3 females per 20 gal is the only stated unit; no scaling rule found (female territory about 30 cm radius appears only on Wikipedia and forums, not used). Aquarium Co-Op says a 10 gal works for breeding."
+ },
+ {
+  "species": "angel",
+  "unit": "fish",
+  "femalesPerMale": null,
+  "basis": "volume",
+  "rule": null,
+  "points": [
+   {
+    "source": "Aquarium Co-Op",
+    "url": "https://www.aquariumcoop.com/blogs/aquarium/angelfish",
+    "gal": null,
+    "dims_in": null,
+    "count": null,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "This territorial behavior is primarily due to breeding."
+   },
+   {
+    "source": "Aquarium Co-Op",
+    "url": "https://www.aquariumcoop.com/blogs/aquarium/angelfish",
+    "gal": null,
+    "dims_in": null,
+    "count": 1,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "having just one as the centerpiece fish in your aquarium seems to make them much more easygoing and docile overall"
+   },
+   {
+    "source": "Fishkeeping World",
+    "url": "https://fishkeepingworld.com/angelfish/",
+    "gal": 30,
+    "dims_in": null,
+    "count": 6,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "Keep silver angelfish in a school of six or more."
+   },
+   {
+    "source": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/pterophyllum-scalare/",
+    "gal": 53,
+    "dims_in": [
+     39,
+     16,
+     20
+    ],
+    "count": 6,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "a group of six juvenile fish"
+   }
+  ],
+  "confidence": "low",
+  "notes": "Basis volume with height (needs 20 in tall). No stated rule beyond points already in expert-curve.json (29 gal/4, 55 gal/5-6, 75 gal/4). Seriously Fish quote is a fetch-tool paraphrase; the six are juveniles to pair off. Fishkeeping World gives no per-gallon rule."
+ },
+ {
+  "species": "betta",
+  "unit": "fish",
+  "femalesPerMale": null,
+  "basis": "volume",
+  "rule": {
+   "first": "20 gal long (4-6 females)",
+   "each": null,
+   "text": "Males: one per tank, never two in open water. Female sorority: four to six in a 20-gal long; above six conflicts rise. Not scaled further."
+  },
+  "points": [
+   {
+    "source": "Gensou",
+    "url": "https://gensou.sg/betta-fish-sorority-tank-complete-guide/",
+    "gal": 20,
+    "dims_in": null,
+    "count": 5,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "four to six female bettas sharing a heavily planted 20-gallon"
+   },
+   {
+    "source": "Gensou",
+    "url": "https://gensou.sg/betta-fish-sorority-tank-complete-guide/",
+    "gal": 20,
+    "dims_in": null,
+    "count": 6,
+    "countUnit": "fish",
+    "kind": "max",
+    "quote": "Above six, tank volume and territory conflicts rise faster than the social benefit."
+   },
+   {
+    "source": "Fishkeeping World",
+    "url": "https://fishkeepingworld.com/female-betta-fish/",
+    "gal": 20,
+    "dims_in": null,
+    "count": 6,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "A sorority is made up of four to six female bettas, preferably all of the same age."
+   },
+   {
+    "source": "Fishkeeping World",
+    "url": "https://fishkeepingworld.com/female-betta-fish/",
+    "gal": 20,
+    "dims_in": null,
+    "count": null,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "If you plan to keep a sorority, you'll need at least a 20-gallon tank."
+   },
+   {
+    "source": "Gensou",
+    "url": "https://gensou.sg/how-many-betta-fish-in-a-tank-guide/",
+    "gal": 10,
+    "dims_in": null,
+    "count": 1,
+    "countUnit": "males",
+    "kind": "max",
+    "quote": "Never open-water two males regardless of volume."
+   },
+   {
+    "source": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/betta-splendens/",
+    "gal": 11,
+    "dims_in": [
+     18,
+     12,
+     null
+    ],
+    "count": 1,
+    "countUnit": "males",
+    "kind": "max",
+    "quote": "only a single individual can be kept per tank in most cases"
+   }
+  ],
+  "confidence": "medium",
+  "notes": "Males: 1 per tank at any size (unit fish). Sorority: group-size rule (minimum 4, about 6 in a 20 gal long); the unit is the group, not a territory. A 10 gal sorority is not supported by good sources. Tankarium points already in expert-curve."
+ },
+ {
+  "species": "tigerbarb",
+  "unit": "fish",
+  "femalesPerMale": null,
+  "basis": "volume",
+  "rule": {
+   "first": "20 gal (5 fish)",
+   "each": "3 gal",
+   "text": "Fishkeeping World: at least a 20-gallon tank for up to 5; For each additional Tiger Barb added, make sure to add 3 gallons"
+  },
+  "points": [
+   {
+    "source": "Fishkeeping World",
+    "url": "https://fishkeepingworld.com/tiger-barb/",
+    "gal": 20,
+    "dims_in": null,
+    "count": 5,
+    "countUnit": "fish",
+    "kind": "max",
+    "quote": "Tiger Barbs need at least a 20-gallon tank - this would be suitable for up to 5 of them."
+   },
+   {
+    "source": "Fishkeeping World",
+    "url": "https://fishkeepingworld.com/tiger-barb/",
+    "gal": 29,
+    "dims_in": null,
+    "count": 8,
+    "countUnit": "fish",
+    "kind": "rule",
+    "quote": "So 8 Tiger Barbs would need at least a 29-gallon tank."
+   },
+   {
+    "source": "Fishkeeping World",
+    "url": "https://fishkeepingworld.com/tiger-barb/",
+    "gal": null,
+    "dims_in": null,
+    "count": null,
+    "countUnit": "fish",
+    "kind": "rule",
+    "quote": "For each additional Tiger Barb added, make sure to add 3 gallons."
+   }
+  ],
+  "confidence": "high",
+  "notes": "Stated rule, but a space rule, not a territory rule: nipping is tied to group size (min 5-8, no more than 12 per the same page), so the cap is really a school floor and ceiling. Same page as the existing expert-curve points."
+ },
+ {
+  "species": "danio",
+  "unit": "fish",
+  "femalesPerMale": null,
+  "basis": "volume",
+  "rule": {
+   "first": "10 gal (5 fish)",
+   "each": "2 gal",
+   "text": "Fishkeeping World: minimum tank size 10 gallons, add 2 gallons per extra fish (fetch-tool paraphrase)"
+  },
+  "points": [
+   {
+    "source": "Fishkeeping World",
+    "url": "https://fishkeepingworld.com/zebra-danio/",
+    "gal": 10,
+    "dims_in": null,
+    "count": 5,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "Zebra danios are schooling fish that should be kept in groups of at least five."
+   },
+   {
+    "source": "Fishkeeping World",
+    "url": "https://fishkeepingworld.com/zebra-danio/",
+    "gal": null,
+    "dims_in": null,
+    "count": null,
+    "countUnit": "fish",
+    "kind": "rule",
+    "quote": "Minimum tank size: 10 gallons"
+   }
+  ],
+  "confidence": "low",
+  "notes": "Danio is a school floor, not a territory fish; too few stresses them, too many cause hyperactivity and territorial behavior (paraphrase). The +2 gal per fish is paraphrased by the fetch tool, not verbatim. Nipping is aimed at other species, so a territory cap is likely not needed. Gensou 16 gal/6 already in expert-curve."
+ },
+ {
+  "species": "swordtail",
+  "unit": "male",
+  "femalesPerMale": 3,
+  "basis": "volume",
+  "rule": {
+   "first": "15 gal",
+   "each": "5 gal",
+   "text": "Fishkeeping World: minimum 15 gal for one swordtail, increase size by 5 gallons per additional fish; 1:3 male to female"
+  },
+  "points": [
+   {
+    "source": "Fishkeeping World",
+    "url": "https://fishkeepingworld.com/swordtail/",
+    "gal": 15,
+    "dims_in": null,
+    "count": 1,
+    "countUnit": "fish",
+    "kind": "rule",
+    "quote": "Increase size by 5 gallons per additional fish."
+   },
+   {
+    "source": "Fishkeeping World",
+    "url": "https://fishkeepingworld.com/swordtail/",
+    "gal": null,
+    "dims_in": null,
+    "count": null,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "1:3 male to female ratio"
+   },
+   {
+    "source": "Fishkeeping World",
+    "url": "https://fishkeepingworld.com/swordtail/",
+    "gal": null,
+    "dims_in": null,
+    "count": null,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "Females must outweigh the number of males in the tank. Otherwise, swordtail males become territorial and aggressive."
+   },
+   {
+    "source": "Practical Fishkeeping",
+    "url": "https://www.practicalfishkeeping.co.uk/fishkeeping-answers/whats-best-for-swordtails/",
+    "gal": 36,
+    "dims_in": [
+     36,
+     15,
+     15
+    ],
+    "count": 6,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "the ideal is probably a single male alongside five females"
+   },
+   {
+    "source": "Practical Fishkeeping",
+    "url": "https://www.practicalfishkeeping.co.uk/fishkeeping-answers/whats-best-for-swordtails/",
+    "gal": null,
+    "dims_in": null,
+    "count": null,
+    "countUnit": "males",
+    "kind": "max",
+    "quote": "Males can be extremely aggressive towards each other."
+   }
+  ],
+  "confidence": "medium",
+  "notes": "Territory is controlled by sex ratio (1 male : 3-5 females), not size; no stated cap on males per volume. The Fishkeeping World volume rule is a fish count (paraphrased quote); implied 30 gal = 4 fish = 1M+3F. PFK tank 90x38x38 cm is about 36 gal."
+ },
+ {
+  "species": "peacock",
+  "unit": "male",
+  "femalesPerMale": 4,
+  "basis": "length",
+  "rule": {
+   "first": "48 in",
+   "each": null,
+   "text": "One male per 48x18 in tank with 3-6 females; more males only in 100+ gal. No per-male increment stated."
+  },
+  "points": [
+   {
+    "source": "TFH Magazine",
+    "url": "https://www.tfhmagazine.com/articles/freshwater/pretty-peacock-cichlids-from-lake-malawi",
+    "gal": 55,
+    "dims_in": [
+     48,
+     18,
+     null
+    ],
+    "count": 1,
+    "countUnit": "males",
+    "kind": "rec",
+    "quote": "the ratio of one male to three or four females seems to work well"
+   },
+   {
+    "source": "TFH Magazine",
+    "url": "https://www.tfhmagazine.com/articles/freshwater/pretty-peacock-cichlids-from-lake-malawi",
+    "gal": null,
+    "dims_in": null,
+    "count": null,
+    "countUnit": "males",
+    "kind": "rec",
+    "quote": "a footprint of approximately 48 inches (120 cm) in length and 18 inches (45 cm) in width"
+   },
+   {
+    "source": "Seriously Fish (A. stuartgranti)",
+    "url": "https://www.seriouslyfish.com/species/aulonocara-stuartgranti/",
+    "gal": 64,
+    "dims_in": [
+     48,
+     18,
+     null
+    ],
+    "count": 1,
+    "countUnit": "males",
+    "kind": "rec",
+    "quote": "maintain just a single individual alongside 4-6 females"
+   },
+   {
+    "source": "Aquarium Source",
+    "url": "https://www.aquariumsource.com/peacock-cichlid/",
+    "gal": 100,
+    "dims_in": null,
+    "count": null,
+    "countUnit": "males",
+    "kind": "rec",
+    "quote": "only keeping one male in the breeding tank"
+   },
+   {
+    "source": "Fishkeeping World",
+    "url": "https://fishkeepingworld.com/peacock-cichlid/",
+    "gal": 100,
+    "dims_in": null,
+    "count": 5,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "100 gallons for a community of four to six peacock cichlids"
+   },
+   {
+    "source": "Fishkeeping World",
+    "url": "https://fishkeepingworld.com/peacock-cichlid/",
+    "gal": 90,
+    "dims_in": null,
+    "count": 15,
+    "countUnit": "males",
+    "kind": "rec",
+    "quote": "about 15 fish for a 90-gallon all-male tank"
+   }
+  ],
+  "confidence": "medium",
+  "notes": "Unit male (harem 1M:3-6F) is consistent across TFH, Seriously Fish and Aquarium Source. No multi-male scaling rule from a good source; Aquarium Source says 100+ gal for a multi-male community. Several quotes are fetch-tool paraphrases; FW 15 males/90 gal is a site reply to a reader. All-male counts of 8-12 in 55-75 gal appear only in forum threads (not used)."
+ },
+ {
+  "species": "yellowlab",
+  "unit": "male",
+  "femalesPerMale": 3,
+  "basis": "length",
+  "rule": {
+   "first": "48 in",
+   "each": null,
+   "text": "Practical Fishkeeping: tank of at least 120 cm / 48 in, at least two females per male; Quality Marine mbuna rule about four juveniles per square foot (footprint)"
+  },
+  "points": [
+   {
+    "source": "Practical Fishkeeping",
+    "url": "https://www.practicalfishkeeping.co.uk/features/malawis-finest-the-yellow-lab-labidochromis-caeruleus/",
+    "gal": null,
+    "dims_in": [
+     48,
+     null,
+     null
+    ],
+    "count": null,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "a 120cm/48 inch and over mixed mbuna aquarium is best"
+   },
+   {
+    "source": "Practical Fishkeeping",
+    "url": "https://www.practicalfishkeeping.co.uk/features/malawis-finest-the-yellow-lab-labidochromis-caeruleus/",
+    "gal": null,
+    "dims_in": null,
+    "count": 20,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "Keep a group of at least 20 fish."
+   },
+   {
+    "source": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/labidochromis-caeruleus/",
+    "gal": 41,
+    "dims_in": [
+     36,
+     18,
+     null
+    ],
+    "count": 4,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "we recommend keeping several females to each male"
+   },
+   {
+    "source": "Quality Marine",
+    "url": "https://www.qualitymarine.com/news/the-miracle-or-madness-of-mixing-mbunas/",
+    "gal": 75,
+    "dims_in": [
+     48,
+     18,
+     null
+    ],
+    "count": 24,
+    "countUnit": "fish",
+    "kind": "rule",
+    "quote": "about four juvenile fish per square foot"
+   },
+   {
+    "source": "Fishkeeping World",
+    "url": "https://fishkeepingworld.com/yellow-lab-cichlid/",
+    "gal": 30,
+    "dims_in": null,
+    "count": null,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "keep the number of yellow lab cichlid males in the tank to a minimum"
+   }
+  ],
+  "confidence": "low",
+  "notes": "Quality Marine gives 4 juveniles per sq ft for mbuna generally (75 gal at 4x1.5 ft = about 24; retailer, juveniles). Practical Fishkeeping '20 fish' and 'two females per male' are fetch-tool paraphrases. Labs are the mild mbuna, so counts mostly reflect mixed colonies. No hard 'one male per X' rule found in an article."
+ },
+ {
+  "species": "demasoni",
+  "unit": "fish",
+  "femalesPerMale": null,
+  "basis": "footprint",
+  "rule": null,
+  "points": [
+   {
+    "source": "Gensou",
+    "url": "https://gensou.sg/?p=22406",
+    "gal": 66,
+    "dims_in": null,
+    "count": 12,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "250 litres minimum for a group; floor of 12 fish"
+   },
+   {
+    "source": "Gensou",
+    "url": "https://gensou.sg/?p=22406",
+    "gal": 92,
+    "dims_in": null,
+    "count": 24,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "350 litres or more gives substantially better results; advises 18 to 24"
+   },
+   {
+    "source": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/chindongo-demasoni/",
+    "gal": 54,
+    "dims_in": [
+     48,
+     18,
+     15
+    ],
+    "count": 8,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "a group of 6-8 young fish"
+   },
+   {
+    "source": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/chindongo-demasoni/",
+    "gal": 54,
+    "dims_in": [
+     48,
+     18,
+     15
+    ],
+    "count": null,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "should be overcrowded to reduce aggression and territory formation"
+   }
+  ],
+  "confidence": "low",
+  "notes": "Cluster species: aggression falls with MORE fish, so demasoni is a group floor (12) not a cap. Gensou: 12-fish floor at 250 L, 18-24 at 350 L. Seriously Fish 54 gal is its stated absolute minimum. Most quotes are fetch-tool paraphrases. Cichlid-Forum articles were blocked (HTTP 402); forum thread numbers (12 in 55 gal/36 in, 15-20 at 72 in) not used. Existing Aquarium Co-Op 40 gal/5-7 point in expert-curve."
+ },
+ {
+  "species": "labeo",
+  "unit": "fish",
+  "femalesPerMale": null,
+  "basis": "footprint",
+  "rule": {
+   "first": "48 in",
+   "each": "about 39 in (1 m territory diameter)",
+   "text": "Seriously Fish: one per tank; in a very large tank each individual is likely to require a territory with a diameter of at least a metre (the per-fish increment is inferred)"
+  },
+  "points": [
+   {
+    "source": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/epalzeorhynchos-bicolor",
+    "gal": 64,
+    "dims_in": [
+     48,
+     18,
+     null
+    ],
+    "count": 1,
+    "countUnit": "fish",
+    "kind": "max",
+    "quote": "each individual is likely to require a territory with a diameter of at least a metre"
+   },
+   {
+    "source": "Practical Fishkeeping",
+    "url": "https://www.practicalfishkeeping.co.uk/features/freshwater-shark-alert/",
+    "gal": null,
+    "dims_in": [
+     48,
+     null,
+     null
+    ],
+    "count": 1,
+    "countUnit": "fish",
+    "kind": "max",
+    "quote": "120cm (48\") minimum (keep singularly)"
+   },
+   {
+    "source": "Gensou",
+    "url": "https://gensou.sg/red-tail-shark-care-guide/",
+    "gal": 55,
+    "dims_in": null,
+    "count": 1,
+    "countUnit": "fish",
+    "kind": "max",
+    "quote": "Keeping two red tail sharks together almost always results in the dominant individual persecuting the subordinate"
+   },
+   {
+    "source": "Fishkeeping World",
+    "url": "https://fishkeepingworld.com/red-tail-shark/",
+    "gal": 55,
+    "dims_in": null,
+    "count": 1,
+    "countUnit": "fish",
+    "kind": "max",
+    "quote": "you should only keep one of these per tank as they are extremely territorial"
+   }
+  ],
+  "confidence": "high",
+  "notes": "One fish holds a territory; all sources say keep one. The Seriously Fish 1 m territory diameter permits a footprint rule for very large tanks only; no source lists a two-shark tank size."
+ },
+ {
+  "species": "auratus",
+  "unit": "male",
+  "femalesPerMale": 4,
+  "basis": "length",
+  "rule": null,
+  "points": [
+   {
+    "source": "TFH Magazine",
+    "url": "https://www.tfhmagazine.com/articles/freshwater/melanochromis-auratus",
+    "gal": 55,
+    "dims_in": null,
+    "count": 1,
+    "countUnit": "males",
+    "kind": "max",
+    "quote": "A 55-gallon tank is absolutely minimun--larger will increase the likelihood of success."
+   },
+   {
+    "source": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/melanochromis-auratus/",
+    "gal": 54,
+    "dims_in": [
+     48,
+     18,
+     null
+    ],
+    "count": 1,
+    "countUnit": "males",
+    "kind": "max",
+    "quote": "a very large tank is required"
+   },
+   {
+    "source": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/melanochromis-auratus/",
+    "gal": 54,
+    "dims_in": [
+     48,
+     18,
+     null
+    ],
+    "count": 4,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "a harem of one male and at least three females"
+   }
+  ],
+  "confidence": "low",
+  "notes": "Seriously Fish 54 gal/120x45 cm is the absolute minimum; one male plus at least 3 females; multiple males only in a very large tank (no size given). SF quotes are fetch-tool paraphrases. Houston Fishbox says 1M + 4-5F (not fetched). No per-male increment found."
+ },
+ {
+  "species": "livingstonii",
+  "unit": "male",
+  "femalesPerMale": 4.5,
+  "basis": "length",
+  "rule": null,
+  "points": [
+   {
+    "source": "Seriously Fish",
+    "url": "https://seriouslyfish.com/species/nimbochromis-livingstonii",
+    "gal": 54,
+    "dims_in": [
+     48,
+     18,
+     null
+    ],
+    "count": 1,
+    "countUnit": "males",
+    "kind": "rec",
+    "quote": "A breeding group of one male and 3-6 females."
+   },
+   {
+    "source": "Seriously Fish",
+    "url": "https://seriouslyfish.com/species/nimbochromis-livingstonii",
+    "gal": null,
+    "dims_in": [
+     48,
+     null,
+     null
+    ],
+    "count": 1,
+    "countUnit": "fish",
+    "kind": "rec",
+    "quote": "at least 48\" in length"
+   }
+  ],
+  "confidence": "low",
+  "notes": "Predatory haplochromine, a loner in nature: one male with 3-6 females for breeding at 48 in+; non-breeding, a solitary specimen. 125-200+ gal figures came only from search summaries (not fetched). No multi-male rule."
+ }
+]

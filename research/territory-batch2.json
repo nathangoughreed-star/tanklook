@@ -1,0 +1,97 @@
+[
+ {"species":"kadango","unit":"male","femalesPerMale":3,"basis":"footprint","rule":null,
+  "points":[
+   {"source":"Seriously Fish (Copadichromis borleyi)","url":"https://www.seriouslyfish.com/species/copadichromis-borleyi/","gal":80,"dims_in":[60,18],"count":1,"countUnit":"males","kind":"rec","quote":"it's best to keep a single male alongside a group of 3 or more females"},
+   {"source":"Seriously Fish (Copadichromis borleyi)","url":"https://www.seriouslyfish.com/species/copadichromis-borleyi/","gal":null,"dims_in":[48,null],"count":1,"countUnit":"males","kind":"rec","quote":"A 48\" tank is a good size for a breeding project","note":"breeding harem of one male, 3-4 females"},
+   {"source":"Fishkeeper UK","url":"https://www.fishkeeper.co.uk/fish/freshwater/cichlids/red-fin-kadango","gal":null,"dims_in":[60,null],"count":1,"countUnit":"males","kind":"rec","quote":"The aquarium should be at least 5ft long"}],
+  "confidence":"low","notes":"Seriously Fish says several males can be kept 'in bigger tanks' with a larger female group, and 'rival males need space to develop their individual territories', but gives no size per extra male. 60x18x18 in = 80 US gal. Species page is C. borleyi (redfin kadango)."},
+
+ {"species":"afra","unit":"male","femalesPerMale":3,"basis":"footprint","rule":null,
+  "points":[
+   {"source":"Seriously Fish (Cynotilapia afra)","url":"https://www.seriouslyfish.com/species/cynotilapia-afra","gal":null,"dims_in":[39,12],"count":1,"countUnit":"males","kind":"rec","quote":"A breeding group of one male and 3-6 females is recommended.","note":"adult aquarium base 100x30 cm, about 90 L"},
+   {"source":"Seriously Fish (Cynotilapia afra)","url":"https://www.seriouslyfish.com/species/cynotilapia-afra","gal":null,"dims_in":[48,null],"count":1,"countUnit":"males","kind":"rec","quote":"The breeding tank should be around 48\" in length and furnished as suggested above."}],
+  "confidence":"low","notes":"Species is 'belligerent and territorial'; Seriously Fish advises overcrowding to dilute aggression. No per-extra-male rule found."},
+
+ {"species":"oscar","unit":"fish","femalesPerMale":null,"basis":"footprint","rule":null,
+  "points":[
+   {"source":"Seriously Fish (Astronotus ocellatus)","url":"https://www.seriouslyfish.com/species/astronotus-ocellatus/","gal":null,"dims_in":[59,24],"count":1,"countUnit":"fish","kind":"rec","quote":"is just about large enough to house a single adult","note":"base 150x60 cm; 'larger quarters required for a pair or group'"},
+   {"source":"Fishkeeping World (citing Seriously Fish)","url":"https://fishkeepingworld.com/oscar-fish/","gal":143,"dims_in":[60,24],"count":1,"countUnit":"fish","kind":"rec","quote":"About 143 gallons (60 x 24 inch base) for one adult"}],
+  "confidence":"low","notes":"No source found stating a count for a larger tank. Search snippet only (Hepper, page returned 403): 55-75 gal first oscar, +30 gal each, so 125 gal for two. Unverified, not used."},
+
+ {"species":"peapuffer","unit":"fish","femalesPerMale":3,"basis":"volume",
+  "rule":{"first":"5 gal","each":"3 gal","text":"Aquarium Co-Op: five gallons for the first puffer, about three more for each additional"},
+  "points":[
+   {"source":"Aquarium Co-Op","url":"https://www.aquariumcoop.com/blogs/aquarium/pea-puffer","gal":5,"dims_in":null,"count":1,"countUnit":"fish","kind":"rule","quote":"provide five gallons of water for the first puffer."},
+   {"source":"Aquarium Co-Op","url":"https://www.aquariumcoop.com/blogs/aquarium/pea-puffer","gal":10,"dims_in":null,"count":3,"countUnit":"fish","kind":"max","quote":"it is possible to keep three puffers in a 10-gallon tank."},
+   {"source":"Fishkeeping World","url":"https://fishkeepingworld.com/pea-puffer/","gal":5,"dims_in":null,"count":1,"countUnit":"fish","kind":"rule","quote":"For every 5 gallons of water your aquarium holds, you should only house one Pea Puffer."},
+   {"source":"Fishkeeping World","url":"https://fishkeepingworld.com/pea-puffer/","gal":20,"dims_in":null,"count":4,"countUnit":"fish","kind":"rec","quote":"A breeding setup should be 20 gallons which will provide plenty of space for one male to be housed with 3 females."}],
+  "confidence":"medium","notes":"Sources differ: Co-Op 5 + 3 per fish vs Fishkeeping World 5 per fish. Male-male aggression is the real limit: Fishkeeping World 'Male Pea Puffer Fish can be very territorial and aggressive towards each other'; Co-Op ratio 1 male to 2-3 females. Unit could be read as 'male' with 2-3 females; cover and planting matter."},
+
+ {"species":"bolivianram","unit":"pair","femalesPerMale":null,"basis":"volume",
+  "rule":{"first":"30 gal","each":"5-10 gal","text":"Fishkeeping World: 30 gal for a single specimen, allow an extra 5-10 gal per ram you add"},
+  "points":[
+   {"source":"Fishkeeping World","url":"https://fishkeepingworld.com/bolivian-ram/","gal":30,"dims_in":null,"count":1,"countUnit":"fish","kind":"rule","quote":"a 30-gallon tank is fine for a single specimen; allow an extra 5-10 gallons per ram you add"},
+   {"source":"Fishkeeping World","url":"https://fishkeepingworld.com/bolivian-ram/","gal":55,"dims_in":null,"count":4,"countUnit":"fish","kind":"rec","quote":"Ensure they have a big enough tank (55+ gallon).","note":"for a group of 4-8 that pairs off"},
+   {"source":"Seriously Fish (Mikrogeophagus altispinosus)","url":"https://www.seriouslyfish.com/species/mikrogeophagus-altispinosus/","gal":48,"dims_in":[36,18],"count":1,"countUnit":"pairs","kind":"rec","quote":"This species should be maintained as a solitary individual, or a bonded pair."},
+   {"source":"Seriously Fish (Mikrogeophagus altispinosus)","url":"https://www.seriouslyfish.com/species/mikrogeophagus-altispinosus/","gal":null,"dims_in":[48,null],"count":6,"countUnit":"fish","kind":"rec","quote":"should ideally be maintained in a mixed-sex group of 6-8 or more"}],
+  "confidence":"low","notes":"AMBIGUOUS: Fishkeeping World scales by volume per fish, Seriously Fish by base size (36x18 in for one or a pair; 120 cm long for a group of 6-8). Both agree rams are mild; Seriously Fish: 'In confined space, the males frequently become more aggressive in defending their respective territory.' 90x45 cm = 182 L = 48 gal."},
+
+ {"species":"ocellaris","unit":"pair","femalesPerMale":null,"basis":"length","rule":null,
+  "points":[
+   {"source":"Practical Fishkeeping","url":"https://www.practicalfishkeeping.co.uk/features/common-clownfish-the-complete-care-guide-to-amphiprion-ocellaris/","gal":null,"dims_in":[24,null],"count":1,"countUnit":"pairs","kind":"max","quote":"the absolute minimum aquarium I would consider is one measuring 60cm (24\") in length"},
+   {"source":"Practical Fishkeeping","url":"https://www.practicalfishkeeping.co.uk/features/common-clownfish-the-complete-care-guide-to-amphiprion-ocellaris/","gal":null,"dims_in":[36,null],"count":1,"countUnit":"pairs","kind":"rec","quote":"gives the fish more room to establish territories","note":"paraphrase context: 90 cm (36 in) tank; page says 'Best kept as a pair'"},
+   {"source":"Bulk Reef Supply (ORA pair listing)","url":"https://www.bulkreefsupply.com/orange-ocellaris-clownfish-pair-ora.html","gal":15,"dims_in":null,"count":1,"countUnit":"pairs","kind":"rec","quote":"minimum tank size of 15 gallons"},
+   {"source":"LiveAquaria","url":"https://www.liveaquaria.com/products/ocellaris-clownfish","gal":20,"dims_in":null,"count":1,"countUnit":"pairs","kind":"rec","quote":"20 Gallons"}],
+  "confidence":"medium","notes":"One pair is the universal unit. Practical Fishkeeping: 'keeping multiple clownfish together in smaller aquaria can often end in conflict.' No source gives a size for a second pair. The 36 in line is a size, not a verbatim sentence about 36 in."},
+
+ {"species":"royalgramma","unit":"fish","femalesPerMale":null,"basis":"volume","rule":null,
+  "points":[
+   {"source":"Fishkeeping World","url":"https://fishkeepingworld.com/royal-gramma/","gal":30,"dims_in":null,"count":1,"countUnit":"fish","kind":"rec","quote":"the minimum tank size you should use is 30 gallons."},
+   {"source":"Fishkeeping World","url":"https://fishkeepingworld.com/royal-gramma/","gal":50,"dims_in":null,"count":1,"countUnit":"pairs","kind":"rec","quote":"if you intend to keep them in pairs then you should have at least a 50-gallon tank."},
+   {"source":"Fishkeeping World","url":"https://fishkeepingworld.com/royal-gramma/","gal":100,"dims_in":null,"count":3,"countUnit":"fish","kind":"rec","quote":"if you intend to keep a group, a tank size of 100+ gallons is needed.","note":"group size not stated; 3 is a floor assumption"},
+   {"source":"Saltwater Aquarium Blog","url":"https://www.saltwateraquariumblog.com/royal-gramma/","gal":55,"dims_in":null,"count":3,"countUnit":"fish","kind":"rec","quote":"Only attempt in larger tanks (ideally 55+ gallons) with abundant caves and hiding spots","note":"group size not stated"}],
+  "confidence":"medium","notes":"Fishkeeping World gives a ladder: 30 gal one, 50 pair, 100+ group. Saltwater Aquarium Blog puts groups at 55+ gal and says best kept single ('one fish per fish family, per tank'). Sources disagree by about 2x on the group size. Territory is cave-based (rockwork), which hints at a footprint/rock basis."},
+
+ {"species":"yellowtang","unit":"fish","femalesPerMale":null,"basis":"length","rule":null,
+  "points":[
+   {"source":"Saltwater Aquarium Blog","url":"https://www.saltwateraquariumblog.com/yellow-tang/","gal":90,"dims_in":[72,null],"count":1,"countUnit":"fish","kind":"rec","quote":"A 6-foot (1.8 m) long tank is often recommended, as it allows for natural cruising behavior."},
+   {"source":"Saltwater Aquarium Blog","url":"https://www.saltwateraquariumblog.com/yellow-tang/","gal":null,"dims_in":[60,null],"count":2,"countUnit":"fish","kind":"rec","quote":"I have kept a yellow tang, and another small-ish tang, in a 5-foot long aquarium as well.","note":"author's own tank, two tangs of different species"},
+   {"source":"Saltwater Aquarium Blog","url":"https://www.saltwateraquariumblog.com/yellow-tang/","gal":null,"dims_in":null,"count":1,"countUnit":"fish","kind":"rec","quote":"it ISN'T recommended to have more than one surgeonfish in an aquarium"}],
+  "confidence":"low","notes":"No published tank-size-to-count rule found in an allowed source. Only forum threads (Reef2Reef, Reef Central) give one tang per 48 in of length; those were not used. Reef2Reef Tang Tally page returned 403. Best-supported unit is one fish, basis length (author: 'prioritize length and open swimming area over total volume')."},
+
+ {"species":"bluetang","unit":"fish","femalesPerMale":null,"basis":"length","rule":null,
+  "points":[
+   {"source":"Practical Fishkeeping","url":"https://www.practicalfishkeeping.co.uk/features/housing-dory-regal-tang-care/","gal":null,"dims_in":[96,null],"count":1,"countUnit":"fish","kind":"max","quote":"one adult regal tang per tank is probably best unless in the largest of systems.","note":"adults need tanks 'close to 245cm (8')'; juveniles 150 cm (5')"},
+   {"source":"LiveAquaria","url":"https://www.liveaquaria.com/product/422/?pcatid=422","gal":125,"dims_in":null,"count":1,"countUnit":"fish","kind":"rec","quote":"A minimum of a 125 gallon tank with plenty of hiding places and live rock for grazing will offer a good environment."}],
+  "confidence":"medium","notes":"Practical Fishkeeping gives a clear one-per-tank rule with no size at which a second fits. LiveAquaria listing (product 422) gives 125 gal minimum for one fish; the fetched page text did not name the species, so verify. Basis is length (PF 5 ft juvenile, 8 ft adult)."},
+
+ {"species":"sixline","unit":"fish","femalesPerMale":null,"basis":"volume","rule":null,
+  "points":[
+   {"source":"Saltwater Aquarium Blog","url":"https://www.saltwateraquariumblog.com/six-line-wrasse/","gal":55,"dims_in":null,"count":1,"countUnit":"fish","kind":"max","quote":"adding more than one six line wrasse will quickly result in a fatal territorial battle."},
+   {"source":"Saltwater Aquarium Blog","url":"https://www.saltwateraquariumblog.com/six-line-wrasse/","gal":55,"dims_in":null,"count":1,"countUnit":"fish","kind":"rec","quote":"requires a minimum tank size of 55 gallons"},
+   {"source":"LiveAquaria","url":"https://www.liveaquaria.com/products/six-line-wrasse","gal":30,"dims_in":null,"count":1,"countUnit":"fish","kind":"rec","quote":"It requires a 30 gallon or larger aquarium."}],
+  "confidence":"medium","notes":"One per tank, firm. Multiples only in a 'massive multi-hundred-gallon system' (SAB paraphrase). LiveAquaria spec table says 60 gal minimum, overview says 30."},
+
+ {"species":"coralbeauty","unit":"fish","femalesPerMale":null,"basis":"volume","rule":null,
+  "points":[
+   {"source":"Saltwater Aquarium Blog","url":"https://www.saltwateraquariumblog.com/coral-beauty-angelfish/","gal":70,"dims_in":null,"count":1,"countUnit":"fish","kind":"rec","quote":"the minimum aquarium size for a long-term Coral Beauty Angelfish is 70 gallons (265 Liters) is strongly recommended."},
+   {"source":"Saltwater Aquarium Blog","url":"https://www.saltwateraquariumblog.com/coral-beauty-angelfish/","gal":180,"dims_in":null,"count":2,"countUnit":"fish","kind":"rule","quote":"never house multiple dwarf angelfish together unless you are managing a massive show system over 180 gallons","note":"count of 2 is our reading of 'multiple'"}],
+  "confidence":"low","notes":"Stated threshold: one per tank below 180 gal. Quote joins two fragments from the page (never house ... / over 180 gallons). Search snippets only (not fetched): a Reef2Reef poster gives 1 dwarf angel per 3 ft of length; ignore."},
+
+ {"species":"firefish","unit":"pair","femalesPerMale":null,"basis":"volume","rule":null,
+  "points":[
+   {"source":"Aquarium Source","url":"https://www.aquariumsource.com/firefish-goby/","gal":20,"dims_in":null,"count":1,"countUnit":"fish","kind":"max","quote":"it's typically best to only have one per tank"},
+   {"source":"LiveAquaria","url":"https://www.liveaquaria.com/products/firefish","gal":20,"dims_in":null,"count":1,"countUnit":"pairs","kind":"rec","quote":"a mated pair can live peacefully together"},
+   {"source":"Aquarium Source","url":"https://www.aquariumsource.com/firefish-goby/","gal":20,"dims_in":null,"count":1,"countUnit":"fish","kind":"rec","quote":"they have a general intolerance for others of their species"}],
+  "confidence":"low","notes":"Unit is one fish or one bonded pair; no size scaling found. Aquarium Source is a content site, not on the preferred list. Purple firefish (a different species) was said to want 30+ gal for a pair; not fetched."},
+
+ {"species":"watchman","unit":"pair","femalesPerMale":null,"basis":"footprint","rule":null,
+  "points":[
+   {"source":"Bulk Reef Supply","url":"https://www.bulkreefsupply.com/content/post/how-to-care-for-watchman-gobies","gal":20,"dims_in":null,"count":1,"countUnit":"fish","kind":"rec","quote":"It may show aggression towards its own species unless being kept as part of a mated pair."},
+   {"source":"Bulk Reef Supply","url":"https://www.bulkreefsupply.com/content/post/how-to-care-for-watchman-gobies","gal":20,"dims_in":null,"count":1,"countUnit":"pairs","kind":"rec","quote":"A minimum of 20 gallons for a Watchman Goby."}],
+  "confidence":"low","notes":"Unit is one burrow, held by one goby or one bonded pair. Basis footprint is inferred (burrow / sand bed); the source calls it 'territorial behavior around the burrow' (SAB, which says 20 gal conditional, about 30 gal forgiving). No size-for-count points. BRS: aggression 'usually ramps up as the fish matures'."},
+
+ {"species":"hermit","unit":"fish","femalesPerMale":null,"basis":"volume","rule":null,
+  "points":[],
+  "confidence":"low","notes":"No usable points. Reef Builders (reefbuilders.com/2015/11/30/4-crabby-caveats-to-keeping-clibanarius-tricolor) rejects a per-gallon rule: 'The volume of water an aquarium holds tells you virtually nothing about how many hermits a system can reasonably sustain.' Hobbyist rules seen only in search snippets (1 per gallon, 1 per 10 gal). Not a territorial limit; limited by shells and food, so it likely needs a flat cap rather than a territory cap. Fishkeeping World and Saltwater Aquarium Blog hermit pages 404."}
+]

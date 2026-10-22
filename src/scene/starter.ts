@@ -6,6 +6,7 @@ import { rng } from '../art/paint';
 import { getSpecies, type Species } from '../data/species';
 import { DEFAULT_DENS, EPIPHYTES, STYLES, STYLE_KIND, clampItem, isLandStyle, isSwampy, layerOf, perch, starterItems, type Layer } from './items';
 import { CARE } from '../data/care';
+import { fightsOverCount, mostFor } from '../data/groups';
 import { volume } from './physics';
 import { hasCorals, whyAnimal } from './animalfit';
 import { floorOf, minFit } from './tankMin';
@@ -45,6 +46,9 @@ export function bioloadLitres(s: TankSetup) {
 /** Litres the animals in the tank take up now (each at its own size: a female at the female length). */
 export const bioload = (fish: Fish[], depthCm = 0) => fish.reduce((a, f) => { const sp = getSpecies(f.species); return a + (sp ? litresPerAnimal(f.sex === 'f' ? female(sp) : sp, depthCm) : 0); }, 0); // depthCm: the tank's mean water depth (lane HC), 0 = raw litres
 
+/** A species whose count is limited by fighting (fightsOverCount) never grows past the most its own data allows in this tank (S196).
+ *  Schools keep the starter's own cap: room is the budget's job. */
+const fightMax = (sp: Species, litres: number) => fightsOverCount(CARE[sp.id]) ? mostFor(CARE[sp.id], litres) ?? Infinity : Infinity;
 /** How a species is stocked: the first group, the step it grows by, the most of it. */
 function stocking(sp: Species) {
   if (sp.pair) return { start: 2, step: 0, max: 2 };
@@ -107,7 +111,7 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
   chosen.forEach((sp, i) => !dry(sp) && add(sp, stocking(sp).start, i === 0 && lead >= 0 ? Math.max(cap, budget) : budget));
   for (let grew = true; grew;) { // grow each group in turn while the budget lasts
     grew = false;
-    for (const [sp, n] of count) { if (dry(sp)) continue; const { step, max } = stocking(sp); if (step && n + step <= Math.round(max * big) && add(sp, step)) grew = true; }
+    for (const [sp, n] of count) { if (dry(sp)) continue; const { step, max } = stocking(sp); if (step && n + step <= Math.min(Math.round(max * big), fightMax(sp, volume(s.tank).litres)) && add(sp, step)) grew = true; }
   }
   if (stop < 1) { // below Few: the first animals only, one at the least
     let keep = Math.max(1, Math.floor([...count.values()].reduce((a, n) => a + n, 0) * stop)); // floor: with the engine's cheaper small fish a Few-sized set is 30+ animals, and the bottom of the range must stay one
