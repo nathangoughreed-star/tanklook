@@ -4,7 +4,7 @@ import { CARE } from '../src/data/care';
 import { mostFor } from '../src/data/groups';
 import { crowdWarnings } from '../src/scene/territory';
 import { stockingOf } from '../src/scene/stocking';
-import { overWarn } from '../src/ui/stockPlanLogic';
+import { notesOf, overWarn } from '../src/ui/stockPlanLogic';
 import { comboTank } from './aqcompare.test';
 import { defaultSetup } from '../src/scene/defaults';
 import { IN } from '../src/scene/physics';
@@ -24,6 +24,7 @@ describe('territory caps', () => {
     expect(mostFor(CARE.banggai, L(40))).toBe(2);        // one pair below 50 gal (lane CW)
     expect(mostFor(CARE.banggai, L(75))).toBe(Infinity); // a group above it, no stated limit
     expect(overWarn({ id: 'banggai', n: 5 }, L(29))).toMatch(/about 2 .*may fight: below 50 gal keep one pair/);
+    expect(notesOf({ id: 'banggai', n: 5 }).line).toMatch(/pair is best/); // the group line never praises a group the warning says fights
   });
   it('fall back to the flat max without a tank size, or without a rule', () => {
     expect(mostFor(CARE.dwarfgourami)).toBe(1);
