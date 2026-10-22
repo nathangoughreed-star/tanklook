@@ -18,7 +18,10 @@ describe('stocking screen logic (lane P5, 2026-10-20)', () => {
   });
   it('+ and - respect zero and the most a tank takes, per sex', () => {
     expect(bump({ id: 'betta', n: 1 }, 'n', 1).n).toBe(2); // never blocked, only warned
-    expect(overWarn({ id: 'betta', n: 2 })).toMatch(/one to a tank/); expect(overWarn({ id: 'oscar', n: 2 })).toMatch(/one to a tank/); expect(overWarn({ id: 'tigerbarb', n: 20 })).toMatch(/not advised/); expect(overWarn({ id: 'oscar', n: 1 })).toBeUndefined();
+    expect(overWarn({ id: 'betta', n: 2 })).toMatch(/one to a tank/); expect(overWarn({ id: 'oscar', n: 2 })).toMatch(/one to a tank/); expect(overWarn({ id: 'mandarin', n: 3 })).toMatch(/may fight/);
+    // lane CW (Nathan 2026-10-22): room is the stocking percent's job, so schools and harem cichlids carry no count warning
+    for (const id of ['tigerbarb', 'neon', 'cardinal', 'danio', 'guppy', 'yellowlab', 'angel', 'goldfish']) expect(overWarn({ id, n: 500 }), id).toBeUndefined();
+    expect(notesOf({ id: 'neon', n: 30 }).line).not.toMatch(/most/); expect(overWarn({ id: 'oscar', n: 1 })).toBeUndefined();
     expect(bump({ id: 'neon', n: 6 }, 'n', -1).n).toBe(5);
     expect(bump({ id: 'neon', n: 0 }, 'n', -1).n).toBe(0);
     const g = startPick('guppy');

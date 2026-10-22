@@ -11,12 +11,12 @@ when it carries the url of the listing it was read from and does not mark the fi
 
 | | values | cited | fitted | derived | researched | claimed | assumption | unsourced | strong |
 |---|---|---|---|---|---|---|---|---|---|
-| **all data** | 5477 | 2486 (45 %) | 59 (1 %) | 220 (4 %) | 799 (15 %) | 648 (12 %) | 786 (14 %) | 479 (9 %) | 50 % |
-| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 1277 | 318 |  | 71 | 436 | 402 | 49 | 1 | 30 % |
+| **all data** | 5448 | 2486 (46 %) | 59 (1 %) | 220 (4 %) | 810 (15 %) | 609 (11 %) | 785 (14 %) | 479 (9 %) | 51 % |
+| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 1252 | 318 |  | 71 | 451 | 363 | 48 | 1 | 31 % |
 | Tank minimum red / green lines, heights, depth notes, advisory gallons (tankmin.json, lane MM) | 275 | 153 |  | 74 | 48 |  |  |  | 83 % |
 | Adult length per species (species.json tl) | 108 | 42 |  | 30 | 21 |  | 15 |  | 67 % |
 | Marine pH band (data/waterchem.ts) | 2 | 2 |  |  |  |  |  |  | 100 % |
-| Reptile / amphibian floor area, height, groups, growth (data/herpstock.ts) | 228 |  |  |  | 228 |  |  |  | 0 % |
+| Reptile / amphibian floor area, height, groups, growth (data/herpstock.ts) | 224 |  |  |  | 224 |  |  |  | 0 % |
 | Terrarium air temperature and humidity (data/climate.ts AIR) | 112 | 28 |  | 18 | 66 |  |  |  | 41 % |
 | Plant and coral light, CO2, fertiliser, dosing (scene/lightneeds.ts) | 182 |  |  |  |  | 182 |  |  | 0 % |
 | Freshwater PAR tiers | 10 |  |  |  |  | 10 |  |  | 0 % |
@@ -43,12 +43,12 @@ when a page is cited beside it, and `says` in src/data/provenance.ts keeps the p
 
 | | measured | source-stated | TankLook interpretation | derived calculation | conservative default | unsourced |
 |---|---|---|---|---|---|---|
-| **all data** | 2 (0 %) | 2519 (46 %) | 2168 (40 %) | 279 (5 %) | 30 (1 %) | 479 (9 %) |
-| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) |  | 335 | 842 | 71 | 28 | 1 |
+| **all data** | 2 (0 %) | 2542 (47 %) | 2116 (39 %) | 279 (5 %) | 30 (1 %) | 479 (9 %) |
+| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) |  | 358 | 794 | 71 | 28 | 1 |
 | Tank minimum red / green lines, heights, depth notes, advisory gallons (tankmin.json, lane MM) |  | 153 | 48 | 74 |  |  |
 | Adult length per species (species.json tl) |  | 63 | 15 | 30 |  |  |
 | Marine pH band (data/waterchem.ts) |  |  |  |  | 2 |  |
-| Reptile / amphibian floor area, height, groups, growth (data/herpstock.ts) |  |  | 228 |  |  |  |
+| Reptile / amphibian floor area, height, groups, growth (data/herpstock.ts) |  |  | 224 |  |  |  |
 | Terrarium air temperature and humidity (data/climate.ts AIR) |  | 28 | 66 | 18 |  |  |
 | Plant and coral light, CO2, fertiliser, dosing (scene/lightneeds.ts) |  |  | 182 |  |  |  |
 | Freshwater PAR tiers |  |  | 10 |  |  |  |
@@ -67,8 +67,8 @@ when a page is cited beside it, and `says` in src/data/provenance.ts keeps the p
 | Deals (deals.json) |  | 160 |  |  |  | 4 |
 | Gear deals (gear-deals.json) |  | 96 |  |  |  |  |
 
-Engine constants (top-level numbers in 30 engine files): 94 documented in FORMULAS, 0 unsourced.
-Numbers written inline in those files' functions (not counted above, a by-hand review list): 328.
+Engine constants (top-level numbers in 30 engine files): 102 documented in FORMULAS, 0 unsourced.
+Numbers written inline in those files' functions (not counted above, a by-hand review list): 331.
 
 ## Work list 1: unsourced values (most user-facing first)
 
@@ -136,7 +136,7 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 
 | file | constants | inline numbers |
 |---|---|---|
-| src/scene/stocking.ts | - | 8 |
+| src/scene/stocking.ts | - | 10 |
 | src/scene/nitrogen.ts | - | 20 |
 | src/scene/lightout.ts | - | 80 |
 | src/scene/kitlight.ts | - | 4 |
@@ -150,7 +150,7 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | src/scene/animalfit.ts | - | 1 |
 | src/scene/propagate.ts | - | 23 |
 | src/scene/weight.ts | - | 6 |
-| src/scene/starter.ts | - | 27 |
+| src/scene/starter.ts | - | 28 |
 | src/data/climate.ts | - | 28 |
 | src/data/tankcheck.ts | - | 1 |
 | src/data/aqadvisor.ts | - | 2 |
@@ -171,9 +171,9 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | `CARE *.bands.good` | 58 | group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named https://petfishonline.com/neon-tetra-tank-size/ |
 | `CARE *.bands.great` | 58 | group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named https://petfishonline.com/neon-tetra-tank-size/ |
 | `CARE *.minLengthMm` | 57 | group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named https://petfishonline.com/neon-tetra-tank-size/ |
-| `CARE *.max` | 52 | group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named https://petfishonline.com/neon-tetra-tank-size/ |
 | `CARE *.sexed.ratio.*` | 38 | group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named https://guidarium.com/fishes/celestial-pearl-danio-galaxy-rasbora |
 | `CARE *.ph.*` | 18 | FishBase pH / dH range where it lists one, otherwise practice; which rows are which was not recorded |
+| `CARE *.max` | 13 | group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named https://guidarium.com/fishes/dwarf-gourami |
 | `CARE *.maxDepthMm` | 3 | group bands, max, sex ratio, depth and tank length: judgement from hobby practice; page named https://training.joshsfrogs.com/care-sheet/fire-bellied-toad-care-sheet |
 | `NEEDS *.par.*` | 62 | band, CO2 and ferts per plant after the planted-tank ratings; no per-plant page recorded |
 | `NEEDS *.band` | 44 | band, CO2 and ferts per plant after the planted-tank ratings; no per-plant page recorded |
@@ -197,13 +197,16 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | `CARE *.bands.good` | 21 |
 | `CARE *.bands.great` | 21 |
 | `CARE *.minLengthMm` | 21 |
-| `CARE *.max` | 19 |
 | `CARE *.minL` | 18 |
+| `CARE *.territory.at.*.*` | 18 |
 | `CARE *.sexed.ratio.*` | 12 |
+| `CARE *.max` | 11 |
 | `CARE *.group` | 5 |
 | `CARE *.care` | 4 |
+| `CARE *.territory.each` | 4 |
 | `CARE *.temper` | 3 |
 | `CARE *.minAreaCm2` | 1 |
+| `CARE *.territory.per` | 1 |
 | `TANKMIN *.vol.gal` | 17 |
 | `TANKMIN *.green.L` | 9 |
 | `TANKMIN *.green.W` | 6 |
@@ -223,9 +226,9 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | `HERP *.min` | 11 |
 | `HERP *.rec` | 11 |
 | `HERP *.each` | 11 |
-| `HERP *.max` | 11 |
 | `HERP *.sexing.from` | 11 |
 | `HERP *.hMin` | 8 |
+| `HERP *.max` | 7 |
 | `HERP *.stages.*.h` | 5 |
 | `HERP *.males2` | 4 |
 | `HERP *.water` | 4 |
@@ -242,6 +245,7 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 
 | file | symbols | status | basis | source says | why |
 |---|---|---|---|---|---|
+| src/data/careNeeds.ts | NEEDS | claimed | TankLook interpretation |  | wording only, no numbers: the care conditions that were group-band messages in groups.ts (P1 data, research/groups-sources.md: mandarin pods, hatchetfish lid, hermit shells), moved so they show at any count (lane RF) |
 | src/data/grazers.ts | GRAZE | cited | source-stated | turbo 3 per 20 gal, nerite 1 per 5 gal, oto 6 in a 20 gal, amano 1 per 2 gal (the most generous guideline each page states) | grazers per tank: the most generous stocking guideline an opened page states (turbo 3 per 20 gal, nerite 1 per 5 gal, oto 6 in a 20 gal, amano 1 per 2 gal) and the feeding it names; quotes checked (research/sourcing/R5-grazers.json) |
 | src/scene/stocking.ts | Q10, T_REF | claimed | TankLook interpretation |  | waste doubles about every 10 K, 25 C reference; no fish paper recorded |
 | src/scene/stocking.ts | massG | derived | derived calculation |  | FishBase length-weight: mass g = a (tl cm)^b |
@@ -249,6 +253,8 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | src/scene/stocking.ts | SALT_LOAD | assumption | TankLook interpretation |  | the hobby rule of thumb "half again" for marine fish; no page states it (looked for, research/sourcing/other/E2.json) |
 | src/scene/stocking.ts | LU_PER_L | fitted | derived calculation |  | calibrated so the starters keep their old animal counts, which came from a rule of thumb (3 L x (tl/35)^1.6). Outside checks bracket it widely: the AqAdvisor filtration probes imply 0.22, our nitrogen budget about 1.7 (research/sourcing/other/E3-lu-per-l.md); kept, since it now only sizes the starters (the filtration % comes from scene/nitrogen.ts) |
 | src/scene/stocking.ts | SPACE_EXP, SPACE_PER_L | fitted | derived calculation |  | fit to 24 AqAdvisor combinations (scripts/aq-compare.mjs) |
+| src/scene/stocking.ts | TINY_EXPERT, SCHOOL_EXP, SCHOOL_REF | fitted | derived calculation |  | grid over 34 published lists and 24 AqAdvisor combinations: the only setting that lowered the scatter of both; expert counts across sizes grow as gallons^0.79; the curve applies above 10 fish only (test/expert.test.ts) |
+| src/scene/stocking.ts | HS_MIN_CM, HS_K, HS_LOW, HS_HIGH, ALL_CURVE, HS_LOW_IDS, HS_HIGH_IDS | assumption | TankLook interpretation |  | height curve (lane HC): Nathan 2026-10-21 decided floor area counts linearly and height with diminishing returns, per species; no source states the scale. Hs = 8 x body depth, min 12 in, x 0.7 (fast schoolers, surface fish) or 1.5 (tall-bodied, gouramis, big cichlids): our estimates, picked mild; the 37 published lists do not separate the classes (research/height-curve.md) |
 | src/scene/stocking.ts | FLOOR_SQIN_PER_IN | fitted | TankLook interpretation | Scotcat: 18-24 sq in of floor per inch of bottom dweller; Seriously Fish group footprints about 10-20 | sources give 12-24 sq in of floor per inch of bottom dweller (Scotcat 18-24; Seriously Fish group footprints: bronze cory ~20, kuhli ~12, clown loach 10-17); 15 is the smallest that reads a shallow-wide tank roomier than a tall one of equal water (test/spaceaudit.test.ts C) and leaves the AqAdvisor median at 1.03 |
 | src/scene/stocking.ts | FLOOR_REF | derived | derived calculation |  | mass-equivalent length: the length of a bronze cory (65 mm, the fish the floor sources measure) of the same mass; keeps 6 kuhlis inside the Seriously Fish minimum tank for them |
 | src/scene/stocking.ts | FLOOR_SHARE | assumption | TankLook interpretation |  | bottom dwellers 1 and midwater / top fish 0 by class (Decision 3); "all"-zone fish 0.5 is our estimate (no source splits their time) |

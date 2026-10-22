@@ -56,4 +56,9 @@ describe('group data (lane P1, 2026-10-20)', () => {
     expect(bandMessage({ bands: { ok: 3, good: 5, great: 8 } }, 2)).toMatch(/at least 3/);
     expect(bandMessage({ bands: { ok: 3, good: 5, great: 8 }, msg: { good: 'own line' } }, 6)).toBe('own line');
   });
+  it('a max is a fighting limit only, never room (lane CW, Nathan 2026-10-22)', () => {
+    // one to a tank, one pair, a few herps by the herp research, or a sourced size-scaled territory rule; schools have no max
+    for (const [id, g] of Object.entries(GROUPS)) if (g.max != null) expect(g.max <= 4 || !!g.territory, `${id}: max ${g.max} reads as a room cap`).toBe(true);
+    for (const id of ['neon', 'cardinal', 'danio', 'tigerbarb', 'guppy', 'cherryshrimp', 'yellowlab']) expect(GROUPS[id].max, id).toBeUndefined();
+  });
 });

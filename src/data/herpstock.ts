@@ -13,8 +13,9 @@ export interface HerpRule {
   each: number;
   /** shortest enclosure (in) the sources accept; the climbers */
   hMin?: number;
-  /** most animals any source supports together; more warns */
-  max: number;
+  /** most animals any source supports together before they fight or eat each other; more warns. Absent = no such limit: the
+   *  group-living ones' room is the floor area per animal (lane CW 2026-10-22, research/count-warnings.md) */
+  max?: number;
   /** from this many animals on, the sex and size-match advice applies */
   group: string;
   /** other categories it can share with (its own species always can) */
@@ -88,28 +89,28 @@ export const HERP: Record<string, HerpRule> = {
     females2: true,
   },
   'Ranoidea caerulea': {
-    name: "White's tree frog", min: 2.25, rec: 3, each: 0.75, hMin: 24, max: 5,
+    name: "White's tree frog", min: 2.25, rec: 3, each: 0.75, hMin: 24,
     group: 'Easy-going in a group, but keep them similar in size: a bigger frog eats a smaller one. Three or more want about 36 in of height.',
     mates: [], mateNote: 'A big frog eats smaller frogs, spiders and anything that fits in its mouth.',
     grow: [[0, 35], [4, 75], [10, 95], [24, 100]], stages: [{ to: 60, k: 0.6, h: 12 }, { to: 1e9, k: 1 }],
     sexing: { from: 12, how: 'Roughly after a year: males have a grey, wrinkled throat and dark pads at the thumb base; females a white throat. Buy 4 or 5 if you want both sexes.' },
   },
   'Bombina orientalis': {
-    name: 'Fire-bellied toad', min: 1.4, rec: 2, each: 0.5, hMin: 12, max: 8, water: true,
+    name: 'Fire-bellied toad', min: 1.4, rec: 2, each: 0.5, hMin: 12, water: true,
     group: 'Social and peaceful in a group; about half the floor should be water.',
     mates: [], mateNote: 'Its skin is toxic to other animals and no source recommends tankmates.',
     grow: [[0, 15], [6, 35], [12, 45]], stages: [{ to: 25, k: 0.6 }, { to: 1e9, k: 1 }],
     sexing: { from: 12, how: 'Adult males have nuptial pads on the first two fingers and a rougher back, clearest in the breeding season. Juveniles cannot be sexed.' },
   },
   'Cynops orientalis': {
-    name: 'Chinese fire-bellied newt', min: 1.4, rec: 2.5, each: 0.6, max: 8, water: true,
+    name: 'Chinese fire-bellied newt', min: 1.4, rec: 2.5, each: 0.6, water: true,
     group: 'Peaceful in groups of its own kind; a tight lid, since it climbs out.',
     mates: ['fw-invert'], mateNote: 'Cherry shrimp and snails are fine; fish are not recommended.',
     grow: [[0, 30], [12, 55], [24, 80], [36, 90]], stages: [{ to: 50, k: 0.6 }, { to: 1e9, k: 1 }],
     sexing: { from: 18, how: 'Only in adults, best in the breeding season: males have a swollen cloaca and a taller tail. Juveniles are almost impossible and take 1 to 3 years.' },
   },
   'Hymenochirus boettgeri': {
-    name: 'African dwarf frog', min: 1.25, rec: 1.4, each: 0.4, max: 8, social: 3, water: true,
+    name: 'African dwarf frog', min: 1.25, rec: 1.4, each: 0.4, social: 3, water: true,
     group: 'Social: keep three or more rather than one or two.',
     mates: ['fw-fish', 'fw-invert'], mateNote: 'Small, peaceful fish of 3 in or less. Not bettas or fancy guppies (they get their fins nipped), cichlids, or anything it can swallow.',
     grow: [[0, 10], [3, 20], [9, 32], [12, 35]], stages: [{ to: 1e9, k: 1 }],

@@ -37,8 +37,8 @@ export function herpCheck(S: TankSetup): StockIssue[] {
     const kid = grown ? '' : ' at this size';
     // a water-side species with a red line is judged by the tank minimum (scene/tankMin.ts, lane MM); a second floor-area verdict here would contradict it
     const tsp = S.fish.map(f => getSpecies(f.species)).find(sp => sp?.sci === sci), tiered = !!tsp && countsAgainstWater(tsp) && !!minDataOf(tsp.id)?.red;
-    if (n > r.max) out.push({ level: 'warn', who, text: `${plural(n, 'animal')}: sources support at most ${r.max} together. ${r.group}` });
-    else if (n >= 2 && r.max > 1 && !(r.social && n >= r.social)) out.push({ level: 'note', who, text: `${plural(n, 'animal')} together. ${r.group}` });
+    if (r.max !== undefined && n > r.max) out.push({ level: 'warn', who, text: `${plural(n, 'animal')}: sources support at most ${r.max} together. ${r.group}` });
+    else if (n >= 2 && (r.max ?? 2) > 1 && !(r.social && n >= r.social)) out.push({ level: 'note', who, text: `${plural(n, 'animal')} together. ${r.group}` });
     if (r.social && n < r.social) out.push({ level: 'note', who, text: `${n === 1 ? 'A single frog' : 'A pair'} is lonely: keep ${r.social} or more.` });
     const m = group.filter(a => a.g === 'm').length, fe = group.filter(a => a.g === 'f').length, u = n - m - fe;
     if (n >= 2) {
