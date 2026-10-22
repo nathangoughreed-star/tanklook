@@ -2,7 +2,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { CARE, SHRIMP } from '../src/data/care';
 import { SPECIES, getSpecies } from '../src/data/species';
-import { preyRisk, whyAnimal, whysAnimal } from '../src/scene/animalfit';
+import { gateOf, preyRisk, whyAnimal, whysAnimal } from '../src/scene/animalfit';
 import { conflictsOf } from '../src/ui/stockPlanLogic';
 
 const sp = (id: string) => getSpecies(id)!;
@@ -48,6 +48,13 @@ describe('invertebrate predation', () => {
     const alone = conflictsOf(picks, 'amano');   // matching water: the concern is all there is, and it is shown first
     expect(alone.filter(w => w.block)).toEqual([]);
     expect(alone[0]).toMatchObject({ block: false, text: expect.stringMatching(risk) });
+  });
+  it('species list: a lone Amano advisory is the visible note and does not gray the row', () => {
+    const risk = /only consider large adults; smaller ones remain at risk/;
+    expect(gateOf(whys('amano', 'gbr'))).toMatchObject({ block: true, text: expect.stringMatching(/temperature/), more: [expect.stringMatching(risk)] });
+    sameWater('gbr', 'amano');
+    const g = gateOf(whys('amano', 'gbr'));
+    expect(g).toMatchObject({ block: false, text: expect.stringMatching(risk) });
   });
   it('rams leave snails alone', () => {
     for (const id of ['ramshorn', 'trumpet', 'nerite', 'mystery']) {
