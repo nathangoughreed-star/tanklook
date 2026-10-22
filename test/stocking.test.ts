@@ -122,6 +122,16 @@ describe('plural (S193)', () => {
 // 2026-10-22 (Nathan's chat, kuhli sanity check; research/habitat-model.md): the school discount is one curve over every fish in the
 // water, and a kuhli spreads over FLOOR_FACTOR of its floor footprint. The tank that started it: 17 kuhli + 15 zebra danio in a 36 x 18 x 18 in,
 // AqAdvisor 74 %, ours was 104 % (water 104, floor 95).
+describe('shrimp and crabs take floor like a bottom fish, scaled by INVERT_FLOOR (2026-10-22)', () => {
+  it('100 cherry shrimp fill a 20 x 10 in floor (10 per gallon), 12 take about 12 %; crabs and big shrimp count more each', () => {
+    const fl = (s: [string, number][]) => stockingOf(tank(20, 10, 12, s)).floorPercent;
+    expect(fl([['cherryshrimp', 100]])).toBeGreaterThan(90); expect(fl([['cherryshrimp', 100]])).toBeLessThan(110);
+    expect(fl([['cherryshrimp', 12]])).toBeGreaterThan(8); expect(fl([['cherryshrimp', 12]])).toBeLessThan(16);
+    expect(fl([['amano', 1]])).toBeGreaterThan(fl([['cherryshrimp', 1]]));
+    expect(fl([['cherryshrimp', 24]])).toBeCloseTo(2 * fl([['cherryshrimp', 12]]), 6);
+  });
+});
+
 describe('tank-wide school discount and the kuhli floor factor (2026-10-22)', () => {
   it('17 kuhli + 15 zebra danio in a 36 x 18 x 18 in tank read well under full (AqAdvisor 74 %), neither limit near 95 %', () => {
     const r = stockingOf(tank(36, 18, 18, [['kuhli', 17], ['danio', 15]]));

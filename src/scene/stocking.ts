@@ -115,7 +115,7 @@ export const schoolShare = (k: number) => k <= SCHOOL_REF ? 1 : SCHOOL_REF * ((k
  * roomier than a tall one of equal water, and leaves the AqAdvisor median at 1.03. The length is mass-equivalent: the length of a
  * bronze cory of the same mass (an eel-shaped kuhli is long but light; by its total length 6 kuhlis would overfill Seriously Fish's own
  * minimum tank for them). "All"-zone fish use the floor half the time (est); midwater and top fish none. Snails count their footprint (snailFloorCm2, lane SN);
- * other invertebrates and land animals count 0 (no source counts them, MX6). A species in FLOOR_FACTOR (data/spacefactor.ts) spreads over that
+ * other aquatic invertebrates (shrimp, crabs) take the fish rule times INVERT_FLOOR (Nathan 2026-10-22); land animals count 0. A species in FLOOR_FACTOR (data/spacefactor.ts) spreads over that
  * share of its footprint (kuhli 0.6: piles into shared caves; est, Nathan 2026-10-22); the floor stays linear in count (audit F).
  */
 export const FLOOR_SQIN_PER_IN = 15;
@@ -167,9 +167,17 @@ export const habitatLengthMm = (sp: Species, tlMm: number) => FLOOR_REF.tlMm * (
  */
 export const SNAIL_FOOT_K = 3.2, SNAIL_ROOM = 3;
 export const snailFloorCm2 = (sp: Species, tlMm: number) => SNAIL_FOOT_K * massG(sp.id, tlMm) ** (2 / 3) * SNAIL_ROOM;
-/** Floor area one animal uses, cm2 (0 for swimmers, non-snail invertebrates and land animals; snails by footprint, lane SN). */
-export const floorUseCm2 = (sp: Species, tlMm: number) => !countsAgainstWater(sp) ? 0 : sp.kind === 'snail' ? snailFloorCm2(sp, tlMm) : isInvert(sp) ? 0
-  : FLOOR_SHARE[zoneOf(sp)] * FLOOR_SQIN_PER_IN * SQIN_CM2 * habitatLengthMm(sp, tlMm) / IN_MM * (FLOOR_FACTOR[sp.id]?.[0] ?? 1);
+/**
+ * Shrimp and crabs on the floor (Nathan 2026-10-22: "apply similar ground/floor rules to inverts as we do for things like kuhlis"): the
+ * fish rule (mass-equivalent length x FLOOR_SQIN_PER_IN x their zone's FLOOR_SHARE, 0.5 for the "all"-zone shrimp and crabs) times
+ * INVERT_FLOOR. 0.3 makes 10 cherry shrimp per gallon a full floor (100 in a 20 x 10 in base: 13.3 sq in each before share and factor),
+ * the top of the usual 5-10 per gallon keeper guidance (est); 12 cherries take 24 sq in. Big shrimp and crabs count more through their
+ * mass; FLOOR_FACTOR overrides per species.
+ */
+export const INVERT_FLOOR = 0.3;
+/** Floor area one animal uses, cm2 (0 for swimmers and land animals; snails by footprint, lane SN; shrimp and crabs at INVERT_FLOOR). */
+export const floorUseCm2 = (sp: Species, tlMm: number) => !countsAgainstWater(sp) ? 0 : sp.kind === 'snail' ? snailFloorCm2(sp, tlMm)
+  : FLOOR_SHARE[zoneOf(sp)] * FLOOR_SQIN_PER_IN * SQIN_CM2 * habitatLengthMm(sp, tlMm) / IN_MM * (FLOOR_FACTOR[sp.id]?.[0] ?? (isInvert(sp) ? INVERT_FLOOR : 1));
 /** Live plants take up nitrogen: up to +25 % at 15 plants per 100 L (a painted patch counts as 3 plants). A documented guess. */
 const PLANT_MAX = 0.25, PLANTS_PER_100L_FULL = 15, PATCH_PLANTS = 3;
 

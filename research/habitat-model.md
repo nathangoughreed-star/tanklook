@@ -55,7 +55,7 @@ today) for floor coefficients 12-18 sq in per inch; 24 lifts it to 1.11. Two mor
 | 1 | Floor need per bottom dweller | **15 sq in per inch** of mass-equivalent length (bronze cory 2.6 in: 38 sq in each) | sources 12-24 (Scotcat, Seriously Fish x3); 15 = smallest that fixes audit C; AqAdvisor median unchanged (calibrated) |
 | 2 | Length used | mass-equivalent (cory-shaped) length, not total length | (est), our choice; fixes kuhli vs its own sourced tank |
 | 3 | Who counts on the floor | bottom zone 1, "all"-zone fish 0.5, midwater / top 0 | 1 / 0 sourced by class (Decision 3); 0.5 (est) |
-| 4 | Invertebrates (snails, shrimp, crabs) | 0 on the floor (snails stay 0 in the water too) | no source counts them (MX6) |
+| 4 | Invertebrates (snails, shrimp, crabs) | snails: their footprint (lane SN); shrimp and crabs: the fish rule (all-zone share 0.5) x 0.3 (2026-10-22); snails stay 0 in the water | no source gives a floor figure (MX6); 0.3 = 10 cherry shrimp per gallon fills the floor, top of the 5-10 per gallon keeper guidance (est) |
 | 5 | Space % | larger of water limit (unchanged) and floor limit | AqAdvisor median 1.03 -> 1.03 |
 | 6 | Run length / activity | no new coefficient; length stays the tank minimum's sourced pass / fail; activity only in Filtration | nothing sourced |
 | 7 | tankfit | reads the engine only: space (now incl. floor), filtration, minimum (incl. length), depth moved into the engine | brief points 3-4 |
