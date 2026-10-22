@@ -58,15 +58,15 @@ describe('tank fit engine (lane P2)', () => {
       for (const s of stepUps(CASES.danios, 'g5', 5)) expect(s.tank.outer.L, s.tank.id).toBeGreaterThan(1000);
     } finally { base.L = was; }
   });
-  it('a shallow-water species skips tall tanks (GroupCare maxDepthMm); a sourced maximum depth is an advisory and skips nothing (lane MM)', () => {
-    expect(needsOf(CASES.frogs).maxDepthMm).toBe(Infinity); // ADF: 24 in, advisory (Decision 3)
+  it('a shallow-water species skips tall tanks (GroupCare maxDepthMm), also beside a sourced advisory maximum (ADF: 450 mm limit, 24 in advice; Nathan 2026-10-22)', () => {
+    expect(needsOf(CASES.frogs).maxDepthMm).toBe(450);
     const base = care.adf, d = minDataOf('adf')!, depth = d.depth;
     try {
       base.maxDepthMm = 300; d.depth = undefined;
       const t = tankFor(CASES.frogs)!;
       expect(t.fails).toEqual([]);
       for (const s of [t, ...stepUps(CASES.frogs, t.tank, 4)]) expect(tankFromModel(s.tank).H * 0.9, s.tank.id).toBeLessThanOrEqual(300);
-    } finally { delete base.maxDepthMm; d.depth = depth; }
+    } finally { base.maxDepthMm = 450; d.depth = depth; }
   });
   it('the floor use is by zone (the stocking engine floor model, lane HB): a pleco uses floor, midwater danios none, land animals none', () => {
     const n = needsOf(CASES.danios);
@@ -103,5 +103,7 @@ describe('tank fit engine (lane P2)', () => {
     expect(recommendedMin('neon')).toBeGreaterThanOrEqual(1);
     expect(recommendedMin('nosuchfish')).toBe(1);
   });
-  afterEach(() => { delete care.danio?.minLengthMm; delete care.adf?.maxDepthMm; });
+  // restore the real values (deleting them took the ADF's depth limit away from every later test)
+  const keep = { danioLen: care.danio?.minLengthMm, adfDepth: care.adf?.maxDepthMm };
+  afterEach(() => { if (care.danio) care.danio.minLengthMm = keep.danioLen; if (care.adf) care.adf.maxDepthMm = keep.adfDepth; });
 });

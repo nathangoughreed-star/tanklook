@@ -17,9 +17,9 @@ export interface GroupCare {
   /** usually kept by sex in the hobby: recommended males : females, and why */
   sexed?: { ratio: [number, number]; note?: string };
   /** MAXIMUM WATER DEPTH, mm: the deepest water the animal can live in (it must reach the surface to breathe, or the shore). Not a
-   *  recommended depth and not the enclosure height. A hard limit in the tank fit (tankMin tooDeep), EXCEPT where tankmin.json gives a
-   *  sourced depth.maxWaterDepthMm for the species: that one governs, as advice beside the count picker (lane MM Decision 3), and this
-   *  field is then not read. */
+   *  recommended depth and not the enclosure height. A limit in the tank fit (tankMin tooDeep, the 'depth' fail): a deeper tank is marked
+   *  too deep and warned about, never blocked. Where tankmin.json also gives a sourced depth.maxWaterDepthMm (ADF: 450 mm limit from
+   *  Modest Fish's 30-45 cm, 24 in advisory), this field is the limit and the sourced one the advice (Nathan 2026-10-22). */
   maxDepthMm?: number;
   flow?: 'low' | 'medium' | 'high';
   /** the part of the tank it lives in; 'all' = no preference */
@@ -131,7 +131,7 @@ export const GROUPS: Record<string, GroupCare> = {
   treefrog: { bands: { ok: 1, good: 2, great: 3 }, msg: { great: 'Same-size frogs only; add 10 gal per extra frog' }, max: 3, zone: 'top', minLengthMm: 457, appeal: ['easy', 'hands-on', 'nocturnal', 'personality'] },
   firetoad: { bands: { ok: 2, good: 3, great: 5 }, msg: { avoid: 'Social; a lone toad does better with company', great: 'Up to ~10 possible in a large shoreline setup' }, max: 10, maxDepthMm: 100, zone: 'bottom', minLengthMm: 600, appeal: ['easy', 'personality', 'colour'] },
   firenewt: { bands: { ok: 2, good: 4, great: 6 }, msg: { avoid: 'Do best in company; a pair is the minimum', great: '5-6 suits a large planted tank' }, max: 8, maxDepthMm: 300, flow: 'low', zone: 'all', minLengthMm: 600, appeal: ['easy', 'personality', 'colour'] },
-  adf: { bands: { ok: 2, good: 5, great: 7 }, msg: { avoid: 'A lone dwarf frog gets lonely; keep 2+' }, max: 6, maxDepthMm: 450, flow: 'low', zone: 'bottom', minLengthMm: 450, appeal: ['personality', 'oddball', 'hands-on'] },
+  adf: { bands: { ok: 2, good: 5, great: 7 }, msg: { avoid: 'A lone dwarf frog gets lonely; keep 2+' }, maxDepthMm: 450, flow: 'low', zone: 'bottom', minLengthMm: 450, appeal: ['personality', 'oddball', 'hands-on'] },
   axolotl: { bands: { ok: 1, good: 1, great: 2 }, msg: { great: 'Pairs need 10n+10 gal and similar size; nipped limbs are common' }, max: 4, flow: 'low', zone: 'bottom', minLengthMm: 800, appeal: ['oddball', 'personality', 'hands-on', 'showpiece'] },
   crestedgecko: { bands: { ok: 1, good: 1, great: 1 }, msg: { ok: 'A single adult is the safest; 1 male + 1-2 females works in a big tall enclosure' }, max: 1, zone: 'top', minLengthMm: 457, appeal: ['easy', 'hands-on', 'nocturnal', 'colour'] },
   crestedharlequin: { bands: { ok: 1, good: 1, great: 1 }, msg: { ok: 'A single adult is the safest; 1 male + 1-2 females works in a big tall enclosure' }, max: 1, zone: 'top', minLengthMm: 457, appeal: ['easy', 'hands-on', 'nocturnal', 'colour'] },

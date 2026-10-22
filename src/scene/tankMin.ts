@@ -144,7 +144,7 @@ export interface MinRow {
   assessed: boolean;
   /** usable water depth (mm), adult length (mm), the advisory maximum depth it is over (0 = none) */
   depthMm: number; tl: number; tooDeepMm: number;
-  /** the deepest water it tolerates, mm (GroupCare maxDepthMm; a sourced maximum that is advisory, ADF, does not count); Infinity = no limit */
+  /** the deepest water it tolerates, mm (GroupCare maxDepthMm, a limit even beside a sourced advisory maximum: ADF, Nathan 2026-10-22); Infinity = no limit */
   maxDepthMm: number;
 }
 export interface TankMinimum {
@@ -167,7 +167,7 @@ export function speciesMinimum(sp: Species, g: Geometry): MinRow {
   const row: MinRow = { id: sp.id, name: sp.name, n: 1, kind: w.floor ? 'area' : 'run', pct: r.assessed ? r.red.pct : Infinity, comfortPct: r.green.pct, minLengthMm: d?.red?.L ?? 0,
     limiting: r.red.limiting, reason: '', comfortReason: recommendedOf(r.green), measure: r.red, comfort: r.green,
     derived: r.red.mark === 'derived (est)', assessed: r.assessed, depthMm: r.depthMm, tl: w.tl, tooDeepMm: r.tooDeepMm,
-    maxDepthMm: d?.depth?.maxWaterDepthMm ? Infinity : careOf(sp.id)?.maxDepthMm ?? Infinity };
+    maxDepthMm: careOf(sp.id)?.maxDepthMm ?? Infinity };
   row.reason = reasonIn(row);
   return row;
 }

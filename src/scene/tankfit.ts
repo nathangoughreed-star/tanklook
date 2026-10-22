@@ -29,7 +29,7 @@ export interface Needs {
   floorCm2: Record<Zone, number>;
   /** the longest red-line length any of them has, mm (scene/tankMin.ts lines); 0 = no demand */
   minLengthMm: number;
-  /** the shallowest water any of them tolerates, mm (GroupCare maxDepthMm); Infinity = no limit. A sourced maximum depth that is advisory (ADF, Decision 3) is not counted */
+  /** the shallowest water any of them tolerates, mm (GroupCare maxDepthMm); Infinity = no limit. It counts even where tankmin.json has a sourced advisory maximum (ADF: 18 in limit, 24 in advice; Nathan 2026-10-22) */
   maxDepthMm: number;
   /** the largest smallest-tank any of them has (CARE.minL, litres): below it the tank is not sane even when the space number is */
   minLitres: number;
@@ -47,7 +47,7 @@ export function needsOf(animals: AnimalCount[]): Needs {
   for (const { sp, n, tl } of wet(animals)) {
     floorCm2[zoneOf(sp)] += n * floorUseCm2(sp, tl);
     minLengthMm = Math.max(minLengthMm, minDataOf(sp.id)?.red?.L ?? 0);
-    if (!minDataOf(sp.id)?.depth?.maxWaterDepthMm) maxDepthMm = Math.min(maxDepthMm, careOf(sp.id)?.maxDepthMm ?? Infinity); // lane MM: ADF's 24 in is an advisory with the count picker
+    maxDepthMm = Math.min(maxDepthMm, careOf(sp.id)?.maxDepthMm ?? Infinity); // Nathan 2026-10-22: the ADF's 450 mm is a limit (a warning, never a block); the sourced 24 in stays as the advice line
     minLitres = Math.max(minLitres, careOf(sp.id)?.minL ?? 0);
     salt ||= !!sp.salt;
   }

@@ -78,9 +78,9 @@ export function notesOf(p: Pk, u: Units = 'cm'): PickNotes {
     ratio = `Kept ${want}${r.note ? `: ${r.note}` : ''}${off && n - u > 0 ? '. Your mix is short on females' : ''}${unk}`;
   }
   const habitat: string[] = [];
-  const md = minDataOf(p.id), adv = md?.depth?.maxWaterDepthMm; // lane MM: a sourced maximum depth is an advisory here, with the count picker (ADF, Decision 3)
-  if (adv) habitat.push(`Water no deeper than ${lenTxt(adv, u)} (advice, ${md!.depth!.note})`);
-  else if (c?.maxDepthMm) habitat.push(`Shallow water, ${lenTxt(c.maxDepthMm, u)} deep at most`);
+  const md = minDataOf(p.id), adv = md?.depth?.maxWaterDepthMm; // the limit (GroupCare maxDepthMm) first, a sourced advisory maximum beside it (ADF, Nathan 2026-10-22)
+  if (c?.maxDepthMm) habitat.push(`Shallow water, ${lenTxt(c.maxDepthMm, u)} deep at most${adv && adv !== c.maxDepthMm ? ` (${md!.depth!.note})` : ''}`);
+  else if (adv) habitat.push(`Water no deeper than ${lenTxt(adv, u)} (advice, ${md!.depth!.note})`);
   if (c?.flow) habitat.push(`${c.flow === 'low' ? 'Gentle' : c.flow === 'high' ? 'Strong' : 'Moderate'} flow`);
   const sp = getSpecies(p.id);
   if (sp) { const z = zoneOf(sp); if (z !== 'all') habitat.push(`Lives in the ${z === 'bottom' ? 'bottom' : z === 'top' ? 'top' : 'middle'} of the tank`); }
