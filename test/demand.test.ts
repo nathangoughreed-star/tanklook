@@ -38,7 +38,9 @@ describe('demandOf on the starter examples', () => {
     expect(planted.D.totals.minPerWeek).toBeGreaterThan(20); expect(planted.D.totals.minPerWeek).toBeLessThan(180);
     expect(reef.D.totals.setupUsd).toBeGreaterThan(planted.D.totals.setupUsd); // salt costs more
     expect(reef.D.totals.minPerWeek).toBeGreaterThan(planted.D.totals.minPerWeek * 0.8);
-    expect(reef.D.totals.risk).toBeGreaterThan(planted.D.totals.risk);
+    // reef above planted held only through five reef species flagged as temperature clashes (pairs sharing 1 °C); since temp-tiers
+    // (2026-10-22) a narrow shared range is a margin, not a clash, and carries no risk points. Whether it should is open (Nathan).
+    expect(reef.D.totals.risk).toBeGreaterThan(run('betta').D.totals.risk);
   });
   it('risk falls with skill and the salt multiplier shows up', () => {
     const novice = run('reef').D.totals.risk, expert = run('reef', p => { p.skill = { fundamentals: 2, fish: 2, planted: 2, salt: 2, terrarium: 2 }; }).D.totals.risk;

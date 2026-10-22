@@ -1,12 +1,21 @@
 // Animal gating (lane AD, 2026-10-16): why a species does not suit this tank, its keeper and the animals already in it
-// (data/care.ts). Returns the first reason, or null when it suits. Advice only: the list grays it, nothing blocks adding it.
+// (data/care.ts). whyAnimal returns the main blocking reason, or null when nothing blocks; whysAnimal returns every reason, blocking
+// ones first, then the material concerns that do not block (`concern`), for the display. Advice only: the list grays it, nothing
+// blocks adding it. Temperature is judged on the whole stocking (temprange.ts), not pair by pair (2026-10-22).
 import { CARE, EXPERTISE_NAME, type Expertise } from '../data/care';
 import type { Species } from '../data/species';
+import { fmtC, sharedRange, NARROW_C } from './temprange';
 
 /** A species' smallest tank is allowed 10 % slack (a 5 gal, 19 L, takes a 20 L species); shared by the animal gate, the tank-fit engine and the hard truths. */
 export const MIN_SLACK_PCT = 100 / 0.9;
 
-export interface AnimalWhy { kind: 'expertise' | 'size' | 'compat'; text: string }
+export interface AnimalWhy {
+  kind: 'expertise' | 'size' | 'compat'; text: string;
+  /** a material concern that does not block (a narrow shared temperature range); absent = blocking */
+  concern?: true;
+  /** the reason is about water temperature (the plan sheet reports the whole stocking's range itself) */
+  temp?: true;
+}
 /** Do two species share space? A land animal and a water-only one never meet: they cannot be kept together, so whyAnimal gates the pair. */
 const meet = (a: Species, b: Species) => !((a.habitat === 'land' && b.habitat === 'water') || (a.habitat === 'water' && b.habitat === 'land'));
 
@@ -15,40 +24,62 @@ const band = (r: [number, number], d = 0) => `${r[0].toFixed(d)}-${r[1].toFixed(
 /** The tank around the animal: `corals`: any coral in it (not macroalgae or the anemone). */
 export interface AnimalEnv { /** the tank's own answer (tankMin.ts minFit): size is judged by floor area, length and water, not litres alone; absent = litres only */ fit?: (sp: Species) => { pct: number; reason: string }; corals?: boolean; /** no heater (lane TM): the water stays at this room temperature, deg C */ unheatedC?: number }
 
-/** `litres`: the tank's volume; `present`: the species already stocked (one entry per species). */
+/** `litres`: the tank's volume; `present`: the species already stocked (one entry per species). The main blocking reason, or null. */
 export function whyAnimal(sp: Species, litres: number, expertise: Expertise, present: Species[], env: AnimalEnv = {}): AnimalWhy | null {
+  return whysAnimal(sp, litres, expertise, present, env).find(w => !w.concern) ?? null;
+}
+
+/** Every reason this species does not suit (same arguments as whyAnimal): the blocking ones in check order, the first being the main
+ *  one, then the concerns that do not block. Empty when it suits. */
+export function whysAnimal(sp: Species, litres: number, expertise: Expertise, present: Species[], env: AnimalEnv = {}): AnimalWhy[] {
   const c = CARE[sp.id];
-  if (!c) return null;
-  if (c.care > expertise) return { kind: 'expertise', text: `expertise: ${EXPERTISE_NAME[c.care].toLowerCase()} animal, you chose ${EXPERTISE_NAME[expertise].toLowerCase()}` };
-  if (env.fit) { const m = env.fit(sp); if (m.pct > MIN_SLACK_PCT) return { kind: 'size', text: `tank size: ${m.reason}` }; }
-  else if (litres < c.minL) return { kind: 'size', text: `tank size: wants at least ${c.minL} L, this tank is ${Math.round(litres)} L` };
-  if (env.unheatedC !== undefined && c.temp && (env.unheatedC < c.temp[0] || env.unheatedC > c.temp[1])) return { kind: 'compat', text: `water temperature: wants ${c.temp[0]}-${c.temp[1]} C, no heater in a ${env.unheatedC} C room` }; // lane TM
-  if (c.coral && env.corals) return { kind: 'compat', text: c.coral === 2 ? 'compatibility: eats corals, not for a reef tank' : 'compatibility: may nip the corals, add with caution' };
+  if (!c) return [];
+  const out: AnimalWhy[] = [];
+  if (c.care > expertise) out.push({ kind: 'expertise', text: `expertise: ${EXPERTISE_NAME[c.care].toLowerCase()} animal, you chose ${EXPERTISE_NAME[expertise].toLowerCase()}` });
+  if (env.fit) { const m = env.fit(sp); if (m.pct > MIN_SLACK_PCT) out.push({ kind: 'size', text: `tank size: ${m.reason}` }); }
+  else if (litres < c.minL) out.push({ kind: 'size', text: `tank size: wants at least ${c.minL} L, this tank is ${Math.round(litres)} L` });
+  if (env.unheatedC !== undefined && c.temp && (env.unheatedC < c.temp[0] || env.unheatedC > c.temp[1])) out.push({ kind: 'compat', temp: true, text: `water temperature: wants ${c.temp[0]}-${c.temp[1]} C, no heater in a ${env.unheatedC} C room` }); // lane TM
+  if (c.coral && env.corals) out.push({ kind: 'compat', text: c.coral === 2 ? 'compatibility: eats corals, not for a reef tank' : 'compatibility: may nip the corals, add with caution' });
   for (const o of present) {
     const oc = CARE[o.id];
     if (!oc) continue;
-    const bad = (t: string) => ({ kind: 'compat' as const, text: `compatibility: ${t} (${o.name})` });
-    if (o.id === sp.id) { if (c.solo) return bad('keeps one per tank, you already have one'); continue; }
-    if (c.fam && c.fam === oc.fam) return bad(`rivals of its look-alike, keep one ${c.fam}`);
+    const bad = (t: string) => { out.push({ kind: 'compat', text: `compatibility: ${t} (${o.name})` }); };
+    if (o.id === sp.id) { if (c.solo) bad('keeps one per tank, you already have one'); continue; }
+    if (c.fam && c.fam === oc.fam) bad(`rivals of its look-alike, keep one ${c.fam}`);
     if (!meet(sp, o)) {
       // frogs share a paludarium with fish; reptiles and land invertebrates (snakes, geckos, spiders) need a dry enclosure
       const dry = (x: Species) => x.habitat === 'land' && (x.cat === 'reptile' || x.cat === 'land-invert');
-      if (dry(sp) || dry(o)) return bad(dry(sp) ? 'needs a dry enclosure, this one lives in the water' : 'lives in the water, it needs a dry enclosure');
+      if (dry(sp) || dry(o)) bad(dry(sp) ? 'needs a dry enclosure, this one lives in the water' : 'lives in the water, it needs a dry enclosure');
       continue;
     }
-    if (c.prey && c.prey.mm >= o.tl && (!c.prey.cats || c.prey.cats.includes(o.cat))) return bad('would eat it');
-    if (oc.prey && oc.prey.mm >= sp.tl && (!oc.prey.cats || oc.prey.cats.includes(sp.cat))) return bad('it would eat this one');
+    if (c.prey && c.prey.mm >= o.tl && (!c.prey.cats || c.prey.cats.includes(o.cat))) bad('would eat it');
+    if (oc.prey && oc.prey.mm >= sp.tl && (!oc.prey.cats || oc.prey.cats.includes(sp.cat))) bad('it would eat this one');
     if (sp.habitat !== 'land' && o.habitat !== 'land') {
-      if (c.temper >= 1 && oc.slow || c.nip && oc.slow) return bad('would harass its long fins');
-      if (oc.temper >= 1 && c.slow || oc.nip && c.slow) return bad('it would harass this one\'s long fins');
-      if (c.temper === 2 && oc.temper === 0) return bad('too aggressive for it');
-      if (oc.temper === 2 && c.temper === 0) return bad('it is too aggressive for this one');
-      if (c.temp && oc.temp && Math.min(c.temp[1], oc.temp[1]) - Math.max(c.temp[0], oc.temp[0]) < 2) return bad(`water temperature: ${c.temp[0]}-${c.temp[1]} C against its ${oc.temp[0]}-${oc.temp[1]} C`);
-      if (c.ph && oc.ph && shared(c.ph, oc.ph) < 0.2) return bad(`water chemistry: pH ${band(c.ph, 1)} against its ${band(oc.ph, 1)}`);
-      if (c.gh && oc.gh && shared(c.gh, oc.gh) < 2) return bad(`water hardness: GH ${band(c.gh)} against its ${band(oc.gh)}`);
+      if (c.temper >= 1 && oc.slow || c.nip && oc.slow) bad('would harass its long fins');
+      if (oc.temper >= 1 && c.slow || oc.nip && c.slow) bad("it would harass this one's long fins");
+      if (c.temper === 2 && oc.temper === 0) bad('too aggressive for it');
+      if (oc.temper === 2 && c.temper === 0) bad('it is too aggressive for this one');
+      if (c.ph && oc.ph && shared(c.ph, oc.ph) < 0.2) bad(`water chemistry: pH ${band(c.ph, 1)} against its ${band(oc.ph, 1)}`);
+      if (c.gh && oc.gh && shared(c.gh, oc.gh) < 2) bad(`water hardness: GH ${band(c.gh)} against its ${band(oc.gh)}`);
     }
   }
-  return null;
+  out.push(...tempWhys(sp, present));
+  return [...out.filter(w => !w.concern), ...out.filter(w => w.concern)];
+}
+
+/** Water temperature on the whole stocking (temprange.ts): adding `sp` empties the shared comfortable range (blocking), or leaves it
+ *  NARROW_C wide or less (a concern, not an incompatibility). When the others already share nothing, `sp` is judged against each. */
+function tempWhys(sp: Species, present: Species[]): AnimalWhy[] {
+  const t = CARE[sp.id]?.temp;
+  if (!t || sp.habitat === 'land') return [];
+  const others = sharedRange(present.filter(o => o.id !== sp.id));
+  if (others.state === 'unknown') return [];
+  const none = (o: Species) => ({ kind: 'compat' as const, temp: true as const, text: `water temperature: No suitable shared temperature identified: its ${fmtC(t)} against ${fmtC(CARE[o.id].temp!)} (${o.name})` });
+  if (others.state === 'none') return others.counted.filter(o => Math.min(t[1], CARE[o.id].temp![1]) <= Math.max(t[0], CARE[o.id].temp![0])).map(none);
+  const all = sharedRange([sp, ...others.counted]);
+  if (all.state === 'none') return [none(t[1] <= others.range![0] ? others.floor! : others.ceiling!)];
+  if (all.state === 'narrow') return [{ kind: 'compat', temp: true, concern: true, text: `temperature: shared range ${fmtC(all.range!)}, a narrow margin (${NARROW_C} °C or less), not an incompatibility` }];
+  return [];
 }
 
 /** Group advice for a stocked species (lane CG): `n` of it in the tank, under its smallest group. Null when it is fine. */
