@@ -57,7 +57,7 @@ import { HERP } from '../data/herpstock';
 import { placeNew, randomPose, randomSize, shuffleFish } from '../scene/scatter';
 import { fitFish, keepInWater, setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
-import { stockingDetail, stockingLine, stockingMemo } from '../scene/stocking';
+import { isOver, stockingDetail, stockingLine, stockingMemo } from '../scene/stocking';
 import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, aqWaitS, fetchAqHealth, fetchStocking, type AqHealth } from '../data/aqadvisor';
 import { BOWL_DEFAULT, BOWL_MAX, BOWL_MIN, PIE_DEFAULT, POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
 import { TABLE_MAX, tableOn, tableRange, wallGap } from '../scene/table';
@@ -2195,7 +2195,7 @@ Cancel, then change the name, to keep both.`)) return;
     const r = stockingMemo(s);
     if (!r.contributors.length) return '<span class="aq none">No animals in the water</span>';
     const tip = [...r.reasons, ...stockingDetail(r)].map(esc).join('&#10;');
-    return `<span class="aq${r.percent > 100 ? ' over' : ''}" title="${tip}">${esc(stockingLine(r))}</span>`;
+    return `<span class="aq${isOver(r.percent) ? ' over' : ''}" title="${tip}">${esc(stockingLine(r))}</span>`;
   };
   viewer.onDrawn(() => {
     const g = G(), active = viewer.active, split = active.length > 1;

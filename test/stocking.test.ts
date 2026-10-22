@@ -3,7 +3,8 @@
 import { describe, expect, it } from 'vitest';
 import { defaultSetup } from '../src/scene/defaults';
 import { IN } from '../src/scene/physics';
-import { loadOf, massG, plural, schoolScale, schoolShare, stockingOf } from '../src/scene/stocking';
+import { isOver, loadOf, massG, plural, schoolScale, schoolShare, stockingLine, stockingOf } from '../src/scene/stocking';
+import { tankSizeLine } from '../src/ui/fullnessTile';
 import { withChoice } from '../src/scene/tech';
 import type { Fish, Item, TankSetup } from '../src/scene/types';
 
@@ -167,5 +168,25 @@ describe('tank-wide school discount and the kuhli floor factor (2026-10-22)', ()
     expect(r.floorPercent).toBeGreaterThan(30); expect(r.floorPercent).toBeLessThan(100);
     const f = (n: number) => stockingOf(tank(36, 18, 18, [['kuhli', n]])).floorPercent;
     expect(f(20) / f(10)).toBeCloseTo(2, 6);
+  });
+});
+
+describe('fullness wording (2026-10-22 review of 12 white clouds + 12 cherry shrimp + 1 ramshorn)', () => {
+  it('over is decided on the shown percent: 100.4 reads 100 % and not overstocked, 100.6 reads 101 %, overstocked', () => {
+    expect(isOver(100.4)).toBe(false); expect(isOver(100.6)).toBe(true); expect(isOver(Infinity)).toBe(true);
+    const r = stockingOf(tank(20, 10, 12, [['whitecloud', 12]]));
+    expect(stockingLine({ ...r, percent: 100.4 })).toBe('Stocking 100%'); expect(stockingLine({ ...r, percent: 100.6 })).toBe('Stocking 101%, overstocked');
+  });
+  it('near full by swimming room does not prescribe water changes; it names fewer animals or a longer tank', () => {
+    const near = Array.from({ length: 40 }, (_, i) => stockingOf(tank(20, 10, 12, [['whitecloud', i + 1]]))).find(r => Math.round(r.percent) >= 85 && !isOver(r.percent))!;
+    expect(near.spacePercent).toBeGreaterThanOrEqual(near.filtrationPercent);
+    expect(near.reasons.join(' ')).not.toMatch(/keep up with water changes/); expect(near.reasons.join(' ')).toMatch(/fewer animals or a longer tank/);
+  });
+  it('white clouds swim above the floor: they take none of it', () => {
+    expect(stockingOf(tank(20, 10, 12, [['whitecloud', 12]])).floorPercent).toBe(0);
+  });
+  it('the tile names the tank the percents are of', () => {
+    const S = tank(20, 10, 12, [['whitecloud', 12]]);
+    expect(tankSizeLine(S, stockingOf(S), 'in')).toMatch(/^Tank 2\d.* × 1\d.* in, [\d.]+ gal of water$/);
   });
 });

@@ -7,7 +7,7 @@
 import { compatLine, compatRisks, coverAdvice, crowdWarnings } from '../scene/territory';
 import type { Viewer } from '../render/viewer';
 import { defaultSpace, spaceFit, tankExtent, SPACE_MAX, SPACE_MIN, type SpaceFit } from '../scene/space';
-import { IDEAL_MAX, plural, stockingDetail, stockingMemo, type Stocking } from '../scene/stocking';
+import { IDEAL_MAX, isOver, plural, stockingDetail, stockingMemo, type Stocking } from '../scene/stocking';
 import { MIN_SLACK_PCT } from '../scene/animalfit';
 import { minDataOf, notesIn, reasonIn, tankMinimum, type MinLine, type MinRow, type TankMinimum } from '../scene/tankMin';
 import { NO3_TO_N, PLANT_SHARE_MAX, type Nitrogen } from '../scene/nitrogen';
@@ -47,7 +47,7 @@ export interface TileState {
 
 export function bar(pct: number): Bar {
   const p = Number.isFinite(pct) ? Math.max(0, pct) : Infinity, r = p === Infinity ? 'over 999' : String(Math.round(p));
-  return { pct: p, fill: Math.min(100, p), level: p > 100 ? 'over' : p >= NEAR_FULL ? 'near' : 'ok', text: `${r}%` };
+  return { pct: p, fill: Math.min(100, p), level: isOver(p) ? 'over' : Math.round(p) >= NEAR_FULL ? 'near' : 'ok', text: `${r}%` };
 }
 
 /** The k animals that fill a bar most: by space or by waste load, with their share of it. */
@@ -73,10 +73,12 @@ export function minWarnings(m: TankMinimum, units: Units): MinWarn[] {
 }
 
 /** The tank-minimum bar: the fill is the tank against the most demanding red line; red below a minimum, yellow below a Recommended mark, green past every one. */
+export const MIN_WORD = { over: 'Too small', near: 'Meets minimum', ok: 'Meets recommended' } as const;
 export function minBar(m: TankMinimum): Bar {
   if (m.percent === Infinity) return { pct: Infinity, fill: 100, level: 'over', text: 'Not assessed' };
-  const b = bar(m.percent);
-  return { ...b, level: m.percent > MIN_SLACK_PCT ? 'over' : m.comfortPercent > 100 ? 'near' : 'ok' };
+  const b = bar(m.percent), level = m.percent > MIN_SLACK_PCT ? 'over' as const : m.comfortPercent > 100 ? 'near' as const : 'ok' as const;
+  // a word, not the percent (2026-10-22): "100 %" read as either "just met" or "at the limit"; the percent stays in the meter and its tip
+  return { ...b, level, text: MIN_WORD[level] };
 }
 
 /** "at least 23.5" x 12"; Recommended 31.5" long": each species' red and green lines, most demanding first (the bar's list). */
@@ -90,13 +92,16 @@ export function topMin(m: TankMinimum, units: Units, k = 3): TopRow[] {
   });
 }
 
+/** "Tank 24 × 13 in, 18.5 gal of water": the size the percents are of (2026-10-22: without it nobody can judge them). */
+export const tankSizeLine = (S: TankSetup, r: Stocking, units: Units) => { const e = tankExtent(S.tank); return `Tank ${fmtBox(e.w, e.d, units)}, ${fmtOf(units).vol(r.capacity.litres)} of water`; };
+
 /** The reason line from space alone, for a tank whose filter is not chosen yet. */
 export function spaceReason(r: Stocking): string {
   if (!r.contributors.length) return '';
   const p = r.spacePercent, top = topBy(r, r.spaceBy === 'floor' ? 'floor' : 'space', 1)[0];
-  if (p > 100 && r.spaceBy === 'floor') return `The floor is too small for the bottom dwellers (${Math.round(p)}% of it), mainly the ${plural(top.n, top.name)}: no extra height fixes that, it needs about ${Math.ceil(r.floor.usedCm2 / 6.4516)} sq in of floor or fewer bottom dwellers.`;
-  if (p > 100) return `The tank is too small for them (${Math.round(p)}% of its space), mainly the ${plural(top.n, top.name)}: it needs about ${Math.ceil(r.capacity.litres * r.waterPercent / 100)} L of water or fewer animals.`;
-  return p >= NEAR_FULL ? 'Past ideal by space: tread carefully, room for a few small animals at most.' : `Room for about ${Math.round(NEAR_FULL - p)}% more by space before it is past ideal.`;
+  if (isOver(p) && r.spaceBy === 'floor') return `The floor is too small for the bottom dwellers (${Math.round(p)}% of it), mainly the ${plural(top.n, top.name)}: no extra height fixes that, it needs about ${Math.ceil(r.floor.usedCm2 / 6.4516)} sq in of floor or fewer bottom dwellers.`;
+  if (isOver(p)) return `The tank is too small for them (${Math.round(p)}% of its space), mainly the ${plural(top.n, top.name)}: it needs about ${Math.ceil(r.capacity.litres * r.waterPercent / 100)} L of water or fewer animals.`;
+  return Math.round(p) >= NEAR_FULL ? (r.spaceBy === 'floor' ? 'Past ideal by floor: fewer bottom dwellers or a tank with a bigger base would help.' : 'Past ideal by space: tread carefully, room for a few small animals at most.') : `Room for about ${Math.round(NEAR_FULL - p)}% more by space before it is past ideal.`;
 }
 export function tileState(S: TankSetup, r: Stocking, units: Units = 'cm'): TileState {
   const m = tankMinimum(S), mins = minWarnings(m, units), tooSmall = mins.some(w => w.level === 'over'), limit = S.layout.space, fit = limit ? spaceFit(S.tank, limit) : undefined;
@@ -234,11 +239,11 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
     // lane HB (Nathan 2026-10-21): Space split into its two limits; the pill and the tank fit use the larger
     const spaceRows = row('water', 'Water column', st.water, topBy(r, 'space'), 'water column', undefined, 'How full the water is: body size against the litres (fitted to AqAdvisor). More height counts here.')
       + row('floor', 'Floor', st.floor, st.topFloor, 'floor', 'Most of the floor:', 'Floor the bottom dwellers use: 15 sq in per inch of fish (research/habitat-model.md). A taller tank adds no floor.', 'No bottom dwellers: the floor is free.');
-    bars.innerHTML = (st.compat ? `<div class="ftWarn ft-${st.compat.level} ftCompat">${esc(st.compat.text)}</div>` : '') + spaceRows
+    bars.innerHTML = `<div class="ftWhy ftSize">${esc(tankSizeLine(S, r, u))}</div>` + (st.compat ? `<div class="ftWarn ft-${st.compat.level} ftCompat">${esc(st.compat.text)}</div>` : '') + spaceRows
       + (st.filter === 'unset' ? `<div class="ftWarn ft-near ftNeedFilter"><b>This tank needs a filter.</b> Add one in Tech › Filtration to see its filtration.${box(false)}</div>`
         : row('filt', 'Filtration', st.filt, st.topFilt, 'waste', undefined, 'Ammonia the filter bacteria can process, after the plants take their share. It does not measure nitrate, oxygen, pH or temperature.')
           + (st.filter === 'filterless' ? `<div class="ftWhy">${box(true)}: bacteria on glass, substrate and decor only.</div>` : ''))
-      + (st.topMin.length ? row('min', 'Tank minimum', st.min, st.topMin, 'minimum', 'Smallest tank they want, whatever the count:') : '')
+      + (st.topMin.length ? row('min', 'Tank minimum', st.min, st.topMin, 'minimum', 'Smallest tank they want, whatever the count:', Number.isFinite(st.min.pct) ? `Their minimum tank is ${Math.round(st.min.pct)}% of this one: green past every Recommended size, yellow between the minimum and Recommended, red below the minimum.` : '') : '')
       + st.mins.map(w => `<div class="ftWarn ft-${w.level}">${esc(w.text)}</div>`).join('')
       + crowd.map(t => `<div class="ftWarn ft-near ftCrowd">${esc(t)}</div>`).join('')
       + cover.map(t => `<div class="ftWarn ft-near ftCover">${esc(t)}</div>`).join('')

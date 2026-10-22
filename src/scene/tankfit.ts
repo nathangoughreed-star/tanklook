@@ -13,7 +13,7 @@ import { getTankModel, TANK_MODELS, tankFromModel, type TankModel } from '../dat
 import { defaultProfile, demandOf, type DemandOpts } from '../demand';
 import { bareSetup } from './defaults';
 import { volume } from './physics';
-import { countsAgainstWater, stockingOf } from './stocking';
+import { countsAgainstWater, isOver, stockingOf } from './stocking';
 import { MIN_SLACK_PCT } from './animalfit';
 import { minDataOf, tankMinimum } from './tankMin';
 import { applyPreset, optionCost, PRESETS, ROOM_C, rowsFor, stockCapacity, tempFit, withChoice } from './tech';
@@ -115,9 +115,9 @@ export interface Fit {
 
 function fitOf(c: Candidate, animals: AnimalCount[]): Fit {
   const S = setupFor(c, animals, 'balanced'), r = stockingOf(S), fails: Fit['fails'] = [];
-  if (r.spacePercent > 100) fails.push('space');
+  if (isOver(r.spacePercent)) fails.push('space');
   // the balanced build already takes the strongest catalogue filter when none keeps it at 70 %: still over 100 % means no filter can carry this stocking here
-  if (r.filtrationPercent > 100) fails.push('filtration');
+  if (isOver(r.filtrationPercent)) fails.push('filtration');
   const tm = tankMinimum(S);
   if (tm.percent > MIN_SLACK_PCT) fails.push('minimum'); // the Fullness tile's own red lines (length, width, floor area, height; tankMin.ts), 10 % slack
   // lane HB: every limit is the engines' own (stockingOf: water and floor; tankMinimum: red lines, length with the same 10 % slack (S207), depth); no math here

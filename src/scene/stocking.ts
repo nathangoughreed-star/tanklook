@@ -267,21 +267,24 @@ export function stockingOf(S: TankSetup): Stocking {
   const reasons: string[] = [];
   let fixFilter: Stocking['fixFilter'];
   if (!contributors.length) reasons.push('No animals in the water.');
-  else if (percent > 100) {
+  else if (isOver(percent)) {
     const top = contributors[0];
     reasons.push(top.share >= 0.4 ? `Overstocked mainly because of the ${plural(top.n, top.name)} (${Math.round(top.share * 100)}% of the load).`
       : `Overstocked: ${contributors.slice(0, 3).map(c => `${plural(c.n, c.name)} ${Math.round(c.share * 100)}%`).join(', ')} of the load.`);
-    if (spacePercent > 100 && spaceBy === 'floor') reasons.push(`The floor is too small for the bottom dwellers (${Math.round(floorPercent)}% of it): no filter or extra height fixes that, it needs about ${Math.ceil(floorUse / SQIN_CM2)} sq in of floor (the tank has ${Math.round(areaCm2 / SQIN_CM2)}) or fewer bottom dwellers.`);
-    else if (spacePercent > 100) reasons.push(`The tank itself is too small for them (${Math.round(spacePercent)}% of its space): no filter fixes that, it needs about ${Math.ceil(cap.litres * waterPercent / 100)} L of water or fewer animals.`);
+    if (isOver(spacePercent) && spaceBy === 'floor') reasons.push(`The floor is too small for the bottom dwellers (${Math.round(floorPercent)}% of it): no filter or extra height fixes that, it needs about ${Math.ceil(floorUse / SQIN_CM2)} sq in of floor (the tank has ${Math.round(areaCm2 / SQIN_CM2)}) or fewer bottom dwellers.`);
+    else if (isOver(spacePercent)) reasons.push(`The tank itself is too small for them (${Math.round(spacePercent)}% of its space): no filter fixes that, it needs about ${Math.ceil(cap.litres * waterPercent / 100)} L of water or fewer animals.`);
     else {
       const fr = rowsFor(S).find(r => r.id === 'filter');
       for (const o of [...(fr?.options ?? [])].sort((a, b) => (a.capacity ?? 1) - (b.capacity ?? 1))) {
         const p = Math.max(nitrogenBudget(S, cap.litres, cap.tempC, load, o.id).ammoniaPercent, spacePercent);
-        if (p <= 100) { fixFilter = { option: o.id, percent: Math.round(p) }; reasons.push(`A ${o.label.toLowerCase()} would bring it to ${Math.round(p)}%.`); break; }
+        if (!isOver(p)) { fixFilter = { option: o.id, percent: Math.round(p) }; reasons.push(`A ${o.label.toLowerCase()} would bring it to ${Math.round(p)}%.`); break; }
       }
       if (!fixFilter) reasons.push(`Even the best filter leaves ammonia high: it needs fewer animals, more plants, lighter feeding or a bigger tank.`);
     }
-  } else if (percent >= IDEAL_MAX) reasons.push('Past ideal, tread carefully: keep up with water changes and add nothing big.');
+  } else if (Math.round(percent) >= IDEAL_MAX) reasons.push(spacePercent < filtrationPercent ? 'Past ideal, tread carefully: keep up with water changes and add nothing big.'
+    // space binds (2026-10-22): water changes add no room, so name what does
+    : spaceBy === 'floor' ? 'Past ideal by floor: water changes do not add floor; fewer bottom dwellers or a tank with a bigger base would.'
+    : 'Past ideal by swimming room: water changes do not add room; fewer animals or a longer tank would.');
   else reasons.push(`Room for about ${Math.round(IDEAL_MAX - percent)}% more load before it is past ideal.`);
   return { nitrogen, percent, spacePercent, waterPercent, floorPercent, spaceBy, floor: { areaCm2, usedCm2: floorUse }, filtrationPercent, load, contributors, capacity: cap, reasons, ...(fixFilter ? { fixFilter } : {}) };
 }
@@ -311,6 +314,8 @@ setWaterChangeFraction(waterChangeFraction);
 export const IDEAL_MAX = 75;
 
 /** One line for the panel and the view label: "Stocking 78%", "Stocking 240%, overstocked". */
-export const stockingLine = (r: Stocking) => `Stocking ${r.percent === Infinity ? 'over 999' : Math.round(r.percent)}%${r.percent > 100 ? ', overstocked' : ''}`;
+/** Over the limit as shown (2026-10-22): the rounded percent, so 100.3 % reads "100%" and not overstocked, and 100.6 % reads "101%, overstocked". */
+export const isOver = (p: number) => Math.round(p) > 100;
+export const stockingLine = (r: Stocking) => `Stocking ${r.percent === Infinity ? 'over 999' : Math.round(r.percent)}%${isOver(r.percent) ? ', overstocked' : ''}`;
 /** The breakdown for a tooltip or list: every contributor with its count, mass and share of the load. */
 export const stockingDetail = (r: Stocking) => [`Space ${Math.round(r.spacePercent)}% of the tank's water, filtration ${Math.round(r.filtrationPercent)}% of what the filter clears`].concat(r.contributors.map(c => `${c.n} ${c.name}: ${Math.round(c.share * 100)}% of the load (${c.grams >= 10 ? Math.round(c.grams / c.n) : (c.grams / c.n).toFixed(1)} g each${Math.abs(c.spaceFactor - 1) >= 0.15 ? `, counted ${c.spaceFactor.toFixed(1)}x for space` : ''})`));

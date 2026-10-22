@@ -114,7 +114,8 @@ export const GROUPS: Record<string, GroupCare> = {
   harlequin: { bands: { ok: 8, good: 10, great: 15 }, flow: 'low', zone: 'middle', minLengthMm: 600, appeal: ['shoal', 'colour', 'peaceful'] },
   chili: { bands: { ok: 8, good: 12, great: 20 }, msg: { avoid: 'Tiny and shy; need a big group to show colour', great: '20+ gives the best colour and natural shoaling' }, flow: 'low', zone: 'middle', minLengthMm: 400, appeal: ['shoal', 'colour', 'size'] },
   danio: { bands: { ok: 8, good: 8, great: 12 }, msg: { avoid: 'Small groups of danios nip fins and fight each other' }, flow: 'medium', zone: 'middle', minLengthMm: 600, appeal: ['shoal', 'active', 'easy'] },
-  whitecloud: { bands: { ok: 6, good: 8, great: 12 }, flow: 'low', zone: 'all', minLengthMm: 600, appeal: ['easy', 'shoal', 'personality'] },
+  whitecloud: { bands: { ok: 6, good: 8, great: 12 }, flow: 'low', zone: 'middle', // upper and middle water (Seriously Fish), not the floor (2026-10-22)
+    minLengthMm: 600, appeal: ['easy', 'shoal', 'personality'] },
   cpd: { bands: { ok: 6, good: 8, great: 10 }, msg: { avoid: 'Shy; small groups hide constantly and stress', good: '8-10 gives bolder, more natural behaviour' }, sexed: { ratio: [1, 2], note: 'Males spar; more females than males cuts stress' }, flow: 'low', zone: 'all', minLengthMm: 450, appeal: ['shoal', 'colour', 'peaceful'] },
   hatchet: { bands: { ok: 6, good: 8, great: 10 }, msg: { avoid: 'A pair or trio behaves very differently from a real group' }, flow: 'low', zone: 'top', minLengthMm: 600, appeal: ['oddball', 'shoal'] },
   cherrybarb: { bands: { ok: 6, good: 8, great: 10 }, msg: { avoid: 'Below six they lose shoaling behaviour and turn skittish' }, sexed: { ratio: [1, 2], note: 'At least two females per male so rival-male chasing is spread out' }, flow: 'low', zone: 'middle', minLengthMm: 600, appeal: ['colour', 'peaceful', 'easy'] },

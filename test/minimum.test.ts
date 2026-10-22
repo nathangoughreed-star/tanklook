@@ -227,6 +227,8 @@ describe('wording (lane MM)', () => {
     expect(top.some(x => /comfortable|cramped|happier/.test(x.note ?? ''))).toBe(false);
     expect(minBar(tankMinimum(one('danio', 48, 13))).level).toBe('ok');
     expect(minBar(tankMinimum(one('danio', 12, 8))).level).toBe('over');
+    // a word, not "100 %" (2026-10-22)
+    expect(minBar(tankMinimum(one('danio', 48, 13))).text).toBe('Meets recommended'); expect(minBar(tankMinimum(one('danio', 12, 8))).text).toBe('Too small');
   });
 });
 

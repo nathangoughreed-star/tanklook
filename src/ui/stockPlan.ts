@@ -116,7 +116,7 @@ ${overWarn(p, litres || undefined, shownLengthMm(plan)) ? `<div class="spWarn">$
 ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</div>` : ''}</li>`;
   };
 
-  const bar = (pct: number, what: string) => `<span class="spBar ${pct > 100 ? 'over' : pct >= IDEAL_MAX ? 'near' : ''}" title="${what}: ${Math.round(pct)} %"><i style="width:${Math.max(2, Math.min(100, pct))}%"></i></span>`;
+  const bar = (pct: number, what: string) => `<span class="spBar ${Math.round(pct) > 100 ? 'over' : Math.round(pct) >= IDEAL_MAX ? 'near' : ''}" title="${what}: ${Math.round(pct)} %"><i style="width:${Math.max(2, Math.min(100, pct))}%"></i></span>`;
   const WHY = FAIL_WORD;
   let sizesTop = 0;
   const tankBlock = () => {
