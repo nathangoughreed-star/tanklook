@@ -216,7 +216,7 @@ export function withChoice(S: TankSetup, row: string, opt: string): TechSetup {
   // an in-sump skimmer without a sump falls back to a hang-on one
   if (row === 'filter' && opt !== 'sump' && rows.skimmer === 'sump') rows.skimmer = 'hob';
   const next: TechSetup = { ...t, rows, preset: 'custom' };
-  if (row === 'filter') { delete next.filterModel; delete next.filterProduct; delete next.filters; }
+  if (row === 'filter') { delete next.filterModel; delete next.filterProduct; delete next.filters; if (opt !== 'none') delete next.filterless; } // as withUnits (S207 review)
   if (row === 'heater') { delete next.heaterW; delete next.heaterProduct; delete next.heaters; }
   return next;
 }

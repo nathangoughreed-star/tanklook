@@ -107,7 +107,7 @@ export interface PlantParts { /** g N a day the plants take from the water */ gN
 /** g N a day the plants can take (ammonium first), from the items and painted plant patches. */
 export function plantUptake(S: TankSetup): PlantParts {
   let gN = 0, count = 0, rootGN = 0, rootCount = 0;
-  const light = S.light && (S.light as { on?: boolean }).on === false ? 0.3 : 0.7;
+  const light = 0.7; // a lit tank's share of full uptake; LightSettings has no off state, so the 0.3 'light off' branch was dead (S207 review)
   const feed = feedOf(techOf(S)), co2 = feed === 'co2' ? 1.3 : feed === 'ferts' ? 1.1 : 1;
   for (const it of S.items) {
     if (it.kind !== 'plant' || DRY_PLANTS.has(it.variant)) continue;

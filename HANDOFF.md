@@ -45,6 +45,19 @@ models on /review.html (and its drawImage error), TG leftovers (heater product p
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
+## CF: S207 review fixes (2026-10-22, done in Coordinator 8 at Nathan's request, branch `cf`)
+- Fixed, tests in test/cf.test.ts: the no-heater line in plan.ts reads the Tech-menu room temperature (was always 21 C) and says "too warm" when the
+  room is above the range; withChoice clears `filterless` when a filter is chosen (kitTech builds a fresh tech, so it never carried it); an all-female
+  sexed group reads "Your mix has no males" (was "short on females"), males-only / females-only species name what is off; planFor keeps its last
+  answer for the same animals and tank (one redraw asked it once per pick row); leaving the stocking screen with every pick removed sets the last box's
+  tank at full size (the 0.7 x box reached the editor); nitrogen.ts's dead light-off branch removed (LightSettings has no off state; no number moves).
+- NOT done, needs Nathan: tankfit's filter loop allows a sump while builds.ts never offers one. Excluding sumps moves 34 of 504 tankFor answers
+  (species x 1/3/6/12/25/50): 3 oscars 180 gal -> 6 ft custom, 3 blue tangs 125 gal -> 6 ft, 6 yellow tangs 55 -> 90 gal, 12 turbo snails 15 -> 37 gal,
+  6 axolotls 60 breeder -> 75 gal; big stockings start failing filtration. Question: should large / salt builds offer a sump instead?
+  Also seen: 50 mystery snails pick a 10 gal (2.5 gal without sumps): snail bioload looks too low.
+- Not done (cleanups): stockingMemo key lacks grow.feed; needsOf unread fields, dead 'floor' fail, capacityOf LU figures, three recommendedMin copies,
+  esc / usd in 12 files, builds.ts baseSetup vs setupFor.
+
 ## S207: Code review fixes (2026-10-22, branch `s207`, worktree `.claude/worktrees/s207`; the review: chat S207, 20 findings on main b0a07bb, two confirmed by running the engine)
 - **Length gate gets the 10 % slack (tankMin.ts `lengthShort`, read by tankfit `fitOf`):** it was strict while the same red-line length already sits in
   `tankMinimum.percent` with MIN_SLACK_PCT, so a tank a few mm under a line DERIVED from another catalogue tank was greyed "too short" where the

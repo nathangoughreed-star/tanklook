@@ -74,9 +74,11 @@ export function notesOf(p: Pk, u: Units = 'cm'): PickNotes {
     const [rm, rf] = r.ratio, f = p.f ?? 0, u = p.u ?? 0;
     const want = rm === 0 ? 'females only' : rf === 0 ? 'males only' : `${rm} male${rm === 1 ? '' : 's'} to ${rf} female${rf === 1 ? '' : 's'}`;
     // the mix is judged on the sexed animals only; unsexed ones are named, never guessed
-    const off = rm === 0 ? p.n > 0 : rf === 0 ? f > 0 : p.n > 0 && f / p.n < rf / rm * 0.75 || (f > 0 && p.n === 0 && rm > 0 && f + p.n > 1);
+    // what is off, said as it is (S207 review: an all-female group used to read "short on females")
+    const off = rm === 0 ? (p.n > 0 ? 'Your mix has males' : '') : rf === 0 ? (f > 0 ? 'Your mix has females' : '')
+      : p.n > 0 && f / p.n < rf / rm * 0.75 ? 'Your mix is short on females' : f > 1 && p.n === 0 ? 'Your mix has no males' : '';
     const unk = u > 0 ? `. ${u} unsexed: the mix can only be checked once they are sexed${u === n ? '' : ' (judged on the sexed ones meanwhile)'}` : '';
-    ratio = `Kept ${want}${r.note ? `: ${r.note}` : ''}${off && n - u > 0 ? '. Your mix is short on females' : ''}${unk}`;
+    ratio = `Kept ${want}${r.note ? `: ${r.note}` : ''}${off && n - u > 0 ? `. ${off}` : ''}${unk}`;
   }
   const habitat: string[] = [];
   const md = minDataOf(p.id), adv = md?.depth?.maxWaterDepthMm; // the limit (GroupCare maxDepthMm) first, a sourced advisory maximum beside it (ADF, Nathan 2026-10-22)
@@ -197,7 +199,16 @@ const FAIL_TEXT: Record<string, string> = {
 
 /** The plan for these picks: the sizes with their verdicts, and the user's chosen tank (never swapped for them) with its cost span. */
 export function planFor(picks: Pk[], chosen?: string): Plan {
-  const animals = animalsOf(picks), options = tankOptions(animals);
+  // one redraw asks up to once per pick row with the same picks (S207 review): the last answer is kept for the same animals and tank
+  const animals = animalsOf(picks), key = JSON.stringify([animals, chosen ?? '']);
+  if (lastPlan?.key === key) return lastPlan.plan;
+  const plan = planOf(animals, chosen);
+  lastPlan = { key, plan };
+  return plan;
+}
+let lastPlan: { key: string; plan: Plan } | undefined;
+function planOf(animals: AnimalCount[], chosen?: string): Plan {
+  const options = tankOptions(animals);
   if (!options.length) return { litres: 0, options: [] };
   const need = options.find(o => !o.fails.length);
   const fit = chosen ? options.find(o => o.tank.id === chosen) : undefined, tank = fit?.tank;

@@ -11,7 +11,8 @@ import { LIBRARY } from './items';
 import type { Build } from './builds';
 import { finSensitiveNames, plantNeeds, priceScape } from './scapes';
 import { countsAgainstWater, stockingOf } from './stocking';
-import { ROOM_C, tempFit } from './tech';
+import { CARE } from '../data/care';
+import { ROOM_C, techOf, tempFit } from './tech';
 import { lenTxt, sizeTxt, tankLabel, type AnimalCount } from './tankfit';
 import { volume } from './physics';
 import { minFit, tankMinimum } from './tankMin';
@@ -58,6 +59,9 @@ export function animalsOfSetup(S: TankSetup): AnimalCount[] {
   return [...m].map(([species, n]) => ({ species, n }));
 }
 
+/** The room temperature where the tank stands, deg C: the user's Tech-menu setting, else the default. */
+const roomOf = (S: TankSetup) => (S.tech ? techOf(S).roomC : undefined) ?? ROOM_C;
+
 /** Hard truths: what is wrong with this stocking in this tank, whatever the user's taste (from the care gates, the tank-fit limits, temperature and plants). */
 export function hardTruths(S: TankSetup, animals: AnimalCount[], heater: boolean, u: Units = 'cm'): { text: string; level: Level }[] {
   const out: { text: string; level: Level }[] = [];
@@ -69,7 +73,8 @@ export function hardTruths(S: TankSetup, animals: AnimalCount[], heater: boolean
   }
   const tm = tankMinimum({ ...S, fish: sp.map((s, i) => ({ id: i + 1, species: s.id, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0 })) }); // lane HB: the same depth limit the tank fit reads
   if (tm.tooDeep) out.push({ text: `Some of your animals need shallow water (${lenTxt(tm.maxDepthMm, u)} at most); this tank's water is ${lenTxt(tm.depthMm, u)} deep`, level: 'bad' });
-  if (!heater && !salt) for (const s of sp.filter(x => countsAgainstWater(x))) if (tempFit(s.id, ROOM_C) === 'out') out.push({ text: `${s.name} is too cold at room temperature (${ROOM_C} C) and the tank has no heater`, level: 'bad' });
+  const room = roomOf(S); // the room the user set (Tech menu), else tech.json's 21 C (S207 review)
+  if (!heater && !salt) for (const s of sp.filter(x => countsAgainstWater(x))) if (tempFit(s.id, room) === 'out') out.push({ text: `${s.name} is too ${room > (CARE[s.id]?.temp?.[1] ?? Infinity) ? 'warm' : 'cold'} at room temperature (${room} C) and the tank has no heater`, level: 'bad' });
   const longFinned = finSensitiveNames(animals);
   if (longFinned.length && S.items.some(it => it.variant.startsWith('plastic'))) out.push({ text: `Hard plastic leaves can tear the long fins of ${longFinned.join(', ')}: use silk plants`, level: 'warn' });
   return out;
@@ -117,7 +122,7 @@ export function planOf(S: TankSetup, build?: Build, now = Date.now(), u: Units =
   const animals = animalsOfSetup(S), st = stockingOf(S);
   const D: Demand = priceScape(S, build ?? ({ animals, gearDeals: [] } as unknown as Build), now);
   const needs = plantNeeds(S);
-  const wantsHeat = (S.water.on && !!S.water.salt) || animals.some(a => { const sp = getSpecies(a.species); return sp && countsAgainstWater(sp) && tempFit(sp.id, ROOM_C) !== 'ok'; });
+  const wantsHeat = (S.water.on && !!S.water.salt) || animals.some(a => { const sp = getSpecies(a.species); return sp && countsAgainstWater(sp) && tempFit(sp.id, roomOf(S)) !== 'ok'; });
   const rows: PlanRow[] = [];
   const grouped = new Map<string, PlanRow>();
   // a kit's one price stands in for the parts it contains (their rows lose their price): the kit row serves their needs

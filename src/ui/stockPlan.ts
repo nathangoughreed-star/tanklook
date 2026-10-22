@@ -5,7 +5,7 @@
 import { rng } from '../art/paint';
 import { CARE } from '../data/care';
 import { getSpecies, searchSpecies } from '../data/species';
-import { tankFromModel } from '../data/tanks';
+import { tankFromModel, type TankModel } from '../data/tanks';
 import { emptyScene } from '../scene/defaults';
 import { placeNew, shuffleFish } from '../scene/scatter';
 import type { Store } from '../scene/store';
@@ -53,11 +53,13 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
   // the tool does not pick the tank; the user does, and can come back for a bigger one as the stocking grows)
   const ghost = (on: boolean) => { if (tankView.ghost !== on) { tankView.ghost = on; viewer.rebuild(); } };
   const GHOST_SCALE = 0.7;
+  let lastBox: TankModel | undefined; // the size the box stands for, while it is on show
   // leaving the screen without a choice: the smallest tank that holds them becomes the real tank, so the editor never gets the box
   const settle = () => {
     if (!tankView.ghost) return;
-    const plan = planFor(picks, chosen), m = plan.need?.tank ?? plan.options.at(-1)?.tank;
-    shown = ''; ghost(false);
+    // every pick removed: no plan, so the last box's tank at its full size (S207 review: the 0.7 x box used to reach the editor)
+    const plan = planFor(picks, chosen), m = plan.need?.tank ?? plan.options.at(-1)?.tank ?? lastBox;
+    shown = ''; ghost(false); lastBox = undefined;
     if (m) store.update(s => { const T = s.tanks[s.active]; T.tank = tankFromModel(m); shuffleFish(T, rng(1 + Math.floor(Math.random() * 1e6)), undefined, 100); });
   };
   const close = () => { settle(); el.hidden = true; gallery.show(false); side(false); bare(false); };
@@ -73,6 +75,7 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
       if (show && key !== shown) {
         T.tank = tankFromModel(show); T.water.on = true; T.water.level = WATER_LEVEL; shown = key; rebuild = true;
         if (box) T.tank = { ...T.tank, L: Math.round(T.tank.L * GHOST_SCALE), D: Math.round(T.tank.D * GHOST_SCALE) };
+        lastBox = box;
         T.camera = { ...T.camera, zoom: 0.55, el: 20 }; // looking down a little so the bottom dwellers show on the bare floor // the whole tank in view, beside the panel
       }
       T.water.salt = picks.some(p => getSpecies(p.id)?.salt);
