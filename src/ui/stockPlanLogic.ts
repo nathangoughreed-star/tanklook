@@ -13,10 +13,20 @@ import { countsAgainstWater } from '../scene/stocking';
 import { minDataOf } from '../scene/tankMin';
 import type { Fish, SpaceLimit, Tank, Units } from '../scene/types';
 
-/** One species on the list. Usually sexed species (CARE.sexed) carry males in `n` and females in `f`; the rest just `n`. */
-export interface Pk { id: string; n: number; f?: number }
+/** Pairing, where a rule depends on it (rules-spec section 4): an established pair, one not yet confirmed, or unknown (the default). */
+export type Pairing = 'established' | 'unconfirmed' | 'unknown';
+/** One species on the list. Sex and pairing are separate inputs (lane RF): species usually kept by sex (CARE.sexed) carry males in `n`,
+ *  females in `f` and unsexed animals in `u`; the rest just `n`. `pair` = the pairing status (only asked where pairRule holds). */
+export interface Pk { id: string; n: number; f?: number; u?: number; pair?: Pairing }
 export const isSexed = (id: string) => !!CARE[id]?.sexed;
-export const totalOf = (p: Pk) => p.n + (p.f ?? 0);
+export const totalOf = (p: Pk) => p.n + (p.f ?? 0) + (p.u ?? 0);
+/** Species whose advice for two animals assumes a FORMED pair (a bonded or breeding pair in their groups.ts lines; the Bolivian ram per the
+ *  rules-spec benchmark "two unpaired cichlids / rams"). Two of them are judged as a pair only when the user says it is established.
+ *  test/careNeeds.test.ts keeps it in step: every species whose lines say "bonded" or "male/female pair" must be here. */
+export const PAIR_FORMERS = new Set(['gbr', 'bolivianram', 'kribensis', 'angel', 'discus', 'ocellaris', 'banggai', 'firefish', 'watchman']);
+export const pairRule = (id: string) => PAIR_FORMERS.has(id);
+/** The pairing question is asked: a pair species with exactly two animals on the list. */
+export const asksPairing = (p: Pk) => pairRule(p.id) && totalOf(p) === 2;
 /** The most one tank is advised to take (a warning past it, never a block). */
 export const maxOf = (id: string) => CARE[id]?.max ?? 99;
 export const minOf = (id: string) => CARE[id]?.bands?.ok ?? CARE[id]?.group ?? 1;
@@ -32,11 +42,11 @@ export function startPick(id: string): Pk {
   return { id, n: r[0] * k, f: r[1] * k };
 }
 
-/** Add `d` (+1 / -1) to one count of a pick, never below 0; males 'n', females 'f'. Past the species' advised most it only warns (overWarn). */
-export function bump(p: Pk, which: 'n' | 'f', d: number): Pk {
-  const cur = which === 'n' ? p.n : p.f ?? 0;
-  const v = Math.max(0, cur + d);
-  return which === 'n' ? { ...p, n: v } : { ...p, f: v };
+/** Add `d` (+1 / -1) to one count of a pick, never below 0; males (or the count) 'n', females 'f', unsexed 'u'. Past the species' advised
+ *  most it only warns (overWarn). */
+export function bump(p: Pk, which: 'n' | 'f' | 'u', d: number): Pk {
+  const v = Math.max(0, (which === 'n' ? p.n : p[which] ?? 0) + d);
+  return { ...p, [which]: v };
 }
 
 /** The warning for keeping more of a species than advised (more than the advised most, or more than one of a keep-one animal), else undefined. */
@@ -48,20 +58,24 @@ export function overWarn(p: Pk): string | undefined {
 }
 
 /** The band message for the total count, plus the sex-ratio line for sexed species. `needs`: the species' essential care conditions
- *  (data/careNeeds.ts), evaluated apart from the count, so they show whatever band the group lands in. */
-export interface PickNotes { band: GroupBand; line: string; ratio?: string; habitat: string[]; needs: { severity: NeedSeverity; text: string }[] }
+ *  (data/careNeeds.ts), evaluated apart from the count, so they show whatever band the group lands in. `pairing`: for two of a pair
+ *  species, the status and its line (two animals, even 1 male + 1 female, are never assumed to be a pair). */
+export interface PickNotes { band: GroupBand; line: string; ratio?: string; habitat: string[]; needs: { severity: NeedSeverity; text: string }[]; pairing?: { status: Pairing; line: string } }
 export function notesOf(p: Pk, u: Units = 'cm'): PickNotes {
   const c = CARE[p.id], n = totalOf(p);
   // labelled as the GROUP-SIZE assessment (rules-spec section 6): it judges the count only, never the tank (groupLineIn adds that)
   const band = bandOf(c, n), msg = c?.max && c.max > 1 && n === c.max ? `${bandMessage(c, n)} (at the most one tank takes: ${c.max})` : bandMessage(c, n);
-  const line = n === 0 || !msg ? '' : `Group size: ${msg}`;
+  const pairing = asksPairing(p) ? pairingOf(p.pair ?? 'unknown') : undefined;
+  const line = n === 0 || !msg ? '' : `Group size: ${msg}${pairing && pairing.status !== 'established' ? ' (only if they are a pair)' : ''}`;
   let ratio: string | undefined;
   const r = c?.sexed;
   if (r) {
-    const [rm, rf] = r.ratio, f = p.f ?? 0;
+    const [rm, rf] = r.ratio, f = p.f ?? 0, u = p.u ?? 0;
     const want = rm === 0 ? 'females only' : rf === 0 ? 'males only' : `${rm} male${rm === 1 ? '' : 's'} to ${rf} female${rf === 1 ? '' : 's'}`;
-    const off = rm === 0 ? p.n > 0 : rf === 0 ? f > 0 : p.n > 0 && f / p.n < rf / rm * 0.75 || (f > 0 && p.n === 0 && rm > 0 && n > 1);
-    ratio = `Kept ${want}${r.note ? `: ${r.note}` : ''}${off && n > 0 ? '. Your mix is short on females' : ''}`;
+    // the mix is judged on the sexed animals only; unsexed ones are named, never guessed
+    const off = rm === 0 ? p.n > 0 : rf === 0 ? f > 0 : p.n > 0 && f / p.n < rf / rm * 0.75 || (f > 0 && p.n === 0 && rm > 0 && f + p.n > 1);
+    const unk = u > 0 ? `. ${u} unsexed: the mix can only be checked once they are sexed${u === n ? '' : ' (judged on the sexed ones meanwhile)'}` : '';
+    ratio = `Kept ${want}${r.note ? `: ${r.note}` : ''}${off && n - u > 0 ? '. Your mix is short on females' : ''}${unk}`;
   }
   const habitat: string[] = [];
   const md = minDataOf(p.id), adv = md?.depth?.maxWaterDepthMm; // lane MM: a sourced maximum depth is an advisory here, with the count picker (ADF, Decision 3)
@@ -73,8 +87,15 @@ export function notesOf(p: Pk, u: Units = 'cm'): PickNotes {
   if (md?.red) habitat.push(`Tank at least ${lenTxt(md.red.L, u)} long${md.red.mark === 'derived (est)' ? ' (estimated from a gallon figure)' : ''}`);
   if (md?.green) habitat.push(`Recommended: ${lenTxt(md.green.L, u)} long (${md.green.site})`);
   const needs = needsOf(p.id).map(x => ({ severity: x.severity, text: needLine(x) }));
-  return { band, line, ...(ratio ? { ratio } : {}), habitat, needs };
+  return { band, line, ...(ratio ? { ratio } : {}), habitat, needs, ...(pairing ? { pairing } : {}) };
 }
+
+const PAIR_LINE: Record<Pairing, string> = {
+  established: 'An established pair',
+  unconfirmed: 'Pairing not confirmed: the group-size result holds only if they pair',
+  unknown: 'Are these two an established pair? Two animals, even 1 male + 1 female, are not assumed to be one: the group-size result holds only if they pair',
+};
+const pairingOf = (status: Pairing) => ({ status, line: PAIR_LINE[status] });
 
 /** The group-size line as it reads beside a chosen tank: when the tank fails (space, minimum, length, depth, floor, filtration) the overall
  *  verdict takes precedence, so the line says it judges the group only and is not shown in a "good" colour (`held`). */

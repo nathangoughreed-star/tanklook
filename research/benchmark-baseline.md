@@ -1,6 +1,6 @@
 # Benchmark baseline: what path 1 says TODAY (generated, do not edit)
 
-Tested commit c32d9d6 (build 1116), WITH UNCOMMITTED CHANGES: M .claude/launch.json;  M research/benchmark-baseline.md;  M src/style.css;  M src/ui/stockPlan.ts;  M src/ui/stockPlanLogic.ts;  M test/benchmarkBaseline.test.ts;  M test/careNeeds.test.ts.
+Tested commit ef95d60 (build 1118), WITH UNCOMMITTED CHANGES: M research/benchmark-baseline.md;  M src/style.css;  M src/ui/stockPlan.ts;  M src/ui/stockPlanLogic.ts;  M test/benchmarkBaseline.test.ts;  M test/careNeeds.test.ts.
 
 Generated 2026-10-22 by test/benchmarkBaseline.test.ts. Expected verdicts live in research/rules-spec.md section 5; this is the engine's current answer only.
 
@@ -91,8 +91,8 @@ Generated 2026-10-22 by test/benchmarkBaseline.test.ts. Expected verdicts live i
 ## Two unpaired social animals
 
 **bolivianram x2 (sex unknown)** in About a 29 gal tank (30 x 13 in): space 26 %, filtration 12 %, size vs minimum 175 %, cramped; fails: minimum, length; problem line: Too small for these animals; pick a bigger tank
-  - bolivianram x2: band ok, "Group size: Doable; 4 or more is better", habitat: Gentle flow / Lives in the bottom of the tank / Tank at least 35 in long / Recommended: 47 in long (Seriously Fish)
-    beside this tank (held, the tank verdict comes first): "Group size: Doable; 4 or more is better. That is the group only: this tank fails (too small for them, too short), see the tank verdict"
+  - bolivianram x2: band ok, "Group size: Doable; 4 or more is better (only if they are a pair)", pairing (unknown) "Are these two an established pair? Two animals, even 1 male + 1 female, are not assumed to be one: the group-size result holds only if they pair", habitat: Gentle flow / Lives in the bottom of the tank / Tank at least 35 in long / Recommended: 47 in long (Seriously Fish)
+    beside this tank (held, the tank verdict comes first): "Group size: Doable; 4 or more is better (only if they are a pair). That is the group only: this tank fails (too small for them, too short), see the tank verdict"
     compat/size note (beginner): expertise: expertise: intermediate animal, you chose beginner
   - builds: cheapest $390 / leastWork $509 / balanced $390
 

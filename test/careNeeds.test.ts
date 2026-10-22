@@ -49,3 +49,31 @@ describe('GroupCare fields agree with their documented meaning (lane RF item 3)'
     }
   });
 });
+
+describe('sex and pairing are separate inputs (lane RF item 4)', () => {
+  it('two of a pair species are never assumed to be a pair, even 1 male + 1 female', async () => {
+    const { notesOf: notes } = await import('../src/ui/stockPlanLogic');
+    const krib = notes({ id: 'kribensis', n: 1, f: 1 });
+    expect(krib.pairing?.status).toBe('unknown');
+    expect(krib.line).toMatch(/only if they are a pair/);
+    const ram = notes({ id: 'bolivianram', n: 2 });
+    expect(ram.pairing?.line).toMatch(/not assumed/);
+    const est = notes({ id: 'bolivianram', n: 2, pair: 'established' });
+    expect(est.line).not.toMatch(/only if/);
+    expect(notes({ id: 'bolivianram', n: 4 }).pairing).toBeUndefined();
+    expect(notes({ id: 'neon', n: 2 }).pairing).toBeUndefined();
+  });
+  it('the pair list follows the data: every "bonded" or "male/female pair" species is on it', async () => {
+    const { PAIR_FORMERS } = await import('../src/ui/stockPlanLogic');
+    for (const [id, g] of Object.entries(GROUPS)) if (/bonded|male\/female pair/i.test([...Object.values(g.msg ?? {}), g.sexed?.note ?? ''].join(' '))) expect(PAIR_FORMERS.has(id), id).toBe(true);
+  });
+  it('unsexed animals count in the total and are named, never guessed into the ratio', async () => {
+    const { notesOf: notes, totalOf, bump } = await import('../src/ui/stockPlanLogic');
+    const p = bump(bump({ id: 'guppy', n: 1, f: 2 }, 'u', 1), 'u', 1);
+    expect(totalOf(p)).toBe(5);
+    const r = notes(p).ratio!;
+    expect(r).toMatch(/2 unsexed: the mix can only be checked once they are sexed/);
+    expect(r).not.toMatch(/short on females/);
+    expect(notes({ id: 'guppy', n: 0, f: 0, u: 3 }).ratio).not.toMatch(/short on females/);
+  });
+});

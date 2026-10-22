@@ -24,7 +24,7 @@ function judge(name: string, picks: Pk[], want: string, gal: number): string[] {
   const lines = [`**${name}** in ${tankLabel(t.tank, 'in')}: space ${r(f.spacePct)} %, filtration ${r(f.filtrationPct)} %, size vs minimum ${r(f.minPct)} %${f.cramped ? ', cramped' : ''}; fails: ${f.fails.join(', ') || 'none'}; problem line: ${plan.problem ?? '(none)'}`];
   for (const p of picks) {
     const n = notesOf(p, 'in');
-    lines.push(`  - ${p.id} x${p.n}${p.f !== undefined ? ` + ${p.f} f` : ''}: band ${n.band}, "${n.line}"${n.ratio ? `, ratio "${n.ratio}"` : ''}${n.habitat.length ? `, habitat: ${n.habitat.join(' / ')}` : ''}`);
+    lines.push(`  - ${p.id} x${p.n}${p.f !== undefined ? ` + ${p.f} f` : ''}: band ${n.band}, "${n.line}"${n.ratio ? `, ratio "${n.ratio}"` : ''}${n.pairing ? `, pairing (${n.pairing.status}) "${n.pairing.line}"` : ''}${n.habitat.length ? `, habitat: ${n.habitat.join(' / ')}` : ''}`);
     { const g = groupLineIn(n, plan); if (g.held) lines.push(`    beside this tank (held, the tank verdict comes first): "${g.text}"`); }
     for (const x of n.needs) lines.push(`    care need (${x.severity}, shown at any count): ${x.text}`);
     const others = picks.filter(q => q !== p).map(q => getSpecies(q.id)!).filter(Boolean);

@@ -17,7 +17,7 @@ import { attachBuildPick } from './buildPick';
 import { attachStockGallery } from './stockGallery';
 import { onSpaceFork, type SpaceFork } from './fullnessTile';
 import { grazerShort } from '../data/grazers';
-import { animalsInTank, animalsOf, bump, FAIL_WORD, groupLineIn, forkOptions, isSexed, notesOf, overWarn, planFor, shownLitres, conflictOf, rankTankmates, startPick, tankLabel, totalOf, type Pk, type Plan, type RoomOption } from './stockPlanLogic';
+import { animalsInTank, animalsOf, bump, FAIL_WORD, groupLineIn, type Pairing, forkOptions, isSexed, notesOf, overWarn, planFor, shownLitres, conflictOf, rankTankmates, startPick, tankLabel, totalOf, type Pk, type Plan, type RoomOption } from './stockPlanLogic';
 import { sizeTxt } from '../scene/tankfit';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
@@ -25,6 +25,7 @@ const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
 const range = (a: number, b: number, f: (n: number) => string) => a === b ? f(a) : `${f(Math.min(a, b))} to ${f(Math.max(a, b))}`;
 const signed = (n: number) => n >= 0 ? `+${usd(n)}` : `-${usd(-n)}`;
 const WATER_LEVEL = 0.9;
+const PAIR_OPTS: [Pairing, string][] = [['established', 'Established'], ['unconfirmed', 'Not confirmed'], ['unknown', "Don't know"]];
 
 export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string, bad?: boolean) => void, openBtn: HTMLElement) {
   const view = document.getElementById('view')!;
@@ -82,9 +83,10 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
         const have = T.fish.filter(f => f.species === p.id).slice(0, totalOf(p));
         while (have.length < totalOf(p)) { const f: Fish = { id: next++, species: p.id, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0 }; have.push(f); added.add(f.id); }
         have.forEach((f, i) => {
-          const female = isSexed(p.id) && i >= p.n;
+          // sexed species: males, then females, then unsexed (drawn in the default form; a herp's gender left unset = not sexed yet)
+          const sexed = isSexed(p.id), female = sexed && i >= p.n && i < p.n + (p.f ?? 0), unsexed = sexed && i >= p.n + (p.f ?? 0);
           if (sp.female) { if (female) f.sex = 'f'; else delete f.sex; }
-          if (isSexed(p.id) && (sp.cat === 'reptile' || sp.cat === 'amphibian')) f.gender = female ? 'f' : 'm';
+          if (sexed && (sp.cat === 'reptile' || sp.cat === 'amphibian')) { if (unsexed) delete f.gender; else f.gender = female ? 'f' : 'm'; }
         });
         keep.push(...have);
       }
@@ -100,10 +102,11 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
     const litres = shownLitres(plan);
     const hungry = litres ? grazerShort(p.id, totalOf(p), litres) : null;
     const sp = getSpecies(p.id)!, nt = notesOf(p, store.scene.units), sexed = isSexed(p.id);
-    const step = (which: 'n' | 'f', label: string, v: number) =>
+    const step = (which: 'n' | 'f' | 'u', label: string, v: number) =>
       `<span class="spStep"><span class="spLab">${label}</span><button type="button" data-act="dec" data-id="${p.id}" data-w="${which}" aria-label="One fewer ${esc(label || sp.name)}"${v <= 0 ? ' disabled' : ''}>−</button><b>${v}</b><button type="button" data-act="inc" data-id="${p.id}" data-w="${which}" aria-label="One more ${esc(label || sp.name)}">+</button></span>`;
     return `<li class="spPick"><div class="spName"><b>${esc(sp.name)}</b><i>${esc(sp.sci)}</i><button type="button" class="spX" data-act="del" data-id="${p.id}" aria-label="Take ${esc(sp.name)} out">✕</button></div>
-<div class="spSteps">${sexed ? step('n', 'Males', p.n) + step('f', 'Females', p.f ?? 0) : step('n', '', p.n)}</div>
+<div class="spSteps">${sexed ? step('n', 'Males', p.n) + step('f', 'Females', p.f ?? 0) + step('u', 'Unsexed', p.u ?? 0) : step('n', '', p.n)}</div>
+${nt.pairing ? `<div class="spPair"><span class="spLab">Pair</span>${PAIR_OPTS.map(([v, t]) => `<button type="button" data-act="pair" data-id="${p.id}" data-v="${v}"${nt.pairing!.status === v ? ' class="on"' : ''} aria-pressed="${nt.pairing!.status === v}">${t}</button>`).join('')}</div><div class="${nt.pairing.status === 'established' ? 'spNote' : 'spWarn'}">${esc(nt.pairing.line)}</div>` : ''}
 ${overWarn(p) ? `<div class="spWarn">${esc(overWarn(p)!)}</div>` : ''}${hungry ? `<div class="spWarn">${esc(hungry.replace(/^algae: /, 'Algae: '))}</div>` : ''}${conflictOf(picks, p.id) ? `<div class="spWarn">${esc(conflictOf(picks, p.id)!)}</div>` : ''}${nt.needs.map(x => `<div class="${x.severity === 'S3' ? 'spWarn' : 'spNote'} spNeed">${esc(x.text)}</div>`).join('')}${(() => { const g = groupLineIn(nt, plan); return `<div class="spMsg ${g.held ? 'spb-held' : bandClass(nt.band)}">${esc(g.text)}</div>`; })()}${nt.ratio ? `<div class="spNote">${esc(nt.ratio)}</div>` : ''}
 ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</div>` : ''}</li>`;
   };
@@ -177,7 +180,8 @@ ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}` : ''}
       case 'add': if (i < 0) { picks.push(startPick(id)); q = ''; change(); } break;
       case 'mate': if (i < 0) { picks.push(startPick(id)); change(); } break;
       case 'del': if (i >= 0) { picks.splice(i, 1); if (!picks.length) mates = false; change(); } break;
-      case 'inc': case 'dec': if (i >= 0) { picks[i] = bump(picks[i], b.dataset.w as 'n' | 'f', b.dataset.act === 'inc' ? 1 : -1); if (!totalOf(picks[i])) picks.splice(i, 1); change(); } break;
+      case 'inc': case 'dec': if (i >= 0) { picks[i] = bump(picks[i], b.dataset.w as 'n' | 'f' | 'u', b.dataset.act === 'inc' ? 1 : -1); if (!totalOf(picks[i])) picks.splice(i, 1); change(); } break;
+      case 'pair': if (i >= 0) { picks[i] = { ...picks[i], pair: b.dataset.v as Pairing }; draw(); } break;
       case 'mates': mates = true; draw(); break;
       case 'nomates': mates = false; draw(); break;
       case 'size': chosen = b.dataset.tank; change(); break;
