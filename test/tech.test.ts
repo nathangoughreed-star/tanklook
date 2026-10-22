@@ -210,4 +210,12 @@ describe('benefits wired (lane TM step 5)', () => {
     const risk = (c: number) => demandOf({ ...S, tech: { rows: { heater: 'none' }, roomC: c } }, defaultProfile(), { now: Date.parse('2026-10-19') }).totals.risk;
     expect(risk(17)).toBeGreaterThan(risk(25));
   });
+  it('an assumed room adds no definite temperature penalty: the same shared assessment as the display (temp-tiers)', () => {
+    const S = sized(762, 305, 305, { fish: true }), D = (tech: TankSetup['tech']) => demandOf({ ...S, tech }, defaultProfile(), { now: Date.parse('2026-10-19') });
+    const heaterRisk = (tech: TankSetup['tech']) => D(tech).items.filter(r => r.key === 'heater').reduce((a, r) => a + r.risk, 0);
+    // the default room is 21 °C: assumed, so no penalty; the same 21 °C entered is definitive and charged; a warm entered room is not
+    expect(heaterRisk({ rows: { heater: 'none' }, roomC: 17 })).toBeGreaterThan(heaterRisk({ rows: { heater: 'none' } }));
+    expect(heaterRisk({ rows: { heater: 'none' }, roomC: 17 })).toBeGreaterThan(heaterRisk({ rows: { heater: 'none' }, roomC: 26 }));
+    expect(heaterRisk({ rows: { heater: 'none' } })).toBeCloseTo(heaterRisk({ rows: { heater: 'none' }, roomC: 26 }), 9);
+  });
 });

@@ -29,7 +29,7 @@ export function planHtml(p: Plan, needs: { severity: string; text: string }[] = 
 <h2>Does it fit?</h2>
 <p class="planVerdict ${p.fits ? needs.length ? 'warn' : 'ok' : 'bad'}"><b>${p.fits ? needs.length ? 'It fits the tank, with care needs to confirm.' : 'Yes, it fits.' : 'Not yet.'}</b></p>
 ${bar('Water column', p.waterPct)}${bar('Floor', p.floorPct)}${bar('Filtration', p.filtrationPct)}
-<ul class="planTruths">${p.verdict.slice(2).map(v => `<li class="${v.level}"><b>${MARK[v.level]}</b> ${esc(v.text)}</li>`).join('')}${p.missing.map(m => `<li class="bad"><b>${MARK.bad}</b> ${esc(m)}</li>`).join('')}</ul>
+<ul class="planTruths">${p.verdict.slice(2).map(v => `<li class="${v.level}"><b>${MARK[v.level]}</b> ${esc(v.text)}${v.more?.length ? `<ul class="planMore">${v.more.map(m => `<li>also: ${esc(m)}</li>`).join('')}</ul>` : ''}</li>`).join('')}${p.missing.map(m => `<li class="bad"><b>${MARK.bad}</b> ${esc(m)}</li>`).join('')}</ul>
 ${needs.length ? `<h3>Care needs the tool cannot check</h3><ul class="planTruths">${needs.map(n => `<li class="${n.severity === 'S3' ? 'bad' : 'warn'}"><b>?</b> ${esc(n.text)}</li>`).join('')}</ul>` : ''}
 <h2>What to buy, and why</h2>
 <table>${needRows}</table>

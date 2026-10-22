@@ -3,7 +3,9 @@
 // scene/tech.ts optionCost; a tank without `tech` keeps the engine's inferred rows untouched (old files do not move).
 // Hooked from engine.ts with one line after the routine work rows, before the kit. Keys 'filter' and 'heater' stay, so a kit's price still covers them.
 import dd from '../data/demand-defaults.json';
-import { coldSpecies, extraUnits, heatLoss, inferTech, optionCost, optionDef, rowsFor, techOf, unitCosts, type TechSetup } from '../scene/tech';
+import { coldSpecies, extraUnits, heatLoss, inferTech, optionCost, optionDef, rowsFor, techOf, tempEvidence, unitCosts, type TechSetup } from '../scene/tech';
+import { operatingCheck, sharedRange } from '../scene/temprange';
+import { getSpecies } from '../data/species';
 import { filterByName, genericHeaterW, heaterForBundle } from '../data/gearCatalog';
 import { matchFilter, matchHeater, type FilterSpec } from './gear';
 import { volume } from '../scene/physics';
@@ -29,8 +31,11 @@ export function techDemand(S: TankSetup, rows: Contribution[], c: TechCtx) {
   const t = techOf(S);
   for (const r of rowsFor(S)) {
     const opt = t.rows[r.id] ?? 'none', def = optionDef(r.id, opt), cost = optionCost(S, r.id, opt, { tech: t });
-    // no heater: each stocked species too cold at room temperature counts as a compatibility warning (lane TM step 5)
-    const cold = r.id === 'heater' ? coldSpecies(S, t).filter(x => x.fit === 'out').length * dd.risk.animalWarnPts.compat : 0;
+    // no heater: each stocked species the room leaves beyond its tolerable range counts as a compatibility warning (lane TM step 5),
+    // but only where the shared temperature assessment is definitive (temprange.ts operatingCheck 'outside': a room the user entered).
+    // An assumed room is a conditional concern on screen, so it adds no definite penalty here either (temp-tiers 2026-10-22).
+    const ev = r.id === 'heater' ? tempEvidence({ ...S, tech: t }, false) : undefined;
+    const cold = ev ? coldSpecies(S, t).filter(x => x.fit === 'out' && operatingCheck(sharedRange([getSpecies(x.id)!]), { ...ev, target: undefined }).state === 'outside').length * dd.risk.animalWarnPts.compat : 0;
     const risk = ((def?.risk ?? 0) + cold) * c.riskMul;
     if (!cost.parts.length && !risk) continue;
     const label = `${r.label}: ${def?.label ?? opt}`;

@@ -657,7 +657,7 @@ Cancel, then change the name, to keep both.`)) return;
     3: 'Demanding or delicate animals: tight water parameters with frequent tests and changes, special foods, quarantine for new arrivals, and several hours a week plus a daily check.',
   };
   /** The care gates (Quick Setup): the box is shown while "Stock by care gates" is on; the list is grayed by them when its own box is ticked too. Null while off. */
-  function animalGate(s: TankSetup): ((sp: Species) => (AnimalWhy & { more: string[] }) | null) | null {
+  function animalGate(s: TankSetup): ((sp: Species) => (AnimalWhy & { more: string[]; block: boolean }) | null) | null {
     const stock = !!s.layout.gateStock, on = stock && !!s.layout.gateAnimals, ex = (s.layout.expertise ?? 1) as 1 | 2 | 3, hint = $('gateAnimalsHint');
     $<HTMLInputElement>('gateStock').checked = stock; $('gateBox').hidden = !stock;
     $<HTMLInputElement>('gateAnimals').checked = !!s.layout.gateAnimals; setVal('expertise', ex);
@@ -666,8 +666,9 @@ Cancel, then change the name, to keep both.`)) return;
     if (!on) return null;
     const litres = volume(s.tank).litres, present = [...new Set(s.fish.map(f => f.species))].map(getSpecies).filter((x): x is Species => !!x);
     const env = { corals: hasCorals(s.items), water: s.tech ? tempEvidence(s) : undefined, fit: minFit(s) }; // the tank's target, or with no heater the room it follows
-    // the main blocking reason, and how many other material concerns stand under it (all of them in the tooltip)
-    return sp => { const all = whysAnimal(sp, litres, ex, present, env), main = all.find(w => !w.concern); return main ? { ...main, more: all.filter(w => w !== main).map(w => w.text) } : null; };
+    // the main blocking reason, and how many other material concerns stand under it (all of them in the tooltip); with no blocker the
+    // first concern is the visible message (a note, the item not grayed), so an advisory never hides behind a clean-looking row
+    return sp => { const all = whysAnimal(sp, litres, ex, present, env), main = all.find(w => !w.concern) ?? all[0]; return main ? { ...main, block: !main.concern, more: all.filter(w => w !== main).map(w => w.text) } : null; };
   }
   $('gateAnimals').onchange = e => store.edit(s => { if ((e.target as HTMLInputElement).checked) s.layout.gateAnimals = true; else delete s.layout.gateAnimals; });
   function renderResults() {
@@ -696,14 +697,14 @@ Cancel, then change the name, to keep both.`)) return;
     const sw = results.querySelector<HTMLButtonElement>('#spSwap');
     if (sw) sw.onclick = () => { if (!S().water.on) store.edit(s => { s.water.on = true; }); setSalt(toSalt); };
     const gate = animalGate(S()), whyOf = (sp: Species) => gate?.(sp) ?? null;
-    list.sort((a, b) => +!!whyOf(a) - +!!whyOf(b)); // stable: the unfit sink, order kept
+    list.sort((a, b) => +!!whyOf(a)?.block - +!!whyOf(b)?.block); // stable: the unfit sink, order kept (a concern alone does not)
     for (const sp of list) {
       const b = document.createElement('button'), gw = whyOf(sp);
       b.setAttribute('role', 'option'); b.setAttribute('aria-selected', String(sp.id === pickId));
       b.className = sp.id === pickId ? 'on' : '';
       const tag = speciesTag(sp) ? `<b class="tag">${speciesTag(sp)}</b>` : '';
-      b.innerHTML = `<span class="nm">${esc(sp.name)} ${tag}</span><span>${fmt(sp.tl)}</span><i class="sci" title="${esc(sp.sci)}">${esc(sp.sci)}</i>${gw ? `<small class="why"${gw.more.length ? ` title="${esc(gw.more.join('; '))}"` : ''}>${esc(gw.text)}${gw.more.length ? ` (+${gw.more.length} more)` : ''}</small>` : ''}`;
-      if (gw) b.classList.add('gated');
+      b.innerHTML = `<span class="nm">${esc(sp.name)} ${tag}</span><span>${fmt(sp.tl)}</span><i class="sci" title="${esc(sp.sci)}">${esc(sp.sci)}</i>${gw ? `<small class="why${gw.block ? '' : ' note'}"${gw.more.length ? ` title="${esc(gw.more.join('; '))}"` : ''}>${esc(gw.text)}${gw.more.length ? ` (+${gw.more.length} more)` : ''}</small>` : ''}`;
+      if (gw?.block) b.classList.add('gated');
       if (sp.note) b.title = sp.note;
       b.onclick = () => { pickId = sp.id; preview.hidden = false; renderResults(); };
       b.ondblclick = () => addOne(sp);

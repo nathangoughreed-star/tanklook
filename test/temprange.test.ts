@@ -6,7 +6,7 @@ import { getSpecies, type Species } from '../src/data/species';
 import { whyAnimal, whysAnimal } from '../src/scene/animalfit';
 import { checkLevel, holdCheck, measuredCheck, NARROW_C, operatingCheck, rangeLine, rangeVerdict, sharedRange, type TempEvidence } from '../src/scene/temprange';
 import { conflictsOf, tempLinesOf } from '../src/ui/stockPlanLogic';
-import { animalsOfSetup, hardTruths } from '../src/scene/plan';
+import { animalsOfSetup, hardTruths, planOf } from '../src/scene/plan';
 import { SCENES } from '../src/examples/scenes';
 import { parseScene } from '../src/scene/validate';
 
@@ -179,5 +179,31 @@ describe('the plan sheet: the two outputs, said once for the whole stocking', ()
     expect(t.find(x => /^Holding 26 °C/.test(x.text))).toBeTruthy();
     expect(t.find(x => /^Measured water temperature 23 °C/.test(x.text))).toMatchObject({ level: 'bad', text: expect.stringMatching(/raise the temperature to 24–27 °C: turn the heater up/) });
     expect(t.some(x => /not at fault/.test(x.text))).toBe(false);
+  });
+  it('through planOf: the Tech menu choice of no heater wins over the shopping list heater row (found in the browser check)', () => {
+    const S = { ...tank('betta'), tech: { rows: { heater: 'none' }, roomC: 20 } } as ReturnType<typeof tank>;
+    expect(planOf(S).verdict.find(v => /^Water temperature: /.test(v.text))).toMatchObject({ level: 'bad', text: expect.stringMatching(/estimated at the 20 °C room/) });
+  });
+  it('a line with several reasons keeps the main one and lists the others under it', () => {
+    const S = tank('betta'), more = hardTruths({ ...S, fish: [] }, [{ species: 'oscar', n: 1 }, { species: 'neon', n: 6 }, { species: 'cardinal', n: 6 }], true).find(v => v.text.startsWith('Oscar'))!;
+    expect(more.more?.length).toBeGreaterThan(0);
+    expect(more.more!.every(m => !/^compatibility: /.test(m))).toBe(true);
+  });
+  it('a measured temperature out of range keeps the whole assessment problematic even when target and holding pass', () => {
+    const S = { ...tank('betta'), tech: { rows: { heater: 'one' }, roomC: 22, targetC: 26, measuredC: 31 } } as ReturnType<typeof tank>, p = planOf(S);
+    const line = (re: RegExp) => p.verdict.find(v => re.test(v.text));
+    expect(line(/^Target water temperature 26 °C/)?.level).toBe('ok');
+    expect(line(/^Holding 26 °C/)?.level).toBe('ok');
+    expect(line(/^Measured water temperature 31 °C/)).toMatchObject({ level: 'bad', text: expect.stringMatching(/lower the temperature to 24–27 °C: cool it with a fan, a chiller or a cooler room/) });
+    expect(line(/^Temperature: /)?.level).toBe('warn'); // the range line is not positive either
+    expect(p.fits).toBe(false);
+  });
+  it('narrow: no blocking reason and no risk points, but the limited-margin concern stays visible', () => {
+    const S = { ...tank('betta'), fish: [], tech: { rows: { heater: 'one' }, targetC: 28 } } as ReturnType<typeof tank>;
+    const t = hardTruths(S, [{ species: 'cardinal', n: 6 }, { species: 'gbr', n: 2 }], true);
+    expect(t.find(v => /^Temperature: /.test(v.text))).toMatchObject({ level: 'warn', text: expect.stringMatching(/shared range 27–29 °C, a narrow margin/) });
+    expect(t.some(v => v.level === 'bad' && /temperature/i.test(v.text))).toBe(false);
+    expect(whyAnimal(sp('gbr'), 1e9, 3, [sp('cardinal')])).toBeNull();
+    expect(whysAnimal(sp('gbr'), 1e9, 3, [sp('cardinal')])).toEqual([expect.objectContaining({ concern: true, text: expect.stringMatching(/narrow margin/) })]);
   });
 });

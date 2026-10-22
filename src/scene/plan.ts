@@ -38,7 +38,8 @@ export interface Plan {
   waterPct: number; floorPct: number;
   filtrationPct: number;
   fits: boolean;
-  verdict: { text: string; level: Level }[];
+  /** `more`: the other material reasons under a line's main one (shown indented under it) */
+  verdict: { text: string; level: Level; more?: string[] }[];
   rows: PlanRow[];
   /** needs that have no item on the list */
   missing: string[];
@@ -63,14 +64,14 @@ export function animalsOfSetup(S: TankSetup): AnimalCount[] {
 const roomOf = (S: TankSetup) => (S.tech ? techOf(S).roomC : undefined) ?? ROOM_C;
 
 /** Hard truths: what is wrong with this stocking in this tank, whatever the user's taste (from the care gates, the tank-fit limits, temperature and plants). */
-export function hardTruths(S: TankSetup, animals: AnimalCount[], heater: boolean, u: Units = 'cm'): { text: string; level: Level }[] {
-  const out: { text: string; level: Level }[] = [];
+export function hardTruths(S: TankSetup, animals: AnimalCount[], heater: boolean, u: Units = 'cm'): { text: string; level: Level; more?: string[] }[] {
+  const out: { text: string; level: Level; more?: string[] }[] = [];
   const sp = animals.flatMap(a => { const s = getSpecies(a.species); return s && a.n > 0 ? [s] : []; });
   const litres = volume(S.tank).litres, salt = S.water.on && !!S.water.salt;
   for (const s of sp) {
     // every blocking reason, the main one first; temperature is said once for the whole stocking below
     const why = whysAnimal(s, litres, 3, sp.filter(o => o !== s), { corals: S.items.some(it => it.kind === 'coral' && it.variant !== 'macroalgae' && it.variant !== 'anemone'), fit: minFit(S) }).filter(w => !w.concern && !w.temp);
-    if (why.length) out.push({ text: `${s.name}: ${why[0].text}${why.length > 1 ? `; also ${why.slice(1).map(w => w.text).join('; ')}` : ''}`, level: 'bad' }); // size is judged by tankMin (floor area, length, water), with its 10 % slack
+    if (why.length) out.push({ text: `${s.name}: ${why[0].text}`, level: 'bad', ...(why.length > 1 ? { more: why.slice(1).map(w => w.text.replace(/^compatibility: /, '')) } : {}) }); // size is judged by tankMin (floor area, length, water), with its 10 % slack
   }
   const tm = tankMinimum({ ...S, fish: sp.map((s, i) => ({ id: i + 1, species: s.id, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0 })) }); // lane HB: the same depth limit the tank fit reads
   if (tm.tooDeep) out.push({ text: `Some of your animals need shallow water (${lenTxt(tm.maxDepthMm, u)} at most); this tank's water is ${lenTxt(tm.depthMm, u)} deep`, level: 'bad' });
@@ -78,9 +79,10 @@ export function hardTruths(S: TankSetup, animals: AnimalCount[], heater: boolean
   // no heater, the room it is modelled to follow: who it is too cold or warm for), whether the setup holds it, and a measurement
   const shared = sharedRange(sp);
   if (shared.state !== 'unknown') {
-    const ev = tempEvidence(S, heater || salt), checks = ev ? [operatingCheck(shared, ev), holdCheck(ev), measuredCheck(shared, ev)] : [];
+    // the Tech menu's heater choice when one is made (the shopping list keeps a heater row even when it is set to none), else the list's
+    const ev = tempEvidence(S, salt ? true : S.tech?.rows.heater !== undefined ? undefined : heater), checks = ev ? [operatingCheck(shared, ev), holdCheck(ev), measuredCheck(shared, ev)] : [];
     out.push(rangeVerdict(shared, checks)); // never positive while the plan's water is definitively outside the range
-    for (const k of checks) if (k) out.push({ text: k.text, level: checkLevel(k) });
+    for (const k of checks) if (k && shared.range && shared.state !== 'single') out.push({ text: k.text, level: checkLevel(k) }); // no usable range: the range line says it
   }
   const longFinned = finSensitiveNames(animals);
   if (longFinned.length && S.items.some(it => it.variant.startsWith('plastic'))) out.push({ text: `Hard plastic leaves can tear the long fins of ${longFinned.join(', ')}: use silk plants`, level: 'warn' });
@@ -176,7 +178,7 @@ export function planOf(S: TankSetup, build?: Build, now = Date.now(), u: Units =
 export function planText(p: Plan): string {
   const L: string[] = [p.title, `${p.tank}: ${p.animals.join(', ')}`, ''];
   L.push(p.fits ? 'It fits.' : 'It does not fit yet:');
-  for (const v of p.verdict) L.push(`  ${v.level === 'ok' ? '+' : v.level === 'warn' ? '~' : '!'} ${v.text}`);
+  for (const v of p.verdict) { L.push(`  ${v.level === 'ok' ? '+' : v.level === 'warn' ? '~' : '!'} ${v.text}`); for (const m of v.more ?? []) L.push(`      also: ${m}`); }
   for (const m of p.missing) L.push(`  ! ${m}`);
   L.push('', 'Shopping list (each item and the need it serves)');
   for (const r of p.rows) L.push(`  ${usd(r.usd).padStart(7)}  ${r.item}${r.kind === 'extra' ? ' [not needed]' : ''}: ${r.serves}`);

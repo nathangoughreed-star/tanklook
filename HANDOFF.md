@@ -122,7 +122,10 @@ The pairwise "share under 2 °C = incompatible" rule is gone. `src/scene/tempran
   list gate "(+N more)" with the rest in the tooltip. Climate chart: "ideal" -> "in range".
 - Re-blessed: reef risk 8.608 -> 6.451, paludarium 7.992 -> 7.467 (false 1 °C clashes removed). The "reef riskier than planted" ranking had no
   independent reason and is dropped; demand.test now tests the mechanism (narrow: no points; a real clash: points; other rows unchanged).
-- Left alone: demand/tech.ts still adds no-heater risk per species via coldSpecies (tolerable bounds, room assumed or not).
+- Demand no-heater risk (demand/tech.ts) now goes through the same assessment: a species beyond its tolerable range is charged only when
+  operatingCheck is definitive (an entered room); an assumed room adds no penalty, matching the "conditional" on screen.
+- Display (browser-checked 2026-10-22): plan sheet main reason + indented "also:" lines; the species list shows a lone concern as a note
+  without graying the item; the plan sheet takes the Tech menu's explicit heater choice over the shopping list's heater row.
 
 ## Lane RF: Path 1 Rule Fixes (2026-10-22, branch `rf`, worktree `.claude/worktrees/rf`, port 5911; prompt prompts/lane-RF-path1-rule-fixes.md)
 Software fixes from research/rules-spec.md section 6; no threshold changed. Benchmark before / after: research/benchmark-baseline.md (regenerate with `GEN_BENCH=1 npx vitest run test/benchmarkBaseline.test.ts`). Tests: test/path1Rules.test.ts.
