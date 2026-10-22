@@ -68,7 +68,7 @@ when a page is cited beside it, and `says` in src/data/provenance.ts keeps the p
 | Gear deals (gear-deals.json) |  | 96 |  |  |  |  |
 
 Engine constants (top-level numbers in 30 engine files): 102 documented in FORMULAS, 0 unsourced.
-Numbers written inline in those files' functions (not counted above, a by-hand review list): 331.
+Numbers written inline in those files' functions (not counted above, a by-hand review list): 330.
 
 ## Work list 1: unsourced values (most user-facing first)
 
@@ -137,7 +137,7 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | file | constants | inline numbers |
 |---|---|---|
 | src/scene/stocking.ts | - | 10 |
-| src/scene/nitrogen.ts | - | 20 |
+| src/scene/nitrogen.ts | - | 19 |
 | src/scene/lightout.ts | - | 80 |
 | src/scene/kitlight.ts | - | 4 |
 | src/scene/lightcheck.ts | - | 3 |
