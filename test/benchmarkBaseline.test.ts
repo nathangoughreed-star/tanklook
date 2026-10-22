@@ -4,7 +4,7 @@
 import { describe, it } from 'vitest';
 import { planFor, notesOf, groupLineIn, startPick, type Pk } from '../src/ui/stockPlanLogic';
 import { tankOptions, tankLabel, type TankFit } from '../src/scene/tankfit';
-import { buildsFor } from '../src/scene/builds';
+import { buildsFor, distinctBuilds } from '../src/scene/builds';
 import { getSpecies } from '../src/data/species';
 import { whyAnimal } from '../src/scene/animalfit';
 
@@ -33,6 +33,7 @@ function judge(name: string, picks: Pk[], want: string, gal: number): string[] {
   }
   const bs = buildsFor(animalsOf(picks), t.tank);
   if (bs.length) lines.push(`  - builds: ${bs.map(b => `${b.id} $${r((b as { setupUsd?: number }).setupUsd ?? 0)}`).join(' / ')}`);
+  if (bs.length) lines.push(`  - shown (same gear merged): ${distinctBuilds(bs).map(b => `${b.label} $${b.setupUsd}`).join(' / ')}`);
   return lines;
 }
 

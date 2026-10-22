@@ -1,6 +1,6 @@
 # Benchmark baseline: what path 1 says TODAY (generated, do not edit)
 
-Tested commit ef95d60 (build 1118), WITH UNCOMMITTED CHANGES: M research/benchmark-baseline.md;  M src/style.css;  M src/ui/stockPlan.ts;  M src/ui/stockPlanLogic.ts;  M test/benchmarkBaseline.test.ts;  M test/careNeeds.test.ts.
+Tested commit 5c6382e (build 1119), WITH UNCOMMITTED CHANGES: M src/scene/builds.ts;  M src/ui/buildPick.ts;  M src/ui/stockPlan.ts;  M test/benchmarkBaseline.test.ts; RM test/careNeeds.test.ts -> test/path1Rules.test.ts.
 
 Generated 2026-10-22 by test/benchmarkBaseline.test.ts. Expected verdicts live in research/rules-spec.md section 5; this is the engine's current answer only.
 
@@ -10,23 +10,27 @@ Generated 2026-10-22 by test/benchmarkBaseline.test.ts. Expected verdicts live i
   - adf x1: band avoid, "Group size: A lone dwarf frog gets lonely; keep 2+", habitat: Water no deeper than 24 in (advice, Modest Fish: no deeper than 2 ft; must reach the surface to breathe) / Gentle flow / Lives in the bottom of the tank / Tank at least 16 in long (estimated from a gallon figure)
     compat/size note (beginner): expertise: expertise: intermediate animal, you chose beginner
   - builds: cheapest $234 / leastWork $464 / balanced $234
+  - shown (same gear merged): Cheapest and balanced $234 / Least work $464
 
 **adf x3** in About a 10 gal tank (20 x 11 in): space 67 %, filtration 14 %, size vs minimum 60 %; fails: none; problem line: (none)
   - adf x3: band ok, "Group size: Doable; 5 or more is better", habitat: Water no deeper than 24 in (advice, Modest Fish: no deeper than 2 ft; must reach the surface to breathe) / Gentle flow / Lives in the bottom of the tank / Tank at least 16 in long (estimated from a gallon figure)
     compat/size note (beginner): expertise: expertise: intermediate animal, you chose beginner
   - builds: cheapest $249 / leastWork $478 / balanced $249
+  - shown (same gear merged): Cheapest and balanced $249 / Least work $478
 
 **adf x5** in About a 10 gal tank (20 x 11 in): space 112 %, filtration 24 %, size vs minimum 60 %; fails: space; problem line: Too many animals for this tank; take fewer or pick a bigger tank
   - adf x5: band good, "Group size: Good; 7 or more is best", habitat: Water no deeper than 24 in (advice, Modest Fish: no deeper than 2 ft; must reach the surface to breathe) / Gentle flow / Lives in the bottom of the tank / Tank at least 16 in long (estimated from a gallon figure)
     beside this tank (held, the tank verdict comes first): "Group size: Good; 7 or more is best. That is the group only: this tank fails (too full), see the tank verdict"
     compat/size note (beginner): expertise: expertise: intermediate animal, you chose beginner
   - builds: cheapest $263 / leastWork $492 / balanced $263
+  - shown (same gear merged): Cheapest and balanced $263 / Least work $492
 
 **adf x9** in About a 10 gal tank (20 x 11 in): space 202 %, filtration 43 %, size vs minimum 60 %; fails: space; problem line: Too many animals for this tank; take fewer or pick a bigger tank
   - adf x9: band great, "Group size: Great", habitat: Water no deeper than 24 in (advice, Modest Fish: no deeper than 2 ft; must reach the surface to breathe) / Gentle flow / Lives in the bottom of the tank / Tank at least 16 in long (estimated from a gallon figure)
     beside this tank (held, the tank verdict comes first): "Group size: Great. That is the group only: this tank fails (too full), see the tank verdict"
     compat/size note (beginner): expertise: expertise: intermediate animal, you chose beginner
   - builds: cheapest $291 / leastWork $520 / balanced $291
+  - shown (same gear merged): Cheapest and balanced $291 / Least work $520
 
 ## Dwarf frogs: same group, different tanks (density only)
 
@@ -35,35 +39,42 @@ Generated 2026-10-22 by test/benchmarkBaseline.test.ts. Expected verdicts live i
     beside this tank (held, the tank verdict comes first): "Group size: Good; 7 or more is best. That is the group only: this tank fails (too full, too small for them, too short), see the tank verdict"
     compat/size note (beginner): expertise: expertise: intermediate animal, you chose beginner
   - builds: cheapest $273 / leastWork $396 / balanced $284
+  - shown (same gear merged): Cheapest $273 / Least work $396 / Balanced $284
 
 **adf x5** in About a 20 gal long (31 x 13 in): space 59 %, filtration 21 %, size vs minimum 31 %; fails: none; problem line: (none)
   - adf x5: band good, "Group size: Good; 7 or more is best", habitat: Water no deeper than 24 in (advice, Modest Fish: no deeper than 2 ft; must reach the surface to breathe) / Gentle flow / Lives in the bottom of the tank / Tank at least 16 in long (estimated from a gallon figure)
     compat/size note (beginner): expertise: expertise: intermediate animal, you chose beginner
   - builds: cheapest $384 / leastWork $489 / balanced $394
+  - shown (same gear merged): Cheapest $384 / Least work $489 / Balanced $394
 
 **adf x5** in About a 29 gal tank (30 x 13 in): space 63 %, filtration 19 %, size vs minimum 34 %; fails: none; problem line: (none)
   - adf x5: band good, "Group size: Good; 7 or more is best", habitat: Water no deeper than 24 in (advice, Modest Fish: no deeper than 2 ft; must reach the surface to breathe) / Gentle flow / Lives in the bottom of the tank / Tank at least 16 in long (estimated from a gallon figure)
     compat/size note (beginner): expertise: expertise: intermediate animal, you chose beginner
   - builds: cheapest $397 / leastWork $515 / balanced $397
+  - shown (same gear merged): Cheapest and balanced $397 / Least work $515
 
 **adf x5** in About a 75 gal tank (49 x 19 in): space 26 %, filtration 4 %, size vs minimum 14 %; fails: none; problem line: (none)
   - adf x5: band good, "Group size: Good; 7 or more is best", habitat: Water no deeper than 24 in (advice, Modest Fish: no deeper than 2 ft; must reach the surface to breathe) / Gentle flow / Lives in the bottom of the tank / Tank at least 16 in long (estimated from a gallon figure)
     compat/size note (beginner): expertise: expertise: intermediate animal, you chose beginner
   - builds: cheapest $692 / leastWork $1059 / balanced $721
+  - shown (same gear merged): Cheapest $692 / Least work $1059 / Balanced $721
 
 ## Neons: group size in a roomy tank (group only)
 
 **neon x3** in About a 40 gal breeder (36 x 18 in): space 7 %, filtration 1 %, size vs minimum 56 %; fails: none; problem line: (none)
   - neon x3: band avoid, "Group size: Neons need a school; under 8 they stress and hide", habitat: Gentle flow / Lives in the middle of the tank / Tank at least 20 in long (estimated from a gallon figure) / Recommended: 24 in long (Seriously Fish)
   - builds: cheapest $488 / leastWork $594 / balanced $489
+  - shown (same gear merged): Cheapest $488 / Least work $594 / Balanced $489
 
 **neon x8** in About a 40 gal breeder (36 x 18 in): space 19 %, filtration 2 %, size vs minimum 56 %; fails: none; problem line: (none)
   - neon x8: band ok, "Group size: Doable; 10 or more is better", habitat: Gentle flow / Lives in the middle of the tank / Tank at least 20 in long (estimated from a gallon figure) / Recommended: 24 in long (Seriously Fish)
   - builds: cheapest $504 / leastWork $610 / balanced $505
+  - shown (same gear merged): Cheapest $504 / Least work $610 / Balanced $505
 
 **neon x15** in About a 40 gal breeder (36 x 18 in): space 34 %, filtration 3 %, size vs minimum 56 %; fails: none; problem line: (none)
   - neon x15: band great, "Group size: Great", habitat: Gentle flow / Lives in the middle of the tank / Tank at least 20 in long (estimated from a gallon figure) / Recommended: 24 in long (Seriously Fish)
   - builds: cheapest $527 / leastWork $634 / balanced $528
+  - shown (same gear merged): Cheapest $527 / Least work $634 / Balanced $528
 
 ## Low waste, poor dimensions
 
@@ -72,12 +83,14 @@ Generated 2026-10-22 by test/benchmarkBaseline.test.ts. Expected verdicts live i
     beside this tank (held, the tank verdict comes first): "Group size: Great. That is the group only: this tank fails (too small for them, too short), see the tank verdict"
     compat/size note (beginner): expertise: expertise: intermediate animal, you chose beginner
   - builds: cheapest $552 / leastWork $657 / balanced $552
+  - shown (same gear merged): Cheapest and balanced $552 / Least work $657
 
 **oscar x1** in About a 55 gal tank (49 x 13 in): space 44 %, filtration 33 %, size vs minimum 185 %, cramped; fails: minimum, length; problem line: Too small for these animals; pick a bigger tank
   - oscar x1: band great, "Group size: Great", habitat: Moderate flow / Tank at least 59 in long
     beside this tank (held, the tank verdict comes first): "Group size: Great. That is the group only: this tank fails (too small for them, too short), see the tank verdict"
     compat/size note (beginner): expertise: expertise: intermediate animal, you chose beginner
   - builds: cheapest $576 / leastWork $681 / balanced $576
+  - shown (same gear merged): Cheapest and balanced $576 / Least work $681
 
 ## Mandarin with space (feeding is the issue)
 
@@ -87,6 +100,7 @@ Generated 2026-10-22 by test/benchmarkBaseline.test.ts. Expected verdicts live i
     care need (S3, shown at any count): Tank maturity: needs a mature reef with an established pod population, not a newly cycled tank. Not checked: the tool cannot see the tank age; confirm it before buying
     compat/size note (beginner): expertise: expertise: expert animal, you chose beginner
   - builds: cheapest $1393 / leastWork $2240 / balanced $1422
+  - shown (same gear merged): Cheapest $1393 / Least work $2240 / Balanced $1422
 
 ## Two unpaired social animals
 
@@ -95,6 +109,7 @@ Generated 2026-10-22 by test/benchmarkBaseline.test.ts. Expected verdicts live i
     beside this tank (held, the tank verdict comes first): "Group size: Doable; 4 or more is better (only if they are a pair). That is the group only: this tank fails (too small for them, too short), see the tank verdict"
     compat/size note (beginner): expertise: expertise: intermediate animal, you chose beginner
   - builds: cheapest $390 / leastWork $509 / balanced $390
+  - shown (same gear merged): Cheapest and balanced $390 / Least work $509
 
 ## Fewer animals in an unsuitable tank (before / after)
 
@@ -109,6 +124,7 @@ Generated 2026-10-22 by test/benchmarkBaseline.test.ts. Expected verdicts live i
     beside this tank (held, the tank verdict comes first): "Group size: Good; 6 or more is best. That is the group only: this tank fails (too full, too small for them, too short), see the tank verdict"
     compat/size note (beginner): expertise: expertise: intermediate animal, you chose beginner
   - builds: cheapest $404 / leastWork $634 / balanced $431
+  - shown (same gear merged): Cheapest $404 / Least work $634 / Balanced $431
 
 **neon x10 + bronzecory x6 (fewer)** in About a 10 gal tank (20 x 11 in): space 171 %, filtration 35 %, size vs minimum 191 %, cramped; fails: space, minimum, length; problem line: Too many animals for this tank; take fewer or pick a bigger tank
   - neon x10: band good, "Group size: Good; 15 or more is best", habitat: Gentle flow / Lives in the middle of the tank / Tank at least 20 in long (estimated from a gallon figure) / Recommended: 24 in long (Seriously Fish)
@@ -118,4 +134,5 @@ Generated 2026-10-22 by test/benchmarkBaseline.test.ts. Expected verdicts live i
     beside this tank (held, the tank verdict comes first): "Group size: Minimum shoal; more is better. That is the group only: this tank fails (too full, too small for them, too short), see the tank verdict"
     compat/size note (beginner): size: tank size: wants at least 72 L, this tank is 41 L
   - builds: cheapest $301 / leastWork $530 / balanced $301
+  - shown (same gear merged): Cheapest and balanced $301 / Least work $530
 

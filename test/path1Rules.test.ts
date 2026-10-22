@@ -1,4 +1,5 @@
-// Essential care conditions are evaluated apart from the group count (lane RF; research/rules-spec.md section 6, first finding).
+// Path 1 rule fixes (lane RF, research/rules-spec.md sections 4 and 6): care needs apart from the group count, the group-size line held
+// by a failing tank, GroupCare field invariants, sex and pairing inputs, and builds merged by configuration.
 import { describe, expect, it } from 'vitest';
 import { GROUPS } from '../src/data/groups';
 import { NEEDS } from '../src/data/careNeeds';
@@ -75,5 +76,43 @@ describe('sex and pairing are separate inputs (lane RF item 4)', () => {
     expect(r).toMatch(/2 unsexed: the mix can only be checked once they are sexed/);
     expect(r).not.toMatch(/short on females/);
     expect(notes({ id: 'guppy', n: 0, f: 0, u: 3 }).ratio).not.toMatch(/short on females/);
+  });
+});
+
+describe('builds merge by configuration, not by price (lane RF item 5)', () => {
+  it('the same gear is one choice; different gear stays separate even at one price', async () => {
+    const { buildsFor, distinctBuilds, configKey } = await import('../src/scene/builds');
+    const { tankFor } = await import('../src/scene/tankfit');
+    const NOW = Date.parse('2026-10-22T12:00:00Z');
+    for (const animals of [[{ species: 'adf', n: 3 }], [{ species: 'neon', n: 10 }, { species: 'bronzecory', n: 6 }], [{ species: 'ocellaris', n: 2 }]]) {
+      const bs = buildsFor(animals, tankFor(animals)!.tank, NOW), ds = distinctBuilds(bs);
+      expect(new Set(ds.map(configKey)).size).toBe(ds.length);
+      expect(new Set(bs.map(configKey)).size).toBe(ds.length);
+      for (const d of ds) for (const id of d.also ?? []) expect(configKey(bs.find(b => b.id === id)!)).toBe(configKey(d));
+    }
+    const [a] = buildsFor([{ species: 'adf', n: 3 }], tankFor([{ species: 'adf', n: 3 }])!.tank, NOW);
+    const twinPrice = { ...a, id: 'balanced' as const, setup: { ...a.setup, light: { ...a.setup.light, watts: 99 } } };
+    expect(distinctBuilds([a, twinPrice])).toHaveLength(2);
+    const twinGear = { ...a, id: 'balanced' as const, setupUsd: a.setupUsd + 50 };
+    const m = distinctBuilds([a, twinGear]);
+    expect(m).toHaveLength(1);
+    expect(m[0].label).toBe('Cheapest and balanced');
+    expect(m[0].also).toEqual(['balanced']);
+  });
+});
+
+describe('the plan sheet lists the care needs (lane RF item 1)', () => {
+  it('a mandarin tank says it fits the tank only with care needs to confirm, and lists them', async () => {
+    const { planHtml, planNeeds, planTextWithNeeds } = await import('../src/ui/planSheet');
+    const { planOf } = await import('../src/scene/plan');
+    const { buildsFor } = await import('../src/scene/builds');
+    const { tankFor } = await import('../src/scene/tankfit');
+    const animals = [{ species: 'mandarin', n: 1 }], b = buildsFor(animals, tankFor(animals)!.tank, Date.parse('2026-10-22T12:00:00Z'))[0];
+    const needs = planNeeds(b.setup), p = planOf(b.setup, b);
+    expect(needs.map(n => n.text).join(' ')).toMatch(/Mandarin.*copepods/i);
+    const html = planHtml(p, needs);
+    expect(html).toMatch(/Care needs the tool cannot check/);
+    if (p.fits) expect(html).toMatch(/with care needs to confirm/);
+    expect(planTextWithNeeds(p, needs)).toMatch(/\? .*copepods[\s\S]*Shopping list/);
   });
 });

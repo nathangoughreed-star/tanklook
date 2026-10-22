@@ -62,6 +62,8 @@ export interface Build {
   bundle?: Deal;
   /** dollars the deals save against the list prices, whole */
   savingUsd: number;
+  /** the other builds that came out as this same configuration and were merged into it (distinctBuilds) */
+  also?: BuildId[];
 }
 
 /** What each build is asked about its tank: the caller passes the tank the stocking needs (tankfit's tankFor, or a step-up). */
@@ -208,6 +210,24 @@ export function buildsFor(animals: AnimalCount[], tank: TankModel, now = Date.no
   const least = Math.min(out.cheapest.minPerWeek, out.balanced.minPerWeek);
   if (out.leastWork.minPerWeek >= least) out.leastWork = { ...(out.cheapest.minPerWeek <= out.balanced.minPerWeek ? out.cheapest : out.balanced), id: 'leastWork', label: BUILD_LABEL.leastWork, blurb: BUILD_BLURB.leastWork };
   return [out.cheapest, out.leastWork, out.balanced];
+}
+
+/** What makes a build a different CHOICE: the tank, every gear choice (filter, heater, quality-of-life rows, pinned products), the light and
+ *  the bundle. Not the price: two builds at the same price with different gear are different choices; the same gear is one choice. */
+export const configKey = (b: Build) => JSON.stringify([b.tank.id, b.setup.tech, b.setup.light, b.bundle ? [b.bundle.retailer, b.bundle.name] : null]);
+
+/** The builds that are genuinely different (rules-spec section 4, "builds converge"): builds with the same configuration merge into the
+ *  first of them, which takes the others' names ("Cheapest and balanced") and lists them in `also`. Order kept. */
+export function distinctBuilds(bs: Build[]): Build[] {
+  const out: Build[] = [];
+  for (const b of bs) {
+    const i = out.findIndex(o => configKey(o) === configKey(b));
+    if (i < 0) { out.push(b); continue; }
+    const o = out[i], also = [...(o.also ?? []), b.id], names = [o.id, ...also].map(id => BUILD_LABEL[id]);
+    const label = names.length === 2 ? `${names[0]} and ${names[1].toLowerCase()}` : `${names.slice(0, -1).map((n, k) => k ? n.toLowerCase() : n).join(', ')} and ${names.at(-1)!.toLowerCase()}`;
+    out[i] = { ...o, also, label, blurb: `One set of gear is all of these: ${[o.id, ...also].map(id => BUILD_BLURB[id].replace(/\.$/, '').replace(/^./, c => c.toLowerCase())).join('; ')}.` };
+  }
+  return out;
 }
 
 /** True when this build keeps the stocking within its own filtration limit (false: no filter on the list carries it in this tank). */

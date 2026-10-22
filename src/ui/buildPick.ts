@@ -8,7 +8,7 @@ import { pinDeal } from '../demand/pinned';
 import { emptyScene } from '../scene/defaults';
 import { shuffleFish } from '../scene/scatter';
 import type { Store } from '../scene/store';
-import { buildsFor, meetsNeeds, type Build } from '../scene/builds';
+import { buildsFor, distinctBuilds, meetsNeeds, type Build } from '../scene/builds';
 import { tankLabel, type AnimalCount } from '../scene/tankfit';
 import type { Viewer } from '../render/viewer';
 import type { TankSetup, Units } from '../scene/types';
@@ -85,7 +85,7 @@ ${meetsNeeds(b) ? '' : '<div class="spWarn">No filter on the list carries these 
 
   const draw = () => {
     const scroll = el.scrollTop, a = animals.map(x => `${x.n} ${esc(getSpecies(x.species)?.name ?? x.species)}`).join(', ');
-    el.innerHTML = `<div class="spHead"><h2>Three ways to build it</h2><button type="button" data-act="close" aria-label="Close">✕</button></div>
+    el.innerHTML = `<div class="spHead"><h2>${['One way', 'Two ways', 'Three ways'][builds.length - 1] ?? 'Ways'} to build it</h2><button type="button" data-act="close" aria-label="Close">✕</button></div>
 <p class="spNote">${esc(tankLabel(builds[0].tank, store.scene.units))} for ${a}. Each is a whole tank: tank, filter, heater and light. Prices are expected costs with the live deals that fit.</p>
 <ul class="bpCards">${builds.map(card).join('')}</ul>
 <div class="spFoot">${back ? '<button type="button" class="spLink" data-act="back">Back to the animals</button>' : ''}<span class="spNote">Pick one and it opens in the editor with everything still yours to change.</span></div>`;
@@ -113,7 +113,7 @@ ${meetsNeeds(b) ? '' : '<div class="spWarn">No filter on the list carries these 
 
   /** Open the screen for these animals in this tank (tankfit's answer or the step the user chose); `onBack` returns to the stocking screen. */
   const open = (a: AnimalCount[], tank: Parameters<typeof buildsFor>[1], onBack?: () => void) => {
-    animals = a; back = onBack; builds = buildsFor(a, tank);
+    animals = a; back = onBack; builds = distinctBuilds(buildsFor(a, tank)); // lane RF: the same gear is one choice, whatever the price
     side(true); pics = []; shoot(); show(1);
     el.hidden = false; draw();
   };
