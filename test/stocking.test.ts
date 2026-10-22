@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import { defaultSetup } from '../src/scene/defaults';
 import { IN } from '../src/scene/physics';
-import { loadOf, massG, plural, stockingOf } from '../src/scene/stocking';
+import { loadOf, massG, plural, schoolScale, stockingOf } from '../src/scene/stocking';
 import { withChoice } from '../src/scene/tech';
 import type { Fish, Item, TankSetup } from '../src/scene/types';
 
@@ -116,5 +116,32 @@ describe('plural (S193)', () => {
     expect(plural(6, 'Panda corydoras')).toBe('6 Panda corydoras');
     expect(plural(10, 'Neon tetra')).toBe('10 Neon tetras');
     expect(plural(1, 'Kuhli loach')).toBe('1 Kuhli loach');
+  });
+});
+
+// 2026-10-22 (Nathan's chat, kuhli sanity check; research/habitat-model.md): the school discount is one curve over every fish in the
+// water, and a kuhli spreads over FLOOR_FACTOR of its floor footprint. The tank that started it: 17 kuhli + 15 zebra danio in a 36 x 18 x 18 in,
+// AqAdvisor 74 %, ours was 104 % (water 104, floor 95).
+describe('tank-wide school discount and the kuhli floor factor (2026-10-22)', () => {
+  it('17 kuhli + 15 zebra danio in a 36 x 18 x 18 in tank read well under full (AqAdvisor 74 %), neither limit near 95 %', () => {
+    const r = stockingOf(tank(36, 18, 18, [['kuhli', 17], ['danio', 15]]));
+    expect(r.percent).toBeGreaterThan(60); expect(r.percent).toBeLessThan(92);
+    expect(r.waterPercent).toBeLessThan(92); expect(r.floorPercent).toBeLessThan(70);
+  });
+  it('the discount is over all the fish in the water: two schools of 10 read less than the sum of each alone, by schoolScale(20)', () => {
+    const a = stockingOf(tank(36, 18, 18, [['neon', 10]])).waterPercent, b = stockingOf(tank(36, 18, 18, [['cardinal', 10]])).waterPercent;
+    const ab = stockingOf(tank(36, 18, 18, [['neon', 10], ['cardinal', 10]])).waterPercent;
+    expect(ab).toBeLessThan(a + b); expect(ab).toBeCloseTo((a + b) * schoolScale(20), 6);
+    expect(schoolScale(10)).toBe(1); expect(schoolScale(20)).toBeGreaterThan(0.75); expect(schoolScale(20)).toBeLessThan(0.9);
+  });
+  it('snails take no room and do not discount the fish', () => {
+    const f = stockingOf(tank(20, 10, 12, [['neon', 12]])).waterPercent, fs = stockingOf(tank(20, 10, 12, [['neon', 12], ['nerite', 10]])).waterPercent;
+    expect(fs).toBeCloseTo(f, 6);
+  });
+  it('6 kuhli stay inside the floor of their Seriously Fish minimum tank (24 x 12 in base), and the floor stays linear in count', () => {
+    const r = stockingOf(tank(24, 12, 12, [['kuhli', 6]]));
+    expect(r.floorPercent).toBeGreaterThan(30); expect(r.floorPercent).toBeLessThan(100);
+    const f = (n: number) => stockingOf(tank(36, 18, 18, [['kuhli', n]])).floorPercent;
+    expect(f(20) / f(10)).toBeCloseTo(2, 6);
   });
 });
