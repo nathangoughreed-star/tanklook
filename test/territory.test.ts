@@ -21,6 +21,9 @@ describe('territory caps', () => {
     expect(mostFor(CARE.kribensis, L(45))).toBe(6);      // a pair at 20 gal, +1 pair per 12.5 gal
     expect(mostFor(CARE.royalgramma, L(55))).toBe(2);    // 50 gal a pair, 100+ a group
     expect(mostFor(CARE.coralbeauty, L(125))).toBe(1);   // a second only over 180 gal
+    expect(mostFor(CARE.banggai, L(40))).toBe(2);        // one pair below 50 gal (lane CW)
+    expect(mostFor(CARE.banggai, L(75))).toBe(Infinity); // a group above it, no stated limit
+    expect(overWarn({ id: 'banggai', n: 5 }, L(29))).toMatch(/about 2 .*may fight: below 50 gal keep one pair/);
   });
   it('fall back to the flat max without a tank size, or without a rule', () => {
     expect(mostFor(CARE.dwarfgourami)).toBe(1);

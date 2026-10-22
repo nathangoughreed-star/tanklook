@@ -39,3 +39,8 @@ Data: territory-batch1.json (15 species), territory-batch2.json (14). Each rule 
 
 ## Decision (Nathan 2026-10-22)
 Option 1: warn above the sourced, size-scaled limit (no clamp to the old flat max); a warning only. Built for the 8 species with a stated rule, see HANDOFF.md section S196. Picture: territory-warning.png.
+
+## Banggai cardinalfish (lane CW, 2026-10-22, added after Coordinator 8's review)
+- Saltwater Aquarium Blog (saltwateraquariumblog.com/banggai-cardinalfish-care-guide/): "I don't recommend you try to keep a shoal of fish." Common mistake: "Attempting to keep a shoal of Banggai Cardinalfish in a small tank, leading to aggression and fatalities." "The minimum tank size for a single Banggai Cardinalfish or a pair is 10-gallons."
+- Top Shelf Aquatics (topshelfaquatics.com/blogs/news/cardinalfish-care-guide-pairs-vs-groups-feeding-and-behavior): "For groups or mixed-species communities, a larger aquarium of 50 gallons or more prevents territorial conflicts" (the same page also says "groups require 75+ gallons with extensive rockwork"); "groups of 6+ in large systems", no maximum.
+- Rule: territory at [[10 gal, 2], [50 gal, no limit]]: one pair below 50 gal, and above it no count limit (no page gives one). The 50 gal figure is the one stated for fighting; 75 is the page's general group size.

@@ -11,8 +11,8 @@ when it carries the url of the listing it was read from and does not mark the fi
 
 | | values | cited | fitted | derived | researched | claimed | assumption | unsourced | strong |
 |---|---|---|---|---|---|---|---|---|---|
-| **all data** | 5448 | 2486 (46 %) | 59 (1 %) | 220 (4 %) | 810 (15 %) | 609 (11 %) | 785 (14 %) | 479 (9 %) | 51 % |
-| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 1252 | 318 |  | 71 | 451 | 363 | 48 | 1 | 31 % |
+| **all data** | 5452 | 2486 (46 %) | 59 (1 %) | 220 (4 %) | 814 (15 %) | 609 (11 %) | 785 (14 %) | 479 (9 %) | 51 % |
+| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 1256 | 318 |  | 71 | 455 | 363 | 48 | 1 | 31 % |
 | Tank minimum red / green lines, heights, depth notes, advisory gallons (tankmin.json, lane MM) | 275 | 153 |  | 74 | 48 |  |  |  | 83 % |
 | Adult length per species (species.json tl) | 108 | 42 |  | 30 | 21 |  | 15 |  | 67 % |
 | Marine pH band (data/waterchem.ts) | 2 | 2 |  |  |  |  |  |  | 100 % |
@@ -43,8 +43,8 @@ when a page is cited beside it, and `says` in src/data/provenance.ts keeps the p
 
 | | measured | source-stated | TankLook interpretation | derived calculation | conservative default | unsourced |
 |---|---|---|---|---|---|---|
-| **all data** | 2 (0 %) | 2542 (47 %) | 2116 (39 %) | 279 (5 %) | 30 (1 %) | 479 (9 %) |
-| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) |  | 358 | 794 | 71 | 28 | 1 |
+| **all data** | 2 (0 %) | 2546 (47 %) | 2116 (39 %) | 279 (5 %) | 30 (1 %) | 479 (9 %) |
+| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) |  | 362 | 794 | 71 | 28 | 1 |
 | Tank minimum red / green lines, heights, depth notes, advisory gallons (tankmin.json, lane MM) |  | 153 | 48 | 74 |  |  |
 | Adult length per species (species.json tl) |  | 63 | 15 | 30 |  |  |
 | Marine pH band (data/waterchem.ts) |  |  |  |  | 2 |  |
@@ -193,12 +193,12 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 |---|---|
 | `CARE *.temp.*` | 146 |
 | `CARE *.tol.*` | 144 |
+| `CARE *.territory.at.*.*` | 22 |
 | `CARE *.bands.ok` | 21 |
 | `CARE *.bands.good` | 21 |
 | `CARE *.bands.great` | 21 |
 | `CARE *.minLengthMm` | 21 |
 | `CARE *.minL` | 18 |
-| `CARE *.territory.at.*.*` | 18 |
 | `CARE *.sexed.ratio.*` | 12 |
 | `CARE *.max` | 11 |
 | `CARE *.group` | 5 |
