@@ -7,6 +7,7 @@ import { getSpecies } from '../src/data/species';
 import { bareSetup } from '../src/scene/defaults';
 import { geometryOf, minDataOf, speciesMinimum } from '../src/scene/tankMin';
 import { MIN_SLACK_PCT } from '../src/scene/animalfit';
+import { floorUseCm2 } from '../src/scene/stocking';
 
 const CASES: Record<string, AnimalCount[]> = {
   frogs: [{ species: 'adf', n: 2 }],
@@ -69,9 +70,8 @@ describe('tank fit engine (lane P2)', () => {
     } finally { base.maxDepthMm = 450; d.depth = depth; }
   });
   it('the floor use is by zone (the stocking engine floor model, lane HB): a pleco uses floor, midwater danios none, land animals none', () => {
-    const n = needsOf(CASES.danios);
-    expect(n.floorCm2.bottom).toBeGreaterThan(0); expect(n.floorCm2.middle).toBe(0); expect(n.floorCm2.top).toBe(0);
-    expect(needsOf([{ species: 'treefrog', n: 2 }]).floorCm2).toEqual({ bottom: 0, middle: 0, top: 0, all: 0 });
+    const fl = (id: string) => { const sp = getSpecies(id)!; return floorUseCm2(sp, sp.tl); };
+    expect(fl('bristlenose')).toBeGreaterThan(0); expect(fl('danio')).toBe(0); expect(fl('treefrog')).toBe(0);
     expect(needsOf(CASES.reef).salt).toBe(true); expect(needsOf(CASES.neons).salt).toBe(false);
   });
   it('the build span runs from the cheapest to the balanced build and grows with the tank', () => {

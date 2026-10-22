@@ -7,13 +7,13 @@
 //   buildSpan(animals, tank)     setup dollars and minutes a week, cheapest build to balanced build
 // GroupCare (lane P1, src/data/groups.ts, plan-path1-animal-first.md) is read through CARE when it lands; until then the defaults hold:
 // recommended minimum = CARE.group else 1, no depth limit, no length limit, zone from the species' own `zone` / `level`.
-import { careOf, zoneOf, type Zone } from './zone';
+import { careOf } from './zone';
 import { getSpecies } from '../data/species';
 import { getTankModel, TANK_MODELS, tankFromModel, type TankModel } from '../data/tanks';
 import { defaultProfile, demandOf, type DemandOpts } from '../demand';
 import { bareSetup } from './defaults';
 import { volume } from './physics';
-import { countsAgainstWater, floorUseCm2, stockingOf } from './stocking';
+import { countsAgainstWater, stockingOf } from './stocking';
 import { MIN_SLACK_PCT } from './animalfit';
 import { minDataOf, tankMinimum } from './tankMin';
 import { applyPreset, optionCost, PRESETS, ROOM_C, rowsFor, stockCapacity, tempFit, withChoice } from './tech';
@@ -25,14 +25,10 @@ export { careOf, recommendedMin, zoneOf, type Zone } from './zone';
 
 
 export interface Needs {
-  /** floor area used by zone, cm2 (the stocking engine's floor model, floorUseCm2; animals that live in the water only) */
-  floorCm2: Record<Zone, number>;
   /** the longest red-line length any of them has, mm (scene/tankMin.ts lines); 0 = no demand */
   minLengthMm: number;
   /** the shallowest water any of them tolerates, mm (GroupCare maxDepthMm); Infinity = no limit. It counts even where tankmin.json has a sourced advisory maximum (ADF: 18 in limit, 24 in advice; Nathan 2026-10-22) */
   maxDepthMm: number;
-  /** the largest smallest-tank any of them has (CARE.minL, litres): below it the tank is not sane even when the space number is */
-  minLitres: number;
   /** salt water needed */
   salt: boolean;
 }
@@ -42,16 +38,13 @@ function wet(animals: AnimalCount[]) {
 }
 
 export function needsOf(animals: AnimalCount[]): Needs {
-  const floorCm2: Record<Zone, number> = { bottom: 0, middle: 0, top: 0, all: 0 };
-  let minLengthMm = 0, maxDepthMm = Infinity, minLitres = 0, salt = false;
-  for (const { sp, n, tl } of wet(animals)) {
-    floorCm2[zoneOf(sp)] += n * floorUseCm2(sp, tl);
+  let minLengthMm = 0, maxDepthMm = Infinity, salt = false;
+  for (const { sp } of wet(animals)) {
     minLengthMm = Math.max(minLengthMm, minDataOf(sp.id)?.red?.L ?? 0);
     maxDepthMm = Math.min(maxDepthMm, careOf(sp.id)?.maxDepthMm ?? Infinity); // Nathan 2026-10-22: the ADF's 450 mm is a limit (a warning, never a block); the sourced 24 in stays as the advice line
-    minLitres = Math.max(minLitres, careOf(sp.id)?.minL ?? 0);
     salt ||= !!sp.salt;
   }
-  return { floorCm2, minLengthMm, maxDepthMm, minLitres, salt };
+  return { minLengthMm, maxDepthMm, salt };
 }
 
 /** A tank candidate: a plain rectangular catalogue size (round, bow, pie and bowl shapes and the terrariums are not offered as steps). */
