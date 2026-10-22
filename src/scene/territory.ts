@@ -13,7 +13,7 @@ import type { TankSetup } from './types';
 
 export function crowdWarnings(S: TankSetup): string[] {
   const n = new Map<string, number>(), males = new Map<string, number>();
-  for (const f of S.fish) { const sp = getSpecies(f.species); if (sp && countsAgainstWater(sp)) { n.set(sp.id, (n.get(sp.id) ?? 0) + 1); if (f.sex !== 'f') males.set(sp.id, (males.get(sp.id) ?? 0) + 1); } }
+  for (const f of S.fish) { const sp = getSpecies(f.species); if (sp && countsAgainstWater(sp)) { n.set(sp.id, (n.get(sp.id) ?? 0) + 1); if (f.gender ? f.gender === 'm' : f.sex !== 'f') males.set(sp.id, (males.get(sp.id) ?? 0) + 1); } }
   const litres = volume(S.tank).litres, out: string[] = [];
   for (const [id, k] of n) {
     const c = CARE[id], mx = mostFor(c, litres, S.tank.L) ?? (c?.solo ? 1 : undefined), name = getSpecies(id)!.name;

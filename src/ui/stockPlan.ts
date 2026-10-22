@@ -20,7 +20,7 @@ import { tankView } from '../render/tankView';
 import { attachBuildPick } from './buildPick';
 import { attachStockGallery } from './stockGallery';
 import { onSpaceFork, type SpaceFork } from './fullnessTile';
-import { spaceBand, animalsInTank, animalsOf, bump, writePairs, FAIL_WORD, groupLineIn, type Pairing, forkOptions, isSexed, notesOf, planFor, conflictsOf, rankTankmates, tempLinesOf, startPick, tankLabel, totalOf, type Pk, type Plan, type RoomOption } from './stockPlanLogic';
+import { spaceBand, animalsInTank, animalsOf, bump, sexFish, writePairs, FAIL_WORD, groupLineIn, type Pairing, forkOptions, isSexed, notesOf, planFor, conflictsOf, rankTankmates, tempLinesOf, startPick, tankLabel, totalOf, type Pk, type Plan, type RoomOption } from './stockPlanLogic';
 import { allLand, isMixed, setPool, sizeTxt } from '../scene/tankfit';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
@@ -92,12 +92,7 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
         const sp = getSpecies(p.id); if (!sp) continue;
         const have = T.fish.filter(f => f.species === p.id).slice(0, totalOf(p));
         while (have.length < totalOf(p)) { const f: Fish = { id: next++, species: p.id, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0 }; have.push(f); added.add(f.id); }
-        have.forEach((f, i) => {
-          // sexed species: males, then females, then unsexed (drawn in the default form; a herp's gender left unset = not sexed yet)
-          const sexed = isSexed(p.id), female = sexed && i >= p.n && i < p.n + (p.f ?? 0), unsexed = sexed && i >= p.n + (p.f ?? 0);
-          if (sp.female) { if (female) f.sex = 'f'; else delete f.sex; }
-          if (sexed && (sp.cat === 'reptile' || sp.cat === 'amphibian')) { if (unsexed) delete f.gender; else f.gender = female ? 'f' : 'm'; }
-        });
+        sexFish(have, p); // males, then females, then unsexed: drawn sex and tracked sex
         keep.push(...have);
       }
       T.fish = keep;

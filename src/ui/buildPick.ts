@@ -9,7 +9,7 @@ import { getSpecies } from '../data/species';
 import { pinDeal } from '../demand/pinned';
 import { emptyScene } from '../scene/defaults';
 import { shuffleFish } from '../scene/scatter';
-import { carryPairs } from '../scene/pairs';
+import { carryAnimals } from '../scene/carry';
 import type { Store } from '../scene/store';
 import { buildsFor, distinctBuilds, meetsNeeds, type Build } from '../scene/builds';
 import { tankLabel, type AnimalCount } from '../scene/tankfit';
@@ -57,6 +57,9 @@ export function attachBuildPick(store: Store, viewer: Viewer, status: (m: string
     else if (!hide && stepped && app) { app.classList.remove('collapsed'); stepped = false; viewer.invalidate(); }
   };
   let builds: Build[] = [], animals: AnimalCount[] = [], pics: string[] = [], back: (() => void) | undefined;
+  // the stocking screen's animals as they were when this screen opened: the previews (show) copy each build's fresh fish over the live
+  // tank, so by the pick the live tank no longer holds the owner's sexes and pairings (2026-10-22, found in the app)
+  let source: Pick<TankSetup, 'fish' | 'pairs'> | undefined;
   const close = () => { el.hidden = true; side(false); };
 
   /** Show build `i` live in the viewer. */
@@ -103,7 +106,7 @@ ${meetsNeeds(b) ? '' : '<div class="spWarn">No filter on the list carries these 
     const b = builds[i];
     if (b.bundle) pinDeal(b.bundle); // before the load that follows promotes it: the demand panel prices the bundle in place of its parts
     const next = sceneForBuild(b, store.scene.units);
-    carryPairs(store.tank, next.tanks[next.active]); // the pairings set on the stocking screen, onto the build's new fish (2026-10-22)
+    carryAnimals(source ?? store.tank, next.tanks[next.active]); // sexes and pairings set on the stocking screen, onto the build's new fish (2026-10-22)
     store.replace(next);
     close(); store.seal();
     status(`${b.label} build opened in the editor: ${tankLabel(b.tank, store.scene.units)}, ${usd(b.setupUsd)} set-up. The look is yours to change; Undo steps back.`);
@@ -122,6 +125,7 @@ ${meetsNeeds(b) ? '' : '<div class="spWarn">No filter on the list carries these 
 
   /** Open the screen for these animals in this tank (tankfit's answer or the step the user chose); `onBack` returns to the stocking screen. */
   const open = (a: AnimalCount[], tank: Parameters<typeof buildsFor>[1], onBack?: () => void) => {
+    source = structuredClone({ fish: store.tank.fish, pairs: store.tank.pairs }); // before the previews overwrite them
     animals = a; back = onBack; builds = distinctBuilds(buildsFor(a, tank)); // lane RF: the same gear is one choice, whatever the price
     side(true); pics = []; shoot(); show(1);
     el.hidden = false; draw();

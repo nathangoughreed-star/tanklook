@@ -26,7 +26,7 @@ import { gateOf, hasCorals, whysAnimal, type AnimalWhy } from '../scene/animalfi
 import { minFit } from '../scene/tankMin';
 import { startCount, strictReader } from './pickerStrict';
 import { OK_FIT, ROLES, SETUP_KINDS, applyKind, fitFrom, groupPicker, offeredIn, roleOf, rolesFor, tankKind, type Fit, type Role, type SetupKind } from '../scene/pickerKind';
-import { EXPERTISE_NAME } from '../data/care';
+import { CARE, EXPERTISE_NAME } from '../data/care';
 import { CARE_NAME, FIT_PAR, fitCaption, whyNot, type FitLight } from '../scene/plantfit';
 import { itemLights, tankSummary } from '../scene/lightcheck';
 import { topGearReach, TOP_GEAR_GAP } from '../scene/topgear';
@@ -971,6 +971,7 @@ Cancel, then change the name, to keep both.`)) return;
     const was = fishTL({ sex: f.sex }, sp), now = fishTL({ sex }, sp);
     if (f.tl) { f.tl = Math.round(f.tl * now / was); if (f.tl === now) delete f.tl; }
     if (sex) f.sex = sex; else delete f.sex;
+    if (CARE[f.species]?.sexed) f.gender = sex === 'f' ? 'f' : 'm'; // choosing the drawn sex records it (2026-10-22)
     fitFish(f, s);
   });
   $('sexM').onclick = () => setSex(); $('sexF').onclick = () => setSex('f');

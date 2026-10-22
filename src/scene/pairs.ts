@@ -27,7 +27,3 @@ export function prunePairs(T: PairTank): void {
   if (!T.pairs) return;
   for (const id of Object.keys(T.pairs)) if (pairingIn(T, id) === 'unknown') setPairing(T, id, 'unknown');
 }
-/** Carry the pairings onto a tank built from the same animals (the build pick makes new fish with new ids). */
-export function carryPairs(from: PairTank, to: PairTank): void {
-  for (const id of Object.keys(from.pairs ?? {})) { const st = pairingIn(from, id); if (st !== 'unknown') setPairing(to, id, st); }
-}

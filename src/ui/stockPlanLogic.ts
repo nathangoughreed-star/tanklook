@@ -13,7 +13,7 @@ import { spaceFit, tankExtent } from '../scene/space';
 import { buildSpan, fitIn, lenTxt, tempVerdict, stepUps, tankFor, tankLabel, tankOptions, zoneOf, type AnimalCount, type BuildSpan, type TankFit } from '../scene/tankfit';
 import { countsAgainstWater } from '../scene/stocking';
 import { minDataOf } from '../scene/tankMin';
-import { setPairing } from '../scene/pairs';
+import { pairingIn, setPairing } from '../scene/pairs';
 import type { Fish, Pairing, SpaceLimit, Tank, TankSetup, Units } from '../scene/types';
 
 export type { Pairing };
@@ -30,6 +30,30 @@ export { PAIR_FORMERS, pairRule }; // the list lives in data/groups.ts (the edit
  *  status the owner chose, for those two animals (scene/pairs.ts). */
 export function writePairs(T: Pick<TankSetup, 'fish' | 'pairs'>, picks: Pk[]): void {
   for (const p of picks) if (pairRule(p.id)) setPairing(T, p.id, asksPairing(p) ? p.pair ?? 'unknown' : 'unknown');
+}
+/** Give a pick's animals their sexes, in order: males, then females, then unsexed (stockPlan.ts sync). `sex` draws a dimorphic female;
+ *  `gender` records the sex for every species kept by sex, absent for the unsexed ones (2026-10-22: before this only herps kept it). */
+export function sexFish(have: Fish[], p: Pk): void {
+  const sp = getSpecies(p.id), sexed = isSexed(p.id);
+  have.forEach((f, i) => {
+    const female = sexed && i >= p.n && i < p.n + (p.f ?? 0), unsexed = sexed && i >= p.n + (p.f ?? 0);
+    if (sp?.female) { if (female) f.sex = 'f'; else delete f.sex; }
+    if (sexed) { if (unsexed) delete f.gender; else f.gender = female ? 'f' : 'm'; }
+  });
+}
+/** The picks a tank holds, read back from its animals (the editor's view of the stocking screen's inputs): species kept by sex count
+ *  males, females and unsexed from the tracked sex alone (absent = unsexed, never inferred); pair species carry the tank's pairing. */
+export function picksFromTank(T: Pick<TankSetup, 'fish' | 'pairs'>): Pk[] {
+  const out = new Map<string, Pk>();
+  for (const f of T.fish) {
+    const p = out.get(f.species) ?? { id: f.species, n: 0 };
+    if (!isSexed(f.species)) p.n++;
+    else if (f.gender === 'm') p.n++;
+    else if (f.gender === 'f') p.f = (p.f ?? 0) + 1;
+    else p.u = (p.u ?? 0) + 1;
+    out.set(f.species, p);
+  }
+  return [...out.values()].map(p => (asksPairing(p) ? { ...p, pair: pairingIn(T, p.id) } : p));
 }
 /** The pairing question is asked: a pair species with exactly two animals on the list. */
 export const asksPairing = (p: Pk) => pairRule(p.id) && totalOf(p) === 2;

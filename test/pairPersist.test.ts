@@ -5,7 +5,8 @@ import { emptyScene } from '../src/scene/defaults';
 import { parseScene } from '../src/scene/validate';
 import { Store } from '../src/scene/store';
 import { crowdWarnings } from '../src/scene/territory';
-import { carryPairs, pairingIn, setPairing } from '../src/scene/pairs';
+import { pairingIn, setPairing } from '../src/scene/pairs';
+import { carryAnimals } from '../src/scene/carry';
 import { bump, notesOf, writePairs, type Pk } from '../src/ui/stockPlanLogic';
 import type { Fish, Pairing, Scene, TankSetup } from '../src/scene/types';
 
@@ -33,7 +34,7 @@ describe('pairing survives stocking screen -> build pick -> editor -> save -> re
     expect(pairingIn(screen.tanks[0], 'gbr')).toBe(st);
     // build pick: a fresh scene with new fish ids (buildPick.ts pick)
     const built = tankWith([['cardinal', 15], ['gbr', 2]], 100);
-    carryPairs(screen.tanks[0], built.tanks[0]);
+    carryAnimals(screen.tanks[0], built.tanks[0]);
     // editor: ordinary edits go through the store, which prunes stale pairings
     const store = new Store(); store.replace(built);
     store.edit(t => { t.fish.find(f => f.species === 'gbr')!.x += 10; });
