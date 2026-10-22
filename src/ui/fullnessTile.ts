@@ -1,5 +1,5 @@
 // Fullness tile (lane P3, path 1, Nathan 2026-10-20): a minimizable tile on the viewer with the stocking engine's two
-// limits as bars, space and filtration (scene/stocking.ts stockingOf; the sidebar stocking line stays), live as animals
+// limits as bars, space and filtration (scene/stocking.ts stockingOf; the sidebar stocking line moved in here 2026-10-22), live as animals
 // are added; hovering (or tapping) a bar lists who fills it most. "Set my space" records the area the owner has
 // (layout.space, scene/space.ts), drawn in the viewer as a dashed outline (render/spaceOutline.ts); an edit that takes
 // the tank past it calls the fork card hook (`onSpaceFork`: make room / swap; the card itself is lane P5's).
@@ -7,7 +7,7 @@
 import { compatLine, compatRisks, coverAdvice, crowdWarnings } from '../scene/territory';
 import type { Viewer } from '../render/viewer';
 import { defaultSpace, spaceFit, tankExtent, SPACE_MAX, SPACE_MIN, type SpaceFit } from '../scene/space';
-import { plural, stockingMemo, type Stocking } from '../scene/stocking';
+import { plural, stockingDetail, stockingMemo, type Stocking } from '../scene/stocking';
 import { MIN_SLACK_PCT } from '../scene/animalfit';
 import { minDataOf, notesIn, reasonIn, tankMinimum, type MinLine, type MinRow, type TankMinimum } from '../scene/tankMin';
 import { NO3_TO_N, PLANT_SHARE_MAX, type Nitrogen } from '../scene/nitrogen';
@@ -106,7 +106,7 @@ export function tileState(S: TankSetup, r: Stocking, units: Units = 'cm'): TileS
     show: S.water.on && (r.contributors.length > 0 || !!limit),
     space: bar(r.spacePercent), filt: bar(r.filtrationPercent), min: minBar(m), mins, head: tooSmall && head.level !== 'over' ? { ...head, level: 'over', text: 'Too small' } : head,
     water: bar(r.waterPercent), floor: bar(r.floorPercent), spaceBy: r.spaceBy, topFloor: topBy(r, 'floor'),
-    topSpace: topBy(r, r.spaceBy === 'floor' ? 'floor' : 'space'), topFilt: topBy(r, 'load'), topMin: topMin(m, units), reason: unset ? spaceReason(r) : r.reasons[0] ?? '', filter,
+    topSpace: topBy(r, r.spaceBy === 'floor' ? 'floor' : 'space'), topFilt: topBy(r, 'load'), topMin: topMin(m, units), reason: unset ? spaceReason(r) : r.reasons.join(' '), filter, // every reason, the fix that would bring it under 100 % too (the sidebar line moved here, Nathan 2026-10-22)
     ...(limit ? { limit, fit } : {}), ...(cr ? { compat: { level: cr.level === 'high' ? 'over' as const : 'near' as const, text: compatLine(cr) } } : {}),
   };
 }
@@ -169,14 +169,17 @@ let forkFn: ForkFn | null = null;
 export function onSpaceFork(fn: ForkFn) { forkFn = fn; return () => { if (forkFn === fn) forkFn = null; }; }
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
-const MIN_KEY = 'tanklook.ftMin', N_KEY = 'tanklook.ftN';
+const MIN_KEY = 'tanklook.ftMin', N_KEY = 'tanklook.ftN', C_KEY = 'tanklook.ftCounts';
 
 export function attachFullnessTile(viewer: Viewer, store: Store) {
   const host = document.getElementById('view')!, tools = host.querySelector('.viewtools'); // top-left, under the view's buttons (the demand panel holds the top right)
   const el = document.createElement('section');
   el.className = 'ft'; el.hidden = true; el.setAttribute('aria-label', 'How full the tank is');
   el.innerHTML = `<button class="ftHead" type="button" aria-expanded="true" title="Minimize the fullness tile"><span class="ftTitle">Fullness</span><span class="ftPill"></span><span class="ftChev" aria-hidden="true">▾</span></button>
-<div class="ftBody"><div class="ftBars"></div><details class="ftN"><summary>Where the ammonia goes, per day</summary><div class="ftNBody"></div></details><div class="ftSpace"></div>
+<div class="ftBody"><div class="ftBars"></div><details class="ftN ftCounts"><summary>What counts</summary><ul class="ftCountsBody"></ul></details>
+<details class="ftN"><summary>Where the ammonia goes, per day</summary><div class="ftNCtl">
+<label>Feeding <select class="ftFeed" title="How heavily the animals are fed: sets the waste they make"><option value="light">Light (0.5 % of body weight a day)</option><option value="normal">Normal (1 %)</option><option value="heavy">Heavy (2 %)</option></select></label>
+<label>Tap nitrate <input class="ftTap" type="number" min="0" max="200" step="1" placeholder="0" title="Nitrate in your tap (source) water, ppm as NO3, from a test kit or your water report; blank = 0"> ppm</label></div><div class="ftNBody"></div></details><div class="ftSpace"></div>
 <form class="ftForm" hidden><div class="ftFields">
 <label>Width <input name="w" type="number" inputmode="decimal" min="1" step="any" required></label>
 <label>Depth <input name="d" type="number" inputmode="decimal" min="1" step="any" required></label>
@@ -190,8 +193,11 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
   place();
   const $ = <T extends Element>(s: string) => el.querySelector(s) as T;
   const head = $<HTMLButtonElement>('.ftHead'), pill = $<HTMLElement>('.ftPill'), bars = $<HTMLElement>('.ftBars'), spaceEl = $<HTMLElement>('.ftSpace');
-  const nEl = $<HTMLDetailsElement>('.ftN'), nBody = $<HTMLElement>('.ftNBody');
+  const nEl = $<HTMLDetailsElement>('.ftN:not(.ftCounts)'), nBody = $<HTMLElement>('.ftNBody'), feed = $<HTMLSelectElement>('.ftFeed'), tap = $<HTMLInputElement>('.ftTap');
+  const cEl = $<HTMLDetailsElement>('.ftCounts'), cBody = $<HTMLElement>('.ftCountsBody');
   try { nEl.open = localStorage.getItem(N_KEY) === '1'; } catch { /* storage blocked */ }
+  try { cEl.open = localStorage.getItem(C_KEY) === '1'; } catch { /* storage blocked */ }
+  cEl.ontoggle = () => { try { localStorage.setItem(C_KEY, cEl.open ? '1' : '0'); } catch { /* ignore */ } };
   nEl.ontoggle = () => { try { localStorage.setItem(N_KEY, nEl.open ? '1' : '0'); } catch { /* ignore */ } };
   const form = $<HTMLFormElement>('.ftForm'), inp = (n: string) => form.elements.namedItem(n) as HTMLInputElement;
 
@@ -217,7 +223,7 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
     const animalsHidden = viewer.hidden.has('fish');
     el.hidden = !st.show || animalsHidden || tankView.ghost; // no tank chosen yet on the stocking screen: nothing to be full
     const crowd = crowdWarnings(S), cover = coverAdvice(S); // S196: fighting limits, a warning only (never in the percents); lane CP2: cover
-    const sig = JSON.stringify([st, u, editing, !!forkFn, tankExtent(S.tank), crowd, cover]);
+    const sig = JSON.stringify([st, u, editing, !!forkFn, tankExtent(S.tank), crowd, cover, stockingDetail(r), r.capacity, r.nitrogen, S.water.tapNitrate ?? 0]);
     if (sig === lastSig) return;
     lastSig = sig;
     el.classList.toggle('over', st.head.level === 'over' || st.fit?.fits === false);
@@ -237,12 +243,17 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
       + crowd.map(t => `<div class="ftWarn ft-near ftCrowd">${esc(t)}</div>`).join('')
       + cover.map(t => `<div class="ftWarn ft-near ftCover">${esc(t)}</div>`).join('')
       + (st.reason ? `<div class="ftWhy">${esc(st.reason)}</div>` : '');
+    cEl.hidden = !r.contributors.length;
+    if (!cEl.hidden) cBody.innerHTML = stockingDetail(r).map(t => `<li>${esc(t)}</li>`).join('') + `<li class="dim">Water ${u === 'in' ? `${Math.round(r.capacity.litres / 3.785)} gal` : `${Math.round(r.capacity.litres)} L`}, filter x${r.capacity.filter.toFixed(2)}${r.capacity.plantCount ? `, plants x${r.capacity.plants.toFixed(2)}` : ''}, ${u === 'in' ? `${Math.round(r.capacity.tempC * 9 / 5 + 32)} °F` : `${Math.round(r.capacity.tempC)} °C`}.</li>`;
     const n = r.nitrogen;
+    if (document.activeElement !== feed) feed.value = n.feeding;
+    if (document.activeElement !== tap) tap.value = S.water.tapNitrate ? String(S.water.tapNitrate) : '';
     nEl.hidden = !r.contributors.length || n.tan <= 0 || st.filter === 'unset';
     if (!nEl.hidden) {
       const seg = (cls: string, g: number) => g > 0 ? `<i class="${cls}" style="width:${g / n.tan * 100}%"></i>` : '';
       nBody.innerHTML = `<div class="ftNSplit" aria-hidden="true">${seg('p', n.byPlants)}${seg('b', n.byBacteria)}${seg('u', n.unprocessed)}</div>`
         + nitrogenRows(n).map(x => `<div class="ftNRow"><span>${esc(x.label)}</span><b>${esc(x.value)}</b></div>${x.note ? `<div class="ftNNote">${esc(x.note)}</div>` : ''}`).join('')
+        + `<div class="ftNNote">Nitrate rises about ${n.nitrateMgNPerWeek.toFixed(1)} mg N/L a week.</div>`
         + `<div class="ftNNote">${st.filter === 'filterless' ? 'With no filter the bacteria build up on the surfaces slowly: let the plants grow in and add the animals a few at a time.' : 'A new filter has no bacteria yet: cycle it (about 4-6 weeks, ammonia and nitrite at 0) before the full stock goes in.'}</div>`
         + `<div class="ftNNote ftNCaveat">Rough figures: animals ±40 %, plant and bacteria rates from few studies.</div>`;
     }
@@ -285,6 +296,8 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
     if (!t.classList.contains('ftNoFilter')) return;
     store.seal(); store.edit(s => setFilterless(s, t.checked)); store.seal();
   };
+  feed.onchange = () => { const v = feed.value as 'light' | 'normal' | 'heavy'; store.edit(s => { s.feeding = v === 'normal' ? undefined : v; }); };
+  tap.onchange = () => { const v = parseFloat(tap.value); store.edit(s => { s.water.tapNitrate = v > 0 ? v : undefined; }); };
   spaceEl.onclick = ev => {
     const t = ev.target as HTMLElement;
     if (t.closest('.ftSet')) openForm(); else if (t.closest('.ftFork')) fork();

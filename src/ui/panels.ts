@@ -1,11 +1,10 @@
 // Sidebar wiring. Inputs write through store.update(); one sync() pulls every control back from the scene,
 // so undo/redo, file open and pointer drags all refresh the panels the same way.
-import { compatLine, compatRisks, coverAdvice, crowdWarnings } from '../scene/territory';
 import { FOCUS_SECS, type FocusSec } from '../render/menuFocus';
 import { attachDemandPanel } from './demandPanel';
 import { fitToLimits, hasLimits } from '../demand/fit';
 import { attachTechMenu } from './techMenu';
-import { filterState, tempEvidence } from '../scene/tech';
+import { tempEvidence } from '../scene/tech';
 import { renderFeaturedDeals } from './featuredDeals';
 import { startDeals, visibleTabs, pickTab, sortDeals, DEFAULT_SORT, type DealSort, type StartTab, type StartMenu } from './startEntries';
 import { DEALS_AS_OF, DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
@@ -59,7 +58,6 @@ import { placeNew, randomPose, randomSize, shuffleFish } from '../scene/scatter'
 import { fitFish, keepInWater, setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
 import { stockingDetail, stockingLine, stockingMemo } from '../scene/stocking';
-import { waterChangeText } from './fullnessTile';
 import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, aqWaitS, fetchAqHealth, fetchStocking, type AqHealth } from '../data/aqadvisor';
 import { BOWL_DEFAULT, BOWL_MAX, BOWL_MIN, PIE_DEFAULT, POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
 import { TABLE_MAX, tableOn, tableRange, wallGap } from '../scene/table';
@@ -1749,40 +1747,7 @@ Cancel, then change the name, to keep both.`)) return;
     window.addEventListener('focus', () => void pollAqHealth());
   }
   const aqWaitText = (key: string) => aqQueued.has(key) ? (aqWaitS() ? `queued, ~${aqWaitS()} s` : 'queued') : 'checking…';
-  /** Our own stocking line: percent, why, and the contributors (lane SE). AqAdvisor below it is only a comparison. */
-  function syncStocking() {
-    const s = S(), has = s.water.on && s.fish.length > 0, r = has ? stockingMemo(s) : null;
-    $('stkRow').hidden = !r || !r.contributors.length;
-    $('stkList').hidden = $('stkRow').hidden;
-    $('stkNit').hidden = $('stkRow').hidden;
-    if (!r || !r.contributors.length) { $('stkWhy').textContent = ''; return; }
-    $('stkOut').textContent = stockingLine(r);
-    $('stkOut').className = r.percent > 100 ? 'bad' : '';
-    const cr = compatRisks(s); // lane CP2: compatibility leads, then the load reasons, fighting limits and cover
-    $('stkWhy').textContent = [...(cr ? [compatLine(cr)] : []), ...r.reasons, ...crowdWarnings(s), ...coverAdvice(s)].join(' '); // S196: fighting limits, a warning beside the percent
-    syncNitrogen(r);
-    $('stkBody').innerHTML = stockingDetail(r).map(t => `<li>${esc(t)}</li>`).join('') + `<li class="dim">Water ${store.scene.units === 'in' ? `${Math.round(r.capacity.litres / 3.785)} gal` : `${Math.round(r.capacity.litres)} L`}, filter x${r.capacity.filter.toFixed(2)}${r.capacity.plantCount ? `, plants x${r.capacity.plants.toFixed(2)}` : ''}, ${store.scene.units === 'in' ? `${Math.round(r.capacity.tempC * 9 / 5 + 32)} °F` : `${Math.round(r.capacity.tempC)} °C`}.</li>`;
-  }
-  /** Waste, filter and plants (lane SE2): the split of the day's nitrogen and the two verdicts. */
-  function syncNitrogen(r: ReturnType<typeof stockingMemo>) {
-    const n = r.nitrogen, sel = $('stkFeed') as HTMLSelectElement;
-    if (document.activeElement !== sel) sel.value = n.feeding;
-    const seg = [['Plants', n.split.plants, '#3a9a5c'], ['Water changes', n.split.waterChanges, '#c9a227'], ['Ammonia the filter cannot clear', n.split.unprocessed, '#c0443c']] as const;
-    $('stkBar').innerHTML = seg.map(([l, v, c]) => `<span title="${l} ${Math.round(v * 100)}%" style="width:${(v * 100).toFixed(1)}%;background:${c}"></span>`).join('');
-    $('stkLegend').innerHTML = seg.map(([l, v, c]) => `<span><i style="background:${c}"></i>${l} ${Math.round(v * 100)}%</span>`).join('');
-    const f = n.filter, mg = n.nitrateMgNPerWeek, wc = waterChangeText(n), tap = $('stkTap') as HTMLInputElement;
-    if (document.activeElement !== tap) tap.value = S().water.tapNitrate ? String(S().water.tapNitrate) : '';
-    const unset = filterState(S()) === 'unset';
-    $('stkBar').hidden = unset; $('stkLegend').hidden = unset;
-    if (unset) { $('stkVerdict').textContent = 'This tank needs a filter: add one in Tech › Filtration, or tick "No filter" in the Fullness tile for a filterless (Walstad style) tank.'; return; }
-    const pct = (p: number) => p === Infinity ? 'over 999' : String(Math.round(p));
-    $('stkVerdict').innerHTML = esc(`Ammonia safety ${pct(n.ammoniaPercent)}% of what the filter can safely clear (${f.label}${f.mediaL ? `, about ${f.mediaL.toFixed(1)} L of media, ${f.src}` : ''})`
-      + (n.plants.count && n.byPlants > 0 ? `; ${pct(n.plantFreeAmmoniaPercent)}% without the plants.` : '.'))
-      + ' ' + esc(`Nitrate rises about ${mg.toFixed(1)} mg N/L a week. Nitrate-only water change: ${wc.value}; ${wc.note}.`)
-      + ` <span class="dim">${esc(`Waste ${(n.tan * 1000).toFixed(0)} mg N a day as ammonia (TAN), plants take up to ${(n.plants.gN * 1000).toFixed(0)} mg N a day. Cycle a new filter first (about 4-6 weeks). Estimates: waste good to about 2x, plant uptake extrapolated, hang-on-back media derived.`)}</span>`;
-  }
   function syncAq() {
-    syncStocking();
     const q = aqQuery(S());
     $('aqRow').style.display = q ? '' : 'none';
     if (!q) { $('aqNote').textContent = isSalt(S()) && S().fish.length ? 'AqAdvisor has no saltwater comparison.' : ''; return; }
@@ -1825,8 +1790,6 @@ Cancel, then change the name, to keep both.`)) return;
     }
     aqQueued.delete(key); aqBusy.delete(key); syncAq(); viewer.invalidate();
   };
-  ($('stkTap') as HTMLInputElement).onchange = e => { const v = parseFloat((e.target as HTMLInputElement).value); store.edit(s => { s.water.tapNitrate = v > 0 ? v : undefined; }); };
-  ($('stkFeed') as HTMLSelectElement).onchange = e => { const v = (e.target as HTMLSelectElement).value as 'light' | 'normal' | 'heavy'; store.edit(s => { s.feeding = v === 'normal' ? undefined : v; }); };
   $('aqCheck').onclick = () => aqCheck(S());
 
   let waterKind = '', syncKeys: string[] = [];
@@ -2241,7 +2204,6 @@ Cancel, then change the name, to keep both.`)) return;
     const sig = JSON.stringify([diff, hidden, g.units, g.active, store.targets, g.camLock, active.map(v => [v.x, v.w]), active.map((v, i) => aqChip(v.S, v.key, i))]);
     if (sig !== tabSig) {
       tabSig = sig;
-      syncStocking(); // the tech menu, the water and the plants change the capacity without a fish edit
       for (const [i, id] of [[0, 'labA'], [1, 'labB']] as const) {
         const el = $<HTMLDivElement>(id), vp = active[i];
         // only while comparing (Nathan 2026-10-14): one tank's size, stocking and Split all live in the panel already
