@@ -4,7 +4,7 @@
 // survive a rerun.
 // Run: node scripts/calib-review.mjs research/calib/round-N.json research/calib/answers/round-N-<expert>.json
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
-import { dimOf, focalOf, loadTables, partsAt, withTables } from './calib-fit.mjs';
+import { answersFit, buildOf, dimOf, focalOf, loadTables, partsAt, withTables } from './calib-fit.mjs';
 
 /** Engine reading of a table row on a dimension ('water', 'floor' or 'max'). */
 export const readOn = (tbl, n, dim = 'max') => { const { W, F } = partsAt(tbl, n); return dim === 'water' ? W : dim === 'floor' ? F : Math.max(W, F); };
@@ -26,7 +26,8 @@ export function rowsOf(round, file) {
     const a = by[s.id] ?? {}, c = focalOf(a), shown = s.stock.find(x => x[0] === s.focal)[1], p = s.pct.space, d = dimOf(s, s.focal);
     const at = (tbl, n, dim) => n >= 1 && n < tbl.length ? readOn(tbl, n, dim) : null;
     const atIdeal = at(s.table, c.ideal, d), atLimit = at(s.table, c.limit, d), mate = a.mate && s.mateTable ? { ...a.mate, at: at(s.mateTable, a.mate.ideal, dimOf(s, a.mate.id)) } : null;
-    const out = a.limits === 'not-room' || Object.values(a.bigEnough ?? {}).includes(false);
+    const lim0 = a.review?.set && 'limits' in a.review.set ? a.review.set.limits : a.limits; // a reviewed exception (calib-fit.mjs rowsOf)
+    const out = lim0 === 'not-room' || Object.values(a.bigEnough ?? {}).includes(false);
     const fixes = out ? [] : [atIdeal && round.ideal / atIdeal, atLimit && round.limit / atLimit, mate?.at && round.ideal / mate.at].filter(Boolean);
     return { s, a, c, mate, shown, p, dim: d, floorBound: s.pct.floor >= s.pct.water, engineBand: bandOf(p, round.ideal, round.limit), atIdeal, atLimit, out,
       fix: fixes.length ? gmean(fixes) : null, ratio: c.ideal >= 1 && c.limit >= 1 ? c.limit / c.ideal : null };
@@ -51,7 +52,8 @@ export function review(round, file) {
     : `## Tank by tank\n\n| tank | gal | animals | engine | engine band | answer band | ideal count -> engine | limit count -> engine | fix |\n|---|---|---|---|---|---|---|---|---|\n`;
   for (const r of rows) {
     const st = r.s.stock.map(([id, n]) => `${n} ${name(id)}${id === r.s.focal ? '*' : id === r.s.mate ? '°' : ''}`).join(' + ');
-    const cnt = (n, at, k, src = r.c) => n >= 1 ? `${n} -> ${pc(at)}` : STATUS[src.status?.[k]] ?? '-';
+    // ideal 0 on review (S214 f14: the tankmates alone already fill the ideal): shown, not fitted (a 0 count has no log reading)
+    const cnt = (n, at, k, src = r.c) => n >= 1 ? `${n} -> ${pc(at)}` : k === 'ideal' && src === r.c && r.a.review?.ideal0 ? '0 (on review)' : STATUS[src.status?.[k]] ?? '-';
     const id = `${r.s.id}${r.s.role !== 'fresh' ? ` (${r.s.role}${r.s.of ? ' of ' + r.s.of : ''})` : ''}`, fx = r.out ? 'left out' : r.fix ? mv(r.fix) : '-';
     if (v2) md += `| ${id} | ${r.s.gal} | ${st} | ${pc(r.s.pct.water)} / ${pc(r.s.pct.floor)} | ${B(r.a.floor)} / ${B(r.a.water)} / ${B(r.a.overall)} | ${cnt(r.c.ideal, r.atIdeal, 'ideal')} | ${r.s.noLimit ? 'not asked' : cnt(r.c.limit, r.atLimit, 'limit')} | ${r.mate ? cnt(r.mate.ideal, r.mate.at, 'ideal', r.mate) : '-'} | ${fx} |\n`;
     else md += `| ${id} | ${r.s.gal} | ${st} | ${pc(r.p)}${r.floorBound ? ' floor' : ''} | ${BAND[r.engineBand]} | ${B(r.a.band)}${r.a.band != null && r.a.band !== r.engineBand ? (r.a.band < r.engineBand ? ' (engine fuller)' : ' (engine emptier)') : ''} | ${cnt(r.c.ideal, r.atIdeal, 'ideal')} | ${cnt(r.c.limit, r.atLimit, 'limit')} | ${fx} |\n`;
@@ -114,8 +116,12 @@ if (process.argv[1]?.endsWith('calib-review.mjs')) {
   if (!roundPath || !ansPath) { console.error('usage: node scripts/calib-review.mjs research/calib/round-N.json answers.json'); process.exit(1); }
   // the engine's readings come from the round's tables file (the frozen tanks re-read on the current engine) when there is one
   const made = JSON.parse(readFileSync(roundPath, 'utf8')), T = loadTables(roundPath), round = T ? withTables(made, T) : made, file = JSON.parse(readFileSync(ansPath, 'utf8'));
-  const out = roundPath.replace(/round-(\d+)\.json$/, `review-round-$1-${String(file.expert).replace(/[^A-Za-z0-9_-]+/g, '_')}.md`);
-  const old = existsSync(out) ? readFileSync(out, 'utf8') : '';
+  // the answers must be about these tanks (calib-fit.mjs answersFit): a round redrawn under the same ids would review the wrong tanks
+  if (!answersFit(made, file)) { console.error(`${ansPath} does not answer the tanks in ${roundPath} (build ${buildOf(made)}${file.build ? ', the file says ' + file.build : ''}): another build of that round?`); process.exit(1); }
+  let out = roundPath.replace(/round-(\d+[a-z]?)\.json$/, `review-round-$1-${String(file.expert).replace(/[^A-Za-z0-9_-]+/g, '_')}.md`);
+  let old = existsSync(out) ? readFileSync(out, 'utf8') : '';
+  // a hand-written review under this name (not made by this script) is never overwritten: write beside it (S214's round-2 review was lost once)
+  if (old && !old.startsWith('# Calibration review')) { out = out.replace(/\.md$/, '.generated.md'); old = existsSync(out) ? readFileSync(out, 'utf8') : ''; console.warn(`kept the hand-written review; writing ${out}`); }
   const body = review(round, file).replace('\n\nAnswers ', `\n\nEngine readings: ${T ? `the current engine (research/calib/tables, ${T.made})` : 'as the round was made'}. Answers `);
   writeFileSync(out, body +(old.includes('## Findings') ? '\n' + old.slice(old.indexOf('## Findings')) : '\n## Findings\n\n(hand-written: the patterns above, the broad changes they suggest, and what the next batch should test)\n'));
   console.log(`wrote ${out}`);

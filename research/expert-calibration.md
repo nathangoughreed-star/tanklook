@@ -314,3 +314,29 @@ factor). The AI's counts on it now read low (ideal 70 -> 59 % against 75, limit 
 112 %): on this tank the expert says the new engine reads too empty, while the fitted tanks pull the water scale down. One tank, one
 AI expert: a flag for the harlequin refit, not a result. **Nothing is applied**: two experts (one an AI), no repeats answered yet, no
 inter-expert overlap. The fit becomes decision material once round 3 has answers from people.
+
+## 13. Builds: answers tied to the tanks they answered (chat XC, 2026-10-23)
+
+**What happened.** ChatGPT's first round-3 answers (5 tanks, forwarded by S214) were about round 3 as first published (8a609a8). Round 3
+was then rebuilt on the length audit (91a51bb) under the same tank ids, and every tank redrew. Matching answers by round and id put
+2 of the 5 on tanks with other species (f12: rummy-noses became platies; f14: bristlenose + otos became bronze cory + hatchetfish) and
+the other 3 on tanks with other counts. Nothing in an answer file said which tanks it answered.
+**Fixed.**
+- `research/calib/round-3a.json` (and survey-round-3a.html) keep round 3 as first published, frozen, `label: "3a"`; its answers live in
+  answers/round-3-chatgpt.json and its review in review-round-3a-chatgpt.md. It has a tables file like every round.
+- A round's **build** is a hash of its tanks (`buildOf` in calib-fit.mjs; round 3: 859f1696, round 3a: 84910225). Survey 3.1 carries it
+  into every export; saved progress or an imported file from another build is set aside (carried in the export), never loaded onto
+  these tanks. Files without a build (everything before 3.1) are matched by their answers' species and tankmates.
+- The fit joins each answer file to the round whose tanks it answered (`answersFit`), never by round number alone, and lists files
+  that fit no round. The review refuses a file that does not answer the round given.
+- Round 3 is frozen now that it is answered: `GEN_CALIB` no longer rewrites it (`GEN_CALIB_R3=1` does, only for a new round). An engine
+  change re-reads it (`GEN_RETABLE`), it never redraws it.
+**S214's readings of the ChatGPT notes**, stored as `review` on the answers: f1's "not room" was the pea puffer's compatibility, its
+counts are room answers (`review.set.limits = null`; the fit now reads `set.limits` before it skips a tank); f14's "no count works" is
+an ideal of 0 bristlenoses (the 45 otos alone are Ideal; the 1:3 ratio allowed only 0, 4, 8), shown as "0 (on review)", not fitted.
+**Survey 3.1 wording** (S214, from the same notes): the M:F split is kept "roughly, rounded as you would stock them"; "not room" is habitat
+or food only (compatibility goes in "keep together"); 0 is a valid count ("enter 0 if even one would pass the line").
+**Reviews**: calib-review.mjs no longer overwrites a hand-written review (it writes `.generated.md` beside it). S214's hand-written
+round-2 review, overwritten once, is restored as review-round-2-ngr-ai-notes.md.
+**Fit on rounds 1, 2 and 3a, today's engine** (fit-round-1-2-3a.md): water x0.80, floor x0.85; held-out error 0.273 -> 0.521 (worse,
+as in section 12). ChatGPT's round-3a counts read the engine too full on 3 of 5 tanks (median fix -15 %). Not applied.

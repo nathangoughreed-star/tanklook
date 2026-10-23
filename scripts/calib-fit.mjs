@@ -75,12 +75,15 @@ export function rowsOf(round, files) {
   for (const f of files) for (const a of f.answers) {
     const s = byId[a.id];
     if (!s) { skipped.push(`${f.expert} ${a.id}: no such tank`); continue; }
-    if (a.limits === 'not-room') { skipped.push(`${f.expert} ${a.id}: habitat or compatibility decides it, not room`); continue; }
+    // a reviewer's reading of the expert's own note (research/calib/review-*.md): `skip` drops answers the note says are not what the
+    // question asks (a preferred count that "does not make the tank green", a band set by compatibility); `set` restates a band, or the
+    // "what limits" answer (`set.limits: null`: the note says the "not room" was compatibility, and its counts are room answers; S214 f1)
+    const rv = a.review ?? {}, skip = new Set(rv.skip ?? []);
+    const limits = rv.set && 'limits' in rv.set ? rv.set.limits : a.limits;
+    if (limits === 'not-room') { skipped.push(`${f.expert} ${a.id}: habitat or food decides it, not room`); continue; }
     const small = Object.entries(a.bigEnough ?? {}).filter(([, v]) => v === false).map(([id]) => id);
     if (small.length) { skipped.push(`${f.expert} ${a.id}: tank too small for ${small.join(', ')} (a tank-minimum answer, not room)`); continue; }
-    // a reviewer's reading of the expert's own note (research/calib/review-*.md): `skip` drops answers the note says are not what the
-    // question asks (a preferred count that "does not make the tank green", a band set by compatibility); `set` restates a band
-    const rv = a.review ?? {}, skip = new Set(rv.skip ?? []);
+    if (rv.set && 'limits' in rv.set && a.limits !== limits) skipped.push(`${f.expert} ${a.id}: kept on review, "what limits" read as ${limits ?? 'room'} (${rv.why ?? 'see the review'})`);
     for (const k of skip) skipped.push(`${f.expert} ${a.id} ${k}: set aside on review (${rv.why ?? 'see the review'})`);
     const w = CONF_W[a.confidence] ?? 1, base = { expert: f.expert, s, w, picture: !!(a.picture ?? f.picture) };
     const counts = [[s.focal, s.table, focalOf(a), ['ideal', 'limit'], 'focal'], ...(a.mate && s.mateTable ? [[a.mate.id, s.mateTable, a.mate, ['ideal'], 'mate']] : [])];
@@ -204,17 +207,38 @@ function disagreement(L, rows, bias) {
   return df ? Math.sqrt(ss / df) : NaN;
 }
 
-/** Several rounds as one: scenario ids become "<round>:<id>" (repeats and pairs keep their links), and the answer files follow; an
- *  earlier round carried inside a later export joins its own round (once per expert, round and export time). */
+/** A round's build: a short hash of its tanks (id, dimensions, stock). The survey carries it into every export (survey 3.1), so an
+ *  answer file can be tied to the exact tanks it answered: round 3 was redrawn after the length audit under the same ids, and ChatGPT's
+ *  first round-3 answers (2026-10-23) were about the earlier tanks (round-3a.json). FNV-1a, 32 bit, hex. */
+export function buildOf(round) {
+  const s = JSON.stringify(round.scenarios.map(t => [t.id, t.dimsIn, t.stock]));
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return h.toString(16).padStart(8, '0');
+}
+/** Whether an answer file answered this round's tanks: by its build when it has one, else by every answer's species (and tankmate)
+ *  matching the tank of that id. */
+export function answersFit(R, f) {
+  if (f.round !== R.round) return false;
+  if (f.build) return f.build === buildOf(R);
+  const by = Object.fromEntries(R.scenarios.map(s => [s.id, s]));
+  return f.answers.every(a => { const s = by[a.id]; if (!s) return false; const sp = Object.keys(a.bigEnough ?? {}).sort().join(); return (!sp || sp === s.stock.map(x => x[0]).sort().join()) && (!a.mate || a.mate.id === s.mate); });
+}
+const labelOf = R => R.label ?? String(R.round);
+
+/** Several rounds as one: scenario ids become "<label>:<id>" (repeats and pairs keep their links), and each answer file joins the round
+ *  whose tanks it answered (answersFit), never by round number alone; an earlier round carried inside a later export joins its own round
+ *  (once per expert, round and export time). Files that fit no round given come back in `unmatched`. */
 export function combine(rounds, files) {
   const all = files.flatMap(f => [f, ...(f.carried ?? [])]), seen = new Set(), use = [];
   for (const f of all) { const k = `${f.round}|${f.expert}|${f.made}`; if (!seen.has(k)) { seen.add(k); use.push(f); } }
-  if (rounds.length === 1) return { round: rounds[0], files: use.filter(f => f.round === rounds[0].round) };
+  const home = f => rounds.find(R => answersFit(R, f));
+  const unmatched = use.filter(f => !home(f)).map(f => `${f.expert} round ${f.round} (${f.made ?? '?'}): its answers fit none of the rounds given (another build of that round?)`);
+  if (rounds.length === 1) return { round: rounds[0], files: use.filter(f => home(f) === rounds[0]), unmatched };
   const p = (r, id) => `${r}:${id}`;
-  const scenarios = rounds.flatMap(R => R.scenarios.map(s => ({ ...s, id: p(R.round, s.id), ...(s.of ? { of: p(R.round, s.of) } : {}) })));
-  const known = new Set(rounds.map(R => R.round));
-  return { round: { round: rounds.map(R => R.round).join('+'), ideal: rounds[0].ideal, limit: rounds[0].limit, scenarios },
-    files: use.filter(f => known.has(f.round)).map(f => ({ ...f, answers: f.answers.map(a => ({ ...a, id: p(f.round, a.id) })) })) };
+  const scenarios = rounds.flatMap(R => R.scenarios.map(s => ({ ...s, id: p(labelOf(R), s.id), ...(s.of ? { of: p(labelOf(R), s.of) } : {}) })));
+  return { round: { round: rounds.map(labelOf).join('+'), ideal: rounds[0].ideal, limit: rounds[0].limit, scenarios }, unmatched,
+    files: use.filter(f => home(f)).map(f => ({ ...f, answers: f.answers.map(a => ({ ...a, id: p(labelOf(home(f)), a.id) })) })) };
 }
 
 /** The whole fit: returns multipliers, biases, errors and the tables the report shows. */
@@ -286,7 +310,7 @@ export function withTables(round, T) {
 }
 /** The tables file next to a round file, if any (research/calib/round-N.json -> research/calib/tables/round-N.json). */
 export function loadTables(roundPath) {
-  const p = roundPath.replace(/round-(\d+)\.json$/, 'tables/round-$1.json');
+  const p = roundPath.replace(/round-(\d+[a-z]?)\.json$/, 'tables/round-$1.json'); // round-3a.json: a frozen earlier build
   return p !== roundPath && existsSync(p) ? JSON.parse(readFileSync(p, 'utf8')) : null;
 }
 
@@ -297,7 +321,9 @@ if (process.argv[1]?.endsWith('calib-fit.mjs')) {
   const rounds = docs.filter(d => d.j.scenarios).map(d => { const T = asMade ? null : loadTables(d.p); if (!asMade && !T) console.warn(`${d.p}: no tables file, fitting on the readings it was made with`); return T ? withTables(d.j, T) : d.j; });
   const files = docs.filter(d => d.j.answers).map(d => d.j);
   if (!rounds.length || !files.length) { console.error('usage: node scripts/calib-fit.mjs [--as-made] round-N.json [...] answers.json [...]'); process.exit(1); }
-  const { round, files: use } = combine(rounds, files), r = fitRound(round, use);
+  const { round, files: use, unmatched } = combine(rounds, files), r = fitRound(round, use);
+  for (const u of unmatched) console.warn('not fitted: ' + u);
+  r.skipped.unshift(...unmatched.map(u => 'whole file: ' + u));
   r.tables = asMade ? 'as made' : rounds.map(R => `round ${R.round}: ${R.tables ? 'current engine, ' + R.tables : 'as made'}`).join('; ');
   const base = `research/calib/fit-round-${String(round.round).replace(/\+/g, '-')}`;
   writeFileSync(base + '.json', JSON.stringify(r, (k, v) => k === 'theta' ? undefined : v, 1) + '\n');

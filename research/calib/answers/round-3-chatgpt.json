@@ -1,0 +1,148 @@
+{
+ "round": 3,
+ "survey": 3,
+ "picture": false,
+ "expert": "chatgpt",
+ "expertKind": "ai",
+ "made": "2026-10-23T16:58:09.720Z",
+ "answers": [
+  {
+   "id": "p2b",
+   "floor": 1,
+   "water": 0,
+   "overall": 1,
+   "limits": "pandacory",
+   "bigEnough": {
+    "pandacory": true
+   },
+   "focal": {
+    "ideal": 16,
+    "limit": 24,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "bare": 1,
+   "note": "For this 36 × 12-inch footprint, I’d treat 17–24 pandas as Caution, so the current 19 sit toward its lower end. These are my calibration thresholds under the stated assumptions.\n\nOptional note: Floor space for shared foraging is the constraint. Occasional midwater swimming and trips to the surface don’t make the unused upper water a substitute for bottom area. Preserve substantial connected substrate alongside the cover.",
+   "ms": 158907
+  },
+  {
+   "id": "f12",
+   "floor": 0,
+   "water": 0,
+   "overall": 0,
+   "limits": "bronzecory",
+   "bigEnough": {
+    "bronzecory": true,
+    "rummynose": true
+   },
+   "focal": {
+    "ideal": 20,
+    "limit": 30,
+    "status": {}
+   },
+   "mate": {
+    "id": "rummynose",
+    "ideal": 25,
+    "status": {}
+   },
+   "together": "yes",
+   "confidence": 1,
+   "bare": 1,
+   "note": "Optional note: The broad 36 × 18-inch bottom provides useful shared foraging space for 17 bronze cories, while ten rummy-noses leave considerable swimming room. The groups primarily use different areas, so their space demands overlap less than those of two midwater schools. These thresholds assume substantial open substrate and an unobstructed swimming route along the tank’s length.",
+   "ms": 79055
+  },
+  {
+   "id": "f14",
+   "floor": 1,
+   "water": 0,
+   "overall": 1,
+   "limits": "bristlenose",
+   "bigEnough": {
+    "bristlenose": true,
+    "oto": true
+   },
+   "focal": {
+    "ideal": null,
+    "limit": 4,
+    "status": {
+     "ideal": "no-valid-count"
+    }
+   },
+   "mate": {
+    "id": "oto",
+    "ideal": 30,
+    "status": {}
+   },
+   "together": "caution",
+   "confidence": 0,
+   "bare": 2,
+   "note": "The zero follows from preserving the sex ratio: the available counts are 0, 4, 8… I’d consider 45 otos alone spatially within Ideal under these assumptions, but adding the first four bristlenoses moves the combination into Caution. Therefore, “No count works as described” would be the wrong selection.\n\nThe one-male, three-female arrangement helps; multiple bristlenoses are more workable with a female-heavy mix and separate caves. Aquarium Co-Op\n\nOptional note: Judge usable surfaces and access to separate resting areas, rather than treating all these fish as open-water swimmers. Food supply needs separate attention at this density; it is not the basis of my room rating.",
+   "ms": 176386,
+   "review": {
+    "why": "the note says the honest ideal is 0 bristlenoses (the 45 otos alone are Ideal; the survey's 1:3 ratio allowed only 0, 4, 8) and calls no-valid-count the wrong pick: ideal 0, recorded, not fitted (the fit cannot read 0)",
+    "ideal0": true
+   }
+  },
+  {
+   "id": "f1",
+   "floor": 0,
+   "water": 0,
+   "overall": 0,
+   "limits": "not-room",
+   "bigEnough": {
+    "guppy": true,
+    "peapuffer": true,
+    "pygmycory": true
+   },
+   "focal": {
+    "ideal": 4,
+    "limit": 8,
+    "status": {}
+   },
+   "mate": {
+    "id": "pygmycory",
+    "ideal": 10,
+    "status": {}
+   },
+   "together": "no",
+   "confidence": 1,
+   "bare": 2,
+   "note": "Those are room-only thresholds, using the listed adult sizes and preserving the guppies’ 1M:3F ratio. They do not endorse the combination.\n\nOptional note: A pea puffer can nip and harass the guppies and pygmy cories despite adequate physical room. Cover can reduce encounters but doesn’t reliably resolve that incompatibility. Reducing guppy numbers therefore isn’t a dependable fix; I would remove the puffer from this community.",
+   "ms": 119779,
+   "review": {
+    "set": {
+     "limits": null
+    },
+    "why": "the note says the counts are room-only thresholds and the no is the pea puffer's compatibility (would remove the puffer): a compatibility answer, kept as room (S214 review)"
+   }
+  },
+  {
+   "id": "f8",
+   "floor": 0,
+   "water": 0,
+   "overall": 0,
+   "limits": "pandacory",
+   "bigEnough": {
+    "pandacory": true
+   },
+   "focal": {
+    "ideal": 13,
+    "limit": 20,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "bare": 1,
+   "note": "Optional note: Bottom foraging space sets the limit. These estimates are consistent with my 16 / 24 thresholds for the 36 × 12-inch tank: this tank has about 17% less floor area, with proportionately lower counts.",
+   "ms": 127369
+  }
+ ],
+ "carried": [],
+ "dropped": [
+  "f11: opened, left open 75 min, nothing answered"
+ ],
+ "source": "survey-round-3.html (survey v3), exported by Nathan 2026-10-23, forwarded by chat S214"
+}

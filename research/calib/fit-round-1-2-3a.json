@@ -1,0 +1,319 @@
+{
+ "round": "1+2+3a",
+ "experts": [
+  "chatgpt",
+  "ngr",
+  "ngr-ai"
+ ],
+ "noise": {
+  "s": 0.2,
+  "pairs": 0
+ },
+ "solver": {
+  "it": 41,
+  "gnorm": 3.7503891028110725e-8
+ },
+ "skipped": [
+  "ngr-ai 2:f10 focal.ideal: set aside on review (the ideal counts are preferred counts with 8 gouramis held, \"they do not imply the combination becomes green\"; the caution comes from gourami territory, not room)",
+  "ngr-ai 2:f10 mate.ideal: set aside on review (the ideal counts are preferred counts with 8 gouramis held, \"they do not imply the combination becomes green\"; the caution comes from gourami territory, not room)",
+  "ngr-ai 2:f10 water: set aside on review (the ideal counts are preferred counts with 8 gouramis held, \"they do not imply the combination becomes green\"; the caution comes from gourami territory, not room)",
+  "ngr-ai 2:f10 overall: set aside on review (the ideal counts are preferred counts with 8 gouramis held, \"they do not imply the combination becomes green\"; the caution comes from gourami territory, not room)",
+  "ngr-ai 2:f9 guppy limit 40: outside the table (1..36)",
+  "ngr-ai 2:f6 mate.ideal: set aside on review (25 white clouds is preferred with the pandas held, \"it does not make the whole tank green\")",
+  "ngr-ai 2:f15 mate.ideal: set aside on review (70 CPDs is \"a preferred conditional count\", not where the tank reads Ideal)",
+  "ngr-ai 2:f14 water: set aside on review (the bands come from kadango breeding territory beside the cories (compatibility); the note says the floor, counting the cories only, is Ideal)",
+  "ngr-ai 2:f14 overall: set aside on review (the bands come from kadango breeding territory beside the cories (compatibility); the note says the floor, counting the cories only, is Ideal)",
+  "chatgpt 3a:f1: kept on review, \"what limits\" read as room (the note says the counts are room-only thresholds and the no is the pea puffer's compatibility (would remove the puffer): a compatibility answer, kept as room (S214 review))"
+ ],
+ "flagged": [
+  "ngr-ai 2:f4 pandacory limit 42: water 90 %, floor 93 % (weighted 0.5)",
+  "chatgpt 3a:f12 rummynose ideal 25: water 96 %, floor 101 % (weighted 0.5)"
+ ],
+ "rows": 80,
+ "held": 5,
+ "g": 0.8,
+ "f": 0.8526,
+ "class": {
+  "big": 1.0473,
+  "invert": 0.9266,
+  "mid": 0.9719,
+  "tiny": 0.9946
+ },
+ "species": {
+  "amano": {
+   "mult": 0.7413,
+   "own": 1,
+   "cls": "invert",
+   "answers": 0
+  },
+  "bristlenose": {
+   "mult": 0.7656,
+   "own": 0.9847,
+   "cls": "mid",
+   "answers": 5
+  },
+  "bronzecory": {
+   "mult": 0.7796,
+   "own": 1.0028,
+   "cls": "mid",
+   "answers": 11
+  },
+  "cardinal": {
+   "mult": 0.7808,
+   "own": 0.9813,
+   "cls": "tiny",
+   "answers": 5
+  },
+  "cherrybarb": {
+   "mult": 0.7775,
+   "own": 1,
+   "cls": "mid",
+   "answers": 0
+  },
+  "cherryshrimp": {
+   "mult": 0.7166,
+   "own": 0.9667,
+   "cls": "invert",
+   "answers": 2
+  },
+  "chili": {
+   "mult": 0.7996,
+   "own": 1.005,
+   "cls": "tiny",
+   "answers": 1
+  },
+  "cpd": {
+   "mult": 0.81,
+   "own": 1.018,
+   "cls": "tiny",
+   "answers": 4
+  },
+  "dwarfpencil": {
+   "mult": 0.8014,
+   "own": 1.0072,
+   "cls": "tiny",
+   "answers": 3
+  },
+  "ember": {
+   "mult": 0.9,
+   "own": 1.1311,
+   "cls": "tiny",
+   "answers": 7
+  },
+  "gourami": {
+   "mult": 0.7775,
+   "own": 1,
+   "cls": "mid",
+   "answers": 0
+  },
+  "guppy": {
+   "mult": 0.6745,
+   "own": 0.8477,
+   "cls": "tiny",
+   "answers": 9
+  },
+  "harlequin": {
+   "mult": 0.7775,
+   "own": 1,
+   "cls": "mid",
+   "answers": 0
+  },
+  "hatchet": {
+   "mult": 0.8121,
+   "own": 1.0206,
+   "cls": "tiny",
+   "answers": 1
+  },
+  "hillstream": {
+   "mult": 0.7931,
+   "own": 0.9968,
+   "cls": "tiny",
+   "answers": 8
+  },
+  "honeygourami": {
+   "mult": 0.787,
+   "own": 0.9891,
+   "cls": "tiny",
+   "answers": 3
+  },
+  "kadango": {
+   "mult": 0.8378,
+   "own": 1,
+   "cls": "big",
+   "answers": 1
+  },
+  "kribensis": {
+   "mult": 0.7775,
+   "own": 1,
+   "cls": "mid",
+   "answers": 0
+  },
+  "kuhli": {
+   "mult": 0.7775,
+   "own": 1,
+   "cls": "mid",
+   "answers": 0
+  },
+  "molly": {
+   "mult": 0.7775,
+   "own": 1,
+   "cls": "mid",
+   "answers": 0
+  },
+  "neon": {
+   "mult": 0.9857,
+   "own": 1.2388,
+   "cls": "tiny",
+   "answers": 4
+  },
+  "oto": {
+   "mult": 0.7187,
+   "own": 0.9032,
+   "cls": "tiny",
+   "answers": 10
+  },
+  "pandacory": {
+   "mult": 0.7685,
+   "own": 0.9659,
+   "cls": "tiny",
+   "answers": 24
+  },
+  "peacock": {
+   "mult": 0.7775,
+   "own": 1,
+   "cls": "mid",
+   "answers": 0
+  },
+  "peapuffer": {
+   "mult": 0.7858,
+   "own": 0.9875,
+   "cls": "tiny",
+   "answers": 7
+  },
+  "platy": {
+   "mult": 0.7957,
+   "own": 1,
+   "cls": "tiny",
+   "answers": 0
+  },
+  "pygmycory": {
+   "mult": 0.7737,
+   "own": 0.9724,
+   "cls": "tiny",
+   "answers": 6
+  },
+  "rummynose": {
+   "mult": 0.785,
+   "own": 0.9865,
+   "cls": "tiny",
+   "answers": 11
+  },
+  "sae": {
+   "mult": 0.8552,
+   "own": 1.0207,
+   "cls": "big",
+   "answers": 4
+  },
+  "sterbai": {
+   "mult": 0.7775,
+   "own": 1,
+   "cls": "mid",
+   "answers": 0
+  },
+  "syno": {
+   "mult": 0.8378,
+   "own": 1,
+   "cls": "big",
+   "answers": 1
+  },
+  "whitecloud": {
+   "mult": 0.7947,
+   "own": 0.9988,
+   "cls": "tiny",
+   "answers": 8
+  },
+  "yellowlab": {
+   "mult": 0.7775,
+   "own": 1,
+   "cls": "mid",
+   "answers": 0
+  }
+ },
+ "capped": [
+  "g"
+ ],
+ "bias": {
+  "chatgpt": -0.04841200139466389,
+  "ngr": 0.037815626616962354,
+  "ngr-ai": -0.011355933220176681
+ },
+ "error": {
+  "heldBefore": 0.27327309840593433,
+  "heldAfter": 0.5214003323741738,
+  "fitBefore": 0.2912679235470085,
+  "fitAfter": 0.21636142737270594,
+  "disagreement": null
+ },
+ "kinds": {
+  "ngr": "",
+  "ngr-ai": "ai",
+  "chatgpt": "ai"
+ },
+ "ratio": [
+  {
+   "id": "1:f12",
+   "expert": "ngr",
+   "experts": 1.625,
+   "engine": 1.4871794871794872
+  },
+  {
+   "id": "2:f8",
+   "expert": "ngr-ai",
+   "experts": 1.5714285714285714,
+   "engine": 1.4938271604938271
+  },
+  {
+   "id": "2:f9",
+   "expert": "ngr-ai",
+   "experts": 1.6,
+   "engine": 1.4545454545454546
+  },
+  {
+   "id": "2:p2b",
+   "expert": "ngr-ai",
+   "experts": 1.5555555555555556,
+   "engine": 1.3333333333333333
+  },
+  {
+   "id": "2:f7",
+   "expert": "ngr-ai",
+   "experts": 1.625,
+   "engine": 1.5
+  },
+  {
+   "id": "3a:p2b",
+   "expert": "chatgpt",
+   "experts": 1.5,
+   "engine": 1.3529411764705883
+  },
+  {
+   "id": "3a:f8",
+   "expert": "chatgpt",
+   "experts": 1.5384615384615385,
+   "engine": 1.2666666666666666
+  }
+ ],
+ "maxRule": {
+  "same": 10,
+  "lower": 0,
+  "higher": 0,
+  "cases": []
+ },
+ "compat": {
+  "ok -> caution": 6,
+  "ok -> yes": 5,
+  "high -> no": 2,
+  "ok -> no": 1
+ },
+ "tables": "round 1: current engine, 2026-10-23; round 2: current engine, 2026-10-23; round 3: current engine, 2026-10-23"
+}

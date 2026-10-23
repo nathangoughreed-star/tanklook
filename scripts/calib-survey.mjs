@@ -7,11 +7,14 @@
 // survey-round-1.html (with renders) is the frozen output of the first version of this script.
 // v2.1 (2026-10-23, after a dogfood answer from ChatGPT): decor stated as furnished for the species (habitat never the limit), "no count
 // works as described", overall asks room only, the zone in the uses tag, a bare-tank question instead of a planted one, who is answering.
+// v3.1 (2026-10-23, ChatGPT's round-3 notes via S214): the ratio is rounded as the expert would, compatibility is not a "not room", 0 is a
+// count; and a build stamp (calib-fit.mjs buildOf) in every export, so saved or imported answers never land on another build's tanks.
 // v3 (2026-10-23, from the round-2 notes of an AI-model expert): the counts say what they mean (the most that still reads Ideal, the most
 // before Problems, the others held at their counts), the animals' assumptions are stated (adults, no breeding, sexes as the expert would
 // choose), the water-column question lists every species (a floor + water species swims too), "not room" names food as well.
 // Run: node scripts/calib-survey.mjs research/calib/round-3.json
 import { readFileSync, writeFileSync } from 'node:fs';
+import { buildOf } from './calib-fit.mjs';
 
 const path = process.argv[2] ?? 'research/calib/round-2.json', round = JSON.parse(readFileSync(path, 'utf8'));
 const out = path.replace(/round-(\d+)\.json$/, 'survey-round-$1.html');
@@ -64,14 +67,21 @@ button.b{font:inherit;padding:3px 12px;border-radius:7px;border:1px solid var(--
 </style></head><body>
 <div id="app"></div><input type="file" id="imp" accept=".json,application/json" style="display:none">
 <script>
-const ROUND = ${round.round}, TANKS = ${JSON.stringify(tanks)};
+const ROUND = ${round.round}, BUILD = '${buildOf(round)}', TANKS = ${JSON.stringify(tanks)};
 const KEY = 'stocking-survey-round-' + ROUND;
 let st = { expert: '', kind: '', at: -1, answers: {}, carried: [] };
 try { st = Object.assign(st, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
+const fitsHere = answers => Object.values(answers || {}).every(a => { const t = TANKS.find(x => x.id === a.id); const sp = Object.keys(a.bigEnough || {}).sort().join(); return t && (!sp || sp === t.stock.map(s => s.id).sort().join()); });
+if (Object.keys(st.answers).length && (st.build ? st.build !== BUILD : !fitsHere(st.answers))) {
+  st.carried.push({ round: ROUND, build: st.build || 'unstamped', expert: st.expert, expertKind: st.kind, made: new Date().toISOString(), note: 'saved progress from another build of this round: set aside, not loaded', answers: Object.values(st.answers) });
+  st.answers = {}; st.at = st.expert ? 0 : -1; setTimeout(() => alert('Your saved answers were for an earlier version of this round (other tanks under the same numbers). They are kept and go out with your export, but this version starts empty.'), 0);
+}
+st.build = BUILD;
+try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} };
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const IDEAL_L = 'most that still reads <b>Ideal</b>', LIMIT_L = 'most before <b>Problems</b>';
-const HELD = '<div class="sub">The other animals stay at their counts. If they alone already pass the line, pick "No count works as described".</div>';
+const HELD = '<div class="sub">The other animals stay at their counts. 0 is a valid count: enter 0 if even one would pass the line. If the others alone already pass it, pick "No count works as described".</div>';
 const KINDS = [['keeper', 'A fishkeeper'], ['professional', 'A professional (store, breeder, aquarist)'], ['ai', 'An AI model']];
 const BANDS = [['var(--g)', 'Ideal or under'], ['var(--y)', 'Caution'], ['var(--r)', 'Problems']];
 const DEF = '<b>Ideal</b>: what experienced keepers would aim for, comfortable long term. <b>Caution</b>: workable, tread carefully. <b>Problems</b>: past this, long-term problems become likely even with good care.';
@@ -114,12 +124,12 @@ document.getElementById('imp').onchange = async e => {
 };
 function importFile(j) {
   if (!j || !Array.isArray(j.answers)) { alert('That file is not an answer file.'); return; }
-  if (j.round === ROUND) {
+  if (j.round === ROUND && (j.build ? j.build === BUILD : fitsHere(Object.fromEntries(j.answers.map(a => [a.id, a]))))) {
     let n = 0; for (const a of j.answers) { const t = TANKS.find(x => x.id === a.id); if (t && !done(t)) { st.answers[a.id] = a; n++; } }
     if (!st.expert && j.expert) st.expert = j.expert; alert('Restored ' + n + ' answer(s) for this round.');
   } else {
     if (!st.carried.some(c => c.round === j.round && c.expert === j.expert && c.made === j.made)) st.carried.push(j);
-    alert('Kept the round ' + j.round + ' answers (' + j.answers.length + ' tanks): they go out with this round\\'s export.');
+    alert('Kept the round ' + j.round + ' answers (' + j.answers.length + ' tanks' + (j.round === ROUND ? ', another version of this round' : '') + '): they go out with this round\\'s export.');
   }
   save(); st.expert && st.at >= 0 ? show() : start();
 }
@@ -157,7 +167,7 @@ function show() {
   const keepTxt = list => list.length ? 'Keeping the ' + list.map(s => s.pl.toLowerCase()).join(' and ') + ' as shown: how' : 'How';
   const L = '<div><div class="card"><h2>The tank</h2><table class="k"><tr><td>Size</td><td>' + t.dims.join(' × ') + ' in, ' + t.gal + ' gal (' + t.litres + ' L), full</td></tr>' +
     '<tr><td>Floor</td><td>' + t.dims[0] + ' × ' + t.dims[1] + ' in = ' + t.floorSqIn + ' sq in</td></tr>' +
-    '<tr><td>Animals</td><td>Adults at the sizes listed; the count stays as shown (no breeding). Where a split is given (M males, F females), the counts you give keep that ratio; otherwise sexes are the mix you would choose</td></tr>' +
+    '<tr><td>Animals</td><td>Adults at the sizes listed; the count stays as shown (no breeding). Where a split is given (M males, F females), the counts you give keep roughly that ratio, rounded as you would stock them (any whole number works); otherwise sexes are the mix you would choose</td></tr>' +
     '<tr><td>Filter</td><td>Canister rated for twice this tank, weekly 30 % changes: <b>never the limit</b></td></tr><tr><td>Decor</td><td>Furnished as these species need (plants, cover, sight breaks): <b>never the limit</b></td></tr></table></div>' +
     '<div class="card" style="margin-top:10px"><h2>The animals (adults)</h2><table><tr><th>count</th><th>species</th><th>adult</th><th>uses</th></tr>' +
     t.stock.map(s => '<tr><td>' + s.n + sexOf(s) + '</td><td>' + esc(s.name) + '</td><td>' + s.cm + ' cm</td><td>' + usesTag(s) + '</td></tr>').join('') + '</table>' +
@@ -169,7 +179,7 @@ function show() {
   if (floorers.length) M += '<div class="q"><h3>Floor room for the bottom dwellers</h3><div class="sub">' + floorers.map(s => esc(s.pl) + (s.floor < 1 ? ' (half the time)' : '')).join(', ') + '</div>' + band('floor', a) + '</div>';
   if (swimmers.length) M += '<div class="q"><h3>Water column room for the swimmers</h3><div class="sub">' + swimmers.map(s => esc(s.pl)).join(', ') + '</div>' + band('water', a) + '</div>';
   M += '<div class="q"><h3>Overall room, as shown</h3><div class="sub">Room only: compatibility goes in "keep together", habitat in "what limits"</div>' + band('overall', a) + '</div>';
-  M += '<div class="q"><h3>What limits this tank\\'s room first?</h3>' + choice('limits', a, [...t.stock.map(s => [s.id, esc(s.pl)]), ['not-room', 'Not room: habitat, compatibility or food decides it']], 'r2') + '</div>';
+  M += '<div class="q"><h3>What limits this tank\\'s room first?</h3>' + choice('limits', a, [...t.stock.map(s => [s.id, esc(s.pl)]), ['not-room', 'Not room: habitat or food decides it (compatibility goes in "keep together")']], 'r2') + '</div>';
   M += '</div><div class="card" style="margin-top:8px"><p class="sec">About your answers</p>';
   if (t.mixed) M += '<div class="q"><h3>Would you keep these species together long term?</h3>' + choice('together', a, [['yes', 'Yes'], ['caution', 'With caution'], ['no', 'No']]) + '</div>';
   M += '<div class="q"><h3>How sure are you of the counts?</h3>' + choice('confidence', a, [[0, 'Low'], [1, 'Medium'], [2, 'High']]) + '</div>';
@@ -205,7 +215,7 @@ function finish() {
   document.getElementById('back').onclick = () => { st.at = TANKS.length - 1; save(); show(); };
 }
 function exportAnswers() {
-  const body = { round: ROUND, survey: 3, picture: false, expert: st.expert, expertKind: st.kind, made: new Date().toISOString(), answers: TANKS.map(t => st.answers[t.id]).filter(Boolean), carried: st.carried };
+  const body = { round: ROUND, build: BUILD, survey: 3.1, picture: false, expert: st.expert, expertKind: st.kind, made: new Date().toISOString(), answers: TANKS.map(t => st.answers[t.id]).filter(Boolean), carried: st.carried };
   const url = URL.createObjectURL(new Blob([JSON.stringify(body, null, 1)], { type: 'application/json' })), el = document.createElement('a');
   el.href = url; el.download = 'round-' + ROUND + '-' + (st.expert || 'expert').replace(/[^A-Za-z0-9_-]+/g, '_') + '.json'; document.body.appendChild(el); el.click(); el.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
 }

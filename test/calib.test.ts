@@ -1,6 +1,7 @@
 // Expert calibration rounds (research/expert-calibration.md): the scenario generator, from round 2 on (survey v2).
 // Round 1 (research/calib/round-1.json) is frozen data from the first generator and is not regenerated.
-// GEN_CALIB=1 npx vitest run test/calib.test.ts writes research/calib/round-2.json and round-3.json (scenarios, engine tables).
+// GEN_CALIB=1 GEN_CALIB_R3=1 npx vitest run test/calib.test.ts rewrites research/calib/round-3.json (GEN_CALIB_R2=1: round-2.json); both are
+// published and answered, so this redraws tanks under the same ids: only for a new round, never for an engine change (use GEN_RETABLE).
 import { describe, expect, it } from 'vitest';
 import { classOf, fitsTank, makeRound, readSpace, setupOf, SIZES_R3, SLOTS, tightOf, type Scenario } from '../src/calib/scenario';
 import { SPACE_FACTOR } from '../src/data/spacefactor';
@@ -69,7 +70,9 @@ describe('calibration round generator (round 2 on)', () => {
     expect(R3.filter(s => s.gal >= 10 && s.gal <= 55).length / R3.length).toBeGreaterThanOrEqual(0.8);
   }, 300000);
   if ((globalThis as any).process?.env.GEN_CALIB) {
-    it('writes research/calib/round-3.json', async () => {
+    // round 3 is published and being answered (2026-10-23): frozen like rounds 1-2 (an engine change re-reads it: test/calibtables.test.ts);
+    // GEN_CALIB_R3=1 rewrites it, which redraws every tank under the same ids (the reason for round-3a.json and the survey's build stamp)
+    if ((globalThis as any).process?.env.GEN_CALIB_R3) it('writes research/calib/round-3.json', async () => {
       // @ts-expect-error node only (no node types in this project)
       const fs = await import('node:fs');
       const per = (s: Scenario, f: (id: string) => unknown) => Object.fromEntries(s.stock.map(([id]) => [id, f(id)]));

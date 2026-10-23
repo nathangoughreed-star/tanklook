@@ -8,13 +8,14 @@ import { readSpace, tableOf, tightOf } from '../src/calib/scenario';
 import R1 from '../research/calib/round-1.json';
 import R2 from '../research/calib/round-2.json';
 import R3 from '../research/calib/round-3.json';
+import R3A from '../research/calib/round-3a.json'; // round 3 as first published, frozen: answers exist for its tanks
 
 type Dims = [number, number, number];
 interface Tank { id: string; dimsIn: Dims; stock: [string, number][]; focal: string; mate?: string }
-const ROUNDS = [R1, R2, R3] as unknown as { round: number; scenarios: Tank[] }[];
+const ROUNDS = [R1, R2, R3, R3A] as unknown as { round: number; label?: string; scenarios: Tank[] }[];
 // @ts-expect-error node only (no node types in this project)
 const fs = await import('node:fs');
-const tablesUrl = (n: number) => new URL(`../research/calib/tables/round-${n}.json`, import.meta.url);
+const tablesUrl = (R: { round: number; label?: string }) => new URL(`../research/calib/tables/round-${R.label ?? R.round}.json`, import.meta.url);
 
 /** What the current engine reads of a frozen tank: as shown, and over the focal (and tankmate) count. */
 export function retable(s: Tank) {
@@ -29,14 +30,14 @@ describe('calibration tables on the current engine', () => {
       fs.mkdirSync(new URL('../research/calib/tables/', import.meta.url), { recursive: true });
       for (const R of ROUNDS) {
         const tanks = Object.fromEntries(R.scenarios.map(s => [s.id, retable(s)]));
-        fs.writeFileSync(tablesUrl(R.round), JSON.stringify({ round: R.round, made: new Date().toISOString().slice(0, 10), note: 'engine readings of the frozen tanks, current engine (test/calibtables.test.ts)', tanks }) + '\n');
+        fs.writeFileSync(tablesUrl(R), JSON.stringify({ round: R.round, ...(R.label ? { label: R.label } : {}), made: new Date().toISOString().slice(0, 10), note: 'engine readings of the frozen tanks, current engine (test/calibtables.test.ts)', tanks }) + '\n');
       }
     }, 600000);
   }
   it('has a tables file for every round, read on the engine as it is now (else: GEN_RETABLE=1 npx vitest run test/calibtables.test.ts)', () => {
     for (const R of ROUNDS) {
-      expect(fs.existsSync(tablesUrl(R.round)), `round ${R.round}: no tables file`).toBe(true);
-      const T = JSON.parse(fs.readFileSync(tablesUrl(R.round), 'utf8'));
+      expect(fs.existsSync(tablesUrl(R)), `round ${R.round}: no tables file`).toBe(true);
+      const T = JSON.parse(fs.readFileSync(tablesUrl(R), 'utf8'));
       for (const s of R.scenarios) {
         const t = T.tanks[s.id];
         expect(t, `round ${R.round} ${s.id}`).toBeTruthy();
