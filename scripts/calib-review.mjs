@@ -46,7 +46,7 @@ export const PATTERNS = [
 export function review(round, file) {
   const rows = rowsOf(round, file), used = rows.filter(r => r.s.role !== 'repeat'), v2 = file.survey === 2 || file.answers.some(a => a.focal);
   const name = id => round.scenarios.find(s => s.names?.[id])?.names[id] ?? id, B = v => v != null ? BAND[v] : '-';
-  let md = `# Calibration review, round ${round.round}: ${file.expert}\n\nAnswers ${file.made?.slice(0, 10) ?? ''}${file.picture ? ' (survey with pictures)' : ''}. Ideal = ${round.ideal} %, limit = ${round.limit} %. Counts are read on the dimension their species fills (floor for bottom dwellers, water for swimmers, the larger for fish that use both). "fix" is what the engine's reading would need to be multiplied by to match the answers: below 0 % the engine reads the tank too full, above it too empty.\n\n`;
+  let md = `# Calibration review, round ${round.round}: ${file.expert}${file.expertKind ? ` (${file.expertKind === 'ai' ? 'an AI model' : file.expertKind})` : ''}\n\nAnswers ${file.made?.slice(0, 10) ?? ''}${file.picture ? ' (survey with pictures)' : ''}. Ideal = ${round.ideal} %, limit = ${round.limit} %. Counts are read on the dimension their species fills (floor for bottom dwellers, water for swimmers, the larger for fish that use both). "fix" is what the engine's reading would need to be multiplied by to match the answers: below 0 % the engine reads the tank too full, above it too empty.\n\n`;
   md += v2 ? `## Tank by tank\n\n| tank | gal | animals | engine water / floor | answer floor / water / overall | ideal count -> engine | limit count -> engine | tankmate ideal -> engine | fix |\n|---|---|---|---|---|---|---|---|---|\n`
     : `## Tank by tank\n\n| tank | gal | animals | engine | engine band | answer band | ideal count -> engine | limit count -> engine | fix |\n|---|---|---|---|---|---|---|---|---|\n`;
   for (const r of rows) {
@@ -91,7 +91,7 @@ export function review(round, file) {
       for (const b of pairs) { const a = rows.find(x => x.s.id === b.s.of); if (!a) continue; md += `- ${a.s.id} ${a.s.dimsIn.join('x')} vs ${b.s.id} ${b.s.dimsIn.join('x')} (${a.s.stock.map(([i, n]) => n + ' ' + name(i)).join(' + ')}): your ideal ${a.c.ideal ?? '-'} vs ${b.c.ideal ?? '-'}, limit ${a.c.limit ?? '-'} vs ${b.c.limit ?? '-'}; the engine's reading as shown ${pc(a.p)} vs ${pc(b.p)}\n`; }
     }
     const hist = (k, labels) => labels.map((l, i) => `${l} ${used.filter(r => r.a[k] === i).length}`).join(', ');
-    md += `\n## About the answers\n\nConfidence: ${hist('confidence', ['low', 'medium', 'high'])}. With dense plants and cover: ${hist('plants', ['the same', 'a little higher', 'a lot higher'])}.\n`;
+    md += `\n## About the answers\n\nConfidence: ${hist('confidence', ['low', 'medium', 'high'])}. In a bare tank: ${hist('bare', ['the same', 'a little lower', 'a lot lower'])} (survey 2.1; survey 2.0 asked about dense planting: ${hist('plants', ['the same', 'a little higher', 'a lot higher'])}).\n`;
   }
   const reps = rows.filter(r => r.s.role === 'repeat' && r.fix);
   if (reps.length) {

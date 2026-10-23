@@ -42,7 +42,7 @@ export function synthAnswers(round, truth, experts = EXPERTS, seed = 1) {
       const fb = hasF ? band(F + eps()) : null, wb = band(W + eps());
       return { id: s.id, floor: fb, water: wb, overall: Math.max(fb ?? 0, wb), limits: s.focal, bigEnough: Object.fromEntries(s.stock.map(([id]) => [id, true])),
         focal: { ideal, limit: s.noLimit ? null : limit, status: {} }, mate: s.mate ? { id: s.mate, ideal: best(s, Math.log(round.ideal), eps(), s.mate, s.mateTable), status: {} } : null,
-        together, confidence: 1, plants: 0, note: '' };
+        together, confidence: 1, bare: 0, note: '' };
     }),
   }));
 }

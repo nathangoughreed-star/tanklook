@@ -251,7 +251,7 @@ export function fitRound(round, files, prior = PRIOR) {
     g: +Math.exp(th[0]).toFixed(4), f: +Math.exp(th[1]).toFixed(4),
     class: Object.fromEntries(L.classes.map(k => [k, +Math.exp(th[L.at['c:' + k]]).toFixed(4)])), species, capped, bias,
     error: { heldBefore: rms(L, held, zero, bias), heldAfter: rms(L, held, th, bias), fitBefore: rms(L, used, zero, bias), fitAfter: rms(L, used, th, bias), disagreement: disagreement(L, rows, bias) },
-    ratio, maxRule, compat, theta: Object.fromEntries(L.names.map((n, i) => [n, th[i]])),
+    kinds: Object.fromEntries(files.map(f => [f.expert, f.expertKind ?? ''])), ratio, maxRule, compat, theta: Object.fromEntries(L.names.map((n, i) => [n, th[i]])),
   };
 }
 
@@ -261,7 +261,8 @@ export function report(r) {
   md += `## Error (rms of log reading at the experts' counts)\n\n| | before | after |\n|---|---|---|\n| held-out anchors | ${nf(e.heldBefore)} | ${nf(e.heldAfter)} |\n| fitted tanks | ${nf(e.fitBefore)} | ${nf(e.fitAfter)} |\n\nInter-expert disagreement ${Number.isFinite(e.disagreement) ? e.disagreement.toFixed(3) : 'n/a (one expert)'}. ${e.heldAfter <= 1.1 * e.disagreement ? '**Stop rule met**: held-out error is within the experts\' own disagreement.' : 'Stop rule not met.'}\n\n`;
   md += `## Multipliers on today's factors\n\nWater (SPACE_PER_L) x${r.g}, floor x${r.f}. Classes: ${Object.entries(r.class).map(([k, m]) => `${k} ${pc(m)}`).join(', ')}.${r.capped.length ? ` Capped at x1.25: ${r.capped.join(', ')}.` : ''}\n\n| species | class | answers | total move | own move |\n|---|---|---|---|---|\n`;
   for (const [id, v] of Object.entries(r.species).sort((a, b) => Math.abs(Math.log(b[1].mult)) - Math.abs(Math.log(a[1].mult)))) if (Math.abs(v.mult - 1) >= 0.05) md += `| ${id} | ${v.cls} | ${v.answers} | ${pc(v.mult)} | ${pc(v.own)} |\n`;
-  md += `\n## Experts\n\n| expert | bias |\n|---|---|\n${r.experts.map(x => `| ${x} | ${pc(Math.exp(r.bias[x]))} |`).join('\n')}\n`;
+  // an AI model is one expert among several with its own bias (survey 2.1 asks who is answering); read its rows apart before trusting a move
+  md += `\n## Experts\n\n| expert | answering as | bias |\n|---|---|---|\n${r.experts.map(x => `| ${x} | ${r.kinds?.[x] === 'ai' ? 'AI model' : r.kinds?.[x] || '-'} | ${pc(Math.exp(r.bias[x]))} |`).join('\n')}\n`;
   if (r.ratio.length) { const m = a => [...a].sort((p, q) => p - q)[a.length >> 1]; md += `\n## Limit / ideal count (one-species tanks)\n\nMedian ratio, experts ${m(r.ratio.map(x => x.experts)).toFixed(2)}, engine ${m(r.ratio.map(x => x.engine)).toFixed(2)} (${r.ratio.length} answers). Experts higher means they find later fish cheaper than the school curve does.\n`; }
   const mr = r.maxRule;
   if (mr.same + mr.lower + mr.higher) md += `\n## The max rule\n\nOverall answer vs the tighter of the floor and water answers: same ${mr.same}, lower ${mr.lower}, higher ${mr.higher}. If "lower" or "higher" is common, experts do not judge by the tighter dimension alone and the engine's "larger of the two" needs revisiting.\n${mr.cases.map(x => `- ${x}`).join('\n')}\n`;

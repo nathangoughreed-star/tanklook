@@ -250,3 +250,22 @@ dimension alone (test/calibfit.test.ts "calibration fit, survey 2").
 answers and the counts; patterns now by the engine's tight dimension too; the max rule; what limits the room (vs the engine's biggest
 contributor on the binding dimension); "too small" answers (each a tank-minimum disagreement); the pairs side by side; confidence and
 plants; the notes, below the tables.
+
+**Survey 2.1 (2026-10-23, after a dogfood answer from ChatGPT on f10: 11 marbled hatchetfish, 8 honey gouramis, 8 chili rasboras in a
+40 breeder).** It answered "not room", gave no counts at all ("no suitable count as shown: habitat needs correcting") and overall
+"problems" against water "caution". Nathan asked whether experts should be forced to give numbers: no, a forced number from an expert
+who thinks none works is invented data. The answer showed four survey flaws, fixed:
+- the decor line ("no plants; a few rocks") made habitat a limit, while the engine does not count decor in room. Now "furnished as these
+  species need (plants, cover, sight breaks): never the limit", like the filter; the plants question flips to "in a bare tank, your
+  counts would be the same / a little lower / a lot lower" (`bare`), which still measures the cover effect;
+- the status option was "no count works with these tankmates"; its reason was habitat. Now "no count works as described" (same stored
+  value, `no-valid-count`);
+- "overall" mixed compatibility into a room answer. Now "Overall room, as shown", with compatibility pointed to "keep together";
+- the "water" tag hid that hatchetfish and honey gouramis share the surface. The tag now says "water, near the surface" or "water column".
+Who is answering is asked (`expertKind`: keeper, professional, AI model): an AI model is one expert among several with its own bias,
+and the fit report shows the kind next to each expert.
+Its other catch is a data question for the engine, not the survey: chili rasbora `tl` 35 mm in species.json, where *Boraras brigittae*
+reaches about 2 cm (a standard vs total length mix-up?). Mass goes with length cubed; its AqAdvisor space factor (3.36) was fitted at
+that length, so the two partly cancel. Proposed as its own audit (all species' lengths), not changed here.
+The 8 honey gouramis passed the fighting check because the honey gourami has no territory rule (data/groups.ts): a gap for the
+territory lane, recorded here.
