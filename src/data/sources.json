@@ -36,6 +36,7 @@
   },
   "territory-research": { "title": "Fighting limits by tank size for 29 territorial species (Fishkeeping World, Aquarium Co-Op, Seriously Fish, Saltwater Aquarium Blog and others)", "by": "Glass Box lane S196", "url": "research/territory-caps.md", "accessed": "2026-10-22", "kind": "internal" },
   "expert-stockings": { "title": "37 published stocking lists and 73 count-vs-size points (Aquarium Co-Op, Fishkeeping World, Aqueon, BRS and others) through our engine", "by": "Glass Box lane S196", "url": "research/expert-stockings.md", "accessed": "2026-10-21", "kind": "internal" },
+  "expert-v4": { "title": "Stocking and compatibility survey v4: 60 hand-written tanks in four modules, answered by keepers, professionals and AI models", "by": "experts named only with consent (none yet)", "url": "research/calib/v4/survey-v4-design.md", "accessed": "2026-10-23", "kind": "internal", "note": "build c7cb52e6; answers in research/calib/answers/v4-<expert>.json (scripts/calib-parse-v4.mjs); no answers yet, nothing fitted or applied" },
   "aq-compare": {
    "title": "54 one-species and 24 mixed AqAdvisor probes vs our engine",
    "by": "Glass Box lane SE2",

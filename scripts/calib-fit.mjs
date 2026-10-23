@@ -8,6 +8,7 @@
 // tank the expert called too small for a species, or limited by habitat rather than room, is left out; confidence weights.
 // Run: node scripts/calib-fit.mjs research/calib/round-1.json research/calib/round-2.json research/calib/answers/*.json
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { buildV4 } from './calib-parse-v4.mjs';
 
 // prior sd of each log multiplier (0 = today's value). Species 0.10, classes 0.15: on synthetic rounds (scripts/calib-synth.mjs, 4 seeds)
 // a species prior of 0.25 let a tankmate held at one count trade off against the focal species and recovered worse than no fit;
@@ -221,6 +222,7 @@ export function buildOf(round) {
  *  matching the tank of that id. */
 export function answersFit(R, f) {
   if (f.round !== R.round) return false;
+  if (R.survey === 'v4') return f.survey === 'v4' && f.build === R.build; // v4 files always carry the build (make-survey-v4.mjs)
   if (f.build) return f.build === buildOf(R);
   const by = Object.fromEntries(R.scenarios.map(s => [s.id, s]));
   return f.answers.every(a => { const s = by[a.id]; if (!s) return false; const sp = Object.keys(a.bigEnough ?? {}).sort().join(); return (!sp || sp === s.stock.map(x => x[0]).sort().join()) && (!a.mate || a.mate.id === s.mate); });
@@ -315,18 +317,78 @@ export function loadTables(roundPath) {
   return p !== roundPath && existsSync(p) ? JSON.parse(readFileSync(p, 'utf8')) : null;
 }
 
+// ---------- survey v4 (research/calib/v4/survey-v4-design.md sections 4-5; 2026-10-23) ----------
+// The 60 v4 tanks are not a generated round: the fit reads the count tanks among them (counts asked, a space.* or golden.* tag) as a
+// round of their own, label "v4", on the engine tables of research/calib/tables/v4.json (salt tanks were read with salt water), and turns
+// each v4 answer file (scripts/calib-parse-v4.mjs) into the survey-2 answer shape rowsOf reads, so every rule above applies unchanged.
+export const V4_FIT_TAG = /^(space|golden)\./;
+/** The v4 verdict as the overall band: past the limit and not workable are both past 100 % on the room scale. */
+export const V4_BAND = { ideal: 0, caution: 1, problems: 2, unworkable: 2 };
+export const V4_CONF = { low: 0, medium: 1, high: 2 };
+/** A first change that is not about room makes the verdict something other than a room band: the band is kept out (the counts stay). */
+export const V4_NOT_ROOM = { bigger: 'a tank-minimum answer', drop: 'a compatibility answer', ratio: 'a group-size or sex-mix answer', other: 'another reason (see the note)' };
+
+/** The v4 count tanks as a round, on their tables (test/calibtablesv4.test.ts). A tank the engine could not read is left out. */
+export function roundV4(J, T) {
+  const build = buildV4(J);
+  if (T.build !== build) throw new Error(`tables/v4.json is build ${T.build}, the scenarios ${build}: GEN_RETABLE_V4=1 npx vitest run test/calibtablesv4.test.ts`);
+  const scenarios = J.scenarios.filter(s => s.ask.includes('counts') && s.focal && s.tests.some(t => V4_FIT_TAG.test(t)) && T.tanks[s.id]?.readable && T.tanks[s.id].table).map(s => {
+    const t = T.tanks[s.id], sp = t.app.space;
+    return { id: s.id, kind: s.stock.length > 1 ? 'mix' : 'single', gal: parseFloat(J.tanks[s.tank].name), dimsIn: J.tanks[s.tank].in, stock: s.stock.map(x => [x.id, x.n]),
+      focal: s.focal, table: t.table, uses: t.uses, cls: t.cls, pct: { space: sp.pct, water: sp.water, floor: sp.floor }, salt: t.salt, tests: s.tests,
+      gate: t.app.compat?.level ?? 'ok', gateItems: t.app.compat?.items ?? [], minSp: s.min?.species ?? null, role: s.pairOf ? 'pair' : 'fresh', ...(s.pairOf ? { of: s.pairOf } : {}) };
+  });
+  return { round: 'v4', label: 'v4', survey: 'v4', build, ideal: J.ideal, limit: J.limit, tables: T.made, scenarios };
+}
+
+/** A v4 answer file (one expert, answers keyed by tank) as the fit's answer file: the count tanks only; skipped tanks out; `verdict` the
+ *  overall band; ideal / limit / countStatus the focal counts; confidence 0.5 / 1 / 1.5; change "notroom" and "not big enough" leave the
+ *  tank out as in survey 2; a change that is not about room keeps the band out. `v4` says what was not fitted and why. */
+export function fileV4(f, R) {
+  const by = Object.fromEntries(R.scenarios.map(s => [s.id, s])), answers = [];
+  let outside = 0, skipped = 0;
+  for (const [id, a] of Object.entries(f.answers ?? {})) {
+    const s = by[id];
+    if (!s) { outside++; continue; }
+    if (a.skip) { skipped++; continue; }
+    const why = V4_NOT_ROOM[a.change];
+    answers.push({ id, focal: { ideal: a.ideal ?? null, limit: a.limit ?? null, status: a.countStatus ? { ideal: a.countStatus, limit: a.countStatus } : {} },
+      overall: a.verdict != null ? V4_BAND[a.verdict] ?? null : null, floor: null, water: null, confidence: V4_CONF[a.confidence],
+      limits: a.change === 'notroom' ? 'not-room' : null, bigEnough: a.bigEnough === 'no' && s.minSp ? { [s.minSp]: false } : {}, together: a.together ?? null,
+      ...(a.note ? { note: a.note } : {}), ...(why ? { review: { skip: ['overall'], why: `v4 change "${a.change}": ${why}, not a room band` } } : {}) });
+  }
+  return { round: 'v4', survey: 'v4', build: f.build, expert: f.expert, expertKind: f.expertKind, made: f.made, answers, carried: [],
+    v4: { outside, skipped, carried: (f.carried ?? []).length } };
+}
+/** The tables file for the v4 scenarios (research/calib/v4/scenarios-v4.json -> research/calib/tables/v4.json). */
+export function loadTablesV4(scenariosPath) {
+  const p = scenariosPath.replace(/v4[\\/]scenarios-v4\.json$/, 'tables/v4.json');
+  return p !== scenariosPath && existsSync(p) ? JSON.parse(readFileSync(p, 'utf8')) : null;
+}
+
 if (process.argv[1]?.endsWith('calib-fit.mjs')) {
   // --as-made fits on the engine readings stored at generation; by default each round reads its tables file (the current engine)
-  const args = process.argv.slice(2), asMade = args.includes('--as-made');
-  const docs = args.filter(a => !a.startsWith('--')).map(p => ({ p, j: JSON.parse(readFileSync(p, 'utf8')) }));
-  const rounds = docs.filter(d => d.j.scenarios).map(d => { const T = asMade ? null : loadTables(d.p); if (!asMade && !T) console.warn(`${d.p}: no tables file, fitting on the readings it was made with`); return T ? withTables(d.j, T) : d.j; });
-  const files = docs.filter(d => d.j.answers).map(d => d.j);
-  if (!rounds.length || !files.length) { console.error('usage: node scripts/calib-fit.mjs [--as-made] round-N.json [...] answers.json [...]'); process.exit(1); }
+  // --out <base> writes <base>.{json,md} in place of research/calib/fit-round-<rounds> (synthetic runs, 2026-10-23)
+  const args = process.argv.slice(2), asMade = args.includes('--as-made'), outAt = args.indexOf('--out');
+  const docs = args.filter((a, i) => !a.startsWith('--') && !(outAt >= 0 && i === outAt + 1)).map(p => ({ p, j: JSON.parse(readFileSync(p, 'utf8')) }));
+  // survey v4: the scenarios file and its tables (no readings are stored with the tanks, so there is no "as made")
+  const rounds = docs.filter(d => d.j.scenarios).map(d => {
+    if (d.j.survey === 'v4') { const T = loadTablesV4(d.p); if (!T) { console.error(`${d.p}: no research/calib/tables/v4.json (GEN_RETABLE_V4=1 npx vitest run test/calibtablesv4.test.ts)`); process.exit(1); } return roundV4(d.j, T); }
+    const T = asMade ? null : loadTables(d.p); if (!asMade && !T) console.warn(`${d.p}: no tables file, fitting on the readings it was made with`); return T ? withTables(d.j, T) : d.j; });
+  const R4 = rounds.find(R => R.survey === 'v4'), notes4 = [];
+  const files = docs.filter(d => d.j.answers).map(d => {
+    if (d.j.survey !== 'v4') return d.j;
+    if (!R4) return { ...d.j, round: 'v4', answers: [] }; // reported below as fitting no round given
+    const f = fileV4(d.j, R4), v = f.v4;
+    notes4.push(`${f.expert} v4: ${f.answers.length} count tanks read; ${v.outside} answers on tanks outside the count fit (no counts asked, or no space.* / golden.* tag); ${v.skipped} count tanks skipped by the expert${v.carried ? `; ${v.carried} file(s) carried from another build, not fitted` : ''}`);
+    return f;
+  });
+  if (!rounds.length || !files.length) { console.error('usage: node scripts/calib-fit.mjs [--as-made] [--out <base>] round-N.json | research/calib/v4/scenarios-v4.json [...] answers.json [...]'); process.exit(1); }
   const { round, files: use, unmatched } = combine(rounds, files), r = fitRound(round, use);
   for (const u of unmatched) console.warn('not fitted: ' + u);
-  r.skipped.unshift(...unmatched.map(u => 'whole file: ' + u));
+  r.skipped.unshift(...unmatched.map(u => 'whole file: ' + u), ...notes4);
   r.tables = asMade ? 'as made' : rounds.map(R => `round ${R.round}: ${R.tables ? 'current engine, ' + R.tables : 'as made'}`).join('; ');
-  const base = `research/calib/fit-round-${String(round.round).replace(/\+/g, '-')}`;
+  const base = outAt >= 0 ? args[outAt + 1].replace(/\.(json|md)$/, '') : `research/calib/fit-round-${String(round.round).replace(/\+/g, '-')}`;
   writeFileSync(base + '.json', JSON.stringify(r, (k, v) => k === 'theta' ? undefined : v, 1) + '\n');
   writeFileSync(base + '.md', report(r));
   console.log(`fit round ${r.round}: water x${r.g}, floor x${r.f}; held-out error ${r.error.heldBefore?.toFixed(3)} -> ${r.error.heldAfter?.toFixed(3)}; wrote ${base}.{json,md}`);

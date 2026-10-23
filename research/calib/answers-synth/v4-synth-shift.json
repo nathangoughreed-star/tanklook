@@ -1,0 +1,629 @@
+{
+ "survey": "v4",
+ "build": "c7cb52e6",
+ "expert": "synth-shift",
+ "expertKind": "ai",
+ "modules": [
+  "A",
+  "B",
+  "C",
+  "D"
+ ],
+ "made": "2026-10-23",
+ "source": "calib-synth-v4.mjs",
+ "answers": {
+  "A01": {
+   "verdict": "caution",
+   "confidence": "medium",
+   "change": "bigger",
+   "bigEnough": "yes",
+   "smallest": "10 gal (20 x 10 x 12 in)"
+  },
+  "A02": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "drop",
+   "changeSp": [
+    "nerite"
+   ],
+   "together": "caution",
+   "reasons": [
+    "chemistry",
+    "temperature"
+   ],
+   "ideal": 10,
+   "limit": 15
+  },
+  "A03": {
+   "verdict": "problems",
+   "confidence": "medium",
+   "change": "fewer",
+   "changeSp": [
+    "guppy"
+   ],
+   "together": "yes",
+   "ideal": 6,
+   "limit": 8
+  },
+  "A04": {
+   "verdict": "caution",
+   "confidence": "medium",
+   "change": "fewer",
+   "changeSp": [
+    "bronzecory"
+   ],
+   "ideal": 9,
+   "limit": 21
+  },
+  "A05": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "ideal": 4,
+   "limit": 13
+  },
+  "A06": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "drop",
+   "changeSp": [
+    "nerite"
+   ],
+   "together": "caution",
+   "reasons": [
+    "chemistry",
+    "temperature"
+   ],
+   "ideal": 20,
+   "limit": 36
+  },
+  "A07": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "drop",
+   "changeSp": [
+    "betta"
+   ],
+   "together": "caution",
+   "reasons": [
+    "nip"
+   ]
+  },
+  "A08": {
+   "verdict": "caution",
+   "confidence": "medium",
+   "change": "fewer",
+   "changeSp": [
+    "sterbai"
+   ],
+   "together": "yes",
+   "ideal": 0,
+   "limit": 21,
+   "bigEnough": "yes",
+   "smallest": "75 gal (48 x 18 x 21 in)"
+  },
+  "A09": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "bigger",
+   "together": "caution",
+   "reasons": [
+    "aggression",
+    "temperature"
+   ]
+  },
+  "A10": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "drop",
+   "ideal": 0,
+   "limit": 29
+  },
+  "A11": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "drop",
+   "changeSp": [
+    "sae"
+   ],
+   "ideal": 4,
+   "limit": 14
+  },
+  "A12": {
+   "verdict": "caution",
+   "confidence": "medium",
+   "change": "fewer",
+   "changeSp": [
+    "danio"
+   ],
+   "ideal": 12,
+   "limit": 19
+  },
+  "A13": {
+   "verdict": "problems",
+   "confidence": "medium",
+   "change": "fewer",
+   "changeSp": [
+    "neon"
+   ],
+   "ideal": 12,
+   "limit": 18
+  },
+  "A14": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "drop",
+   "changeSp": [
+    "kuhli"
+   ],
+   "together": "caution",
+   "reasons": [
+    "chemistry",
+    "temperature"
+   ],
+   "ideal": 18,
+   "limit": 42
+  },
+  "A15": {
+   "verdict": "ideal",
+   "confidence": "medium",
+   "change": "fewer",
+   "changeSp": [
+    "chili"
+   ],
+   "together": "yes",
+   "ideal": 14,
+   "limit": 27
+  },
+  "A16": {
+   "verdict": "caution",
+   "confidence": "medium",
+   "change": "fewer",
+   "changeSp": [
+    "swordtail"
+   ],
+   "ideal": 4,
+   "limit": 20
+  },
+  "B01": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "bigger",
+   "bigEnough": "no",
+   "smallest": "180 gal (72 x 24 x 24 in)"
+  },
+  "B02": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "bigger",
+   "together": "yes",
+   "countStatus": "cant-say"
+  },
+  "B03": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "bigger",
+   "bigEnough": "no",
+   "smallest": "40 gal breeder (36 x 18 x 16 in)"
+  },
+  "B04": {
+   "verdict": "ideal",
+   "confidence": "medium",
+   "change": "fewer",
+   "changeSp": [
+    "goldfish"
+   ],
+   "together": "yes",
+   "ideal": 4,
+   "limit": 5
+  },
+  "B05": {
+   "verdict": "ideal",
+   "confidence": "medium",
+   "change": "fewer",
+   "changeSp": [
+    "discus"
+   ],
+   "ideal": 7,
+   "limit": 10
+  },
+  "B06": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "drop",
+   "together": "caution",
+   "reasons": [
+    "temperature"
+   ],
+   "ideal": 5,
+   "limit": 9
+  },
+  "B07": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "bigger",
+   "together": "yes",
+   "ideal": 11,
+   "limit": 21,
+   "max": {
+    "demasoni": "16+"
+   }
+  },
+  "B08": {
+   "verdict": "ideal",
+   "confidence": "medium",
+   "change": "fewer",
+   "changeSp": [
+    "syno"
+   ],
+   "ideal": 6,
+   "limit": 15
+  },
+  "B09": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "drop",
+   "changeSp": [
+    "yellowlab"
+   ],
+   "together": "caution",
+   "reasons": [
+    "chemistry",
+    "temperature"
+   ]
+  },
+  "B10": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "bigger",
+   "together": "yes"
+  },
+  "B11": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "drop",
+   "changeSp": [
+    "cherryshrimp"
+   ],
+   "together": "caution",
+   "reasons": [
+    "eat",
+    "temperature"
+   ]
+  },
+  "B12": {
+   "verdict": "caution",
+   "confidence": "medium",
+   "change": "drop",
+   "together": "yes",
+   "maxMales": {
+    "dwarfgourami": "2"
+   }
+  },
+  "B13": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "drop",
+   "changeSp": [
+    "oto"
+   ],
+   "together": "caution",
+   "reasons": [
+    "aggression",
+    "temperature"
+   ],
+   "max": {
+    "peapuffer": "2"
+   }
+  },
+  "B14": {
+   "verdict": "problems",
+   "confidence": "medium",
+   "change": "fewer",
+   "changeSp": [
+    "bolivianram"
+   ],
+   "max": {
+    "bolivianram": "2"
+   }
+  },
+  "B15": {
+   "verdict": "caution",
+   "confidence": "medium",
+   "change": "fewer",
+   "changeSp": [
+    "oto"
+   ],
+   "ideal": 8,
+   "limit": 13
+  },
+  "B16": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "drop",
+   "changeSp": [
+    "chili"
+   ],
+   "ideal": 24,
+   "limit": 57
+  },
+  "C01": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "bigger",
+   "bigEnough": "no",
+   "smallest": "29 gal (30 x 12 x 18 in)"
+  },
+  "C02": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "bigger",
+   "together": "yes",
+   "bigEnough": "no",
+   "smallest": "40 gal breeder (36 x 18 x 16 in)"
+  },
+  "C03": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "drop",
+   "changeSp": [
+    "hermit"
+   ],
+   "together": "caution",
+   "reasons": [
+    "eat",
+    "temperature"
+   ],
+   "ideal": 5,
+   "limit": 14
+  },
+  "C04": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "bigger",
+   "together": "yes",
+   "ideal": 3,
+   "limit": 7
+  },
+  "C05": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "ideal": 3,
+   "limit": 7
+  },
+  "C06": {
+   "verdict": "ideal",
+   "confidence": "medium",
+   "change": "fewer",
+   "changeSp": [
+    "chromis"
+   ],
+   "bigEnough": "yes",
+   "smallest": "125 gal (72 x 18 x 21 in)"
+  },
+  "C07": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "drop",
+   "changeSp": [
+    "bluetang"
+   ],
+   "together": "caution",
+   "reasons": [
+    "aggression",
+    "temperature"
+   ],
+   "bigEnough": "no",
+   "smallest": "240 gal (96 x 24 x 24 in)"
+  },
+  "C08": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "drop",
+   "changeSp": [
+    "bluetang"
+   ],
+   "ideal": 11,
+   "limit": 24
+  },
+  "C09": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "bigger"
+  },
+  "C10": {
+   "verdict": "problems",
+   "confidence": "medium",
+   "change": "fewer",
+   "changeSp": [
+    "banggai"
+   ],
+   "max": {
+    "banggai": "2"
+   }
+  },
+  "C11": {
+   "verdict": "problems",
+   "confidence": "medium",
+   "change": "fewer",
+   "changeSp": [
+    "royalgramma"
+   ],
+   "together": "yes",
+   "max": {
+    "royalgramma": "1",
+    "firefish": "2"
+   }
+  },
+  "C12": {
+   "verdict": "problems",
+   "confidence": "medium",
+   "change": "fewer",
+   "changeSp": [
+    "ocellaris"
+   ],
+   "max": {
+    "ocellaris": "2"
+   }
+  },
+  "D01": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "bigger",
+   "bigEnough": "no",
+   "smallest": "4 x 2 x 2 ft (48 x 24 x 24 in)"
+  },
+  "D02": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "bigger",
+   "together": "yes",
+   "max": {
+    "leopardgecko": "1"
+   }
+  },
+  "D03": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "bigger",
+   "bigEnough": "no",
+   "smallest": "larger"
+  },
+  "D04": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "drop",
+   "changeSp": [
+    "greenanole"
+   ],
+   "together": "caution",
+   "reasons": [
+    "habitat"
+   ]
+  },
+  "D05": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "bigger",
+   "together": "yes",
+   "max": {
+    "crestedgecko": "1"
+   }
+  },
+  "D06": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "bigger",
+   "bigEnough": "no",
+   "smallest": "4 x 2 x 2 ft (48 x 24 x 24 in)"
+  },
+  "D07": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "bigger",
+   "together": "yes",
+   "max": {
+    "dartfrog": "1"
+   }
+  },
+  "D08": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "bigger",
+   "together": "caution",
+   "reasons": [
+    "habitat"
+   ]
+  },
+  "D09": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "bigger",
+   "bigEnough": "no",
+   "smallest": "larger",
+   "max": {
+    "treefrog": "1"
+   }
+  },
+  "D10": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "bigger",
+   "together": "caution",
+   "reasons": [
+    "habitat"
+   ],
+   "max": {
+    "firetoad": "3"
+   }
+  },
+  "D11": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "drop",
+   "together": "caution",
+   "reasons": [
+    "temperature"
+   ],
+   "max": {
+    "firenewt": "3"
+   }
+  },
+  "D12": {
+   "verdict": "caution",
+   "confidence": "medium",
+   "change": "fewer",
+   "changeSp": [
+    "adf"
+   ],
+   "together": "yes",
+   "max": {
+    "adf": "0"
+   }
+  },
+  "D13": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "bigger",
+   "bigEnough": "no",
+   "smallest": "40 gal breeder (36 x 18 x 16 in)"
+  },
+  "D14": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "drop",
+   "changeSp": [
+    "whitecloud"
+   ],
+   "together": "caution",
+   "reasons": [
+    "eat",
+    "habitat",
+    "temperature"
+   ],
+   "max": {
+    "axolotl": "1"
+   }
+  },
+  "D15": {
+   "verdict": "unworkable",
+   "confidence": "medium",
+   "change": "bigger",
+   "max": {
+    "greenanole": "2"
+   },
+   "maxMales": {
+    "greenanole": "1"
+   }
+  },
+  "D16": {
+   "verdict": "ideal",
+   "confidence": "medium",
+   "change": "nothing",
+   "bigEnough": "yes",
+   "smallest": "20 gal long (30 x 12 x 12 in)"
+  }
+ },
+ "open": [],
+ "setAside": [],
+ "carried": []
+}

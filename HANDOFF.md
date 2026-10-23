@@ -59,6 +59,51 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 - `sumpOffered` (any wet tank) is the one rule for tankfit and builds; tankfit's fallback filter is now the lowest filtration (was the highest rated capacity). Every fitting tankFor pick has a build at or under 100 %. Moved numbers: research/sump-section.md (only 12 blue tangs move, 240 -> 210 gal).
 - Open: 3D sump under the stand (lane SF: picture sent, waiting on Nathan); heat loss and skimmer default done in lane SF.
 
+## Calib-v4: survey v4 adopted into the calibration tooling (2026-10-23, side chat from Glass-Box-stocking; branch `calib-v4` cut from `xc`, worktree `.claude/worktrees/calib-v4`; NOT pushed)
+- **Why:** Nathan rejected the round 1-3 survey (random tanks, counts nobody keeps). Survey v4 (60 hand-written likely-case tanks in modules
+  A community, B specialist, C saltwater, D herps; design research/calib/v4/survey-v4-design.md) was written in the stale copy; this lane
+  brings it in and makes its answers usable. Rounds 1-3a are untouched: their fit and four reviews rerun byte-identical (line endings aside),
+  and test/calibv4.test.ts locks the fit against fit-round-1-2-3a-3.json.
+- **Files:** research/calib/v4/ (scenarios-v4.json, make-survey-v4.mjs, design note, survey-v4.html, the LLM packs, index; copied unchanged
+  except the generator's folder lookup, which broke on the space in "Glass Box"; build c7cb52e6, every output byte-identical);
+  src/calib/v4.ts (each tank built the way the stocking screen builds one: males, then females, then unsexed; a pair species' two animals
+  described as a pair marked established; salt water for C; no water for env.water none; the paludarium layout and the stated depth for
+  D10 / D11; then the app's own readings: tileState, tankMinimum, crowdWarnings, compatRisks, operatingCheck on the stated temperature,
+  herpCheck, notesOf / overWarn, groups.ts and herpstock maxima, the tank minimum at the four offered sizes); test/calibtablesv4.test.ts
+  -> research/calib/tables/v4.json; scripts/calib-parse-v4.mjs; scripts/calib-fit.mjs (v4 round + `--out`); scripts/calib-review-v4.mjs;
+  scripts/calib-synth-v4.mjs + research/calib/answers-synth/v4-synth-{agree,shift}.json; test/calibv4.test.ts; sources.json `expert-v4`.
+- **How to run:**
+  `node research/calib/v4/make-survey-v4.mjs` (rebuilds the survey) ·
+  `GEN_RETABLE_V4=1 npx vitest run test/calibtablesv4.test.ts` (rewrites the tables, about 3 s; the same file without the variable is a lock
+  that fails when the engine moves) ·
+  `node scripts/calib-parse-v4.mjs answers/v4-<model>-A.json ... [--check] [--strict]` (validates, merges into research/calib/answers/v4-<expert>.json) ·
+  `node scripts/calib-fit.mjs research/calib/v4/scenarios-v4.json research/calib/answers/v4-<expert>.json [--out <base>]` (old rounds can be given beside it) ·
+  `node scripts/calib-review-v4.mjs research/calib/answers/v4-<expert>.json [...]` (-> research/calib/review-v4-<expert>.md, Findings kept).
+- **Decisions this lane took (open for Nathan):**
+  - The app's overall verdict on the 4-step scale is built from its parts (src/calib/v4.ts verdictOf): not workable = a blocked pair,
+    under a red-line minimum or a herp's bare floor / height, a herp with animals it must not share with, or a temperature with no shared
+    range (or outside it); problems = past 100 % space, a fighting warning, another herp warning, a group too small; caution = past 75 %,
+    a compat concern, under the recommended size, a narrow shared temperature, a herp floor under the usual recommendation, a sex mix off
+    the ratio. **Today it reads 40 of the 60 tanks not workable** (22 tank-minimum red lines, 18 herp warnings, 13 blocked pairs, 6
+    temperature), 10 problems, 9 caution, 1 ideal: most of the survey is "the app says no", so the verdict tags measure the gates more than space.
+  - The fit reads 22 tanks (counts asked and a space.* / golden.* tag); the verdict is the overall band unless the expert's first change
+    is not about room (bigger, drop, ratio, other: band left out, counts kept); notroom and "not big enough" leave the tank out, as survey 2.
+  - The review's count flag uses the "least" fix (the smallest move that makes the expert's count the engine's own nearest count), so a
+    rounded small count is not a disagreement; the point fix is shown beside it.
+- **Findings from the tables (no engine change made):**
+  - The nerite snail's pH gate (7.0-8.5) blocks neon, harlequin and chili rasbora: A02, A06 and B16 read "High compatibility risk", where
+    the survey's `why` for A02 expected no problem but temperature. A question for Nathan before experts answer: rule or data?
+  - The coral-nipper caution (C04, C05) is not in these readings: the coral gate (animalfit.ts) needs coral items in the tank, the v4
+    tanks are built with river stones as rounds 1-3 are, and compatRisks does not pass `corals` either. "LPS and soft corals" is listed
+    among the tank's unmodelled notes; the experts' answers on compat.coral-nipper are therefore read against a tank without corals.
+  - B02: the clown loach is fitted on the floor (bottom dweller), but the engine reads that tank water-bound (107 % water, 50 % floor), so a
+    limit count there pulls the floor scale (the synthetic agreeing expert moved floor x1.06 until it left that count out). Fit-convention question.
+  - 39 tanks carry notes the app has no input for (juvenile lengths, hard water, corals, humidity...): listed per tank in the tables (`unmodelled`).
+- **Proof on synthetic experts:** an agreeing expert fits water x1.00, floor x1.02 and gets no review flag; one keeping 30 % more fish and
+  judging pairs a step milder fits water at the x0.8 cap and gets only count (engine too full), room verdict (milder) and compat (milder)
+  flags. Full suite 1318 green (1 skipped as before), `npm run build` clean.
+- **Next:** Nathan's yes on the verdict reading and the nerite question; then LLM experts per design section 7 (one module per conversation,
+  saved as answers/v4-<model>-<module>.json), parse, review, Findings by hand. Not merged into `xc`; nothing pushed.
 ## XC: expert calibration rounds (2026-10-23, side chat from Glass-Box-stocking; branch `xc`, worktree `.claude/worktrees/xc`, port 5823; NOT pushed)
 - **Why:** refine the stocking engine's space numbers from expert opinions over randomized rounds, instead of hand multipliers (SPACE_NUDGE).
   Design and findings: research/expert-calibration.md.

@@ -1,0 +1,375 @@
+{
+ "round": "v4",
+ "experts": [
+  "synth-shift"
+ ],
+ "noise": {
+  "s": 0.2,
+  "pairs": 0
+ },
+ "solver": {
+  "it": 63,
+  "gnorm": 0.00000385500656252519
+ },
+ "skipped": [
+  "synth-shift v4: 22 count tanks read; 38 answers on tanks outside the count fit (no counts asked, or no space.* / golden.* tag); 0 count tanks skipped by the expert",
+  "synth-shift A02 overall: set aside on review (v4 change \"drop\": a compatibility answer, not a room band)",
+  "synth-shift A06 overall: set aside on review (v4 change \"drop\": a compatibility answer, not a room band)",
+  "synth-shift A10 overall: set aside on review (v4 change \"drop\": a compatibility answer, not a room band)",
+  "synth-shift A10 neon ideal 0: outside the table (1..91)",
+  "synth-shift A11 overall: set aside on review (v4 change \"drop\": a compatibility answer, not a room band)",
+  "synth-shift A14 overall: set aside on review (v4 change \"drop\": a compatibility answer, not a room band)",
+  "synth-shift B02 overall: set aside on review (v4 change \"bigger\": a tank-minimum answer, not a room band)",
+  "synth-shift B06 overall: set aside on review (v4 change \"drop\": a compatibility answer, not a room band)",
+  "synth-shift B07 overall: set aside on review (v4 change \"bigger\": a tank-minimum answer, not a room band)",
+  "synth-shift B16 overall: set aside on review (v4 change \"drop\": a compatibility answer, not a room band)",
+  "synth-shift C04 overall: set aside on review (v4 change \"bigger\": a tank-minimum answer, not a room band)",
+  "synth-shift C08 overall: set aside on review (v4 change \"drop\": a compatibility answer, not a room band)"
+ ],
+ "flagged": [
+  "synth-shift A05 neon ideal 4: water 99 %, floor 101 % (weighted 0.5)"
+ ],
+ "rows": 52,
+ "held": 0,
+ "g": 0.8,
+ "f": 1.079,
+ "class": {
+  "big": 0.9531,
+  "invert": 0.9915,
+  "mid": 0.9816,
+  "salt": 1.0103,
+  "tiny": 1.0036
+ },
+ "species": {
+  "amano": {
+   "mult": 0.7932,
+   "own": 1,
+   "cls": "invert",
+   "answers": 2
+  },
+  "betta": {
+   "mult": 0.7837,
+   "own": 0.9981,
+   "cls": "mid",
+   "answers": 4
+  },
+  "bluetang": {
+   "mult": 0.8073,
+   "own": 0.9989,
+   "cls": "salt",
+   "answers": 2
+  },
+  "boesemani": {
+   "mult": 0.786,
+   "own": 1.0009,
+   "cls": "mid",
+   "answers": 2
+  },
+  "bristlenose": {
+   "mult": 0.7842,
+   "own": 0.9986,
+   "cls": "mid",
+   "answers": 7
+  },
+  "bronzecory": {
+   "mult": 0.7862,
+   "own": 1.0012,
+   "cls": "mid",
+   "answers": 10
+  },
+  "cardinal": {
+   "mult": 0.8052,
+   "own": 1.0029,
+   "cls": "tiny",
+   "answers": 3
+  },
+  "cherrybarb": {
+   "mult": 0.7853,
+   "own": 1.0001,
+   "cls": "mid",
+   "answers": 2
+  },
+  "cherryshrimp": {
+   "mult": 0.7902,
+   "own": 0.9962,
+   "cls": "invert",
+   "answers": 8
+  },
+  "chili": {
+   "mult": 0.7897,
+   "own": 0.9836,
+   "cls": "tiny",
+   "answers": 5
+  },
+  "chromis": {
+   "mult": 0.8108,
+   "own": 1.0032,
+   "cls": "salt",
+   "answers": 7
+  },
+  "cleanershrimp": {
+   "mult": 0.8081,
+   "own": 0.9999,
+   "cls": "salt",
+   "answers": 7
+  },
+  "clownloach": {
+   "mult": 0.7625,
+   "own": 1,
+   "cls": "big",
+   "answers": 0
+  },
+  "coralbeauty": {
+   "mult": 0.8089,
+   "own": 1.0008,
+   "cls": "salt",
+   "answers": 7
+  },
+  "danio": {
+   "mult": 0.8099,
+   "own": 1.0088,
+   "cls": "tiny",
+   "answers": 3
+  },
+  "demasoni": {
+   "mult": 0.8031,
+   "own": 1.0002,
+   "cls": "tiny",
+   "answers": 2
+  },
+  "discus": {
+   "mult": 0.7671,
+   "own": 1.0061,
+   "cls": "big",
+   "answers": 5
+  },
+  "dwarfgourami": {
+   "mult": 0.7853,
+   "own": 1,
+   "cls": "mid",
+   "answers": 2
+  },
+  "ember": {
+   "mult": 0.801,
+   "own": 0.9976,
+   "cls": "tiny",
+   "answers": 2
+  },
+  "goldfish": {
+   "mult": 0.7523,
+   "own": 0.9866,
+   "cls": "big",
+   "answers": 3
+  },
+  "gourami": {
+   "mult": 0.7851,
+   "own": 0.9998,
+   "cls": "mid",
+   "answers": 1
+  },
+  "guppy": {
+   "mult": 0.8105,
+   "own": 1.0095,
+   "cls": "tiny",
+   "answers": 3
+  },
+  "harlequin": {
+   "mult": 0.7854,
+   "own": 1.0002,
+   "cls": "mid",
+   "answers": 2
+  },
+  "hermit": {
+   "mult": 0.8086,
+   "own": 1.0004,
+   "cls": "salt",
+   "answers": 7
+  },
+  "honeygourami": {
+   "mult": 0.776,
+   "own": 0.9882,
+   "cls": "mid",
+   "answers": 3
+  },
+  "kuhli": {
+   "mult": 0.7838,
+   "own": 0.9981,
+   "cls": "mid",
+   "answers": 4
+  },
+  "mandarin": {
+   "mult": 0.8081,
+   "own": 0.9999,
+   "cls": "salt",
+   "answers": 2
+  },
+  "molly": {
+   "mult": 0.7905,
+   "own": 1.0066,
+   "cls": "mid",
+   "answers": 3
+  },
+  "neon": {
+   "mult": 0.8003,
+   "own": 0.9969,
+   "cls": "tiny",
+   "answers": 12
+  },
+  "nerite": {
+   "mult": 0.7932,
+   "own": 1,
+   "cls": "invert",
+   "answers": 9
+  },
+  "ocellaris": {
+   "mult": 0.8092,
+   "own": 1.0011,
+   "cls": "salt",
+   "answers": 7
+  },
+  "oscar": {
+   "mult": 0.7625,
+   "own": 1,
+   "cls": "big",
+   "answers": 0
+  },
+  "oto": {
+   "mult": 0.8027,
+   "own": 0.9998,
+   "cls": "tiny",
+   "answers": 1
+  },
+  "pandacory": {
+   "mult": 0.803,
+   "own": 1.0001,
+   "cls": "tiny",
+   "answers": 2
+  },
+  "peacock": {
+   "mult": 0.7796,
+   "own": 0.9928,
+   "cls": "mid",
+   "answers": 3
+  },
+  "platy": {
+   "mult": 0.805,
+   "own": 1.0027,
+   "cls": "tiny",
+   "answers": 3
+  },
+  "pygmycory": {
+   "mult": 0.8026,
+   "own": 0.9996,
+   "cls": "tiny",
+   "answers": 2
+  },
+  "royalgramma": {
+   "mult": 0.8084,
+   "own": 1.0002,
+   "cls": "salt",
+   "answers": 5
+  },
+  "rummynose": {
+   "mult": 0.8027,
+   "own": 0.9998,
+   "cls": "tiny",
+   "answers": 1
+  },
+  "sae": {
+   "mult": 0.7627,
+   "own": 1.0003,
+   "cls": "big",
+   "answers": 2
+  },
+  "sterbai": {
+   "mult": 0.7895,
+   "own": 1.0054,
+   "cls": "mid",
+   "answers": 2
+  },
+  "swordtail": {
+   "mult": 0.7922,
+   "own": 1.0088,
+   "cls": "mid",
+   "answers": 3
+  },
+  "syno": {
+   "mult": 0.7518,
+   "own": 0.986,
+   "cls": "big",
+   "answers": 3
+  },
+  "turbo": {
+   "mult": 0.8083,
+   "own": 1,
+   "cls": "salt",
+   "answers": 7
+  },
+  "watchman": {
+   "mult": 0.8089,
+   "own": 1.0008,
+   "cls": "salt",
+   "answers": 7
+  },
+  "whitecloud": {
+   "mult": 0.8031,
+   "own": 1.0003,
+   "cls": "tiny",
+   "answers": 6
+  },
+  "yellowlab": {
+   "mult": 0.7799,
+   "own": 0.9932,
+   "cls": "mid",
+   "answers": 5
+  },
+  "yellowtang": {
+   "mult": 0.8078,
+   "own": 0.9994,
+   "cls": "salt",
+   "answers": 2
+  }
+ },
+ "capped": [
+  "g"
+ ],
+ "bias": {
+  "synth-shift": 0
+ },
+ "error": {
+  "heldBefore": null,
+  "heldAfter": null,
+  "fitBefore": 0.26784322254948356,
+  "fitAfter": 0.04211182441033019,
+  "disagreement": null
+ },
+ "kinds": {
+  "synth-shift": "ai"
+ },
+ "ratio": [
+  {
+   "id": "A13",
+   "expert": "synth-shift",
+   "experts": 1.5,
+   "engine": 1.4444444444444444
+  },
+  {
+   "id": "B05",
+   "expert": "synth-shift",
+   "experts": 1.4285714285714286,
+   "engine": 1.3333333333333333
+  }
+ ],
+ "maxRule": {
+  "same": 0,
+  "lower": 0,
+  "higher": 0,
+  "cases": []
+ },
+ "compat": {
+  "high -> caution": 3,
+  "ok -> yes": 6,
+  "ok -> caution": 1
+ },
+ "tables": "round v4: current engine, 2026-10-23"
+}
