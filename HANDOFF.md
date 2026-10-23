@@ -73,8 +73,8 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
   described as a pair marked established; salt water for C; no water for env.water none; the paludarium layout and the stated depth for
   D10 / D11; then the app's own readings: tileState, tankMinimum, crowdWarnings, compatRisks, operatingCheck on the stated temperature,
   herpCheck, notesOf / overWarn, groups.ts and herpstock maxima, the tank minimum at the four offered sizes; per tank also each species'
-  floor share on today's engine (`uses`, stocking.ts floorUseCm2: shrimp and crabs 0.3, kuhli 0.6, the S212 zone audit; Coordinator 9:
-  the engine rule, which S216's e93c3d1 is asked to share), its adult length (`tlMm`), the rounds' mix gate (scenario.ts gateOf), and
+  floor share on today's engine (`uses`: stocking.ts floorShare, the one rule since S216's f52efb3, snails as floor animals; shrimp and
+  crabs 0.3, kuhli 0.6, the S212 zone audit), its adult length (`tlMm`), the rounds' mix gate (scenario.ts gateOf), and
   count tables for the counted species and the mate; the lock re-reads all of it but the count tables); test/calibtablesv4.test.ts
   -> research/calib/tables/v4.json; scripts/calib-parse-v4.mjs; scripts/calib-fit.mjs (v4 round + `--out`); scripts/calib-review-v4.mjs;
   scripts/calib-synth-v4.mjs + research/calib/answers-synth/v4-synth-{agree,shift}.json; test/calibv4.test.ts; sources.json `expert-v4`.

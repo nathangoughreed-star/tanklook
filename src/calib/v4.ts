@@ -5,9 +5,7 @@
 // scripts/calib-fit.mjs and scripts/calib-review-v4.mjs compare the experts with.
 import { starterItems } from '../scene/items';
 import { IN, volume } from '../scene/physics';
-import { FLOOR_SHARE, INVERT_FLOOR, stockingOf } from '../scene/stocking';
-import { zoneOf } from '../scene/zone';
-import { FLOOR_FACTOR } from '../data/spacefactor';
+import { floorShare as engineFloorShare, stockingOf } from '../scene/stocking';
 import { compatRisks, crowdWarnings } from '../scene/territory';
 import { tankMinimum } from '../scene/tankMin';
 import { MIN_SLACK_PCT } from '../scene/animalfit';
@@ -203,10 +201,10 @@ export function unmodelled(sc: V4Scenario): string[] {
   return out;
 }
 
-/** The floor share the engine gives a species today (stocking.ts floorUseCm2): its zone's share times FLOOR_FACTOR, shrimp and crabs at
- *  INVERT_FLOOR, snails on the floor only. scenario.ts floorShareOf predates the invert floor rule (shrimp 0) and stays as rounds 1-3 used it. */
-export const floorShare = (sp: NonNullable<ReturnType<typeof getSpecies>>) => sp.kind === 'snail' ? 1
-  : FLOOR_SHARE[zoneOf(sp)] * (FLOOR_FACTOR[sp.id]?.[0] ?? (sp.cat.endsWith('invert') ? INVERT_FLOOR : 1));
+/** The floor share the engine gives a species today: stocking.ts floorShare (zone share x FLOOR_FACTOR, shrimp and crabs at INVERT_FLOOR;
+ *  the one rule the engine, scenario.ts and the round tables read, S216 f52efb3), except snails, which the engine measures by footprint
+ *  (snailFloorCm2) and which take no water room: for the fit they are floor animals. */
+export const floorShare = (sp: NonNullable<ReturnType<typeof getSpecies>>) => sp.kind === 'snail' ? 1 : engineFloorShare(sp);
 
 /** Everything the tables file holds for one tank. */
 export function retableV4(doc: V4Doc, sc: V4Scenario) {
