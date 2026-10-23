@@ -7,12 +7,16 @@
 // survey-round-1.html (with renders) is the frozen output of the first version of this script.
 // v2.1 (2026-10-23, after a dogfood answer from ChatGPT): decor stated as furnished for the species (habitat never the limit), "no count
 // works as described", overall asks room only, the zone in the uses tag, a bare-tank question instead of a planted one, who is answering.
-// Run: node scripts/calib-survey.mjs research/calib/round-2.json
+// v3 (2026-10-23, from the round-2 notes of an AI-model expert): the counts say what they mean (the most that still reads Ideal, the most
+// before Problems, the others held at their counts), the animals' assumptions are stated (adults, no breeding, sexes as the expert would
+// choose), the water-column question lists every species (a floor + water species swims too), "not room" names food as well.
+// Run: node scripts/calib-survey.mjs research/calib/round-3.json
 import { readFileSync, writeFileSync } from 'node:fs';
 
 const path = process.argv[2] ?? 'research/calib/round-2.json', round = JSON.parse(readFileSync(path, 'utf8'));
 const out = path.replace(/round-(\d+)\.json$/, 'survey-round-$1.html');
 if (out === path) throw new Error('expected a research/calib/round-N.json path');
+if (round.round === 2 && !process.env.REBUILD_R2) throw new Error('round 2 is closed (survey-round-2.html, v2.2); REBUILD_R2=1 to rebuild it with this version');
 if (round.round === 1) throw new Error('round 1 is frozen (survey-round-1.html, with renders); this builds survey v2 from round 2 on');
 const GAL_L = 3.785;
 // as plural() in scene/stocking.ts: a name ending in fish or s is its own plural; ch / sh / x / z take es; the rest s
@@ -65,19 +69,21 @@ let st = { expert: '', kind: '', at: -1, answers: {}, carried: [] };
 try { st = Object.assign(st, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} };
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const IDEAL_L = 'most that still reads <b>Ideal</b>', LIMIT_L = 'most before <b>Problems</b>';
+const HELD = '<div class="sub">The other animals stay at their counts. If they alone already pass the line, pick "No count works as described".</div>';
 const KINDS = [['keeper', 'A fishkeeper'], ['professional', 'A professional (store, breeder, aquarist)'], ['ai', 'An AI model']];
 const BANDS = [['var(--g)', 'Ideal or under'], ['var(--y)', 'Caution'], ['var(--r)', 'Problems']];
 const DEF = '<b>Ideal</b>: what experienced keepers would aim for, comfortable long term. <b>Caution</b>: workable, tread carefully. <b>Problems</b>: past this, long-term problems become likely even with good care.';
 const blank = t => ({ id: t.id, floor: null, water: null, overall: null, limits: null, bigEnough: {}, focal: { ideal: null, limit: null, status: {} }, mate: t.mate ? { id: t.mate, ideal: null, status: {} } : null, together: null, confidence: null, bare: null, note: '', ms: 0 });
 const ans = t => st.answers[t.id] || (st.answers[t.id] = blank(t));
-const hasFloor = t => t.stock.some(s => s.floor > 0), hasWater = t => t.stock.some(s => s.floor < 1);
+const hasFloor = t => t.stock.some(s => s.floor > 0), hasWater = t => t.stock.length > 0;
 const countOk = (c, k) => c[k] != null || !!c.status[k];
 // what is still open on a tank, named, so the Next message says which (Nathan 2026-10-23: a page that looked complete would not continue)
 function missing(t) {
   const a = st.answers[t.id]; if (!a) return ['everything'];
   return [[hasFloor(t) && a.floor == null, 'floor room'], [hasWater(t) && a.water == null, 'water column room'], [a.overall == null, 'overall room'],
     [a.limits == null, 'what limits'], [!t.stock.every(s => a.bigEnough[s.id] != null), 'big enough'], [!countOk(a.focal, 'ideal'), 'ideal count'],
-    [!t.noLimit && !countOk(a.focal, 'limit'), '"at most" count'], [a.mate && !countOk(a.mate, 'ideal'), 'second ideal count'],
+    [!t.noLimit && !countOk(a.focal, 'limit'), '"Problems" count'], [a.mate && !countOk(a.mate, 'ideal'), 'second ideal count'],
     [t.mixed && !a.together, 'keep together'], [a.confidence == null, 'how sure'], [a.bare == null, 'bare tank']].filter(x => x[0]).map(x => x[1]);
 }
 const done = t => missing(t).length === 0;
@@ -109,7 +115,7 @@ function importFile(j) {
 }
 function start() {
   document.getElementById('app').innerHTML = '<div class="start"><div class="card"><h2 style="font-size:17px">Stocking survey, round ' + ROUND + '</h2>' +
-    '<p>' + TANKS.length + ' tanks, each described in words (no picture: camera and decor change how full a tank looks). Judge <b>room</b> for the animals: the filter is always strong enough, and the tank is always furnished as the species need, so neither is the limit. Compatibility goes in "keep together". You never see the app\\'s own number. One tank comes up twice on purpose, and two pairs hold the same animals in tanks of the same gallons but another shape.</p>' +
+    '<p>' + TANKS.length + ' tanks, each described in words (no picture: camera and decor change how full a tank looks). Judge <b>room</b> for the animals: the filter is always strong enough, and the tank is always furnished as the species need, so neither is the limit. Compatibility goes in "keep together". <b>Counts</b>: with the other animals held at their counts, the most of one species that still reads Ideal, and the most before Problems; if the others alone already pass that line, pick "No count works as described". You never see the app\\'s own number. One tank comes up twice on purpose, and two pairs hold the same animals in tanks of the same gallons but another shape.</p>' +
     '<p class="note">' + DEF + '</p>' +
     '<p>Your name or initials (only to tell answer files apart):<br><input type="text" id="who" value="' + esc(st.expert) + '" style="width:260px"></p>' +
     '<p>Answering as:</p><div class="r3" style="margin-bottom:10px">' + KINDS.map(([v, l]) => '<button class="o' + (st.kind === v ? ' on' : '') + '" data-kind="' + v + '">' + l + '</button>').join('') + '</div>' +
@@ -134,10 +140,11 @@ function keep() {
 function show() {
   const i = st.at; if (i >= TANKS.length) return finish();
   const t = TANKS[i], a = ans(t); shownAt = Date.now();
-  const sp = id => t.stock.find(s => s.id === id), others = t.stock.filter(s => s.id !== t.focal), floorers = t.stock.filter(s => s.floor > 0), swimmers = t.stock.filter(s => s.floor < 1);
+  const sp = id => t.stock.find(s => s.id === id), others = t.stock.filter(s => s.id !== t.focal), floorers = t.stock.filter(s => s.floor > 0), swimmers = t.stock;
   const keepTxt = list => list.length ? 'Keeping the ' + list.map(s => s.pl.toLowerCase()).join(' and ') + ' as shown: how' : 'How';
   const L = '<div><div class="card"><h2>The tank</h2><table class="k"><tr><td>Size</td><td>' + t.dims.join(' × ') + ' in, ' + t.gal + ' gal (' + t.litres + ' L), full</td></tr>' +
     '<tr><td>Floor</td><td>' + t.dims[0] + ' × ' + t.dims[1] + ' in = ' + t.floorSqIn + ' sq in</td></tr>' +
+    '<tr><td>Animals</td><td>Adults at the sizes listed; the count stays as shown (no breeding); sexes in the mix you would choose for that count</td></tr>' +
     '<tr><td>Filter</td><td>Canister rated for twice this tank, weekly 30 % changes: <b>never the limit</b></td></tr><tr><td>Decor</td><td>Furnished as these species need (plants, cover, sight breaks): <b>never the limit</b></td></tr></table></div>' +
     '<div class="card" style="margin-top:10px"><h2>The animals (adults)</h2><table><tr><th>count</th><th>species</th><th>adult</th><th>uses</th></tr>' +
     t.stock.map(s => '<tr><td>' + s.n + '</td><td>' + esc(s.name) + '</td><td>' + s.cm + ' cm</td><td>' + usesTag(s) + '</td></tr>').join('') + '</table>' +
@@ -146,12 +153,12 @@ function show() {
   if (floorers.length) M += '<div class="q"><h3>Floor room for the bottom dwellers</h3><div class="sub">' + floorers.map(s => esc(s.pl) + (s.floor < 1 ? ' (half the time)' : '')).join(', ') + '</div>' + band('floor', a) + '</div>';
   if (swimmers.length) M += '<div class="q"><h3>Water column room for the swimmers</h3><div class="sub">' + swimmers.map(s => esc(s.pl)).join(', ') + '</div>' + band('water', a) + '</div>';
   M += '<div class="q"><h3>Overall room, as shown</h3><div class="sub">Room only: compatibility goes in "keep together", habitat in "what limits"</div>' + band('overall', a) + '</div>';
-  M += '<div class="q"><h3>What limits this tank\\'s room first?</h3>' + choice('limits', a, [...t.stock.map(s => [s.id, esc(s.pl)]), ['not-room', 'Not room: habitat or compatibility decides it']], 'r2') + '</div>';
+  M += '<div class="q"><h3>What limits this tank\\'s room first?</h3>' + choice('limits', a, [...t.stock.map(s => [s.id, esc(s.pl)]), ['not-room', 'Not room: habitat, compatibility or food decides it']], 'r2') + '</div>';
   M += '<div class="q"><h3>Is the tank big enough for each species at all?</h3><table class="yn">' + t.stock.map(s => '<tr><td>' + esc(s.name) + '</td><td><div class="r2" style="width:120px">' +
     [[true, 'yes'], [false, 'no']].map(([v, l]) => '<button class="o' + (a.bigEnough[s.id] === v ? ' on' : '') + '" data-big="' + s.id + '" data-v="' + v + '">' + l + '</button>').join('') + '</div></td></tr>').join('') + '</table></div></div>';
-  let R = '<div class="card"><p class="sec">Counts</p><div class="q"><h3>' + esc(keepTxt(others)) + ' many ' + esc(sp(t.focal).pl.toLowerCase()) + '?</h3>' +
-    countRow('ideal', 'focal', 'ideal', a.focal) + (t.noLimit ? '' : '<div style="margin-top:8px">' + countRow('at most', 'focal', 'limit', a.focal) + '</div>') + '</div>';
-  if (a.mate) R += '<div class="q"><h3>' + esc(keepTxt(t.stock.filter(s => s.id !== t.mate))) + ' many ' + esc(sp(t.mate).pl.toLowerCase()) + ' would be ideal?</h3>' + countRow('ideal', 'mate', 'ideal', a.mate) + '</div>';
+  let R = '<div class="card"><p class="sec">Counts</p><div class="q"><h3>' + esc(keepTxt(others)) + ' many ' + esc(sp(t.focal).pl.toLowerCase()) + '?</h3>' + HELD +
+    countRow(IDEAL_L, 'focal', 'ideal', a.focal) + (t.noLimit ? '' : '<div style="margin-top:8px">' + countRow(LIMIT_L, 'focal', 'limit', a.focal) + '</div>') + '</div>';
+  if (a.mate) R += '<div class="q"><h3>' + esc(keepTxt(t.stock.filter(s => s.id !== t.mate))) + ' many ' + esc(sp(t.mate).pl.toLowerCase()) + '?</h3>' + HELD + countRow(IDEAL_L, 'mate', 'ideal', a.mate) + '</div>';
   R += '<p class="sec">About your answers</p>';
   if (t.mixed) R += '<div class="q"><h3>Would you keep these species together long term?</h3>' + choice('together', a, [['yes', 'Yes'], ['caution', 'With caution'], ['no', 'No']]) + '</div>';
   R += '<div class="q"><h3>How sure are you of the counts?</h3>' + choice('confidence', a, [[0, 'Low'], [1, 'Medium'], [2, 'High']]) + '</div>';
@@ -168,7 +175,7 @@ function show() {
   document.getElementById('back').onclick = () => { keep(); st.at = Math.max(0, i - 1); save(); show(); };
   document.getElementById('next').onclick = () => { keep();
     const m = document.getElementById('miss');
-    if (a.focal.ideal != null && a.focal.limit != null && a.focal.limit < a.focal.ideal) { m.textContent = 'The "at most" count is below the ideal: please check the two counts.'; return; }
+    if (a.focal.ideal != null && a.focal.limit != null && a.focal.limit < a.focal.ideal) { m.textContent = 'The "Problems" count is below the "Ideal" count: please check the two counts.'; return; }
     if (!st.kind) { m.textContent = 'Please pick who you are answering as (top of the page).'; return; }
     if (!done(t)) { m.textContent = 'Still to answer: ' + missing(t).join(', ') + ' (for a count, a number or one of the buttons under it).'; return; }
     st.at = i + 1; save(); show(); };
@@ -183,7 +190,7 @@ function finish() {
   document.getElementById('back').onclick = () => { st.at = TANKS.length - 1; save(); show(); };
 }
 function exportAnswers() {
-  const body = { round: ROUND, survey: 2, picture: false, expert: st.expert, expertKind: st.kind, made: new Date().toISOString(), answers: TANKS.map(t => st.answers[t.id]).filter(Boolean), carried: st.carried };
+  const body = { round: ROUND, survey: 3, picture: false, expert: st.expert, expertKind: st.kind, made: new Date().toISOString(), answers: TANKS.map(t => st.answers[t.id]).filter(Boolean), carried: st.carried };
   const url = URL.createObjectURL(new Blob([JSON.stringify(body, null, 1)], { type: 'application/json' })), el = document.createElement('a');
   el.href = url; el.download = 'round-' + ROUND + '-' + (st.expert || 'expert').replace(/[^A-Za-z0-9_-]+/g, '_') + '.json'; document.body.appendChild(el); el.click(); el.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
 }

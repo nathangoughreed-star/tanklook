@@ -1,0 +1,322 @@
+{
+ "round": 2,
+ "survey": 2,
+ "picture": false,
+ "expert": "ngr-ai",
+ "expertKind": "ai",
+ "made": "2026-10-23T15:13:00.172Z",
+ "answers": [
+  {
+   "id": "f10",
+   "floor": null,
+   "water": 1,
+   "overall": 1,
+   "limits": "honeygourami",
+   "bigEnough": {
+    "hatchet": true,
+    "honeygourami": true,
+    "chili": true
+   },
+   "focal": {
+    "ideal": 12,
+    "limit": 20,
+    "status": {}
+   },
+   "mate": {
+    "id": "chili",
+    "ideal": 20,
+    "status": {}
+   },
+   "together": "caution",
+   "confidence": 0,
+   "plants": 2,
+   "note": "Eight honey gouramis are the main constraint. Suitable cover helps them separate, but their territorial behavior still matters, especially with multiple males. Hatchetfish concentrate near the surface, creating overlap with the gouramis’ preferred territory. www.aquariumcoop.com\n\nThe 12 hatchetfish / 20 chilis are my preferred counts with those eight gouramis fixed. They don’t imply that the entire combination becomes green. The 20-hatchetfish maximum is a tentative calibration estimate; the unknown gourami sex ratio makes that boundary particularly uncertain.\n\nReplace the old note with:\nAssumes suitable cover and sight breaks. Eight honey gouramis drive the caution rating through territorial demand and overlap with surface-dwelling hatchetfish. Gourami sex ratio materially affects suitability. Suggested counts are conditional estimates; changing hatchetfish or chili numbers alone does not remove the gourami constraint.",
+   "ms": 651886,
+   "bare": 2,
+   "review": {
+    "skip": [
+     "focal.ideal",
+     "mate.ideal",
+     "water",
+     "overall"
+    ],
+    "why": "the ideal counts are preferred counts with 8 gouramis held, \"they do not imply the combination becomes green\"; the caution comes from gourami territory, not room"
+   }
+  },
+  {
+   "id": "f8",
+   "floor": null,
+   "water": 0,
+   "overall": 0,
+   "limits": "ember",
+   "bigEnough": {
+    "ember": true
+   },
+   "focal": {
+    "ideal": 70,
+    "limit": 110,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "bare": 1,
+   "note": "66 embers is a comfortably full stocking here. A single school of small, peaceful fish uses this footprint efficiently, without another species competing for territory. Embers’ peaceful, gregarious behavior supports that assessment. www.seriouslyfish.com\n\nCompared with the earlier 29-gallon, this tank provides 80% more horizontal area—648 versus 360 square inches. That supports a substantial increase from my earlier 40-fish ideal, especially with suitable furnishing now explicit.\n\n70 ideal / 110 maximum are approximate calibration judgments. Confidence is higher in the current green rating than in the precise maximum.\n\nNote: Single-species shoal; current count is near my comfortable target. Preserve connected swimming areas among the planting. Cover improves security, but reducing numbers alone would not fully compensate for a bare habitat.",
+   "ms": 84828
+  },
+  {
+   "id": "f9",
+   "floor": null,
+   "water": 0,
+   "overall": 0,
+   "limits": "guppy",
+   "bigEnough": {
+    "guppy": true
+   },
+   "focal": {
+    "ideal": 25,
+    "limit": 40,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "bare": 1,
+   "note": "18 guppies at the stated 3 cm adult size is comfortably green in this 30-inch tank. My 25 ideal / 40 maximum are approximate room-based calibration estimates, assuming the population stays at the specified count.\n\nSize matters here: 3 cm represents a small adult guppy, particularly a male. Females are generally larger, so these counts should not automatically transfer to a mixed group of larger adults. petco.com\n\nNote: Assessed at the listed 3 cm adult size. Sex ratio and reproduction require separate consideration; a breeding population can grow beyond the assessed stocking. For mixed sexes, provide roughly two to three females per male to reduce concentrated harassment.",
+   "ms": 74402
+  },
+  {
+   "id": "p2b",
+   "floor": 0,
+   "water": null,
+   "overall": 0,
+   "limits": "bronzecory",
+   "bigEnough": {
+    "bronzecory": true
+   },
+   "focal": {
+    "ideal": 18,
+    "limit": 28,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "bare": 1,
+   "note": "15 adult bronze cories is a comfortable stocking for this four-foot, species-only tank. Their peaceful social behavior allows shared foraging space rather than requiring separate territories. Tropical Fish Hobbyist Magazine\n\nThe 576-square-inch footprint drives my assessment. The 12-inch width is adequate, but gives less room for the group to spread out than an 18-inch-wide breeder. Their occasional swimming above the bottom doesn’t remove that floor-space constraint.\n\n18 ideal / 28 maximum are judgment-based calibration estimates, with greater confidence in the current green rating than the exact maximum.\n\nNote: Assumes substantial accessible foraging substrate, with shelter arranged to preserve connected floor space. Fine sand supports their natural foraging behavior.",
+   "ms": 110631
+  },
+  {
+   "id": "a1",
+   "floor": null,
+   "water": 1,
+   "overall": 1,
+   "limits": "harlequin",
+   "bigEnough": {
+    "harlequin": true,
+    "rummynose": true
+   },
+   "focal": {
+    "ideal": 70,
+    "limit": 110,
+    "status": {}
+   },
+   "mate": {
+    "id": "rummynose",
+    "ideal": 12,
+    "status": {}
+   },
+   "together": "yes",
+   "confidence": 1,
+   "bare": 1,
+   "note": "115 adult, 5 cm fish makes this a busy but workable six-foot tank. I’d place it moderately into amber. Both groups use overlapping swimming space, and the 87 harlequins account for most of the demand.\n\nThe two ideal answers are separate alternatives: approximately 70 + 28, or 87 + 12. Of those, I’d favor reducing the harlequins and retaining the larger rummy-nose school. Rummy-noses benefit from substantial groups and are compatible with similarly sized, peaceful rasboras. Aquarium Co-Op\n\nNote: Compatible species; combined swimming-space demand drives the caution rating. Counts are approximate calibration judgments, with the maximum less certain than the current classification.",
+   "ms": 181297
+  },
+  {
+   "id": "f6",
+   "floor": 1,
+   "water": 0,
+   "overall": 1,
+   "limits": "pandacory",
+   "bigEnough": {
+    "pandacory": true,
+    "whitecloud": true
+   },
+   "focal": {
+    "ideal": 20,
+    "limit": 32,
+    "status": {}
+   },
+   "mate": {
+    "id": "whitecloud",
+    "ideal": 25,
+    "status": {}
+   },
+   "together": "yes",
+   "confidence": 1,
+   "bare": 1,
+   "note": "28 pandas make the bottom busy; the 25 white clouds are a comfortable swimming population. My judgment is amber overall, primarily from the panda density. The counts are approximate calibration estimates.\n\nKeeping 25 white clouds is my preferred answer with the pandas fixed—it does not make the whole tank green. Reducing the pandas is the useful adjustment.\n\nOne engine input needs scrutiny: “White clouds: floor, half the time” overstates their role as bottom dwellers. They primarily occupy the upper and middle water, although they also visit and feed lower down. I would give them much less floor demand than an equivalent-sized cory, and I have not treated them as 12.5 additional bottom-dwelling fish here.",
+   "ms": 115528,
+   "review": {
+    "skip": [
+     "mate.ideal"
+    ],
+    "why": "25 white clouds is preferred with the pandas held, \"it does not make the whole tank green\""
+   }
+  },
+  {
+   "id": "f4",
+   "floor": 2,
+   "water": 0,
+   "overall": 2,
+   "limits": "pandacory",
+   "bigEnough": {
+    "pandacory": true,
+    "rummynose": true
+   },
+   "focal": {
+    "ideal": 28,
+    "limit": 42,
+    "status": {}
+   },
+   "mate": {
+    "id": "rummynose",
+    "ideal": null,
+    "status": {
+     "ideal": "no-valid-count"
+    }
+   },
+   "together": "yes",
+   "confidence": 1,
+   "bare": 1,
+   "note": "The 59 pandas drive the red rating. This tank has only 33% more floor area than the preceding 40 breeder, but 111% more pandas. The extra height does little to relieve their primary space constraint.\n\nMy 28 ideal / 42 maximum are approximate calibration judgments consistent with that preceding case. The 49 rummy-noses are a substantial but reasonable school for the swimming space; reducing them cannot resolve the panda crowding.\n\nNote: Species compatibility is acceptable; the current bottom population is not. “No count works” for rummy-noses means the fixed 59 pandas already exceed my floor-space limit, even with zero tetras.",
+   "ms": 155781
+  },
+  {
+   "id": "f7",
+   "floor": null,
+   "water": 1,
+   "overall": 1,
+   "limits": "neon",
+   "bigEnough": {
+    "neon": true
+   },
+   "focal": {
+    "ideal": 40,
+    "limit": 65,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "bare": 1,
+   "note": "52 adult neons puts this moderately into amber: workable under the stated assumptions, but beyond my comfortably stocked target.\n\nCompared with the 66 embers in this same footprint, these 3.8 cm neons are substantially larger than the listed 2 cm embers. I’d therefore set a lower comfortable count despite both being peaceful shoaling fish. thesprucepets.com\n\nNote: Single-species stocking with no compatibility constraint. 40 ideal / 65 maximum are approximate space-based judgments; the upper boundary is less certain than the amber classification.",
+   "ms": 143388
+  },
+  {
+   "id": "f15",
+   "floor": 1,
+   "water": 1,
+   "overall": 1,
+   "limits": "sae",
+   "bigEnough": {
+    "sae": true,
+    "cpd": true
+   },
+   "focal": {
+    "ideal": null,
+    "limit": 4,
+    "status": {
+     "ideal": "cant-say"
+    }
+   },
+   "mate": {
+    "id": "cpd",
+    "ideal": 70,
+    "status": {}
+   },
+   "together": "caution",
+   "confidence": 0,
+   "bare": 2,
+   "note": "The algae eaters need both grazing surfaces and swimming space. Their group dynamics also complicate an “ideal” count: Seriously Fish recommends six or more and a roughly 60 × 18-inch footprint for a group. I regard this 48-inch tank as marginal rather than automatically impossible, but wouldn’t add more to this particular stock. The four-fish ceiling is my calibration judgment, not an established limit. Seriously Fish\n\nCPDs are timid, benefit from substantial plant cover, and can be disadvantaged by larger, more competitive tankmates. That drives the compatibility caution and the stronger reduction for a bare tank. 70 is a preferred conditional count, not a claim that it resolves the algae eaters’ social requirements. Aquarium Co-Op\n\nNote for the engine: Don’t translate 109 CPDs into 54.5 bottom dwellers. Using lower planted water is different from requiring substrate territory. Also, the water-column question omits Siamese algae eaters even though their tag correctly says “floor + water.” Their swimming demand should count.",
+   "ms": 233128,
+   "review": {
+    "skip": [
+     "mate.ideal"
+    ],
+    "why": "70 CPDs is \"a preferred conditional count\", not where the tank reads Ideal"
+   }
+  },
+  {
+   "id": "f13",
+   "floor": 1,
+   "water": 0,
+   "overall": 1,
+   "limits": "oto",
+   "bigEnough": {
+    "hillstream": true,
+    "oto": true
+   },
+   "focal": {
+    "ideal": null,
+    "limit": 4,
+    "status": {
+     "ideal": "cant-say"
+    }
+   },
+   "mate": {
+    "id": "oto",
+    "ideal": 20,
+    "status": {}
+   },
+   "together": "caution",
+   "confidence": 0,
+   "bare": 2,
+   "note": "Four hillstreams plus about 20 otos would be my comfortable target under the stated assumptions. With 38 otos fixed, I wouldn’t add more hillstreams; changing only their count doesn’t give me a clear ideal stocking.\n\nThe floor rating is an imperfect proxy here. Otos use glass, leaves, wood, and rocks, so their usable space depends heavily on the furnished surface area. Counting them as 19 equivalent bottom dwellers misses that distinction.\n\nSeparately from room, sustaining 42 grazers requires deliberate feeding. Adequate filtration and furnishing don’t establish adequate food production; Aquarium Co-Op specifically identifies exhausting available algae as a limitation on oto numbers. That concern belongs in the husbandry note rather than being used to inflate the room rating.",
+   "ms": 147663
+  },
+  {
+   "id": "f14",
+   "floor": 1,
+   "water": 1,
+   "overall": 1,
+   "limits": "kadango",
+   "bigEnough": {
+    "bronzecory": true,
+    "kadango": true
+   },
+   "focal": {
+    "ideal": null,
+    "limit": null,
+    "status": {
+     "ideal": "cant-say",
+     "limit": "cant-say"
+    }
+   },
+   "mate": {
+    "id": "kadango",
+    "ideal": null,
+    "status": {
+     "ideal": "cant-say"
+    }
+   },
+   "together": "no",
+   "confidence": 0,
+   "bare": 2,
+   "note": "The missing sex ratio materially changes this one. A predominantly female group and a group containing many mature males have very different space requirements. Kadangos shoal, but males establish breeding territories on rocks or substrate. Furnishing helps divide those territories; it doesn’t eliminate their space requirements. Seriously Fish\n\nI wouldn’t recommend combining that breeding activity with 37 cories continually traversing the bottom. That is a compatibility judgment—not a claim that 37 cories alone overcrowd a six-foot tank. I’m withholding conditional counts because they would imply a defensible mixed stocking target that I don’t have here.\n\nNote for the engine: “Water, near the surface” misrepresents Kadango space use. They need open swimming water and access to bottom breeding territories. If the floor question counted only the cories, I’d mark it Ideal or under; the actual mixed tank warrants Caution.",
+   "ms": 143378,
+   "review": {
+    "skip": [
+     "water",
+     "overall"
+    ],
+    "set": {
+     "floor": 0
+    },
+    "why": "the bands come from kadango breeding territory beside the cories (compatibility); the note says the floor, counting the cories only, is Ideal"
+   }
+  }
+ ],
+ "carried": [],
+ "answeredVia": "ngr"
+}

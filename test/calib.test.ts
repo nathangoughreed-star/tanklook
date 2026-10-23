@@ -1,8 +1,8 @@
 // Expert calibration rounds (research/expert-calibration.md): the scenario generator, from round 2 on (survey v2).
 // Round 1 (research/calib/round-1.json) is frozen data from the first generator and is not regenerated.
-// GEN_CALIB=1 npx vitest run test/calib.test.ts writes research/calib/round-2.json (scenarios, engine tables).
+// GEN_CALIB=1 npx vitest run test/calib.test.ts writes research/calib/round-2.json and round-3.json (scenarios, engine tables).
 import { describe, expect, it } from 'vitest';
-import { classOf, fitsTank, makeRound, readSpace, setupOf, SLOTS, tightOf, type Scenario } from '../src/calib/scenario';
+import { classOf, fitsTank, makeRound, readSpace, setupOf, SIZES_R3, SLOTS, tightOf, type Scenario } from '../src/calib/scenario';
 import { SPACE_FACTOR } from '../src/data/spacefactor';
 import { compatRisks, crowdWarnings } from '../src/scene/territory';
 import { groupShort } from '../src/scene/animalfit';
@@ -10,6 +10,8 @@ import { getSpecies } from '../src/data/species';
 import { zoneOf } from '../src/scene/zone';
 
 const SEED = 2, R = makeRound({ seed: SEED });
+// round 3 (Nathan 2026-10-23): fixed tank sizes centred on the common ones (SIZES_R3), seed 3
+const R3 = makeRound({ seed: 3, sizes: SIZES_R3 });
 const fresh = R.filter(s => s.role === 'fresh');
 const readAt = (t: Scenario['table'], n: number) => Math.max(Object.values(t[n].water).reduce((a, b) => a + b, 0), t[n].floor);
 
@@ -60,7 +62,20 @@ describe('calibration round generator (round 2 on)', () => {
       expect(readSpace(s.dimsIn, s.stock).space).toBeCloseTo(s.pct.space, 6);
     }
   });
+  it('round 3 keeps to its sizes: every fixed size used, centred on 10-55 gal', () => {
+    const f3 = R3.filter(s => s.role === 'fresh');
+    expect(f3.map(s => s.gal).sort((a, b) => a - b)).toEqual(SIZES_R3.map(t => t[0]).sort((a, b) => a - b));
+    expect(R3.filter(s => s.gal >= 10 && s.gal <= 55).length / R3.length).toBeGreaterThanOrEqual(0.8);
+  }, 300000);
   if ((globalThis as any).process?.env.GEN_CALIB) {
+    it('writes research/calib/round-3.json', async () => {
+      // @ts-expect-error node only (no node types in this project)
+      const fs = await import('node:fs');
+      const per = (s: Scenario, f: (id: string) => unknown) => Object.fromEntries(s.stock.map(([id]) => [id, f(id)]));
+      const out = R3.map(s => ({ ...s, names: per(s, id => getSpecies(id)!.name), tlMm: per(s, id => getSpecies(id)!.tl), cls: per(s, classOf),
+        ownRow: per(s, id => !!SPACE_FACTOR[id]), zone: per(s, id => zoneOf(getSpecies(id)!)), invert: per(s, id => getSpecies(id)!.cat === 'fw-invert') }));
+      fs.writeFileSync(new URL('../research/calib/round-3.json', import.meta.url), JSON.stringify({ round: 3, seed: 3, made: '2026-10-23', ideal: 75, limit: 100, survey: 3, scenarios: out }) + '\n');
+    }, 300000);
     it('writes research/calib/round-2.json', async () => {
       // @ts-expect-error node only (no node types in this project)
       const fs = await import('node:fs');

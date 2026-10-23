@@ -222,7 +222,38 @@ export function inTank(s: Scenario, [gal, dims]: [number, Dims], id: string): Sc
     ...(s.mate ? { mateTable: tableOf(dims, s.stock, s.mate) } : {}) };
 }
 
-export interface RoundOpts { seed: number; answers?: Record<string, number>; anchorSeed?: number; pairs?: number; repeats?: number }
+/** Round 3's 16 fresh tanks (Nathan 2026-10-23: round 2 drew every size alike and the fit gate pushed retries into big tanks, so none
+ *  was 10 or 15 gal and 40 gal came up 8 times). Centred on the sizes people keep, 10 to 55 gal, with three outliers (5.5, 75; the
+ *  anchor is the 125). Each size is used once per entry: its species are redrawn in that tank, never moved to a bigger one. A 5.5 gal
+ *  nano was tried and no slot could fill it (every fish's recommended minimum is above it), so a 15 gal takes its place. */
+export const SIZES_R3: [number, Dims][] = [[15, [24, 12, 12]], [10, [20, 10, 12]], [10, [20, 10, 12]], [10, [20, 10, 12]],
+  [20, [24, 12, 16]], [20, [24, 12, 16]], [20, [30, 12, 12]], [20, [30, 12, 12]], [29, [30, 12, 18]], [29, [30, 12, 18]], [29, [30, 12, 18]],
+  [40, [36, 18, 16]], [40, [36, 18, 16]], [55, [48, 13, 21]], [55, [48, 13, 21]], [75, [48, 18, 21]]];
+
+export interface RoundOpts { seed: number; answers?: Record<string, number>; anchorSeed?: number; pairs?: number; repeats?: number; sizes?: [number, Dims][] }
+
+/** Fixed sizes: the smallest first (hardest to fill), each tries the open slots in a seeded order, a flagged mix relaxing to a passing
+ *  one and a mix to a single before the next slot; a size no slot can fill is dropped (reported by the test). */
+function fillSized(r: () => number, slots: Slot[], sizes: [number, Dims][], answers: Record<string, number>, prefix: string): Scenario[] {
+  const out: Scenario[] = [], seen = { ...answers }, open = [...slots];
+  for (const tank of [...sizes].sort((a, b) => a[0] - b[0])) {
+    const order = open.map((_, i) => [r(), i] as [number, number]).sort((a, b) => a[0] - b[0]).map(x => x[1]);
+    let got: Scenario | null = null, used = -1;
+    for (const relax of [0, 1, 2]) {
+      for (const i of order) {
+        const want = open[i], kind: Kind = relax === 0 ? want.kind : relax === 1 ? (want.kind === 'mix-flagged' ? 'mix-ok' : want.kind) : 'single';
+        for (let tries = 0; tries < 150 && !got; tries++) got = drawOne(r, { ...want, kind }, seen, `${prefix}${out.length + 1}`, tank);
+        if (got) { used = i; break; }
+      }
+      if (got) break;
+    }
+    if (!got) continue;
+    open.splice(used, 1);
+    for (const [id] of got.stock) seen[id] = (seen[id] ?? 0) + 1;
+    out.push(got);
+  }
+  return out;
+}
 
 function fill(r: () => number, slots: Slot[], answers: Record<string, number>, prefix: string): Scenario[] {
   const out: Scenario[] = [], seen = { ...answers };
@@ -243,7 +274,7 @@ function fill(r: () => number, slots: Slot[], answers: Record<string, number>, p
  *  repeats, in a seeded order with every repeat at least 5 tanks after its original. Ids: f1.., p1a/p1b.., a1, r1... */
 export function makeRound(o: RoundOpts): Scenario[] {
   const r = rng(o.seed), answers = o.answers ?? {};
-  const order: Scenario[] = fill(r, SLOTS, answers, 'f');
+  const order: Scenario[] = o.sizes ? fillSized(r, SLOTS, o.sizes, answers, 'f') : fill(r, SLOTS, answers, 'f');
   const pairSlots: Slot[] = [{ tight: 'water', kind: 'single' }, { tight: 'floor', kind: 'single' }, { tight: 'water', kind: 'mix-ok' }];
   for (let k = 0, tries = 0; k < (o.pairs ?? 2) && tries < 400; tries++) {
     const pr = PAIRS[(k + tries) % PAIRS.length], a = drawOne(r, pairSlots[k % pairSlots.length], answers, `p${k + 1}a`, pr[0]);

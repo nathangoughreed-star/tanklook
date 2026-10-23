@@ -78,10 +78,14 @@ export function rowsOf(round, files) {
     if (a.limits === 'not-room') { skipped.push(`${f.expert} ${a.id}: habitat or compatibility decides it, not room`); continue; }
     const small = Object.entries(a.bigEnough ?? {}).filter(([, v]) => v === false).map(([id]) => id);
     if (small.length) { skipped.push(`${f.expert} ${a.id}: tank too small for ${small.join(', ')} (a tank-minimum answer, not room)`); continue; }
+    // a reviewer's reading of the expert's own note (research/calib/review-*.md): `skip` drops answers the note says are not what the
+    // question asks (a preferred count that "does not make the tank green", a band set by compatibility); `set` restates a band
+    const rv = a.review ?? {}, skip = new Set(rv.skip ?? []);
+    for (const k of skip) skipped.push(`${f.expert} ${a.id} ${k}: set aside on review (${rv.why ?? 'see the review'})`);
     const w = CONF_W[a.confidence] ?? 1, base = { expert: f.expert, s, w, picture: !!(a.picture ?? f.picture) };
-    const counts = [[s.focal, s.table, focalOf(a), ['ideal', 'limit']], ...(a.mate && s.mateTable ? [[a.mate.id, s.mateTable, a.mate, ['ideal']]] : [])];
-    for (const [who, tbl, c, keys] of counts) for (const key of keys) {
-      const n = c[key];
+    const counts = [[s.focal, s.table, focalOf(a), ['ideal', 'limit'], 'focal'], ...(a.mate && s.mateTable ? [[a.mate.id, s.mateTable, a.mate, ['ideal'], 'mate']] : [])];
+    for (const [who, tbl, c, keys, role] of counts) for (const key of keys) {
+      const n = skip.has(`${role}.${key}`) ? null : c[key];
       if (n == null || n === '') continue;
       if (n < 1 || n >= tbl.length) { skipped.push(`${f.expert} ${a.id} ${who} ${key} ${n}: outside the table (1..${tbl.length - 1})`); continue; }
       const anchor = key === 'ideal' ? round.ideal : round.limit, dim = dimOf(s, who), { W, F } = partsAt(tbl, n);
@@ -92,7 +96,10 @@ export function rowsOf(round, files) {
     }
     const shown = shownOf(s);
     if (a.band != null) rows.push({ ...base, type: 'band', key: 'overall', tbl: s.table, dim: 'max', n: shown, y: a.band, cuts }); // survey 1: one band, the larger dimension
-    for (const [key, dim] of [['floor', 'floor'], ['water', 'water'], ['overall', 'max']]) if (a.focal && a[key] != null) rows.push({ ...base, type: 'band', key, tbl: s.table, dim, n: shown, y: a[key], cuts });
+    for (const [key, dim] of [['floor', 'floor'], ['water', 'water'], ['overall', 'max']]) {
+      const y = rv.set?.[key] ?? a[key];
+      if (a.focal && y != null && !skip.has(key)) rows.push({ ...base, type: 'band', key, tbl: s.table, dim, n: shown, y, cuts });
+    }
   }
   return { rows, skipped, flagged };
 }

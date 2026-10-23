@@ -274,3 +274,17 @@ territory lane, recorded here.
 "Answering as" is three buttons; under each count box a dashed line "or, instead of a number:" holds "Can't say" and "No count
 works as described" (picking one clears the number, typing a number clears it, clicking it again unselects it). Stored answers
 are unchanged (`status`, `expertKind`), so earlier answer files still import.
+
+## 11. Round 3: tank sizes people keep, survey v3 (Nathan 2026-10-23)
+
+Round 2 drew every standard size alike, and the fit gate (every species at its recommended minimum) turned failed draws in small tanks
+into retries that landed in big ones: none of its 22 tanks was 10 or 15 gal, 40 gal came up 8 times, the median was 40 gal. Nathan
+caught it 11 tanks in. Round 3 (`makeRound({ seed: 3, sizes: SIZES_R3 })`, research/calib/round-3.json) fixes the 16 fresh tank sizes:
+10 x3, 15, 20 high x2, 20 long x2, 29 x3, 40 breeder x2, 55 x2, 75. Each size keeps its tank and redraws the species, relaxing the slot
+(flagged mix to passing mix to single) before giving up; a 5.5 gal nano was tried and dropped (every fish's recommended minimum is
+above it). With the pairs, the anchor and the repeat: 20 of 22 tanks are 10-55 gal. Panda corydoras is the focal species in 7 of
+them (it is one of the few floor fish that fit 10-30 gal at its recommended minimum): a known skew.
+Survey v3 (survey-round-3.html) comes from the round-2 notes of an AI-model expert (research/calib/review-round-2-ngr-ai.md): counts
+labelled by the band line they mark with the others held, animals' assumptions stated (adults, no breeding, sexes as chosen), every
+species in the water-column question, food named as a non-room limit. Round 2 is closed (its survey stays at 2.2). The fit reads a
+reviewer's `review.skip` / `review.set` on an answer and lists what was set aside.

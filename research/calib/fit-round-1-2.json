@@ -1,0 +1,299 @@
+{
+ "round": "1+2",
+ "experts": [
+  "ngr",
+  "ngr-ai"
+ ],
+ "noise": {
+  "s": 0.2,
+  "pairs": 0
+ },
+ "solver": {
+  "it": 43,
+  "gnorm": 0.0000010959398302726635
+ },
+ "skipped": [
+  "ngr-ai 2:f10 focal.ideal: set aside on review (the ideal counts are preferred counts with 8 gouramis held, \"they do not imply the combination becomes green\"; the caution comes from gourami territory, not room)",
+  "ngr-ai 2:f10 mate.ideal: set aside on review (the ideal counts are preferred counts with 8 gouramis held, \"they do not imply the combination becomes green\"; the caution comes from gourami territory, not room)",
+  "ngr-ai 2:f10 water: set aside on review (the ideal counts are preferred counts with 8 gouramis held, \"they do not imply the combination becomes green\"; the caution comes from gourami territory, not room)",
+  "ngr-ai 2:f10 overall: set aside on review (the ideal counts are preferred counts with 8 gouramis held, \"they do not imply the combination becomes green\"; the caution comes from gourami territory, not room)",
+  "ngr-ai 2:f6 mate.ideal: set aside on review (25 white clouds is preferred with the pandas held, \"it does not make the whole tank green\")",
+  "ngr-ai 2:f15 mate.ideal: set aside on review (70 CPDs is \"a preferred conditional count\", not where the tank reads Ideal)",
+  "ngr-ai 2:f14 water: set aside on review (the bands come from kadango breeding territory beside the cories (compatibility); the note says the floor, counting the cories only, is Ideal)",
+  "ngr-ai 2:f14 overall: set aside on review (the bands come from kadango breeding territory beside the cories (compatibility); the note says the floor, counting the cories only, is Ideal)"
+ ],
+ "flagged": [
+  "ngr-ai 2:f4 pandacory limit 42: water 86 %, floor 93 % (weighted 0.5)",
+  "ngr-ai 2:f13 hillstream limit 4: water 93 %, floor 90 % (weighted 0.5)"
+ ],
+ "rows": 54,
+ "held": 5,
+ "g": 0.8646,
+ "f": 0.8482,
+ "class": {
+  "big": 1.0391,
+  "invert": 0.9178,
+  "mid": 1,
+  "tiny": 1.0111
+ },
+ "species": {
+  "amano": {
+   "mult": 0.7936,
+   "own": 1,
+   "cls": "invert",
+   "answers": 0
+  },
+  "bristlenose": {
+   "mult": 0.8646,
+   "own": 1,
+   "cls": "mid",
+   "answers": 0
+  },
+  "bronzecory": {
+   "mult": 0.8646,
+   "own": 1,
+   "cls": "mid",
+   "answers": 5
+  },
+  "cardinal": {
+   "mult": 0.8349,
+   "own": 0.9551,
+   "cls": "tiny",
+   "answers": 5
+  },
+  "cherrybarb": {
+   "mult": 0.8646,
+   "own": 1,
+   "cls": "mid",
+   "answers": 0
+  },
+  "cherryshrimp": {
+   "mult": 0.7639,
+   "own": 0.9626,
+   "cls": "invert",
+   "answers": 2
+  },
+  "chili": {
+   "mult": 0.8763,
+   "own": 1.0024,
+   "cls": "tiny",
+   "answers": 1
+  },
+  "cpd": {
+   "mult": 0.8876,
+   "own": 1.0153,
+   "cls": "tiny",
+   "answers": 4
+  },
+  "dwarfpencil": {
+   "mult": 0.8755,
+   "own": 1.0014,
+   "cls": "tiny",
+   "answers": 3
+  },
+  "ember": {
+   "mult": 0.9898,
+   "own": 1.1322,
+   "cls": "tiny",
+   "answers": 7
+  },
+  "gourami": {
+   "mult": 0.8646,
+   "own": 1,
+   "cls": "mid",
+   "answers": 0
+  },
+  "guppy": {
+   "mult": 0.7313,
+   "own": 0.8366,
+   "cls": "tiny",
+   "answers": 4
+  },
+  "harlequin": {
+   "mult": 0.8646,
+   "own": 1,
+   "cls": "mid",
+   "answers": 0
+  },
+  "hatchet": {
+   "mult": 0.8757,
+   "own": 1.0018,
+   "cls": "tiny",
+   "answers": 1
+  },
+  "hillstream": {
+   "mult": 0.8869,
+   "own": 1.0146,
+   "cls": "tiny",
+   "answers": 8
+  },
+  "honeygourami": {
+   "mult": 0.8482,
+   "own": 0.9703,
+   "cls": "tiny",
+   "answers": 3
+  },
+  "kadango": {
+   "mult": 0.8985,
+   "own": 1,
+   "cls": "big",
+   "answers": 1
+  },
+  "kribensis": {
+   "mult": 0.8646,
+   "own": 1,
+   "cls": "mid",
+   "answers": 0
+  },
+  "kuhli": {
+   "mult": 0.8646,
+   "own": 1,
+   "cls": "mid",
+   "answers": 0
+  },
+  "molly": {
+   "mult": 0.8646,
+   "own": 1,
+   "cls": "mid",
+   "answers": 0
+  },
+  "neon": {
+   "mult": 1.023,
+   "own": 1.1702,
+   "cls": "tiny",
+   "answers": 4
+  },
+  "oto": {
+   "mult": 0.8798,
+   "own": 1.0064,
+   "cls": "tiny",
+   "answers": 5
+  },
+  "pandacory": {
+   "mult": 0.8496,
+   "own": 0.9718,
+   "cls": "tiny",
+   "answers": 14
+  },
+  "peacock": {
+   "mult": 0.8646,
+   "own": 1,
+   "cls": "mid",
+   "answers": 0
+  },
+  "peapuffer": {
+   "mult": 0.8742,
+   "own": 1,
+   "cls": "tiny",
+   "answers": 1
+  },
+  "platy": {
+   "mult": 0.8742,
+   "own": 1,
+   "cls": "tiny",
+   "answers": 0
+  },
+  "pygmycory": {
+   "mult": 0.8742,
+   "own": 1,
+   "cls": "tiny",
+   "answers": 0
+  },
+  "rummynose": {
+   "mult": 0.8458,
+   "own": 0.9675,
+   "cls": "tiny",
+   "answers": 5
+  },
+  "sae": {
+   "mult": 0.9139,
+   "own": 1.0172,
+   "cls": "big",
+   "answers": 4
+  },
+  "sterbai": {
+   "mult": 0.8646,
+   "own": 1,
+   "cls": "mid",
+   "answers": 0
+  },
+  "syno": {
+   "mult": 0.8985,
+   "own": 1,
+   "cls": "big",
+   "answers": 1
+  },
+  "whitecloud": {
+   "mult": 0.8726,
+   "own": 0.9981,
+   "cls": "tiny",
+   "answers": 8
+  },
+  "yellowlab": {
+   "mult": 0.8646,
+   "own": 1,
+   "cls": "mid",
+   "answers": 0
+  }
+ },
+ "capped": [],
+ "bias": {
+  "ngr": 0.004983534799917048,
+  "ngr-ai": -0.03213915573017865
+ },
+ "error": {
+  "heldBefore": 0.11309574610085339,
+  "heldAfter": 0.048998118954934174,
+  "fitBefore": 0.27379012741638203,
+  "fitAfter": 0.21988055933344297,
+  "disagreement": null
+ },
+ "kinds": {
+  "ngr": "",
+  "ngr-ai": "ai"
+ },
+ "ratio": [
+  {
+   "id": "1:f12",
+   "expert": "ngr",
+   "experts": 1.625,
+   "engine": 1.488888888888889
+  },
+  {
+   "id": "2:f8",
+   "expert": "ngr-ai",
+   "experts": 1.5714285714285714,
+   "engine": 1.4893617021276595
+  },
+  {
+   "id": "2:f9",
+   "expert": "ngr-ai",
+   "experts": 1.6,
+   "engine": 1.5
+  },
+  {
+   "id": "2:p2b",
+   "expert": "ngr-ai",
+   "experts": 1.5555555555555556,
+   "engine": 1.3333333333333333
+  },
+  {
+   "id": "2:f7",
+   "expert": "ngr-ai",
+   "experts": 1.625,
+   "engine": 1.4807692307692308
+  }
+ ],
+ "maxRule": {
+  "same": 5,
+  "lower": 0,
+  "higher": 0,
+  "cases": []
+ },
+ "compat": {
+  "ok -> caution": 5,
+  "ok -> yes": 4,
+  "high -> no": 1,
+  "ok -> no": 1
+ }
+}
