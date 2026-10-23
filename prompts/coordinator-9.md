@@ -53,3 +53,8 @@ HOW TO WORK, changes from coordinator-8.md:
   status` and `log origin/main..HEAD` on every check. Nathan fast-forwards it himself (`merge --ff-only origin/main`).
 - Every engine-number lane: ask for the moved-numbers table (starters, example scenes, tankFor x 1/3/6/12/25/50) before the push, and
   re-ask after every rebase. Main moves several times an hour.
+
+STEP 1, take over: get_session "self", set_session_title "Coordinator 9", move yourself into "Glass Box: Active"; in HANDOFF.md "Start
+here" replace local_c8c29767 / "Coordinator 8" with yours (protocol paragraph and "Current lanes" line), commit from Glass-Box-coord;
+send_message your id to S212, SU, S216, S217, S196, S199; tell Nathan you're live and Coordinator 8 can be archived. End every reply with
+"Build N". Hand off to coordinator-10 at about a third of context, state first.
