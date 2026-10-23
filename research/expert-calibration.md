@@ -17,7 +17,7 @@ answers). No engine number has moved; no real expert answer exists yet. Section 
 This differs from the lane SR prompt on origin/main (fb2059e: 100 % = recommended capacity, yellow to 115 / 130). The survey and
 the fit use the scale above; the two anchors are constants in one place (`IDEAL_PCT = 75`, `LIMIT_PCT = 100` in
 src/calib/scenario.ts) so they follow whatever SR finally exports. S214 (2026-10-23) put the same cut in code as IDEAL_MAX = 75 in
-scene/stocking.ts (branch s214, da59331; NEAR_FULL equals it); the basis: published lists read a median 74 % at their own maximum counts.
+scene/stocking.ts (on main as 7d6325e; NEAR_FULL equals it; src/calib/scenario.ts imports it); the basis: published lists read a median 74 % at their own maximum counts.
 
 ## 1. What can be fitted (checked against main fb2059e)
 
