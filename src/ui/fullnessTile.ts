@@ -7,7 +7,7 @@
 import { compatLine, compatRisks, coverAdvice, crowdWarnings } from '../scene/territory';
 import type { Viewer } from '../render/viewer';
 import { defaultSpace, spaceFit, tankExtent, SPACE_MAX, SPACE_MIN, type SpaceFit } from '../scene/space';
-import { plural, stockingDetail, stockingMemo, type Stocking } from '../scene/stocking';
+import { IDEAL_MAX, plural, stockingDetail, stockingMemo, type Stocking } from '../scene/stocking';
 import { MIN_SLACK_PCT } from '../scene/animalfit';
 import { minDataOf, notesIn, reasonIn, tankMinimum, type MinLine, type MinRow, type TankMinimum } from '../scene/tankMin';
 import { NO3_TO_N, PLANT_SHARE_MAX, type Nitrogen } from '../scene/nitrogen';
@@ -18,8 +18,8 @@ import type { Store } from '../scene/store';
 import type { SpaceLimit, TankSetup, Units } from '../scene/types';
 import { tankView } from '../render/tankView';
 
-/** A bar at or over this reads "near full" (amber); over 100 is over (red). */
-export const NEAR_FULL = 85;
+/** A bar at or over this reads "caution" (amber, past ideal); over 100 is over (red). */
+export const NEAR_FULL = IDEAL_MAX;
 export type Level = 'ok' | 'near' | 'over';
 export interface Bar { pct: number; /** fill width, 0..100 */ fill: number; level: Level; text: string }
 export interface MinWarn { level: 'over' | 'near'; text: string }
@@ -96,7 +96,7 @@ export function spaceReason(r: Stocking): string {
   const p = r.spacePercent, top = topBy(r, r.spaceBy === 'floor' ? 'floor' : 'space', 1)[0];
   if (p > 100 && r.spaceBy === 'floor') return `The floor is too small for the bottom dwellers (${Math.round(p)}% of it), mainly the ${plural(top.n, top.name)}: no extra height fixes that, it needs about ${Math.ceil(r.floor.usedCm2 / 6.4516)} sq in of floor or fewer bottom dwellers.`;
   if (p > 100) return `The tank is too small for them (${Math.round(p)}% of its space), mainly the ${plural(top.n, top.name)}: it needs about ${Math.ceil(r.capacity.litres * r.waterPercent / 100)} L of water or fewer animals.`;
-  return p >= NEAR_FULL ? 'Near full by space: room for a few small animals, no more.' : `Room for about ${Math.round(100 - p)}% more by space.`;
+  return p >= NEAR_FULL ? 'Past ideal by space: tread carefully, room for a few small animals at most.' : `Room for about ${Math.round(NEAR_FULL - p)}% more by space before it is past ideal.`;
 }
 export function tileState(S: TankSetup, r: Stocking, units: Units = 'cm'): TileState {
   const m = tankMinimum(S), mins = minWarnings(m, units), tooSmall = mins.some(w => w.level === 'over'), limit = S.layout.space, fit = limit ? spaceFit(S.tank, limit) : undefined;

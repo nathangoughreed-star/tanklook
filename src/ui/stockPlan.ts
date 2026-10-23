@@ -10,6 +10,7 @@ import { emptyScene } from '../scene/defaults';
 import { placeNew, shuffleFish } from '../scene/scatter';
 import type { Store } from '../scene/store';
 import type { Fish } from '../scene/types';
+import { IDEAL_MAX } from '../scene/stocking';
 import type { Viewer } from '../render/viewer';
 import { gearView } from '../render/gear3d';
 import { tankView } from '../render/tankView';
@@ -115,8 +116,7 @@ ${overWarn(p, litres || undefined) ? `<div class="spWarn">${esc(overWarn(p, litr
 ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</div>` : ''}</li>`;
   };
 
-  const SP_NEAR = 75; // green up to here, amber to 100, red over
-  const bar = (pct: number, what: string) => `<span class="spBar ${pct > 100 ? 'over' : pct >= SP_NEAR ? 'near' : ''}" title="${what}: ${Math.round(pct)} %"><i style="width:${Math.max(2, Math.min(100, pct))}%"></i></span>`;
+  const bar = (pct: number, what: string) => `<span class="spBar ${pct > 100 ? 'over' : pct >= IDEAL_MAX ? 'near' : ''}" title="${what}: ${Math.round(pct)} %"><i style="width:${Math.max(2, Math.min(100, pct))}%"></i></span>`;
   const WHY = FAIL_WORD;
   let sizesTop = 0;
   const tankBlock = () => {

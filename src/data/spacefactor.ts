@@ -70,5 +70,5 @@ export const FLOOR_FACTOR: Record<string, [number, string]> = {
 // Hand-set multipliers on top of the AqAdvisor fit (Nathan's targets, not a fit): the species' space load is multiplied by both.
 // Like FLOOR_FACTOR, re-add this block after a rebuild (scripts/space-factors.mjs writes only the tables above).
 export const SPACE_NUDGE: Record<string, [number, string]> = {
-  discus: [1.435, 'Nathan 2026-10-22: 6 discus in a 55 gal (48 x 13 x 20 in) should read 85 % (was 59 % of the space): 85.2 % now, just inside the yellow band'],
+  discus: [1.435, 'Nathan 2026-10-22: 6 discus in a 55 gal (48 x 13 x 20 in) should read 85 % (was 59 % of the space): 85.2 % now, in the caution band (75-100)'],
 };

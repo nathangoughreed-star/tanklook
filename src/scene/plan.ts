@@ -11,7 +11,7 @@ import { checkLevel, holdCheck, measuredCheck, operatingCheck, rangeVerdict, sha
 import { LIBRARY } from './items';
 import type { Build } from './builds';
 import { finSensitiveNames, plantNeeds, priceScape } from './scapes';
-import { countsAgainstWater, stockingOf } from './stocking';
+import { IDEAL_MAX, countsAgainstWater, stockingOf } from './stocking';
 import { ROOM_C, techOf, tempEvidence, tempFit } from './tech';
 import { lenTxt, sizeTxt, tankLabel, type AnimalCount } from './tankfit';
 import { volume } from './physics';
@@ -154,8 +154,8 @@ export function planOf(S: TankSetup, build?: Build, now = Date.now(), u: Units =
   const heater = D.items.some(r => r.key === 'heater');
   const truths = hardTruths(S, animals, heater, u);
   const verdict: Plan['verdict'] = [
-    { text: `Space: water column ${Math.round(st.waterPercent)}%, floor ${Math.round(st.floorPercent)}%${st.spacePercent > 100 ? st.spaceBy === 'floor' ? ' (too many bottom dwellers for its floor)' : ' (too many animals for it)' : ''}`, level: st.spacePercent > 100 ? 'bad' : st.spacePercent > 85 ? 'warn' : 'ok' },
-    { text: `Filtration: ${Math.round(st.filtrationPercent)}% of what the filter and plants clear${st.filtrationPercent > 100 ? ' (the filter cannot keep up)' : ''}`, level: st.filtrationPercent > 100 ? 'bad' : st.filtrationPercent > 85 ? 'warn' : 'ok' },
+    { text: `Space: water column ${Math.round(st.waterPercent)}%, floor ${Math.round(st.floorPercent)}%${st.spacePercent > 100 ? st.spaceBy === 'floor' ? ' (too many bottom dwellers for its floor)' : ' (too many animals for it)' : ''}`, level: st.spacePercent > 100 ? 'bad' : st.spacePercent >= IDEAL_MAX ? 'warn' : 'ok' },
+    { text: `Filtration: ${Math.round(st.filtrationPercent)}% of what the filter and plants clear${st.filtrationPercent > 100 ? ' (the filter cannot keep up)' : ''}`, level: st.filtrationPercent > 100 ? 'bad' : st.filtrationPercent >= IDEAL_MAX ? 'warn' : 'ok' },
     ...truths,
   ];
   const names = animals.map(a => `${a.n} ${getSpecies(a.species)?.name ?? a.species}`);

@@ -273,8 +273,8 @@ export function stockingOf(S: TankSetup): Stocking {
       }
       if (!fixFilter) reasons.push(`Even the best filter leaves ammonia high: it needs fewer animals, more plants, lighter feeding or a bigger tank.`);
     }
-  } else if (percent >= 85) reasons.push('Cramped but doable: keep up with water changes.');
-  else reasons.push(`Room for about ${Math.round(100 - percent)}% more load.`);
+  } else if (percent >= IDEAL_MAX) reasons.push('Past ideal, tread carefully: keep up with water changes and add nothing big.');
+  else reasons.push(`Room for about ${Math.round(IDEAL_MAX - percent)}% more load before it is past ideal.`);
   return { nitrogen, percent, spacePercent, waterPercent, floorPercent, spaceBy, floor: { areaCm2, usedCm2: floorUse }, filtrationPercent, load, contributors, capacity: cap, reasons, ...(fixFilter ? { fixFilter } : {}) };
 }
 
@@ -297,6 +297,10 @@ export function waterChangeFraction(S: TankSetup): number {
 }
 
 setWaterChangeFraction(waterChangeFraction);
+
+/** Stocking bands (Nathan 2026-10-23): up to IDEAL_MAX is ideal (green), IDEAL_MAX to 100 is caution (amber: tread carefully),
+ *  over 100 is likely to cause problems long term (red). Every bar and verdict reads these two lines. */
+export const IDEAL_MAX = 75;
 
 /** One line for the panel and the view label: "Stocking 78%", "Stocking 240%, overstocked". */
 export const stockingLine = (r: Stocking) => `Stocking ${r.percent === Infinity ? 'over 999' : Math.round(r.percent)}%${r.percent > 100 ? ', overstocked' : ''}`;
