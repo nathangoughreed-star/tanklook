@@ -4,31 +4,32 @@
 <style>
 :root{--bg:#f6f5f1;--card:#fff;--ink:#1d2329;--mute:#626b73;--line:#dcd9d2;--acc:#1f6f8b;--g:#3e9b5a;--y:#d9a520;--r:#c8463c}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.4 system-ui,"Segoe UI",sans-serif}
-header{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:8px 14px;border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:2}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:5px 10px;border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:2}
 header b{font-size:15px}.prog{flex:1;min-width:100px;height:6px;background:#e8e5de;border-radius:3px}.prog i{display:block;height:100%;background:var(--acc);border-radius:3px}
-main{display:grid;grid-template-columns:0.9fr 1fr 1fr;gap:12px;padding:12px 14px;max-width:1400px;margin:auto}
+main{display:grid;grid-template-columns:0.9fr 1fr 1fr;gap:8px;padding:8px 10px;max-width:1500px;margin:auto}
+@media(max-width:1450px){body{font-size:13px}td,th{font-size:12.5px}button.o{font-size:12px}h3{font-size:13px}.note,.sub{font-size:11.5px}}
 @media(max-width:1100px){main{grid-template-columns:1fr 1fr}main>div:first-child{grid-column:span 2}}
 @media(max-width:700px){main{grid-template-columns:1fr}main>div:first-child{grid-column:auto}}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 11px}
 h2{font-size:14px;margin:0 0 6px}h3{margin:0 0 4px;font-size:13.5px}
-table{border-collapse:collapse;width:100%}td,th{padding:3px 6px 3px 0;text-align:left;vertical-align:top;font-size:13px}th{color:var(--mute);font-weight:500;border-bottom:1px solid var(--line)}
+table{border-collapse:collapse;width:100%}td,th{padding:2px 6px 2px 0;text-align:left;vertical-align:top;font-size:13px}th{color:var(--mute);font-weight:500;border-bottom:1px solid var(--line)}
 .k td:first-child{color:var(--mute);white-space:nowrap;width:70px}
 .tag{display:inline-block;font-size:11.5px;padding:1px 6px;border-radius:9px;white-space:nowrap}
 .tag.b{background:linear-gradient(90deg,#f3eadb 50%,#e3eef5 50%)}.tag.w{background:#e3eef5}
 .note{font-size:12px;color:var(--mute)}
-.q{margin-bottom:10px}.r3,.r2{display:grid;gap:5px}.r3{grid-template-columns:repeat(3,1fr)}.r2{grid-template-columns:repeat(2,1fr)}
-button.o{font:inherit;font-size:12.5px;text-align:left;padding:5px 7px;border:1px solid var(--line);border-radius:7px;background:#fff;cursor:pointer;color:var(--ink)}
+.q{margin-bottom:6px}.r3,.r2{display:grid;gap:5px}.r3{grid-template-columns:repeat(3,1fr)}.r2{grid-template-columns:repeat(2,1fr)}
+button.o{font:inherit;font-size:12.5px;text-align:left;padding:3px 7px;border:1px solid var(--line);border-radius:7px;background:#fff;cursor:pointer;color:var(--ink)}
 button.o.on{border-color:var(--acc);box-shadow:0 0 0 2px #1f6f8b33;background:#eef6f9}
 .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
-input[type=number]{font:inherit;width:66px;padding:3px 6px;border:1px solid var(--line);border-radius:6px}input[type=text]{font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:6px}
-.alt{margin:4px 0 2px;font-size:12px;color:var(--mute)}.alt button.o{font-size:12px;padding:3px 7px;border-style:dashed;margin-left:4px}
+input[type=number]{font:inherit;width:66px;padding:2px 6px;border:1px solid var(--line);border-radius:6px}input[type=text]{font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:6px}
+.alt{margin:3px 0 1px;font-size:12px;color:var(--mute)}.alt button.o{font-size:12px;padding:3px 7px;border-style:dashed;margin-left:4px}
 .cnt{display:flex;align-items:center;gap:6px}.cnt.off input{opacity:.45}
 .sub{color:var(--mute);font-size:12px;margin:-2px 0 4px}
-.yn td{padding:2px 6px 2px 0}
-textarea{width:100%;height:40px;font:inherit;border:1px solid var(--line);border-radius:6px;padding:5px}
+.yn td{padding:1px 6px 1px 0}
+textarea{width:100%;height:32px;font:inherit;border:1px solid var(--line);border-radius:6px;padding:5px}
 nav{display:flex;justify-content:space-between;margin-top:6px}
-button.b{font:inherit;padding:5px 14px;border-radius:7px;border:1px solid var(--line);background:#fff;cursor:pointer}button.go{background:var(--acc);color:#fff;border-color:var(--acc)}
-.sec{font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--mute);margin:0 0 6px}
+button.b{font:inherit;padding:3px 12px;border-radius:7px;border:1px solid var(--line);background:#fff;cursor:pointer}button.go{background:var(--acc);color:#fff;border-color:var(--acc)}
+.sec{font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--mute);margin:0 0 4px}
 .start{max-width:680px;margin:40px auto;padding:0 16px}.start p{margin:0 0 10px}
 .miss{color:var(--r);font-size:12.5px}
 </style></head><body>
@@ -122,21 +123,23 @@ function show() {
     '<tr><td>Filter</td><td>Canister rated for twice this tank, weekly 30 % changes: <b>never the limit</b></td></tr><tr><td>Decor</td><td>Furnished as these species need (plants, cover, sight breaks): <b>never the limit</b></td></tr></table></div>' +
     '<div class="card" style="margin-top:10px"><h2>The animals (adults)</h2><table><tr><th>count</th><th>species</th><th>adult</th><th>uses</th></tr>' +
     t.stock.map(s => '<tr><td>' + s.n + sexOf(s) + '</td><td>' + esc(s.name) + '</td><td>' + s.cm + ' cm</td><td>' + usesTag(s) + '</td></tr>').join('') + '</table>' +
-    '<p class="note" style="margin:6px 0 0">"Uses" is how the app counts each animal. ' + DEF + '</p></div></div>';
+    '<p class="note" style="margin:6px 0 0">"Uses" is how the app counts each animal. ' + DEF + '</p></div>' +
+    // one screenshot per tank (Nathan 2026-10-23: LLM experts get a single screenshot): the per-species question sits under the animals
+    '<div class="card" style="margin-top:8px"><h3>Is the tank big enough for each species at all?</h3><table class="yn">' + t.stock.map(s => '<tr><td>' + esc(s.name) + '</td><td><div class="r2" style="width:120px">' +
+    [[true, 'yes'], [false, 'no']].map(([v, l]) => '<button class="o' + (a.bigEnough[s.id] === v ? ' on' : '') + '" data-big="' + s.id + '" data-v="' + v + '">' + l + '</button>').join('') + '</div></td></tr>').join('') + '</table></div></div>';
   let M = '<div class="card"><p class="sec">Room, as shown</p>';
   if (floorers.length) M += '<div class="q"><h3>Floor room for the bottom dwellers</h3><div class="sub">' + floorers.map(s => esc(s.pl) + (s.floor < 1 ? ' (half the time)' : '')).join(', ') + '</div>' + band('floor', a) + '</div>';
   if (swimmers.length) M += '<div class="q"><h3>Water column room for the swimmers</h3><div class="sub">' + swimmers.map(s => esc(s.pl)).join(', ') + '</div>' + band('water', a) + '</div>';
   M += '<div class="q"><h3>Overall room, as shown</h3><div class="sub">Room only: compatibility goes in "keep together", habitat in "what limits"</div>' + band('overall', a) + '</div>';
   M += '<div class="q"><h3>What limits this tank\'s room first?</h3>' + choice('limits', a, [...t.stock.map(s => [s.id, esc(s.pl)]), ['not-room', 'Not room: habitat, compatibility or food decides it']], 'r2') + '</div>';
-  M += '<div class="q"><h3>Is the tank big enough for each species at all?</h3><table class="yn">' + t.stock.map(s => '<tr><td>' + esc(s.name) + '</td><td><div class="r2" style="width:120px">' +
-    [[true, 'yes'], [false, 'no']].map(([v, l]) => '<button class="o' + (a.bigEnough[s.id] === v ? ' on' : '') + '" data-big="' + s.id + '" data-v="' + v + '">' + l + '</button>').join('') + '</div></td></tr>').join('') + '</table></div></div>';
-  let R = '<div class="card"><p class="sec">Counts</p><div class="q"><h3>' + esc(keepTxt(others)) + ' many ' + esc(sp(t.focal).pl.toLowerCase()) + '?</h3>' + HELD +
-    countRow(IDEAL_L, 'focal', 'ideal', a.focal) + (t.noLimit ? '' : '<div style="margin-top:8px">' + countRow(LIMIT_L, 'focal', 'limit', a.focal) + '</div>') + '</div>';
-  if (a.mate) R += '<div class="q"><h3>' + esc(keepTxt(t.stock.filter(s => s.id !== t.mate))) + ' many ' + esc(sp(t.mate).pl.toLowerCase()) + '?</h3>' + HELD + countRow(IDEAL_L, 'mate', 'ideal', a.mate) + '</div>';
-  R += '<p class="sec">About your answers</p>';
-  if (t.mixed) R += '<div class="q"><h3>Would you keep these species together long term?</h3>' + choice('together', a, [['yes', 'Yes'], ['caution', 'With caution'], ['no', 'No']]) + '</div>';
-  R += '<div class="q"><h3>How sure are you of the counts?</h3>' + choice('confidence', a, [[0, 'Low'], [1, 'Medium'], [2, 'High']]) + '</div>';
-  R += '<div class="q"><h3>In a bare tank (no plants or cover), your counts would be</h3>' + choice('bare', a, [[0, 'The same'], [1, 'A little lower'], [2, 'A lot lower']]) + '</div>';
+  M += '</div><div class="card" style="margin-top:8px"><p class="sec">About your answers</p>';
+  if (t.mixed) M += '<div class="q"><h3>Would you keep these species together long term?</h3>' + choice('together', a, [['yes', 'Yes'], ['caution', 'With caution'], ['no', 'No']]) + '</div>';
+  M += '<div class="q"><h3>How sure are you of the counts?</h3>' + choice('confidence', a, [[0, 'Low'], [1, 'Medium'], [2, 'High']]) + '</div>';
+  M += '<div class="q"><h3>In a bare tank (no plants or cover), your counts would be</h3>' + choice('bare', a, [[0, 'The same'], [1, 'A little lower'], [2, 'A lot lower']]) + '</div></div>';
+  M = '<div>' + M + '</div>';
+  let R = '<div class="card"><p class="sec">Counts</p>' + HELD + '<div class="q"><h3>' + esc(keepTxt(others)) + ' many ' + esc(sp(t.focal).pl.toLowerCase()) + '?</h3>' +
+    countRow(IDEAL_L, 'focal', 'ideal', a.focal) + (t.noLimit ? '' : '<div style="margin-top:5px">' + countRow(LIMIT_L, 'focal', 'limit', a.focal) + '</div>') + '</div>';
+  if (a.mate) R += '<div class="q"><h3>' + esc(keepTxt(t.stock.filter(s => s.id !== t.mate))) + ' many ' + esc(sp(t.mate).pl.toLowerCase()) + '?</h3>' + countRow(IDEAL_L, 'mate', 'ideal', a.mate) + '</div>';
   R += '<div class="q"><h3>Note (optional)</h3><textarea id="note">' + esc(a.note) + '</textarea></div><div id="miss" class="miss"></div><nav><button class="b" id="back"' + (i ? '' : ' disabled') + '>← Back</button><button class="b go" id="next">Next →</button></nav></div>';
   const K = st.kind ? '' : '<div class="card" style="margin:10px 0 0"><h3>Answering as</h3><div class="r3">' + KINDS.map(([v, l]) => '<button class="o" data-kind="' + v + '">' + l + '</button>').join('') + '</div></div>';
   document.getElementById('app').innerHTML = head(i) + K + '<main>' + L + M + R + '</main>';
