@@ -1,69 +1,69 @@
-starter planted 24x12x16 s2: 8 cardinal, 8 neon = 80 % -> 6 amano, 8 neon, 6 oto = 77 %
-starter planted 36x18x18 s2: 7 amano, 1 betta, 10 cardinal, 12 neon, 8 oto = 68 % -> 10 amano, 1 betta, 10 cardinal, 12 neon, 10 oto = 63 %
-starter planted 48x13x20 s2: 9 amano, 1 betta, 10 cardinal, 12 neon, 8 oto = 67 % -> 8 amano, 1 betta, 12 cardinal, 12 neon, 10 oto = 64 %
-starter planted 72x18x22 s2: 10 amano, 1 betta, 22 cardinal, 24 neon, 22 oto = 53 % -> 10 amano, 1 betta, 26 cardinal, 28 neon, 24 oto = 50 %
-starter iwagumi 24x12x16 s3: 8 amano, 10 neon, 3 nerite = 62 % -> 6 amano, 8 neon, 6 oto = 76 %
-starter iwagumi 24x12x16 s8: 6 cpd, 8 ember, 8 neon = 74 % -> 8 cpd, 8 ember, 6 oto = 73 %
-starter iwagumi 36x18x18 s1: 7 amano, 10 cherryshrimp, 8 cpd, 12 harlequin, 8 oto = 57 % -> 10 amano, 10 cherryshrimp, 10 cpd, 12 harlequin, 10 oto = 52 %
-starter iwagumi 36x18x18 s3: 7 amano, 8 harlequin, 10 neon, 2 nerite, 8 oto = 57 % -> 7 amano, 10 harlequin, 10 neon, 3 nerite, 8 oto = 51 %
-starter iwagumi 36x18x18 s8: 10 cpd, 10 ember, 8 neon, 6 oto, 10 rummynose = 65 % -> 8 cpd, 10 ember, 10 neon, 8 oto, 10 rummynose = 62 %
-starter iwagumi 48x13x20 s1: 9 amano, 10 cherryshrimp, 12 cpd, 12 harlequin, 8 oto = 58 % -> 8 amano, 10 cherryshrimp, 10 cpd, 14 harlequin, 10 oto = 53 %
-starter iwagumi 48x13x20 s3: 9 amano, 8 harlequin, 10 neon, 3 nerite, 8 oto = 57 % -> 7 amano, 10 harlequin, 12 neon, 3 nerite, 8 oto = 52 %
-starter iwagumi 48x13x20 s8: 10 cpd, 10 ember, 8 neon, 6 oto, 10 rummynose = 64 % -> 8 cpd, 10 ember, 10 neon, 8 oto, 10 rummynose = 61 %
+starter planted 24x12x16 s2: 8 cardinal, 8 neon = 80 % -> 7 amano, 8 neon, 6 oto = 76 %
+starter planted 36x18x18 s2: 7 amano, 1 betta, 10 cardinal, 12 neon, 8 oto = 68 % -> 8 amano, 1 betta, 12 cardinal, 12 neon, 10 oto = 64 %
+starter planted 48x13x20 s2: 9 amano, 1 betta, 10 cardinal, 12 neon, 8 oto = 67 % -> 10 amano, 1 betta, 12 cardinal, 12 neon, 10 oto = 64 %
+starter planted 72x18x22 s2: 10 amano, 1 betta, 22 cardinal, 24 neon, 22 oto = 53 % -> 10 amano, 1 betta, 26 cardinal, 28 neon, 26 oto = 50 %
+starter iwagumi 24x12x16 s3: 8 amano, 10 neon, 3 nerite = 62 % -> 7 amano, 8 neon, 6 oto = 75 %
+starter iwagumi 24x12x16 s8: 6 cpd, 8 ember, 8 neon = 74 % -> 10 cpd, 8 ember, 6 oto = 74 %
+starter iwagumi 36x18x18 s1: 7 amano, 10 cherryshrimp, 8 cpd, 12 harlequin, 8 oto = 57 % -> 9 amano, 10 cherryshrimp, 12 cpd, 12 harlequin, 10 oto = 52 %
+starter iwagumi 36x18x18 s3: 7 amano, 8 harlequin, 10 neon, 2 nerite, 8 oto = 57 % -> 8 amano, 10 harlequin, 10 neon, 3 nerite, 8 oto = 50 %
+starter iwagumi 36x18x18 s8: 10 cpd, 10 ember, 8 neon, 6 oto, 10 rummynose = 65 % -> 8 cpd, 10 ember, 10 neon, 8 oto, 10 rummynose = 61 %
+starter iwagumi 48x13x20 s1: 9 amano, 10 cherryshrimp, 12 cpd, 12 harlequin, 8 oto = 58 % -> 10 amano, 10 cherryshrimp, 10 cpd, 14 harlequin, 10 oto = 53 %
+starter iwagumi 48x13x20 s3: 9 amano, 8 harlequin, 10 neon, 3 nerite, 8 oto = 57 % -> 8 amano, 10 harlequin, 12 neon, 3 nerite, 8 oto = 52 %
+starter iwagumi 48x13x20 s8: 10 cpd, 10 ember, 8 neon, 6 oto, 10 rummynose = 64 % -> 10 cpd, 10 ember, 10 neon, 8 oto, 10 rummynose = 61 %
 starter iwagumi 72x18x22 s1: 10 amano, 10 cherryshrimp, 24 cpd, 26 harlequin, 24 oto = 49 % -> 10 amano, 10 cherryshrimp, 30 cpd, 30 harlequin, 28 oto = 45 %
-starter iwagumi 72x18x22 s3: 10 amano, 20 harlequin, 22 neon, 4 nerite, 20 oto = 48 % -> 10 amano, 24 harlequin, 24 neon, 4 nerite, 22 oto = 44 %
-starter iwagumi 72x18x22 s8: 18 cpd, 20 ember, 20 neon, 16 oto, 20 rummynose = 53 % -> 22 cpd, 22 ember, 20 neon, 18 oto, 22 rummynose = 50 %
-starter nature 24x12x16 s3: 1 betta, 8 cpd, 2 nerite, 8 pandacory = 68 % -> 8 cpd, 6 oto, 6 pandacory = 78 %
-starter nature 24x12x16 s5: 8 amano, 8 cpd, 10 ember, 2 nerite = 60 % -> 7 amano, 10 ember, 6 oto = 73 %
-starter nature 36x18x18 s3: 1 betta, 14 cpd, 4 nerite, 10 oto, 10 pandacory = 62 % -> 1 betta, 16 cpd, 4 nerite, 12 oto, 12 pandacory = 57 %
-starter nature 36x18x18 s5: 10 amano, 12 cpd, 14 ember, 4 nerite, 10 oto = 59 % -> 10 amano, 12 cpd, 16 ember, 4 nerite, 14 oto = 54 %
-starter nature 36x18x18 s8: 8 cpd, 10 ember, 10 harlequin, 3 nerite, 6 oto = 53 % -> 8 cpd, 12 ember, 10 harlequin, 3 nerite, 8 oto = 50 %
-starter nature 48x13x20 s3: 1 betta, 16 cpd, 4 nerite, 10 oto, 10 pandacory = 62 % -> 1 betta, 18 cpd, 4 nerite, 12 oto, 12 pandacory = 58 %
-starter nature 48x13x20 s5: 9 amano, 10 cpd, 14 ember, 4 nerite, 12 oto = 59 % -> 10 amano, 14 cpd, 16 ember, 4 nerite, 14 oto = 53 %
-starter nature 48x13x20 s8: 8 cpd, 12 ember, 10 harlequin, 4 nerite, 6 oto = 54 % -> 10 cpd, 12 ember, 10 harlequin, 4 nerite, 8 oto = 50 %
+starter iwagumi 72x18x22 s3: 10 amano, 20 harlequin, 22 neon, 4 nerite, 20 oto = 48 % -> 10 amano, 24 harlequin, 26 neon, 4 nerite, 22 oto = 44 %
+starter iwagumi 72x18x22 s8: 18 cpd, 20 ember, 20 neon, 16 oto, 20 rummynose = 53 % -> 20 cpd, 22 ember, 20 neon, 20 oto, 22 rummynose = 50 %
+starter nature 24x12x16 s3: 1 betta, 8 cpd, 2 nerite, 8 pandacory = 68 % -> 8 cpd, 6 oto, 6 pandacory = 76 %
+starter nature 24x12x16 s5: 8 amano, 8 cpd, 10 ember, 2 nerite = 60 % -> 6 amano, 8 ember, 2 nerite, 6 oto = 65 %
+starter nature 36x18x18 s3: 1 betta, 14 cpd, 4 nerite, 10 oto, 10 pandacory = 62 % -> 1 betta, 14 cpd, 4 nerite, 14 oto, 12 pandacory = 58 %
+starter nature 36x18x18 s5: 10 amano, 12 cpd, 14 ember, 4 nerite, 10 oto = 59 % -> 10 amano, 14 cpd, 16 ember, 4 nerite, 14 oto = 53 %
+starter nature 36x18x18 s8: 8 cpd, 10 ember, 10 harlequin, 3 nerite, 6 oto = 53 % -> 10 cpd, 12 ember, 10 harlequin, 3 nerite, 8 oto = 50 %
+starter nature 48x13x20 s3: 1 betta, 16 cpd, 4 nerite, 10 oto, 10 pandacory = 62 % -> 1 betta, 14 cpd, 4 nerite, 12 oto, 14 pandacory = 59 %
+starter nature 48x13x20 s5: 9 amano, 10 cpd, 14 ember, 4 nerite, 12 oto = 59 % -> 10 amano, 14 cpd, 18 ember, 4 nerite, 14 oto = 53 %
+starter nature 48x13x20 s8: 8 cpd, 12 ember, 10 harlequin, 4 nerite, 6 oto = 54 % -> 10 cpd, 12 ember, 10 harlequin, 4 nerite, 8 oto = 49 %
 starter nature 72x18x22 s3: 1 betta, 28 cpd, 4 nerite, 26 oto, 26 pandacory = 56 % -> 1 betta, 30 cpd, 4 nerite, 30 oto, 30 pandacory = 55 %
-starter nature 72x18x22 s5: 10 amano, 30 cpd, 30 ember, 4 nerite, 30 oto = 50 % -> 10 amano, 30 cpd, 30 ember, 4 nerite, 30 oto = 39 %
-starter nature 72x18x22 s8: 22 cpd, 24 ember, 22 harlequin, 4 nerite, 18 oto = 47 % -> 22 cpd, 26 ember, 24 harlequin, 4 nerite, 22 oto = 44 %
+starter nature 72x18x22 s5: 10 amano, 30 cpd, 30 ember, 4 nerite, 30 oto = 50 % -> 10 amano, 30 cpd, 30 ember, 4 nerite, 30 oto = 38 %
+starter nature 72x18x22 s8: 22 cpd, 24 ember, 22 harlequin, 4 nerite, 18 oto = 47 % -> 26 cpd, 26 ember, 24 harlequin, 4 nerite, 22 oto = 44 %
 starter dutch 36x18x18 s1: 1 bolivianram, 1 dwarfgourami, 12 harlequin, 8 oto = 55 % -> 1 bolivianram, 1 dwarfgourami, 8 harlequin, 6 oto, 1 sae = 49 %
 starter dutch 36x18x18 s8: 8 amano, 1 dwarfgourami, 8 oto, 8 platy = 59 % -> 6 amano, 1 dwarfgourami, 6 oto, 6 platy, 1 sae = 53 %
 starter dutch 48x13x20 s1: 1 bolivianram, 1 dwarfgourami, 12 harlequin, 8 oto = 53 % -> 1 bolivianram, 1 dwarfgourami, 10 harlequin, 6 oto, 1 sae = 53 %
-starter dutch 48x13x20 s8: 10 amano, 1 dwarfgourami, 8 oto, 8 platy = 58 % -> 10 amano, 1 dwarfgourami, 6 oto, 6 platy, 1 sae = 55 %
-starter dutch 72x18x22 s1: 1 bolivianram, 1 dwarfgourami, 26 harlequin, 22 oto, 1 sae = 50 % -> 1 bolivianram, 1 dwarfgourami, 30 harlequin, 26 oto, 1 sae = 46 %
-starter dutch 72x18x22 s8: 10 amano, 1 dwarfgourami, 18 oto, 16 platy, 1 sae = 53 % -> 10 amano, 1 dwarfgourami, 22 oto, 18 platy, 1 sae = 53 %
-starter forest 24x12x16 s8: 8 cpd, 2 nerite, 6 oto = 68 % -> 8 cpd, 3 nerite, 8 oto = 61 %
-starter forest 36x18x18 s2: 10 amano, 10 cherryshrimp, 14 neon, 4 nerite, 10 oto = 60 % -> 10 amano, 10 cherryshrimp, 16 neon, 4 nerite, 12 oto = 53 %
-starter forest 36x18x18 s3: 10 cherryshrimp, 10 harlequin, 10 neon, 2 nerite, 6 oto = 55 % -> 10 cherryshrimp, 10 harlequin, 10 neon, 3 nerite, 8 oto = 50 %
-starter forest 36x18x18 s8: 8 cpd, 8 harlequin, 8 neon, 3 nerite, 8 oto = 56 % -> 10 cpd, 10 harlequin, 8 neon, 3 nerite, 8 oto = 51 %
-starter forest 48x13x20 s2: 9 amano, 10 cherryshrimp, 16 neon, 4 nerite, 10 oto = 60 % -> 10 amano, 10 cherryshrimp, 16 neon, 4 nerite, 14 oto = 54 %
-starter forest 48x13x20 s3: 10 cherryshrimp, 10 harlequin, 8 neon, 3 nerite, 8 oto = 55 % -> 10 cherryshrimp, 10 harlequin, 10 neon, 3 nerite, 10 oto = 52 %
-starter forest 48x13x20 s8: 8 cpd, 8 harlequin, 10 neon, 3 nerite, 8 oto = 57 % -> 10 cpd, 10 harlequin, 10 neon, 3 nerite, 8 oto = 52 %
-starter forest 72x18x22 s2: 10 amano, 10 cherryshrimp, 30 neon, 4 nerite, 30 oto = 50 % -> 10 amano, 10 cherryshrimp, 30 neon, 4 nerite, 30 oto = 39 %
+starter dutch 48x13x20 s8: 10 amano, 1 dwarfgourami, 8 oto, 8 platy = 58 % -> 6 amano, 1 dwarfgourami, 8 oto, 6 platy, 1 sae = 55 %
+starter dutch 72x18x22 s1: 1 bolivianram, 1 dwarfgourami, 26 harlequin, 22 oto, 1 sae = 50 % -> 1 bolivianram, 1 dwarfgourami, 30 harlequin, 28 oto, 1 sae = 46 %
+starter dutch 72x18x22 s8: 10 amano, 1 dwarfgourami, 18 oto, 16 platy, 1 sae = 53 % -> 10 amano, 1 dwarfgourami, 18 oto, 20 platy, 1 sae = 53 %
+starter forest 24x12x16 s8: 8 cpd, 2 nerite, 6 oto = 68 % -> 10 cpd, 3 nerite, 8 oto = 62 %
+starter forest 36x18x18 s2: 10 amano, 10 cherryshrimp, 14 neon, 4 nerite, 10 oto = 60 % -> 10 amano, 10 cherryshrimp, 16 neon, 4 nerite, 14 oto = 54 %
+starter forest 36x18x18 s3: 10 cherryshrimp, 10 harlequin, 10 neon, 2 nerite, 6 oto = 55 % -> 10 cherryshrimp, 10 harlequin, 10 neon, 4 nerite, 8 oto = 49 %
+starter forest 36x18x18 s8: 8 cpd, 8 harlequin, 8 neon, 3 nerite, 8 oto = 56 % -> 10 cpd, 10 harlequin, 8 neon, 3 nerite, 8 oto = 50 %
+starter forest 48x13x20 s2: 9 amano, 10 cherryshrimp, 16 neon, 4 nerite, 10 oto = 60 % -> 10 amano, 10 cherryshrimp, 16 neon, 4 nerite, 14 oto = 53 %
+starter forest 48x13x20 s3: 10 cherryshrimp, 10 harlequin, 8 neon, 3 nerite, 8 oto = 55 % -> 10 cherryshrimp, 12 harlequin, 10 neon, 3 nerite, 8 oto = 51 %
+starter forest 48x13x20 s8: 8 cpd, 8 harlequin, 10 neon, 3 nerite, 8 oto = 57 % -> 10 cpd, 10 harlequin, 10 neon, 3 nerite, 8 oto = 51 %
+starter forest 72x18x22 s2: 10 amano, 10 cherryshrimp, 30 neon, 4 nerite, 30 oto = 50 % -> 10 amano, 10 cherryshrimp, 30 neon, 4 nerite, 30 oto = 38 %
 starter forest 72x18x22 s3: 10 cherryshrimp, 22 harlequin, 22 neon, 4 nerite, 20 oto = 48 % -> 10 cherryshrimp, 26 harlequin, 24 neon, 4 nerite, 22 oto = 44 %
-starter forest 72x18x22 s8: 22 cpd, 20 harlequin, 20 neon, 4 nerite, 18 oto = 48 % -> 22 cpd, 22 harlequin, 22 neon, 4 nerite, 22 oto = 45 %
-starter stream 24x12x16 s5: 8 cherrybarb, 4 nerite = 55 % -> 6 cherrybarb, 8 oto = 80 %
-starter stream 36x18x18 s2: 7 amano, 12 chili, 6 kuhli, 3 nerite, 6 oto = 64 % -> 7 amano, 12 chili, 6 kuhli, 4 nerite, 8 oto = 59 %
-starter stream 36x18x18 s5: 2 nerite, 8 oto, 8 tigerbarb = 55 % -> 6 cherrybarb, 6 oto, 8 tigerbarb = 57 %
-starter stream 48x13x20 s2: 9 amano, 10 chili, 6 kuhli, 3 nerite, 8 oto = 66 % -> 9 amano, 10 chili, 8 kuhli, 3 nerite, 8 oto = 65 %
-starter stream 48x13x20 s5: 6 cherrybarb, 6 oto, 8 tigerbarb = 61 % -> 6 cherrybarb, 3 nerite, 6 oto, 8 tigerbarb = 57 %
-starter stream 72x18x22 s2: 10 amano, 20 chili, 16 kuhli, 4 nerite, 18 oto = 56 % -> 10 amano, 22 chili, 18 kuhli, 4 nerite, 20 oto = 56 %
+starter forest 72x18x22 s8: 22 cpd, 20 harlequin, 20 neon, 4 nerite, 18 oto = 48 % -> 24 cpd, 22 harlequin, 22 neon, 4 nerite, 22 oto = 44 %
+starter stream 24x12x16 s5: 8 cherrybarb, 4 nerite = 55 % -> 6 cherrybarb, 2 nerite, 6 oto = 70 %
+starter stream 36x18x18 s2: 7 amano, 12 chili, 6 kuhli, 3 nerite, 6 oto = 64 % -> 8 amano, 12 chili, 6 kuhli, 4 nerite, 8 oto = 59 %
+starter stream 36x18x18 s5: 2 nerite, 8 oto, 8 tigerbarb = 55 % -> 6 cherrybarb, 8 oto, 8 tigerbarb = 59 %
+starter stream 48x13x20 s2: 9 amano, 10 chili, 6 kuhli, 3 nerite, 8 oto = 66 % -> 7 amano, 10 chili, 8 kuhli, 4 nerite, 8 oto = 63 %
+starter stream 48x13x20 s5: 6 cherrybarb, 6 oto, 8 tigerbarb = 61 % -> 6 cherrybarb, 2 nerite, 8 oto, 8 tigerbarb = 59 %
+starter stream 72x18x22 s2: 10 amano, 20 chili, 16 kuhli, 4 nerite, 18 oto = 56 % -> 10 amano, 24 chili, 18 kuhli, 4 nerite, 20 oto = 56 %
 starter stream 72x18x22 s5: 10 cherrybarb, 12 danio, 4 nerite, 12 oto, 12 tigerbarb = 51 % -> 12 cherrybarb, 12 danio, 4 nerite, 12 oto, 14 tigerbarb = 51 %
 starter hillstream 36x18x18 s1: 10 danio, 1 hillstream, 3 nerite, 8 oto, 10 whitecloud = 64 % -> 12 danio, 1 hillstream, 4 nerite, 8 oto, 10 whitecloud = 62 %
-starter hillstream 36x18x18 s2: 10 cherryshrimp, 12 danio, 1 hillstream, 4 nerite, 8 oto = 63 % -> 10 cherryshrimp, 12 danio, 1 hillstream, 4 nerite, 12 oto = 62 %
-starter hillstream 36x18x18 s3: 10 danio, 1 hillstream, 3 nerite, 8 oto, 10 whitecloud = 65 % -> 12 danio, 1 hillstream, 4 nerite, 8 oto, 10 whitecloud = 63 %
+starter hillstream 36x18x18 s2: 10 cherryshrimp, 12 danio, 1 hillstream, 4 nerite, 8 oto = 63 % -> 10 cherryshrimp, 14 danio, 1 hillstream, 4 nerite, 10 oto = 63 %
+starter hillstream 36x18x18 s3: 10 danio, 1 hillstream, 3 nerite, 8 oto, 10 whitecloud = 65 % -> 12 danio, 1 hillstream, 4 nerite, 8 oto, 10 whitecloud = 62 %
 starter hillstream 36x18x18 s5: 10 cherryshrimp, 10 danio, 1 hillstream, 8 oto, 12 whitecloud = 69 % -> 10 cherryshrimp, 12 danio, 1 hillstream, 10 oto, 10 whitecloud = 67 %
-starter hillstream 36x18x18 s8: 10 cherryshrimp, 10 danio, 1 hillstream, 8 oto, 12 whitecloud = 69 % -> 10 cherryshrimp, 12 danio, 1 hillstream, 10 oto, 10 whitecloud = 68 %
-starter hillstream 48x13x20 s1: 10 danio, 1 hillstream, 4 nerite, 8 oto, 10 whitecloud = 63 % -> 12 danio, 1 hillstream, 3 nerite, 10 oto, 10 whitecloud = 64 %
+starter hillstream 36x18x18 s8: 10 cherryshrimp, 10 danio, 1 hillstream, 8 oto, 12 whitecloud = 69 % -> 10 cherryshrimp, 12 danio, 1 hillstream, 10 oto, 10 whitecloud = 67 %
+starter hillstream 48x13x20 s1: 10 danio, 1 hillstream, 4 nerite, 8 oto, 10 whitecloud = 63 % -> 12 danio, 1 hillstream, 3 nerite, 10 oto, 10 whitecloud = 63 %
 starter hillstream 48x13x20 s2: 10 cherryshrimp, 12 danio, 1 hillstream, 4 nerite, 8 oto = 62 % -> 10 cherryshrimp, 14 danio, 1 hillstream, 4 nerite, 10 oto = 63 %
-starter hillstream 48x13x20 s3: 10 danio, 1 hillstream, 4 nerite, 8 oto, 10 whitecloud = 64 % -> 12 danio, 1 hillstream, 3 nerite, 10 oto, 10 whitecloud = 65 %
-starter hillstream 48x13x20 s5: 10 cherryshrimp, 12 danio, 1 hillstream, 8 oto, 8 whitecloud = 68 % -> 10 cherryshrimp, 12 danio, 1 hillstream, 10 oto, 10 whitecloud = 67 %
-starter hillstream 48x13x20 s8: 10 cherryshrimp, 10 danio, 1 hillstream, 8 oto, 12 whitecloud = 68 % -> 10 cherryshrimp, 12 danio, 1 hillstream, 10 oto, 10 whitecloud = 68 %
-starter hillstream 72x18x22 s1: 24 danio, 1 hillstream, 4 nerite, 20 oto, 22 whitecloud = 54 % -> 26 danio, 1 hillstream, 4 nerite, 24 oto, 26 whitecloud = 53 %
-starter hillstream 72x18x22 s2: 10 cherryshrimp, 28 danio, 1 hillstream, 4 nerite, 24 oto = 54 % -> 10 cherryshrimp, 30 danio, 1 hillstream, 4 nerite, 30 oto = 53 %
-starter hillstream 72x18x22 s3: 24 danio, 1 hillstream, 4 nerite, 20 oto, 22 whitecloud = 54 % -> 26 danio, 1 hillstream, 4 nerite, 24 oto, 26 whitecloud = 53 %
-starter hillstream 72x18x22 s5: 10 cherryshrimp, 24 danio, 1 hillstream, 22 oto, 22 whitecloud = 56 % -> 10 cherryshrimp, 28 danio, 1 hillstream, 24 oto, 24 whitecloud = 55 %
-starter hillstream 72x18x22 s8: 10 cherryshrimp, 24 danio, 1 hillstream, 22 oto, 22 whitecloud = 55 % -> 10 cherryshrimp, 26 danio, 1 hillstream, 26 oto, 26 whitecloud = 54 %
+starter hillstream 48x13x20 s3: 10 danio, 1 hillstream, 4 nerite, 8 oto, 10 whitecloud = 64 % -> 12 danio, 1 hillstream, 3 nerite, 10 oto, 10 whitecloud = 64 %
+starter hillstream 48x13x20 s5: 10 cherryshrimp, 12 danio, 1 hillstream, 8 oto, 8 whitecloud = 68 % -> 10 cherryshrimp, 12 danio, 1 hillstream, 10 oto, 12 whitecloud = 68 %
+starter hillstream 48x13x20 s8: 10 cherryshrimp, 10 danio, 1 hillstream, 8 oto, 12 whitecloud = 68 % -> 10 cherryshrimp, 12 danio, 1 hillstream, 10 oto, 12 whitecloud = 68 %
+starter hillstream 72x18x22 s1: 24 danio, 1 hillstream, 4 nerite, 20 oto, 22 whitecloud = 54 % -> 28 danio, 1 hillstream, 4 nerite, 24 oto, 24 whitecloud = 54 %
+starter hillstream 72x18x22 s2: 10 cherryshrimp, 28 danio, 1 hillstream, 4 nerite, 24 oto = 54 % -> 10 cherryshrimp, 30 danio, 1 hillstream, 4 nerite, 30 oto = 52 %
+starter hillstream 72x18x22 s3: 24 danio, 1 hillstream, 4 nerite, 20 oto, 22 whitecloud = 54 % -> 26 danio, 1 hillstream, 4 nerite, 26 oto, 26 whitecloud = 53 %
+starter hillstream 72x18x22 s5: 10 cherryshrimp, 24 danio, 1 hillstream, 22 oto, 22 whitecloud = 56 % -> 10 cherryshrimp, 28 danio, 1 hillstream, 24 oto, 28 whitecloud = 55 %
+starter hillstream 72x18x22 s8: 10 cherryshrimp, 24 danio, 1 hillstream, 22 oto, 22 whitecloud = 55 % -> 10 cherryshrimp, 28 danio, 1 hillstream, 24 oto, 28 whitecloud = 55 %
 example planted tank 0: 78 % -> 75 %
-example iwagumi tank 0: 83 % -> 75 %
+example iwagumi tank 0: 83 % -> 74 %
 tankFor oto x12: 21 gal -> 16 gal
-tankFor oto x25: 32 gal -> 29 gal
-tankFor oto x50: 59 gal -> 42 gal
+tankFor oto x25: 32 gal -> 21 gal
+tankFor oto x50: 59 gal -> 38 gal

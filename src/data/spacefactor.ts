@@ -84,6 +84,6 @@ export const FLOOR_FACTOR: Record<string, [number, string]> = {
 // Hand-set multipliers on top of the AqAdvisor fit (Nathan's targets, not a fit): the species' space load is multiplied by both.
 // Like FLOOR_FACTOR, re-add this block after a rebuild (scripts/space-factors.mjs writes only the tables above).
 export const SPACE_NUDGE: Record<string, [number, string]> = {
-  oto: [0.67, 'expert rounds 2-3 (ngr-ai, chatgpt, chatgpt-high; all AI models), Nathan 2026-10-23: take the advice. Four answers put the engine 1.3-1.9x too heavy on otos in the water (45 alone in a 55 gal is Ideal; 12 with 11 pandas in a 29 gal is Ideal; 20 with 4 hillstreams in a 30 gal is Ideal; 19 with 11 pandas is Caution); median multiplier 0.67 on the AqAdvisor factor 3.34. 6 otos in a 10 gal: 95 % -> 64 %'],
+  oto: [0.63, 'expert rounds 2-3 (ngr-ai, chatgpt, chatgpt-high; all AI models), Nathan 2026-10-23: take the advice. Four answers put the engine 1.3-1.9x too heavy on otos in the water (45 alone in a 55 gal is Ideal; 12 with 11 pandas in a 29 gal is Ideal; 20 with 4 hillstreams in a 30 gal is Ideal; 19 with 11 pandas is Caution); median 0.67, then set by Nathan to his target: 12 otos in the 15 gal (24.5 x 12.5 x 12.75 in) read 75 %, with the grazing caution (data/grazers.ts) carrying the food side'],
   discus: [1.435, 'Nathan 2026-10-22: 6 discus in a 55 gal (48 x 13 x 20 in) should read 85 % (was 59 % of the space): 85.2 % now, in the caution band (75-100)'],
 };
