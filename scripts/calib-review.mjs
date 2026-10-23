@@ -42,8 +42,10 @@ export function review(round, file) {
   md += `## Tank by tank\n\n| tank | gal | animals | engine | engine band | answer band | engine at ideal count | engine at limit count | fix | note |\n|---|---|---|---|---|---|---|---|---|---|\n`;
   for (const r of rows) {
     const st = r.s.stock.map(([id, n]) => `${n} ${name(id)}${id === r.s.focal ? '*' : ''}`).join(' + ');
-    const ic = r.a.ideal >= 1 ? `${r.a.ideal} -> ${pc(r.atIdeal)}` : '-', lc = r.a.limit >= 1 ? `${r.a.limit} -> ${pc(r.atLimit)}` : '-';
-    md += `| ${r.s.id}${r.s.role !== 'fresh' ? ` (${r.s.role}${r.s.of ? ' of ' + r.s.of : ''})` : ''} | ${r.s.gal} | ${st} | ${pc(r.p)}${r.floorBound ? ' floor' : ''} | ${BAND[r.engineBand]} | ${r.a.band != null ? BAND[r.a.band] : '-'}${r.a.band != null && r.a.band !== r.engineBand ? (r.a.band < r.engineBand ? ' (engine fuller)' : ' (engine emptier)') : ''} | ${ic} | ${lc} | ${r.fix ? mv(r.fix) : '-'} | ${(r.a.note ?? '').replace(/\|/g, '/').replace(/\n/g, ' ')} |\n`;
+    // countStatus (Nathan 2026-10-23): 'no-valid-count' = no count works with the fixed tankmates (not 0); 'not-assessable' = the question does not fit (shrimp)
+    const cs = k => ({ 'no-valid-count': 'no valid count', 'not-assessable': 'not assessable' })[r.a.countStatus?.[k]] ?? '-';
+    const ic = r.a.ideal >= 1 ? `${r.a.ideal} -> ${pc(r.atIdeal)}` : cs('ideal'), lc = r.a.limit >= 1 ? `${r.a.limit} -> ${pc(r.atLimit)}` : cs('limit');
+    md += `| ${r.s.id}${r.s.role !== 'fresh' ? ` (${r.s.role}${r.s.of ? ' of ' + r.s.of : ''})` : ''} | ${r.s.gal} | ${st} | ${pc(r.p)}${r.floorBound ? ' floor' : ''} | ${BAND[r.engineBand]} | ${r.a.band != null ? BAND[r.a.band] : '-'}${r.a.band != null && r.a.band !== r.engineBand ? (r.a.band < r.engineBand ? ' (engine fuller)' : ' (engine emptier)') : ''} | ${ic} | ${lc} | ${r.fix ? mv(r.fix) : '-'} | ${r.a.note ? 'below' : ''} |\|/g, '/').replace(/\n/g, ' ')} |\n`;
   }
   const withFix = used.filter(r => r.fix), all = withFix.map(r => r.fix);
   md += `\n\\* = the species the count questions asked about.\n\n## Overall\n\n`;
@@ -69,8 +71,10 @@ export function review(round, file) {
   if (mix.length) {
     const want = { ok: 'yes', concern: 'caution', high: 'no' };
     md += `\n## Compatibility: gate vs you\n\n${mix.filter(r => want[r.s.gate] === r.a.together).length} of ${mix.length} agree.\n\n`;
-    for (const r of mix.filter(r => want[r.s.gate] !== r.a.together)) md += `- ${r.s.id} (${r.s.stock.map(([id]) => name(id)).join(' + ')}): gate ${r.s.gate}${r.s.gateItems.length ? ` (${r.s.gateItems.join('; ')})` : ''}, you ${r.a.together}${r.a.note ? `: "${r.a.note}"` : ''}\n`;
+    for (const r of mix.filter(r => want[r.s.gate] !== r.a.together)) md += `- ${r.s.id} (${r.s.stock.map(([id]) => name(id)).join(' + ')}): gate ${r.s.gate}${r.s.gateItems.length ? ` (${r.s.gateItems.join('; ')})` : ''}, you ${r.a.together}${r.a.note ? ' (see the note)' : ''}\n`;
   }
+  const notes = rows.filter(r => r.a.note);
+  if (notes.length) md += `\n## Notes (the expert's own words)\n\n${notes.map(r => `**${r.s.id}**: ${r.a.note.replace(/\n+/g, ' ')}`).join('\n\n')}\n`;
   return md;
 }
 

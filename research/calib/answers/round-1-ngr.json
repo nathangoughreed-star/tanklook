@@ -1,0 +1,71 @@
+{
+ "round": 1,
+ "expert": "ngr",
+ "made": "2026-10-23T13:22:50.077Z",
+ "answers": [
+  {
+   "id": "f18",
+   "band": 0,
+   "ideal": 100,
+   "limit": 150,
+   "together": "caution",
+   "note": "Room: The current 84 cardinals looks comfortably stocked for a six-foot tank. The 13 dwarf pencilfish add modest competition for swimming space; the nine hillstream loaches primarily need usable grazing surfaces. I wouldn’t mark this amber just because the total exceeds 100 fish.\n\nMy 100 ideal / 150 limit are judgment-based calibration anchors, not experimentally established thresholds. Confidence is substantially higher in the current green classification than in the exact upper limit.\n\nCompatibility note: Hillstream loaches versus the other two species is the concern. Hillstreams favor cooler, highly oxygenated water and substantial flow; cardinals favor warmer conditions, while dwarf pencilfish favor calmer water. This needs deliberate temperature selection and sheltered areas alongside flowing, rocky grazing areas. Loaches Online\n\nFor the engine, I’d keep that compatibility caution separate from the green space assessment. Reducing the cardinal count doesn’t resolve the habitat mismatch.",
+   "ms": 242122,
+   "picture": true
+  },
+  {
+   "id": "f4",
+   "band": 1,
+   "ideal": 25,
+   "limit": 40,
+   "together": "yes",
+   "note": "35 white clouds plus six pandas is a busy but workable stocking in this 36-inch tank. The length provides useful swimming room, and the pandas primarily occupy the bottom. I’d put it in amber, without calling it severely cramped.\n\n25 white clouds would be my comfortable, well-populated target. 40 is my approximate upper calibration anchor; confidence in that precise boundary is lower than in the amber assessment. These are space judgments under the survey’s filtration assumption.\n\nCompatibility: A reasonable pairing at around 72°F / 22°C, with good oxygenation—a temperature that accommodates the white clouds and sits at the cooler end of the published range for captive-bred pandas.",
+   "ms": 113101,
+   "picture": true
+  },
+  {
+   "id": "f12",
+   "band": 0,
+   "ideal": 40,
+   "limit": 65,
+   "together": null,
+   "note": "28 embers in this 29-gallon is comfortably green, with substantial room remaining. Their small adult size, peaceful schooling behavior, and absence of other fish make this considerably less crowded than the previous white-cloud setup. Their peaceful, gregarious behavior is well documented. Seriously Fish\n\nI’d use 40 as a comfortably full target and 65 as a provisional upper boundary for this footprint—not a proven biological cutoff. The 30 × 12-inch footprint matters more to my assessment than the extra tank height.\n\nNote: Assumes suitable planting or cover while preserving open swimming space; the sparse illustration wouldn’t be my preferred furnishing for them.",
+   "ms": 66743,
+   "picture": true
+  },
+  {
+   "id": "f5",
+   "band": 2,
+   "ideal": null,
+   "limit": null,
+   "together": "no",
+   "note": "The 19 cm Malawi synodontis is the decisive space problem. A 30 × 12-inch footprint is inadequate for that adult fish regardless of panda count; published guidance recommends at least a 48-inch tank. Adding 22 pandas further concentrates demand on the limited bottom area. Seriously Fish\n\nCompatibility also fails: pea puffers pose fin-nipping and harassment risks to the catfish. The Malawi synodontis also brings different habitat requirements and a potential predation risk to sufficiently small tankmates. pufferfishenthusiastsworldwide.com\n\nFor calibration, this needs a “no valid count with the fixed inhabitants” designation. Entering zero could incorrectly imply that removing all pandas makes the remaining setup acceptable.",
+   "ms": 103082,
+   "picture": true,
+   "countStatus": {
+    "ideal": "no-valid-count",
+    "limit": "no-valid-count"
+   },
+   "countWhy": "the 19 cm synodontis alone makes the tank too small whatever the panda count (Nathan)"
+  },
+  {
+   "id": "f20",
+   "band": 0,
+   "ideal": 50,
+   "limit": null,
+   "together": "caution",
+   "note": "34 adult cherries aren’t pushing this tank’s space limit. The eight cardinals and two honey gouramis determine how full the swimming space feels. Assuming suitable planting and a compatible gourami pair, I’d keep this green.\n\n50 shrimp is my comfortable colony target, not a sharp optimum. Their capacity depends heavily on grazing surfaces, cover, and food availability; colony growth can become food-limited. A specific red threshold based only on tank dimensions would be weak calibration data. Aquarium Co-Op\n\nCompatibility note: Honey gouramis may leave adult cherries alone but eat shrimplets; dense moss and sheltered crevices help. I’d also want the gouramis’ sexes known before treating the pair as reliably compatible in this footprint.",
+   "ms": 120889,
+   "picture": true,
+   "countStatus": {
+    "limit": "not-assessable"
+   },
+   "countWhy": "a shrimp limit from dimensions alone is weak: grazing surface and food set it (Nathan)"
+  }
+ ],
+ "picture": true,
+ "source": "survey-round-1.html (renders shown); exported by Nathan 2026-10-23, forwarded by chat S214",
+ "dropped": [
+  "f15: blank"
+ ]
+}
