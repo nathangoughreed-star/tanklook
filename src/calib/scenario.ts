@@ -17,6 +17,7 @@ import type { TankSetup } from '../scene/types';
 
 /** The two anchors the experts answer on (Nathan 2026-10-23): 75 % = ideal (green up to here), 100 % = the limit past which
  *  long-term problems are likely (red beyond); in between, tread carefully. */
+// The same cut as IDEAL_MAX in scene/stocking.ts (branch s214, da59331, not on main yet): import it from there once it lands.
 export const IDEAL_PCT = 75, LIMIT_PCT = 100;
 
 /** Standard US glass tanks, gal and inches L x D x H (as test/expert.test.ts), 10 gal and up. */

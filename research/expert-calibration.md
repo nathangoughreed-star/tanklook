@@ -16,7 +16,8 @@ answers). No engine number has moved; no real expert answer exists yet. Section 
 
 This differs from the lane SR prompt on origin/main (fb2059e: 100 % = recommended capacity, yellow to 115 / 130). The survey and
 the fit use the scale above; the two anchors are constants in one place (`IDEAL_PCT = 75`, `LIMIT_PCT = 100` in
-src/calib/scenario.ts) so they follow whatever SR finally exports.
+src/calib/scenario.ts) so they follow whatever SR finally exports. S214 (2026-10-23) put the same cut in code as IDEAL_MAX = 75 in
+scene/stocking.ts (branch s214, da59331; NEAR_FULL equals it); the basis: published lists read a median 74 % at their own maximum counts.
 
 ## 1. What can be fitted (checked against main fb2059e)
 
@@ -131,8 +132,8 @@ Stop rule: when held-out error is within inter-expert disagreement (x1.1), furth
 
 - The scale differs from the SR prompt (section 0); SR and this lane must use the same two anchors.
 - Who the experts are, and how many per round (3-5 gives a usable disagreement estimate).
-- Goldens: Nathan restates each old-scale target (SPACE_NUDGE discus, FLOOR_FACTOR kuhli, the S196 / HC / HB test targets) on the
-  new scale.
+- Goldens: the discus golden stays as it is (6 discus in a 55 gal = 85 %, now in the caution band; S214 2026-10-23). The other
+  old-scale targets (FLOOR_FACTOR kuhli, the S196 / HC / HB test targets) still need restating on the new scale.
 - Round 2: per-species FLOOR_FACTOR, pairwise questions, information weights from round 1's answer counts; renders scripted (now by hand).
 
 ## 8. Built 2026-10-23 (slice 1): what changed against the design above
