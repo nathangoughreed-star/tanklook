@@ -1,6 +1,6 @@
-# Stocking and compatibility survey v4 (build c7cb52e6) — module B: Freshwater specialist
+# Stocking and compatibility survey v4 (build cba9d609) — module B: Freshwater specialist
 
-You are answering as an expert keeper. Each tank below is described in words. Assume: adults at the lengths shown, no breeding counted, sexes as listed. Filtration, water changes, heating, lighting and furnishing (plants, cover, hides, sight breaks, rockwork) are whatever these animals need: never the limit. Judge these animals, at these counts, in this tank.
+You are answering as an expert keeper. Each tank below is described in words. Assume: adults at the lengths shown, no breeding counted, sexes as listed (a male : female ratio is kept roughly, rounded as you would stock them). Filtration, water changes, heating, lighting and furnishing (plants, cover, hides, sight breaks, rockwork) are whatever these animals need: never the limit. Judge these animals, at these counts, in this tank.
 
 The scale: Ideal = the stocking an experienced keeper aims for (reads 75 % in the app). At most = the count past which long-term problems become likely (reads 100 %). "caution" lies between the two. A count of 0 is valid (even one would cross the line). If you do not know the animals, answer verdict "skip" and nothing else for that tank: a guessed number is worse than no number.
 
@@ -10,7 +10,7 @@ Field meanings:
 - verdict: ideal (comfortable long term with ordinary care) | caution (workable but past ideal) | problems (long-term trouble likely even with good care) | unworkable (not as described) | skip.
 - change: the first thing you would change: nothing | fewer (of changeSp) | bigger (tank) | drop (changeSp) | ratio (group size or sex ratio) | notroom (the limit is food, maturity or habitat, not room) | other (say in note).
 - together / reasons / problem: would you keep these together long term; why not, from: eat (would eat or injure), nip (fin nipping or harassment), aggression (aggression or territory), temperature, chemistry (pH, hardness, salinity), habitat (humidity or habitat), food (food or diet), disease (disease or toxins), breeding (breeding or sex mix), other.
-- ideal / limit: the counted species only, with the other animals held as shown. countStatus replaces both numbers: cant-say, or no-valid-count (no count works as described).
+- ideal / limit: the counted species only, with the other animals held as shown. countStatus replaces both numbers: cant-say, or no-valid-count (no count works as described). Six tanks also ask mateIdeal / mateLimit (mateStatus) for a second counted species, a bottom dweller.
 - bigEnough / smallest: whether the tank is big enough for one adult of that species at all, and the smallest of the offered sizes you would use for it as stocked here ("larger" if none).
 - max.<species>: the most of that species you would keep in this tank, whatever else is in it. maxMales.<species>: the most males.
 - confidence: low | medium | high.
@@ -83,12 +83,13 @@ Setting: Fresh water; water 29 °C (84 °F).
 Animals:
 - 6 Discus (adults): adult 150 mm (5.9 in); lives water column (tall-bodied)  <- the counted species
 - 15 Cardinal tetras: adult 45 mm (1.8 in); lives water column
-- 8 Sterba's corydoras: adult 65 mm (2.6 in); lives bottom
+- 8 Sterba's corydoras: adult 65 mm (2.6 in); lives bottom  <- also counted (mateIdeal / mateLimit)
 Answer:
 - verdict: one of ideal | caution | problems | unworkable | skip
 - change: one of nothing | fewer | bigger | drop | ratio | notroom | other; with fewer or drop also changeSp: [species ids from discus, cardinal, sterbai]
 - together: yes | caution | no; if not yes, reasons: [any of eat | nip | aggression | temperature | chemistry | habitat | food | disease | breeding | other]; problem: [species ids]
 - ideal and limit: whole numbers of discus (the others held as shown; 0 allowed) — or countStatus: cant-say | no-valid-count
+- mateIdeal and mateLimit: the same for sterba's corydoras, with the others as shown — or mateStatus: cant-say | no-valid-count
 - confidence: low | medium | high; note: free text (optional)
 
 ### B07
@@ -142,6 +143,7 @@ Answer:
 - verdict: one of ideal | caution | problems | unworkable | skip
 - change: one of nothing | fewer | bigger | drop | ratio | notroom | other; with fewer or drop also changeSp: [species ids from kribensis, neon, pandacory]
 - together: yes | caution | no; if not yes, reasons: [any of eat | nip | aggression | temperature | chemistry | habitat | food | disease | breeding | other]; problem: [species ids]
+- max.kribensis: one of 1 | 2 | 3 | 4 | 6+ (most you would keep here whatever else is in the tank)
 - confidence: low | medium | high; note: free text (optional)
 
 ### B11
@@ -228,7 +230,7 @@ Answer:
 ```json
 {
  "survey": "v4",
- "build": "c7cb52e6",
+ "build": "cba9d609",
  "module": "B",
  "expert": "<name>",
  "expertKind": "ai",
@@ -286,6 +288,8 @@ Answer:
    "problem": [],
    "ideal": null,
    "limit": null,
+   "mateIdeal": null,
+   "mateLimit": null,
    "confidence": "",
    "note": ""
   },
@@ -325,6 +329,9 @@ Answer:
    "together": "",
    "reasons": [],
    "problem": [],
+   "max": {
+    "kribensis": ""
+   },
    "confidence": "",
    "note": ""
   },

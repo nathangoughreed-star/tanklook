@@ -1,70 +1,70 @@
 # Expert calibration, fit of round v4
 
-1 experts (synth-shift), 52 answers, 0 on held-out anchors. Noise 0.200 (log) from 0 repeat pairs. Engine readings: round v4: current engine, 2026-10-23.
+1 experts (synth-shift), 64 answers, 0 on held-out anchors. Noise 0.200 (log) from 0 repeat pairs. Engine readings: round v4: current engine, 2026-10-23.
 
 ## Error (rms of log reading at the experts' counts)
 
 | | before | after |
 |---|---|---|
 | held-out anchors | n/a | n/a |
-| fitted tanks | 0.268 | 0.042 |
+| fitted tanks | 0.267 | 0.044 |
 
 Inter-expert disagreement n/a (no tank answered by two experts yet). Stop rule not met.
 
 ## Multipliers on today's factors
 
-Water (SPACE_PER_L) x0.8, floor x1.079. Classes: big -5 %, invert -1 %, mid -2 %, salt +1 %, tiny +0 %. Capped at x1.25: g.
+Water (SPACE_PER_L) x0.8, floor x0.8. Classes: big -5 %, invert -1 %, mid -0 %, salt +1 %, tiny -0 %. Capped at x1.25: g, f.
 
 | species | class | answers | total move | own move |
 |---|---|---|---|---|
-| syno | big | 3 | -25 % | -1 % |
+| syno | big | 3 | -25 % | -2 % |
 | goldfish | big | 3 | -25 % | -1 % |
+| sae | big | 4 | -24 % | -0 % |
 | clownloach | big | 0 | -24 % | +0 % |
 | oscar | big | 0 | -24 % | +0 % |
-| sae | big | 2 | -24 % | +0 % |
-| discus | big | 5 | -23 % | +1 % |
-| honeygourami | mid | 3 | -22 % | -1 % |
-| peacock | mid | 3 | -22 % | -1 % |
-| yellowlab | mid | 5 | -22 % | -1 % |
-| betta | mid | 4 | -22 % | -0 % |
-| kuhli | mid | 4 | -22 % | -0 % |
-| bristlenose | mid | 7 | -22 % | -0 % |
-| gourami | mid | 1 | -21 % | -0 % |
-| cherrybarb | mid | 2 | -21 % | +0 % |
-| dwarfgourami | mid | 2 | -21 % | +0 % |
-| harlequin | mid | 2 | -21 % | +0 % |
-| boesemani | mid | 2 | -21 % | +0 % |
-| bronzecory | mid | 10 | -21 % | +0 % |
-| sterbai | mid | 2 | -21 % | +1 % |
-| chili | tiny | 5 | -21 % | -2 % |
+| discus | big | 7 | -24 % | +1 % |
+| chili | tiny | 5 | -22 % | -2 % |
+| honeygourami | mid | 3 | -21 % | -1 % |
 | cherryshrimp | invert | 8 | -21 % | -0 % |
-| molly | mid | 3 | -21 % | +1 % |
-| swordtail | mid | 3 | -21 % | +1 % |
-| amano | invert | 2 | -21 % | +0 % |
+| peacock | mid | 3 | -21 % | -1 % |
+| yellowlab | mid | 5 | -21 % | -1 % |
+| amano | invert | 2 | -21 % | -0 % |
 | nerite | invert | 9 | -21 % | +0 % |
-| neon | tiny | 12 | -20 % | -0 % |
+| kuhli | mid | 6 | -21 % | -0 % |
+| harlequin | mid | 2 | -20 % | -0 % |
+| betta | mid | 4 | -20 % | -0 % |
 | ember | tiny | 2 | -20 % | -0 % |
+| gourami | mid | 3 | -20 % | -0 % |
+| boesemani | mid | 4 | -20 % | -0 % |
+| cherrybarb | mid | 4 | -20 % | -0 % |
+| dwarfgourami | mid | 2 | -20 % | -0 % |
+| pandacory | tiny | 2 | -20 % | -0 % |
+| demasoni | tiny | 2 | -20 % | -0 % |
+| oto | tiny | 3 | -20 % | -0 % |
 | pygmycory | tiny | 2 | -20 % | -0 % |
-| oto | tiny | 1 | -20 % | -0 % |
-| rummynose | tiny | 1 | -20 % | -0 % |
-| pandacory | tiny | 2 | -20 % | +0 % |
-| demasoni | tiny | 2 | -20 % | +0 % |
+| rummynose | tiny | 3 | -20 % | -0 % |
+| platy | tiny | 5 | -20 % | +0 % |
 | whitecloud | tiny | 6 | -20 % | +0 % |
-| platy | tiny | 3 | -19 % | +0 % |
-| cardinal | tiny | 3 | -19 % | +0 % |
-| bluetang | salt | 2 | -19 % | -0 % |
+| molly | mid | 5 | -20 % | +0 % |
+| cardinal | tiny | 7 | -20 % | +0 % |
+| swordtail | mid | 5 | -20 % | +0 % |
+| sterbai | mid | 4 | -20 % | +0 % |
+| neon | tiny | 18 | -20 % | +0 % |
+| bluetang | salt | 2 | -20 % | -0 % |
 | yellowtang | salt | 2 | -19 % | -0 % |
+| bristlenose | mid | 13 | -19 % | +1 % |
 | cleanershrimp | salt | 7 | -19 % | -0 % |
 | mandarin | salt | 2 | -19 % | -0 % |
 | turbo | salt | 7 | -19 % | +0 % |
-| royalgramma | salt | 5 | -19 % | +0 % |
 | hermit | salt | 7 | -19 % | +0 % |
+| royalgramma | salt | 5 | -19 % | +0 % |
+| danio | tiny | 3 | -19 % | +1 % |
 | coralbeauty | salt | 7 | -19 % | +0 % |
 | watchman | salt | 7 | -19 % | +0 % |
-| ocellaris | salt | 7 | -19 % | +0 % |
-| danio | tiny | 3 | -19 % | +1 % |
 | guppy | tiny | 3 | -19 % | +1 % |
+| ocellaris | salt | 7 | -19 % | +0 % |
 | chromis | salt | 7 | -19 % | +0 % |
+| bronzecory | mid | 18 | -18 % | +2 % |
 
 ## Experts
 
@@ -84,7 +84,14 @@ Median ratio, experts 1.50, engine 1.44 (2 answers). Experts higher means they f
 
 ## Ambiguous counts (both dimensions near the anchor)
 
+- synth-shift A04 bronzecory ideal 8: water 112 %, floor 102 % (weighted 0.5)
+- synth-shift A04 bronzecory limit 11: water 126 %, floor 134 % (weighted 0.5)
 - synth-shift A05 neon ideal 4: water 99 %, floor 101 % (weighted 0.5)
+- synth-shift A05 bronzecory ideal 6: water 119 %, floor 101 % (weighted 0.5)
+- synth-shift A05 bronzecory limit 8: water 134 %, floor 127 % (weighted 0.5)
+- synth-shift A10 bronzecory limit 18: water 135 %, floor 128 % (weighted 0.5)
+- synth-shift A16 bronzecory limit 22: water 132 %, floor 130 % (weighted 0.5)
+- synth-shift B06 sterbai limit 30: water 149 %, floor 131 % (weighted 0.5)
 
 ## Left out
 

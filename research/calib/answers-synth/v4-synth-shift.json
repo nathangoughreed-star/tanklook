@@ -1,6 +1,6 @@
 {
  "survey": "v4",
- "build": "c7cb52e6",
+ "build": "cba9d609",
  "expert": "synth-shift",
  "expertKind": "ai",
  "modules": [
@@ -53,13 +53,17 @@
     "bronzecory"
    ],
    "ideal": 9,
-   "limit": 21
+   "limit": 21,
+   "mateIdeal": 8,
+   "mateLimit": 11
   },
   "A05": {
    "verdict": "unworkable",
    "confidence": "medium",
    "ideal": 4,
-   "limit": 13
+   "limit": 13,
+   "mateIdeal": 6,
+   "mateLimit": 8
   },
   "A06": {
    "verdict": "unworkable",
@@ -116,7 +120,9 @@
    "confidence": "medium",
    "change": "drop",
    "ideal": 0,
-   "limit": 29
+   "limit": 29,
+   "mateIdeal": 13,
+   "mateLimit": 18
   },
   "A11": {
    "verdict": "unworkable",
@@ -126,7 +132,9 @@
     "sae"
    ],
    "ideal": 4,
-   "limit": 14
+   "limit": 14,
+   "mateIdeal": 1,
+   "mateLimit": 21
   },
   "A12": {
    "verdict": "caution",
@@ -182,7 +190,9 @@
     "swordtail"
    ],
    "ideal": 4,
-   "limit": 20
+   "limit": 20,
+   "mateIdeal": 16,
+   "mateLimit": 22
   },
   "B01": {
    "verdict": "unworkable",
@@ -235,7 +245,9 @@
     "temperature"
    ],
    "ideal": 5,
-   "limit": 9
+   "limit": 9,
+   "mateIdeal": 22,
+   "mateLimit": 30
   },
   "B07": {
    "verdict": "unworkable",
@@ -275,7 +287,10 @@
    "verdict": "unworkable",
    "confidence": "medium",
    "change": "bigger",
-   "together": "yes"
+   "together": "yes",
+   "max": {
+    "kribensis": "2"
+   }
   },
   "B11": {
    "verdict": "unworkable",

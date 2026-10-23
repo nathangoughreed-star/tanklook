@@ -30,7 +30,7 @@ const J = V4J as any, T = T4 as any, sc = (id: string) => J.scenarios.find((s: a
 const agree = synthV4(J, T, { expert: 'synth-agree' }), shift = synthV4(J, T, { expert: 'synth-shift', load: 1.3, milder: true });
 
 describe('survey v4 answer parser', () => {
-  it('reads the build the survey prints', () => expect(buildV4(J)).toBe('c7cb52e6'));
+  it('reads the build the survey prints', () => expect(buildV4(J)).toBe('cba9d609'));
 
   it('keeps valid values and sets aside everything the survey does not offer, never coercing', () => {
     const r = checkAnswer(sc('B07'), { verdict: 'caution', change: 'fewer', changeSp: ['yellowlab', 'oscar'], together: 'maybe', reasons: ['aggression', 'boredom'],
@@ -38,6 +38,15 @@ describe('survey v4 answer parser', () => {
     expect(r.answer).toEqual({ verdict: 'caution', change: 'fewer', changeSp: ['yellowlab'], reasons: ['aggression'], ideal: 6, max: { demasoni: '12' }, confidence: 'high' });
     const why = Object.fromEntries(r.aside.map((x: any) => [x.field, x.value]));
     expect(why).toEqual({ changeSp: ['oscar'], together: 'maybe', reasons: ['boredom'], limit: '10', 'max.yellowlab': '4', colour: 'blue' });
+  });
+
+  it('reads the second counted species where the tank has one, and the krib cap on B10', () => {
+    const r = checkAnswer(sc('A04'), { verdict: 'caution', ideal: 10, limit: 14, mateIdeal: 4, mateLimit: '6' });
+    expect(r.answer).toEqual({ verdict: 'caution', ideal: 10, limit: 14, mateIdeal: 4 });
+    expect(r.aside.map((x: any) => x.field)).toEqual(['mateLimit']);
+    expect(checkAnswer(sc('A02'), { verdict: 'ideal', mateIdeal: 3 }).aside[0].why).toBe('this tank has no second counted species');
+    expect(checkAnswer(sc('B10'), { verdict: 'caution', max: { kribensis: '6+' } }).answer.max).toEqual({ kribensis: '6+' });
+    expect(checkAnswer(sc('B10'), { verdict: 'caution', max: { kribensis: '5' } }).aside[0].field).toBe('max.kribensis');
   });
 
   it('reads skip either way, refuses fields the tank does not ask, and a count status beside counts', () => {
@@ -52,15 +61,15 @@ describe('survey v4 answer parser', () => {
   });
 
   it('reads the LLM template shape inside a fenced reply and the HTML export shape alike', () => {
-    const llm = 'Here you go:\n```json\n' + JSON.stringify({ survey: 'v4', build: 'c7cb52e6', module: 'D', expert: 'model-x', expertKind: 'ai', answers: { D02: { verdict: 'problems', change: 'ratio', together: 'caution', reasons: ['breeding'], max: { leopardgecko: '2' }, confidence: 'low', note: '' } } }) + '\n```';
-    const html = { survey: 'v4', build: 'c7cb52e6', expert: 'model-x', expertKind: 'ai', modules: ['A'], answers: { A01: { verdict: 'ideal', change: 'nothing', bigEnough: 'yes', smallest: 'larger', confidence: 'medium', ms: 9000 } } };
+    const llm = 'Here you go:\n```json\n' + JSON.stringify({ survey: 'v4', build: 'cba9d609', module: 'D', expert: 'model-x', expertKind: 'ai', answers: { D02: { verdict: 'problems', change: 'ratio', together: 'caution', reasons: ['breeding'], max: { leopardgecko: '2' }, confidence: 'low', note: '' } } }) + '\n```';
+    const html = { survey: 'v4', build: 'cba9d609', expert: 'model-x', expertKind: 'ai', modules: ['A'], answers: { A01: { verdict: 'ideal', change: 'nothing', bigEnough: 'yes', smallest: 'larger', confidence: 'medium', ms: 9000 } } };
     const a = checkFile(J, jsonOf(llm), 'v4-model-x-D.json'), b = checkFile(J, html, 'export.json');
     expect(a.answers.D02.max).toEqual({ leopardgecko: '2' });
     expect(a.open.length).toBe(15); // module D has 16 tanks
     const m = merge([a, b]);
     expect(m.modules).toEqual(['A', 'D']);
     expect(Object.keys(m.answers).sort()).toEqual(['A01', 'D02']);
-    expect(m.build).toBe('c7cb52e6');
+    expect(m.build).toBe('cba9d609');
     expect(checkFile(J, { ...html, build: '859f1696' }).ok).toBe(false);
     expect(() => merge([a, checkFile(J, { ...html, expert: 'someone-else' })])).toThrow(/different experts/);
   });
@@ -88,10 +97,19 @@ describe('survey v4 in the fit', () => {
     expect(answersFit(R1 as any, fileV4(agree, R))).toBe(false);
   });
   it('maps verdict, confidence, skip and change onto the survey-2 rows', () => {
-    const f = fileV4({ ...agree, answers: { A04: { verdict: 'unworkable', change: 'drop', confidence: 'high', ideal: 8, limit: 12 }, A05: { skip: true }, A01: { verdict: 'ideal' } } }, R);
+    const f = fileV4({ ...agree, answers: { A04: { verdict: 'unworkable', change: 'drop', confidence: 'high', ideal: 8, limit: 12, mateStatus: 'no-valid-count' }, A05: { skip: true }, A01: { verdict: 'ideal' } } }, R);
     expect(f.answers).toEqual([{ id: 'A04', focal: { ideal: 8, limit: 12, status: {} }, overall: 2, floor: null, water: null, confidence: 2, limits: null, bigEnough: {}, together: null,
+      mate: { id: 'bronzecory', ideal: null, limit: null, status: { ideal: 'no-valid-count', limit: 'no-valid-count' } },
       review: { skip: ['overall'], why: 'v4 change "drop": a compatibility answer, not a room band' } }]);
     expect(f.v4).toEqual({ outside: 1, skipped: 1, carried: 0 });
+  });
+  it('fits the second counted species\' ideal and limit on the dimension it fills today', () => {
+    const a = R.scenarios.find((s: any) => s.id === 'A04');
+    expect(a.mate).toBe('bronzecory');
+    expect(a.mateLimit).toBe(true);
+    const f = fileV4({ ...agree, answers: { A04: { verdict: 'caution', ideal: 10, limit: 14, mateIdeal: 4, mateLimit: 6 } } }, R);
+    const fit = fitRound(R, [f]);
+    expect(fit.rows).toBe(5); // focal ideal + limit, mate ideal + limit, the overall band
   });
   it('moves nothing much for an expert who agrees with the app', () => {
     const fit = fitRound(R, [fileV4(agree, R)]);
@@ -101,6 +119,7 @@ describe('survey v4 in the fit', () => {
   it('reads the water scale down for an expert who keeps 30 % more fish', () => {
     const fit = fitRound(R, [fileV4(shift, R)]);
     expect(fit.g).toBeLessThan(0.85); // the round's cap is x0.8
+    expect(fit.f).toBeLessThan(0.85); // the six floor counts (the second counted species) read the floor down too
   });
   it('fits rounds 1-3a exactly as before (fit-round-1-2-3a-3.json)', () => {
     const tabled = [[R1, T1], [R2, T2], [R3A, T3A], [R3, T3]].map(([r, t]) => withTables(r, t));

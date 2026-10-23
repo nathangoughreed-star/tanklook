@@ -88,7 +88,7 @@ export function rowsOf(round, files) {
     if (rv.set && 'limits' in rv.set && a.limits !== limits) skipped.push(`${f.expert} ${a.id}: kept on review, "what limits" read as ${limits ?? 'room'} (${rv.why ?? 'see the review'})`);
     for (const k of skip) skipped.push(`${f.expert} ${a.id} ${k}: set aside on review (${rv.why ?? 'see the review'})`);
     const w = CONF_W[a.confidence] ?? 1, base = { expert: f.expert, s, w, picture: !!(a.picture ?? f.picture) };
-    const counts = [[s.focal, s.table, focalOf(a), ['ideal', 'limit'], 'focal'], ...(a.mate && s.mateTable ? [[a.mate.id, s.mateTable, a.mate, ['ideal'], 'mate']] : [])];
+    const counts = [[s.focal, s.table, focalOf(a), ['ideal', 'limit'], 'focal'], ...(a.mate && s.mateTable ? [[a.mate.id, s.mateTable, a.mate, s.mateLimit ? ['ideal', 'limit'] : ['ideal'], 'mate']] : [])]; // v4 asks the mate's limit too
     for (const [who, tbl, c, keys, role] of counts) for (const key of keys) {
       const n = skip.has(`${role}.${key}`) ? null : c[key];
       if (n == null || n === '') continue;
@@ -336,13 +336,15 @@ export function roundV4(J, T) {
     const t = T.tanks[s.id], sp = t.app.space;
     return { id: s.id, kind: s.stock.length > 1 ? 'mix' : 'single', gal: parseFloat(J.tanks[s.tank].name), dimsIn: J.tanks[s.tank].in, stock: s.stock.map(x => [x.id, x.n]),
       focal: s.focal, table: t.table, uses: t.uses, cls: t.cls, pct: { space: sp.pct, water: sp.water, floor: sp.floor }, salt: t.salt, tests: s.tests,
-      gate: t.app.compat?.level ?? 'ok', gateItems: t.app.compat?.items ?? [], minSp: s.min?.species ?? null, role: s.pairOf ? 'pair' : 'fresh', ...(s.pairOf ? { of: s.pairOf } : {}) };
+      gate: t.app.compat?.level ?? 'ok', gateItems: t.app.compat?.items ?? [], minSp: s.min?.species ?? null, role: s.pairOf ? 'pair' : 'fresh', ...(s.pairOf ? { of: s.pairOf } : {}),
+      // the second counted species (build cba9d609): ideal and limit, read on the dimension it fills today (t.uses)
+      ...(s.mate && t.mateTable ? { mate: s.mate, mateTable: t.mateTable, mateLimit: true } : {}) };
   });
   return { round: 'v4', label: 'v4', survey: 'v4', build, ideal: J.ideal, limit: J.limit, tables: T.made, scenarios };
 }
 
 /** A v4 answer file (one expert, answers keyed by tank) as the fit's answer file: the count tanks only; skipped tanks out; `verdict` the
- *  overall band; ideal / limit / countStatus the focal counts; confidence 0.5 / 1 / 1.5; change "notroom" and "not big enough" leave the
+ *  overall band; ideal / limit / countStatus the focal counts, mateIdeal / mateLimit / mateStatus the second counted species; confidence 0.5 / 1 / 1.5; change "notroom" and "not big enough" leave the
  *  tank out as in survey 2; a change that is not about room keeps the band out. `v4` says what was not fitted and why. */
 export function fileV4(f, R) {
   const by = Object.fromEntries(R.scenarios.map(s => [s.id, s])), answers = [];
@@ -355,6 +357,7 @@ export function fileV4(f, R) {
     answers.push({ id, focal: { ideal: a.ideal ?? null, limit: a.limit ?? null, status: a.countStatus ? { ideal: a.countStatus, limit: a.countStatus } : {} },
       overall: a.verdict != null ? V4_BAND[a.verdict] ?? null : null, floor: null, water: null, confidence: V4_CONF[a.confidence],
       limits: a.change === 'notroom' ? 'not-room' : null, bigEnough: a.bigEnough === 'no' && s.minSp ? { [s.minSp]: false } : {}, together: a.together ?? null,
+      ...(s.mate ? { mate: { id: s.mate, ideal: a.mateIdeal ?? null, limit: a.mateLimit ?? null, status: a.mateStatus ? { ideal: a.mateStatus, limit: a.mateStatus } : {} } } : {}),
       ...(a.note ? { note: a.note } : {}), ...(why ? { review: { skip: ['overall'], why: `v4 change "${a.change}": ${why}, not a room band` } } : {}) });
   }
   return { round: 'v4', survey: 'v4', build: f.build, expert: f.expert, expertKind: f.expertKind, made: f.made, answers, carried: [],

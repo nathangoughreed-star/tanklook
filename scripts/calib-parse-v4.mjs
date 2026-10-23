@@ -10,9 +10,9 @@ import { basename } from 'node:path';
 
 export const SCENARIOS_V4 = 'research/calib/v4/scenarios-v4.json';
 export const loadV4 = (p = SCENARIOS_V4) => JSON.parse(readFileSync(p, 'utf8'));
-/** The survey's build, as make-survey-v4.mjs computes it (FNV-1a over the tanks, stock, env and ask). */
+/** The survey's build, as make-survey-v4.mjs computes it (FNV-1a over the tanks, stock, env, the counted species and ask). */
 export function buildV4(J) {
-  const s = JSON.stringify(J.scenarios.map(x => [x.id, x.tank, J.tanks[x.tank].in, x.env, x.stock, x.focal ?? null, x.ask]));
+  const s = JSON.stringify(J.scenarios.map(x => [x.id, x.tank, J.tanks[x.tank].in, x.env, x.stock, x.focal ?? null, x.mate ?? null, x.ask]));
   let h = 0x811c9dc5;
   for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
   return h.toString(16).padStart(8, '0');
@@ -76,6 +76,12 @@ export function checkAnswer(s, a) {
         else if (isCount(v)) ans[k] = v; else put(k, v, 'a whole number, 0 or more, is expected (or countStatus)');
         break;
       case 'countStatus': one(COUNT_STATUS, 'counts'); break;
+      // the second counted species (six tanks since build cba9d609): the same meaning as ideal / limit
+      case 'mateIdeal': case 'mateLimit':
+        if (!s.mate || !asks.has('counts')) put(k, v, 'this tank has no second counted species');
+        else if (isCount(v)) ans[k] = v; else put(k, v, 'a whole number, 0 or more, is expected (or mateStatus)');
+        break;
+      case 'mateStatus': if (!s.mate) put(k, v, 'this tank has no second counted species'); else one(COUNT_STATUS, 'counts'); break;
       case 'bigEnough': one(['yes', 'no'], 'min'); break;
       case 'smallest': one([...(s.min?.sizes ?? []), 'larger'], 'min'); break;
       case 'max': case 'maxMales': {
@@ -102,6 +108,11 @@ export function checkAnswer(s, a) {
     put('countStatus', ans.countStatus, `given together with counts (${ans.ideal ?? '-'} / ${ans.limit ?? '-'}): set aside with them`);
     for (const c of ['ideal', 'limit']) if (ans[c] !== undefined) { put(c, ans[c], 'given together with countStatus'); delete ans[c]; }
     delete ans.countStatus;
+  }
+  if (ans.mateStatus && (ans.mateIdeal !== undefined || ans.mateLimit !== undefined)) {
+    put('mateStatus', ans.mateStatus, `given together with counts (${ans.mateIdeal ?? '-'} / ${ans.mateLimit ?? '-'}): set aside with them`);
+    for (const c of ['mateIdeal', 'mateLimit']) if (ans[c] !== undefined) { put(c, ans[c], 'given together with mateStatus'); delete ans[c]; }
+    delete ans.mateStatus;
   }
   if (ans.changeSp && !['fewer', 'drop'].includes(ans.change)) { put('changeSp', ans.changeSp, `only read with change fewer or drop (change is ${ans.change ?? 'not given'})`); delete ans.changeSp; }
   if (!ans.verdict) put('verdict', flat.verdict ?? null, 'no verdict: the tank counts as unanswered');

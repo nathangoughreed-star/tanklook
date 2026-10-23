@@ -20,7 +20,7 @@ import { getSpecies } from '../data/species';
 import { footprint } from '../scene/shape';
 import { isSexed, notesOf, overWarn, pairRule, writePairs, type Pk } from '../ui/stockPlanLogic';
 import { tileState } from '../ui/fullnessTile';
-import { classOf, setupOf, type TableRow } from './scenario';
+import { classOf, gateOf, setupOf, type TableRow } from './scenario';
 import type { TankSetup } from '../scene/types';
 
 type Dims = [number, number, number];
@@ -28,7 +28,7 @@ export interface V4Stock { id: string; n: number; sex?: 'm' | 'f' | [number, num
 export interface V4Tank { name: string; in: Dims; kind: 'aquarium' | 'terrarium' | 'paludarium' }
 export interface V4Scenario {
   id: string; module: string; tank: string; env: { water: 'fresh' | 'salt' | 'none' | 'half'; tempC?: number; note?: string };
-  stock: V4Stock[]; focal?: string; ask: string[]; tests: string[]; why: string; pairOf?: string;
+  stock: V4Stock[]; focal?: string; mate?: string; ask: string[]; tests: string[]; why: string; pairOf?: string;
   min?: { species: string; sizes: string[]; label?: string }; max?: { species: string; options: string[]; label?: string }[];
   maxMales?: { species: string; options: string[] }[];
 }
@@ -216,10 +216,16 @@ export function retableV4(doc: V4Doc, sc: V4Scenario) {
   const app = readApp(sc, dims), counts = sc.ask.includes('counts') && sc.focal;
   const cls = Object.fromEntries(sc.stock.map(s => { const sp = getSpecies(s.id)!; return [s.id, sp.salt ? 'salt' : classOf(s.id)]; }));
   const uses = Object.fromEntries(sc.stock.map(s => [s.id, { water: getSpecies(s.id)!.kind !== 'snail', floor: floorShare(getSpecies(s.id)!) }]));
+  // adult lengths as the engine has them at retable time (the female's where the species is drawn apart), mm
+  const tlMm = Object.fromEntries(sc.stock.map(s => { const sp = getSpecies(s.id)!; return [s.id, sp.female ? { m: sp.tl, f: sp.female.tl } : sp.tl]; }));
+  // a mix's label as rounds 1-3 read it (scenario.ts gateOf: compatibility at the groups' minimums, no / one shared degree = high, narrow = concern)
+  const gate = sc.stock.length > 1 ? gateOf(dims, sc.stock.map(s => s.id)) : null;
   return {
     readable: true, kind: T.kind, water: sc.env.water, salt: sc.env.water === 'salt', ...(sc.env.water === 'half' ? { note: 'paludarium: the app\'s paludarium layout, water at the stated depth; read as the app reads it today' } : {}),
-    unmodelled: unmodelled(sc), cls, uses, app,
+    unmodelled: unmodelled(sc), cls, uses, tlMm, ...(gate ? { gate: gate.gate, gateItems: gate.items } : {}), app,
     ...(sc.min ? { minSizes: sc.min.sizes.map(label => { const d = sizeOf(label); return { label, dims: d, ...(d ? minAt(sc, sc.min!.species, d) : { level: null, why: 'no size in the label' }) }; }) } : {}),
     ...(counts ? { table: tableV4(sc, dims, sc.focal!, doc.limit) } : {}),
+    // the second counted species (a bottom dweller, survey v4 build cba9d609), the focal held as shown
+    ...(counts && sc.mate ? { mateTable: tableV4(sc, dims, sc.mate, doc.limit) } : {}),
   };
 }

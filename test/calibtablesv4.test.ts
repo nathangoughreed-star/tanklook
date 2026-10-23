@@ -1,9 +1,9 @@
 // Survey v4 (research/calib/v4/survey-v4-design.md section 9.1): what the app says today about each of the 60 tanks, one engine run per
 // tank, written to research/calib/tables/v4.json for scripts/calib-fit.mjs and scripts/calib-review-v4.mjs. The tanks are frozen (build
-// c7cb52e6); only the readings are recomputed. GEN_RETABLE_V4=1 npx vitest run test/calibtablesv4.test.ts rewrites the file; the lock
+// cba9d609); only the readings are recomputed. GEN_RETABLE_V4=1 npx vitest run test/calibtablesv4.test.ts rewrites the file; the lock
 // below fails when the engine has moved since (rerun the line above, then refit and rereview).
 import { describe, expect, it } from 'vitest';
-import { pickOf, readApp, retableV4, setupV4, stockAt, verdictOf, waterDepthIn, type V4Doc } from '../src/calib/v4';
+import { pickOf, retableV4, setupV4, stockAt, verdictOf, waterDepthIn, type V4Doc } from '../src/calib/v4';
 import { stockingOf } from '../src/scene/stocking';
 import V4J from '../research/calib/v4/scenarios-v4.json';
 
@@ -11,16 +11,18 @@ const V4 = V4J as unknown as V4Doc;
 // @ts-expect-error node only (no node types in this project)
 const fs = await import('node:fs');
 const url = new URL('../research/calib/tables/v4.json', import.meta.url);
-/** The survey's build (make-survey-v4.mjs): FNV-1a over the tanks, stock, env and ask. */
+/** The survey's build (make-survey-v4.mjs): FNV-1a over the tanks, stock, env, the counted species and ask. */
 function buildOf(J: any) {
-  const s = JSON.stringify(J.scenarios.map((x: any) => [x.id, x.tank, J.tanks[x.tank].in, x.env, x.stock, x.focal ?? null, x.ask]));
+  const s = JSON.stringify(J.scenarios.map((x: any) => [x.id, x.tank, J.tanks[x.tank].in, x.env, x.stock, x.focal ?? null, x.mate ?? null, x.ask]));
   let h = 0x811c9dc5;
   for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
   return h.toString(16).padStart(8, '0');
 }
+/** The tables entry without the count tables (one engine run per tank, plus the gate): what the lock compares. */
+const retableLite = (s: V4Doc['scenarios'][number]) => { const { table: _t, mateTable: _m, minSizes: _z, ...rest } = retableV4({ ...V4, scenarios: [] } as V4Doc, { ...s, min: undefined, ask: s.ask.filter(a => a !== 'counts') }) as any; return rest; };
 const sc = (id: string) => V4.scenarios.find(s => s.id === id)!;
 /** The lock's fingerprint of a reading: the overall verdict and the space percent as shown. */
-const lockOf = (t: any) => t.readable ? [t.app.verdict, t.app.space ? +t.app.space.pct.toFixed(6) : null, t.app.herp.length, t.app.crowd.length, t.app.compat?.level ?? null] : null;
+const lockOf = (t: any) => t.readable ? [t.app.verdict, t.app.space ? +t.app.space.pct.toFixed(6) : null, t.app.herp.length, t.app.crowd.length, t.app.compat?.level ?? null, t.gate ?? null, t.uses, t.tlMm] : null;
 
 describe('survey v4 engine tables', () => {
   if ((globalThis as any).process?.env.GEN_RETABLE_V4) {
@@ -31,20 +33,21 @@ describe('survey v4 engine tables', () => {
     }, 600000);
   }
 
-  it('is the build the survey was made from', () => expect(buildOf(V4J)).toBe('c7cb52e6'));
+  it('is the build the survey was made from', () => expect(buildOf(V4J)).toBe('cba9d609'));
 
   it('has a reading for every tank, on the engine as it is now (else: GEN_RETABLE_V4=1 npx vitest run test/calibtablesv4.test.ts)', () => {
     expect(fs.existsSync(url), 'no research/calib/tables/v4.json').toBe(true);
     const T = JSON.parse(fs.readFileSync(url, 'utf8'));
-    expect(T.build).toBe('c7cb52e6');
+    expect(T.build).toBe('cba9d609');
     for (const s of V4.scenarios) {
       const t = T.tanks[s.id];
       expect(t, s.id).toBeTruthy();
       if (!t.readable) continue;
-      const now = { readable: true, app: readApp(s, V4.tanks[s.tank].in) };
+      const now = retableLite(s);
       expect(lockOf(now), `${s.id}: the engine moved since the tables were made`).toEqual(lockOf(t));
       // count tables exactly for the tanks that ask counts, with row n = the shown count
       expect(!!t.table, `${s.id} table`).toBe(s.ask.includes('counts'));
+      expect(!!t.mateTable, `${s.id} mate table`).toBe(s.ask.includes('counts') && !!s.mate);
       if (t.table) expect(Object.values(t.table[s.stock.find(x => x.id === s.focal)!.n].water as Record<string, number>).reduce((a, b) => a + b, 0)).toBeCloseTo(t.app.space.water, 6);
     }
   });

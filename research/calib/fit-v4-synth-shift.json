@@ -8,8 +8,8 @@
   "pairs": 0
  },
  "solver": {
-  "it": 63,
-  "gnorm": 0.00000385500656252519
+  "it": 60,
+  "gnorm": 8.576194677574067e-7
  },
  "skipped": [
   "synth-shift v4: 22 count tanks read; 38 answers on tanks outside the count fit (no counts asked, or no space.* / golden.* tag); 0 count tanks skipped by the expert",
@@ -27,311 +27,319 @@
   "synth-shift C08 overall: set aside on review (v4 change \"drop\": a compatibility answer, not a room band)"
  ],
  "flagged": [
-  "synth-shift A05 neon ideal 4: water 99 %, floor 101 % (weighted 0.5)"
+  "synth-shift A04 bronzecory ideal 8: water 112 %, floor 102 % (weighted 0.5)",
+  "synth-shift A04 bronzecory limit 11: water 126 %, floor 134 % (weighted 0.5)",
+  "synth-shift A05 neon ideal 4: water 99 %, floor 101 % (weighted 0.5)",
+  "synth-shift A05 bronzecory ideal 6: water 119 %, floor 101 % (weighted 0.5)",
+  "synth-shift A05 bronzecory limit 8: water 134 %, floor 127 % (weighted 0.5)",
+  "synth-shift A10 bronzecory limit 18: water 135 %, floor 128 % (weighted 0.5)",
+  "synth-shift A16 bronzecory limit 22: water 132 %, floor 130 % (weighted 0.5)",
+  "synth-shift B06 sterbai limit 30: water 149 %, floor 131 % (weighted 0.5)"
  ],
- "rows": 52,
+ "rows": 64,
  "held": 0,
  "g": 0.8,
- "f": 1.079,
+ "f": 0.8,
  "class": {
-  "big": 0.9531,
-  "invert": 0.9915,
-  "mid": 0.9816,
-  "salt": 1.0103,
-  "tiny": 1.0036
+  "big": 0.9472,
+  "invert": 0.9906,
+  "mid": 0.9975,
+  "salt": 1.0072,
+  "tiny": 0.9987
  },
  "species": {
   "amano": {
-   "mult": 0.7932,
-   "own": 1,
+   "mult": 0.7924,
+   "own": 0.9999,
    "cls": "invert",
    "answers": 2
   },
   "betta": {
-   "mult": 0.7837,
-   "own": 0.9981,
+   "mult": 0.7957,
+   "own": 0.9972,
    "cls": "mid",
    "answers": 4
   },
   "bluetang": {
-   "mult": 0.8073,
-   "own": 0.9989,
+   "mult": 0.8048,
+   "own": 0.9988,
    "cls": "salt",
    "answers": 2
   },
   "boesemani": {
-   "mult": 0.786,
-   "own": 1.0009,
+   "mult": 0.7977,
+   "own": 0.9997,
    "cls": "mid",
-   "answers": 2
+   "answers": 4
   },
   "bristlenose": {
-   "mult": 0.7842,
-   "own": 0.9986,
+   "mult": 0.8056,
+   "own": 1.0095,
    "cls": "mid",
-   "answers": 7
+   "answers": 13
   },
   "bronzecory": {
-   "mult": 0.7862,
-   "own": 1.0012,
+   "mult": 0.8163,
+   "own": 1.0229,
    "cls": "mid",
-   "answers": 10
+   "answers": 18
   },
   "cardinal": {
-   "mult": 0.8052,
-   "own": 1.0029,
+   "mult": 0.8007,
+   "own": 1.0021,
    "cls": "tiny",
-   "answers": 3
+   "answers": 7
   },
   "cherrybarb": {
-   "mult": 0.7853,
-   "own": 1.0001,
+   "mult": 0.7977,
+   "own": 0.9997,
    "cls": "mid",
-   "answers": 2
+   "answers": 4
   },
   "cherryshrimp": {
-   "mult": 0.7902,
-   "own": 0.9962,
+   "mult": 0.7893,
+   "own": 0.9959,
    "cls": "invert",
    "answers": 8
   },
   "chili": {
-   "mult": 0.7897,
-   "own": 0.9836,
+   "mult": 0.7845,
+   "own": 0.9818,
    "cls": "tiny",
    "answers": 5
   },
   "chromis": {
-   "mult": 0.8108,
-   "own": 1.0032,
+   "mult": 0.8078,
+   "own": 1.0025,
    "cls": "salt",
    "answers": 7
   },
   "cleanershrimp": {
-   "mult": 0.8081,
-   "own": 0.9999,
+   "mult": 0.8056,
+   "own": 0.9998,
    "cls": "salt",
    "answers": 7
   },
   "clownloach": {
-   "mult": 0.7625,
+   "mult": 0.7578,
    "own": 1,
    "cls": "big",
    "answers": 0
   },
   "coralbeauty": {
-   "mult": 0.8089,
-   "own": 1.0008,
+   "mult": 0.8064,
+   "own": 1.0007,
    "cls": "salt",
    "answers": 7
   },
   "danio": {
-   "mult": 0.8099,
-   "own": 1.0088,
+   "mult": 0.8062,
+   "own": 1.009,
    "cls": "tiny",
    "answers": 3
   },
   "demasoni": {
-   "mult": 0.8031,
-   "own": 1.0002,
+   "mult": 0.798,
+   "own": 0.9987,
    "cls": "tiny",
    "answers": 2
   },
   "discus": {
-   "mult": 0.7671,
+   "mult": 0.7624,
    "own": 1.0061,
    "cls": "big",
-   "answers": 5
+   "answers": 7
   },
   "dwarfgourami": {
-   "mult": 0.7853,
-   "own": 1,
+   "mult": 0.7977,
+   "own": 0.9997,
    "cls": "mid",
    "answers": 2
   },
   "ember": {
-   "mult": 0.801,
-   "own": 0.9976,
+   "mult": 0.7959,
+   "own": 0.9961,
    "cls": "tiny",
    "answers": 2
   },
   "goldfish": {
-   "mult": 0.7523,
-   "own": 0.9866,
+   "mult": 0.7481,
+   "own": 0.9872,
    "cls": "big",
    "answers": 3
   },
   "gourami": {
-   "mult": 0.7851,
-   "own": 0.9998,
+   "mult": 0.7975,
+   "own": 0.9993,
    "cls": "mid",
-   "answers": 1
+   "answers": 3
   },
   "guppy": {
-   "mult": 0.8105,
-   "own": 1.0095,
+   "mult": 0.8066,
+   "own": 1.0096,
    "cls": "tiny",
    "answers": 3
   },
   "harlequin": {
-   "mult": 0.7854,
-   "own": 1.0002,
+   "mult": 0.7956,
+   "own": 0.997,
    "cls": "mid",
    "answers": 2
   },
   "hermit": {
-   "mult": 0.8086,
-   "own": 1.0004,
+   "mult": 0.8059,
+   "own": 1.0002,
    "cls": "salt",
    "answers": 7
   },
   "honeygourami": {
-   "mult": 0.776,
-   "own": 0.9882,
+   "mult": 0.7875,
+   "own": 0.9868,
    "cls": "mid",
    "answers": 3
   },
   "kuhli": {
-   "mult": 0.7838,
-   "own": 0.9981,
+   "mult": 0.7942,
+   "own": 0.9952,
    "cls": "mid",
-   "answers": 4
+   "answers": 6
   },
   "mandarin": {
-   "mult": 0.8081,
+   "mult": 0.8057,
    "own": 0.9999,
    "cls": "salt",
    "answers": 2
   },
   "molly": {
-   "mult": 0.7905,
-   "own": 1.0066,
+   "mult": 0.8003,
+   "own": 1.0029,
    "cls": "mid",
-   "answers": 3
+   "answers": 5
   },
   "neon": {
-   "mult": 0.8003,
-   "own": 0.9969,
+   "mult": 0.803,
+   "own": 1.005,
    "cls": "tiny",
-   "answers": 12
+   "answers": 18
   },
   "nerite": {
-   "mult": 0.7932,
+   "mult": 0.7925,
    "own": 1,
    "cls": "invert",
    "answers": 9
   },
   "ocellaris": {
-   "mult": 0.8092,
-   "own": 1.0011,
+   "mult": 0.8066,
+   "own": 1.001,
    "cls": "salt",
    "answers": 7
   },
   "oscar": {
-   "mult": 0.7625,
+   "mult": 0.7578,
    "own": 1,
    "cls": "big",
    "answers": 0
   },
   "oto": {
-   "mult": 0.8027,
-   "own": 0.9998,
+   "mult": 0.7984,
+   "own": 0.9993,
    "cls": "tiny",
-   "answers": 1
+   "answers": 3
   },
   "pandacory": {
-   "mult": 0.803,
-   "own": 1.0001,
+   "mult": 0.7977,
+   "own": 0.9984,
    "cls": "tiny",
    "answers": 2
   },
   "peacock": {
-   "mult": 0.7796,
-   "own": 0.9928,
+   "mult": 0.7903,
+   "own": 0.9903,
    "cls": "mid",
    "answers": 3
   },
   "platy": {
-   "mult": 0.805,
-   "own": 1.0027,
+   "mult": 0.7993,
+   "own": 1.0004,
    "cls": "tiny",
-   "answers": 3
+   "answers": 5
   },
   "pygmycory": {
-   "mult": 0.8026,
-   "own": 0.9996,
+   "mult": 0.7984,
+   "own": 0.9993,
    "cls": "tiny",
    "answers": 2
   },
   "royalgramma": {
-   "mult": 0.8084,
+   "mult": 0.8059,
    "own": 1.0002,
    "cls": "salt",
    "answers": 5
   },
   "rummynose": {
-   "mult": 0.8027,
-   "own": 0.9998,
+   "mult": 0.7985,
+   "own": 0.9994,
    "cls": "tiny",
-   "answers": 1
-  },
-  "sae": {
-   "mult": 0.7627,
-   "own": 1.0003,
-   "cls": "big",
-   "answers": 2
-  },
-  "sterbai": {
-   "mult": 0.7895,
-   "own": 1.0054,
-   "cls": "mid",
-   "answers": 2
-  },
-  "swordtail": {
-   "mult": 0.7922,
-   "own": 1.0088,
-   "cls": "mid",
    "answers": 3
   },
+  "sae": {
+   "mult": 0.7571,
+   "own": 0.9991,
+   "cls": "big",
+   "answers": 4
+  },
+  "sterbai": {
+   "mult": 0.802,
+   "own": 1.005,
+   "cls": "mid",
+   "answers": 4
+  },
+  "swordtail": {
+   "mult": 0.8011,
+   "own": 1.0039,
+   "cls": "mid",
+   "answers": 5
+  },
   "syno": {
-   "mult": 0.7518,
-   "own": 0.986,
+   "mult": 0.7455,
+   "own": 0.9837,
    "cls": "big",
    "answers": 3
   },
   "turbo": {
-   "mult": 0.8083,
+   "mult": 0.8058,
    "own": 1,
    "cls": "salt",
    "answers": 7
   },
   "watchman": {
-   "mult": 0.8089,
-   "own": 1.0008,
+   "mult": 0.8064,
+   "own": 1.0007,
    "cls": "salt",
    "answers": 7
   },
   "whitecloud": {
-   "mult": 0.8031,
-   "own": 1.0003,
+   "mult": 0.7993,
+   "own": 1.0004,
    "cls": "tiny",
    "answers": 6
   },
   "yellowlab": {
-   "mult": 0.7799,
-   "own": 0.9932,
+   "mult": 0.7903,
+   "own": 0.9904,
    "cls": "mid",
    "answers": 5
   },
   "yellowtang": {
-   "mult": 0.8078,
+   "mult": 0.8053,
    "own": 0.9994,
    "cls": "salt",
    "answers": 2
   }
  },
  "capped": [
-  "g"
+  "g",
+  "f"
  ],
  "bias": {
   "synth-shift": 0
@@ -339,8 +347,8 @@
  "error": {
   "heldBefore": null,
   "heldAfter": null,
-  "fitBefore": 0.26784322254948356,
-  "fitAfter": 0.04211182441033019,
+  "fitBefore": 0.2672326400631946,
+  "fitAfter": 0.04437867706793477,
   "disagreement": null
  },
  "kinds": {

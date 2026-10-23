@@ -1,6 +1,6 @@
 # Calibration review, survey v4: synth-shift
 
-Build c7cb52e6. Engine readings: the current engine (research/calib/tables/v4.json, 2026-10-23). 1 expert (synth-shift (an AI model): modules A, B, C, D). With more than one expert each tank reads their median. The app's overall verdict is src/calib/v4.ts verdictOf, from its parts (space band, tank minimum, fighting warnings, compatibility, temperature, herp checks, group bands); "milder" means the experts judge the tank less severely than the app.
+Build cba9d609. Engine readings: the current engine (research/calib/tables/v4.json, 2026-10-23). 1 expert (synth-shift (an AI model): modules A, B, C, D). With more than one expert each tank reads their median. The app's overall verdict is src/calib/v4.ts verdictOf, from its parts (space band, tank minimum, fighting warnings, compatibility, temperature, herp checks, group bands); "milder" means the experts judge the tank less severely than the app.
 
 ## Verdict per tag
 
@@ -44,6 +44,7 @@ Flagged: half or more of the tag's answered tanks a band off the app, all in the
 | groups.territory-banggai | C10 | problems | problems | 1 | 0 | 0 |  |
 | groups.territory-bolivian | B14 | problems | problems | 1 | 0 | 0 |  |
 | groups.territory-gramma | C11 | problems | problems | 1 | 0 | 0 |  |
+| groups.territory-krib | B10 | unworkable | unworkable | 1 | 0 | 0 |  |
 | groups.territory-puffer | B13 | unworkable | unworkable | 1 | 0 | 0 |  |
 | groups.yellowlab-min | B09 | unworkable | unworkable | 1 | 0 | 0 |  |
 | herp.adf-min | D12 | problems | caution | 0 | 1 | 0 | **flag: experts milder** |
@@ -145,14 +146,14 @@ Flagged: half or more of the tag's answered tanks a band off the app, all in the
 | problems | 0 | 0 | 0 | 0 |
 | unworkable | 0 | 0 | 0 | 0 |
 
-**groups** (15 tanks)
+**groups** (16 tanks)
 
 | app \ experts | ideal | caution | problems | unworkable |
 |---|---|---|---|---|
 | ideal | 0 | 0 | 0 | 0 |
 | caution | 1 | 2 | 0 | 0 |
 | problems | 0 | 1 | 5 | 0 |
-| unworkable | 0 | 0 | 0 | 6 |
+| unworkable | 0 | 0 | 0 | 7 |
 
 **herp** (15 tanks)
 
@@ -192,27 +193,33 @@ Flagged: half or more of the tag's answered tanks a band off the app, all in the
 
 ## Count fix per tank
 
-Each count read on the dimension its species fills (as calib-fit.mjs does). "fix" is the multiplier the engine's reading needs (below 0 % the engine reads the tank too full); "least" is the smallest move that makes the expert's count the engine's own nearest count, so a rounded small count is not a disagreement. Fitted (calib-fit.mjs): the tanks with a space.* or golden.* tag.
+Each count read on the dimension its species fills today (as calib-fit.mjs does). "fix" is the multiplier the engine's reading needs (below 0 % the engine reads the tank too full); "least" is the smallest move that makes the expert's count the engine's own nearest count, so a rounded small count is not a disagreement. A tank's fix pools its counted species and its second counted species (the bottom dweller of six tanks, the line below it, marked †). Fitted (calib-fit.mjs): the tanks with a space.* or golden.* tag.
 
 | tank | counted | shown -> engine | ideal -> engine | limit -> engine | fix | least | fitted |
 |---|---|---|---|---|---|---|---|
 | A02 | neon (water) | 6 -> 68 % | 10 -> 100 % | 15 -> 129 % | -24 % | -22 % | yes |
 | A03 | guppy (water) | 8 -> 131 % | 6 -> 102 % | 8 -> 131 % | -25 % | -20 % | yes |
-| A04 | neon (water) | 10 -> 101 % | 9 -> 98 % | 21 -> 131 % | -23 % | -22 % | yes |
-| A05 | neon (water) | 10 -> 119 % | 4 -> 99 % | 13 -> 129 % | -23 % | -22 % | yes |
+| A04 | neon (water) | 10 -> 101 % | 9 -> 98 % | 21 -> 131 % | -25 % | -22 % | yes |
+|  | bronzecory † (floor) | 6 -> 81 % | 8 -> 102 % | 11 -> 134 % |  |  |  |
+| A05 | neon (water) | 10 -> 119 % | 4 -> 99 % | 13 -> 129 % | -23 % | -20 % | yes |
+|  | bronzecory † (floor) | 6 -> 101 % | 6 -> 101 % | 8 -> 127 % |  |  |  |
 | A06 | harlequin (water) | 12 -> 78 % | 20 -> 97 % | 36 -> 129 % | -23 % | -22 % | yes |
 | A08 | rummynose (water) | 15 -> 122 % | 0 | 21 -> 130 % | -23 % | -23 % | no |
-| A10 | neon (water) | 20 -> 122 % | 0 | 29 -> 130 % | -23 % | -23 % | yes |
-| A11 | boesemani (water) | 8 -> 113 % | 4 -> 99 % | 14 -> 130 % | -24 % | -23 % | yes |
+| A10 | neon (water) | 20 -> 122 % | 0 | 29 -> 130 % | -23 % | -21 % | yes |
+|  | bronzecory † (floor) | 12 -> 91 % | 13 -> 97 % | 18 -> 128 % |  |  |  |
+| A11 | boesemani (water) | 8 -> 113 % | 4 -> 99 % | 14 -> 130 % | -23 % | -22 % | yes |
+|  | kuhli † (max) | 10 -> 113 % | 1 -> 97 % | 21 -> 130 % |  |  |  |
 | A12 | danio (water) | 12 -> 99 % | 12 -> 99 % | 19 -> 129 % | -23 % | -22 % | yes |
 | A13 | neon (water) | 20 -> 142 % | 12 -> 99 % | 18 -> 132 % | -24 % | -22 % | yes |
 | A14 | ember (water) | 10 -> 85 % | 18 -> 98 % | 42 -> 130 % | -23 % | -23 % | yes |
 | A15 | chili (water) | 12 -> 92 % | 14 -> 97 % | 27 -> 130 % | -23 % | -22 % | yes |
-| A16 | platy (water) | 6 -> 102 % | 4 -> 97 % | 20 -> 130 % | -23 % | -22 % | yes |
-| B02 | clownloach (floor) | 5 -> 50 % | cant-say | cant-say | - | - | yes |
+| A16 | platy (water) | 6 -> 102 % | 4 -> 97 % | 20 -> 130 % | -22 % | -21 % | yes |
+|  | bronzecory † (floor) | 8 -> 47 % | 16 -> 95 % | 22 -> 130 % |  |  |  |
+| B02 | clownloach (floor) | 5 -> 50 % | cant-say | cant-say |  |  | yes |
 | B04 | goldfish (max) | 3 -> 82 % | 4 -> 107 % | 5 -> 130 % | -27 % | -18 % | yes |
 | B05 | discus (water) | 6 -> 82 % | 7 -> 95 % | 10 -> 136 % | -24 % | -19 % | yes |
-| B06 | discus (water) | 6 -> 102 % | 5 -> 94 % | 9 -> 127 % | -21 % | -17 % | yes |
+| B06 | discus (water) | 6 -> 102 % | 5 -> 94 % | 9 -> 127 % | -22 % | -19 % | yes |
+|  | sterbai † (floor) | 8 -> 35 % | 22 -> 96 % | 30 -> 131 % |  |  |  |
 | B07 | yellowlab (max) | 8 -> 85 % | 11 -> 96 % | 21 -> 130 % | -23 % | -21 % | yes |
 | B08 | peacock (water) | 5 -> 95 % | 6 -> 99 % | 15 -> 130 % | -24 % | -23 % | yes |
 | B15 | oto (max) | 8 -> 98 % | 8 -> 98 % | 13 -> 130 % | -23 % | -21 % | no |
@@ -240,39 +247,39 @@ Flagged: the median least fix of the tag's count tanks more than 15 % off.
 | compat.prey-sw-inverts | C03 | -24 % | -23 % | **flag: engine reads too full** |
 | compat.temper-vs-school | A02 | -24 % | -22 % | **flag: engine reads too full** |
 | compat.temperature-narrow | A02 A06 | -23 % | -22 % | **flag: engine reads too full** |
-| compat.temperature-warm | B06 | -21 % | -17 % | **flag: engine reads too full** |
+| compat.temperature-warm | B06 | -22 % | -19 % | **flag: engine reads too full** |
 | golden.discus-85 | B05 | -24 % | -19 % | **flag: engine reads too full** |
 | groups.chromis | C04 | -25 % | -22 % | **flag: engine reads too full** |
 | groups.demasoni | B07 | -23 % | -21 % | **flag: engine reads too full** |
 | groups.grazer-density | B15 | -23 % | -21 % | **flag: engine reads too full** |
-| groups.sae | A11 | -24 % | -23 % | **flag: engine reads too full** |
+| groups.sae | A11 | -23 % | -22 % | **flag: engine reads too full** |
 | groups.sexed | A03 A16 | -24 % | -21 % | **flag: engine reads too full** |
 | groups.syno | B08 | -24 % | -23 % | **flag: engine reads too full** |
 | limits.food-not-room | B15 | -23 % | -21 % | **flag: engine reads too full** |
 | space.big-class-mass | B04 | -27 % | -18 % | **flag: engine reads too full** |
-| space.canonical-20 | A04 | -23 % | -22 % | **flag: engine reads too full** |
+| space.canonical-20 | A04 | -25 % | -22 % | **flag: engine reads too full** |
 | space.chili-refit | A15 | -23 % | -22 % | **flag: engine reads too full** |
 | space.community-29 | A06 | -23 % | -22 % | **flag: engine reads too full** |
 | space.coolwater | A12 | -23 % | -22 % | **flag: engine reads too full** |
-| space.discus-community | B06 | -21 % | -17 % | **flag: engine reads too full** |
-| space.floor | A04 | -23 % | -22 % | **flag: engine reads too full** |
-| space.footprint-vs-height | A05 | -23 % | -22 % | **flag: engine reads too full** |
-| space.full-community | A10 | -23 % | -23 % | **flag: engine reads too full** |
+| space.discus-community | B06 | -22 % | -19 % | **flag: engine reads too full** |
+| space.floor | A04 | -25 % | -22 % | **flag: engine reads too full** |
+| space.footprint-vs-height | A05 | -23 % | -20 % | **flag: engine reads too full** |
+| space.full-community | A10 | -23 % | -21 % | **flag: engine reads too full** |
 | space.invert-class | A15 B16 | -23 % | -22 % | **flag: engine reads too full** |
-| space.kuhli-floor-factor | A11 | -24 % | -23 % | **flag: engine reads too full** |
+| space.kuhli-floor-factor | A11 | -23 % | -22 % | **flag: engine reads too full** |
 | space.livebearer-nano | A03 | -25 % | -20 % | **flag: engine reads too full** |
-| space.livebearers | A16 | -23 % | -22 % | **flag: engine reads too full** |
+| space.livebearers | A16 | -22 % | -21 % | **flag: engine reads too full** |
 | space.malawi-mix | B08 | -24 % | -23 % | **flag: engine reads too full** |
 | space.mbuna-convention | B07 | -23 % | -21 % | **flag: engine reads too full** |
-| space.mid-class | A11 | -24 % | -23 % | **flag: engine reads too full** |
+| space.mid-class | A11 | -23 % | -22 % | **flag: engine reads too full** |
 | space.nano | A02 | -24 % | -22 % | **flag: engine reads too full** |
 | space.reef-125 | C08 | -23 % | -22 % | **flag: engine reads too full** |
 | space.reef-40 | C04 | -25 % | -22 % | **flag: engine reads too full** |
 | space.salt-scale | C05 C08 | -23 % | -21 % | **flag: engine reads too full** |
-| space.school-curve | A10 A13 | -24 % | -23 % | **flag: engine reads too full** |
-| space.swordtail-refit | A16 | -23 % | -22 % | **flag: engine reads too full** |
+| space.school-curve | A10 A13 | -23 % | -22 % | **flag: engine reads too full** |
+| space.swordtail-refit | A16 | -22 % | -21 % | **flag: engine reads too full** |
 | space.tiny-class | A14 | -23 % | -23 % | **flag: engine reads too full** |
-| space.water | A04 | -23 % | -22 % | **flag: engine reads too full** |
+| space.water | A04 | -25 % | -22 % | **flag: engine reads too full** |
 | space.water-small | A13 | -24 % | -22 % | **flag: engine reads too full** |
 | tankmin.angel-height | A08 | -23 % | -23 % | **flag: engine reads too full** |
 | tankmin.coralbeauty | C04 | -25 % | -22 % | **flag: engine reads too full** |
@@ -411,6 +418,7 @@ The app's figure for this tank (groups.ts territory or max, one for a solo speci
 | tank | question | app figure | app option | experts | |
 |---|---|---|---|---|---|
 | B07 | max demasoni | no limit (no limit) | 16+ | 16+ |  |
+| B10 | max kribensis | 2 (groups.ts territory) | 2 | 2 |  |
 | B12 | maxMales dwarfgourami | 2 (groups.ts territory) | 2 | 2 |  |
 | B13 | max peapuffer | 2 (groups.ts territory) | 2 | 2 |  |
 | B14 | max bolivianram | 2 (groups.ts territory) | 2 | 2 |  |
@@ -471,12 +479,12 @@ Confidence: low 0, medium 60, high 0. A module a keeper mostly skips is outside 
 - count compat.prey-sw-inverts: engine too full (-23 %)
 - count compat.temper-vs-school: engine too full (-22 %)
 - count compat.temperature-narrow: engine too full (-22 %)
-- count compat.temperature-warm: engine too full (-17 %)
+- count compat.temperature-warm: engine too full (-19 %)
 - count golden.discus-85: engine too full (-19 %)
 - count groups.chromis: engine too full (-22 %)
 - count groups.demasoni: engine too full (-21 %)
 - count groups.grazer-density: engine too full (-21 %)
-- count groups.sae: engine too full (-23 %)
+- count groups.sae: engine too full (-22 %)
 - count groups.sexed: engine too full (-21 %)
 - count groups.syno: engine too full (-23 %)
 - count limits.food-not-room: engine too full (-21 %)
@@ -485,23 +493,23 @@ Confidence: low 0, medium 60, high 0. A module a keeper mostly skips is outside 
 - count space.chili-refit: engine too full (-22 %)
 - count space.community-29: engine too full (-22 %)
 - count space.coolwater: engine too full (-22 %)
-- count space.discus-community: engine too full (-17 %)
+- count space.discus-community: engine too full (-19 %)
 - count space.floor: engine too full (-22 %)
-- count space.footprint-vs-height: engine too full (-22 %)
-- count space.full-community: engine too full (-23 %)
+- count space.footprint-vs-height: engine too full (-20 %)
+- count space.full-community: engine too full (-21 %)
 - count space.invert-class: engine too full (-22 %)
-- count space.kuhli-floor-factor: engine too full (-23 %)
+- count space.kuhli-floor-factor: engine too full (-22 %)
 - count space.livebearer-nano: engine too full (-20 %)
-- count space.livebearers: engine too full (-22 %)
+- count space.livebearers: engine too full (-21 %)
 - count space.malawi-mix: engine too full (-23 %)
 - count space.mbuna-convention: engine too full (-21 %)
-- count space.mid-class: engine too full (-23 %)
+- count space.mid-class: engine too full (-22 %)
 - count space.nano: engine too full (-22 %)
 - count space.reef-125: engine too full (-22 %)
 - count space.reef-40: engine too full (-22 %)
 - count space.salt-scale: engine too full (-21 %)
-- count space.school-curve: engine too full (-23 %)
-- count space.swordtail-refit: engine too full (-22 %)
+- count space.school-curve: engine too full (-22 %)
+- count space.swordtail-refit: engine too full (-21 %)
 - count space.tiny-class: engine too full (-23 %)
 - count space.water: engine too full (-22 %)
 - count space.water-small: engine too full (-22 %)

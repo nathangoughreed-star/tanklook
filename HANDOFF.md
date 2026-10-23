@@ -65,11 +65,17 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
   brings it in and makes its answers usable. Rounds 1-3a are untouched: their fit and four reviews rerun byte-identical (line endings aside),
   and test/calibv4.test.ts locks the fit against fit-round-1-2-3a-3.json.
 - **Files:** research/calib/v4/ (scenarios-v4.json, make-survey-v4.mjs, design note, survey-v4.html, the LLM packs, index; copied unchanged
-  except the generator's folder lookup, which broke on the space in "Glass Box"; build c7cb52e6, every output byte-identical);
+  except the generator's folder lookup, which broke on the space in "Glass Box"; build **cba9d609**, every output byte-identical to the
+  redesign chat's folder. The survey was rebuilt the same day on S216's lessons (design note section 10): six tanks count a second
+  species, a bottom dweller (`mate`: A04, A05, A10, A16 bronze cory, A11 kuhli, B06 sterbai; answers mateIdeal / mateLimit / mateStatus),
+  B10 asks max.kribensis, and the build hash includes `mate`. The first build here was c7cb52e6; no answers exist for it);
   src/calib/v4.ts (each tank built the way the stocking screen builds one: males, then females, then unsexed; a pair species' two animals
   described as a pair marked established; salt water for C; no water for env.water none; the paludarium layout and the stated depth for
   D10 / D11; then the app's own readings: tileState, tankMinimum, crowdWarnings, compatRisks, operatingCheck on the stated temperature,
-  herpCheck, notesOf / overWarn, groups.ts and herpstock maxima, the tank minimum at the four offered sizes); test/calibtablesv4.test.ts
+  herpCheck, notesOf / overWarn, groups.ts and herpstock maxima, the tank minimum at the four offered sizes; per tank also each species'
+  floor share on today's engine (`uses`, stocking.ts floorUseCm2: shrimp and crabs 0.3, kuhli 0.6, the S212 zone audit; Coordinator 9:
+  the engine rule, which S216's e93c3d1 is asked to share), its adult length (`tlMm`), the rounds' mix gate (scenario.ts gateOf), and
+  count tables for the counted species and the mate; the lock re-reads all of it but the count tables); test/calibtablesv4.test.ts
   -> research/calib/tables/v4.json; scripts/calib-parse-v4.mjs; scripts/calib-fit.mjs (v4 round + `--out`); scripts/calib-review-v4.mjs;
   scripts/calib-synth-v4.mjs + research/calib/answers-synth/v4-synth-{agree,shift}.json; test/calibv4.test.ts; sources.json `expert-v4`.
 - **How to run:**
@@ -99,9 +105,10 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
   - B02: the clown loach is fitted on the floor (bottom dweller), but the engine reads that tank water-bound (107 % water, 50 % floor), so a
     limit count there pulls the floor scale (the synthetic agreeing expert moved floor x1.06 until it left that count out). Fit-convention question.
   - 39 tanks carry notes the app has no input for (juvenile lengths, hard water, corals, humidity...): listed per tank in the tables (`unmodelled`).
-- **Proof on synthetic experts:** an agreeing expert fits water x1.00, floor x1.02 and gets no review flag; one keeping 30 % more fish and
-  judging pairs a step milder fits water at the x0.8 cap and gets only count (engine too full), room verdict (milder) and compat (milder)
-  flags. Full suite 1318 green (1 skipped as before), `npm run build` clean.
+- **Proof on synthetic experts (build cba9d609):** an agreeing expert fits water x1.00, floor x1.01 and gets no review flag; one keeping 30 %
+  more fish and judging pairs a step milder fits water and floor at the x0.8 cap (the floor through the six mate counts) and gets only
+  count (engine too full), room verdict (milder) and compat (milder) flags. Checked over S216's e93c3d1 in a throwaway worktree: no shared
+  files, every calibration test green, the old-round lock follows its new fit. Full suite 1319 green (1 skipped as before), `npm run build` clean.
 - **Next:** Nathan's yes on the verdict reading and the nerite question; then LLM experts per design section 7 (one module per conversation,
   saved as answers/v4-<model>-<module>.json), parse, review, Findings by hand. Not merged into `xc`; nothing pushed.
 ## XC: expert calibration rounds (2026-10-23, side chat from Glass-Box-stocking; branch `xc`, worktree `.claude/worktrees/xc`, port 5823; NOT pushed)

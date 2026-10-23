@@ -131,23 +131,31 @@ export function reviewV4(J, T, files) {
   // 2. counts
   const countTanks = readable.filter(s => s.ask.includes('counts') && T.tanks[s.id].table);
   const fixOf = {};
-  md += `## Count fix per tank\n\nEach count read on the dimension its species fills (as calib-fit.mjs does). "fix" is the multiplier the engine's reading needs (below 0 % the engine reads the tank too full); "least" is the smallest move that makes the expert's count the engine's own nearest count, so a rounded small count is not a disagreement. Fitted (calib-fit.mjs): the tanks with a space.* or golden.* tag.\n\n| tank | counted | shown -> engine | ideal -> engine | limit -> engine | fix | least | fitted |\n|---|---|---|---|---|---|---|---|\n`;
+  md += `## Count fix per tank\n\nEach count read on the dimension its species fills today (as calib-fit.mjs does). "fix" is the multiplier the engine's reading needs (below 0 % the engine reads the tank too full); "least" is the smallest move that makes the expert's count the engine's own nearest count, so a rounded small count is not a disagreement. A tank's fix pools its counted species and its second counted species (the bottom dweller of six tanks, the line below it, marked †). Fitted (calib-fit.mjs): the tanks with a space.* or golden.* tag.\n\n| tank | counted | shown -> engine | ideal -> engine | limit -> engine | fix | least | fitted |\n|---|---|---|---|---|---|---|---|\n`;
   for (const s of countTanks) {
-    const t = T.tanks[s.id], d = dimOf({ uses: t.uses }, s.focal), shown = s.stock.find(x => x.id === s.focal).n, per = [];
-    const cells = { ideal: [], limit: [] };
+    const t = T.tanks[s.id], per = [];
+    // the counted species, then the second one: [species, its table, the answer keys, the status key]
+    const who = [[s.focal, t.table, 'ideal', 'limit', 'countStatus'], ...(s.mate && t.mateTable ? [[s.mate, t.mateTable, 'mateIdeal', 'mateLimit', 'mateStatus']] : [])];
+    const cells = who.map(() => ({ ideal: [], limit: [] }));
     for (const { a } of ans(s.id)) {
       if (a.change === 'notroom' || (s.min && a.bigEnough === 'no')) continue;
       const fx = [];
-      for (const [k, anchor] of [['ideal', J.ideal], ['limit', J.limit]]) {
-        const c = countFix(t.table, a[k], anchor, d);
-        cells[k].push(a[k] === 0 ? '0' : c ? `${a[k]} -> ${pc(c.at)}` : a.countStatus ? a.countStatus : '-');
-        if (c) fx.push(c);
-      }
+      who.forEach(([sp, tbl, ki, kl, ks], w) => {
+        const d = dimOf({ uses: t.uses }, sp);
+        for (const [k, key, anchor] of [['ideal', ki, J.ideal], ['limit', kl, J.limit]]) {
+          const c = countFix(tbl, a[key], anchor, d);
+          cells[w][k].push(a[key] === 0 ? '0' : c ? `${a[key]} -> ${pc(c.at)}` : a[ks] ? a[ks] : '-');
+          if (c) fx.push(c);
+        }
+      });
       if (fx.length) per.push({ fix: gmean(fx.map(c => c.fix)), least: gmean(fx.map(c => c.least)) });
     }
     const f = per.length ? { fix: median(per.map(p => p.fix)), least: median(per.map(p => p.least)) } : null;
     if (f) fixOf[s.id] = f;
-    md += `| ${s.id} | ${s.focal} (${d}) | ${shown} -> ${pc(readOn(t.table, shown, d))} | ${cells.ideal.join(', ') || '-'} | ${cells.limit.join(', ') || '-'} | ${f ? mv(f.fix) : '-'} | ${f ? mv(f.least) : '-'} | ${s.tests.some(x => /^(space|golden)\./.test(x)) ? 'yes' : 'no'} |\n`;
+    who.forEach(([sp, tbl], w) => {
+      const d = dimOf({ uses: t.uses }, sp), shown = s.stock.find(x => x.id === sp).n;
+      md += `| ${w ? '' : s.id} | ${sp}${w ? ' †' : ''} (${d}) | ${shown} -> ${pc(readOn(tbl, shown, d))} | ${cells[w].ideal.join(', ') || '-'} | ${cells[w].limit.join(', ') || '-'} | ${!w && f ? mv(f.fix) : ''} | ${!w && f ? mv(f.least) : ''} | ${w ? '' : s.tests.some(x => /^(space|golden)\./.test(x)) ? 'yes' : 'no'} |\n`;
+    });
   }
   md += `\n### Count fix per tag\n\nFlagged: the median least fix of the tag's count tanks more than ${Math.round((FIX_FLAG - 1) * 100)} % off.\n\n| tag | tanks | median fix | median least | |\n|---|---|---|---|---|\n`;
   for (const tag of tags) {

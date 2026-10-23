@@ -10,7 +10,7 @@ const J = JSON.parse(fs.readFileSync(path.join(here, 'scenarios-v4.json'), 'utf8
 
 // ---------- build id: a hash of the tanks and stocks, so answers are tied to the scenarios they answered ----------
 function fnv(str) { let h = 0x811c9dc5; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h.toString(16).padStart(8, '0'); }
-const BUILD = fnv(JSON.stringify(J.scenarios.map(s => [s.id, s.tank, J.tanks[s.tank].in, s.env, s.stock, s.focal ?? null, s.ask])));
+const BUILD = fnv(JSON.stringify(J.scenarios.map(s => [s.id, s.tank, J.tanks[s.tank].in, s.env, s.stock, s.focal ?? null, s.mate ?? null, s.ask])));
 
 // ---------- helpers ----------
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -35,9 +35,9 @@ function envLine(s) {
 function sexText(x) { if (!x.sex) return ''; if (x.sex === 'm') return x.n === 1 ? 'male' : 'all males'; if (x.sex === 'f') return x.n === 1 ? 'female' : 'all females'; return `${x.sex[0]} male${x.sex[0] === 1 ? '' : 's'}, ${x.sex[1]} female${x.sex[1] === 1 ? '' : 's'}`; }
 function stockRows(s) {
   return s.stock.map(x => { const z = sp(x.id); const len = z.ftl && z.ftl !== z.tl ? `${mm(z.tl)} male, ${mm(z.ftl)} female` : mm(z.tl);
-    return { n: x.n, name: plural(x.n, x.id), sex: sexText(x), note: x.note || '', len, lives: z.lives, id: x.id, focal: s.focal === x.id }; });
+    return { n: x.n, name: plural(x.n, x.id), sex: sexText(x), note: x.note || '', len, lives: z.lives, id: x.id, focal: s.focal === x.id || s.mate === x.id }; });
 }
-const ASSUME = 'Assume: adults at the lengths shown, no breeding counted, sexes as listed. Filtration, water changes, heating, lighting and furnishing (plants, cover, hides, sight breaks, rockwork) are whatever these animals need: never the limit. Judge these animals, at these counts, in this tank.';
+const ASSUME = 'Assume: adults at the lengths shown, no breeding counted, sexes as listed (a male : female ratio is kept roughly, rounded as you would stock them). Filtration, water changes, heating, lighting and furnishing (plants, cover, hides, sight breaks, rockwork) are whatever these animals need: never the limit. Judge these animals, at these counts, in this tank.';
 const VERDICTS = [['ideal', 'Ideal', 'comfortable long term with ordinary care'], ['caution', 'Caution', 'workable but past ideal: tread carefully'], ['problems', 'Problems likely', 'long-term trouble even with good care'], ['unworkable', 'Not workable', 'as described, no']];
 const CHANGES = [['nothing', 'Nothing'], ['fewer', 'Fewer of ...'], ['bigger', 'Bigger tank'], ['drop', 'Drop ...'], ['ratio', 'Group size or sex ratio'], ['notroom', 'Not room: food, maturity or habitat'], ['other', 'Something else (note)']];
 const TOGETHER = [['yes', 'Yes'], ['caution', 'With caution'], ['no', 'No']];
@@ -54,7 +54,7 @@ function scenarioCard(s) {
 <table class="stock"><thead><tr><th>#</th><th>Animal</th><th>Adult length</th><th>Lives</th></tr></thead><tbody>
 ${rows.map(r => `<tr${r.focal ? ' class="focal"' : ''}><td>${r.n}</td><td>${esc(r.name)}${r.sex ? ` <i>(${esc(r.sex)})</i>` : ''}${r.note ? ` <i>(${esc(r.note)})</i>` : ''}</td><td>${esc(r.len)}</td><td>${esc(r.lives)}</td></tr>`).join('\n')}
 </tbody></table>
-<div class="assume">Assume adults as listed, no breeding counted. Filtration, water changes, heat, light and furnishing (plants, cover, hides, rockwork) are never the limit.</div>
+<div class="assume">Assume adults as listed, no breeding counted, sex ratios kept roughly. Filtration, water changes, heat, light and furnishing (plants, cover, hides, rockwork) are never the limit.</div>
 </div>`;
 }
 const btns = (q, opts, cls = 'b') => opts.map(([v, l, d]) => `<button class="${cls}" data-q="${q}" data-v="${esc(v)}"${d ? ` title="${esc(d)}"` : ''}>${esc(l)}</button>`).join('');
@@ -77,6 +77,9 @@ ${!one && s.stock.length > 2 ? `<div class="sub" data-show="together=caution,no"
 <div class="opts counts"><label>Ideal <input type="number" min="0" step="1" inputmode="numeric" data-q="ideal"></label><label>At most <input type="number" min="0" step="1" inputmode="numeric" data-q="limit"></label></div>
 <div class="sub always"><span>or, instead of numbers:</span> <button class="chip" data-q="countStatus" data-v="cant-say">Can't say</button><button class="chip" data-q="countStatus" data-v="no-valid-count">No count works as described</button></div>
 <div class="hint">Ideal = what you would aim for; at most = past this, long-term problems become likely; 0 is valid.</div></div>`);
+    if (s.mate) q.push(`<div class="q"><div class="ql">${n++}. And how many <b>${esc(lower(s.mate))}</b>, with the others as shown?</div>
+<div class="opts counts"><label>Ideal <input type="number" min="0" step="1" inputmode="numeric" data-q="mateIdeal"></label><label>At most <input type="number" min="0" step="1" inputmode="numeric" data-q="mateLimit"></label></div>
+<div class="sub always"><span>or, instead of numbers:</span> <button class="chip" data-q="mateStatus" data-v="cant-say">Can't say</button><button class="chip" data-q="mateStatus" data-v="no-valid-count">No count works as described</button></div></div>`);
   }
   if (s.ask.includes('min')) {
     const m = s.min;
@@ -90,7 +93,7 @@ ${!one && s.stock.length > 2 ? `<div class="sub" data-show="together=caution,no"
   return q.join('\n');
 }
 
-const SCN = J.scenarios.map(s => ({ id: s.id, module: s.module, tank: s.tank, focal: s.focal ?? null, ask: s.ask, stock: s.stock, pairOf: s.pairOf ?? null }));
+const SCN = J.scenarios.map(s => ({ id: s.id, module: s.module, tank: s.tank, focal: s.focal ?? null, mate: s.mate ?? null, ask: s.ask, stock: s.stock, pairOf: s.pairOf ?? null }));
 const html = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Stocking survey v4</title>
@@ -165,20 +168,21 @@ $('next').onclick=()=>{if(i<list.length-1){i++;show();}else{$('toStart').click()
 function show(){const id=list[i],a=ans(id);t0=Date.now();$('start').hidden=true;$('tank').hidden=false;$('prev').hidden=$('next').hidden=false;$('next').textContent=i<list.length-1?'Next':'Finish';$('prog').textContent=id+' · '+(i+1)+' of '+list.length+' · module '+SCN.find(s=>s.id===id).module;
 $('left').innerHTML=CARDS[id];$('right').innerHTML=QS[id];const R=$('right');R.classList.toggle('off',!!a.skip);
 for(const b of R.querySelectorAll('button[data-q]')){const q=b.dataset.q,v=b.dataset.v;b.classList.toggle('on',isOn(a,q,v));b.onclick=()=>{toggle(a,q,v,b);paint(R,a);touch(a);};}
-for(const inp of R.querySelectorAll('input[type=number]')){inp.value=a[inp.dataset.q]??'';inp.oninput=()=>{const v=inp.value===''?null:Math.max(0,Math.round(+inp.value));a[inp.dataset.q]=v;if(v!==null)delete a.countStatus;paint(R,a);touch(a);};}
+for(const inp of R.querySelectorAll('input[type=number]')){inp.value=a[inp.dataset.q]??'';inp.oninput=()=>{const v=inp.value===''?null:Math.max(0,Math.round(+inp.value));a[inp.dataset.q]=v;if(v!==null)delete a[inp.dataset.q.startsWith('mate')?'mateStatus':'countStatus'];paint(R,a);touch(a);};}
 const ta=R.querySelector('textarea');ta.value=a.note||'';ta.oninput=()=>{a.note=ta.value;touch(a);};
 paint(R,a);$('open').textContent=openIds().length+' open of '+list.length;window.scrollTo(0,0);}
 const MULTI=new Set(['changeSp','reasons','problem']);
-function isOn(a,q,v){if(MULTI.has(q))return Array.isArray(a[q])&&a[q].includes(v);if(q==='verdict'&&v==='skip')return!!a.skip;if(q==='countStatus')return a.countStatus===v;return a[q]===v;}
+function isOn(a,q,v){if(MULTI.has(q))return Array.isArray(a[q])&&a[q].includes(v);if(q==='verdict'&&v==='skip')return!!a.skip;if(q==='countStatus'||q==='mateStatus')return a[q]===v;return a[q]===v;}
 function toggle(a,q,v,b){if(q==='verdict'&&v==='skip'){a.skip=!a.skip;if(a.skip)delete a.verdict;return;}
 if(q==='verdict')delete a.skip;
 if(MULTI.has(q)){const arr=Array.isArray(a[q])?a[q]:[];a[q]=arr.includes(v)?arr.filter(x=>x!==v):[...arr,v];return;}
 if(q==='countStatus'){if(a.countStatus===v)delete a.countStatus;else{a.countStatus=v;a.ideal=null;a.limit=null;}return;}
+if(q==='mateStatus'){if(a.mateStatus===v)delete a.mateStatus;else{a.mateStatus=v;a.mateIdeal=null;a.mateLimit=null;}return;}
 if(q==='change'&&a.change!==v)a.changeSp=[];
 a[q]=a[q]===v?null:v;}
 function paint(R,a){R.classList.toggle('off',!!a.skip);for(const b of R.querySelectorAll('button[data-q]'))b.classList.toggle('on',isOn(a,b.dataset.q,b.dataset.v));
 for(const d of R.querySelectorAll('.sub[data-show]')){const [q,vs]=d.dataset.show.split('=');d.classList.toggle('show',vs.split(',').includes(String(a[q])));}
-for(const inp of R.querySelectorAll('input[type=number]'))if(a.countStatus)inp.value='';}
+for(const inp of R.querySelectorAll('input[type=number]'))if(a[inp.dataset.q.startsWith('mate')?'mateStatus':'countStatus'])inp.value='';}
 function touch(a){a.ms=(a.ms||0)+(Date.now()-t0);t0=Date.now();S.made=new Date().toISOString();save();$('open').textContent=openIds().length+' open of '+list.length;}
 function clean(){const out={};for(const [id,a] of Object.entries(S.answers)){const c={};for(const [k,v] of Object.entries(a)){if(v===null||v===''||(Array.isArray(v)&&!v.length))continue;const m=/^(max|maxMales):(.+)$/.exec(k);if(m){(c[m[1]]=c[m[1]]||{})[m[2]]=v;continue;}c[k]=v;}if(Object.keys(c).length)out[id]=c;}return out;}
 function exportFile(){const data={survey:'v4',build:BUILD,expert:S.expert||'anon',expertKind:S.expertKind,modules:S.modules,made:new Date().toISOString(),source:'survey-v4.html',answers:clean(),carried:S.carried||[]};
@@ -196,12 +200,13 @@ fs.writeFileSync(path.join(here, 'survey-v4.html'), html);
 function scenarioText(s) {
   const t = tankLine(s.tank), rows = stockRows(s);
   const lines = [`### ${s.id}`, `Tank: ${t.name}, ${t.dims}; ${t.vol}; floor ${t.floor}.`, `Setting: ${envLine(s)}.`, 'Animals:'];
-  for (const r of rows) lines.push(`- ${r.n} ${r.name}${r.sex ? ` (${r.sex})` : ''}${r.note ? ` (${r.note})` : ''}: adult ${r.len}; lives ${r.lives}${r.focal ? '  <- the counted species' : ''}`);
+  for (const r of rows) lines.push(`- ${r.n} ${r.name}${r.sex ? ` (${r.sex})` : ''}${r.note ? ` (${r.note})` : ''}: adult ${r.len}; lives ${r.lives}${r.id === s.focal ? '  <- the counted species' : r.id === s.mate ? '  <- also counted (mateIdeal / mateLimit)' : ''}`);
   const asks = [];
   asks.push('verdict: one of ideal | caution | problems | unworkable | skip');
   if (s.ask.includes('change')) asks.push(`change: one of nothing | fewer | bigger | drop | ratio | notroom | other; with fewer or drop also changeSp: [species ids from ${s.stock.map(x => x.id).join(', ')}]`);
   if (s.ask.includes('compat')) asks.push(`together: yes | caution | no; if not yes, reasons: [any of ${REASONS.map(r => r[0]).join(' | ')}]${s.stock.length > 2 ? `; problem: [species ids]` : ''}`);
   if (s.ask.includes('counts')) asks.push(`ideal and limit: whole numbers of ${lower(s.focal)} (the others held as shown; 0 allowed) — or countStatus: cant-say | no-valid-count`);
+  if (s.mate) asks.push(`mateIdeal and mateLimit: the same for ${lower(s.mate)}, with the others as shown — or mateStatus: cant-say | no-valid-count`);
   if (s.ask.includes('min')) asks.push(`bigEnough: yes | no (for an adult ${sp(s.min.species).name.toLowerCase()}); smallest: one of ${s.min.sizes.map(z => JSON.stringify(z)).join(' | ')} | "larger"${s.min.label ? ` (${s.min.label})` : ''}`);
   if (s.ask.includes('max')) for (const m of s.max) asks.push(`max.${m.species}: one of ${m.options.join(' | ')}${m.label ? ` (${m.label})` : ' (most you would keep here whatever else is in the tank)'}`);
   if (s.ask.includes('maxMales')) for (const m of s.maxMales) asks.push(`maxMales.${m.species}: one of ${m.options.join(' | ')}`);
@@ -214,6 +219,7 @@ function template(s) {
   if (!s.ask.includes('change')) delete o.change;
   if (s.ask.includes('compat')) { o.together = ''; o.reasons = []; if (s.stock.length > 2) o.problem = []; }
   if (s.ask.includes('counts')) { o.ideal = null; o.limit = null; }
+  if (s.mate) { o.mateIdeal = null; o.mateLimit = null; }
   if (s.ask.includes('min')) { o.bigEnough = ''; o.smallest = ''; }
   if (s.ask.includes('max')) { o.max = {}; for (const m of s.max) o.max[m.species] = ''; }
   if (s.ask.includes('maxMales')) { o.maxMales = {}; for (const m of s.maxMales) o.maxMales[m.species] = ''; }
@@ -232,7 +238,7 @@ Field meanings:
 - verdict: ideal (comfortable long term with ordinary care) | caution (workable but past ideal) | problems (long-term trouble likely even with good care) | unworkable (not as described) | skip.
 - change: the first thing you would change: nothing | fewer (of changeSp) | bigger (tank) | drop (changeSp) | ratio (group size or sex ratio) | notroom (the limit is food, maturity or habitat, not room) | other (say in note).
 - together / reasons / problem: would you keep these together long term; why not, from: eat (would eat or injure), nip (fin nipping or harassment), aggression (aggression or territory), temperature, chemistry (pH, hardness, salinity), habitat (humidity or habitat), food (food or diet), disease (disease or toxins), breeding (breeding or sex mix), other.
-- ideal / limit: the counted species only, with the other animals held as shown. countStatus replaces both numbers: cant-say, or no-valid-count (no count works as described).
+- ideal / limit: the counted species only, with the other animals held as shown. countStatus replaces both numbers: cant-say, or no-valid-count (no count works as described). Six tanks also ask mateIdeal / mateLimit (mateStatus) for a second counted species, a bottom dweller.
 - bigEnough / smallest: whether the tank is big enough for one adult of that species at all, and the smallest of the offered sizes you would use for it as stocked here ("larger" if none).
 - max.<species>: the most of that species you would keep in this tank, whatever else is in it. maxMales.<species>: the most males.
 - confidence: low | medium | high.
@@ -245,9 +251,9 @@ for (const m of J.modules) {
   packs.push(md);
 }
 fs.writeFileSync(path.join(here, 'survey-v4-llm-all.md'), packs.join('\n\n---\n\n'));
-const idx = ['# Survey v4 scenario index (build ' + BUILD + ')', '', 'One line per tank: what is in it, what is asked (V verdict, Ch change, Co compat, N counts, M minimum, X max, XM max males, all with confidence) and which engine component the answers inform.', ''];
+const idx = ['# Survey v4 scenario index (build ' + BUILD + ')', '', 'One line per tank: what is in it (* the counted species, † a second counted species), what is asked (V verdict, Ch change, Co compat, N counts, M minimum, X max, XM max males, all with confidence) and which engine component the answers inform.', ''];
 for (const m of J.modules) { idx.push('## ' + m.id + '. ' + m.name + ' (' + J.scenarios.filter(s => s.module === m.id).length + ' tanks)', '', '| id | tank | stock | asks | tests | why |', '|---|---|---|---|---|---|');
-  for (const s of J.scenarios.filter(s => s.module === m.id)) { const t = J.tanks[s.tank]; const st = s.stock.map(x => x.n + ' ' + lower(x.id) + (x.id === s.focal ? '*' : '') + (x.sex ? ' (' + sexText(x) + ')' : '')).join(', ');
+  for (const s of J.scenarios.filter(s => s.module === m.id)) { const t = J.tanks[s.tank]; const st = s.stock.map(x => x.n + ' ' + lower(x.id) + (x.id === s.focal ? '*' : x.id === s.mate ? '†' : '') + (x.sex ? ' (' + sexText(x) + ')' : '')).join(', ');
     const asks = s.ask.filter(a => a !== 'confidence').map(a => ({ verdict: 'V', change: 'Ch', compat: 'Co', counts: 'N', min: 'M', max: 'X', maxMales: 'XM' })[a]).join(' ');
     idx.push('| ' + s.id + (s.pairOf ? ' (pair of ' + s.pairOf + ')' : '') + ' | ' + t.name + ', ' + t.in.join(' x ') + ' in' + (s.env.tempC ? ', ' + s.env.tempC + ' °C' : '') + (s.env.note ? ', ' + s.env.note : '') + ' | ' + st + ' | ' + asks + ' | ' + s.tests.join(', ') + ' | ' + s.why + ' |'); } idx.push(''); }
 fs.writeFileSync(path.join(here, 'survey-v4-index.md'), idx.join('\n'));

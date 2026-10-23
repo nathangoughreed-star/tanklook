@@ -11,7 +11,7 @@ changed by this note; the files here are the proposal and a working survey. What
 | `survey-v4-llm-A.md` … `-D.md`, `-all.md` | the survey for LLM experts: the tanks as text plus a JSON answer template; the model answers in JSON, no screenshot, no browser |
 | `survey-v4-index.md` | one line per tank: stock, questions asked, engine component tested, why (generated) |
 
-Build `c7cb52e6` is a hash of the tanks and counts. Every export carries it, so answers can never be matched to tanks they did not
+Build `cba9d609` is a hash of the tanks and counts. Every export carries it, so answers can never be matched to tanks they did not
 answer (the round-3 / 3a accident).
 
 ## 1. What went wrong with rounds 1-3, measured
@@ -78,7 +78,10 @@ cubes, a 20 long paludarium and four terrarium sizes. The full list is `survey-v
 | C saltwater | 12 | clown and royal gramma minimums in nanos (C01, C02), invert predation by size vs by habit (C03), a full 40 breeder reef and the coral-nipper gate (C04), the salt scale against volume (C05, C08), yellow and blue tang minimums and two tangs together (C06, C07), maturity / food (C09), Banggai, gramma, firefish and clown caps (C10-C12) |
 | D herps | 16 | floor minimums for leopard gecko, crested gecko, ball python, axolotl, tarantula (D01, D03, D06, D13, D16), per-extra-animal floor and height (D02, D05, D09, D15), sex rules (D02, D05, D15), cross-species on land (D04, D08), amphibian groups (D07, D10, D11), the two pairings shops suggest (D12 frogs + betta, D14 axolotls + fish), a toxin gap (D10) |
 
-Counts are asked of the species marked `*` in the index; the other animals are held as shown.
+Counts are asked of the species marked `*` in the index; the other animals are held as shown. Six tanks also ask counts of a bottom
+dweller (marked `†`): bronze corys on A04, A05, A10 and A16, kuhlis on A11, sterbai on B06. Rounds 1-3 read the floor scale 11 %
+emptier and the water scale 7 % fuller than the experts, and v4's counted species are mostly swimmers, so the floor needs its own
+likely-count readings.
 
 ## 4. Questions and the answer schema
 
@@ -90,6 +93,7 @@ Per tank, in this order; a question appears only when the tank's `ask` lists it.
 | `change` (+ `changeSp[]`) | the first thing you would change | `nothing` · `fewer` (of changeSp) · `bigger` (tank) · `drop` (changeSp) · `ratio` (group size or sex ratio) · `notroom` (food, maturity or habitat is the limit) · `other` (note) |
 | `together` (+ `reasons[]`, `problem[]`) | keep these together long term? | `yes` · `caution` · `no`; reasons from `eat`, `nip`, `aggression`, `temperature`, `chemistry`, `habitat`, `food`, `disease`, `breeding`, `other`; `problem` names the species when the tank has three or more |
 | `ideal`, `limit` (or `countStatus`) | with the others as shown, how many of the counted species | whole numbers, 0 allowed; or `cant-say` · `no-valid-count` |
+| `mateIdeal`, `mateLimit` (or `mateStatus`) | the same for a second counted species, a bottom dweller (six tanks) | as above |
 | `bigEnough`, `smallest` | big enough for one adult of the named species at all; the smallest of four offered sizes you would use for it as stocked | `yes` · `no`; one of the four size labels or `larger` |
 | `max.<species>` | the most of that species you would keep in this tank, whatever else is in it | one of the offered counts (e.g. 0 · 1 · 2 · 3 · 5 · 7+) |
 | `maxMales.<species>` | the most males of that species here | 0 · 1 · 2 · 3 |
@@ -150,7 +154,9 @@ This folder is the stale copy; the files need copying into the live repo on `xc`
 1. **Engine tables for v4** (`GEN_RETABLE`-style, one engine run per tank): fresh tanks through the existing `setupOf`; salt tanks with
    `water.salt = true`; terrarium tanks through `herpcheck` (floor sq ft, height, max, mates); the paludarium (D10) with whatever the app
    says today, recorded as such. Store the app's verdict per tank (band, tank-minimum result, group warnings, compat level and items)
-   next to the counts table, since section 5 reads verdicts as well as counts.
+   next to the counts table, since section 5 reads verdicts as well as counts. Also store, per species and tank, today's floor share
+   (`uses`) and today's temperature gate per mix (`gateOf`), and read each species' adult length from the engine at build time: the
+   fit must read a count on the dimension the species fills today, not the one the card showed (S216's rule from rounds 2-3).
 2. **A parser for LLM answers**: validate every value against section 4 (unknown values -> set aside and listed), merge the four
    module files of one model into one answer file.
 3. **`calib-fit.mjs`**: accept the v4 fields (`verdict` as the overall band, `ideal` / `limit` as before, `countStatus`), fit counts only on
@@ -159,7 +165,30 @@ This folder is the stale copy; the files need copying into the live repo on `xc`
    Findings section across reruns, like `calib-review.mjs` does.
 5. **Provenance**: a `sources.json` entry `expert-v4` with the experts (names only with consent) and the build id.
 
-## 10. Decisions this note takes, open for Nathan to overrule
+## 10. What rounds 1-3 learned, and where v4 keeps it (from S216, 2026-10-23)
+
+| lesson | v4 |
+|---|---|
+| answers must be tied to the exact tanks (round 3 was redrawn under the same ids under ChatGPT's answers) | build id in every export; the HTML sets aside a saved state or import from another build |
+| frozen tanks, current readings: re-read every answered tank after an engine change, with a lock test | section 9 item 1; the lock test is the lane's |
+| a mix's label must follow the app's temperature gate (`gateOf`: none / single = high, narrow = concern) | v4 never labels a tank compatible; the `why` lines quote the gate and the tables step checks them |
+| renders bias the room judgement | text only |
+| decor and filter stated as never the limit; "no plants" made habitat the limit | the assumption line on every card |
+| "no count works as described" is not 0; 0 is valid | both kept, with the hint that 0 is valid |
+| "not room" means food, maturity or habitat; compatibility goes in "keep together" | `change: notroom` and `together` are separate questions |
+| a sex ratio is kept roughly, rounded as you would stock them (1:3 once forced 0 / 4 / 8) | in the assumption line |
+| overall follows the tighter of floor and water (26 of 26 tanks) | one overall verdict plus "fewer of X"; the second band question is dropped because the max rule held, and the floor gets its own count questions instead |
+| no dropdowns, answering as keeper / professional / AI, a Start over button | all kept |
+| shrimp get no limit count (food sets it) | kept except B16, a shrimp tank where shrimp are the only count that makes sense; `cant-say` is expected there |
+| experts read water fuller (-7 %) and floor emptier (+11 %) than the engine, nearly all answers AI so far | six floor count questions added; human experts are the point of v4 |
+| panda thresholds consistent (12 / 18 on 30 x 12, 15 / 22 on 36 x 12); oto floor share disputed; krib territory let 10 kribs into a 75; NARROW_C split | pandas not over-sampled again; otos counted on B15 and present on A10; a krib cap question on B10; narrow-margin tanks A02, A06, B12 |
+| three ChatGPT runs are not three experts | section 7: two runs of one model share a bias term |
+
+Engine changes since this note's first build that the tables step must reflect: the S212 zone audit (white cloud, pygmy cory, pea
+puffer and CPD take no floor; kuhli floor factor 0.6; shrimp and crabs take floor at 0.3), the length audit (the card lengths here
+are the post-audit ones), the kribensis fighting limit by tank length, and S214's pending krib territory and otocinclus changes.
+
+## 11. Decisions this note takes, open for Nathan to overrule
 
 - 60 tanks in one set, modular, instead of 22 random tanks a round.
 - Counts asked for 25 tanks only; minimums, maxima and compatibility carry the rest.

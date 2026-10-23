@@ -41,6 +41,12 @@ export function synthV4(J, T, { expert, load = 1, milder = false }) {
       if (i != null) a.ideal = i;
       if (l != null) a.limit = l;
       if (i == null && l == null) a.countStatus = 'cant-say';
+      if (s.mate && t.mateTable) { // the second counted species, on the dimension it fills
+        const dm = dimOf({ uses: t.uses }, s.mate), mi = nearest(t.mateTable, J.ideal * load, dm), ml = nearest(t.mateTable, J.limit * load, dm);
+        if (mi != null) a.mateIdeal = mi;
+        if (ml != null) a.mateLimit = ml;
+        if (mi == null && ml == null) a.mateStatus = 'cant-say';
+      }
     }
     if (s.ask.includes('min')) { a.bigEnough = appBigEnough(t, s, J); a.smallest = [...s.min.sizes, 'larger'][appSmallest(t)]; }
     for (const k of ['max', 'maxMales']) if (s.ask.includes(k)) {

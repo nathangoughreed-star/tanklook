@@ -1,6 +1,6 @@
 # Calibration review, survey v4: synth-agree
 
-Build c7cb52e6. Engine readings: the current engine (research/calib/tables/v4.json, 2026-10-23). 1 expert (synth-agree (an AI model): modules A, B, C, D). With more than one expert each tank reads their median. The app's overall verdict is src/calib/v4.ts verdictOf, from its parts (space band, tank minimum, fighting warnings, compatibility, temperature, herp checks, group bands); "milder" means the experts judge the tank less severely than the app.
+Build cba9d609. Engine readings: the current engine (research/calib/tables/v4.json, 2026-10-23). 1 expert (synth-agree (an AI model): modules A, B, C, D). With more than one expert each tank reads their median. The app's overall verdict is src/calib/v4.ts verdictOf, from its parts (space band, tank minimum, fighting warnings, compatibility, temperature, herp checks, group bands); "milder" means the experts judge the tank less severely than the app.
 
 ## Verdict per tag
 
@@ -44,6 +44,7 @@ Flagged: half or more of the tag's answered tanks a band off the app, all in the
 | groups.territory-banggai | C10 | problems | problems | 1 | 0 | 0 |  |
 | groups.territory-bolivian | B14 | problems | problems | 1 | 0 | 0 |  |
 | groups.territory-gramma | C11 | problems | problems | 1 | 0 | 0 |  |
+| groups.territory-krib | B10 | unworkable | unworkable | 1 | 0 | 0 |  |
 | groups.territory-puffer | B13 | unworkable | unworkable | 1 | 0 | 0 |  |
 | groups.yellowlab-min | B09 | unworkable | unworkable | 1 | 0 | 0 |  |
 | herp.adf-min | D12 | problems | problems | 1 | 0 | 0 |  |
@@ -145,14 +146,14 @@ Flagged: half or more of the tag's answered tanks a band off the app, all in the
 | problems | 0 | 0 | 0 | 0 |
 | unworkable | 0 | 0 | 0 | 0 |
 
-**groups** (15 tanks)
+**groups** (16 tanks)
 
 | app \ experts | ideal | caution | problems | unworkable |
 |---|---|---|---|---|
 | ideal | 0 | 0 | 0 | 0 |
 | caution | 0 | 3 | 0 | 0 |
 | problems | 0 | 0 | 6 | 0 |
-| unworkable | 0 | 0 | 0 | 6 |
+| unworkable | 0 | 0 | 0 | 7 |
 
 **herp** (15 tanks)
 
@@ -192,27 +193,33 @@ Flagged: half or more of the tag's answered tanks a band off the app, all in the
 
 ## Count fix per tank
 
-Each count read on the dimension its species fills (as calib-fit.mjs does). "fix" is the multiplier the engine's reading needs (below 0 % the engine reads the tank too full); "least" is the smallest move that makes the expert's count the engine's own nearest count, so a rounded small count is not a disagreement. Fitted (calib-fit.mjs): the tanks with a space.* or golden.* tag.
+Each count read on the dimension its species fills today (as calib-fit.mjs does). "fix" is the multiplier the engine's reading needs (below 0 % the engine reads the tank too full); "least" is the smallest move that makes the expert's count the engine's own nearest count, so a rounded small count is not a disagreement. A tank's fix pools its counted species and its second counted species (the bottom dweller of six tanks, the line below it, marked †). Fitted (calib-fit.mjs): the tanks with a space.* or golden.* tag.
 
 | tank | counted | shown -> engine | ideal -> engine | limit -> engine | fix | least | fitted |
 |---|---|---|---|---|---|---|---|
 | A02 | neon (water) | 6 -> 68 % | 7 -> 76 % | 10 -> 100 % | -1 % | +0 % | yes |
 | A03 | guppy (water) | 8 -> 131 % | 4 -> 73 % | 6 -> 102 % | 0 % | +0 % | yes |
-| A04 | neon (water) | 10 -> 101 % | 2 -> 73 % | 10 -> 101 % | +1 % | +0 % | yes |
-| A05 | neon (water) | 10 -> 119 % | 0 | 4 -> 99 % | +1 % | +0 % | yes |
+| A04 | neon (water) | 10 -> 101 % | 2 -> 73 % | 10 -> 101 % | +2 % | +0 % | yes |
+|  | bronzecory † (floor) | 6 -> 81 % | 5 -> 70 % | 8 -> 102 % |  |  |  |
+| A05 | neon (water) | 10 -> 119 % | 0 | 4 -> 99 % | +0 % | +0 % | yes |
+|  | bronzecory † (floor) | 6 -> 101 % | 4 -> 74 % | 6 -> 101 % |  |  |  |
 | A06 | harlequin (water) | 12 -> 78 % | 11 -> 76 % | 22 -> 101 % | -1 % | +0 % | yes |
 | A08 | rummynose (water) | 15 -> 122 % | 0 | 1 -> 100 % | +0 % | +0 % | no |
-| A10 | neon (water) | 20 -> 122 % | 0 | 0 | - | - | yes |
-| A11 | boesemani (water) | 8 -> 113 % | 0 | 4 -> 99 % | +1 % | +0 % | yes |
+| A10 | neon (water) | 20 -> 122 % | 0 | 0 | +3 % | +0 % | yes |
+|  | bronzecory † (floor) | 12 -> 91 % | 9 -> 72 % | 13 -> 97 % |  |  |  |
+| A11 | boesemani (water) | 8 -> 113 % | 0 | 4 -> 99 % | +0 % | +0 % | yes |
+|  | kuhli † (max) | 10 -> 113 % | 0 | 3 -> 100 % |  |  |  |
 | A12 | danio (water) | 12 -> 99 % | 7 -> 73 % | 12 -> 99 % | +2 % | +0 % | yes |
 | A13 | neon (water) | 20 -> 142 % | 9 -> 78 % | 12 -> 99 % | -1 % | +0 % | yes |
 | A14 | ember (water) | 10 -> 85 % | 4 -> 75 % | 20 -> 101 % | 0 % | +0 % | yes |
 | A15 | chili (water) | 12 -> 92 % | 6 -> 73 % | 15 -> 100 % | +1 % | +0 % | yes |
-| A16 | platy (water) | 6 -> 102 % | 0 | 5 -> 99 % | +1 % | +0 % | yes |
+| A16 | platy (water) | 6 -> 102 % | 0 | 5 -> 99 % | -1 % | +0 % | yes |
+|  | bronzecory † (floor) | 8 -> 47 % | 13 -> 77 % | 17 -> 101 % |  |  |  |
 | B02 | clownloach (floor) | 5 -> 50 % | 8 -> 72 % | - | +4 % | +0 % | yes |
 | B04 | goldfish (max) | 3 -> 82 % | 3 -> 82 % | 4 -> 107 % | -8 % | +0 % | yes |
 | B05 | discus (water) | 6 -> 82 % | 6 -> 82 % | 7 -> 95 % | -2 % | +0 % | yes |
-| B06 | discus (water) | 6 -> 102 % | 3 -> 77 % | 6 -> 102 % | -2 % | +0 % | yes |
+| B06 | discus (water) | 6 -> 102 % | 3 -> 77 % | 6 -> 102 % | -1 % | +0 % | yes |
+|  | sterbai † (floor) | 8 -> 35 % | 17 -> 74 % | 23 -> 100 % |  |  |  |
 | B07 | yellowlab (max) | 8 -> 85 % | 5 -> 74 % | 12 -> 100 % | +1 % | +0 % | yes |
 | B08 | peacock (water) | 5 -> 95 % | 1 -> 78 % | 6 -> 99 % | -2 % | 0 % | yes |
 | B15 | oto (max) | 8 -> 98 % | 5 -> 73 % | 8 -> 98 % | +2 % | +0 % | no |
@@ -240,39 +247,40 @@ Flagged: the median least fix of the tag's count tanks more than 15 % off.
 | compat.prey-sw-inverts | C03 | -2 % | -1 % |  |
 | compat.temper-vs-school | A02 | -1 % | +0 % |  |
 | compat.temperature-narrow | A02 A06 | -1 % | +0 % |  |
-| compat.temperature-warm | B06 | -2 % | +0 % |  |
+| compat.temperature-warm | B06 | -1 % | +0 % |  |
 | golden.discus-85 | B05 | -2 % | +0 % |  |
 | groups.chromis | C04 | -3 % | 0 % |  |
 | groups.demasoni | B07 | +1 % | +0 % |  |
 | groups.grazer-density | B15 | +2 % | +0 % |  |
-| groups.sae | A11 | +1 % | +0 % |  |
-| groups.sexed | A03 A16 | +0 % | +0 % |  |
+| groups.sae | A11 | +0 % | +0 % |  |
+| groups.sexed | A03 A16 | -1 % | +0 % |  |
 | groups.syno | B08 | -2 % | 0 % |  |
 | limits.food-not-room | B15 | +2 % | +0 % |  |
 | space.big-class | B02 | +4 % | +0 % |  |
 | space.big-class-mass | B04 | -8 % | +0 % |  |
-| space.canonical-20 | A04 | +1 % | +0 % |  |
+| space.canonical-20 | A04 | +2 % | +0 % |  |
 | space.chili-refit | A15 | +1 % | +0 % |  |
 | space.community-29 | A06 | -1 % | +0 % |  |
 | space.coolwater | A12 | +2 % | +0 % |  |
-| space.discus-community | B06 | -2 % | +0 % |  |
-| space.floor | A04 | +1 % | +0 % |  |
-| space.footprint-vs-height | A05 | +1 % | +0 % |  |
+| space.discus-community | B06 | -1 % | +0 % |  |
+| space.floor | A04 | +2 % | +0 % |  |
+| space.footprint-vs-height | A05 | +0 % | +0 % |  |
+| space.full-community | A10 | +3 % | +0 % |  |
 | space.invert-class | A15 B16 | +0 % | +0 % |  |
-| space.kuhli-floor-factor | A11 | +1 % | +0 % |  |
+| space.kuhli-floor-factor | A11 | +0 % | +0 % |  |
 | space.livebearer-nano | A03 | 0 % | +0 % |  |
-| space.livebearers | A16 | +1 % | +0 % |  |
+| space.livebearers | A16 | -1 % | +0 % |  |
 | space.malawi-mix | B08 | -2 % | 0 % |  |
 | space.mbuna-convention | B07 | +1 % | +0 % |  |
-| space.mid-class | A11 | +1 % | +0 % |  |
+| space.mid-class | A11 | +0 % | +0 % |  |
 | space.nano | A02 | -1 % | +0 % |  |
 | space.reef-125 | C08 | +0 % | +0 % |  |
 | space.reef-40 | C04 | -3 % | 0 % |  |
 | space.salt-scale | C05 C08 | -1 % | 0 % |  |
-| space.school-curve | A13 | -1 % | +0 % |  |
-| space.swordtail-refit | A16 | +1 % | +0 % |  |
+| space.school-curve | A10 A13 | +1 % | +0 % |  |
+| space.swordtail-refit | A16 | -1 % | +0 % |  |
 | space.tiny-class | A14 | 0 % | +0 % |  |
-| space.water | A04 | +1 % | +0 % |  |
+| space.water | A04 | +2 % | +0 % |  |
 | space.water-small | A13 | -1 % | +0 % |  |
 | tankmin.angel-height | A08 | +0 % | +0 % |  |
 | tankmin.clownloach | B02 | +4 % | +0 % |  |
@@ -412,6 +420,7 @@ The app's figure for this tank (groups.ts territory or max, one for a solo speci
 | tank | question | app figure | app option | experts | |
 |---|---|---|---|---|---|
 | B07 | max demasoni | no limit (no limit) | 16+ | 16+ |  |
+| B10 | max kribensis | 2 (groups.ts territory) | 2 | 2 |  |
 | B12 | maxMales dwarfgourami | 2 (groups.ts territory) | 2 | 2 |  |
 | B13 | max peapuffer | 2 (groups.ts territory) | 2 | 2 |  |
 | B14 | max bolivianram | 2 (groups.ts territory) | 2 | 2 |  |

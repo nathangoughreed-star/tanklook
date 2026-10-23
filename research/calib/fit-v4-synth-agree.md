@@ -1,23 +1,23 @@
 # Expert calibration, fit of round v4
 
-1 experts (synth-agree), 49 answers, 0 on held-out anchors. Noise 0.200 (log) from 0 repeat pairs. Engine readings: round v4: current engine, 2026-10-23.
+1 experts (synth-agree), 60 answers, 0 on held-out anchors. Noise 0.200 (log) from 0 repeat pairs. Engine readings: round v4: current engine, 2026-10-23.
 
 ## Error (rms of log reading at the experts' counts)
 
 | | before | after |
 |---|---|---|
 | held-out anchors | n/a | n/a |
-| fitted tanks | 0.033 | 0.031 |
+| fitted tanks | 0.032 | 0.030 |
 
 Inter-expert disagreement n/a (no tank answered by two experts yet). Stop rule not met.
 
 ## Multipliers on today's factors
 
-Water (SPACE_PER_L) x0.9983, floor x1.0204. Classes: big -2 %, invert +0 %, mid +3 %, salt -0 %, tiny -1 %.
+Water (SPACE_PER_L) x0.9979, floor x1.0138. Classes: big -2 %, invert +0 %, mid +3 %, salt -0 %, tiny -1 %.
 
 | species | class | answers | total move | own move |
 |---|---|---|---|---|
-| bronzecory | mid | 7 | +5 % | +2 % |
+| bronzecory | mid | 15 | +5 % | +2 % |
 
 ## Experts
 
@@ -38,7 +38,9 @@ Median ratio, experts 1.33, engine 1.44 (2 answers). Experts higher means they f
 ## Ambiguous counts (both dimensions near the anchor)
 
 - synth-agree A04 neon ideal 2: water 73 %, floor 81 % (weighted 0.5)
+- synth-agree A04 bronzecory limit 8: water 112 %, floor 102 % (weighted 0.5)
 - synth-agree A05 neon limit 4: water 99 %, floor 101 % (weighted 0.5)
+- synth-agree A05 bronzecory limit 6: water 119 %, floor 101 % (weighted 0.5)
 
 ## Left out
 
@@ -51,6 +53,7 @@ Median ratio, experts 1.33, engine 1.44 (2 answers). Experts higher means they f
 - synth-agree A10 neon limit 0: outside the table (1..91)
 - synth-agree A11 overall: set aside on review (v4 change "drop": a compatibility answer, not a room band)
 - synth-agree A11 boesemani ideal 0: outside the table (1..34)
+- synth-agree A11 kuhli ideal 0: outside the table (1..57)
 - synth-agree A14 overall: set aside on review (v4 change "drop": a compatibility answer, not a room band)
 - synth-agree A16 platy ideal 0: outside the table (1..49)
 - synth-agree B02 overall: set aside on review (v4 change "bigger": a tank-minimum answer, not a room band)

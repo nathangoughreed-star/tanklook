@@ -8,8 +8,8 @@
   "pairs": 0
  },
  "solver": {
-  "it": 59,
-  "gnorm": 2.9804784827253343e-8
+  "it": 134,
+  "gnorm": 0.00000122196973490047
  },
  "skipped": [
   "synth-agree v4: 22 count tanks read; 38 answers on tanks outside the count fit (no counts asked, or no space.* / golden.* tag); 0 count tanks skipped by the expert",
@@ -21,6 +21,7 @@
   "synth-agree A10 neon limit 0: outside the table (1..91)",
   "synth-agree A11 overall: set aside on review (v4 change \"drop\": a compatibility answer, not a room band)",
   "synth-agree A11 boesemani ideal 0: outside the table (1..34)",
+  "synth-agree A11 kuhli ideal 0: outside the table (1..57)",
   "synth-agree A14 overall: set aside on review (v4 change \"drop\": a compatibility answer, not a room band)",
   "synth-agree A16 platy ideal 0: outside the table (1..49)",
   "synth-agree B02 overall: set aside on review (v4 change \"bigger\": a tank-minimum answer, not a room band)",
@@ -32,94 +33,96 @@
  ],
  "flagged": [
   "synth-agree A04 neon ideal 2: water 73 %, floor 81 % (weighted 0.5)",
-  "synth-agree A05 neon limit 4: water 99 %, floor 101 % (weighted 0.5)"
+  "synth-agree A04 bronzecory limit 8: water 112 %, floor 102 % (weighted 0.5)",
+  "synth-agree A05 neon limit 4: water 99 %, floor 101 % (weighted 0.5)",
+  "synth-agree A05 bronzecory limit 6: water 119 %, floor 101 % (weighted 0.5)"
  ],
- "rows": 49,
+ "rows": 60,
  "held": 0,
- "g": 0.9983,
- "f": 1.0204,
+ "g": 0.9979,
+ "f": 1.0138,
  "class": {
-  "big": 0.9811,
+  "big": 0.9808,
   "invert": 1.001,
-  "mid": 1.0313,
-  "salt": 0.9965,
-  "tiny": 0.9904
+  "mid": 1.0307,
+  "salt": 0.9967,
+  "tiny": 0.9909
  },
  "species": {
   "amano": {
-   "mult": 0.999,
+   "mult": 0.9987,
    "own": 0.9998,
    "cls": "invert",
    "answers": 2
   },
   "betta": {
-   "mult": 1.0277,
+   "mult": 1.0267,
    "own": 0.9982,
    "cls": "mid",
    "answers": 4
   },
   "bluetang": {
-   "mult": 0.9952,
+   "mult": 0.9951,
    "own": 1.0004,
    "cls": "salt",
    "answers": 2
   },
   "boesemani": {
-   "mult": 1.0295,
-   "own": 0.9999,
+   "mult": 1.0274,
+   "own": 0.9989,
    "cls": "mid",
-   "answers": 1
-  },
-  "bristlenose": {
-   "mult": 1.0368,
-   "own": 1.007,
-   "cls": "mid",
-   "answers": 6
-  },
-  "bronzecory": {
-   "mult": 1.0522,
-   "own": 1.022,
-   "cls": "mid",
-   "answers": 7
-  },
-  "cardinal": {
-   "mult": 0.9864,
-   "own": 0.9977,
-   "cls": "tiny",
    "answers": 2
   },
-  "cherrybarb": {
-   "mult": 1.0295,
-   "own": 1,
+  "bristlenose": {
+   "mult": 1.0358,
+   "own": 1.0071,
    "cls": "mid",
-   "answers": 1
+   "answers": 12
+  },
+  "bronzecory": {
+   "mult": 1.0515,
+   "own": 1.0223,
+   "cls": "mid",
+   "answers": 15
+  },
+  "cardinal": {
+   "mult": 0.9866,
+   "own": 0.9977,
+   "cls": "tiny",
+   "answers": 6
+  },
+  "cherrybarb": {
+   "mult": 1.0281,
+   "own": 0.9995,
+   "cls": "mid",
+   "answers": 2
   },
   "cherryshrimp": {
-   "mult": 0.9999,
+   "mult": 0.9996,
    "own": 1.0007,
    "cls": "invert",
    "answers": 8
   },
   "chili": {
-   "mult": 0.9849,
+   "mult": 0.9851,
    "own": 0.9962,
    "cls": "tiny",
    "answers": 5
   },
   "chromis": {
-   "mult": 1.0024,
+   "mult": 1.0023,
    "own": 1.0077,
    "cls": "salt",
    "answers": 7
   },
   "cleanershrimp": {
-   "mult": 0.994,
+   "mult": 0.9939,
    "own": 0.9993,
    "cls": "salt",
    "answers": 7
   },
   "clownloach": {
-   "mult": 0.9794,
+   "mult": 0.9787,
    "own": 1,
    "cls": "big",
    "answers": 1
@@ -131,205 +134,205 @@
    "answers": 7
   },
   "danio": {
-   "mult": 0.9768,
-   "own": 0.988,
+   "mult": 0.9769,
+   "own": 0.9879,
    "cls": "tiny",
    "answers": 3
   },
   "demasoni": {
-   "mult": 0.9909,
+   "mult": 0.9911,
    "own": 1.0023,
    "cls": "tiny",
    "answers": 2
   },
   "discus": {
-   "mult": 0.9891,
-   "own": 1.0099,
+   "mult": 0.9888,
+   "own": 1.0103,
    "cls": "big",
-   "answers": 5
+   "answers": 7
   },
   "dwarfgourami": {
-   "mult": 1.0288,
+   "mult": 1.0278,
    "own": 0.9993,
    "cls": "mid",
    "answers": 2
   },
   "ember": {
-   "mult": 0.987,
-   "own": 0.9983,
+   "mult": 0.9872,
+   "own": 0.9984,
    "cls": "tiny",
    "answers": 2
   },
   "goldfish": {
-   "mult": 0.9755,
-   "own": 0.9959,
+   "mult": 0.975,
+   "own": 0.9962,
    "cls": "big",
    "answers": 3
   },
   "gourami": {
-   "mult": 1.0295,
+   "mult": 1.0285,
    "own": 1,
    "cls": "mid",
-   "answers": 0
+   "answers": 2
   },
   "guppy": {
-   "mult": 0.9958,
+   "mult": 0.9959,
    "own": 1.0072,
    "cls": "tiny",
    "answers": 3
   },
   "harlequin": {
-   "mult": 1.0248,
-   "own": 0.9954,
+   "mult": 1.0239,
+   "own": 0.9955,
    "cls": "mid",
    "answers": 2
   },
   "hermit": {
-   "mult": 0.9917,
+   "mult": 0.9916,
    "own": 0.997,
    "cls": "salt",
    "answers": 7
   },
   "honeygourami": {
-   "mult": 1.0248,
-   "own": 0.9954,
+   "mult": 1.0239,
+   "own": 0.9955,
    "cls": "mid",
    "answers": 3
   },
   "kuhli": {
-   "mult": 1.0256,
+   "mult": 1.0247,
    "own": 0.9962,
    "cls": "mid",
-   "answers": 3
+   "answers": 4
   },
   "mandarin": {
-   "mult": 0.9948,
+   "mult": 0.9947,
    "own": 1.0001,
    "cls": "salt",
    "answers": 2
   },
   "molly": {
-   "mult": 1.0375,
-   "own": 1.0078,
+   "mult": 1.0366,
+   "own": 1.0079,
    "cls": "mid",
-   "answers": 2
+   "answers": 4
   },
   "neon": {
-   "mult": 0.9971,
+   "mult": 0.9973,
    "own": 1.0085,
    "cls": "tiny",
-   "answers": 10
+   "answers": 16
   },
   "nerite": {
-   "mult": 0.9993,
+   "mult": 0.9989,
    "own": 1,
    "cls": "invert",
    "answers": 9
   },
   "ocellaris": {
-   "mult": 0.9925,
+   "mult": 0.9924,
    "own": 0.9978,
    "cls": "salt",
    "answers": 7
   },
   "oscar": {
-   "mult": 0.9794,
+   "mult": 0.9787,
    "own": 1,
    "cls": "big",
    "answers": 1
   },
   "oto": {
-   "mult": 0.9887,
+   "mult": 0.9889,
    "own": 1,
    "cls": "tiny",
-   "answers": 0
+   "answers": 2
   },
   "pandacory": {
-   "mult": 0.9849,
-   "own": 0.9962,
+   "mult": 0.9852,
+   "own": 0.9963,
    "cls": "tiny",
    "answers": 2
   },
   "peacock": {
-   "mult": 1.0227,
-   "own": 0.9933,
+   "mult": 1.0218,
+   "own": 0.9935,
    "cls": "mid",
    "answers": 3
   },
   "platy": {
-   "mult": 0.9922,
+   "mult": 0.9924,
    "own": 1.0036,
    "cls": "tiny",
-   "answers": 2
+   "answers": 4
   },
   "pygmycory": {
-   "mult": 0.9879,
+   "mult": 0.9881,
    "own": 0.9992,
    "cls": "tiny",
    "answers": 2
   },
   "royalgramma": {
-   "mult": 0.9936,
+   "mult": 0.9935,
    "own": 0.9988,
    "cls": "salt",
    "answers": 5
   },
   "rummynose": {
-   "mult": 0.9887,
+   "mult": 0.9889,
    "own": 1,
    "cls": "tiny",
-   "answers": 0
+   "answers": 2
   },
   "sae": {
-   "mult": 0.9793,
-   "own": 0.9999,
+   "mult": 0.9777,
+   "own": 0.9989,
    "cls": "big",
-   "answers": 1
+   "answers": 2
   },
   "sterbai": {
-   "mult": 1.025,
+   "mult": 1.0241,
    "own": 0.9956,
    "cls": "mid",
-   "answers": 2
+   "answers": 4
   },
   "swordtail": {
-   "mult": 1.0402,
-   "own": 1.0104,
+   "mult": 1.0393,
+   "own": 1.0105,
    "cls": "mid",
-   "answers": 2
+   "answers": 4
   },
   "syno": {
-   "mult": 0.9657,
-   "own": 0.986,
+   "mult": 0.9653,
+   "own": 0.9862,
    "cls": "big",
    "answers": 3
   },
   "turbo": {
-   "mult": 0.9947,
+   "mult": 0.9946,
    "own": 1,
    "cls": "salt",
    "answers": 7
   },
   "watchman": {
-   "mult": 0.9935,
+   "mult": 0.9934,
    "own": 0.9988,
    "cls": "salt",
    "answers": 7
   },
   "whitecloud": {
-   "mult": 0.9874,
+   "mult": 0.9876,
    "own": 0.9987,
    "cls": "tiny",
    "answers": 6
   },
   "yellowlab": {
-   "mult": 1.0231,
-   "own": 0.9937,
+   "mult": 1.0223,
+   "own": 0.9939,
    "cls": "mid",
    "answers": 5
   },
   "yellowtang": {
-   "mult": 0.995,
+   "mult": 0.9949,
    "own": 1.0002,
    "cls": "salt",
    "answers": 2
@@ -342,8 +345,8 @@
  "error": {
   "heldBefore": null,
   "heldAfter": null,
-  "fitBefore": 0.03329314960300127,
-  "fitAfter": 0.031407398838392116,
+  "fitBefore": 0.032145255272496155,
+  "fitAfter": 0.030393379055732847,
   "disagreement": null
  },
  "kinds": {
