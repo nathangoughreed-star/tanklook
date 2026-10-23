@@ -14,7 +14,7 @@ import { groupShort } from '../scene/animalfit';
 import { sharedRange } from '../scene/temprange';
 import { zoneOf } from '../scene/zone';
 import { SPECIES, getSpecies, type Species } from '../data/species';
-import { SPACE_FACTOR } from '../data/spacefactor';
+import { FLOOR_FACTOR, SPACE_FACTOR } from '../data/spacefactor';
 import { CARE } from '../data/care';
 import type { TankSetup } from '../scene/types';
 
@@ -81,7 +81,8 @@ export const POOL: Species[] = SPECIES.filter(sp => (sp.cat === 'fw-fish' || sp.
   && countsAgainstWater(sp) && massG(sp.id) > 0);
 const isInvert = (sp: Species) => sp.cat === 'fw-invert';
 /** The floor share the engine gives a species (stocking.ts floorUseCm2): none for shrimp, else by zone. */
-export const floorShareOf = (sp: Species) => isInvert(sp) ? 0 : FLOOR_SHARE[zoneOf(sp)];
+// S212 (2026-10-23): times FLOOR_FACTOR, as the engine's floorUseCm2 does, so a species the engine counts at half the floor (mbuna 0.5) or none (white cloud 0) is not drawn as a floorer
+export const floorShareOf = (sp: Species) => isInvert(sp) ? 0 : FLOOR_SHARE[zoneOf(sp)] * (FLOOR_FACTOR[sp.id]?.[0] ?? 1);
 
 /** A tank with these animals, sparse decor (river stones), water to the rim, fish spread by zone with a seeded layout. */
 export function setupOf(dimsIn: Dims, stock: [string, number][], seed = 1): TankSetup {
