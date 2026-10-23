@@ -30,7 +30,7 @@ export function writePairs(T: Pick<TankSetup, 'fish' | 'pairs'>, picks: Pk[]): v
 /** The pairing question is asked: a pair species with exactly two animals on the list. */
 export const asksPairing = (p: Pk) => pairRule(p.id) && totalOf(p) === 2;
 /** The most one tank is advised to take (a warning past it, never a block); with the tank's litres, the size-scaled rule (S196). */
-export const maxOf = (id: string, litres?: number) => mostFor(CARE[id], litres) ?? 99;
+export const maxOf = (id: string, litres?: number, lengthMm?: number) => mostFor(CARE[id], litres, lengthMm) ?? 99;
 export const minOf = (id: string) => CARE[id]?.bands?.ok ?? CARE[id]?.group ?? 1;
 
 /** The picks as the tank-fit engine wants them (males and females together). */
@@ -55,8 +55,8 @@ export function bump(p: Pk, which: 'n' | 'f' | 'u', d: number): Pk {
 
 /** The warning for keeping more of a species than advised (more than the advised most, or more than one of a keep-one animal), else
  *  undefined. With the tank's litres, the most scales with the tank where the sources give a rule (S196, data/groups.ts territory). */
-export function overWarn(p: Pk, litres?: number): string | undefined {
-  const c = CARE[p.id], n = totalOf(p), mx = mostFor(c, litres) ?? (c?.solo ? 1 : undefined);
+export function overWarn(p: Pk, litres?: number, lengthMm?: number): string | undefined {
+  const c = CARE[p.id], n = totalOf(p), mx = mostFor(c, litres, lengthMm) ?? (c?.solo ? 1 : undefined);
   const name = getSpecies(p.id)?.name ?? p.id;
   if (c?.beyond && mx && n > mx) return `${name}: ${c.beyond}`;
   if (!mx || n <= mx || !fightsOverCount(c)) {
@@ -211,6 +211,8 @@ export interface Plan {
 const litresOf = (m: TankModel) => volume(tankFromModel(m)).litres;
 /** The litres of the tank the plan shows: the chosen one, else the smallest that fits (0 when none). */
 export const shownLitres = (plan: Plan) => plan.tank ? plan.litres : plan.need ? litresOf(plan.need.tank) : 0;
+/** The shown tank's inside length, mm (length-based fighting rules, kribensis), else undefined. */
+export const shownLengthMm = (plan: Plan) => { const m = plan.tank ?? plan.need?.tank; return m ? tankFromModel(m).L : undefined; };
 
 /** each tank failure in a few words */
 export const FAIL_WORD: Record<string, string> = { space: 'too full', filtration: 'no filter carries it', minimum: 'too small for them', length: 'too short', depth: 'too deep', floor: 'not enough floor' };

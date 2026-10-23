@@ -45,3 +45,9 @@ Option 1: warn above the sourced, size-scaled limit (no clamp to the old flat ma
 - Saltwater Aquarium Blog (saltwateraquariumblog.com/banggai-cardinalfish-care-guide/): "I don't recommend you try to keep a shoal of fish." Common mistake: "Attempting to keep a shoal of Banggai Cardinalfish in a small tank, leading to aggression and fatalities." "The minimum tank size for a single Banggai Cardinalfish or a pair is 10-gallons."
 - Top Shelf Aquatics (topshelfaquatics.com/blogs/news/cardinalfish-care-guide-pairs-vs-groups-feeding-and-behavior): "For groups or mixed-species communities, a larger aquarium of 50 gallons or more prevents territorial conflicts" (the same page also says "groups require 75+ gallons with extensive rockwork"); "groups of 6+ in large systems", no maximum.
 - Rule: territory at [[10 gal, 2], [50 gal, no limit]]: one pair below 50 gal, and above it no count limit (no page gives one). The 50 gal figure is the one stated for fighting; 75 is the page's general group size.
+
+## Kribensis by tank length (lane CW, 2026-10-23; Nathan chose option C in the S196 chat: "lets do your recommendation")
+- Replaces the one-retailer rule (Furry Critter: 20 gal a pair, +10-15 gal per pair), which let 10 kribs in a 75 gal pass (Coordinator 9).
+- Seriously Fish (seriouslyfish.com/species/pelvicachromis-pulcher/): "24" x 15" x 12" (60x37.5x30cm) - 71 litres is suitable for a single pair"; "a large tank is required if more than one pair is to be kept"; "the fish become very territorial when breeding".
+- Rule: one pair per 24 in of tank length, never below one pair (territory basis 'length', at [[24 in, 2]], each 24 in, per 2). The 24 in step per extra pair is OUR reading (the page gives no increment): provenance basis 'interpretation'. Inside length + 1 in, since tanks are quoted by nominal outside length.
+- Limits (fish): 29 gal (30 in) 2, 55 gal (48 in) 4, 75 gal (48 in) 4, 125 gal (72 in) 6.

@@ -25,7 +25,9 @@ export interface GroupCare {
    *  steps as the sources state them (fighting limits only: room rules such as "+3 gal per tiger barb" are the stocking percent's
    *  job); past the last step one more animal per `each` gal (`per` at a time, 2 for pairs). Where present
    *  it replaces `max` for a known tank size. A warning only: the stocking percent never reads it. */
-  territory?: { at: [number, number][]; each?: number; per?: number; /** advice shown with the warning */ note?: string };
+  territory?: { at: [number, number][]; each?: number; per?: number; /** advice shown with the warning */ note?: string;
+    /** what `at` / `each` measure: US gallons (default) or the tank's inside LENGTH in inches (kribensis, lane CW 2026-10-23) */
+    basis?: 'gal' | 'length' };
   /** MALES before they fight (lane CW, Nathan 2026-10-22): one male from `at` US gal, one more per `each` gal. Females never count.
    *  A warning only, like `territory`; the stocking percent never reads it. */
   males?: { at: number; each: number };
@@ -61,11 +63,14 @@ export const PAIR_FORMERS = new Set(['gbr', 'bolivianram', 'kribensis', 'angel',
 export const pairRule = (id: string) => PAIR_FORMERS.has(id);
 /** Recommended minimum group: bands.ok, else the older CARE.group, else 1. */
 export const recommendedMin = (g: GroupCare | undefined, careGroup?: number) => g?.bands?.ok ?? careGroup ?? 1;
-/** The most one tank of `litres` takes before fighting: the size-scaled `territory` rule, else the flat `max`. */
-export function mostFor(g: GroupCare | undefined, litres?: number): number | undefined {
+/** The most one tank of `litres` (and `lengthMm` long) takes before fighting: the size-scaled `territory` rule, else the flat `max`.
+ *  A length-based rule needs the length; without it the flat max stands. */
+export function mostFor(g: GroupCare | undefined, litres?: number, lengthMm?: number): number | undefined {
   const t = g?.territory;
-  if (!t || litres === undefined) return g?.max;
-  const gal = litres / 3.785;
+  // a length rule reads the inside length plus 1 in: sources quote tanks by their nominal outside length (a 72 in 125 gal is ~71.4 in inside)
+  const size = t?.basis === 'length' ? (lengthMm === undefined ? undefined : lengthMm / 25.4 + 1) : litres === undefined ? undefined : litres / 3.785;
+  if (!t || size === undefined) return g?.max;
+  const gal = size; // gallons, or inches for a length rule
   let [at, n] = t.at[0];
   for (const s of t.at) if (gal >= s[0]) [at, n] = s;
   if (t.each && gal > at) n += Math.floor((gal - at) / t.each + 1e-9) * (t.per ?? 1);
@@ -127,7 +132,7 @@ export const GROUPS: Record<string, GroupCare> = {
   // two pairs need room for separate territories, which footprint, layout and pairing decide, not a gallon figure.
   gbr: { bands: { ok: 1, good: 2, great: 2 }, msg: { ok: 'Suitable singly', good: 'Suitable pair; may defend a breeding territory', great: 'Suitable pair; may defend a breeding territory', unpaired: 'Compatibility unconfirmed; monitor aggression and provide a separation option' }, max: 2, beyond: "Guided recommendations currently support one ram or one compatible pair; larger groups aren't evaluated", flow: 'low', zone: 'bottom', minLengthMm: 600, appeal: ['showpiece', 'colour', 'hands-on'] },
   bolivianram: { bands: { ok: 2, good: 4, great: 6 }, msg: { avoid: 'Singles do best only if tank is peaceful; a pair or small group is better' }, max: 8, territory: { at: [[30, 1]], each: 7.5 }, flow: 'low', zone: 'bottom', minLengthMm: 600, appeal: ['personality', 'colour', 'easy'] },
-  kribensis: { bands: { ok: 2, good: 2, great: 2 }, msg: { avoid: 'A lone krib is fine but a male/female pair shows the real behaviour' }, max: 2, territory: { at: [[20, 2]], each: 12.5, per: 2 }, sexed: { ratio: [1, 1], note: 'Keep as one male/female pair; breeding pairs are territorial and need hiding caves' }, flow: 'low', zone: 'bottom', minLengthMm: 600, appeal: ['personality', 'colour', 'easy'] },
+  kribensis: { bands: { ok: 2, good: 2, great: 2 }, msg: { avoid: 'A lone krib is fine but a male/female pair shows the real behaviour' }, max: 2, territory: { basis: 'length', at: [[24, 2]], each: 24, per: 2, note: 'one pair per 24 in of tank length; breeding pairs claim the floor' }, sexed: { ratio: [1, 1], note: 'Keep as one male/female pair; breeding pairs are territorial and need hiding caves' }, flow: 'low', zone: 'bottom', minLengthMm: 600, appeal: ['personality', 'colour', 'easy'] },
   cockatoo: { bands: { ok: 2, good: 3, great: 4 }, msg: { avoid: 'A lone male is fine but a harem is the natural way', great: '1 male with 3 females needs dense caves and a 90 cm footprint' }, territory: { at: [[14, 2], [18, 3]], each: 10, note: 'each female holds her own cave territory: keep 1 male to 2-3 females only in a 20 long or bigger, with caves out of sight of each other' }, males: { at: 14, each: 35 }, sexed: { ratio: [1, 3], note: 'One male to 2-3 females; never two males in a small tank; add males after females settle' }, flow: 'low', zone: 'bottom', minLengthMm: 900, appeal: ['personality', 'colour', 'showpiece'] },
   yellowlab: { bands: { ok: 4, good: 6, great: 8 }, msg: { avoid: 'A lone fish or a male with too few females gets harassed or harasses' }, sexed: { ratio: [1, 4], note: 'One male to several females to spread male aggression' }, flow: 'medium', zone: 'all', minLengthMm: 900, appeal: ['colour', 'easy', 'personality'] },
   peacock: { bands: { ok: 3, good: 4, great: 6 }, msg: { avoid: 'Singles and pairs get chased hard; keep one male with several females' }, sexed: { ratio: [1, 3], note: 'One male to 2-4 females; two males fight unless tank is very large' }, flow: 'medium', zone: 'middle', minLengthMm: 1200, appeal: ['colour', 'showpiece', 'personality'] },

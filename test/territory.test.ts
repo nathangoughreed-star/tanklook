@@ -7,7 +7,8 @@ import { stockingOf } from '../src/scene/stocking';
 import { notesOf, overWarn } from '../src/ui/stockPlanLogic';
 import { comboTank } from './aqcompare.test';
 import { defaultSetup } from '../src/scene/defaults';
-import { IN } from '../src/scene/physics';
+import { IN, volume } from '../src/scene/physics';
+import { TANK_MODELS, tankFromModel } from '../src/data/tanks';
 import { starterAnimals } from '../src/scene/starter';
 import { styleGround } from '../src/scene/scapeground';
 import { STYLES, isLandStyle, isReefy } from '../src/scene/items';
@@ -18,13 +19,28 @@ describe('territory caps', () => {
     expect(mostFor(CARE.dwarfgourami, L(10))).toBe(3);   // Fishkeeping World: 2-3 in 10 gal
     expect(mostFor(CARE.dwarfgourami, L(20))).toBe(5);   // +5 gal per fish
     expect(mostFor(CARE.dwarfgourami, L(125))).toBe(26);
-    expect(mostFor(CARE.kribensis, L(45))).toBe(6);      // a pair at 20 gal, +1 pair per 12.5 gal
+    // kribensis by LENGTH (Nathan 2026-10-23, option C): one pair per 24 in (Seriously Fish: a 24 in tank suits a single pair)
+    expect(mostFor(CARE.kribensis, L(29), 30 * 25.4)).toBe(2);
+    expect(mostFor(CARE.kribensis, L(55), 48 * 25.4)).toBe(4);
+    expect(mostFor(CARE.kribensis, L(75), 48 * 25.4)).toBe(4);
+    expect(mostFor(CARE.kribensis, L(125), 72 * 25.4)).toBe(6);
+    expect(mostFor(CARE.kribensis, L(10), 20 * 25.4)).toBe(2);   // never below one pair
+    expect(mostFor(CARE.kribensis, L(75))).toBe(2);              // no length known: the flat max
     expect(mostFor(CARE.royalgramma, L(55))).toBe(2);    // 50 gal a pair, 100+ a group
     expect(mostFor(CARE.coralbeauty, L(125))).toBe(1);   // a second only over 180 gal
     expect(mostFor(CARE.banggai, L(40))).toBe(2);        // one pair below 50 gal (lane CW)
     expect(mostFor(CARE.banggai, L(75))).toBe(Infinity); // a group above it, no stated limit
     expect(overWarn({ id: 'banggai', n: 5 }, L(29))).toMatch(/about 2 .*may fight: below 50 gal keep one pair/);
     expect(notesOf({ id: 'banggai', n: 5 }).line).toMatch(/pair is best/); // the group line never praises a group the warning says fights
+  });
+  it('kribensis: 10 in a 75 gal warn, on the real tank models too (Coordinator 9, lane CW 2026-10-23)', () => {
+    expect(crowdWarnings(comboTank({ name: '', tank: [48, 18, 21], stock: [['kribensis', 10]] })).join()).toMatch(/10 Kribensis.*more than about 4 in a tank this size may fight/);
+    expect(crowdWarnings(comboTank({ name: '', tank: [48, 18, 21], stock: [['kribensis', 4]] }))).toEqual([]);
+    for (const [name, want] of [['29 gal', 2], ['55 gal', 4], ['75 gal', 4], ['125 gal', 6]] as const) {
+      const m = TANK_MODELS.find(t => !t.terrarium && t.name.startsWith(name))!;
+      expect(m, name).toBeDefined();
+      expect(mostFor(CARE.kribensis, volume(tankFromModel(m)).litres, tankFromModel(m).L), m.name).toBe(want);
+    }
   });
   it('fall back to the flat max without a tank size, or without a rule', () => {
     expect(mostFor(CARE.dwarfgourami)).toBeUndefined(); // lane CW: no flat max; the males rule needs a tank size too
