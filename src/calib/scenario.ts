@@ -4,7 +4,7 @@
 import { defaultSetup } from '../scene/defaults';
 import { starterItems } from '../scene/items';
 import { IN } from '../scene/physics';
-import { stockingOf, countsAgainstWater, massG } from '../scene/stocking';
+import { IDEAL_MAX, stockingOf, countsAgainstWater, massG } from '../scene/stocking';
 import { compatRisks, crowdWarnings } from '../scene/territory';
 import { tankMinimum } from '../scene/tankMin';
 import { groupShort } from '../scene/animalfit';
@@ -17,8 +17,7 @@ import type { TankSetup } from '../scene/types';
 
 /** The two anchors the experts answer on (Nathan 2026-10-23): 75 % = ideal (green up to here), 100 % = the limit past which
  *  long-term problems are likely (red beyond); in between, tread carefully. */
-// The same cut as IDEAL_MAX in scene/stocking.ts (branch s214, da59331, not on main yet): import it from there once it lands.
-export const IDEAL_PCT = 75, LIMIT_PCT = 100;
+export const IDEAL_PCT = IDEAL_MAX, LIMIT_PCT = 100;
 
 /** Standard US glass tanks, gal and inches L x D x H (as test/expert.test.ts), 10 gal and up. */
 export const TANKS: [number, [number, number, number]][] = [[10, [20, 10, 12]], [15, [24, 12, 12]], [20, [24, 12, 16]], [29, [30, 12, 18]],
