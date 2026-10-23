@@ -57,3 +57,39 @@ describe('calibration batch review', () => {
     expect(md).not.toMatch(/\*\*flag\*\*/);
   });
 });
+
+// @ts-expect-error plain node script, no types
+import { combine, fitRound as fit2, rowsOf as rows2 } from '../scripts/calib-fit.mjs';
+import ROUND2 from '../research/calib/round-2.json';
+import NGR from '../research/calib/answers/round-1-ngr.json';
+describe('calibration fit, survey 2', () => {
+  const r2 = ROUND2 as any, clean2 = EXPERTS.map((e: any) => ({ ...e, noise: 1e-4 }));
+  it('reads a floor-only shift from the floor answers and leaves water alone', () => {
+    const f = fit2(r2, synthAnswers(r2, { f: Math.log(1.2) }, clean2));
+    expect(Math.abs(Math.log(f.f / 1.2))).toBeLessThan(0.05);
+    expect(Math.abs(Math.log(f.g))).toBeLessThan(0.05);
+  });
+  it('reads a water-only shift from the water answers and leaves the floor alone', () => {
+    const f = fit2(r2, synthAnswers(r2, { g: Math.log(0.85) }, clean2));
+    expect(Math.abs(Math.log(f.g / 0.85))).toBeLessThan(0.05);
+    expect(Math.abs(Math.log(f.f))).toBeLessThan(0.05);
+  });
+  it('leaves out tanks the expert calls too small or limited by habitat, and weights ambiguous counts half', () => {
+    const [file] = synthAnswers(r2, {}, [{ expert: 'z', bias: 0, noise: 1e-4 }]);
+    file.answers[0].limits = 'not-room';
+    file.answers[1].bigEnough[file.answers[1].focal ? Object.keys(file.answers[1].bigEnough)[0] : ''] = false;
+    const { rows, skipped } = rows2(r2, [file]);
+    expect(rows.some((r: any) => r.s.id === file.answers[0].id || r.s.id === file.answers[1].id)).toBe(false);
+    expect(skipped.length).toBe(2);
+    for (const r of rows.filter((x: any) => x.ambiguous)) expect(r.w).toBeLessThan(1);
+  });
+  it('fits round 1 and round 2 together, with a round-1 file carried inside a round-2 export', () => {
+    const [f2] = synthAnswers(r2, {}, [{ expert: 'ngr', bias: 0, noise: 1e-4 }]);
+    const { round: both, files } = combine([round, r2], [{ ...f2, carried: [NGR, NGR] }]);
+    expect(both.scenarios.length).toBe(round.scenarios.length + r2.scenarios.length);
+    expect(files.length).toBe(2);
+    const f = fit2(both, files);
+    expect(f.rows).toBeGreaterThan(50);
+    expect(f.skipped.some((x: string) => x.includes('1:f5'))).toBe(false); // f5 has no valid counts: nothing to skip, nothing fitted
+  });
+});

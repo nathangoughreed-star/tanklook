@@ -202,3 +202,51 @@ Notes:
   small difference of opinion moves the count a lot. Even on one species it is a noisy statistic: read it over several rounds, not one.
 - Test: test/calibfit.test.ts "calibration batch review" (a known global shift reads back in the median fix; an expert who agrees with
   the engine gets no flags).
+
+## 10. Survey v2 and round 2 (Nathan 2026-10-23, after answering 5 round-1 tanks; relayed by chat S214, approved from a mockup)
+
+**Why.** Round 1's renders biased the answers: camera and zoom change how crowded a tank looks, decor and substrate how busy it
+feels (the otos and amanos showed it). And one overall answer only informs the larger of the engine's two dimensions.
+
+**Round 1's answers** (Nathan, 5 tanks: research/calib/answers/round-1-ngr.json) stay as data, tagged `picture: true`. f5 holds the
+new answer type "no valid count with the fixed inhabitants" (the 19 cm synodontis alone makes the tank too small; 0 would say the rest
+is fine); f20's shrimp limit is "not assessable" (grazing and food set it). Both are stored as `countStatus`, not as missing or 0.
+round-1.json and survey-round-1.html are frozen: the generator has changed since, and his answers are tied to those tanks.
+
+**The screen** (scripts/calib-survey.mjs -> research/calib/survey-round-2.html, 23 kB): a text card (tank L x D x H, gallons, floor
+area; a filter stated as never the limit; no plants, a few rocks; each species with count, adult length and what the engine counts it
+on: water, floor + water, or water + floor half the time). Questions per tank:
+1. floor room (only when there are floor animals), water column room (only when there are swimmers), overall: ideal / caution / problems;
+2. what limits the room first: a species, or "not room: habitat or compatibility decides it";
+3. is the tank big enough for each species at all (yes / no);
+4. ideal and "at most" counts for the focal species, and an ideal count for one tankmate; each count can be "can't say" or "no count
+   works with these tankmates";
+5. keep together (mixes), confidence (low / medium / high), would dense plants and cover raise the counts (the same / a little / a lot).
+"Import answers" restores this round's file or carries an earlier round's (it goes out with the export). No schematic in round 2
+(Nathan: text only); the picture effect can later be measured by splitting experts between picture and text, not by one expert
+re-answering (he remembers his answers).
+
+**Round 2** (src/calib/scenario.ts, seed 2, research/calib/round-2.json): 16 slots: 6 floor-tight (bottom dwellers fill the floor),
+6 water-tight (schools, tall-bodied fish), 4 both tight; 2 pairs (the same stock in two footprints of the same gallons: 20 high vs
+20 long, 40 breeder vs 40 long; tests Nathan's f12 note that footprint matters more than height); 1 held-out anchor; 1 repeat:
+22 tanks. Every species meets its *recommended* minimum tank, not only the red line (the f5 fix). Shrimp are never the focal species
+or the main school (they stay as tankmates), so no limit count is asked of an invert.
+
+**The fit** (scripts/calib-fit.mjs):
+- each count on the dimension its species fills: floor for bottom dwellers, water for swimmers (and shrimp), the larger for "all"-zone
+  fish; the tankmate count through its own engine table;
+- floor and water bands on their own dimension, the overall band on the larger; a round-1 band on the larger only;
+- left out: tanks answered "not room", and tanks the expert called too small for a species (those are tank-minimum answers);
+- a count where both dimensions sit near the anchor (both at 80 % of it or more, within 20 % of each other) is flagged and weighs half;
+- confidence weighs 0.5 / 1 / 1.5; every expert, Nathan included, has a bias term (one expert among several, not ground truth);
+- rounds fit together (`combine`: ids "<round>:<id>"), and a round-1 file carried inside a round-2 export joins round 1 once;
+- the report adds the max-rule check (does the overall follow the tighter of floor and water? if not, the engine's "larger of the
+  two" needs revisiting) and lists the ambiguous and left-out answers.
+Synthetic round 2 (5 experts, noise 0.12; truth water x0.9, floor x1.1, tiny +15 %, bronze cory +20 %): floor x1.093, species error
+0.038 vs 0.059 unfitted, held-out 0.149 -> 0.128. A floor-only and a water-only shift each come back within 5 % and leave the other
+dimension alone (test/calibfit.test.ts "calibration fit, survey 2").
+
+**The review** (scripts/calib-review.mjs) reads survey 1 and 2 files: per tank engine water / floor next to the floor / water / overall
+answers and the counts; patterns now by the engine's tight dimension too; the max rule; what limits the room (vs the engine's biggest
+contributor on the binding dimension); "too small" answers (each a tank-minimum disagreement); the pairs side by side; confidence and
+plants; the notes, below the tables.

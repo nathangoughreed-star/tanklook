@@ -1,0 +1,510 @@
+{
+ "round": 2,
+ "survey": 2,
+ "expert": "synth-E",
+ "made": "2026-10-23",
+ "synthetic": true,
+ "answers": [
+  {
+   "id": "f10",
+   "floor": null,
+   "water": 2,
+   "overall": 2,
+   "limits": "hatchet",
+   "bigEnough": {
+    "hatchet": true,
+    "honeygourami": true,
+    "chili": true
+   },
+   "focal": {
+    "ideal": 1,
+    "limit": 1,
+    "status": {}
+   },
+   "mate": {
+    "id": "chili",
+    "ideal": 3,
+    "status": {}
+   },
+   "together": "yes",
+   "confidence": 1,
+   "plants": 0,
+   "note": ""
+  },
+  {
+   "id": "f8",
+   "floor": null,
+   "water": 0,
+   "overall": 0,
+   "limits": "ember",
+   "bigEnough": {
+    "ember": true
+   },
+   "focal": {
+    "ideal": 131,
+    "limit": 102,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "plants": 0,
+   "note": ""
+  },
+  {
+   "id": "f9",
+   "floor": null,
+   "water": 2,
+   "overall": 2,
+   "limits": "guppy",
+   "bigEnough": {
+    "guppy": true
+   },
+   "focal": {
+    "ideal": 8,
+    "limit": 16,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "plants": 0,
+   "note": ""
+  },
+  {
+   "id": "p2b",
+   "floor": 2,
+   "water": 0,
+   "overall": 2,
+   "limits": "bronzecory",
+   "bigEnough": {
+    "bronzecory": true
+   },
+   "focal": {
+    "ideal": 9,
+    "limit": 11,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "plants": 0,
+   "note": ""
+  },
+  {
+   "id": "a1",
+   "floor": null,
+   "water": 2,
+   "overall": 2,
+   "limits": "harlequin",
+   "bigEnough": {
+    "harlequin": true,
+    "rummynose": true
+   },
+   "focal": {
+    "ideal": 56,
+    "limit": 131,
+    "status": {}
+   },
+   "mate": {
+    "id": "rummynose",
+    "ideal": 1,
+    "status": {}
+   },
+   "together": "yes",
+   "confidence": 1,
+   "plants": 0,
+   "note": ""
+  },
+  {
+   "id": "f6",
+   "floor": 2,
+   "water": 0,
+   "overall": 2,
+   "limits": "pandacory",
+   "bigEnough": {
+    "pandacory": true,
+    "whitecloud": true
+   },
+   "focal": {
+    "ideal": 11,
+    "limit": 16,
+    "status": {}
+   },
+   "mate": {
+    "id": "whitecloud",
+    "ideal": 1,
+    "status": {}
+   },
+   "together": "yes",
+   "confidence": 1,
+   "plants": 0,
+   "note": ""
+  },
+  {
+   "id": "f4",
+   "floor": 2,
+   "water": 2,
+   "overall": 2,
+   "limits": "pandacory",
+   "bigEnough": {
+    "pandacory": true,
+    "rummynose": true
+   },
+   "focal": {
+    "ideal": 30,
+    "limit": 43,
+    "status": {}
+   },
+   "mate": {
+    "id": "rummynose",
+    "ideal": 1,
+    "status": {}
+   },
+   "together": "yes",
+   "confidence": 1,
+   "plants": 0,
+   "note": ""
+  },
+  {
+   "id": "f7",
+   "floor": null,
+   "water": 1,
+   "overall": 1,
+   "limits": "neon",
+   "bigEnough": {
+    "neon": true
+   },
+   "focal": {
+    "ideal": 55,
+    "limit": 65,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "plants": 0,
+   "note": ""
+  },
+  {
+   "id": "f15",
+   "floor": 2,
+   "water": 0,
+   "overall": 2,
+   "limits": "sae",
+   "bigEnough": {
+    "sae": true,
+    "cpd": true
+   },
+   "focal": {
+    "ideal": 1,
+    "limit": 4,
+    "status": {}
+   },
+   "mate": {
+    "id": "cpd",
+    "ideal": 46,
+    "status": {}
+   },
+   "together": "yes",
+   "confidence": 1,
+   "plants": 0,
+   "note": ""
+  },
+  {
+   "id": "f13",
+   "floor": 2,
+   "water": 2,
+   "overall": 2,
+   "limits": "hillstream",
+   "bigEnough": {
+    "hillstream": true,
+    "oto": true
+   },
+   "focal": {
+    "ideal": 1,
+    "limit": 3,
+    "status": {}
+   },
+   "mate": {
+    "id": "oto",
+    "ideal": 18,
+    "status": {}
+   },
+   "together": "yes",
+   "confidence": 1,
+   "plants": 0,
+   "note": ""
+  },
+  {
+   "id": "f14",
+   "floor": 2,
+   "water": 2,
+   "overall": 2,
+   "limits": "bronzecory",
+   "bigEnough": {
+    "bronzecory": true,
+    "kadango": true
+   },
+   "focal": {
+    "ideal": 22,
+    "limit": 30,
+    "status": {}
+   },
+   "mate": {
+    "id": "kadango",
+    "ideal": 11,
+    "status": {}
+   },
+   "together": "yes",
+   "confidence": 1,
+   "plants": 0,
+   "note": ""
+  },
+  {
+   "id": "f16",
+   "floor": 1,
+   "water": 1,
+   "overall": 1,
+   "limits": "kribensis",
+   "bigEnough": {
+    "kribensis": true,
+    "yellowlab": true
+   },
+   "focal": {
+    "ideal": 7,
+    "limit": 5,
+    "status": {}
+   },
+   "mate": {
+    "id": "yellowlab",
+    "ideal": 7,
+    "status": {}
+   },
+   "together": "no",
+   "confidence": 1,
+   "plants": 0,
+   "note": ""
+  },
+  {
+   "id": "f5",
+   "floor": 2,
+   "water": 1,
+   "overall": 2,
+   "limits": "kuhli",
+   "bigEnough": {
+    "kuhli": true,
+    "sterbai": true
+   },
+   "focal": {
+    "ideal": 23,
+    "limit": 30,
+    "status": {}
+   },
+   "mate": {
+    "id": "sterbai",
+    "ideal": 1,
+    "status": {}
+   },
+   "together": "yes",
+   "confidence": 1,
+   "plants": 0,
+   "note": ""
+  },
+  {
+   "id": "f12",
+   "floor": 0,
+   "water": 2,
+   "overall": 2,
+   "limits": "harlequin",
+   "bigEnough": {
+    "harlequin": true,
+    "peapuffer": true
+   },
+   "focal": {
+    "ideal": 12,
+    "limit": 37,
+    "status": {}
+   },
+   "mate": {
+    "id": "peapuffer",
+    "ideal": 1,
+    "status": {}
+   },
+   "together": "no",
+   "confidence": 1,
+   "plants": 0,
+   "note": ""
+  },
+  {
+   "id": "p1a",
+   "floor": null,
+   "water": 2,
+   "overall": 2,
+   "limits": "neon",
+   "bigEnough": {
+    "neon": true
+   },
+   "focal": {
+    "ideal": 15,
+    "limit": 27,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "plants": 0,
+   "note": ""
+  },
+  {
+   "id": "f2",
+   "floor": 2,
+   "water": 1,
+   "overall": 2,
+   "limits": "bronzecory",
+   "bigEnough": {
+    "bronzecory": true
+   },
+   "focal": {
+    "ideal": 15,
+    "limit": 22,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "plants": 0,
+   "note": ""
+  },
+  {
+   "id": "p1b",
+   "floor": null,
+   "water": 2,
+   "overall": 2,
+   "limits": "neon",
+   "bigEnough": {
+    "neon": true
+   },
+   "focal": {
+    "ideal": 18,
+    "limit": 22,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "plants": 0,
+   "note": ""
+  },
+  {
+   "id": "f3",
+   "floor": 2,
+   "water": 0,
+   "overall": 2,
+   "limits": "bronzecory",
+   "bigEnough": {
+    "bronzecory": true
+   },
+   "focal": {
+    "ideal": 8,
+    "limit": 10,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "plants": 0,
+   "note": ""
+  },
+  {
+   "id": "f1",
+   "floor": 1,
+   "water": 0,
+   "overall": 1,
+   "limits": "pandacory",
+   "bigEnough": {
+    "pandacory": true
+   },
+   "focal": {
+    "ideal": 24,
+    "limit": 36,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "plants": 0,
+   "note": ""
+  },
+  {
+   "id": "p2a",
+   "floor": 2,
+   "water": 0,
+   "overall": 2,
+   "limits": "bronzecory",
+   "bigEnough": {
+    "bronzecory": true
+   },
+   "focal": {
+    "ideal": 12,
+    "limit": 16,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "plants": 0,
+   "note": ""
+  },
+  {
+   "id": "r1",
+   "floor": 2,
+   "water": 2,
+   "overall": 2,
+   "limits": "hillstream",
+   "bigEnough": {
+    "hillstream": true,
+    "oto": true
+   },
+   "focal": {
+    "ideal": 1,
+    "limit": 2,
+    "status": {}
+   },
+   "mate": {
+    "id": "oto",
+    "ideal": 20,
+    "status": {}
+   },
+   "together": "yes",
+   "confidence": 1,
+   "plants": 0,
+   "note": ""
+  },
+  {
+   "id": "f11",
+   "floor": null,
+   "water": 2,
+   "overall": 2,
+   "limits": "dwarfpencil",
+   "bigEnough": {
+    "dwarfpencil": true,
+    "gourami": true
+   },
+   "focal": {
+    "ideal": 42,
+    "limit": 74,
+    "status": {}
+   },
+   "mate": {
+    "id": "gourami",
+    "ideal": 1,
+    "status": {}
+   },
+   "together": "yes",
+   "confidence": 1,
+   "plants": 0,
+   "note": ""
+  }
+ ]
+}

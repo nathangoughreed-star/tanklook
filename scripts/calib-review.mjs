@@ -1,27 +1,35 @@
-// Batch review for the expert calibration (research/expert-calibration.md section 9, Nathan 2026-10-23): one expert's answers to a
-// round, tank by tank against the engine, then grouped by pattern (body class, zone, floor or water, one species or a mix, tank size,
-// school size) so broad changes can be read off. Hand-written findings below "## Findings" survive a rerun.
-// Run: node scripts/calib-review.mjs research/calib/round-1.json research/calib/answers/round-1-<expert>.json
+// Batch review for the expert calibration (research/expert-calibration.md sections 9 and 10, Nathan 2026-10-23): one expert's answers
+// to a round, tank by tank against the engine, then grouped by pattern (body class, zone, which dimension is tight, one species or a
+// mix, tank size, school size) so broad changes can be read off. Survey 1 or 2 answers. Hand-written findings below "## Findings"
+// survive a rerun.
+// Run: node scripts/calib-review.mjs research/calib/round-N.json research/calib/answers/round-N-<expert>.json
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { dimOf, focalOf, partsAt } from './calib-fit.mjs';
 
-/** Engine space reading of tank s with n of its focal species (from the round's engine table). */
-export const readAt = (s, n) => { const r = s.table[Math.max(0, Math.min(n, s.table.length - 1))]; return Math.max(Object.values(r.water).reduce((a, b) => a + b, 0), r.floor); };
+/** Engine reading of a table row on a dimension ('water', 'floor' or 'max'). */
+export const readOn = (tbl, n, dim = 'max') => { const { W, F } = partsAt(tbl, n); return dim === 'water' ? W : dim === 'floor' ? F : Math.max(W, F); };
+/** Survey-1 helper kept for callers: the larger dimension. */
+export const readAt = (s, n) => readOn(s.table, n);
 const bandOf = (p, ideal, limit) => p <= ideal ? 0 : p <= limit ? 1 : 2;
 const BAND = ['green', 'amber', 'red'];
 const pc = x => `${Math.round(x)} %`, mv = m => `${m >= 1 ? '+' : ''}${Math.round((m - 1) * 100)} %`;
 const gmean = xs => Math.exp(xs.reduce((a, x) => a + Math.log(x), 0) / xs.length);
 const median = xs => { const s = [...xs].sort((a, b) => a - b), k = s.length >> 1; return s.length % 2 ? s[k] : (s[k - 1] + s[k]) / 2; };
+const STATUS = { 'no-valid-count': 'no valid count', 'not-assessable': 'not assessable', 'cant-say': "can't say" };
 
-/** Per tank: the engine as shown, the expert's band, and what the engine reads at the expert's ideal and limit counts. `fix` is the
- *  multiplier the engine's reading would need to match the expert (geometric mean over the two counts; below 1 = the engine reads high). */
+/** Per tank: the engine as shown, the expert's bands, and what the engine reads (on the counted species' own dimension) at the expert's
+ *  counts. `fix` is the multiplier the engine's reading would need to match the expert (geometric mean over the counts; below 1 = the
+ *  engine reads high). Tanks the expert called too small for a species, or limited by habitat, get no fix. */
 export function rowsOf(round, file) {
   const by = Object.fromEntries(file.answers.map(a => [a.id, a]));
   return round.scenarios.map(s => {
-    const a = by[s.id] ?? {}, shown = s.stock.find(x => x[0] === s.focal)[1], p = s.pct.space;
-    const atIdeal = a.ideal >= 1 && a.ideal < s.table.length ? readAt(s, a.ideal) : null, atLimit = a.limit >= 1 && a.limit < s.table.length ? readAt(s, a.limit) : null;
-    const fixes = [atIdeal && round.ideal / atIdeal, atLimit && round.limit / atLimit].filter(Boolean);
-    return { s, a, shown, p, floorBound: s.pct.floor >= s.pct.water, engineBand: bandOf(p, round.ideal, round.limit), atIdeal, atLimit, fix: fixes.length ? gmean(fixes) : null,
-      ratio: a.ideal >= 1 && a.limit >= 1 ? a.limit / a.ideal : null };
+    const a = by[s.id] ?? {}, c = focalOf(a), shown = s.stock.find(x => x[0] === s.focal)[1], p = s.pct.space, d = dimOf(s, s.focal);
+    const at = (tbl, n, dim) => n >= 1 && n < tbl.length ? readOn(tbl, n, dim) : null;
+    const atIdeal = at(s.table, c.ideal, d), atLimit = at(s.table, c.limit, d), mate = a.mate && s.mateTable ? { ...a.mate, at: at(s.mateTable, a.mate.ideal, dimOf(s, a.mate.id)) } : null;
+    const out = a.limits === 'not-room' || Object.values(a.bigEnough ?? {}).includes(false);
+    const fixes = out ? [] : [atIdeal && round.ideal / atIdeal, atLimit && round.limit / atLimit, mate?.at && round.ideal / mate.at].filter(Boolean);
+    return { s, a, c, mate, shown, p, dim: d, floorBound: s.pct.floor >= s.pct.water, engineBand: bandOf(p, round.ideal, round.limit), atIdeal, atLimit, out,
+      fix: fixes.length ? gmean(fixes) : null, ratio: c.ideal >= 1 && c.limit >= 1 ? c.limit / c.ideal : null };
   });
 }
 
@@ -29,43 +37,66 @@ export function rowsOf(round, file) {
 export const PATTERNS = [
   ['focal body class', r => r.s.cls[r.s.focal]],
   ['focal zone', r => r.s.zone?.[r.s.focal] ?? null],
-  ['what binds', r => r.floorBound ? 'floor' : 'water'],
+  ['tight dimension (engine)', r => r.s.tight ?? (r.floorBound ? 'floor' : 'water')],
   ['one species or a mix', r => r.s.stock.length > 1 ? 'mix' : 'one species'],
   ['tank size', r => r.s.gal <= 20 ? '10-20 gal' : r.s.gal <= 40 ? '29-40 gal' : '55 gal and up'],
   ['focal count as shown', r => r.shown <= 10 ? '10 or fewer' : r.shown <= 30 ? '11-30' : 'over 30'],
 ];
 
 export function review(round, file) {
-  const rows = rowsOf(round, file), used = rows.filter(r => r.s.role !== 'repeat');
-  const ex = file.expert, name = id => round.scenarios[0] && (round.scenarios.find(s => s.names?.[id])?.names[id] ?? id);
-  let md = `# Calibration review, round ${round.round}: ${ex}\n\nAnswers ${file.made?.slice(0, 10) ?? ''}. Ideal = ${round.ideal} %, limit = ${round.limit} %. "fix" is what the engine's reading would need to be multiplied by to match the answer (geometric mean of ideal and limit counts): below 0 % the engine reads the tank too full, above it too empty.\n\n`;
-  md += `## Tank by tank\n\n| tank | gal | animals | engine | engine band | answer band | engine at ideal count | engine at limit count | fix | note |\n|---|---|---|---|---|---|---|---|---|---|\n`;
+  const rows = rowsOf(round, file), used = rows.filter(r => r.s.role !== 'repeat'), v2 = file.survey === 2 || file.answers.some(a => a.focal);
+  const name = id => round.scenarios.find(s => s.names?.[id])?.names[id] ?? id, B = v => v != null ? BAND[v] : '-';
+  let md = `# Calibration review, round ${round.round}: ${file.expert}\n\nAnswers ${file.made?.slice(0, 10) ?? ''}${file.picture ? ' (survey with pictures)' : ''}. Ideal = ${round.ideal} %, limit = ${round.limit} %. Counts are read on the dimension their species fills (floor for bottom dwellers, water for swimmers, the larger for fish that use both). "fix" is what the engine's reading would need to be multiplied by to match the answers: below 0 % the engine reads the tank too full, above it too empty.\n\n`;
+  md += v2 ? `## Tank by tank\n\n| tank | gal | animals | engine water / floor | answer floor / water / overall | ideal count -> engine | limit count -> engine | tankmate ideal -> engine | fix |\n|---|---|---|---|---|---|---|---|---|\n`
+    : `## Tank by tank\n\n| tank | gal | animals | engine | engine band | answer band | ideal count -> engine | limit count -> engine | fix |\n|---|---|---|---|---|---|---|---|---|\n`;
   for (const r of rows) {
-    const st = r.s.stock.map(([id, n]) => `${n} ${name(id)}${id === r.s.focal ? '*' : ''}`).join(' + ');
-    // countStatus (Nathan 2026-10-23): 'no-valid-count' = no count works with the fixed tankmates (not 0); 'not-assessable' = the question does not fit (shrimp)
-    const cs = k => ({ 'no-valid-count': 'no valid count', 'not-assessable': 'not assessable' })[r.a.countStatus?.[k]] ?? '-';
-    const ic = r.a.ideal >= 1 ? `${r.a.ideal} -> ${pc(r.atIdeal)}` : cs('ideal'), lc = r.a.limit >= 1 ? `${r.a.limit} -> ${pc(r.atLimit)}` : cs('limit');
-    md += `| ${r.s.id}${r.s.role !== 'fresh' ? ` (${r.s.role}${r.s.of ? ' of ' + r.s.of : ''})` : ''} | ${r.s.gal} | ${st} | ${pc(r.p)}${r.floorBound ? ' floor' : ''} | ${BAND[r.engineBand]} | ${r.a.band != null ? BAND[r.a.band] : '-'}${r.a.band != null && r.a.band !== r.engineBand ? (r.a.band < r.engineBand ? ' (engine fuller)' : ' (engine emptier)') : ''} | ${ic} | ${lc} | ${r.fix ? mv(r.fix) : '-'} | ${r.a.note ? 'below' : ''} |\|/g, '/').replace(/\n/g, ' ')} |\n`;
+    const st = r.s.stock.map(([id, n]) => `${n} ${name(id)}${id === r.s.focal ? '*' : id === r.s.mate ? '°' : ''}`).join(' + ');
+    const cnt = (n, at, k, src = r.c) => n >= 1 ? `${n} -> ${pc(at)}` : STATUS[src.status?.[k]] ?? '-';
+    const id = `${r.s.id}${r.s.role !== 'fresh' ? ` (${r.s.role}${r.s.of ? ' of ' + r.s.of : ''})` : ''}`, fx = r.out ? 'left out' : r.fix ? mv(r.fix) : '-';
+    if (v2) md += `| ${id} | ${r.s.gal} | ${st} | ${pc(r.s.pct.water)} / ${pc(r.s.pct.floor)} | ${B(r.a.floor)} / ${B(r.a.water)} / ${B(r.a.overall)} | ${cnt(r.c.ideal, r.atIdeal, 'ideal')} | ${r.s.noLimit ? 'not asked' : cnt(r.c.limit, r.atLimit, 'limit')} | ${r.mate ? cnt(r.mate.ideal, r.mate.at, 'ideal', r.mate) : '-'} | ${fx} |\n`;
+    else md += `| ${id} | ${r.s.gal} | ${st} | ${pc(r.p)}${r.floorBound ? ' floor' : ''} | ${BAND[r.engineBand]} | ${B(r.a.band)}${r.a.band != null && r.a.band !== r.engineBand ? (r.a.band < r.engineBand ? ' (engine fuller)' : ' (engine emptier)') : ''} | ${cnt(r.c.ideal, r.atIdeal, 'ideal')} | ${cnt(r.c.limit, r.atLimit, 'limit')} | ${fx} |\n`;
   }
   const withFix = used.filter(r => r.fix), all = withFix.map(r => r.fix);
-  md += `\n\\* = the species the count questions asked about.\n\n## Overall\n\n`;
+  md += `\n\\* = the species the main count questions asked about; ° = the tankmate count.\n\n## Overall\n\n`;
   if (all.length) md += `${all.length} tanks with counts. Median fix ${mv(median(all))}; the engine reads ${all.filter(f => f < 0.9).length} of them more than 10 % too full, ${all.filter(f => f > 1.1).length} more than 10 % too empty.\n`;
-  const bands = used.filter(r => r.a.band != null);
-  if (bands.length) md += `Bands: ${bands.filter(r => r.a.band === r.engineBand).length} of ${bands.length} agree; the engine is a band fuller on ${bands.filter(r => r.a.band < r.engineBand).length}, emptier on ${bands.filter(r => r.a.band > r.engineBand).length}.\n`;
+  const bandsOf = (k, dim) => used.filter(r => r.a[k] != null && !r.out).map(r => [r.a[k], bandOf(dim === 'water' ? r.s.pct.water : dim === 'floor' ? r.s.pct.floor : r.p, round.ideal, round.limit)]);
+  for (const [k, dim, label] of v2 ? [['floor', 'floor', 'Floor bands'], ['water', 'water', 'Water bands'], ['overall', 'max', 'Overall bands']] : [['band', 'max', 'Bands']]) {
+    const b = bandsOf(k, dim);
+    if (b.length) md += `${label}: ${b.filter(([x, e]) => x === e).length} of ${b.length} agree; the engine is a band fuller on ${b.filter(([x, e]) => x < e).length}, emptier on ${b.filter(([x, e]) => x > e).length}.\n`;
+  }
+  const ratios = used.filter(r => r.ratio && r.s.stock.length === 1 && !r.out), engR = [];
+  for (const r of ratios) { const i = r.s.table.findIndex((_, n) => n > 0 && readOn(r.s.table, n, r.dim) >= round.ideal), l = r.s.table.findIndex((_, n) => n > 0 && readOn(r.s.table, n, r.dim) >= round.limit); if (i > 0 && l > 0) engR.push(l / i); }
   // one-species tanks only: in a mix the tankmates already take much of the room, so a small difference of opinion moves the count a lot
-  const ratios = used.filter(r => r.ratio && r.s.stock.length === 1), engR = [];
-  for (const r of ratios) { const i = r.s.table.findIndex((_, n) => n > 0 && readAt(r.s, n) >= round.ideal), l = r.s.table.findIndex((_, n) => n > 0 && readAt(r.s, n) >= round.limit); if (i > 0 && l > 0) engR.push(l / i); }
-  if (ratios.length && engR.length) md += `Limit / ideal count, one-species tanks (${ratios.length}): yours median ${median(ratios.map(r => r.ratio)).toFixed(2)}, the engine's ${median(engR).toFixed(2)} (a higher ratio from you means later fish crowd the tank less than the engine's school curve says).\n`;
-  md += `\n## Patterns\n\nMedian fix per group (tanks with counts, repeats left out). Flagged: 3 or more tanks and a median more than 15 % off.\n\n| pattern | group | tanks | median fix | range | |\n|---|---|---|---|---|---|\n`;
+  if (ratios.length && engR.length) md += `Limit / ideal count, one-species tanks (${ratios.length}): yours median ${median(ratios.map(r => r.ratio)).toFixed(2)}, the engine's ${median(engR).toFixed(2)} (a higher ratio from you means later fish crowd the tank less than the engine's school curve says; noisy, read it over rounds).\n`;
+  md += `\n## Patterns\n\nMedian fix per group (tanks with counts, repeats and left-out tanks excluded). Flagged: 3 or more tanks and a median more than 15 % off.\n\n| pattern | group | tanks | median fix | range | |\n|---|---|---|---|---|---|\n`;
   for (const [pat, key] of PATTERNS) {
     const g = new Map();
     for (const r of withFix) { const k = key(r); if (k != null) g.set(k, [...(g.get(k) ?? []), r.fix]); }
     for (const [k, fs] of [...g.entries()].sort()) { const m = median(fs); md += `| ${pat} | ${k} | ${fs.length} | ${mv(m)} | ${mv(Math.min(...fs))} to ${mv(Math.max(...fs))} | ${fs.length >= 3 && Math.abs(Math.log(m)) > Math.log(1.15) ? '**flag**' : ''} |\n`; }
   }
+  if (v2) {
+    const mr = used.filter(r => r.a.overall != null && r.a.floor != null && r.a.water != null);
+    if (mr.length) { const off = mr.filter(r => r.a.overall !== Math.max(r.a.floor, r.a.water)); md += `\n## The max rule\n\nThe engine's overall is the larger of floor and water. Your overall matched your tighter dimension on ${mr.length - off.length} of ${mr.length} tanks.${off.length ? ' Not on: ' + off.map(r => `${r.s.id} (floor ${B(r.a.floor)}, water ${B(r.a.water)}, overall ${B(r.a.overall)})`).join(', ') + '.' : ''}\n`; }
+    const lim = used.filter(r => r.a.limits);
+    if (lim.length) {
+      const eng = r => { const top = Object.entries(partsAt(r.s.table, r.shown).W ? r.s.table[r.shown].water : {}).sort((p, q) => q[1] - p[1])[0]?.[0]; return r.s.pct.floor >= r.s.pct.water ? r.s.stock.filter(([id]) => r.s.uses?.[id]?.floor >= 1).sort((p, q) => q[1] - p[1])[0]?.[0] ?? top : top; };
+      md += `\n## What limits the room first\n\n${lim.filter(r => r.a.limits === 'not-room').length} tank(s) "not room" (left out of the room numbers). Of the rest, your limiting species matches the engine's biggest contributor on the binding dimension on ${lim.filter(r => r.a.limits !== 'not-room' && r.a.limits === eng(r)).length} of ${lim.filter(r => r.a.limits !== 'not-room').length}.\n`;
+      for (const r of lim.filter(r => r.a.limits !== 'not-room' && r.a.limits !== eng(r))) md += `- ${r.s.id}: you ${name(r.a.limits)}, engine ${name(eng(r))}\n`;
+    }
+    const small = used.flatMap(r => Object.entries(r.a.bigEnough ?? {}).filter(([, v]) => v === false).map(([id]) => `${r.s.id} ${name(id)} in ${r.s.dimsIn.join(' x ')} in`));
+    md += `\n## Big enough per species\n\nEvery tank passed the app's recommended minimum for each species. You called ${small.length ? 'these too small (each is a tank-minimum disagreement): ' + small.join('; ') : 'none too small'}.\n`;
+    const pairs = rows.filter(r => r.s.role === 'pair' && r.s.of);
+    if (pairs.length) {
+      md += `\n## Pairs (same stock, another footprint)\n\n`;
+      for (const b of pairs) { const a = rows.find(x => x.s.id === b.s.of); if (!a) continue; md += `- ${a.s.id} ${a.s.dimsIn.join('x')} vs ${b.s.id} ${b.s.dimsIn.join('x')} (${a.s.stock.map(([i, n]) => n + ' ' + name(i)).join(' + ')}): your ideal ${a.c.ideal ?? '-'} vs ${b.c.ideal ?? '-'}, limit ${a.c.limit ?? '-'} vs ${b.c.limit ?? '-'}; the engine's reading as shown ${pc(a.p)} vs ${pc(b.p)}\n`; }
+    }
+    const hist = (k, labels) => labels.map((l, i) => `${l} ${used.filter(r => r.a[k] === i).length}`).join(', ');
+    md += `\n## About the answers\n\nConfidence: ${hist('confidence', ['low', 'medium', 'high'])}. With dense plants and cover: ${hist('plants', ['the same', 'a little higher', 'a lot higher'])}.\n`;
+  }
   const reps = rows.filter(r => r.s.role === 'repeat' && r.fix);
   if (reps.length) {
     md += `\n## Repeats (your own consistency)\n\n`;
-    for (const r of reps) { const o = rows.find(x => x.s.id === r.s.of); md += `- ${r.s.id} = ${r.s.of}: fix ${mv(r.fix)} vs ${o?.fix ? mv(o.fix) : '-'}; counts ${r.a.ideal}/${r.a.limit} vs ${o?.a.ideal}/${o?.a.limit}\n`; }
+    for (const r of reps) { const o = rows.find(x => x.s.id === r.s.of); md += `- ${r.s.id} = ${r.s.of}: fix ${mv(r.fix)} vs ${o?.fix ? mv(o.fix) : '-'}; counts ${r.c.ideal}/${r.c.limit} vs ${o?.c.ideal}/${o?.c.limit}\n`; }
   }
   const mix = rows.filter(r => r.s.kind !== 'single' && r.a.together);
   if (mix.length) {

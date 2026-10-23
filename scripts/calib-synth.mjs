@@ -2,7 +2,7 @@
 // truth were today's factors times known multipliers, each expert with a bias and noise. The fit must recover the multipliers.
 // Run: node scripts/calib-synth.mjs research/calib/round-1.json  (writes research/calib/answers-synth/*.json, fits, prints recovery)
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { fitRound, layout, readLog, report } from './calib-fit.mjs';
+import { dimOf, fitRound, layout, readLog, report } from './calib-fit.mjs';
 
 function rng(seed) {
   let a = seed >>> 0;
@@ -23,18 +23,26 @@ export const EXPERTS = [{ expert: 'synth-A', bias: -0.08, noise: 0.12 }, { exper
 /** Answer files for `round` under the true log multipliers `truth` (names as in layout(): g, f, c:<class>, d:<species>). */
 export function synthAnswers(round, truth, experts = EXPERTS, seed = 1) {
   const L = layout(round), th = L.names.map(n => truth[n] ?? 0), r = rng(seed);
-  const best = (s, target, eps) => {
+  // a count is judged on the dimension its species fills (as the fit reads it, calib-fit.mjs dimOf)
+  const best = (s, target, eps, who = s.focal, tbl = s.table) => {
     let bn = 1, bd = Infinity;
-    for (let n = 1; n < s.table.length; n++) { const d = Math.abs(readLog(L, s, n, th).v + eps - target); if (d < bd) { bd = d; bn = n; } }
+    for (let n = 1; n < tbl.length; n++) { const d = Math.abs(readLog(L, s, n, th, dimOf(s, who), tbl).v + eps - target); if (d < bd) { bd = d; bn = n; } }
     return bn;
   };
+  const band = v => v < Math.log(round.ideal) ? 0 : v < Math.log(round.limit) ? 1 : 2;
   return experts.map(e => ({
-    round: round.round, expert: e.expert, made: '2026-10-23', synthetic: true,
+    round: round.round, survey: round.survey ?? 1, expert: e.expert, made: '2026-10-23', synthetic: true,
     answers: round.scenarios.map(s => {
-      const shown = s.stock.find(x => x[0] === s.focal)[1], p = readLog(L, s, shown, th).v + e.bias + e.noise * gauss(r);
+      const shown = s.stock.find(x => x[0] === s.focal)[1], eps = () => e.bias + e.noise * gauss(r);
       const together = s.kind === 'single' ? null : ({ ok: 'yes', concern: 'caution', high: 'no' })[s.gate];
-      return { id: s.id, band: p < Math.log(round.ideal) ? 0 : p < Math.log(round.limit) ? 1 : 2,
-        ideal: best(s, Math.log(round.ideal), e.bias + e.noise * gauss(r)), limit: best(s, Math.log(round.limit), e.bias + e.noise * gauss(r)), together };
+      const ideal = best(s, Math.log(round.ideal), eps()), limit = best(s, Math.log(round.limit), eps());
+      if ((round.survey ?? 1) === 1) return { id: s.id, band: band(readLog(L, s, shown, th).v + eps()), ideal, limit, together };
+      // survey 2: a band per dimension, the overall from the larger, a tankmate count, everyone fits, medium confidence
+      const W = readLog(L, s, shown, th, 'water').v, F = readLog(L, s, shown, th, 'floor').v, hasF = s.stock.some(([id]) => s.uses[id].floor > 0);
+      const fb = hasF ? band(F + eps()) : null, wb = band(W + eps());
+      return { id: s.id, floor: fb, water: wb, overall: Math.max(fb ?? 0, wb), limits: s.focal, bigEnough: Object.fromEntries(s.stock.map(([id]) => [id, true])),
+        focal: { ideal, limit: s.noLimit ? null : limit, status: {} }, mate: s.mate ? { id: s.mate, ideal: best(s, Math.log(round.ideal), eps(), s.mate, s.mateTable), status: {} } : null,
+        together, confidence: 1, plants: 0, note: '' };
     }),
   }));
 }

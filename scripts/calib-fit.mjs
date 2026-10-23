@@ -1,8 +1,12 @@
-// Expert calibration fit (research/expert-calibration.md section 4). Plain node, no dependencies, deterministic.
-// Reads a round (research/calib/round-N.json, from GEN_CALIB=1 npx vitest run test/calib.test.ts) and the experts' answer files
-// (the survey's "Export answers"), fits log multipliers on today's space factors (global water g, global floor f, per class c_k,
-// per species d_j) plus a bias per expert, and writes research/calib/fit-round-N.{json,md}.
-// Run: node scripts/calib-fit.mjs research/calib/round-1.json research/calib/answers/*.json
+// Expert calibration fit (research/expert-calibration.md sections 4 and 10). Plain node, no dependencies, deterministic.
+// Reads rounds (research/calib/round-N.json, from GEN_CALIB=1 npx vitest run test/calib.test.ts) and the experts' answer files
+// (the survey's "Export answers"; survey 1 or 2, an earlier round carried inside a later export counts too), fits log multipliers on
+// today's space factors (global water g, global floor f, per class c_k, per species d_j) plus a bias per expert, and writes
+// research/calib/fit-round-N.{json,md}.
+// Survey 2 (Nathan 2026-10-23): each count is fitted on the dimension its species fills (floor for bottom dwellers, water for swimmers,
+// the larger for "all"-zone fish); floor and water bands on their own dimension, the overall band on the larger; an answer whose
+// tank the expert called too small for a species, or limited by habitat rather than room, is left out; confidence weights.
+// Run: node scripts/calib-fit.mjs research/calib/round-1.json research/calib/round-2.json research/calib/answers/*.json
 import { readFileSync, writeFileSync } from 'node:fs';
 
 // prior sd of each log multiplier (0 = today's value). Species 0.10, classes 0.15: on synthetic rounds (scripts/calib-synth.mjs, 4 seeds)
@@ -12,6 +16,8 @@ export const PRIOR = { g: 0.3, f: 0.2, c: 0.15, d: 0.1, b: 0.3 };
 export const CAP = Math.log(1.25); // most a parameter may move in one round
 const SOFT_K = 50;
 const S_FLOOR = 0.10, S_DEFAULT = 0.2, BAND_K = 0.55; // noise floor, noise before any repeats, logistic scale per unit of noise
+/** Confidence weights (survey 2: low / medium / high); answers without one count 1. Ambiguous counts (both dimensions near the anchor) count half. */
+export const CONF_W = [0.5, 1, 1.5], AMBIG_W = 0.5;
 
 /** The parameter vector's layout for a round: names and the species / class index of each. */
 export function layout(round) {
@@ -24,9 +30,13 @@ export function layout(round) {
   return { species, classes, cls, names, at, n: names.length };
 }
 
-/** log reading of tank s at focal count n under theta, and its gradient (sparse: [index, value][]). Ranks held at today's order. */
-export function readLog(L, s, n, th) {
-  const row = s.table[Math.max(0, Math.min(n, s.table.length - 1))];
+/** Engine water and floor percent at row n of a table, today's factors. */
+export const partsAt = (tbl, n) => { const r = tbl[Math.max(0, Math.min(n, tbl.length - 1))]; return { W: Object.values(r.water).reduce((a, b) => a + b, 0), F: r.floor }; };
+
+/** log reading of a tank at count n (row n of `tbl`, the focal table by default) under theta, on dimension `dim` ('water', 'floor' or
+ *  'max', the engine's larger of the two), and its gradient (sparse: [index, value][]). Ranks held at today's order. */
+export function readLog(L, s, n, th, dim = 'max', tbl = s.table) {
+  const row = tbl[Math.max(0, Math.min(n, tbl.length - 1))];
   let W = 0;
   const parts = [];
   for (const [id, w] of Object.entries(row.water)) {
@@ -35,6 +45,9 @@ export function readLog(L, s, n, th) {
     W += w * m; parts.push([ic, id_, w * m]);
   }
   const F = row.floor * Math.exp(th[1]);
+  const water = () => { const grad = [[0, 1]]; for (const [ic, id_, x] of parts) { grad.push([ic, x / W]); grad.push([id_, x / W]); } return { v: Math.log(W), grad }; };
+  if (dim === 'water') return W > 0 ? water() : { v: -Infinity, grad: [] };
+  if (dim === 'floor') return F > 0 ? { v: Math.log(F), grad: [[1, 1]] } : { v: -Infinity, grad: [] };
   if (!(W > 0) && !(F > 0)) return { v: -Infinity, grad: [] };
   // the engine takes the larger of water and floor; a sharp smooth max (log-sum-exp, SOFT_K) keeps the gradient continuous where they
   // swap (a hard max left BFGS stalled on that kink); it reads at most log(2) / SOFT_K = 1.4 % above the engine, only where they are equal
@@ -46,29 +59,47 @@ export function readLog(L, s, n, th) {
 }
 
 const sig = z => 1 / (1 + Math.exp(-z));
-const shownOf = s => s.stock.find(x => x[0] === s.focal)[1];
+const shownOf = (s, id = s.focal) => s.stock.find(x => x[0] === id)[1];
+/** The floor share of a species in a tank: from the round's `uses` (round 2 on), else by zone (round 1). */
+const floorShare = (s, id) => s.uses?.[id]?.floor ?? (s.invert?.[id] ? 0 : ({ bottom: 1, all: 0.5 })[s.zone?.[id]] ?? 0);
+/** The dimension a count of species `id` is fitted on: the one it fills. */
+export const dimOf = (s, id) => { const f = floorShare(s, id); return f >= 1 ? 'floor' : f <= 0 ? 'water' : 'max'; };
+/** The focal counts of an answer, survey 1 or 2: { ideal, limit, status }. */
+export const focalOf = a => a.focal ?? { ideal: a.ideal, limit: a.limit, status: a.countStatus ?? {} };
 
-/** Answer rows the fit uses: counts (ideal -> 75, limit -> 100) and bands, each tied to its expert and tank. */
+/** Answer rows the fit uses: counts (ideal -> 75, limit -> 100, on the species' own dimension) and bands, each tied to its expert and
+ *  tank, with a weight. `skipped` says why an answer was left out. */
 export function rowsOf(round, files) {
   const byId = Object.fromEntries(round.scenarios.map(s => [s.id, s]));
-  const rows = [], skipped = [];
+  const rows = [], skipped = [], flagged = [], cuts = [Math.log(round.ideal), Math.log(round.limit)];
   for (const f of files) for (const a of f.answers) {
     const s = byId[a.id];
     if (!s) { skipped.push(`${f.expert} ${a.id}: no such tank`); continue; }
-    for (const [key, anchor] of [['ideal', round.ideal], ['limit', round.limit]]) {
-      const n = a[key];
+    if (a.limits === 'not-room') { skipped.push(`${f.expert} ${a.id}: habitat or compatibility decides it, not room`); continue; }
+    const small = Object.entries(a.bigEnough ?? {}).filter(([, v]) => v === false).map(([id]) => id);
+    if (small.length) { skipped.push(`${f.expert} ${a.id}: tank too small for ${small.join(', ')} (a tank-minimum answer, not room)`); continue; }
+    const w = CONF_W[a.confidence] ?? 1, base = { expert: f.expert, s, w, picture: !!(a.picture ?? f.picture) };
+    const counts = [[s.focal, s.table, focalOf(a), ['ideal', 'limit']], ...(a.mate && s.mateTable ? [[a.mate.id, s.mateTable, a.mate, ['ideal']]] : [])];
+    for (const [who, tbl, c, keys] of counts) for (const key of keys) {
+      const n = c[key];
       if (n == null || n === '') continue;
-      if (n < 1 || n >= s.table.length) { skipped.push(`${f.expert} ${a.id} ${key} ${n}: outside the table (0..${s.table.length - 1})`); continue; }
-      rows.push({ type: 'count', key, expert: f.expert, s, n: Math.round(n), anchor: Math.log(anchor) });
+      if (n < 1 || n >= tbl.length) { skipped.push(`${f.expert} ${a.id} ${who} ${key} ${n}: outside the table (1..${tbl.length - 1})`); continue; }
+      const anchor = key === 'ideal' ? round.ideal : round.limit, dim = dimOf(s, who), { W, F } = partsAt(tbl, n);
+      // both dimensions near the anchor at that count: unclear which one the expert reacted to
+      const ambiguous = Math.min(W, F) >= 0.8 * anchor && Math.max(W, F) / Math.max(1e-9, Math.min(W, F)) < 1.2;
+      if (ambiguous) flagged.push(`${f.expert} ${a.id} ${who} ${key} ${n}: water ${W.toFixed(0)} %, floor ${F.toFixed(0)} % (weighted ${AMBIG_W})`);
+      rows.push({ ...base, type: 'count', key, who, tbl, dim, n: Math.round(n), anchor: Math.log(anchor), w: w * (ambiguous ? AMBIG_W : 1), ambiguous });
     }
-    if (a.band != null) rows.push({ type: 'band', expert: f.expert, s, n: shownOf(s), y: a.band, cuts: [Math.log(round.ideal), Math.log(round.limit)] });
+    const shown = shownOf(s);
+    if (a.band != null) rows.push({ ...base, type: 'band', key: 'overall', tbl: s.table, dim: 'max', n: shown, y: a.band, cuts }); // survey 1: one band, the larger dimension
+    for (const [key, dim] of [['floor', 'floor'], ['water', 'water'], ['overall', 'max']]) if (a.focal && a[key] != null) rows.push({ ...base, type: 'band', key, tbl: s.table, dim, n: shown, y: a[key], cuts });
   }
-  return { rows, skipped };
+  return { rows, skipped, flagged };
 }
 
 /** Rounding of a count answer, as extra variance: the log step between neighbouring counts, squared, over 12. */
-function roundVar(L, s, n) {
-  const z = new Array(L.n).fill(0), a = readLog(L, s, Math.max(1, n - 1), z).v, b = readLog(L, s, n + 1, z).v;
+function roundVar(L, r) {
+  const z = new Array(L.n).fill(0), a = readLog(L, r.s, Math.max(1, r.n - 1), z, r.dim, r.tbl).v, b = readLog(L, r.s, r.n + 1, z, r.dim, r.tbl).v;
   const step = Number.isFinite(a) && Number.isFinite(b) ? (b - a) / 2 : 0.3;
   return step * step / 12;
 }
@@ -78,11 +109,11 @@ export function repeatNoise(L, round, files) {
   const diffs = [], z = new Array(L.n).fill(0);
   const byId = Object.fromEntries(round.scenarios.map(s => [s.id, s]));
   for (const f of files) {
-    const ans = Object.fromEntries(f.answers.map(a => [a.id, a]));
+    const ans = Object.fromEntries(f.answers.map(a => [a.id, focalOf(a)]));
     for (const s of round.scenarios.filter(x => x.role === 'repeat')) {
-      const a = ans[s.id], o = ans[s.of];
+      const a = ans[s.id], o = ans[s.of], d = dimOf(s, s.focal);
       if (!a || !o) continue;
-      for (const k of ['ideal', 'limit']) if (a[k] >= 1 && o[k] >= 1) diffs.push(readLog(L, s, a[k], z).v - readLog(L, byId[s.of], o[k], z).v);
+      for (const k of ['ideal', 'limit']) if (a[k] >= 1 && o[k] >= 1) diffs.push(readLog(L, s, a[k], z, d).v - readLog(L, byId[s.of], o[k], z, d).v);
     }
   }
   if (diffs.length < 2) return { s: S_DEFAULT, pairs: diffs.length };
@@ -95,7 +126,7 @@ function objective(L, rows, experts, s, prior) {
   const nb = experts.length, eAt = Object.fromEntries(experts.map((e, i) => [e, L.n + i]));
   const sd = L.names.map(n => n === 'g' ? prior.g : n === 'f' ? prior.f : n.startsWith('c:') ? prior.c : prior.d).concat(experts.map(() => prior.b));
   const fit = rows.filter(r => r.s.role !== 'anchor');
-  for (const r of fit) if (r.type === 'count') r.v = s * s + roundVar(L, r.s, r.n);
+  for (const r of fit) if (r.type === 'count') r.v = s * s + roundVar(L, r);
   return x => {
     let f = 0;
     const g = new Array(x.length).fill(0);
@@ -104,15 +135,15 @@ function objective(L, rows, experts, s, prior) {
     if (nb > 1) { let sb = 0; for (let i = 0; i < nb; i++) sb += x[L.n + i]; f += 50 * sb * sb; for (let i = 0; i < nb; i++) g[L.n + i] += 100 * sb; }
     else g[L.n] = 0, x[L.n] = 0;
     for (const r of fit) {
-      const { v, grad } = readLog(L, r.s, r.n, x), ib = eAt[r.expert], b = nb > 1 ? x[ib] : 0;
+      const { v, grad } = readLog(L, r.s, r.n, x, r.dim, r.tbl), ib = eAt[r.expert], b = nb > 1 ? x[ib] : 0;
       if (!Number.isFinite(v)) continue;
       let dL;
-      if (r.type === 'count') { const res = v + b - r.anchor; f += res * res / (2 * r.v); dL = res / r.v; }
+      if (r.type === 'count') { const res = v + b - r.anchor; f += r.w * res * res / (2 * r.v); dL = r.w * res / r.v; }
       else {
         const sc = s * BAND_K, s1 = sig((r.cuts[0] - v - b) / sc), s2 = sig((r.cuts[1] - v - b) / sc);
-        if (r.y === 0) { f -= Math.log(Math.max(1e-12, s1)); dL = (1 - s1) / sc; }
-        else if (r.y === 2) { f -= Math.log(Math.max(1e-12, 1 - s2)); dL = -s2 / sc; }
-        else { const p = Math.max(1e-12, s2 - s1); f -= Math.log(p); dL = (s2 * (1 - s2) - s1 * (1 - s1)) / p / sc; }
+        if (r.y === 0) { f -= r.w * Math.log(Math.max(1e-12, s1)); dL = r.w * (1 - s1) / sc; }
+        else if (r.y === 2) { f -= r.w * Math.log(Math.max(1e-12, 1 - s2)); dL = -r.w * s2 / sc; }
+        else { const p = Math.max(1e-12, s2 - s1); f -= r.w * Math.log(p); dL = r.w * (s2 * (1 - s2) - s1 * (1 - s1)) / p / sc; }
       }
       for (const [i, d] of grad) g[i] += dL * d;
       if (nb > 1) g[ib] += dL;
@@ -149,7 +180,7 @@ export function bfgs(fg, x0, iters = Number(process.env.CALIB_ITERS ?? 400)) {
 
 /** rms of count residuals (log scale) on the rows given, under theta and the fitted biases. */
 function rms(L, rows, th, bias) {
-  const r = rows.filter(x => x.type === 'count').map(x => readLog(L, x.s, x.n, th).v + (bias[x.expert] ?? 0) - x.anchor).filter(Number.isFinite);
+  const r = rows.filter(x => x.type === 'count').map(x => readLog(L, x.s, x.n, th, x.dim, x.tbl).v + (bias[x.expert] ?? 0) - x.anchor).filter(Number.isFinite);
   return r.length ? Math.sqrt(r.reduce((a, v) => a + v * v, 0) / r.length) : NaN;
 }
 
@@ -157,8 +188,8 @@ function rms(L, rows, th, bias) {
 function disagreement(L, rows, bias) {
   const z = new Array(L.n).fill(0), by = new Map();
   for (const r of rows) if (r.type === 'count') {
-    const key = `${r.s.of ?? r.s.id}:${r.key}`; // a repeat pools with its original
-    const v = readLog(L, r.s, r.n, z).v + (bias[r.expert] ?? 0);
+    const key = `${r.s.of && r.s.role === 'repeat' ? r.s.of : r.s.id}:${r.who}:${r.key}`; // a repeat pools with its original
+    const v = readLog(L, r.s, r.n, z, r.dim, r.tbl).v + (bias[r.expert] ?? 0);
     if (Number.isFinite(v)) by.set(key, [...(by.get(key) ?? []), v]);
   }
   let ss = 0, df = 0;
@@ -166,10 +197,23 @@ function disagreement(L, rows, bias) {
   return df ? Math.sqrt(ss / df) : NaN;
 }
 
+/** Several rounds as one: scenario ids become "<round>:<id>" (repeats and pairs keep their links), and the answer files follow; an
+ *  earlier round carried inside a later export joins its own round (once per expert, round and export time). */
+export function combine(rounds, files) {
+  const all = files.flatMap(f => [f, ...(f.carried ?? [])]), seen = new Set(), use = [];
+  for (const f of all) { const k = `${f.round}|${f.expert}|${f.made}`; if (!seen.has(k)) { seen.add(k); use.push(f); } }
+  if (rounds.length === 1) return { round: rounds[0], files: use.filter(f => f.round === rounds[0].round) };
+  const p = (r, id) => `${r}:${id}`;
+  const scenarios = rounds.flatMap(R => R.scenarios.map(s => ({ ...s, id: p(R.round, s.id), ...(s.of ? { of: p(R.round, s.of) } : {}) })));
+  const known = new Set(rounds.map(R => R.round));
+  return { round: { round: rounds.map(R => R.round).join('+'), ideal: rounds[0].ideal, limit: rounds[0].limit, scenarios },
+    files: use.filter(f => known.has(f.round)).map(f => ({ ...f, answers: f.answers.map(a => ({ ...a, id: p(f.round, a.id) })) })) };
+}
+
 /** The whole fit: returns multipliers, biases, errors and the tables the report shows. */
 export function fitRound(round, files, prior = PRIOR) {
   const L = layout(round), experts = [...new Set(files.map(f => f.expert))].sort();
-  const { rows, skipped } = rowsOf(round, files), noise = repeatNoise(L, round, files);
+  const { rows, skipped, flagged } = rowsOf(round, files), noise = repeatNoise(L, round, files);
   const fg = objective(L, rows, experts, noise.s, prior);
   const { x, it, gnorm } = bfgs(fg, new Array(L.n + experts.length).fill(0));
   const th = x.slice(0, L.n), capped = [];
@@ -179,27 +223,35 @@ export function fitRound(round, files, prior = PRIOR) {
   const answers = {};
   for (const r of used) for (const [id] of r.s.stock) answers[id] = (answers[id] ?? 0) + 1;
   const species = Object.fromEntries(L.species.map(id => [id, { mult: +Math.exp(th[0] + th[L.at['c:' + L.cls[id]]] + th[L.at['d:' + id]]).toFixed(4), own: +Math.exp(th[L.at['d:' + id]]).toFixed(4), cls: L.cls[id], answers: answers[id] ?? 0 }]));
-  // limit / ideal count ratio: experts' against the engine's (tests the school curve)
+  const byId = Object.fromEntries(round.scenarios.map(s => [s.id, s]));
+  // limit / ideal count ratio on one-species tanks: experts' against the engine's (tests the school curve)
   const ratio = [];
   for (const f of files) for (const a of f.answers) {
-    const s = round.scenarios.find(t => t.id === a.id);
-    if (!s || !(a.ideal >= 1) || !(a.limit >= 1)) continue;
-    const at = p => s.table.findIndex(rw => Math.max(Object.values(rw.water).reduce((u, v) => u + v, 0), rw.floor) >= p);
+    const s = byId[a.id], c = focalOf(a);
+    if (!s || s.stock.length > 1 || !(c.ideal >= 1) || !(c.limit >= 1)) continue;
+    const d = dimOf(s, s.focal), at = p => s.table.findIndex((_, n) => n > 0 && Math.exp(readLog(L, s, n, zero, d).v) >= p);
     const ei = at(round.ideal), el = at(round.limit);
-    if (ei > 0 && el > 0) ratio.push({ id: s.id, expert: f.expert, experts: a.limit / a.ideal, engine: el / ei });
+    if (ei > 0 && el > 0) ratio.push({ id: s.id, expert: f.expert, experts: c.limit / c.ideal, engine: el / ei });
+  }
+  // the max rule: does the overall answer follow the tighter of the floor and water answers, as the engine's max does?
+  const maxRule = { same: 0, lower: 0, higher: 0, cases: [] };
+  for (const f of files) for (const a of f.answers) {
+    if (a.overall == null || a.floor == null || a.water == null) continue;
+    const m = Math.max(a.floor, a.water), k = a.overall === m ? 'same' : a.overall < m ? 'lower' : 'higher';
+    maxRule[k]++; if (k !== 'same') maxRule.cases.push(`${f.expert} ${a.id}: floor ${a.floor}, water ${a.water}, overall ${a.overall}`);
   }
   const compat = {};
   for (const f of files) for (const a of f.answers) {
-    const s = round.scenarios.find(t => t.id === a.id);
+    const s = byId[a.id];
     if (!s || s.kind === 'single' || !a.together) continue;
     const k = `${s.gate} -> ${a.together}`; compat[k] = (compat[k] ?? 0) + 1;
   }
   return {
-    round: round.round, experts, noise, solver: { it, gnorm }, skipped, rows: rows.length, held: held.length,
+    round: round.round, experts, noise, solver: { it, gnorm }, skipped, flagged, rows: rows.length, held: held.length,
     g: +Math.exp(th[0]).toFixed(4), f: +Math.exp(th[1]).toFixed(4),
     class: Object.fromEntries(L.classes.map(k => [k, +Math.exp(th[L.at['c:' + k]]).toFixed(4)])), species, capped, bias,
     error: { heldBefore: rms(L, held, zero, bias), heldAfter: rms(L, held, th, bias), fitBefore: rms(L, used, zero, bias), fitAfter: rms(L, used, th, bias), disagreement: disagreement(L, rows, bias) },
-    ratio, compat, theta: Object.fromEntries(L.names.map((n, i) => [n, th[i]])),
+    ratio, maxRule, compat, theta: Object.fromEntries(L.names.map((n, i) => [n, th[i]])),
   };
 }
 
@@ -210,17 +262,21 @@ export function report(r) {
   md += `## Multipliers on today's factors\n\nWater (SPACE_PER_L) x${r.g}, floor x${r.f}. Classes: ${Object.entries(r.class).map(([k, m]) => `${k} ${pc(m)}`).join(', ')}.${r.capped.length ? ` Capped at x1.25: ${r.capped.join(', ')}.` : ''}\n\n| species | class | answers | total move | own move |\n|---|---|---|---|---|\n`;
   for (const [id, v] of Object.entries(r.species).sort((a, b) => Math.abs(Math.log(b[1].mult)) - Math.abs(Math.log(a[1].mult)))) if (Math.abs(v.mult - 1) >= 0.05) md += `| ${id} | ${v.cls} | ${v.answers} | ${pc(v.mult)} | ${pc(v.own)} |\n`;
   md += `\n## Experts\n\n| expert | bias |\n|---|---|\n${r.experts.map(x => `| ${x} | ${pc(Math.exp(r.bias[x]))} |`).join('\n')}\n`;
-  if (r.ratio.length) { const m = a => [...a].sort((p, q) => p - q)[a.length >> 1]; md += `\n## Limit / ideal count\n\nMedian ratio, experts ${m(r.ratio.map(x => x.experts)).toFixed(2)}, engine ${m(r.ratio.map(x => x.engine)).toFixed(2)} (${r.ratio.length} answers). Experts higher means they find later fish cheaper than the school curve does.\n`; }
+  if (r.ratio.length) { const m = a => [...a].sort((p, q) => p - q)[a.length >> 1]; md += `\n## Limit / ideal count (one-species tanks)\n\nMedian ratio, experts ${m(r.ratio.map(x => x.experts)).toFixed(2)}, engine ${m(r.ratio.map(x => x.engine)).toFixed(2)} (${r.ratio.length} answers). Experts higher means they find later fish cheaper than the school curve does.\n`; }
+  const mr = r.maxRule;
+  if (mr.same + mr.lower + mr.higher) md += `\n## The max rule\n\nOverall answer vs the tighter of the floor and water answers: same ${mr.same}, lower ${mr.lower}, higher ${mr.higher}. If "lower" or "higher" is common, experts do not judge by the tighter dimension alone and the engine's "larger of the two" needs revisiting.\n${mr.cases.map(x => `- ${x}`).join('\n')}\n`;
   if (Object.keys(r.compat).length) md += `\n## Compatibility: gate -> experts\n\n${Object.entries(r.compat).sort().map(([k, n]) => `- ${k}: ${n}`).join('\n')}\n`;
-  if (r.skipped.length) md += `\n## Skipped answers\n\n${r.skipped.map(x => `- ${x}`).join('\n')}\n`;
+  if (r.flagged.length) md += `\n## Ambiguous counts (both dimensions near the anchor)\n\n${r.flagged.map(x => `- ${x}`).join('\n')}\n`;
+  if (r.skipped.length) md += `\n## Left out\n\n${r.skipped.map(x => `- ${x}`).join('\n')}\n`;
   return md;
 }
 
 if (process.argv[1]?.endsWith('calib-fit.mjs')) {
-  const [roundPath, ...answerPaths] = process.argv.slice(2);
-  if (!roundPath || !answerPaths.length) { console.error('usage: node scripts/calib-fit.mjs research/calib/round-N.json answers1.json [...]'); process.exit(1); }
-  const round = JSON.parse(readFileSync(roundPath, 'utf8')), files = answerPaths.map(p => JSON.parse(readFileSync(p, 'utf8')));
-  const r = fitRound(round, files), base = roundPath.replace(/round-(\d+)\.json$/, 'fit-round-$1');
+  const docs = process.argv.slice(2).map(p => ({ p, j: JSON.parse(readFileSync(p, 'utf8')) }));
+  const rounds = docs.filter(d => d.j.scenarios).map(d => d.j), files = docs.filter(d => d.j.answers).map(d => d.j);
+  if (!rounds.length || !files.length) { console.error('usage: node scripts/calib-fit.mjs round-N.json [...] answers.json [...]'); process.exit(1); }
+  const { round, files: use } = combine(rounds, files), r = fitRound(round, use);
+  const base = `research/calib/fit-round-${String(round.round).replace(/\+/g, '-')}`;
   writeFileSync(base + '.json', JSON.stringify(r, (k, v) => k === 'theta' ? undefined : v, 1) + '\n');
   writeFileSync(base + '.md', report(r));
   console.log(`fit round ${r.round}: water x${r.g}, floor x${r.f}; held-out error ${r.error.heldBefore?.toFixed(3)} -> ${r.error.heldAfter?.toFixed(3)}; wrote ${base}.{json,md}`);

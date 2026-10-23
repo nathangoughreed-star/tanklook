@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stocking survey, round 2</title>
+<style>
+:root{--bg:#f6f5f1;--card:#fff;--ink:#1d2329;--mute:#626b73;--line:#dcd9d2;--acc:#1f6f8b;--g:#3e9b5a;--y:#d9a520;--r:#c8463c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.4 system-ui,"Segoe UI",sans-serif}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:8px 14px;border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:2}
+header b{font-size:15px}.prog{flex:1;min-width:100px;height:6px;background:#e8e5de;border-radius:3px}.prog i{display:block;height:100%;background:var(--acc);border-radius:3px}
+main{display:grid;grid-template-columns:0.9fr 1fr 1fr;gap:12px;padding:12px 14px;max-width:1400px;margin:auto}
+@media(max-width:1100px){main{grid-template-columns:1fr 1fr}main>div:first-child{grid-column:span 2}}
+@media(max-width:700px){main{grid-template-columns:1fr}main>div:first-child{grid-column:auto}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+h2{font-size:14px;margin:0 0 6px}h3{margin:0 0 4px;font-size:13.5px}
+table{border-collapse:collapse;width:100%}td,th{padding:3px 6px 3px 0;text-align:left;vertical-align:top;font-size:13px}th{color:var(--mute);font-weight:500;border-bottom:1px solid var(--line)}
+.k td:first-child{color:var(--mute);white-space:nowrap;width:70px}
+.tag{display:inline-block;font-size:11.5px;padding:1px 6px;border-radius:9px;white-space:nowrap}
+.tag.b{background:linear-gradient(90deg,#f3eadb 50%,#e3eef5 50%)}.tag.w{background:#e3eef5}
+.note{font-size:12px;color:var(--mute)}
+.q{margin-bottom:10px}.r3,.r2{display:grid;gap:5px}.r3{grid-template-columns:repeat(3,1fr)}.r2{grid-template-columns:repeat(2,1fr)}
+button.o{font:inherit;font-size:12.5px;text-align:left;padding:5px 7px;border:1px solid var(--line);border-radius:7px;background:#fff;cursor:pointer;color:var(--ink)}
+button.o.on{border-color:var(--acc);box-shadow:0 0 0 2px #1f6f8b33;background:#eef6f9}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+input[type=number]{font:inherit;width:66px;padding:3px 6px;border:1px solid var(--line);border-radius:6px}input[type=text]{font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:6px}
+select{font:inherit;font-size:12px;padding:2px 4px;border:1px solid var(--line);border-radius:6px;background:#fff}
+.sub{color:var(--mute);font-size:12px;margin:-2px 0 4px}
+.yn td{padding:2px 6px 2px 0}
+textarea{width:100%;height:40px;font:inherit;border:1px solid var(--line);border-radius:6px;padding:5px}
+nav{display:flex;justify-content:space-between;margin-top:6px}
+button.b{font:inherit;padding:5px 14px;border-radius:7px;border:1px solid var(--line);background:#fff;cursor:pointer}button.go{background:var(--acc);color:#fff;border-color:var(--acc)}
+.sec{font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--mute);margin:0 0 6px}
+.start{max-width:680px;margin:40px auto;padding:0 16px}.start p{margin:0 0 10px}
+.miss{color:var(--r);font-size:12.5px}
+</style></head><body>
+<div id="app"></div><input type="file" id="imp" accept=".json,application/json" style="display:none">
+<script>
+const ROUND = 2, TANKS = [{"id":"f10","gal":40,"dims":[36,18,16],"litres":151,"floorSqIn":648,"mixed":true,"focal":"hatchet","mate":"chili","noLimit":false,"stock":[{"id":"hatchet","n":11,"name":"Marbled hatchetfish","pl":"Marbled hatchetfish","cm":3.5,"floor":0},{"id":"honeygourami","n":8,"name":"Honey gourami","pl":"Honey gouramis","cm":5,"floor":0},{"id":"chili","n":8,"name":"Chili rasbora","pl":"Chili rasboras","cm":3.5,"floor":0}]},{"id":"f8","gal":40,"dims":[36,18,16],"litres":151,"floorSqIn":648,"mixed":false,"focal":"ember","mate":null,"noLimit":false,"stock":[{"id":"ember","n":66,"name":"Ember tetra","pl":"Ember tetras","cm":2,"floor":0}]},{"id":"f9","gal":29,"dims":[30,12,18],"litres":110,"floorSqIn":360,"mixed":false,"focal":"guppy","mate":null,"noLimit":false,"stock":[{"id":"guppy","n":18,"name":"Guppy","pl":"Guppys","cm":3,"floor":0}]},{"id":"p2b","gal":40,"dims":[48,12,16],"litres":151,"floorSqIn":576,"mixed":false,"focal":"bronzecory","mate":null,"noLimit":false,"stock":[{"id":"bronzecory","n":15,"name":"Bronze corydoras","pl":"Bronze corydoras","cm":6.5,"floor":1}]},{"id":"a1","gal":125,"dims":[72,18,21],"litres":473,"floorSqIn":1296,"mixed":true,"focal":"harlequin","mate":"rummynose","noLimit":false,"stock":[{"id":"harlequin","n":87,"name":"Harlequin rasbora","pl":"Harlequin rasboras","cm":5,"floor":0},{"id":"rummynose","n":28,"name":"Rummy-nose tetra","pl":"Rummy-nose tetras","cm":5,"floor":0}]},{"id":"f6","gal":40,"dims":[36,18,16],"litres":151,"floorSqIn":648,"mixed":true,"focal":"pandacory","mate":"whitecloud","noLimit":false,"stock":[{"id":"pandacory","n":28,"name":"Panda corydoras","pl":"Panda corydoras","cm":4.6,"floor":1},{"id":"whitecloud","n":25,"name":"White cloud mountain minnow","pl":"White cloud mountain minnows","cm":4,"floor":0.5}]},{"id":"f4","gal":75,"dims":[48,18,21],"litres":284,"floorSqIn":864,"mixed":true,"focal":"pandacory","mate":"rummynose","noLimit":false,"stock":[{"id":"pandacory","n":59,"name":"Panda corydoras","pl":"Panda corydoras","cm":4.6,"floor":1},{"id":"rummynose","n":49,"name":"Rummy-nose tetra","pl":"Rummy-nose tetras","cm":5,"floor":0}]},{"id":"f7","gal":40,"dims":[36,18,16],"litres":151,"floorSqIn":648,"mixed":false,"focal":"neon","mate":null,"noLimit":false,"stock":[{"id":"neon","n":52,"name":"Neon tetra","pl":"Neon tetras","cm":3.8,"floor":0}]},{"id":"f15","gal":75,"dims":[48,18,21],"litres":284,"floorSqIn":864,"mixed":true,"focal":"sae","mate":"cpd","noLimit":false,"stock":[{"id":"sae","n":4,"name":"Siamese algae eater","pl":"Siamese algae eaters","cm":15,"floor":1},{"id":"cpd","n":109,"name":"Celestial pearl danio","pl":"Celestial pearl danios","cm":2.5,"floor":0.5}]},{"id":"f13","gal":30,"dims":[36,12,16],"litres":114,"floorSqIn":432,"mixed":true,"focal":"hillstream","mate":"oto","noLimit":false,"stock":[{"id":"hillstream","n":4,"name":"Reticulated hillstream loach","pl":"Reticulated hillstream loaches","cm":6,"floor":1},{"id":"oto","n":38,"name":"Otocinclus","pl":"Otocinclus","cm":3.3,"floor":0.5}]},{"id":"f14","gal":125,"dims":[72,18,21],"litres":473,"floorSqIn":1296,"mixed":true,"focal":"bronzecory","mate":"kadango","noLimit":false,"stock":[{"id":"bronzecory","n":37,"name":"Bronze corydoras","pl":"Bronze corydoras","cm":6.5,"floor":1},{"id":"kadango","n":23,"name":"Kadango (red-fin) cichlid","pl":"Kadango (red-fin) cichlids","cm":14,"floor":0}]},{"id":"f16","gal":75,"dims":[48,18,21],"litres":284,"floorSqIn":864,"mixed":true,"focal":"kribensis","mate":"yellowlab","noLimit":false,"stock":[{"id":"kribensis","n":5,"name":"Kribensis","pl":"Kribensis","cm":11,"floor":1},{"id":"yellowlab","n":16,"name":"Yellow lab cichlid","pl":"Yellow lab cichlids","cm":10,"floor":0.5}]},{"id":"f5","gal":125,"dims":[72,18,21],"litres":473,"floorSqIn":1296,"mixed":true,"focal":"kuhli","mate":"sterbai","noLimit":false,"stock":[{"id":"kuhli","n":59,"name":"Kuhli loach","pl":"Kuhli loaches","cm":10,"floor":1},{"id":"sterbai","n":11,"name":"Sterba's corydoras","pl":"Sterba's corydoras","cm":6.5,"floor":1}]},{"id":"f12","gal":40,"dims":[36,18,16],"litres":151,"floorSqIn":648,"mixed":true,"focal":"harlequin","mate":"peapuffer","noLimit":false,"stock":[{"id":"harlequin","n":37,"name":"Harlequin rasbora","pl":"Harlequin rasboras","cm":5,"floor":0},{"id":"peapuffer","n":9,"name":"Pea puffer","pl":"Pea puffers","cm":3.5,"floor":0.5}]},{"id":"p1a","gal":20,"dims":[24,12,16],"litres":76,"floorSqIn":288,"mixed":false,"focal":"neon","mate":null,"noLimit":false,"stock":[{"id":"neon","n":23,"name":"Neon tetra","pl":"Neon tetras","cm":3.8,"floor":0}]},{"id":"f2","gal":90,"dims":[48,18,24],"litres":341,"floorSqIn":864,"mixed":false,"focal":"bronzecory","mate":null,"noLimit":false,"stock":[{"id":"bronzecory","n":27,"name":"Bronze corydoras","pl":"Bronze corydoras","cm":6.5,"floor":1}]},{"id":"p1b","gal":20,"dims":[30,12,12],"litres":76,"floorSqIn":360,"mixed":false,"focal":"neon","mate":null,"noLimit":false,"stock":[{"id":"neon","n":23,"name":"Neon tetra","pl":"Neon tetras","cm":3.8,"floor":0}]},{"id":"f3","gal":30,"dims":[36,12,16],"litres":114,"floorSqIn":432,"mixed":false,"focal":"bronzecory","mate":null,"noLimit":false,"stock":[{"id":"bronzecory","n":9,"name":"Bronze corydoras","pl":"Bronze corydoras","cm":6.5,"floor":1}]},{"id":"f1","gal":55,"dims":[48,13,21],"litres":208,"floorSqIn":624,"mixed":false,"focal":"pandacory","mate":null,"noLimit":false,"stock":[{"id":"pandacory","n":34,"name":"Panda corydoras","pl":"Panda corydoras","cm":4.6,"floor":1}]},{"id":"p2a","gal":40,"dims":[36,18,16],"litres":151,"floorSqIn":648,"mixed":false,"focal":"bronzecory","mate":null,"noLimit":false,"stock":[{"id":"bronzecory","n":15,"name":"Bronze corydoras","pl":"Bronze corydoras","cm":6.5,"floor":1}]},{"id":"r1","gal":30,"dims":[36,12,16],"litres":114,"floorSqIn":432,"mixed":true,"focal":"hillstream","mate":"oto","noLimit":false,"stock":[{"id":"hillstream","n":4,"name":"Reticulated hillstream loach","pl":"Reticulated hillstream loaches","cm":6,"floor":1},{"id":"oto","n":38,"name":"Otocinclus","pl":"Otocinclus","cm":3.3,"floor":0.5}]},{"id":"f11","gal":90,"dims":[48,18,24],"litres":341,"floorSqIn":864,"mixed":true,"focal":"dwarfpencil","mate":"gourami","noLimit":false,"stock":[{"id":"dwarfpencil","n":115,"name":"Dwarf pencilfish","pl":"Dwarf pencilfish","cm":3.5,"floor":0},{"id":"gourami","n":9,"name":"Pearl gourami","pl":"Pearl gouramis","cm":12,"floor":0}]}];
+const KEY = 'stocking-survey-round-' + ROUND;
+let st = { expert: '', at: -1, answers: {}, carried: [] };
+try { st = Object.assign(st, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} };
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const BANDS = [['var(--g)', 'Ideal or under'], ['var(--y)', 'Caution'], ['var(--r)', 'Problems']];
+const DEF = '<b>Ideal</b>: what experienced keepers would aim for, comfortable long term. <b>Caution</b>: workable, tread carefully. <b>Problems</b>: past this, long-term problems become likely even with good care.';
+const blank = t => ({ id: t.id, floor: null, water: null, overall: null, limits: null, bigEnough: {}, focal: { ideal: null, limit: null, status: {} }, mate: t.mate ? { id: t.mate, ideal: null, status: {} } : null, together: null, confidence: null, plants: null, note: '', ms: 0 });
+const ans = t => st.answers[t.id] || (st.answers[t.id] = blank(t));
+const hasFloor = t => t.stock.some(s => s.floor > 0), hasWater = t => t.stock.some(s => s.floor < 1);
+const countOk = (c, k) => c[k] != null || !!c.status[k];
+function done(t) {
+  const a = st.answers[t.id]; if (!a) return false;
+  return (!hasFloor(t) || a.floor != null) && (!hasWater(t) || a.water != null) && a.overall != null && a.limits != null
+    && t.stock.every(s => a.bigEnough[s.id] != null) && countOk(a.focal, 'ideal') && (t.noLimit || countOk(a.focal, 'limit'))
+    && (!a.mate || countOk(a.mate, 'ideal')) && (!t.mixed || a.together) && a.confidence != null && a.plants != null;
+}
+let shownAt = Date.now();
+function head(i) {
+  const n = TANKS.filter(done).length;
+  return '<header><b>Stocking survey · round ' + ROUND + '</b><span>' + (i < TANKS.length ? 'Tank ' + (i + 1) + ' of ' + TANKS.length : 'Finish') + '</span><div class="prog"><i style="width:' + (100 * n / TANKS.length) + '%"></i></div>' +
+    '<span class="note">' + esc(st.expert) + ' · ' + n + ' answered · saved in this browser' + (st.carried.length ? ' · ' + st.carried.length + ' earlier file(s) carried' : '') + '</span><button class="b" data-imp>Import answers</button><button class="b" data-exp>Export answers</button></header>';
+}
+function wire() {
+  document.querySelectorAll('[data-imp]').forEach(b => b.onclick = () => document.getElementById('imp').click());
+  document.querySelectorAll('[data-exp]').forEach(b => b.onclick = () => { if (st.at >= 0 && st.at < TANKS.length) keep(); exportAnswers(); });
+}
+document.getElementById('imp').onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  let j; try { j = JSON.parse(await f.text()); } catch (err) { alert('That file is not an answer file.'); return; }
+  importFile(j);
+};
+function importFile(j) {
+  if (!j || !Array.isArray(j.answers)) { alert('That file is not an answer file.'); return; }
+  if (j.round === ROUND) {
+    let n = 0; for (const a of j.answers) { const t = TANKS.find(x => x.id === a.id); if (t && !done(t)) { st.answers[a.id] = a; n++; } }
+    if (!st.expert && j.expert) st.expert = j.expert; alert('Restored ' + n + ' answer(s) for this round.');
+  } else {
+    if (!st.carried.some(c => c.round === j.round && c.expert === j.expert && c.made === j.made)) st.carried.push(j);
+    alert('Kept the round ' + j.round + ' answers (' + j.answers.length + ' tanks): they go out with this round\'s export.');
+  }
+  save(); st.expert && st.at >= 0 ? show() : start();
+}
+function start() {
+  document.getElementById('app').innerHTML = '<div class="start"><div class="card"><h2 style="font-size:17px">Stocking survey, round ' + ROUND + '</h2>' +
+    '<p>' + TANKS.length + ' tanks, each described in words (no picture: camera and decor change how full a tank looks). Judge <b>room</b> for the animals; the filter is always strong enough not to be the limit. You never see the app\'s own number. One tank comes up twice on purpose, and two pairs hold the same animals in tanks of the same gallons but another shape.</p>' +
+    '<p class="note">' + DEF + '</p>' +
+    '<p>Your name or initials (only to tell answer files apart):<br><input type="text" id="who" value="' + esc(st.expert) + '" style="width:260px"></p>' +
+    '<p><button class="b go" id="go">' + (st.at >= 0 ? 'Continue' : 'Start') + '</button> <button class="b" data-imp>Import answers</button> <span class="note">(a file you exported before, this round or an earlier one)</span></p></div></div>';
+  wire();
+  document.getElementById('go').onclick = () => { const w = document.getElementById('who').value.trim(); if (!w) return; st.expert = w; if (st.at < 0) st.at = 0; save(); show(); };
+}
+const usesTag = f => f >= 1 ? '<span class="tag b">floor + water</span>' : f > 0 ? '<span class="tag b">water + floor, half the time</span>' : '<span class="tag w">water</span>';
+const band = (k, a) => '<div class="r3">' + BANDS.map((b, i) => '<button class="o' + (a[k] === i ? ' on' : '') + '" data-set="' + k + '" data-v="' + i + '"><span class="dot" style="background:' + b[0] + '"></span>' + b[1] + '</button>').join('') + '</div>';
+const choice = (k, a, opts, cls = 'r3') => '<div class="' + cls + '">' + opts.map(([v, l]) => '<button class="o' + (a[k] === v ? ' on' : '') + '" data-set="' + k + '" data-v="' + esc(v) + '">' + l + '</button>').join('') + '</div>';
+const statusSel = (who, k, c) => '<select data-st="' + who + '.' + k + '"><option value="">count</option><option value="cant-say"' + (c.status[k] === 'cant-say' ? ' selected' : '') + '>can\'t say</option><option value="no-valid-count"' + (c.status[k] === 'no-valid-count' ? ' selected' : '') + '>no count works with these tankmates</option></select>';
+function keep() {
+  const t = TANKS[st.at], a = ans(t), num = v => v === '' || v == null ? null : Math.max(0, Math.round(+v));
+  for (const el of document.querySelectorAll('[data-num]')) { const [who, k] = el.dataset.num.split('.'); a[who][k] = num(el.value); }
+  for (const el of document.querySelectorAll('[data-st]')) { const [who, k] = el.dataset.st.split('.'); if (el.value) { a[who].status[k] = el.value; a[who][k] = null; } else delete a[who].status[k]; }
+  const n = document.getElementById('note'); if (n) a.note = n.value;
+  a.ms += Date.now() - shownAt; shownAt = Date.now(); save();
+}
+function show() {
+  const i = st.at; if (i >= TANKS.length) return finish();
+  const t = TANKS[i], a = ans(t); shownAt = Date.now();
+  const sp = id => t.stock.find(s => s.id === id), others = t.stock.filter(s => s.id !== t.focal), floorers = t.stock.filter(s => s.floor > 0), swimmers = t.stock.filter(s => s.floor < 1);
+  const keepTxt = list => list.length ? 'Keeping the ' + list.map(s => s.pl.toLowerCase()).join(' and ') + ' as shown: how' : 'How';
+  const L = '<div><div class="card"><h2>The tank</h2><table class="k"><tr><td>Size</td><td>' + t.dims.join(' × ') + ' in, ' + t.gal + ' gal (' + t.litres + ' L), full</td></tr>' +
+    '<tr><td>Floor</td><td>' + t.dims[0] + ' × ' + t.dims[1] + ' in = ' + t.floorSqIn + ' sq in</td></tr>' +
+    '<tr><td>Filter</td><td>Canister rated for twice this tank, weekly 30 % changes: <b>never the limit</b></td></tr><tr><td>Decor</td><td>No plants; a few rocks</td></tr></table></div>' +
+    '<div class="card" style="margin-top:10px"><h2>The animals (adults)</h2><table><tr><th>count</th><th>species</th><th>adult</th><th>uses</th></tr>' +
+    t.stock.map(s => '<tr><td>' + s.n + '</td><td>' + esc(s.name) + '</td><td>' + s.cm + ' cm</td><td>' + usesTag(s.floor) + '</td></tr>').join('') + '</table>' +
+    '<p class="note" style="margin:6px 0 0">"Uses" is how the app counts each animal. ' + DEF + '</p></div></div>';
+  let M = '<div class="card"><p class="sec">Room, as shown</p>';
+  if (floorers.length) M += '<div class="q"><h3>Floor room for the bottom dwellers</h3><div class="sub">' + floorers.map(s => esc(s.pl) + (s.floor < 1 ? ' (half the time)' : '')).join(', ') + '</div>' + band('floor', a) + '</div>';
+  if (swimmers.length) M += '<div class="q"><h3>Water column room for the swimmers</h3><div class="sub">' + swimmers.map(s => esc(s.pl)).join(', ') + '</div>' + band('water', a) + '</div>';
+  M += '<div class="q"><h3>Overall, this tank is</h3>' + band('overall', a) + '</div>';
+  M += '<div class="q"><h3>What limits this tank\'s room first?</h3>' + choice('limits', a, [...t.stock.map(s => [s.id, esc(s.pl)]), ['not-room', 'Not room: habitat or compatibility decides it']], 'r2') + '</div>';
+  M += '<div class="q"><h3>Is the tank big enough for each species at all?</h3><table class="yn">' + t.stock.map(s => '<tr><td>' + esc(s.name) + '</td><td><div class="r2" style="width:120px">' +
+    [[true, 'yes'], [false, 'no']].map(([v, l]) => '<button class="o' + (a.bigEnough[s.id] === v ? ' on' : '') + '" data-big="' + s.id + '" data-v="' + v + '">' + l + '</button>').join('') + '</div></td></tr>').join('') + '</table></div></div>';
+  let R = '<div class="card"><p class="sec">Counts</p><div class="q"><h3>' + esc(keepTxt(others)) + ' many ' + esc(sp(t.focal).pl.toLowerCase()) + '?</h3>' +
+    'ideal <input type="number" min="0" data-num="focal.ideal" value="' + (a.focal.ideal ?? '') + '"> ' + statusSel('focal', 'ideal', a.focal) +
+    (t.noLimit ? '' : '<br>at most <input type="number" min="0" data-num="focal.limit" value="' + (a.focal.limit ?? '') + '" style="margin-top:4px"> ' + statusSel('focal', 'limit', a.focal)) + '</div>';
+  if (a.mate) R += '<div class="q"><h3>' + esc(keepTxt(t.stock.filter(s => s.id !== t.mate))) + ' many ' + esc(sp(t.mate).pl.toLowerCase()) + ' would be ideal?</h3>ideal <input type="number" min="0" data-num="mate.ideal" value="' + (a.mate.ideal ?? '') + '"> ' + statusSel('mate', 'ideal', a.mate) + '</div>';
+  R += '<p class="sec">About your answers</p>';
+  if (t.mixed) R += '<div class="q"><h3>Would you keep these species together long term?</h3>' + choice('together', a, [['yes', 'Yes'], ['caution', 'With caution'], ['no', 'No']]) + '</div>';
+  R += '<div class="q"><h3>How sure are you of the counts?</h3>' + choice('confidence', a, [[0, 'Low'], [1, 'Medium'], [2, 'High']]) + '</div>';
+  R += '<div class="q"><h3>With dense plants and cover, your counts would be</h3>' + choice('plants', a, [[0, 'The same'], [1, 'A little higher'], [2, 'A lot higher']]) + '</div>';
+  R += '<div class="q"><h3>Note (optional)</h3><textarea id="note">' + esc(a.note) + '</textarea></div><div id="miss" class="miss"></div><nav><button class="b" id="back"' + (i ? '' : ' disabled') + '>← Back</button><button class="b go" id="next">Next →</button></nav></div>';
+  document.getElementById('app').innerHTML = head(i) + '<main>' + L + M + R + '</main>';
+  wire();
+  const typed = v => /^\d+$/.test(v) ? +v : v;
+  document.querySelectorAll('[data-set]').forEach(b => b.onclick = () => { keep(); a[b.dataset.set] = typed(b.dataset.v); save(); show(); });
+  document.querySelectorAll('[data-big]').forEach(b => b.onclick = () => { keep(); a.bigEnough[b.dataset.big] = b.dataset.v === 'true'; save(); show(); });
+  document.getElementById('back').onclick = () => { keep(); st.at = Math.max(0, i - 1); save(); show(); };
+  document.getElementById('next').onclick = () => { keep();
+    const m = document.getElementById('miss');
+    if (a.focal.ideal != null && a.focal.limit != null && a.focal.limit < a.focal.ideal) { m.textContent = 'The "at most" count is below the ideal: please check the two counts.'; return; }
+    if (!done(t)) { m.textContent = 'Please answer each question (a count, or pick "can\'t say" / "no count works").'; return; }
+    st.at = i + 1; save(); show(); };
+}
+function finish() {
+  const open = TANKS.map((t, i) => done(t) ? null : i).filter(x => x !== null);
+  document.getElementById('app').innerHTML = head(TANKS.length) + '<div class="start"><div class="card"><h2 style="font-size:17px">Thank you</h2>' +
+    (open.length ? '<p class="miss">' + open.length + ' tank(s) still open: ' + open.map(i => '<a href="#" data-go="' + i + '">' + (i + 1) + '</a>').join(', ') + '</p>' : '<p>All ' + TANKS.length + ' tanks answered.</p>') +
+    '<p>Click <b>Export answers</b> and send the downloaded file back. Your answers also stay saved in this browser.</p><button class="b go" data-exp>Export answers</button> <button class="b" id="back">← Back</button></div></div>';
+  wire();
+  document.querySelectorAll('[data-go]').forEach(x => x.onclick = e => { e.preventDefault(); st.at = +x.dataset.go; save(); show(); });
+  document.getElementById('back').onclick = () => { st.at = TANKS.length - 1; save(); show(); };
+}
+function exportAnswers() {
+  const body = { round: ROUND, survey: 2, picture: false, expert: st.expert, made: new Date().toISOString(), answers: TANKS.map(t => st.answers[t.id]).filter(Boolean), carried: st.carried };
+  const url = URL.createObjectURL(new Blob([JSON.stringify(body, null, 1)], { type: 'application/json' })), el = document.createElement('a');
+  el.href = url; el.download = 'round-' + ROUND + '-' + (st.expert || 'expert').replace(/[^A-Za-z0-9_-]+/g, '_') + '.json'; document.body.appendChild(el); el.click(); el.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+st.expert && st.at >= 0 ? show() : start();
+</script></body></html>
