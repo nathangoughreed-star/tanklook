@@ -63,11 +63,20 @@ let shownAt = Date.now();
 function head(i) {
   const n = TANKS.filter(done).length;
   return '<header><b>Stocking survey · round ' + ROUND + '</b><span>' + (i < TANKS.length ? 'Tank ' + (i + 1) + ' of ' + TANKS.length : 'Finish') + '</span><div class="prog"><i style="width:' + (100 * n / TANKS.length) + '%"></i></div>' +
-    '<span class="note">' + esc(st.expert) + ' · ' + n + ' answered · saved in this browser' + (st.carried.length ? ' · ' + st.carried.length + ' earlier file(s) carried' : '') + '</span><button class="b" data-imp>Import answers</button><button class="b" data-exp>Export answers</button></header>';
+    '<span class="note">' + esc(st.expert) + ' · ' + n + ' answered · saved in this browser' + (st.carried.length ? ' · ' + st.carried.length + ' earlier file(s) carried' : '') + '</span><button class="b" data-imp>Import answers</button><button class="b" data-exp>Export answers</button><button class="b" data-reset>Start over</button></header>';
+}
+// Start over (Nathan 2026-10-23): downloads what is answered so far, then clears this browser's copy and goes back to the start page
+function startOver() {
+  if (!confirm('Start over? Your answers so far are downloaded first, then cleared from this browser.')) return;
+  if (st.at >= 0 && st.at < TANKS.length) keep();
+  if (Object.keys(st.answers).length) exportAnswers();
+  try { localStorage.removeItem(KEY); } catch (e) {}
+  st = { expert: '', kind: '', at: -1, answers: {}, carried: [] }; start();
 }
 function wire() {
   document.querySelectorAll('[data-imp]').forEach(b => b.onclick = () => document.getElementById('imp').click());
   document.querySelectorAll('[data-exp]').forEach(b => b.onclick = () => { if (st.at >= 0 && st.at < TANKS.length) keep(); exportAnswers(); });
+  document.querySelectorAll('[data-reset]').forEach(b => b.onclick = startOver);
 }
 document.getElementById('imp').onchange = async e => {
   const f = e.target.files[0]; e.target.value = ''; if (!f) return;
