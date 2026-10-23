@@ -160,6 +160,18 @@ export const SLOTS: Slot[] = [
   ...(['mix-ok', 'mix-ok', 'mix-ok', 'mix-flagged'] as Kind[]).map(kind => ({ tight: 'both' as Tight, kind })),
 ];
 
+/** A mix's gate, as the app judges it: the compatibility risks (territory.ts compatRisks) and the shared temperature range (temprange.ts;
+ *  S214 2026-10-23: white cloud with bristlenose share only 22 °C, white cloud with neon 21-22, and both passed as clean mixes in round 3).
+ *  No overlap or a single shared degree blocks ('high'); a narrow overlap is a concern; only a broad overlap (or no range recorded) is clean. */
+export function gateOf(dims: Dims, ids: string[]): { gate: 'ok' | 'concern' | 'high'; items: string[] } {
+  const cr = compatRisks(setupOf(dims, ids.map(i => [i, groupMin(i)])));
+  let gate: 'ok' | 'concern' | 'high' = cr ? cr.level : 'ok';
+  const items = [...(cr?.items ?? [])], temp = sharedRange(ids.map(i => getSpecies(i)!));
+  if (temp.state === 'none' || temp.state === 'single') { gate = 'high'; items.push(`temperature: ${temp.state === 'none' ? 'no shared range' : 'one shared degree, no operating margin'}`); }
+  else if (temp.state === 'narrow') { if (gate === 'ok') gate = 'concern'; items.push('temperature: narrow shared range'); }
+  return { gate, items };
+}
+
 /** One tank for a slot (in `tank` when given), or null when the draw fails a gate (the caller retries). */
 export function drawOne(r: () => number, slot: Slot, answers: Record<string, number>, id: string, tank?: [number, Dims]): Scenario | null {
   const [gal, dims] = tank ?? TANKS[Math.floor(r() * TANKS.length)];
@@ -181,12 +193,10 @@ export function drawOne(r: () => number, slot: Slot, answers: Record<string, num
     }
   }
   if (!fitsTank(dims, ids)) return null;
-  const sps = ids.map(i => getSpecies(i)!);
   let gate: Scenario['gate'] = null, gateItems: string[] = [];
   if (slot.kind !== 'single') {
-    const cr = compatRisks(setupOf(dims, ids.map(i => [i, groupMin(i)])));
-    gate = cr ? cr.level : 'ok'; gateItems = cr?.items ?? [];
-    if (slot.kind === 'mix-ok' && (gate !== 'ok' || sharedRange(sps).state === 'none')) return null;
+    const g = gateOf(dims, ids); gate = g.gate; gateItems = g.items;
+    if (slot.kind === 'mix-ok' && gate !== 'ok') return null;
     if (slot.kind === 'mix-flagged' && gate === 'ok') return null;
   }
   // the reading to aim at: half near the ideal, half near the limit (log-normal, sd 0.25), clamped to 50-130 % (Nathan: spread)
@@ -262,9 +272,10 @@ function fillSized(r: () => number, slots: Slot[], sizes: [number, Dims][], answ
 function fill(r: () => number, slots: Slot[], answers: Record<string, number>, prefix: string): Scenario[] {
   const out: Scenario[] = [], seen = { ...answers };
   for (const want of slots) {
-    for (let tries = 0; tries < 800; tries++) {
-      // a flagged mix is rare in some tanks: after 400 tries take a passing mix for that slot
-      const slot = tries >= 400 && want.kind === 'mix-flagged' ? { ...want, kind: 'mix-ok' as Kind } : want;
+    for (let tries = 0; tries < 2000; tries++) {
+      // a flagged mix is rare in some tanks: after 1000 tries take a passing mix for that slot (passing mixes need a broad shared
+      // temperature range since 2026-10-23, so they too can take more tries)
+      const slot = tries >= 1000 && want.kind === 'mix-flagged' ? { ...want, kind: 'mix-ok' as Kind } : want;
       const s = drawOne(r, slot, seen, `${prefix}${out.length + 1}`);
       if (!s) continue;
       for (const [id] of s.stock) seen[id] = (seen[id] ?? 0) + 1; // spread the round over species
@@ -288,7 +299,9 @@ export function makeRound(o: RoundOpts): Scenario[] {
   const ar = rng(o.anchorSeed ?? 7_500_200);
   for (let tries = 0; tries < 400; tries++) { const a = drawOne(ar, { tight: 'water', kind: 'mix-ok' }, {}, 'a1'); if (!a) continue;
     const held = o.anchorStock ? inTank({ ...a, stock: o.anchorStock, focal: o.anchorStock[0][0], mate: o.anchorStock[1]?.[0] }, [a.gal, a.dimsIn], 'a1') : a;
-    if (held) { const { of: _of, ...h } = held; order.push({ ...h, role: 'anchor' }); break; } }
+    // a pinned anchor keeps its stock, so its label follows the gates (87 harlequins + 28 rummy-noses share only a narrow range)
+    const g = held && o.anchorStock ? gateOf(held.dimsIn, held.stock.map(x => x[0])) : null;
+    if (held) { const { of: _of, ...h } = held; order.push({ ...h, ...(g ? { gate: g.gate, gateItems: g.items, kind: g.gate === 'ok' ? 'mix-ok' as Kind : 'mix-flagged' as Kind } : {}), role: 'anchor' }); break; } }
   for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
   const early = order.slice(0, Math.max(1, order.length - 5)).filter(s => s.role === 'fresh');
   for (let k = 0; k < (o.repeats ?? 1) && early.length; k++) {

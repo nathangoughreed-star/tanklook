@@ -85,12 +85,15 @@ Confidence: low 4, medium 7, high 0. In a bare tank: the same 0, a little lower 
 
 ## Compatibility: gate vs you
 
-3 of 7 agree.
+0 of 7 agree.
 
 - f10 (Marbled hatchetfish + Honey gourami + Chili rasbora): gate ok, you caution (see the note)
+- a1 (Harlequin rasbora + Rummy-nose tetra): gate concern (temperature: narrow shared range), you yes (see the note)
+- f6 (Panda corydoras + White cloud mountain minnow): gate concern (temperature: narrow shared range), you yes (see the note)
+- f4 (Panda corydoras + Rummy-nose tetra): gate concern (temperature: narrow shared range), you yes (see the note)
 - f15 (Siamese algae eater + Celestial pearl danio): gate ok, you caution (see the note)
 - f13 (Reticulated hillstream loach + Otocinclus): gate ok, you caution (see the note)
-- f14 (Bronze corydoras + Kadango (red-fin) cichlid): gate ok, you no (see the note)
+- f14 (Bronze corydoras + Kadango (red-fin) cichlid): gate concern (temperature: narrow shared range), you no (see the note)
 
 ## Notes (the expert's own words)
 

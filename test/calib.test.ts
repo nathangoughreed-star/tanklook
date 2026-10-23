@@ -9,6 +9,7 @@ import { compatRisks, crowdWarnings } from '../src/scene/territory';
 import { groupShort } from '../src/scene/animalfit';
 import { getSpecies } from '../src/data/species';
 import { zoneOf } from '../src/scene/zone';
+import { sharedRange } from '../src/scene/temprange';
 import { GROUPS } from '../src/data/groups';
 
 const SEED = 2, R = makeRound({ seed: SEED });
@@ -49,10 +50,11 @@ describe('calibration round generator (round 2 on)', () => {
   it('never makes a shrimp the focal species', () => {
     for (const s of R) expect(getSpecies(s.focal)!.cat, s.id).not.toBe('fw-invert');
   });
-  it('labels mixes by the compatibility gates', () => {
-    for (const s of R.filter(x => x.kind !== 'single')) {
-      const cr = compatRisks(setupOf(s.dimsIn, s.stock));
-      if (s.kind === 'mix-ok') expect(cr, s.id).toBeNull(); else expect(cr?.level, s.id).toMatch(/high|concern/);
+  it('labels mixes by the compatibility gates and the shared temperature range, as the app judges them', () => {
+    for (const r of [R, R3]) for (const s of r.filter(x => x.kind !== 'single')) {
+      const cr = compatRisks(setupOf(s.dimsIn, s.stock)), temp = sharedRange(s.stock.map(([id]) => getSpecies(id)!)).state;
+      const clean = !cr && (temp === 'broad' || temp === 'unknown');
+      expect(clean, `${s.id} (${s.kind}, temperature ${temp})`).toBe(s.kind === 'mix-ok');
     }
   });
   it('stores engine tables that match the tank as shown and grow with the count, for the focal species and the tankmate', () => {

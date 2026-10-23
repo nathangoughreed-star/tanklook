@@ -4,7 +4,7 @@
 // GEN_RETABLE=1 npx vitest run test/calibtables.test.ts rewrites the tables files. The lock below fails when the engine has moved
 // since (a length, a factor, a curve): rerun the line above, then refit.
 import { describe, expect, it } from 'vitest';
-import { readSpace, tableOf, tightOf } from '../src/calib/scenario';
+import { gateOf, readSpace, tableOf, tightOf } from '../src/calib/scenario';
 import R1 from '../research/calib/round-1.json';
 import R2 from '../research/calib/round-2.json';
 import R3 from '../research/calib/round-3.json';
@@ -17,11 +17,13 @@ const ROUNDS = [R1, R2, R3, R3A] as unknown as { round: number; label?: string; 
 const fs = await import('node:fs');
 const tablesUrl = (R: { round: number; label?: string }) => new URL(`../research/calib/tables/round-${R.label ?? R.round}.json`, import.meta.url);
 
-/** What the current engine reads of a frozen tank: as shown, and over the focal (and tankmate) count. */
+/** What the current engine reads of a frozen tank: as shown, and over the focal (and tankmate) count; for a mix also the gate the app
+ *  gives it today (compatibility and shared temperature, gateOf), so reviews compare the experts with today's rules. */
 export function retable(s: Tank) {
   const r = readSpace(s.dimsIn, s.stock);
   return { pct: { space: r.space, water: r.water, floor: r.floor }, tight: tightOf(r.water, r.floor), table: tableOf(s.dimsIn, s.stock, s.focal),
-    ...(s.mate ? { mateTable: tableOf(s.dimsIn, s.stock, s.mate) } : {}) };
+    ...(s.mate ? { mateTable: tableOf(s.dimsIn, s.stock, s.mate) } : {}),
+    ...(s.stock.length > 1 ? (g => ({ gate: g.gate, gateItems: g.items }))(gateOf(s.dimsIn, s.stock.map(x => x[0]))) : {}) };
 }
 
 describe('calibration tables on the current engine', () => {

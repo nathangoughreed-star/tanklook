@@ -61,10 +61,9 @@ Median fix per group (tanks with counts, repeats and left-out tanks excluded). F
 
 ## Compatibility: gate vs you
 
-2 of 4 agree.
+3 of 4 agree.
 
-- f18 (Cardinal tetra + Reticulated hillstream loach + Dwarf pencilfish): gate ok, you caution (see the note)
-- f20 (Cherry shrimp + Cardinal tetra + Honey gourami): gate ok, you caution (see the note)
+- f4 (White cloud mountain minnow + Panda corydoras): gate concern (temperature: narrow shared range), you yes (see the note)
 
 ## Notes (the expert's own words)
 

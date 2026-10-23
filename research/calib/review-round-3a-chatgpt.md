@@ -83,8 +83,9 @@ Confidence: low 1, medium 4, high 0. In a bare tank: the same 0, a little lower 
 
 ## Compatibility: gate vs you
 
-2 of 3 agree.
+1 of 3 agree.
 
+- f12 (Bronze corydoras + Rummy-nose tetra): gate concern (temperature: narrow shared range), you yes (see the note)
 - f14 (Bristlenose pleco + Otocinclus): gate ok, you caution (see the note)
 
 ## Notes (the expert's own words)

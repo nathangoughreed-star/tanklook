@@ -358,3 +358,16 @@ different settings: Nathan to confirm), and no tank has two experts' answers yet
 until round 3 has human answers and Nathan's yes).
 Open: a count past the end of a tank's engine table (ngr-ai 2:f9, 40 guppies vs a table to 36) is skipped, though it says the engine
 reads far too full there; the tables should run further, or the fit should read such a count as "at least the last row".
+
+## 15. Mix labels follow the app's temperature gate (2026-10-23, from S214's finding)
+
+S214 traced the white cloud + neon and white cloud + bristlenose mixes that round 3 labelled "passing": the app is right, the generator
+was wrong. The app blocks a single shared degree (white cloud 16-22 °C, bristlenose 22-27: 'single') and warns on a narrow overlap
+(white cloud with neon 21-22 °C: 'narrow'); the generator only rejected no overlap at all. `gateOf` (scenario.ts) now judges a mix as the
+app does (compatRisks, plus none / single = high, narrow = concern; only a broad overlap is clean) and is used by the draws and by the
+pinned anchor (87 harlequins + 28 rummy-noses: narrow, so a flagged mix). Passing-mix slots take more tries (2000, the flagged-to-passing
+fallback at 1000). Frozen rounds keep their stored labels; the tables files now carry today's gate per mix, which the reviews use.
+Labels that change on today's rules: round 1: 7 mixes ok -> concern; round 2: 4; round 3: 6 (f11 and its repeat r1 -> high); round 3a: 3.
+"Keep together" against today's gates: ngr 2 -> 3 of 4 agree, chatgpt-high 5 -> 7 of 12, chatgpt (3a) 2 -> 1 of 3, ngr-ai 3 -> 0 of 7
+(it answered "yes" to the narrow-range mixes). So the AI experts split on whether a 1-2 °C shared range is a concern: evidence for the
+temperature gate's narrow band (NARROW_C = 2 in temprange.ts), Nathan's call, not changed here.

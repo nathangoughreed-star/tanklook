@@ -95,15 +95,13 @@ Confidence: low 0, medium 21, high 0. In a bare tank: the same 0, a little lower
 
 ## Compatibility: gate vs you
 
-5 of 12 agree.
+7 of 12 agree.
 
-- f5 (Chili rasbora + Dwarf gourami + Pygmy corydoras): gate ok, you caution (see the note)
-- f11 (Bristlenose pleco + White cloud mountain minnow): gate ok, you no (see the note)
-- f6 (Neon tetra + White cloud mountain minnow): gate ok, you caution (see the note)
+- a1 (Harlequin rasbora + Rummy-nose tetra): gate concern (temperature: narrow shared range), you yes (see the note)
 - f16 (Kribensis + Sterba's corydoras): gate ok, you no (see the note)
 - f9 (Panda corydoras + Otocinclus): gate ok, you caution (see the note)
-- f13 (Kuhli loach + Celestial pearl danio): gate high (Celestial pearl danio with Kuhli loach: water chemistry: pH 6.5-7.5 against its 5.5-6.5), you yes (see the note)
-- r1 (Bristlenose pleco + White cloud mountain minnow): gate ok, you no (see the note)
+- f14 (Bronze corydoras + Marbled hatchetfish): gate concern (temperature: narrow shared range), you yes (see the note)
+- f13 (Kuhli loach + Celestial pearl danio): gate high (Celestial pearl danio with Kuhli loach: water chemistry: pH 6.5-7.5 against its 5.5-6.5; temperature: narrow shared range), you yes (see the note)
 
 ## Notes (the expert's own words)
 
