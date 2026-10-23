@@ -45,6 +45,23 @@ models on /review.html (and its drawImage error), TG leftovers (heater product p
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
+## XC: expert calibration rounds (2026-10-23, side chat from Glass-Box-stocking; branch `xc`, worktree `.claude/worktrees/xc`, port 5823; NOT pushed)
+- **Why:** refine the stocking engine's space numbers from expert opinions over randomized rounds, instead of hand multipliers (SPACE_NUDGE).
+  Design and findings: research/expert-calibration.md.
+- **Nathan's decisions (2026-10-23, in chat):** experts answer on 75 % = ideal (green), 100 % = limit past which long-term problems are
+  likely (red), tread carefully between (this differs from the lane SR prompt's 100 % = recommended capacity; Nathan: SR already knows).
+  Mixed tanks are drawn through the compatibility gates (40 % one species, 40 % passing mixes, 20 % flagged) and get a "keep together?"
+  question checked against the gates (not fitted). Sparse decor (river stones). Survey screen approved from a mockup.
+- **Built:** src/calib/scenario.ts (seeded generator; every species passes its tank minimum and group, no fighting warning; engine table
+  per focal count), test/calib.test.ts, scripts/calib-fit.mjs (log multipliers on today's factors: water g, floor f, class c, species d,
+  expert bias; BFGS; cap x1.25 a round), scripts/calib-synth.mjs + test/calibfit.test.ts (a known shift is recovered: species error
+  0.045 vs 0.077 unfitted), scripts/calib-survey.mjs -> research/calib/survey-round-1.html (24 tanks, 4.4 MB, renders inlined, no
+  engine numbers inside). scripts/space-factors.mjs now keeps the hand-set blocks after the generated table (it dropped FLOOR_FACTOR).
+- **No engine number moved.** Full suite green, tsc clean.
+- **Open:** who the experts are; goldens restated on the 75 / 100 scale (SPACE_NUDGE discus on branch s214, FLOOR_FACTOR kuhli, the
+  S196 / HC / HB targets); src/data/expertfit.json + provenance rule once real answers exist; otocinclus do not render in the app
+  (f13, f19 of round 1), amano shrimp nearly invisible.
+
 ## CP: compatibility gaps from a stocking audit (2026-10-22, Nathan's own chat opened from Glass-Box-stocking; branch `compat-puffer-krib`, worktree C:/Users/nreed/Glass-Box-compat)
 Outside audit: 28 x 15 x 12 in (21.8 gal), 1 male + 3 female pea puffers, 1 male dwarf gourami, a mated krib pair. The tile said "Room for about 17% more" and no gate fired (puffer temper 2 + nip only hit `slow` fish or temper 0; gourami and kribs are temper 1).
 - care.ts: `feelers` (dwarf, honey, pearl gourami): hit by `nip` only, blocking for a temper-2 nipper (tiger barb, pea puffer), a concern for danio; `slow` still means long fins, so kribs + gourami stay clean. `alone` (pea puffer): concern beside any other fish (inverts are the prey rule's). `guard` cm2 (kribensis 1800, about 2 x 1 ft): a sexed or established pair with other fish on a floor under twice that is a concern.

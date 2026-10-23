@@ -1,0 +1,176 @@
+{
+ "round": 1,
+ "expert": "synth-E",
+ "made": "2026-10-23",
+ "synthetic": true,
+ "answers": [
+  {
+   "id": "f18",
+   "band": 1,
+   "ideal": 84,
+   "limit": 143,
+   "together": "yes"
+  },
+  {
+   "id": "f4",
+   "band": 2,
+   "ideal": 19,
+   "limit": 30,
+   "together": "yes"
+  },
+  {
+   "id": "f12",
+   "band": 0,
+   "ideal": 33,
+   "limit": 40,
+   "together": null
+  },
+  {
+   "id": "f5",
+   "band": 2,
+   "ideal": 1,
+   "limit": 8,
+   "together": "no"
+  },
+  {
+   "id": "f20",
+   "band": 2,
+   "ideal": 1,
+   "limit": 7,
+   "together": "yes"
+  },
+  {
+   "id": "f15",
+   "band": 2,
+   "ideal": 33,
+   "limit": 42,
+   "together": null
+  },
+  {
+   "id": "f13",
+   "band": 1,
+   "ideal": 13,
+   "limit": 11,
+   "together": "no"
+  },
+  {
+   "id": "f3",
+   "band": 2,
+   "ideal": 2,
+   "limit": 5,
+   "together": "yes"
+  },
+  {
+   "id": "r2",
+   "band": 2,
+   "ideal": 19,
+   "limit": 31,
+   "together": "yes"
+  },
+  {
+   "id": "f10",
+   "band": 2,
+   "ideal": 12,
+   "limit": 47,
+   "together": "yes"
+  },
+  {
+   "id": "a2",
+   "band": 1,
+   "ideal": 16,
+   "limit": 36,
+   "together": null
+  },
+  {
+   "id": "f17",
+   "band": 1,
+   "ideal": 14,
+   "limit": 38,
+   "together": "no"
+  },
+  {
+   "id": "f1",
+   "band": 0,
+   "ideal": 40,
+   "limit": 53,
+   "together": null
+  },
+  {
+   "id": "f6",
+   "band": 1,
+   "ideal": 7,
+   "limit": 16,
+   "together": null
+  },
+  {
+   "id": "r1",
+   "band": 2,
+   "ideal": 3,
+   "limit": 4,
+   "together": "yes"
+  },
+  {
+   "id": "f14",
+   "band": 2,
+   "ideal": 1,
+   "limit": 16,
+   "together": "yes"
+  },
+  {
+   "id": "a1",
+   "band": 2,
+   "ideal": 1,
+   "limit": 5,
+   "together": "yes"
+  },
+  {
+   "id": "f2",
+   "band": 0,
+   "ideal": 34,
+   "limit": 59,
+   "together": null
+  },
+  {
+   "id": "f9",
+   "band": 0,
+   "ideal": 10,
+   "limit": 14,
+   "together": "no"
+  },
+  {
+   "id": "f19",
+   "band": 2,
+   "ideal": 56,
+   "limit": 72,
+   "together": null
+  },
+  {
+   "id": "f11",
+   "band": 1,
+   "ideal": 13,
+   "limit": 18,
+   "together": "yes"
+  },
+  {
+   "id": "f7",
+   "band": 1,
+   "ideal": 19,
+   "limit": 32,
+   "together": null
+  },
+  {
+   "id": "f16",
+   "band": 2,
+   "ideal": 26,
+   "limit": 39,
+   "together": "yes"
+  },
+  {
+   "id": "f8",
+   "band": 2,
+   "ideal": 63,
+   "limit": 98,
+   "together": null
+  }
+ ]
+}

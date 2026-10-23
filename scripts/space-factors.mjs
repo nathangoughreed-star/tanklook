@@ -22,5 +22,8 @@ export const SPACE_FACTOR: Record<string, [number, string]> = {
 `;
 for (const r of rows) t += `  ${r[0]}: [${(+r[4]).toFixed(2)}, '${why(r)}'],\n`;
 t += '};\n';
+// keep the hand-set blocks after the generated table (FLOOR_FACTOR, any multipliers): the rebuild used to drop them (chat XC 2026-10-23)
+const old = readFileSync('src/data/spacefactor.ts', 'utf8').replace(/\r\n/g, '\n'), at = old.indexOf('export const SPACE_FACTOR:'), end = at < 0 ? -1 : old.indexOf('\n};\n', at);
+if (end >= 0) t += old.slice(end + 4);
 writeFileSync('src/data/spacefactor.ts', t);
 console.log(classF);

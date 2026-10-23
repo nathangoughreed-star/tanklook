@@ -1,0 +1,176 @@
+{
+ "round": 1,
+ "expert": "synth-B",
+ "made": "2026-10-23",
+ "synthetic": true,
+ "answers": [
+  {
+   "id": "f18",
+   "band": 1,
+   "ideal": 82,
+   "limit": 136,
+   "together": "yes"
+  },
+  {
+   "id": "f4",
+   "band": 2,
+   "ideal": 26,
+   "limit": 37,
+   "together": "yes"
+  },
+  {
+   "id": "f12",
+   "band": 0,
+   "ideal": 32,
+   "limit": 50,
+   "together": null
+  },
+  {
+   "id": "f5",
+   "band": 2,
+   "ideal": 3,
+   "limit": 7,
+   "together": "no"
+  },
+  {
+   "id": "f20",
+   "band": 1,
+   "ideal": 1,
+   "limit": 23,
+   "together": "yes"
+  },
+  {
+   "id": "f15",
+   "band": 1,
+   "ideal": 29,
+   "limit": 49,
+   "together": null
+  },
+  {
+   "id": "f13",
+   "band": 1,
+   "ideal": 11,
+   "limit": 21,
+   "together": "no"
+  },
+  {
+   "id": "f3",
+   "band": 2,
+   "ideal": 4,
+   "limit": 4,
+   "together": "yes"
+  },
+  {
+   "id": "r2",
+   "band": 1,
+   "ideal": 22,
+   "limit": 30,
+   "together": "yes"
+  },
+  {
+   "id": "f10",
+   "band": 2,
+   "ideal": 21,
+   "limit": 107,
+   "together": "yes"
+  },
+  {
+   "id": "a2",
+   "band": 0,
+   "ideal": 17,
+   "limit": 27,
+   "together": null
+  },
+  {
+   "id": "f17",
+   "band": 0,
+   "ideal": 27,
+   "limit": 46,
+   "together": "no"
+  },
+  {
+   "id": "f1",
+   "band": 0,
+   "ideal": 34,
+   "limit": 59,
+   "together": null
+  },
+  {
+   "id": "f6",
+   "band": 0,
+   "ideal": 9,
+   "limit": 13,
+   "together": null
+  },
+  {
+   "id": "r1",
+   "band": 2,
+   "ideal": 3,
+   "limit": 6,
+   "together": "yes"
+  },
+  {
+   "id": "f14",
+   "band": 2,
+   "ideal": 1,
+   "limit": 54,
+   "together": "yes"
+  },
+  {
+   "id": "a1",
+   "band": 2,
+   "ideal": 2,
+   "limit": 3,
+   "together": "yes"
+  },
+  {
+   "id": "f2",
+   "band": 0,
+   "ideal": 46,
+   "limit": 61,
+   "together": null
+  },
+  {
+   "id": "f9",
+   "band": 0,
+   "ideal": 11,
+   "limit": 14,
+   "together": "no"
+  },
+  {
+   "id": "f19",
+   "band": 2,
+   "ideal": 52,
+   "limit": 89,
+   "together": null
+  },
+  {
+   "id": "f11",
+   "band": 0,
+   "ideal": 11,
+   "limit": 19,
+   "together": "yes"
+  },
+  {
+   "id": "f7",
+   "band": 1,
+   "ideal": 26,
+   "limit": 30,
+   "together": null
+  },
+  {
+   "id": "f16",
+   "band": 1,
+   "ideal": 34,
+   "limit": 45,
+   "together": "yes"
+  },
+  {
+   "id": "f8",
+   "band": 1,
+   "ideal": 73,
+   "limit": 106,
+   "together": null
+  }
+ ]
+}
