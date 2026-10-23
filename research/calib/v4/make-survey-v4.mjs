@@ -57,29 +57,29 @@ ${rows.map(r => `<tr${r.focal ? ' class="focal"' : ''}><td>${r.n}</td><td>${esc(
 <div class="assume">Assume adults as listed, no breeding counted, sex ratios kept roughly. Filtration, water changes, heat, light and furnishing (plants, cover, hides, rockwork) are never the limit.</div>
 </div>`;
 }
-const btns = (q, opts, cls = 'b') => opts.map(([v, l, d]) => `<button class="${cls}" data-q="${q}" data-v="${esc(v)}"${d ? ` title="${esc(d)}"` : ''}>${esc(l)}</button>`).join('');
+// no tooltips (Nathan 2026-10-23): everything a question means is printed on the page, readable from one screenshot
+const btns = (q, opts, cls = 'b') => opts.map(([v, l]) => `<button class="${cls}" data-q="${q}" data-v="${esc(v)}">${esc(l)}</button>`).join('');
+const VERDICT_KEY = VERDICTS.map(([, l, d]) => `<b>${esc(l)}</b>: ${esc(d)}`).join(' · ') + ' · <b>Skip</b>: nothing else is asked for this tank';
 function questions(s) {
   const q = [], names = id => plural(2, id), speciesChips = (qn) => s.stock.map(x => `<button class="chip" data-q="${qn}" data-v="${x.id}">${esc(names(x.id))}</button>`).join('');
-  q.push(`<div class="q"><div class="ql">1. Your verdict on this tank as shown</div><div class="opts">${btns('verdict', VERDICTS)}<button class="b skip" data-q="verdict" data-v="skip" title="Nothing else is asked for this tank">I don't know these animals well enough: skip</button></div>
+  q.push(`<div class="q"><div class="ql">1. Your verdict on this tank as shown</div><div class="opts">${btns('verdict', VERDICTS)}<button class="b skip" data-q="verdict" data-v="skip">I don't know these animals well enough: skip</button></div>
 </div>`);
   let n = 2;
   if (s.ask.includes('change')) q.push(`<div class="q"><div class="ql">${n++}. The first thing you would change</div><div class="opts">${btns('change', CHANGES)}</div>
-<div class="sub" data-show="change=fewer"><span>Fewer of:</span> ${speciesChips('changeSp')}</div><div class="sub" data-show="change=drop"><span>Drop:</span> ${speciesChips('changeSp')}</div></div>`);
+<div class="sub always"><span>With "Fewer of" or "Drop", which species:</span> ${speciesChips('changeSp')}</div></div>`);
   if (s.ask.includes('compat')) {
     const one = new Set(s.stock.map(x => x.id)).size === 1;
     q.push(`<div class="q"><div class="ql">${n++}. ${one ? `Keep these ${s.stock[0].n} ${esc(lower(s.stock[0].id))} together long term?` : 'Keep these species together long term?'}</div><div class="opts">${btns('together', TOGETHER)}</div>
-<div class="sub" data-show="together=caution,no"><span>Why (all that apply):</span> ${REASONS.map(([v, l]) => `<button class="chip" data-q="reasons" data-v="${v}">${esc(l)}</button>`).join('')}</div>
-${!one && s.stock.length > 2 ? `<div class="sub" data-show="together=caution,no"><span>The problem is with:</span> ${speciesChips('problem')}</div>` : ''}</div>`);
+<div class="sub always"><span>If not "Yes", why (all that apply):</span> ${REASONS.map(([v, l]) => `<button class="chip" data-q="reasons" data-v="${v}">${esc(l)}</button>`).join('')}</div>
+${!one && s.stock.length > 2 ? `<div class="sub always"><span>If not "Yes", the problem is with:</span> ${speciesChips('problem')}</div>` : ''}</div>`);
   }
   if (s.ask.includes('counts')) {
     const others = s.stock.filter(x => x.id !== s.focal);
     q.push(`<div class="q"><div class="ql">${n++}. ${others.length ? `With the others as shown, how many <b>${esc(lower(s.focal))}</b> here?` : `How many <b>${esc(lower(s.focal))}</b> in this tank?`}</div>
-<div class="opts counts"><label>Ideal <input type="number" min="0" step="1" inputmode="numeric" data-q="ideal"></label><label>At most <input type="number" min="0" step="1" inputmode="numeric" data-q="limit"></label></div>
-<div class="sub always"><span>or, instead of numbers:</span> <button class="chip" data-q="countStatus" data-v="cant-say">Can't say</button><button class="chip" data-q="countStatus" data-v="no-valid-count">No count works as described</button></div>
+<div class="opts counts"><label>Ideal <input type="number" min="0" step="1" inputmode="numeric" data-q="ideal"></label><label>At most <input type="number" min="0" step="1" inputmode="numeric" data-q="limit"></label><span class="or">or, instead of numbers:</span><button class="chip" data-q="countStatus" data-v="cant-say">Can't say</button><button class="chip" data-q="countStatus" data-v="no-valid-count">No count works as described</button></div>
 <div class="hint">Ideal = what you would aim for; at most = past this, long-term problems become likely; 0 is valid.</div></div>`);
     if (s.mate) q.push(`<div class="q"><div class="ql">${n++}. And how many <b>${esc(lower(s.mate))}</b>, with the others as shown?</div>
-<div class="opts counts"><label>Ideal <input type="number" min="0" step="1" inputmode="numeric" data-q="mateIdeal"></label><label>At most <input type="number" min="0" step="1" inputmode="numeric" data-q="mateLimit"></label></div>
-<div class="sub always"><span>or, instead of numbers:</span> <button class="chip" data-q="mateStatus" data-v="cant-say">Can't say</button><button class="chip" data-q="mateStatus" data-v="no-valid-count">No count works as described</button></div></div>`);
+<div class="opts counts"><label>Ideal <input type="number" min="0" step="1" inputmode="numeric" data-q="mateIdeal"></label><label>At most <input type="number" min="0" step="1" inputmode="numeric" data-q="mateLimit"></label><span class="or">or, instead of numbers:</span><button class="chip" data-q="mateStatus" data-v="cant-say">Can't say</button><button class="chip" data-q="mateStatus" data-v="no-valid-count">No count works as described</button></div></div>`);
   }
   if (s.ask.includes('min')) {
     const m = s.min;
@@ -88,9 +88,11 @@ ${!one && s.stock.length > 2 ? `<div class="sub" data-show="together=caution,no"
   }
   if (s.ask.includes('max')) for (const m of s.max) q.push(`<div class="q"><div class="ql">${n++}. Most <b>${esc(lower(m.species))}</b> you would keep in this tank${m.label ? `, ${esc(m.label)}` : ', whatever else is in it'}</div><div class="opts">${m.options.map(o => `<button class="b" data-q="max:${m.species}" data-v="${esc(o)}">${esc(o)}</button>`).join('')}</div></div>`);
   if (s.ask.includes('maxMales')) for (const m of s.maxMales) q.push(`<div class="q"><div class="ql">${n++}. Most <b>male ${esc(lower(m.species))}</b> in this tank</div><div class="opts">${m.options.map(o => `<button class="b" data-q="maxMales:${m.species}" data-v="${esc(o)}">${esc(o)}</button>`).join('')}</div></div>`);
-  q.push(`<div class="q"><div class="ql">${n++}. How sure are you?</div><div class="opts">${btns('confidence', CONF)}</div></div>`);
-  q.push(`<div class="q note"><div class="ql" style="display:inline-block;margin-right:8px">Note (optional)</div><textarea data-q="note" rows="1" placeholder="Anything the buttons could not say"></textarea></div>`);
-  return q.join('\n');
+  // the left column under the tank card (it has room; one screen holds everything, Nathan 2026-10-23): what the verdicts mean, how sure, a note
+  const side = `<div id="side"><div class="q key"><div class="ql">What the verdicts mean</div>${VERDICT_KEY}</div>
+<div class="q"><div class="ql">${n++}. How sure are you?</div><div class="opts">${btns('confidence', CONF)}</div></div>
+<div class="q note"><div class="ql">Note (optional)</div><textarea data-q="note" rows="2" placeholder="Anything the buttons could not say"></textarea></div></div>`;
+  return { main: q.join('\n'), side };
 }
 
 const SCN = J.scenarios.map(s => ({ id: s.id, module: s.module, tank: s.tank, focal: s.focal ?? null, mate: s.mate ?? null, ask: s.ask, stock: s.stock, pairOf: s.pairOf ?? null }));
@@ -109,7 +111,7 @@ button{font:inherit;cursor:pointer}
 .chip{padding:2px 8px;font-size:12.5px;border-radius:12px}
 .nav{border:1px solid var(--line);background:var(--card);border-radius:6px;padding:6px 14px}.nav.primary{background:var(--acc);color:#fff;border-color:var(--acc)}
 main{max-width:1340px;margin:0 auto;padding:8px 14px}
-.grid{display:grid;grid-template-columns:minmax(340px,400px) 1fr;gap:12px;align-items:start}
+.grid{display:grid;grid-template-columns:minmax(340px,460px) 1fr;gap:12px;align-items:start}
 @media (max-width:900px){.grid{grid-template-columns:1fr}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
 .tank b{font-size:16px}.dim{color:var(--mute)}.env{margin:6px 0 8px;color:var(--ink)}
@@ -118,10 +120,11 @@ table.stock td{padding:2px 6px 2px 0;border-bottom:1px solid #eef1f4;vertical-al
 .assume{margin-top:6px;font-size:11.5px;color:var(--mute);line-height:1.3}
 .q{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:4px 10px 5px;margin-bottom:4px}
 .ql{font-weight:600;margin-bottom:2px}.opts{display:flex;flex-wrap:wrap;align-items:center}.hint{font-size:11px;color:var(--mute);margin-top:1px}
-.sub{display:none;margin-top:2px;padding-top:2px;border-top:1px dashed var(--line)}.sub.always,.sub.show{display:block}.sub>span{color:var(--mute);margin-right:4px}
+.sub{display:block;margin-top:2px;padding-top:2px;border-top:1px dashed var(--line)}.sub>span{color:var(--mute);margin-right:4px}
+.key{font-size:11.5px;color:var(--mute);margin-top:2px;line-height:1.3}.key b{color:var(--ink);font-weight:600}
 .counts label{margin-right:14px}.counts input{width:70px;font:inherit;padding:4px 6px;border:1px solid var(--line);border-radius:6px;margin-left:4px}
-.q.note textarea{width:calc(100% - 120px);vertical-align:middle}textarea{width:100%;font:inherit;padding:4px 6px;border:1px solid var(--line);border-radius:6px;resize:vertical}
-.off .q:not(:first-child){opacity:.35;pointer-events:none}
+.q.note textarea{width:100%}#left .q{margin-top:6px;margin-bottom:0}.or{color:var(--mute);margin:0 4px 0 10px}textarea{width:100%;font:inherit;padding:4px 6px;border:1px solid var(--line);border-radius:6px;resize:vertical}
+.off #right .q:not(:first-child),.off #left .q:not(.key){opacity:.35;pointer-events:none}
 .start{max-width:760px;margin:20px auto}.start h1{font-size:20px;margin:0 0 8px}.start p{margin:6px 0}.start label{display:block;margin:8px 0 4px;font-weight:600}
 .start input[type=text]{font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:6px;width:280px}
 .mods .b{display:block;width:100%;text-align:left;margin:4px 0;padding:8px 10px}.mods .b small{display:block;color:inherit;opacity:.8;font-weight:400}
@@ -149,7 +152,7 @@ table.stock td{padding:2px 6px 2px 0;border-bottom:1px solid #eef1f4;vertical-al
 <script>
 const BUILD=${JSON.stringify(BUILD)}, KEY='calib-v4-'+BUILD, SCN=${JSON.stringify(SCN)};
 const CARDS=${JSON.stringify(Object.fromEntries(J.scenarios.map(s => [s.id, scenarioCard(s)])))};
-const QS=${JSON.stringify(Object.fromEntries(J.scenarios.map(s => [s.id, questions(s)])))};
+const QS=${JSON.stringify(Object.fromEntries(J.scenarios.map(s => [s.id, questions(s)])))};// {main: the right column, side: under the tank card}
 const $=id=>document.getElementById(id);
 let S=load(); function load(){try{const j=JSON.parse(localStorage.getItem(KEY)||'null');if(j&&j.build===BUILD)return j;}catch(e){}return{survey:'v4',build:BUILD,expert:'',expertKind:null,modules:[],answers:{},carried:[],made:null};}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
@@ -165,8 +168,10 @@ $('go').onclick=()=>{if(!S.modules.length){alert('Pick at least one module.');re
 $('toStart').onclick=()=>{$('tank').hidden=true;$('start').hidden=false;$('prog').textContent='';$('open').textContent='';$('prev').hidden=$('next').hidden=true;};
 $('prev').onclick=()=>{if(i>0){i--;show();}};
 $('next').onclick=()=>{if(i<list.length-1){i++;show();}else{$('toStart').click();alert(openIds().length?openIds().length+' tank(s) still open: '+openIds().join(', '):'All '+list.length+' tanks answered. Export answers to send them back.');}};
+// the key, how sure and the note go under the tank card, or under the questions when the animal list is long: whichever keeps the page on one screen
+function place(){const L=$('left'),Rt=$('right'),h=e=>e.getBoundingClientRect().height;for(const q of [...$('side').children])(h(L)<=h(Rt)?L:Rt).appendChild(q);}
 function show(){const id=list[i],a=ans(id);t0=Date.now();$('start').hidden=true;$('tank').hidden=false;$('prev').hidden=$('next').hidden=false;$('next').textContent=i<list.length-1?'Next':'Finish';$('prog').textContent=id+' · '+(i+1)+' of '+list.length+' · module '+SCN.find(s=>s.id===id).module;
-$('left').innerHTML=CARDS[id];$('right').innerHTML=QS[id];const R=$('right');R.classList.toggle('off',!!a.skip);
+$('left').innerHTML=CARDS[id]+QS[id].side;$('right').innerHTML=QS[id].main;place();const R=$('tank');R.classList.toggle('off',!!a.skip);
 for(const b of R.querySelectorAll('button[data-q]')){const q=b.dataset.q,v=b.dataset.v;b.classList.toggle('on',isOn(a,q,v));b.onclick=()=>{toggle(a,q,v,b);paint(R,a);touch(a);};}
 for(const inp of R.querySelectorAll('input[type=number]')){inp.value=a[inp.dataset.q]??'';inp.oninput=()=>{const v=inp.value===''?null:Math.max(0,Math.round(+inp.value));a[inp.dataset.q]=v;if(v!==null)delete a[inp.dataset.q.startsWith('mate')?'mateStatus':'countStatus'];paint(R,a);touch(a);};}
 const ta=R.querySelector('textarea');ta.value=a.note||'';ta.oninput=()=>{a.note=ta.value;touch(a);};
@@ -181,7 +186,6 @@ if(q==='mateStatus'){if(a.mateStatus===v)delete a.mateStatus;else{a.mateStatus=v
 if(q==='change'&&a.change!==v)a.changeSp=[];
 a[q]=a[q]===v?null:v;}
 function paint(R,a){R.classList.toggle('off',!!a.skip);for(const b of R.querySelectorAll('button[data-q]'))b.classList.toggle('on',isOn(a,b.dataset.q,b.dataset.v));
-for(const d of R.querySelectorAll('.sub[data-show]')){const [q,vs]=d.dataset.show.split('=');d.classList.toggle('show',vs.split(',').includes(String(a[q])));}
 for(const inp of R.querySelectorAll('input[type=number]'))if(a[inp.dataset.q.startsWith('mate')?'mateStatus':'countStatus'])inp.value='';}
 function touch(a){a.ms=(a.ms||0)+(Date.now()-t0);t0=Date.now();S.made=new Date().toISOString();save();$('open').textContent=openIds().length+' open of '+list.length;}
 function clean(){const out={};for(const [id,a] of Object.entries(S.answers)){const c={};for(const [k,v] of Object.entries(a)){if(v===null||v===''||(Array.isArray(v)&&!v.length))continue;const m=/^(max|maxMales):(.+)$/.exec(k);if(m){(c[m[1]]=c[m[1]]||{})[m[2]]=v;continue;}c[k]=v;}if(Object.keys(c).length)out[id]=c;}return out;}
