@@ -81,7 +81,8 @@ export function rowsOf(round, files) {
     const rv = a.review ?? {}, skip = new Set(rv.skip ?? []);
     const limits = rv.set && 'limits' in rv.set ? rv.set.limits : a.limits;
     if (limits === 'not-room') { skipped.push(`${f.expert} ${a.id}: habitat or food decides it, not room`); continue; }
-    const small = Object.entries(a.bigEnough ?? {}).filter(([, v]) => v === false).map(([id]) => id);
+    // review.set.bigEnough restates a misclicked big-enough answer from the expert's own note (S214, chatgpt-high p1b)
+    const small = Object.entries({ ...(a.bigEnough ?? {}), ...(rv.set?.bigEnough ?? {}) }).filter(([, v]) => v === false).map(([id]) => id);
     if (small.length) { skipped.push(`${f.expert} ${a.id}: tank too small for ${small.join(', ')} (a tank-minimum answer, not room)`); continue; }
     if (rv.set && 'limits' in rv.set && a.limits !== limits) skipped.push(`${f.expert} ${a.id}: kept on review, "what limits" read as ${limits ?? 'room'} (${rv.why ?? 'see the review'})`);
     for (const k of skip) skipped.push(`${f.expert} ${a.id} ${k}: set aside on review (${rv.why ?? 'see the review'})`);
@@ -289,7 +290,7 @@ export function fitRound(round, files, prior = PRIOR) {
 export function report(r) {
   const nf = v => Number.isFinite(v) ? v.toFixed(3) : 'n/a', pc = m => `${m >= 1 ? '+' : ''}${((m - 1) * 100).toFixed(0)} %`, e = r.error;
   let md = `# Expert calibration, fit of round ${r.round}\n\n${r.experts.length} experts (${r.experts.join(', ')}), ${r.rows} answers, ${r.held} on held-out anchors. Noise ${r.noise.s.toFixed(3)} (log) from ${r.noise.pairs} repeat pairs.${r.tables ? ` Engine readings: ${r.tables}.` : ''}\n\n`;
-  md += `## Error (rms of log reading at the experts' counts)\n\n| | before | after |\n|---|---|---|\n| held-out anchors | ${nf(e.heldBefore)} | ${nf(e.heldAfter)} |\n| fitted tanks | ${nf(e.fitBefore)} | ${nf(e.fitAfter)} |\n\nInter-expert disagreement ${Number.isFinite(e.disagreement) ? e.disagreement.toFixed(3) : 'n/a (one expert)'}. ${e.heldAfter <= 1.1 * e.disagreement ? '**Stop rule met**: held-out error is within the experts\' own disagreement.' : 'Stop rule not met.'}\n\n`;
+  md += `## Error (rms of log reading at the experts' counts)\n\n| | before | after |\n|---|---|---|\n| held-out anchors | ${nf(e.heldBefore)} | ${nf(e.heldAfter)} |\n| fitted tanks | ${nf(e.fitBefore)} | ${nf(e.fitAfter)} |\n\nInter-expert disagreement ${Number.isFinite(e.disagreement) ? e.disagreement.toFixed(3) : 'n/a (no tank answered by two experts yet)'}. ${e.heldAfter <= 1.1 * e.disagreement ? '**Stop rule met**: held-out error is within the experts\' own disagreement.' : 'Stop rule not met.'}\n\n`;
   md += `## Multipliers on today's factors\n\nWater (SPACE_PER_L) x${r.g}, floor x${r.f}. Classes: ${Object.entries(r.class).map(([k, m]) => `${k} ${pc(m)}`).join(', ')}.${r.capped.length ? ` Capped at x1.25: ${r.capped.join(', ')}.` : ''}\n\n| species | class | answers | total move | own move |\n|---|---|---|---|---|\n`;
   for (const [id, v] of Object.entries(r.species).sort((a, b) => Math.abs(Math.log(b[1].mult)) - Math.abs(Math.log(a[1].mult)))) if (Math.abs(v.mult - 1) >= 0.05) md += `| ${id} | ${v.cls} | ${v.answers} | ${pc(v.mult)} | ${pc(v.own)} |\n`;
   // an AI model is one expert among several with its own bias (survey 2.1 asks who is answering); read its rows apart before trusting a move

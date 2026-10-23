@@ -27,7 +27,7 @@ export function rowsOf(round, file) {
     const at = (tbl, n, dim) => n >= 1 && n < tbl.length ? readOn(tbl, n, dim) : null;
     const atIdeal = at(s.table, c.ideal, d), atLimit = at(s.table, c.limit, d), mate = a.mate && s.mateTable ? { ...a.mate, at: at(s.mateTable, a.mate.ideal, dimOf(s, a.mate.id)) } : null;
     const lim0 = a.review?.set && 'limits' in a.review.set ? a.review.set.limits : a.limits; // a reviewed exception (calib-fit.mjs rowsOf)
-    const out = lim0 === 'not-room' || Object.values(a.bigEnough ?? {}).includes(false);
+    const out = lim0 === 'not-room' || Object.values({ ...(a.bigEnough ?? {}), ...(a.review?.set?.bigEnough ?? {}) }).includes(false);
     const fixes = out ? [] : [atIdeal && round.ideal / atIdeal, atLimit && round.limit / atLimit, mate?.at && round.ideal / mate.at].filter(Boolean);
     return { s, a, c, mate, shown, p, dim: d, floorBound: s.pct.floor >= s.pct.water, engineBand: bandOf(p, round.ideal, round.limit), atIdeal, atLimit, out,
       fix: fixes.length ? gmean(fixes) : null, ratio: c.ideal >= 1 && c.limit >= 1 ? c.limit / c.ideal : null };

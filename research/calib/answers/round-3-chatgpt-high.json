@@ -1,0 +1,574 @@
+{
+ "round": 3,
+ "survey": 3,
+ "picture": false,
+ "expert": "chatgpt-high",
+ "expertKind": "ai",
+ "made": "2026-10-23T18:03:47.429Z",
+ "answers": [
+  {
+   "id": "p1b",
+   "floor": null,
+   "water": 2,
+   "overall": 2,
+   "limits": "molly",
+   "bigEnough": {
+    "molly": false
+   },
+   "focal": {
+    "ideal": 12,
+    "limit": 19,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "bare": 2,
+   "note": "The 48-inch length provides good swimming space, but 37 adult 8.5 cm mollies would create severe crowding. Approximately 10–12 would make a comfortable species-only display, with 13–19 increasingly crowded and 20+ entering problematic territory. The 1:3 male-to-female ratio is favorable, but plants and sight breaks remain important for limiting harassment. Strong filtration cannot compensate for insufficient swimming space.\n Copy note",
+   "ms": 189490,
+   "review": {
+    "set": {
+     "bigEnough": {
+      "molly": true
+     }
+    },
+    "why": "its note praises the 48 in length and gives the same 12 / 19 as p1a, where molly is big enough: a misclick (S214 review)"
+   }
+  },
+  {
+   "id": "f7",
+   "floor": 1,
+   "water": 0,
+   "overall": 1,
+   "limits": "pandacory",
+   "bigEnough": {
+    "pandacory": true
+   },
+   "focal": {
+    "ideal": 12,
+    "limit": 18,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "bare": 1,
+   "note": "A 30 × 12-inch footprint comfortably accommodates a group of panda corydoras. Around 8–12 adults represents a desirable stocking level, while 16 is crowded but workable with adequate open sand, cover, and maintenance. Above approximately 18, competition for bottom foraging space and localized crowding become increasingly concerning. The limiting factor is usable floor area rather than water volume or filtration. These thresholds are approximate husbandry judgments, not hard biological limits.\n Copy note",
+   "ms": 96114
+  },
+  {
+   "id": "f8",
+   "floor": 2,
+   "water": 0,
+   "overall": 2,
+   "limits": "pandacory",
+   "bigEnough": {
+    "pandacory": true
+   },
+   "focal": {
+    "ideal": 12,
+    "limit": 18,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "bare": 1,
+   "note": "24 adult panda corydoras substantially exceed the comfortable stocking density for a 30 × 12-inch footprint. Although their schooling behavior is beneficial, usable substrate area and foraging space become limiting. The tank is suitable for the species, but not this quantity. Approximately 8–12 is ideal, 13–18 increasingly crowded, and 19+ problematic. Strong filtration does not eliminate spatial crowding.\n\nCalibration note: These thresholds remain consistent with the preceding 16-panda scenario. At 24 fish, the tank has crossed decisively into Problems rather than merely approaching the boundary.",
+   "ms": 106767
+  },
+  {
+   "id": "f4",
+   "floor": null,
+   "water": 0,
+   "overall": 0,
+   "limits": "cherrybarb",
+   "bigEnough": {
+    "cherrybarb": true
+   },
+   "focal": {
+    "ideal": 10,
+    "limit": 14,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "bare": 2,
+   "note": "Seven adult cherry barbs (2M, 5F) make a healthy, comfortable stocking for this 24 × 12-inch planted aquarium. The sex ratio is favorable. Approximately 8–10 would be an ideal species-only group; 11–14 becomes progressively crowded, and 15+ raises significant concerns about swimming room and territorial interactions. Cherry barbs particularly benefit from dense vegetation and visual barriers. In a completely bare tank, reducing the number alone would not adequately address their habitat needs.\n Copy note",
+   "ms": 108697
+  },
+  {
+   "id": "f5",
+   "floor": 0,
+   "water": 0,
+   "overall": 0,
+   "limits": "dwarfgourami",
+   "bigEnough": {
+    "chili": true,
+    "dwarfgourami": true,
+    "pygmycory": true
+   },
+   "focal": {
+    "ideal": 24,
+    "limit": 36,
+    "status": {}
+   },
+   "mate": {
+    "id": "pygmycory",
+    "ideal": 14,
+    "status": {}
+   },
+   "together": "caution",
+   "confidence": 1,
+   "bare": 2,
+   "note": "The current stocking is comfortably within the tank's spatial capacity. Both schooling species could support substantially larger groups. The primary uncertainty is the dwarf gourami: individual temperament varies, and its territorial behavior may intimidate the very small chili rasboras or interfere with feeding. With dense planting, visual barriers, and a peaceful gourami, this could be a successful long-term community. The numerical limits reflect swimming and foraging space rather than a guarantee of compatibility. \n\nAquarium Co-Op\n+2\n\n\n\n\nCalibration distinction: I would rate the room green, while independently flagging compatibility as requiring caution. I would not penalize the stocking percentage simply because one gourami might be aggressive.\n",
+   "ms": 203782
+  },
+  {
+   "id": "f11",
+   "floor": 2,
+   "water": 1,
+   "overall": 2,
+   "limits": "bristlenose",
+   "bigEnough": {
+    "bristlenose": true,
+    "whitecloud": true
+   },
+   "focal": {
+    "ideal": null,
+    "limit": null,
+    "status": {
+     "ideal": "no-valid-count",
+     "limit": "no-valid-count"
+    }
+   },
+   "mate": {
+    "id": "whitecloud",
+    "ideal": null,
+    "status": {
+     "ideal": "no-valid-count"
+    }
+   },
+   "together": "no",
+   "confidence": 1,
+   "bare": 2,
+   "note": "Three adult bristlenose plecos are too many for a 30 × 12-inch footprint, even with one male and two females. Territorial behavior and access to suitable foraging areas are the primary spatial concerns. The 29 minnows also produce a crowded swimming column, though their number alone is less concerning than the pleco group. With three plecos already exceeding the bottom-space limit, reducing the minnows cannot restore an acceptable overall stocking level. Separately, white clouds prefer cooler water than bristlenose plecos, making this a poor long-term temperature pairing. \n\nAquarium Co-Op Forum\n+2\n\n\n\n\nCalibration note: I would consider approximately 1 bristlenose and 15–20 white clouds a more reasonable spatial combination in this aquarium, although the temperature compatibility concern remains.",
+   "ms": 141243
+  },
+  {
+   "id": "f10",
+   "floor": 2,
+   "water": 0,
+   "overall": 2,
+   "limits": "pandacory",
+   "bigEnough": {
+    "pandacory": true
+   },
+   "focal": {
+    "ideal": 12,
+    "limit": 18,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "bare": 1,
+   "note": "Although this aquarium holds 29 gallons, its 30 × 12-inch footprint is identical to the previous 20-gallon-long scenario. The additional six inches of height increases water volume but provides relatively little additional usable space for bottom-oriented panda corydoras. Approximately 8–12 adults would be comfortable, 13–18 increasingly crowded, and 19+ problematic. At 24 adults, floor-space competition and concentrated foraging activity are the primary concerns.\n\nCalibration note: The ideal and problems thresholds remain unchanged from the 20-gallon-long scenario. This is intentional: increasing tank height should not substantially increase the stocking capacity for predominantly bottom-dwelling fish.",
+   "ms": 192143
+  },
+  {
+   "id": "f6",
+   "floor": 0,
+   "water": 0,
+   "overall": 0,
+   "limits": "whitecloud",
+   "bigEnough": {
+    "neon": true,
+    "whitecloud": true
+   },
+   "focal": {
+    "ideal": 13,
+    "limit": 18,
+    "status": {}
+   },
+   "mate": {
+    "id": "whitecloud",
+    "ideal": 10,
+    "status": {}
+   },
+   "together": "caution",
+   "confidence": 1,
+   "bare": 2,
+   "note": "The current stocking is spatially comfortable. Both schooling species have adequate room, although the 24-inch length limits further expansion, especially for the more active white clouds. The primary compatibility concern is temperature: neon tetras prefer approximately 70–77°F, while white clouds prefer 57–72°F. A stable 70–72°F offers a narrow overlap, but this is not an ideal pairing across their broader preferred conditions. Dense planting and open swimming areas are beneficial. \n\nSeriously Fish\n+1\n\n\n\n\nCalibration note: This tank is green for spatial stocking, with some capacity remaining. The compatibility caution should remain separate from the stocking percentage.",
+   "ms": 113850
+  },
+  {
+   "id": "f1",
+   "floor": 0,
+   "water": 0,
+   "overall": 0,
+   "limits": "guppy",
+   "bigEnough": {
+    "guppy": true,
+    "peapuffer": true,
+    "pygmycory": true
+   },
+   "focal": {
+    "ideal": 4,
+    "limit": 6,
+    "status": {}
+   },
+   "mate": {
+    "id": "pygmycory",
+    "ideal": 7,
+    "status": {}
+   },
+   "together": "no",
+   "confidence": 1,
+   "bare": 2,
+   "note": "Spatially, this is near the upper end of comfortable stocking for a 20-inch, 10-gallon aquarium. The pygmy corydoras are small and use both bottom and midwater space, while guppies predominantly occupy the upper water column. However, the pea puffer makes this combination unsuitable for long-term keeping. Pea puffers are territorial and prone to fin-nipping, particularly toward guppies. They are generally recommended for species-only aquariums. The six pygmy corydoras also represent a relatively small school; eight or more would be preferable if space permits. \n\nAquarium Co-Op\n+1\n\n\n\n\nCalibration distinction: The stocking is approximately at the green/yellow boundary spatially, but the compatibility verdict is firmly No. The pea puffer's aggression should not be represented as excess stocking load.",
+   "ms": 222752
+  },
+  {
+   "id": "a1",
+   "floor": null,
+   "water": 1,
+   "overall": 1,
+   "limits": "harlequin",
+   "bigEnough": {
+    "harlequin": true,
+    "rummynose": true
+   },
+   "focal": {
+    "ideal": 75,
+    "limit": 125,
+    "status": {}
+   },
+   "mate": {
+    "id": "rummynose",
+    "ideal": 18,
+    "status": {}
+   },
+   "together": "yes",
+   "confidence": 1,
+   "bare": 1,
+   "note": "The six-foot tank provides excellent swimming length for both species, and their peaceful temperaments make them compatible long-term. However, 115 adult fish averaging 5 cm creates a densely occupied midwater column. I would classify this as Caution rather than Problems: workable with the specified filtration, maintenance, and habitat, but beyond my preferred comfortable stocking target. The 87 harlequins contribute most of the spatial demand, while the more active, tightly schooling rummy-nose tetras require substantial unobstructed swimming space. Both species benefit from planted margins and open swimming lanes. \n\nAquarium Compass\n+2\n\n\n\n\nCalibration note: This is a relatively mild Caution, not an impending stocking failure. The numerical thresholds are approximate judgments, with substantial uncertainty at these large school sizes.",
+   "ms": 119828
+  },
+  {
+   "id": "f15",
+   "floor": 1,
+   "water": 0,
+   "overall": 1,
+   "limits": "bronzecory",
+   "bigEnough": {
+    "bronzecory": true,
+    "cpd": true
+   },
+   "focal": {
+    "ideal": 14,
+    "limit": 22,
+    "status": {}
+   },
+   "mate": {
+    "id": "cpd",
+    "ideal": 55,
+    "status": {}
+   },
+   "together": "yes",
+   "confidence": 1,
+   "bare": 2,
+   "note": "The 48-inch length provides substantial swimming room for the celestial pearl danios, and the 2:1 female-to-male ratio helps distribute male territorial interactions. Forty-two CPDs are reasonable with extensive planting. Sixteen adult bronze corydoras create considerable bottom activity within the relatively narrow 13-inch footprint, placing floor occupancy slightly beyond my preferred comfortable level. The combination is generally compatible, with overlapping temperature requirements around 72–77°F. Additional corydoras would be more concerning than additional CPDs. \n\nAquariumHQ\n+1\n\n\n\n\nCalibration note: This is a mild Caution, primarily from the bronze corydoras. The taller 55-gallon format provides useful water-column capacity but comparatively limited bottom area. The proposed thresholds are approximate, with greater uncertainty for the CPD maximum.",
+   "ms": 114183
+  },
+  {
+   "id": "f16",
+   "floor": 2,
+   "water": 0,
+   "overall": 2,
+   "limits": "kribensis",
+   "bigEnough": {
+    "kribensis": true,
+    "sterbai": true
+   },
+   "focal": {
+    "ideal": 2,
+    "limit": 4,
+    "status": {}
+   },
+   "mate": {
+    "id": "sterbai",
+    "ideal": null,
+    "status": {
+     "ideal": "no-valid-count"
+    }
+   },
+   "together": "no",
+   "confidence": 1,
+   "bare": 2,
+   "note": "Ten adult kribensis are excessive for the 48 × 18-inch footprint because of territorial behavior, particularly if multiple male-female pairs form. Even without offspring, spawning pairs can defend substantial bottom territories. Eleven Sterba's corydoras are reasonable for this footprint in isolation, but their constant bottom foraging would bring them into conflict with territorial kribensis. One kribensis pair would be comfortable spatially, while two pairs could be workable with carefully separated territories but pose greater risks. The ten kribensis already exceed the floor-space limit regardless of the corydoras count. \n\nMy Aquarium Fish\n+2\n\n\n\n\nCalibration note: This is an important case where territorial footprint, not physical fish density, determines capacity. A 75-gallon aquarium can comfortably accommodate considerably more than 21 fish of comparable size if their spatial and social requirements differ.",
+   "ms": 105225,
+   "review": {
+    "skip": [
+     "focal.ideal",
+     "focal.limit",
+     "floor",
+     "overall"
+    ],
+    "why": "the note says territory, not density, sets the krib capacity (pairs defend bottom territories): a fighting-limit answer, kept out of room. Engine question for Nathan: the krib territory rule let 10 kribs through crowdWarnings in a 75 gal (S214 review)"
+   }
+  },
+  {
+   "id": "f3",
+   "floor": null,
+   "water": 0,
+   "overall": 0,
+   "limits": "dwarfpencil",
+   "bigEnough": {
+    "dwarfpencil": true
+   },
+   "focal": {
+    "ideal": 10,
+    "limit": 13,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "bare": 2,
+   "note": "Eight adult dwarf pencilfish make a comfortable species-only group in a densely planted 10-gallon aquarium. Approximately 8–10 represents the preferred stocking range, 11–13 becomes increasingly crowded, and 14+ raises concerns about available swimming space and male territorial interactions. The 20-inch tank length is adequate but near the lower recommended limit. Dense planting, floating cover, and broken sightlines are particularly important for this species. \n\nSeriously Fish\n+2\n\n\n\n\nCalibration note: Eight fish is an appropriate green-level stocking, with limited room for expansion. The stocking limit is influenced more by horizontal space and opportunities to avoid other fish than by waste production.",
+   "ms": 188023
+  },
+  {
+   "id": "f12",
+   "floor": 1,
+   "water": 2,
+   "overall": 2,
+   "limits": "platy",
+   "bigEnough": {
+    "bronzecory": true,
+    "platy": true
+   },
+   "focal": {
+    "ideal": null,
+    "limit": 14,
+    "status": {
+     "ideal": "no-valid-count"
+    }
+   },
+   "mate": {
+    "id": "platy",
+    "ideal": null,
+    "status": {
+     "ideal": "no-valid-count"
+    }
+   },
+   "together": "yes",
+   "confidence": 1,
+   "bare": 1,
+   "note": "The 36 × 18-inch footprint provides substantial bottom area, but 22 adult bronze corydoras approach its comfortable floor-space limit. Thirty adult platys create a densely occupied water column, particularly when combined with the corydoras' swimming activity. Neither species is inherently incompatible with the other, and the platy sex ratio is favorable. However, 52 fish of these sizes exceed my preferred spatial stocking for a 40-gallon breeder. Reducing the corydoras to approximately 10–14 while retaining the platys would bring the aquarium into a more manageable, though still crowded, range.\n\nCalibration note: This is a borderline Problems assessment rather than an extreme overstocking case. The corydoras alone would be near the upper Caution boundary, and 30 platys alone would also be crowded but potentially workable. Their combined spatial demands push the aquarium into Problems.",
+   "ms": 245423
+  },
+  {
+   "id": "f9",
+   "floor": 1,
+   "water": 0,
+   "overall": 1,
+   "limits": "pandacory",
+   "bigEnough": {
+    "pandacory": true,
+    "oto": true
+   },
+   "focal": {
+    "ideal": 9,
+    "limit": 16,
+    "status": {}
+   },
+   "mate": {
+    "id": "oto",
+    "ideal": 12,
+    "status": {}
+   },
+   "together": "caution",
+   "confidence": 1,
+   "bare": 2,
+   "note": "The 30 × 12-inch footprint is becoming crowded, but otocinclus and panda corydoras occupy partially different surfaces. Otocinclus frequently graze on plants, glass, and hardscape rather than competing directly for open substrate. Eleven pandas are near the preferred floor-space limit, while 19 otocinclus push the overall stocking into Caution. The species are peaceful and compatible. The more significant long-term concern is sustaining adequate biofilm and supplemental food for 19 otocinclus, rather than aggression or waste production. \n\nAquarium Co-Op\n+1\n\n\n\n\nCalibration note: This is a moderate Caution. Otocinclus should receive less floor-space weighting than similarly sized, exclusively substrate-oriented fish. Their grazing surface requirements also deserve separate treatment from swimming-space capacity.",
+   "ms": 115165
+  },
+  {
+   "id": "f14",
+   "floor": 0,
+   "water": 0,
+   "overall": 0,
+   "limits": "bronzecory",
+   "bigEnough": {
+    "bronzecory": true,
+    "hatchet": true
+   },
+   "focal": {
+    "ideal": 18,
+    "limit": 26,
+    "status": {}
+   },
+   "mate": {
+    "id": "hatchet",
+    "ideal": 14,
+    "status": {}
+   },
+   "together": "yes",
+   "confidence": 1,
+   "bare": 2,
+   "note": "This is a comfortable, well-balanced stocking arrangement. Fifteen bronze corydoras occupy a substantial but reasonable portion of the 48 × 13-inch footprint, while six marbled hatchetfish primarily use the surface and contribute little competition for bottom space. Both species are peaceful and compatible, with overlapping temperature requirements. The corydoras are closer to their preferred spatial limit, while the hatchetfish group could be expanded considerably. Floating cover, open surface swimming areas, and a tightly sealed lid are important for the hatchetfish. \n\nSeriously Fish\n+1\n\n\n\n\nCalibration note: Unlike the previous 55-gallon example with 42 celestial pearl danios, this combination has almost complete separation between surface and bottom occupancy. I would therefore keep the overall assessment green, even with 15 adult bronze corydoras.",
+   "ms": 306288
+  },
+  {
+   "id": "f13",
+   "floor": 1,
+   "water": 2,
+   "overall": 2,
+   "limits": "cpd",
+   "bigEnough": {
+    "kuhli": true,
+    "cpd": true
+   },
+   "focal": {
+    "ideal": null,
+    "limit": null,
+    "status": {
+     "ideal": "no-valid-count",
+     "limit": "no-valid-count"
+    }
+   },
+   "mate": {
+    "id": "cpd",
+    "ideal": 50,
+    "status": {}
+   },
+   "together": "yes",
+   "confidence": 1,
+   "bare": 2,
+   "note": "The 36 × 18-inch footprint offers ample space for six kuhli loaches, but 85 adult celestial pearl danios create excessive occupancy of the lower and middle water column. CPDs are not conventional tight-schooling fish; males establish small display territories, and the 28 males would compete for space despite the favorable 2:1 female ratio. Around 40–50 CPDs alongside six kuhlis would represent a more comfortable stocking target. At 85, the danios alone exceed my preferred spatial limits, so removing the kuhlis would not restore an acceptable overall stocking level. The species themselves are compatible.\n\nCalibration note: The key consideration is that CPDs spend considerable time in the lower water column, rather than spreading evenly throughout the aquarium's 16-inch height. Their territorial spacing matters more than their small body size might suggest.",
+   "ms": 94611
+  },
+  {
+   "id": "p1a",
+   "floor": null,
+   "water": 2,
+   "overall": 2,
+   "limits": "molly",
+   "bigEnough": {
+    "molly": true
+   },
+   "focal": {
+    "ideal": 12,
+    "limit": 19,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "bare": 1,
+   "note": "Thirty-seven adult black mollies substantially exceed the comfortable capacity of this 40-gallon breeder. Approximately 10–12 would make an ideal species-only display, 13–19 increasingly crowded, and 20+ problematic. The 9M:28F ratio is favorable, but male competition and persistent courtship remain concerns. The 18-inch depth provides useful maneuvering room, although the 36-inch length offers less straight-line swimming distance than a 40-gallon long. Strong filtration does not eliminate physical crowding. \n\nAquarium Co-Op\n\n\n\n\nCalibration note: I retained the 12/19 thresholds from the earlier 48 × 12 × 16-inch molly scenario. The breeder gains 12.5% in footprint but loses 25% in swimming length, making similar stocking limits reasonable.",
+   "ms": 80651
+  },
+  {
+   "id": "f2",
+   "floor": null,
+   "water": 2,
+   "overall": 2,
+   "limits": "ember",
+   "bigEnough": {
+    "ember": true
+   },
+   "focal": {
+    "ideal": 16,
+    "limit": 24,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "bare": 2,
+   "note": "Twenty-six adult ember tetras create a very dense school for a 20-inch-long aquarium. Their tiny size, peaceful temperament, and low territoriality allow substantially higher stocking densities than larger tetras. Approximately 12–16 would make a comfortable species-only display, while 17–24 would be increasingly crowded. At 26, the available swimming space becomes restrictive, even with excellent filtration. Dense plants and shaded cover are particularly important, although sufficient open swimming space should remain.\n\nCalibration note: This is a relatively mild Problems assessment. Ember tetras tolerate group density exceptionally well, so the transition from Caution to Problems is less sharply defined than for territorial or larger-bodied species.",
+   "ms": 84782
+  },
+  {
+   "id": "r1",
+   "floor": 2,
+   "water": 1,
+   "overall": 2,
+   "limits": "bristlenose",
+   "bigEnough": {
+    "bristlenose": true,
+    "whitecloud": true
+   },
+   "focal": {
+    "ideal": null,
+    "limit": 1,
+    "status": {
+     "ideal": "no-valid-count"
+    }
+   },
+   "mate": {
+    "id": "whitecloud",
+    "ideal": null,
+    "status": {
+     "ideal": "no-valid-count"
+    }
+   },
+   "together": "no",
+   "confidence": 1,
+   "bare": 2,
+   "note": "Three adult bristlenose plecos exceed the comfortable territorial capacity of a 30 × 12-inch footprint, particularly with a male present. The 29 white clouds also create a crowded swimming column, although their spatial demands are less severe than the plecos'. Reducing the minnows cannot resolve the excessive bottom occupancy. Separately, white clouds prefer cooler temperatures than bristlenose plecos, creating a long-term husbandry compromise.\n\nCalibration note: This is identical to Aquarium 6, so I've preserved the same thresholds and classifications.",
+   "ms": 122896,
+   "review": {
+    "why": "repeat of f11: bands identical; limit 1 here vs no valid count on f11 (S214 review)"
+   }
+  },
+  {
+   "id": "p2b",
+   "floor": 1,
+   "water": 0,
+   "overall": 1,
+   "limits": "pandacory",
+   "bigEnough": {
+    "pandacory": true
+   },
+   "focal": {
+    "ideal": 15,
+    "limit": 22,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "bare": 1,
+   "note": "Twenty-two adult panda corydoras represent a heavily stocked but potentially workable group in a 36 × 12-inch aquarium. The additional swimming length and 20% greater floor area compared with a 30 × 12-inch tank provide meaningful extra capacity. Approximately 12–15 pandas would represent comfortable stocking, while 16–22 increasingly crowd the bottom. Above 22, restricted foraging space and concentrated activity become significant concerns. Good substrate, shelter, and unobstructed feeding areas remain important.\n\nCalibration note: This scales reasonably from the previous 30 × 12-inch panda corydoras assessments (12 Ideal, 18 before Problems). The 20% increase in floor area supports increasing those thresholds to approximately 15 and 22, respectively. At 22 fish, this is near the upper Caution boundary.",
+   "ms": 66677
+  },
+  {
+   "id": "p2a",
+   "floor": 2,
+   "water": 0,
+   "overall": 2,
+   "limits": "pandacory",
+   "bigEnough": {
+    "pandacory": true
+   },
+   "focal": {
+    "ideal": 12,
+    "limit": 18,
+    "status": {}
+   },
+   "mate": null,
+   "together": null,
+   "confidence": 1,
+   "bare": 1,
+   "note": "Twenty-two adult panda corydoras exceed the preferred stocking capacity of a 30 × 12-inch footprint. Approximately 8–12 provide a comfortable group, 13–18 represent increasingly crowded conditions, and 19+ enter Problems territory. Although the tank holds 29 gallons, its additional height provides limited benefit to bottom-oriented fish. The main concern is concentrated activity and competition for usable substrate, rather than filtration capacity.\n\nCalibration note: This is intentionally different from the preceding 36 × 12-inch tank containing 22 pandas, which received Caution. The 20% reduction in floor area pushes the same group into Problems. The thresholds remain consistent with our earlier 30 × 12-inch assessments.",
+   "ms": 308537
+  }
+ ],
+ "carried": [],
+ "source": "survey-round-3.html (no build stamp: answered before survey 3.1; matches round 3 build 859f1696 by species), exported by Nathan 2026-10-23, forwarded by chat S214"
+}

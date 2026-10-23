@@ -340,3 +340,21 @@ or food only (compatibility goes in "keep together"); 0 is a valid count ("enter
 round-2 review, overwritten once, is restored as review-round-2-ngr-ai-notes.md.
 **Fit on rounds 1, 2 and 3a, today's engine** (fit-round-1-2-3a.md): water x0.80, floor x0.85; held-out error 0.273 -> 0.521 (worse,
 as in section 12). ChatGPT's round-3a counts read the engine too full on 3 of 5 tanks (median fix -15 %). Not applied.
+
+## 14. Round 3, first full answer set: chatgpt-high (2026-10-23, forwarded by S214)
+
+ChatGPT at a higher reasoning setting answered all 22 tanks of round 3 (build 859f1696, matched by species: the export predates the
+3.1 stamp). Stored as answers/round-3-chatgpt-high.json with S214's readings: p1b's "molly: tank too small" contradicts its own note
+(the 48 in length is praised; same 12 / 19 as the 40 breeder) and is read as a misclick (`review.set.bigEnough`, which the fit and the
+review now honour); f16's krib counts and its floor / overall bands are territory answers (pairs defend bottom territories), set aside
+from room. The krib territory rule (groups.ts) let 10 kribs in a 75 gal through `crowdWarnings`: an engine data question for Nathan.
+Review (review-round-3-chatgpt-high.md): water reads too full (water-tight tanks median fix -7 %; on water bands the engine is a band
+fuller on 9 of 21), floor reads too empty (floor-tight +11 %, mid-size fish +21 %, both-tight +21 %, flagged). The max rule held on all
+15 tanks with floor, water and overall answers (26 of 26 across all experts). Panda thresholds are consistent: 12 / 18 on a 30 x 12 in
+floor whatever the height, 15 / 22 on 36 x 12 in.
+Fit, all rounds and files (fit-round-1-2-3a-3.md): water x0.84, floor x0.87, tiny fish -10 %, mid +11 %; fitted error 0.280 -> 0.209,
+held-out 0.232 -> 0.375 (worse again). Three of the four experts are AI models (chatgpt, chatgpt-high, ngr-ai, possibly one model at
+different settings: Nathan to confirm), and no tank has two experts' answers yet. **Nothing is applied** (Coordinator 9: no global scale
+until round 3 has human answers and Nathan's yes).
+Open: a count past the end of a tank's engine table (ngr-ai 2:f9, 40 guppies vs a table to 36) is skipped, though it says the engine
+reads far too full there; the tables should run further, or the fit should read such a count as "at least the last row".
