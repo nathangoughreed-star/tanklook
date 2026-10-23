@@ -40,18 +40,22 @@ let st = { expert: '', kind: '', at: -1, answers: {}, carried: [] };
 try { st = Object.assign(st, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} };
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const KINDS = [['keeper', 'A fishkeeper'], ['professional', 'A professional (store, breeder, aquarist)'], ['ai', 'An AI model']];
 const BANDS = [['var(--g)', 'Ideal or under'], ['var(--y)', 'Caution'], ['var(--r)', 'Problems']];
 const DEF = '<b>Ideal</b>: what experienced keepers would aim for, comfortable long term. <b>Caution</b>: workable, tread carefully. <b>Problems</b>: past this, long-term problems become likely even with good care.';
 const blank = t => ({ id: t.id, floor: null, water: null, overall: null, limits: null, bigEnough: {}, focal: { ideal: null, limit: null, status: {} }, mate: t.mate ? { id: t.mate, ideal: null, status: {} } : null, together: null, confidence: null, bare: null, note: '', ms: 0 });
 const ans = t => st.answers[t.id] || (st.answers[t.id] = blank(t));
 const hasFloor = t => t.stock.some(s => s.floor > 0), hasWater = t => t.stock.some(s => s.floor < 1);
 const countOk = (c, k) => c[k] != null || !!c.status[k];
-function done(t) {
-  const a = st.answers[t.id]; if (!a) return false;
-  return (!hasFloor(t) || a.floor != null) && (!hasWater(t) || a.water != null) && a.overall != null && a.limits != null
-    && t.stock.every(s => a.bigEnough[s.id] != null) && countOk(a.focal, 'ideal') && (t.noLimit || countOk(a.focal, 'limit'))
-    && (!a.mate || countOk(a.mate, 'ideal')) && (!t.mixed || a.together) && a.confidence != null && a.bare != null && !!st.kind;
+// what is still open on a tank, named, so the Next message says which (Nathan 2026-10-23: a page that looked complete would not continue)
+function missing(t) {
+  const a = st.answers[t.id]; if (!a) return ['everything'];
+  return [[hasFloor(t) && a.floor == null, 'floor room'], [hasWater(t) && a.water == null, 'water column room'], [a.overall == null, 'overall room'],
+    [a.limits == null, 'what limits'], [!t.stock.every(s => a.bigEnough[s.id] != null), 'big enough'], [!countOk(a.focal, 'ideal'), 'ideal count'],
+    [!t.noLimit && !countOk(a.focal, 'limit'), '"at most" count'], [a.mate && !countOk(a.mate, 'ideal'), 'second ideal count'],
+    [t.mixed && !a.together, 'keep together'], [a.confidence == null, 'how sure'], [a.bare == null, 'bare tank']].filter(x => x[0]).map(x => x[1]);
 }
+const done = t => missing(t).length === 0;
 let shownAt = Date.now();
 function head(i) {
   const n = TANKS.filter(done).length;
@@ -83,7 +87,7 @@ function start() {
     '<p>' + TANKS.length + ' tanks, each described in words (no picture: camera and decor change how full a tank looks). Judge <b>room</b> for the animals: the filter is always strong enough, and the tank is always furnished as the species need, so neither is the limit. Compatibility goes in "keep together". You never see the app\'s own number. One tank comes up twice on purpose, and two pairs hold the same animals in tanks of the same gallons but another shape.</p>' +
     '<p class="note">' + DEF + '</p>' +
     '<p>Your name or initials (only to tell answer files apart):<br><input type="text" id="who" value="' + esc(st.expert) + '" style="width:260px"></p>' +
-    '<p>Answering as:</p><div class="r3" style="margin-bottom:10px">' + [['keeper', 'A fishkeeper'], ['professional', 'A professional (store, breeder, aquarist)'], ['ai', 'An AI model']].map(([v, l]) => '<button class="o' + (st.kind === v ? ' on' : '') + '" data-kind="' + v + '">' + l + '</button>').join('') + '</div>' +
+    '<p>Answering as:</p><div class="r3" style="margin-bottom:10px">' + KINDS.map(([v, l]) => '<button class="o' + (st.kind === v ? ' on' : '') + '" data-kind="' + v + '">' + l + '</button>').join('') + '</div>' +
     '<p><button class="b go" id="go">' + (st.at >= 0 ? 'Continue' : 'Start') + '</button> <button class="b" data-imp>Import answers</button> <span class="note">(a file you exported before, this round or an earlier one)</span></p></div></div>';
   wire();
   document.querySelectorAll('[data-kind]').forEach(b => b.onclick = () => { st.expert = document.getElementById('who').value.trim(); st.kind = b.dataset.kind; save(); start(); });
@@ -128,17 +132,20 @@ function show() {
   R += '<div class="q"><h3>How sure are you of the counts?</h3>' + choice('confidence', a, [[0, 'Low'], [1, 'Medium'], [2, 'High']]) + '</div>';
   R += '<div class="q"><h3>In a bare tank (no plants or cover), your counts would be</h3>' + choice('bare', a, [[0, 'The same'], [1, 'A little lower'], [2, 'A lot lower']]) + '</div>';
   R += '<div class="q"><h3>Note (optional)</h3><textarea id="note">' + esc(a.note) + '</textarea></div><div id="miss" class="miss"></div><nav><button class="b" id="back"' + (i ? '' : ' disabled') + '>← Back</button><button class="b go" id="next">Next →</button></nav></div>';
-  document.getElementById('app').innerHTML = head(i) + '<main>' + L + M + R + '</main>';
+  const K = st.kind ? '' : '<div class="card" style="margin:10px 0 0"><h3>Answering as</h3><div class="r3">' + KINDS.map(([v, l]) => '<button class="o" data-kind="' + v + '">' + l + '</button>').join('') + '</div></div>';
+  document.getElementById('app').innerHTML = head(i) + K + '<main>' + L + M + R + '</main>';
   wire();
   const typed = v => /^\d+$/.test(v) ? +v : v;
   document.querySelectorAll('[data-set]').forEach(b => b.onclick = () => { keep(); a[b.dataset.set] = typed(b.dataset.v); save(); show(); });
+  document.querySelectorAll('[data-kind]').forEach(b => b.onclick = () => { keep(); st.kind = b.dataset.kind; save(); show(); });
   document.querySelectorAll('[data-stb]').forEach(b => b.onclick = () => { keep(); const [who, k] = b.dataset.stb.split('.'), c = a[who]; if (c.status[k] === b.dataset.v) delete c.status[k]; else { c.status[k] = b.dataset.v; c[k] = null; } save(); show(); });
   document.querySelectorAll('[data-big]').forEach(b => b.onclick = () => { keep(); a.bigEnough[b.dataset.big] = b.dataset.v === 'true'; save(); show(); });
   document.getElementById('back').onclick = () => { keep(); st.at = Math.max(0, i - 1); save(); show(); };
   document.getElementById('next').onclick = () => { keep();
     const m = document.getElementById('miss');
     if (a.focal.ideal != null && a.focal.limit != null && a.focal.limit < a.focal.ideal) { m.textContent = 'The "at most" count is below the ideal: please check the two counts.'; return; }
-    if (!done(t)) { m.textContent = 'Please answer each question (a count, or pick "can\'t say" / "no count works").'; return; }
+    if (!st.kind) { m.textContent = 'Please pick who you are answering as (top of the page).'; return; }
+    if (!done(t)) { m.textContent = 'Still to answer: ' + missing(t).join(', ') + ' (for a count, a number or one of the buttons under it).'; return; }
     st.at = i + 1; save(); show(); };
 }
 function finish() {
