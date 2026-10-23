@@ -8,6 +8,7 @@ import { groupShort } from '../src/scene/animalfit';
 import { getSpecies } from '../src/data/species';
 import { defaultScene } from '../src/scene/defaults';
 import { shareHash } from '../src/scene/share';
+import { zoneOf } from '../src/scene/zone';
 
 const R = makeRound({ seed: 1 });
 const fresh = R.filter(s => s.role === 'fresh');
@@ -70,7 +71,7 @@ describe('calibration round generator', () => {
       const out = [];
       for (const s of R) {
         const sc = defaultScene(); sc.name = `Survey ${s.id}`; sc.tanks = [setupOf(s.dimsIn, s.stock, s.seed)];
-        out.push({ ...s, names: Object.fromEntries(s.stock.map(([id]) => [id, getSpecies(id)!.name])), tlMm: Object.fromEntries(s.stock.map(([id]) => [id, getSpecies(id)!.tl])), cls: Object.fromEntries(s.stock.map(([id]) => [id, classOf(id)])), ownRow: Object.fromEntries(s.stock.map(([id]) => [id, !!SPACE_FACTOR[id]])), share: await shareHash(sc) });
+        out.push({ ...s, names: Object.fromEntries(s.stock.map(([id]) => [id, getSpecies(id)!.name])), tlMm: Object.fromEntries(s.stock.map(([id]) => [id, getSpecies(id)!.tl])), cls: Object.fromEntries(s.stock.map(([id]) => [id, classOf(id)])), ownRow: Object.fromEntries(s.stock.map(([id]) => [id, !!SPACE_FACTOR[id]])), zone: Object.fromEntries(s.stock.map(([id]) => [id, zoneOf(getSpecies(id)!)])), share: await shareHash(sc) });
       }
       fs.mkdirSync(new URL('../research/calib/', import.meta.url), { recursive: true });
       fs.writeFileSync(new URL('../research/calib/round-1.json', import.meta.url), JSON.stringify({ round: 1, seed: 1, made: '2026-10-23', ideal: 75, limit: 100, scenarios: out }) + '\n');

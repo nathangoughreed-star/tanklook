@@ -172,3 +172,33 @@ shows engine readings worth an expert's eye, e.g. 90 otocinclus in a 55 gal read
 
 Render limits: otocinclus render but blend into the gravel (f13, f19; checked in chat "Otocinclus invisible in the 3D view", no bug); amano shrimp are nearly
 transparent at survey scale. The survey tells experts the animal list is what counts.
+
+## 9. The working process: batches, review, broad changes (Nathan 2026-10-23)
+
+Nathan: "do maybe 10-20 tanks and stocking combinations within a certain expected stocking band, give opinions on every one of them,
+write that up into a doc, then we make broad changes through pattern recognition. Then make that process iterative."
+His choices: he gives the opinions himself, through the survey; the band is spread (about 50-130 %, round 1 reaches 150 on three tanks).
+This is the main loop. The fit of section 4 stays as a cross-check on the patterns, not the decision.
+
+One iteration:
+1. **Batch**: a round of 10-20 fresh tanks plus a repeat or two (round 1: 20 fresh, 2 anchors, 2 repeats, already rendered).
+2. **Opinions**: Nathan answers research/calib/survey-round-N.html and exports the JSON into research/calib/answers/.
+3. **Write-up**: `node scripts/calib-review.mjs research/calib/round-N.json research/calib/answers/round-N-<name>.json` writes
+   research/calib/review-round-N-<name>.md:
+   - tank by tank: the engine's reading and band, his band, the engine's reading at his ideal and limit counts, and the "fix"
+     (the multiplier the engine's reading needs to match him);
+   - patterns: the median fix by body class, zone, floor or water bound, one species or a mix, tank size and school size, flagged at
+     3+ tanks and more than 15 % off;
+   - his repeat consistency, and the compatibility gates against his "keep together?" answers.
+   Claude adds a hand-written "## Findings" section (kept on reruns): the patterns, the broad change each suggests (a class factor, the
+   school curve, the floor scale, a zone), and what the next batch should test.
+4. **Change**: Nathan approves the broad changes. They go into the engine with provenance (src 'expert-round-N'), and the tests
+   re-bless.
+5. **Next batch**: the generator weights toward the groups that were flagged or thin, and the next round starts from the changed
+   engine.
+
+Notes:
+- The limit / ideal count ratio is reported for one-species tanks only. In a mix the tankmates already take much of the room, so a
+  small difference of opinion moves the count a lot. Even on one species it is a noisy statistic: read it over several rounds, not one.
+- Test: test/calibfit.test.ts "calibration batch review" (a known global shift reads back in the median fix; an expert who agrees with
+  the engine gets no flags).

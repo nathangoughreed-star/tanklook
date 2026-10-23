@@ -57,6 +57,7 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
   expert bias; BFGS; cap x1.25 a round), scripts/calib-synth.mjs + test/calibfit.test.ts (a known shift is recovered: species error
   0.045 vs 0.077 unfitted), scripts/calib-survey.mjs -> research/calib/survey-round-1.html (24 tanks, 4.4 MB, renders inlined, no
   engine numbers inside). scripts/space-factors.mjs now keeps the hand-set blocks after the generated table (it dropped FLOOR_FACTOR).
+- **Process (Nathan 2026-10-23):** batches of 10-20 tanks; Nathan answers the survey himself (spread band 50-130 %); `node scripts/calib-review.mjs` writes research/calib/review-round-N-<name>.md (per tank, patterns, flags) and Claude adds findings; Nathan approves broad changes; next batch. Design doc section 9. **Next: Nathan answers research/calib/survey-round-1.html.**
 - **No engine number moved.** Full suite green, tsc clean.
 - **Open:** who the experts are; goldens restated on the 75 / 100 scale (discus stays 6 in 55 gal = 85 %, per S214; still open: FLOOR_FACTOR kuhli, the
   S196 / HC / HB targets); src/data/expertfit.json + provenance rule once real answers exist; otocinclus blend into the gravel in the renders (they do render; no bug)

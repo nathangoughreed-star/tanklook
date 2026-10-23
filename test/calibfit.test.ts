@@ -44,3 +44,16 @@ describe('calibration fit on synthetic experts', () => {
     expect(fit.noise.s).toBeGreaterThan(0.06); expect(fit.noise.s).toBeLessThan(0.25);
   });
 });
+
+// @ts-expect-error plain node script, no types
+import { review, rowsOf } from '../scripts/calib-review.mjs';
+describe('calibration batch review', () => {
+  it('reads a known shift back per pattern and leaves an engine-agreeing expert at no change', () => {
+    const truth = { g: Math.log(0.9) }, f = synthAnswers(round, truth, [{ expert: 'x', bias: 0, noise: 1e-4 }])[0];
+    const fixes = rowsOf(round, f).filter((r: any) => r.fix).map((r: any) => r.fix).sort((a: number, b: number) => a - b);
+    expect(Math.abs(Math.log(fixes[fixes.length >> 1] / 0.9))).toBeLessThan(0.04);
+    const md = review(round, synthAnswers(round, {}, [{ expert: 'y', bias: 0, noise: 1e-4 }])[0]);
+    expect(md).toMatch(/Median fix [+-]?[0-3] %/);
+    expect(md).not.toMatch(/\*\*flag\*\*/);
+  });
+});
