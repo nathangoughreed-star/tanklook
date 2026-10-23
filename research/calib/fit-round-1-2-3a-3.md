@@ -6,58 +6,52 @@
 
 | | before | after |
 |---|---|---|
-| held-out anchors | 0.232 | 0.375 |
-| fitted tanks | 0.280 | 0.209 |
+| held-out anchors | 0.225 | 0.323 |
+| fitted tanks | 0.356 | 0.317 |
 
 Inter-expert disagreement n/a (no tank answered by two experts yet). Stop rule not met.
 
 ## Multipliers on today's factors
 
-Water (SPACE_PER_L) x0.8367, floor x0.8737. Classes: big +4 %, invert -8 %, mid +11 %, tiny -10 %. Capped at x1.25: d:neon.
+Water (SPACE_PER_L) x0.8694, floor x0.9824. Classes: big +6 %, invert -10 %, mid +12 %, tiny -10 %.
 
 | species | class | answers | total move | own move |
 |---|---|---|---|---|
-| guppy | tiny | 15 | -36 % | -15 % |
-| oto | tiny | 16 | -35 % | -14 % |
-| pandacory | tiny | 55 | -30 % | -8 % |
-| pygmycory | tiny | 18 | -28 % | -4 % |
-| chili | tiny | 7 | -28 % | -4 % |
-| peapuffer | tiny | 13 | -26 % | -2 % |
-| dwarfpencil | tiny | 7 | -26 % | -2 % |
-| whitecloud | tiny | 21 | -26 % | -2 % |
-| rummynose | tiny | 11 | -26 % | -1 % |
-| cherryshrimp | invert | 2 | -26 % | -4 % |
-| honeygourami | tiny | 3 | -25 % | -1 % |
-| cardinal | tiny | 5 | -25 % | -1 % |
-| hillstream | tiny | 8 | -25 % | +0 % |
-| platy | tiny | 4 | -24 % | +1 % |
-| hatchet | tiny | 7 | -23 % | +2 % |
-| amano | invert | 0 | -23 % | +0 % |
-| cpd | tiny | 14 | -17 % | +11 % |
-| ember | tiny | 11 | -13 % | +16 % |
-| kadango | big | 1 | -13 % | +0 % |
-| syno | big | 1 | -13 % | +0 % |
-| bristlenose | mid | 12 | -12 % | -5 % |
-| sae | big | 4 | -11 % | +2 % |
-| bronzecory | mid | 27 | -11 % | -3 % |
-| cherrybarb | mid | 4 | -9 % | -2 % |
-| kribensis | mid | 1 | -9 % | -2 % |
-| sterbai | mid | 1 | -8 % | -1 % |
-| dwarfgourami | mid | 6 | -8 % | -1 % |
-| gourami | mid | 0 | -7 % | +0 % |
-| harlequin | mid | 0 | -7 % | +0 % |
-| peacock | mid | 0 | -7 % | +0 % |
-| yellowlab | mid | 0 | -7 % | +0 % |
-| neon | tiny | 10 | -6 % | +25 % |
+| guppy | tiny | 15 | -34 % | -16 % |
+| oto | tiny | 16 | -33 % | -14 % |
+| cardinal | tiny | 5 | -26 % | -6 % |
+| pandacory | tiny | 55 | -26 % | -6 % |
+| chili | tiny | 7 | -26 % | -5 % |
+| cherryshrimp | invert | 2 | -25 % | -5 % |
+| pygmycory | tiny | 18 | -24 % | -4 % |
+| dwarfpencil | tiny | 7 | -24 % | -3 % |
+| honeygourami | tiny | 3 | -23 % | -2 % |
+| rummynose | tiny | 11 | -23 % | -2 % |
+| peapuffer | tiny | 13 | -23 % | -2 % |
+| hillstream | tiny | 8 | -23 % | -1 % |
+| amano | invert | 0 | -22 % | +0 % |
+| platy | tiny | 4 | -21 % | +1 % |
+| hatchet | tiny | 7 | -20 % | +2 % |
+| ember | tiny | 11 | -13 % | +11 % |
+| whitecloud | tiny | 21 | -12 % | +12 % |
+| cpd | tiny | 14 | -9 % | +16 % |
+| kadango | big | 1 | -8 % | +0 % |
+| syno | big | 1 | -8 % | +0 % |
+| molly | mid | 8 | +8 % | +10 % |
+| kuhli | mid | 4 | +7 % | +10 % |
+| bronzecory | mid | 27 | -6 % | -4 % |
+| bristlenose | mid | 12 | -6 % | -3 % |
+| sae | big | 4 | -5 % | +3 % |
+| cherrybarb | mid | 4 | -5 % | -3 % |
 
 ## Experts
 
 | expert | answering as | bias |
 |---|---|---|
-| chatgpt | AI model | -6 % |
-| chatgpt-high | AI model | +4 % |
-| ngr | - | +3 % |
-| ngr-ai | AI model | -2 % |
+| chatgpt | AI model | -14 % |
+| chatgpt-high | AI model | +2 % |
+| ngr | - | +13 % |
+| ngr-ai | AI model | +1 % |
 
 ## Limit / ideal count (one-species tanks)
 
@@ -70,16 +64,21 @@ Overall answer vs the tighter of the floor and water answers: same 26, lower 0, 
 
 ## Compatibility: gate -> experts
 
-- high -> no: 3
+- concern -> caution: 4
+- concern -> no: 1
+- concern -> yes: 7
+- high -> no: 5
 - high -> yes: 1
-- ok -> caution: 9
-- ok -> no: 4
-- ok -> yes: 9
+- ok -> caution: 5
+- ok -> no: 1
+- ok -> yes: 2
 
 ## Ambiguous counts (both dimensions near the anchor)
 
 - ngr-ai 2:f4 pandacory limit 42: water 90 %, floor 93 % (weighted 0.5)
 - chatgpt 3a:f12 rummynose ideal 25: water 96 %, floor 101 % (weighted 0.5)
+- chatgpt-high 3:f15 bronzecory ideal 14: water 75 %, floor 86 % (weighted 0.5)
+- chatgpt-high 3:f15 cpd ideal 55: water 86 %, floor 98 % (weighted 0.5)
 - chatgpt-high 3:f9 pandacory limit 16: water 140 %, floor 126 % (weighted 0.5)
 - chatgpt-high 3:f14 hatchet ideal 14: water 80 %, floor 92 % (weighted 0.5)
 

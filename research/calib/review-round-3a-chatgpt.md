@@ -9,22 +9,22 @@ Engine readings: the current engine (research/calib/tables, 2026-10-23). Answers
 | p2b (pair of p2a) | 30 | 19 Panda corydoras* | 60 % / 84 % | amber / green / amber | 16 -> 71 % | 24 -> 106 % | - | 0 % |
 | f12 | 40 | 17 Bronze corydoras* + 10 Rummy-nose tetra° | 75 % / 101 % | green / green / green | 20 -> 118 % | 30 -> 178 % | 25 -> 96 % | -35 % |
 | f14 | 55 | 4 Bristlenose pleco* + 45 Otocinclus° | 133 % / 94 % | amber / green / amber | 0 (on review) | 4 -> 94 % | 30 -> 110 % | -15 % |
-| f1 | 10 | 4 Guppy* + 1 Pea puffer + 6 Pygmy corydoras° | 107 % / 24 % | green / green / green | 4 -> 107 % | 8 -> 161 % | 10 -> 122 % | -36 % |
+| f1 | 10 | 4 Guppy* + 1 Pea puffer + 6 Pygmy corydoras° | 107 % / 0 % | green / green / green | 4 -> 107 % | 8 -> 161 % | 10 -> 122 % | -36 % |
 | f8 | 20 | 11 Panda corydoras* | 48 % / 59 % | green / green / green | 13 -> 69 % | 20 -> 106 % | - | +1 % |
 | f11 | 29 | 13 Panda corydoras* | 54 % / 69 % | - / - / - | - | - | - | - |
 | f3 | 10 | 8 Dwarf pencilfish* | 82 % / 0 % | - / - / - | - | - | - | - |
-| f7 | 20 | 10 Panda corydoras* + 5 Pea puffer° | 80 % / 65 % | - / - / - | - | - | - | - |
+| f7 | 20 | 10 Panda corydoras* + 5 Pea puffer° | 80 % / 53 % | - / - / - | - | - | - | - |
 | f16 | 75 | 29 Bronze corydoras* + 14 Harlequin rasbora° | 78 % / 129 % | - / - / - | - | - | - | - |
-| f5 | 20 | 13 Neon tetra* + 24 Amano shrimp° | 86 % / 0 % | - / - / - | - | - | - | - |
+| f5 | 20 | 13 Neon tetra* + 24 Amano shrimp° | 86 % / 25 % | - / - / - | - | - | - | - |
 | f9 | 29 | 3 Bristlenose pleco* + 38 Otocinclus° | 214 % / 131 % | - / - / - | - | - | - | - |
 | f4 | 15 | 6 Cherry barb* | 49 % / 0 % | - / - / - | - | - | - | - |
 | p1b (pair of p1a) | 20 | 32 Dwarf pencilfish* | 131 % / 0 % | - / - / - | - | - | - | - |
-| f10 | 29 | 6 Panda corydoras* + 49 Celestial pearl danio° | 80 % / 96 % | - / - / - | - | - | - | - |
-| f6 | 20 | 3 Platy* + 10 Cherry shrimp + 6 White cloud mountain minnow° | 56 % / 19 % | - / - / - | - | - | - | - |
+| f10 | 29 | 6 Panda corydoras* + 49 Celestial pearl danio° | 80 % / 32 % | - / - / - | - | - | - | - |
+| f6 | 20 | 3 Platy* + 10 Cherry shrimp + 6 White cloud mountain minnow° | 56 % / 7 % | - / - / - | - | - | - | - |
 | f15 | 55 | 26 Panda corydoras* | 52 % / 80 % | - / - / - | - | - | - | - |
 | f2 | 10 | 30 Ember tetra* | 139 % / 0 % | - / - / - | - | - | - | - |
 | p2a (pair) | 29 | 19 Panda corydoras* | 71 % / 101 % | - / - / - | - | - | - | - |
-| r1 (repeat of f5) | 20 | 13 Neon tetra* + 24 Amano shrimp° | 86 % / 0 % | - / - / - | - | - | - | - |
+| r1 (repeat of f5) | 20 | 13 Neon tetra* + 24 Amano shrimp° | 86 % / 25 % | - / - / - | - | - | - | - |
 | f13 | 40 | 13 Bronze corydoras* + 14 Reticulated hillstream loach° | 95 % / 128 % | - / - / - | - | - | - | - |
 | a1 (anchor) | 125 | 87 Harlequin rasbora* + 28 Rummy-nose tetra° | 66 % / 0 % | - / - / - | - | - | - | - |
 | p1a (pair) | 20 | 32 Dwarf pencilfish* | 140 % / 0 % | - / - / - | - | - | - | - |

@@ -11,15 +11,15 @@ Engine readings: the current engine (research/calib/tables, 2026-10-23). Answers
 | f9 | 29 | 18 Guppy* | 111 % / 0 % | - / green / green | 25 -> 140 % | 40 -> 0 % | - | -47 % |
 | p2b (pair of p2a) | 40 | 15 Bronze corydoras* | 62 % / 100 % | green / - / green | 18 -> 120 % | 28 -> 187 % | - | -42 % |
 | a1 (anchor) | 125 | 87 Harlequin rasbora* + 28 Rummy-nose tetra° | 66 % / 0 % | - / amber / amber | 70 -> 59 % | 110 -> 75 % | 12 -> 58 % | +30 % |
-| f6 | 40 | 28 Panda corydoras* + 25 White cloud mountain minnow° | 73 % / 117 % | amber / green / amber | 20 -> 94 % | 32 -> 129 % | 25 -> 117 % | -27 % |
+| f6 | 40 | 28 Panda corydoras* + 25 White cloud mountain minnow° | 73 % / 83 % | amber / green / amber | 20 -> 59 % | 32 -> 95 % | 25 -> 83 % | +7 % |
 | f4 | 75 | 59 Panda corydoras* + 49 Rummy-nose tetra° | 102 % / 131 % | red / green / red | 28 -> 62 % | 42 -> 93 % | no valid count | +14 % |
 | f7 | 40 | 52 Neon tetra* | 75 % / 0 % | - / amber / amber | 40 -> 62 % | 65 -> 88 % | - | +17 % |
-| f15 | 75 | 4 Siamese algae eater* + 109 Celestial pearl danio° | 77 % / 89 % | amber / amber / amber | can't say | 4 -> 89 % | 70 -> 67 % | +12 % |
+| f15 | 75 | 4 Siamese algae eater* + 109 Celestial pearl danio° | 77 % / 29 % | amber / amber / amber | can't say | 4 -> 29 % | 70 -> 67 % | +96 % |
 | f13 | 30 | 4 Reticulated hillstream loach* + 38 Otocinclus° | 169 % / 90 % | amber / green / amber | can't say | 4 -> 90 % | 20 -> 115 % | -15 % |
 | f14 | 125 | 37 Bronze corydoras* + 23 Kadango (red-fin) cichlid° | 114 % / 110 % | amber / amber / amber | can't say | can't say | can't say | - |
 | f16 | 75 | 5 Kribensis* + 16 Yellow lab cichlid° | 74 % / 75 % | - / - / - | - | - | - | - |
 | f5 | 125 | 59 Kuhli loach* + 11 Sterba's corydoras° | 92 % / 131 % | - / - / - | - | - | - | - |
-| f12 | 40 | 37 Harlequin rasbora* + 9 Pea puffer° | 83 % / 12 % | - / - / - | - | - | - | - |
+| f12 | 40 | 37 Harlequin rasbora* + 9 Pea puffer° | 83 % / 0 % | - / - / - | - | - | - | - |
 | p1a (pair) | 20 | 23 Neon tetra* | 94 % / 0 % | - / - / - | - | - | - | - |
 | f2 | 90 | 27 Bronze corydoras* | 63 % / 120 % | - / - / - | - | - | - | - |
 | p1b (pair of p1a) | 20 | 23 Neon tetra* | 88 % / 0 % | - / - / - | - | - | - | - |
@@ -33,10 +33,10 @@ Engine readings: the current engine (research/calib/tables, 2026-10-23). Answers
 
 ## Overall
 
-10 tanks with counts. Median fix +3 %; the engine reads 4 of them more than 10 % too full, 4 more than 10 % too empty.
-Floor bands: 3 of 6 agree; the engine is a band fuller on 3, emptier on 0.
+10 tanks with counts. Median fix +8 %; the engine reads 3 of them more than 10 % too full, 4 more than 10 % too empty.
+Floor bands: 3 of 6 agree; the engine is a band fuller on 2, emptier on 1.
 Water bands: 5 of 10 agree; the engine is a band fuller on 4, emptier on 1.
-Overall bands: 5 of 11 agree; the engine is a band fuller on 5, emptier on 1.
+Overall bands: 6 of 11 agree; the engine is a band fuller on 4, emptier on 1.
 Limit / ideal count, one-species tanks (4): yours median 1.59, the engine's 1.47 (a higher ratio from you means later fish crowd the tank less than the engine's school curve says; noisy, read it over rounds).
 
 ## Patterns
@@ -45,21 +45,21 @@ Median fix per group (tanks with counts, repeats and left-out tanks excluded). F
 
 | pattern | group | tanks | median fix | range | |
 |---|---|---|---|---|---|
-| focal body class | big | 1 | +12 % | +12 % to +12 % |  |
+| focal body class | big | 1 | +96 % | +96 % to +96 % |  |
 | focal body class | mid | 2 | -6 % | -42 % to +30 % |  |
-| focal body class | tiny | 7 | -3 % | -47 % to +17 % |  |
-| focal zone | bottom | 5 | -15 % | -42 % to +14 % | **flag** |
+| focal body class | tiny | 7 | +7 % | -47 % to +17 % |  |
+| focal zone | bottom | 5 | +7 % | -42 % to +96 % |  |
 | focal zone | middle | 3 | +17 % | +9 % to +30 % | **flag** |
 | focal zone | top | 2 | -25 % | -47 % to -3 % |  |
-| tight dimension (engine) | both | 2 | +13 % | +12 % to +14 % |  |
-| tight dimension (engine) | floor | 2 | -34 % | -42 % to -27 % |  |
-| tight dimension (engine) | water | 6 | +3 % | -47 % to +30 % |  |
-| one species or a mix | mix | 6 | +5 % | -27 % to +30 % |  |
+| tight dimension (engine) | both | 2 | +10 % | +7 % to +14 % |  |
+| tight dimension (engine) | floor | 1 | -42 % | -42 % to -42 % |  |
+| tight dimension (engine) | water | 7 | +9 % | -47 % to +96 % |  |
+| one species or a mix | mix | 6 | +10 % | -15 % to +96 % |  |
 | one species or a mix | one species | 4 | -17 % | -47 % to +17 % | **flag** |
-| tank size | 29-40 gal | 7 | -15 % | -47 % to +17 % | **flag** |
-| tank size | 55 gal and up | 3 | +14 % | +12 % to +30 % |  |
-| focal count as shown | 10 or fewer | 2 | -1 % | -15 % to +12 % |  |
-| focal count as shown | 11-30 | 4 | -34 % | -47 % to -3 % | **flag** |
+| tank size | 29-40 gal | 7 | -3 % | -47 % to +17 % |  |
+| tank size | 55 gal and up | 3 | +30 % | +14 % to +96 % | **flag** |
+| focal count as shown | 10 or fewer | 2 | +41 % | -15 % to +96 % |  |
+| focal count as shown | 11-30 | 4 | -23 % | -47 % to +7 % | **flag** |
 | focal count as shown | over 30 | 4 | +15 % | +9 % to +30 % | **flag** |
 
 ## The max rule
