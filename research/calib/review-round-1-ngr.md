@@ -1,41 +1,41 @@
 # Calibration review, round 1: ngr
 
-Answers 2026-10-23 (survey with pictures). Ideal = 75 %, limit = 100 %. Counts are read on the dimension their species fills (floor for bottom dwellers, water for swimmers, the larger for fish that use both). "fix" is what the engine's reading would need to be multiplied by to match the answers: below 0 % the engine reads the tank too full, above it too empty.
+Engine readings: the current engine (research/calib/tables, 2026-10-23). Answers 2026-10-23 (survey with pictures). Ideal = 75 %, limit = 100 %. Counts are read on the dimension their species fills (floor for bottom dwellers, water for swimmers, the larger for fish that use both). "fix" is what the engine's reading would need to be multiplied by to match the answers: below 0 % the engine reads the tank too full, above it too empty.
 
 ## Tank by tank
 
 | tank | gal | animals | engine | engine band | answer band | ideal count -> engine | limit count -> engine | fix |
 |---|---|---|---|---|---|---|---|---|
-| f18 | 125 | 84 Cardinal tetra* + 9 Reticulated hillstream loach + 13 Dwarf pencilfish | 75 % | amber | green (engine fuller) | 100 -> 82 % | 150 -> 102 % | -5 % |
+| f18 | 125 | 84 Cardinal tetra* + 9 Reticulated hillstream loach + 13 Dwarf pencilfish | 77 % | amber | green (engine fuller) | 100 -> 84 % | 150 -> 104 % | -7 % |
 | f4 | 30 | 35 White cloud mountain minnow* + 6 Panda corydoras | 99 % floor | amber | amber | 25 -> 79 % | 40 -> 110 % | -7 % |
-| f12 | 29 | 28 Ember tetra* | 54 % | green | green | 40 -> 70 % | 65 -> 99 % | +5 % |
-| f5 | 29 | 22 Panda corydoras* + 4 Pea puffer + 1 Malawi synodontis | 152 % floor | red | red | no valid count | no valid count | - |
-| f20 | 15 | 34 Cherry shrimp* + 8 Cardinal tetra + 2 Honey gourami | 108 % | red | green (engine fuller) | 50 -> 119 % | not assessable | -37 % |
-| f15 | 125 | 60 Kadango (red-fin) cichlid* | 129 % | red | - | - | - | - |
-| f13 | 15 | 15 Otocinclus* + 2 Pea puffer | 91 % | amber | - | - | - | - |
-| f3 | 15 | 6 Sterba's corydoras* + 1 Bristlenose pleco | 106 % | red | - | - | - | - |
+| f12 | 29 | 28 Ember tetra* | 60 % | green | green | 40 -> 77 % | 65 -> 109 % | -6 % |
+| f5 | 29 | 22 Panda corydoras* + 4 Pea puffer + 1 Malawi synodontis | 150 % floor | red | red | no valid count | no valid count | - |
+| f20 | 15 | 34 Cherry shrimp* + 8 Cardinal tetra + 2 Honey gourami | 113 % | red | green (engine fuller) | 50 -> 124 % | not assessable | -39 % |
+| f15 | 125 | 60 Kadango (red-fin) cichlid* | 154 % | red | - | - | - | - |
+| f13 | 15 | 15 Otocinclus* + 2 Pea puffer | 161 % | red | - | - | - | - |
+| f3 | 15 | 6 Sterba's corydoras* + 1 Bristlenose pleco | 99 % floor | amber | - | - | - | - |
 | r2 (repeat of f4) | 30 | 35 White cloud mountain minnow* + 6 Panda corydoras | 99 % floor | amber | - | - | - | - |
-| f10 | 90 | 90 Neon tetra* + 71 Ember tetra | 96 % | amber | - | - | - | - |
-| a2 (anchor) | 75 | 21 Peacock cichlid* | 86 % | amber | - | - | - | - |
-| f17 | 40 | 22 Cardinal tetra* + 1 Malawi synodontis | 68 % | green | - | - | - | - |
-| f1 | 75 | 39 Guppy* | 71 % | green | - | - | - | - |
+| f10 | 90 | 90 Neon tetra* + 71 Ember tetra | 98 % | amber | - | - | - | - |
+| a2 (anchor) | 75 | 21 Peacock cichlid* | 95 % | amber | - | - | - | - |
+| f17 | 40 | 22 Cardinal tetra* + 1 Malawi synodontis | 67 % | green | - | - | - | - |
+| f1 | 75 | 39 Guppy* | 77 % | amber | - | - | - | - |
 | f6 | 20 | 9 Kuhli loach* | 86 % | amber | - | - | - | - |
-| r1 (repeat of f3) | 15 | 6 Sterba's corydoras* + 1 Bristlenose pleco | 106 % | red | - | - | - | - |
+| r1 (repeat of f3) | 15 | 6 Sterba's corydoras* + 1 Bristlenose pleco | 99 % floor | amber | - | - | - | - |
 | f14 | 40 | 101 Pygmy corydoras* + 33 Ember tetra + 55 Celestial pearl danio | 143 % floor | red | - | - | - | - |
 | a1 (anchor) | 90 | 18 Bronze corydoras* + 56 Pygmy corydoras + 4 Bristlenose pleco | 150 % floor | red | - | - | - | - |
 | f2 | 75 | 27 Platy* | 52 % | green | - | - | - | - |
-| f9 | 55 | 9 Yellow lab cichlid* + 8 Harlequin rasbora | 75 % | green | - | - | - | - |
-| f19 | 55 | 90 Otocinclus* | 111 % floor | red | - | - | - | - |
-| f11 | 55 | 13 Cherry barb* + 5 Black molly | 89 % | amber | - | - | - | - |
-| f7 | 29 | 18 Dwarf pencilfish* | 65 % | green | - | - | - | - |
-| f16 | 75 | 55 Guppy* + 67 Amano shrimp | 103 % | red | - | - | - | - |
-| f8 | 40 | 126 Ember tetra* | 93 % | amber | - | - | - | - |
+| f9 | 55 | 9 Yellow lab cichlid* + 8 Harlequin rasbora | 67 % | green | - | - | - | - |
+| f19 | 55 | 90 Otocinclus* | 157 % | red | - | - | - | - |
+| f11 | 55 | 13 Cherry barb* + 5 Black molly | 55 % | green | - | - | - | - |
+| f7 | 29 | 18 Dwarf pencilfish* | 70 % | green | - | - | - | - |
+| f16 | 75 | 55 Guppy* + 67 Amano shrimp | 112 % | red | - | - | - | - |
+| f8 | 40 | 126 Ember tetra* | 103 % | red | - | - | - | - |
 
 \* = the species the main count questions asked about; ° = the tankmate count.
 
 ## Overall
 
-4 tanks with counts. Median fix -6 %; the engine reads 1 of them more than 10 % too full, 0 more than 10 % too empty.
+4 tanks with counts. Median fix -7 %; the engine reads 1 of them more than 10 % too full, 0 more than 10 % too empty.
 Bands: 3 of 5 agree; the engine is a band fuller on 2, emptier on 0.
 Limit / ideal count, one-species tanks (1): yours median 1.63, the engine's 1.49 (a higher ratio from you means later fish crowd the tank less than the engine's school curve says; noisy, read it over rounds).
 
@@ -45,19 +45,19 @@ Median fix per group (tanks with counts, repeats and left-out tanks excluded). F
 
 | pattern | group | tanks | median fix | range | |
 |---|---|---|---|---|---|
-| focal body class | invert | 1 | -37 % | -37 % to -37 % |  |
-| focal body class | tiny | 3 | -5 % | -7 % to +5 % |  |
-| focal zone | all | 2 | -22 % | -37 % to -7 % |  |
-| focal zone | middle | 2 | 0 % | -5 % to +5 % |  |
-| tight dimension (engine) | floor | 1 | -7 % | -7 % to -7 % |  |
-| tight dimension (engine) | water | 3 | -5 % | -37 % to +5 % |  |
-| one species or a mix | mix | 3 | -7 % | -37 % to -5 % |  |
-| one species or a mix | one species | 1 | +5 % | +5 % to +5 % |  |
-| tank size | 10-20 gal | 1 | -37 % | -37 % to -37 % |  |
-| tank size | 29-40 gal | 2 | -1 % | -7 % to +5 % |  |
-| tank size | 55 gal and up | 1 | -5 % | -5 % to -5 % |  |
-| focal count as shown | 11-30 | 1 | +5 % | +5 % to +5 % |  |
-| focal count as shown | over 30 | 3 | -7 % | -37 % to -5 % |  |
+| focal body class | invert | 1 | -39 % | -39 % to -39 % |  |
+| focal body class | tiny | 3 | -7 % | -7 % to -6 % |  |
+| focal zone | all | 2 | -23 % | -39 % to -7 % |  |
+| focal zone | middle | 2 | -7 % | -7 % to -6 % |  |
+| tight dimension (engine) | both | 1 | -7 % | -7 % to -7 % |  |
+| tight dimension (engine) | water | 3 | -7 % | -39 % to -6 % |  |
+| one species or a mix | mix | 3 | -7 % | -39 % to -7 % |  |
+| one species or a mix | one species | 1 | -6 % | -6 % to -6 % |  |
+| tank size | 10-20 gal | 1 | -39 % | -39 % to -39 % |  |
+| tank size | 29-40 gal | 2 | -6 % | -7 % to -6 % |  |
+| tank size | 55 gal and up | 1 | -7 % | -7 % to -7 % |  |
+| focal count as shown | 11-30 | 1 | -6 % | -6 % to -6 % |  |
+| focal count as shown | over 30 | 3 | -7 % | -39 % to -7 % |  |
 
 ## Compatibility: gate vs you
 

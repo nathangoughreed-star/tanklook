@@ -7,7 +7,7 @@
 // the larger for "all"-zone fish); floor and water bands on their own dimension, the overall band on the larger; an answer whose
 // tank the expert called too small for a species, or limited by habitat rather than room, is left out; confidence weights.
 // Run: node scripts/calib-fit.mjs research/calib/round-1.json research/calib/round-2.json research/calib/answers/*.json
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 
 // prior sd of each log multiplier (0 = today's value). Species 0.10, classes 0.15: on synthetic rounds (scripts/calib-synth.mjs, 4 seeds)
 // a species prior of 0.25 let a tankmate held at one count trade off against the focal species and recovered worse than no fit;
@@ -264,7 +264,7 @@ export function fitRound(round, files, prior = PRIOR) {
 
 export function report(r) {
   const nf = v => Number.isFinite(v) ? v.toFixed(3) : 'n/a', pc = m => `${m >= 1 ? '+' : ''}${((m - 1) * 100).toFixed(0)} %`, e = r.error;
-  let md = `# Expert calibration, fit of round ${r.round}\n\n${r.experts.length} experts (${r.experts.join(', ')}), ${r.rows} answers, ${r.held} on held-out anchors. Noise ${r.noise.s.toFixed(3)} (log) from ${r.noise.pairs} repeat pairs.\n\n`;
+  let md = `# Expert calibration, fit of round ${r.round}\n\n${r.experts.length} experts (${r.experts.join(', ')}), ${r.rows} answers, ${r.held} on held-out anchors. Noise ${r.noise.s.toFixed(3)} (log) from ${r.noise.pairs} repeat pairs.${r.tables ? ` Engine readings: ${r.tables}.` : ''}\n\n`;
   md += `## Error (rms of log reading at the experts' counts)\n\n| | before | after |\n|---|---|---|\n| held-out anchors | ${nf(e.heldBefore)} | ${nf(e.heldAfter)} |\n| fitted tanks | ${nf(e.fitBefore)} | ${nf(e.fitAfter)} |\n\nInter-expert disagreement ${Number.isFinite(e.disagreement) ? e.disagreement.toFixed(3) : 'n/a (one expert)'}. ${e.heldAfter <= 1.1 * e.disagreement ? '**Stop rule met**: held-out error is within the experts\' own disagreement.' : 'Stop rule not met.'}\n\n`;
   md += `## Multipliers on today's factors\n\nWater (SPACE_PER_L) x${r.g}, floor x${r.f}. Classes: ${Object.entries(r.class).map(([k, m]) => `${k} ${pc(m)}`).join(', ')}.${r.capped.length ? ` Capped at x1.25: ${r.capped.join(', ')}.` : ''}\n\n| species | class | answers | total move | own move |\n|---|---|---|---|---|\n`;
   for (const [id, v] of Object.entries(r.species).sort((a, b) => Math.abs(Math.log(b[1].mult)) - Math.abs(Math.log(a[1].mult)))) if (Math.abs(v.mult - 1) >= 0.05) md += `| ${id} | ${v.cls} | ${v.answers} | ${pc(v.mult)} | ${pc(v.own)} |\n`;
@@ -279,11 +279,26 @@ export function report(r) {
   return md;
 }
 
+/** A round with its engine readings replaced by a tables file's (test/calibtables.test.ts: the frozen tanks re-read on the current
+ *  engine). Tanks and counts stay as generated; `pctAsMade` keeps the reading the round was made with. */
+export function withTables(round, T) {
+  return { ...round, tables: T.made, scenarios: round.scenarios.map(s => T.tanks[s.id] ? { ...s, pctAsMade: s.pct, ...T.tanks[s.id] } : s) };
+}
+/** The tables file next to a round file, if any (research/calib/round-N.json -> research/calib/tables/round-N.json). */
+export function loadTables(roundPath) {
+  const p = roundPath.replace(/round-(\d+)\.json$/, 'tables/round-$1.json');
+  return p !== roundPath && existsSync(p) ? JSON.parse(readFileSync(p, 'utf8')) : null;
+}
+
 if (process.argv[1]?.endsWith('calib-fit.mjs')) {
-  const docs = process.argv.slice(2).map(p => ({ p, j: JSON.parse(readFileSync(p, 'utf8')) }));
-  const rounds = docs.filter(d => d.j.scenarios).map(d => d.j), files = docs.filter(d => d.j.answers).map(d => d.j);
-  if (!rounds.length || !files.length) { console.error('usage: node scripts/calib-fit.mjs round-N.json [...] answers.json [...]'); process.exit(1); }
+  // --as-made fits on the engine readings stored at generation; by default each round reads its tables file (the current engine)
+  const args = process.argv.slice(2), asMade = args.includes('--as-made');
+  const docs = args.filter(a => !a.startsWith('--')).map(p => ({ p, j: JSON.parse(readFileSync(p, 'utf8')) }));
+  const rounds = docs.filter(d => d.j.scenarios).map(d => { const T = asMade ? null : loadTables(d.p); if (!asMade && !T) console.warn(`${d.p}: no tables file, fitting on the readings it was made with`); return T ? withTables(d.j, T) : d.j; });
+  const files = docs.filter(d => d.j.answers).map(d => d.j);
+  if (!rounds.length || !files.length) { console.error('usage: node scripts/calib-fit.mjs [--as-made] round-N.json [...] answers.json [...]'); process.exit(1); }
   const { round, files: use } = combine(rounds, files), r = fitRound(round, use);
+  r.tables = asMade ? 'as made' : rounds.map(R => `round ${R.round}: ${R.tables ? 'current engine, ' + R.tables : 'as made'}`).join('; ');
   const base = `research/calib/fit-round-${String(round.round).replace(/\+/g, '-')}`;
   writeFileSync(base + '.json', JSON.stringify(r, (k, v) => k === 'theta' ? undefined : v, 1) + '\n');
   writeFileSync(base + '.md', report(r));

@@ -292,3 +292,25 @@ reviewer's `review.skip` / `review.set` on an answer and lists what was set asid
 tank (still 20 of 22 at 10-55 gal). The anchor holds round 2's stock (87 harlequin + 28 rummy-nose, `anchorStock`), read under today's
 factors (66 % space; the free draw had moved to 171 harlequins). Round 2's tanks are frozen: GEN_CALIB no longer rewrites
 round-2.json (GEN_CALIB_R2=1 does); its engine tables are still the pre-audit ones, a question for the fit.
+
+## 12. Engine tables on the current engine (chat XC, 2026-10-23, after the length audit)
+
+**Rule.** A round's tanks and counts are frozen once answered: the answers are about them. What the engine reads of them is not:
+after any engine change (a length, a factor, a curve) the fit must compare the answers with today's engine, not with the engine
+the round was drawn on. So the readings live apart from the round: `research/calib/tables/round-N.json` holds, per tank, the
+reading as shown and the focal and tankmate tables, recomputed by `GEN_RETABLE=1 npx vitest run test/calibtables.test.ts` (about 45 s
+for rounds 1-3). scripts/calib-fit.mjs and scripts/calib-review.mjs use it by default (`withTables`; `--as-made` fits on the stored
+readings) and say which they used. A lock in the same test re-reads each tank as shown on every suite run (one engine run per tank)
+and fails when the engine has moved without a retable.
+
+**What the length audit moved** (aeda1f5: 11 lengths, 22 refitted space factors). Tanks whose reading as shown moved more than 5 %:
+round 1: 13 of 24 (up to 76 %); round 2: 9 of 22 (up to 81 %); round 3: none (built on it). Fitting rounds 1-2 on their stored
+readings would have compared the answers with an engine that no longer exists.
+
+**First fit on today's engine** (rounds 1 + 2: Nathan's 5 round-1 tanks with pictures, the AI model's round-2 export; 53 answers):
+water x0.83, floor x0.85, but the held-out error rises (0.299 -> 0.498; on the stored readings it fell, 0.113 -> 0.049). The held-out
+tank is round 2's anchor, 87 harlequins + 28 rummy-noses in a 125 gal: the audit took it from 97 % to 66 % (harlequin's refitted
+factor). The AI's counts on it now read low (ideal 70 -> 59 % against 75, limit 110 -> 75 % against 100; before the audit 85 % and
+112 %): on this tank the expert says the new engine reads too empty, while the fitted tanks pull the water scale down. One tank, one
+AI expert: a flag for the harlequin refit, not a result. **Nothing is applied**: two experts (one an AI), no repeats answered yet, no
+inter-expert overlap. The fit becomes decision material once round 3 has answers from people.

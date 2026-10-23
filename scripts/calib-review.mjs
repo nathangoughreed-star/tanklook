@@ -4,7 +4,7 @@
 // survive a rerun.
 // Run: node scripts/calib-review.mjs research/calib/round-N.json research/calib/answers/round-N-<expert>.json
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
-import { dimOf, focalOf, partsAt } from './calib-fit.mjs';
+import { dimOf, focalOf, loadTables, partsAt, withTables } from './calib-fit.mjs';
 
 /** Engine reading of a table row on a dimension ('water', 'floor' or 'max'). */
 export const readOn = (tbl, n, dim = 'max') => { const { W, F } = partsAt(tbl, n); return dim === 'water' ? W : dim === 'floor' ? F : Math.max(W, F); };
@@ -112,9 +112,11 @@ export function review(round, file) {
 if (process.argv[1]?.endsWith('calib-review.mjs')) {
   const [roundPath, ansPath] = process.argv.slice(2);
   if (!roundPath || !ansPath) { console.error('usage: node scripts/calib-review.mjs research/calib/round-N.json answers.json'); process.exit(1); }
-  const round = JSON.parse(readFileSync(roundPath, 'utf8')), file = JSON.parse(readFileSync(ansPath, 'utf8'));
+  // the engine's readings come from the round's tables file (the frozen tanks re-read on the current engine) when there is one
+  const made = JSON.parse(readFileSync(roundPath, 'utf8')), T = loadTables(roundPath), round = T ? withTables(made, T) : made, file = JSON.parse(readFileSync(ansPath, 'utf8'));
   const out = roundPath.replace(/round-(\d+)\.json$/, `review-round-$1-${String(file.expert).replace(/[^A-Za-z0-9_-]+/g, '_')}.md`);
   const old = existsSync(out) ? readFileSync(out, 'utf8') : '';
-  writeFileSync(out, review(round, file) + (old.includes('## Findings') ? '\n' + old.slice(old.indexOf('## Findings')) : '\n## Findings\n\n(hand-written: the patterns above, the broad changes they suggest, and what the next batch should test)\n'));
+  const body = review(round, file).replace('\n\nAnswers ', `\n\nEngine readings: ${T ? `the current engine (research/calib/tables, ${T.made})` : 'as the round was made'}. Answers `);
+  writeFileSync(out, body +(old.includes('## Findings') ? '\n' + old.slice(old.indexOf('## Findings')) : '\n## Findings\n\n(hand-written: the patterns above, the broad changes they suggest, and what the next batch should test)\n'));
   console.log(`wrote ${out}`);
 }
