@@ -7,14 +7,14 @@
 import { defaultSetup } from '../scene/defaults';
 import { starterItems } from '../scene/items';
 import { IN } from '../scene/physics';
-import { IDEAL_MAX, FLOOR_SHARE, stockingOf, countsAgainstWater, massG } from '../scene/stocking';
+import { IDEAL_MAX, floorShare, stockingOf, countsAgainstWater, massG } from '../scene/stocking';
 import { compatRisks, crowdWarnings } from '../scene/territory';
 import { tankMinimum } from '../scene/tankMin';
 import { groupShort } from '../scene/animalfit';
 import { sharedRange } from '../scene/temprange';
 import { zoneOf } from '../scene/zone';
 import { SPECIES, getSpecies, type Species } from '../data/species';
-import { FLOOR_FACTOR, SPACE_FACTOR } from '../data/spacefactor';
+import { SPACE_FACTOR } from '../data/spacefactor';
 import { CARE } from '../data/care';
 import type { TankSetup } from '../scene/types';
 
@@ -82,7 +82,9 @@ export const POOL: Species[] = SPECIES.filter(sp => (sp.cat === 'fw-fish' || sp.
 const isInvert = (sp: Species) => sp.cat === 'fw-invert';
 /** The floor share the engine gives a species (stocking.ts floorUseCm2): none for shrimp, else by zone. */
 // S212 (2026-10-23): times FLOOR_FACTOR, as the engine's floorUseCm2 does, so a species the engine counts at half the floor (mbuna 0.5) or none (white cloud 0) is not drawn as a floorer
-export const floorShareOf = (sp: Species) => isInvert(sp) ? 0 : FLOOR_SHARE[zoneOf(sp)] * (FLOOR_FACTOR[sp.id]?.[0] ?? 1);
+// Coordinator 9 2026-10-23: this is the engine's own rule (stocking.ts floorShare), shrimp and crabs x INVERT_FLOOR included; the copy that
+// stood here gave shrimp 0 while the engine gives them floor (Nathan's yes 2026-10-22), and the survey v4 tables read the engine's
+export const floorShareOf = (sp: Species) => floorShare(sp);
 
 /** A tank with these animals, sparse decor (river stones), water to the rim, fish spread by zone with a seeded layout. */
 export function setupOf(dimsIn: Dims, stock: [string, number][], seed = 1): TankSetup {

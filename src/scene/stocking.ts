@@ -175,9 +175,13 @@ export const snailFloorCm2 = (sp: Species, tlMm: number) => SNAIL_FOOT_K * massG
  * mass; FLOOR_FACTOR overrides per species.
  */
 export const INVERT_FLOOR = 0.3;
+/** The share of the floor rule a water animal takes: its zone's share times its FLOOR_FACTOR (shrimp and crabs: INVERT_FLOOR). The one
+ *  rule the engine, the calibration rounds and the survey v4 tables all read (Coordinator 9, 2026-10-23: they had drifted on shrimp).
+ *  Snails are measured by footprint instead (snailFloorCm2). */
+export const floorShare = (sp: Species) => FLOOR_SHARE[zoneOf(sp)] * (FLOOR_FACTOR[sp.id]?.[0] ?? (isInvert(sp) ? INVERT_FLOOR : 1));
 /** Floor area one animal uses, cm2 (0 for swimmers and land animals; snails by footprint, lane SN; shrimp and crabs at INVERT_FLOOR). */
 export const floorUseCm2 = (sp: Species, tlMm: number) => !countsAgainstWater(sp) ? 0 : sp.kind === 'snail' ? snailFloorCm2(sp, tlMm)
-  : FLOOR_SHARE[zoneOf(sp)] * FLOOR_SQIN_PER_IN * SQIN_CM2 * habitatLengthMm(sp, tlMm) / IN_MM * (FLOOR_FACTOR[sp.id]?.[0] ?? (isInvert(sp) ? INVERT_FLOOR : 1));
+  : floorShare(sp) * FLOOR_SQIN_PER_IN * SQIN_CM2 * habitatLengthMm(sp, tlMm) / IN_MM;
 /** Live plants take up nitrogen: up to +25 % at 15 plants per 100 L (a painted patch counts as 3 plants). A documented guess. */
 const PLANT_MAX = 0.25, PLANTS_PER_100L_FULL = 15, PATCH_PLANTS = 3;
 
