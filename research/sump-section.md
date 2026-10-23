@@ -157,3 +157,20 @@ Every tankFor pick that fits (427) now has a build at or under 100 % filtration 
 | axolotl x50 | c8 | canister $8469 251% | sump $8789 44% |
 
 Example scenes as saved: no number moves (none uses a sump). With the SPS preset (a sump) the reef scene's set-up drops $4847 -> $4415 and clownnano's $2616 -> $2478 (filtration 4 -> 3 %) (a plain tank + plumbing is cheaper than the old sump-box row); stocking, filtration and $/month unchanged.
+
+## Lane SF (2026-10-23): sumps from 5 gal (Nathan: "Allow a smaller sump on nanos")
+SUMP_MIN_GAL 10 -> 5: a nano's default sump follows SUMP_SHARE (a 20 gal high gets a 5.5 gal; a 5 gal display a 5 gal, before a 10 gal that did not even fit under it).
+Against main 77b4af6, all species x 1/3/6/12/25/50 (450 cases): no tank pick and no verdict moves; 7 filtration % rise (less sump water), all still fit.
+
+| species x count | tank | filtration before -> after |
+|---|---|---|
+| mystery x12 | g5 | 43 -> 59 % |
+| mystery x25 | g15 | 45 -> 52 % |
+| mystery x50 | g30b | 51 -> 53 % |
+| turbo x3 | g5 | 37 -> 51 % |
+| turbo x6 | g8c | 57 -> 69 % |
+| turbo x12 | g20l | 58 -> 64 % |
+| axolotl x3 | g20l | 39 -> 44 % |
+
+16 build lines (cheapest / least work / balanced) take the smaller sump; setup moves -$5 .. +$8. Three least-work builds switch from a canister to a sump (nerite x50 / 20 gal long $903 -> $911, mystery x25 / 15 gal $708 -> $703, axolotl x3 / 20 gal long $911 -> $919).
+Clown nano example with the Soft preset: sump 10 gal -> 5 gal, heater 150 -> 100 W, 35.1 -> 30.6 kWh/mo, upkeep $85.55 -> $84.30/mo, setup $2048 -> $2030.

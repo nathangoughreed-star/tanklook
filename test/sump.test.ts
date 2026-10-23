@@ -121,8 +121,8 @@ describe('SU: coordinator review', () => {
     const mean = (r: { lo: number; mode: number; hi: number }) => (r.lo + r.mode + r.hi) / 3;
     expect(Math.abs(usd(both) - usd(can) - mean(sumpUnit.setup))).toBeLessThan(mean(sumpUnit.setup) * 0.05);
   });
-  it('the sump sizes start at 10 gal', () => {
-    expect(Math.min(...SUMP_MODELS.map(m => m.ratedGal))).toBe(10);
+  it('the sump sizes start at 5 gal (lane SF, Nathan 2026-10-23; was 10)', () => {
+    expect(Math.min(...SUMP_MODELS.map(m => m.ratedGal))).toBe(5);
     expect(parseTech({ rows: {}, sump: { model: 'g2_5' } })?.sump).toBeUndefined();
   });
 });

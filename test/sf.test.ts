@@ -3,7 +3,7 @@ import { getTankModel, tankFromModel } from '../src/data/tanks';
 import { bareSetup } from '../src/scene/defaults';
 import { SCENES } from '../src/examples/scenes';
 import { parseScene } from '../src/scene/validate';
-import { heatLoss, inferTech, SUMP_FILL, sumpOf, techOf, withUnits, type TechSetup } from '../src/scene/tech';
+import { heatLoss, inferTech, SUMP_FILL, SUMP_MODELS, SUMP_SHARE, sumpOf, techOf, withUnits, type TechSetup } from '../src/scene/tech';
 import type { TankSetup } from '../src/scene/types';
 
 // Lane SF (sump follow-ups, 2026-10-23).
@@ -67,5 +67,16 @@ describe('SF: a saved tech without a skimmer row', () => {
     expect(techOf(tankOf('g75', true, withUnits({ rows: {} }, 'filter', [{ kind: 'canister' }, { kind: 'sump' }]))).rows.skimmer).toBe('sump');
     expect(techOf(tankOf('g75', true, { rows: { filter: 'canister' } })).rows.skimmer).toBe('hob');
     expect(techOf(tankOf('g75', true, { rows: { filter: 'canister', skimmer: 'none' } })).rows.skimmer).toBe('none');
+  });
+});
+
+describe('SF: a nano gets a sump of its own 25 % (Nathan 2026-10-23: "Allow a smaller sump on nanos")', () => {
+  it('the sump sizes start at 5 gal; a 20 gal high gets the 5.5 gal (the smallest of its 25 %), not the 10', () => {
+    expect(Math.min(...SUMP_MODELS.map(m => m.ratedGal))).toBe(5);
+    expect(SUMP_MODELS.some(m => m.id === 'g2_5' || m.id === 'g3c')).toBe(false);
+    const S = tankOf('g20h', true, withUnits({ rows: {} }, 'filter', [{ kind: 'sump' }]));
+    const z = sumpOf(S)!, litres = (b: { L: number; D: number; H: number }) => b.L * b.D * b.H / 1e6;
+    expect(z.model).toBe('g5_5');
+    expect(litres(z)).toBeGreaterThanOrEqual(SUMP_SHARE * litres(S.tank));
   });
 });

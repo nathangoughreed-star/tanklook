@@ -443,8 +443,8 @@ export const offerChiller = (S: TankSetup) => { const h = heatLoss(S); return h.
 export const SUMP_FILL = 0.5;
 /** A sump picked for the display when none is chosen: at least this share of the display's volume, and no longer than the display (it stands in the stand). */
 export const SUMP_SHARE = 0.25;
-/** The smallest catalogue size offered as a sump: a 10 gal, the smallest plain tank commonly used as one (smaller holds too little for the drain-down). */
-export const SUMP_MIN_GAL = 10;
+/** The smallest catalogue size offered as a sump: a 5 gal, so a nano's default follows SUMP_SHARE (Nathan 2026-10-23, lane SF: "Allow a smaller sump on nanos"; was 10). */
+export const SUMP_MIN_GAL = 5;
 /** The plain glass sizes a sump is picked from (tankfit's own list: rectangles with a generic name), from SUMP_MIN_GAL up. */
 export const SUMP_MODELS: TankModel[] = TANK_MODELS.filter(m => !m.terrarium && (m.shape ?? 'rect') === 'rect' && /^[\d.]+ (gal|ft)/.test(m.name) && m.ratedGal >= SUMP_MIN_GAL);
 const boxLitres = (z: { L: number; D: number; H: number }) => z.L * z.D * z.H / 1e6;
