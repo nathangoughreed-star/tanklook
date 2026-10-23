@@ -67,3 +67,8 @@ export const SPACE_FACTOR: Record<string, [number, string]> = {
 export const FLOOR_FACTOR: Record<string, [number, string]> = {
   kuhli: [0.6, 'eel-shaped and gregarious: kuhlis pile into one shared cave or root tangle instead of spreading over the floor (Seriously Fish; Aquarium Co-Op keeps 3-6 in a 20 gal and more in bigger tanks). At 1.0, 17 kuhlis read 95 % of a 36 x 18 in floor; the floor stays linear in count (audit F), 2026-10-22'],
 };
+// Hand-set multipliers on top of the AqAdvisor fit (Nathan's targets, not a fit): the species' space load is multiplied by both.
+// Like FLOOR_FACTOR, re-add this block after a rebuild (scripts/space-factors.mjs writes only the tables above).
+export const SPACE_NUDGE: Record<string, [number, string]> = {
+  discus: [1.435, 'Nathan 2026-10-22: 6 discus in a 55 gal (48 x 13 x 20 in) should read 85 % (was 59 % of the space): 85.2 % now, just inside the yellow band'],
+};

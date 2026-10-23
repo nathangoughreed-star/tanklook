@@ -19,7 +19,7 @@ import dd from '../data/demand-defaults.json';
 // estimates, marked 'estimate'). The 3D bodies' volume is only the cross-check that flags outliers (scripts/body-mass.mjs).
 import bm from '../data/bodymass.json';
 import { getSpecies, type Species } from '../data/species';
-import { FLOOR_FACTOR, SPACE_FACTOR, SPACE_FACTOR_CLASS } from '../data/spacefactor';
+import { FLOOR_FACTOR, SPACE_FACTOR, SPACE_FACTOR_CLASS, SPACE_NUDGE } from '../data/spacefactor';
 import { bioloadLitres } from './starter';
 import { feedingOf, isLivePlantPatch, nitrogenBudget, tanOf, type Nitrogen } from './nitrogen';
 import { heatLoss, rowsFor, setWaterChangeFraction, stockCapacity } from './tech';
@@ -79,7 +79,7 @@ export const SPACE_EXP = 0.45, SPACE_PER_L = 1.564 * 0.9374 / 3.96; // per effec
 export const TINY_EXPERT = 0.8;
 export function spaceFactor(sp: Species): number {
   const g = massG(sp.id, sp.tl);
-  return spaceFactorAq(sp, g) * (g < 2 ? TINY_EXPERT : 1);
+  return spaceFactorAq(sp, g) * (g < 2 ? TINY_EXPERT : 1) * (SPACE_NUDGE[sp.id]?.[0] ?? 1);
 }
 function spaceFactorAq(sp: Species, g: number): number {
   const own = SPACE_FACTOR[sp.id];
