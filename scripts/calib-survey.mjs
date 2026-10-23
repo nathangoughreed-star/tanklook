@@ -24,7 +24,7 @@ const pl = name => /(fish|s)$/i.test(name) ? name : /(ch|sh|x|z)$/i.test(name) ?
 const tanks = round.scenarios.map(s => ({
   id: s.id, gal: s.gal, dims: s.dimsIn, litres: Math.round(s.gal * GAL_L), floorSqIn: s.dimsIn[0] * s.dimsIn[1], mixed: s.stock.length > 1,
   focal: s.focal, mate: s.mate ?? null, noLimit: !!s.noLimit,
-  stock: s.stock.map(([id, n]) => ({ id, n, name: s.names[id], pl: pl(s.names[id]), cm: +(s.tlMm[id] / 10).toFixed(1), floor: s.uses[id].floor, zone: s.zone?.[id] ?? 'middle' })),
+  stock: s.stock.map(([id, n]) => ({ id, n, name: s.names[id], pl: pl(s.names[id]), cm: +(s.tlMm[id] / 10).toFixed(1), floor: s.uses[id].floor, zone: s.zone?.[id] ?? 'middle', sex: s.sex?.[id] ?? null })),
 }));
 
 const html = `<!doctype html>
@@ -125,6 +125,9 @@ function start() {
   document.getElementById('go').onclick = () => { const w = document.getElementById('who').value.trim(); if (!w || !st.kind) return; st.expert = w; if (st.at < 0) st.at = 0; save(); show(); };
 }
 // where it swims, so experts see who shares which part of the water (ChatGPT's dogfood note: hatchetfish and honey gouramis share the surface)
+// the split at the app's ratio (data/groups.ts sexed), at least one male once there are two
+const sexOf = s => { if (!s.sex) return ''; if (s.n < 2) return ' <span class="note">(either sex)</span>';
+  const m = Math.max(1, Math.round(s.n * s.sex[0] / (s.sex[0] + s.sex[1]))); return ' <span class="note">(' + m + ' M, ' + (s.n - m) + ' F)</span>'; };
 const usesTag = s => s.floor >= 1 ? '<span class="tag b">floor + water</span>' : s.floor > 0 ? '<span class="tag b">water + floor, half the time</span>' : '<span class="tag w">' + (s.zone === 'top' ? 'water, near the surface' : 'water column') + '</span>';
 const band = (k, a) => '<div class="r3">' + BANDS.map((b, i) => '<button class="o' + (a[k] === i ? ' on' : '') + '" data-set="' + k + '" data-v="' + i + '"><span class="dot" style="background:' + b[0] + '"></span>' + b[1] + '</button>').join('') + '</div>';
 const choice = (k, a, opts, cls = 'r3') => '<div class="' + cls + '">' + opts.map(([v, l]) => '<button class="o' + (a[k] === v ? ' on' : '') + '" data-set="' + k + '" data-v="' + esc(v) + '">' + l + '</button>').join('') + '</div>';
@@ -144,10 +147,10 @@ function show() {
   const keepTxt = list => list.length ? 'Keeping the ' + list.map(s => s.pl.toLowerCase()).join(' and ') + ' as shown: how' : 'How';
   const L = '<div><div class="card"><h2>The tank</h2><table class="k"><tr><td>Size</td><td>' + t.dims.join(' × ') + ' in, ' + t.gal + ' gal (' + t.litres + ' L), full</td></tr>' +
     '<tr><td>Floor</td><td>' + t.dims[0] + ' × ' + t.dims[1] + ' in = ' + t.floorSqIn + ' sq in</td></tr>' +
-    '<tr><td>Animals</td><td>Adults at the sizes listed; the count stays as shown (no breeding); sexes in the mix you would choose for that count</td></tr>' +
+    '<tr><td>Animals</td><td>Adults at the sizes listed; the count stays as shown (no breeding). Where a split is given (M males, F females), the counts you give keep that ratio; otherwise sexes are the mix you would choose</td></tr>' +
     '<tr><td>Filter</td><td>Canister rated for twice this tank, weekly 30 % changes: <b>never the limit</b></td></tr><tr><td>Decor</td><td>Furnished as these species need (plants, cover, sight breaks): <b>never the limit</b></td></tr></table></div>' +
     '<div class="card" style="margin-top:10px"><h2>The animals (adults)</h2><table><tr><th>count</th><th>species</th><th>adult</th><th>uses</th></tr>' +
-    t.stock.map(s => '<tr><td>' + s.n + '</td><td>' + esc(s.name) + '</td><td>' + s.cm + ' cm</td><td>' + usesTag(s) + '</td></tr>').join('') + '</table>' +
+    t.stock.map(s => '<tr><td>' + s.n + sexOf(s) + '</td><td>' + esc(s.name) + '</td><td>' + s.cm + ' cm</td><td>' + usesTag(s) + '</td></tr>').join('') + '</table>' +
     '<p class="note" style="margin:6px 0 0">"Uses" is how the app counts each animal. ' + DEF + '</p></div></div>';
   let M = '<div class="card"><p class="sec">Room, as shown</p>';
   if (floorers.length) M += '<div class="q"><h3>Floor room for the bottom dwellers</h3><div class="sub">' + floorers.map(s => esc(s.pl) + (s.floor < 1 ? ' (half the time)' : '')).join(', ') + '</div>' + band('floor', a) + '</div>';

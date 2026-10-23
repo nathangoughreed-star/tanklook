@@ -8,6 +8,7 @@ import { compatRisks, crowdWarnings } from '../src/scene/territory';
 import { groupShort } from '../src/scene/animalfit';
 import { getSpecies } from '../src/data/species';
 import { zoneOf } from '../src/scene/zone';
+import { GROUPS } from '../src/data/groups';
 
 const SEED = 2, R = makeRound({ seed: SEED });
 // round 3 (Nathan 2026-10-23): fixed tank sizes centred on the common ones (SIZES_R3), seed 3
@@ -73,7 +74,9 @@ describe('calibration round generator (round 2 on)', () => {
       const fs = await import('node:fs');
       const per = (s: Scenario, f: (id: string) => unknown) => Object.fromEntries(s.stock.map(([id]) => [id, f(id)]));
       const out = R3.map(s => ({ ...s, names: per(s, id => getSpecies(id)!.name), tlMm: per(s, id => getSpecies(id)!.tl), cls: per(s, classOf),
-        ownRow: per(s, id => !!SPACE_FACTOR[id]), zone: per(s, id => zoneOf(getSpecies(id)!)), invert: per(s, id => getSpecies(id)!.cat === 'fw-invert') }));
+        ownRow: per(s, id => !!SPACE_FACTOR[id]), zone: per(s, id => zoneOf(getSpecies(id)!)), invert: per(s, id => getSpecies(id)!.cat === 'fw-invert'),
+        // the app's own male : female ratio for fish kept by sex (Nathan 2026-10-23: give the split where it matters); shrimp have none here
+        sex: per(s, id => getSpecies(id)!.cat === 'fw-invert' ? null : GROUPS[id]?.sexed?.ratio ?? null) }));
       fs.writeFileSync(new URL('../research/calib/round-3.json', import.meta.url), JSON.stringify({ round: 3, seed: 3, made: '2026-10-23', ideal: 75, limit: 100, survey: 3, scenarios: out }) + '\n');
     }, 300000);
     it('writes research/calib/round-2.json', async () => {
