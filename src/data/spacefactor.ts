@@ -65,6 +65,7 @@ export const SPACE_FACTOR: Record<string, [number, string]> = {
 /** Share of the floor-model footprint a species really spreads over (scene/stocking.ts floorUseCm2): 1 for every bottom dweller
  *  not listed. Judgment constants (est), not fits: no source gives a per-fish floor figure for a species that piles up. */
 export const FLOOR_FACTOR: Record<string, [number, string]> = {
+  oto: [0.5, 'grazes glass, plant leaves, wood and rock more than open substrate: two expert answer sets (round 2 ngr-ai, round 3 chatgpt-high, both AI models) asked for less floor weight than a substrate fish of its size; Nathan: take the advice, 2026-10-23. Half of the all-zone share, so a quarter of a bottom dweller'],
   kuhli: [0.6, 'eel-shaped and gregarious: kuhlis pile into one shared cave or root tangle instead of spreading over the floor (Seriously Fish; Aquarium Co-Op keeps 3-6 in a 20 gal and more in bigger tanks). At 1.0, 17 kuhlis read 95 % of a 36 x 18 in floor; the floor stays linear in count (audit F), 2026-10-22'],
   whitecloud: [0, 'upper and middle water (Seriously Fish), never on the floor (2026-10-22). Floor only: its zone stays all, which also sets its height curve and water reading'],
   cpd: [0, 'swims above the floor (zone audit 2026-10-22, Nathan: floor only); its zone all still sets its height curve'],
@@ -83,5 +84,6 @@ export const FLOOR_FACTOR: Record<string, [number, string]> = {
 // Hand-set multipliers on top of the AqAdvisor fit (Nathan's targets, not a fit): the species' space load is multiplied by both.
 // Like FLOOR_FACTOR, re-add this block after a rebuild (scripts/space-factors.mjs writes only the tables above).
 export const SPACE_NUDGE: Record<string, [number, string]> = {
+  oto: [0.67, 'expert rounds 2-3 (ngr-ai, chatgpt, chatgpt-high; all AI models), Nathan 2026-10-23: take the advice. Four answers put the engine 1.3-1.9x too heavy on otos in the water (45 alone in a 55 gal is Ideal; 12 with 11 pandas in a 29 gal is Ideal; 20 with 4 hillstreams in a 30 gal is Ideal; 19 with 11 pandas is Caution); median multiplier 0.67 on the AqAdvisor factor 3.34. 6 otos in a 10 gal: 95 % -> 64 %'],
   discus: [1.435, 'Nathan 2026-10-22: 6 discus in a 55 gal (48 x 13 x 20 in) should read 85 % (was 59 % of the space): 85.2 % now, in the caution band (75-100)'],
 };
