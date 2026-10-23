@@ -1,0 +1,354 @@
+{
+ "batch": "LA",
+ "agent_notes": "Lane LA 2026-10-23 length audit (research/species-length-audit.md): typical adult total length against FishBase and Seriously Fish.",
+ "species": {
+  "chili": {
+   "fields": {
+    "tl": {
+     "ours": 23,
+     "verdict": "derived",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Boraras-brigittae.html",
+       "site": "FishBase",
+       "quote": "Max length : 3.5 cm TL male/unsexed; (Ref. 13371)",
+       "states": "FishBase max 35 mm TL"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/boraras-brigittae/",
+       "site": "Seriously",
+       "quote": "20mm SL0.8in SL",
+       "states": "Seriously Fish max SL 20 mm"
+      }
+     ],
+     "decision": "lane LA 2026-10-23 (Nathan: update the adult lengths): typical adult total length, SF 20 SL x1.2=24; FB common 18 SL=22. Our 35 is FB max TL only; OFF by ~-35%; was 35"
+    }
+   }
+  },
+  "clownloach": {
+   "fields": {
+    "tl": {
+     "ours": 230,
+     "verdict": "derived",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Chromobotia-macracanthus.html",
+       "site": "FishBase",
+       "quote": "Max length : 30.5 cm TL male/unsexed; (Ref. 92922)",
+       "states": "FishBase max 305 mm TL"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/chromobotia-macracanthus/",
+       "site": "Seriously",
+       "quote": "400mm SL",
+       "states": "Seriously Fish max SL 400 mm"
+      }
+     ],
+     "decision": "lane LA 2026-10-23 (Nathan: update the adult lengths): typical adult total length, FB 305 TL vs SF 400 SL (wild); home-aquarium adults mostly 20-25 cm; 300 is upper bound.; was 300"
+    }
+   }
+  },
+  "swordtail": {
+   "fields": {
+    "tl": {
+     "ours": 110,
+     "verdict": "derived",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Xiphophorus-hellerii.html",
+       "site": "FishBase",
+       "quote": "Max length : 14.0 cm TL male/unsexed",
+       "states": "FishBase max 140 mm TL"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/xiphophorus-hellerii/",
+       "site": "Seriously",
+       "quote": "Max size: 140mm SL6in SL",
+       "states": "Seriously Fish max SL 140 mm"
+      }
+     ],
+     "decision": "lane LA 2026-10-23 (Nathan: update the adult lengths): typical adult total length, FB 140 TL male/160 female is max; SF 140 SL conflicts; typical aquarium adults ~90-100 SL males w/o sword, ~110-120 TL incl. sword.; was 140"
+    },
+    "female.tl": {
+     "ours": 120,
+     "verdict": "derived",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Xiphophorus-hellerii.html",
+       "site": "FishBase",
+       "quote": "Max length : 14.0 cm TL male/unsexed",
+       "states": "FishBase max 140 mm TL"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/xiphophorus-hellerii/",
+       "site": "Seriously",
+       "quote": "Max size: 140mm SL6in SL",
+       "states": "Seriously Fish max SL 140 mm"
+      }
+     ],
+     "decision": "lane LA 2026-10-23: female by the same sources and the typical-adult reading; was 160"
+    }
+   }
+  },
+  "guppy": {
+   "fields": {
+    "tl": {
+     "ours": 38,
+     "verdict": "derived",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Poecilia-reticulata.html",
+       "site": "FishBase",
+       "quote": "Max length : 5.0 cm SL male/unsexed; (Ref. 59043); 6.0 cm SL (female)",
+       "states": "FishBase max 50 mm SL"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/poecilia-reticulata/",
+       "site": "Seriously",
+       "quote": "60mm SL",
+       "states": "Seriously Fish max SL 60 mm"
+      }
+     ],
+     "decision": "lane LA 2026-10-23 (Nathan: update the adult lengths): typical adult total length, Wild-type male ~25-30 SL; with caudal ~35-40 TL; female ~40-45 SL, ~50-55 TL.; was 30"
+    }
+   }
+  },
+  "kadango": {
+   "fields": {
+    "tl": {
+     "ours": 170,
+     "verdict": "derived",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Copadichromis-borleyi.html",
+       "site": "FishBase",
+       "quote": "Max length : 14.0 cm TL male/unsexed;",
+       "states": "FishBase max 140 mm TL"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/copadichromis-borleyi/",
+       "site": "Seriously",
+       "quote": "200mm SL8in SL",
+       "states": "Seriously Fish max SL 200 mm"
+      }
+     ],
+     "decision": "lane LA 2026-10-23 (Nathan: update the adult lengths): typical adult total length, FB 140 TL vs SF 200 SL (~240 TL) conflict; aquarium adults ~12-14 cm SL, ~15-17 cm TL.; was 140"
+    },
+    "female.tl": {
+     "ours": 140,
+     "verdict": "derived",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Copadichromis-borleyi.html",
+       "site": "FishBase",
+       "quote": "Max length : 14.0 cm TL male/unsexed;",
+       "states": "FishBase max 140 mm TL"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/copadichromis-borleyi/",
+       "site": "Seriously",
+       "quote": "200mm SL8in SL",
+       "states": "Seriously Fish max SL 200 mm"
+      }
+     ],
+     "decision": "lane LA 2026-10-23: female by the same sources and the typical-adult reading; was 120"
+    }
+   }
+  },
+  "honeygourami": {
+   "fields": {
+    "tl": {
+     "ours": 60,
+     "verdict": "derived",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Trichogaster-chuna.html",
+       "site": "FishBase",
+       "quote": "Max length : 13.7 cm TL male/unsexed",
+       "states": "FishBase max 137 mm TL"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/trichogaster-chuna/",
+       "site": "Seriously",
+       "quote": "55mm SL2.2in SL",
+       "states": "Seriously Fish max SL 55 mm"
+      }
+     ],
+     "decision": "lane LA 2026-10-23 (Nathan: update the adult lengths): typical adult total length, FB 137 TL conflicts >25% with SF 55 SL (~66 TL); FB figure looks wrong, trust SF; typical adults ~50 SL, ~60 TL.; was 50"
+    },
+    "female.tl": {
+     "ours": 60,
+     "verdict": "derived",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Trichogaster-chuna.html",
+       "site": "FishBase",
+       "quote": "Max length : 13.7 cm TL male/unsexed",
+       "states": "FishBase max 137 mm TL"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/trichogaster-chuna/",
+       "site": "Seriously",
+       "quote": "55mm SL2.2in SL",
+       "states": "Seriously Fish max SL 55 mm"
+      }
+     ],
+     "decision": "lane LA 2026-10-23: female by the same sources and the typical-adult reading; was 50"
+    }
+   }
+  },
+  "peapuffer": {
+   "fields": {
+    "tl": {
+     "ours": 30,
+     "verdict": "derived",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Carinotetraodon-travancoricus.html",
+       "site": "FishBase",
+       "quote": "Max length : 3.5 cm TL male/unsexed; (Ref. 4833)",
+       "states": "FishBase max 35 mm TL"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/carinotetraodon-travancoricus/",
+       "site": "Seriously",
+       "quote": "25mm SL1.0in SL",
+       "states": "Seriously Fish max SL 25 mm"
+      }
+     ],
+     "decision": "lane LA 2026-10-23 (Nathan: update the adult lengths): typical adult total length, FB biology: 'Reaches less than 2.5 cm TL'; SF 25 SL (~30 TL); typical ~25-30 TL.; was 35"
+    },
+    "female.tl": {
+     "ours": 27,
+     "verdict": "derived",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Carinotetraodon-travancoricus.html",
+       "site": "FishBase",
+       "quote": "Max length : 3.5 cm TL male/unsexed; (Ref. 4833)",
+       "states": "FishBase max 35 mm TL"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/carinotetraodon-travancoricus/",
+       "site": "Seriously",
+       "quote": "25mm SL1.0in SL",
+       "states": "Seriously Fish max SL 25 mm"
+      }
+     ],
+     "decision": "lane LA 2026-10-23: female by the same sources and the typical-adult reading; was 30"
+    }
+   }
+  },
+  "gbr": {
+   "fields": {
+    "tl": {
+     "ours": 50,
+     "verdict": "derived",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Mikrogeophagus-ramirezi.html",
+       "site": "FishBase",
+       "quote": "Max length : 4.2 cm SL male/unsexed",
+       "states": "FishBase max 42 mm SL"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/mikrogeophagus-ramirezi/",
+       "site": "Seriously",
+       "quote": "40mm SL1.6in SL",
+       "states": "Seriously Fish max SL 40 mm"
+      }
+     ],
+     "decision": "lane LA 2026-10-23 (Nathan: update the adult lengths): typical adult total length, male 40 SL x1.2 = 48, typical ~50; female ~42; was 60"
+    },
+    "female.tl": {
+     "ours": 42,
+     "verdict": "derived",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Mikrogeophagus-ramirezi.html",
+       "site": "FishBase",
+       "quote": "Max length : 4.2 cm SL male/unsexed",
+       "states": "FishBase max 42 mm SL"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/mikrogeophagus-ramirezi/",
+       "site": "Seriously",
+       "quote": "40mm SL1.6in SL",
+       "states": "Seriously Fish max SL 40 mm"
+      }
+     ],
+     "decision": "lane LA 2026-10-23: female by the same sources and the typical-adult reading; was 50"
+    }
+   }
+  },
+  "dwarfgourami": {
+   "fields": {
+    "tl": {
+     "ours": 80,
+     "verdict": "derived",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Trichogaster-lalius.html",
+       "site": "FishBase",
+       "quote": "Max length : 9.5 cm TL male/unsexed; (Ref. 116964)",
+       "states": "FishBase max 95 mm TL"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/trichogaster-lalius/",
+       "site": "Seriously",
+       "quote": "88mm SL3.5in SL",
+       "states": "Seriously Fish max SL 88 mm"
+      }
+     ],
+     "decision": "lane LA 2026-10-23 (Nathan: update the adult lengths): typical adult total length, FB 95 TL is max; adults seen 65-85; female ~65; was 95"
+    }
+   }
+  },
+  "ember": {
+   "fields": {
+    "tl": {
+     "ours": 23,
+     "verdict": "derived",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Hyphessobrycon-amandae.html",
+       "site": "FishBase",
+       "quote": "Max length : 2.0 cm SL male/unsexed;",
+       "states": "FishBase max 20 mm SL"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/hyphessobrycon-amandae/",
+       "site": "Seriously",
+       "quote": "grows to around 20 mm SL",
+       "states": "Seriously Fish max SL 20 mm"
+      }
+     ],
+     "decision": "lane LA 2026-10-23 (Nathan: update the adult lengths): typical adult total length, Both sites give 20 mm SL; x1.2 = ~24 mm TL; typical fish slightly under max.; was 20"
+    }
+   }
+  },
+  "hatchet": {
+   "fields": {
+    "tl": {
+     "ours": 40,
+     "verdict": "derived",
+     "sources": [
+      {
+       "url": "https://www.fishbase.se/summary/Carnegiella-strigata.html",
+       "site": "FishBase",
+       "quote": "Max length : 3.5 cm SL male/unsexed",
+       "states": "FishBase max 35 mm SL"
+      },
+      {
+       "url": "https://www.seriouslyfish.com/species/carnegiella-strigata/",
+       "site": "Seriously",
+       "quote": "35mm SL1.4in SL",
+       "states": "Seriously Fish max SL 35 mm"
+      }
+     ],
+     "decision": "lane LA 2026-10-23 (Nathan: update the adult lengths): typical adult total length, 35 SL x1.2 = 42; typical 40; was 35"
+    }
+   }
+  }
+ }
+}

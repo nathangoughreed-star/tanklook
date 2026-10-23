@@ -1,0 +1,290 @@
+[
+ {
+  "id": "chili",
+  "field": "tl",
+  "verdict": "derived",
+  "url": "https://www.fishbase.se/summary/Boraras-brigittae.html",
+  "result": "label",
+  "score": 1,
+  "quote": "Max length : 3.5 cm TL male/unsexed; (Ref. 13371)"
+ },
+ {
+  "id": "chili",
+  "field": "tl",
+  "verdict": "derived",
+  "url": "https://www.seriouslyfish.com/species/boraras-brigittae/",
+  "result": "compact",
+  "score": 1,
+  "quote": "20mm SL0.8in SL"
+ },
+ {
+  "id": "clownloach",
+  "field": "tl",
+  "verdict": "derived",
+  "url": "https://www.fishbase.se/summary/Chromobotia-macracanthus.html",
+  "result": "label",
+  "score": 1,
+  "quote": "Max length : 30.5 cm TL male/unsexed; (Ref. 92922)"
+ },
+ {
+  "id": "clownloach",
+  "field": "tl",
+  "verdict": "derived",
+  "url": "https://www.seriouslyfish.com/species/chromobotia-macracanthus/",
+  "result": "compact",
+  "score": 1,
+  "quote": "400mm SL"
+ },
+ {
+  "id": "swordtail",
+  "field": "tl",
+  "verdict": "derived",
+  "url": "https://www.fishbase.se/summary/Xiphophorus-hellerii.html",
+  "result": "label",
+  "score": 1,
+  "quote": "Max length : 14.0 cm TL male/unsexed"
+ },
+ {
+  "id": "swordtail",
+  "field": "tl",
+  "verdict": "derived",
+  "url": "https://www.seriouslyfish.com/species/xiphophorus-hellerii/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Max size: 140mm SL6in SL"
+ },
+ {
+  "id": "swordtail",
+  "field": "female.tl",
+  "verdict": "derived",
+  "url": "https://www.fishbase.se/summary/Xiphophorus-hellerii.html",
+  "result": "label",
+  "score": 1,
+  "quote": "Max length : 14.0 cm TL male/unsexed"
+ },
+ {
+  "id": "swordtail",
+  "field": "female.tl",
+  "verdict": "derived",
+  "url": "https://www.seriouslyfish.com/species/xiphophorus-hellerii/",
+  "result": "compact",
+  "score": 1,
+  "quote": "Max size: 140mm SL6in SL"
+ },
+ {
+  "id": "guppy",
+  "field": "tl",
+  "verdict": "derived",
+  "url": "https://www.fishbase.se/summary/Poecilia-reticulata.html",
+  "result": "label",
+  "score": 1,
+  "quote": "Max length : 5.0 cm SL male/unsexed; (Ref. 59043); 6.0 cm SL (female)"
+ },
+ {
+  "id": "guppy",
+  "field": "tl",
+  "verdict": "derived",
+  "url": "https://www.seriouslyfish.com/species/poecilia-reticulata/",
+  "result": "compact",
+  "score": 1,
+  "quote": "60mm SL"
+ },
+ {
+  "id": "kadango",
+  "field": "tl",
+  "verdict": "derived",
+  "url": "https://www.fishbase.se/summary/Copadichromis-borleyi.html",
+  "result": "label",
+  "score": 1,
+  "quote": "Max length : 14.0 cm TL male/unsexed;"
+ },
+ {
+  "id": "kadango",
+  "field": "tl",
+  "verdict": "derived",
+  "url": "https://www.seriouslyfish.com/species/copadichromis-borleyi/",
+  "result": "compact",
+  "score": 1,
+  "quote": "200mm SL8in SL"
+ },
+ {
+  "id": "kadango",
+  "field": "female.tl",
+  "verdict": "derived",
+  "url": "https://www.fishbase.se/summary/Copadichromis-borleyi.html",
+  "result": "label",
+  "score": 1,
+  "quote": "Max length : 14.0 cm TL male/unsexed;"
+ },
+ {
+  "id": "kadango",
+  "field": "female.tl",
+  "verdict": "derived",
+  "url": "https://www.seriouslyfish.com/species/copadichromis-borleyi/",
+  "result": "compact",
+  "score": 1,
+  "quote": "200mm SL8in SL"
+ },
+ {
+  "id": "honeygourami",
+  "field": "tl",
+  "verdict": "derived",
+  "url": "https://www.fishbase.se/summary/Trichogaster-chuna.html",
+  "result": "label",
+  "score": 1,
+  "quote": "Max length : 13.7 cm TL male/unsexed"
+ },
+ {
+  "id": "honeygourami",
+  "field": "tl",
+  "verdict": "derived",
+  "url": "https://www.seriouslyfish.com/species/trichogaster-chuna/",
+  "result": "compact",
+  "score": 1,
+  "quote": "55mm SL2.2in SL"
+ },
+ {
+  "id": "honeygourami",
+  "field": "female.tl",
+  "verdict": "derived",
+  "url": "https://www.fishbase.se/summary/Trichogaster-chuna.html",
+  "result": "label",
+  "score": 1,
+  "quote": "Max length : 13.7 cm TL male/unsexed"
+ },
+ {
+  "id": "honeygourami",
+  "field": "female.tl",
+  "verdict": "derived",
+  "url": "https://www.seriouslyfish.com/species/trichogaster-chuna/",
+  "result": "compact",
+  "score": 1,
+  "quote": "55mm SL2.2in SL"
+ },
+ {
+  "id": "peapuffer",
+  "field": "tl",
+  "verdict": "derived",
+  "url": "https://www.fishbase.se/summary/Carinotetraodon-travancoricus.html",
+  "result": "label",
+  "score": 1,
+  "quote": "Max length : 3.5 cm TL male/unsexed; (Ref. 4833)"
+ },
+ {
+  "id": "peapuffer",
+  "field": "tl",
+  "verdict": "derived",
+  "url": "https://www.seriouslyfish.com/species/carinotetraodon-travancoricus/",
+  "result": "compact",
+  "score": 1,
+  "quote": "25mm SL1.0in SL"
+ },
+ {
+  "id": "peapuffer",
+  "field": "female.tl",
+  "verdict": "derived",
+  "url": "https://www.fishbase.se/summary/Carinotetraodon-travancoricus.html",
+  "result": "label",
+  "score": 1,
+  "quote": "Max length : 3.5 cm TL male/unsexed; (Ref. 4833)"
+ },
+ {
+  "id": "peapuffer",
+  "field": "female.tl",
+  "verdict": "derived",
+  "url": "https://www.seriouslyfish.com/species/carinotetraodon-travancoricus/",
+  "result": "compact",
+  "score": 1,
+  "quote": "25mm SL1.0in SL"
+ },
+ {
+  "id": "gbr",
+  "field": "tl",
+  "verdict": "derived",
+  "url": "https://www.fishbase.se/summary/Mikrogeophagus-ramirezi.html",
+  "result": "label",
+  "score": 1,
+  "quote": "Max length : 4.2 cm SL male/unsexed"
+ },
+ {
+  "id": "gbr",
+  "field": "tl",
+  "verdict": "derived",
+  "url": "https://www.seriouslyfish.com/species/mikrogeophagus-ramirezi/",
+  "result": "compact",
+  "score": 1,
+  "quote": "40mm SL1.6in SL"
+ },
+ {
+  "id": "gbr",
+  "field": "female.tl",
+  "verdict": "derived",
+  "url": "https://www.fishbase.se/summary/Mikrogeophagus-ramirezi.html",
+  "result": "label",
+  "score": 1,
+  "quote": "Max length : 4.2 cm SL male/unsexed"
+ },
+ {
+  "id": "gbr",
+  "field": "female.tl",
+  "verdict": "derived",
+  "url": "https://www.seriouslyfish.com/species/mikrogeophagus-ramirezi/",
+  "result": "compact",
+  "score": 1,
+  "quote": "40mm SL1.6in SL"
+ },
+ {
+  "id": "dwarfgourami",
+  "field": "tl",
+  "verdict": "derived",
+  "url": "https://www.fishbase.se/summary/Trichogaster-lalius.html",
+  "result": "label",
+  "score": 1,
+  "quote": "Max length : 9.5 cm TL male/unsexed; (Ref. 116964)"
+ },
+ {
+  "id": "dwarfgourami",
+  "field": "tl",
+  "verdict": "derived",
+  "url": "https://www.seriouslyfish.com/species/trichogaster-lalius/",
+  "result": "compact",
+  "score": 1,
+  "quote": "88mm SL3.5in SL"
+ },
+ {
+  "id": "ember",
+  "field": "tl",
+  "verdict": "derived",
+  "url": "https://www.fishbase.se/summary/Hyphessobrycon-amandae.html",
+  "result": "label",
+  "score": 1,
+  "quote": "Max length : 2.0 cm SL male/unsexed;"
+ },
+ {
+  "id": "ember",
+  "field": "tl",
+  "verdict": "derived",
+  "url": "https://www.seriouslyfish.com/species/hyphessobrycon-amandae/",
+  "result": "exact",
+  "score": 1,
+  "quote": "grows to around 20 mm SL"
+ },
+ {
+  "id": "hatchet",
+  "field": "tl",
+  "verdict": "derived",
+  "url": "https://www.fishbase.se/summary/Carnegiella-strigata.html",
+  "result": "label",
+  "score": 1,
+  "quote": "Max length : 3.5 cm SL male/unsexed"
+ },
+ {
+  "id": "hatchet",
+  "field": "tl",
+  "verdict": "derived",
+  "url": "https://www.seriouslyfish.com/species/carnegiella-strigata/",
+  "result": "compact",
+  "score": 1,
+  "quote": "35mm SL1.4in SL"
+ }
+]

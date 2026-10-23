@@ -1,0 +1,35 @@
+// Length-audit scratch: refit the space factor of every freshwater fish whose length differs from its research/fit.tsv length, so a
+// 55 gal with the fit count reads what AqAdvisor says (same rule as the original fit). Rewrites those fit.tsv rows; then run
+// node scripts/space-factors.mjs. REFIT=1 npx vitest run test/length-refit.scratch.test.ts
+import { readFileSync, writeFileSync } from 'node:fs';
+import { describe, it } from 'vitest';
+import { getSpecies } from '../src/data/species';
+import { SPACE_FACTOR } from '../src/data/spacefactor';
+import { defaultSetup } from '../src/scene/defaults';
+import { IN } from '../src/scene/physics';
+import { massG, stockingOf } from '../src/scene/stocking';
+
+const space = (id: string, n: number) => {
+  const s = defaultSetup();
+  s.tank = { ...s.tank, L: 48 * IN, D: 13 * IN, H: 20 * IN };
+  s.water.on = true; s.water.level = 0.9; s.water.salt = false;
+  s.fish = Array.from({ length: n }, (_, i) => ({ id: i + 1, species: id, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0 })) as never;
+  return stockingOf(s).waterPercent;
+};
+describe.runIf(process.env.REFIT)('refit', () => {
+  it('rewrites fit.tsv rows', () => {
+    const rows = readFileSync('research/fit.tsv', 'utf8').split('\n').map(l => l.split('\t'));
+    const log: string[] = [];
+    for (const r of rows) {
+      const sp = getSpecies(r[0]);
+      if (!sp || r[5] !== 'fw-fish' || +r[6] === sp.tl) continue;
+      const aq = +r[2], n = +r[1], old = SPACE_FACTOR[r[0]][0];
+      for (let k = 0; k < 4; k++) { const cur = space(r[0], n); SPACE_FACTOR[r[0]][0] *= aq / cur; }
+      const f = SPACE_FACTOR[r[0]][0], g = massG(r[0]);
+      log.push(`${r[0]} ${r[6]}->${sp.tl} mm, ${(+r[7]).toFixed(2)}->${g.toFixed(2)} g, factor ${old} -> ${f.toFixed(2)}, space ${space(r[0], n).toFixed(1)}% (AqAdvisor ${aq}%)`);
+      r[3] = (aq / f).toFixed(1).replace(/\.0$/, ''); r[4] = f.toFixed(2); r[6] = String(sp.tl); r[7] = g.toFixed(2);
+    }
+    writeFileSync('research/fit.tsv', rows.map(r => r.join('\t')).join('\n'));
+    writeFileSync(process.env.REFIT_LOG!, log.join('\n'));
+  });
+});

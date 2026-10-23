@@ -990,3 +990,9 @@ refit (same undo step: second `store.edit` with history false; skipped when both
 `demand.setLimits` (30 min, low, safe / 60, low, moderate / 120, flexible, any; money untouched). Swaps keep floaters floaters, carpets carpets, never a succulent. demandOf's upkeep mean now
 includes the expected loss replacement (`Contribution.lossMo`) so swaps and the panel agree with the Monte Carlo. Not covered: density sliders / restock do not fit to limits. Lane KK is
 finished unless Nathan asks for more; the preview server on 5733 is stopped.
+
+## Length audit lane (2026-10-23, applied on branch length-audit, not pushed)
+- research/species-length-audit.md: 51 freshwater fish tl vs FishBase / Seriously Fish. Off by more than 25 %: chili 35 (typical 23), clown loach 300, swordtail 140/160. Nathan said update, so 11 lengths changed (chili 23, clown loach 230, swordtail 110/120, guppy 38, kadango 170/140, honey gourami 60, pea puffer 30, ram 50, dwarf gourami 80, ember 23, hatchet 40) plus three female lengths.
+- Found: lane CB's 10-21 lengths were applied without refitting SPACE_FACTOR (21 rows). Refitted all 22 changed-length rows to AqAdvisor in a 55 gal (water %); fit.tsv rows updated. Chili now reads 37 % in that tank (was 103 %). Rule: a length change must refit that species' factor (research/length-refit.scratch.test.ts.txt: copy to test/, REFIT=1 REFIT_LOG=out.txt npx vitest run; then node scripts/space-factors.mjs).
+- Sourcing batch research/sourcing/LA.json (derived, quotes verified); anchor baseline and demand locks re-blessed. scripts/body-mass.mjs not rerun (it overwrites lane SN's hand edits).
+- Open: the other fitted factors have drifted from AqAdvisor since lane HC (median reading 1.1x, range 0.6-1.9x): a full refit is its own lane.

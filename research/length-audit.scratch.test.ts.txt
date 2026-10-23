@@ -1,0 +1,43 @@
+// Length-audit scratch (not part of the suite): what a length fix does to each freshwater fish's stocking reading.
+// (kept as .txt; copy to test/*.test.ts to run) LEN_AUDIT=<proposals.json> LEN_OUT=<out.json> npx vitest run test/length-audit.scratch.test.ts
+// proposals.json = { id: newTlMm }. One species alone in a 55 gal (48 x 13 x 20 in) at its AqAdvisor-fit count (research/fit.tsv).
+import { readFileSync, writeFileSync } from 'node:fs';
+import { describe, it } from 'vitest';
+import { getSpecies } from '../src/data/species';
+import { SPACE_FACTOR } from '../src/data/spacefactor';
+import { defaultSetup } from '../src/scene/defaults';
+import { IN } from '../src/scene/physics';
+import { massG, spaceFactor, stockingOf } from '../src/scene/stocking';
+
+const fit = Object.fromEntries(readFileSync('research/fit.tsv', 'utf8').trim().split('\n').map(l => l.split('\t')).map(r => [r[0], { n: +r[1], aq: +r[2], tl: +r[6] }]));
+const reading = (id: string, n: number) => {
+  const s = defaultSetup();
+  s.tank = { ...s.tank, L: 48 * IN, D: 13 * IN, H: 20 * IN };
+  s.water.on = true; s.water.level = 0.9; s.water.salt = false;
+  s.fish = Array.from({ length: n }, (_, i) => ({ id: i + 1, species: id, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0 })) as never;
+  const r = stockingOf(s);
+  return { space: Math.round(r.spacePercent * 10) / 10, filt: Math.round(r.filtrationPercent * 10) / 10, pct: Math.round(r.percent * 10) / 10 };
+};
+describe.runIf(process.env.LEN_AUDIT)('length audit scratch', () => {
+  it('runs', () => {
+    const prop = JSON.parse(readFileSync(process.env.LEN_AUDIT!, 'utf8')) as Record<string, number>;
+    const out: Record<string, unknown> = {};
+    for (const [id, f] of Object.entries(fit)) {
+      const sp = getSpecies(id); if (!sp || (sp.cat ?? 'fw-fish') !== 'fw-fish') continue;
+      const tl0 = sp.tl, fac0 = SPACE_FACTOR[id]?.[0], m0 = massG(id), sf0 = spaceFactor(sp);
+      const cur = reading(id, f.n);
+      const row: Record<string, unknown> = { n: f.n, fitTl: f.tl, tl: tl0, aq: f.aq, g: +m0.toFixed(2), cur };
+      if (prop[id] && prop[id] !== tl0 && fac0 !== undefined) {
+        sp.tl = prop[id];
+        row.newTl = prop[id]; row.newG = +massG(id).toFixed(2);
+        row.raw = reading(id, f.n);
+        SPACE_FACTOR[id][0] = fac0 * (sf0 * m0 ** 0.45) / (spaceFactor(sp) * massG(id) ** 0.45);   // same space per animal as before the length change (SPACE_EXP 0.45)
+        row.newFactor = +SPACE_FACTOR[id][0].toFixed(2); row.oldFactor = fac0;
+        row.comp = reading(id, f.n);
+        SPACE_FACTOR[id][0] = fac0; sp.tl = tl0;
+      }
+      out[id] = row;
+    }
+    writeFileSync(process.env.LEN_OUT!, JSON.stringify(out, null, 1));
+  });
+});
