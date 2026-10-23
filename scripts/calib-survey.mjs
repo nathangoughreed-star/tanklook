@@ -46,7 +46,8 @@ button.o{font:inherit;font-size:12.5px;text-align:left;padding:5px 7px;border:1p
 button.o.on{border-color:var(--acc);box-shadow:0 0 0 2px #1f6f8b33;background:#eef6f9}
 .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
 input[type=number]{font:inherit;width:66px;padding:3px 6px;border:1px solid var(--line);border-radius:6px}input[type=text]{font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:6px}
-select{font:inherit;font-size:12px;padding:2px 4px;border:1px solid var(--line);border-radius:6px;background:#fff}
+.alt{margin:4px 0 2px;font-size:12px;color:var(--mute)}.alt button.o{font-size:12px;padding:3px 7px;border-style:dashed;margin-left:4px}
+.cnt{display:flex;align-items:center;gap:6px}.cnt.off input{opacity:.45}
 .sub{color:var(--mute);font-size:12px;margin:-2px 0 4px}
 .yn td{padding:2px 6px 2px 0}
 textarea{width:100%;height:40px;font:inherit;border:1px solid var(--line);border-radius:6px;padding:5px}
@@ -107,20 +108,22 @@ function start() {
     '<p>' + TANKS.length + ' tanks, each described in words (no picture: camera and decor change how full a tank looks). Judge <b>room</b> for the animals: the filter is always strong enough, and the tank is always furnished as the species need, so neither is the limit. Compatibility goes in "keep together". You never see the app\\'s own number. One tank comes up twice on purpose, and two pairs hold the same animals in tanks of the same gallons but another shape.</p>' +
     '<p class="note">' + DEF + '</p>' +
     '<p>Your name or initials (only to tell answer files apart):<br><input type="text" id="who" value="' + esc(st.expert) + '" style="width:260px"></p>' +
-    '<p>Answering as: <select id="kind"><option value="">choose</option>' + [['keeper', 'a fishkeeper'], ['professional', 'a professional (store, breeder, aquarist)'], ['ai', 'an AI model']].map(([v, l]) => '<option value="' + v + '"' + (st.kind === v ? ' selected' : '') + '>' + l + '</option>').join('') + '</select></p>' +
+    '<p>Answering as:</p><div class="r3" style="margin-bottom:10px">' + [['keeper', 'A fishkeeper'], ['professional', 'A professional (store, breeder, aquarist)'], ['ai', 'An AI model']].map(([v, l]) => '<button class="o' + (st.kind === v ? ' on' : '') + '" data-kind="' + v + '">' + l + '</button>').join('') + '</div>' +
     '<p><button class="b go" id="go">' + (st.at >= 0 ? 'Continue' : 'Start') + '</button> <button class="b" data-imp>Import answers</button> <span class="note">(a file you exported before, this round or an earlier one)</span></p></div></div>';
   wire();
-  document.getElementById('go').onclick = () => { const w = document.getElementById('who').value.trim(), k = document.getElementById('kind').value; if (!w || !k) return; st.expert = w; st.kind = k; if (st.at < 0) st.at = 0; save(); show(); };
+  document.querySelectorAll('[data-kind]').forEach(b => b.onclick = () => { st.expert = document.getElementById('who').value.trim(); st.kind = b.dataset.kind; save(); start(); });
+  document.getElementById('go').onclick = () => { const w = document.getElementById('who').value.trim(); if (!w || !st.kind) return; st.expert = w; if (st.at < 0) st.at = 0; save(); show(); };
 }
 // where it swims, so experts see who shares which part of the water (ChatGPT's dogfood note: hatchetfish and honey gouramis share the surface)
 const usesTag = s => s.floor >= 1 ? '<span class="tag b">floor + water</span>' : s.floor > 0 ? '<span class="tag b">water + floor, half the time</span>' : '<span class="tag w">' + (s.zone === 'top' ? 'water, near the surface' : 'water column') + '</span>';
 const band = (k, a) => '<div class="r3">' + BANDS.map((b, i) => '<button class="o' + (a[k] === i ? ' on' : '') + '" data-set="' + k + '" data-v="' + i + '"><span class="dot" style="background:' + b[0] + '"></span>' + b[1] + '</button>').join('') + '</div>';
 const choice = (k, a, opts, cls = 'r3') => '<div class="' + cls + '">' + opts.map(([v, l]) => '<button class="o' + (a[k] === v ? ' on' : '') + '" data-set="' + k + '" data-v="' + esc(v) + '">' + l + '</button>').join('') + '</div>';
-const statusSel = (who, k, c) => '<select data-st="' + who + '.' + k + '"><option value="">count</option><option value="cant-say"' + (c.status[k] === 'cant-say' ? ' selected' : '') + '>can\\'t say</option><option value="no-valid-count"' + (c.status[k] === 'no-valid-count' ? ' selected' : '') + '>no count works as described</option></select>';
+// no dropdowns (Nathan 2026-10-23): a screenshot must show every option, so the two non-count answers are buttons on their own line, dashed, picked instead of a number
+const countRow = (label, who, k, c) => '<div class="cnt' + (c.status[k] ? ' off' : '') + '">' + label + ' <input type="number" min="0" data-num="' + who + '.' + k + '" value="' + (c[k] ?? '') + '"></div>' +
+  '<div class="alt">or, instead of a number:' + [['cant-say', 'Can&#39;t say'], ['no-valid-count', 'No count works as described']].map(([v, l]) => '<button class="o' + (c.status[k] === v ? ' on' : '') + '" data-stb="' + who + '.' + k + '" data-v="' + v + '">' + l + '</button>').join('') + '</div>';
 function keep() {
   const t = TANKS[st.at], a = ans(t), num = v => v === '' || v == null ? null : Math.max(0, Math.round(+v));
-  for (const el of document.querySelectorAll('[data-num]')) { const [who, k] = el.dataset.num.split('.'); a[who][k] = num(el.value); }
-  for (const el of document.querySelectorAll('[data-st]')) { const [who, k] = el.dataset.st.split('.'); if (el.value) { a[who].status[k] = el.value; a[who][k] = null; } else delete a[who].status[k]; }
+  for (const el of document.querySelectorAll('[data-num]')) { const [who, k] = el.dataset.num.split('.'); a[who][k] = num(el.value); if (a[who][k] != null) delete a[who].status[k]; }
   const n = document.getElementById('note'); if (n) a.note = n.value;
   a.ms += Date.now() - shownAt; shownAt = Date.now(); save();
 }
@@ -143,9 +146,8 @@ function show() {
   M += '<div class="q"><h3>Is the tank big enough for each species at all?</h3><table class="yn">' + t.stock.map(s => '<tr><td>' + esc(s.name) + '</td><td><div class="r2" style="width:120px">' +
     [[true, 'yes'], [false, 'no']].map(([v, l]) => '<button class="o' + (a.bigEnough[s.id] === v ? ' on' : '') + '" data-big="' + s.id + '" data-v="' + v + '">' + l + '</button>').join('') + '</div></td></tr>').join('') + '</table></div></div>';
   let R = '<div class="card"><p class="sec">Counts</p><div class="q"><h3>' + esc(keepTxt(others)) + ' many ' + esc(sp(t.focal).pl.toLowerCase()) + '?</h3>' +
-    'ideal <input type="number" min="0" data-num="focal.ideal" value="' + (a.focal.ideal ?? '') + '"> ' + statusSel('focal', 'ideal', a.focal) +
-    (t.noLimit ? '' : '<br>at most <input type="number" min="0" data-num="focal.limit" value="' + (a.focal.limit ?? '') + '" style="margin-top:4px"> ' + statusSel('focal', 'limit', a.focal)) + '</div>';
-  if (a.mate) R += '<div class="q"><h3>' + esc(keepTxt(t.stock.filter(s => s.id !== t.mate))) + ' many ' + esc(sp(t.mate).pl.toLowerCase()) + ' would be ideal?</h3>ideal <input type="number" min="0" data-num="mate.ideal" value="' + (a.mate.ideal ?? '') + '"> ' + statusSel('mate', 'ideal', a.mate) + '</div>';
+    countRow('ideal', 'focal', 'ideal', a.focal) + (t.noLimit ? '' : '<div style="margin-top:8px">' + countRow('at most', 'focal', 'limit', a.focal) + '</div>') + '</div>';
+  if (a.mate) R += '<div class="q"><h3>' + esc(keepTxt(t.stock.filter(s => s.id !== t.mate))) + ' many ' + esc(sp(t.mate).pl.toLowerCase()) + ' would be ideal?</h3>' + countRow('ideal', 'mate', 'ideal', a.mate) + '</div>';
   R += '<p class="sec">About your answers</p>';
   if (t.mixed) R += '<div class="q"><h3>Would you keep these species together long term?</h3>' + choice('together', a, [['yes', 'Yes'], ['caution', 'With caution'], ['no', 'No']]) + '</div>';
   R += '<div class="q"><h3>How sure are you of the counts?</h3>' + choice('confidence', a, [[0, 'Low'], [1, 'Medium'], [2, 'High']]) + '</div>';
@@ -155,6 +157,7 @@ function show() {
   wire();
   const typed = v => /^\\d+$/.test(v) ? +v : v;
   document.querySelectorAll('[data-set]').forEach(b => b.onclick = () => { keep(); a[b.dataset.set] = typed(b.dataset.v); save(); show(); });
+  document.querySelectorAll('[data-stb]').forEach(b => b.onclick = () => { keep(); const [who, k] = b.dataset.stb.split('.'), c = a[who]; if (c.status[k] === b.dataset.v) delete c.status[k]; else { c.status[k] = b.dataset.v; c[k] = null; } save(); show(); });
   document.querySelectorAll('[data-big]').forEach(b => b.onclick = () => { keep(); a.bigEnough[b.dataset.big] = b.dataset.v === 'true'; save(); show(); });
   document.getElementById('back').onclick = () => { keep(); st.at = Math.max(0, i - 1); save(); show(); };
   document.getElementById('next').onclick = () => { keep();

@@ -269,3 +269,8 @@ reaches about 2 cm (a standard vs total length mix-up?). Mass goes with length c
 that length, so the two partly cancel. Proposed as its own audit (all species' lengths), not changed here.
 The 8 honey gouramis passed the fighting check because the honey gourami has no territory rule (data/groups.ts): a gap for the
 territory lane, recorded here.
+
+**Survey 2.2: no dropdowns (Nathan 2026-10-23).** LLM experts get the survey as a screenshot, so no option may hide in a menu.
+"Answering as" is three buttons; under each count box a dashed line "or, instead of a number:" holds "Can't say" and "No count
+works as described" (picking one clears the number, typing a number clears it, clicking it again unselects it). Stored answers
+are unchanged (`status`, `expertKind`), so earlier answer files still import.
