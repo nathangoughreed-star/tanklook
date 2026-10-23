@@ -45,6 +45,13 @@ models on /review.html (and its drawImage error), TG leftovers (heater product p
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
+## SU: Sump section in Tech (2026-10-22..23, branch `su`, worktree `.claude/worktrees/su`, port 5917; Nathan approved the layout and the push)
+- Nathan: "an additional section in the 'tech'. Reuse the same presets or custom size tanks for it." 2026-10-23: layout yes; a sump is one filter unit among the others (one sump per tank, it has one size); offer it on ANY tank; the builds pick it wherever it is the best option, any size; 3D under the stand yes (picture first, not built).
+- `tech.sump = { model?, L, D, H }` (interior mm; catalogue sizes from 10 gal, SUMP_MODELS; custom 50-3000 mm). No size = `sumpDefault` (smallest plain size >= 25 % of the display volume that fits its length). Sump water (x 0.5, SUMP_FILL) counts in the nitrogen budget and the water change, NOT in Space or the tank minimum.
+- Priced in the Filtration row (counted once): sump tank (bare-tank rows by its gallons), new cited row gear:sump-plumbing, return pump. The Tech menu's Sump row (techMenu.ts) reads "in Filtration"; "Pick a size..." opens the Tank sizes dialog in sump mode (panels.ts hook `openSumpPicker`).
+- `sumpOffered` (any wet tank) is the one rule for tankfit and builds; tankfit's fallback filter is now the lowest filtration (was the highest rated capacity). Every fitting tankFor pick has a build at or under 100 %. Moved numbers: research/sump-section.md (only 12 blue tangs move, 240 -> 210 gal).
+- Open: 3D sump under the stand (show Nathan a picture first); the sump's own heat loss is not modelled; inferTech gives salt tanks an in-sump skimmer with no sump (pre-existing).
+
 ## XC: expert calibration rounds (2026-10-23, side chat from Glass-Box-stocking; branch `xc`, worktree `.claude/worktrees/xc`, port 5823; NOT pushed)
 - **Why:** refine the stocking engine's space numbers from expert opinions over randomized rounds, instead of hand multipliers (SPACE_NUDGE).
   Design and findings: research/expert-calibration.md.
