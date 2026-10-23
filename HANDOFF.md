@@ -45,12 +45,18 @@ models on /review.html (and its drawImage error), TG leftovers (heater product p
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
+## SF: Sump follow-ups (2026-10-23, branch `sf`, worktree `.claude/worktrees/sf`; from SU's open items)
+- Heat loss (tech.ts heatLoss): a tank with a sump adds the sump's glass up to its water line (H x SUMP_FILL), its floor, and its water surface at the OPEN rate (it sits open in the cabinet; the display's lid does not cover it). wallM2 / floorM2 / surfaceM2 include it; the Tech menu's heat hint says "(the sump included)". The model has no volume term (areas only), so the sump's water volume does not enter. Moves only tanks with a sump: e.g. salt 75 gal open + 20 gal high sump, room default: heater 250 -> 300 W, 67.5 -> 87.1 kWh/mo; heater $ flat (the generic heater prices are one class from 150 to 500 W).
+- Skimmer default: inferTech's skimmer follows the filter ('sump' only with a sump filter, else 'hob'); techOf fills a saved tech's missing skimmer row from its own filter units. Old files with no tech do not move (demand/engine.ts still prices its inferred skimmer row); with the tech made explicit, reef $3310 -> $3303 and clownnano $1403 -> $1399, risk unchanged (both skimmers are tier 2). Re-blessed gearFilters LOCK (reef+tech, clownnano+tech); sump.test.ts "counts the sump once" pins skimmer 'hob' on both tanks (one-line hook in SU's test).
+- 3D sump under the stand: mock-up sent to Nathan (side-session-notes sf-sump-mockup.png); NOT built until his answer.
+- Tests: test/sf.test.ts.
+
 ## SU: Sump section in Tech (2026-10-22..23, branch `su`, worktree `.claude/worktrees/su`, port 5917; Nathan approved the layout and the push)
 - Nathan: "an additional section in the 'tech'. Reuse the same presets or custom size tanks for it." 2026-10-23: layout yes; a sump is one filter unit among the others (one sump per tank, it has one size); offer it on ANY tank; the builds pick it wherever it is the best option, any size; 3D under the stand yes (picture first, not built).
 - `tech.sump = { model?, L, D, H }` (interior mm; catalogue sizes from 10 gal, SUMP_MODELS; custom 50-3000 mm). No size = `sumpDefault` (smallest plain size >= 25 % of the display volume that fits its length). Sump water (x 0.5, SUMP_FILL) counts in the nitrogen budget and the water change, NOT in Space or the tank minimum.
 - Priced in the Filtration row (counted once): sump tank (bare-tank rows by its gallons), new cited row gear:sump-plumbing, return pump. The Tech menu's Sump row (techMenu.ts) reads "in Filtration"; "Pick a size..." opens the Tank sizes dialog in sump mode (panels.ts hook `openSumpPicker`).
 - `sumpOffered` (any wet tank) is the one rule for tankfit and builds; tankfit's fallback filter is now the lowest filtration (was the highest rated capacity). Every fitting tankFor pick has a build at or under 100 %. Moved numbers: research/sump-section.md (only 12 blue tangs move, 240 -> 210 gal).
-- Open: 3D sump under the stand (show Nathan a picture first); the sump's own heat loss is not modelled; inferTech gives salt tanks an in-sump skimmer with no sump (pre-existing).
+- Open: 3D sump under the stand (lane SF: picture sent, waiting on Nathan); heat loss and skimmer default done in lane SF.
 
 ## XC: expert calibration rounds (2026-10-23, side chat from Glass-Box-stocking; branch `xc`, worktree `.claude/worktrees/xc`, port 5823; NOT pushed)
 - **Why:** refine the stocking engine's space numbers from expert opinions over randomized rounds, instead of hand multipliers (SPACE_NUDGE).

@@ -113,8 +113,9 @@ describe('SU: tankfit and the builds offer a sump on the same tanks', () => {
 
 describe('SU: coordinator review', () => {
   it('the plan counts the sump once (in the Filtration row): canister + sump costs the canister plus the sump unit', () => {
-    const can = tankOf('g75', [], true, withUnits({ rows: {} }, 'filter', [{ kind: 'canister' }]));
-    const both = tankOf('g75', [], true, { ...withUnits({ rows: {} }, 'filter', [{ kind: 'canister' }, { kind: 'sump' }]), sump: { model: 'g20h', ...tankFromModel(getTankModel('g20h')!) } });
+    // the same skimmer on both (lane SF: an unset skimmer follows the filters, so only the sump unit differs)
+    const can = tankOf('g75', [], true, withUnits({ rows: { skimmer: 'hob' } }, 'filter', [{ kind: 'canister' }]));
+    const both = tankOf('g75', [], true, { ...withUnits({ rows: { skimmer: 'hob' } }, 'filter', [{ kind: 'canister' }, { kind: 'sump' }]), sump: { model: 'g20h', ...tankFromModel(getTankModel('g20h')!) } });
     const usd = (S: TankSetup) => demandOf(S, defaultProfile(), { now: NOW }).totals.setupUsd;
     const sumpUnit = optionCost(both, 'filter', 'sump', { tech: { ...both.tech!, filters: [{ kind: 'sump' }] } });
     const mean = (r: { lo: number; mode: number; hi: number }) => (r.lo + r.mode + r.hi) / 3;

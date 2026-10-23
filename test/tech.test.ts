@@ -34,7 +34,7 @@ describe('tech menu model (lane TM step 1)', () => {
       if (!S.water.on) { expect(rowsFor(S), id).toEqual([]); continue; }
       expect(feedFor(S), id).toBe(S.grow.feed);
       if (!S.water.salt) expect(feedOf(t), id).toBe(S.grow.feed);
-      else expect(t.rows.skimmer, id).toBe('sump');
+      else expect(t.rows.skimmer, id).toBe('hob'); // lane SF: no sump in the inferred filter, so a hang-on skimmer
       expect(t.rows.heater, id).toBe('one');
     }
   });

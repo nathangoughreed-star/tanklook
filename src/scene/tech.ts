@@ -144,7 +144,7 @@ export function rowsFor(S: TankSetup): TechRow[] {
 // ---- defaults, presets, choices
 
 /** The gear the demand engine always assumed (before the Tech menu): HOB up to 60 gal, canister above; one heater; CO2 /
- *  ferts from grow.feed; a skimmer on salt. Rows the engine did not count are 'none' (or the cheapest real choice). */
+ *  ferts from grow.feed; a skimmer on salt (hang-on, in the sump when the filter is one). Rows the engine did not count are 'none' (or the cheapest real choice). */
 export function inferTech(S: TankSetup): TechSetup {
   if (!S.water.on) return { rows: {} };
   const gal = galOf(S), feed = S.grow.feed, salt = isSalt(S);
@@ -152,7 +152,8 @@ export function inferTech(S: TankSetup): TechSetup {
     filter: gal <= 60 ? 'hob' : 'canister', heater: 'one', chiller: 'none', air: 'none', uv: 'none',
     conditioner: salt ? 'none' : 'yes', rodi: 'none', ato: 'none',
   };
-  if (salt) Object.assign(rows, { skimmer: 'sump', flow: feed === 'co2' ? 'wave' : feed === 'ferts' ? 'two' : 'none', dosing: feed === 'co2' ? 'doser' : feed === 'ferts' ? 'twopart' : 'none', salinity: 'refractometer', saltmix: 'mix' });
+  // the skimmer follows the filter (lane SF): in the sump with one, else hang-on
+  if (salt) Object.assign(rows, { skimmer: rows.filter === 'sump' ? 'sump' : 'hob', flow: feed === 'co2' ? 'wave' : feed === 'ferts' ? 'two' : 'none', dosing: feed === 'co2' ? 'doser' : feed === 'ferts' ? 'twopart' : 'none', salinity: 'refractometer', saltmix: 'mix' });
   else Object.assign(rows, { co2: feed === 'co2' ? 'pressurized' : 'none', ferts: feed === 'low' ? 'none' : 'aio' });
   return { rows };
 }
@@ -174,7 +175,10 @@ export function setFilterless(S: TankSetup, on: boolean) {
 export function techOf(S: TankSetup): TechSetup {
   const inf = inferTech(S);
   if (!S.tech) return inf;
-  return { ...S.tech, rows: { ...inf.rows, ...S.tech.rows } };
+  const t: TechSetup = { ...S.tech, rows: { ...inf.rows, ...S.tech.rows } };
+  // a missing skimmer follows the saved filters, not the inferred one (lane SF)
+  if (inf.rows.skimmer && S.tech.rows.skimmer === undefined) t.rows.skimmer = hasSump(t) ? 'sump' : 'hob';
+  return t;
 }
 export const choiceOf = (S: TankSetup, row: string) => techOf(S).rows[row] ?? 'none';
 
@@ -380,7 +384,7 @@ export function filterSteps(kind: FilterKind, current: string) {
 }
 
 export interface HeatLoss {
-  /** m2 of glass below the waterline (walls), of floor, and of open water */
+  /** m2 of glass below the waterline (walls), of floor, and of open water; the sump's included (lane SF) */
   wallM2: number; floorM2: number; surfaceM2: number;
   /** W per K through all of it */
   wPerK: number;
@@ -405,9 +409,12 @@ export interface HeatLoss {
  *  sets the surface loss. */
 export function heatLoss(S: TankSetup, t: TechSetup = techOf(S)): HeatLoss {
   const fp = footprint(S.tank), hw = S.tank.H * Math.min(1, Math.max(0, S.water.level)) / 1000;
-  const wallM2 = fp.perimeter / 1000 * hw, floorM2 = fp.area / 1e6, surfaceM2 = floorM2;
+  // the sump (lane SF): its glass up to its water line (SUMP_FILL), its floor, and its water surface, open to the cabinet (the display's lid does not cover it)
+  const z = S.water.on && hasSump(t) ? t.sump ?? sumpDefault(S) : undefined;
+  const zWall = z ? 2 * (z.L + z.D) / 1000 * z.H * SUMP_FILL / 1000 : 0, zFloor = z ? z.L * z.D / 1e6 : 0;
+  const wallM2 = fp.perimeter / 1000 * hw + zWall, floorM2 = fp.area / 1e6 + zFloor, surfaceM2 = floorM2;
   const surf = (HEAT.surface as Record<string, number>)[S.lid] ?? HEAT.surface.open;
-  const wPerK = HEAT.wall * wallM2 + HEAT.bottom * floorM2 + surf * surfaceM2;
+  const wPerK = HEAT.wall * wallM2 + HEAT.bottom * floorM2 + surf * (surfaceM2 - zFloor) + HEAT.surface.open * zFloor;
   const targetC = t.targetC ?? climateOf(S).find(c => c.label === 'Water')?.at ?? (isSalt(S) ? 25.5 : 24), roomC = t.roomC ?? ROOM_C;
   const dT = targetC - roomC, lossW = Math.max(0, wPerK * dT), needW = Math.max(0, wPerK * (dT + HEAT.nightDropK) * HEAT.headroom);
   const us = heaterUnits(t), n = us.length;
