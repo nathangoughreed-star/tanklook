@@ -269,7 +269,8 @@ export function withUnits(t: TechSetup, row: 'heater' | 'filter', units: HeaterU
   const next: TechSetup = { ...t, rows: { ...t.rows }, preset: 'custom' };
   if (row === 'heater') { delete next.heaterW; delete next.heaterProduct; next.heaters = units as HeaterUnit[]; next.rows.heater = heaterRow(units.length); }
   else {
-    delete next.filterModel; delete next.filterProduct; next.filters = units as FilterUnit[]; next.rows.filter = filterRow(next.filters);
+    delete next.filterModel; delete next.filterProduct; next.filters = (units as FilterUnit[]).filter((u, i, us) => u.kind !== 'sump' || us.findIndex(x => x.kind === 'sump') === i); // one sump: it has one size (lane SU)
+    next.rows.filter = filterRow(next.filters);
     if (units.length) delete next.filterless; // a filter added: removing it later asks again ("This tank needs a filter"), not filterless
     for (const [r, o] of Object.entries(optionDef('filter', next.rows.filter)?.needs ?? {})) next.rows[r] = o;
     if (!next.filters.some(u => u.kind === 'sump') && next.rows.skimmer === 'sump') next.rows.skimmer = 'hob';
@@ -435,8 +436,6 @@ export const offerChiller = (S: TankSetup) => { const h = heatLoss(S); return h.
 export const SUMP_FILL = 0.5;
 /** A sump picked for the display when none is chosen: at least this share of the display's volume, and no longer than the display (it stands in the stand). */
 export const SUMP_SHARE = 0.25;
-/** Where a sump is offered (tankfit and the builds): salt water from the option's minGal (29 gal), fresh water from 75 gal, where the catalogue's reef-ready (drilled) tanks are. */
-export const SUMP_FRESH_GAL = 75;
 /** The smallest catalogue size offered as a sump: a 10 gal, the smallest plain tank commonly used as one (smaller holds too little for the drain-down). */
 export const SUMP_MIN_GAL = 10;
 /** The plain glass sizes a sump is picked from (tankfit's own list: rectangles with a generic name), from SUMP_MIN_GAL up. */
@@ -461,12 +460,8 @@ export function sumpOf(S: TankSetup, asIf = false): SumpSize | undefined {
 export const sumpLitres = (S: TankSetup, asIf = false): number => { const z = sumpOf(S, asIf); return z ? boxLitres(z) * SUMP_FILL : 0; };
 /** "20 gal long tank, 57 L of water" style name: the catalogue size, else the custom size in cm. */
 export const sumpName = (z: SumpSize) => `${getTankModel(z.model ?? '')?.name ?? `${Math.round(z.L / 10)} x ${Math.round(z.D / 10)} x ${Math.round(z.H / 10)} cm`} tank, ${Math.round(boxLitres(z) * SUMP_FILL)} L of water`;
-/** True where tankfit and the builds may pick a sump: salt water from minGal, fresh from SUMP_FRESH_GAL. */
-export function sumpOffered(S: TankSetup): boolean {
-  if (!S.water.on) return false;
-  const gal = Math.round(galOf(S));
-  return gal >= (isSalt(S) ? optionDef('filter', 'sump')?.minGal ?? 29 : SUMP_FRESH_GAL);
-}
+/** True where tankfit and the builds may pick a sump: any wet tank (Nathan 2026-10-23: "offer it on any tank. Why not?"). */
+export const sumpOffered = (S: TankSetup): boolean => S.water.on;
 /** The sump tank's price: a bare glass tank of its gallons (the tank:N rows; a catalogue size by its rated gallons). Not its catalogue
  *  listings: those are display tanks (rimless, reef-ready, kits), dearer than the plain glass box a sump is. */
 function sumpTankPrice(z: SumpSize): Range3 | undefined {
@@ -694,6 +689,7 @@ export function parseTech(raw: unknown): TechSetup | undefined {
     const u = v as Partial<FilterUnit> | null; if (!u || typeof u !== 'object' || typeof u.kind !== 'string' || u.kind === 'none' || !optionDef('filter', u.kind)) return [];
     return [{ kind: u.kind, ...(typeof u.product === 'string' && filterProduct(u.product)?.kind === u.kind ? { product: u.product } : {}), ...(typeof u.model === 'string' && FILTER_MODELS.some(m => m.id === u.model && m.kind === u.kind) ? { model: u.model } : {}), ...(u.kit === true ? { kit: true } : {}) }];
   });
+  if (t.filters) t.filters = t.filters.filter((u, i, us) => u.kind !== 'sump' || us.findIndex(x => x.kind === 'sump') === i); // one sump (lane SU)
   if (t.heaters) rows.heater = heaterRow(t.heaters.length);
   if (t.filters) rows.filter = filterRow(t.filters);
   if (r.filterless === true && !t.filters?.length) t.filterless = true;

@@ -4,7 +4,7 @@ import { bareSetup } from '../src/scene/defaults';
 import { volume } from '../src/scene/physics';
 import { stockingOf } from '../src/scene/stocking';
 import { tankMinimum } from '../src/scene/tankMin';
-import { tankFor, type AnimalCount } from '../src/scene/tankfit';
+import { fitIn, tankFor, type AnimalCount } from '../src/scene/tankfit';
 import { buildsFor } from '../src/scene/builds';
 import { applyPreset, optionCost, parseTech, SUMP_MODELS, sumpLitres, sumpOf, sumpOffered, withUnits, type TechSetup } from '../src/scene/tech';
 import { demandOf, defaultProfile } from '../src/demand';
@@ -82,13 +82,16 @@ describe('SU: the sump priced as gear rows', () => {
 });
 
 describe('SU: tankfit and the builds offer a sump on the same tanks', () => {
-  it('large and salt tanks only (drilled or overflow box; proposal: salt from 29 gal, fresh from 75 gal)', () => {
-    expect(sumpOffered(tankOf('g55', [], true))).toBe(true);
-    expect(sumpOffered(tankOf('g29', [], true))).toBe(true);
-    expect(sumpOffered(tankOf('g20l', [], true))).toBe(false);
-    expect(sumpOffered(tankOf('g55', [], false))).toBe(false);
-    expect(sumpOffered(tankOf('g75', [], false))).toBe(true);
-    expect(sumpOffered(tankOf('g180', [], false))).toBe(true);
+  it('any wet tank (Nathan 2026-10-23: "offer it on any tank. Why not?")', () => {
+    for (const [id, salt] of [['g2_5', true], ['g20l', true], ['g55', false], ['g10', false], ['g180', false]] as const) expect(sumpOffered(tankOf(id, [], salt)), id).toBe(true);
+    const dry = tankOf('g20l'); dry.water.on = false;
+    expect(sumpOffered(dry)).toBe(false);
+  });
+  it("tankfit's fallback filter (none meets the target) is the one with the lowest filtration, as the builds' (not the highest rated capacity)", () => {
+    for (const [a, id] of [[[{ species: 'mystery', n: 50 }], 'g2_5'], [[{ species: 'turbo', n: 12 }], 'g15'], [[{ species: 'oscar', n: 25 }], 'c8']] as const) {
+      const f = fitIn([...a], id)!, best = Math.min(...buildsFor([...a], getTankModel(id)!, NOW).map(b => b.filtrationPct));
+      expect(f.filtrationPct, `${a[0].species} in ${id}`).toBeLessThanOrEqual(best + 0.5);
+    }
   });
   const cases: AnimalCount[][] = [[{ species: 'yellowtang', n: 6 }], [{ species: 'bluetang', n: 3 }], [{ species: 'oscar', n: 3 }], [{ species: 'turbo', n: 12 }]];
   it('the tank tankFor picks has a build that carries the stocking (no sump counted that builds never offer)', () => {
@@ -101,12 +104,10 @@ describe('SU: tankfit and the builds offer a sump on the same tanks', () => {
   });
   it('a salt stocking that needs one gets a sump build', () => {
     const a = [{ species: 'yellowtang', n: 6 }], fit = tankFor(a)!;
-    expect(fit.tank.id).toBe('g55');
-    const b = buildsFor(a, fit.tank, NOW).find(x => x.id === 'balanced')!;
+    const b = buildsFor(a, getTankModel('g55')!, NOW).find(x => x.id === 'balanced')!;
     expect(b.setup.tech?.rows.filter).toBe('sump');
     expect(b.gear[0]).toMatch(/^Filter: Sump \(15 gal tank, \d+ L of water\) \+ return pump$/);
-    // a fresh 55 gal is not offered one: its builds and its tank pick both go without
-    expect(buildsFor([{ species: 'discus', n: 6 }], getTankModel('g55')!, NOW).some(x => x.setup.tech?.rows.filter === 'sump')).toBe(false);
+    expect(fit.fails).toEqual([]);
   });
 });
 
@@ -122,5 +123,15 @@ describe('SU: coordinator review', () => {
   it('the sump sizes start at 10 gal', () => {
     expect(Math.min(...SUMP_MODELS.map(m => m.ratedGal))).toBe(10);
     expect(parseTech({ rows: {}, sump: { model: 'g2_5' } })?.sump).toBeUndefined();
+  });
+});
+
+describe('SU: a sump is one filter unit among the others (Nathan 2026-10-23)', () => {
+  it('adding a sump keeps the other filters; one sump per tank', () => {
+    const t = withUnits({ rows: {} }, 'filter', [{ kind: 'canister' }, { kind: 'hob' }, { kind: 'sump' }]);
+    const S = tankOf('g75', [], true, t);
+    expect(sumpOf(S)).toBeDefined();
+    expect(stockingOf(S).filtrationPercent).toBeGreaterThanOrEqual(0);
+    expect(withUnits(t, 'filter', [...t.filters!, { kind: 'sump' }]).filters!.filter(u => u.kind === 'sump').length).toBe(1);
   });
 });

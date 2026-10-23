@@ -16,7 +16,7 @@ import type { Store } from '../scene/store';
 import {
   ROOM_C, applyPreset, feedFor, feedOf, filterFor, filterSteps, filterUnits, heatLoss, offerChiller,
   optionCost, optionDef, presetsFor, reefFeedOf, rowsFor, setFeed, singleFilter, stockCapacity, techOf, tempEvidence, unitCosts, walstadGaps, withChoice,
-  withUnits, withoutUnit, sumpDefault, sumpFromModel, sumpLitres, sumpName, sumpOf, sumpOffered, SUMP_FILL, type FilterUnit, type SumpSize, type HeaterUnit, type OptionCost, type TechSetup,
+  withUnits, withoutUnit, sumpDefault, sumpFromModel, sumpLitres, sumpName, sumpOf, SUMP_FILL, type FilterUnit, type SumpSize, type HeaterUnit, type OptionCost, type TechSetup,
 } from '../scene/tech';
 import { FILTER_PRODUCTS, HEATER_PRODUCTS, filtersNear, genericHeaterW, heatersNear, lightProduct, lightsFor, productName, type FilterProduct, type HeaterProduct, type LightProduct } from '../data/gearCatalog';
 import { applyLightProduct, lightProductNote, productOn } from '../scene/lightproduct';
@@ -217,14 +217,14 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     let html = `<div class="trow${isOpen ? ' open' : ''}" data-row="sump"><button type="button" class="thead" aria-expanded="${isOpen}"><span class="tlab">Sump</span><span class="tcur">${z ? esc(sumpTitle(z)) : 'None'}</span>${c ? '<span class="tcost" title="The sump tank, its plumbing and the return pump are priced in the Filtration row">in Filtration</span>' : ''}</button>`;
     if (!isOpen) return html + '</div>';
     html += '<div class="topts">';
-    const offered = sumpOffered(S) ? '' : `<div class="hint">Usually on salt tanks from 29 gal and fresh ones from 75 gal: the display needs drilling or an overflow box.</div>`;
-    if (!z) return html + `<div class="hint">A second tank in the stand: the display drains into it and a return pump sends the water back. It hides the heater and skimmer and adds its water to the system.</div>${offered}<button type="button" class="tadd" data-act="sump|add">+ Add a sump</button></div></div>`;
+    
+    if (!z) return html + `<div class="hint">A second tank in the stand: the display drains into it and a return pump sends the water back. It hides the heater and skimmer and adds its water to the system.</div><button type="button" class="tadd" data-act="sump|add">+ Add a sump</button></div></div>`;
     const u = fahr() ? 'in' : 'cm', water = sumpLitres(S);
     const size = ['L', 'D', 'H'].map(k => `<input type="number" data-sz="${k}" min="1" step="${fahr() ? 0.5 : 1}" value="${lenIn(z[k as 'L' | 'D' | 'H'])}" aria-label="${{ L: 'Length', D: 'Depth', H: 'Height' }[k]}" title="${{ L: 'Length', D: 'Depth (front to back)', H: 'Height' }[k]}">`).join(' × ');
     const body = `<div class="tsz" title="Inside size; type to make it a custom size">${z.model ? 'Inside' : 'Custom, inside'} ${size} ${u}</div>`
       + `<span class="tchips"><span class="tchip good" title="${esc(`Its water dilutes the waste with the display's (run ${Math.round(SUMP_FILL * 100)} % full: the rest is room for what drains down when the pump stops). It adds no swimming room.`)}">+${Math.round(water)} L of water</span></span>`
       + `<div class="tstep"><button type="button" data-act="sump|pick">Pick a size…</button></div>`;
-    html += `<div class="tunits">${card(esc(sumpTitle(z)), c, false, 'sump|del', body)}</div><div class="hint">Sump tank, plumbing and return pump: part of the Filtration total above, not added again.</div>${offered}`;
+    html += `<div class="tunits">${card(esc(sumpTitle(z)), c, false, 'sump|del', body)}</div><div class="hint">Sump tank, plumbing and return pump: part of the Filtration total above, not added again.</div>`;
     return html + `<div class="hint">${esc(optionDef('filter', 'sump')?.note ?? '')}</div></div></div>`;
   };
 

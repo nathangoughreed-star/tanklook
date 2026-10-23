@@ -110,7 +110,7 @@ function price(S0: TankSetup, now: number, bundle?: Deal, withGearDeals = true):
 
 interface Candidate { opt: string; S: TankSetup; usd: number; min: number; filtration: number; capacity: number }
 
-/** Every filter the Tech menu offers this tank, priced and judged: not "none", and a sump only where sumpOffered (a large or salt tank,
+/** Every filter the Tech menu offers this tank, priced and judged: not "none"; a sump wherever sumpOffered (any wet tank, Nathan 2026-10-23;
  *  drilled or with an overflow box; lane SU), the same tanks tankfit counts one on. */
 function filterCandidates(base: TankSetup, now: number): Candidate[] {
   const out: Candidate[] = [];
