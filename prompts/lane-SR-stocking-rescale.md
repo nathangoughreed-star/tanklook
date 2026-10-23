@@ -1,0 +1,29 @@
+You are SR: Stocking Rescale (proposed code; the coordinator confirms the ID and sets the title "SR: Stocking Rescale"; do NOT rename this chat). Work in your own worktree: git -C "C:\Users\nreed\Glass Box" fetch origin; git -C "C:\Users\nreed\Glass Box" worktree add ".claude/worktrees/sr" -b sr origin/main; npm ci; change-directory tool. Never work in the shared checkout or the stale Glass-Box-stocking folder.
+
+Origin: Nathan's design chat opened from Glass-Box-stocking, 2026-10-23. Nathan's decisions (in chat, his answers to three questions):
+- **100 % = recommended capacity**: a fully stocked adult community that experienced, respected keepers would comfortably recommend for this tank, with suitable gear and ordinary, consistent maintenance. 100 % is NOT "overstocked" and NOT "optimal". It excludes setups that depend on unusually frequent maintenance, on juveniles staying small, or on exceptional success at managing aggression.
+- **Recalibrate the numbers** as well as the colours (not colours only).
+- **Yellow band per dimension**: space (water) and floor are yellow over 100 up to 115. Filtration is yellow over 100 up to 130. Red is beyond those. The overall colour is the WORST dimension's colour, not the colour of the highest number.
+- **Re-ask Nathan for every hand-set target stated on the old scale** (SPACE_NUDGE discus "6 in a 55 gal = 85 %, just inside the yellow band", FLOOR_FACTOR kuhli, the S196 / HC / HB / kuhli test targets). List each one with its old and new reading, plus a picture where it is a screen, and let him restate it.
+
+Today (main babf4e7): green < 85, amber 85-100 (NEAR_FULL in src/ui/fullnessTile.ts; "Cramped but doable" in src/scene/stocking.ts), red > 100 ("overstocked"). percent = max(water, floor, filtration).
+
+Read first: HANDOFF "Start here" (lane rules, the Source traceability rule: a new or re-fit constant needs its src/data/provenance.ts rule updated), and the HANDOFF sections S196, Kuhli sanity check, SN, Lane HC, Lane HB and Lane NB. Then research/expert-stockings.md, research/expert-curve.md, research/habitat-model.md, and src/scene/stocking.ts.
+
+Work unit, in order. Commit each step separately, and send pictures to Nathan wherever a step changes a screen:
+1. **Bands in one place.** Export the thresholds from src/scene/stocking.ts:
+   - green up to and including 100
+   - yellow space/floor to 115, yellow filtration to 130
+   - wording: "Lightly stocked" under 70; "Well stocked" 70-100; "Beyond recommended capacity" in yellow; "Not recommended" in red.
+   Add a `level(r)` that takes the worst level across the dimensions. Use it from fullnessTile.ts (replace NEAR_FULL), stockingLine and panels.ts (the `.aq over` span). Show the binding dimension with the number: "95 % · Well stocked (limited by floor)". Replace "Room for about N% more load" with "Below recommended capacity" (remaining room depends on which animal is added). Round displayed readings to the nearest 5 %; keep raw values internally and in tests.
+2. **Calibration set.** Tag each of the 37 lists in research/expert-stockings.json as `room` (the publisher stopped because the tank was full) or `temper` (a fighting / temperament cap binds first: dwarf gourami, angels, chromis, barbs ... see S196's note that the capped lists read a 59 % median). Write the tag's reason in the file. Ask Nathan about borderline lists, WITH the list shown.
+3. **Re-centre.** Fit the global space scale (SPACE_PER_L) so the `room` lists' published maximums read a median of about 90-95 %, and as many of them as possible land in 85-100. Report how many fall outside. Do NOT re-tune per-species factors to force a list in. Check against must-be-red cases: a common pleco in 20 gal, an oscar in a 29 gal community, 4 goldfish in 29 gal (Aqueon), a 10 gal betta + school set. Also check clearly sparse cases (a lone betta in 10 gal stays lightly stocked).
+4. **Filtration 100 % = conservative sustainable capacity**, not the point where the filter just keeps up. Read scene/nitrogen.ts and say what ammoniaPercent 100 means today. If it is a physical limit, propose a safety margin to Nathan before changing it. A better filter may raise filtration capacity only up to a cap (propose +30-50 % over the tank's baseline); it never changes space or floor.
+5. **Downstream.** tankfit.ts, plan.ts, starter.ts and builds.ts treat <= 100 as "fits". Keep that meaning, since 100 is still the recommended ceiling. Re-bless the starter counts and tests (expert, aqcompare, aqspecies, stocking, fullnessTile, starterfull, scapes, snailload, spaceaudit, territory, builds, nitrogen, compatrisk) and list every changed count in your HANDOFF section. Give before/after tables for the expert median, the 24 AqAdvisor combinations and each starter tank.
+5b. **Starter density (folded in by Coordinator 8, 2026-10-23).** Since S211's 8ad16ea, starters at "Full" read only 46-56 %. Re-tune them so "Full" lands in the new recommended-capacity band (about 85-100 %).
+6. **Hard rules stay out of the %.** Minimum tank length, minimum group size, fighting limits (crowdWarnings) and compatibility keep showing as their own flags. A tank may read "40 % · Lightly stocked" next to a red "tank too short" flag. Check that the UI shows both.
+7. **Re-ask** (decision 4 above) once the re-centre has landed.
+
+OUT OF SCOPE: new species data, compatibility rules, territory phase 2.
+Coordination: the shared checkout had an uncommitted SPACE_NUDGE (discus) edit in src/data/spacefactor.ts, src/scene/stocking.ts and src/data/provenance.ts on 2026-10-23, from another chat. Ask the coordinator whose it is and wait until it lands on main before you start step 3.
+Ship per the lane rules: `npm run build` plus the full suite green, push from your worktree, record your work in HANDOFF under "Lane sections (current)", and message the coordinator (its id is in HANDOFF "Start here").
