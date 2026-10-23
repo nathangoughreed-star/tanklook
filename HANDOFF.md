@@ -8,7 +8,7 @@ items. Every finished lane / feature section was moved verbatim to **HANDOFF-arc
 heading when you need a subsystem's history. Add your own dated section under "Lane sections" here, and when your lane
 is done the coordinator moves it to the archive.
 
-**Lane rules:** Before EVERY push run `npm run build` (tsc over src AND test, then vite build), not just tsc on src or the tests: the deploy job runs it, and on 2026-10-21 a test-file type error kept the live site at build 1047 for six pushes. Rules: touch another lane's file only for a one-line hook, and say so in your section. No scene version bump without
+**Lane rules:** Before EVERY push run `npm run build` (tsc over src AND test, then vite build), not just tsc on src or the tests: the deploy job runs it, and on 2026-10-21 a test-file type error kept the live site at build 1047 for six pushes. Any change that moves engine numbers also runs `GEN_RETABLE=1 npx vitest run test/calibtables.test.ts` after its last rebase and commits the rewritten `research/calib/tables/*.json` (S216's lock on the frozen expert rounds, 2026-10-23); otherwise that test fails on main. Rules: touch another lane's file only for a one-line hook, and say so in your section. No scene version bump without
 asking Nathan. Shipping: in the worktree `git fetch` + `git merge origin/main`, tsc + tests + browser check, then
 `git push origin HEAD:main` and `git -C "C:/Users/nreed/Glass Box" merge --ff-only origin/main`. HANDOFF.md
 conflicts on merge: keep both sections. **In the shared folder itself** (C:/Users/nreed/Glass Box, any chat not in a
