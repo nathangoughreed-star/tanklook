@@ -288,3 +288,7 @@ Survey v3 (survey-round-3.html) comes from the round-2 notes of an AI-model expe
 labelled by the band line they mark with the others held, animals' assumptions stated (adults, no breeding, sexes as chosen), every
 species in the water-column question, food named as a non-room limit. Round 2 is closed (its survey stays at 2.2). The fit reads a
 reviewer's `review.skip` / `review.set` on an answer and lists what was set aside.
+**Round 3 rebuilt on the length audit (aeda1f5, same day).** Same seed and sizes; the new lengths and 22 refitted factors redraw every
+tank (still 20 of 22 at 10-55 gal). The anchor holds round 2's stock (87 harlequin + 28 rummy-nose, `anchorStock`), read under today's
+factors (66 % space; the free draw had moved to 171 harlequins). Round 2's tanks are frozen: GEN_CALIB no longer rewrites
+round-2.json (GEN_CALIB_R2=1 does); its engine tables are still the pre-audit ones, a question for the fit.

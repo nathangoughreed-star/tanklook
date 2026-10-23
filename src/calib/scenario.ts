@@ -230,7 +230,10 @@ export const SIZES_R3: [number, Dims][] = [[15, [24, 12, 12]], [10, [20, 10, 12]
   [20, [24, 12, 16]], [20, [24, 12, 16]], [20, [30, 12, 12]], [20, [30, 12, 12]], [29, [30, 12, 18]], [29, [30, 12, 18]], [29, [30, 12, 18]],
   [40, [36, 18, 16]], [40, [36, 18, 16]], [55, [48, 13, 21]], [55, [48, 13, 21]], [75, [48, 18, 21]]];
 
-export interface RoundOpts { seed: number; answers?: Record<string, number>; anchorSeed?: number; pairs?: number; repeats?: number; sizes?: [number, Dims][] }
+export interface RoundOpts { seed: number; answers?: Record<string, number>; anchorSeed?: number; pairs?: number; repeats?: number; sizes?: [number, Dims][];
+  /** the anchor's stock held from an earlier round, read under today's factors (2026-10-23: the length audit's refit moved the drawn
+   *  anchor from 87 to 171 harlequins; the anchor is the one tank every round shares) */
+  anchorStock?: [string, number][] }
 
 /** Fixed sizes: the smallest first (hardest to fill), each tries the open slots in a seeded order, a flagged mix relaxing to a passing
  *  one and a mix to a single before the next slot; a size no slot can fill is dropped (reported by the test). */
@@ -282,7 +285,9 @@ export function makeRound(o: RoundOpts): Scenario[] {
     if (a && b) { order.push({ ...a, role: 'pair' }, b); k++; }
   }
   const ar = rng(o.anchorSeed ?? 7_500_200);
-  for (let tries = 0; tries < 400; tries++) { const a = drawOne(ar, { tight: 'water', kind: 'mix-ok' }, {}, 'a1'); if (a) { order.push({ ...a, role: 'anchor' }); break; } }
+  for (let tries = 0; tries < 400; tries++) { const a = drawOne(ar, { tight: 'water', kind: 'mix-ok' }, {}, 'a1'); if (!a) continue;
+    const held = o.anchorStock ? inTank({ ...a, stock: o.anchorStock, focal: o.anchorStock[0][0], mate: o.anchorStock[1]?.[0] }, [a.gal, a.dimsIn], 'a1') : a;
+    if (held) { const { of: _of, ...h } = held; order.push({ ...h, role: 'anchor' }); break; } }
   for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
   const early = order.slice(0, Math.max(1, order.length - 5)).filter(s => s.role === 'fresh');
   for (let k = 0; k < (o.repeats ?? 1) && early.length; k++) {

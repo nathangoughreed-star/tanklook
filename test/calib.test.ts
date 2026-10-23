@@ -12,7 +12,7 @@ import { GROUPS } from '../src/data/groups';
 
 const SEED = 2, R = makeRound({ seed: SEED });
 // round 3 (Nathan 2026-10-23): fixed tank sizes centred on the common ones (SIZES_R3), seed 3
-const R3 = makeRound({ seed: 3, sizes: SIZES_R3 });
+const R3 = makeRound({ seed: 3, sizes: SIZES_R3, anchorStock: [['harlequin', 87], ['rummynose', 28]] }); // round 2's anchor stock
 const fresh = R.filter(s => s.role === 'fresh');
 const readAt = (t: Scenario['table'], n: number) => Math.max(Object.values(t[n].water).reduce((a, b) => a + b, 0), t[n].floor);
 
@@ -79,7 +79,8 @@ describe('calibration round generator (round 2 on)', () => {
         sex: per(s, id => getSpecies(id)!.cat === 'fw-invert' ? null : GROUPS[id]?.sexed?.ratio ?? null) }));
       fs.writeFileSync(new URL('../research/calib/round-3.json', import.meta.url), JSON.stringify({ round: 3, seed: 3, made: '2026-10-23', ideal: 75, limit: 100, survey: 3, scenarios: out }) + '\n');
     }, 300000);
-    it('writes research/calib/round-2.json', async () => {
+    // round 2 is closed and answered (2026-10-23): its tanks are frozen like round 1's; GEN_CALIB_R2=1 rewrites it on today's engine
+    if ((globalThis as any).process?.env.GEN_CALIB_R2) it('writes research/calib/round-2.json', async () => {
       // @ts-expect-error node only (no node types in this project)
       const fs = await import('node:fs');
       const per = (s: Scenario, f: (id: string) => unknown) => Object.fromEntries(s.stock.map(([id]) => [id, f(id)]));
