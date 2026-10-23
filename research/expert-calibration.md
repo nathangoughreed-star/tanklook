@@ -134,7 +134,7 @@ Stop rule: when held-out error is within inter-expert disagreement (x1.1), furth
 - Who the experts are, and how many per round (3-5 gives a usable disagreement estimate).
 - Goldens: the discus golden stays as it is (6 discus in a 55 gal = 85 %, now in the caution band; S214 2026-10-23). The other
   old-scale targets (FLOOR_FACTOR kuhli, the S196 / HC / HB test targets) still need restating on the new scale.
-- Round 2: per-species FLOOR_FACTOR, pairwise questions, information weights from round 1's answer counts; renders scripted (now by hand).
+- Round 2: a plainer substrate for the renders so small bottom fish stand out; per-species FLOOR_FACTOR, pairwise questions, information weights from round 1's answer counts; renders scripted (now by hand).
 
 ## 8. Built 2026-10-23 (slice 1): what changed against the design above
 
@@ -170,5 +170,5 @@ partly recovered for the mid class (x0.96 vs x0.90): 24 tanks give it few clean 
 Round 1 as generated (seed 1): 20 fresh tanks (8 one species, 8 passing mixes, 4 flagged), 2 anchors, 2 repeats; 10-125 gal. It already
 shows engine readings worth an expert's eye, e.g. 90 otocinclus in a 55 gal read 111 %, 126 embers in a 40 gal 93 %.
 
-Render limits: otocinclus do not render in the app at all (f13, f19: in the scene file, invisible in the view); amano shrimp are nearly
+Render limits: otocinclus render but blend into the gravel (f13, f19; checked in chat "Otocinclus invisible in the 3D view", no bug); amano shrimp are nearly
 transparent at survey scale. The survey tells experts the animal list is what counts.
