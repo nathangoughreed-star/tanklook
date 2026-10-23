@@ -6,14 +6,14 @@
 
 | | before | after |
 |---|---|---|
-| held-out anchors | 0.225 | 0.323 |
-| fitted tanks | 0.356 | 0.317 |
+| held-out anchors | 0.225 | 0.325 |
+| fitted tanks | 0.354 | 0.315 |
 
 Inter-expert disagreement n/a (no tank answered by two experts yet). Stop rule not met.
 
 ## Multipliers on today's factors
 
-Water (SPACE_PER_L) x0.8694, floor x0.9824. Classes: big +6 %, invert -10 %, mid +12 %, tiny -10 %.
+Water (SPACE_PER_L) x0.8682, floor x0.9846. Classes: big +6 %, invert -10 %, mid +12 %, tiny -10 %.
 
 | species | class | answers | total move | own move |
 |---|---|---|---|---|
@@ -37,12 +37,12 @@ Water (SPACE_PER_L) x0.8694, floor x0.9824. Classes: big +6 %, invert -10 %, mid
 | cpd | tiny | 14 | -9 % | +16 % |
 | kadango | big | 1 | -8 % | +0 % |
 | syno | big | 1 | -8 % | +0 % |
-| molly | mid | 8 | +8 % | +10 % |
+| bronzecory | mid | 27 | -7 % | -4 % |
+| molly | mid | 8 | +7 % | +10 % |
 | kuhli | mid | 4 | +7 % | +10 % |
-| bronzecory | mid | 27 | -6 % | -4 % |
 | bristlenose | mid | 12 | -6 % | -3 % |
-| sae | big | 4 | -5 % | +3 % |
-| cherrybarb | mid | 4 | -5 % | -3 % |
+| cherrybarb | mid | 4 | -6 % | -3 % |
+| sae | big | 4 | -6 % | +3 % |
 
 ## Experts
 

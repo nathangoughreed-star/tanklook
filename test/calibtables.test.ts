@@ -4,7 +4,8 @@
 // GEN_RETABLE=1 npx vitest run test/calibtables.test.ts rewrites the tables files. The lock below fails when the engine has moved
 // since (a length, a factor, a curve): rerun the line above, then refit.
 import { describe, expect, it } from 'vitest';
-import { gateOf, readSpace, tableOf, tightOf } from '../src/calib/scenario';
+import { floorShareOf, gateOf, readSpace, tableOf, tightOf } from '../src/calib/scenario';
+import { getSpecies } from '../src/data/species';
 import R1 from '../research/calib/round-1.json';
 import R2 from '../research/calib/round-2.json';
 import R3 from '../research/calib/round-3.json';
@@ -23,6 +24,9 @@ export function retable(s: Tank) {
   const r = readSpace(s.dimsIn, s.stock);
   return { pct: { space: r.space, water: r.water, floor: r.floor }, tight: tightOf(r.water, r.floor), table: tableOf(s.dimsIn, s.stock, s.focal),
     ...(s.mate ? { mateTable: tableOf(s.dimsIn, s.stock, s.mate) } : {}),
+    // what each species takes as the engine counts it today (S212 2026-10-23: white cloud, pygmy cory and others no longer use the floor);
+    // the fit reads a count on the dimension its species fills, so it must be today's share, not the one the survey showed
+    uses: Object.fromEntries(s.stock.map(([id]) => [id, { water: true, floor: floorShareOf(getSpecies(id)!) }])),
     ...(s.stock.length > 1 ? (g => ({ gate: g.gate, gateItems: g.items }))(gateOf(s.dimsIn, s.stock.map(x => x[0]))) : {}) };
 }
 

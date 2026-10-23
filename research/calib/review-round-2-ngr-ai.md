@@ -11,7 +11,7 @@ Engine readings: the current engine (research/calib/tables, 2026-10-23). Answers
 | f9 | 29 | 18 Guppy* | 111 % / 0 % | - / green / green | 25 -> 140 % | 40 -> 0 % | - | -47 % |
 | p2b (pair of p2a) | 40 | 15 Bronze corydoras* | 62 % / 100 % | green / - / green | 18 -> 120 % | 28 -> 187 % | - | -42 % |
 | a1 (anchor) | 125 | 87 Harlequin rasbora* + 28 Rummy-nose tetra° | 66 % / 0 % | - / amber / amber | 70 -> 59 % | 110 -> 75 % | 12 -> 58 % | +30 % |
-| f6 | 40 | 28 Panda corydoras* + 25 White cloud mountain minnow° | 73 % / 83 % | amber / green / amber | 20 -> 59 % | 32 -> 95 % | 25 -> 83 % | +7 % |
+| f6 | 40 | 28 Panda corydoras* + 25 White cloud mountain minnow° | 73 % / 83 % | amber / green / amber | 20 -> 59 % | 32 -> 95 % | 25 -> 73 % | +11 % |
 | f4 | 75 | 59 Panda corydoras* + 49 Rummy-nose tetra° | 102 % / 131 % | red / green / red | 28 -> 62 % | 42 -> 93 % | no valid count | +14 % |
 | f7 | 40 | 52 Neon tetra* | 75 % / 0 % | - / amber / amber | 40 -> 62 % | 65 -> 88 % | - | +17 % |
 | f15 | 75 | 4 Siamese algae eater* + 109 Celestial pearl danio° | 77 % / 29 % | amber / amber / amber | can't say | 4 -> 29 % | 70 -> 67 % | +96 % |
@@ -33,7 +33,7 @@ Engine readings: the current engine (research/calib/tables, 2026-10-23). Answers
 
 ## Overall
 
-10 tanks with counts. Median fix +8 %; the engine reads 3 of them more than 10 % too full, 4 more than 10 % too empty.
+10 tanks with counts. Median fix +10 %; the engine reads 3 of them more than 10 % too full, 5 more than 10 % too empty.
 Floor bands: 3 of 6 agree; the engine is a band fuller on 2, emptier on 1.
 Water bands: 5 of 10 agree; the engine is a band fuller on 4, emptier on 1.
 Overall bands: 6 of 11 agree; the engine is a band fuller on 4, emptier on 1.
@@ -47,19 +47,19 @@ Median fix per group (tanks with counts, repeats and left-out tanks excluded). F
 |---|---|---|---|---|---|
 | focal body class | big | 1 | +96 % | +96 % to +96 % |  |
 | focal body class | mid | 2 | -6 % | -42 % to +30 % |  |
-| focal body class | tiny | 7 | +7 % | -47 % to +17 % |  |
-| focal zone | bottom | 5 | +7 % | -42 % to +96 % |  |
+| focal body class | tiny | 7 | +9 % | -47 % to +17 % |  |
+| focal zone | bottom | 5 | +11 % | -42 % to +96 % |  |
 | focal zone | middle | 3 | +17 % | +9 % to +30 % | **flag** |
 | focal zone | top | 2 | -25 % | -47 % to -3 % |  |
-| tight dimension (engine) | both | 2 | +10 % | +7 % to +14 % |  |
+| tight dimension (engine) | both | 2 | +13 % | +11 % to +14 % |  |
 | tight dimension (engine) | floor | 1 | -42 % | -42 % to -42 % |  |
 | tight dimension (engine) | water | 7 | +9 % | -47 % to +96 % |  |
-| one species or a mix | mix | 6 | +10 % | -15 % to +96 % |  |
+| one species or a mix | mix | 6 | +13 % | -15 % to +96 % |  |
 | one species or a mix | one species | 4 | -17 % | -47 % to +17 % | **flag** |
 | tank size | 29-40 gal | 7 | -3 % | -47 % to +17 % |  |
 | tank size | 55 gal and up | 3 | +30 % | +14 % to +96 % | **flag** |
 | focal count as shown | 10 or fewer | 2 | +41 % | -15 % to +96 % |  |
-| focal count as shown | 11-30 | 4 | -23 % | -47 % to +7 % | **flag** |
+| focal count as shown | 11-30 | 4 | -23 % | -47 % to +11 % | **flag** |
 | focal count as shown | over 30 | 4 | +15 % | +9 % to +30 % | **flag** |
 
 ## The max rule

@@ -16,7 +16,7 @@ Engine readings: the current engine (research/calib/tables, 2026-10-23). Answers
 | f6 | 20 | 9 Neon tetra* + 7 White cloud mountain minnow° | 65 % / 0 % | green / green / green | 13 -> 79 % | 18 -> 94 % | 10 -> 72 % | +2 % |
 | f1 | 10 | 4 Guppy* + 1 Pea puffer + 6 Pygmy corydoras° | 107 % / 0 % | green / green / green | 4 -> 107 % | 6 -> 134 % | 7 -> 111 % | -29 % |
 | a1 (anchor) | 125 | 87 Harlequin rasbora* + 28 Rummy-nose tetra° | 66 % / 0 % | - / amber / amber | 75 -> 61 % | 125 -> 80 % | 18 -> 61 % | +23 % |
-| f15 | 55 | 16 Bronze corydoras* + 42 Celestial pearl danio° | 80 % / 98 % | amber / green / amber | 14 -> 86 % | 22 -> 135 % | 55 -> 98 % | -21 % |
+| f15 | 55 | 16 Bronze corydoras* + 42 Celestial pearl danio° | 80 % / 98 % | amber / green / amber | 14 -> 86 % | 22 -> 135 % | 55 -> 86 % | -17 % |
 | f16 | 75 | 10 Kribensis* + 11 Sterba's corydoras° | 72 % / 109 % | red / green / red | 2 -> 60 % | 4 -> 72 % | no valid count | +31 % |
 | f3 | 10 | 8 Dwarf pencilfish* | 82 % / 0 % | - / green / green | 10 -> 102 % | 13 -> 123 % | - | -23 % |
 | f12 | 40 | 22 Bronze corydoras* + 30 Platy° | 130 % / 130 % | amber / red / red | no valid count | 14 -> 83 % | no valid count | +21 % |
@@ -50,14 +50,14 @@ Median fix per group (tanks with counts, repeats and left-out tanks excluded). F
 | focal zone | bottom | 11 | +11 % | -26 % to +31 % |  |
 | focal zone | middle | 8 | -2 % | -27 % to +27 % |  |
 | focal zone | top | 1 | -29 % | -29 % to -29 % |  |
-| tight dimension (engine) | both | 3 | -21 % | -21 % to +21 % | **flag** |
+| tight dimension (engine) | both | 3 | -17 % | -21 % to +21 % | **flag** |
 | tight dimension (engine) | floor | 7 | +11 % | -26 % to +31 % |  |
 | tight dimension (engine) | water | 10 | -2 % | -29 % to +29 % |  |
-| one species or a mix | mix | 10 | -10 % | -29 % to +31 % |  |
+| one species or a mix | mix | 10 | -8 % | -29 % to +31 % |  |
 | one species or a mix | one species | 10 | +11 % | -23 % to +27 % |  |
 | tank size | 10-20 gal | 8 | -11 % | -29 % to +11 % |  |
 | tank size | 29-40 gal | 8 | +12 % | -21 % to +29 % |  |
-| tank size | 55 gal and up | 4 | +1 % | -26 % to +31 % |  |
+| tank size | 55 gal and up | 4 | +3 % | -26 % to +31 % |  |
 | focal count as shown | 10 or fewer | 6 | -2 % | -29 % to +31 % |  |
 | focal count as shown | 11-30 | 11 | +7 % | -27 % to +21 % |  |
 | focal count as shown | over 30 | 3 | +23 % | +13 % to +27 % | **flag** |
