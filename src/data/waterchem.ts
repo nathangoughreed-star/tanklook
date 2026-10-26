@@ -21,7 +21,8 @@ export const CHEM: Record<string, { ph: R; gh?: R }> = {
   auratus: { ph: [7.6, 8.6], gh: [10, 20] }, livingstonii: { ph: [7.6, 8.6], gh: [10, 20] }, afra: { ph: [7.6, 8.6], gh: [10, 20] },
   angel: { ph: [6.0, 7.5] }, discus: { ph: [5.0, 7.0], gh: [1, 8] }, oscar: { ph: [6.0, 8.0] }, goldfish: { ph: [6, 8] }, comet: { ph: [6, 8] },
   bronzecory: { ph: [6.0, 8.0] }, pandacory: { ph: [6.0, 7.5] }, pygmycory: { ph: [6.4, 7.4] }, bristlenose: { ph: [6.0, 8.0] },
-  oto: { ph: [6.0, 7.5] }, kuhli: { ph: [5.5, 6.5], gh: [1, 6] }, clownloach: { ph: [5, 7.5] }, sae: { ph: [6.5, 8] },
+  // kuhli: wild water is pH 5.5-6.5, very soft (FishBase); widened to pH 7.5, GH 10 for farmed stock, as common aquarium practice (Nathan 2026-10-26)
+  oto: { ph: [6.0, 7.5] }, kuhli: { ph: [5.5, 7.5], gh: [1, 10] }, clownloach: { ph: [5, 7.5] }, sae: { ph: [6.5, 8] },
   hillstream: { ph: [6, 7.5] }, peapuffer: { ph: [7.0, 8.0] },
   // invertebrates: snails need some hardness for their shells
   cherryshrimp: { ph: [6.5, 8.0], gh: [4, 14] }, amano: { ph: [6.0, 8.0], gh: [3, 15] }, nerite: { ph: [7.0, 8.5], gh: [6, 18] },
