@@ -18,11 +18,18 @@ import { bareSetup } from './defaults';
 import { volume } from './physics';
 import { countsAgainstWater, stockingOf } from './stocking';
 import { filterFor, filterUnits, heaterUnits, heatLoss, applyPreset, PRESETS, ROOM_C, rowsFor, sumpName, sumpOf, sumpOffered, techOf, tempFit, withChoice } from './tech';
-import { needsOf, type AnimalCount } from './tankfit';
+import { allLand, needsOf, type AnimalCount } from './tankfit';
+import { dryGearLines, drySetup } from './drygear';
 import type { Fish, TankSetup } from './types';
 
 export type BuildId = 'cheapest' | 'leastWork' | 'balanced';
 export const BUILD_LABEL: Record<BuildId, string> = { cheapest: 'Cheapest', leastWork: 'Least work', balanced: 'Balanced' };
+/** A terrarium's builds (lane LT): the same three names, the gear is heat, UVB and misting instead of a filter. */
+export const DRY_BLURB: Record<BuildId, string> = {
+  cheapest: 'The lowest price that still gives these animals the heat, UVB and humidity they need: an on/off thermostat, misting by hand.',
+  leastWork: 'The fewest minutes a week, at a cost: an automatic mister and a timer on the lights.',
+  balanced: 'A dimming thermostat on the basking lamp (a steady warm spot, no hot runaway, longer bulb life), misting by hand.',
+};
 export const BUILD_BLURB: Record<BuildId, string> = {
   cheapest: 'The lowest price that still keeps these animals within what the filter can clear.',
   leastWork: 'The fewest minutes a week, at a cost: quality-of-life gear (a water-change hose, an automatic feeder, an auto top-off on salt) and the filter that is least work to clean.',
@@ -149,6 +156,7 @@ function choose(id: BuildId, list: Candidate[]): Candidate | undefined {
 }
 
 const gearLines = (S: TankSetup): string[] => {
+  if (!S.water.on) return dryGearLines(S);
   const lines: string[] = [];
   const t = techOf(S);
   const fs = filterUnits(t);
@@ -203,6 +211,7 @@ function finish(id: BuildId, tank: TankModel, animals: AnimalCount[], S0: TankSe
  * build's limit whenever any filter can do it; cheapest costs no more than balanced; least work takes no more minutes than either.
  */
 export function buildsFor(animals: AnimalCount[], tank: TankModel, now = Date.now()): Build[] {
+  if (allLand(animals)) return dryBuilds(animals, tank, now);
   const base = baseSetup(tank, animals), list = filterCandidates(base, now);
   const make = (id: BuildId) => { const c = choose(id, list); return finish(id, tank, animals, c ? c.S : base, now); };
   const out = { cheapest: make('cheapest'), leastWork: make('leastWork'), balanced: make('balanced') };
@@ -214,9 +223,24 @@ export function buildsFor(animals: AnimalCount[], tank: TankModel, now = Date.no
   return [out.cheapest, out.leastWork, out.balanced];
 }
 
+/** A terrarium's three builds (lane LT): each build's gear choice (scene/drygear.ts), priced by the demand model; no filter, no bundle. */
+function dryBuilds(animals: AnimalCount[], tank: TankModel, now: number): Build[] {
+  const make = (id: BuildId): Build => {
+    const p = price(drySetup(tank, animals, id), now), setupUsd = Math.round(p.D.totals.setupUsd);
+    return { id, label: BUILD_LABEL[id], blurb: DRY_BLURB[id], tank, animals, setup: p.S, gear: gearLines(p.S), setupUsd, listUsd: setupUsd,
+      upkeepUsdMo: Math.round(p.D.totals.upkeepUsdMo), minPerWeek: Math.round(p.D.totals.minPerWeek), filtrationPct: 0, spacePct: 0, gearDeals: [],
+      ...(p.tankDeal ? { tankDeal: p.tankDeal } : {}), savingUsd: 0 };
+  };
+  const c = make('cheapest'), b = make('balanced');
+  let l = make('leastWork');
+  // as the water builds: gear that saves no minutes (a timer on a dry terrarium) is no "least work"
+  if (l.minPerWeek >= Math.min(c.minPerWeek, b.minPerWeek)) l = { ...(c.minPerWeek <= b.minPerWeek ? c : b), id: 'leastWork', label: BUILD_LABEL.leastWork, blurb: DRY_BLURB.leastWork };
+  return [c, l, b];
+}
+
 /** What makes a build a different CHOICE: the tank, every gear choice (filter, heater, quality-of-life rows, pinned products), the light and
  *  the bundle. Not the price: two builds at the same price with different gear are different choices; the same gear is one choice. */
-export const configKey = (b: Build) => JSON.stringify([b.tank.id, b.setup.tech, b.setup.light, b.bundle ? [b.bundle.retailer, b.bundle.name] : null]);
+export const configKey = (b: Build) => JSON.stringify([b.tank.id, b.setup.tech, b.setup.dryGear, b.setup.light, b.bundle ? [b.bundle.retailer, b.bundle.name] : null]);
 
 /** The builds that are genuinely different (rules-spec section 4, "builds converge"): builds with the same configuration merge into the
  *  first of them, which takes the others' names ("Cheapest and balanced") and lists them in `also`. Order kept. */
@@ -227,7 +251,8 @@ export function distinctBuilds(bs: Build[]): Build[] {
     if (i < 0) { out.push(b); continue; }
     const o = out[i], also = [...(o.also ?? []), b.id], names = [o.id, ...also].map(id => BUILD_LABEL[id]);
     const label = names.length === 2 ? `${names[0]} and ${names[1].toLowerCase()}` : `${names.slice(0, -1).map((n, k) => k ? n.toLowerCase() : n).join(', ')} and ${names.at(-1)!.toLowerCase()}`;
-    out[i] = { ...o, also, label, blurb: `One set of gear is all of these: ${[o.id, ...also].map(id => BUILD_BLURB[id].replace(/\.$/, '').replace(/^./, c => c.toLowerCase())).join('; ')}.` };
+    const blurbs = o.setup.water.on ? BUILD_BLURB : DRY_BLURB;
+    out[i] = { ...o, also, label, blurb: `One set of gear is all of these: ${[o.id, ...also].map(id => blurbs[id].replace(/\.$/, '').replace(/^./, c => c.toLowerCase())).join('; ')}.` };
   }
   return out;
 }

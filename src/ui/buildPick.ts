@@ -87,7 +87,7 @@ ${meetsNeeds(b) ? '' : '<div class="spWarn">No filter on the list carries these 
   const draw = () => {
     const scroll = el.scrollTop, a = animals.map(x => `${x.n} ${esc(getSpecies(x.species)?.name ?? x.species)}`).join(', ');
     el.innerHTML = `<div class="spHead"><h2>${['One way', 'Two ways', 'Three ways'][builds.length - 1] ?? 'Ways'} to build it</h2><button type="button" data-act="close" aria-label="Close">✕</button></div>
-<p class="spNote">${esc(tankLabel(builds[0].tank, store.scene.units))} for ${a}. Each is a whole tank: tank, filter, heater and light. Prices are expected costs with the live deals that fit.</p>
+<p class="spNote">${esc(tankLabel(builds[0].tank, store.scene.units))} for ${a}. Each is a whole ${builds[0].setup.water.on ? 'tank: tank, filter, heater and light' : 'terrarium: enclosure, heat, UVB, thermostat and misting'}. Prices are expected costs with the live deals that fit.</p>
 <ul class="bpCards">${builds.map(card).join('')}</ul>
 <div class="spFoot">${back ? '<button type="button" class="spLink" data-act="back">Back to the animals</button>' : ''}<span class="spNote">Pick one and it opens in the editor with everything still yours to change.</span></div>`;
     el.scrollTop = scroll;

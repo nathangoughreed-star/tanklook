@@ -13,7 +13,8 @@ import type { Build } from './builds';
 import { finSensitiveNames, plantNeeds, priceScape } from './scapes';
 import { IDEAL_MAX, countsAgainstWater, stockingOf } from './stocking';
 import { ROOM_C, techOf, tempEvidence, tempFit } from './tech';
-import { lenTxt, sizeTxt, tankLabel, type AnimalCount } from './tankfit';
+import { dryFit, lenTxt, sizeTxt, tankLabel, type AnimalCount } from './tankfit';
+import { dryGearOf } from './drygear';
 import { volume } from './physics';
 import { minFit, tankMinimum } from './tankMin';
 import { tankWeight } from './weight';
@@ -97,9 +98,25 @@ function kitServes(parts: ({ serves: string; kind: PlanRow['kind'] } | undefined
   return need.length ? { serves: `Includes what these need: ${need.map(p => p.serves).join('; ')}`, kind: 'need' } : { serves: 'Part of the set-up', kind: 'look' };
 }
 
+/** A terrarium's own rows (lane LT): what its heat, UVB, gauge and misting are for. */
+function dryServe(k: string, S: TankSetup, animals: AnimalCount[]): { serves: string; kind: PlanRow['kind'] } | undefined {
+  const names = [...new Set(animals.map(a => getSpecies(a.species)?.name).filter(Boolean))].slice(0, 3).join(', ');
+  if (k === 'tank') return { serves: `Floor: your animals need ${Math.round(dryFit(S.tank, animals).spacePct)}% of its floor at the minimum the sources accept`, kind: 'need' };
+  if (k === 'dry:dome' || k === 'dry:basking-bulb') return { serves: `Heat: a warm basking spot for ${names}`, kind: 'need' };
+  if (k === 'dry:heat-mat') return { serves: `Heat: ${names} want it warmer than a room`, kind: 'need' };
+  if (k === 'dry:thermostat') return { serves: 'Holds the heat at its setting: no burns, no cold nights', kind: 'need' };
+  if (k === 'dry:uvb') return { serves: 'UVB: vitamin D3 and calcium for the animals that bask', kind: 'need' };
+  if (k === 'dry:gauge') return { serves: 'Checking the warm spot and the humidity', kind: 'need' };
+  if (k === 'dry:mist') return { serves: dryGearOf(S).mist === 'auto' ? 'Humidity, by itself: these animals want 60% or more' : 'Humidity: these animals want 60% or more', kind: 'need' };
+  if (k === 'dry:timer') return { serves: 'Less work: the lights go on and off by themselves', kind: 'look' };
+  if (k === 'lid') return { serves: 'Keeps the animals in and lets air through', kind: 'need' };
+  return undefined;
+}
+
 /** What each priced row serves; undefined = skip the row (no set-up price). */
 function serve(r: Contribution, S: TankSetup, animals: AnimalCount[], needs: ReturnType<typeof plantNeeds>, st: ReturnType<typeof stockingOf>, wantsHeat: boolean): { serves: string; kind: PlanRow['kind'] } | undefined {
   const k = r.key, wet = animals.map(a => getSpecies(a.species)?.name).filter(Boolean);
+  if (!S.water.on) { const d = dryServe(k, S, animals); if (d) return d; }
   if (k === 'tank') return { serves: `Space: your animals take ${Math.round(st.waterPercent)}% of its water column and ${Math.round(st.floorPercent)}% of its floor`, kind: 'need' };
   if (k === 'filter' || k === 'filter+') return { serves: `Waste: your animals produce ${Math.round(st.filtrationPercent)}% of what this filter (and the plants) can clear`, kind: 'need' };
   if (k === 'heater' || k === 'heater+') return wantsHeat
@@ -153,7 +170,12 @@ export function planOf(S: TankSetup, build?: Build, now = Date.now(), u: Units =
   if (st.filtrationPercent > 100) missing.push('Filter: none on the list clears what these animals produce (choose a stronger one or a bigger tank)');
   const heater = D.items.some(r => r.key === 'heater');
   const truths = hardTruths(S, animals, heater, u);
-  const verdict: Plan['verdict'] = [
+  const df = S.water.on ? undefined : dryFit(S.tank, animals); // lane LT: a terrarium is judged on floor and height, no water
+  const verdict: Plan['verdict'] = df ? [
+    { text: `Floor: ${Math.round(df.spacePct)}% of it at the minimum the sources accept${df.fails.includes('floor') ? ' (not enough floor for them)' : ''}`, level: df.fails.includes('floor') ? 'bad' : df.spacePct >= IDEAL_MAX ? 'warn' : 'ok' },
+    ...(df.fails.includes('height') ? [{ text: 'Height: not tall enough for these climbers', level: 'bad' as const }] : []),
+    ...truths,
+  ] : [
     { text: `Space: water column ${Math.round(st.waterPercent)}%, floor ${Math.round(st.floorPercent)}%${st.spacePercent > 100 ? st.spaceBy === 'floor' ? ' (too many bottom dwellers for its floor)' : ' (too many animals for it)' : ''}`, level: st.spacePercent > 100 ? 'bad' : st.spacePercent >= IDEAL_MAX ? 'warn' : 'ok' },
     { text: `Filtration: ${Math.round(st.filtrationPercent)}% of what the filter and plants clear${st.filtrationPercent > 100 ? ' (the filter cannot keep up)' : ''}`, level: st.filtrationPercent > 100 ? 'bad' : st.filtrationPercent >= IDEAL_MAX ? 'warn' : 'ok' },
     ...truths,
@@ -167,7 +189,7 @@ export function planOf(S: TankSetup, build?: Build, now = Date.now(), u: Units =
   for (const d of build?.gearDeals ?? []) dealLine(`${d.title} on sale at ${d.store}: ${usd(d.price.usd)} (was ${usd(d.price.regularUsd)})`);
   if (!build?.bundle) for (const d of gearOffers(S, D, now)) dealLine(`${GEAR_SLOT_NAME[d.slot][0].toUpperCase()}${GEAR_SLOT_NAME[d.slot].slice(1)}: ${d.title} on sale at ${d.store}, ${usd(d.price.usd)} (was ${usd(d.price.regularUsd)})`);
   return {
-    title: 'Your animal tank: the plan', tank: build ? tankLabel(build.tank, u) : `${Math.round(volume(S.tank).gallons)} gal (${sizeTxt(S.tank.L, S.tank.D, u)})`, animals: names,
+    title: S.water.on ? 'Your animal tank: the plan' : 'Your terrarium: the plan', tank: build ? tankLabel(build.tank, u) : `${Math.round(volume(S.tank).gallons)} gal (${sizeTxt(S.tank.L, S.tank.D, u)})`, animals: names,
     spacePct: Math.round(st.spacePercent), waterPct: Math.round(st.waterPercent), floorPct: Math.round(st.floorPercent), filtrationPct: Math.round(st.filtrationPercent), fits, verdict, rows, missing,
     setupUsd: Math.round(D.totals.setupUsd), upkeepUsdMo: Math.round(D.totals.upkeepUsdMo), minPerWeek: Math.round(D.totals.minPerWeek),
     deals, cycleNote: CYCLE_NOTE,

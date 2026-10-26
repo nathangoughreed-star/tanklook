@@ -98,7 +98,8 @@ describe('tank fit engine (lane P2)', () => {
     expect(warm.setupUsd.cheapest - room.setupUsd.cheapest).toBeGreaterThan(15); // the heater
   });
   it('no animals in the water means no tank, no steps; the label reads like the viewer wants', () => {
-    expect(tankFor([])).toBeUndefined(); expect(tankFor([{ species: 'treefrog', n: 2 }])).toBeUndefined(); expect(stepUps([], 'g10')).toEqual([]);
+    expect(tankFor([])).toBeUndefined(); expect(stepUps([], 'g10')).toEqual([]);
+    expect(tankFor([{ species: 'treefrog', n: 2 }])?.tank.terrarium).toBe(true); // lane LT 2026-10-26: land animals get a terrarium (test/landpath.test.ts)
     expect(tankLabel(getTankModel('g20l')!)).toBe('About a 20 gal long (77 x 33 cm)');
     expect(recommendedMin('neon')).toBeGreaterThanOrEqual(1);
     expect(recommendedMin('nosuchfish')).toBe(1);
@@ -126,6 +127,7 @@ describe('S207 (2026-10-22): the length gate carries the same 10 % slack as the 
     for (const id of ['g5', 'g6c', 'g8c', 'g10']) expect(fitIn(a, id)?.fails).toEqual(all.find(x => x.tank.id === id)!.fails);
     expect(fitIn(a, 'g5')?.fails).toEqual([]);
     expect(fitIn(a, 'g6c')?.fails.length).toBeGreaterThan(0); // more litres than the 5 gal, yet too short for the gourami's red line
-    expect(fitIn([{ species: 'leopardgecko', n: 1 }], 'g20l')).toBeUndefined(); // nothing in the water: nothing to judge
+    expect(fitIn([{ species: 'leopardgecko', n: 1 }], 'g20l')?.fails).toContain('floor'); // lane LT: a land animal is judged on floor (30 x 12 in is under its 36 x 18)
+    expect(fitIn([], 'g20l')).toBeUndefined(); // nothing to judge
   });
 });

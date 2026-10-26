@@ -26,6 +26,7 @@ import { techDemand } from './tech';
 import { isLivePlantPatch, PATCH_PLANTS } from '../scene/nitrogen';
 import { waterChangeFraction } from '../scene/stocking';
 import { sumpLitres, techOf } from '../scene/tech';
+import { dryGearOf, dryRows, terrariumPrice } from '../scene/drygear';
 import type { Contribution, Demand, Domain, Group, Range3, Rangeish, UserProfile } from './types';
 
 export const FACTORS = factorsJson;
@@ -95,7 +96,7 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   const G = DEFAULTS.gear;
 
   // ---- tank, stand, lid, substrate, gear
-  const tank = opts.tankPrice?.(S, gal), band = G.tank.find(b => gal <= b.maxGal) ?? G.tank[G.tank.length - 1];
+  const tank = opts.tankPrice?.(S, gal) ?? (wet ? undefined : terrariumPrice(S.tank)), band = G.tank.find(b => gal <= b.maxGal) ?? G.tank[G.tank.length - 1];
   const catTank = tankRowPrice(gal);
   const tankTypical = tank !== undefined ? r3(tank)! : catTank ?? scale3(pick(band.perGal), gal);
   // a bare tank of this size on sale right now (read from a retailer page) is what buying the parts would cost
@@ -129,6 +130,14 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
       if (S.grow.feed === 'co2') add('co2', 'CO2 injection', 'gear', { setup: price(rowPrice('gear:co2-kit') ?? pick(G.co2.setup)), upkeep: rowPrice('gear:co2-refill') ? scale3(rowPrice('gear:co2-refill')!, 1 / 3) : pick(G.co2.upkeepUsdMo), minutes: r3(G.co2.minPerWeek) });
       if (S.grow.feed !== 'low') add('ferts', 'Fertilizer', 'consumable', { upkeep: rowPrice('gear:ferts') ?? pick(G.ferts.upkeepUsdMo), minutes: r3(G.ferts.minPerWeek) });
     }
+  }
+
+  else for (const r of dryRows(S)) { // lane LT: a terrarium's heat, thermostat, UVB, gauge and misting (scene/drygear.ts)
+    const p = rowPrice(r.price), life = priceRow(r.price)?.lifeMonths;
+    if (!p) continue;
+    // a bulb or UVB tube wears out: its replacement is upkeep (the row's own replacement price when it lists one)
+    const rep = life ? scale3(rowPrice(`${r.price}-tube`) ?? p, 1 / life) : undefined;
+    add(r.key, r.label, 'gear', { setup: price(scale3(p, r.qty ?? 1)), ...(rep ? { upkeep: rep } : {}), ...(r.watts ? { kwhMo: r.watts * (r.hours ?? 24) * 30 / 1000 } : {}) });
   }
 
   // ---- hardscape
@@ -184,7 +193,11 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
 
   // ---- routine work and consumables (water changes, testing, cleaning, yearly jobs)
   const T = DEFAULTS.time;
-  if (!wet) add('mist', 'Misting and upkeep', 'work', { minutes: pick(T.terrariumMistMin) });
+  if (!wet) {
+    // lane LT: hand misting is the bulk of a humid terrarium's work; an automatic mister leaves the refill; a dry one only the spot clean
+    const mist = dryGearOf(S).mist;
+    add('mist', mist === 'auto' ? 'Spot cleaning, refilling the mister' : mist === 'hand' ? 'Misting by hand and spot cleaning' : 'Spot cleaning', 'work', { minutes: pick(mist === 'hand' ? T.terrariumMistMin : mist === 'auto' ? T.terrariumAutoMistMin : T.terrariumDryMin) });
+  }
   else {
     // the share of the tank to change comes from the nitrogen budget (plants and the filter take part of it away), floored and capped
     const frac = waterChangeFraction(S), galWk = (gal + sumpLitres(S) / 3.785) * frac; // lane SU: the change is a share of all the water, the sump's too
