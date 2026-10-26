@@ -6,30 +6,32 @@ Engine readings: the current engine (research/calib/tables, 2026-10-26). Answers
 
 | tank | gal | animals | engine | engine band | answer band | ideal count -> engine | limit count -> engine | fix |
 |---|---|---|---|---|---|---|---|---|
-| f18 | 125 | 84 Cardinal tetra* + 9 Reticulated hillstream loach + 13 Dwarf pencilfish | 77 % | amber | green (engine fuller) | 100 -> 84 % | 150 -> 104 % | -7 % |
-| f4 | 30 | 35 White cloud mountain minnow* + 6 Panda corydoras | 76 % | amber | amber | 25 -> 64 % | 40 -> 82 % | +20 % |
+| f18 | 125 | 84 Cardinal tetra* + 9 Reticulated hillstream loach + 13 Dwarf pencilfish ⚠ | 77 % | amber | green (engine fuller) | 100 -> 84 % | 150 -> 104 % | -7 % |
+| f4 | 30 | 35 White cloud mountain minnow* + 6 Panda corydoras ⚠ | 76 % | amber | amber | 25 -> 64 % | 40 -> 82 % | +20 % |
 | f12 | 29 | 28 Ember tetra* | 60 % | green | green | 40 -> 77 % | 65 -> 109 % | -6 % |
-| f5 | 29 | 22 Panda corydoras* + 4 Pea puffer + 1 Malawi synodontis | 141 % floor | red | red | no valid count | no valid count | - |
+| f5 | 29 | 22 Panda corydoras* + 4 Pea puffer + 1 Malawi synodontis ⚠ | 141 % floor | red | red | no valid count | no valid count | - |
 | f20 | 15 | 34 Cherry shrimp* + 8 Cardinal tetra + 2 Honey gourami | 113 % | red | green (engine fuller) | 50 -> 124 % | not assessable | -39 % |
-| f15 | 125 | 60 Kadango (red-fin) cichlid* | 154 % | red | - | - | - | - |
+| f15 | 125 | 60 Kadango (red-fin) cichlid* ⚠ | 154 % | red | - | - | - | - |
 | f13 | 15 | 15 Otocinclus* + 2 Pea puffer | 111 % | red | - | - | - | - |
 | f3 | 15 | 6 Sterba's corydoras* + 1 Bristlenose pleco | 99 % floor | amber | - | - | - | - |
-| r2 (repeat of f4) | 30 | 35 White cloud mountain minnow* + 6 Panda corydoras | 76 % | amber | - | - | - | - |
-| f10 | 90 | 90 Neon tetra* + 71 Ember tetra | 98 % | amber | - | - | - | - |
+| r2 (repeat of f4) | 30 | 35 White cloud mountain minnow* + 6 Panda corydoras ⚠ | 76 % | amber | - | - | - | - |
+| f10 | 90 | 90 Neon tetra* + 71 Ember tetra ⚠ | 98 % | amber | - | - | - | - |
 | a2 (anchor) | 75 | 21 Peacock cichlid* | 95 % | amber | - | - | - | - |
 | f17 | 40 | 22 Cardinal tetra* + 1 Malawi synodontis | 67 % | green | - | - | - | - |
-| f1 | 75 | 39 Guppy* | 77 % | amber | - | - | - | - |
+| f1 | 75 | 39 Guppy* ⚠ | 77 % | amber | - | - | - | - |
 | f6 | 20 | 9 Kuhli loach* | 86 % | amber | - | - | - | - |
 | r1 (repeat of f3) | 15 | 6 Sterba's corydoras* + 1 Bristlenose pleco | 99 % floor | amber | - | - | - | - |
-| f14 | 40 | 101 Pygmy corydoras* + 33 Ember tetra + 55 Celestial pearl danio | 115 % | red | - | - | - | - |
-| a1 (anchor) | 90 | 18 Bronze corydoras* + 56 Pygmy corydoras + 4 Bristlenose pleco | 108 % floor | red | - | - | - | - |
+| f14 | 40 | 101 Pygmy corydoras* + 33 Ember tetra + 55 Celestial pearl danio ⚠ | 115 % | red | - | - | - | - |
+| a1 (anchor) | 90 | 18 Bronze corydoras* + 56 Pygmy corydoras + 4 Bristlenose pleco ⚠ | 108 % floor | red | - | - | - | - |
 | f2 | 75 | 27 Platy* | 52 % | green | - | - | - | - |
 | f9 | 55 | 9 Yellow lab cichlid* + 8 Harlequin rasbora | 67 % | green | - | - | - | - |
-| f19 | 55 | 90 Otocinclus* | 118 % | red | - | - | - | - |
+| f19 | 55 | 90 Otocinclus* ⚠ | 118 % | red | - | - | - | - |
 | f11 | 55 | 13 Cherry barb* + 5 Black molly | 55 % | green | - | - | - | - |
 | f7 | 29 | 18 Dwarf pencilfish* | 70 % | green | - | - | - | - |
-| f16 | 75 | 55 Guppy* + 67 Amano shrimp | 112 % | red | - | - | - | - |
-| f8 | 40 | 126 Ember tetra* | 103 % | red | - | - | - | - |
+| f16 | 75 | 55 Guppy* + 67 Amano shrimp ⚠ | 112 % | red | - | - | - | - |
+| f8 | 40 | 126 Ember tetra* ⚠ | 103 % | red | - | - | - | - |
+
+⚠ = an implausible stocking count (see "Implausible-count tanks").
 
 \* = the species the main count questions asked about; ° = the tankmate count.
 
@@ -57,6 +59,23 @@ Median fix per group (tanks with counts, repeats and left-out tanks excluded). F
 | tank size | 55 gal and up | 1 | -7 % | -7 % to -7 % |  |
 | focal count as shown | 11-30 | 1 | -6 % | -6 % to -6 % |  |
 | focal count as shown | over 30 | 3 | -7 % | -39 % to +20 % |  |
+
+## Implausible-count tanks
+
+Counts nobody keeps (30 or more of one species, 40 for shrimp and snails, 15 or more corydoras, or 50 or more animals). They stay in the fit at full weight (Nathan 2026-10-26) but read their answers with that in mind: 12 of 24 tanks, 2 with counts. Median fix +6 % on them, -22 % on the others.
+
+- f18: 84 Cardinal tetra; fix -7 % (has a note)
+- f4: 35 White cloud mountain minnow; fix +20 % (has a note)
+- f5: 22 Panda corydoras (has a note)
+- f15: 60 Kadango (red-fin) cichlid
+- r2: 35 White cloud mountain minnow
+- f10: 90 Neon tetra, 71 Ember tetra
+- f1: 39 Guppy
+- f14: 101 Pygmy corydoras, 33 Ember tetra, 55 Celestial pearl danio
+- a1: 18 Bronze corydoras, 56 Pygmy corydoras
+- f19: 90 Otocinclus
+- f16: 55 Guppy, 67 Amano shrimp
+- f8: 126 Ember tetra
 
 ## Compatibility: gate vs you
 

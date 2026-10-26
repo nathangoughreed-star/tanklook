@@ -44,6 +44,18 @@ export const PATTERNS = [
   ['focal count as shown', r => r.shown <= 10 ? '10 or fewer' : r.shown <= 30 ? '11-30' : 'over 30'],
 ];
 
+/** Counts nobody keeps (Nathan 2026-10-26: flagged in review, still fitted at full weight): 30 or more of one species (40 for shrimp and
+ *  snails), 15 or more corydoras, or 50 or more animals in the tank. The old random rounds drew many (87 harlequins, 19 panda cory). */
+export function implausibleOf(s, name = id => id) {
+  const why = [], total = s.stock.reduce((a, [, n]) => a + n, 0);
+  for (const [id, n] of s.stock) {
+    const inv = s.cls?.[id] === 'invert', nm = name(id), lim = inv ? 40 : /orydoras/i.test(nm) ? 15 : 30;
+    if (n >= lim) why.push(`${n} ${nm}`);
+  }
+  if (!why.length && total >= 50) why.push(`${total} animals in all`);
+  return why;
+}
+
 export function review(round, file) {
   const rows = rowsOf(round, file), used = rows.filter(r => r.s.role !== 'repeat'), v2 = file.survey === 2 || file.answers.some(a => a.focal);
   const name = id => round.scenarios.find(s => s.names?.[id])?.names[id] ?? id, B = v => v != null ? BAND[v] : '-';
@@ -51,13 +63,17 @@ export function review(round, file) {
   md += v2 ? `## Tank by tank\n\n| tank | gal | animals | engine water / floor | answer floor / water / overall | ideal count -> engine | limit count -> engine | tankmate ideal -> engine | fix |\n|---|---|---|---|---|---|---|---|---|\n`
     : `## Tank by tank\n\n| tank | gal | animals | engine | engine band | answer band | ideal count -> engine | limit count -> engine | fix |\n|---|---|---|---|---|---|---|---|---|\n`;
   for (const r of rows) {
-    const st = r.s.stock.map(([id, n]) => `${n} ${name(id)}${id === r.s.focal ? '*' : id === r.s.mate ? '°' : ''}`).join(' + ');
+    const st = r.s.stock.map(([id, n]) => `${n} ${name(id)}${id === r.s.focal ? '*' : id === r.s.mate ? '°' : ''}`).join(' + ') + (implausibleOf(r.s, name).length ? ' ⚠' : '');
     // ideal 0 on review (S214 f14: the tankmates alone already fill the ideal): shown, not fitted (a 0 count has no log reading)
     const cnt = (n, at, k, src = r.c) => n >= 1 ? `${n} -> ${pc(at)}` : k === 'ideal' && src === r.c && r.a.review?.ideal0 ? '0 (on review)' : STATUS[src.status?.[k]] ?? '-';
     const id = `${r.s.id}${r.s.role !== 'fresh' ? ` (${r.s.role}${r.s.of ? ' of ' + r.s.of : ''})` : ''}`, fx = r.out ? 'left out' : r.fix ? mv(r.fix) : '-';
     if (v2) md += `| ${id} | ${r.s.gal} | ${st} | ${pc(r.s.pct.water)} / ${pc(r.s.pct.floor)} | ${B(r.a.floor)} / ${B(r.a.water)} / ${B(r.a.overall)} | ${cnt(r.c.ideal, r.atIdeal, 'ideal')} | ${r.s.noLimit ? 'not asked' : cnt(r.c.limit, r.atLimit, 'limit')} | ${r.mate ? cnt(r.mate.ideal, r.mate.at, 'ideal', r.mate) : '-'} | ${fx} |\n`;
     else md += `| ${id} | ${r.s.gal} | ${st} | ${pc(r.p)}${r.floorBound ? ' floor' : ''} | ${BAND[r.engineBand]} | ${B(r.a.band)}${r.a.band != null && r.a.band !== r.engineBand ? (r.a.band < r.engineBand ? ' (engine fuller)' : ' (engine emptier)') : ''} | ${cnt(r.c.ideal, r.atIdeal, 'ideal')} | ${cnt(r.c.limit, r.atLimit, 'limit')} | ${fx} |\n`;
   }
+  const odd = rows.filter(r => implausibleOf(r.s, name).length);
+  md += `
+⚠ = an implausible stocking count (see "Implausible-count tanks").
+`;
   const withFix = used.filter(r => r.fix), all = withFix.map(r => r.fix);
   md += `\n\\* = the species the main count questions asked about; ° = the tankmate count.\n\n## Overall\n\n`;
   if (all.length) md += `${all.length} tanks with counts. Median fix ${mv(median(all))}; the engine reads ${all.filter(f => f < 0.9).length} of them more than 10 % too full, ${all.filter(f => f > 1.1).length} more than 10 % too empty.\n`;
@@ -95,6 +111,13 @@ export function review(round, file) {
     const hist = (k, labels) => labels.map((l, i) => `${l} ${used.filter(r => r.a[k] === i).length}`).join(', ');
     md += `\n## About the answers\n\nConfidence: ${hist('confidence', ['low', 'medium', 'high'])}. In a bare tank: ${hist('bare', ['the same', 'a little lower', 'a lot lower'])} (survey 2.1; survey 2.0 asked about dense planting: ${hist('plants', ['the same', 'a little higher', 'a lot higher'])}).\n`;
   }
+  md += `
+## Implausible-count tanks
+
+Counts nobody keeps (30 or more of one species, 40 for shrimp and snails, 15 or more corydoras, or 50 or more animals). They stay in the fit at full weight (Nathan 2026-10-26) but read their answers with that in mind: ${odd.length} of ${rows.length} tanks, ${odd.filter(r => r.fix).length} with counts. Median fix ${odd.filter(r => r.fix).length ? mv(median(odd.filter(r => r.fix).map(r => r.fix))) : '-'} on them, ${withFix.filter(r => !odd.includes(r)).length ? mv(median(withFix.filter(r => !odd.includes(r)).map(r => r.fix))) : '-'} on the others.
+
+${odd.map(r => `- ${r.s.id}: ${implausibleOf(r.s, name).join(', ')}${r.fix ? `; fix ${mv(r.fix)}` : ''}${r.a.note ? ' (has a note)' : ''}`).join('\n') || '- none'}
+`;
   const reps = rows.filter(r => r.s.role === 'repeat' && r.fix);
   if (reps.length) {
     md += `\n## Repeats (your own consistency)\n\n`;

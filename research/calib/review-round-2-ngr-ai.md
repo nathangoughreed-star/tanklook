@@ -7,27 +7,29 @@ Engine readings: the current engine (research/calib/tables, 2026-10-26). Answers
 | tank | gal | animals | engine water / floor | answer floor / water / overall | ideal count -> engine | limit count -> engine | tankmate ideal -> engine | fix |
 |---|---|---|---|---|---|---|---|---|
 | f10 | 40 | 11 Marbled hatchetfish* + 8 Honey gourami + 8 Chili rasbora° | 75 % / 0 % | - / amber / amber | 12 -> 77 % | 20 -> 89 % | 20 -> 89 % | -3 % |
-| f8 | 40 | 66 Ember tetra* | 65 % / 0 % | - / green / green | 70 -> 68 % | 110 -> 94 % | - | +9 % |
+| f8 | 40 | 66 Ember tetra* ⚠ | 65 % / 0 % | - / green / green | 70 -> 68 % | 110 -> 94 % | - | +9 % |
 | f9 | 29 | 18 Guppy* | 111 % / 0 % | - / green / green | 25 -> 140 % | 40 -> 0 % | - | -47 % |
-| p2b (pair of p2a) | 40 | 15 Bronze corydoras* | 62 % / 100 % | green / - / green | 18 -> 120 % | 28 -> 187 % | - | -42 % |
-| a1 (anchor) | 125 | 87 Harlequin rasbora* + 28 Rummy-nose tetra° | 66 % / 0 % | - / amber / amber | 70 -> 59 % | 110 -> 75 % | 12 -> 58 % | +30 % |
-| f6 | 40 | 28 Panda corydoras* + 25 White cloud mountain minnow° | 73 % / 83 % | amber / green / amber | 20 -> 59 % | 32 -> 95 % | 25 -> 73 % | +11 % |
-| f4 | 75 | 59 Panda corydoras* + 49 Rummy-nose tetra° | 102 % / 131 % | red / green / red | 28 -> 62 % | 42 -> 93 % | no valid count | +14 % |
-| f7 | 40 | 52 Neon tetra* | 75 % / 0 % | - / amber / amber | 40 -> 62 % | 65 -> 88 % | - | +17 % |
-| f15 | 75 | 4 Siamese algae eater* + 109 Celestial pearl danio° | 77 % / 29 % | amber / amber / amber | can't say | 4 -> 29 % | 70 -> 67 % | +96 % |
-| f13 | 30 | 4 Reticulated hillstream loach* + 38 Otocinclus° | 127 % / 59 % | amber / green / amber | can't say | 4 -> 59 % | 20 -> 86 % | +21 % |
-| f14 | 125 | 37 Bronze corydoras* + 23 Kadango (red-fin) cichlid° | 114 % / 110 % | amber / amber / amber | can't say | can't say | can't say | - |
+| p2b (pair of p2a) | 40 | 15 Bronze corydoras* ⚠ | 62 % / 100 % | green / - / green | 18 -> 120 % | 28 -> 187 % | - | -42 % |
+| a1 (anchor) | 125 | 87 Harlequin rasbora* + 28 Rummy-nose tetra° ⚠ | 66 % / 0 % | - / amber / amber | 70 -> 59 % | 110 -> 75 % | 12 -> 58 % | +30 % |
+| f6 | 40 | 28 Panda corydoras* + 25 White cloud mountain minnow° ⚠ | 73 % / 83 % | amber / green / amber | 20 -> 59 % | 32 -> 95 % | 25 -> 73 % | +11 % |
+| f4 | 75 | 59 Panda corydoras* + 49 Rummy-nose tetra° ⚠ | 102 % / 131 % | red / green / red | 28 -> 62 % | 42 -> 93 % | no valid count | +14 % |
+| f7 | 40 | 52 Neon tetra* ⚠ | 75 % / 0 % | - / amber / amber | 40 -> 62 % | 65 -> 88 % | - | +17 % |
+| f15 | 75 | 4 Siamese algae eater* + 109 Celestial pearl danio° ⚠ | 77 % / 29 % | amber / amber / amber | can't say | 4 -> 29 % | 70 -> 67 % | +96 % |
+| f13 | 30 | 4 Reticulated hillstream loach* + 38 Otocinclus° ⚠ | 127 % / 59 % | amber / green / amber | can't say | 4 -> 59 % | 20 -> 86 % | +21 % |
+| f14 | 125 | 37 Bronze corydoras* + 23 Kadango (red-fin) cichlid° ⚠ | 114 % / 110 % | amber / amber / amber | can't say | can't say | can't say | - |
 | f16 | 75 | 5 Kribensis* + 16 Yellow lab cichlid° | 74 % / 75 % | - / - / - | - | - | - | - |
-| f5 | 125 | 59 Kuhli loach* + 11 Sterba's corydoras° | 92 % / 131 % | - / - / - | - | - | - | - |
-| f12 | 40 | 37 Harlequin rasbora* + 9 Pea puffer° | 83 % / 0 % | - / - / - | - | - | - | - |
+| f5 | 125 | 59 Kuhli loach* + 11 Sterba's corydoras° ⚠ | 92 % / 131 % | - / - / - | - | - | - | - |
+| f12 | 40 | 37 Harlequin rasbora* + 9 Pea puffer° ⚠ | 83 % / 0 % | - / - / - | - | - | - | - |
 | p1a (pair) | 20 | 23 Neon tetra* | 94 % / 0 % | - / - / - | - | - | - | - |
-| f2 | 90 | 27 Bronze corydoras* | 63 % / 120 % | - / - / - | - | - | - | - |
+| f2 | 90 | 27 Bronze corydoras* ⚠ | 63 % / 120 % | - / - / - | - | - | - | - |
 | p1b (pair of p1a) | 20 | 23 Neon tetra* | 88 % / 0 % | - / - / - | - | - | - | - |
 | f3 | 30 | 9 Bronze corydoras* | 55 % / 80 % | - / - / - | - | - | - | - |
-| f1 | 55 | 34 Panda corydoras* | 63 % / 104 % | - / - / - | - | - | - | - |
-| p2a (pair) | 40 | 15 Bronze corydoras* | 55 % / 89 % | - / - / - | - | - | - | - |
-| r1 (repeat of f13) | 30 | 4 Reticulated hillstream loach* + 38 Otocinclus° | 127 % / 59 % | - / - / - | - | - | - | - |
-| f11 | 90 | 115 Dwarf pencilfish* + 9 Pearl gourami° | 124 % / 0 % | - / - / - | - | - | - | - |
+| f1 | 55 | 34 Panda corydoras* ⚠ | 63 % / 104 % | - / - / - | - | - | - | - |
+| p2a (pair) | 40 | 15 Bronze corydoras* ⚠ | 55 % / 89 % | - / - / - | - | - | - | - |
+| r1 (repeat of f13) | 30 | 4 Reticulated hillstream loach* + 38 Otocinclus° ⚠ | 127 % / 59 % | - / - / - | - | - | - | - |
+| f11 | 90 | 115 Dwarf pencilfish* + 9 Pearl gourami° ⚠ | 124 % / 0 % | - / - / - | - | - | - | - |
+
+⚠ = an implausible stocking count (see "Implausible-count tanks").
 
 \* = the species the main count questions asked about; ° = the tankmate count.
 
@@ -82,6 +84,27 @@ Every tank passed the app's recommended minimum for each species. You called non
 ## About the answers
 
 Confidence: low 4, medium 7, high 0. In a bare tank: the same 0, a little lower 7, a lot lower 4 (survey 2.1; survey 2.0 asked about dense planting: the same 0, a little higher 0, a lot higher 1).
+
+## Implausible-count tanks
+
+Counts nobody keeps (30 or more of one species, 40 for shrimp and snails, 15 or more corydoras, or 50 or more animals). They stay in the fit at full weight (Nathan 2026-10-26) but read their answers with that in mind: 16 of 22 tanks, 8 with counts. Median fix +15 % on them, -25 % on the others.
+
+- f8: 66 Ember tetra; fix +9 % (has a note)
+- p2b: 15 Bronze corydoras; fix -42 % (has a note)
+- a1: 87 Harlequin rasbora; fix +30 % (has a note)
+- f6: 28 Panda corydoras; fix +11 % (has a note)
+- f4: 59 Panda corydoras, 49 Rummy-nose tetra; fix +14 % (has a note)
+- f7: 52 Neon tetra; fix +17 % (has a note)
+- f15: 109 Celestial pearl danio; fix +96 % (has a note)
+- f13: 38 Otocinclus; fix +21 % (has a note)
+- f14: 37 Bronze corydoras (has a note)
+- f5: 59 Kuhli loach
+- f12: 37 Harlequin rasbora
+- f2: 27 Bronze corydoras
+- f1: 34 Panda corydoras
+- p2a: 15 Bronze corydoras
+- r1: 38 Otocinclus
+- f11: 115 Dwarf pencilfish
 
 ## Compatibility: gate vs you
 

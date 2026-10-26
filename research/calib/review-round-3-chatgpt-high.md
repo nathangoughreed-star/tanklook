@@ -6,28 +6,30 @@ Engine readings: the current engine (research/calib/tables, 2026-10-26). Answers
 
 | tank | gal | animals | engine water / floor | answer floor / water / overall | ideal count -> engine | limit count -> engine | tankmate ideal -> engine | fix |
 |---|---|---|---|---|---|---|---|---|
-| p1b (pair of p1a) | 40 | 37 Black molly* | 146 % / 0 % | - / red / red | 12 -> 65 % | 19 -> 90 % | - | +13 % |
-| f7 | 20 | 16 Panda corydoras* | 63 % / 85 % | amber / green / amber | 12 -> 64 % | 18 -> 96 % | - | +11 % |
-| f8 | 20 | 24 Panda corydoras* | 85 % / 128 % | red / green / red | 12 -> 64 % | 18 -> 96 % | - | +11 % |
+| p1b (pair of p1a) | 40 | 37 Black molly* ⚠ | 146 % / 0 % | - / red / red | 12 -> 65 % | 19 -> 90 % | - | +13 % |
+| f7 | 20 | 16 Panda corydoras* ⚠ | 63 % / 85 % | amber / green / amber | 12 -> 64 % | 18 -> 96 % | - | +11 % |
+| f8 | 20 | 24 Panda corydoras* ⚠ | 85 % / 128 % | red / green / red | 12 -> 64 % | 18 -> 96 % | - | +11 % |
 | f4 | 15 | 7 Cherry barb* | 58 % / 0 % | - / green / green | 10 -> 82 % | 14 -> 105 % | - | -7 % |
 | f5 | 20 | 12 Chili rasbora* + 1 Dwarf gourami + 6 Pygmy corydoras° | 77 % / 0 % | green / green / green | 24 -> 112 % | 36 -> 143 % | 14 -> 91 % | -27 % |
 | f11 | 29 | 3 Bristlenose pleco* + 29 White cloud mountain minnow° | 113 % / 50 % | red / amber / red | no valid count | no valid count | no valid count | - |
-| f10 | 29 | 24 Panda corydoras* | 85 % / 128 % | red / green / red | 12 -> 64 % | 18 -> 96 % | - | +11 % |
+| f10 | 29 | 24 Panda corydoras* ⚠ | 85 % / 128 % | red / green / red | 12 -> 64 % | 18 -> 96 % | - | +11 % |
 | f6 | 20 | 9 Neon tetra* + 7 White cloud mountain minnow° | 65 % / 0 % | green / green / green | 13 -> 79 % | 18 -> 94 % | 10 -> 72 % | +2 % |
 | f1 | 10 | 4 Guppy* + 1 Pea puffer + 6 Pygmy corydoras° | 107 % / 0 % | green / green / green | 4 -> 107 % | 6 -> 134 % | 7 -> 111 % | -29 % |
-| a1 (anchor) | 125 | 87 Harlequin rasbora* + 28 Rummy-nose tetra° | 66 % / 0 % | - / amber / amber | 75 -> 61 % | 125 -> 80 % | 18 -> 61 % | +23 % |
-| f15 | 55 | 16 Bronze corydoras* + 42 Celestial pearl danio° | 80 % / 98 % | amber / green / amber | 14 -> 86 % | 22 -> 135 % | 55 -> 86 % | -17 % |
+| a1 (anchor) | 125 | 87 Harlequin rasbora* + 28 Rummy-nose tetra° ⚠ | 66 % / 0 % | - / amber / amber | 75 -> 61 % | 125 -> 80 % | 18 -> 61 % | +23 % |
+| f15 | 55 | 16 Bronze corydoras* + 42 Celestial pearl danio° ⚠ | 80 % / 98 % | amber / green / amber | 14 -> 86 % | 22 -> 135 % | 55 -> 86 % | -17 % |
 | f16 | 75 | 10 Kribensis* + 11 Sterba's corydoras° | 72 % / 109 % | red / green / red | 2 -> 60 % | 4 -> 72 % | no valid count | +31 % |
 | f3 | 10 | 8 Dwarf pencilfish* | 82 % / 0 % | - / green / green | 10 -> 102 % | 13 -> 123 % | - | -23 % |
-| f12 | 40 | 22 Bronze corydoras* + 30 Platy° | 130 % / 130 % | amber / red / red | no valid count | 14 -> 83 % | no valid count | +21 % |
+| f12 | 40 | 22 Bronze corydoras* + 30 Platy° ⚠ | 130 % / 130 % | amber / red / red | no valid count | 14 -> 83 % | no valid count | +21 % |
 | f9 | 29 | 11 Panda corydoras* + 19 Otocinclus° | 95 % / 80 % | amber / green / amber | 9 -> 69 % | 16 -> 106 % | 12 -> 78 % | -1 % |
-| f14 | 55 | 15 Bronze corydoras* + 6 Marbled hatchetfish° | 67 % / 92 % | green / green / green | 18 -> 111 % | 26 -> 160 % | 14 -> 80 % | -26 % |
-| f13 | 40 | 6 Kuhli loach* + 85 Celestial pearl danio° | 75 % / 20 % | amber / red / red | no valid count | no valid count | 50 -> 58 % | +29 % |
-| p1a (pair) | 40 | 37 Black molly* | 130 % / 0 % | - / red / red | 12 -> 58 % | 19 -> 80 % | - | +27 % |
+| f14 | 55 | 15 Bronze corydoras* + 6 Marbled hatchetfish° ⚠ | 67 % / 92 % | green / green / green | 18 -> 111 % | 26 -> 160 % | 14 -> 80 % | -26 % |
+| f13 | 40 | 6 Kuhli loach* + 85 Celestial pearl danio° ⚠ | 75 % / 20 % | amber / red / red | no valid count | no valid count | 50 -> 58 % | +29 % |
+| p1a (pair) | 40 | 37 Black molly* ⚠ | 130 % / 0 % | - / red / red | 12 -> 58 % | 19 -> 80 % | - | +27 % |
 | f2 | 10 | 26 Ember tetra* | 125 % / 0 % | - / red / red | 16 -> 88 % | 24 -> 118 % | - | -15 % |
 | r1 (repeat of f11) | 29 | 3 Bristlenose pleco* + 29 White cloud mountain minnow° | 113 % / 50 % | red / amber / red | no valid count | 1 -> 17 % | no valid count | +499 % |
-| p2b (pair of p2a) | 30 | 22 Panda corydoras* | 66 % / 98 % | amber / green / amber | 15 -> 67 % | 22 -> 98 % | - | +7 % |
-| p2a (pair) | 29 | 22 Panda corydoras* | 79 % / 117 % | red / green / red | 12 -> 64 % | 18 -> 96 % | - | +11 % |
+| p2b (pair of p2a) | 30 | 22 Panda corydoras* ⚠ | 66 % / 98 % | amber / green / amber | 15 -> 67 % | 22 -> 98 % | - | +7 % |
+| p2a (pair) | 29 | 22 Panda corydoras* ⚠ | 79 % / 117 % | red / green / red | 12 -> 64 % | 18 -> 96 % | - | +11 % |
+
+⚠ = an implausible stocking count (see "Implausible-count tanks").
 
 \* = the species the main count questions asked about; ° = the tankmate count.
 
@@ -86,6 +88,23 @@ Every tank passed the app's recommended minimum for each species. You called the
 ## About the answers
 
 Confidence: low 0, medium 21, high 0. In a bare tank: the same 0, a little lower 8, a lot lower 13 (survey 2.1; survey 2.0 asked about dense planting: the same 0, a little higher 0, a lot higher 0).
+
+## Implausible-count tanks
+
+Counts nobody keeps (30 or more of one species, 40 for shrimp and snails, 15 or more corydoras, or 50 or more animals). They stay in the fit at full weight (Nathan 2026-10-26) but read their answers with that in mind: 12 of 22 tanks, 12 with counts. Median fix +11 % on them, -11 % on the others.
+
+- p1b: 37 Black molly; fix +13 % (has a note)
+- f7: 16 Panda corydoras; fix +11 % (has a note)
+- f8: 24 Panda corydoras; fix +11 % (has a note)
+- f10: 24 Panda corydoras; fix +11 % (has a note)
+- a1: 87 Harlequin rasbora; fix +23 % (has a note)
+- f15: 16 Bronze corydoras, 42 Celestial pearl danio; fix -17 % (has a note)
+- f12: 22 Bronze corydoras, 30 Platy; fix +21 % (has a note)
+- f14: 15 Bronze corydoras; fix -26 % (has a note)
+- f13: 85 Celestial pearl danio; fix +29 % (has a note)
+- p1a: 37 Black molly; fix +27 % (has a note)
+- p2b: 22 Panda corydoras; fix +7 % (has a note)
+- p2a: 22 Panda corydoras; fix +11 % (has a note)
 
 ## Repeats (your own consistency)
 
