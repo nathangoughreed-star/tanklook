@@ -21,6 +21,8 @@ const meet = (a: Species, b: Species) => !((a.habitat === 'land' && b.habitat ==
 
 const shared = (a: [number, number], b: [number, number]) => Math.min(a[1], b[1]) - Math.max(a[0], b[0]);
 const band = (r: [number, number], d = 0) => `${r[0].toFixed(d)}-${r[1].toFixed(d)}`;
+/** the shared part of two ranges, as a band */
+const both = (a: [number, number], b: [number, number], d = 0) => band([Math.max(a[0], b[0]), Math.min(a[1], b[1])], d);
 /** The tank around the animal: `corals`: any coral in it (not macroalgae or the anemone). */
 export interface AnimalEnv { /** the tank's own answer (tankMin.ts minFit): size is judged by floor area, length and water, not litres alone; absent = litres only */ fit?: (sp: Species) => { pct: number; reason: string }; corals?: boolean; /** this tank's water temperature inputs (tech.ts tempEvidence): its target, or with no heater the room it follows */ water?: TempEvidence }
 
@@ -77,8 +79,18 @@ export function whysAnimal(sp: Species, litres: number, expertise: Expertise, pr
       const fish = (x: Species) => x.cat.endsWith('-fish');
       if (c.alone && fish(o)) bad('best kept in a species-only tank', true);
       if (oc.alone && fish(sp)) bad('it is best kept in a species-only tank', true);
-      if (c.ph && oc.ph && shared(c.ph, oc.ph) < 0.2) bad(`water chemistry: pH ${band(c.ph, 1)} against its ${band(oc.ph, 1)}`);
-      if (c.gh && oc.gh && shared(c.gh, oc.gh) < 2) bad(`water hardness: GH ${band(c.gh)} against its ${band(oc.gh)}`);
+      // water chemistry (Nathan 2026-10-26): preferred ranges shared = fine; only the acceptable ones shared = a compromise (concern);
+      // not even those = blocking. A species with no documented acceptable range is held to its preferred one (waterchem.ts).
+      if (c.ph && oc.ph) {
+        const a = c.phOk ?? c.ph, b = oc.phOk ?? oc.ph;
+        if (shared(a, b) < 0.2) bad(`water chemistry: pH ${band(a, 1)} against its ${band(b, 1)}`);
+        else if (shared(c.ph, oc.ph) < 0.2) bad(`water chemistry: prefers pH ${band(c.ph, 1)}, it ${band(oc.ph, 1)}; both accept ${both(a, b, 1)}, a compromise`, true);
+      }
+      if (c.gh && oc.gh) {
+        const a = c.ghOk ?? c.gh, b = oc.ghOk ?? oc.gh;
+        if (shared(a, b) < 2) bad(`water hardness: GH ${band(a)} against its ${band(b)}`);
+        else if (shared(c.gh, oc.gh) < 2) bad(`water hardness: prefers GH ${band(c.gh)}, it ${band(oc.gh)}; both accept ${both(a, b)}, a compromise`, true);
+      }
     }
   }
   out.push(...tempWhys(sp, present)); // the combination first: no setting fixes it

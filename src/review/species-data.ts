@@ -87,6 +87,8 @@ const COLS: Col[] = [
   { key: 'tol', label: 'Temp tolerable', group: 'Water and air', get: s => { const c = careOf(s), r = range(c?.tol, tC); return r && c?.tolEst ? [r[0], r[1] + ' ~'] : r; } },
   { key: 'ph', label: 'pH', group: 'Water and air', get: s => range(careOf(s)?.ph, x => x, 1) },
   { key: 'gh', label: 'GH (dGH)', group: 'Water and air', get: s => range(careOf(s)?.gh, x => x) },
+  { key: 'phOk', label: 'pH acceptable', group: 'Water and air', get: s => range(careOf(s)?.phOk, x => x, 1) },
+  { key: 'ghOk', label: 'GH acceptable', group: 'Water and air', get: s => range(careOf(s)?.ghOk, x => x) },
   { key: 'atemp', label: 'Air temp', group: 'Water and air', get: s => range(air(s)?.c, tC) },
   { key: 'atol', label: 'Air temp tolerable', group: 'Water and air', get: s => range(air(s)?.tol, tC) },
   { key: 'awarm', label: 'Warm spot', group: 'Water and air', get: s => range(air(s)?.warm, tC) },

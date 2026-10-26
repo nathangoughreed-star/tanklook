@@ -3,8 +3,11 @@
 // aquarium practice; nothing is copied from a care site. Advice only, as care.ts. Checked against FishBase 2026-10-19: kept
 // wider than FishBase where farmed stock lives in harder water (neon GH, cardinal / ram upper pH, Bolivian ram from 6.0).
 type R = [number, number];
-/** Comfortable pH, and general hardness in dGH where sources agree (absent = no hardness check). Freshwater only. */
-export const CHEM: Record<string, { ph: R; gh?: R }> = {
+/** Preferred pH, and general hardness in dGH where sources agree (absent = no hardness check). Freshwater only.
+ *  phOk / ghOk: the documented acceptable range, where it is wider than the preferred one (Nathan 2026-10-26). Absent = the preferred
+ *  range is also the acceptable one: nothing is padded automatically (a blanket +-0.5 pH widening turned 360 of 388 failing pairs
+ *  amber, neon tetras with Malawi cichlids among them; research/chem-audit.md). */
+export const CHEM: Record<string, { ph: R; gh?: R; phOk?: R; ghOk?: R }> = {
   neon: { ph: [5.0, 7.0], gh: [1, 10] }, cardinal: { ph: [3.5, 7.5], gh: [1, 8] }, ember: { ph: [5.0, 7.0], gh: [1, 10] },
   // dwarf pencilfish: FishBase pH 5.8-7.5, dH to 15; low end widened to 5.0 inside Seriously Fish's 4.0-7.0 (wild water 4-6), GH from 1 (SF 1-10)
   dwarfpencil: { ph: [5.0, 7.5], gh: [1, 15] }, sterbai: { ph: [6.0, 8.0], gh: [2, 25] },
@@ -21,8 +24,9 @@ export const CHEM: Record<string, { ph: R; gh?: R }> = {
   auratus: { ph: [7.6, 8.6], gh: [10, 20] }, livingstonii: { ph: [7.6, 8.6], gh: [10, 20] }, afra: { ph: [7.6, 8.6], gh: [10, 20] },
   angel: { ph: [6.0, 7.5] }, discus: { ph: [5.0, 7.0], gh: [1, 8] }, oscar: { ph: [6.0, 8.0] }, goldfish: { ph: [6, 8] }, comet: { ph: [6, 8] },
   bronzecory: { ph: [6.0, 8.0] }, pandacory: { ph: [6.0, 7.5] }, pygmycory: { ph: [6.4, 7.4] }, bristlenose: { ph: [6.0, 8.0] },
-  // kuhli: wild water is pH 5.5-6.5, very soft (FishBase); widened to pH 7.5, GH 10 for farmed stock, as common aquarium practice (Nathan 2026-10-26)
-  oto: { ph: [6.0, 7.5] }, kuhli: { ph: [5.5, 7.5], gh: [1, 10] }, clownloach: { ph: [5, 7.5] }, sae: { ph: [6.5, 8] },
+  // kuhli: wild water is pH 5.5-6.5, very soft (FishBase); farmed stock is kept to pH 7.5, GH 10 (common aquarium practice), so that is its
+  // acceptable range, the preferred one stays soft and acidic (Nathan 2026-10-26)
+  oto: { ph: [6.0, 7.5] }, kuhli: { ph: [5.5, 7.0], gh: [1, 6], phOk: [5.5, 7.5], ghOk: [1, 10] }, clownloach: { ph: [5, 7.5] }, sae: { ph: [6.5, 8] },
   hillstream: { ph: [6, 7.5] }, peapuffer: { ph: [7.0, 8.0] },
   // invertebrates: snails need some hardness for their shells
   cherryshrimp: { ph: [6.5, 8.0], gh: [4, 14] }, amano: { ph: [6.0, 8.0], gh: [3, 15] }, nerite: { ph: [7.0, 8.5], gh: [6, 18] },

@@ -1,4 +1,6 @@
-// Water-chemistry audit (2026-10-26), not part of the suite: copy into test/ and run with vitest to regenerate research/chem-audit.md.
+// Water-chemistry audit (2026-10-26), not part of the suite: copy into test/ as a .test.ts and run with vitest to regenerate
+// research/chem-audit.md. Grades every pair of the freshwater species with a pH record under three kuhli records, through the
+// real engine, and lists the snail pairs that stay green.
 import { test } from 'vitest';
 import { writeFileSync } from 'node:fs';
 import { CARE } from '../src/data/care';
@@ -7,83 +9,70 @@ import { getSpecies, type Species } from '../src/data/species';
 import { whysAnimal } from '../src/scene/animalfit';
 
 type R = [number, number];
-const ov = (a: R, b: R) => Math.min(a[1], b[1]) - Math.max(a[0], b[0]);
-const iv = (a: R, b: R) => `${Math.max(a[0], b[0])}-${Math.min(a[1], b[1])}`;
 type G = 'green' | 'amber' | 'red';
+const ov = (a: R, b: R) => Math.min(a[1], b[1]) - Math.max(a[0], b[0]);
+const iv = (a: R, b: R): string => ov(a, b) < 0 ? 'none' : `${Math.max(a[0], b[0])}-${Math.min(a[1], b[1])}`;
 
 function grade(a: Species, b: Species): { g: G; why: string[] } {
   const w = [...whysAnimal(a, 1e6, 3, [b]), ...whysAnimal(b, 1e6, 3, [a])].filter(x => x.kind === 'compat');
   const red = w.filter(x => !x.concern), amb = w.filter(x => x.concern);
   return red.length ? { g: 'red', why: red.map(x => x.text) } : amb.length ? { g: 'amber', why: amb.map(x => x.text) } : { g: 'green', why: [] };
 }
-/** candidate rule: shared pH <= phT or shared GH <= ghT (inclusive), only where the engine already passes both */
-function narrow(a: string, b: string, phT: number, ghT: number): string[] {
-  const x = CARE[a], y = CARE[b], out: string[] = [];
-  if (x.ph && y.ph) { const s = ov(x.ph, y.ph); if (s >= 0.2 && s <= phT + 1e-9) out.push(`pH ${iv(x.ph, y.ph)} (${s.toFixed(1)} wide)`); }
-  if (x.gh && y.gh) { const s = ov(x.gh, y.gh); if (s >= 2 && s <= ghT + 1e-9) out.push(`GH ${iv(x.gh, y.gh)} (${s} dGH wide)`); }
-  return out;
-}
+/** snail needs Nathan quoted (Aquarium Co-Op, 2026-10-26): mystery pH >= 7.2 and GH >= 8; nerite pH above 7. Not yet in the data. */
+const SNAIL_NEED: Record<string, { ph?: number; gh?: number }> = { mystery: { ph: 7.2, gh: 8 }, nerite: { ph: 7.0 } };
 
 test('chem audit', () => {
   const ids = Object.keys(CHEM).filter(id => CARE[id] && getSpecies(id));
   const sp = ids.map(id => getSpecies(id)!);
   const pairs: [number, number][] = [];
   for (let i = 0; i < sp.length; i++) for (let j = i + 1; j < sp.length; j++) pairs.push([i, j]);
+  const K = CARE.kuhli, now = { ph: K.ph!, gh: K.gh!, phOk: K.phOk, ghOk: K.ghOk };
+  const run = (ph: R, gh: R, phOk?: R, ghOk?: R) => {
+    K.ph = ph; K.gh = gh; K.phOk = phOk; K.ghOk = ghOk;
+    return pairs.map(([i, j]) => grade(sp[i], sp[j]));
+  };
+  const orig = run([5.5, 6.5], [1, 6]);
+  const live = run([5.5, 7.5], [1, 10]);
+  const model = run(now.ph, now.gh, now.phOk, now.ghOk);
+  const cnt = (gs: { g: G }[]) => (['green', 'amber', 'red'] as G[]).map(g => `${g} ${gs.filter(x => x.g === g).length}`).join(', ');
 
-  const before = pairs.map(([i, j]) => grade(sp[i], sp[j]));
-  const oldK = { ph: CARE.kuhli.ph!, gh: CARE.kuhli.gh! };
-  CARE.kuhli.ph = [5.5, 7.5]; CARE.kuhli.gh = [1, 10];
-  const after = pairs.map(([i, j]) => grade(sp[i], sp[j]));
+  const L: string[] = [`# Water-chemistry audit: preferred + acceptable ranges`, '',
+    `Generated 2026-10-26 (branch s225). ${ids.length} freshwater species with a pH record, ${pairs.length} pairs, graded by the real engine`,
+    `(whysAnimal both ways, compatibility reasons only; size and expertise ignored), so a pair already red for predation, aggression or`,
+    `temperature stays red whatever its water.`, '',
+    `Model (Nathan 2026-10-26): preferred ranges share enough = green; only the documented acceptable ranges do = amber; not even those = red.`,
+    `No range is widened automatically: a species without an acceptable range is held to its preferred one. Only the kuhli has one so far.`, '',
+    `| Kuhli record | pH | GH | Totals |`, `|---|---|---|---|`,
+    `| Original (before d7b6c89) | 5.5-6.5 | 1-6 | ${cnt(orig)} |`,
+    `| Live main (d7b6c89) | 5.5-7.5 | 1-10 | ${cnt(live)} |`,
+    `| This model | preferred ${now.ph.join('-')}, acceptable ${now.phOk!.join('-')} | preferred ${now.gh.join('-')}, acceptable ${now.ghOk!.join('-')} | ${cnt(model)} |`, ''];
 
-  const L: string[] = [];
-  const cnt = (gs: { g: G }[]) => ({ green: gs.filter(x => x.g === 'green').length, amber: gs.filter(x => x.g === 'amber').length, red: gs.filter(x => x.g === 'red').length });
-  L.push(`# Water-chemistry audit: kuhli data fix + narrow-overlap amber rule`, '',
-    `Generated 2026-10-26 by a throwaway vitest script against main. ${ids.length} freshwater species with a pH record, ${pairs.length} pairs.`,
-    `Grades come from the full engine (whysAnimal both ways, compat reasons only; size and expertise ignored), so pairs already red for predation,`,
-    `aggression or temperature stay red and are not counted against the rule.`, '',
-    `Kuhli before: pH ${oldK.ph.join('-')}, GH ${oldK.gh.join('-')}. After: pH 5.5-7.5, GH 1-10.`, '');
-
-  L.push(`## 1. Kuhli data fix alone`, '', `Totals before ${JSON.stringify(cnt(before))}, after ${JSON.stringify(cnt(after))}.`, '');
-  L.push(`| Pair | Before | After | Before reasons |`, `|---|---|---|---|`);
-  pairs.forEach(([i, j], k) => { if (before[k].g !== after[k].g) L.push(`| ${sp[i].name} + ${sp[j].name} | ${before[k].g} | ${after[k].g} | ${before[k].why.join('; ')} |`); });
+  L.push(`## 1. Every pair whose grade changes (original -> live main -> this model)`, '', `| Pair | Original | Live main | This model | This model's reasons |`, `|---|---|---|---|---|`);
+  pairs.forEach(([i, j], k) => { if (orig[k].g !== model[k].g || live[k].g !== model[k].g)
+    L.push(`| ${sp[i].name} + ${sp[j].name} | ${orig[k].g} | ${live[k].g} | **${model[k].g}** | ${model[k].why.map(t => t.replace('compatibility: ', '')).join('; ')} |`); });
   L.push('');
 
-  const TH: [number, number][] = [[0.5, 4], [0.5, 3], [0.3, 4], [0.3, 3], [0.5, 2]];
-  L.push(`## 2. Narrow-overlap rule, threshold sensitivity (on top of the kuhli fix)`, '',
-    `Green pairs that would turn amber. Inclusive thresholds: shared pH <= X or shared GH <= Y.`, '', `| pH <= | GH <= | green -> amber | by pH | by GH | by both |`, `|---|---|---|---|---|---|`);
-  for (const [p, g] of TH) {
-    let n = 0, byP = 0, byG = 0, both = 0;
-    pairs.forEach(([i, j], k) => { if (after[k].g !== 'green') return; const r = narrow(ids[i], ids[j], p, g); if (!r.length) return; n++;
-      const hp = r.some(s => s.startsWith('pH')), hg = r.some(s => s.startsWith('GH')); if (hp && hg) both++; else if (hp) byP++; else byG++; });
-    L.push(`| ${p} | ${g} | ${n} | ${byP} | ${byG} | ${both} |`);
-  }
-  L.push('');
-
-  const [P, Gt] = TH[0];
-  L.push(`## 3. Every green -> amber change at pH <= ${P}, GH <= ${Gt} (the thresholds that catch kuhli + nerite)`, '',
-    `| Pair | Limiting parameter (shared interval) |`, `|---|---|`);
+  L.push(`## 2. Snail pairs still green under this model`, '',
+    `Shared preferred pH and GH for each green pair with a snail. "Gap" = the shared preferred range cannot meet the snail need Nathan quoted`,
+    `(Aquarium Co-Op: mystery pH 7.2 or higher, GH 8 or higher; nerite pH above 7). Ramshorn and trumpet snails have no such figure yet.`, '',
+    `| Snail | With | Shared pH | Shared GH | Gap |`, `|---|---|---|---|---|`);
   const rows: string[] = [];
-  pairs.forEach(([i, j], k) => { if (after[k].g !== 'green') return; const r = narrow(ids[i], ids[j], P, Gt); if (r.length) rows.push(`| ${sp[i].name} + ${sp[j].name} | ${r.join('; ')} |`); });
-  L.push(...rows.sort(), '');
-  L.push(`Already-amber pairs that would gain a water advisory too: ${pairs.filter(([i, j], k) => after[k].g === 'amber' && narrow(ids[i], ids[j], P, Gt).length).length}.`, '');
+  pairs.forEach(([i, j], k) => { if (model[k].g !== 'green') return;
+    for (const [s, o] of [[i, j], [j, i]]) { const a = sp[s], b = sp[o]; if (a.kind !== 'snail' || b.kind === 'snail') continue;
+      const ca = CARE[a.id], cb = CARE[b.id], need = SNAIL_NEED[a.id], gap: string[] = [];
+      const sp_ = ov(ca.ph!, cb.ph!) >= 0 ? [Math.max(ca.ph![0], cb.ph![0]), Math.min(ca.ph![1], cb.ph![1])] : null;
+      const sg = ca.gh && cb.gh ? [Math.max(ca.gh[0], cb.gh[0]), Math.min(ca.gh[1], cb.gh[1])] : null;
+      if (need?.ph !== undefined && sp_ && sp_[1] < need.ph + (a.id === 'nerite' ? 0.2 : 0)) gap.push(`pH tops out at ${sp_[1]}`);
+      if (need?.gh !== undefined && sg && sg[1] < need.gh) gap.push(`GH tops out at ${sg[1]}`);
+      rows.push(`| ${a.name} | ${b.name} | ${iv(ca.ph!, cb.ph!)} | ${ca.gh && cb.gh ? iv(ca.gh, cb.gh) : `no GH record (${!ca.gh ? a.name : b.name})`} | ${gap.join('; ') || '-'} |`); } });
+  rows.sort();
+  L.push(...rows, '', `${rows.length} green snail pairs, ${rows.filter(r => !r.endsWith('| - |')).length} with a gap.`, '');
 
-  L.push(`## 4. Full matrix after (kuhli fix + rule at pH <= ${P}, GH <= ${Gt})`, '', `G green, a amber, R red. Rows and columns in the same order.`, '', '```');
-  const ab = ids.map(id => id.slice(0, 5).padEnd(5));
-  L.push('             ' + ab.map((_, c) => String(c).padStart(2)).join(''));
-  sp.forEach((s, i) => {
-    let line = `${String(i).padStart(2)} ${ids[i].slice(0, 9).padEnd(10)}`;
-    sp.forEach((_, j) => { if (i === j) { line += ' .'; return; } const k = pairs.findIndex(([a, b]) => a === Math.min(i, j) && b === Math.max(i, j));
-      const g = after[k].g === 'green' && narrow(ids[Math.min(i, j)], ids[Math.max(i, j)], P, Gt).length ? 'amber' : after[k].g;
-      line += g === 'green' ? ' G' : g === 'amber' ? ' a' : ' R'; });
-    L.push(line);
-  });
+  L.push(`## 3. Full matrix under this model`, '', `G green, a amber, R red; rows and columns in the same order.`, '', '```');
+  L.push('              ' + ids.map((_, c) => String(c).padStart(2)).join(''));
+  const at = (i: number, j: number) => model[pairs.findIndex(([a, b]) => a === Math.min(i, j) && b === Math.max(i, j))].g;
+  sp.forEach((_, i) => L.push(`${String(i).padStart(2)} ${ids[i].slice(0, 10).padEnd(11)}` + sp.map((__, j) => i === j ? ' .' : ` ${at(i, j) === 'green' ? 'G' : at(i, j) === 'amber' ? 'a' : 'R'}`).join('')));
   L.push('```', '');
-  const shellRows: string[] = [];
-  pairs.forEach(([i, j], k) => { if (after[k].g !== 'green') return;
-    for (const [sn, o] of [[i, j], [j, i]]) { const a = sp[sn], b = sp[o], bg = CARE[b.id].gh;
-      if (a.kind === 'snail' && CARE[a.id].gh && bg && bg[1] <= 10) shellRows.push(`| ${b.name} + ${a.name} | ${b.name} GH ${bg.join('-')}, snail GH ${CARE[a.id].gh!.join('-')} |`); } });
-  L.push(`## 5. Alternative: shell-builder advisory (snail with a hardness record + a species whose preferred GH tops out at 10 or less)`, '',
-    `${shellRows.length} green -> amber.`, '', `| Pair | Why |`, `|---|---|`, ...shellRows.sort(), '');
   writeFileSync('research/chem-audit.md', L.join('\n'));
-  CARE.kuhli.ph = oldK.ph; CARE.kuhli.gh = oldK.gh;
+  K.ph = now.ph; K.gh = now.gh; K.phOk = now.phOk; K.ghOk = now.ghOk;
 });

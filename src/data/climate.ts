@@ -141,8 +141,9 @@ export function climateOf(S: TankSetup): Climate[] {
     const bands: Band[] = own.map(id => { const c = CARE[id]; return { name: nm(id), ok: c.temp!, tol: c.tol ?? pad(c.temp!, 2), est: !c.tol || !!c.tolEst }; });
     const fit = solve(bands, 0, 40, 0.5, '°C');
     const fallback: R = S.water.salt ? [24, 27] : [22, 26];
-    // pH: the recorded band (waterchem.ts) is the comfortable one; no tolerable band is recorded, so it is estimated 0.5 wider
-    const phBands: Band[] = sp.filter(id => CARE[id]?.ph).map(id => ({ name: nm(id), ok: CARE[id].ph!, tol: pad(CARE[id].ph!, 0.5), est: true }));
+    // pH: the preferred band and the documented acceptable one (waterchem.ts), the same data the compatibility check reads; without an
+    // acceptable band nothing is invented (Nathan 2026-10-26), only solve's own 0.3 minimum margin applies, marked as an estimate
+    const phBands: Band[] = sp.filter(id => CARE[id]?.ph).map(id => { const c = CARE[id]; return { name: nm(id), ok: c.ph!, tol: c.phOk ?? c.ph!, est: !c.phOk }; });
     const fitPh = solve(phBands, 4, 9, 0.1, 'pH');
     if (fitPh) fitPh.at = Math.round(fitPh.at * 10) / 10;
     rows.push({

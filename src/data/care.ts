@@ -46,6 +46,9 @@ export interface AnimalCare extends GroupCare {
   /** comfortable pH and general hardness (dGH; absent = no hardness check), aquatic species (lane CG, data/waterchem.ts) */
   ph?: [number, number];
   gh?: [number, number];
+  /** the documented acceptable pH / GH where wider than the preferred (waterchem.ts phOk / ghOk); absent = the preferred range */
+  phOk?: [number, number];
+  ghOk?: [number, number];
   /** smallest group it is kept in (shoalers, schoolers, shrimp colonies) */
   group?: number;
   /** marine: 1 may nip corals (add with caution), 2 eats corals (not reef-safe). Invertebrate eaters are `prey` with `cats`. */
@@ -87,7 +90,7 @@ export const CARE: Record<string, AnimalCare> = {
 // Researched temperature bands (research/climate, 2026-10-19) replace the first-guess ranges above.
 for (const [id, w] of Object.entries(WATER)) { const c = CARE[id]; if (c) { c.temp = w.ok; c.tol = w.tol; if (w.est) c.tolEst = true; } }
 // Water chemistry and group sizes (lane CG, 2026-10-19): one marine pH band for every salt species, no hardness check.
-for (const [id, w] of Object.entries(CHEM)) { const c = CARE[id]; if (c) { c.ph = w.ph; if (w.gh) c.gh = w.gh; } }
+for (const [id, w] of Object.entries(CHEM)) { const c = CARE[id]; if (c) { c.ph = w.ph; if (w.gh) c.gh = w.gh; if (w.phOk) c.phOk = w.phOk; if (w.ghOk) c.ghOk = w.ghOk; } }
 for (const [id, n] of Object.entries(GROUP)) { const c = CARE[id]; if (c) c.group = n; }
 for (const sp of SPECIES) if (sp.salt && CARE[sp.id]) CARE[sp.id].ph = MARINE_PH;
 // Group bands, caps, sex ratios and habitat limits (lane P1, 2026-10-20; data/groups.ts, sources in research/groups-sources.md).
