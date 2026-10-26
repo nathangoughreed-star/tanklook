@@ -1,6 +1,6 @@
 # Calibration review, round 3: chatgpt-high (an AI model)
 
-Engine readings: the current engine (research/calib/tables, 2026-10-23). Answers 2026-10-23. Ideal = 75 %, limit = 100 %. Counts are read on the dimension their species fills (floor for bottom dwellers, water for swimmers, the larger for fish that use both). "fix" is what the engine's reading would need to be multiplied by to match the answers: below 0 % the engine reads the tank too full, above it too empty.
+Engine readings: the current engine (research/calib/tables, 2026-10-26). Answers 2026-10-23. Ideal = 75 %, limit = 100 %. Counts are read on the dimension their species fills (floor for bottom dwellers, water for swimmers, the larger for fish that use both). "fix" is what the engine's reading would need to be multiplied by to match the answers: below 0 % the engine reads the tank too full, above it too empty.
 
 ## Tank by tank
 
@@ -20,7 +20,7 @@ Engine readings: the current engine (research/calib/tables, 2026-10-23). Answers
 | f16 | 75 | 10 Kribensis* + 11 Sterba's corydoras° | 72 % / 109 % | red / green / red | 2 -> 60 % | 4 -> 72 % | no valid count | +31 % |
 | f3 | 10 | 8 Dwarf pencilfish* | 82 % / 0 % | - / green / green | 10 -> 102 % | 13 -> 123 % | - | -23 % |
 | f12 | 40 | 22 Bronze corydoras* + 30 Platy° | 130 % / 130 % | amber / red / red | no valid count | 14 -> 83 % | no valid count | +21 % |
-| f9 | 29 | 11 Panda corydoras* + 19 Otocinclus° | 128 % / 99 % | amber / green / amber | 9 -> 88 % | 16 -> 126 % | 12 -> 103 % | -21 % |
+| f9 | 29 | 11 Panda corydoras* + 19 Otocinclus° | 95 % / 80 % | amber / green / amber | 9 -> 69 % | 16 -> 106 % | 12 -> 78 % | -1 % |
 | f14 | 55 | 15 Bronze corydoras* + 6 Marbled hatchetfish° | 67 % / 92 % | green / green / green | 18 -> 111 % | 26 -> 160 % | 14 -> 80 % | -26 % |
 | f13 | 40 | 6 Kuhli loach* + 85 Celestial pearl danio° | 75 % / 20 % | amber / red / red | no valid count | no valid count | 50 -> 58 % | +29 % |
 | p1a (pair) | 40 | 37 Black molly* | 130 % / 0 % | - / red / red | 12 -> 58 % | 19 -> 80 % | - | +27 % |
@@ -33,10 +33,10 @@ Engine readings: the current engine (research/calib/tables, 2026-10-23). Answers
 
 ## Overall
 
-20 tanks with counts. Median fix +9 %; the engine reads 7 of them more than 10 % too full, 10 more than 10 % too empty.
+20 tanks with counts. Median fix +9 %; the engine reads 6 of them more than 10 % too full, 10 more than 10 % too empty.
 Floor bands: 11 of 15 agree; the engine is a band fuller on 2, emptier on 2.
 Water bands: 10 of 21 agree; the engine is a band fuller on 9, emptier on 2.
-Overall bands: 14 of 21 agree; the engine is a band fuller on 5, emptier on 2.
+Overall bands: 15 of 21 agree; the engine is a band fuller on 4, emptier on 2.
 Limit / ideal count, one-species tanks (10): yours median 1.50, the engine's 1.31 (a higher ratio from you means later fish crowd the tank less than the engine's school curve says; noisy, read it over rounds).
 
 ## Patterns
@@ -50,13 +50,13 @@ Median fix per group (tanks with counts, repeats and left-out tanks excluded). F
 | focal zone | bottom | 11 | +11 % | -26 % to +31 % |  |
 | focal zone | middle | 8 | -2 % | -27 % to +27 % |  |
 | focal zone | top | 1 | -29 % | -29 % to -29 % |  |
-| tight dimension (engine) | both | 3 | -17 % | -21 % to +21 % | **flag** |
+| tight dimension (engine) | both | 3 | -1 % | -17 % to +21 % |  |
 | tight dimension (engine) | floor | 7 | +11 % | -26 % to +31 % |  |
 | tight dimension (engine) | water | 10 | -2 % | -29 % to +29 % |  |
-| one species or a mix | mix | 10 | -8 % | -29 % to +31 % |  |
+| one species or a mix | mix | 10 | +1 % | -29 % to +31 % |  |
 | one species or a mix | one species | 10 | +11 % | -23 % to +27 % |  |
 | tank size | 10-20 gal | 8 | -11 % | -29 % to +11 % |  |
-| tank size | 29-40 gal | 8 | +12 % | -21 % to +29 % |  |
+| tank size | 29-40 gal | 8 | +12 % | -1 % to +29 % |  |
 | tank size | 55 gal and up | 4 | +3 % | -26 % to +31 % |  |
 | focal count as shown | 10 or fewer | 6 | -2 % | -29 % to +31 % |  |
 | focal count as shown | 11-30 | 11 | +7 % | -27 % to +21 % |  |
@@ -68,12 +68,11 @@ The engine's overall is the larger of floor and water. Your overall matched your
 
 ## What limits the room first
 
-0 tank(s) "not room" (left out of the room numbers). Of the rest, your limiting species matches the engine's biggest contributor on the binding dimension on 16 of 21.
+0 tank(s) "not room" (left out of the room numbers). Of the rest, your limiting species matches the engine's biggest contributor on the binding dimension on 17 of 21.
 - f5: you Dwarf gourami, engine Chili rasbora
 - f6: you White cloud mountain minnow, engine Neon tetra
 - f16: you Kribensis, engine Sterba's corydoras
 - f12: you Platy, engine Bronze corydoras
-- f9: you Panda corydoras, engine Otocinclus
 
 ## Big enough per species
 
@@ -100,7 +99,7 @@ Confidence: low 0, medium 21, high 0. In a bare tank: the same 0, a little lower
 - f16 (Kribensis + Sterba's corydoras): gate ok, you no (see the note)
 - f9 (Panda corydoras + Otocinclus): gate ok, you caution (see the note)
 - f14 (Bronze corydoras + Marbled hatchetfish): gate concern (temperature: narrow shared range), you yes (see the note)
-- f13 (Kuhli loach + Celestial pearl danio): gate high (Celestial pearl danio with Kuhli loach: water chemistry: pH 6.5-7.5 against its 5.5-6.5; temperature: narrow shared range), you yes (see the note)
+- f13 (Kuhli loach + Celestial pearl danio): gate concern (temperature: narrow shared range), you yes (see the note)
 
 ## Notes (the expert's own words)
 

@@ -1,6 +1,6 @@
 # Calibration review, round 2: ngr-ai (an AI model)
 
-Engine readings: the current engine (research/calib/tables, 2026-10-23). Answers 2026-10-23. Ideal = 75 %, limit = 100 %. Counts are read on the dimension their species fills (floor for bottom dwellers, water for swimmers, the larger for fish that use both). "fix" is what the engine's reading would need to be multiplied by to match the answers: below 0 % the engine reads the tank too full, above it too empty.
+Engine readings: the current engine (research/calib/tables, 2026-10-26). Answers 2026-10-23. Ideal = 75 %, limit = 100 %. Counts are read on the dimension their species fills (floor for bottom dwellers, water for swimmers, the larger for fish that use both). "fix" is what the engine's reading would need to be multiplied by to match the answers: below 0 % the engine reads the tank too full, above it too empty.
 
 ## Tank by tank
 
@@ -15,7 +15,7 @@ Engine readings: the current engine (research/calib/tables, 2026-10-23). Answers
 | f4 | 75 | 59 Panda corydoras* + 49 Rummy-nose tetra° | 102 % / 131 % | red / green / red | 28 -> 62 % | 42 -> 93 % | no valid count | +14 % |
 | f7 | 40 | 52 Neon tetra* | 75 % / 0 % | - / amber / amber | 40 -> 62 % | 65 -> 88 % | - | +17 % |
 | f15 | 75 | 4 Siamese algae eater* + 109 Celestial pearl danio° | 77 % / 29 % | amber / amber / amber | can't say | 4 -> 29 % | 70 -> 67 % | +96 % |
-| f13 | 30 | 4 Reticulated hillstream loach* + 38 Otocinclus° | 169 % / 90 % | amber / green / amber | can't say | 4 -> 90 % | 20 -> 115 % | -15 % |
+| f13 | 30 | 4 Reticulated hillstream loach* + 38 Otocinclus° | 127 % / 59 % | amber / green / amber | can't say | 4 -> 59 % | 20 -> 86 % | +21 % |
 | f14 | 125 | 37 Bronze corydoras* + 23 Kadango (red-fin) cichlid° | 114 % / 110 % | amber / amber / amber | can't say | can't say | can't say | - |
 | f16 | 75 | 5 Kribensis* + 16 Yellow lab cichlid° | 74 % / 75 % | - / - / - | - | - | - | - |
 | f5 | 125 | 59 Kuhli loach* + 11 Sterba's corydoras° | 92 % / 131 % | - / - / - | - | - | - | - |
@@ -26,15 +26,15 @@ Engine readings: the current engine (research/calib/tables, 2026-10-23). Answers
 | f3 | 30 | 9 Bronze corydoras* | 55 % / 80 % | - / - / - | - | - | - | - |
 | f1 | 55 | 34 Panda corydoras* | 63 % / 104 % | - / - / - | - | - | - | - |
 | p2a (pair) | 40 | 15 Bronze corydoras* | 55 % / 89 % | - / - / - | - | - | - | - |
-| r1 (repeat of f13) | 30 | 4 Reticulated hillstream loach* + 38 Otocinclus° | 169 % / 90 % | - / - / - | - | - | - | - |
+| r1 (repeat of f13) | 30 | 4 Reticulated hillstream loach* + 38 Otocinclus° | 127 % / 59 % | - / - / - | - | - | - | - |
 | f11 | 90 | 115 Dwarf pencilfish* + 9 Pearl gourami° | 124 % / 0 % | - / - / - | - | - | - | - |
 
 \* = the species the main count questions asked about; ° = the tankmate count.
 
 ## Overall
 
-10 tanks with counts. Median fix +10 %; the engine reads 3 of them more than 10 % too full, 5 more than 10 % too empty.
-Floor bands: 3 of 6 agree; the engine is a band fuller on 2, emptier on 1.
+10 tanks with counts. Median fix +13 %; the engine reads 2 of them more than 10 % too full, 6 more than 10 % too empty.
+Floor bands: 2 of 6 agree; the engine is a band fuller on 2, emptier on 2.
 Water bands: 5 of 10 agree; the engine is a band fuller on 4, emptier on 1.
 Overall bands: 6 of 11 agree; the engine is a band fuller on 4, emptier on 1.
 Limit / ideal count, one-species tanks (4): yours median 1.59, the engine's 1.47 (a higher ratio from you means later fish crowd the tank less than the engine's school curve says; noisy, read it over rounds).
@@ -47,18 +47,18 @@ Median fix per group (tanks with counts, repeats and left-out tanks excluded). F
 |---|---|---|---|---|---|
 | focal body class | big | 1 | +96 % | +96 % to +96 % |  |
 | focal body class | mid | 2 | -6 % | -42 % to +30 % |  |
-| focal body class | tiny | 7 | +9 % | -47 % to +17 % |  |
-| focal zone | bottom | 5 | +11 % | -42 % to +96 % |  |
+| focal body class | tiny | 7 | +11 % | -47 % to +21 % |  |
+| focal zone | bottom | 5 | +14 % | -42 % to +96 % |  |
 | focal zone | middle | 3 | +17 % | +9 % to +30 % | **flag** |
 | focal zone | top | 2 | -25 % | -47 % to -3 % |  |
 | tight dimension (engine) | both | 2 | +13 % | +11 % to +14 % |  |
 | tight dimension (engine) | floor | 1 | -42 % | -42 % to -42 % |  |
-| tight dimension (engine) | water | 7 | +9 % | -47 % to +96 % |  |
-| one species or a mix | mix | 6 | +13 % | -15 % to +96 % |  |
+| tight dimension (engine) | water | 7 | +17 % | -47 % to +96 % | **flag** |
+| one species or a mix | mix | 6 | +17 % | -3 % to +96 % | **flag** |
 | one species or a mix | one species | 4 | -17 % | -47 % to +17 % | **flag** |
-| tank size | 29-40 gal | 7 | -3 % | -47 % to +17 % |  |
+| tank size | 29-40 gal | 7 | +9 % | -47 % to +21 % |  |
 | tank size | 55 gal and up | 3 | +30 % | +14 % to +96 % | **flag** |
-| focal count as shown | 10 or fewer | 2 | +41 % | -15 % to +96 % |  |
+| focal count as shown | 10 or fewer | 2 | +59 % | +21 % to +96 % |  |
 | focal count as shown | 11-30 | 4 | -23 % | -47 % to +11 % | **flag** |
 | focal count as shown | over 30 | 4 | +15 % | +9 % to +30 % | **flag** |
 

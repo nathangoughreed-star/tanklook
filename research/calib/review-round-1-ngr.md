@@ -1,6 +1,6 @@
 # Calibration review, round 1: ngr
 
-Engine readings: the current engine (research/calib/tables, 2026-10-23). Answers 2026-10-23 (survey with pictures). Ideal = 75 %, limit = 100 %. Counts are read on the dimension their species fills (floor for bottom dwellers, water for swimmers, the larger for fish that use both). "fix" is what the engine's reading would need to be multiplied by to match the answers: below 0 % the engine reads the tank too full, above it too empty.
+Engine readings: the current engine (research/calib/tables, 2026-10-26). Answers 2026-10-23 (survey with pictures). Ideal = 75 %, limit = 100 %. Counts are read on the dimension their species fills (floor for bottom dwellers, water for swimmers, the larger for fish that use both). "fix" is what the engine's reading would need to be multiplied by to match the answers: below 0 % the engine reads the tank too full, above it too empty.
 
 ## Tank by tank
 
@@ -12,7 +12,7 @@ Engine readings: the current engine (research/calib/tables, 2026-10-23). Answers
 | f5 | 29 | 22 Panda corydoras* + 4 Pea puffer + 1 Malawi synodontis | 141 % floor | red | red | no valid count | no valid count | - |
 | f20 | 15 | 34 Cherry shrimp* + 8 Cardinal tetra + 2 Honey gourami | 113 % | red | green (engine fuller) | 50 -> 124 % | not assessable | -39 % |
 | f15 | 125 | 60 Kadango (red-fin) cichlid* | 154 % | red | - | - | - | - |
-| f13 | 15 | 15 Otocinclus* + 2 Pea puffer | 161 % | red | - | - | - | - |
+| f13 | 15 | 15 Otocinclus* + 2 Pea puffer | 111 % | red | - | - | - | - |
 | f3 | 15 | 6 Sterba's corydoras* + 1 Bristlenose pleco | 99 % floor | amber | - | - | - | - |
 | r2 (repeat of f4) | 30 | 35 White cloud mountain minnow* + 6 Panda corydoras | 76 % | amber | - | - | - | - |
 | f10 | 90 | 90 Neon tetra* + 71 Ember tetra | 98 % | amber | - | - | - | - |
@@ -25,7 +25,7 @@ Engine readings: the current engine (research/calib/tables, 2026-10-23). Answers
 | a1 (anchor) | 90 | 18 Bronze corydoras* + 56 Pygmy corydoras + 4 Bristlenose pleco | 108 % floor | red | - | - | - | - |
 | f2 | 75 | 27 Platy* | 52 % | green | - | - | - | - |
 | f9 | 55 | 9 Yellow lab cichlid* + 8 Harlequin rasbora | 67 % | green | - | - | - | - |
-| f19 | 55 | 90 Otocinclus* | 157 % | red | - | - | - | - |
+| f19 | 55 | 90 Otocinclus* | 118 % | red | - | - | - | - |
 | f11 | 55 | 13 Cherry barb* + 5 Black molly | 55 % | green | - | - | - | - |
 | f7 | 29 | 18 Dwarf pencilfish* | 70 % | green | - | - | - | - |
 | f16 | 75 | 55 Guppy* + 67 Amano shrimp | 112 % | red | - | - | - | - |
