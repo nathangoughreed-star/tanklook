@@ -13,11 +13,9 @@ go back to the lane to rebase and re-bless (never hand-resolve generated files o
 tarantula, gpureveal, calib timeout) flake under load and pass alone.
 
 QUEUE / RUNNING (full ids; send with SendMessage to the id)
-- SR: Stocking Rescale (local_f0877f8e-c540-4d47-b9d4-65c8e47cc1a9), branch claude/sr-67d7bd: steps 1, 3, 4, 7 done (5bb9dcf, green,
-  wording "NN% · limited by floor", filtration advice = Nathan's quote, starters at Full median 51.6 -> 67.5 %). NOT pushed: waiting
-  for its next sha that adds Nathan's two answers: filter extra capacity capped at +50 % over baseline ("sure"), and option (a) for
-  nano starters (pick a smaller school that fits instead of falling back to snails; reads the species list, so S238's fish count).
-  Push it as one batch with its moved-numbers table.
+- SR: Stocking Rescale (local_f0877f8e-c540-4d47-b9d4-65c8e47cc1a9): steps 1, 3, 4, 7 + filter cap (+50 %) + nano-starter rule ON MAIN
+  (bce3458, build 1278). Open: Nathan's calls on 6 borderline expert-list tags (SR's chat). Nano tanks with no fitting school are
+  listed in its report; S238's new fish should fill the freshwater gaps.
 - S224b: Catalogue Merge (local_bcf39200-7006-4999-86fc-bd3eec942827): 0fa0758 HELD. Has includes (698 variants: full 108, partial
   552, none 38; lid unknown 378; gaps in research/tanks/includes-gaps.json). Before pushing it must: price each size from a standard
   rimmed non-kit variant (g50b step-up read +$689 via a $610 LANDEN rimless; Nathan: "no 50g standard? 36x18x18?"; g50b is the
@@ -29,7 +27,7 @@ QUEUE / RUNNING (full ids; send with SendMessage to the id)
   Nathan's "if we need to add some more small schooling fish for nano tanks lets do it. I also want some crayfish and thai micro
   crabs. Aquatic isopods too." Running. Tells you which new fish qualify for SR's nano-starter rule.
 - S216: Expert Calibration Rounds (local_264b779e-f6ea-4d39-8d33-6a55f3f6e3a9): xc = bb84489 (fit-report label) + 1288c9d
-  (prompts/lane-S216b-expert-calibration.md). LAST in the queue (after SR). After it lands, start S216b from that prompt.
+  (prompts/lane-S216b-expert-calibration.md). LAST in the queue; told "your turn" at build 1278. After it lands, start S216b from that prompt.
   Decided: rounds 1-3 data used at FULL weight in one fit with v4; ChatGPT experts = one source (round-1-ngr.json = Nathan's own
   5 tanks, a small human source); global water / floor scales belong to S216b (needs human answers, held-out gain, Nathan's yes).
 - S232: Scheduled Price Sweep: DONE. Task glass-box-weekly-price-sweep, Mondays ~08:10, first run 2026-11-02; each sweep
