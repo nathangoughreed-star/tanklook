@@ -164,3 +164,9 @@ OK?"). It is a draft, not in scenarios-v4.json. Adding it changes build cba9d609
 - The 24 fish on the class default deserve keeper-anchored K values, which module E's answers can fit.
 - A pick's females are scaled at the same share of their own adult length.
 - The fork card and the tankmate ranking read young picks' lengths for the prey gate, but not their growth.
+- Social limits that arrive with maturity (S227, from the first v4 expert notes, 2026-10-26). Five juvenile Banggai cardinals coexist until
+  pairs form (C10); three ocellaris bought young end as a pair and a harassed third (C12). The stepping only reads space, size and prey
+  today. Group limits (groups.ts max, territory, pairs) could join `firstFail` once a species records the length or age they apply from.
+- Calibration stays at adult size (Nathan 2026-10-26; the lock in test/calibtablesv4.test.ts on calib-v4, 99b9c6c, fails if a v4 tank's
+  fish get a tl). This branch leaves setupV4 and the v4 scenarios alone, and the planner's default stays adult. Module E's juvenile tanks
+  therefore need their own table, outside that lock.
