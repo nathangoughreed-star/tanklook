@@ -2,7 +2,7 @@ You are the new coordinator for the Glass Box parallel lanes, taking over from s
 ("Coordinator 10"). You coordinate; you don't build features. Read the "HOW TO WORK" sections of coordinator-6.md through -10.md
 (all still valid), then this file, which overrides them where they differ.
 
-STATE FIRST (2026-10-26 ~17:15 UTC, build 1271, main b9c528b, deploys green as of 8d1fb4d; check the runs API).
+STATE FIRST (2026-10-26 ~17:45 UTC, build 1281, main 463c6e0, deploys green as of 8d1fb4d; check the runs API).
 
 MERGE PROTOCOL (Nathan 2026-10-26, "push all work that is ready. I dogfood with the main site"; standing): lanes DON'T push.
 A lane sends a ready sha. You cherry-pick it onto origin/main in C:/Users/nreed/Glass-Box-coord (detached;
@@ -26,10 +26,11 @@ QUEUE / RUNNING (full ids; send with SendMessage to the id)
 - S238: Nano Schoolers, Crayfish, Micro Crabs, Isopods (local_4046d44f-eca3-495a-a4a8-8bb9c49d442c), started 2026-10-26 on
   Nathan's "if we need to add some more small schooling fish for nano tanks lets do it. I also want some crayfish and thai micro
   crabs. Aquatic isopods too." Running. Tells you which new fish qualify for SR's nano-starter rule.
-- S216: Expert Calibration Rounds (local_264b779e-f6ea-4d39-8d33-6a55f3f6e3a9): xc = bb84489 (fit-report label) + 1288c9d
-  (prompts/lane-S216b-expert-calibration.md). LAST in the queue; told "your turn" at build 1278. After it lands, start S216b from that prompt.
-  Decided: rounds 1-3 data used at FULL weight in one fit with v4; ChatGPT experts = one source (round-1-ngr.json = Nathan's own
-  5 tanks, a small human source); global water / floor scales belong to S216b (needs human answers, held-out gain, Nathan's yes).
+- S216: Expert Calibration Rounds: DONE (463c6e0, build 1281); archive it.
+- S216b: Expert Calibration Fit (local_326205fb-de49-4e9e-b6ba-ce412b7ea974), started 2026-10-26 from
+  prompts/lane-S216b-expert-calibration.md. Decided: rounds 1-3 at FULL weight in one fit with v4; ChatGPT experts = one source
+  (round-1-ngr.json = Nathan's own 5 tanks, a small human source); global water / floor scales belong to S216b (needs human
+  answers, held-out gain, Nathan's yes). It reports to you: send it your id.
 - S232: Scheduled Price Sweep: DONE. Task glass-box-weekly-price-sweep, Mondays ~08:10, first run 2026-11-02; each sweep
   messages the coordinator a sha + report (push it like any lane). Archive S232.
 
@@ -42,7 +43,7 @@ WAITING ON NATHAN
 - Next lanes to propose once S224b lands: kit records (kits.json for every bundle that should lock), includes research (step 2).
 - Backlog (not asked): territory phase 2 (S196), oto / tiny bottom-dweller visibility (S218 finding).
 
-NATHAN CAN ARCHIVE: Coordinators 8, 9 and 10 (after you take over), SU, S166, S196, S199, S214 x2, S218, S219, S222, S224, S225,
+NATHAN CAN ARCHIVE: Coordinators 8, 9 and 10 (after you take over), SU, S216, S232, SR (after its 6 borderline tags), S166, S196, S199, S214 x2, S218, S219, S222, S224, S225,
 S226, S230, S231, S234, S235, S236, S237, the "Glass Box sidebar re-sort" routine runs. S233 after S224b lands.
 Shared checkout: S234 / S235 left uncommitted copies that now match main, plus .claude/launch.json (S234's land-path config) and
 untracked test/_tmp/probe.test.ts. Nathan syncs it himself (`git -C "C:/Users/nreed/Glass Box" merge --ff-only origin/main` after
@@ -63,5 +64,5 @@ HOW TO WORK, changes from coordinator-10.md:
 
 STEP 1, take over: get_session "self"; detach_session "self" if nested; set_session_title "Coordinator 11"; move into
 Glass Box: Active; in HANDOFF.md "Start here" replace local_901f3080 / "Coordinator 10" (protocol paragraph and "Current lanes"
-line), commit from Glass-Box-coord and push; send your full id to SR, S224b, S229, S238, S216, S232, S233; tell Nathan you're live
+line), commit from Glass-Box-coord and push; send your full id to S224b, S229, S238, S216b, SR, S233; tell Nathan you're live
 and Coordinator 10 can be archived. End every reply with "Build N". Hand off to coordinator-12 at about 25 % context, state first.
