@@ -74,6 +74,14 @@ adult length per species in mm. Only those three are re-read. A condition in wor
 answers resting on it are set aside, and the knowledge in it goes to a claim. If a condition drops the counted species, its counts
 cannot be read under it.
 
+## Adult sizes (Nathan 2026-10-26)
+
+Every v4 answer is a judgement of the animals at adult size, and the engine tables read every tank at adult length (a lock in
+test/calibtablesv4.test.ts holds this whatever the stocking screen's size picker defaults to). A note that mentions juveniles ("five
+juveniles may coexist for a while", "fine for a growing juvenile") is not a condition: the answer stays an adult answer. What the note
+says about juveniles goes to a claim, which feeds the juvenile-size timeline ("fine for now, outgrows it in N months"), not the
+calibration. Only a note that says the expert's own answer is for a smaller animal makes a `tl` condition.
+
 ## Claims: the ledger
 
 A claim is knowledge in the note that holds beyond this one tank: "kuhlis need groups of six or more", "nerites are fine with neons in

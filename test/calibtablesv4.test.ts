@@ -85,6 +85,10 @@ describe('survey v4 engine tables', () => {
     }
   });
 
+  it('reads every survey tank at adult size: the experts judged adults (Nathan 2026-10-26), whatever a size picker defaults to', () => {
+    for (const s of V4.scenarios) for (const f of setupV4(V4.tanks[s.tank].in, s.env, s.stock).fish) expect(f.tl, `${s.id} ${f.species}`).toBeUndefined();
+  });
+
   it("reads a tank under a note's condition: another stock, temperature or animal length", () => {
     const a13 = sc('A13'), juv = condScenario(a13, { text: 'juveniles', tl: { neon: 20 } }, condKey('A13', 'x y'));
     expect(juv.id).toBe('A13@x_y');

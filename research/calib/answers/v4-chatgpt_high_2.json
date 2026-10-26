@@ -1,0 +1,837 @@
+{
+ "survey": "v4",
+ "build": "cba9d609",
+ "expert": "chatgpt high 2",
+ "expertKind": "ai",
+ "modules": [
+  "A",
+  "B",
+  "C",
+  "D"
+ ],
+ "made": "2026-10-26T14:41:37.338Z",
+ "sources": [
+  "raw-v4-chatgpt-high-2.json"
+ ],
+ "answers": {
+  "A01": {
+   "verdict": "ideal",
+   "ms": 230102,
+   "change": "nothing",
+   "bigEnough": "yes",
+   "smallest": "5 gal (16 x 8 x 10 in)",
+   "confidence": "high",
+   "note": "Optional note: Five gallons is a reasonable minimum for a single male betta, assuming adequate filtration, heating, and appropriate furnishings. The 16-inch horizontal length and shallow water column are favorable. A larger tank provides more room, but isn't necessary for acceptable long-term welfare.\n\nThis matches the common 5-gallon minimum recommended by Aquarium Co-Op and the betta-keeping community. \n\nAquarium Co-Op\n+1\n\n\n\n\nCalibration distinction: I interpret Ideal as a healthy, appropriate long-term setup—not necessarily the largest or most enriching possible enclosure. Under that definition, this qualifies."
+  },
+  "A02": {
+   "verdict": "caution",
+   "ms": 81513,
+   "change": "fewer",
+   "together": "caution"
+  },
+  "A03": {
+   "verdict": "caution",
+   "ms": 121748,
+   "changeSp": [
+    "guppy"
+   ],
+   "change": "fewer",
+   "together": "caution",
+   "reasons": [
+    "eat"
+   ],
+   "problem": [
+    "cherryshrimp"
+   ],
+   "ideal": 4,
+   "limit": 6,
+   "confidence": "medium",
+   "note": "Optional note: Eight adult guppies, especially six large females, make this 20-inch tank crowded for active swimming. Four (1M/3F) would be comfortably stocked; six is a reasonable upper limit with good care. The shrimp and nerite add little spatial pressure. Adults are generally compatible, although guppies will prey on shrimplets. Mixed-sex guppies will also reproduce, requiring population control in practice. Water hardness should suit all three species.\n\nCalibration distinction: This is yellow, not red. The adult population can remain healthy under the stated assumptions, but eight guppies exceed what I'd consider comfortable stocking. Aquarium Co-Op also identifies six fancy guppies as a viable 10-gallon stocking option."
+  },
+  "A04": {
+   "verdict": "caution",
+   "ms": 191576,
+   "changeSp": [
+    "bristlenose"
+   ],
+   "change": "drop",
+   "ideal": 10,
+   "limit": 15,
+   "mateIdeal": 6,
+   "mateLimit": 8,
+   "confidence": "medium",
+   "note": "Optional note: The neon school is appropriately sized, and six bronze corydoras form a suitable social group. The concern is the fully grown 5-inch bristlenose sharing a 30 × 12-inch footprint with six relatively large corydoras. This is near the lower acceptable enclosure size for the pleco, and territorial displacement may occur. The arrangement can work, but removing the pleco or upgrading to a larger tank would provide better long-term spatial margins. Hobbyist experiences with this combination vary substantially. \n\nReddit\n+2\n\n\n\n\nCalibration distinction: Yellow, but closer to green than red. I wouldn't expect chronic problems in a well-managed aquarium with compatible individuals. The concern is limited bottom-area margin, not the number of neon tetras or overall filtration capacity."
+  },
+  "A05": {
+   "verdict": "caution",
+   "ms": 580955,
+   "ideal": 10,
+   "limit": 12,
+   "mateIdeal": 6,
+   "mateLimit": 7,
+   "confidence": "medium",
+   "note": "Optional note: Compared with the 20-gallon long, this tank has 20% less floor area despite similar volume. Six adult bronze corydoras sharing a 24 × 12-inch bottom with a mature bristlenose pleco is the main concern. Ten neon tetras remain reasonable, but the shorter swimming length reduces their margin as well. The setup is workable with appropriate shelter and compatible individuals, although a 20-gallon long or larger would be preferable.\n\nCalibration distinction: Still yellow, but noticeably closer to red than the preceding 20-gallon long. The difference is driven primarily by reduced horizontal space and bottom-dweller crowding, not waste production. The numerical limits are approximate rather than sharp biological thresholds."
+  },
+  "A06": {
+   "verdict": "ideal",
+   "ms": 125519,
+   "change": "nothing",
+   "together": "yes",
+   "ideal": 12,
+   "limit": 18,
+   "confidence": "high",
+   "note": "Optional note: Well-balanced community with appropriately sized schools, distinct habitat use, and no substantial spatial conflicts. Twelve harlequins provide a strong school without overwhelming the swimming area. Eight panda corydoras comfortably occupy the bottom, while the single dwarf gourami provides a centerpiece. Adult Amano shrimp and nerites are compatible. At 25°C, panda corydoras are at the upper end of their recommended temperature range; 24°C would provide slightly more margin. Individual dwarf gourami temperament remains a consideration. \n\nSeriously Fish\n+2\n\n\n\n\nCalibration distinction: Solid green. This is close to what I'd consider a well-stocked, attractive 29-gallon community aquarium. The 18-rasbora maximum is an approximate upper boundary, not the preferred stocking target."
+  },
+  "A07": {
+   "verdict": "problems",
+   "ms": 77564,
+   "changeSp": [
+    "betta"
+   ],
+   "change": "drop",
+   "together": "no",
+   "reasons": [
+    "nip"
+   ],
+   "confidence": "high",
+   "note": "Optional note: Tiger barbs are active, persistent fin nippers, making them poor companions for slower, long-finned male bettas. A group of eight reduces aggression among the barbs but does not reliably prevent harassment of the betta. The 29-gallon tank provides reasonable space for the tiger barbs themselves; the problem is behavioral incompatibility, not stocking density. Removing the betta would make this a substantially better arrangement. \n\nAquarium Co-Op\n\n\n\n\nCalibration distinction: This is a clear behavioral failure that additional filtration or water changes cannot resolve. I selected Problems likely rather than Not workable because individual fish may coexist temporarily, but I would not recommend the combination for long-term housing."
+  },
+  "A08": {
+   "verdict": "caution",
+   "ms": 121962,
+   "change": "bigger",
+   "together": "caution",
+   "reasons": [
+    "aggression"
+   ],
+   "problem": [
+    "angel",
+    "bristlenose"
+   ],
+   "ideal": 15,
+   "limit": 20,
+   "bigEnough": "yes",
+   "smallest": "55 gal (48 x 13 x 21 in)",
+   "confidence": "medium",
+   "note": "Optional note: This is a fairly heavily occupied community, but the main limitation is the 16-inch tank height for fully grown angelfish. Adult angelfish can exceed 8 inches in total vertical height, and a 20-inch-tall aquarium is preferable. A bonded pair may also defend spawning territory aggressively. Two adult bristlenose plecos add potential territorial conflict at the bottom, although the 18-inch tank width helps. The rummy-nose and Sterba's corydoras groups are appropriately sized. A 55-gallon would address the height and swimming-length concerns, while a 75-gallon would be substantially more comfortable. \n\nSeriously Fish\n+1\n\n\n\n\nCalibration distinction: Upper yellow. This could remain functional long term, but it has limited behavioral and spatial margins. I would not classify it as red solely because of the number of fish."
+  },
+  "A09": {
+   "verdict": "problems",
+   "ms": 66247,
+   "changeSp": [
+    "neon"
+   ],
+   "change": "drop",
+   "together": "no",
+   "reasons": [
+    "eat"
+   ],
+   "problem": [
+    "angel",
+    "neon"
+   ],
+   "confidence": "high",
+   "note": "Optional note: The 55-gallon dimensions are appropriate for a bonded pair of adult angelfish, and eight bronze corydoras are a suitable bottom-dwelling group. The primary problem is predation: fully grown angelfish can swallow adult neon tetras. Some individuals coexist peacefully, particularly when raised together, but this is not a reliably safe long-term pairing. At 26°C, the water is also somewhat warm for neons. Replacing them with larger-bodied, peaceful schooling fish would substantially improve compatibility. \n\nAquario\n+2\n\n\n\n\nCalibration distinction: Red despite having ample tank volume and otherwise modest stocking. This is a species-compatibility failure rather than an overcrowding problem. A larger aquarium would not reliably eliminate the predation risk."
+  },
+  "A10": {
+   "verdict": "caution",
+   "ms": 134986,
+   "changeSp": [
+    "neon"
+   ],
+   "change": "fewer",
+   "ideal": 12,
+   "limit": 20,
+   "mateIdeal": 8,
+   "mateLimit": 12,
+   "confidence": "medium",
+   "note": "Optional note: Heavily stocked but generally compatible community. The 48-inch swimming length accommodates the three tetra schools, although 38 midwater tetras create substantial activity alongside two adult pearl gouramis. Twelve bronze corydoras plus a bristlenose also make for a busy 13-inch-wide bottom. The otocinclus are appropriately grouped. Reducing the neons to approximately 12 would improve swimming space without compromising schooling behavior. Pearl gourami territorial behavior during breeding is a secondary concern. \n\nSeriously Fish\n\n\n\n\nCalibration distinction: Upper yellow, approaching the stocking limit I'd recommend for this community. No individual species is fundamentally unsuitable, and serious long-term problems aren't inevitable. The primary issue is cumulative crowding across several otherwise reasonable groups.\n\nThe numerical limits are approximate judgments, not sharp biological thresholds."
+  },
+  "A11": {
+   "verdict": "caution",
+   "ms": 117137,
+   "change": "bigger",
+   "ideal": 8,
+   "limit": 10,
+   "mateIdeal": 10,
+   "mateLimit": 14,
+   "confidence": "medium",
+   "note": "Optional note: The rainbowfish group and sex ratio are appropriate, as are the cherry barb and kuhli loach groups. The main concern is four mature 6-inch Siamese algae eaters sharing a 48-inch tank with eight highly active rainbowfish. Siamese algae eaters are strong swimmers, can become competitive with maturity, and benefit from more horizontal space. A 60-inch or longer tank would be preferable. Water chemistry is another consideration: Boesemani rainbowfish favor harder, more alkaline water than kuhli loaches generally prefer. \n\nSeriously Fish\n+2\n\n\n\n\nCalibration distinction: Upper yellow. The aquarium has adequate overall volume, and the species are not inherently aggressive toward one another. However, adult swimming-space demands and differing water preferences prevent an Ideal rating. The suggested numerical limits assume the other populations remain unchanged; they do not resolve the Siamese algae eater concern."
+  },
+  "A12": {
+   "verdict": "caution",
+   "ms": 187336,
+   "change": "bigger",
+   "ideal": 8,
+   "limit": 12,
+   "confidence": "medium",
+   "note": "Optional note: Both species are compatible at 20°C, and their social groups are appropriately sized. The concern is swimming space. Zebra danios are exceptionally active, and 12 adults sharing a 30-inch tank with eight similarly active minnows is crowded. A 36-inch or longer aquarium would be preferable. Reducing the danios to eight would help, but increasing swimming length is the better solution. Seriously Fish recommends a minimum 36 × 12-inch footprint for zebra danios. \n\nSeriously Fish\n\n\n\n\nCalibration distinction: Yellow, primarily because of activity density rather than bioload or incompatibility. The existing 12 danios are at my approximate upper limit for this particular arrangement. The 8-fish ideal is a compromise within the existing footprint, not an assertion that eight danios in 30 inches is optimal."
+  },
+  "A13": {
+   "verdict": "problems",
+   "ms": 504568,
+   "change": "bigger",
+   "ideal": 8,
+   "limit": 10,
+   "confidence": "medium",
+   "note": "Optional note: Twenty adult neon tetras are substantially overcrowded in a 20 × 10-inch footprint, even with excellent filtration and water quality. Their schooling and swimming behavior requires more horizontal space. Eight is a reasonable target for a species-only 10-gallon under more permissive husbandry guidance, with ten as my approximate upper limit. A 20-gallon long would be considerably better for a school of twenty.\n\nCalibration distinction: Red due to spatial crowding rather than bioload. The 10-gallon recommendation is somewhat contested: Aquarium Co-Op supports 6–8 neons in a 10-gallon, while Seriously Fish recommends a minimum 24 × 12-inch footprint. \n\nAquarium Co-Op\n+1\n\n\n The numerical answers reflect the more permissive interpretation; I'd prefer the larger footprint for optimal welfare."
+  },
+  "A14": {
+   "verdict": "ideal",
+   "ms": 68501,
+   "change": "nothing",
+   "together": "yes",
+   "ideal": 12,
+   "limit": 20,
+   "confidence": "medium",
+   "note": "Optional note: Well-balanced planted community with adequate schooling groups and complementary habitat use. Ten ember tetras are already a good group; twelve would be my preferred target, and approximately twenty is a reasonable upper limit with the other inhabitants unchanged. Pygmy corydoras occupy both the bottom and lower water column, while kuhli loaches primarily use the substrate and cover. The 26°C temperature is near the warm end for pygmy corydoras but acceptable. Betta temperament introduces some uncertainty, although the tank provides sufficient room for separation.\n\nCalibration distinction: Solid green. All four species have appropriate space, group sizes, and broadly compatible environmental requirements. The possibility of an unusually aggressive betta doesn't, by itself, justify downgrading an otherwise appropriate community to yellow."
+  },
+  "A15": {
+   "verdict": "caution",
+   "ms": 90433,
+   "changeSp": [
+    "honeygourami"
+   ],
+   "change": "fewer",
+   "together": "caution",
+   "reasons": [
+    "aggression"
+   ],
+   "problem": [
+    "honeygourami"
+   ],
+   "ideal": 15,
+   "limit": 20,
+   "confidence": "medium",
+   "note": "Optional note: The chili rasbora school is appropriately sized, and the overall stocking density is reasonable. The main uncertainty is the honey gourami trio: a breeding male can become territorial and harass females, even with a 1M/2F ratio. Keeping one honey gourami would be more predictable. Adult cherry shrimp can coexist, but juvenile shrimp are vulnerable to predation. The planted 30-inch tank provides useful separation, although individual temperament remains important. \n\nReddit\n+2\n\n\n\n\nCalibration distinction: Lower yellow, close to green. This is not overcrowded, and all three species can coexist successfully. The caution reflects the possibility of breeding-related territorial behavior, rather than insufficient tank capacity."
+  },
+  "A16": {
+   "verdict": "caution",
+   "ms": 83803,
+   "change": "bigger",
+   "ideal": 4,
+   "limit": 6,
+   "mateIdeal": 8,
+   "mateLimit": 10,
+   "confidence": "medium",
+   "note": "Optional note: Seventeen adult livebearers, including six large mollies and five swordtails, create substantial swimming-space competition in a 36-inch tank. Swordtails are the primary limitation; a 48-inch or longer aquarium would better accommodate their activity. The eight bronze corydoras are appropriately grouped, and the 18-inch tank depth provides adequate foraging space. The sex ratios are reasonable, and all species can coexist in sufficiently hard, alkaline freshwater, although bronze corydoras generally prefer less alkaline conditions than mollies. \n\nSeriously Fish\n+1\n\n\n\n\nCalibration distinction: Upper yellow, approaching red. The bottom population is reasonable; the primary problem is crowding among three relatively active livebearer species. Removing the swordtails would substantially improve this arrangement without requiring a larger tank."
+  },
+  "B01": {
+   "verdict": "unworkable",
+   "ms": 54182,
+   "change": "bigger",
+   "bigEnough": "no",
+   "smallest": "75 gal (48 x 18 x 21 in)",
+   "confidence": "high",
+   "note": "Optional note: A 12-inch Oscar in a tank only 13 inches front-to-back has severely restricted turning and maneuvering space. The 48-inch length is also limiting. A 75-gallon tank is a commonly accepted minimum for one adult, although 125 gallons or larger is preferable for comfortable long-term housing. Excellent filtration cannot compensate for inadequate physical dimensions. \n\nAquarium Co-Op\n+1\n\n\n\n\nCalibration distinction: This crosses from Problems likely into Not workable because the enclosure's physical dimensions are fundamentally unsuitable for the adult fish. The 75-gallon recommendation is a lower acceptable boundary, not an optimal target."
+  },
+  "B02": {
+   "verdict": "problems",
+   "ms": 154456,
+   "change": "bigger",
+   "together": "caution",
+   "reasons": [
+    "aggression",
+    "other"
+   ],
+   "problem": [
+    "oscar",
+    "clownloach"
+   ],
+   "countStatus": "no-valid-count",
+   "confidence": "high",
+   "note": "Optional note: The 72-inch length is good, but the 18-inch width becomes restrictive for five mature 9-inch clown loaches sharing space with a 12-inch Oscar. Clown loaches require groups of at least five, so reducing their number isn't a satisfactory solution. Seriously Fish recommends a minimum 72 × 24-inch footprint for a group. The Oscar and bristlenose introduce additional competition for space and potential behavioral conflicts. A 180-gallon (72 × 24 × 24-inch) or larger aquarium would be substantially more appropriate. \n\nSeriously Fish\n\n\n\n\nCalibration distinction: Red primarily because of the combined spatial demands of large adult fish, not an inherent incompatibility between the species. The Oscar itself is appropriately housed in a 125-gallon tank. The clown loaches are the limiting factor, and reducing their group below five would create a separate welfare problem."
+  },
+  "B03": {
+   "verdict": "unworkable",
+   "ms": 90682,
+   "change": "bigger",
+   "bigEnough": "no",
+   "smallest": "29 gal (30 x 12 x 18 in)",
+   "confidence": "high",
+   "note": "Optional note: An 8-inch adult fancy goldfish has inadequate swimming and turning space in a 20 × 10-inch footprint. Excellent filtration cannot resolve this physical limitation. A 29-gallon is my lower acceptable boundary for one adult, though the 40-gallon breeder is substantially preferable because of its 36 × 18-inch footprint. The 21°C temperature is appropriate. Minimum-size recommendations vary, with Aquarium Co-Op suggesting at least 20 gallons per fancy goldfish. \n\nAquarium Co-Op\n+1\n\n\n\n\nCalibration distinction: Clear red, specifically Not workable. An adult fish occupying 40% of the tank's length has fundamentally inadequate room to maneuver. The issue persists regardless of water quality."
+  },
+  "B04": {
+   "verdict": "problems",
+   "ms": 100121,
+   "changeSp": [
+    "goldfish"
+   ],
+   "change": "fewer",
+   "together": "caution",
+   "reasons": [
+    "eat",
+    "other"
+   ],
+   "ideal": 1,
+   "limit": 2,
+   "confidence": "high",
+   "note": "Optional note: Three fully grown 8-inch fancy goldfish are too crowded for comfortable long-term housing in a 36 × 18-inch footprint. One would be comfortable; two are plausible but approaching the spatial limit. White cloud minnows share suitable temperature requirements at 21°C, but mature goldfish can swallow them. Fancy goldfish are slower than common goldfish, so coexistence is possible, but predation remains unpredictable. \n\nAquarium Co-Op\n+2\n\n\n\n\nCalibration distinction: Red due to cumulative adult crowding and predation risk, not water quality. Reducing the goldfish population improves spatial conditions but doesn't eliminate the risk to the minnows."
+  },
+  "B05": {
+   "verdict": "caution",
+   "ms": 125933,
+   "change": "bigger",
+   "limit": 6,
+   "ideal": 0,
+   "confidence": "medium",
+   "note": "Six adult 15 cm discus represent a workable but cramped group in a standard 55-gallon aquarium. The 48-inch length and 21-inch height are adequate, but the 13-inch front-to-back dimension restricts maneuvering and avoidance between individuals. A 75-gallon (48 × 18-inch footprint) is substantially preferable. Reducing the school below 5–6 risks worsening social dynamics, so there is no count I would call truly ideal in this footprint. Six is approximately the upper workable limit under the stipulated excellent care. The 29°C temperature is appropriate. \n\nAquarium Co-Op\n+2\n\n\n\n\nCalibration note: The ideal count of zero is deliberate. It means no socially appropriate group achieves my preferred comfort standard in this aquarium. The problem is better addressed by increasing tank width than reducing the school size."
+  },
+  "B06": {
+   "verdict": "caution",
+   "ms": 153412,
+   "change": "other",
+   "reasons": [
+    "temperature"
+   ],
+   "together": "caution",
+   "problem": [
+    "sterbai"
+   ],
+   "ideal": 6,
+   "limit": 7,
+   "mateIdeal": 10,
+   "mateLimit": 16,
+   "confidence": "medium",
+   "note": "The 48 × 18-inch footprint is adequate for six adult discus, and the 15 cardinals and 8 Sterba's corydoras add relatively little spatial competition. This is a conventional, reasonable discus community rather than a significantly overstocked aquarium. My caution concerns the 29°C temperature: cardinals tolerate it, but it exceeds the commonly cited 24–28°C range for Sterba's corydoras. Lowering to approximately 28°C would provide a better compromise for all three species. At that temperature, I would classify the existing stocking as Ideal, albeit toward the upper end for discus. \n\nThe Fish Collection\n+2\n\n\n\n\nCalibration distinction: The Caution verdict is driven by temperature, not physical stocking. Six discus represent a sensible adult group in this footprint; adding one is potentially workable, but eight would push beyond my preferred limit. The corydoras have more numerical expansion room than the discus."
+  },
+  "B07": {
+   "verdict": "caution",
+   "ms": 309103,
+   "change": "ratio",
+   "together": "caution",
+   "reasons": [
+    "aggression"
+   ],
+   "limit": 10,
+   "max": {
+    "demasoni": "12"
+   },
+   "confidence": "medium",
+   "note": "The water conditions and species pairing are appropriate. Eight yellow labs at 2M:6F is reasonable, but eight demasoni at 2M:6F creates a significant aggression-management risk. Many keepers recommend groups of 12 or more demasoni to disperse aggression, although smaller groups can succeed. Increasing the demasoni group toward 12, maintaining a female majority, or choosing a less aggressive mbuna would improve the setup. The 13-inch tank depth restricts territorial separation. No yellow lab count makes the unchanged demasoni group confidently ideal.\nCalibration note\nThis case exposes a limitation of conventional stocking calculations: adding demasoni can sometimes improve welfare despite increasing physical stocking density.\n\nSources differ on the minimum group size. Practical Fishkeeping describes successful smaller groups, while other care references recommend 12 or more. That disagreement warrants a Caution verdict rather than automatically classifying eight demasoni as unworkable. \n\nPractical Fishkeeping\n+2\n\n\n\n\nThe ideal yellow lab answer is intentionally No count works as described, because the uncertainty comes from the fixed demasoni group, not excessive yellow lab numbers."
+  },
+  "B08": {
+   "verdict": "caution",
+   "ms": 352116,
+   "change": "bigger",
+   "ideal": 4,
+   "limit": 6,
+   "confidence": "medium",
+   "note": "This is a plausible but fairly crowded Malawi community. The peacock and yellow lab sex ratios are favorable, and yellow labs are among the mbuna most likely to coexist successfully with peacocks. However, five adult peacocks, six yellow labs, and three 19 cm Synodontis put substantial demands on a 48 × 18-inch footprint. The catfish also require adequate bottom retreats. A 6-foot aquarium would provide meaningfully better territorial separation. Four peacocks (1M, 3F) would be my preferred count with the other animals unchanged; six is approximately the upper workable limit. \n\nWetWebMedia\n+3\n\n\n\n\nCalibration note: This is primarily a spatial and territorial Caution, not a water-chemistry issue. The yellow labs are relatively peaceful for mbuna, but they can still outcompete or harass peacocks. The three large Synodontis are an important contributor to the limited available space. I am assuming the listed Malawi synodontis are Synodontis njassae, consistent with the stated adult length."
+  },
+  "B09": {
+   "verdict": "unworkable",
+   "ms": 167054,
+   "changeSp": [
+    "yellowlab"
+   ],
+   "change": "drop",
+   "together": "no",
+   "reasons": [
+    "aggression"
+   ],
+   "problem": [
+    "yellowlab"
+   ],
+   "confidence": "high",
+   "note": "Yellow labs are comparatively peaceful mbuna, but still require substantially more territorial space than a 30 × 12-inch aquarium provides. A 1M:1F pair also creates harassment risk, particularly for the female. Most established husbandry recommendations favor at least a 36–48-inch tank with one male and several females. Their preference for hard, alkaline Malawi water additionally conflicts with the softer-water preferences of neon tetras and bronze corydoras. The small, peaceful tankmates risk harassment or injury. Removing both yellow labs leaves a reasonable 29-gallon community. \n\nPractical Fishkeeping\n+2\n\n\n\n\nCalibration note: This is not a bioload problem. Even with ideal filtration and rockwork, the combination fails due to territorial behavior, social structure, and water chemistry. Increasing the tank size alone would not resolve every incompatibility."
+  },
+  "B10": {
+   "verdict": "problems",
+   "ms": 125722,
+   "changeSp": [
+    "kribensis"
+   ],
+   "change": "drop",
+   "together": "no",
+   "reasons": [
+    "aggression"
+   ],
+   "problem": [
+    "kribensis"
+   ],
+   "max": {
+    "kribensis": "2"
+   },
+   "confidence": "high",
+   "note": "A kribensis pair can inhabit a 20-gallon-long aquarium, but combining them with six bottom-foraging panda corydoras is risky. Kribensis become strongly territorial during spawning, and the corydoras will repeatedly enter defended areas while foraging. The 30 × 12-inch footprint offers insufficient separation to reliably protect them. The neon tetras are comparatively suitable tankmates because they occupy the water column. Temperature is acceptable for all three species. I would keep the kribensis pair without other bottom dwellers or remove the pair to retain the peaceful community. \n\nSeriously Fish\n+2\n\n\n\n\nCalibration note: The two kribensis aren't excessive by themselves. The problem is territorial overlap with the panda corydoras, especially during spawning. Since spawning behavior can occur even when offspring aren't counted, the compatibility risk remains."
+  },
+  "B11": {
+   "verdict": "caution",
+   "ms": 164647,
+   "changeSp": [
+    "cherryshrimp"
+   ],
+   "change": "drop",
+   "together": "caution",
+   "reasons": [
+    "eat",
+    "temperature"
+   ],
+   "problem": [
+    "gbr",
+    "cherryshrimp"
+   ],
+   "confidence": "medium",
+   "note": "The 24 × 12-inch footprint is adequate for an established ram pair, and 10 ember tetras add little spatial pressure. The primary concern is the cherry shrimp. At 30 mm, healthy adults may survive alongside rams, especially with dense cover, but predation remains a significant risk, particularly during molting. The 28°C temperature is appropriate for rams and acceptable for ember tetras, but sits at the upper tolerance limit for cherry shrimp, potentially shortening their lifespan. Removing the shrimp would make this a comfortable, lightly stocked community. \n\nSeriously Fish\n+3\n\n\n\n\nCalibration note: Spatial stocking is firmly Ideal. Caution comes exclusively from shrimp predation risk and temperature suitability, not crowding. I would not classify this as Problems likely solely because the rams might eat shrimp, given that the survey explicitly specifies large adults and adequate cover."
+  },
+  "B12": {
+   "verdict": "problems",
+   "ms": 291769,
+   "changeSp": [
+    "dwarfgourami"
+   ],
+   "change": "fewer",
+   "together": "no",
+   "reasons": [
+    "aggression",
+    "nip"
+   ],
+   "problem": [
+    "dwarfgourami"
+   ],
+   "maxMales": {
+    "dwarfgourami": "1"
+   },
+   "confidence": "high",
+   "note": "The tank is comfortably stocked in terms of physical space, but two male dwarf gouramis present a significant territorial aggression risk in a 30-inch aquarium. Dense planting and sight breaks help, but don't reliably prevent one male from dominating or injuring the other. A single male dwarf gourami alongside ten harlequin rasboras and six panda corydoras would make a reasonable community. The 25°C temperature is acceptable, although toward the warm end for panda corydoras. \n\nSeriously Fish\n+1\n\n\n\n\nCalibration note: Problems likely is driven entirely by male-male aggression, not stocking density. Two males can occasionally coexist, but the failure risk is sufficiently high that I wouldn't recommend this arrangement for long-term keeping."
+  },
+  "B13": {
+   "verdict": "caution",
+   "ms": 208059,
+   "change": "bigger",
+   "together": "caution",
+   "reasons": [
+    "nip",
+    "aggression",
+    "food"
+   ],
+   "max": {
+    "peapuffer": "3"
+   },
+   "confidence": "medium",
+   "note": "Three pea puffers at a 1M:2F ratio can be maintained in a densely planted 10-gallon aquarium, although this is a relatively tight arrangement. Otocinclus are among the more plausible pea puffer tankmates, but fin-nipping remains possible. The six otos also require dependable grazing and supplemental feeding. A 20-gallon long would provide more territorial separation and grazing surfaces. A species-only puffer aquarium would be more predictable. \n\nAquarium Co-Op\n+2\n\n\n\n\nCalibration note: I wouldn't automatically classify this combination as unworkable. The favorable sex ratio and dense planting materially improve its prospects. However, three puffers represent my upper limit for this 10-gallon footprint, not an ideal social group size. Specialist guidance increasingly favors larger groups of six or more in larger aquariums."
+  },
+  "B14": {
+   "verdict": "caution",
+   "ms": 122492,
+   "changeSp": [
+    "bolivianram"
+   ],
+   "change": "fewer",
+   "max": {
+    "bolivianram": "4"
+   },
+   "confidence": "medium",
+   "note": "The 36 × 18-inch footprint provides reasonable space for four Bolivian rams, but two males and two females may form two territorial breeding pairs. Eight Sterba's corydoras continually foraging across the substrate could intrude into those territories, particularly during spawning. Bolivian rams are relatively peaceful cichlids, so this is workable with good sight breaks, but a single established pair would be more predictable. The 12 rummy-nose tetras add little territorial pressure, and 25°C is suitable for all three species. \n\nAquarist Atlas\n+2\n\n\n\n\nCalibration note: Four Bolivian rams is my upper workable count in this footprint, not an ideal target with other bottom dwellers present. This is a moderate Caution driven by territorial interactions, rather than excessive bioload or insufficient swimming volume."
+  },
+  "B15": {
+   "verdict": "problems",
+   "ms": 812376,
+   "change": "notroom",
+   "countStatus": "no-valid-count",
+   "confidence": "high",
+   "note": "The tank has sufficient physical space for these animals, and the species are generally compatible. However, a six-week-old aquarium without visible algae is unlikely to have a sufficiently established grazing ecosystem for eight otocinclus, particularly alongside a bristlenose pleco and six Amano shrimp. Otocinclus are vulnerable to starvation in immature aquariums and may initially reject supplemental foods. I would postpone introducing them until the tank has matured and reliable feeding is established. Once mature, six to eight otos could be reasonable with deliberate supplemental feeding. \n\nAquarium Co-Op\n+1\n\n\n\n\nCalibration note: This should trigger a food/maturity warning, not a spatial stocking penalty. Zero is a temporary recommendation based on the aquarium's immaturity, not an assertion that the tank can never support otocinclus. A lack of visible algae doesn't prove a lack of biofilm, but it's an important warning sign in such a young aquarium."
+  },
+  "B16": {
+   "verdict": "caution",
+   "ms": 435773,
+   "changeSp": [
+    "nerite"
+   ],
+   "change": "fewer",
+   "ideal": 40,
+   "limit": 80,
+   "confidence": "medium",
+   "note": "Optional note: Physical stocking is comfortable. Eight chili rasboras and 30 cherry shrimp are reasonable in a planted 10-gallon. The main concern is supporting three adult nerite snails with adequate grazing food. Reducing to one or two nerites would make the setup more robust. Cherry shrimp can tolerate relatively high densities with adequate supplemental feeding and surfaces.\n\nCalibration note: The caution is primarily a food-availability issue, not a spatial stocking issue. Increasing shrimp numbers should not automatically trigger spatial crowding warnings at the same rate as adding fish. The 40/80 thresholds are approximate and assume reliable supplemental feeding."
+  },
+  "C01": {
+   "verdict": "problems",
+   "ms": 89874,
+   "change": "bigger",
+   "bigEnough": "yes",
+   "smallest": "20 gal (24 x 12 x 16 in)",
+   "confidence": "medium",
+   "note": "Optional note: A single adult ocellaris can potentially be maintained in a well-designed 10-gallon aquarium, but two adults approaching 4 inches each make the 20 × 10-inch footprint uncomfortably restrictive. A bonded pair is less problematic than two unpaired fish, but still needs room for territorial behavior and movement. A 20-gallon is a defensible minimum for the pair; 29 gallons would be more comfortable. The hermit crabs are not a meaningful constraint. \n\ncoralifeproducts.com\n+2\n\n\n\n\nCalibration note: This is a useful test of pair stocking versus individual minimum tank size. A 10-gallon can be marginally acceptable for one ocellaris without being acceptable for two. Pair bonding reduces aggression concerns but does not eliminate space requirements."
+  },
+  "C02": {
+   "verdict": "problems",
+   "ms": 182705,
+   "change": "bigger",
+   "together": "caution",
+   "reasons": [
+    "aggression",
+    "food"
+   ],
+   "problem": [
+    "ocellaris",
+    "royalgramma",
+    "firefish",
+    "turbo"
+   ],
+   "bigEnough": "yes",
+   "smallest": "40 gal breeder (36 x 18 x 16 in)",
+   "confidence": "medium",
+   "note": "Optional note: Four adult reef fish totaling approximately 15 inches in an 18-inch cube create significant territorial crowding. The bonded clownfish pair may defend a substantial portion of the aquarium, while the royal gramma and timid firefish need separate retreats. These species can coexist in a larger aquarium. Three adult Mexican turbo snails also represent considerable grazing demand for a small reef. A 40 breeder provides a substantially better footprint for this community. \n\nLiveAquaria\n+2\n\n\n\n\nCalibration note: This case is limited by the combination of territorial space and adult fish size, not filtration capacity. The 18 × 18-inch footprint is particularly important: 22 gallons in a cube does not provide the same territorial separation as a longer aquarium. The 40 breeder recommendation is for the entire community as stocked, not the royal gramma alone.\n\nThe three large turbo snails warrant a separate food-availability caution, even after upgrading, unless supplemental feeding is reliable. \n\nReef2Reef\n+1"
+  },
+  "C03": {
+   "verdict": "problems",
+   "ms": 312356,
+   "changeSp": [
+    "sixline"
+   ],
+   "change": "drop",
+   "together": "caution",
+   "reasons": [
+    "aggression",
+    "food"
+   ],
+   "problem": [
+    "turbo",
+    "sixline"
+   ],
+   "countStatus": "no-valid-count",
+   "confidence": "medium",
+   "note": "Optional note: The 18 × 18-inch footprint is restrictive for four adult fish, particularly an active, potentially aggressive six-line wrasse sharing space with a territorial clownfish pair. Five large Mexican turbo snails also present substantial grazing demands. The ten blue-leg hermit crabs are not the primary problem, although competition for food and shells deserves attention. \n\nLiveAquaria\n+1\n\n\n\n\nCalibration note: This has the same 18 × 18-inch footprint as the previous 20-gallon cube. The additional water height does little to improve territorial separation or swimming room. Removing hermit crabs alone would not resolve the problems, so No count works as described is the appropriate survey response.\n\nFor separate hermit-crab density calibration, I'd tentatively target 5–8 ideal, 15 at most in a comparable mature 29-gallon reef after correcting the fish and snail issues. Those are low-confidence estimates, not established biological limits."
+  },
+  "C04": {
+   "verdict": "problems",
+   "ms": 140836,
+   "change": "bigger",
+   "together": "caution",
+   "reasons": [
+    "aggression",
+    "food"
+   ],
+   "problem": [
+    "chromis",
+    "coralbeauty",
+    "turbo"
+   ],
+   "countStatus": "no-valid-count",
+   "confidence": "medium",
+   "note": "Optional note: Six adult blue-green chromis require more open swimming space than this 36-inch aquarium provides, especially alongside five other adult fish. Chromis also develop dominance hierarchies that can lead to persistent harassment. The coral beauty is another major constraint: commonly recommended minimums are 50–70 gallons, and it may nip LPS and soft corals. Five large Mexican turbo snails create additional grazing competition. \n\nThe Ornamental Aquatic Trade Association\n+3\n\n\n\n\nCalibration note: Even removing every chromis would leave the adult coral beauty in an undersized aquarium, so No count works as described is more appropriate than returning zero. This is an important distinction between an individual species' stocking capacity and the suitability of the fixed community.\n\nAlso, reducing six chromis to two or three is not necessarily a safe compromise: smaller groups can concentrate aggression on subordinate individuals. \n\nCORAL Magazine\n+1"
+  },
+  "C05": {
+   "verdict": "problems",
+   "ms": 96892,
+   "countStatus": "no-valid-count",
+   "confidence": "medium",
+   "note": "Optional note: The 48-inch length is a meaningful improvement over the 40 breeder, making the coral beauty more defensible, although it remains borderline and potentially prone to coral nipping. However, six adult chromis alongside four other adult fish create a crowded community. Chromis are best maintained in groups of approximately five or more, but this aquarium has insufficient spare capacity for a comfortable group. Reducing them to two or three risks concentrating aggression among the remaining fish. \n\nThe Ornamental Aquatic Trade Association\n+2\n\n\n\n\nCalibration note: Zero is intentional rather than selecting No count works as described. Without chromis, the remaining four fish are a defensible, though somewhat borderline, 55-gallon community. The problem is that a suitable chromis group would push this particular community beyond a comfortable stocking level, while smaller groups introduce social risks.\n\nThe zero thresholds are husbandry judgments, not hard physical limits. A chromis group of five or six in a less heavily occupied 55-gallon aquarium would be a different assessment."
+  },
+  "C06": {
+   "verdict": "unworkable",
+   "ms": 124865,
+   "change": "bigger",
+   "bigEnough": "no",
+   "smallest": "125 gal (72 x 18 x 21 in)",
+   "confidence": "high",
+   "note": "Optional note: An adult 8-inch yellow tang is fundamentally unsuited to the 48 × 13-inch footprint, particularly alongside nine other fish. The narrow front-to-back dimension restricts turning and maneuvering, while the four-foot length provides inadequate sustained swimming space. A six-foot 125-gallon aquarium is a defensible minimum for this community, although larger would be preferable. Adult yellow tang recommendations vary from approximately 100 to 180 gallons, with Biota specifically recommending 125 gallons or more. \n\nThe Biota Group\n+2\n\n\n\n\nCalibration note: This is a clear example of a species-specific minimum footprint overriding otherwise reasonable community stocking calculations. Even removing all six chromis would not make this aquarium appropriate for the adult tang. The restriction is primarily swimming geometry, not bioload."
+  },
+  "C07": {
+   "verdict": "unworkable",
+   "ms": 74724,
+   "change": "bigger",
+   "together": "caution",
+   "reasons": [
+    "aggression"
+   ],
+   "problem": [
+    "yellowtang",
+    "bluetang",
+    "chromis"
+   ],
+   "bigEnough": "no",
+   "smallest": "240 gal (96 x 24 x 24 in)",
+   "confidence": "high",
+   "note": "Optional note: An adult 12-inch blue tang requires substantially more swimming length than this 48-inch aquarium offers. A 180-gallon, six-foot aquarium is a commonly recommended minimum for the species alone. With an adult yellow tang and eight additional fish, I would prefer the eight-foot 240-gallon option. Yellow and blue tangs can coexist, but territorial conflicts remain possible. The chromis also introduce some within-group aggression risk. \n\nLiveAquaria\n+2\n\n\n\n\nCalibration note: This reinforces the distinction between current juvenile size and adult requirements. The blue tang should fail the 75-gallon assessment independently of total stocking density. The 240-gallon recommendation is specific to this entire community; an adult blue tang alone could reasonably be accommodated in a 180-gallon aquarium with suitable dimensions."
+  },
+  "C08": {
+   "verdict": "unworkable",
+   "ms": 415638,
+   "changeSp": [
+    "bluetang"
+   ],
+   "change": "drop",
+   "countStatus": "no-valid-count",
+   "confidence": "high",
+   "note": "Optional note: The principal issue is the adult 12.2-inch blue tang in a 72 × 18-inch aquarium, particularly alongside an 8-inch yellow tang. The six-foot length is an improvement over the previous scenarios, but the narrow footprint and extensive community make this unsuitable for comfortable long-term housing. A 180-gallon aquarium is a widely recommended minimum for adult blue tangs. \n\nQuality Marine\n+1\n\n\n Nine adult chromis add substantial swimming-space demand, while ten large Mexican turbo snails create significant grazing competition. The mature refugium makes the mandarin considerably more defensible.\n\nCalibration note: No count of chromis resolves the underlying adult blue tang constraint. This is why No count works as described is preferable to zero. Removing the blue tang would substantially change the assessment and make a moderate chromis group potentially reasonable.\n\nA separate concern is the ten turbo snails: food availability should be evaluated independently of fish stocking, since a mature 125-gallon reef may not sustain that many large grazers without supplemental feeding"
+  },
+  "C09": {
+   "verdict": "unworkable",
+   "ms": 204636,
+   "change": "notroom",
+   "confidence": "high",
+   "note": "Optional note: A three-month-old, 20-gallon aquarium without a refugium is unlikely to sustain the copepod population required by a typical mandarin dragonet. Chronic starvation is the primary concern, not swimming space or aggression. The clownfish pair is reasonably accommodated in this footprint, but the mandarin should be removed unless a reliable, independently verified feeding strategy is established. Captive-bred mandarins already eating prepared foods are an important exception, although even Biota recommends at least 30 gallons. \n\nThe Ornamental Aquatic Trade Association\n+2\n\n\n\n\nCalibration note: This is a strong test of habitat and food suitability independent of spatial stocking. The engine should recognize the combination of small volume, immature aquarium, no refugium, and specialized feeding requirements as a severe husbandry problem. Captive-bred, prepared-food-trained mandarins should receive different treatment from specimens dependent on naturally reproducing copepods."
+  },
+  "C10": {
+   "verdict": "problems",
+   "ms": 84338,
+   "changeSp": [
+    "banggai"
+   ],
+   "change": "fewer",
+   "max": {
+    "banggai": "2"
+   },
+   "confidence": "high",
+   "note": "Optional note: Five juvenile Banggai cardinalfish may coexist temporarily, but as they mature, pair formation can trigger serious aggression toward other cardinals. In a 30-inch aquarium, subordinate individuals have little opportunity to escape. A single Banggai or a confirmed compatible pair is appropriate alongside the bonded clownfish pair. Two randomly selected adults are not necessarily compatible. NOAA's captive-breeding guidance specifically documents potentially fatal social stress when pairs form in groups. \n\nNOAA Institutional Repository\n+1\n\n\n\n\nCalibration note: Banggai cardinalfish should not be treated as conventional schooling fish. Their long-term stocking limits are governed primarily by pair formation and conspecific territorial aggression, not swimming-space demand. Five juveniles can be temporarily acceptable while five adults in the same tank are problematic, even without population growth."
+  },
+  "C11": {
+   "confidence": "high",
+   "ms": 110979,
+   "verdict": "problems",
+   "changeSp": [
+    "royalgramma",
+    "firefish"
+   ],
+   "change": "fewer",
+   "together": "caution",
+   "reasons": [
+    "aggression",
+    "breeding"
+   ],
+   "problem": [
+    "royalgramma",
+    "firefish"
+   ],
+   "max": {
+    "royalgramma": "1",
+    "firefish": "1"
+   },
+   "note": "Optional note: Both royal grammas and firefish are generally peaceful toward other species but can be strongly territorial toward their own kind. Two separately purchased royal grammas may fight over caves, while two unpaired firefish can harass one another, sometimes severely. Confirmed compatible pairs are exceptions. A single royal gramma, single firefish, and bonded clownfish pair would make a comfortable community in this 36-inch aquarium. \n\nLiveAquaria\n+3\n\n\n\n\nCalibration note: This is primarily an intraspecific aggression problem, not spatial overstocking. The engine should distinguish established pairs from two independently acquired individuals. Both species can be housed singly without compromising their welfare, so reducing each to one is an appropriate solution rather than requiring a larger tank."
+  },
+  "C12": {
+   "verdict": "problems",
+   "ms": 59610,
+   "changeSp": [
+    "ocellaris"
+   ],
+   "change": "fewer",
+   "max": {
+    "ocellaris": "2"
+   },
+   "confidence": "high",
+   "note": "Optional note: Three juvenile ocellaris may initially coexist, but as they mature, a dominant female and breeding male typically establish themselves. The third fish risks persistent harassment, exclusion from feeding, and potentially death. A bonded pair is appropriate for this 24 × 12-inch aquarium. Larger clownfish social groups can sometimes work, but they require substantially more favorable conditions and are not reliably sustainable here. \n\nPractical Fishkeeping\n+1\n\n\n\n\nCalibration note: This is a social-structure limitation rather than a simple stocking-density problem. The engine should strongly discourage three adult clownfish in a small aquarium, even if they were introduced simultaneously as juveniles. Two is a meaningful social threshold; adding a third can substantially increase aggression rather than merely increasing stocking pressure by 50%."
+  },
+  "D01": {
+   "verdict": "unworkable",
+   "ms": 54671,
+   "change": "bigger",
+   "bigEnough": "no",
+   "smallest": "40 gal breeder (36 x 18 x 16 in)",
+   "confidence": "high",
+   "note": "Optional note: A 20 × 10-inch footprint is substantially too small for a 10-inch adult leopard gecko. It restricts exercise, exploration, and establishing meaningful thermal zones. A 36 × 18-inch footprint is a reasonable modern minimum, providing 3.24 times the floor area. A 4 × 2-foot enclosure would be preferable, but isn't necessary for an acceptable long-term setup. \n\nLeopard Gecko Care Sheet\n+1\n\n\n\n\nCalibration note: Leopard geckos should be evaluated primarily on usable floor area rather than enclosure volume. A 10-gallon enclosure fails even for a single adult, regardless of otherwise excellent husbandry. A 20-long represents an improvement but remains below the preferred modern minimum."
+  },
+  "D02": {
+   "verdict": "unworkable",
+   "ms": 205127,
+   "changeSp": [
+    "leopardgecko"
+   ],
+   "change": "fewer",
+   "together": "no",
+   "confidence": "high",
+   "note": "Optional note: Leopard geckos are best housed individually. Two males risk serious fighting; a male-female combination introduces persistent mating pressure; and even two females can compete for territory and resources or injure one another. Successful female cohabitation is possible, but not reliably safe, especially in a 36 × 18-inch enclosure. The RSPCA recommends solitary housing, and ReptiFiles discourages cohabitation even among females. \n\nRSPCA\n+1\n\n\n\n\nCalibration note: The 40 breeder is appropriate for one adult leopard gecko, but not a recommended permanent enclosure for two. The all-female maximum of 1 reflects responsible long-term husbandry rather than an absolute biological limit. Sexing the animals does not fully resolve the cohabitation risk.",
+   "max": {
+    "leopardgecko": "1"
+   }
+  },
+  "D03": {
+   "verdict": "unworkable",
+   "ms": 78878,
+   "change": "bigger",
+   "bigEnough": "no",
+   "smallest": "18 x 18 x 36 in",
+   "confidence": "high",
+   "note": "Optional note: A 12 × 12 × 18-inch enclosure is appropriate for a growing juvenile but substantially undersized for a 9-inch adult. Crested geckos are arboreal and need both vertical climbing room and horizontal space for jumping and exploration. An 18 × 18 × 24-inch enclosure is accepted as a minimum by some husbandry authorities, but the more generous 18 × 18 × 36-inch size matches current ReptiFiles guidance and is my preferred long-term standard. \n\nReptiFiles\n+1\n\n\n\n\nCalibration note: Arboreal enclosure suitability should account for height, horizontal dimensions, and usable climbing volume. A 12 × 12 × 18-inch enclosure fails for an adult, while 18 × 18 × 24 inches represents a defensible lower boundary and 18 × 18 × 36 inches a stronger ideal-minimum target."
+  },
+  "D04": {
+   "confidence": "high",
+   "ms": 430401,
+   "verdict": "unworkable",
+   "changeSp": [
+    "greenanole"
+   ],
+   "change": "drop",
+   "together": "no",
+   "reasons": [
+    "temperature",
+    "aggression"
+   ],
+   "note": "Optional note: These species have different thermal requirements. Green anoles require a daytime basking area around 85–95°F, whereas crested geckos are vulnerable to prolonged high temperatures, particularly above 85°F. Both are arboreal and would compete for limited climbing and retreat space in this enclosure. The territorial male anole presents an additional harassment risk. Separate housing is strongly recommended. \n\nReptiFiles\n+2\n\n\n\n\nCalibration note: This should trigger a severe interspecies compatibility failure independently of enclosure capacity. Both animals could potentially be maintained individually in an 18 × 18 × 24-inch enclosure under some husbandry standards, although larger enclosures are preferable. Increasing the enclosure size alone would not reliably resolve the thermal and behavioral incompatibilities."
+  },
+  "D05": {
+   "verdict": "unworkable",
+   "ms": 88666,
+   "changeSp": [
+    "crestedgecko"
+   ],
+   "change": "fewer",
+   "together": "no",
+   "reasons": [
+    "aggression",
+    "breeding"
+   ],
+   "max": {
+    "crestedgecko": "1"
+   },
+   "confidence": "high",
+   "note": "Optional note: Permanent male-female cohabitation is not recommended, particularly in an 18 × 18 × 24-inch enclosure. The male will likely attempt repeated mating, potentially causing female stress, injuries, and repeated egg production. Even though offspring aren't counted, reproductive behavior remains a significant concern. Some breeders successfully house compatible pairs temporarily, but that is different from recommended permanent housing. The RSPCA specifically advises against permanently keeping males with other crested geckos. \n\nRSPCA\n+2\n\n\n\n\nCalibration note: This is primarily a reproductive and social compatibility failure rather than ordinary spatial overcrowding. Even a larger enclosure would not make permanent male-female cohabitation ideal. A single adult is the appropriate long-term stocking target, preferably in an enclosure at least 18 × 18 × 36 inches."
+  },
+  "D06": {
+   "confidence": "high",
+   "ms": 81738,
+   "note": "Optional note: A 36 × 18 × 16-inch enclosure is too restrictive for a 4.5-foot adult female ball python. The 36-inch length prevents her from fully extending along the enclosure, while the limited footprint and height constrain exploration, thermoregulation, and climbing opportunities. A 4 × 2 × 2-foot enclosure is a commonly accepted modern minimum, although a 6 × 2 × 2-foot enclosure would better accommodate this particular snake's length. \n\nReptiFiles\n+2\n\n\n\n\nCalibration note: Snake enclosure requirements should scale with individual adult length rather than relying exclusively on species-wide minimums. The 4 × 2 × 2-foot option represents a defensible practical minimum, but a stricter full-body-length criterion would favor the 6-foot enclosure for this 4.5-foot female. Both approaches clearly reject the 40 breeder for permanent housing.",
+   "verdict": "unworkable",
+   "change": "bigger",
+   "bigEnough": "no",
+   "smallest": "4 x 2 x 2 ft (48 x 24 x 24 in)"
+  },
+  "D07": {
+   "verdict": "problems",
+   "ms": 122428,
+   "change": "ratio",
+   "together": "no",
+   "reasons": [
+    "aggression"
+   ],
+   "max": {
+    "dartfrog": "2"
+   },
+   "confidence": "high",
+   "note": "Optional note: Dendrobates tinctorius females can be highly territorial toward one another, particularly when competing for access to a male. In an 18 × 18-inch footprint, two adult females present a substantial risk of fighting, chronic stress, and exclusion from feeding. A compatible male-female pair is the more reliable arrangement. Groups with multiple males and one female can sometimes succeed, but require careful management. \n\nPMC\n+2\n\n\n\n\nCalibration note: This is primarily a sex-ratio and territoriality constraint rather than physical crowding. The enclosure has reasonable space for two adults, but introducing a second female substantially increases conflict risk. TankLook should distinguish a 1M/2F trio from a compatible 1M/1F pair rather than treating both as simple stocking-density increments."
+  },
+  "D08": {
+   "confidence": "high",
+   "ms": 81184,
+   "note": "Optional note: Adult White's tree frogs are large, opportunistic predators capable of consuming smaller amphibians, making the 1.8-inch dart frogs potential prey. The species also have different preferred environmental conditions: White's tree frogs benefit from warmer basking areas and periodic drying, whereas dyeing dart frogs require consistently humid conditions and generally cooler temperatures. Their preferred ranges overlap somewhat, but this does not resolve the predation risk. \n\nLitoria caerulea\n+2\n\n\n\n\nCalibration note: This is a clear interspecies predation failure, not a spatial stocking problem. Even a much larger enclosure would not make this combination reliably safe. TankLook should flag large, opportunistic amphibians housed with sufficiently small frogs, regardless of whether the species normally occupy different vertical zones.",
+   "verdict": "unworkable",
+   "changeSp": [
+    "treefrog"
+   ],
+   "change": "drop",
+   "together": "no",
+   "reasons": [
+    "eat",
+    "temperature",
+    "habitat"
+   ]
+  },
+  "D09": {
+   "verdict": "caution",
+   "ms": 155428,
+   "confidence": "medium",
+   "note": "Optional note: White's tree frogs tolerate group housing well, so aggression is not the primary concern. However, three large, 5-inch adults in an 18 × 18 × 24-inch enclosure have limited climbing and perching space. Long-term success is possible with well-distributed sturdy branches and resting sites, but I would prefer a larger enclosure. A 36 × 18 × 36-inch terrarium offers comfortable room for three adults. Published recommendations vary, with some permitting three in this enclosure and others recommending substantially larger group housing. \n\nThe Bio Dude\n+2\n\n\n\n\nCalibration note: This is a useful distinction between acceptable and ideal group density. Three White's tree frogs are socially compatible, and the current enclosure is not automatically dangerous, but it is more crowded than desirable. Two adults represent my comfortable upper target for this footprint; three warrant caution rather than an automatic severe failure.",
+   "change": "bigger",
+   "bigEnough": "yes",
+   "smallest": "36 x 18 x 36 in",
+   "max": {
+    "treefrog": "2"
+   }
+  },
+  "D10": {
+   "verdict": "problems",
+   "ms": 824795,
+   "note": "The four fire-bellied toads are reasonably accommodated, but the shallow aquatic section is unsuitable for six adult white cloud mountain minnows. Its exact volume and swimming footprint are unknown, although the 4-inch depth imposes a substantial limitation. Removing the minnows would be my first change.\n\nCalibration implication: TankLook shouldn't infer an exact aquatic footprint from a qualitative description like \"half land, half water.\" It can establish an upper bound from known dimensions, but should otherwise acknowledge uncertainty rather than inventing geometry.",
+   "confidence": "low",
+   "together": "caution",
+   "max": {
+    "firetoad": "4"
+   }
+  },
+  "D11": {
+   "verdict": "caution",
+   "ms": 529771,
+   "confidence": "medium",
+   "note": "Optional note: Four adult Chinese fire-bellied newts are reasonably accommodated by the 30 × 12-inch footprint, although the 8-inch water depth provides only approximately 12.5 gallons before displacement. The 18°C temperature is excellent for the newts and tolerable for cherry shrimp. Some shrimp may be eaten, but coexistence is possible with sufficient cover. Nerite snails are the least suitable inhabitants because 18°C is at the lower edge of their reported tolerance and below their usual preferred range. \n\nHypselotriton orientalis (Captive Bred)\n+3\n\n\n\n\nCalibration note: This is a borderline compatibility case rather than severe overcrowding. Four newts represent a defensible upper stocking target for this shallow setup, while shrimp predation and suboptimal nerite temperature warrant separate cautions. Neither should automatically produce a severe spatial stocking penalty.",
+   "together": "caution",
+   "changeSp": [
+    "nerite"
+   ],
+   "change": "drop",
+   "reasons": [
+    "eat",
+    "temperature"
+   ],
+   "max": {
+    "firenewt": "4"
+   }
+  },
+  "D12": {
+   "verdict": "problems",
+   "ms": 187802,
+   "changeSp": [
+    "adf"
+   ],
+   "change": "drop",
+   "together": "caution",
+   "reasons": [
+    "nip"
+   ],
+   "max": {
+    "adf": "0"
+   },
+   "confidence": "medium",
+   "note": "Optional note: Three African dwarf frogs and a male betta are too much for this 16 × 8-inch footprint. The frogs are social and benefit from groups, but their poor eyesight and slow feeding create risks when housed with a betta, which may monopolize food or harass them. Accidental fin biting is also possible. Compatibility varies with individual temperament, and successful mixed housing does occur, but a 5-gallon aquarium leaves little margin for conflict. \n\nReddit\n+2\n\n\n\n\nCalibration note: The maximum of zero frogs applies specifically to this aquarium with the betta remaining. A species-only 5-gallon aquarium containing two or three African dwarf frogs is substantially more defensible. The limitation here is cumulative spatial pressure and interspecies feeding/behavioral risks, not an absolute incompatibility between the species."
+  },
+  "D13": {
+   "verdict": "unworkable",
+   "ms": 333147,
+   "change": "bigger",
+   "bigEnough": "no",
+   "smallest": "40 gal breeder (36 x 18 x 16 in)",
+   "confidence": "high",
+   "note": "Optional note: The 17°C water temperature is excellent, but the 20 × 10-inch footprint is unsuitable for an adult axolotl approaching 12 inches long. It severely restricts turning, walking, and exploration. A 29-gallon aquarium is considered an acceptable minimum by some keepers, but its 12-inch width remains restrictive. I would choose a 40 breeder for comfortable permanent housing, providing substantially more usable floor area. \n\nReddit\n+2\n\n\n\n\nCalibration note: This is a clear floor-space failure, independent of filtration or water quality. A 29-gallon aquarium is a defensible borderline minimum, while the 40 breeder is a stronger target for comfortable adult housing. TankLook should place greater weight on footprint, particularly front-to-back width, than water volume for axolotls."
+  },
+  "D14": {
+   "verdict": "unworkable",
+   "ms": 186855,
+   "change": "bigger",
+   "together": "no",
+   "reasons": [
+    "eat"
+   ],
+   "max": {
+    "axolotl": "0"
+   },
+   "confidence": "high",
+   "note": "Optional note: Two 12-inch adult axolotls are severely cramped in a 30 × 12-inch footprint. Even one adult would be inadequately accommodated under our established standards. The 17°C temperature suits both species, but white cloud minnows may be eaten by the axolotls or occasionally nip their exposed gills. A larger, preferably 48 × 24-inch enclosure would be much more appropriate for two similarly sized axolotls, with the minnows housed separately. \n\nMyAxolotl\n+1\n\n\n\n\nCalibration note: Zero is appropriate because the enclosure is too small for even one adult axolotl, regardless of the minnows. The mixed-species predation risk is an independent compatibility concern. Increasing enclosure size resolves the spatial limitation but does not eliminate the risks of housing minnows with axolotls."
+  },
+  "D15": {
+   "verdict": "problems",
+   "ms": 153345,
+   "change": "bigger",
+   "max": {
+    "greenanole": "2"
+   },
+   "maxMales": {
+    "greenanole": "1"
+   },
+   "confidence": "medium",
+   "note": "Optional note: The 1M/3F ratio is sensible for group housing, but four adult green anoles are crowded in an 18 × 18 × 24-inch terrarium. Competition for basking positions, visual territories, and escape routes can cause chronic stress. One male with three females can succeed in larger, densely planted enclosures, but the available space here is restrictive. Two compatible adults are more defensible, although solitary housing is the safer standard. Husbandry recommendations vary considerably on communal housing. \n\nReptiFiles\n+2\n\n\n\n\nCalibration note: Green anoles are not strictly incompatible with conspecifics, but territorial pressure increases with density. A single male is the appropriate maximum regardless of total group size. The 1M/3F ratio reduces male-male aggression but does not eliminate competition or reproductive harassment. TankLook should treat two compatible animals as potentially workable with caution, while four in this footprint cross into likely long-term problems."
+  },
+  "D16": {
+   "verdict": "caution",
+   "ms": 231079,
+   "change": "bigger",
+   "bigEnough": "yes",
+   "smallest": "12 x 12 x 12 in",
+   "confidence": "medium",
+   "note": "Optional note: A 12 × 12-inch footprint provides twice the spider's 6-inch leg span in each direction. This is at the lower end of commonly accepted terrestrial tarantula housing recommendations, but remains workable. An 18 × 18 × 12-inch enclosure would offer more comfortable floor space. Deep substrate is particularly important to minimize dangerous falling distances for this heavy-bodied terrestrial species. \n\nnwzoo.com\n+1\n\n\n\n\nCalibration note: Tarantula enclosure sizing should primarily use diagonal leg span, not body length. For terrestrial species, approximately 2× leg span in horizontal dimensions is a defensible lower boundary, while 3× provides more comfortable room. Excessive unobstructed vertical height can actually increase injury risk, so larger enclosure volume is not automatically better."
+  }
+ },
+ "open": [],
+ "setAside": [
+  {
+   "file": "raw-v4-chatgpt-high-2.json",
+   "tank": "B07",
+   "field": "changeSp",
+   "value": [
+    "demasoni"
+   ],
+   "why": "only read with change fewer or drop (change is ratio)"
+  }
+ ],
+ "carried": []
+}
