@@ -320,5 +320,55 @@
   "name": "Yellow Clown Goby (Gobiodon okinawae)",
   "standIn": true,
   "salt": true
+ },
+ "greenneon": {
+  "aq": "200909300144",
+  "name": "Neon Tetra (Paracheirodon innesi)",
+  "standIn": true
+ },
+ "merah": {
+  "aq": "200911012018",
+  "name": "Chili Rasbora (Boraras brigittae)",
+  "standIn": true
+ },
+ "exclamation": {
+  "aq": "200911012018",
+  "name": "Chili Rasbora (Boraras brigittae)",
+  "standIn": true
+ },
+ "dwarfrasbora": {
+  "aq": "200911012018",
+  "name": "Chili Rasbora (Boraras brigittae)",
+  "standIn": true
+ },
+ "cpo": {
+  "aq": "200909300181",
+  "name": "Red Cherry Shrimp (Neocaridina heteropoda)",
+  "standIn": true
+ },
+ "cajundwarf": {
+  "aq": "200909300181",
+  "name": "Red Cherry Shrimp (Neocaridina heteropoda)",
+  "standIn": true
+ },
+ "rswcrayfish": {
+  "aq": "200909300134",
+  "name": "Mystery Snail (Pomacea cuprina)",
+  "standIn": true
+ },
+ "redclaw": {
+  "aq": "200909300134",
+  "name": "Mystery Snail (Pomacea cuprina)",
+  "standIn": true
+ },
+ "thaicrab": {
+  "aq": "200909300181",
+  "name": "Red Cherry Shrimp (Neocaridina heteropoda)",
+  "standIn": true
+ },
+ "asellus": {
+  "aq": "200909300181",
+  "name": "Red Cherry Shrimp (Neocaridina heteropoda)",
+  "standIn": true
  }
 }

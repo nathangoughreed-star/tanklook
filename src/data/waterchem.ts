@@ -17,6 +17,14 @@ export const CHEM: Record<string, { ph: R; gh?: R; phOk?: R; ghOk?: R }> = {
   neon: { ph: [5.0, 7.0], gh: [1, 10], phOk: [4.0, 7.5], ghOk: [1, 12] }, cardinal: { ph: [3.5, 7.5], gh: [1, 8] }, ember: { ph: [5.0, 7.0], gh: [1, 10], phOk: [5.0, 7.5] },
   // dwarf pencilfish: FishBase pH 5.8-7.5, dH to 15; low end widened to 5.0 inside Seriously Fish's 4.0-7.0 (wild water 4-6), GH from 1 (SF 1-10)
   dwarfpencil: { ph: [5.0, 7.5], gh: [1, 15] }, sterbai: { ph: [6.0, 8.0], gh: [2, 25] },
+  // 2026-10-26 (S238) Seriously Fish: green neon pH 3.0-6.5 dGH 1-8; strawberry and dwarf spotted rasbora pH 4.0-6.5 dGH 1-5; exclamation point pH 6.0-7.0 dGH 1-10.
+  // The comfortable low ends are our pick inside those pages' ranges (the pages state the wild-water extremes); the page range is the acceptable band.
+  greenneon: { ph: [4.5, 6.5], gh: [1, 8], phOk: [3.0, 6.5] }, merah: { ph: [5.0, 6.5], gh: [1, 5], phOk: [4.0, 6.5] }, dwarfrasbora: { ph: [5.0, 6.5], gh: [1, 5], phOk: [4.0, 6.5] }, exclamation: { ph: [6.0, 7.0], gh: [1, 10] },
+  // crayfish, micro crab: retailer and breeder care sheets (research/sourcing/S238.md); calcium for moulting is why the hard end stays open
+  cpo: { ph: [6.8, 8.0], gh: [6, 15], phOk: [6.5, 8.0] }, cajundwarf: { ph: [7.0, 8.0], gh: [6, 20], phOk: [6.0, 8.0] },
+  rswcrayfish: { ph: [6.5, 8.0], gh: [8, 20], phOk: [6.5, 8.5] }, redclaw: { ph: [7.0, 8.0], gh: [8, 20], phOk: [6.5, 8.2] }, thaicrab: { ph: [6.5, 7.5], gh: [6, 12], phOk: [6.5, 8.0] },
+  // Pond Informer: Asellus aquaticus is "averse to low pH conditions" and tolerates organic pollution; no number is given, so 6.5-8.0 is our reading
+  asellus: { ph: [6.5, 8.0] },
   rummynose: { ph: [5.5, 7.0], gh: [1, 10], phOk: [5.5, 7.5] }, harlequin: { ph: [5.0, 7.0], gh: [1, 12], phOk: [5.0, 7.5] }, chili: { ph: [5.0, 7.0], gh: [1, 8] },
   danio: { ph: [6.0, 8.0] }, whitecloud: { ph: [6, 8.3] }, cpd: { ph: [6.5, 7.5] }, hatchet: { ph: [5, 7], gh: [1, 10], phOk: [5, 8] },
   cherrybarb: { ph: [6, 8] }, tigerbarb: { ph: [6, 8] }, boesemani: { ph: [7.0, 8.0], gh: [9, 19] },
@@ -48,6 +56,6 @@ export const MARINE_PH: R = [8.0, 8.4];
 /** The smallest group a shoaling or schooling species is kept in (fewer = stressed, shy or nippy). Advice only. */
 export const GROUP: Record<string, number> = {
   neon: 8, cardinal: 8, ember: 8, rummynose: 10, harlequin: 8, chili: 8, danio: 8, whitecloud: 6, cpd: 6, hatchet: 6,
-  cherrybarb: 6, tigerbarb: 8, boesemani: 6, bronzecory: 4, sterbai: 6, dwarfpencil: 8, pandacory: 6, pygmycory: 6, oto: 6, kuhli: 5,
+  greenneon: 8, merah: 8, exclamation: 8, dwarfrasbora: 8, asellus: 10, thaicrab: 5, cherrybarb: 6, tigerbarb: 8, boesemani: 6, bronzecory: 4, sterbai: 6, dwarfpencil: 8, pandacory: 6, pygmycory: 6, oto: 6, kuhli: 5,
   clownloach: 5, cherryshrimp: 10, amano: 6, chromis: 6,
 };

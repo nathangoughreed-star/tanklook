@@ -108,7 +108,7 @@ export function searchSpecies(q: string, cat?: Category): Species[] {
     const hay = norm(s.name + ' ' + s.sci + ' ' + s.id + tags), words = hay.split(/\s+/);
     if (!terms.every(t => hay.includes(t))) continue;
     const prefix = terms.filter(t => words.some(w => w.startsWith(t))).length;
-    scored.push([prefix, s]);
+    scored.push([prefix + (terms.includes(norm(s.id)) ? 1 : 0), s]); // an id typed whole ranks first (S238: 'neon' is the neon tetra, not the green neon)
   }
   return scored.sort((a, b) => b[0] - a[0] || a[1].name.localeCompare(b[1].name)).map(x => x[1]);
 }

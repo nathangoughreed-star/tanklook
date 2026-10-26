@@ -334,10 +334,79 @@ function drawHermit(s: HermitSpec, ctx: Ctx, P: Proj, W: number) {
   const st = HERMIT_LIMBS[3].js[1]; herpEye(ctx, P, W, st[0], st[1] - 0.012, 0.018, s.eye, 'dark');
 }
 
+// ---------- Thai micro crab and the aquatic isopod (S238, 2026-10-26) ----------
+// Two small crustaceans on the hermit's limb machinery: one Limb3D list feeds the card and the 3D body. The crab faces +u as every animal
+// (its sideways walk is not modelled); the isopod is a flat segmented oval with feelers forward and uropods back.
+const CRAB_A = 0.5, CG = CRAB_A / 2 - 0.015;
+interface CrabSpec { body: [string, string, string]; leg: [string, string, string]; eye: [string, string]; mark: string }
+const CRABS: Record<string, CrabSpec> = {
+  // Thai micro crab (Limnopilos naiyanetri): a small rounded carapace in grey-brown, mottled, pale-grey to olive legs, small claws held forward
+  thaicrab: { body: ['#4e4538', '#7a6c58', '#a09076'], leg: ['#5e5848', '#8a8068', '#aaa088'], eye: ['#3a3226', '#0c0a08'], mark: '#3a3024' },
+};
+const CRAB_SIDE: Pt[] = [[0.9, 0.1, 'c'], [0.84, 0.04], [0.7, -0.015], [0.5, -0.035], [0.3, -0.015], [0.16, 0.04], [0.12, 0.1, 'c'], [0.18, 0.16], [0.4, 0.18], [0.62, 0.18], [0.82, 0.16]];
+const CRAB_JOINT = '#c8bca0';
+const CRAB_LIMBS: Limb3D[] = [
+  // three walking legs a side, fanned out from under the carapace: coxa out, merus up to the knee, the long dactyl down to the ground
+  { js: [[0.64, 0.15, 0.1, 0.012], [0.7, 0.07, 0.2, 0.011], [0.74, 0.14, 0.27, 0.009], [0.74, 0.232, 0.3, 0.006]], toes: [[0.012, 0.0]], toe: 0.006, seg: CRAB_JOINT },
+  { js: [[0.5, 0.15, 0.12, 0.012], [0.5, 0.06, 0.22, 0.011], [0.5, 0.14, 0.29, 0.009], [0.5, 0.232, 0.32, 0.006]], toes: [[0.01, 0.0]], toe: 0.006, seg: CRAB_JOINT },
+  { js: [[0.36, 0.15, 0.1, 0.012], [0.3, 0.07, 0.2, 0.011], [0.26, 0.14, 0.27, 0.009], [0.26, 0.232, 0.3, 0.006]], toes: [[-0.012, 0.0]], toe: 0.006, seg: CRAB_JOINT },
+  // cheliped: small claws held forward in front of the face
+  { js: [[0.8, 0.12, 0.1, 0.014], [0.88, 0.14, 0.17, 0.012], [0.93, 0.17, 0.15, 0.011]], toes: [], toe: 0, seg: CRAB_JOINT, claw: { palm: 0.045, r: 0.022, finger: 0.035 } },
+  // eye stalk (no toes; the eye sits on its tip)
+  { js: [[0.82, 0.03, 0.04, 0.008], [0.86, -0.012, 0.06, 0.006]], toes: [], toe: 0 },
+];
+function drawCrab(s: CrabSpec, ctx: Ctx, P: Proj, W: number) {
+  const card = (l: Limb3D, far: boolean) => {
+    const js = l.js.map(j => [j[0] - (far ? 0.02 : 0), j[1] - (far ? 0.015 : 0), j[3]] as J), e = js[js.length - 1], cl = l.claw;
+    if (cl) js.push([e[0] + cl.palm * 0.5, e[1] + 0.01, cl.r]);
+    const toes = cl ? [[e[0] + cl.palm + cl.finger, e[1] + 0.005], [e[0] + cl.palm + cl.finger * 0.9, e[1] + 0.02]] as [number, number][]
+      : l.toes.map(([du]) => [e[0] + du, CG - l.toe * 0.5] as [number, number]);
+    limb(ctx, P, W, js, toes, cl ? cl.r * 0.35 : l.toe, s.leg, far);
+  };
+  for (const l of CRAB_LIMBS.slice(0, 4)) card(l, true);
+  body(ctx, P, W, CRAB_SIDE, -0.035, 0.18, [[0, s.body[0]], [0.5, s.body[1]], [1, s.body[2]]], 0.03, l => {
+    for (let i = 0; i < 14; i++) { const r = rng(5 + i); blob(l, P, W, 0.22 + r() * 0.6, -0.01 + r() * 0.12, 0.03, 0.02, s.mark, 0.25); }
+  });
+  for (const l of CRAB_LIMBS.slice(0, 4)) card(l, false);
+  const st = CRAB_LIMBS[4].js[1]; herpEye(ctx, P, W, st[0], st[1] - 0.006, 0.014, s.eye, 'dark');
+}
+
+// aquatic isopod (Asellus aquaticus): a flat oval of seven plates in mottled grey-brown, long feelers, two uropods like a forked tail
+const ISO_A = 0.34, IG = ISO_A / 2 - 0.015;
+interface IsoSpec { body: [string, string, string]; leg: [string, string, string]; mark: string; eye: [string, string] }
+const ISOPODS: Record<string, IsoSpec> = {
+  asellus: { body: ['#5a5042', '#8a7c68', '#b0a288'], leg: ['#6a6050', '#90846c', '#b0a68c'], mark: '#3a3226', eye: ['#2a2420', '#080606'] },
+};
+const ISO_SIDE: Pt[] = [[0.84, 0.07, 'c'], [0.78, 0.03], [0.6, -0.005], [0.4, -0.01], [0.22, 0.0], [0.1, 0.04, 'c'], [0.14, 0.1], [0.4, 0.115], [0.7, 0.115], [0.8, 0.1]];
+const ISO_LIMBS: Limb3D[] = [
+  // short walking legs under the plates
+  { js: [[0.7, 0.1, 0.09, 0.008], [0.73, 0.14, 0.15, 0.007], [0.72, 0.152, 0.18, 0.005]], toes: [[0.01, 0]], toe: 0.004 },
+  { js: [[0.55, 0.1, 0.1, 0.008], [0.55, 0.14, 0.16, 0.007], [0.55, 0.152, 0.19, 0.005]], toes: [[0.01, 0]], toe: 0.004 },
+  { js: [[0.4, 0.1, 0.1, 0.008], [0.37, 0.14, 0.16, 0.007], [0.36, 0.152, 0.19, 0.005]], toes: [[-0.01, 0]], toe: 0.004 },
+  { js: [[0.28, 0.1, 0.09, 0.008], [0.23, 0.14, 0.14, 0.007], [0.22, 0.152, 0.17, 0.005]], toes: [[-0.01, 0]], toe: 0.004 },
+  // second antennae: long, swept forward and out; first antennae short
+  { js: [[0.82, 0.05, 0.05, 0.005], [0.93, 0.0, 0.12, 0.004], [1.04, -0.02, 0.22, 0.003]], toes: [], toe: 0, c: ['#a09478', '#7a6e56'] },
+  { js: [[0.83, 0.06, 0.03, 0.004], [0.9, 0.04, 0.06, 0.003], [0.95, 0.04, 0.08, 0.002]], toes: [], toe: 0, c: ['#a09478', '#7a6e56'] },
+  // uropods: two thin forks behind the last plate
+  { js: [[0.1, 0.05, 0.03, 0.006], [0.04, 0.06, 0.07, 0.004], [-0.04, 0.07, 0.1, 0.003]], toes: [], toe: 0, c: ['#8a7e64', '#6a5e48'] },
+];
+function drawIsopod(s: IsoSpec, ctx: Ctx, P: Proj, W: number) {
+  const ant = (l: Limb3D) => limb(ctx, P, W, l.js.map(j => [j[0], j[1], j[3]] as J), [], 0.004, l.c ? [l.c[1], l.c[0], l.c[0]] : s.leg, false);
+  for (const l of ISO_LIMBS.slice(0, 4)) limb(ctx, P, W, l.js.map(j => [j[0], j[1], j[3]] as J), l.toes.map(([du]) => [l.js[2][0] + du, IG - 0.004] as [number, number]), 0.004, s.leg, true);
+  body(ctx, P, W, ISO_SIDE, -0.01, 0.115, [[0, s.body[0]], [0.5, s.body[1]], [1, s.body[2]]], 0.02, l => {
+    for (let i = 0; i < 7; i++) soft(l, P, 0.2 + i * 0.085, 0.205 + i * 0.085, -0.02, 0.12, s.mark, 0.4, [0, 0], [0.01, 0.01]);
+    for (let i = 0; i < 10; i++) { const r = rng(9 + i); blob(l, P, W, 0.2 + r() * 0.6, r() * 0.08, 0.025, 0.012, s.mark, 0.22); }
+  });
+  for (const l of ISO_LIMBS.slice(4)) ant(l);
+  herpEye(ctx, P, W, 0.82, 0.03, 0.01, s.eye, 'dark');
+}
+
 export const HERP_ART: Record<string, (ctx: Ctx, P: Proj, W: number) => void> = {
   ...Object.fromEntries(Object.entries(FROGS).map(([k, s]) => [k, (c: Ctx, P: Proj, W: number) => drawFrog(s, c, P, W)])),
   ...Object.fromEntries(Object.entries(SALS).map(([k, s]) => [k, (c: Ctx, P: Proj, W: number) => drawSal(s, c, P, W)])),
   ...Object.fromEntries(Object.entries(HERMITS).map(([k, s]) => [k, (c: Ctx, P: Proj, W: number) => drawHermit(s, c, P, W)])),
+  ...Object.fromEntries(Object.entries(CRABS).map(([k, s]) => [k, (c: Ctx, P: Proj, W: number) => drawCrab(s, c, P, W)])),
+  ...Object.fromEntries(Object.entries(ISOPODS).map(([k, s]) => [k, (c: Ctx, P: Proj, W: number) => drawIsopod(s, c, P, W)])),
   ...LIZARD_ART,
   ...SPIDER_ART,
   ...SNAKE_ART,
@@ -347,6 +416,8 @@ export const HERP_ART: Record<string, (ctx: Ctx, P: Proj, W: number) => void> = 
 /** Aspect + resting offset (the ground line) for amphibian art keys. */
 export function herpMeta(art: string): { aspect: number; rest: number } | undefined {
   if (HERMITS[art]) return { aspect: HERMIT_A, rest: HG };
+  if (CRABS[art]) return { aspect: CRAB_A, rest: CG };
+  if (ISOPODS[art]) return { aspect: ISO_A, rest: IG };
   const s = FROGS[art] ?? SALS[art]; if (!s) return lizardMeta(art) ?? spiderMeta(art) ?? tarantulaMeta(art) ?? snakeMeta(art);
   return { aspect: s.aspect, rest: s.aspect / 2 - 0.015 };
 }
@@ -510,6 +581,26 @@ export const HERP3D: Record<string, Herp3D> = {
     limbs: HERMIT_LIMBS, legCol: [HERMITS.hermit.leg[1], HERMITS.hermit.leg[0]],
     eye: { u: 0.89, th: 0.3, r: 0.018, iris: HERMITS.hermit.eye, pupil: 'dark', bulge: 1, at: [0.89, 0.045, 0.035] },
     ground: HG, shell: { s: HERMIT_SHELL, shell: HERMITS.hermit.shell, mark: HERMITS.hermit.mark },
+  },
+  // Thai micro crab: a low rounded carapace as wide as long, three walking legs a side, small claws forward
+  thaicrab: {
+    side: CRAB_SIDE, wid: [[0.12, 0.05], [0.25, 0.17], [0.5, 0.21], [0.75, 0.17], [0.9, 0.06]], belly: 2.6,
+    tone: [[0, CRABS.thaicrab.body[0]], [0.5, CRABS.thaicrab.body[1]], [1, CRABS.thaicrab.body[2]]],
+    marks: [{ k: 'spots', n: 40, u: [0.2, 0.85], a: [0.0, 0.55], r: [0.01, 0.022], c: '#3a3024', o: 0.4, seed: 5 }],
+    limbs: CRAB_LIMBS, legCol: [CRABS.thaicrab.leg[1], CRABS.thaicrab.leg[0]],
+    eye: { u: 0.86, th: 0.3, r: 0.014, iris: CRABS.thaicrab.eye, pupil: 'dark', bulge: 1, at: [0.86, -0.012, 0.06] },
+    ground: CG,
+  },
+  // aquatic isopod: a flat oval, seven plates (dark bands across the back), mottled grey-brown, feelers forward and uropods back
+  asellus: {
+    side: ISO_SIDE, wid: [[0.1, 0.03], [0.2, 0.12], [0.5, 0.15], [0.8, 0.12], [0.84, 0.06]], belly: 2.4,
+    tone: [[0, ISOPODS.asellus.body[0]], [0.5, ISOPODS.asellus.body[1]], [1, ISOPODS.asellus.body[2]]],
+    marks: [
+      ...[0, 1, 2, 3, 4, 5, 6].map((i): Mark3D => ({ k: 'band', u: [0.2 + i * 0.085, 0.208 + i * 0.085], a: [0, 0.8], c: '#2e261c', o: 0.55, blur: 0.004 })),
+      { k: 'spots', n: 30, u: [0.2, 0.8], a: [0.0, 0.6], r: [0.01, 0.02], c: '#3a3226', o: 0.3, seed: 8 }],
+    limbs: ISO_LIMBS, legCol: [ISOPODS.asellus.leg[1], ISOPODS.asellus.leg[0]],
+    eye: { u: 0.82, th: 0.3, r: 0.01, iris: ISOPODS.asellus.eye, pupil: 'dark', bulge: 0.6 },
+    ground: IG,
   },
   // yellow bands down each side of the back, black between with black spots; a lower side band; blue belly
   dartfrog: frog3D(FROGS.dartfrog, 1, [[0, '#17181b'], [0.6, '#1c1d20'], [0.82, '#202227'], [1, '#26467e']], [

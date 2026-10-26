@@ -21,7 +21,7 @@ const RECORD = process.argv.includes('--record');
 const INDEX = RECORD ? 'src/data/model-versions.json' : 'public/model-sheets/index.html', t0 = Date.now(); // the versions file is written last
 const server = await createServer({ server: { port: 5413, strictPort: false }, logLevel: 'warn' });
 await server.listen();
-const url = server.resolvedUrls.local[0] + (RECORD ? 'review.html?record' : 'review.html?export');
+const url = server.resolvedUrls.local[0] + (RECORD ? 'review.html?record' + (process.argv.find(a => a.startsWith('--only=')) ? '&only=' + process.argv.find(a => a.startsWith('--only=')).slice(7) : '') : 'review.html?export');
 const profile = mkdtempSync(join(tmpdir(), 'sheets-'));
 const browser = spawn(exe, ['--headless=new', ...(RECORD ? ['--use-angle=d3d11', '--ignore-gpu-blocklist'] : ['--use-angle=swiftshader', '--enable-unsafe-swiftshader']), '--no-first-run', `--user-data-dir=${profile}`, url], { stdio: 'ignore' });
 

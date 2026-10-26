@@ -34,9 +34,28 @@
    "kind": "tool",
    "note": "our space numbers are FITTED to its answers (research/aq-compare.json, research/fit.tsv); a hobby heuristic, not biology"
   },
-  "territory-research": { "title": "Fighting limits by tank size for 29 territorial species (Fishkeeping World, Aquarium Co-Op, Seriously Fish, Saltwater Aquarium Blog and others)", "by": "Glass Box lane S196", "url": "research/territory-caps.md", "accessed": "2026-10-22", "kind": "internal" },
-  "expert-stockings": { "title": "37 published stocking lists and 73 count-vs-size points (Aquarium Co-Op, Fishkeeping World, Aqueon, BRS and others) through our engine", "by": "Glass Box lane S196", "url": "research/expert-stockings.md", "accessed": "2026-10-21", "kind": "internal" },
-  "expert-v4": { "title": "Stocking and compatibility survey v4: 60 hand-written tanks in four modules, answered by keepers, professionals and AI models", "by": "experts named only with consent (none yet)", "url": "research/calib/v4/survey-v4-design.md", "accessed": "2026-10-23", "kind": "internal", "note": "build cba9d609; answers in research/calib/answers/v4-<expert>.json (scripts/calib-parse-v4.mjs); no answers yet, nothing fitted or applied" },
+  "territory-research": {
+   "title": "Fighting limits by tank size for 29 territorial species (Fishkeeping World, Aquarium Co-Op, Seriously Fish, Saltwater Aquarium Blog and others)",
+   "by": "Glass Box lane S196",
+   "url": "research/territory-caps.md",
+   "accessed": "2026-10-22",
+   "kind": "internal"
+  },
+  "expert-stockings": {
+   "title": "37 published stocking lists and 73 count-vs-size points (Aquarium Co-Op, Fishkeeping World, Aqueon, BRS and others) through our engine",
+   "by": "Glass Box lane S196",
+   "url": "research/expert-stockings.md",
+   "accessed": "2026-10-21",
+   "kind": "internal"
+  },
+  "expert-v4": {
+   "title": "Stocking and compatibility survey v4: 60 hand-written tanks in four modules, answered by keepers, professionals and AI models",
+   "by": "experts named only with consent (none yet)",
+   "url": "research/calib/v4/survey-v4-design.md",
+   "accessed": "2026-10-23",
+   "kind": "internal",
+   "note": "build cba9d609; answers in research/calib/answers/v4-<expert>.json (scripts/calib-parse-v4.mjs); no answers yet, nothing fitted or applied"
+  },
   "aq-compare": {
    "title": "54 one-species and 24 mixed AqAdvisor probes vs our engine",
    "by": "Glass Box lane SE2",
@@ -242,12 +261,12 @@
    "note": "per-value page url and verbatim quote in research/sourcing/<batch>.json, checked by scripts/verify-quotes.mjs"
   },
   "aquariadise.com": {
-   "title": "Aquariadise care guides",
+   "title": "Aquariadise care sheets (Thai micro crab, dwarf crayfish)",
    "by": "Aquariadise",
    "url": "https://www.aquariadise.com",
-   "accessed": "2026-10-20",
-   "kind": "consensus",
-   "note": "per-value page url and verbatim quote in research/sourcing/<batch>.json, checked by scripts/verify-quotes.mjs"
+   "accessed": "2026-10-26",
+   "kind": "retailer",
+   "note": "opened 2026-10-26 (S238): the Thai micro crab care sheet"
   },
   "chewy.com": {
    "title": "Chewy education care guides",
@@ -314,12 +333,12 @@
    "note": "per-value page url and verbatim quote in research/sourcing/<batch>.json, checked by scripts/verify-quotes.mjs"
   },
   "guidarium.com": {
-   "title": "Guidarium species profiles",
+   "title": "Guidarium: Red swamp crayfish profile",
    "by": "Guidarium",
-   "url": "https://www.guidarium.com",
-   "accessed": "2026-10-20",
-   "kind": "consensus",
-   "note": "per-value page url and verbatim quote in research/sourcing/<batch>.json, checked by scripts/verify-quotes.mjs"
+   "url": "https://guidarium.com/fishes/red-swamp-crayfish",
+   "accessed": "2026-10-26",
+   "kind": "reference",
+   "note": "opened 2026-10-26 (S238): 12 cm, 18-28 C, pH 6.5-8.5, 8-20 dGH, 75 L / 60 cm minimum, highly aggressive"
   },
   "tropicalfreshwaterfish.com": {
    "title": "Tropical Freshwater Fish species profiles",
@@ -650,12 +669,12 @@
    "note": "opened by the R5-grazers research agent; per-value page url and verbatim quote in research/sourcing/R5-grazers.json, checked by scripts/verify-quotes.mjs"
   },
   "fishkeeper.co.uk": {
-   "title": "Fishkeeper care pages",
+   "title": "Fishkeeper: Red-clawed crayfish profile",
    "by": "Fishkeeper",
-   "url": "https://fishkeeper.co.uk",
-   "accessed": "2026-10-21",
+   "url": "https://www.fishkeeper.co.uk/fish/freshwater/miscellaneous/red-clawed-crayfish",
+   "accessed": "2026-10-26",
    "kind": "reference",
-   "note": "opened by the R5-grazers research agent; per-value page url and verbatim quote in research/sourcing/R5-grazers.json, checked by scripts/verify-quotes.mjs"
+   "note": "opened 2026-10-26 (S238): up to 20 cm, 18-28 C, pH 7.2-8.2, dH 10-25, non-community"
   },
   "exo-terra.com": {
    "title": "Exo Terra care guides (dart frogs)",
@@ -729,9 +748,30 @@
    "kind": "consensus",
    "note": "per-value page url and verbatim quote in research/sourcing/<batch>.json, checked by scripts/verify-quotes.mjs"
   },
-  "petfishonline.com": { "title": "PetFishOnline: how many mystery snails per gallon", "by": "PetFishOnline", "url": "https://petfishonline.com/how-many-mystery-snails/", "accessed": "2026-10-22", "kind": "reference", "note": "\"Each mystery snail requires two and a half gallons of water\"; quoted in research/snail-load.md" },
-  "sealifebase-lw-congener": { "title": "SeaLifeBase length-weight relationship of Turbo cornutus (congener of the Mexican turbo snail)", "by": "Palomares & Pauly (eds.), SeaLifeBase", "url": "https://www.sealifebase.se/popdyn/LWRelationshipList.php?ID=83873", "accessed": "2026-10-22", "kind": "primary", "note": "a 0.25579, b 2.940, shell length 4.9-11.2 cm, n 42, r2 0.975, SW Korea; units not stated on the page, FishBase convention cm and g assumed" },
-  "snail-load": { "title": "Snail waste and space (lane SN)", "by": "Glass Box lane SN (Sonnet research agent)", "url": "research/snail-load.md", "accessed": "2026-10-22", "kind": "internal", "note": "footprint model, waste class and their sources; approved by Nathan 2026-10-22" },
+  "petfishonline.com": {
+   "title": "PetFishOnline: how many mystery snails per gallon",
+   "by": "PetFishOnline",
+   "url": "https://petfishonline.com/how-many-mystery-snails/",
+   "accessed": "2026-10-22",
+   "kind": "reference",
+   "note": "\"Each mystery snail requires two and a half gallons of water\"; quoted in research/snail-load.md"
+  },
+  "sealifebase-lw-congener": {
+   "title": "SeaLifeBase length-weight relationship of Turbo cornutus (congener of the Mexican turbo snail)",
+   "by": "Palomares & Pauly (eds.), SeaLifeBase",
+   "url": "https://www.sealifebase.se/popdyn/LWRelationshipList.php?ID=83873",
+   "accessed": "2026-10-22",
+   "kind": "primary",
+   "note": "a 0.25579, b 2.940, shell length 4.9-11.2 cm, n 42, r2 0.975, SW Korea; units not stated on the page, FishBase convention cm and g assumed"
+  },
+  "snail-load": {
+   "title": "Snail waste and space (lane SN)",
+   "by": "Glass Box lane SN (Sonnet research agent)",
+   "url": "research/snail-load.md",
+   "accessed": "2026-10-22",
+   "kind": "internal",
+   "note": "footprint model, waste class and their sources; approved by Nathan 2026-10-22"
+  },
   "habitat-model": {
    "title": "Habitat model for the Space bar: floor area for bottom dwellers, run, height, activity",
    "by": "Glass Box lane HB (Sonnet research agents)",
@@ -747,6 +787,22 @@
    "accessed": "2026-10-21",
    "kind": "reference",
    "note": "a keeper's rule, 18-24 sq in of floor per inch of cory"
+  },
+  "theshrimpfarm.com": {
+   "title": "The Shrimp Farm: Dwarf Orange Crayfish (CPO) care page",
+   "by": "The Shrimp Farm",
+   "url": "https://www.theshrimpfarm.com/posts/mexican-dwarf-crayfish/",
+   "accessed": "2026-10-26",
+   "kind": "retailer",
+   "note": "opened 2026-10-26 (S238)"
+  },
+  "pondinformer.com": {
+   "title": "Pond Informer: Guide to aquatic sow bugs (Asellidae)",
+   "by": "Pond Informer",
+   "url": "https://pondinformer.com/aquatic-sow-bugs-asellidae",
+   "accessed": "2026-10-26",
+   "kind": "reference",
+   "note": "opened 2026-10-26 (S238): Asellus aquaticus 5-12 mm, detritus eater, sold to aquarists, food for larger fish"
   }
  }
 }

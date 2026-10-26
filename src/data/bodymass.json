@@ -541,6 +541,71 @@
    "b": 3,
    "src": "estimate",
    "note": "typical adult mass 15 g (keeper references, not FishBase)"
+  },
+  "greenneon": {
+   "a": 0.01122,
+   "b": 3.08,
+   "src": "estimate",
+   "note": "Paracheirodon genus: the neon tetra's FishBase Bayesian a, b used for the green neon (no species row read)",
+   "model": 0.47,
+   "flag": true
+  },
+  "merah": {
+   "a": 0.00891,
+   "b": 3.02,
+   "src": "estimate",
+   "note": "Boraras genus: the chili rasbora's FishBase Bayesian a, b used (no species row read)",
+   "model": 0.69
+  },
+  "exclamation": {
+   "a": 0.00891,
+   "b": 3.02,
+   "src": "estimate",
+   "note": "Boraras genus: the chili rasbora's FishBase Bayesian a, b used (no species row read)",
+   "model": 0.63
+  },
+  "dwarfrasbora": {
+   "a": 0.00891,
+   "b": 3.02,
+   "src": "estimate",
+   "note": "Boraras genus: the chili rasbora's FishBase Bayesian a, b used (no species row read)",
+   "model": 0.76
+  },
+  "cpo": {
+   "a": 0.012,
+   "b": 3,
+   "src": "estimate",
+   "note": "typical adult mass 1.5 g (judgement from a 5 cm adult; scales with length cubed)"
+  },
+  "cajundwarf": {
+   "a": 0.0125,
+   "b": 3,
+   "src": "estimate",
+   "note": "typical adult mass 0.8 g (judgement from a 4 cm adult; scales with length cubed)"
+  },
+  "rswcrayfish": {
+   "a": 0.01736,
+   "b": 3,
+   "src": "estimate",
+   "note": "typical adult mass 30 g (judgement from a 12 cm adult; scales with length cubed)"
+  },
+  "redclaw": {
+   "a": 0.0125,
+   "b": 3,
+   "src": "estimate",
+   "note": "typical adult mass 100 g (judgement; the species reaches 25 cm and 600 g (Gensou), a typical aquarium adult is far lighter; scales with length cubed)"
+  },
+  "thaicrab": {
+   "a": 0.2315,
+   "b": 3,
+   "src": "estimate",
+   "note": "typical adult mass 0.4 g (judgement from a 1 cm carapace; scales with length cubed)"
+  },
+  "asellus": {
+   "a": 0.01157,
+   "b": 3,
+   "src": "estimate",
+   "note": "typical adult mass 0.02 g (judgement from a 12 mm adult; scales with length cubed)"
   }
  }
 }
