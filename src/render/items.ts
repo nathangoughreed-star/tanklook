@@ -533,22 +533,24 @@ export function solidMaterial(T: Tank) {
  */
 const ENTRY = `
 // the sightline camera -> this fragment (at s = 1): where it enters the kept region (s; -1: the camera is inside), and
-// the glass's outward normal there
+// the glass's outward normal there; 2 (past the fragment) where the sightline never enters it (it leaves through a pane the
+// camera is inside of before it crosses the last one it is outside of: past a corner)
 float glassEntry(out vec3 n) {
-  float t = -1.0; n = vec3(0.0, 0.0, 1.0);
+  float t = -1.0, tOut = 1e9; n = vec3(0.0, 0.0, 1.0);
 #if NUM_CLIPPING_PLANES > 0
   // view space, camera at the origin: kept where dot(n, q) + c >= 0 (three's clippingPlanes, q = -vClipPosition)
   vec3 q = -vClipPosition;
   for (int i = 0; i < NUM_CLIPPING_PLANES; i++) {
     vec4 pl = clippingPlanes[i]; float dn = dot(pl.xyz, q);
     if (pl.w < 0.0 && dn > 0.0) { float s = -pl.w / dn; if (s > t) { t = s; n = -pl.xyz * mat3(viewMatrix); } }
+    else if (pl.w >= 0.0 && dn < 0.0) tOut = min(tOut, -pl.w / dn);
   }
 #endif
   vec3 o = cameraPosition, v = vGlassW - o, oc = o - uC;
   float a = dot(v, v), b = dot(oc, v), c = dot(oc, oc) - uR * uR, disc = b * b - a * c;
   if (c > 0.0 && disc > 0.0) { float s = (-b - sqrt(disc)) / a; if (s > t && o.y + s * v.y < uTop) { t = s; n = o + s * v - uC; } }
   n = normalize(n);
-  return t;
+  return t > tOut ? 2.0 : t;
 }
 `;
 const capShader = (sh: THREE.WebGLProgramParametersWithUniforms) => {
@@ -572,7 +574,7 @@ const capMats = new Map<string, CapMats>();
 function capMaterials(T: Tank): CapMats {
   const k = glassKey(T), had = capMats.get(k);
   if (had) return had;
-  const { planes, patch, vary } = glassClip(T), look = solidLook(0.75);
+  const { planes, vary } = glassClip(T), look = solidLook(0.75);
   const count = (side: THREE.Side, op: THREE.StencilOp) => {
     // no colour: a blend keeping what is there (the viewer locks the colour mask on, so colorWrite: false would not hold)
     const m = new THREE.MeshBasicMaterial({ clippingPlanes: planes, side, depthWrite: false, depthTest: false,
@@ -594,8 +596,11 @@ function capMaterials(T: Tank): CapMats {
   // the cap draws the piece's far-side back faces, whose vertex colours carry the light baked for THEIR normals (facets of the
   // inside, so the cut face read as a hollow); the cap takes the albedo back out (aBake) and bakes in the light for its own
   // flat face, the glass's outward normal (the same 0.42 + 0.72 (n.L) + 0.08 n.y as bakedShape, LIGHT in the room's frame)
+  // the cap is NOT cut at the glass: it is moved to the entry point anyway (capShader), and on a piece through two panes
+  // (a front corner) the far side behind the cut lies past the other pane, so a cut cap had no fragment there (hollow)
   const pre = (sh: THREE.WebGLProgramParametersWithUniforms) => {
-    patch(sh); look(sh);
+    vary(sh); look(sh);
+    sh.fragmentShader = sh.fragmentShader.replace('#include <clipping_planes_fragment>', '');
     sh.vertexShader = 'attribute float aBake;\nvarying float vBake;\n' + sh.vertexShader.replace('vGlassW = ', 'vBake = aBake; vGlassW = ');
     sh.fragmentShader = 'varying float vBake;\n' + sh.fragmentShader.replace('#include <color_fragment>',
       `#include <color_fragment>\n  { vec3 Lw = normalize(vec3(${LIGHT.x.toFixed(5)}, ${LIGHT.y.toFixed(5)}, ${LIGHT.z.toFixed(5)})); diffuseColor.rgb *= (0.42 + 0.72 * max(0.0, dot(aqCapN, Lw)) + 0.08 * aqCapN.y) / max(vBake, 0.05); }`);
