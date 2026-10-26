@@ -6,7 +6,7 @@ import { rng } from '../art/paint';
 import { getSpecies, type Species } from '../data/species';
 import { DEFAULT_DENS, EPIPHYTES, STYLES, STYLE_KIND, clampItem, isLandStyle, isSwampy, layerOf, perch, starterItems, type Layer } from './items';
 import { CARE } from '../data/care';
-import { fightsOverCount, mostFor } from '../data/groups';
+import { fightsOverCount, mostFor, mostMalesFor } from '../data/groups';
 import { volume } from './physics';
 import { hasCorals, whyAnimal } from './animalfit';
 import { floorOf, minFit } from './tankMin';
@@ -137,8 +137,10 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
   }
   const fish: Fish[] = [], ids = new Set<number>();
   let next = firstId;
-  for (const [sp, n] of count) for (let i = 0; i < n; i++) {
-    const f: Fish = { id: next++, species: sp.id, x: T.L / 2, y: 0, depth: T.D / 2, ...randomPose(sp, r, 0), ...(sp.female && i % 2 ? { sex: 'f' as const } : {}) };
+  const maleCap = (sp: Species) => mostMalesFor(CARE[sp.id], volume(s.tank).litres) ?? Infinity; // a males rule (cpd): the rest go in as females, so a starter shows no fighting warning
+  for (const [sp, n] of count) for (let i = 0, males = 0; i < n; i++) {
+    const female = !!sp.female && (i % 2 === 1 || males >= maleCap(sp)); if (!female) males++;
+    const f: Fish = { id: next++, species: sp.id, x: T.L / 2, y: 0, depth: T.D / 2, ...randomPose(sp, r, 0), ...(female ? { sex: 'f' as const } : {}) };
     randomSize(f, sp, 100, r); fish.push(f); ids.add(f.id);
   }
   const t = { ...s, fish };
