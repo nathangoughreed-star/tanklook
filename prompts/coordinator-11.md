@@ -32,12 +32,10 @@ QUEUE / RUNNING (full ids; send with SendMessage to the id)
   (prompts/lane-S216b-expert-calibration.md). LAST in the queue (after SR). After it lands, start S216b from that prompt.
   Decided: rounds 1-3 data used at FULL weight in one fit with v4; ChatGPT experts = one source (round-1-ngr.json = Nathan's own
   5 tanks, a small human source); global water / floor scales belong to S216b (needs human answers, held-out gain, Nathan's yes).
-- S232: Scheduled Price Sweep (local_e27f674f-051b-4e56-8470-1821aff01510): all code on main (0ba01dd). Nathan said "yes, weekly",
-  but the auto-mode classifier denied create_scheduled_task. NATHAN must allow it in S232's chat and say retry. Task prompt:
-  research/price-sweep/task-prompt.md (Mondays 08:00, own worktree per sweep, one commit, never pushes, messages the coordinator).
+- S232: Scheduled Price Sweep: DONE. Task glass-box-weekly-price-sweep, Mondays ~08:10, first run 2026-11-02; each sweep
+  messages the coordinator a sha + report (push it like any lane). Archive S232.
 
 WAITING ON NATHAN
-- S232 scheduled-task permission (above).
 - S234 / LT questions (HANDOFF "LT"): land + water mix -> paludarium?; dry-tank gear editable in Tech + drawn in 3D?; ball python
   upkeep $69/mo (food scales by length^0.8; frozen rats ~ $15).
 - Closing the "what's in the box" gap (plan Nathan asked for): step 1 = S224b (on disk); step 2 = targeted research lane over
