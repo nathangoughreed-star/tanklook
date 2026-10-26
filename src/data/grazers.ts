@@ -14,9 +14,20 @@ export const GRAZE: Record<string, Grazer> = {
 /** The most of a grazer a tank of `litres` feeds on its algae (at least 1), or undefined for an animal that is not on the list. */
 export const grazersFed = (id: string, litres: number) => GRAZE[id] ? Math.max(1, Math.floor(GRAZE[id].perL * litres + 1e-9)) : undefined;
 
+/** More than this many times what the algae feeds is a problem, not a caution (Nathan 2026-10-26: "escalate to red when natural food
+ *  availability is severely inadequate"; 12 otos in a 15 gal, 3x, stays a caution). The app does not know whether daily feeding is
+ *  already in place, so the red line says what it takes. */
+export const GRAZE_SEVERE = 4;
+/** 'severe' past GRAZE_SEVERE times what the algae feeds, 'short' past it at all, null when the algae feeds them. */
+export function grazerLevel(id: string, n: number, litres: number): 'short' | 'severe' | null {
+  const most = grazersFed(id, litres);
+  return !GRAZE[id] || !most || n <= most ? null : n > GRAZE_SEVERE * most ? 'severe' : 'short';
+}
 /** Advice when `n` of a grazer is more than the tank's algae feeds, else null. */
 export function grazerShort(id: string, n: number, litres: number): string | null {
   const g = GRAZE[id], most = grazersFed(id, litres);
   if (!g || !most || n <= most) return null;
-  return `algae: this tank grows enough for about ${most} (the guideline is ${g.per}); ${n} will run out, so feed ${g.feed}, or keep ${most}`;
+  return grazerLevel(id, n, litres) === 'severe'
+    ? `algae: this tank grows enough for about ${most} (the guideline is ${g.per}); ${n} will starve on it: only with ${g.feed} already in place, else keep ${most}`
+    : `algae: this tank grows enough for about ${most} (the guideline is ${g.per}); ${n} will run out, so feed ${g.feed}, or keep ${most}`;
 }

@@ -19,7 +19,7 @@ import dd from '../data/demand-defaults.json';
 // estimates, marked 'estimate'). The 3D bodies' volume is only the cross-check that flags outliers (scripts/body-mass.mjs).
 import bm from '../data/bodymass.json';
 import { getSpecies, type Species } from '../data/species';
-import { FLOOR_FACTOR, SPACE_FACTOR, SPACE_FACTOR_CLASS, SPACE_NUDGE } from '../data/spacefactor';
+import { FLOOR_FACTOR, GROUP_GROW, SPACE_FACTOR, SPACE_FACTOR_CLASS, SPACE_NUDGE } from '../data/spacefactor';
 import { bioloadLitres } from './starter';
 import { feedingOf, isLivePlantPatch, nitrogenBudget, tanOf, type Nitrogen } from './nitrogen';
 import { heatLoss, rowsFor, setWaterChangeFraction, stockCapacity, sumpLitres } from './tech';
@@ -246,13 +246,16 @@ export function stockingOf(S: TankSetup): Stocking {
   let load = 0, spaceLoad = 0, floorUse = 0;
   const each: { c: Contributor; s: number }[] = [];
   const meanDepthCm = cap.litres * 1000 / Math.max(1e-9, floorOf(S.tank).areaCm2);
+  // a species whose room grows with its group (GROUP_GROW): every animal of it carries (n / ref)^exp past ref
+  const nOf = new Map<string, number>(); for (const f of S.fish) nOf.set(f.species, (nOf.get(f.species) ?? 0) + 1);
+  const grow = (id: string) => { const g = GROUP_GROW[id], n = nOf.get(id) ?? 0; return g && n > g[0] ? (n / g[0]) ** g[1] : 1; };
   for (const f of S.fish) {
     const sp = getSpecies(f.species), l = !sp || !countsAgainstWater(sp) ? 0 : tanOf(sp, massG(sp.id, f.tl ?? sp.tl), feeding, cap.tempC, salt);
     if (!sp || l <= 0) continue;
     load += l;
     const c = by.get(sp.id) ?? { id: sp.id, name: sp.name, n: 0, load: 0, space: 0, share: 0, grams: 0, cls: metClass(sp), floor: 0, spaceFactor: spaceFactor(sp) };
-    const fl = floorUseCm2(sp, f.tl ?? sp.tl);
-    const s = spaceOf(sp, f.tl ?? sp.tl) * heightMul(sp, meanDepthCm);
+    const gr = grow(sp.id), fl = floorUseCm2(sp, f.tl ?? sp.tl) * gr;
+    const s = spaceOf(sp, f.tl ?? sp.tl) * heightMul(sp, meanDepthCm) * gr;
     if (s > 0) each.push({ c, s });
     c.n++; c.load += l; c.floor += fl; floorUse += fl; c.grams += massG(sp.id, f.tl ?? sp.tl); by.set(sp.id, c);
   }
