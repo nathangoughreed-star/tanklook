@@ -109,14 +109,16 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
   `node scripts/calib-fit.mjs research/calib/v4/scenarios-v4.json research/calib/answers/v4-<expert>.json [--out <base>]` (old rounds can be given beside it) ·
   `node scripts/calib-review-v4.mjs research/calib/answers/v4-<expert>.json [...]` (-> research/calib/review-v4-<expert>.md, Findings kept).
 - **Decisions this lane took (open for Nathan):**
-  - The app's overall verdict on the 4-step scale is built from its parts (src/calib/v4.ts verdictOf): not workable = a blocked pair,
-    under a red-line minimum or a herp's bare floor / height, a herp with animals it must not share with, or a temperature with no shared
-    range (or outside it); problems = past 100 % space, a fighting warning, another herp warning, a group too small; caution = past 75 %,
-    a compat concern, under the recommended size, a narrow shared temperature, a herp floor under the usual recommendation, a sex mix off
-    the ratio. **On main d7b6c89 it reads 39 of the 60 tanks not workable** (tanks, one can have several: 17 under a red-line minimum,
-    12 with a herp warning, 12 blocked pairs, 6 temperature), 10 problems, 10 caution, 1 ideal: most of the survey is "the app says no",
-    so the verdict tags measure the gates more than space. Nathan (2026-10-26) answered "too small" to whether a red tank minimum is
-    "not workable" or "problems"; how that maps onto the four steps is asked in the chat.
+  - **"Too small" is the app's verdict of its own (Nathan 2026-10-26, chosen from: its own verdict / not workable / problems):** a
+    species under its red-line tank minimum, or a herp under its bare floor or height (the same idea for land animals), gives `too-small`,
+    with the 4-step reading of the other parts beside it (`rest`). The review keeps those tanks out of the 4-step agreement and reads them
+    in their own section against the experts' "Bigger tank" / "not big enough" answers (flag: fewer than half ask for bigger; A05 and C05
+    ask neither question, so they are shown, never flagged). The rest of the verdict (src/calib/v4.ts verdictOf, the reading this lane
+    took): not workable = a blocked pair, a herp with animals it must not share with, or no shared temperature (or outside it); problems =
+    past 100 % space, a fighting warning, another herp warning, a group too small; caution = past 75 %, a compat concern, under the
+    recommended size, a narrow shared temperature, a herp floor under the usual recommendation, a sex mix off the ratio.
+    **On main 75eb86c: 27 too small** (their other parts: 9 ideal, 5 caution, 6 problems, 7 not workable), 10 not workable, 12 problems,
+    9 caution, 2 ideal. S214's otocinclus change moved A10 (122 -> 118 %), B13 (140 -> 105 %) and B15 (98 -> 72 %, caution -> ideal).
   - Retabled on d7b6c89 (kuhli chemistry widened to pH 5.5-7.5, GH 1-10): A14 went not workable -> caution (its kuhli / pygmy cory pH
     block is gone; the narrow shared temperature remains), A11 stays blocked on hardness only (boesemani GH 9-19 against kuhli 1-10).
   - The fit reads 22 tanks (counts asked and a space.* / golden.* tag); the verdict is the overall band unless the expert's first change

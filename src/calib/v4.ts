@@ -105,16 +105,19 @@ export function appMost(S: TankSetup, id: string): { most: number | null; males:
   return { most: mx ?? null, males: mm ?? null, from: c?.territory ? 'groups.ts territory' : c?.max !== undefined ? 'groups.ts max' : c?.solo ? 'solo' : 'no limit' };
 }
 
-/** The app's overall verdict on the 4-step scale, from its parts (the reading this lane takes; open for Nathan): not workable when a
- *  pair is blocked, the tank is under a species' red line or a herp's bare floor / height, a herp is with animals it must not share with,
- *  or the temperature misses the shared range; problems past 100 % of space, with a fighting warning or another herp warning, or a
- *  group too small; caution past 75 %, with a compatibility concern, under a recommended size, a narrow shared temperature, a herp
- *  floor under the usual recommendation or a sex mix off the app's ratio; otherwise ideal. */
-export function verdictOf(a: Omit<AppReading, 'verdict' | 'by'>): { verdict: Verdict; by: string[] } {
+/** A herp line that says the enclosure is under the species' bare floor or height: the land animals' "Too small". */
+const herpSmall = (h: { level: string; text: string }) => h.level === 'warn' && /^(floor|enclosure)/.test(h.text);
+/** The app's overall verdict, from its parts. "Too small" is a verdict of its own (Nathan 2026-10-26): a species under its red-line tank
+ *  minimum, or a herp under its bare floor or height, gives `too-small`, with the 4-step reading of everything else beside it (`rest`).
+ *  Otherwise, on the 4 steps: not workable when a pair is blocked, a herp is with animals it must not share with, or the temperature
+ *  misses the shared range; problems past 100 % of space, with a fighting warning or another herp warning, or a group too small; caution
+ *  past 75 %, with a compatibility concern, under a recommended size, a narrow shared temperature, a herp floor under the usual
+ *  recommendation or a sex mix off the app's ratio; otherwise ideal. */
+export function verdictOf(a: Omit<AppReading, 'verdict' | 'by' | 'rest'>): { verdict: AppVerdict; by: string[]; rest: { verdict: Verdict; by: string[] } | null } {
+  const small = [...a.tankmin.filter(m => m.level === 'red').map(m => `tankmin red: ${m.id}`), ...a.herp.filter(herpSmall).map(h => `herp: ${h.who}: ${h.text.split(/[.:;]/)[0]}`)];
   const by: [Verdict, string][] = [];
   if (a.compat?.level === 'high') by.push(['unworkable', 'compat high']);
-  for (const m of a.tankmin) if (m.level === 'red') by.push(['unworkable', `tankmin red: ${m.id}`]);
-  for (const h of a.herp) if (h.level === 'warn') by.push([/^(not with|floor|enclosure|needs water)/.test(h.text) ? 'unworkable' : 'problems', `herp: ${h.who}: ${h.text.split(/[.:]/)[0]}`]);
+  for (const h of a.herp) if (h.level === 'warn' && !herpSmall(h)) by.push([/^(not with|needs water)/.test(h.text) ? 'unworkable' : 'problems', `herp: ${h.who}: ${h.text.split(/[.:]/)[0]}`]);
   if (a.temp.state === 'outside' || a.temp.shared === 'none' || a.temp.shared === 'single') by.push(['unworkable', `temperature ${a.temp.state === 'outside' ? 'outside' : a.temp.shared}`]);
   if (a.space && a.space.band === 'problems') by.push(['problems', `space ${Math.round(a.space.pct)} %`]);
   for (const w of a.crowd) by.push(['problems', `crowd: ${w.split(':')[0]}`]);
@@ -126,11 +129,14 @@ export function verdictOf(a: Omit<AppReading, 'verdict' | 'by'>): { verdict: Ver
   for (const h of a.herp) if (h.level === 'note' && /usual recommendation/.test(h.text)) by.push(['caution', `herp floor under recommended: ${h.who}`]);
   for (const g of a.groups) if (g.ratio && /Your mix/.test(g.ratio)) by.push(['caution', `sex mix: ${g.id}`]);
   const worst = by.reduce((k, [v]) => Math.max(k, VERDICTS.indexOf(v)), 0);
-  return { verdict: VERDICTS[worst], by: by.filter(([v]) => VERDICTS.indexOf(v) === worst).map(([, w]) => w) };
+  const four = { verdict: VERDICTS[worst], by: by.filter(([v]) => VERDICTS.indexOf(v) === worst).map(([, w]) => w) };
+  return small.length ? { verdict: 'too-small', by: small, rest: four } : { ...four, rest: null };
 }
+export type AppVerdict = Verdict | 'too-small';
 
 export interface AppReading {
-  verdict: Verdict; by: string[];
+  /** 'too-small' or one of the 4 steps; `by` the parts that set it; `rest` the 4-step reading of the other parts of a too-small tank */
+  verdict: AppVerdict; by: string[]; rest: { verdict: Verdict; by: string[] } | null;
   /** null in a dry enclosure (the app shows no Space bar without water) */
   space: { pct: number; water: number; floor: number; spaceBy: 'water' | 'floor'; band: 'ideal' | 'caution' | 'problems'; head: string; top: string | null; topWater: string | null; topFloor: string | null } | null;
   tankmin: { id: string; pct: number; comfortPct: number; level: 'red' | 'yellow' | 'green'; reason: string }[];

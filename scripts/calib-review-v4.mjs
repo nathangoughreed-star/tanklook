@@ -44,6 +44,7 @@ const nameIn = (text, s, J) => s.stock.map(x => x.id).filter(id => text.includes
 /** The first change the app's own reading points to, from the parts that set its verdict (verdictOf's `by`), for one tank. */
 export function appChange(t, s, J) {
   const a = t.app, by = a.by[0] ?? '';
+  if (a.verdict === 'too-small') return { change: 'bigger', sp: [] };
   if (a.verdict === 'ideal' || !by) return { change: 'nothing', sp: [] };
   if (/^space/.test(by)) return { change: 'fewer', sp: [a.space.top].filter(Boolean) };
   if (/^crowd/.test(by)) return { change: 'fewer', sp: nameIn(by, s, J) };
@@ -106,26 +107,39 @@ export function reviewV4(J, T, files) {
   const readable = J.scenarios.filter(s => T.tanks[s.id]?.readable);
   const unread = J.scenarios.filter(s => !T.tanks[s.id]?.readable).map(s => `${s.id} (${T.tanks[s.id]?.why ?? 'no reading'})`);
   const exp = s => { const v = ans(s.id).map(x => vIx(x.a.verdict)).filter(x => x >= 0); return v.length ? median(v) : null; };
-  const appV = s => vIx(T.tanks[s.id].app.verdict);
+  // "Too small" is the app's verdict of its own (Nathan 2026-10-26): those tanks leave the 4-step agreement and are read in their own section
+  const small = s => T.tanks[s.id].app.verdict === 'too-small', appV = s => small(s) ? null : vIx(T.tanks[s.id].app.verdict);
+  const bigger = a => a.change === 'bigger' || a.bigEnough === 'no';
   let md = `# Calibration review, survey v4: ${experts.join(', ') || 'no experts'}\n\nBuild ${build}. Engine readings: the current engine (research/calib/tables/v4.json, ${T.made}). ${use.length} expert${use.length === 1 ? '' : 's'} (${use.map(f => `${f.expert}${f.expertKind ? ` (${f.expertKind === 'ai' ? 'an AI model' : f.expertKind})` : ''}: modules ${(f.modules ?? []).join(', ')}`).join('; ')}). With more than one expert each tank reads their median. The app's overall verdict is src/calib/v4.ts verdictOf, from its parts (space band, tank minimum, fighting warnings, compatibility, temperature, herp checks, group bands); "milder" means the experts judge the tank less severely than the app.${unread.length ? ` Not readable by the engine: ${unread.join('; ')}.` : ''}${skipped.length ? ` Files left out: ${skipped.join('; ')}.` : ''}\n\n`;
 
   // 1. verdicts per tag
   const tags = [...new Set(readable.flatMap(s => s.tests))].sort();
-  md += `## Verdict per tag\n\nFlagged: half or more of the tag's answered tanks a band off the app, all in the same direction.\n\n| tag | tanks | app | experts | agree | milder | harsher | |\n|---|---|---|---|---|---|---|---|\n`;
+  md += `## Verdict per tag\n\nFlagged: half or more of the tag's answered tanks a band off the app, all in the same direction. A tank the app calls "too small" is shown but not counted here (its own section below).\n\n| tag | tanks | app | experts | agree | milder | harsher | |\n|---|---|---|---|---|---|---|---|\n`;
   for (const tag of tags) {
-    const ss = readable.filter(s => s.tests.includes(tag)), rows = ss.map(s => ({ s, a: appV(s), e: exp(s) })), done = rows.filter(r => r.e != null);
+    const ss = readable.filter(s => s.tests.includes(tag)), rows = ss.map(s => ({ s, a: appV(s), e: exp(s) })), done = rows.filter(r => r.e != null && r.a != null);
     const milder = done.filter(r => r.e - r.a <= -1).length, harsher = done.filter(r => r.e - r.a >= 1).length, agree = done.length - milder - harsher;
     const flag = done.length && milder + harsher >= done.length / 2 && !(milder && harsher);
     if (flag) flags.push({ kind: 'verdict', key: tag, dir: milder ? 'milder' : 'harsher', detail: `${milder + harsher} of ${done.length} tanks` });
-    md += `| ${tag} | ${ss.map(s => s.id).join(' ')} | ${rows.map(r => VERDICTS[r.a]).join(', ')} | ${rows.map(r => vName(r.e)).join(', ')} | ${agree} | ${milder} | ${harsher} | ${flag ? `**flag: experts ${milder ? 'milder' : 'harsher'}**` : ''} |\n`;
+    md += `| ${tag} | ${ss.map(s => s.id).join(' ')} | ${rows.map(r => r.a == null ? 'too small' : VERDICTS[r.a]).join(', ')} | ${rows.map(r => vName(r.e)).join(', ')} | ${agree} | ${milder} | ${harsher} | ${flag ? `**flag: experts ${milder ? 'milder' : 'harsher'}**` : ''} |\n`;
   }
   // the 4 x 4 agreement table per tag family
   md += `\n### Agreement by family (rows the app, columns the experts' median, tanks)\n\n`;
   for (const fam of [...new Set(tags.map(t => t.split('.')[0]))]) {
     const ss = readable.filter(s => s.tests.some(t => t.startsWith(fam + '.'))), m = VERDICTS.map(() => VERDICTS.map(() => 0));
-    for (const s of ss) { const e = exp(s); if (e != null) m[appV(s)][Math.round(e)]++; }
+    for (const s of ss) { const e = exp(s); if (e != null && appV(s) != null) m[appV(s)][Math.round(e)]++; }
     if (!m.flat().some(Boolean)) continue;
     md += `**${fam}** (${ss.length} tanks)\n\n| app \\ experts | ${VERDICTS.join(' | ')} |\n|---|---|---|---|---|\n${VERDICTS.map((v, i) => `| ${v} | ${m[i].join(' | ')} |`).join('\n')}\n\n`;
+  }
+
+  // the app's "Too small": do the experts also want a bigger tank (first change "bigger", or "not big enough")?
+  md += `\n## Too small (the app's own verdict)\n\nA species under its red-line tank minimum, or a herp under its bare floor or height. Read against the experts' first change ("Bigger tank") and "big enough" answers; their 4-step verdict is shown beside it. Flagged: fewer than half the experts who answered ask for a bigger tank.\n\n| tank | app's lines | the rest, on 4 steps | experts' verdict | experts: bigger tank / not big enough | |\n|---|---|---|---|---|---|\n`;
+  for (const s of readable.filter(small)) {
+    const t = T.tanks[s.id], as = ans(s.id), asked = s.ask.includes('change') || s.ask.includes('min');
+    if (!as.length) continue;
+    // a tank that asks neither the first change nor "big enough" (A05, C05) gives the experts no way to say it: shown, never flagged
+    const yes = as.filter(x => bigger(x.a)).length, off = asked && yes < as.length / 2;
+    if (off) flags.push({ kind: 'tooSmall', key: s.id, dir: 'experts accept the tank', detail: `${yes} of ${as.length} ask for bigger` });
+    md += `| ${s.id} | ${t.app.by.join('; ')} | ${t.app.rest.verdict}${t.app.rest.by.length ? ` (${t.app.rest.by.join('; ')})` : ''} | ${as.map(x => x.a.verdict).join(', ')} | ${asked ? `${yes} of ${as.length}` : 'not asked'} | ${off ? '**flag: experts accept the tank**' : ''} |\n`;
   }
 
   // 2. counts

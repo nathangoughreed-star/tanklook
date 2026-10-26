@@ -1,23 +1,22 @@
 # Expert calibration, fit of round v4
 
-1 experts (synth-agree), 61 answers, 0 on held-out anchors. Noise 0.200 (log) from 0 repeat pairs. Engine readings: round v4: current engine, 2026-10-26.
+1 experts (synth-agree), 62 answers, 0 on held-out anchors. Noise 0.200 (log) from 0 repeat pairs. Engine readings: round v4: current engine, 2026-10-26.
 
 ## Error (rms of log reading at the experts' counts)
 
 | | before | after |
 |---|---|---|
 | held-out anchors | n/a | n/a |
-| fitted tanks | 0.032 | 0.030 |
+| fitted tanks | 0.031 | 0.030 |
 
 Inter-expert disagreement n/a (no tank answered by two experts yet). Stop rule not met.
 
 ## Multipliers on today's factors
 
-Water (SPACE_PER_L) x0.998, floor x1.0138. Classes: big -2 %, invert +0 %, mid +3 %, salt -0 %, tiny -1 %.
+Water (SPACE_PER_L) x0.9978, floor x1.0084. Classes: big -2 %, invert +0 %, mid +3 %, salt -0 %, tiny -1 %.
 
 | species | class | answers | total move | own move |
 |---|---|---|---|---|
-| bronzecory | mid | 15 | +5 % | +2 % |
 
 ## Experts
 
@@ -31,7 +30,7 @@ Median ratio, experts 1.33, engine 1.44 (2 answers). Experts higher means they f
 
 ## Compatibility: gate -> experts
 
-- high -> no: 2
+- concern -> caution: 2
 - ok -> caution: 7
 - ok -> no: 1
 
@@ -41,16 +40,16 @@ Median ratio, experts 1.33, engine 1.44 (2 answers). Experts higher means they f
 - synth-agree A04 bronzecory limit 8: water 112 %, floor 102 % (weighted 0.5)
 - synth-agree A05 neon limit 4: water 99 %, floor 101 % (weighted 0.5)
 - synth-agree A05 bronzecory limit 6: water 119 %, floor 101 % (weighted 0.5)
+- synth-agree A10 neon limit 2: water 100 %, floor 87 % (weighted 0.5)
 
 ## Left out
 
 - synth-agree v4: 22 count tanks read; 38 answers on tanks outside the count fit (no counts asked, or no space.* / golden.* tag); 0 count tanks skipped by the expert
-- synth-agree A02 overall: set aside on review (v4 change "drop": a compatibility answer, not a room band)
+- synth-agree A02 overall: set aside on review (v4 change "ratio": a group-size or sex-mix answer, not a room band)
 - synth-agree A05 neon ideal 0: outside the table (1..32)
-- synth-agree A06 overall: set aside on review (v4 change "drop": a compatibility answer, not a room band)
+- synth-agree A06 overall: set aside on review (v4 change "ratio": a group-size or sex-mix answer, not a room band)
 - synth-agree A10 overall: set aside on review (v4 change "drop": a compatibility answer, not a room band)
-- synth-agree A10 neon ideal 0: outside the table (1..91)
-- synth-agree A10 neon limit 0: outside the table (1..91)
+- synth-agree A10 neon ideal 0: outside the table (1..96)
 - synth-agree A11 overall: set aside on review (v4 change "drop": a compatibility answer, not a room band)
 - synth-agree A11 boesemani ideal 0: outside the table (1..34)
 - synth-agree A11 kuhli ideal 0: outside the table (1..57)

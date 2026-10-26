@@ -77,8 +77,18 @@ describe('survey v4 engine tables', () => {
     const base = { space: null, tankmin: [], minHead: null, crowd: [], compat: null, temp: { shared: 'broad', range: null, state: 'inside', text: '' }, herp: [], groups: [], most: {} };
     expect(verdictOf(base).verdict).toBe('ideal');
     expect(verdictOf({ ...base, compat: { level: 'concern', items: ['x'] } }).verdict).toBe('caution');
-    expect(verdictOf({ ...base, crowd: ['3 bettas: fight'], compat: { level: 'concern', items: ['x'] } })).toEqual({ verdict: 'problems', by: ['crowd: 3 bettas'] });
+    expect(verdictOf({ ...base, crowd: ['3 bettas: fight'], compat: { level: 'concern', items: ['x'] } })).toEqual({ verdict: 'problems', by: ['crowd: 3 bettas'], rest: null });
     expect(verdictOf({ ...base, compat: { level: 'high', items: ['x'] } }).verdict).toBe('unworkable');
     expect(verdictOf({ ...base, herp: [{ level: 'warn', who: 'Leopard gecko', text: '2 males: males fight' }] }).verdict).toBe('problems');
+  });
+
+  it('reads "too small" as a verdict of its own, with the rest on the 4 steps beside it (Nathan 2026-10-26)', () => {
+    const base = { space: null, tankmin: [], minHead: null, crowd: [], compat: null, temp: { shared: 'broad', range: null, state: 'inside', text: '' }, herp: [], groups: [], most: {} };
+    const red = { id: 'oscar', pct: 182, comfortPct: 182, level: 'red' as const, reason: '' };
+    expect(verdictOf({ ...base, tankmin: [red], compat: { level: 'concern', items: ['x'] } })).toEqual({ verdict: 'too-small', by: ['tankmin red: oscar'], rest: { verdict: 'caution', by: ['compat concern'] } });
+    expect(verdictOf({ ...base, herp: [{ level: 'warn', who: 'Leopard gecko', text: 'floor 1.39 sq ft; 1 animal need at least 4.5 sq ft' }] }).verdict).toBe('too-small');
+    // the app reads B01 (one oscar in a 55) too small, the rest of it ideal
+    const b01 = retableLite(sc('B01')).app;
+    expect([b01.verdict, b01.rest?.verdict]).toEqual(['too-small', 'ideal']);
   });
 });

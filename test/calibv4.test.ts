@@ -147,6 +147,16 @@ describe('survey v4 review', () => {
     // a pair the app blocks, answered one step milder
     expect(flags.find((f: any) => f.kind === 'compat' && f.key === 'A07')?.detail).toBe('app no, experts caution');
   });
+  it('reads a tank the app calls too small against "bigger tank", not the 4 steps', () => {
+    const a = JSON.parse(JSON.stringify(agree));
+    expect(T.tanks.B01.app.verdict).toBe('too-small');
+    expect(a.answers.B01.change).toBe('bigger'); // the agreeing expert asks for a bigger tank: no flag (the first test)
+    a.answers.B01 = { verdict: 'ideal', change: 'nothing', bigEnough: 'yes', smallest: a.answers.B01.smallest, confidence: 'high' };
+    const { flags } = reviewV4(J, T, [a]);
+    expect(flags.filter((f: any) => f.key === 'B01' || f.key.startsWith('B01 ')).map((f: any) => `${f.kind} ${f.dir}`).sort())
+      .toEqual(['bigEnough yes', 'change nothing', 'tooSmall experts accept the tank']);
+    expect(flags.some((f: any) => f.kind === 'verdict')).toBe(false); // too-small tanks are not in the 4-step agreement
+  });
   it('flags a minimum and a maximum the experts read differently', () => {
     const a = JSON.parse(JSON.stringify(agree));
     a.answers.A01.smallest = '20 gal long (30 x 12 x 12 in)';

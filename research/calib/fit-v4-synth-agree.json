@@ -8,17 +8,16 @@
   "pairs": 0
  },
  "solver": {
-  "it": 65,
-  "gnorm": 8.394007755479396e-7
+  "it": 63,
+  "gnorm": 0.0000026855233487863256
  },
  "skipped": [
   "synth-agree v4: 22 count tanks read; 38 answers on tanks outside the count fit (no counts asked, or no space.* / golden.* tag); 0 count tanks skipped by the expert",
-  "synth-agree A02 overall: set aside on review (v4 change \"drop\": a compatibility answer, not a room band)",
+  "synth-agree A02 overall: set aside on review (v4 change \"ratio\": a group-size or sex-mix answer, not a room band)",
   "synth-agree A05 neon ideal 0: outside the table (1..32)",
-  "synth-agree A06 overall: set aside on review (v4 change \"drop\": a compatibility answer, not a room band)",
+  "synth-agree A06 overall: set aside on review (v4 change \"ratio\": a group-size or sex-mix answer, not a room band)",
   "synth-agree A10 overall: set aside on review (v4 change \"drop\": a compatibility answer, not a room band)",
-  "synth-agree A10 neon ideal 0: outside the table (1..91)",
-  "synth-agree A10 neon limit 0: outside the table (1..91)",
+  "synth-agree A10 neon ideal 0: outside the table (1..96)",
   "synth-agree A11 overall: set aside on review (v4 change \"drop\": a compatibility answer, not a room band)",
   "synth-agree A11 boesemani ideal 0: outside the table (1..34)",
   "synth-agree A11 kuhli ideal 0: outside the table (1..57)",
@@ -34,17 +33,18 @@
   "synth-agree A04 neon ideal 2: water 73 %, floor 81 % (weighted 0.5)",
   "synth-agree A04 bronzecory limit 8: water 112 %, floor 102 % (weighted 0.5)",
   "synth-agree A05 neon limit 4: water 99 %, floor 101 % (weighted 0.5)",
-  "synth-agree A05 bronzecory limit 6: water 119 %, floor 101 % (weighted 0.5)"
+  "synth-agree A05 bronzecory limit 6: water 119 %, floor 101 % (weighted 0.5)",
+  "synth-agree A10 neon limit 2: water 100 %, floor 87 % (weighted 0.5)"
  ],
- "rows": 61,
+ "rows": 62,
  "held": 0,
- "g": 0.998,
- "f": 1.0138,
+ "g": 0.9978,
+ "f": 1.0084,
  "class": {
-  "big": 0.9806,
-  "invert": 1.001,
-  "mid": 1.031,
-  "salt": 0.9966,
+  "big": 0.981,
+  "invert": 1.0011,
+  "mid": 1.0302,
+  "salt": 0.9968,
   "tiny": 0.991
  },
  "species": {
@@ -55,43 +55,43 @@
    "answers": 2
   },
   "betta": {
-   "mult": 1.0272,
-   "own": 0.9983,
+   "mult": 1.0263,
+   "own": 0.9984,
    "cls": "mid",
    "answers": 5
   },
   "bluetang": {
-   "mult": 0.9951,
+   "mult": 0.995,
    "own": 1.0004,
    "cls": "salt",
    "answers": 2
   },
   "boesemani": {
-   "mult": 1.0278,
-   "own": 0.9988,
+   "mult": 1.0268,
+   "own": 0.9989,
    "cls": "mid",
    "answers": 2
   },
   "bristlenose": {
-   "mult": 1.0362,
-   "own": 1.0071,
+   "mult": 1.035,
+   "own": 1.0069,
    "cls": "mid",
-   "answers": 12
+   "answers": 13
   },
   "bronzecory": {
-   "mult": 1.0518,
-   "own": 1.0221,
+   "mult": 1.0496,
+   "own": 1.0211,
    "cls": "mid",
-   "answers": 15
+   "answers": 16
   },
   "cardinal": {
-   "mult": 0.9867,
-   "own": 0.9977,
+   "mult": 0.986,
+   "own": 0.9973,
    "cls": "tiny",
-   "answers": 6
+   "answers": 7
   },
   "cherrybarb": {
-   "mult": 1.0285,
+   "mult": 1.0275,
    "own": 0.9995,
    "cls": "mid",
    "answers": 2
@@ -103,8 +103,8 @@
    "answers": 8
   },
   "chili": {
-   "mult": 0.9852,
-   "own": 0.9961,
+   "mult": 0.9851,
+   "own": 0.9963,
    "cls": "tiny",
    "answers": 5
   },
@@ -121,86 +121,86 @@
    "answers": 7
   },
   "clownloach": {
-   "mult": 0.9787,
+   "mult": 0.9788,
    "own": 1,
    "cls": "big",
    "answers": 1
   },
   "coralbeauty": {
-   "mult": 0.9932,
+   "mult": 0.9931,
    "own": 0.9985,
    "cls": "salt",
    "answers": 7
   },
   "danio": {
-   "mult": 0.977,
-   "own": 0.9879,
+   "mult": 0.9769,
+   "own": 0.988,
    "cls": "tiny",
    "answers": 3
   },
   "demasoni": {
-   "mult": 0.9912,
-   "own": 1.0023,
+   "mult": 0.9911,
+   "own": 1.0024,
    "cls": "tiny",
    "answers": 2
   },
   "discus": {
-   "mult": 0.9887,
+   "mult": 0.9889,
    "own": 1.0103,
    "cls": "big",
    "answers": 7
   },
   "dwarfgourami": {
-   "mult": 1.0282,
+   "mult": 1.0272,
    "own": 0.9993,
    "cls": "mid",
    "answers": 2
   },
   "ember": {
-   "mult": 0.9876,
-   "own": 0.9987,
+   "mult": 0.9875,
+   "own": 0.9988,
    "cls": "tiny",
    "answers": 3
   },
   "goldfish": {
-   "mult": 0.975,
+   "mult": 0.9751,
    "own": 0.9962,
    "cls": "big",
    "answers": 3
   },
   "gourami": {
-   "mult": 1.029,
-   "own": 1,
+   "mult": 1.0275,
+   "own": 0.9996,
    "cls": "mid",
-   "answers": 2
+   "answers": 3
   },
   "guppy": {
-   "mult": 0.996,
-   "own": 1.0071,
+   "mult": 0.9959,
+   "own": 1.0072,
    "cls": "tiny",
    "answers": 3
   },
   "harlequin": {
-   "mult": 1.0243,
-   "own": 0.9954,
+   "mult": 1.0234,
+   "own": 0.9956,
    "cls": "mid",
    "answers": 2
   },
   "hermit": {
-   "mult": 0.9917,
+   "mult": 0.9916,
    "own": 0.997,
    "cls": "salt",
    "answers": 7
   },
   "honeygourami": {
-   "mult": 1.0243,
-   "own": 0.9955,
+   "mult": 1.0234,
+   "own": 0.9956,
    "cls": "mid",
    "answers": 3
   },
   "kuhli": {
-   "mult": 1.0257,
-   "own": 0.9968,
+   "mult": 1.025,
+   "own": 0.9971,
    "cls": "mid",
    "answers": 5
   },
@@ -211,19 +211,19 @@
    "answers": 2
   },
   "molly": {
-   "mult": 1.037,
-   "own": 1.0078,
+   "mult": 1.0361,
+   "own": 1.008,
    "cls": "mid",
    "answers": 4
   },
   "neon": {
    "mult": 0.9973,
-   "own": 1.0084,
+   "own": 1.0087,
    "cls": "tiny",
-   "answers": 16
+   "answers": 17
   },
   "nerite": {
-   "mult": 0.999,
+   "mult": 0.9989,
    "own": 1,
    "cls": "invert",
    "answers": 9
@@ -235,103 +235,103 @@
    "answers": 7
   },
   "oscar": {
-   "mult": 0.9787,
+   "mult": 0.9788,
    "own": 1,
    "cls": "big",
    "answers": 1
   },
   "oto": {
-   "mult": 0.989,
-   "own": 1,
+   "mult": 0.9885,
+   "own": 0.9998,
    "cls": "tiny",
-   "answers": 2
+   "answers": 3
   },
   "pandacory": {
-   "mult": 0.9853,
-   "own": 0.9963,
+   "mult": 0.9851,
+   "own": 0.9964,
    "cls": "tiny",
    "answers": 2
   },
   "peacock": {
-   "mult": 1.0222,
-   "own": 0.9934,
+   "mult": 1.0213,
+   "own": 0.9935,
    "cls": "mid",
    "answers": 3
   },
   "platy": {
-   "mult": 0.9925,
-   "own": 1.0036,
+   "mult": 0.9924,
+   "own": 1.0037,
    "cls": "tiny",
    "answers": 4
   },
   "pygmycory": {
-   "mult": 0.9883,
-   "own": 0.9993,
+   "mult": 0.9881,
+   "own": 0.9994,
    "cls": "tiny",
    "answers": 3
   },
   "royalgramma": {
-   "mult": 0.9935,
+   "mult": 0.9934,
    "own": 0.9988,
    "cls": "salt",
    "answers": 5
   },
   "rummynose": {
-   "mult": 0.989,
-   "own": 1,
+   "mult": 0.9884,
+   "own": 0.9996,
    "cls": "tiny",
-   "answers": 2
+   "answers": 3
   },
   "sae": {
-   "mult": 0.9775,
-   "own": 0.9988,
+   "mult": 0.9778,
+   "own": 0.9989,
    "cls": "big",
    "answers": 2
   },
   "sterbai": {
-   "mult": 1.0245,
-   "own": 0.9956,
+   "mult": 1.0235,
+   "own": 0.9957,
    "cls": "mid",
    "answers": 4
   },
   "swordtail": {
-   "mult": 1.0397,
-   "own": 1.0104,
+   "mult": 1.0388,
+   "own": 1.0106,
    "cls": "mid",
    "answers": 4
   },
   "syno": {
-   "mult": 0.9652,
-   "own": 0.9862,
+   "mult": 0.9654,
+   "own": 0.9863,
    "cls": "big",
    "answers": 3
   },
   "turbo": {
-   "mult": 0.9947,
+   "mult": 0.9946,
    "own": 1,
    "cls": "salt",
    "answers": 7
   },
   "watchman": {
-   "mult": 0.9935,
+   "mult": 0.9934,
    "own": 0.9988,
    "cls": "salt",
    "answers": 7
   },
   "whitecloud": {
-   "mult": 0.9877,
+   "mult": 0.9875,
    "own": 0.9987,
    "cls": "tiny",
    "answers": 6
   },
   "yellowlab": {
-   "mult": 1.0226,
-   "own": 0.9938,
+   "mult": 1.0218,
+   "own": 0.994,
    "cls": "mid",
    "answers": 5
   },
   "yellowtang": {
-   "mult": 0.9949,
+   "mult": 0.9948,
    "own": 1.0002,
    "cls": "salt",
    "answers": 2
@@ -344,8 +344,8 @@
  "error": {
   "heldBefore": null,
   "heldAfter": null,
-  "fitBefore": 0.032145255272496155,
-  "fitAfter": 0.030429647702752124,
+  "fitBefore": 0.031136121395537304,
+  "fitAfter": 0.029946200886538023,
   "disagreement": null
  },
  "kinds": {
@@ -372,7 +372,7 @@
   "cases": []
  },
  "compat": {
-  "high -> no": 2,
+  "concern -> caution": 2,
   "ok -> caution": 7,
   "ok -> no": 1
  },

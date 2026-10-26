@@ -28,7 +28,9 @@ export function synthV4(J, T, { expert, load = 1, milder = false }) {
     if (!t?.readable) { answers[s.id] = { skip: true, note: 'not readable by the engine' }; continue; }
     // a verdict the app reached on room alone follows the expert's own scale (the reading divided by `load`), so bands and counts agree
     const room = /^space/.test(t.app.by[0] ?? '') || (t.app.verdict === 'ideal' && t.app.space), pct = t.app.space ? t.app.space.pct / load : 0;
-    const a = { verdict: room && load !== 1 ? (pct <= J.ideal ? 'ideal' : pct <= J.limit ? 'caution' : 'problems') : t.app.verdict, confidence: 'medium' };
+    // a tank the app calls too small: the 4-step reading of its other parts (the survey has no "too small" verdict; "Bigger tank" says it)
+    const four = t.app.verdict === 'too-small' ? t.app.rest.verdict : t.app.verdict;
+    const a = { verdict: room && load !== 1 ? (pct <= J.ideal ? 'ideal' : pct <= J.limit ? 'caution' : 'problems') : four, confidence: 'medium' };
     if (s.ask.includes('change')) { const c = appChange(t, s, J); a.change = c.change; if (['fewer', 'drop'].includes(c.change) && c.sp.length) a.changeSp = c.sp; }
     if (s.ask.includes('compat')) {
       const k = Math.max(0, TOG.indexOf(appTogether(t)) - (milder ? 1 : 0));
