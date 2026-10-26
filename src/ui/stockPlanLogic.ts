@@ -6,7 +6,9 @@ import { bandMessage, bandOf, fightsOverCount, malesWarning, mostFor, mostMalesF
 import { needLine, needsOf, type NeedSeverity } from '../data/careNeeds';
 import { getSpecies, SPECIES, type Species } from '../data/species';
 import { TANK_MODELS, tankFromModel, type TankModel } from '../data/tanks';
-import { whyAnimal, whysAnimal } from '../scene/animalfit';
+import { preyRisk, whyAnimal, whysAnimal } from '../scene/animalfit';
+import { youngLengths } from '../data/growth';
+import { firstFail, lenAbout, lengthIn, span } from '../scene/outgrows';
 import { operatingCheck, rangeLine, sharedRange } from '../scene/temprange';
 import { volume } from '../scene/physics';
 import { spaceFit, tankExtent } from '../scene/space';
@@ -19,7 +21,7 @@ import type { Fish, Pairing, SpaceLimit, Tank, TankSetup, Units } from '../scene
 export type { Pairing };
 /** One species on the list. Sex and pairing are separate inputs (lane RF): species usually kept by sex (CARE.sexed) carry males in `n`,
  *  females in `f` and unsexed animals in `u`; the rest just `n`. `pair` = the pairing status (only asked where pairRule holds). */
-export interface Pk { id: string; n: number; f?: number; u?: number; pair?: Pairing }
+export interface Pk { id: string; n: number; f?: number; u?: number; pair?: Pairing; /** S228: the animals' current length, mm (the stage picked); absent = adult */ tl?: number }
 export const isSexed = (id: string) => !!CARE[id]?.sexed;
 /** The Space band a percent shows in, on the ROUNDED percent the screen prints (S214 2026-10-26: the bar coloured on the rounded
  *  value while the "past ideal" label read the raw one, so 74.6-74.99 % showed an amber "75 %" bar with no label). */
@@ -67,7 +69,9 @@ export const minOf = (id: string) => CARE[id]?.bands?.ok ?? CARE[id]?.group ?? 1
 
 /** The picks as the tank-fit engine wants them (males and females together). */
 /** The picks as counts for the tank engine; females counted apart so they are sized at the female length (unsexed at the species length). */
-export const animalsOf = (picks: Pk[]): AnimalCount[] => picks.filter(p => totalOf(p) > 0).map(p => ({ species: p.id, n: totalOf(p), ...(p.f ? { f: p.f } : {}) }));
+export const animalsOf = (picks: Pk[]): AnimalCount[] => picks.filter(p => totalOf(p) > 0).map(p => ({ species: p.id, n: totalOf(p), ...(p.f ? { f: p.f } : {}), ...(p.tl ? { tl: p.tl } : {}) }));
+/** The picks' young animals' lengths by species (S228; the prey gate reads them). */
+const lengthsOf = (picks: Pk[]) => youngLengths(picks.filter(p => p.tl).map(p => ({ species: p.id, tl: p.tl })));
 
 /** A species added at its recommended minimum; a sexed one at the smallest whole multiple of its ratio that reaches that minimum. */
 export function startPick(id: string): Pk {
@@ -167,9 +171,33 @@ export function conflictsOf(picks: Pk[], id: string): { text: string; block: boo
   if (!sp || !others.length) return [];
   const clash = others.find(o => !!o.salt !== !!sp.salt);
   const out = clash ? [{ text: `${sp.salt ? 'Salt' : 'Fresh'} water: it cannot share a tank with ${clash.name}`, block: true }] : [];
-  for (const w of whysAnimal(sp, Infinity, 3, others)) out.push({ text: w.text.replace(/^compatibility: /, ''), block: !w.concern });
+  for (const w of whysAnimal(sp, Infinity, 3, others, { tl: lengthsOf(picks) })) out.push({ text: w.text.replace(/^compatibility: /, ''), block: !w.concern });
   return out;
 }
+
+/** S228: a young pick that eats nothing on the list today but will as it grows: the first time a pair turns into "would eat it", with
+ *  the eater, the eaten and the eater's length then. Undefined when nothing changes (or it already does: today's verdict says that). */
+export interface PreyLater { months: number; eater: string; eaten: string; lengthMm: number }
+export function preyLater(picks: Pk[], id: string): PreyLater | undefined {
+  const live = picks.filter(p => totalOf(p) > 0);
+  if (!live.some(p => p.tl) || !live.some(p => p.id === id) || live.length < 2) return undefined;
+  const me = getSpecies(id); if (!me) return undefined;
+  const eats = (at: { species: string; tl?: number }[]): [Species, Species] | undefined => {
+    const tl = youngLengths(at);
+    for (const o of at) {
+      const other = getSpecies(o.species); if (!other || other.id === id) continue;
+      if (preyRisk(me, other, tl[me.id], tl[other.id]) === 'eats') return [me, other];
+      if (preyRisk(other, me, tl[other.id], tl[me.id]) === 'eats') return [other, me];
+    }
+    return undefined;
+  };
+  const xs = live.map(p => ({ species: p.id, ...(p.tl ? { tl: p.tl } : {}) }));
+  if (eats(xs)) return undefined;
+  const o = firstFail(xs, eats);
+  return o && { months: o.months, eater: o.why[0].name, eaten: o.why[1].name, lengthMm: lengthIn(o, o.why[0].id) };
+}
+export const preyLaterLine = (l: PreyLater, u: Units = 'cm') =>
+  `Fine for now: in about ${span(l.months)}, at about ${lenAbout(l.lengthMm, u === 'in' ? 'in' : 'cm')}, the ${l.eater.toLowerCase()} can eat the ${l.eaten.toLowerCase()}.`;
 /** The whole list's water temperature, two separate lines (temprange.ts): the shared range of every aquatic pick, then the setpoint,
  *  which the planner cannot know before a tank is set up (unchecked). Null with no aquatic pick. */
 export function tempLinesOf(picks: Pk[]): { range: string; rangeState: string; setpoint: string } | null {
@@ -202,7 +230,7 @@ export function rankTankmates(picks: Pk[], tank?: TankModel): Mate[] {
     if (taken.has(sp.id) || !countsAgainstWater(sp)) continue;
     const c = CARE[sp.id]; if (!c) continue;
     const salty = have.find(o => !!o.salt !== !!sp.salt);
-    const why = salty ? `${sp.salt ? 'Salt' : 'Fresh'} water: it cannot share a tank with ${salty.name}` : whyAnimal(sp, Infinity, 3, have)?.text.replace(/^compatibility: /, '') ?? '';
+    const why = salty ? `${sp.salt ? 'Salt' : 'Fresh'} water: it cannot share a tank with ${salty.name}` : whyAnimal(sp, Infinity, 3, have, { tl: lengthsOf(picks) })?.text.replace(/^compatibility: /, '') ?? '';
     let score = why ? 0 : 100;
     if (!why) {
       // fills a part of the tank the others leave empty, shares their water, easy to keep, and likes the same things
@@ -243,7 +271,12 @@ export interface Plan {
   problem?: string;
   /** a compromise worth knowing, not a block (the animals' comfortable temperatures miss, their tolerable ones meet) */
   caution?: string;
+  /** S228, young picks: the sizes that hold them today but not grown, by tank id: when and why each stops working */
+  later?: Record<string, Later>;
 }
+/** When a size that holds young animals today stops working (S228): months from now, the animal it is about and its length then,
+ *  what fails, what it needs then where a herp's floor or height says so, and the smallest size that holds them then. */
+export interface Later { months: number; who: string; lengthMm: number; fail: string; needs?: string; next?: TankModel }
 const litresOf = (m: TankModel) => volume(tankFromModel(m)).litres;
 /** The litres of the tank the plan shows: the chosen one, else the smallest that fits (0 when none). */
 export const shownLitres = (plan: Plan) => plan.tank ? plan.litres : plan.need ? litresOf(plan.need.tank) : 0;
@@ -276,12 +309,35 @@ let lastPlan: { key: string; plan: Plan } | undefined;
 function planOf(animals: AnimalCount[], chosen?: string): Plan {
   const options = tankOptions(animals);
   if (!options.length) return { litres: 0, options: [] };
-  const need = options.find(o => !o.fails.length);
+  // S228: young picks are judged at their size; the size the screen recommends stays the one that holds them grown
+  const young = animals.some(a => a.tl), grownUp = young ? tankOptions(animals.map(({ tl: _t, ...a }) => a)) : options;
+  const need = grownUp.find(o => !o.fails.length);
+  const later: Record<string, Later> = {};
+  if (young) options.forEach((o, i) => { if (!o.fails.length && grownUp[i]?.fails.length) { const l = laterOf(animals, o.tank); if (l) later[o.tank.id] = l; } });
   const fit = chosen ? options.find(o => o.tank.id === chosen) : undefined, tank = fit?.tank;
   const noTemp = options[0].fails.includes('temperature'), tv = tempVerdict(animals), why = noTemp ? rangeLine(sharedRange(animals.flatMap(a => getSpecies(a.species) ?? []))) : '';
   const caution = tv.level === 'compromise' ? `No comfortable temperature in common: they only overlap where both can live, ${tv.range![0]}-${tv.range![1]} C. Hold the water near ${tv.at} C; neither is at its best there` : undefined;
-  const bad = noTemp ? `${FAIL_TEXT.temperature}. ${why}` : fit?.fails.length ? FAIL_TEXT[fit.fails.includes('filtration') ? 'filtration' : fit.fails[0]] : !need && !chosen ? 'No tank on the list holds these; take fewer animals' : undefined;
-  return { ...(need ? { need } : {}), options, ...(tank ? { tank, fit, litres: litresOf(tank), span: buildSpan(animals, tank) } : { litres: 0 }), ...(bad ? { problem: bad } : {}), ...(caution ? { caution } : {}) };
+  // a herp's floor or height says what it needs at its size (S228), not the fish wording
+  const bad = noTemp ? `${FAIL_TEXT.temperature}. ${why}` : fit?.short && (fit.fails[0] === 'floor' || fit.fails[0] === 'height') ? `Too small at this size: it needs ${fit.short}; pick a bigger enclosure` : fit?.fails.length ? FAIL_TEXT[fit.fails.includes('filtration') ? 'filtration' : fit.fails[0]] : !need && !chosen ? 'No tank on the list holds these; take fewer animals' : undefined;
+  return { ...(need ? { need } : {}), options, ...(tank ? { tank, fit, litres: litresOf(tank), span: buildSpan(animals, tank) } : { litres: 0 }), ...(bad ? { problem: bad } : {}), ...(caution ? { caution } : {}), ...(Object.keys(later).length ? { later } : {}) };
+}
+
+/** When young animals outgrow `tank` (S228): the first month its verdict fails as they grow together, else undefined. */
+export function laterOf(animals: AnimalCount[], tank: TankModel): Later | undefined {
+  const o = firstFail(animals, at => { const f = fitIn(at, tank); return f?.fails.length ? f : undefined; });
+  if (!o) return undefined;
+  // the animal it is about: the young one with the biggest grown tank minimum (one young pick: that one)
+  const young = animals.filter(a => a.tl), big = (a: AnimalCount) => { const d = minDataOf(a.species); return d?.red ? d.red.L * (d.red.W ?? 1) : getSpecies(a.species)?.tl ?? 0; };
+  const who = young.reduce((a, b) => big(b) > big(a) ? b : a, young[0]);
+  const next = tankFor(o.at as AnimalCount[]);
+  return { months: o.months, who: getSpecies(who.species)?.name ?? who.species, lengthMm: lengthIn(o, who.species), fail: o.why.fails[0], ...(o.why.short ? { needs: o.why.short } : {}),
+    ...(next && !next.fails.length && next.tank.id !== tank.id ? { next: next.tank } : {}) };
+}
+/** The amber "fine for now" line for a size (S228): "Fine now. In about 2 months, at about 4.7 in, it needs 2.48 sq ft of floor: a 20 long." */
+export function laterLine(l: Later, u: Units = 'cm', solo = true): string {
+  const it = solo ? 'it' : `the ${l.who.toLowerCase()}`;
+  const what = l.needs ? `${it} needs ${l.needs}` : `${it} outgrows this tank (${FAIL_WORD[l.fail] ?? l.fail})`;
+  return `Fine now. In about ${span(l.months)}, at about ${lenAbout(l.lengthMm, u === 'in' ? 'in' : 'cm')}, ${what}${l.next ? `: ${tankLabel(l.next, u).replace(/^About (an? )?/, 'a ').replace(/ \([^)]*\)$/, '')}` : ''}.`;
 }
 
 export { tankLabel };

@@ -105,3 +105,62 @@ Implement (a)-(e) behind the existing checks, with herpcheck's loop moved into t
 reads "fine for now" with its months, and the adult reads too small; a 2 in oscar in a 55 with neons flips the prey gate at a stated
 length. Then the full suite, `npm run build`, the calib retables if any engine number moves, planner screenshots, and a commit on
 `outgrows`. Nothing is pushed.
+
+## 5. Nathan's answers and what was built (2026-10-26, branch `s228`)
+
+Nathan approved the design and the recommendation on each question: Q1 terrarium sizes in the planner, Q2 size buttons for fish 100 mm or
+longer as adults, Q3 linear scaling, Q4 amber with a clock and the months, and (g) the survey module.
+
+**Growth model** (`src/data/growth.ts`): herps use their `grow` curve. Fish use von Bertalanffy with Linf = the app's adult length, and
+the curve starts at min(8 mm, 10 % of Linf). K comes from FishBase where a growth table exists; a subagent checked all 28 fish with a size
+picker (`research/outgrows/fishbase-growth.json`). Only 4 have usable rows, all from wild fish: goldfish and comet (K 0.22), kuhli (0.37)
+and yellow tang (0.16); the one chromis row is flagged questionable. Every other fish, the oscar included, uses a class default marked est:
+K 3 per year under 60 mm, 2 under 150 mm, 1.5 above. That puts an oscar at about 9 in after a year; keepers quote 10 to 12 in.
+An animal at 85 % of its adult length or more counts as adult (`ADULT_SHARE`). The editor scatters animals about 3 % either side of
+adult, so ordinary adults never move.
+
+**Checks at the current size:**
+- tank minimum: every line scales with the length share (`scaleMin`), and the reason names it ("Seriously Fish's adult line, scaled to
+  its length");
+- the prey gate: the predator's mouth is its length share of the adult's, and the prey is judged at its own length (`preyRisk(pred, prey,
+  predTl, preyTl)`, `AnimalEnv.tl`);
+- herp floor and height: by stage, as before, now through `herpRooms`;
+- space: already length-based.
+
+**Stepping** (`src/scene/outgrows.ts`, `firstFail`): growing only asks more of a tank, so the search halves its way through a grid
+(monthly for 2 years, quarterly to 5, then yearly), then halves within the failing month. herpcheck's "should last" loop now uses it;
+its tests and the v4 calibration tables are unchanged.
+
+**Planner:**
+- Each herp and each fish of 100 mm or longer gets "Size now" buttons (hatchling / juvenile / sub-adult / adult; adult is the default).
+- Land animals get a tank list, judged dry by herp floor and height: the generic sizes plus the catalogue terrariums. A land plan prices
+  no aquarium build.
+- A size that holds the animals now but not grown shows amber "⏱ for now, about N months".
+- The recommended size is still the one that holds them grown.
+- The chosen tank's verdict names whatever fails first, the tank or a tankmate eaten.
+
+**Editor:** Animal checks gains a growth line for young fish (`scene/growcheck.ts`).
+
+Readings, all from the tests in `test/outgrows.test.ts`:
+- Hatchling leopard gecko, 10 gal: "Fine now. In about 2 months, at about 4.7 in, it needs 2.48 sq ft (0.23 m²) of floor: a 20 gal
+  long." In a 20 long, the same gecko lasts about 11 months, to 7.1 in. An adult reads "Too small at this size: it needs 4.5 sq ft".
+- Oscar sold at 1.8 in, in a 55 with 8 neons: "Fine for now: in about 3 months, at about 4.5 in, the oscar can eat the neon tetra."
+  The tank itself lasts about 6 months, to 7.1 in, when the 13 in depth falls short of the scaled 60 cm width line.
+
+![after: hatchling gecko, 10 gal](outgrows/after-gecko-hatchling-10gal.png) ![after: adult gecko, 10 gal](outgrows/after-gecko-adult-10gal.png)
+![after: oscar and neons, 55](outgrows/after-oscar-hatchling-55-neons.png) ![after: editor, young oscar](outgrows/after-editor-oscar-55.png)
+
+**Moved numbers** (`scripts/moved-numbers.mjs`, `research/outgrows/moved-numbers-s228.txt`):
+- starters: 0 of 1620;
+- example scenes: 0 of 11;
+- sumps: 0;
+- tankFor, steps and builds: only the 9 land herps (they had no size before, now they do) and 50 fire toads (depth, now also floor).
+
+**Survey module E** (`research/calib/v4/module-e-draft.json`): 10 tanks with a new `until` question ("until about what length is this tank
+OK?"). It is a draft, not in scenarios-v4.json. Adding it changes build cba9d609 and the synthetic answers tied to it, and the scenario
+`tl` it relies on lives in the calib-v4-notes branch, which isn't merged yet. The calibration lane adds it after that branch lands.
+
+**Open:**
+- The 24 fish on the class default deserve keeper-anchored K values, which module E's answers can fit.
+- A pick's females are scaled at the same share of their own adult length.
+- The fork card and the tankmate ranking read young picks' lengths for the prey gate, but not their growth.

@@ -40,6 +40,13 @@ export interface Needs {
   salt: boolean;
 }
 
+/** Animals with a herp rule (data/herpstock.ts): their floor and height by stage are part of the fit (S228). */
+/** Animals the tank list can judge: some in the water, or land animals with a herp rule. */
+const kept = (animals: AnimalCount[]) => wet(animals).length > 0 || landOnly(animals);
+const herps = (animals: AnimalCount[]) => animals.filter(a => { const sp = getSpecies(a.species); return sp && a.n > 0 && HERP[sp.sci]; });
+/** Land animals only (no animal in the water, a herp among them): judged in a dry enclosure (S228: the planner lists sizes for them). */
+export const landOnly = (animals: AnimalCount[]) => !wet(animals).length && herps(animals).length > 0;
+
 function wet(animals: AnimalCount[]) {
   return animals.flatMap(a => { const sp = getSpecies(a.species); return sp && a.n > 0 && countsAgainstWater(sp) ? [{ sp, n: a.n, tl: a.tl ?? sp.tl }] : []; });
 }
@@ -71,7 +78,7 @@ export function landNeed(animals: AnimalCount[]): { floorSqFt: number; hMin: num
 const POOL_DEPTH = 0.5;
 /** The share of the floor left for the pool once the land has its minimum (at least 2 %: a tank with no room left reads as over-full, never as an error). */
 const poolShare = (T: TankSetup['tank'], animals: AnimalCount[]) => Math.max(0.02, 1 - landNeed(animals).floorSqFt / (footprint(T).area / SQFT_MM2));
-const dry = (animals: AnimalCount[]) => animals.flatMap(a => { const sp = getSpecies(a.species); return sp && a.n > 0 && sp.habitat === 'land' ? [{ sp, n: a.n }] : []; });
+const dry = (animals: AnimalCount[]) => animals.flatMap(a => { const sp = getSpecies(a.species); return sp && a.n > 0 && sp.habitat === 'land' ? [{ sp, n: a.n, tl: a.tl }] : []; });
 
 export function needsOf(animals: AnimalCount[]): Needs {
   let minLengthMm = 0, maxDepthMm = Infinity, salt = false;
@@ -127,14 +134,16 @@ export function withDryGear(S: TankSetup, animals: AnimalCount[], build: DryBuil
 
 /** The bare tank with the animals in it and the build's gear: what stockingOf and the demand model are asked about. */
 function setupFor(c: Candidate, animals: AnimalCount[], build: BuildKind): TankSetup {
-  const S = bareSetup(), salt = needsOf(animals).salt;
+  const S = bareSetup(), salt = needsOf(animals).salt, land = landOnly(animals);
   S.tank = c.T;
   S.water.on = true; S.water.level = WATER_LEVEL; S.water.salt = salt;
   if (isMixed(animals)) setPool(S, animals);
   let id = 1;
-  // females at their own adult length (a molly female is 96 mm to the male's 85): the tank list then reads what the tile reads
-  S.fish = animals.flatMap(a => { const fem = getSpecies(a.species)?.female; return Array.from({ length: Math.max(0, a.n) }, (_, i): Fish => ({ id: id++, species: a.species, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0,
-    ...(fem && i < (a.f ?? 0) ? { sex: 'f' as const, tl: fem.tl } : a.tl ? { tl: a.tl } : {}) })); });
+  // females at their own adult length (a molly female is 96 mm to the male's 85): the tank list then reads what the tile reads;
+  // a young pick (S228 `tl`) at that length, its females at the same share of theirs
+  S.fish = animals.flatMap(a => { const sp = getSpecies(a.species), fem = sp?.female; return Array.from({ length: Math.max(0, a.n) }, (_, i): Fish => ({ id: id++, species: a.species, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0,
+    ...(fem && i < (a.f ?? 0) ? { sex: 'f' as const, tl: a.tl && sp ? Math.round(fem.tl * a.tl / sp.tl) : fem.tl } : a.tl ? { tl: a.tl } : {}) })); });
+  if (land) return S; // a dry enclosure: no filter or heater to choose
   const preset = BASE_PRESET[salt ? 'salt' : 'fresh'];
   if (PRESETS.some(p => p.id === preset)) S.tech = applyPreset(S, preset);
   S.light = { ...S.light, type: 'led', tech: 'led-white', count: 1, watts: undefined };
@@ -181,6 +190,8 @@ export interface Fit {
   minPct: number;
   /** workable but cramped for some species (comfortable size over the tank) */
   cramped: boolean;
+  /** S228: what a herp lacks here at its stage, in words ("2.48 sq ft of floor"), when its floor or height fails */
+  short?: string;
   /** why a tank is out, empty when it fits */
   fails: ('space' | 'minimum' | 'length' | 'depth' | 'floor' | 'filtration' | 'height' | 'temperature')[];
 }
@@ -195,16 +206,20 @@ export function dryFit(T: TankSetup['tank'], animals: AnimalCount[]): Fit {
   const S = bareSetup(); S.tank = T; S.water.on = false;
   const g = geometryOf(S), raw = footprint(T).area / SQFT_MM2, area = raw * 1.05, height = T.H / 25.4 + 1, fails: Fit['fails'] = [];
   let minPct = 0, comfort = 0, need = 0, want = 0;
-  for (const { sp, n } of dry(animals)) {
-    const r = speciesMinimum(sp, g), rule = HERP[sp.sci];
+  let short: string | undefined;
+  for (const { sp, n, tl } of dry(animals)) {
+    const r = speciesMinimum(sp, g, tl), rule = HERP[sp.sci];
     minPct = Math.max(minPct, r.pct); comfort = Math.max(comfort, r.comfortPct);
     if (!rule) continue;
-    const [mn, rc] = floorFor(rule, n); need += mn; want += rc;
-    if (rule.hMin && height < rule.hMin && !fails.includes('height')) fails.push('height');
+    // S228: a young animal needs its stage's floor and height (the same stage table herpcheck reads)
+    const st = rule.stages.find(x => (tl ?? sp.tl) <= x.to) ?? rule.stages[rule.stages.length - 1], grown = st === rule.stages[rule.stages.length - 1], hNeed = st.h ?? (grown ? rule.hMin : undefined);
+    const [mn, rc] = floorFor(rule, n); need += mn * st.k; want += rc * st.k;
+    if (hNeed && height < hNeed && !fails.includes('height')) fails.push('height');
+    short ??= area < mn * st.k ? `${+(mn * st.k).toFixed(2)} sq ft (${(mn * st.k * 0.0929).toFixed(2)} m²) of floor` : hNeed && height < hNeed ? `${hNeed} in of height` : undefined;
   }
   if (minPct > MIN_SLACK_PCT) fails.unshift('minimum');
   if (area < need) fails.push('floor');
-  return { spacePct: need ? 100 * need / raw : 0, filtrationPct: 0, minPct, cramped: comfort > 100 || area < want, fails };
+  return { spacePct: need ? 100 * need / raw : 0, filtrationPct: 0, minPct, cramped: comfort > 100 || area < want, fails, ...(short ? { short } : {}) };
 }
 
 function fitOf(c: Candidate, animals: AnimalCount[]): Fit {

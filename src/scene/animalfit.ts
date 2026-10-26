@@ -4,6 +4,7 @@
 // blocks adding it. Temperature is judged on the whole stocking (temprange.ts), not pair by pair (2026-10-22).
 import { CARE, EXPERTISE_NAME, SHRIMP, type Expertise } from '../data/care';
 import type { Species } from '../data/species';
+import { shareOf } from '../data/growth';
 import { fmtC, operatingCheck, sharedRange, type TempEvidence } from './temprange';
 
 /** A species' smallest tank is allowed 10 % slack (a 5 gal, 19 L, takes a 20 L species); shared by the animal gate, the tank-fit engine and the hard truths. */
@@ -24,15 +25,17 @@ const band = (r: [number, number], d = 0) => `${r[0].toFixed(d)}-${r[1].toFixed(
 /** the shared part of two ranges, as a band */
 const both = (a: [number, number], b: [number, number], d = 0) => band([Math.max(a[0], b[0]), Math.min(a[1], b[1])], d);
 /** The tank around the animal: `corals`: any coral in it (not macroalgae or the anemone). */
-export interface AnimalEnv { /** the tank's own answer (tankMin.ts minFit): size is judged by floor area, length and water, not litres alone; absent = litres only */ fit?: (sp: Species) => { pct: number; reason: string }; corals?: boolean; /** this tank's water temperature inputs (tech.ts tempEvidence): its target, or with no heater the room it follows */ water?: TempEvidence }
+export interface AnimalEnv { /** S228: the animals' current lengths by species id (mm; absent = adult): the prey gate reads them */ tl?: Record<string, number>; /** the tank's own answer (tankMin.ts minFit): size is judged by floor area, length and water, not litres alone; absent = litres only */ fit?: (sp: Species) => { pct: number; reason: string }; corals?: boolean; /** this tank's water temperature inputs (tech.ts tempEvidence): its target, or with no heater the room it follows */ water?: TempEvidence }
 
 /** Predation between two animals that share space (lane IP 2026-10-22): 'eats' when `pred` takes `prey`, 'young' when only its young
  *  and small ones are at risk (prey.young: keep large adults). Reads lengths and kinds only, never temperature, so a band edit that
  *  lets the pair share water cannot hide it. prey.inverts 'shrimp' targets shrimp; without it snails in range are prey too. */
-export function preyRisk(pred: Species, prey: Species): 'eats' | 'young' | null {
+export function preyRisk(pred: Species, prey: Species, predTl?: number, preyTl?: number): 'eats' | 'young' | null {
   const p = CARE[pred.id]?.prey;
   if (!p || pred.id === prey.id || (p.cats && !p.cats.includes(prey.cat)) || (p.inverts === 'shrimp' && prey.cat.endsWith('-invert') && !SHRIMP.has(prey.id))) return null;
-  return p.mm >= prey.tl ? 'eats' : p.young && p.young >= prey.tl ? 'young' : null;
+  // S228: a young predator's mouth is its length share of the adult's (a 2 in oscar takes no neon); a young prey animal is its own length
+  const k = shareOf(predTl, pred.tl), tl = preyTl !== undefined && shareOf(preyTl, prey.tl) < 1 ? preyTl : prey.tl;
+  return p.mm * k >= tl ? 'eats' : p.young && p.young * k >= tl ? 'young' : null;
 }
 
 /** `litres`: the tank's volume; `present`: the species already stocked (one entry per species). The main blocking reason, or null. */
@@ -63,7 +66,7 @@ export function whysAnimal(sp: Species, litres: number, expertise: Expertise, pr
       if (dry(sp) || dry(o)) bad(dry(sp) ? 'needs a dry enclosure, this one lives in the water' : 'lives in the water, it needs a dry enclosure');
       continue;
     }
-    const eats = preyRisk(sp, o), eaten = preyRisk(o, sp);   // lane IP: blocking when it takes the adults, a concern when only the young
+    const at = (x: Species) => env.tl?.[x.id], eats = preyRisk(sp, o, at(sp), at(o)), eaten = preyRisk(o, sp, at(o), at(sp));   // lane IP: blocking when it takes the adults, a concern when only the young
     if (eats === 'eats') bad('would eat it');
     if (eaten === 'eats') bad('it would eat this one');
     if (eats === 'young') bad('may eat its small ones: only consider large adults; smaller ones remain at risk', true);

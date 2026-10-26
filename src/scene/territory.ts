@@ -3,6 +3,7 @@
 import { CARE } from '../data/care';
 import { fightsOverCount, malesWarning, mostFor, mostMalesFor, pairRule } from '../data/groups';
 import { getSpecies } from '../data/species';
+import { youngLengths } from '../data/growth';
 import { volume } from './physics';
 import { countsAgainstWater, plural } from './stocking';
 import { pairingIn } from './pairs';
@@ -39,10 +40,10 @@ export function crowdWarnings(S: TankSetup): string[] {
  *  `guard`) is a concern. Null when nothing applies. Temperature, size and expertise are said elsewhere. */
 export function compatRisks(S: TankSetup): { level: 'high' | 'concern'; items: string[] } | null {
   const ids = [...new Set(S.fish.map(f => f.species))], sp = ids.flatMap(id => { const s = getSpecies(id); return s && s.habitat !== 'land' ? [s] : []; });
-  const block: string[] = [], concern: string[] = [];
+  const block: string[] = [], concern: string[] = [], tl = youngLengths(S.fish); // S228: young animals by their own length (the prey gate)
   for (const s of sp) for (const o of sp) {
     if (o === s) continue;
-    const ws = whysAnimal(s, Infinity, 3, [o]), blocked = ws.some(w => !w.concern && !w.temp);
+    const ws = whysAnimal(s, Infinity, 3, [o], { tl }), blocked = ws.some(w => !w.concern && !w.temp);
     for (const w of ws) {
       if (w.concern && blocked) continue; // a blocked pair is said by its blocker alone
       const t = w.text.replace(/^compatibility: /, '');

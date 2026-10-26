@@ -1,0 +1,313 @@
+{
+ "boesemani": {
+  "sci": "Melanotaenia boesemani",
+  "specCode": 10489,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=10489&GenusName=Melanotaenia&SpeciesName=boesemani&fc=1",
+  "rows": [],
+  "note": "FishBase: system found no growth information for the requested species"
+ },
+ "swordtail": {
+  "sci": "Xiphophorus hellerii",
+  "specCode": 3231,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=3231&GenusName=Xiphophorus&SpeciesName=hellerii&fc=1",
+  "rows": [],
+  "note": "FishBase: system found no growth information for the requested species"
+ },
+ "gourami": {
+  "sci": "Trichopodus leerii",
+  "specCode": 4674,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=4674&GenusName=Trichopodus&SpeciesName=leerii&fc=1",
+  "rows": [],
+  "note": "FishBase: system found no growth information for the requested species"
+ },
+ "kribensis": {
+  "sci": "Pelvicachromis pulcher",
+  "specCode": 7778,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=7778&GenusName=Pelvicachromis&SpeciesName=pulcher&fc=1",
+  "rows": [],
+  "note": "FishBase: system found no growth information for the requested species"
+ },
+ "yellowlab": {
+  "sci": "Labidochromis caeruleus",
+  "specCode": 2327,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=2327&GenusName=Labidochromis&SpeciesName=caeruleus&fc=1",
+  "rows": [],
+  "note": "FishBase: system found no growth information for the requested species"
+ },
+ "peacock": {
+  "sci": "Aulonocara stuartgranti",
+  "specCode": 2190,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=2190&GenusName=Aulonocara&SpeciesName=stuartgranti&fc=1",
+  "rows": [],
+  "note": "FishBase: system found no growth information for the requested species"
+ },
+ "kadango": {
+  "sci": "Copadichromis borleyi",
+  "specCode": 2312,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=2312&GenusName=Copadichromis&SpeciesName=borleyi&fc=1",
+  "rows": [],
+  "note": "FishBase: system found no growth information for the requested species"
+ },
+ "labeo": {
+  "sci": "Labeotropheus trewavasae",
+  "specCode": 2326,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=2326&GenusName=Labeotropheus&SpeciesName=trewavasae&fc=1",
+  "rows": [],
+  "note": "FishBase: system found no growth information for the requested species"
+ },
+ "auratus": {
+  "sci": "Melanochromis auratus",
+  "specCode": 2343,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=2343&GenusName=Melanochromis&SpeciesName=auratus&fc=1",
+  "rows": [],
+  "note": "FishBase: system found no growth information for the requested species"
+ },
+ "livingstonii": {
+  "sci": "Nimbochromis livingstonii",
+  "specCode": 2274,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=2274&GenusName=Nimbochromis&SpeciesName=livingstonii&fc=1",
+  "rows": [],
+  "note": "FishBase: system found no growth information for the requested species"
+ },
+ "afra": {
+  "sci": "Cynotilapia afra",
+  "specCode": 2323,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=2323&GenusName=Cynotilapia&SpeciesName=afra&fc=1",
+  "rows": [],
+  "note": "FishBase: system found no growth information for the requested species"
+ },
+ "syno": {
+  "sci": "Synodontis njassae",
+  "specCode": 5384,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=5384&GenusName=Synodontis&SpeciesName=njassae&fc=1",
+  "rows": [],
+  "note": "FishBase: system found no growth information for the requested species"
+ },
+ "angel": {
+  "sci": "Pterophyllum scalare",
+  "specCode": 4717,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=4717&GenusName=Pterophyllum&SpeciesName=scalare&fc=1",
+  "rows": [],
+  "note": "FishBase: system found no growth information for the requested species"
+ },
+ "discus": {
+  "sci": "Symphysodon aequifasciatus",
+  "specCode": 11185,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=11185&GenusName=Symphysodon&SpeciesName=aequifasciatus&fc=1",
+  "rows": [],
+  "note": "FishBase: system found no growth information for the requested species"
+ },
+ "oscar": {
+  "sci": "Astronotus ocellatus",
+  "specCode": 3612,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=3612&GenusName=Astronotus&SpeciesName=ocellatus&fc=1",
+  "rows": [],
+  "note": "FishBase: system found no growth information for the requested species"
+ },
+ "goldfish": {
+  "sci": "Carassius auratus",
+  "specCode": 271,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=271&GenusName=Carassius&SpeciesName=auratus&fc=1",
+  "rows": [
+   {
+    "LooCm": 25.8,
+    "type": "SL",
+    "K": 0.165,
+    "t0": null,
+    "sex": "",
+    "M": 0.26,
+    "tempC": 22.4,
+    "where": "China, Dongjiang River, Guangdon",
+    "flags": "questionable=No; captive=No"
+   },
+   {
+    "LooCm": 28.9,
+    "type": "TL",
+    "K": 0.284,
+    "t0": null,
+    "sex": "",
+    "M": null,
+    "tempC": null,
+    "where": "Russia, Amur River",
+    "flags": "questionable=No; captive=No"
+   }
+  ],
+  "note": ""
+ },
+ "comet": {
+  "sci": "Carassius auratus",
+  "specCode": 271,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=271&GenusName=Carassius&SpeciesName=auratus&fc=1",
+  "rows": [
+   {
+    "LooCm": 25.8,
+    "type": "SL",
+    "K": 0.165,
+    "t0": null,
+    "sex": "",
+    "M": 0.26,
+    "tempC": 22.4,
+    "where": "China, Dongjiang River, Guangdon",
+    "flags": "questionable=No; captive=No"
+   },
+   {
+    "LooCm": 28.9,
+    "type": "TL",
+    "K": 0.284,
+    "t0": null,
+    "sex": "",
+    "M": null,
+    "tempC": null,
+    "where": "Russia, Amur River",
+    "flags": "questionable=No; captive=No"
+   }
+  ],
+  "note": "same species as goldfish (Carassius auratus)"
+ },
+ "kuhli": {
+  "sci": "Pangio kuhlii",
+  "specCode": 12276,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=12276&GenusName=Pangio&SpeciesName=kuhlii&fc=1",
+  "rows": [
+   {
+    "LooCm": 6.7,
+    "type": "SL",
+    "K": 0.368,
+    "t0": null,
+    "sex": "",
+    "M": null,
+    "tempC": 29.0,
+    "where": "Malaysia, Kejin River, Sarawak",
+    "flags": "questionable=No; captive=No"
+   }
+  ],
+  "note": ""
+ },
+ "clownloach": {
+  "sci": "Chromobotia macracanthus",
+  "specCode": 10897,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=10897&GenusName=Chromobotia&SpeciesName=macracanthus&fc=1",
+  "rows": [],
+  "note": "FishBase: system found no growth information for the requested species"
+ },
+ "sae": {
+  "sci": "Crossocheilus oblongus",
+  "specCode": 12063,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=12063&GenusName=Crossocheilus&SpeciesName=oblongus&fc=1",
+  "rows": [],
+  "note": "FishBase: system found no growth information for the requested species"
+ },
+ "ocellaris": {
+  "sci": "Amphiprion ocellaris",
+  "specCode": 6509,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=6509&GenusName=Amphiprion&SpeciesName=ocellaris&fc=1",
+  "rows": [],
+  "note": "FishBase: system found no growth information for the requested species"
+ },
+ "yellowtang": {
+  "sci": "Zebrasoma flavescens",
+  "specCode": 6018,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=6018&GenusName=Zebrasoma&SpeciesName=flavescens&fc=1",
+  "rows": [
+   {
+    "LooCm": 15.6,
+    "type": "TL",
+    "K": 0.3,
+    "t0": -1.2,
+    "sex": "F",
+    "M": null,
+    "tempC": null,
+    "where": "Hawaii, West Hawaii coast",
+    "flags": "questionable=No; captive=No"
+   },
+   {
+    "LooCm": 17.9,
+    "type": "TL",
+    "K": 0.25,
+    "t0": -1.2,
+    "sex": "M",
+    "M": null,
+    "tempC": null,
+    "where": "Hawaii, West Hawaii coast",
+    "flags": "questionable=No; captive=No"
+   },
+   {
+    "LooCm": 19.4,
+    "type": "TL",
+    "K": 0.073,
+    "t0": null,
+    "sex": "F",
+    "M": 0.1,
+    "tempC": null,
+    "where": "Hawaii, West Hawaii coast , 2003-2007",
+    "flags": "questionable=No; captive=No"
+   },
+   {
+    "LooCm": 21.0,
+    "type": "TL",
+    "K": 0.075,
+    "t0": null,
+    "sex": "M",
+    "M": 0.11,
+    "tempC": null,
+    "where": "Hawaii, West Hawaii coast , 2003-2007",
+    "flags": "questionable=No; captive=No"
+   }
+  ],
+  "note": ""
+ },
+ "bluetang": {
+  "sci": "Paracanthurus hepatus",
+  "specCode": 6017,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=6017&GenusName=Paracanthurus&SpeciesName=hepatus&fc=1",
+  "rows": [],
+  "note": "FishBase: system found no growth information for the requested species"
+ },
+ "sixline": {
+  "sci": "Pseudocheilinus hexataenia",
+  "specCode": 5617,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=5617&GenusName=Pseudocheilinus&SpeciesName=hexataenia&fc=1",
+  "rows": [],
+  "note": "FishBase: system found no growth information for the requested species"
+ },
+ "chromis": {
+  "sci": "Chromis viridis",
+  "specCode": 5679,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=5679&GenusName=Chromis&SpeciesName=viridis&fc=1",
+  "rows": [
+   {
+    "LooCm": 11.5,
+    "type": "TL",
+    "K": 2.3,
+    "t0": null,
+    "sex": "",
+    "M": null,
+    "tempC": 27.0,
+    "where": "India, Lakshadweep lagoons",
+    "flags": "questionable=Yes; captive=No"
+   }
+  ],
+  "note": ""
+ },
+ "coralbeauty": {
+  "sci": "Centropyge bispinosa",
+  "specCode": 5458,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=5458&GenusName=Centropyge&SpeciesName=bispinosa&fc=1",
+  "rows": [],
+  "note": "FishBase: system found no growth information for the requested species"
+ },
+ "watchman": {
+  "sci": "Cryptocentrus cinctus",
+  "specCode": 7208,
+  "url": "https://www.fishbase.se/PopDyn/PopGrowthList.php?ID=7208&GenusName=Cryptocentrus&SpeciesName=cinctus&fc=1",
+  "rows": [],
+  "note": "FishBase: system found no growth information for the requested species"
+ },
+ "bristlenose": {
+  "sci": "Ancistrus sp.",
+  "specCode": null,
+  "url": null,
+  "rows": [],
+  "note": "genus only, skipped"
+ }
+}

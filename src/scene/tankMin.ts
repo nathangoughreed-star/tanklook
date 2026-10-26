@@ -8,6 +8,7 @@
 // Percent = what the tank would have to be / what it is, so 100 = exactly the line and over 100 = short of it, like the other bars.
 import TM from '../data/tankmin.json';
 import { getSpecies, type Species } from '../data/species';
+import { shareOf, youngLengths } from '../data/growth';
 import { bioloadLitres } from './starter';
 import { careOf, zoneOf } from './zone';
 import { tankExtent } from './space';
@@ -166,12 +167,23 @@ export interface TankMinimum {
   lengthShort: boolean; tooDeep: boolean; depthMm: number; maxDepthMm: number;
 }
 
+/** A juvenile's lines (S228, Nathan 2026-10-26): every measure a line states (length, width, floor area, height, the gallon figure)
+ *  scales with its length share `k`, linearly, the way the herp stages scale the floor. `k` 1 = the lines as decided. */
+export function scaleMin(d: MinData | undefined, k: number): MinData | undefined {
+  if (!d || k >= 1) return d;
+  // the page stated the adult's line; the scaled one is ours, and says so where it is named ("Seriously Fish's adult line, scaled to its length")
+  const at = (site: string) => `${site}'s adult line, scaled to its length`;
+  const l = (x?: MinLine) => x && { ...x, site: at(x.site), L: x.L * k, ...(x.W ? { W: x.W * k } : {}), ...(x.areaCm2 ? { areaCm2: x.areaCm2 * k } : {}) };
+  const h = (x?: HeightLine) => x && { ...x, site: at(x.site), H: x.H * k };
+  return { ...d, red: l(d.red), green: l(d.green), hRed: h(d.hRed), hGreen: h(d.hGreen), ...(d.vol ? { vol: { ...d.vol, gal: d.vol.gal * k } } : {}) };
+}
+
 /** One species against a tank (the same answer the Fullness tile, the tank-fit engine, the animal gate and the hard truths all use). */
-export function speciesMinimum(sp: Species, g: Geometry): MinRow {
-  const w = whoOf(sp), d = minDataOf(sp.id), r = measureLines(w, d, g);
+export function speciesMinimum(sp: Species, g: Geometry, tl?: number): MinRow {
+  const k = shareOf(tl, sp.tl), w = whoOf(sp), d = scaleMin(minDataOf(sp.id), k), r = measureLines(w, d, g);
   // S245 (Nathan 2026-10-26): no animal in the water is exempt from a minimum. With no red line the care table's minimum volume (CARE.minL,
   // sourced per species in provenance.ts) is the line, held in litres against the tank's full volume with the same 10 % slack.
-  const minL = !d?.red && countsAgainstWater(sp) ? careOf(sp.id)?.minL ?? 0 : 0;
+  const minL = !d?.red && countsAgainstWater(sp) ? (careOf(sp.id)?.minL ?? 0) * Math.min(1, k) : 0; // S228: a juvenile's line scales with its length share, like the others
   if (minL > 0) { const have = g.tankLitres ?? g.litres; r.red = { pct: 100 * (have > 0 ? minL / have : Infinity), limiting: 'water', need: minL, have, mark: 'advisory', site: MINL_SITE, states: `${minL} L` }; }
   // lane U5 (Nathan 2026-10-28): for a species marked `volGate` the gallon figure is a gate too, so a short tank is not saved by a length that suits a 12 in cube (betta: 5 gal floor)
   const vd = d as unknown as { volGate?: string; vol?: { gal: number; site: string } } | undefined;
@@ -188,13 +200,14 @@ export function speciesMinimum(sp: Species, g: Geometry): MinRow {
 }
 
 export function tankMinimum(S: TankSetup): TankMinimum {
-  const g = geometryOf(S), by = new Map<string, MinRow>();
+  // each species is judged at its largest animal's length (S228: a juvenile by its own; an adult-sized one as decided)
+  const g = geometryOf(S), by = new Map<string, MinRow>(), young = youngLengths(S.fish);
   for (const fi of S.fish) {
     const sp = getSpecies(fi.species);
     if (!sp || !countsAgainstWater(sp)) continue;
     const have = by.get(sp.id);
     if (have) { have.n++; continue; }
-    by.set(sp.id, speciesMinimum(sp, g));
+    by.set(sp.id, speciesMinimum(sp, g, young[sp.id]));
   }
   const rows = [...by.values()].sort((a, b) => b.pct - a.pct);
   const depthMm = depthOf(g), maxDepthMm = Math.min(Infinity, ...rows.map(r => r.maxDepthMm));
