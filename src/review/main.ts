@@ -183,8 +183,8 @@ for (const [cat, label] of [...CATEGORIES, ['gear', 'Tech gear'], ['fake', 'Arti
 }
 
 // ?only=gear-: Record touches only the looks starting with it (one lane's models, while other lanes' changes wait)
-const ONLY = new URLSearchParams(location.search).get('only') ?? '';
-const changed = () => LOOKS.filter(s => { const h = hashes.get(s.look); return h && RECORDED[s.look]?.hash !== h && s.look.startsWith(ONLY); });
+const ONLY = (new URLSearchParams(location.search).get('only') ?? '').split(','); // comma-separated prefixes (S238)
+const changed = () => LOOKS.filter(s => { const h = hashes.get(s.look); return h && RECORDED[s.look]?.hash !== h && ONLY.some(o => s.look.startsWith(o)); });
 function applyFilter() {
   const q = ($('filter') as HTMLInputElement).value.trim().toLowerCase();
   const onlyFlag = ($('onlyFlag') as HTMLInputElement).checked, onlyChanged = ($('onlyChanged') as HTMLInputElement).checked;

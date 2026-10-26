@@ -6436,6 +6436,410 @@
     "heightGreen": null,
     "depth": null
    }
+  },
+  "greenneon": {
+   "batch": "S238",
+   "sci": "Paracheirodon simulans",
+   "measures": {
+    "footprint": {
+     "value": [
+      450,
+      300
+     ],
+     "unit": "mm",
+     "kind": "min",
+     "url": "https://www.seriouslyfish.com/species/paracheirodon-simulans/",
+     "site": "Seriously Fish",
+     "quote": "An aquarium with base dimensions of 45 ∗ 30 cm18 ∗ 12 in or larger is recommended",
+     "conditions": "group 8-10; adult",
+     "mark": "sourced",
+     "single": true,
+     "check": "exact",
+     "credibility": "high",
+     "spread": 0,
+     "n": 1
+    }
+   },
+   "conflict": null,
+   "checked": 1,
+   "lines": {
+    "red": {
+     "L": 450,
+     "W": 300,
+     "mark": "sourced",
+     "site": "Seriously Fish",
+     "url": "https://www.seriouslyfish.com/species/paracheirodon-simulans/",
+     "states": "45 ∗ 30 cm",
+     "quote": "An aquarium with base dimensions of 45 ∗ 30 cm18 ∗ 12 in or larger is recommended",
+     "from": "footprint"
+    },
+    "green": null,
+    "why": "one geometry page: it or the gallon figure's tank, whichever is lower",
+    "heightRed": null,
+    "heightGreen": null,
+    "depth": null
+   }
+  },
+  "merah": {
+   "batch": "S238",
+   "sci": "Boraras merah",
+   "measures": {
+    "footprint": {
+     "value": [
+      450,
+      300
+     ],
+     "unit": "mm",
+     "kind": "min",
+     "url": "https://www.seriouslyfish.com/species/boraras-merah/",
+     "site": "Seriously Fish",
+     "quote": "base of 45 × 30 cm",
+     "conditions": "group 8-10; adult",
+     "mark": "sourced",
+     "single": true,
+     "check": "exact",
+     "credibility": "high",
+     "spread": 0,
+     "n": 1
+    }
+   },
+   "conflict": null,
+   "checked": 1,
+   "lines": {
+    "red": {
+     "L": 450,
+     "W": 300,
+     "mark": "sourced",
+     "site": "Seriously Fish",
+     "url": "https://www.seriouslyfish.com/species/boraras-merah/",
+     "states": "45 ∗ 30 cm",
+     "quote": "base of 45 × 30 cm",
+     "from": "footprint"
+    },
+    "green": null,
+    "why": "one geometry page: it or the gallon figure's tank, whichever is lower",
+    "heightRed": null,
+    "heightGreen": null,
+    "depth": null
+   }
+  },
+  "exclamation": {
+   "batch": "S238",
+   "sci": "Boraras urophthalmoides",
+   "measures": {
+    "footprint": {
+     "value": [
+      450,
+      300
+     ],
+     "unit": "mm",
+     "kind": "min",
+     "url": "https://www.seriouslyfish.com/species/boraras-urophthalmoides/",
+     "site": "Seriously Fish",
+     "quote": "best kept in a tank with base dimensions of at least 45 ∗ 30 cm",
+     "conditions": "group 8-10; adult",
+     "mark": "sourced",
+     "single": true,
+     "check": "exact",
+     "credibility": "high",
+     "spread": 0,
+     "n": 1
+    }
+   },
+   "conflict": null,
+   "checked": 1,
+   "lines": {
+    "red": {
+     "L": 450,
+     "W": 300,
+     "mark": "sourced",
+     "site": "Seriously Fish",
+     "url": "https://www.seriouslyfish.com/species/boraras-urophthalmoides/",
+     "states": "45 ∗ 30 cm",
+     "quote": "best kept in a tank with base dimensions of at least 45 ∗ 30 cm",
+     "from": "footprint"
+    },
+    "green": null,
+    "why": "one geometry page: it or the gallon figure's tank, whichever is lower",
+    "heightRed": null,
+    "heightGreen": null,
+    "depth": null
+   }
+  },
+  "dwarfrasbora": {
+   "batch": "S238",
+   "sci": "Boraras maculatus",
+   "measures": {
+    "footprint": {
+     "value": [
+      450,
+      300
+     ],
+     "unit": "mm",
+     "kind": "min",
+     "url": "https://www.seriouslyfish.com/species/boraras-maculatus/",
+     "site": "Seriously Fish",
+     "quote": "45 × 30cm",
+     "conditions": "group 8-10; adult",
+     "mark": "sourced",
+     "single": true,
+     "check": "exact",
+     "credibility": "high",
+     "spread": 0,
+     "n": 1
+    }
+   },
+   "conflict": null,
+   "checked": 1,
+   "lines": {
+    "red": {
+     "L": 450,
+     "W": 300,
+     "mark": "sourced",
+     "site": "Seriously Fish",
+     "url": "https://www.seriouslyfish.com/species/boraras-maculatus/",
+     "states": "45 ∗ 30 cm",
+     "quote": "45 × 30cm",
+     "from": "footprint"
+    },
+    "green": null,
+    "why": "one geometry page: it or the gallon figure's tank, whichever is lower",
+    "heightRed": null,
+    "heightGreen": null,
+    "depth": null
+   }
+  },
+  "cpo": {
+   "batch": "S238",
+   "sci": "Cambarellus patzcuarensis",
+   "measures": {
+    "footprint": {
+     "mark": "not-stated",
+     "note": "No dimensions stated."
+    },
+    "water_depth": {
+     "mark": "not-stated",
+     "note": "Not stated."
+    },
+    "volume": {
+     "value": 10,
+     "unit": "gal",
+     "kind": "min",
+     "url": "https://www.theshrimpfarm.com/posts/mexican-dwarf-crayfish/",
+     "site": "The Shrimp Farm",
+     "quote": "Something around 10 gallons (38L) would be a great place to start",
+     "conditions": "a starting size, not a stated minimum",
+     "mark": "sourced",
+     "single": true,
+     "check": "exact",
+     "credibility": "medium",
+     "spread": 0,
+     "n": 1
+    }
+   },
+   "conflict": null,
+   "checked": 1,
+   "lines": {
+    "red": null,
+    "green": null,
+    "why": "aquatic invertebrate: clearance only (Decision 3)",
+    "heightRed": null,
+    "heightGreen": null,
+    "depth": null
+   }
+  },
+  "cajundwarf": {
+   "batch": "S238",
+   "sci": "Cambarellus shufeldtii",
+   "measures": {
+    "footprint": {
+     "mark": "not-stated",
+     "note": "No dimensions stated."
+    },
+    "water_depth": {
+     "mark": "not-stated",
+     "note": "Not stated."
+    },
+    "volume": {
+     "value": 5,
+     "unit": "gal",
+     "kind": "min",
+     "url": "https://aquaticarts.com/products/cajun-dwarf-crayfish",
+     "site": "Aquatic Arts",
+     "quote": "Minimum tank size: 5 gallons",
+     "conditions": "retailer listing",
+     "mark": "sourced",
+     "single": true,
+     "check": "exact",
+     "credibility": "medium",
+     "spread": 0,
+     "n": 1
+    }
+   },
+   "conflict": null,
+   "checked": 1,
+   "lines": {
+    "red": null,
+    "green": null,
+    "why": "aquatic invertebrate: clearance only (Decision 3)",
+    "heightRed": null,
+    "heightGreen": null,
+    "depth": null
+   }
+  },
+  "rswcrayfish": {
+   "batch": "S238",
+   "sci": "Procambarus clarkii",
+   "measures": {
+    "footprint": {
+     "mark": "not-stated",
+     "note": "No dimensions stated."
+    },
+    "water_depth": {
+     "mark": "not-stated",
+     "note": "Not stated."
+    },
+    "volume": {
+     "value": 19.8,
+     "unit": "gal",
+     "kind": "min",
+     "url": "https://guidarium.com/fishes/red-swamp-crayfish",
+     "site": "Guidarium",
+     "quote": "minimum volume of 75 litres and a tank length of at least 60 cm",
+     "conditions": "one adult",
+     "mark": "sourced",
+     "single": true,
+     "check": "exact",
+     "credibility": "medium",
+     "spread": 0,
+     "n": 1
+    }
+   },
+   "conflict": null,
+   "checked": 1,
+   "lines": {
+    "red": null,
+    "green": null,
+    "why": "aquatic invertebrate: clearance only (Decision 3)",
+    "heightRed": null,
+    "heightGreen": null,
+    "depth": null
+   }
+  },
+  "redclaw": {
+   "batch": "S238",
+   "sci": "Cherax quadricarinatus",
+   "measures": {
+    "footprint": {
+     "mark": "not-stated",
+     "note": "No dimensions stated."
+    },
+    "water_depth": {
+     "mark": "not-stated",
+     "note": "Not stated."
+    },
+    "volume": {
+     "value": 52.8,
+     "unit": "gal",
+     "kind": "min",
+     "url": "https://gensou.sg/?p=33039",
+     "site": "Gensou",
+     "quote": "minimum of 200 litres for an adult",
+     "conditions": "one adult; page text as summarised, 200 L = 52.8 US gal",
+     "mark": "sourced (est)",
+     "check": "exact",
+     "credibility": "medium",
+     "spread": 0,
+     "n": 1
+    }
+   },
+   "conflict": null,
+   "checked": 1,
+   "lines": {
+    "red": null,
+    "green": null,
+    "why": "aquatic invertebrate: clearance only (Decision 3)",
+    "heightRed": null,
+    "heightGreen": null,
+    "depth": null
+   }
+  },
+  "thaicrab": {
+   "batch": "S238",
+   "sci": "Limnopilos naiyanetri",
+   "measures": {
+    "footprint": {
+     "mark": "not-stated",
+     "note": "No dimensions stated."
+    },
+    "water_depth": {
+     "mark": "not-stated",
+     "note": "Not stated."
+    },
+    "volume": {
+     "value": 5,
+     "unit": "gal",
+     "kind": "min",
+     "url": "https://www.aquariadise.com/caresheet-thai-micro-crab-limnopilos-naiyanetri/",
+     "site": "Aquariadise",
+     "quote": "5 gallons (19 L)",
+     "conditions": "a good starting point for stability; groups of at least five",
+     "mark": "sourced",
+     "single": true,
+     "check": "exact",
+     "credibility": "medium",
+     "spread": 0,
+     "n": 1
+    }
+   },
+   "conflict": null,
+   "checked": 1,
+   "lines": {
+    "red": null,
+    "green": null,
+    "why": "aquatic invertebrate: clearance only (Decision 3)",
+    "heightRed": null,
+    "heightGreen": null,
+    "depth": null
+   }
+  },
+  "asellus": {
+   "batch": "S238",
+   "sci": "Asellus aquaticus",
+   "measures": {
+    "footprint": {
+     "mark": "not-stated",
+     "note": "No dimensions stated."
+    },
+    "water_depth": {
+     "mark": "not-stated",
+     "note": "Not stated."
+    },
+    "volume": {
+     "value": 2,
+     "unit": "gal",
+     "kind": "min",
+     "url": "https://pondinformer.com/aquatic-sow-bugs-asellidae",
+     "site": "Pond Informer",
+     "quote": "AVERAGE SIZE 5 – 12 mm",
+     "conditions": "the page gives no tank size: 2 gal is our floor for a colony of 5-12 mm animals",
+     "mark": "sourced (est)",
+     "check": "exact",
+     "credibility": "medium",
+     "spread": 0,
+     "n": 1
+    }
+   },
+   "conflict": null,
+   "checked": 1,
+   "lines": {
+    "red": null,
+    "green": null,
+    "why": "aquatic invertebrate: clearance only (Decision 3)",
+    "heightRed": null,
+    "heightGreen": null,
+    "depth": null
+   }
   }
  },
  "flags": [

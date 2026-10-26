@@ -1844,6 +1844,110 @@
     "from": "footprint"
    },
    "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "greenneon": {
+   "red": {
+    "L": 450,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/paracheirodon-simulans/",
+    "states": "45 ∗ 30 cm",
+    "from": "footprint"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "merah": {
+   "red": {
+    "L": 450,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/boraras-merah/",
+    "states": "45 ∗ 30 cm",
+    "from": "footprint"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "exclamation": {
+   "red": {
+    "L": 450,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/boraras-urophthalmoides/",
+    "states": "45 ∗ 30 cm",
+    "from": "footprint"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "dwarfrasbora": {
+   "red": {
+    "L": 450,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/boraras-maculatus/",
+    "states": "45 ∗ 30 cm",
+    "from": "footprint"
+   },
+   "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
+  },
+  "cpo": {
+   "vol": {
+    "gal": 10,
+    "mark": "sourced",
+    "site": "The Shrimp Farm",
+    "url": "https://www.theshrimpfarm.com/posts/mexican-dwarf-crayfish/"
+   },
+   "why": "aquatic invertebrate: clearance only (Decision 3)"
+  },
+  "cajundwarf": {
+   "vol": {
+    "gal": 5,
+    "mark": "sourced",
+    "site": "Aquatic Arts",
+    "url": "https://aquaticarts.com/products/cajun-dwarf-crayfish"
+   },
+   "why": "aquatic invertebrate: clearance only (Decision 3)"
+  },
+  "rswcrayfish": {
+   "vol": {
+    "gal": 19.8,
+    "mark": "sourced",
+    "site": "Guidarium",
+    "url": "https://guidarium.com/fishes/red-swamp-crayfish"
+   },
+   "why": "aquatic invertebrate: clearance only (Decision 3)"
+  },
+  "redclaw": {
+   "vol": {
+    "gal": 52.8,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Gensou",
+    "url": "https://gensou.sg/?p=33039"
+   },
+   "why": "aquatic invertebrate: clearance only (Decision 3)"
+  },
+  "thaicrab": {
+   "vol": {
+    "gal": 5,
+    "mark": "sourced",
+    "site": "Aquariadise",
+    "url": "https://www.aquariadise.com/caresheet-thai-micro-crab-limnopilos-naiyanetri/"
+   },
+   "why": "aquatic invertebrate: clearance only (Decision 3)"
+  },
+  "asellus": {
+   "vol": {
+    "gal": 2,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Pond Informer",
+    "url": "https://pondinformer.com/aquatic-sow-bugs-asellidae"
+   },
+   "why": "aquatic invertebrate: clearance only (Decision 3)"
   }
  }
 }

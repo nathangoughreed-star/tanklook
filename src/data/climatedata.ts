@@ -73,6 +73,11 @@ export const WATER: Record<string, { ok: R; tol: R; est?: true }> = {
   peapuffer: { ok: [24,28], tol: [22,30] },
   sterbai: { ok: [24,28], tol: [21,30] },
   dwarfpencil: { ok: [24,28], tol: [22,29] },
+  greenneon: { ok: [24,27], tol: [22,29], est: true },
+  merah: { ok: [22,27], tol: [20,28] }, dwarfrasbora: { ok: [22,27], tol: [20,28] }, exclamation: { ok: [22,27], tol: [20,28] },
+  cpo: { ok: [18,26], tol: [15,28] }, cajundwarf: { ok: [18,24], tol: [15,28] },
+  rswcrayfish: { ok: [18,28], tol: [10,30] }, redclaw: { ok: [23,28], tol: [18,30] },
+  thaicrab: { ok: [22,28], tol: [20,30], est: true }, asellus: { ok: [16,24], tol: [4,28], est: true },
 };
 export const AIRDATA: Record<string, { c: R; tol: R; rh?: R; rhTol?: R; warm?: R; night?: R; est?: true }> = {
   dartfrog: { c: [21,26], tol: [18,27], rh: [80,100], rhTol: [60,100], night: [18,21] },
