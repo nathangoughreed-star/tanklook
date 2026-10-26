@@ -21,7 +21,7 @@ const today = () => new Date().toISOString().slice(0, 10);
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36';
 
 /** Hosts that need a real browser (Claude in Chrome): they refuse a plain fetch. */
-const BROWSER_HOSTS = /(^|\.)(petco|chewy|petsmart)\.com$/;
+const BROWSER_HOSTS = /(^|\.)(petco|chewy)\.com$/;
 /** Not a product page for a US price: secondary sources, category pages, other currencies. Never swept. */
 const SKIP_HOSTS = /(aquariumdepot\.ca|desertcart|hugglepets\.co\.uk|modelnet\.cs\.princeton|vintagevinylnews|saltwateraquariumblog|forums\.reefcentral|houstonfishbox|monsterfishkeepers)/;
 const SKIP_PATH = /\/(c|category|collections|collection)\/[^/]*$|\/aquariums\/?$/;
@@ -65,7 +65,7 @@ function ldOffers(html) {
   return out;
 }
 
-async function get(url, ms = 25000) {
+async function get(url, ms = 60000) {
   return fetch(url, { headers: { 'user-agent': UA, accept: 'text/html,application/json' }, redirect: 'follow', signal: AbortSignal.timeout(ms) });
 }
 
@@ -154,6 +154,8 @@ function cmdApply() {
     if (onSale) {
       v.regular_usd = r.regular; if (r.sale_ends) v.sale_ends = r.sale_ends;
       if (oldReg == null || oldReg !== r.regular || Math.abs(old - p) >= 0.005) rep.sales.push(`${name}: ${money2(p)}, list ${money2(r.regular)} (${Math.round((1 - p / r.regular) * 100)} % off)${r.sale_ends ? ', ends ' + r.sale_ends : ''}`);
+    } else if (oldReg != null && r.regular == null && p < oldReg * 0.98) {
+      // this reader cannot see a struck-through list price (JSON-LD has none): the stored sale price still stands, so the sale stays
     } else {
       if (oldReg != null) rep.saleEnded.push(`${name}: sale gone, now ${money2(p)} (was ${money2(old)} off ${money2(oldReg)})`);
       delete v.regular_usd; delete v.sale_ends;
