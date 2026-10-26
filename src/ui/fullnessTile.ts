@@ -101,7 +101,7 @@ export function spaceReason(r: Stocking): string {
   const p = r.spacePercent, top = topBy(r, r.spaceBy === 'floor' ? 'floor' : 'space', 1)[0];
   if (isOver(p) && r.spaceBy === 'floor') return `The floor is too small for the bottom dwellers (${Math.round(p)}% of it), mainly the ${plural(top.n, top.name)}: no extra height fixes that, it needs about ${Math.ceil(r.floor.usedCm2 / 6.4516)} sq in of floor or fewer bottom dwellers.`;
   if (isOver(p)) return `The tank is too small for them (${Math.round(p)}% of its space), mainly the ${plural(top.n, top.name)}: it needs about ${Math.ceil(r.capacity.litres * r.waterPercent / 100)} L of water or fewer animals.`;
-  return Math.round(p) >= NEAR_FULL ? (r.spaceBy === 'floor' ? 'Past ideal by floor: fewer bottom dwellers or a tank with a bigger base would help.' : 'Past ideal by space: tread carefully, room for a few small animals at most.') : `Room for about ${Math.round(NEAR_FULL - p)}% more by space before it is past ideal.`;
+  return Math.round(p) >= NEAR_FULL ? (r.spaceBy === 'floor' ? 'Past ideal by floor: fewer bottom dwellers or a tank with a bigger base would help.' : 'Past ideal by space: tread carefully, room for a few small animals at most.') : `${Math.round(p)}% · limited by ${r.spaceBy === 'floor' ? 'floor' : 'swimming room'}. Ideal.`;
 }
 export function tileState(S: TankSetup, r: Stocking, units: Units = 'cm'): TileState {
   const m = tankMinimum(S), mins = minWarnings(m, units), tooSmall = mins.some(w => w.level === 'over'), limit = S.layout.space, fit = limit ? spaceFit(S.tank, limit) : undefined;
