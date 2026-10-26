@@ -6,12 +6,13 @@
 //
 // The product gate (2026-10-26, Nathan: "If you pick a style of tank, then everything that comes along with that must remain unless you
 // deliberately change it after a warning message"). The same mechanism holds the product the tank was picked as (TankSetup.product):
-// a rimless product holds the rim off (locksOf().rim), an all-in-one its kit's gear, and any maker's product its size and shape. A held
-// control is greyed with lockNote; changing it anyway goes through breakNote, a confirm saying what it breaks, then releaseProduct
-// (the tank is a custom one with what it had; undo brings the product back). A catalogue size with no maker holds nothing: a resize
-// just makes it a custom size. An ordinary maker's tank holds only its size: rim, lid and gear change freely.
+// every ready-made tank (a maker's product, a standard catalogue size, a size named after one product) holds its rim as sold
+// (locksOf().rim) and its size and shape, and an all-in-one its kit's gear. Nathan 2026-10-26: "custom tanks are custom and anything
+// can be changed. others not so much. If I get a standard 55g, I cant just take the rim off". A held control is greyed with lockNote;
+// changing it anyway goes through breakNote, a confirm saying what it breaks, then releaseProduct (the tank is a custom one with what
+// it had; undo brings the product back). What people add to any tank (lid, light, filter, heater) stays free unless a kit supplies it.
 import { kitById, kitGear, type KitModel } from '../data/kits';
-import { getTankModel, pickRimless, variantByKey, variantName, type TankModel, type TankVariant } from '../data/tanks';
+import { getTankModel, namedModel, pickRimless, variantByKey, variantName, type TankModel, type TankVariant } from '../data/tanks';
 import { kitTech } from '../demand/tech';
 import { filterUnits, heaterUnits } from './tech';
 import { applyKitLight } from './kitlight';
@@ -34,7 +35,7 @@ export function productOf(S: Pick<TankSetup, 'product'>): { m: TankModel; v?: Ta
 
 export function locksOf(S: Gated): Locks | undefined {
   const k = S.integrated && kitById(S.integrated.kit), pv = productOf(S);
-  const rim = !!pv?.v && pickRimless(pv.m, pv.v);
+  const rim = !!pv; // a ready-made tank keeps the rim it is sold with, either way
   if (!k && !rim) return undefined;
   return { light: !!k && k.lightIncluded !== false, lid: !!k, filter: !!k?.filter, heater: !!k?.heater?.watts, rim };
 }
@@ -79,7 +80,7 @@ function holdProduct(t: TankSetup) {
   if (!pv) { delete t.product; return; }
   if (!p.sig) p.sig = tankSig(t.tank);
   else if (p.sig !== tankSig(t.tank)) { delete t.product; return; }
-  if (pv.v && pickRimless(pv.m, pv.v)) t.render.rim = false;
+  t.render.rim = !pickRimless(pv.m, pv.v);
 }
 
 /** Called on every scene edit (scene/store.ts): holds the product, applies a freshly picked kit, releases one whose tank changed, and
@@ -112,25 +113,28 @@ export function holdIntegrated(t: TankSetup) {
   }
 }
 
-/** The product's name: "Imagitarium (Petco) Open-Glass Rimless 10 gal", or "Fluval Flex 9" for a kit with no product recorded. */
+/** The product's name: "Imagitarium (Petco) Open-Glass Rimless 10 gal", "Fluval Flex 9" for a kit with no product recorded, "standard
+ *  55 gal" for a catalogue size, or the size's own name when it is named after one product. */
 export function productName(S: Gated): string {
   const pv = productOf(S), k = integratedKit(S);
-  return pv?.v ? variantName(pv.v) : k ? `${k.brand} ${k.name}` : pv ? `${pv.m.name} tank` : '';
+  return pv?.v ? variantName(pv.v) : k ? `${k.brand} ${k.name}` : pv ? (namedModel(pv.m) ? pv.m.name : `standard ${pv.m.name}`) : '';
 }
 
-/** The tank panel's line, always shown: a real product, a catalogue size with no maker, or a custom size. */
+/** The tank panel's line, always shown: ready-made (a maker's product or a standard size) or custom. */
+export const CUSTOM_LABEL = 'Custom tank: any size, anything can be changed';
 export function productLabel(S: Gated): string {
   const pv = productOf(S);
-  if (!pv) return S.integrated ? `Real product: ${productName(S)}` : 'Custom size';
-  if (!pv.v) return `Standard size: ${pv.m.name} (any maker)`;
+  if (!pv) return S.integrated ? `Ready-made: ${productName(S)}` : CUSTOM_LABEL;
+  if (!pv.v) return `Ready-made: ${namedModel(pv.m) ? pv.m.name : `standard ${pv.m.name} tank (any maker)`}`;
   const r = pv.v.retailer && !pv.v.brand.includes(pv.v.retailer) ? ` (${pv.v.retailer})` : '';
-  return `Real product: ${variantName(pv.v)}${r}`;
+  return `Ready-made: ${variantName(pv.v)}${r}`;
 }
+const soldRimless = (S: Gated) => { const pv = productOf(S); return !!pv && pickRimless(pv.m, pv.v); };
 
 const GEAR = { light: 'light', lid: 'lid', filter: 'filter', heater: 'heater' } as const;
 /** The one line the panels show beside what is locked. */
 export function lockNote(S: Gated, what: keyof Locks): string {
-  if (what === 'rim') return locksOf(S)?.rim ? `The ${productName(S)} is only sold rimless.` : '';
+  if (what === 'rim') return locksOf(S)?.rim ? `The ${productName(S)} is ${soldRimless(S) ? 'only sold rimless' : 'sold with its rim'}.` : '';
   return integratedKit(S) ? `All-in-one kit: its ${GEAR[what]} comes with it. Changing it makes this a custom tank.` : '';
 }
 
@@ -138,12 +142,12 @@ export function lockNote(S: Gated, what: keyof Locks): string {
 export function breakNote(S: Gated, what: Held): string | undefined {
   const name = productName(S), tail = 'makes this a custom tank, not that product.';
   if (what === 'size') {
-    const v = productOf(S)?.v;
-    if (!v && !S.integrated) return undefined; // a catalogue size with no maker (or none): a resize just makes it a custom size
-    return `The ${name} is sold at ${v ? `${v.L_in} × ${v.D_in} × ${v.H_in} in` : 'one size'}. A new size or shape ${tail}${S.integrated ? ' Its gear stays on it and can then be changed.' : ''} Continue?`;
+    const pv = productOf(S), v = pv?.v, o = pv?.m.outer, inch = (mm: number) => +(mm / 25.4).toFixed(1);
+    if (!pv && !S.integrated) return undefined; // a custom tank: any size
+    return `The ${name} is sold at ${v ? `${v.L_in} × ${v.D_in} × ${v.H_in} in` : o ? `${inch(o.L)} × ${inch(o.D)} × ${inch(o.H)} in` : 'one size'}. A new size or shape ${tail}${S.integrated ? ' Its gear stays on it and can then be changed.' : ''} Continue?`;
   }
   if (!locksOf(S)?.[what]) return undefined;
-  if (what === 'rim') return `The ${name} is only sold rimless. Adding a rim ${tail} Continue?`;
+  if (what === 'rim') return soldRimless(S) ? `The ${name} is only sold rimless. Adding a rim ${tail} Continue?` : `The ${name} is sold with its rim. Taking it off ${tail} Continue?`;
   return `The ${name} runs on its own ${GEAR[what]}. Changing it ${tail} Continue?`;
 }
 

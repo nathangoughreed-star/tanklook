@@ -4,9 +4,9 @@
 import { describe, expect, it } from 'vitest';
 import { parseScene } from '../src/scene/validate';
 import { Store as SceneStore } from '../src/scene/store';
-import { breakNote, locksOf, mayChange, productLabel, releaseProduct, type Held } from '../src/scene/integrated';
+import { breakNote, CUSTOM_LABEL, locksOf, mayChange, productLabel, releaseProduct, type Held } from '../src/scene/integrated';
 import { KITS, type KitModel } from '../src/data/kits';
-import { TANK_MODELS, modelOfVariant, pickRimless, tankFromModel, type TankModel, type TankVariant } from '../src/data/tanks';
+import { TANK_MODELS, modelOfVariant, pickRimless, soleProduct, tankFromModel, type TankModel, type TankVariant } from '../src/data/tanks';
 import { applyTankPick } from '../src/ui/tankPick';
 import type { TankSetup } from '../src/scene/types';
 
@@ -43,7 +43,7 @@ describe('product gate: rimless products', () => {
   it('adding a rim asks what it breaks; no changes nothing, yes makes it a custom tank with what it had', () => {
     const { m, v } = find(/Imagitarium.*Open-Glass Rimless 10/i);
     const store = new SceneStore(); pick(store, m, v);
-    expect(productLabel(store.tank)).toMatch(/^Real product: Imagitarium.*Open-Glass Rimless 10/);
+    expect(productLabel(store.tank)).toMatch(/^Ready-made: Imagitarium.*Open-Glass Rimless 10/);
     const before = JSON.stringify(store.tank);
     const asked = change(store, 'rim', false, s => { s.render.rim = true; });
     expect(asked[0]).toMatch(/The Imagitarium.*Open-Glass Rimless 10 gal is only sold rimless\. Adding a rim makes this a custom tank, not that product\. Continue\?/);
@@ -53,9 +53,9 @@ describe('product gate: rimless products', () => {
     expect(store.tank.render.rim).toBe(true);
     expect(store.tank.product).toBeUndefined();
     expect(store.tank.tank).toEqual(size);
-    expect(productLabel(store.tank)).toBe('Custom size');
+    expect(productLabel(store.tank)).toBe(CUSTOM_LABEL);
     store.undo(); // undo brings the product back
-    expect(productLabel(store.tank)).toMatch(/^Real product: Imagitarium/);
+    expect(productLabel(store.tank)).toMatch(/^Ready-made: Imagitarium/);
     expect(store.tank.render.rim).toBe(false);
   });
 });
@@ -68,23 +68,44 @@ describe('product gate: size and shape', () => {
     expect(change(store, 'size', false, s => { s.tank = { ...s.tank, L: L + 50 }; })[0]).toMatch(/is sold at .* in\. A new size or shape makes this a custom tank/);
     expect(store.tank.tank.L).toBe(L); expect(store.tank.product).toBeDefined();
     change(store, 'size', true, s => { s.tank = { ...s.tank, L: L + 50 }; });
-    expect(store.tank.tank.L).toBe(L + 50); expect(productLabel(store.tank)).toBe('Custom size');
+    expect(store.tank.tank.L).toBe(L + 50); expect(productLabel(store.tank)).toBe(CUSTOM_LABEL);
   });
-  it('an ordinary shelf tank changes freely: rim, lid and gear never ask', () => {
+  it('an ordinary maker tank is ready-made: its rim holds (Nathan: "If I get a standard 55g, I cant just take the rim off"), add-ons stay free', () => {
     const { m, v } = find(/Aqueon/i, x => !x.rimless && !x.kit);
     const store = new SceneStore(); pick(store, m, v);
-    expect(locksOf(store.tank)).toBeUndefined();
-    for (const w of ['rim', 'lid', 'light', 'filter', 'heater'] as const) expect(change(store, w, false, () => {}), w).toEqual([]);
-    change(store, 'rim', false, s => { s.render.rim = false; s.lid = 'open'; });
-    expect([store.tank.render.rim, store.tank.lid]).toEqual([false, 'open']);
-    expect(productLabel(store.tank)).toMatch(/^Real product: Aqueon/);
+    expect(locksOf(store.tank)).toMatchObject({ rim: true, lid: false, light: false, filter: false, heater: false });
+    expect(change(store, 'rim', false, s => { s.render.rim = false; })[0]).toMatch(/is sold with its rim\. Taking it off makes this a custom tank, not that product\. Continue\?/);
+    expect(store.tank.render.rim).toBe(true);
+    store.edit(s => { s.render.rim = false; }); // a path that did not ask is put back
+    expect(store.tank.render.rim).toBe(true);
+    for (const w of ['lid', 'light', 'filter', 'heater'] as const) expect(change(store, w, false, () => {}), w).toEqual([]);
+    change(store, 'lid', false, s => { s.lid = 'open'; });
+    expect(store.tank.lid).toBe('open');
+    expect(productLabel(store.tank)).toMatch(/^Ready-made: Aqueon/);
   });
-  it('a catalogue size with no maker: no question, a resize just makes it a custom size', () => {
-    const m = TANK_MODELS.find(x => x.id === 'g29') ?? TANK_MODELS.find(x => !x.terrarium && x.shape === 'rect')!;
+  it('a custom tank changes freely: nothing asks', () => {
+    const { m, v } = find(/Aqueon/i, x => !x.rimless && !x.kit);
+    const store = new SceneStore(); pick(store, m, v);
+    change(store, 'size', true, s => { s.tank = { ...s.tank, L: s.tank.L + 30 }; });
+    expect(productLabel(store.tank)).toBe(CUSTOM_LABEL);
+    for (const w of ['rim', 'lid', 'light', 'filter', 'heater', 'size'] as const) expect(change(store, w, false, () => {}), w).toEqual([]);
+    change(store, 'rim', false, s => { s.render.rim = false; });
+    expect(store.tank.render.rim).toBe(false);
+  });
+  it('a standard catalogue size is ready-made too: a resize and the rim ask', () => {
+    const m = TANK_MODELS.find(x => x.id === 'g55') ?? TANK_MODELS.find(x => !x.terrarium && x.shape === 'rect' && !x.rimless)!;
     const store = new SceneStore(); pick(store, m);
-    expect(productLabel(store.tank)).toBe(`Standard size: ${m.name} (any maker)`);
-    expect(change(store, 'size', false, s => { s.tank = { ...s.tank, H: s.tank.H + 40 }; })).toEqual([]);
-    expect(productLabel(store.tank)).toBe('Custom size');
+    expect(productLabel(store.tank)).toBe(`Ready-made: standard ${m.name} tank (any maker)`);
+    expect(change(store, 'size', false, s => { s.tank = { ...s.tank, H: s.tank.H + 40 }; })[0]).toMatch(new RegExp(`The standard ${m.name} is sold at .* in`));
+    expect(change(store, 'rim', false, () => {})).toHaveLength(1);
+    change(store, 'size', true, s => { s.tank = { ...s.tank, H: s.tank.H + 40 }; });
+    expect(productLabel(store.tank)).toBe(CUSTOM_LABEL);
+  });
+  it('a size named after one product is that product, not a custom size', () => {
+    const m = TANK_MODELS.find(x => x.id === 'n_flex_9gal')!;
+    expect(soleProduct(m)?.kit).toBe('fluval-flex-9');
+    const multi = TANK_MODELS.find(x => x.id === 'n_imagitarium_shallow_6_8');
+    if (multi) { const store = new SceneStore(); pick(store, multi); expect(productLabel(store.tank)).toBe(`Ready-made: ${multi.name}`); expect(locksOf(store.tank)?.rim).toBe(true); }
   });
 });
 
@@ -99,16 +120,16 @@ describe('product gate: all-in-ones and starter kits', () => {
     expect(change(store, 'size', false, () => {})[0]).toMatch(/Its gear stays on it/);
     change(store, 'light', true, s => { s.light.watts = 40; });
     expect(store.tank.light.watts).toBe(40);
-    expect(store.tank.integrated).toBeUndefined(); expect(productLabel(store.tank)).toBe('Custom size');
+    expect(store.tank.integrated).toBeUndefined(); expect(productLabel(store.tank)).toBe(CUSTOM_LABEL);
   });
-  it('a starter kit applies its gear and holds nothing', () => {
+  it('a starter kit applies its gear and holds none of it (the tank keeps its rim)', () => {
     const k: KitModel = { ...KITS.find(x => x.id === 'fluval-flex-9')!, id: 'test-starter', kind: 'starter', lid: 'hood' };
     KITS.push(k);
     try {
       const m = TANK_MODELS.find(x => x.id === 'g10')!, v: TankVariant = { ...m.variants![0], kit: 'test-starter', rimless: false };
       const store = new SceneStore(); store.edit(s => { s.lid = 'open'; });
       pick(store, m, v);
-      expect(store.tank.lid).toBe('hood'); expect(store.tank.integrated).toBeUndefined(); expect(locksOf(store.tank)).toBeUndefined();
+      expect(store.tank.lid).toBe('hood'); expect(store.tank.integrated).toBeUndefined(); expect(locksOf(store.tank)).toMatchObject({ rim: true, lid: false, light: false, filter: false, heater: false });
       store.edit(s => { s.lid = 'glass'; });
       expect(store.tank.lid).toBe('glass');
     } finally { KITS.pop(); }
@@ -126,6 +147,6 @@ describe('product gate: save and load', () => {
     }
     const store = new SceneStore(); pick(store, ...Object.values(find(/Aqueon/i)) as [TankModel, TankVariant]);
     const raw = JSON.parse(JSON.stringify(store.scene)); raw.tanks[0].product.key = 'gone|gone';
-    expect(productLabel(parseScene(raw).scene.tanks[0])).toBe('Custom size');
+    expect(productLabel(parseScene(raw).scene.tanks[0])).toBe(CUSTOM_LABEL);
   });
 });

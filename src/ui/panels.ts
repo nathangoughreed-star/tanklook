@@ -30,10 +30,10 @@ import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixt
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene } from '../scene/defaults';
-import { BANDS, TANK_MODELS, dimsInches, modelOfVariant, saleLive, tankFromModel, tankSaleFor, variantUsd, type TankModel, type TankVariant } from '../data/tanks';
+import { BANDS, TANK_MODELS, dimsInches, modelOfVariant, soleProduct, saleLive, tankFromModel, tankSaleFor, variantUsd, type TankModel, type TankVariant } from '../data/tanks';
 import { pinPreset } from '../demand/pinned';
 import { applyTankPick, unholdBtn } from './tankPick';
-import { breakNote, locksOf, lockNote, mayChange, productLabel, releaseProduct, type Held } from '../scene/integrated';
+import { breakNote, CUSTOM_LABEL, locksOf, lockNote, mayChange, productLabel, releaseProduct, type Held } from '../scene/integrated';
 import { COMPS, DEFAULT_DENS, STYLE_GROUPS, STYLE_KIND, isLandStyle, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
 import { handEdits, randomStyle, regenerate, shuffleHard } from '../scene/starter';
 import { styleGround } from '../scene/scapeground';
@@ -398,7 +398,7 @@ Cancel, then change the name, to keep both.`)) return;
     };
     let sumpDone: ((m: TankModel) => void) | null = null;
     dlg.addEventListener('close', () => { sumpDone = null; $('tankDlgTitle').textContent = 'Tank sizes'; });
-    const apply = (m: TankModel, v?: TankVariant) => { if (sumpDone) { sumpDone(m); dlg.close(); return; } const mm = v ? modelOfVariant(m, v) : m; setTank(() => tankFromModel(mm), undefined, mm.glassMm, standFor(m, v)); pinPreset(store.scene.active, store.tank, saleOf(m, v)); dlg.close(); };
+    const apply = (m: TankModel, v?: TankVariant) => { if (sumpDone) { sumpDone(m); dlg.close(); return; } v ??= soleProduct(m); const mm = v ? modelOfVariant(m, v) : m; setTank(() => tankFromModel(mm), undefined, mm.glassMm, standFor(m, v)); pinPreset(store.scene.active, store.tank, saleOf(m, v)); dlg.close(); };
     const draw = () => {
       const needle = q.value.trim().toLowerCase();
       const hit = (m: TankModel) => !needle || [m.name, m.shape, ...(m.tags ?? []), ...(m.variants ?? []).flatMap(v => [v.brand, v.line ?? ''])].join(' ').toLowerCase().includes(needle);
@@ -443,7 +443,7 @@ Cancel, then change the name, to keep both.`)) return;
   document.addEventListener('click', e => {
     const what = (e.target as HTMLElement).closest<HTMLElement>('[data-unhold]')?.dataset.unhold as Held | undefined;
     if (!what || !gate(what)) return;
-    store.edit(s => { unhold(s, what); if (what === 'rim') s.render.rim = true; }); // the rim has one way to change: adding it
+    store.edit(s => { unhold(s, what); if (what === 'rim') s.render.rim = !s.render.rim; }); // the rim has one change: the other way
   });
   /** Resize / reshape each edited tank from its own current size (so ticking both changes only what was set). A library pick
    *  (`also`) sets the product; any other size or shape asks first when the tank is a maker's product. */
@@ -496,7 +496,7 @@ Cancel, then change the name, to keep both.`)) return;
   const setUnits = (u: Scene['units']) => store.update(s => { s.units = u; });
   $('uIn').onclick = () => setUnits('in'); $('uCm').onclick = () => setUnits('cm');
   $('rimY').onclick = () => { if (gate('rim')) store.edit(s => { unhold(s, 'rim'); s.render.rim = true; }); };
-  $('rimN').onclick = () => store.edit(s => { s.render.rim = false; });
+  $('rimN').onclick = () => { if (gate('rim')) store.edit(s => { unhold(s, 'rim'); s.render.rim = false; }); };
   $('edgesY').onclick = () => store.edit(s => { s.render.edges = true; });
   $('edgesN').onclick = () => store.edit(s => { s.render.edges = false; });
   const LIDS = [['lidOpen', 'open'], ['lidGlass', 'glass'], ['lidMesh', 'mesh'], ['lidHood', 'hood']] as const;
@@ -1884,10 +1884,10 @@ Cancel, then change the name, to keep both.`)) return;
       for (const [id, d] of LIDS) ($(id) as HTMLButtonElement).disabled = !!lk?.lid || (d === 'hood' && !flatEnds(A));
       $('lidLock').hidden = !lk?.lid; $('lidLock').innerHTML = lk?.lid ? esc(lockNote(store.tank, 'lid')) + unholdBtn('lid') : '';
       // a product only sold rimless keeps its rim off (Nathan 2026-10-26: "those imagitarium rimless tanks arent available rimmed")
-      ($('rimY') as HTMLButtonElement).disabled = !!lk?.rim;
+      ($('rimY') as HTMLButtonElement).disabled = !!lk?.rim && !s.render.rim; ($('rimN') as HTMLButtonElement).disabled = !!lk?.rim && s.render.rim;
       $('rimLock').hidden = !lk?.rim; $('rimLock').innerHTML = lk?.rim ? esc(lockNote(store.tank, 'rim')) + unholdBtn('rim') : '';
       // real product or custom size, always shown
-      const pl = productLabel(store.tank); $('prodLine').textContent = pl; $('prodLine').classList.toggle('custom', pl === 'Custom size');
+      const pl = productLabel(store.tank); $('prodLine').textContent = pl; $('prodLine').classList.toggle('custom', pl === CUSTOM_LABEL);
     }
     for (const id of ['wallLeft', 'wallRight']) ($(id) as HTMLButtonElement).disabled = !flatEnds(A);
     // which tank the panel edits (split view)

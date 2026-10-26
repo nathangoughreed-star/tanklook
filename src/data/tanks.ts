@@ -167,6 +167,8 @@ export const variantKey = (v: TankVariant) => [v.brand, v.line ?? '', `${v.L_in}
 export const variantByKey = (m: TankModel, key: string) => m.variants?.find(v => variantKey(v) === key);
 /** "Imagitarium (Petco) Open-Glass Rimless 10 gal": the maker and line as the listing names them. */
 export const variantName = (v: TankVariant) => `${v.brand}${v.line ? ' ' + v.line : ''}`;
-/** A size named after one maker's product ("Fluval Flex 9 (curved front)"), not a generic catalogue size: its generic row is that
- *  shape with no product, so picking it is a custom size (the product is the row under it). */
+/** A size named after one maker's product ("Fluval Flex 9 (curved front)"), not a generic catalogue size: the panel names it as itself,
+ *  not "standard ...", and picking its row picks its product when it has only one (soleProduct). */
 export const namedModel = (m: TankModel) => !!m.variants?.some(v => m.name.toLowerCase().startsWith(v.brand.toLowerCase().split(' ')[0]));
+/** A size named after one product with only that product under it: picking the size is picking the product. */
+export const soleProduct = (m: TankModel) => (namedModel(m) && m.variants?.length === 1 ? m.variants[0] : undefined);
