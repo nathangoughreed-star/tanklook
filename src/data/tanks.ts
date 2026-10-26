@@ -1,7 +1,7 @@
 // Tank catalog (lane KA, 2026-10-19): real aquarium sizes, nano to monster, plus the terrarium presets. OUTER dimensions
 // (what people measure and what the label says) are the source of truth; the app's Tank is INTERIOR mm with glass added outside,
 // so `tankFromModel` derives the interior once. Data in tanks.json; the check is scripts/check-tanks.mjs + test/tanks.test.ts.
-import type { Tank, TankShape } from '../scene/types';
+import type { LidType, Tank, TankShape } from '../scene/types';
 import { glassThickness, IN, volume } from '../scene/physics';
 import { archBulge, normTank, offsetRing } from '../scene/shape';
 import data from './tanks.json';
@@ -32,11 +32,17 @@ export interface TankVariant {
   price_note?: string;
   /** An all-in-one that only runs on its own gear (data/kits.json record `kit`): picking it applies that kit and locks what it supplies (scene/integrated.ts). */
   kit?: string;
+  /** What the product is sold with (S233b, Nathan 2026-10-26: "Exactly what it comes with is important to figure out for every
+   *  commercial tank"). A key left out = not recorded; false / 'none' = sold without it. A variant with `kit` takes this from its
+   *  kits.json record unless it sets its own. What it includes is held like the rim (scene/integrated.ts); the rest is free. */
+  includes?: Includes;
   discontinued?: boolean;
   url?: string;
   checked?: string;
   confidence?: 'high' | 'medium' | 'low';
 }
+
+export interface Includes { lid?: LidType | 'none'; light?: boolean; filter?: boolean; heater?: boolean; stand?: boolean }
 
 export interface TankModel {
   id: string;

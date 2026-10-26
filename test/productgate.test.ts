@@ -4,7 +4,7 @@
 import { describe, expect, it } from 'vitest';
 import { parseScene } from '../src/scene/validate';
 import { Store as SceneStore } from '../src/scene/store';
-import { breakNote, CUSTOM_LABEL, locksOf, mayChange, productLabel, releaseProduct, type Held } from '../src/scene/integrated';
+import { breakNote, CUSTOM_LABEL, includesNote, locksOf, mayChange, productLabel, releaseProduct, type Held } from '../src/scene/integrated';
 import { KITS, type KitModel } from '../src/data/kits';
 import { TANK_MODELS, modelOfVariant, pickRimless, soleProduct, tankFromModel, type TankModel, type TankVariant } from '../src/data/tanks';
 import { applyTankPick } from '../src/ui/tankPick';
@@ -116,23 +116,71 @@ describe('product gate: all-in-ones and starter kits', () => {
     const lid = store.tank.lid, w = store.tank.light.watts;
     store.edit(s => { s.lid = 'open'; s.light.watts = 99; }); // drift from a path that did not ask is put back
     expect([store.tank.lid, store.tank.light.watts]).toEqual([lid, w]);
-    expect(change(store, 'filter', false, () => {})[0]).toMatch(/runs on its own filter\. Changing it makes this a custom tank/);
+    expect(change(store, 'filter', false, () => {})[0]).toMatch(/comes with its own filter\. Changing it makes this a custom tank/);
     expect(change(store, 'size', false, () => {})[0]).toMatch(/Its gear stays on it/);
     change(store, 'light', true, s => { s.light.watts = 40; });
     expect(store.tank.light.watts).toBe(40);
     expect(store.tank.integrated).toBeUndefined(); expect(productLabel(store.tank)).toBe(CUSTOM_LABEL);
   });
-  it('a starter kit applies its gear and holds none of it (the tank keeps its rim)', () => {
+  it('a starter kit holds what it ships with, like an all-in-one (Nathan: what it comes with is held)', () => {
     const k: KitModel = { ...KITS.find(x => x.id === 'fluval-flex-9')!, id: 'test-starter', kind: 'starter', lid: 'hood' };
     KITS.push(k);
     try {
       const m = TANK_MODELS.find(x => x.id === 'g10')!, v: TankVariant = { ...m.variants![0], kit: 'test-starter', rimless: false };
       const store = new SceneStore(); store.edit(s => { s.lid = 'open'; });
       pick(store, m, v);
-      expect(store.tank.lid).toBe('hood'); expect(store.tank.integrated).toBeUndefined(); expect(locksOf(store.tank)).toMatchObject({ rim: true, lid: false, light: false, filter: false, heater: false });
-      store.edit(s => { s.lid = 'glass'; });
-      expect(store.tank.lid).toBe('glass');
+      expect(store.tank.lid).toBe('hood'); expect(store.tank.integrated?.kit).toBe('test-starter');
+      expect(locksOf(store.tank)).toMatchObject({ rim: true, lid: true, filter: true });
+      store.edit(s => { s.lid = 'glass'; }); // drift is put back
+      expect(store.tank.lid).toBe('hood');
     } finally { KITS.pop(); }
+  });
+});
+
+describe('product gate: what a product comes with (includes)', () => {
+  /** A product at g10 with this `includes`, registered in the library for the test (the lookup is by key). */
+  function withProduct(includes: TankVariant['includes'], run: (m: TankModel, v: TankVariant) => void) {
+    const m = TANK_MODELS.find(x => x.id === 'g10')!, v: TankVariant = { ...m.variants![0], line: 'Test line', rimless: false, includes };
+    if (!includes) delete v.includes;
+    m.variants!.push(v);
+    try { run(m, v); } finally { m.variants!.pop(); }
+  }
+  it('a lid it ships with is held, and changing it asks', () => withProduct({ lid: 'glass', light: false, filter: false, heater: false, stand: false }, (m, v) => {
+    const store = new SceneStore(); store.edit(s => { s.lid = 'hood'; });
+    pick(store, m, v);
+    expect(store.tank.lid).toBe('glass');
+    expect(locksOf(store.tank)).toMatchObject({ lid: true, light: false, filter: false, heater: false });
+    expect(includesNote(store.tank)).toBe('Comes with a glass top. Sold without: light, filter, heater, stand (free to add).');
+    store.edit(s => { s.lid = 'open'; });
+    expect(store.tank.lid).toBe('glass');
+    expect(change(store, 'lid', false, s => { s.lid = 'open'; })[0]).toMatch(/comes with a glass top\. Changing the lid makes this a custom tank/);
+    for (const w of ['light', 'filter', 'heater'] as const) expect(change(store, w, false, () => {}), w).toEqual([]);
+    change(store, 'lid', true, s => { s.lid = 'open'; });
+    expect(store.tank.lid).toBe('open'); expect(productLabel(store.tank)).toBe(CUSTOM_LABEL);
+  }));
+  it('a truly bare tank keeps everything but its rim and size free', () => withProduct({ lid: 'none', light: false, filter: false, heater: false, stand: false }, (m, v) => {
+    const store = new SceneStore(); pick(store, m, v);
+    expect(store.tank.lid).toBe('open');
+    expect(locksOf(store.tank)).toMatchObject({ rim: true, lid: false, light: false, filter: false, heater: false });
+    change(store, 'lid', false, s => { s.lid = 'hood'; });
+    expect(store.tank.lid).toBe('hood');
+  }));
+  it('nothing recorded: free and flagged, never guessed', () => withProduct(undefined, (m, v) => {
+    const store = new SceneStore(); store.edit(s => { s.lid = 'mesh'; });
+    pick(store, m, v);
+    expect(store.tank.lid).toBe('mesh');
+    expect(locksOf(store.tank)?.lid).toBe(false);
+    expect(includesNote(store.tank)).toMatch(/^What this tank comes with isn't recorded yet/);
+  }));
+  it('gear it ships with but no kit models is flagged, not locked', () => withProduct({ lid: 'hood', light: true }, (m, v) => {
+    const store = new SceneStore(); pick(store, m, v);
+    expect(locksOf(store.tank)).toMatchObject({ lid: true, light: false });
+    expect(includesNote(store.tank)).toBe('Comes with a hood, its own light. Not recorded yet: filter, heater, stand (free to set). Its light is not modelled yet, so it can be changed.');
+  }));
+  it('an all-in-one reads what it ships with from its kit record', () => {
+    const { m, v } = find(/Flex 9/i, x => !!x.kit);
+    const store = new SceneStore(); pick(store, m, v);
+    expect(includesNote(store.tank)).toMatch(/^Comes with .*its own light, its own filter/);
   });
 });
 

@@ -33,7 +33,7 @@ import { emptyScene } from '../scene/defaults';
 import { BANDS, TANK_MODELS, dimsInches, modelOfVariant, soleProduct, saleLive, tankFromModel, tankSaleFor, variantUsd, type TankModel, type TankVariant } from '../data/tanks';
 import { pinPreset } from '../demand/pinned';
 import { applyTankPick, unholdBtn } from './tankPick';
-import { breakNote, CUSTOM_LABEL, locksOf, lockNote, mayChange, productLabel, releaseProduct, type Held } from '../scene/integrated';
+import { breakNote, CUSTOM_LABEL, includesNote, locksOf, lockNote, mayChange, productLabel, releaseProduct, type Held } from '../scene/integrated';
 import { COMPS, DEFAULT_DENS, STYLE_GROUPS, STYLE_KIND, isLandStyle, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
 import { handEdits, randomStyle, regenerate, shuffleHard } from '../scene/starter';
 import { styleGround } from '../scene/scapeground';
@@ -1888,6 +1888,7 @@ Cancel, then change the name, to keep both.`)) return;
       $('rimLock').hidden = !lk?.rim; $('rimLock').innerHTML = lk?.rim ? esc(lockNote(store.tank, 'rim')) + unholdBtn('rim') : '';
       // real product or custom size, always shown
       const pl = productLabel(store.tank); $('prodLine').textContent = pl; $('prodLine').classList.toggle('custom', pl === CUSTOM_LABEL);
+      const inc = includesNote(store.tank); $('prodIncl').hidden = !inc; $('prodIncl').textContent = inc;
     }
     for (const id of ['wallLeft', 'wallRight']) ($(id) as HTMLButtonElement).disabled = !flatEnds(A);
     // which tank the panel edits (split view)
