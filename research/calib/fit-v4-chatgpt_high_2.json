@@ -365,9 +365,9 @@
   "cases": []
  },
  "compat": {
-  "high -> caution": 1,
+  "concern -> caution": 1,
   "ok -> caution": 7,
-  "high -> yes": 1,
+  "concern -> yes": 1,
   "ok -> yes": 1
  },
  "tables": "round v4: current engine, 2026-10-26"

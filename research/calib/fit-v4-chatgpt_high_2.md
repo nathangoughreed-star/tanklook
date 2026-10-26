@@ -56,8 +56,8 @@ Median ratio, experts 1.25, engine 1.44 (1 answers). Experts higher means they f
 
 ## Compatibility: gate -> experts
 
-- high -> caution: 1
-- high -> yes: 1
+- concern -> caution: 1
+- concern -> yes: 1
 - ok -> caution: 7
 - ok -> yes: 1
 

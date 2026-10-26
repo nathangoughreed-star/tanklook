@@ -22,9 +22,9 @@ Flagged: half or more of the tag's answered tanks a band off the app, all in the
 | compat.prey-sw-inverts | C03 | too small | problems | 0 | 0 | 0 |  |
 | compat.species-only | B13 | unworkable | caution | 0 | 1 | 0 | **flag: experts milder** |
 | compat.temper | B09 | too small | unworkable | 0 | 0 | 0 |  |
-| compat.temper-vs-school | A02 | unworkable | caution | 0 | 1 | 0 | **flag: experts milder** |
+| compat.temper-vs-school | A02 | problems | caution | 0 | 1 | 0 | **flag: experts milder** |
 | compat.temperature-cool | D11 | unworkable | caution | 0 | 1 | 0 | **flag: experts milder** |
-| compat.temperature-narrow | A02 A06 B12 | unworkable, unworkable, caution | caution, ideal, problems | 0 | 2 | 1 |  |
+| compat.temperature-narrow | A02 A06 B12 | problems, problems, caution | caution, ideal, problems | 0 | 2 | 1 |  |
 | compat.temperature-none | B11 | unworkable | caution | 0 | 1 | 0 | **flag: experts milder** |
 | compat.temperature-warm | B06 | unworkable | caution | 0 | 1 | 0 | **flag: experts milder** |
 | compat.two-tangs | C07 | too small | unworkable | 0 | 0 | 0 |  |
@@ -76,7 +76,7 @@ Flagged: half or more of the tag's answered tanks a band off the app, all in the
 | space.big-class-mass | B04 | caution | problems | 0 | 0 | 1 | **flag: experts harsher** |
 | space.canonical-20 | A04 | problems | caution | 0 | 1 | 0 | **flag: experts milder** |
 | space.chili-refit | A15 | caution | caution | 1 | 0 | 0 |  |
-| space.community-29 | A06 | unworkable | ideal | 0 | 1 | 0 | **flag: experts milder** |
+| space.community-29 | A06 | problems | ideal | 0 | 1 | 0 | **flag: experts milder** |
 | space.coolwater | A12 | caution | caution | 1 | 0 | 0 |  |
 | space.discus-community | B06 | unworkable | caution | 0 | 1 | 0 | **flag: experts milder** |
 | space.floor | A04 | problems | caution | 0 | 1 | 0 | **flag: experts milder** |
@@ -89,7 +89,7 @@ Flagged: half or more of the tag's answered tanks a band off the app, all in the
 | space.malawi-mix | B08 | caution | caution | 1 | 0 | 0 |  |
 | space.mbuna-convention | B07 | too small | caution | 0 | 0 | 0 |  |
 | space.mid-class | A11 | unworkable | caution | 0 | 1 | 0 | **flag: experts milder** |
-| space.nano | A01 A02 | caution, unworkable | ideal, caution | 0 | 2 | 0 | **flag: experts milder** |
+| space.nano | A01 A02 | caution, problems | ideal, caution | 0 | 2 | 0 | **flag: experts milder** |
 | space.nano-reef | C02 | too small | problems | 0 | 0 | 0 |  |
 | space.reef-125 | C08 | unworkable | unworkable | 1 | 0 | 0 |  |
 | space.reef-40 | C04 | too small | problems | 0 | 0 | 0 |  |
@@ -125,8 +125,8 @@ Flagged: half or more of the tag's answered tanks a band off the app, all in the
 |---|---|---|---|---|
 | ideal | 0 | 0 | 0 | 0 |
 | caution | 1 | 2 | 2 | 0 |
-| problems | 0 | 3 | 0 | 0 |
-| unworkable | 1 | 6 | 1 | 0 |
+| problems | 1 | 4 | 0 | 0 |
+| unworkable | 0 | 5 | 1 | 0 |
 
 **golden** (1 tanks)
 
@@ -170,8 +170,8 @@ Flagged: half or more of the tag's answered tanks a band off the app, all in the
 |---|---|---|---|---|
 | ideal | 0 | 0 | 0 | 0 |
 | caution | 2 | 3 | 1 | 0 |
-| problems | 0 | 3 | 1 | 0 |
-| unworkable | 1 | 5 | 0 | 1 |
+| problems | 1 | 4 | 1 | 0 |
+| unworkable | 0 | 4 | 0 | 1 |
 
 **tankmin** (16 tanks)
 
@@ -305,10 +305,10 @@ fewer X: the app's biggest contributor on its binding dimension, or a fighting w
 | tank | app's reading | experts | fits the app | |
 |---|---|---|---|---|
 | A01 | caution: tankmin yellow: betta | nothing | no | **flag** |
-| A02 | unworkable: compat high | fewer | no | **flag** |
+| A02 | problems: group too small: neon | fewer | no | **flag** |
 | A03 | problems: space 131 %; group too small: cherryshrimp | fewer guppy | yes |  |
 | A04 | problems: space 101 % | drop bristlenose | no | **flag** |
-| A06 | unworkable: compat high | nothing | no | **flag** |
+| A06 | problems: group too small: amano | nothing | no | **flag** |
 | A07 | unworkable: compat high | drop betta | yes |  |
 | A08 | problems: space 122 % | bigger | yes |  |
 | A09 | too-small: tankmin red: angel | drop neon | yes |  |
@@ -369,9 +369,9 @@ The app's answer: no for a blocked pair, no shared temperature, or a herp that m
 
 | tank | app | app's lines | experts | app reasons | expert reasons | |
 |---|---|---|---|---|---|---|
-| A02 | no | Neon tetra with Nerite snail (zebra): water chemistry: pH 5.0-7.0 against its 7.0-8.5 (Nerite snail (zebra)); temperature narrow | caution | chemistry, temperature | - | **flag** |
+| A02 | caution | Neon tetra with Nerite snail (zebra): water chemistry: prefers pH 5.0-7.0, it 7.0-8.5; both accept 7.0-7.5, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps (Nerite snail (zebra)); temperature narrow | caution | chemistry, temperature | - |  |
 | A03 | caution | temperature narrow | caution | temperature | eat | **not in the app: eat** |
-| A06 | no | Harlequin rasbora with Nerite snail (zebra): water chemistry: pH 5.0-7.0 against its 7.0-8.5 (Nerite snail (zebra)); temperature narrow | yes | chemistry, temperature | - | **flag** |
+| A06 | caution | Harlequin rasbora with Nerite snail (zebra): water chemistry: prefers pH 5.0-7.0, it 7.0-8.5; both accept 7.0-7.5, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps (Nerite snail (zebra)); temperature narrow | yes | chemistry, temperature | - | **flag** |
 | A07 | no | Tiger barb with Betta: would harass its long fins | no | nip | nip |  |
 | A08 | caution | Angelfish breeding pair defends much of this floor (648 sq in): tankmates need caves and sight breaks elsewhere; temperature narrow | caution | aggression, temperature | aggression |  |
 | A09 | no | Angelfish breeding pair defends much of this floor (624 sq in): tankmates need caves and sight breaks elsewhere; temperature none | no | aggression, temperature | eat | **not in the app: eat** |
@@ -381,7 +381,7 @@ The app's answer: no for a blocked pair, no shared temperature, or a herp that m
 | B04 | caution | temperature narrow | caution | temperature | eat, other | **not in the app: eat, other** |
 | B06 | no | temperature narrow | caution | temperature | temperature | **flag** |
 | B07 | caution | temperature narrow | caution | temperature | aggression | **not in the app: aggression** |
-| B09 | no | Neon tetra with Yellow lab cichlid: water chemistry: pH 5.0-7.0 against its 7.6-8.6; Neon tetra with Yellow lab cichlid: water hardness: GH 1-10 against its 10-20; temperature narrow | no | chemistry, temperature | aggression | **not in the app: aggression** |
+| B09 | no | Neon tetra with Yellow lab cichlid: water chemistry: pH 4.0-7.5 against its 7.6-8.6; temperature narrow | no | chemistry, temperature | aggression | **not in the app: aggression** |
 | B10 | caution | Kribensis breeding pair defends much of this floor (360 sq in): tankmates need caves and sight breaks elsewhere; temperature narrow | no | aggression, temperature | aggression | **flag** |
 | B11 | no | German blue ram with Cherry shrimp: would eat it; temperature none | caution | eat, temperature | eat, temperature | **flag** |
 | B12 | caution | temperature narrow | no | temperature | aggression, nip | **flag** **not in the app: aggression, nip** |
@@ -1142,9 +1142,9 @@ Raised: two or more experts make the claim, or one keeper or professional makes 
 - count space.swordtail-refit: engine too empty (+17 %)
 - count tankmin.angel-height: engine too full (-30 %)
 - change A01: nothing (app: bigger)
-- change A02: fewer (app: drop nerite)
+- change A02: fewer (app: ratio)
 - change A04: drop (app: fewer bronzecory)
-- change A06: nothing (app: drop nerite)
+- change A06: nothing (app: ratio)
 - change A10: fewer (app: drop)
 - change A11: bigger (app: drop kuhli)
 - change A14: nothing (app: fewer kuhli)
@@ -1155,9 +1155,8 @@ Raised: two or more experts make the claim, or one keeper or professional makes 
 - change B13: bigger (app: drop oto)
 - change B16: fewer (app: drop chili)
 - change D16: bigger (app: nothing)
-- compat A02: milder (app no, experts caution)
 - reasons A03: expert-only (eat)
-- compat A06: milder (app no, experts yes)
+- compat A06: milder (app caution, experts yes)
 - reasons A09: expert-only (eat)
 - compat A14: milder (app caution, experts yes)
 - reasons A15: expert-only (breeding, eat)
