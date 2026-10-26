@@ -25,6 +25,7 @@ import { minFit } from '../scene/tankMin';
 import { EXPERTISE_NAME } from '../data/care';
 import { CARE_NAME, FIT_PAR, fitCaption, whyNot, type FitLight } from '../scene/plantfit';
 import { itemLights, tankSummary } from '../scene/lightcheck';
+import { topGearReach, TOP_GEAR_GAP } from '../scene/topgear';
 import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeLayout, tubeOf, TUBE_SP_MAX, bestPos, ledBarDepth, posMax, wattsOf, type Fixture } from '../scene/lightout';
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
@@ -2057,7 +2058,7 @@ Cancel, then change the name, to keep both.`)) return;
     Object.assign($('lSp') as HTMLInputElement, tl ? { max: String(TUBE_SP_MAX), step: '5' } : { max: '1500', step: '10' }); setVal('lSp', l.spacing ?? 0);
     setVal('lPat', l.pattern); setOut('oLSp', tl ? (tl.set ? `${fmt(tl.s)} · hood ${fmt(tl.depth)} deep` : 'Auto') : l.spacing ? fmt(l.spacing) : 'Auto'); setOut('oLCone', l.cone + '°');
     setOut('oLH', s.lid === 'hood' ? 'In hood' : fmt(l.height) + ' above');
-    $('lHRow').style.display = l.type === 'flat' ? 'none' : ''; ($('lH') as HTMLInputElement).disabled = s.lid === 'hood';
+    $('lHRow').style.display = l.type === 'flat' ? 'none' : ''; ($('lH') as HTMLInputElement).disabled = s.lid === 'hood'; ($('lH') as HTMLInputElement).min = String(Math.max(FIX_SPEC[fx]?.h[0] ?? 0, Math.ceil(topGearReach(s) + TOP_GEAR_GAP) * +(topGearReach(s) > 0))); // the lid gear's reach is the floor
     $('lMountRow').style.display = l.type === 'flat' || s.lid === 'hood' ? 'none' : ''; setVal('lMount', mountOf(l));
     $('lHoodLedRow').style.display = s.lid === 'hood' && l.type === 'led' ? '' : 'none'; setVal('lHoodLed', l.hoodLed ?? 'strips');
     // in a hood the LED fixture is strips or a bar (the row above), so the menu does not promise a full-length bar

@@ -5,6 +5,7 @@ import { parsePatches } from './brush';
 import { ANIMAL_RANGE, DENS_RANGE, LIBRARY, MAX_ITEMS, clampItem, legacyDens, starterItems } from './items';
 import { CEILING_H, CEILING_MAX, CEILING_MIN, WALL_GAP, WALL_GAP_MAX, clamp, mapToTank } from './physics';
 import { MH_BULBS, TECH_IDS, fitFixture } from './lightout';
+import { clearTopGear } from './topgear';
 import { lightProduct } from '../data/gearCatalog';
 import { normTank } from './shape';
 import { TABLE_MAX, fitTable } from './table';
@@ -357,6 +358,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
   { const pr = parsePairs(raw.pairs, setup.fish); if (pr) setup.pairs = pr; } // 2026-10-22: pairing per pair species, absent = unknown
   keepInWater(setup); fitTable(setup);
   fitFixture(setup.light, setup.tank, false); // 2026-10-15: older lights clamped into their fixture's usual ranges
+  clearTopGear(setup); // lane S231 2026-10-26: a light over a dry tank clears its lid gear
   return setup;
 }
 
