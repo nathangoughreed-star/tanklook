@@ -482,7 +482,10 @@ Software fixes from research/rules-spec.md section 6; no threshold changed. Benc
   gradient fill, then changed his mind the same day.) The minimum bar keeps one colour per level (its yellow line is Recommended, not
   75 %); the plan sheet's bars are its own and are untouched. Stocking screen (Nathan, same day: "yes"): its Space bars (`.spBar.gauge`)
   share the gauge, `ui/gauge.ts` + style.css `.gauge`; `spaceBand` still drives the past-ideal label and the near / over class; its
-  tank-size bar (the animals' minimum against the tank) stays flat, like the tile's minimum bar.
+  tank-size bar (the animals' minimum against the tank) stays flat, like the tile's minimum bar. Pill and labels (Nathan, same day:
+  "since this is just over ideal, it should still be pretty much green"): the collapsed tile's pill, the stocking screen's past-ideal label
+  and the plan sheet's bars take the gauge's colour at the percent (`gaugeColor` / `gaugeText` in ui/gauge.ts; the plan sheet's bars are
+  gauges now); the band words (`spaceBand`) are unchanged.
 - **Moved numbers (deliberate; full list research/habitat/moved-numbers.txt, vs main 1740665):** 35 of 1944 starter scenes (kuhli-heavy
   ones lose 2-4 kuhlis, others gain swimmers; paludariums in 2.5-5 gal drop to 1 toad / 1 newt). 16 tankFor picks: 12 kuhli (2x group) 20 high -> 30 breeder,
   13 kuhlis in a 20 long now fail on Space (~123 %, Nathan approved; the tank minimum still passes, test in minimum.test.ts); 4 adf 10 -> 15 gal;

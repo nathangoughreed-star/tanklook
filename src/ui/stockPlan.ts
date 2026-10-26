@@ -11,7 +11,7 @@ import { placeNew, shuffleFish } from '../scene/scatter';
 import type { Store } from '../scene/store';
 import type { Fish } from '../scene/types';
 import { IDEAL_MAX } from '../scene/stocking';
-import { GAUGE_TIP, gaugeStyle } from './gauge';
+import { GAUGE_TIP, gaugeColor, gaugeStyle } from './gauge';
 import type { Viewer } from '../render/viewer';
 import { gearView } from '../render/gear3d';
 import { tankView } from '../render/tankView';
@@ -144,7 +144,7 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
     const land = allLand(animals);
     h += `<div class="spHd">${land ? 'Terrarium sizes' : 'Tank sizes'}</div><div class="spBands spNote">${land ? 'Floor' : 'Space'}: <span class="spB ok">ideal up to ${IDEAL_MAX} %</span> <span class="spB near">caution, tread carefully, to 100 %</span> <span class="spB over">over 100 %: likely to cause problems long term</span></div><div class="spSizeKey spNote"><span>Space</span><span>Tank size</span></div><ul class="spSizes">${plan.options.map(o => {
       const bad = o.fails.length > 0, on = plan.tank?.id === o.tank.id, full = o.spacePct, filt = o.filtrationPct > 70 ? `<em class="${o.filtrationPct > 100 ? 'cr' : ''}">filter load ${Math.round(o.filtrationPct)} % on a basic filter; plants and a stronger one lower it</em>` : '';
-      return `<li><button type="button" data-act="size" data-tank="${o.tank.id}" class="${bad ? 'small' : ''}${on ? ' on' : ''}"${bad ? ' title="Too small for these animals; you can still pick it"' : ''}><span class="spLbl">${esc(tankLabel(o.tank, store.scene.units))}${bad ? `<em>${WHY[o.fails[0]]}</em>` : spaceBand(full) !== 'ok' ? '<em class="cr">past ideal: tread carefully</em>' : o.cramped ? '<em class="cr">workable, a bit cramped</em>' : ''}${filt}</span>${bar(full, land ? 'Floor: the floor these animals need at the minimum the sources accept' : 'Space: how full the tank is by room, whatever the filter', true)}<span class="spPct">${Math.round(full)} %</span>${bar(o.minPct, 'Tank size against what the animals need')}<span class="spPct">${Math.round(o.minPct)} %</span></button></li>`;
+      return `<li><button type="button" data-act="size" data-tank="${o.tank.id}" class="${bad ? 'small' : ''}${on ? ' on' : ''}"${bad ? ' title="Too small for these animals; you can still pick it"' : ''}><span class="spLbl">${esc(tankLabel(o.tank, store.scene.units))}${bad ? `<em>${WHY[o.fails[0]]}</em>` : spaceBand(full) !== 'ok' ? `<em class="cr" style="color:${gaugeColor(full)}">past ideal: tread carefully</em>` : o.cramped ? '<em class="cr">workable, a bit cramped</em>' : ''}${filt}</span>${bar(full, land ? 'Floor: the floor these animals need at the minimum the sources accept' : 'Space: how full the tank is by room, whatever the filter', true)}<span class="spPct">${Math.round(full)} %</span>${bar(o.minPct, 'Tank size against what the animals need')}<span class="spPct">${Math.round(o.minPct)} %</span></button></li>`;
     }).join('')}</ul>`;
     return h;
   };

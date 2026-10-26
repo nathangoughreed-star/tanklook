@@ -5,7 +5,7 @@ import type { Build } from '../scene/builds';
 import { planOf, planText, type Level, type Plan } from '../scene/plan';
 import type { Store } from '../scene/store';
 import type { TankSetup } from '../scene/types';
-import { IDEAL_MAX } from '../scene/stocking';
+import { gaugeStyle } from './gauge';
 import { getSpecies } from '../data/species';
 import { needLine, needsOf } from '../data/careNeeds';
 
@@ -22,7 +22,8 @@ export function planNeeds(S: TankSetup): { severity: string; text: string }[] {
 /** The plan as text with the care needs after the verdict lines. */
 export const planTextWithNeeds = (p: Plan, needs: { text: string }[]) => needs.length ? planText(p).replace(/\n\nShopping list/, `\n${needs.map(n => `  ? ${n.text}`).join('\n')}\n\nShopping list`) : planText(p);
 
-const bar = (label: string, pct: number) => `<div class="planBar"><span>${label}</span><div><i class="${pct > 100 ? 'bad' : pct >= IDEAL_MAX ? 'warn' : 'ok'}" style="width:${Math.min(100, pct)}%"></i></div><b>${pct}%</b></div>`;
+// S229 (Nathan 2026-10-26): the whole-scale gauge the tile and the stocking screen use (ui/gauge.ts), not a flat colour per band
+const bar = (label: string, pct: number) => `<div class="planBar"><span>${label}</span><div class="gauge" style="${gaugeStyle(pct)}"><i></i></div><b>${pct}%</b></div>`;
 
 export function planHtml(p: Plan, needs: { severity: string; text: string }[] = []): string {
   const needRows = p.rows.map(r => `<tr class="${r.kind}"><th scope="row">${esc(r.item)}${r.kind === 'extra' ? ' <em>(not needed)</em>' : ''}</th><td class="q">${usd(r.usd)}</td><td>${esc(r.serves)}</td></tr>`).join('');

@@ -593,8 +593,7 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .ftHead { display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px 10px; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; text-align: left }
 .ftTitle { font-weight: 600 } .ftChev { margin-left: auto; color: var(--muted); transition: transform .15s }
 .ftPill { padding: 0 7px; border-radius: 9px; font-weight: 600; background: #2e9e6a; color: #fff }
-.ftPill.ft-near { background: #e0a530; color: #1d2330 }
-.ftPill.ft-over { background: #d8432f; color: #fff }
+/* the pill's background and text are set inline from gaugeColor / gaugeText (S229): the gauge's colour at this level, so 76 % is still green */
 .ft:not(.min) .ftPill { display: none }
 .ft.min { width: auto } .ft.min .ftBody { display: none } .ft.min .ftChev { transform: rotate(-90deg) }
 .ftBody { padding: 0 10px 8px }
@@ -728,7 +727,7 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .planChip { position: absolute; left: 12px; bottom: 12px; z-index: 5; font: inherit; font-size: 13px; font-weight: 600; padding: 7px 14px; border-radius: 16px; border: 1px solid #2a9bb0; background: #2a9bb0; color: #fff; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, .3) }
 .planChip[hidden] { display: none }
 #sheetView .sheetBar .grow { flex: 1 }
-#sheetView .planBar { display: grid; grid-template-columns: 80px 1fr 46px; gap: 8px; align-items: center; margin: 4px 0 } #sheetView .planBar div { height: 12px; background: #e3e6eb; border-radius: 6px; overflow: hidden } #sheetView .planBar i { display: block; height: 100% } #sheetView .planBar b { text-align: right }
+#sheetView .planBar { display: grid; grid-template-columns: 80px 1fr 46px; gap: 8px; align-items: center; margin: 4px 0 } #sheetView .planBar div { height: 12px; background: #e3e6eb; border-radius: 6px } /* a .gauge (S229) */ #sheetView .planBar i { display: block; height: 100% } #sheetView .planBar b { text-align: right }
 #sheetView i.ok { background: #2e9e5b } #sheetView i.warn { background: #d9a21b } #sheetView i.bad { background: #c0392b }
 #sheetView .planVerdict { margin: 4px 0; font-size: 15px } #sheetView .planVerdict.ok b { color: #2e7d32 } #sheetView .planVerdict.bad b { color: #c0392b } #sheetView .planVerdict.warn b { color: #b8860b }
 #sheetView .planMore { list-style: none; margin: 2px 0 4px 22px; padding: 0; font-size: .92em; opacity: .85 }

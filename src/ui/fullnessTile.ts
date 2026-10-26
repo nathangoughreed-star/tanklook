@@ -17,7 +17,7 @@ const ROUTINE_FLOOR = dd.time.waterChangeFraction.floor;
 import type { Store } from '../scene/store';
 import type { SpaceLimit, TankSetup, Units } from '../scene/types';
 import { tankView } from '../render/tankView';
-import { GAUGE_TIP, gaugeStyle } from './gauge';
+import { GAUGE_TIP, gaugeColor, gaugeStyle, gaugeText } from './gauge';
 
 /** A bar at or over this reads "caution" (amber, past ideal); over 100 is over (red). */
 export const NEAR_FULL = IDEAL_MAX;
@@ -240,6 +240,8 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
     pill.textContent = (st.fit?.fits === false ? `${st.head.text} · too big` : st.head.text) + (st.compat ? ` · ${st.compat.level === 'over' ? 'compat risk' : 'compat concern'}` : ''); // lane CP: seen while minimized, the bar colours stay load-only
     pill.title = st.compat?.text ?? '';
     pill.className = `ftPill ft-${st.fit?.fits === false ? 'over' : st.head.level}`;
+    const pc = st.fit?.fits === false || st.head.level === 'over' ? Infinity : st.head.pct; // the gauge's colour at this level, not the band's
+    pill.style.background = gaugeColor(pc); pill.style.color = gaugeText(pc);
     const box = (on: boolean) => `<label class="ftNoFilt"><input type="checkbox" class="ftNoFilter"${on ? ' checked' : ''}> No filter: I am keeping this tank filterless (Walstad style)</label>`;
     // lane HB (Nathan 2026-10-21): Space split into its two limits; the pill and the tank fit use the larger
     const spaceRows = row('water', 'Water column', st.water, topBy(r, 'space'), 'water column', undefined, 'How full the water is: body size against the litres (fitted to AqAdvisor). More height counts here.')
