@@ -46,6 +46,20 @@ for (const m of J.tanks) for (const v of m.variants ?? []) {
 console.log(stats);
 const by = {}; for (const g of gaps) { const k = `${g.maker} @ ${g.retailer ?? '-'}`; by[k] = (by[k] ?? 0) + 1; }
 console.log(Object.entries(by).sort((a, b) => b[1] - a[1]).slice(0, 15).map(([k, n]) => `${n}  ${k}`).join('\n'));
+// bundles whose gear should lock but have no kits.json record (the kit-records lane), and generic sizes with no standard priced tank
+const kitGaps = [], priceGaps = [];
+for (const m of J.tanks) {
+  for (const v of m.variants ?? []) if (!v.kit && v.includes && (v.includes.light || v.includes.filter || v.includes.heater)) kitGaps.push({ key: `${m.id}|${vkey(v)}`, maker: v.brand, retailer: v.retailer ?? null, url: v.url ?? null, includes: v.includes });
+  if (/^[\d.]+ (gal|ft)/.test(m.name) && !m.terrarium && (m.shape ?? 'rect') === 'rect') {
+    const std = (m.variants ?? []).filter(v => !v.discontinued && v.price_usd && v.price_kind !== 'kit' && !v.rimless && !/acrylic|low[- ]?iron|waterbox|red sea|reefer/i.test(`${v.brand} ${v.line ?? ''} ${v.price_note ?? ''}`));
+    if (std.length < (m.ratedGal >= 75 ? 2 : 3)) priceGaps.push({ id: m.id, name: m.name, standardPriced: std.length });
+  }
+}
+console.log('kit gaps', kitGaps.length, 'price gaps', priceGaps.length);
+if (WRITE) {
+  fs.writeFileSync(path.join(path.dirname(gp), 'kit-gaps.json'), JSON.stringify({ note: 'variants whose includes says light / filter / heater but have no kit record in kits.json: no gear spec to hold, so they stay free (S233b); for the kit-records lane', count: kitGaps.length, gaps: kitGaps }, null, 1) + '\n');
+  fs.writeFileSync(path.join(path.dirname(gp), 'price-gaps.json'), JSON.stringify({ note: 'generic sizes with fewer than 3 standard rimmed non-kit priced products (2 from 75 gal): the planner uses its $/gallon rule (or big-box tanks) there; for the research lane (e.g. g50b, the 36x18x19 breeder: no Aqueon / Marineland price found)', sizes: priceGaps }, null, 1) + '\n');
+}
 if (WRITE) {
   let out = JSON.stringify(J, null, 1) + '\n'; if (crlf) out = out.replace(/\n/g, '\r\n'); fs.writeFileSync(tp, out);
   fs.writeFileSync(gp, JSON.stringify({ note: 'variants whose includes has unknown keys (lid unknown, or light / filter / heater / stand); feeds a follow-up research lane', count: gaps.length, gaps }, null, 1) + '\n');
