@@ -131,7 +131,7 @@ function cmdApply() {
   // a browser reading replaces a plain-fetch 'browser' placeholder
   const all = read('results.json').map(r => (r.status === 'browser' && browser.has(r.key) ? { ...r, ...browser.get(r.key) } : r));
   const lib = loadLib(), day = today();
-  const rep = { changed: [], sales: [], saleEnded: [], filled: [], dead: [], held: [], unreadable: [], same: 0, soldOut: [] };
+  const rep = { changed: [], sales: [], saleEnded: [], filled: [], dead: [], held: [], unreadable: [], same: 0, soldOut: [], includesDiff: [] };
   const money2 = (n) => `$${n.toFixed(2)}`;
   for (const r of all) {
     const [id, idxS] = r.key.split('|'), m = lib.tanks.find(t => t.id === id);
@@ -139,6 +139,8 @@ function cmdApply() {
     if (!v || v.url !== r.url) v = m?.variants?.find(x => x.url === r.url); // the list moved since the fetch
     if (!v) continue;
     const name = `${id}: ${v.brand}${v.line ? ' ' + v.line : ''}${v.retailer ? ' (' + v.retailer + ')' : ''}`;
+    // report-only: what the page says is in the box vs TankVariant.includes (lid glass|hood|mesh|none, light, filter, heater, stand), once the catalogue carries it
+    if (r.includes_seen && v.includes) for (const k of Object.keys(r.includes_seen)) if (v.includes[k] !== undefined && String(v.includes[k]) !== String(r.includes_seen[k])) rep.includesDiff.push(`${name}: ${k} stored ${v.includes[k]}, page says ${r.includes_seen[k]} - ${r.url}`);
     if (r.status === 'dead') { rep.dead.push(`${name} - ${r.note} - ${r.url}`); continue; }
     if (r.status !== 'ok' || !r.price) { rep.unreadable.push(`${name} - ${r.note ?? r.status}`); continue; }
     const old = v.price_usd ?? null, oldReg = v.regular_usd ?? null, p = r.price;
@@ -164,7 +166,7 @@ function cmdApply() {
   const lines = [`# Price sweep ${day}`, '', `${all.length} variants read: ${rep.same} unchanged, ${rep.changed.length} price changes, ${rep.sales.length} sales seen, ${rep.saleEnded.length} sales ended, ${rep.filled.length} unpriced ones with a price shown, ${rep.dead.length} dead links, ${rep.held.length} held for review, ${rep.unreadable.length} unreadable.`, ''];
   const sec = (t, a) => { if (a.length) lines.push(`## ${t} (${a.length})`, ...a.map(x => '- ' + x), ''); };
   sec('Sales seen', rep.sales); sec('Price changes', rep.changed); sec('Sales ended', rep.saleEnded); sec('Unpriced entries that now show a price (NOT applied)', rep.filled);
-  sec('Dead links', rep.dead); sec('Held for review (price far from the stored one; NOT applied)', rep.held); sec('Listed unavailable', rep.soldOut); sec('Unreadable (left as they were)', rep.unreadable);
+  sec('Dead links', rep.dead); sec('Held for review (price far from the stored one; NOT applied)', rep.held); sec('Listed unavailable', rep.soldOut); sec('Includes disagree with the catalogue (report only, nothing changed)', rep.includesDiff); sec('Unreadable (left as they were)', rep.unreadable);
   writeFileSync(join(dir, 'report.md'), lines.join('\n'));
   saveLib(lib);
   console.log(lines.slice(0, 3).join('\n'));
