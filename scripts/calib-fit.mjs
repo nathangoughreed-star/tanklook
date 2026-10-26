@@ -21,6 +21,19 @@ const S_FLOOR = 0.10, S_DEFAULT = 0.2, BAND_K = 0.55; // noise floor, noise befo
 /** Confidence weights (survey 2: low / medium / high); answers without one count 1. Ambiguous counts (both dimensions near the anchor) count half. */
 export const CONF_W = [0.5, 1, 1.5], AMBIG_W = 0.5;
 
+
+/** Counts nobody keeps (Nathan 2026-10-26: flagged in review, still fitted at full weight): 30 or more of one species (40 for shrimp and
+ *  snails), 15 or more corydoras, or 50 or more animals in the tank. The old random rounds drew many (87 harlequins, 19 panda cory). */
+export function implausibleOf(s, name = id => id) {
+  const why = [], total = s.stock.reduce((a, [, n]) => a + n, 0);
+  for (const [id, n] of s.stock) {
+    const inv = s.cls?.[id] === 'invert', nm = name(id), lim = inv ? 40 : /orydoras/i.test(nm) ? 15 : 30;
+    if (n >= lim) why.push(`${n} ${nm}`);
+  }
+  if (!why.length && total >= 50) why.push(`${total} animals in all`);
+  return why;
+}
+
 /** The parameter vector's layout for a round: names and the species / class index of each. */
 export function layout(round) {
   const species = [...new Set(round.scenarios.flatMap(s => s.stock.map(x => x[0])))].sort();
@@ -403,6 +416,9 @@ if (process.argv[1]?.endsWith('calib-fit.mjs')) {
   });
   // --one-ai: every AI-model file is one source with one bias term (Nathan 2026-10-26: the ChatGPT experts count as one)
   if (args.includes('--one-ai')) for (const f of files) if (f.expertKind === 'ai') { f.expertWas = f.expert; f.expert = 'ai'; }
+  // --no-implausible: leave out the tanks of rounds 1-3 that implausibleOf flags (v4's curated tanks are never dropped)
+  if (args.includes('--no-implausible')) { const drop = new Set(); for (const R of rounds) if (R.survey !== 'v4') for (const s of R.scenarios) if (implausibleOf(s, id => s.names?.[id] ?? id).length) drop.add(R.round + ':' + s.id);
+    for (const f of files) if (f.survey !== 'v4') f.answers = f.answers.filter(a => !drop.has(f.round + ':' + a.id)); console.log('left out ' + drop.size + ' implausible tanks'); }
   if (!rounds.length || !files.length) { console.error('usage: node scripts/calib-fit.mjs [--as-made] [--out <base>] round-N.json | research/calib/v4/scenarios-v4.json [...] answers.json [...]'); process.exit(1); }
   const { round, files: use, unmatched } = combine(rounds, files), r = fitRound(round, use);
   for (const u of unmatched) console.warn('not fitted: ' + u);

@@ -4,7 +4,8 @@
 // survive a rerun.
 // Run: node scripts/calib-review.mjs research/calib/round-N.json research/calib/answers/round-N-<expert>.json
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
-import { answersFit, buildOf, dimOf, focalOf, loadTables, partsAt, withTables } from './calib-fit.mjs';
+import { answersFit, buildOf, dimOf, focalOf, implausibleOf, loadTables, partsAt, withTables } from './calib-fit.mjs';
+export { implausibleOf };
 
 /** Engine reading of a table row on a dimension ('water', 'floor' or 'max'). */
 export const readOn = (tbl, n, dim = 'max') => { const { W, F } = partsAt(tbl, n); return dim === 'water' ? W : dim === 'floor' ? F : Math.max(W, F); };
@@ -43,18 +44,6 @@ export const PATTERNS = [
   ['tank size', r => r.s.gal <= 20 ? '10-20 gal' : r.s.gal <= 40 ? '29-40 gal' : '55 gal and up'],
   ['focal count as shown', r => r.shown <= 10 ? '10 or fewer' : r.shown <= 30 ? '11-30' : 'over 30'],
 ];
-
-/** Counts nobody keeps (Nathan 2026-10-26: flagged in review, still fitted at full weight): 30 or more of one species (40 for shrimp and
- *  snails), 15 or more corydoras, or 50 or more animals in the tank. The old random rounds drew many (87 harlequins, 19 panda cory). */
-export function implausibleOf(s, name = id => id) {
-  const why = [], total = s.stock.reduce((a, [, n]) => a + n, 0);
-  for (const [id, n] of s.stock) {
-    const inv = s.cls?.[id] === 'invert', nm = name(id), lim = inv ? 40 : /orydoras/i.test(nm) ? 15 : 30;
-    if (n >= lim) why.push(`${n} ${nm}`);
-  }
-  if (!why.length && total >= 50) why.push(`${total} animals in all`);
-  return why;
-}
 
 export function review(round, file) {
   const rows = rowsOf(round, file), used = rows.filter(r => r.s.role !== 'repeat'), v2 = file.survey === 2 || file.answers.some(a => a.focal);

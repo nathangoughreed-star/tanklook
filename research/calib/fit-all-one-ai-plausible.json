@@ -1,0 +1,453 @@
+{
+ "round": "1+2+3a+3+v4",
+ "experts": [
+  "ai",
+  "ngr"
+ ],
+ "noise": {
+  "s": 0.2,
+  "pairs": 0
+ },
+ "solver": {
+  "it": 76,
+  "gnorm": 0.0000044094099558285645
+ },
+ "skipped": [
+  "chatgpt high 2 v4: 22 count tanks read; 38 answers on tanks outside the count fit (no counts asked, or no space.* / golden.* tag); 0 count tanks skipped by the expert",
+  "chatgpt high 2 v4: 59 notes read (Claude Opus 5.5 (S227), read in full against each tank, the answers and the app reading); 9 answer(s) changed by them: A15 reasons restated [\"aggression\"] -> [\"breeding\",\"eat\"] (\"a breeding male can become territorial and harass females\"); A15 problem restated [\"honeygourami\"] -> [\"honeygourami\",\"cherryshrimp\"] (\"juvenile shrimp are vulnerable to predation\"); B05 ideal restated 0 -> null (\"The ideal count of zero is deliberate. It means no socially appropriate group achieves my preferred comfort standard in this aquarium\"); C05 countStatus restated \"no-valid-count\" -> null (\"Zero is intentional rather than selecting No count works as described\"); C05 ideal restated null -> 0 (\"Without chromis, the remaining four fish are a defensible, though somewhat borderline, 55-gallon community\"); C05 limit restated null -> 0 (\"The zero thresholds are husbandry judgments\"); D10 change restated null -> \"drop\" (\"Removing the minnows would be my first change\"); D10 changeSp restated null -> [\"whitecloud\"] (\"Removing the minnows would be my first change\"); D12 max.adf aside (\"The maximum of zero frogs applies specifically to this aquarium with the betta remaining\")",
+  "ai 2:f10 focal.ideal: set aside on review (the ideal counts are preferred counts with 8 gouramis held, \"they do not imply the combination becomes green\"; the caution comes from gourami territory, not room)",
+  "ai 2:f10 mate.ideal: set aside on review (the ideal counts are preferred counts with 8 gouramis held, \"they do not imply the combination becomes green\"; the caution comes from gourami territory, not room)",
+  "ai 2:f10 water: set aside on review (the ideal counts are preferred counts with 8 gouramis held, \"they do not imply the combination becomes green\"; the caution comes from gourami territory, not room)",
+  "ai 2:f10 overall: set aside on review (the ideal counts are preferred counts with 8 gouramis held, \"they do not imply the combination becomes green\"; the caution comes from gourami territory, not room)",
+  "ai 2:f9 guppy limit 40: outside the table (1..36)",
+  "ai 3a:f1: kept on review, \"what limits\" read as room (the note says the counts are room-only thresholds and the no is the pea puffer's compatibility (would remove the puffer): a compatibility answer, kept as room (S214 review))",
+  "ai v4:A04 overall: set aside on review (v4 change \"drop\": a compatibility answer, not a room band)",
+  "ai v4:A11 overall: set aside on review (v4 change \"bigger\": a tank-minimum answer, not a room band)",
+  "ai v4:A12 overall: set aside on review (v4 change \"bigger\": a tank-minimum answer, not a room band)",
+  "ai v4:A13 overall: set aside on review (v4 change \"bigger\": a tank-minimum answer, not a room band)",
+  "ai v4:A16 overall: set aside on review (v4 change \"bigger\": a tank-minimum answer, not a room band)",
+  "ai v4:B02 overall: set aside on review (v4 change \"bigger\": a tank-minimum answer, not a room band)",
+  "ai v4:B05 overall: set aside on review (v4 change \"bigger\": a tank-minimum answer, not a room band)",
+  "ai v4:B06 overall: set aside on review (v4 change \"other\": another reason (see the note), not a room band)",
+  "ai v4:B07 overall: set aside on review (v4 change \"ratio\": a group-size or sex-mix answer, not a room band)",
+  "ai v4:B08 overall: set aside on review (v4 change \"bigger\": a tank-minimum answer, not a room band)",
+  "ai v4:C04 overall: set aside on review (v4 change \"bigger\": a tank-minimum answer, not a room band)",
+  "ai v4:C05 chromis ideal 0: outside the table (1..16)",
+  "ai v4:C05 chromis limit 0: outside the table (1..16)",
+  "ai v4:C08 overall: set aside on review (v4 change \"drop\": a compatibility answer, not a room band)"
+ ],
+ "flagged": [
+  "ai v4:A04 bronzecory limit 8: water 112 %, floor 102 % (weighted 0.5)",
+  "ai v4:A05 neon ideal 10: water 119 %, floor 101 % (weighted 0.5)",
+  "ai v4:A05 bronzecory ideal 6: water 119 %, floor 101 % (weighted 0.5)",
+  "ai v4:A05 bronzecory limit 7: water 126 %, floor 114 % (weighted 0.5)"
+ ],
+ "rows": 102,
+ "held": 0,
+ "g": 0.8494,
+ "f": 1.25,
+ "class": {
+  "big": 1.2292,
+  "invert": 0.9449,
+  "mid": 0.8988,
+  "salt": 1.0371,
+  "tiny": 0.8867
+ },
+ "species": {
+  "amano": {
+   "mult": 0.8045,
+   "own": 1.0022,
+   "cls": "invert",
+   "answers": 3
+  },
+  "betta": {
+   "mult": 0.776,
+   "own": 1.0163,
+   "cls": "mid",
+   "answers": 4
+  },
+  "bluetang": {
+   "mult": 0.8809,
+   "own": 1,
+   "cls": "salt",
+   "answers": 0
+  },
+  "boesemani": {
+   "mult": 0.723,
+   "own": 0.9469,
+   "cls": "mid",
+   "answers": 4
+  },
+  "bristlenose": {
+   "mult": 0.7589,
+   "own": 0.9939,
+   "cls": "mid",
+   "answers": 21
+  },
+  "bronzecory": {
+   "mult": 0.7255,
+   "own": 0.9503,
+   "cls": "mid",
+   "answers": 18
+  },
+  "cardinal": {
+   "mult": 0.7118,
+   "own": 0.945,
+   "cls": "tiny",
+   "answers": 11
+  },
+  "cherrybarb": {
+   "mult": 0.7763,
+   "own": 1.0168,
+   "cls": "mid",
+   "answers": 8
+  },
+  "cherryshrimp": {
+   "mult": 0.781,
+   "own": 0.973,
+   "cls": "invert",
+   "answers": 11
+  },
+  "chili": {
+   "mult": 0.7062,
+   "own": 0.9377,
+   "cls": "tiny",
+   "answers": 13
+  },
+  "chromis": {
+   "mult": 0.8879,
+   "own": 1.0079,
+   "cls": "salt",
+   "answers": 1
+  },
+  "cleanershrimp": {
+   "mult": 0.8813,
+   "own": 1.0005,
+   "cls": "salt",
+   "answers": 1
+  },
+  "clownloach": {
+   "mult": 1.0441,
+   "own": 1,
+   "cls": "big",
+   "answers": 0
+  },
+  "coralbeauty": {
+   "mult": 0.8824,
+   "own": 1.0016,
+   "cls": "salt",
+   "answers": 1
+  },
+  "cpd": {
+   "mult": 0.7532,
+   "own": 1,
+   "cls": "tiny",
+   "answers": 0
+  },
+  "danio": {
+   "mult": 0.7869,
+   "own": 1.0447,
+   "cls": "tiny",
+   "answers": 2
+  },
+  "demasoni": {
+   "mult": 0.7758,
+   "own": 1.0301,
+   "cls": "tiny",
+   "answers": 1
+  },
+  "discus": {
+   "mult": 1.0055,
+   "own": 0.963,
+   "cls": "big",
+   "answers": 5
+  },
+  "dwarfgourami": {
+   "mult": 0.764,
+   "own": 1.0007,
+   "cls": "mid",
+   "answers": 9
+  },
+  "dwarfpencil": {
+   "mult": 0.7187,
+   "own": 0.9542,
+   "cls": "tiny",
+   "answers": 4
+  },
+  "ember": {
+   "mult": 0.836,
+   "own": 1.1099,
+   "cls": "tiny",
+   "answers": 6
+  },
+  "goldfish": {
+   "mult": 1.3051,
+   "own": 1.25,
+   "cls": "big",
+   "answers": 3
+  },
+  "gourami": {
+   "mult": 0.76,
+   "own": 0.9954,
+   "cls": "mid",
+   "answers": 5
+  },
+  "guppy": {
+   "mult": 0.6209,
+   "own": 0.8244,
+   "cls": "tiny",
+   "answers": 18
+  },
+  "harlequin": {
+   "mult": 0.8008,
+   "own": 1.0489,
+   "cls": "mid",
+   "answers": 3
+  },
+  "hatchet": {
+   "mult": 0.7648,
+   "own": 1.0154,
+   "cls": "tiny",
+   "answers": 1
+  },
+  "hermit": {
+   "mult": 0.8829,
+   "own": 1.0023,
+   "cls": "salt",
+   "answers": 1
+  },
+  "hillstream": {
+   "mult": 0.7532,
+   "own": 1,
+   "cls": "tiny",
+   "answers": 0
+  },
+  "honeygourami": {
+   "mult": 0.7725,
+   "own": 1.0118,
+   "cls": "mid",
+   "answers": 6
+  },
+  "kadango": {
+   "mult": 1.0441,
+   "own": 1,
+   "cls": "big",
+   "answers": 0
+  },
+  "kribensis": {
+   "mult": 0.7635,
+   "own": 1,
+   "cls": "mid",
+   "answers": 0
+  },
+  "kuhli": {
+   "mult": 0.741,
+   "own": 0.9706,
+   "cls": "mid",
+   "answers": 7
+  },
+  "mandarin": {
+   "mult": 0.8809,
+   "own": 1,
+   "cls": "salt",
+   "answers": 0
+  },
+  "molly": {
+   "mult": 0.7682,
+   "own": 1.0061,
+   "cls": "mid",
+   "answers": 4
+  },
+  "neon": {
+   "mult": 0.8606,
+   "own": 1.1426,
+   "cls": "tiny",
+   "answers": 23
+  },
+  "nerite": {
+   "mult": 0.8027,
+   "own": 1,
+   "cls": "invert",
+   "answers": 10
+  },
+  "ocellaris": {
+   "mult": 0.8827,
+   "own": 1.002,
+   "cls": "salt",
+   "answers": 1
+  },
+  "oscar": {
+   "mult": 1.0441,
+   "own": 1,
+   "cls": "big",
+   "answers": 0
+  },
+  "oto": {
+   "mult": 0.7515,
+   "own": 0.9978,
+   "cls": "tiny",
+   "answers": 5
+  },
+  "pandacory": {
+   "mult": 0.7815,
+   "own": 1.0377,
+   "cls": "tiny",
+   "answers": 3
+  },
+  "peacock": {
+   "mult": 0.7584,
+   "own": 0.9934,
+   "cls": "mid",
+   "answers": 2
+  },
+  "peapuffer": {
+   "mult": 0.7212,
+   "own": 0.9576,
+   "cls": "tiny",
+   "answers": 12
+  },
+  "platy": {
+   "mult": 0.7559,
+   "own": 1.0036,
+   "cls": "tiny",
+   "answers": 4
+  },
+  "pygmycory": {
+   "mult": 0.6855,
+   "own": 0.9102,
+   "cls": "tiny",
+   "answers": 21
+  },
+  "royalgramma": {
+   "mult": 0.8815,
+   "own": 1.0007,
+   "cls": "salt",
+   "answers": 1
+  },
+  "rummynose": {
+   "mult": 0.75,
+   "own": 0.9958,
+   "cls": "tiny",
+   "answers": 5
+  },
+  "sae": {
+   "mult": 0.967,
+   "own": 0.9261,
+   "cls": "big",
+   "answers": 4
+  },
+  "sterbai": {
+   "mult": 0.7482,
+   "own": 0.98,
+   "cls": "mid",
+   "answers": 4
+  },
+  "swordtail": {
+   "mult": 0.7697,
+   "own": 1.0081,
+   "cls": "mid",
+   "answers": 4
+  },
+  "syno": {
+   "mult": 1.0223,
+   "own": 0.9791,
+   "cls": "big",
+   "answers": 2
+  },
+  "turbo": {
+   "mult": 0.8809,
+   "own": 1,
+   "cls": "salt",
+   "answers": 1
+  },
+  "watchman": {
+   "mult": 0.882,
+   "own": 1.0013,
+   "cls": "salt",
+   "answers": 1
+  },
+  "whitecloud": {
+   "mult": 0.8196,
+   "own": 1.0881,
+   "cls": "tiny",
+   "answers": 18
+  },
+  "yellowlab": {
+   "mult": 0.7776,
+   "own": 1.0185,
+   "cls": "mid",
+   "answers": 3
+  },
+  "yellowtang": {
+   "mult": 0.8809,
+   "own": 1,
+   "cls": "salt",
+   "answers": 0
+  }
+ },
+ "capped": [
+  "f",
+  "d:goldfish"
+ ],
+ "bias": {
+  "ai": 0.09414631374015539,
+  "ngr": -0.07539490004933101
+ },
+ "error": {
+  "heldBefore": null,
+  "heldAfter": null,
+  "fitBefore": 0.39443296687477375,
+  "fitAfter": 0.27529678734099633,
+  "disagreement": null
+ },
+ "kinds": {
+  "ngr": "",
+  "ai": "ai"
+ },
+ "ratio": [
+  {
+   "id": "1:f12",
+   "expert": "ngr",
+   "experts": 1.625,
+   "engine": 1.4871794871794872
+  },
+  {
+   "id": "2:f9",
+   "expert": "ai",
+   "experts": 1.6,
+   "engine": 1.4545454545454546
+  },
+  {
+   "id": "3:f4",
+   "expert": "ai",
+   "experts": 1.4,
+   "engine": 1.4
+  },
+  {
+   "id": "3:f3",
+   "expert": "ai",
+   "experts": 1.3,
+   "engine": 1.25
+  },
+  {
+   "id": "v4:A13",
+   "expert": "ai",
+   "experts": 1.25,
+   "engine": 1.4444444444444444
+  }
+ ],
+ "maxRule": {
+  "same": 6,
+  "lower": 0,
+  "higher": 0,
+  "cases": []
+ },
+ "compat": {
+  "concern -> caution": 4,
+  "ok -> caution": 8,
+  "high -> no": 4,
+  "concern -> yes": 1,
+  "ok -> yes": 1
+ },
+ "tables": "round 1: current engine, 2026-10-26; round 2: current engine, 2026-10-26; round 3a: current engine, 2026-10-26; round 3: current engine, 2026-10-26; round v4: current engine, 2026-10-26"
+}
