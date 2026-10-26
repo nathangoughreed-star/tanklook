@@ -5,9 +5,10 @@
 // demand engine always inferred (inferTech), so its numbers do not move. grow.feed is derived from the CO2 + ferts rows
 // (feedOf); the Plant care slider sets those rows (setFeed).
 import { fitsInStand } from './standspace';
+import { dryInferred } from './drygear';
 import data from '../data/tech.json';
 import { CARE } from '../data/care';
-import { AIR, climateOf } from '../data/climate';
+import { climateOf } from '../data/climate';
 import { getSpecies } from '../data/species';
 import { FILTER_MODELS, HEATER_MODELS, matchHeater, type FilterKind, type FilterModel, type HeaterModel } from '../demand/gear';
 import { price as rowPrice, tankRowPrice } from '../demand/prices';
@@ -123,6 +124,8 @@ export interface GearDef {
   perWaterChange?: { key: string; perGal: number };
   cutsDosing?: boolean;
   inWaterChange?: boolean;
+  /** a dry tank's piece that has a body in the 3D scene though it draws no power (thermostat, gauge, mist bottle) */
+  draw?: boolean;
 }
 export interface Preset { id: string; label: string; water: 'fresh' | 'salt'; rows: Record<string, string>; needs?: { substrate?: string; plants?: string } }
 
@@ -146,15 +149,11 @@ export function rowsFor(S: TankSetup): TechRow[] {
 
 // ---- defaults, presets, choices
 
-/** A dry tank infers a basking lamp (and UVB) when an animal's warm spot starts at this or hotter (deg C, 84 F): a real
- *  basking spot (ball python 30, leopard gecko 32, anoles 29), not the gentle gradient a crested gecko (26) or a tree
- *  frog (28) gets from the room. */
-const BASK_C = 29;
 /** The gear the demand engine always assumed (before the Tech menu): HOB up to 60 gal, canister above; one heater; CO2 /
  *  ferts from grow.feed; a skimmer on salt (hang-on, in the sump when the filter is one). Rows the engine did not count are 'none' (or the cheapest real choice). */
 export function inferTech(S: TankSetup): TechSetup {
-  // a dry tank: a basking lamp and UVB when an animal in it wants a warm spot (a lizard, a snake), else neither
-  if (!S.water.on) { const bask = S.fish.some(f => (AIR[f.species]?.warm?.[0] ?? 0) >= BASK_C); return { rows: { heatlamp: bask ? 'dome' : 'none', uvb: bask ? 'tube' : 'none', mist: 'none' } }; }
+  // a dry tank: the cheapest gear its animals call for (scene/drygear.ts: heat, thermostat, UVB, gauge, misting), one model for the Tech menu, the 3D and the totals
+  if (!S.water.on) return { rows: dryInferred(S.fish.map(f => f.species)) };
   const gal = galOf(S), feed = S.grow.feed, salt = isSalt(S);
   const rows: Record<string, string> = {
     filter: gal <= 60 ? 'hob' : 'canister', heater: 'one', chiller: 'none', air: 'none', uv: 'none',
@@ -675,7 +674,7 @@ export function techParts(S: TankSetup): TechPiece[] {
     }
     for (const gear of def?.parts ?? []) {
       const g = GEAR[gear];
-      if (!g || g.inWaterChange || g.perWaterChange || (!g.watts && !g.sized && !['dropchecker', 'diyco2', 'sump', 'refractometer', 'hydrometer', 'chiller', 'rodi'].includes(gear))) continue;
+      if (!g || g.inWaterChange || g.perWaterChange || (!g.watts && !g.sized && !g.draw && !['dropchecker', 'diyco2', 'sump', 'refractometer', 'hydrometer', 'chiller', 'rodi'].includes(gear))) continue;
       const piece: TechPiece = { row: row.id, option: opt, gear, n: def?.count ?? 1, ...(t.place?.[row.id] ? { place: t.place[row.id] } : {}) };
       if (g.sized === 'filter' && def?.kind) { const f = filterFor(S, def.kind, t.filterModel, t.filterProduct); Object.assign(piece, { model: f.model.id, n: f.n, gph: f.product?.gph ?? f.model.gph, watts: f.product?.watts ?? f.model.watts, ...(f.product ? { product: f.product.id } : {}) }); }
       else if (g.sized === 'heater') { const h = heatLoss(S, t); Object.assign(piece, { model: h.heater.id, n: h.n, watts: h.heater.watts }); }

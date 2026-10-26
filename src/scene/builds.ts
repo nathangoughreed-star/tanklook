@@ -240,7 +240,7 @@ function dryBuilds(animals: AnimalCount[], tank: TankModel, now: number): Build[
 
 /** What makes a build a different CHOICE: the tank, every gear choice (filter, heater, quality-of-life rows, pinned products), the light and
  *  the bundle. Not the price: two builds at the same price with different gear are different choices; the same gear is one choice. */
-export const configKey = (b: Build) => JSON.stringify([b.tank.id, b.setup.tech, b.setup.dryGear, b.setup.light, b.bundle ? [b.bundle.retailer, b.bundle.name] : null]);
+export const configKey = (b: Build) => JSON.stringify([b.tank.id, b.setup.tech, b.setup.light, b.bundle ? [b.bundle.retailer, b.bundle.name] : null]);
 
 /** The builds that are genuinely different (rules-spec section 4, "builds converge"): builds with the same configuration merge into the
  *  first of them, which takes the others' names ("Cheapest and balanced") and lists them in `also`. Order kept. */

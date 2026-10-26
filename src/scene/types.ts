@@ -341,7 +341,7 @@ export const standAsked = (st: StandSettings) => !st.show && st.need === 'ask';
 export type LidType = 'open' | 'glass' | 'hood' | 'mesh';
 /** Front opening (lane EN, 2026-10-16; absent = none): a terrarium's hinged or sliding glass doors, drawn on a rectangle's front pane. */
 export type DoorType = 'none' | 'hinged' | 'sliding';
-/** Terrarium gear (lane LT): heat source, its thermostat, UVB, a temperature / humidity gauge, misting, a timer on the lights. */
+/** Terrarium gear read off the Tech rows (scene/drygear.ts dryGearOf): heat source, its thermostat, UVB, a temperature / humidity gauge, misting, a timer on the lights. */
 export interface DryGear { heat: 'lamp' | 'mat' | 'none'; thermostat: 'onoff' | 'dimming' | 'none'; uvb: 't5' | 'low' | 'none'; gauge: boolean; mist: 'hand' | 'auto' | 'none'; timer: boolean }
 
 /** 'back' = wall behind the tank; 'left' / 'right' = peninsula, that end of the tank against the wall (Nathan 2026-10-08:
@@ -385,8 +385,6 @@ export interface TankSetup {
   water: WaterSettings;
   lid: LidType;
   doors?: DoorType;
-  /** A terrarium's gear (lane LT, 2026-10-26, no version bump; absent = the cheapest build for the animals in it, scene/drygear.ts) */
-  dryGear?: DryGear;
   stand: StandSettings;
   wall: WallSettings;
   person: PersonSettings;

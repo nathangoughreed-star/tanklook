@@ -9,6 +9,7 @@ import type { TankSetup } from './types';
 const PIECE_H: Record<string, (L: number) => number> = {
   heatdome: L => (L >= 900 ? 108 : 70) * 0.95 + 34 + 3,
   uvbtube: () => 36,
+  uvblow: () => 36,
   mister: () => 26,
   fogger: () => 46,
 };

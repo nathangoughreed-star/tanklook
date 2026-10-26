@@ -1,0 +1,98 @@
+changed rows: tankFor 0 of 576, steps 0 of 576, builds 30 of 576, starters 0 of 1620, sumps 0 of 128, examples 2 of 11
+
+builds | greenanole x1
+    before: cheapest t24x48x24 $1262/1262 filt 0 space 0 | leastWork t24x48x24 $1566/1566 filt 0 space 0 | balanced t24x48x24 $1388/1388 filt 0 space 0
+    after:  cheapest t24x48x24 $1131/1131 filt 0 space 0 | leastWork t24x48x24 $1434/1434 filt 0 space 0 | balanced t24x48x24 $1256/1256 filt 0 space 0
+builds | greenanole x3
+    before: cheapest t24x48x24 $1729/1729 filt 0 space 0 | leastWork t24x48x24 $2033/2033 filt 0 space 0 | balanced t24x48x24 $1855/1855 filt 0 space 0
+    after:  cheapest t24x48x24 $1598/1598 filt 0 space 0 | leastWork t24x48x24 $1901/1901 filt 0 space 0 | balanced t24x48x24 $1723/1723 filt 0 space 0
+builds | greenanole x6
+    before: cheapest t48x24x24 $2456/2456 filt 0 space 0 | leastWork t48x24x24 $2760/2760 filt 0 space 0 | balanced t48x24x24 $2582/2582 filt 0 space 0
+    after:  cheapest t48x24x24 $2324/2324 filt 0 space 0 | leastWork t48x24x24 $2628/2628 filt 0 space 0 | balanced t48x24x24 $2450/2450 filt 0 space 0
+builds | greenanole x12
+    before: cheapest t48x24x24 $3857/3857 filt 0 space 0 | leastWork t48x24x24 $4161/4161 filt 0 space 0 | balanced t48x24x24 $3982/3982 filt 0 space 0
+    after:  cheapest t48x24x24 $3725/3725 filt 0 space 0 | leastWork t48x24x24 $4029/4029 filt 0 space 0 | balanced t48x24x24 $3851/3851 filt 0 space 0
+builds | greenanole x25
+    before: cheapest t48x24x24 $6892/6892 filt 0 space 0 | leastWork t48x24x24 $7196/7196 filt 0 space 0 | balanced t48x24x24 $7018/7018 filt 0 space 0
+    after:  cheapest t48x24x24 $6761/6761 filt 0 space 0 | leastWork t48x24x24 $7064/7064 filt 0 space 0 | balanced t48x24x24 $6886/6886 filt 0 space 0
+builds | greenanole x50
+    before: cheapest t48x24x24 $12729/12729 filt 0 space 0 | leastWork t48x24x24 $13033/13033 filt 0 space 0 | balanced t48x24x24 $12855/12855 filt 0 space 0
+    after:  cheapest t48x24x24 $12598/12598 filt 0 space 0 | leastWork t48x24x24 $12901/12901 filt 0 space 0 | balanced t48x24x24 $12723/12723 filt 0 space 0
+builds | greenanolebrown x1
+    before: cheapest t24x48x24 $1262/1262 filt 0 space 0 | leastWork t24x48x24 $1566/1566 filt 0 space 0 | balanced t24x48x24 $1388/1388 filt 0 space 0
+    after:  cheapest t24x48x24 $1131/1131 filt 0 space 0 | leastWork t24x48x24 $1434/1434 filt 0 space 0 | balanced t24x48x24 $1256/1256 filt 0 space 0
+builds | greenanolebrown x3
+    before: cheapest t24x48x24 $1729/1729 filt 0 space 0 | leastWork t24x48x24 $2033/2033 filt 0 space 0 | balanced t24x48x24 $1855/1855 filt 0 space 0
+    after:  cheapest t24x48x24 $1598/1598 filt 0 space 0 | leastWork t24x48x24 $1901/1901 filt 0 space 0 | balanced t24x48x24 $1723/1723 filt 0 space 0
+builds | greenanolebrown x6
+    before: cheapest t48x24x24 $2456/2456 filt 0 space 0 | leastWork t48x24x24 $2760/2760 filt 0 space 0 | balanced t48x24x24 $2582/2582 filt 0 space 0
+    after:  cheapest t48x24x24 $2324/2324 filt 0 space 0 | leastWork t48x24x24 $2628/2628 filt 0 space 0 | balanced t48x24x24 $2450/2450 filt 0 space 0
+builds | greenanolebrown x12
+    before: cheapest t48x24x24 $3857/3857 filt 0 space 0 | leastWork t48x24x24 $4161/4161 filt 0 space 0 | balanced t48x24x24 $3982/3982 filt 0 space 0
+    after:  cheapest t48x24x24 $3725/3725 filt 0 space 0 | leastWork t48x24x24 $4029/4029 filt 0 space 0 | balanced t48x24x24 $3851/3851 filt 0 space 0
+builds | greenanolebrown x25
+    before: cheapest t48x24x24 $6892/6892 filt 0 space 0 | leastWork t48x24x24 $7196/7196 filt 0 space 0 | balanced t48x24x24 $7018/7018 filt 0 space 0
+    after:  cheapest t48x24x24 $6761/6761 filt 0 space 0 | leastWork t48x24x24 $7064/7064 filt 0 space 0 | balanced t48x24x24 $6886/6886 filt 0 space 0
+builds | greenanolebrown x50
+    before: cheapest t48x24x24 $12729/12729 filt 0 space 0 | leastWork t48x24x24 $13033/13033 filt 0 space 0 | balanced t48x24x24 $12855/12855 filt 0 space 0
+    after:  cheapest t48x24x24 $12598/12598 filt 0 space 0 | leastWork t48x24x24 $12901/12901 filt 0 space 0 | balanced t48x24x24 $12723/12723 filt 0 space 0
+builds | brownanole x1
+    before: cheapest t18x18x18 $881/881 filt 0 space 0 | leastWork t18x18x18 $881/881 filt 0 space 0 | balanced t18x18x18 $1007/1007 filt 0 space 0
+    after:  cheapest t18x18x18 $749/749 filt 0 space 0 | leastWork t18x18x18 $749/749 filt 0 space 0 | balanced t18x18x18 $875/875 filt 0 space 0
+builds | brownanole x3
+    before: cheapest n_exo_terra_24x18x24 $1424/1424 filt 0 space 0 | leastWork n_exo_terra_24x18x24 $1424/1424 filt 0 space 0 | balanced n_exo_terra_24x18x24 $1550/1550 filt 0 space 0
+    after:  cheapest n_exo_terra_24x18x24 $1293/1293 filt 0 space 0 | leastWork n_exo_terra_24x18x24 $1293/1293 filt 0 space 0 | balanced n_exo_terra_24x18x24 $1418/1418 filt 0 space 0
+builds | brownanole x6
+    before: cheapest t48x18x24 $2422/2422 filt 0 space 0 | leastWork t48x18x24 $2422/2422 filt 0 space 0 | balanced t48x18x24 $2547/2547 filt 0 space 0
+    after:  cheapest t48x18x24 $2290/2290 filt 0 space 0 | leastWork t48x18x24 $2290/2290 filt 0 space 0 | balanced t48x18x24 $2415/2415 filt 0 space 0
+builds | brownanole x12
+    before: cheapest t48x24x24 $3898/3898 filt 0 space 0 | leastWork t48x24x24 $3898/3898 filt 0 space 0 | balanced t48x24x24 $4023/4023 filt 0 space 0
+    after:  cheapest t48x24x24 $3766/3766 filt 0 space 0 | leastWork t48x24x24 $3766/3766 filt 0 space 0 | balanced t48x24x24 $3891/3891 filt 0 space 0
+builds | brownanole x25
+    before: cheapest t48x24x24 $6988/6988 filt 0 space 0 | leastWork t48x24x24 $6988/6988 filt 0 space 0 | balanced t48x24x24 $7113/7113 filt 0 space 0
+    after:  cheapest t48x24x24 $6856/6856 filt 0 space 0 | leastWork t48x24x24 $6856/6856 filt 0 space 0 | balanced t48x24x24 $6981/6981 filt 0 space 0
+builds | brownanole x50
+    before: cheapest t48x24x24 $12930/12930 filt 0 space 0 | leastWork t48x24x24 $12930/12930 filt 0 space 0 | balanced t48x24x24 $13055/13055 filt 0 space 0
+    after:  cheapest t48x24x24 $12798/12798 filt 0 space 0 | leastWork t48x24x24 $12798/12798 filt 0 space 0 | balanced t48x24x24 $12924/12924 filt 0 space 0
+builds | leopardgecko x1
+    before: cheapest t36x18x18 $770/770 filt 0 space 0 | leastWork t36x18x18 $770/770 filt 0 space 0 | balanced t36x18x18 $896/896 filt 0 space 0
+    after:  cheapest t36x18x18 $638/638 filt 0 space 0 | leastWork t36x18x18 $638/638 filt 0 space 0 | balanced t36x18x18 $764/764 filt 0 space 0
+builds | leopardgecko x3
+    before: cheapest t48x24x24 $1204/1204 filt 0 space 0 | leastWork t48x24x24 $1204/1204 filt 0 space 0 | balanced t48x24x24 $1329/1329 filt 0 space 0
+    after:  cheapest t48x24x24 $1072/1072 filt 0 space 0 | leastWork t48x24x24 $1072/1072 filt 0 space 0 | balanced t48x24x24 $1198/1198 filt 0 space 0
+builds | leopardgecko x6
+    before: cheapest t48x24x24 $1377/1377 filt 0 space 0 | leastWork t48x24x24 $1377/1377 filt 0 space 0 | balanced t48x24x24 $1502/1502 filt 0 space 0
+    after:  cheapest t48x24x24 $1245/1245 filt 0 space 0 | leastWork t48x24x24 $1245/1245 filt 0 space 0 | balanced t48x24x24 $1371/1371 filt 0 space 0
+builds | leopardgecko x12
+    before: cheapest t48x24x24 $1723/1723 filt 0 space 0 | leastWork t48x24x24 $1723/1723 filt 0 space 0 | balanced t48x24x24 $1849/1849 filt 0 space 0
+    after:  cheapest t48x24x24 $1592/1592 filt 0 space 0 | leastWork t48x24x24 $1592/1592 filt 0 space 0 | balanced t48x24x24 $1717/1717 filt 0 space 0
+builds | leopardgecko x25
+    before: cheapest t48x24x24 $2474/2474 filt 0 space 0 | leastWork t48x24x24 $2474/2474 filt 0 space 0 | balanced t48x24x24 $2599/2599 filt 0 space 0
+    after:  cheapest t48x24x24 $2342/2342 filt 0 space 0 | leastWork t48x24x24 $2342/2342 filt 0 space 0 | balanced t48x24x24 $2467/2467 filt 0 space 0
+builds | leopardgecko x50
+    before: cheapest t48x24x24 $3917/3917 filt 0 space 0 | leastWork t48x24x24 $3917/3917 filt 0 space 0 | balanced t48x24x24 $4042/4042 filt 0 space 0
+    after:  cheapest t48x24x24 $3785/3785 filt 0 space 0 | leastWork t48x24x24 $3785/3785 filt 0 space 0 | balanced t48x24x24 $3911/3911 filt 0 space 0
+builds | ballpython x1
+    before: cheapest t48x24x24 $1128/1128 filt 0 space 0 | leastWork t48x24x24 $1432/1432 filt 0 space 0 | balanced t48x24x24 $1254/1254 filt 0 space 0
+    after:  cheapest t48x24x24 $996/996 filt 0 space 0 | leastWork t48x24x24 $1300/1300 filt 0 space 0 | balanced t48x24x24 $1122/1122 filt 0 space 0
+builds | ballpython x3
+    before: cheapest t48x24x24 $1303/1303 filt 0 space 0 | leastWork t48x24x24 $1607/1607 filt 0 space 0 | balanced t48x24x24 $1429/1429 filt 0 space 0
+    after:  cheapest t48x24x24 $1172/1172 filt 0 space 0 | leastWork t48x24x24 $1475/1475 filt 0 space 0 | balanced t48x24x24 $1297/1297 filt 0 space 0
+builds | ballpython x6
+    before: cheapest t48x24x24 $1566/1566 filt 0 space 0 | leastWork t48x24x24 $1870/1870 filt 0 space 0 | balanced t48x24x24 $1691/1691 filt 0 space 0
+    after:  cheapest t48x24x24 $1434/1434 filt 0 space 0 | leastWork t48x24x24 $1738/1738 filt 0 space 0 | balanced t48x24x24 $1560/1560 filt 0 space 0
+builds | ballpython x12
+    before: cheapest t48x24x24 $2091/2091 filt 0 space 0 | leastWork t48x24x24 $2395/2395 filt 0 space 0 | balanced t48x24x24 $2217/2217 filt 0 space 0
+    after:  cheapest t48x24x24 $1960/1960 filt 0 space 0 | leastWork t48x24x24 $2263/2263 filt 0 space 0 | balanced t48x24x24 $2085/2085 filt 0 space 0
+builds | ballpython x25
+    before: cheapest t48x24x24 $3230/3230 filt 0 space 0 | leastWork t48x24x24 $3534/3534 filt 0 space 0 | balanced t48x24x24 $3355/3355 filt 0 space 0
+    after:  cheapest t48x24x24 $3098/3098 filt 0 space 0 | leastWork t48x24x24 $3402/3402 filt 0 space 0 | balanced t48x24x24 $3223/3223 filt 0 space 0
+builds | ballpython x50
+    before: cheapest t48x24x24 $5419/5419 filt 0 space 0 | leastWork t48x24x24 $5723/5723 filt 0 space 0 | balanced t48x24x24 $5544/5544 filt 0 space 0
+    after:  cheapest t48x24x24 $5287/5287 filt 0 space 0 | leastWork t48x24x24 $5591/5591 filt 0 space 0 | balanced t48x24x24 $5413/5413 filt 0 space 0
+examples | arid #0
+    before: 0 % (space 0, filt 0) setup $1523 | Tank (90 gal)
+    after:  0 % (space 0, filt 0) setup $1392 | Tank (90 gal)
+examples | python #0
+    before: 0 % (space 0, filt 0) setup $1750 | Tank (90 gal)
+    after:  0 % (space 0, filt 0) setup $1619 | Tank (90 gal)

@@ -102,13 +102,12 @@ function kitServes(parts: ({ serves: string; kind: PlanRow['kind'] } | undefined
 function dryServe(k: string, S: TankSetup, animals: AnimalCount[]): { serves: string; kind: PlanRow['kind'] } | undefined {
   const names = [...new Set(animals.map(a => getSpecies(a.species)?.name).filter(Boolean))].slice(0, 3).join(', ');
   if (k === 'tank') return { serves: `Floor: your animals need ${Math.round(dryFit(S.tank, animals).spacePct)}% of its floor at the minimum the sources accept`, kind: 'need' };
-  if (k === 'dry:dome' || k === 'dry:basking-bulb') return { serves: `Heat: a warm basking spot for ${names}`, kind: 'need' };
-  if (k === 'dry:heat-mat') return { serves: `Heat: ${names} want it warmer than a room`, kind: 'need' };
-  if (k === 'dry:thermostat') return { serves: 'Holds the heat at its setting: no burns, no cold nights', kind: 'need' };
-  if (k === 'dry:uvb') return { serves: 'UVB: vitamin D3 and calcium for the animals that bask', kind: 'need' };
-  if (k === 'dry:gauge') return { serves: 'Checking the warm spot and the humidity', kind: 'need' };
-  if (k === 'dry:mist') return { serves: dryGearOf(S).mist === 'auto' ? 'Humidity, by itself: these animals want 60% or more' : 'Humidity: these animals want 60% or more', kind: 'need' };
-  if (k === 'dry:timer') return { serves: 'Less work: the lights go on and off by themselves', kind: 'look' };
+  if (k === 'heatlamp') return { serves: S.tech?.rows.heatlamp === 'mat' || dryGearOf(S).heat === 'mat' ? `Heat: ${names} want it warmer than a room` : `Heat: a warm basking spot for ${names}`, kind: 'need' };
+  if (k === 'thermostat') return { serves: 'Holds the heat at its setting: no burns, no cold nights', kind: 'need' };
+  if (k === 'uvb') return { serves: 'UVB: vitamin D3 and calcium for the animals that bask', kind: 'need' };
+  if (k === 'gauge') return { serves: 'Checking the warm spot and the humidity', kind: 'need' };
+  if (k === 'mist') return { serves: dryGearOf(S).mist === 'auto' ? 'Humidity, by itself: these animals want 60% or more' : 'Humidity: these animals want 60% or more', kind: 'need' };
+  if (k === 'timer') return { serves: 'Less work: the lights go on and off by themselves', kind: 'look' };
   if (k === 'lid') return { serves: 'Keeps the animals in and lets air through', kind: 'need' };
   return undefined;
 }

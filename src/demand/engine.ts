@@ -26,7 +26,7 @@ import { techDemand } from './tech';
 import { isLivePlantPatch, PATCH_PLANTS } from '../scene/nitrogen';
 import { waterChangeFraction } from '../scene/stocking';
 import { sumpLitres, techOf } from '../scene/tech';
-import { dryGearOf, dryRows, terrariumPrice } from '../scene/drygear';
+import { terrariumPrice } from '../scene/drygear';
 import type { Contribution, Demand, Domain, Group, Range3, Rangeish, UserProfile } from './types';
 
 export const FACTORS = factorsJson;
@@ -136,14 +136,6 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
     }
   }
 
-  else for (const r of dryRows(S)) { // lane LT: a terrarium's heat, thermostat, UVB, gauge and misting (scene/drygear.ts)
-    const p = rowPrice(r.price), life = priceRow(r.price)?.lifeMonths;
-    if (!p) continue;
-    // a bulb or UVB tube wears out: its replacement is upkeep (the row's own replacement price when it lists one)
-    const rep = life ? scale3(rowPrice(`${r.price}-tube`) ?? p, 1 / life) : undefined;
-    add(r.key, r.label, 'gear', { setup: price(scale3(p, r.qty ?? 1)), ...(rep ? { upkeep: rep } : {}), ...(r.watts ? { kwhMo: r.watts * (r.hours ?? 24) * 30 / 1000 } : {}) });
-  }
-
   // ---- hardscape
   for (const it of S.items) {
     if (it.kind === 'plant' || it.kind === 'coral') continue;
@@ -200,8 +192,8 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   const T = DEFAULTS.time;
   if (!wet) {
     // lane LT: hand misting is the bulk of a humid terrarium's work; an automatic mister leaves the refill; a dry one only the spot clean
-    const mist = dryGearOf(S).mist;
-    add('mist', mist === 'auto' ? 'Spot cleaning, refilling the mister' : mist === 'hand' ? 'Misting by hand and spot cleaning' : 'Spot cleaning', 'work', { minutes: pick(mist === 'hand' ? T.terrariumMistMin : mist === 'auto' ? T.terrariumAutoMistMin : T.terrariumDryMin) });
+    const mr = techOf(S).rows.mist, mist = mr === 'hand' ? 'hand' : mr === 'mister' || mr === 'fogger' ? 'auto' : 'none';
+    add('mistwork', mist === 'auto' ? 'Spot cleaning, refilling the mister' : mist === 'hand' ? 'Misting by hand and spot cleaning' : 'Spot cleaning', 'work', { minutes: pick(mist === 'hand' ? T.terrariumMistMin : mist === 'auto' ? T.terrariumAutoMistMin : T.terrariumDryMin) });
   }
   else {
     // the share of the tank to change comes from the nitrogen budget (plants and the filter take part of it away), floored and capped

@@ -268,8 +268,8 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     const S = store.tank, t = techOf(S), rows = rowsFor(S);
     const dry = !S.water.on;
     let html = '';
-    // a dry tank (2026-10-21): its lamps and misting, drawn on the top and dragged anywhere on it; priced here, not yet in the tank's totals
-    if (dry) html += '<div class="hint">A dry tank: basking heat, UVB and misting. Drag a lamp anywhere on the top while this menu is open.</div>';
+    // a dry tank: one gear model (S240, 2026-10-26): these rows are what the totals price and what is drawn, whichever path made the tank
+    if (dry) html += '<div class="hint">A terrarium: heat, thermostat, UVB, gauge, misting and a timer. Each is priced in the totals and drawn on the tank. Drag a lamp or the mister anywhere on the top while this menu is open.</div>';
     else html += wetHead(S, t);
     const all = rows.map(r => optionCost(S, r.id, t.rows[r.id] ?? 'none', { tech: t, kwhUsd: kwhUsd() })), sum = (f: (c: OptionCost) => { lo: number; mode: number; hi: number }) => all.reduce((a, c) => ({ lo: a.lo + f(c).lo, mode: a.mode + f(c).mode, hi: a.hi + f(c).hi }), { lo: 0, mode: 0, hi: 0 });
     html += `<div class="ttot"><span>All this gear</span>${range({ ...all[0], setup: sum(c => c.setup), monthlyUsd: sum(c => c.monthlyUsd), minutes: sum(c => c.minutes), kwhMo: all.reduce((a, c) => a + c.kwhMo, 0), est: all.some(c => c.est) }, dry ? 0 : coveredOf(S, t, 'heater') + coveredOf(S, t, 'filter'))}</div>`;

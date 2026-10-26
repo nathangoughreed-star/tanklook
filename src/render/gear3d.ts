@@ -17,7 +17,7 @@ import type { Tank, TankSetup } from '../scene/types';
 // ---------- what is drawn ----------
 
 /** Gear classes beyond gear-models.json's filters and heaters. */
-export const EXTRA_GEAR = ['airstone', 'co2', 'uv', 'powerhead', 'wavemaker', 'skimmer', 'sump', 'ato', 'heatdome', 'uvb', 'mister', 'fogger'] as const;
+export const EXTRA_GEAR = ['airstone', 'co2', 'uv', 'powerhead', 'wavemaker', 'skimmer', 'sump', 'ato', 'heatdome', 'uvb', 'mister', 'fogger', 'heatmat', 'thermostat', 'gauge', 'handmister', 'timer'] as const;
 /** A dry tank's gear on the top (2026-10-21): the basking dome, the UVB tube, the misting nozzle, the fogger's outlet. */
 const LID_GEAR = new Set(['heatdome', 'uvb', 'mister', 'fogger']);
 export type ExtraGear = (typeof EXTRA_GEAR)[number];
@@ -62,7 +62,9 @@ export function gearPicks(S: TankSetup): GearPick[] {
       case 'powerhead': pick('powerhead'); break;
       case 'wavemaker': pick('wavemaker'); break;
       case 'heatdome': pick('heatdome'); break;
-      case 'uvbtube': pick('uvb'); break;
+      case 'uvbtube': case 'uvblow': pick('uvb'); break;
+      case 'heatmat': case 'gauge': case 'handmister': case 'timer': pick(p.gear); break;
+      case 'thermoonoff': case 'thermodim': pick('thermostat'); break;
       case 'mister': pick('mister'); break;
       case 'fogger': pick('fogger'); break;
       default: break; // dosing, test kits, RO/DI, the chiller: not in the tank
@@ -799,11 +801,27 @@ function offBack(S: TankSetup, T: Tank, p: THREE.Vector3, yEnd: number, end?: TH
 interface TopSpot { x: number; d: number }
 /** T5 tube lengths sold (mm: 12, 18, 22, 34 and 46 in). */
 const T5_MM = [288, 438, 550, 862, 1150];
+/** The nearest spot to `want` where a piece of half size hx by hd clears every footprint in `taken` (clear air of 8 mm); the wanted spot
+ *  when nothing is free. Top pieces do not stand on each other (Lid lamps follow-up, S240); with no lid the rim decides, so no search. */
+export function clearOnTop(S: TankSetup, T: Tank, want: TopSpot, hx: number, hd: number, taken: [number, number, number, number][]): TopSpot {
+  const gap = 8, free = (x: number, d: number) => taken.every(([tx, td, thx, thd]) => Math.abs(x - tx) >= hx + thx + gap || Math.abs(d - td) >= hd + thd + gap);
+  const [wx, wd] = onTop(S, T, want.x, want.d, hx, hd);
+  if (lidTop(S, T).open || free(wx, wd)) return { x: wx, d: wd };
+  let best: TopSpot | undefined, bestD = Infinity;
+  for (let x = 0; x <= T.L; x += 10) for (let d = 0; d <= T.D; d += 10) {
+    const [cx, cd] = onTop(S, T, x, d, hx, hd), dist = (cx - wx) ** 2 + (cd - wd) ** 2;
+    if (dist < bestD && free(cx, cd)) { best = { x: cx, d: cd }; bestD = dist; }
+  }
+  return best ?? { x: wx, d: wd };
+}
+/** The UVB tube drawn: the kit that is priced (the low-output row is the 12 in shade-dweller kit, the full row a 24 in T5 HO), shortened to the
+ *  longest standard tube up to ~3/4 of the tank's length. */
+const uvbLen = (S: TankSetup, T: Tank) => Math.min(techOf(S).rows.uvb === 'low' ? T5_MM[0] : 610, T5_MM.filter(l => l <= Math.max(T.L * 0.72, T5_MM[0])).pop()!);
 /** Each top piece's builder (its body; the cord or tube it returns is drawn after, outside its grab box) and default spot. */
-const TOP: Record<string, { at: (T: Tank) => TopSpot; build: (S: TankSetup, T: Tank, kit: Kit, sp: TopSpot) => () => void }> = {
+const TOP: Record<string, { at: (T: Tank) => TopSpot; /** half its footprint (mm along x, in depth), as its builder clamps it */ half: (S: TankSetup, T: Tank) => [number, number]; build: (S: TankSetup, T: Tank, kit: Kit, sp: TopSpot) => () => void }> = {
   // a deep reflector dome with a ceramic socket and a basking bulb: black outside, bare aluminium inside lit by the
   // bulb, a rolled lip on the mesh (8.5" on a tank over 3 ft, else 5.5")
-  heatdome: { at: T => ({ x: T.L * 0.22, d: T.D * 0.4 }), build(S, T, kit, sp) {
+  heatdome: { at: T => ({ x: T.L * 0.22, d: T.D * 0.4 }), half: (_S, T) => { const R = (T.L >= 900 ? 108 : 70) + 3; return [R, R]; }, build(S, T, kit, sp) {
     const R = T.L >= 900 ? 108 : 70, [x, d] = onTop(S, T, sp.x, sp.d, R + 3, R + 3), c = V(x, lidTop(S, T).y(d), -d);
     const prof: [number, number][] = [[R, 0], [R * 0.99, R * 0.12], [R * 0.93, R * 0.38], [R * 0.8, R * 0.62], [R * 0.58, R * 0.82], [R * 0.34, R * 0.95], [R * 0.24, R * 0.98]];
     kit.lathe('room', prof, c, UP, C.black, 0.06, 32);
@@ -817,8 +835,8 @@ const TOP: Record<string, { at: (T: Tank) => TopSpot; build: (S: TankSetup, T: T
   } },
   // a T5 UVB fixture: an aluminium channel (open below, its reflector inside) on two end caps, the tube held in clips;
   // the longest standard tube up to ~3/4 of the tank's length
-  uvb: { at: T => ({ x: T.L * 0.22, d: T.D * 0.74 }), build(S, T, kit, sp) {
-    const len = T5_MM.filter(l => l <= Math.max(T.L * 0.72, T5_MM[0])).pop()!, W = 56;
+  uvb: { at: T => ({ x: T.L * 0.22, d: T.D * 0.74 }), half: (S, T) => [uvbLen(S, T) / 2 + 34, 30], build(S, T, kit, sp) {
+    const len = uvbLen(S, T), W = 56;
     const [x, d] = onTop(S, T, sp.x, sp.d, len / 2 + 34, W / 2 + 2), y = lidTop(S, T).y(d), z = -d;
     for (const k of [-1, 1]) kit.box('room', V(x + k * (len / 2 + 17), y + 18, z), 34, 36, W + 4, C.charcoal, 4);
     kit.box('room', V(x, y + 34, z), len, 4, W, C.black);
@@ -833,7 +851,7 @@ const TOP: Record<string, { at: (T: Tank) => TopSpot; build: (S: TankSetup, T: T
   } },
   // a misting nozzle through the top (a nut on the mesh, the nozzle under it), its tube to the pump and reservoir on
   // the floor behind the tank
-  mister: { at: T => ({ x: T.L * 0.78, d: T.D * 0.8 }), build(S, T, kit, sp) {
+  mister: { at: T => ({ x: T.L * 0.78, d: T.D * 0.8 }), half: () => [14, 14], build(S, T, kit, sp) {
     const [x, d] = onTop(S, T, sp.x, sp.d, 14, 14), y = lidTop(S, T).y(d), z = -d;
     kit.rod('room', V(x, y, z), V(x, y + 5, z), 12, C.black, { seg: 6 });
     kit.rod('room', V(x, y + 5, z), V(x, y + 26, z), 7, C.black, { seg: 16 });
@@ -848,7 +866,7 @@ const TOP: Record<string, { at: (T: Tank) => TopSpot; build: (S: TankSetup, T: T
     };
   } },
   // a fogger's outlet: a white elbow standing in a hole in the top, its ribbed hose to the fogger on the floor behind
-  fogger: { at: T => ({ x: T.L * 0.8, d: T.D * 0.82 }), build(S, T, kit, sp) {
+  fogger: { at: T => ({ x: T.L * 0.8, d: T.D * 0.82 }), half: () => [22, 22], build(S, T, kit, sp) {
     const [x, d] = onTop(S, T, sp.x, sp.d, 22, 22), y = lidTop(S, T).y(d), z = -d;
     kit.rod('room', V(x, y - 12, z), V(x, y + 40, z), 20, C.white, { seg: 20 });
     kit.rod('room', V(x, y + 40, z), V(x, y + 46, z), 22, C.white, { seg: 20 });
@@ -859,6 +877,44 @@ const TOP: Record<string, { at: (T: Tank) => TopSpot; build: (S: TankSetup, T: T
       kit.tube('room', offBack(S, T, V(x, y + 46, z), fy + 280, V(rx, fy + 192, rz)), 14, 0xdedcd6, 0, 12);
     };
   } },
+};
+
+/** A dry tank's small gear that is not on the top (not dragged): the heat mat under the glass, the thermostat and timer boxes and the
+ *  hand sprayer on the floor behind, the gauge on the inside of the back glass. Each builder returns nothing; its x is a fixed slot. */
+const BESIDE: Record<string, (S: TankSetup, T: Tank, kit: Kit) => void> = {
+  heatmat(S, T, kit) {
+    const len = Math.min(T.L * 0.34, 460), dep = Math.min(T.D * 0.7, 210), x = T.L * 0.22 + len * 0.1, y = tankUnderside(T, S.render) - 2.5, z = -T.D / 2, fy = floorY(T, S.render, S.stand);
+    kit.box('room', V(x, y, z), len, 3, dep, 0x1b1b1d, 1);
+    kit.tube('room', [V(x - len / 2 + 30, y, -(T.D - 24)), V(x - len / 2 + 30, y - 3, -(T.D + 22)), V(x - len / 2 + 30, fy + 70, -(T.D + 30)), V(x - len / 2 + 30, fy + 4, -(T.D + 80))], 2.2, C.black, 0, 6);
+  },
+  // a dimming box (Herpstat-like, a knob and a screen) is bigger than an on/off one (a probe jack and a small display)
+  thermostat(S, T, kit) {
+    const dim = techOf(S).rows.thermostat === 'dimming', w = dim ? 150 : 120, h = dim ? 100 : 70, d = dim ? 60 : 45, fy = floorY(T, S.render, S.stand), x = Math.max(80, w / 2 + 20), z = -(T.D + 90);
+    kit.box('room', V(x, fy + h / 2, z), w, h, d, dim ? 0x33353a : 0x2a4d8f, 6);
+    kit.box('glow', V(x, fy + h * 0.62, z + d / 2 + 0.6), w * 0.5, h * 0.26, 1.2, 0xbfe3a8);
+    if (dim) kit.rod('room', V(x + w * 0.28, fy + h * 0.3, z + d / 2), V(x + w * 0.28, fy + h * 0.3, z + d / 2 + 10), 9, 0xd6d9dc, { seg: 16 });
+    else for (const k of [-1, 1]) kit.box('room', V(x + k * w * 0.3, fy + h * 0.25, z + d / 2 + 1.5), 14, 9, 3, 0xd6d9dc, 2);
+    kit.tube('room', [V(x, fy + h, z), V(x, fy + h + 40, z - 30), V(x, fy + h + 10, -(T.D + 22))], 2.4, C.black, 0, 6);
+  },
+  timer(S, T, kit) {
+    const fy = floorY(T, S.render, S.stand), x = Math.max(80, 150 + 95), z = -(T.D + 90);
+    kit.box('room', V(x, fy + 38, z), 62, 76, 44, 0xf1f1ee, 8);
+    kit.rod('room', V(x, fy + 48, z + 22), V(x, fy + 48, z + 25), 17, 0xc9ccd0, { seg: 20 });
+    kit.box('glow', V(x, fy + 18, z + 22.6), 30, 9, 1.2, 0xbfe3a8);
+  },
+  handmister(S, T, kit) {
+    const fy = floorY(T, S.render, S.stand), x = T.L - Math.max(70, T.L * 0.06), z = -(T.D + 90);
+    kit.rod('clear', V(x, fy, z), V(x, fy + 210, z), 40, 0xcfe6ee, { seg: 24, base: 0.3 });
+    kit.rod('room', V(x, fy + 210, z), V(x, fy + 232, z), 32, C.black, { seg: 20 });
+    kit.rod('room', V(x, fy + 232, z), V(x + 32, fy + 244, z), 8, C.black, { seg: 12 });
+    kit.rod('room', V(x + 4, fy + 210, z - 6), V(x + 44, fy + 196, z - 6), 5, C.black, { seg: 10 });
+  },
+  gauge(S, T, kit) {
+    const Db = T.D - backdropDepth(S.backdrop, T), x = T.L * 0.58, y = T.H * 0.6, z = -(Db - 10);
+    kit.box('room', V(x, y, z), 62, 38, 9, 0x26272b, 3);
+    kit.box('glow', V(x, y, z + 4.8), 50, 24, 1, 0xcfe8c8);
+    kit.tube('room', [V(x + 31, y - 10, z), V(x + 60, y - 30, z + 4), V(x + 60, y - 80, z + 10)], 1.6, C.black, 0, 6);
+  },
 };
 
 // ---------- the set ----------
@@ -928,11 +984,14 @@ export function buildGear(S: TankSetup, T: Tank, solids: THREE.Box3[], picks = g
     if (go(wm)) { const s0 = wm!.place ? spot(wm!, 0) : { f: fr(opp), sp: { u: Db * 0.45, y: 0.55 } as Spot }; track(wm!, () => powerhead(s0.f, s0.sp, true)); }
   }
   // a dry tank's top gear: anywhere on the top, the owner's spot or its default; the whole body is its grab box
-  for (const p of picks) {
-    const top = TOP[p.id]; if (!top) continue;
-    const q = p.place?.wall === 'lid' ? p.place : undefined, at = q ? { x: q.u, d: q.d ?? T.D / 2 } : top.at(T);
+  const taken: [number, number, number, number][] = [], tops = picks.filter(p => TOP[p.id]);
+  for (const p of [...tops.filter(p => p.place?.wall === 'lid'), ...tops.filter(p => p.place?.wall !== 'lid')]) { // the owner's spots first; the others find room
+    const top = TOP[p.id], q = p.place?.wall === 'lid' ? p.place : undefined, [hx, hd] = top.half(S, T);
+    const at = clearOnTop(S, T, q ? { x: q.u, d: q.d ?? T.D / 2 } : top.at(T), hx, hd, taken);
+    taken.push([at.x, at.d, hx, hd]);
     let tail = () => {}; track(p, () => { tail = top.build(S, T, kit, at); }, true); tail();
   }
+  for (const p of picks) BESIDE[p.id]?.(S, T, kit);
   const out = kit.meshes();
   for (const m of out) m.visible = shown;
   if (out[0]) out[0].userData.gearPieces = pieces;

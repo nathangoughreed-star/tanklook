@@ -90,17 +90,33 @@
    { "id": "mix", "label": "Reef salt mix", "parts": ["saltmix"], "note": "Mixed into every water change; priced with the water changes." }
   ]},
   { "id": "heatlamp", "label": "Basking heat", "water": "dry", "options": [
-   { "id": "none", "label": "None", "parts": [], "note": "Only for animals that live at room temperature (most frogs, tarantulas)." },
-   { "id": "dome", "label": "Dome heat lamp on the top", "parts": ["heatdome"], "note": "A basking bulb in a reflector dome on the mesh top; on a thermostat, so a stuck bulb cannot cook the tank." }
+   { "id": "none", "label": "None", "parts": [], "note": "Only for animals that live at room temperature (most frogs, tarantulas, crested geckos)." },
+   { "id": "dome", "label": "Dome heat lamp on the top", "parts": ["heatdome", "baskbulb"], "note": "A basking bulb in a reflector dome on the top; run it from a thermostat (next row), so a stuck bulb cannot cook the tank." },
+   { "id": "mat", "label": "Heat mat under the floor", "parts": ["heatmat"], "note": "A flat heater stuck under the glass at one end: gentle belly heat for animals that want it a little warmer than the room, no light." }
+  ]},
+  { "id": "thermostat", "label": "Thermostat", "water": "dry", "options": [
+   { "id": "none", "label": "None", "parts": [], "note": "Only with no heat. A lamp or mat with no thermostat can overheat the tank." },
+   { "id": "onoff", "label": "On/off thermostat", "parts": ["thermoonoff"], "note": "Switches the lamp or mat on and off around the temperature you set: the cheap one, the bulb cycles." },
+   { "id": "dimming", "label": "Dimming thermostat", "parts": ["thermodim"], "note": "Dims the lamp to hold the temperature: no hot spot runs away and the bulb lasts longer." }
   ]},
   { "id": "uvb", "label": "UVB", "water": "dry", "options": [
    { "id": "none", "label": "None", "parts": [] },
-   { "id": "tube", "label": "UVB tube in a reflector", "parts": ["uvbtube"], "note": "A T5 tube over the basking side. UVB does not pass glass: it shines through a mesh top. The tube fades: replace it yearly." }
+   { "id": "low", "label": "UVB tube, low output (shade dweller)", "parts": ["uvblow"], "note": "A 12 in low-output T5 tube in a reflector for animals that shelter in the shade (ball python, leopard gecko, crested gecko). UVB does not pass glass: it shines through a mesh top. Replace the tube yearly." },
+   { "id": "tube", "label": "UVB T5 tube in a reflector", "parts": ["uvbtube"], "note": "A full T5 HO tube over the basking side, for basking lizards (anoles). UVB does not pass glass: it shines through a mesh top. The tube fades: replace it yearly." }
+  ]},
+  { "id": "gauge", "label": "Thermometer and hygrometer", "water": "dry", "options": [
+   { "id": "none", "label": "None", "parts": [] },
+   { "id": "yes", "label": "Digital thermometer and hygrometer", "parts": ["gauge"], "note": "Two probes: the warm spot and the humidity. You cannot run a terrarium by feel." }
   ]},
   { "id": "mist", "label": "Misting", "water": "dry", "options": [
-   { "id": "none", "label": "Spray by hand", "parts": [] },
+   { "id": "none", "label": "None (a dry tank)", "parts": [], "note": "For animals that want drier air (leopard gecko, ball python in a dry room, tarantulas of dry climates)." },
+   { "id": "hand", "label": "Spray by hand", "parts": ["handmister"], "note": "A pressure sprayer: once or twice a day, by you." },
    { "id": "mister", "label": "Misting system", "parts": ["mister"], "note": "A pump and reservoir behind the tank and a nozzle through the top, on a timer: no more spraying by hand, only refilling the reservoir." },
    { "id": "fogger", "label": "Fogger", "parts": ["fogger"], "note": "Cold fog piped in through the top: humidity without wet leaves; refill the tank daily." }
+  ]},
+  { "id": "timer", "label": "Timer for the lights", "water": "dry", "options": [
+   { "id": "none", "label": "None", "parts": [] },
+   { "id": "yes", "label": "Outlet timer", "parts": ["timer"], "note": "The lamp and UVB go on and off by themselves, so the day is the same length every day." }
   ]}
  ],
  "gear": {
@@ -124,10 +140,18 @@
   "rodi":         { "label": "RO/DI unit", "price": { "key": "gear:ro-unit" }, "monthly": { "lo": 3, "mode": 5, "hi": 9 }, "minutes": { "lo": 2, "mode": 4, "hi": 6 }, "ref": 40, "exp": { "monthly": 0.7 } },
   "wchose": { "label": "Water-change hose", "price": { "key": "gear:wc-hose" } },
   "autofeeder": { "label": "Automatic feeder", "price": { "key": "gear:auto-feeder" } },
-  "heatdome": { "label": "Dome heat lamp + thermostat", "price": { "fallback": { "lo": 30, "mode": 45, "hi": 70 } }, "watts": 75, "hours": 10, "monthly": { "lo": 1, "mode": 1.5, "hi": 2.5 } },
-  "uvbtube": { "label": "UVB T5 tube + reflector", "price": { "fallback": { "lo": 45, "mode": 70, "hi": 110 } }, "watts": 24, "hours": 12, "monthly": { "lo": 1.5, "mode": 2.5, "hi": 3.5 } },
-  "mister": { "label": "Misting system", "price": { "fallback": { "lo": 60, "mode": 110, "hi": 170 } }, "watts": 10, "hours": 0.2, "minutes": { "lo": -6, "mode": -3, "hi": -1 } },
-  "fogger": { "label": "Fogger", "price": { "fallback": { "lo": 25, "mode": 40, "hi": 60 } }, "watts": 25, "hours": 4, "minutes": { "lo": 5, "mode": 10, "hi": 15 } },
+  "heatdome": { "draw": true, "label": "Dome lamp fixture", "price": { "key": "dry:dome" } },
+  "baskbulb": { "label": "Basking bulb", "price": { "key": "dry:basking-bulb" }, "watts": 75, "hours": 7.2, "monthly": { "key": "dry:basking-bulb-tube", "months": 3 }, "ref": 40, "exp": { "watts": 0.35 } },
+  "heatmat": { "draw": true, "label": "Heat mat", "price": { "key": "dry:heat-mat" }, "watts": 20, "hours": 12, "ref": 40, "exp": { "watts": 0.35 } },
+  "thermoonoff": { "draw": true, "label": "On/off thermostat", "price": { "key": "dry:thermostat-onoff" } },
+  "thermodim": { "draw": true, "label": "Dimming thermostat", "price": { "key": "dry:thermostat-dimming" } },
+  "uvblow": { "draw": true, "label": "UVB tube, low output, and reflector", "price": { "key": "dry:uvb-low" }, "watts": 14, "hours": 12, "monthly": { "key": "dry:uvb-low-tube", "months": 12 } },
+  "uvbtube": { "draw": true, "label": "UVB T5 HO tube and reflector", "price": { "key": "dry:uvb-t5-24" }, "watts": 24, "hours": 12, "monthly": { "key": "dry:uvb-t5-24-tube", "months": 12 } },
+  "gauge": { "draw": true, "label": "Thermometer and hygrometer", "price": { "key": "dry:gauge" } },
+  "handmister": { "draw": true, "label": "Hand pressure mister", "price": { "key": "dry:hand-mister" } },
+  "mister": { "draw": true, "label": "Misting system", "price": { "key": "dry:auto-mister" }, "watts": 10, "hours": 0.2 },
+  "fogger": { "draw": true, "label": "Fogger", "price": { "fallback": { "lo": 25, "mode": 40, "hi": 60 } }, "watts": 25, "hours": 4, "minutes": { "lo": 5, "mode": 10, "hi": 15 } },
+  "timer": { "draw": true, "label": "Outlet timer", "price": { "key": "dry:timer" } },
   "ato": { "label": "Auto top-off", "price": { "key": "gear:ato" }, "watts": 8, "hours": 1, "minutes": { "lo": -4, "mode": -2, "hi": -1 }, "ref": 40, "exp": { "minutes": 0.3 } },
   "skimmerhob": { "label": "Hang-on protein skimmer", "price": { "key": "gear:skimmer-hob" }, "watts": 11, "hours": 24, "minutes": { "lo": 2, "mode": 3, "hi": 5 }, "ref": 55, "exp": { "price": 0.5, "watts": 0.6 } },
   "skimmer":      { "label": "In-sump protein skimmer", "price": { "key": "gear:skimmer" }, "watts": 15, "hours": 24, "minutes": { "lo": 2, "mode": 4, "hi": 6 }, "ref": 75, "exp": { "price": 0.5, "watts": 0.6 } },

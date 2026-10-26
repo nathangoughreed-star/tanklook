@@ -54,7 +54,7 @@ describe('gear on the lid', () => {
   const mid = (p: GearPiece) => ({ x: (p.box.min.x + p.box.max.x) / 2, d: -(p.box.min.z + p.box.max.z) / 2, y: p.box.min.y });
   it('a dry tank with a basking animal gets a dome lamp and a UVB tube, both on the top', () => {
     const S = python('mesh');
-    expect(gearPicks(S).map(p => p.id)).toEqual(['heatdome', 'uvb']);
+    expect(gearPicks(S).map(p => p.id)).toEqual(['heatdome', 'thermostat', 'uvb', 'gauge', 'handmister']);
     expect(['heatdome', 'uvb', 'mister', 'fogger'].map(mountOf)).toEqual(['lid', 'lid', 'lid', 'lid']);
     const top = lidTop(S, S.tank).y(0);
     for (const p of pieces(S)) { expect(p.mount).toBe('lid'); expect(p.box.min.y).toBeCloseTo(top, -1); }
@@ -80,7 +80,7 @@ describe('gear on the lid', () => {
   });
   it('the lamps count in the totals, inferred or saved, so a drag never moves them; a misting system saves the spraying', () => {
     const S = python('mesh'), tot = (X: TankSetup) => demandOf(X, defaultProfile(), { now: Date.parse('2026-10-19') }).totals;
-    const none = { ...S, tech: { rows: { heatlamp: 'none', uvb: 'none', mist: 'none' } } }, base = tot(S);
+    const none = { ...S, tech: { rows: { heatlamp: 'none', thermostat: 'none', uvb: 'none', gauge: 'none', mist: 'none', timer: 'none' } } }, base = tot(S);
     expect(base.setupUsd - tot(none).setupUsd).toBeGreaterThan(100); // the dome and the UVB kit
     const dragged = { ...S, tech: withPlace(S, 'heatlamp', { wall: 'lid', at: 0.8, y: 0.3 }) };
     expect(tot(dragged)).toEqual(base);

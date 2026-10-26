@@ -3,11 +3,11 @@
 import { describe, expect, it } from 'vitest';
 import { allLand, tankFor, tankOptions, fitIn, buildSpan, type AnimalCount } from '../src/scene/tankfit';
 import { buildsFor, distinctBuilds } from '../src/scene/builds';
-import { dryNeedsOf, drySetup, dryRows } from '../src/scene/drygear';
+import { dryNeedsOf, drySetup } from '../src/scene/drygear';
+import { rowsFor, optionCost, techOf } from '../src/scene/tech';
 import { getTankModel } from '../src/data/tanks';
 import { planOf } from '../src/scene/plan';
 import { planFor, startPick } from '../src/ui/stockPlanLogic';
-import { price } from '../src/demand/prices';
 
 const python: AnimalCount[] = [{ species: 'ballpython', n: 1 }];
 const LAND = ['ballpython', 'leopardgecko', 'crestedgecko', 'greenanole', 'brownanole', 'dartfrog', 'treefrog', 'regaljumper', 'chacogoldenknee'];
@@ -53,7 +53,7 @@ describe('terrarium gear and builds', () => {
   it('every gear row has a price', () => {
     for (const id of LAND) for (const b of ['cheapest', 'leastWork', 'balanced'] as const) {
       const S = drySetup(getTankModel(tankFor([{ species: id, n: 1 }])!.tank.id)!, [{ species: id, n: 1 }], b);
-      for (const r of dryRows(S)) expect(price(r.price), `${id} ${b} ${r.price}`).toBeDefined();
+      for (const r of rowsFor(S)) { const o = techOf(S).rows[r.id]; if (o === 'none') continue; const c = optionCost(S, r.id, o); expect(c.setup.mode, `${id} ${b} ${r.id}=${o}`).toBeGreaterThan(0); }
     }
   });
   it('the ball python gets three dry builds: heat on a thermostat, UVB, misting; cheapest the cheapest, least work the fewest minutes', () => {
@@ -61,7 +61,7 @@ describe('terrarium gear and builds', () => {
     expect(bs.map(b => b.id)).toEqual(['cheapest', 'leastWork', 'balanced']);
     for (const b of bs) {
       expect(b.setup.water.on).toBe(false);
-      expect(b.gear.join(' ')).toMatch(/Basking bulb/);
+      expect(b.gear.join(' ')).toMatch(/basking bulb/i);
       expect(b.gear.join(' ')).toMatch(/UVB/);
       expect(b.gear.join(' ')).not.toMatch(/Filter|Heater/);
       expect(b.setupUsd).toBeGreaterThan(0);

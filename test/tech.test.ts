@@ -32,7 +32,7 @@ describe('tech menu model (lane TM step 1)', () => {
       expect(S.tech, id).toBeUndefined();
       const t = techOf(S);
       // a dry tank: only its own rows (lamps, misting), a basking lamp and UVB inferred when an animal wants a warm spot
-      if (!S.water.on) { expect(rowsFor(S).map(r => r.water), id).toEqual(rowsFor(S).map(() => 'dry')); expect(rowsFor(S).length, id).toBe(3); continue; }
+      if (!S.water.on) { expect(rowsFor(S).map(r => r.water), id).toEqual(rowsFor(S).map(() => 'dry')); expect(rowsFor(S).length, id).toBe(6); continue; }
       expect(feedFor(S), id).toBe(S.grow.feed);
       if (!S.water.salt) expect(feedOf(t), id).toBe(S.grow.feed);
       else expect(t.rows.skimmer, id).toBe('hob'); // lane SF: no sump in the inferred filter, so a hang-on skimmer
@@ -142,7 +142,7 @@ describe('tech menu model (lane TM step 1)', () => {
     const scene = parseScene(SCENES.planted).scene;
     scene.tanks[0].tech = t;
     expect(parseScene(JSON.parse(JSON.stringify(scene))).scene.tanks[0].tech).toEqual(t);
-    expect(inferTech({ ...S, water: { ...S.water, on: false } }).rows).toEqual({ heatlamp: 'none', uvb: 'none', mist: 'none' }); // planted's fish want no basking spot
+    expect(inferTech({ ...S, water: { ...S.water, on: false } }).rows).toEqual({ heatlamp: 'none', thermostat: 'none', uvb: 'none', gauge: 'yes', mist: 'none', timer: 'none' }); // planted's fish want no basking spot
   });
 });
 
@@ -152,7 +152,7 @@ describe('demand rows from the tech (lane TM step 3)', () => {
   it('a file without tech keeps its demand numbers (locked 2026-10-19; minutes and upkeep re-blessed 2026-10-21, lane MW: water change from the nitrogen budget, feeding, glass, plant bunches; lane CB: combined sources moved adult sizes and minimums)', () => {
     // reef re-blessed 2026-10-22 (lane SN: turbo snail mass from Turbo cornutus, upkeep +$2 a year, minutes +0.8); reef and paludarium risk re-blessed 2026-10-22 (temp-tiers: a shared temperature range of 2 °C or less is a narrow margin, not a compatibility flag)
     // 2026-10-27: arid and python re-blessed (their basking lamp and UVB count: +$132 / +$172 with python's mesh lid, +$10.81/mo); terrarium risk 4.294 (no dome for tree frogs, so no raised light)
-    const LOCK: Record<string, number[]> = { planted: [1334.104, 53.447, 55.66, 8.229], iwagumi: [2111.437, 43.308, 53.943, 6.696], betta: [337.872, 9.969, 33.949, 4.984], paludarium: [1645.377, 60.087, 58.399, 7.467], terrarium: [909.126, 33.197, 15.324, 4.294] /* lane LT 2026-10-26: heat, UVB, gauge rows; spot cleaning, no misting */, reef: [3421.776, 175.13, 88.873, 6.451], rainforest: [1512.939, 74.961, 36.904, 4.005] /* lane LT: UVB, gauge, hand mister */, arid: [1523.125, 58.236, 15.569, 3.298], python: [1749.919, 37.182, 21.769, 1.813], blackwater: [1236.514, 49.617, 44.674, 5.613], clownnano: [1556.626, 96.605, 73.753, 6.326] };;
+    const LOCK: Record<string, number[]> = { planted: [1334.104, 53.447, 55.66, 8.229], iwagumi: [2111.437, 43.308, 53.943, 6.696], betta: [337.872, 9.969, 33.949, 4.984], paludarium: [1645.377, 60.087, 58.399, 7.467], terrarium: [909.126, 32.73, 15.324, 4.373] /* lane LT 2026-10-26: heat, UVB, gauge rows; spot cleaning, no misting */, reef: [3421.776, 175.13, 88.873, 6.451], rainforest: [1512.939, 74.961, 36.904, 4.005] /* lane LT: UVB, gauge, hand mister */, arid: [1391.438, 47.401, 15.569, 3.298], python: [1618.231, 26.347, 21.769, 1.813], blackwater: [1236.514, 49.617, 44.674, 5.613], clownnano: [1556.626, 96.605, 73.753, 6.326] };;
     for (const [id, want] of Object.entries(LOCK)) {
       const t = D(tankOf(id)).totals;
       expect([t.setupUsd, t.upkeepUsdMo, t.minPerWeek, t.risk].map(v => Math.round(v * 1000) / 1000), id).toEqual(want);
