@@ -18,6 +18,7 @@ import { MIN_SLACK_PCT } from './animalfit';
 import { geometryOf, minDataOf, speciesMinimum, tankMinimum } from './tankMin';
 import { floorFor, HERP, SQFT_MM2 } from '../data/herpstock';
 import { footprint } from './shape';
+import { sharedRange } from './temprange';
 import { drySetup } from './drygear';
 import { applyPreset, optionCost, PRESETS, ROOM_C, rowsFor, sumpOffered, tempFit, withChoice } from './tech';
 import type { Fish, TankSetup, Units } from './types';
@@ -132,7 +133,7 @@ export interface Fit {
   /** workable but cramped for some species (comfortable size over the tank) */
   cramped: boolean;
   /** why a tank is out, empty when it fits */
-  fails: ('space' | 'minimum' | 'length' | 'depth' | 'floor' | 'filtration' | 'height')[];
+  fails: ('space' | 'minimum' | 'length' | 'depth' | 'floor' | 'filtration' | 'height' | 'temperature')[];
 }
 
 /**
@@ -176,7 +177,14 @@ export interface TankFit extends Fit {
   gallons: number;
   needs: Needs;
 }
-const fitOfTank = (c: Candidate, animals: AnimalCount[], needs: Needs): TankFit => ({ ...(allLand(animals) ? dryFit(c.T, animals) : fitOf(c, animals)), tank: c.m, litres: c.litres, gallons: c.litres / 3.785, needs });
+/** S245 (Nathan 2026-10-26, S244 F4): animals with no comfortable temperature in common fit no tank; extra space never rescues them. */
+export const sharedOf = (animals: AnimalCount[]) => sharedRange(wet(animals).map(w => w.sp));
+const noSharedTemp = (animals: AnimalCount[]) => sharedOf(animals).state === 'none';
+const fitOfTank = (c: Candidate, animals: AnimalCount[], needs: Needs): TankFit => {
+  const f = allLand(animals) ? dryFit(c.T, animals) : fitOf(c, animals);
+  if (noSharedTemp(animals)) f.fails.unshift('temperature');
+  return { ...f, tank: c.m, litres: c.litres, gallons: c.litres / 3.785, needs };
+};
 /** The sizes these animals are judged against: terrariums for land animals, else the plain rectangular tanks; empty with nothing to judge. */
 const candidatesFor = (animals: AnimalCount[]): Candidate[] => allLand(animals) ? TERRARIA : wet(animals).length ? CANDIDATES : [];
 

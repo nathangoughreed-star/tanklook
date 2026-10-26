@@ -159,3 +159,12 @@ tank** ("Hardness not compared: no data for danio, tiger barb, ..."), never one 
 ## 7. Reproduce
 
 `research/audits/probes/*.audit.ts`: counts (`counts.audit.ts`), pair probes (`pair-probes.audit.ts`), tier counts (`pair-tiers.audit.ts`), room / flow / air (`misc.audit.ts`). Each file's first line says how to run it.
+
+## 8. S245 fixes (2026-10-26)
+
+Item 2 (tank minimums) is FIXED: a species with no red line in `tankmin.json` takes `CARE.minL` as its minimum volume (`scene/tankMin.ts` `speciesMinimum`,
+label `MINL_SITE`; provenance: the species' own `minL` rule, cited / assumption per species), held in litres against the tank's full volume with the 10 % slack. Smallest tank that
+holds one animal, before -> after: cherry shrimp 2.5 -> 5 gal, amano 2.5 -> 10, CPO 2.5 -> 10, Cajun dwarf 2.5 -> 5, red swamp crayfish 2.5 -> 20 gal high, redclaw 3 gal cube -> 50 gal breeder,
+Thai crab 2.5 -> 5, mystery snail 2.5 -> 5, trumpet snail 2.5 -> 5, skunk cleaner shrimp 2.5 -> 20 high, turbo 2.5 -> 10, hermit 2.5 -> 10; unchanged: asellus (8 L), nerite (8 L), ramshorn (5 L) (2.5 gal already holds them),
+fire-bellied toad (minL 57 L, already past it; still fails on depth only). The "unknown reads as a hard fail" opposite leak (`assessed: false`) is untouched.
+The unknown-species and no-bands cases are fixed with F1-F3 (see invariants.md).

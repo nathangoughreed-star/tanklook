@@ -32,6 +32,8 @@ export const minDataOf = (id: string): MinData | undefined => lines[id];
 /** Decision 3: a large-bodied swimmer is held to the stated front-to-back width as well as the length; smaller swimmers to the length. Adult length at or over this, mm. */
 export const LARGE_BODY_MM = 150;
 const GAL_L = 3.785;
+/** Where a species' minimum comes from when tankmin.json has no red line for it (S245): the care table's minimum volume. */
+export const MINL_SITE = 'the care table, no tank-minimum line';
 
 /** The tank's floor area, cm2, any shape (outer footprint); its longest floor side and its shortest (front to back for a rectangle), mm. */
 export function floorOf(T: TankSetup['tank']): { areaCm2: number; runMm: number; widthMm: number } {
@@ -167,6 +169,10 @@ export interface TankMinimum {
 /** One species against a tank (the same answer the Fullness tile, the tank-fit engine, the animal gate and the hard truths all use). */
 export function speciesMinimum(sp: Species, g: Geometry): MinRow {
   const w = whoOf(sp), d = minDataOf(sp.id), r = measureLines(w, d, g);
+  // S245 (Nathan 2026-10-26): no animal in the water is exempt from a minimum. With no red line the care table's minimum volume (CARE.minL,
+  // sourced per species in provenance.ts) is the line, held in litres against the tank's full volume with the same 10 % slack.
+  const minL = !d?.red && countsAgainstWater(sp) ? careOf(sp.id)?.minL ?? 0 : 0;
+  if (minL > 0) { const have = g.tankLitres ?? g.litres; r.red = { pct: 100 * (have > 0 ? minL / have : Infinity), limiting: 'water', need: minL, have, mark: 'advisory', site: MINL_SITE, states: `${minL} L` }; }
   const row: MinRow = { id: sp.id, name: sp.name, n: 1, kind: w.floor ? 'area' : 'run', pct: r.assessed ? r.red.pct : Infinity, comfortPct: r.green.pct, minLengthMm: d?.red?.L ?? 0,
     limiting: r.red.limiting, reason: '', comfortReason: recommendedOf(r.green), measure: r.red, comfort: r.green,
     derived: r.red.mark === 'derived (est)', assessed: r.assessed, depthMm: r.depthMm, tl: w.tl, tooDeepMm: r.tooDeepMm,

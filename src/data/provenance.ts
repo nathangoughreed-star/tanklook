@@ -359,6 +359,7 @@ export const FORMULAS: Formula[] = [
 
 export const EXCLUDED: Excluded[] = [
   { file: 'src/scene/stocking.ts', symbols: ['SQIN_CM2', 'IN_MM'], why: 'unit conversions (sq in in cm2, inch in mm)' },
+  { file: 'src/scene/tankMin.ts', symbols: ['MINL_SITE'], why: "S245: a label, no number. A species with no red line in tankmin.json takes CARE.minL (its own provenance rule, TANKMIN / CARE: cited, researched or assumption per species) as its minimum volume, held against the tank's full volume with the 10 % slack" },
   { file: 'src/scene/tankMin.ts', symbols: ['CM', 'GAL_L'], why: 'the default print format (cm) and the US gallon in litres (3.785), a unit conversion' },
   { file: 'src/scene/builds.ts', symbols: ['BUILD_BLURB'], why: 'card wording (mentions the 70 % headroom, which FILTRATION_LIMIT documents)' },
   { file: 'src/scene/lightout.ts', symbols: ['AQ_MAX', 'LAMP_Y', 'TUBE_SP_MAX', 'LREF', 'EXPOSE', 'EXP_MIN', 'EXP_MAX'], why: 'render exposure and slider ranges' },

@@ -7,8 +7,10 @@
 // notesOf(...).band (count only, never the tank) and the pairing line; invariants 3 and 4 test that.
 import { describe, expect, it } from 'vitest';
 import { CARE } from '../src/data/care';
-import { GROUPS, bandOf, type GroupBand } from '../src/data/groups';
+import { GROUPS, bandMessage, bandOf, type GroupBand } from '../src/data/groups';
 import { SPECIES, getSpecies, type Species } from '../src/data/species';
+import { minDataOf } from '../src/scene/tankMin';
+import { tankFor } from '../src/scene/tankfit';
 import { whysAnimal } from '../src/scene/animalfit';
 import { defaultSetup } from '../src/scene/defaults';
 import { withChoice } from '../src/scene/tech';
@@ -60,7 +62,8 @@ describe('invariant 1: adding an animal never lowers fullness', () => {
     }
     expect(bad.slice(0, 5)).toEqual([]);
   });
-  it.fails('FINDING F5: with the water temperature NOT set (inferred from the stocking) adding an animal can LOWER filtration (e.g. 11 syno + 1 harlequin, 42x16x25 in: 58.43 -> 58.31)', () => {
+  // F5 is DOCUMENTED-INTENDED (Nathan accepted it 2026-10-26, lane S245): with no target set the water temperature follows the stocking, so a tankmate can move it. Kept as it.fails so a change shows.
+  it.fails('FINDING F5 (documented-intended): with the water temperature NOT set (inferred from the stocking) adding an animal can LOWER filtration (e.g. 11 syno + 1 harlequin, 42x16x25 in: 58.43 -> 58.31)', () => {
     const r = rng(1), bad: string[] = [];
     for (let k = 0; k < 300; k++) {
       const { s, stock, pool } = randomTank(r, false), add = pick(r, pool).id, a = stockingOf(s).filtrationPercent, b = stockingOf(addOne(s, add)).filtrationPercent;
@@ -106,7 +109,7 @@ describe('invariant 2: tank height does not change the floor capacity of bottom 
 
 describe('invariant 3: 4 -> 6 of a social species', () => {
   const social = Object.keys(GROUPS).filter(id => GROUPS[id].bands && getSpecies(id) && countsAgainstWater(getSpecies(id)!));
-  const RANK: Record<GroupBand, number> = { avoid: 0, ok: 1, good: 2, great: 3 };
+  const RANK: Record<GroupBand, number> = { avoid: 0, ok: 1, good: 2, great: 3, unknown: -1 };
   it('the group-size band never gets worse from 4 to 6 (count bands only; the fighting limit is a separate warning)', () => {
     expect(social.length).toBeGreaterThan(10);
     const bad = social.filter(id => RANK[bandOf(GROUPS[id], 6)] < RANK[bandOf(GROUPS[id], 4)]).map(id => `${id}: ${bandOf(GROUPS[id], 4)} -> ${bandOf(GROUPS[id], 6)}`);
@@ -143,7 +146,7 @@ describe('invariant 4: a bonded pair changes the social result, never the physic
     }
   });
   it('the social side does change, and only for the better: an established pair is never worse than an unconfirmed one', () => {
-    const RANK: Record<GroupBand, number> = { avoid: 0, ok: 1, good: 2, great: 3 }, bad: string[] = [];
+    const RANK: Record<GroupBand, number> = { avoid: 0, ok: 1, good: 2, great: 3, unknown: -1 }, bad: string[] = [];
     for (const id of formers) {
       const u = notesOf({ id, n: 2, pair: 'unknown' }), e = notesOf({ id, n: 2, pair: 'established' });
       if (RANK[e.band] < RANK[u.band]) bad.push(`${id}: unknown ${u.band} -> established ${e.band}`);
@@ -169,17 +172,18 @@ describe('invariant 5: missing species requirements cannot silently confirm comp
       expect(sharedRange([target, mate]).unrecorded).toContain(target);
     } finally { CARE[target.id].temp = saved; }
   });
-  it.fails('FINDING F1: a species id with no species or care entry is not quietly "fine": the gate says something (today whysAnimal returns [])', () => {
-    // whysAnimal(`if (!c) return []`) gives an unknown / care-less species NO reasons, i.e. the same answer as "suits": see invariants.md F1.
-    expect(whysAnimal({ ...FRESH[0], id: 'nosuchfish' } as Species, 1000, 3, [])).not.toEqual([]);
+  it('F1 (fixed S245): a species id with no species or care entry is not quietly "fine": the gate says "not enough information"', () => {
+    const w = whysAnimal({ ...FRESH[0], id: 'nosuchfish' } as Species, 1000, 3, []);
+    expect(w.length).toBeGreaterThan(0); expect(w[0].text).toMatch(/not enough information/);
   });
-  it.fails('FINDING F2: stockingOf on an unknown species id reads the tank as empty (percent 0, "No animals"), not as "cannot assess"', () => {
+  it('F2 (fixed S245): stockingOf on an unknown species id says "not enough information", never "No animals in the water"', () => {
     const r = stockingOf(tank(36, 18, 18, [['nosuchfish', 5]]));
     expect(r.reasons.join(' ')).not.toMatch(/No animals in the water/);
+    expect(r.reasons.join(' ')).toMatch(/Not enough information/);
   });
-  it('every aquatic species has group-size data, so bandOf never answers "ok" for a species it knows nothing about', () => {
-    // bandOf(undefined / no bands, n) is 'ok' (silent): harmless only while this list is empty (FINDING F3, a latent hazard, not a live bug)
-    expect(bandOf(undefined, 1)).toBe('ok');
+  it('F3 (fixed S245): a species without group bands reads "unknown" (not enough information), never "ok"; every aquatic species has bands today', () => {
+    expect(bandOf(undefined, 1)).toBe('unknown'); expect(bandOf({}, 5)).toBe('unknown');
+    expect(bandMessage(undefined, 1)).toMatch(/Not enough information/);
     expect(WATER.filter(s => !CARE[s.id].bands && !CARE[s.id].group).map(s => s.id)).toEqual([]);
   });
   it('the temperature gate runs for every aquatic species that has a range (none is silently skipped)', () => {
@@ -227,11 +231,43 @@ describe('invariant 6: an unsuitable temperature cannot be rescued by excess spa
     const sr = sharedRange([a, b]); expect(sr.state).toBe('none');
     expect(rangeVerdict(sr, []).level).toBe('bad');
   });
-  it.fails('FINDING F4: the plan sheet tank list (planFor) ignores temperature: a stocking with NO shared range still has a tank that "fits" (fails empty, no problem line)', () => {
+  it('F4 (fixed S245): a stocking with NO shared temperature range has no fitting tank at any size, and a problem line says why', () => {
     const a = FRESH.find(x => CARE[x.id].temp![1] <= 20 && !CARE[x.id].solo)!, b = FRESH.find(x => CARE[x.id].temp![0] >= 26 && !CARE[x.id].solo)!;
     expect(sharedRange([a, b]).state).toBe('none');
     const plan = planFor([{ id: a.id, n: 1 }, { id: b.id, n: 1 }]);
     const biggest = plan.options[plan.options.length - 1];
     expect(biggest.fails.length > 0 || !!plan.problem).toBe(true);
+    expect(plan.options.every(o => o.fails.includes('temperature'))).toBe(true); // extra space never rescues it
+    expect(plan.need).toBeUndefined();
+    expect(plan.problem).toMatch(/temperature/i);
+  });
+  it('F4: a shared range keeps the old behaviour (no temperature fail), and every seeded no-range pair is refused at every size', () => {
+    const ok = planFor([{ id: 'neon', n: 8 }]); expect(ok.options.some(o => o.fails.includes('temperature'))).toBe(false); expect(ok.need).toBeDefined();
+    const r = rng(7), bad: string[] = []; let seen = 0;
+    for (let k = 0; k < 400 && seen < 40; k++) {
+      const a = pick(r, FRESH), b = pick(r, FRESH);
+      if (a.id === b.id || sharedRange([a, b]).state !== 'none') continue;
+      seen++; const p = planFor([{ id: a.id, n: 1 }, { id: b.id, n: 1 }]);
+      if (p.need || !p.problem || !p.options.every(o => o.fails.includes('temperature'))) bad.push(`${a.id} + ${b.id}`);
+    }
+    expect(seen).toBeGreaterThan(5); expect(bad.slice(0, 5)).toEqual([]);
+  });
+});
+
+describe('S245: every aquatic species has a tank minimum the size path enforces', () => {
+  const MINL = WATER.filter(s => !minDataOf(s.id)?.red && CARE[s.id].minL);
+  it('every aquatic species has a red line or a care-table minimum volume', () => {
+    expect(WATER.filter(s => !minDataOf(s.id)?.red && !CARE[s.id].minL).map(s => s.id)).toEqual([]);
+  });
+  it('a species on the care-table minimum fails a tank under it and passes one at it (10 % slack), alone', () => {
+    expect(MINL.length).toBeGreaterThan(10);
+    const bad: string[] = [];
+    for (const s of MINL) {
+      const L = CARE[s.id].minL!, small = tankFor([{ species: s.id, n: 1 }])!;
+      if (small.litres < L / 1.1 - 1e-6 && !small.fails.length) bad.push(`${s.id}: ${small.litres.toFixed(0)} L passes a ${L} L minimum`);
+      if (small.litres >= L / 1.1 && small.fails.includes('minimum')) bad.push(`${s.id}: ${small.litres.toFixed(0)} L fails a ${L} L minimum`);
+    }
+    expect(bad).toEqual([]);
+    expect(tankFor([{ species: 'redclaw', n: 1 }])!.litres).toBeGreaterThan(180);
   });
 });

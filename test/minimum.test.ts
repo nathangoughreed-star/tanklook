@@ -10,7 +10,7 @@ import { volume } from '../src/scene/physics';
 import { tankFor, tankOptions } from '../src/scene/tankfit';
 import { planFor } from '../src/ui/stockPlanLogic';
 import { bowlDims } from '../src/scene/shape';
-import { floorOf, geometryOf, measureLines, minDataOf, minFit, notesIn, speciesMinimum, tankMinimum, type Geometry, type MinData, type Who } from '../src/scene/tankMin';
+import { MINL_SITE, floorOf, geometryOf, measureLines, minDataOf, minFit, notesIn, speciesMinimum, tankMinimum, type Geometry, type MinData, type Who } from '../src/scene/tankMin';
 import { withChoice } from '../src/scene/tech';
 import { floorUseCm2 } from '../src/scene/stocking';
 import { minBar, minWarnings, topMin } from '../src/ui/fullnessTile';
@@ -125,12 +125,14 @@ describe('noncompensation: each measure on its own', () => {
     expect(m.limiting === 'water' && m.pct > 100).toBe(false);
     // ample geometry and depth, almost no water: no species fails, the water shortfall is only the yellow advisory
     const dry: Geometry = { litres: 1, tankLitres: 1, areaCm2: 40000, lengthMm: 2400, widthMm: 1200, heightMm: 2000, depthMm: 550 };
-    for (const sp of SPECIES) { const r = speciesMinimum(sp, dry); expect(r.pct, sp.id).toBeLessThanOrEqual(100); if (minDataOf(sp.id)?.vol) expect(r.comfort.limiting, sp.id).toBe('water'); }
+    // S245 (Nathan 2026-10-26): a species with no red line takes CARE.minL as its minimum volume, so it does fail on water alone; every other species still never does
+    for (const sp of SPECIES) { const r = speciesMinimum(sp, dry); if (r.measure.site === MINL_SITE) { expect(r.measure.limiting, sp.id).toBe('water'); continue; } expect(r.pct, sp.id).toBeLessThanOrEqual(100); if (minDataOf(sp.id)?.vol) expect(r.comfort.limiting, sp.id).toBe('water'); }
   });
-  it('Decision 2: the mystery snail\'s 5 gal is its Recommended mark, not a failure', () => {
-    const m = speciesMinimum(getSpecies('mystery')!, { litres: 10, areaCm2: 1500, lengthMm: 400, widthMm: 250 });
-    expect(m.pct).toBeLessThanOrEqual(100);
-    expect(m.comfortPct).toBeGreaterThan(100); expect(m.comfort.limiting).toBe('water'); expect(m.comfortReason).toMatch(/^below the recommended size: .*5 gal/);
+  it('S245 (amends Decision 2): the mystery snail has no red line, so its care-table 19 L is its minimum: 10 L fails, 21 L passes', () => {
+    const g = (litres: number) => ({ litres, tankLitres: litres, areaCm2: 1500, lengthMm: 400, widthMm: 250 });
+    const small = speciesMinimum(getSpecies('mystery')!, g(10)), ok = speciesMinimum(getSpecies('mystery')!, g(21));
+    expect(small.pct).toBeGreaterThan(110); expect(small.limiting).toBe('water'); expect(small.reason).toMatch(/care table/);
+    expect(ok.pct).toBeLessThanOrEqual(100);
   });
   it('overall rule: a floor area derived from litres never fails a swimmer that has its length (tiger barb, 48 x 3 in floor, 18 in of water)', () => {
     const m = speciesMinimum(getSpecies('tigerbarb')!, { litres: 48 * 3 * 18 * 0.016387, areaCm2: 48 * 3 * 6.4516, lengthMm: 48 * IN_MM, widthMm: 3 * IN_MM });

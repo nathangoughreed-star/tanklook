@@ -7,7 +7,7 @@ import { filterUnits, techOf } from '../src/scene/tech';
 
 const SMALL: AnimalCount[] = [{ species: 'betta', n: 1 }];
 const MID: AnimalCount[] = [{ species: 'neon', n: 10 }, { species: 'bronzecory', n: 6 }];
-const BIG: AnimalCount[] = [{ species: 'neon', n: 12 }, { species: 'pandacory', n: 6 }, { species: 'angel', n: 4 }, { species: 'platy', n: 6 }];
+const BIG: AnimalCount[] = [{ species: 'neon', n: 12 }, { species: 'pandacory', n: 6 }, { species: 'kribensis', n: 4 }, { species: 'platy', n: 6 }]; // S245: was 4 angels, which share no temperature with neons (21-25 vs 26-29 C): planFor now refuses that mix at every size;
 const SALT: AnimalCount[] = [{ species: 'ocellaris', n: 2 }];
 const cases: [string, AnimalCount[]][] = [['small', SMALL], ['mid', MID], ['big', BIG], ['salt', SALT]];
 const NOW = Date.parse('2026-10-20');

@@ -55,7 +55,7 @@ export interface GroupCare {
    *  so a tag that nearly every species carries (personality, easy, colour) discriminates nothing: give it only where it is distinctive. */
   appeal?: string[];
 }
-export type GroupBand = 'avoid' | 'ok' | 'good' | 'great';
+export type GroupBand = 'avoid' | 'ok' | 'good' | 'great' | 'unknown';
 /** Species whose advice for two animals assumes a FORMED pair (a bonded or breeding pair in their lines below; the Bolivian ram per the
  *  rules-spec benchmark "two unpaired cichlids / rams"). Two of them are judged as a pair only when the owner says it is established.
  *  test/path1Rules.test.ts keeps it in step: every species whose lines say "bonded" or "male/female pair" must be here. */
@@ -89,14 +89,15 @@ export const fightsOverCount = (g: (GroupCare & { solo?: boolean }) | undefined)
 /** The males warning's text: `males` males (or animals, when they are not sexed) past the most this tank takes. */
 export const malesWarning = (name: string, males: number, most: number, sexed: boolean, each = 15) =>
   `${name} males fight: a tank this size takes ${most === 1 ? 'one male' : `at most ${most} males`} (one more per ${each} gal)${sexed ? `, you have ${males}` : `; if more than ${most} of these ${males} are males, expect fighting`}. Females do not count.`;
-/** Which band a count of animals falls in (no bands = always 'ok'). */
+/** Which band a count of animals falls in (no bands = 'unknown': not enough information, S245; it used to read 'ok'). */
 export function bandOf(g: GroupCare | undefined, n: number): GroupBand {
   const b = g?.bands;
-  return !b ? 'ok' : n < b.ok ? 'avoid' : n >= b.great ? 'great' : n >= b.good ? 'good' : 'ok';
+  return !b ? 'unknown' : n < b.ok ? 'avoid' : n >= b.great ? 'great' : n >= b.good ? 'good' : 'ok';
 }
 /** The band's message: the species' own line, else one generated from the numbers. */
 export function bandMessage(g: GroupCare | undefined, n: number): string {
   const band = bandOf(g, n), b = g?.bands;
+  if (band === 'unknown') return 'Not enough information: no group-size data for this species';
   const own = g?.msg?.[band];
   if (own || !b) return own ?? '';
   if (band === 'avoid') return b.ok <= 1 ? 'Too few' : `Too few: wants at least ${b.ok}`;

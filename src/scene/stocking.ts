@@ -275,7 +275,10 @@ export function stockingOf(S: TankSetup): Stocking {
   for (const c of contributors) c.share = bySpace ? (spaceSum ? spaceUse(c) / spaceSum : 0) : (load ? c.load / load : 0);
   const reasons: string[] = [];
   let fixFilter: Stocking['fixFilter'];
-  if (!contributors.length) reasons.push('No animals in the water.');
+  // S245: an animal with no species entry is unknown, never "nothing there" (it takes no room in the numbers, so say it cannot be assessed)
+  const unknown = [...new Set(S.fish.filter(f => !getSpecies(f.species)).map(f => f.species))];
+  if (unknown.length) reasons.push(`Not enough information: no data for ${unknown.join(', ')}, so this tank cannot be assessed.`);
+  if (!contributors.length) { if (!unknown.length) reasons.push('No animals in the water.'); }
   else if (isOver(percent)) {
     const top = contributors[0];
     reasons.push(top.share >= 0.4 ? `Overstocked mainly because of the ${plural(top.n, top.name)} (${Math.round(top.share * 100)}% of the load).`

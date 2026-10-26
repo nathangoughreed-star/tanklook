@@ -1,7 +1,9 @@
 # Stocking-engine invariants (lane S244, 2026-10-26)
 
 Tests: `test/invariants.test.ts` (22 tests, about 3 s, seeded, over every aquatic species and 300 + 80 + 60 random tanks).
-Nothing in the engine was changed. A violated invariant is an `it.fails` test named FINDING Fn, so the suite is green and a fix turns
+**Update S245 (2026-10-26, Nathan approved): F1, F2, F3, F4 are FIXED and their tests are plain `it`; F5 is documented-intended (Nathan accepted it) and stays `it.fails` so any change shows.** Fixes: `whysAnimal` with no care entry returns "not enough information"; `stockingOf` says "Not enough information: no data for <id>" instead of "No animals in the water"; `bandOf` returns `'unknown'` with no bands (message "Not enough information: no group-size data"); `tankOptions` / `planFor` mark every size `temperature` when the animals share no range (no `need`, `problem` line names the clash). Original text follows.
+
+Nothing in the engine was changed (at S244). A violated invariant is an `it.fails` test named FINDING Fn, so the suite is green and a fix turns
 that test red ("expected to fail") until the marker is removed.
 
 ## Results
@@ -26,7 +28,7 @@ that test red ("expected to fail") until the marker is removed.
 
 ## Findings (each is an `it.fails` in the file)
 
-**F5. Adding an animal can lower filtration when the water temperature is not set.** With no `tech.targetC`, `capacityOf` reads the
+**F5 (documented-intended, Nathan 2026-10-26: accepted as is). Adding an animal can lower filtration when the water temperature is not set.** With no `tech.targetC`, `capacityOf` reads the
 water temperature from `climateOf(S)`, which follows the stocking, so a new species can move the modelled temperature and with it every
 animal's load (`tempFactor`) and the inferred filter size. 33 of 4,422 ordered species pairs (one A, then A + one B) lower
 `filtrationPercent`, e.g. 1 syno -> 1 syno + 1 harlequin (48 x 18 x 20 in): `tan` 0.2664 -> 0.2585, filtration 58.13 % -> 58.01 %;

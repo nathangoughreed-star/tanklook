@@ -3,6 +3,7 @@
 // species asked for more floor than any 75 gal has). GEN_REASON=1 writes research/reasonableness.md (worst first) for review.
 import { describe, expect, it } from 'vitest';
 import { TANK_MODELS, tankFromModel } from '../src/data/tanks';
+import { CARE } from '../src/data/care';
 import { SPECIES } from '../src/data/species';
 import { bareSetup } from '../src/scene/defaults';
 import { geometryOf, minDataOf, speciesMinimum } from '../src/scene/tankMin';
@@ -27,7 +28,8 @@ describe('every water species finds a sensible catalogue tank', () => {
   it('a species whose minimum is derived from its gallon figure is never held to a tank much bigger than those litres', () => {
     expect(rows.filter(r => !r.explicit && r.wantL > 0 && ratio(r) > 1.7).map(r => `${r.id} wants ${r.wantL} L but needs ${Math.round(r.litres)} L (${r.limiting})`)).toEqual([]);
   });
+  // S245 (Nathan 2026-10-26): red swamp crayfish (75 L) and redclaw (200 L) have no tank-minimum line and now take CARE.minL, so they are exempt here: their litres are their sourced minimum
   it('no snail, shrimp or crab needs more than a 10 gal-class tank to be kept alone', () => {
-    expect(rows.filter(r => r.invert && r.litres > 55).map(r => `${r.id} needs ${Math.round(r.litres)} L (${r.limiting})`)).toEqual([]);
+    expect(rows.filter(r => r.invert && r.litres > 55 && !((CARE[r.id]?.minL ?? 0) > 55 && !minDataOf(r.id)?.red)).map(r => `${r.id} needs ${Math.round(r.litres)} L (${r.limiting})`)).toEqual([]);
   });
 });
