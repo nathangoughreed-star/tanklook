@@ -405,7 +405,7 @@ if (process.argv[1]?.endsWith('calib-fit.mjs')) {
   const { round, files: use, unmatched } = combine(rounds, files), r = fitRound(round, use);
   for (const u of unmatched) console.warn('not fitted: ' + u);
   r.skipped.unshift(...unmatched.map(u => 'whole file: ' + u), ...notes4);
-  r.tables = asMade ? 'as made' : rounds.map(R => `round ${R.round}: ${R.tables ? 'current engine, ' + R.tables : 'as made'}`).join('; ');
+  r.tables = asMade ? 'as made' : rounds.map(R => `round ${R.label ?? R.round}: ${R.tables ? 'current engine, ' + R.tables : 'as made'}`).join('; ');
   const base = outAt >= 0 ? args[outAt + 1].replace(/\.(json|md)$/, '') : `research/calib/fit-round-${String(round.round).replace(/\+/g, '-')}`;
   writeFileSync(base + '.json', JSON.stringify(r, (k, v) => k === 'theta' ? undefined : v, 1) + '\n');
   writeFileSync(base + '.md', report(r));
