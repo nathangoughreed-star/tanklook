@@ -601,17 +601,18 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .ftRow { position: relative; margin: 2px 0 6px; outline: none; cursor: default }
 .ftLab { display: flex; justify-content: space-between } .ftLab b { font-variant-numeric: tabular-nums }
 .ftTrack { position: relative; height: 8px; margin-top: 2px; border-radius: 4px; background: color-mix(in srgb, var(--ink) 12%, transparent) }
-.ftTrack i { position: absolute; inset: 0; border-radius: 4px; background: #2e9e6a; clip-path: inset(0 calc(100% - min(100, var(--pct, 0)) * 1%) 0 0 round 4px); transition: clip-path .25s }
-.ft-near .ftTrack i { background: #d99a1e } .ft-over .ftTrack i { background: #d8432f } .ft-over .ftLab b { color: #d8432f }
-/* load bars (Nathan 2026-10-26): the track is the whole scale, green to the ideal (--ideal, a number the tile sets from IDEAL_MAX), green -> amber
-   to half way to the limit, amber -> red at 100 and red past it; --pct (on the track) is this tank and ::after is its line. The scale runs to
-   --scale = max(100, --pct), so past 100 the zones shrink to make room and the line sits at the end. The reached part (i, clipped at --pct) is
-   full strength, the part ahead (::before) faint. */
-.ftLoad .ftTrack { --scale: max(100, var(--pct, 0)); --at: calc(var(--pct, 0) / var(--scale) * 100%) }
-.ftLoad .ftTrack::before, .ftLoad .ftTrack i { background: linear-gradient(to right, #2e9e6a calc(var(--ideal, 75) / var(--scale) * 100%), #d99a1e calc((var(--ideal, 75) + 100) / 2 / var(--scale) * 100%), #d8432f calc(100 / var(--scale) * 100%)) }
-.ftLoad .ftTrack::before { content: ''; position: absolute; inset: 0; border-radius: 4px; opacity: .3 }
-.ftLoad .ftTrack i { clip-path: inset(0 calc(100% - var(--at)) 0 0 round 4px) }
-.ftLoad .ftTrack::after { content: ''; position: absolute; top: -2px; bottom: -2px; left: var(--at); width: 2px; margin-left: -1px; border-radius: 1px; background: color-mix(in srgb, var(--ink) 85%, transparent); pointer-events: none; transition: left .25s }
+.ftTrack:not(.gauge) i { position: absolute; inset: 0; border-radius: 4px; background: #2e9e6a; clip-path: inset(0 calc(100% - min(100, var(--pct, 0)) * 1%) 0 0 round 4px); transition: clip-path .25s }
+.ft-near .ftTrack:not(.gauge) i { background: #d99a1e } .ft-over .ftTrack:not(.gauge) i { background: #d8432f } .ft-over .ftLab b { color: #d8432f }
+/* The whole-scale gauge (S229, Nathan 2026-10-26; ui/gauge.ts sets --pct and --ideal): the Fullness tile's load bars (.ftTrack.gauge) and the
+   stocking screen's space bars (.spBar.gauge). The element is the whole scale, green to the ideal, green -> amber to half way to the limit,
+   amber -> red at 100 and red past it; ::after is the line where this tank is. The scale runs to --scale = max(100, --pct), so past 100 the
+   zones shrink to make room and the line sits at the end. The reached part (i, clipped at --pct) is full strength, the part ahead (::before)
+   faint. The element sets its own size, radius and track background. */
+.gauge { position: relative; --scale: max(100, var(--pct, 0)); --at: calc(var(--pct, 0) / var(--scale) * 100%) }
+.gauge::before, .gauge i { position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(to right, #2e9e6a calc(var(--ideal, 75) / var(--scale) * 100%), #d99a1e calc((var(--ideal, 75) + 100) / 2 / var(--scale) * 100%), #d8432f calc(100 / var(--scale) * 100%)) }
+.gauge::before { content: ''; opacity: .3 }
+.gauge i { clip-path: inset(0 calc(100% - var(--at)) 0 0 round 4px); transition: clip-path .25s }
+.gauge::after { content: ''; position: absolute; top: -2px; bottom: -2px; left: var(--at); width: 2px; margin-left: -1px; border-radius: 1px; background: color-mix(in srgb, var(--ink) 85%, transparent); pointer-events: none; transition: left .25s }
 .ftTop { display: none; margin-top: 4px; padding: 4px 6px; border-radius: 4px; background: color-mix(in srgb, var(--ink) 7%, transparent) }
 .ftTop b { font-variant-numeric: tabular-nums } .ftTopHd { color: var(--muted) }
 .ftRow:hover .ftTop, .ftRow:focus-visible .ftTop, .ftRow.open .ftTop { display: block }
@@ -666,7 +667,8 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .spMates li, .spFork li { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--line) } .spMates { max-height: 340px; overflow-y: auto } .spMates li.no { opacity: .5 } .spWhy { display: block; font-size: 11px }
 .spFork li > div { display: flex; flex-direction: column }
 .spTank { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px } .spTank > b { flex: 1 1 100% }
-.spBar { display: inline-block; width: 80px; height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--ink) 15%, transparent); overflow: hidden } .spBar i { display: block; height: 100%; background: #2f8f4e } .spBar.near i { background: #d6a21b } .spBar.over i { background: #d8432f }
+.spBar { display: inline-block; width: 80px; height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--ink) 15%, transparent) } /* the space bar is a .gauge (S229); the tank-size bar stays flat */
+.spBar:not(.gauge) { overflow: hidden } .spBar:not(.gauge) i { display: block; height: 100%; background: #2f8f4e } .spBar.near:not(.gauge) i { background: #d6a21b } .spBar.over:not(.gauge) i { background: #d8432f }
 .spPct { font-size: 11px; opacity: .75 }
 .spLive { display: flex; justify-content: space-between; gap: 8px; margin-top: 8px; padding: 6px 8px; border-radius: 6px; background: color-mix(in srgb, #2a9bb0 14%, transparent) }
 .spSteps2 { max-height: 230px; overflow-y: auto; padding-right: 4px }

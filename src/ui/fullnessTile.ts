@@ -17,6 +17,7 @@ const ROUTINE_FLOOR = dd.time.waterChangeFraction.floor;
 import type { Store } from '../scene/store';
 import type { SpaceLimit, TankSetup, Units } from '../scene/types';
 import { tankView } from '../render/tankView';
+import { GAUGE_TIP, gaugeStyle } from './gauge';
 
 /** A bar at or over this reads "caution" (amber, past ideal); over 100 is over (red). */
 export const NEAR_FULL = IDEAL_MAX;
@@ -180,7 +181,6 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
   const host = document.getElementById('view')!, tools = host.querySelector('.viewtools'); // top-left, under the view's buttons (the demand panel holds the top right)
   const el = document.createElement('section');
   el.className = 'ft'; el.hidden = true; el.setAttribute('aria-label', 'How full the tank is');
-  el.style.setProperty('--ideal', String(NEAR_FULL)); // the load bars' colour scale (style.css .ftLoad) follows IDEAL_MAX
   el.innerHTML = `<button class="ftHead" type="button" aria-expanded="true" title="Minimize the fullness tile"><span class="ftTitle">Fullness</span><span class="ftPill"></span><span class="ftChev" aria-hidden="true">▾</span></button>
 <div class="ftBody"><div class="ftBars"></div><details class="ftN ftCounts"><summary>What counts</summary><ul class="ftCountsBody"></ul></details>
 <details class="ftN"><summary>Where the ammonia goes, per day</summary><div class="ftNCtl">
@@ -216,15 +216,12 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
   setMin(min, false);
   head.onclick = () => setMin(!min);
 
-  // Load bars (water, floor, filt; Nathan 2026-10-26): the track is the whole scale, green to the ideal (IDEAL_MAX), green -> amber to half
-  // way to the limit, amber -> red at 100 and red past it, with a line where this tank is; the reached part is full strength, the part ahead
-  // faint. Past 100 the scale runs to the tank's percent, so the zones shrink to make room (style.css .ftLoad, --pct on the track). The
-  // minimum bar keeps one colour per level: its yellow line is Recommended, not the ideal.
-  const LOAD_TIP = ` The scale: green to the ideal (${NEAR_FULL}%), amber half way to the limit, red at 100%; the line is this tank. Past 100% the scale stretches to reach it.`;
+  // Load bars (water, floor, filt; Nathan 2026-10-26): the whole-scale gauge (ui/gauge.ts, style.css .gauge), shared with the stocking
+  // screen's space bars. The minimum bar keeps one colour per level: its yellow line is Recommended, not the ideal.
   const row = (key: string, label: string, b: Bar, top: TopRow[], what: string, hd = `Most of the ${what}:`, tip = '', none = 'No animals in the water yet.', load = key !== 'min') => {
-    const t = (tip + (load ? LOAD_TIP : '')).trim();
+    const t = (tip + (load ? ` ${GAUGE_TIP}` : '')).trim();
     return `<div class="ftRow ft-${b.level}${load ? ' ftLoad' : ''}" tabindex="0" data-row="${key}"${t ? ` title="${esc(t)}"` : ''}><div class="ftLab"><span>${label}</span><b>${b.text}</b></div>`
-      + `<div class="ftTrack" role="meter" aria-label="${label}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(Math.min(b.pct, 999))}" style="--pct:${Math.min(b.pct, 999)}"><i></i></div>`
+      + `<div class="ftTrack${load ? ' gauge' : ''}" role="meter" aria-label="${label}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(Math.min(b.pct, 999))}" style="${load ? gaugeStyle(b.pct) : `--pct:${Math.min(b.pct, 999)}`}"><i></i></div>`
       + `<div class="ftTop">${top.length ? `<div class="ftTopHd">${hd}</div>` + top.map(t => `<div>${esc(plural(t.n, t.name))} <b>${t.note ? esc(t.note) : `${Math.round(t.share * 100)}%`}</b></div>`).join('') : `<div>${none}</div>`}</div></div>`;
   };
 
