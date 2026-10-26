@@ -704,6 +704,10 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .sg .sgMateHd { display: none } .sg.sgMates .sgMateHd { display: block; padding: 20px 24px 6px } .sg.sgMates .sgHero, .sg.sgMates .sgIntro, .sg.sgMates .sgChips { display: none }
 .sgTile.no { opacity: .5; cursor: default } .sgAdd { font-size: 12px; font-weight: 600; color: #0e2a33; background: #7fd0de; border-radius: 5px; padding: 2px 8px; align-self: flex-start; margin-top: 3px } .sgWhy { font-size: 11px; color: #e0a45a }
 .sgTile b { font-size: 14px } .sgTile i { font-size: 11px; opacity: .65 } .sgBits { font-size: 11.5px; color: #7fd0de }
+/* reptiles and amphibians: how they take company (S246, Nathan 2026-10-26); the group-living ones stand out */
+.sgGrp { font-size: 11.5px; font-weight: 600; border-radius: 5px; padding: 2px 7px; align-self: flex-start; margin-top: 3px; display: flex; flex-direction: column; gap: 1px }
+.sgGrp em { font-style: normal; font-weight: 400; font-size: 11px; opacity: .85 }
+.sgGrp.group { color: #0f2a12; background: #8fd694 } .sgGrp.care { color: #e0a45a; border: 1px solid #e0a45a66 } .sgGrp.alone { color: #b8bec8; border: 1px solid #b8bec844 }
 .sgNone { padding: 24px } .sgRunNote { margin: -4px 24px 8px; font-size: 12px; opacity: .7 }
 @media (max-width: 700px) { .sg { padding: 0 0 40px } .sgHero { padding-top: 70px; height: 340px; grid-template-columns: repeat(3, 1fr) } .sgGrid { grid-template-columns: repeat(2, 1fr) } }
 @media (max-width: 700px) { .sp { left: 6px; right: 6px; width: auto; top: auto; max-height: 62%; bottom: 6px } }

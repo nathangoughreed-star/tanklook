@@ -1,6 +1,6 @@
 // Herp stocking check (Nathan 2026-10-19): floor area, height, group size, water and tankmate rules for reptiles and amphibians.
 import { describe, expect, it } from 'vitest';
-import { HERP, floorFor } from '../src/data/herpstock';
+import { HERP, floorFor, herpGroup } from '../src/data/herpstock';
 import { SPECIES } from '../src/data/species';
 import { defaultScene } from '../src/scene/defaults';
 import { herpCheck } from '../src/scene/herpcheck';
@@ -81,5 +81,17 @@ describe('herp stocking check', () => {
       expect(r.stages[r.stages.length - 1].k, sci).toBe(1);
       for (let i = 1; i < r.grow.length; i++) { expect(r.grow[i][0]).toBeGreaterThan(r.grow[i - 1][0]); expect(r.grow[i][1]).toBeGreaterThanOrEqual(r.grow[i - 1][1]); }
     }
+  });
+});
+
+describe('how each species takes company (S246, Nathan 2026-10-26)', () => {
+  const kind = (name: string) => herpGroup(Object.values(HERP).find(r => r.name === name)!).kind;
+  it('the group-living ones are called out; the rest are with care or alone', () => {
+    for (const n of ["White's tree frog", 'Fire-bellied toad', 'Chinese fire-bellied newt', 'African dwarf frog']) expect(kind(n), n).toBe('group');
+    for (const n of ['Crested gecko', 'Leopard gecko', 'Green anole', 'Dyeing dart frog', 'Axolotl']) expect(kind(n), n).toBe('care');
+    expect(kind('Ball python')).toBe('alone');
+  });
+  it('the floor it quotes is the recommended floor for that group, and a social species is shown at its own group size', () => {
+    for (const r of Object.values(HERP)) { const g = herpGroup(r); expect(g.floor, r.name).toBe(g.kind === 'alone' ? r.rec : floorFor(r, g.n)[1]); if (r.social) expect(g.n).toBeGreaterThanOrEqual(r.social); }
   });
 });
