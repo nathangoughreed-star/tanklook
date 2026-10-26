@@ -140,11 +140,14 @@ const rowDef = (id: string) => TECH_ROWS.find(r => r.id === id);
 export const optionDef = (row: string, opt: string) => rowDef(row)?.options.find(o => o.id === opt);
 
 const galOf = (S: TankSetup) => volume(S.tank).gallons;
+/** A wet tank with a land animal in it: a paludarium (the land side needs its own dry gear). */
+export const hasLand = (S: TankSetup) => S.water.on && S.fish.some(f => getSpecies(f.species)?.habitat === 'land');
 const isSalt = (S: TankSetup) => S.water.on && !!S.water.salt;
 /** The rows this tank shows: a dry tank its own (heat lamp, UVB, misting); fresh-only rows (CO2, ferts) not on salt, salt rows only on salt. */
 export function rowsFor(S: TankSetup): TechRow[] {
   if (!S.water.on) return TECH_ROWS.filter(r => r.water === 'dry');
-  return TECH_ROWS.filter(r => r.water !== 'dry' && (r.water === 'wet' || (r.water === 'salt') === isSalt(S)));
+  const land = hasLand(S); // a paludarium (lane S241): the land animals' heat, UVB and misting rows join the water rows
+  return TECH_ROWS.filter(r => (land && r.water === 'dry') || r.water !== 'dry' && (r.water === 'wet' || (r.water === 'salt') === isSalt(S)));
 }
 
 // ---- defaults, presets, choices
@@ -161,6 +164,7 @@ export function inferTech(S: TankSetup): TechSetup {
   };
   // a tank started from its animals (path 1): no filter or heater until the owner adds one (Nathan 2026-10-26)
   if (S.stockFirst) Object.assign(rows, { filter: 'none', heater: 'none' });
+  if (hasLand(S)) Object.assign(rows, dryInferred(S.fish.filter(f => getSpecies(f.species)?.habitat === 'land').map(f => f.species)));
   // the skimmer follows the filter (lane SF): in the sump with one, else hang-on
   if (salt) Object.assign(rows, { skimmer: rows.filter === 'sump' ? 'sump' : 'hob', flow: feed === 'co2' ? 'wave' : feed === 'ferts' ? 'two' : 'none', dosing: feed === 'co2' ? 'doser' : feed === 'ferts' ? 'twopart' : 'none', salinity: 'refractometer', saltmix: 'mix' });
   else Object.assign(rows, { co2: feed === 'co2' ? 'pressurized' : 'none', ferts: feed === 'low' ? 'none' : 'aio' });

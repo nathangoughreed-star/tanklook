@@ -20,7 +20,7 @@ import { attachStockGallery } from './stockGallery';
 import { onSpaceFork, type SpaceFork } from './fullnessTile';
 import { grazerLevel, grazerShort } from '../data/grazers';
 import { spaceBand, animalsInTank, animalsOf, bump, writePairs, FAIL_WORD, groupLineIn, type Pairing, forkOptions, isSexed, notesOf, overWarn, shownLengthMm, planFor, shownLitres, conflictsOf, rankTankmates, tempLinesOf, startPick, tankLabel, totalOf, type Pk, type Plan, type RoomOption } from './stockPlanLogic';
-import { allLand, sizeTxt } from '../scene/tankfit';
+import { allLand, isMixed, setPool, sizeTxt } from '../scene/tankfit';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
@@ -70,7 +70,7 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
   const sync = (rebuild = false) => {
     // the chosen tank, else the invisible box around the smallest size that holds them (it follows the picks: it is not a choice)
     const plan = planFor(picks, chosen), box = plan.tank ? undefined : plan.need?.tank ?? plan.options.at(-1)?.tank, show = plan.tank ?? box;
-    const key = show ? `${box ? 'box:' : ''}${show.id}` : '';
+    const mixed = isMixed(animalsOf(picks)), key = show ? `${box ? 'box:' : ''}${show.id}${mixed ? ':' + animalsOf(picks).map(a => `${a.species}${a.n}`).join(',') : ''}` : ''; // a paludarium's pool follows the picks
     ghost(!plan.tank); // nothing chosen (or nothing picked yet): no tank drawn; set before the update so the fullness tile reads it
     store.update(s => {
       const T = s.tanks[s.active];
@@ -79,6 +79,7 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
         const land = allLand(animalsOf(picks));
         T.tank = tankFromModel(show); T.water.on = !land; T.water.level = WATER_LEVEL; shown = key; rebuild = true;
         if (land) { T.lid = 'mesh'; T.doors = 'hinged'; } else if (T.doors) delete T.doors;
+        if (mixed) setPool(T, animalsOf(picks)); // part water, part land (lane S241)
         if (box) T.tank = { ...T.tank, L: Math.round(T.tank.L * GHOST_SCALE), D: Math.round(T.tank.D * GHOST_SCALE) };
         lastBox = box;
         T.camera = { ...T.camera, zoom: 0.55, el: 20 }; // looking down a little so the bottom dwellers show on the bare floor // the whole tank in view, beside the panel
@@ -138,13 +139,13 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
       if (plan.problem) h += `<div class="spWarn">${esc(plan.problem)}. You can still continue.</div>`;
       if (plan.span) {
         const { setupUsd: s, minPerWeek: m } = plan.span;
-        h += `<div class="spLive"><span>Set-up about <b>${range(s.cheapest, s.balanced, usd)}</b></span><span>About <b>${range(m.cheapest, m.balanced, n => `${n}`)} min</b> a week</span></div><div class="spNote">Cheapest build to balanced build: ${allLand(animalsOf(picks)) ? 'terrarium, heat, UVB, thermostat and misting' : 'tank, filter, light, heater and water care'} for these animals.</div>`;
+        h += `<div class="spLive"><span>Set-up about <b>${range(s.cheapest, s.balanced, usd)}</b></span><span>About <b>${range(m.cheapest, m.balanced, n => `${n}`)} min</b> a week</span></div><div class="spNote">Cheapest build to balanced build: ${allLand(animalsOf(picks)) ? 'terrarium, heat, UVB, thermostat and misting' : isMixed(animalsOf(picks)) ? 'tank, filter, light, heater, water care, and heat, UVB and misting for the land animals' : 'tank, filter, light, heater and water care'} for these animals.</div>`;
       }
     } else h += plan.need ? '<div class="spNote">No tank yet: pick one. You can add more animals after, and come back for a bigger tank. Greyed sizes are too small for the animals you have so far.</div>' : `<div class="spWarn">${esc(plan.problem ?? '')}</div>`;
-    const land = allLand(animals);
-    h += `<div class="spHd">${land ? 'Terrarium sizes' : 'Tank sizes'}</div><div class="spBands spNote">${land ? 'Floor' : 'Space'}: <span class="spB ok">ideal up to ${IDEAL_MAX} %</span> <span class="spB near">caution, tread carefully, to 100 %</span> <span class="spB over">over 100 %: likely to cause problems long term</span></div><div class="spSizeKey spNote"><span>Space</span><span>Tank size</span></div><ul class="spSizes">${plan.options.map(o => {
+    const land = allLand(animals), pal = isMixed(animals);
+    h += `<div class="spHd">${land ? 'Terrarium sizes' : pal ? 'Paludarium sizes' : 'Tank sizes'}</div><div class="spBands spNote">${land ? 'Floor' : pal ? 'Land (floor the land animals need) and Water (the fish in the pool that is left)' : 'Space'}: <span class="spB ok">ideal up to ${IDEAL_MAX} %</span> <span class="spB near">caution, tread carefully, to 100 %</span> <span class="spB over">over 100 %: likely to cause problems long term</span></div><div class="spSizeKey spNote">${pal ? '<span>Land</span><span>Water</span>' : '<span>Space</span>'}<span>Tank size</span></div><ul class="spSizes">${plan.options.map(o => {
       const bad = o.fails.length > 0, on = plan.tank?.id === o.tank.id, full = o.spacePct, filt = o.filtrationPct > 70 ? `<em class="${o.filtrationPct > 100 ? 'cr' : ''}">filter load ${Math.round(o.filtrationPct)} % on a basic filter; plants and a stronger one lower it</em>` : '';
-      return `<li><button type="button" data-act="size" data-tank="${o.tank.id}" class="${bad ? 'small' : ''}${on ? ' on' : ''}"${bad ? ' title="Too small for these animals; you can still pick it"' : ''}><span class="spLbl">${esc(tankLabel(o.tank, store.scene.units))}${bad ? `<em>${WHY[o.fails[0]]}</em>` : spaceBand(full) !== 'ok' ? `<em class="cr" style="color:${gaugeColor(full)}">past ideal: tread carefully</em>` : o.cramped ? '<em class="cr">workable, a bit cramped</em>' : ''}${filt}</span>${bar(full, land ? 'Floor: the floor these animals need at the minimum the sources accept' : 'Space: how full the tank is by room, whatever the filter', true)}<span class="spPct">${Math.round(full)} %</span>${bar(o.minPct, 'Tank size against what the animals need')}<span class="spPct">${Math.round(o.minPct)} %</span></button></li>`;
+      return `<li><button type="button" data-act="size" data-tank="${o.tank.id}" class="${bad ? 'small' : ''}${on ? ' on' : ''}"${bad ? ' title="Too small for these animals; you can still pick it"' : ''}><span class="spLbl">${esc(tankLabel(o.tank, store.scene.units))}${bad ? `<em>${WHY[o.fails[0]]}</em>` : spaceBand(full) !== 'ok' ? `<em class="cr" style="color:${gaugeColor(full)}">past ideal: tread carefully</em>` : o.cramped ? '<em class="cr">workable, a bit cramped</em>' : ''}${filt}</span>${pal ? `${bar(o.landPct ?? 0, 'Land: the floor the land animals need at the minimum the sources accept', true)}<span class="spPct">${Math.round(o.landPct ?? 0)} %</span>` : ''}${bar(full, land ? 'Floor: the floor these animals need at the minimum the sources accept' : pal ? 'Water: how full the pool is, whatever the filter' : 'Space: how full the tank is by room, whatever the filter', true)}<span class="spPct">${Math.round(full)} %</span>${bar(o.minPct, 'Tank size against what the animals need')}<span class="spPct">${Math.round(o.minPct)} %</span></button></li>`;
     }).join('')}</ul>`;
     return h;
   };
