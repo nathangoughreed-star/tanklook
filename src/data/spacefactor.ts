@@ -85,7 +85,7 @@ export const FLOOR_FACTOR: Record<string, [number, string]> = {
  *  load is multiplied by (n / ref)^exp, so a big group needs more than the shared school curve gives it. For grazers that strip the
  *  surfaces a group shares; aggression and bioload are not the reason. Hand-set targets, not a fit. */
 export const GROUP_GROW: Record<string, [number, number, string]> = {
-  oto: [12, 0.095, 'Nathan 2026-10-26: 12 in the 15 gal stays at 75 %; 25 should be comfortable (ideal) in a 30 gal breeder and 50 in a 55 gal, smaller tanks progressively less defensible; otos depend on grazing surfaces and food a big group exhausts (Aquarium Co-Op)'],
+  oto: [12, 0.09, 'Nathan 2026-10-26: 12 in the 15 gal stays at 75 %; 25 should be comfortable (ideal) in a 30 gal breeder and 50 in a 55 gal, smaller tanks progressively less defensible; otos depend on grazing surfaces and food a big group exhausts (Aquarium Co-Op)'],
 };
 // Hand-set multipliers on top of the AqAdvisor fit (Nathan's targets, not a fit): the species' space load is multiplied by both.
 // Like FLOOR_FACTOR, re-add this block after a rebuild (scripts/space-factors.mjs writes only the tables above).

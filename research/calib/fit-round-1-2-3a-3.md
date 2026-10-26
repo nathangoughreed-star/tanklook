@@ -6,43 +6,42 @@
 
 | | before | after |
 |---|---|---|
-| held-out anchors | 0.225 | 0.325 |
-| fitted tanks | 0.354 | 0.315 |
+| held-out anchors | 0.219 | 0.311 |
+| fitted tanks | 0.355 | 0.319 |
 
 Inter-expert disagreement n/a (no tank answered by two experts yet). Stop rule not met.
 
 ## Multipliers on today's factors
 
-Water (SPACE_PER_L) x0.8682, floor x0.9846. Classes: big +6 %, invert -10 %, mid +12 %, tiny -10 %.
+Water (SPACE_PER_L) x0.8755, floor x1.0137. Classes: big +5 %, invert -10 %, mid +11 %, tiny -9 %.
 
 | species | class | answers | total move | own move |
 |---|---|---|---|---|
-| guppy | tiny | 15 | -34 % | -16 % |
-| oto | tiny | 16 | -33 % | -14 % |
-| cardinal | tiny | 5 | -26 % | -6 % |
-| pandacory | tiny | 55 | -26 % | -6 % |
-| chili | tiny | 7 | -26 % | -5 % |
-| cherryshrimp | invert | 2 | -25 % | -5 % |
+| guppy | tiny | 15 | -34 % | -18 % |
+| pandacory | tiny | 55 | -25 % | -6 % |
+| chili | tiny | 7 | -25 % | -6 % |
+| cardinal | tiny | 5 | -25 % | -6 % |
+| cherryshrimp | invert | 2 | -25 % | -4 % |
+| oto | tiny | 16 | -25 % | -5 % |
 | pygmycory | tiny | 18 | -24 % | -4 % |
-| dwarfpencil | tiny | 7 | -24 % | -3 % |
-| honeygourami | tiny | 3 | -23 % | -2 % |
-| rummynose | tiny | 11 | -23 % | -2 % |
-| peapuffer | tiny | 13 | -23 % | -2 % |
-| hillstream | tiny | 8 | -23 % | -1 % |
-| amano | invert | 0 | -22 % | +0 % |
-| platy | tiny | 4 | -21 % | +1 % |
-| hatchet | tiny | 7 | -20 % | +2 % |
-| ember | tiny | 11 | -13 % | +11 % |
-| whitecloud | tiny | 21 | -12 % | +12 % |
-| cpd | tiny | 14 | -9 % | +16 % |
+| dwarfpencil | tiny | 7 | -23 % | -4 % |
+| honeygourami | tiny | 3 | -22 % | -2 % |
+| rummynose | tiny | 11 | -22 % | -2 % |
+| peapuffer | tiny | 13 | -22 % | -2 % |
+| amano | invert | 0 | -21 % | +0 % |
+| hillstream | tiny | 8 | -21 % | -1 % |
+| platy | tiny | 4 | -20 % | +1 % |
+| hatchet | tiny | 7 | -19 % | +2 % |
+| ember | tiny | 11 | -13 % | +9 % |
+| whitecloud | tiny | 21 | -11 % | +11 % |
+| cpd | tiny | 14 | -8 % | +16 % |
 | kadango | big | 1 | -8 % | +0 % |
 | syno | big | 1 | -8 % | +0 % |
-| bronzecory | mid | 27 | -7 % | -4 % |
-| molly | mid | 8 | +7 % | +10 % |
+| molly | mid | 8 | +8 % | +10 % |
+| bronzecory | mid | 27 | -7 % | -5 % |
 | kuhli | mid | 4 | +7 % | +10 % |
-| bristlenose | mid | 12 | -6 % | -3 % |
-| cherrybarb | mid | 4 | -6 % | -3 % |
-| sae | big | 4 | -6 % | +3 % |
+| sae | big | 4 | -5 % | +2 % |
+| cherrybarb | mid | 4 | -5 % | -3 % |
 
 ## Experts
 
@@ -50,8 +49,8 @@ Water (SPACE_PER_L) x0.8682, floor x0.9846. Classes: big +6 %, invert -10 %, mid
 |---|---|---|
 | chatgpt | AI model | -14 % |
 | chatgpt-high | AI model | +2 % |
-| ngr | - | +13 % |
-| ngr-ai | AI model | +1 % |
+| ngr | - | +11 % |
+| ngr-ai | AI model | +2 % |
 
 ## Limit / ideal count (one-species tanks)
 
@@ -78,7 +77,8 @@ Overall answer vs the tighter of the floor and water answers: same 26, lower 0, 
 - chatgpt 3a:f12 rummynose ideal 25: water 96 %, floor 101 % (weighted 0.5)
 - chatgpt-high 3:f15 bronzecory ideal 14: water 75 %, floor 86 % (weighted 0.5)
 - chatgpt-high 3:f15 cpd ideal 55: water 86 %, floor 98 % (weighted 0.5)
-- chatgpt-high 3:f9 pandacory limit 16: water 140 %, floor 126 % (weighted 0.5)
+- chatgpt-high 3:f9 pandacory limit 16: water 107 %, floor 106 % (weighted 0.5)
+- chatgpt-high 3:f9 oto ideal 12: water 78 %, floor 71 % (weighted 0.5)
 - chatgpt-high 3:f14 hatchet ideal 14: water 80 %, floor 92 % (weighted 0.5)
 
 ## Left out

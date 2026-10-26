@@ -12,8 +12,8 @@ describe('otocinclus', () => {
   it('keeps Nathan\'s targets', () => {
     expect(space(12, '15 gal')).toBeGreaterThan(74.5);
     expect(space(12, '15 gal')).toBeLessThan(75.5);
-    expect(space(25, '30 gal breeder')).toBeLessThanOrEqual(75);
-    expect(space(50, '55 gal')).toBeLessThan(75);
+    expect(space(25, '30 gal breeder')).toBeLessThan(74.5);
+    expect(space(50, '55 gal')).toBeLessThan(74.5);   // shows as 74 %, ideal (the bar rounds)
     expect(space(25, '20 gal long')).toBeGreaterThan(100);   // smaller tanks less defensible
     expect(space(50, '37 gal')).toBeGreaterThan(100);
   }, 60000);

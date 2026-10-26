@@ -11,7 +11,7 @@ starter iwagumi 48x13x20 s1: 9 amano, 10 cherryshrimp, 12 cpd, 12 harlequin, 8 o
 starter iwagumi 48x13x20 s3: 9 amano, 8 harlequin, 10 neon, 3 nerite, 8 oto = 57 % -> 8 amano, 10 harlequin, 12 neon, 3 nerite, 8 oto = 52 %
 starter iwagumi 48x13x20 s8: 10 cpd, 10 ember, 8 neon, 6 oto, 10 rummynose = 64 % -> 10 cpd, 10 ember, 10 neon, 8 oto, 10 rummynose = 61 %
 starter iwagumi 72x18x22 s1: 10 amano, 10 cherryshrimp, 24 cpd, 26 harlequin, 24 oto = 49 % -> 10 amano, 10 cherryshrimp, 30 cpd, 30 harlequin, 28 oto = 46 %
-starter iwagumi 72x18x22 s3: 10 amano, 20 harlequin, 22 neon, 4 nerite, 20 oto = 48 % -> 10 amano, 24 harlequin, 26 neon, 4 nerite, 22 oto = 45 %
+starter iwagumi 72x18x22 s3: 10 amano, 20 harlequin, 22 neon, 4 nerite, 20 oto = 48 % -> 10 amano, 24 harlequin, 26 neon, 4 nerite, 22 oto = 44 %
 starter iwagumi 72x18x22 s8: 18 cpd, 20 ember, 20 neon, 16 oto, 20 rummynose = 53 % -> 20 cpd, 22 ember, 20 neon, 20 oto, 22 rummynose = 51 %
 starter nature 24x12x16 s3: 1 betta, 8 cpd, 2 nerite, 8 pandacory = 68 % -> 8 cpd, 6 oto, 6 pandacory = 76 %
 starter nature 24x12x16 s5: 8 amano, 8 cpd, 10 ember, 2 nerite = 60 % -> 6 amano, 8 ember, 2 nerite, 6 oto = 65 %
@@ -37,7 +37,7 @@ starter forest 36x18x18 s8: 8 cpd, 8 harlequin, 8 neon, 3 nerite, 8 oto = 56 % -
 starter forest 48x13x20 s2: 9 amano, 10 cherryshrimp, 16 neon, 4 nerite, 10 oto = 60 % -> 10 amano, 10 cherryshrimp, 16 neon, 4 nerite, 14 oto = 53 %
 starter forest 48x13x20 s3: 10 cherryshrimp, 10 harlequin, 8 neon, 3 nerite, 8 oto = 55 % -> 10 cherryshrimp, 12 harlequin, 10 neon, 3 nerite, 8 oto = 51 %
 starter forest 48x13x20 s8: 8 cpd, 8 harlequin, 10 neon, 3 nerite, 8 oto = 57 % -> 10 cpd, 10 harlequin, 10 neon, 3 nerite, 8 oto = 51 %
-starter forest 72x18x22 s2: 10 amano, 10 cherryshrimp, 30 neon, 4 nerite, 30 oto = 50 % -> 10 amano, 10 cherryshrimp, 30 neon, 4 nerite, 30 oto = 40 %
+starter forest 72x18x22 s2: 10 amano, 10 cherryshrimp, 30 neon, 4 nerite, 30 oto = 50 % -> 10 amano, 10 cherryshrimp, 30 neon, 4 nerite, 30 oto = 39 %
 starter forest 72x18x22 s3: 10 cherryshrimp, 22 harlequin, 22 neon, 4 nerite, 20 oto = 48 % -> 10 cherryshrimp, 26 harlequin, 24 neon, 4 nerite, 22 oto = 44 %
 starter forest 72x18x22 s8: 22 cpd, 20 harlequin, 20 neon, 4 nerite, 18 oto = 48 % -> 24 cpd, 22 harlequin, 22 neon, 4 nerite, 22 oto = 45 %
 starter stream 24x12x16 s5: 8 cherrybarb, 4 nerite = 55 % -> 6 cherrybarb, 2 nerite, 6 oto = 70 %
