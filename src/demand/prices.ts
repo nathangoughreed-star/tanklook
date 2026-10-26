@@ -3,7 +3,7 @@
 import data from '../data/demand-items.json';
 import type { Range3 } from './types';
 
-export interface PriceRow { lo: number; mode: number; hi: number; unit: string; url: string; est?: boolean }
+export interface PriceRow { lo: number; mode: number; hi: number; unit: string; url: string; est?: boolean; /** a bulb or tube's life, months: its replacement is upkeep (lane LT) */ lifeMonths?: number }
 const ROWS = data.rows as Record<string, PriceRow>;
 export const PRICES_AS_OF = data.asOf;
 export const priceRow = (key: string) => ROWS[key];

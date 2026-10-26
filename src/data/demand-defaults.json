@@ -420,6 +420,20 @@
   "plantPatchMin": {
    "mode": 0.5,
    "note": "a painted patch of live plants (carpet, moss, 3 plants): trimmed every 2-3 weeks (FishyHub); x the growth rate"
+  },
+  "terrariumAutoMistMin": {
+   "lo": 4,
+   "mode": 7,
+   "hi": 12,
+   "est": true,
+   "note": "spot clean ~5 min/week plus an automatic mister refill ~5 min every 2 weeks; keeper estimates, no cited figure (research/terrarium-gear.md, lane LT)"
+  },
+  "terrariumDryMin": {
+   "lo": 3,
+   "mode": 5,
+   "hi": 10,
+   "est": true,
+   "note": "spot cleaning a terrarium that needs no misting, ~5 min/week; keeper estimate, no cited figure (research/terrarium-gear.md, lane LT)"
   }
  },
  "risk": {

@@ -220,7 +220,7 @@ export const shownLitres = (plan: Plan) => plan.tank ? plan.litres : plan.need ?
 export const shownLengthMm = (plan: Plan) => { const m = plan.tank ?? plan.need?.tank; return m ? tankFromModel(m).L : undefined; };
 
 /** each tank failure in a few words */
-export const FAIL_WORD: Record<string, string> = { space: 'too full', filtration: 'no filter carries it', minimum: 'too small for them', length: 'too short', depth: 'too deep', floor: 'not enough floor' };
+export const FAIL_WORD: Record<string, string> = { space: 'too full', filtration: 'no filter carries it', minimum: 'too small for them', length: 'too short', depth: 'too deep', floor: 'not enough floor', height: 'not tall enough' };
 const FAIL_TEXT: Record<string, string> = {
   filtration: 'No filter can carry this many animals; take fewer',
   space: 'Too many animals for this tank; take fewer or pick a bigger tank',
@@ -228,6 +228,7 @@ const FAIL_TEXT: Record<string, string> = {
   length: 'Too short for these animals; pick a longer tank',
   depth: 'Too deep for these animals; pick a shallower tank',
   floor: 'Not enough floor for the bottom dwellers and swimmers together; pick a bigger tank',
+  height: 'Not tall enough for these climbers; pick a taller terrarium',
 };
 
 /** The plan for these picks: the sizes with their verdicts, and the user's chosen tank (never swapped for them) with its cost span. */

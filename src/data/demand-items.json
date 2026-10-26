@@ -1505,6 +1505,109 @@
    "hi": 45,
    "unit": "automatic fish feeder; Eheim Everyday Feeder $21.99 Jeffers (out of stock), $28.13 open box at Bulk Reef Supply; hi estimated from programmable feeders (lane MW, 2026-10-21)",
    "url": "https://www.bulkreefsupply.com/everyday-fish-feeder-eheim.html"
+  },
+  "dry:basking-bulb": {
+   "lo": 9.99,
+   "mode": 12.99,
+   "hi": 14.55,
+   "unit": "Zoo Med Repti Basking Spot 75W single (incandescent, not halogen): PetSmart/Premier $9.99, Walmart $14.55 (lane LT, 2026-10-26)",
+   "url": "https://www.petsmart.com/reptile/environmental-control-and-lighting/bulbs-and-lamps/zoo-med-repti-basking-spot-lamp---75-watt-94753.html",
+   "lifeMonths": 3
+  },
+  "dry:dome": {
+   "lo": 29.98,
+   "mode": 29.98,
+   "hi": 39.99,
+   "unit": "Zoo Med Deep Dome 8.5 in fixture, PetSmart sale $29.98 / list $39.99 (lane LT, 2026-10-26)",
+   "url": "https://www.petsmart.com/reptile/environmental-control-and-lighting/light-fixtures/zoo-med-reptile-deep-dome-lamp-fixture-59819.html"
+  },
+  "dry:heat-mat": {
+   "lo": 24.98,
+   "mode": 28.99,
+   "hi": 34.99,
+   "unit": "Zoo Med ReptiTherm UTH: small 6x8 in $24.98 (Jeffers), medium 8x12 16W $28.99, large 8x18 24W $34.99 (PetSmart) (lane LT, 2026-10-26)",
+   "url": "https://www.petsmart.com/reptile/environmental-control-and-lighting/heaters/zoo-med-repti-therm-reptile-under-tank-heater-1851426.html"
+  },
+  "dry:thermostat-onoff": {
+   "lo": 24.5,
+   "mode": 35,
+   "hi": 48.95,
+   "unit": "Inkbird ITC-308 ~$24.50 deal (Amazon, Apr 2024) to ~$35 (eBay); Jump Start MTPRTC $48.95 Harris Seeds (up to $77-94 elsewhere); Zoo Med ReptiTemp ~$30-65 est (lane LT, 2026-10-26)",
+   "url": "https://www.homebrewfinds.com/inkbird-itc-308/"
+  },
+  "dry:thermostat-dimming": {
+   "lo": 148.49,
+   "mode": 149.99,
+   "hi": 164.99,
+   "unit": "Herpstat 1 (Spyder Robotics) ~$149.99 (conflicting $52.50 listings judged bogus); SpyderWeb version $148-165. Cheaper dimmers (Inkbird/Zoo Med dimming) not priced (lane LT, 2026-10-26)",
+   "url": "https://www.pangeareptile.com/collections/best-sellers/products/reptile-thermostats-herpstat-1",
+   "est": true
+  },
+  "dry:uvb-t5-24": {
+   "lo": 74.99,
+   "mode": 74.99,
+   "hi": 86.99,
+   "unit": "Arcadia ProT5 kit 24 in w/ 6% tube $74.99 (MorphMarket/Dubia Roaches); Zoo Med ReptiSun T5 HO hood 24 in $59.98 (ThatPetPlace) to $76.98 (Josh's Frogs, hood only on most sites). Replacement 22 in ReptiSun 5.0 tube $24.98 (Chewy) to $37.57 (lane LT, 2026-10-26)",
+   "url": "https://dubiaroaches.com/products/arcadia-prot5-uvb-kit-24-with-bulb-6",
+   "lifeMonths": 12
+  },
+  "dry:uvb-t5-24-tube": {
+   "lo": 24.98,
+   "mode": 31.275,
+   "hi": 37.57,
+   "unit": "replacement UVB tube for dry:uvb-t5-24 (lane LT, 2026-10-26)",
+   "url": "https://www.chewy.com/dp/344989"
+  },
+  "dry:uvb-low": {
+   "lo": 57.15,
+   "mode": 64.01,
+   "hi": 73.99,
+   "unit": "Arcadia ShadeDweller Arboreal ProT5 kit 12 in 8W 2.4%: Josh's Frogs $57.15-64.01 (sold out at times), Northern Gecko $73.99; replacement tube $20.01 (lane LT, 2026-10-26)",
+   "url": "https://joshsfrogs.com/sp/arcadia-prot5-uvb-kit---shadedweller-arboreal--2-4--uvb--12-5-inch--8-watt--arcrartp8saz",
+   "lifeMonths": 12
+  },
+  "dry:uvb-low-tube": {
+   "lo": 20.01,
+   "mode": 20.01,
+   "hi": 20.01,
+   "unit": "replacement UVB tube for dry:uvb-low (lane LT, 2026-10-26)",
+   "url": "https://joshsfrogs.com/sp/arcadia-shadedweller-replacement-8-watt-bulb-arcrfd3sd08"
+  },
+  "dry:gauge": {
+   "lo": 12.99,
+   "mode": 18.49,
+   "hi": 21.52,
+   "unit": "Zoo Med digital thermometer+humidity gauge, 2 probes: $12.99 (WI Humane) / $14.99 (Zamzows) / $21.52 (ReptiFiles). IR gun: Zoo Med ReptiTemp $15.29-16.19 (PetSmart/Chewy) (lane LT, 2026-10-26)",
+   "url": "https://shop.reptifiles.com/products/zoo-med-digital-thermometer-humidity-gauge"
+  },
+  "dry:hand-mister": {
+   "lo": 3.29,
+   "mode": 10.99,
+   "hi": 13.99,
+   "unit": "Exo Terra Mister 2 qt pressure sprayer: $10.99 MorphMarket, $13.99 Chewy; 500 ml mini $3.29-6.95 (lane LT, 2026-10-26)",
+   "url": "https://www.chewy.com/exo-terra-mister-portable-pressure/dp/152108"
+  },
+  "dry:auto-mister": {
+   "lo": 134.99,
+   "mode": 169.99,
+   "hi": 191.75,
+   "unit": "Exo Terra Monsoon Solo II $134.99 (Bio Dude sale) to $169.99 (Pisces); MistKing Starter V5 $191.75 (ReptiFiles) / $179.95 (Bio Dude) (lane LT, 2026-10-26)",
+   "url": "https://www.thebiodude.com/collections/reptile-misting-systems?redirect=2"
+  },
+  "dry:timer": {
+   "lo": 8,
+   "mode": 12,
+   "hi": 20,
+   "unit": "plug-in mechanical/digital outlet timer, typical hardware-store price; no listing fetched (lane LT, 2026-10-26)",
+   "url": "https://www.amazon.com/s?k=outlet+timer+digital",
+   "est": true
+  },
+  "dry:basking-bulb-tube": {
+   "lo": 9.99,
+   "mode": 12.99,
+   "hi": 14.55,
+   "unit": "replacement basking bulb: the bulb itself (lane LT, 2026-10-26)",
+   "url": "https://www.petsmart.com/reptile/environmental-control-and-lighting/bulbs-and-lamps/zoo-med-repti-basking-spot-lamp---75-watt-94753.html"
   }
  }
 }
