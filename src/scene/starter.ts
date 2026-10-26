@@ -1,7 +1,7 @@
 // Starter sets, layer by layer (lane SD, 2026-10-15): the hardscape and plants come from scene/items.ts
 // `starterItems`; this adds the animal layer and the regenerate the density sliders and Shuffle call. Each layer draws
 // from its own random stream (seed x layer), so redrawing one leaves the layers it does not feed exactly as they were.
-import { floorPerAnimal, litresPerAnimal } from './stocking';
+import { IDEAL_MAX, floorPerAnimal, litresPerAnimal, stockingOf } from './stocking';
 import { rng } from '../art/paint';
 import { getSpecies, type Species } from '../data/species';
 import { DEFAULT_DENS, EPIPHYTES, STYLES, STYLE_KIND, clampItem, isLandStyle, isSwampy, layerOf, perch, starterItems, type Layer } from './items';
@@ -14,8 +14,12 @@ import { groundEdited } from './scapeground';
 import { placeNew, randomPose, randomSize } from './scatter';
 import type { Fish, Item, LayoutId, TankSetup } from './types';
 
-/** Share of the tank's bioload cap each animal stop fills (None .. Full). Full stays under the cap. */
+/** Share of the tank's bioload cap each animal stop fills (None .. Full). Full stays under the cap. Since lane SR (2026-10-26) this is the
+ *  stops' SHARES of the Full target: a stop reads its share of FULL_READING in the stocking engine (what the tile shows), not of the
+ *  summed litres, which ignored the school curve and left Full at a 52 % median (the experts' full lists are ideal, up to IDEAL_MAX). */
 export const ANIMAL_FILL = [0, 0.35, 0.6, 0.8, 0.9] as const;
+/** What a starter reads at the Full stop, percent (just under the ideal edge: the drawn sizes jitter a point or two). */
+export const FULL_READING = IDEAL_MAX - 1;
 /** Species tried per stop: a few kinds in a light tank, a community in a full one. */
 const KINDS_PER_STOP = [0, 2, 3, 4, 5] as const;
 /** A continuous animal value (0..6) between the stops: below Few it is Few thinned to a share of its animals (one at
@@ -95,9 +99,19 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
   // lane HB: the floor the bottom dwellers use is held to the same share of the tank's floor as the water budget is of its water (the
   // stocking engine's floor limit), so a starter's Full stays at or under 100 % on both
   const floorPerLitre = floorOf(T).areaCm2 / Math.max(1e-9, bioloadLitres(s));
+  // lane SR: a group goes in while the tank still reads at or under the stop's target in the stocking engine itself (school curve,
+  // floor, filtration), so Full lands where the tile says ideal instead of where the summed litres said 90 %
+  const stopRead = (most: number) => FULL_READING * most / bioloadLitres(s) / ANIMAL_FILL[4];
+  const reading = (extra: Map<Species, number>) => {
+    const probe: Fish[] = [];
+    for (const [sp, n] of extra) for (let i = 0; i < n; i++) probe.push({ id: probe.length, species: sp.id, x: 0, y: 0, depth: 0, yaw: 0, ...(sp.female && i % 2 ? { sex: 'f' as const } : {}) } as Fish);
+    return stockingOf({ ...s, fish: probe }).percent;
+  };
   const add = (sp: Species, n: number, most = budget) => {
     const have = count.get(sp) ?? 0, l = gl(sp, have, n), fl = groupLitres(sp, have, n, floorPerAnimal);
-    if (n <= 0 || used + l > most || usedFloor + fl > most * floorPerLitre) return false;
+    if (n <= 0) return false;
+    const next = new Map(count); next.set(sp, have + n);
+    if (reading(next) > stopRead(most)) return false;
     count.set(sp, have + n); used += l; usedFloor += fl; return true;
   };
   // the lead group goes in at any stop above None if it fits under the cap at all (a small tank's Few is then just
