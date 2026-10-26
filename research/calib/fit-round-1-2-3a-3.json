@@ -386,13 +386,12 @@
  },
  "compat": {
   "concern -> caution": 4,
-  "concern -> yes": 7,
+  "concern -> yes": 8,
   "high -> no": 5,
   "ok -> caution": 5,
   "concern -> no": 1,
   "ok -> yes": 2,
-  "ok -> no": 1,
-  "high -> yes": 1
+  "ok -> no": 1
  },
- "tables": "round 1: current engine, 2026-10-23; round 2: current engine, 2026-10-23; round 3: current engine, 2026-10-23; round 3: current engine, 2026-10-23"
+ "tables": "round 1: current engine, 2026-10-26; round 2: current engine, 2026-10-26; round 3: current engine, 2026-10-26; round 3: current engine, 2026-10-26"
 }

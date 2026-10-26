@@ -1,6 +1,6 @@
 # Expert calibration, fit of round 1+2+3a+3
 
-4 experts (chatgpt, chatgpt-high, ngr, ngr-ai), 182 answers, 10 on held-out anchors. Noise 0.200 (log) from 0 repeat pairs. Engine readings: round 1: current engine, 2026-10-23; round 2: current engine, 2026-10-23; round 3: current engine, 2026-10-23; round 3: current engine, 2026-10-23.
+4 experts (chatgpt, chatgpt-high, ngr, ngr-ai), 182 answers, 10 on held-out anchors. Noise 0.200 (log) from 0 repeat pairs. Engine readings: round 1: current engine, 2026-10-26; round 2: current engine, 2026-10-26; round 3: current engine, 2026-10-26; round 3: current engine, 2026-10-26.
 
 ## Error (rms of log reading at the experts' counts)
 
@@ -66,9 +66,8 @@ Overall answer vs the tighter of the floor and water answers: same 26, lower 0, 
 
 - concern -> caution: 4
 - concern -> no: 1
-- concern -> yes: 7
+- concern -> yes: 8
 - high -> no: 5
-- high -> yes: 1
 - ok -> caution: 5
 - ok -> no: 1
 - ok -> yes: 2
