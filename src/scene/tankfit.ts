@@ -9,7 +9,7 @@
 // recommended minimum = CARE.group else 1, no depth limit, no length limit, zone from the species' own `zone` / `level`.
 import { careOf } from './zone';
 import { getSpecies } from '../data/species';
-import { getTankModel, TANK_MODELS, tankFromModel, variantUsd, type TankModel } from '../data/tanks';
+import { getTankModel, pickRimless, TANK_MODELS, tankFromModel, type TankModel, type TankVariant } from '../data/tanks';
 import { defaultProfile, demandOf, type DemandOpts } from '../demand';
 import { bareSetup } from './defaults';
 import { volume } from './physics';
@@ -110,10 +110,16 @@ function setupFor(c: Candidate, animals: AnimalCount[], build: BuildKind): TankS
   return S;
 }
 
-/** The tank's own price from the catalogue's real products (median of the listed prices), else the demand model's $/gallon rule. */
+/** The tank's own price from the catalogue's real products: the median list price of the standard bare glass tanks (not a kit, rimless,
+ *  acrylic, discontinued or a premium line: low-iron, reef systems), when there are three or more (two from 75 gal up, few makers
+ *  sell those). Fewer fall back to the big-box stores' own tanks (Petco / PetSmart / Chewy), else to the demand model's $/gallon rule:
+ *  one premium product must not set a size's planning price, and a sale is tankSaleFor's, not the planning price (S224b). */
+const PREMIUM = /low[- ]?iron|ultra[- ]?clear|starphire|opti-?white|reefer|waterbox|red sea|innovative marine|ultum|neptunian|fiji cube/i;
 const catalogPrice = (c: Candidate): DemandOpts['tankPrice'] => () => {
-  const ps = (c.m.variants ?? []).filter(v => !v.discontinued && v.price_usd && v.price_kind !== 'kit').map(v => variantUsd(v)!).sort((a, b) => a - b); // a stale sale reads its list price
-  return ps.length ? ps[Math.floor(ps.length / 2)] : undefined;
+  const live = (c.m.variants ?? []).filter(v => !v.discontinued && v.price_usd && v.price_kind !== 'kit' && !/acrylic/i.test(`${v.line ?? ''} ${v.price_note ?? ''}`) && !PREMIUM.test(`${v.brand} ${v.line ?? ''}`));
+  const usd = (vs: TankVariant[]) => { const ps = vs.map(v => v.regular_usd ?? v.price_usd!).sort((a, b) => a - b); return ps.length ? ps[Math.floor(ps.length / 2)] : undefined; };
+  const std = live.filter(v => !pickRimless(c.m, v));
+  return (std.length >= (c.m.ratedGal >= 75 ? 2 : 3) ? usd(std) : undefined) ?? usd(live.filter(v => /^(Petco|PetSmart|Chewy)$/.test(v.retailer ?? '')));
 };
 
 export interface Fit {

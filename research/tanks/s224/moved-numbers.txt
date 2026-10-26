@@ -1,1166 +1,1163 @@
-changed rows: tankFor 1 of 516, steps 386 of 516, builds 166 of 516, starters 51 of 1620, sumps 86 of 128, examples 0 of 11
+changed rows: tankFor 1 of 516, steps 385 of 516, builds 166 of 516, starters 51 of 1620, sumps 86 of 128, examples 0 of 11
 
 tankFor | nerite x12
     before: {"tank":"g3c","fails":"","space":97.7,"filt":36.5,"min":0}
     after:  {"tank":"g3c","fails":"","space":92.4,"filt":36.5,"min":0}
 steps | neon x1
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | neon x3
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | neon x6
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | neon x12
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | neon x25
     before: g29 +$84; g37 +$138; g50b +$162
-    after:  g29 +$52; g37 +$107; g50b +$689
+    after:  g29 +$61; g37 +$115; g50b +$139
+steps | neon x50
+    before: g40b +$1; g55 +$132; g75 +$306
+    after:  g40b +$80; g55 +$237; g75 +$474
 steps | cardinal x1
     before: g20h +$26; g29 +$124; g37 +$178
-    after:  g20h +$-63; g29 +$4; g37 +$58
+    after:  g20h +$49; g29 +$124; g37 +$178
 steps | cardinal x3
     before: g20h +$26; g29 +$124; g37 +$178
-    after:  g20h +$-63; g29 +$4; g37 +$58
+    after:  g20h +$49; g29 +$124; g37 +$178
 steps | cardinal x6
     before: g20h +$26; g29 +$124; g37 +$178
-    after:  g20h +$-63; g29 +$4; g37 +$58
+    after:  g20h +$49; g29 +$124; g37 +$178
 steps | cardinal x12
     before: g20h +$26; g29 +$124; g37 +$178
-    after:  g20h +$-63; g29 +$4; g37 +$58
+    after:  g20h +$49; g29 +$124; g37 +$178
 steps | cardinal x25
     before: g29 +$61; g37 +$115; g50b +$139
-    after:  g29 +$-9; g37 +$46; g50b +$628
+    after:  g29 +$50; g37 +$105; g50b +$128
 steps | cardinal x50
     before: g55 +$131; g75 +$305; g120 +$1577
-    after:  g55 +$131; g75 +$305; g120 +$1782
+    after:  g55 +$157; g75 +$394; g120 +$1703
 steps | ember x1
     before: g10 +$20; g15 +$44; g20h +$71
-    after:  g10 +$66; g15 +$165; g20h +$102
+    after:  g10 +$36; g15 +$44; g20h +$94
 steps | ember x3
     before: g10 +$20; g15 +$44; g20h +$71
-    after:  g10 +$66; g15 +$165; g20h +$102
+    after:  g10 +$36; g15 +$44; g20h +$94
 steps | ember x6
     before: g10 +$20; g15 +$44; g20h +$71
-    after:  g10 +$66; g15 +$165; g20h +$102
+    after:  g10 +$36; g15 +$44; g20h +$94
 steps | ember x12
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | ember x25
     before: g20h +$26; g29 +$110; g37 +$178
-    after:  g20h +$-63; g29 +$-10; g37 +$58
+    after:  g20h +$49; g29 +$110; g37 +$178
 steps | ember x50
     before: g37 +$68; g50b +$92; g75 +$375
-    after:  g37 +$68; g50b +$650; g75 +$375
+    after:  g37 +$68; g50b +$92; g75 +$543
 steps | dwarfpencil x1
     before: g10 +$20; g15 +$44; g20h +$71
-    after:  g10 +$66; g15 +$165; g20h +$102
+    after:  g10 +$36; g15 +$44; g20h +$94
 steps | dwarfpencil x3
     before: g10 +$20; g15 +$44; g20h +$71
-    after:  g10 +$66; g15 +$165; g20h +$102
+    after:  g10 +$36; g15 +$44; g20h +$94
 steps | dwarfpencil x6
     before: g15 +$25; g20h +$51; g29 +$149
-    after:  g15 +$99; g20h +$36; g29 +$102
+    after:  g15 +$8; g20h +$57; g29 +$132
 steps | dwarfpencil x12
     before: g20h +$26; g29 +$124; g37 +$178
-    after:  g20h +$-63; g29 +$4; g37 +$58
+    after:  g20h +$49; g29 +$124; g37 +$178
 steps | dwarfpencil x25
     before: g29 +$61; g37 +$115; g50b +$139
-    after:  g29 +$-9; g37 +$46; g50b +$628
+    after:  g29 +$50; g37 +$105; g50b +$128
 steps | dwarfpencil x50
     before: g55 +$131; g75 +$305; g120 +$1577
-    after:  g55 +$131; g75 +$305; g120 +$1782
+    after:  g55 +$157; g75 +$394; g120 +$1703
 steps | rummynose x1
     before: g29 +$61; g37 +$115; g50b +$139
-    after:  g29 +$-9; g37 +$46; g50b +$628
+    after:  g29 +$50; g37 +$105; g50b +$128
 steps | rummynose x3
     before: g29 +$61; g37 +$115; g50b +$139
-    after:  g29 +$-9; g37 +$46; g50b +$628
+    after:  g29 +$50; g37 +$105; g50b +$128
 steps | rummynose x6
     before: g29 +$61; g37 +$115; g50b +$139
-    after:  g29 +$-9; g37 +$46; g50b +$628
+    after:  g29 +$50; g37 +$105; g50b +$128
 steps | rummynose x12
     before: g29 +$61; g37 +$115; g50b +$139
-    after:  g29 +$-9; g37 +$46; g50b +$628
+    after:  g29 +$50; g37 +$105; g50b +$128
 steps | rummynose x25
     before: g29 +$61; g37 +$115; g50b +$139
-    after:  g29 +$-9; g37 +$46; g50b +$628
+    after:  g29 +$50; g37 +$105; g50b +$128
 steps | rummynose x50
     before: g55 +$131; g75 +$305; g120 +$1577
-    after:  g55 +$131; g75 +$305; g120 +$1782
+    after:  g55 +$157; g75 +$394; g120 +$1703
 steps | harlequin x1
     before: g20h +$26; g29 +$110; g37 +$164
-    after:  g20h +$-63; g29 +$-10; g37 +$44
+    after:  g20h +$49; g29 +$110; g37 +$164
 steps | harlequin x3
     before: g20h +$26; g29 +$110; g37 +$164
-    after:  g20h +$-63; g29 +$-10; g37 +$44
+    after:  g20h +$49; g29 +$110; g37 +$164
 steps | harlequin x6
     before: g20h +$26; g29 +$110; g37 +$164
-    after:  g20h +$-63; g29 +$-10; g37 +$44
+    after:  g20h +$49; g29 +$110; g37 +$164
 steps | harlequin x12
     before: g20h +$26; g29 +$110; g37 +$164
-    after:  g20h +$-63; g29 +$-10; g37 +$44
+    after:  g20h +$49; g29 +$110; g37 +$164
 steps | harlequin x25
     before: g29 +$47; g37 +$101; g50b +$139
-    after:  g29 +$-23; g37 +$32; g50b +$628
+    after:  g29 +$36; g37 +$91; g50b +$128
+steps | harlequin x50
+    before: g40b +$1; g55 +$132; g75 +$306
+    after:  g40b +$80; g55 +$237; g75 +$474
 steps | chili x1
     before: g5 +$14; g8c +$14; g10 +$40
-    after:  g5 +$77; g8c +$84; g10 +$86
+    after:  g5 +$4; g8c +$14; g10 +$56
 steps | chili x3
     before: g5 +$14; g8c +$14; g10 +$40
-    after:  g5 +$77; g8c +$84; g10 +$86
+    after:  g5 +$4; g8c +$14; g10 +$56
 steps | chili x6
     before: g8c +$0; g10 +$26; g15 +$51
-    after:  g8c +$7; g10 +$9; g15 +$108
+    after:  g8c +$10; g10 +$52; g15 +$60
 steps | chili x12
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | chili x25
     before: g29 +$84; g37 +$152; g50b +$176
-    after:  g29 +$52; g37 +$121; g50b +$703
+    after:  g29 +$61; g37 +$129; g50b +$153
+steps | chili x50
+    before: g40b +$1; g55 +$132; g75 +$306
+    after:  g40b +$80; g55 +$237; g75 +$474
 steps | danio x1
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | danio x3
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | danio x6
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | danio x12
     before: g20h +$26; g29 +$110; g37 +$164
-    after:  g20h +$-63; g29 +$-10; g37 +$44
+    after:  g20h +$49; g29 +$110; g37 +$164
+steps | danio x25
+    before: g40b +$1; g55 +$132; g75 +$306
+    after:  g40b +$80; g55 +$237; g75 +$474
 steps | danio x50
     before: g75 +$157; g120 +$1429; g150 +$786
-    after:  g75 +$157; g120 +$1634; g150 +$1030
+    after:  g75 +$209; g120 +$1518; g150 +$915
 steps | whitecloud x1
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | whitecloud x3
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | whitecloud x6
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | whitecloud x12
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | whitecloud x25
     before: g20h +$26; g29 +$110; g37 +$164
-    after:  g20h +$-63; g29 +$-10; g37 +$44
+    after:  g20h +$49; g29 +$110; g37 +$164
 steps | whitecloud x50
     before: g37 +$54; g50b +$78; g75 +$361
-    after:  g37 +$54; g50b +$636; g75 +$361
+    after:  g37 +$54; g50b +$78; g75 +$529
 steps | cpd x1
     before: g10 +$20; g15 +$44; g20h +$71
-    after:  g10 +$66; g15 +$165; g20h +$102
+    after:  g10 +$36; g15 +$44; g20h +$94
 steps | cpd x3
     before: g10 +$20; g15 +$44; g20h +$71
-    after:  g10 +$66; g15 +$165; g20h +$102
+    after:  g10 +$36; g15 +$44; g20h +$94
 steps | cpd x6
     before: g10 +$20; g15 +$44; g20h +$71
-    after:  g10 +$66; g15 +$165; g20h +$102
+    after:  g10 +$36; g15 +$44; g20h +$94
 steps | cpd x12
     before: g10 +$20; g15 +$44; g20h +$71
-    after:  g10 +$66; g15 +$165; g20h +$102
+    after:  g10 +$36; g15 +$44; g20h +$94
 steps | cpd x25
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | cpd x50
     before: g20h +$26; g29 +$110; g37 +$164
-    after:  g20h +$-63; g29 +$-10; g37 +$44
+    after:  g20h +$49; g29 +$110; g37 +$164
 steps | hatchet x1
     before: g29 +$61; g37 +$115; g50b +$139
-    after:  g29 +$-9; g37 +$46; g50b +$628
+    after:  g29 +$50; g37 +$105; g50b +$128
 steps | hatchet x3
     before: g29 +$61; g37 +$115; g50b +$139
-    after:  g29 +$-9; g37 +$46; g50b +$628
+    after:  g29 +$50; g37 +$105; g50b +$128
 steps | hatchet x6
     before: g29 +$61; g37 +$115; g50b +$139
-    after:  g29 +$-9; g37 +$46; g50b +$628
+    after:  g29 +$50; g37 +$105; g50b +$128
 steps | hatchet x12
     before: g29 +$61; g37 +$115; g50b +$139
-    after:  g29 +$-9; g37 +$46; g50b +$628
+    after:  g29 +$50; g37 +$105; g50b +$128
 steps | hatchet x25
     before: g37 +$54; g50b +$78; g75 +$361
-    after:  g37 +$54; g50b +$636; g75 +$361
+    after:  g37 +$54; g50b +$78; g75 +$529
 steps | hatchet x50
     before: g55 +$131; g75 +$305; g120 +$1577
-    after:  g55 +$131; g75 +$305; g120 +$1782
+    after:  g55 +$157; g75 +$394; g120 +$1703
 steps | cherrybarb x1
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | cherrybarb x3
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | cherrybarb x6
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | cherrybarb x12
     before: g20h +$26; g29 +$110; g37 +$178
-    after:  g20h +$-63; g29 +$-10; g37 +$58
+    after:  g20h +$49; g29 +$110; g37 +$178
+steps | cherrybarb x25
+    before: g40b +$1; g55 +$132; g75 +$306
+    after:  g40b +$80; g55 +$237; g75 +$474
 steps | cherrybarb x50
     before: g75 +$157; g120 +$1429; g150 +$786
-    after:  g75 +$157; g120 +$1634; g150 +$1030
+    after:  g75 +$209; g120 +$1518; g150 +$915
 steps | tigerbarb x1
     before: g29 +$47; g37 +$115; g50b +$139
-    after:  g29 +$-23; g37 +$46; g50b +$628
+    after:  g29 +$36; g37 +$105; g50b +$128
 steps | tigerbarb x3
     before: g29 +$47; g37 +$115; g50b +$139
-    after:  g29 +$-23; g37 +$46; g50b +$628
+    after:  g29 +$36; g37 +$105; g50b +$128
 steps | tigerbarb x6
     before: g29 +$47; g37 +$115; g50b +$139
-    after:  g29 +$-23; g37 +$46; g50b +$628
+    after:  g29 +$36; g37 +$105; g50b +$128
 steps | tigerbarb x12
     before: g29 +$47; g37 +$115; g50b +$139
-    after:  g29 +$-23; g37 +$46; g50b +$628
+    after:  g29 +$36; g37 +$105; g50b +$128
 steps | tigerbarb x25
     before: g55 +$131; g75 +$305; g120 +$1577
-    after:  g55 +$131; g75 +$305; g120 +$1782
+    after:  g55 +$157; g75 +$394; g120 +$1703
 steps | tigerbarb x50
     before: g120 +$1272; g150 +$629; g210 +$1398
-    after:  g120 +$1477; g150 +$874; g210 +$1398
+    after:  g120 +$1309; g150 +$706; g210 +$1230
 steps | boesemani x1
     before: g75 +$174; g120 +$1446; g150 +$803
-    after:  g75 +$174; g120 +$1651; g150 +$1047
+    after:  g75 +$237; g120 +$1546; g150 +$942
 steps | boesemani x3
     before: g75 +$174; g120 +$1446; g150 +$803
-    after:  g75 +$174; g120 +$1651; g150 +$1047
+    after:  g75 +$237; g120 +$1546; g150 +$942
 steps | boesemani x6
     before: g75 +$174; g120 +$1446; g150 +$803
-    after:  g75 +$174; g120 +$1651; g150 +$1047
+    after:  g75 +$237; g120 +$1546; g150 +$942
 steps | boesemani x12
     before: g75 +$174; g120 +$1446; g150 +$803
-    after:  g75 +$174; g120 +$1651; g150 +$1047
+    after:  g75 +$237; g120 +$1546; g150 +$942
 steps | boesemani x25
     before: g120 +$1272; g150 +$629; g210 +$1398
-    after:  g120 +$1477; g150 +$874; g210 +$1398
-steps | boesemani x50
-    before: g240 +$66; c8 +$-1073
-    after:  g240 +$1145; c8 +$-80
+    after:  g120 +$1309; g150 +$706; g210 +$1230
 steps | guppy x1
     before: g10 +$26; g15 +$51; g20h +$77
-    after:  g10 +$9; g15 +$108; g20h +$45
+    after:  g10 +$52; g15 +$60; g20h +$110
 steps | guppy x3
     before: g10 +$26; g15 +$51; g20h +$77
-    after:  g10 +$9; g15 +$108; g20h +$45
+    after:  g10 +$52; g15 +$60; g20h +$110
 steps | guppy x6
     before: g15 +$25; g20h +$51; g29 +$149
-    after:  g15 +$99; g20h +$36; g29 +$102
+    after:  g15 +$8; g20h +$57; g29 +$132
 steps | guppy x12
     before: g29 +$61; g37 +$115; g50b +$139
-    after:  g29 +$-9; g37 +$46; g50b +$628
+    after:  g29 +$50; g37 +$105; g50b +$128
+steps | guppy x25
+    before: g40b +$1; g55 +$132; g75 +$306
+    after:  g40b +$80; g55 +$237; g75 +$474
 steps | guppy x50
     before: g75 +$157; g120 +$1429; g150 +$786
-    after:  g75 +$157; g120 +$1634; g150 +$1030
+    after:  g75 +$209; g120 +$1518; g150 +$915
 steps | platy x1
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | platy x3
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | platy x6
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | platy x12
     before: g29 +$84; g37 +$138; g50b +$162
-    after:  g29 +$52; g37 +$107; g50b +$689
+    after:  g29 +$61; g37 +$115; g50b +$139
+steps | platy x25
+    before: g40b +$1; g55 +$132; g75 +$306
+    after:  g40b +$80; g55 +$237; g75 +$474
 steps | platy x50
     before: g75 +$157; g120 +$1429; g150 +$786
-    after:  g75 +$157; g120 +$1634; g150 +$1030
+    after:  g75 +$209; g120 +$1518; g150 +$915
 steps | molly x1
     before: g15 +$25; g20h +$51; g29 +$149
-    after:  g15 +$99; g20h +$36; g29 +$102
+    after:  g15 +$8; g20h +$57; g29 +$132
 steps | molly x3
     before: g15 +$25; g20h +$51; g29 +$149
-    after:  g15 +$99; g20h +$36; g29 +$102
+    after:  g15 +$8; g20h +$57; g29 +$132
 steps | molly x6
     before: g20h +$26; g29 +$124; g37 +$178
-    after:  g20h +$-63; g29 +$4; g37 +$58
+    after:  g20h +$49; g29 +$124; g37 +$178
 steps | molly x12
     before: g37 +$54; g50b +$78; g75 +$361
-    after:  g37 +$54; g50b +$636; g75 +$361
+    after:  g37 +$54; g50b +$78; g75 +$529
 steps | molly x25
     before: g75 +$283; g120 +$1555; g150 +$912
-    after:  g75 +$-275; g120 +$1202; g150 +$598
+    after:  g75 +$451; g120 +$1760; g150 +$1157
 steps | molly x50
     before: g125 +$6; g180 +$1871; g240 +$1937
-    after:  g125 +$384; g180 +$878; g240 +$2023
+    after:  g125 +$654; g180 +$3702; g240 +$3768
+steps | swordtail x1
+    before: g40b +$1; g55 +$132; g75 +$306
+    after:  g40b +$80; g55 +$237; g75 +$474
+steps | swordtail x3
+    before: g40b +$1; g55 +$132; g75 +$306
+    after:  g40b +$80; g55 +$237; g75 +$474
+steps | swordtail x6
+    before: g40b +$1; g55 +$132; g75 +$306
+    after:  g40b +$80; g55 +$237; g75 +$474
 steps | swordtail x12
     before: g55 +$131; g75 +$305; g120 +$1577
-    after:  g55 +$131; g75 +$305; g120 +$1782
+    after:  g55 +$157; g75 +$394; g120 +$1703
 steps | swordtail x25
     before: g150 +$-643; g210 +$126; g300 +$4972
-    after:  g150 +$-603; g210 +$-79; g300 +$3713
-steps | swordtail x50
-    before: g240 +$66; c8 +$-1073
-    after:  g240 +$1145; c8 +$-80
+    after:  g150 +$-603; g210 +$-79; g300 +$628
 steps | betta x1
     before: g10 +$26; g15 +$51; g20h +$77
-    after:  g10 +$9; g15 +$108; g20h +$45
+    after:  g10 +$52; g15 +$60; g20h +$110
 steps | betta x3
     before: g10 +$26; g15 +$51; g20h +$77
-    after:  g10 +$9; g15 +$108; g20h +$45
+    after:  g10 +$52; g15 +$60; g20h +$110
 steps | betta x6
     before: g15 +$25; g20h +$51; g29 +$149
-    after:  g15 +$99; g20h +$36; g29 +$102
+    after:  g15 +$8; g20h +$57; g29 +$132
 steps | betta x12
     before: g29 +$47; g37 +$101; g50b +$125
-    after:  g29 +$-23; g37 +$32; g50b +$614
+    after:  g29 +$36; g37 +$91; g50b +$114
+steps | betta x25
+    before: g40b +$1; g55 +$132; g75 +$306
+    after:  g40b +$80; g55 +$237; g75 +$474
 steps | betta x50
     before: g120 +$1272; g150 +$629; g210 +$1398
-    after:  g120 +$1477; g150 +$874; g210 +$1398
+    after:  g120 +$1309; g150 +$706; g210 +$1230
 steps | dwarfgourami x1
     before: g15 +$25; g20h +$51; g29 +$149
-    after:  g15 +$99; g20h +$36; g29 +$102
+    after:  g15 +$8; g20h +$57; g29 +$132
 steps | dwarfgourami x3
     before: g15 +$25; g20h +$51; g29 +$149
-    after:  g15 +$99; g20h +$36; g29 +$102
+    after:  g15 +$8; g20h +$57; g29 +$132
 steps | dwarfgourami x6
     before: g15 +$25; g20h +$51; g29 +$149
-    after:  g15 +$99; g20h +$36; g29 +$102
+    after:  g15 +$8; g20h +$57; g29 +$132
 steps | dwarfgourami x12
     before: g29 +$61; g37 +$115; g50b +$139
-    after:  g29 +$-9; g37 +$46; g50b +$628
+    after:  g29 +$50; g37 +$105; g50b +$128
 steps | dwarfgourami x25
     before: g55 +$131; g75 +$305; g120 +$1577
-    after:  g55 +$131; g75 +$305; g120 +$1782
+    after:  g55 +$157; g75 +$394; g120 +$1703
 steps | dwarfgourami x50
     before: g75 +$-3; g120 +$1270; g150 +$626
-    after:  g75 +$-3; g120 +$1474; g150 +$871
+    after:  g75 +$50; g120 +$1359; g150 +$755
 steps | honeygourami x1
     before: g10 +$26; g15 +$51; g20h +$77
-    after:  g10 +$9; g15 +$108; g20h +$45
+    after:  g10 +$52; g15 +$60; g20h +$110
 steps | honeygourami x3
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | honeygourami x6
     before: g20h +$26; g29 +$110; g37 +$178
-    after:  g20h +$-63; g29 +$-10; g37 +$58
+    after:  g20h +$49; g29 +$110; g37 +$178
 steps | honeygourami x12
     before: g37 +$68; g50b +$92; g75 +$375
-    after:  g37 +$68; g50b +$650; g75 +$375
+    after:  g37 +$68; g50b +$92; g75 +$543
 steps | honeygourami x25
     before: g75 +$283; g120 +$1555; g150 +$912
-    after:  g75 +$-275; g120 +$1202; g150 +$598
+    after:  g75 +$451; g120 +$1760; g150 +$1157
 steps | honeygourami x50
     before: g125 +$6; g180 +$1871; g240 +$1937
-    after:  g125 +$384; g180 +$878; g240 +$2023
+    after:  g125 +$654; g180 +$3702; g240 +$3768
+steps | gourami x1
+    before: g40b +$1; g55 +$132; g75 +$306
+    after:  g40b +$80; g55 +$237; g75 +$474
+steps | gourami x3
+    before: g40b +$1; g55 +$132; g75 +$306
+    after:  g40b +$80; g55 +$237; g75 +$474
+steps | gourami x6
+    before: g40b +$1; g55 +$132; g75 +$306
+    after:  g40b +$80; g55 +$237; g75 +$474
 steps | gourami x12
     before: g55 +$131; g75 +$305; g120 +$1577
-    after:  g55 +$131; g75 +$305; g120 +$1782
+    after:  g55 +$157; g75 +$394; g120 +$1703
 steps | gourami x25
     before: g75 +$143; g120 +$1183; g150 +$539
-    after:  g75 +$143; g120 +$1387; g150 +$784
+    after:  g75 +$196; g120 +$1272; g150 +$668
 steps | gourami x50
     before: g150 +$-593; g210 +$219; g300 +$4669
-    after:  g150 +$-553; g210 +$14; g300 +$3411
+    after:  g150 +$-553; g210 +$14; g300 +$326
 steps | gbr x1
     before: g20l +$77; g30b +$179; g40b +$180
-    after:  g20l +$26; g30b +$59; g40b +$60
+    after:  g20l +$88; g30b +$179; g40b +$259
 steps | gbr x3
     before: g20l +$77; g30b +$179; g40b +$180
-    after:  g20l +$26; g30b +$59; g40b +$60
+    after:  g20l +$88; g30b +$179; g40b +$259
 steps | gbr x6
     before: g20l +$77; g30b +$179; g60b +$328
-    after:  g20l +$26; g30b +$59; g60b +$208
+    after:  g20l +$88; g30b +$179; g60b +$444
 steps | gbr x12
     before: g30b +$102; g60b +$251; g120 +$1680
-    after:  g30b +$32; g60b +$182; g120 +$1815
+    after:  g30b +$91; g60b +$356; g120 +$1874
 steps | gbr x25
     before: g120 +$1429; g150 +$786; g210 +$1555
-    after:  g120 +$1634; g150 +$1030; g210 +$1555
-steps | gbr x50
-    before: g240 +$66; c8 +$-1073
-    after:  g240 +$1145; c8 +$-80
+    after:  g120 +$1518; g150 +$915; g210 +$1439
 steps | bolivianram x1
     before: g60b +$149; g120 +$1578; g150 +$935
-    after:  g60b +$149; g120 +$1783; g150 +$1180
+    after:  g60b +$265; g120 +$1783; g150 +$1180
 steps | bolivianram x3
     before: g60b +$149; g120 +$1578; g150 +$935
-    after:  g60b +$149; g120 +$1783; g150 +$1180
+    after:  g60b +$265; g120 +$1783; g150 +$1180
 steps | bolivianram x6
     before: g60b +$149; g120 +$1578; g150 +$935
-    after:  g60b +$149; g120 +$1783; g150 +$1180
+    after:  g60b +$265; g120 +$1783; g150 +$1180
 steps | bolivianram x12
     before: g60b +$149; g120 +$1578; g150 +$935
-    after:  g60b +$149; g120 +$1783; g150 +$1180
+    after:  g60b +$265; g120 +$1783; g150 +$1180
 steps | bolivianram x25
     before: g180 +$1865; g240 +$1931; c8 +$792
-    after:  g180 +$494; g240 +$1639; c8 +$414
+    after:  g180 +$3048; g240 +$3114; c8 +$1975
 steps | kribensis x1
     before: g60b +$149; g120 +$1578; g150 +$935
-    after:  g60b +$149; g120 +$1783; g150 +$1180
+    after:  g60b +$265; g120 +$1783; g150 +$1180
 steps | kribensis x3
     before: g60b +$149; g120 +$1578; g150 +$935
-    after:  g60b +$149; g120 +$1783; g150 +$1180
+    after:  g60b +$265; g120 +$1783; g150 +$1180
 steps | kribensis x6
     before: g60b +$149; g120 +$1578; g150 +$935
-    after:  g60b +$149; g120 +$1783; g150 +$1180
+    after:  g60b +$265; g120 +$1783; g150 +$1180
 steps | kribensis x12
     before: g120 +$1429; g150 +$786; g210 +$1555
-    after:  g120 +$1634; g150 +$1030; g210 +$1555
-steps | kribensis x25
-    before: g240 +$66; c8 +$-1073
-    after:  g240 +$1145; c8 +$-80
+    after:  g120 +$1518; g150 +$915; g210 +$1439
 steps | cockatoo x1
     before: g20l +$63; g30b +$179; g60b +$328
-    after:  g20l +$12; g30b +$59; g60b +$208
+    after:  g20l +$74; g30b +$179; g60b +$444
 steps | cockatoo x3
     before: g20l +$63; g30b +$179; g40b +$180
-    after:  g20l +$12; g30b +$59; g40b +$60
+    after:  g20l +$74; g30b +$179; g40b +$259
 steps | cockatoo x6
     before: g20l +$63; g30b +$179; g40b +$180
-    after:  g20l +$12; g30b +$59; g40b +$60
+    after:  g20l +$74; g30b +$179; g40b +$259
 steps | cockatoo x12
     before: g50b +$23; g75 +$306; g120 +$1578
-    after:  g50b +$581; g75 +$306; g120 +$1783
+    after:  g50b +$23; g75 +$474; g120 +$1783
 steps | cockatoo x25
     before: g180 +$1865; g240 +$1931; c8 +$792
-    after:  g180 +$494; g240 +$1639; c8 +$414
+    after:  g180 +$3048; g240 +$3114; c8 +$1975
+steps | yellowlab x1
+    before: g40b +$1; g55 +$132; g75 +$306
+    after:  g40b +$80; g55 +$237; g75 +$474
+steps | yellowlab x3
+    before: g40b +$1; g55 +$132; g75 +$306
+    after:  g40b +$80; g55 +$237; g75 +$474
+steps | yellowlab x6
+    before: g40b +$1; g55 +$132; g75 +$306
+    after:  g40b +$80; g55 +$237; g75 +$474
 steps | yellowlab x12
     before: g55 +$131; g75 +$305; g120 +$1577
-    after:  g55 +$131; g75 +$305; g120 +$1782
+    after:  g55 +$157; g75 +$394; g120 +$1703
 steps | yellowlab x25
     before: g120 +$1272; g150 +$629; g210 +$1398
-    after:  g120 +$1477; g150 +$874; g210 +$1398
+    after:  g120 +$1309; g150 +$706; g210 +$1230
 steps | yellowlab x50
     before: g180 +$1865; g240 +$1931; c8 +$792
-    after:  g180 +$494; g240 +$1639; c8 +$414
+    after:  g180 +$3048; g240 +$3114; c8 +$1975
 steps | peacock x1
     before: g75 +$174; g120 +$1446; g150 +$803
-    after:  g75 +$174; g120 +$1651; g150 +$1047
+    after:  g75 +$237; g120 +$1546; g150 +$942
 steps | peacock x3
     before: g75 +$174; g120 +$1446; g150 +$803
-    after:  g75 +$174; g120 +$1651; g150 +$1047
+    after:  g75 +$237; g120 +$1546; g150 +$942
 steps | peacock x6
     before: g75 +$174; g120 +$1446; g150 +$803
-    after:  g75 +$174; g120 +$1651; g150 +$1047
+    after:  g75 +$237; g120 +$1546; g150 +$942
 steps | peacock x12
     before: g75 +$174; g120 +$1446; g150 +$803
-    after:  g75 +$174; g120 +$1651; g150 +$1047
+    after:  g75 +$237; g120 +$1546; g150 +$942
 steps | peacock x25
     before: g125 +$6; g180 +$1871; g240 +$1937
-    after:  g125 +$384; g180 +$878; g240 +$2023
-steps | peacock x50
-    before: g240 +$-265; c8 +$-1404
-    after:  g240 +$814; c8 +$-411
+    after:  g125 +$654; g180 +$3702; g240 +$3768
 steps | demasoni x1
     before: g75 +$157; g120 +$1429; g150 +$786
-    after:  g75 +$157; g120 +$1634; g150 +$1030
+    after:  g75 +$209; g120 +$1518; g150 +$915
 steps | demasoni x3
     before: g120 +$1429; g150 +$786; g210 +$1555
-    after:  g120 +$1634; g150 +$1030; g210 +$1555
+    after:  g120 +$1518; g150 +$915; g210 +$1439
 steps | demasoni x6
     before: g120 +$1429; g150 +$786; g210 +$1555
-    after:  g120 +$1634; g150 +$1030; g210 +$1555
+    after:  g120 +$1518; g150 +$915; g210 +$1439
 steps | demasoni x12
     before: g120 +$1429; g150 +$786; g210 +$1555
-    after:  g120 +$1634; g150 +$1030; g210 +$1555
+    after:  g120 +$1518; g150 +$915; g210 +$1439
 steps | demasoni x25
     before: g120 +$1429; g150 +$786; g210 +$1555
-    after:  g120 +$1634; g150 +$1030; g210 +$1555
+    after:  g120 +$1518; g150 +$915; g210 +$1439
 steps | demasoni x50
     before: g180 +$1865; g240 +$1931; c8 +$792
-    after:  g180 +$494; g240 +$1639; c8 +$414
+    after:  g180 +$3048; g240 +$3114; c8 +$1975
 steps | kadango x1
     before: g75 +$174; g120 +$1446; g150 +$803
-    after:  g75 +$174; g120 +$1651; g150 +$1047
+    after:  g75 +$237; g120 +$1546; g150 +$942
 steps | kadango x3
     before: g75 +$174; g120 +$1446; g150 +$803
-    after:  g75 +$174; g120 +$1651; g150 +$1047
+    after:  g75 +$237; g120 +$1546; g150 +$942
 steps | kadango x6
     before: g75 +$174; g120 +$1446; g150 +$803
-    after:  g75 +$174; g120 +$1651; g150 +$1047
+    after:  g75 +$237; g120 +$1546; g150 +$942
 steps | kadango x12
     before: g75 +$143; g120 +$1183; g150 +$539
-    after:  g75 +$143; g120 +$1387; g150 +$784
+    after:  g75 +$196; g120 +$1272; g150 +$668
 steps | kadango x25
     before: g150 +$-593; g210 +$219; g300 +$4669
-    after:  g150 +$-553; g210 +$14; g300 +$3411
-steps | kadango x50
-    before: g240 +$174; c8 +$-618
-    after:  g240 +$1253; c8 +$375
+    after:  g150 +$-553; g210 +$14; g300 +$326
 steps | labeo x1
     before: g75 +$174; g120 +$1446; g150 +$803
-    after:  g75 +$174; g120 +$1651; g150 +$1047
+    after:  g75 +$237; g120 +$1546; g150 +$942
 steps | labeo x3
     before: g75 +$174; g120 +$1446; g150 +$803
-    after:  g75 +$174; g120 +$1651; g150 +$1047
+    after:  g75 +$237; g120 +$1546; g150 +$942
 steps | labeo x6
     before: g75 +$174; g120 +$1446; g150 +$803
-    after:  g75 +$174; g120 +$1651; g150 +$1047
+    after:  g75 +$237; g120 +$1546; g150 +$942
 steps | labeo x12
     before: g75 +$157; g120 +$1429; g150 +$786
-    after:  g75 +$157; g120 +$1634; g150 +$1030
+    after:  g75 +$209; g120 +$1518; g150 +$915
 steps | labeo x25
     before: g180 +$1865; g240 +$1931; c8 +$792
-    after:  g180 +$494; g240 +$1639; c8 +$414
+    after:  g180 +$3048; g240 +$3114; c8 +$1975
 steps | labeo x50
     before: g300 +$4846; c8 +$1260
-    after:  g300 +$3792; c8 +$1260
+    after:  g300 +$707; c8 +$1260
 steps | auratus x1
     before: g120 +$1429; g150 +$786; g210 +$1555
-    after:  g120 +$1634; g150 +$1030; g210 +$1555
+    after:  g120 +$1518; g150 +$915; g210 +$1439
 steps | auratus x3
     before: g75 +$157; g120 +$1429; g150 +$786
-    after:  g75 +$157; g120 +$1634; g150 +$1030
+    after:  g75 +$209; g120 +$1518; g150 +$915
 steps | auratus x6
     before: g75 +$157; g120 +$1429; g150 +$786
-    after:  g75 +$157; g120 +$1634; g150 +$1030
+    after:  g75 +$209; g120 +$1518; g150 +$915
 steps | auratus x12
     before: g75 +$157; g120 +$1429; g150 +$786
-    after:  g75 +$157; g120 +$1634; g150 +$1030
+    after:  g75 +$209; g120 +$1518; g150 +$915
 steps | auratus x25
     before: g180 +$1865; g240 +$1931; c8 +$792
-    after:  g180 +$494; g240 +$1639; c8 +$414
-steps | auratus x50
-    before: c8 +$-1139
-    after:  c8 +$-1225
+    after:  g180 +$3048; g240 +$3114; c8 +$1975
 steps | livingstonii x1
     before: g75 +$174; g120 +$1446; g150 +$803
-    after:  g75 +$174; g120 +$1651; g150 +$1047
+    after:  g75 +$237; g120 +$1546; g150 +$942
 steps | livingstonii x3
     before: g75 +$-68; g120 +$1204; g150 +$561
-    after:  g75 +$-68; g120 +$1409; g150 +$805
+    after:  g75 +$-5; g120 +$1304; g150 +$700
 steps | livingstonii x6
     before: g120 +$1348; g150 +$755; g210 +$1171
-    after:  g120 +$1552; g150 +$999; g210 +$1171
-steps | livingstonii x12
-    before: g240 +$174; c8 +$-618
-    after:  g240 +$1253; c8 +$375
+    after:  g120 +$1384; g150 +$831; g210 +$1003
 steps | livingstonii x25
     before: c8 +$-3463
-    after:  c8 +$-2409
+    after:  c8 +$676
 steps | afra x1
     before: g75 +$174; g120 +$1446; g150 +$803
-    after:  g75 +$174; g120 +$1651; g150 +$1047
+    after:  g75 +$237; g120 +$1546; g150 +$942
 steps | afra x3
     before: g75 +$174; g120 +$1446; g150 +$803
-    after:  g75 +$174; g120 +$1651; g150 +$1047
+    after:  g75 +$237; g120 +$1546; g150 +$942
 steps | afra x6
     before: g75 +$174; g120 +$1446; g150 +$803
-    after:  g75 +$174; g120 +$1651; g150 +$1047
+    after:  g75 +$237; g120 +$1546; g150 +$942
 steps | afra x12
     before: g120 +$1429; g150 +$786; g210 +$1555
-    after:  g120 +$1634; g150 +$1030; g210 +$1555
+    after:  g120 +$1518; g150 +$915; g210 +$1439
 steps | afra x25
     before: g180 +$1865; g240 +$1931; c8 +$792
-    after:  g180 +$494; g240 +$1639; c8 +$414
-steps | afra x50
-    before: c8 +$-1139
-    after:  c8 +$-1225
+    after:  g180 +$3048; g240 +$3114; c8 +$1975
 steps | syno x1
     before: g30b +$116; g60b +$265; g75 +$422
-    after:  g30b +$46; g60b +$196; g75 +$352
+    after:  g30b +$105; g60b +$370; g75 +$579
 steps | syno x3
     before: g60b +$149; g120 +$1578; g150 +$935
-    after:  g60b +$149; g120 +$1783; g150 +$1180
+    after:  g60b +$265; g120 +$1783; g150 +$1180
 steps | syno x6
     before: g75 +$-3; g120 +$1270; g150 +$626
-    after:  g75 +$-3; g120 +$1474; g150 +$871
-steps | syno x12
-    before: g240 +$66; c8 +$-1073
-    after:  g240 +$1145; c8 +$-80
+    after:  g75 +$50; g120 +$1359; g150 +$755
+steps | angel x1
+    before: g40b +$1; g55 +$132; g75 +$306
+    after:  g40b +$80; g55 +$237; g75 +$474
+steps | angel x3
+    before: g40b +$1; g55 +$132; g75 +$306
+    after:  g40b +$80; g55 +$237; g75 +$474
 steps | angel x6
     before: g55 +$162; g75 +$93; g120 +$1366
-    after:  g55 +$162; g75 +$93; g120 +$1570
+    after:  g55 +$188; g75 +$183; g120 +$1492
 steps | angel x12
     before: g120 +$1348; g150 +$755; g210 +$1171
-    after:  g120 +$1552; g150 +$999; g210 +$1171
+    after:  g120 +$1384; g150 +$831; g210 +$1003
 steps | angel x25
     before: g210 +$812; g300 +$5925; c8 +$2462
-    after:  g210 +$567; g300 +$4626; c8 +$2217
-steps | angel x50
-    before: c8 +$-792
-    after:  c8 +$-878
+    after:  g210 +$567; g300 +$1541; c8 +$2217
 steps | discus x1
     before: g75 +$174; g120 +$1446; g150 +$803
-    after:  g75 +$174; g120 +$1651; g150 +$1047
+    after:  g75 +$237; g120 +$1546; g150 +$942
 steps | discus x3
     before: g75 +$174; g120 +$1446; g150 +$803
-    after:  g75 +$174; g120 +$1651; g150 +$1047
+    after:  g75 +$237; g120 +$1546; g150 +$942
 steps | discus x6
     before: g75 +$-68; g120 +$1204; g150 +$561
-    after:  g75 +$-68; g120 +$1409; g150 +$805
+    after:  g75 +$-5; g120 +$1304; g150 +$700
 steps | discus x12
     before: g125 +$53; g180 +$1589; g240 +$1655
-    after:  g125 +$431; g180 +$596; g240 +$1741
-steps | discus x25
-    before: g240 +$174; c8 +$-618
-    after:  g240 +$1253; c8 +$375
+    after:  g125 +$702; g180 +$3420; g240 +$3486
 steps | discus x50
     before: c8 +$-3463
-    after:  c8 +$-2409
-steps | oscar x1
-    before: g240 +$66; c8 +$-1073
-    after:  g240 +$1145; c8 +$-80
-steps | oscar x3
-    before: g240 +$174; c8 +$-618
-    after:  g240 +$1253; c8 +$375
-steps | oscar x6
-    before: g240 +$174; c8 +$-618
-    after:  g240 +$1253; c8 +$375
+    after:  c8 +$676
 steps | goldfish x1
     before: g29 +$47; g37 +$101; g50b +$125
-    after:  g29 +$-23; g37 +$32; g50b +$614
+    after:  g29 +$36; g37 +$91; g50b +$114
 steps | goldfish x3
     before: g50b +$23; g75 +$307; g120 +$1579
-    after:  g50b +$582; g75 +$307; g120 +$1784
+    after:  g50b +$23; g75 +$475; g120 +$1784
 steps | goldfish x6
     before: g120 +$1272; g150 +$629; g210 +$1398
-    after:  g120 +$1477; g150 +$874; g210 +$1398
+    after:  g120 +$1309; g150 +$706; g210 +$1230
 steps | goldfish x12
     before: g210 +$416; g300 +$5262; c8 +$1676
-    after:  g210 +$171; g300 +$3964; c8 +$1431
-steps | goldfish x25
-    before: c8 +$-792
-    after:  c8 +$-878
+    after:  g210 +$171; g300 +$879; c8 +$1431
+steps | comet x1
+    before: g40b +$1; g55 +$132; g75 +$306
+    after:  g40b +$80; g55 +$237; g75 +$474
 steps | comet x3
     before: g55 +$162; g75 +$93; g120 +$1366
-    after:  g55 +$162; g75 +$93; g120 +$1570
+    after:  g55 +$188; g75 +$183; g120 +$1492
 steps | comet x6
     before: g125 +$53; g180 +$1589; g240 +$1655
-    after:  g125 +$431; g180 +$596; g240 +$1741
-steps | comet x12
-    before: g240 +$174; c8 +$-618
-    after:  g240 +$1253; c8 +$375
+    after:  g125 +$702; g180 +$3420; g240 +$3486
 steps | bronzecory x1
     before: g30b +$116; g60b +$265; g120 +$1694
-    after:  g30b +$46; g60b +$196; g120 +$1829
+    after:  g30b +$105; g60b +$370; g120 +$1888
 steps | bronzecory x3
     before: g30b +$116; g60b +$265; g120 +$1694
-    after:  g30b +$46; g60b +$196; g120 +$1829
+    after:  g30b +$105; g60b +$370; g120 +$1888
 steps | bronzecory x6
     before: g30b +$116; g60b +$265; g120 +$1694
-    after:  g30b +$46; g60b +$196; g120 +$1829
+    after:  g30b +$105; g60b +$370; g120 +$1888
 steps | bronzecory x12
     before: g60b +$149; g120 +$1578; g150 +$935
-    after:  g60b +$149; g120 +$1783; g150 +$1180
+    after:  g60b +$265; g120 +$1783; g150 +$1180
 steps | bronzecory x25
     before: g150 +$-643; g210 +$126; g300 +$4972
-    after:  g150 +$-603; g210 +$-79; g300 +$3713
+    after:  g150 +$-603; g210 +$-79; g300 +$628
 steps | bronzecory x50
     before: g300 +$4846; c8 +$1260
-    after:  g300 +$3792; c8 +$1260
+    after:  g300 +$707; c8 +$1260
 steps | pandacory x1
     before: g20l +$63; g30b +$165; g60b +$314
-    after:  g20l +$12; g30b +$45; g60b +$194
+    after:  g20l +$74; g30b +$165; g60b +$430
 steps | pandacory x3
     before: g20l +$63; g30b +$165; g60b +$314
-    after:  g20l +$12; g30b +$45; g60b +$194
+    after:  g20l +$74; g30b +$165; g60b +$430
 steps | pandacory x6
     before: g20l +$63; g30b +$165; g60b +$314
-    after:  g20l +$12; g30b +$45; g60b +$194
+    after:  g20l +$74; g30b +$165; g60b +$430
 steps | pandacory x12
     before: g20l +$63; g30b +$165; g60b +$314
-    after:  g20l +$12; g30b +$45; g60b +$194
+    after:  g20l +$74; g30b +$165; g60b +$430
 steps | pandacory x25
     before: g60b +$149; g120 +$1578; g150 +$935
-    after:  g60b +$149; g120 +$1783; g150 +$1180
+    after:  g60b +$265; g120 +$1783; g150 +$1180
 steps | pandacory x50
     before: g150 +$-643; g210 +$126; g300 +$4972
-    after:  g150 +$-603; g210 +$-79; g300 +$3713
+    after:  g150 +$-603; g210 +$-79; g300 +$628
 steps | pygmycory x1
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | pygmycory x3
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | pygmycory x6
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | pygmycory x12
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | pygmycory x25
     before: g20h +$26; g29 +$110; g37 +$164
-    after:  g20h +$-63; g29 +$-10; g37 +$44
+    after:  g20h +$49; g29 +$110; g37 +$164
 steps | pygmycory x50
     before: g29 +$84; g37 +$138; g50b +$176
-    after:  g29 +$52; g37 +$107; g50b +$703
+    after:  g29 +$61; g37 +$115; g50b +$153
 steps | sterbai x1
     before: g20l +$63; g30b +$179; g60b +$328
-    after:  g20l +$12; g30b +$59; g60b +$208
+    after:  g20l +$74; g30b +$179; g60b +$444
 steps | sterbai x3
     before: g20l +$63; g30b +$179; g60b +$328
-    after:  g20l +$12; g30b +$59; g60b +$208
+    after:  g20l +$74; g30b +$179; g60b +$444
 steps | sterbai x6
     before: g20l +$63; g30b +$179; g60b +$328
-    after:  g20l +$12; g30b +$59; g60b +$208
+    after:  g20l +$74; g30b +$179; g60b +$444
 steps | sterbai x12
     before: g60b +$149; g120 +$1578; g150 +$935
-    after:  g60b +$149; g120 +$1783; g150 +$1180
+    after:  g60b +$265; g120 +$1783; g150 +$1180
 steps | sterbai x25
     before: g150 +$-643; g210 +$126; g300 +$4972
-    after:  g150 +$-603; g210 +$-79; g300 +$3713
+    after:  g150 +$-603; g210 +$-79; g300 +$628
 steps | sterbai x50
     before: g300 +$4846; c8 +$1260
-    after:  g300 +$3792; c8 +$1260
+    after:  g300 +$707; c8 +$1260
 steps | bristlenose x1
     before: g20l +$63; g30b +$179; g40b +$180
-    after:  g20l +$12; g30b +$59; g40b +$60
+    after:  g20l +$74; g30b +$179; g40b +$259
 steps | bristlenose x3
     before: g20l +$63; g30b +$179; g40b +$180
-    after:  g20l +$12; g30b +$59; g40b +$60
+    after:  g20l +$74; g30b +$179; g40b +$259
 steps | bristlenose x6
     before: g40b +$1; g60b +$149; g120 +$1578
-    after:  g40b +$1; g60b +$149; g120 +$1783
+    after:  g40b +$80; g60b +$265; g120 +$1783
 steps | bristlenose x12
     before: g120 +$1429; g150 +$786; g210 +$1555
-    after:  g120 +$1634; g150 +$1030; g210 +$1555
-steps | bristlenose x25
-    before: g240 +$66; c8 +$-1073
-    after:  g240 +$1145; c8 +$-80
+    after:  g120 +$1518; g150 +$915; g210 +$1439
 steps | oto x1
     before: g10 +$20; g15 +$44; g20h +$71
-    after:  g10 +$66; g15 +$165; g20h +$102
+    after:  g10 +$36; g15 +$44; g20h +$94
 steps | oto x3
     before: g10 +$20; g15 +$44; g20h +$71
-    after:  g10 +$66; g15 +$165; g20h +$102
+    after:  g10 +$36; g15 +$44; g20h +$94
 steps | oto x6
     before: g15 +$25; g20h +$51; g29 +$135
-    after:  g15 +$99; g20h +$36; g29 +$88
+    after:  g15 +$8; g20h +$57; g29 +$118
 steps | oto x12
     before: g20h +$26; g29 +$110; g37 +$164
-    after:  g20h +$-63; g29 +$-10; g37 +$44
+    after:  g20h +$49; g29 +$110; g37 +$164
 steps | oto x25
     before: g37 +$54; g50b +$78; g75 +$361
-    after:  g37 +$54; g50b +$636; g75 +$361
+    after:  g37 +$54; g50b +$78; g75 +$529
 steps | oto x50
     before: g55 +$131; g75 +$305; g120 +$1577
-    after:  g55 +$131; g75 +$305; g120 +$1782
+    after:  g55 +$157; g75 +$394; g120 +$1703
 steps | kuhli x1
     before: g20l +$63; g30b +$179; g60b +$328
-    after:  g20l +$12; g30b +$59; g60b +$208
+    after:  g20l +$74; g30b +$179; g60b +$444
 steps | kuhli x3
     before: g20l +$63; g30b +$179; g60b +$328
-    after:  g20l +$12; g30b +$59; g60b +$208
+    after:  g20l +$74; g30b +$179; g60b +$444
 steps | kuhli x6
     before: g20l +$63; g30b +$179; g50b +$202
-    after:  g20l +$12; g30b +$59; g50b +$640
+    after:  g20l +$74; g30b +$179; g50b +$202
 steps | kuhli x12
     before: g30b +$116; g40b +$117; g60b +$265
-    after:  g30b +$46; g40b +$48; g60b +$196
+    after:  g30b +$105; g40b +$185; g60b +$370
 steps | kuhli x25
     before: g60b +$149; g120 +$1578; g150 +$935
-    after:  g60b +$149; g120 +$1783; g150 +$1180
+    after:  g60b +$265; g120 +$1783; g150 +$1180
 steps | kuhli x50
     before: g150 +$-643; g210 +$126; g300 +$4972
-    after:  g150 +$-603; g210 +$-79; g300 +$3713
+    after:  g150 +$-603; g210 +$-79; g300 +$628
 steps | clownloach x1
     before: g180 +$1865; g240 +$1931; c8 +$792
-    after:  g180 +$494; g240 +$1639; c8 +$414
+    after:  g180 +$3048; g240 +$3114; c8 +$1975
 steps | clownloach x3
     before: g180 +$1865; g240 +$1931; c8 +$792
-    after:  g180 +$494; g240 +$1639; c8 +$414
-steps | clownloach x6
-    before: g240 +$66; c8 +$-1073
-    after:  g240 +$1145; c8 +$-80
+    after:  g180 +$3048; g240 +$3114; c8 +$1975
 steps | sae x1
     before: g30b +$116; g60b +$265; g120 +$1694
-    after:  g30b +$46; g60b +$196; g120 +$1829
+    after:  g30b +$105; g60b +$370; g120 +$1888
 steps | sae x3
     before: g30b +$116; g60b +$265; g120 +$1694
-    after:  g30b +$46; g60b +$196; g120 +$1829
+    after:  g30b +$105; g60b +$370; g120 +$1888
 steps | sae x6
     before: g60b +$149; g120 +$1578; g150 +$935
-    after:  g60b +$149; g120 +$1783; g150 +$1180
+    after:  g60b +$265; g120 +$1783; g150 +$1180
 steps | sae x12
     before: g150 +$-643; g210 +$126; g300 +$4972
-    after:  g150 +$-603; g210 +$-79; g300 +$3713
+    after:  g150 +$-603; g210 +$-79; g300 +$628
 steps | sae x25
     before: g300 +$4846; c8 +$1260
-    after:  g300 +$3792; c8 +$1260
+    after:  g300 +$707; c8 +$1260
 steps | hillstream x1
     before: g30b +$102; g60b +$251; g120 +$1680
-    after:  g30b +$32; g60b +$182; g120 +$1815
+    after:  g30b +$91; g60b +$356; g120 +$1874
 steps | hillstream x3
     before: g30b +$102; g60b +$251; g120 +$1680
-    after:  g30b +$32; g60b +$182; g120 +$1815
+    after:  g30b +$91; g60b +$356; g120 +$1874
 steps | hillstream x6
     before: g30b +$102; g60b +$251; g120 +$1680
-    after:  g30b +$32; g60b +$182; g120 +$1815
+    after:  g30b +$91; g60b +$356; g120 +$1874
 steps | hillstream x12
     before: g30b +$102; g40b +$103; g60b +$251
-    after:  g30b +$32; g40b +$34; g60b +$182
+    after:  g30b +$91; g40b +$171; g60b +$356
 steps | hillstream x25
     before: g60b +$149; g120 +$1578; g150 +$935
-    after:  g60b +$149; g120 +$1783; g150 +$1180
+    after:  g60b +$265; g120 +$1783; g150 +$1180
 steps | hillstream x50
     before: g180 +$1865; g240 +$1931; c8 +$792
-    after:  g180 +$494; g240 +$1639; c8 +$414
+    after:  g180 +$3048; g240 +$3114; c8 +$1975
 steps | peapuffer x1
     before: g5 +$14; g8c +$14; g10 +$40
-    after:  g5 +$77; g8c +$84; g10 +$86
+    after:  g5 +$4; g8c +$14; g10 +$56
 steps | peapuffer x3
     before: g8c +$0; g10 +$26; g15 +$51
-    after:  g8c +$7; g10 +$9; g15 +$108
+    after:  g8c +$10; g10 +$52; g15 +$60
 steps | peapuffer x6
     before: g15 +$25; g20h +$51; g29 +$149
-    after:  g15 +$99; g20h +$36; g29 +$102
+    after:  g15 +$8; g20h +$57; g29 +$132
 steps | peapuffer x12
     before: g29 +$98; g37 +$152; g50b +$176
-    after:  g29 +$66; g37 +$121; g50b +$703
+    after:  g29 +$75; g37 +$129; g50b +$153
+steps | peapuffer x25
+    before: g40b +$1; g55 +$132; g75 +$306
+    after:  g40b +$80; g55 +$237; g75 +$474
 steps | peapuffer x50
     before: g75 +$174; g120 +$1446; g150 +$803
-    after:  g75 +$174; g120 +$1651; g150 +$1047
+    after:  g75 +$237; g120 +$1546; g150 +$942
 steps | cherryshrimp x1
     before: g3c +$-5; g5 +$14; g8c +$14
-    after:  g3c +$26; g5 +$77; g8c +$84
+    after:  g3c +$28; g5 +$4; g8c +$14
 steps | cherryshrimp x3
     before: g3c +$-5; g5 +$14; g8c +$14
-    after:  g3c +$26; g5 +$77; g8c +$84
+    after:  g3c +$28; g5 +$4; g8c +$14
 steps | cherryshrimp x6
     before: g3c +$-5; g5 +$14; g8c +$14
-    after:  g3c +$26; g5 +$77; g8c +$84
+    after:  g3c +$28; g5 +$4; g8c +$14
 steps | cherryshrimp x12
     before: g3c +$-5; g5 +$14; g8c +$14
-    after:  g3c +$26; g5 +$77; g8c +$84
+    after:  g3c +$28; g5 +$4; g8c +$14
 steps | cherryshrimp x25
     before: g8c +$0; g10 +$26; g15 +$51
-    after:  g8c +$7; g10 +$9; g15 +$108
+    after:  g8c +$10; g10 +$52; g15 +$60
 steps | cherryshrimp x50
     before: g10 +$26; g15 +$51; g20h +$77
-    after:  g10 +$2; g15 +$101; g20h +$38
+    after:  g10 +$43; g15 +$51; g20h +$100
 steps | amano x1
     before: g3c +$-5; g5 +$14; g8c +$14
-    after:  g3c +$26; g5 +$77; g8c +$84
+    after:  g3c +$28; g5 +$4; g8c +$14
 steps | amano x3
     before: g3c +$-5; g5 +$14; g8c +$14
-    after:  g3c +$26; g5 +$77; g8c +$84
+    after:  g3c +$28; g5 +$4; g8c +$14
 steps | amano x6
     before: g3c +$-5; g5 +$14; g8c +$14
-    after:  g3c +$26; g5 +$77; g8c +$84
+    after:  g3c +$28; g5 +$4; g8c +$14
 steps | amano x12
     before: g8c +$0; g10 +$26; g15 +$51
-    after:  g8c +$7; g10 +$9; g15 +$108
+    after:  g8c +$10; g10 +$52; g15 +$60
 steps | amano x25
     before: g10 +$26; g15 +$51; g20h +$77
-    after:  g10 +$2; g15 +$101; g20h +$38
+    after:  g10 +$43; g15 +$51; g20h +$100
 steps | amano x50
     before: g20h +$26; g29 +$110; g37 +$164
-    after:  g20h +$-63; g29 +$-10; g37 +$44
+    after:  g20h +$49; g29 +$110; g37 +$164
 steps | nerite x1
     before: g3c +$-5; g5 +$14; g8c +$14
-    after:  g3c +$26; g5 +$77; g8c +$84
+    after:  g3c +$28; g5 +$4; g8c +$14
 steps | nerite x3
     before: g3c +$-5; g5 +$14; g8c +$14
-    after:  g3c +$26; g5 +$77; g8c +$84
+    after:  g3c +$28; g5 +$4; g8c +$14
 steps | nerite x6
     before: g3c +$-5; g5 +$14; g8c +$14
-    after:  g3c +$26; g5 +$77; g8c +$84
+    after:  g3c +$28; g5 +$4; g8c +$14
 steps | nerite x12
     before: g5 +$19; g8c +$18; g10 +$45
-    after:  g5 +$50; g8c +$58; g10 +$59
+    after:  g5 +$-23; g8c +$-14; g10 +$29
 steps | nerite x25
     before: g10 +$26; g15 +$51; g20l +$114
-    after:  g10 +$2; g15 +$101; g20l +$113
+    after:  g10 +$43; g15 +$51; g20l +$125
 steps | nerite x50
     before: g30b +$-61; g60b +$88; g120 +$1517
-    after:  g30b +$-130; g60b +$19; g120 +$1653
+    after:  g30b +$-72; g60b +$193; g120 +$1711
 steps | mystery x1
     before: g3c +$-5; g5 +$14; g8c +$14
-    after:  g3c +$26; g5 +$77; g8c +$84
+    after:  g3c +$28; g5 +$4; g8c +$14
 steps | mystery x3
     before: g3c +$-5; g5 +$14; g8c +$14
-    after:  g3c +$26; g5 +$77; g8c +$84
+    after:  g3c +$28; g5 +$4; g8c +$14
 steps | mystery x6
     before: g3c +$-5; g5 +$14; g8c +$14
-    after:  g3c +$26; g5 +$77; g8c +$84
+    after:  g3c +$28; g5 +$4; g8c +$14
 steps | mystery x12
     before: g8c +$-46; g10 +$-8; g15 +$45
-    after:  g8c +$-39; g10 +$-25; g15 +$102
+    after:  g8c +$-36; g10 +$19; g15 +$55
 steps | mystery x25
     before: g20l +$77; g30b +$167; g60b +$317
-    after:  g20l +$26; g30b +$47; g60b +$196
+    after:  g20l +$87; g30b +$167; g60b +$432
 steps | mystery x50
     before: g60b +$205; g120 +$1621; g150 +$744
-    after:  g60b +$205; g120 +$1825; g150 +$989
+    after:  g60b +$320; g120 +$1825; g150 +$989
 steps | ramshorn x1
     before: g3c +$-5; g5 +$14; g8c +$14
-    after:  g3c +$26; g5 +$77; g8c +$84
+    after:  g3c +$28; g5 +$4; g8c +$14
 steps | ramshorn x3
     before: g3c +$-5; g5 +$14; g8c +$14
-    after:  g3c +$26; g5 +$77; g8c +$84
+    after:  g3c +$28; g5 +$4; g8c +$14
 steps | ramshorn x6
     before: g3c +$-5; g5 +$14; g8c +$14
-    after:  g3c +$26; g5 +$77; g8c +$84
+    after:  g3c +$28; g5 +$4; g8c +$14
 steps | ramshorn x12
     before: g3c +$-5; g5 +$14; g8c +$14
-    after:  g3c +$26; g5 +$77; g8c +$84
+    after:  g3c +$28; g5 +$4; g8c +$14
 steps | ramshorn x25
     before: g3c +$-5; g5 +$14; g8c +$14
-    after:  g3c +$26; g5 +$77; g8c +$84
+    after:  g3c +$28; g5 +$4; g8c +$14
 steps | ramshorn x50
     before: g8c +$0; g10 +$26; g15 +$51
-    after:  g8c +$7; g10 +$9; g15 +$108
+    after:  g8c +$10; g10 +$52; g15 +$60
 steps | trumpet x1
     before: g3c +$-5; g5 +$14; g8c +$14
-    after:  g3c +$26; g5 +$77; g8c +$84
+    after:  g3c +$28; g5 +$4; g8c +$14
 steps | trumpet x3
     before: g3c +$-5; g5 +$14; g8c +$14
-    after:  g3c +$26; g5 +$77; g8c +$84
+    after:  g3c +$28; g5 +$4; g8c +$14
 steps | trumpet x6
     before: g3c +$-5; g5 +$14; g8c +$14
-    after:  g3c +$26; g5 +$77; g8c +$84
+    after:  g3c +$28; g5 +$4; g8c +$14
 steps | trumpet x12
     before: g3c +$-5; g5 +$14; g8c +$14
-    after:  g3c +$26; g5 +$77; g8c +$84
+    after:  g3c +$28; g5 +$4; g8c +$14
 steps | trumpet x25
     before: g3c +$-5; g5 +$14; g8c +$14
-    after:  g3c +$26; g5 +$77; g8c +$84
+    after:  g3c +$28; g5 +$4; g8c +$14
 steps | trumpet x50
     before: g3c +$-5; g5 +$14; g8c +$14
-    after:  g3c +$26; g5 +$77; g8c +$84
+    after:  g3c +$28; g5 +$4; g8c +$14
 steps | ocellaris x1
     before: g20h +$47; g29 +$197; g37 +$283
-    after:  g20h +$-42; g29 +$77; g37 +$163
+    after:  g20h +$70; g29 +$197; g37 +$283
 steps | ocellaris x3
     before: g20h +$47; g29 +$197; g37 +$283
-    after:  g20h +$-42; g29 +$77; g37 +$163
+    after:  g20h +$70; g29 +$197; g37 +$283
 steps | ocellaris x6
     before: g29 +$89; g37 +$175; g50b +$254
-    after:  g29 +$19; g37 +$105; g50b +$744
+    after:  g29 +$78; g37 +$164; g50b +$244
 steps | ocellaris x12
     before: g55 +$213; g75 +$439; g120 +$1775
-    after:  g55 +$213; g75 +$439; g120 +$1979
+    after:  g55 +$239; g75 +$528; g120 +$1901
 steps | ocellaris x25
     before: g125 +$158; g180 +$2106; g240 +$2356
-    after:  g125 +$536; g180 +$1114; g240 +$2442
-steps | ocellaris x50
-    before: g240 +$-82; c8 +$-1081
-    after:  g240 +$998; c8 +$-88
+    after:  g125 +$806; g180 +$3938; g240 +$4187
 steps | royalgramma x1
     before: g40b +$36; g60b +$272; g120 +$1810
-    after:  g40b +$36; g60b +$272; g120 +$2015
+    after:  g40b +$114; g60b +$387; g120 +$2015
 steps | royalgramma x3
     before: g60b +$272; g120 +$1810; g150 +$1325
-    after:  g60b +$272; g120 +$2015; g150 +$1570
+    after:  g60b +$387; g120 +$2015; g150 +$1570
 steps | royalgramma x6
     before: g40b +$36; g60b +$272; g120 +$1810
-    after:  g40b +$36; g60b +$272; g120 +$2015
+    after:  g40b +$114; g60b +$387; g120 +$2015
 steps | royalgramma x12
     before: g50b +$80; g75 +$474; g120 +$1810
-    after:  g50b +$639; g75 +$474; g120 +$2015
+    after:  g50b +$80; g75 +$642; g120 +$2015
 steps | royalgramma x25
     before: g120 +$1538; g150 +$1053; g210 +$1956
-    after:  g120 +$1743; g150 +$1298; g210 +$1956
-steps | royalgramma x50
-    before: g240 +$249; c8 +$-750
-    after:  g240 +$1329; c8 +$243
+    after:  g120 +$1628; g150 +$1182; g210 +$1841
 steps | yellowtang x1
     before: g75 +$226; g120 +$1562; g150 +$1077
-    after:  g75 +$226; g120 +$1767; g150 +$1321
+    after:  g75 +$289; g120 +$1662; g150 +$1216
 steps | yellowtang x3
     before: g75 +$-16; g120 +$1320; g150 +$835
-    after:  g75 +$-16; g120 +$1524; g150 +$1079
+    after:  g75 +$47; g120 +$1419; g150 +$974
 steps | yellowtang x6
     before: g75 +$211; g120 +$1622; g150 +$1187
-    after:  g75 +$211; g120 +$1827; g150 +$1432
+    after:  g75 +$274; g120 +$1722; g150 +$1327
 steps | yellowtang x12
     before: g125 +$205; g180 +$2156; g240 +$2513
-    after:  g125 +$583; g180 +$1163; g240 +$2599
-steps | yellowtang x25
-    before: g240 +$357; c8 +$-295
-    after:  g240 +$1436; c8 +$698
+    after:  g125 +$854; g180 +$3987; g240 +$4344
 steps | yellowtang x50
     before: c8 +$-3383
-    after:  c8 +$-2329
+    after:  c8 +$756
 steps | bluetang x1
     before: g180 +$1949; g240 +$2198; c8 +$1199
-    after:  g180 +$578; g240 +$1907; c8 +$821
+    after:  g180 +$3132; g240 +$3381; c8 +$2382
 steps | bluetang x3
     before: g180 +$1950; g240 +$2307; c8 +$1655
-    after:  g180 +$579; g240 +$2016; c8 +$1277
+    after:  g180 +$3133; g240 +$3490; c8 +$2838
 steps | bluetang x6
     before: g180 +$1950; g240 +$2307; c8 +$1655
-    after:  g180 +$579; g240 +$2016; c8 +$1277
+    after:  g180 +$3133; g240 +$3490; c8 +$2838
 steps | bluetang x12
     before: g300 +$5265; c8 +$1882
-    after:  g300 +$4211; c8 +$1882
+    after:  g300 +$1126; c8 +$1882
 steps | firefish x1
     before: g29 +$75; g37 +$175; g50b +$254
-    after:  g29 +$5; g37 +$105; g50b +$744
+    after:  g29 +$64; g37 +$164; g50b +$244
 steps | firefish x3
     before: g29 +$75; g37 +$175; g50b +$254
-    after:  g29 +$5; g37 +$105; g50b +$744
+    after:  g29 +$64; g37 +$164; g50b +$244
 steps | firefish x6
     before: g29 +$75; g37 +$175; g50b +$254
-    after:  g29 +$5; g37 +$105; g50b +$744
+    after:  g29 +$64; g37 +$164; g50b +$244
 steps | firefish x12
     before: g29 +$75; g37 +$175; g50b +$254
-    after:  g29 +$5; g37 +$105; g50b +$744
+    after:  g29 +$64; g37 +$164; g50b +$244
+steps | firefish x25
+    before: g40b +$36; g55 +$248; g75 +$474
+    after:  g40b +$114; g55 +$353; g75 +$642
 steps | firefish x50
     before: g75 +$202; g120 +$1538; g150 +$1053
-    after:  g75 +$202; g120 +$1743; g150 +$1298
+    after:  g75 +$255; g120 +$1628; g150 +$1182
 steps | banggai x1
     before: g15 +$77; g20h +$124; g29 +$274
-    after:  g15 +$151; g20h +$109; g29 +$227
+    after:  g15 +$60; g20h +$130; g29 +$257
 steps | banggai x3
     before: g15 +$77; g20h +$124; g29 +$274
-    after:  g15 +$151; g20h +$109; g29 +$227
+    after:  g15 +$60; g20h +$130; g29 +$257
 steps | banggai x6
     before: g20h +$47; g29 +$197; g37 +$283
-    after:  g20h +$-42; g29 +$77; g37 +$163
+    after:  g20h +$70; g29 +$197; g37 +$283
+steps | banggai x12
+    before: g40b +$36; g55 +$248; g75 +$474
+    after:  g40b +$114; g55 +$353; g75 +$642
 steps | banggai x25
     before: g75 +$235; g120 +$1571; g150 +$1085
-    after:  g75 +$-324; g120 +$1217; g150 +$771
+    after:  g75 +$403; g120 +$1775; g150 +$1330
 steps | banggai x50
     before: g125 +$109; g180 +$1824; g240 +$2074
-    after:  g125 +$487; g180 +$832; g240 +$2160
+    after:  g125 +$757; g180 +$3656; g240 +$3905
+steps | sixline x1
+    before: g40b +$36; g55 +$248; g75 +$474
+    after:  g40b +$114; g55 +$353; g75 +$642
+steps | sixline x3
+    before: g40b +$36; g55 +$248; g75 +$474
+    after:  g40b +$114; g55 +$353; g75 +$642
+steps | sixline x6
+    before: g40b +$36; g55 +$248; g75 +$474
+    after:  g40b +$114; g55 +$353; g75 +$642
 steps | sixline x12
     before: g75 +$394; g120 +$1730; g150 +$1245
-    after:  g75 +$-165; g120 +$1376; g150 +$931
+    after:  g75 +$562; g120 +$1935; g150 +$1489
 steps | sixline x25
     before: g150 +$-485; g210 +$418; g300 +$5416
-    after:  g150 +$-445; g210 +$213; g300 +$4158
-steps | sixline x50
-    before: g240 +$249; c8 +$-750
-    after:  g240 +$1329; c8 +$243
+    after:  g150 +$-445; g210 +$213; g300 +$1073
+steps | chromis x1
+    before: g40b +$36; g55 +$248; g75 +$474
+    after:  g40b +$114; g55 +$353; g75 +$642
+steps | chromis x3
+    before: g40b +$36; g55 +$248; g75 +$474
+    after:  g40b +$114; g55 +$353; g75 +$642
+steps | chromis x6
+    before: g40b +$36; g55 +$248; g75 +$474
+    after:  g40b +$114; g55 +$353; g75 +$642
 steps | chromis x12
     before: g75 +$202; g120 +$1538; g150 +$1053
-    after:  g75 +$202; g120 +$1743; g150 +$1298
+    after:  g75 +$255; g120 +$1628; g150 +$1182
 steps | chromis x25
     before: g180 +$1949; g240 +$2198; c8 +$1199
-    after:  g180 +$578; g240 +$1907; c8 +$821
+    after:  g180 +$3132; g240 +$3381; c8 +$2382
 steps | chromis x50
     before: g300 +$4602; c8 +$1096
-    after:  g300 +$3549; c8 +$1096
+    after:  g300 +$464; c8 +$1096
 steps | coralbeauty x1
     before: g120 +$1538; g150 +$1053; g210 +$1956
-    after:  g120 +$1743; g150 +$1298; g210 +$1956
+    after:  g120 +$1628; g150 +$1182; g210 +$1841
 steps | coralbeauty x3
     before: g120 +$1538; g150 +$1053; g210 +$1956
-    after:  g120 +$1743; g150 +$1298; g210 +$1956
+    after:  g120 +$1628; g150 +$1182; g210 +$1841
 steps | coralbeauty x6
     before: g120 +$1538; g150 +$1053; g210 +$1956
-    after:  g120 +$1743; g150 +$1298; g210 +$1956
+    after:  g120 +$1628; g150 +$1182; g210 +$1841
 steps | coralbeauty x12
     before: g150 +$-485; g210 +$418; g300 +$5416
-    after:  g150 +$-445; g210 +$213; g300 +$4158
-steps | coralbeauty x25
-    before: g240 +$357; c8 +$-1081
-    after:  g240 +$1436; c8 +$-88
+    after:  g150 +$-445; g210 +$213; g300 +$1073
 steps | watchman x1
     before: g30b +$174; g40b +$210; g60b +$446
-    after:  g30b +$105; g40b +$140; g60b +$377
+    after:  g30b +$164; g40b +$278; g60b +$551
 steps | watchman x3
     before: g30b +$174; g60b +$446; g120 +$1984
-    after:  g30b +$105; g60b +$377; g120 +$2120
+    after:  g30b +$164; g60b +$551; g120 +$2179
 steps | watchman x6
     before: g30b +$-3; g40b +$33; g60b +$269
-    after:  g30b +$-72; g40b +$-36; g60b +$200
+    after:  g30b +$-13; g40b +$101; g60b +$374
 steps | watchman x12
     before: g120 +$1538; g150 +$1053; g210 +$1956
-    after:  g120 +$1743; g150 +$1298; g210 +$1956
-steps | watchman x25
-    before: g240 +$249; c8 +$-750
-    after:  g240 +$1329; c8 +$243
+    after:  g120 +$1628; g150 +$1182; g210 +$1841
 steps | mandarin x1
     before: g40b +$36; g60b +$272; g120 +$1810
-    after:  g40b +$36; g60b +$272; g120 +$2015
+    after:  g40b +$114; g60b +$387; g120 +$2015
+steps | mandarin x3
+    before: g40b +$36; g60b +$272; g75 +$474
+    after:  g40b +$114; g60b +$387; g75 +$642
 steps | mandarin x6
     before: g60b +$272; g120 +$1810; g150 +$1325
-    after:  g60b +$272; g120 +$2015; g150 +$1570
+    after:  g60b +$387; g120 +$2015; g150 +$1570
 steps | mandarin x12
     before: g60b +$272; g120 +$1810; g150 +$1325
-    after:  g60b +$272; g120 +$2015; g150 +$1570
+    after:  g60b +$387; g120 +$2015; g150 +$1570
 steps | mandarin x25
     before: g120 +$1538; g150 +$1053; g210 +$1956
-    after:  g120 +$1743; g150 +$1298; g210 +$1956
-steps | mandarin x50
-    before: g240 +$249; c8 +$-750
-    after:  g240 +$1329; c8 +$243
+    after:  g120 +$1628; g150 +$1182; g210 +$1841
 steps | cleanershrimp x1
     before: g3c +$8; g5 +$31; g8c +$51
-    after:  g3c +$38; g5 +$94; g8c +$121
+    after:  g3c +$39; g5 +$21; g8c +$51
 steps | cleanershrimp x3
     before: g8c +$20; g10 +$90; g15 +$167
-    after:  g8c +$27; g10 +$73; g15 +$224
+    after:  g8c +$30; g10 +$117; g15 +$177
 steps | cleanershrimp x6
     before: g15 +$77; g20l +$185; g30b +$359
-    after:  g15 +$151; g20l +$208; g30b +$313
+    after:  g15 +$60; g20l +$179; g30b +$342
 steps | cleanershrimp x12
     before: g30b +$174; g60b +$446; g120 +$1984
-    after:  g30b +$105; g60b +$377; g120 +$2120
+    after:  g30b +$164; g60b +$551; g120 +$2179
 steps | cleanershrimp x25
     before: g60b +$272; g120 +$1810; g150 +$1325
-    after:  g60b +$272; g120 +$2015; g150 +$1570
+    after:  g60b +$387; g120 +$2015; g150 +$1570
 steps | cleanershrimp x50
     before: g150 +$-485; g210 +$418; g300 +$5416
-    after:  g150 +$-445; g210 +$213; g300 +$4158
+    after:  g150 +$-445; g210 +$213; g300 +$1073
 steps | turbo x1
     before: g3c +$8; g5 +$31; g8c +$51
-    after:  g3c +$38; g5 +$94; g8c +$121
+    after:  g3c +$39; g5 +$21; g8c +$51
 steps | turbo x3
     before: g8c +$33; g10 +$115; g15 +$219
-    after:  g8c +$40; g10 +$98; g15 +$276
+    after:  g8c +$42; g10 +$141; g15 +$229
 steps | turbo x6
     before: g10 +$37; g15 +$141; g20l +$255
-    after:  g10 +$12; g15 +$191; g20l +$254
+    after:  g10 +$53; g15 +$141; g20l +$266
 steps | turbo x12
     before: g30b +$180; g60b +$508; g120 +$1800
-    after:  g30b +$111; g60b +$438; g120 +$1935
+    after:  g30b +$170; g60b +$613; g120 +$1994
 steps | turbo x25
     before: g120 +$1595; g150 +$1160; g210 +$2106
-    after:  g120 +$1799; g150 +$1404; g210 +$2106
-steps | turbo x50
-    before: g240 +$357; c8 +$-295
-    after:  g240 +$1436; c8 +$698
+    after:  g120 +$1684; g150 +$1289; g210 +$1990
 steps | hermit x1
     before: g3c +$8; g5 +$31; g8c +$51
-    after:  g3c +$38; g5 +$94; g8c +$121
+    after:  g3c +$39; g5 +$21; g8c +$51
 steps | hermit x3
     before: g3c +$8; g5 +$31; g8c +$51
-    after:  g3c +$38; g5 +$94; g8c +$121
+    after:  g3c +$39; g5 +$21; g8c +$51
 steps | hermit x6
     before: g8c +$20; g10 +$90; g15 +$167
-    after:  g8c +$27; g10 +$73; g15 +$224
+    after:  g8c +$30; g10 +$117; g15 +$177
 steps | hermit x12
     before: g15 +$77; g20l +$185; g30b +$359
-    after:  g15 +$151; g20l +$208; g30b +$313
+    after:  g15 +$60; g20l +$179; g30b +$342
 steps | hermit x25
     before: g30b +$174; g40b +$210; g60b +$446
-    after:  g30b +$105; g40b +$140; g60b +$377
+    after:  g30b +$164; g40b +$278; g60b +$551
 steps | hermit x50
     before: g40b +$36; g60b +$272; g120 +$1810
-    after:  g40b +$36; g60b +$272; g120 +$2015
-steps | firenewt x1
-    before: g30b +$165
-    after:  g30b +$45
-steps | firenewt x3
-    before: g30b +$165
-    after:  g30b +$45
-steps | firenewt x6
-    before: g30b +$165
-    after:  g30b +$45
-steps | firenewt x12
-    before: g30b +$165
-    after:  g30b +$45
+    after:  g40b +$114; g60b +$387; g120 +$2015
 steps | adf x1
     before: g10 +$26; g15 +$51; g20l +$114
-    after:  g10 +$9; g15 +$108; g20l +$120
+    after:  g10 +$52; g15 +$60; g20l +$134
 steps | adf x3
     before: g15 +$25; g20l +$88; g30b +$204
-    after:  g15 +$99; g20l +$111; g30b +$157
+    after:  g15 +$8; g20l +$82; g30b +$187
 steps | adf x6
     before: g20l +$63; g30b +$179; g60b +$328
-    after:  g20l +$12; g30b +$59; g60b +$208
+    after:  g20l +$74; g30b +$179; g60b +$444
+steps | adf x12
+    before: g60b +$149
+    after:  g60b +$265
 steps | axolotl x1
     before: g29 +$84; g37 +$138; g50b +$162
-    after:  g29 +$52; g37 +$107; g50b +$689
+    after:  g29 +$61; g37 +$115; g50b +$139
 steps | axolotl x3
     before: g30b +$108; g60b +$226; g120 +$1495
-    after:  g30b +$39; g60b +$156; g120 +$1631
+    after:  g30b +$97; g60b +$331; g120 +$1690
 steps | axolotl x6
     before: g120 +$1416; g150 +$772; g210 +$1308
-    after:  g120 +$1621; g150 +$1017; g210 +$1308
-steps | axolotl x12
-    before: g240 +$174; c8 +$-1404
-    after:  g240 +$1253; c8 +$-411
+    after:  g120 +$1505; g150 +$902; g210 +$1193
 builds | cardinal x25
     before: cheapest g20l $516/529 filt 21.3 space 98.2 deal Petco $40 | leastWork g20l $621/634 filt 21.3 space 98.2 deal Petco $40 | balanced g20l $526/539 filt 20.7 space 98.2 deal Petco $40
     after:  cheapest g20l $510/523 filt 21.3 space 98.2 deal Petco $34.99 | leastWork g20l $615/628 filt 21.3 space 98.2 deal Petco $34.99 | balanced g20l $520/533 filt 20.7 space 98.2 deal Petco $34.99
