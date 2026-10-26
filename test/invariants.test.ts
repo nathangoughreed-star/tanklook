@@ -10,7 +10,7 @@ import { CARE } from '../src/data/care';
 import { GROUPS, bandMessage, bandOf, type GroupBand } from '../src/data/groups';
 import { SPECIES, getSpecies, type Species } from '../src/data/species';
 import { minDataOf } from '../src/scene/tankMin';
-import { tankFor } from '../src/scene/tankfit';
+import { tankFor, tempVerdict } from '../src/scene/tankfit';
 import { whysAnimal } from '../src/scene/animalfit';
 import { defaultSetup } from '../src/scene/defaults';
 import { withChoice } from '../src/scene/tech';
@@ -231,26 +231,39 @@ describe('invariant 6: an unsuitable temperature cannot be rescued by excess spa
     const sr = sharedRange([a, b]); expect(sr.state).toBe('none');
     expect(rangeVerdict(sr, []).level).toBe('bad');
   });
-  it('F4 (fixed S245): a stocking with NO shared temperature range has no fitting tank at any size, and a problem line says why', () => {
-    const a = FRESH.find(x => CARE[x.id].temp![1] <= 20 && !CARE[x.id].solo)!, b = FRESH.find(x => CARE[x.id].temp![0] >= 26 && !CARE[x.id].solo)!;
-    expect(sharedRange([a, b]).state).toBe('none');
-    const plan = planFor([{ id: a.id, n: 1 }, { id: b.id, n: 1 }]);
-    const biggest = plan.options[plan.options.length - 1];
-    expect(biggest.fails.length > 0 || !!plan.problem).toBe(true);
-    expect(plan.options.every(o => o.fails.includes('temperature'))).toBe(true); // extra space never rescues it
+  it('F4 (fixed S245): animals whose TOLERABLE temperatures do not meet (axolotl + boesemani) have no fitting tank at any size, and a problem line says why', () => {
+    const plan = planFor([{ id: 'axolotl', n: 1 }, { id: 'boesemani', n: 1 }]);
     expect(plan.need).toBeUndefined();
+    expect(plan.options.every(o => o.fails.includes('temperature'))).toBe(true); // extra space never rescues it
     expect(plan.problem).toMatch(/temperature/i);
   });
-  it('F4: a shared range keeps the old behaviour (no temperature fail), and every seeded no-range pair is refused at every size', () => {
-    const ok = planFor([{ id: 'neon', n: 8 }]); expect(ok.options.some(o => o.fails.includes('temperature'))).toBe(false); expect(ok.need).toBeDefined();
+  it('F4: where only the comfortable ranges miss (angel + neon) a tank still fits, with a caution naming the compromise temperature', () => {
+    const plan = planFor([{ id: 'angel', n: 2 }, { id: 'neon', n: 8 }]);
+    expect(sharedRange([getSpecies('angel')!, getSpecies('neon')!]).state).toBe('none');
+    expect(plan.options.some(o => o.fails.includes('temperature'))).toBe(false);
+    expect(plan.need).toBeDefined(); expect(plan.caution).toMatch(/Hold the water near \d+(\.5)? C/);
+  });
+  it('F4: a shared range raises neither a fail nor a caution; every seeded pair whose tolerable ranges miss is refused at every size', () => {
+    const ok = planFor([{ id: 'neon', n: 8 }]); expect(ok.options.some(o => o.fails.includes('temperature'))).toBe(false); expect(ok.caution).toBeUndefined();
     const r = rng(7), bad: string[] = []; let seen = 0;
-    for (let k = 0; k < 400 && seen < 40; k++) {
+    for (let k = 0; k < 4000 && seen < 40; k++) {
       const a = pick(r, FRESH), b = pick(r, FRESH);
-      if (a.id === b.id || sharedRange([a, b]).state !== 'none') continue;
+      if (a.id === b.id || tempVerdict([{ species: a.id, n: 1 }, { species: b.id, n: 1 }]).level !== 'none') continue;
       seen++; const p = planFor([{ id: a.id, n: 1 }, { id: b.id, n: 1 }]);
       if (p.need || !p.problem || !p.options.every(o => o.fails.includes('temperature'))) bad.push(`${a.id} + ${b.id}`);
     }
     expect(seen).toBeGreaterThan(5); expect(bad.slice(0, 5)).toEqual([]);
+  });
+  it('counts of the freshwater pairs whose comfortable ranges are disjoint: compromise (tolerable overlap) vs none', () => {
+    // the S242 population: every freshwater species in the water, snails included (71)
+    const ALLF = SPECIES.filter(s => s.habitat !== 'land' && !s.salt && CARE[s.id]);
+    let comp = 0, none = 0;
+    for (let i = 0; i < ALLF.length; i++) for (let j = i + 1; j < ALLF.length; j++) {
+      if (sharedRange([ALLF[i], ALLF[j]]).state !== 'none') continue;
+      const v = tempVerdict([{ species: ALLF[i].id, n: 1 }, { species: ALLF[j].id, n: 1 }]).level; if (v === 'compromise') comp++; else none++;
+    }
+    expect(comp + none).toBeGreaterThan(0);
+    expect({ comp, none }).toEqual({ comp: 183, none: 55 }) // S245: 238 disjoint-comfortable freshwater pairs of 2485; the 55 are refused, the 183 fit with a caution;
   });
 });
 

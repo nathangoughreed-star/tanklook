@@ -19,6 +19,8 @@ import { geometryOf, minDataOf, speciesMinimum, tankMinimum } from './tankMin';
 import { floorFor, HERP, SQFT_MM2 } from '../data/herpstock';
 import { footprint } from './shape';
 import { sharedRange } from './temprange';
+import { WATER } from '../data/climatedata';
+import { CARE } from '../data/care';
 import { drySetup } from './drygear';
 import { applyPreset, optionCost, PRESETS, ROOM_C, rowsFor, sumpOffered, tempFit, withChoice } from './tech';
 import type { Fish, TankSetup, Units } from './types';
@@ -177,9 +179,19 @@ export interface TankFit extends Fit {
   gallons: number;
   needs: Needs;
 }
-/** S245 (Nathan 2026-10-26, S244 F4): animals with no comfortable temperature in common fit no tank; extra space never rescues them. */
+/** S245 (Nathan 2026-10-26, S244 F4): animals whose tolerable temperatures do not meet fit no tank; extra space never rescues them. */
 export const sharedOf = (animals: AnimalCount[]) => sharedRange(wet(animals).map(w => w.sp));
-const noSharedTemp = (animals: AnimalCount[]) => sharedOf(animals).state === 'none';
+/** Temperature of a stocking, from the comfortable ranges first and the tolerable ones (climatedata WATER.tol) second (Coordinator 11, 2026-10-26):
+ *  'none' = not even the tolerable ranges meet (axolotl + boesemani): no tank fits. 'compromise' = only the comfortable ranges miss (angel + neon):
+ *  a tank still fits, with a caution naming the compromise temperature (the middle of the tolerable overlap). */
+export function tempVerdict(animals: AnimalCount[]): { level: 'ok' | 'compromise' | 'none'; range?: [number, number]; at?: number } {
+  const sps = wet(animals).map(w => w.sp);
+  if (sharedRange(sps).state !== 'none') return { level: 'ok' };
+  const rs = sps.filter(s => s.habitat !== 'land').map(s => WATER[s.id]?.tol ?? CARE[s.id]?.temp).filter((r): r is [number, number] => !!r);
+  const lo = Math.max(...rs.map(r => r[0])), hi = Math.min(...rs.map(r => r[1]));
+  return hi < lo ? { level: 'none' } : { level: 'compromise', range: [lo, hi], at: Math.round((lo + hi) / 2 * 2) / 2 };
+}
+const noSharedTemp = (animals: AnimalCount[]) => tempVerdict(animals).level === 'none';
 const fitOfTank = (c: Candidate, animals: AnimalCount[], needs: Needs): TankFit => {
   const f = allLand(animals) ? dryFit(c.T, animals) : fitOf(c, animals);
   if (noSharedTemp(animals)) f.fails.unshift('temperature');
