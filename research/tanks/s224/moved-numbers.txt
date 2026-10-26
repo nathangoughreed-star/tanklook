@@ -1,0 +1,2072 @@
+changed rows: tankFor 1 of 516, steps 386 of 516, builds 166 of 516, starters 51 of 1620, sumps 86 of 128, examples 0 of 11
+
+tankFor | nerite x12
+    before: {"tank":"g3c","fails":"","space":97.7,"filt":36.5,"min":0}
+    after:  {"tank":"g3c","fails":"","space":92.4,"filt":36.5,"min":0}
+steps | neon x1
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | neon x3
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | neon x6
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | neon x12
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | neon x25
+    before: g29 +$84; g37 +$138; g50b +$162
+    after:  g29 +$52; g37 +$107; g50b +$689
+steps | cardinal x1
+    before: g20h +$26; g29 +$124; g37 +$178
+    after:  g20h +$-63; g29 +$4; g37 +$58
+steps | cardinal x3
+    before: g20h +$26; g29 +$124; g37 +$178
+    after:  g20h +$-63; g29 +$4; g37 +$58
+steps | cardinal x6
+    before: g20h +$26; g29 +$124; g37 +$178
+    after:  g20h +$-63; g29 +$4; g37 +$58
+steps | cardinal x12
+    before: g20h +$26; g29 +$124; g37 +$178
+    after:  g20h +$-63; g29 +$4; g37 +$58
+steps | cardinal x25
+    before: g29 +$61; g37 +$115; g50b +$139
+    after:  g29 +$-9; g37 +$46; g50b +$628
+steps | cardinal x50
+    before: g55 +$131; g75 +$305; g120 +$1577
+    after:  g55 +$131; g75 +$305; g120 +$1782
+steps | ember x1
+    before: g10 +$20; g15 +$44; g20h +$71
+    after:  g10 +$66; g15 +$165; g20h +$102
+steps | ember x3
+    before: g10 +$20; g15 +$44; g20h +$71
+    after:  g10 +$66; g15 +$165; g20h +$102
+steps | ember x6
+    before: g10 +$20; g15 +$44; g20h +$71
+    after:  g10 +$66; g15 +$165; g20h +$102
+steps | ember x12
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | ember x25
+    before: g20h +$26; g29 +$110; g37 +$178
+    after:  g20h +$-63; g29 +$-10; g37 +$58
+steps | ember x50
+    before: g37 +$68; g50b +$92; g75 +$375
+    after:  g37 +$68; g50b +$650; g75 +$375
+steps | dwarfpencil x1
+    before: g10 +$20; g15 +$44; g20h +$71
+    after:  g10 +$66; g15 +$165; g20h +$102
+steps | dwarfpencil x3
+    before: g10 +$20; g15 +$44; g20h +$71
+    after:  g10 +$66; g15 +$165; g20h +$102
+steps | dwarfpencil x6
+    before: g15 +$25; g20h +$51; g29 +$149
+    after:  g15 +$99; g20h +$36; g29 +$102
+steps | dwarfpencil x12
+    before: g20h +$26; g29 +$124; g37 +$178
+    after:  g20h +$-63; g29 +$4; g37 +$58
+steps | dwarfpencil x25
+    before: g29 +$61; g37 +$115; g50b +$139
+    after:  g29 +$-9; g37 +$46; g50b +$628
+steps | dwarfpencil x50
+    before: g55 +$131; g75 +$305; g120 +$1577
+    after:  g55 +$131; g75 +$305; g120 +$1782
+steps | rummynose x1
+    before: g29 +$61; g37 +$115; g50b +$139
+    after:  g29 +$-9; g37 +$46; g50b +$628
+steps | rummynose x3
+    before: g29 +$61; g37 +$115; g50b +$139
+    after:  g29 +$-9; g37 +$46; g50b +$628
+steps | rummynose x6
+    before: g29 +$61; g37 +$115; g50b +$139
+    after:  g29 +$-9; g37 +$46; g50b +$628
+steps | rummynose x12
+    before: g29 +$61; g37 +$115; g50b +$139
+    after:  g29 +$-9; g37 +$46; g50b +$628
+steps | rummynose x25
+    before: g29 +$61; g37 +$115; g50b +$139
+    after:  g29 +$-9; g37 +$46; g50b +$628
+steps | rummynose x50
+    before: g55 +$131; g75 +$305; g120 +$1577
+    after:  g55 +$131; g75 +$305; g120 +$1782
+steps | harlequin x1
+    before: g20h +$26; g29 +$110; g37 +$164
+    after:  g20h +$-63; g29 +$-10; g37 +$44
+steps | harlequin x3
+    before: g20h +$26; g29 +$110; g37 +$164
+    after:  g20h +$-63; g29 +$-10; g37 +$44
+steps | harlequin x6
+    before: g20h +$26; g29 +$110; g37 +$164
+    after:  g20h +$-63; g29 +$-10; g37 +$44
+steps | harlequin x12
+    before: g20h +$26; g29 +$110; g37 +$164
+    after:  g20h +$-63; g29 +$-10; g37 +$44
+steps | harlequin x25
+    before: g29 +$47; g37 +$101; g50b +$139
+    after:  g29 +$-23; g37 +$32; g50b +$628
+steps | chili x1
+    before: g5 +$14; g8c +$14; g10 +$40
+    after:  g5 +$77; g8c +$84; g10 +$86
+steps | chili x3
+    before: g5 +$14; g8c +$14; g10 +$40
+    after:  g5 +$77; g8c +$84; g10 +$86
+steps | chili x6
+    before: g8c +$0; g10 +$26; g15 +$51
+    after:  g8c +$7; g10 +$9; g15 +$108
+steps | chili x12
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | chili x25
+    before: g29 +$84; g37 +$152; g50b +$176
+    after:  g29 +$52; g37 +$121; g50b +$703
+steps | danio x1
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | danio x3
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | danio x6
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | danio x12
+    before: g20h +$26; g29 +$110; g37 +$164
+    after:  g20h +$-63; g29 +$-10; g37 +$44
+steps | danio x50
+    before: g75 +$157; g120 +$1429; g150 +$786
+    after:  g75 +$157; g120 +$1634; g150 +$1030
+steps | whitecloud x1
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | whitecloud x3
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | whitecloud x6
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | whitecloud x12
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | whitecloud x25
+    before: g20h +$26; g29 +$110; g37 +$164
+    after:  g20h +$-63; g29 +$-10; g37 +$44
+steps | whitecloud x50
+    before: g37 +$54; g50b +$78; g75 +$361
+    after:  g37 +$54; g50b +$636; g75 +$361
+steps | cpd x1
+    before: g10 +$20; g15 +$44; g20h +$71
+    after:  g10 +$66; g15 +$165; g20h +$102
+steps | cpd x3
+    before: g10 +$20; g15 +$44; g20h +$71
+    after:  g10 +$66; g15 +$165; g20h +$102
+steps | cpd x6
+    before: g10 +$20; g15 +$44; g20h +$71
+    after:  g10 +$66; g15 +$165; g20h +$102
+steps | cpd x12
+    before: g10 +$20; g15 +$44; g20h +$71
+    after:  g10 +$66; g15 +$165; g20h +$102
+steps | cpd x25
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | cpd x50
+    before: g20h +$26; g29 +$110; g37 +$164
+    after:  g20h +$-63; g29 +$-10; g37 +$44
+steps | hatchet x1
+    before: g29 +$61; g37 +$115; g50b +$139
+    after:  g29 +$-9; g37 +$46; g50b +$628
+steps | hatchet x3
+    before: g29 +$61; g37 +$115; g50b +$139
+    after:  g29 +$-9; g37 +$46; g50b +$628
+steps | hatchet x6
+    before: g29 +$61; g37 +$115; g50b +$139
+    after:  g29 +$-9; g37 +$46; g50b +$628
+steps | hatchet x12
+    before: g29 +$61; g37 +$115; g50b +$139
+    after:  g29 +$-9; g37 +$46; g50b +$628
+steps | hatchet x25
+    before: g37 +$54; g50b +$78; g75 +$361
+    after:  g37 +$54; g50b +$636; g75 +$361
+steps | hatchet x50
+    before: g55 +$131; g75 +$305; g120 +$1577
+    after:  g55 +$131; g75 +$305; g120 +$1782
+steps | cherrybarb x1
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | cherrybarb x3
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | cherrybarb x6
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | cherrybarb x12
+    before: g20h +$26; g29 +$110; g37 +$178
+    after:  g20h +$-63; g29 +$-10; g37 +$58
+steps | cherrybarb x50
+    before: g75 +$157; g120 +$1429; g150 +$786
+    after:  g75 +$157; g120 +$1634; g150 +$1030
+steps | tigerbarb x1
+    before: g29 +$47; g37 +$115; g50b +$139
+    after:  g29 +$-23; g37 +$46; g50b +$628
+steps | tigerbarb x3
+    before: g29 +$47; g37 +$115; g50b +$139
+    after:  g29 +$-23; g37 +$46; g50b +$628
+steps | tigerbarb x6
+    before: g29 +$47; g37 +$115; g50b +$139
+    after:  g29 +$-23; g37 +$46; g50b +$628
+steps | tigerbarb x12
+    before: g29 +$47; g37 +$115; g50b +$139
+    after:  g29 +$-23; g37 +$46; g50b +$628
+steps | tigerbarb x25
+    before: g55 +$131; g75 +$305; g120 +$1577
+    after:  g55 +$131; g75 +$305; g120 +$1782
+steps | tigerbarb x50
+    before: g120 +$1272; g150 +$629; g210 +$1398
+    after:  g120 +$1477; g150 +$874; g210 +$1398
+steps | boesemani x1
+    before: g75 +$174; g120 +$1446; g150 +$803
+    after:  g75 +$174; g120 +$1651; g150 +$1047
+steps | boesemani x3
+    before: g75 +$174; g120 +$1446; g150 +$803
+    after:  g75 +$174; g120 +$1651; g150 +$1047
+steps | boesemani x6
+    before: g75 +$174; g120 +$1446; g150 +$803
+    after:  g75 +$174; g120 +$1651; g150 +$1047
+steps | boesemani x12
+    before: g75 +$174; g120 +$1446; g150 +$803
+    after:  g75 +$174; g120 +$1651; g150 +$1047
+steps | boesemani x25
+    before: g120 +$1272; g150 +$629; g210 +$1398
+    after:  g120 +$1477; g150 +$874; g210 +$1398
+steps | boesemani x50
+    before: g240 +$66; c8 +$-1073
+    after:  g240 +$1145; c8 +$-80
+steps | guppy x1
+    before: g10 +$26; g15 +$51; g20h +$77
+    after:  g10 +$9; g15 +$108; g20h +$45
+steps | guppy x3
+    before: g10 +$26; g15 +$51; g20h +$77
+    after:  g10 +$9; g15 +$108; g20h +$45
+steps | guppy x6
+    before: g15 +$25; g20h +$51; g29 +$149
+    after:  g15 +$99; g20h +$36; g29 +$102
+steps | guppy x12
+    before: g29 +$61; g37 +$115; g50b +$139
+    after:  g29 +$-9; g37 +$46; g50b +$628
+steps | guppy x50
+    before: g75 +$157; g120 +$1429; g150 +$786
+    after:  g75 +$157; g120 +$1634; g150 +$1030
+steps | platy x1
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | platy x3
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | platy x6
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | platy x12
+    before: g29 +$84; g37 +$138; g50b +$162
+    after:  g29 +$52; g37 +$107; g50b +$689
+steps | platy x50
+    before: g75 +$157; g120 +$1429; g150 +$786
+    after:  g75 +$157; g120 +$1634; g150 +$1030
+steps | molly x1
+    before: g15 +$25; g20h +$51; g29 +$149
+    after:  g15 +$99; g20h +$36; g29 +$102
+steps | molly x3
+    before: g15 +$25; g20h +$51; g29 +$149
+    after:  g15 +$99; g20h +$36; g29 +$102
+steps | molly x6
+    before: g20h +$26; g29 +$124; g37 +$178
+    after:  g20h +$-63; g29 +$4; g37 +$58
+steps | molly x12
+    before: g37 +$54; g50b +$78; g75 +$361
+    after:  g37 +$54; g50b +$636; g75 +$361
+steps | molly x25
+    before: g75 +$283; g120 +$1555; g150 +$912
+    after:  g75 +$-275; g120 +$1202; g150 +$598
+steps | molly x50
+    before: g125 +$6; g180 +$1871; g240 +$1937
+    after:  g125 +$384; g180 +$878; g240 +$2023
+steps | swordtail x12
+    before: g55 +$131; g75 +$305; g120 +$1577
+    after:  g55 +$131; g75 +$305; g120 +$1782
+steps | swordtail x25
+    before: g150 +$-643; g210 +$126; g300 +$4972
+    after:  g150 +$-603; g210 +$-79; g300 +$3713
+steps | swordtail x50
+    before: g240 +$66; c8 +$-1073
+    after:  g240 +$1145; c8 +$-80
+steps | betta x1
+    before: g10 +$26; g15 +$51; g20h +$77
+    after:  g10 +$9; g15 +$108; g20h +$45
+steps | betta x3
+    before: g10 +$26; g15 +$51; g20h +$77
+    after:  g10 +$9; g15 +$108; g20h +$45
+steps | betta x6
+    before: g15 +$25; g20h +$51; g29 +$149
+    after:  g15 +$99; g20h +$36; g29 +$102
+steps | betta x12
+    before: g29 +$47; g37 +$101; g50b +$125
+    after:  g29 +$-23; g37 +$32; g50b +$614
+steps | betta x50
+    before: g120 +$1272; g150 +$629; g210 +$1398
+    after:  g120 +$1477; g150 +$874; g210 +$1398
+steps | dwarfgourami x1
+    before: g15 +$25; g20h +$51; g29 +$149
+    after:  g15 +$99; g20h +$36; g29 +$102
+steps | dwarfgourami x3
+    before: g15 +$25; g20h +$51; g29 +$149
+    after:  g15 +$99; g20h +$36; g29 +$102
+steps | dwarfgourami x6
+    before: g15 +$25; g20h +$51; g29 +$149
+    after:  g15 +$99; g20h +$36; g29 +$102
+steps | dwarfgourami x12
+    before: g29 +$61; g37 +$115; g50b +$139
+    after:  g29 +$-9; g37 +$46; g50b +$628
+steps | dwarfgourami x25
+    before: g55 +$131; g75 +$305; g120 +$1577
+    after:  g55 +$131; g75 +$305; g120 +$1782
+steps | dwarfgourami x50
+    before: g75 +$-3; g120 +$1270; g150 +$626
+    after:  g75 +$-3; g120 +$1474; g150 +$871
+steps | honeygourami x1
+    before: g10 +$26; g15 +$51; g20h +$77
+    after:  g10 +$9; g15 +$108; g20h +$45
+steps | honeygourami x3
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | honeygourami x6
+    before: g20h +$26; g29 +$110; g37 +$178
+    after:  g20h +$-63; g29 +$-10; g37 +$58
+steps | honeygourami x12
+    before: g37 +$68; g50b +$92; g75 +$375
+    after:  g37 +$68; g50b +$650; g75 +$375
+steps | honeygourami x25
+    before: g75 +$283; g120 +$1555; g150 +$912
+    after:  g75 +$-275; g120 +$1202; g150 +$598
+steps | honeygourami x50
+    before: g125 +$6; g180 +$1871; g240 +$1937
+    after:  g125 +$384; g180 +$878; g240 +$2023
+steps | gourami x12
+    before: g55 +$131; g75 +$305; g120 +$1577
+    after:  g55 +$131; g75 +$305; g120 +$1782
+steps | gourami x25
+    before: g75 +$143; g120 +$1183; g150 +$539
+    after:  g75 +$143; g120 +$1387; g150 +$784
+steps | gourami x50
+    before: g150 +$-593; g210 +$219; g300 +$4669
+    after:  g150 +$-553; g210 +$14; g300 +$3411
+steps | gbr x1
+    before: g20l +$77; g30b +$179; g40b +$180
+    after:  g20l +$26; g30b +$59; g40b +$60
+steps | gbr x3
+    before: g20l +$77; g30b +$179; g40b +$180
+    after:  g20l +$26; g30b +$59; g40b +$60
+steps | gbr x6
+    before: g20l +$77; g30b +$179; g60b +$328
+    after:  g20l +$26; g30b +$59; g60b +$208
+steps | gbr x12
+    before: g30b +$102; g60b +$251; g120 +$1680
+    after:  g30b +$32; g60b +$182; g120 +$1815
+steps | gbr x25
+    before: g120 +$1429; g150 +$786; g210 +$1555
+    after:  g120 +$1634; g150 +$1030; g210 +$1555
+steps | gbr x50
+    before: g240 +$66; c8 +$-1073
+    after:  g240 +$1145; c8 +$-80
+steps | bolivianram x1
+    before: g60b +$149; g120 +$1578; g150 +$935
+    after:  g60b +$149; g120 +$1783; g150 +$1180
+steps | bolivianram x3
+    before: g60b +$149; g120 +$1578; g150 +$935
+    after:  g60b +$149; g120 +$1783; g150 +$1180
+steps | bolivianram x6
+    before: g60b +$149; g120 +$1578; g150 +$935
+    after:  g60b +$149; g120 +$1783; g150 +$1180
+steps | bolivianram x12
+    before: g60b +$149; g120 +$1578; g150 +$935
+    after:  g60b +$149; g120 +$1783; g150 +$1180
+steps | bolivianram x25
+    before: g180 +$1865; g240 +$1931; c8 +$792
+    after:  g180 +$494; g240 +$1639; c8 +$414
+steps | kribensis x1
+    before: g60b +$149; g120 +$1578; g150 +$935
+    after:  g60b +$149; g120 +$1783; g150 +$1180
+steps | kribensis x3
+    before: g60b +$149; g120 +$1578; g150 +$935
+    after:  g60b +$149; g120 +$1783; g150 +$1180
+steps | kribensis x6
+    before: g60b +$149; g120 +$1578; g150 +$935
+    after:  g60b +$149; g120 +$1783; g150 +$1180
+steps | kribensis x12
+    before: g120 +$1429; g150 +$786; g210 +$1555
+    after:  g120 +$1634; g150 +$1030; g210 +$1555
+steps | kribensis x25
+    before: g240 +$66; c8 +$-1073
+    after:  g240 +$1145; c8 +$-80
+steps | cockatoo x1
+    before: g20l +$63; g30b +$179; g60b +$328
+    after:  g20l +$12; g30b +$59; g60b +$208
+steps | cockatoo x3
+    before: g20l +$63; g30b +$179; g40b +$180
+    after:  g20l +$12; g30b +$59; g40b +$60
+steps | cockatoo x6
+    before: g20l +$63; g30b +$179; g40b +$180
+    after:  g20l +$12; g30b +$59; g40b +$60
+steps | cockatoo x12
+    before: g50b +$23; g75 +$306; g120 +$1578
+    after:  g50b +$581; g75 +$306; g120 +$1783
+steps | cockatoo x25
+    before: g180 +$1865; g240 +$1931; c8 +$792
+    after:  g180 +$494; g240 +$1639; c8 +$414
+steps | yellowlab x12
+    before: g55 +$131; g75 +$305; g120 +$1577
+    after:  g55 +$131; g75 +$305; g120 +$1782
+steps | yellowlab x25
+    before: g120 +$1272; g150 +$629; g210 +$1398
+    after:  g120 +$1477; g150 +$874; g210 +$1398
+steps | yellowlab x50
+    before: g180 +$1865; g240 +$1931; c8 +$792
+    after:  g180 +$494; g240 +$1639; c8 +$414
+steps | peacock x1
+    before: g75 +$174; g120 +$1446; g150 +$803
+    after:  g75 +$174; g120 +$1651; g150 +$1047
+steps | peacock x3
+    before: g75 +$174; g120 +$1446; g150 +$803
+    after:  g75 +$174; g120 +$1651; g150 +$1047
+steps | peacock x6
+    before: g75 +$174; g120 +$1446; g150 +$803
+    after:  g75 +$174; g120 +$1651; g150 +$1047
+steps | peacock x12
+    before: g75 +$174; g120 +$1446; g150 +$803
+    after:  g75 +$174; g120 +$1651; g150 +$1047
+steps | peacock x25
+    before: g125 +$6; g180 +$1871; g240 +$1937
+    after:  g125 +$384; g180 +$878; g240 +$2023
+steps | peacock x50
+    before: g240 +$-265; c8 +$-1404
+    after:  g240 +$814; c8 +$-411
+steps | demasoni x1
+    before: g75 +$157; g120 +$1429; g150 +$786
+    after:  g75 +$157; g120 +$1634; g150 +$1030
+steps | demasoni x3
+    before: g120 +$1429; g150 +$786; g210 +$1555
+    after:  g120 +$1634; g150 +$1030; g210 +$1555
+steps | demasoni x6
+    before: g120 +$1429; g150 +$786; g210 +$1555
+    after:  g120 +$1634; g150 +$1030; g210 +$1555
+steps | demasoni x12
+    before: g120 +$1429; g150 +$786; g210 +$1555
+    after:  g120 +$1634; g150 +$1030; g210 +$1555
+steps | demasoni x25
+    before: g120 +$1429; g150 +$786; g210 +$1555
+    after:  g120 +$1634; g150 +$1030; g210 +$1555
+steps | demasoni x50
+    before: g180 +$1865; g240 +$1931; c8 +$792
+    after:  g180 +$494; g240 +$1639; c8 +$414
+steps | kadango x1
+    before: g75 +$174; g120 +$1446; g150 +$803
+    after:  g75 +$174; g120 +$1651; g150 +$1047
+steps | kadango x3
+    before: g75 +$174; g120 +$1446; g150 +$803
+    after:  g75 +$174; g120 +$1651; g150 +$1047
+steps | kadango x6
+    before: g75 +$174; g120 +$1446; g150 +$803
+    after:  g75 +$174; g120 +$1651; g150 +$1047
+steps | kadango x12
+    before: g75 +$143; g120 +$1183; g150 +$539
+    after:  g75 +$143; g120 +$1387; g150 +$784
+steps | kadango x25
+    before: g150 +$-593; g210 +$219; g300 +$4669
+    after:  g150 +$-553; g210 +$14; g300 +$3411
+steps | kadango x50
+    before: g240 +$174; c8 +$-618
+    after:  g240 +$1253; c8 +$375
+steps | labeo x1
+    before: g75 +$174; g120 +$1446; g150 +$803
+    after:  g75 +$174; g120 +$1651; g150 +$1047
+steps | labeo x3
+    before: g75 +$174; g120 +$1446; g150 +$803
+    after:  g75 +$174; g120 +$1651; g150 +$1047
+steps | labeo x6
+    before: g75 +$174; g120 +$1446; g150 +$803
+    after:  g75 +$174; g120 +$1651; g150 +$1047
+steps | labeo x12
+    before: g75 +$157; g120 +$1429; g150 +$786
+    after:  g75 +$157; g120 +$1634; g150 +$1030
+steps | labeo x25
+    before: g180 +$1865; g240 +$1931; c8 +$792
+    after:  g180 +$494; g240 +$1639; c8 +$414
+steps | labeo x50
+    before: g300 +$4846; c8 +$1260
+    after:  g300 +$3792; c8 +$1260
+steps | auratus x1
+    before: g120 +$1429; g150 +$786; g210 +$1555
+    after:  g120 +$1634; g150 +$1030; g210 +$1555
+steps | auratus x3
+    before: g75 +$157; g120 +$1429; g150 +$786
+    after:  g75 +$157; g120 +$1634; g150 +$1030
+steps | auratus x6
+    before: g75 +$157; g120 +$1429; g150 +$786
+    after:  g75 +$157; g120 +$1634; g150 +$1030
+steps | auratus x12
+    before: g75 +$157; g120 +$1429; g150 +$786
+    after:  g75 +$157; g120 +$1634; g150 +$1030
+steps | auratus x25
+    before: g180 +$1865; g240 +$1931; c8 +$792
+    after:  g180 +$494; g240 +$1639; c8 +$414
+steps | auratus x50
+    before: c8 +$-1139
+    after:  c8 +$-1225
+steps | livingstonii x1
+    before: g75 +$174; g120 +$1446; g150 +$803
+    after:  g75 +$174; g120 +$1651; g150 +$1047
+steps | livingstonii x3
+    before: g75 +$-68; g120 +$1204; g150 +$561
+    after:  g75 +$-68; g120 +$1409; g150 +$805
+steps | livingstonii x6
+    before: g120 +$1348; g150 +$755; g210 +$1171
+    after:  g120 +$1552; g150 +$999; g210 +$1171
+steps | livingstonii x12
+    before: g240 +$174; c8 +$-618
+    after:  g240 +$1253; c8 +$375
+steps | livingstonii x25
+    before: c8 +$-3463
+    after:  c8 +$-2409
+steps | afra x1
+    before: g75 +$174; g120 +$1446; g150 +$803
+    after:  g75 +$174; g120 +$1651; g150 +$1047
+steps | afra x3
+    before: g75 +$174; g120 +$1446; g150 +$803
+    after:  g75 +$174; g120 +$1651; g150 +$1047
+steps | afra x6
+    before: g75 +$174; g120 +$1446; g150 +$803
+    after:  g75 +$174; g120 +$1651; g150 +$1047
+steps | afra x12
+    before: g120 +$1429; g150 +$786; g210 +$1555
+    after:  g120 +$1634; g150 +$1030; g210 +$1555
+steps | afra x25
+    before: g180 +$1865; g240 +$1931; c8 +$792
+    after:  g180 +$494; g240 +$1639; c8 +$414
+steps | afra x50
+    before: c8 +$-1139
+    after:  c8 +$-1225
+steps | syno x1
+    before: g30b +$116; g60b +$265; g75 +$422
+    after:  g30b +$46; g60b +$196; g75 +$352
+steps | syno x3
+    before: g60b +$149; g120 +$1578; g150 +$935
+    after:  g60b +$149; g120 +$1783; g150 +$1180
+steps | syno x6
+    before: g75 +$-3; g120 +$1270; g150 +$626
+    after:  g75 +$-3; g120 +$1474; g150 +$871
+steps | syno x12
+    before: g240 +$66; c8 +$-1073
+    after:  g240 +$1145; c8 +$-80
+steps | angel x6
+    before: g55 +$162; g75 +$93; g120 +$1366
+    after:  g55 +$162; g75 +$93; g120 +$1570
+steps | angel x12
+    before: g120 +$1348; g150 +$755; g210 +$1171
+    after:  g120 +$1552; g150 +$999; g210 +$1171
+steps | angel x25
+    before: g210 +$812; g300 +$5925; c8 +$2462
+    after:  g210 +$567; g300 +$4626; c8 +$2217
+steps | angel x50
+    before: c8 +$-792
+    after:  c8 +$-878
+steps | discus x1
+    before: g75 +$174; g120 +$1446; g150 +$803
+    after:  g75 +$174; g120 +$1651; g150 +$1047
+steps | discus x3
+    before: g75 +$174; g120 +$1446; g150 +$803
+    after:  g75 +$174; g120 +$1651; g150 +$1047
+steps | discus x6
+    before: g75 +$-68; g120 +$1204; g150 +$561
+    after:  g75 +$-68; g120 +$1409; g150 +$805
+steps | discus x12
+    before: g125 +$53; g180 +$1589; g240 +$1655
+    after:  g125 +$431; g180 +$596; g240 +$1741
+steps | discus x25
+    before: g240 +$174; c8 +$-618
+    after:  g240 +$1253; c8 +$375
+steps | discus x50
+    before: c8 +$-3463
+    after:  c8 +$-2409
+steps | oscar x1
+    before: g240 +$66; c8 +$-1073
+    after:  g240 +$1145; c8 +$-80
+steps | oscar x3
+    before: g240 +$174; c8 +$-618
+    after:  g240 +$1253; c8 +$375
+steps | oscar x6
+    before: g240 +$174; c8 +$-618
+    after:  g240 +$1253; c8 +$375
+steps | goldfish x1
+    before: g29 +$47; g37 +$101; g50b +$125
+    after:  g29 +$-23; g37 +$32; g50b +$614
+steps | goldfish x3
+    before: g50b +$23; g75 +$307; g120 +$1579
+    after:  g50b +$582; g75 +$307; g120 +$1784
+steps | goldfish x6
+    before: g120 +$1272; g150 +$629; g210 +$1398
+    after:  g120 +$1477; g150 +$874; g210 +$1398
+steps | goldfish x12
+    before: g210 +$416; g300 +$5262; c8 +$1676
+    after:  g210 +$171; g300 +$3964; c8 +$1431
+steps | goldfish x25
+    before: c8 +$-792
+    after:  c8 +$-878
+steps | comet x3
+    before: g55 +$162; g75 +$93; g120 +$1366
+    after:  g55 +$162; g75 +$93; g120 +$1570
+steps | comet x6
+    before: g125 +$53; g180 +$1589; g240 +$1655
+    after:  g125 +$431; g180 +$596; g240 +$1741
+steps | comet x12
+    before: g240 +$174; c8 +$-618
+    after:  g240 +$1253; c8 +$375
+steps | bronzecory x1
+    before: g30b +$116; g60b +$265; g120 +$1694
+    after:  g30b +$46; g60b +$196; g120 +$1829
+steps | bronzecory x3
+    before: g30b +$116; g60b +$265; g120 +$1694
+    after:  g30b +$46; g60b +$196; g120 +$1829
+steps | bronzecory x6
+    before: g30b +$116; g60b +$265; g120 +$1694
+    after:  g30b +$46; g60b +$196; g120 +$1829
+steps | bronzecory x12
+    before: g60b +$149; g120 +$1578; g150 +$935
+    after:  g60b +$149; g120 +$1783; g150 +$1180
+steps | bronzecory x25
+    before: g150 +$-643; g210 +$126; g300 +$4972
+    after:  g150 +$-603; g210 +$-79; g300 +$3713
+steps | bronzecory x50
+    before: g300 +$4846; c8 +$1260
+    after:  g300 +$3792; c8 +$1260
+steps | pandacory x1
+    before: g20l +$63; g30b +$165; g60b +$314
+    after:  g20l +$12; g30b +$45; g60b +$194
+steps | pandacory x3
+    before: g20l +$63; g30b +$165; g60b +$314
+    after:  g20l +$12; g30b +$45; g60b +$194
+steps | pandacory x6
+    before: g20l +$63; g30b +$165; g60b +$314
+    after:  g20l +$12; g30b +$45; g60b +$194
+steps | pandacory x12
+    before: g20l +$63; g30b +$165; g60b +$314
+    after:  g20l +$12; g30b +$45; g60b +$194
+steps | pandacory x25
+    before: g60b +$149; g120 +$1578; g150 +$935
+    after:  g60b +$149; g120 +$1783; g150 +$1180
+steps | pandacory x50
+    before: g150 +$-643; g210 +$126; g300 +$4972
+    after:  g150 +$-603; g210 +$-79; g300 +$3713
+steps | pygmycory x1
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | pygmycory x3
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | pygmycory x6
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | pygmycory x12
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | pygmycory x25
+    before: g20h +$26; g29 +$110; g37 +$164
+    after:  g20h +$-63; g29 +$-10; g37 +$44
+steps | pygmycory x50
+    before: g29 +$84; g37 +$138; g50b +$176
+    after:  g29 +$52; g37 +$107; g50b +$703
+steps | sterbai x1
+    before: g20l +$63; g30b +$179; g60b +$328
+    after:  g20l +$12; g30b +$59; g60b +$208
+steps | sterbai x3
+    before: g20l +$63; g30b +$179; g60b +$328
+    after:  g20l +$12; g30b +$59; g60b +$208
+steps | sterbai x6
+    before: g20l +$63; g30b +$179; g60b +$328
+    after:  g20l +$12; g30b +$59; g60b +$208
+steps | sterbai x12
+    before: g60b +$149; g120 +$1578; g150 +$935
+    after:  g60b +$149; g120 +$1783; g150 +$1180
+steps | sterbai x25
+    before: g150 +$-643; g210 +$126; g300 +$4972
+    after:  g150 +$-603; g210 +$-79; g300 +$3713
+steps | sterbai x50
+    before: g300 +$4846; c8 +$1260
+    after:  g300 +$3792; c8 +$1260
+steps | bristlenose x1
+    before: g20l +$63; g30b +$179; g40b +$180
+    after:  g20l +$12; g30b +$59; g40b +$60
+steps | bristlenose x3
+    before: g20l +$63; g30b +$179; g40b +$180
+    after:  g20l +$12; g30b +$59; g40b +$60
+steps | bristlenose x6
+    before: g40b +$1; g60b +$149; g120 +$1578
+    after:  g40b +$1; g60b +$149; g120 +$1783
+steps | bristlenose x12
+    before: g120 +$1429; g150 +$786; g210 +$1555
+    after:  g120 +$1634; g150 +$1030; g210 +$1555
+steps | bristlenose x25
+    before: g240 +$66; c8 +$-1073
+    after:  g240 +$1145; c8 +$-80
+steps | oto x1
+    before: g10 +$20; g15 +$44; g20h +$71
+    after:  g10 +$66; g15 +$165; g20h +$102
+steps | oto x3
+    before: g10 +$20; g15 +$44; g20h +$71
+    after:  g10 +$66; g15 +$165; g20h +$102
+steps | oto x6
+    before: g15 +$25; g20h +$51; g29 +$135
+    after:  g15 +$99; g20h +$36; g29 +$88
+steps | oto x12
+    before: g20h +$26; g29 +$110; g37 +$164
+    after:  g20h +$-63; g29 +$-10; g37 +$44
+steps | oto x25
+    before: g37 +$54; g50b +$78; g75 +$361
+    after:  g37 +$54; g50b +$636; g75 +$361
+steps | oto x50
+    before: g55 +$131; g75 +$305; g120 +$1577
+    after:  g55 +$131; g75 +$305; g120 +$1782
+steps | kuhli x1
+    before: g20l +$63; g30b +$179; g60b +$328
+    after:  g20l +$12; g30b +$59; g60b +$208
+steps | kuhli x3
+    before: g20l +$63; g30b +$179; g60b +$328
+    after:  g20l +$12; g30b +$59; g60b +$208
+steps | kuhli x6
+    before: g20l +$63; g30b +$179; g50b +$202
+    after:  g20l +$12; g30b +$59; g50b +$640
+steps | kuhli x12
+    before: g30b +$116; g40b +$117; g60b +$265
+    after:  g30b +$46; g40b +$48; g60b +$196
+steps | kuhli x25
+    before: g60b +$149; g120 +$1578; g150 +$935
+    after:  g60b +$149; g120 +$1783; g150 +$1180
+steps | kuhli x50
+    before: g150 +$-643; g210 +$126; g300 +$4972
+    after:  g150 +$-603; g210 +$-79; g300 +$3713
+steps | clownloach x1
+    before: g180 +$1865; g240 +$1931; c8 +$792
+    after:  g180 +$494; g240 +$1639; c8 +$414
+steps | clownloach x3
+    before: g180 +$1865; g240 +$1931; c8 +$792
+    after:  g180 +$494; g240 +$1639; c8 +$414
+steps | clownloach x6
+    before: g240 +$66; c8 +$-1073
+    after:  g240 +$1145; c8 +$-80
+steps | sae x1
+    before: g30b +$116; g60b +$265; g120 +$1694
+    after:  g30b +$46; g60b +$196; g120 +$1829
+steps | sae x3
+    before: g30b +$116; g60b +$265; g120 +$1694
+    after:  g30b +$46; g60b +$196; g120 +$1829
+steps | sae x6
+    before: g60b +$149; g120 +$1578; g150 +$935
+    after:  g60b +$149; g120 +$1783; g150 +$1180
+steps | sae x12
+    before: g150 +$-643; g210 +$126; g300 +$4972
+    after:  g150 +$-603; g210 +$-79; g300 +$3713
+steps | sae x25
+    before: g300 +$4846; c8 +$1260
+    after:  g300 +$3792; c8 +$1260
+steps | hillstream x1
+    before: g30b +$102; g60b +$251; g120 +$1680
+    after:  g30b +$32; g60b +$182; g120 +$1815
+steps | hillstream x3
+    before: g30b +$102; g60b +$251; g120 +$1680
+    after:  g30b +$32; g60b +$182; g120 +$1815
+steps | hillstream x6
+    before: g30b +$102; g60b +$251; g120 +$1680
+    after:  g30b +$32; g60b +$182; g120 +$1815
+steps | hillstream x12
+    before: g30b +$102; g40b +$103; g60b +$251
+    after:  g30b +$32; g40b +$34; g60b +$182
+steps | hillstream x25
+    before: g60b +$149; g120 +$1578; g150 +$935
+    after:  g60b +$149; g120 +$1783; g150 +$1180
+steps | hillstream x50
+    before: g180 +$1865; g240 +$1931; c8 +$792
+    after:  g180 +$494; g240 +$1639; c8 +$414
+steps | peapuffer x1
+    before: g5 +$14; g8c +$14; g10 +$40
+    after:  g5 +$77; g8c +$84; g10 +$86
+steps | peapuffer x3
+    before: g8c +$0; g10 +$26; g15 +$51
+    after:  g8c +$7; g10 +$9; g15 +$108
+steps | peapuffer x6
+    before: g15 +$25; g20h +$51; g29 +$149
+    after:  g15 +$99; g20h +$36; g29 +$102
+steps | peapuffer x12
+    before: g29 +$98; g37 +$152; g50b +$176
+    after:  g29 +$66; g37 +$121; g50b +$703
+steps | peapuffer x50
+    before: g75 +$174; g120 +$1446; g150 +$803
+    after:  g75 +$174; g120 +$1651; g150 +$1047
+steps | cherryshrimp x1
+    before: g3c +$-5; g5 +$14; g8c +$14
+    after:  g3c +$26; g5 +$77; g8c +$84
+steps | cherryshrimp x3
+    before: g3c +$-5; g5 +$14; g8c +$14
+    after:  g3c +$26; g5 +$77; g8c +$84
+steps | cherryshrimp x6
+    before: g3c +$-5; g5 +$14; g8c +$14
+    after:  g3c +$26; g5 +$77; g8c +$84
+steps | cherryshrimp x12
+    before: g3c +$-5; g5 +$14; g8c +$14
+    after:  g3c +$26; g5 +$77; g8c +$84
+steps | cherryshrimp x25
+    before: g8c +$0; g10 +$26; g15 +$51
+    after:  g8c +$7; g10 +$9; g15 +$108
+steps | cherryshrimp x50
+    before: g10 +$26; g15 +$51; g20h +$77
+    after:  g10 +$2; g15 +$101; g20h +$38
+steps | amano x1
+    before: g3c +$-5; g5 +$14; g8c +$14
+    after:  g3c +$26; g5 +$77; g8c +$84
+steps | amano x3
+    before: g3c +$-5; g5 +$14; g8c +$14
+    after:  g3c +$26; g5 +$77; g8c +$84
+steps | amano x6
+    before: g3c +$-5; g5 +$14; g8c +$14
+    after:  g3c +$26; g5 +$77; g8c +$84
+steps | amano x12
+    before: g8c +$0; g10 +$26; g15 +$51
+    after:  g8c +$7; g10 +$9; g15 +$108
+steps | amano x25
+    before: g10 +$26; g15 +$51; g20h +$77
+    after:  g10 +$2; g15 +$101; g20h +$38
+steps | amano x50
+    before: g20h +$26; g29 +$110; g37 +$164
+    after:  g20h +$-63; g29 +$-10; g37 +$44
+steps | nerite x1
+    before: g3c +$-5; g5 +$14; g8c +$14
+    after:  g3c +$26; g5 +$77; g8c +$84
+steps | nerite x3
+    before: g3c +$-5; g5 +$14; g8c +$14
+    after:  g3c +$26; g5 +$77; g8c +$84
+steps | nerite x6
+    before: g3c +$-5; g5 +$14; g8c +$14
+    after:  g3c +$26; g5 +$77; g8c +$84
+steps | nerite x12
+    before: g5 +$19; g8c +$18; g10 +$45
+    after:  g5 +$50; g8c +$58; g10 +$59
+steps | nerite x25
+    before: g10 +$26; g15 +$51; g20l +$114
+    after:  g10 +$2; g15 +$101; g20l +$113
+steps | nerite x50
+    before: g30b +$-61; g60b +$88; g120 +$1517
+    after:  g30b +$-130; g60b +$19; g120 +$1653
+steps | mystery x1
+    before: g3c +$-5; g5 +$14; g8c +$14
+    after:  g3c +$26; g5 +$77; g8c +$84
+steps | mystery x3
+    before: g3c +$-5; g5 +$14; g8c +$14
+    after:  g3c +$26; g5 +$77; g8c +$84
+steps | mystery x6
+    before: g3c +$-5; g5 +$14; g8c +$14
+    after:  g3c +$26; g5 +$77; g8c +$84
+steps | mystery x12
+    before: g8c +$-46; g10 +$-8; g15 +$45
+    after:  g8c +$-39; g10 +$-25; g15 +$102
+steps | mystery x25
+    before: g20l +$77; g30b +$167; g60b +$317
+    after:  g20l +$26; g30b +$47; g60b +$196
+steps | mystery x50
+    before: g60b +$205; g120 +$1621; g150 +$744
+    after:  g60b +$205; g120 +$1825; g150 +$989
+steps | ramshorn x1
+    before: g3c +$-5; g5 +$14; g8c +$14
+    after:  g3c +$26; g5 +$77; g8c +$84
+steps | ramshorn x3
+    before: g3c +$-5; g5 +$14; g8c +$14
+    after:  g3c +$26; g5 +$77; g8c +$84
+steps | ramshorn x6
+    before: g3c +$-5; g5 +$14; g8c +$14
+    after:  g3c +$26; g5 +$77; g8c +$84
+steps | ramshorn x12
+    before: g3c +$-5; g5 +$14; g8c +$14
+    after:  g3c +$26; g5 +$77; g8c +$84
+steps | ramshorn x25
+    before: g3c +$-5; g5 +$14; g8c +$14
+    after:  g3c +$26; g5 +$77; g8c +$84
+steps | ramshorn x50
+    before: g8c +$0; g10 +$26; g15 +$51
+    after:  g8c +$7; g10 +$9; g15 +$108
+steps | trumpet x1
+    before: g3c +$-5; g5 +$14; g8c +$14
+    after:  g3c +$26; g5 +$77; g8c +$84
+steps | trumpet x3
+    before: g3c +$-5; g5 +$14; g8c +$14
+    after:  g3c +$26; g5 +$77; g8c +$84
+steps | trumpet x6
+    before: g3c +$-5; g5 +$14; g8c +$14
+    after:  g3c +$26; g5 +$77; g8c +$84
+steps | trumpet x12
+    before: g3c +$-5; g5 +$14; g8c +$14
+    after:  g3c +$26; g5 +$77; g8c +$84
+steps | trumpet x25
+    before: g3c +$-5; g5 +$14; g8c +$14
+    after:  g3c +$26; g5 +$77; g8c +$84
+steps | trumpet x50
+    before: g3c +$-5; g5 +$14; g8c +$14
+    after:  g3c +$26; g5 +$77; g8c +$84
+steps | ocellaris x1
+    before: g20h +$47; g29 +$197; g37 +$283
+    after:  g20h +$-42; g29 +$77; g37 +$163
+steps | ocellaris x3
+    before: g20h +$47; g29 +$197; g37 +$283
+    after:  g20h +$-42; g29 +$77; g37 +$163
+steps | ocellaris x6
+    before: g29 +$89; g37 +$175; g50b +$254
+    after:  g29 +$19; g37 +$105; g50b +$744
+steps | ocellaris x12
+    before: g55 +$213; g75 +$439; g120 +$1775
+    after:  g55 +$213; g75 +$439; g120 +$1979
+steps | ocellaris x25
+    before: g125 +$158; g180 +$2106; g240 +$2356
+    after:  g125 +$536; g180 +$1114; g240 +$2442
+steps | ocellaris x50
+    before: g240 +$-82; c8 +$-1081
+    after:  g240 +$998; c8 +$-88
+steps | royalgramma x1
+    before: g40b +$36; g60b +$272; g120 +$1810
+    after:  g40b +$36; g60b +$272; g120 +$2015
+steps | royalgramma x3
+    before: g60b +$272; g120 +$1810; g150 +$1325
+    after:  g60b +$272; g120 +$2015; g150 +$1570
+steps | royalgramma x6
+    before: g40b +$36; g60b +$272; g120 +$1810
+    after:  g40b +$36; g60b +$272; g120 +$2015
+steps | royalgramma x12
+    before: g50b +$80; g75 +$474; g120 +$1810
+    after:  g50b +$639; g75 +$474; g120 +$2015
+steps | royalgramma x25
+    before: g120 +$1538; g150 +$1053; g210 +$1956
+    after:  g120 +$1743; g150 +$1298; g210 +$1956
+steps | royalgramma x50
+    before: g240 +$249; c8 +$-750
+    after:  g240 +$1329; c8 +$243
+steps | yellowtang x1
+    before: g75 +$226; g120 +$1562; g150 +$1077
+    after:  g75 +$226; g120 +$1767; g150 +$1321
+steps | yellowtang x3
+    before: g75 +$-16; g120 +$1320; g150 +$835
+    after:  g75 +$-16; g120 +$1524; g150 +$1079
+steps | yellowtang x6
+    before: g75 +$211; g120 +$1622; g150 +$1187
+    after:  g75 +$211; g120 +$1827; g150 +$1432
+steps | yellowtang x12
+    before: g125 +$205; g180 +$2156; g240 +$2513
+    after:  g125 +$583; g180 +$1163; g240 +$2599
+steps | yellowtang x25
+    before: g240 +$357; c8 +$-295
+    after:  g240 +$1436; c8 +$698
+steps | yellowtang x50
+    before: c8 +$-3383
+    after:  c8 +$-2329
+steps | bluetang x1
+    before: g180 +$1949; g240 +$2198; c8 +$1199
+    after:  g180 +$578; g240 +$1907; c8 +$821
+steps | bluetang x3
+    before: g180 +$1950; g240 +$2307; c8 +$1655
+    after:  g180 +$579; g240 +$2016; c8 +$1277
+steps | bluetang x6
+    before: g180 +$1950; g240 +$2307; c8 +$1655
+    after:  g180 +$579; g240 +$2016; c8 +$1277
+steps | bluetang x12
+    before: g300 +$5265; c8 +$1882
+    after:  g300 +$4211; c8 +$1882
+steps | firefish x1
+    before: g29 +$75; g37 +$175; g50b +$254
+    after:  g29 +$5; g37 +$105; g50b +$744
+steps | firefish x3
+    before: g29 +$75; g37 +$175; g50b +$254
+    after:  g29 +$5; g37 +$105; g50b +$744
+steps | firefish x6
+    before: g29 +$75; g37 +$175; g50b +$254
+    after:  g29 +$5; g37 +$105; g50b +$744
+steps | firefish x12
+    before: g29 +$75; g37 +$175; g50b +$254
+    after:  g29 +$5; g37 +$105; g50b +$744
+steps | firefish x50
+    before: g75 +$202; g120 +$1538; g150 +$1053
+    after:  g75 +$202; g120 +$1743; g150 +$1298
+steps | banggai x1
+    before: g15 +$77; g20h +$124; g29 +$274
+    after:  g15 +$151; g20h +$109; g29 +$227
+steps | banggai x3
+    before: g15 +$77; g20h +$124; g29 +$274
+    after:  g15 +$151; g20h +$109; g29 +$227
+steps | banggai x6
+    before: g20h +$47; g29 +$197; g37 +$283
+    after:  g20h +$-42; g29 +$77; g37 +$163
+steps | banggai x25
+    before: g75 +$235; g120 +$1571; g150 +$1085
+    after:  g75 +$-324; g120 +$1217; g150 +$771
+steps | banggai x50
+    before: g125 +$109; g180 +$1824; g240 +$2074
+    after:  g125 +$487; g180 +$832; g240 +$2160
+steps | sixline x12
+    before: g75 +$394; g120 +$1730; g150 +$1245
+    after:  g75 +$-165; g120 +$1376; g150 +$931
+steps | sixline x25
+    before: g150 +$-485; g210 +$418; g300 +$5416
+    after:  g150 +$-445; g210 +$213; g300 +$4158
+steps | sixline x50
+    before: g240 +$249; c8 +$-750
+    after:  g240 +$1329; c8 +$243
+steps | chromis x12
+    before: g75 +$202; g120 +$1538; g150 +$1053
+    after:  g75 +$202; g120 +$1743; g150 +$1298
+steps | chromis x25
+    before: g180 +$1949; g240 +$2198; c8 +$1199
+    after:  g180 +$578; g240 +$1907; c8 +$821
+steps | chromis x50
+    before: g300 +$4602; c8 +$1096
+    after:  g300 +$3549; c8 +$1096
+steps | coralbeauty x1
+    before: g120 +$1538; g150 +$1053; g210 +$1956
+    after:  g120 +$1743; g150 +$1298; g210 +$1956
+steps | coralbeauty x3
+    before: g120 +$1538; g150 +$1053; g210 +$1956
+    after:  g120 +$1743; g150 +$1298; g210 +$1956
+steps | coralbeauty x6
+    before: g120 +$1538; g150 +$1053; g210 +$1956
+    after:  g120 +$1743; g150 +$1298; g210 +$1956
+steps | coralbeauty x12
+    before: g150 +$-485; g210 +$418; g300 +$5416
+    after:  g150 +$-445; g210 +$213; g300 +$4158
+steps | coralbeauty x25
+    before: g240 +$357; c8 +$-1081
+    after:  g240 +$1436; c8 +$-88
+steps | watchman x1
+    before: g30b +$174; g40b +$210; g60b +$446
+    after:  g30b +$105; g40b +$140; g60b +$377
+steps | watchman x3
+    before: g30b +$174; g60b +$446; g120 +$1984
+    after:  g30b +$105; g60b +$377; g120 +$2120
+steps | watchman x6
+    before: g30b +$-3; g40b +$33; g60b +$269
+    after:  g30b +$-72; g40b +$-36; g60b +$200
+steps | watchman x12
+    before: g120 +$1538; g150 +$1053; g210 +$1956
+    after:  g120 +$1743; g150 +$1298; g210 +$1956
+steps | watchman x25
+    before: g240 +$249; c8 +$-750
+    after:  g240 +$1329; c8 +$243
+steps | mandarin x1
+    before: g40b +$36; g60b +$272; g120 +$1810
+    after:  g40b +$36; g60b +$272; g120 +$2015
+steps | mandarin x6
+    before: g60b +$272; g120 +$1810; g150 +$1325
+    after:  g60b +$272; g120 +$2015; g150 +$1570
+steps | mandarin x12
+    before: g60b +$272; g120 +$1810; g150 +$1325
+    after:  g60b +$272; g120 +$2015; g150 +$1570
+steps | mandarin x25
+    before: g120 +$1538; g150 +$1053; g210 +$1956
+    after:  g120 +$1743; g150 +$1298; g210 +$1956
+steps | mandarin x50
+    before: g240 +$249; c8 +$-750
+    after:  g240 +$1329; c8 +$243
+steps | cleanershrimp x1
+    before: g3c +$8; g5 +$31; g8c +$51
+    after:  g3c +$38; g5 +$94; g8c +$121
+steps | cleanershrimp x3
+    before: g8c +$20; g10 +$90; g15 +$167
+    after:  g8c +$27; g10 +$73; g15 +$224
+steps | cleanershrimp x6
+    before: g15 +$77; g20l +$185; g30b +$359
+    after:  g15 +$151; g20l +$208; g30b +$313
+steps | cleanershrimp x12
+    before: g30b +$174; g60b +$446; g120 +$1984
+    after:  g30b +$105; g60b +$377; g120 +$2120
+steps | cleanershrimp x25
+    before: g60b +$272; g120 +$1810; g150 +$1325
+    after:  g60b +$272; g120 +$2015; g150 +$1570
+steps | cleanershrimp x50
+    before: g150 +$-485; g210 +$418; g300 +$5416
+    after:  g150 +$-445; g210 +$213; g300 +$4158
+steps | turbo x1
+    before: g3c +$8; g5 +$31; g8c +$51
+    after:  g3c +$38; g5 +$94; g8c +$121
+steps | turbo x3
+    before: g8c +$33; g10 +$115; g15 +$219
+    after:  g8c +$40; g10 +$98; g15 +$276
+steps | turbo x6
+    before: g10 +$37; g15 +$141; g20l +$255
+    after:  g10 +$12; g15 +$191; g20l +$254
+steps | turbo x12
+    before: g30b +$180; g60b +$508; g120 +$1800
+    after:  g30b +$111; g60b +$438; g120 +$1935
+steps | turbo x25
+    before: g120 +$1595; g150 +$1160; g210 +$2106
+    after:  g120 +$1799; g150 +$1404; g210 +$2106
+steps | turbo x50
+    before: g240 +$357; c8 +$-295
+    after:  g240 +$1436; c8 +$698
+steps | hermit x1
+    before: g3c +$8; g5 +$31; g8c +$51
+    after:  g3c +$38; g5 +$94; g8c +$121
+steps | hermit x3
+    before: g3c +$8; g5 +$31; g8c +$51
+    after:  g3c +$38; g5 +$94; g8c +$121
+steps | hermit x6
+    before: g8c +$20; g10 +$90; g15 +$167
+    after:  g8c +$27; g10 +$73; g15 +$224
+steps | hermit x12
+    before: g15 +$77; g20l +$185; g30b +$359
+    after:  g15 +$151; g20l +$208; g30b +$313
+steps | hermit x25
+    before: g30b +$174; g40b +$210; g60b +$446
+    after:  g30b +$105; g40b +$140; g60b +$377
+steps | hermit x50
+    before: g40b +$36; g60b +$272; g120 +$1810
+    after:  g40b +$36; g60b +$272; g120 +$2015
+steps | firenewt x1
+    before: g30b +$165
+    after:  g30b +$45
+steps | firenewt x3
+    before: g30b +$165
+    after:  g30b +$45
+steps | firenewt x6
+    before: g30b +$165
+    after:  g30b +$45
+steps | firenewt x12
+    before: g30b +$165
+    after:  g30b +$45
+steps | adf x1
+    before: g10 +$26; g15 +$51; g20l +$114
+    after:  g10 +$9; g15 +$108; g20l +$120
+steps | adf x3
+    before: g15 +$25; g20l +$88; g30b +$204
+    after:  g15 +$99; g20l +$111; g30b +$157
+steps | adf x6
+    before: g20l +$63; g30b +$179; g60b +$328
+    after:  g20l +$12; g30b +$59; g60b +$208
+steps | axolotl x1
+    before: g29 +$84; g37 +$138; g50b +$162
+    after:  g29 +$52; g37 +$107; g50b +$689
+steps | axolotl x3
+    before: g30b +$108; g60b +$226; g120 +$1495
+    after:  g30b +$39; g60b +$156; g120 +$1631
+steps | axolotl x6
+    before: g120 +$1416; g150 +$772; g210 +$1308
+    after:  g120 +$1621; g150 +$1017; g210 +$1308
+steps | axolotl x12
+    before: g240 +$174; c8 +$-1404
+    after:  g240 +$1253; c8 +$-411
+builds | cardinal x25
+    before: cheapest g20l $516/529 filt 21.3 space 98.2 deal Petco $40 | leastWork g20l $621/634 filt 21.3 space 98.2 deal Petco $40 | balanced g20l $526/539 filt 20.7 space 98.2 deal Petco $40
+    after:  cheapest g20l $510/523 filt 21.3 space 98.2 deal Petco $34.99 | leastWork g20l $615/628 filt 21.3 space 98.2 deal Petco $34.99 | balanced g20l $520/533 filt 20.7 space 98.2 deal Petco $34.99
+builds | ember x1
+    before: cheapest g5_5 $218/287 filt 0.2 space 10.7 bundle Walmart | leastWork g5_5 $403/410 filt 0.2 space 10.7 deal Petco $25 | balanced g5_5 $290/297 filt 0.2 space 10.7 deal Petco $25
+    after:  cheapest g5_5 $218/277 filt 0.2 space 10.7 bundle Walmart | leastWork g5_5 $393/400 filt 0.2 space 10.7 deal Petco $15 | balanced g5_5 $280/287 filt 0.2 space 10.7 deal Petco $15
+builds | ember x3
+    before: cheapest g5_5 $232/302 filt 0.6 space 32 bundle Walmart | leastWork g5_5 $417/425 filt 0.5 space 32 deal Petco $25 | balanced g5_5 $305/312 filt 0.6 space 32 deal Petco $25
+    after:  cheapest g5_5 $232/292 filt 0.6 space 32 bundle Walmart | leastWork g5_5 $407/414 filt 0.5 space 32 deal Petco $15 | balanced g5_5 $294/302 filt 0.6 space 32 deal Petco $15
+builds | ember x6
+    before: cheapest g5_5 $254/324 filt 1.3 space 64 bundle Walmart | leastWork g5_5 $439/447 filt 1 space 64 deal Petco $25 | balanced g5_5 $327/334 filt 1.2 space 64 deal Petco $25
+    after:  cheapest g5_5 $254/314 filt 1.3 space 64 bundle Walmart | leastWork g5_5 $429/437 filt 1 space 64 deal Petco $15 | balanced g5_5 $317/324 filt 1.2 space 64 deal Petco $15
+builds | dwarfpencil x1
+    before: cheapest g5_5 $217/287 filt 0.6 space 17.3 bundle Walmart | leastWork g5_5 $402/410 filt 0.5 space 17.3 deal Petco $25 | balanced g5_5 $290/297 filt 0.5 space 17.3 deal Petco $25
+    after:  cheapest g5_5 $217/277 filt 0.6 space 17.3 bundle Walmart | leastWork g5_5 $392/399 filt 0.5 space 17.3 deal Petco $15 | balanced g5_5 $279/287 filt 0.5 space 17.3 deal Petco $15
+builds | dwarfpencil x3
+    before: cheapest g5_5 $231/301 filt 1.7 space 51.9 bundle Walmart | leastWork g5_5 $416/424 filt 1.4 space 51.9 deal Petco $25 | balanced g5_5 $304/311 filt 1.6 space 51.9 deal Petco $25
+    after:  cheapest g5_5 $231/291 filt 1.7 space 51.9 bundle Walmart | leastWork g5_5 $406/413 filt 1.4 space 51.9 deal Petco $15 | balanced g5_5 $293/301 filt 1.6 space 51.9 deal Petco $15
+builds | dwarfpencil x25
+    before: cheapest g20l $524/538 filt 10.9 space 99.1 deal Petco $40 | leastWork g20l $629/643 filt 10.9 space 99.1 deal Petco $40 | balanced g20l $535/548 filt 10.6 space 99.1 deal Petco $40
+    after:  cheapest g20l $519/532 filt 10.9 space 99.1 deal Petco $34.99 | leastWork g20l $624/637 filt 10.9 space 99.1 deal Petco $34.99 | balanced g20l $529/542 filt 10.6 space 99.1 deal Petco $34.99
+builds | rummynose x1
+    before: cheapest g20l $357/370 filt 0.5 space 5.1 deal Petco $40 | leastWork g20l $462/475 filt 0.5 space 5.1 deal Petco $40 | balanced g20l $367/380 filt 0.5 space 5.1 deal Petco $40
+    after:  cheapest g20l $352/365 filt 0.5 space 5.1 deal Petco $34.99 | leastWork g20l $457/470 filt 0.5 space 5.1 deal Petco $34.99 | balanced g20l $362/375 filt 0.5 space 5.1 deal Petco $34.99
+builds | rummynose x3
+    before: cheapest g20l $372/386 filt 1.5 space 15.2 deal Petco $40 | leastWork g20l $477/491 filt 1.5 space 15.2 deal Petco $40 | balanced g20l $383/396 filt 1.4 space 15.2 deal Petco $40
+    after:  cheapest g20l $367/380 filt 1.5 space 15.2 deal Petco $34.99 | leastWork g20l $472/485 filt 1.5 space 15.2 deal Petco $34.99 | balanced g20l $377/390 filt 1.4 space 15.2 deal Petco $34.99
+builds | rummynose x6
+    before: cheapest g20l $396/409 filt 2.9 space 30.4 deal Petco $40 | leastWork g20l $501/514 filt 2.9 space 30.4 deal Petco $40 | balanced g20l $406/419 filt 2.8 space 30.4 deal Petco $40
+    after:  cheapest g20l $390/403 filt 2.9 space 30.4 deal Petco $34.99 | leastWork g20l $495/508 filt 2.9 space 30.4 deal Petco $34.99 | balanced g20l $400/413 filt 2.8 space 30.4 deal Petco $34.99
+builds | rummynose x12
+    before: cheapest g20l $442/455 filt 5.8 space 57.7 deal Petco $40 | leastWork g20l $547/560 filt 5.8 space 57.7 deal Petco $40 | balanced g20l $452/465 filt 5.7 space 57.7 deal Petco $40
+    after:  cheapest g20l $436/449 filt 5.8 space 57.7 deal Petco $34.99 | leastWork g20l $541/555 filt 5.8 space 57.7 deal Petco $34.99 | balanced g20l $446/460 filt 5.7 space 57.7 deal Petco $34.99
+builds | rummynose x25
+    before: cheapest g20l $542/555 filt 12.1 space 97.9 deal Petco $40 | leastWork g20l $647/660 filt 12.1 space 97.9 deal Petco $40 | balanced g20l $552/565 filt 11.8 space 97.9 deal Petco $40
+    after:  cheapest g20l $536/550 filt 12.1 space 97.9 deal Petco $34.99 | leastWork g20l $641/655 filt 12.1 space 97.9 deal Petco $34.99 | balanced g20l $547/560 filt 11.8 space 97.9 deal Petco $34.99
+builds | harlequin x25
+    before: cheapest g20l $472/485 filt 41.4 space 84.6 deal Petco $40 | leastWork g20l $577/590 filt 41.4 space 84.6 deal Petco $40 | balanced g20l $482/495 filt 40.2 space 84.6 deal Petco $40
+    after:  cheapest g20l $466/480 filt 41.4 space 84.6 deal Petco $34.99 | leastWork g20l $571/585 filt 41.4 space 84.6 deal Petco $34.99 | balanced g20l $476/490 filt 40.2 space 84.6 deal Petco $34.99
+builds | chili x1
+    before: cheapest g2_5 $245/262 filt 0.2 space 28.3 | leastWork g2_5 $368/384 filt 0.1 space 28.3 | balanced g2_5 $255/272 filt 0.2 space 28.3
+    after:  cheapest g2_5 $242/258 filt 0.2 space 28.3 deal Petco $12 | leastWork g2_5 $365/381 filt 0.1 space 28.3 deal Petco $12 | balanced g2_5 $252/268 filt 0.2 space 28.3 deal Petco $12
+builds | chili x3
+    before: cheapest g2_5 $257/274 filt 0.5 space 84.9 | leastWork g2_5 $380/397 filt 0.4 space 84.9 | balanced g2_5 $268/284 filt 0.5 space 84.9
+    after:  cheapest g2_5 $254/271 filt 0.5 space 84.9 deal Petco $12 | leastWork g2_5 $377/394 filt 0.4 space 84.9 deal Petco $12 | balanced g2_5 $264/281 filt 0.5 space 84.9 deal Petco $12
+builds | chili x6
+    before: cheapest g5 $248/316 filt 1 space 89.4 bundle Walmart | leastWork g5 $432/439 filt 0.8 space 89.4 deal Petco $25 | balanced g5 $319/326 filt 0.9 space 89.4 deal Petco $25
+    after:  cheapest g5 $248/306 filt 1 space 89.4 bundle Walmart | leastWork g5 $422/429 filt 0.8 space 89.4 deal Petco $15 | balanced g5 $309/317 filt 0.9 space 89.4 deal Petco $15
+builds | danio x50
+    before: cheapest g60b $747/855 filt 21 space 83.7 deal Petco $110 | leastWork g60b $853/961 filt 17.7 space 83.7 deal Petco $110 | balanced g60b $748/856 filt 17.7 space 83.7 deal Petco $110
+    after:  cheapest g60b $690/798 filt 21 space 83.7 deal Petco $57.5 | leastWork g60b $796/904 filt 17.7 space 83.7 deal Petco $57.5 | balanced g60b $691/799 filt 17.7 space 83.7 deal Petco $57.5
+builds | cpd x1
+    before: cheapest g5_5 $224/293 filt 0.2 space 8.2 bundle Walmart | leastWork g5_5 $409/416 filt 0.1 space 8.2 deal Petco $25 | balanced g5_5 $296/303 filt 0.1 space 8.2 deal Petco $25
+    after:  cheapest g5_5 $224/283 filt 0.2 space 8.2 bundle Walmart | leastWork g5_5 $399/406 filt 0.1 space 8.2 deal Petco $15 | balanced g5_5 $286/293 filt 0.1 space 8.2 deal Petco $15
+builds | cpd x3
+    before: cheapest g5_5 $251/321 filt 0.5 space 24.6 bundle Walmart | leastWork g5_5 $436/444 filt 0.4 space 24.6 deal Petco $25 | balanced g5_5 $324/331 filt 0.4 space 24.6 deal Petco $25
+    after:  cheapest g5_5 $251/310 filt 0.5 space 24.6 bundle Walmart | leastWork g5_5 $426/433 filt 0.4 space 24.6 deal Petco $15 | balanced g5_5 $313/321 filt 0.4 space 24.6 deal Petco $15
+builds | cpd x6
+    before: cheapest g5_5 $292/362 filt 0.9 space 49.2 bundle Walmart | leastWork g5_5 $477/484 filt 0.7 space 49.2 deal Petco $25 | balanced g5_5 $364/372 filt 0.9 space 49.2 deal Petco $25
+    after:  cheapest g5_5 $292/351 filt 0.9 space 49.2 bundle Walmart | leastWork g5_5 $467/474 filt 0.7 space 49.2 deal Petco $15 | balanced g5_5 $354/361 filt 0.9 space 49.2 deal Petco $15
+builds | cpd x12
+    before: cheapest g5_5 $374/443 filt 1.8 space 93.4 bundle Walmart | leastWork g5_5 $559/566 filt 1.5 space 93.4 deal Petco $25 | balanced g5_5 $446/453 filt 1.8 space 93.4 deal Petco $25
+    after:  cheapest g5_5 $374/433 filt 1.8 space 93.4 bundle Walmart | leastWork g5_5 $549/556 filt 1.5 space 93.4 deal Petco $15 | balanced g5_5 $436/443 filt 1.8 space 93.4 deal Petco $15
+builds | hatchet x1
+    before: cheapest g20l $356/369 filt 0.9 space 5.4 deal Petco $40 | leastWork g20l $461/474 filt 0.9 space 5.4 deal Petco $40 | balanced g20l $366/379 filt 0.9 space 5.4 deal Petco $40
+    after:  cheapest g20l $350/363 filt 0.9 space 5.4 deal Petco $34.99 | leastWork g20l $455/468 filt 0.9 space 5.4 deal Petco $34.99 | balanced g20l $360/373 filt 0.9 space 5.4 deal Petco $34.99
+builds | hatchet x3
+    before: cheapest g20l $368/381 filt 2.7 space 16.1 deal Petco $40 | leastWork g20l $473/486 filt 2.7 space 16.1 deal Petco $40 | balanced g20l $378/391 filt 2.6 space 16.1 deal Petco $40
+    after:  cheapest g20l $362/376 filt 2.7 space 16.1 deal Petco $34.99 | leastWork g20l $467/481 filt 2.7 space 16.1 deal Petco $34.99 | balanced g20l $373/386 filt 2.6 space 16.1 deal Petco $34.99
+builds | hatchet x6
+    before: cheapest g20l $386/400 filt 5.4 space 32.2 deal Petco $40 | leastWork g20l $492/505 filt 5.4 space 32.2 deal Petco $40 | balanced g20l $397/410 filt 5.3 space 32.2 deal Petco $40
+    after:  cheapest g20l $381/394 filt 5.4 space 32.2 deal Petco $34.99 | leastWork g20l $486/499 filt 5.4 space 32.2 deal Petco $34.99 | balanced g20l $391/404 filt 5.3 space 32.2 deal Petco $34.99
+builds | hatchet x12
+    before: cheapest g20l $424/437 filt 10.9 space 61.2 deal Petco $40 | leastWork g20l $529/542 filt 10.9 space 61.2 deal Petco $40 | balanced g20l $434/447 filt 10.6 space 61.2 deal Petco $40
+    after:  cheapest g20l $418/431 filt 10.9 space 61.2 deal Petco $34.99 | leastWork g20l $523/536 filt 10.9 space 61.2 deal Petco $34.99 | balanced g20l $428/441 filt 10.6 space 61.2 deal Petco $34.99
+builds | cherrybarb x50
+    before: cheapest g60b $870/1004 filt 32.4 space 78.5 deal Petco $110 | leastWork g60b $976/1110 filt 27.3 space 78.5 deal Petco $110 | balanced g60b $871/1005 filt 27.3 space 78.5 deal Petco $110
+    after:  cheapest g60b $813/947 filt 32.4 space 78.5 deal Petco $57.5 | leastWork g60b $919/1053 filt 27.3 space 78.5 deal Petco $57.5 | balanced g60b $814/948 filt 27.3 space 78.5 deal Petco $57.5
+builds | tigerbarb x1
+    before: cheapest g20l $357/370 filt 2.9 space 8.6 deal Petco $40 | leastWork g20l $462/475 filt 2.9 space 8.6 deal Petco $40 | balanced g20l $367/380 filt 2.8 space 8.6 deal Petco $40
+    after:  cheapest g20l $352/365 filt 2.9 space 8.6 deal Petco $34.99 | leastWork g20l $457/470 filt 2.9 space 8.6 deal Petco $34.99 | balanced g20l $362/375 filt 2.8 space 8.6 deal Petco $34.99
+builds | tigerbarb x3
+    before: cheapest g20l $372/386 filt 8.7 space 25.8 deal Petco $40 | leastWork g20l $477/491 filt 8.7 space 25.8 deal Petco $40 | balanced g20l $383/396 filt 8.4 space 25.8 deal Petco $40
+    after:  cheapest g20l $367/380 filt 8.7 space 25.8 deal Petco $34.99 | leastWork g20l $472/485 filt 8.7 space 25.8 deal Petco $34.99 | balanced g20l $377/390 filt 8.4 space 25.8 deal Petco $34.99
+builds | tigerbarb x6
+    before: cheapest g20l $396/409 filt 17.4 space 51.6 deal Petco $40 | leastWork g20l $501/514 filt 17.4 space 51.6 deal Petco $40 | balanced g20l $406/419 filt 16.9 space 51.6 deal Petco $40
+    after:  cheapest g20l $390/403 filt 17.4 space 51.6 deal Petco $34.99 | leastWork g20l $495/508 filt 17.4 space 51.6 deal Petco $34.99 | balanced g20l $400/413 filt 16.9 space 51.6 deal Petco $34.99
+builds | tigerbarb x12
+    before: cheapest g20l $442/455 filt 34.7 space 98.1 deal Petco $40 | leastWork g20l $547/560 filt 34.7 space 98.1 deal Petco $40 | balanced g20l $452/465 filt 33.7 space 98.1 deal Petco $40
+    after:  cheapest g20l $436/449 filt 34.7 space 98.1 deal Petco $34.99 | leastWork g20l $541/555 filt 34.7 space 98.1 deal Petco $34.99 | balanced g20l $446/460 filt 33.7 space 98.1 deal Petco $34.99
+builds | tigerbarb x50
+    before: cheapest g75 $1043/1176 filt 44.9 space 96 deal Petco $150 | leastWork g75 $1405/1537 filt 8.3 space 96 deal Petco $150 | balanced g75 $1071/1205 filt 30.5 space 96 deal Petco $150
+    after:  cheapest g75 $1043/1176 filt 44.9 space 96 deal PetSmart $149.99 | leastWork g75 $1405/1537 filt 8.3 space 96 deal PetSmart $149.99 | balanced g75 $1071/1205 filt 30.5 space 96 deal PetSmart $149.99
+builds | boesemani x25
+    before: cheapest g75 $1044/1176 filt 62.6 space 98.4 deal Petco $150 | leastWork g75 $1430/1537 filt 11.5 space 98.4 deal Petco $150 | balanced g75 $1072/1205 filt 42.4 space 98.4 deal Petco $150
+    after:  cheapest g75 $1044/1176 filt 62.6 space 98.4 deal PetSmart $149.99 | leastWork g75 $1430/1537 filt 11.5 space 98.4 deal PetSmart $149.99 | balanced g75 $1072/1205 filt 42.4 space 98.4 deal PetSmart $149.99
+builds | guppy x1
+    before: cheapest g5 $220/288 filt 0.9 space 27.7 bundle Walmart | leastWork g5 $404/411 filt 0.7 space 27.7 deal Petco $25 | balanced g5 $291/298 filt 0.8 space 27.7 deal Petco $25
+    after:  cheapest g5 $220/278 filt 0.9 space 27.7 bundle Walmart | leastWork g5 $394/401 filt 0.7 space 27.7 deal Petco $15 | balanced g5 $281/289 filt 0.8 space 27.7 deal Petco $15
+builds | guppy x3
+    before: cheapest g5 $240/308 filt 2.6 space 83.2 bundle Walmart | leastWork g5 $424/431 filt 2.1 space 83.2 deal Petco $25 | balanced g5 $311/318 filt 2.5 space 83.2 deal Petco $25
+    after:  cheapest g5 $240/298 filt 2.6 space 83.2 bundle Walmart | leastWork g5 $414/421 filt 2.1 space 83.2 deal Petco $15 | balanced g5 $301/308 filt 2.5 space 83.2 deal Petco $15
+builds | guppy x12
+    before: cheapest g20l $467/480 filt 7.9 space 87.7 deal Petco $40 | leastWork g20l $572/585 filt 7.9 space 87.7 deal Petco $40 | balanced g20l $477/491 filt 7.7 space 87.7 deal Petco $40
+    after:  cheapest g20l $462/475 filt 7.9 space 87.7 deal Petco $34.99 | leastWork g20l $567/580 filt 7.9 space 87.7 deal Petco $34.99 | balanced g20l $472/485 filt 7.7 space 87.7 deal Petco $34.99
+builds | guppy x50
+    before: cheapest g60b $1028/1162 filt 14.7 space 100.2 deal Petco $110 | leastWork g60b $1134/1268 filt 12.4 space 100.2 deal Petco $110 | balanced g60b $1029/1163 filt 12.4 space 100.2 deal Petco $110
+    after:  cheapest g60b $971/1105 filt 14.7 space 100.2 deal Petco $57.5 | leastWork g60b $1077/1211 filt 12.4 space 100.2 deal Petco $57.5 | balanced g60b $972/1106 filt 12.4 space 100.2 deal Petco $57.5
+builds | platy x50
+    before: cheapest g60b $852/960 filt 14.1 space 92.2 deal Petco $110 | leastWork g60b $958/1066 filt 11.9 space 92.2 deal Petco $110 | balanced g60b $853/961 filt 11.9 space 92.2 deal Petco $110
+    after:  cheapest g60b $795/902 filt 14.1 space 92.2 deal Petco $57.5 | leastWork g60b $901/1008 filt 11.9 space 92.2 deal Petco $57.5 | balanced g60b $796/903 filt 11.9 space 92.2 deal Petco $57.5
+builds | molly x50
+    before: cheapest g90 $1083/1215 filt 66.6 space 98.5 deal Petco $150 | leastWork g90 $1518/1625 filt 15.2 space 98.5 deal Petco $150 | balanced g90 $1106/1238 filt 64.7 space 98.5 deal Petco $150
+    after:  cheapest g90 $1083/1215 filt 66.6 space 98.5 deal PetSmart $149.99 | leastWork g90 $1518/1625 filt 15.2 space 98.5 deal PetSmart $149.99 | balanced g90 $1106/1238 filt 64.7 space 98.5 deal PetSmart $149.99
+builds | betta x1
+    before: cheapest g5 $228/296 filt 2.2 space 29.7 bundle Walmart | leastWork g5 $412/419 filt 1.8 space 29.7 deal Petco $25 | balanced g5 $299/306 filt 2.1 space 29.7 deal Petco $25
+    after:  cheapest g5 $228/286 filt 2.2 space 29.7 bundle Walmart | leastWork g5 $402/409 filt 1.8 space 29.7 deal Petco $15 | balanced g5 $289/296 filt 2.1 space 29.7 deal Petco $15
+builds | betta x3
+    before: cheapest g5 $263/331 filt 6.5 space 89.2 bundle Walmart | leastWork g5 $447/454 filt 5.3 space 89.2 deal Petco $25 | balanced g5 $334/341 filt 6.3 space 89.2 deal Petco $25
+    after:  cheapest g5 $263/321 filt 6.5 space 89.2 bundle Walmart | leastWork g5 $437/444 filt 5.3 space 89.2 deal Petco $15 | balanced g5 $324/331 filt 6.3 space 89.2 deal Petco $15
+builds | betta x12
+    before: cheapest g20l $561/587 filt 20 space 91.4 deal Petco $40 | leastWork g20l $666/692 filt 20 space 91.4 deal Petco $40 | balanced g20l $571/597 filt 19.4 space 91.4 deal Petco $40
+    after:  cheapest g20l $555/581 filt 20 space 91.4 deal Petco $34.99 | leastWork g20l $660/686 filt 20 space 91.4 deal Petco $34.99 | balanced g20l $565/591 filt 19.4 space 91.4 deal Petco $34.99
+builds | betta x50
+    before: cheapest g75 $1534/1667 filt 25.9 space 90.7 deal Petco $150 | leastWork g75 $1920/2028 filt 4.8 space 90.7 deal Petco $150 | balanced g75 $1563/1695 filt 17.5 space 90.7 deal Petco $150
+    after:  cheapest g75 $1534/1667 filt 25.9 space 90.7 deal PetSmart $149.99 | leastWork g75 $1920/2028 filt 4.8 space 90.7 deal PetSmart $149.99 | balanced g75 $1563/1695 filt 17.5 space 90.7 deal PetSmart $149.99
+builds | dwarfgourami x12
+    before: cheapest g20l $505/518 filt 49.4 space 94.9 deal Petco $40 | leastWork g20l $610/623 filt 49.4 space 94.9 deal Petco $40 | balanced g20l $515/528 filt 48 space 94.9 deal Petco $40
+    after:  cheapest g20l $499/512 filt 49.4 space 94.9 deal Petco $34.99 | leastWork g20l $604/618 filt 49.4 space 94.9 deal Petco $34.99 | balanced g20l $509/523 filt 48 space 94.9 deal Petco $34.99
+builds | dwarfgourami x50
+    before: cheapest g60b $1186/1319 filt 91.8 space 99.8 deal Petco $110 | leastWork g60b $1292/1425 filt 77.4 space 99.8 deal Petco $110 | balanced g60b $1346/1479 filt 65.3 space 99.8 deal Petco $110
+    after:  cheapest g60b $1129/1261 filt 91.8 space 99.8 deal Petco $57.5 | leastWork g60b $1235/1368 filt 77.4 space 99.8 deal Petco $57.5 | balanced g60b $1289/1422 filt 65.3 space 99.8 deal Petco $57.5
+builds | honeygourami x1
+    before: cheapest g5 $218/286 filt 2.4 space 40 bundle Walmart | leastWork g5 $402/409 filt 2 space 40 deal Petco $25 | balanced g5 $289/297 filt 2.3 space 40 deal Petco $25
+    after:  cheapest g5 $218/277 filt 2.4 space 40 bundle Walmart | leastWork g5 $392/400 filt 2 space 40 deal Petco $15 | balanced g5 $280/287 filt 2.3 space 40 deal Petco $15
+builds | honeygourami x50
+    before: cheapest g90 $1101/1233 filt 19.2 space 98.9 deal Petco $150 | leastWork g90 $1511/1643 filt 4.4 space 98.9 deal Petco $150 | balanced g90 $1124/1256 filt 18.6 space 98.9 deal Petco $150
+    after:  cheapest g90 $1101/1233 filt 19.2 space 98.9 deal PetSmart $149.99 | leastWork g90 $1511/1643 filt 4.4 space 98.9 deal PetSmart $149.99 | balanced g90 $1124/1256 filt 18.6 space 98.9 deal PetSmart $149.99
+builds | gourami x25
+    before: cheapest g60b $837/970 filt 98.3 space 100.1 deal Petco $110 | leastWork g60b $1171/1304 filt 25.8 space 100.1 deal Petco $110 | balanced g60b $1066/1199 filt 25.8 space 100.1 deal Petco $110
+    after:  cheapest g60b $780/913 filt 98.3 space 100.1 deal Petco $57.5 | leastWork g60b $1114/1246 filt 25.8 space 100.1 deal Petco $57.5 | balanced g60b $1009/1141 filt 25.8 space 100.1 deal Petco $57.5
+builds | gbr x12
+    before: cheapest g20l $561/587 filt 16.7 space 79.2 deal Petco $40 | leastWork g20l $666/692 filt 16.7 space 79.2 deal Petco $40 | balanced g20l $571/597 filt 16.3 space 79.2 deal Petco $40
+    after:  cheapest g20l $555/581 filt 16.7 space 79.2 deal Petco $34.99 | leastWork g20l $660/686 filt 16.7 space 79.2 deal Petco $34.99 | balanced g20l $565/591 filt 16.3 space 79.2 deal Petco $34.99
+builds | gbr x25
+    before: cheapest g60b $976/1109 filt 15.6 space 73.1 deal Petco $110 | leastWork g60b $1082/1215 filt 13.1 space 73.1 deal Petco $110 | balanced g60b $977/1110 filt 13.1 space 73.1 deal Petco $110
+    after:  cheapest g60b $919/1052 filt 15.6 space 73.1 deal Petco $57.5 | leastWork g60b $1025/1158 filt 13.1 space 73.1 deal Petco $57.5 | balanced g60b $920/1053 filt 13.1 space 73.1 deal Petco $57.5
+builds | bolivianram x25
+    before: cheapest g125 $1709/1734 filt 31.3 space 92.2 deal Petco $500 | leastWork g125 $2192/2192 filt 6.1 space 92.2 deal Petco $500 | balanced g125 $1732/1757 filt 30.4 space 92.2 deal Petco $500
+    after:  cheapest g125 $1818/1843 filt 31.3 space 92.2 | leastWork g125 $2301/2301 filt 6.1 space 92.2 | balanced g125 $1841/1866 filt 30.4 space 92.2
+builds | kribensis x12
+    before: cheapest g60b $676/810 filt 50.8 space 73.3 deal Petco $110 | leastWork g60b $782/916 filt 42.8 space 73.3 deal Petco $110 | balanced g60b $677/811 filt 42.8 space 73.3 deal Petco $110
+    after:  cheapest g60b $619/752 filt 50.8 space 73.3 deal Petco $57.5 | leastWork g60b $725/858 filt 42.8 space 73.3 deal Petco $57.5 | balanced g60b $620/753 filt 42.8 space 73.3 deal Petco $57.5
+builds | cockatoo x25
+    before: cheapest g125 $1988/1988 filt 28.6 space 89.1 deal Petco $500 | leastWork g125 $2446/2446 filt 5.5 space 89.1 deal Petco $500 | balanced g125 $2011/2011 filt 27.8 space 89.1 deal Petco $500
+    after:  cheapest g125 $2097/2097 filt 28.6 space 89.1 | leastWork g125 $2554/2554 filt 5.5 space 89.1 | balanced g125 $2120/2120 filt 27.8 space 89.1
+builds | yellowlab x25
+    before: cheapest g75 $902/1036 filt 57.2 space 83 deal Petco $150 | leastWork g75 $1264/1397 filt 10.5 space 83 deal Petco $150 | balanced g75 $931/1065 filt 38.8 space 83 deal Petco $150
+    after:  cheapest g75 $902/1036 filt 57.2 space 83 deal PetSmart $149.99 | leastWork g75 $1264/1397 filt 10.5 space 83 deal PetSmart $149.99 | balanced g75 $931/1065 filt 38.8 space 83 deal PetSmart $149.99
+builds | yellowlab x50
+    before: cheapest g125 $1840/1865 filt 71.6 space 97 deal Petco $500 | leastWork g125 $2323/2323 filt 13.9 space 97 deal Petco $500 | balanced g125 $1863/1888 filt 69.6 space 97 deal Petco $500
+    after:  cheapest g125 $1949/1973 filt 71.6 space 97 | leastWork g125 $2431/2431 filt 13.9 space 97 | balanced g125 $1972/1997 filt 69.6 space 97
+builds | peacock x25
+    before: cheapest g90 $1311/1442 filt 59.4 space 98.9 deal Petco $150 | leastWork g90 $1721/1852 filt 13.6 space 98.9 deal Petco $150 | balanced g90 $1334/1465 filt 57.7 space 98.9 deal Petco $150
+    after:  cheapest g90 $1311/1442 filt 59.4 space 98.9 deal PetSmart $149.99 | leastWork g90 $1721/1852 filt 13.6 space 98.9 deal PetSmart $149.99 | balanced g90 $1334/1465 filt 57.7 space 98.9 deal PetSmart $149.99
+builds | demasoni x1
+    before: cheapest g60b $556/689 filt 0.5 space 4.4 deal Petco $110 | leastWork g60b $662/795 filt 0.4 space 4.4 deal Petco $110 | balanced g60b $557/690 filt 0.4 space 4.4 deal Petco $110
+    after:  cheapest g60b $499/632 filt 0.5 space 4.4 deal Petco $57.5 | leastWork g60b $605/738 filt 0.4 space 4.4 deal Petco $57.5 | balanced g60b $500/633 filt 0.4 space 4.4 deal Petco $57.5
+builds | demasoni x3
+    before: cheapest g60b $592/725 filt 1.6 space 13.3 deal Petco $110 | leastWork g60b $698/831 filt 1.3 space 13.3 deal Petco $110 | balanced g60b $593/726 filt 1.3 space 13.3 deal Petco $110
+    after:  cheapest g60b $535/667 filt 1.6 space 13.3 deal Petco $57.5 | leastWork g60b $641/774 filt 1.3 space 13.3 deal Petco $57.5 | balanced g60b $536/668 filt 1.3 space 13.3 deal Petco $57.5
+builds | demasoni x6
+    before: cheapest g60b $646/778 filt 3.1 space 26.6 deal Petco $110 | leastWork g60b $752/884 filt 2.7 space 26.6 deal Petco $110 | balanced g60b $647/779 filt 2.7 space 26.6 deal Petco $110
+    after:  cheapest g60b $588/721 filt 3.1 space 26.6 deal Petco $57.5 | leastWork g60b $694/827 filt 2.7 space 26.6 deal Petco $57.5 | balanced g60b $589/722 filt 2.7 space 26.6 deal Petco $57.5
+builds | demasoni x12
+    before: cheapest g60b $753/885 filt 6.3 space 50.6 deal Petco $110 | leastWork g60b $859/992 filt 5.3 space 50.6 deal Petco $110 | balanced g60b $754/887 filt 5.3 space 50.6 deal Petco $110
+    after:  cheapest g60b $695/828 filt 6.3 space 50.6 deal Petco $57.5 | leastWork g60b $802/934 filt 5.3 space 50.6 deal Petco $57.5 | balanced g60b $696/829 filt 5.3 space 50.6 deal Petco $57.5
+builds | demasoni x25
+    before: cheapest g60b $985/1118 filt 13.1 space 85.9 deal Petco $110 | leastWork g60b $1091/1224 filt 11 space 85.9 deal Petco $110 | balanced g60b $986/1119 filt 11 space 85.9 deal Petco $110
+    after:  cheapest g60b $928/1060 filt 13.1 space 85.9 deal Petco $57.5 | leastWork g60b $1034/1166 filt 11 space 85.9 deal Petco $57.5 | balanced g60b $929/1061 filt 11 space 85.9 deal Petco $57.5
+builds | demasoni x50
+    before: cheapest g125 $2268/2268 filt 11.4 space 98.8 deal Petco $500 | leastWork g125 $2726/2726 filt 2.2 space 98.8 deal Petco $500 | balanced g125 $2291/2291 filt 11.1 space 98.8 deal Petco $500
+    after:  cheapest g125 $2377/2377 filt 11.4 space 98.8 | leastWork g125 $2835/2835 filt 2.2 space 98.8 | balanced g125 $2400/2400 filt 11.1 space 98.8
+builds | kadango x12
+    before: cheapest g60b $1113/1246 filt 27.8 space 90.7 deal Petco $110 | leastWork g60b $1218/1351 filt 27.8 space 90.7 deal Petco $110 | balanced g60b $1113/1246 filt 27.8 space 90.7 deal Petco $110
+    after:  cheapest g60b $1056/1189 filt 27.8 space 90.7 deal Petco $57.5 | leastWork g60b $1161/1294 filt 27.8 space 90.7 deal Petco $57.5 | balanced g60b $1056/1189 filt 27.8 space 90.7 deal Petco $57.5
+builds | labeo x12
+    before: cheapest g60b $714/848 filt 26.7 space 77.1 deal Petco $110 | leastWork g60b $820/954 filt 22.5 space 77.1 deal Petco $110 | balanced g60b $715/849 filt 22.5 space 77.1 deal Petco $110
+    after:  cheapest g60b $656/790 filt 26.7 space 77.1 deal Petco $57.5 | leastWork g60b $762/896 filt 22.5 space 77.1 deal Petco $57.5 | balanced g60b $657/791 filt 22.5 space 77.1 deal Petco $57.5
+builds | labeo x25
+    before: cheapest g125 $1743/1743 filt 24.3 space 91.3 deal Petco $500 | leastWork g125 $2201/2201 filt 4.7 space 91.3 deal Petco $500 | balanced g125 $1766/1766 filt 23.6 space 91.3 deal Petco $500
+    after:  cheapest g125 $1851/1851 filt 24.3 space 91.3 | leastWork g125 $2309/2309 filt 4.7 space 91.3 | balanced g125 $1874/1874 filt 23.6 space 91.3
+builds | auratus x1
+    before: cheapest g60b $549/683 filt 4.2 space 7 deal Petco $110 | leastWork g60b $655/789 filt 3.6 space 7 deal Petco $110 | balanced g60b $550/684 filt 3.6 space 7 deal Petco $110
+    after:  cheapest g60b $491/625 filt 4.2 space 7 deal Petco $57.5 | leastWork g60b $598/731 filt 3.6 space 7 deal Petco $57.5 | balanced g60b $493/626 filt 3.6 space 7 deal Petco $57.5
+builds | auratus x3
+    before: cheapest g60b $572/706 filt 12.7 space 21 deal Petco $110 | leastWork g60b $678/812 filt 10.7 space 21 deal Petco $110 | balanced g60b $573/707 filt 10.7 space 21 deal Petco $110
+    after:  cheapest g60b $515/648 filt 12.7 space 21 deal Petco $57.5 | leastWork g60b $621/755 filt 10.7 space 21 deal Petco $57.5 | balanced g60b $516/649 filt 10.7 space 21 deal Petco $57.5
+builds | auratus x6
+    before: cheapest g60b $607/740 filt 25.4 space 42 deal Petco $110 | leastWork g60b $713/847 filt 21.4 space 42 deal Petco $110 | balanced g60b $608/741 filt 21.4 space 42 deal Petco $110
+    after:  cheapest g60b $549/683 filt 25.4 space 42 deal Petco $57.5 | leastWork g60b $655/789 filt 21.4 space 42 deal Petco $57.5 | balanced g60b $550/684 filt 21.4 space 42 deal Petco $57.5
+builds | auratus x12
+    before: cheapest g60b $676/810 filt 50.8 space 79.8 deal Petco $110 | leastWork g60b $782/916 filt 42.8 space 79.8 deal Petco $110 | balanced g60b $677/811 filt 42.8 space 79.8 deal Petco $110
+    after:  cheapest g60b $619/752 filt 50.8 space 79.8 deal Petco $57.5 | leastWork g60b $725/859 filt 42.8 space 79.8 deal Petco $57.5 | balanced g60b $620/753 filt 42.8 space 79.8 deal Petco $57.5
+builds | auratus x25
+    before: cheapest g125 $1664/1664 filt 46.1 space 94.6 deal Petco $500 | leastWork g125 $2122/2122 filt 8.9 space 94.6 deal Petco $500 | balanced g125 $1687/1687 filt 44.8 space 94.6 deal Petco $500
+    after:  cheapest g125 $1773/1773 filt 46.1 space 94.6 | leastWork g125 $2230/2230 filt 8.9 space 94.6 | balanced g125 $1796/1796 filt 44.8 space 94.6
+builds | livingstonii x6
+    before: cheapest g75 $1072/1205 filt 30 space 96.9 deal Petco $150 | leastWork g75 $1183/1316 filt 96 space 96.9 deal Petco $150 | balanced g75 $1072/1205 filt 30 space 96.9 deal Petco $150
+    after:  cheapest g75 $1072/1205 filt 30 space 96.9 deal PetSmart $149.99 | leastWork g75 $1183/1316 filt 96 space 96.9 deal PetSmart $149.99 | balanced g75 $1072/1205 filt 30 space 96.9 deal PetSmart $149.99
+builds | afra x12
+    before: cheapest g60b $752/885 filt 39.5 space 81.3 deal Petco $110 | leastWork g60b $858/992 filt 33.3 space 81.3 deal Petco $110 | balanced g60b $753/886 filt 33.3 space 81.3 deal Petco $110
+    after:  cheapest g60b $694/828 filt 39.5 space 81.3 deal Petco $57.5 | leastWork g60b $800/934 filt 33.3 space 81.3 deal Petco $57.5 | balanced g60b $695/829 filt 33.3 space 81.3 deal Petco $57.5
+builds | afra x25
+    before: cheapest g125 $1822/1822 filt 35.8 space 96.4 deal Petco $500 | leastWork g125 $2280/2280 filt 6.9 space 96.4 deal Petco $500 | balanced g125 $1845/1845 filt 34.8 space 96.4 deal Petco $500
+    after:  cheapest g125 $1930/1930 filt 35.8 space 96.4 | leastWork g125 $2388/2388 filt 6.9 space 96.4 | balanced g125 $1953/1953 filt 34.8 space 96.4
+builds | syno x1
+    before: cheapest g20l $371/384 filt 33.2 space 35 deal Petco $40 | leastWork g20l $476/489 filt 33.2 space 35 deal Petco $40 | balanced g20l $381/394 filt 32.3 space 35 deal Petco $40
+    after:  cheapest g20l $365/379 filt 33.2 space 35 deal Petco $34.99 | leastWork g20l $470/484 filt 33.2 space 35 deal Petco $34.99 | balanced g20l $376/389 filt 32.3 space 35 deal Petco $34.99
+builds | syno x6
+    before: cheapest g60b $667/800 filt 88.9 space 93.1 deal Petco $110 | leastWork g60b $773/906 filt 75 space 93.1 deal Petco $110 | balanced g60b $827/961 filt 63.3 space 93.1 deal Petco $110
+    after:  cheapest g60b $609/743 filt 88.9 space 93.1 deal Petco $57.5 | leastWork g60b $715/849 filt 75 space 93.1 deal Petco $57.5 | balanced g60b $770/903 filt 63.3 space 93.1 deal Petco $57.5
+builds | angel x12
+    before: cheapest g75 $1188/1296 filt 30.3 space 97 deal Petco $150 | leastWork g75 $1274/1407 filt 96.9 space 97 deal Petco $150 | balanced g75 $1188/1296 filt 30.3 space 97 deal Petco $150
+    after:  cheapest g75 $1188/1296 filt 30.3 space 97 deal PetSmart $149.99 | leastWork g75 $1274/1407 filt 96.9 space 97 deal PetSmart $149.99 | balanced g75 $1188/1296 filt 30.3 space 97 deal PetSmart $149.99
+builds | angel x25
+    before: cheapest g150 $2323/2323 filt 35.1 space 94.3 deal Petco $500 | leastWork g150 $2428/2428 filt 35.1 space 94.3 deal Petco $500 | balanced g150 $2323/2323 filt 35.1 space 94.3 deal Petco $500
+    after:  cheapest g150 $2568/2568 filt 35.1 space 94.3 | leastWork g150 $2673/2673 filt 35.1 space 94.3 | balanced g150 $2568/2568 filt 35.1 space 94.3
+builds | discus x12
+    before: cheapest g90 $1862/1969 filt 89.4 space 97.7 deal Petco $150 | leastWork g90 $1967/2074 filt 89.4 space 97.7 deal Petco $150 | balanced g90 $1911/2018 filt 24.1 space 97.7 deal Petco $150
+    after:  cheapest g90 $1862/1969 filt 89.4 space 97.7 deal PetSmart $149.99 | leastWork g90 $1967/2074 filt 89.4 space 97.7 deal PetSmart $149.99 | balanced g90 $1911/2018 filt 24.1 space 97.7 deal PetSmart $149.99
+builds | goldfish x1
+    before: cheapest g20l $350/350 filt 43.1 space 50.4 deal Petco $40 | leastWork g20l $455/455 filt 43.1 space 50.4 deal Petco $40 | balanced g20l $360/360 filt 41.9 space 50.4 deal Petco $40
+    after:  cheapest g20l $344/344 filt 43.1 space 50.4 deal Petco $34.99 | leastWork g20l $450/450 filt 43.1 space 50.4 deal Petco $34.99 | balanced g20l $355/355 filt 41.9 space 50.4 deal Petco $34.99
+builds | goldfish x6
+    before: cheapest g75 $743/851 filt 80.4 space 84.6 deal Petco $150 | leastWork g75 $1104/1212 filt 14.8 space 84.6 deal Petco $150 | balanced g75 $771/879 filt 54.5 space 84.6 deal Petco $150
+    after:  cheapest g75 $743/851 filt 80.4 space 84.6 deal PetSmart $149.99 | leastWork g75 $1104/1212 filt 14.8 space 84.6 deal PetSmart $149.99 | balanced g75 $771/879 filt 54.5 space 84.6 deal PetSmart $149.99
+builds | goldfish x12
+    before: cheapest g150 $1592/1592 filt 93.9 space 91.8 deal Petco $500 | leastWork g150 $2073/2073 filt 16.5 space 91.8 deal Petco $500 | balanced g150 $1968/1968 filt 16.5 space 91.8 deal Petco $500
+    after:  cheapest g150 $1837/1837 filt 93.9 space 91.8 | leastWork g150 $2318/2318 filt 16.5 space 91.8 | balanced g150 $2213/2213 filt 16.5 space 91.8
+builds | comet x6
+    before: cheapest g90 $724/831 filt 98.4 space 96 deal Petco $150 | leastWork g90 $1063/1170 filt 85.9 space 96 deal Petco $150 | balanced g90 $1006/1113 filt 23.2 space 96 deal Petco $150
+    after:  cheapest g90 $724/831 filt 98.4 space 96 deal PetSmart $149.99 | leastWork g90 $1063/1170 filt 85.9 space 96 deal PetSmart $149.99 | balanced g90 $1006/1113 filt 23.2 space 96 deal PetSmart $149.99
+builds | bronzecory x1
+    before: cheapest g20l $356/369 filt 4.1 space 10 deal Petco $40 | leastWork g20l $461/474 filt 4.1 space 10 deal Petco $40 | balanced g20l $366/379 filt 4 space 10 deal Petco $40
+    after:  cheapest g20l $350/364 filt 4.1 space 10 deal Petco $34.99 | leastWork g20l $456/469 filt 4.1 space 10 deal Petco $34.99 | balanced g20l $361/374 filt 4 space 10 deal Petco $34.99
+builds | bronzecory x3
+    before: cheapest g20l $369/382 filt 12.2 space 30 deal Petco $40 | leastWork g20l $474/488 filt 12.2 space 30 deal Petco $40 | balanced g20l $379/393 filt 11.9 space 30 deal Petco $40
+    after:  cheapest g20l $364/377 filt 12.2 space 30 deal Petco $34.99 | leastWork g20l $469/482 filt 12.2 space 30 deal Petco $34.99 | balanced g20l $374/387 filt 11.9 space 30 deal Petco $34.99
+builds | bronzecory x6
+    before: cheapest g20l $389/402 filt 24.4 space 60.1 deal Petco $40 | leastWork g20l $494/508 filt 24.4 space 60.1 deal Petco $40 | balanced g20l $399/413 filt 23.7 space 60.1 deal Petco $40
+    after:  cheapest g20l $384/397 filt 24.4 space 60.1 deal Petco $34.99 | leastWork g20l $489/502 filt 24.4 space 60.1 deal Petco $34.99 | balanced g20l $394/407 filt 23.7 space 60.1 deal Petco $34.99
+builds | bristlenose x12
+    before: cheapest g60b $657/791 filt 53.3 space 92.8 deal Petco $110 | leastWork g60b $763/897 filt 45 space 92.8 deal Petco $110 | balanced g60b $658/792 filt 45 space 92.8 deal Petco $110
+    after:  cheapest g60b $600/733 filt 53.3 space 92.8 deal Petco $57.5 | leastWork g60b $706/840 filt 45 space 92.8 deal Petco $57.5 | balanced g60b $601/734 filt 45 space 92.8 deal Petco $57.5
+builds | oto x1
+    before: cheapest g5_5 $188/258 filt 0.4 space 17.6 bundle Walmart | leastWork g5_5 $381/381 filt 0.3 space 17.6 deal Petco $25 | balanced g5_5 $268/268 filt 0.4 space 17.6 deal Petco $25
+    after:  cheapest g5_5 $188/247 filt 0.4 space 17.6 bundle Walmart | leastWork g5_5 $370/370 filt 0.3 space 17.6 deal Petco $15 | balanced g5_5 $258/258 filt 0.4 space 17.6 deal Petco $15
+builds | oto x3
+    before: cheapest g5_5 $204/273 filt 1.1 space 52.7 bundle Walmart | leastWork g5_5 $396/396 filt 0.9 space 52.7 deal Petco $25 | balanced g5_5 $283/283 filt 1.1 space 52.7 deal Petco $25
+    after:  cheapest g5_5 $204/263 filt 1.1 space 52.7 bundle Walmart | leastWork g5_5 $386/386 filt 0.9 space 52.7 deal Petco $15 | balanced g5_5 $273/273 filt 1.1 space 52.7 deal Petco $15
+builds | kuhli x12
+    before: cheapest g20l $412/426 filt 42 space 81.8 deal Petco $40 | leastWork g20l $517/531 filt 42 space 81.8 deal Petco $40 | balanced g20l $422/436 filt 40.8 space 81.8 deal Petco $40
+    after:  cheapest g20l $407/420 filt 42 space 81.8 deal Petco $34.99 | leastWork g20l $512/525 filt 42 space 81.8 deal Petco $34.99 | balanced g20l $417/430 filt 40.8 space 81.8 deal Petco $34.99
+builds | clownloach x1
+    before: cheapest g125 $1397/1397 filt 9.5 space 17 deal Petco $500 | leastWork g125 $1855/1855 filt 1.8 space 17 deal Petco $500 | balanced g125 $1420/1420 filt 9.2 space 17 deal Petco $500
+    after:  cheapest g125 $1506/1506 filt 9.5 space 17 | leastWork g125 $1964/1964 filt 1.8 space 17 | balanced g125 $1529/1529 filt 9.2 space 17
+builds | clownloach x3
+    before: cheapest g125 $1441/1441 filt 28.5 space 51 deal Petco $500 | leastWork g125 $1899/1899 filt 5.5 space 51 deal Petco $500 | balanced g125 $1465/1465 filt 27.7 space 51 deal Petco $500
+    after:  cheapest g125 $1550/1550 filt 28.5 space 51 | leastWork g125 $2008/2008 filt 5.5 space 51 | balanced g125 $1573/1573 filt 27.7 space 51
+builds | sae x1
+    before: cheapest g20l $356/369 filt 15 space 22.7 deal Petco $40 | leastWork g20l $461/474 filt 15 space 22.7 deal Petco $40 | balanced g20l $366/379 filt 14.5 space 22.7 deal Petco $40
+    after:  cheapest g20l $350/364 filt 15 space 22.7 deal Petco $34.99 | leastWork g20l $456/469 filt 15 space 22.7 deal Petco $34.99 | balanced g20l $361/374 filt 14.5 space 22.7 deal Petco $34.99
+builds | sae x3
+    before: cheapest g20l $369/382 filt 44.9 space 68.1 deal Petco $40 | leastWork g20l $474/488 filt 44.9 space 68.1 deal Petco $40 | balanced g20l $379/393 filt 43.6 space 68.1 deal Petco $40
+    after:  cheapest g20l $364/377 filt 44.9 space 68.1 deal Petco $34.99 | leastWork g20l $469/482 filt 44.9 space 68.1 deal Petco $34.99 | balanced g20l $374/387 filt 43.6 space 68.1 deal Petco $34.99
+builds | hillstream x1
+    before: cheapest g20l $351/351 filt 0.9 space 8.4 deal Petco $40 | leastWork g20l $456/456 filt 0.9 space 8.4 deal Petco $40 | balanced g20l $361/361 filt 0.9 space 8.4 deal Petco $40
+    after:  cheapest g20l $345/345 filt 0.9 space 8.4 deal Petco $34.99 | leastWork g20l $450/450 filt 0.9 space 8.4 deal Petco $34.99 | balanced g20l $355/355 filt 0.9 space 8.4 deal Petco $34.99
+builds | hillstream x3
+    before: cheapest g20l $386/386 filt 2.6 space 25.2 deal Petco $40 | leastWork g20l $491/491 filt 2.6 space 25.2 deal Petco $40 | balanced g20l $396/396 filt 2.6 space 25.2 deal Petco $40
+    after:  cheapest g20l $381/381 filt 2.6 space 25.2 deal Petco $34.99 | leastWork g20l $486/486 filt 2.6 space 25.2 deal Petco $34.99 | balanced g20l $391/391 filt 2.6 space 25.2 deal Petco $34.99
+builds | hillstream x6
+    before: cheapest g20l $440/440 filt 5.3 space 50.5 deal Petco $40 | leastWork g20l $545/545 filt 5.3 space 50.5 deal Petco $40 | balanced g20l $450/450 filt 5.1 space 50.5 deal Petco $40
+    after:  cheapest g20l $434/434 filt 5.3 space 50.5 deal Petco $34.99 | leastWork g20l $539/539 filt 5.3 space 50.5 deal Petco $34.99 | balanced g20l $445/445 filt 5.1 space 50.5 deal Petco $34.99
+builds | hillstream x12
+    before: cheapest g20l $547/547 filt 10.6 space 96 deal Petco $40 | leastWork g20l $652/652 filt 10.6 space 96 deal Petco $40 | balanced g20l $557/557 filt 10.3 space 96 deal Petco $40
+    after:  cheapest g20l $542/542 filt 10.6 space 96 deal Petco $34.99 | leastWork g20l $647/647 filt 10.6 space 96 deal Petco $34.99 | balanced g20l $552/552 filt 10.3 space 96 deal Petco $34.99
+builds | hillstream x50
+    before: cheapest g125 $2224/2224 filt 8.6 space 95.8 deal Petco $500 | leastWork g125 $2682/2682 filt 1.7 space 95.8 deal Petco $500 | balanced g125 $2247/2247 filt 8.3 space 95.8 deal Petco $500
+    after:  cheapest g125 $2333/2333 filt 8.6 space 95.8 | leastWork g125 $2790/2790 filt 1.7 space 95.8 | balanced g125 $2356/2356 filt 8.3 space 95.8
+builds | peapuffer x1
+    before: cheapest g2_5 $245/262 filt 0.7 space 59.8 | leastWork g2_5 $368/385 filt 0.6 space 59.8 | balanced g2_5 $256/272 filt 0.7 space 59.8
+    after:  cheapest g2_5 $242/259 filt 0.7 space 59.8 deal Petco $12 | leastWork g2_5 $365/382 filt 0.6 space 59.8 deal Petco $12 | balanced g2_5 $252/269 filt 0.7 space 59.8 deal Petco $12
+builds | peapuffer x3
+    before: cheapest g5 $231/299 filt 2 space 89 bundle Walmart | leastWork g5 $415/422 filt 1.6 space 89 deal Petco $25 | balanced g5 $302/310 filt 1.9 space 89 deal Petco $25
+    after:  cheapest g5 $231/290 filt 2 space 89 bundle Walmart | leastWork g5 $405/413 filt 1.6 space 89 deal Petco $15 | balanced g5 $293/300 filt 1.9 space 89 deal Petco $15
+builds | cherryshrimp x1
+    before: cheapest g2_5 $230/230 filt 0.3 space 8.4 | leastWork g2_5 $352/352 filt 0.3 space 8.4 | balanced g2_5 $240/240 filt 0.3 space 8.4
+    after:  cheapest g2_5 $226/226 filt 0.3 space 8.4 deal Petco $12 | leastWork g2_5 $349/349 filt 0.3 space 8.4 deal Petco $12 | balanced g2_5 $236/236 filt 0.3 space 8.4 deal Petco $12
+builds | cherryshrimp x3
+    before: cheapest g2_5 $238/238 filt 0.9 space 25.1 | leastWork g2_5 $360/360 filt 0.8 space 25.1 | balanced g2_5 $248/248 filt 0.9 space 25.1
+    after:  cheapest g2_5 $234/234 filt 0.9 space 25.1 deal Petco $12 | leastWork g2_5 $357/357 filt 0.8 space 25.1 deal Petco $12 | balanced g2_5 $244/244 filt 0.9 space 25.1 deal Petco $12
+builds | cherryshrimp x6
+    before: cheapest g2_5 $250/250 filt 1.9 space 50.2 | leastWork g2_5 $373/373 filt 1.5 space 50.2 | balanced g2_5 $260/260 filt 1.8 space 50.2
+    after:  cheapest g2_5 $246/246 filt 1.9 space 50.2 deal Petco $12 | leastWork g2_5 $369/369 filt 1.5 space 50.2 deal Petco $12 | balanced g2_5 $257/257 filt 1.8 space 50.2 deal Petco $12
+builds | cherryshrimp x12
+    before: cheapest g2_5 $274/274 filt 3.8 space 95.4 | leastWork g2_5 $397/397 filt 3.1 space 95.4 | balanced g2_5 $284/284 filt 3.6 space 95.4
+    after:  cheapest g2_5 $271/271 filt 3.8 space 95.4 deal Petco $12 | leastWork g2_5 $394/394 filt 3.1 space 95.4 deal Petco $12 | balanced g2_5 $281/281 filt 3.6 space 95.4 deal Petco $12
+builds | cherryshrimp x25
+    before: cheapest g5 $281/349 filt 7.5 space 80.3 bundle Walmart | leastWork g5 $472/472 filt 6.1 space 80.3 deal Petco $25 | balanced g5 $359/359 filt 7.2 space 80.3 deal Petco $25
+    after:  cheapest g5 $281/340 filt 7.5 space 80.3 bundle Walmart | leastWork g5 $462/462 filt 6.1 space 80.3 deal Petco $15 | balanced g5 $350/350 filt 7.2 space 80.3 deal Petco $15
+builds | amano x1
+    before: cheapest g2_5 $232/232 filt 0.9 space 12.9 | leastWork g2_5 $355/355 filt 0.7 space 12.9 | balanced g2_5 $242/242 filt 0.8 space 12.9
+    after:  cheapest g2_5 $229/229 filt 0.9 space 12.9 deal Petco $12 | leastWork g2_5 $351/351 filt 0.7 space 12.9 deal Petco $12 | balanced g2_5 $239/239 filt 0.8 space 12.9 deal Petco $12
+builds | amano x3
+    before: cheapest g2_5 $244/244 filt 2.6 space 38.7 | leastWork g2_5 $367/367 filt 2.1 space 38.7 | balanced g2_5 $254/254 filt 2.5 space 38.7
+    after:  cheapest g2_5 $241/241 filt 2.6 space 38.7 deal Petco $12 | leastWork g2_5 $364/364 filt 2.1 space 38.7 deal Petco $12 | balanced g2_5 $251/251 filt 2.5 space 38.7 deal Petco $12
+builds | amano x6
+    before: cheapest g2_5 $263/263 filt 5.3 space 77.4 | leastWork g2_5 $386/386 filt 4.2 space 77.4 | balanced g2_5 $273/273 filt 5.1 space 77.4
+    after:  cheapest g2_5 $260/260 filt 5.3 space 77.4 deal Petco $12 | leastWork g2_5 $383/383 filt 4.2 space 77.4 deal Petco $12 | balanced g2_5 $270/270 filt 5.1 space 77.4 deal Petco $12
+builds | amano x12
+    before: cheapest g5 $256/324 filt 10 space 72.9 bundle Walmart | leastWork g5 $447/447 filt 8.1 space 72.9 deal Petco $25 | balanced g5 $334/334 filt 9.6 space 72.9 deal Petco $25
+    after:  cheapest g5 $256/314 filt 10 space 72.9 bundle Walmart | leastWork g5 $437/437 filt 8.1 space 72.9 deal Petco $15 | balanced g5 $325/325 filt 9.6 space 72.9 deal Petco $15
+builds | nerite x1
+    before: cheapest g2_5 $244/260 filt 3.2 space 8.7 | leastWork g2_5 $367/383 filt 2.6 space 8.7 | balanced g2_5 $254/271 filt 3.1 space 8.7
+    after:  cheapest g2_5 $241/257 filt 3.2 space 8.7 deal Petco $12 | leastWork g2_5 $363/380 filt 2.6 space 8.7 deal Petco $12 | balanced g2_5 $251/267 filt 3.1 space 8.7 deal Petco $12
+builds | nerite x3
+    before: cheapest g2_5 $254/271 filt 9.6 space 26 | leastWork g2_5 $377/394 filt 7.8 space 26 | balanced g2_5 $264/281 filt 9.3 space 26
+    after:  cheapest g2_5 $251/268 filt 9.6 space 26 deal Petco $12 | leastWork g2_5 $374/391 filt 7.8 space 26 deal Petco $12 | balanced g2_5 $261/278 filt 9.3 space 26 deal Petco $12
+builds | nerite x6
+    before: cheapest g2_5 $270/287 filt 19.2 space 52 | leastWork g2_5 $393/410 filt 15.5 space 52 | balanced g2_5 $280/297 filt 18.5 space 52
+    after:  cheapest g2_5 $267/283 filt 19.2 space 52 deal Petco $12 | leastWork g2_5 $390/406 filt 15.5 space 52 deal Petco $12 | balanced g2_5 $277/294 filt 18.5 space 52 deal Petco $12
+builds | nerite x12
+    before: cheapest g3c $330/312 filt 37.9 space 97.7 | leastWork g3c $453/435 filt 30.7 space 97.7 | balanced g3c $340/322 filt 36.5 space 97.7
+    after:  cheapest g3c $329/312 filt 38 space 92.4 | leastWork g3c $452/435 filt 30.8 space 92.4 | balanced g3c $339/322 filt 36.5 space 92.4
+builds | nerite x50
+    before: cheapest g20l $643/656 filt 57.2 space 80.1 deal Petco $40 | leastWork g20l $911/924 filt 24.6 space 80.1 deal Petco $40 | balanced g20l $798/811 filt 44.9 space 80.1 deal Petco $40
+    after:  cheapest g20l $637/651 filt 57.2 space 80.1 deal Petco $34.99 | leastWork g20l $906/919 filt 24.6 space 80.1 deal Petco $34.99 | balanced g20l $793/806 filt 44.9 space 80.1 deal Petco $34.99
+builds | mystery x1
+    before: cheapest g2_5 $243/259 filt 10.3 space 12.4 | leastWork g2_5 $365/382 filt 8.3 space 12.4 | balanced g2_5 $253/269 filt 9.9 space 12.4
+    after:  cheapest g2_5 $239/256 filt 10.3 space 12.4 deal Petco $12 | leastWork g2_5 $362/379 filt 8.3 space 12.4 deal Petco $12 | balanced g2_5 $249/266 filt 9.9 space 12.4 deal Petco $12
+builds | mystery x3
+    before: cheapest g2_5 $251/267 filt 30.8 space 37.2 | leastWork g2_5 $373/390 filt 24.9 space 37.2 | balanced g2_5 $261/277 filt 29.6 space 37.2
+    after:  cheapest g2_5 $247/264 filt 30.8 space 37.2 deal Petco $12 | leastWork g2_5 $370/387 filt 24.9 space 37.2 deal Petco $12 | balanced g2_5 $257/274 filt 29.6 space 37.2 deal Petco $12
+builds | mystery x6
+    before: cheapest g2_5 $263/279 filt 61.6 space 74.4 | leastWork g2_5 $386/402 filt 49.8 space 74.4 | balanced g2_5 $273/290 filt 59.3 space 74.4
+    after:  cheapest g2_5 $259/276 filt 61.6 space 74.4 deal Petco $12 | leastWork g2_5 $382/399 filt 49.8 space 74.4 deal Petco $12 | balanced g2_5 $270/286 filt 59.3 space 74.4 deal Petco $12
+builds | mystery x12
+    before: cheapest g5 $337/344 filt 95.5 space 87.5 deal Petco $25 | leastWork g5 $442/450 filt 95.5 space 87.5 deal Petco $25 | balanced g5 $506/514 filt 37.9 space 87.5 deal Petco $25
+    after:  cheapest g5 $328/335 filt 95.5 space 87.5 deal Petco $15 | leastWork g5 $433/440 filt 95.5 space 87.5 deal Petco $15 | balanced g5 $497/504 filt 37.9 space 87.5 deal Petco $15
+builds | ramshorn x1
+    before: cheapest g2_5 $227/227 filt 0.9 space 3.3 | leastWork g2_5 $350/350 filt 0.7 space 3.3 | balanced g2_5 $238/238 filt 0.9 space 3.3
+    after:  cheapest g2_5 $224/224 filt 0.9 space 3.3 deal Petco $12 | leastWork g2_5 $347/347 filt 0.7 space 3.3 deal Petco $12 | balanced g2_5 $234/234 filt 0.9 space 3.3 deal Petco $12
+builds | ramshorn x3
+    before: cheapest g2_5 $231/231 filt 2.7 space 9.8 | leastWork g2_5 $354/354 filt 2.2 space 9.8 | balanced g2_5 $242/242 filt 2.6 space 9.8
+    after:  cheapest g2_5 $228/228 filt 2.7 space 9.8 deal Petco $12 | leastWork g2_5 $351/351 filt 2.2 space 9.8 deal Petco $12 | balanced g2_5 $238/238 filt 2.6 space 9.8 deal Petco $12
+builds | ramshorn x6
+    before: cheapest g2_5 $237/237 filt 5.5 space 19.7 | leastWork g2_5 $360/360 filt 4.4 space 19.7 | balanced g2_5 $247/247 filt 5.3 space 19.7
+    after:  cheapest g2_5 $234/234 filt 5.5 space 19.7 deal Petco $12 | leastWork g2_5 $357/357 filt 4.4 space 19.7 deal Petco $12 | balanced g2_5 $244/244 filt 5.3 space 19.7 deal Petco $12
+builds | ramshorn x12
+    before: cheapest g2_5 $249/249 filt 10.9 space 39.4 | leastWork g2_5 $372/372 filt 8.8 space 39.4 | balanced g2_5 $259/259 filt 10.5 space 39.4
+    after:  cheapest g2_5 $246/246 filt 10.9 space 39.4 deal Petco $12 | leastWork g2_5 $369/369 filt 8.8 space 39.4 deal Petco $12 | balanced g2_5 $256/256 filt 10.5 space 39.4 deal Petco $12
+builds | ramshorn x25
+    before: cheapest g2_5 $275/275 filt 22.8 space 82 | leastWork g2_5 $397/397 filt 18.4 space 82 | balanced g2_5 $285/285 filt 21.9 space 82
+    after:  cheapest g2_5 $271/271 filt 22.8 space 82 deal Petco $12 | leastWork g2_5 $394/394 filt 18.4 space 82 deal Petco $12 | balanced g2_5 $281/281 filt 21.9 space 82 deal Petco $12
+builds | ramshorn x50
+    before: cheapest g5 $279/347 filt 43.3 space 96.4 bundle Walmart | leastWork g5 $470/470 filt 35.3 space 96.4 deal Petco $25 | balanced g5 $357/357 filt 41.7 space 96.4 deal Petco $25
+    after:  cheapest g5 $279/337 filt 43.3 space 96.4 bundle Walmart | leastWork g5 $460/460 filt 35.3 space 96.4 deal Petco $15 | balanced g5 $347/347 filt 41.7 space 96.4 deal Petco $15
+builds | trumpet x1
+    before: cheapest g2_5 $229/229 filt 0.2 space 0.9 | leastWork g2_5 $352/352 filt 0.1 space 0.9 | balanced g2_5 $239/239 filt 0.2 space 0.9
+    after:  cheapest g2_5 $226/226 filt 0.2 space 0.9 deal Petco $12 | leastWork g2_5 $349/349 filt 0.1 space 0.9 deal Petco $12 | balanced g2_5 $236/236 filt 0.2 space 0.9 deal Petco $12
+builds | trumpet x3
+    before: cheapest g2_5 $237/237 filt 0.5 space 2.6 | leastWork g2_5 $360/360 filt 0.4 space 2.6 | balanced g2_5 $247/247 filt 0.5 space 2.6
+    after:  cheapest g2_5 $234/234 filt 0.5 space 2.6 deal Petco $12 | leastWork g2_5 $356/356 filt 0.4 space 2.6 deal Petco $12 | balanced g2_5 $244/244 filt 0.5 space 2.6 deal Petco $12
+builds | trumpet x6
+    before: cheapest g2_5 $248/248 filt 1 space 5.2 | leastWork g2_5 $371/371 filt 0.8 space 5.2 | balanced g2_5 $258/258 filt 1 space 5.2
+    after:  cheapest g2_5 $245/245 filt 1 space 5.2 deal Petco $12 | leastWork g2_5 $368/368 filt 0.8 space 5.2 deal Petco $12 | balanced g2_5 $255/255 filt 1 space 5.2 deal Petco $12
+builds | trumpet x12
+    before: cheapest g2_5 $271/271 filt 2.1 space 10.4 | leastWork g2_5 $393/393 filt 1.7 space 10.4 | balanced g2_5 $281/281 filt 2 space 10.4
+    after:  cheapest g2_5 $267/267 filt 2.1 space 10.4 deal Petco $12 | leastWork g2_5 $390/390 filt 1.7 space 10.4 deal Petco $12 | balanced g2_5 $277/277 filt 2 space 10.4 deal Petco $12
+builds | trumpet x25
+    before: cheapest g2_5 $319/319 filt 4.3 space 21.6 | leastWork g2_5 $442/442 filt 3.5 space 21.6 | balanced g2_5 $329/329 filt 4.1 space 21.6
+    after:  cheapest g2_5 $316/316 filt 4.3 space 21.6 deal Petco $12 | leastWork g2_5 $439/439 filt 3.5 space 21.6 deal Petco $12 | balanced g2_5 $326/326 filt 4.1 space 21.6 deal Petco $12
+builds | trumpet x50
+    before: cheapest g2_5 $413/413 filt 8.5 space 43.2 | leastWork g2_5 $536/536 filt 6.9 space 43.2 | balanced g2_5 $423/423 filt 8.2 space 43.2
+    after:  cheapest g2_5 $410/410 filt 8.5 space 43.2 deal Petco $12 | leastWork g2_5 $533/533 filt 6.9 space 43.2 deal Petco $12 | balanced g2_5 $420/420 filt 8.2 space 43.2 deal Petco $12
+builds | ocellaris x6
+    before: cheapest g20l $1187/1201 filt 67.7 space 97 deal Petco $40 | leastWork g20l $1474/1488 filt 67.7 space 97 deal Petco $40 | balanced g20l $1198/1211 filt 65.8 space 97 deal Petco $40
+    after:  cheapest g20l $1182/1195 filt 67.7 space 97 deal Petco $34.99 | leastWork g20l $1469/1482 filt 67.7 space 97 deal Petco $34.99 | balanced g20l $1192/1205 filt 65.8 space 97 deal Petco $34.99
+builds | ocellaris x25
+    before: cheapest g90 $2608/2602 filt 58.7 space 97.3 deal Petco $150 | leastWork g90 $3225/3194 filt 13.4 space 97.3 deal Petco $150 | balanced g90 $2631/2625 filt 57 space 97.3 deal Petco $150
+    after:  cheapest g90 $2608/2602 filt 58.7 space 97.3 deal PetSmart $149.99 | leastWork g90 $3225/3194 filt 13.4 space 97.3 deal PetSmart $149.99 | balanced g90 $2631/2625 filt 57 space 97.3 deal PetSmart $149.99
+builds | royalgramma x25
+    before: cheapest g60b $2755/2920 filt 60.3 space 96.4 deal Petco $110 | leastWork g60b $3043/3208 filt 50.8 space 96.4 deal Petco $110 | balanced g60b $2756/2921 filt 50.8 space 96.4 deal Petco $110
+    after:  cheapest g60b $2698/2863 filt 60.3 space 96.4 deal Petco $57.5 | leastWork g60b $2986/3151 filt 50.8 space 96.4 deal Petco $57.5 | balanced g60b $2699/2864 filt 50.8 space 96.4 deal Petco $57.5
+builds | yellowtang x12
+    before: cheapest g90 $5546/5540 filt 51.8 space 91.9 deal Petco $150 | leastWork g90 $5833/5827 filt 51.8 space 91.9 deal Petco $150 | balanced g90 $5546/5540 filt 51.8 space 91.9 deal Petco $150
+    after:  cheapest g90 $5546/5540 filt 51.8 space 91.9 deal PetSmart $149.99 | leastWork g90 $5833/5827 filt 51.8 space 91.9 deal PetSmart $149.99 | balanced g90 $5546/5540 filt 51.8 space 91.9 deal PetSmart $149.99
+builds | bluetang x1
+    before: cheapest g125 $2573/2606 filt 66.5 space 11.9 deal Petco $500 | leastWork g125 $3237/3246 filt 12.9 space 11.9 deal Petco $500 | balanced g125 $2596/2629 filt 64.7 space 11.9 deal Petco $500
+    after:  cheapest g125 $2681/2715 filt 66.5 space 11.9 | leastWork g125 $3346/3354 filt 12.9 space 11.9 | balanced g125 $2705/2738 filt 64.7 space 11.9
+builds | bluetang x3
+    before: cheapest g125 $3349/3358 filt 38.7 space 35.7 deal Petco $500 | leastWork g125 $3636/3645 filt 38.7 space 35.7 deal Petco $500 | balanced g125 $3349/3358 filt 38.7 space 35.7 deal Petco $500
+    after:  cheapest g125 $3458/3466 filt 38.7 space 35.7 | leastWork g125 $3745/3753 filt 38.7 space 35.7 | balanced g125 $3458/3466 filt 38.7 space 35.7
+builds | bluetang x6
+    before: cheapest g125 $3948/3956 filt 77.3 space 71.4 deal Petco $500 | leastWork g125 $4235/4243 filt 77.3 space 71.4 deal Petco $500 | balanced g125 $3948/3956 filt 77.3 space 71.4 deal Petco $500
+    after:  cheapest g125 $4056/4065 filt 77.3 space 71.4 | leastWork g125 $4343/4351 filt 77.3 space 71.4 | balanced g125 $4056/4065 filt 77.3 space 71.4
+builds | firefish x1
+    before: cheapest g20l $1010/1023 filt 3.4 space 7.9 deal Petco $40 | leastWork g20l $1297/1310 filt 3.4 space 7.9 deal Petco $40 | balanced g20l $1020/1033 filt 3.3 space 7.9 deal Petco $40
+    after:  cheapest g20l $1004/1017 filt 3.4 space 7.9 deal Petco $34.99 | leastWork g20l $1291/1304 filt 3.4 space 7.9 deal Petco $34.99 | balanced g20l $1014/1027 filt 3.3 space 7.9 deal Petco $34.99
+builds | firefish x3
+    before: cheapest g20l $1082/1096 filt 10.3 space 23.6 deal Petco $40 | leastWork g20l $1369/1383 filt 10.3 space 23.6 deal Petco $40 | balanced g20l $1093/1106 filt 10 space 23.6 deal Petco $40
+    after:  cheapest g20l $1077/1090 filt 10.3 space 23.6 deal Petco $34.99 | leastWork g20l $1364/1377 filt 10.3 space 23.6 deal Petco $34.99 | balanced g20l $1087/1100 filt 10 space 23.6 deal Petco $34.99
+builds | firefish x6
+    before: cheapest g20l $1192/1205 filt 20.6 space 47.1 deal Petco $40 | leastWork g20l $1479/1492 filt 20.6 space 47.1 deal Petco $40 | balanced g20l $1202/1215 filt 20 space 47.1 deal Petco $40
+    after:  cheapest g20l $1186/1199 filt 20.6 space 47.1 deal Petco $34.99 | leastWork g20l $1473/1486 filt 20.6 space 47.1 deal Petco $34.99 | balanced g20l $1196/1210 filt 20 space 47.1 deal Petco $34.99
+builds | firefish x12
+    before: cheapest g20l $1410/1423 filt 41.2 space 89.6 deal Petco $40 | leastWork g20l $1697/1710 filt 41.2 space 89.6 deal Petco $40 | balanced g20l $1420/1434 filt 40.1 space 89.6 deal Petco $40
+    after:  cheapest g20l $1405/1418 filt 41.2 space 89.6 deal Petco $34.99 | leastWork g20l $1692/1705 filt 41.2 space 89.6 deal Petco $34.99 | balanced g20l $1415/1428 filt 40.1 space 89.6 deal Petco $34.99
+builds | firefish x50
+    before: cheapest g60b $3132/3297 filt 76.7 space 95.3 deal Petco $110 | leastWork g60b $3420/3585 filt 64.6 space 95.3 deal Petco $110 | balanced g60b $3133/3298 filt 64.6 space 95.3 deal Petco $110
+    after:  cheapest g60b $3075/3240 filt 76.7 space 95.3 deal Petco $57.5 | leastWork g60b $3363/3528 filt 64.6 space 95.3 deal Petco $57.5 | balanced g60b $3076/3241 filt 64.6 space 95.3 deal Petco $57.5
+builds | banggai x50
+    before: cheapest g90 $4028/4021 filt 86.4 space 94.7 deal Petco $150 | leastWork g90 $4571/4565 filt 73.2 space 94.7 deal Petco $150 | balanced g90 $4358/4327 filt 19.7 space 94.7 deal Petco $150
+    after:  cheapest g90 $4028/4021 filt 86.4 space 94.7 deal PetSmart $149.99 | leastWork g90 $4571/4565 filt 73.2 space 94.7 deal PetSmart $149.99 | balanced g90 $4358/4327 filt 19.7 space 94.7 deal PetSmart $149.99
+builds | chromis x12
+    before: cheapest g60b $1511/1676 filt 66.9 space 90.7 deal Petco $110 | leastWork g60b $1799/1964 filt 56.4 space 90.7 deal Petco $110 | balanced g60b $1512/1677 filt 56.4 space 90.7 deal Petco $110
+    after:  cheapest g60b $1454/1619 filt 66.9 space 90.7 deal Petco $57.5 | leastWork g60b $1742/1907 filt 56.4 space 90.7 deal Petco $57.5 | balanced g60b $1455/1620 filt 56.4 space 90.7 deal Petco $57.5
+builds | chromis x25
+    before: cheapest g125 $2815/2823 filt 60.7 space 95 deal Petco $500 | leastWork g125 $3455/3463 filt 11.8 space 95 deal Petco $500 | balanced g125 $2838/2846 filt 59.1 space 95 deal Petco $500
+    after:  cheapest g125 $2924/2932 filt 60.7 space 95 | leastWork g125 $3563/3571 filt 11.8 space 95 | balanced g125 $2947/2955 filt 59.1 space 95
+builds | coralbeauty x1
+    before: cheapest g60b $1400/1565 filt 10.9 space 8.9 deal Petco $110 | leastWork g60b $1688/1853 filt 9.2 space 8.9 deal Petco $110 | balanced g60b $1401/1566 filt 9.2 space 8.9 deal Petco $110
+    after:  cheapest g60b $1343/1508 filt 10.9 space 8.9 deal Petco $57.5 | leastWork g60b $1631/1796 filt 9.2 space 8.9 deal Petco $57.5 | balanced g60b $1344/1509 filt 9.2 space 8.9 deal Petco $57.5
+builds | coralbeauty x3
+    before: cheapest g60b $1579/1744 filt 32.7 space 26.8 deal Petco $110 | leastWork g60b $1867/2032 filt 27.5 space 26.8 deal Petco $110 | balanced g60b $1580/1745 filt 27.5 space 26.8 deal Petco $110
+    after:  cheapest g60b $1521/1686 filt 32.7 space 26.8 deal Petco $57.5 | leastWork g60b $1809/1974 filt 27.5 space 26.8 deal Petco $57.5 | balanced g60b $1522/1687 filt 27.5 space 26.8 deal Petco $57.5
+builds | coralbeauty x6
+    before: cheapest g60b $1847/2012 filt 65.3 space 53.6 deal Petco $110 | leastWork g60b $2135/2300 filt 55.1 space 53.6 deal Petco $110 | balanced g60b $1848/2013 filt 55.1 space 53.6 deal Petco $110
+    after:  cheapest g60b $1789/1954 filt 65.3 space 53.6 deal Petco $57.5 | leastWork g60b $2077/2242 filt 55.1 space 53.6 deal Petco $57.5 | balanced g60b $1790/1955 filt 55.1 space 53.6 deal Petco $57.5
+builds | watchman x1
+    before: cheapest g20l $1017/1031 filt 12.3 space 15.7 deal Petco $40 | leastWork g20l $1304/1317 filt 12.3 space 15.7 deal Petco $40 | balanced g20l $1027/1041 filt 12 space 15.7 deal Petco $40
+    after:  cheapest g20l $1012/1025 filt 12.3 space 15.7 deal Petco $34.99 | leastWork g20l $1299/1312 filt 12.3 space 15.7 deal Petco $34.99 | balanced g20l $1022/1035 filt 12 space 15.7 deal Petco $34.99
+builds | watchman x3
+    before: cheapest g20l $1106/1119 filt 37 space 47.1 deal Petco $40 | leastWork g20l $1392/1406 filt 37 space 47.1 deal Petco $40 | balanced g20l $1116/1129 filt 36 space 47.1 deal Petco $40
+    after:  cheapest g20l $1100/1113 filt 37 space 47.1 deal Petco $34.99 | leastWork g20l $1387/1400 filt 37 space 47.1 deal Petco $34.99 | balanced g20l $1110/1123 filt 36 space 47.1 deal Petco $34.99
+builds | watchman x6
+    before: cheapest g20l $1238/1251 filt 74 space 94.3 deal Petco $40 | leastWork g20l $1525/1538 filt 74 space 94.3 deal Petco $40 | balanced g20l $1425/1438 filt 28.5 space 94.3 deal Petco $40
+    after:  cheapest g20l $1232/1246 filt 74 space 94.3 deal Petco $34.99 | leastWork g20l $1519/1533 filt 74 space 94.3 deal Petco $34.99 | balanced g20l $1419/1433 filt 28.5 space 94.3 deal Petco $34.99
+builds | watchman x12
+    before: cheapest g60b $1841/2005 filt 66.1 space 79.4 deal Petco $110 | leastWork g60b $2128/2293 filt 55.7 space 79.4 deal Petco $110 | balanced g60b $1842/2007 filt 55.7 space 79.4 deal Petco $110
+    after:  cheapest g60b $1783/1948 filt 66.1 space 79.4 deal Petco $57.5 | leastWork g60b $2071/2236 filt 55.7 space 79.4 deal Petco $57.5 | balanced g60b $1784/1949 filt 55.7 space 79.4 deal Petco $57.5
+builds | mandarin x25
+    before: cheapest g60b $3167/3332 filt 41.1 space 91.2 deal Petco $110 | leastWork g60b $3455/3620 filt 34.7 space 91.2 deal Petco $110 | balanced g60b $3168/3333 filt 34.7 space 91.2 deal Petco $110
+    after:  cheapest g60b $3109/3274 filt 41.1 space 91.2 deal Petco $57.5 | leastWork g60b $3397/3562 filt 34.7 space 91.2 deal Petco $57.5 | balanced g60b $3110/3275 filt 34.7 space 91.2 deal Petco $57.5
+builds | cleanershrimp x1
+    before: cheapest g2_5 $737/754 filt 2.9 space 43.6 | leastWork g2_5 $1042/1059 filt 2.4 space 43.6 | balanced g2_5 $747/764 filt 2.8 space 43.6
+    after:  cheapest g2_5 $734/751 filt 2.9 space 43.6 deal Petco $12 | leastWork g2_5 $1039/1055 filt 2.4 space 43.6 deal Petco $12 | balanced g2_5 $744/761 filt 2.8 space 43.6 deal Petco $12
+builds | cleanershrimp x3
+    before: cheapest g5 $519/901 filt 8.3 space 76.9 bundle Walmart | leastWork g5 $1198/1205 filt 6.8 space 76.9 deal Petco $25 | balanced g5 $904/911 filt 8 space 76.9 deal Petco $25
+    after:  cheapest g5 $519/891 filt 8.3 space 76.9 bundle Walmart | leastWork g5 $1189/1196 filt 6.8 space 76.9 deal Petco $15 | balanced g5 $894/901 filt 8 space 76.9 deal Petco $15
+builds | cleanershrimp x12
+    before: cheapest g20l $1612/1625 filt 25.4 space 91.9 deal Petco $40 | leastWork g20l $1899/1912 filt 25.4 space 91.9 deal Petco $40 | balanced g20l $1622/1635 filt 24.7 space 91.9 deal Petco $40
+    after:  cheapest g20l $1606/1620 filt 25.4 space 91.9 deal Petco $34.99 | leastWork g20l $1893/1907 filt 25.4 space 91.9 deal Petco $34.99 | balanced g20l $1617/1630 filt 24.7 space 91.9 deal Petco $34.99
+builds | turbo x1
+    before: cheapest g2_5 $690/707 filt 35 space 38.4 | leastWork g2_5 $995/1012 filt 28.3 space 38.4 | balanced g2_5 $700/717 filt 33.7 space 38.4
+    after:  cheapest g2_5 $687/704 filt 35 space 38.4 deal Petco $12 | leastWork g2_5 $992/1009 filt 28.3 space 38.4 deal Petco $12 | balanced g2_5 $697/714 filt 33.7 space 38.4 deal Petco $12
+builds | turbo x3
+    before: cheapest g5 $378/760 filt 99.7 space 67.6 bundle Walmart | leastWork g5 $1048/1065 filt 81.3 space 67.6 deal Petco $25 | balanced g5 $881/888 filt 61 space 67.6 deal Petco $25
+    after:  cheapest g5 $378/750 filt 99.7 space 67.6 bundle Walmart | leastWork g5 $1038/1055 filt 81.3 space 67.6 deal Petco $15 | balanced g5 $872/879 filt 61 space 67.6 deal Petco $15
+builds | turbo x12
+    before: cheapest g20l $1244/1257 filt 64.5 space 85.1 deal Petco $40 | leastWork g20l $1531/1544 filt 64.5 space 85.1 deal Petco $40 | balanced g20l $1244/1257 filt 64.5 space 85.1 deal Petco $40
+    after:  cheapest g20l $1238/1251 filt 64.5 space 85.1 deal Petco $34.99 | leastWork g20l $1525/1538 filt 64.5 space 85.1 deal Petco $34.99 | balanced g20l $1238/1251 filt 64.5 space 85.1 deal Petco $34.99
+builds | turbo x25
+    before: cheapest g60b $1716/1881 filt 48.4 space 78.5 deal Petco $110 | leastWork g60b $2003/2168 filt 48.4 space 78.5 deal Petco $110 | balanced g60b $1716/1881 filt 48.4 space 78.5 deal Petco $110
+    after:  cheapest g60b $1659/1824 filt 48.4 space 78.5 deal Petco $57.5 | leastWork g60b $1946/2111 filt 48.4 space 78.5 deal Petco $57.5 | balanced g60b $1659/1824 filt 48.4 space 78.5 deal Petco $57.5
+builds | hermit x1
+    before: cheapest g2_5 $688/705 filt 0.9 space 24.3 | leastWork g2_5 $993/1010 filt 0.7 space 24.3 | balanced g2_5 $699/715 filt 0.8 space 24.3
+    after:  cheapest g2_5 $685/702 filt 0.9 space 24.3 deal Petco $12 | leastWork g2_5 $990/1007 filt 0.7 space 24.3 deal Petco $12 | balanced g2_5 $695/712 filt 0.8 space 24.3 deal Petco $12
+builds | hermit x3
+    before: cheapest g2_5 $698/714 filt 2.6 space 72.8 | leastWork g2_5 $1002/1019 filt 2.1 space 72.8 | balanced g2_5 $708/724 filt 2.5 space 72.8
+    after:  cheapest g2_5 $694/711 filt 2.6 space 72.8 deal Petco $12 | leastWork g2_5 $999/1016 filt 2.1 space 72.8 deal Petco $12 | balanced g2_5 $705/721 filt 2.5 space 72.8 deal Petco $12
+builds | hermit x6
+    before: cheapest g5 $387/768 filt 5 space 85.5 bundle Walmart | leastWork g5 $1066/1073 filt 4.1 space 85.5 deal Petco $25 | balanced g5 $771/778 filt 4.8 space 85.5 deal Petco $25
+    after:  cheapest g5 $387/759 filt 5 space 85.5 bundle Walmart | leastWork g5 $1056/1063 filt 4.1 space 85.5 deal Petco $15 | balanced g5 $762/769 filt 4.8 space 85.5 deal Petco $15
+builds | hermit x25
+    before: cheapest g20l $1087/1100 filt 16 space 86.7 deal Petco $40 | leastWork g20l $1374/1387 filt 16 space 86.7 deal Petco $40 | balanced g20l $1097/1110 filt 15.6 space 86.7 deal Petco $40
+    after:  cheapest g20l $1082/1095 filt 16 space 86.7 deal Petco $34.99 | leastWork g20l $1369/1382 filt 16 space 86.7 deal Petco $34.99 | balanced g20l $1092/1105 filt 15.6 space 86.7 deal Petco $34.99
+builds | adf x1
+    before: cheapest g5 $217/285 filt 5.4 space 37.4 bundle Walmart | leastWork g5 $401/408 filt 4.4 space 37.4 deal Petco $25 | balanced g5 $288/295 filt 5.2 space 37.4 deal Petco $25
+    after:  cheapest g5 $217/276 filt 5.4 space 37.4 bundle Walmart | leastWork g5 $391/399 filt 4.4 space 37.4 deal Petco $15 | balanced g5 $279/286 filt 5.2 space 37.4 deal Petco $15
+builds | axolotl x3
+    before: cheapest g20l $806/823 filt 79.4 space 100.2 deal Petco $40 | leastWork g20l $919/936 filt 43.6 space 100.2 deal Petco $40 | balanced g20l $814/831 filt 43.6 space 100.2 deal Petco $40
+    after:  cheapest g20l $801/817 filt 79.4 space 100.2 deal Petco $34.99 | leastWork g20l $913/930 filt 43.6 space 100.2 deal Petco $34.99 | balanced g20l $808/825 filt 43.6 space 100.2 deal Petco $34.99
+builds | axolotl x6
+    before: cheapest g60b $1326/1451 filt 31.4 space 88.7 deal Petco $110 | leastWork g60b $1432/1556 filt 31.4 space 88.7 deal Petco $110 | balanced g60b $1326/1451 filt 31.4 space 88.7 deal Petco $110
+    after:  cheapest g60b $1269/1394 filt 31.4 space 88.7 deal Petco $57.5 | leastWork g60b $1374/1499 filt 31.4 space 88.7 deal Petco $57.5 | balanced g60b $1269/1394 filt 31.4 space 88.7 deal Petco $57.5
+starters | stones g3c s1
+    before: 2 nerite | 16.3 %
+    after:  2 nerite | 15.4 %
+starters | stones g3c s2
+    before: 2 nerite | 16.3 %
+    after:  2 nerite | 15.4 %
+starters | stones g3c s3
+    before: 2 nerite | 16.3 %
+    after:  2 nerite | 15.4 %
+starters | driftwood g3c s1
+    before: 2 nerite | 16.3 %
+    after:  2 nerite | 15.4 %
+starters | driftwood g3c s2
+    before: 2 nerite | 16.8 %
+    after:  2 nerite | 14.9 %
+starters | driftwood g3c s3
+    before: 2 nerite | 17.3 %
+    after:  2 nerite | 14.9 %
+starters | planted g3c s1
+    before: 10 cherryshrimp | 66.6 %
+    after:  10 cherryshrimp | 66.5 %
+starters | planted g3c s2
+    before: 10 cherryshrimp | 65.4 %
+    after:  10 cherryshrimp | 66.8 %
+starters | planted g3c s3
+    before: 2 nerite | 16.8 %
+    after:  2 nerite | 15.4 %
+starters | iwagumi g3c s1
+    before: 6 cpd | 86.7 %
+    after:  6 cpd | 87.5 %
+starters | iwagumi g3c s2
+    before: 6 cpd | 86.7 %
+    after:  6 cpd | 87.5 %
+starters | iwagumi g3c s3
+    before: 6 cpd | 87.5 %
+    after:  6 cpd | 88.3 %
+starters | swamp g3c s1
+    before: 4 ramshorn | 12.6 %
+    after:  4 ramshorn | 11.7 %
+starters | swamp g3c s2
+    before: 4 ramshorn | 12.6 %
+    after:  4 ramshorn | 11.7 %
+starters | swamp g3c s3
+    before: 4 ramshorn | 12.1 %
+    after:  4 ramshorn | 11.4 %
+starters | reef g3c s1
+    before: 3 hermit | 69.6 %
+    after:  3 hermit | 65.8 %
+starters | reef g3c s2
+    before: 3 hermit | 69.6 %
+    after:  3 hermit | 65.8 %
+starters | reef g3c s3
+    before: 3 hermit | 69.6 %
+    after:  3 hermit | 65.8 %
+starters | nature g3c s1
+    before: 6 cpd | 87.5 %
+    after:  6 cpd | 88.3 %
+starters | nature g3c s2
+    before: 6 cpd | 88.4 %
+    after:  6 cpd | 90 %
+starters | nature g3c s3
+    before: 6 cpd | 90.8 %
+    after:  6 cpd | 84.2 %
+starters | dutch g3c s1
+    before: 10 cherryshrimp | 66.9 %
+    after:  2 nerite | 15.4 %
+starters | dutch g3c s2
+    before: 2 nerite | 16.3 %
+    after:  2 nerite | 16.4 %
+starters | dutch g3c s3
+    before: 2 nerite | 16.3 %
+    after:  2 nerite | 14.9 %
+starters | jungle g3c s1
+    before: 2 nerite | 16.3 %
+    after:  2 nerite | 15.9 %
+starters | jungle g3c s2
+    before: 2 nerite | 16.3 %
+    after:  2 nerite | 15.4 %
+starters | jungle g3c s3
+    before: 2 nerite | 16.3 %
+    after:  2 nerite | 15.4 %
+starters | forest g3c s1
+    before: 6 cpd | 88.3 %
+    after:  6 cpd | 89.2 %
+starters | forest g3c s2
+    before: 6 cpd | 86.7 %
+    after:  6 cpd | 87.5 %
+starters | forest g3c s3
+    before: 6 cpd | 85.1 %
+    after:  6 cpd | 85.9 %
+starters | paludarium g3c s1
+    before: 5 dartfrog, 1 firetoad | 58.6 %
+    after:  5 dartfrog, 1 firetoad | 55.4 %
+starters | paludarium g3c s2
+    before: 5 dartfrog, 1 firetoad, 3 ramshorn | 69.3 %
+    after:  5 dartfrog, 1 firetoad, 3 ramshorn | 65.5 %
+starters | paludarium g3c s3
+    before: 5 dartfrog, 1 firetoad | 62.2 %
+    after:  5 dartfrog, 1 firetoad | 58.8 %
+starters | malawi g3c s1
+    before: 2 nerite | 16.3 %
+    after:  2 nerite | 15.4 %
+starters | malawi g3c s2
+    before: 2 nerite | 15.8 %
+    after:  2 nerite | 14.9 %
+starters | malawi g3c s3
+    before: 2 nerite | 15.8 %
+    after:  2 nerite | 14.9 %
+starters | stream g3c s1
+    before: 2 nerite | 16.3 %
+    after:  2 nerite | 15.4 %
+starters | stream g3c s2
+    before: 2 nerite | 17.3 %
+    after:  2 nerite | 16.4 %
+starters | stream g3c s3
+    before: 2 nerite | 16.3 %
+    after:  2 nerite | 15.4 %
+starters | hillstream g3c s1
+    before: 2 nerite | 16.3 %
+    after:  2 nerite | 15.4 %
+starters | hillstream g3c s2
+    before: 2 nerite | 15.8 %
+    after:  2 nerite | 14.9 %
+starters | hillstream g3c s3
+    before: 2 nerite | 16.3 %
+    after:  2 nerite | 15.4 %
+starters | softreef g3c s1
+    before: 3 hermit | 69.6 %
+    after:  3 hermit | 65.8 %
+starters | softreef g3c s2
+    before: 3 hermit | 70.8 %
+    after:  3 hermit | 66.9 %
+starters | softreef g3c s3
+    before: 3 hermit | 68.3 %
+    after:  3 hermit | 64.6 %
+starters | spsreef g3c s1
+    before: 3 hermit | 68.3 %
+    after:  3 hermit | 64.6 %
+starters | spsreef g3c s2
+    before: 3 hermit | 65.9 %
+    after:  3 hermit | 62.3 %
+starters | spsreef g3c s3
+    before: 3 hermit | 69.6 %
+    after:  3 hermit | 65.8 %
+starters | clownnano g3c s1
+    before: 3 hermit | 68.3 %
+    after:  3 hermit | 64.6 %
+starters | clownnano g3c s2
+    before: 3 hermit | 68.3 %
+    after:  3 hermit | 64.6 %
+starters | clownnano g3c s3
+    before: 3 hermit | 68.3 %
+    after:  3 hermit | 64.6 %
+sumps | g6c
+    before: g3c 221x221x250
+    after:  g3c 227x227x231
+sumps | g10
+    before: g3c 221x221x250
+    after:  g3c 227x227x231
+sumps | n_imagitarium_shallow_13_3
+    before: g3c 221x221x250
+    after:  g3c 227x227x231
+sumps | n_aqueon_standard_glass_rectan
+    before: (none)
+    after:  g10 504x257x315
+sumps | n_aqueon_frameless_cube_1
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_aqueon_frameless_cube_60
+    before: (none)
+    after:  g10 504x257x315
+sumps | n_coralife_biocube_16
+    before: (none)
+    after:  g6c 284x284x288
+sumps | n_marineland_exhibit_series_wi
+    before: (none)
+    after:  g8c 335x335x275
+sumps | n_marineland_high_definition_l
+    before: (none)
+    after:  g10 504x257x315
+sumps | n_marineland_portrait_desktop_
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_marineland_half_moon_combo_2
+    before: (none)
+    after:  g10 504x257x315
+sumps | n_marineland_standard_rectangu
+    before: (none)
+    after:  g5 398x195x250
+sumps | n_marineland_standard_rectangu_
+    before: (none)
+    after:  g5 398x195x250
+sumps | n_marineland_standard_rectangu__
+    before: (none)
+    after:  g10 504x257x315
+sumps | n_marineland_standard_rectangu___
+    before: (none)
+    after:  g8c 335x335x275
+sumps | n_marineland_standard_rectangu____
+    before: (none)
+    after:  g10 504x257x315
+sumps | n_marineland_standard_rectangu_____
+    before: (none)
+    after:  g29 756x306x470
+sumps | n_marineland_standard_rectangu______
+    before: (none)
+    after:  g37 759x314x602
+sumps | n_tetra_tetra_connect_28_wi_fi
+    before: (none)
+    after:  g8c 335x335x275
+sumps | n_fluval_spec_v_5
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_fluval_evo_13_5
+    before: (none)
+    after:  g5 398x195x250
+sumps | n_fluval_shaker_and_cabinet_se
+    before: (none)
+    after:  g15 612x308x319
+sumps | n_fluval_siena_and_cabinet_set
+    before: (none)
+    after:  g20h 606x308x420
+sumps | n_fluval_visi_white_60p_set_20
+    before: (none)
+    after:  g5 398x195x250
+sumps | n_marineland_marineland_portra
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_innovative_marine_innovative
+    before: (none)
+    after:  g5_5 405x205x263
+sumps | n_allcolor_low_iron_rimless_6
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_fzone_fzone_6_4_shallow_riml
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_fzone_fzone_9_shallow_rimles
+    before: (none)
+    after:  g3c 227x227x231
+sumps | n_landen_landen_long_3_5_rimle
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_landen_landen_tall_10_rimles
+    before: (none)
+    after:  g3c 227x227x231
+sumps | n_landen_landen_75h_37_rimless
+    before: (none)
+    after:  g10 504x257x315
+sumps | n_landen_landen_long_10_8_riml
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_lifegard_lifegard_2_nano_cub
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_lifegard_lifegard_bookshelf_
+    before: (none)
+    after:  g5 398x195x250
+sumps | n_lifegard_lifegard_bookshelf__
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_sc_empire_usa_starfire_glass
+    before: (none)
+    after:  g37 759x314x602
+sumps | n_jengu_jengu_t1_2_1_betta_nan
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_jengu_jengu_t1_2_1_betta_nan_
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_tailwag_fable_6_hydroponic_f
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_tailwag_fable_2_hydroponic_f
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_vehipa_vehipa_betta_fish_1_a
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_vehipa_vehipa_betta_fish_2_4
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_evieun_evieun_2_2_small_glas
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_vivohome_vivohome_2_smart_fi
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_ewonlife_3_betta_plastic_all
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_hyuvcx_5_3_fish_betta_starte
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_minilake_5_vertical_rimless_
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_aqua_daren_15_rimless_ultra_
+    before: (none)
+    after:  g5 398x195x250
+sumps | n_aquarcraft_3_5_rimless_nano_
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_imagitarium_glass_versa_6_6
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_fluval_kuhl_microscaping_bla
+    before: (none)
+    after:  g3c 227x227x231
+sumps | n_fluval_liv_microscaping_16_g
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_waterbox_infinia_frag_1254
+    before: (none)
+    after:  g20h 606x308x420
+sumps | n_waterbox_infinia_frag_1555
+    before: (none)
+    after:  g29 756x306x470
+sumps | n_waterbox_infinia_frag_1756
+    before: (none)
+    after:  g30b 902x445x299
+sumps | n_jbj_aquazen_rimless_desktop_
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_jbj_rimless_desktop_flat_pan
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_jbj_nano_cube_wifi_40w_led
+    before: (none)
+    after:  g8c 335x335x275
+sumps | n_jbj_all_in_one_rimless_flat_
+    before: (none)
+    after:  g15 612x308x319
+sumps | n_lifegard_ultra_low_iron_book
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_lifegard_ultra_low_iron_book_
+    before: (none)
+    after:  g5 398x195x250
+sumps | n_lifegard_ultra_low_iron_w_fi
+    before: (none)
+    after:  g3c 227x227x231
+sumps | n_lifegard_low_iron_ultra_clea
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_penn_plax_educational
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_penn_plax_prism_nano_black
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_tropical_marine_centre_kreis
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_zoo_med_axolotl
+    before: (none)
+    after:  g8c 335x335x275
+sumps | n_top_fin_betta_bamboo_3
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_clear_for_life_100_rectangle
+    before: (none)
+    after:  g29 756x306x470
+sumps | n_clear_for_life_20_rectangle_
+    before: (none)
+    after:  g5 398x195x250
+sumps | n_clear_for_life_uniquarium_40
+    before: (none)
+    after:  g10 504x257x315
+sumps | n_clear_for_life_60_rectangle_
+    before: (none)
+    after:  g15 612x308x319
+sumps | n_clear_for_life_125_rectangle
+    before: (none)
+    after:  g29 756x306x470
+sumps | n_fiji_cube_48_shallow_externa
+    before: (none)
+    after:  g15 612x308x319
+sumps | n_fiji_cube_57_shallow_externa
+    before: (none)
+    after:  g15 612x308x319
+sumps | n_ultum_nature_systems_60l_rim
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_innovative_marine_nuvo_ext_1
+    before: (none)
+    after:  g29 756x306x470
+sumps | n_innovative_marine_nuvo_ext_1_
+    before: (none)
+    after:  g29 756x306x470
+sumps | n_innovative_marine_nuvo_ext_1__
+    before: (none)
+    after:  g37 759x314x602
+sumps | n_innovative_marine_nuvo_ext_1___
+    before: (none)
+    after:  g37 759x314x602
+sumps | n_innovative_marine_nuvo_ext_2
+    before: (none)
+    after:  g50b 902x445x477
+sumps | n_innovative_marine_nuvo_ext_2_
+    before: (none)
+    after:  g55 1226x325x534
+sumps | n_pro_clear_systems_prostar_ri
+    before: (none)
+    after:  g10 504x257x315
+sumps | n_ultum_nature_systems_uns_r80
+    before: (none)
+    after:  g15 612x308x319
+sumps | n_penn_plax_penn_plax_spongebo
+    before: (none)
+    after:  g2_5 303x151x206
