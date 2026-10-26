@@ -11,6 +11,16 @@ for (const f of fs.readdirSync(dir).filter(f => /^retailer-.*json$|^maker-lineup
 }
 const vkey = v => [v.brand, v.line ?? '', `${v.L_in}x${v.D_in}x${v.H_in}`, v.retailer ?? ''].join('|');
 const kitName = /\bkit\b|starter|bundle|aio\b|all-in-one|ensemble|system|combo|set\b|biorb|\bflex\b|\bspec\b|\bevo\b|fluval (chi|edge|vicenza|siena|shaker)|\bled\b.*\b(tank|aquarium)\b/i;
+const FIXES = [
+  { url: 'https://www.amazon.com/dp/B013BXE1XO', inc: { lid: 'hood', heater: true } },
+  { url: 'https://www.amazon.com/dp/B09QY453F2', rimless: true },
+  { url: 'https://www.amazon.com/dp/B09SQF651S', rimless: true },
+  { url: 'https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/clear-for-life-125-gallon-rectangle-acrylic-aquarium-fish-tank-72x18x20-fresh-and-saltwater-5188326.html', price: 1749.99 },
+  { url: 'https://www.aqueon.com/products/aquariums/frameless-cube-aquariums', inc: { lid: 'glass', light: false } },
+  { url: 'https://www.aqueon.com/products/aquarium-starter-kits/smartclean-led-kit', line: '20 gal', inc: { heater: true, stand: false } },
+  { url: 'https://www.tetra-fish.com/products/aquarium-kits/complete-led-aquarium-29-29-gal', inc: { heater: true } },
+  { url: 'https://www.tetra-fish.com/products/aquarium-kits/playmobil-kit', inc: { heater: true } },
+];
 const stats = { full: 0, partial: 0, none: 0, lidUnknown: 0, total: 0 }, gaps = [];
 const KEYS = ['lid', 'light', 'filter', 'heater', 'stand'];
 for (const m of J.tanks) for (const v of m.variants ?? []) {
@@ -24,18 +34,23 @@ for (const m of J.tanks) for (const v of m.variants ?? []) {
   if (toks.has('filter') || /\bfilter(ed|s)?\b/.test(`${v.line ?? ''}`.toLowerCase()) || /with (an? )?(power )?filter|\/filter|, filter|and filter|kit with led and filter|filter,? and/.test(txt)) inc.filter = true;
   if (toks.has('heater') || /with (an? )?heater|\bheater\b included|, heater/.test(txt)) inc.heater = true;
   if (toks.has('stand') || toks.has('cabinet') || /with (an? )?(stand|cabinet)|and stand|& stand|and cabinet|, stand|\bstand included/.test(`${v.line ?? ''} ${txt}`.toLowerCase())) inc.stand = true;
+  // the merge writes what the research listed as its own chunk of the note: "...; light, filter, hood; ..."
+  for (const ch of (v.price_note ?? '').split('; ')) if (/^((light|filter|hood|lid|stand|heater|cabinet|canopy)(,? and |, | and |$))+$/.test(ch.trim())) for (const w of ch.match(/light|filter|hood|stand|heater|cabinet|canopy|lid/g)) { if (w === 'light') inc.light = true; else if (w === 'filter') inc.filter = true; else if (w === 'heater') inc.heater = true; else if (w === 'stand' || w === 'cabinet') inc.stand = true; else toks.add('hood'); }
   // lid
-  const noLid = /\b(no|without) (a )?(lid|hood|top|cover|canopy)|tank only|tank-only|bare tank|no hood|top-?less/.test(txt);
+  const noLid = /\b(no|without) (a )?(lid|hood|top|cover|canopy)|tank only|tank-only|no hood|top-?less/.test(txt);
   if (/\bmesh (top|lid|cover)|screen (top|lid)/.test(txt)) inc.lid = 'mesh';
   else if (/glass (top|lid|cover|canopy)|with (a )?glass (top|lid)|glass top with clips|\bglass top\b/.test(txt)) inc.lid = 'glass';
   else if (toks.has('hood') || toks.has('lid') || toks.has('canopy') || /\b(full |led )?hood\b|\bcanopy\b|\bhood\/|lid and light|lid, light/.test(txt) && !noLid) inc.lid = 'hood';
   else if (noLid) inc.lid = 'none';
   // Nathan 2026-10-26: the rimless Imagitarium tanks ship with a glass top
-  if (inc.lid === undefined && /imagitarium/i.test(v.brand) && /rimless|frameless|open-glass/i.test(v.line ?? '')) inc.lid = 'glass';
+  if (inc.lid === undefined && /imagitarium/i.test(v.brand) && (v.rimless || /rimless|frameless|open-glass/i.test(v.line ?? ''))) inc.lid = 'glass';
   // a street / msrp price is the bare tank (price_kind 'kit' = tank + gear): nothing but the glass (and any lid above) ships with it
   const bare = v.price_kind !== 'kit' && !kitName.test(`${v.line ?? ''} ${v.price_note ?? ''}`.slice(0, 160)) && toks.size === 0;
   if (bare) for (const k of ['light', 'filter', 'heater', 'stand']) if (inc[k] === undefined) inc[k] = false;
   // a kit-priced row with partial evidence: gear named is in, the rest unknown
+  // corrections from the 2026-10-26 spot-check against live pages (research/tanks/s224/spotcheck-sample.json): page-stated facts win
+  const fx = FIXES.find(f => v.url === f.url && (!f.line || (v.line ?? '').includes(f.line)));
+  if (fx) { Object.assign(inc, fx.inc ?? {}); if (fx.rimless) v.rimless = true; if (fx.price) v.price_usd = fx.price; }
   const have = KEYS.filter(k => inc[k] !== undefined).length;
   if (have) v.includes = Object.fromEntries(KEYS.filter(k => inc[k] !== undefined).map(k => [k, inc[k]])); else delete v.includes;
   if (have === 5) stats.full++; else if (have) stats.partial++; else stats.none++;

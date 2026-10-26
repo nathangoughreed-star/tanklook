@@ -1,6 +1,6 @@
 {
  "note": "variants whose includes has unknown keys (lid unknown, or light / filter / heater / stand); feeds a follow-up research lane",
- "count": 590,
+ "count": 583,
  "gaps": [
   {
    "key": "g2_5|Aqueon|MiniBow LED kit|11.5x7.63x12.5|",
@@ -113,15 +113,6 @@
    ]
   },
   {
-   "key": "g3c|Aqueon|Frameless Cube 3 gal|9.25x9.25x9.25|Aqueon (maker)",
-   "maker": "Aqueon",
-   "retailer": "Aqueon (maker)",
-   "url": "https://www.aqueon.com/products/aquariums/frameless-cube-aquariums",
-   "unknown": [
-    "lid"
-   ]
-  },
-  {
    "key": "g3c|Tetra|Cube 3 Gallon Starter Fish Tank Kit|9.75x9.75x10.32|Amazon",
    "maker": "Tetra",
    "retailer": "Amazon",
@@ -231,8 +222,6 @@
    "retailer": "Petco",
    "url": "https://www.petco.com/product/imagitarium-glass-shrimp-and-aquatic-plants-aquarium",
    "unknown": [
-    "lid",
-    "light",
     "heater",
     "stand"
    ]
@@ -438,15 +427,6 @@
    ]
   },
   {
-   "key": "g6c|Aqueon|Frameless Cube 6 gal|11.5x11.5x11.5|Aqueon (maker)",
-   "maker": "Aqueon",
-   "retailer": "Aqueon (maker)",
-   "url": "https://www.aqueon.com/products/aquariums/frameless-cube-aquariums",
-   "unknown": [
-    "lid"
-   ]
-  },
-  {
    "key": "g6c|Top Fin|Backlight Aquarium 5 gal|12.1x10.4x11.8|PetSmart",
    "maker": "Top Fin",
    "retailer": "PetSmart",
@@ -629,7 +609,6 @@
    "retailer": "Tetra (maker)",
    "url": "https://www.tetra-fish.com/products/aquarium-kits/playmobil-kit",
    "unknown": [
-    "heater",
     "stand"
    ]
   },
@@ -841,16 +820,6 @@
    ]
   },
   {
-   "key": "g20h|Aqueon|LED SmartClean Starter Kit 20 gal|24.25x12.5x16.75|Aqueon (maker)",
-   "maker": "Aqueon",
-   "retailer": "Aqueon (maker)",
-   "url": "https://www.aqueon.com/products/aquarium-starter-kits/smartclean-led-kit",
-   "unknown": [
-    "heater",
-    "stand"
-   ]
-  },
-  {
    "key": "g20h|Aqueon|Rectangle LED Kit 20 High gal (20 gal)|24.25x12.5x16.75|Aqueon (maker)",
    "maker": "Aqueon",
    "retailer": "Aqueon (maker)",
@@ -906,7 +875,6 @@
    "retailer": "Amazon",
    "url": "https://www.amazon.com/dp/B013BXE1XO",
    "unknown": [
-    "heater",
     "stand"
    ]
   },
@@ -1084,7 +1052,6 @@
    "retailer": "Tetra (maker)",
    "url": "https://www.tetra-fish.com/products/aquarium-kits/complete-led-aquarium-29-29-gal",
    "unknown": [
-    "heater",
     "stand"
    ]
   },
@@ -3296,15 +3263,6 @@
    ]
   },
   {
-   "key": "n_imagitarium_cube_14|Aqueon|Frameless Cube 14 gal|15.125x15.125x15.125|Aqueon (maker)",
-   "maker": "Aqueon",
-   "retailer": "Aqueon (maker)",
-   "url": "https://www.aqueon.com/products/aquariums/frameless-cube-aquariums",
-   "unknown": [
-    "lid"
-   ]
-  },
-  {
    "key": "n_imagitarium_cube_14|Marineland|10 Gallon Glass Aquarium Kit|15.125x15.2x13.125|Marineland (maker)",
    "maker": "Marineland",
    "retailer": "Marineland (maker)",
@@ -3469,15 +3427,6 @@
     "lid",
     "heater",
     "stand"
-   ]
-  },
-  {
-   "key": "n_imagitarium_cube_35|Aqueon|Frameless Cube 35 gal|21x21x21|Aqueon (maker)",
-   "maker": "Aqueon",
-   "retailer": "Aqueon (maker)",
-   "url": "https://www.aqueon.com/products/aquariums/frameless-cube-aquariums",
-   "unknown": [
-    "lid"
    ]
   },
   {
@@ -3706,7 +3655,6 @@
    "retailer": "Petco",
    "url": "https://www.petco.com/product/imagitarium-shallow-glass-shrimp-and-aquatic-plants-aquarium",
    "unknown": [
-    "light",
     "heater",
     "stand"
    ]
@@ -3770,24 +3718,6 @@
    "maker": "Marineland",
    "retailer": "Marineland (maker)",
    "url": "https://sc10cdn.spectrumbrands.com/-/media/project/spectrumcommerce/marineland/files/product-files/aquarium-products/tanks/rectangular-tanks-specs-and-sizes-template.pdf",
-   "unknown": [
-    "lid"
-   ]
-  },
-  {
-   "key": "n_aqueon_frameless_cube_1|Aqueon|Frameless Cube 1 gal|6.375x6.375x6.375|Aqueon (maker)",
-   "maker": "Aqueon",
-   "retailer": "Aqueon (maker)",
-   "url": "https://www.aqueon.com/products/aquariums/frameless-cube-aquariums",
-   "unknown": [
-    "lid"
-   ]
-  },
-  {
-   "key": "n_aqueon_frameless_cube_60|Aqueon|Frameless Cube 60 gal|25x25x25|Aqueon (maker)",
-   "maker": "Aqueon",
-   "retailer": "Aqueon (maker)",
-   "url": "https://www.aqueon.com/products/aquariums/frameless-cube-aquariums",
    "unknown": [
     "lid"
    ]

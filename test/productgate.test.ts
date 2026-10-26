@@ -62,7 +62,7 @@ describe('product gate: rimless products', () => {
 
 describe('product gate: size and shape', () => {
   it('a size edit on a maker\'s product asks; no keeps it, yes leaves a custom size', () => {
-    const { m, v } = find(/Aqueon/i, x => !x.rimless && !x.kit);
+    const { m, v } = find(/Aqueon/i, x => !x.rimless && !x.kit && x.includes?.light === false);
     const store = new SceneStore(); pick(store, m, v);
     const L = store.tank.tank.L;
     expect(change(store, 'size', false, s => { s.tank = { ...s.tank, L: L + 50 }; })[0]).toMatch(/is sold at .* in\. A new size or shape makes this a custom tank/);
@@ -71,7 +71,7 @@ describe('product gate: size and shape', () => {
     expect(store.tank.tank.L).toBe(L + 50); expect(productLabel(store.tank)).toBe(CUSTOM_LABEL);
   });
   it('an ordinary maker tank is ready-made: its rim holds (Nathan: "If I get a standard 55g, I cant just take the rim off"), add-ons stay free', () => {
-    const { m, v } = find(/Aqueon/i, x => !x.rimless && !x.kit);
+    const { m, v } = find(/Aqueon/i, x => !x.rimless && !x.kit && x.includes?.light === false);
     const store = new SceneStore(); pick(store, m, v);
     expect(locksOf(store.tank)).toMatchObject({ rim: true, lid: false, light: false, filter: false, heater: false });
     expect(change(store, 'rim', false, s => { s.render.rim = false; })[0]).toMatch(/is sold with its rim\. Taking it off makes this a custom tank, not that product\. Continue\?/);
@@ -84,7 +84,7 @@ describe('product gate: size and shape', () => {
     expect(productLabel(store.tank)).toMatch(/^Ready-made: Aqueon/);
   });
   it('a custom tank changes freely: nothing asks', () => {
-    const { m, v } = find(/Aqueon/i, x => !x.rimless && !x.kit);
+    const { m, v } = find(/Aqueon/i, x => !x.rimless && !x.kit && x.includes?.light === false);
     const store = new SceneStore(); pick(store, m, v);
     change(store, 'size', true, s => { s.tank = { ...s.tank, L: s.tank.L + 30 }; });
     expect(productLabel(store.tank)).toBe(CUSTOM_LABEL);

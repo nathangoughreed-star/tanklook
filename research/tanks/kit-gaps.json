@@ -211,6 +211,8 @@
    "retailer": "Petco",
    "url": "https://www.petco.com/product/imagitarium-glass-shrimp-and-aquatic-plants-aquarium",
    "includes": {
+    "lid": "glass",
+    "light": true,
     "filter": true
    }
   },
@@ -489,7 +491,8 @@
    "includes": {
     "lid": "hood",
     "light": true,
-    "filter": true
+    "filter": true,
+    "heater": true
    }
   },
   {
@@ -644,7 +647,9 @@
    "includes": {
     "lid": "hood",
     "light": true,
-    "filter": true
+    "filter": true,
+    "heater": true,
+    "stand": false
    }
   },
   {
@@ -696,9 +701,10 @@
    "retailer": "Amazon",
    "url": "https://www.amazon.com/dp/B013BXE1XO",
    "includes": {
-    "lid": "none",
+    "lid": "hood",
     "light": true,
-    "filter": true
+    "filter": true,
+    "heater": true
    }
   },
   {
@@ -793,7 +799,8 @@
    "includes": {
     "lid": "hood",
     "light": true,
-    "filter": true
+    "filter": true,
+    "heater": true
    }
   },
   {
@@ -1294,7 +1301,7 @@
    "retailer": null,
    "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/aqueon-led-aquarium-and-stand-ensemble---125-gallon-5262172.html",
    "includes": {
-    "lid": "none",
+    "lid": "hood",
     "light": true,
     "stand": true
    }
@@ -1936,7 +1943,8 @@
    "retailer": "Petco",
    "url": "https://www.petco.com/product/imagitarium-shallow-glass-shrimp-and-aquatic-plants-aquarium",
    "includes": {
-    "lid": "none",
+    "lid": "glass",
+    "light": true,
     "filter": true
    }
   },

@@ -344,6 +344,7 @@
      "checked": "2026-10-26",
      "confidence": "high",
      "includes": {
+      "lid": "glass",
       "light": false,
       "filter": false,
       "heater": false,
@@ -630,6 +631,8 @@
      "checked": "2026-10-26",
      "confidence": "low",
      "includes": {
+      "lid": "glass",
+      "light": true,
       "filter": true
      }
     },
@@ -1242,6 +1245,7 @@
      "checked": "2026-10-26",
      "confidence": "high",
      "includes": {
+      "lid": "glass",
       "light": false,
       "filter": false,
       "heater": false,
@@ -1803,7 +1807,8 @@
      "includes": {
       "lid": "hood",
       "light": true,
-      "filter": true
+      "filter": true,
+      "heater": true
      }
     },
     {
@@ -2549,7 +2554,9 @@
      "includes": {
       "lid": "hood",
       "light": true,
-      "filter": true
+      "filter": true,
+      "heater": true,
+      "stand": false
      }
     },
     {
@@ -2658,9 +2665,10 @@
      "checked": "2026-10-26",
      "confidence": "medium",
      "includes": {
-      "lid": "none",
+      "lid": "hood",
       "light": true,
-      "filter": true
+      "filter": true,
+      "heater": true
      }
     },
     {
@@ -3184,7 +3192,8 @@
      "includes": {
       "lid": "hood",
       "light": true,
-      "filter": true
+      "filter": true,
+      "heater": true
      }
     },
     {
@@ -5899,7 +5908,7 @@
      "checked": "2026-10-19",
      "confidence": "high",
      "includes": {
-      "lid": "none",
+      "lid": "hood",
       "light": true,
       "stand": true
      }
@@ -5930,7 +5939,7 @@
      "L_in": 72,
      "D_in": 18,
      "H_in": 20,
-     "price_usd": 1649.99,
+     "price_usd": 1749.99,
      "price_kind": "street",
      "price_note": "PetSmart $1649.99; page read 2026-10-26",
      "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/clear-for-life-125-gallon-rectangle-acrylic-aquarium-fish-tank-72x18x20-fresh-and-saltwater-5188326.html",
@@ -8348,6 +8357,7 @@
      "checked": "2026-10-26",
      "confidence": "high",
      "includes": {
+      "lid": "glass",
       "light": false,
       "filter": false,
       "heater": false,
@@ -8845,6 +8855,7 @@
      "checked": "2026-10-26",
      "confidence": "high",
      "includes": {
+      "lid": "glass",
       "light": false,
       "filter": false,
       "heater": false,
@@ -9345,7 +9356,8 @@
      "checked": "2026-10-26",
      "confidence": "medium",
      "includes": {
-      "lid": "none",
+      "lid": "glass",
+      "light": true,
       "filter": true
      }
     }
@@ -9688,6 +9700,7 @@
      "checked": "2026-10-26",
      "confidence": "high",
      "includes": {
+      "lid": "glass",
       "light": false,
       "filter": false,
       "heater": false,
@@ -9729,6 +9742,7 @@
      "checked": "2026-10-26",
      "confidence": "high",
      "includes": {
+      "lid": "glass",
       "light": false,
       "filter": false,
       "heater": false,
@@ -11914,7 +11928,8 @@
       "filter": false,
       "heater": false,
       "stand": false
-     }
+     },
+     "rimless": true
     },
     {
      "brand": "Lifegard Aquatics",
@@ -11979,7 +11994,8 @@
       "filter": false,
       "heater": false,
       "stand": false
-     }
+     },
+     "rimless": true
     }
    ]
   },
