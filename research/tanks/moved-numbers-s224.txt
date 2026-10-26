@@ -1,0 +1,417 @@
+S224 moved numbers: origin/main 7bc8536 (before) vs branch s223 (after), 2026-10-26.
+Commands: node scripts/moved-numbers.mjs main.json --now 2026-10-26 (tanks.json of main), the same on the branch, then node scripts/moved-numbers.mjs --diff main.json branch.json
+All step-up and build moves but amano x25 are cost-only ($5-16; g3c / g6c now priced from their listed products, the rimless 5.5 at $25 a live Petco sale). The pick, starter and 2 of the sump moves are g6c taking the Petco 11.49 in cube (Nathan 2026-10-26); the other 5 sump rows are the new library bases.
+
+changed rows: tankFor 1 of 450, steps 48 of 450, builds 27 of 450, starters 54 of 1620, sumps 7 of 45, examples 0 of 11
+
+tankFor | amano x25
+    before: {"tank":"g6c","fails":"","space":100.4,"filt":19.6,"min":0}
+    after:  {"tank":"g8c","fails":"","space":79,"filt":19,"min":0}
+steps | chili x1
+    before: g5 +$20; g8c +$14; g10 +$40
+    after:  g5 +$14; g8c +$14; g10 +$40
+steps | chili x3
+    before: g5 +$20; g8c +$14; g10 +$40
+    after:  g5 +$14; g8c +$14; g10 +$40
+steps | chili x6
+    before: g8c +$-6; g10 +$20; g15 +$45
+    after:  g8c +$0; g10 +$26; g15 +$51
+steps | guppy x1
+    before: g10 +$20; g15 +$45; g20h +$71
+    after:  g10 +$26; g15 +$51; g20h +$77
+steps | guppy x3
+    before: g10 +$20; g15 +$45; g20h +$71
+    after:  g10 +$26; g15 +$51; g20h +$77
+steps | betta x1
+    before: g10 +$20; g15 +$45; g20h +$71
+    after:  g10 +$26; g15 +$51; g20h +$77
+steps | betta x3
+    before: g10 +$20; g15 +$45; g20h +$71
+    after:  g10 +$26; g15 +$51; g20h +$77
+steps | honeygourami x1
+    before: g10 +$20; g15 +$45; g20h +$71
+    after:  g10 +$26; g15 +$51; g20h +$77
+steps | peapuffer x1
+    before: g5 +$20; g8c +$14; g10 +$40
+    after:  g5 +$14; g8c +$14; g10 +$40
+steps | peapuffer x3
+    before: g8c +$-6; g10 +$20; g15 +$45
+    after:  g8c +$0; g10 +$26; g15 +$51
+steps | cherryshrimp x1
+    before: g3c +$-16; g5 +$20; g8c +$14
+    after:  g3c +$-5; g5 +$14; g8c +$14
+steps | cherryshrimp x3
+    before: g3c +$-16; g5 +$20; g8c +$14
+    after:  g3c +$-5; g5 +$14; g8c +$14
+steps | cherryshrimp x6
+    before: g3c +$-16; g5 +$20; g8c +$14
+    after:  g3c +$-5; g5 +$14; g8c +$14
+steps | cherryshrimp x12
+    before: g3c +$-16; g5 +$20; g8c +$14
+    after:  g3c +$-5; g5 +$14; g8c +$14
+steps | cherryshrimp x25
+    before: g8c +$-6; g10 +$20; g15 +$45
+    after:  g8c +$0; g10 +$26; g15 +$51
+steps | amano x1
+    before: g3c +$-16; g5 +$20; g8c +$14
+    after:  g3c +$-5; g5 +$14; g8c +$14
+steps | amano x3
+    before: g3c +$-16; g5 +$20; g8c +$14
+    after:  g3c +$-5; g5 +$14; g8c +$14
+steps | amano x6
+    before: g3c +$-16; g5 +$20; g8c +$14
+    after:  g3c +$-5; g5 +$14; g8c +$14
+steps | amano x12
+    before: g8c +$-6; g10 +$20; g15 +$45
+    after:  g8c +$0; g10 +$26; g15 +$51
+steps | amano x25
+    before: g8c +$5; g10 +$31; g15 +$56
+    after:  g10 +$26; g15 +$51; g20h +$77
+steps | nerite x1
+    before: g3c +$-16; g5 +$20; g8c +$14
+    after:  g3c +$-5; g5 +$14; g8c +$14
+steps | nerite x3
+    before: g3c +$-16; g5 +$20; g8c +$14
+    after:  g3c +$-5; g5 +$14; g8c +$14
+steps | nerite x6
+    before: g3c +$-16; g5 +$20; g8c +$14
+    after:  g3c +$-5; g5 +$14; g8c +$14
+steps | nerite x12
+    before: g5 +$35; g8c +$29; g10 +$56
+    after:  g5 +$19; g8c +$18; g10 +$45
+steps | mystery x1
+    before: g3c +$-16; g5 +$20; g8c +$14
+    after:  g3c +$-5; g5 +$14; g8c +$14
+steps | mystery x3
+    before: g3c +$-16; g5 +$20; g8c +$14
+    after:  g3c +$-5; g5 +$14; g8c +$14
+steps | mystery x6
+    before: g3c +$-16; g5 +$20; g8c +$14
+    after:  g3c +$-5; g5 +$14; g8c +$14
+steps | mystery x12
+    before: g8c +$-52; g10 +$-13; g15 +$39
+    after:  g8c +$-46; g10 +$-8; g15 +$45
+steps | ramshorn x1
+    before: g3c +$-16; g5 +$20; g8c +$14
+    after:  g3c +$-5; g5 +$14; g8c +$14
+steps | ramshorn x3
+    before: g3c +$-16; g5 +$20; g8c +$14
+    after:  g3c +$-5; g5 +$14; g8c +$14
+steps | ramshorn x6
+    before: g3c +$-16; g5 +$20; g8c +$14
+    after:  g3c +$-5; g5 +$14; g8c +$14
+steps | ramshorn x12
+    before: g3c +$-16; g5 +$20; g8c +$14
+    after:  g3c +$-5; g5 +$14; g8c +$14
+steps | ramshorn x25
+    before: g3c +$-16; g5 +$20; g8c +$14
+    after:  g3c +$-5; g5 +$14; g8c +$14
+steps | ramshorn x50
+    before: g8c +$-6; g10 +$20; g15 +$45
+    after:  g8c +$0; g10 +$26; g15 +$51
+steps | trumpet x1
+    before: g3c +$-16; g5 +$20; g8c +$14
+    after:  g3c +$-5; g5 +$14; g8c +$14
+steps | trumpet x3
+    before: g3c +$-16; g5 +$20; g8c +$14
+    after:  g3c +$-5; g5 +$14; g8c +$14
+steps | trumpet x6
+    before: g3c +$-16; g5 +$20; g8c +$14
+    after:  g3c +$-5; g5 +$14; g8c +$14
+steps | trumpet x12
+    before: g3c +$-16; g5 +$20; g8c +$14
+    after:  g3c +$-5; g5 +$14; g8c +$14
+steps | trumpet x25
+    before: g3c +$-16; g5 +$20; g8c +$14
+    after:  g3c +$-5; g5 +$14; g8c +$14
+steps | trumpet x50
+    before: g3c +$-16; g5 +$20; g8c +$14
+    after:  g3c +$-5; g5 +$14; g8c +$14
+steps | cleanershrimp x1
+    before: g3c +$-3; g5 +$37; g8c +$51
+    after:  g3c +$8; g5 +$31; g8c +$51
+steps | cleanershrimp x3
+    before: g8c +$14; g10 +$84; g15 +$161
+    after:  g8c +$20; g10 +$90; g15 +$167
+steps | turbo x1
+    before: g3c +$-3; g5 +$37; g8c +$51
+    after:  g3c +$8; g5 +$31; g8c +$51
+steps | turbo x3
+    before: g8c +$27; g10 +$109; g15 +$213
+    after:  g8c +$33; g10 +$115; g15 +$219
+steps | hermit x1
+    before: g3c +$-3; g5 +$37; g8c +$51
+    after:  g3c +$8; g5 +$31; g8c +$51
+steps | hermit x3
+    before: g3c +$-3; g5 +$37; g8c +$51
+    after:  g3c +$8; g5 +$31; g8c +$51
+steps | hermit x6
+    before: g8c +$14; g10 +$84; g15 +$161
+    after:  g8c +$20; g10 +$90; g15 +$167
+steps | adf x1
+    before: g10 +$20; g15 +$45; g20l +$108
+    after:  g10 +$26; g15 +$51; g20l +$114
+builds | ember x1
+    before: cheapest g5_5 $218/293 filt 0.2 space 10.7 bundle Walmart | leastWork g5_5 $409/416 filt 0.2 space 10.7 | balanced g5_5 $296/303 filt 0.2 space 10.7
+    after:  cheapest g5_5 $218/287 filt 0.2 space 10.7 bundle Walmart | leastWork g5_5 $403/410 filt 0.2 space 10.7 deal Petco $25 | balanced g5_5 $290/297 filt 0.2 space 10.7 deal Petco $25
+builds | ember x3
+    before: cheapest g5_5 $232/308 filt 0.6 space 32 bundle Walmart | leastWork g5_5 $423/431 filt 0.5 space 32 | balanced g5_5 $311/318 filt 0.6 space 32
+    after:  cheapest g5_5 $232/302 filt 0.6 space 32 bundle Walmart | leastWork g5_5 $417/425 filt 0.5 space 32 deal Petco $25 | balanced g5_5 $305/312 filt 0.6 space 32 deal Petco $25
+builds | ember x6
+    before: cheapest g5_5 $254/330 filt 1.3 space 64 bundle Walmart | leastWork g5_5 $445/453 filt 1 space 64 | balanced g5_5 $333/340 filt 1.2 space 64
+    after:  cheapest g5_5 $254/324 filt 1.3 space 64 bundle Walmart | leastWork g5_5 $439/447 filt 1 space 64 deal Petco $25 | balanced g5_5 $327/334 filt 1.2 space 64 deal Petco $25
+builds | dwarfpencil x1
+    before: cheapest g5_5 $217/293 filt 0.6 space 17.3 bundle Walmart | leastWork g5_5 $408/416 filt 0.5 space 17.3 | balanced g5_5 $296/303 filt 0.5 space 17.3
+    after:  cheapest g5_5 $217/287 filt 0.6 space 17.3 bundle Walmart | leastWork g5_5 $402/410 filt 0.5 space 17.3 deal Petco $25 | balanced g5_5 $290/297 filt 0.5 space 17.3 deal Petco $25
+builds | dwarfpencil x3
+    before: cheapest g5_5 $231/307 filt 1.7 space 51.9 bundle Walmart | leastWork g5_5 $422/430 filt 1.4 space 51.9 | balanced g5_5 $310/317 filt 1.6 space 51.9
+    after:  cheapest g5_5 $231/301 filt 1.7 space 51.9 bundle Walmart | leastWork g5_5 $416/424 filt 1.4 space 51.9 deal Petco $25 | balanced g5_5 $304/311 filt 1.6 space 51.9 deal Petco $25
+builds | chili x6
+    before: cheapest g5 $248/322 filt 1 space 89.4 bundle Walmart | leastWork g5 $438/445 filt 0.8 space 89.4 | balanced g5 $325/332 filt 0.9 space 89.4
+    after:  cheapest g5 $248/316 filt 1 space 89.4 bundle Walmart | leastWork g5 $432/439 filt 0.8 space 89.4 deal Petco $25 | balanced g5 $319/326 filt 0.9 space 89.4 deal Petco $25
+builds | cpd x1
+    before: cheapest g5_5 $224/299 filt 0.2 space 8.2 bundle Walmart | leastWork g5_5 $415/422 filt 0.1 space 8.2 | balanced g5_5 $302/309 filt 0.1 space 8.2
+    after:  cheapest g5_5 $224/293 filt 0.2 space 8.2 bundle Walmart | leastWork g5_5 $409/416 filt 0.1 space 8.2 deal Petco $25 | balanced g5_5 $296/303 filt 0.1 space 8.2 deal Petco $25
+builds | cpd x3
+    before: cheapest g5_5 $251/327 filt 0.5 space 24.6 bundle Walmart | leastWork g5_5 $442/449 filt 0.4 space 24.6 | balanced g5_5 $330/337 filt 0.4 space 24.6
+    after:  cheapest g5_5 $251/321 filt 0.5 space 24.6 bundle Walmart | leastWork g5_5 $436/444 filt 0.4 space 24.6 deal Petco $25 | balanced g5_5 $324/331 filt 0.4 space 24.6 deal Petco $25
+builds | cpd x6
+    before: cheapest g5_5 $292/367 filt 0.9 space 49.2 bundle Walmart | leastWork g5_5 $483/490 filt 0.7 space 49.2 | balanced g5_5 $370/378 filt 0.9 space 49.2
+    after:  cheapest g5_5 $292/362 filt 0.9 space 49.2 bundle Walmart | leastWork g5_5 $477/484 filt 0.7 space 49.2 deal Petco $25 | balanced g5_5 $364/372 filt 0.9 space 49.2 deal Petco $25
+builds | cpd x12
+    before: cheapest g5_5 $374/449 filt 1.8 space 93.4 bundle Walmart | leastWork g5_5 $565/572 filt 1.5 space 93.4 | balanced g5_5 $452/459 filt 1.8 space 93.4
+    after:  cheapest g5_5 $374/443 filt 1.8 space 93.4 bundle Walmart | leastWork g5_5 $559/566 filt 1.5 space 93.4 deal Petco $25 | balanced g5_5 $446/453 filt 1.8 space 93.4 deal Petco $25
+builds | guppy x1
+    before: cheapest g5 $220/294 filt 0.9 space 27.7 bundle Walmart | leastWork g5 $410/417 filt 0.7 space 27.7 | balanced g5 $297/304 filt 0.8 space 27.7
+    after:  cheapest g5 $220/288 filt 0.9 space 27.7 bundle Walmart | leastWork g5 $404/411 filt 0.7 space 27.7 deal Petco $25 | balanced g5 $291/298 filt 0.8 space 27.7 deal Petco $25
+builds | guppy x3
+    before: cheapest g5 $240/314 filt 2.6 space 83.2 bundle Walmart | leastWork g5 $429/437 filt 2.1 space 83.2 | balanced g5 $317/324 filt 2.5 space 83.2
+    after:  cheapest g5 $240/308 filt 2.6 space 83.2 bundle Walmart | leastWork g5 $424/431 filt 2.1 space 83.2 deal Petco $25 | balanced g5 $311/318 filt 2.5 space 83.2 deal Petco $25
+builds | betta x1
+    before: cheapest g5 $228/302 filt 2.2 space 29.7 bundle Walmart | leastWork g5 $417/425 filt 1.8 space 29.7 | balanced g5 $305/312 filt 2.1 space 29.7
+    after:  cheapest g5 $228/296 filt 2.2 space 29.7 bundle Walmart | leastWork g5 $412/419 filt 1.8 space 29.7 deal Petco $25 | balanced g5 $299/306 filt 2.1 space 29.7 deal Petco $25
+builds | betta x3
+    before: cheapest g5 $263/337 filt 6.5 space 89.2 bundle Walmart | leastWork g5 $453/460 filt 5.3 space 89.2 | balanced g5 $340/347 filt 6.3 space 89.2
+    after:  cheapest g5 $263/331 filt 6.5 space 89.2 bundle Walmart | leastWork g5 $447/454 filt 5.3 space 89.2 deal Petco $25 | balanced g5 $334/341 filt 6.3 space 89.2 deal Petco $25
+builds | honeygourami x1
+    before: cheapest g5 $218/292 filt 2.4 space 40 bundle Walmart | leastWork g5 $408/415 filt 2 space 40 | balanced g5 $295/302 filt 2.3 space 40
+    after:  cheapest g5 $218/286 filt 2.4 space 40 bundle Walmart | leastWork g5 $402/409 filt 2 space 40 deal Petco $25 | balanced g5 $289/297 filt 2.3 space 40 deal Petco $25
+builds | oto x1
+    before: cheapest g5_5 $188/264 filt 0.4 space 27.9 bundle Walmart | leastWork g5_5 $387/387 filt 0.3 space 27.9 | balanced g5_5 $274/274 filt 0.4 space 27.9
+    after:  cheapest g5_5 $188/258 filt 0.4 space 27.9 bundle Walmart | leastWork g5_5 $381/381 filt 0.3 space 27.9 deal Petco $25 | balanced g5_5 $268/268 filt 0.4 space 27.9 deal Petco $25
+builds | oto x3
+    before: cheapest g5_5 $204/279 filt 1.1 space 83.7 bundle Walmart | leastWork g5_5 $402/402 filt 0.9 space 83.7 | balanced g5_5 $289/289 filt 1.1 space 83.7
+    after:  cheapest g5_5 $204/273 filt 1.1 space 83.7 bundle Walmart | leastWork g5_5 $396/396 filt 0.9 space 83.7 deal Petco $25 | balanced g5_5 $283/283 filt 1.1 space 83.7 deal Petco $25
+builds | peapuffer x3
+    before: cheapest g5 $231/305 filt 2 space 89 bundle Walmart | leastWork g5 $421/428 filt 1.6 space 89 | balanced g5 $308/315 filt 1.9 space 89
+    after:  cheapest g5 $231/299 filt 2 space 89 bundle Walmart | leastWork g5 $415/422 filt 1.6 space 89 deal Petco $25 | balanced g5 $302/310 filt 1.9 space 89 deal Petco $25
+builds | cherryshrimp x25
+    before: cheapest g5 $281/355 filt 7.5 space 80.3 bundle Walmart | leastWork g5 $478/478 filt 6.1 space 80.3 | balanced g5 $365/365 filt 7.2 space 80.3
+    after:  cheapest g5 $281/349 filt 7.5 space 80.3 bundle Walmart | leastWork g5 $472/472 filt 6.1 space 80.3 deal Petco $25 | balanced g5 $359/359 filt 7.2 space 80.3 deal Petco $25
+builds | amano x12
+    before: cheapest g5 $256/330 filt 10 space 72.9 bundle Walmart | leastWork g5 $453/453 filt 8.1 space 72.9 | balanced g5 $340/340 filt 9.6 space 72.9
+    after:  cheapest g5 $256/324 filt 10 space 72.9 bundle Walmart | leastWork g5 $447/447 filt 8.1 space 72.9 deal Petco $25 | balanced g5 $334/334 filt 9.6 space 72.9 deal Petco $25
+builds | amano x25
+    before: cheapest g6c $401/401 filt 20.3 space 100.4 | leastWork g6c $524/524 filt 16.6 space 100.4 | balanced g6c $411/411 filt 19.6 space 100.4
+    after:  cheapest g8c $406/406 filt 19.6 space 79 | leastWork g8c $529/529 filt 16.2 space 79 | balanced g8c $416/416 filt 19 space 79
+builds | mystery x12
+    before: cheapest g5 $343/350 filt 95.5 space 87.5 | leastWork g5 $448/455 filt 95.5 space 87.5 | balanced g5 $512/520 filt 37.9 space 87.5
+    after:  cheapest g5 $337/344 filt 95.5 space 87.5 deal Petco $25 | leastWork g5 $442/450 filt 95.5 space 87.5 deal Petco $25 | balanced g5 $506/514 filt 37.9 space 87.5 deal Petco $25
+builds | ramshorn x50
+    before: cheapest g5 $279/353 filt 43.3 space 96.4 bundle Walmart | leastWork g5 $475/475 filt 35.3 space 96.4 | balanced g5 $363/363 filt 41.7 space 96.4
+    after:  cheapest g5 $279/347 filt 43.3 space 96.4 bundle Walmart | leastWork g5 $470/470 filt 35.3 space 96.4 deal Petco $25 | balanced g5 $357/357 filt 41.7 space 96.4 deal Petco $25
+builds | cleanershrimp x3
+    before: cheapest g5 $519/907 filt 8.3 space 76.9 bundle Walmart | leastWork g5 $1204/1211 filt 6.8 space 76.9 | balanced g5 $909/917 filt 8 space 76.9
+    after:  cheapest g5 $519/901 filt 8.3 space 76.9 bundle Walmart | leastWork g5 $1198/1205 filt 6.8 space 76.9 deal Petco $25 | balanced g5 $904/911 filt 8 space 76.9 deal Petco $25
+builds | turbo x3
+    before: cheapest g5 $378/766 filt 99.7 space 67.6 bundle Walmart | leastWork g5 $1054/1071 filt 81.3 space 67.6 | balanced g5 $887/894 filt 61 space 67.6
+    after:  cheapest g5 $378/760 filt 99.7 space 67.6 bundle Walmart | leastWork g5 $1048/1065 filt 81.3 space 67.6 deal Petco $25 | balanced g5 $881/888 filt 61 space 67.6 deal Petco $25
+builds | hermit x6
+    before: cheapest g5 $387/774 filt 5 space 85.5 bundle Walmart | leastWork g5 $1072/1079 filt 4.1 space 85.5 | balanced g5 $777/784 filt 4.8 space 85.5
+    after:  cheapest g5 $387/768 filt 5 space 85.5 bundle Walmart | leastWork g5 $1066/1073 filt 4.1 space 85.5 deal Petco $25 | balanced g5 $771/778 filt 4.8 space 85.5 deal Petco $25
+builds | adf x1
+    before: cheapest g5 $217/291 filt 5.4 space 37.4 bundle Walmart | leastWork g5 $407/414 filt 4.4 space 37.4 | balanced g5 $294/301 filt 5.2 space 37.4
+    after:  cheapest g5 $217/285 filt 5.4 space 37.4 bundle Walmart | leastWork g5 $401/408 filt 4.4 space 37.4 deal Petco $25 | balanced g5 $288/295 filt 5.2 space 37.4 deal Petco $25
+starters | stones g6c s1
+    before: 4 nerite | 16 %
+    after:  4 nerite | 19.1 %
+starters | stones g6c s2
+    before: 4 nerite | 16.6 %
+    after:  4 nerite | 19.7 %
+starters | stones g6c s3
+    before: 4 nerite | 15.8 %
+    after:  4 nerite | 18.8 %
+starters | driftwood g6c s1
+    before: 10 amano, 1 gbr | 67.9 %
+    after:  6 amano, 2 nerite | 32.6 %
+starters | driftwood g6c s2
+    before: 6 pandacory | 77.8 %
+    after:  9 amano, 1 gbr | 70 %
+starters | driftwood g6c s3
+    before: 1 honeygourami, 2 nerite | 33.9 %
+    after:  1 gbr, 3 nerite | 35.6 %
+starters | planted g6c s1
+    before: 8 ember | 77 %
+    after:  8 ember | 83.9 %
+starters | planted g6c s2
+    before: 8 ember | 77.6 %
+    after:  8 ember | 81.4 %
+starters | planted g6c s3
+    before: 8 ember | 78.8 %
+    after:  8 ember | 83.3 %
+starters | iwagumi g6c s1
+    before: 6 amano, 6 cpd | 72.4 %
+    after:  10 cherryshrimp, 6 cpd | 75.9 %
+starters | iwagumi g6c s2
+    before: 8 ember | 76.5 %
+    after:  8 ember | 83.3 %
+starters | iwagumi g6c s3
+    before: 8 ember | 77.6 %
+    after:  8 ember | 84.6 %
+starters | swamp g6c s1
+    before: 8 ember | 75.9 %
+    after:  8 ember | 82.7 %
+starters | swamp g6c s2
+    before: 8 ember | 76.5 %
+    after:  8 ember | 83.3 %
+starters | swamp g6c s3
+    before: 8 ember | 74.7 %
+    after:  8 ember | 81.4 %
+starters | reef g6c s1
+    before: 3 hermit | 35.3 %
+    after:  3 hermit | 42 %
+starters | reef g6c s2
+    before: 3 hermit | 35.3 %
+    after:  3 hermit | 42 %
+starters | reef g6c s3
+    before: 3 hermit | 35.3 %
+    after:  3 hermit | 42 %
+starters | nature g6c s1
+    before: 10 cherryshrimp, 6 cpd | 70.8 %
+    after:  10 cherryshrimp, 6 cpd | 73.8 %
+starters | nature g6c s2
+    before: 8 ember | 75.9 %
+    after:  6 cpd, 2 nerite | 47.1 %
+starters | nature g6c s3
+    before: 6 cpd, 1 honeygourami | 77.5 %
+    after:  8 ember | 82.7 %
+starters | dutch g6c s1
+    before: 4 nerite | 16.6 %
+    after:  4 nerite | 19.7 %
+starters | dutch g6c s2
+    before: 4 nerite | 16.8 %
+    after:  4 nerite | 20 %
+starters | dutch g6c s3
+    before: 4 nerite | 16.3 %
+    after:  4 nerite | 19.4 %
+starters | jungle g6c s1
+    before: 1 gbr, 3 nerite | 29.8 %
+    after:  1 gbr, 3 nerite | 35.3 %
+starters | jungle g6c s2
+    before: 1 gbr, 1 honeygourami | 49.4 %
+    after:  1 gbr, 3 nerite | 35.3 %
+starters | jungle g6c s3
+    before: 1 honeygourami, 2 nerite | 31 %
+    after:  4 nerite | 19.4 %
+starters | forest g6c s1
+    before: 10 cherryshrimp, 6 cpd | 69.8 %
+    after:  10 cherryshrimp, 6 cpd | 73.8 %
+starters | forest g6c s2
+    before: 6 cpd, 2 nerite | 44.4 %
+    after:  6 cpd, 2 nerite | 47.1 %
+starters | forest g6c s3
+    before: 10 cherryshrimp, 6 cpd | 70.7 %
+    after:  10 cherryshrimp, 6 cpd | 74.8 %
+starters | paludarium g6c s1
+    before: 5 dartfrog, 2 firenewt, 2 firetoad | 88.2 %
+    after:  5 dartfrog, 1 firenewt, 2 firetoad | 88.3 %
+starters | paludarium g6c s2
+    before: 5 dartfrog, 2 firenewt, 2 firetoad | 87.3 %
+    after:  5 dartfrog, 1 firenewt, 2 firetoad | 86.4 %
+starters | paludarium g6c s3
+    before: 5 dartfrog, 4 firenewt, 1 firetoad | 102 %
+    after:  5 dartfrog, 4 firenewt, 1 firetoad | 111 %
+starters | blackwater g6c s1
+    before: 8 ember | 75.3 %
+    after:  8 ember | 82.1 %
+starters | blackwater g6c s2
+    before: 8 ember | 76.5 %
+    after:  8 ember | 83.3 %
+starters | blackwater g6c s3
+    before: 8 ember | 76.5 %
+    after:  8 ember | 83.3 %
+starters | malawi g6c s1
+    before: 4 nerite | 16.6 %
+    after:  4 nerite | 19.7 %
+starters | malawi g6c s2
+    before: 4 nerite | 16.3 %
+    after:  4 nerite | 19.4 %
+starters | malawi g6c s3
+    before: 4 nerite | 16 %
+    after:  4 nerite | 19.1 %
+starters | stream g6c s1
+    before: 8 ember | 77 %
+    after:  8 ember | 83.9 %
+starters | stream g6c s2
+    before: 8 ember | 78.2 %
+    after:  8 ember | 85.2 %
+starters | stream g6c s3
+    before: 8 whitecloud | 86.4 %
+    after:  6 whitecloud | 68.5 %
+starters | hillstream g6c s1
+    before: 1 hillstream, 6 whitecloud | 85.2 %
+    after:  6 whitecloud | 68.2 %
+starters | hillstream g6c s2
+    before: 1 hillstream, 6 whitecloud | 85.7 %
+    after:  6 whitecloud | 68.5 %
+starters | hillstream g6c s3
+    before: 1 hillstream, 6 whitecloud | 85.7 %
+    after:  6 whitecloud | 65.8 %
+starters | softreef g6c s1
+    before: 3 hermit | 35.3 %
+    after:  3 hermit | 42 %
+starters | softreef g6c s2
+    before: 3 hermit | 36 %
+    after:  3 hermit | 42.8 %
+starters | softreef g6c s3
+    before: 3 hermit | 34.7 %
+    after:  3 hermit | 41.3 %
+starters | spsreef g6c s1
+    before: 3 hermit | 34.7 %
+    after:  3 hermit | 41.3 %
+starters | spsreef g6c s2
+    before: 3 hermit | 33.5 %
+    after:  3 hermit | 39.8 %
+starters | spsreef g6c s3
+    before: 3 hermit | 35.3 %
+    after:  3 hermit | 42 %
+starters | clownnano g6c s1
+    before: 3 hermit | 34.7 %
+    after:  3 hermit | 41.3 %
+starters | clownnano g6c s2
+    before: 3 hermit | 34.7 %
+    after:  3 hermit | 41.3 %
+starters | clownnano g6c s3
+    before: 3 hermit | 34.7 %
+    after:  3 hermit | 41.3 %
+sumps | g6c
+    before: g2_5 303x151x206
+    after:  g3c 221x221x250
+sumps | n_flex_15gal
+    before: g6c 310x310x250
+    after:  g6c 284x284x288
+sumps | n_imagitarium_cube_14
+    before: (none)
+    after:  g6c 284x284x288
+sumps | n_imagitarium_cube_35
+    before: (none)
+    after:  g10 504x257x315
+sumps | n_imagitarium_shallow_6_8
+    before: (none)
+    after:  g2_5 303x151x206
+sumps | n_imagitarium_shallow_13_3
+    before: (none)
+    after:  g3c 221x221x250
+sumps | n_imagitarium_shallow_28
+    before: (none)
+    after:  g8c 335x335x275

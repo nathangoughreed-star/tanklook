@@ -163,7 +163,9 @@ export const RULES: Record<string, Rule[]> = {
     { path: 'gear.liquidcarbon.monthly.months', status: 'derived', basis: 'derived', src: ['seachem.com'], why: 'Seachem dose 5 mL per 50 gal a day on 20 gal = 2 mL a day: a 500 mL bottle lasts about 8 months' },
   ],
   GEAR_CATALOG: [{ path: '*.*.{gph,galMin,galMax,watts,priceUsd}', status: 'cited', basis: 'source-stated', says: "the product page's figure", src: ['product-pages'], why: 'the product page at the row url', rowUrl: true }],
-  TANKS: [{ path: '**', status: 'cited', basis: 'source-stated', says: "the listing's figure", src: ['product-pages'], why: 'the listing at the row url', rowUrl: true }],
+  TANKS: [{ path: '**', status: 'cited', basis: 'source-stated', says: "the listing's figure", src: ['product-pages'], why: 'the listing at the row url', rowUrl: true },
+    // S224 (2026-10-26): Petco lists no depth for its Frameless Shallow line; the row's `est` keeps the depth off the listing
+    { path: '{n_imagitarium_shallow_6_8,n_imagitarium_shallow_13_3,n_imagitarium_shallow_28}.outer.D', status: 'derived', basis: 'derived', src: ['product-pages'], why: "Petco lists width and height only: depth back-solved from the rated gallons (the 6.8's shrimp kit box gives 20 x 10 x 8.62 in; Petco customer service gave roughly 32 x 15 for the 28)" }],
   KITS: [{ path: '**', status: 'cited', basis: 'source-stated', says: "the listing's figure", src: ['product-pages'], why: 'the listing at the row url', rowUrl: true }],
   DEALS: [{ path: '**', status: 'cited', basis: 'source-stated', says: "the listing's figure", src: ['product-pages'], why: 'the listing at the row url', rowUrl: true }],
   GEAR_DEALS: [{ path: '**', status: 'cited', basis: 'source-stated', says: "the listing's figure", src: ['product-pages'], why: 'the listing at the row url', rowUrl: true }],

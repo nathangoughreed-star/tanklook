@@ -55,6 +55,22 @@
      "url": "https://bulkreefsupply.com/fluval-spec-2-6-gallon-aquarium-kit-fluval.html",
      "checked": "2026-10-19",
      "confidence": "medium"
+    },
+    {
+     "brand": "Imagitarium (Petco)",
+     "line": "Open-Glass Rimless 2.5 gal",
+     "L_in": 12.2,
+     "D_in": 6.14,
+     "H_in": 9.2,
+     "rimless": true,
+     "price_usd": 20,
+     "price_kind": "street",
+     "retailer": "Petco",
+     "regular_usd": 40,
+     "price_note": "Petco sale $20, regular $40 (50% off, no end shown); page read 2026-10-26; SKU 3966767; dims from the Petco page; glass top with clips; store pickup",
+     "url": "https://www.petco.com/product/imagitarium-25-gallon-open-glass-rimless-aquarium-tank",
+     "checked": "2026-10-26",
+     "confidence": "high"
     }
    ]
   },
@@ -99,6 +115,22 @@
      "price_note": "one marketplace listing; another gives 10.31x11.06x17.5 (likely with hood/filter)",
      "url": "https://www.desertcart.sn/products/1627265",
      "checked": "2026-10-19",
+     "confidence": "low"
+    },
+    {
+     "brand": "Imagitarium (Petco)",
+     "line": "Open-Glass Frameless Cube 3 gal",
+     "L_in": 8.78,
+     "D_in": 8.78,
+     "H_in": 8.78,
+     "rimless": true,
+     "price_usd": 30,
+     "price_kind": "street",
+     "retailer": "Petco",
+     "regular_usd": 60,
+     "price_note": "Petco sale $30, regular $60 (50% off, no end shown); page read 2026-10-26; SKU 3966821; Petco lists 8.78 x 8.78 x 12.83 in, but 12.83 is the 10 gal's height pasted in (a reviewer measured about 8 x 8 x 8, and 8.78 in cubed is 2.9 gal), so the height is taken as 8.78; store pickup",
+     "url": "https://www.petco.com/product/imagitarium-3-gallon-open-glass-frameless-cube-aquarium-tank",
+     "checked": "2026-10-26",
      "confidence": "low"
     }
    ]
@@ -174,6 +206,22 @@
      "url": "https://www.petsmart.com/fish/starter-kits/glofish-led-aquarium-kit-94257.html",
      "checked": "2026-10-19",
      "confidence": "high"
+    },
+    {
+     "brand": "Imagitarium (Petco)",
+     "line": "Glass Shrimp & Aquatic Plants Aquarium 5 gal",
+     "L_in": 11.81,
+     "D_in": 10.43,
+     "H_in": 10.15,
+     "rimless": true,
+     "price_usd": 69.74,
+     "price_kind": "kit",
+     "retailer": "Petco",
+     "regular_usd": 92.99,
+     "price_note": "Petco kit $69.74, regular $92.99; page read 2026-10-26; SKU 3865587; light and filter; the page does not say frameless, the photo shows bare glass edges; Petco lists 11.81 x 12.48 x 12.95 in with the light and filter, so the glass is estimated by taking off what the 6.8 gal shallow version adds (2.05 in depth, 2.8 in height), which leaves about 5 gal inside",
+     "url": "https://www.petco.com/product/imagitarium-glass-shrimp-and-aquatic-plants-aquarium",
+     "checked": "2026-10-26",
+     "confidence": "low"
     }
    ]
   },
@@ -219,6 +267,23 @@
      "url": "https://aquariumdepot.ca/products/aqueon-standard-rectangular-aquarium-black-trim-5-5-gal",
      "checked": "2026-10-19",
      "confidence": "medium"
+    },
+    {
+     "brand": "Imagitarium (Petco)",
+     "line": "Open-Glass Rimless 5.5 gal",
+     "L_in": 16.2,
+     "D_in": 8.44,
+     "H_in": 10.55,
+     "glass_mm": 6,
+     "rimless": true,
+     "price_usd": 25,
+     "price_kind": "street",
+     "retailer": "Petco",
+     "regular_usd": 50,
+     "price_note": "Petco sale $25, regular $50 (50% off, no end shown); page read 2026-10-26; SKU 3966759; dims from the Petco page; 1/4 in (6 mm) glass per Petco Q&A; folding glass top with clips; store pickup",
+     "url": "https://www.petco.com/product/imagitarium-55-gallon-open-glass-rimless-aquarium-tank",
+     "checked": "2026-10-26",
+     "confidence": "high"
     }
    ]
   },
@@ -248,9 +313,9 @@
    "ratedGal": 6,
    "shape": "rect",
    "outer": {
-    "L": 317.5,
-    "H": 254,
-    "D": 317.5
+    "L": 291.8,
+    "H": 291.8,
+    "D": 291.8
    },
    "glassMm": 4,
    "band": "nano",
@@ -258,8 +323,8 @@
     "cube",
     "desktop"
    ],
-   "source": "estimate: common US size, no single maker listing checked",
-   "note": "Rimless-style low cube; makers vary.",
+   "source": "https://www.petco.com/product/imagitarium-6-gallon-open-glass-frameless-cube-aquarium-tank",
+   "note": "Imagitarium Open-Glass Frameless Cube 6 gal, 11.49 in cube (Petco listing, 2026-10-26); was an estimate of 12.5 x 12.5 x 10 in.",
    "variants": [
     {
      "brand": "AquaTop",
@@ -285,6 +350,38 @@
      "url": "https://www.bulkreefsupply.com/30c-rimless-aquarium-7-gallon-ultum-nature-systems.html",
      "checked": "2026-10-19",
      "confidence": "medium"
+    },
+    {
+     "brand": "Imagitarium (Petco)",
+     "line": "Open-Glass Frameless Cube 6 gal",
+     "L_in": 11.49,
+     "D_in": 11.49,
+     "H_in": 11.49,
+     "rimless": true,
+     "price_usd": 40,
+     "price_kind": "street",
+     "retailer": "Petco",
+     "regular_usd": 80,
+     "price_note": "Petco sale $40, regular $80 (50% off, no end shown); page read 2026-10-26; SKU 3966783; dims from the Petco page; store pickup",
+     "url": "https://www.petco.com/product/imagitarium-6-gallon-open-glass-frameless-cube-aquarium-tank",
+     "checked": "2026-10-26",
+     "confidence": "high"
+    },
+    {
+     "brand": "Imagitarium (Petco)",
+     "line": "Frameless Freshwater Aquarium Kit (6.8 gal)",
+     "L_in": 13.75,
+     "D_in": 8.75,
+     "H_in": 14,
+     "rimless": true,
+     "price_usd": 74.99,
+     "price_kind": "kit",
+     "retailer": "Petco",
+     "regular_usd": 99.99,
+     "price_note": "Petco kit $74.99, regular $99.99; page read 2026-10-26; SKU 2782157; LED light, internal power filter, lid with feeding holes; online shows \"Notify me when available\"; Petco lists only 13.75 W x 14 H in (may include the light), so the depth is back-solved from 6.8 gal",
+     "url": "https://www.petco.com/product/imagitarium-frameless-freshwater-aquarium-kit",
+     "checked": "2026-10-26",
+     "confidence": "low"
     }
    ]
   },
@@ -481,6 +578,22 @@
      "price_note": "Petco sale $18, regular $36 (50% off, no end shown); page read 2026-10-19; dims from the Petco page",
      "url": "https://www.petco.com/product/imagitarium-black-framed-glass-aquarium-10-gallon-3966935",
      "checked": "2026-10-19",
+     "confidence": "high"
+    },
+    {
+     "brand": "Imagitarium (Petco)",
+     "line": "Open-Glass Rimless 10 gal",
+     "L_in": 20.18,
+     "D_in": 10.2,
+     "H_in": 12.83,
+     "rimless": true,
+     "price_usd": 35,
+     "price_kind": "street",
+     "retailer": "Petco",
+     "regular_usd": 70,
+     "price_note": "Petco sale $35, regular $70 (50% off, no end shown); page read 2026-10-26; SKU 3966775; dims from the Petco page; store pickup",
+     "url": "https://www.petco.com/product/imagitarium-10-gallon-open-glass-rimless-aquarium-tank",
+     "checked": "2026-10-26",
      "confidence": "high"
     }
    ]
@@ -2779,7 +2892,10 @@
    "glassMm": 6,
    "band": "small",
    "source": "https://fishtanksdirect.com/flex-15-gallon-aquarium-kit-16-l-x-15-w-x-15-h-black",
-   "est": ["frontBulge", "glassMm"],
+   "est": [
+    "frontBulge",
+    "glassMm"
+   ],
    "note": "Listing 16 x 15 x 15 in, checked 2026-10-19 (research/tanks). Front pane curved about a HORIZONTAL axis, as the Flex 9. Outer D is the full depth at the bulge; the bulge (frontBulge 32 mm) is an ESTIMATE scaled from the Flex 9 box photo (the maker does not publish it); glass 6 mm is assumed like the Flex 9. A Flex 2.0 listing gives about 16.3 x 15.75 x 15 in.",
    "variants": [
     {
@@ -2812,7 +2928,10 @@
    "glassMm": 6,
    "band": "nano",
    "source": "https://www.bulkreefsupply.com/9-gallon-fluval-flex-2-0-aquarium-fluval.html",
-   "est": ["frontBulge", "glassMm"],
+   "est": [
+    "frontBulge",
+    "glassMm"
+   ],
    "note": "Listing checked 2026-10-19 (research/tanks); glass 6 mm assumed. Front pane curved about a HORIZONTAL axis (an arc in side view, flush with the frame at the floor and the opening, bulging out at mid-height). The outer depth D = 340.4 mm is the full depth at the bulge; the bulge itself (frontBulge 28 mm) is an ESTIMATE from the box photo (roughly 25-30 mm): the maker does not publish it.",
    "variants": [
     {
@@ -3007,6 +3126,215 @@
      "price_kind": "street",
      "retailer": "PetSmart",
      "regular_usd": 219.99
+    }
+   ]
+  },
+  {
+   "id": "n_imagitarium_cube_14",
+   "name": "Imagitarium Frameless Cube 14",
+   "ratedGal": 14,
+   "shape": "rect",
+   "outer": {
+    "L": 384.8,
+    "H": 384.8,
+    "D": 384.8
+   },
+   "glassMm": 6,
+   "rimless": true,
+   "band": "nano",
+   "tags": [
+    "cube"
+   ],
+   "source": "https://www.petco.com/product/imagitarium-14-gallon-open-glass-frameless-cube-aquarium-tank",
+   "note": "Petco Open-Glass Frameless Cube 14 gal, 15.15 in cube (Petco listing, 2026-10-26). Library preload only, not an engine pick (Nathan 2026-10-26). Glass not listed: 6 mm, the catalog rule for this height.",
+   "variants": [
+    {
+     "brand": "Imagitarium (Petco)",
+     "line": "Open-Glass Frameless Cube 14 gal",
+     "L_in": 15.15,
+     "D_in": 15.15,
+     "H_in": 15.15,
+     "rimless": true,
+     "price_usd": 60,
+     "price_kind": "street",
+     "retailer": "Petco",
+     "regular_usd": 120,
+     "price_note": "Petco sale $60, regular $120 (50% off, no end shown); page read 2026-10-26; SKU 3966839; dims from the Petco page; store pickup",
+     "url": "https://www.petco.com/product/imagitarium-14-gallon-open-glass-frameless-cube-aquarium-tank",
+     "checked": "2026-10-26",
+     "confidence": "high"
+    }
+   ]
+  },
+  {
+   "id": "n_imagitarium_cube_35",
+   "name": "Imagitarium Frameless Cube 35",
+   "ratedGal": 35,
+   "shape": "rect",
+   "outer": {
+    "L": 525,
+    "H": 510,
+    "D": 525
+   },
+   "glassMm": 8,
+   "rimless": true,
+   "band": "small",
+   "tags": [
+    "cube"
+   ],
+   "source": "https://www.petco.com/product/imagitarium-35-gallon-open-glass-frameless-cube-aquarium-tank",
+   "note": "Petco Open-Glass Frameless Cube 35 gal, 20.67 x 20.67 x 20.08 in (Petco listing, 2026-10-26). Library preload only, not an engine pick (Nathan 2026-10-26). Glass not listed: 8 mm, the catalog rule for this height.",
+   "variants": [
+    {
+     "brand": "Imagitarium (Petco)",
+     "line": "Open-Glass Frameless Cube 35 gal",
+     "L_in": 20.67,
+     "D_in": 20.67,
+     "H_in": 20.08,
+     "rimless": true,
+     "price_usd": 100,
+     "price_kind": "street",
+     "retailer": "Petco",
+     "regular_usd": 200,
+     "price_note": "Petco sale $100, regular $200 (50% off, no end shown); page read 2026-10-26; SKU 3966847; dims from the Petco page; store pickup",
+     "url": "https://www.petco.com/product/imagitarium-35-gallon-open-glass-frameless-cube-aquarium-tank",
+     "checked": "2026-10-26",
+     "confidence": "high"
+    }
+   ]
+  },
+  {
+   "id": "n_imagitarium_shallow_6_8",
+   "name": "Imagitarium Frameless Shallow 6.8",
+   "ratedGal": 6.8,
+   "shape": "rect",
+   "outer": {
+    "L": 508,
+    "H": 215.9,
+    "D": 254
+   },
+   "glassMm": 5,
+   "rimless": true,
+   "band": "nano",
+   "tags": [
+    "shallow"
+   ],
+   "source": "https://www.petco.com/product/imagitarium-frameless-shallow-glass-aquarium",
+   "note": "Petco Frameless Shallow Glass Aquarium 6.8 gal, 20 W x 8.5 H in (Petco listing, 2026-10-26); Petco gives no depth: 10 in, from the shrimp kit box (20 x 10 x 8.62) and the rated volume. Library preload only, not an engine pick (Nathan 2026-10-26).",
+   "est": [
+    "D"
+   ],
+   "variants": [
+    {
+     "brand": "Imagitarium (Petco)",
+     "line": "Frameless Shallow 6.8 gal",
+     "L_in": 20,
+     "D_in": 10,
+     "H_in": 8.5,
+     "rimless": true,
+     "price_usd": 40,
+     "price_kind": "street",
+     "retailer": "Petco",
+     "regular_usd": 80,
+     "price_note": "Petco sale $40, regular $80 (50% off, no end shown); page read 2026-10-26; SKU 3966855; Petco lists 20 W x 8.5 H in and no depth: 10 in is estimated from the 6.8 gal rating (the shrimp kit box gives 20 x 10 x 8.62); store pickup",
+     "url": "https://www.petco.com/product/imagitarium-frameless-shallow-glass-aquarium",
+     "checked": "2026-10-26",
+     "confidence": "low"
+    },
+    {
+     "brand": "Imagitarium (Petco)",
+     "line": "Shallow Glass Shrimp & Aquatic Plants Aquarium 6.8 gal",
+     "L_in": 20,
+     "D_in": 10,
+     "H_in": 8.62,
+     "rimless": true,
+     "price_usd": 114.99,
+     "price_kind": "kit",
+     "retailer": "Petco",
+     "price_note": "Petco kit $114.99; page read 2026-10-26; SKU 3865595; light and filter; Petco lists 20 x 12.05 x 11.42 in with the light and filter; the bare tank is 20 x 10 x 8.62 per the box",
+     "url": "https://www.petco.com/product/imagitarium-shallow-glass-shrimp-and-aquatic-plants-aquarium",
+     "checked": "2026-10-26",
+     "confidence": "medium"
+    }
+   ]
+  },
+  {
+   "id": "n_imagitarium_shallow_13_3",
+   "name": "Imagitarium Frameless Shallow 13.3",
+   "ratedGal": 13.3,
+   "shape": "rect",
+   "outer": {
+    "L": 613.9,
+    "H": 275.1,
+    "D": 297.2
+   },
+   "glassMm": 5,
+   "rimless": true,
+   "band": "nano",
+   "tags": [
+    "shallow"
+   ],
+   "source": "https://www.petco.com/product/imagitarium-frameless-shallow-glass-aquarium",
+   "note": "Petco Frameless Shallow Glass Aquarium 13.3 gal, 24.17 W x 10.83 H in (Petco listing, 2026-10-26); Petco gives no depth: 11.7 in, estimated from the rated volume. Library preload only, not an engine pick (Nathan 2026-10-26).",
+   "est": [
+    "D"
+   ],
+   "variants": [
+    {
+     "brand": "Imagitarium (Petco)",
+     "line": "Frameless Shallow 13.3 gal",
+     "L_in": 24.17,
+     "D_in": 11.7,
+     "H_in": 10.83,
+     "rimless": true,
+     "price_usd": 60,
+     "price_kind": "street",
+     "retailer": "Petco",
+     "regular_usd": 120,
+     "price_note": "Petco sale $60, regular $120 (50% off, no end shown); page read 2026-10-26; SKU 3966863; Petco lists 24.17 W x 10.83 H in and no depth: 11.7 in is estimated from the 13.3 gal rating; store pickup",
+     "url": "https://www.petco.com/product/imagitarium-frameless-shallow-glass-aquarium",
+     "checked": "2026-10-26",
+     "confidence": "low"
+    }
+   ]
+  },
+  {
+   "id": "n_imagitarium_shallow_28",
+   "name": "Imagitarium Frameless Shallow 28",
+   "ratedGal": 28,
+   "shape": "rect",
+   "outer": {
+    "L": 812.8,
+    "H": 347,
+    "D": 381
+   },
+   "glassMm": 6,
+   "rimless": true,
+   "band": "small",
+   "tags": [
+    "shallow"
+   ],
+   "source": "https://www.petco.com/product/imagitarium-frameless-shallow-glass-aquarium",
+   "note": "Petco Frameless Shallow Glass Aquarium 28 gal, 32 W x 13.66 H in (Petco listing, 2026-10-26); Petco gives no depth: 15 in, estimated from the rated volume (Petco customer service: roughly 32 x 15). Library preload only, not an engine pick (Nathan 2026-10-26).",
+   "est": [
+    "D"
+   ],
+   "variants": [
+    {
+     "brand": "Imagitarium (Petco)",
+     "line": "Frameless Shallow 28 gal",
+     "L_in": 32,
+     "D_in": 15,
+     "H_in": 13.66,
+     "rimless": true,
+     "price_usd": 80,
+     "price_kind": "street",
+     "retailer": "Petco",
+     "regular_usd": 160,
+     "price_note": "Petco sale $80, regular $160 (50% off, no end shown); page read 2026-10-26; SKU 3966871; Petco lists 32 W x 13.66 H in and no depth: 15 in is estimated from the 28 gal rating (Petco customer service said roughly 32 x 15); store pickup",
+     "url": "https://www.petco.com/product/imagitarium-frameless-shallow-glass-aquarium",
+     "checked": "2026-10-26",
+     "confidence": "low"
     }
    ]
   }
