@@ -159,3 +159,14 @@ export function tankChoices(opts: { terrariums?: boolean } = {}): TankChoice[] {
 
 /** Catalog volume in US gallons from the derived interior (what the check compares with ratedGal). */
 export const modelGallons = (m: TankModel) => volume(tankFromModel(m)).gallons;
+
+/** Rimless when the product says so (a variant's own flag wins over its size's). */
+export const pickRimless = (m: TankModel, v?: TankVariant) => !!(v ? v.rimless ?? m.rimless : m.rimless);
+/** A product's key within its size: maker, line, outer inches and retailer (stable when products are added; an index is not). */
+export const variantKey = (v: TankVariant) => [v.brand, v.line ?? '', `${v.L_in}x${v.D_in}x${v.H_in}`, v.retailer ?? ''].join('|');
+export const variantByKey = (m: TankModel, key: string) => m.variants?.find(v => variantKey(v) === key);
+/** "Imagitarium (Petco) Open-Glass Rimless 10 gal": the maker and line as the listing names them. */
+export const variantName = (v: TankVariant) => `${v.brand}${v.line ? ' ' + v.line : ''}`;
+/** A size named after one maker's product ("Fluval Flex 9 (curved front)"), not a generic catalogue size: its generic row is that
+ *  shape with no product, so picking it is a custom size (the product is the row under it). */
+export const namedModel = (m: TankModel) => !!m.variants?.some(v => m.name.toLowerCase().startsWith(v.brand.toLowerCase().split(' ')[0]));

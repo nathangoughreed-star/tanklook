@@ -20,6 +20,9 @@ export interface KitModel {
   filter: { kind: 'hob' | 'canister' | 'sponge' | 'internal'; rating?: number };
   heater?: { watts: number };
   tier: 'budget' | 'mid' | 'plant' | 'reef';
+  /** 'starter': a glass tank sold with a hood, light and filter (an LED or starter kit): picking it applies that gear once and it
+   *  stays editable. Absent = an all-in-one that runs only on its own gear: held (scene/integrated.ts). Nathan 2026-10-26. */
+  kind?: 'starter';
   /** false = the listing says the light is sold separately: an integrated kit then holds its filter and lid but not the light. */
   lightIncluded?: false;
   /** Approximate retail on `asOf`; absent when no price was found (see note). */

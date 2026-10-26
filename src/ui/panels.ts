@@ -32,8 +32,8 @@ import type { Viewer } from '../render/viewer';
 import { emptyScene } from '../scene/defaults';
 import { BANDS, TANK_MODELS, dimsInches, modelOfVariant, saleLive, tankFromModel, tankSaleFor, variantUsd, type TankModel, type TankVariant } from '../data/tanks';
 import { pinPreset } from '../demand/pinned';
-import { applyTankPick } from './tankPick';
-import { locksOf, lockNote } from '../scene/integrated';
+import { applyTankPick, unholdBtn } from './tankPick';
+import { breakNote, locksOf, lockNote, mayChange, productLabel, releaseProduct, type Held } from '../scene/integrated';
 import { COMPS, DEFAULT_DENS, STYLE_GROUPS, STYLE_KIND, isLandStyle, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
 import { handEdits, randomStyle, regenerate, shuffleHard } from '../scene/starter';
 import { styleGround } from '../scene/scapeground';
@@ -436,10 +436,21 @@ Cancel, then change the name, to keep both.`)) return;
     $('presetA').onclick = () => { sumpDone = null; draw(); dlg.showModal(); q.focus(); };
     openSumpPicker = done => { sumpDone = done; $('tankDlgTitle').textContent = 'Sump size'; q.value = ''; draw(); dlg.showModal(); q.focus(); };
   }
-  /** Resize / reshape each edited tank from its own current size (so ticking both changes only what was set). */
+  /** The product gate (scene/integrated.ts): a change to what an edited tank's product holds asks first, saying what it breaks;
+   *  yes releases the product in the same edit (one undo step brings both back), no changes nothing. */
+  const gate = (what: Held) => mayChange(store.targets.map(i => store.scene.tanks[i]), what, m => confirm(m));
+  const unhold = (s: TankSetup, what: Held) => { if (breakNote(s, what)) releaseProduct(s); };
+  document.addEventListener('click', e => {
+    const what = (e.target as HTMLElement).closest<HTMLElement>('[data-unhold]')?.dataset.unhold as Held | undefined;
+    if (!what || !gate(what)) return;
+    store.edit(s => { unhold(s, what); if (what === 'rim') s.render.rim = true; }); // the rim has one way to change: adding it
+  });
+  /** Resize / reshape each edited tank from its own current size (so ticking both changes only what was set). A library pick
+   *  (`also`) sets the product; any other size or shape asks first when the tank is a maker's product. */
   function setTank(next: (T: Tank) => Tank, coalesce?: string, glass?: number, also?: (s: TankSetup) => void) {
+    if (!also && !gate('size')) { sync(); return; }
     store.edit(s => {
-      also?.(s);
+      if (also) also(s); else unhold(s, 'size');
       const T = next(s.tank);
       if (glass != null) s.render.glass = glass;
       rescaleTank(s, T); // keep fish at the same relative spot (and apply the shape's rules, e.g. round D = L)
@@ -484,7 +495,7 @@ Cancel, then change the name, to keep both.`)) return;
   }
   const setUnits = (u: Scene['units']) => store.update(s => { s.units = u; });
   $('uIn').onclick = () => setUnits('in'); $('uCm').onclick = () => setUnits('cm');
-  $('rimY').onclick = () => store.edit(s => { s.render.rim = true; });
+  $('rimY').onclick = () => { if (gate('rim')) store.edit(s => { unhold(s, 'rim'); s.render.rim = true; }); };
   $('rimN').onclick = () => store.edit(s => { s.render.rim = false; });
   $('edgesY').onclick = () => store.edit(s => { s.render.edges = true; });
   $('edgesN').onclick = () => store.edit(s => { s.render.edges = false; });
@@ -492,7 +503,7 @@ Cancel, then change the name, to keep both.`)) return;
   for (const [id, d] of [['doorNone', 'none'], ['doorHinged', 'hinged'], ['doorSliding', 'sliding']] as const) $(id).onclick = () => store.edit(s => { if (d === 'none') delete s.doors; else s.doors = d; });
   const BG_BTNS = [['bgBack', 'back'], ['bgLeft', 'left'], ['bgRight', 'right'], ['bgFront', 'front']] as const;
   // a hood has no room for a metal halide pendant (too hot): it becomes LED pucks
-  for (const [id, lid] of LIDS) $(id).onclick = () => store.edit(s => { s.lid = lid; if (lid === 'hood' && fixtureOf(s.light) === 'pendant') { s.light.tech = 'led-white'; fitK(s.light); fitFixture(s.light, s.tank, true); } });
+  for (const [id, lid] of LIDS) $(id).onclick = () => gate('lid') && store.edit(s => { unhold(s, 'lid'); s.lid = lid; if (lid === 'hood' && fixtureOf(s.light) === 'pendant') { s.light.tech = 'led-white'; fitK(s.light); fitFixture(s.light, s.tank, true); } });
   $<HTMLSelectElement>('bgSel').innerHTML = Object.entries(BACKGROUNDS).map(([k, b]) => `<option value="${k}">${esc(b.label)}</option>`).join('');
   $('bgColor').oninput = e => store.edit(s => { s.render.bgColor = (e.target as HTMLInputElement).value; }, { coalesce: 'bgColor' });
   $<HTMLSelectElement>('bgSel').onchange = e => store.edit(s => { s.render.bg = (e.target as HTMLSelectElement).value as TankSetup['render']['bg']; });
@@ -1871,7 +1882,12 @@ Cancel, then change the name, to keep both.`)) return;
     { // an integrated kit keeps its own lid (scene/integrated.ts)
       const lk = locksOf(store.tank);
       for (const [id, d] of LIDS) ($(id) as HTMLButtonElement).disabled = !!lk?.lid || (d === 'hood' && !flatEnds(A));
-      $('lidLock').hidden = !lk?.lid; $('lidLock').textContent = lk?.lid ? lockNote(store.tank, 'lid') : '';
+      $('lidLock').hidden = !lk?.lid; $('lidLock').innerHTML = lk?.lid ? esc(lockNote(store.tank, 'lid')) + unholdBtn('lid') : '';
+      // a product only sold rimless keeps its rim off (Nathan 2026-10-26: "those imagitarium rimless tanks arent available rimmed")
+      ($('rimY') as HTMLButtonElement).disabled = !!lk?.rim;
+      $('rimLock').hidden = !lk?.rim; $('rimLock').innerHTML = lk?.rim ? esc(lockNote(store.tank, 'rim')) + unholdBtn('rim') : '';
+      // real product or custom size, always shown
+      const pl = productLabel(store.tank); $('prodLine').textContent = pl; $('prodLine').classList.toggle('custom', pl === 'Custom size');
     }
     for (const id of ['wallLeft', 'wallRight']) ($(id) as HTMLButtonElement).disabled = !flatEnds(A);
     // which tank the panel edits (split view)

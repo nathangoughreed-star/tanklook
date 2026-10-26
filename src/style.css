@@ -82,6 +82,10 @@ button.on, button.primary { background: var(--accent); color: #fff; border-color
 .status { position: fixed; z-index: 20; left: 14px; bottom: 14px; width: 322px; box-sizing: border-box; padding: 8px 10px; border-radius: 6px; background: var(--chip); border: 1px solid var(--line); box-shadow: 0 3px 12px rgb(0 0 0 / .35); font-size: 12.5px }
 .status.bad { border-color: var(--bad); border-left-width: 4px }
 .hint { font-size: 11.5px; color: var(--muted) }
+/* the product gate (2026-10-26): what the tank is, and the way to change what a product holds */
+.prodline { font-size: 12px; font-weight: 600; margin: 4px 0 6px; padding: 3px 7px; border-left: 3px solid var(--accent, #4a8); }
+.prodline.custom { font-weight: 400; color: var(--muted); border-left-color: var(--muted) }
+button.unhold { font-size: 11px; padding: 0 6px; margin-left: 4px }
 .help ul { padding-left: 18px; margin: 6px 0 }
 .help li { margin: 3px 0 }
 .warn { color: var(--warn) } .bad { color: var(--bad) } .ok { color: var(--ok) }
