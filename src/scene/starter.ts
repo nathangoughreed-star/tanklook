@@ -90,15 +90,7 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
   const depthCm = bioloadLitres(s) * 1000 / Math.max(1e-9, floorOf(T).areaCm2), per = (sp: Species) => litresPerAnimal(sp, depthCm); // lane HC: a tall tank's water counts for less
   const gl = (sp: Species, from: number, n: number) => groupLitres(sp, from, n, per);
   const cap = bioloadLitres(s) * ANIMAL_FILL[4];
-  const lead = pool.findIndex(sp => sp.group && sp.zone !== 'bottom' && !isInvert(sp) && sp.habitat === 'water' && gl(sp, 0, stocking(sp).start) <= cap);
-  if (lead > 0) pool.unshift(...pool.splice(lead, 1));
-  const chosen = pool.slice(0, kindsAt(stop)), budget = bioloadLitres(s) * fillAt(stop), big = Math.max(1, fillAt(stop) / ANIMAL_FILL[4]);
-  const count = new Map<Species, number>();
   const dry = (sp: Species) => (land || id === 'paludarium') && sp.habitat !== 'water'; // land animals in a terrarium style
-  let used = 0, usedFloor = 0;
-  // lane HB: the floor the bottom dwellers use is held to the same share of the tank's floor as the water budget is of its water (the
-  // stocking engine's floor limit), so a starter's Full stays at or under 100 % on both
-  const floorPerLitre = floorOf(T).areaCm2 / Math.max(1e-9, bioloadLitres(s));
   // lane SR: a group goes in while the tank still reads at or under the stop's target in the stocking engine itself (school curve,
   // floor, filtration), so Full lands where the tile says ideal instead of where the summed litres said 90 %
   const stopRead = (most: number) => FULL_READING * most / bioloadLitres(s) / ANIMAL_FILL[4];
@@ -107,6 +99,18 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
     for (const [sp, n] of extra) for (let i = 0; i < n; i++) probe.push({ id: probe.length, species: sp.id, x: 0, y: 0, depth: 0, yaw: 0, ...(sp.female && i % 2 ? { sex: 'f' as const } : {}) } as Fish);
     return stockingOf({ ...s, fish: probe }).percent;
   };
+  // lane SR (Nathan 2026-10-26, option a): a species whose smallest group cannot fit under the Full target is not drawn (its group would be
+  // refused at every stop): a nano tank then gets whatever smaller schooling species the species list holds, not snails. Nothing is named here.
+  const fits = (sp: Species) => dry(sp) || reading(new Map([[sp, stocking(sp).start]])) <= stopRead(cap);
+  { const ok = pool.filter(fits); if (ok.length) pool.splice(0, pool.length, ...ok); }
+  const lead = pool.findIndex(sp => sp.group && sp.zone !== 'bottom' && !isInvert(sp) && sp.habitat === 'water' && gl(sp, 0, stocking(sp).start) <= cap);
+  if (lead > 0) pool.unshift(...pool.splice(lead, 1));
+  const chosen = pool.slice(0, kindsAt(stop)), budget = bioloadLitres(s) * fillAt(stop), big = Math.max(1, fillAt(stop) / ANIMAL_FILL[4]);
+  const count = new Map<Species, number>();
+  let used = 0, usedFloor = 0;
+  // lane HB: the floor the bottom dwellers use is held to the same share of the tank's floor as the water budget is of its water (the
+  // stocking engine's floor limit), so a starter's Full stays at or under 100 % on both
+  const floorPerLitre = floorOf(T).areaCm2 / Math.max(1e-9, bioloadLitres(s));
   const add = (sp: Species, n: number, most = budget) => {
     const have = count.get(sp) ?? 0, l = gl(sp, have, n), fl = groupLitres(sp, have, n, floorPerAnimal);
     if (n <= 0) return false;
