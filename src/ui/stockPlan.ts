@@ -18,7 +18,7 @@ import { attachBuildPick } from './buildPick';
 import { attachStockGallery } from './stockGallery';
 import { onSpaceFork, type SpaceFork } from './fullnessTile';
 import { grazerLevel, grazerShort } from '../data/grazers';
-import { animalsInTank, animalsOf, bump, writePairs, FAIL_WORD, groupLineIn, type Pairing, forkOptions, isSexed, notesOf, overWarn, shownLengthMm, planFor, shownLitres, conflictsOf, rankTankmates, tempLinesOf, startPick, tankLabel, totalOf, type Pk, type Plan, type RoomOption } from './stockPlanLogic';
+import { spaceBand, animalsInTank, animalsOf, bump, writePairs, FAIL_WORD, groupLineIn, type Pairing, forkOptions, isSexed, notesOf, overWarn, shownLengthMm, planFor, shownLitres, conflictsOf, rankTankmates, tempLinesOf, startPick, tankLabel, totalOf, type Pk, type Plan, type RoomOption } from './stockPlanLogic';
 import { sizeTxt } from '../scene/tankfit';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
@@ -116,7 +116,7 @@ ${overWarn(p, litres || undefined, shownLengthMm(plan)) ? `<div class="spWarn">$
 ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</div>` : ''}</li>`;
   };
 
-  const bar = (pct: number, what: string) => `<span class="spBar ${Math.round(pct) > 100 ? 'over' : Math.round(pct) >= IDEAL_MAX ? 'near' : ''}" title="${what}: ${Math.round(pct)} %"><i style="width:${Math.max(2, Math.min(100, pct))}%"></i></span>`;
+  const bar = (pct: number, what: string) => `<span class="spBar ${spaceBand(pct) === 'ok' ? '' : spaceBand(pct)}" title="${what}: ${Math.round(pct)} %"><i style="width:${Math.max(2, Math.min(100, pct))}%"></i></span>`;
   const WHY = FAIL_WORD;
   let sizesTop = 0;
   const tankBlock = () => {
@@ -135,7 +135,7 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
     } else h += plan.need ? '<div class="spNote">No tank yet: pick one. You can add more animals after, and come back for a bigger tank. Greyed sizes are too small for the animals you have so far.</div>' : `<div class="spWarn">${esc(plan.problem ?? '')}</div>`;
     h += `<div class="spHd">Tank sizes</div><div class="spBands spNote">Space: <span class="spB ok">ideal up to ${IDEAL_MAX} %</span> <span class="spB near">caution, tread carefully, to 100 %</span> <span class="spB over">over 100 %: likely to cause problems long term</span></div><div class="spSizeKey spNote"><span>Space</span><span>Tank size</span></div><ul class="spSizes">${plan.options.map(o => {
       const bad = o.fails.length > 0, on = plan.tank?.id === o.tank.id, full = o.spacePct, filt = o.filtrationPct > 70 ? `<em class="${o.filtrationPct > 100 ? 'cr' : ''}">filter load ${Math.round(o.filtrationPct)} % on a basic filter; plants and a stronger one lower it</em>` : '';
-      return `<li><button type="button" data-act="size" data-tank="${o.tank.id}" class="${bad ? 'small' : ''}${on ? ' on' : ''}"${bad ? ' title="Too small for these animals; you can still pick it"' : ''}><span class="spLbl">${esc(tankLabel(o.tank, store.scene.units))}${bad ? `<em>${WHY[o.fails[0]]}</em>` : full >= IDEAL_MAX ? '<em class="cr">past ideal: tread carefully</em>' : o.cramped ? '<em class="cr">workable, a bit cramped</em>' : ''}${filt}</span>${bar(full, 'Space: how full the tank is by room, whatever the filter')}<span class="spPct">${Math.round(full)} %</span>${bar(o.minPct, 'Tank size against what the animals need')}<span class="spPct">${Math.round(o.minPct)} %</span></button></li>`;
+      return `<li><button type="button" data-act="size" data-tank="${o.tank.id}" class="${bad ? 'small' : ''}${on ? ' on' : ''}"${bad ? ' title="Too small for these animals; you can still pick it"' : ''}><span class="spLbl">${esc(tankLabel(o.tank, store.scene.units))}${bad ? `<em>${WHY[o.fails[0]]}</em>` : spaceBand(full) !== 'ok' ? '<em class="cr">past ideal: tread carefully</em>' : o.cramped ? '<em class="cr">workable, a bit cramped</em>' : ''}${filt}</span>${bar(full, 'Space: how full the tank is by room, whatever the filter')}<span class="spPct">${Math.round(full)} %</span>${bar(o.minPct, 'Tank size against what the animals need')}<span class="spPct">${Math.round(o.minPct)} %</span></button></li>`;
     }).join('')}</ul>`;
     return h;
   };

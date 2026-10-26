@@ -1,5 +1,6 @@
 // Pure logic for the stocking screen and the fork card (lane P5, 2026-10-20): picks and counts, tankmate ranking, the tank the picks need,
 // fork options. No DOM; src/ui/stockPlan.ts draws it. Reads CARE (with the P1 group data merged in) and the P2 engine (scene/tankfit.ts).
+import { IDEAL_MAX } from '../scene/stocking';
 import { CARE } from '../data/care';
 import { bandMessage, bandOf, fightsOverCount, malesWarning, mostFor, mostMalesFor, PAIR_FORMERS, pairRule, type GroupBand } from '../data/groups';
 import { needLine, needsOf, type NeedSeverity } from '../data/careNeeds';
@@ -20,6 +21,9 @@ export type { Pairing };
  *  females in `f` and unsexed animals in `u`; the rest just `n`. `pair` = the pairing status (only asked where pairRule holds). */
 export interface Pk { id: string; n: number; f?: number; u?: number; pair?: Pairing }
 export const isSexed = (id: string) => !!CARE[id]?.sexed;
+/** The Space band a percent shows in, on the ROUNDED percent the screen prints (S214 2026-10-26: the bar coloured on the rounded
+ *  value while the "past ideal" label read the raw one, so 74.6-74.99 % showed an amber "75 %" bar with no label). */
+export const spaceBand = (pct: number): 'ok' | 'near' | 'over' => Math.round(pct) > 100 ? 'over' : Math.round(pct) >= IDEAL_MAX ? 'near' : 'ok';
 export const totalOf = (p: Pk) => p.n + (p.f ?? 0) + (p.u ?? 0);
 export { PAIR_FORMERS, pairRule }; // the list lives in data/groups.ts (the editor's warnings read it too)
 /** Write the picks' pairings into the tank they were synced to (after its fish are set): each pair species with two animals keeps the
