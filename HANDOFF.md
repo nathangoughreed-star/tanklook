@@ -82,6 +82,24 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 - `sumpOffered` (any wet tank) is the one rule for tankfit and builds; tankfit's fallback filter is now the lowest filtration (was the highest rated capacity). Every fitting tankFor pick has a build at or under 100 %. Moved numbers: research/sump-section.md (only 12 blue tangs move, 240 -> 210 gal).
 - Open: 3D sump under the stand (lane SF: picture sent, waiting on Nathan); heat loss and skimmer default done in lane SF.
 
+## Calib-v4 notes: every answer read through its tank's note (2026-10-26, side chat from Glass-Box-stocking; branch `calib-v4-notes` cut from `calib-v4` cb2b48f, worktree `.claude/worktrees/calib-v4-notes`; NOT pushed)
+- **Why:** Nathan 2026-10-26: "the notes contain quite a bit of golden knowledge. I want them to be read carefully and have all answers of a
+  specific tank be read through the lens of the specific notes attached." Before this, notes were printed at the end of the review and only
+  a hand-added `review` annotation could change how an answer was read.
+- **Method:** research/calib/v4/note-reading.md. A model (never a regex) reads each note with the tank, the answers and the app's reading in
+  front of it, and writes `research/calib/answers/v4-<expert>.notes.json` beside the answers: a summary, a status for every answered field
+  (as-clicked / restated / conditional / aside, each change with the note's own words and why), a condition the app can model (stock,
+  tempC, tl in mm), and claims (species, rule key, quote, firm).
+- **Files:** scripts/calib-notes-v4.mjs (brief, check, skeleton, applyNotes, loadRead, ledger); calib-fit.mjs and calib-review-v4.mjs read
+  answers only through applyNotes and refuse a file with an unread or changed note; src/calib/v4.ts `tl` override, condKey, condScenario;
+  test/calibtablesv4.test.ts writes and locks research/calib/tables/v4-notes.json (tanks as notes describe them, `A13@expert`);
+  test/calibnotesv4.test.ts. The review gains three sections: each noted tank read through its note, answers under a note's condition
+  against the app on that tank (flag kind `conditional`), and the claims ledger (flag kind `claim`: two experts, or one keeper or
+  professional firm with high confidence).
+- **How to run:** `node scripts/calib-notes-v4.mjs brief <answers>` -> read -> `node scripts/calib-notes-v4.mjs check <answers>` ->
+  `GEN_RETABLE_V4=1 npx vitest run test/calibtablesv4.test.ts` when a reading has a modelled condition -> fit and review as before.
+- **State:** calibration tests 42 green (notes, v4 tables, v4 tooling, rounds 1-3). No real answers exist yet, so no readings either.
+
 ## Calib-v4: survey v4 adopted into the calibration tooling (2026-10-23, side chat from Glass-Box-stocking; branch `calib-v4` cut from `xc`, worktree `.claude/worktrees/calib-v4`; NOT pushed)
 - **Why:** Nathan rejected the round 1-3 survey (random tanks, counts nobody keeps). Survey v4 (60 hand-written likely-case tanks in modules
   A community, B specialist, C saltwater, D herps; design research/calib/v4/survey-v4-design.md) was written in the stale copy; this lane

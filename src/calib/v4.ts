@@ -29,6 +29,8 @@ export interface V4Scenario {
   stock: V4Stock[]; focal?: string; mate?: string; ask: string[]; tests: string[]; why: string; pairOf?: string;
   min?: { species: string; sizes: string[]; label?: string }; max?: { species: string; options: string[]; label?: string }[];
   maxMales?: { species: string; options: string[] }[];
+  /** adult lengths the tank is read at instead of the engine's, mm per species (a note's stated condition, e.g. juveniles) */
+  tl?: Record<string, number>;
 }
 export interface V4Doc { tanks: Record<string, V4Tank>; scenarios: V4Scenario[]; ideal: number; limit: number }
 
@@ -56,8 +58,9 @@ export const waterDepthIn = (note?: string) => { const m = /water (\d+(?:\.\d+)?
 /** The tank as the app would hold it: the inside dimensions, the animals placed as rounds 1-3 place them (setupOf), each animal's sex
  *  and the pairs as the stocking screen sets them, salt water for a saltwater tank, no water for a dry enclosure (env.water none), and
  *  for a paludarium (env.water half) the app's paludarium layout with the stated water depth. */
-export function setupV4(dims: Dims, env: V4Scenario['env'], stock: V4Stock[]): TankSetup {
+export function setupV4(dims: Dims, env: V4Scenario['env'], stock: V4Stock[], tl?: Record<string, number>): TankSetup {
   const S = setupOf(dims, stock.map(s => [s.id, s.n] as [string, number])), picks = stock.map(pickOf);
+  if (tl) for (const f of S.fish) if (tl[f.species] > 0) f.tl = tl[f.species];
   for (const p of picks) {
     const sp = getSpecies(p.id)!, mine = S.fish.filter(f => f.species === p.id), sexed = isSexed(p.id);
     // ui/stockPlan.ts: males, then females, then unsexed (a herp's gender left unset = not sexed yet)
@@ -84,7 +87,7 @@ const herpArea = (S: TankSetup) => footprint(S.tank).area / SQFT_MM2 * 1.05;
 
 /** One species at one size, as stocked: the tank minimum's line for a water animal, the herp floor and height checks for a land one. */
 function minAt(sc: V4Scenario, sp: string, dims: Dims): { level: 'red' | 'yellow' | 'green'; why: string } {
-  const S = setupV4(dims, sc.env, sc.stock), row = tankMinimum(S).rows.find(r => r.id === sp);
+  const S = setupV4(dims, sc.env, sc.stock, sc.tl), row = tankMinimum(S).rows.find(r => r.id === sp);
   if (row) return { level: minLevel(row.pct, row.comfortPct), why: `${Math.round(row.pct)} % of the red line, ${Math.round(row.comfortPct)} % of the green` };
   const who = herpRuleOf(sp)?.name, iss = herpCheck(S).filter(i => i.who === who && /^(floor|enclosure)/.test(i.text));
   return { level: iss.some(i => i.level === 'warn') ? 'red' : iss.length ? 'yellow' : 'green', why: iss.map(i => i.text).join('; ') || 'meets the floor and height' };
@@ -151,7 +154,7 @@ export interface AppReading {
 
 /** What the app shows for a tank as described. */
 export function readApp(sc: V4Scenario, dims: Dims): AppReading {
-  const S = setupV4(dims, sc.env, sc.stock), st = stockingOf(S), tile = tileState(S, st, 'in'), m = tankMinimum(S);
+  const S = setupV4(dims, sc.env, sc.stock, sc.tl), st = stockingOf(S), tile = tileState(S, st, 'in'), m = tankMinimum(S);
   const bandOf = (lv: string) => lv === 'over' ? 'problems' as const : lv === 'near' ? 'caution' as const : 'ideal' as const;
   const top = (k: 'space' | 'floor') => [...st.contributors].filter(c => c[k] > 0).sort((a, b) => b[k] - a[k])[0]?.id ?? null;
   const wet = S.water.on && st.contributors.length > 0;
@@ -189,7 +192,7 @@ export function stockAt(sc: V4Scenario, who: string, n: number): V4Stock[] {
 export function tableV4(sc: V4Scenario, dims: Dims, who: string, limit = 100): TableRow[] {
   const shown = sc.stock.find(s => s.id === who)!.n, out: TableRow[] = [];
   for (let n = 0; n <= 400; n++) {
-    const st = stockingOf(setupV4(dims, sc.env, stockAt(sc, who, n))), water: Record<string, number> = {};
+    const st = stockingOf(setupV4(dims, sc.env, stockAt(sc, who, n), sc.tl)), water: Record<string, number> = {};
     for (const c of st.contributors) water[c.id] = c.space / st.capacity.space * 100;
     out.push({ n, water, floor: st.floorPercent });
     if (n >= 2 * shown && st.spacePercent > 1.8 * limit) break;
@@ -221,15 +224,26 @@ export function retableV4(doc: V4Doc, sc: V4Scenario) {
   const cls = Object.fromEntries(sc.stock.map(s => { const sp = getSpecies(s.id)!; return [s.id, sp.salt ? 'salt' : classOf(s.id)]; }));
   const uses = Object.fromEntries(sc.stock.map(s => [s.id, { water: getSpecies(s.id)!.kind !== 'snail', floor: floorShare(getSpecies(s.id)!) }]));
   // adult lengths as the engine has them at retable time (the female's where the species is drawn apart), mm
-  const tlMm = Object.fromEntries(sc.stock.map(s => { const sp = getSpecies(s.id)!; return [s.id, sp.female ? { m: sp.tl, f: sp.female.tl } : sp.tl]; }));
+  const tlMm = Object.fromEntries(sc.stock.map(s => { const sp = getSpecies(s.id)!; return [s.id, sc.tl?.[s.id] ?? (sp.female ? { m: sp.tl, f: sp.female.tl } : sp.tl)]; }));
   // a mix's label as rounds 1-3 read it (scenario.ts gateOf: compatibility at the groups' minimums, no / one shared degree = high, narrow = concern)
   const gate = sc.stock.length > 1 ? gateOf(dims, sc.stock.map(s => s.id)) : null;
   return {
     readable: true, kind: T.kind, water: sc.env.water, salt: sc.env.water === 'salt', ...(sc.env.water === 'half' ? { note: 'paludarium: the app\'s paludarium layout, water at the stated depth; read as the app reads it today' } : {}),
     unmodelled: unmodelled(sc), cls, uses, tlMm, ...(gate ? { gate: gate.gate, gateItems: gate.items } : {}), app,
     ...(sc.min ? { minSizes: sc.min.sizes.map(label => { const d = sizeOf(label); return { label, dims: d, ...(d ? minAt(sc, sc.min!.species, d) : { level: null, why: 'no size in the label' }) }; }) } : {}),
-    ...(counts ? { table: tableV4(sc, dims, sc.focal!, doc.limit) } : {}),
+    ...(counts && sc.stock.some(s => s.id === sc.focal) ? { table: tableV4(sc, dims, sc.focal!, doc.limit) } : {}),
     // the second counted species (a bottom dweller, survey v4 build cba9d609), the focal held as shown
-    ...(counts && sc.mate ? { mateTable: tableV4(sc, dims, sc.mate, doc.limit) } : {}),
+    ...(counts && sc.mate && sc.stock.some(s => s.id === sc.mate) ? { mateTable: tableV4(sc, dims, sc.mate, doc.limit) } : {}),
   };
+}
+
+// ---------- a note's stated condition (research/calib/v4/note-reading.md, Nathan 2026-10-26) ----------
+/** What a note says the expert assumed, in the parts the app has an input for: the stock (replaces the tank's), the water temperature,
+ *  the animals' lengths. Anything else in the note is not modelled, and answers that rest on it are set aside, not re-read. */
+export interface V4Condition { text: string; stock?: V4Stock[]; tempC?: number; tl?: Record<string, number> }
+/** The id of a tank as one expert's note says they read it: `A04@expert`. */
+export const condKey = (tank: string, expert: string) => `${tank}@${String(expert).replace(/[^A-Za-z0-9_-]+/g, '_')}`;
+/** The tank as the note says the expert read it: the same box and questions, the stated stock, temperature and lengths. */
+export function condScenario(sc: V4Scenario, c: V4Condition, key: string): V4Scenario {
+  return { ...sc, id: key, stock: c.stock ?? sc.stock, env: c.tempC != null ? { ...sc.env, tempC: c.tempC } : sc.env, ...(c.tl ? { tl: c.tl } : {}) };
 }

@@ -101,7 +101,7 @@ describe('survey v4 in the fit', () => {
     expect(f.answers).toEqual([{ id: 'A04', focal: { ideal: 8, limit: 12, status: {} }, overall: 2, floor: null, water: null, confidence: 2, limits: null, bigEnough: {}, together: null,
       mate: { id: 'bronzecory', ideal: null, limit: null, status: { ideal: 'no-valid-count', limit: 'no-valid-count' } },
       review: { skip: ['overall'], why: 'v4 change "drop": a compatibility answer, not a room band' } }]);
-    expect(f.v4).toEqual({ outside: 1, skipped: 1, carried: 0 });
+    expect(f.v4).toEqual({ outside: 1, skipped: 1, carried: 0, condOut: 0, readings: 0, notes: 0 });
   });
   it('fits the second counted species\' ideal and limit on the dimension it fills today', () => {
     const a = R.scenarios.find((s: any) => s.id === 'A04');

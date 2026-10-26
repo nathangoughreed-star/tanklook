@@ -98,7 +98,7 @@ Per tank, in this order; a question appears only when the tank's `ask` lists it.
 | `max.<species>` | the most of that species you would keep in this tank, whatever else is in it | one of the offered counts (e.g. 0 · 1 · 2 · 3 · 5 · 7+) |
 | `maxMales.<species>` | the most males of that species here | 0 · 1 · 2 · 3 |
 | `confidence` | how sure | `low` · `medium` · `high` |
-| `note` | free text | |
+| `note` | free text | read first: every answer on the tank is read through it (section 5, note-reading.md) |
 
 Export file: `{ survey: "v4", build, expert, expertKind (keeper · professional · ai), modules[], made, answers: { <tankId>: {...} }, carried[] }`.
 `ms` per tank is time spent. An LLM pack returns the same object for one module, with `expertKind: "ai"`. The HTML stores the same
@@ -116,6 +116,7 @@ shape (it flattens `max.<species>` to `max:<species>` internally and nests it on
 | `max.<species>` | `groups.ts` `max`, `territory`, and `herpstock.ts` `max` / `each` | the median vs the app's figure for that tank size; eleven species |
 | `maxMales.<species>` | `groups.ts` `males` (dwarf gourami), herp `males2` (anole) | the same |
 | `confidence` | weight | 0.5 / 1 / 1.5 as before |
+| `note` | how every other answer on the tank is read (Nathan 2026-10-26) | a model reads it before anything else and gives each answered field a status: as-clicked, restated, conditional (re-read on the engine under the stated stock, temperature or lengths) or aside, with the note's words; knowledge in it goes to a ledger of claims that can raise a proposal by itself. The fit and the review refuse a file with an unread note. Method: `note-reading.md` |
 | `skip` | nothing | counted per expert and module; a module with many skips from a keeper is outside their domain, a module with many skips from an LLM is a prompt problem |
 
 ## 6. Reading the results
