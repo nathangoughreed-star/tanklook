@@ -173,45 +173,6 @@
      "bend": 0,
      "tl": 190,
      "surface": "glass"
-    },
-    {
-     "id": 1001,
-     "species": "crestedgecko",
-     "x": 411.2737179875207,
-     "y": 196.2952813252527,
-     "depth": 254.4043140149108,
-     "yaw": 102,
-     "pitch": 0,
-     "roll": 0,
-     "bend": 0,
-     "tl": 188,
-     "surface": "hardscape"
-    },
-    {
-     "id": 1002,
-     "species": "crestedharlequin",
-     "x": 364.69042147556127,
-     "y": 413.08306549986503,
-     "depth": 197.6476844652766,
-     "yaw": -107,
-     "pitch": 0,
-     "roll": 0,
-     "bend": 0,
-     "tl": 180,
-     "surface": "hardscape"
-    },
-    {
-     "id": 1003,
-     "species": "crestedharlequin",
-     "x": 234.17174764975906,
-     "y": 64.36074029671181,
-     "depth": 218.31848364426568,
-     "yaw": -155,
-     "pitch": -4,
-     "roll": -4,
-     "bend": 0.25,
-     "tl": 175,
-     "surface": "floor"
     }
    ],
    "items": [

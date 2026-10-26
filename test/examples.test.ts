@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { getSpecies } from '../src/data/species';
 import { EXAMPLES } from '../src/examples';
 import { SCENES } from '../src/examples/scenes';
+import { herpCheck } from '../src/scene/herpcheck';
 import { insideBy, shapeOf } from '../src/scene/shape';
 import { parseScene } from '../src/scene/validate';
 
@@ -17,6 +18,14 @@ describe('example tanks (lane F, 2026-10-13)', () => {
     expect(warnings).toEqual([]);
     expect(scene.name).toBe(x.name);
     for (const t of scene.tanks) for (const f of t.fish) expect(getSpecies(f.species), f.species).toBeTruthy();
+  });
+  // A starter tank must not trip its own animal checks (Nathan 2026-10-26). One accepted exception: the paludarium keeps
+  // white clouds with its fire-bellied toads, which no source recommends ("we can live a little").
+  for (const x of EXAMPLES) it(`"${x.name}" passes the animal checks`, () => {
+    for (const t of parseScene(SCENES[x.id]).scene.tanks) {
+      const warns = herpCheck(t).filter(i => i.level === 'warn' && !(x.id === 'paludarium' && i.text.startsWith('not with White cloud')));
+      expect(warns).toEqual([]);
+    }
   });
   it('the reef is a saltwater tank and the terrarium is dry', () => {
     const tank = (id: string) => parseScene(SCENES[id]).scene.tanks[0];
