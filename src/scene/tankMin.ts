@@ -104,7 +104,8 @@ export function measureLines(w: Who, d: MinData | undefined, g: Geometry): Lines
   const red = worst(checksOf(w, d?.red, d?.hRed, g));
   const gc = checksOf(w, d?.green ?? d?.red, d?.hGreen ?? d?.hRed, g);
   // Decision 2: the gallon figure is husbandry guidance, a Recommended mark (mystery snail 5 gal), never a gate
-  if (d?.vol) gc.push({ limiting: 'water', need: d.vol.gal * GAL_L, have: g.tankLitres ?? g.litres, mark: 'advisory', site: d.vol.site, states: `${d.vol.gal} gal` });
+  // a gallon figure names the catalogue size and the glass holds up to 10 % less (a 20 gal long, 30 x 12 x 12 in, is 71 L, not 75.7): the red lines' 10 % slack applies (Nathan 2026-10-26)
+  if (d?.vol) gc.push({ limiting: 'water', need: d.vol.gal * GAL_L * 100 / MIN_SLACK_PCT, have: g.tankLitres ?? g.litres, mark: 'advisory', site: d.vol.site, states: `${d.vol.gal} gal` });
   const depth = depthOf(g), max = d?.depth?.maxWaterDepthMm ?? 0;
   // no page states a minimum water depth (MX7): water shallower than the animal is long is not assessed, not a pass
   return { red, green: worst(gc), assessed: !(w.water && depth < w.tl), depthMm: depth, tooDeepMm: max && depth > max ? max : 0 };
