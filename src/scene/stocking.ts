@@ -283,6 +283,7 @@ export function stockingOf(S: TankSetup): Stocking {
     if (isOver(spacePercent) && spaceBy === 'floor') reasons.push(`The floor is too small for the bottom dwellers (${Math.round(floorPercent)}% of it): no filter or extra height fixes that, it needs about ${Math.ceil(floorUse / SQIN_CM2)} sq in of floor (the tank has ${Math.round(areaCm2 / SQIN_CM2)}) or fewer bottom dwellers.`);
     else if (isOver(spacePercent)) reasons.push(`The tank itself is too small for them (${Math.round(spacePercent)}% of its space): no filter fixes that, it needs about ${Math.ceil(cap.litres * waterPercent / 100)} L of water or fewer animals.`);
     else {
+      reasons.push('Past the safe load for this filter: it needs a larger filter or less load.');
       const fr = rowsFor(S).find(r => r.id === 'filter');
       for (const o of [...(fr?.options ?? [])].sort((a, b) => (a.capacity ?? 1) - (b.capacity ?? 1))) {
         const p = Math.max(nitrogenBudget(S, cap.litres + (o.id === 'sump' ? sumpLitres(S, true) : 0), cap.tempC, load, o.id).ammoniaPercent, spacePercent);
@@ -290,11 +291,16 @@ export function stockingOf(S: TankSetup): Stocking {
       }
       if (!fixFilter) reasons.push(`Even the best filter leaves ammonia high: it needs fewer animals, more plants, lighter feeding or a bigger tank.`);
     }
-  } else if (Math.round(percent) >= IDEAL_MAX) reasons.push(spacePercent < filtrationPercent ? 'Past ideal, tread carefully: keep up with water changes and add nothing big.'
-    // space binds (2026-10-22): water changes add no room, so name what does
-    : spaceBy === 'floor' ? 'Past ideal by floor: water changes do not add floor; fewer bottom dwellers or a tank with a bigger base would.'
-    : 'Past ideal by swimming room: water changes do not add room; fewer animals or a longer tank would.');
-  else reasons.push(`Room for about ${Math.round(IDEAL_MAX - percent)}% more load before it is past ideal.`);
+  } else {
+    // lane SR step 7 (Nathan 2026-10-26): name the binding dimension with the number; the filtration advice is Nathan's own words: "75% is ideal and
+    // can be attenuated with normal water changes and the fish will have no toxin-induced stress from under-filtering. Yellow is doable with heavier
+    // than normal water changes/schedule. 100% should get a larger filter or reduce load."
+    const dim = bySpace ? (spaceBy === 'floor' ? 'floor' : 'swimming room') : 'filtration', head = `${Math.round(percent)}% · limited by ${dim}.`;
+    const past = Math.round(percent) >= IDEAL_MAX;
+    reasons.push(bySpace
+      ? `${head} ${!past ? 'Ideal.' : spaceBy === 'floor' ? 'Past ideal: water changes do not add floor; fewer bottom dwellers or a tank with a bigger base would.' : 'Past ideal: water changes do not add room; fewer animals or a longer tank would.'}`
+      : `${head} ${past ? 'Doable with heavier than normal water changes and a tighter schedule; at 100% it needs a larger filter or less load.' : 'Normal water changes keep ammonia down; the fish get no toxin-induced stress from under-filtering.'}`);
+  }
   return { nitrogen, percent, spacePercent, waterPercent, floorPercent, spaceBy, floor: { areaCm2, usedCm2: floorUse }, filtrationPercent, load, contributors, capacity: cap, reasons, ...(fixFilter ? { fixFilter } : {}) };
 }
 

@@ -1,8 +1,8 @@
 // Integrated kits (2026-10-20, Nathan: "integrated kits/tanks like this can really only be used with their own tech and equipment and
 // aren't customizable like a bare glass tank"). An all-in-one such as a Fluval Flex is picked from the tank picker with its kit
 // (TankVariant.kit, an id in data/kits.json). The kit's light, lid and filter are applied once and then HELD: the panels grey
-// out what the kit supplies (locksOf), and holdIntegrated, called after every scene edit, puts any drift back. Ordinary starter kits
-// (hood, light and filter on a glass tank, KitModel.kind 'starter') are not integrated: their gear is applied once and stays editable.
+// out what the kit supplies (locksOf), and holdIntegrated, called after every scene edit, puts any drift back. Since S233b a starter
+// or LED kit is held the same way: what a product ships with is held (Nathan 2026-10-26).
 //
 // The product gate (2026-10-26, Nathan: "If you pick a style of tank, then everything that comes along with that must remain unless you
 // deliberately change it after a warning message"). The same mechanism holds the product the tank was picked as (TankSetup.product):
@@ -10,9 +10,11 @@
 // (locksOf().rim) and its size and shape, and an all-in-one its kit's gear. Nathan 2026-10-26: "custom tanks are custom and anything
 // can be changed. others not so much. If I get a standard 55g, I cant just take the rim off". A held control is greyed with lockNote;
 // changing it anyway goes through breakNote, a confirm saying what it breaks, then releaseProduct (the tank is a custom one with what
-// it had; undo brings the product back). What people add to any tank (lid, light, filter, heater) stays free unless a kit supplies it.
+// it had; undo brings the product back). What the product ships with (TankVariant.includes, or its kit record) is held like the rim:
+// Nathan 2026-10-26, "yes, as long as its truly a bare tank. Often times tanks come with at least a glass top". What it is sold
+// without is free, and what is not recorded yet is free and flagged (includesNote), never guessed.
 import { kitById, kitGear, type KitModel } from '../data/kits';
-import { getTankModel, namedModel, pickRimless, variantByKey, variantName, type TankModel, type TankVariant } from '../data/tanks';
+import { getTankModel, namedModel, pickRimless, variantByKey, variantName, type Includes, type TankModel, type TankVariant } from '../data/tanks';
 import { kitTech } from '../demand/tech';
 import { filterUnits, heaterUnits } from './tech';
 import { applyKitLight } from './kitlight';
@@ -33,11 +35,22 @@ export function productOf(S: Pick<TankSetup, 'product'>): { m: TankModel; v?: Ta
   return p.key && !v ? undefined : { m, v };
 }
 
+/** What a kit ships with, as a product's `includes`. */
+export const kitIncludes = (k: KitModel): Includes => ({ lid: k.lid, light: k.lightIncluded !== false, filter: !!k.filter, heater: !!k.heater?.watts, stand: !!k.stand });
+/** What the ready-made tank is sold with: its own record, else its kit's; undefined when nothing is recorded (a standard size, or a
+ *  product not yet researched). */
+export function includesOf(S: Gated): Includes | undefined {
+  const pv = productOf(S), k = pv?.v?.kit ? kitById(pv.v.kit) : integratedKit(S);
+  return pv?.v?.includes ?? (k ? kitIncludes(k) : undefined);
+}
+/** The lid a ready-made tank without a kit ships with, which it then keeps (a kit holds its own through `integrated`). */
+const shippedLid = (S: Gated) => { const l = !S.integrated && productOf(S) ? includesOf(S)?.lid : undefined; return l && l !== 'none' ? l : undefined; };
+
 export function locksOf(S: Gated): Locks | undefined {
   const k = S.integrated && kitById(S.integrated.kit), pv = productOf(S);
   const rim = !!pv; // a ready-made tank keeps the rim it is sold with, either way
   if (!k && !rim) return undefined;
-  return { light: !!k && k.lightIncluded !== false, lid: !!k, filter: !!k?.filter, heater: !!k?.heater?.watts, rim };
+  return { light: !!k && k.lightIncluded !== false, lid: !!k || !!shippedLid(S), filter: !!k?.filter, heater: !!k?.heater?.watts, rim };
 }
 export const integratedKit = (S: Pick<TankSetup, 'integrated'>): KitModel | undefined => S.integrated ? kitById(S.integrated.kit) : undefined;
 
@@ -81,6 +94,8 @@ function holdProduct(t: TankSetup) {
   if (!p.sig) p.sig = tankSig(t.tank);
   else if (p.sig !== tankSig(t.tank)) { delete t.product; return; }
   t.render.rim = !pickRimless(pv.m, pv.v);
+  const lid = shippedLid(t);
+  if (lid) t.lid = lid;
 }
 
 /** Called on every scene edit (scene/store.ts): holds the product, applies a freshly picked kit, releases one whose tank changed, and
@@ -132,10 +147,33 @@ export function productLabel(S: Gated): string {
 const soldRimless = (S: Gated) => { const pv = productOf(S); return !!pv && pickRimless(pv.m, pv.v); };
 
 const GEAR = { light: 'light', lid: 'lid', filter: 'filter', heater: 'heater' } as const;
+const LIDS: Record<string, string> = { glass: 'a glass top', hood: 'a hood', mesh: 'a mesh top', open: 'no lid' };
 /** The one line the panels show beside what is locked. */
 export function lockNote(S: Gated, what: keyof Locks): string {
   if (what === 'rim') return locksOf(S)?.rim ? `The ${productName(S)} is ${soldRimless(S) ? 'only sold rimless' : 'sold with its rim'}.` : '';
-  return integratedKit(S) ? `All-in-one kit: its ${GEAR[what]} comes with it. Changing it makes this a custom tank.` : '';
+  if (what === 'lid' && shippedLid(S)) return `The ${productName(S)} comes with ${LIDS[shippedLid(S)!]}.`;
+  return integratedKit(S) ? `The ${productName(S)} comes with its own ${GEAR[what]}. Changing it makes this a custom tank.` : '';
+}
+
+/** What the ready-made tank comes with, shown under its label: included, sold without, and not recorded yet (free, flagged). */
+export function includesNote(S: Gated): string {
+  if (!productOf(S) && !S.integrated) return '';
+  const inc = includesOf(S);
+  if (!inc) return "What this tank comes with isn't recorded yet: lid, light, filter and heater are free to set.";
+  const k = integratedKit(S), names = { lid: 'lid', light: 'light', filter: 'filter', heater: 'heater', stand: 'stand' } as const;
+  const yes: string[] = [], no: string[] = [], unknown: string[] = [], loose: string[] = [];
+  for (const key of Object.keys(names) as (keyof Includes)[]) {
+    const v = inc[key];
+    if (v === undefined) unknown.push(names[key]);
+    else if (v === false || v === 'none') no.push(names[key]);
+    else {
+      yes.push(key === 'lid' ? LIDS[v as string] ?? 'a lid' : `${key === 'stand' ? 'a' : 'its own'} ${names[key]}`);
+      if (!k && (key === 'light' || key === 'filter' || key === 'heater')) loose.push(names[key]); // no kit record: the gear itself is not modelled
+    }
+  }
+  return [yes.length ? `Comes with ${yes.join(', ')}.` : '', no.length ? `Sold without: ${no.join(', ')} (free to add).` : '',
+    unknown.length ? `Not recorded yet: ${unknown.join(', ')} (free to set).` : '',
+    loose.length ? `Its ${loose.join(', ')} is not modelled yet, so it can be changed.` : ''].filter(Boolean).join(' ');
 }
 
 /** The confirm a change to something held asks, saying what it breaks; undefined when nothing is held there (it changes freely). */
@@ -148,7 +186,8 @@ export function breakNote(S: Gated, what: Held): string | undefined {
   }
   if (!locksOf(S)?.[what]) return undefined;
   if (what === 'rim') return soldRimless(S) ? `The ${name} is only sold rimless. Adding a rim ${tail} Continue?` : `The ${name} is sold with its rim. Taking it off ${tail} Continue?`;
-  return `The ${name} runs on its own ${GEAR[what]}. Changing it ${tail} Continue?`;
+  if (what === 'lid' && shippedLid(S)) return `The ${name} comes with ${LIDS[shippedLid(S)!]}. Changing the lid ${tail} Continue?`;
+  return `The ${name} comes with its own ${GEAR[what]}. Changing it ${tail} Continue?`;
 }
 
 /** Yes to breakNote: the tank becomes a custom one with what it had (the gear stays, now editable). Undo brings the product back. */
