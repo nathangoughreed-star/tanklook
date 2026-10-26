@@ -81,15 +81,18 @@ export function whysAnimal(sp: Species, litres: number, expertise: Expertise, pr
       if (oc.alone && fish(sp)) bad('it is best kept in a species-only tank', true);
       // water chemistry (Nathan 2026-10-26): preferred ranges shared = fine; only the acceptable ones shared = a compromise (concern);
       // not even those = blocking. A species with no documented acceptable range is held to its preferred one (waterchem.ts).
+      // a snail on either side: its shell is what soft or acid water costs it, said with the remedy (advice, not a KH rule: no
+      // species-level KH data yet)
+      const shell = sp.kind === 'snail' || o.kind === 'snail' ? '; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps' : '';
       if (c.ph && oc.ph) {
         const a = c.phOk ?? c.ph, b = oc.phOk ?? oc.ph;
         if (shared(a, b) < 0.2) bad(`water chemistry: pH ${band(a, 1)} against its ${band(b, 1)}`);
-        else if (shared(c.ph, oc.ph) < 0.2) bad(`water chemistry: prefers pH ${band(c.ph, 1)}, it ${band(oc.ph, 1)}; both accept ${both(a, b, 1)}, a compromise`, true);
+        else if (shared(c.ph, oc.ph) < 0.2) bad(`water chemistry: prefers pH ${band(c.ph, 1)}, it ${band(oc.ph, 1)}; both accept ${both(a, b, 1)}, a compromise${shell}`, true);
       }
       if (c.gh && oc.gh) {
         const a = c.ghOk ?? c.gh, b = oc.ghOk ?? oc.gh;
         if (shared(a, b) < 2) bad(`water hardness: GH ${band(a)} against its ${band(b)}`);
-        else if (shared(c.gh, oc.gh) < 2) bad(`water hardness: prefers GH ${band(c.gh)}, it ${band(oc.gh)}; both accept ${both(a, b)}, a compromise`, true);
+        else if (shared(c.gh, oc.gh) < 2) bad(`water hardness: prefers GH ${band(c.gh)}, it ${band(oc.gh)}; both accept ${both(a, b)}, a compromise${shell}`, true);
       }
     }
   }

@@ -30,7 +30,10 @@ export const CHEM: Record<string, { ph: R; gh?: R; phOk?: R; ghOk?: R }> = {
   hillstream: { ph: [6, 7.5] }, peapuffer: { ph: [7.0, 8.0] },
   // invertebrates: snails need some hardness for their shells
   cherryshrimp: { ph: [6.5, 8.0], gh: [4, 14] }, amano: { ph: [6.0, 8.0], gh: [3, 15] }, nerite: { ph: [7.0, 8.5], gh: [6, 18] },
-  mystery: { ph: [6.5, 8.0], gh: [6, 18] }, ramshorn: { ph: [7, 8], gh: [6, 18] }, trumpet: { ph: [6.5, 8.0] },
+  // mystery snail: Aquarium Co-Op's care guide, "pH of at least 7.2, and GH above 150 ppm (or 8 degrees)", is the preferred floor; the
+  // older 6.5 / 6 floor is kept as acceptable (Nathan 2026-10-26). Nerite: its Aquarium Co-Op guide says pH above 7.0 and plenty of minerals,
+  // no GH figure, which its 7.0-8.5 already covers.
+  mystery: { ph: [7.2, 8.0], gh: [8, 18], phOk: [6.5, 8.0], ghOk: [6, 18] }, ramshorn: { ph: [7, 8], gh: [6, 18] }, trumpet: { ph: [6.5, 8.0] },
   adf: { ph: [6.5, 7.8] }, axolotl: { ph: [7.0, 7.6] }, firenewt: { ph: [6.5, 7.5] }, firetoad: { ph: [6.5, 7.5] },
 };
 /** Every marine species shares one band (natural seawater); no hardness check. */
