@@ -19,8 +19,8 @@ pushes from a throwaway worktree without touching other chats' edits. A hook (`s
 
 **Chat IDs (Nathan 2026-10-20):** every chat has a unique ID and a title of the form `ID: Short Title` (`P2b: Tank Filtration & Honest Span`; coordinators are just `Coordinator N`). The COORDINATOR assigns the ID and sets the title when it starts a chat; chats never rename themselves and never reuse an ID. Lanes keep their letter code (P1-P6b, SE, SE2, LO, GD, DM, TG, UF = user flow design, SB source backfill, ST source traceability, ER equipment research, LC light catalogue, MC menu close, SF sponge filter, TV tank sizes, HM heater menu, HL hood lighting, BT bare tank, SC substrate contour, SO stand and cost). Side and older chats are `S001`-`S164` (numbered by age on 2026-10-20); the next free number is S165, the next lane codes are chosen by the coordinator and checked against this list. Chats started by hand get an ID at the next coordinator `check`.
 
-**Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_901f3080-a6d1-434c-9b78-3485dcfdaf02`
-("Coordinator 10", took over 2026-10-26 from `local_e8a444fa` (Coordinator 9)). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
+**Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_bbbd7610-737d-4dad-b5cc-25aacc03fb67`
+("Coordinator 11", took over 2026-10-26 from `local_901f3080` (Coordinator 10)). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says
 what landed (commit), what is still open, and which files are now free. The coordinator then sends Nathan the prompts
 for any chats that can start now. If a prompt is still waiting when another lane opens, it sends all waiting prompts again
@@ -30,7 +30,7 @@ New since 2026-10-16: lane prompts are one line ("You are lane X. Read prompts/l
 whose chat gets long hands off to a fresh chat at a work-unit boundary (write its state into its HANDOFF section
 first); dev servers are swept when a lane reports done and on "check" (no hourly sweep).
 
-**Current lanes** (coordinator "Coordinator 10", `local_901f3080`):
+**Current lanes** (coordinator "Coordinator 11", `local_bbbd7610`):
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 DONE 2026-10-16 (lane SS2, see archive; its gaps: no water dish, no succulents, Malawi has only yellowlab / cockatoo); multi-select / duplicate (lane MS) + scatter brush (lane SB) DONE 2026-10-16, see archive; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
