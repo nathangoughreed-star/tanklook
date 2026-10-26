@@ -254,18 +254,42 @@ describe('bare-tank sales (parts estimate)', () => {
   });
 });
 describe('stand not chosen yet', () => {
-  it('counts a typical stand while undecided, nothing after "I don\'t need a stand"', async () => {
+  it('counts a stand only once added: undecided and "I don\'t need a stand" count nothing (Nathan 2026-10-26)', async () => {
     const { demandOf } = await import('../src/demand/engine');
     const { defaultProfile } = await import('../src/demand/types');
     const { emptyScene } = await import('../src/scene/defaults');
     const { sceneFromDeal } = await import('../src/demand/dealscene');
     const { DEALS } = await import('../src/data/deals');
     const S = emptyScene().tanks[0], P = defaultProfile(), row = (st: object) => demandOf({ ...S, stand: { ...S.stand, ...st } }, P).items.find(r => r.key === 'stand');
-    expect(row({ show: false, need: 'ask' })?.label).toMatch(/not chosen yet/);
+    expect(row({ show: false, need: 'ask' })).toBeUndefined();
     expect(row({ show: false, need: 'none' })).toBeUndefined();
     expect(row({ show: true, need: 'added' })?.label).toBe('Stand');
     const kit = DEALS.find(d => d.tank && !d.includes.includes('stand'))!, ens = DEALS.find(d => d.tank && d.includes.includes('stand'))!;
     expect(sceneFromDeal(kit)!.tanks[0].stand).toMatchObject({ show: false, need: 'ask' });
     expect(sceneFromDeal(ens)!.tanks[0].stand.show).toBe(true);
+  });
+});
+describe('path-1 gear and lid advice (Nathan 2026-10-26)', () => {
+  it('a tank started from its animals counts no filter or heater until the owner adds one; an ordinary tank still does', async () => {
+    const { demandOf } = await import('../src/demand/engine');
+    const { defaultProfile } = await import('../src/demand/types');
+    const { emptyScene } = await import('../src/scene/defaults');
+    const S0 = emptyScene().tanks[0], S = { ...S0, water: { ...S0.water, on: true } }, P = defaultProfile();
+    const keys = (T: typeof S) => demandOf(T, P).items.map(r => r.key);
+    expect(keys(S)).toEqual(expect.arrayContaining(['filter', 'heater', 'filterclean']));
+    const p1 = keys({ ...S, stockFirst: true });
+    expect(p1).not.toContain('filter'); expect(p1).not.toContain('heater'); expect(p1).not.toContain('filterclean');
+    expect(keys({ ...S, stockFirst: true, tech: { rows: { filter: 'hob', heater: 'one' } } })).toEqual(expect.arrayContaining(['filter', 'heater']));
+  });
+  it('an open top with animals that get out suggests a lid: mesh when dry, glass when wet; none for plain fish or a lidded tank', async () => {
+    const { lidAdvice } = await import('../src/demand/lid');
+    const { emptyScene } = await import('../src/scene/defaults');
+    const S0 = emptyScene().tanks[0], f = (species: string) => ({ id: 1, species, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0 });
+    const dry = { ...S0, lid: 'open' as const, water: { ...S0.water, on: false }, fish: [f('regaljumper')] };
+    expect(lidAdvice(dry)).toMatchObject({ lid: 'mesh', who: ['Regal jumping spider'] });
+    expect(lidAdvice({ ...dry, lid: 'mesh' })).toBeUndefined();
+    const wet = { ...dry, water: { ...S0.water, on: true } };
+    expect(lidAdvice({ ...wet, fish: [f('hatchet')] })?.lid).toBe('glass');
+    expect(lidAdvice({ ...wet, fish: [f('neon')] })).toBeUndefined();
   });
 });

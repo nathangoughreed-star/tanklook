@@ -156,6 +156,8 @@ export function inferTech(S: TankSetup): TechSetup {
     filter: gal <= 60 ? 'hob' : 'canister', heater: 'one', chiller: 'none', air: 'none', uv: 'none',
     conditioner: salt ? 'none' : 'yes', rodi: 'none', ato: 'none',
   };
+  // a tank started from its animals (path 1): no filter or heater until the owner adds one (Nathan 2026-10-26)
+  if (S.stockFirst) Object.assign(rows, { filter: 'none', heater: 'none' });
   // the skimmer follows the filter (lane SF): in the sump with one, else hang-on
   if (salt) Object.assign(rows, { skimmer: rows.filter === 'sump' ? 'sump' : 'hob', flow: feed === 'co2' ? 'wave' : feed === 'ferts' ? 'two' : 'none', dosing: feed === 'co2' ? 'doser' : feed === 'ferts' ? 'twopart' : 'none', salinity: 'refractometer', saltmix: 'mix' });
   else Object.assign(rows, { co2: feed === 'co2' ? 'pressurized' : 'none', ferts: feed === 'low' ? 'none' : 'aio' });
