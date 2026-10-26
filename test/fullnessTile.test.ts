@@ -11,6 +11,7 @@ import { stockingOf } from '../src/scene/stocking';
 import { NEAR_FULL, bar, mg, nitrogenRows, forkDue, fromUnits, overLine, tileState, toUnits, topBy } from '../src/ui/fullnessTile';
 import { floorOf, tankMinimum } from '../src/scene/tankMin';
 import { minWarnings } from '../src/ui/fullnessTile';
+import { spaceBand } from '../src/ui/stockPlanLogic';
 import type { TankSetup } from '../src/scene/types';
 
 // the build paints textures on canvases: a do-nothing 2D context is enough here (as in menuFocus.test.ts)
@@ -56,6 +57,14 @@ describe('fullness bars', () => {
     expect(bar(130)).toMatchObject({ level: 'over', fill: 100, text: '130%' });
     expect(bar(Infinity)).toMatchObject({ level: 'over', fill: 100, text: 'over 999%' });
     expect(bar(-3).fill).toBe(0);
+  });
+  // S229 (Nathan 2026-10-26): the load bars' fill is a gradient keyed to where it reaches on the track (green to the ideal line, amber half
+  // way to the limit, red at 100), so the colour is positional and the fill is the raw percent; the band (label, pill, reason text) reads the
+  // rounded percent, the same one S214's spaceBand reads on the stocking screen, so the two screens never disagree on the word.
+  it('bands agree with the stocking screen on the rounded percent; the fill stays unrounded', () => {
+    for (const p of [74.4, 74.6, 74.99, 75, 87.5, 99.6, 100.4, 100.5, 130]) expect(bar(p).level, `${p}`).toBe(spaceBand(p));
+    expect(bar(74.6)).toMatchObject({ level: 'near', fill: 74.6, text: '75%' }); // printed 75 %, tip just short of the line
+    expect(bar(100.4)).toMatchObject({ level: 'near', fill: 100, text: '100%' }); // printed 100 %, full bar, not over
   });
   it('lists who fills each bar most, with shares of that bar', () => {
     const S = withFish(), r = stockingOf(S);
