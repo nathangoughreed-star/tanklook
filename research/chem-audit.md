@@ -1,207 +1,103 @@
-# Water-chemistry audit: snail minimums
+# Water-chemistry audit: soft-water fish acceptable ranges
 
-Generated 2026-10-26 (branch s225). 61 freshwater species with a pH record, 1830 pairs, graded by the real engine
+Generated 2026-10-26 (branch S226). 61 freshwater species with a pH record, 1830 pairs, graded by the real engine
 (whysAnimal both ways, compatibility reasons only; size and expertise ignored), so a pair already red for predation, aggression or
-temperature stays red whatever its water.
+temperature stays red whatever its water. Before = live main's src/data/waterchem.ts, after = this branch's.
 
-Model (Nathan 2026-10-26): preferred ranges share enough = green; only the documented acceptable ranges do = amber; not even those = red.
-No range is widened automatically. Acceptable ranges so far: kuhli loach (pH 5.5-7.5, GH 1-10) and mystery snail (pH 6.5-8.0, GH 6-18).
-This step raises the mystery snail's preferred floor to Aquarium Co-Op's "pH of at least 7.2, and GH above 150 ppm (or 8 degrees)".
+Model (Nathan 2026-10-26): preferred ranges share at least 0.2 pH and 2 dGH = green; only the documented acceptable ranges do = amber;
+not even those = red. Nothing is widened automatically.
 
-| Mystery snail record | pH | GH | Totals |
+Totals: live main green 498, amber 424, red 908; this step green 498, amber 443, red 889.
+
+## Records changed by this step
+
+| Species | Preferred pH / GH | Acceptable pH / GH, live main | Acceptable pH / GH, this step |
 |---|---|---|---|
-| Live main (build 1235) | 6.5-8.0 | 6-18 | green 505, amber 417, red 908 |
-| This step | preferred 7.2-8, acceptable 6.5-8 | preferred 8-18, acceptable 6-18 | green 498, amber 424, red 908 |
+| Neon tetra | 5-7 / 1-10 | none | 4-7.5 / 1-12 |
+| Ember tetra | 5-7 / 1-10 | none | 5-7.5 / 1-10 |
+| Rummy-nose tetra | 5.5-7 / 1-10 | none | 5.5-7.5 / 1-10 |
+| Harlequin rasbora | 5-7 / 1-12 | none | 5-7.5 / 1-12 |
+| Marbled hatchetfish | 5-7 / 1-10 | none | 5-8 / 1-10 |
 
-## 1. Every pair whose grade changes (live main -> this step)
+## 1. Every pair whose grade or reasons change (live main -> this step)
+
+95 pairs: red -> red 71, red -> amber 19, amber -> amber 5.
+
+Biggest groups (colour changes per changed species): Neon tetra 5, Harlequin rasbora 5, Ember tetra 3, Rummy-nose tetra 3, Marbled hatchetfish 3.
+
+Colour changes:
 
 | Pair | Live main | This step | This step's reasons |
 |---|---|---|---|
-| Neon tetra + Mystery snail | green | **amber** | water chemistry: prefers pH 5.0-7.0, it 7.2-8.0; both accept 6.5-7.0, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps; water chemistry: prefers pH 7.2-8.0, it 5.0-7.0; both accept 6.5-7.0, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps |
-| Cardinal tetra + Mystery snail | green | **amber** | water hardness: prefers GH 1-8, it 8-18; both accept 6-8, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps; water hardness: prefers GH 8-18, it 1-8; both accept 6-8, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps |
-| Ember tetra + Mystery snail | green | **amber** | water chemistry: prefers pH 5.0-7.0, it 7.2-8.0; both accept 6.5-7.0, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps; water chemistry: prefers pH 7.2-8.0, it 5.0-7.0; both accept 6.5-7.0, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps |
-| Rummy-nose tetra + Mystery snail | green | **amber** | water chemistry: prefers pH 5.5-7.0, it 7.2-8.0; both accept 6.5-7.0, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps; water chemistry: prefers pH 7.2-8.0, it 5.5-7.0; both accept 6.5-7.0, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps |
-| Harlequin rasbora + Mystery snail | green | **amber** | water chemistry: prefers pH 5.0-7.0, it 7.2-8.0; both accept 6.5-7.0, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps; water chemistry: prefers pH 7.2-8.0, it 5.0-7.0; both accept 6.5-7.0, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps |
-| Chili rasbora + Mystery snail | green | **amber** | water chemistry: prefers pH 5.0-7.0, it 7.2-8.0; both accept 6.5-7.0, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps; water hardness: prefers GH 1-8, it 8-18; both accept 6-8, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps; water chemistry: prefers pH 7.2-8.0, it 5.0-7.0; both accept 6.5-7.0, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps; water hardness: prefers GH 8-18, it 1-8; both accept 6-8, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps |
-| Marbled hatchetfish + Mystery snail | green | **amber** | water chemistry: prefers pH 5.0-7.0, it 7.2-8.0; both accept 6.5-7.0, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps; water chemistry: prefers pH 7.2-8.0, it 5.0-7.0; both accept 6.5-7.0, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps |
-| Discus + Mystery snail | amber | **amber** | water chemistry: prefers pH 5.0-7.0, it 7.2-8.0; both accept 6.5-7.0, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps; water hardness: prefers GH 1-8, it 8-18; both accept 6-8, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps; temperature: shared range 26–27 °C, a narrow margin (2 °C or less), not an incompatibility; water chemistry: prefers pH 7.2-8.0, it 5.0-7.0; both accept 6.5-7.0, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps; water hardness: prefers GH 8-18, it 1-8; both accept 6-8, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps |
-| Kuhli loach + Mystery snail | amber | **amber** | water chemistry: prefers pH 5.5-7.0, it 7.2-8.0; both accept 6.5-7.5, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps; water hardness: prefers GH 1-6, it 8-18; both accept 6-10, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps; water chemistry: prefers pH 7.2-8.0, it 5.5-7.0; both accept 6.5-7.5, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps; water hardness: prefers GH 8-18, it 1-6; both accept 6-10, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps |
+| Neon tetra + Guppy | red | **amber** | water chemistry: prefers pH 5.0-7.0, it 7.0-8.3; both accept 7.0-7.5, a compromise; temperature: shared range 24–25 °C, a narrow margin (2 °C or less), not an incompatibility; water chemistry: prefers pH 7.0-8.3, it 5.0-7.0; both accept 7.0-7.5, a compromise |
+| Neon tetra + Platy | red | **amber** | water chemistry: prefers pH 5.0-7.0, it 7.0-8.2; both accept 7.0-7.5, a compromise; water hardness: prefers GH 1-10, it 9-25; both accept 9-12, a compromise; water chemistry: prefers pH 7.0-8.2, it 5.0-7.0; both accept 7.0-7.5, a compromise; water hardness: prefers GH 9-25, it 1-10; both accept 9-12, a compromise |
+| Neon tetra + Swordtail | red | **amber** | water chemistry: prefers pH 5.0-7.0, it 7.0-8.0; both accept 7.0-7.5, a compromise; water hardness: prefers GH 1-10, it 9-25; both accept 9-12, a compromise; water chemistry: prefers pH 7.0-8.0, it 5.0-7.0; both accept 7.0-7.5, a compromise; water hardness: prefers GH 9-25, it 1-10; both accept 9-12, a compromise |
+| Neon tetra + Nerite snail (zebra) | red | **amber** | water chemistry: prefers pH 5.0-7.0, it 7.0-8.5; both accept 7.0-7.5, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps (Nerite snail (zebra)); water chemistry: prefers pH 7.0-8.5, it 5.0-7.0; both accept 7.0-7.5, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps |
+| Neon tetra + Ramshorn snail | red | **amber** | water chemistry: prefers pH 5.0-7.0, it 7.0-8.0; both accept 7.0-7.5, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps; water chemistry: prefers pH 7.0-8.0, it 5.0-7.0; both accept 7.0-7.5, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps |
+| Ember tetra + Guppy | red | **amber** | water chemistry: prefers pH 5.0-7.0, it 7.0-8.3; both accept 7.0-7.5, a compromise; water chemistry: prefers pH 7.0-8.3, it 5.0-7.0; both accept 7.0-7.5, a compromise |
+| Ember tetra + Nerite snail (zebra) | red | **amber** | water chemistry: prefers pH 5.0-7.0, it 7.0-8.5; both accept 7.0-7.5, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps (Nerite snail (zebra)); water chemistry: prefers pH 7.0-8.5, it 5.0-7.0; both accept 7.0-7.5, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps |
+| Ember tetra + Ramshorn snail | red | **amber** | water chemistry: prefers pH 5.0-7.0, it 7.0-8.0; both accept 7.0-7.5, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps; water chemistry: prefers pH 7.0-8.0, it 5.0-7.0; both accept 7.0-7.5, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps |
+| Rummy-nose tetra + Guppy | red | **amber** | water chemistry: prefers pH 5.5-7.0, it 7.0-8.3; both accept 7.0-7.5, a compromise; water chemistry: prefers pH 7.0-8.3, it 5.5-7.0; both accept 7.0-7.5, a compromise |
+| Rummy-nose tetra + Nerite snail (zebra) | red | **amber** | water chemistry: prefers pH 5.5-7.0, it 7.0-8.5; both accept 7.0-7.5, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps (Nerite snail (zebra)); water chemistry: prefers pH 7.0-8.5, it 5.5-7.0; both accept 7.0-7.5, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps |
+| Rummy-nose tetra + Ramshorn snail | red | **amber** | water chemistry: prefers pH 5.5-7.0, it 7.0-8.0; both accept 7.0-7.5, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps; water chemistry: prefers pH 7.0-8.0, it 5.5-7.0; both accept 7.0-7.5, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps |
+| Harlequin rasbora + Guppy | red | **amber** | water chemistry: prefers pH 5.0-7.0, it 7.0-8.3; both accept 7.0-7.5, a compromise; temperature: shared range 24–26 °C, a narrow margin (2 °C or less), not an incompatibility; water chemistry: prefers pH 7.0-8.3, it 5.0-7.0; both accept 7.0-7.5, a compromise |
+| Harlequin rasbora + Platy | red | **amber** | water chemistry: prefers pH 5.0-7.0, it 7.0-8.2; both accept 7.0-7.5, a compromise; water chemistry: prefers pH 7.0-8.2, it 5.0-7.0; both accept 7.0-7.5, a compromise |
+| Harlequin rasbora + Swordtail | red | **amber** | water chemistry: prefers pH 5.0-7.0, it 7.0-8.0; both accept 7.0-7.5, a compromise; water chemistry: prefers pH 7.0-8.0, it 5.0-7.0; both accept 7.0-7.5, a compromise |
+| Harlequin rasbora + Nerite snail (zebra) | red | **amber** | water chemistry: prefers pH 5.0-7.0, it 7.0-8.5; both accept 7.0-7.5, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps (Nerite snail (zebra)); water chemistry: prefers pH 7.0-8.5, it 5.0-7.0; both accept 7.0-7.5, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps |
+| Harlequin rasbora + Ramshorn snail | red | **amber** | water chemistry: prefers pH 5.0-7.0, it 7.0-8.0; both accept 7.0-7.5, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps; water chemistry: prefers pH 7.0-8.0, it 5.0-7.0; both accept 7.0-7.5, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps |
+| Marbled hatchetfish + Guppy | red | **amber** | water chemistry: prefers pH 5.0-7.0, it 7.0-8.3; both accept 7.0-8.0, a compromise; water chemistry: prefers pH 7.0-8.3, it 5.0-7.0; both accept 7.0-8.0, a compromise |
+| Marbled hatchetfish + Nerite snail (zebra) | red | **amber** | water chemistry: prefers pH 5.0-7.0, it 7.0-8.5; both accept 7.0-8.0, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps (Nerite snail (zebra)); water chemistry: prefers pH 7.0-8.5, it 5.0-7.0; both accept 7.0-8.0, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps |
+| Marbled hatchetfish + Ramshorn snail | red | **amber** | water chemistry: prefers pH 5.0-7.0, it 7.0-8.0; both accept 7.0-8.0, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps; water chemistry: prefers pH 7.0-8.0, it 5.0-7.0; both accept 7.0-8.0, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps |
 
-## 2. Snail pairs still green under this model
+Same colour, reasons reworded (the quoted acceptable range changes), 76 pairs: Neon tetra + Boeseman's rainbowfish (red), Neon tetra + Black molly (red), Neon tetra + Yellow lab cichlid (red), Neon tetra + Peacock cichlid (red), Neon tetra + Demasoni cichlid (red), Neon tetra + Kadango (red-fin) cichlid (red), Neon tetra + Malawi synodontis (red), Neon tetra + Blue-nosed mbuna (red), Neon tetra + Golden mbuna (red), Neon tetra + Livingstone's cichlid (red), Neon tetra + Dogtooth cichlid (red), Neon tetra + Pea puffer (red), Neon tetra + Mystery snail (amber), Neon tetra + Axolotl (red), Ember tetra + Boeseman's rainbowfish (red), Ember tetra + Platy (red), Ember tetra + Black molly (red), Ember tetra + Swordtail (red), Ember tetra + Yellow lab cichlid (red), Ember tetra + Peacock cichlid (red), Ember tetra + Demasoni cichlid (red), Ember tetra + Kadango (red-fin) cichlid (red), Ember tetra + Malawi synodontis (red), Ember tetra + Blue-nosed mbuna (red), Ember tetra + Golden mbuna (red), Ember tetra + Livingstone's cichlid (red), Ember tetra + Dogtooth cichlid (red), Ember tetra + Pea puffer (red), Ember tetra + Mystery snail (amber), Ember tetra + Axolotl (red), Rummy-nose tetra + Boeseman's rainbowfish (red), Rummy-nose tetra + Platy (red), Rummy-nose tetra + Black molly (red), Rummy-nose tetra + Swordtail (red), Rummy-nose tetra + Yellow lab cichlid (red), Rummy-nose tetra + Peacock cichlid (red), Rummy-nose tetra + Demasoni cichlid (red), Rummy-nose tetra + Kadango (red-fin) cichlid (red), Rummy-nose tetra + Malawi synodontis (red), Rummy-nose tetra + Blue-nosed mbuna (red), Rummy-nose tetra + Golden mbuna (red), Rummy-nose tetra + Livingstone's cichlid (red), Rummy-nose tetra + Dogtooth cichlid (red), Rummy-nose tetra + Pea puffer (red), Rummy-nose tetra + Mystery snail (amber), Rummy-nose tetra + Axolotl (red), Harlequin rasbora + Boeseman's rainbowfish (red), Harlequin rasbora + Black molly (red), Harlequin rasbora + Yellow lab cichlid (red), Harlequin rasbora + Peacock cichlid (red), Harlequin rasbora + Demasoni cichlid (red), Harlequin rasbora + Kadango (red-fin) cichlid (red), Harlequin rasbora + Malawi synodontis (red), Harlequin rasbora + Blue-nosed mbuna (red), Harlequin rasbora + Golden mbuna (red), Harlequin rasbora + Livingstone's cichlid (red), Harlequin rasbora + Dogtooth cichlid (red), Harlequin rasbora + Pea puffer (red), Harlequin rasbora + Mystery snail (amber), Harlequin rasbora + Axolotl (red), Marbled hatchetfish + Boeseman's rainbowfish (red), Marbled hatchetfish + Platy (red), Marbled hatchetfish + Black molly (red), Marbled hatchetfish + Swordtail (red), Marbled hatchetfish + Yellow lab cichlid (red), Marbled hatchetfish + Peacock cichlid (red), Marbled hatchetfish + Demasoni cichlid (red), Marbled hatchetfish + Kadango (red-fin) cichlid (red), Marbled hatchetfish + Malawi synodontis (red), Marbled hatchetfish + Blue-nosed mbuna (red), Marbled hatchetfish + Golden mbuna (red), Marbled hatchetfish + Livingstone's cichlid (red), Marbled hatchetfish + Dogtooth cichlid (red), Marbled hatchetfish + Pea puffer (red), Marbled hatchetfish + Mystery snail (amber), Marbled hatchetfish + Axolotl (red).
 
-Shared preferred pH and GH for each green pair with a snail. "Gap" = the shared preferred range cannot meet the snail need Nathan quoted
-(Aquarium Co-Op: mystery pH 7.2 or higher, GH 8 or higher; nerite pH above 7). Ramshorn and trumpet snails have no such figure yet.
+## 2. Lake Malawi check
 
-| Snail | With | Shared pH | Shared GH | Gap |
+No pair with a Lake Malawi species (9 species) leaves red.
+
+## 3. Shell-builders with soft-water fish
+
+Soft-water fish here = preferred pH tops out at 7.0 or lower, or preferred GH at 8 or lower. R red, a amber, G green; "was -> now" where it moves.
+
+| Fish (preferred pH / GH; acceptable) | Nerite snail (zebra) | Mystery snail | Ramshorn snail | Malaysian trumpet snail |
 |---|---|---|---|---|
-| Malaysian trumpet snail | African dwarf frog | 6.5-7.8 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Amano shrimp | 6.5-8 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Betta | 6.5-7.5 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Black molly | 7.5-8 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Bolivian ram | 6.5-7.5 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Bristlenose pleco | 6.5-8 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Bronze corydoras | 6.5-8 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Cardinal tetra | 6.5-7.5 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Celestial pearl danio | 6.5-7.5 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Cherry barb | 6.5-8 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Cherry shrimp | 6.5-8 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Chili rasbora | 6.5-7 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Dwarf gourami | 6.5-7.5 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Dwarf pencilfish | 6.5-7.5 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Ember tetra | 6.5-7 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Fancy goldfish | 6.5-8 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Fire-bellied toad | 6.5-7.5 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Guppy | 7-8 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Harlequin rasbora | 6.5-7 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Honey gourami | 6.5-7.5 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Kribensis | 6.5-7.5 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Kuhli loach | 6.5-7 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Malawi synodontis | 7.5-8 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Marbled hatchetfish | 6.5-7 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Neon tetra | 6.5-7 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Otocinclus | 6.5-7.5 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Panda corydoras | 6.5-7.5 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Pearl gourami | 6.5-8 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Platy | 7-8 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Pygmy corydoras | 6.5-7.4 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Reticulated hillstream loach | 6.5-7.5 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Rummy-nose tetra | 6.5-7 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Siamese algae eater | 6.5-8 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Sterba's corydoras | 6.5-8 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Swordtail | 7-8 | no GH record (Malaysian trumpet snail) | - |
-| Malaysian trumpet snail | Zebra danio | 6.5-8 | no GH record (Malaysian trumpet snail) | - |
-| Mystery snail | African dwarf frog | 7.2-7.8 | no GH record (African dwarf frog) | - |
-| Mystery snail | Amano shrimp | 7.2-8 | 8-15 | - |
-| Mystery snail | Betta | 7.2-7.5 | no GH record (Betta) | - |
-| Mystery snail | Black molly | 7.5-8 | 10-18 | - |
-| Mystery snail | Bolivian ram | 7.2-7.5 | no GH record (Bolivian ram) | - |
-| Mystery snail | Bristlenose pleco | 7.2-8 | no GH record (Bristlenose pleco) | - |
-| Mystery snail | Bronze corydoras | 7.2-8 | no GH record (Bronze corydoras) | - |
-| Mystery snail | Celestial pearl danio | 7.2-7.5 | no GH record (Celestial pearl danio) | - |
-| Mystery snail | Cherry barb | 7.2-8 | no GH record (Cherry barb) | - |
-| Mystery snail | Cherry shrimp | 7.2-8 | 8-14 | - |
-| Mystery snail | Dwarf gourami | 7.2-7.5 | no GH record (Dwarf gourami) | - |
-| Mystery snail | Dwarf pencilfish | 7.2-7.5 | 8-15 | - |
-| Mystery snail | Guppy | 7.2-8 | 8-18 | - |
-| Mystery snail | Honey gourami | 7.2-7.5 | no GH record (Honey gourami) | - |
-| Mystery snail | Kribensis | 7.2-7.5 | no GH record (Kribensis) | - |
-| Mystery snail | Malawi synodontis | 7.5-8 | 10-18 | - |
-| Mystery snail | Otocinclus | 7.2-7.5 | no GH record (Otocinclus) | - |
-| Mystery snail | Panda corydoras | 7.2-7.5 | no GH record (Panda corydoras) | - |
-| Mystery snail | Platy | 7.2-8 | 9-18 | - |
-| Mystery snail | Pygmy corydoras | 7.2-7.4 | no GH record (Pygmy corydoras) | - |
-| Mystery snail | Reticulated hillstream loach | 7.2-7.5 | no GH record (Reticulated hillstream loach) | - |
-| Mystery snail | Siamese algae eater | 7.2-8 | no GH record (Siamese algae eater) | - |
-| Mystery snail | Sterba's corydoras | 7.2-8 | 8-18 | - |
-| Mystery snail | Swordtail | 7.2-8 | 9-18 | - |
-| Mystery snail | Zebra danio | 7.2-8 | no GH record (Zebra danio) | - |
-| Nerite snail (zebra) | African dwarf frog | 7-7.8 | no GH record (African dwarf frog) | - |
-| Nerite snail (zebra) | Amano shrimp | 7-8 | 6-15 | - |
-| Nerite snail (zebra) | Betta | 7-7.5 | no GH record (Betta) | - |
-| Nerite snail (zebra) | Black molly | 7.5-8.5 | 10-18 | - |
-| Nerite snail (zebra) | Bolivian ram | 7-7.5 | no GH record (Bolivian ram) | - |
-| Nerite snail (zebra) | Bristlenose pleco | 7-8 | no GH record (Bristlenose pleco) | - |
-| Nerite snail (zebra) | Bronze corydoras | 7-8 | no GH record (Bronze corydoras) | - |
-| Nerite snail (zebra) | Cardinal tetra | 7-7.5 | 6-8 | - |
-| Nerite snail (zebra) | Celestial pearl danio | 7-7.5 | no GH record (Celestial pearl danio) | - |
-| Nerite snail (zebra) | Cherry barb | 7-8 | no GH record (Cherry barb) | - |
-| Nerite snail (zebra) | Cherry shrimp | 7-8 | 6-14 | - |
-| Nerite snail (zebra) | Dwarf gourami | 7-7.5 | no GH record (Dwarf gourami) | - |
-| Nerite snail (zebra) | Dwarf pencilfish | 7-7.5 | 6-15 | - |
-| Nerite snail (zebra) | Guppy | 7-8.3 | 8-18 | - |
-| Nerite snail (zebra) | Honey gourami | 7-7.5 | no GH record (Honey gourami) | - |
-| Nerite snail (zebra) | Kribensis | 7-7.5 | no GH record (Kribensis) | - |
-| Nerite snail (zebra) | Malawi synodontis | 7.5-8.5 | 10-18 | - |
-| Nerite snail (zebra) | Otocinclus | 7-7.5 | no GH record (Otocinclus) | - |
-| Nerite snail (zebra) | Panda corydoras | 7-7.5 | no GH record (Panda corydoras) | - |
-| Nerite snail (zebra) | Platy | 7-8.2 | 9-18 | - |
-| Nerite snail (zebra) | Pygmy corydoras | 7-7.4 | no GH record (Pygmy corydoras) | - |
-| Nerite snail (zebra) | Reticulated hillstream loach | 7-7.5 | no GH record (Reticulated hillstream loach) | - |
-| Nerite snail (zebra) | Siamese algae eater | 7-8 | no GH record (Siamese algae eater) | - |
-| Nerite snail (zebra) | Sterba's corydoras | 7-8 | 6-18 | - |
-| Nerite snail (zebra) | Swordtail | 7-8 | 9-18 | - |
-| Nerite snail (zebra) | Zebra danio | 7-8 | no GH record (Zebra danio) | - |
-| Ramshorn snail | African dwarf frog | 7-7.8 | no GH record (African dwarf frog) | - |
-| Ramshorn snail | Amano shrimp | 7-8 | 6-15 | - |
-| Ramshorn snail | Betta | 7-7.5 | no GH record (Betta) | - |
-| Ramshorn snail | Black molly | 7.5-8 | 10-18 | - |
-| Ramshorn snail | Bolivian ram | 7-7.5 | no GH record (Bolivian ram) | - |
-| Ramshorn snail | Bristlenose pleco | 7-8 | no GH record (Bristlenose pleco) | - |
-| Ramshorn snail | Bronze corydoras | 7-8 | no GH record (Bronze corydoras) | - |
-| Ramshorn snail | Cardinal tetra | 7-7.5 | 6-8 | - |
-| Ramshorn snail | Celestial pearl danio | 7-7.5 | no GH record (Celestial pearl danio) | - |
-| Ramshorn snail | Cherry barb | 7-8 | no GH record (Cherry barb) | - |
-| Ramshorn snail | Cherry shrimp | 7-8 | 6-14 | - |
-| Ramshorn snail | Dwarf gourami | 7-7.5 | no GH record (Dwarf gourami) | - |
-| Ramshorn snail | Dwarf pencilfish | 7-7.5 | 6-15 | - |
-| Ramshorn snail | Fancy goldfish | 7-8 | no GH record (Fancy goldfish) | - |
-| Ramshorn snail | Fire-bellied toad | 7-7.5 | no GH record (Fire-bellied toad) | - |
-| Ramshorn snail | Guppy | 7-8 | 8-18 | - |
-| Ramshorn snail | Honey gourami | 7-7.5 | no GH record (Honey gourami) | - |
-| Ramshorn snail | Kribensis | 7-7.5 | no GH record (Kribensis) | - |
-| Ramshorn snail | Malawi synodontis | 7.5-8 | 10-18 | - |
-| Ramshorn snail | Otocinclus | 7-7.5 | no GH record (Otocinclus) | - |
-| Ramshorn snail | Panda corydoras | 7-7.5 | no GH record (Panda corydoras) | - |
-| Ramshorn snail | Platy | 7-8 | 9-18 | - |
-| Ramshorn snail | Pygmy corydoras | 7-7.4 | no GH record (Pygmy corydoras) | - |
-| Ramshorn snail | Reticulated hillstream loach | 7-7.5 | no GH record (Reticulated hillstream loach) | - |
-| Ramshorn snail | Siamese algae eater | 7-8 | no GH record (Siamese algae eater) | - |
-| Ramshorn snail | Sterba's corydoras | 7-8 | 6-18 | - |
-| Ramshorn snail | Swordtail | 7-8 | 9-18 | - |
-| Ramshorn snail | Zebra danio | 7-8 | no GH record (Zebra danio) | - |
-
-115 green snail pairs, 0 with a gap.
-
-## 3. Shell-builders with soft-water fish: why only mystery-snail pairs move
-
-Soft-water fish here = preferred pH tops out at 7.0 or lower, or preferred GH at 8 or lower. Grades under this step; R red, a amber, G green.
-
-| Fish (preferred pH / GH) | Nerite snail (zebra) | Mystery snail | Ramshorn snail | Malaysian trumpet snail |
-|---|---|---|---|---|
-| Neon tetra (5-7 / 1-10) | red | green -> **amber** | red | green |
-| Cardinal tetra (3.5-7.5 / 1-8) | green | green -> **amber** | green | green |
-| Ember tetra (5-7 / 1-10) | red | green -> **amber** | red | green |
-| Rummy-nose tetra (5.5-7 / 1-10) | red | green -> **amber** | red | green |
-| Harlequin rasbora (5-7 / 1-12) | red | green -> **amber** | red | green |
-| Chili rasbora (5-7 / 1-8) | red | green -> **amber** | red | green |
-| Marbled hatchetfish (5-7 / 1-10) | red | green -> **amber** | red | green |
+| Neon tetra (5-7 / 1-10; 4-7.5 / 1-12) | red -> **amber** | amber | red -> **amber** | green |
+| Cardinal tetra (3.5-7.5 / 1-8) | green | amber | green | green |
+| Ember tetra (5-7 / 1-10; 5-7.5 / 1-10) | red -> **amber** | amber | red -> **amber** | green |
+| Rummy-nose tetra (5.5-7 / 1-10; 5.5-7.5 / 1-10) | red -> **amber** | amber | red -> **amber** | green |
+| Harlequin rasbora (5-7 / 1-12; 5-7.5 / 1-12) | red -> **amber** | amber | red -> **amber** | green |
+| Chili rasbora (5-7 / 1-8) | red | amber | red | green |
+| Marbled hatchetfish (5-7 / 1-10; 5-8 / 1-10) | red -> **amber** | amber | red -> **amber** | green |
 | German blue ram (4-7 / 1-8) | red | red | red | amber |
 | Cockatoo dwarf cichlid (5-6 / 2-15) | red | red | red | red |
 | Discus (5-7 / 1-8) | red | amber | red | amber |
-| Kuhli loach (5.5-7 / 1-6) | amber | amber | amber | green |
+| Kuhli loach (5.5-7 / 1-6; 5.5-7.5 / 1-10) | amber | amber | amber | green |
 
-Nerite (pH 7.0-8.5) and ramshorn (pH 7.0-8.0) were already red with these fish: their preferred pH starts at 7.0, where the fish's ends, and
-neither has an acceptable range to fall back on, so the pairs were already blocked. Only the mystery snail, recorded down to pH 6.5, was green with them, so raising
-its preferred floor is the only change. The trumpet snail (pH 6.5-8.0, no GH record) stays green: no source minimum yet.
-
-Open question: those reds are likely too harsh (neon + nerite are commonly kept together near pH 7), the kuhli's problem again. The
-fix would be a documented acceptable range for the soft-water fish (farmed stock), as for the kuhli, not a looser snail record.
-
-## 4. Full matrix under this model
+## 4. Full matrix under this step
 
 G green, a amber, R red; rows and columns in the same order.
 
 ```
                0 1 2 3 4 5 6 7 8 9101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960
- 0 neon        . a a a a a G a G a G a a R R R R R R a a a R R a a a R R R R R R R R R R R R G a G G G G G a R G G R G G R a R G G R a G
+ 0 neon        . a a a a a G a G a G a a R R a a R a a a a R R a a a R R R R R R R R R R R R G a G G G G G a R G G R G G a a a G G R a G
  1 cardinal    a . G G G G G G G R a G G R R R R R R G G G G a G G G R R R R R R R R R G G R a R G a G G G G G G a R a G G a G G G R R a
- 2 ember       a G . G G G G G G R a G G R R R R R R G G G a R G G G R R R R R R R R R R a R a R G a G G G G a G a R a G R a R G G R R a
+ 2 ember       a G . G G G G G G R a G G R R a R R R G G G a R G G G R R R R R R R R R R a R a R G a G G G G a G a R a G a a a G G R R a
  3 dwarfpenci  a G G . G G a G a R a G a R a G a R G G G G G a a G G R R R R R R R R R a a R R R a a a G a G G a a R a a G G G G a R R R
  4 sterbai     a G G G . G a G a R a G a R a G a G G G G G G a a G R a a R a G R R R R a a R R R a a a G a G G a a R a a G G G G a R R R
- 5 rummynose   a G G G G . a G a R a G a R R R R R R G G G a R a G G R R R R R R R R R a a R R R a a a G a G a a a R a a R a R G a R R R
- 6 harlequin   G G G a a a . G G R G a G R R R R R R a a G a R G a a R R R R R R R R R R R R a R G G G G G G a G G R G G R a R G G R R a
+ 5 rummynose   a G G G G . a G a R a G a R R a R R R G G G a R a G G R R R R R R R R R a a R R R a a a G a G a a a R a a a a a G a R R R
+ 6 harlequin   G G G a a a . G G R G a G R R a a R a a a G a R G a a R R R R R R R R R R R R a R G G G G G G a G G R G G a a a G G R R a
  7 chili       a G G G G G G . G R a G G R R R R R R G G G a R G G G R R R R R R R R R R a R a R G a G G G G a G a R a G R a R G G R R a
  8 danio       G G G a a a G G . a G a G R R R G G G R a a a R G a R a a R a G R R R R R R R G a G G G G G G a G G R G G G G G G G R a G
  9 whitecloud  a R R R R R R R a . R R R R R R a R R R R R R R R R R R R R R R R R R R R R R a G R a R R a R R R a R G a R R a a R R G G
 10 cpd         G a a a a a G a G R . a a R R a G R G a a a R R a a R R R R R R R R R R R R R a R G G G G G a R G G R G G G G G G G R R a
-11 hatchet     a G G G G G a G a R a . a R R R R R R G G G a R a G G R R R R R R R R R a a R R R a a a G a G a a a R a a R a R G a R R R
+11 hatchet     a G G G G G a G a R a . a R R a R R R G G G a R a G G R R R R R R R R R a a R R R a a a G a G a a a R a a a a a G a R R R
 12 cherrybarb  a G G a a a G G G R a a . R R a G G G a a G a R G a R a a R a G R R R R R R R a R G a G G G G a G a R a G G G G G G R R a
 13 tigerbarb   R R R R R R R R R R R R R . R R R R G R R R R R R G R a R a R G G G R G R R R R R R R R R R R R R R a R R R R R R R R R R
 14 boesemani   R R R a a R R R R R R R R R . a R a a G a a a R R a R R R R a a R R R R G R a R R R R R a R R G R R R R R a a a a R R R R
-15 guppy       R R R G G R R R R R a R a R a . a G R R R G a R a R R R a R a R R R R R R R R R R a a a G a a a a a R a a G G G G a R R R
-16 platy       R R R a a R R R G a G R G R R a . G G a a G a R G a R a a R a G R R R R R R R G a G G G G G R a G G R G G G G G G G R a G
+15 guppy       a R a G G a a R R R a a a R a . a G R R R G a R a R R R a R a R R R R R R R R R R a a a G a a a a a R a a G G G G a R R R
+16 platy       a R R a a R a R G a G R G R R a . G G a a G a R G a R a a R a G R R R R R R R G a G G G G G R a G G R G G G G G G G R a G
 17 molly       R R R R G R R R G R R R G R a G G . G R R R G R R R R a a R a G R R R R R R R a R G R R G R R R G R R a G G G G G G R R R
-18 swordtail   R R R G G R R R G R G R G G a R G G . R G G a R G G R a a a a G G G G G R R G a R G G G G G R a G G a G G G G G G G R R a
+18 swordtail   a R R G G R a R G R G R G G a R G G . R G G a R G G R a a a a G G G G G R R G a R G G G G G R a G G a G G G G G G G R R a
 19 betta       a G G G G G a G R R a G a R G R a R R . R G G a a R R R R R R R R R R R R R R R R a a a G a G G a a R a a G G G G a R R R
 20 dwarfgoura  a G G G G G a G a R a G a R a R a R G R . G G a a G R R R R R R R R R R R R R R R a a a G a G G a a R a a G G G G a R R R
 21 honeygoura  a G G G G G G G a R a G G R a G G R G G G . a R G G R R R R R R R R R R a a R a R G a G G G G a G a R a G G G G G G R R a
@@ -236,9 +132,9 @@ G green, a amber, R red; rows and columns in the same order.
 50 peapuffer   R R R R R R R R R R R R R a R R R R a R R R R R R a R a R a R a a a R a R R R R R R R R R R R R R R . R R R R R R R R R R
 51 cherryshri  G a a a a a G a G G G a a R R a G a G a a a R R a a R a a R R a R R R R R R R G G G G G G G a R G G R . G G G G G G R G G
 52 amano       G G G a a a G G G a G a G R R a G G G a a G a R G a R a a R a G R R R R R R R G a G G G G G G a G G R G . G G G G G R a G
-53 nerite      R G R G G R R R G R G R G R a G G G G G G G a R G G R a a R a G R R R R a R R a R G G G G G a a G G R G G . G G G G R R a
+53 nerite      a G a G G a a R G R G a G R a G G G G G G G a R G G R a a R a G R R R R a R R a R G G G G G a a G G R G G . G G G G R R a
 54 mystery     a a a G G a a a G R G a G R a G G G G G G G a R G G R a a R a G R R R R a a R a R G G G G G a a G G R G G G . G G G R R a
-55 ramshorn    R G R G G R R R G a G R G R a G G G G G G G a R G G R a a R a G R R R R a R R G a G G G G G a R G G R G G G G . G G R a G
+55 ramshorn    a G a G G a a R G a G a G R a G G G G G G G a R G G R a a R a G R R R R a R R G a G G G G G a R G G R G G G G . G G R a G
 56 trumpet     G G G G G G G G G a G G G R a G G G G G G G G a G G R a a R a G R R R R a a R G a G G G G G G R G G R G G G G G . G R a G
 57 adf         G G G a a a G G G R G a G R R a G G G a a G a R G a R a a R a G R R R R R R R a R G G G G G G a G G R G G G G G G . R R a
 58 axolotl     R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R . a R
