@@ -401,6 +401,8 @@ if (process.argv[1]?.endsWith('calib-fit.mjs')) {
     if (v.notes) notes4.push(`${f.expert} v4: ${v.notes} notes read (${read.notesRead.by}); ${v.readings} answer(s) changed by them: ${read.readings.map(x => `${x.tank} ${x.field} ${x.status}${x.status === 'restated' ? ` ${JSON.stringify(x.from)} -> ${JSON.stringify(x.to)}` : ''} ("${x.quote}")`).join('; ') || 'none'}${v.condOut ? `; ${v.condOut} tank(s) under a note's condition have no engine table (GEN_RETABLE_V4=1 npx vitest run test/calibtablesv4.test.ts)` : ''}`);
     return f;
   });
+  // --one-ai: every AI-model file is one source with one bias term (Nathan 2026-10-26: the ChatGPT experts count as one)
+  if (args.includes('--one-ai')) for (const f of files) if (f.expertKind === 'ai') { f.expertWas = f.expert; f.expert = 'ai'; }
   if (!rounds.length || !files.length) { console.error('usage: node scripts/calib-fit.mjs [--as-made] [--out <base>] round-N.json | research/calib/v4/scenarios-v4.json [...] answers.json [...]'); process.exit(1); }
   const { round, files: use, unmatched } = combine(rounds, files), r = fitRound(round, use);
   for (const u of unmatched) console.warn('not fitted: ' + u);
