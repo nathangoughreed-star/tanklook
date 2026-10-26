@@ -1176,6 +1176,8 @@ Cancel, then change the name, to keep both.`)) return;
   } catch { /* storage blocked: panel shown */ }
   const showSide = (on: boolean) => {
     $('app').classList.toggle('collapsed', !on); saveUI(); viewer.invalidate();
+    // hiding the panel leaves the Light map (Nathan 2026-10-26): its key and controls live in the panel
+    if (!on && G().tanks.some(t => t.render.beams)) store.update(s => { for (const t of s.tanks) t.render.beams = false; }, { history: false });
     const tab = $('sideTab'), t = on ? 'Hide the panel' : 'Show the panel';
     tab.title = t; tab.setAttribute('aria-label', t); tab.setAttribute('aria-expanded', String(on));
   };
