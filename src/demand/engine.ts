@@ -227,7 +227,7 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   const tankRisk = (wet && small ? small.pts : 0) + (salt ? DEFAULTS.risk.salt : 0);
   if (tankRisk) add('stability', salt ? 'Saltwater chemistry and volume' : 'Small volume', 'tank', { risk: tankRisk * skillMul(P, domain), domain });
 
-  techDemand(S, rows, { price, riskMul: skillMul(P, domain), domain }); // lane TM: gear rows from the chosen tech (no-op without S.tech)
+  techDemand(S, rows, { price, riskMul: skillMul(P, domain), domain }); // lane TM: gear rows from the chosen tech (a wet tank without S.tech: no-op; a dry tank: its lamps and misting)
   for (const c of rows) {
     const p = opts.parts?.[c.key];
     if (p && c.setup) { c.setup = widen3({ lo: p.usd * 0.97, mode: p.usd, hi: p.usd * 1.1 }, ageWiden(p.asOf, opts.now ?? Date.now())); c.label += ` (${p.label})`; }

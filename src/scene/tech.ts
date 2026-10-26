@@ -146,11 +146,15 @@ export function rowsFor(S: TankSetup): TechRow[] {
 
 // ---- defaults, presets, choices
 
+/** A dry tank infers a basking lamp (and UVB) when an animal's warm spot starts at this or hotter (deg C, 84 F): a real
+ *  basking spot (ball python 30, leopard gecko 32, anoles 29), not the gentle gradient a crested gecko (26) or a tree
+ *  frog (28) gets from the room. */
+const BASK_C = 29;
 /** The gear the demand engine always assumed (before the Tech menu): HOB up to 60 gal, canister above; one heater; CO2 /
  *  ferts from grow.feed; a skimmer on salt (hang-on, in the sump when the filter is one). Rows the engine did not count are 'none' (or the cheapest real choice). */
 export function inferTech(S: TankSetup): TechSetup {
   // a dry tank: a basking lamp and UVB when an animal in it wants a warm spot (a lizard, a snake), else neither
-  if (!S.water.on) { const bask = S.fish.some(f => AIR[f.species]?.warm); return { rows: { heatlamp: bask ? 'dome' : 'none', uvb: bask ? 'tube' : 'none', mist: 'none' } }; }
+  if (!S.water.on) { const bask = S.fish.some(f => (AIR[f.species]?.warm?.[0] ?? 0) >= BASK_C); return { rows: { heatlamp: bask ? 'dome' : 'none', uvb: bask ? 'tube' : 'none', mist: 'none' } }; }
   const gal = galOf(S), feed = S.grow.feed, salt = isSalt(S);
   const rows: Record<string, string> = {
     filter: gal <= 60 ? 'hob' : 'canister', heater: 'one', chiller: 'none', air: 'none', uv: 'none',

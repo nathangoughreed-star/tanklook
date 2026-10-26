@@ -26,7 +26,9 @@ export interface TechCtx {
 }
 /** Replace the inferred gear rows with the chosen tech's rows (one per row with gear: setup, consumables, kWh, minutes, risk). */
 export function techDemand(S: TankSetup, rows: Contribution[], c: TechCtx) {
-  if (!S.tech || !S.water.on) return;
+  // a wet tank without `tech` keeps the engine's inferred rows; a dry tank always counts its lamps and misting, the inferred
+  // ones too (Nathan 2026-10-26: the drawn gear is the priced gear, so dragging a lamp never changes the totals)
+  if (S.water.on && !S.tech) return;
   for (let i = rows.length - 1; i >= 0; i--) if (REPLACED.has(rows[i].key)) rows.splice(i, 1);
   const t = techOf(S);
   for (const r of rowsFor(S)) {

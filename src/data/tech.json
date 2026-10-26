@@ -99,7 +99,7 @@
   ]},
   { "id": "mist", "label": "Misting", "water": "dry", "options": [
    { "id": "none", "label": "Spray by hand", "parts": [] },
-   { "id": "mister", "label": "Misting system", "parts": ["mister"], "note": "A pump and reservoir behind the tank and a nozzle through the top, on a timer." },
+   { "id": "mister", "label": "Misting system", "parts": ["mister"], "note": "A pump and reservoir behind the tank and a nozzle through the top, on a timer: no more spraying by hand, only refilling the reservoir." },
    { "id": "fogger", "label": "Fogger", "parts": ["fogger"], "note": "Cold fog piped in through the top: humidity without wet leaves; refill the tank daily." }
   ]}
  ],
@@ -126,7 +126,7 @@
   "autofeeder": { "label": "Automatic feeder", "price": { "key": "gear:auto-feeder" } },
   "heatdome": { "label": "Dome heat lamp + thermostat", "price": { "fallback": { "lo": 30, "mode": 45, "hi": 70 } }, "watts": 75, "hours": 10, "monthly": { "lo": 1, "mode": 1.5, "hi": 2.5 } },
   "uvbtube": { "label": "UVB T5 tube + reflector", "price": { "fallback": { "lo": 45, "mode": 70, "hi": 110 } }, "watts": 24, "hours": 12, "monthly": { "lo": 1.5, "mode": 2.5, "hi": 3.5 } },
-  "mister": { "label": "Misting system", "price": { "fallback": { "lo": 60, "mode": 110, "hi": 170 } }, "watts": 10, "hours": 0.2, "minutes": { "lo": 2, "mode": 4, "hi": 8 } },
+  "mister": { "label": "Misting system", "price": { "fallback": { "lo": 60, "mode": 110, "hi": 170 } }, "watts": 10, "hours": 0.2, "minutes": { "lo": -6, "mode": -3, "hi": -1 } },
   "fogger": { "label": "Fogger", "price": { "fallback": { "lo": 25, "mode": 40, "hi": 60 } }, "watts": 25, "hours": 4, "minutes": { "lo": 5, "mode": 10, "hi": 15 } },
   "ato": { "label": "Auto top-off", "price": { "key": "gear:ato" }, "watts": 8, "hours": 1, "minutes": { "lo": -4, "mode": -2, "hi": -1 }, "ref": 40, "exp": { "minutes": 0.3 } },
   "skimmerhob": { "label": "Hang-on protein skimmer", "price": { "key": "gear:skimmer-hob" }, "watts": 11, "hours": 24, "minutes": { "lo": 2, "mode": 3, "hi": 5 }, "ref": 55, "exp": { "price": 0.5, "watts": 0.6 } },

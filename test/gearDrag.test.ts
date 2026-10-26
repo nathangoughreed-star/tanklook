@@ -7,6 +7,8 @@ import { placeFor, withPlace } from '../src/interact/gearDrag';
 import { buildGear, gearPicks, lidTop, mountOf, type GearPiece } from '../src/render/gear3d';
 import { parseTech, techOf } from '../src/scene/tech';
 import type { TankSetup } from '../src/scene/types';
+import { demandOf } from '../src/demand/engine';
+import { defaultProfile } from '../src/demand/types';
 
 const ex = (name: string): TankSetup => { const sc = parseScene(JSON.parse(SCENES[name])).scene; return sc.tanks[sc.active]; };
 const fromFront = (x: number, y: number, _S?: TankSetup) => new THREE.Ray(new THREE.Vector3(x, y, 2000), new THREE.Vector3(0, 0, -1));
@@ -75,5 +77,14 @@ describe('gear on the lid', () => {
     const open = { ...placed, lid: 'open' as const };
     expect(dome(open).d).toBeLessThan(0); // the front rim is nearer than the back one at 0.4 of the depth
     expect(parseTech(JSON.parse(JSON.stringify(placed.tech)))!.place!.heatlamp).toEqual({ wall: 'lid', at: 0.7, y: 0.4 });
+  });
+  it('the lamps count in the totals, inferred or saved, so a drag never moves them; a misting system saves the spraying', () => {
+    const S = python('mesh'), tot = (X: TankSetup) => demandOf(X, defaultProfile(), { now: Date.parse('2026-10-19') }).totals;
+    const none = { ...S, tech: { rows: { heatlamp: 'none', uvb: 'none', mist: 'none' } } }, base = tot(S);
+    expect(base.setupUsd - tot(none).setupUsd).toBeGreaterThan(100); // the dome and the UVB kit
+    const dragged = { ...S, tech: withPlace(S, 'heatlamp', { wall: 'lid', at: 0.8, y: 0.3 }) };
+    expect(tot(dragged)).toEqual(base);
+    const mist = { ...S, tech: { ...techOf(S), rows: { ...techOf(S).rows, mist: 'mister' } } };
+    expect(tot(mist).minPerWeek).toBeLessThan(base.minPerWeek);
   });
 });
