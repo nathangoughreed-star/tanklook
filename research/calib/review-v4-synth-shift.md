@@ -1,6 +1,6 @@
 # Calibration review, survey v4: synth-shift
 
-Build cba9d609. Engine readings: the current engine (research/calib/tables/v4.json, 2026-10-23). 1 expert (synth-shift (an AI model): modules A, B, C, D). With more than one expert each tank reads their median. The app's overall verdict is src/calib/v4.ts verdictOf, from its parts (space band, tank minimum, fighting warnings, compatibility, temperature, herp checks, group bands); "milder" means the experts judge the tank less severely than the app.
+Build cba9d609. Engine readings: the current engine (research/calib/tables/v4.json, 2026-10-26). 1 expert (synth-shift (an AI model): modules A, B, C, D). With more than one expert each tank reads their median. The app's overall verdict is src/calib/v4.ts verdictOf, from its parts (space band, tank minimum, fighting warnings, compatibility, temperature, herp checks, group bands); "milder" means the experts judge the tank less severely than the app.
 
 ## Verdict per tag
 
@@ -8,7 +8,7 @@ Flagged: half or more of the tag's answered tanks a band off the app, all in the
 
 | tag | tanks | app | experts | agree | milder | harsher | |
 |---|---|---|---|---|---|---|---|
-| compat.betta-community | A14 | unworkable | unworkable | 1 | 0 | 0 |  |
+| compat.betta-community | A14 | caution | ideal | 0 | 1 | 0 | **flag: experts milder** |
 | compat.breeding-pair-floor | A08 B10 B14 | problems, unworkable, problems | caution, unworkable, problems | 2 | 1 | 0 |  |
 | compat.coolwater-mates | B04 | caution | ideal | 0 | 1 | 0 | **flag: experts milder** |
 | compat.coral-nipper | C04 | unworkable | unworkable | 1 | 0 | 0 |  |
@@ -97,7 +97,7 @@ Flagged: half or more of the tag's answered tanks a band off the app, all in the
 | space.salt-scale | C05 C08 | unworkable, unworkable | unworkable, unworkable | 2 | 0 | 0 |  |
 | space.school-curve | A10 A13 | unworkable, problems | unworkable, problems | 2 | 0 | 0 |  |
 | space.swordtail-refit | A16 | problems | caution | 0 | 1 | 0 | **flag: experts milder** |
-| space.tiny-class | A14 | unworkable | unworkable | 1 | 0 | 0 |  |
+| space.tiny-class | A14 | caution | ideal | 0 | 1 | 0 | **flag: experts milder** |
 | space.water | A04 | problems | caution | 0 | 1 | 0 | **flag: experts milder** |
 | space.water-small | A13 | problems | problems | 1 | 0 | 0 |  |
 | tankmin.angel-height | A08 | problems | caution | 0 | 1 | 0 | **flag: experts milder** |
@@ -124,9 +124,9 @@ Flagged: half or more of the tag's answered tanks a band off the app, all in the
 | app \ experts | ideal | caution | problems | unworkable |
 |---|---|---|---|---|
 | ideal | 0 | 0 | 0 | 0 |
-| caution | 2 | 2 | 0 | 0 |
+| caution | 3 | 2 | 0 | 0 |
 | problems | 0 | 1 | 2 | 0 |
-| unworkable | 0 | 0 | 0 | 16 |
+| unworkable | 0 | 0 | 0 | 15 |
 
 **gap** (1 tanks)
 
@@ -178,9 +178,9 @@ Flagged: half or more of the tag's answered tanks a band off the app, all in the
 | app \ experts | ideal | caution | problems | unworkable |
 |---|---|---|---|---|
 | ideal | 0 | 0 | 0 | 0 |
-| caution | 3 | 2 | 0 | 0 |
+| caution | 4 | 2 | 0 | 0 |
 | problems | 0 | 2 | 2 | 0 |
-| unworkable | 0 | 0 | 0 | 15 |
+| unworkable | 0 | 0 | 0 | 14 |
 
 **tankmin** (16 tanks)
 
@@ -302,10 +302,10 @@ fewer X: the app's biggest contributor on its binding dimension, or a fighting w
 | A08 | problems: space 122 % | fewer sterbai | yes |  |
 | A09 | unworkable: tankmin red: angel; temperature none | bigger | yes |  |
 | A10 | unworkable: temperature single | drop | yes |  |
-| A11 | unworkable: compat high; temperature single | drop sae | yes |  |
+| A11 | unworkable: compat high; temperature single | drop kuhli | yes |  |
 | A12 | caution: space 99 %; tankmin yellow: danio; temperature narrow | fewer danio | yes |  |
 | A13 | problems: space 142 % | fewer neon | yes |  |
-| A14 | unworkable: compat high | drop kuhli | yes |  |
+| A14 | caution: space 85 %; tankmin yellow: kuhli; temperature narrow | fewer kuhli | yes |  |
 | A15 | caution: space 92 %; temperature narrow | fewer chili | yes |  |
 | A16 | problems: space 102 % | fewer swordtail | yes |  |
 | B01 | unworkable: tankmin red: oscar | bigger | yes |  |
@@ -364,7 +364,7 @@ The app's answer: no for a blocked pair, no shared temperature, or a herp that m
 | A07 | no | Tiger barb with Betta: would harass its long fins | caution | nip | nip | **flag** |
 | A08 | caution | Angelfish breeding pair defends much of this floor (648 sq in): tankmates need caves and sight breaks elsewhere; temperature narrow | yes | aggression, temperature | - | **flag** |
 | A09 | no | Angelfish breeding pair defends much of this floor (624 sq in): tankmates need caves and sight breaks elsewhere; temperature none | caution | aggression, temperature | aggression, temperature | **flag** |
-| A14 | no | Kuhli loach with Pygmy corydoras: water chemistry: pH 5.5-6.5 against its 6.4-7.4; temperature narrow | caution | chemistry, temperature | chemistry, temperature | **flag** |
+| A14 | caution | temperature narrow | yes | temperature | - | **flag** |
 | A15 | caution | temperature narrow | yes | temperature | - | **flag** |
 | B02 | caution | temperature narrow | yes | temperature | - | **flag** |
 | B04 | caution | temperature narrow | yes | temperature | - | **flag** |
@@ -450,6 +450,7 @@ Confidence: low 0, medium 60, high 0. A module a keeper mostly skips is outside 
 
 ## Flags
 
+- verdict compat.betta-community: milder (1 of 1 tanks)
 - verdict compat.coolwater-mates: milder (1 of 1 tanks)
 - verdict golden.discus-85: milder (1 of 1 tanks)
 - verdict groups.sexed: milder (1 of 2 tanks)
@@ -464,6 +465,7 @@ Confidence: low 0, medium 60, high 0. A module a keeper mostly skips is outside 
 - verdict space.livebearers: milder (1 of 1 tanks)
 - verdict space.malawi-mix: milder (1 of 1 tanks)
 - verdict space.swordtail-refit: milder (1 of 1 tanks)
+- verdict space.tiny-class: milder (1 of 1 tanks)
 - verdict space.water: milder (1 of 1 tanks)
 - verdict tankmin.angel-height: milder (1 of 1 tanks)
 - verdict tankmin.yellowtang: milder (1 of 1 tanks)
@@ -524,7 +526,7 @@ Confidence: low 0, medium 60, high 0. A module a keeper mostly skips is outside 
 - compat A07: milder (app no, experts caution)
 - compat A08: milder (app caution, experts yes)
 - compat A09: milder (app no, experts caution)
-- compat A14: milder (app no, experts caution)
+- compat A14: milder (app caution, experts yes)
 - compat A15: milder (app caution, experts yes)
 - compat B02: milder (app caution, experts yes)
 - compat B04: milder (app caution, experts yes)

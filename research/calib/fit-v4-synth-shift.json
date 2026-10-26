@@ -8,8 +8,8 @@
   "pairs": 0
  },
  "solver": {
-  "it": 60,
-  "gnorm": 8.576194677574067e-7
+  "it": 58,
+  "gnorm": 2.259518871512416e-7
  },
  "skipped": [
   "synth-shift v4: 22 count tanks read; 38 answers on tanks outside the count fit (no counts asked, or no space.* / golden.* tag); 0 count tanks skipped by the expert",
@@ -18,7 +18,6 @@
   "synth-shift A10 overall: set aside on review (v4 change \"drop\": a compatibility answer, not a room band)",
   "synth-shift A10 neon ideal 0: outside the table (1..91)",
   "synth-shift A11 overall: set aside on review (v4 change \"drop\": a compatibility answer, not a room band)",
-  "synth-shift A14 overall: set aside on review (v4 change \"drop\": a compatibility answer, not a room band)",
   "synth-shift B02 overall: set aside on review (v4 change \"bigger\": a tank-minimum answer, not a room band)",
   "synth-shift B06 overall: set aside on review (v4 change \"drop\": a compatibility answer, not a room band)",
   "synth-shift B07 overall: set aside on review (v4 change \"bigger\": a tank-minimum answer, not a room band)",
@@ -36,302 +35,302 @@
   "synth-shift A16 bronzecory limit 22: water 132 %, floor 130 % (weighted 0.5)",
   "synth-shift B06 sterbai limit 30: water 149 %, floor 131 % (weighted 0.5)"
  ],
- "rows": 64,
+ "rows": 65,
  "held": 0,
  "g": 0.8,
  "f": 0.8,
  "class": {
-  "big": 0.9472,
-  "invert": 0.9906,
-  "mid": 0.9975,
-  "salt": 1.0072,
-  "tiny": 0.9987
+  "big": 0.9494,
+  "invert": 0.9913,
+  "mid": 0.9938,
+  "salt": 1.0081,
+  "tiny": 0.9982
  },
  "species": {
   "amano": {
-   "mult": 0.7924,
+   "mult": 0.793,
    "own": 0.9999,
    "cls": "invert",
    "answers": 2
   },
   "betta": {
-   "mult": 0.7957,
-   "own": 0.9972,
+   "mult": 0.7917,
+   "own": 0.9957,
    "cls": "mid",
-   "answers": 4
+   "answers": 5
   },
   "bluetang": {
-   "mult": 0.8048,
+   "mult": 0.8055,
    "own": 0.9988,
    "cls": "salt",
    "answers": 2
   },
   "boesemani": {
-   "mult": 0.7977,
-   "own": 0.9997,
+   "mult": 0.7957,
+   "own": 1.0008,
    "cls": "mid",
    "answers": 4
   },
   "bristlenose": {
-   "mult": 0.8056,
-   "own": 1.0095,
+   "mult": 0.8031,
+   "own": 1.0101,
    "cls": "mid",
    "answers": 13
   },
   "bronzecory": {
-   "mult": 0.8163,
-   "own": 1.0229,
+   "mult": 0.8149,
+   "own": 1.0249,
    "cls": "mid",
    "answers": 18
   },
   "cardinal": {
-   "mult": 0.8007,
-   "own": 1.0021,
+   "mult": 0.8004,
+   "own": 1.0023,
    "cls": "tiny",
    "answers": 7
   },
   "cherrybarb": {
-   "mult": 0.7977,
-   "own": 0.9997,
+   "mult": 0.7952,
+   "own": 1.0001,
    "cls": "mid",
    "answers": 4
   },
   "cherryshrimp": {
-   "mult": 0.7893,
-   "own": 0.9959,
+   "mult": 0.79,
+   "own": 0.9962,
    "cls": "invert",
    "answers": 8
   },
   "chili": {
-   "mult": 0.7845,
-   "own": 0.9818,
+   "mult": 0.7848,
+   "own": 0.9827,
    "cls": "tiny",
    "answers": 5
   },
   "chromis": {
-   "mult": 0.8078,
-   "own": 1.0025,
+   "mult": 0.8086,
+   "own": 1.0027,
    "cls": "salt",
    "answers": 7
   },
   "cleanershrimp": {
-   "mult": 0.8056,
+   "mult": 0.8063,
    "own": 0.9998,
    "cls": "salt",
    "answers": 7
   },
   "clownloach": {
-   "mult": 0.7578,
+   "mult": 0.7595,
    "own": 1,
    "cls": "big",
    "answers": 0
   },
   "coralbeauty": {
-   "mult": 0.8064,
+   "mult": 0.8071,
    "own": 1.0007,
    "cls": "salt",
    "answers": 7
   },
   "danio": {
-   "mult": 0.8062,
-   "own": 1.009,
+   "mult": 0.8063,
+   "own": 1.0097,
    "cls": "tiny",
    "answers": 3
   },
   "demasoni": {
    "mult": 0.798,
-   "own": 0.9987,
+   "own": 0.9993,
    "cls": "tiny",
    "answers": 2
   },
   "discus": {
-   "mult": 0.7624,
-   "own": 1.0061,
+   "mult": 0.764,
+   "own": 1.0059,
    "cls": "big",
    "answers": 7
   },
   "dwarfgourami": {
-   "mult": 0.7977,
-   "own": 0.9997,
+   "mult": 0.7949,
+   "own": 0.9998,
    "cls": "mid",
    "answers": 2
   },
   "ember": {
-   "mult": 0.7959,
-   "own": 0.9961,
+   "mult": 0.7926,
+   "own": 0.9925,
    "cls": "tiny",
-   "answers": 2
+   "answers": 3
   },
   "goldfish": {
-   "mult": 0.7481,
-   "own": 0.9872,
+   "mult": 0.7496,
+   "own": 0.9869,
    "cls": "big",
    "answers": 3
   },
   "gourami": {
-   "mult": 0.7975,
-   "own": 0.9993,
+   "mult": 0.7946,
+   "own": 0.9994,
    "cls": "mid",
    "answers": 3
   },
   "guppy": {
-   "mult": 0.8066,
-   "own": 1.0096,
+   "mult": 0.8067,
+   "own": 1.0102,
    "cls": "tiny",
    "answers": 3
   },
   "harlequin": {
-   "mult": 0.7956,
-   "own": 0.997,
+   "mult": 0.7934,
+   "own": 0.9979,
    "cls": "mid",
    "answers": 2
   },
   "hermit": {
-   "mult": 0.8059,
+   "mult": 0.8067,
    "own": 1.0002,
    "cls": "salt",
    "answers": 7
   },
   "honeygourami": {
-   "mult": 0.7875,
-   "own": 0.9868,
+   "mult": 0.785,
+   "own": 0.9873,
    "cls": "mid",
    "answers": 3
   },
   "kuhli": {
-   "mult": 0.7942,
-   "own": 0.9952,
+   "mult": 0.7843,
+   "own": 0.9864,
    "cls": "mid",
-   "answers": 6
+   "answers": 7
   },
   "mandarin": {
-   "mult": 0.8057,
+   "mult": 0.8064,
    "own": 0.9999,
    "cls": "salt",
    "answers": 2
   },
   "molly": {
-   "mult": 0.8003,
-   "own": 1.0029,
+   "mult": 0.7979,
+   "own": 1.0036,
    "cls": "mid",
    "answers": 5
   },
   "neon": {
-   "mult": 0.803,
-   "own": 1.005,
+   "mult": 0.8038,
+   "own": 1.0066,
    "cls": "tiny",
    "answers": 18
   },
   "nerite": {
-   "mult": 0.7925,
+   "mult": 0.7931,
    "own": 1,
    "cls": "invert",
    "answers": 9
   },
   "ocellaris": {
-   "mult": 0.8066,
+   "mult": 0.8073,
    "own": 1.001,
    "cls": "salt",
    "answers": 7
   },
   "oscar": {
-   "mult": 0.7578,
+   "mult": 0.7595,
    "own": 1,
    "cls": "big",
    "answers": 0
   },
   "oto": {
-   "mult": 0.7984,
-   "own": 0.9993,
+   "mult": 0.7981,
+   "own": 0.9994,
    "cls": "tiny",
    "answers": 3
   },
   "pandacory": {
    "mult": 0.7977,
-   "own": 0.9984,
+   "own": 0.9989,
    "cls": "tiny",
    "answers": 2
   },
   "peacock": {
-   "mult": 0.7903,
-   "own": 0.9903,
+   "mult": 0.7878,
+   "own": 0.9908,
    "cls": "mid",
    "answers": 3
   },
   "platy": {
-   "mult": 0.7993,
-   "own": 1.0004,
+   "mult": 0.7992,
+   "own": 1.0008,
    "cls": "tiny",
    "answers": 5
   },
   "pygmycory": {
-   "mult": 0.7984,
-   "own": 0.9993,
+   "mult": 0.7962,
+   "own": 0.9971,
    "cls": "tiny",
-   "answers": 2
+   "answers": 3
   },
   "royalgramma": {
-   "mult": 0.8059,
+   "mult": 0.8066,
    "own": 1.0002,
    "cls": "salt",
    "answers": 5
   },
   "rummynose": {
-   "mult": 0.7985,
-   "own": 0.9994,
+   "mult": 0.7981,
+   "own": 0.9995,
    "cls": "tiny",
    "answers": 3
   },
   "sae": {
-   "mult": 0.7571,
-   "own": 0.9991,
+   "mult": 0.7597,
+   "own": 1.0002,
    "cls": "big",
    "answers": 4
   },
   "sterbai": {
-   "mult": 0.802,
-   "own": 1.005,
+   "mult": 0.7991,
+   "own": 1.0051,
    "cls": "mid",
    "answers": 4
   },
   "swordtail": {
-   "mult": 0.8011,
-   "own": 1.0039,
+   "mult": 0.7989,
+   "own": 1.0048,
    "cls": "mid",
    "answers": 5
   },
   "syno": {
-   "mult": 0.7455,
-   "own": 0.9837,
+   "mult": 0.7475,
+   "own": 0.9842,
    "cls": "big",
    "answers": 3
   },
   "turbo": {
-   "mult": 0.8058,
+   "mult": 0.8065,
    "own": 1,
    "cls": "salt",
    "answers": 7
   },
   "watchman": {
-   "mult": 0.8064,
-   "own": 1.0007,
+   "mult": 0.8071,
+   "own": 1.0008,
    "cls": "salt",
    "answers": 7
   },
   "whitecloud": {
-   "mult": 0.7993,
-   "own": 1.0004,
+   "mult": 0.799,
+   "own": 1.0005,
    "cls": "tiny",
    "answers": 6
   },
   "yellowlab": {
-   "mult": 0.7903,
-   "own": 0.9904,
+   "mult": 0.7882,
+   "own": 0.9913,
    "cls": "mid",
    "answers": 5
   },
   "yellowtang": {
-   "mult": 0.8053,
+   "mult": 0.806,
    "own": 0.9994,
    "cls": "salt",
    "answers": 2
@@ -348,7 +347,7 @@
   "heldBefore": null,
   "heldAfter": null,
   "fitBefore": 0.2672326400631946,
-  "fitAfter": 0.04437867706793477,
+  "fitAfter": 0.044070463390500185,
   "disagreement": null
  },
  "kinds": {
@@ -375,9 +374,9 @@
   "cases": []
  },
  "compat": {
-  "high -> caution": 3,
-  "ok -> yes": 6,
+  "high -> caution": 2,
+  "ok -> yes": 7,
   "ok -> caution": 1
  },
- "tables": "round v4: current engine, 2026-10-23"
+ "tables": "round v4: current engine, 2026-10-26"
 }

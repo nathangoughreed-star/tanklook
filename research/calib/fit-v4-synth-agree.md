@@ -1,6 +1,6 @@
 # Expert calibration, fit of round v4
 
-1 experts (synth-agree), 60 answers, 0 on held-out anchors. Noise 0.200 (log) from 0 repeat pairs. Engine readings: round v4: current engine, 2026-10-23.
+1 experts (synth-agree), 61 answers, 0 on held-out anchors. Noise 0.200 (log) from 0 repeat pairs. Engine readings: round v4: current engine, 2026-10-26.
 
 ## Error (rms of log reading at the experts' counts)
 
@@ -13,7 +13,7 @@ Inter-expert disagreement n/a (no tank answered by two experts yet). Stop rule n
 
 ## Multipliers on today's factors
 
-Water (SPACE_PER_L) x0.9979, floor x1.0138. Classes: big -2 %, invert +0 %, mid +3 %, salt -0 %, tiny -1 %.
+Water (SPACE_PER_L) x0.998, floor x1.0138. Classes: big -2 %, invert +0 %, mid +3 %, salt -0 %, tiny -1 %.
 
 | species | class | answers | total move | own move |
 |---|---|---|---|---|
@@ -31,8 +31,8 @@ Median ratio, experts 1.33, engine 1.44 (2 answers). Experts higher means they f
 
 ## Compatibility: gate -> experts
 
-- high -> no: 3
-- ok -> caution: 6
+- high -> no: 2
+- ok -> caution: 7
 - ok -> no: 1
 
 ## Ambiguous counts (both dimensions near the anchor)
@@ -54,7 +54,6 @@ Median ratio, experts 1.33, engine 1.44 (2 answers). Experts higher means they f
 - synth-agree A11 overall: set aside on review (v4 change "drop": a compatibility answer, not a room band)
 - synth-agree A11 boesemani ideal 0: outside the table (1..34)
 - synth-agree A11 kuhli ideal 0: outside the table (1..57)
-- synth-agree A14 overall: set aside on review (v4 change "drop": a compatibility answer, not a room band)
 - synth-agree A16 platy ideal 0: outside the table (1..49)
 - synth-agree B02 overall: set aside on review (v4 change "bigger": a tank-minimum answer, not a room band)
 - synth-agree B06 overall: set aside on review (v4 change "drop": a compatibility answer, not a room band)

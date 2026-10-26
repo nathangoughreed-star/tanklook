@@ -9,7 +9,7 @@
   "C",
   "D"
  ],
- "made": "2026-10-23",
+ "made": "2026-10-26",
  "source": "calib-synth-v4.mjs",
  "answers": {
   "A01": {
@@ -136,7 +136,7 @@
    "confidence": "medium",
    "change": "drop",
    "changeSp": [
-    "sae"
+    "kuhli"
    ],
    "ideal": 0,
    "limit": 4,
@@ -164,15 +164,14 @@
    "limit": 12
   },
   "A14": {
-   "verdict": "unworkable",
+   "verdict": "caution",
    "confidence": "medium",
-   "change": "drop",
+   "change": "fewer",
    "changeSp": [
     "kuhli"
    ],
-   "together": "no",
+   "together": "caution",
    "reasons": [
-    "chemistry",
     "temperature"
    ],
    "ideal": 4,

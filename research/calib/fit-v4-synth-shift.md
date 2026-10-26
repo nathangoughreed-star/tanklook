@@ -1,6 +1,6 @@
 # Expert calibration, fit of round v4
 
-1 experts (synth-shift), 64 answers, 0 on held-out anchors. Noise 0.200 (log) from 0 repeat pairs. Engine readings: round v4: current engine, 2026-10-23.
+1 experts (synth-shift), 65 answers, 0 on held-out anchors. Noise 0.200 (log) from 0 repeat pairs. Engine readings: round v4: current engine, 2026-10-26.
 
 ## Error (rms of log reading at the experts' counts)
 
@@ -13,58 +13,58 @@ Inter-expert disagreement n/a (no tank answered by two experts yet). Stop rule n
 
 ## Multipliers on today's factors
 
-Water (SPACE_PER_L) x0.8, floor x0.8. Classes: big -5 %, invert -1 %, mid -0 %, salt +1 %, tiny -0 %. Capped at x1.25: g, f.
+Water (SPACE_PER_L) x0.8, floor x0.8. Classes: big -5 %, invert -1 %, mid -1 %, salt +1 %, tiny -0 %. Capped at x1.25: g, f.
 
 | species | class | answers | total move | own move |
 |---|---|---|---|---|
 | syno | big | 3 | -25 % | -2 % |
 | goldfish | big | 3 | -25 % | -1 % |
-| sae | big | 4 | -24 % | -0 % |
 | clownloach | big | 0 | -24 % | +0 % |
 | oscar | big | 0 | -24 % | +0 % |
+| sae | big | 4 | -24 % | +0 % |
 | discus | big | 7 | -24 % | +1 % |
+| kuhli | mid | 7 | -22 % | -1 % |
 | chili | tiny | 5 | -22 % | -2 % |
 | honeygourami | mid | 3 | -21 % | -1 % |
-| cherryshrimp | invert | 8 | -21 % | -0 % |
 | peacock | mid | 3 | -21 % | -1 % |
 | yellowlab | mid | 5 | -21 % | -1 % |
+| cherryshrimp | invert | 8 | -21 % | -0 % |
+| betta | mid | 5 | -21 % | -0 % |
+| ember | tiny | 3 | -21 % | -1 % |
 | amano | invert | 2 | -21 % | -0 % |
 | nerite | invert | 9 | -21 % | +0 % |
-| kuhli | mid | 6 | -21 % | -0 % |
-| harlequin | mid | 2 | -20 % | -0 % |
-| betta | mid | 4 | -20 % | -0 % |
-| ember | tiny | 2 | -20 % | -0 % |
-| gourami | mid | 3 | -20 % | -0 % |
-| boesemani | mid | 4 | -20 % | -0 % |
-| cherrybarb | mid | 4 | -20 % | -0 % |
-| dwarfgourami | mid | 2 | -20 % | -0 % |
+| harlequin | mid | 2 | -21 % | -0 % |
+| gourami | mid | 3 | -21 % | -0 % |
+| dwarfgourami | mid | 2 | -21 % | -0 % |
+| cherrybarb | mid | 4 | -20 % | +0 % |
+| boesemani | mid | 4 | -20 % | +0 % |
+| pygmycory | tiny | 3 | -20 % | -0 % |
 | pandacory | tiny | 2 | -20 % | -0 % |
+| molly | mid | 5 | -20 % | +0 % |
 | demasoni | tiny | 2 | -20 % | -0 % |
 | oto | tiny | 3 | -20 % | -0 % |
-| pygmycory | tiny | 2 | -20 % | -0 % |
 | rummynose | tiny | 3 | -20 % | -0 % |
-| platy | tiny | 5 | -20 % | +0 % |
-| whitecloud | tiny | 6 | -20 % | +0 % |
-| molly | mid | 5 | -20 % | +0 % |
-| cardinal | tiny | 7 | -20 % | +0 % |
 | swordtail | mid | 5 | -20 % | +0 % |
-| sterbai | mid | 4 | -20 % | +0 % |
-| neon | tiny | 18 | -20 % | +0 % |
-| bluetang | salt | 2 | -20 % | -0 % |
+| whitecloud | tiny | 6 | -20 % | +0 % |
+| sterbai | mid | 4 | -20 % | +1 % |
+| platy | tiny | 5 | -20 % | +0 % |
+| cardinal | tiny | 7 | -20 % | +0 % |
+| bristlenose | mid | 13 | -20 % | +1 % |
+| neon | tiny | 18 | -20 % | +1 % |
+| bluetang | salt | 2 | -19 % | -0 % |
 | yellowtang | salt | 2 | -19 % | -0 % |
-| bristlenose | mid | 13 | -19 % | +1 % |
 | cleanershrimp | salt | 7 | -19 % | -0 % |
+| danio | tiny | 3 | -19 % | +1 % |
 | mandarin | salt | 2 | -19 % | -0 % |
 | turbo | salt | 7 | -19 % | +0 % |
-| hermit | salt | 7 | -19 % | +0 % |
 | royalgramma | salt | 5 | -19 % | +0 % |
-| danio | tiny | 3 | -19 % | +1 % |
+| guppy | tiny | 3 | -19 % | +1 % |
+| hermit | salt | 7 | -19 % | +0 % |
 | coralbeauty | salt | 7 | -19 % | +0 % |
 | watchman | salt | 7 | -19 % | +0 % |
-| guppy | tiny | 3 | -19 % | +1 % |
 | ocellaris | salt | 7 | -19 % | +0 % |
 | chromis | salt | 7 | -19 % | +0 % |
-| bronzecory | mid | 18 | -18 % | +2 % |
+| bronzecory | mid | 18 | -19 % | +2 % |
 
 ## Experts
 
@@ -78,9 +78,9 @@ Median ratio, experts 1.50, engine 1.44 (2 answers). Experts higher means they f
 
 ## Compatibility: gate -> experts
 
-- high -> caution: 3
+- high -> caution: 2
 - ok -> caution: 1
-- ok -> yes: 6
+- ok -> yes: 7
 
 ## Ambiguous counts (both dimensions near the anchor)
 
@@ -101,7 +101,6 @@ Median ratio, experts 1.50, engine 1.44 (2 answers). Experts higher means they f
 - synth-shift A10 overall: set aside on review (v4 change "drop": a compatibility answer, not a room band)
 - synth-shift A10 neon ideal 0: outside the table (1..91)
 - synth-shift A11 overall: set aside on review (v4 change "drop": a compatibility answer, not a room band)
-- synth-shift A14 overall: set aside on review (v4 change "drop": a compatibility answer, not a room band)
 - synth-shift B02 overall: set aside on review (v4 change "bigger": a tank-minimum answer, not a room band)
 - synth-shift B06 overall: set aside on review (v4 change "drop": a compatibility answer, not a room band)
 - synth-shift B07 overall: set aside on review (v4 change "bigger": a tank-minimum answer, not a room band)

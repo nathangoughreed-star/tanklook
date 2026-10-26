@@ -90,15 +90,20 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
     under a red-line minimum or a herp's bare floor / height, a herp with animals it must not share with, or a temperature with no shared
     range (or outside it); problems = past 100 % space, a fighting warning, another herp warning, a group too small; caution = past 75 %,
     a compat concern, under the recommended size, a narrow shared temperature, a herp floor under the usual recommendation, a sex mix off
-    the ratio. **Today it reads 40 of the 60 tanks not workable** (22 tank-minimum red lines, 18 herp warnings, 13 blocked pairs, 6
-    temperature), 10 problems, 9 caution, 1 ideal: most of the survey is "the app says no", so the verdict tags measure the gates more than space.
+    the ratio. **On main d7b6c89 it reads 39 of the 60 tanks not workable** (tanks, one can have several: 17 under a red-line minimum,
+    12 with a herp warning, 12 blocked pairs, 6 temperature), 10 problems, 10 caution, 1 ideal: most of the survey is "the app says no",
+    so the verdict tags measure the gates more than space. Nathan (2026-10-26) answered "too small" to whether a red tank minimum is
+    "not workable" or "problems"; how that maps onto the four steps is asked in the chat.
+  - Retabled on d7b6c89 (kuhli chemistry widened to pH 5.5-7.5, GH 1-10): A14 went not workable -> caution (its kuhli / pygmy cory pH
+    block is gone; the narrow shared temperature remains), A11 stays blocked on hardness only (boesemani GH 9-19 against kuhli 1-10).
   - The fit reads 22 tanks (counts asked and a space.* / golden.* tag); the verdict is the overall band unless the expert's first change
     is not about room (bigger, drop, ratio, other: band left out, counts kept); notroom and "not big enough" leave the tank out, as survey 2.
   - The review's count flag uses the "least" fix (the smallest move that makes the expert's count the engine's own nearest count), so a
     rounded small count is not a disagreement; the point fix is shown beside it.
 - **Findings from the tables (no engine change made):**
   - The nerite snail's pH gate (7.0-8.5) blocks neon, harlequin and chili rasbora: A02, A06 and B16 read "High compatibility risk", where
-    the survey's `why` for A02 expected no problem but temperature. A question for Nathan before experts answer: rule or data?
+    the survey's `why` for A02 expected no problem but temperature. Nathan (2026-10-26): being worked on in another chat; retable
+    (GEN_RETABLE_V4) when that lands.
   - The coral-nipper caution (C04, C05) is not in these readings: the coral gate (animalfit.ts) needs coral items in the tank, the v4
     tanks are built with river stones as rounds 1-3 are, and compatRisks does not pass `corals` either. "LPS and soft corals" is listed
     among the tank's unmodelled notes; the experts' answers on compat.coral-nipper are therefore read against a tank without corals.
