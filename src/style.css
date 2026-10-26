@@ -508,6 +508,7 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .tankvars { display: flex; flex-direction: column; gap: 3px }
 .tankgen { display: flex; flex-direction: column; gap: 2px; align-self: start }
 .tankgen span { font-size: 12px; opacity: .75 }
+.tankgen.nofit { cursor: not-allowed } .tankgen.nofit b { opacity: .5 } .tankgen.nofit .bad { opacity: 1 } /* a sump too big for the stand (lane SF) */
 .tankvar { display: grid; grid-template-columns: 1fr 120px 110px; gap: 8px; align-items: center }
 .tankvar .vp { text-align: right; font-variant-numeric: tabular-nums }
 .tankvar .vb i { opacity: .7 }

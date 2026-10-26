@@ -173,3 +173,15 @@ Against main 77b4af6 (10 gal floor), all species x 1/3/6/12/25/50 (450 cases): n
 | axolotl x3 | g20l | 39 -> 44 % |
 
 17 build lines change; setup moves -$45 .. +$44. Three least-work builds switch from a canister to a sump (nerite x50 / 20 gal long, mystery x25 / 15 gal, turbo x6 / 8 gal cube), two balanced builds from a sump to a canister (mystery x12 / 5 gal $468 -> $512, turbo x6 / 8 gal cube $947 -> $978).
+
+## Lane SF (2026-10-26): the sump in the stand, in 3D (Nathan: doors open on click; "just say it wont fit in the stand and dont allow both the sump and stand. no sticking out of the stand walls"; no stand: the sump on the floor beside the tank)
+src/scene/standspace.ts: the room inside each stand style (cabinet less 18 mm panels and the kick plate, frame less its tubes, a table under its top and apron between the legs). The default sump now also fits inside the stand (length, depth and height); the size picker greys what does not fit; a sump that stops fitting turns the Sump row red and is not drawn.
+Against main e544a63, all species x 1/3/6/12/25/50: only the 125 gal moves (its 30 gal breeder sump, 18 in deep, is deeper than the cabinet inside; the default is now the 37 gal). No tank pick or verdict moves.
+
+| species x count | tank | moved |
+|---|---|---|
+| bluetang x3 | g125 | filtration 40 -> 39 %; builds +$20 |
+| bluetang x6 | g125 | filtration 79 -> 77 %; builds +$21 |
+| 12 others (bolivianram, cockatoo, yellowlab, demasoni, labeo, auratus, afra, clownloach x1 / x3, hillstream, bluetang x1, chromis) | g125 | least-work build +$20 |
+
+Salt 125 gal with its default sump, room default: open heater need 389 -> 371 W (500 W either way), 129.1 -> 123.3 kWh/mo; glass lid 500 -> 300 W, 100.6 -> 94.8 kWh/mo.

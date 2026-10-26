@@ -6,7 +6,8 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { FILTER_MODELS, HEATER_MODELS, type FilterModel } from '../demand/gear';
-import { filterState, heatLoss, techOf, techParts, type GearPlace } from '../scene/tech';
+import { filterState, heatLoss, SUMP_FILL, sumpDefault, sumpOf, techOf, techParts, type GearPlace } from '../scene/tech';
+import { fitsInStand } from '../scene/standspace';
 import { filterProduct, genericHeaterW, heaterProduct, type FilterProduct, type PartColour } from '../data/gearCatalog';
 import { backdropDepth, glassThickness, tankUnderside, floorY, waterY, clamp, HOOD_H, RIM_DROP, RIM_H } from '../scene/physics';
 import { chord } from '../scene/shape';
@@ -566,18 +567,31 @@ function canister(f: Frame, m: FilterModel, sp: Spot, prod?: FilterProduct) {
 }
 
 function sump(f: Frame, sp: Spot) {
-  const { kit, t } = f;
+  const { kit, t, T } = f;
+  // the sump tank (lane SF, Nathan 2026-10-26): its own size, inside the stand; beside the tank on the floor with no stand;
+  // not drawn when it does not fit inside the stand (the Tech menu says so). The drain and return run to its chambers.
+  const z = sumpOf(f.S, true) ?? sumpDefault(f.S), stand = f.S.stand.show, fits = fitsInStand(f.S, z);
+  const cabinet = stand && (f.S.stand.style === 'cabinet' || f.S.stand.style === 'custom'), h = f.S.stand.height;
+  const base = f.floor + (cabinet ? Math.min(70, h * 0.12) : 0) + 2;
+  const cx = stand ? T.L / 2 : f.side === 'left' ? -t - 80 - z.L / 2 : T.L + t + 80 + z.L / 2, cz = stand ? -T.D / 2 : -(T.D - z.D / 2);
+  const show = !stand || fits, x0 = cx - z.L / 2, drainX = x0 + z.L * 0.1, pumpX = x0 + z.L * 0.84, top = base + z.H;
   // overflow box hung on the back glass (inside box with a comb, a U-tube over the rim to the outside box), drain down
-  const w = 130, d = 70, h = 150, yT = f.H - 6, u = f.slot(sp.fixed ? sp.u : sp.u + w / 2, w + 8, yT - h, yT, 0, d + 8, sp.fixed);
-  f.box('wet', f.P(u, yT - h / 2, d / 2 + 2), w, h, d, C.black, 4);
+  const w = 130, d = 70, oh = 150, yT = f.H - 6, u = f.slot(sp.fixed ? sp.u : sp.u + w / 2, w + 8, yT - oh, yT, 0, d + 8, sp.fixed);
+  f.box('wet', f.P(u, yT - oh / 2, d / 2 + 2), w, oh, d, C.black, 4);
   for (let i = 0; i < 12; i++) f.box('wet', f.P(u - w / 2 + 8 + i * (w - 16) / 11, f.wy - 6, d + 2.4), 3.2, 22, 1, 0x070808);
   kit.tube('clear', [f.P(u, f.wy - 40, d / 2), f.P(u, f.H + 40, d / 2), f.P(u, f.H + 60, -t / 2), f.P(u, f.H + 40, -t - 40), f.P(u, f.H - 40, -t - 40)], 12, C.glass, 0.1, 14);
   f.box('room', f.P(u, f.H - 70, -t - 40), w * 0.8, 140, 70, C.black, 4);
-  const standY = f.S.stand.show ? f.top : f.floor;
-  kit.tube('room', [f.P(u, f.H - 140, -t - 40), f.P(u, standY + 40, -t - 50), f.P(u, standY - 30, -t + 30)], 14, C.charcoal, 0, 10);
-  // return: a rigid line up the back and over the rim, loc-line beads curving forward, a flared nozzle
-  const uR = f.slot(u + w / 2 + 120, 40, f.wy - 100, f.H, 0, 50), rr = 10;
-  kit.tube('room', [f.P(uR, standY - 30, -t + 30), f.P(uR, standY + 40, -t - 22), f.P(uR, f.H + 10, -t - 22)], rr, C.black, 0, 10);
+  const standY = stand ? f.top : f.floor, dB = f.P(u, f.H - 140, -t - 40);
+  // the drain: down the back; into the sump's first chamber (in the stand, or out along the floor to the one beside the tank)
+  const drain = [dB, f.P(u, standY + 40, -t - 50)];
+  if (show) drain.push(V(drainX, Math.max(standY - 30, top + 40), dB.z), V(drainX, top + 20, cz), V(drainX, base + z.H * 0.6, cz));
+  else drain.push(f.P(u, standY - 30, -t + 30));
+  kit.tube('room', drain, 14, C.charcoal, 0, 10);
+  // return: from the pump up the back and over the rim, loc-line beads curving forward, a flared nozzle
+  const uR = f.slot(u + w / 2 + 120, 40, f.wy - 100, f.H, 0, 50), rr = 10, rB = f.P(uR, standY + 40, -t - 22);
+  const ret = show ? [V(pumpX, base + 40, cz), V(pumpX, top + 20, cz), V(pumpX, Math.max(standY - 30, top + 40), rB.z), rB, f.P(uR, f.H + 10, -t - 22)]
+    : [f.P(uR, standY - 30, -t + 30), rB, f.P(uR, f.H + 10, -t - 22)];
+  kit.tube('room', ret, rr, C.black, 0, 10);
   kit.tube('wet', [f.P(uR, f.H + 10, -t - 22), f.P(uR, f.H + 34, -t / 2), f.P(uR, f.H + 10, 16), f.P(uR, f.wy - 30, 16)], rr, C.black, 0, 10);
   let p = f.P(uR, f.wy - 30, 16), dir = V(0, -1, 0);
   for (let i = 0; i < 4; i++) {
@@ -586,16 +600,19 @@ function sump(f: Frame, sp: Spot) {
     p = q; dir = nd;
   }
   kit.lathe('wet', [[7, 0], [7.5, 10], [10, 22], [12, 24]], p, dir, C.locline, 0, 20);
-  // the sump in the stand: a glass box of water, its skimmer and return pump
-  if (f.S.stand.show) {
-    const sw = Math.min(f.T.L * 0.7, 750), sd = f.T.D * 0.6, sh = Math.min(330, (f.top - f.floor) * 0.55), cu = f.T.L / 2, cb = f.T.D * 0.45, c = f.P(cu, f.floor + 30 + sh / 2, cb);
-    const sx = f.P(cu, 0, 0).x;
-    kit.box('clear', c, sw, sh, sd, C.glass); kit.parts.clear[kit.parts.clear.length - 1].getAttribute('aBase').array.fill(0.1);
-    kit.box('clear', c.clone().add(V(0, -sh * 0.1, 0)), sw - 8, sh * 0.78, sd - 8, 0xcfe7ec);
-    kit.rod('room', V(sx - sw * 0.28, f.floor + 30, c.z), V(sx - sw * 0.28, f.floor + 30 + sh * 1.15, c.z), 48, C.black, { seg: 24 });
-    kit.rod('clear', V(sx - sw * 0.28, f.floor + 30 + sh * 1.15, c.z), V(sx - sw * 0.28, f.floor + 60 + sh * 1.15, c.z), 44, C.cup, { base: 0.35 });
-    kit.box('room', V(sx + sw * 0.32, f.floor + 70, c.z), 80, 70, 70, C.black, 10);
+  if (!show) return;
+  // the sump: a glass box run SUMP_FILL full, two baffles, the skimmer (when it is the in-sump one) and the return pump
+  const wl = z.H * SUMP_FILL, c = V(cx, base + z.H / 2, cz);
+  kit.box('clear', c, z.L, z.H, z.D, C.glass); kit.parts.clear[kit.parts.clear.length - 1].getAttribute('aBase').array.fill(0.1);
+  kit.box('clear', V(cx, base + wl / 2 + 3, cz), z.L - 8, wl, z.D - 8, 0xcfe7ec);
+  for (const k of [0.33, 0.62]) kit.box('clear', V(x0 + z.L * k, base + z.H * 0.33, cz), 5, z.H * 0.62, z.D - 8, C.glass);
+  if (techOf(f.S).rows.skimmer === 'sump') {
+    const sx = x0 + z.L * 0.2, sr = clamp(z.D * 0.18, 30, 60), sh = clamp(z.H * 0.9, 150, 520);
+    kit.rod('room', V(sx, base + 4, cz), V(sx, base + sh, cz), sr, C.black, { seg: 24 });
+    kit.rod('clear', V(sx, base + sh, cz), V(sx, base + sh + sr * 1.4, cz), sr * 0.92, C.cup, { base: 0.35 });
   }
+  const pw = clamp(z.L * 0.12, 50, 110);
+  kit.box('room', V(pumpX, base + pw * 0.45, cz), pw, pw * 0.9, pw * 0.9, C.black, 10);
 }
 
 function skimmerHob(f: Frame, sp: Spot) {

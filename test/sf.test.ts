@@ -5,6 +5,8 @@ import { SCENES } from '../src/examples/scenes';
 import { parseScene } from '../src/scene/validate';
 import { heatLoss, inferTech, SUMP_FILL, SUMP_LINE_L, SUMP_MODELS, SUMP_SHARE, sumpDrainDown, sumpFromModel, sumpOf, sumpTooSmall, techOf, withUnits, type TechSetup } from '../src/scene/tech';
 import type { TankSetup } from '../src/scene/types';
+import { glassThickness } from '../src/scene/physics';
+import { STAND_PANEL, standInside, standMisfit, sumpFitsStand } from '../src/scene/standspace';
 
 // Lane SF (sump follow-ups, 2026-10-23).
 const tankOf = (id: string, salt = true, tech?: TechSetup): TankSetup => {
@@ -92,5 +94,42 @@ describe('SF: no fixed minimum sump (Nathan 2026-10-26: "drop"); the limit is th
       const S = tankOf(id, true, withUnits({ rows: {} }, 'filter', [{ kind: 'sump' }]));
       expect(sumpTooSmall(S), id).toBe(false);
     }
+  });
+});
+
+describe('SF: the sump must fit inside the stand (Nathan 2026-10-26: "just say it wont fit in the stand and dont allow both the sump and stand")', () => {
+  const sumped = (id: string, sump?: string) => tankOf(id, true, { ...withUnits({ rows: {} }, 'filter', [{ kind: 'sump' }]), ...(sump ? { sump: sumpFromModel(getTankModel(sump)!) } : {}) });
+  it('the room inside a cabinet: its outline less the panels, its height less the top and the kick plate', () => {
+    const S = sumped('g75'), t = glassThickness(S.tank, S.render.glass), h = S.stand.height, r = standInside(S)!;
+    expect(S.stand.style).toBe('cabinet');
+    expect(r.L).toBeCloseTo(S.tank.L + 2 * t - 2 * STAND_PANEL, 6);
+    expect(r.D).toBeCloseTo(S.tank.D + 2 * t - 2 * STAND_PANEL, 6);
+    expect(r.H).toBeCloseTo(h - STAND_PANEL - Math.min(70, h * 0.12), 6);
+  });
+  it('no stand shown: no room under the tank, the sump stands beside it and always fits', () => {
+    const S = sumped('g40b', 'g55'); S.stand = { ...S.stand, show: false };
+    expect(standInside(S)).toBeUndefined();
+    expect(sumpFitsStand(S)).toBe(true);
+  });
+  it('a 55 gal sump does not fit under a 40 breeder; a 20 gal long does', () => {
+    expect(sumpFitsStand(sumped('g40b', 'g55'))).toBe(false);
+    expect(sumpFitsStand(sumped('g40b', 'g20l'))).toBe(true);
+    expect(sumpFitsStand(tankOf('g40b', true, { rows: { filter: 'canister' } }))).toBe(true); // no sump, nothing to fit
+  });
+  it('the default sump always fits the stand it stands in, whatever the style', () => {
+    for (const id of ['g10', 'g20h', 'g40b', 'g75', 'g125', 'g180']) for (const style of ['cabinet', 'frame', 'table', 'custom'] as const) {
+      const S = sumped(id); S.stand = { ...S.stand, style, table: { shape: 'rect', L: S.tank.L + 300, D: S.tank.D + 300, x: 0, z: 0 } };
+      expect(sumpFitsStand(S), `${id} ${style}`).toBe(true);
+    }
+  });
+});
+
+describe('SF: what does not fit, said', () => {
+  it('a 55 gal under a 40 breeder: too long and too tall, with the room inside', () => {
+    const S = tankOf('g40b', true, { ...withUnits({ rows: {} }, 'filter', [{ kind: 'sump' }]), sump: sumpFromModel(getTankModel('g55')!) });
+    const m = standMisfit(S, sumpOf(S)!), r = standInside(S)!;
+    expect(m.map(x => x.side)).toContain('long');
+    expect(m.find(x => x.side === 'long')!.room).toBeCloseTo(r.L, 6);
+    expect(standMisfit(S, sumpFromModel(getTankModel('g20l')!))).toEqual([]);
   });
 });

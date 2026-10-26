@@ -4,6 +4,7 @@
 // (render/gear3d.ts, via techParts) all read the tank's tech through techOf. A file without `tech` gets the gear the
 // demand engine always inferred (inferTech), so its numbers do not move. grow.feed is derived from the CO2 + ferts rows
 // (feedOf); the Plant care slider sets those rows (setFeed).
+import { fitsInStand } from './standspace';
 import data from '../data/tech.json';
 import { CARE } from '../data/care';
 import { AIR, climateOf } from '../data/climate';
@@ -456,10 +457,12 @@ export const SUMP_MODELS: TankModel[] = TANK_MODELS.filter(m => !m.terrarium && 
 const boxLitres = (z: { L: number; D: number; H: number }) => z.L * z.D * z.H / 1e6;
 /** A catalogue size as a sump size. */
 export const sumpFromModel = (m: TankModel): SumpSize => { const T = tankFromModel(m); return { model: m.id, L: T.L, D: T.D, H: T.H }; };
-/** The sump this display gets when none is chosen: the smallest plain size of at least SUMP_SHARE of its volume that fits its length, else the largest that fits. */
+/** The sump this display gets when none is chosen: the smallest plain size of at least SUMP_SHARE of its volume that holds the drain-down and fits inside
+ *  the stand (no stand: no longer than the display), else the largest that fits. */
 export function sumpDefault(S: TankSetup): SumpSize {
   const want = SUMP_SHARE * volume(S.tank).litres, all = SUMP_MODELS.map(sumpFromModel).sort((a, b) => boxLitres(a) - boxLitres(b));
-  const fit = all.filter(z => z.L <= S.tank.L), down = sumpDrainDown(S);
+  // it stands inside the stand (lane SF); with no stand, beside the tank, no longer than it
+  const fit = all.filter(z => S.stand.show ? fitsInStand(S, z) : z.L <= S.tank.L), down = sumpDrainDown(S);
   return fit.find(z => boxLitres(z) >= want && boxLitres(z) * (1 - SUMP_FILL) >= down) ?? fit.at(-1) ?? all[0];
 }
 /** Litres that drain into the sump when the return pump stops: SUMP_DRAIN_MM over the display's surface, plus the return line. */

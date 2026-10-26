@@ -4,7 +4,8 @@ import { FOCUS_SECS, type FocusSec } from '../render/menuFocus';
 import { attachDemandPanel } from './demandPanel';
 import { fitToLimits, hasLimits } from '../demand/fit';
 import { attachTechMenu } from './techMenu';
-import { SUMP_MODELS, tempEvidence } from '../scene/tech';
+import { SUMP_MODELS, sumpFromModel, tempEvidence } from '../scene/tech';
+import { standMisfit } from '../scene/standspace';
 import { renderFeaturedDeals } from './featuredDeals';
 import { startDeals, visibleTabs, pickTab, sortDeals, DEFAULT_SORT, type DealSort, type StartTab, type StartMenu } from './startEntries';
 import { DEALS_AS_OF, DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
@@ -417,6 +418,9 @@ Cancel, then change the name, to keep both.`)) return;
           const head = document.createElement('button'); head.className = 'tankgen';
           head.innerHTML = `<b>${esc(m.name)}</b><span>${dimsInches(m.outer)} in generic${/^estimate/.test(m.source) ? ' (estimated size)' : ''}${vs.length ? ` · ${vs.length} product${vs.length > 1 ? 's' : ''}` : ''}</span>`;
           head.onclick = () => apply(m);
+          // a sump that does not fit inside this stand is greyed and cannot be picked (lane SF, Nathan 2026-10-26)
+          const miss = sumpDone ? standMisfit(store.tank, sumpFromModel(m)) : [];
+          if (miss.length) { head.disabled = true; head.classList.add('nofit'); head.insertAdjacentHTML('beforeend', `<span class="bad">Won’t fit in the stand (${miss.map(x => `${(x.size / IN).toFixed(1)} in ${x.side}, ${(x.room / IN).toFixed(1)} in inside`).join('; ')})</span>`); }
           const col = document.createElement('div'); col.className = 'tankvars';
           row.append(head, col);
           for (const v of vs) {

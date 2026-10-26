@@ -7,6 +7,7 @@
 // Heating and Filtration (Nathan 2026-10-20) list the units the tank has, one card each (its name first; a bundle's own
 // with its price crossed out), and an Add button: a heater (generic, its watts editable, or any catalogued one), a filter
 // (its type, then generic or a catalogued one of that type). Removing the last shows "No heater" / "None (Walstad)".
+import { standMisfit } from '../scene/standspace';
 import { FACTORS, demandOf } from '../demand/engine';
 import { pinnedKit } from '../demand/pinned';
 import { mean3 as mean } from '../demand/range';
@@ -213,8 +214,8 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
   /** "20 gal high tank, 39 L of water"; a custom size in the viewer's units. */
   const sumpTitle = (z: SumpSize) => z.model ? sumpName(z) : `${lenIn(z.L)} × ${lenIn(z.D)} × ${lenIn(z.H)} ${fahr() ? 'in' : 'cm'} tank, ${Math.round(z.L * z.D * z.H / 1e6 * SUMP_FILL)} L of water`;
   const sumpRow = (S: TankSetup, t: TechSetup): string => {
-    const z = sumpOf(S), isOpen = open === 'sump', c = z ? optionCost(S, 'filter', 'sump', { tech: singleFilter(t, { kind: 'sump' }), kwhUsd: kwhUsd() }) : undefined;
-    let html = `<div class="trow${isOpen ? ' open' : ''}" data-row="sump"><button type="button" class="thead" aria-expanded="${isOpen}"><span class="tlab">Sump</span><span class="tcur">${z ? esc(sumpTitle(z)) : 'None'}</span>${c ? '<span class="tcost" title="The sump tank, its plumbing and the return pump are priced in the Filtration row">in Filtration</span>' : ''}</button>`;
+    const z = sumpOf(S), miss = z ? standMisfit(S, z) : [], isOpen = open === 'sump', c = z ? optionCost(S, 'filter', 'sump', { tech: singleFilter(t, { kind: 'sump' }), kwhUsd: kwhUsd() }) : undefined;
+    let html = `<div class="trow${isOpen ? ' open' : ''}" data-row="sump"><button type="button" class="thead" aria-expanded="${isOpen}"><span class="tlab">Sump</span><span class="tcur">${z ? esc(sumpTitle(z)) : 'None'}${miss.length ? ' <b class="bad">Won’t fit in the stand</b>' : ''}</span>${c ? '<span class="tcost" title="The sump tank, its plumbing and the return pump are priced in the Filtration row">in Filtration</span>' : ''}</button>`;
     if (!isOpen) return html + '</div>';
     html += '<div class="topts">';
     
@@ -224,6 +225,11 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     const body = `<div class="tsz" title="Inside size; type to make it a custom size">${z.model ? 'Inside' : 'Custom, inside'} ${size} ${u}</div>`
       + `<span class="tchips"><span class="tchip good" title="${esc(`Its water dilutes the waste with the display's (run ${Math.round(SUMP_FILL * 100)} % full: the rest is room for what drains down when the pump stops). It adds no swimming room.`)}">+${Math.round(water)} L of water</span></span>`
       + `<div class="tstep"><button type="button" data-act="sump|pick">Pick a size…</button></div>`;
+    // lane SF (Nathan 2026-10-26): a sump that does not fit inside the stand says so (and is not drawn under the tank)
+    if (miss.length) {
+      const u = fahr() ? ' in' : ' cm', both = (k: 'size' | 'room') => miss.map(x => `${lenIn(x[k])}${u} ${x.side}`).join(' and ');
+      html += `<div class="hint bad"><b>Won’t fit in the stand: this sump is ${both('size')}; the ${S.stand.style === 'cabinet' || S.stand.style === 'custom' ? 'cabinet' : 'stand'} is ${both('room')} inside.</b> Pick a smaller sump, or a longer stand. The sump is not drawn under the tank until it fits.</div>`;
+    }
     // lane SF: no fixed minimum; a sump that cannot hold what drains down when the power goes says so
     if (sumpTooSmall(S)) { const v = (l: number) => fahr() ? `${(l / 3.785).toFixed(1)} gal` : `${l.toFixed(1)} L`, room = z.L * z.D * z.H / 1e6 * (1 - SUMP_FILL);
       html += `<div class="hint warn">Too small: when the power goes, about ${v(sumpDrainDown(S))} drains down from the display and this sump has room for ${v(room)}. Pick a bigger sump.</div>`; }
