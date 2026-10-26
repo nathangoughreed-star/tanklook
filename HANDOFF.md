@@ -410,6 +410,13 @@ Software fixes from research/rules-spec.md section 6; no threshold changed. Benc
   **Floor** bars in place of Space (Floor lists the bottom dwellers; "No bottom dwellers: the floor is free"); the pill still takes the larger.
   Reason text asks for sq in of floor when the floor binds. The plan sheet shows the same two bars; its verdict reads "Space: water column X %,
   floor Y %". Picture: research/habitat/tile-split.png (options shown to Nathan: tile-options.png).
+- **Tile bar scale (Nathan 2026-10-26, branch `ftg`):** the load bars (water column, floor, filtration) show the whole scale, green to the
+  ideal (IDEAL_MAX, 75 %), green -> amber to half way to the limit (87.5 %), amber -> red at 100 % and red past it, with a line where this
+  tank is; the reached part is full strength, the part ahead faint. Past 100 % the scale runs to the tank's percent (`--scale = max(100,
+  --pct)`), so the zones shrink to make room and the line sits at the end (Nathan: "the green bar would be pushed smaller"). style.css
+  `.ftLoad`; `--ideal` is set on the tile from IDEAL_MAX, `--pct` on each track. (Nathan first asked for a line at the ideal and a plain
+  gradient fill, then changed his mind the same day.) The minimum bar keeps one colour per level (its yellow line is Recommended, not
+  75 %); the plan sheet's bars are its own and are untouched.
 - **Moved numbers (deliberate; full list research/habitat/moved-numbers.txt, vs main 1740665):** 35 of 1944 starter scenes (kuhli-heavy
   ones lose 2-4 kuhlis, others gain swimmers; paludariums in 2.5-5 gal drop to 1 toad / 1 newt). 16 tankFor picks: 12 kuhli (2x group) 20 high -> 30 breeder,
   13 kuhlis in a 20 long now fail on Space (~123 %, Nathan approved; the tank minimum still passes, test in minimum.test.ts); 4 adf 10 -> 15 gal;
