@@ -443,18 +443,28 @@ export const offerChiller = (S: TankSetup) => { const h = heatLoss(S); return h.
 export const SUMP_FILL = 0.5;
 /** A sump picked for the display when none is chosen: at least this share of the display's volume, and no longer than the display (it stands in the stand). */
 export const SUMP_SHARE = 0.25;
-/** The smallest catalogue size offered as a sump: a 5 gal, so a nano's default follows SUMP_SHARE (Nathan 2026-10-23, lane SF: "Allow a smaller sump on nanos"; was 10). */
-export const SUMP_MIN_GAL = 5;
-/** The plain glass sizes a sump is picked from (tankfit's own list: rectangles with a generic name), from SUMP_MIN_GAL up. */
-export const SUMP_MODELS: TankModel[] = TANK_MODELS.filter(m => !m.terrarium && (m.shape ?? 'rect') === 'rect' && /^[\d.]+ (gal|ft)/.test(m.name) && m.ratedGal >= SUMP_MIN_GAL);
+/** Water over the overflow that drains down when the return pump stops, mm over the display's surface (about 1 in). */
+export const SUMP_DRAIN_MM = 25.4;
+/** Litres the return line siphons back into the sump when the pump stops (about 0.1 gal). */
+export const SUMP_LINE_L = 0.5;
+/** The plain glass sizes a sump is picked from (tankfit's own list: rectangles with a generic name). No fixed minimum (Nathan 2026-10-26,
+ *  lane SF: "drop"): the limit is the drain-down (sumpTooSmall). */
+export const SUMP_MODELS: TankModel[] = TANK_MODELS.filter(m => !m.terrarium && (m.shape ?? 'rect') === 'rect' && /^[\d.]+ (gal|ft)/.test(m.name));
 const boxLitres = (z: { L: number; D: number; H: number }) => z.L * z.D * z.H / 1e6;
 /** A catalogue size as a sump size. */
 export const sumpFromModel = (m: TankModel): SumpSize => { const T = tankFromModel(m); return { model: m.id, L: T.L, D: T.D, H: T.H }; };
 /** The sump this display gets when none is chosen: the smallest plain size of at least SUMP_SHARE of its volume that fits its length, else the largest that fits. */
 export function sumpDefault(S: TankSetup): SumpSize {
   const want = SUMP_SHARE * volume(S.tank).litres, all = SUMP_MODELS.map(sumpFromModel).sort((a, b) => boxLitres(a) - boxLitres(b));
-  const fit = all.filter(z => z.L <= S.tank.L);
-  return fit.find(z => boxLitres(z) >= want) ?? fit.at(-1) ?? all[0];
+  const fit = all.filter(z => z.L <= S.tank.L), down = sumpDrainDown(S);
+  return fit.find(z => boxLitres(z) >= want && boxLitres(z) * (1 - SUMP_FILL) >= down) ?? fit.at(-1) ?? all[0];
+}
+/** Litres that drain into the sump when the return pump stops: SUMP_DRAIN_MM over the display's surface, plus the return line. */
+export const sumpDrainDown = (S: TankSetup): number => footprint(S.tank).area * SUMP_DRAIN_MM / 1e6 + SUMP_LINE_L;
+/** The tank's sump cannot hold the drain-down in its empty part (the share above SUMP_FILL): it would overflow when the power goes. */
+export function sumpTooSmall(S: TankSetup): boolean {
+  const z = sumpOf(S);
+  return !!z && boxLitres(z) * (1 - SUMP_FILL) < sumpDrainDown(S);
 }
 const hasSump = (t: TechSetup) => filterUnits(t).some(u => u.kind === 'sump');
 /** The tank's sump: its own size, else the default; undefined with no sump in the filtration (or `asIf` forces one, to judge the option). */

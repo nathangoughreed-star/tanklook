@@ -16,7 +16,7 @@ import type { Store } from '../scene/store';
 import {
   ROOM_C, applyPreset, feedFor, feedOf, filterFor, filterSteps, filterUnits, heatLoss, offerChiller,
   optionCost, optionDef, presetsFor, reefFeedOf, rowsFor, setFeed, singleFilter, stockCapacity, techOf, tempEvidence, unitCosts, walstadGaps, withChoice,
-  withUnits, withoutUnit, sumpDefault, sumpFromModel, sumpLitres, sumpName, sumpOf, SUMP_FILL, type FilterUnit, type SumpSize, type HeaterUnit, type OptionCost, type TechSetup,
+  withUnits, withoutUnit, sumpDefault, sumpFromModel, sumpLitres, sumpName, sumpOf, SUMP_FILL, sumpDrainDown, sumpTooSmall, type FilterUnit, type SumpSize, type HeaterUnit, type OptionCost, type TechSetup,
 } from '../scene/tech';
 import { FILTER_PRODUCTS, HEATER_PRODUCTS, filtersNear, genericHeaterW, heatersNear, lightProduct, lightsFor, productName, type FilterProduct, type HeaterProduct, type LightProduct } from '../data/gearCatalog';
 import { applyLightProduct, lightProductNote, productOn } from '../scene/lightproduct';
@@ -224,6 +224,9 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     const body = `<div class="tsz" title="Inside size; type to make it a custom size">${z.model ? 'Inside' : 'Custom, inside'} ${size} ${u}</div>`
       + `<span class="tchips"><span class="tchip good" title="${esc(`Its water dilutes the waste with the display's (run ${Math.round(SUMP_FILL * 100)} % full: the rest is room for what drains down when the pump stops). It adds no swimming room.`)}">+${Math.round(water)} L of water</span></span>`
       + `<div class="tstep"><button type="button" data-act="sump|pick">Pick a size…</button></div>`;
+    // lane SF: no fixed minimum; a sump that cannot hold what drains down when the power goes says so
+    if (sumpTooSmall(S)) { const v = (l: number) => fahr() ? `${(l / 3.785).toFixed(1)} gal` : `${l.toFixed(1)} L`, room = z.L * z.D * z.H / 1e6 * (1 - SUMP_FILL);
+      html += `<div class="hint warn">Too small: when the power goes, about ${v(sumpDrainDown(S))} drains down from the display and this sump has room for ${v(room)}. Pick a bigger sump.</div>`; }
     html += `<div class="tunits">${card(esc(sumpTitle(z)), c, false, 'sump|del', body)}</div><div class="hint">Sump tank, plumbing and return pump: part of the Filtration total above, not added again.</div>`;
     return html + `<div class="hint">${esc(optionDef('filter', 'sump')?.note ?? '')}</div></div></div>`;
   };
