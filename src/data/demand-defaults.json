@@ -1,7 +1,10 @@
 {
  "_note": "Category-level DemandAdd defaults (lane KK, phase 1 starter). Phase 2 adds per-species / per-plant rows (src/data/demand-items.json) that override these. Rule of thumb, asOf 2026-10-19, ranges deliberately wide.",
  "asOf": "2026-10-19",
- "animals": {
+ "foodMo": {
+    "ballpython": { "lo": 3.6, "mode": 8.7, "hi": 10.8 }
+  },
+  "animals": {
   "_note": "price at refMm total length, scaled by (tl/refMm)^1.2; food USD/month each; mins = care minutes per week each (feeding, watching)",
   "fw-fish": {
    "refMm": 50,

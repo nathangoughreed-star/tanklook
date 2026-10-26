@@ -182,6 +182,7 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
     const u = (DEFAULTS.animals as unknown as Record<string, typeof DEFAULTS.animals["fw-fish"]>)[sp.cat];
     if (!u) continue;
     const tl = f.tl ?? sp.tl, c = CARE[sp.id];
+    const food = (DEFAULTS.foodMo as Record<string, Range3 | undefined>)[sp.id];   // a species fed from a listed price x its feeding rate, not scaled by length
     let raw = c ? DEFAULTS.risk.careLevel[c.care] : 0.4;
     const why = c ? whyAnimal(sp, litres, (P.skill[adom] + 1) as 1 | 2 | 3, present, env) : null;
     if (why) { raw += DEFAULTS.risk.animalWarnPts[why.kind]; const w = `${sp.name}: ${why.text}`; if (!warnings.includes(w)) warnings.push(w); }
@@ -190,7 +191,7 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
     const hungry = wet ? grazerShort(sp.id, nOf(sp.id), litres) : null; // more grazers than the algae feeds (data/grazers.ts)
     if (hungry) { const w = `${sp.name}: ${hungry}`; if (!warnings.includes(w)) { warnings.push(w); raw += DEFAULTS.risk.animalWarnPts.group; } }
     add(`animal:${sp.id}`, sp.name, 'animal', {
-      setup: price(scale3(rowPrice(`animal:${sp.id}`) ?? pick(u.setup), Math.pow(tl / (rowPrice(`animal:${sp.id}`) ? sp.tl : u.refMm), 1.2))), upkeep: scale3(pick(u.upkeep), Math.pow(tl / u.refMm, 0.8) * sMul.upkeep), minutes: r3(u.mins * sMul.minutes),
+      setup: price(scale3(rowPrice(`animal:${sp.id}`) ?? pick(u.setup), Math.pow(tl / (rowPrice(`animal:${sp.id}`) ? sp.tl : u.refMm), 1.2))), upkeep: scale3(food ? pick(food) : pick(u.upkeep), (food ? 1 : Math.pow(tl / u.refMm, 0.8)) * sMul.upkeep), minutes: r3(u.mins * sMul.minutes),
       livestock: true, domain: adom, risk: raw * skillMul(P, adom),
     });
   }

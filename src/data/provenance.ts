@@ -169,6 +169,8 @@ export const RULES: Record<string, Rule[]> = {
   // (demand-items, gear-catalog, tanks). Where the listings cover a band with 5+ rows and the mode lands within 25 %, the mode is
   // derived; the rest stay our rule of thumb, and the bands the fit disagrees with wait in research/sourcing/decisions.md.
   DEMAND_DEFAULTS: [
+    // S239 (2026-10-26): the ball python's food was the reptile class band scaled by length^0.8 ($69 a month); now price x feeding rate
+    { path: 'foodMo.ballpython.*', status: 'derived', basis: 'derived', says: 'Zen Habitats: adults "every 2-3 weeks" (over 1,500 g "every 4-6 weeks"); RodentPro: large rats, 5 count, $24.95', src: ['zenhabitats.com', 'rodentpro.com'], why: 'one large frozen rat ($24.95 / 5 = $4.99) every 2-3 weeks = $7-11 a month, mode every 2.5 weeks $8.7; lo one every 5 weeks (over 1,500 g) $3.6; hi every 2 weeks $10.8 (ReptiFiles: feeders 10-15 % of body weight, wild adults about 10 meals a year)' },
     { path: '**', status: 'assumption', basis: 'interpretation', why: 'rule-of-thumb band (our judgement); refit to the cited listings in research/sourcing/other/D-cost-defaults.md: too few listings or a different unit, so kept by Nathan 2026-10-20' },
     { path: 'time.waterChangeFraction.floor', status: 'cited', basis: 'source-stated', says: "a weekly water change of 10-20 % (fresh) or 10 % (salt) is best practice", src: ['americanaquariumproducts.com', 'bulkreefsupply-video'], why: 'a weekly water change of 10-20 % (fresh) or 10 % (salt) is the stated best practice; the model changes at least 10 % (research/sourcing/minutes/minutes-A.json)' },
     { path: '{time,risk}.**', status: 'assumption', basis: 'interpretation', why: 'minutes a week and risk points are our model; no listing or page states them' },

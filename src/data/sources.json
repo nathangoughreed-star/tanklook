@@ -500,6 +500,14 @@
    "kind": "retailer",
    "note": "per-value page url and verbatim quote in research/sourcing/tank-minimum/<batch>.json, checked by scripts/verify-quotes.mjs; registered by lane CB 2026-10-21 so its claims carry a weight"
   },
+  "rodentpro.com": {
+   "title": "RodentPro frozen rats",
+   "by": "RodentPro",
+   "url": "https://rodentpro.com/categories/frozen-foods/rats",
+   "accessed": "2026-10-26",
+   "kind": "retailer",
+   "note": "listing read 2026-10-26: large rats 5 count $24.95, medium 10 count $39.90, extra-large 3 count $16.17 (S239 ball python food)"
+  },
   "zenhabitats.com": {
    "title": "Zen Habitats care sheets",
    "by": "Zen Habitats",
