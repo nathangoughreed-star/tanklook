@@ -1921,7 +1921,7 @@ Cancel, then change the name, to keep both.`)) return;
     const t = glassThickness(A, s.render.glass);
     $('glassHint').textContent = (s.render.glass === 'auto' ? 'Auto: ' : 'Glass: ') + t + ' mm (' + fmtLen(t, u, 2) + ')';
 
-    $('standOn').checked = s.stand.show; $('standAsk').hidden = !standAsked(s.stand); setVal('standFinish', s.stand.finish); setVal('standStyle', s.stand.style); setVal('standH', s.stand.height);
+    $('standNone').textContent = s.water.on ? "I don't need a stand" : "I'll use my own furniture"; $('standOn').checked = s.stand.show; $('standAsk').hidden = !standAsked(s.stand); setVal('standFinish', s.stand.finish); setVal('standStyle', s.stand.style); setVal('standH', s.stand.height);
     setOut('oStandH', fmt(s.stand.height));
     const tb = s.stand.table, tr = tableRange(s);
     $('tableRows').style.display = tableOn(s) ? '' : 'none';

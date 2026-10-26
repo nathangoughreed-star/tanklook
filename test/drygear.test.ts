@@ -79,4 +79,14 @@ describe('one gear model for a dry tank', () => {
       }
     }
   });
+  it('a terrarium has its own stand row (about $200 for 48 x 24, scaled by footprint); own furniture is $0; an aquarium keeps the gallon rule', () => {
+    const stand = (S: TankSetup) => tot(S).items.find(i => i.key === 'stand');
+    const P = ex('python'), big = { ...P, stand: { ...P.stand, show: true } }, small = { ...big, tank: { ...big.tank, L: 610, D: 305 } };
+    const b = stand(big)!, s2 = stand(small)!;
+    expect(b.label).toBe('Stand (terrarium)');
+    expect(b.setup!.mode).toBeGreaterThan(170); expect(b.setup!.mode).toBeLessThan(260);
+    expect(s2.setup!.mode).toBeLessThan(b.setup!.mode * 0.6);
+    expect(stand({ ...big, stand: { ...big.stand, show: false, need: 'none' } })).toBeUndefined(); // my own furniture: $0
+    const A = ex('planted'); expect(stand({ ...A, stand: { ...A.stand, show: true } })!.label).toBe('Stand');
+  });
 });

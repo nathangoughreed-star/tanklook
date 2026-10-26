@@ -747,6 +747,13 @@
    "unit": "unit; Seapora $170, Walmart 55-75 $169-199",
    "url": "https://www.thatpetplace.com/empress-cabinet-stand-black-48-in-x-12-in"
   },
+  "gear:terrarium-stand-48x24": {
+   "lo": 189.51,
+   "mode": 199.99,
+   "hi": 299.99,
+   "unit": "reptile terrarium stand for a 48 x 24 in tank (S240b, 2026-10-26): GDLF 48 x 24 stand with cabinet $199.99 list, $189.99 on sale (Wood Art Supply, Abunda); Walmart 48 x 24 tabletop stand from $189.51; New Age Pet Ecoflex 48 in Versa stand $299.99 sale (list $489.99, PetSmart, brand-matched). Other sizes scale by footprint (drygear.ts terrariumStandK, our estimate)",
+   "url": "https://woodartsupply.com/products/gdlf-reptile-tank-stand-terrarium-stand-with-cabinet-for-accessories-storage-48-x-24-tabletop-fits-up-to-120-gallon-bearded-dragon-tank-reptile-terrarium-turtle-tank-natural-wood-color"
+  },
   "gear:substrate-sand": {
    "lo": 7,
    "mode": 11,

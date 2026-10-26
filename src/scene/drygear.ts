@@ -91,6 +91,11 @@ export function terrariumPrice(T: TankSetup['tank']): number | undefined {
   return undefined;
 }
 
+/** A terrarium's stand costs its own row (S240b, Nathan 2026-10-26 "rec": not the aquarium stand rule, which prices by gallons of water): the
+ *  reptile 48 x 24 stand's price scaled by footprint ^ 0.7 (our estimate; only the 48 x 24 is sourced), kept within 0.4 to 2.2 times. */
+export const TERRARIUM_STAND_ROW = 'gear:terrarium-stand-48x24';
+export const terrariumStandK = (T: TankSetup['tank']) => Math.min(2.2, Math.max(0.4, Math.pow((T.L * T.D) / (1219.2 * 609.6), 0.7)));
+
 /** The bare terrarium with the animals in it and a build's gear: water off, a mesh top, hinged front doors, no lamp of its own (the
  *  basking and UVB lights are the build's gear; a planted scape adds its light in the scape step). */
 export function drySetup(m: TankModel, animals: Count[], build: DryBuild): TankSetup {

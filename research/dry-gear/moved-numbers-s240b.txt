@@ -1,0 +1,80 @@
+changed rows: 26 of 26 (dry examples + land-species builds at x1 and x3; the wet sections cannot move, the stand row only prices a dry tank)
+
+example terrarium
+  before: 909.43 / 32.73 / 15.32 / 4.37
+  after:  919.82 / 32.73 / 15.32 / 4.37
+example rainforest
+  before: 1513.14 / 74.96 / 36.9 / 4.01
+  after:  1475.92 / 74.96 / 36.9 / 4.01
+example arid
+  before: 1391.59 / 47.4 / 15.57 / 3.3
+  after:  1363.87 / 47.4 / 15.57 / 3.3
+example python
+  before: 1618.62 / 26.35 / 21.77 / 1.81
+  after:  1590.89 / 26.35 / 21.77 / 1.81
+builds dartfrog x1 t24x12x12
+  before: cheapest $255 | leastWork $419 | balanced $255
+  after:  cheapest $251 | leastWork $414 | balanced $251
+builds dartfrog x3 t24x12x24
+  before: cheapest $462 | leastWork $626 | balanced $462
+  after:  cheapest $487 | leastWork $651 | balanced $487
+builds treefrog x1 t18x24x18
+  before: cheapest $569 | leastWork $569 | balanced $694
+  after:  cheapest $535 | leastWork $535 | balanced $661
+builds treefrog x3 n_36x18x24
+  before: cheapest $960 | leastWork $960 | balanced $1086
+  after:  cheapest $911 | leastWork $911 | balanced $1037
+builds crestedgecko x1 t18x24x18
+  before: cheapest $491 | leastWork $669 | balanced $491
+  after:  cheapest $457 | leastWork $635 | balanced $457
+builds crestedgecko x3 t48x24x24
+  before: cheapest $996 | leastWork $1174 | balanced $996
+  after:  cheapest $898 | leastWork $1077 | balanced $898
+builds crestedharlequin x1 t18x24x18
+  before: cheapest $552 | leastWork $730 | balanced $552
+  after:  cheapest $518 | leastWork $697 | balanced $518
+builds crestedharlequin x3 t48x24x24
+  before: cheapest $1180 | leastWork $1358 | balanced $1180
+  after:  cheapest $1082 | leastWork $1260 | balanced $1082
+builds greenanole x1 t24x48x24
+  before: cheapest $1131 | leastWork $1434 | balanced $1256
+  after:  cheapest $940 | leastWork $1244 | balanced $1066
+builds greenanole x3 t24x48x24
+  before: cheapest $1598 | leastWork $1901 | balanced $1723
+  after:  cheapest $1407 | leastWork $1711 | balanced $1533
+builds greenanolebrown x1 t24x48x24
+  before: cheapest $1131 | leastWork $1434 | balanced $1256
+  after:  cheapest $940 | leastWork $1244 | balanced $1066
+builds greenanolebrown x3 t24x48x24
+  before: cheapest $1598 | leastWork $1901 | balanced $1723
+  after:  cheapest $1407 | leastWork $1711 | balanced $1533
+builds brownanole x1 t18x18x18
+  before: cheapest $749 | leastWork $749 | balanced $875
+  after:  cheapest $735 | leastWork $735 | balanced $861
+builds brownanole x3 n_exo_terra_24x18x24
+  before: cheapest $1293 | leastWork $1293 | balanced $1418
+  after:  cheapest $1257 | leastWork $1257 | balanced $1382
+builds leopardgecko x1 t36x18x18
+  before: cheapest $638 | leastWork $638 | balanced $764
+  after:  cheapest $628 | leastWork $628 | balanced $754
+builds leopardgecko x3 t48x24x24
+  before: cheapest $1072 | leastWork $1072 | balanced $1198
+  after:  cheapest $975 | leastWork $975 | balanced $1100
+builds regaljumper x1 t8x8x8
+  before: cheapest $236 | leastWork $236 | balanced $236
+  after:  cheapest $231 | leastWork $231 | balanced $231
+builds regaljumper x3 t8x8x8
+  before: cheapest $306 | leastWork $306 | balanced $306
+  after:  cheapest $301 | leastWork $301 | balanced $301
+builds ballpython x1 t48x24x24
+  before: cheapest $996 | leastWork $1300 | balanced $1122
+  after:  cheapest $899 | leastWork $1203 | balanced $1024
+builds ballpython x3 t48x24x24
+  before: cheapest $1172 | leastWork $1475 | balanced $1297
+  after:  cheapest $1074 | leastWork $1378 | balanced $1199
+builds chacogoldenknee x1 n_exo_terra_24x18x24
+  before: cheapest $461 | leastWork $461 | balanced $461
+  after:  cheapest $426 | leastWork $426 | balanced $426
+builds chacogoldenknee x3 n_exo_terra_24x18x24
+  before: cheapest $563 | leastWork $563 | balanced $563
+  after:  cheapest $527 | leastWork $527 | balanced $527
