@@ -6507,6 +6507,16 @@
    "checked": 1,
    "lines": {
     "red": {
+     "L": 335,
+     "W": 335,
+     "mark": "derived (est)",
+     "site": "Fishkeeping World (chili rasbora page, same genus)",
+     "url": "https://www.fishkeepingworld.com/chili-rasbora/",
+     "states": "8 gal -> 8 gal cube (chili rasbora's gallon figure, applied to this Boraras by Nathan 2026-10-26)",
+     "from": "volume",
+     "ref": "g8c"
+    },
+    "green": {
      "L": 450,
      "W": 300,
      "mark": "sourced",
@@ -6516,7 +6526,6 @@
      "quote": "base of 45 × 30 cm",
      "from": "footprint"
     },
-    "green": null,
     "why": "one geometry page: it or the gallon figure's tank, whichever is lower",
     "heightRed": null,
     "heightGreen": null,
@@ -6550,6 +6559,16 @@
    "checked": 1,
    "lines": {
     "red": {
+     "L": 335,
+     "W": 335,
+     "mark": "derived (est)",
+     "site": "Fishkeeping World (chili rasbora page, same genus)",
+     "url": "https://www.fishkeepingworld.com/chili-rasbora/",
+     "states": "8 gal -> 8 gal cube (chili rasbora's gallon figure, applied to this Boraras by Nathan 2026-10-26)",
+     "from": "volume",
+     "ref": "g8c"
+    },
+    "green": {
      "L": 450,
      "W": 300,
      "mark": "sourced",
@@ -6559,7 +6578,6 @@
      "quote": "best kept in a tank with base dimensions of at least 45 ∗ 30 cm",
      "from": "footprint"
     },
-    "green": null,
     "why": "one geometry page: it or the gallon figure's tank, whichever is lower",
     "heightRed": null,
     "heightGreen": null,
@@ -6593,6 +6611,16 @@
    "checked": 1,
    "lines": {
     "red": {
+     "L": 335,
+     "W": 335,
+     "mark": "derived (est)",
+     "site": "Fishkeeping World (chili rasbora page, same genus)",
+     "url": "https://www.fishkeepingworld.com/chili-rasbora/",
+     "states": "8 gal -> 8 gal cube (chili rasbora's gallon figure, applied to this Boraras by Nathan 2026-10-26)",
+     "from": "volume",
+     "ref": "g8c"
+    },
+    "green": {
      "L": 450,
      "W": 300,
      "mark": "sourced",
@@ -6602,7 +6630,6 @@
      "quote": "45 × 30cm",
      "from": "footprint"
     },
-    "green": null,
     "why": "one geometry page: it or the gallon figure's tank, whichever is lower",
     "heightRed": null,
     "heightGreen": null,
