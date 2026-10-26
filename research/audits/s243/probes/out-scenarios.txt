@@ -1,0 +1,95 @@
+
+##### A 20L: 2 dwarf gourami, 6 tiger barb, 1 pea puffer  [tank 19 gal]
+engine: percent 84 (space 84 by water; water 84, floor 0; filt 11)  pill="84%"
+engine reasons: 84% · limited by swimming room. Past ideal: water changes do not add room; fewer animals or a longer tank would.
+TILE min bar: Meets minimum (100%) ; mins: -
+TILE compat: [over] High compatibility risk: Tiger barb with Dwarf gourami: would nip its feelers; Pea puffer with Dwarf gourami: would nip its feelers; Pea puffer with Tiger barb: best kept in a species-only tank.
+TILE crowd: Dwarf gourami males fight: a tank this size takes one male (one more per 15 gal), you have 2. Females do not count.
+TILE cover: -
+PLAN fits=false; verdict: [warn] Space: water column 84%, floor 0% || [ok] Filtration: 11% of what the filter and plants clear || [bad] Dwarf gourami: compatibility: it would nip this one's feelers (Tiger barb) {also it would nip this one's feelers (Pea puffer)} || [bad] Tiger barb: compatibility: would nip its feelers (Dwarf gourami) || [bad] Pea puffer: compatibility: would nip its feelers (Dwarf gourami) || [ok] Temperature: shared range 24–27 °C || [warn] Water temperature: unchecked, no target water temperature set (set it inside 24–27 °C; Tech menu); missing: -
+PLAN needs: -
+STOCKSCREEN dwarfgourami: band=great line="Group size: Great"  overWarn="Dwarf gourami males fight: a tank this size takes one male (one more per 15 gal); if more than 1 of these 2 are males, expect fighting. Females do not count." graze="-" conflicts=[BLOCK: it would nip this one's feelers (Tiger barb) ; BLOCK: it would nip this one's feelers (Pea puffer) ; concern: it is best kept in a species-only tank (Pea puffer)] needs=[]
+STOCKSCREEN tigerbarb: band=avoid line="Group size: Small groups redirect fin-nipping onto tankmates"  overWarn="-" graze="-" conflicts=[BLOCK: would nip its feelers (Dwarf gourami) ; concern: it is best kept in a species-only tank (Pea puffer)] needs=[]
+STOCKSCREEN peapuffer: band=ok line="Group size: Solo is fine in a small tank" ratio="Kept 1 male to 3 females: One male to 2-3 females or single-sex; multiple males fight. Your mix is short on females" overWarn="-" graze="-" conflicts=[BLOCK: would nip its feelers (Dwarf gourami) ; concern: best kept in a species-only tank (Dwarf gourami) ; concern: best kept in a species-only tank (Tiger barb)] needs=[]
+
+##### B 10gal: 2 betta + 6 cory  [tank 10 gal]
+engine: percent 80 (space 80 by water; water 80, floor 58; filt 3)  pill="Too small"
+engine reasons: 80% · limited by swimming room. Past ideal: water changes do not add room; fewer animals or a longer tank would.
+TILE min bar: Too small (146%) ; mins: [over] 6 Panda corydoras: estimated from a gallon figure (Seriously Fish: 10.8 gal, the smallest such tank is a 15 gal): wants about 292 sq in of floor, this tank has 200 sq in of floor
+TILE compat: -
+TILE crowd: Betta is best kept one to a tank: expect fighting.
+TILE cover: -
+PLAN fits=false; verdict: [warn] Space: water column 80%, floor 58% || [ok] Filtration: 3% of what the filter and plants clear || [bad] Panda corydoras: tank size: estimated from a gallon figure (Seriously Fish: 10.8 gal, the smallest such tank is a 15 gal): wants about 1885 cm2 of floor, this tank has 1290 cm2 of floor || [warn] Temperature: shared range 24–25 °C, a narrow margin (2 °C or less): the recorded ranges meet, with little room for heater swing or a cold night || [warn] Water temperature: unchecked, no target water temperature set (set it inside 24–25 °C; Tech menu); missing: -
+PLAN needs: -
+STOCKSCREEN betta: band=great line="Group size: Great"  overWarn="Betta is best kept one to a tank: expect fighting. The tank shown is sized for all of them" graze="-" conflicts=[concern: temperature: shared range 24–25 °C, a narrow margin (2 °C or less), not an incompatibility] needs=[]
+STOCKSCREEN pandacory: band=ok line="Group size: Minimum shoal; more is better"  overWarn="-" graze="-" conflicts=[concern: temperature: shared range 24–25 °C, a narrow margin (2 °C or less), not an incompatibility] needs=[]
+
+##### C 55gal: 6 discus + 2 bristlenose  [tank 57 gal]
+engine: percent 104 (space 104 by water; water 104, floor 19; filt 84)  pill="104%"
+engine reasons: Overstocked mainly because of the 6 Discus (78% of the load). | The tank itself is too small for them (104% of its space): no filter fixes that, it needs about 224 L of water or fewer animals.
+TILE min bar: Meets minimum (100%) ; mins: -
+TILE compat: -
+TILE crowd: -
+TILE cover: -
+PLAN fits=false; verdict: [bad] Space: water column 104%, floor 19% (too many animals for it) || [warn] Filtration: 84% of what the filter and plants clear || [warn] Temperature: shared range 26–27 °C, a narrow margin (2 °C or less): the recorded ranges meet, with little room for heater swing or a cold night || [warn] Water temperature: unchecked, no target water temperature set (set it inside 26–27 °C; Tech menu); missing: -
+PLAN needs: -
+STOCKSCREEN discus: band=good line="Group size: Good; 8 or more is best"  overWarn="-" graze="-" conflicts=[concern: temperature: shared range 26–27 °C, a narrow margin (2 °C or less), not an incompatibility] needs=[]
+STOCKSCREEN bristlenose: band=good line="Group size: One male plus a female avoids rival males" ratio="Kept 1 male to 3 females: Males are territorial over caves; keep one male per territory unless the tank is very large (150 cm+). Your mix is short on females" overWarn="-" graze="-" conflicts=[concern: temperature: shared range 26–27 °C, a narrow margin (2 °C or less), not an incompatibility] needs=[]
+
+##### D 29gal: 25 oto  [tank 28 gal]
+engine: percent 82 (space 82 by water; water 82, floor 28; filt 3)  pill="82%"
+engine reasons: 82% · limited by swimming room. Past ideal: water changes do not add room; fewer animals or a longer tank would.
+TILE min bar: Meets recommended (59%) ; mins: -
+TILE compat: -
+TILE crowd: -
+TILE cover: -
+PLAN fits=true; verdict: [warn] Space: water column 82%, floor 28% || [ok] Filtration: 3% of what the filter and plants clear || [ok] Temperature: shared range 21–26 °C || [warn] Water temperature: unchecked, no target water temperature set (set it inside 21–26 °C; Tech menu); missing: -
+PLAN needs: -
+STOCKSCREEN oto: band=great line="Group size: Large group is the most natural"  overWarn="-" graze="algae: this tank grows enough for about 8 (the guideline is 3-6 in a 20 gal); 25 will run out, so feed algae wafers and blanched vegetables daily, or keep 8" conflicts=[] needs=[]
+
+##### E 20L: 2 kribensis + 6 cory + 6 neon  [tank 19 gal]
+engine: percent 71 (space 71 by water; water 71, floor 61; filt 11)  pill="Too small"
+engine reasons: 71% · limited by swimming room. Ideal.
+TILE min bar: Too small (123%) ; mins: [over] 2 Kribensis: wants a tank at least 14.8" front to back (Seriously Fish), this one is 12" front to back
+TILE compat: -
+TILE crowd: -
+TILE cover: Kribensis: add a cave or arch (Hardscape › Caves): they spawn in one and a pair guards it.
+PLAN fits=false; verdict: [ok] Space: water column 71%, floor 61% || [ok] Filtration: 11% of what the filter and plants clear || [bad] Kribensis: tank size: wants a tank at least 38 cm front to back (Seriously Fish), this one is 31 cm front to back || [warn] Temperature: shared range 24–25 °C, a narrow margin (2 °C or less): the recorded ranges meet, with little room for heater swing or a cold night || [warn] Water temperature: unchecked, no target water temperature set (set it inside 24–25 °C; Tech menu); missing: -
+PLAN needs: -
+STOCKSCREEN kribensis: band=great line="Group size: Great (the most before they fight: 2) (only if they are a pair)" ratio="Kept 1 male to 1 female: Keep as one male/female pair; breeding pairs are territorial and need hiding caves. Your mix is short on females" overWarn="-" graze="-" conflicts=[concern: temperature: shared range 24–25 °C, a narrow margin (2 °C or less), not an incompatibility] needs=[]
+STOCKSCREEN pandacory: band=ok line="Group size: Minimum shoal; more is better"  overWarn="-" graze="-" conflicts=[concern: temperature: shared range 24–25 °C, a narrow margin (2 °C or less), not an incompatibility] needs=[]
+STOCKSCREEN neon: band=avoid line="Group size: Neons need a school; under 8 they stress and hide"  overWarn="-" graze="-" conflicts=[concern: temperature: shared range 24–25 °C, a narrow margin (2 °C or less), not an incompatibility] needs=[]
+
+##### F 10gal: 2 goldfish  [tank 10 gal]
+engine: percent 205 (space 205 by water; water 205, floor 46; filt 40)  pill="205%"
+engine reasons: Overstocked mainly because of the 2 Fancy goldfish (100% of the load). | The tank itself is too small for them (205% of its space): no filter fixes that, it needs about 81 L of water or fewer animals.
+TILE min bar: Too small (151%) ; mins: [over] 2 Fancy goldfish: estimated from a gallon figure (Fishkeeping World: 20 gal, the smallest such tank is a 20 gal long): wants about 30.1" long, this one is 20" long
+TILE compat: -
+TILE crowd: -
+TILE cover: -
+PLAN fits=false; verdict: [bad] Space: water column 205%, floor 46% (too many animals for it) || [ok] Filtration: 40% of what the filter and plants clear || [bad] Fancy goldfish: tank size: estimated from a gallon figure (Fishkeeping World: 20 gal, the smallest such tank is a 20 gal long): wants about 77 cm long, this one is 51 cm long || [ok] Temperature: shared range 20–24 °C || [warn] Water temperature: unchecked, no target water temperature set (set it inside 20–24 °C; Tech menu); missing: -
+PLAN needs: -
+STOCKSCREEN goldfish: band=ok line="Group size: Pair works if the tank is big enough"  overWarn="-" graze="-" conflicts=[] needs=[]
+
+##### G 20L: 6 neon + 1 oscar  [tank 19 gal]
+engine: percent 274 (space 154 by water; water 154, floor 27; filt 274)  pill="154%"
+engine reasons: Overstocked mainly because of the 1 Oscar (99% of the load). | The tank itself is too small for them (154% of its space): no filter fixes that, it needs about 110 L of water or fewer animals.
+TILE min bar: Not assessed (inf%) ; mins: [over] 1 Oscar: not assessed: 9" of water is shallower than its own length (11.8"), and no source states a minimum water depth
+TILE compat: [over] High compatibility risk: Oscar with Neon tetra: would eat it.
+TILE crowd: -
+TILE cover: -
+PLAN fits=false; verdict: [bad] Space: water column 154%, floor 27% (too many animals for it) || [bad] Filtration: 274% of what the filter and plants clear (the filter cannot keep up) || [bad] Neon tetra: compatibility: it would eat this one (Oscar) || [bad] Oscar: tank size: not assessed: 23 cm of water is shallower than its own length (30 cm), and no source states a minimum water depth {also would eat it (Neon tetra)} || [warn] Temperature: shared range 23–25 °C, a narrow margin (2 °C or less): the recorded ranges meet, with little room for heater swing or a cold night || [warn] Water temperature: unchecked, no target water temperature set (set it inside 23–25 °C; Tech menu); missing: Filter: none on the list clears what these animals produce (choose a stronger one or a bigger tank)
+PLAN needs: -
+STOCKSCREEN neon: band=avoid line="Group size: Neons need a school; under 8 they stress and hide"  overWarn="-" graze="-" conflicts=[BLOCK: it would eat this one (Oscar) ; concern: temperature: shared range 23–25 °C, a narrow margin (2 °C or less), not an incompatibility] needs=[]
+STOCKSCREEN oscar: band=great line="Group size: Great"  overWarn="-" graze="-" conflicts=[BLOCK: would eat it (Neon tetra) ; concern: temperature: shared range 23–25 °C, a narrow margin (2 °C or less), not an incompatibility] needs=[]
+
+##### H 40 breeder: 8 demasoni  [tank 45 gal]
+engine: percent 47 (space 47 by water; water 47, floor 15; filt 2)  pill="Too small"
+engine reasons: 47% · limited by swimming room. Ideal.
+TILE min bar: Too small (131%) ; mins: [over] 8 Demasoni cichlids: wants a tank at least 47.2" long (Seriously Fish), this one is 36" long
+TILE compat: -
+TILE crowd: -
+TILE cover: -
+PLAN fits=false; verdict: [ok] Space: water column 47%, floor 15% || [ok] Filtration: 2% of what the filter and plants clear || [bad] Demasoni cichlid: tank size: wants a tank at least 120 cm long (Seriously Fish), this one is 91 cm long || [ok] Temperature: shared range 25–28 °C || [warn] Water temperature: unchecked, no target water temperature set (set it inside 25–28 °C; Tech menu); missing: -
+PLAN needs: -
+STOCKSCREEN demasoni: band=ok line="Group size: Dominance fights; only in a big tank, with rockwork" ratio="Kept 1 male to 3 females: Several females per male; hard to sex when young so buy a big group. Your mix is short on females" overWarn="-" graze="-" conflicts=[] needs=[]

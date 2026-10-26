@@ -1,0 +1,41 @@
+temper	Aquarium Co-Op 5 gal pea puffer	space 28	filt 0
+room	Aquarium Co-Op 5 gal green neon school	space 91	filt 2
+room	Aquarium Co-Op 10 gal centerpiece gourami	space 102	filt 2
+room	Aquarium Co-Op 10 gal cookie cutter betta	space 111	filt 5
+room	Aquarium Co-Op 10 gal aquascape cardinals	space 90	filt 5
+room	Aquarium Co-Op 10 gal white cloud colony	space 67	filt 3
+room	Aquarium Co-Op 10 gal fancy guppy colony	space 91	filt 2
+temper	Aquarium Co-Op 10 gal pea puffers	space 45	filt 1
+room	Aquarium Co-Op 10 gal African dwarf frogs	space 113	filt 10
+temper	Aquarium Co-Op 10 gal apistogramma pair	space 49	filt 5
+room	Aquarium Co-Op 20 gal neon school look-good	space 114	filt 10
+room	Aquarium Co-Op 20 gal unheated danios	space 142	filt 15
+room	Aquarium Co-Op 20 gal bristlenose breeding	space 49	filt 8
+temper	Aquarium Co-Op 29 gal angelfish pair	space 47	filt 35
+room	Aquarium Co-Op 29 gal single fancy goldfish	space 39	filt 15
+room	Aquarium Co-Op 20 gal single fancy goldfish (minimum rule)	space 54	filt 17
+temper	Aquarium Co-Op 40 gal saulosi colony	space 42	filt 1
+room	Aquarium Co-Op 40 gal flowerhorn	space 53	filt 111
+temper	Aquarium Co-Op 55 gal angelfish school	space 118	filt 150
+temper	Aquarium Co-Op 55 gal tiger barbs	space 42	filt 4
+room	Fishkeeping World 10 gal tetra centerpiece	space 109	filt 6
+room	Fishkeeping World 10 gal ember school	space 63	filt 1
+room	Fishkeeping World 30 gal community	space 56	filt 11
+room	Fishkeeping World 40 gal community	space 68	filt 5
+room	Fishkeeping World 40 gal guppies only	space 69	filt 2
+room	Fishkeeping World 40 gal mollies only	space 51	filt 10
+room	Fishkeeping World 40 gal fancy goldfish	space 73	filt 24
+room	Aquarium Source 40 gal peaceful community	space 64	filt 8
+room	Aquarium Source 40 gal planted ember aquascape	space 33	filt 2
+room	Aquarium Source 40 gal German blue ram	space 52	filt 3
+room	Aqueon 29 gal fancy goldfish	space 156	filt 91
+room	Gensou 55 gal small-tetra planted	space 70	filt 4
+room	Gensou 55 gal mixed community	space 74	filt 11
+room	Gensou 55 gal combo A rummynose angel	space 103	filt 37
+room	Bulk Reef Supply 20 gal starter	space 82	filt 17
+temper	Saltwater Aquarium Blog 40 gal damselfish display	space 120	filt 39
+temper	Saltwater Aquarium Blog 55 gal damselfish display	space 132	filt 50
+filtration binds in 2/37; median space percent room-capped (28) 73, temper-capped (9) 47
+discus: as shown 82 (water 82, floor 0) ; without hand-set nudge/grow 57 (water 57, floor 0)
+oto: as shown 82 (water 82, floor 28) ; without hand-set nudge/grow 122 (water 122, floor 27)
+oto15: as shown 79 (water 79, floor 16) ; without hand-set nudge/grow 126 (water 126, floor 16)

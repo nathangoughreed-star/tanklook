@@ -1,0 +1,28 @@
+import { it } from 'vitest';
+import { SPECIES } from '../src/data/species';
+import { CARE } from '../src/data/care';
+import { minDataOf } from '../src/scene/tankMin';
+import { GROUPS } from '../src/data/groups';
+import { MET_CLASS } from '../src/scene/stocking';
+import bm from '../src/data/bodymass.json';
+import { SPACE_FACTOR } from '../src/data/spacefactor';
+it('counts', async () => {
+  const wet = SPECIES.filter(s => s.habitat !== 'land'), all = SPECIES;
+  const c = (f: (s: any) => boolean, l = all) => l.filter(f).length;
+  const out = {
+    total: all.length, water: wet.length, land: all.length - wet.length,
+    noCare: c(s => !CARE[s.id]),
+    temp: c(s => !!CARE[s.id]?.temp, wet), noTemp: c(s => !CARE[s.id]?.temp, wet),
+    ph: c(s => !!CARE[s.id]?.ph, wet), noPh: c(s => !CARE[s.id]?.ph, wet),
+    gh: c(s => !!CARE[s.id]?.gh, wet), noGh: c(s => !CARE[s.id]?.gh, wet),
+    noGroup: c(s => !CARE[s.id]?.group && !(CARE[s.id] as any)?.bands, wet),
+    noTankMinLine: c(s => !minDataOf(s.id)?.red, wet),
+    noTemper: c(s => CARE[s.id]?.temper === undefined, wet),
+    withPrey: c(s => !!CARE[s.id]?.prey, wet),
+    withTerritory: c(s => !!(CARE[s.id] as any)?.territory || !!(CARE[s.id] as any)?.males || !!CARE[s.id]?.solo || (CARE[s.id] as any)?.max !== undefined, wet),
+    noMass: c(s => !(bm.species as any)[s.id], wet), massEstimate: c(s => (bm.species as any)[s.id]?.src === 'estimate', wet),
+    ownSpaceFactor: c(s => !!(SPACE_FACTOR as any)[s.id], wet),
+    withNeeds: 0,
+  };
+  (await import('node:fs')).writeFileSync('C:/Users/nreed/AppData/Local/Temp/claude/C--Users-nreed-Glass-Box--claude-worktrees-peaceful-hertz-ad3d69/d0745941-beaf-4110-b9ea-0e33b2ed8f70/scratchpad/counts.json', JSON.stringify(out, null, 1));
+});

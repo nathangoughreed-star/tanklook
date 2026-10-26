@@ -1,0 +1,25 @@
+import { it } from 'vitest';
+import { stockingOf } from '../src/scene/stocking';
+import { comboTank } from './aqcompare.test';
+import { SPACE_NUDGE, GROUP_GROW } from '../src/data/spacefactor';
+import LISTS from '../research/expert-stockings.json';
+const STD: [number, number[]][] = [[5, [16, 8, 10]], [10, [20, 10, 12]], [15, [24, 12, 12]], [20, [24, 12, 16]], [29, [30, 12, 18]], [30, [36, 12, 16]], [40, [36, 18, 16]], [55, [48, 13, 21]], [75, [48, 18, 21]], [90, [48, 18, 24]], [125, [72, 18, 21]]];
+const dims = (l: any) => l.dims_in ?? STD.reduce((b, s) => Math.abs(s[0] - l.gal) < Math.abs(b[0] - l.gal) ? s : b)[1];
+it('sweep', async () => {
+  const out: string[] = []; let filtBind = 0, over = 0; const bySrc: Record<string, number[]> = { room: [], temper: [] };
+  for (const l of LISTS as any[]) {
+    const s = comboTank({ name: l.name, tank: dims(l), stock: l.stock.map((r: any) => [r[0], r[2]]) }); s.water.salt = l.salt;
+    const r = stockingOf(s); if (r.filtrationPercent > r.spacePercent) filtBind++; (bySrc[l.cap] ??= []).push(r.spacePercent);
+    out.push(`${l.cap}\t${l.name}\tspace ${r.spacePercent.toFixed(0)}\tfilt ${r.filtrationPercent.toFixed(0)}`);
+  }
+  const med = (a: number[]) => { const x = [...a].sort((p, q) => p - q); return x[x.length >> 1]; };
+  out.push(`filtration binds in ${filtBind}/37; median space percent room-capped (${bySrc.room.length}) ${med(bySrc.room).toFixed(0)}, temper-capped (${bySrc.temper.length}) ${med(bySrc.temper).toFixed(0)}`);
+  const base = (sc: any) => stockingOf(comboTank(sc));
+  for (const sc of [{ name: 'discus', tank: [48, 13, 21], stock: [['discus', 6]] }, { name: 'oto', tank: [30, 12, 18], stock: [['oto', 25]] }, { name: 'oto15', tank: [24, 12, 12], stock: [['oto', 12]] }] as any[]) {
+    const a = base(sc), ns = { ...SPACE_NUDGE } as any, gg = { ...GROUP_GROW } as any;
+    delete (SPACE_NUDGE as any)[sc.stock[0][0]]; delete (GROUP_GROW as any)[sc.stock[0][0]];
+    const b = base(sc); Object.assign(SPACE_NUDGE, ns); Object.assign(GROUP_GROW, gg);
+    out.push(`${sc.name}: as shown ${a.spacePercent.toFixed(0)} (water ${a.waterPercent.toFixed(0)}, floor ${a.floorPercent.toFixed(0)}) ; without hand-set nudge/grow ${b.spacePercent.toFixed(0)} (water ${b.waterPercent.toFixed(0)}, floor ${b.floorPercent.toFixed(0)})`);
+  }
+  (await import('node:fs')).writeFileSync('C:/Users/nreed/AppData/Local/Temp/claude/C--Users-nreed-Glass-Box--claude-worktrees-peaceful-hertz-ad3d69/d0745941-beaf-4110-b9ea-0e33b2ed8f70/scratchpad/sweep.txt', out.join('\n'));
+});

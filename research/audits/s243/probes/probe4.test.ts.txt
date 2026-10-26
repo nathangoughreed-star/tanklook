@@ -1,0 +1,11 @@
+import { it } from 'vitest';
+import { SPECIES } from '../src/data/species';
+import { minDataOf, tankMinimum } from '../src/scene/tankMin';
+import { comboTank } from './aqcompare.test';
+import { minBar } from '../src/ui/fullnessTile';
+it('nomin', async () => {
+  const no = SPECIES.filter(s => s.habitat !== 'land' && !minDataOf(s.id)?.red);
+  const out: string[] = [`no red line (${no.length}): ${no.map(s => `${s.id}[${s.cat}]`).join(' ')}`];
+  for (const s of no.slice(0, 40)) { const m = tankMinimum(comboTank({ name: '', tank: [12, 12, 12], stock: [[s.id, 1]] })); const b = minBar(m); out.push(`${s.id}: ${b.text} pct=${m.percent}`); }
+  (await import('node:fs')).writeFileSync('C:/Users/nreed/AppData/Local/Temp/claude/C--Users-nreed-Glass-Box--claude-worktrees-peaceful-hertz-ad3d69/d0745941-beaf-4110-b9ea-0e33b2ed8f70/scratchpad/nomin.txt', out.join('\n'));
+});
