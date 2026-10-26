@@ -29,9 +29,9 @@ import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixt
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene } from '../scene/defaults';
-import { BANDS, TANK_MODELS, dimsInches, modelOfVariant, tankFromModel, tankSaleFor, type TankModel, type TankVariant } from '../data/tanks';
+import { BANDS, TANK_MODELS, dimsInches, modelOfVariant, saleLive, tankFromModel, tankSaleFor, variantUsd, type TankModel, type TankVariant } from '../data/tanks';
 import { pinPreset } from '../demand/pinned';
-import { kitById } from '../data/kits';
+import { applyTankPick } from './tankPick';
 import { locksOf, lockNote } from '../scene/integrated';
 import { COMPS, DEFAULT_DENS, STYLE_GROUPS, STYLE_KIND, isLandStyle, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
 import { handEdits, randomStyle, regenerate, shuffleHard } from '../scene/starter';
@@ -380,19 +380,15 @@ Cancel, then change the name, to keep both.`)) return;
   {
     const dlg = $<HTMLDialogElement>('tankDlg'), list = $('tankList'), q = $<HTMLInputElement>('tankQ'), terra = $<HTMLInputElement>('tankTerra');
     const $r = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
-    // a sale shows as the sale price, the struck list price and the retailer, until its end date
-    const onSale = (v: TankVariant) => v.price_usd != null && !!v.regular_usd && v.regular_usd > v.price_usd && !(v.sale_ends && Date.parse(v.sale_ends + 'T23:59:59') < Date.now());
+    // a sale shows as the sale price, the struck list price and the retailer, while it is live (saleLive: read lately, not ended);
+    // a stale one shows the list price
+    const onSale = (v: TankVariant) => saleLive(v);
     const usd = (v: TankVariant) => v.price_usd == null ? 'price n/a' : onSale(v)
       ? `<b>${$r(v.price_usd)}</b> <s>${$r(v.regular_usd!)}</s> ${Math.round((1 - v.price_usd / v.regular_usd!) * 100)}% off${v.retailer ? ` at ${esc(v.retailer)}` : ''}${v.sale_ends ? `, ends ${esc(v.sale_ends)}` : ''}`
-      : `~${$r(v.price_usd)}${v.price_kind === 'kit' ? ' (kit)' : ''}`;
+      : `~${$r(variantUsd(v)!)}${v.price_kind === 'kit' ? ' (kit)' : ''}`;
     // interior from the outer size on the label; the glass matches so the outside does too
-    // a tank sold with a stand (an ensemble) shows it; any other does not add one: the stand section asks, unless the user added one
-    const standFor = (v?: TankVariant) => (s: TankSetup) => {
-      // an all-in-one (Fluval Flex and the like) is applied with its own light, lid and filter, which then stay (scene/integrated.ts); any other pick is an ordinary tank
-      if (v?.kit && kitById(v.kit)) s.integrated = { kit: v.kit }; else delete s.integrated;
-      if (v && /stand|ensemble/i.test(v.line ?? '')) { s.stand.show = true; s.stand.need = undefined; }
-      else if (s.stand.need !== 'added') { s.stand.show = false; s.stand.need = 'ask'; }
-    };
+    // the pick's rim, lid, all-in-one kit and stand (ui/tankPick.ts)
+    const standFor = (m: TankModel, v?: TankVariant) => (s: TankSetup) => applyTankPick(s, m, v);
     // a size picked on sale is remembered, so resizing it later says the sale price no longer applies (demandPanel)
     const saleOf = (m: TankModel, v?: TankVariant) => {
       if (v) return onSale(v) ? { product: `${v.brand}${v.line ? ' ' + v.line : ''}`, retailer: v.retailer ?? 'a retailer', usd: v.price_usd! } : undefined;
@@ -401,7 +397,7 @@ Cancel, then change the name, to keep both.`)) return;
     };
     let sumpDone: ((m: TankModel) => void) | null = null;
     dlg.addEventListener('close', () => { sumpDone = null; $('tankDlgTitle').textContent = 'Tank sizes'; });
-    const apply = (m: TankModel, v?: TankVariant) => { if (sumpDone) { sumpDone(m); dlg.close(); return; } const mm = v ? modelOfVariant(m, v) : m; setTank(() => tankFromModel(mm), undefined, mm.glassMm, standFor(v)); pinPreset(store.scene.active, store.tank, saleOf(m, v)); dlg.close(); };
+    const apply = (m: TankModel, v?: TankVariant) => { if (sumpDone) { sumpDone(m); dlg.close(); return; } const mm = v ? modelOfVariant(m, v) : m; setTank(() => tankFromModel(mm), undefined, mm.glassMm, standFor(m, v)); pinPreset(store.scene.active, store.tank, saleOf(m, v)); dlg.close(); };
     const draw = () => {
       const needle = q.value.trim().toLowerCase();
       const hit = (m: TankModel) => !needle || [m.name, m.shape, ...(m.tags ?? []), ...(m.variants ?? []).flatMap(v => [v.brand, v.line ?? ''])].join(' ').toLowerCase().includes(needle);

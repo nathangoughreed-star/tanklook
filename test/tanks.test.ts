@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { checkAll, VOL_EXCEPTIONS, VOL_TOL } from '../src/data/tankcheck';
-import { TANK_MODELS, getTankModel, outerOf, tankChoices, tankFromModel, tankFromOuter } from '../src/data/tanks';
+import { TANK_MODELS, getTankModel, outerOf, saleLive, tankChoices, tankFromModel, tankFromOuter, variantUsd } from '../src/data/tanks';
 import { glassThickness, IN, volume } from '../src/scene/physics';
 import { emptyScene } from '../src/scene/defaults';
 import { parseScene } from '../src/scene/validate';
@@ -36,6 +36,13 @@ describe('tank catalog (lane KA)', () => {
     expect(c[c.length - 1].group).toBe('Terrariums');
     expect(c[0].group).toMatch(/^Nano/);
     expect(tankChoices({ terrariums: false }).length).toBe(TANK_MODELS.length - 14);
+  });
+  it('a sale counts while its page was read in the last 30 days and has not ended; a stale one reads the list price (S224)', () => {
+    const now = Date.parse('2026-10-26T12:00:00Z'), v = { brand: 'X', L_in: 20, D_in: 10, H_in: 12, price_usd: 20, regular_usd: 40, checked: '2026-10-20' };
+    expect(saleLive(v, now)).toBe(true); expect(variantUsd(v, now)).toBe(20);
+    expect(saleLive({ ...v, checked: '2026-09-20' }, now)).toBe(false); expect(variantUsd({ ...v, checked: '2026-09-20' }, now)).toBe(40);
+    expect(saleLive({ ...v, sale_ends: '2026-10-25' }, now)).toBe(false);
+    expect(variantUsd({ ...v, regular_usd: undefined }, now)).toBe(20); // no list price: the one price there is
   });
   it("a maker's own glass thickness (9.5 / 15.9 mm) survives a save and reload, so the outside keeps the label size", () => {
     for (const g of [9.5, 15.9]) {

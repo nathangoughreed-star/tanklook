@@ -9,7 +9,7 @@
 // recommended minimum = CARE.group else 1, no depth limit, no length limit, zone from the species' own `zone` / `level`.
 import { careOf } from './zone';
 import { getSpecies } from '../data/species';
-import { getTankModel, TANK_MODELS, tankFromModel, type TankModel } from '../data/tanks';
+import { getTankModel, TANK_MODELS, tankFromModel, variantUsd, type TankModel } from '../data/tanks';
 import { defaultProfile, demandOf, type DemandOpts } from '../demand';
 import { bareSetup } from './defaults';
 import { volume } from './physics';
@@ -97,7 +97,7 @@ function setupFor(c: Candidate, animals: AnimalCount[], build: BuildKind): TankS
 
 /** The tank's own price from the catalogue's real products (median of the listed prices), else the demand model's $/gallon rule. */
 const catalogPrice = (c: Candidate): DemandOpts['tankPrice'] => () => {
-  const ps = (c.m.variants ?? []).filter(v => !v.discontinued && v.price_usd && v.price_kind !== 'kit').map(v => v.price_usd!).sort((a, b) => a - b);
+  const ps = (c.m.variants ?? []).filter(v => !v.discontinued && v.price_usd && v.price_kind !== 'kit').map(v => variantUsd(v)!).sort((a, b) => a - b); // a stale sale reads its list price
   return ps.length ? ps[Math.floor(ps.length / 2)] : undefined;
 };
 
