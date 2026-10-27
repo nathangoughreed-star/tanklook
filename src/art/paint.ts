@@ -76,8 +76,14 @@ export function blob(ctx: Ctx, P: Proj, W: number, u: number, v: number, ru: num
  * on its own line from its base on the body to its tip: [u0, v0, u1, v1, width x the default].
  */
 export function fin(ctx: Ctx, P: Proj, W: number, pts: Pt[], root: [number, number], tint: string, ray: string,
-  { a = style.finA, rays = 14, extra, segs }: { a?: number; rays?: number; extra?: (c: Ctx) => void; segs?: [number, number, number, number, number][] } = {}) {
-  ctx.save(); shape(ctx, P, pts); ctx.fillStyle = hexA(tint, a); ctx.fill(); ctx.clip();
+  { a = style.finA, rays = 14, extra, segs, fade }: { a?: number; rays?: number; extra?: (c: Ctx) => void; segs?: [number, number, number, number, number][]; fade?: number } = {}) {
+  ctx.save(); shape(ctx, P, pts);
+  if (fade) { // translucent toward the edge: the membrane is thickest at the base (fade = share of alpha lost at the far edge, kept <= 0.4 so cut-out edges stay whole)
+    const [gx, gy] = P(root[0], root[1]), far = Math.max(...pts.map(q => { const [x, y] = P(q[0], q[1]); return Math.hypot(x - gx, y - gy); }));
+    const g = ctx.createRadialGradient(gx, gy, far * 0.1, gx, gy, far); g.addColorStop(0, hexA(tint, a)); g.addColorStop(1, hexA(tint, a * (1 - Math.min(0.4, fade))));
+    ctx.fillStyle = g;
+  } else ctx.fillStyle = hexA(tint, a);
+  ctx.fill(); ctx.clip();
   extra?.(ctx);
   if (segs) {
     for (const [u0, v0, u1, v1, w] of segs) {

@@ -80,6 +80,7 @@ export interface Plan {
   thick?: number;     // 3D: max body thickness / max body depth (laterally compressed < 0.5 < rounder)
   sectionExp?: number; // 3D: cross-section exponent (2 = elliptical; >2 = boxier); default 2.4
   gillLine?: number;   // 3D: faint raised operculum seam opacity (0..1); opt-in to avoid extra meshes for other species
+  finFade?: number;    // 2D: fins turn this much more translucent toward their edge (0..0.4); opt-in
   shimmerRgb?: string; // 2D: glint colour as 'r,g,b' (default warm gold)
   shimmer?: number;    // 2D: fine, deterministic warm scale glints (0..1); opt-in, projected to 3D flanks
   // 3D body shape (all optional): flat belly 0..1; cross-section widest low (+) or high (-); thickness at the peduncle
@@ -326,7 +327,7 @@ function finDrawer(p: Plan, ctx: Ctx, P: Proj, W: number) {
   return (pts: Pt[] | undefined, root: [number, number], f: { tint?: string; a?: number; edge?: string } | undefined, seed: number, segs?: FinRay[]) => {
     if (!pts) return;
     const e = {
-      a: f?.a, rays: 14, extra: (c: Ctx) => {
+      a: f?.a, fade: p.finFade, rays: 14, extra: (c: Ctx) => {
         paintMarks(c, P, W, p.finMarks, seed);
         if (f?.edge) { shape(c, P, pts); c.strokeStyle = hexA(f.edge, 0.55); c.lineWidth = 0.014 * W; c.stroke(); }
       },
@@ -546,7 +547,7 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { at: 0.64, len: 0.15, h: 0.17, rake: 0.15, lead: 0.6, tip: 'point', trail: 0.06, drop: 0.25, tint: '#1f1f1f', a: 0.85, edge: '#c23a28' }, anal: { at: 0.44, len: 0.13, h: 0.1, rake: 0.2, lead: 0.7, tip: 'point', trail: 0.04, drop: 0.3 }, pelvic: { u: 0.6, len: 0.11, w: 1.5, tint: '#c4442e' }, pec: { s: 1.3 },
     marks: [{ k: 'bars', us: [0.9, 0.67, 0.45, 0.24], w: 0.06, c: '#1c1c1e', a: 0.92 }], eye: { r: 0.032, iris: ['#cf6a3a', '#4a2010'] } },
   // male: the anal fin is a gonopodium; small upturned mouth
-  guppy: { gape: 0.035, gapeDrop: 0.008, thick: 0.45, depth: 0.2, pedU: 0.4, ped: 0.04, peak: 0.45, snout: 0.4, mouth: -0.03, shade: ['#7c8476', '#bfc4b8', '#ddddd2'], tail: { type: 'notch', h: 0.27, tint: '#e0782e', a: 0.85 }, fin: '#c6a37a',
+  guppy: { finFade: 0.35, shimmer: 0.5, shimmerRgb: '210,235,255', gillLine: 0.25, gape: 0.035, gapeDrop: 0.008, thick: 0.45, depth: 0.2, pedU: 0.4, ped: 0.04, peak: 0.45, snout: 0.4, mouth: -0.03, shade: ['#7c8476', '#bfc4b8', '#ddddd2'], tail: { type: 'notch', h: 0.27, tint: '#e0782e', a: 0.85 }, fin: '#c6a37a',
     dorsal: { u0: 0.42, u1: 0.58, h: 0.09, tint: '#7fa6c6' }, gono: { at: 0.57, len: 0.11 }, pelvic: { u: 0.65, len: 0.04 },
     marks: [{ k: 'blob', u: 0.55, v: 0, ru: 0.06, rv: 0.05, c: '#2d6fb0', a: 0.8 }, { k: 'blob', u: 0.47, v: 0.01, ru: 0.03, rv: 0.03, c: '#1a1a1a', a: 0.8 }, { k: 'blob', u: 0.68, v: 0.02, ru: 0.06, rv: 0.04, c: '#e0884a', a: 0.7 }],
     finMarks: [{ k: 'band', u0: 0, u1: 0.2, v0: -0.3, v1: 0.3, c: '#3a6ab8', a: 0.55, f: 0.08 }, { k: 'spots', n: 26, u0: 0.04, u1: 0.38, v0: -0.24, v1: 0.24, r: 0.014, c: '#2a2a40', a: 0.6 }],
@@ -564,7 +565,7 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { u0: 0.58, u1: 0.7, h: 0.07 }, gono: { at: 0.69, len: 0.09 }, pelvic: { u: 0.74, len: 0.04 },
     finMarks: [{ k: 'band', u0: 0, u1: 0.33, v0: 0.062, v1: 0.09, c: '#1c1c1c', a: 0.85, f: 0.006 }], eye: { r: 0.022, iris: ['#cfb890', '#4a3e2c'] } },
   // anal fin from just behind the pelvics back to the peduncle, long pointed pelvics, upturned jaw
-  betta: { drape: 0.03, gape: 0.04, gapeDrop: 0.008, thick: 0.45, depth: 0.24, pedU: 0.36, ped: 0.08, peak: 0.4, snout: 0.5, mouth: -0.035, shade: ['#4a1428', '#8a1f34', '#a33a44'], tail: { type: 'veil', h: 0.38, tint: '#9c2236', a: 0.92 }, fin: '#a02a3c', ray: '#5a0f1c',
+  betta: { finFade: 0.4, shimmer: 0.6, shimmerRgb: '255,175,195', gillLine: 0.3, drape: 0.03, gape: 0.04, gapeDrop: 0.008, thick: 0.45, depth: 0.24, pedU: 0.36, ped: 0.08, peak: 0.4, snout: 0.5, mouth: -0.035, shade: ['#4a1428', '#8a1f34', '#a33a44'], tail: { type: 'veil', h: 0.38, tint: '#9c2236', a: 0.92 }, fin: '#a02a3c', ray: '#5a0f1c',
     dorsal: { at: 0.56, len: 0.2, h: 0.2, rake: 0.65, trail: 0.1, drop: 0.6, a: 0.8 }, anal: { at: 0.65, len: 0.3, h: 0.24, rake: 0.75, trail: 0.1, drop: 0.7, a: 0.8 },
     pelvic: { u: 0.69, len: 0.15, ext: 0.05, w: 0.6, tint: '#9c2236' },
     marks: [{ k: 'spots', n: 60, u0: 0.38, u1: 0.85, v0: -0.08, v1: 0.08, r: 0.01, c: '#4f7fb8', a: 0.35 }],
