@@ -16,6 +16,7 @@ import { GEAR_SLOT_NAME, gearOffers, gearParts, pinGear, pinnedGear, unpinGear }
 import { GEAR_DEALS, gearPctOff } from '../data/gearDeals';
 import { compliance, constraintsFromLimits, effectiveLimits, parseConstraints, rememberLastUsed, type Cap, type Constraints } from '../scene/constraints';
 import { summaryOf } from './stockSummary';
+import { findSolutions, type Option, type Solutions } from '../demand/makefit';
 import { lidAdvice, type LidAdvice } from '../demand/lid';
 
 const KEY = 'tanklook.demand';
@@ -37,7 +38,7 @@ function load(): UserProfile {
 }
 
 export function attachDemandPanel(store: Store, mount: HTMLElement) {
-  let P = load(), D: Demand | null = null, B: Demand | null = null, lid: (LidAdvice & { usd: number }) | null = null, open: Bar | null = null, timer = 0;
+  let sol: Solutions | null = null, P = load(), D: Demand | null = null, B: Demand | null = null, lid: (LidAdvice & { usd: number }) | null = null, open: Bar | null = null, timer = 0;
   /** What the last edit moved each bar by, shown as a chip for a few seconds so a change is seen as it happens. */
   let prev: Record<Bar, number> | null = null, chips: Partial<Record<Bar, { d: number; until: number }>> = {}, chipTimer = 0;
   /** The profile with this tank's guardrails in place of its limits (a tank with none keeps the browser profile's limits). */
@@ -48,7 +49,7 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
   mount.innerHTML = `<div class="dm"><button type="button" class="dmtog" aria-expanded="true" title="Show or hide what this tank costs and asks of you; it updates as you edit"><span class="dmhead">What this tank asks of you</span><span class="dmsum"></span><span class="dmcaret" aria-hidden="true">▾</span></button>
     <div class="dmbody"><div class="dmmode"></div><div class="dmbars"></div><div class="dmlid" hidden></div><div class="dmdeals" style="font-size:11px;opacity:.85"></div><div class="dmdrill" hidden></div>
     <details class="dmset dmguard"><summary>Guardrails</summary><div class="dmlimits"></div></details>
-    <div class="dmcomp" role="status"></div>
+    <div class="dmcomp" role="status"></div><div class="dmsol" hidden></div>
     <details class="dmset"><summary>Your situation</summary><div class="dmsit"></div></details></div></div>`;
   const q = <T extends HTMLElement>(s: string) => mount.querySelector(s) as T;
   const bars = q('.dmbars'), drill = q('.dmdrill'), tog = q('.dmtog'), body = q('.dmbody');
@@ -61,6 +62,7 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
 
   function recompute() {
     const S = store.tank;
+    sol = null; // a result is for the scene it was found on
     const kit = pinnedKit(S, store.scene.active, P);
     const parts = gearParts(S);
     D = demandOf(S, P, { kit, parts });
@@ -126,12 +128,40 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
     const cls = c.overall === 'within' ? 'ok' : c.overall === 'off' ? 'off' : 'warn';
     el.className = 'dmcomp ' + cls;
     el.innerHTML = `<div>${esc(c.line)}</div>` + (c.overall === 'over' && c.unknown ? `<div>${esc(c.results.filter(r => r.state === 'unknown').map(r => r.text).join('; '))} (unknown)</div>` : '')
-      + (c.overall === 'within' && welfare ? `<div>Within your guardrails does not mean the stocking is fine.</div>` : '') + (welfare ? `<div class="dmwelf">${esc(welfare)}</div>` : '');
+      + (c.overall === 'within' && welfare ? `<div>Within your guardrails does not mean the stocking is fine.</div>` : '') + (welfare ? `<div class="dmwelf">${esc(welfare)}</div>` : '')
+      + (c.overall === 'over' ? `<button type="button" class="dmfind" title="Try a few changes on a copy of this tank and check each against all your guardrails and the animals' needs">Find solutions</button>` : '');
+    el.querySelector('.dmfind')?.addEventListener('click', () => { const S2 = store.tank; sol = findSolutions(S2, Pe(), { demand: { kit: pinnedKit(S2, store.scene.active, P), parts: gearParts(S2) }, units: store.scene.units, previous: store.previousTank }); renderSolutions(); });
+    renderSolutions();
     if (chip) {
       chip.hidden = c.overall === 'off'; chip.className = 'guardchip ' + cls;
       chip.textContent = c.overall === 'within' ? 'Within guardrails' : c.overall === 'over' ? `${c.over} over` : 'Guardrails: unknown';
       chip.title = c.line + (welfare ? ' ' + welfare : '') + ' Click to open the Guardrails.';
     }
+  }
+  /** The Find solutions card (C3): fully compliant options first, those that need a limit raised apart; every enabled limit shown per option. */
+  function renderSolutions() {
+    const el = q('.dmsol');
+    el.hidden = !sol || sol.status !== 'over';
+    if (!sol || sol.status !== 'over') return;
+    const sgn = (v: number, f: (n: number) => string) => (v < 0 ? '−' : '+') + f(Math.abs(v));
+    const deltas = (o: Option) => [Math.abs(o.delta.startupUsd) >= 1 ? `${sgn(o.delta.startupUsd, usd)} set-up` : '', Math.abs(o.delta.monthlyUsd) >= 0.5 ? `${sgn(o.delta.monthlyUsd, usd)}/mo` : '',
+      Math.abs(o.delta.minPerWeek) >= 0.5 ? `${sgn(o.delta.minPerWeek, n => Math.round(n) + ' min/wk')}${o.estimate ? ' (estimate)' : ''}` : ''].filter(Boolean).join(', ') || 'no change in cost or time';
+    const need = (o: Option) => [o.needs.startupUsd ? `+${usd(o.needs.startupUsd)} set-up` : '', o.needs.monthlyUsd ? `+${usd(o.needs.monthlyUsd)}/mo` : '', o.needs.minPerWeek ? `+${o.needs.minPerWeek} min/wk` : ''].filter(Boolean).join(', ');
+    const card = (o: Option, relax: boolean) => `<div class="dmopt"><b>${esc(o.title)}</b><div class="dmoptd">${esc(o.detail)}</div><div>${esc(deltas(o))}</div>
+      <ul class="dmoptst">${o.status.map(r => `<li class="${r.state}">${r.state === 'pass' ? '✓' : r.state === 'over' ? '✗' : '?'} ${esc(r.label)}: ${esc(r.text)}</li>`).join('')}</ul>
+      ${relax ? `<div class="dmneeds">Needs ${esc(need(o))} on your limit</div>` : ''}${o.newUnknown.length ? `<div class="dmoptd">Not enough information to check: ${esc(o.newUnknown[0])}</div>` : ''}
+      <button type="button" class="dmapply" data-opt="${esc(o.id)}">Apply</button></div>`;
+    const all = [...sol.compliant, ...sol.needsRelaxing];
+    el.innerHTML = `<div class="dmsolh">Find solutions <button type="button" class="dmsolx" aria-label="Close">×</button></div>`
+      + (sol.compliant.length ? `<div class="dmsolg">Fits all your guardrails and the animals' needs</div>${sol.compliant.map(o => card(o, false)).join('')}` : `<div class="dmnone">${esc(sol.message ?? '')}</div>`)
+      + (sol.needsRelaxing.length ? `<div class="dmsolg">${sol.compliant.length ? 'Needs a limit raised' : 'Closest, each needs a limit raised'}</div>${sol.needsRelaxing.map(o => card(o, true)).join('')}` : '')
+      + (!sol.compliant.length ? `<div class="dmoptd">You can also undo, change the animals yourself, or raise a limit. These figures are estimates and the search tries only a few changes.</div>` : '')
+      + (sol.rejected.length ? `<div class="dmsolg">Tried, but not suitable</div><ul class="dmoptst">${sol.rejected.map(r => `<li>${esc(r.title)}: ${esc(r.reason)}</li>`).join('')}</ul>` : '');
+    el.querySelector('.dmsolx')?.addEventListener('click', () => { sol = null; renderSolutions(); });
+    el.querySelectorAll<HTMLButtonElement>('.dmapply').forEach(b => b.addEventListener('click', () => {
+      const o = all.find(x => x.id === b.dataset.opt); if (!o) return;
+      store.edit(t => { t.fish = structuredClone(o.scene.fish); t.items = structuredClone(o.scene.items); t.tank = structuredClone(o.scene.tank); if (o.scene.tech) t.tech = structuredClone(o.scene.tech); else delete t.tech; if (o.scene.product) t.product = o.scene.product; else delete t.product; });
+    }));
   }
   chip?.addEventListener('click', () => { setShown(true); (q('.dmguard') as HTMLDetailsElement).open = true; q('.dmguard').scrollIntoView({ block: 'nearest' }); });
   function renderLid() {

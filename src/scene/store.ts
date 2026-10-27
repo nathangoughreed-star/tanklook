@@ -260,6 +260,11 @@ export class Store {
     if (this.undoStack.length > MAX_HISTORY) this.undoStack.shift();
     this.redoStack = [];
   }
+  /** The active tank as it was one undo step ago (for Find solutions' undo lever); undefined with no history. */
+  get previousTank(): TankSetup | undefined {
+    const snap = this.undoStack[this.undoStack.length - 1];
+    try { return snap ? (JSON.parse(snap) as Scene).tanks[this.scene.active] : undefined; } catch { return undefined; }
+  }
   get canUndo() { return this.undoStack.length > 0; }
   get canRedo() { return this.redoStack.length > 0; }
   undo() { this.step(this.undoStack, this.redoStack); }

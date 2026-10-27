@@ -766,5 +766,14 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .dmcomp.ok { border-color: currentColor; opacity: .9 }
 .dmcomp.off { opacity: .7 }
 .dmcomp .dmwelf { margin-top: 3px; color: var(--warn) }
+.dmfind { display: block; margin-top: 5px; font-size: 11.5px; cursor: pointer }
+.dmsol { margin-top: 6px; padding: 6px 8px; border: 1px solid #8885; border-radius: 6px; font-size: 11.5px }
+.dmsol .dmsolh { display: flex; justify-content: space-between; font-weight: 600 }
+.dmsol .dmsolg { margin: 7px 0 3px; font-weight: 600; opacity: .85 }
+.dmsol .dmopt { padding: 5px 0; border-top: 1px solid #8884 }
+.dmsol .dmoptd { opacity: .75 }
+.dmsol .dmnone, .dmsol .dmneeds { color: var(--warn) }
+.dmsol .dmoptst { margin: 3px 0; padding-left: 14px; list-style: none }
+.dmsol .dmoptst .over { color: var(--warn) }
 .guardchip { font-size: 11px; padding: 2px 8px; border-radius: 10px; margin-right: 8px }
 .guardchip.warn { color: var(--warn); border-color: var(--warn) }
