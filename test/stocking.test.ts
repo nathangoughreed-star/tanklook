@@ -1,9 +1,10 @@
 // Our stocking engine (lane SE): known-good and known-bad stockings give sane percentages in the right order, and the
 // percent is monotonic in animals, filter and volume.
 import { describe, expect, it } from 'vitest';
+import { getSpecies } from '../src/data/species';
 import { defaultSetup } from '../src/scene/defaults';
 import { IN } from '../src/scene/physics';
-import { isOver, loadOf, massG, plural, schoolScale, schoolShare, stockingLine, stockingOf } from '../src/scene/stocking';
+import { BOTTOM_WATER, isOver, loadOf, waterShare, massG, plural, schoolScale, schoolShare, stockingLine, stockingOf } from '../src/scene/stocking';
 import { tankSizeLine } from '../src/ui/fullnessTile';
 import { withChoice } from '../src/scene/tech';
 import type { Fish, Item, TankSetup } from '../src/scene/types';
@@ -163,7 +164,7 @@ describe('tank-wide school discount and the kuhli floor factor (2026-10-22)', ()
   it('bottom dwellers read the same at any height (Nathan 2026-10-22: 10 kuhli read 146 % at 6 in, 54 % at 50 in)', () => {
     const w = [6, 12, 24, 50].map(H => stockingOf(tank(30, 12, H, [['kuhli', 10]])).waterPercent);
     for (const v of w) expect(v).toBeCloseTo(w[0], 0);
-    expect(w[0]).toBeGreaterThan(60); expect(w[0]).toBeLessThan(90);
+    expect(w[0]).toBeGreaterThan(45); expect(w[0]).toBeLessThan(90); // S253: 76 % -> 54 %, kuhli charge 0.7 of their water room (BOTTOM_WATER); their floor is the limit
   });
   it('6 kuhli stay inside the floor of their Seriously Fish minimum tank (24 x 12 in base), and the floor stays linear in count', () => {
     const r = stockingOf(tank(24, 12, 12, [['kuhli', 6]]));
@@ -190,5 +191,39 @@ describe('fullness wording (2026-10-22 review of 12 white clouds + 12 cherry shr
   it('the tile names the tank the percents are of', () => {
     const S = tank(20, 10, 12, [['whitecloud', 12]]);
     expect(tankSizeLine(S, stockingOf(S), 'in')).toMatch(/^Tank 2\d.* × 1\d.* in, [\d.]+ gal of water$/);
+  });
+});
+
+// lane S253 (Nathan 2026-10-27): a bottom dweller charges the floor in full and only BOTTOM_WATER of its water room, so a bottom-dwelling stock
+// is limited by its floor, never by the water column; swimmers are unchanged. 23.9 x 12.1 x 18.4 in = 20.7 gal of water (Nathan's two screenshots).
+describe('zone-aware swimming room (lane S253)', () => {
+  const nathan = (stock: [string, number][]) => stockingOf(tank(23.9, 12.1, 18.4, stock));
+  it('bottom-zone animals charge BOTTOM_WATER of the water room; swimmers charge all of it', () => {
+    expect(waterShare(getSpecies('kuhli')!)).toBe(BOTTOM_WATER); expect(waterShare(getSpecies('bronzecory')!)).toBe(BOTTOM_WATER);
+    expect(waterShare(getSpecies('danio')!)).toBe(1); expect(waterShare(getSpecies('neon')!)).toBe(1);
+    expect(BOTTOM_WATER).toBeGreaterThan(0); expect(BOTTOM_WATER).toBeLessThan(1);
+  });
+  it('10 kuhli alone: the floor bar fills before the water column bar, and the headline is the floor (Nathan: why would substrate animals fill the water first?)', () => {
+    const r = nathan([['kuhli', 10]]);
+    expect(r.floorPercent).toBeGreaterThan(r.waterPercent); expect(r.spaceBy).toBe('floor'); expect(r.spacePercent).toBeCloseTo(r.floorPercent, 6);
+  });
+  it('bottom-only stocks (cory, kuhli, bristlenose) never read their water column above their floor in a normal tank', () => {
+    for (const [id, n] of [['bronzecory', 6], ['kuhli', 8], ['pandacory', 8], ['bristlenose', 2]] as [string, number][]) {
+      const r = stockingOf(tank(30, 12, 16, [[id, n]])); expect(r.floorPercent, id).toBeGreaterThan(r.waterPercent);
+    }
+  });
+  it('6 zebra danio + 6 kuhli in the 20.7 gal read about the AqAdvisor 82 % (reference only): the danio fill the water, the kuhli the floor', () => {
+    const r = nathan([['danio', 6], ['kuhli', 6]]);
+    expect(r.spacePercent).toBeGreaterThan(79); expect(r.spacePercent).toBeLessThan(85); expect(r.spaceBy).toBe('water');
+    expect(r.floorPercent).toBeGreaterThan(35); expect(r.floorPercent).toBeLessThan(55);
+  });
+  it('pure swimmers still read full: 8 zebra danio in a 10 gal over 100 %, 10 neon in a 10 gal past ideal, all water-bound with no floor', () => {
+    const d = stockingOf(tank(20, 10, 12.3, [['danio', 8]])), n = stockingOf(tank(20, 10, 12.3, [['neon', 10]]));
+    expect(d.spacePercent).toBeGreaterThan(100); expect(d.spaceBy).toBe('water'); expect(d.floorPercent).toBe(0);
+    expect(n.spacePercent).toBeGreaterThan(75); expect(n.spaceBy).toBe('water');
+  });
+  it('a swimming school still sets the headline when kuhli are added (adding bottom dwellers never lowers a reading)', () => {
+    const base = nathan([['danio', 6]]).spacePercent, more = nathan([['danio', 6], ['kuhli', 6]]).spacePercent;
+    expect(more).toBeGreaterThan(base);
   });
 });

@@ -137,6 +137,13 @@ export const HS_MIN_CM = 30.5, HS_K = 8, HS_LOW = 0.7, HS_HIGH = 1.5, ALL_CURVE 
  *  the height, so their water room is floor area x the credited height at BOTTOM_REF_CM of water, whatever the tank's depth; their reading
  *  depends on the floor only. 35 cm (about 14 in of water) is the depth at which every calibration test still passes (33 and 37 each fail one). */
 export const BOTTOM_REF_CM = 35;
+/** Zone-aware swimming room (lane S253, Nathan 2026-10-27: "for an animal that spends its life on the substrate, why would they possibly fill up
+ *  the water column bar before the floor space bar?"): a bottom-zone animal charges the FLOOR in full (floorUseCm2) and only BOTTOM_WATER of
+ *  its AqAdvisor-fitted water room (it still breathes, hides and shoots up through the column; AqAdvisor itself is volume-only and charges it all).
+ *  Mid / top / "all"-zone animals charge the water column in full. 0.7 puts 6 danio + 6 kuhli in 20 gal at the AqAdvisor-like 82 % (danio alone
+ *  46 %, kuhli alone 57 % x 0.7) while a bottom-only stock reads on its floor (10 kuhli 75 %, water 57 %). */
+export const BOTTOM_WATER = 0.7;
+export const waterShare = (sp: Species) => zoneOf(sp) === 'bottom' ? BOTTOM_WATER : 1;
 /** Class by id (lane HC, Nathan 2026-10-21: "an oscar going from 12 to 18 inches is a lot more helpful than a school of danios"):
  *  fast horizontal schoolers and surface fish use little of the height (low); tall-bodied fish, hoverers and big cichlids use more (high). */
 const HS_LOW_IDS = new Set(['danio', 'whitecloud', 'cpd', 'harlequin', 'chili', 'tigerbarb', 'cherrybarb', 'sae']);
@@ -230,7 +237,7 @@ export function animalLoad(sp: Species, tlMm: number, tempC = T_REF, salt = fals
 /** Litres of water one adult of this species takes up (its load over what a litre clears): the starters' budget unit. */
 export const litresPerAnimal = (sp: Species, depthCm = 0) => Math.max(animalLoad(sp, sp.tl, T_REF, !!sp.salt) / LU_PER_L,
   // SE2 (2026-10-20): the starters also respect the space limit, so Full reads about 90 % by the space number (animals in the water only)
-  countsAgainstWater(sp) ? spaceOf(sp, sp.tl) * heightMul(sp, depthCm) / SPACE_PER_L : 0); // depthCm: the tank's mean water depth (lane HC), 0 = no height effect // starters draw animals at adult length (a few % either way): budgeted at adult so what is drawn matches (2026-10-21)
+  countsAgainstWater(sp) ? spaceOf(sp, sp.tl) * heightMul(sp, depthCm) * waterShare(sp) / SPACE_PER_L : 0); // depthCm: the tank's mean water depth (lane HC), 0 = no height effect // starters draw animals at adult length (a few % either way): budgeted at adult so what is drawn matches (2026-10-21)
 /** Floor area one adult takes, cm2, sized like litresPerAnimal (at adult length): the starters' floor budget unit (lane HB). */
 export const floorPerAnimal = (sp: Species) => floorUseCm2(sp, sp.tl);
 
@@ -259,7 +266,7 @@ export function stockingOf(S: TankSetup): Stocking {
     load += l;
     const c = by.get(sp.id) ?? { id: sp.id, name: sp.name, n: 0, load: 0, space: 0, share: 0, grams: 0, cls: metClass(sp), floor: 0, spaceFactor: spaceFactor(sp) };
     const gr = grow(sp.id), fl = floorUseCm2(sp, f.tl ?? sp.tl) * gr;
-    const s = spaceOf(sp, f.tl ?? sp.tl) * heightMul(sp, meanDepthCm) * gr;
+    const s = spaceOf(sp, f.tl ?? sp.tl) * heightMul(sp, meanDepthCm) * waterShare(sp) * gr;
     if (s > 0) each.push({ c, s });
     c.n++; c.load += l; c.floor += fl; floorUse += fl; c.grams += massG(sp.id, f.tl ?? sp.tl); by.set(sp.id, c);
   }

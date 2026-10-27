@@ -1,0 +1,9 @@
+
+ RUN  v5.0.3 C:/Users/nreed/Glass Box/.claude/worktrees/clever-aryabhata-81056a
+
+
+ Test Files  145 passed | 1 skipped (146)
+      Tests  1572 passed | 1 expected fail | 1 skipped (1574)
+   Start at  16:07:59
+   Duration  114.23s (tests 71%, import 20%, transform 10%)
+

@@ -1,0 +1,140 @@
+
+ RUN  v5.0.3 C:/Users/nreed/Glass Box/.claude/worktrees/clever-aryabhata-81056a
+
+ ❯ test/starterfull.test.ts (1 test | 1 failed) 2480ms
+   × every starter at the Full stop stays at or under 100 % 2478ms
+ ❯ test/tankfit.test.ts (12 tests | 2 failed) 7376ms
+   ❯ tank fit engine (lane P2) (10)
+     × every real case lands on a catalogue tank that meets the space limit, and sizes grow with the stocking 328ms
+     × it is the SMALLEST tank: the step below it is not offered because it fails (space or the species minimum) 1417ms
+ ❯ test/minimum.test.ts (27 tests | 1 failed) 759ms
+   ❯ 13 kuhlis in a 20 long (S188 acceptance) (2)
+     × the tank minimum never fails it, and since 2026-10-22 neither does the Space bar: 13 kuhlis read cramped but doable (about 96 %) by the water limit, no longer 131 % by floor (kuhlis pile up, FLOOR_FACTOR 0.6) 109ms
+ ❯ test/calibtablesv4.test.ts (8 tests | 1 failed) 207ms
+   ❯ survey v4 engine tables (8)
+     × has a reading for every tank, on the engine as it is now (else: GEN_RETABLE_V4=1 npx vitest run test/calibtablesv4.test.ts) 111ms
+ ❯ test/calibtables.test.ts (1 test | 1 failed) 43ms
+   ❯ calibration tables on the current engine (1)
+     × has a tables file for every round, read on the engine as it is now (else: GEN_RETABLE=1 npx vitest run test/calibtables.test.ts) 40ms
+ ❯ test/stocking.test.ts (28 tests | 1 failed) 223ms
+   ❯ tank-wide school discount and the kuhli floor factor (2026-10-22) (7)
+     × bottom dwellers read the same at any height (Nathan 2026-10-22: 10 kuhli read 146 % at 6 in, 54 % at 50 in) 9ms
+ ❯ test/sources.test.ts (2 tests | 1 failed) 18ms
+   ❯ source traceability (2)
+     × unsourced values do not rise above the baseline (ratchet) 6ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/calibtables.test.ts > calibration tables on the current engine > has a tables file for every round, read on the engine as it is now (else: GEN_RETABLE=1 npx vitest run test/calibtables.test.ts)
+AssertionError: round 1 f18: the engine moved since the tables were made: expected 70.30159522842274 to be close to 77.02429124301237, received difference is 6.72269601458963, but expected 5e-7
+ ❯ test/calibtables.test.ts:51:125
+     49|         expect(t, `round ${R.round} ${s.id}`).toBeTruthy();
+     50|         // the reading as shown is one engine run per tank: cheap enou…
+     51|         expect(readSpace(s.dimsIn, s.stock).space, `round ${R.round} $…
+       |                                                                                                                             ^
+     52|       }
+     53|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  test/calibtablesv4.test.ts > survey v4 engine tables > has a reading for every tank, on the engine as it is now (else: GEN_RETABLE_V4=1 npx vitest run test/calibtablesv4.test.ts)
+AssertionError: A04: the engine moved since the tables were made: expected [ 'caution', 81.417629, +0, +0, …(4) ] to deeply equal [ Array(8) ]
+
+- Expected
++ Received
+
+@@ -1,8 +1,8 @@
+  [
+-   "problems",
+-   100.551958,
++   "caution",
++   81.417629,
+    0,
+    0,
+    null,
+    "ok",
+    {
+
+ ❯ test/calibtablesv4.test.ts:65:83
+     63|       if (!t.readable) continue;
+     64|       const now = retableLite(s);
+     65|       expect(lockOf(now), `${s.id}: the engine moved since the tables …
+       |                                                                                   ^
+     66|       // count tables exactly for the tanks that ask counts, with row …
+     67|       expect(!!t.table, `${s.id} table`).toBe(s.ask.includes('counts')…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  test/minimum.test.ts > 13 kuhlis in a 20 long (S188 acceptance) > the tank minimum never fails it, and since 2026-10-22 neither does the Space bar: 13 kuhlis read cramped but doable (about 96 %) by the water limit, no longer 131 % by floor (kuhlis pile up, FLOOR_FACTOR 0.6)
+AssertionError: expected 73.66996051351678 to be greater than 85
+ ❯ test/minimum.test.ts:209:59
+    207|     expect(13 * floorUseCm2(getSpecies('kuhli')!, getSpecies('kuhli')!…
+    208|     const at20 = tankOptions([{ species: 'kuhli', n: 13 }]).find(o => …
+    209|     expect(at20.fails).toEqual([]); expect(at20.spacePct).toBeGreaterT…
+       |                                                           ^
+    210|     expect(planFor([{ id: 'kuhli', n: 13 }], 'g20l').fit!.fails).toEqu…
+    211|     const at8 = tankOptions([{ species: 'kuhli', n: 8 }]).find(o => o.…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  test/sources.test.ts > source traceability > unsourced values do not rise above the baseline (ratchet)
+AssertionError: new engine constants need a FORMULAS or EXCLUDED entry: expected 1 to be less than or equal to 0
+ ❯ test/sources.test.ts:23:88
+     21|     const base = JSON.parse(readFileSync(BASE, 'utf8'));
+     22|     expect(s.unsourced, 'new advice values need a rule in src/data/pro…
+     23|     expect(s.constUnsourced, 'new engine constants need a FORMULAS or …
+       |                                                                                        ^
+     24|   });
+     25| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  test/starterfull.test.ts > every starter at the Full stop stays at or under 100 %
+AssertionError: dutch 36x18x18 seed 5: expected 102.89083311858955 to be less than or equal to 100
+ ❯ test/starterfull.test.ts:19:116
+     17|       s.layout = { id: id as any, seed, dens: { hard: 2, plant: 2, ani…
+     18|       s.fish = starterAnimals(s, 1); if (!s.fish.length) continue;
+     19|       n++; reads.push(stockingOf(s).percent); expect(stockingOf(s).per…
+       |                                                                                                                    ^
+     20|     }
+     21|   }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  test/stocking.test.ts > tank-wide school discount and the kuhli floor factor (2026-10-22) > bottom dwellers read the same at any height (Nathan 2026-10-22: 10 kuhli read 146 % at 6 in, 54 % at 50 in)
+AssertionError: expected 53.51341666165851 to be greater than 60
+ ❯ test/stocking.test.ts:166:18
+    164|     const w = [6, 12, 24, 50].map(H => stockingOf(tank(30, 12, H, [['k…
+    165|     for (const v of w) expect(v).toBeCloseTo(w[0], 0);
+    166|     expect(w[0]).toBeGreaterThan(60); expect(w[0]).toBeLessThan(90);
+       |                  ^
+    167|   });
+    168|   it('6 kuhli stay inside the floor of their Seriously Fish minimum ta…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  test/tankfit.test.ts > tank fit engine (lane P2) > every real case lands on a catalogue tank that meets the space limit, and sizes grow with the stocking
+AssertionError: expected 15.858489114927345 to be greater than or equal to 20
+ ❯ test/tankfit.test.ts:30:35
+     28|     expect(fit('kribs').gallons).toBeGreaterThanOrEqual(15); expect(fi…
+     29|     expect(fit('oscar').gallons).toBeGreaterThanOrEqual(75);
+     30|     expect(fit('danios').gallons).toBeGreaterThanOrEqual(20); expect(f…
+       |                                   ^
+     31|     expect(fit('oscar').gallons).toBeGreaterThan(fit('kribs').gallons);
+     32|     expect(tankFor([{ species: 'neon', n: 30 }])!.litres).toBeGreaterT…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  test/tankfit.test.ts > tank fit engine (lane P2) > it is the SMALLEST tank: the step below it is not offered because it fails (space or the species minimum)
+AssertionError: expected 0 to be greater than 0
+ ❯ test/tankfit.test.ts:36:28
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  7 failed | 139 passed | 1 skipped (147)
+      Tests  8 failed | 1559 passed | 1 expected fail | 1 skipped (1569)
+   Start at  15:57:21
+   Duration  68.90s (tests 72%, import 23%, transform 6%)
+

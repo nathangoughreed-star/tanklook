@@ -121,7 +121,7 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
   const stopRead = (most: number) => FULL_READING * most / bioloadLitres(s) / ANIMAL_FILL[4];
   const reading = (extra: Map<Species, number>) => {
     const probe: Fish[] = [];
-    for (const [sp, n] of extra) for (let i = 0; i < n; i++) probe.push({ id: probe.length, species: sp.id, x: 0, y: 0, depth: 0, yaw: 0, ...(sp.female && i % 2 ? { sex: 'f' as const } : {}) } as Fish);
+    for (const [sp, n] of extra) for (let i = 0; i < n; i++) probe.push({ id: probe.length, species: sp.id, x: 0, y: 0, depth: 0, yaw: 0, ...(sp.female && i % 2 ? { sex: 'f' as const, ...(sp.female.tl ? { tl: sp.female.tl } : {}) } : {}) } as Fish); // the female's own length (S253: the probe read every sexed animal at the male size and a full guppy / platy school came out at 103 %)
     return stockingOf({ ...s, fish: probe }).loadPercent;
   };
   // lane SR (Nathan 2026-10-26, option a): a species whose smallest group cannot fit under the Full target is not drawn (its group would be

@@ -201,12 +201,12 @@ describe('13 kuhlis in a 20 long (S188 acceptance)', () => {
     expect(w).toEqual([]); expect(minBar(m).level).toBe('near'); // 77 cm < the 80 cm Recommended mark
     expect(topMin(m, 'in')[0].note).toMatch(/^at least 23.6" x 11.8"; Recommended 31.5" long$/);
   });
-  it('the tank minimum never fails it, and since 2026-10-22 neither does the Space bar: 13 kuhlis read cramped but doable (about 96 %) by the water limit, no longer 131 % by floor (kuhlis pile up, FLOOR_FACTOR 0.6)', () => {
+  it('the tank minimum never fails it, and since 2026-10-22 neither does the Space bar: 13 kuhlis read cramped but doable (about 74 % since S253, 96 % before) by the floor / water limit, no longer 131 % by floor (kuhlis pile up, FLOOR_FACTOR 0.6)', () => {
     // 15 sq in of floor per inch of mass-equivalent length x FLOOR_FACTOR 0.6 (research/habitat-model.md, 2026-10-22): 13 kuhlis want ~264 sq in of the 20 long's 360
     // (lane HB's 440 sq in read 131 % on floor); the water limit, one school curve over the tank, reads them about 96 % in the catalogue 20 long.
     expect(13 * floorUseCm2(getSpecies('kuhli')!, getSpecies('kuhli')!.tl)).toBeLessThan(floorOf(S.tank).areaCm2);
     const at20 = tankOptions([{ species: 'kuhli', n: 13 }]).find(o => o.tank.id === 'g20l')!;
-    expect(at20.fails).toEqual([]); expect(at20.spacePct).toBeGreaterThan(85); expect(at20.spacePct).toBeLessThanOrEqual(100); expect(at20.minPct).toBeLessThanOrEqual(100);
+    expect(at20.fails).toEqual([]); expect(at20.spacePct).toBeGreaterThan(60); // S253: 96 % -> about 74 %: the kuhlis charge the floor in full and 0.7 of their water room expect(at20.spacePct).toBeLessThanOrEqual(100); expect(at20.minPct).toBeLessThanOrEqual(100);
     expect(planFor([{ id: 'kuhli', n: 13 }], 'g20l').fit!.fails).toEqual([]); // the stocking screen reads the same result
     const at8 = tankOptions([{ species: 'kuhli', n: 8 }]).find(o => o.tank.id === 'g20l')!;
     expect(at8.fails).toEqual([]); expect(at8.spacePct).toBeLessThan(80); // 8 fit it with room

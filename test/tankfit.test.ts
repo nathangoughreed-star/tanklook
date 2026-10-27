@@ -27,12 +27,13 @@ describe('tank fit engine (lane P2)', () => {
     expect(fit('neons').gallons).toBeLessThan(15);
     expect(fit('kribs').gallons).toBeGreaterThanOrEqual(15); expect(fit('kribs').gallons).toBeLessThan(40);
     expect(fit('oscar').gallons).toBeGreaterThanOrEqual(75);
-    expect(fit('danios').gallons).toBeGreaterThanOrEqual(20); expect(fit('danios').gallons).toBeLessThan(40);
+    expect(fit('danios').gallons).toBeGreaterThanOrEqual(15); // 20 before S253: the bristlenose now charges the floor and 0.7 of its water room (BOTTOM_WATER), so the 10 danio set the tank (about 16 gal, 100 %)
+    expect(fit('danios').gallons).toBeLessThan(40);
     expect(fit('oscar').gallons).toBeGreaterThan(fit('kribs').gallons);
     expect(tankFor([{ species: 'neon', n: 30 }])!.litres).toBeGreaterThan(fit('neons').litres);
   });
   it('it is the SMALLEST tank: the step below it is not offered because it fails (space or the species minimum)', () => {
-    const t = fit('danios'), smaller = stepUps(CASES.danios, 'g5', 40).filter(s => s.litres < t.litres);
+    const t = fit('danios'), smaller = tankOptions(CASES.danios).filter(s => s.litres < t.litres); // every catalogue tank below it (stepUps lists only tanks that pass)
     expect(smaller.length).toBeGreaterThan(0);
     // 'minimum' is the Fullness tile's own red lines (scene/tankMin.ts, lane MM): every smaller step fails space, filtration or the minimum
     const short = (m: (typeof smaller)[number]['tank']) => { const S = bareSetup(); S.tank = tankFromModel(m); S.water.on = true; S.water.level = 0.9; const g = geometryOf(S); return CASES.danios.some(a => speciesMinimum(getSpecies(a.species)!, g).pct > MIN_SLACK_PCT); };
