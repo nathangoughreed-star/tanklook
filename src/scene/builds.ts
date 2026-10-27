@@ -10,6 +10,7 @@ import { dealAsKit, type Deal } from '../data/deals';
 import { productName } from '../data/gearCatalog';
 import type { GearDeal } from '../data/gearDeals';
 import { defaultProfile, demandOf, type Demand, type DemandOpts } from '../demand';
+import { dryDealsFor } from '../demand/drydeals';
 import { dealMatches, MIN_SAVING_FRAC, MIN_SAVING_USD } from '../demand/dealmatch';
 import { filterName } from '../demand/gear';
 import { gearOffers, gearParts, pinGear } from '../demand/gearDeals';
@@ -231,10 +232,15 @@ export function buildsFor(animals: AnimalCount[], tank: TankModel, now = Date.no
 /** A terrarium's three builds (lane LT): each build's gear choice (scene/drygear.ts), priced by the demand model; no filter, no bundle. */
 function dryBuilds(animals: AnimalCount[], tank: TankModel, now: number): Build[] {
   const make = (id: BuildId): Build => {
-    const p = price(drySetup(tank, animals, id), now), setupUsd = Math.round(p.D.totals.setupUsd);
-    return { id, label: BUILD_LABEL[id], blurb: DRY_BLURB[id], tank, animals, setup: p.S, gear: gearLines(p.S), setupUsd, listUsd: setupUsd,
+    const S = drySetup(tank, animals, id), listed = price(S, now);
+    let p = listed, bundle: Deal | undefined;
+    // lane KT: a reptile kit sold in this enclosure's size stands in for the tank, lid, dome, bulb and gauge rows the build would buy anyway
+    for (const d of dryDealsFor(tank, now, S)) { const q = price(S, now, d); if (q.D.totals.setupUsd < p.D.totals.setupUsd) { p = q; bundle = d; } }
+    const setupUsd = Math.round(p.D.totals.setupUsd), listUsd = Math.round(listed.D.totals.setupUsd);
+    if (bundle && listUsd - setupUsd <= Math.max(MIN_SAVING_USD, MIN_SAVING_FRAC * listUsd)) { p = listed; bundle = undefined; }
+    return { id, label: BUILD_LABEL[id], blurb: DRY_BLURB[id], tank, animals, setup: p.S, gear: gearLines(p.S), setupUsd: Math.round(p.D.totals.setupUsd), listUsd,
       upkeepUsdMo: Math.round(p.D.totals.upkeepUsdMo), minPerWeek: Math.round(p.D.totals.minPerWeek), filtrationPct: 0, spacePct: 0, gearDeals: [],
-      ...(p.tankDeal ? { tankDeal: p.tankDeal } : {}), savingUsd: 0 };
+      ...(p.tankDeal ? { tankDeal: p.tankDeal } : {}), ...(bundle ? { bundle } : {}), savingUsd: Math.max(0, listUsd - Math.round(p.D.totals.setupUsd)) };
   };
   const c = make('cheapest'), b = make('balanced');
   let l = make('leastWork');

@@ -1128,6 +1128,129 @@
     }
    },
    "img": "https://m.media-amazon.com/images/I/81MlYD1+FdL._AC_SL500_.jpg"
+  },
+  {
+   "id": "petsmart-thrive-desert-40",
+   "retailer": "PetSmart",
+   "name": "Thrive Desert Essentials Kit 40G (front-opening glass terrarium)",
+   "gal": 40,
+   "terrarium": true,
+   "confidence": "medium",
+   "dims": {
+    "L_in": 36,
+    "D_in": 18,
+    "H_in": 18
+   },
+   "includes": [
+    "tank",
+    "lid",
+    "dome",
+    "bulb",
+    "gauge"
+   ],
+   "price": {
+    "usd": 129.99,
+    "regularUsd": 259.99
+   },
+   "url": "https://www.petsmart.com/reptile/habitats-and-decor/terrariums/thrive-andtrade-desert-essentials-kit---40g-87137.html",
+   "asOf": "2026-10-27",
+   "note": "Page read 2026-10-27 (fetched through a page summarizer, not a browser): $129.99, struck-through $259.99, banner 'Save 50% on select Thrive reptile terrariums, price displayed', no end date shown (a report that this sale ended 2026-09-27 is contradicted by the page, but other PetSmart listings of the kit showed $124.99-$249.99, so re-check). Contents: 40 gal glass terrarium 36x18x18 in with front doors, screen lid with feeding door, 100 W Arcadia basking spot, 23 W desert UVB bulb, two 8.5 in dome lamps, two thermometer/hygrometers, one food/water dish. NOT included: thermostat, hides, substrate, supplements. The build's own thermostat, UVB (a 23 W compact is not a linear T5; the kit's is left unused and not credited) and hides stay priced. Credited against the kit: tank, lid, dome lamp, basking bulb, gauge."
+  },
+  {
+   "id": "petsmart-zoomed-gecko-20",
+   "retailer": "PetSmart",
+   "name": "Zoo Med Leopard Gecko ReptiHabitat 20 gal (30x12x12)",
+   "gal": 20,
+   "terrarium": true,
+   "confidence": "medium",
+   "dims": {
+    "L_in": 30,
+    "D_in": 12,
+    "H_in": 12
+   },
+   "includes": [
+    "tank",
+    "lid",
+    "dome",
+    "bulb"
+   ],
+   "price": {
+    "usd": 199.99,
+    "regularUsd": 219.99
+   },
+   "url": "https://www.petsmart.com/reptile/habitats-and-decor/terrariums/zoo-med-20-gallon-leopard-gecko-reptihabitat-5351767.html",
+   "asOf": "2026-10-27",
+   "note": "Page read 2026-10-27 (page summarizer): $199.99, struck-through $219.99, no end date; other PetSmart listings of the same kit showed $99.99 and $125.99 (both out of stock or an ended promotion). Contents: 20 gal glass terrarium with sliding screen top, 20 lb ReptiSand, Mini Combo Deep Dome fixture, 75 W basking spot, 75 W red infrared heat lamp, medium dish, Habba hut, digital thermometer (no hygrometer), calcium and vitamin samples. NOT included: thermostat, UVB, hygrometer. Credited: tank, lid, dome, basking bulb; the sand, hut and dish are worth under $30 and are not credited."
+  },
+  {
+   "id": "tractorsupply-zoomed-bearded-40",
+   "retailer": "Tractor Supply",
+   "name": "Zoo Med ReptiHabitat Bearded Dragon Kit 40 gal",
+   "gal": 40,
+   "terrarium": true,
+   "confidence": "low",
+   "dims": {
+    "L_in": 36,
+    "D_in": 18,
+    "H_in": 18
+   },
+   "includes": [
+    "tank",
+    "lid"
+   ],
+   "price": {
+    "usd": 291.99
+   },
+   "url": "https://www.tractorsupply.com/tsc/product/zoo-med-40-gallon-reptihabitat-bearded-dragon-kit-1406699",
+   "asOf": "2026-10-27",
+   "note": "Search snippet only, page not opened: $291.99 online only, 36x18x18 in. Contents not confirmed (a Zoo Med kit normally adds a dome fixture, bulbs and a thermometer); dearer than the Thrive kit, so recorded but not used."
+  },
+  {
+   "id": "petco-imagitarium-breeder-40",
+   "retailer": "Petco",
+   "name": "Imagitarium Breeder Open-Glass Aquarium 40 gal (bare tank, no lid)",
+   "gal": 40,
+   "terrarium": true,
+   "confidence": "low",
+   "dims": {
+    "L_in": 36.33,
+    "D_in": 18.34,
+    "H_in": 15.9
+   },
+   "includes": [
+    "tank"
+   ],
+   "price": {
+    "usd": 75,
+    "regularUsd": 150
+   },
+   "url": "https://www.petco.com/shop/en/petcostore/product/imagitarium-40-gallon-breeder-open-glass-aquarium-tank",
+   "asOf": "2026-10-27",
+   "note": "Search snippet only (petco.com returned 403 to a direct fetch): $75.00, was $150.00, '50% off', online; Aqueon 40 breeder (SKU 170968) $149.99 list, same $75 online-only sale also reported. Open-top aquarium glass, not a front-opening terrarium: needs a screen lid (sold separately). Sale recurs, no end date known."
+  },
+  {
+   "id": "target-reptizoo-40",
+   "retailer": "Target",
+   "name": "Repti Zoo 40 gal glass terrarium (bare)",
+   "gal": 40,
+   "terrarium": true,
+   "confidence": "low",
+   "dims": {
+    "L_in": 36,
+    "D_in": 18,
+    "H_in": 18
+   },
+   "includes": [
+    "tank",
+    "lid"
+   ],
+   "price": {
+    "usd": 205.99,
+    "regularUsd": 249.99
+   },
+   "url": "https://www.target.com/p/-/A-88867032",
+   "asOf": "2026-10-27",
+   "note": "Search snippet only: $205.99 against $249.99 (a second Target listing $249.99, was $299.99). Bare terrarium with screen top; dearer than the Thrive kit."
   }
  ]
 }

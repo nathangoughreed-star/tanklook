@@ -42,7 +42,9 @@ describe('one gear model for a dry tank', () => {
         const meshes = buildGear(S, S.tank, []);
         expect(meshes.length, sp).toBeGreaterThan(0);
         // the build card's price is the totals' price
-        expect(Math.round(tot(S).totals.setupUsd)).toBe(b.setupUsd);
+        // (a build priced with a kit (lane KT) is cheaper than its own rows: the kit stands in for the tank, lid, lamp and gauge)
+        if (!b.bundle) expect(Math.round(tot(S).totals.setupUsd)).toBe(b.setupUsd);
+        else expect(b.setupUsd).toBeLessThan(Math.round(tot(S).totals.setupUsd));
       }
     }
   });

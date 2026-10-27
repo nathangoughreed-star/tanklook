@@ -368,9 +368,9 @@
   },
   "animal:leopardgecko": {
    "lo": 25,
-   "mode": 60,
+   "mode": 32,
    "hi": 80,
-   "unit": "common-morph juvenile each; Ward's $79.95",
+   "unit": "common-morph juvenile each; PetSmart $27.99-34.99 (mode ~$32, re-anchored 2026-10-27 from $60), Ward's science-supply $79.95 kept as hi",
    "url": "https://www.wardsci.com/us/en/product/28306657/wards-juvenile-leopard-gecko"
   },
   "animal:livingstonii": {

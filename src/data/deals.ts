@@ -4,7 +4,10 @@ import type { FilterSpec } from '../demand/gear';
 
 /** Retailer bundle deals (lane KD, 2026-10): a tank sold with its stand (and sometimes lid, light, filter, heater) for one price.
  *  Rows are researched by the sweep in prompts/deals-sweep.md; `est` marks a row with no live listing found. */
-export type DealPart = 'tank' | 'stand' | 'lid' | 'light' | 'filter' | 'heater';
+export type DealPart = 'tank' | 'stand' | 'lid' | 'light' | 'filter' | 'heater' | 'dome' | 'bulb' | 'uvb' | 'gauge';
+/** The demand-engine row each terrarium part replaces (the Tech rows of scene/tech.ts: the heat lamp row is the dome fixture and the bulb together); the aquarium parts use their own names. A kit's UVB
+ *  is listed in `includes` only when it is worth using in place of the build's own (a 23 W compact is not a linear T5). */
+const DRY_KEY: Partial<Record<DealPart, string>> = { dome: 'heatlamp', bulb: 'heatlamp', uvb: 'uvb', gauge: 'gauge' };
 export interface Deal {
   id: string;
   retailer: string;
@@ -31,6 +34,10 @@ export interface Deal {
   img?: string;
   asOf: string;
   est?: boolean;
+  /** a land enclosure (terrarium) kit or tank: matched by `dims` to the build's terrarium, never offered for an aquarium (lane KT, 2026-10-27) */
+  terrarium?: boolean;
+  /** how sure the row is: 'low' = read from a search snippet, page not opened (such a row never prices a build, whether or not it is `est`) */
+  confidence?: 'high' | 'medium' | 'low';
   note?: string;
 }
 /** Every guess behind a deal, in plain words: the row's own list plus a light whose power the listing does not give. */
@@ -56,7 +63,7 @@ const day = (d: string) => Date.parse(d + 'T23:59:59');
 export function dealsFor(gal: number, stand: boolean, now = Date.now(), tol = 2.5, list: Deal[] = DEALS): Deal[] {
   return list
     // rated vs measured: a tank measures a little over its label (a 75 is about 79 gal inside), so the slack is one-sided
-    .filter((d) => d.gal - gal <= tol && gal - d.gal <= Math.max(tol, gal * 0.07) &&
+    .filter((d) => !d.terrarium && d.gal - gal <= tol && gal - d.gal <= Math.max(tol, gal * 0.07) &&
  (stand || !d.includes.includes('stand')) && (!d.saleEnds || day(d.saleEnds) >= now))
     .sort((a, b) => a.price.usd - b.price.usd);
 }
@@ -65,7 +72,7 @@ export function dealsFor(gal: number, stand: boolean, now = Date.now(), tol = 2.
 export const dealAsKit = (d: Deal) => {
   const k = d.kit ? kitById(d.kit) : undefined, g = k ? kitGear(k) : undefined;
   return {
-    id: d.id, priceUsd: d.price.usd, asOf: d.asOf, includes: d.includes as string[], label: `${d.retailer} ${d.name}`,
+    id: d.id, priceUsd: d.price.usd, asOf: d.asOf, includes: d.includes.map((p) => DRY_KEY[p] ?? p), label: `${d.retailer} ${d.name}`,
     filter: d.includes.includes('filter') ? d.filter ?? g?.filter : undefined,
     heater: d.includes.includes('heater') ? d.heater ?? g?.heater : undefined,
   };
