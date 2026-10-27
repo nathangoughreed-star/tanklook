@@ -2,7 +2,7 @@
 // (see placeholder.ts), so the species list can grow without hand-drawing each fish. Same unit frame as the
 // hand-drawn art: u = 0 (tail tip) .. 1 (nose tip) across the card width W (== adult TL), v = offset in widths
 // from the card's centre line, + down. Tail and nose tips are sharp corners at u = 0 and u = 1 exactly.
-import { type Ctx, type Proj, type Pt, blob, body, eye, fin, gill, hexA, rng, scales, shape, soft, style, wavyBand } from './paint';
+import { type Ctx, type Proj, type Pt, blob, body, eye, fin, gill, hexA, rng, scales, shimmer, shape, soft, style, wavyBand } from './paint';
 
 type Tail = 'fork' | 'notch' | 'round' | 'veil' | 'lyre' | 'double' | 'sword';
 type FinShape = 'tri' | 'round' | 'sail' | 'long' | 'swept';
@@ -78,6 +78,9 @@ export interface Plan {
   bristles?: boolean; // bristlenose snout
   rim?: number;
   thick?: number;     // 3D: max body thickness / max body depth (laterally compressed < 0.5 < rounder)
+  sectionExp?: number; // 3D: cross-section exponent (2 = elliptical; >2 = boxier); default 2.4
+  gillLine?: number;   // 3D: faint raised operculum seam opacity (0..1); opt-in to avoid extra meshes for other species
+  shimmer?: number;    // 2D: fine, deterministic warm scale glints (0..1); opt-in, projected to 3D flanks
   // 3D body shape (all optional): flat belly 0..1; cross-section widest low (+) or high (-); thickness at the peduncle
   // (share, default 0.55); head this share narrower than the trunk from the gill cover on; thickness kept to the snout
   // tip (share of max: a flat, wide snout)
@@ -360,6 +363,7 @@ export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
   const [t0, b0] = [Math.min(...g.bodyPts.map(q => q[1])), Math.max(...g.bodyPts.map(q => q[1]))];
   body(ctx, P, W, g.bodyPts, t0, b0, [[0, p.shade[0]], [0.4, p.shade[1]], [0.65, p.shade[1]], [1, p.shade[2]]], p.rim ?? 0.035, l => {
     paintMarks(l, P, W, p.marks, 7);
+    if (p.shimmer) shimmer(l, P, W, p.pedU + 0.025, 1 - (1 - p.pedU) * 0.14, g.prof, p.shimmer);
     const gu = 1 - (1 - p.pedU) * 0.2, [gt, gb] = g.prof(gu);
     if (style.features) gill(l, P, W, gu, gt + (gb - gt) * 0.2, gt + (gb - gt) * 0.85, 0.02);
   }, l => {
@@ -467,9 +471,21 @@ export const PLANS: Record<string, Plan> = {
     marks: [{ k: 'band', u0: 0.15, u1: 0.6, v0: -0.008, v1: 0.2, c: '#c4303a', a: 0.95, f: 0.015 }, { k: 'band', u0: 0.24, u1: 0.93, v0: -0.07, v1: -0.006, c: '#2aa9e0', a: 1, f: 0.012 },
       { k: 'band', u0: 0.3, u1: 0.85, v0: -0.05, v1: -0.025, c: '#bfeaf6', a: 0.45, f: 0.006 }],
     eye: { r: 0.024, iris: ['#b9ccd2', '#4c5c63'] } },
-  ember: { gape: 0.022, gapeDrop: 0.005, thick: 0.42, depth: 0.24, pedU: 0.2, ped: 0.034, peak: 0.6, snout: 0.45, shade: ['#b0522e', '#d9743e', '#e89a6a'], tail: { type: 'fork', h: 0.15, tint: '#d07a4e' }, fin: '#d58a5c',
-    dorsal: { at: 0.61, len: 0.06, h: 0.1, rake: 0.12, taper: 0.4, lead: 0.6, tip: 'point', trail: 0.05, drop: 0.2 }, anal: { at: 0.5, len: 0.25, h: 0.06, rake: 0.05, lead: 0.9, drop: 0.5, trail: 0.01 }, adipose: true, pelvic: { u: 0.6, len: 0.06 },
-    marks: [{ k: 'band', u0: 0.4, u1: 0.95, v0: 0.04, v1: 0.15, c: '#f2c7a6', a: 0.5, f: 0.03 }], eye: { r: 0.03, iris: ['#d8a070', '#5b3020'] } },
+  // Ember tetra (Hyphessobrycon amandae): luminous copper/orange, rounded snout, clear warm fins.
+  // The shape and coloration describe a well-colored adult; adult total length is kept in species.json.
+  ember: { noseCap: 0.022, gape: 0.018, gapeDrop: 0.004, thick: 0.42, sectionExp: 2.05, gillLine: 0.34, shimmer: 0.7, drape: 0.014,
+    depth: 0.245, pedU: 0.2, ped: 0.034, peak: 0.61, snout: 0.6,
+    shade: ['#9e3b22', '#ed722f', '#f2b57b'], tail: { type: 'fork', h: 0.15, tint: '#df7b45', a: 0.72 }, fin: '#dd925f', ray: '#994d30',
+    dorsal: { at: 0.61, len: 0.068, h: 0.11, rake: 0.12, taper: 0.4, lead: 0.6, tip: 'point', trail: 0.05, drop: 0.2, tint: '#e78240', a: 0.82 },
+    anal: { at: 0.5, len: 0.24, h: 0.057, rake: 0.05, lead: 0.9, drop: 0.5, trail: 0.01, tint: '#d4774d', a: 0.7 },
+    adipose: true, pelvic: { u: 0.6, len: 0.06, tint: '#dda06d' }, pec: { s: 0.85, tint: '#e6b184' },
+    marks: [
+      { k: 'blob', u: 0.67, v: 0.006, ru: 0.25, rv: 0.085, c: '#ffc765', a: 0.5 }, // luminous gold through the flank
+      { k: 'band', u0: 0.42, u1: 0.95, v0: 0.068, v1: 0.165, c: '#fce2ae', a: 0.4, f: 0.035 }, // translucent lower body
+      { k: 'blob', u: 0.855, v: 0.047, ru: 0.065, rv: 0.073, c: '#b74824', a: 0.25 }, // flush around gill plate
+      { k: 'band', u0: 0.22, u1: 0.74, v0: -0.105, v1: -0.076, c: '#a34524', a: 0.25, f: 0.014 }, // darkened back line
+    ],
+    eye: { r: 0.031, u: 0.905, dv: -0.02, iris: ['#f2c889', '#60301c'] } },
   rummynose: { gape: 0.022, gapeDrop: 0.005, thick: 0.42, depth: 0.21, pedU: 0.2, ped: 0.028, peak: 0.66, snout: 0.45, shade: ['#8b927f', '#c9cdc2', '#e2e1da'], tail: { type: 'fork', h: 0.14 }, fin: '#c8ccc5',
     dorsal: { at: 0.61, len: 0.06, h: 0.09, rake: 0.12, taper: 0.4, lead: 0.6, tip: 'point', trail: 0.05, drop: 0.2 }, anal: { at: 0.47, len: 0.21, h: 0.045, rake: 0.05, lead: 0.9, drop: 0.5, trail: 0.01 }, adipose: true, pelvic: { u: 0.62, len: 0.05 },
     marks: [{ k: 'blob', u: 0.93, v: -0.01, ru: 0.09, rv: 0.08, c: '#c4303a', a: 0.95 }],
