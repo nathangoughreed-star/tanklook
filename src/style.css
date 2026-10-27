@@ -751,3 +751,11 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .ftCatWhat, .ftNoData { color: var(--muted, #8a93a3); font-size: 11px; margin: 2px 0 } .ftCat ul { margin: 3px 0 2px 16px; padding: 0; font-size: 12px }
 li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unknown { color: #aab3c2 } .ftCat li em { color: var(--muted, #8a93a3) }
 .ftCatAns { font-size: 12px; font-weight: 600; margin: 3px 0 }
+
+/* The Welcome screen (lane C4, 2026-10-27) */
+.welcomedlg .welcomeTile b { font-size: 15px }
+.welcomedlg .welcomeTile span { white-space: normal }
+.welcomeSuggest { margin: 8px 0 4px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px }
+.welcomeSuggest .primary { background: var(--accent); border-color: var(--accent); color: #fff }
+.welcomeSoon { border: 1px dashed var(--line); border-radius: 6px; padding: 8px 10px; color: var(--ink) }
+.welcomeSoon[hidden] { display: none }

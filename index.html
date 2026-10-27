@@ -23,6 +23,7 @@
   </header>
 
   <div class="toolbar">
+    <button id="welcomeBtn" title="Back to the Welcome screen: pick how to start">Welcome</button>
     <button id="newScene" title="Start a new, empty tank">New</button>
     <button id="openScene" title="Open a tank saved in this browser, or a downloaded file">Open…</button>
     <button id="saveScene" title="Save this tank in this browser, with a picture (Open… lists them)">Save</button>
@@ -43,6 +44,14 @@
     <div class="tankbar"><input id="tankQ" type="search" placeholder="Search size, brand or shape (e.g. 75, Petco, bowfront)" aria-label="Search tanks"><label class="chk"><input id="tankTerra" type="checkbox"> Terrariums</label></div>
     <p class="hint">Sizes are outer dimensions as sold. Makers often shave or add an inch to the generic size, so pick the brand you will buy. Prices are typical new US prices and move often.</p>
     <div id="tankList"></div>
+  </dialog>
+  <dialog id="welcomeDlg" class="libdlg startdlg welcomedlg" aria-labelledby="welcomeTitle">
+    <form method="dialog" class="libhead"><h2 id="welcomeTitle">Welcome to TankLook</h2><button value="close" aria-label="Close">✕</button></form>
+    <p class="hint">Plan an aquarium, paludarium or terrarium: tank, ground, plants, animals and light, all to scale. How do you want to start?</p>
+    <div class="startbtns startpaths" id="welcomeTiles"></div>
+    <p class="welcomeSuggest"><button type="button" class="primary" data-w="soon-suggest" id="welcomeSuggest">Suggest a setup</button> <span class="hint">Tell us your budget, space and time; we propose setups.</span></p>
+    <p class="hint welcomeSoon" id="welcomeSoon" role="status" hidden></p>
+    <p class="hint startswap"><button type="button" class="linkbtn" data-browse="new">On sale now and bundles</button> · <button type="button" class="linkbtn" data-browse="open">Starter tanks and saved tanks</button></p>
   </dialog>
   <dialog id="startDlg" class="libdlg startdlg" aria-labelledby="startTitle">
     <form method="dialog" class="libhead"><h2 id="startTitle">TankLook</h2><button value="close" aria-label="Close">✕</button></form>
@@ -81,7 +90,7 @@
       <div id="libList" class="libgrid"></div>
       <div class="btns"><button id="openFile">Open a downloaded file…</button></div>
     </section>
-    <p class="hint startswap"><button type="button" id="startSwap" class="linkbtn"></button></p>
+    <p class="hint startswap"><button type="button" id="startSwap" class="linkbtn"></button> · <button type="button" id="startWelcome" class="linkbtn">Back to Welcome</button></p>
     <p class="hint">Drag (one finger on a phone) to look around, wheel or pinch to zoom; <i>How to use</i> at the top of the panel has the rest.</p>
   </dialog>
   <div id="busy" class="busy" role="status" aria-live="polite" hidden><div class="busybox"><span class="spin" aria-hidden="true"></span><span id="busyText">Opening…</span></div></div>

@@ -7,6 +7,7 @@ import { attachTechMenu } from './techMenu';
 import { SUMP_MODELS, sumpFromModel, tempEvidence } from '../scene/tech';
 import { standMisfit } from '../scene/standspace';
 import { renderFeaturedDeals } from './featuredDeals';
+import { attachWelcome } from './welcome';
 import { startDeals, visibleTabs, pickTab, sortDeals, DEFAULT_SORT, type DealSort, type StartTab, type StartMenu } from './startEntries';
 import { DEALS_AS_OF, DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
 import { LEVELS, onPerf, perf, setAuto, setLevel } from '../render/perf';
@@ -277,7 +278,17 @@ export function attachPanels(store: Store, viewer: Viewer) {
     if (!startDlg.open) startDlg.showModal();
     (isNew ? $('startFresh') : startDlg.querySelector<HTMLElement>('[data-tab][aria-selected="true"]') ?? swap).focus();
   }
-  const showStart = () => showChooser('new', undefined, true);
+  // The Welcome screen (lane C4) is the front door: first launch shows it; New / Open… still open the chooser above.
+  // At first launch the tank on screen is already a fresh one, so Sandbox just closes the Welcome screen.
+  let welcomeFirst = false;
+  const welcome = attachWelcome({
+    stocking: () => $('startAnimal').click(),
+    sandbox: () => welcomeFirst ? (welcomeFirst = false, true) : newEmptyTank(),
+    browse: menu => showChooser(menu, menu === 'open' ? 'starters' : undefined, welcomeFirst),
+  });
+  $('welcomeBtn').onclick = () => { welcomeFirst = false; if (startDlg.open) startDlg.close(); welcome.show(); };
+  $('startWelcome').onclick = () => { startDlg.close(); welcome.show(); };
+  const showStart = () => { welcomeFirst = true; welcome.show(); };
   void import('./stockPlan').then(m => m.attachStockPlan(store, viewer, status, $('startAnimal'))); // lane P5: the stocking screen (path 1) and the fork card; loaded after start-up (it pulls in the tank-fit engine, whose imports must not run before starter.ts's)
   $('libList').onclick = e => {
     const t = e.target as HTMLElement, del = t.closest<HTMLButtonElement>('[data-libdel]'), op = t.closest<HTMLButtonElement>('[data-lib]');
