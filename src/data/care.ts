@@ -26,6 +26,8 @@ export interface AnimalCare extends GroupCare {
    *  (lane IP 2026-10-22). `young`: past `mm` and up to this adult length it still takes the young and small ones, an advisory
    *  (only consider large adults; the plan does not know their size, so it never says they are safe), not "would eat it". */
   prey?: { mm: number; cats?: Category[]; inverts?: 'shrimp'; young?: number };
+  /** predation was researched and the answer is "harmless" (no `prey`); absent with no `prey` = never researched (S242 audit 2026-10-26) */
+  preyChecked?: true;
   /** one of its kind per tank (a bonded pair is fine); `fam` extends that to look-alike rivals (tangs) */
   solo?: true;
   fam?: string;
@@ -54,6 +56,9 @@ export interface AnimalCare extends GroupCare {
   /** marine: 1 may nip corals (add with caution), 2 eats corals (not reef-safe). Invertebrate eaters are `prey` with `cats`. */
   coral?: 1 | 2;
 }
+/** What we know about whether a species eats its tankmates: 'predator' (a `prey` rule), 'harmless' (researched, `preyChecked`), 'unknown'
+ *  (never researched: no data, not a pass). Nothing reads this to change a verdict yet; it lets a screen say "not researched". */
+export const preyKnowledge = (id: string): 'predator' | 'harmless' | 'unknown' => CARE[id]?.prey ? 'predator' : CARE[id]?.preyChecked ? 'harmless' : 'unknown';
 /** The shrimp in the catalogue, for prey.inverts (the catalogue has no shrimp kind; test/invertprey.test.ts keeps this list whole). */
 export const SHRIMP: ReadonlySet<string> = new Set(['cherryshrimp', 'amano', 'cleanershrimp']);
 const A = (care: Expertise, minL: number, temper: 0 | 1 | 2, temp?: [number, number], x: Partial<AnimalCare> = {}): AnimalCare => ({ care, minL, temper, ...(temp ? { temp } : {}), ...x });
