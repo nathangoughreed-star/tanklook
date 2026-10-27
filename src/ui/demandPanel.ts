@@ -14,7 +14,8 @@ import { DEAL_NOTE, NOT_SPONSORED, dealGuesses, savingLine, type Deal } from '..
 import { renderDealMatch } from './dealMatch';
 import { GEAR_SLOT_NAME, gearOffers, gearParts, pinGear, pinnedGear, unpinGear } from '../demand/gearDeals';
 import { GEAR_DEALS, gearPctOff } from '../data/gearDeals';
-import { constraintsFromLimits, effectiveLimits, parseConstraints, rememberLastUsed, type Cap, type Constraints } from '../scene/constraints';
+import { compliance, constraintsFromLimits, effectiveLimits, parseConstraints, rememberLastUsed, type Cap, type Constraints } from '../scene/constraints';
+import { summaryOf } from './stockSummary';
 import { lidAdvice, type LidAdvice } from '../demand/lid';
 
 const KEY = 'tanklook.demand';
@@ -46,7 +47,8 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
   let shown = (() => { try { const v = localStorage.getItem(OPEN_KEY); if (v !== null) return v === '1'; } catch { /* ignore */ } return window.innerWidth > 900; })();
   mount.innerHTML = `<div class="dm"><button type="button" class="dmtog" aria-expanded="true" title="Show or hide what this tank costs and asks of you; it updates as you edit"><span class="dmhead">What this tank asks of you</span><span class="dmsum"></span><span class="dmcaret" aria-hidden="true">▾</span></button>
     <div class="dmbody"><div class="dmmode"></div><div class="dmbars"></div><div class="dmlid" hidden></div><div class="dmdeals" style="font-size:11px;opacity:.85"></div><div class="dmdrill" hidden></div>
-    <details class="dmset"><summary>Guardrails</summary><div class="dmlimits"></div></details>
+    <details class="dmset dmguard"><summary>Guardrails</summary><div class="dmlimits"></div></details>
+    <div class="dmcomp" role="status"></div>
     <details class="dmset"><summary>Your situation</summary><div class="dmsit"></div></details></div></div>`;
   const q = <T extends HTMLElement>(s: string) => mount.querySelector(s) as T;
   const bars = q('.dmbars'), drill = q('.dmdrill'), tog = q('.dmtog'), body = q('.dmbody');
@@ -108,12 +110,30 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
     q('.dmmode').textContent = nA ? `With ${nA} animal${nA > 1 ? 's' : ''}${B ? `; without them: ${usd(B.totals.setupUsd)} to set up, ${usd(B.totals.upkeepUsdMo)} a month` : ''}`
       : nP ? 'Plants only: what it costs to keep this planted tank running. Add animals and watch it climb.' : 'Empty tank: the gear and upkeep before anything lives in it.';
     q('.dmsum').textContent = `${usd(D.totals.setupUsd)} · ${usd(D.totals.upkeepUsdMo)}/mo · ${Math.round(D.totals.minPerWeek)} min/wk · difficulty ${D.totals.risk.toFixed(1)}`;
+    renderCompliance();
     renderLid();
     renderDeals();
     drill.hidden = !open;
     if (open) fillDrill(open);
   }
 
+  /** The compliance line (C2): amber under the Guardrails controls and a small header chip. It never interrupts an edit; welfare (stocking) is separate. */
+  const chip = document.getElementById('guardChip') as HTMLButtonElement | null;
+  function renderCompliance() {
+    const S = store.tank, c = compliance(S, D?.totals, Pe().limits, store.scene.units), el = q('.dmcomp');
+    let welfare = '';
+    try { const w = S.fish.length ? summaryOf(S, store.scene.units) : null; if (w && w.worst === 'problem') welfare = `Welfare: ${w.cats.filter(k => k.level === 'problem').map(k => k.label).join(', ')} has a problem (see the stocking summary). Guardrails do not change that.`; } catch { /* ignore */ }
+    const cls = c.overall === 'within' ? 'ok' : c.overall === 'off' ? 'off' : 'warn';
+    el.className = 'dmcomp ' + cls;
+    el.innerHTML = `<div>${esc(c.line)}</div>` + (c.overall === 'over' && c.unknown ? `<div>${esc(c.results.filter(r => r.state === 'unknown').map(r => r.text).join('; '))} (unknown)</div>` : '')
+      + (c.overall === 'within' && welfare ? `<div>Within your guardrails does not mean the stocking is fine.</div>` : '') + (welfare ? `<div class="dmwelf">${esc(welfare)}</div>` : '');
+    if (chip) {
+      chip.hidden = c.overall === 'off'; chip.className = 'guardchip ' + cls;
+      chip.textContent = c.overall === 'within' ? 'Within guardrails' : c.overall === 'over' ? `${c.over} over` : 'Guardrails: unknown';
+      chip.title = c.line + (welfare ? ' ' + welfare : '') + ' Click to open the Guardrails.';
+    }
+  }
+  chip?.addEventListener('click', () => { setShown(true); (q('.dmguard') as HTMLDetailsElement).open = true; q('.dmguard').scrollIntoView({ block: 'nearest' }); });
   function renderLid() {
     const el = q('.dmlid');
     el.hidden = !lid;

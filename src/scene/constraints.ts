@@ -11,10 +11,12 @@
 //                                    (a saved tank without the field reads the profile, so nothing changes for it)
 //   activeSpace(S)                   layout.space while the space guardrail is on (or unset); undefined when switched off
 //   lastUsed() / rememberLastUsed()  the person's last-used values (localStorage), the defaults for a NEW project
+//   compliance(S, totals, profile)   (C2) per enabled guardrail pass / over / unknown, plus one overall line; see below
 // A switched-off cap is never gated, but its cost / time is still shown (the demand bars read totals, not caps).
 import type { Limits } from '../demand/types';
 import factorsJson from '../data/factors.json';
-import type { SpaceLimit, TankSetup } from './types';
+import type { SpaceLimit, TankSetup, Units } from './types';
+import { spaceFit, tankExtent } from './space';
 
 export interface Cap { on: boolean; value: number }
 export type Effort = 'low' | 'medium' | 'high';
@@ -77,3 +79,51 @@ export function lastUsed(): Constraints | undefined {
 export function rememberLastUsed(c: Constraints | undefined): void {
   try { if (c) localStorage.setItem(KEY, JSON.stringify(c)); } catch { /* ignore */ }
 }
+
+// ---- C2: the compliance line (Nathan 2026-10-27). An enabled guardrail decides whether a COMPLETED build is called compliant; it never
+// blocks building or editing, and husbandry (stockSummary.ts) never reads it. "Within your guardrails" only when every enabled
+// limit passes on KNOWN data; unknown reads unknown, never green; all off = numbers only, no pass / fail. The totals are the
+// engine's calculated expected values (estimates), the caps are the person's own limits.
+export type GuardId = 'startup' | 'monthly' | 'time' | 'space';
+export type GuardState = 'pass' | 'over' | 'unknown';
+export interface GuardResult { id: GuardId; label: string; state: GuardState; /** "45 / 30 min a week"; for unknown, why */ text: string }
+export interface Compliance {
+  /** every enabled guardrail, in a fixed order; empty when all are off */
+  results: GuardResult[];
+  over: number; unknown: number;
+  /** 'off' = no guardrail is on (numbers only, nothing to pass or fail) */
+  overall: 'within' | 'over' | 'unknown' | 'off';
+  line: string;
+}
+export interface CostTotals { setupUsd: number; upkeepUsdMo: number; minPerWeek: number }
+
+/** @param totals the demand engine's expected totals, or undefined when they are not known yet. */
+export function compliance(S: Pick<TankSetup, 'constraints' | 'layout' | 'tank'>, totals: CostTotals | undefined, profile: Limits, units: Units = 'cm'): Compliance {
+  const L = effectiveLimits(S, profile);
+  const usd = (v: number) => '$' + Math.round(v).toLocaleString();
+  const known = (v: number | undefined): v is number => typeof v === 'number' && Number.isFinite(v);
+  const results: GuardResult[] = [];
+  const num = (id: GuardId, label: string, v: number | undefined, capv: number | undefined, fmt: (n: number) => string, unit: string) => {
+    if (capv === undefined) return;
+    if (!known(v)) results.push({ id, label, state: 'unknown', text: `${label}: not known yet (cap ${fmt(capv)}${unit})` });
+    else results.push({ id, label, state: v > capv ? 'over' : 'pass', text: `${fmt(v)} / ${fmt(capv)}${unit}` });
+  };
+  num('startup', 'Set-up cost', totals?.setupUsd, L.setupUsd, usd, '');
+  num('monthly', 'Upkeep', totals?.upkeepUsdMo, L.upkeepUsd ?? upkeepCapOf(L.upkeep), usd, ' a month');
+  num('time', 'Time', totals?.minPerWeek, L.minPerWeek, n => String(Math.round(n)), ' min a week');
+  const sp = S.constraints?.space?.on === true ? S.layout.space : activeSpace(S);
+  if (S.constraints?.space?.on === true && !S.layout.space) results.push({ id: 'space', label: 'Space', state: 'unknown', text: 'Space: no size set yet' });
+  else if (sp) {
+    const f = spaceFit(S.tank, sp), e = tankExtent(S.tank), len = (mm: number) => units === 'in' ? `${Math.round(mm / 25.4 * 10) / 10}"` : `${Math.round(mm / 10)} cm`;
+    results.push({ id: 'space', label: 'Space', state: f.fits ? 'pass' : 'over',
+      text: f.fits ? `fits your ${len(sp.w)} x ${len(sp.d)} space` : `tank ${len(e.w)} x ${len(e.d)} vs your space ${len(sp.w)} x ${len(sp.d)}${sp.h && f.over.h ? `, ${len(f.over.h)} too tall` : ''}` });
+  }
+  const over = results.filter(r => r.state === 'over').length, unknown = results.filter(r => r.state === 'unknown').length;
+  const overall = !results.length ? 'off' : over ? 'over' : unknown ? 'unknown' : 'within';
+  const line = overall === 'off' ? 'No guardrails on: the numbers are shown, nothing is checked against a limit.'
+    : overall === 'within' ? 'Within your guardrails'
+    : overall === 'over' ? `${over} over: ${results.filter(r => r.state === 'over').map(r => `${r.label.toLowerCase()} ${r.text}`).join('; ')}`
+    : `Not known: ${results.filter(r => r.state === 'unknown').map(r => r.text).join('; ')}`;
+  return { results, over, unknown, overall, line };
+}
+const upkeepCapOf = (u: Limits['upkeep']): number | undefined => u === 'free' || u === 'low' ? UPKEEP_USD[u] : undefined;

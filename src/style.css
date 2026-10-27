@@ -759,3 +759,12 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .welcomeSuggest .primary { background: var(--accent); border-color: var(--accent); color: #fff }
 .welcomeSoon { border: 1px dashed var(--line); border-radius: 6px; padding: 8px 10px; color: var(--ink) }
 .welcomeSoon[hidden] { display: none }
+
+/* C2 compliance line + header chip */
+.dmcomp { margin-top: 6px; padding: 5px 8px; border-radius: 6px; font-size: 11.5px; border: 1px solid transparent }
+.dmcomp.warn { color: var(--warn); border-color: var(--warn); background: color-mix(in srgb, var(--warn) 10%, transparent) }
+.dmcomp.ok { border-color: currentColor; opacity: .9 }
+.dmcomp.off { opacity: .7 }
+.dmcomp .dmwelf { margin-top: 3px; color: var(--warn) }
+.guardchip { font-size: 11px; padding: 2px 8px; border-radius: 10px; margin-right: 8px }
+.guardchip.warn { color: var(--warn); border-color: var(--warn) }
