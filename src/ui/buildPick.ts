@@ -24,6 +24,10 @@ const listeners = new Set<(e: BuildPicked) => void>();
 export const onBuildPicked = (fn: (e: BuildPicked) => void) => { listeners.add(fn); return () => { listeners.delete(fn); }; };
 
 /** The build's tank with its animals scattered (a fixed seed per build: the picture does not change from one open to the next). */
+/** Put tank `T` in the active tank's place, key for key: a plain Object.assign leaves the old tank's extra settings behind (a terrarium's front doors
+ *  stayed on the aquarium that came after it in the pictures; Nathan 2026-10-27). */
+export function putTank(A: TankSetup, T: TankSetup): void { for (const k of Object.keys(A)) delete (A as unknown as Record<string, unknown>)[k]; Object.assign(A, T); }
+
 export function placedSetup(b: Build): TankSetup {
   const T = structuredClone(b.setup);
   shuffleFish(T, rng(7 + b.id.length * 31 + T.fish.length), undefined, 100);
@@ -56,7 +60,7 @@ export function attachBuildPick(store: Store, viewer: Viewer, status: (m: string
   /** Show build `i` live in the viewer. */
   const show = (i: number) => {
     const T = placedSetup(builds[i]);
-    store.update(s => { const A = s.tanks[s.active]; Object.assign(A, T); }, { coalesce: 'buildpick' });
+    store.update(s => { putTank(s.tanks[s.active], T); }, { coalesce: 'buildpick' });
   };
   /** One picture per build, taken with the main viewer while the panel is hidden. */
   const shoot = () => {

@@ -31,7 +31,16 @@ export const TAGS: readonly { id: Tag; label: string }[] = [
   { id: 'natural', label: 'Natural' }, { id: 'unusual', label: 'Unusual' }, { id: 'low-maint', label: 'Low maintenance' },
 ];
 export const FAMILY_LABEL: Record<Family, string> = { fish: 'freshwater fish', invert: 'freshwater invertebrates', salt: 'saltwater', terrarium: 'terrarium animals' };
-export interface Archetype { id: string; title: string; family: Family; tags: Tag[]; animals: AnimalCount[]; why: string }
+/** What the person is building (Nathan 2026-10-27): a freshwater or saltwater aquarium; a terrarium (a land enclosure, water off); a vivarium (a mix of water and land: paludarium, riparium). */
+export type Kind = 'freshwater' | 'saltwater' | 'terrarium' | 'vivarium';
+export const KINDS: readonly { id: Kind; label: string; blurb: string }[] = [
+  { id: 'freshwater', label: 'Freshwater aquarium', blurb: 'fish, shrimp, snails' }, { id: 'saltwater', label: 'Saltwater aquarium', blurb: 'marine fish and invertebrates' },
+  { id: 'terrarium', label: 'Terrarium', blurb: 'a land enclosure' }, { id: 'vivarium', label: 'Vivarium', blurb: 'water and land together: paludarium, riparium' },
+];
+/** Inside a terrarium or vivarium: reptiles and amphibians, or arthropods (tarantulas, scorpions, isopods, mantises). */
+export type DryGroup = 'herp' | 'arthropod';
+export const DRY_GROUPS: readonly { id: DryGroup; label: string }[] = [{ id: 'herp', label: 'Reptiles & amphibians' }, { id: 'arthropod', label: 'Arthropods (tarantulas, scorpions, isopods, mantises ...)' }];
+export interface Archetype { id: string; kind: Kind; group?: DryGroup; title: string; family: Family; tags: Tag[]; animals: AnimalCount[]; why: string }
 export const ARCHETYPES = data.archetypes as unknown as Archetype[];
 
 /** Equipment the person already has (lane C8, Nathan 2026-10-27). The model has no owned-gear concept, so this is the minimal version: an owned
@@ -52,6 +61,10 @@ export function ownedSavings(b: Build, owned: readonly OwnedKey[], needStand: bo
 }
 
 export interface Wants {
+  /** the kinds of setup wanted (default all four; at least one) */
+  kinds?: Kind[];
+  /** for a terrarium / vivarium: which animals (default both) */
+  groups?: DryGroup[];
   /** equipment already owned (set-up price $0) */
   owned?: OwnedKey[];
   /** will the person need a stand? default true (today's builds are priced with one); false = no stand cost */
@@ -90,6 +103,8 @@ export interface Suggestions {
   /** closest setups that pass every check except a money / time cap, and what to raise (never presented as fits) */
   misses: Miss[];
   message?: string;
+  /** nothing is offered for what was ticked (not a guardrail result): there are no setups of that kind in the data yet */
+  unavailable?: string;
 }
 
 const money = (b: Build): Money => ({ startupUsd: b.setupUsd, monthlyUsd: b.upkeepUsdMo, minPerWeek: b.minPerWeek });
@@ -111,7 +126,9 @@ export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', no
   const space = C.space?.on === false ? undefined : w.space;
   const proposals: Proposal[] = [], misses: Miss[] = [];
   let anyOn = false;
-  for (const a of ARCHETYPES) {
+  const wantKinds = w.kinds?.length ? w.kinds : KINDS.map(k => k.id), groups = w.groups?.length ? w.groups : DRY_GROUPS.map(g => g.id);
+  const wanted = ARCHETYPES.filter(a => wantKinds.includes(a.kind) && (!a.group || groups.includes(a.group)));
+  for (const a of wanted) {
     if (a.animals.some(x => !getSpecies(x.species))) continue;
     let best: Proposal | undefined, near: Miss | undefined;
     for (const m of tanksFor(a, space, SIZES_PER_ARCHETYPE)) {
@@ -153,7 +170,8 @@ export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', no
   shown.sort(rank);
   const kinds = [...new Set(sorted.map(p => p.archetype.family))];
   const out: Suggestions = { off: !anyOn, proposals: shown, qualified: sorted.map(p => p.archetype.id), kinds, misses: misses.sort((a, b) => relaxSize(a.needs) - relaxSize(b.needs)).slice(0, 3) };
-  if (!shown.length) out.message = NO_SUGGESTION;
+  if (!wanted.length) out.unavailable = 'There are no setups of that kind to suggest yet: the species data has no tarantulas, scorpions, isopods or mantises. Tick another kind, or Reptiles & amphibians.';
+  else if (!shown.length) out.message = NO_SUGGESTION;
   else if (kinds.length < 3 && anyOn) out.note = `Only ${kinds.length === 1 ? 'one kind' : `${kinds.length} kinds`} of setup fit${kinds.length === 1 ? 's' : ''} your guardrails: ${kinds.map(k => FAMILY_LABEL[k]).join(', ')}.`;
   return out;
 }

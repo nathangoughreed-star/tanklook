@@ -800,3 +800,5 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .lkPic { cursor: pointer }
 .lkp.lkSide { left: auto; width: 340px }
 .sgOwned { font-size: 12.5px } .sgOwnList { display: flex; flex-direction: column; gap: 2px; margin: 4px 0 4px 8px }
+.sgKinds { border: 1px solid var(--line); border-radius: 6px; margin: 0; padding: 4px 8px 6px; display: flex; flex-direction: column; gap: 2px; font-size: 12.5px } .sgKinds legend { font-weight: 600; padding: 0 4px }
+.sgSub { margin: 2px 0 2px 18px; display: flex; flex-direction: column; gap: 2px }

@@ -123,4 +123,40 @@ describe('Suggest a setup', () => {
       expect(on.totals.startupUsd).toBeGreaterThan(own.totals.startupUsd);
     });
   });
+
+  describe('kinds of setup, and no terrarium doors on an aquarium (Nathan 2026-10-27)', () => {
+    const NOWT = Date.parse('2026-10-27');
+    it('every archetype x size: aquariums never get front doors (a terrarium does)', () => {
+      let seen = 0;
+      for (const a of ARCHETYPES) for (const t of tankOptions(a.animals).filter(x => !x.fails.length).slice(0, 4)) for (const b of buildsFor(a.animals, t.tank, NOWT)) {
+        seen++;
+        if (a.kind === 'freshwater' || a.kind === 'saltwater') expect(b.setup.doors, `${a.id} ${t.tank.name}`).toBeUndefined();
+        else if (a.kind === 'terrarium') expect(b.setup.doors).toBeTruthy();
+      }
+      expect(seen).toBeGreaterThan(20);
+    });
+    it('placing a terrarium and then an aquarium in the same tank leaves no doors (putTank replaces, never merges)', async () => {
+      const { putTank } = await import('../src/ui/buildPick');
+      const terr = buildsFor(ARCHETYPES.find(a => a.id === 'leopard-gecko')!.animals, tankOptions(ARCHETYPES.find(a => a.id === 'leopard-gecko')!.animals).find(x => !x.fails.length)!.tank, NOWT)[0].setup;
+      const aq = buildsFor(ARCHETYPES.find(a => a.id === 'clown-nano')!.animals, tankOptions(ARCHETYPES.find(a => a.id === 'clown-nano')!.animals).find(x => !x.fails.length)!.tank, NOWT)[0].setup;
+      const slot = structuredClone(terr); expect(slot.doors).toBeTruthy();
+      putTank(slot, structuredClone(aq));
+      expect(slot.doors).toBeUndefined();
+    });
+    it('kinds: only archetypes of the ticked kinds are proposed; saltwater alone is the clownfish', () => {
+      expect(run({}, { kinds: ['saltwater'] }).proposals.map(p => p.archetype.kind)).toEqual(['saltwater']);
+      expect(run({}, { kinds: ['freshwater'] }).proposals.every(p => p.archetype.kind === 'freshwater')).toBe(true);
+      const dry = run({}, { kinds: ['terrarium', 'vivarium'] }).proposals;
+      expect(dry.length).toBeGreaterThan(0); expect(dry.every(p => p.archetype.kind === 'terrarium' || p.archetype.kind === 'vivarium')).toBe(true);
+    });
+    it('vivarium: a water-and-land mix (dart frogs on land, snails in the pool)', () => {
+      const v = run({}, { kinds: ['vivarium'] }).proposals;
+      expect(v.map(p => p.archetype.id)).toEqual(['dart-paludarium']);
+      expect(v[0].scene.water.on).toBe(true);
+    });
+    it('arthropods only: nothing to offer yet, said plainly and not as a guardrail result', () => {
+      const r = run({}, { kinds: ['terrarium'], groups: ['arthropod'] });
+      expect(r.proposals).toEqual([]); expect(r.unavailable).toMatch(/no setups of that kind/); expect(r.message).toBeUndefined();
+    });
+  });
 });

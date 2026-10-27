@@ -7,7 +7,7 @@ import { getSpecies } from '../data/species';
 import { demandOf } from '../demand/engine';
 import { pinDeal } from '../demand/pinned';
 import { rhythmOf } from '../demand/rhythm';
-import { suggestSetups, OWNED, TAGS, type OwnedKey, FAMILY_LABEL, type Proposal, type Suggestions, type Tag } from '../demand/suggest';
+import { suggestSetups, DRY_GROUPS, KINDS, OWNED, type DryGroup, type Kind, TAGS, type OwnedKey, FAMILY_LABEL, type Proposal, type Suggestions, type Tag } from '../demand/suggest';
 import { CYCLE_NOTE } from '../scene/plan';
 import { compliance, lastUsed, rememberLastUsed, type Constraints } from '../scene/constraints';
 import type { Store } from '../scene/store';
@@ -15,17 +15,17 @@ import { tankLabel } from '../scene/tankfit';
 import type { Viewer } from '../render/viewer';
 import type { SpaceLimit, Units } from '../scene/types';
 import { loadProfile } from './demandPanel';
-import { placedSetup, sceneForBuild } from './buildPick';
+import { placedSetup, putTank, sceneForBuild } from './buildPick';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
 const MM_IN = 25.4;
 
 /** The guardrails card's fields as the panel holds them (empty = that guardrail has no value yet, so it is off). */
-export interface Fields { startup: string; monthly: string; time: string; spaceOn: boolean; w: string; d: string; needStand: boolean; owned: OwnedKey[] }
+export interface Fields { startup: string; monthly: string; time: string; spaceOn: boolean; w: string; d: string; needStand: boolean; owned: OwnedKey[]; kinds: Kind[]; groups: DryGroup[] }
 const num = (s: string) => { const v = parseFloat(s); return Number.isFinite(v) && v >= 0 ? v : undefined; };
 /** Fields -> the constraints and space the generator checks. A box with no number is off; the space box needs both sizes. */
-export function wantsFrom(f: Fields, units: Units): { constraints: Constraints; space?: SpaceLimit; spaceMissing: boolean; needStand: boolean; owned: OwnedKey[] } {
+export function wantsFrom(f: Fields, units: Units): { constraints: Constraints; space?: SpaceLimit; spaceMissing: boolean; needStand: boolean; owned: OwnedKey[]; kinds: Kind[]; groups: DryGroup[] } {
   const c: Constraints = {}, s = num(f.startup), m = num(f.monthly), t = num(f.time);
   if (s !== undefined) c.startupUsd = { on: true, value: s };
   if (m !== undefined) c.monthlyUsd = { on: true, value: m };
@@ -33,7 +33,7 @@ export function wantsFrom(f: Fields, units: Units): { constraints: Constraints; 
   const k = units === 'in' ? MM_IN : 10, w = num(f.w), d = num(f.d);
   let space: SpaceLimit | undefined;
   if (f.spaceOn) { c.space = { on: true }; if (w !== undefined && d !== undefined && w > 0 && d > 0) space = { w: Math.round(w * k), d: Math.round(d * k) }; }
-  return { constraints: c, ...(space ? { space } : {}), spaceMissing: f.spaceOn && !space, needStand: f.needStand, owned: f.owned };
+  return { constraints: c, ...(space ? { space } : {}), spaceMissing: f.spaceOn && !space, needStand: f.needStand, owned: f.owned, kinds: f.kinds, groups: f.groups };
 }
 
 export function attachSuggest(store: Store, viewer: Viewer, status: (m: string, bad?: boolean) => void) {
@@ -46,7 +46,7 @@ export function attachSuggest(store: Store, viewer: Viewer, status: (m: string, 
     if (hide && app && !app.classList.contains('collapsed')) { app.classList.add('collapsed'); stepped = true; viewer.invalidate(); }
     else if (!hide && stepped && app) { app.classList.remove('collapsed'); stepped = false; viewer.invalidate(); }
   };
-  let f: Fields = { startup: '', monthly: '', time: '', spaceOn: false, w: '', d: '', needStand: true, owned: [] };
+  let f: Fields = { startup: '', monthly: '', time: '', spaceOn: false, w: '', d: '', needStand: true, owned: [], kinds: KINDS.map(k => k.id), groups: DRY_GROUPS.map(g => g.id) };
   let tags = new Set<Tag>(), res: Suggestions | undefined, pics: string[] = [], note = '';
   const units = () => store.scene.units ?? 'in';
 
@@ -54,13 +54,14 @@ export function attachSuggest(store: Store, viewer: Viewer, status: (m: string, 
   const seed = () => {
     const c = store.tank.constraints ?? lastUsed(), sp = store.tank.layout.space, k = units() === 'in' ? MM_IN : 10;
     const v = (x?: { on: boolean; value: number }) => x && x.on ? String(x.value) : '';
-    f = { startup: v(c?.startupUsd), monthly: v(c?.monthlyUsd), time: v(c?.minutesPerWeek), spaceOn: !!(c?.space?.on && sp), w: sp ? String(Math.round(sp.w / k * 10) / 10) : '', d: sp ? String(Math.round(sp.d / k * 10) / 10) : '', needStand: f.needStand, owned: f.owned };
+    f = { startup: v(c?.startupUsd), monthly: v(c?.monthlyUsd), time: v(c?.minutesPerWeek), spaceOn: !!(c?.space?.on && sp), w: sp ? String(Math.round(sp.w / k * 10) / 10) : '', d: sp ? String(Math.round(sp.d / k * 10) / 10) : '', needStand: f.needStand, owned: f.owned, kinds: f.kinds, groups: f.groups };
     tags = new Set(); res = undefined; pics = []; note = '';
   };
   const readFields = () => {
     const g = (id: string) => el.querySelector<HTMLInputElement>(`#sg${id}`);
     f = { startup: g('Startup')?.value ?? '', monthly: g('Monthly')?.value ?? '', time: g('Time')?.value ?? '', spaceOn: !!g('SpaceOn')?.checked, w: g('W')?.value ?? '', d: g('D')?.value ?? '', needStand: g('NeedStand')?.checked ?? true,
-      owned: [...el.querySelectorAll<HTMLInputElement>('.sgOwn:checked')].map(x => x.value as OwnedKey) };
+      owned: [...el.querySelectorAll<HTMLInputElement>('.sgOwn:checked')].map(x => x.value as OwnedKey),
+      kinds: [...el.querySelectorAll<HTMLInputElement>('.sgKind:checked')].map(x => x.value as Kind), groups: [...el.querySelectorAll<HTMLInputElement>('.sgGroup:checked')].map(x => x.value as DryGroup) };
   };
 
   const close = () => { el.hidden = true; side(false); };
@@ -89,12 +90,15 @@ ${p.unknown.length ? `<div class="spNote">Not enough information: ${esc(p.unknow
     if (res) {
       if (res.proposals.length) out = `<p class="spNote">${esc(res.off ? 'No guardrail is on, so these are ranked by what you picked below, not checked against a limit.' : 'Each one passes every guardrail you switched on and the animals\' care checks. Prices are expected costs; minutes are estimates.')}</p>
 ${res.note ? `<p class="spWarn sgNote">${esc(res.note)}</p>` : ''}<ul class="bpCards">${res.proposals.map(card).join('')}</ul>`;
-      else out = `<p class="spWarn" id="sgNone">${esc(res.message ?? '')}</p>`;
-      if (res.misses.length) out += `<div class="sgMiss"><b>Closest, if you raise a limit</b> (these do not fit your guardrails as set)<ul>${res.misses.map(m => `<li>${esc(m.archetype.title)}: ${esc(m.text)}</li>`).join('')}</ul></div>`;
+      else out = `<p class="spWarn" id="sgNone">${esc(res.message ?? res.unavailable ?? '')}</p>`;
+      if (res.misses.length && !res.unavailable) out += `<div class="sgMiss"><b>Closest, if you raise a limit</b> (these do not fit your guardrails as set)<ul>${res.misses.map(m => `<li>${esc(m.archetype.title)}: ${esc(m.text)}</li>`).join('')}</ul></div>`;
     }
     el.innerHTML = `<div class="spHead"><h2>Suggest a setup</h2><button type="button" data-act="close" aria-label="Close">✕</button></div>
 <p class="spNote">Tick the limits that matter to you and we propose setups that fit them, each checked against all of them and against what the animals need. Leave a box empty to keep that limit off.</p>
 <div class="sgCard">
+<fieldset class="sgKinds"><legend>What kind of setup?</legend>${KINDS.map(k => `<label><input class="sgKind" type="checkbox" value="${k.id}" ${f.kinds.includes(k.id) ? 'checked' : ''}> ${k.label} <span class="spNote">${k.blurb}</span></label>`).join('')}
+${f.kinds.some(k => k === 'terrarium' || k === 'vivarium') ? `<div class="sgSub" role="group" aria-label="Terrarium and vivarium animals">${DRY_GROUPS.map(g => `<label><input class="sgGroup" type="checkbox" value="${g.id}" ${f.groups.includes(g.id) ? 'checked' : ''}> ${g.label}</label>`).join('')}</div>` : ''}
+${f.kinds.length ? '' : '<div class="spWarn">Tick at least one kind.</div>'}</fieldset>
 <label class="sgRow"><span>Set-up budget ($)</span><input id="sgStartup" type="number" min="0" step="10" inputmode="decimal" value="${esc(f.startup)}" placeholder="no limit"></label>
 <label class="sgRow"><span>Monthly budget ($ a month)</span><input id="sgMonthly" type="number" min="0" step="1" inputmode="decimal" value="${esc(f.monthly)}" placeholder="no limit"></label>
 <label class="sgRow"><span>Care time (min a week)</span><input id="sgTime" type="number" min="0" step="5" inputmode="decimal" value="${esc(f.time)}" placeholder="no limit"></label>
@@ -110,7 +114,7 @@ ${res.note ? `<p class="spWarn sgNote">${esc(res.note)}</p>` : ''}<ul class="bpC
   /** One picture per proposal: show it in the main viewer, take the picture, then roll the editor back to the tank the person had. */
   const shoot = (list: Proposal[]) => {
     const was = el.hidden, m = store.mark; el.hidden = true;
-    pics = list.map(p => { store.update(s => { Object.assign(s.tanks[s.active], placedSetup(p.build)); }, { coalesce: 'suggest' }); return viewer.thumbnail(720); });
+    pics = list.map(p => { store.update(s => { putTank(s.tanks[s.active], placedSetup(p.build)); }, { coalesce: 'suggest' }); return viewer.thumbnail(720); });
     store.rollback(m); el.hidden = was;
   };
 
@@ -118,8 +122,9 @@ ${res.note ? `<p class="spWarn sgNote">${esc(res.note)}</p>` : ''}<ul class="bpC
     readFields();
     const w = wantsFrom(f, units());
     note = '';
+    if (!w.kinds.length) { note = 'Tick at least one kind of setup.'; res = undefined; draw(); return; }
     if (w.spaceMissing) { note = 'Enter the width and depth of your space, or untick Space.'; res = undefined; draw(); return; }
-    res = suggestSetups({ needStand: w.needStand, owned: w.owned, constraints: w.constraints, ...(w.space ? { space: w.space } : {}), tags: [...tags] }, loadProfile(), units());
+    res = suggestSetups({ kinds: w.kinds, groups: w.groups, needStand: w.needStand, owned: w.owned, constraints: w.constraints, ...(w.space ? { space: w.space } : {}), tags: [...tags] }, loadProfile(), units());
     pics = [];
     if (res.proposals.length) shoot(res.proposals);
     draw();
@@ -144,7 +149,7 @@ ${res.note ? `<p class="spWarn sgNote">${esc(res.note)}</p>` : ''}<ul class="bpC
     if (t.dataset.tag) { readFields(); const id = t.dataset.tag as Tag; tags.has(id) ? tags.delete(id) : tags.add(id); draw(); return; }
     switch (t.dataset.act) { case 'close': close(); break; case 'go': go(); break; case 'pick': pick(+(t.dataset.i ?? -1)); break; }
   };
-  el.onchange = e => { if ((e.target as HTMLElement).id === 'sgNeedStand') { readFields(); draw(); } };
+  el.onchange = e => { if ((e.target as HTMLElement).id === 'sgNeedStand' || (e.target as HTMLElement).classList.contains('sgKind')) { readFields(); draw(); } };
   el.onkeydown = e => { if (e.key === 'Enter' && (e.target as HTMLElement).tagName === 'INPUT') go(); };
 
   const open = () => { seed(); side(true); el.hidden = false; draw(); el.querySelector<HTMLInputElement>('#sgStartup')?.focus(); };
