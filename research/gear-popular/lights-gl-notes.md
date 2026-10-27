@@ -46,3 +46,10 @@ Read from product pages (price, ratings, bought/month, listing size; package siz
 ASINs found: NICREW ClassicLED Marine 48 W B08Q378RBY ($89.99, 48-60 in tanks); 36 W B0899BVX9Q already in.
 Pane hidden -> browser scripts time out; keep the Browser pane visible while GL runs. Still to read: VIPARSPECTRA, Pawfly 48 W,
 95 W / 140 W generics, AI Prime 16 HD, Kessil A80, 12 freshwater rows. Nothing added to gear-catalog.json yet.
+
+## RESULT 2026-10-27: 15 rows added (lights 18 -> 33)
+Reef (10): NICREW HyperReef 100/150/200 Gen 2, NavaReef 65/135, ClassicLED Marine 48 W, VIPARSPECTRA V165, Pawfly 48 W, SMATFARM 95 W and 140 W.
+Freshwater (5): Pawfly 5 W 8 in sub, Pawfly 6 W clip, MQ 8 in sub, Novique 8 W clip, hygger 8 W sub.
+NEEDS SPEC (not entered; watts or size unread): AquaIllumination Prime 16 HD (not on Amazon search), Kessil A80 (watts not on page; coverage 14-24 in),
+SMATFARM 60 W (page timed out), NEOAQLUX 24/7 (two), AQQA 24/7 (18-24 in and clip), SEAOURA 11 in and 27 in, COVOART 15 in, AQUANEAT 7.5 in (no watts: skipped),
+hygger multi-channel clip. No reef product publishes PAR at a stated depth (Pawfly 48 W's "PAR 128" has no depth): `par` left unset.
