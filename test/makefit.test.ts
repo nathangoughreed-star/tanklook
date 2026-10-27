@@ -7,6 +7,8 @@ import { compliance, type Constraints } from '../src/scene/constraints';
 import { SCENES } from '../src/examples/scenes';
 import { parseScene } from '../src/scene/validate';
 import { summaryOf } from '../src/ui/stockSummary';
+import { Store } from '../src/scene/store';
+import { defaultScene } from '../src/scene/defaults';
 import type { TankSetup } from '../src/scene/types';
 
 const base = (): TankSetup => { const sc = parseScene(JSON.parse(SCENES[Object.keys(SCENES).find(k => { const t = parseScene(JSON.parse(SCENES[k])).scene; return t.tanks[t.active].water.on; })!])).scene; return sc.tanks[sc.active]; };
@@ -105,5 +107,19 @@ describe('Find solutions (lane C3)', () => {
     const r = findSolutions(S, P, { previous: stock([['neon', 8]], S.constraints) });
     for (const o of [...r.compliant, ...r.needsRelaxing]) expect(LEVERS).toContain(o.lever);
     expect(JSON.stringify([...r.compliant, ...r.needsRelaxing].map(o => o.title))).not.toMatch(/filter/i);
+  });
+
+  it('the undo lever needs a real edit: none right after opening a scene, and never the tank from before the open', () => {
+    const st = new Store(defaultScene());
+    expect(st.previousTank).toBeUndefined();
+    st.edit(t => { t.layout = { ...t.layout, space: { w: 1000, d: 500 } }; });
+    expect(st.previousTank).toBeDefined();
+    st.replace(defaultScene());                         // open a file / shared link: the undo step is the OLD tank
+    expect(st.canUndo).toBe(true);
+    expect(st.previousTank).toBeUndefined();
+    st.edit(t => { t.layout = { ...t.layout, space: { w: 900, d: 400 } }; });
+    expect(st.previousTank?.layout.space).toBeUndefined();   // the opened scene as it was, not the earlier tank
+    st.undo();
+    expect(st.previousTank).toBeUndefined();
   });
 });

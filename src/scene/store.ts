@@ -257,11 +257,14 @@ export class Store {
 
   private pushUndo() {
     this.undoStack.push(JSON.stringify(this.scene));
-    if (this.undoStack.length > MAX_HISTORY) this.undoStack.shift();
+    if (this.undoStack.length > MAX_HISTORY) { this.undoStack.shift(); this.loadDepth = Math.max(0, this.loadDepth - 1); }
     this.redoStack = [];
   }
-  /** The active tank as it was one undo step ago (for Find solutions' undo lever); undefined with no history. */
+  /** Undo depth right after the last whole-scene replace (open, new, shared link): history at or below it is another tank, not an edit. */
+  private loadDepth = 0;
+  /** The active tank as it was one undo step ago (for Find solutions' undo lever); undefined until a real edit has been made since the scene was opened. */
   get previousTank(): TankSetup | undefined {
+    if (this.undoStack.length <= this.loadDepth) return undefined;
     const snap = this.undoStack[this.undoStack.length - 1];
     try { return snap ? (JSON.parse(snap) as Scene).tanks[this.scene.active] : undefined; } catch { return undefined; }
   }
@@ -314,6 +317,7 @@ export class Store {
   /** Replace the whole scene (open file, new). Undoable. */
   replace(scene: Scene) {
     this.pushUndo(); this.seal();
+    this.loadDepth = this.undoStack.length;
     this.scene = scene;
     this.editOn = [0, 1].map(k => k === scene.active);
     this.selId = null; this.selItem = null; this.extraFish = []; this.extraItems = []; this.selPatches = [];
