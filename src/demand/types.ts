@@ -51,6 +51,8 @@ export interface Contribution {
   /** kWh per month; priced at the user's rate */
   kwhMo?: number;
   minutes?: Range3;
+  /** days between sessions of this task (1 = daily, 7 = weekly); `minutes` stays the weekly mean, so one session is about minutes x everyDays / 7 */
+  everyDays?: number;
   /** risk points after skill scaling */
   risk: number;
   domain?: Domain;

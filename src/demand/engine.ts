@@ -184,7 +184,7 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
     const hungry = wet ? grazerShort(sp.id, nOf(sp.id), litres) : null; // more grazers than the algae feeds (data/grazers.ts)
     if (hungry) { const w = `${sp.name}: ${hungry}`; if (!warnings.includes(w)) { warnings.push(w); raw += DEFAULTS.risk.animalWarnPts.group; } }
     add(`animal:${sp.id}`, sp.name, 'animal', {
-      setup: price(scale3(rowPrice(`animal:${sp.id}`) ?? pick(u.setup), Math.pow(tl / (rowPrice(`animal:${sp.id}`) ? sp.tl : u.refMm), 1.2))), upkeep: scale3(food ? pick(food) : pick(u.upkeep), (food ? 1 : Math.pow(tl / u.refMm, 0.8)) * sMul.upkeep), minutes: r3(u.mins * sMul.minutes),
+      setup: price(scale3(rowPrice(`animal:${sp.id}`) ?? pick(u.setup), Math.pow(tl / (rowPrice(`animal:${sp.id}`) ? sp.tl : u.refMm), 1.2))), upkeep: scale3(food ? pick(food) : pick(u.upkeep), (food ? 1 : Math.pow(tl / u.refMm, 0.8)) * sMul.upkeep), minutes: r3(u.mins * sMul.minutes), everyDays: (DEFAULTS.reptileCadence as Record<string, { everyDays?: number }>)[sp.id]?.everyDays,
       livestock: true, domain: adom, risk: raw * skillMul(P, adom),
     });
   }
@@ -205,13 +205,14 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
     if (rowPrice('gear:test-kit')) add('testkit', 'Water test kit', 'gear', { setup: price(rowPrice('gear:test-kit')!) });
     add('waterchange', `Water changes (${Math.round(frac * 100)} % a week${hose ? ', by hose' : ''})`, 'work', { upkeep: scale3(per, galWk * 4.33), minutes: add3(scale3(pick(hose ? T.waterChangeHosePerGalMin : T.waterChangePerGalMin), galWk * sMul.minutes), scale3(pick(hose ? T.waterChangeHoseFixedMin : T.waterChangeFixedMin), sMul.minutes)) });
     // feeding trips (an automatic feeder leaves only the refill) and wiping the glass (algae follows the light; live plants take nutrients, artificial ones need a wipe)
-    add('feeding', techOf(S).rows.feeder === 'auto' ? 'Feeding (automatic feeder: refills)' : 'Feeding trips', 'work', { minutes: pick(techOf(S).rows.feeder === 'auto' ? T.feederRefillMinPerWeek : T.feedingTripMinPerWeek) });
+    add('feeding', techOf(S).rows.feeder === 'auto' ? 'Feeding (automatic feeder: refills)' : 'Feeding trips', 'work', { minutes: pick(techOf(S).rows.feeder === 'auto' ? T.feederRefillMinPerWeek : T.feedingTripMinPerWeek), everyDays: techOf(S).rows.feeder === 'auto' ? 14 : 1 });
     const g = T.glass, wpg = Math.min(g.wpgCap, wattsOf(S) / Math.max(gal, 1)), live = S.items.filter(i => i.kind === 'plant').length + (S.patches ?? []).filter(isLivePlantPatch).length * PATCH_PLANTS;
     const fake = S.items.filter(i => i.kind === 'artificial').length, cover = Math.min(1, live / Math.max(gal / 10, 1));
     const glassMid = (g.baseMin + g.minPerHalfWpg * wpg / 0.5) * (1 - g.liveCut * cover) + Math.min(g.artificialCapMin, g.artificialEachMin * fake);
     add('glass', 'Wiping the glass and algae', 'work', { minutes: { lo: glassMid * 0.6, mode: glassMid, hi: glassMid * 1.6 } });
-    add('testing', 'Testing the water', 'work', { minutes: scale3(pick(T.testingMin), sMul.minutes) });
-    if (!bare) add('filterclean', 'Cleaning the filter', 'work', { minutes: pick(T.filterCleanMinPerWeek) });
+    const tt = T.testing, testDays = salt ? tt.salt.everyDays : animals.some(a => a.sp.id === 'goldfish') ? tt.goldfish.everyDays : tt.fresh.everyDays; // sourced intervals per tank type (research/maintenance/cadence.json)
+    add('testing', 'Testing the water', 'work', { minutes: scale3(pick(tt.minPerSession), 7 / testDays), everyDays: testDays });
+    if (!bare) add('filterclean', 'Cleaning the filter', 'work', { minutes: pick(T.filterCleanMinPerWeek), everyDays: 14 });
     if (salt) add('saltwork', 'Mixing salt water, top-off, dosing', 'work', { minutes: pick(T.saltExtraMin) });
   }
   add('yearly', 'Yearly jobs (deep clean, replacing gear)', 'work', { minutes: pick(T.yearlyJobsMinPerWeek) });

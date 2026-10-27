@@ -347,6 +347,96 @@
    }
   }
  },
+ "reptileCadence": {
+  "_note": "Feeding cadence per reptile species (lane C6 follow-up, 2026-10-27). everyDays is the interval between feedings and is sourced (research/maintenance/cadence.json); minutes are NOT sourced anywhere, so the weekly mean stays the animals.reptile.mins value (2 min/wk, unchanged) and the minutes per feeding session are derived: mins x everyDays / 7. Species with no row (none today) fall back to daily.",
+  "leopardgecko": {
+   "everyDays": 2,
+   "status": "sourced",
+   "item": "leopard-gecko-feed",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/leopard-gecko-care-guide",
+     "quote": "Adults typically eat every other day.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  "ballpython": {
+   "everyDays": 12,
+   "status": "sourced",
+   "basis": "midpoint of 'every 10 to 14 days' (adults)",
+   "item": "ball-python-feed",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+     "quote": "Reduce to every 10 to 14 days for adults",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  "crestedgecko": {
+   "everyDays": 3.5,
+   "status": "sourced",
+   "basis": "1 to 2 feedings a week = every 3.5 days",
+   "item": "crested-feed",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/crested-gecko-care-guide",
+     "quote": "Feed 1 to 2 times per week",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  "crestedharlequin": {
+   "everyDays": 3.5,
+   "status": "sourced",
+   "basis": "same species group as crested gecko",
+   "item": "crested-feed",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/crested-gecko-care-guide",
+     "quote": "Feed 1 to 2 times per week",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  "greenanole": {
+   "everyDays": 1,
+   "status": "sourced",
+   "item": "anole-feed",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/anole-care-guide",
+     "quote": "Daily feeding: Offer 2 to 5 appropriately sized gut-loaded crickets or dubia roaches",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  "greenanolebrown": {
+   "everyDays": 1,
+   "status": "sourced",
+   "item": "anole-feed",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/anole-care-guide",
+     "quote": "Daily feeding: Offer 2 to 5 appropriately sized gut-loaded crickets or dubia roaches",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  "brownanole": {
+   "everyDays": 1,
+   "status": "sourced",
+   "item": "anole-feed",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/anole-care-guide",
+     "quote": "Daily feeding: Offer 2 to 5 appropriately sized gut-loaded crickets or dubia roaches",
+     "accessed": "2026-10-27"
+    }
+   ]
+  }
+ },
  "time": {
   "_note": "minutes per week, averaged over the year. waterChange = fixed + perGal x gallons changed; the fraction changed comes from the nitrogen budget (scene/nitrogen.ts waterChangePct), floored and capped here. Lane MW 2026-10-21: intervals cited in research/sourcing/minutes-*.json, every minutes figure is our assumption.",
   "waterChangeFraction": {
@@ -365,12 +455,45 @@
    "mode": 0.5,
    "hi": 0.9
   },
-  "testingMin": {
-   "lo": 1.5,
-   "mode": 3,
-   "hi": 6,
-   "note": "every 2-4 weeks once established (FishyHub), about 6 minutes a run: averaged to a week"
+  "testing": {
+  "_note": "Water-test interval per tank type (lane C6 follow-up, 2026-10-27). Weekly mean = minPerSession x 7 / everyDays. Session minutes are an ASSUMPTION (6 min, the old testingMin 3/wk x 2 weeks); intervals are sourced. The salt minutes multiplier (factors.saltMultiplier.minutes) no longer applies to testing: the weekly interval is what made salt heavier.",
+  "minPerSession": {
+   "lo": 3,
+   "mode": 6,
+   "hi": 12
   },
+  "fresh": {
+   "everyDays": 14,
+   "status": "model",
+   "basis": "FishyHub: every 2-4 weeks once established (existing model value, kept for general freshwater)"
+  },
+  "goldfish": {
+   "everyDays": 10.5,
+   "status": "sourced",
+   "basis": "midpoint of 'every 1-2 weeks' once established (after 6 weeks of testing every 2-3 days)",
+   "item": "goldfish_test",
+   "sources": [
+    {
+     "url": "https://kb.rspca.org.au/knowledge-base/how-should-i-care-for-my-goldfish/",
+     "quote": "test the water every two to three days for ammonia and nitrite for the first six weeks.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  "salt": {
+   "everyDays": 7,
+   "status": "sourced",
+   "basis": "weekly full test (BRS); Reefbuilders says weekly to biweekly",
+   "item": "salt_testing",
+   "sources": [
+    {
+     "url": "https://www.bulkreefsupply.com/content/post/weekly-saltwater-aquarium-maintenance-checklist",
+     "quote": "Start the week with a full set of water tests.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  }
+ },
   "filterCleanMinPerWeek": {
    "lo": 1,
    "mode": 2,
