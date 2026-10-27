@@ -32,6 +32,7 @@ const BARS: { bar: Bar; title: string; tip: string }[] = [
 const usd = (v: number) => '$' + Math.round(v).toLocaleString();
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
+export { load as loadProfile };
 function load(): UserProfile {
   const d = defaultProfile();
   try { const j = JSON.parse(localStorage.getItem(KEY) ?? 'null') as Partial<UserProfile> | null; if (j) { const { budgetMode: _old, ...limits } = (j.limits ?? {}) as Partial<UserProfile['limits']> & { budgetMode?: string }; return { ...d, ...j, skill: { ...d.skill, ...j.skill }, limits }; } } catch { /* ignore */ } // an old save's budgetMode is dropped, the number kept

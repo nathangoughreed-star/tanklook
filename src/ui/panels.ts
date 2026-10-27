@@ -281,11 +281,15 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // The Welcome screen (lane C4) is the front door: first launch shows it; New / Open… still open the chooser above.
   // At first launch the tank on screen is already a fresh one, so Sandbox just closes the Welcome screen.
   let welcomeFirst = false;
+  let suggestPanel: { open(): void } | undefined;
   const welcome = attachWelcome({
     stocking: () => $('startAnimal').click(),
+    suggest: () => suggestPanel?.open(),
     sandbox: () => welcomeFirst ? (welcomeFirst = false, true) : newEmptyTank(),
     browse: menu => showChooser(menu, menu === 'open' ? 'starters' : undefined, welcomeFirst),
   });
+  void import('./suggest').then(m => { suggestPanel = m.attachSuggest(store, viewer, status); }); // lane C8: Suggest a setup
+  $('suggestBtn').onclick = () => { if (startDlg.open) startDlg.close(); suggestPanel?.open(); };
   $('welcomeBtn').onclick = () => { welcomeFirst = false; if (startDlg.open) startDlg.close(); welcome.show(); };
   $('startWelcome').onclick = () => { startDlg.close(); welcome.show(); };
   const showStart = () => { welcomeFirst = true; welcome.show(); };
