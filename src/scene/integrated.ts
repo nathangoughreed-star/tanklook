@@ -22,10 +22,11 @@ import type { IntegratedKit, LightSettings, Tank, TankProduct, TankSetup } from 
 
 /** What the product supplies and so cannot be changed without releasing it: the kit's gear (the heater is the user's unless the kit
  *  ships one), and the rim of a tank only sold rimless. */
-export interface Locks { light: boolean; lid: boolean; filter: boolean; heater: boolean; rim: boolean }
+export interface Locks { light: boolean; lid: boolean; filter: boolean; heater: boolean; rim: boolean;
+  /** a ready-made tank is sold without front doors, so they are held off (Nathan 2026-10-27: an Imagitarium's doors are greyed out) */ doors: boolean }
 /** What a change can break: something locked, or the size and shape the product is sold at. */
 export type Held = keyof Locks | 'size';
-type Gated = Pick<TankSetup, 'integrated' | 'product'>;
+type Gated = Pick<TankSetup, 'integrated' | 'product' | 'doors'>;
 
 /** The library pick the tank is: its size and, for a maker's product, the variant (none for a catalogue size). */
 export function productOf(S: Pick<TankSetup, 'product'>): { m: TankModel; v?: TankVariant } | undefined {
@@ -50,7 +51,7 @@ export function locksOf(S: Gated): Locks | undefined {
   const k = S.integrated && kitById(S.integrated.kit), pv = productOf(S);
   const rim = !!pv; // a ready-made tank keeps the rim it is sold with, either way
   if (!k && !rim) return undefined;
-  return { light: !!k && k.lightIncluded !== false, lid: !!k || !!shippedLid(S), filter: !!k?.filter, heater: !!k?.heater?.watts, rim };
+  return { light: !!k && k.lightIncluded !== false, lid: !!k || !!shippedLid(S), filter: !!k?.filter, heater: !!k?.heater?.watts, rim, doors: !!pv && !S.doors };
 }
 export const integratedKit = (S: Pick<TankSetup, 'integrated'>): KitModel | undefined => S.integrated ? kitById(S.integrated.kit) : undefined;
 
@@ -151,6 +152,7 @@ const LIDS: Record<string, string> = { glass: 'a glass top', hood: 'a hood', mes
 /** The one line the panels show beside what is locked. */
 export function lockNote(S: Gated, what: keyof Locks): string {
   if (what === 'rim') return locksOf(S)?.rim ? `The ${productName(S)} is ${soldRimless(S) ? 'only sold rimless' : 'sold with its rim'}.` : '';
+  if (what === 'doors') return locksOf(S)?.doors ? `The ${productName(S)} is sold without front doors.` : '';
   if (what === 'lid' && shippedLid(S)) return `The ${productName(S)} comes with ${LIDS[shippedLid(S)!]}.`;
   return integratedKit(S) ? `The ${productName(S)} comes with its own ${GEAR[what]}. Changing it makes this a custom tank.` : '';
 }
@@ -186,6 +188,7 @@ export function breakNote(S: Gated, what: Held): string | undefined {
   }
   if (!locksOf(S)?.[what]) return undefined;
   if (what === 'rim') return soldRimless(S) ? `The ${name} is only sold rimless. Adding a rim ${tail} Continue?` : `The ${name} is sold with its rim. Taking it off ${tail} Continue?`;
+  if (what === 'doors') return `The ${name} is sold without front doors. Adding doors ${tail} Continue?`;
   if (what === 'lid' && shippedLid(S)) return `The ${name} comes with ${LIDS[shippedLid(S)!]}. Changing the lid ${tail} Continue?`;
   return `The ${name} comes with its own ${GEAR[what]}. Changing it ${tail} Continue?`;
 }

@@ -24,7 +24,7 @@ import { notesOf } from './stockPlanLogic';
 export interface MinWarn { level: 'over' | 'near'; text: string }
 export type CatId = 'minimums' | 'social' | 'environment' | 'behaviour' | 'fullness';
 export type CatLevel = 'ok' | 'caution' | 'problem' | 'unknown';
-export interface CatItem { level: 'caution' | 'problem' | 'unknown'; text: string; /** a cross-link: the item is counted here, also relevant there */ also?: string }
+export interface CatItem { level: 'caution' | 'problem' | 'unknown'; text: string; /** a cross-link: the item is counted here, also relevant there */ also?: string; /** a load percent: the line is tinted along the gauge's green-amber-red scale */ pct?: number }
 export interface Category { id: CatId; label: string; what: string; level: CatLevel; word: string; items: CatItem[]; /** the category's one-line answer (Tank minimums: the smallest tank holding every species' minimum group) */ answer?: string }
 export interface StockSummary {
   cats: Category[];
@@ -54,7 +54,7 @@ export const worstOf = (ls: CatLevel[]): CatLevel => ls.reduce((a, b) => RANK[b]
  */
 export function stockSummary(S: TankSetup, r: Stocking, mins: { level: 'over' | 'near'; text: string }[]): StockSummary {
   const by: Record<CatId, CatItem[]> = { minimums: [], social: [], environment: [], behaviour: [], fullness: [] };
-  const add = (c: CatId, level: CatItem['level'], text: string, also?: string) => by[c].push({ level, text, ...(also ? { also } : {}) });
+  const add = (c: CatId, level: CatItem['level'], text: string, also?: string, pct?: number) => by[c].push({ level, text, ...(also ? { also } : {}), ...(pct !== undefined ? { pct } : {}) });
   const count = new Map<string, number>(), fem = new Map<string, number>();
   for (const f of S.fish) { const sp = getSpecies(f.species); if (!sp || !countsAgainstWater(sp)) continue; count.set(sp.id, (count.get(sp.id) ?? 0) + 1); if (f.sex === 'f') fem.set(sp.id, (fem.get(sp.id) ?? 0) + 1); }
   const sp = [...count.keys()].map(id => getSpecies(id)!) as Species[];
@@ -124,8 +124,8 @@ export function stockSummary(S: TankSetup, r: Stocking, mins: { level: 'over' | 
   // (e) spatial fullness: room only (water column or floor), never filtration (Nathan 2026-10-27)
   if (r.contributors.length) {
     const p = r.spacePercent, where = r.spaceBy === 'floor' ? 'floor' : 'swimming room';
-    if (isOver(p)) add('fullness', 'problem', `${Number.isFinite(p) ? Math.round(p) : 'Over 999'}% of the ${where}: too many for this tank`);
-    else if (Math.round(p) >= IDEAL_MAX) add('fullness', 'caution', `${Math.round(p)}% of the ${where}: past ideal`);
+    if (isOver(p)) add('fullness', 'problem', `${Number.isFinite(p) ? Math.round(p) : 'Over 999'}% of the ${where}: too many for this tank`, undefined, Number.isFinite(p) ? p : 999);
+    else if (Math.round(p) >= FULLNESS_WARN) add('fullness', 'caution', `${Math.round(p)}% of the ${where}: nearly full`, undefined, p); // the bar beside it says the rest: 75-90 % is just past ideal, not worth a flag (Nathan 2026-10-27)
   }
 
   const gm = stockingGroupMinimum(sp.map(x => x.id)).tank;
@@ -153,10 +153,18 @@ export function minWarnings(m: TankMinimum, units: Units): MinWarn[] {
   return out;
 }
 
+/** The fullness line shows only from here up (the bar already shows the number; Nathan 2026-10-27). */
+export const FULLNESS_WARN = 90;
+/** The text colour of a load percent on the gauge's own scale (style.css .gauge: amber at the midpoint of ideal..100, red at 100). */
+export function gaugeText(pct: number): string {
+  const t = Math.max(0, Math.min(1, (pct - (IDEAL_MAX + 100) / 2) / (100 - (IDEAL_MAX + 100) / 2))), a = [240, 178, 74], b = [255, 138, 122];
+  return `rgb(${a.map((x, i) => Math.round(x + (b[i] - x) * t)).join(',')})`;
+}
+
 /** The five-category summary as the tile draws it (S243 step 1): one chip per category, each expanding into its reasons. */
 export function summaryHtml(sm: StockSummary, esc: (s: string) => string): string {
   const rows = sm.cats.map(c => `<details class="ftCat"${c.level === 'problem' ? ' open' : ''}><summary><span>${esc(c.label)}</span><span class="ftChip ftc-${c.level}">${esc(c.word)}</span></summary>`
-    + `<div class="ftCatWhat">${esc(c.what)}</div>` + (c.answer ? `<div class="ftCatAns">${esc(c.answer)}</div>` : '') + (c.items.length ? `<ul>${c.items.map(i => `<li class="ftc-${i.level}">${esc(i.text)}${i.also ? ` <em>(${esc(i.also)})</em>` : ''}</li>`).join('')}</ul>` : '<ul><li class="ftc-ok">Nothing found against it.</li></ul>') + '</details>').join('');
+    + `<div class="ftCatWhat">${esc(c.what)}</div>` + (c.answer ? `<div class="ftCatAns">${esc(c.answer)}</div>` : '') + (c.items.length ? `<ul>${c.items.map(i => `<li class="ftc-${i.level}"${i.pct !== undefined ? ` style="color:${gaugeText(i.pct)}"` : ''}>${esc(i.text)}${i.also ? ` <em>(${esc(i.also)})</em>` : ''}</li>`).join('')}</ul>` : '<ul><li class="ftc-ok">Nothing found against it.</li></ul>') + '</details>').join('');
   return `<div class="ftCats">${rows}${sm.noData ? `<div class="ftNoData" title="${esc(sm.noDataFor.join(', '))}">${sm.noData} check${sm.noData === 1 ? '' : 's'} had no data for this species</div>` : ''}</div>`;
 }
 

@@ -94,6 +94,7 @@ export function notesOf(p: Pk, u: Units = 'cm'): PickNotes {
     // the mix is judged on the sexed animals only; unsexed ones are named, never guessed
     // what is off, said as it is (S207 review: an all-female group used to read "short on females")
     const off = rm === 0 ? (p.n > 0 ? 'Your mix has males' : '') : rf === 0 ? (f > 0 ? 'Your mix has females' : '')
+      : p.n + f < 2 ? '' // one sexed animal is a single, not a mix: nothing to judge (a lone male pleco is fine)
       : p.n > 0 && f / p.n < rf / rm * 0.75 ? 'Your mix is short on females' : f > 1 && p.n === 0 ? 'Your mix has no males' : '';
     const unk = u > 0 ? `. ${u} unsexed: the mix can only be checked once they are sexed${u === n ? '' : ' (judged on the sexed ones meanwhile)'}` : '';
     ratio = `Kept ${want}${r.note ? `: ${r.note}` : ''}${off && n - u > 0 ? `. ${off}` : ''}${unk}`;

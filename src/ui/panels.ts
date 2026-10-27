@@ -1926,7 +1926,8 @@ Cancel, then change the name, to keep both.`)) return;
     $('rimY').classList.toggle('on', s.render.rim); $('rimN').classList.toggle('on', !s.render.rim);
     $('edgesY').classList.toggle('on', s.render.edges); $('edgesN').classList.toggle('on', !s.render.edges);
     for (const [id, lid] of LIDS) $(id).classList.toggle('on', s.lid === lid);
-    for (const [id, d] of [['doorNone', 'none'], ['doorHinged', 'hinged'], ['doorSliding', 'sliding']] as const) { $(id).classList.toggle('on', (s.doors ?? 'none') === d); ($(id) as HTMLButtonElement).disabled = d !== 'none' && shapeOf(s.tank) !== 'rect'; }
+    for (const [id, d] of [['doorNone', 'none'], ['doorHinged', 'hinged'], ['doorSliding', 'sliding']] as const) { $(id).classList.toggle('on', (s.doors ?? 'none') === d); ($(id) as HTMLButtonElement).disabled = d !== 'none' && (shapeOf(s.tank) !== 'rect' || !!locksOf(s)?.doors); }
+    { const dl = locksOf(s)?.doors; $('doorLock').hidden = !dl; $('doorLock').innerHTML = dl ? esc(lockNote(s, 'doors')) + unholdBtn('doors') : ''; }
     setVal('bgSel', s.render.bg); setVal('bgColor', s.render.bgColor ?? '#2f4a36'); $('bgColor').style.display = s.render.bg === 'custom' ? '' : 'none';
     for (const [id, side] of BG_BTNS) { const on = s.render.bgSides.includes(side); $(id).classList.toggle('on', on); $(id).setAttribute('aria-pressed', String(on)); }
     $('bgSidesRow').style.display = s.render.bg === 'none' && s.backdrop.kind === 'none' ? 'none' : ''; // sides of the colour and the 3D wall
