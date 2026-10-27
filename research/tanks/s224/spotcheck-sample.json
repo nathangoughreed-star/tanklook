@@ -1,0 +1,390 @@
+[
+ {
+  "model": "g2_5",
+  "brand": "Imagitarium (Petco)",
+  "line": "Open-Glass Rimless 2.5 gal",
+  "L": 12.2,
+  "D": 6.14,
+  "H": 9.2,
+  "price": 20,
+  "regular": 40,
+  "kind": "street",
+  "rimless": true,
+  "includes": {
+   "lid": "glass",
+   "light": false,
+   "filter": false,
+   "heater": false,
+   "stand": false
+  },
+  "retailer": "Petco",
+  "url": "https://www.petco.com/product/imagitarium-25-gallon-open-glass-rimless-aquarium-tank"
+ },
+ {
+  "model": "n_lifegard_ultra_low_iron_book",
+  "brand": "Lifegard Aquatics",
+  "line": "Ultra Low Iron Bookshelf Glass 29.92 in",
+  "L": 29.92,
+  "D": 5.9,
+  "H": 7.87,
+  "price": 97.99,
+  "kind": "street",
+  "rimless": false,
+  "includes": {
+   "lid": "none",
+   "light": false,
+   "filter": false,
+   "heater": false,
+   "stand": false
+  },
+  "retailer": "Petco",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/freestanding-large-fish-tanks"
+ },
+ {
+  "model": "g75",
+  "brand": "Imagitarium",
+  "line": "Open-Glass Aquarium Tank 75 gal",
+  "L": 48.03,
+  "D": 18.03,
+  "H": 22.87,
+  "price": 150,
+  "regular": 300,
+  "kind": "street",
+  "rimless": false,
+  "includes": {
+   "lid": "glass",
+   "light": false,
+   "filter": false,
+   "heater": false,
+   "stand": false
+  },
+  "retailer": "Petco",
+  "url": "https://www.petco.com/product/imagitarium-75-gallon-open-glass-aquarium-tank"
+ },
+ {
+  "model": "g37",
+  "brand": "Marineland",
+  "line": "Standard Rectangular 37 gal",
+  "L": 30,
+  "D": 12,
+  "H": 22,
+  "kind": "msrp",
+  "rimless": false,
+  "includes": {
+   "light": false,
+   "filter": false,
+   "heater": false,
+   "stand": false
+  },
+  "retailer": "Marineland (maker)",
+  "url": "https://sc10cdn.spectrumbrands.com/-/media/project/spectrumcommerce/marineland/files/product-files/aquarium-products/tanks/rectangular-tanks-specs-and-sizes-template.pdf"
+ },
+ {
+  "model": "n_marineland_standard_rectangu",
+  "brand": "Marineland",
+  "line": "Standard Rectangular 16 gal High",
+  "L": 20,
+  "D": 10,
+  "H": 18,
+  "kind": "msrp",
+  "rimless": false,
+  "includes": {
+   "light": false,
+   "filter": false,
+   "heater": false,
+   "stand": false
+  },
+  "retailer": "Marineland (maker)",
+  "url": "https://sc10cdn.spectrumbrands.com/-/media/project/spectrumcommerce/marineland/files/product-files/aquarium-products/tanks/rectangular-tanks-specs-and-sizes-template.pdf"
+ },
+ {
+  "model": "n_marineland_exhibit_series_wi",
+  "brand": "Marineland",
+  "line": "Exhibit Series Wi-Fi LED Kit 29 gal (with stand)",
+  "L": 22,
+  "D": 22,
+  "H": 14,
+  "kind": "kit",
+  "rimless": true,
+  "includes": {
+   "lid": "hood",
+   "light": true,
+   "filter": true,
+   "heater": true,
+   "stand": true
+  },
+  "retailer": "Marineland (maker)",
+  "url": "https://www.marineland.com/products/aquariums/marineland-exhibit-series-wi-fi-led-kit-29-gallon"
+ },
+ {
+  "model": "g20h",
+  "brand": "GloFish",
+  "line": "20 Gallon Complete Fish Tank Kit",
+  "L": 24.2,
+  "D": 12.4,
+  "H": 16.7,
+  "price": 194.31,
+  "kind": "kit",
+  "rimless": false,
+  "includes": {
+   "lid": "none",
+   "light": true,
+   "filter": true
+  },
+  "retailer": "Amazon",
+  "url": "https://www.amazon.com/dp/B013BXE1XO"
+ },
+ {
+  "model": "n_lifegard_lifegard_bookshelf_",
+  "brand": "Lifegard Aquatics",
+  "line": "Bookshelf Aquarium 16 Gallon 6mm",
+  "L": 33.85,
+  "D": 9.84,
+  "H": 11.02,
+  "price": 169.99,
+  "kind": "street",
+  "rimless": false,
+  "includes": {
+   "lid": "none",
+   "light": false,
+   "filter": false,
+   "heater": false,
+   "stand": false
+  },
+  "retailer": "Amazon",
+  "url": "https://www.amazon.com/dp/B09QY453F2"
+ },
+ {
+  "model": "n_lifegard_lifegard_bookshelf__",
+  "brand": "Lifegard Aquatics",
+  "line": "Bookshelf Aquarium 6 Gallon 5mm",
+  "L": 7.87,
+  "D": 5.9,
+  "H": 29.92,
+  "price": 79.15,
+  "kind": "street",
+  "rimless": false,
+  "includes": {
+   "lid": "none",
+   "light": false,
+   "filter": false,
+   "heater": false,
+   "stand": false
+  },
+  "retailer": "Amazon",
+  "url": "https://www.amazon.com/dp/B09SQF651S"
+ },
+ {
+  "model": "g125",
+  "brand": "Clear-For-Life",
+  "line": "125 gal rectangle acrylic 72x18x20",
+  "L": 72,
+  "D": 18,
+  "H": 20,
+  "price": 1649.99,
+  "kind": "street",
+  "rimless": false,
+  "includes": {
+   "light": false,
+   "filter": false,
+   "heater": false,
+   "stand": false
+  },
+  "retailer": "PetSmart",
+  "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/clear-for-life-125-gallon-rectangle-acrylic-aquarium-fish-tank-72x18x20-fresh-and-saltwater-5188326.html"
+ },
+ {
+  "model": "n_waterbox_cube_20",
+  "brand": "Clear-For-Life",
+  "line": "25 Gallon Cube Acrylic Aquarium",
+  "L": 18,
+  "D": 18,
+  "H": 18,
+  "price": 369.99,
+  "kind": "street",
+  "rimless": false,
+  "includes": {
+   "light": false,
+   "filter": false,
+   "heater": false,
+   "stand": false
+  },
+  "retailer": "PetSmart",
+  "url": "https://www.petsmart.com/5187099.html"
+ },
+ {
+  "model": "g240",
+  "brand": "Clear-For-Life",
+  "line": "240 Gallon Rectangle Acrylic Aquarium",
+  "L": 96,
+  "D": 24,
+  "H": 24,
+  "price": 3299.99,
+  "kind": "street",
+  "rimless": false,
+  "includes": {
+   "light": false,
+   "filter": false,
+   "heater": false,
+   "stand": false
+  },
+  "retailer": "PetSmart",
+  "url": "https://www.petsmart.com/5187064.html"
+ },
+ {
+  "model": "n_imagitarium_cube_35",
+  "brand": "Aqueon",
+  "line": "Frameless Cube 35 gal",
+  "L": 21,
+  "D": 21,
+  "H": 21,
+  "kind": "msrp",
+  "rimless": true,
+  "includes": {
+   "light": false,
+   "filter": false,
+   "heater": false,
+   "stand": false
+  },
+  "retailer": "Aqueon (maker)",
+  "url": "https://www.aqueon.com/products/aquariums/frameless-cube-aquariums"
+ },
+ {
+  "model": "g6c",
+  "brand": "Aqueon",
+  "line": "Frameless Cube 6 gal",
+  "L": 11.5,
+  "D": 11.5,
+  "H": 11.5,
+  "kind": "msrp",
+  "rimless": true,
+  "includes": {
+   "light": false,
+   "filter": false,
+   "heater": false,
+   "stand": false
+  },
+  "retailer": "Aqueon (maker)",
+  "url": "https://www.aqueon.com/products/aquariums/frameless-cube-aquariums"
+ },
+ {
+  "model": "g20h",
+  "brand": "Aqueon",
+  "line": "LED SmartClean Starter Kit 20 gal",
+  "L": 24.25,
+  "D": 12.5,
+  "H": 16.75,
+  "kind": "kit",
+  "rimless": false,
+  "includes": {
+   "lid": "hood",
+   "light": true,
+   "filter": true
+  },
+  "retailer": "Aqueon (maker)",
+  "url": "https://www.aqueon.com/products/aquarium-starter-kits/smartclean-led-kit"
+ },
+ {
+  "model": "n_lifegard_lifegard_2_nano_cub",
+  "brand": "Vibrant Life",
+  "line": "Life Betta View Aquarium Starter Kit, 1.5 Gallon",
+  "L": 7.5,
+  "D": 7.5,
+  "H": 8.25,
+  "price": 26.97,
+  "kind": "kit",
+  "rimless": false,
+  "includes": {
+   "light": true,
+   "filter": true
+  },
+  "retailer": "Walmart (sold and shipped by Walmart.com)",
+  "url": "https://www.walmart.com/ip/15303459484"
+ },
+ {
+  "model": "g29",
+  "brand": "Tetra",
+  "line": "29 Gallon Glass LED Aquarium Kit",
+  "L": 30,
+  "D": 12,
+  "H": 18,
+  "price": 83.14,
+  "regular": 175.79,
+  "kind": "kit",
+  "rimless": false,
+  "includes": {
+   "light": true,
+   "stand": true
+  },
+  "retailer": "Walmart (sold and shipped by Walmart.com)",
+  "url": "https://www.walmart.com/ip/1560621988"
+ },
+ {
+  "model": "g3c",
+  "brand": "Vibrant Life",
+  "line": "Life Betta View Aquarium Starter Kit, 3 Gallon",
+  "L": 9.25,
+  "D": 9.25,
+  "H": 9.75,
+  "price": 39,
+  "kind": "kit",
+  "rimless": false,
+  "includes": {
+   "light": true,
+   "filter": true
+  },
+  "retailer": "Walmart (sold and shipped by Walmart.com)",
+  "url": "https://www.walmart.com/ip/15280601414"
+ },
+ {
+  "model": "g29",
+  "brand": "Tetra",
+  "line": "Complete LED Aquarium Kit 29 gal",
+  "L": 30,
+  "D": 12,
+  "H": 18,
+  "kind": "kit",
+  "rimless": false,
+  "includes": {
+   "lid": "hood",
+   "light": true,
+   "filter": true
+  },
+  "retailer": "Tetra (maker)",
+  "url": "https://www.tetra-fish.com/products/aquarium-kits/complete-led-aquarium-29-29-gal"
+ },
+ {
+  "model": "g10",
+  "brand": "Tetra",
+  "line": "PLAYMOBIL Explore Your Aquarium Kit 10 gal",
+  "L": 20,
+  "D": 10,
+  "H": 12,
+  "kind": "kit",
+  "rimless": false,
+  "includes": {
+   "lid": "hood",
+   "light": true,
+   "filter": true
+  },
+  "retailer": "Tetra (maker)",
+  "url": "https://www.tetra-fish.com/products/aquarium-kits/playmobil-kit"
+ },
+ {
+  "model": "n_tetra_tetra_connect_28_wi_fi",
+  "brand": "Tetra",
+  "line": "Connect 28 gal Aquarium Kit (Wi-Fi feeder)",
+  "L": 24,
+  "D": 15,
+  "H": 18.9,
+  "kind": "kit",
+  "rimless": false,
+  "includes": {
+   "lid": "hood",
+   "light": true,
+   "filter": true
+  },
+  "retailer": "Tetra (maker)",
+  "url": "https://www.tetra-fish.com/products/aquarium-kits/tetra-connect-28g-aquarium-kit"
+ }
+]

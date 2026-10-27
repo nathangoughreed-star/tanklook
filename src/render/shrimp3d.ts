@@ -175,6 +175,7 @@ function legGeometry(s: Shrimp3D) {
   // along it and the feet fan out from them, front pair forward, rear pair back, so no two legs cross
   [0.06, 0.11, 0.17, 0.25, 0.33].forEach((t, i) => {
     const f = sp.at(t), y0 = f.c.y - HV * s.deep * 0.75, x0 = f.c.x, b = V(x0, y0, 0.02);
+    if (i === 0 && s.claw) return; // a crayfish's first pair are the big chelae (clawGeometry)
     if (i < 2) { // the two small front pairs (tiny pincers in these shrimp), carried forward and down
       const r = 0.0034;
       parts.push(jointed([b, V(x0 + 0.012, y0 - 0.026, 0.032), V(x0 + 0.04, y0 - 0.042 + i * 0.006, 0.032), V(x0 + 0.062, y0 - 0.046 + i * 0.008, 0.024)], [r, r * 0.9, r * 0.75, r * 0.6]));
@@ -197,6 +198,24 @@ function legGeometry(s: Shrimp3D) {
       parts.push(jointed([fork, tip], [0.0026, 0.0012]));
     }
   }
+  return shade(mergeGeometries(parts)!);
+}
+
+/** A crayfish's chelae (+ side): arm forward and out, a broad palm, two fingers closing at their tips; `patch` = only the colour patch on the palm's outer side. */
+function clawGeometry(s: Shrimp3D, patch: boolean) {
+  const c = s.claw!, k = c.size, sp = spine(s), f = sp.at(0.06), y0 = f.c.y - HV * s.deep * 0.75, x0 = f.c.x, parts: THREE.BufferGeometry[] = [];
+  const el = V(x0 + 0.05 * k, y0 - 0.012, 0.045 * k), wr = V(x0 + 0.1 * k, y0 - 0.028, 0.075 * k + 0.02), pc = wr.clone().add(V(0.055 * k, 0.0, 0.012 * k));
+  if (patch) {
+    const g = new THREE.SphereGeometry(1, 12, 8).scale(0.03 * k, 0.012 * k, 0.012 * k).translate(pc.x, pc.y + 0.004 * k, pc.z + 0.03 * k);
+    g.deleteAttribute('uv'); return g.toNonIndexed();
+  }
+  parts.push(jointed([V(x0, y0, 0.02), el, wr], [0.0075 * k, 0.0065 * k, 0.0055 * k]));
+  const palm = new THREE.SphereGeometry(1, 14, 10).scale(0.06 * k, 0.022 * k, 0.03 * k).translate(pc.x, pc.y, pc.z);
+  palm.deleteAttribute('uv'); parts.push(palm.toNonIndexed());
+  // the fixed finger low, the movable one above it, both curving in so the tips meet
+  const bz = pc.z - 0.004 * k, tipX = pc.x + 0.12 * k;
+  parts.push(jointed([V(pc.x + 0.035 * k, pc.y - 0.012 * k, bz), V(pc.x + 0.08 * k, pc.y - 0.012 * k, bz - 0.008 * k), V(tipX, pc.y - 0.002 * k, bz - 0.022 * k)], [0.012 * k, 0.009 * k, 0.0025]));
+  parts.push(jointed([V(pc.x + 0.035 * k, pc.y + 0.012 * k, bz), V(pc.x + 0.08 * k, pc.y + 0.018 * k, bz - 0.006 * k), V(tipX, pc.y + 0.003 * k, bz - 0.022 * k)], [0.012 * k, 0.009 * k, 0.0025]));
   return shade(mergeGeometries(parts)!);
 }
 
@@ -269,6 +288,13 @@ export function shrimpBody(art: string, w: number) {
   const legs = geo(art + ':legs', () => legGeometry(s)), ants = geo(art + ':ant', () => antennaGeometry(s));
   const lm = mat('leg:' + art, () => new THREE.MeshBasicMaterial({ color: s.leg, vertexColors: true, ...see }));
   const am = mat('ant:' + art, () => new THREE.MeshBasicMaterial({ color: s.antC, vertexColors: true, ...(s.glass ? see : {}) }));
+  if (s.claw) {
+    const cg = geo(art + ':claw', () => clawGeometry(s, false)), pm = s.claw.patch ? mat('patch:' + art, () => new THREE.MeshBasicMaterial({ color: s.claw!.patch, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 })) : undefined;
+    for (const side of [1, -1]) {
+      const o = new THREE.Mesh(cg, lm); o.scale.z = side; grp.add(o);
+      if (pm) { const q = new THREE.Mesh(geo(art + ':patch', () => clawGeometry(s, true)), pm); q.scale.z = side; grp.add(q); }
+    }
+  }
   for (const side of [1, -1]) for (const [g, m] of [[legs, lm], [ants, am]] as const) { const o = new THREE.Mesh(g, m); o.scale.z = side; grp.add(o); }
   // stalked eyes: a short stalk out of the carapace front, a dark ball on its end, looking out and a little forward
   const sp = spine(s), f = sp.at(0.03), eyeR = 0.0135;

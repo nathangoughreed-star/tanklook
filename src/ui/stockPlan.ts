@@ -8,18 +8,19 @@ import { getSpecies, searchSpecies } from '../data/species';
 import { tankFromModel, type TankModel } from '../data/tanks';
 import { emptyScene } from '../scene/defaults';
 import { placeNew, shuffleFish } from '../scene/scatter';
+import { summaryHtml, summaryOf } from './stockSummary';
 import type { Store } from '../scene/store';
 import type { Fish } from '../scene/types';
 import { IDEAL_MAX } from '../scene/stocking';
+import { GAUGE_TIP, gaugeColor, gaugeStyle } from './gauge';
 import type { Viewer } from '../render/viewer';
 import { gearView } from '../render/gear3d';
 import { tankView } from '../render/tankView';
 import { attachBuildPick } from './buildPick';
 import { attachStockGallery } from './stockGallery';
 import { onSpaceFork, type SpaceFork } from './fullnessTile';
-import { grazerLevel, grazerShort } from '../data/grazers';
-import { spaceBand, animalsInTank, animalsOf, bump, writePairs, FAIL_WORD, groupLineIn, type Pairing, forkOptions, isSexed, notesOf, overWarn, shownLengthMm, planFor, shownLitres, conflictsOf, rankTankmates, tempLinesOf, startPick, tankLabel, totalOf, type Pk, type Plan, type RoomOption } from './stockPlanLogic';
-import { allLand, sizeTxt } from '../scene/tankfit';
+import { spaceBand, animalsInTank, animalsOf, bump, writePairs, FAIL_WORD, groupLineIn, type Pairing, forkOptions, isSexed, notesOf, planFor, conflictsOf, rankTankmates, tempLinesOf, startPick, tankLabel, totalOf, type Pk, type Plan, type RoomOption } from './stockPlanLogic';
+import { allLand, isMixed, setPool, sizeTxt } from '../scene/tankfit';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
@@ -69,7 +70,7 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
   const sync = (rebuild = false) => {
     // the chosen tank, else the invisible box around the smallest size that holds them (it follows the picks: it is not a choice)
     const plan = planFor(picks, chosen), box = plan.tank ? undefined : plan.need?.tank ?? plan.options.at(-1)?.tank, show = plan.tank ?? box;
-    const key = show ? `${box ? 'box:' : ''}${show.id}` : '';
+    const mixed = isMixed(animalsOf(picks)), key = show ? `${box ? 'box:' : ''}${show.id}${mixed ? ':' + animalsOf(picks).map(a => `${a.species}${a.n}`).join(',') : ''}` : ''; // a paludarium's pool follows the picks
     ghost(!plan.tank); // nothing chosen (or nothing picked yet): no tank drawn; set before the update so the fullness tile reads it
     store.update(s => {
       const T = s.tanks[s.active];
@@ -78,6 +79,7 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
         const land = allLand(animalsOf(picks));
         T.tank = tankFromModel(show); T.water.on = !land; T.water.level = WATER_LEVEL; shown = key; rebuild = true;
         if (land) { T.lid = 'mesh'; T.doors = 'hinged'; } else if (T.doors) delete T.doors;
+        if (mixed) setPool(T, animalsOf(picks)); // part water, part land (lane S241)
         if (box) T.tank = { ...T.tank, L: Math.round(T.tank.L * GHOST_SCALE), D: Math.round(T.tank.D * GHOST_SCALE) };
         lastBox = box;
         T.camera = { ...T.camera, zoom: 0.55, el: 20 }; // looking down a little so the bottom dwellers show on the bare floor // the whole tank in view, beside the panel
@@ -107,19 +109,21 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
   // ---------- drawing ----------
   const bandClass = (b: string) => `spb-${b}`;
   const pickRow = (p: Pk, plan: Plan) => {
-    const litres = shownLitres(plan);
-    const hungry = litres ? grazerShort(p.id, totalOf(p), litres) : null;
     const sp = getSpecies(p.id)!, nt = notesOf(p, store.scene.units), sexed = isSexed(p.id);
     const step = (which: 'n' | 'f' | 'u', label: string, v: number) =>
       `<span class="spStep"><span class="spLab">${label}</span><button type="button" data-act="dec" data-id="${p.id}" data-w="${which}" aria-label="One fewer ${esc(label || sp.name)}"${v <= 0 ? ' disabled' : ''}>−</button><b>${v}</b><button type="button" data-act="inc" data-id="${p.id}" data-w="${which}" aria-label="One more ${esc(label || sp.name)}">+</button></span>`;
     return `<li class="spPick"><div class="spName"><b>${esc(sp.name)}</b><i>${esc(sp.sci)}</i><button type="button" class="spX" data-act="del" data-id="${p.id}" aria-label="Take ${esc(sp.name)} out">✕</button></div>
 <div class="spSteps">${sexed ? step('n', 'Males', p.n) + step('f', 'Females', p.f ?? 0) + step('u', 'Unsexed', p.u ?? 0) : step('n', '', p.n)}</div>
 ${nt.pairing ? `<div class="spPair"><span class="spLab">Pair</span>${PAIR_OPTS.map(([v, t]) => `<button type="button" data-act="pair" data-id="${p.id}" data-v="${v}"${nt.pairing!.status === v ? ' class="on"' : ''} aria-pressed="${nt.pairing!.status === v}">${t}</button>`).join('')}</div><div class="${nt.pairing.status === 'established' ? 'spNote' : 'spWarn'}">${esc(nt.pairing.line)}</div>` : ''}
-${overWarn(p, litres || undefined, shownLengthMm(plan)) ? `<div class="spWarn">${esc(overWarn(p, litres || undefined, shownLengthMm(plan))!)}</div>` : ''}${hungry ? (grazerLevel(p.id, totalOf(p), litres) === 'severe' ? `<div class="spWarn">${esc(hungry.replace(/^algae: /, 'Problem, grazing: '))}</div>` : `<div class="spWarn spGraze">${esc(hungry.replace(/^algae: /, 'Caution, grazing: '))}</div>`) : ''}${conflictsOf(picks, p.id).map((w, i) => `<div class="${w.block && i === 0 ? 'spWarn' : 'spNote'}">${i ? 'Also: ' : ''}${esc(w.text)}</div>`).join('')}${nt.needs.map(x => `<div class="${x.severity === 'S3' ? 'spWarn' : 'spNote'} spNeed">${esc(x.text)}</div>`).join('')}${(() => { const g = groupLineIn(nt, plan); return `<div class="spMsg ${g.held ? 'spb-held' : bandClass(nt.band)}">${esc(g.text)}</div>`; })()}${nt.ratio ? `<div class="spNote">${esc(nt.ratio)}</div>` : ''}
+${conflictsOf(picks, p.id).filter(w => /^expertise:/.test(w.text)).map(w => `<div class="${w.block ? 'spWarn' : 'spNote'}">${esc(w.text)}</div>`).join('')}${(() => { const g = groupLineIn(nt, plan); return nt.line ? `<div class="spMsg ${g.held ? 'spb-held' : bandClass(nt.band)}">${esc(nt.line)}</div>` : ''; })()}${nt.ratio ? `<div class="spNote">${esc(nt.ratio)}</div>` : ''}
 ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</div>` : ''}</li>`;
   };
 
-  const bar = (pct: number, what: string) => `<span class="spBar ${spaceBand(pct) === 'ok' ? '' : spaceBand(pct)}" title="${what}: ${Math.round(pct)} %"><i style="width:${Math.max(2, Math.min(100, pct))}%"></i></span>`;
+  // S229 (Nathan 2026-10-26, "yes"): the space bar is the whole-scale gauge the Fullness tile uses (ui/gauge.ts); spaceBand still drives the
+  // label and the class. The tank-size bar (the animals' minimum against this tank) keeps one colour per band, like the tile's minimum bar.
+  const bar = (pct: number, what: string, gauge = false) => gauge
+    ? `<span class="spBar gauge ${spaceBand(pct) === 'ok' ? '' : spaceBand(pct)}" style="${gaugeStyle(pct)}" title="${what}: ${Math.round(pct)} %. ${GAUGE_TIP}"><i></i></span>`
+    : `<span class="spBar ${spaceBand(pct) === 'ok' ? '' : spaceBand(pct)}" title="${what}: ${Math.round(pct)} %"><i style="width:${Math.max(2, Math.min(100, pct))}%"></i></span>`;
   const WHY = FAIL_WORD;
   let sizesTop = 0;
   const tankBlock = () => {
@@ -133,13 +137,13 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
       if (plan.problem) h += `<div class="spWarn">${esc(plan.problem)}. You can still continue.</div>`;
       if (plan.span) {
         const { setupUsd: s, minPerWeek: m } = plan.span;
-        h += `<div class="spLive"><span>Set-up about <b>${range(s.cheapest, s.balanced, usd)}</b></span><span>About <b>${range(m.cheapest, m.balanced, n => `${n}`)} min</b> a week</span></div><div class="spNote">Cheapest build to balanced build: ${allLand(animalsOf(picks)) ? 'terrarium, heat, UVB, thermostat and misting' : 'tank, filter, light, heater and water care'} for these animals.</div>`;
+        h += `<div class="spLive"><span>Set-up about <b>${range(s.cheapest, s.balanced, usd)}</b></span><span>About <b>${range(m.cheapest, m.balanced, n => `${n}`)} min</b> a week</span></div><div class="spNote">Cheapest build to balanced build: ${allLand(animalsOf(picks)) ? 'terrarium, heat, UVB, thermostat and misting' : isMixed(animalsOf(picks)) ? 'tank, filter, light, heater, water care, and heat, UVB and misting for the land animals' : 'tank, filter, light, heater and water care'} for these animals.</div>`;
       }
     } else h += plan.need ? '<div class="spNote">No tank yet: pick one. You can add more animals after, and come back for a bigger tank. Greyed sizes are too small for the animals you have so far.</div>' : `<div class="spWarn">${esc(plan.problem ?? '')}</div>`;
-    const land = allLand(animals);
-    h += `<div class="spHd">${land ? 'Terrarium sizes' : 'Tank sizes'}</div><div class="spBands spNote">${land ? 'Floor' : 'Space'}: <span class="spB ok">ideal up to ${IDEAL_MAX} %</span> <span class="spB near">caution, tread carefully, to 100 %</span> <span class="spB over">over 100 %: likely to cause problems long term</span></div><div class="spSizeKey spNote"><span>Space</span><span>Tank size</span></div><ul class="spSizes">${plan.options.map(o => {
+    const land = allLand(animals), pal = isMixed(animals);
+    h += `<div class="spHd">${land ? 'Terrarium sizes' : pal ? 'Paludarium sizes' : 'Tank sizes'}</div><div class="spBands spNote">${land ? 'Floor' : pal ? 'Land (floor the land animals need) and Water (the fish in the pool that is left)' : 'Space'}: <span class="spB ok">ideal up to ${IDEAL_MAX} %</span> <span class="spB near">caution, tread carefully, to 100 %</span> <span class="spB over">over 100 %: likely to cause problems long term</span></div><div class="spSizeKey spNote">${pal ? '<span>Land</span><span>Water</span>' : '<span>Space</span>'}<span>Tank size</span></div><ul class="spSizes">${plan.options.map(o => {
       const bad = o.fails.length > 0, on = plan.tank?.id === o.tank.id, full = o.spacePct, filt = o.filtrationPct > 70 ? `<em class="${o.filtrationPct > 100 ? 'cr' : ''}">filter load ${Math.round(o.filtrationPct)} % on a basic filter; plants and a stronger one lower it</em>` : '';
-      return `<li><button type="button" data-act="size" data-tank="${o.tank.id}" class="${bad ? 'small' : ''}${on ? ' on' : ''}"${bad ? ' title="Too small for these animals; you can still pick it"' : ''}><span class="spLbl">${esc(tankLabel(o.tank, store.scene.units))}${bad ? `<em>${WHY[o.fails[0]]}</em>` : spaceBand(full) !== 'ok' ? '<em class="cr">past ideal: tread carefully</em>' : o.cramped ? '<em class="cr">workable, a bit cramped</em>' : ''}${filt}</span>${bar(full, land ? 'Floor: the floor these animals need at the minimum the sources accept' : 'Space: how full the tank is by room, whatever the filter')}<span class="spPct">${Math.round(full)} %</span>${bar(o.minPct, 'Tank size against what the animals need')}<span class="spPct">${Math.round(o.minPct)} %</span></button></li>`;
+      return `<li><button type="button" data-act="size" data-tank="${o.tank.id}" class="${bad ? 'small' : ''}${on ? ' on' : ''}"${bad ? ' title="Too small for these animals; you can still pick it"' : ''}><span class="spLbl">${esc(tankLabel(o.tank, store.scene.units))}${bad ? `<em>${WHY[o.fails[0]]}</em>` : spaceBand(full) !== 'ok' ? `<em class="cr" style="color:${gaugeColor(full)}">past ideal: tread carefully</em>` : o.cramped ? '<em class="cr">workable, a bit cramped</em>' : ''}${filt}</span>${pal ? `${bar(o.landPct ?? 0, 'Land: the floor the land animals need at the minimum the sources accept', true)}<span class="spPct">${Math.round(o.landPct ?? 0)} %</span>` : ''}${bar(full, land ? 'Floor: the floor these animals need at the minimum the sources accept' : pal ? 'Water: how full the pool is, whatever the filter' : 'Space: how full the tank is by room, whatever the filter', true)}<span class="spPct">${Math.round(full)} %</span>${bar(o.minPct, 'Tank size against what the animals need')}<span class="spPct">${Math.round(o.minPct)} %</span></button></li>`;
     }).join('')}</ul>`;
     return h;
   };
@@ -158,7 +162,7 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
     el.innerHTML = `<div class="spHead"><h2>An animal I want</h2><button type="button" data-act="close" aria-label="Close">✕</button></div>
 <input class="spQ" type="search" placeholder="Search an animal by name (e.g. betta, neon tetra, clownfish)" aria-label="Search animals" value="${esc(q)}" autocomplete="off">
 <div class="spResWrap">${results()}</div>
-${picks.length ? `${(() => { const pl = planFor(picks, chosen); const tl = tempLinesOf(picks); return (pl.tank && pl.problem ? `<div class="spWarn spVerdict">Tank verdict: ${esc(pl.problem)}</div>` : '') + (tl ? `<div class="${tl.rangeState === 'none' ? 'spWarn' : 'spNote'}">${esc(tl.range)}</div><div class="spNote">${esc(tl.setpoint)}</div>` : ''); })()}<ul class="spPicks">${picks.map(p => pickRow(p, planFor(picks, chosen))).join('')}</ul>
+${picks.length ? `${(() => { const pl = planFor(picks, chosen); const tl = tempLinesOf(picks); return (pl.tank && pl.problem ? `<div class="spWarn spVerdict">Tank verdict: ${esc(pl.problem)}</div>` : '') + (pl.caution ? `<div class="spNote">${esc(pl.caution)}</div>` : '') + (() => { const sm = summaryOf(store.tank, store.scene.units); return `<div class="spHd">Stocking summary: ${esc(sm.worstWord)}</div>${summaryHtml(sm, esc)}`; })() + (tl ? `<div class="${tl.rangeState === 'none' ? 'spWarn' : 'spNote'}">${esc(tl.range)}</div><div class="spNote">${esc(tl.setpoint)}</div>` : ''); })()}<ul class="spPicks">${picks.map(p => pickRow(p, planFor(picks, chosen))).join('')}</ul>
 <div class="spHd">Other animals in with them?</div>
 ${mates ? `<p class="spNote">Pick from the pictures on the left; each goes in at the smallest group it is kept in.</p><button type="button" class="primary" data-act="nomates">Done adding</button>` : `<div class="spYN"><button type="button" data-act="mates">Yes, show me what suits them</button></div>`}` : '<p class="spNote">Search for the animal you have in mind, or pick one from the pictures. It goes in at the smallest group it is kept in and shows in the view; then pick a tank for them.</p>'}
 ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}` : ''}

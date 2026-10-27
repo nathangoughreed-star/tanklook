@@ -119,7 +119,8 @@ describe('fit to limits', () => {
 });
 describe('expected cost (lane DS: one number, no spread)', () => {
   // Means of the old 20000-draw Monte Carlo (cost.ts, deleted 2026-10-19) for fixed setups; the expected value must not move. Upkeep and minutes re-blessed 2026-10-21 (lane MW: water changes now follow the nitrogen budget, new feeding / glass / plant rows), and again by lane CB (combined sources: larger adult sizes, more waste); setup is unchanged. Terrarium re-blessed 2026-10-26 (lane LT: heat, UVB and gauge rows, spot cleaning instead of misting when the animals want under 60 % humidity).
-  const GOLD: Record<string, number[]> = {"planted/0": [1334.1, 52.31, 55.66], "planted/1": [1334.1, 55.11, 55.66], "planted/2": [1334.1, 57.09, 55.66], "iwagumi/0": [2111.44, 42.76, 53.94], "iwagumi/1": [2111.44, 42.84, 53.94], "iwagumi/2": [2111.44, 36.81, 53.94], "betta/0": [337.87, 9.92, 33.83], "betta/1": [337.87, 11.29, 33.83], "betta/2": [337.87, 10.91, 33.83], "reef/0": [3421.78, 176.52, 88.04], "reef/1": [3421.78, 189.62, 88.04], "reef/2": [3421.78, 172.72, 88.04], "terrarium/0": [909.13, 33.2, 15.32], "terrarium/1": [909.13, 35.56, 15.32], "terrarium/2": [909.13, 33.2, 15.32], "paludarium/0": [1645.38, 61.59, 58.4], "paludarium/1": [1645.38, 63.66, 58.4], "paludarium/2": [1645.38, 66.76, 58.4]};
+  // Paludarium, terrarium, rainforest and arid re-blessed 2026-10-26 (starter tanks pass their animal checks: one gecko each, three toads with white clouds, a 30 in corner tank for three tree frogs).
+  const GOLD: Record<string, number[]> = {"planted/0": [1334.1, 52.31, 55.66], "planted/1": [1334.1, 55.11, 55.66], "planted/2": [1334.1, 57.09, 55.66], "iwagumi/0": [2111.44, 42.76, 53.94], "iwagumi/1": [2111.44, 42.84, 53.94], "iwagumi/2": [2111.44, 36.81, 53.94], "betta/0": [337.87, 9.92, 33.83], "betta/1": [337.87, 11.29, 33.83], "betta/2": [337.87, 10.91, 33.83], "reef/0": [3421.78, 176.52, 88.04], "reef/1": [3421.78, 189.62, 88.04], "reef/2": [3421.78, 172.72, 88.04], "terrarium/0": [1920.23, 35.54, 17.43], "terrarium/1": [1920.23, 38.85, 17.43], "terrarium/2": [1920.23, 35.54, 17.43], "paludarium/0": [1394.95, 43.44, 56], "paludarium/1": [1394.95, 48.99, 56], "paludarium/2": [1394.95, 48.61, 56]};
   const prof = (v: number) => (P: ReturnType<typeof defaultProfile>) => { if (v === 1) { P.kwhUsd = 0.3; P.skill.fish = 1; } if (v === 2) { P.skill.salt = 2; P.skill.planted = 2; P.waterSource = 'bought-ro'; } };
   it('the expected value equals the old Monte Carlo mean for fixed setups', () => {
     for (const [k, [setup, upkeep, minutes]] of Object.entries(GOLD)) {
@@ -254,18 +255,42 @@ describe('bare-tank sales (parts estimate)', () => {
   });
 });
 describe('stand not chosen yet', () => {
-  it('counts a typical stand while undecided, nothing after "I don\'t need a stand"', async () => {
+  it('counts a stand only once added: undecided and "I don\'t need a stand" count nothing (Nathan 2026-10-26)', async () => {
     const { demandOf } = await import('../src/demand/engine');
     const { defaultProfile } = await import('../src/demand/types');
     const { emptyScene } = await import('../src/scene/defaults');
     const { sceneFromDeal } = await import('../src/demand/dealscene');
     const { DEALS } = await import('../src/data/deals');
     const S = emptyScene().tanks[0], P = defaultProfile(), row = (st: object) => demandOf({ ...S, stand: { ...S.stand, ...st } }, P).items.find(r => r.key === 'stand');
-    expect(row({ show: false, need: 'ask' })?.label).toMatch(/not chosen yet/);
+    expect(row({ show: false, need: 'ask' })).toBeUndefined();
     expect(row({ show: false, need: 'none' })).toBeUndefined();
     expect(row({ show: true, need: 'added' })?.label).toBe('Stand');
     const kit = DEALS.find(d => d.tank && !d.includes.includes('stand'))!, ens = DEALS.find(d => d.tank && d.includes.includes('stand'))!;
     expect(sceneFromDeal(kit)!.tanks[0].stand).toMatchObject({ show: false, need: 'ask' });
     expect(sceneFromDeal(ens)!.tanks[0].stand.show).toBe(true);
+  });
+});
+describe('path-1 gear and lid advice (Nathan 2026-10-26)', () => {
+  it('a tank started from its animals counts no filter or heater until the owner adds one; an ordinary tank still does', async () => {
+    const { demandOf } = await import('../src/demand/engine');
+    const { defaultProfile } = await import('../src/demand/types');
+    const { emptyScene } = await import('../src/scene/defaults');
+    const S0 = emptyScene().tanks[0], S = { ...S0, water: { ...S0.water, on: true } }, P = defaultProfile();
+    const keys = (T: typeof S) => demandOf(T, P).items.map(r => r.key);
+    expect(keys(S)).toEqual(expect.arrayContaining(['filter', 'heater', 'filterclean']));
+    const p1 = keys({ ...S, stockFirst: true });
+    expect(p1).not.toContain('filter'); expect(p1).not.toContain('heater'); expect(p1).not.toContain('filterclean');
+    expect(keys({ ...S, stockFirst: true, tech: { rows: { filter: 'hob', heater: 'one' } } })).toEqual(expect.arrayContaining(['filter', 'heater']));
+  });
+  it('an open top with animals that get out suggests a lid: mesh when dry, glass when wet; none for plain fish or a lidded tank', async () => {
+    const { lidAdvice } = await import('../src/demand/lid');
+    const { emptyScene } = await import('../src/scene/defaults');
+    const S0 = emptyScene().tanks[0], f = (species: string) => ({ id: 1, species, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0 });
+    const dry = { ...S0, lid: 'open' as const, water: { ...S0.water, on: false }, fish: [f('regaljumper')] };
+    expect(lidAdvice(dry)).toMatchObject({ lid: 'mesh', who: ['Regal jumping spider'] });
+    expect(lidAdvice({ ...dry, lid: 'mesh' })).toBeUndefined();
+    const wet = { ...dry, water: { ...S0.water, on: true } };
+    expect(lidAdvice({ ...wet, fish: [f('hatchet')] })?.lid).toBe('glass');
+    expect(lidAdvice({ ...wet, fish: [f('neon')] })).toBeUndefined();
   });
 });

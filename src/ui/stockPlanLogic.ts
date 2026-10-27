@@ -10,7 +10,7 @@ import { whyAnimal, whysAnimal } from '../scene/animalfit';
 import { operatingCheck, rangeLine, sharedRange } from '../scene/temprange';
 import { volume } from '../scene/physics';
 import { spaceFit, tankExtent } from '../scene/space';
-import { buildSpan, fitIn, lenTxt, stepUps, tankFor, tankLabel, tankOptions, zoneOf, type AnimalCount, type BuildSpan, type TankFit } from '../scene/tankfit';
+import { buildSpan, fitIn, lenTxt, tempVerdict, stepUps, tankFor, tankLabel, tankOptions, zoneOf, type AnimalCount, type BuildSpan, type TankFit } from '../scene/tankfit';
 import { countsAgainstWater } from '../scene/stocking';
 import { minDataOf } from '../scene/tankMin';
 import { setPairing } from '../scene/pairs';
@@ -212,6 +212,8 @@ export interface Plan {
   span?: BuildSpan;
   /** one plain line when the chosen tank is too small for the picks, or when no tank is enough */
   problem?: string;
+  /** a compromise worth knowing, not a block (the animals' comfortable temperatures miss, their tolerable ones meet) */
+  caution?: string;
 }
 const litresOf = (m: TankModel) => volume(tankFromModel(m)).litres;
 /** The litres of the tank the plan shows: the chosen one, else the smallest that fits (0 when none). */
@@ -220,7 +222,7 @@ export const shownLitres = (plan: Plan) => plan.tank ? plan.litres : plan.need ?
 export const shownLengthMm = (plan: Plan) => { const m = plan.tank ?? plan.need?.tank; return m ? tankFromModel(m).L : undefined; };
 
 /** each tank failure in a few words */
-export const FAIL_WORD: Record<string, string> = { space: 'too full', filtration: 'no filter carries it', minimum: 'too small for them', length: 'too short', depth: 'too deep', floor: 'not enough floor', height: 'not tall enough' };
+export const FAIL_WORD: Record<string, string> = { space: 'too full', filtration: 'no filter carries it', minimum: 'too small for them', length: 'too short', depth: 'too deep', floor: 'not enough floor', height: 'not tall enough', temperature: 'no shared temperature' };
 const FAIL_TEXT: Record<string, string> = {
   filtration: 'No filter can carry this many animals; take fewer',
   space: 'Too many animals for this tank; take fewer or pick a bigger tank',
@@ -229,6 +231,7 @@ const FAIL_TEXT: Record<string, string> = {
   depth: 'Too deep for these animals; pick a shallower tank',
   floor: 'Not enough floor for the bottom dwellers and swimmers together; pick a bigger tank',
   height: 'Not tall enough for these climbers; pick a taller terrarium',
+  temperature: 'These animals cannot live at one temperature, even a tolerable one; no tank size fixes that, so keep them apart or swap one',
 };
 
 /** The plan for these picks: the sizes with their verdicts, and the user's chosen tank (never swapped for them) with its cost span. */
@@ -246,8 +249,10 @@ function planOf(animals: AnimalCount[], chosen?: string): Plan {
   if (!options.length) return { litres: 0, options: [] };
   const need = options.find(o => !o.fails.length);
   const fit = chosen ? options.find(o => o.tank.id === chosen) : undefined, tank = fit?.tank;
-  const bad = fit?.fails.length ? FAIL_TEXT[fit.fails.includes('filtration') ? 'filtration' : fit.fails[0]] : !need && !chosen ? 'No tank on the list holds these; take fewer animals' : undefined;
-  return { ...(need ? { need } : {}), options, ...(tank ? { tank, fit, litres: litresOf(tank), span: buildSpan(animals, tank) } : { litres: 0 }), ...(bad ? { problem: bad } : {}) };
+  const noTemp = options[0].fails.includes('temperature'), tv = tempVerdict(animals), why = noTemp ? rangeLine(sharedRange(animals.flatMap(a => getSpecies(a.species) ?? []))) : '';
+  const caution = tv.level === 'compromise' ? `No comfortable temperature in common: they only overlap where both can live, ${tv.range![0]}-${tv.range![1]} C. Hold the water near ${tv.at} C; neither is at its best there` : undefined;
+  const bad = noTemp ? `${FAIL_TEXT.temperature}. ${why}` : fit?.fails.length ? FAIL_TEXT[fit.fails.includes('filtration') ? 'filtration' : fit.fails[0]] : !need && !chosen ? 'No tank on the list holds these; take fewer animals' : undefined;
+  return { ...(need ? { need } : {}), options, ...(tank ? { tank, fit, litres: litresOf(tank), span: buildSpan(animals, tank) } : { litres: 0 }), ...(bad ? { problem: bad } : {}), ...(caution ? { caution } : {}) };
 }
 
 export { tankLabel };

@@ -16,6 +16,8 @@ export function glassThickness(T: Tank, glass: RenderSettings['glass']): number 
 
 /** Rim strip height and how far the bottom rim drops below the bottom glass (mm). */
 export const RIM_H = 20, RIM_DROP = 2;
+/** Height of the moulded hood over the rim top (mm; render/build.ts addHood). */
+export const HOOD_H = 38;
 
 /** y of the underside of the tank (bottom glass, or bottom rim when rimmed) = top of the stand. */
 export function tankUnderside(T: Tank, R: RenderSettings) {

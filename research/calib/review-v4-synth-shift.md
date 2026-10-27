@@ -4,39 +4,39 @@ Build cba9d609. Engine readings: the current engine (research/calib/tables/v4.js
 
 ## Verdict per tag
 
-Flagged: half or more of the tag's answered tanks a band off the app, all in the same direction.
+Flagged: half or more of the tag's answered tanks a band off the app, all in the same direction. A tank the app calls "too small" is shown but not counted here (its own section below).
 
 | tag | tanks | app | experts | agree | milder | harsher | |
 |---|---|---|---|---|---|---|---|
 | compat.betta-community | A14 | caution | ideal | 0 | 1 | 0 | **flag: experts milder** |
-| compat.breeding-pair-floor | A08 B10 B14 | problems, unworkable, problems | caution, unworkable, problems | 2 | 1 | 0 |  |
+| compat.breeding-pair-floor | A08 B10 B14 | problems, too small, problems | caution, caution, problems | 1 | 1 | 0 | **flag: experts milder** |
 | compat.coolwater-mates | B04 | caution | ideal | 0 | 1 | 0 | **flag: experts milder** |
-| compat.coral-nipper | C04 | unworkable | unworkable | 1 | 0 | 0 |  |
-| compat.cover-cave | B10 | unworkable | unworkable | 1 | 0 | 0 |  |
+| compat.coral-nipper | C04 | too small | problems | 0 | 0 | 0 |  |
+| compat.cover-cave | B10 | too small | caution | 0 | 0 | 0 |  |
 | compat.fish-in-shrimp-tank | B16 | unworkable | unworkable | 1 | 0 | 0 |  |
-| compat.hermits-vs-snails | C03 | unworkable | unworkable | 1 | 0 | 0 |  |
+| compat.hermits-vs-snails | C03 | too small | unworkable | 0 | 0 | 0 |  |
 | compat.nip-no-target | A12 | caution | caution | 1 | 0 | 0 |  |
 | compat.nip-vs-fins | A07 | unworkable | unworkable | 1 | 0 | 0 |  |
 | compat.prey-shrimp | A03 A15 B11 | problems, caution, unworkable | problems, ideal, unworkable | 2 | 1 | 0 |  |
-| compat.prey-size | A08 A09 B02 | problems, unworkable, unworkable | caution, unworkable, unworkable | 2 | 1 | 0 |  |
-| compat.prey-sw-inverts | C03 | unworkable | unworkable | 1 | 0 | 0 |  |
+| compat.prey-size | A08 A09 B02 | problems, too small, too small | caution, unworkable, problems | 0 | 1 | 0 | **flag: experts milder** |
+| compat.prey-sw-inverts | C03 | too small | unworkable | 0 | 0 | 0 |  |
 | compat.species-only | B13 | unworkable | unworkable | 1 | 0 | 0 |  |
-| compat.temper | B09 | unworkable | unworkable | 1 | 0 | 0 |  |
-| compat.temper-vs-school | A02 | unworkable | unworkable | 1 | 0 | 0 |  |
+| compat.temper | B09 | too small | unworkable | 0 | 0 | 0 |  |
+| compat.temper-vs-school | A02 | problems | problems | 1 | 0 | 0 |  |
 | compat.temperature-cool | D11 | unworkable | unworkable | 1 | 0 | 0 |  |
-| compat.temperature-narrow | A02 A06 B12 | unworkable, unworkable, caution | unworkable, unworkable, caution | 3 | 0 | 0 |  |
+| compat.temperature-narrow | A02 A06 B12 | problems, problems, caution | problems, problems, caution | 3 | 0 | 0 |  |
 | compat.temperature-none | B11 | unworkable | unworkable | 1 | 0 | 0 |  |
 | compat.temperature-warm | B06 | unworkable | unworkable | 1 | 0 | 0 |  |
-| compat.two-tangs | C07 | unworkable | unworkable | 1 | 0 | 0 |  |
-| compat.water-chemistry | B09 | unworkable | unworkable | 1 | 0 | 0 |  |
-| gap.toxins | D10 | unworkable | unworkable | 1 | 0 | 0 |  |
+| compat.two-tangs | C07 | too small | unworkable | 0 | 0 | 0 |  |
+| compat.water-chemistry | B09 | too small | unworkable | 0 | 0 | 0 |  |
+| gap.toxins | D10 | too small | unworkable | 0 | 0 | 0 |  |
 | golden.discus-85 | B05 | caution | ideal | 0 | 1 | 0 | **flag: experts milder** |
-| groups.chromis | C04 | unworkable | unworkable | 1 | 0 | 0 |  |
-| groups.chromis-under-min | C07 | unworkable | unworkable | 1 | 0 | 0 |  |
+| groups.chromis | C04 | too small | problems | 0 | 0 | 0 |  |
+| groups.chromis-under-min | C07 | too small | unworkable | 0 | 0 | 0 |  |
 | groups.clown-max-2 | C12 | problems | problems | 1 | 0 | 0 |  |
-| groups.demasoni | B07 | unworkable | unworkable | 1 | 0 | 0 |  |
+| groups.demasoni | B07 | too small | caution | 0 | 0 | 0 |  |
 | groups.firefish-pair | C11 | problems | problems | 1 | 0 | 0 |  |
-| groups.grazer-density | B15 | caution | caution | 1 | 0 | 0 |  |
+| groups.grazer-density | B15 | ideal | ideal | 1 | 0 | 0 |  |
 | groups.males-rule | B12 | caution | caution | 1 | 0 | 0 |  |
 | groups.sae | A11 | unworkable | unworkable | 1 | 0 | 0 |  |
 | groups.sexed | A03 A16 | problems, problems | problems, caution | 1 | 1 | 0 | **flag: experts milder** |
@@ -44,57 +44,57 @@ Flagged: half or more of the tag's answered tanks a band off the app, all in the
 | groups.territory-banggai | C10 | problems | problems | 1 | 0 | 0 |  |
 | groups.territory-bolivian | B14 | problems | problems | 1 | 0 | 0 |  |
 | groups.territory-gramma | C11 | problems | problems | 1 | 0 | 0 |  |
-| groups.territory-krib | B10 | unworkable | unworkable | 1 | 0 | 0 |  |
+| groups.territory-krib | B10 | too small | caution | 0 | 0 | 0 |  |
 | groups.territory-puffer | B13 | unworkable | unworkable | 1 | 0 | 0 |  |
-| groups.yellowlab-min | B09 | unworkable | unworkable | 1 | 0 | 0 |  |
+| groups.yellowlab-min | B09 | too small | unworkable | 0 | 0 | 0 |  |
 | herp.adf-min | D12 | problems | caution | 0 | 1 | 0 | **flag: experts milder** |
 | herp.adf-with-betta | D12 | problems | caution | 0 | 1 | 0 | **flag: experts milder** |
-| herp.anole-group | D15 | unworkable | unworkable | 1 | 0 | 0 |  |
-| herp.arboreal-min | D03 | unworkable | unworkable | 1 | 0 | 0 |  |
-| herp.axolotl-min | D13 | unworkable | unworkable | 1 | 0 | 0 |  |
-| herp.axolotl-pair | D14 | unworkable | unworkable | 1 | 0 | 0 |  |
-| herp.axolotl-with-fish | D14 | unworkable | unworkable | 1 | 0 | 0 |  |
-| herp.cohab-sex-rule | D02 | unworkable | unworkable | 1 | 0 | 0 |  |
+| herp.anole-group | D15 | too small | ideal | 0 | 0 | 0 |  |
+| herp.arboreal-min | D03 | too small | ideal | 0 | 0 | 0 |  |
+| herp.axolotl-min | D13 | too small | ideal | 0 | 0 | 0 |  |
+| herp.axolotl-pair | D14 | too small | unworkable | 0 | 0 | 0 |  |
+| herp.axolotl-with-fish | D14 | too small | unworkable | 0 | 0 | 0 |  |
+| herp.cohab-sex-rule | D02 | too small | ideal | 0 | 0 | 0 |  |
 | herp.cross-species | D04 | unworkable | unworkable | 1 | 0 | 0 |  |
-| herp.dartfrog-group | D07 | unworkable | unworkable | 1 | 0 | 0 |  |
-| herp.each-extra | D02 D05 | unworkable, unworkable | unworkable, unworkable | 2 | 0 | 0 |  |
-| herp.female-aggression | D07 | unworkable | unworkable | 1 | 0 | 0 |  |
-| herp.floor-min-bp | D06 | unworkable | unworkable | 1 | 0 | 0 |  |
-| herp.floor-min-leo | D01 | unworkable | unworkable | 1 | 0 | 0 |  |
-| herp.height | D03 D09 | unworkable, unworkable | unworkable, unworkable | 2 | 0 | 0 |  |
-| herp.height-bp | D06 | unworkable | unworkable | 1 | 0 | 0 |  |
-| herp.mixed-pair | D05 | unworkable | unworkable | 1 | 0 | 0 |  |
+| herp.dartfrog-group | D07 | too small | problems | 0 | 0 | 0 |  |
+| herp.each-extra | D02 D05 | too small, too small | ideal, ideal | 0 | 0 | 0 |  |
+| herp.female-aggression | D07 | too small | problems | 0 | 0 | 0 |  |
+| herp.floor-min-bp | D06 | too small | caution | 0 | 0 | 0 |  |
+| herp.floor-min-leo | D01 | too small | ideal | 0 | 0 | 0 |  |
+| herp.height | D03 D09 | too small, too small | ideal, ideal | 0 | 0 | 0 |  |
+| herp.height-bp | D06 | too small | caution | 0 | 0 | 0 |  |
+| herp.mixed-pair | D05 | too small | ideal | 0 | 0 | 0 |  |
 | herp.newt-group | D11 | unworkable | unworkable | 1 | 0 | 0 |  |
 | herp.newt-with-shrimp | D11 | unworkable | unworkable | 1 | 0 | 0 |  |
-| herp.one-male | D15 | unworkable | unworkable | 1 | 0 | 0 |  |
-| herp.prey-amphibian | D08 | unworkable | unworkable | 1 | 0 | 0 |  |
-| herp.toad-group | D10 | unworkable | unworkable | 1 | 0 | 0 |  |
-| herp.toad-with-fish | D10 | unworkable | unworkable | 1 | 0 | 0 |  |
-| herp.treefrog-each-extra | D09 | unworkable | unworkable | 1 | 0 | 0 |  |
-| limits.food-not-room | B15 C09 | caution, unworkable | caution, unworkable | 2 | 0 | 0 |  |
-| space.big-class | B02 | unworkable | unworkable | 1 | 0 | 0 |  |
+| herp.one-male | D15 | too small | ideal | 0 | 0 | 0 |  |
+| herp.prey-amphibian | D08 | too small | unworkable | 0 | 0 | 0 |  |
+| herp.toad-group | D10 | too small | unworkable | 0 | 0 | 0 |  |
+| herp.toad-with-fish | D10 | too small | unworkable | 0 | 0 | 0 |  |
+| herp.treefrog-each-extra | D09 | too small | ideal | 0 | 0 | 0 |  |
+| limits.food-not-room | B15 C09 | ideal, too small | ideal, ideal | 1 | 0 | 0 |  |
+| space.big-class | B02 | too small | problems | 0 | 0 | 0 |  |
 | space.big-class-mass | B04 | caution | ideal | 0 | 1 | 0 | **flag: experts milder** |
 | space.canonical-20 | A04 | problems | caution | 0 | 1 | 0 | **flag: experts milder** |
 | space.chili-refit | A15 | caution | ideal | 0 | 1 | 0 | **flag: experts milder** |
-| space.community-29 | A06 | unworkable | unworkable | 1 | 0 | 0 |  |
+| space.community-29 | A06 | problems | problems | 1 | 0 | 0 |  |
 | space.coolwater | A12 | caution | caution | 1 | 0 | 0 |  |
 | space.discus-community | B06 | unworkable | unworkable | 1 | 0 | 0 |  |
 | space.floor | A04 | problems | caution | 0 | 1 | 0 | **flag: experts milder** |
-| space.footprint-vs-height | A05 | unworkable | unworkable | 1 | 0 | 0 |  |
+| space.footprint-vs-height | A05 | too small | problems | 0 | 0 | 0 |  |
 | space.full-community | A10 | unworkable | unworkable | 1 | 0 | 0 |  |
 | space.invert-class | A15 B16 | caution, unworkable | ideal, unworkable | 1 | 1 | 0 | **flag: experts milder** |
 | space.kuhli-floor-factor | A11 | unworkable | unworkable | 1 | 0 | 0 |  |
 | space.livebearer-nano | A03 | problems | problems | 1 | 0 | 0 |  |
 | space.livebearers | A16 | problems | caution | 0 | 1 | 0 | **flag: experts milder** |
 | space.malawi-mix | B08 | caution | ideal | 0 | 1 | 0 | **flag: experts milder** |
-| space.mbuna-convention | B07 | unworkable | unworkable | 1 | 0 | 0 |  |
+| space.mbuna-convention | B07 | too small | caution | 0 | 0 | 0 |  |
 | space.mid-class | A11 | unworkable | unworkable | 1 | 0 | 0 |  |
-| space.nano | A01 A02 | caution, unworkable | caution, unworkable | 2 | 0 | 0 |  |
-| space.nano-reef | C02 | unworkable | unworkable | 1 | 0 | 0 |  |
+| space.nano | A01 A02 | caution, problems | caution, problems | 2 | 0 | 0 |  |
+| space.nano-reef | C02 | too small | caution | 0 | 0 | 0 |  |
 | space.reef-125 | C08 | unworkable | unworkable | 1 | 0 | 0 |  |
-| space.reef-40 | C04 | unworkable | unworkable | 1 | 0 | 0 |  |
-| space.salt-load | C01 | unworkable | unworkable | 1 | 0 | 0 |  |
-| space.salt-scale | C05 C08 | unworkable, unworkable | unworkable, unworkable | 2 | 0 | 0 |  |
+| space.reef-40 | C04 | too small | problems | 0 | 0 | 0 |  |
+| space.salt-load | C01 | too small | caution | 0 | 0 | 0 |  |
+| space.salt-scale | C05 C08 | too small, unworkable | problems, unworkable | 1 | 0 | 0 |  |
 | space.school-curve | A10 A13 | unworkable, problems | unworkable, problems | 2 | 0 | 0 |  |
 | space.swordtail-refit | A16 | problems | caution | 0 | 1 | 0 | **flag: experts milder** |
 | space.tiny-class | A14 | caution | ideal | 0 | 1 | 0 | **flag: experts milder** |
@@ -102,19 +102,19 @@ Flagged: half or more of the tag's answered tanks a band off the app, all in the
 | space.water-small | A13 | problems | problems | 1 | 0 | 0 |  |
 | tankmin.angel-height | A08 | problems | caution | 0 | 1 | 0 | **flag: experts milder** |
 | tankmin.betta | A01 | caution | caution | 1 | 0 | 0 |  |
-| tankmin.bluetang | C07 | unworkable | unworkable | 1 | 0 | 0 |  |
-| tankmin.clownloach | B02 | unworkable | unworkable | 1 | 0 | 0 |  |
-| tankmin.coralbeauty | C04 | unworkable | unworkable | 1 | 0 | 0 |  |
-| tankmin.coralbeauty-width | C05 | unworkable | unworkable | 1 | 0 | 0 |  |
-| tankmin.demasoni-width | B07 | unworkable | unworkable | 1 | 0 | 0 |  |
-| tankmin.goldfish | B03 | unworkable | unworkable | 1 | 0 | 0 |  |
-| tankmin.mandarin | C09 | unworkable | unworkable | 1 | 0 | 0 |  |
-| tankmin.ocellaris | C01 | unworkable | unworkable | 1 | 0 | 0 |  |
-| tankmin.oscar | B01 | unworkable | unworkable | 1 | 0 | 0 |  |
-| tankmin.royalgramma | C02 | unworkable | unworkable | 1 | 0 | 0 |  |
-| tankmin.sixline | C03 | unworkable | unworkable | 1 | 0 | 0 |  |
+| tankmin.bluetang | C07 | too small | unworkable | 0 | 0 | 0 |  |
+| tankmin.clownloach | B02 | too small | problems | 0 | 0 | 0 |  |
+| tankmin.coralbeauty | C04 | too small | problems | 0 | 0 | 0 |  |
+| tankmin.coralbeauty-width | C05 | too small | problems | 0 | 0 | 0 |  |
+| tankmin.demasoni-width | B07 | too small | caution | 0 | 0 | 0 |  |
+| tankmin.goldfish | B03 | too small | problems | 0 | 0 | 0 |  |
+| tankmin.mandarin | C09 | too small | ideal | 0 | 0 | 0 |  |
+| tankmin.ocellaris | C01 | too small | caution | 0 | 0 | 0 |  |
+| tankmin.oscar | B01 | too small | ideal | 0 | 0 | 0 |  |
+| tankmin.royalgramma | C02 | too small | caution | 0 | 0 | 0 |  |
+| tankmin.sixline | C03 | too small | unworkable | 0 | 0 | 0 |  |
 | tankmin.tarantula-row | D16 | ideal | ideal | 1 | 0 | 0 |  |
-| tankmin.yellowlab | B09 | unworkable | unworkable | 1 | 0 | 0 |  |
+| tankmin.yellowlab | B09 | too small | unworkable | 0 | 0 | 0 |  |
 | tankmin.yellowtang | C06 | caution | ideal | 0 | 1 | 0 | **flag: experts milder** |
 
 ### Agreement by family (rows the app, columns the experts' median, tanks)
@@ -125,17 +125,8 @@ Flagged: half or more of the tag's answered tanks a band off the app, all in the
 |---|---|---|---|---|
 | ideal | 0 | 0 | 0 | 0 |
 | caution | 3 | 2 | 0 | 0 |
-| problems | 0 | 1 | 2 | 0 |
-| unworkable | 0 | 0 | 0 | 15 |
-
-**gap** (1 tanks)
-
-| app \ experts | ideal | caution | problems | unworkable |
-|---|---|---|---|---|
-| ideal | 0 | 0 | 0 | 0 |
-| caution | 0 | 0 | 0 | 0 |
-| problems | 0 | 0 | 0 | 0 |
-| unworkable | 0 | 0 | 0 | 1 |
+| problems | 0 | 1 | 4 | 0 |
+| unworkable | 0 | 0 | 0 | 6 |
 
 **golden** (1 tanks)
 
@@ -150,10 +141,10 @@ Flagged: half or more of the tag's answered tanks a band off the app, all in the
 
 | app \ experts | ideal | caution | problems | unworkable |
 |---|---|---|---|---|
-| ideal | 0 | 0 | 0 | 0 |
-| caution | 1 | 2 | 0 | 0 |
+| ideal | 1 | 0 | 0 | 0 |
+| caution | 1 | 1 | 0 | 0 |
 | problems | 0 | 1 | 5 | 0 |
-| unworkable | 0 | 0 | 0 | 7 |
+| unworkable | 0 | 0 | 0 | 2 |
 
 **herp** (15 tanks)
 
@@ -162,16 +153,16 @@ Flagged: half or more of the tag's answered tanks a band off the app, all in the
 | ideal | 0 | 0 | 0 | 0 |
 | caution | 0 | 0 | 0 | 0 |
 | problems | 0 | 1 | 0 | 0 |
-| unworkable | 0 | 0 | 0 | 14 |
+| unworkable | 0 | 0 | 0 | 2 |
 
 **limits** (2 tanks)
 
 | app \ experts | ideal | caution | problems | unworkable |
 |---|---|---|---|---|
-| ideal | 0 | 0 | 0 | 0 |
-| caution | 0 | 1 | 0 | 0 |
+| ideal | 1 | 0 | 0 | 0 |
+| caution | 0 | 0 | 0 | 0 |
 | problems | 0 | 0 | 0 | 0 |
-| unworkable | 0 | 0 | 0 | 1 |
+| unworkable | 0 | 0 | 0 | 0 |
 
 **space** (24 tanks)
 
@@ -179,8 +170,8 @@ Flagged: half or more of the tag's answered tanks a band off the app, all in the
 |---|---|---|---|---|
 | ideal | 0 | 0 | 0 | 0 |
 | caution | 4 | 2 | 0 | 0 |
-| problems | 0 | 2 | 2 | 0 |
-| unworkable | 0 | 0 | 0 | 14 |
+| problems | 0 | 2 | 4 | 0 |
+| unworkable | 0 | 0 | 0 | 5 |
 
 **tankmin** (16 tanks)
 
@@ -189,8 +180,42 @@ Flagged: half or more of the tag's answered tanks a band off the app, all in the
 | ideal | 1 | 0 | 0 | 0 |
 | caution | 1 | 1 | 0 | 0 |
 | problems | 0 | 1 | 0 | 0 |
-| unworkable | 0 | 0 | 0 | 12 |
+| unworkable | 0 | 0 | 0 | 0 |
 
+
+## Too small (the app's own verdict)
+
+A species under its red-line tank minimum, or a herp under its bare floor or height. Read against the experts' first change ("Bigger tank") and "big enough" answers; their 4-step verdict is shown beside it. Flagged: fewer than half the experts who answered ask for a bigger tank.
+
+| tank | app's lines | the rest, on 4 steps | experts' verdict | experts: bigger tank / not big enough | |
+|---|---|---|---|---|---|
+| A05 | tankmin red: bronzecory | problems (space 119 %) | problems | not asked |  |
+| A09 | tankmin red: angel | unworkable (temperature none) | unworkable | 1 of 1 |  |
+| B01 | tankmin red: oscar | ideal | ideal | 1 of 1 |  |
+| B02 | tankmin red: oscar | problems (space 107 %) | problems | 1 of 1 |  |
+| B03 | tankmin red: goldfish | problems (space 103 %; group too small: goldfish) | problems | 1 of 1 |  |
+| B07 | tankmin red: demasoni | caution (space 85 %; temperature narrow) | caution | 1 of 1 |  |
+| B09 | tankmin red: yellowlab | unworkable (compat high) | unworkable | 1 of 1 |  |
+| B10 | tankmin red: kribensis | caution (space 78 %; compat concern; temperature narrow) | caution | 1 of 1 |  |
+| C01 | tankmin red: ocellaris | caution (space 82 %) | caution | 1 of 1 |  |
+| C02 | tankmin red: royalgramma; tankmin red: firefish; tankmin red: ocellaris | caution (space 99 %; temperature narrow) | caution | 1 of 1 |  |
+| C03 | tankmin red: sixline; tankmin red: ocellaris; tankmin red: watchman | unworkable (compat high) | unworkable | 1 of 1 |  |
+| C04 | tankmin red: coralbeauty | problems (space 126 %) | problems | 1 of 1 |  |
+| C05 | tankmin red: coralbeauty | problems (space 122 %) | problems | not asked |  |
+| C07 | tankmin red: bluetang | unworkable (compat high) | unworkable | 1 of 1 |  |
+| C09 | tankmin red: mandarin; tankmin red: ocellaris | ideal | ideal | 1 of 1 |  |
+| D01 | herp: Leopard gecko: floor 1 | ideal | ideal | 1 of 1 |  |
+| D02 | herp: Leopard gecko: floor 4 | ideal | ideal | 1 of 1 |  |
+| D03 | herp: Crested gecko: floor 1 sq ft (0; herp: Crested gecko: enclosure 18 in tall | ideal | ideal | 1 of 1 |  |
+| D05 | herp: Crested gecko: floor 2 | ideal | ideal | 1 of 1 |  |
+| D06 | herp: Ball python: enclosure 16 in tall | caution (herp floor under recommended: Ball python) | caution | 1 of 1 |  |
+| D07 | herp: Dyeing dart frog: floor 2 | problems (herp: Dyeing dart frog: 2 females) | problems | 1 of 1 |  |
+| D08 | herp: White's tree frog: floor 2; herp: Dyeing dart frog: floor 2 | unworkable (herp: White's tree frog: not with Dyeing dart frog; herp: Dyeing dart frog: not with White's tree frog) | unworkable | 1 of 1 |  |
+| D09 | herp: White's tree frog: floor 2 | ideal | ideal | 1 of 1 |  |
+| D10 | herp: Fire-bellied toad: floor 2 | unworkable (herp: Fire-bellied toad: not with White cloud mountain minnow) | unworkable | 1 of 1 |  |
+| D13 | tankmin red: axolotl | ideal | ideal | 1 of 1 |  |
+| D14 | tankmin red: axolotl | unworkable (compat high; herp: Axolotl: not with White cloud mountain minnow) | unworkable | 1 of 1 |  |
+| D15 | herp: Green anole: floor 2 | ideal | ideal | 1 of 1 |  |
 ## Count fix per tank
 
 Each count read on the dimension its species fills today (as calib-fit.mjs does). "fix" is the multiplier the engine's reading needs (below 0 % the engine reads the tank too full); "least" is the smallest move that makes the expert's count the engine's own nearest count, so a rounded small count is not a disagreement. A tank's fix pools its counted species and its second counted species (the bottom dweller of six tanks, the line below it, marked †). Fitted (calib-fit.mjs): the tanks with a space.* or golden.* tag.
@@ -205,8 +230,8 @@ Each count read on the dimension its species fills today (as calib-fit.mjs does)
 |  | bronzecory † (floor) | 6 -> 101 % | 6 -> 101 % | 8 -> 127 % |  |  |  |
 | A06 | harlequin (water) | 12 -> 78 % | 20 -> 97 % | 36 -> 129 % | -23 % | -22 % | yes |
 | A08 | rummynose (water) | 15 -> 122 % | 0 | 21 -> 130 % | -23 % | -23 % | no |
-| A10 | neon (water) | 20 -> 122 % | 0 | 29 -> 130 % | -23 % | -21 % | yes |
-|  | bronzecory † (floor) | 12 -> 91 % | 13 -> 97 % | 18 -> 128 % |  |  |  |
+| A10 | neon (water) | 20 -> 118 % | 0 | 33 -> 130 % | -24 % | -22 % | yes |
+|  | bronzecory † (floor) | 12 -> 87 % | 14 -> 99 % | 19 -> 130 % |  |  |  |
 | A11 | boesemani (water) | 8 -> 113 % | 4 -> 99 % | 14 -> 130 % | -23 % | -22 % | yes |
 |  | kuhli † (max) | 10 -> 113 % | 1 -> 97 % | 21 -> 130 % |  |  |  |
 | A12 | danio (water) | 12 -> 99 % | 12 -> 99 % | 19 -> 129 % | -23 % | -22 % | yes |
@@ -222,7 +247,7 @@ Each count read on the dimension its species fills today (as calib-fit.mjs does)
 |  | sterbai † (floor) | 8 -> 35 % | 22 -> 96 % | 30 -> 131 % |  |  |  |
 | B07 | yellowlab (max) | 8 -> 85 % | 11 -> 96 % | 21 -> 130 % | -23 % | -21 % | yes |
 | B08 | peacock (water) | 5 -> 95 % | 6 -> 99 % | 15 -> 130 % | -24 % | -23 % | yes |
-| B15 | oto (max) | 8 -> 98 % | 8 -> 98 % | 13 -> 130 % | -23 % | -21 % | no |
+| B15 | oto (max) | 8 -> 72 % | 14 -> 96 % | 23 -> 130 % | -22 % | -21 % | no |
 | B16 | cherryshrimp (max) | 30 -> 104 % | 24 -> 97 % | 57 -> 130 % | -23 % | -22 % | yes |
 | C03 | hermit (max) | 10 -> 118 % | 5 -> 100 % | 14 -> 131 % | -24 % | -23 % | no |
 | C04 | chromis (water) | 6 -> 126 % | 3 -> 99 % | 7 -> 133 % | -25 % | -22 % | yes |
@@ -251,11 +276,11 @@ Flagged: the median least fix of the tag's count tanks more than 15 % off.
 | golden.discus-85 | B05 | -24 % | -19 % | **flag: engine reads too full** |
 | groups.chromis | C04 | -25 % | -22 % | **flag: engine reads too full** |
 | groups.demasoni | B07 | -23 % | -21 % | **flag: engine reads too full** |
-| groups.grazer-density | B15 | -23 % | -21 % | **flag: engine reads too full** |
+| groups.grazer-density | B15 | -22 % | -21 % | **flag: engine reads too full** |
 | groups.sae | A11 | -23 % | -22 % | **flag: engine reads too full** |
 | groups.sexed | A03 A16 | -24 % | -21 % | **flag: engine reads too full** |
 | groups.syno | B08 | -24 % | -23 % | **flag: engine reads too full** |
-| limits.food-not-room | B15 | -23 % | -21 % | **flag: engine reads too full** |
+| limits.food-not-room | B15 | -22 % | -21 % | **flag: engine reads too full** |
 | space.big-class-mass | B04 | -27 % | -18 % | **flag: engine reads too full** |
 | space.canonical-20 | A04 | -25 % | -22 % | **flag: engine reads too full** |
 | space.chili-refit | A15 | -23 % | -22 % | **flag: engine reads too full** |
@@ -264,7 +289,7 @@ Flagged: the median least fix of the tag's count tanks more than 15 % off.
 | space.discus-community | B06 | -22 % | -19 % | **flag: engine reads too full** |
 | space.floor | A04 | -25 % | -22 % | **flag: engine reads too full** |
 | space.footprint-vs-height | A05 | -23 % | -20 % | **flag: engine reads too full** |
-| space.full-community | A10 | -23 % | -21 % | **flag: engine reads too full** |
+| space.full-community | A10 | -24 % | -22 % | **flag: engine reads too full** |
 | space.invert-class | A15 B16 | -23 % | -22 % | **flag: engine reads too full** |
 | space.kuhli-floor-factor | A11 | -23 % | -22 % | **flag: engine reads too full** |
 | space.livebearer-nano | A03 | -25 % | -20 % | **flag: engine reads too full** |
@@ -276,7 +301,7 @@ Flagged: the median least fix of the tag's count tanks more than 15 % off.
 | space.reef-125 | C08 | -23 % | -22 % | **flag: engine reads too full** |
 | space.reef-40 | C04 | -25 % | -22 % | **flag: engine reads too full** |
 | space.salt-scale | C05 C08 | -23 % | -21 % | **flag: engine reads too full** |
-| space.school-curve | A10 A13 | -23 % | -22 % | **flag: engine reads too full** |
+| space.school-curve | A10 A13 | -24 % | -22 % | **flag: engine reads too full** |
 | space.swordtail-refit | A16 | -22 % | -21 % | **flag: engine reads too full** |
 | space.tiny-class | A14 | -23 % | -23 % | **flag: engine reads too full** |
 | space.water | A04 | -25 % | -22 % | **flag: engine reads too full** |
@@ -294,13 +319,13 @@ fewer X: the app's biggest contributor on its binding dimension, or a fighting w
 | tank | app's reading | experts | fits the app | |
 |---|---|---|---|---|
 | A01 | caution: tankmin yellow: betta | bigger | yes |  |
-| A02 | unworkable: compat high | drop nerite | yes |  |
+| A02 | problems: group too small: neon | ratio | yes |  |
 | A03 | problems: space 131 %; group too small: cherryshrimp | fewer guppy | yes |  |
 | A04 | problems: space 101 % | fewer bronzecory | yes |  |
-| A06 | unworkable: compat high | drop nerite | yes |  |
+| A06 | problems: group too small: amano | ratio | yes |  |
 | A07 | unworkable: compat high | drop betta | yes |  |
 | A08 | problems: space 122 % | fewer sterbai | yes |  |
-| A09 | unworkable: tankmin red: angel; temperature none | bigger | yes |  |
+| A09 | too-small: tankmin red: angel | bigger | yes |  |
 | A10 | unworkable: temperature single | drop | yes |  |
 | A11 | unworkable: compat high; temperature single | drop kuhli | yes |  |
 | A12 | caution: space 99 %; tankmin yellow: danio; temperature narrow | fewer danio | yes |  |
@@ -308,48 +333,48 @@ fewer X: the app's biggest contributor on its binding dimension, or a fighting w
 | A14 | caution: space 85 %; tankmin yellow: kuhli; temperature narrow | fewer kuhli | yes |  |
 | A15 | caution: space 92 %; temperature narrow | fewer chili | yes |  |
 | A16 | problems: space 102 % | fewer swordtail | yes |  |
-| B01 | unworkable: tankmin red: oscar | bigger | yes |  |
-| B02 | unworkable: tankmin red: oscar | bigger | yes |  |
-| B03 | unworkable: tankmin red: goldfish | bigger | yes |  |
+| B01 | too-small: tankmin red: oscar | bigger | yes |  |
+| B02 | too-small: tankmin red: oscar | bigger | yes |  |
+| B03 | too-small: tankmin red: goldfish | bigger | yes |  |
 | B04 | caution: space 82 %; temperature narrow | fewer goldfish | yes |  |
 | B05 | caution: space 82 %; tankmin yellow: discus | fewer discus | yes |  |
 | B06 | unworkable: temperature outside | drop | yes |  |
-| B07 | unworkable: tankmin red: demasoni | bigger | yes |  |
+| B07 | too-small: tankmin red: demasoni | bigger | yes |  |
 | B08 | caution: space 95 %; temperature narrow | fewer syno | yes |  |
-| B09 | unworkable: compat high; tankmin red: yellowlab | drop yellowlab | yes |  |
-| B10 | unworkable: tankmin red: kribensis | bigger | yes |  |
+| B09 | too-small: tankmin red: yellowlab | bigger | yes |  |
+| B10 | too-small: tankmin red: kribensis | bigger | yes |  |
 | B11 | unworkable: compat high; temperature none | drop cherryshrimp | yes |  |
 | B12 | caution: temperature narrow | drop | yes |  |
 | B13 | unworkable: compat high | drop oto | yes |  |
 | B14 | problems: crowd: 4 Bolivian rams | fewer bolivianram | yes |  |
-| B15 | caution: space 98 % | fewer oto | yes |  |
+| B15 | ideal: - | nothing | yes |  |
 | B16 | unworkable: compat high | drop chili | yes |  |
-| C01 | unworkable: tankmin red: ocellaris | bigger | yes |  |
-| C02 | unworkable: tankmin red: royalgramma; tankmin red: firefish; tankmin red: ocellaris | bigger | yes |  |
-| C03 | unworkable: compat high; tankmin red: sixline; tankmin red: ocellaris; tankmin red: watchman | drop hermit | yes |  |
-| C04 | unworkable: tankmin red: coralbeauty | bigger | yes |  |
+| C01 | too-small: tankmin red: ocellaris | bigger | yes |  |
+| C02 | too-small: tankmin red: royalgramma; tankmin red: firefish; tankmin red: ocellaris | bigger | yes |  |
+| C03 | too-small: tankmin red: sixline; tankmin red: ocellaris; tankmin red: watchman | bigger | yes |  |
+| C04 | too-small: tankmin red: coralbeauty | bigger | yes |  |
 | C06 | caution: space 91 %; tankmin yellow: yellowtang; temperature narrow | fewer chromis | yes |  |
-| C07 | unworkable: compat high; tankmin red: bluetang | drop bluetang | yes |  |
+| C07 | too-small: tankmin red: bluetang | bigger | yes |  |
 | C08 | unworkable: compat high | drop bluetang | yes |  |
-| C09 | unworkable: tankmin red: mandarin; tankmin red: ocellaris | bigger | yes |  |
+| C09 | too-small: tankmin red: mandarin; tankmin red: ocellaris | bigger | yes |  |
 | C10 | problems: crowd: 5 Banggai cardinalfish | fewer banggai | yes |  |
 | C11 | problems: crowd: Royal gramma is best kept one to a tank | fewer royalgramma | yes |  |
 | C12 | problems: crowd: 3 Ocellaris clownfish | fewer ocellaris | yes |  |
-| D01 | unworkable: herp: Leopard gecko: floor 1 | bigger | yes |  |
-| D02 | unworkable: herp: Leopard gecko: floor 4 | bigger | yes |  |
-| D03 | unworkable: herp: Crested gecko: floor 1 sq ft (0; herp: Crested gecko: enclosure 18 in tall; it needs at least 24 in | bigger | yes |  |
+| D01 | too-small: herp: Leopard gecko: floor 1 | bigger | yes |  |
+| D02 | too-small: herp: Leopard gecko: floor 4 | bigger | yes |  |
+| D03 | too-small: herp: Crested gecko: floor 1 sq ft (0; herp: Crested gecko: enclosure 18 in tall | bigger | yes |  |
 | D04 | unworkable: herp: Crested gecko: not with Green anole; herp: Green anole: not with Crested gecko (flame) | drop greenanole | yes |  |
-| D05 | unworkable: herp: Crested gecko: floor 2 | bigger | yes |  |
-| D06 | unworkable: herp: Ball python: enclosure 16 in tall; it needs at least 18 in | bigger | yes |  |
-| D07 | unworkable: herp: Dyeing dart frog: floor 2 | bigger | yes |  |
-| D08 | unworkable: herp: White's tree frog: floor 2; herp: White's tree frog: not with Dyeing dart frog; herp: Dyeing dart frog: floor 2; herp: Dyeing dart frog: not with White's tree frog | bigger | yes |  |
-| D09 | unworkable: herp: White's tree frog: floor 2 | bigger | yes |  |
-| D10 | unworkable: herp: Fire-bellied toad: floor 2; herp: Fire-bellied toad: not with White cloud mountain minnow | bigger | yes |  |
+| D05 | too-small: herp: Crested gecko: floor 2 | bigger | yes |  |
+| D06 | too-small: herp: Ball python: enclosure 16 in tall | bigger | yes |  |
+| D07 | too-small: herp: Dyeing dart frog: floor 2 | bigger | yes |  |
+| D08 | too-small: herp: White's tree frog: floor 2; herp: Dyeing dart frog: floor 2 | bigger | yes |  |
+| D09 | too-small: herp: White's tree frog: floor 2 | bigger | yes |  |
+| D10 | too-small: herp: Fire-bellied toad: floor 2 | bigger | yes |  |
 | D11 | unworkable: temperature single | drop | yes |  |
 | D12 | problems: space 107 % | fewer adf | yes |  |
-| D13 | unworkable: tankmin red: axolotl | bigger | yes |  |
-| D14 | unworkable: compat high; tankmin red: axolotl; herp: Axolotl: not with White cloud mountain minnow | drop whitecloud | yes |  |
-| D15 | unworkable: herp: Green anole: floor 2 | bigger | yes |  |
+| D13 | too-small: tankmin red: axolotl | bigger | yes |  |
+| D14 | too-small: tankmin red: axolotl | bigger | yes |  |
+| D15 | too-small: herp: Green anole: floor 2 | bigger | yes |  |
 | D16 | ideal: - | nothing | yes |  |
 
 ## Keep together, and why, against compatRisks
@@ -358,9 +383,9 @@ The app's answer: no for a blocked pair, no shared temperature, or a herp that m
 
 | tank | app | app's lines | experts | app reasons | expert reasons | |
 |---|---|---|---|---|---|---|
-| A02 | no | Neon tetra with Nerite snail (zebra): water chemistry: pH 5.0-7.0 against its 7.0-8.5 (Nerite snail (zebra)); temperature narrow | caution | chemistry, temperature | chemistry, temperature | **flag** |
+| A02 | caution | Neon tetra with Nerite snail (zebra): water chemistry: prefers pH 5.0-7.0, it 7.0-8.5; both accept 7.0-7.5, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps (Nerite snail (zebra)); temperature narrow | yes | chemistry, temperature | - | **flag** |
 | A03 | caution | temperature narrow | yes | temperature | - | **flag** |
-| A06 | no | Harlequin rasbora with Nerite snail (zebra): water chemistry: pH 5.0-7.0 against its 7.0-8.5 (Nerite snail (zebra)); temperature narrow | caution | chemistry, temperature | chemistry, temperature | **flag** |
+| A06 | caution | Harlequin rasbora with Nerite snail (zebra): water chemistry: prefers pH 5.0-7.0, it 7.0-8.5; both accept 7.0-7.5, a compromise; snail shells need calcium and buffering (KH): crushed coral or a mineral supplement helps (Nerite snail (zebra)); temperature narrow | yes | chemistry, temperature | - | **flag** |
 | A07 | no | Tiger barb with Betta: would harass its long fins | caution | nip | nip | **flag** |
 | A08 | caution | Angelfish breeding pair defends much of this floor (648 sq in): tankmates need caves and sight breaks elsewhere; temperature narrow | yes | aggression, temperature | - | **flag** |
 | A09 | no | Angelfish breeding pair defends much of this floor (624 sq in): tankmates need caves and sight breaks elsewhere; temperature none | caution | aggression, temperature | aggression, temperature | **flag** |
@@ -370,7 +395,7 @@ The app's answer: no for a blocked pair, no shared temperature, or a herp that m
 | B04 | caution | temperature narrow | yes | temperature | - | **flag** |
 | B06 | no | temperature narrow | caution | temperature | temperature | **flag** |
 | B07 | caution | temperature narrow | yes | temperature | - | **flag** |
-| B09 | no | Neon tetra with Yellow lab cichlid: water chemistry: pH 5.0-7.0 against its 7.6-8.6; Neon tetra with Yellow lab cichlid: water hardness: GH 1-10 against its 10-20; temperature narrow | caution | chemistry, temperature | chemistry, temperature | **flag** |
+| B09 | no | Neon tetra with Yellow lab cichlid: water chemistry: pH 4.0-7.5 against its 7.6-8.6; temperature narrow | caution | chemistry, temperature | chemistry, temperature | **flag** |
 | B10 | caution | Kribensis breeding pair defends much of this floor (360 sq in): tankmates need caves and sight breaks elsewhere; temperature narrow | yes | aggression, temperature | - | **flag** |
 | B11 | no | German blue ram with Cherry shrimp: would eat it; temperature none | caution | eat, temperature | eat, temperature | **flag** |
 | B12 | caution | temperature narrow | yes | temperature | - | **flag** |
@@ -451,7 +476,9 @@ Confidence: low 0, medium 60, high 0. A module a keeper mostly skips is outside 
 ## Flags
 
 - verdict compat.betta-community: milder (1 of 1 tanks)
+- verdict compat.breeding-pair-floor: milder (1 of 2 tanks)
 - verdict compat.coolwater-mates: milder (1 of 1 tanks)
+- verdict compat.prey-size: milder (1 of 1 tanks)
 - verdict golden.discus-85: milder (1 of 1 tanks)
 - verdict groups.sexed: milder (1 of 2 tanks)
 - verdict groups.syno: milder (1 of 1 tanks)
@@ -498,7 +525,7 @@ Confidence: low 0, medium 60, high 0. A module a keeper mostly skips is outside 
 - count space.discus-community: engine too full (-19 %)
 - count space.floor: engine too full (-22 %)
 - count space.footprint-vs-height: engine too full (-20 %)
-- count space.full-community: engine too full (-21 %)
+- count space.full-community: engine too full (-22 %)
 - count space.invert-class: engine too full (-22 %)
 - count space.kuhli-floor-factor: engine too full (-22 %)
 - count space.livebearer-nano: engine too full (-20 %)
@@ -520,9 +547,9 @@ Confidence: low 0, medium 60, high 0. A module a keeper mostly skips is outside 
 - count tankmin.coralbeauty-width: engine too full (-20 %)
 - count tankmin.demasoni-width: engine too full (-21 %)
 - count tankmin.sixline: engine too full (-23 %)
-- compat A02: milder (app no, experts caution)
+- compat A02: milder (app caution, experts yes)
 - compat A03: milder (app caution, experts yes)
-- compat A06: milder (app no, experts caution)
+- compat A06: milder (app caution, experts yes)
 - compat A07: milder (app no, experts caution)
 - compat A08: milder (app caution, experts yes)
 - compat A09: milder (app no, experts caution)

@@ -111,7 +111,7 @@
     ],
     "pools": []
    },
-   "lid": "open",
+   "lid": "mesh",
    "stand": {
     "show": true,
     "height": 762,

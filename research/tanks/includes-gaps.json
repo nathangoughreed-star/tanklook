@@ -1,0 +1,6019 @@
+{
+ "note": "variants whose includes has unknown keys (lid unknown, or light / filter / heater / stand); feeds a follow-up research lane",
+ "count": 583,
+ "gaps": [
+  {
+   "key": "g2_5|Aqueon|MiniBow LED kit|11.5x7.63x12.5|",
+   "maker": "Aqueon",
+   "retailer": null,
+   "url": "https://www.aqueon.com/products/aquarium-starter-kits/minibow-led-kits",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g2_5|Aqueon|Standard Glass Rectangle|12.25x6.25x8.25|PetSmart",
+   "maker": "Aqueon",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5356062.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g2_5|Fluval|Spec (2.6 gal / 10 L)|11.8x10.8x8.7|",
+   "maker": "Fluval",
+   "retailer": null,
+   "url": "https://bulkreefsupply.com/fluval-spec-2-6-gallon-aquarium-kit-fluval.html",
+   "unknown": [
+    "lid",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g2_5|Marineland|Standard Rectangular 2.5 gal|12x6x8|Marineland (maker)",
+   "maker": "Marineland",
+   "retailer": "Marineland (maker)",
+   "url": "https://sc10cdn.spectrumbrands.com/-/media/project/spectrumcommerce/marineland/files/product-files/aquarium-products/tanks/rectangular-tanks-specs-and-sizes-template.pdf",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g2_5|NICREW|2.5 Gallon Nano Nature Aquarium Kit Basic Black|11.8x6.3x8.66|Amazon",
+   "maker": "NICREW",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0DMNKBWBN",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g2_5|minilake|2.5 Gallon Nano Aquarium Starter Kit Rimless Glass|11.86x6.3x8.7|Amazon",
+   "maker": "minilake",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0H7C43L8C",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g2_5|Imagitarium|Shallow Glass Aquarium Kit with lighting, filtration & accessories 2.5 gal|12.87x7x8.11|Petco",
+   "maker": "Imagitarium",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "g2_5|Top Fin|Custom Colorflow Aquarium with 7 Color-Changing LEDs 3 gal|13.4x6.85x9.01|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5295572.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g2_5|Top Fin|Easy Clean Aquarium 3 gal|13.4x6.85x9.01|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5285082.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g3c|Marineland|Contour Aquarium Kit|9.63x9.63x14|",
+   "maker": "Marineland",
+   "retailer": null,
+   "url": "https://www.petsmart.com/5362412.html",
+   "unknown": [
+    "lid",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g3c|Tetra|3 gal Cube kit|10x10x10.51|",
+   "maker": "Tetra",
+   "retailer": null,
+   "url": "https://www.desertcart.sn/products/1627265",
+   "unknown": [
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g3c|Tetra|Cube 3 Gallon Starter Fish Tank Kit|9.75x9.75x10.32|Amazon",
+   "maker": "Tetra",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B008CA7W7E",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g3c|Imagitarium|Betta Cube Kit 2.5 gal Blue|9.01x8.74x8.62|Petco",
+   "maker": "Imagitarium",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "g3c|Lifegard Aquatics|Ultra Low Iron Betta Filter Kit (alt)|7.87x7.87x9.84|Petco",
+   "maker": "Lifegard Aquatics",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "g3c|Top Fin|Shrimp & Plant Oasis Tank Aquarium 3 gal|9.1x9.1x9.3|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5321024.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g3c|Top Fin|Backlight Aquarium 3 gal|9.6x8.8x10.9|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5300984.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g3c|Top Fin|Clear Vivid View Aquarium 3 gal (acrylic)|10x8.7x11.4|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5321065.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g3c|Vibrant Life|Life Betta View Aquarium Starter Kit, 3 Gallon|9.25x9.25x9.75|Walmart (sold and shipped by Walmart.com)",
+   "maker": "Vibrant Life",
+   "retailer": "Walmart (sold and shipped by Walmart.com)",
+   "url": "https://www.walmart.com/ip/15280601414",
+   "unknown": [
+    "lid",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g5|Aqueon|MiniBow LED SmartClean kit|14.5x10x13.5|",
+   "maker": "Aqueon",
+   "retailer": null,
+   "url": "https://www.thatpetplace.com/aqueon-5g-mini-bow-led-smartclean-aquarium-kit",
+   "unknown": [
+    "lid",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g5|Marineland|Portrait Glass LED kit|9.5x9.5x14|",
+   "maker": "Marineland",
+   "retailer": null,
+   "url": "https://www.thatpetplace.com/marineland-portrait-desktop-kit-5-gal",
+   "unknown": [
+    "lid",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g5|GloFish|LED Aquarium Kit 5 gal|16.5x10.5x11|PetSmart",
+   "maker": "GloFish",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/fish/starter-kits/glofish-led-aquarium-kit-94257.html",
+   "unknown": [
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g5|Imagitarium (Petco)|Glass Shrimp & Aquatic Plants Aquarium 5 gal|11.81x10.43x10.15|Petco",
+   "maker": "Imagitarium (Petco)",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/product/imagitarium-glass-shrimp-and-aquatic-plants-aquarium",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g5|Marineland|Standard Rectangular 5.5 gal|16x8x10|Marineland (maker)",
+   "maker": "Marineland",
+   "retailer": "Marineland (maker)",
+   "url": "https://sc10cdn.spectrumbrands.com/-/media/project/spectrumcommerce/marineland/files/product-files/aquarium-products/tanks/rectangular-tanks-specs-and-sizes-template.pdf",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g5|Tetra|ColorFusion Bubbling LED Aquarium Kit|16x8x10|Tetra (maker)",
+   "maker": "Tetra",
+   "retailer": "Tetra (maker)",
+   "url": "https://www.tetra-fish.com/products/aquarium-kits/colorfusion-bubbling-led-aquarium-kit",
+   "unknown": [
+    "lid",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g5|minilake|5 Gallon Glass Aquarium Starter Kit Rimless|16x8x10|Amazon",
+   "maker": "minilake",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0GY8Z64YQ",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g5|GloFish|5 gal Kit with blue and white LEDs|16x8.5x10|Petco",
+   "maker": "GloFish",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "g5|GloFish|LED Aquarium Kit 5 gal|16.25x8.43x10.12|PetSmart",
+   "maker": "GloFish",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5369363.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g5|Top Fin|Shrimp & Plant Aquarium 5 gal|15.17x9.1x9.3|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5342771.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g5|Top Fin|Custom Colorflow Aquarium with 7 Color-Changing LEDs 5 gal|16x8.58x11.2|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5295564.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g5|Top Fin|Easy Clean Aquarium 5 gal|16x8.58x11.2|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5285081.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g5|Vibrant Life|Life 5-Gallon Bow-Front Glow/White Aquarium Starter Kit (5 gal)|14x9x10.5|Walmart (sold and shipped by Walmart.com)",
+   "maker": "Vibrant Life",
+   "retailer": "Walmart (sold and shipped by Walmart.com)",
+   "url": "https://www.walmart.com/ip/20000457618",
+   "unknown": [
+    "lid",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g5_5|Aqueon|Standard Glass Rectangle|16.5x8.75x10.75|PetSmart",
+   "maker": "Aqueon",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5345486.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g5_5|Aqueon|Standard Rectangular Black Trim (Aquarium Depot CA listing)|16.25x8.375x10.5|",
+   "maker": "Aqueon",
+   "retailer": null,
+   "url": "https://aquariumdepot.ca/products/aqueon-standard-rectangular-aquarium-black-trim-5-5-gal",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g5_5|Aqueon|Standard Glass Rectangle 5.5 gal|16.25x8.4x10.5|Aqueon (maker)",
+   "maker": "Aqueon",
+   "retailer": "Aqueon (maker)",
+   "url": "https://www.aqueon.com/products/aquariums/standard-glass-rectangle-aquariums",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g5_5|Aqueon|5.5 LED Aquarium Starter Kit (5.5 gal)|16.1875x8.375x10.5|Aqueon (maker)",
+   "maker": "Aqueon",
+   "retailer": "Aqueon (maker)",
+   "url": "https://www.aqueon.com/products/aquarium-starter-kits/aquarium-starter-kit-with-led",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g5_5|Wonderfactory|5 Gallon Smart Fish Tank App Controlled Glass Betta Kit|17.2x9.2x10.5|Amazon",
+   "maker": "Wonderfactory",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0H8S9QDN3",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g5_5|Wonderfactory|5 Gallon Small Glass Aquarium Kit Starter Set|15.6x7.8x11.7|Amazon",
+   "maker": "Wonderfactory",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0H6B8XBYL",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g5_5|Imagitarium|LED Aquarium Kit 5.5 gal|16.18x8.42x10.47|Petco",
+   "maker": "Imagitarium",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "g5_5|Top Fin|Essentials Aquarium Starter Kit 5 gal (5.5 gal tank)|16.2x8.4x10.9|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5355200.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g6c|AquaTop|High Clarity Low Iron cube (7.1 gal)|12x12x12|",
+   "maker": "AquaTop",
+   "retailer": null,
+   "url": "https://yourlocalfishstore.com/collections/rimless-aquariums",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g6c|Ultum Nature Systems|30C rimless cube (7 gal)|11.81x11.81x11.81|Bulk Reef Supply",
+   "maker": "Ultum Nature Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/30c-rimless-aquarium-7-gallon-ultum-nature-systems.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g6c|Imagitarium (Petco)|Frameless Freshwater Aquarium Kit (6.8 gal)|13.75x8.75x14|Petco",
+   "maker": "Imagitarium (Petco)",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/product/imagitarium-frameless-freshwater-aquarium-kit",
+   "unknown": [
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g6c|Top Fin|Backlight Aquarium 5 gal|12.1x10.4x11.8|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5300988.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g8c|biOrb|CUBE 30 (8 gal), acrylic|12.6x12.6x13.6|",
+   "maker": "biOrb",
+   "retailer": null,
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g8c|Fluval|Plant Aquarium Starter Kit 9 gal|14x13x12|Fluval (maker)",
+   "maker": "Fluval",
+   "retailer": "Fluval (maker)",
+   "url": "https://fluvalaquatics.com/us/shop/product/plant-aquarium-starter-kit-9-us-gal-34-l",
+   "unknown": [
+    "lid",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g8c|Fluval|Plant Fish Tank Aquarium Starter Kit 9 gal|14x13x12|PetSmart",
+   "maker": "Fluval",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5386296.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g10|Aqueon|Standard Glass Rectangle|20.25x10.5x12.6|",
+   "maker": "Aqueon",
+   "retailer": null,
+   "url": "https://aquariumdepot.ca/products/aqueon-standard-rectangular-aquarium-black-trim-10-gal",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g10|Innovative Marine|Nuvo Fusion Nano 10|11.8x15x13|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/10-nuvo-fusion-pro-aio-aquarium-bundle-innovative-marine.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g10|Marineland|Open Glass Aquarium|20x10x12|PetSmart",
+   "maker": "Marineland",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-open-glass-aquarium-86933.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g10|Tetra|10 Gallon STEM Aquarium Kit|22.07x11.07x14.19|",
+   "maker": "Tetra",
+   "retailer": null,
+   "url": "https://www.petsmart.com/5342454.html",
+   "unknown": [
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g10|Top Fin|Angled Aquarium|23.24x12.8x9.89|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/top-fin-angled-aquarium--10-gallon-5342770.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g10|Top Fin|Cube Aquarium Essentials Starter Kit|14.09x14.09x14.09|",
+   "maker": "Top Fin",
+   "retailer": null,
+   "url": "https://www.petsmart.com/fish/starter-kits/top-fin-cube-aquarium-essentials-starter-kit---fish-tank-starter-kit---10-gallon-100213.html",
+   "unknown": [
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g10|Waterbox|Cube 10 AIO|13.8x14.2x13.8|",
+   "maker": "Waterbox",
+   "retailer": null,
+   "url": "https://frags2fishes.com/aquariums/cube10starphireultraclear10gallonaquarium-waterboxaquariums/",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g10|Top Fin|LED Black Glass Aquarium Kit 10 gal|20.1x10.1x12.8|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/fish/starter-kits/top-fin-led-black-glass-aquarium-58620.html",
+   "unknown": [
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g10|Tetra|Complete LED Aquarium Kit 10 gal|20x10x12|Chewy",
+   "maker": "Tetra",
+   "retailer": "Chewy",
+   "url": "https://www.chewy.com/tetra-complete-tropical-fish-aquarium/dp/1452806",
+   "unknown": [
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g10|Imagitarium (Petco)|LED Aquarium Kit 10 gal|20.15x10.19x12.75|Petco",
+   "maker": "Imagitarium (Petco)",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/shop/en/petcostore/product/imagitarium-led-aquarium-kit",
+   "unknown": [
+    "stand"
+   ]
+  },
+  {
+   "key": "g10|Aqueon|LED SmartClean Starter Kit 10 gal|20.25x10.5x12.5625|Aqueon (maker)",
+   "maker": "Aqueon",
+   "retailer": "Aqueon (maker)",
+   "url": "https://www.aqueon.com/products/aquarium-starter-kits/smartclean-led-kit",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g10|Aqueon|Rectangle LED Kit 10 gal|20.25x10.5x12.5625|Aqueon (maker)",
+   "maker": "Aqueon",
+   "retailer": "Aqueon (maker)",
+   "url": "https://www.aqueon.com/products/aquarium-starter-kits/rectangle-led-kits",
+   "unknown": [
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g10|Tetra|STEM Aquarium Kit with Activity Guide 10 gal|20x10x12|Tetra (maker)",
+   "maker": "Tetra",
+   "retailer": "Tetra (maker)",
+   "url": "https://www.tetra-fish.com/products/aquarium-kits/stem-10-gal-aquarium-kit-with-activity-guide",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g10|Tetra|PLAYMOBIL Explore Your Aquarium Kit 10 gal|20x10x12|Tetra (maker)",
+   "maker": "Tetra",
+   "retailer": "Tetra (maker)",
+   "url": "https://www.tetra-fish.com/products/aquarium-kits/playmobil-kit",
+   "unknown": [
+    "stand"
+   ]
+  },
+  {
+   "key": "g10|Tetra|Goldfish LED Aquarium Kit|20x10x12|Tetra (maker)",
+   "maker": "Tetra",
+   "retailer": "Tetra (maker)",
+   "url": "https://www.tetra-fish.com/products/aquarium-kits/goldfish-led-aquarium-kit",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g10|Fluval|Visi-White 45P Aquarium Set 10.7 gal|17.7x11.8x11.8|Fluval (maker)",
+   "maker": "Fluval",
+   "retailer": "Fluval (maker)",
+   "url": "https://fluvalaquatics.com/us/shop/product/visi-white-45p-aquarium-set-10-7-us-gal-40-5-l",
+   "unknown": [
+    "lid",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g10|Marina|LED Aquarium Kit 10 gallon|20x10x12.5|Amazon",
+   "maker": "Marina",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0173I55JM",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g10|FZONE|10 Gal Rimless Aquarium (S45-W30)|17.7x11.8x11.8|Amazon",
+   "maker": "FZONE",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B09XB6TG7X",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g10|Wonderfactory|10 Gallon Fish Tank Set Glass Aquarium Starter Kit|19.5x9.75x12.48|Amazon",
+   "maker": "Wonderfactory",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0H9YDSV4V",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g10|North American Pet Aquatics|10 gal Glass Aquarium with Glass Lid|20.125x10.125x12.5|Petco",
+   "maker": "North American Pet Aquatics",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/product/north-american-pet-aquatics-10-gallon-glass-aquarium-with-glass-lid",
+   "unknown": [
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g10|GloFish|10 gal Glass Aquarium Kit|20x10x12|Petco",
+   "maker": "GloFish",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "g10|GloFish|Premium Seamless Kit 10 gal|18.5x10.5x13|Petco",
+   "maker": "GloFish",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "g10|Top Fin|Essentials Aquarium Starter Kit 10 gal|20x10.1x12.8|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5355199.html",
+   "unknown": [
+    "stand"
+   ]
+  },
+  {
+   "key": "g10|Top Fin|LED Bubble Wall Aquarium Kit 10 gal|20.3x10.7x12.5|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5308096.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g10|Clear-For-Life|10 Gallon Rectangle Acrylic Aquarium|20x10x12|PetSmart",
+   "maker": "Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5187082.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g10|Vibrant Life|Life 10 Gallon Aquarium Starter Kit|20.13x10.19x12.19|Walmart (sold and shipped by Walmart.com)",
+   "maker": "Vibrant Life",
+   "retailer": "Walmart (sold and shipped by Walmart.com)",
+   "url": "https://www.walmart.com/ip/15316464908",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g15|Aqueon|Standard Glass Rectangle|24.5x12.5x12.75|",
+   "maker": "Aqueon",
+   "retailer": null,
+   "url": "https://aquariumdepot.ca/products/aqueon-standard-rectangular-aquarium-black-trim-15-gal",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g15|Marineland|Standard Rectangular 15 gal|24x12x12|Marineland (maker)",
+   "maker": "Marineland",
+   "retailer": "Marineland (maker)",
+   "url": "https://sc10cdn.spectrumbrands.com/-/media/project/spectrumcommerce/marineland/files/product-files/aquarium-products/tanks/rectangular-tanks-specs-and-sizes-template.pdf",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g15|Waterbox|Clear Mini 16 (15.8 gal)|23.4x11.8x14.2|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/freestanding-large-fish-tanks",
+   "unknown": [
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g20h|Aqueon|Standard Glass Rectangle (20 high)|24.25x12.5x16.75|PetSmart",
+   "maker": "Aqueon",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5345487.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g20h|Tetra|Open Glass Aquarium 20|24x12x16|PetSmart",
+   "maker": "Tetra",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5380617.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g20h|Top Fin|Essentials Aquarium Starter Kit 20 gal|24x12.7x16|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/fish/starter-kits/top-fin-essentials-aquarium-starter-kit-5262265.html",
+   "unknown": [
+    "light",
+    "filter",
+    "stand"
+   ]
+  },
+  {
+   "key": "g20h|Top Fin|LED Bubble Wall Aquarium Kit 20 gal|24.2x13.1x16.6|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/top-fin-led-bubble-wall-aquarium-kit---fish-tank-starter-kit---10-20-gallon-64706.html",
+   "unknown": [
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g20h|Tetra|Complete Tropical Aquarium Kit 20 gal|24x12x16|Walmart",
+   "maker": "Tetra",
+   "retailer": "Walmart",
+   "url": "https://www.walmart.com/ip/Tetra-Aquarium-20-Gallon-Complete-Tropical-Fish-Tank-Kit-with-LED-Lighting-and-Decor-for-Freshwater-Fish/51494060",
+   "unknown": [
+    "filter",
+    "stand"
+   ]
+  },
+  {
+   "key": "g20h|Imagitarium (Petco)|LED Aquarium Kit 20 gal (taller)|24.17x12.67x17.32|Petco",
+   "maker": "Imagitarium (Petco)",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-2417-w-x-1735-h-20-gallon-3946408",
+   "unknown": [
+    "stand"
+   ]
+  },
+  {
+   "key": "g20h|Aqueon|Rectangle LED Kit 20 High gal (20 gal)|24.25x12.5x16.75|Aqueon (maker)",
+   "maker": "Aqueon",
+   "retailer": "Aqueon (maker)",
+   "url": "https://www.aqueon.com/products/aquarium-starter-kits/rectangle-led-kits",
+   "unknown": [
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g20h|Marineland|BIO-Wheel LED Aquarium Kit|24x12x16|Marineland (maker)",
+   "maker": "Marineland",
+   "retailer": "Marineland (maker)",
+   "url": "https://www.marineland.com/products/aquariums/bio-wheel-led-aquarium-kit",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g20h|Marineland|Standard Rectangular 20 gal High|24x12x16|Marineland (maker)",
+   "maker": "Marineland",
+   "retailer": "Marineland (maker)",
+   "url": "https://sc10cdn.spectrumbrands.com/-/media/project/spectrumcommerce/marineland/files/product-files/aquarium-products/tanks/rectangular-tanks-specs-and-sizes-template.pdf",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g20h|Tetra|20 Gallon Complete Tropical Fish Tank Kit|24.2x12.4x16.7|Amazon",
+   "maker": "Tetra",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B013BXDZ90",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g20h|Tetra|ColorFusion 20 Gallon Complete Aquarium Kit|24.2x12.4x16.7|Amazon",
+   "maker": "Tetra",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B013BXDXTC",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g20h|GloFish|20 Gallon Complete Fish Tank Kit|24.2x12.4x16.7|Amazon",
+   "maker": "GloFish",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B013BXE1XO",
+   "unknown": [
+    "stand"
+   ]
+  },
+  {
+   "key": "g20h|Rusepin|Aquarium Tank, Glass, 20 Gal|24.25x12.5x16.75|Amazon",
+   "maker": "Rusepin",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B005VDO8OA",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g20h|North American Pet Aquatics|20 gal Glass Aquarium with Glass Lid|24.25x12.5x16.75|Petco",
+   "maker": "North American Pet Aquatics",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/product/north-american-pet-aquatics-20-gallon-glass-aquarium-with-glass-lid",
+   "unknown": [
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g20h|Fluval|EVO XII Marine Kit 13.5 gal|22x11x15|Petco",
+   "maker": "Fluval",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "g20h|Pro Clear Aquatic Systems|ProStar Rimless AIO 23 Aquarium & Stand (23 Gallons)|23.5x11.5x15.5|Bulk Reef Supply",
+   "maker": "Pro Clear Aquatic Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/prostar-rimless-aio-23-aquarium-stand-23-gallons-pro-clear-aquatic-systems.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "g20h|Tetra|Complete LED Aquarium Kit for Goldfish, 20 Gallon|24.25x12.6x16.7|Walmart (sold and shipped by Walmart.com)",
+   "maker": "Tetra",
+   "retailer": "Walmart (sold and shipped by Walmart.com)",
+   "url": "https://www.walmart.com/ip/1988218289",
+   "unknown": [
+    "lid",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g20h|Aqueon|Aquarium Fish Tank Starter Kit with LED Lighting 20 High (20 gal)|24.25x12.5x16.75|Walmart (sold and shipped by Walmart.com)",
+   "maker": "Aqueon",
+   "retailer": "Walmart (sold and shipped by Walmart.com)",
+   "url": "https://www.walmart.com/ip/424027537",
+   "unknown": [
+    "lid",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g20l|Aqueon|20 Gallon Long (Tractor Supply listing)|30.5x13.13x13|",
+   "maker": "Aqueon",
+   "retailer": null,
+   "url": "https://www.tractorsupply.com/tsc/product/aqueon-20-gallon-long-tank-1405672",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g20l|Aqueon|Standard Glass Rectangle (20 long)|30.25x12.5x12.75|PetSmart",
+   "maker": "Aqueon",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5356064.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g20l|Innovative Marine|Nuvo Fusion 20 AIO|23.6x15x13|",
+   "maker": "Innovative Marine",
+   "retailer": null,
+   "url": "https://www.bulkreefsupply.com/20-nuvo-fusion-aio-long-aquarium-innovative-marine.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g20l|Marineland|Standard Rectangular 20 long|30x12x12|",
+   "maker": "Marineland",
+   "retailer": null,
+   "url": "https://www.petsupermarket.com/fish/supplies/aquariums-starter-kits/aquariums/marineland-standard-rectangular-high-sided-glass-fish-aquarium-20-gallon/474911202.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g20l|CLBA|20 Gallon Rectangular Rimless Ultra Clear Nano Aquarium|30x12x12|Amazon",
+   "maker": "CLBA",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0GKFLPB1W",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g20l|Aqueon|Standard Open-Glass Tank 20 gal long|30.5x13.125x13|Petco",
+   "maker": "Aqueon",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/product/aqueon-standard-glass-aquarium-tank-20-gallon",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g20l|Innovative Marine|20 NUVO Fusion Peninsula PRO 2 AIO Aquarium w/ APS Pedestal (20 gal)|30x11.8x13|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/20-nuvo-fusion-peninsula-pro-2-aio-aquarium-w-aps-pedestal-innovative-marine.html",
+   "unknown": [
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "g29|Aqueon|Standard Glass Rectangle|30.25x12.5x18.75|PetSmart",
+   "maker": "Aqueon",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5371593.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g29|Marineland|Standard Rectangular 29|30x12x18|",
+   "maker": "Marineland",
+   "retailer": null,
+   "url": "https://www.petsupermarket.com/fish/supplies/aquariums-starter-kits/aquariums/marineland-fish-aquarium-tank-black-29-gallon-30-x-12-x-18/PSI00861.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g29|Imagitarium (Petco)|LED Aquarium Kit 29 gal (taller)|30.19x12.4x20.86|Petco",
+   "maker": "Imagitarium (Petco)",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/shop/en/petcostore/product/imagitarium-led-aquarium-kit",
+   "unknown": [
+    "stand"
+   ]
+  },
+  {
+   "key": "g29|Aqueon|Rectangle LED Kit 29 gal|30.25x12.5x18.75|Aqueon (maker)",
+   "maker": "Aqueon",
+   "retailer": "Aqueon (maker)",
+   "url": "https://www.aqueon.com/products/aquarium-starter-kits/rectangle-led-kits",
+   "unknown": [
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g29|Tetra|Complete LED Aquarium Kit 29 gal|30x12x18|Tetra (maker)",
+   "maker": "Tetra",
+   "retailer": "Tetra (maker)",
+   "url": "https://www.tetra-fish.com/products/aquarium-kits/complete-led-aquarium-29-29-gal",
+   "unknown": [
+    "stand"
+   ]
+  },
+  {
+   "key": "g29|Tetra|29 Gallon Complete Tropical Fish Tank Kit|30x12x18|Amazon",
+   "maker": "Tetra",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B09Y716CJC",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g29|Imagitarium|LED Aquarium Kit 29 gal|30.12x12.4x20.82|Petco",
+   "maker": "Imagitarium",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "g29|Clear-For-Life|UniQuarium 29 Gallon Rectangle Acrylic Aquarium Built-In Filter|30x12x18|PetSmart",
+   "maker": "Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5188203.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g29|Tetra|29 Gallon Glass LED Aquarium Kit|30x12x18|Walmart (sold and shipped by Walmart.com)",
+   "maker": "Tetra",
+   "retailer": "Walmart (sold and shipped by Walmart.com)",
+   "url": "https://www.walmart.com/ip/1560621988",
+   "unknown": [
+    "lid",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g30b|Marineland|30 gal (36 x 13 x 16)|36x13x16|",
+   "maker": "Marineland",
+   "retailer": null,
+   "url": "https://piscespets.com/products/marineland-aquarium-black",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g30b|Innovative Marine|NUVO Fusion Pro 2 40 Gallon Long AIO Aquarium with APS Stand|35.4x19.7x13|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/nuvo-fusion-pro-2-40-gallon-long-aio-aquarium-innovative-marine-html.html",
+   "unknown": [
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "g37|Top Fin|Aquarium & Stand Ensemble 36 gal|30.7x15.7x22.6|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/top-fin-aquarium-and-stand-ensemble---36-gallon-78697.html",
+   "unknown": [
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g37|Marineland|Standard Rectangular 37 gal|30x12x22|Marineland (maker)",
+   "maker": "Marineland",
+   "retailer": "Marineland (maker)",
+   "url": "https://sc10cdn.spectrumbrands.com/-/media/project/spectrumcommerce/marineland/files/product-files/aquarium-products/tanks/rectangular-tanks-specs-and-sizes-template.pdf",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g37|Top Fin|Essentials Aquarium Starter Kit 29 gal|30.2x12.4x21.9|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5262164.html",
+   "unknown": [
+    "stand"
+   ]
+  },
+  {
+   "key": "g40b|Aqueon|Standard Glass 40 Breeder|36.25x18.25x17|",
+   "maker": "Aqueon",
+   "retailer": null,
+   "url": "https://aquariumdepot.ca/products/aqueon-standard-rectangular-aquarium-black-trim-40-gal-breeder",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g40b|Generic (That Pet Place listing)|40 Gallon Breeder Black|36x18x16|",
+   "maker": "Generic (That Pet Place listing)",
+   "retailer": null,
+   "url": "https://www.thatpetplace.com/40-Gallon-Breeder-Aquarium-Black",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g40b|Marineland|Open Glass 40 gal (breeder footprint)|36x18x16|",
+   "maker": "Marineland",
+   "retailer": null,
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-open-glass-aquarium-5356187.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g40b|Imagitarium (Petco)|LED Aquarium Kit 40 gal|36.33x18.34x15.9|Petco",
+   "maker": "Imagitarium (Petco)",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-3633-w-x-159-h-40-gallons-3946424",
+   "unknown": [
+    "lid",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g40b|Aqueon|Standard Open-Glass Tank 40 gal breeder|36.19x18.25x16.94|Petco",
+   "maker": "Aqueon",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/product/aqueon-standard-glass-aquarium-tank-40-gallon",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g40b|Zoo Med|Aquatic Turtle Kit 40 gal|36x18x18|Petco",
+   "maker": "Zoo Med",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "g50b|All-Glass Aquarium (Aqueon parent)|50 gallon 36x18x19|36x18x19|",
+   "maker": "All-Glass Aquarium (Aqueon parent)",
+   "retailer": null,
+   "url": "https://modelnet.cs.princeton.edu/data/fish_tank/fish_tank_000000338/fish_tank_000000338_detail.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g50b|SeaClear|50 gal rectangle acrylic (not a breeder footprint)|36x15x20|",
+   "maker": "SeaClear",
+   "retailer": null,
+   "url": "https://fishtanksdirect.com/seaclear-50-gallon-36lx15wx20h-rectangular-acrylic-fish-tank-10-100-1250/",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g50b|Fluval|Premium LED Kit 45 gal Bow|36x16x20|Fluval (maker)",
+   "maker": "Fluval",
+   "retailer": "Fluval (maker)",
+   "url": "https://fluvalaquatics.com/us/shop/product/premium-led-aquarium-kit-45-bow-45-us-gal-170-l-black",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g50b|Fluval|Visi-White 90P Aquarium Set 53.6 gal|35.4x17.7x19.7|Fluval (maker)",
+   "maker": "Fluval",
+   "retailer": "Fluval (maker)",
+   "url": "https://fluvalaquatics.com/us/shop/product/visi-white-90p-aquarium-set-53-6-us-gal-202-5-l-copy",
+   "unknown": [
+    "lid",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g50b|Fluval|Premium Aquarium Kit 45 Bow with Cabinet 45 gal|36x16x20|Fluval (maker)",
+   "maker": "Fluval",
+   "retailer": "Fluval (maker)",
+   "url": "https://fluvalaquatics.com/us/shop/product/premium-aquarium-kit-45-bow-cabinet-45-us-gal-170-l-black",
+   "unknown": [
+    "lid",
+    "heater"
+   ]
+  },
+  {
+   "key": "g50b|Waterbox|Clear 3620 (49.1 gal)|35.4x19.7x17.7|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "g50b|Waterbox|AIO 503 (49.1 gal)|35.4x19.7x17.7|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "g50b|Waterbox|AIO 50.3 Aquarium System (49 gallons)|35.4x19.7x17.7|Bulk Reef Supply",
+   "maker": "Waterbox",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/aio-50-3-aquarium-system-49-gallons-waterbox-aquariums.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g50b|Waterbox|CLEAR 3620 Aquarium & Stand (49 Gallons)|35.4x19.7x17.7|Bulk Reef Supply",
+   "maker": "Waterbox",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/clear-3620-aquarium-stand-49-gallons-waterbox-aquariums.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g50b|LiquidArt|AIO Acrylic Aquarium w/ Cabinet (56 Gallons) - LiquidArt|36x20x18|Bulk Reef Supply",
+   "maker": "LiquidArt",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/liquidart-aio-acrylic-aquarium-w-cabinet-56-gallons-liquidart.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g50b|LiquidArt|Fresh Acrylic Aquarium w/ Cabinet (56 Gallons) - LiquidArt|36x20x18|Bulk Reef Supply",
+   "maker": "LiquidArt",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/liquidart-fresh-acrylic-aquarium-w-cabinet-56-gallons-liquidart.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g50b|Red Sea|REEF-FRAME 250 Aquarium (53.9 Gallons)|35.4x20.1x20.9|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reef-frame-250-aquarium-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "g50b|Red Sea|REEF-FRAME MAX 250 Aquarium (53.9 Gallons)|35.4x20.1x20.9|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reef-frame-max-250-aquarium-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g50b|Red Sea|REEFER 250 G3 Aquarium System (54 Gallons)|35.4x19.7x20.9|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-250-g3-aquarium-system-54-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g50b|Red Sea|REEFER Deluxe 250 G3 Aquarium System (54 Gallons) (incl. 2 x ReefLED 115)|35.4x19.7x20.9|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-deluxe-250-g3-aquarium-system-54-gallons-incl-2-x-reefled-115-red-sea.html",
+   "unknown": [
+    "lid",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g50b|Red Sea|REEFER MAX 250 G3 Aquarium System (54 Gallons)|35.4x19.7x20.9|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-max-250-g3-aquarium-system-54-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "g55|Aqueon|Standard Glass Rectangle 55 gal|48.25x12.75x21|PetSmart",
+   "maker": "Aqueon",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/aqueon-standard-glass-rectangle-aquarium-glass-fish-tank-25-gallon---55-gallon-5356186.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g55|Marineland|55 Gallon black|48x13x20|",
+   "maker": "Marineland",
+   "retailer": null,
+   "url": "https://piscespets.com/products/marineland-aquarium-black",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g55|Tetra|Glass 55 gal|48x13x20|",
+   "maker": "Tetra",
+   "retailer": null,
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/tetra-open-glass-aquarium-glass-fish-tank-5380173.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g55|Waterbox|Frag 85.3 (53.9 gal display, rated 54)|35.4x23.6x16.1|",
+   "maker": "Waterbox",
+   "retailer": null,
+   "url": "https://www.bulkreefsupply.com/frag-85-3-aquarium-system-54-gallons-waterbox.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g55|Imagitarium (Petco)|LED Aquarium Kit 55 gal (taller)|47.75x13.07x23.89|Petco",
+   "maker": "Imagitarium (Petco)",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-4775-w-x-2389-h-55-gallons-3946432",
+   "unknown": [
+    "lid",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g55|Aqueon|Rectangle LED Kit 55 gal|48.25x12.75x21|Aqueon (maker)",
+   "maker": "Aqueon",
+   "retailer": "Aqueon (maker)",
+   "url": "https://www.aqueon.com/products/aquarium-starter-kits/rectangle-led-kits",
+   "unknown": [
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g55|Tetra|LED 55 Gallon Complete Fish Tank Kit|50.63x14.75x23.25|Amazon",
+   "maker": "Tetra",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B09WYXZ61D",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g55|Tetra|LED 55 Gallon Complete Fish Tank Kit (second listing)|48.25x12.8x20.9|Amazon",
+   "maker": "Tetra",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B07BJ9KPSR",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g55|Aqueon|Standard Open-Glass Tank 55 gal|48.75x14x21.25|Petco",
+   "maker": "Aqueon",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/product/aqueon-standard-glass-aquarium-tank-55-gallon-5051128-1",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g55|Clear-For-Life|75 Gallon Rectangle UniQuarium Acrylic Aquarium Built-In Filtration (15 in deep)|48x15x24|PetSmart",
+   "maker": "Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5188244.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g60b|Aqueon|Rectangle 60 Breeder|48.5x18.5x16.25|Petco",
+   "maker": "Aqueon",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/product/aqueon-standard-glass-aquarium-tank-25-gallon",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g60b|Waterbox|Marine X 90.3 (59.3 gal display, rated 59)|35.4x19.7x21.7|",
+   "maker": "Waterbox",
+   "retailer": null,
+   "url": "https://bulkreefsupply.com/marine-x-90-3-aquarium-system-59-gallons-waterbox-aquariums.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g60b|Waterbox|AIO 654 (65.8 gal)|47.2x19.7x17.7|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "g60b|LiquidArt|AIO Acrylic Aquarium w/ Cabinet (75 Gallons) - LiquidArt|48x20x18|Bulk Reef Supply",
+   "maker": "LiquidArt",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/liquidart-aio-acrylic-aquarium-w-cabinet-75-gallons-liquidart.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g60b|LiquidArt|Fresh Acrylic Aquarium w/ Cabinet (75 Gallons) - LiquidArt|48x20x18|Bulk Reef Supply",
+   "maker": "LiquidArt",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/liquidart-fresh-acrylic-aquarium-w-cabinet-75-gallons-liquidart.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g65|Aqueon|Standard Rectangular 65 gal|36.4x18.4x25|",
+   "maker": "Aqueon",
+   "retailer": null,
+   "url": "https://aquariumdepot.ca/aqueon-standard-rectangular-aquarium-black-trim-65-gal.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g65|Marineland|65 Gallon black|36x18x24|",
+   "maker": "Marineland",
+   "retailer": null,
+   "url": "https://piscespets.com/products/marineland-aquarium-black",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g65|Marineland|Corner-Flo reef-ready 65 gal (1 overflow)|36.31x18.28x24.75|",
+   "maker": "Marineland",
+   "retailer": null,
+   "url": "https://aquariumdepot.ca/products/marineland-corner-flo-reef-ready-aquarium-65-gal",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g65|SeaClear|System II 65 gal acrylic|48x15x20|",
+   "maker": "SeaClear",
+   "retailer": null,
+   "url": "https://fishtanksdirect.com/seaclear-system-ii-65-gallon-48lx15wx20h-rectangular-acrylic-aquarium/",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g65|Waterbox|AIO 65.4 (65.8 gal display)|47.2x19.7x17.7|",
+   "maker": "Waterbox",
+   "retailer": null,
+   "url": "https://www.bulkreefsupply.com/aio-65-4-aquarium-system-65-gallons-waterbox-aquariums.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "g65|Fluval|Shaker Aquarium & Cabinet Set 66.5 gal|41x16x24|Fluval (maker)",
+   "maker": "Fluval",
+   "retailer": "Fluval (maker)",
+   "url": "https://fluvalaquatics.com/us/shop/product/shaker-aquarium-set-66-5-us-gal-252-l",
+   "unknown": [
+    "lid",
+    "heater"
+   ]
+  },
+  {
+   "key": "g65|Waterbox|Eden X 60 w/ FLED 34 (59 gal)|35.4x19.7x22.8|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "g65|Clear-For-Life|65 Gallon Rectangle UniQuarium Acrylic Aquarium Built-In Filtration|36x18x24|PetSmart",
+   "maker": "Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5188237.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g65|Waterbox|MARINE EX 90.3 Aquarium System (59 Gallons)|35.4x19.7x21.7|Bulk Reef Supply",
+   "maker": "Waterbox",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/marine-ex-90-3-aquarium-system-59-gallons-waterbox-aquariums.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "g65|Pro Clear Aquatic Systems|ProStar Rimless V2 90 Aquarium & Stand (63 Gallons)|36x20x22|Bulk Reef Supply",
+   "maker": "Pro Clear Aquatic Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/prostar-rimless-v2-90-aquarium-stand-63-gallons-pro-clear-aquatic-systems.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g75|Aqueon|Standard Glass 75 gal|49x19.5x21.25|Petco",
+   "maker": "Aqueon",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/shop/en/petcostore/product/aqueon-standard-glass-aquarium-tank-75-gallon",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g75|Innovative Marine|NUVO INT 75 (internal overflow) system|35.4x23.6x19.7|",
+   "maker": "Innovative Marine",
+   "retailer": null,
+   "url": "https://www.bulkreefsupply.com/int-75-gallon-aquarium-complete-reef-system-innovative-marine.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g75|Marineland|Corner-Flo reef-ready 75 gal (1 overflow)|48.38x18.38x20.94|",
+   "maker": "Marineland",
+   "retailer": null,
+   "url": "https://aquariumdepot.ca/products/marineland-corner-flo-reef-ready-aquarium-75-gal",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g75|Marineland|High Definition LED Ensemble 75 gal|48.38x18.38x21|",
+   "maker": "Marineland",
+   "retailer": null,
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-high-definition-led-ensemble---75-gallon-62017.html",
+   "unknown": [
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g75|Marineland|Open Glass 75 gal|48x18x21|PetSmart",
+   "maker": "Marineland",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-open-glass-aquarium-5356187.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g75|SeaClear|System II 75 gal acrylic|48x18x20|",
+   "maker": "SeaClear",
+   "retailer": null,
+   "url": "https://fishtanksdirect.com/seaclear-system-ii-75-gallon-48lx18wx20h-rectangular-acrylic-aquarium/",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g75|Waterbox|Frag 105.4 (72.3 gal display, rated 72)|47.2x23.6x16.1|",
+   "maker": "Waterbox",
+   "retailer": null,
+   "url": "https://www.bulkreefsupply.com/frag-105-4-aquarium-system-72-gallons-waterbox.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g75|Aqueon|Standard Glass Rectangle 75 gal|48.5x18.5x21.25|Aqueon (maker)",
+   "maker": "Aqueon",
+   "retailer": "Aqueon (maker)",
+   "url": "https://www.aqueon.com/products/aquariums/standard-glass-rectangle-aquariums",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g75|Aqueon|Standard Glass Rectangle 75 gal (second variant, SKU 100116075)|48.5x18.5x21.125|Aqueon (maker)",
+   "maker": "Aqueon",
+   "retailer": "Aqueon (maker)",
+   "url": "https://www.aqueon.com/products/aquariums/standard-glass-rectangle-aquariums",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g75|Aqueon|Reef-Ready Rectangle 75 gal|48.5x18.5x21.125|Aqueon (maker)",
+   "maker": "Aqueon",
+   "retailer": "Aqueon (maker)",
+   "url": "https://www.aqueon.com/products/aquariums/reef-ready-aquariums",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g75|Aqueon|Standard Open-Glass Tank 75 gal|49x19.5x21.25|Petco",
+   "maker": "Aqueon",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/product/aqueon-standard-glass-aquarium-tank-75-gallon",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g75|Waterbox|Marine X 1104|47.2x19.7x21.7|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "g75|Waterbox|Clear 4820 (72.2 gal)|47.2x19.7x19.7|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "g75|Waterbox|Eden X 80 Peninsula w/ FLED 46 (80 gal)|47.2x19.7x22.8|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "g75|Clear-For-Life|75 Gallon Rectangle Acrylic Aquarium|48x18x20|PetSmart",
+   "maker": "Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5187102.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g75|Clear-For-Life|UniQuarium 75 Gallon Rectangle Acrylic Aquarium Built-In Filter 48x18x20|48x18x20|PetSmart",
+   "maker": "Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5188239.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g75|Waterbox|CLEAR 4820 Aquarium & Stand (72 Gallons)|47.2x19.7x19.7|Bulk Reef Supply",
+   "maker": "Waterbox",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/clear-4820-aquarium-stand-72-gallons-waterbox-aquariums.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g75|Waterbox|MARINE EX 110.4 Aquarium System (79 Gallons)|47.2x19.7x21.7|Bulk Reef Supply",
+   "maker": "Waterbox",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/marine-ex-110-4-aquarium-system-79-gallons-waterbox-aquariums.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "g75|Waterbox|MARINE X 110.4 Aquarium System (79 Gallons)|47.2x19.7x21.7|Bulk Reef Supply",
+   "maker": "Waterbox",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/marine-x-110-4-aquarium-system-79-gallons-waterbox-aquariums.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "g75|Waterbox|Peninsula 4820 Aquarium & Stand (79 Gallons) - Waterbox|47.2x19.3x21.7|Bulk Reef Supply",
+   "maker": "Waterbox",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/peninsula-4820-aquarium-stand-79-gallons-waterbox.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g75|Red Sea|REEFER 350 G3 Aquarium System (72 Gallons)|47.2x19.7x20.9|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-350-g3-aquarium-system-72-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g75|Red Sea|REEFER Deluxe 350 G3 Aquarium System (72 Gallons) (incl. 2 x ReefLED 115)|47.2x19.7x20.9|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-deluxe-350-g3-aquarium-system-72-gallons-incl-2-x-reefled-115-red-sea.html",
+   "unknown": [
+    "lid",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g75|Red Sea|REEFER MAX 350 G3 Aquarium System (72 Gallons)|47.2x19.7x20.9|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-max-350-g3-aquarium-system-72-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "g90|Aqueon|Standard Rectangular 90 gal|48.5x18.5x25.375|Aquarium Depot (CA)",
+   "maker": "Aqueon",
+   "retailer": "Aquarium Depot (CA)",
+   "url": "https://aquariumdepot.ca/products/aqueon-standard-rectangular-aquarium-black-trim-90-gal",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g90|Clear-For-Life|90R Rectangle Uniquarium acrylic|48x18x24|",
+   "maker": "Clear-For-Life",
+   "retailer": null,
+   "url": "https://fishtanksdirect.com/clear-for-life-90R-48lx18wx24h-rectangle-uniquarium/",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g90|Marineland|90 Gallon black standard|48x18x24|",
+   "maker": "Marineland",
+   "retailer": null,
+   "url": "https://piscespets.com/products/marineland-aquarium-black",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g90|Marineland|Corner-Flo reef-ready 90 gal (1 overflow)|48.38x18.38x24.88|",
+   "maker": "Marineland",
+   "retailer": null,
+   "url": "https://aquariumdepot.ca/products/marineland-corner-flo-reef-ready-aquarium-90-gal",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g90|Clear-For-Life|90 Gallon Rectangle Acrylic Aquarium|48x18x24|PetSmart",
+   "maker": "Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5187100.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g90|Clear-For-Life|UniQuarium 90 Gallon Rectangle Acrylic Aquarium Built-In Filter|48x18x24|PetSmart",
+   "maker": "Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5187256.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g120|Custom Aquariums (glass, AGA-style)|120 Gallon 24H x 48L x 24D Basic Package|48x24x24|",
+   "maker": "Custom Aquariums (glass, AGA-style)",
+   "retailer": null,
+   "url": "https://www.customaquariums.com/?p=23627",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g120|Marineland|120 Gallon black standard|60x18x26|",
+   "maker": "Marineland",
+   "retailer": null,
+   "url": "https://piscespets.com/products/marineland-aquarium-black",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g120|Marineland|Corner-Flo reef-ready 120 gal (1 overflow)|48x24x24|",
+   "maker": "Marineland",
+   "retailer": null,
+   "url": "https://natureaquariums.com/products/marineland-corner-flo-rectangular-aquarium-black-clear-1ea90-gal-48x18x24-in",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g120|SeaClear|120 gal rectangle acrylic|48x24x24|",
+   "maker": "SeaClear",
+   "retailer": null,
+   "url": "https://fishtanksdirect.com/clear-for-life-100-gallon-48lx24wx24h-half-cylinder-acrylic-fish-tank-100g-mezzo/",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g120|Fluval|Siena Aquarium & Cabinet Set 88 gal|43x22x22|Fluval (maker)",
+   "maker": "Fluval",
+   "retailer": "Fluval (maker)",
+   "url": "https://fluvalaquatics.com/us/shop/product/siena-aquarium-set-88-us-gal-332-l",
+   "unknown": [
+    "lid",
+    "heater"
+   ]
+  },
+  {
+   "key": "g120|Waterbox|Infinia Reef 1504|48.2x25.3x21.7|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "g120|Fiji Cube|108 Gallon External Overflow Rimless Aquarium|47.24x23.62x22.44|Bulk Reef Supply",
+   "maker": "Fiji Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/108-gallon-external-overflow-rimless-aquarium-fiji-cube.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g120|Fiji Cube|108 Gallon External Overflow Rimless Aquarium with Stand|47.24x23.62x22.44|Bulk Reef Supply",
+   "maker": "Fiji Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/108-gallon-external-overflow-rimless-aquarium-with-stand-fiji-cube.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g120|Fiji Cube|108 Gallon Internal Overflow Rimless Aquarium|48x24x22.5|Bulk Reef Supply",
+   "maker": "Fiji Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/108-gallon-internal-overflow-rimless-aquarium-fiji-cube.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g120|Fiji Cube|108 Gallon Internal Overflow Rimless Aquarium with Stand|48x24x22.5|Bulk Reef Supply",
+   "maker": "Fiji Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/108-gallon-internal-overflow-rimless-aquarium-with-stand-fiji-cube.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g120|Waterbox|INFINIA 150.4 Aquarium System (106 Gallons) - Waterbox|48.2x25.3x21.7|Bulk Reef Supply",
+   "maker": "Waterbox",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/infinia-150-4-aquarium-system-106-gallons-waterbox.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "g120|Pro Clear Aquatic Systems|ProStar Rimless V2 150 Aquarium & Stand (110 Gallons)|48x24x24|Bulk Reef Supply",
+   "maker": "Pro Clear Aquatic Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/prostar-rimless-v2-150-aquarium-stand-110-gallons-pro-clear-aquatic-systems.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g120|Red Sea|REEFER Deluxe Peninsula 500 G3 Aquarium System (109 Gallons) (incl. 3 x ReefLED 115)|49.2x25x23.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-deluxe-peninsula-500-g3-aquarium-system-109-gallons-incl-3-x-reefled-115-red-sea.html",
+   "unknown": [
+    "lid",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g120|Red Sea|REEFER Deluxe S-550 G3 Aquarium System (118 Gallons) (incl. 2 x ReefLED 170)|47.3x26.8x25.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-deluxe-s-550-g3-aquarium-system-118-gallons-incl-2-x-reefled-170-red-sea.html",
+   "unknown": [
+    "lid",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g120|Red Sea|REEFER MAX Peninsula 500 G3 Aquarium System (109 Gallons)|49.2x25x23.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-max-peninsula-500-g3-aquarium-system-109-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "g120|Red Sea|REEFER MAX S-550 G3 Aquarium System (118 Gallons)|47.3x26.8x25.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-max-s-550-g3-aquarium-system-118-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "g120|Red Sea|REEFER MAX S-550 G3+ Aquarium (118.3 Gallons)|47.2x26.8x25.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-max-s-550-g3-plus-aquarium-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g120|Red Sea|REEFER Peninsula 500 G3 Aquarium System (109 Gallons)|49.2x25x23.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-peninsula-500-g3-aquarium-system-109-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g120|Red Sea|REEFER S-550 G3 Aquarium System (118 Gallons)|47.3x26.8x25.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-s-550-g3-aquarium-system-118-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g120|Red Sea|REEFER S-550 G3+ Aquarium (118.3 Gallons)|47.2x26.8x25.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-s-550-g3-plus-aquarium-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g120|Ultum Nature Systems|UNS R120 Reef System (94 Gallons)|47.24x23.62x23.62|Bulk Reef Supply",
+   "maker": "Ultum Nature Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/uns-r120-reef-system-94-gallons-ultum-nature-systems.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "bow36|Top Fin|Bow Front Starter Kit 36 gal|30.7x15.7x22.6|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/fish/starter-kits/top-fin-bow-front-aquarium-starter-kit---fish-tank-starter-kit---36-gallon-5282370.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "bow36|Aqueon|Bow front 36 gal|30.3x15.5x20.9|saltwateraquariumblog.com (secondary)",
+   "maker": "Aqueon",
+   "retailer": "saltwateraquariumblog.com (secondary)",
+   "url": "https://www.saltwateraquariumblog.com/bow-front-aquarium/",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "bow46|Aqueon|Bow front 46 gal|36.4x16.4x21.9|saltwateraquariumblog.com (secondary)",
+   "maker": "Aqueon",
+   "retailer": "saltwateraquariumblog.com (secondary)",
+   "url": "https://www.saltwateraquariumblog.com/bow-front-aquarium/",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "bow46|Oceanic|46 gal bowfront|36.5x16.5x21|",
+   "maker": "Oceanic",
+   "retailer": null,
+   "url": "https://forums.reefcentral.com/threads/46gal-bowfront.938237",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "bow72|Aqueon|Bow front 72 gal|48.4x18x23|saltwateraquariumblog.com (secondary)",
+   "maker": "Aqueon",
+   "retailer": "saltwateraquariumblog.com (secondary)",
+   "url": "https://www.saltwateraquariumblog.com/bow-front-aquarium/",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "bow72|Clear-For-Life|80 gal bow front acrylic (rated 80)|48x18x24|",
+   "maker": "Clear-For-Life",
+   "retailer": null,
+   "url": "https://fishtanksdirect.com/80-gallon-48-l-x-18-w-x-24-h-bow-front-aquarium",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "bow72|Oceanic|72 gal bowfront|48x18x22|",
+   "maker": "Oceanic",
+   "retailer": null,
+   "url": "https://www.houstonfishbox.com/forum/the-fish-market/buy-sell-or-trade-equipment/52825-",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "bow72|SeaClear|72 gal bow front acrylic|48x18x20|",
+   "maker": "SeaClear",
+   "retailer": null,
+   "url": "https://fishtanksdirect.com/sea-clear-72-gallon-48lx18wx20h-bow-front-acrylic-fish-tank/",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "bow72|Tsunami|72 gal bow front acrylic|48x18x20|",
+   "maker": "Tsunami",
+   "retailer": null,
+   "url": "https://fishtanksdirect.com/tsunami-72-gallon-48lx18wx20h-bow-front-acrylic-aquarium",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "hex35|Clear-For-Life|35 Gallon Hexagon (acrylic)|25x21x24|",
+   "maker": "Clear-For-Life",
+   "retailer": null,
+   "url": "https://www.petsmart.com/5187060.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "cor50|Clear-For-Life|Quadra 60 gal quarter-cylinder acrylic (rated 60)|24x24x30|",
+   "maker": "Clear-For-Life",
+   "retailer": null,
+   "url": "https://fishtanksdirect.com/clear-for-life-quadra-60-gallon-24lx24wx30h-quarter-cylinder-acrylic-fish-tank-60g-quadra/",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "cor50|SeaClear|50 gal pentagon acrylic|24x24x24|",
+   "maker": "SeaClear",
+   "retailer": null,
+   "url": "https://fishtanksdirect.com/seaclear-50-gallon-24lx24lwx24h-pentagon-acrylic-fish-tank",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g125|Aqueon|LED Aquarium & Stand Ensemble 125 gal|72.5x18.5x23.4|",
+   "maker": "Aqueon",
+   "retailer": null,
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/aqueon-led-aquarium-and-stand-ensemble---125-gallon-5262172.html",
+   "unknown": [
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g125|Clear-For-Life|125 gal rectangle acrylic 60x18x24|60x18x24|PetSmart",
+   "maker": "Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/clear-for-life-125-gallon-rectangle-acrylic-aquarium-fish-tank-60x18x24-fresh-and-saltwater-16607.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g125|Clear-For-Life|125 gal rectangle acrylic 72x18x20|72x18x20|PetSmart",
+   "maker": "Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/clear-for-life-125-gallon-rectangle-acrylic-aquarium-fish-tank-72x18x20-fresh-and-saltwater-5188326.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g125|Marineland|Corner-Flo reef-ready 125 gal (2 overflows)|72.56x18.72x22.13|",
+   "maker": "Marineland",
+   "retailer": null,
+   "url": "https://aquariumdepot.ca/products/marineland-standard-rectangular-aquarium-125-gal",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g125|Marineland|High-Definition LED Aquarium & Stand Ensemble 125 gal|72.5x18.69x22.13|",
+   "maker": "Marineland",
+   "retailer": null,
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-high-definition-led-aquarium-and-stand-ensemble---125-gallon-led-fish-tank-kit-86934.html",
+   "unknown": [
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g125|Marineland|Standard rectangular 125 gal|72x18x22|",
+   "maker": "Marineland",
+   "retailer": null,
+   "url": "https://aquariumdepot.ca/products/marineland-standard-rectangular-aquarium-125-gal",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g125|Clear-For-Life|125 Gallon Rectangle UniQuarium Acrylic Aquarium Built-In Filtration 72x18x20|72x18x20|PetSmart",
+   "maker": "Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5188263.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g135|Clear-For-Life|135 gal rectangle acrylic|72x18x24|PetSmart",
+   "maker": "Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5187098.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g135|Seapora|Reef Ready 135 gal glass|72x18x24|",
+   "maker": "Seapora",
+   "retailer": null,
+   "url": "https://www.thatpetplace.com/seapora-reef-ready-135-gal-72x18x24",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g150|Aqueon|Standard rectangular 150 gal|72.5x18.5x29.5|",
+   "maker": "Aqueon",
+   "retailer": null,
+   "url": "https://aquariumdepot.ca/products/aqueon-standard-rectangular-aquarium-black-trim-150-gal",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g150|Marineland|Corner-Flo reef-ready 150 gal (2 overflows)|72x18x27|",
+   "maker": "Marineland",
+   "retailer": null,
+   "url": "https://natureaquariums.com/products/marineland-corner-flo-rectangular-aquarium-black-clear-1ea90-gal-48x18x24-in",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g150|Marineland|Standard rectangular 150 gal|72x18x27|",
+   "maker": "Marineland",
+   "retailer": null,
+   "url": "https://aquariumdepot.ca/products/marineland-standard-rectangular-aquarium-150-gal",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g180|Custom Aquariums|180 Gallon Glass Saltwater Aquarium|72x24x24|",
+   "maker": "Custom Aquariums",
+   "retailer": null,
+   "url": "https://www.customaquariums.com/product/180-gallon-glass-saltwater-aquarium/",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g180|Custom Aquariums|180 Gallon Tall|72x18x30|",
+   "maker": "Custom Aquariums",
+   "retailer": null,
+   "url": "https://www.customaquariums.com/?p=23658",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g180|Glasscages|72 in Rimless Low-Iron 180 gal w/ black stand|72x24x24|",
+   "maker": "Glasscages",
+   "retailer": null,
+   "url": "https://www.bulkreefsupply.com/72-rimless-low-iron-glass-aquarium-w-black-stand-157-gallons-glasscages.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g180|Marineland|Standard Rectangular 180 Gal|72x24x24|",
+   "maker": "Marineland",
+   "retailer": null,
+   "url": "https://aquariumdepot.ca/products/marineland-standard-rectangular-aquarium-180-gal",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g180|PetSmart / Clear-For-Life|180 Gallon Rectangle (acrylic)|72x24x24|PetSmart",
+   "maker": "PetSmart / Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/clear-for-life-180-gallon-rectangle-aquarium-acrylic-fish-tank-5187093.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g180|Reef Savvy|180 gal rimless (BRS combo)|64x29x22|",
+   "maker": "Reef Savvy",
+   "retailer": null,
+   "url": "https://www.bulkreefsupply.com/180-gallon-reef-savvy-aquarium-with-maple-cabinet-stand-bulk-reef-supply.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g180|Waterbox|Infinia Reef 2306|72.3x25.3x23.6|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "g180|Waterbox|Clear 7225|72.3x25.3x23.6|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "g180|Waterbox|Peninsula 7225|72.3x25.3x23.6|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "g180|Clear-For-Life|180 Gallon Rectangle Acrylic Aquarium|72x24x24|PetSmart",
+   "maker": "Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5187093.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g180|Clear-For-Life|UniQuarium 180 Gallon Rectangle Acrylic Aquarium Built-In Filter|72x24x24|PetSmart",
+   "maker": "Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5187081.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g180|Waterbox|CLEAR 7225 Aquarium & Stand (167 Gallons) - Waterbox|72.3x25.3x23.6|Bulk Reef Supply",
+   "maker": "Waterbox",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/clear-7225-aquarium-stand-167-gallons-waterbox.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g180|Waterbox|INFINIA 230.6 Aquarium System (167 Gallons) - Waterbox|72.3x25.3x23.6|Bulk Reef Supply",
+   "maker": "Waterbox",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/infinia-230-6-aquarium-system-167-gallons-waterbox.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "g180|Neptunian Cube|Magic Pro 180 - Professional Reef Aquarium System (135 Gallons)|71x21.6x23.6|Bulk Reef Supply",
+   "maker": "Neptunian Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/neptunian-cube-magic-pro-180-aquarium-system.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g180|Neptunian Cube|Peninsula 180 - Professional Reef Aquarium System (141 Gallons)|71x22.4x23.6|Bulk Reef Supply",
+   "maker": "Neptunian Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/neptunian-cube-peninsula-180-aquarium-system.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g180|Waterbox|Peninsula 7225 Aquarium & Stand (167 Gallons) - Waterbox|72.3x25.3x23.6|Bulk Reef Supply",
+   "maker": "Waterbox",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/peninsula-7225-aquarium-stand-167-gallons-waterbox.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g180|Pro Clear Aquatic Systems|ProStar Rimless V2 230 Aquarium & Stand (180 Gallons)|72x26x24|Bulk Reef Supply",
+   "maker": "Pro Clear Aquatic Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/prostar-rimless-v2-230-aquarium-stand-180-gallons-pro-clear-aquatic-systems.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g180|Red Sea|REEFER 750 G3 Aquarium System (158 Gallons)|70.9x25.6x23.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-750-g3-aquarium-system-158-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g180|Red Sea|REEFER Deluxe 750 G3 Aquarium System (158 Gallons) (incl. 4 x ReefLED 115)|70.9x25.6x23.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-deluxe-750-g3-aquarium-system-158-gallons-incl-4-x-reefled-115-red-sea.html",
+   "unknown": [
+    "lid",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g180|Red Sea|REEFER Deluxe S-850 G3 Aquarium System (180 Gallons) (incl. 3 x ReefLED 170)|70.9x26.8x25.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-deluxe-s-850-g3-aquarium-system-180-gallons-incl-3-x-reefled-170-red-sea.html",
+   "unknown": [
+    "lid",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g180|Red Sea|REEFER MAX 750 G3 Aquarium System (158 Gallons)|70.9x25.6x23.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-max-750-g3-aquarium-system-158-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "g180|Red Sea|REEFER MAX S-850 G3 Aquarium System (180 Gallons)|70.9x26.8x25.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-max-s-850-g3-aquarium-system-180-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "g180|Red Sea|REEFER S-850 G3 Aquarium System (180 Gallons)|70.9x26.8x25.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-s-850-g3-aquarium-system-180-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g180|Ultum Nature Systems|UNS R180 Reef System (147 Gallons)|70.87x23.62x23.62|Bulk Reef Supply",
+   "maker": "Ultum Nature Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/uns-r180-reef-system-147-gallons-ultum-nature-systems.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g210|Aqueon|Standard Rectangular Black Trim 210 Gal|72.5x24.5x29.25|",
+   "maker": "Aqueon",
+   "retailer": null,
+   "url": "https://modelnet.cs.princeton.edu/data/fish_tank/fish_tank_000000030/fish_tank_000000030_detail.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g210|Red Sea|REEFER Deluxe Peninsula S-950 G3 Aquarium System (200 Gallons) (incl. 4 x ReefLED 170)|78.7x26.8x25.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-deluxe-peninsula-s-950-g3-aquarium-system-200-gallons-incl-4-x-reefled-170-red-sea.html",
+   "unknown": [
+    "lid",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g210|Red Sea|REEFER Deluxe S-1000 G3 Aquarium System (210 Gallons) (incl. 4 x ReefLED 170)|82.79x26.8x25.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-deluxe-s-1000-g3-aquarium-system-210-gallons-incl-4-x-reefled-170-red-sea.html",
+   "unknown": [
+    "lid",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g210|Red Sea|REEFER MAX Peninsula S-950 G3 Aquarium System (200 Gallons)|78.7x26.8x25.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-max-peninsula-s-950-g3-aquarium-system-200-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "g210|Red Sea|REEFER MAX S-1000 G3 Aquarium System (210 Gallons)|82.79x26.8x25.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-max-s-1000-g3-aquarium-system-210-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "g210|Red Sea|REEFER MAX S-1000 G3+ Aquarium (210 Gallons)|82.7x26.8x25.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-max-s-1000-g3-plus-aquarium-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g210|Red Sea|REEFER Peninsula S-950 G3 Aquarium System (200 Gallons)|78.7x26.8x25.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-peninsula-s-950-g3-aquarium-system-200-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g210|Red Sea|REEFER S-1000 G3 Aquarium System (210 Gallons)|82.79x26.8x25.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-s-1000-g3-aquarium-system-210-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "g210|Red Sea|REEFER S-1000 G3+ Aquarium (210 Gallons)|82.7x26.8x25.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-s-1000-g3-plus-aquarium-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g240|Custom Aquariums|240 Gallon Glass Aquarium|72x24x30|",
+   "maker": "Custom Aquariums",
+   "retailer": null,
+   "url": "https://www.customaquariums.com/product/240-gallon-aquarium/",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g240|Custom Aquariums|280 Gallon Glass Aquarium (96x24x24)|96x24x24|",
+   "maker": "Custom Aquariums",
+   "retailer": null,
+   "url": "https://www.customaquariums.com/product/280-gallon-aquarium/",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g240|PetSmart / Clear-For-Life|240 Gallon Rectangle (acrylic)|96x24x24|PetSmart",
+   "maker": "PetSmart / Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/clear-for-life-240-gallon-rectangle-aquarium-acrylic-fish-tank-5187064.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g240|SeaClear / FishTanksDirect|240 Gallon Trapezoid Overflow|96x24x24|",
+   "maker": "SeaClear / FishTanksDirect",
+   "retailer": null,
+   "url": "https://fishtanksdirect.com/seaclear-240-gallon-96lx24wx24h-trapezoid-overflow-aquarium",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g240|Clear-For-Life|240 Gallon Rectangle Acrylic Aquarium|96x24x24|PetSmart",
+   "maker": "Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5187064.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g240|Clear-For-Life|UniQuarium 240 Gallon Rectangle Acrylic Aquarium Built-In Filter|96x24x24|PetSmart",
+   "maker": "Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5188307.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "g300|Marineland|300 Deep Dimension (older)|72x36x27|",
+   "maker": "Marineland",
+   "retailer": null,
+   "url": "https://www.monsterfishkeepers.com/forums/goto/post?id=7645226",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g300|PetSmart / Clear-For-Life|300 Gallon Rectangle (acrylic)|96x24x30|PetSmart",
+   "maker": "PetSmart / Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/clear-for-life-300-gallon-rectangle-aquarium-16375.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g300|Marineland|Standard Rectangular 265 gal|84x24x30|Marineland (maker)",
+   "maker": "Marineland",
+   "retailer": "Marineland (maker)",
+   "url": "https://sc10cdn.spectrumbrands.com/-/media/project/spectrumcommerce/marineland/files/product-files/aquarium-products/tanks/rectangular-tanks-specs-and-sizes-template.pdf",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "g300|Clear-For-Life|300 Gallon Rectangle Acrylic Aquarium|96x24x30|PetSmart",
+   "maker": "Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5187061.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "c6|Custom Aquariums|240 gal 30H x 72L x 24D|72x24x30|customaquariums.com",
+   "maker": "Custom Aquariums",
+   "retailer": "customaquariums.com",
+   "url": "https://www.customaquariums.com/?p=23654",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "c6|Aqueon|Standard Rectangular 210 Gal|72.5x24.5x29.25|",
+   "maker": "Aqueon",
+   "retailer": null,
+   "url": "https://modelnet.cs.princeton.edu/data/fish_tank/fish_tank_000000030/fish_tank_000000030_detail.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "c6|Glasscages|72 in Rimless (180 gal)|72x24x24|",
+   "maker": "Glasscages",
+   "retailer": null,
+   "url": "https://www.bulkreefsupply.com/72-rimless-low-iron-glass-aquarium-w-black-stand-157-gallons-glasscages.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "c6|Marineland|Standard Rectangular 220 gal Extra-High|72x24x30|Marineland (maker)",
+   "maker": "Marineland",
+   "retailer": "Marineland (maker)",
+   "url": "https://sc10cdn.spectrumbrands.com/-/media/project/spectrumcommerce/marineland/files/product-files/aquarium-products/tanks/rectangular-tanks-specs-and-sizes-template.pdf",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "t8x8x8|Exo Terra|Glass Terrarium Nano 8x8x12|8x8x12|",
+   "maker": "Exo Terra",
+   "retailer": null,
+   "url": "https://joshsfrogs.com/c/habitat/enclosures",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "t8x8x8|Reptizoo|Mini Nano Glass 8x8x12|8x8x12|",
+   "maker": "Reptizoo",
+   "retailer": null,
+   "url": "https://frontdeskreview.com/product/reptile-terrariums/reptizoo-mini-8x8x12/",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "t12x12x12|Exo Terra|Nano Terrarium 12x12x12|12x12x12|",
+   "maker": "Exo Terra",
+   "retailer": null,
+   "url": "https://frontdeskreview.com/product/reptile-terrariums/exo-terra-nano-12x12x12/",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "t12x12x12|Zoo Med|Naturalistic Terrarium 12x12x12|12x12x12|",
+   "maker": "Zoo Med",
+   "retailer": null,
+   "url": "https://aquariumdepot.ca/products/zoo-med-naturalistic-terrarium-12-x-12-x-12",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "t18x18x18|Exo Terra|Pro Terrarium 18x18x18 (PT4404)|18x18x18|",
+   "maker": "Exo Terra",
+   "retailer": null,
+   "url": "https://joshsfrogs.com/c/habitat/enclosures",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "t18x18x18|Reptizoo|RK0105S Glass Terrarium|18x18x18|",
+   "maker": "Reptizoo",
+   "retailer": null,
+   "url": "https://reptiledeli.com/products/reptizoo-rk0105s-18-x-18-x-18-reptile-glass-terrarium-single-hinge-door",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "t18x18x18|Zoo Med|Naturalistic Terrarium 18x18x18|18x18x18|",
+   "maker": "Zoo Med",
+   "retailer": null,
+   "url": "https://shop.reptifiles.com/products/zoo-med-naturalistic-terrarium-18x18x18",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "t12x18x12|Exo Terra|Pro Terrarium 12x12x18 (PT4401)|12x12x18|",
+   "maker": "Exo Terra",
+   "retailer": null,
+   "url": "https://joshsfrogs.com/c/habitat/enclosures",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "t12x18x12|Zoo Med|Naturalistic Terrarium 12x12x18|12x12x18|",
+   "maker": "Zoo Med",
+   "retailer": null,
+   "url": "https://shop.reptifiles.com/products/zoo-med-naturalistic-terrarium-12x12x18",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "t18x24x18|Dubia.com|18x18x24A PVC enclosure|18x18x24|",
+   "maker": "Dubia.com",
+   "retailer": null,
+   "url": "https://dubiaroaches.com/products/24x24x48-pvc-panel-reptile-enclosure-hinged-doors",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "t18x24x18|Exo Terra|Glass Terrarium 18x18x24 (Pangea listing)|18x18x24|",
+   "maker": "Exo Terra",
+   "retailer": null,
+   "url": "https://www.pangeareptile.com/products/exo-terra-18x18x24-glass-terrarium-available-for-pick-up-at-our-warehouse-only",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "t18x24x18|Exo Terra|Pro Terrarium 18x18x24 (PT4405)|18x18x24|",
+   "maker": "Exo Terra",
+   "retailer": null,
+   "url": "https://joshsfrogs.com/sp/exo-terra-pro-terrarium--18x18x124-pt4405",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "t18x24x18|Reptizoo|RK0110NS knock-down Glass Terrarium|18x18x24|",
+   "maker": "Reptizoo",
+   "retailer": null,
+   "url": "https://www.reptiledeli.com/products/reptizoo-rk0110ns-18x18x24-knock-down-reptile-glass-terrarium-single-hinge-door",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "t18x24x18|Zoo Med|Naturalistic Terrarium 18x18x24 (ZMNT4)|18x18x24|",
+   "maker": "Zoo Med",
+   "retailer": null,
+   "url": "https://joshsfrogs.com/sp/zoo-med-naturalistic-terrarium-18x18x24-zmnt4",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "t24x48x24|Carolina Custom Cages|Bio Deep Hybrid 24x24x48|24x24x48|",
+   "maker": "Carolina Custom Cages",
+   "retailer": null,
+   "url": "https://vintagevinylnews.com/?p=111972",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "t24x48x24|Dubia.com|24x24x48 Arboreal PVC V3|24x24x48|",
+   "maker": "Dubia.com",
+   "retailer": null,
+   "url": "https://dubiaroaches.com/products/24x24x48-pvc-panel-reptile-enclosure-hinged-doors",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "t36x18x18|Exo Terra|Wide Terrarium Large 36x18x18 (PT2613)|36x18x18|",
+   "maker": "Exo Terra",
+   "retailer": null,
+   "url": "https://hugglepets.co.uk/?p=458842",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "t36x18x18|OIIBO|Front-Opening Glass Terrarium 36x18x18|36x18x18|",
+   "maker": "OIIBO",
+   "retailer": null,
+   "url": "https://frontdeskreview.com/product/reptile-terrariums/oiibo-front-opening-36x18x18/",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "t36x18x18|Reptizoo|Glass Terrarium 36x18x18|36x18x18|",
+   "maker": "Reptizoo",
+   "retailer": null,
+   "url": "https://www.walmart.com/ip/238681420",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "t48x18x24|Zen Habitats|Zen Habitat 3.0 low-profile 4x2x16 in|48x24x16|",
+   "maker": "Zen Habitats",
+   "retailer": null,
+   "url": "https://www.zenhabitats.com/products/48x24x16-reptile-enclosure-the-zen-habitat-3-0",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "t48x24x24|Carolina Custom Cages|4x2x2 PVC|48x24x24|",
+   "maker": "Carolina Custom Cages",
+   "retailer": null,
+   "url": "https://frontdeskreview.com/product/reptile-terrariums/carolina-custom-cages-4x2x2-pvc/",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "t48x24x24|Dubia.com|4x2x2 PVC|48x24x24|",
+   "maker": "Dubia.com",
+   "retailer": null,
+   "url": "https://frontdeskreview.com/product/reptile-terrariums/dubia-com-4x2x2-pvc/",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "t48x24x24|Zen Habitats|Zen Habitat 3.0 4x2x2 (wood)|48x24x24|",
+   "maker": "Zen Habitats",
+   "retailer": null,
+   "url": "https://www.zenhabitats.com/products/4x2x2-reptile-enclosure-the-zen-habitat-3-0",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_waterbox_cube_20|Waterbox|AIO 20 Cube (20 gal)|17.7x17.7x15.7|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_waterbox_cube_20|Waterbox|Eden 20 w/ FLED 17 (17 gal)|17.7x17.7x17.7|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_waterbox_cube_20|JBJ|20 Gallon Nano Rimless AIO Aquarium|17.25x16x16|Bulk Reef Supply",
+   "maker": "JBJ",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/20-gallon-nano-rimless-aio-aquarium-jbj.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_waterbox_cube_20|JBJ|All-in-One Rimless Flat Panel 25 gal|18.5x18x18|Petco",
+   "maker": "JBJ",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_waterbox_cube_20|JBJ|Rimless Flat Panel Kit 25 gal on cabinet (black/white)|18.5x18x18|Petco",
+   "maker": "JBJ",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_waterbox_cube_20|Penn-Plax|Aquaterrium|17.25x17x15.5|Petco",
+   "maker": "Penn-Plax",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_waterbox_cube_20|Clear-For-Life|25 Gallon Cube Acrylic Aquarium|18x18x18|PetSmart",
+   "maker": "Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5187099.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_waterbox_cube_20|Red Sea|MAX NANO G2 Cube Aquarium (20 Gal)|17.7x17.7x17.7|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/max-nano-g2-cube-aquarium-20-gal-red-sea.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_waterbox_cube_20|Neptunian Cube|Tabletop T-45 - Professional Reef Aquarium System (16 Gallons)|17.7x15.7x15.7|Bulk Reef Supply",
+   "maker": "Neptunian Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/neptunian-cube-tabletop-t-45-aquarium-system.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_waterbox_cube_20|JBJ|RF-25 Rimless Flat Panel Aquarium & Stand (25 Gal)|18.5x18x18|Bulk Reef Supply",
+   "maker": "JBJ",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/rf-25-rimless-flat-panel-aquarium-stand-25-gal-jbj.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_g45_tall|Marineland|High Definition LED Aquarium & Stand Ensemble 45 gal|36.25x12.6x24.8|",
+   "maker": "Marineland",
+   "retailer": null,
+   "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-high-definition-led-aquarium-and-stand-ensemble---45-gallon-94286.html",
+   "unknown": [
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_exo_terra_24x18x24|Exo Terra|Glass Terrarium Medium/Tall 24x18x24 (PT2612)|24x18x24|",
+   "maker": "Exo Terra",
+   "retailer": null,
+   "url": "https://hugglepets.co.uk/?p=458842",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_exo_terra_24x18x24|Reptizoo|Double Hinge Glass Terrarium 24x18x24|24x18x24|",
+   "maker": "Reptizoo",
+   "retailer": null,
+   "url": "https://www.walmart.com/ip/238681420",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_36x18x24|Reptizoo|67 Gallon Front-Opening Glass (RHK11)|36x18x24|",
+   "maker": "Reptizoo",
+   "retailer": null,
+   "url": "https://www.reptiledeli.com/products/reptizoo-reptile-glass-terrarium-double-hinge-door-36-x-18-x-24-rhk11",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_20gal_long_terrarium|Reptizoo|Glass Terrarium 20 gal|30x12x12|PetSmart",
+   "maker": "Reptizoo",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/reptile/habitats-and-decor/terrariums/reptizoo-glass-terrarium---reptile-habitat-enclosure---20-120-gal-5375655.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_20gal_long_terrarium|Zoo Med|ReptiHabitat 20 gal|30x12x12|PetSmart",
+   "maker": "Zoo Med",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/reptile/habitats-and-decor/terrariums/zoo-med-20-gallon-leopard-gecko-reptihabitat-5351767.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_14|Marineland|10 Gallon Glass Aquarium Kit|15.125x15.2x13.125|Marineland (maker)",
+   "maker": "Marineland",
+   "retailer": "Marineland (maker)",
+   "url": "https://www.marineland.com/products/aquariums/10-gallon-glass-aquarium-kit",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_14|Fluval|Flex 9 gal|14x13x13|Fluval (maker)",
+   "maker": "Fluval",
+   "retailer": "Fluval (maker)",
+   "url": "https://fluvalaquatics.com/us/shop/product/flex-aquarium-kit-9-us-gal-34-l",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_14|Fluval|Flex 2.0 9 gal|14x13x13|Fluval (maker)",
+   "maker": "Fluval",
+   "retailer": "Fluval (maker)",
+   "url": "https://fluvalaquatics.com/us/shop/product/flex-2-0-aquarium-kit-9-us-gal-34-l",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_14|Fluval|Flex 9 Gallon Glass Aquarium Kit, Black|14x13x14|Amazon",
+   "maker": "Fluval",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B01MRIQW7K",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_14|Fluval|Flex 15 Kit (black) (15 gal)|16x15x15|Petco",
+   "maker": "Fluval",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_14|Fluval|Flex 9 Kit (white) (9 gal)|14x13x13|Petco",
+   "maker": "Fluval",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_14|HELLOREEF GloFish|15 gal Kit|15x15x15|Petco",
+   "maker": "HELLOREEF GloFish",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_14|Waterbox|AIO 10 Cube (10 gal)|13.8x13.8x13.8|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/freestanding-large-fish-tanks",
+   "unknown": [
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_14|JBJ|15 Gallon Nano Rimless AIO Aquarium|15.25x14x16|Bulk Reef Supply",
+   "maker": "JBJ",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/15-gallon-nano-rimless-aio-aquarium-jbj.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_14|Penn-Plax|Planting kit|14.75x13.75x15.75|Petco",
+   "maker": "Penn-Plax",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_14|HelloReef|Clownfish & Anemone Aquarium Kit (15 gal)|15x15x15|Bulk Reef Supply",
+   "maker": "HelloReef",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/clownfish-anemone-aquarium-kit-hello-reef.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_14|HelloReef|15 Gallon Aquarium & Black Stand Bundle|15x15x15|Bulk Reef Supply",
+   "maker": "HelloReef",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/helloreef-15-gallon-aquarium-black-stand-bundle-helloreef.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_14|Bulk Reef Supply|Reef Master 15 Gallon Aquarium Kit|15x15x15|Bulk Reef Supply",
+   "maker": "Bulk Reef Supply",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reef-master-15-gallon-aquarium-kit-bulk-reef-supply.html",
+   "unknown": [
+    "lid",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_14|Bulk Reef Supply|Reef Pro 15 Gallon Aquarium Kit|15x15x15|Bulk Reef Supply",
+   "maker": "Bulk Reef Supply",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reef-pro-15-gallon-aquarium-kit-bulk-reef-supply.html",
+   "unknown": [
+    "lid",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_14|Ultum Nature Systems|UNS 35A Dual All-In-One Aquarium (11.3 Gallons)|13.77x13.77x13.77|Bulk Reef Supply",
+   "maker": "Ultum Nature Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/uns-35a-dual-aio-aquarium-11-gallons.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_14|Fluval|15 Gallon Fluval Flex 2.0 Aquarium|16.3x15.75x15|Bulk Reef Supply",
+   "maker": "Fluval",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/15-gallon-fluval-flex-2-0-aquarium-fluval.html",
+   "unknown": [
+    "lid",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_35|Coralife|BioCube 32 gal|20.25x21.875x19.125|Coralife (maker)",
+   "maker": "Coralife",
+   "retailer": "Coralife (maker)",
+   "url": "https://www.coralifeproducts.com/all-products/biocube/aquariums",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_35|Marineland|Frameless Cube Aquarium|17.875x17.875x18.875|Marineland (maker)",
+   "maker": "Marineland",
+   "retailer": "Marineland (maker)",
+   "url": "https://www.marineland.com/products/aquariums/frameless-cube-aquarium",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_35|Imagitarium|Cube Glass Aquarium Kit with lighting, filtration & accessories|19.72x19.72x19.86|Petco",
+   "maker": "Imagitarium",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_35|Waterbox|AIO 352 (33 gal)|23.6x19.7x17.7|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_35|Waterbox|Clear 2420|23.6x19.7x17.7|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_35|Waterbox|Marine X 602|23.6x19.7x19.7|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_35|JBJ|Nano-Cube All-in-One 24 gal|18x19.6x19.7|Petco",
+   "maker": "JBJ",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_35|Waterbox|AIO 35.2 Aquarium System (33 gallons)|23.6x19.7x17.7|Bulk Reef Supply",
+   "maker": "Waterbox",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/aio-35-2-aquarium-system-33-gallons-waterbox-aquariums.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_35|HelloReef|33 Gallon Aquarium & Black Stand|23.6x19.7x17.7|Bulk Reef Supply",
+   "maker": "HelloReef",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/helloreef-33-gallon-aquarium-black-stand.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_35|Waterbox|MARINE EX 60.2 Aquarium System (36 Gallons)|23.6x19.7x19.7|Bulk Reef Supply",
+   "maker": "Waterbox",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/marine-ex-60-2-aquarium-system-36-gallons-waterbox-aquariums.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_35|Waterbox|MARINE X 60.2 Aquarium System (36 Gallons)|23.6x19.7x19.7|Bulk Reef Supply",
+   "maker": "Waterbox",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/marine-x-60-2-aquarium-system-36-gallons-waterbox-aquariums.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_35|Red Sea|MAX NANO G2 Peninsula Aquarium (26 Gal)|23x17.7x17.7|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/max-nano-g2-peninsula-aquarium-26-gal-red-sea.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_35|Neptunian Cube|Tabletop T-60 - Professional Reef Aquarium System (38 Gallons)|23.6x21.6x19.7|Bulk Reef Supply",
+   "maker": "Neptunian Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/neptunian-cube-tabletop-t-60-aquarium-system.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_35|Nyos|OPUS G2 200 Aquarium w/ Grey Slim-Line Cabinet (43 Gallons)|21.7x21.7x20.9|Bulk Reef Supply",
+   "maker": "Nyos",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/opus-g2-200-aquarium-w-grey-slim-line-cabinet-43-gallons.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_35|Bulk Reef Supply|Reef Master 33 Gallon Aquarium Kit|23.6x19.7x17.7|Bulk Reef Supply",
+   "maker": "Bulk Reef Supply",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reef-master-33-gallon-aquarium-kit.html",
+   "unknown": [
+    "lid",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_35|Bulk Reef Supply|Reef Pro 33 Gallon Aquarium Kit|23.6x19.7x17.7|Bulk Reef Supply",
+   "maker": "Bulk Reef Supply",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reef-pro-33-gallon-aquarium-kit.html",
+   "unknown": [
+    "filter",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_35|Bulk Reef Supply|Reef Ready 33 Gallon Aquarium Kit|23.6x19.7x17.7|Bulk Reef Supply",
+   "maker": "Bulk Reef Supply",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reef-ready-33-gallon-aquarium-kit.html",
+   "unknown": [
+    "light",
+    "filter",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_35|Red Sea|REEFER 170 G3 Aquarium System (33 Gallons)|23.6x19.7x20.1|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-170-g3-aquarium-system-33-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_35|Red Sea|REEFER Deluxe 170 G3 Aquarium System (33 Gallons) (incl. 1 x ReefLED 115)|23.6x19.7x20.1|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-deluxe-170-g3-aquarium-system-33-gallons-incl-1-x-reefled-115-red-sea.html",
+   "unknown": [
+    "lid",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_35|Red Sea|REEFER MAX 170 G3 Aquarium System (33 Gallons)|23.6x19.7x20.1|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-max-170-g3-aquarium-system-33-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_imagitarium_cube_35|Ultum Nature Systems|UNS R60 Reef System (32 Gallons)|23.62x19.69x19.69|Bulk Reef Supply",
+   "maker": "Ultum Nature Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/uns-r60-reef-system-32-gallons-ultum-nature-systems.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_imagitarium_shallow_6_8|Imagitarium (Petco)|Shallow Glass Shrimp & Aquatic Plants Aquarium 6.8 gal|20x10x8.62|Petco",
+   "maker": "Imagitarium (Petco)",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/product/imagitarium-shallow-glass-shrimp-and-aquatic-plants-aquarium",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_imagitarium_shallow_28|Fluval|Flex 32.5 gal|32.5x15.75x15.35|Fluval (maker)",
+   "maker": "Fluval",
+   "retailer": "Fluval (maker)",
+   "url": "https://fluvalaquatics.com/us/shop/product/flex-aquarium-set-32-5-us-gal-123-l-black",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_imagitarium_shallow_28|GloFish|20 Gallon Premium Fish Tank Kit|27.35x14.63x15.63|Amazon",
+   "maker": "GloFish",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0FM6KNRHG",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_imagitarium_shallow_28|Fluval|Flex 32.5 gal Kit (black)|32.5x15.75x15.35|Petco",
+   "maker": "Fluval",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_imagitarium_shallow_28|Waterbox|Clear Mini 30 (31 gal)|31.4x15.7x15.7|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/freestanding-large-fish-tanks",
+   "unknown": [
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_aqueon_standard_glass_rectan|Aqueon|Standard Glass Rectangle 38 gal|36.25x12.625x19.75|Aqueon (maker)",
+   "maker": "Aqueon",
+   "retailer": "Aqueon (maker)",
+   "url": "https://www.aqueon.com/products/aquariums/standard-glass-rectangle-aquariums",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_aqueon_standard_glass_rectan|Marineland|Standard Rectangular 40 gal High|36x13x20|Marineland (maker)",
+   "maker": "Marineland",
+   "retailer": "Marineland (maker)",
+   "url": "https://sc10cdn.spectrumbrands.com/-/media/project/spectrumcommerce/marineland/files/product-files/aquarium-products/tanks/rectangular-tanks-specs-and-sizes-template.pdf",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_aqueon_frameless_cube_60|Clear-For-Life|60 Gallon Cube Acrylic Aquarium|24x24x24|PetSmart",
+   "maker": "Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5188247.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_coralife_biocube_16|Coralife|BioCube 16 gal|15x16.75x17.5|Coralife (maker)",
+   "maker": "Coralife",
+   "retailer": "Coralife (maker)",
+   "url": "https://www.coralifeproducts.com/all-products/biocube/aquariums",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_coralife_biocube_16|Coralife|Smart BioCube Jr 14 gal|15x16.75x17.5|Coralife (maker)",
+   "maker": "Coralife",
+   "retailer": "Coralife (maker)",
+   "url": "https://www.coralifeproducts.com/all-products/biocube/smart-biocube-jr",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_coralife_biocube_16|Coralife|LED Biocube Aquarium Starter Kit 14 Gallon (acrylic)|16.75x15x17.5|Amazon",
+   "maker": "Coralife",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0F45BXMXS",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_coralife_biocube_16|Ultum Nature Systems|UNS 40A Dual All-In-One Aquarium (16.9 Gallons)|15.74x15.74x15.74|Bulk Reef Supply",
+   "maker": "Ultum Nature Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/uns-40a-dual-aio-aquarium-16-gallons.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_marineland_exhibit_series_wi|Fiji Cube|32 Gallon Rimless AIO Nano Aquarium PRO Series|23.62x19.69x15.75|Bulk Reef Supply",
+   "maker": "Fiji Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/32-gallon-rimless-aio-nano-aquarium-pro-series-fiji-cube.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_marineland_high_definition_l|Marineland|High Definition LED Ensemble Aquarium and Stand 60 gal|48.5x12.75x24.75|Marineland (maker)",
+   "maker": "Marineland",
+   "retailer": "Marineland (maker)",
+   "url": "https://www.marineland.com/products/aquariums/high-definition-led-ensemble-aquarium-and-stand-60-gallon",
+   "unknown": [
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_marineland_high_definition_l|Marineland|Standard Rectangular 60 gal|48x13x24|Marineland (maker)",
+   "maker": "Marineland",
+   "retailer": "Marineland (maker)",
+   "url": "https://sc10cdn.spectrumbrands.com/-/media/project/spectrumcommerce/marineland/files/product-files/aquarium-products/tanks/rectangular-tanks-specs-and-sizes-template.pdf",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_marineland_high_definition_l|Marineland|Modern LED Aquarium & Stand Ensemble 60 gal|48.5x12.75x25|PetSmart",
+   "maker": "Marineland",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5248474.html",
+   "unknown": [
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_marineland_high_definition_l|Top Fin|Essentials Aquarium Starter Kit 55 gal|47.8x13.1x24.6|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5262267.html",
+   "unknown": [
+    "stand"
+   ]
+  },
+  {
+   "key": "n_marineland_portrait_desktop_|Marineland|Portrait Desktop Kit 5 gal|9.5x9.5x14|Marineland (maker)",
+   "maker": "Marineland",
+   "retailer": "Marineland (maker)",
+   "url": "https://www.marineland.com/products/aquariums/portrait-desktop-kit",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_marineland_portrait_desktop_|Fluval|Chi Aquarium Kit|10x10x14.4|Fluval (maker)",
+   "maker": "Fluval",
+   "retailer": "Fluval (maker)",
+   "url": "https://fluvalaquatics.com/us/shop/product/chi-aquarium-kit",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_marineland_half_moon_combo_2|Marineland|Half-Moon Aquarium Combo 20 / 30 gal|23.47x12.125x23.5625|Marineland (maker)",
+   "maker": "Marineland",
+   "retailer": "Marineland (maker)",
+   "url": "https://www.marineland.com/products/aquariums/half-moon-aquarium-combo",
+   "unknown": [
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_marineland_half_moon_combo_2|Marineland|Standard Rectangular 30 gal Extra-High|24x12x24|Marineland (maker)",
+   "maker": "Marineland",
+   "retailer": "Marineland (maker)",
+   "url": "https://sc10cdn.spectrumbrands.com/-/media/project/spectrumcommerce/marineland/files/product-files/aquarium-products/tanks/rectangular-tanks-specs-and-sizes-template.pdf",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_marineland_half_moon_combo_2|TARARIUM|20 Gallon Fish Tank Betta Starter Kit 100% Glass|21.26x13.39x21.89|Amazon",
+   "maker": "TARARIUM",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0GVY18QWW",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_marineland_standard_rectangu|Marineland|Standard Rectangular 16 gal High|20x10x18|Marineland (maker)",
+   "maker": "Marineland",
+   "retailer": "Marineland (maker)",
+   "url": "https://sc10cdn.spectrumbrands.com/-/media/project/spectrumcommerce/marineland/files/product-files/aquarium-products/tanks/rectangular-tanks-specs-and-sizes-template.pdf",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_marineland_standard_rectangu|Fluval|Spec 16 gal|21.5x11.5x17|Fluval (maker)",
+   "maker": "Fluval",
+   "retailer": "Fluval (maker)",
+   "url": "https://fluvalaquatics.com/us/shop/product/spec-aquarium-kit-16-us-gal-60-l-black",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_marineland_standard_rectangu|Fluval|Spec 16 Gallon Aquarium Kit|21.8x11.5x17.5|Bulk Reef Supply",
+   "maker": "Fluval",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/fluval-spec-16-gallon-aquarium-kit-fluval.html",
+   "unknown": [
+    "lid",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_marineland_standard_rectangu_|Marineland|Standard Rectangular 20 gal Extra-High|20x10x24|Marineland (maker)",
+   "maker": "Marineland",
+   "retailer": "Marineland (maker)",
+   "url": "https://sc10cdn.spectrumbrands.com/-/media/project/spectrumcommerce/marineland/files/product-files/aquarium-products/tanks/rectangular-tanks-specs-and-sizes-template.pdf",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_marineland_standard_rectangu__|Marineland|Standard Rectangular 25 gal|24x12x20|Marineland (maker)",
+   "maker": "Marineland",
+   "retailer": "Marineland (maker)",
+   "url": "https://sc10cdn.spectrumbrands.com/-/media/project/spectrumcommerce/marineland/files/product-files/aquarium-products/tanks/rectangular-tanks-specs-and-sizes-template.pdf",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_marineland_standard_rectangu___|Marineland|Standard Rectangular 30 gal Breeder|30x18x12|Marineland (maker)",
+   "maker": "Marineland",
+   "retailer": "Marineland (maker)",
+   "url": "https://sc10cdn.spectrumbrands.com/-/media/project/spectrumcommerce/marineland/files/product-files/aquarium-products/tanks/rectangular-tanks-specs-and-sizes-template.pdf",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_marineland_standard_rectangu____|Marineland|Standard Rectangular 40 gal|48x13x16|Marineland (maker)",
+   "maker": "Marineland",
+   "retailer": "Marineland (maker)",
+   "url": "https://sc10cdn.spectrumbrands.com/-/media/project/spectrumcommerce/marineland/files/product-files/aquarium-products/tanks/rectangular-tanks-specs-and-sizes-template.pdf",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_marineland_standard_rectangu_____|Marineland|Standard Rectangular 110 gal|48x18x30|Marineland (maker)",
+   "maker": "Marineland",
+   "retailer": "Marineland (maker)",
+   "url": "https://sc10cdn.spectrumbrands.com/-/media/project/spectrumcommerce/marineland/files/product-files/aquarium-products/tanks/rectangular-tanks-specs-and-sizes-template.pdf",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_marineland_standard_rectangu______|Marineland|Standard Rectangular 150 gal Extra-High|48x24x30|Marineland (maker)",
+   "maker": "Marineland",
+   "retailer": "Marineland (maker)",
+   "url": "https://sc10cdn.spectrumbrands.com/-/media/project/spectrumcommerce/marineland/files/product-files/aquarium-products/tanks/rectangular-tanks-specs-and-sizes-template.pdf",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_tetra_tetra_connect_28_wi_fi|Tetra|Connect 28 gal Aquarium Kit (Wi-Fi feeder)|24x15x18.9|Tetra (maker)",
+   "maker": "Tetra",
+   "retailer": "Tetra (maker)",
+   "url": "https://www.tetra-fish.com/products/aquarium-kits/tetra-connect-28g-aquarium-kit",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_tetra_tetra_connect_28_wi_fi|Waterbox|Eden 30 w/ FLED 21 (white) (29.4 gal)|23.6x15.7x21.7|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_fluval_spec_v_5|Fluval|Spec V 5 gal|19.5x6.5x11.5|Fluval (maker)",
+   "maker": "Fluval",
+   "retailer": "Fluval (maker)",
+   "url": "https://fluvalaquatics.com/us/shop/product/spec-aquarium-kit-5-us-gal-19-l",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_fluval_evo_13_5|Fluval|Evo 13.5 gal|22x15x11.5|Fluval (maker)",
+   "maker": "Fluval",
+   "retailer": "Fluval (maker)",
+   "url": "https://fluvalaquatics.com/us/shop/product/evo-aquarium-kit-13-5-us-gal-52-l-black",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_fluval_shaker_and_cabinet_se|Fluval|Shaker Aquarium & Cabinet Set 44 gal|27.5x16x24|Fluval (maker)",
+   "maker": "Fluval",
+   "retailer": "Fluval (maker)",
+   "url": "https://fluvalaquatics.com/us/shop/product/shaker-aquarium-set-44-us-gal-168-l",
+   "unknown": [
+    "lid",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_fluval_shaker_and_cabinet_se|Waterbox|Eden 40 w/ FLED 30 (39.5 gal)|31.5x15.7x21.7|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_fluval_shaker_and_cabinet_se|Top Fin|Essentials Aquarium Starter Kit 37 gal|30.4x15.47x22.24|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5262266.html",
+   "unknown": [
+    "stand"
+   ]
+  },
+  {
+   "key": "n_fluval_siena_and_cabinet_set|Fluval|Siena Aquarium & Cabinet Set 72 gal|35x22x22|Fluval (maker)",
+   "maker": "Fluval",
+   "retailer": "Fluval (maker)",
+   "url": "https://fluvalaquatics.com/us/shop/product/siena-aquarium-set-72-us-gal-272-l",
+   "unknown": [
+    "lid",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_fluval_siena_and_cabinet_set|Waterbox|Marine X 903|35.4x19.7x21.7|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_fluval_siena_and_cabinet_set|JBJ|All-in-One Rimless Flat Panel 65 gal|36x21x20|Petco",
+   "maker": "JBJ",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_fluval_siena_and_cabinet_set|JBJ|Rimless Flat Panel Kit 65 gal on cabinet (black/white)|36x21x20|Petco",
+   "maker": "JBJ",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_fluval_siena_and_cabinet_set|Fiji Cube|81 Gallon External Overflow Rimless Aquarium with Stand|35.43x23.62x22.44|Bulk Reef Supply",
+   "maker": "Fiji Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/81-gallon-external-overflow-rimless-aquarium-with-stand-fiji-cube.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_fluval_siena_and_cabinet_set|Fiji Cube|81 Gallon Internal Overflow Rimless Aquarium|36x24x22.5|Bulk Reef Supply",
+   "maker": "Fiji Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/81-gallon-internal-overflow-rimless-aquarium-fiji-cube.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_fluval_siena_and_cabinet_set|Fiji Cube|81 Gallon Internal Overflow Rimless Aquarium with Stand|36x24x22.5|Bulk Reef Supply",
+   "maker": "Fiji Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/81-gallon-internal-overflow-rimless-aquarium-with-stand-fiji-cube.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_fluval_siena_and_cabinet_set|Innovative Marine|NUVO EXT 75 Gallon Aquarium Complete Reef System|35.4x23.6x19.7|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/ext-75-gallon-aquarium-complete-reef-system-innovative-marine.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_fluval_siena_and_cabinet_set|Red Sea|MAX NANO G2 XXL Aquarium (53 Gal)|35.4x21.7x19.7|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/max-nano-g2-xxl-aquarium-53-gal-red-sea.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_fluval_siena_and_cabinet_set|Neptunian Cube|Magic Pro 90 - Professional Reef Aquarium System (65 Gallons)|35.4x21.6x21.6|Bulk Reef Supply",
+   "maker": "Neptunian Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/neptunian-cube-magic-pro-90-aquarium-system.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_fluval_siena_and_cabinet_set|Neptunian Cube|Peninsula 90 - Professional Reef Aquarium System (67 Gallons)|35.4x22.4x21.6|Bulk Reef Supply",
+   "maker": "Neptunian Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/neptunian-cube-peninsula-90-aquarium-system.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_fluval_siena_and_cabinet_set|Red Sea|REEFER 300 G3 Aquarium System (65 Gallons)|35.4x22.6x21.7|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-300-g3-aquarium-system-65-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_fluval_siena_and_cabinet_set|Red Sea|REEFER Deluxe 300 G3 Aquarium System (65 Gallons) (incl. 2 x ReefLED 115)|35.4x22.6x21.7|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-deluxe-300-g3-aquarium-system-65-gallons-incl-2-x-reefled-115-red-sea.html",
+   "unknown": [
+    "lid",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_fluval_siena_and_cabinet_set|Red Sea|REEFER Deluxe Peninsula 350 G3 Aquarium System (73 Gallons) (incl. 2 x ReefLED 115)|37.8x25x23.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-deluxe-peninsula-350-g3-aquarium-system-73-gallons-incl-2-x-reefled-115-red-sea.html",
+   "unknown": [
+    "lid",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_fluval_siena_and_cabinet_set|Red Sea|REEFER MAX 300 G3 Aquarium System (65 Gallons)|35.4x22.6x21.7|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-max-300-g3-aquarium-system-65-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_fluval_siena_and_cabinet_set|Red Sea|REEFER MAX Peninsula 350 G3 Aquarium System (73 Gallons)|37.8x25x23.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-max-peninsula-350-g3-aquarium-system-73-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_fluval_siena_and_cabinet_set|Red Sea|REEFER Peninsula 350 G3 Aquarium System (73 Gallons)|37.8x25x23.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-peninsula-350-g3-aquarium-system-73-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_fluval_siena_and_cabinet_set|JBJ|RF-65 Rimless Flat Panel Aquarium & Stand (65 Gal)|36x21x20|Bulk Reef Supply",
+   "maker": "JBJ",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/rf-65-rimless-flat-panel-aquarium-stand-65-gal-jbj.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_fluval_siena_and_cabinet_set|Ultum Nature Systems|UNS R90 Reef System (61 Gallons)|35.43x22.05x22.05|Bulk Reef Supply",
+   "maker": "Ultum Nature Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/uns-r90-reef-system-61-gallons-ultum-nature-systems.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_fluval_visi_white_60p_set_20|Fluval|Visi-White 60P Aquarium Set 20.6 gal|23.6x14.4x14.4|Fluval (maker)",
+   "maker": "Fluval",
+   "retailer": "Fluval (maker)",
+   "url": "https://fluvalaquatics.com/us/shop/product/visi-white-60p-aquarium-set-20-6-us-gal-78-l",
+   "unknown": [
+    "lid",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_fluval_visi_white_60p_set_20|SC Aquariums|Empire USA 24 Gallon All-in-One Aquarium Kit Rimless|24x15x15|Amazon",
+   "maker": "SC Aquariums",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B07S6R5D2C",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_fluval_visi_white_60p_set_20|Waterbox|AIO 25 Peninsula (25 gal)|23.6x15.7x15.7|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/freestanding-large-fish-tanks",
+   "unknown": [
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_fluval_visi_white_60p_set_20|Waterbox|Clear Mini 25 (25 gal)|23.6x15.7x15.7|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/freestanding-large-fish-tanks",
+   "unknown": [
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_fluval_visi_white_60p_set_20|Ultum Nature Systems|60U Rimless Aquarium - 20 Gallon|23.62x14.17x14.17|Bulk Reef Supply",
+   "maker": "Ultum Nature Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/60u-rimless-aquarium-20-gallon-ultum-nature-systems.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_fluval_visi_white_60p_set_20|Waterbox|Cube 25 Peninsula Nano AIO Aquarium (25 gal)|23.6x15.7x15.7|Bulk Reef Supply",
+   "maker": "Waterbox",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/cube-25-peninsula-nano-aio-aquarium-waterbox-aquariums.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_fluval_visi_white_60p_set_20|Ultum Nature Systems|UNS 60A Dual All-In-One Aquarium (20 Gallons)|23.62x14.17x14.17|Bulk Reef Supply",
+   "maker": "Ultum Nature Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/uns-60a-dual-aio-aquarium-20-5-gallons.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_marineland_marineland_portra|MarineLand|Portrait 5 Gallon Fish Tank Kit|9.99x9.67x17.2|Amazon",
+   "maker": "MarineLand",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B00O8SZTKQ",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_innovative_marine_innovative|Innovative Marine|Marine Starter Kit Aquarium 25 Gallon Lagoon|23.6x19.7x11.8|Amazon",
+   "maker": "Innovative Marine",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0D956WMNK",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_innovative_marine_innovative|Innovative Marine|25 NUVO Fusion AIO Lagoon Aquarium (25 gal)|23.6x19.7x11.8|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/25-nuvo-fusion-aio-lagoon-aquarium-innovative-marine.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_allcolor_low_iron_rimless_6|Top Fin|Premium Glass Aquarium 5 gal|14x9.5x9.5|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5230342.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_fzone_fzone_6_4_shallow_riml|FZONE|6.4 Gal Shallow Rimless Aquarium (L45-W30)|17.71x11.8x7.08|Amazon",
+   "maker": "FZONE",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0BZ8CK9DR",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_fzone_fzone_6_4_shallow_riml|Ultum Nature Systems|Dual AIO 45SA Rimless 6 Gallon|17.71x11.02x7.08|Amazon",
+   "maker": "Ultum Nature Systems",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0GRBBQ4FT",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_fzone_fzone_6_4_shallow_riml|Ultum Nature Systems|UNS 45SA Dual All-In-One Aquarium (5.9 Gallons)|17.71x11.02x7.08|Bulk Reef Supply",
+   "maker": "Ultum Nature Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/uns-45sa-dual-aio-aquarium-5-9-gallons.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_fzone_fzone_9_shallow_rimles|FZONE|9 Gal Shallow Rimless Aquarium (L60-W36)|23.6x14.2x6.3|Amazon",
+   "maker": "FZONE",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0BZ8H8FYJ",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_fzone_fzone_9_shallow_rimles|Ultum Nature Systems|60S Rimless Aquarium - 10 Gallon|23.6x14.17x7.08|Bulk Reef Supply",
+   "maker": "Ultum Nature Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/60s-rimless-aquarium-10-gallon-ultum-nature-systems.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_fzone_fzone_9_shallow_rimles|Ultum Nature Systems|UNS 60SA Dual All-In-One Aquarium (10.2 Gallons)|23.62x14.17x7.08|Bulk Reef Supply",
+   "maker": "Ultum Nature Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/uns-60sa-dual-aio-aquarium-10-2-gallons.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_landen_landen_tall_10_rimles|Fluval|20L Betta Kit|12x11x17|Petco",
+   "maker": "Fluval",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_landen_landen_75h_37_rimless|LANDEN|Aquarium 75H 37 Gallon Rimless|29.5x17.7x17.7|Amazon",
+   "maker": "LANDEN",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0CMCM9PQJ",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_landen_landen_long_10_8_riml|Ultum Nature Systems|90B Rimless Aquarium - 12 Gallon|35.43x7.87x9.84|Bulk Reef Supply",
+   "maker": "Ultum Nature Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/90b-rimless-aquarium-12-gallon-ultum-nature-systems.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_lifegard_lifegard_2_nano_cub|Vibrant Life|Life Betta View Aquarium Starter Kit, 1.5 Gallon|7.5x7.5x8.25|Walmart (sold and shipped by Walmart.com)",
+   "maker": "Vibrant Life",
+   "retailer": "Walmart (sold and shipped by Walmart.com)",
+   "url": "https://www.walmart.com/ip/15303459484",
+   "unknown": [
+    "lid",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Waterbox|Infinia Reef 1905|60.5x25.3x22.6|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Waterbox|Clear 6025|60.5x25.3x21.7|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Waterbox|Peninsula 6025|60.5x25.3x22.6|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Fiji Cube|142 Gallon External Overflow Rimless Aquarium|59.06x23.62x23.62|Bulk Reef Supply",
+   "maker": "Fiji Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/142-gallon-external-overflow-rimless-aquarium-fiji-cube.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Fiji Cube|142 Gallon External Overflow Rimless Aquarium Full Package|59.06x23.62x23.62|Bulk Reef Supply",
+   "maker": "Fiji Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/142-gallon-external-overflow-rimless-aquarium-full-package-fiji-cube.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Fiji Cube|142 Gallon Internal Overflow Rimless Aquarium|60x24x24|Bulk Reef Supply",
+   "maker": "Fiji Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/142-gallon-internal-overflow-rimless-aquarium-fiji-cube.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Waterbox|CLEAR 6025 Aquarium & Stand (130 Gallons) - Waterbox|60.5x25.3x21.7|Bulk Reef Supply",
+   "maker": "Waterbox",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/clear-6025-aquarium-stand-130-gallons-waterbox.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Waterbox|INFINIA 190.5 Aquarium System (137 Gallons) - Waterbox|60.5x25.3x22.6|Bulk Reef Supply",
+   "maker": "Waterbox",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/infinia-190-5-aquarium-system-137-gallons-waterbox.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Neptunian Cube|Magic Pro 150 - Professional Reef Aquarium System (116 Gallons)|59x21.6x21.6|Bulk Reef Supply",
+   "maker": "Neptunian Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/neptunian-cube-magic-pro-150-aquarium-system.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Neptunian Cube|Peninsula 150 - Professional Reef Aquarium System (120 Gallons)|59x22.4x21.6|Bulk Reef Supply",
+   "maker": "Neptunian Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/neptunian-cube-peninsula-150-aquarium-system.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Pro Clear Aquatic Systems|ProStar Rimless V2 200 Aquarium & Stand (150 Gallons)|60x26x24|Bulk Reef Supply",
+   "maker": "Pro Clear Aquatic Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/prostar-rimless-v2-200-aquarium-stand-150-gallons-pro-clear-aquatic-systems.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Red Sea|REEF-FRAME 500 Aquarium (107 Gallons)|59.1x22.6x21.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reef-frame-500-aquarium-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Red Sea|REEF-FRAME MAX 500 Aquarium (107 Gallons)|59.1x22.6x21.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reef-frame-max-500-aquarium-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Red Sea|REEFER 525 G3 Aquarium System (112 Gallons)|59.1x23.6x21.7|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-525-g3-aquarium-system-112-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Red Sea|REEFER 625 G3 Aquarium System (132 Gallons)|59.1x25.6x23.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-625-g3-aquarium-system-132-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Red Sea|REEFER Deluxe 525 G3 Aquarium System (112 Gallons) (incl. 2 x ReefLED 170)|59.1x23.6x21.7|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-deluxe-525-g3-aquarium-system-112-gallons-incl-2-x-reefled-170-red-sea.html",
+   "unknown": [
+    "lid",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Red Sea|REEFER Deluxe 625 G3 Aquarium System (132 Gallons) (incl. 2 x ReefLED 170)|59.1x25.6x23.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-deluxe-625-g3-aquarium-system-132-gallons-incl-2-x-reefled-170-red-sea.html",
+   "unknown": [
+    "lid",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Red Sea|REEFER Deluxe Peninsula S-700 G3 Aquarium System (150 Gallons) (incl. 3 x ReefLED 170)|59.4x26.8x25.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-deluxe-peninsula-s-700-g3-aquarium-system-150-gallons-incl-3-x-reefled-170-red-sea.html",
+   "unknown": [
+    "lid",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Red Sea|REEFER Deluxe S-700 G3 Aquarium System (149 Gallons) (incl. 3 x ReefLED 170)|59.1x26.8x25.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-deluxe-s-700-g3-aquarium-system-149-gallons-incl-3-x-reefled-170-red-sea.html",
+   "unknown": [
+    "lid",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Red Sea|REEFER MAX 525 G3 Aquarium System (112 Gallons)|59.1x23.6x21.7|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-max-525-g3-aquarium-system-112-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Red Sea|REEFER MAX 625 G3 Aquarium System (132 Gallons)|59.1x25.6x23.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-max-625-g3-aquarium-system-132-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Red Sea|REEFER MAX Peninsula S-700 G3 Aquarium System (150 Gallons)|59.4x26.8x25.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-max-peninsula-s-700-g3-aquarium-system-150-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Red Sea|REEFER MAX S-700 G3 Aquarium System (149 Gallons)|59.1x26.8x25.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-max-s-700-g3-aquarium-system-149-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Red Sea|REEFER Peninsula S-700 G3 Aquarium System (150 Gallons)|59.4x26.8x25.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-peninsula-s-700-g3-aquarium-system-150-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Red Sea|REEFER S-700 G3 Aquarium System (149 Gallons)|59.1x26.8x25.6|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-s-700-g3-aquarium-system-149-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Ultum Nature Systems|UNS R150 Reef System (118 Gallons)|59.06x23.62x23.62|Bulk Reef Supply",
+   "maker": "Ultum Nature Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/uns-r150-reef-system-118-gallons-ultum-nature-systems.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_sc_empire_usa_starfire_glass|Waterbox|Peninsula 6025 Aquarium & Stand (136 Gallons)|60.5x25.3x22.6|Bulk Reef Supply",
+   "maker": "Waterbox",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/peninsula-6025-aquarium-stand-136-gallons-waterbox.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_jengu_jengu_t1_2_1_betta_nan|Jengu|T1 2.1 Gal Betta Nano Desktop Aquarium Kit|7.1x9.1x7.5|Amazon",
+   "maker": "Jengu",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0GY2XPHR1",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_jengu_jengu_t1_2_1_betta_nan_|Jengu|T1 2.1 Gal Betta Nano Desktop Aquarium Kit (variant)|7.5x7.1x13.2|Amazon",
+   "maker": "Jengu",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0GY2RR7Z9",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_tailwag_fable_6_hydroponic_f|Tailwag Fable|6 Gallon Hydroponic Fish Tank Desktop Kit|19.49x8.46x8.35|Amazon",
+   "maker": "Tailwag Fable",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0HGK5FPYW",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_tailwag_fable_6_hydroponic_f|YHDSYN|6 Gallon Betta Fish Tank 7-in-1 Starter Kit|19.5x8.4x8.4|Amazon",
+   "maker": "YHDSYN",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0H87PVY65",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_tailwag_fable_2_hydroponic_f|Tailwag Fable|2 Gallon Hydroponic Fish Tank Desktop Kit|12.05x7.72x7.24|Amazon",
+   "maker": "Tailwag Fable",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0H1HZ29ZB",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_tailwag_fable_2_hydroponic_f|Ahua Walsong|2.8 Gallon Nano Aquarium Starter Kit with Light|11.8x7x7.8|Amazon",
+   "maker": "Ahua Walsong",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0FZTVVN63",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_tailwag_fable_2_hydroponic_f|Ultum Nature Systems|3N Rimless Aquarium - 2.9 Gallon|12.2x7.48x7.48|Bulk Reef Supply",
+   "maker": "Ultum Nature Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/3n-rimless-aquarium-2-9-gallon-ultum-nature-systems.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_vehipa_vehipa_betta_fish_1_a|Vehipa|Betta Fish Tank 1 Gal Acrylic Nano Kit Black|7.8x5.8x6|Amazon",
+   "maker": "Vehipa",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0GKFXWCS7",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_vehipa_vehipa_betta_fish_1_a|Vehipa|1 Gal Betta Acrylic Tank Kit White|7.8x5.8x6|Amazon",
+   "maker": "Vehipa",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0H66VZGVP",
+   "unknown": [
+    "lid",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_vehipa_vehipa_betta_fish_2_4|Vehipa|Betta Fish Tank 2.4 Gallon Glass Kit|11.81x5.83x9.53|Amazon",
+   "maker": "Vehipa",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0FJ8HDKVP",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_vehipa_vehipa_betta_fish_2_4|EVIEUN|2.9 Gallon Small Glass Fish Tank Kit|12x6x9|Amazon",
+   "maker": "EVIEUN",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0H4G1G5HL",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_vehipa_vehipa_betta_fish_2_4|EVIEUN|2.2 Gallon Betta Tank Black|11.81x5.91x9.25|Amazon",
+   "maker": "EVIEUN",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0GWCP1LNN",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_evieun_evieun_2_2_small_glas|EVIEUN|2.2 Gallon Small Glass Fish Tank Kit|10x6x8|Amazon",
+   "maker": "EVIEUN",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0H4FMVF5W",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_vivohome_vivohome_2_smart_fi|VIVOHOME|2 Gallon Smart Fish Tank with App and Auto Feeder|6.3x7.8x11.8|Amazon",
+   "maker": "VIVOHOME",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0GL1H59MK",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_ewonlife_3_betta_plastic_all|eWonLife|3 Gallon Betta Tank Plastic All-in-One Starter Kit (acrylic)|14.96x7.87x8.27|Amazon",
+   "maker": "eWonLife",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0GBX2KK32",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_ewonlife_3_betta_plastic_all|MCCKLE|5 Gallon Fish Tank Starter Kit (acrylic)|14.88x8.26x8.03|Amazon",
+   "maker": "MCCKLE",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0GXZVPPJ6",
+   "unknown": [
+    "lid",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_ewonlife_3_betta_plastic_all|Top Fin|LED Black Glass Aquarium 3 gal|14x7.5x8.8|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5300125.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_ewonlife_3_betta_plastic_all|Top Fin|All-In-One Betta Aquarium Starter Kit 3 gal|14x7.5x8.9|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5321019.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_ewonlife_3_betta_plastic_all|Ultum Nature Systems|5N Rimless Aquarium - 4.6 Gallon|14.17x8.66x8.66|Bulk Reef Supply",
+   "maker": "Ultum Nature Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/5n-rimless-aquarium-4-6-gallon-ultum-nature-systems.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_hyuvcx_5_3_fish_betta_starte|HYUVCX|5.3 Gallon Fish Tank Betta Starter Kit|8.27x8.27x18.74|Amazon",
+   "maker": "HYUVCX",
+   "retailer": "Amazon",
+   "url": "https://www.amazon.com/dp/B0FCY3KF6V",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_aqua_daren_15_rimless_ultra_|Waterbox|AIO 15 Cube w/ FLED (15 gal)|19.7x13.8x13.8|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/freestanding-large-fish-tanks",
+   "unknown": [
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_imagitarium_glass_versa_6_6|Imagitarium|Glass Versa Aquarium 6.6 gal|9.8x15.7x12.2|Petco",
+   "maker": "Imagitarium",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_fluval_kuhl_microscaping_bla|Fluval|Kuhl Microscaping Kit (black)|11x11x9|Petco",
+   "maker": "Fluval",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_fluval_kuhl_microscaping_bla|JBJ|AquaZen Rimless Desktop 4 gal kit|12x10x8|Petco",
+   "maker": "JBJ",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_fluval_kuhl_microscaping_bla|Eshopps|DeskMate 4.8 Gallon AIO Aquarium w/ LED Light|12x11x10|Bulk Reef Supply",
+   "maker": "Eshopps",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/deskmate-4-8-gallon-aio-aquarium-w-led-light-eshopps.html",
+   "unknown": [
+    "lid",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_fluval_kuhl_microscaping_bla|Bulk Reef Supply|DeskMate 4.8 Gallon AIO Nano Tank Bundle|12x11x10|Bulk Reef Supply",
+   "maker": "Bulk Reef Supply",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/deskmate-4-8-gallon-aio-nano-tank-bundle-bulk-reef-supply.html",
+   "unknown": [
+    "lid",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_fluval_kuhl_microscaping_bla|Fluval|Spec 2.6 Gallon Aquarium Kit|10.8x11.8x8.7|Bulk Reef Supply",
+   "maker": "Fluval",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/fluval-spec-2-6-gallon-aquarium-kit-fluval.html",
+   "unknown": [
+    "lid",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_fluval_kuhl_microscaping_bla|AquaZen|4 Gallon Scapers Planted Aquarium Kit|12x10x8|Bulk Reef Supply",
+   "maker": "AquaZen",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/4-gallon-scapers-planted-aquarium-kit-aquazen.html",
+   "unknown": [
+    "lid",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_fluval_liv_microscaping_16_g|Fluval|Liv Microscaping 16 gram kit (white/teak)|13x8x12.5|Petco",
+   "maker": "Fluval",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_waterbox_infinia_frag_1254|Waterbox|Infinia Frag 1254|48.2x25.3x16.1|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_waterbox_infinia_frag_1254|Fiji Cube|76 Gallon Shallow External Overflow Rimless Aquarium with Stand|47.24x23.62x15.75|Bulk Reef Supply",
+   "maker": "Fiji Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/76-gallon-external-overflow-rimless-aquarium-with-stand-fiji-cube.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_waterbox_infinia_frag_1254|Fiji Cube|76 Gallon Shallow External Overflow Rimless Aquarium|47.24x23.62x15.75|Bulk Reef Supply",
+   "maker": "Fiji Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/76-gallon-shallow-external-overflow-rimless-aquarium-fiji-cube.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_waterbox_infinia_frag_1254|Fiji Cube|76 Gallon Shallow Internal Overflow Rimless Aquarium|47.24x23.62x15.75|Bulk Reef Supply",
+   "maker": "Fiji Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/76-gallon-shallow-internal-overflow-rimless-aquarium-fiji-cube-1.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_waterbox_infinia_frag_1254|Fiji Cube|76 Gallon Shallow Internal Overflow Rimless Aquarium with Stand|47.24x23.62x15.75|Bulk Reef Supply",
+   "maker": "Fiji Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/76-gallon-shallow-internal-overflow-rimless-aquarium-with-stand-fiji-cube.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_waterbox_infinia_frag_1254|Waterbox|INFINIA Frag 125.4 Aquarium System (78 Gallons) - Waterbox|48.2x25.3x16.1|Bulk Reef Supply",
+   "maker": "Waterbox",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/infinia-frag-125-4-aquarium-system-78-gallons-waterbox.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_waterbox_infinia_frag_1254|Innovative Marine|NUVO SR Pro 2 80 Gallon AIO Aquarium with APS Stand|47.24x23.62x16.14|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/sr-pro-2-80-gallon-aio-aquarium-innovative-marine-html.html",
+   "unknown": [
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_waterbox_infinia_frag_1555|Waterbox|Infinia Frag 1555|60.5x25.3x16.1|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_waterbox_infinia_frag_1555|Waterbox|INFINIA Frag 155.5 Aquarium System (98 Gallons) - Waterbox|60.5x25.3x16.1|Bulk Reef Supply",
+   "maker": "Waterbox",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/infinia-frag-155-5-aquarium-system-98-gallons-waterbox.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_waterbox_infinia_frag_1756|Waterbox|Infinia Frag 1756|72.3x25.3x16.1|Petco",
+   "maker": "Waterbox",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_waterbox_infinia_frag_1756|Waterbox|INFINIA Frag 175.6 Aquarium System (118 Gallons) - Waterbox|72.3x25.3x16.1|Bulk Reef Supply",
+   "maker": "Waterbox",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/infinia-frag-175-6-aquarium-system-118-gallons-waterbox.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_waterbox_infinia_frag_1756|Innovative Marine|NUVO SR Pro 2 120 Gallon AIO Aquarium with APS Stand (Made to Order)|70.9x23.62x16.14|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/sr-pro-2-120-gallon-aio-aquarium-mto-innovative-marine.html",
+   "unknown": [
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_jbj_aquazen_rimless_desktop_|JBJ|AquaZen Rimless Desktop 10 gal kit|16x12x12|Petco",
+   "maker": "JBJ",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_jbj_aquazen_rimless_desktop_|JBJ|Nano Rimless 10G AIO (10 gal)|14.25x12x13|Petco",
+   "maker": "JBJ",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_jbj_aquazen_rimless_desktop_|Dennerle|Shrimp King Kit 10 gal|15.75x12.75x11|Petco",
+   "maker": "Dennerle",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_jbj_aquazen_rimless_desktop_|Dennerle|Scapers Tank Kit|15.75x12.75x11|Petco",
+   "maker": "Dennerle",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_jbj_aquazen_rimless_desktop_|JBJ|10 Gallon Nano Rimless AIO Aquarium|15.5x12x12.5|Bulk Reef Supply",
+   "maker": "JBJ",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/10-gallon-nano-rimless-aio-aquarium-jbj.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_jbj_aquazen_rimless_desktop_|Innovative Marine|10 NUVO Fusion PRO 2 AIO Aquarium Bundle (10 gal)|15x11.8x13|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/10-nuvo-fusion-pro-2-aio-aquarium-bundle-innovative-marine.html",
+   "unknown": [
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_jbj_aquazen_rimless_desktop_|Ultum Nature Systems|UNS 45A Dual All-In-One Aquarium (9.3 Gallons)|17.71x11.02x11.02|Bulk Reef Supply",
+   "maker": "Ultum Nature Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/uns-45a-dual-aio-aquarium-9-3-gallons.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_jbj_aquazen_rimless_desktop_|AquaZen|10 Gallon Scapers Planted Aquarium Kit|16x12x11|Bulk Reef Supply",
+   "maker": "AquaZen",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/10-gallon-scapers-planted-aquarium-kit-aquazen.html",
+   "unknown": [
+    "lid",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_jbj_rimless_desktop_flat_pan|Ultum Nature Systems|45U Rimless Aquarium - 9 Gallon|17.71x11.02x11.02|Bulk Reef Supply",
+   "maker": "Ultum Nature Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/45u-rimless-aquarium-9-gallon-ultum-nature-systems.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_jbj_nano_cube_wifi_40w_led|JBJ|Nano-Cube WiFi 40W LED (28 gal)|17.5x22x22|Petco",
+   "maker": "JBJ",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_jbj_all_in_one_rimless_flat_|JBJ|All-in-One Rimless Flat Panel 45 gal|26.5x22x19|Petco",
+   "maker": "JBJ",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_jbj_all_in_one_rimless_flat_|JBJ|Rimless Flat Panel Kit 45 gal on cabinet (black/white)|26.5x22x19|Petco",
+   "maker": "JBJ",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_jbj_all_in_one_rimless_flat_|LiquidArt|AIO Acrylic Aquarium w/ Cabinet (37.5 Gallons) - LiquidArt|24x20x18|Bulk Reef Supply",
+   "maker": "LiquidArt",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/liquidart-aio-acrylic-aquarium-w-cabinet-37-5-gallons-liquidart.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_jbj_all_in_one_rimless_flat_|LiquidArt|Fresh Acrylic Aquarium w/ Cabinet (37.5 Gallons) - LiquidArt|24x20x18|Bulk Reef Supply",
+   "maker": "LiquidArt",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/liquidart-fresh-acrylic-aquarium-w-cabinet-37-5-gallons-liquidart.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_jbj_all_in_one_rimless_flat_|Red Sea|MAX NANO G2 XL Aquarium (33 Gal)|24x20x20|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/max-nano-g2-xl-aquarium-33-gal-red-sea.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_jbj_all_in_one_rimless_flat_|Neptunian Cube|Magic Pro 60 - Professional Reef Aquarium System (39 Gallons)|23.6x21.6x19.7|Bulk Reef Supply",
+   "maker": "Neptunian Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/neptunian-cube-magic-pro-60-aquarium-system.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_jbj_all_in_one_rimless_flat_|Innovative Marine|NUVO Fusion Pro 2 40 Gallon AIO Aquarium with APS Stand|23.62x19.68x18.89|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/nuvo-fusion-pro-2-40-gallon-aio-aquarium-innovative-marine-html.html",
+   "unknown": [
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_jbj_all_in_one_rimless_flat_|JBJ|RF-45 Rimless Flat Panel Aquarium & Stand (45 Gal)|26.5x22x19|Bulk Reef Supply",
+   "maker": "JBJ",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/rf-45-rimless-flat-panel-aquarium-stand-45-gal-jbj.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_jbj_all_in_one_rimless_flat_|Ultum Nature Systems|UNS R75 Reef System (42 Gallons)|29.53x19.69x19.69|Bulk Reef Supply",
+   "maker": "Ultum Nature Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/uns-r75-reef-system-42-gallons-ultum-nature-systems.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_lifegard_ultra_low_iron_book_|Ultum Nature Systems|90L Rimless Aquarium - 21 Gallon|35.43x11.81x11.81|Bulk Reef Supply",
+   "maker": "Ultum Nature Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/90l-rimless-aquarium-21-gallon-ultum-nature-systems.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_lifegard_ultra_low_iron_book_|Ultum Nature Systems|UNS 90LA Dual All-In-One Aquarium (21.4 Gallons)|35.43x11.81x11.81|Bulk Reef Supply",
+   "maker": "Ultum Nature Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/uns-90la-dual-aio-aquarium-21-gallons.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_lifegard_ultra_low_iron_w_fi|Lifegard Aquatics|Ultra Low Iron Aquarium w/ filter 11.81 x 11.81 x 13.77 (alt)|11.81x11.81x13.77|Petco",
+   "maker": "Lifegard Aquatics",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_lifegard_ultra_low_iron_w_fi|Ultum Nature Systems|UNS 30A Dual All-In-One Aquarium (7.1 Gallons)|11.81x11.81x11.81|Bulk Reef Supply",
+   "maker": "Ultum Nature Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/uns-30a-dual-aio-aquarium-7-gallons.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_lifegard_low_iron_ultra_clea|Top Fin|Trapezoid Aquarium 3 gal|13.47x9.6x8.68|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5356961.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_lifegard_low_iron_ultra_clea|GloFish|Crescent Aquarium Kit 3 Gallons|12.59x7.49x9.21|Walmart (sold and shipped by Walmart.com)",
+   "maker": "GloFish",
+   "retailer": "Walmart (sold and shipped by Walmart.com)",
+   "url": "https://www.walmart.com/ip/16940355",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_penn_plax_educational|Penn-Plax|Educational Aquarium|9.25x5.75x10.25|Petco",
+   "maker": "Penn-Plax",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_penn_plax_prism_nano_black|Penn-Plax|Prism Nano Kit (black)|7x9x10|Petco",
+   "maker": "Penn-Plax",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_tropical_marine_centre_kreis|Tropical Marine Centre|Kreisel for Aquatics 10 L|14x10.75x15.75|Petco",
+   "maker": "Tropical Marine Centre",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_zoo_med_axolotl|Zoo Med|Axolotl Kit|36x18x10|Petco",
+   "maker": "Zoo Med",
+   "retailer": "Petco",
+   "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+   "unknown": [
+    "heater"
+   ]
+  },
+  {
+   "key": "n_top_fin_betta_bamboo_3|Top Fin|Betta Bamboo Aquarium 3 gal|14.1x6.3x9.14|PetSmart",
+   "maker": "Top Fin",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5282472.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_clear_for_life_100_rectangle|Clear-For-Life|100 Gallon Rectangle Acrylic Aquarium|60x18x20|PetSmart",
+   "maker": "Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5187075.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_clear_for_life_100_rectangle|Clear-For-Life|100 Gallon Rectangle UniQuarium Acrylic Aquarium Built-In Filtration|60x18x20|PetSmart",
+   "maker": "Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5188257.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_clear_for_life_20_rectangle_|Clear-For-Life|20 Gallon Rectangle Acrylic Aquarium|30x10x14|PetSmart",
+   "maker": "Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5187084.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_clear_for_life_uniquarium_40|Clear-For-Life|UniQuarium 40 Gallon Rectangle Acrylic Aquarium Built-In Filter|36x15x16|PetSmart",
+   "maker": "Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5188226.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_clear_for_life_uniquarium_40|Fiji Cube|38 Gallon Peninsula Rimless AIO Nano Aquarium PRO Series|35.43x15.75x15.75|Bulk Reef Supply",
+   "maker": "Fiji Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/38-gallon-peninsula-rimless-aio-nano-aquarium-pro-series-fiji-cube.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_clear_for_life_uniquarium_40|Pro Clear Aquatic Systems|ProStar Rimless AIO 35 Aquarium & Stand (35 Gallons)|31.5x15.5x17|Bulk Reef Supply",
+   "maker": "Pro Clear Aquatic Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/prostar-rimless-aio-35-aquarium-stand-35-gallons-pro-clear-aquatic-systems.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_clear_for_life_60_rectangle_|Clear-For-Life|60 Gallon Rectangle UniQuarium Acrylic Aquarium Built-In Filtration|48x15x18|PetSmart",
+   "maker": "Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5188235.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_clear_for_life_125_rectangle|Clear-For-Life|125 Gallon Rectangle UniQuarium Acrylic Aquarium Built-In Filtration 60x18x24|60x18x24|PetSmart",
+   "maker": "Clear-For-Life",
+   "retailer": "PetSmart",
+   "url": "https://www.petsmart.com/5188262.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_fiji_cube_48_shallow_externa|Fiji Cube|48 Gallon Shallow External Overflow Rimless Aquarium Full Package|29.92x23.62x15.75|Bulk Reef Supply",
+   "maker": "Fiji Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/48-gallon-external-overflow-rimless-aquarium-full-package-fiji-cube.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_fiji_cube_48_shallow_externa|Fiji Cube|48 Gallon Shallow External Overflow Rimless Aquarium|29.92x23.62x15.75|Bulk Reef Supply",
+   "maker": "Fiji Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/48-gallon-shallow-external-overflow-rimless-aquarium-fiji-cube-1.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_fiji_cube_48_shallow_externa|Fiji Cube|48 Gallon Shallow Internal Overflow Rimless Aquarium|29.92x23.62x15.75|Bulk Reef Supply",
+   "maker": "Fiji Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/48-gallon-shallow-internal-overflow-rimless-aquarium-fiji-cube.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_fiji_cube_48_shallow_externa|Innovative Marine|NUVO EXT 50 Gallon Aquarium Complete Reef System|30x23.6x16.1|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/ext-50-gallon-aquarium-complete-reef-system-innovative-marine.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_fiji_cube_48_shallow_externa|Innovative Marine|NUVO INT 50 Gallon Aquarium Complete Reef System|29.92x23.62x16.14|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/int-50-gallon-aquarium-complete-reef-system-innovative-marine.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_fiji_cube_48_shallow_externa|Innovative Marine|NUVO Fusion Pro 2 50 Gallon AIO Lagoon Aquarium with APS Stand|29.92x23.62x16.14|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/nuvo-fusion-pro-2-50-gallon-aio-lagoon-aquarium-innovative-marine-html.html",
+   "unknown": [
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_fiji_cube_57_shallow_externa|Fiji Cube|57 Gallon Shallow External Overflow Rimless Aquarium with Stand|35.43x23.62x15.75|Bulk Reef Supply",
+   "maker": "Fiji Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/57-gallon-external-overflow-rimless-aquarium-with-stand-fiji-cube.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_fiji_cube_57_shallow_externa|Fiji Cube|57 Gallon Shallow External Overflow Rimless Aquarium|35.43x23.62x15.75|Bulk Reef Supply",
+   "maker": "Fiji Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/57-gallon-shallow-external-overflow-rimless-aquarium-fiji-cube.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_fiji_cube_57_shallow_externa|Fiji Cube|57 Gallon Shallow Internal Overflow Rimless Aquarium|35.43x23.62x15.75|Bulk Reef Supply",
+   "maker": "Fiji Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/57-gallon-shallow-internal-overflow-rimless-aquarium-fiji-cube-1.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_fiji_cube_57_shallow_externa|Fiji Cube|57 Gallon Shallow Internal Overflow Rimless Aquarium with Stand|35.43x23.62x15.75|Bulk Reef Supply",
+   "maker": "Fiji Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/57-gallon-shallow-internal-overflow-rimless-aquarium-with-stand-fiji-cube.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_fiji_cube_57_shallow_externa|Innovative Marine|NUVO SR Pro 2 60 Gallon AIO Aquarium with APS Stand|35.43x23.62x16.14|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/sr-pro-2-60-gallon-aio-aquarium-innovative-marine-html.html",
+   "unknown": [
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_ultum_nature_systems_60l_rim|Ultum Nature Systems|60L Rimless Aquarium - 6 Gallon|23.6x7.87x7.87|Bulk Reef Supply",
+   "maker": "Ultum Nature Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/60l-rimless-aquarium-6-gallon-ultum-nature-systems.html",
+   "unknown": [
+    "lid"
+   ]
+  },
+  {
+   "key": "n_innovative_marine_nuvo_ext_1|Innovative Marine|NUVO EXT 100 Gallon Aquarium Complete Reef System (Made to Order)|47.3x23.6x19.7|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/ext-100-gallon-aquarium-complete-reef-system-mto-innovative-marine.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_innovative_marine_nuvo_ext_1|Innovative Marine|NUVO INT 100 Gallon Aquarium Complete Reef System (Made to Order)|47.3x23.6x19.7|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/int-100-gallon-aquarium-complete-reef-system-mto-innovative-marine.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_innovative_marine_nuvo_ext_1|Neptunian Cube|Magic Pro 120 - Professional Reef Aquarium System (87 Gallons)|47.2x21.6x21.6|Bulk Reef Supply",
+   "maker": "Neptunian Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/neptunian-cube-magic-pro-120-aquarium-system.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_innovative_marine_nuvo_ext_1|Neptunian Cube|Peninsula 120 - Professional Reef Aquarium System (90 Gallons)|47.2x22.4x21.6|Bulk Reef Supply",
+   "maker": "Neptunian Cube",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/neptunian-cube-peninsula-120-aquarium-system.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_innovative_marine_nuvo_ext_1|Red Sea|REEF-FRAME 350 Aquarium (74.6 Gallons)|47.2x21.6x20.9|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reef-frame-350-aquarium-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_innovative_marine_nuvo_ext_1|Red Sea|REEF-FRAME MAX 350 Aquarium (74.6 Gallons)|47.2x21.6x20.9|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reef-frame-max-350-aquarium-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_innovative_marine_nuvo_ext_1|Red Sea|REEFER 425 G3 Aquarium System (91 Gallons)|47.2x23.6x21.7|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-425-g3-aquarium-system-91-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_innovative_marine_nuvo_ext_1|Red Sea|REEFER Deluxe 425 G3 Aquarium System (91 Gallons) (incl. 2 x ReefLED 115)|47.2x23.6x21.7|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-deluxe-425-g3-aquarium-system-91-gallons-incl-2-x-reefled-115-red-sea.html",
+   "unknown": [
+    "lid",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_innovative_marine_nuvo_ext_1|Red Sea|REEFER MAX 425 G3 Aquarium System (91 Gallons)|47.2x23.6x21.7|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-max-425-g3-aquarium-system-91-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_innovative_marine_nuvo_ext_1_|Innovative Marine|NUVO EXT 112 Gallon Lagoon Aquarium Complete Reef System (Made to Order)|35.4x35.4x19.7|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/ext-112-gallon-lagoon-aquarium-complete-reef-system-mto-innovative-marine.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_innovative_marine_nuvo_ext_1_|Innovative Marine|NUVO INT 112 Gallon Lagoon Aquarium Complete Reef System (Made to Order)|35.4x35.4x19.7|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/int-112-gallon-lagoon-aquarium-complete-reef-system-mto-innovative-marine.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_innovative_marine_nuvo_ext_1__|Innovative Marine|NUVO EXT 150 Gallon Lagoon Aquarium Complete Reef System (Made to Order)|47.3x35.4x19.7|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/ext-150-gallon-lagoon-aquarium-complete-reef-system-mto-innovative-marine.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_innovative_marine_nuvo_ext_1__|Innovative Marine|NUVO INT 150 Gallon Lagoon Aquarium Complete Reef System (Made to Order)|47.3x35.4x19.7|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/int-150-gallon-lagoon-aquarium-complete-reef-system-mto-innovative-marine.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_innovative_marine_nuvo_ext_1___|Innovative Marine|NUVO EXT 170 Gallon Aquarium Complete Reef System (Made to Order)|59x30x21.7|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/ext-170-gallon-aquarium-complete-reef-system-mto-innovative-marine.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_innovative_marine_nuvo_ext_1___|Innovative Marine|NUVO INT 170 Gallon Aquarium Complete Reef System (Made to Order)|59x30x21.7|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/int-170-gallon-aquarium-complete-reef-system-mto-innovative-marine.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_innovative_marine_nuvo_ext_2|Innovative Marine|NUVO EXT 200 Gallon Aquarium Complete Reef System (Made to Order)|70.9x30x21.7|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/ext-200-gallon-aquarium-complete-reef-system-mto-innovative-marine.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_innovative_marine_nuvo_ext_2|Innovative Marine|NUVO EXT 200 Gallon Peninsula Aquarium Complete Reef System (Made to Order)|70.9x30x21.7|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/ext-200-gallon-peninsula-aquarium-complete-reef-system-mto-innovative-marine.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_innovative_marine_nuvo_ext_2|Innovative Marine|NUVO INT 200 Gallon Aquarium Complete Reef System (Made to Order)|70.9x30x21.7|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/int-200-gallon-aquarium-complete-reef-system-mto-innovative-marine.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_innovative_marine_nuvo_ext_2|Innovative Marine|NUVO INT 200 Gallon Peninsula Aquarium Complete Reef System (Made to Order)|70.9x30x21.7|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/int-200-gallon-peninsula-aquarium-complete-reef-system-mto-innovative-marine.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_innovative_marine_nuvo_ext_2_|Innovative Marine|NUVO EXT 240 Gallon Aquarium Complete Reef System (Made to Order)|82.7x30x21.7|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/ext-240-gallon-aquarium-complete-reef-system-mto-innovative-marine.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_innovative_marine_nuvo_ext_2_|Innovative Marine|NUVO INT 240 Gallon Aquarium Complete Reef System (Made to Order)|82.7x30x21.7|Bulk Reef Supply",
+   "maker": "Innovative Marine",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/int-240-gallon-aquarium-complete-reef-system-mto-innovative-marine.html",
+   "unknown": [
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_pro_clear_systems_prostar_ri|Pro Clear Aquatic Systems|ProStar Rimless V2 60 Aquarium & Stand (42 Gallons)|24x20x22|Bulk Reef Supply",
+   "maker": "Pro Clear Aquatic Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/prostar-rimless-v2-60-aquarium-stand-42-gallons-pro-clear-aquatic-systems.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_pro_clear_systems_prostar_ri|Red Sea|REEF-FRAME 170 Aquarium (35.9 Gallons)|23.6x20.1x20.9|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reef-frame-170-aquarium-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_pro_clear_systems_prostar_ri|Red Sea|REEF-FRAME MAX 170 Aquarium (35.9 Gallons)|23.6x20.1x20.9|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reef-frame-max-170-aquarium-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_pro_clear_systems_prostar_ri|Red Sea|REEFER 200 G3 Aquarium System (42 Gallons)|23.6x22.6x20.9|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-200-g3-aquarium-system-42-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_pro_clear_systems_prostar_ri|Red Sea|REEFER Deluxe 200 G3 Aquarium System (42 Gallons) (incl. 1 x ReefLED 115)|23.6x22.6x20.9|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-deluxe-200-g3-aquarium-system-42-gallons-incl-1-x-reefled-115-red-sea.html",
+   "unknown": [
+    "lid",
+    "filter",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_pro_clear_systems_prostar_ri|Red Sea|REEFER MAX 200 G3 Aquarium System (42 Gallons)|23.6x22.6x20.9|Bulk Reef Supply",
+   "maker": "Red Sea",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/reefer-max-200-g3-aquarium-system-42-gallons-red-sea.html",
+   "unknown": [
+    "lid",
+    "light",
+    "heater"
+   ]
+  },
+  {
+   "key": "n_ultum_nature_systems_uns_r80|Ultum Nature Systems|UNS R80 Frag System (52 Gallons)|31.5x31.5x14.17|Bulk Reef Supply",
+   "maker": "Ultum Nature Systems",
+   "retailer": "Bulk Reef Supply",
+   "url": "https://www.bulkreefsupply.com/uns-r80-frag-system-52-gallons-ultum-nature-systems.html",
+   "unknown": [
+    "lid",
+    "light",
+    "filter",
+    "heater",
+    "stand"
+   ]
+  },
+  {
+   "key": "n_penn_plax_penn_plax_spongebo|Penn-Plax|SpongeBob SquarePants Plastic Starter Kit 1.5 gal|8.5x6x7.5|Walmart (sold and shipped by Walmart.com)",
+   "maker": "Penn-Plax",
+   "retailer": "Walmart (sold and shipped by Walmart.com)",
+   "url": "https://www.walmart.com/ip/226964879",
+   "unknown": [
+    "lid",
+    "light",
+    "heater",
+    "stand"
+   ]
+  }
+ ]
+}

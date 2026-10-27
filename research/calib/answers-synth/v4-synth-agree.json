@@ -20,13 +20,10 @@
    "smallest": "10 gal (20 x 10 x 12 in)"
   },
   "A02": {
-   "verdict": "unworkable",
+   "verdict": "problems",
    "confidence": "medium",
-   "change": "drop",
-   "changeSp": [
-    "nerite"
-   ],
-   "together": "no",
+   "change": "ratio",
+   "together": "caution",
    "reasons": [
     "chemistry",
     "temperature"
@@ -61,7 +58,7 @@
    "mateLimit": 8
   },
   "A05": {
-   "verdict": "unworkable",
+   "verdict": "problems",
    "confidence": "medium",
    "ideal": 0,
    "limit": 4,
@@ -69,13 +66,10 @@
    "mateLimit": 6
   },
   "A06": {
-   "verdict": "unworkable",
+   "verdict": "problems",
    "confidence": "medium",
-   "change": "drop",
-   "changeSp": [
-    "nerite"
-   ],
-   "together": "no",
+   "change": "ratio",
+   "together": "caution",
    "reasons": [
     "chemistry",
     "temperature"
@@ -127,9 +121,9 @@
    "confidence": "medium",
    "change": "drop",
    "ideal": 0,
-   "limit": 0,
-   "mateIdeal": 9,
-   "mateLimit": 13
+   "limit": 2,
+   "mateIdeal": 10,
+   "mateLimit": 14
   },
   "A11": {
    "verdict": "unworkable",
@@ -204,14 +198,14 @@
    "mateLimit": 17
   },
   "B01": {
-   "verdict": "unworkable",
+   "verdict": "ideal",
    "confidence": "medium",
    "change": "bigger",
    "bigEnough": "no",
    "smallest": "180 gal (72 x 24 x 24 in)"
   },
   "B02": {
-   "verdict": "unworkable",
+   "verdict": "problems",
    "confidence": "medium",
    "change": "bigger",
    "together": "caution",
@@ -221,7 +215,7 @@
    "ideal": 8
   },
   "B03": {
-   "verdict": "unworkable",
+   "verdict": "problems",
    "confidence": "medium",
    "change": "bigger",
    "bigEnough": "no",
@@ -265,7 +259,7 @@
    "mateLimit": 23
   },
   "B07": {
-   "verdict": "unworkable",
+   "verdict": "caution",
    "confidence": "medium",
    "change": "bigger",
    "together": "caution",
@@ -291,10 +285,7 @@
   "B09": {
    "verdict": "unworkable",
    "confidence": "medium",
-   "change": "drop",
-   "changeSp": [
-    "yellowlab"
-   ],
+   "change": "bigger",
    "together": "no",
    "reasons": [
     "chemistry",
@@ -302,7 +293,7 @@
    ]
   },
   "B10": {
-   "verdict": "unworkable",
+   "verdict": "caution",
    "confidence": "medium",
    "change": "bigger",
    "together": "caution",
@@ -367,14 +358,11 @@
    }
   },
   "B15": {
-   "verdict": "caution",
+   "verdict": "ideal",
    "confidence": "medium",
-   "change": "fewer",
-   "changeSp": [
-    "oto"
-   ],
-   "ideal": 5,
-   "limit": 8
+   "change": "nothing",
+   "ideal": 9,
+   "limit": 15
   },
   "B16": {
    "verdict": "unworkable",
@@ -387,14 +375,14 @@
    "limit": 27
   },
   "C01": {
-   "verdict": "unworkable",
+   "verdict": "caution",
    "confidence": "medium",
    "change": "bigger",
    "bigEnough": "no",
    "smallest": "29 gal (30 x 12 x 18 in)"
   },
   "C02": {
-   "verdict": "unworkable",
+   "verdict": "caution",
    "confidence": "medium",
    "change": "bigger",
    "together": "caution",
@@ -407,10 +395,7 @@
   "C03": {
    "verdict": "unworkable",
    "confidence": "medium",
-   "change": "drop",
-   "changeSp": [
-    "hermit"
-   ],
+   "change": "bigger",
    "together": "no",
    "reasons": [
     "eat",
@@ -420,7 +405,7 @@
    "limit": 5
   },
   "C04": {
-   "verdict": "unworkable",
+   "verdict": "problems",
    "confidence": "medium",
    "change": "bigger",
    "together": "caution",
@@ -431,7 +416,7 @@
    "limit": 3
   },
   "C05": {
-   "verdict": "unworkable",
+   "verdict": "problems",
    "confidence": "medium",
    "ideal": 1,
    "limit": 3
@@ -449,10 +434,7 @@
   "C07": {
    "verdict": "unworkable",
    "confidence": "medium",
-   "change": "drop",
-   "changeSp": [
-    "bluetang"
-   ],
+   "change": "bigger",
    "together": "no",
    "reasons": [
     "aggression",
@@ -472,7 +454,7 @@
    "limit": 12
   },
   "C09": {
-   "verdict": "unworkable",
+   "verdict": "ideal",
    "confidence": "medium",
    "change": "bigger"
   },
@@ -515,14 +497,14 @@
    }
   },
   "D01": {
-   "verdict": "unworkable",
+   "verdict": "ideal",
    "confidence": "medium",
    "change": "bigger",
    "bigEnough": "no",
    "smallest": "4 x 2 x 2 ft (48 x 24 x 24 in)"
   },
   "D02": {
-   "verdict": "unworkable",
+   "verdict": "ideal",
    "confidence": "medium",
    "change": "bigger",
    "together": "yes",
@@ -531,7 +513,7 @@
    }
   },
   "D03": {
-   "verdict": "unworkable",
+   "verdict": "ideal",
    "confidence": "medium",
    "change": "bigger",
    "bigEnough": "no",
@@ -550,7 +532,7 @@
    ]
   },
   "D05": {
-   "verdict": "unworkable",
+   "verdict": "ideal",
    "confidence": "medium",
    "change": "bigger",
    "together": "yes",
@@ -559,14 +541,14 @@
    }
   },
   "D06": {
-   "verdict": "unworkable",
+   "verdict": "caution",
    "confidence": "medium",
    "change": "bigger",
    "bigEnough": "no",
    "smallest": "4 x 2 x 2 ft (48 x 24 x 24 in)"
   },
   "D07": {
-   "verdict": "unworkable",
+   "verdict": "problems",
    "confidence": "medium",
    "change": "bigger",
    "together": "yes",
@@ -584,7 +566,7 @@
    ]
   },
   "D09": {
-   "verdict": "unworkable",
+   "verdict": "ideal",
    "confidence": "medium",
    "change": "bigger",
    "bigEnough": "no",
@@ -633,7 +615,7 @@
    }
   },
   "D13": {
-   "verdict": "unworkable",
+   "verdict": "ideal",
    "confidence": "medium",
    "change": "bigger",
    "bigEnough": "no",
@@ -642,10 +624,7 @@
   "D14": {
    "verdict": "unworkable",
    "confidence": "medium",
-   "change": "drop",
-   "changeSp": [
-    "whitecloud"
-   ],
+   "change": "bigger",
    "together": "no",
    "reasons": [
     "eat",
@@ -657,7 +636,7 @@
    }
   },
   "D15": {
-   "verdict": "unworkable",
+   "verdict": "ideal",
    "confidence": "medium",
    "change": "bigger",
    "max": {

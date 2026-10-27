@@ -1,21 +1,27 @@
 // Starter sets, layer by layer (lane SD, 2026-10-15): the hardscape and plants come from scene/items.ts
 // `starterItems`; this adds the animal layer and the regenerate the density sliders and Shuffle call. Each layer draws
 // from its own random stream (seed x layer), so redrawing one leaves the layers it does not feed exactly as they were.
-import { floorPerAnimal, litresPerAnimal } from './stocking';
+import { IDEAL_MAX, floorPerAnimal, litresPerAnimal, stockingOf } from './stocking';
 import { rng } from '../art/paint';
 import { getSpecies, type Species } from '../data/species';
 import { DEFAULT_DENS, EPIPHYTES, STYLES, STYLE_KIND, clampItem, isLandStyle, isSwampy, layerOf, perch, starterItems, type Layer } from './items';
 import { CARE } from '../data/care';
-import { fightsOverCount, mostFor } from '../data/groups';
+import { fightsOverCount, mostFor, mostMalesFor } from '../data/groups';
 import { volume } from './physics';
 import { hasCorals, whyAnimal } from './animalfit';
 import { floorOf, minFit } from './tankMin';
 import { groundEdited } from './scapeground';
 import { placeNew, randomPose, randomSize } from './scatter';
-import type { Fish, Item, LayoutId, TankSetup } from './types';
+import { HERP, SQFT_MM2, floorFor, type HerpRule } from '../data/herpstock';
+import { footprint } from './shape';
+import type { Fish, Item, LayoutId, Tank, TankSetup } from './types';
 
-/** Share of the tank's bioload cap each animal stop fills (None .. Full). Full stays under the cap. */
+/** Share of the tank's bioload cap each animal stop fills (None .. Full). Full stays under the cap. Since lane SR (2026-10-26) this is the
+ *  stops' SHARES of the Full target: a stop reads its share of FULL_READING in the stocking engine (what the tile shows), not of the
+ *  summed litres, which ignored the school curve and left Full at a 52 % median (the experts' full lists are ideal, up to IDEAL_MAX). */
 export const ANIMAL_FILL = [0, 0.35, 0.6, 0.8, 0.9] as const;
+/** What a starter reads at the Full stop, percent (just under the ideal edge: the drawn sizes jitter a point or two). */
+export const FULL_READING = IDEAL_MAX - 1;
 /** Species tried per stop: a few kinds in a light tank, a community in a full one. */
 const KINDS_PER_STOP = [0, 2, 3, 4, 5] as const;
 /** A continuous animal value (0..6) between the stops: below Few it is Few thinned to a share of its animals (one at
@@ -61,6 +67,15 @@ function stocking(sp: Species) {
 /** Most of a land species a terrarium starter keeps (lane SS2): geckos in a pair or a trio, a snake, spider or tarantula alone,
  *  frogs in a group. Land animals are not counted against the bioload (there is no water to foul). */
 const LAND_MOST: Record<string, number> = { ballpython: 1, chacogoldenknee: 1, regaljumper: 1, leopardgecko: 2, crestedgecko: 2, crestedharlequin: 2, treefrog: 4, dartfrog: 5, firetoad: 5, firenewt: 4 };
+/** Most adults of a reptile or amphibian this tank holds by its own check (scene/herpcheck.ts, the same 5 % / 1 in slack): the bare
+ *  floor for n, the height, the most-together. 0 = not even one (S246, Nathan 2026-10-26: a starter must not trip its animal checks). */
+export function herpMost(r: HerpRule, T: Tank) {
+  const area = footprint(T).area / SQFT_MM2 * 1.05;
+  if (r.hMin && T.H / 25.4 + 1 < r.hMin) return 0;
+  let n = 0;
+  while (n < (r.max ?? 99) && floorFor(r, n + 1)[0] <= area) n++;
+  return n;
+}
 const landCount = (sp: Species, v: number) => { const m = LAND_MOST[sp.id] ?? 3; return Math.max(1, Math.min(m, Math.round(m * fillAt(v) / ANIMAL_FILL[4]))); };
 
 /**
@@ -83,35 +98,63 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
     for (const sp of pool) if (!whyAnimal(sp, litres, ex, kept, { corals: hasCorals(s.items), fit: minFit(s) })) kept.push(sp);
     pool.splice(0, pool.length, ...kept);
   }
+  // S246 (Nathan 2026-10-26): one reptile or amphibian species (the first in the shuffled pool that fits at all: floor, height, water
+  // if it needs it), never more of it than herpMost, and only the company its rule accepts; a paludarium's fish stay in the water with
+  // it (Nathan: "we can live a little"). Their own kinds never share: every herp rule has an empty or invert-only mates list.
+  const herpCap = new Map<Species, number>();
+  {
+    let rule: HerpRule | undefined;
+    const keep = pool.filter(sp => {
+      const h = HERP[sp.sci]; if (!h) return true;
+      if (rule || (h.water && !s.water.on)) return false;
+      const most = herpMost(h, T); if (!most) return false;
+      rule = h; herpCap.set(sp, most); return true;
+    });
+    pool.splice(0, pool.length, ...keep.filter(sp => !rule || HERP[sp.sci] || rule.mates.includes(sp.cat) || (id === 'paludarium' && sp.habitat === 'water')));
+  }
   const depthCm = bioloadLitres(s) * 1000 / Math.max(1e-9, floorOf(T).areaCm2), per = (sp: Species) => litresPerAnimal(sp, depthCm); // lane HC: a tall tank's water counts for less
   const gl = (sp: Species, from: number, n: number) => groupLitres(sp, from, n, per);
   const cap = bioloadLitres(s) * ANIMAL_FILL[4];
+  const dry = (sp: Species) => (land || id === 'paludarium') && sp.habitat !== 'water'; // land animals in a terrarium style
+  // lane SR: a group goes in while the tank still reads at or under the stop's target in the stocking engine itself (school curve,
+  // floor, filtration), so Full lands where the tile says ideal instead of where the summed litres said 90 %
+  const stopRead = (most: number) => FULL_READING * most / bioloadLitres(s) / ANIMAL_FILL[4];
+  const reading = (extra: Map<Species, number>) => {
+    const probe: Fish[] = [];
+    for (const [sp, n] of extra) for (let i = 0; i < n; i++) probe.push({ id: probe.length, species: sp.id, x: 0, y: 0, depth: 0, yaw: 0, ...(sp.female && i % 2 ? { sex: 'f' as const } : {}) } as Fish);
+    return stockingOf({ ...s, fish: probe }).percent;
+  };
+  // lane SR (Nathan 2026-10-26, option a): a species whose smallest group cannot fit under the Full target is not drawn (its group would be
+  // refused at every stop): a nano tank then gets whatever smaller schooling species the species list holds, not snails. Nothing is named here.
+  const fits = (sp: Species) => dry(sp) || reading(new Map([[sp, stocking(sp).start]])) <= stopRead(cap);
+  { const ok = pool.filter(fits); if (ok.length) pool.splice(0, pool.length, ...ok); }
   const lead = pool.findIndex(sp => sp.group && sp.zone !== 'bottom' && !isInvert(sp) && sp.habitat === 'water' && gl(sp, 0, stocking(sp).start) <= cap);
   if (lead > 0) pool.unshift(...pool.splice(lead, 1));
   const chosen = pool.slice(0, kindsAt(stop)), budget = bioloadLitres(s) * fillAt(stop), big = Math.max(1, fillAt(stop) / ANIMAL_FILL[4]);
   const count = new Map<Species, number>();
-  const dry = (sp: Species) => (land || id === 'paludarium') && sp.habitat !== 'water'; // land animals in a terrarium style
   let used = 0, usedFloor = 0;
   // lane HB: the floor the bottom dwellers use is held to the same share of the tank's floor as the water budget is of its water (the
   // stocking engine's floor limit), so a starter's Full stays at or under 100 % on both
   const floorPerLitre = floorOf(T).areaCm2 / Math.max(1e-9, bioloadLitres(s));
   const add = (sp: Species, n: number, most = budget) => {
     const have = count.get(sp) ?? 0, l = gl(sp, have, n), fl = groupLitres(sp, have, n, floorPerAnimal);
-    if (n <= 0 || used + l > most || usedFloor + fl > most * floorPerLitre) return false;
+    if (n <= 0) return false;
+    const next = new Map(count); next.set(sp, have + n);
+    if (reading(next) > stopRead(most)) return false;
     count.set(sp, have + n); used += l; usedFloor += fl; return true;
   };
   // the lead group goes in at any stop above None if it fits under the cap at all (a small tank's Few is then just
   // that one school); the rest join while the stop's share lasts
   for (const sp of chosen) if (dry(sp)) { // lane HB: semi-aquatic amphibians use the floor too; trim the group to the floor budget
-    let n = landCount(sp, stop);
+    let n = Math.min(landCount(sp, stop), herpCap.get(sp) ?? Infinity);
     while (n > 1 && usedFloor + groupLitres(sp, 0, n, floorPerAnimal) > cap * floorPerLitre) n--;
     count.set(sp, n); usedFloor += groupLitres(sp, 0, n, floorPerAnimal);
   }
   for (const [sp, n] of count) used += gl(sp, 0, n); // semi-aquatic animals in a swamp / paludarium count against the water too (SE2 2026-10-20: Full stays at or under 100 %)
-  chosen.forEach((sp, i) => !dry(sp) && add(sp, stocking(sp).start, i === 0 && lead >= 0 ? Math.max(cap, budget) : budget));
+  chosen.forEach((sp, i) => !dry(sp) && add(sp, Math.min(stocking(sp).start, herpCap.get(sp) ?? Infinity), i === 0 && lead >= 0 ? Math.max(cap, budget) : budget));
   for (let grew = true; grew;) { // grow each group in turn while the budget lasts
     grew = false;
-    for (const [sp, n] of count) { if (dry(sp)) continue; const { step, max } = stocking(sp); if (step && n + step <= Math.min(Math.round(max * big), fightMax(sp, volume(s.tank).litres, s.tank.L)) && add(sp, step)) grew = true; }
+    for (const [sp, n] of count) { if (dry(sp)) continue; const { step, max } = stocking(sp); if (step && n + step <= Math.min(Math.round(max * big), fightMax(sp, volume(s.tank).litres, s.tank.L), herpCap.get(sp) ?? Infinity) && add(sp, step)) grew = true; }
   }
   if (stop < 1) { // below Few: the first animals only, one at the least
     let keep = Math.max(1, Math.floor([...count.values()].reduce((a, n) => a + n, 0) * stop)); // floor: with the engine's cheaper small fish a Few-sized set is 30+ animals, and the bottom of the range must stay one
@@ -119,8 +162,10 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
   }
   const fish: Fish[] = [], ids = new Set<number>();
   let next = firstId;
-  for (const [sp, n] of count) for (let i = 0; i < n; i++) {
-    const f: Fish = { id: next++, species: sp.id, x: T.L / 2, y: 0, depth: T.D / 2, ...randomPose(sp, r, 0), ...(sp.female && i % 2 ? { sex: 'f' as const } : {}) };
+  const maleCap = (sp: Species) => mostMalesFor(CARE[sp.id], volume(s.tank).litres) ?? Infinity; // a males rule (cpd): the rest go in as females, so a starter shows no fighting warning
+  for (const [sp, n] of count) for (let i = 0, males = 0; i < n; i++) {
+    const female = !!sp.female && (i % 2 === 1 || males >= maleCap(sp)); if (!female) males++;
+    const f: Fish = { id: next++, species: sp.id, x: T.L / 2, y: 0, depth: T.D / 2, ...randomPose(sp, r, 0), ...(female ? { sex: 'f' as const } : {}) };
     randomSize(f, sp, 100, r); fish.push(f); ids.add(f.id);
   }
   const t = { ...s, fish };

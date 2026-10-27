@@ -102,13 +102,12 @@ function kitServes(parts: ({ serves: string; kind: PlanRow['kind'] } | undefined
 function dryServe(k: string, S: TankSetup, animals: AnimalCount[]): { serves: string; kind: PlanRow['kind'] } | undefined {
   const names = [...new Set(animals.map(a => getSpecies(a.species)?.name).filter(Boolean))].slice(0, 3).join(', ');
   if (k === 'tank') return { serves: `Floor: your animals need ${Math.round(dryFit(S.tank, animals).spacePct)}% of its floor at the minimum the sources accept`, kind: 'need' };
-  if (k === 'dry:dome' || k === 'dry:basking-bulb') return { serves: `Heat: a warm basking spot for ${names}`, kind: 'need' };
-  if (k === 'dry:heat-mat') return { serves: `Heat: ${names} want it warmer than a room`, kind: 'need' };
-  if (k === 'dry:thermostat') return { serves: 'Holds the heat at its setting: no burns, no cold nights', kind: 'need' };
-  if (k === 'dry:uvb') return { serves: 'UVB: vitamin D3 and calcium for the animals that bask', kind: 'need' };
-  if (k === 'dry:gauge') return { serves: 'Checking the warm spot and the humidity', kind: 'need' };
-  if (k === 'dry:mist') return { serves: dryGearOf(S).mist === 'auto' ? 'Humidity, by itself: these animals want 60% or more' : 'Humidity: these animals want 60% or more', kind: 'need' };
-  if (k === 'dry:timer') return { serves: 'Less work: the lights go on and off by themselves', kind: 'look' };
+  if (k === 'heatlamp') return { serves: S.tech?.rows.heatlamp === 'mat' || dryGearOf(S).heat === 'mat' ? `Heat: ${names} want it warmer than a room` : `Heat: a warm basking spot for ${names}`, kind: 'need' };
+  if (k === 'thermostat') return { serves: 'Holds the heat at its setting: no burns, no cold nights', kind: 'need' };
+  if (k === 'uvb') return { serves: 'UVB: vitamin D3 and calcium for the animals that bask', kind: 'need' };
+  if (k === 'gauge') return { serves: 'Checking the warm spot and the humidity', kind: 'need' };
+  if (k === 'mist') return { serves: dryGearOf(S).mist === 'auto' ? 'Humidity, by itself: these animals want 60% or more' : 'Humidity: these animals want 60% or more', kind: 'need' };
+  if (k === 'timer') return { serves: 'Less work: the lights go on and off by themselves', kind: 'look' };
   if (k === 'lid') return { serves: 'Keeps the animals in and lets air through', kind: 'need' };
   return undefined;
 }
@@ -121,7 +120,7 @@ function serve(r: Contribution, S: TankSetup, animals: AnimalCount[], needs: Ret
   if (k === 'filter' || k === 'filter+') return { serves: `Waste: your animals produce ${Math.round(st.filtrationPercent)}% of what this filter (and the plants) can clear`, kind: 'need' };
   if (k === 'heater' || k === 'heater+') return wantsHeat
     ? { serves: `Temperature: ${[...new Set(wet)].slice(0, 3).join(', ')} ${new Set(wet).size === 1 && animals[0].n === 1 ? 'wants' : 'want'} warmer water than a room`, kind: 'need' }
-    : { serves: 'Nothing here needs it: your animals are comfortable at room temperature', kind: 'extra' };
+    : { serves: S.tech?.roomC !== undefined ? 'Nothing here needs it: your animals are comfortable at room temperature' : `Nothing here needs it if your room stays near ${Math.round(ROOM_C)} °C (${Math.round(ROOM_C * 9 / 5 + 32)} °F, assumed: set your room temperature to confirm)`, kind: 'extra' };
   if (k === 'light') return needs.live ? { serves: `Plants: ${needs.light.replace(/^./, c => c.toLowerCase())}`, kind: 'need' } : { serves: 'So you can see the tank; no plant or animal here needs it', kind: 'look' };
   if (k === 'co2') return needs.live && needs.co2 !== 'No CO2 needed' ? { serves: 'Plants: some of your live plants want CO2', kind: 'need' } : { serves: 'Nothing here needs it: your plants grow without CO2', kind: 'extra' };
   if (k === 'ferts') return needs.live ? { serves: 'Plants: feeding the live plants', kind: 'need' } : { serves: 'Nothing here needs it: there are no live plants', kind: 'extra' };

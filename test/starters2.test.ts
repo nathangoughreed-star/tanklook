@@ -4,6 +4,7 @@ import { defaultSetup } from '../src/scene/defaults';
 import { STYLES, STYLE_GROUPS, STYLE_KIND, isLandStyle, isReefy, starterItems, LAYOUTS } from '../src/scene/items';
 import { styleGround } from '../src/scene/scapeground';
 import { starterAnimals } from '../src/scene/starter';
+import { herpCheck } from '../src/scene/herpcheck';
 import { getSpecies } from '../src/data/species';
 import { LAYOUT_IDS } from '../src/scene/validate';
 import type { LayoutId } from '../src/scene/types';
@@ -31,16 +32,28 @@ describe('starter styles batch 2 (lane SS2)', () => {
   });
   it('terrariums stock their own animals, marine styles stock salt animals', () => {
     for (const id of NEW) {
-      const fish = starterAnimals(setup(id, 5), 1);
+      const s = setup(id, 5); if (id === 'rainforest') s.tank = { ...s.tank, H: 610 }; // its animals are all climbers that need 24 in of height (S246: a starter keeps to the animal checks)
+      const fish = starterAnimals(s, 1);
       expect(fish.length, id).toBeGreaterThan(0);
       for (const f of fish) { expect(STYLES[id as Exclude<LayoutId, 'none'>].animals).toContain(f.species); expect(!!getSpecies(f.species)!.salt).toBe(isReefy(id)); }
     }
     expect(starterAnimals(setup('python', 1), 1).map(f => f.species)).toEqual(['ballpython']);
+    expect(starterAnimals(setup('rainforest', 5), 1), 'a 20 in tall tank is too short for any of them').toEqual([]);
   });
   it('terrarium grounds are dry types; blackwater lays catappa litter; an older style leaves litter alone', () => {
     expect(['soil', 'layered', 'tsand', 'clay', 'bark']).toContain(setup('arid', 3).substrate.type === 'custom' ? 'soil' : setup('arid', 3).substrate.type);
     expect(setup('blackwater', 3).substrate.litter?.leaf).toBe('catappa');
     const s = defaultSetup(); s.substrate.litter = { leaf: 'oak', density: 50, seed: 4 }; s.layout = { id: 'planted', seed: 2 }; styleGround(s);
     expect(s.substrate.litter).toEqual({ leaf: 'oak', density: 50, seed: 4 });
+  });
+});
+
+describe('a starter passes its own animal checks (S246, Nathan 2026-10-26)', () => {
+  it('no reptile or amphibian warning in any land or paludarium starter, past Full too; only a paludarium keeps fish with its amphibian', () => {
+    for (const id of NEW.filter(x => isLandStyle(x) || x === 'paludarium')) for (const [L, D, H] of [[457, 457, 610], [610, 305, 305], [914, 457, 457], [1219, 610, 457]]) for (const seed of [1, 2, 3, 4]) for (const animal of [1, 4, 6]) {
+      const s = setup(id, seed, animal); s.tank = { ...s.tank, L, D, H }; s.fish = starterAnimals(s, 1);
+      const warns = herpCheck(s).filter(i => i.level === 'warn' && !(id === 'paludarium' && i.text.startsWith('not with') && !/frog|toad|newt|gecko|anole|python/i.test(i.text.split('.')[0])));
+      expect(warns, `${id} ${L}x${D}x${H} seed ${seed} stop ${animal}`).toEqual([]);
+    }
   });
 });

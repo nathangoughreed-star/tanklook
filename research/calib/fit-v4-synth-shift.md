@@ -7,7 +7,7 @@
 | | before | after |
 |---|---|---|
 | held-out anchors | n/a | n/a |
-| fitted tanks | 0.267 | 0.044 |
+| fitted tanks | 0.268 | 0.045 |
 
 Inter-expert disagreement n/a (no tank answered by two experts yet). Stop rule not met.
 
@@ -35,15 +35,15 @@ Water (SPACE_PER_L) x0.8, floor x0.8. Classes: big -5 %, invert -1 %, mid -1 %, 
 | nerite | invert | 9 | -21 % | +0 % |
 | harlequin | mid | 2 | -21 % | -0 % |
 | gourami | mid | 3 | -21 % | -0 % |
-| dwarfgourami | mid | 2 | -21 % | -0 % |
+| dwarfgourami | mid | 2 | -20 % | -0 % |
 | cherrybarb | mid | 4 | -20 % | +0 % |
 | boesemani | mid | 4 | -20 % | +0 % |
 | pygmycory | tiny | 3 | -20 % | -0 % |
 | pandacory | tiny | 2 | -20 % | -0 % |
 | molly | mid | 5 | -20 % | +0 % |
 | demasoni | tiny | 2 | -20 % | -0 % |
-| oto | tiny | 3 | -20 % | -0 % |
 | rummynose | tiny | 3 | -20 % | -0 % |
+| oto | tiny | 3 | -20 % | -0 % |
 | swordtail | mid | 5 | -20 % | +0 % |
 | whitecloud | tiny | 6 | -20 % | +0 % |
 | sterbai | mid | 4 | -20 % | +1 % |
@@ -54,17 +54,17 @@ Water (SPACE_PER_L) x0.8, floor x0.8. Classes: big -5 %, invert -1 %, mid -1 %, 
 | bluetang | salt | 2 | -19 % | -0 % |
 | yellowtang | salt | 2 | -19 % | -0 % |
 | cleanershrimp | salt | 7 | -19 % | -0 % |
-| danio | tiny | 3 | -19 % | +1 % |
 | mandarin | salt | 2 | -19 % | -0 % |
+| danio | tiny | 3 | -19 % | +1 % |
 | turbo | salt | 7 | -19 % | +0 % |
+| hermit | salt | 7 | -19 % | +0 % |
 | royalgramma | salt | 5 | -19 % | +0 % |
 | guppy | tiny | 3 | -19 % | +1 % |
-| hermit | salt | 7 | -19 % | +0 % |
 | coralbeauty | salt | 7 | -19 % | +0 % |
 | watchman | salt | 7 | -19 % | +0 % |
 | ocellaris | salt | 7 | -19 % | +0 % |
 | chromis | salt | 7 | -19 % | +0 % |
-| bronzecory | mid | 18 | -19 % | +2 % |
+| bronzecory | mid | 18 | -18 % | +3 % |
 
 ## Experts
 
@@ -78,7 +78,7 @@ Median ratio, experts 1.50, engine 1.44 (2 answers). Experts higher means they f
 
 ## Compatibility: gate -> experts
 
-- high -> caution: 2
+- concern -> yes: 2
 - ok -> caution: 1
 - ok -> yes: 7
 
@@ -89,17 +89,17 @@ Median ratio, experts 1.50, engine 1.44 (2 answers). Experts higher means they f
 - synth-shift A05 neon ideal 4: water 99 %, floor 101 % (weighted 0.5)
 - synth-shift A05 bronzecory ideal 6: water 119 %, floor 101 % (weighted 0.5)
 - synth-shift A05 bronzecory limit 8: water 134 %, floor 127 % (weighted 0.5)
-- synth-shift A10 bronzecory limit 18: water 135 %, floor 128 % (weighted 0.5)
+- synth-shift A10 bronzecory limit 19: water 133 %, floor 130 % (weighted 0.5)
 - synth-shift A16 bronzecory limit 22: water 132 %, floor 130 % (weighted 0.5)
 - synth-shift B06 sterbai limit 30: water 149 %, floor 131 % (weighted 0.5)
 
 ## Left out
 
 - synth-shift v4: 22 count tanks read; 38 answers on tanks outside the count fit (no counts asked, or no space.* / golden.* tag); 0 count tanks skipped by the expert
-- synth-shift A02 overall: set aside on review (v4 change "drop": a compatibility answer, not a room band)
-- synth-shift A06 overall: set aside on review (v4 change "drop": a compatibility answer, not a room band)
+- synth-shift A02 overall: set aside on review (v4 change "ratio": a group-size or sex-mix answer, not a room band)
+- synth-shift A06 overall: set aside on review (v4 change "ratio": a group-size or sex-mix answer, not a room band)
 - synth-shift A10 overall: set aside on review (v4 change "drop": a compatibility answer, not a room band)
-- synth-shift A10 neon ideal 0: outside the table (1..91)
+- synth-shift A10 neon ideal 0: outside the table (1..96)
 - synth-shift A11 overall: set aside on review (v4 change "drop": a compatibility answer, not a room band)
 - synth-shift B02 overall: set aside on review (v4 change "bigger": a tank-minimum answer, not a room band)
 - synth-shift B06 overall: set aside on review (v4 change "drop": a compatibility answer, not a room band)

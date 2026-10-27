@@ -5,6 +5,7 @@ import { DEFAULT_DENS, STYLES, layerOf, legacyDens, starterItems, stopDens } fro
 import { IN } from '../src/scene/physics';
 import { floorOf } from '../src/scene/tankMin';
 import { bioload, bioloadLitres, handEdits, regenerate, starterAnimals } from '../src/scene/starter';
+import { stockingOf } from '../src/scene/stocking';
 import { swampTerrain } from '../src/scene/terrain';
 import { LAYOUT_IDS, parseScene } from '../src/scene/validate';
 import { isLandStyle, isReefy, isSwampy } from '../src/scene/items';
@@ -86,7 +87,7 @@ describe('density sliders and per-layer streams (lane SD, 2026-10-15)', () => {
       let last = 0;
       for (let stop = 1; stop <= 4; stop++) {
         const s = setup(id, seed, { hard: 2, plant: 2, animal: stop }), fish = starterAnimals(s, 1);
-        if (!isLandStyle(id) && id !== 'paludarium') expect(bioload(fish, depthOf(s))).toBeLessThanOrEqual(bioloadLitres(s) * 0.9 + 1e-9);
+        if (!isLandStyle(id) && id !== 'paludarium') expect(stockingOf({ ...s, fish }).percent).toBeLessThanOrEqual(100); // lane SR: the engine's own reading, not the summed litres (which ignored the school curve)
         if (id !== 'paludarium') expect(bioload(fish, depthOf(s))).toBeGreaterThanOrEqual(last); // lane HC: paludarium seed 1 swaps its 26-ember lead school for none at stop 3 once the amphibians use more of the shallow pool (follow-up in HANDOFF)
         last = bioload(fish, depthOf(s));
         for (const f of fish) expect(!!getSpecies(f.species)!.salt).toBe(isReefy(id));

@@ -26,6 +26,8 @@ export interface AnimalCare extends GroupCare {
    *  (lane IP 2026-10-22). `young`: past `mm` and up to this adult length it still takes the young and small ones, an advisory
    *  (only consider large adults; the plan does not know their size, so it never says they are safe), not "would eat it". */
   prey?: { mm: number; cats?: Category[]; inverts?: 'shrimp'; young?: number };
+  /** predation was researched and the answer is "harmless" (no `prey`); absent with no `prey` = never researched (S242 audit 2026-10-26) */
+  preyChecked?: true;
   /** one of its kind per tank (a bonded pair is fine); `fam` extends that to look-alike rivals (tangs) */
   solo?: true;
   fam?: string;
@@ -54,6 +56,9 @@ export interface AnimalCare extends GroupCare {
   /** marine: 1 may nip corals (add with caution), 2 eats corals (not reef-safe). Invertebrate eaters are `prey` with `cats`. */
   coral?: 1 | 2;
 }
+/** What we know about whether a species eats its tankmates: 'predator' (a `prey` rule), 'harmless' (researched, `preyChecked`), 'unknown'
+ *  (never researched: no data, not a pass). Nothing reads this to change a verdict yet; it lets a screen say "not researched". */
+export const preyKnowledge = (id: string): 'predator' | 'harmless' | 'unknown' => CARE[id]?.prey ? 'predator' : CARE[id]?.preyChecked ? 'harmless' : 'unknown';
 /** The shrimp in the catalogue, for prey.inverts (the catalogue has no shrimp kind; test/invertprey.test.ts keeps this list whole). */
 export const SHRIMP: ReadonlySet<string> = new Set(['cherryshrimp', 'amano', 'cleanershrimp']);
 const A = (care: Expertise, minL: number, temper: 0 | 1 | 2, temp?: [number, number], x: Partial<AnimalCare> = {}): AnimalCare => ({ care, minL, temper, ...(temp ? { temp } : {}), ...x });
@@ -72,6 +77,10 @@ export const CARE: Record<string, AnimalCare> = {
   bronzecory: A(1, 72, 0, [22, 26]), sterbai: A(1, 41, 0, [24, 28]), pandacory: A(1, 41, 0, [20, 24]), pygmycory: A(1, 38, 0, [22, 26]), bristlenose: A(1, 80, 0, [22, 27]),
   oto: A(2, 40, 0, [22, 26]), kuhli: A(1, 80, 0, [24, 28]), clownloach: A(2, 284, 0, [24, 28], { prey: { mm: 30, cats: ['fw-invert'] } }),
   sae: A(1, 93, 0, [22, 26]), hillstream: A(2, 60, 0, [18, 24]), peapuffer: A(2, 20, 2, [24, 28], { prey: { mm: 45, cats: ['fw-invert'] }, nip: true, alone: true, cover: 'plants' }),
+  greenneon: A(2, 41, 0, [24, 27]), merah: A(2, 41, 0, [22, 27]), exclamation: A(2, 41, 0, [22, 27]), dwarfrasbora: A(2, 41, 0, [22, 27]),
+  cpo: A(1, 38, 1, [18, 26], { prey: { mm: 40, cats: ['fw-invert'] } }), cajundwarf: A(1, 19, 1, [18, 24], { prey: { mm: 40, cats: ['fw-invert'] } }),
+  rswcrayfish: A(2, 75, 2, [18, 26], { solo: true, prey: { mm: 60 } }), redclaw: A(2, 200, 2, [23, 28], { solo: true, prey: { mm: 100 } }),
+  thaicrab: A(2, 19, 0, [22, 28]), asellus: A(1, 8, 0, [16, 24]),
   cherryshrimp: A(1, 20, 0, [18, 26]), amano: A(1, 40, 0, [18, 26]), nerite: A(1, 8, 0, [22, 28]), mystery: A(1, 19, 0, [20, 26]),
   ramshorn: A(1, 5, 0, [18, 28]), trumpet: A(1, 20, 0, [18, 28]),
   ocellaris: A(1, 57, 1, [24, 27]), royalgramma: A(1, 115, 0, [24, 27], { solo: true }), yellowtang: A(1, 379, 1, [24, 27], { solo: true, fam: 'tang' }),

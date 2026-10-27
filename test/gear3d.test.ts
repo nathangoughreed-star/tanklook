@@ -19,7 +19,7 @@ describe('gear3d', () => {
     expect(hi).toEqual(expect.arrayContaining(['co2'])); expect(hi.some(id => id.startsWith('canister'))).toBe(true);
     const R = ex('reef'), sps = gearPicks({ ...R, tech: applyPreset(R, 'sps') });
     expect(sps.map(p => p.id)).toEqual(expect.arrayContaining(['sump', 'wavemaker'])); expect(sps.filter(p => p.id.startsWith('heater')).length).toBe(2); // one pick per heater
-    expect(gearPicks({ ...S, water: { ...S.water, on: false } })).toEqual([]);
+    expect(gearPicks({ ...S, water: { ...S.water, on: false } })).toEqual([{ id: 'gauge', row: 'gauge' }]); // a dry tank's planted fish want no heat: only the gauge (S240)
   });
 
   it('merges a whole set into at most four meshes, inside the room and above the floor', () => {

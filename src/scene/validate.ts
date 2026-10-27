@@ -5,6 +5,7 @@ import { parsePatches } from './brush';
 import { ANIMAL_RANGE, DENS_RANGE, LIBRARY, MAX_ITEMS, clampItem, legacyDens, starterItems } from './items';
 import { CEILING_H, CEILING_MAX, CEILING_MIN, WALL_GAP, WALL_GAP_MAX, clamp, mapToTank } from './physics';
 import { MH_BULBS, TECH_IDS, fitFixture } from './lightout';
+import { clearTopGear } from './topgear';
 import { lightProduct } from '../data/gearCatalog';
 import { normTank } from './shape';
 import { TABLE_MAX, fitTable } from './table';
@@ -16,7 +17,7 @@ import { adoptImages, sidesTouch } from './images';
 import { parseTech } from './tech';
 import { pairRule } from '../data/groups';
 import { prunePairs } from './pairs';
-import { parseIntegrated } from './integrated';
+import { parseIntegrated, parseProduct } from './integrated';
 import { parseSpace } from './space'; // lane P3: layout.space
 
 const GRAINS = ['mud', 'sand', 'gravel', 'pebble'] as const;
@@ -351,12 +352,14 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
   if (te2.h.length && !sameGrid(te2, setup.tank)) setup.terrain = { ...sampleTerrain(setup, setup.tank, te2.cols), on: te2.on };
   { const pt = parsePatches(raw.patches); if (pt) setup.patches = pt; } // lane SB 2026-10-16: painted scatter, absent = none
   { const ig = parseIntegrated(raw.integrated); if (ig) setup.integrated = ig; } // 2026-10-20: an integrated kit (an all-in-one run on its own gear)
+  { const pd = parseProduct(raw.product); if (pd) setup.product = pd; } // 2026-10-26: the library product the tank is (absent = a custom size)
   { const tc = parseTech(raw.tech); if (tc) setup.tech = tc; } // lane TM 2026-10-19: tech level, absent = inferred gear
   if (raw.feeding === 'light' || raw.feeding === 'heavy') setup.feeding = raw.feeding; // lane SE2 2026-10-20, absent = normal
   if (raw.stockFirst === true) setup.stockFirst = true; // 2026-10-21: path 1 tank, no filter drawn until one is added
   { const pr = parsePairs(raw.pairs, setup.fish); if (pr) setup.pairs = pr; } // 2026-10-22: pairing per pair species, absent = unknown
   keepInWater(setup); fitTable(setup);
   fitFixture(setup.light, setup.tank, false); // 2026-10-15: older lights clamped into their fixture's usual ranges
+  clearTopGear(setup); // lane S231 2026-10-26: a light over a dry tank clears its lid gear
   return setup;
 }
 

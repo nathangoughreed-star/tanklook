@@ -9,9 +9,11 @@ export interface DealOffer { deal: Deal; /** setup $ with the deal's price in pl
 
 /** Deals that fit this build (tank size, stand) with what each saves against buying the parts, best saving first. */
 export function dealOffers(S: TankSetup, P: UserProfile, opts: DemandOpts = {}, deals?: Deal[]): DealOffer[] {
-  const gal = volume(S.tank).gallons, base = demandOf(S, P, { ...opts, kit: undefined }).totals.setupUsd;
-  return dealsFor(gal, S.stand.show || standAsked(S.stand), opts.now, undefined, deals).map((deal) => {
-    const withDealUsd = demandOf(S, P, { ...opts, kit: dealAsKit(deal) }).totals.setupUsd;
+  // an undecided stand is not in the tank's price, but a bundle with a stand is weighed against buying a stand too
+  const ask = standAsked(S.stand), T = ask ? { ...S, stand: { ...S.stand, show: true } } : S;
+  const gal = volume(S.tank).gallons, base = demandOf(T, P, { ...opts, kit: undefined }).totals.setupUsd;
+  return dealsFor(gal, S.stand.show || ask, opts.now, undefined, deals).map((deal) => {
+    const withDealUsd = demandOf(T, P, { ...opts, kit: dealAsKit(deal) }).totals.setupUsd;
     return { deal, withDealUsd, partsUsd: base, savingUsd: base - withDealUsd, saleOffUsd: deal.price.regularUsd ? deal.price.regularUsd - deal.price.usd : undefined };
   }).sort((a, b) => b.savingUsd - a.savingUsd);
 }

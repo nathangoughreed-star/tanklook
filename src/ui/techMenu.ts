@@ -7,6 +7,7 @@
 // Heating and Filtration (Nathan 2026-10-20) list the units the tank has, one card each (its name first; a bundle's own
 // with its price crossed out), and an Add button: a heater (generic, its watts editable, or any catalogued one), a filter
 // (its type, then generic or a catalogued one of that type). Removing the last shows "No heater" / "None (Walstad)".
+import { standMisfit } from '../scene/standspace';
 import { FACTORS, demandOf } from '../demand/engine';
 import { pinnedKit } from '../demand/pinned';
 import { mean3 as mean } from '../demand/range';
@@ -22,6 +23,7 @@ import { FILTER_PRODUCTS, HEATER_PRODUCTS, filtersNear, genericHeaterW, heatersN
 import { applyLightProduct, lightProductNote, productOn } from '../scene/lightproduct';
 import { TECHS, lightOutCached } from '../scene/lightout';
 import { integratedKit, lockNote, locksOf } from '../scene/integrated';
+import { unholdBtn } from './tankPick';
 import type { FilterKind } from '../demand/gear';
 import { volume } from '../scene/physics';
 import type { TankSetup } from '../scene/types';
@@ -213,8 +215,8 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
   /** "20 gal high tank, 39 L of water"; a custom size in the viewer's units. */
   const sumpTitle = (z: SumpSize) => z.model ? sumpName(z) : `${lenIn(z.L)} × ${lenIn(z.D)} × ${lenIn(z.H)} ${fahr() ? 'in' : 'cm'} tank, ${Math.round(z.L * z.D * z.H / 1e6 * SUMP_FILL)} L of water`;
   const sumpRow = (S: TankSetup, t: TechSetup): string => {
-    const z = sumpOf(S), isOpen = open === 'sump', c = z ? optionCost(S, 'filter', 'sump', { tech: singleFilter(t, { kind: 'sump' }), kwhUsd: kwhUsd() }) : undefined;
-    let html = `<div class="trow${isOpen ? ' open' : ''}" data-row="sump"><button type="button" class="thead" aria-expanded="${isOpen}"><span class="tlab">Sump</span><span class="tcur">${z ? esc(sumpTitle(z)) : 'None'}</span>${c ? '<span class="tcost" title="The sump tank, its plumbing and the return pump are priced in the Filtration row">in Filtration</span>' : ''}</button>`;
+    const z = sumpOf(S), miss = z ? standMisfit(S, z) : [], isOpen = open === 'sump', c = z ? optionCost(S, 'filter', 'sump', { tech: singleFilter(t, { kind: 'sump' }), kwhUsd: kwhUsd() }) : undefined;
+    let html = `<div class="trow${isOpen ? ' open' : ''}" data-row="sump"><button type="button" class="thead" aria-expanded="${isOpen}"><span class="tlab">Sump</span><span class="tcur">${z ? esc(sumpTitle(z)) : 'None'}${miss.length ? ' <b class="bad">Won’t fit in the stand</b>' : ''}</span>${c ? '<span class="tcost" title="The sump tank, its plumbing and the return pump are priced in the Filtration row">in Filtration</span>' : ''}</button>`;
     if (!isOpen) return html + '</div>';
     html += '<div class="topts">';
     
@@ -224,6 +226,11 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     const body = `<div class="tsz" title="Inside size; type to make it a custom size">${z.model ? 'Inside' : 'Custom, inside'} ${size} ${u}</div>`
       + `<span class="tchips"><span class="tchip good" title="${esc(`Its water dilutes the waste with the display's (run ${Math.round(SUMP_FILL * 100)} % full: the rest is room for what drains down when the pump stops). It adds no swimming room.`)}">+${Math.round(water)} L of water</span></span>`
       + `<div class="tstep"><button type="button" data-act="sump|pick">Pick a size…</button></div>`;
+    // lane SF (Nathan 2026-10-26): a sump that does not fit inside the stand says so (and is not drawn under the tank)
+    if (miss.length) {
+      const u = fahr() ? ' in' : ' cm', both = (k: 'size' | 'room') => miss.map(x => `${lenIn(x[k])}${u} ${x.side}`).join(' and ');
+      html += `<div class="hint bad"><b>Won’t fit in the stand: this sump is ${both('size')}; the ${S.stand.style === 'cabinet' || S.stand.style === 'custom' ? 'cabinet' : 'stand'} is ${both('room')} inside.</b> Pick a smaller sump, or a longer stand. The sump is not drawn under the tank until it fits.</div>`;
+    }
     // lane SF: no fixed minimum; a sump that cannot hold what drains down when the power goes says so
     if (sumpTooSmall(S)) { const v = (l: number) => fahr() ? `${(l / 3.785).toFixed(1)} gal` : `${l.toFixed(1)} L`, room = z.L * z.D * z.H / 1e6 * (1 - SUMP_FILL);
       html += `<div class="hint warn">Too small: when the power goes, about ${v(sumpDrainDown(S))} drains down from the display and this sump has room for ${v(room)}. Pick a bigger sump.</div>`; }
@@ -236,9 +243,8 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     return `Setup ${part(d.setup - b.setup, usd, 1)} · Monthly ${part(d.upkeep - b.upkeep, v => usd(v), 0.05)} · Time ${part(d.minutes - b.minutes, v => `${v.toFixed(v < 10 ? 1 : 0)} min/wk`, 0.05)} · Difficulty ${part(d.risk - b.risk, v => v.toFixed(1), 0.05)}`;
   };
 
-  function render() {
-    const S = store.tank, t = techOf(S), rows = rowsFor(S);
-    if (!S.water.on) { mount.innerHTML = '<div class="hint">A dry tank: no filter, heater or water gear. Heat lamps, misting and UVB come later.</div>'; return; }
+  /** The wet tank's head: presets, room temperature, heat loss and the warnings. */
+  const wetHead = (S: TankSetup, t: TechSetup) => {
     const presets = presetsFor(S), h = heatLoss(S, t);
     const shownPreset = S.tech ? (t.preset ?? 'custom') : '';
     let html = `<div class="tpre" role="group" aria-label="Tech presets">${presets.map(p => `<button type="button" data-pre="${p.id}" class="${shownPreset === p.id ? 'on' : ''}">${esc(p.label)}</button>`).join('')}<span class="tcustom">${shownPreset === 'custom' ? 'Custom' : !S.tech ? 'Not set: the usual gear for this tank' : ''}</span></div>`;
@@ -255,8 +261,18 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     if (offerChiller(S) && t.rows.chiller !== 'chiller') warn.push(`The room (${room(t)}) is warmer than the tank should be (${tempTxt(h.targetC)}): a chiller, or a cooler room.`);
     if (t.rows.co2 === 'pressurized' && t.rows.air === 'airstone') warn.push('An airstone running by day blows off the injected CO2: put it on a timer for the night.');
     if (warn.length) html += `<div class="hint why">${warn.map(esc).join('<br>')}</div>`;
+    return html;
+  };
+
+  function render() {
+    const S = store.tank, t = techOf(S), rows = rowsFor(S);
+    const dry = !S.water.on;
+    let html = '';
+    // a dry tank: one gear model (S240, 2026-10-26): these rows are what the totals price and what is drawn, whichever path made the tank
+    if (dry) html += '<div class="hint">A terrarium: heat, thermostat, UVB, gauge, misting and a timer. Each is priced in the totals and drawn on the tank. Drag a lamp or the mister anywhere on the top while this menu is open.</div>';
+    else html += wetHead(S, t);
     const all = rows.map(r => optionCost(S, r.id, t.rows[r.id] ?? 'none', { tech: t, kwhUsd: kwhUsd() })), sum = (f: (c: OptionCost) => { lo: number; mode: number; hi: number }) => all.reduce((a, c) => ({ lo: a.lo + f(c).lo, mode: a.mode + f(c).mode, hi: a.hi + f(c).hi }), { lo: 0, mode: 0, hi: 0 });
-    html += `<div class="ttot"><span>All this gear</span>${range({ ...all[0], setup: sum(c => c.setup), monthlyUsd: sum(c => c.monthlyUsd), minutes: sum(c => c.minutes), kwhMo: all.reduce((a, c) => a + c.kwhMo, 0), est: all.some(c => c.est) }, coveredOf(S, t, 'heater') + coveredOf(S, t, 'filter'))}</div>`;
+    html += `<div class="ttot"><span>All this gear</span>${range({ ...all[0], setup: sum(c => c.setup), monthlyUsd: sum(c => c.monthlyUsd), minutes: sum(c => c.minutes), kwhMo: all.reduce((a, c) => a + c.kwhMo, 0), est: all.some(c => c.est) }, dry ? 0 : coveredOf(S, t, 'heater') + coveredOf(S, t, 'filter'))}</div>`;
     html += `<div class="tprev" aria-live="polite"></div>`;
     for (const r of rows) {
       if (r.id === 'chiller' && !offerChiller(S) && t.rows.chiller !== 'chiller') continue;
@@ -268,7 +284,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
       if (r.id === 'filter' && cur !== 'none') name = filterUnits(t).map(u => filterLabel(S, u)).join(' + ');
       html += `<div class="trow${open === r.id ? ' open' : ''}" data-row="${r.id}"><button type="button" class="thead" aria-expanded="${open === r.id}"><span class="tlab">${esc(r.label)}</span><span class="tcur">${esc(name)}</span>${range(c, coveredOf(S, t, r.id))}</button>`;
       // an integrated kit's own filter (or heater): shown, not opened (scene/integrated.ts)
-      if ((r.id === 'filter' && locksOf(S)?.filter) || (r.id === 'heater' && locksOf(S)?.heater)) { html += `<div class="hint">${esc(lockNote(S, r.id))}</div></div>`; continue; }
+      if ((r.id === 'filter' && locksOf(S)?.filter) || (r.id === 'heater' && locksOf(S)?.heater)) { html += `<div class="hint">${esc(lockNote(S, r.id))}${unholdBtn(r.id)}</div></div>`; continue; }
       if (open === r.id && (r.id === 'heater' || r.id === 'filter')) {
         html += `<div class="topts">${r.id === 'heater' ? heaterBody(S, t, cur, c) : filterBody(S, t, cur, c, r)}${def?.note ? `<div class="hint">${esc(def.note)}</div>` : ''}</div></div>`;
         if (r.id === 'filter') html += sumpRow(S, t);
@@ -375,7 +391,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     lightKey = key;
     if (kitLight) { // an integrated kit has its own light: no catalogue to pick from
       const t = TECHS[l.tech ?? kitLight.light.tech];
-      lightMount.innerHTML = `<div class="tunit"><div class="tuh"><span class="tun">${esc(kitLight.name)}: its own light</span></div><div class="hint">${l.watts ?? kitLight.light.watts ?? '?'} W ${esc(t?.label ?? 'LED')}${kitLight.light.spec === 'published' ? '' : ' (from the listing)'}. ${esc(lockNote(S, 'light'))}</div></div>`;
+      lightMount.innerHTML = `<div class="tunit"><div class="tuh"><span class="tun">${esc(kitLight.name)}: its own light</span></div><div class="hint">${l.watts ?? kitLight.light.watts ?? '?'} W ${esc(t?.label ?? 'LED')}${kitLight.light.spec === 'published' ? '' : ' (from the listing)'}. ${esc(lockNote(S, 'light'))}${unholdBtn('light')}</div></div>`;
       return;
     }
     if (S.lid === 'hood') { lightMount.innerHTML = '<div class="hint">The hood holds its own lamps: take the hood off (Lid) to fit one of the catalogued lights.</div>'; return; }

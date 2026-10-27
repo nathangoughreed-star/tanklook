@@ -5,9 +5,10 @@ import type { Build } from '../scene/builds';
 import { planOf, planText, type Level, type Plan } from '../scene/plan';
 import type { Store } from '../scene/store';
 import type { TankSetup } from '../scene/types';
-import { IDEAL_MAX } from '../scene/stocking';
+import { gaugeStyle } from './gauge';
 import { getSpecies } from '../data/species';
 import { needLine, needsOf } from '../data/careNeeds';
+import { summaryHtml, summaryOf, summaryText, type StockSummary } from './stockSummary';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
@@ -20,16 +21,23 @@ export function planNeeds(S: TankSetup): { severity: string; text: string }[] {
   return ids.flatMap(id => needsOf(id).map(n => ({ severity: n.severity, text: `${getSpecies(id)?.name ?? id}: ${needLine(n)}` })));
 }
 /** The plan as text with the care needs after the verdict lines. */
-export const planTextWithNeeds = (p: Plan, needs: { text: string }[]) => needs.length ? planText(p).replace(/\n\nShopping list/, `\n${needs.map(n => `  ? ${n.text}`).join('\n')}\n\nShopping list`) : planText(p);
+export function planTextWithNeeds(p: Plan, needs: { text: string }[], sm?: StockSummary): string {
+  const NL = String.fromCharCode(10), at = NL + NL + 'Shopping list';
+  let t = planText(p);
+  if (needs.length) t = t.replace(at, NL + needs.map(n => `  ? ${n.text}`).join(NL) + at);
+  if (sm) t = t.replace(at, NL + NL + summaryText(sm).join(NL) + at); // S243 step 2: the same five categories as the tile
+  return t;
+}
 
-const bar = (label: string, pct: number) => `<div class="planBar"><span>${label}</span><div><i class="${pct > 100 ? 'bad' : pct >= IDEAL_MAX ? 'warn' : 'ok'}" style="width:${Math.min(100, pct)}%"></i></div><b>${pct}%</b></div>`;
+// S229 (Nathan 2026-10-26): the whole-scale gauge the tile and the stocking screen use (ui/gauge.ts), not a flat colour per band
+const bar = (label: string, pct: number) => `<div class="planBar"><span>${label}</span><div class="gauge" style="${gaugeStyle(pct)}"><i></i></div><b>${pct}%</b></div>`;
 
-export function planHtml(p: Plan, needs: { severity: string; text: string }[] = []): string {
+export function planHtml(p: Plan, needs: { severity: string; text: string }[] = [], sm?: StockSummary): string {
   const needRows = p.rows.map(r => `<tr class="${r.kind}"><th scope="row">${esc(r.item)}${r.kind === 'extra' ? ' <em>(not needed)</em>' : ''}</th><td class="q">${usd(r.usd)}</td><td>${esc(r.serves)}</td></tr>`).join('');
   return `<h1>${esc(p.title)}</h1><p class="sheetSub">${esc(p.tank)}: ${esc(p.animals.join(', '))}</p>
 <h2>Does it fit?</h2>
 <p class="planVerdict ${p.fits ? needs.length ? 'warn' : 'ok' : 'bad'}"><b>${p.fits ? needs.length ? 'It fits the tank, with care needs to confirm.' : 'Yes, it fits.' : 'Not yet.'}</b></p>
-${bar('Water column', p.waterPct)}${bar('Floor', p.floorPct)}${bar('Filtration', p.filtrationPct)}
+${sm ? `<h3>Stocking summary: ${esc(sm.worstWord)}</h3>${summaryHtml(sm, esc)}` : ''}${bar('Water column', p.waterPct)}${bar('Floor', p.floorPct)}${bar('Filtration', p.filtrationPct)}
 <ul class="planTruths">${p.verdict.slice(2).map(v => `<li class="${v.level}"><b>${MARK[v.level]}</b> ${esc(v.text)}${v.more?.length ? `<ul class="planMore">${v.more.map(m => `<li>also: ${esc(m)}</li>`).join('')}</ul>` : ''}</li>`).join('')}${p.missing.map(m => `<li class="bad"><b>${MARK.bad}</b> ${esc(m)}</li>`).join('')}</ul>
 ${needs.length ? `<h3>Care needs the tool cannot check</h3><ul class="planTruths">${needs.map(n => `<li class="${n.severity === 'S3' ? 'bad' : 'warn'}"><b>?</b> ${esc(n.text)}</li>`).join('')}</ul>` : ''}
 <h2>What to buy, and why</h2>
@@ -54,7 +62,7 @@ export function attachPlanSheet(store: Store) {
     a.href = url; a.download = `${slug(store.scene.name)}-plan.txt`; document.body.append(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 10000);
   };
-  const render = () => { if (host) host.querySelector<HTMLElement>('.sheetPage')!.innerHTML = planHtml(current(), planNeeds(setup())); };
+  const render = () => { if (host) host.querySelector<HTMLElement>('.sheetPage')!.innerHTML = planHtml(current(), planNeeds(setup()), summaryOf(setup(), store.scene.units)); };
   const open = (b?: Build) => {
     if (host) close();
     build = b;
@@ -62,7 +70,7 @@ export function attachPlanSheet(store: Store) {
     host.innerHTML = `<div class="sheetBar"><b>Your plan</b><span class="grow"></span><button id="planPrint">Print</button><button id="planTxt">.txt</button><button id="planClose">Close</button></div><div class="sheetPage" role="document"></div>`;
     document.body.append(host); document.body.classList.add('sheet-open'); document.addEventListener('keydown', onKey);
     const $ = (id: string) => host!.querySelector<HTMLElement>(id)!;
-    $('#planClose').onclick = close; $('#planPrint').onclick = () => window.print(); $('#planTxt').onclick = () => save(planTextWithNeeds(current(), planNeeds(setup())));
+    $('#planClose').onclick = close; $('#planPrint').onclick = () => window.print(); $('#planTxt').onclick = () => save(planTextWithNeeds(current(), planNeeds(setup()), summaryOf(setup(), store.scene.units)));
     render();
   };
   return { open, close };

@@ -341,7 +341,7 @@ export const standAsked = (st: StandSettings) => !st.show && st.need === 'ask';
 export type LidType = 'open' | 'glass' | 'hood' | 'mesh';
 /** Front opening (lane EN, 2026-10-16; absent = none): a terrarium's hinged or sliding glass doors, drawn on a rectangle's front pane. */
 export type DoorType = 'none' | 'hinged' | 'sliding';
-/** Terrarium gear (lane LT): heat source, its thermostat, UVB, a temperature / humidity gauge, misting, a timer on the lights. */
+/** Terrarium gear read off the Tech rows (scene/drygear.ts dryGearOf): heat source, its thermostat, UVB, a temperature / humidity gauge, misting, a timer on the lights. */
 export interface DryGear { heat: 'lamp' | 'mat' | 'none'; thermostat: 'onoff' | 'dimming' | 'none'; uvb: 't5' | 'low' | 'none'; gauge: boolean; mist: 'hand' | 'auto' | 'none'; timer: boolean }
 
 /** 'back' = wall behind the tank; 'left' / 'right' = peninsula, that end of the tank against the wall (Nathan 2026-10-08:
@@ -385,8 +385,6 @@ export interface TankSetup {
   water: WaterSettings;
   lid: LidType;
   doors?: DoorType;
-  /** A terrarium's gear (lane LT, 2026-10-26, no version bump; absent = the cheapest build for the animals in it, scene/drygear.ts) */
-  dryGear?: DryGear;
   stand: StandSettings;
   wall: WallSettings;
   person: PersonSettings;
@@ -412,7 +410,14 @@ export interface TankSetup {
   /** An integrated kit (2026-10-20, Nathan: an all-in-one such as a Fluval Flex runs only on its own light, filter and lid; no version bump).
    *  Picked from the tank picker: the kit's gear is applied once and then held (scene/integrated.ts). Absent = a bare or ordinary tank. */
   integrated?: IntegratedKit;
+  /** The library pick this tank is (2026-10-26, Nathan: "clearly distinguish if the tank being worked on is a real commercially
+   *  available tank or a custom size"; no version bump). Absent = a custom size. scene/integrated.ts holds what the product fixes. */
+  product?: TankProduct;
 }
+
+/** `model` a data/tanks.json size id; `key` the maker's product at that size (data/tanks.ts variantKey), absent for the catalogue size
+ *  with no maker; `sig` the tank as picked (scene/integrated.ts tankSig), filled in on the first edit. */
+export interface TankProduct { model: string; key?: string; sig?: string }
 
 /** `kit` is an id in data/kits.json; the rest is what holding it needs: `sig` the tank it was applied to (any other size or shape
  *  releases it), and the kit's own settings as applied. All filled in by scene/integrated.ts. */

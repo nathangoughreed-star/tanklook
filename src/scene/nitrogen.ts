@@ -49,9 +49,11 @@ const THROUGH = { hob: 0.6, canister: 0.9, internal: 0.8, sponge: 0.9, sump: 0.9
 /** Bacteria on glass, substrate and decor: a small floor (g TAN per litre of water per day), also what a filterless Walstad tank has. */
 const SURFACE_RATE = 0.0004;
 const HEADROOM = 0.7;
+/** The most a filter bigger than the tank's baseline (the generic model of its kind fitted to the tank) adds to the capacity: +50 % (Nathan 2026-10-26). */
+export const FILTER_BOOST_MAX = 0.5;
 const warm = (c: number) => Math.min(1.5, 1.07 ** (c - 25));
 
-export interface FilterCap { kind: string; mediaL: number; src: string; gDay: number; flowGate: number; label: string }
+export interface FilterCap { kind: string; mediaL: number; src: string; gDay: number; flowGate: number; label: string; /** g TAN a day of the tank's baseline filter of this kind (0: none or a sump, uncapped) */ baseG?: number }
 /** What the bacteria in this tank's filter (option `opt`, else the chosen one) can nitrify, g TAN a day, at `tempC`. */
 export function filterCapacity(S: TankSetup, litres: number, tempC: number, opt?: string): FilterCap {
   const t = techOf(S);
@@ -59,24 +61,33 @@ export function filterCapacity(S: TankSetup, litres: number, tempC: number, opt?
   if (!opt && t.filters?.length) {
     const surface = litres * SURFACE_RATE * warm(tempC), each = t.filters.map(u => filterCapacity({ ...S, tech: singleFilter(t, u) }, litres, tempC));
     const top = each.reduce((a, c) => c.gDay > a.gDay ? c : a);
-    return { kind: top.kind, mediaL: each.reduce((a, c) => a + c.mediaL, 0), src: top.src, gDay: surface + each.reduce((a, c) => a + c.gDay - surface, 0), flowGate: top.flowGate, label: each.map(c => c.label).join(' + ') };
+    const sum = surface + each.reduce((a, c) => a + c.gDay - surface, 0), base = top.baseG ?? 0; // several filters share the one +50 % over a single baseline filter (lane SR)
+    return { kind: top.kind, mediaL: each.reduce((a, c) => a + c.mediaL, 0), src: top.src, gDay: base > 0 ? Math.min(sum, surface + base * (1 + FILTER_BOOST_MAX)) : sum, flowGate: top.flowGate, label: each.map(c => c.label).join(' + '), baseG: base };
   }
   const choice = opt ?? t.rows.filter ?? 'none', def = optionDef('filter', choice);
   const surface = litres * SURFACE_RATE * warm(tempC);
   if (choice === 'none' || !def) return { kind: 'none', mediaL: 0, src: 'none', gDay: surface, flowGate: 1, label: 'no filter' };
   const sump = choice === 'sump', kind = (sump ? 'sump' : def.kind ?? 'hob') as keyof typeof MEDIA_RATE;
-  let mediaL: number, src = 'derived', gph = 0, label = def.label;
+  let mediaL: number, src = 'derived', gph = 0, label = def.label, baseG = 0;
+  // a filter's own capacity: its media x the kind's rate, gated by the flow that reaches the media
+  const capOf = (m: number, flow: number) => { const g = m * MEDIA_RATE[kind] * warm(tempC), gate = g > 0 && flow > 0 ? Math.min(1, flow * 3.785 * 24 / 1000 * THROUGH[kind] / (2 * g)) : 1; return { g, gate }; };
+  const mediaOf = (f: ReturnType<typeof filterFor>) => {
+    const row = FILTER_MEDIA_L[f.product?.id ?? f.model.id];
+    return { row, mediaL: (row ? row[0] : kind === 'sponge' ? SPONGE_L_PER_GAL * f.model.galMax : (f.product?.gph ?? f.model.gph) * (MEDIA_L_PER_GPH as Record<string, number>)[kind]) * f.n };
+  };
   if (sump) { mediaL = litres * 0.05; gph = litres / 3.785 * 5; label = 'sump'; }
   else {
-    const f = filterFor(S, def.kind!, opt ? undefined : t.filterModel, opt ? undefined : t.filterProduct);
-    const id = f.product?.id ?? f.model.id, row = FILTER_MEDIA_L[id];
+    const f = filterFor(S, def.kind!, opt ? undefined : t.filterModel, opt ? undefined : t.filterProduct), m = mediaOf(f);
     gph = f.gph; label = `${f.n > 1 ? f.n + ' x ' : ''}${f.product ? f.product.model : f.model.label}`;
-    const per = row ? row[0] : kind === 'sponge' ? SPONGE_L_PER_GAL * f.model.galMax : (f.product?.gph ?? f.model.gph) * (MEDIA_L_PER_GPH as Record<string, number>)[kind];
-    mediaL = per * f.n; src = row ? row[1] : 'estimated by kind';
+    mediaL = m.mediaL; src = m.row ? m.row[1] : 'estimated by kind';
+    // lane SR (Nathan 2026-10-26, "sure"): a bigger or better filter than the tank's baseline (the generic model of this kind fitted to its size)
+    // earns at most FILTER_BOOST_MAX extra capacity; it never changes space or floor
+    const b = mediaOf(filterFor(S, def.kind!)), c0 = capOf(b.mediaL, filterFor(S, def.kind!).gph);
+    baseG = c0.g * c0.gate;
   }
-  const g = mediaL * MEDIA_RATE[kind] * warm(tempC);
-  const flowM3 = gph * 3.785 * 24 / 1000 * THROUGH[kind], flowGate = g > 0 && gph > 0 ? Math.min(1, flowM3 / (2 * g)) : 1;
-  return { kind, mediaL, src, gDay: surface + g * flowGate, flowGate, label };
+  const { g, gate: flowGate } = capOf(mediaL, gph);
+  const gDay = baseG > 0 ? Math.min(surface + g * flowGate, surface + baseG * (1 + FILTER_BOOST_MAX)) : surface + g * flowGate;
+  return { kind, mediaL, src, gDay, flowGate, label, baseG };
 }
 
 type PlantClass = 'slow' | 'medium' | 'fast' | 'float';

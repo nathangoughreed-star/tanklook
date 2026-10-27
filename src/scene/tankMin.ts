@@ -32,6 +32,8 @@ export const minDataOf = (id: string): MinData | undefined => lines[id];
 /** Decision 3: a large-bodied swimmer is held to the stated front-to-back width as well as the length; smaller swimmers to the length. Adult length at or over this, mm. */
 export const LARGE_BODY_MM = 150;
 const GAL_L = 3.785;
+/** Where a species' minimum comes from when tankmin.json has no red line for it (S245): the care table's minimum volume. */
+export const MINL_SITE = 'the care table, no tank-minimum line';
 
 /** The tank's floor area, cm2, any shape (outer footprint); its longest floor side and its shortest (front to back for a rectangle), mm. */
 export function floorOf(T: TankSetup['tank']): { areaCm2: number; runMm: number; widthMm: number } {
@@ -104,7 +106,8 @@ export function measureLines(w: Who, d: MinData | undefined, g: Geometry): Lines
   const red = worst(checksOf(w, d?.red, d?.hRed, g));
   const gc = checksOf(w, d?.green ?? d?.red, d?.hGreen ?? d?.hRed, g);
   // Decision 2: the gallon figure is husbandry guidance, a Recommended mark (mystery snail 5 gal), never a gate
-  if (d?.vol) gc.push({ limiting: 'water', need: d.vol.gal * GAL_L, have: g.tankLitres ?? g.litres, mark: 'advisory', site: d.vol.site, states: `${d.vol.gal} gal` });
+  // a gallon figure names the catalogue size and the glass holds up to 10 % less (a 20 gal long, 30 x 12 x 12 in, is 71 L, not 75.7): the red lines' 10 % slack applies (Nathan 2026-10-26)
+  if (d?.vol) gc.push({ limiting: 'water', need: d.vol.gal * GAL_L * 100 / MIN_SLACK_PCT, have: g.tankLitres ?? g.litres, mark: 'advisory', site: d.vol.site, states: `${d.vol.gal} gal` });
   const depth = depthOf(g), max = d?.depth?.maxWaterDepthMm ?? 0;
   // no page states a minimum water depth (MX7): water shallower than the animal is long is not assessed, not a pass
   return { red, green: worst(gc), assessed: !(w.water && depth < w.tl), depthMm: depth, tooDeepMm: max && depth > max ? max : 0 };
@@ -166,6 +169,10 @@ export interface TankMinimum {
 /** One species against a tank (the same answer the Fullness tile, the tank-fit engine, the animal gate and the hard truths all use). */
 export function speciesMinimum(sp: Species, g: Geometry): MinRow {
   const w = whoOf(sp), d = minDataOf(sp.id), r = measureLines(w, d, g);
+  // S245 (Nathan 2026-10-26): no animal in the water is exempt from a minimum. With no red line the care table's minimum volume (CARE.minL,
+  // sourced per species in provenance.ts) is the line, held in litres against the tank's full volume with the same 10 % slack.
+  const minL = !d?.red && countsAgainstWater(sp) ? careOf(sp.id)?.minL ?? 0 : 0;
+  if (minL > 0) { const have = g.tankLitres ?? g.litres; r.red = { pct: 100 * (have > 0 ? minL / have : Infinity), limiting: 'water', need: minL, have, mark: 'advisory', site: MINL_SITE, states: `${minL} L` }; }
   const row: MinRow = { id: sp.id, name: sp.name, n: 1, kind: w.floor ? 'area' : 'run', pct: r.assessed ? r.red.pct : Infinity, comfortPct: r.green.pct, minLengthMm: d?.red?.L ?? 0,
     limiting: r.red.limiting, reason: '', comfortReason: recommendedOf(r.green), measure: r.red, comfort: r.green,
     derived: r.red.mark === 'derived (est)', assessed: r.assessed, depthMm: r.depthMm, tl: w.tl, tooDeepMm: r.tooDeepMm,

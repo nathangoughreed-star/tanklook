@@ -964,10 +964,32 @@ Object.assign(PLANS, {
   mandarin_f: her('mandarin', { dorsal: { at: 0.66, len: 0.1, h: 0.1, spines: 1, nSp: 4, spineH: [0.13, 0.1], notch: 0.2, tint: '#d0602a' } }),
 });
 
+// nano schoolers (S238, 2026-10-26): built from the chili and neon plans with their own paint; no reference photos opened, so colours are from
+// Seriously Fish's descriptions (recorded as model v1 on the review page)
+Object.assign(PLANS, {
+  // green neon tetra (Paracheirodon simulans): a blue-green stripe from the eye to the tail base, a silvery-white belly, clear forked tail, no red band
+  greenneon: her('tetra', { depth: 0.2, shade: ['#4e5e4a', '#a2b0a0', '#e8eae2'], tail: { type: 'fork', h: 0.14, tint: '#c4ccc8', a: 0.7 }, fin: '#c4ccc8',
+    marks: [{ k: 'band', u0: 0.2, u1: 0.95, v0: -0.07, v1: -0.004, c: '#1fb58c', a: 1, f: 0.012 }, { k: 'band', u0: 0.28, u1: 0.88, v0: -0.05, v1: -0.025, c: '#9af0d2', a: 0.5, f: 0.006 }],
+    eye: { r: 0.026, iris: ['#bcd2cc', '#3c5a52'] } }),
+  // strawberry rasbora (Boraras merah): a red-orange body, a large dark blotch behind the gill cover and a smaller one at the tail base
+  merah: her('chili', { shade: ['#b6402a', '#dc623a', '#eca882'], tail: { type: 'fork', h: 0.13, tint: '#d4684a', a: 0.8 }, fin: '#d8785a',
+    marks: [{ k: 'band', u0: 0.24, u1: 0.7, v0: -0.008, v1: 0.008, c: '#3a1c16', a: 0.45, f: 0.008 }, { k: 'blob', u: 0.62, v: -0.002, ru: 0.06, rv: 0.04, c: '#201210', a: 0.85 }, { k: 'blob', u: 0.24, v: 0, ru: 0.025, rv: 0.022, c: '#201210', a: 0.85 }],
+    eye: { r: 0.03, iris: ['#d88a58', '#4a1a12'] } }),
+  // exclamation point rasbora (Boraras urophthalmoides): orange-red; a black stripe along the rear body and a round black spot on the tail base, the "!"
+  exclamation: her('chili', { depth: 0.2, shade: ['#c0602c', '#e88c44', '#f4cc9c'], tail: { type: 'fork', h: 0.13, tint: '#e0905a', a: 0.8 }, fin: '#e4a070',
+    marks: [{ k: 'band', u0: 0.34, u1: 0.74, v0: -0.01, v1: 0.01, c: '#1e1210', a: 0.9, f: 0.008 }, { k: 'blob', u: 0.23, v: 0, ru: 0.03, rv: 0.026, c: '#1e1210', a: 0.9 }],
+    eye: { r: 0.03, iris: ['#dc9a5c', '#4a2a12'] } }),
+  // dwarf spotted rasbora (Boraras maculatus): red-orange with a dark shoulder spot, a dark spot on the tail base and a thin dark line between
+  dwarfrasbora: her('chili', { depth: 0.22, shade: ['#b23c2c', '#d85c3c', '#e8a282'], tail: { type: 'fork', h: 0.13, tint: '#cc6048', a: 0.8 }, fin: '#d0725a',
+    marks: [{ k: 'band', u0: 0.26, u1: 0.62, v0: -0.006, v1: 0.006, c: '#2a1814', a: 0.6, f: 0.006 }, { k: 'blob', u: 0.66, v: -0.004, ru: 0.034, rv: 0.036, c: '#1c100e', a: 0.9 }, { k: 'blob', u: 0.23, v: 0, ru: 0.03, rv: 0.026, c: '#1c100e', a: 0.9 }],
+    eye: { r: 0.03, iris: ['#d07a50', '#4a1a12'] } }),
+});
+
 const SHRIMP: Record<string, ShrimpSpec> = {
   cherryshrimp: { body: ['#b8242a', '#d8444a'] },
   amano: { body: ['#6e7a7c', '#94a0a0'], glass: 0.3, dashes: '#3a1e16', stripe: '#e8d8a0' },
   // skunk cleaner (Lysmata amboinensis): red back split by a broad white stripe, orange-yellow flanks, long white antennae
+  cpo: { body: ['#d8681e', '#f0a050'] }, cajundwarf: { body: ['#8a7a5e', '#b4a686'] }, rswcrayfish: { body: ['#b02a1c', '#d86a50'] }, redclaw: { body: ['#3e6e62', '#78a090'] },
   cleanershrimp: { body: ['#c8281e', '#e8a838'], back: '#c42a20', stripe: '#f6f4ee', stripeW: 0.022, ant: ['#f4f2ea', 1.35] },
 };
 /**

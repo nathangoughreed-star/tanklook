@@ -854,6 +854,15 @@ export class Viewer {
     return { vp, ray: this.ray.ray.clone(), ...none, fishId: o && o.userData.item == null ? (o.userData.id as number) : null, itemId: o?.userData.item ?? null, mesh: o as THREE.Mesh | undefined };
   }
 
+  /** A cabinet stand under the client point (lane SF: a click on it opens or closes its doors). */
+  standAt(clientX: number, clientY: number): boolean {
+    const hit = this.hitTest(clientX, clientY), S = hit?.vp.S, sc = hit?.vp.scene as THREE.Scene | undefined;
+    if (!hit || !S || !sc || !S.stand.show || (S.stand.style !== 'cabinet' && S.stand.style !== 'custom')) return false;
+    // anywhere in its box: with the doors open the ray may pass between the panels to the sump inside
+    const box = new THREE.Box3(); for (const o of sc.children) if (o.userData.stand) box.expandByObject(o);
+    return !box.isEmpty() && this.ray.ray.intersectsBox(box);
+  }
+
   private static CORE = 0.65; // share of the on-screen box (each way) that picks the piece
   private static CORE_MIN_PX = 12; // but never a half-size under this, so small fish stay easy to grab
   private box = new THREE.Box3(); private corner = new THREE.Vector3();

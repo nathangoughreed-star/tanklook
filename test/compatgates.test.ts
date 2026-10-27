@@ -27,7 +27,8 @@ describe('compatibility gates (lane CG, 2026-10-19)', () => {
   it('soft-water fish against hard-water fish', () => {
     expect(whyAnimal(sp('cardinal'), 500, 3, [sp('molly')])?.text).toMatch(/pH|hardness/);
     expect(whyAnimal(sp('cardinal'), 500, 3, [sp('peacock')])?.text).toMatch(/pH/);
-    expect(whyAnimal(sp('platy'), 200, 3, [sp('neon')])?.text).toMatch(/hardness|pH/);
+    // platy + neon is a compromise since the neon's acceptable range (2026-10-26); the ember has no GH beyond 10, so stays red
+    expect(whyAnimal(sp('platy'), 200, 3, [sp('ember')])?.text).toMatch(/hardness|pH/);
     expect(whyAnimal(sp('peacock'), 500, 3, [sp('yellowlab')])).toBeNull();
     expect(whyAnimal(sp('neon'), 200, 1, [sp('harlequin'), sp('pandacory')])).toBeNull();
   });

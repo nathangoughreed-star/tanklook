@@ -1,0 +1,45 @@
+import { it } from 'vitest';
+import { comboTank } from './aqcompare.test';
+import { stockingOf } from '../src/scene/stocking';
+import { tileState, topMin } from '../src/ui/fullnessTile';
+import { crowdWarnings, compatRisks, coverAdvice } from '../src/scene/territory';
+import { planOf } from '../src/scene/plan';
+import { planNeeds } from '../src/ui/planSheet';
+import { notesOf, overWarn, planFor, conflictsOf, groupLineIn } from '../src/ui/stockPlanLogic';
+import { grazerShort } from '../src/data/grazers';
+import { volume } from '../src/scene/physics';
+import { tankFor, fitIn } from '../src/scene/tankfit';
+
+const SC: { name: string; tank: [number, number, number]; stock: [string, number][] }[] = [
+  { name: 'A 20L: 2 dwarf gourami, 6 tiger barb, 1 pea puffer', tank: [30, 12, 12], stock: [['dwarfgourami', 2], ['tigerbarb', 6], ['peapuffer', 1]] },
+  { name: 'B 10gal: 2 betta + 6 cory', tank: [20, 10, 12], stock: [['betta', 2], ['pandacory', 6]] },
+  { name: 'C 55gal: 6 discus + 2 bristlenose', tank: [48, 13, 21], stock: [['discus', 6], ['bristlenose', 2]] },
+  { name: 'D 29gal: 25 oto', tank: [30, 12, 18], stock: [['oto', 25]] },
+  { name: 'E 20L: 2 kribensis + 6 cory + 6 neon', tank: [30, 12, 12], stock: [['kribensis', 2], ['pandacory', 6], ['neon', 6]] },
+  { name: 'F 10gal: 2 goldfish', tank: [20, 10, 12], stock: [['goldfish', 2]] },
+  { name: 'G 20L: 6 neon + 1 oscar', tank: [30, 12, 12], stock: [['neon', 6], ['oscar', 1]] },
+  { name: 'H 40 breeder: 8 demasoni', tank: [36, 18, 16], stock: [['demasoni', 8]] },
+];
+it('probe', async () => {
+  const out: string[] = [];
+  for (const sc of SC) {
+    const S = comboTank(sc as any), r = stockingOf(S), st = tileState(S, r, 'in');
+    out.push(`\n##### ${sc.name}  [tank ${Math.round(volume(S.tank).gallons)} gal]`);
+    out.push(`engine: percent ${r.percent.toFixed(0)} (space ${r.spacePercent.toFixed(0)} by ${r.spaceBy}; water ${r.waterPercent.toFixed(0)}, floor ${r.floorPercent.toFixed(0)}; filt ${r.filtrationPercent.toFixed(0)})  pill="${st.head.text}"`);
+    out.push(`engine reasons: ${r.reasons.join(' | ')}`);
+    out.push(`TILE min bar: ${st.min.text} (${Number.isFinite(st.min.pct) ? st.min.pct.toFixed(0) : 'inf'}%) ; mins: ${st.mins.map(m => `[${m.level}] ${m.text}`).join(' || ') || '-'}`);
+    out.push(`TILE compat: ${st.compat ? `[${st.compat.level}] ${st.compat.text}` : '-'}`);
+    out.push(`TILE crowd: ${crowdWarnings(S).join(' || ') || '-'}`);
+    out.push(`TILE cover: ${coverAdvice(S).join(' || ') || '-'}`);
+    const p = planOf(S, undefined, 0, 'in');
+    out.push(`PLAN fits=${p.fits}; verdict: ${p.verdict.map(v => `[${v.level}] ${v.text}${v.more ? ' {also ' + v.more.join('; ') + '}' : ''}`).join(' || ')}; missing: ${p.missing.join('|') || '-'}`);
+    out.push(`PLAN needs: ${planNeeds(S).map(n => n.text).join(' || ') || '-'}`);
+    const picks = sc.stock.map(([id, n]) => ({ id, n }));
+    const gal = volume(S.tank).litres;
+    for (const k of picks) {
+      const nt = notesOf(k, 'in'), ow = overWarn(k, gal, S.tank.L), gz = grazerShort(k.id, k.n, gal), cf = conflictsOf(picks, k.id).map(c => `${c.block ? 'BLOCK' : 'concern'}: ${c.text}`);
+      out.push(`STOCKSCREEN ${k.id}: band=${nt.band} line="${nt.line}" ${nt.ratio ? 'ratio="' + nt.ratio + '"' : ''} overWarn="${ow ?? '-'}" graze="${gz ?? '-'}" conflicts=[${cf.join(' ; ')}] needs=[${nt.needs.map(n => n.text).join(' ; ')}]`);
+    }
+  }
+  (await import('node:fs')).writeFileSync('C:/Users/nreed/AppData/Local/Temp/claude/C--Users-nreed-Glass-Box--claude-worktrees-peaceful-hertz-ad3d69/d0745941-beaf-4110-b9ea-0e33b2ed8f70/scratchpad/probe.txt', out.join('\n'));
+});

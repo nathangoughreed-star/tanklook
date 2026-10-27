@@ -12,6 +12,7 @@
 // member of a group of two or more moves or turns them all, the layout between them kept.
 // Pieces take presses only while their menu (Hardscape, or Plants for plants and corals) is open, animals only while the Animals menu is.
 import * as THREE from 'three';
+import { tankView } from '../render/tankView';
 import { clingsTo, fishTL, getSpecies, leafUp, restsOnFloor, speciesOf } from '../data/species';
 import { restsOnGround } from '../scene/water';
 import { D2R, backdropDepth, clamp, clampFish } from '../scene/physics';
@@ -412,7 +413,8 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       return;
     }
     // a plain click on empty space (no orbit drag) clears the selection, so nothing is highlighted
-    if (orbit && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) { if (patchPick != null) store.selectPatch(patchPick); else store.select(null); }
+    // a click on a cabinet stand opens or closes its doors (lane SF, Nathan 2026-10-26: "have the doors open on click to reveal beneath")
+    if (orbit && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) { if (viewer.standAt(e.clientX, e.clientY)) { tankView.standOpen = !tankView.standOpen; viewer.rebuild(); } else if (patchPick != null) store.selectPatch(patchPick); else store.select(null); }
     if (drag?.moved || orbit || lift?.moved || move?.moved || pool?.moved) store.seal();
     if (lift) { viewer.terrainEdit.hot = null; viewer.rebuild(); }
     if (pool) { viewer.terrainEdit.poolHot = null; viewer.rebuild(); }

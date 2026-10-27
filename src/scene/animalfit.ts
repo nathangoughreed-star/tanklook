@@ -44,7 +44,8 @@ export function whyAnimal(sp: Species, litres: number, expertise: Expertise, pre
  *  one, then the concerns that do not block. Empty when it suits. */
 export function whysAnimal(sp: Species, litres: number, expertise: Expertise, present: Species[], env: AnimalEnv = {}): AnimalWhy[] {
   const c = CARE[sp.id];
-  if (!c) return [];
+  // S245: no care entry = not enough information, never the empty list that means "suits"
+  if (!c) return [{ kind: 'compat', text: `not enough information: no care data for ${sp.name}` }];
   const out: AnimalWhy[] = [];
   if (c.care > expertise) out.push({ kind: 'expertise', text: `expertise: ${EXPERTISE_NAME[c.care].toLowerCase()} animal, you chose ${EXPERTISE_NAME[expertise].toLowerCase()}` });
   if (env.fit) { const m = env.fit(sp); if (m.pct > MIN_SLACK_PCT) out.push({ kind: 'size', text: `tank size: ${m.reason}` }); }

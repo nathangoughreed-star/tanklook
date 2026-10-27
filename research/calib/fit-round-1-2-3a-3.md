@@ -1,6 +1,6 @@
 # Expert calibration, fit of round 1+2+3a+3
 
-4 experts (chatgpt, chatgpt-high, ngr, ngr-ai), 182 answers, 10 on held-out anchors. Noise 0.200 (log) from 0 repeat pairs. Engine readings: round 1: current engine, 2026-10-26; round 2: current engine, 2026-10-26; round 3: current engine, 2026-10-26; round 3: current engine, 2026-10-26.
+4 experts (chatgpt, chatgpt-high, ngr, ngr-ai), 182 answers, 10 on held-out anchors. Noise 0.200 (log) from 0 repeat pairs. Engine readings: round 1: current engine, 2026-10-26; round 2: current engine, 2026-10-26; round 3a: current engine, 2026-10-26; round 3: current engine, 2026-10-26.
 
 ## Error (rms of log reading at the experts' counts)
 

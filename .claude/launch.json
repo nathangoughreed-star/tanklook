@@ -572,6 +572,32 @@
         "--strictPort"
       ],
       "port": 5933
+    },
+    {
+      "name": "lid-lamps",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5871",
+        "--strictPort"
+      ],
+      "port": 5871
+    },
+    {
+      "name": "s240",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5979",
+        "--strictPort"
+      ],
+      "port": 5979
     }
   ]
 }

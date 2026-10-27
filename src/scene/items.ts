@@ -617,16 +617,16 @@ export const layerOf = (it: Pick<Item, 'kind'>): Layer => it.kind === 'plant' ||
 export interface StyleSpec { hard: [number, number]; plant: [number, number]; stones?: readonly number[]; animals: readonly string[] }
 export const STYLES: Record<Exclude<LayoutId, 'none'>, StyleSpec> = {
   stones: { hard: [0.3, 2.4], plant: [0.3, 2.2], animals: ['danio', 'tigerbarb', 'cherrybarb', 'kribensis', 'bronzecory', 'bristlenose', 'platy', 'nerite', 'kuhli'] },
-  driftwood: { hard: [0.35, 2.2], plant: [0.4, 2.2], animals: ['cardinal', 'rummynose', 'angel', 'honeygourami', 'bolivianram', 'gbr', 'pandacory', 'bristlenose', 'kuhli', 'amano', 'nerite'] },
-  planted: { hard: [0.3, 2], plant: [0.6, 2.4], animals: ['neon', 'cardinal', 'rummynose', 'harlequin', 'ember', 'cherrybarb', 'dwarfgourami', 'betta', 'honeygourami', 'bolivianram', 'pandacory', 'oto', 'amano', 'cherryshrimp', 'nerite'] },
+  driftwood: { hard: [0.35, 2.2], plant: [0.4, 2.2], animals: ['cardinal', 'rummynose', 'angel', 'honeygourami', 'bolivianram', 'gbr', 'pandacory', 'bristlenose', 'kuhli', 'amano', 'nerite', 'exclamation', 'merah', 'dwarfrasbora'] },
+  planted: { hard: [0.3, 2], plant: [0.6, 2.4], animals: ['neon', 'cardinal', 'rummynose', 'harlequin', 'ember', 'cherrybarb', 'dwarfgourami', 'betta', 'honeygourami', 'bolivianram', 'pandacory', 'oto', 'amano', 'cherryshrimp', 'nerite', 'exclamation', 'merah', 'dwarfrasbora'] },
   iwagumi: { hard: [0.55, 1.8], plant: [0.4, 2], stones: [3, 3, 5, 5, 7], animals: ['ember', 'chili', 'harlequin', 'rummynose', 'cpd', 'neon', 'oto', 'amano', 'cherryshrimp', 'nerite'] },
   swamp: { hard: [0.3, 2.5], plant: [0.5, 2], animals: ['dartfrog', 'treefrog', 'firetoad', 'firenewt', 'guppy', 'ember', 'ramshorn'] },
   reef: { hard: [0.4, 2], plant: [0.4, 2.2], animals: ['ocellaris', 'royalgramma', 'firefish', 'banggai', 'chromis', 'sixline', 'watchman', 'coralbeauty', 'yellowtang', 'cleanershrimp', 'turbo', 'hermit'] },
   // lane SS (2026-10-15). Dutch: no hardscape up to Medium, a stone or a small piece of wood or two past it
-  nature: { hard: [0.4, 2], plant: [0.4, 2.2], animals: ['cardinal', 'rummynose', 'harlequin', 'ember', 'cpd', 'betta', 'honeygourami', 'pandacory', 'oto', 'amano', 'cherryshrimp', 'nerite'] },
+  nature: { hard: [0.4, 2], plant: [0.4, 2.2], animals: ['cardinal', 'rummynose', 'harlequin', 'ember', 'cpd', 'betta', 'honeygourami', 'pandacory', 'oto', 'amano', 'cherryshrimp', 'nerite', 'exclamation', 'merah', 'dwarfrasbora'] },
   dutch: { hard: [0.2, 1.6], plant: [0.5, 2.2], animals: ['neon', 'cardinal', 'rummynose', 'harlequin', 'platy', 'dwarfgourami', 'bolivianram', 'sae', 'oto', 'amano', 'cherryshrimp', 'nerite'] },
-  jungle: { hard: [0.4, 2], plant: [0.6, 2.4], animals: ['angel', 'cardinal', 'rummynose', 'hatchet', 'gbr', 'bolivianram', 'pandacory', 'bronzecory', 'bristlenose', 'kuhli', 'honeygourami', 'nerite'] },
-  forest: { hard: [0.4, 2], plant: [0.4, 2], animals: ['ember', 'chili', 'cpd', 'harlequin', 'neon', 'pandacory', 'oto', 'amano', 'cherryshrimp', 'nerite'] },
+  jungle: { hard: [0.4, 2], plant: [0.6, 2.4], animals: ['angel', 'cardinal', 'rummynose', 'hatchet', 'gbr', 'bolivianram', 'pandacory', 'bronzecory', 'bristlenose', 'kuhli', 'honeygourami', 'nerite', 'exclamation', 'merah', 'dwarfrasbora'] },
+  forest: { hard: [0.4, 2], plant: [0.4, 2], animals: ['ember', 'chili', 'cpd', 'harlequin', 'neon', 'pandacory', 'oto', 'amano', 'cherryshrimp', 'nerite', 'exclamation', 'merah', 'dwarfrasbora'] },
   // lane SS2 (2026-10-16)
   rainforest: { hard: [0.4, 2], plant: [0.4, 2.2], animals: ['crestedgecko', 'crestedharlequin'] },
   arid: { hard: [0.4, 2], plant: [0.3, 2], animals: ['leopardgecko'] },
@@ -635,9 +635,9 @@ export const STYLES: Record<Exclude<LayoutId, 'none'>, StyleSpec> = {
   burrow: { hard: [0.5, 2], plant: [0.3, 2], animals: ['chacogoldenknee'] },
   frogs: { hard: [0.4, 2], plant: [0.4, 2.2], animals: ['treefrog', 'dartfrog'] },
   paludarium: { hard: [0.3, 2.5], plant: [0.5, 2.2], animals: ['dartfrog', 'treefrog', 'firetoad', 'firenewt', 'chili', 'ember', 'guppy', 'ramshorn'] },
-  blackwater: { hard: [0.5, 2.2], plant: [0.3, 1.8], animals: ['cardinal', 'rummynose', 'harlequin', 'ember', 'angel', 'bolivianram', 'pandacory', 'bristlenose', 'kuhli', 'hatchet'] },
+  blackwater: { hard: [0.5, 2.2], plant: [0.3, 1.8], animals: ['cardinal', 'rummynose', 'harlequin', 'ember', 'angel', 'bolivianram', 'pandacory', 'bristlenose', 'kuhli', 'hatchet', 'exclamation', 'merah', 'dwarfrasbora'] },
   malawi: { hard: [0.5, 2], plant: [0.2, 1.4], animals: ['yellowlab', 'peacock', 'demasoni', 'kadango', 'labeo', 'auratus', 'afra', 'syno', 'nerite'] }, // lane AQ: livingstonii left out (eats demasoni / nerite)
-  stream: { hard: [0.4, 2], plant: [0.5, 2.2], animals: ['danio', 'whitecloud', 'tigerbarb', 'cherrybarb', 'chili', 'ember', 'kuhli', 'oto', 'amano', 'nerite'] },
+  stream: { hard: [0.4, 2], plant: [0.5, 2.2], animals: ['danio', 'whitecloud', 'tigerbarb', 'cherrybarb', 'chili', 'ember', 'kuhli', 'oto', 'amano', 'nerite', 'exclamation', 'merah', 'dwarfrasbora'] },
   hillstream: { hard: [0.5, 2.2], plant: [0.3, 1.8], animals: ['hillstream', 'danio', 'whitecloud', 'oto', 'nerite', 'cherryshrimp'] },
   softreef: { hard: [0.4, 2], plant: [0.4, 2.2], animals: ['ocellaris', 'royalgramma', 'firefish', 'banggai', 'chromis', 'watchman', 'cleanershrimp', 'turbo', 'hermit'] },
   spsreef: { hard: [0.4, 2], plant: [0.4, 2.2], animals: ['royalgramma', 'firefish', 'chromis', 'sixline', 'coralbeauty', 'yellowtang', 'cleanershrimp', 'turbo', 'hermit'] },

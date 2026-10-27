@@ -1,0 +1,17 @@
+no red line (16): cherryshrimp[fw-invert] amano[fw-invert] cpo[fw-invert] cajundwarf[fw-invert] rswcrayfish[fw-invert] redclaw[fw-invert] thaicrab[fw-invert] asellus[fw-invert] nerite[fw-invert] mystery[fw-invert] ramshorn[fw-invert] trumpet[fw-invert] cleanershrimp[sw-invert] turbo[sw-invert] hermit[sw-invert] firetoad[amphibian]
+cherryshrimp: Meets recommended pct=0
+amano: Meets minimum pct=0
+cpo: Meets minimum pct=0
+cajundwarf: Meets recommended pct=0
+rswcrayfish: Meets minimum pct=0
+redclaw: Meets minimum pct=0
+thaicrab: Meets recommended pct=0
+asellus: Meets recommended pct=0
+nerite: Meets recommended pct=0
+mystery: Meets recommended pct=0
+ramshorn: Meets recommended pct=0
+trumpet: Meets recommended pct=0
+cleanershrimp: Meets minimum pct=0
+turbo: Meets recommended pct=0
+hermit: Meets minimum pct=0
+firetoad: Meets minimum pct=100.06561679790028

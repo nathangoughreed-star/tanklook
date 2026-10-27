@@ -14,6 +14,7 @@ import { DEAL_NOTE, NOT_SPONSORED, dealGuesses, savingLine, type Deal } from '..
 import { renderDealMatch } from './dealMatch';
 import { GEAR_SLOT_NAME, gearOffers, gearParts, pinGear, pinnedGear, unpinGear } from '../demand/gearDeals';
 import { GEAR_DEALS, gearPctOff } from '../data/gearDeals';
+import { lidAdvice, type LidAdvice } from '../demand/lid';
 
 const KEY = 'tanklook.demand';
 const DOMAIN_LABEL: [keyof UserProfile['skill'], string][] = [['fundamentals', 'Keeping a tank at all'], ['fish', 'Freshwater fish'], ['planted', 'Planted tanks'], ['salt', 'Saltwater'], ['terrarium', 'Terrariums']];
@@ -34,14 +35,14 @@ function load(): UserProfile {
 }
 
 export function attachDemandPanel(store: Store, mount: HTMLElement) {
-  let P = load(), D: Demand | null = null, B: Demand | null = null, open: Bar | null = null, timer = 0;
+  let P = load(), D: Demand | null = null, B: Demand | null = null, lid: (LidAdvice & { usd: number }) | null = null, open: Bar | null = null, timer = 0;
   /** What the last edit moved each bar by, shown as a chip for a few seconds so a change is seen as it happens. */
   let prev: Record<Bar, number> | null = null, chips: Partial<Record<Bar, { d: number; until: number }>> = {}, chipTimer = 0;
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(P)); } catch { /* ignore */ } };
   const OPEN_KEY = 'tanklook.demandOpen';
   let shown = (() => { try { const v = localStorage.getItem(OPEN_KEY); if (v !== null) return v === '1'; } catch { /* ignore */ } return window.innerWidth > 900; })();
   mount.innerHTML = `<div class="dm"><button type="button" class="dmtog" aria-expanded="true" title="Show or hide what this tank costs and asks of you; it updates as you edit"><span class="dmhead">What this tank asks of you</span><span class="dmsum"></span><span class="dmcaret" aria-hidden="true">▾</span></button>
-    <div class="dmbody"><div class="dmmode"></div><div class="dmbars"></div><div class="dmdeals" style="font-size:11px;opacity:.85"></div><div class="dmdrill" hidden></div>
+    <div class="dmbody"><div class="dmmode"></div><div class="dmbars"></div><div class="dmlid" hidden></div><div class="dmdeals" style="font-size:11px;opacity:.85"></div><div class="dmdrill" hidden></div>
     <details class="dmset"><summary>Set limits</summary><div class="dmlimits"></div></details>
     <details class="dmset"><summary>Your situation</summary><div class="dmsit"></div></details></div></div>`;
   const q = <T extends HTMLElement>(s: string) => mount.querySelector(s) as T;
@@ -60,6 +61,9 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
     D = demandOf(S, P, { kit, parts });
     // the same tank without its animals: what keeping just the plants (or the bare tank) costs, so adding animals reads as a jump from it
     B = S.fish.length ? demandOf({ ...S, fish: [] }, P, { kit, parts }) : null;
+    // animals that get out of an open top: suggest the lid, with what adding it costs (not counted until it is added)
+    const adv = lidAdvice(S);
+    lid = adv ? { ...adv, usd: demandOf({ ...S, lid: adv.lid }, P, { kit, parts }).totals.setupUsd - D.totals.setupUsd } : null;
     const now = { setup: D.totals.setupUsd, upkeep: D.totals.upkeepUsdMo, minutes: D.totals.minPerWeek, risk: D.totals.risk };
     if (prev) {
       const T: Record<Bar, number> = { setup: 1, upkeep: 0.5, minutes: 0.5, risk: 0.05 }, until = Date.now() + 6000;
@@ -101,9 +105,21 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
     q('.dmmode').textContent = nA ? `With ${nA} animal${nA > 1 ? 's' : ''}${B ? `; without them: ${usd(B.totals.setupUsd)} to set up, ${usd(B.totals.upkeepUsdMo)} a month` : ''}`
       : nP ? 'Plants only: what it costs to keep this planted tank running. Add animals and watch it climb.' : 'Empty tank: the gear and upkeep before anything lives in it.';
     q('.dmsum').textContent = `${usd(D.totals.setupUsd)} · ${usd(D.totals.upkeepUsdMo)}/mo · ${Math.round(D.totals.minPerWeek)} min/wk · difficulty ${D.totals.risk.toFixed(1)}`;
+    renderLid();
     renderDeals();
     drill.hidden = !open;
     if (open) fillDrill(open);
+  }
+
+  function renderLid() {
+    const el = q('.dmlid');
+    el.hidden = !lid;
+    if (!lid) return;
+    const name = lid.lid === 'mesh' ? 'mesh top' : 'glass top';
+    el.innerHTML = `${esc(lid.text)} <a href="#" class="dmaddlid">Add a ${name}</a>${lid.usd >= 1 ? ` (about ${usd(lid.usd)})` : ''}`;
+    el.querySelector<HTMLAnchorElement>('.dmaddlid')!.addEventListener('click', e => {
+      e.preventDefault(); const want = lid?.lid; if (want) store.update(s => { s.tanks[s.active].lid = want; });
+    });
   }
 
   /** Retailer tank+stand bundles that fit this build, with what each saves against buying the parts (data: src/data/deals.json). */

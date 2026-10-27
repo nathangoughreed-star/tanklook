@@ -1,0 +1,21 @@
+{
+ "total": 96,
+ "water": 85,
+ "land": 11,
+ "noCare": 0,
+ "temp": 85,
+ "noTemp": 0,
+ "ph": 85,
+ "noPh": 0,
+ "gh": 41,
+ "noGh": 44,
+ "noGroup": 0,
+ "noTankMinLine": 16,
+ "noTemper": 0,
+ "withPrey": 13,
+ "withTerritory": 22,
+ "noMass": 0,
+ "massEstimate": 22,
+ "ownSpaceFactor": 54,
+ "withNeeds": 0
+}

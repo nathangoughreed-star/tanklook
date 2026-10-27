@@ -371,3 +371,36 @@ Labels that change on today's rules: round 1: 7 mixes ok -> concern; round 2: 4;
 "Keep together" against today's gates: ngr 2 -> 3 of 4 agree, chatgpt-high 5 -> 7 of 12, chatgpt (3a) 2 -> 1 of 3, ngr-ai 3 -> 0 of 7
 (it answered "yes" to the narrow-range mixes). So the AI experts split on whether a 1-2 °C shared range is a concern: evidence for the
 temperature gate's narrow band (NARROW_C = 2 in temprange.ts), Nathan's call, not changed here.
+
+## 16. One fit over rounds 1-3 and v4 (S216b, 2026-10-26)
+
+Decisions (Nathan 2026-10-26, via Coordinator 10): rounds 1-3 answers stay in at full weight (1.0, like v4's) in one fit with v4; the
+AI-model experts (ngr-ai, chatgpt, chatgpt-high, v4 chatgpt high 2) count as ONE source (`--one-ai`: one bias term); round-1-ngr (Nathan, 5 tanks,
+pictures) is the second, human source. Global water / floor scales belong to this lane; applying one needs human answers, a held-out gain and Nathan's yes.
+No new round from makeRound without asking.
+
+Run (current engine, tables locks for both): `node scripts/calib-fit.mjs research/calib/round-1.json round-2.json round-3a.json round-3.json research/calib/v4/scenarios-v4.json research/calib/answers/{round-1-ngr,round-2-ngr-ai,round-3-chatgpt,round-3-chatgpt-high,v4-chatgpt_high_2}.json --one-ai --out research/calib/fit-all-one-ai`
+
+| fit | water | floor | held-out rms before -> after | fitted rms before -> after |
+|---|---|---|---|---|
+| rounds 1-3 only (fit-round-1-2-3a-3) | x0.876 | x1.014 | 0.219 -> 0.311 | 0.28 -> 0.21 |
+| v4 only (fit-v4-only; no held-out anchors) | x0.932 | x1.170 | n/a | 0.289 -> 0.205 |
+| all, one AI source (fit-all-one-ai) | x0.948 | x1.057 | 0.263 -> 0.357 | 0.334 -> 0.293 |
+| all, one bias per file (fit-all-per-file) | x0.879 | x1.036 | 0.234 -> 0.400 | |
+
+Reading: the held-out error RISES in every combination (10 anchors), no tank has two experts (disagreement n/a), and there is one human source of 5 tanks.
+By the lane rule this is not decision material: **no global scale is proposed or applied**. The v4 data pull water toward x0.93-0.95 and floor up
+(+4 to +17 %); rounds 1-3 pull water down (x0.88). The sources agree on goldfish (+25 %, capped) and on tiny / invert classes reading fuller than the engine.
+Bias with one AI source: ai -3 %, ngr +3 %. Revisit when a human expert's answers on v4 arrive; ask Nathan before weighting them against the AI source.
+Implausible-count tanks (e.g. 87 harlequins, panda cory in 19 of 90 round-1-3 tanks) stay in at full weight as decided; they are the likely reason rounds 1-3 pull tiny species harder.
+
+Implausible-count flags (S216b, 2026-10-26): `implausibleOf` in scripts/calib-review.mjs (30+ of one species, 40+ shrimp / snails, 15+ corydoras, or 50+ animals) marks tanks with ⚠ in the review tables and adds an "Implausible-count tanks" section (rounds 1, 2, 3a, 3 reviews regenerated; the fit is unchanged, they stay at full weight). Flagged tanks: 12 of 24 (round 1), 16 of 22 (round 2), 12 of 22 (3a), 12 of 22 (3). Median fix on flagged tanks vs the others: round 1 +6 % / -22 %, round 2 +15 % / -25 %, round 3 +11 % / -11 %, round 3a 0 % / -17 %: on the plausible tanks the engine reads fuller than the experts, on the implausible ones it reads emptier or level, so the old rounds' implausible counts push the fit toward a less-negative water scale than the plausible tanks alone would.
+
+
+### Dry run of the combined one-AI fit (S216b, 2026-10-26, nothing applied)
+
+Patch (not committed): every species' space x its fitted total move (class x global where it has no row), floor x f, from fit-all-one-ai.json; scripts/moved-numbers.mjs on main vs patched, listed in research/calib/moved-numbers-fit-one-ai.txt. Changed rows: tankFor 506 of 576, steps 140 of 576, builds 506 of 576, starters 1569 of 1620, examples 7 of 11, sumps 0. tankFor picks: 464 same, 31 bigger tank, 81 smaller. Examples: oto x12 15 gal -> 10 gal; guppy x12 20 long -> 15 gal; goldfish x3 37 -> 50 breeder; angel x6 40 breeder -> 50 breeder; neon x12 stays 10 gal 96 -> 99 %; ember x12 70 -> 65 %. The plausible-only variant (--no-implausible, fit-all-one-ai-plausible) drops 43 tanks and every held-out anchor and pins floor at the x1.25 cap: not usable.
+
+### Decision: defer the global fit (Nathan 2026-10-26, via Coordinator 11)
+
+Not applied: no global water / floor scale and no class or species terms from the one-AI fit (section 16 and its dry run). Reason: circular validation. Tuning the engine to the AI answers and then measuring agreement with those answers measures the fit, not biology. Kept: the AI rounds stay as regression and inconsistency checks and as preliminary targets (species-level changes Nathan accepts one by one, as with oto, CPD males and the gallon-mark slack, remain fine); AI calibration rounds continue. Eventual fitting only against an independent reference set: experienced aquarists' judgments, with a held-out part never used in the fit. Note for that set: documented long-running tanks show survival, not necessarily ideal stocking. The held-out anchors of rounds 1-3 (5 extreme stockings) are not that set.

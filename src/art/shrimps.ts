@@ -18,6 +18,8 @@ export interface Shrimp3D {
   skin: (x: CanvasRenderingContext2D, W: number, H: number) => void;
   marks?: (x: CanvasRenderingContext2D, W: number, H: number) => void; // drawn on the glass body as a solid overlay
   fan: (x: CanvasRenderingContext2D, W: number, H: number) => void;
+  /** crayfish: the first walking legs are big chelae; size x the default (a redclaw's is ~1.35), patch = the colour of an outer patch on the palm */
+  claw?: { size: number; patch?: string };
 }
 
 /** A vertical gradient over the whole skin (dorsal midline at the top, keel at the bottom). */
@@ -90,5 +92,30 @@ export const SHRIMP3D: Record<string, Shrimp3D> = {
       x.fillStyle = '#f6f4ee';
       for (const [u, v] of [[0.62, 0.5], [0.78, 0.35], [0.78, 0.65], [0.45, 0.5]]) { x.beginPath(); x.ellipse(u * W, v * H, 0.06 * W, 0.14 * H, 0, 0, Math.PI * 2); x.fill(); }
     },
+  },
+  // crayfish (S238): the shrimp body plan with a short rostrum, a straight deeper abdomen and big chelae on the first legs
+  // Orange dwarf crayfish (Cambarellus patzcuarensis, CPO): bright orange all over, a little paler below, light mottling
+  cpo: {
+    rost: 0.04, up: 0, hump: 0.08, deep: 1.4, legL: 0.95, stand: 0.03, ant: 0.85, leg: '#d8681e', antC: '#c85a1a', eye: '#140c0a', claw: { size: 1.15 },
+    skin: (x, W, H) => { bands(x, W, H, [[0, '#c4561a'], [0.4, '#e2782a'], [0.8, '#f0a050'], [1, '#f4b878']]); mottle(x, W, H, 51, 220, 5, ['#b04a14', '#f6b060', '#e8802c'], 0.22); },
+    fan: (x, W, H) => blade(x, W, H, '#e2782a', 0.95, 0.6),
+  },
+  // Cajun dwarf crayfish (Cambarellus shufeldtii): tan to grey-blue-brown, darker marbling, a dark back band
+  cajundwarf: {
+    rost: 0.04, up: 0, hump: 0.08, deep: 1.35, legL: 0.95, stand: 0.03, ant: 0.85, leg: '#8a7a5e', antC: '#7a6c52', eye: '#140c0a', claw: { size: 1.05 },
+    skin: (x, W, H) => { bands(x, W, H, [[0, '#4e4434'], [0.15, '#7a6a50'], [0.6, '#968664'], [1, '#b4a686']]); mottle(x, W, H, 52, 260, 5, ['#5a4e3a', '#a8b0a0', '#6e6044'], 0.3); },
+    fan: (x, W, H) => blade(x, W, H, '#8a7a5e', 0.95, 0.6),
+  },
+  // Red swamp crayfish (Procambarus clarkii): dark red-brown above, bright red flanks and claws, paler belly
+  rswcrayfish: {
+    rost: 0.05, up: 0, hump: 0.05, deep: 1.5, legL: 1, stand: 0.035, ant: 0.9, leg: '#b02a1c', antC: '#8a2418', eye: '#140c0a', claw: { size: 1.45 },
+    skin: (x, W, H) => { bands(x, W, H, [[0, '#3c1410'], [0.2, '#6a2018'], [0.55, '#b02a1c'], [0.85, '#d04a30'], [1, '#e08060']]); mottle(x, W, H, 53, 200, 4, ['#d84a30', '#4a1812', '#e86a4a'], 0.25); },
+    fan: (x, W, H) => blade(x, W, H, '#a82a1c', 0.95, 0.6),
+  },
+  // Redclaw (Cherax quadricarinatus): olive-green to blue-green body, a bright red patch on the outer edge of each claw
+  redclaw: {
+    rost: 0.05, up: 0, hump: 0.05, deep: 1.5, legL: 1, stand: 0.04, ant: 0.9, leg: '#3e6e62', antC: '#3a5e54', eye: '#140c0a', claw: { size: 1.65, patch: '#d8321e' },
+    skin: (x, W, H) => { bands(x, W, H, [[0, '#2e463e'], [0.3, '#3e6a5e'], [0.7, '#4e8070'], [1, '#78a090']]); mottle(x, W, H, 54, 200, 5, ['#2a5a68', '#6a9a80', '#3a5a4a'], 0.25); },
+    fan: (x, W, H) => blade(x, W, H, '#3e6e62', 0.95, 0.6),
   },
 };

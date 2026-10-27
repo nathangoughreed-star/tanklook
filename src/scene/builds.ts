@@ -17,8 +17,8 @@ import { kitTech } from '../demand/tech';
 import { bareSetup } from './defaults';
 import { volume } from './physics';
 import { countsAgainstWater, stockingOf } from './stocking';
-import { filterFor, filterUnits, heaterUnits, heatLoss, applyPreset, PRESETS, ROOM_C, rowsFor, sumpName, sumpOf, sumpOffered, techOf, tempFit, withChoice } from './tech';
-import { allLand, needsOf, type AnimalCount } from './tankfit';
+import { filterFor, filterUnits, heaterUnits, heatLoss, applyPreset, PRESETS, ROOM_C, hasLand, rowsFor, sumpName, sumpOf, sumpOffered, techOf, tempFit, withChoice } from './tech';
+import { allLand, isMixed, needsOf, setPool, withDryGear, type AnimalCount } from './tankfit';
 import { dryGearLines, drySetup } from './drygear';
 import type { Fish, TankSetup } from './types';
 
@@ -82,6 +82,7 @@ function baseSetup(tank: TankModel, animals: AnimalCount[]): TankSetup {
   const S = bareSetup(), salt = needsOf(animals).salt;
   S.tank = tankFromModel(tank);
   S.water.on = true; S.water.level = WATER_LEVEL; S.water.salt = salt;
+  if (isMixed(animals)) setPool(S, animals); // a paludarium: the pool is what the land leaves (tankfit)
   let id = 1;
   S.fish = animals.flatMap(a => Array.from({ length: Math.max(0, a.n) }, (): Fish => ({ id: id++, species: a.species, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0, ...(a.tl ? { tl: a.tl } : {}) })));
   const preset = BASE_PRESET[salt ? 'salt' : 'fresh'];
@@ -164,11 +165,12 @@ const gearLines = (S: TankSetup): string[] => {
   if (fs.length) lines.push(`Filter: ${fs.map(u => { if (u.kind === 'sump') return `Sump (${sumpName(sump!)}) + return pump`; const f = filterFor(S, u.kind as never, u.model, u.product); return f.product ? productName(f.product) : filterName(f.model); }).join(' + ')}`);
   const hs = heaterUnits(t);
   if (t.rows.heater && t.rows.heater !== 'none' && hs.length) lines.push(`Heater: about ${Math.round(heatLoss(S, t).heater.watts)} W${hs.length > 1 ? ' x ' + hs.length : ''}`);
-  else lines.push('No heater: these animals are comfortable at room temperature');
+  else lines.push(S.tech?.roomC !== undefined ? 'No heater: these animals are comfortable at room temperature' : `No heater: fine if your room stays near ${Math.round(ROOM_C)} °C (${Math.round(ROOM_C * 9 / 5 + 32)} °F, assumed)`);
   lines.push(`Light: ${S.light.watts ? Math.round(S.light.watts) + ' W ' : ''}LED`);
   if (t.rows.ato === 'ato') lines.push('Quality of life: auto top-off');
   if (t.rows.wcmethod === 'hose') lines.push('Quality of life: water-change hose (drains and fills from the tap)');
   if (t.rows.feeder === 'auto') lines.push('Quality of life: automatic feeder');
+  if (hasLand(S)) lines.push(...dryGearLines(S).map(l => `Land side: ${l}`)); // a paludarium
   return lines;
 };
 
@@ -213,7 +215,8 @@ function finish(id: BuildId, tank: TankModel, animals: AnimalCount[], S0: TankSe
 export function buildsFor(animals: AnimalCount[], tank: TankModel, now = Date.now()): Build[] {
   if (allLand(animals)) return dryBuilds(animals, tank, now);
   const base = baseSetup(tank, animals), list = filterCandidates(base, now);
-  const make = (id: BuildId) => { const c = choose(id, list); return finish(id, tank, animals, c ? c.S : base, now); };
+  const mixed = isMixed(animals); // the land side's gear joins each build (heat, UVB, misting by the build's kind)
+  const make = (id: BuildId) => { const c = choose(id, list), S = c ? c.S : base; return finish(id, tank, animals, mixed ? withDryGear(S, animals, id) : S, now); };
   const out = { cheapest: make('cheapest'), leastWork: make('leastWork'), balanced: make('balanced') };
   // a bundle or sale can make one build cheaper than the build meant to be cheaper: the cheaper of the two is the cheapest
   if (out.cheapest.setupUsd > out.balanced.setupUsd) out.cheapest = { ...out.balanced, id: 'cheapest', label: BUILD_LABEL.cheapest, blurb: BUILD_BLURB.cheapest };
@@ -240,7 +243,7 @@ function dryBuilds(animals: AnimalCount[], tank: TankModel, now: number): Build[
 
 /** What makes a build a different CHOICE: the tank, every gear choice (filter, heater, quality-of-life rows, pinned products), the light and
  *  the bundle. Not the price: two builds at the same price with different gear are different choices; the same gear is one choice. */
-export const configKey = (b: Build) => JSON.stringify([b.tank.id, b.setup.tech, b.setup.dryGear, b.setup.light, b.bundle ? [b.bundle.retailer, b.bundle.name] : null]);
+export const configKey = (b: Build) => JSON.stringify([b.tank.id, b.setup.tech, b.setup.light, b.bundle ? [b.bundle.retailer, b.bundle.name] : null]);
 
 /** The builds that are genuinely different (rules-spec section 4, "builds converge"): builds with the same configuration merge into the
  *  first of them, which takes the others' names ("Cheapest and balanced") and lists them in `also`. Order kept. */

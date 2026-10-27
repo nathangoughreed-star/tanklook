@@ -83,6 +83,13 @@ describe('territory caps', () => {
     expect(crowdWarnings(breeder)).toEqual([]);
     expect(overWarn({ id: 'cockatoo', n: 2 }, L(15))).toMatch(/takes one male/); // unsexed pair: both may be males
   });
+  it('celestial pearl danio males: one in a 5.5 gal, one more per 2 gal (S216b 2026-10-26, Seriously Fish 18 x 12 in, Aquarium Co-Op 10 gal)', () => {
+    expect([5.5, 7.5, 10, 20].map(g => mostMalesFor(CARE.cpd, L(g)))).toEqual([1, 2, 3, 8]);
+    const nano = comboTank({ name: '', tank: [16, 8, 10], stock: [['cpd', 9]] }); // a 5.5 gal, all drawn as males
+    expect(crowdWarnings(nano).join()).toMatch(/Celestial pearl danio males fight: a tank this size takes one male.*you have 9/);
+    nano.fish.forEach((x, i) => { if (i) x.sex = 'f'; });
+    expect(crowdWarnings(nano)).toEqual([]); // 1 male and 8 females
+  });
   it('never fall below the group the bands ask for, and only room rules are left out (Coordinator 8, 2026-10-22)', () => {
     expect(overWarn({ id: 'bolivianram', n: 2 }, L(29))).toBeUndefined();      // a pair, bands ok 2
     expect(overWarn({ id: 'tigerbarb', n: 8 }, L(20))).toBeUndefined();        // bands ok 8; "+3 gal per barb" is a room rule

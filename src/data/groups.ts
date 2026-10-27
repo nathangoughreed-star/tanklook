@@ -55,7 +55,7 @@ export interface GroupCare {
    *  so a tag that nearly every species carries (personality, easy, colour) discriminates nothing: give it only where it is distinctive. */
   appeal?: string[];
 }
-export type GroupBand = 'avoid' | 'ok' | 'good' | 'great';
+export type GroupBand = 'avoid' | 'ok' | 'good' | 'great' | 'unknown';
 /** Species whose advice for two animals assumes a FORMED pair (a bonded or breeding pair in their lines below; the Bolivian ram per the
  *  rules-spec benchmark "two unpaired cichlids / rams"). Two of them are judged as a pair only when the owner says it is established.
  *  test/path1Rules.test.ts keeps it in step: every species whose lines say "bonded" or "male/female pair" must be here. */
@@ -89,14 +89,15 @@ export const fightsOverCount = (g: (GroupCare & { solo?: boolean }) | undefined)
 /** The males warning's text: `males` males (or animals, when they are not sexed) past the most this tank takes. */
 export const malesWarning = (name: string, males: number, most: number, sexed: boolean, each = 15) =>
   `${name} males fight: a tank this size takes ${most === 1 ? 'one male' : `at most ${most} males`} (one more per ${each} gal)${sexed ? `, you have ${males}` : `; if more than ${most} of these ${males} are males, expect fighting`}. Females do not count.`;
-/** Which band a count of animals falls in (no bands = always 'ok'). */
+/** Which band a count of animals falls in (no bands = 'unknown': not enough information, S245; it used to read 'ok'). */
 export function bandOf(g: GroupCare | undefined, n: number): GroupBand {
   const b = g?.bands;
-  return !b ? 'ok' : n < b.ok ? 'avoid' : n >= b.great ? 'great' : n >= b.good ? 'good' : 'ok';
+  return !b ? 'unknown' : n < b.ok ? 'avoid' : n >= b.great ? 'great' : n >= b.good ? 'good' : 'ok';
 }
 /** The band's message: the species' own line, else one generated from the numbers. */
 export function bandMessage(g: GroupCare | undefined, n: number): string {
   const band = bandOf(g, n), b = g?.bands;
+  if (band === 'unknown') return 'Not enough information: no group-size data for this species';
   const own = g?.msg?.[band];
   if (own || !b) return own ?? '';
   if (band === 'avoid') return b.ok <= 1 ? 'Too few' : `Too few: wants at least ${b.ok}`;
@@ -110,12 +111,16 @@ export const GROUPS: Record<string, GroupCare> = {
   cardinal: { bands: { ok: 8, good: 10, great: 15 }, msg: { avoid: 'Cardinals need a shoal; under 8 they get shy and stressed' }, flow: 'low', zone: 'middle', minLengthMm: 600, appeal: ['shoal', 'colour', 'showpiece', 'peaceful'] },
   ember: { bands: { ok: 8, good: 12, great: 20 }, msg: { avoid: 'Embers get shy in small groups; 8+ keeps them out and about' }, flow: 'low', zone: 'middle', minLengthMm: 450, appeal: ['shoal', 'colour', 'easy'] },
   dwarfpencil: { bands: { ok: 8, good: 10, great: 15 }, msg: { avoid: 'Timid; small groups hide and squabble', great: 'A big group spreads the squabbles and brings them out' }, flow: 'low', zone: 'middle', minLengthMm: 450, appeal: ['shoal', 'colour', 'peaceful'] },
+  greenneon: { bands: { ok: 8, good: 10, great: 15 }, msg: { avoid: 'Shy and stressed in small groups; Seriously Fish advises 8-10 or more' }, flow: 'low', zone: 'middle', minLengthMm: 450, appeal: ['shoal', 'colour', 'peaceful'] },
+  merah: { bands: { ok: 8, good: 10, great: 15 }, msg: { avoid: 'Timid; Seriously Fish says at least 8-10 or they hide and lose colour', great: '15+ gives the best colour and natural shoaling' }, flow: 'low', zone: 'middle', minLengthMm: 450, appeal: ['shoal', 'colour', 'size'] },
+  exclamation: { bands: { ok: 8, good: 10, great: 15 }, msg: { avoid: 'Timid; Seriously Fish says at least 8-10 or they hide', great: '15+ gives the best colour and natural shoaling' }, flow: 'low', zone: 'middle', minLengthMm: 450, appeal: ['shoal', 'colour', 'size'] },
+  dwarfrasbora: { bands: { ok: 8, good: 10, great: 15 }, msg: { avoid: 'Timid; Seriously Fish says at least 8-10 or they hide', great: '15+ gives the best colour and natural shoaling' }, flow: 'low', zone: 'middle', minLengthMm: 450, appeal: ['shoal', 'colour', 'size'] },
   rummynose: { bands: { ok: 10, good: 10, great: 15 }, msg: { ok: 'Seriously Fish advises 10 or more; tight shoalers', good: 'Shoal tightens and holds colour at 10+' }, flow: 'medium', zone: 'middle', minLengthMm: 750, appeal: ['shoal', 'showpiece', 'active'] },
   harlequin: { bands: { ok: 8, good: 10, great: 15 }, flow: 'low', zone: 'middle', minLengthMm: 600, appeal: ['shoal', 'colour', 'peaceful'] },
   chili: { bands: { ok: 8, good: 12, great: 20 }, msg: { avoid: 'Tiny and shy; need a big group to show colour', great: '20+ gives the best colour and natural shoaling' }, flow: 'low', zone: 'middle', minLengthMm: 400, appeal: ['shoal', 'colour', 'size'] },
   danio: { bands: { ok: 8, good: 8, great: 12 }, msg: { avoid: 'Small groups of danios nip fins and fight each other' }, flow: 'medium', zone: 'middle', minLengthMm: 600, appeal: ['shoal', 'active', 'easy'] },
   whitecloud: { bands: { ok: 6, good: 8, great: 12 }, flow: 'low', zone: 'all', minLengthMm: 600, appeal: ['easy', 'shoal', 'personality'] },
-  cpd: { bands: { ok: 6, good: 8, great: 10 }, msg: { avoid: 'Shy; small groups hide constantly and stress', good: '8-10 gives bolder, more natural behaviour' }, sexed: { ratio: [1, 2], note: 'Males spar; more females than males cuts stress' }, flow: 'low', zone: 'all', minLengthMm: 450, appeal: ['shoal', 'colour', 'peaceful'] },
+  cpd: { bands: { ok: 6, good: 8, great: 10 }, msg: { avoid: 'Shy; small groups hide constantly and stress', good: '8-10 gives bolder, more natural behaviour' }, sexed: { ratio: [1, 2], note: 'Males spar; more females than males cuts stress' }, males: { at: 5.5, each: 2 }, /* S216b 2026-10-26, ChatGPT answer citing Seriously Fish (18 x 12 in because of male aggression) and Aquarium Co-Op (10 gal+): one male in a 5.5 gal, one more per 2 gal (3 in a 10 gal) */ flow: 'low', zone: 'all', minLengthMm: 450, appeal: ['shoal', 'colour', 'peaceful'] },
   hatchet: { bands: { ok: 6, good: 8, great: 10 }, msg: { avoid: 'A pair or trio behaves very differently from a real group' }, flow: 'low', zone: 'top', minLengthMm: 600, appeal: ['oddball', 'shoal'] },
   cherrybarb: { bands: { ok: 6, good: 8, great: 10 }, msg: { avoid: 'Below six they lose shoaling behaviour and turn skittish' }, sexed: { ratio: [1, 2], note: 'At least two females per male so rival-male chasing is spread out' }, flow: 'low', zone: 'middle', minLengthMm: 600, appeal: ['colour', 'peaceful', 'easy'] },
   tigerbarb: { bands: { ok: 8, good: 8, great: 10 }, msg: { avoid: 'Small groups redirect fin-nipping onto tankmates', ok: '5-7 is the riskiest range for nipping; 8+ keeps the pecking order internal' }, flow: 'medium', zone: 'middle', minLengthMm: 750, appeal: ['shoal', 'active', 'colour'] },
@@ -161,6 +166,12 @@ export const GROUPS: Record<string, GroupCare> = {
   peapuffer: { bands: { ok: 1, good: 3, great: 5 }, msg: { ok: 'Solo is fine in a small tank', good: 'Keep one male to several females; males fight', great: 'Needs dense planting and 15+ gal' }, max: 8, territory: { at: [[5, 1]], each: 3 }, sexed: { ratio: [1, 3], note: 'One male to 2-3 females or single-sex; multiple males fight' }, flow: 'low', zone: 'all', minLengthMm: 300, appeal: ['personality', 'hands-on', 'oddball', 'size'] },
   cherryshrimp: { bands: { ok: 10, good: 15, great: 25 }, sexed: { ratio: [1, 2], note: 'More females than males helps a breeding colony' }, flow: 'low', zone: 'all', minLengthMm: 400, appeal: ['shoal', 'colour', 'cleanup'] },
   amano: { bands: { ok: 6, good: 8, great: 10 }, msg: { great: 'Colony behaviour at 10+; cannot breed in freshwater' }, flow: 'medium', zone: 'all', minLengthMm: 450, appeal: ['cleanup', 'easy', 'personality'] },
+  cpo: { bands: { ok: 1, good: 3, great: 6 }, msg: { ok: 'One is fine; for several give each its own hide' }, sexed: { ratio: [1, 2], note: 'Males are territorial; one male to two females spreads the fighting' }, flow: 'low', zone: 'bottom', minLengthMm: 300, appeal: ['personality', 'colour', 'oddball', 'easy'] },
+  cajundwarf: { bands: { ok: 1, good: 3, great: 6 }, msg: { ok: 'One is fine; for several give each its own hide' }, sexed: { ratio: [1, 2], note: 'Males are territorial; one male to two females spreads the fighting' }, flow: 'low', zone: 'bottom', minLengthMm: 300, appeal: ['personality', 'oddball', 'easy'] },
+  rswcrayfish: { bands: { ok: 1, good: 1, great: 1 }, max: 1, msg: { ok: 'One per tank: they fight their own kind' }, flow: 'medium', zone: 'bottom', minLengthMm: 600, appeal: ['personality', 'size', 'hands-on'] },
+  redclaw: { bands: { ok: 1, good: 1, great: 1 }, max: 1, msg: { ok: 'One per tank in anything under a very large floor: they fight their own kind' }, flow: 'medium', zone: 'bottom', minLengthMm: 900, appeal: ['personality', 'size', 'showpiece'] },
+  thaicrab: { bands: { ok: 5, good: 8, great: 12 }, msg: { avoid: 'Shy and defenceless alone; Aquariadise keeps them in groups of at least five' }, flow: 'low', zone: 'bottom', minLengthMm: 300, appeal: ['oddball', 'personality', 'peaceful'] },
+  asellus: { bands: { ok: 10, good: 20, great: 40 }, msg: { ok: 'A colony breeds in leaf litter; start with a handful, they fill the tank on their own' }, flow: 'low', zone: 'bottom', appeal: ['cleanup', 'oddball', 'easy'] },
   nerite: { bands: { ok: 1, good: 1, great: 1 }, flow: 'medium', zone: 'all', minLengthMm: 300, appeal: ['cleanup', 'easy', 'peaceful'] },
   mystery: { bands: { ok: 1, good: 1, great: 1 }, msg: { ok: 'Fine alone; 2-4 per 10 gal, more breed fast and foul water' }, flow: 'low', zone: 'bottom', appeal: ['cleanup', 'easy', 'oddball', 'colour'] },
   ramshorn: { bands: { ok: 1, good: 3, great: 6 }, msg: { great: 'Breeds fast; numbers track feeding, watch for a population boom' }, flow: 'low', zone: 'all', minLengthMm: 400, appeal: ['easy', 'cleanup', 'oddball'] },

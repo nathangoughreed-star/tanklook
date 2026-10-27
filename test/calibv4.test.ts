@@ -101,7 +101,7 @@ describe('survey v4 in the fit', () => {
     expect(f.answers).toEqual([{ id: 'A04', focal: { ideal: 8, limit: 12, status: {} }, overall: 2, floor: null, water: null, confidence: 2, limits: null, bigEnough: {}, together: null,
       mate: { id: 'bronzecory', ideal: null, limit: null, status: { ideal: 'no-valid-count', limit: 'no-valid-count' } },
       review: { skip: ['overall'], why: 'v4 change "drop": a compatibility answer, not a room band' } }]);
-    expect(f.v4).toEqual({ outside: 1, skipped: 1, carried: 0 });
+    expect(f.v4).toEqual({ outside: 1, skipped: 1, carried: 0, condOut: 0, readings: 0, notes: 0 });
   });
   it('fits the second counted species\' ideal and limit on the dimension it fills today', () => {
     const a = R.scenarios.find((s: any) => s.id === 'A04');
@@ -146,6 +146,16 @@ describe('survey v4 review', () => {
     expect(flags.filter((f: any) => f.kind !== 'count').every((f: any) => f.dir === 'milder')).toBe(true);
     // a pair the app blocks, answered one step milder
     expect(flags.find((f: any) => f.kind === 'compat' && f.key === 'A07')?.detail).toBe('app no, experts caution');
+  });
+  it('reads a tank the app calls too small against "bigger tank", not the 4 steps', () => {
+    const a = JSON.parse(JSON.stringify(agree));
+    expect(T.tanks.B01.app.verdict).toBe('too-small');
+    expect(a.answers.B01.change).toBe('bigger'); // the agreeing expert asks for a bigger tank: no flag (the first test)
+    a.answers.B01 = { verdict: 'ideal', change: 'nothing', bigEnough: 'yes', smallest: a.answers.B01.smallest, confidence: 'high' };
+    const { flags } = reviewV4(J, T, [a]);
+    expect(flags.filter((f: any) => f.key === 'B01' || f.key.startsWith('B01 ')).map((f: any) => `${f.kind} ${f.dir}`).sort())
+      .toEqual(['bigEnough yes', 'change nothing', 'tooSmall experts accept the tank']);
+    expect(flags.some((f: any) => f.kind === 'verdict')).toBe(false); // too-small tanks are not in the 4-step agreement
   });
   it('flags a minimum and a maximum the experts read differently', () => {
     const a = JSON.parse(JSON.stringify(agree));

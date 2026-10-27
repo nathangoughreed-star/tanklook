@@ -4,6 +4,8 @@
 // (render/gear3d.ts, via techParts) all read the tank's tech through techOf. A file without `tech` gets the gear the
 // demand engine always inferred (inferTech), so its numbers do not move. grow.feed is derived from the CO2 + ferts rows
 // (feedOf); the Plant care slider sets those rows (setFeed).
+import { fitsInStand } from './standspace';
+import { dryInferred } from './drygear';
 import data from '../data/tech.json';
 import { CARE } from '../data/care';
 import { climateOf } from '../data/climate';
@@ -23,11 +25,12 @@ import type { TempEvidence } from './temprange';
 /** Where a row's gear sits (lane TG draws it there): the tank wall it hangs on or stands against, and how far along that
  *  wall, 0 = left end (back wall, seen from the front) or front end (side walls) .. 1 = the other end. */
 export interface GearPlace {
-  /** 'floor' (lane TG 2026-10-19): gear that stands on the ground (sponge filter, airstone) */
-  wall: 'back' | 'left' | 'right' | 'floor';
-  /** floor: the x share, 0 = left .. 1 = right */
+  /** 'floor' (lane TG 2026-10-19): gear that stands on the ground (sponge filter, airstone); 'lid' (2026-10-21): a dry
+   *  tank's lamps and misting nozzle, anywhere on the top (mesh, glass or hood; with no lid, on the rim) */
+  wall: 'back' | 'left' | 'right' | 'floor' | 'lid';
+  /** floor and lid: the x share, 0 = left .. 1 = right */
   at?: number;
-  /** glass mounts: height share from the ground (0) to the water line (1); floor: depth share, 0 = front .. 1 = back */
+  /** glass mounts: height share from the ground (0) to the water line (1); floor and lid: depth share, 0 = front .. 1 = back */
   y?: number;
   /** heaters: degrees off vertical, -90..90 (90 = lying flat; the owner's Shift + wheel) */
   lean?: number;
@@ -79,7 +82,8 @@ export interface HeaterUnit { product?: string; w?: number; kit?: boolean }
  *  generic gear-models.json `model` (absent = sized for the tank). `kit` as for heaters. */
 export interface FilterUnit { kind: string; product?: string; model?: string; kit?: boolean }
 
-export type Water = 'wet' | 'fresh' | 'salt';
+/** 'dry' (2026-10-21): a dry tank's rows (heat lamp, UVB, misting) */
+export type Water = 'wet' | 'fresh' | 'salt' | 'dry';
 export interface TechOption {
   id: string; label: string; parts: string[]; note?: string;
   /** filter kind sized from gear-models.json */
@@ -120,6 +124,8 @@ export interface GearDef {
   perWaterChange?: { key: string; perGal: number };
   cutsDosing?: boolean;
   inWaterChange?: boolean;
+  /** a dry tank's piece that has a body in the 3D scene though it draws no power (thermostat, gauge, mist bottle) */
+  draw?: boolean;
 }
 export interface Preset { id: string; label: string; water: 'fresh' | 'salt'; rows: Record<string, string>; needs?: { substrate?: string; plants?: string } }
 
@@ -134,11 +140,14 @@ const rowDef = (id: string) => TECH_ROWS.find(r => r.id === id);
 export const optionDef = (row: string, opt: string) => rowDef(row)?.options.find(o => o.id === opt);
 
 const galOf = (S: TankSetup) => volume(S.tank).gallons;
+/** A wet tank with a land animal in it: a paludarium (the land side needs its own dry gear). */
+export const hasLand = (S: TankSetup) => S.water.on && S.fish.some(f => getSpecies(f.species)?.habitat === 'land');
 const isSalt = (S: TankSetup) => S.water.on && !!S.water.salt;
-/** The rows this tank shows: none for a dry tank; fresh-only rows (CO2, ferts) not on salt, salt rows only on salt. */
+/** The rows this tank shows: a dry tank its own (heat lamp, UVB, misting); fresh-only rows (CO2, ferts) not on salt, salt rows only on salt. */
 export function rowsFor(S: TankSetup): TechRow[] {
-  if (!S.water.on) return [];
-  return TECH_ROWS.filter(r => r.water === 'wet' || (r.water === 'salt') === isSalt(S));
+  if (!S.water.on) return TECH_ROWS.filter(r => r.water === 'dry');
+  const land = hasLand(S); // a paludarium (lane S241): the land animals' heat, UVB and misting rows join the water rows
+  return TECH_ROWS.filter(r => (land && r.water === 'dry') || r.water !== 'dry' && (r.water === 'wet' || (r.water === 'salt') === isSalt(S)));
 }
 
 // ---- defaults, presets, choices
@@ -146,12 +155,16 @@ export function rowsFor(S: TankSetup): TechRow[] {
 /** The gear the demand engine always assumed (before the Tech menu): HOB up to 60 gal, canister above; one heater; CO2 /
  *  ferts from grow.feed; a skimmer on salt (hang-on, in the sump when the filter is one). Rows the engine did not count are 'none' (or the cheapest real choice). */
 export function inferTech(S: TankSetup): TechSetup {
-  if (!S.water.on) return { rows: {} };
+  // a dry tank: the cheapest gear its animals call for (scene/drygear.ts: heat, thermostat, UVB, gauge, misting), one model for the Tech menu, the 3D and the totals
+  if (!S.water.on) return { rows: dryInferred(S.fish.map(f => f.species)) };
   const gal = galOf(S), feed = S.grow.feed, salt = isSalt(S);
   const rows: Record<string, string> = {
     filter: gal <= 60 ? 'hob' : 'canister', heater: 'one', chiller: 'none', air: 'none', uv: 'none',
     conditioner: salt ? 'none' : 'yes', rodi: 'none', ato: 'none',
   };
+  // a tank started from its animals (path 1): no filter or heater until the owner adds one (Nathan 2026-10-26)
+  if (S.stockFirst) Object.assign(rows, { filter: 'none', heater: 'none' });
+  if (hasLand(S)) Object.assign(rows, dryInferred(S.fish.filter(f => getSpecies(f.species)?.habitat === 'land').map(f => f.species)));
   // the skimmer follows the filter (lane SF): in the sump with one, else hang-on
   if (salt) Object.assign(rows, { skimmer: rows.filter === 'sump' ? 'sump' : 'hob', flow: feed === 'co2' ? 'wave' : feed === 'ferts' ? 'two' : 'none', dosing: feed === 'co2' ? 'doser' : feed === 'ferts' ? 'twopart' : 'none', salinity: 'refractometer', saltmix: 'mix' });
   else Object.assign(rows, { co2: feed === 'co2' ? 'pressurized' : 'none', ferts: feed === 'low' ? 'none' : 'aio' });
@@ -453,10 +466,12 @@ export const SUMP_MODELS: TankModel[] = TANK_MODELS.filter(m => !m.terrarium && 
 const boxLitres = (z: { L: number; D: number; H: number }) => z.L * z.D * z.H / 1e6;
 /** A catalogue size as a sump size. */
 export const sumpFromModel = (m: TankModel): SumpSize => { const T = tankFromModel(m); return { model: m.id, L: T.L, D: T.D, H: T.H }; };
-/** The sump this display gets when none is chosen: the smallest plain size of at least SUMP_SHARE of its volume that fits its length, else the largest that fits. */
+/** The sump this display gets when none is chosen: the smallest plain size of at least SUMP_SHARE of its volume that holds the drain-down and fits inside
+ *  the stand (no stand: no longer than the display), else the largest that fits. */
 export function sumpDefault(S: TankSetup): SumpSize {
   const want = SUMP_SHARE * volume(S.tank).litres, all = SUMP_MODELS.map(sumpFromModel).sort((a, b) => boxLitres(a) - boxLitres(b));
-  const fit = all.filter(z => z.L <= S.tank.L), down = sumpDrainDown(S);
+  // it stands inside the stand (lane SF); with no stand, beside the tank, no longer than it
+  const fit = all.filter(z => S.stand.show ? fitsInStand(S, z) : z.L <= S.tank.L), down = sumpDrainDown(S);
   return fit.find(z => boxLitres(z) >= want && boxLitres(z) * (1 - SUMP_FILL) >= down) ?? fit.at(-1) ?? all[0];
 }
 /** Litres that drain into the sump when the return pump stops: SUMP_DRAIN_MM over the display's surface, plus the return line. */
@@ -663,7 +678,7 @@ export function techParts(S: TankSetup): TechPiece[] {
     }
     for (const gear of def?.parts ?? []) {
       const g = GEAR[gear];
-      if (!g || g.inWaterChange || g.perWaterChange || (!g.watts && !g.sized && !['dropchecker', 'diyco2', 'sump', 'refractometer', 'hydrometer', 'chiller', 'rodi'].includes(gear))) continue;
+      if (!g || g.inWaterChange || g.perWaterChange || (!g.watts && !g.sized && !g.draw && !['dropchecker', 'diyco2', 'sump', 'refractometer', 'hydrometer', 'chiller', 'rodi'].includes(gear))) continue;
       const piece: TechPiece = { row: row.id, option: opt, gear, n: def?.count ?? 1, ...(t.place?.[row.id] ? { place: t.place[row.id] } : {}) };
       if (g.sized === 'filter' && def?.kind) { const f = filterFor(S, def.kind, t.filterModel, t.filterProduct); Object.assign(piece, { model: f.model.id, n: f.n, gph: f.product?.gph ?? f.model.gph, watts: f.product?.watts ?? f.model.watts, ...(f.product ? { product: f.product.id } : {}) }); }
       else if (g.sized === 'heater') { const h = heatLoss(S, t); Object.assign(piece, { model: h.heater.id, n: h.n, watts: h.heater.watts }); }
@@ -677,7 +692,7 @@ export function techParts(S: TankSetup): TechPiece[] {
 
 // ---- file
 
-const WALLS = new Set(['back', 'left', 'right', 'floor']);
+const WALLS = new Set(['back', 'left', 'right', 'floor', 'lid']);
 /** A saved sump: a catalogue size by its id (its size re-read from the catalogue), else a custom size, each side 50-3000 mm. */
 function parseSump(raw: unknown): SumpSize | undefined {
   if (!raw || typeof raw !== 'object') return undefined;

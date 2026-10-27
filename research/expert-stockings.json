@@ -17,7 +17,9 @@
   ],
   "standIns": [],
   "quote": "we generally recommend only one pea puffer in a 5-gallon fish tank",
-  "notes": "Single-species option from a top-5 nano list."
+  "notes": "Single-species option from a top-5 nano list.",
+  "cap": "temper",
+  "capReason": "One pea puffer per 5 gal is the publisher's aggression rule, not a room limit"
  },
  {
   "name": "Aquarium Co-Op 5 gal green neon school",
@@ -39,7 +41,9 @@
    "Green neon tetra as neon"
   ],
   "quote": "get a school of six and provide lots of shelter",
-  "notes": "Single-species option from a top-5 nano list; green neon is slightly smaller than neon."
+  "notes": "Single-species option from a top-5 nano list; green neon is slightly smaller than neon.",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count"
  },
  {
   "name": "Aquarium Co-Op 10 gal centerpiece gourami",
@@ -69,7 +73,9 @@
   ],
   "standIns": [],
   "quote": "Surround the gourami with six to eight schooling nano fish that have a different color.",
-  "notes": "Page says gourami (powder blue or honey) + 6-8 nano schooling fish (ember or neon) + 4-6 panda or 6-8 pygmy corydoras; trumpet/nerite snails counts unspecified (omitted)."
+  "notes": "Page says gourami (powder blue or honey) + 6-8 nano schooling fish (ember or neon) + 4-6 panda or 6-8 pygmy corydoras; trumpet/nerite snails counts unspecified (omitted).",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count"
  },
  {
   "name": "Aquarium Co-Op 10 gal cookie cutter betta",
@@ -104,7 +110,9 @@
   ],
   "standIns": [],
   "quote": "A centerpiece fish is a colorful or unusual-looking fish that really captures the attention of the viewer",
-  "notes": "Composed from the page's pick-one menus (centerpiece/middle/bottom/algae eater): betta, chili rasbora 8, panda cory 4-5, nerite 2."
+  "notes": "Composed from the page's pick-one menus (centerpiece/middle/bottom/algae eater): betta, chili rasbora 8, panda cory 4-5, nerite 2.",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count"
  },
  {
   "name": "Aquarium Co-Op 10 gal aquascape cardinals",
@@ -134,7 +142,9 @@
   ],
   "standIns": [],
   "quote": "let's pick a schooling fish for the upper half of the aquarium, bottom dwellers for the lower half",
-  "notes": "Composed from the page's pick-one menus: cardinal 6, pygmy cory 6, nerite 2."
+  "notes": "Composed from the page's pick-one menus: cardinal 6, pygmy cory 6, nerite 2.",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count"
  },
  {
   "name": "Aquarium Co-Op 10 gal white cloud colony",
@@ -154,7 +164,9 @@
   ],
   "standIns": [],
   "quote": "sometimes it can be quite rewarding to set up an aquarium with only one species",
-  "notes": "Species-only option, 10 fish."
+  "notes": "Species-only option, 10 fish.",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count"
  },
  {
   "name": "Aquarium Co-Op 10 gal fancy guppy colony",
@@ -174,7 +186,9 @@
   ],
   "standIns": [],
   "quote": "sometimes it can be quite rewarding to set up an aquarium with only one species",
-  "notes": "Species-only option: 2 males, 4 females."
+  "notes": "Species-only option: 2 males, 4 females.",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count"
  },
  {
   "name": "Aquarium Co-Op 10 gal pea puffers",
@@ -194,7 +208,9 @@
   ],
   "standIns": [],
   "quote": "sometimes it can be quite rewarding to set up an aquarium with only one species",
-  "notes": "Species-only option, 3 pea puffers."
+  "notes": "Species-only option, 3 pea puffers.",
+  "cap": "temper",
+  "capReason": "3 pea puffers in 10 gal: stopped by territorial aggression (Co-Op's pea puffer fighting rule)"
  },
  {
   "name": "Aquarium Co-Op 10 gal African dwarf frogs",
@@ -214,7 +230,9 @@
   ],
   "standIns": [],
   "quote": "sometimes it can be quite rewarding to set up an aquarium with only one species",
-  "notes": "Species-only option, 5 frogs (may add 1-2 mystery snails; omitted)."
+  "notes": "Species-only option, 5 frogs (may add 1-2 mystery snails; omitted).",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count"
  },
  {
   "name": "Aquarium Co-Op 10 gal apistogramma pair",
@@ -234,7 +252,9 @@
   ],
   "standIns": [],
   "quote": "sometimes it can be quite rewarding to set up an aquarium with only one species",
-  "notes": "Species-only option, breeding pair of Apistogramma."
+  "notes": "Species-only option, breeding pair of Apistogramma.",
+  "cap": "temper",
+  "capReason": "One breeding pair: pair territory and aggression cap the count, not room"
  },
  {
   "name": "Aquarium Co-Op 20 gal neon school look-good",
@@ -259,7 +279,9 @@
   ],
   "standIns": [],
   "quote": "Then drop in a school of 12 to 20 neon tetras for maximum impact.",
-  "notes": "Cherry shrimp and nerite snail in the same list have no counts (omitted)."
+  "notes": "Cherry shrimp and nerite snail in the same list have no counts (omitted).",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count"
  },
  {
   "name": "Aquarium Co-Op 20 gal unheated danios",
@@ -286,7 +308,9 @@
    "Salt and pepper cory as bronzecory"
   ],
   "quote": "Get 12 to 15 of them to create a kaleidoscope of colors zooming around the tank",
-  "notes": "Corydoras 5-6 salt and pepper; invertebrates unspecified."
+  "notes": "Corydoras 5-6 salt and pepper; invertebrates unspecified.",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count"
  },
  {
   "name": "Aquarium Co-Op 20 gal bristlenose breeding",
@@ -306,7 +330,10 @@
   ],
   "standIns": [],
   "quote": "In order for breeding to occur, you need at least one male and one female.",
-  "notes": "Minimum of 2 stated; no maximum."
+  "notes": "Minimum of 2 stated; no maximum.",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count",
+  "capBorderline": "Publisher states only a minimum (2), no maximum; territorial males, so neither tag is sure"
  },
  {
   "name": "Aquarium Co-Op 29 gal angelfish pair",
@@ -326,7 +353,9 @@
   ],
   "standIns": [],
   "quote": "get a nice-looking male and female to pair up in this species-only setup",
-  "notes": "Breeding project, species-only pair."
+  "notes": "Breeding project, species-only pair.",
+  "cap": "temper",
+  "capReason": "One pair: angelfish pair territory (breeding project) caps the count"
  },
  {
   "name": "Aquarium Co-Op 29 gal single fancy goldfish",
@@ -346,7 +375,10 @@
   ],
   "standIns": [],
   "quote": "choosing only one fancy goldfish for this setup",
-  "notes": "Compare Aqueon 29 gal goldfish 3-4."
+  "notes": "Compare Aqueon 29 gal goldfish 3-4.",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count",
+  "capBorderline": "Co-Op's goldfish figure is a per-gallon minimum-tank rule, not a full stocking; waste binds, so room-like"
  },
  {
   "name": "Aquarium Co-Op 20 gal single fancy goldfish (minimum rule)",
@@ -366,7 +398,10 @@
   ],
   "standIns": [],
   "quote": "we recommend 20 gallons of water volume per goldfish, with at least 10 gallons added for every other goldfish.",
-  "notes": "Minimum-tank rule: 1 fancy goldfish per 20 gal, +10 gal per extra fish (30 gal = 2, 40 gal = 3)."
+  "notes": "Minimum-tank rule: 1 fancy goldfish per 20 gal, +10 gal per extra fish (30 gal = 2, 40 gal = 3).",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count",
+  "capBorderline": "Same: a minimum-tank rule (20 gal for 1, +10 per fish), not a stopped-because-full list"
  },
  {
   "name": "Aquarium Co-Op 40 gal saulosi colony",
@@ -388,7 +423,10 @@
    "Saulosi cichlid as demasoni (similar 3 in mbuna)"
   ],
   "quote": "we recommend getting 1\u20132 males and 4\u20135 females.",
-  "notes": "Species-only Malawi colony, 5-7 fish total."
+  "notes": "Species-only Malawi colony, 5-7 fish total.",
+  "cap": "temper",
+  "capReason": "5-7 demasoni: colony size is set by mbuna aggression management (borderline)",
+  "capBorderline": "Demasoni colony size is set by aggression management, but also a room figure"
  },
  {
   "name": "Aquarium Co-Op 40 gal flowerhorn",
@@ -410,7 +448,10 @@
    "Flowerhorn cichlid as oscar"
   ],
   "quote": "we recommend only keeping one in the 40-gallon tank with no other tank mates.",
-  "notes": "Single large cichlid; adult size comparable to oscar."
+  "notes": "Single large cichlid; adult size comparable to oscar.",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count",
+  "capBorderline": "One big cichlid in 40 gal: the publisher compares adult size to the tank, so room, but it is an aggressive fish"
  },
  {
   "name": "Aquarium Co-Op 55 gal angelfish school",
@@ -430,7 +471,9 @@
   ],
   "standIns": [],
   "quote": "This school can consist of 6\u201310 silver, black, koi, or other type of angel.",
-  "notes": "Page adds a smaller schooling species (lemon tetra or cherry barb) with no count; omitted."
+  "notes": "Page adds a smaller schooling species (lemon tetra or cherry barb) with no count; omitted.",
+  "cap": "temper",
+  "capReason": "Angel school 6-10: angel temperament caps the count, publisher adds no further fish"
  },
  {
   "name": "Aquarium Co-Op 55 gal tiger barbs",
@@ -450,7 +493,9 @@
   ],
   "standIns": [],
   "quote": "Since barbs are schooling fish, get at least 6\u201310 fish per species.",
-  "notes": "Tiger barb tank; 6-10 per species."
+  "notes": "Tiger barb tank; 6-10 per species.",
+  "cap": "temper",
+  "capReason": "Tiger barbs 6-10: nipping / temperament cap, the publisher's range, not a stocking-full figure"
  },
  {
   "name": "Fishkeeping World 10 gal tetra centerpiece",
@@ -485,7 +530,9 @@
   ],
   "standIns": [],
   "quote": "A tetra school plus one centerpiece fish and a few bottom dwellers is a common pattern",
-  "notes": "Article calls 6-8 neons borderline for 10 gal; 'one betta or one dwarf gourami'; pygmy cory '6+' (max unspecified)."
+  "notes": "Article calls 6-8 neons borderline for 10 gal; 'one betta or one dwarf gourami'; pygmy cory '6+' (max unspecified).",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count"
  },
  {
   "name": "Fishkeeping World 10 gal ember school",
@@ -505,7 +552,9 @@
   ],
   "standIns": [],
   "quote": "8-10 for ember tetras in a heavily planted tank",
-  "notes": "Heavily planted condition."
+  "notes": "Heavily planted condition.",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count"
  },
  {
   "name": "Fishkeeping World 30 gal community",
@@ -535,7 +584,9 @@
   ],
   "standIns": [],
   "quote": "An example of a community tank includes six cherry barbs, one pearl gourami, and a bristlenose pleco.",
-  "notes": ""
+  "notes": "",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count"
  },
  {
   "name": "Fishkeeping World 40 gal community",
@@ -575,7 +626,9 @@
   ],
   "standIns": [],
   "quote": "keep a ratio of one male to two or three females to limit harassment",
-  "notes": "Quote is the guppy note; the mixed-species counts are the article's example. Article warns danios may not suit a calm tank."
+  "notes": "Quote is the guppy note; the mixed-species counts are the article's example. Article warns danios may not suit a calm tank.",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count"
  },
  {
   "name": "Fishkeeping World 40 gal guppies only",
@@ -595,7 +648,9 @@
   ],
   "standIns": [],
   "quote": "In a species-only 40-gallon tank you can keep about 20 of them",
-  "notes": "Single-species capacity figure."
+  "notes": "Single-species capacity figure.",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count"
  },
  {
   "name": "Fishkeeping World 40 gal mollies only",
@@ -615,7 +670,9 @@
   ],
   "standIns": [],
   "quote": "You can keep 8-10 of them in a tank of this volume.",
-  "notes": "Single-species capacity figure."
+  "notes": "Single-species capacity figure.",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count"
  },
  {
   "name": "Fishkeeping World 40 gal fancy goldfish",
@@ -635,7 +692,9 @@
   ],
   "standIns": [],
   "quote": "each goldfish needs about 10 extra gallons after the first 20",
-  "notes": "Quote paraphrases the article's goldfish note (two or three fish)."
+  "notes": "Quote paraphrases the article's goldfish note (two or three fish).",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count"
  },
  {
   "name": "Aquarium Source 40 gal peaceful community",
@@ -667,7 +726,9 @@
    "Unspecified single-species Corydoras as bronzecory"
   ],
   "quote": "The goal is to create activity at different levels of the water column",
-  "notes": ""
+  "notes": "",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count"
  },
  {
   "name": "Aquarium Source 40 gal planted ember aquascape",
@@ -697,7 +758,9 @@
   ],
   "standIns": [],
   "quote": "In this build, plants and hardscape become the main attraction.",
-  "notes": ""
+  "notes": "",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count"
  },
  {
   "name": "Aquarium Source 40 gal German blue ram",
@@ -727,7 +790,9 @@
   ],
   "standIns": [],
   "quote": "This build focuses on individual fish behavior rather than maximum species variety.",
-  "notes": "1 individual or established pair of rams; pleco 'with caution'."
+  "notes": "1 individual or established pair of rams; pleco 'with caution'.",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count"
  },
  {
   "name": "Aqueon 29 gal fancy goldfish",
@@ -747,7 +812,9 @@
   ],
   "standIns": [],
   "quote": "A 29-gallon aquarium would be a good home for 3-4 of the fancy Ryukin or Oranda varieties.",
-  "notes": "Compare Aquarium Co-Op 29 gal single goldfish."
+  "notes": "Compare Aquarium Co-Op 29 gal single goldfish.",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count"
  },
  {
   "name": "Gensou 55 gal small-tetra planted",
@@ -772,7 +839,9 @@
   ],
   "standIns": [],
   "quote": "Bioload math is directional, not absolute.",
-  "notes": "Vendor guide sized at ~130 cm total fish length; article says 15% reduction for warm climates and starting at 60%."
+  "notes": "Vendor guide sized at ~130 cm total fish length; article says 15% reduction for warm climates and starting at 60%.",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count"
  },
  {
   "name": "Gensou 55 gal mixed community",
@@ -804,7 +873,9 @@
    "Sterbai cory as bronzecory"
   ],
   "quote": "Bioload math is directional, not absolute.",
-  "notes": "Vendor guide sized at ~132 cm total fish length."
+  "notes": "Vendor guide sized at ~132 cm total fish length.",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count"
  },
  {
   "name": "Gensou 55 gal combo A rummynose angel",
@@ -841,7 +912,9 @@
    "Sterbai cory as bronzecory"
   ],
   "quote": "Bioload math is directional, not absolute.",
-  "notes": "Article calls this a stretch example (~184 cm, over its planted budget) needing weekly 40% water changes."
+  "notes": "Article calls this a stretch example (~184 cm, over its planted budget) needing weekly 40% water changes.",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count"
  },
  {
   "name": "Bulk Reef Supply 20 gal starter",
@@ -878,7 +951,10 @@
    "Shrimp goby (paired with pistol shrimp) as watchman"
   ],
   "quote": "20 Gallon Starter Stocking List",
-  "notes": "Pistol shrimp (paired with the goby) has no count of its own and is ignored; clownfish are a mated pair."
+  "notes": "Pistol shrimp (paired with the goby) has no count of its own and is ignored; clownfish are a mated pair.",
+  "cap": "room",
+  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count",
+  "capBorderline": "Mixed reef starter: pair-bonded clowns and a territorial gramma; the 20 gal figure is a room limit but fighting is possible"
  },
  {
   "name": "Saltwater Aquarium Blog 40 gal damselfish display",
@@ -900,7 +976,9 @@
    "Generic damselfish as chromis"
   ],
   "quote": "Approximate 9-12 damsels in a 40-gallon tank would be a beautiful display.",
-  "notes": "Fish-only damsel tank."
+  "notes": "Fish-only damsel tank.",
+  "cap": "temper",
+  "capReason": "Chromis (damselfish) display: damsel aggression caps the count"
  },
  {
   "name": "Saltwater Aquarium Blog 55 gal damselfish display",
@@ -922,6 +1000,8 @@
    "Generic damselfish as chromis"
   ],
   "quote": "A 55 gallon tank could house a lot of damsels\u2013perhaps 15 or more.",
-  "notes": "'15 or more'; fish-only damsel tank."
+  "notes": "'15 or more'; fish-only damsel tank.",
+  "cap": "temper",
+  "capReason": "Chromis (damselfish) display: damsel aggression caps the count"
  }
 ]

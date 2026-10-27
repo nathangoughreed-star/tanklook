@@ -1,0 +1,105 @@
+{
+ "note": "generic sizes with fewer than 3 standard rimmed non-kit priced products (2 from 75 gal): the planner uses its $/gallon rule (or big-box tanks) there; for the research lane (e.g. g50b, the 36x18x19 breeder: no Aqueon / Marineland price found)",
+ "sizes": [
+  {
+   "id": "g2_5",
+   "name": "2.5 gal",
+   "standardPriced": 2
+  },
+  {
+   "id": "g3c",
+   "name": "3 gal cube",
+   "standardPriced": 0
+  },
+  {
+   "id": "g5",
+   "name": "5 gal",
+   "standardPriced": 0
+  },
+  {
+   "id": "g5_5",
+   "name": "5.5 gal",
+   "standardPriced": 2
+  },
+  {
+   "id": "g6c",
+   "name": "6 gal cube",
+   "standardPriced": 0
+  },
+  {
+   "id": "g8c",
+   "name": "8 gal cube",
+   "standardPriced": 0
+  },
+  {
+   "id": "g15",
+   "name": "15 gal",
+   "standardPriced": 0
+  },
+  {
+   "id": "g30b",
+   "name": "30 gal breeder",
+   "standardPriced": 0
+  },
+  {
+   "id": "g37",
+   "name": "37 gal",
+   "standardPriced": 0
+  },
+  {
+   "id": "g50b",
+   "name": "50 gal breeder",
+   "standardPriced": 0
+  },
+  {
+   "id": "g60b",
+   "name": "60 gal breeder",
+   "standardPriced": 2
+  },
+  {
+   "id": "g65",
+   "name": "65 gal",
+   "standardPriced": 0
+  },
+  {
+   "id": "g90",
+   "name": "90 gal",
+   "standardPriced": 0
+  },
+  {
+   "id": "g125",
+   "name": "125 gal",
+   "standardPriced": 0
+  },
+  {
+   "id": "g135",
+   "name": "135 gal",
+   "standardPriced": 1
+  },
+  {
+   "id": "g150",
+   "name": "150 gal",
+   "standardPriced": 0
+  },
+  {
+   "id": "g210",
+   "name": "210 gal",
+   "standardPriced": 0
+  },
+  {
+   "id": "g300",
+   "name": "300 gal",
+   "standardPriced": 1
+  },
+  {
+   "id": "c6",
+   "name": "6 ft custom",
+   "standardPriced": 1
+  },
+  {
+   "id": "c8",
+   "name": "8 ft custom",
+   "standardPriced": 0
+  }
+ ]
+}

@@ -1,7 +1,7 @@
 // Tank catalog (lane KA, 2026-10-19): real aquarium sizes, nano to monster, plus the terrarium presets. OUTER dimensions
 // (what people measure and what the label says) are the source of truth; the app's Tank is INTERIOR mm with glass added outside,
 // so `tankFromModel` derives the interior once. Data in tanks.json; the check is scripts/check-tanks.mjs + test/tanks.test.ts.
-import type { Tank, TankShape } from '../scene/types';
+import type { LidType, Tank, TankShape } from '../scene/types';
 import { glassThickness, IN, volume } from '../scene/physics';
 import { archBulge, normTank, offsetRing } from '../scene/shape';
 import data from './tanks.json';
@@ -32,11 +32,17 @@ export interface TankVariant {
   price_note?: string;
   /** An all-in-one that only runs on its own gear (data/kits.json record `kit`): picking it applies that kit and locks what it supplies (scene/integrated.ts). */
   kit?: string;
+  /** What the product is sold with (S233b, Nathan 2026-10-26: "Exactly what it comes with is important to figure out for every
+   *  commercial tank"). A key left out = not recorded; false / 'none' = sold without it. A variant with `kit` takes this from its
+   *  kits.json record unless it sets its own. What it includes is held like the rim (scene/integrated.ts); the rest is free. */
+  includes?: Includes;
   discontinued?: boolean;
   url?: string;
   checked?: string;
   confidence?: 'high' | 'medium' | 'low';
 }
+
+export interface Includes { lid?: LidType | 'none'; light?: boolean; filter?: boolean; heater?: boolean; stand?: boolean }
 
 export interface TankModel {
   id: string;
@@ -68,6 +74,17 @@ export interface TankModel {
 export const TANK_MODELS = (data as { tanks: TankModel[] }).tanks;
 export const getTankModel = (id: string) => TANK_MODELS.find(m => m.id === id);
 
+/** A sale counts while its page was read in the last SALE_DAYS days and its end date, when given, has not passed (S224, Nathan
+ *  2026-10-26: prices are kept by a sweep that re-reads the pages; a sale nobody has seen lately falls back to the list price). */
+export const SALE_DAYS = 30;
+export function saleLive(v: TankVariant, now = Date.now()): boolean {
+  if (v.price_usd == null || !v.regular_usd || v.regular_usd <= v.price_usd || !v.checked) return false;
+  const age = now - Date.parse(v.checked);
+  return age >= 0 && age <= SALE_DAYS * 864e5 && !(v.sale_ends && Date.parse(v.sale_ends + 'T23:59:59') < now);
+}
+/** What the product costs now: the sale price while the sale is live, else the list price. */
+export const variantUsd = (v: TankVariant, now = Date.now()): number | undefined => (v.regular_usd && !saleLive(v, now) ? v.regular_usd : v.price_usd ?? undefined);
+
 export interface TankSale { usd: number; regularUsd: number; retailer: string; product: string; saleEnds?: string; checked: string }
 /** The cheapest bare glass tank on sale now at about this size and shape (rated gallons within `tol`), read from a retailer
  *  page in the last 30 days and not past its sale end. Undefined when none is known. Kits, acrylic and terrariums are left out. */
@@ -82,11 +99,9 @@ export function tankSaleFor(gal: number, shape: TankShape = 'rect', now = Date.n
   for (const m of models) {
     if (m.terrarium || m.shape !== shape || !near(m)) continue;
     for (const v of m.variants ?? []) {
-      if (v.price_usd == null || !v.regular_usd || v.regular_usd <= v.price_usd || v.price_kind === 'kit' || v.discontinued || !v.checked) continue;
+      if (!saleLive(v, now) || v.price_kind === 'kit' || v.discontinued) continue;
       if (/acrylic/i.test(`${v.line ?? ''} ${v.price_note ?? ''}`)) continue;
-      const age = now - Date.parse(v.checked);
-      if (age < 0 || age > 30 * 864e5 || (v.sale_ends && Date.parse(v.sale_ends + 'T23:59:59') < now)) continue;
-      if (!best || v.price_usd < best.usd) best = { usd: v.price_usd, regularUsd: v.regular_usd, retailer: v.retailer ?? 'a retailer', product: `${v.brand}${v.line ? ' ' + v.line : ''}`, saleEnds: v.sale_ends, checked: v.checked };
+      if (!best || v.price_usd! < best.usd) best = { usd: v.price_usd!, regularUsd: v.regular_usd!, retailer: v.retailer ?? 'a retailer', product: `${v.brand}${v.line ? ' ' + v.line : ''}`, saleEnds: v.sale_ends, checked: v.checked! };
     }
   }
   return best;
@@ -150,3 +165,16 @@ export function tankChoices(opts: { terrariums?: boolean } = {}): TankChoice[] {
 
 /** Catalog volume in US gallons from the derived interior (what the check compares with ratedGal). */
 export const modelGallons = (m: TankModel) => volume(tankFromModel(m)).gallons;
+
+/** Rimless when the product says so (a variant's own flag wins over its size's). */
+export const pickRimless = (m: TankModel, v?: TankVariant) => !!(v ? v.rimless ?? m.rimless : m.rimless);
+/** A product's key within its size: maker, line, outer inches and retailer (stable when products are added; an index is not). */
+export const variantKey = (v: TankVariant) => [v.brand, v.line ?? '', `${v.L_in}x${v.D_in}x${v.H_in}`, v.retailer ?? ''].join('|');
+export const variantByKey = (m: TankModel, key: string) => m.variants?.find(v => variantKey(v) === key);
+/** "Imagitarium (Petco) Open-Glass Rimless 10 gal": the maker and line as the listing names them. */
+export const variantName = (v: TankVariant) => `${v.brand}${v.line ? ' ' + v.line : ''}`;
+/** A size named after one maker's product ("Fluval Flex 9 (curved front)"), not a generic catalogue size: the panel names it as itself,
+ *  not "standard ...", and picking its row picks its product when it has only one (soleProduct). */
+export const namedModel = (m: TankModel) => !!m.variants?.some(v => m.name.toLowerCase().startsWith(v.brand.toLowerCase().split(' ')[0]));
+/** A size named after one product with only that product under it: picking the size is picking the product. */
+export const soleProduct = (m: TankModel) => (namedModel(m) && m.variants?.length === 1 ? m.variants[0] : undefined);

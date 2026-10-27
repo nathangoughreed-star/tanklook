@@ -129,7 +129,22 @@ export const SQFT_MM2 = 92903.04;
 /** Floor needed (sq ft) for n animals of a rule: [bare minimum, recommended]. */
 export const floorFor = (r: HerpRule, n: number): [number, number] => [r.min + r.each * (n - 1), r.rec + r.each * (n - 1)];
 
-const lerp = (c: [number, number][], by: 0 | 1, v: number): number => {
+/** How a species takes company of its own kind (Nathan 2026-10-26: most reptiles and amphibians are kept one to a tank, so the
+ *  ones that do well with more are called out, with the floor a group needs). From the rule alone, no names:
+ *  'group' = no most-together and no sex that fights; 'care' = a few together under conditions (a most-together or a sex rule);
+ *  'alone' = one to an enclosure. `floor` = recommended sq ft for `n` animals (the smallest group worth showing). */
+export interface HerpGroup { kind: 'group' | 'care' | 'alone'; label: string; n: number; floor: number }
+export function herpGroup(r: HerpRule): HerpGroup {
+  if (r.max === 1) return { kind: 'alone', label: 'Kept alone', n: 1, floor: r.rec };
+  if (!r.max && !r.males2 && !r.females2) {
+    const n = Math.max(3, r.social ?? 0);
+    return { kind: 'group', label: 'Does well in a group', n, floor: floorFor(r, n)[1] };
+  }
+  const how = r.males2 && r.mixed ? 'females only' : r.males2 ? 'one male' : r.females2 ? 'one female' : 'size-matched';
+  return { kind: 'care', label: `Small group with care (${how}${r.max ? `, at most ${r.max}` : ''})`, n: 2, floor: floorFor(r, 2)[1] };
+}
+
+const lerp =(c: [number, number][], by: 0 | 1, v: number): number => {
   const o = by ? 0 : 1;
   if (v <= c[0][by]) return c[0][o];
   for (let i = 1; i < c.length; i++) if (v <= c[i][by]) return c[i - 1][o] + (c[i][o] - c[i - 1][o]) * (v - c[i - 1][by]) / (c[i][by] - c[i - 1][by]);

@@ -9,7 +9,7 @@
 // recommended minimum = CARE.group else 1, no depth limit, no length limit, zone from the species' own `zone` / `level`.
 import { careOf } from './zone';
 import { getSpecies } from '../data/species';
-import { getTankModel, TANK_MODELS, tankFromModel, type TankModel } from '../data/tanks';
+import { getTankModel, pickRimless, TANK_MODELS, tankFromModel, type TankModel, type TankVariant } from '../data/tanks';
 import { defaultProfile, demandOf, type DemandOpts } from '../demand';
 import { bareSetup } from './defaults';
 import { volume } from './physics';
@@ -17,9 +17,13 @@ import { countsAgainstWater, isOver, stockingOf } from './stocking';
 import { MIN_SLACK_PCT } from './animalfit';
 import { geometryOf, minDataOf, speciesMinimum, tankMinimum } from './tankMin';
 import { floorFor, HERP, SQFT_MM2 } from '../data/herpstock';
+import { dryNeedsOf, dryRowsFor, type DryBuild } from './drygear';
 import { footprint } from './shape';
+import { sharedRange } from './temprange';
+import { WATER } from '../data/climatedata';
+import { CARE } from '../data/care';
 import { drySetup } from './drygear';
-import { applyPreset, optionCost, PRESETS, ROOM_C, rowsFor, sumpOffered, tempFit, withChoice } from './tech';
+import { applyPreset, optionCost, PRESETS, ROOM_C, rowsFor, sumpOffered, techOf, tempFit, withChoice } from './tech';
 import type { Fish, TankSetup, Units } from './types';
 
 /** What the user has picked: n animals of a species, each at `tl` mm (the adult length when omitted). */
@@ -41,11 +45,32 @@ function wet(animals: AnimalCount[]) {
 }
 
 /** Land animals only (lane LT, 2026-10-26): the picks live in a terrarium and are judged on floor and height, not water. A mix of land and
- *  water animals stays on the water path (the land ones are not counted against the water, as before). */
+ *  water animals is a paludarium (lane S241, below). */
 export function allLand(animals: AnimalCount[]): boolean {
   const sps = animals.filter(a => a.n > 0).map(a => getSpecies(a.species));
   return sps.length > 0 && sps.every(sp => sp?.habitat === 'land');
 }
+/** A paludarium (lane S241, Nathan 2026-10-26): at least one land pick and at least one pick that is not land. Part water, part land. */
+export function isMixed(animals: AnimalCount[]): boolean {
+  const sps = animals.filter(a => a.n > 0).map(a => getSpecies(a.species)).filter(sp => !!sp);
+  return sps.some(sp => sp!.habitat === 'land') && sps.some(sp => sp!.habitat !== 'land');
+}
+/** The land side's need: the herpstock minimum floor of every land animal and of each semi-aquatic one that has a rule (it uses the bank
+ *  as well as the pool), sq ft; and the tallest height the land animals ask for, in. */
+export function landNeed(animals: AnimalCount[]): { floorSqFt: number; hMin: number } {
+  let floorSqFt = 0, hMin = 0;
+  for (const a of animals) {
+    const sp = getSpecies(a.species), rule = sp && a.n > 0 && sp.habitat !== 'water' ? HERP[sp.sci] : undefined;
+    if (!sp || !rule) continue;
+    floorSqFt += floorFor(rule, a.n)[0];
+    if (sp.habitat === 'land') hMin = Math.max(hMin, rule.hMin ?? 0);
+  }
+  return { floorSqFt, hMin };
+}
+/** The pool's depth as a share of the tank's height (the paludarium starter's water line sits near 0.42; Nathan's design 2026-10-26: half). */
+const POOL_DEPTH = 0.5;
+/** The share of the floor left for the pool once the land has its minimum (at least 2 %: a tank with no room left reads as over-full, never as an error). */
+const poolShare = (T: TankSetup['tank'], animals: AnimalCount[]) => Math.max(0.02, 1 - landNeed(animals).floorSqFt / (footprint(T).area / SQFT_MM2));
 const dry = (animals: AnimalCount[]) => animals.flatMap(a => { const sp = getSpecies(a.species); return sp && a.n > 0 && sp.habitat === 'land' ? [{ sp, n: a.n }] : []; });
 
 export function needsOf(animals: AnimalCount[]): Needs {
@@ -64,10 +89,16 @@ const CANDIDATES = TANK_MODELS.filter(m => !m.terrarium && (m.shape ?? 'rect') =
   .map(m => { const T = tankFromModel(m); return { m, T, litres: volume(T).litres }; })
   .sort((a, b) => a.litres - b.litres || a.m.id.localeCompare(b.m.id));
 type Candidate = (typeof CANDIDATES)[number];
+/** Wide shallow tanks a paludarium can use beyond the plain rectangular sizes (Nathan 2026-10-26: the Imagitarium Frameless Shallow 28 gal; its depth is an estimate). */
+const PALUDARIUM_EXTRA = ['n_imagitarium_shallow_28'];
+const PALUDARIA: Candidate[] = [...CANDIDATES, ...PALUDARIUM_EXTRA.flatMap(id => { const m = getTankModel(id); return m ? [(() => { const T = tankFromModel(m); return { m, T, litres: volume(T).litres }; })()] : []; })]
+  .sort((a, b) => a.litres - b.litres || a.m.id.localeCompare(b.m.id));
 /** The terrarium sizes, for land animals (every catalogue terrarium: the generic presets and the three real products), least air first. */
 const TERRARIA: Candidate[] = TANK_MODELS.filter(m => m.terrarium)
   .map(m => { const T = tankFromModel(m); return { m, T, litres: volume(T).litres }; })
   .sort((a, b) => a.litres - b.litres || a.m.id.localeCompare(b.m.id));
+/** The catalogue sizes smallest first, wet (plain rectangular) or land (terrariums): for the group-minimum tank (groupMin.ts). */
+export const catalogueSizes = (land: boolean): Candidate[] => land ? TERRARIA : CANDIDATES;
 
 /**
  * The two builds, for these animals in this tank (the animals' part of a build: plants and CO2 belong to the scape step, lane P6).
@@ -83,11 +114,23 @@ const needsHeater = (animals: AnimalCount[], salt: boolean) => salt || wet(anima
 const FILTRATION_TARGET = { cheapest: 100, balanced: 70 } as const;
 export type BuildKind = keyof typeof FILTRATION_TARGET;
 
+/** A paludarium's water: the pool is what is left of the floor after the land's minimum, at POOL_DEPTH of the height; the paludarium scape, a mesh top. */
+export function setPool(S: TankSetup, animals: AnimalCount[]): void {
+  S.water.level = poolShare(S.tank, animals) * POOL_DEPTH;
+  S.layout.id = 'paludarium'; S.lid = 'mesh';
+}
+/** The land side's gear rows (heat, thermostat, UVB, gauge, misting, timer) for a paludarium build, merged into the setup's Tech rows. */
+export function withDryGear(S: TankSetup, animals: AnimalCount[], build: DryBuild): TankSetup {
+  const t = techOf(S), land = animals.filter(a => a.n > 0 && getSpecies(a.species)?.habitat === 'land').map(a => a.species);
+  return { ...S, tech: { ...t, rows: { ...t.rows, ...dryRowsFor(dryNeedsOf(land), build) } } };
+}
+
 /** The bare tank with the animals in it and the build's gear: what stockingOf and the demand model are asked about. */
 function setupFor(c: Candidate, animals: AnimalCount[], build: BuildKind): TankSetup {
   const S = bareSetup(), salt = needsOf(animals).salt;
   S.tank = c.T;
   S.water.on = true; S.water.level = WATER_LEVEL; S.water.salt = salt;
+  if (isMixed(animals)) setPool(S, animals);
   let id = 1;
   // females at their own adult length (a molly female is 96 mm to the male's 85): the tank list then reads what the tile reads
   S.fish = animals.flatMap(a => { const fem = getSpecies(a.species)?.female; return Array.from({ length: Math.max(0, a.n) }, (_, i): Fish => ({ id: id++, species: a.species, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0,
@@ -96,6 +139,11 @@ function setupFor(c: Candidate, animals: AnimalCount[], build: BuildKind): TankS
   if (PRESETS.some(p => p.id === preset)) S.tech = applyPreset(S, preset);
   S.light = { ...S.light, type: 'led', tech: 'led-white', count: 1, watts: undefined };
   if (!needsHeater(animals, salt)) S.tech = withChoice(S, 'heater', 'none');
+  if (isMixed(animals)) return withDryGear(applyFilter(S, build), animals, build === 'balanced' ? 'balanced' : 'cheapest');
+  return applyFilter(S, build);
+}
+/** The build's filter: the cheapest that keeps filtration at its target (see setupFor). */
+function applyFilter(S: TankSetup, build: BuildKind): TankSetup {
   const options = rowsFor(S).find(r => r.id === 'filter')?.options ?? [];
   let best: { opt: string; usd: number } | undefined, strongest: { opt: string; pct: number } | undefined;
   for (const o of options) {
@@ -110,13 +158,21 @@ function setupFor(c: Candidate, animals: AnimalCount[], build: BuildKind): TankS
   return S;
 }
 
-/** The tank's own price from the catalogue's real products (median of the listed prices), else the demand model's $/gallon rule. */
+/** The tank's own price from the catalogue's real products: the median list price of the standard bare glass tanks (not a kit, rimless,
+ *  acrylic, discontinued or a premium line: low-iron, reef systems), when there are three or more (two from 75 gal up, few makers
+ *  sell those). Fewer fall back to the big-box stores' own tanks (Petco / PetSmart / Chewy), else to the demand model's $/gallon rule:
+ *  one premium product must not set a size's planning price, and a sale is tankSaleFor's, not the planning price (S224b). */
+const PREMIUM = /low[- ]?iron|ultra[- ]?clear|starphire|opti-?white|reefer|waterbox|red sea|innovative marine|ultum|neptunian|fiji cube/i;
 const catalogPrice = (c: Candidate): DemandOpts['tankPrice'] => () => {
-  const ps = (c.m.variants ?? []).filter(v => !v.discontinued && v.price_usd && v.price_kind !== 'kit').map(v => v.price_usd!).sort((a, b) => a - b);
-  return ps.length ? ps[Math.floor(ps.length / 2)] : undefined;
+  const live = (c.m.variants ?? []).filter(v => !v.discontinued && v.price_usd && v.price_kind !== 'kit' && !/acrylic/i.test(`${v.line ?? ''} ${v.price_note ?? ''}`) && !PREMIUM.test(`${v.brand} ${v.line ?? ''}`));
+  const usd = (vs: TankVariant[]) => { const ps = vs.map(v => v.regular_usd ?? v.price_usd!).sort((a, b) => a - b); return ps.length ? ps[Math.floor(ps.length / 2)] : undefined; };
+  const std = live.filter(v => !pickRimless(c.m, v));
+  return (std.length >= (c.m.ratedGal >= 75 ? 2 : 3) ? usd(std) : undefined) ?? usd(live.filter(v => /^(Petco|PetSmart|Chewy)$/.test(v.retailer ?? '')));
 };
 
 export interface Fit {
+  /** a paludarium only: the floor the land animals need at the sources' minimum, percent of the tank's floor (spacePct is then the pool's Space) */
+  landPct?: number;
   /** space limit of this tank, percent (stockingOf spacePercent) */
   spacePct: number;
   /** filtration limit under the balanced build, percent */
@@ -126,7 +182,7 @@ export interface Fit {
   /** workable but cramped for some species (comfortable size over the tank) */
   cramped: boolean;
   /** why a tank is out, empty when it fits */
-  fails: ('space' | 'minimum' | 'length' | 'depth' | 'floor' | 'filtration' | 'height')[];
+  fails: ('space' | 'minimum' | 'length' | 'depth' | 'floor' | 'filtration' | 'height' | 'temperature')[];
 }
 
 /**
@@ -152,7 +208,7 @@ export function dryFit(T: TankSetup['tank'], animals: AnimalCount[]): Fit {
 }
 
 function fitOf(c: Candidate, animals: AnimalCount[]): Fit {
-  const S = setupFor(c, animals, 'balanced'), r = stockingOf(S), fails: Fit['fails'] = [];
+  const S = setupFor(c, animals, 'balanced'), r = stockingOf(S), fails: Fit['fails'] = [], mixed = isMixed(animals);
   if (isOver(r.spacePercent)) fails.push('space');
   // the balanced build already takes the strongest catalogue filter when none keeps it at 70 %: still over 100 % means no filter can carry this stocking here
   if (isOver(r.filtrationPercent)) fails.push('filtration');
@@ -161,6 +217,12 @@ function fitOf(c: Candidate, animals: AnimalCount[]): Fit {
   // lane HB: every limit is the engines' own (stockingOf: water and floor; tankMinimum: red lines, length with the same 10 % slack (S207), depth); no math here
   if (tm.lengthShort) fails.push('length');
   if (tm.tooDeep) fails.push('depth');
+  if (mixed) { // the land side: its herpstock floor and height (the same rules as a terrarium), the pool's are the water engines' above
+    const { floorSqFt, hMin } = landNeed(animals), raw = footprint(c.T).area / SQFT_MM2;
+    if (raw * 1.05 < floorSqFt) fails.push('floor');
+    if (hMin && c.T.H / 25.4 + 1 < hMin) fails.push('height');
+    return { spacePct: r.spacePercent, filtrationPct: r.filtrationPercent, minPct: Math.min(tm.percent, 999), cramped: tm.comfortPercent > 100 || raw * 1.05 < floorSqFt * 1.3, fails, landPct: 100 * floorSqFt / raw };
+  }
   return { spacePct: r.spacePercent, filtrationPct: r.filtrationPercent, minPct: tm.percent, cramped: tm.comfortPercent > 100, fails };
 }
 
@@ -170,9 +232,26 @@ export interface TankFit extends Fit {
   gallons: number;
   needs: Needs;
 }
-const fitOfTank = (c: Candidate, animals: AnimalCount[], needs: Needs): TankFit => ({ ...(allLand(animals) ? dryFit(c.T, animals) : fitOf(c, animals)), tank: c.m, litres: c.litres, gallons: c.litres / 3.785, needs });
+/** S245 (Nathan 2026-10-26, S244 F4): animals whose tolerable temperatures do not meet fit no tank; extra space never rescues them. */
+export const sharedOf = (animals: AnimalCount[]) => sharedRange(wet(animals).map(w => w.sp));
+/** Temperature of a stocking, from the comfortable ranges first and the tolerable ones (climatedata WATER.tol) second (Coordinator 11, 2026-10-26):
+ *  'none' = not even the tolerable ranges meet (axolotl + boesemani): no tank fits. 'compromise' = only the comfortable ranges miss (angel + neon):
+ *  a tank still fits, with a caution naming the compromise temperature (the middle of the tolerable overlap). */
+export function tempVerdict(animals: AnimalCount[]): { level: 'ok' | 'compromise' | 'none'; range?: [number, number]; at?: number } {
+  const sps = wet(animals).map(w => w.sp);
+  if (sharedRange(sps).state !== 'none') return { level: 'ok' };
+  const rs = sps.filter(s => s.habitat !== 'land').map(s => WATER[s.id]?.tol ?? CARE[s.id]?.temp).filter((r): r is [number, number] => !!r);
+  const lo = Math.max(...rs.map(r => r[0])), hi = Math.min(...rs.map(r => r[1]));
+  return hi < lo ? { level: 'none' } : { level: 'compromise', range: [lo, hi], at: Math.round((lo + hi) / 2 * 2) / 2 };
+}
+const noSharedTemp = (animals: AnimalCount[]) => tempVerdict(animals).level === 'none';
+const fitOfTank = (c: Candidate, animals: AnimalCount[], needs: Needs): TankFit => {
+  const f = allLand(animals) ? dryFit(c.T, animals) : fitOf(c, animals);
+  if (noSharedTemp(animals)) f.fails.unshift('temperature');
+  return { ...f, tank: c.m, litres: c.litres, gallons: c.litres / 3.785, needs };
+};
 /** The sizes these animals are judged against: terrariums for land animals, else the plain rectangular tanks; empty with nothing to judge. */
-const candidatesFor = (animals: AnimalCount[]): Candidate[] => allLand(animals) ? TERRARIA : wet(animals).length ? CANDIDATES : [];
+const candidatesFor = (animals: AnimalCount[]): Candidate[] => allLand(animals) ? TERRARIA : isMixed(animals) ? PALUDARIA : wet(animals).length ? CANDIDATES : [];
 
 /** The smallest catalogue tank that holds these animals (space, filtration with the strongest catalogue filter, species limits); the largest one (still failing, `fails` says why) when none does. Undefined with no animals in the water. */
 export function tankFor(animals: AnimalCount[]): TankFit | undefined {
@@ -191,7 +270,7 @@ export function tankOptions(animals: AnimalCount[]): TankFit[] {
 }
 
 /** A model as a candidate: its catalogue entry, else (the editor's own tank) built from the model. */
-const candidateOf = (m: TankModel): Candidate => CANDIDATES.find(c => c.m.id === m.id) ?? TERRARIA.find(c => c.m.id === m.id) ?? { m, T: tankFromModel(m), litres: volume(tankFromModel(m)).litres };
+const candidateOf = (m: TankModel): Candidate => PALUDARIA.find(c => c.m.id === m.id) ?? TERRARIA.find(c => c.m.id === m.id) ?? { m, T: tankFromModel(m), litres: volume(tankFromModel(m)).litres };
 
 /** These animals judged in ONE given tank (the verdict tankOptions gives that size): the chosen tank with a tankmate added, the fork card's
  *  in-space tank. A tank with more litres can still fail where a smaller one holds them (cubes and talls fail length / minimum), so comparing
@@ -216,7 +295,7 @@ const STEP_RATIO = 1.25;
 /** The next `n` good sizes above `current`: bigger water each time with a lower Space bar (floor-bound animals need more floor), none that fails the length or depth the animals need. */
 export function stepUps(animals: AnimalCount[], current: TankModel | string, n = 3, ratio = STEP_RATIO): StepUp[] {
   const cur = typeof current === 'string' ? getTankModel(current) : current;
-  if (!cur || !wet(animals).length || allLand(animals)) return []; // a terrarium's next size is the list itself (lane LT)
+  if (!cur || !wet(animals).length || allLand(animals) || isMixed(animals)) return []; // a terrarium's next size is the list itself (lane LT)
   const c0 = candidateOf(cur);
   const base = setupUsd(c0, animals, 'balanced'), out: StepUp[] = [];
   let from = c0.litres, room = fitOf(c0, animals).spacePct;

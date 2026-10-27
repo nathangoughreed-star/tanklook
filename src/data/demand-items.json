@@ -747,6 +747,13 @@
    "unit": "unit; Seapora $170, Walmart 55-75 $169-199",
    "url": "https://www.thatpetplace.com/empress-cabinet-stand-black-48-in-x-12-in"
   },
+  "gear:terrarium-stand-48x24": {
+   "lo": 189.51,
+   "mode": 199.99,
+   "hi": 299.99,
+   "unit": "reptile terrarium stand for a 48 x 24 in tank (S240b, 2026-10-26): GDLF 48 x 24 stand with cabinet $199.99 list, $189.99 on sale (Wood Art Supply, Abunda); Walmart 48 x 24 tabletop stand from $189.51; New Age Pet Ecoflex 48 in Versa stand $299.99 sale (list $489.99, PetSmart, brand-matched). Other sizes scale by footprint (drygear.ts terrariumStandK, our estimate)",
+   "url": "https://woodartsupply.com/products/gdlf-reptile-tank-stand-terrarium-stand-with-cabinet-for-accessories-storage-48-x-24-tabletop-fits-up-to-120-gallon-bearded-dragon-tank-reptile-terrarium-turtle-tank-natural-wood-color"
+  },
   "gear:substrate-sand": {
    "lo": 7,
    "mode": 11,
@@ -1608,6 +1615,76 @@
    "hi": 14.55,
    "unit": "replacement basking bulb: the bulb itself (lane LT, 2026-10-26)",
    "url": "https://www.petsmart.com/reptile/environmental-control-and-lighting/bulbs-and-lamps/zoo-med-repti-basking-spot-lamp---75-watt-94753.html"
+  },
+  "animal:greenneon": {
+   "lo": 3,
+   "mode": 5,
+   "hi": 9,
+   "unit": "each; judgement: Shrimpy Business lists packs of 3-24 from $14.50-18.95 without a per-fish price",
+   "url": "https://shrimpybusiness.com/collections/rasboras"
+  },
+  "animal:merah": {
+   "lo": 3,
+   "mode": 5,
+   "hi": 9,
+   "unit": "each; judgement: Shrimpy Business lists packs of 3-24 from $14.50-18.95 without a per-fish price",
+   "url": "https://shrimpybusiness.com/collections/rasboras"
+  },
+  "animal:exclamation": {
+   "lo": 3,
+   "mode": 5,
+   "hi": 9,
+   "unit": "each; judgement: Shrimpy Business lists packs of 3-24 from $14.50-18.95 without a per-fish price",
+   "url": "https://shrimpybusiness.com/collections/rasboras"
+  },
+  "animal:dwarfrasbora": {
+   "lo": 3,
+   "mode": 5,
+   "hi": 9,
+   "unit": "each; judgement: Shrimpy Business lists packs of 3-24 from $14.50-18.95 without a per-fish price",
+   "url": "https://shrimpybusiness.com/collections/rasboras"
+  },
+  "animal:cpo": {
+   "lo": 8,
+   "mode": 12,
+   "hi": 20,
+   "unit": "each; judgement from the sister Cambarellus at Aquatic Arts ($18.99-19.99)",
+   "url": "https://aquaticarts.com/products/cajun-dwarf-crayfish"
+  },
+  "animal:cajundwarf": {
+   "lo": 12,
+   "mode": 19,
+   "hi": 25,
+   "unit": "each; Aquatic Arts $18.99 female, $19.99 male",
+   "url": "https://aquaticarts.com/products/cajun-dwarf-crayfish"
+  },
+  "animal:rswcrayfish": {
+   "lo": 5,
+   "mode": 19.5,
+   "hi": 25,
+   "unit": "each; Aquatic Arts neon red pair $38.99 (about $19.50 each); lo judgement for plain red",
+   "url": "https://aquaticarts.com/products/neon-red-crayfish-procambarus-clarkii-breeder-combo-box"
+  },
+  "animal:redclaw": {
+   "lo": 6,
+   "mode": 10,
+   "hi": 25,
+   "unit": "each; no listing price found, judgement",
+   "url": "https://www.fishkeeper.co.uk/fish/freshwater/miscellaneous/red-clawed-crayfish"
+  },
+  "animal:thaicrab": {
+   "lo": 5,
+   "mode": 6,
+   "hi": 9,
+   "unit": "each; Aquatic Arts packs of 5 for $29.99 up to 30 for $126.99; hi judgement",
+   "url": "https://aquaticarts.com/products/thai-micro-crabs"
+  },
+  "animal:asellus": {
+   "lo": 0.5,
+   "mode": 1,
+   "hi": 2,
+   "unit": "each; no live aquatic culture price found (Ward's listing discontinued), judgement",
+   "url": "https://pondinformer.com/aquatic-sow-bugs-asellidae"
   }
  }
 }

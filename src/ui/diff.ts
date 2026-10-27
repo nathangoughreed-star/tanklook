@@ -9,6 +9,7 @@ import { FIXTURES, TECHS, fixtureOf, mountOf, techOf, wattsOf } from '../scene/l
 import { shapeOf } from '../scene/shape';
 import { setWaterLevel } from '../scene/water';
 import type { TankSetup, Units } from '../scene/types';
+import { productLabel } from '../scene/integrated';
 
 /** Make tank `to` match tank `from` in one setting. */
 export type Match = (to: TankSetup, from: TankSetup) => void;
@@ -42,6 +43,12 @@ export function tankDiff(a: TankSetup, b: TankSetup, u: Units): DiffItem[] {
   const named = (name: string) => (_: unknown, side: 'A' | 'B') => `${name} ${side}`;
 
   add(a.tank, b.tank, T => fmtSize(T, u), (to, from) => rescaleTank(to, from.tank));
+  // the product each tank is (2026-10-26): matching takes the other's size, product and what the product holds
+  add(productLabel(a), productLabel(b), l => l, (to, from) => {
+    rescaleTank(to, from.tank); to.render.rim = from.render.rim;
+    if (from.product) to.product = structuredClone(from.product); else delete to.product;
+    if (from.integrated) to.integrated = structuredClone(from.integrated); else delete to.integrated;
+  });
   add(a.render.glass, b.render.glass, (g, side) => `Glass ${glassThickness((side === 'A' ? a : b).tank, g)} mm${g === 'auto' ? ' (auto)' : ''}`, ['render.glass']);
   add(a.render.glassType, b.render.glassType, t => (t === 'lowiron' ? 'Low-iron glass' : 'Standard glass'), ['render.glassType']);
   add(a.render.rim, b.render.rim, r => (r ? 'Rimmed' : 'Rimless'), ['render.rim']);

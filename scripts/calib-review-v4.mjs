@@ -8,8 +8,9 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dimOf } from './calib-fit.mjs';
 import { readOn } from './calib-review.mjs';
 import { buildV4, loadV4, VERDICTS } from './calib-parse-v4.mjs';
+import { ledger, loadRead } from './calib-notes-v4.mjs';
 
-export const TABLES_V4 = 'research/calib/tables/v4.json';
+export const TABLES_V4 = 'research/calib/tables/v4.json', TABLES_V4_NOTES = 'research/calib/tables/v4-notes.json';
 const median = xs => { const s = [...xs].sort((a, b) => a - b), k = s.length >> 1; return s.length % 2 ? s[k] : (s[k - 1] + s[k]) / 2; };
 const mode = xs => { const c = new Map(); for (const x of xs) c.set(x, (c.get(x) ?? 0) + 1); return [...c.entries()].sort((a, b) => b[1] - a[1] || String(a[0]).localeCompare(String(b[0])))[0]?.[0]; };
 const gmean = xs => Math.exp(xs.reduce((a, x) => a + Math.log(x), 0) / xs.length);
@@ -44,6 +45,7 @@ const nameIn = (text, s, J) => s.stock.map(x => x.id).filter(id => text.includes
 /** The first change the app's own reading points to, from the parts that set its verdict (verdictOf's `by`), for one tank. */
 export function appChange(t, s, J) {
   const a = t.app, by = a.by[0] ?? '';
+  if (a.verdict === 'too-small') return { change: 'bigger', sp: [] };
   if (a.verdict === 'ideal' || !by) return { change: 'nothing', sp: [] };
   if (/^space/.test(by)) return { change: 'fewer', sp: [a.space.top].filter(Boolean) };
   if (/^crowd/.test(by)) return { change: 'fewer', sp: nameIn(by, s, J) };
@@ -97,8 +99,10 @@ export function countFix(tbl, n, anchor, dim) {
 }
 
 // ---------- the review ----------
-/** Everything the review shows, and the flags it raises (each { kind, key, dir, detail }). `files`: v4 answer files (one per expert). */
-export function reviewV4(J, T, files) {
+/** Everything the review shows, and the flags it raises (each { kind, key, dir, detail }). `files`: v4 answer files (one per expert),
+ *  read through their notes (scripts/calib-notes-v4.mjs applyNotes); `C`: the engine's readings of the tanks as notes say the experts
+ *  read them (research/calib/tables/v4-notes.json). */
+export function reviewV4(J, T, files, C = null) {
   const build = buildV4(J), flags = [], skipped = [];
   const use = files.filter(f => { if (f.survey !== 'v4' || f.build !== build) { skipped.push(`${f.expert}: build ${f.build}, not ${build}`); return false; } return true; });
   const experts = use.map(f => f.expert), by = Object.fromEntries(J.scenarios.map(s => [s.id, s]));
@@ -106,26 +110,39 @@ export function reviewV4(J, T, files) {
   const readable = J.scenarios.filter(s => T.tanks[s.id]?.readable);
   const unread = J.scenarios.filter(s => !T.tanks[s.id]?.readable).map(s => `${s.id} (${T.tanks[s.id]?.why ?? 'no reading'})`);
   const exp = s => { const v = ans(s.id).map(x => vIx(x.a.verdict)).filter(x => x >= 0); return v.length ? median(v) : null; };
-  const appV = s => vIx(T.tanks[s.id].app.verdict);
+  // "Too small" is the app's verdict of its own (Nathan 2026-10-26): those tanks leave the 4-step agreement and are read in their own section
+  const small = s => T.tanks[s.id].app.verdict === 'too-small', appV = s => small(s) ? null : vIx(T.tanks[s.id].app.verdict);
+  const bigger = a => a.change === 'bigger' || a.bigEnough === 'no';
   let md = `# Calibration review, survey v4: ${experts.join(', ') || 'no experts'}\n\nBuild ${build}. Engine readings: the current engine (research/calib/tables/v4.json, ${T.made}). ${use.length} expert${use.length === 1 ? '' : 's'} (${use.map(f => `${f.expert}${f.expertKind ? ` (${f.expertKind === 'ai' ? 'an AI model' : f.expertKind})` : ''}: modules ${(f.modules ?? []).join(', ')}`).join('; ')}). With more than one expert each tank reads their median. The app's overall verdict is src/calib/v4.ts verdictOf, from its parts (space band, tank minimum, fighting warnings, compatibility, temperature, herp checks, group bands); "milder" means the experts judge the tank less severely than the app.${unread.length ? ` Not readable by the engine: ${unread.join('; ')}.` : ''}${skipped.length ? ` Files left out: ${skipped.join('; ')}.` : ''}\n\n`;
 
   // 1. verdicts per tag
   const tags = [...new Set(readable.flatMap(s => s.tests))].sort();
-  md += `## Verdict per tag\n\nFlagged: half or more of the tag's answered tanks a band off the app, all in the same direction.\n\n| tag | tanks | app | experts | agree | milder | harsher | |\n|---|---|---|---|---|---|---|---|\n`;
+  md += `## Verdict per tag\n\nFlagged: half or more of the tag's answered tanks a band off the app, all in the same direction. A tank the app calls "too small" is shown but not counted here (its own section below).\n\n| tag | tanks | app | experts | agree | milder | harsher | |\n|---|---|---|---|---|---|---|---|\n`;
   for (const tag of tags) {
-    const ss = readable.filter(s => s.tests.includes(tag)), rows = ss.map(s => ({ s, a: appV(s), e: exp(s) })), done = rows.filter(r => r.e != null);
+    const ss = readable.filter(s => s.tests.includes(tag)), rows = ss.map(s => ({ s, a: appV(s), e: exp(s) })), done = rows.filter(r => r.e != null && r.a != null);
     const milder = done.filter(r => r.e - r.a <= -1).length, harsher = done.filter(r => r.e - r.a >= 1).length, agree = done.length - milder - harsher;
     const flag = done.length && milder + harsher >= done.length / 2 && !(milder && harsher);
     if (flag) flags.push({ kind: 'verdict', key: tag, dir: milder ? 'milder' : 'harsher', detail: `${milder + harsher} of ${done.length} tanks` });
-    md += `| ${tag} | ${ss.map(s => s.id).join(' ')} | ${rows.map(r => VERDICTS[r.a]).join(', ')} | ${rows.map(r => vName(r.e)).join(', ')} | ${agree} | ${milder} | ${harsher} | ${flag ? `**flag: experts ${milder ? 'milder' : 'harsher'}**` : ''} |\n`;
+    md += `| ${tag} | ${ss.map(s => s.id).join(' ')} | ${rows.map(r => r.a == null ? 'too small' : VERDICTS[r.a]).join(', ')} | ${rows.map(r => vName(r.e)).join(', ')} | ${agree} | ${milder} | ${harsher} | ${flag ? `**flag: experts ${milder ? 'milder' : 'harsher'}**` : ''} |\n`;
   }
   // the 4 x 4 agreement table per tag family
   md += `\n### Agreement by family (rows the app, columns the experts' median, tanks)\n\n`;
   for (const fam of [...new Set(tags.map(t => t.split('.')[0]))]) {
     const ss = readable.filter(s => s.tests.some(t => t.startsWith(fam + '.'))), m = VERDICTS.map(() => VERDICTS.map(() => 0));
-    for (const s of ss) { const e = exp(s); if (e != null) m[appV(s)][Math.round(e)]++; }
+    for (const s of ss) { const e = exp(s); if (e != null && appV(s) != null) m[appV(s)][Math.round(e)]++; }
     if (!m.flat().some(Boolean)) continue;
     md += `**${fam}** (${ss.length} tanks)\n\n| app \\ experts | ${VERDICTS.join(' | ')} |\n|---|---|---|---|---|\n${VERDICTS.map((v, i) => `| ${v} | ${m[i].join(' | ')} |`).join('\n')}\n\n`;
+  }
+
+  // the app's "Too small": do the experts also want a bigger tank (first change "bigger", or "not big enough")?
+  md += `\n## Too small (the app's own verdict)\n\nA species under its red-line tank minimum, or a herp under its bare floor or height. Read against the experts' first change ("Bigger tank") and "big enough" answers; their 4-step verdict is shown beside it. Flagged: fewer than half the experts who answered ask for a bigger tank.\n\n| tank | app's lines | the rest, on 4 steps | experts' verdict | experts: bigger tank / not big enough | |\n|---|---|---|---|---|---|\n`;
+  for (const s of readable.filter(small)) {
+    const t = T.tanks[s.id], as = ans(s.id), asked = s.ask.includes('change') || s.ask.includes('min');
+    if (!as.length) continue;
+    // a tank that asks neither the first change nor "big enough" (A05, C05) gives the experts no way to say it: shown, never flagged
+    const yes = as.filter(x => bigger(x.a)).length, off = asked && yes < as.length / 2;
+    if (off) flags.push({ kind: 'tooSmall', key: s.id, dir: 'experts accept the tank', detail: `${yes} of ${as.length} ask for bigger` });
+    md += `| ${s.id} | ${t.app.by.join('; ')} | ${t.app.rest.verdict}${t.app.rest.by.length ? ` (${t.app.rest.by.join('; ')})` : ''} | ${as.map(x => x.a.verdict).join(', ')} | ${asked ? `${yes} of ${as.length}` : 'not asked'} | ${off ? '**flag: experts accept the tank**' : ''} |\n`;
   }
 
   // 2. counts
@@ -222,8 +239,55 @@ export function reviewV4(J, T, files) {
   }
   const conf = use.flatMap(f => Object.values(f.answers ?? {}).map(a => a.confidence).filter(Boolean));
   md += `\nConfidence: ${['low', 'medium', 'high'].map(c => `${c} ${conf.filter(x => x === c).length}`).join(', ')}. A module a keeper mostly skips is outside their domain; one an LLM skips is a prompt problem (design section 5).\n`;
-  const notes = use.flatMap(f => Object.entries(f.answers ?? {}).filter(([, a]) => a.note).map(([id, a]) => `**${id}** (${f.expert}): ${a.note.replace(/\n+/g, ' ')}`));
-  if (notes.length) md += `\n## Notes (the experts' own words)\n\n${notes.join('\n\n')}\n`;
+
+  // 8. every noted tank, its answers read through its note (Nathan 2026-10-26: the notes are the lens on their tank)
+  const noted = use.flatMap(f => Object.entries(f.answers ?? {}).filter(([, a]) => a.note).map(([id, a]) => ({ f, id, a }))).sort((x, y) => x.id.localeCompare(y.id) || x.f.expert.localeCompare(y.f.expert));
+  if (noted.length) {
+    md += `\n## Each noted tank, read through its note\n\nThe expert's words, what the reader took from them, and every answer the note changed. Answers not listed were read as clicked, after reading the note. The tables above already use these readings.\n\n`;
+    for (const { f, id, a } of noted) {
+      const rs = (f.readings ?? []).filter(x => x.tank === id), cl = (f.claims ?? []).filter(c => c.tank === id), c = Object.values(f.cond ?? {}).find(x => x.tank === id);
+      md += `**${id}** (${f.expert}, ${a.confidence ?? 'no'} confidence): ${a.note.replace(/\n+/g, ' ')}\n\n- Read as: ${a.read?.summary ?? '(no reading)'}\n`;
+      for (const x of rs) md += `- ${x.field}: ${x.status}${x.status === 'restated' ? ` ${JSON.stringify(x.from)} -> ${JSON.stringify(x.to)}` : x.status === 'aside' ? ` (${JSON.stringify(x.from)} not read)` : ` (${JSON.stringify(x.from)}, read on the tank as the note describes it)`}: ${x.why} ("${x.quote}")\n`;
+      if (c) md += `- Condition: ${c.condition.text}\n`;
+      for (const k of cl) md += `- Claim (${k.rule}${k.firm ? ', firm' : ''}): ${k.claim} ("${k.quote}")\n`;
+      md += '\n';
+    }
+  }
+
+  // 9. answers that rest on a note's condition, against the app on that tank
+  const conds = use.flatMap(f => Object.entries(f.cond ?? {}).map(([k, c]) => ({ f, k, c })));
+  if (conds.length) {
+    md += `\n## Answered under the note's condition\n\nThe note says the expert judged another tank than the one shown (another stock, temperature or animal size). These answers are read against the app on that tank (research/calib/tables/v4-notes.json), not the tank shown, and are left out of every table above.\n\n| tank | expert | condition | app on that tank | answers | |\n|---|---|---|---|---|---|\n`;
+    for (const { f, k, c } of conds) {
+      const t = C?.tanks?.[k], a = c.answer, s = by[c.tank];
+      let cell, flag = '';
+      if (!t) cell = 'no reading yet (GEN_RETABLE_V4=1 npx vitest run test/calibtablesv4.test.ts)';
+      else if (!t.readable) cell = `not readable: ${t.why}`;
+      else {
+        const v = t.app.verdict, parts = [];
+        cell = `${v}${t.app.by.length ? ` (${t.app.by.join('; ')})` : ''}`;
+        if (a.verdict && v !== 'too-small' && Math.abs(vIx(a.verdict) - vIx(v)) >= 1) { flag = '**flag**'; flags.push({ kind: 'conditional', key: `${k} verdict`, dir: vIx(a.verdict) < vIx(v) ? 'milder' : 'harsher', detail: `app ${v}, expert ${a.verdict}; ${c.condition.text}` }); }
+        if (a.together && s?.ask.includes('compat') && a.together !== appTogether(t)) { flag = '**flag**'; flags.push({ kind: 'conditional', key: `${k} together`, dir: a.together, detail: `app ${appTogether(t)}; ${c.condition.text}` }); }
+        for (const [key, tbl, who, anchor] of [['ideal', t.table, s?.focal, J.ideal], ['limit', t.table, s?.focal, J.limit], ['mateIdeal', t.mateTable, s?.mate, J.ideal], ['mateLimit', t.mateTable, s?.mate, J.limit]]) {
+          if (!(a[key] >= 1) || !tbl) continue;
+          const fx = countFix(tbl, a[key], anchor, dimOf({ uses: t.uses }, who));
+          if (fx) parts.push(`${key} ${a[key]} -> ${pc(fx.at)} (least ${mv(fx.least)})`);
+        }
+        if (parts.length) cell += `; ${parts.join(', ')}`;
+      }
+      md += `| ${c.tank} | ${f.expert} | ${c.condition.text} | ${cell} | ${JSON.stringify(Object.fromEntries(Object.entries(a).filter(([x]) => x !== 'note')))} | ${flag} |\n`;
+    }
+  }
+
+  // 10. the ledger: what the notes claim, by rule; a raised rule is a proposal of its own
+  const led = ledger(use);
+  if (led.length) {
+    md += `\n## What the notes claim, by rule\n\nRaised: two or more experts make the claim, or one keeper or professional makes it firmly with high confidence. A raised rule is a proposal whether or not a tag above was flagged; a single claim is kept for round B.\n\n`;
+    for (const r of led) {
+      if (r.raised) flags.push({ kind: 'claim', key: r.rule, dir: 'raised', detail: `${r.why}: ${r.claims[0].claim}` });
+      md += `**${r.rule}** (${r.experts.join(', ')})${r.raised ? ` **raised: ${r.why}**` : ''}\n\n${r.claims.map(c => `- ${c.tank}, ${c.expert}${c.species.length ? ` on ${c.species.join(', ')}` : ''}: ${c.claim} ("${c.quote}")`).join('\n')}\n\n`;
+    }
+  }
   md += `\n## Flags\n\n${flags.length ? flags.map(f => `- ${f.kind} ${f.key}: ${f.dir} (${f.detail})`).join('\n') : 'None: the answers agree with the app on every tag, count, change, pair, minimum and maximum asked.'}\n`;
   return { md, flags };
 }
@@ -240,11 +304,14 @@ if (process.argv[1]?.endsWith('calib-review-v4.mjs')) {
   const args = process.argv.slice(2), outAt = args.indexOf('--out'), paths = args.filter((a, i) => !a.startsWith('--') && !(outAt >= 0 && i === outAt + 1));
   if (!paths.length) { console.error('usage: node scripts/calib-review-v4.mjs research/calib/answers/v4-<expert>.json [...] [--out <path>]'); process.exit(1); }
   if (!existsSync(TABLES_V4)) { console.error(`no ${TABLES_V4}: GEN_RETABLE_V4=1 npx vitest run test/calibtablesv4.test.ts`); process.exit(1); }
-  const J = loadV4(), T = JSON.parse(readFileSync(TABLES_V4, 'utf8')), files = paths.map(p => JSON.parse(readFileSync(p, 'utf8')));
+  const J = loadV4(), T = JSON.parse(readFileSync(TABLES_V4, 'utf8')), C = existsSync(TABLES_V4_NOTES) ? JSON.parse(readFileSync(TABLES_V4_NOTES, 'utf8')) : null;
+  // every answer is read through its tank's note (Nathan 2026-10-26); a file with an unread note is refused
+  let files;
+  try { files = paths.map(p => loadRead(J, p)); } catch (e) { console.error(String(e.message ?? e)); process.exit(1); }
   if (T.build !== buildV4(J)) { console.error(`${TABLES_V4} is build ${T.build}, the scenarios ${buildV4(J)}: rerun GEN_RETABLE_V4=1 npx vitest run test/calibtablesv4.test.ts`); process.exit(1); }
   const bad = files.filter(f => f.survey !== 'v4' || f.build !== T.build);
   if (bad.length) { console.error(`not answers to build ${T.build}: ${bad.map(f => `${f.expert} (${f.survey}, build ${f.build})`).join(', ')}`); process.exit(1); }
-  const { md, flags } = reviewV4(J, T, files);
+  const { md, flags } = reviewV4(J, T, files, C);
   const out = writeReview(outAt >= 0 ? args[outAt + 1] : `research/calib/review-v4-${files.map(f => String(f.expert).replace(/[^A-Za-z0-9_-]+/g, '_')).join('+')}.md`, md);
   console.log(`wrote ${out}: ${flags.length} flag(s)${flags.length ? ': ' + [...new Set(flags.map(f => f.kind))].map(k => `${k} ${flags.filter(f => f.kind === k).length}`).join(', ') : ''}`);
 }

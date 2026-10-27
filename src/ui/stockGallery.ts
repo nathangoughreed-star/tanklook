@@ -4,6 +4,8 @@
 // loads pictures, not 3D (live renders took ~20 s for all 84); an animal with no baked file is drawn live once and kept. Picking a tile hands
 // the id to the stocking screen, which then shows the bare tank sized for it.
 import { CARE } from '../data/care';
+import { HERP, herpGroup } from '../data/herpstock';
+import { TANK_MODELS } from '../data/tanks';
 import type { Units } from '../scene/types';
 import { CATEGORIES, SPECIES, searchSpecies, speciesTag, type Category, type Species } from '../data/species';
 import { drawFishCard } from '../art/placeholder';
@@ -21,7 +23,15 @@ const noBake = new Set<string>(); // looks with no baked file in public/gallery 
 /** A tile's scale bar is always one unit long (Nathan 2026-10-21): 1 in, or 1 cm in metric, scaled to the animal. */
 const RULER: Record<Units, [number, string]> = { in: [25.4, '1 in'], cm: [10, '1 cm'] };
 /** "1.6 in" / "14 in" / "3.5 ft" for a length in mm. */
-const inchText = (mm: number) => { const i = mm / 25.4; return i < 24 ? `${i < 10 ? Math.round(i * 10) / 10 : Math.round(i)} in` : `${Math.round(i / 12 * 10) / 10} ft`; };
+/** "4.5 sq ft: a 24 x 24 in terrarium, 48 in tall": the floor a group needs and the smallest generic catalogue terrarium that gives it
+ *  (outer size, with herpCheck's 5 % / 1 in slack) at the species' height. */
+const TERRA = TANK_MODELS.filter(m => m.terrarium && /^t\d/.test(m.id)).map(m => ({ L: m.outer.L / 25.4, D: m.outer.D / 25.4, H: m.outer.H / 25.4 }))
+  .sort((a, b) => a.L * a.D - b.L * b.D || a.H - b.H);
+const floorText = (a: number, hMin = 0, dry = true) => { // a water animal (an aquarium, not a terrarium) gets the area only
+  const t = dry && TERRA.find(t => t.L * t.D / 144 * 1.05 >= a && t.H + 1 >= hMin), r = (v: number) => Math.round(v);
+  return `${+a.toFixed(2)} sq ft${t ? `: a ${r(t.L)} x ${r(t.D)} in terrarium, ${r(t.H)} in tall` : ''}`;
+};
+const inchText = (mm: number) =>{ const i = mm / 25.4; return i < 24 ? `${i < 10 ? Math.round(i * 10) / 10 : Math.round(i)} in` : `${Math.round(i / 12 * 10) / 10} ft`; };
 
 /** The still cropped to the animal (a snake or a spider fills little of the frame it is fitted in), with a little air round it. Reads the
  *  renderer's canvas now, in the task that drew it; falls back to the whole frame if there is nothing to read. */
@@ -110,10 +120,12 @@ export function attachStockGallery(view: HTMLElement, pick: (id: string) => void
   };
 
   const tile = (sp: Species, mate?: Mate) => {
-    const c = CARE[sp.id], min = c?.bands?.ok ?? c?.group, tag = speciesTag(sp);
-    const bits = [sp.tl ? `adult ${inchText(sp.tl)}` : '', min && min > 1 ? `group of ${min}+` : c?.solo ? 'kept alone' : '', tag].filter(Boolean).join(' · ');
+    const c = CARE[sp.id], min = c?.bands?.ok ?? c?.group, tag = speciesTag(sp), rule = HERP[sp.sci], hg = rule && herpGroup(rule);
+    // a reptile or amphibian says how it takes company (a badge in place of "kept alone"), and the floor a group needs
+    const grp = hg ? `<span class="sgGrp ${hg.kind}">${esc(hg.label)}${hg.kind === 'alone' ? '' : `<em>${hg.n} need ${floorText(hg.floor, rule.hMin, sp.habitat !== 'water')}</em>`}</span>` : '';
+    const bits = [sp.tl ? `adult ${inchText(sp.tl)}` : '', hg ? '' : min && min > 1 ? `group of ${min}+` : c?.solo ? 'kept alone' : '', tag].filter(Boolean).join(' · ');
     const extra = mate ? (mate.ok ? `<span class="sgAdd">Add ${mate.n}</span>${mate.fits ? '' : `<span class="sgWhy">Needs a bigger tank: ${esc(mate.bigger ?? '')}</span>`}` : `<span class="sgWhy">Not with these: ${esc(mate.why ?? '')}</span>`) : '';
-    return `<li><button type="button" class="sgTile${mate && !mate.ok ? ' no' : ''}"${mate && !mate.ok ? ' disabled' : ''} data-id="${sp.id}"><span class="sgImg"><img alt="" data-look="${sp.id}"></span><b>${esc(sp.name)}</b><i>${esc(sp.sci)}</i>${bits ? `<span class="sgBits">${esc(bits)}</span>` : ''}${extra}</button></li>`;
+    return `<li><button type="button" class="sgTile${mate && !mate.ok ? ' no' : ''}"${mate && !mate.ok ? ' disabled' : ''} data-id="${sp.id}"><span class="sgImg"><img alt="" data-look="${sp.id}"></span><b>${esc(sp.name)}</b><i>${esc(sp.sci)}</i>${bits ? `<span class="sgBits">${esc(bits)}</span>` : ''}${grp}${extra}</button></li>`;
   };
 
   const list = () => {

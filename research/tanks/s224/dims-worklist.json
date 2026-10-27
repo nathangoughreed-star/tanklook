@@ -1,0 +1,2932 @@
+[
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Aqueon (maker)",
+  "brand": "Aqueon",
+  "line": "Standard Glass Rectangle 75 gal (second variant, SKU 100116075)",
+  "gal_rated": 75,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.aqueon.com/products/aquariums/standard-glass-rectangle-aquariums",
+  "sku": "100116075"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Aqueon (maker)",
+  "brand": "Aqueon",
+  "line": "5.5 LED Aquarium Starter Kit",
+  "gal_rated": 5.5,
+  "listed": [
+   16.375,
+   8.625,
+   10.6875
+  ],
+  "why": "dims basis: with hood/light",
+  "url": "https://www.aqueon.com/products/aquarium-starter-kits/aquarium-starter-kit-with-led",
+  "sku": "100547597"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Aqueon (maker)",
+  "brand": "Aqueon",
+  "line": "LED SmartClean Starter Kit 10 gal",
+  "gal_rated": 10,
+  "listed": [
+   23.75,
+   14,
+   16.5
+  ],
+  "why": "outer volume 2.38x the rating",
+  "url": "https://www.aqueon.com/products/aquarium-starter-kits/smartclean-led-kit",
+  "sku": "100552047"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Aqueon (maker)",
+  "brand": "Aqueon",
+  "line": "LED SmartClean Starter Kit 20 gal",
+  "gal_rated": 20,
+  "listed": [
+   27.25,
+   15.75,
+   21
+  ],
+  "why": "outer volume 1.95x the rating",
+  "url": "https://www.aqueon.com/products/aquarium-starter-kits/smartclean-led-kit",
+  "sku": "100552048"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Aqueon (maker)",
+  "brand": "Aqueon",
+  "line": "Rectangle LED Kit 10 gal",
+  "gal_rated": 10,
+  "listed": [
+   22.88,
+   12.75,
+   13.88
+  ],
+  "why": "outer volume 1.75x the rating",
+  "url": "https://www.aqueon.com/products/aquarium-starter-kits/rectangle-led-kits",
+  "sku": "100117855"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Aqueon (maker)",
+  "brand": "Aqueon",
+  "line": "Rectangle LED Kit 20 High gal",
+  "gal_rated": 20,
+  "listed": [
+   25.88,
+   14.25,
+   18.63
+  ],
+  "why": "dims basis: with hood/light",
+  "url": "https://www.aqueon.com/products/aquarium-starter-kits/rectangle-led-kits",
+  "sku": "100117860"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Aqueon (maker)",
+  "brand": "Aqueon",
+  "line": "Rectangle LED Kit 29 gal",
+  "gal_rated": 29,
+  "listed": [
+   32.25,
+   14.25,
+   20.63
+  ],
+  "why": "dims basis: with hood/light",
+  "url": "https://www.aqueon.com/products/aquarium-starter-kits/rectangle-led-kits",
+  "sku": "100117865"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Aqueon (maker)",
+  "brand": "Aqueon",
+  "line": "Rectangle LED Kit 55 gal",
+  "gal_rated": 55,
+  "listed": [
+   50.38,
+   14.5,
+   22.63
+  ],
+  "why": "dims basis: with hood/light",
+  "url": "https://www.aqueon.com/products/aquarium-starter-kits/rectangle-led-kits",
+  "sku": "100117870"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Aqueon (maker)",
+  "brand": "Aqueon",
+  "line": "LED MiniBow SmartClean Kit 1 gal",
+  "gal_rated": 1,
+  "listed": [
+   8.5,
+   6.2,
+   9.2
+  ],
+  "why": "outer volume 2.10x the rating",
+  "url": "https://www.aqueon.com/products/aquarium-starter-kits/minibow-smartclean",
+  "sku": "100543585"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Aqueon (maker)",
+  "brand": "Aqueon",
+  "line": "LED MiniBow SmartClean Kit 2.5 gal",
+  "gal_rated": 2.5,
+  "listed": [
+   11.5,
+   7.63,
+   12.5
+  ],
+  "why": "outer volume 1.90x the rating",
+  "url": "https://www.aqueon.com/products/aquarium-starter-kits/minibow-smartclean",
+  "sku": "100543588"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Aqueon (maker)",
+  "brand": "Aqueon",
+  "line": "LED MiniBow SmartClean Kit 5 gal",
+  "gal_rated": 5,
+  "listed": [
+   14.5,
+   10,
+   13.5
+  ],
+  "why": "outer volume 1.69x the rating",
+  "url": "https://www.aqueon.com/products/aquarium-starter-kits/minibow-smartclean",
+  "sku": "100543610"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Aqueon (maker)",
+  "brand": "Aqueon",
+  "line": "BettaBow 1 gal Quick Clean kit",
+  "gal_rated": 1,
+  "listed": [
+   8.5,
+   6.25,
+   9.25
+  ],
+  "why": "outer volume 2.13x the rating",
+  "url": "https://www.aqueon.com/products/aquarium-starter-kits/quick-clean-aquarium",
+  "sku": "100542857"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Coralife (maker)",
+  "brand": "Coralife",
+  "line": "BioCube 16 gal",
+  "gal_rated": 16,
+  "listed": [
+   16.75,
+   18.13,
+   20.13
+  ],
+  "why": "outer volume 1.65x the rating",
+  "url": "https://www.coralifeproducts.com/all-products/biocube/aquariums",
+  "sku": "100115661"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Coralife (maker)",
+  "brand": "Coralife",
+  "line": "BioCube 32 gal",
+  "gal_rated": 32,
+  "listed": [
+   22,
+   24,
+   23.88
+  ],
+  "why": "outer volume 1.71x the rating",
+  "url": "https://www.coralifeproducts.com/all-products/biocube/aquariums",
+  "sku": "100115662"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Coralife (maker)",
+  "brand": "Coralife",
+  "line": "Smart BioCube Jr 14 gal",
+  "gal_rated": 14,
+  "listed": [
+   18.11,
+   16.73,
+   18.9
+  ],
+  "why": "outer volume 1.77x the rating",
+  "url": "https://www.coralifeproducts.com/all-products/biocube/smart-biocube-jr",
+  "sku": "100550802"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Marineland (maker)",
+  "brand": "Marineland",
+  "line": "Portrait Desktop Kit 5 gal",
+  "gal_rated": 5,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.marineland.com/products/aquariums/portrait-desktop-kit",
+  "sku": "ML90609"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Marineland (maker)",
+  "brand": "Marineland",
+  "line": "Silhouette Desktop Kit 3 gal",
+  "gal_rated": 3,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.marineland.com/products/aquariums/silhouette-desktop-kit",
+  "sku": "ML90608"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Marineland (maker)",
+  "brand": "Marineland",
+  "line": "Contour Desktop Kit 3 / 5 gal",
+  "gal_rated": 3,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.marineland.com/products/aquariums/contour-desktop-kit",
+  "sku": "ML90610"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Marineland (maker)",
+  "brand": "Marineland",
+  "line": "BIO-Wheel LED Aquarium Kit",
+  "gal_rated": null,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.marineland.com/products/aquariums/bio-wheel-led-aquarium-kit",
+  "sku": "PFK20B"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Marineland (maker)",
+  "brand": "Marineland",
+  "line": "Half-Moon Aquarium Combo 20 / 30 gal",
+  "gal_rated": 20,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.marineland.com/products/aquariums/half-moon-aquarium-combo",
+  "sku": "11536"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Marineland (maker)",
+  "brand": "Marineland",
+  "line": "Frameless Cube Aquarium",
+  "gal_rated": null,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.marineland.com/products/aquariums/frameless-cube-aquarium",
+  "sku": "NV33010"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Tetra (maker)",
+  "brand": "Tetra",
+  "line": "STEM Aquarium Kit with Activity Guide 10 gal",
+  "gal_rated": 10,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.tetra-fish.com/products/aquarium-kits/stem-10-gal-aquarium-kit-with-activity-guide",
+  "sku": "NV33904"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Tetra (maker)",
+  "brand": "Tetra",
+  "line": "PLAYMOBIL Explore Your Aquarium Kit 10 gal",
+  "gal_rated": 10,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.tetra-fish.com/products/aquarium-kits/playmobil-kit",
+  "sku": "NV52006"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Tetra (maker)",
+  "brand": "Tetra",
+  "line": "Goldfish LED Aquarium Kit",
+  "gal_rated": null,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.tetra-fish.com/products/aquarium-kits/goldfish-led-aquarium-kit",
+  "sku": "NV81620"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Tetra (maker)",
+  "brand": "Tetra",
+  "line": "Tetra Connect 28 gal Aquarium Kit (Wi-Fi feeder)",
+  "gal_rated": 28,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.tetra-fish.com/products/aquarium-kits/tetra-connect-28g-aquarium-kit",
+  "sku": "NV84035"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Tetra (maker)",
+  "brand": "Tetra",
+  "line": "LED Aquarium Cube 1.5 gal",
+  "gal_rated": 1.5,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.tetra-fish.com/products/aquarium-kits/led-aquarium-cube-1-5",
+  "sku": "29137"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Tetra (maker)",
+  "brand": "Tetra",
+  "line": "LED Cube Kit 3 gal",
+  "gal_rated": 3,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.tetra-fish.com/products/aquarium-kits/3-gal-led-cube-kit",
+  "sku": "29095"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Tetra (maker)",
+  "brand": "Tetra",
+  "line": "Crescent Kit 5 gal",
+  "gal_rated": 5,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.tetra-fish.com/products/aquarium-kits/crescent-kit-5",
+  "sku": "29003"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Tetra (maker)",
+  "brand": "Tetra",
+  "line": "LED Betta Trapezoid-Shaped Tank 1 gal",
+  "gal_rated": 1,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.tetra-fish.com/products/aquarium-kits/led-betta-trapezoid-shaped-tank",
+  "sku": "AQ-29050"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Tetra (maker)",
+  "brand": "Tetra",
+  "line": "LED Half Moon Betta Aquarium Kit 1 gal",
+  "gal_rated": 1,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.tetra-fish.com/products/aquarium-kits/led-half-moon-betta-aquarium-kit",
+  "sku": "AQ-29049"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Tetra (maker)",
+  "brand": "Tetra",
+  "line": "Bubbling LED Kit 3 gal Half Moon",
+  "gal_rated": 3,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.tetra-fish.com/products/aquarium-kits/bubbling-led-kit-3-gallon-halfmoon",
+  "sku": "29277"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Tetra (maker)",
+  "brand": "Tetra",
+  "line": "ColorFusion Half Moon Bubbling LED Kit 3 gal",
+  "gal_rated": 3,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.tetra-fish.com/products/aquarium-kits/colorfusion-half-moon-bubbling-led-kit-3",
+  "sku": "29041"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Tetra (maker)",
+  "brand": "Tetra",
+  "line": "ColorFusion Bubbling LED Aquarium Kit",
+  "gal_rated": null,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.tetra-fish.com/products/aquarium-kits/colorfusion-bubbling-led-aquarium-kit",
+  "sku": "NV33194"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Tetra (maker)",
+  "brand": "Tetra",
+  "line": "Crescent STEM Aquarium Kit 3 gal",
+  "gal_rated": 3,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.tetra-fish.com/products/aquarium-kits/crescent-stem-aquarium-kit-3-gal",
+  "sku": "AQ-78481E"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Tetra (maker)",
+  "brand": "Tetra",
+  "line": "STEM 3 gal Half Moon Aquarium Kit",
+  "gal_rated": 3,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.tetra-fish.com/products/aquarium-kits/stem-3-gal-aquarium-kit-with-activity-guide",
+  "sku": "AQ-78482E"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Fluval (maker)",
+  "brand": "Fluval",
+  "line": "Spec 2.6 gal",
+  "gal_rated": 2.6,
+  "listed": [
+   10,
+   8,
+   11.5
+  ],
+  "why": "outer volume 1.53x the rating",
+  "url": "https://fluvalaquatics.com/us/shop/product/spec-aquarium-kit-2-6-us-gal-10-l",
+  "sku": "10515"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Fluval (maker)",
+  "brand": "Fluval",
+  "line": "Evo 5 gal",
+  "gal_rated": 5,
+  "listed": [
+   20.5,
+   11.5,
+   7.5
+  ],
+  "why": "outer volume 1.53x the rating",
+  "url": "https://fluvalaquatics.com/us/shop/product/evo-aquarium-kit-5-us-gal-19-l-black",
+  "sku": "10528"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Fluval (maker)",
+  "brand": "Fluval",
+  "line": "Betta Premium 2.6 gal",
+  "gal_rated": 2.6,
+  "listed": [
+   10.75,
+   8.75,
+   14.75
+  ],
+  "why": "outer volume 2.31x the rating",
+  "url": "https://fluvalaquatics.com/us/shop/product/betta-premium-aquarium-kit-2-6-us-gal-10-l",
+  "sku": null
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Fluval (maker)",
+  "brand": "Fluval",
+  "line": "Betta Premium 6 gal",
+  "gal_rated": 6,
+  "listed": [
+   12,
+   11,
+   17
+  ],
+  "why": "outer volume 1.62x the rating",
+  "url": "https://fluvalaquatics.com/us/shop/product/betta-premium-aquarium-kit-6-us-gal-22-7-l",
+  "sku": null
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Fluval (maker)",
+  "brand": "Fluval",
+  "line": "Kuhl microscaping 2.1 gal",
+  "gal_rated": 2.1,
+  "listed": [
+   11,
+   11,
+   28.5
+  ],
+  "why": "outer volume 7.11x the rating",
+  "url": "https://fluvalaquatics.com/us/shop/product/kuhl-microscaping-aquarium-kit-2-1-us-gal-8-l-black",
+  "sku": "15041"
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Fluval (maker)",
+  "brand": "Fluval",
+  "line": "Liv 1.6 gal",
+  "gal_rated": 1.6,
+  "listed": [
+   13,
+   8,
+   12.5
+  ],
+  "why": "outer volume 3.52x the rating",
+  "url": "https://fluvalaquatics.com/us/shop/product/liv-aquarium-kit-1-6-us-gal-6-l-white",
+  "sku": null
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Fluval (maker)",
+  "brand": "Fluval",
+  "line": "Edge Aquarium Kit (6 / 12 gal)",
+  "gal_rated": 6,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://fluvalaquatics.com/us/shop/product/edge-aquarium-kit",
+  "sku": null
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Fluval (maker)",
+  "brand": "Fluval",
+  "line": "Chi Aquarium Kit",
+  "gal_rated": null,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://fluvalaquatics.com/us/shop/product/chi-aquarium-kit",
+  "sku": null
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Fluval (maker)",
+  "brand": "Fluval",
+  "line": "Plant Aquarium Starter Kit 9 gal",
+  "gal_rated": 9,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://fluvalaquatics.com/us/shop/product/plant-aquarium-starter-kit-9-us-gal-34-l",
+  "sku": null
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Fluval (maker)",
+  "brand": "Fluval",
+  "line": "Visi-White 45P Aquarium Set 10.7 gal",
+  "gal_rated": 10.7,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://fluvalaquatics.com/us/shop/product/visi-white-45p-aquarium-set-10-7-us-gal-40-5-l",
+  "sku": null
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Fluval (maker)",
+  "brand": "Fluval",
+  "line": "Visi-White 60P Aquarium Set 20.6 gal",
+  "gal_rated": 20.6,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://fluvalaquatics.com/us/shop/product/visi-white-60p-aquarium-set-20-6-us-gal-78-l",
+  "sku": null
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Fluval (maker)",
+  "brand": "Fluval",
+  "line": "Visi-White 90P Aquarium Set 53.6 gal",
+  "gal_rated": 53.6,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://fluvalaquatics.com/us/shop/product/visi-white-90p-aquarium-set-53-6-us-gal-202-5-l-copy",
+  "sku": null
+ },
+ {
+  "file": "maker-lineups.json",
+  "retailer": "Fluval (maker)",
+  "brand": "Fluval",
+  "line": "Premium Aquarium Kit 45 Bow with Cabinet 45 gal",
+  "gal_rated": 45,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://fluvalaquatics.com/us/shop/product/premium-aquarium-kit-45-bow-cabinet-45-us-gal-170-l-black",
+  "sku": null
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "Tetra",
+  "line": "Tetra ColorFusion 20 Gallon Complete Aquarium Kit",
+  "gal_rated": 20,
+  "listed": [
+   27.88,
+   16.13,
+   20.38
+  ],
+  "why": "outer volume 1.98x the rating",
+  "url": "https://www.amazon.com/dp/B013BXDXTC",
+  "sku": "B013BXDXTC"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "Tetra",
+  "line": "Tetra Cube 3 Gallon Starter Fish Tank Kit",
+  "gal_rated": 3,
+  "listed": [
+   10.31,
+   11.06,
+   17.5
+  ],
+  "why": "outer volume 2.88x the rating",
+  "url": "https://www.amazon.com/dp/B008CA7W7E",
+  "sku": "B008CA7W7E"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "Tetra",
+  "line": "Tetra Half-Moon 3 Gallon Starter Fish Tank Kit",
+  "gal_rated": 3,
+  "listed": [
+   12.5,
+   6.88,
+   12.94
+  ],
+  "why": "outer volume 1.61x the rating",
+  "url": "https://www.amazon.com/dp/B00591C0F8",
+  "sku": "B00591C0F8"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "Tetra",
+  "line": "Tetra Bubbling LED 1 Gallon Starter Fish Tank Kit",
+  "gal_rated": 1,
+  "listed": [
+   7.75,
+   6.75,
+   8.25
+  ],
+  "why": "outer volume 1.87x the rating",
+  "url": "https://www.amazon.com/dp/B007GCGTPU",
+  "sku": "B007GCGTPU"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "Tetra",
+  "line": "Tetra LED Half Moon 1.1 Gallon Fish Tank Kit for Betta",
+  "gal_rated": 1.1,
+  "listed": [
+   9.25,
+   5,
+   9.75
+  ],
+  "why": "outer volume 1.77x the rating",
+  "url": "https://www.amazon.com/dp/B007GCGUUY",
+  "sku": "B007GCGUUY"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "GloFish",
+  "line": "GloFish 20 Gallon Premium Fish Tank Kit",
+  "gal_rated": 20,
+  "listed": [
+   24.2,
+   12.4,
+   16.7
+  ],
+  "why": "dims basis: estimate: dims not on page; estimate: same footprint as GloFish 20 gal kit B013BXE1XO",
+  "url": "https://www.amazon.com/dp/B0FM6KNRHG",
+  "sku": "B0FM6KNRHG"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "Coralife",
+  "line": "Coralife LED Biocube Aquarium Starter Kit 16 Gallon",
+  "gal_rated": 16,
+  "listed": [
+   21.75,
+   20.25,
+   23.25
+  ],
+  "why": "outer volume 2.77x the rating",
+  "url": "https://www.amazon.com/dp/B06WP9Q6CZ",
+  "sku": "B06WP9Q6CZ"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "Coralife",
+  "line": "Coralife LED Biocube Aquarium Starter Kit 14 Gallon",
+  "gal_rated": 14,
+  "listed": [
+   18.11,
+   16.73,
+   18.9
+  ],
+  "why": "outer volume 1.77x the rating",
+  "url": "https://www.amazon.com/dp/B0F45BXMXS",
+  "sku": "B0F45BXMXS"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "Aqueon",
+  "line": "Aqueon LED MiniBow 1 Gallon Kit with SmartClean",
+  "gal_rated": 1,
+  "listed": [
+   8.88,
+   6.63,
+   9.75
+  ],
+  "why": "outer volume 2.48x the rating",
+  "url": "https://www.amazon.com/dp/B08LK64RMB",
+  "sku": "B08LK64RMB"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "Aqueon",
+  "line": "Aqueon LED MiniBow Kit with SmartClean (2.5 gal by size)",
+  "gal_rated": 2.5,
+  "listed": [
+   11,
+   7.25,
+   12
+  ],
+  "why": "outer volume 1.66x the rating",
+  "url": "https://www.amazon.com/dp/B08LK994Y3",
+  "sku": "B08LK994Y3"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "Aqueon",
+  "line": "Aqueon LED MiniBow Kit with SmartClean (5 gal by size)",
+  "gal_rated": 5,
+  "listed": [
+   15,
+   10.67,
+   15.44
+  ],
+  "why": "outer volume 2.14x the rating",
+  "url": "https://www.amazon.com/dp/B08LKC4NLB",
+  "sku": "B08LKC4NLB"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "Rusepin",
+  "line": "Aquarium Tank, Glass, 20 Gal",
+  "gal_rated": 20,
+  "listed": [
+   27.8,
+   16.3,
+   20.7
+  ],
+  "why": "outer volume 2.03x the rating",
+  "url": "https://www.amazon.com/dp/B005VDO8OA",
+  "sku": "B005VDO8OA"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "FZONE",
+  "line": "FZONE 6.4 Gal Shallow Rimless Aquarium (L45-W30)",
+  "gal_rated": 6.4,
+  "listed": [
+   17.7,
+   17.7,
+   7.1
+  ],
+  "why": "outer volume 1.50x the rating",
+  "url": "https://www.amazon.com/dp/B0BZ8CK9DR",
+  "sku": "B0BZ8CK9DR"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "FZONE",
+  "line": "FZONE 9 Gal Shallow Rimless Aquarium (L60-W36)",
+  "gal_rated": 9,
+  "listed": [
+   23.6,
+   23.6,
+   6.3
+  ],
+  "why": "outer volume 1.69x the rating",
+  "url": "https://www.amazon.com/dp/B0BZ8H8FYJ",
+  "sku": "B0BZ8H8FYJ"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "FZONE",
+  "line": "FZONE 10 Gal Rimless Aquarium (S45-W30)",
+  "gal_rated": 10,
+  "listed": [
+   17.7,
+   17.7,
+   11.8
+  ],
+  "why": "outer volume 1.60x the rating",
+  "url": "https://www.amazon.com/dp/B09XB6TG7X",
+  "sku": "B09XB6TG7X"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "LANDEN",
+  "line": "LANDEN Aquarium 75H 37 Gallon Rimless",
+  "gal_rated": 37,
+  "listed": [
+   29.5,
+   17.7,
+   17.7
+  ],
+  "why": "dims basis: estimate: dims not on page; estimate: 75x45x45 cm from model code, converted",
+  "url": "https://www.amazon.com/dp/B0CMCM9PQJ",
+  "sku": "B0CMCM9PQJ"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "Jengu",
+  "line": "Jengu M1 5 Gallon Smart Fish Tank, App-Controlled Betta Kit",
+  "gal_rated": 5,
+  "listed": [
+   12.52,
+   9.69,
+   17.56
+  ],
+  "why": "outer volume 1.84x the rating",
+  "url": "https://www.amazon.com/dp/B0GVQQ5NYH",
+  "sku": "B0GVQQ5NYH"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "Vehipa",
+  "line": "Vehipa 1 Gal Betta Acrylic Tank Kit White",
+  "gal_rated": 1,
+  "listed": [
+   8.27,
+   6.3,
+   7.28
+  ],
+  "why": "outer volume 1.64x the rating",
+  "url": "https://www.amazon.com/dp/B0H66VZGVP",
+  "sku": "B0H66VZGVP"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "Vehipa",
+  "line": "Vehipa Smart Fish Aquarium Kit 4.2 Gallon",
+  "gal_rated": 4.2,
+  "listed": [
+   14.96,
+   11.4,
+   15.9
+  ],
+  "why": "outer volume 2.79x the rating",
+  "url": "https://www.amazon.com/dp/B0H7QY86SJ",
+  "sku": "B0H7QY86SJ"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "EVIEUN",
+  "line": "EVIEUN Betta Fish Tank 1 Gallon Acrylic Kit Black",
+  "gal_rated": 1,
+  "listed": [
+   10.8,
+   4.7,
+   7.8
+  ],
+  "why": "outer volume 1.71x the rating",
+  "url": "https://www.amazon.com/dp/B0HP12GDV9",
+  "sku": "B0HP12GDV9"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "SIHDYRDBY",
+  "line": "Fish Tank Kit Starter 4 Gallon with Bottom Drainage",
+  "gal_rated": 4,
+  "listed": [
+   15.35,
+   7.87,
+   11.81
+  ],
+  "why": "outer volume 1.54x the rating",
+  "url": "https://www.amazon.com/dp/B0G1SDHR3M",
+  "sku": "B0G1SDHR3M"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "VIVOHOME",
+  "line": "VIVOHOME 5 Gallon Smart Fish Tank with App and Auto Feeder",
+  "gal_rated": 5,
+  "listed": [
+   17.3,
+   9.5,
+   15.7
+  ],
+  "why": "outer volume 2.23x the rating",
+  "url": "https://www.amazon.com/dp/B0G3PX57J1",
+  "sku": "B0G3PX57J1"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "VIVOHOME",
+  "line": "VIVOHOME 2 Gallon Smart Fish Tank with App and Auto Feeder",
+  "gal_rated": 2,
+  "listed": [
+   7.8,
+   6.3,
+   15.7
+  ],
+  "why": "outer volume 1.67x the rating",
+  "url": "https://www.amazon.com/dp/B0GL1H59MK",
+  "sku": "B0GL1H59MK"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "SWIMSYNC",
+  "line": "3 Gallon Fish Tank Starter Kit Betta Black",
+  "gal_rated": 3,
+  "listed": [
+   12.5,
+   6,
+   14.5
+  ],
+  "why": "outer volume 1.57x the rating",
+  "url": "https://www.amazon.com/dp/B0GFCNQ9QJ",
+  "sku": "B0GFCNQ9QJ"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "LYPHARD",
+  "line": "Mini Aquarium All-in-one 1.2 Gallon Glass",
+  "gal_rated": 1.2,
+  "listed": [
+   11.8,
+   6,
+   9.8
+  ],
+  "why": "outer volume 2.50x the rating",
+  "url": "https://www.amazon.com/dp/B0F53LNM4G",
+  "sku": "B0F53LNM4G"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "MCCKLE",
+  "line": "5 Gallon Fish Tank Starter Kit",
+  "gal_rated": 5,
+  "listed": [
+   14.88,
+   14.88,
+   8.03
+  ],
+  "why": "outer volume 1.54x the rating",
+  "url": "https://www.amazon.com/dp/B0GXZVPPJ6",
+  "sku": "B0GXZVPPJ6"
+ },
+ {
+  "file": "retailer-amazon.json",
+  "retailer": "Amazon",
+  "brand": "CLBA",
+  "line": "20 Gallon Rectangular Rimless Ultra Clear Nano Aquarium",
+  "gal_rated": 20,
+  "listed": [
+   35.24,
+   17.12,
+   17.12
+  ],
+  "why": "outer volume 2.24x the rating",
+  "url": "https://www.amazon.com/dp/B0GKFLPB1W",
+  "sku": "B0GKFLPB1W"
+ },
+ {
+  "file": "retailer-chewy.json",
+  "retailer": "Chewy",
+  "brand": "Aqueon",
+  "line": "LED MiniBow SmartClean Aquarium Kit, Black, 5 gal",
+  "gal_rated": 5,
+  "listed": [
+   14.5,
+   10,
+   13.5
+  ],
+  "why": "outer volume 1.69x the rating",
+  "url": "https://www.chewy.com/aqueon-led-minibow-smartclean-fish/dp/289362",
+  "sku": "289362"
+ },
+ {
+  "file": "retailer-chewy.json",
+  "retailer": "Chewy",
+  "brand": "Tetra",
+  "line": "Complete Tropical Fish Aquarium Kit with LED (size variant; one of 10/20/29+ gal)",
+  "gal_rated": null,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.chewy.com/tetra-complete-tropical-fish-aquarium/dp/1452814",
+  "sku": "1452814"
+ },
+ {
+  "file": "retailer-chewy.json",
+  "retailer": "Chewy",
+  "brand": "Marina",
+  "line": "10G LED Aquarium Kit, 10 gal",
+  "gal_rated": 10,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.chewy.com/marina-10g-led-aquarium-kit-10-gal/dp/658766",
+  "sku": "658766"
+ },
+ {
+  "file": "retailer-chewy.json",
+  "retailer": "Chewy",
+  "brand": "Aqueon",
+  "line": "Standard Glass Long Rectangular Aquarium, 20 gal long",
+  "gal_rated": 20,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.chewy.com/aqueon-standard-glass-long/dp/5025990",
+  "sku": "5025990"
+ },
+ {
+  "file": "retailer-chewy.json",
+  "retailer": "Chewy",
+  "brand": "Lifegard",
+  "line": "Long Clear Glass Bookshelf Aquarium 5 mm, 11 gal",
+  "gal_rated": 11,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.chewy.com/lifegard-long-clear-glass-bookshelf/dp/889766",
+  "sku": "889766"
+ },
+ {
+  "file": "retailer-chewy.json",
+  "retailer": "Chewy",
+  "brand": "GloFish",
+  "line": "Aquarium Starter Kit, 3 gal",
+  "gal_rated": 3,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.chewy.com/glofish-aquarium-starter-kit-3-gal/dp/133080",
+  "sku": "133080"
+ },
+ {
+  "file": "retailer-chewy.json",
+  "retailer": "Chewy",
+  "brand": "Frisco",
+  "line": "Aquarium 5.5 gal with Glass Canopy",
+  "gal_rated": 5.5,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.chewy.com/frisco-aquarium-55-gal-aquarium-glass/dp/567814",
+  "sku": "567814"
+ },
+ {
+  "file": "retailer-chewy.json",
+  "retailer": "Chewy",
+  "brand": "Frisco",
+  "line": "Aquarium 5.5 gal",
+  "gal_rated": 5.5,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.chewy.com/frisco-aquarium/dp/?",
+  "sku": "?"
+ },
+ {
+  "file": "retailer-chewy.json",
+  "retailer": "Chewy",
+  "brand": "Aqueon",
+  "line": "Smart Clean Filtration LED Starter Kit (size variant)",
+  "gal_rated": null,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.chewy.com/aqueon-smart-clean-filtration-led/dp/1720486",
+  "sku": "1720486"
+ },
+ {
+  "file": "retailer-chewy.json",
+  "retailer": "Chewy",
+  "brand": "Tetra",
+  "line": "Glass Aquarium 29 gal",
+  "gal_rated": 29,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.chewy.com/tetra-glass-aquarium-29-gal/dp/339439",
+  "sku": "339439"
+ },
+ {
+  "file": "retailer-chewy.json",
+  "retailer": "Chewy",
+  "brand": "Tetra",
+  "line": "Glass Aquarium 20 gal",
+  "gal_rated": 20,
+  "listed": [
+   24,
+   12,
+   16
+  ],
+  "why": "dims basis: estimate: Chewy size table 20-gal = 12 x 24 x 16 (W x L x H), price not captured",
+  "url": "https://www.chewy.com/tetra-glass-aquarium-20-gal/dp/339438",
+  "sku": "339438"
+ },
+ {
+  "file": "retailer-chewy.json",
+  "retailer": "Chewy",
+  "brand": "Marina",
+  "line": "iGlo 5G Aquarium Kit, 5 gal",
+  "gal_rated": 5,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.chewy.com/marina-iglo-5g-aquarium-kit-5-gal/dp/658750",
+  "sku": "658750"
+ },
+ {
+  "file": "retailer-chewy.json",
+  "retailer": "Chewy",
+  "brand": "Tetra",
+  "line": "LED Cube Kit Aquarium, 3 gal",
+  "gal_rated": 3,
+  "listed": [
+   10,
+   10,
+   10.51
+  ],
+  "why": "outer volume 1.52x the rating",
+  "url": "https://www.chewy.com/tetra-led-cube-kit-fish-aquarium-3/dp/220163",
+  "sku": "220163"
+ },
+ {
+  "file": "retailer-chewy.json",
+  "retailer": "Chewy",
+  "brand": "Lifegard",
+  "line": "Nano Cube Low Iron Ultra Clear Glass Tank 5 mm, 3 gal",
+  "gal_rated": 3,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.chewy.com/lifegard-nano-cube-low-iron-ultra/dp/889830",
+  "sku": "889830"
+ },
+ {
+  "file": "retailer-chewy.json",
+  "retailer": "Chewy",
+  "brand": "Fluval",
+  "line": "Betta Premium Aquarium Kit, 2.6 gal",
+  "gal_rated": 2.6,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.chewy.com/fluval-betta-premium-aquarium-kit-26/dp/2507278",
+  "sku": "2507278"
+ },
+ {
+  "file": "retailer-chewy.json",
+  "retailer": "Chewy",
+  "brand": "AquaZen",
+  "line": "Rimless Desktop Aquarium, 10 gal",
+  "gal_rated": 10,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.chewy.com/aquazen-rimless-desktop-aquarium-10/dp/2010118",
+  "sku": "2010118"
+ },
+ {
+  "file": "retailer-chewy.json",
+  "retailer": "Chewy",
+  "brand": "Aqueon",
+  "line": "LED Aquarium Starter Kit, 20 gal",
+  "gal_rated": 20,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.chewy.com/aqueon-led-aquarium-starter-kit-20/dp/258121",
+  "sku": "258121"
+ },
+ {
+  "file": "retailer-chewy.json",
+  "retailer": "Chewy",
+  "brand": "Marina",
+  "line": "LED Aquarium Kit, 20 gal",
+  "gal_rated": 20,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.chewy.com/marina-led-aquarium-kit-20-gal/dp/152036",
+  "sku": "152036"
+ },
+ {
+  "file": "retailer-chewy.json",
+  "retailer": "Chewy",
+  "brand": "Tetra",
+  "line": "Aquarium + LED Lighting & Decor, 20 gal",
+  "gal_rated": 20,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.chewy.com/tetra-aquarium-led-lighting-decor/dp/696158",
+  "sku": "696158"
+ },
+ {
+  "file": "retailer-chewy.json",
+  "retailer": "Chewy",
+  "brand": "GloFish",
+  "line": "Aquarium Kit, 10 gal",
+  "gal_rated": 10,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.chewy.com/glofish-aquarium-kit-10-gal/dp/208505",
+  "sku": "208505"
+ },
+ {
+  "file": "retailer-chewy.json",
+  "retailer": "Chewy",
+  "brand": "Fluval",
+  "line": "Spec Aquarium Kit, 5 gal",
+  "gal_rated": 5,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.chewy.com/fluval-spec-aquarium-kit-5-gal/dp/152024",
+  "sku": "152024"
+ },
+ {
+  "file": "retailer-chewy.json",
+  "retailer": "Chewy",
+  "brand": "Marina",
+  "line": "Chewy search also lists: Tetra Glass Aquarium 10 gal 339437, GloFish Glass Aquarium Kit 10 gal 714454, Fluval Aquarium Kit 16 gal 658710, Fluval Spec white 5 gal 2507046, Aqueon MiniBow SmartClean 289362",
+  "gal_rated": null,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.chewy.com/-/dp/?",
+  "sku": "?"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Imagitarium",
+  "line": "Shallow Glass Aquarium Kit with lighting, filtration & accessories 2.5 gal",
+  "gal_rated": 2.5,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "4614683"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Imagitarium",
+  "line": "Angled Front Glass Aquarium Kit with lighting, filtration & accessories 5.5 gal",
+  "gal_rated": 5.5,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "4614755"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Imagitarium",
+  "line": "Hexagonal Glass Aquarium Kit with lighting, filtration & accessories 20 gal",
+  "gal_rated": 20,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "4614763"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Imagitarium",
+  "line": "Cube Glass Aquarium Kit with lighting, filtration & accessories",
+  "gal_rated": null,
+  "listed": [
+   19.72,
+   19.72,
+   19.86
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "4614704"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Imagitarium",
+  "line": "Pro Deluxe Freshwater Aquarium 3.7 gal",
+  "gal_rated": 3.7,
+  "listed": [
+   11.2,
+   11.1,
+   11.4
+  ],
+  "why": "outer volume 1.66x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "2441395"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Imagitarium",
+  "line": "Glass Betta Kit 5 gal",
+  "gal_rated": 5,
+  "listed": [
+   11.81,
+   12.48,
+   12.95
+  ],
+  "why": "outer volume 1.65x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3865819"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Imagitarium",
+  "line": "Glass Betta Kit 2.5 gal",
+  "gal_rated": 2.5,
+  "listed": [
+   10.31,
+   9.37,
+   11.3
+  ],
+  "why": "outer volume 1.89x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3865801"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Imagitarium",
+  "line": "Plastic Half Moon Betta Aquarium",
+  "gal_rated": null,
+  "listed": [
+   9.96,
+   7.44,
+   11.49
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3865915"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Aqueon",
+  "line": "Frameless Cube Aquarium",
+  "gal_rated": null,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/freestanding-large-fish-tanks",
+  "sku": "3362146"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Aqueon",
+  "line": "5 gal LED MiniBow SmartClean Kit (black)",
+  "gal_rated": 5,
+  "listed": [
+   14.5,
+   10,
+   13.5
+  ],
+  "why": "outer volume 1.69x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3292660"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Fluval",
+  "line": "Spec III Kit (black) 2.6 gal",
+  "gal_rated": 2.6,
+  "listed": [
+   11.8,
+   10.5,
+   8.7
+  ],
+  "why": "outer volume 1.79x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "2140322"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Fluval",
+  "line": "Spec V Kit (black) 5 gal",
+  "gal_rated": 5,
+  "listed": [
+   20.5,
+   7.5,
+   11.6
+  ],
+  "why": "outer volume 1.54x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "2106829"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Fluval",
+  "line": "Spec V Kit (white) 5 gal",
+  "gal_rated": 5,
+  "listed": [
+   20.5,
+   7.5,
+   11.6
+  ],
+  "why": "outer volume 1.54x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "2140349"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Fluval",
+  "line": "EVO XII Marine Kit 13.5 gal",
+  "gal_rated": 13.5,
+  "listed": [
+   23.4,
+   13.5,
+   15.6
+  ],
+  "why": "outer volume 1.58x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "2685306"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Fluval",
+  "line": "EVO V Marine Kit 5 gal",
+  "gal_rated": 5,
+  "listed": [
+   21.3,
+   8.3,
+   12.5
+  ],
+  "why": "outer volume 1.91x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "2740109"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Fluval",
+  "line": "Flex 32.5 gal Kit (black)",
+  "gal_rated": 32.5,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3610859"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Fluval",
+  "line": "Betta Premium Kit 2.6 gal",
+  "gal_rated": 2.6,
+  "listed": [
+   11.8,
+   10.8,
+   8.7
+  ],
+  "why": "outer volume 1.85x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3314224"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Fluval",
+  "line": "20L Betta Kit",
+  "gal_rated": null,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "4577405"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Fluval",
+  "line": "Kuhl Microscaping Kit (black)",
+  "gal_rated": null,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "4767663"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Fluval",
+  "line": "Liv Microscaping 16 gram kit (white/teak)",
+  "gal_rated": null,
+  "listed": [
+   15,
+   10.2,
+   14.6
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "4666985"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Coralife",
+  "line": "BioCube Jr 14 gal",
+  "gal_rated": 14,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3859056"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Coralife",
+  "line": "Smart BioCube Jr 14 gal (Bluetooth/Wi-Fi)",
+  "gal_rated": 14,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3944921"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "GloFish",
+  "line": "Premium Seamless Kit 10 gal",
+  "gal_rated": 10,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3662860"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "GloFish",
+  "line": "Desktop Cycle Light and Hidden Filtration Kit 5 gal",
+  "gal_rated": 5,
+  "listed": [
+   11,
+   11,
+   16.25
+  ],
+  "why": "outer volume 1.70x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3132210"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "Clear Mini 25 (stand)",
+  "gal_rated": 24,
+  "listed": [
+   23.6,
+   15.7,
+   47.6
+  ],
+  "why": "outer volume 3.18x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3976527 w/3976543 a/3976535 b"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "Clear Mini 30 (stand)",
+  "gal_rated": 31,
+  "listed": [
+   31.4,
+   15.7,
+   47.6
+  ],
+  "why": "outer volume 3.28x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3976560"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "AIO 20 Cube",
+  "gal_rated": 20,
+  "listed": [
+   17.7,
+   17.7,
+   47.6
+  ],
+  "why": "outer volume 3.23x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3976316 w/3976332 a/3976324 b"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "Eden 20 w/ FLED 17",
+  "gal_rated": 17,
+  "listed": [
+   17.7,
+   17.7,
+   49.6
+  ],
+  "why": "outer volume 3.96x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3976068 w/3976084 a/3976076 b"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "Eden 30 w/ FLED 21",
+  "gal_rated": 29.4,
+  "listed": [
+   23.6,
+   15.7,
+   53.5
+  ],
+  "why": "outer volume 2.92x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3976113 a/3976105 b"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "Eden 30 w/ FLED 21 (white)",
+  "gal_rated": 29.4,
+  "listed": [
+   23.6,
+   15.7,
+   53.5
+  ],
+  "why": "outer volume 2.92x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3976092 w"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "AIO 352",
+  "gal_rated": 33,
+  "listed": [
+   23.6,
+   19.7,
+   53.1
+  ],
+  "why": "outer volume 3.24x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3976341 w/3976367 a/3976359 b"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "Eden 40 w/ FLED 30",
+  "gal_rated": 39.5,
+  "listed": [
+   31.5,
+   15.7,
+   53.5
+  ],
+  "why": "outer volume 2.90x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3976121 w/3976148 a/3976130 b"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "Clear 2420",
+  "gal_rated": null,
+  "listed": [
+   23.4,
+   19.7,
+   53.1
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3976586 w/3975997 a/3975989 b"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "Clear 3620",
+  "gal_rated": 49.1,
+  "listed": [
+   35.4,
+   19.7,
+   53.1
+  ],
+  "why": "outer volume 3.26x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3976009 w/3976025 a/3976017 b"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "AIO 503",
+  "gal_rated": 49.1,
+  "listed": [
+   35.4,
+   19.7,
+   53.1
+  ],
+  "why": "outer volume 3.26x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3976375 w/3976391 a/3976383 b"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "Eden X 60 w/ FLED 34",
+  "gal_rated": 59,
+  "listed": [
+   35.4,
+   19.7,
+   58.3
+  ],
+  "why": "outer volume 2.98x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3976156 w/3976172 a/3976164 b"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "Marine X 602",
+  "gal_rated": null,
+  "listed": [
+   23.6,
+   19.7,
+   55.1
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3976439 w/3976455 a/3976447 b"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "Marine X 903",
+  "gal_rated": null,
+  "listed": [
+   35.4,
+   19.7,
+   57.1
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3976463 w/3976480 a/3976471 b"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "Marine X 1104",
+  "gal_rated": null,
+  "listed": [
+   47.2,
+   19.7,
+   57.1
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3976498 w/3976519 a/3976501 b"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "AIO 654",
+  "gal_rated": 65.8,
+  "listed": [
+   47.2,
+   19.7,
+   53.1
+  ],
+  "why": "outer volume 3.25x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3976404 w/3976421 a/3976412 b"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "Clear 4820",
+  "gal_rated": 72.2,
+  "listed": [
+   47.2,
+   19.7,
+   55.1
+  ],
+  "why": "outer volume 3.07x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3976033 w/3976050 a/3976041 b"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "Eden X 80 Peninsula w/ FLED 46",
+  "gal_rated": 80,
+  "listed": [
+   47.2,
+   19.7,
+   58.3
+  ],
+  "why": "outer volume 2.93x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3976210 w/3976295 a/3976228 b"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "Infinia Reef 1504",
+  "gal_rated": null,
+  "listed": [
+   48.2,
+   25.3,
+   58.2
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3925771 w/3925789 b"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "Infinia Frag 1254",
+  "gal_rated": null,
+  "listed": [
+   48.2,
+   25.3,
+   52.6
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3925691 w/3925869 b"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "Infinia Reef 1905",
+  "gal_rated": null,
+  "listed": [
+   60.5,
+   25.3,
+   59.1
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3925834 w/3925842 b"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "Infinia Frag 1555",
+  "gal_rated": null,
+  "listed": [
+   60.5,
+   25.3,
+   52.6
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3925877 w"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "Clear 6025",
+  "gal_rated": null,
+  "listed": [
+   60.5,
+   25.3,
+   58.2
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3925762 w/3925797 b"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "Peninsula 6025",
+  "gal_rated": null,
+  "listed": [
+   60.5,
+   25.3,
+   59.1
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3925703 w/3925826 b"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "Infinia Reef 2306",
+  "gal_rated": null,
+  "listed": [
+   72.3,
+   25.3,
+   60.1
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3925682 b (white 3925851 lists H 23.6, likely a typo)"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "Clear 7225",
+  "gal_rated": null,
+  "listed": [
+   72.3,
+   25.3,
+   60.1
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3925746 w/3925800 b"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "Peninsula 7225",
+  "gal_rated": null,
+  "listed": [
+   72.3,
+   25.3,
+   60.1
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3925754 w/3925674 b"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Waterbox",
+  "line": "Infinia Frag 1756",
+  "gal_rated": null,
+  "listed": [
+   72.3,
+   25.3,
+   52.6
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3925738 w/3925720 b"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "JBJ",
+  "line": "Rimless Desktop Series Flat Panel 10 gal",
+  "gal_rated": 10,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/freestanding-large-fish-tanks",
+  "sku": "3035461"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "JBJ",
+  "line": "Nano Rimless 10G AIO",
+  "gal_rated": 10,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3748188"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "JBJ",
+  "line": "Nano Rimless 15G AIO",
+  "gal_rated": 15,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3748276"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "JBJ",
+  "line": "Nano Rimless 20G AIO",
+  "gal_rated": 20,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3748268"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "JBJ",
+  "line": "All-in-One Rimless Flat Panel 25 gal",
+  "gal_rated": 25,
+  "listed": [
+   26.5,
+   22,
+   19
+  ],
+  "why": "outer volume 1.92x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3521021"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "JBJ",
+  "line": "All-in-One Rimless Flat Panel 65 gal",
+  "gal_rated": 65,
+  "listed": [
+   26.5,
+   22,
+   19
+  ],
+  "why": "outer volume 0.74x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3521055"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "JBJ",
+  "line": "Rimless Flat Panel Kit 25 gal on cabinet (black/white)",
+  "gal_rated": 25,
+  "listed": [
+   18.5,
+   18,
+   54
+  ],
+  "why": "outer volume 3.11x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3542526 b/3542534 w"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "JBJ",
+  "line": "Rimless Flat Panel Kit 45 gal on cabinet (black/white)",
+  "gal_rated": 45,
+  "listed": [
+   26.5,
+   22,
+   55
+  ],
+  "why": "outer volume 3.08x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3542497 b/3542500 w"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "JBJ",
+  "line": "Rimless Flat Panel Kit 65 gal on cabinet (black/white)",
+  "gal_rated": 65,
+  "listed": [
+   36,
+   21,
+   56
+  ],
+  "why": "outer volume 2.82x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3542489 b/3542518 w"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Lifegard Aquatics",
+  "line": "Ultra Low Iron Bookshelf Glass 31.89 in",
+  "gal_rated": null,
+  "listed": [
+   31.89,
+   7.87,
+   9.84
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/freestanding-large-fish-tanks",
+  "sku": "3865798"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Lifegard Aquatics",
+  "line": "Ultra Low Iron Bookshelf Glass 33.85 in",
+  "gal_rated": null,
+  "listed": [
+   33.85,
+   9.84,
+   11
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/freestanding-large-fish-tanks",
+  "sku": "3865798"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Lifegard Aquatics",
+  "line": "Ultra Low Iron Bookshelf Glass 29.92 in",
+  "gal_rated": null,
+  "listed": [
+   29.92,
+   5.9,
+   7.87
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/freestanding-large-fish-tanks",
+  "sku": "3865798"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Lifegard Aquatics",
+  "line": "Ultra Low Iron Bookshelf Glass 35.82 in",
+  "gal_rated": null,
+  "listed": [
+   35.82,
+   11.81,
+   11.81
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/freestanding-large-fish-tanks",
+  "sku": "3865798"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Lifegard Aquatics",
+  "line": "Ultra Low Iron Glass Aquarium 23.62 x 11.81 x 14.17",
+  "gal_rated": null,
+  "listed": [
+   23.62,
+   11.81,
+   14.17
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/freestanding-large-fish-tanks",
+  "sku": "3865798"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Lifegard Aquatics",
+  "line": "Ultra Low Iron Glass Aquarium 14.17 x 8.66 x 10.24",
+  "gal_rated": null,
+  "listed": [
+   14.17,
+   8.66,
+   10.24
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/freestanding-large-fish-tanks",
+  "sku": "3865798"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Lifegard Aquatics",
+  "line": "Ultra Low Iron Aquarium w/ filter 11.81 x 11.81 x 13.77",
+  "gal_rated": null,
+  "listed": [
+   11.81,
+   11.81,
+   13.77
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3865798"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Lifegard Aquatics",
+  "line": "Ultra Low Iron Aquarium w/ filter 11.81 x 11.81 x 13.77 (alt)",
+  "gal_rated": null,
+  "listed": [
+   11.81,
+   11.81,
+   13.77
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3865798"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Lifegard Aquatics",
+  "line": "Low Iron Ultra Clear 4.1 gal",
+  "gal_rated": null,
+  "listed": [
+   12.2,
+   8.66,
+   9.06
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/freestanding-large-fish-tanks",
+  "sku": "3865798"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Lifegard Aquatics",
+  "line": "Ultra Low Iron Betta Filter Kit 7.87 x 7.87 x 9.84",
+  "gal_rated": null,
+  "listed": [
+   7.87,
+   7.87,
+   9.84
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3865798"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Lifegard Aquatics",
+  "line": "Ultra Low Iron Betta Filter Kit (alt)",
+  "gal_rated": null,
+  "listed": [
+   7.87,
+   7.87,
+   9.84
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3865798"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Penn-Plax",
+  "line": "Educational Aquarium",
+  "gal_rated": null,
+  "listed": [
+   9.25,
+   5.75,
+   10.25
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3314081"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Penn-Plax",
+  "line": "Planting kit",
+  "gal_rated": null,
+  "listed": [
+   14.75,
+   13.75,
+   15.75
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3314013"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Penn-Plax",
+  "line": "Aquaterrium",
+  "gal_rated": null,
+  "listed": [
+   17.25,
+   17,
+   15.5
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3314005"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Penn-Plax",
+  "line": "Prism Nano Kit (black)",
+  "gal_rated": null,
+  "listed": [
+   7,
+   9,
+   10
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "2166400"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Penn-Plax",
+  "line": "360 Aquasphere 10",
+  "gal_rated": 10,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/freestanding-large-fish-tanks",
+  "sku": "3368097"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Penn-Plax",
+  "line": "360 Aquasphere 14",
+  "gal_rated": 14,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/freestanding-large-fish-tanks",
+  "sku": "3368100"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Penn-Plax",
+  "line": "360 Aquasphere 24",
+  "gal_rated": 24,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/freestanding-large-fish-tanks",
+  "sku": "3368118"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Dennerle",
+  "line": "Shrimp King Nano Shrimp Cube",
+  "gal_rated": null,
+  "listed": [
+   7.87,
+   7.87,
+   9.84
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/freestanding-large-fish-tanks",
+  "sku": "3483124"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Dennerle",
+  "line": "Scapers Tank Kit",
+  "gal_rated": null,
+  "listed": [
+   15.75,
+   12.75,
+   11
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3483141"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Dennerle",
+  "line": "Shrimp King Starter / Scapers Soil Starter",
+  "gal_rated": null,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3748196 / 3748209"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Tropical Marine Centre",
+  "line": "Kreisel for Aquatics 10 L",
+  "gal_rated": null,
+  "listed": [
+   14,
+   10.75,
+   15.75
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "4607563"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Tropical Marine Centre",
+  "line": "Kreisel for Aquatics 15 L",
+  "gal_rated": null,
+  "listed": [
+   14,
+   10.75,
+   15.75
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "4607571"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "Zoo Med",
+  "line": "Axolotl Kit",
+  "gal_rated": null,
+  "listed": [
+   36,
+   18,
+   10
+  ],
+  "why": "no rated gallons",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "4755777"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "biOrb",
+  "line": "Cube 30 black mcr",
+  "gal_rated": 30,
+  "listed": [
+   12.7,
+   12.7,
+   13.68
+  ],
+  "why": "outer volume 0.32x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3600132"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "biOrb",
+  "line": "Cube 30 white mcr",
+  "gal_rated": 30,
+  "listed": [
+   12.7,
+   12.7,
+   13.68
+  ],
+  "why": "outer volume 0.32x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3600079"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "biOrb",
+  "line": "Cube 60 black mcr",
+  "gal_rated": 60,
+  "listed": [
+   15.75,
+   15.75,
+   17.05
+  ],
+  "why": "outer volume 0.31x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3600095"
+ },
+ {
+  "file": "retailer-petco.json",
+  "retailer": "Petco",
+  "brand": "biOrb",
+  "line": "Cube 60 white mcr",
+  "gal_rated": 60,
+  "listed": [
+   15.75,
+   15.75,
+   17.05
+  ],
+  "why": "outer volume 0.31x the rating",
+  "url": "https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles",
+  "sku": "3599928"
+ },
+ {
+  "file": "retailer-petsmart.json",
+  "retailer": "PetSmart",
+  "brand": "GloFish",
+  "line": "LED Aquarium Kit 5 gal",
+  "gal_rated": 5,
+  "listed": [
+   16.5,
+   10.5,
+   11
+  ],
+  "why": "outer volume 1.65x the rating",
+  "url": "https://www.petsmart.com/5369363.html",
+  "sku": "5369363"
+ },
+ {
+  "file": "retailer-petsmart.json",
+  "retailer": "PetSmart",
+  "brand": "Fluval",
+  "line": "Betta Premium Fish Tank Aquarium Starter Kit 3.65 gal",
+  "gal_rated": 3.65,
+  "listed": [
+   10.75,
+   8.75,
+   14.75
+  ],
+  "why": "outer volume 1.65x the rating",
+  "url": "https://www.petsmart.com/5386470.html",
+  "sku": "5386470"
+ },
+ {
+  "file": "retailer-petsmart.json",
+  "retailer": "PetSmart",
+  "brand": "Top Fin",
+  "line": "Half Moon Aquarium 3.5 gal",
+  "gal_rated": 3.5,
+  "listed": [
+   12.2,
+   8.3,
+   12.3
+  ],
+  "why": "outer volume 1.54x the rating",
+  "url": "https://www.petsmart.com/5253372.html",
+  "sku": "5253372"
+ },
+ {
+  "file": "retailer-petsmart.json",
+  "retailer": "PetSmart",
+  "brand": "Top Fin",
+  "line": "All-In-One Betta Aquarium Starter Kit 3 gal",
+  "gal_rated": 3,
+  "listed": [
+   13.4,
+   6.85,
+   9
+  ],
+  "why": "dims basis: estimate: page spec block is a copy-paste of an aquarium divider (11.3 x 17.5 in); used Top Fin 3 gal Easy Clean footprint 13.4 x 6.85 x 9.01",
+  "url": "https://www.petsmart.com/5321019.html",
+  "sku": "5321019"
+ },
+ {
+  "file": "retailer-petsmart.json",
+  "retailer": "PetSmart",
+  "brand": "Top Fin",
+  "line": "Diamond Aquarium 1 gal",
+  "gal_rated": 1,
+  "listed": [
+   10.4,
+   6.9,
+   8.4
+  ],
+  "why": "outer volume 2.61x the rating",
+  "url": "https://www.petsmart.com/5264615.html",
+  "sku": "5264615"
+ },
+ {
+  "file": "retailer-petsmart.json",
+  "retailer": "PetSmart",
+  "brand": "Top Fin",
+  "line": "Trapezoid Aquarium 3 gal",
+  "gal_rated": 3,
+  "listed": [
+   13.47,
+   9.6,
+   8.68
+  ],
+  "why": "outer volume 1.62x the rating",
+  "url": "https://www.petsmart.com/5356961.html",
+  "sku": "5356961"
+ },
+ {
+  "file": "retailer-specialists.json",
+  "retailer": "Bulk Reef Supply",
+  "brand": "Pro Clear Aquatic Systems",
+  "line": "ProStar Rimless AIO 23 Aquarium & Stand (23 Gallons)",
+  "gal_rated": 23,
+  "listed": [
+   23.5,
+   11.5,
+   15.5
+  ],
+  "why": "outer volume 0.79x the rating",
+  "url": "https://www.bulkreefsupply.com/prostar-rimless-aio-23-aquarium-stand-23-gallons-pro-clear-aquatic-systems.html",
+  "sku": "257047"
+ },
+ {
+  "file": "retailer-specialists.json",
+  "retailer": "Bulk Reef Supply",
+  "brand": "Fluval",
+  "line": "Fluval Spec 2.6 Gallon Aquarium Kit",
+  "gal_rated": 2.6,
+  "listed": [
+   10.8,
+   11.8,
+   8.7
+  ],
+  "why": "outer volume 1.85x the rating",
+  "url": "https://www.bulkreefsupply.com/fluval-spec-2-6-gallon-aquarium-kit-fluval.html",
+  "sku": null
+ },
+ {
+  "file": "retailer-specialists.json",
+  "retailer": "Bulk Reef Supply",
+  "brand": "Fluval",
+  "line": "Fluval Spec 5 Gallon Aquarium Kit",
+  "gal_rated": 5,
+  "listed": [
+   20.5,
+   7.5,
+   11.6
+  ],
+  "why": "outer volume 1.54x the rating",
+  "url": "https://www.bulkreefsupply.com/fluval-spec-5-gallon-aquarium-kit-fluval.html",
+  "sku": null
+ },
+ {
+  "file": "retailer-specialists.json",
+  "retailer": "Bulk Reef Supply",
+  "brand": "Fluval",
+  "line": "Fluval Spec 5 Gallon Aquarium Starter Kit",
+  "gal_rated": 5,
+  "listed": [
+   20.5,
+   7.5,
+   11.6
+  ],
+  "why": "outer volume 1.54x the rating",
+  "url": "https://www.bulkreefsupply.com/fluval-spec-5-gallon-aquarium-starter-kit-bulk-reef-supply.html",
+  "sku": null
+ },
+ {
+  "file": "retailer-walmart.json",
+  "retailer": "Walmart (sold and shipped by Walmart.com)",
+  "brand": "Aqua Culture",
+  "line": "Aqua Culture 5-Gallon Glass Fish Tank LED Aquarium Starter Kit",
+  "gal_rated": 5,
+  "listed": [
+   16.5,
+   8.75,
+   12.37
+  ],
+  "why": "outer volume 1.55x the rating",
+  "url": "https://www.walmart.com/ip/20693704",
+  "sku": "20693704"
+ },
+ {
+  "file": "retailer-walmart.json",
+  "retailer": "Walmart (sold and shipped by Walmart.com)",
+  "brand": "Vibrant Life",
+  "line": "Vibrant Life 5 Gallon Aquarium Starter Kit with Blue & White LED Lights",
+  "gal_rated": 5,
+  "listed": [
+   16.5,
+   8.75,
+   10.75
+  ],
+  "why": "dims basis: estimate: standard 5 gal glass tank; page gives no dims",
+  "url": "https://www.walmart.com/ip/15293521397",
+  "sku": "15293521397"
+ },
+ {
+  "file": "retailer-walmart.json",
+  "retailer": "Walmart (sold and shipped by Walmart.com)",
+  "brand": "Vibrant Life",
+  "line": "Vibrant Life 10 Gallon Aquarium Starter Kit",
+  "gal_rated": 10,
+  "listed": [
+   20,
+   10,
+   12
+  ],
+  "why": "dims basis: estimate: standard 10 gal glass tank; page gives no dims",
+  "url": "https://www.walmart.com/ip/15316464908",
+  "sku": "15316464908"
+ },
+ {
+  "file": "retailer-walmart.json",
+  "retailer": "Walmart (sold and shipped by Walmart.com)",
+  "brand": "Vibrant Life",
+  "line": "Vibrant Life 5-Gallon Bow-Front Glow/White Aquarium Starter Kit",
+  "gal_rated": 5,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.walmart.com/ip/20000457618",
+  "sku": "20000457618"
+ },
+ {
+  "file": "retailer-walmart.json",
+  "retailer": "Walmart (sold and shipped by Walmart.com)",
+  "brand": "Vibrant Life",
+  "line": "Vibrant Life Betta View Aquarium Starter Kit, 1.5 Gallon",
+  "gal_rated": 1.5,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.walmart.com/ip/15303459484",
+  "sku": "15303459484"
+ },
+ {
+  "file": "retailer-walmart.json",
+  "retailer": "Walmart (sold and shipped by Walmart.com)",
+  "brand": "Vibrant Life",
+  "line": "Vibrant Life Betta View Aquarium Starter Kit, 3 Gallon",
+  "gal_rated": 3,
+  "listed": [
+   9.57,
+   9.57,
+   10.1
+  ],
+  "why": "dims basis: box",
+  "url": "https://www.walmart.com/ip/15280601414",
+  "sku": "15280601414"
+ },
+ {
+  "file": "retailer-walmart.json",
+  "retailer": "Walmart (sold and shipped by Walmart.com)",
+  "brand": "Tetra",
+  "line": "Tetra 29 Gallon Glass LED Aquarium Kit",
+  "gal_rated": 29,
+  "listed": [
+   30,
+   12,
+   18
+  ],
+  "why": "dims basis: estimate: standard 29 gal footprint 30 x 12 x 18",
+  "url": "https://www.walmart.com/ip/1560621988",
+  "sku": "1560621988"
+ },
+ {
+  "file": "retailer-walmart.json",
+  "retailer": "Walmart (sold and shipped by Walmart.com)",
+  "brand": "Tetra",
+  "line": "Tetra Complete LED Aquarium Kit for Goldfish, 20 Gallon",
+  "gal_rated": 20,
+  "listed": [
+   30,
+   12,
+   12
+  ],
+  "why": "dims basis: estimate: 20 gal long footprint; page height 12",
+  "url": "https://www.walmart.com/ip/1988218289",
+  "sku": "1988218289"
+ },
+ {
+  "file": "retailer-walmart.json",
+  "retailer": "Walmart (sold and shipped by Walmart.com)",
+  "brand": "GloFish",
+  "line": "GloFish 5 Gallon Aquarium Kit with LED Light and Filter (crescent)",
+  "gal_rated": 5,
+  "listed": [
+   16.5,
+   10.5,
+   13.19
+  ],
+  "why": "outer volume 1.98x the rating",
+  "url": "https://www.walmart.com/ip/33116878",
+  "sku": "33116878"
+ },
+ {
+  "file": "retailer-walmart.json",
+  "retailer": "Walmart (sold and shipped by Walmart.com)",
+  "brand": "GloFish",
+  "line": "GloFish 5 Gallon Aquarium Starter Kit with LED (AQ-78238)",
+  "gal_rated": 5,
+  "listed": [
+   16.5,
+   10.5,
+   13
+  ],
+  "why": "outer volume 1.95x the rating",
+  "url": "https://www.walmart.com/ip/713303375",
+  "sku": "713303375"
+ },
+ {
+  "file": "retailer-walmart.json",
+  "retailer": "Walmart (sold and shipped by Walmart.com)",
+  "brand": "GloFish",
+  "line": "GloFish 5 Gallon Desktop Aquarium Kit with Filter",
+  "gal_rated": 5,
+  "listed": [
+   11,
+   11,
+   16.25
+  ],
+  "why": "outer volume 1.70x the rating",
+  "url": "https://www.walmart.com/ip/17862900205",
+  "sku": "17862900205"
+ },
+ {
+  "file": "retailer-walmart.json",
+  "retailer": "Walmart (sold and shipped by Walmart.com)",
+  "brand": "GloFish",
+  "line": "GloFish Crescent Aquarium Kit 3 Gallons",
+  "gal_rated": 3,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.walmart.com/ip/16940355",
+  "sku": "16940355"
+ },
+ {
+  "file": "retailer-walmart.json",
+  "retailer": "Walmart (sold and shipped by Walmart.com)",
+  "brand": "Tetra",
+  "line": "Tetra STEM 3 Gallon Aquarium Kit (half-moon)",
+  "gal_rated": 3,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.walmart.com/ip/15794957150",
+  "sku": "15794957150"
+ },
+ {
+  "file": "retailer-walmart.json",
+  "retailer": "Walmart (sold and shipped by Walmart.com)",
+  "brand": "Marineland",
+  "line": "Marineland 3 Gallon Aquarium Kit, Glass, with Filter and LED (ML90610-00)",
+  "gal_rated": 3,
+  "listed": [
+   9.63,
+   9.63,
+   14
+  ],
+  "why": "outer volume 1.87x the rating",
+  "url": "https://www.walmart.com/ip/36887970",
+  "sku": "36887970"
+ },
+ {
+  "file": "retailer-walmart.json",
+  "retailer": "Walmart (sold and shipped by Walmart.com)",
+  "brand": "Tetra",
+  "line": "Tetra 1.1 Gallon Betta Aquarium Kit, Half Moon",
+  "gal_rated": 1.1,
+  "listed": [
+   9.5,
+   5.32,
+   10.25
+  ],
+  "why": "outer volume 2.04x the rating",
+  "url": "https://www.walmart.com/ip/24872632",
+  "sku": "24872632"
+ },
+ {
+  "file": "retailer-walmart.json",
+  "retailer": "Walmart (sold and shipped by Walmart.com)",
+  "brand": "Penn-Plax",
+  "line": "Penn-Plax SpongeBob SquarePants Plastic Starter Kit 1.5 gal",
+  "gal_rated": 1.5,
+  "listed": [
+   8.5,
+   6,
+   9.5
+  ],
+  "why": "dims basis: estimate: dims from page text '8.5x6x9.5', height 9.5 spec",
+  "url": "https://www.walmart.com/ip/226964879",
+  "sku": "226964879"
+ },
+ {
+  "file": "retailer-walmart.json",
+  "retailer": "Walmart (sold and shipped by Walmart.com)",
+  "brand": "Aqueon",
+  "line": "Aqueon Aquarium Fish Tank Starter Kit with LED Lighting 20 High",
+  "gal_rated": 20,
+  "listed": [
+   27.5,
+   16,
+   20.25
+  ],
+  "why": "outer volume 1.93x the rating",
+  "url": "https://www.walmart.com/ip/424027537",
+  "sku": "424027537"
+ },
+ {
+  "file": "retailer-walmart.json",
+  "retailer": "Walmart (sold and shipped by Walmart.com)",
+  "brand": "Aqua Culture",
+  "line": "Aqua Culture 3-Gallon 360 View Aquarium Kit",
+  "gal_rated": 3,
+  "listed": null,
+  "why": "no dims",
+  "url": "https://www.walmart.com/ip/13448744",
+  "sku": "13448744"
+ }
+]
