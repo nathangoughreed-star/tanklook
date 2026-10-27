@@ -1,7 +1,8 @@
 // Suggest a setup (lane C8): proposals are rechecked on ALL enabled guardrails and husbandry; nothing qualifying says exactly the no-suggestion line.
 import { describe, expect, it } from 'vitest';
 import { defaultProfile } from '../src/demand/types';
-import { ARCHETYPES, suggestSetups, NO_SUGGESTION, type Wants } from '../src/demand/suggest';
+import { ARCHETYPES, asksDryGroups, suggestSetups, NO_SUGGESTION, type OwnedMap, type Wants } from '../src/demand/suggest';
+import { FILTER_PRODUCTS, HEATER_PRODUCTS, LIGHT_PRODUCTS } from '../src/data/gearCatalog';
 import { buildsFor } from '../src/scene/builds';
 import { tankOptions } from '../src/scene/tankfit';
 import { compliance, type Constraints } from '../src/scene/constraints';
@@ -95,7 +96,7 @@ describe('Suggest a setup', () => {
     const wide: Constraints = { startupUsd: cap(5000) };
     const first = (extra: Partial<Wants>) => run(wide, extra).proposals.find(p => p.archetype.id === 'betta')!;
     it('owned items cost $0 in the set-up total; the animals and husbandry are untouched; upkeep and minutes unchanged', () => {
-      const a = first({}), b = first({ owned: ['filter', 'heater'] });
+      const a = first({}), b = first({ owned: { filter: 'care', heater: 'care' } });
       expect(b.saved).toBeGreaterThan(0);
       expect(b.totals.startupUsd).toBe(b.build.setupUsd - b.saved);      // the build may differ: owning gear can change which build ranks best
       expect(b.totals.monthlyUsd).toBe(b.build.upkeepUsdMo); expect(b.totals.minPerWeek).toBe(b.build.minPerWeek);
@@ -106,7 +107,7 @@ describe('Suggest a setup', () => {
     it('a budget the setup just misses is met once the owned gear is taken off', () => {
       const a = first({}), cap1 = a.totals.startupUsd - 5;
       expect(run({ startupUsd: cap(cap1) }).proposals.some(p => p.archetype.id === 'betta' && p.build.id === a.build.id && p.totals.startupUsd === a.totals.startupUsd)).toBe(false);
-      const r = run({ startupUsd: cap(cap1) }, { owned: ['filter', 'heater', 'light', 'lid'] });
+      const r = run({ startupUsd: cap(cap1) }, { owned: { filter: 'care', heater: 'care', light: 'care', lid: 'care' } });
       expect(r.proposals.some(p => p.archetype.id === 'betta' && p.totals.startupUsd <= cap1)).toBe(true);
     });
     it('stand off: no stand cost and the scene shows none; stand on: the default price', () => {
@@ -116,7 +117,7 @@ describe('Suggest a setup', () => {
       expect(off.totals.startupUsd).toBeLessThan(on.totals.startupUsd);
     });
     it('an owned stand is $0 when a stand is needed, and is ignored when none is', () => {
-      const on = first({}), own = first({ owned: ['stand'] }), offOwn = first({ needStand: false, owned: ['stand'] }), off = first({ needStand: false });
+      const on = first({}), own = first({ owned: { stand: 'care' } }), offOwn = first({ needStand: false, owned: { stand: 'care' } }), off = first({ needStand: false });
       expect(own.totals.startupUsd).toBe(off.totals.startupUsd);       // $0 stand = no stand cost
       expect(own.scene.stand.show).toBe(true);                         // it is still a stand in the scene
       expect(offOwn.totals.startupUsd).toBe(off.totals.startupUsd);   // no double count
@@ -157,6 +158,40 @@ describe('Suggest a setup', () => {
     it('arthropods only: nothing to offer yet, said plainly and not as a guardrail result', () => {
       const r = run({}, { kinds: ['terrarium'], groups: ['arthropod'] });
       expect(r.proposals).toEqual([]); expect(r.unavailable).toMatch(/no setups of that kind/); expect(r.message).toBeUndefined();
+    });
+  });
+
+  describe("which equipment they have: a real product, I don't care, I don't know (Nathan 2026-10-27)", () => {
+    const wide: Constraints = { startupUsd: cap(5000) };
+    const pick = (owned: OwnedMap) => run(wide, { owned }).proposals.find(p => p.archetype.id === 'betta')!;
+    it('a real filter that carries the stocking is credited $0 and goes into the tank', () => {
+      const big = FILTER_PRODUCTS.filter(f => f.kind === 'hob').sort((a, b) => (b.gph ?? 0) - (a.gph ?? 0))[0];
+      const p = pick({ filter: big.id });
+      expect(p.ownedNotes.some(n => n.kind === 'credit' && n.text.includes('used in the tank'))).toBe(true);
+      expect(p.saved).toBeGreaterThan(0);
+      expect(JSON.stringify(p.scene.tech)).toContain(big.id);
+    });
+    it("an undersized heater is flagged, not credited, and the setup's own heater is priced", () => {
+      const tiny = [...HEATER_PRODUCTS].sort((a, b) => a.watts - b.watts)[0];
+      const a = pick({ heater: 'care' }), b = pick({ heater: tiny.id });
+      expect(b.ownedNotes.some(n => n.kind === 'flag' && /under the .* W this tank needs/.test(n.text))).toBe(true);
+      expect(b.saved).toBeLessThan(a.saved);
+    });
+    it('a light that does not span the tank is flagged', () => {
+      const off = LIGHT_PRODUCTS.find(l => l.fitMinMm > 700)!;
+      const p = pick({ light: off.id });
+      expect(p.ownedNotes.some(n => n.kind === 'flag')).toBe(true);
+    });
+    it("I don't care: credited $0 as before; I don't know: not credited, a note to check", () => {
+      const care = pick({ filter: 'care' }), unk = pick({ filter: 'unknown' }), none = pick({});
+      expect(care.saved).toBeGreaterThan(0);
+      expect(unk.saved).toBe(0); expect(unk.totals.startupUsd).toBe(unk.build.setupUsd);
+      expect(unk.ownedNotes.some(n => n.kind === 'ask')).toBe(true);
+      expect(none.ownedNotes).toEqual([]);
+    });
+    it('the terrarium / vivarium sub-choice is asked when Terrarium OR Vivarium is ticked, and not otherwise', () => {
+      expect(asksDryGroups(['terrarium'])).toBe(true); expect(asksDryGroups(['vivarium'])).toBe(true);
+      expect(asksDryGroups(['terrarium', 'vivarium'])).toBe(true); expect(asksDryGroups(['freshwater', 'saltwater'])).toBe(false);
     });
   });
 });

@@ -7,7 +7,7 @@ import { getSpecies } from '../data/species';
 import { demandOf } from '../demand/engine';
 import { pinDeal } from '../demand/pinned';
 import { rhythmOf } from '../demand/rhythm';
-import { suggestSetups, DRY_GROUPS, KINDS, OWNED, type DryGroup, type Kind, TAGS, type OwnedKey, FAMILY_LABEL, type Proposal, type Suggestions, type Tag } from '../demand/suggest';
+import { suggestSetups, DRY_GROUPS, KINDS, OWNED, PICK_CARE, PICK_UNKNOWN, asksDryGroups, type OwnedMap, type DryGroup, type Kind, TAGS, FAMILY_LABEL, type Proposal, type Suggestions, type Tag } from '../demand/suggest';
 import { CYCLE_NOTE } from '../scene/plan';
 import { compliance, lastUsed, rememberLastUsed, type Constraints } from '../scene/constraints';
 import type { Store } from '../scene/store';
@@ -22,10 +22,10 @@ const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
 const MM_IN = 25.4;
 
 /** The guardrails card's fields as the panel holds them (empty = that guardrail has no value yet, so it is off). */
-export interface Fields { startup: string; monthly: string; time: string; spaceOn: boolean; w: string; d: string; needStand: boolean; owned: OwnedKey[]; kinds: Kind[]; groups: DryGroup[] }
+export interface Fields { startup: string; monthly: string; time: string; spaceOn: boolean; w: string; d: string; needStand: boolean; owned: OwnedMap; kinds: Kind[]; groups: DryGroup[] }
 const num = (s: string) => { const v = parseFloat(s); return Number.isFinite(v) && v >= 0 ? v : undefined; };
 /** Fields -> the constraints and space the generator checks. A box with no number is off; the space box needs both sizes. */
-export function wantsFrom(f: Fields, units: Units): { constraints: Constraints; space?: SpaceLimit; spaceMissing: boolean; needStand: boolean; owned: OwnedKey[]; kinds: Kind[]; groups: DryGroup[] } {
+export function wantsFrom(f: Fields, units: Units): { constraints: Constraints; space?: SpaceLimit; spaceMissing: boolean; needStand: boolean; owned: OwnedMap; kinds: Kind[]; groups: DryGroup[] } {
   const c: Constraints = {}, s = num(f.startup), m = num(f.monthly), t = num(f.time);
   if (s !== undefined) c.startupUsd = { on: true, value: s };
   if (m !== undefined) c.monthlyUsd = { on: true, value: m };
@@ -46,7 +46,7 @@ export function attachSuggest(store: Store, viewer: Viewer, status: (m: string, 
     if (hide && app && !app.classList.contains('collapsed')) { app.classList.add('collapsed'); stepped = true; viewer.invalidate(); }
     else if (!hide && stepped && app) { app.classList.remove('collapsed'); stepped = false; viewer.invalidate(); }
   };
-  let f: Fields = { startup: '', monthly: '', time: '', spaceOn: false, w: '', d: '', needStand: true, owned: [], kinds: KINDS.map(k => k.id), groups: DRY_GROUPS.map(g => g.id) };
+  let f: Fields = { startup: '', monthly: '', time: '', spaceOn: false, w: '', d: '', needStand: true, owned: {}, kinds: KINDS.map(k => k.id), groups: DRY_GROUPS.map(g => g.id) };
   let tags = new Set<Tag>(), res: Suggestions | undefined, pics: string[] = [], note = '';
   const units = () => store.scene.units ?? 'in';
 
@@ -60,7 +60,7 @@ export function attachSuggest(store: Store, viewer: Viewer, status: (m: string, 
   const readFields = () => {
     const g = (id: string) => el.querySelector<HTMLInputElement>(`#sg${id}`);
     f = { startup: g('Startup')?.value ?? '', monthly: g('Monthly')?.value ?? '', time: g('Time')?.value ?? '', spaceOn: !!g('SpaceOn')?.checked, w: g('W')?.value ?? '', d: g('D')?.value ?? '', needStand: g('NeedStand')?.checked ?? true,
-      owned: [...el.querySelectorAll<HTMLInputElement>('.sgOwn:checked')].map(x => x.value as OwnedKey),
+      owned: Object.fromEntries([...el.querySelectorAll<HTMLInputElement>('.sgOwn:checked')].map(x => [x.value, el.querySelector<HTMLSelectElement>(`.sgOwnPick[data-k="${x.value}"]`)?.value ?? PICK_CARE])) as OwnedMap,
       kinds: [...el.querySelectorAll<HTMLInputElement>('.sgKind:checked')].map(x => x.value as Kind), groups: [...el.querySelectorAll<HTMLInputElement>('.sgGroup:checked')].map(x => x.value as DryGroup) };
   };
 
@@ -77,6 +77,7 @@ export function attachSuggest(store: Store, viewer: Viewer, status: (m: string, 
 <div class="spNote">${esc(p.archetype.why)} ${esc(tankLabel(b.tank, units()))} with ${animals}. ${esc(b.label)} build.</div>
 <div class="bpNums"><span><b>${usd(p.totals.startupUsd)}</b>set-up${p.saved ? `<i>${usd(p.saved)} less: what you have</i>` : ''}</span><span><b>${usd(p.totals.monthlyUsd)}</b>a month</span><span><b>${p.totals.minPerWeek}</b>min a week<i>estimate</i></span></div>
 <div class="spNote">Rhythm: ${esc(rh.text)} (estimate)${rh.awayText ? `. Can be left: ${esc(rh.awayText)}.` : ''}</div>
+${p.ownedNotes.map(n => `<div class="${n.kind === 'credit' ? 'spNote' : 'spWarn'}">${esc(n.text)}</div>`).join('')}
 ${p.matched.length ? `<div class="spNote">Matches: ${p.matched.map(m => esc(TAGS.find(t => t.id === m)!.label.toLowerCase())).join(', ')}</div>` : ''}
 ${checks ? `<ul class="bpGear sgChecks">${checks}</ul>` : ''}
 ${p.unknown.length ? `<div class="spNote">Not enough information: ${esc(p.unknown[0])}</div>` : ''}
@@ -85,7 +86,7 @@ ${p.unknown.length ? `<div class="spNote">Not enough information: ${esc(p.unknow
   };
 
   const draw = () => {
-    const scroll = el.scrollTop, k = lenU();
+    const scroll = el.scrollTop, k = lenU(), nOwned = Object.keys(f.owned).length;
     let out = '';
     if (res) {
       if (res.proposals.length) out = `<p class="spNote">${esc(res.off ? 'No guardrail is on, so these are ranked by what you picked below, not checked against a limit.' : 'Each one passes every guardrail you switched on and the animals\' care checks. Prices are expected costs; minutes are estimates.')}</p>
@@ -97,14 +98,15 @@ ${res.note ? `<p class="spWarn sgNote">${esc(res.note)}</p>` : ''}<ul class="bpC
 <p class="spNote">Tick the limits that matter to you and we propose setups that fit them, each checked against all of them and against what the animals need. Leave a box empty to keep that limit off.</p>
 <div class="sgCard">
 <fieldset class="sgKinds"><legend>What kind of setup?</legend>${KINDS.map(k => `<label><input class="sgKind" type="checkbox" value="${k.id}" ${f.kinds.includes(k.id) ? 'checked' : ''}> ${k.label} <span class="spNote">${k.blurb}</span></label>`).join('')}
-${f.kinds.some(k => k === 'terrarium' || k === 'vivarium') ? `<div class="sgSub" role="group" aria-label="Terrarium and vivarium animals">${DRY_GROUPS.map(g => `<label><input class="sgGroup" type="checkbox" value="${g.id}" ${f.groups.includes(g.id) ? 'checked' : ''}> ${g.label}</label>`).join('')}</div>` : ''}
+${asksDryGroups(f.kinds) ? `<div class="sgSub" role="group" aria-label="Terrarium and vivarium animals"><span class="spNote">For a terrarium or vivarium, which animals?</span>${DRY_GROUPS.map(g => `<label><input class="sgGroup" type="checkbox" value="${g.id}" ${f.groups.includes(g.id) ? 'checked' : ''}> ${g.label}</label>`).join('')}</div>` : ''}
 ${f.kinds.length ? '' : '<div class="spWarn">Tick at least one kind.</div>'}</fieldset>
 <label class="sgRow"><span>Set-up budget ($)</span><input id="sgStartup" type="number" min="0" step="10" inputmode="decimal" value="${esc(f.startup)}" placeholder="no limit"></label>
 <label class="sgRow"><span>Monthly budget ($ a month)</span><input id="sgMonthly" type="number" min="0" step="1" inputmode="decimal" value="${esc(f.monthly)}" placeholder="no limit"></label>
 <label class="sgRow"><span>Care time (min a week)</span><input id="sgTime" type="number" min="0" step="5" inputmode="decimal" value="${esc(f.time)}" placeholder="no limit"></label>
 <div class="sgRow"><label><input id="sgSpaceOn" type="checkbox" ${f.spaceOn ? 'checked' : ''}> Space (${k})</label><span class="sgSp"><input id="sgW" type="number" min="0" aria-label="Width" value="${esc(f.w)}" placeholder="wide"> x <input id="sgD" type="number" min="0" aria-label="Depth" value="${esc(f.d)}" placeholder="deep"></span></div>
 <label class="sgRow"><span><input id="sgNeedStand" type="checkbox" ${f.needStand ? 'checked' : ''}> I'll need a stand</span></label>
-<details class="sgOwned"${f.owned.length ? ' open' : ''}><summary>Equipment I already have${f.owned.length ? ` (${f.owned.length})` : ''}</summary><div class="sgOwnList">${OWNED.map(o => `<label><input class="sgOwn" type="checkbox" value="${o.id}" ${f.owned.includes(o.id) ? 'checked' : ''}${o.id === 'stand' && !f.needStand ? ' disabled' : ''}> ${o.label}</label>`).join('')}</div><div class="spNote">Owned items cost $0 in the set-up total and the budget. They still count for the animals' needs, so the one you own should be as good as the one the setup calls for.</div></details>
+<details class="sgOwned"${nOwned ? ' open' : ''}><summary>Equipment I already have${nOwned ? ` (${nOwned})` : ''}</summary><div class="sgOwnList">${OWNED.map(o => { const on = o.id in f.owned, pick = f.owned[o.id] ?? PICK_CARE;
+  return `<div class="sgOwnRow"><label><input class="sgOwn" type="checkbox" value="${o.id}" ${on ? 'checked' : ''}${o.id === 'stand' && !f.needStand ? ' disabled' : ''}> ${o.label}</label>${on ? `<select class="sgOwnPick" data-k="${o.id}" aria-label="Which ${esc(o.label.toLowerCase())}"><option value="${PICK_CARE}"${pick === PICK_CARE ? ' selected' : ''}>I don't care</option><option value="${PICK_UNKNOWN}"${pick === PICK_UNKNOWN ? ' selected' : ''}>I don't know</option>${o.products ? `<optgroup label="From the catalogue">${o.products().map(p => `<option value="${p.id}"${pick === p.id ? ' selected' : ''}>${esc(p.label)}</option>`).join('')}</optgroup>` : ''}</select>` : ''}</div>`; }).join('')}</div><div class="spNote">Pick the real one and it is credited at its real size (too small and we say so and price a new one). "I don't care": $0, the setup's own is assumed to suit it. "I don't know": priced as bought, with a note to check yours.</div></details>
 <div class="sgTags" role="group" aria-label="What appeals to you">${TAGS.map(t => `<button type="button" class="sgTag${tags.has(t.id) ? ' on' : ''}" data-tag="${t.id}" aria-pressed="${tags.has(t.id)}">${t.label}</button>`).join('')}</div>
 <button type="button" class="primary" data-act="go">Show me setups</button>${note ? `<div class="spWarn">${esc(note)}</div>` : ''}
 </div>${out}`;
@@ -149,7 +151,7 @@ ${f.kinds.length ? '' : '<div class="spWarn">Tick at least one kind.</div>'}</fi
     if (t.dataset.tag) { readFields(); const id = t.dataset.tag as Tag; tags.has(id) ? tags.delete(id) : tags.add(id); draw(); return; }
     switch (t.dataset.act) { case 'close': close(); break; case 'go': go(); break; case 'pick': pick(+(t.dataset.i ?? -1)); break; }
   };
-  el.onchange = e => { if ((e.target as HTMLElement).id === 'sgNeedStand' || (e.target as HTMLElement).classList.contains('sgKind')) { readFields(); draw(); } };
+  el.onchange = e => { if ((e.target as HTMLElement).id === 'sgNeedStand' || (e.target as HTMLElement).classList.contains('sgKind') || (e.target as HTMLElement).classList.contains('sgOwn')) { readFields(); draw(); } };
   el.onkeydown = e => { if (e.key === 'Enter' && (e.target as HTMLElement).tagName === 'INPUT') go(); };
 
   const open = () => { seed(); side(true); el.hidden = false; draw(); el.querySelector<HTMLInputElement>('#sgStartup')?.focus(); };
