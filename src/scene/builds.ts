@@ -165,7 +165,7 @@ const gearLines = (S: TankSetup): string[] => {
   if (fs.length) lines.push(`Filter: ${fs.map(u => { if (u.kind === 'sump') return `Sump (${sumpName(sump!)}) + return pump`; const f = filterFor(S, u.kind as never, u.model, u.product); return f.product ? productName(f.product) : filterName(f.model); }).join(' + ')}`);
   const hs = heaterUnits(t);
   if (t.rows.heater && t.rows.heater !== 'none' && hs.length) lines.push(`Heater: about ${Math.round(heatLoss(S, t).heater.watts)} W${hs.length > 1 ? ' x ' + hs.length : ''}`);
-  else lines.push('No heater: these animals are comfortable at room temperature');
+  else lines.push(S.tech?.roomC !== undefined ? 'No heater: these animals are comfortable at room temperature' : `No heater: fine if your room stays near ${Math.round(ROOM_C)} °C (${Math.round(ROOM_C * 9 / 5 + 32)} °F, assumed)`);
   lines.push(`Light: ${S.light.watts ? Math.round(S.light.watts) + ' W ' : ''}LED`);
   if (t.rows.ato === 'ato') lines.push('Quality of life: auto top-off');
   if (t.rows.wcmethod === 'hose') lines.push('Quality of life: water-change hose (drains and fills from the tap)');

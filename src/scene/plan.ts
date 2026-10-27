@@ -120,7 +120,7 @@ function serve(r: Contribution, S: TankSetup, animals: AnimalCount[], needs: Ret
   if (k === 'filter' || k === 'filter+') return { serves: `Waste: your animals produce ${Math.round(st.filtrationPercent)}% of what this filter (and the plants) can clear`, kind: 'need' };
   if (k === 'heater' || k === 'heater+') return wantsHeat
     ? { serves: `Temperature: ${[...new Set(wet)].slice(0, 3).join(', ')} ${new Set(wet).size === 1 && animals[0].n === 1 ? 'wants' : 'want'} warmer water than a room`, kind: 'need' }
-    : { serves: 'Nothing here needs it: your animals are comfortable at room temperature', kind: 'extra' };
+    : { serves: S.tech?.roomC !== undefined ? 'Nothing here needs it: your animals are comfortable at room temperature' : `Nothing here needs it if your room stays near ${Math.round(ROOM_C)} °C (${Math.round(ROOM_C * 9 / 5 + 32)} °F, assumed: set your room temperature to confirm)`, kind: 'extra' };
   if (k === 'light') return needs.live ? { serves: `Plants: ${needs.light.replace(/^./, c => c.toLowerCase())}`, kind: 'need' } : { serves: 'So you can see the tank; no plant or animal here needs it', kind: 'look' };
   if (k === 'co2') return needs.live && needs.co2 !== 'No CO2 needed' ? { serves: 'Plants: some of your live plants want CO2', kind: 'need' } : { serves: 'Nothing here needs it: your plants grow without CO2', kind: 'extra' };
   if (k === 'ferts') return needs.live ? { serves: 'Plants: feeding the live plants', kind: 'need' } : { serves: 'Nothing here needs it: there are no live plants', kind: 'extra' };
