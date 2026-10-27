@@ -2,23 +2,23 @@
 // menu does, plus a "Suggest a setup" button (Discover is an action, not a path). The pure part (tile list, what a
 // click does) is testable; attachWelcome wires the dialog in index.html.
 export type WelcomeTileId = 'animal' | 'look' | 'sandbox';
-export type WelcomeAction = 'stocking' | 'soon-look' | 'sandbox' | 'suggest';
+export type WelcomeAction = 'stocking' | 'look' | 'sandbox' | 'suggest';
 export interface WelcomeTile { id: WelcomeTileId; title: string; blurb: string; action: WelcomeAction }
 
 export const WELCOME_TILES: readonly WelcomeTile[] = [
   { id: 'animal', title: 'An animal I want', blurb: 'Pick the animal; the tank it needs, and what it costs, follow.', action: 'stocking' },
-  { id: 'look', title: 'A look I want', blurb: 'Start from a style: nature, iwagumi, jungle, reef.', action: 'soon-look' },
+  { id: 'look', title: 'A look I want', blurb: 'Start from a style: nature, iwagumi, jungle, reef.', action: 'look' },
   { id: 'sandbox', title: 'Sandbox', blurb: 'An empty tank to fill yourself, no questions. Rebuild a tank you already own here.', action: 'sandbox' },
 ];
 export const SUGGEST_ACTION: WelcomeAction = 'suggest';
 export const WELCOME_TITLE = 'Welcome to TankLook';
 
 /** What the screen does for an action: a call into the host (open a screen, start a tank) or a short coming-soon panel. */
-export function welcomeOutcome(a: WelcomeAction): { kind: 'go'; to: 'stocking' | 'sandbox' | 'suggest' } | { kind: 'soon'; text: string } {
+export function welcomeOutcome(a: WelcomeAction): { kind: 'go'; to: 'stocking' | 'look' | 'sandbox' | 'suggest' } | { kind: 'soon'; text: string } {
   switch (a) {
     case 'stocking': return { kind: 'go', to: 'stocking' };
     case 'sandbox': return { kind: 'go', to: 'sandbox' };
-    case 'soon-look': return { kind: 'soon', text: 'Starting from a look is coming soon. For now, Sandbox lets you pick a scape style in the editor, or pick an animal and choose its scape after.' };
+    case 'look': return { kind: 'go', to: 'look' };
     case 'suggest': return { kind: 'go', to: 'suggest' };
   }
 }
@@ -26,6 +26,7 @@ export function welcomeOutcome(a: WelcomeAction): { kind: 'go'; to: 'stocking' |
 export interface WelcomeHost {
   /** Open the stocking screen (path 1). */ stocking(): void;
   /** Open the Suggest a setup panel (guardrails in, proposals out). */ suggest(): void;
+  /** Open Create a look (path 2, lane C7). */ look(): void;
   /** An empty tank in the editor. */ sandbox(): boolean;
   /** Open the old New / Open chooser (deals, starters, saved tanks). */ browse(menu: 'new' | 'open'): void;
 }
@@ -38,7 +39,7 @@ export function attachWelcome(host: WelcomeHost) {
     const o = welcomeOutcome(a);
     if (o.kind === 'soon') { soon.textContent = o.text; soon.hidden = false; return; }
     soon.hidden = true;
-    if (o.to === 'sandbox') { if (host.sandbox()) dlg.close(); } else if (o.to === 'suggest') { dlg.close(); host.suggest(); } else { dlg.close(); host.stocking(); }
+    if (o.to === 'sandbox') { if (host.sandbox()) dlg.close(); } else if (o.to === 'suggest') { dlg.close(); host.suggest(); } else if (o.to === 'look') { dlg.close(); host.look(); } else { dlg.close(); host.stocking(); }
   };
   dlg.addEventListener('click', e => {
     const t = (e.target as HTMLElement).closest<HTMLElement>('[data-w],[data-browse]');

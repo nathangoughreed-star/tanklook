@@ -9,10 +9,10 @@ describe('welcome screen', () => {
     const by = (id: string) => welcomeOutcome(WELCOME_TILES.find(t => t.id === id)!.action);
     expect(by('animal')).toEqual({ kind: 'go', to: 'stocking' });
     expect(by('sandbox')).toEqual({ kind: 'go', to: 'sandbox' });
+    expect(by('look')).toEqual({ kind: 'go', to: 'look' });
   });
-  it('look shows a coming-soon panel; Suggest a setup opens the Suggest panel', () => {
-    const look = welcomeOutcome(WELCOME_TILES[1].action);
-    expect(look.kind).toBe('soon');
+  it('look opens Create a look; Suggest a setup opens the Suggest panel', () => {
+    expect(welcomeOutcome(WELCOME_TILES[1].action)).toEqual({ kind: 'go', to: 'look' });
     expect(welcomeOutcome(SUGGEST_ACTION)).toEqual({ kind: 'go', to: 'suggest' });
   });
 });

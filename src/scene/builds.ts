@@ -263,3 +263,12 @@ export function distinctBuilds(bs: Build[]): Build[] {
 /** True when this build keeps the stocking within its own filtration limit (false: no filter on the list carries it in this tank). */
 export const meetsNeeds = (b: Build) => b.filtrationPct <= FILTRATION_LIMIT[b.id] && b.spacePct <= 100;
 
+
+/**
+ * The build of a look-first tank (Create a look, spec section (e)): no animals yet, so the tank is the user's size chip and the gear is the
+ * balanced build's rules with nothing to stock. A terrarium size gets the dry gear (no filter), a water size the bare-minimum filter and light.
+ * Picking animals later re-plans the gear with `buildsFor`.
+ */
+export function emptyBuild(tank: TankModel, now = Date.now()): Build {
+  return tank.terrarium ? dryBuilds([], tank, now)[2] : buildsFor([], tank, now)[2];
+}
