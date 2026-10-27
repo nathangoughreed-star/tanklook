@@ -7,6 +7,10 @@ type R = [number, number];
  *  phOk / ghOk: the documented acceptable range, where it is wider than the preferred one (Nathan 2026-10-26). Absent = the preferred
  *  range is also the acceptable one: nothing is padded automatically (a blanket +-0.5 pH widening turned 360 of 388 failing pairs
  *  amber, neon tetras with Malawi cichlids among them; research/chem-audit.md). */
+// 2026-10-27 (S242 GH fix): hardness ranges added for 25 more species from the pages named in research/audits/S242-gh-sources.json (Seriously Fish,
+// FishBase, Guidarium for the dwarf frog); they are the page's stated range, the same reading as the older rows. A species with no GH range here
+// (asellus, trumpet snail: unit unstated, fire-bellied toad, fire newt, axolotl: no figure) is simply not checked for hardness. Betta: Seriously Fish
+// gives wild fish 5.0-7.0 and ornamental strains 6.0-8.0, so phOk 5.0-8.0 covers both and ph stays our pick.
 export const CHEM: Record<string, { ph: R; gh?: R; phOk?: R; ghOk?: R }> = {
   // Acceptable ranges for farmed soft-water fish (Nathan 2026-10-26: shell-building snails were red with them only at the pH 7.0 edge), one
   // source each. Neon: Seriously Fish "pH 4.0-7.5, 1-12 dGH". Ember: Aquarium Co-Op "adaptable enough to handle pH of 5.5-7.5" (no GH
@@ -26,29 +30,29 @@ export const CHEM: Record<string, { ph: R; gh?: R; phOk?: R; ghOk?: R }> = {
   // Pond Informer: Asellus aquaticus is "averse to low pH conditions" and tolerates organic pollution; no number is given, so 6.5-8.0 is our reading
   asellus: { ph: [6.5, 8.0] },
   rummynose: { ph: [5.5, 7.0], gh: [1, 10], phOk: [5.5, 7.5] }, harlequin: { ph: [5.0, 7.0], gh: [1, 12], phOk: [5.0, 7.5] }, chili: { ph: [5.0, 7.0], gh: [1, 8] },
-  danio: { ph: [6.0, 8.0] }, whitecloud: { ph: [6, 8.3] }, cpd: { ph: [6.5, 7.5] }, hatchet: { ph: [5, 7], gh: [1, 10], phOk: [5, 8] },
-  cherrybarb: { ph: [6, 8] }, tigerbarb: { ph: [6, 8] }, boesemani: { ph: [7.0, 8.0], gh: [9, 19] },
+  danio: { ph: [6.0, 8.0], gh: [5, 20] }, whitecloud: { ph: [6, 8.3], gh: [5, 20] }, cpd: { ph: [6.5, 7.5], gh: [5, 15] }, hatchet: { ph: [5, 7], gh: [1, 10], phOk: [5, 8] },
+  cherrybarb: { ph: [6, 8], gh: [2, 20] }, tigerbarb: { ph: [6, 8], gh: [1, 20] }, boesemani: { ph: [7.0, 8.0], gh: [9, 19] },
   guppy: { ph: [7, 8.3], gh: [8, 25] }, platy: { ph: [7.0, 8.2], gh: [9, 25] }, molly: { ph: [7.5, 8.5], gh: [10, 25] },
-  swordtail: { ph: [7, 8], gh: [9, 25] }, betta: { ph: [6.0, 7.5] }, dwarfgourami: { ph: [6.0, 7.5] }, honeygourami: { ph: [6.0, 7.5] },
-  gourami: { ph: [5.5, 8] }, gbr: { ph: [4, 7], gh: [1, 8] }, bolivianram: { ph: [6.0, 7.5] }, kribensis: { ph: [6.0, 7.5] },
+  swordtail: { ph: [7, 8], gh: [9, 25] }, betta: { ph: [6.0, 7.5], gh: [1, 15], phOk: [5.0, 8.0] }, dwarfgourami: { ph: [6.0, 7.5], gh: [2, 18] }, honeygourami: { ph: [6.0, 7.5], gh: [2, 15] },
+  gourami: { ph: [5.5, 8], gh: [3, 35] }, gbr: { ph: [4, 7], gh: [1, 8] }, bolivianram: { ph: [6.0, 7.5], gh: [1, 10] }, kribensis: { ph: [6.0, 7.5], gh: [0, 12] },
   cockatoo: { ph: [5, 6], gh: [2, 15] },
   // Lake Malawi / Tanganyika: hard, alkaline water
   yellowlab: { ph: [7.6, 8.6], gh: [10, 20] }, peacock: { ph: [7.5, 9], gh: [10, 20] }, demasoni: { ph: [7.6, 8.6], gh: [10, 20] },
   kadango: { ph: [7.6, 8.6], gh: [10, 20] }, syno: { ph: [7.5, 8.5], gh: [10, 25] }, labeo: { ph: [7.6, 8.6], gh: [10, 20] },
   auratus: { ph: [7.6, 8.6], gh: [10, 20] }, livingstonii: { ph: [7.6, 8.6], gh: [10, 20] }, afra: { ph: [7.6, 8.6], gh: [10, 20] },
-  angel: { ph: [6.0, 7.5] }, discus: { ph: [5.0, 7.0], gh: [1, 8] }, oscar: { ph: [6.0, 8.0] }, goldfish: { ph: [6, 8] }, comet: { ph: [6, 8] },
-  bronzecory: { ph: [6.0, 8.0] }, pandacory: { ph: [6.0, 7.5] }, pygmycory: { ph: [6.4, 7.4] }, bristlenose: { ph: [6.0, 8.0] },
+  angel: { ph: [6.0, 7.5], gh: [0, 15] }, discus: { ph: [5.0, 7.0], gh: [1, 8] }, oscar: { ph: [6.0, 8.0], gh: [5, 20] }, goldfish: { ph: [6, 8], gh: [5, 19] }, comet: { ph: [6, 8], gh: [5, 19] },
+  bronzecory: { ph: [6.0, 8.0], gh: [2, 15] }, pandacory: { ph: [6.0, 7.5], gh: [1, 12] }, pygmycory: { ph: [6.4, 7.4], gh: [2, 15] }, bristlenose: { ph: [6.0, 8.0], gh: [1, 15] },
   // kuhli: wild water is pH 5.5-6.5, very soft (FishBase); farmed stock is kept to pH 7.5, GH 10 (common aquarium practice), so that is its
   // acceptable range, the preferred one stays soft and acidic (Nathan 2026-10-26)
-  oto: { ph: [6.0, 7.5] }, kuhli: { ph: [5.5, 7.0], gh: [1, 6], phOk: [5.5, 7.5], ghOk: [1, 10] }, clownloach: { ph: [5, 7.5] }, sae: { ph: [6.5, 8] },
-  hillstream: { ph: [6, 7.5] }, peapuffer: { ph: [7.0, 8.0] },
+  oto: { ph: [6.0, 7.5], gh: [5, 19] }, kuhli: { ph: [5.5, 7.0], gh: [1, 6], phOk: [5.5, 7.5], ghOk: [1, 10] }, clownloach: { ph: [5, 7.5], gh: [1, 12] }, sae: { ph: [6.5, 8], gh: [1, 15] },
+  hillstream: { ph: [6, 7.5], gh: [2, 15] }, peapuffer: { ph: [7.0, 8.0], gh: [5, 25] },
   // invertebrates: snails need some hardness for their shells
   cherryshrimp: { ph: [6.5, 8.0], gh: [4, 14] }, amano: { ph: [6.0, 8.0], gh: [3, 15] }, nerite: { ph: [7.0, 8.5], gh: [6, 18] },
   // mystery snail: Aquarium Co-Op's care guide, "pH of at least 7.2, and GH above 150 ppm (or 8 degrees)", is the preferred floor; the
   // older 6.5 / 6 floor is kept as acceptable (Nathan 2026-10-26). Nerite: its Aquarium Co-Op guide says pH above 7.0 and plenty of minerals,
   // no GH figure, which its 7.0-8.5 already covers.
   mystery: { ph: [7.2, 8.0], gh: [8, 18], phOk: [6.5, 8.0], ghOk: [6, 18] }, ramshorn: { ph: [7, 8], gh: [6, 18] }, trumpet: { ph: [6.5, 8.0] },
-  adf: { ph: [6.5, 7.8] }, axolotl: { ph: [7.0, 7.6] }, firenewt: { ph: [6.5, 7.5] }, firetoad: { ph: [6.5, 7.5] },
+  adf: { ph: [6.5, 7.8], gh: [5, 15] }, axolotl: { ph: [7.0, 7.6] }, firenewt: { ph: [6.5, 7.5] }, firetoad: { ph: [6.5, 7.5] },
 };
 /** Every marine species shares one band (natural seawater); no hardness check. */
 export const MARINE_PH: R = [8.0, 8.4];
