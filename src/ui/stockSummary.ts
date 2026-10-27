@@ -17,6 +17,7 @@ import { groupMinimum, stockingGroupMinimum } from '../scene/groupMin';
 import { plural } from '../scene/stocking';
 import { rangeLine, sharedRange } from '../scene/temprange';
 import { coverAdvice, crowdWarnings } from '../scene/territory';
+import { filterState } from '../scene/tech';
 import type { TankSetup, Units } from '../scene/types';
 import { notesOf } from './stockPlanLogic';
 
@@ -107,6 +108,15 @@ export function stockSummary(S: TankSetup, r: Stocking, mins: { level: 'over' | 
   for (const s of sp) {
     const g = grazerShort(s.id, count.get(s.id)!, litres);
     if (g) add('environment', grazerLevel(s.id, count.get(s.id)!, litres) === 'severe' ? 'problem' : 'caution', `${s.name}: ${g.replace(/^algae: /, 'food: ')}`);
+  }
+
+  // filtration is not fullness (S243 step 4): it reads under Environment, as its own item, when the owner has a filter chosen
+  if (r.contributors.length && filterState(S) !== 'unset') {
+    const f = r.filtrationPercent, wc = r.nitrogen.waterChange.state;
+    if (isOver(f)) add('environment', 'problem', `Filtration: ${Number.isFinite(f) ? Math.round(f) : 'over 999'}% of what the filter and plants clear: the filter cannot keep up, so a bigger filter or fewer animals`);
+    else if (Math.round(f) >= IDEAL_MAX) add('environment', 'caution', `Filtration: ${Math.round(f)}% of what the filter and plants clear: heavier than normal water changes`);
+    if (wc === 'failure') add('environment', 'problem', 'Water changes cannot hold nitrate near 40 ppm for this stock (see the nitrate line)');
+    else if (wc === 'high') add('environment', 'caution', 'High water-change maintenance to hold nitrate near 40 ppm (see the nitrate line)');
   }
 
   // (e) spatial fullness: room only (water column or floor), never filtration (Nathan 2026-10-27)

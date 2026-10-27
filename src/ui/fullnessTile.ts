@@ -92,7 +92,7 @@ export function spaceReason(r: Stocking): string {
 export function tileState(S: TankSetup, r: Stocking, units: Units = 'cm'): TileState {
   const m = tankMinimum(S), mins = minWarnings(m, units), tooSmall = mins.some(w => w.level === 'over'), limit = S.layout.space, fit = limit ? spaceFit(S.tank, limit) : undefined;
   // no filter of the owner's yet (Nathan 2026-10-21): the pill and the reason come from space alone, not from an assumed filter
-  const filter = filterState(S), unset = filter === 'unset', head = bar(unset ? r.spacePercent : r.percent), cr = compatRisks(S);
+  const filter = filterState(S), unset = filter === 'unset', head = bar(unset ? r.spacePercent : r.loadPercent), cr = compatRisks(S);
   return {
     show: S.water.on && (r.contributors.length > 0 || !!limit),
     space: bar(r.spacePercent), filt: bar(r.filtrationPercent), min: minBar(m), mins, head: tooSmall && head.level !== 'over' ? { ...head, level: 'over', text: 'Too small' } : head,

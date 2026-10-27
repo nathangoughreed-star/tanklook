@@ -11,7 +11,8 @@ import dd from '../data/demand-defaults.json';
 //                  Lane HB (2026-10-21, research/habitat-model.md): Space is the larger of that WATER limit and a FLOOR limit, the floor
 //                  area the bottom dwellers use (FLOOR_SQIN_PER_IN of floor per inch of mass-equivalent length) over the tank's floor, so a
 //                  taller tank on the same floor gives bottom dwellers no more room. The water limit keeps its AqAdvisor fit.
-//   percent      = the larger of the two (over 100 = overstocked). Compatibility (waterchem, animalfit, group minimums) stays separate.
+//   percent      = ROOM ONLY (= spacePercent; S243 step 4, Nathan 2026-10-27: fullness means room). loadPercent = the larger of space and
+//   filtration, for the readers that decide whether a stocking is too much (reasons, the starter's Full stop, the tile's pill colour). Compatibility (waterchem, animalfit, group minimums) stays separate.
 //   2026-10-22 (Nathan, after the kuhli sanity check, research/habitat-model.md): the school discount in SPACE is one curve over all the
 //              fish in the water (AqAdvisor is concave in the whole tank's load, not per species), and a species that piles into shared
 //              caves (kuhli) uses FLOOR_FACTOR of its floor footprint.
@@ -192,8 +193,10 @@ export interface CapacityParts { /** load units the tank's water holds, filter a
 export interface Stocking {
   /** the nitrogen budget behind filtrationPercent (lane SE2): waste, filter bacteria, plants, nitrate */
   nitrogen: Nitrogen;
-  /** the larger of space and filtration, percent; over 100 = overstocked. 0 with no animals. */
+  /** fullness: room only (= spacePercent), percent; over 100 = too many for the room. 0 with no animals. (S243 step 4, Nathan 2026-10-27) */
   percent: number;
+  /** the larger of space and filtration, percent (what `percent` was before S243 step 4); over 100 = too much for the tank or its filter */
+  loadPercent: number;
   /** the larger of waterPercent and floorPercent: how full the tank itself is (the filter does not change it) */
   spacePercent: number;
   /** space load / what the tank's water holds, percent (the AqAdvisor-fitted per-litre number) */
@@ -266,7 +269,7 @@ export function stockingOf(S: TankSetup): Stocking {
   const areaCm2 = floorOf(S.tank).areaCm2, waterPercent = pc(spaceLoad, cap.space), floorPercent = pc(floorUse, areaCm2);
   const spaceBy = floorPercent > waterPercent ? 'floor' as const : 'water' as const, spacePercent = Math.max(waterPercent, floorPercent);
   const nitrogen = nitrogenBudget(S, cap.litres + sumpLitres(S), cap.tempC, load), // lane SU: the sump's water dilutes the waste too (not the swimming room)
-    filtrationPercent = nitrogen.ammoniaPercent, percent = Math.max(spacePercent, filtrationPercent);
+    filtrationPercent = nitrogen.ammoniaPercent, loadPercent = Math.max(spacePercent, filtrationPercent), percent = spacePercent;
   // shares are of the limit that binds
   const bySpace = spacePercent >= filtrationPercent;
   const contributors = [...by.values()].sort((a, b) => bySpace ? b.space - a.space : b.load - a.load);
@@ -279,7 +282,7 @@ export function stockingOf(S: TankSetup): Stocking {
   const unknown = [...new Set(S.fish.filter(f => !getSpecies(f.species)).map(f => f.species))];
   if (unknown.length) reasons.push(`Not enough information: no data for ${unknown.join(', ')}, so this tank cannot be assessed.`);
   if (!contributors.length) { if (!unknown.length) reasons.push('No animals in the water.'); }
-  else if (isOver(percent)) {
+  else if (isOver(loadPercent)) {
     const top = contributors[0];
     reasons.push(top.share >= 0.4 ? `Overstocked mainly because of the ${plural(top.n, top.name)} (${Math.round(top.share * 100)}% of the load).`
       : `Overstocked: ${contributors.slice(0, 3).map(c => `${plural(c.n, c.name)} ${Math.round(c.share * 100)}%`).join(', ')} of the load.`);
@@ -304,7 +307,7 @@ export function stockingOf(S: TankSetup): Stocking {
       ? `${head} ${!past ? 'Ideal.' : spaceBy === 'floor' ? 'Past ideal: water changes do not add floor; fewer bottom dwellers or a tank with a bigger base would.' : 'Past ideal: water changes do not add room; fewer animals or a longer tank would.'}`
       : `${head} ${past ? 'Doable with heavier than normal water changes and a tighter schedule; at 100% it needs a larger filter or less load.' : 'Normal water changes keep ammonia down; the fish get no toxin-induced stress from under-filtering.'}`);
   }
-  return { nitrogen, percent, spacePercent, waterPercent, floorPercent, spaceBy, floor: { areaCm2, usedCm2: floorUse }, filtrationPercent, load, contributors, capacity: cap, reasons, ...(fixFilter ? { fixFilter } : {}) };
+  return { nitrogen, percent, loadPercent, spacePercent, waterPercent, floorPercent, spaceBy, floor: { areaCm2, usedCm2: floorUse }, filtrationPercent, load, contributors, capacity: cap, reasons, ...(fixFilter ? { fixFilter } : {}) };
 }
 
 /** `stockingOf` remembered by what it reads (the UI asks every frame): animals and lengths, tank, water, tech, plants. */
@@ -334,6 +337,6 @@ export const IDEAL_MAX = 75;
 /** One line for the panel and the view label: "Stocking 78%", "Stocking 240%, overstocked". */
 /** Over the limit as shown (2026-10-22): the rounded percent, so 100.3 % reads "100%" and not overstocked, and 100.6 % reads "101%, overstocked". */
 export const isOver = (p: number) => Math.round(p) > 100;
-export const stockingLine = (r: Stocking) => `Stocking ${r.percent === Infinity ? 'over 999' : Math.round(r.percent)}%${isOver(r.percent) ? ', overstocked' : ''}`;
+export const stockingLine = (r: Stocking) => `Stocking ${r.percent === Infinity ? 'over 999' : Math.round(r.percent)}%${isOver(r.percent) ? ', overstocked' : isOver(r.filtrationPercent) ? ', filter over' : ''}`;
 /** The breakdown for a tooltip or list: every contributor with its count, mass and share of the load. */
 export const stockingDetail = (r: Stocking) => [`Space ${Math.round(r.spacePercent)}% of the tank's water, filtration ${Math.round(r.filtrationPercent)}% of what the filter clears`].concat(r.contributors.map(c => `${c.n} ${c.name}: ${Math.round(c.share * 100)}% of the load (${c.grams >= 10 ? Math.round(c.grams / c.n) : (c.grams / c.n).toFixed(1)} g each${Math.abs(c.spaceFactor - 1) >= 0.15 ? `, counted ${c.spaceFactor.toFixed(1)}x for space` : ''})`));

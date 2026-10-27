@@ -19,7 +19,8 @@ function tank(L: number, D: number, H: number, stock: [string, number][], o: { s
   if (o.filter) s.tech = withChoice(s, 'filter', o.filter);
   return s;
 }
-const pct = (s: TankSetup) => stockingOf(s).percent;
+// S243 step 4: `percent` is room only now; these tests are about the whole load (room or filtration), loadPercent
+const pct = (s: TankSetup) => stockingOf(s).loadPercent;
 
 const SALT = { salt: true };
 describe('stocking engine (lane SE)', () => {
@@ -89,14 +90,14 @@ describe('stocking engine (lane SE)', () => {
   it('space and filtration are separate: a better filter lowers filtration only, space only moves with water and animals', () => {
     const a = stockingOf(tank(36, 18, 18, [['danio', 14]], { filter: 'none' })), b = stockingOf(tank(36, 18, 18, [['danio', 14]], { filter: 'canister' }));
     expect(b.spacePercent).toBeCloseTo(a.spacePercent, 9); expect(b.filtrationPercent).toBeLessThan(a.filtrationPercent);
-    expect(a.percent).toBeCloseTo(Math.max(a.spacePercent, a.filtrationPercent), 9);
+    expect(a.percent).toBeCloseTo(a.spacePercent, 9); expect(a.loadPercent).toBeCloseTo(Math.max(a.spacePercent, a.filtrationPercent), 9); // S243 step 4: fullness = room only
     const crammed = stockingOf(tank(20, 10, 12, [['danio', 40]], { filter: 'sump' }));
     expect(crammed.spacePercent).toBeGreaterThan(100); expect(crammed.reasons.join(' ')).toMatch(/no filter fixes that/);
   });
   it('an overstocked tank names a filter that fixes it when one does, and capacity parts add up', () => {
     const s = tank(48, 13, 20, [['oscar', 2]], { filter: 'sponge' });
     const r = stockingOf(s);
-    expect(r.percent).toBeGreaterThan(100);
+    expect(r.loadPercent).toBeGreaterThan(100);
     expect(r.reasons.length).toBeGreaterThanOrEqual(2);
     expect(r.nitrogen.tan).toBeCloseTo(r.load, 9);
     expect(r.contributors.reduce((a, x) => a + x.load, 0)).toBeCloseTo(r.load, 9);

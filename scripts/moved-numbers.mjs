@@ -50,7 +50,7 @@ try {
       s.layout = { id, seed, dens: { hard: 2, plant: 2, animal: 4 } }; s.fish = []; sg.styleGround(s);
       s.fish = st.starterAnimals(s, 1);
       const c = {}; for (const f of s.fish) c[f.species] = (c[f.species] ?? 0) + 1;
-      out.starters[`${id} ${m.id} s${seed}`] = Object.keys(c).sort().map(k => `${c[k]} ${k}`).join(', ') + ` | ${r1(sk.stockingOf(s).percent)} %`;
+      out.starters[`${id} ${m.id} s${seed}`] = Object.keys(c).sort().map(k => `${c[k]} ${k}`).join(', ') + ` | ${r1((x => x.loadPercent ?? x.percent)(sk.stockingOf(s)))} %`;
     }
   }
   for (const m of tk.TANK_MODELS.filter(m => !m.terrarium)) {
@@ -59,7 +59,7 @@ try {
   }
   for (const x of ex.EXAMPLES) va.parseScene(exs.SCENES[x.id]).scene.tanks.forEach((t, i) => {
     const r = sk.stockingOf(t), d = dm.demandOf(t, dm.defaultProfile(), { now: NOW });
-    out.examples[`${x.id} #${i}`] = `${r1(r.percent)} % (space ${r1(r.spacePercent)}, filt ${r1(r.filtrationPercent)}) setup $${Math.round(d.totals.setupUsd)} | ${d.items.find(c => c.key === 'tank')?.label ?? ''}`;
+    out.examples[`${x.id} #${i}`] = `${r1(r.loadPercent ?? r.percent)} % (space ${r1(r.spacePercent)}, filt ${r1(r.filtrationPercent)}) setup $${Math.round(d.totals.setupUsd)} | ${d.items.find(c => c.key === 'tank')?.label ?? ''}`;
   });
   writeFileSync(arg[0], JSON.stringify(out, null, 1));
   console.log(`${day}: ` + Object.entries(out).map(([k, v]) => `${k} ${Object.keys(v).length}`).join(', '));

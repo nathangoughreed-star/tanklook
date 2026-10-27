@@ -2221,7 +2221,7 @@ Cancel, then change the name, to keep both.`)) return;
     const r = stockingMemo(s);
     if (!r.contributors.length) return '<span class="aq none">No animals in the water</span>';
     const tip = [...r.reasons, ...stockingDetail(r)].map(esc).join('&#10;');
-    return `<span class="aq${isOver(r.percent) ? ' over' : ''}" title="${tip}">${esc(stockingLine(r))}</span>`;
+    return `<span class="aq${isOver(r.loadPercent) ? ' over' : ''}" title="${tip}">${esc(stockingLine(r))}</span>`;
   };
   viewer.onDrawn(() => {
     const g = G(), active = viewer.active, split = active.length > 1;

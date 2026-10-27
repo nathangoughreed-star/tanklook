@@ -122,7 +122,7 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
   const reading = (extra: Map<Species, number>) => {
     const probe: Fish[] = [];
     for (const [sp, n] of extra) for (let i = 0; i < n; i++) probe.push({ id: probe.length, species: sp.id, x: 0, y: 0, depth: 0, yaw: 0, ...(sp.female && i % 2 ? { sex: 'f' as const } : {}) } as Fish);
-    return stockingOf({ ...s, fish: probe }).percent;
+    return stockingOf({ ...s, fish: probe }).loadPercent;
   };
   // lane SR (Nathan 2026-10-26, option a): a species whose smallest group cannot fit under the Full target is not drawn (its group would be
   // refused at every stop): a nano tank then gets whatever smaller schooling species the species list holds, not snails. Nothing is named here.
