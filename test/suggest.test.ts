@@ -2,6 +2,8 @@
 import { describe, expect, it } from 'vitest';
 import { defaultProfile } from '../src/demand/types';
 import { ARCHETYPES, suggestSetups, NO_SUGGESTION, type Wants } from '../src/demand/suggest';
+import { buildsFor } from '../src/scene/builds';
+import { tankOptions } from '../src/scene/tankfit';
 import { compliance, type Constraints } from '../src/scene/constraints';
 import { summaryOf } from '../src/ui/stockSummary';
 
@@ -12,7 +14,7 @@ const run = (c: Constraints, extra: Partial<Wants> = {}) => suggestSetups({ cons
 describe('Suggest a setup', () => {
   it('every archetype names real species and has a distinct id', () => {
     expect(new Set(ARCHETYPES.map(a => a.id)).size).toBe(ARCHETYPES.length);
-    expect(ARCHETYPES.length).toBeGreaterThanOrEqual(10);
+    expect(ARCHETYPES.length).toBeGreaterThanOrEqual(8);
   });
 
   it('all guardrails off: three proposals, ranked by appeal only, no pass / fail', () => {
@@ -32,8 +34,20 @@ describe('Suggest a setup', () => {
     for (const p of r.proposals) {
       const cp = compliance(p.scene, { setupUsd: p.totals.startupUsd, upkeepUsdMo: p.totals.monthlyUsd, minPerWeek: p.totals.minPerWeek }, P.limits);
       expect(cp.overall).toBe('within');
-      expect(summaryOf(p.scene, 'cm').worst).not.toBe('problem');
+      expect(summaryOf(p.scene, 'cm').cats.every(k => k.level !== 'problem' && k.level !== 'caution')).toBe(true);
       expect(p.scene.constraints).toEqual(c);
+    }
+  });
+
+  it('strict husbandry (Nathan 2026-10-27): 8 zebra danio in a 10 gal (20 in) is never recommended; Spatial fullness reads Caution there', () => {
+    const danio = buildsFor([{ species: 'danio', n: 8 }], tankOptions([{ species: 'danio', n: 8 }]).find(t => !t.fails.length && /^10 gal/.test(t.tank.name))!.tank, NOW)[0];
+    const sm = summaryOf(danio.setup, 'in');
+    expect(danio.tank.name).toBe('10 gal');
+    expect(sm.cats.find(k => k.id === 'fullness' || /fullness/i.test(k.label))?.level).toBe('caution');
+    for (const c of [{}, { startupUsd: cap(400), monthlyUsd: cap(25), minutesPerWeek: cap(45) }, { startupUsd: cap(2000) }]) {
+      const r = run(c);
+      for (const p of r.proposals) expect(p.archetype.id === 'danio' && p.build.tank.name === '10 gal').toBe(false);
+      for (const p of r.proposals) expect(summaryOf(p.scene, 'in').cats.some(k => k.level === 'caution' || k.level === 'problem')).toBe(false);
     }
   });
 

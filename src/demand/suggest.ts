@@ -57,6 +57,8 @@ export interface Suggestions {
   /** every guardrail is off: nothing to check against, proposals are ranked by appeal alone */
   off: boolean;
   proposals: Proposal[];
+  /** every archetype that has a setup passing all checks (proposals shows at most three of them) */
+  qualified: string[];
   /** the kinds (families) that have a setup passing every check */
   kinds: Family[];
   note?: string;
@@ -78,7 +80,7 @@ function headroom(t: Money, L: Limits): number {
   return parts.length ? parts.reduce((s, [v, c]) => s + Math.max(0, 1 - v / c), 0) / parts.length : 1;
 }
 
-const SIZES_PER_ARCHETYPE = 2;
+const SIZES_PER_ARCHETYPE = 4;
 export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', now = Date.now()): Suggestions {
   const C = w.constraints, tags = w.tags ?? [];
   const space = C.space?.on === false ? undefined : w.space;
@@ -92,7 +94,9 @@ export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', no
         if (!meetsNeeds(b)) continue;
         const scene: TankSetup = { ...b.setup, constraints: C, layout: { ...b.setup.layout, ...(w.space ? { space: w.space } : {}) } };
         const sm = summaryOf(scene, units);
-        if (sm.worst === 'problem') continue;                                    // husbandry is never traded for money or time
+        // husbandry is never traded for money or time: the strict rule (Nathan 2026-10-27) = nothing the stocking screen words as a Problem OR a
+        // Caution in any of its five categories (past-ideal fullness, a short sex ratio, a missing cave ...). Only "not enough information" passes, and it is shown.
+        if (sm.cats.some(c => c.level === 'problem' || c.level === 'caution')) continue;
         const t = money(b), L = effectiveLimits(scene, P0.limits);
         const cp = compliance(scene, { setupUsd: t.startupUsd, upkeepUsdMo: t.monthlyUsd, minPerWeek: t.minPerWeek }, L, units);
         if (cp.overall !== 'off') anyOn = true;
@@ -122,7 +126,7 @@ export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', no
   for (const p of sorted) if (shown.length < 3 && !shown.includes(p)) shown.push(p);
   shown.sort(rank);
   const kinds = [...new Set(sorted.map(p => p.archetype.family))];
-  const out: Suggestions = { off: !anyOn, proposals: shown, kinds, misses: misses.sort((a, b) => relaxSize(a.needs) - relaxSize(b.needs)).slice(0, 3) };
+  const out: Suggestions = { off: !anyOn, proposals: shown, qualified: sorted.map(p => p.archetype.id), kinds, misses: misses.sort((a, b) => relaxSize(a.needs) - relaxSize(b.needs)).slice(0, 3) };
   if (!shown.length) out.message = NO_SUGGESTION;
   else if (kinds.length < 3 && anyOn) out.note = `Only ${kinds.length === 1 ? 'one kind' : `${kinds.length} kinds`} of setup fit${kinds.length === 1 ? 's' : ''} your guardrails: ${kinds.map(k => FAMILY_LABEL[k]).join(', ')}.`;
   return out;

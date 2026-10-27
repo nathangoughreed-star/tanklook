@@ -3,11 +3,8 @@
   "archetypes": [
     { "id": "betta", "title": "A betta in its own tank", "family": "fish", "tags": ["colorful", "calm", "low-maint"], "animals": [{ "species": "betta", "n": 1 }], "why": "One showy fish, a small tank, little to look after." },
     { "id": "ember-nano", "title": "Ember tetra nano school", "family": "fish", "tags": ["colorful", "calm"], "animals": [{ "species": "ember", "n": 12 }], "why": "A glowing orange school in a small tank." },
-    { "id": "neon-cory", "title": "Neon tetras and corydoras community", "family": "fish", "tags": ["colorful", "active"], "animals": [{ "species": "neon", "n": 10 }, { "species": "bronzecory", "n": 6 }], "why": "Mid-water school plus bottom dwellers: the classic community." },
+    { "id": "neon-cory", "title": "Neon tetras and corydoras community", "family": "fish", "tags": ["colorful", "active"], "animals": [{ "species": "neon", "n": 8 }, { "species": "bronzecory", "n": 4 }], "why": "Mid-water school plus bottom dwellers: the classic community." },
     { "id": "danio", "title": "Zebra danio school", "family": "fish", "tags": ["active", "low-maint"], "animals": [{ "species": "danio", "n": 8 }], "why": "Hardy, always moving, forgiving of mistakes." },
-    { "id": "guppy", "title": "Guppy group", "family": "fish", "tags": ["colorful", "active"], "animals": [{ "species": "guppy", "n": 6 }], "why": "Bright, busy, easy to keep." },
-    { "id": "kribensis", "title": "Kribensis pair", "family": "fish", "tags": ["unusual", "active"], "animals": [{ "species": "kribensis", "n": 2 }], "why": "A small cichlid pair that raises fry in a cave." },
-    { "id": "shrimp", "title": "Cherry shrimp colony", "family": "invert", "tags": ["calm", "natural", "low-maint"], "animals": [{ "species": "cherryshrimp", "n": 10 }, { "species": "nerite", "n": 2 }], "why": "A tiny, quiet colony that breeds on its own." },
     { "id": "clown-nano", "title": "Clownfish pair (saltwater)", "family": "salt", "tags": ["colorful", "unusual"], "animals": [{ "species": "ocellaris", "n": 2 }], "why": "The saltwater classic; the most gear and care of these." },
     { "id": "leopard-gecko", "title": "Leopard gecko terrarium", "family": "terrarium", "tags": ["unusual", "calm", "low-maint"], "animals": [{ "species": "leopardgecko", "n": 1 }], "why": "A dry desert enclosure, no water to keep." },
     { "id": "crested-gecko", "title": "Crested gecko terrarium", "family": "terrarium", "tags": ["unusual", "calm"], "animals": [{ "species": "crestedgecko", "n": 1 }], "why": "A tall, humid, planted enclosure for a gentle climber." },
