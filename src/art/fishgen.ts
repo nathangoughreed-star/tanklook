@@ -575,7 +575,7 @@ export const PLANS: Record<string, Plan> = {
     finMarks: [{ k: 'spots', n: 60, u0: 0, u1: 0.6, v0: -0.4, v1: 0.4, r: 0.015, c: '#4f7fb8', a: 0.25 }],
     eye: { r: 0.03, iris: ['#7a3030', '#1a0808'] } },
   // pearl gourami: was hand-drawn (drawGourami); outline, fins and markings taken from that drawing
-  gourami: { thick: 0.32, depth: 0.39, pedU: 0.17, ped: 0.08, peak: 0.45, snout: 0.55, mouth: -0.045, shade: ['#5e5644', '#a09274', '#d3c6a8'], tail: { type: 'round', h: 0.16, tint: '#a8987a' }, fin: '#a8987a', ray: '#73654f',
+  gourami: { shimmer: 0.6, shimmerRgb: '255,242,220', gillLine: 0.25, finFade: 0.3, thick: 0.32, depth: 0.39, pedU: 0.17, ped: 0.08, peak: 0.45, snout: 0.55, mouth: -0.045, shade: ['#5e5644', '#a09274', '#d3c6a8'], tail: { type: 'round', h: 0.16, tint: '#a8987a' }, fin: '#a8987a', ray: '#73654f',
     // short dorsal set back, pointed in the male; anal from behind the pelvics to the peduncle, its rear rays drawn out in a fringe
     dorsal: { at: 0.5, len: 0.26, h: 0.1, spines: 0.35, nSp: 5, spineH: [0.05, 0.07], notch: 0.3, tip: 'point', trail: 0.14, drop: 0.9, rake: 0.6 },
     anal: { at: 0.7, len: 0.5, h: 0.11, spines: 0.4, nSp: 7, spineH: [0.03, 0.07], notch: 0.18, rake: 0.7, tip: 'point', trail: 0.07, fringe: true, edge: '#c87a3e' }, pelvic: { u: 0.72, len: 0.4, thread: true, tint: '#c8b48a' },
@@ -583,44 +583,45 @@ export const PLANS: Record<string, Plan> = {
       { k: 'poly', pts: zigzag(0.86, 0.21, 13, 0.01, 0.006), c: '#2a251d', a: 0.6 }, { k: 'blob', u: 0.215, v: 0, ru: 0.03, rv: 0.03, c: '#2a251d', a: 0.7 }],
     finMarks: [{ k: 'spots', n: 110, u0: 0.02, u1: 0.62, v0: -0.27, v1: 0.27, r: 0.009, c: '#f2eadb', a: 0.6 }],
     eye: { r: 0.024, iris: ['#d0b48a', '#5e4a2e'] } },
-  dwarfgourami: { thick: 0.32, depth: 0.42, pedU: 0.2, ped: 0.06, peak: 0.5, snout: 0.55, mouth: -0.045, shade: ['#2f5c8a', '#c25a3a', '#d47a54'], tail: { type: 'round', h: 0.17, tint: '#c6603e' }, fin: '#c86a4a',
+  dwarfgourami: { shimmer: 0.6, shimmerRgb: '175,205,255', gillLine: 0.28, finFade: 0.3, thick: 0.32, depth: 0.42, pedU: 0.2, ped: 0.06, peak: 0.5, snout: 0.55, mouth: -0.045, shade: ['#2f5c8a', '#c25a3a', '#d47a54'], tail: { type: 'round', h: 0.17, tint: '#c6603e' }, fin: '#c86a4a',
     // gourami fins: long bases, low spiny fronts deepening to the rear; the male's soft dorsal and anal end in points
     dorsal: { at: 0.62, len: 0.38, h: 0.1, spines: 0.6, nSp: 7, spineH: [0.035, 0.07], notch: 0.18, tip: 'point', trail: 0.07, rake: 0.6, edge: '#3c74b0' },
     anal: { at: 0.68, len: 0.46, h: 0.12, spines: 0.5, nSp: 7, spineH: [0.03, 0.08], notch: 0.18, tip: 'point', trail: 0.06, rake: 0.65, edge: '#3c74b0' }, pelvic: { u: 0.72, len: 0.4, thread: true, tint: '#d68a5a' },
-    marks: [0.32, 0.4, 0.48, 0.56, 0.64, 0.72, 0.8].map(u => ({ k: 'band' as const, u0: u, u1: u + 0.035, v0: -0.25, v1: 0.25, c: '#3a78b8', a: 0.75, f: 0.01 })),
+    // Commons (Colisa lalia): slanted bars alternating red and blue, the blue metallic
+    marks: [0.3, 0.37, 0.44, 0.51, 0.58, 0.65, 0.72, 0.79].map((u, i) => ({ k: 'poly' as const, pts: [[u + 0.07, -0.26], [u + 0.1, -0.26], [u + 0.03, 0.26], [u, 0.26]] as [number, number][], c: i % 2 ? '#c8402e' : '#3a78b8', a: i % 2 ? 0.5 : 0.75 })),
     finMarks: [{ k: 'spots', n: 40, u0: 0.05, u1: 0.7, v0: -0.35, v1: 0.35, r: 0.012, c: '#3a78b8', a: 0.6 }],
     eye: { r: 0.032, iris: ['#c8603a', '#3a1a10'] } },
-  honeygourami: { thick: 0.32, depth: 0.38, pedU: 0.2, ped: 0.06, peak: 0.5, snout: 0.55, mouth: -0.045, shade: ['#b06a2a', '#e09a42', '#eabc78'], tail: { type: 'round', h: 0.15, tint: '#dca064' }, fin: '#dca064',
+  honeygourami: { shimmer: 0.55, shimmerRgb: '255,228,165', gillLine: 0.25, finFade: 0.35, thick: 0.32, depth: 0.38, pedU: 0.2, ped: 0.06, peak: 0.5, snout: 0.55, mouth: -0.045, shade: ['#b06a2a', '#e09a42', '#eabc78'], tail: { type: 'round', h: 0.15, tint: '#dca064' }, fin: '#dca064',
     dorsal: { at: 0.6, len: 0.36, h: 0.085, spines: 0.6, nSp: 6, spineH: [0.03, 0.06], notch: 0.18, tip: 'point', trail: 0.05, rake: 0.6 },
     anal: { at: 0.67, len: 0.45, h: 0.1, spines: 0.5, nSp: 6, spineH: [0.03, 0.07], notch: 0.18, tip: 'point', trail: 0.05, rake: 0.65, edge: '#3a3020' }, pelvic: { u: 0.7, len: 0.3, thread: true, tint: '#e0a868' },
     marks: [{ k: 'band', u0: 0.7, u1: 1, v0: 0.04, v1: 0.26, c: '#4a3a30', a: 0.42, f: 0.14 }, { k: 'blob', u: 0.84, v: 0.14, ru: 0.09, rv: 0.07, c: '#3a2e2a', a: 0.35 }], eye: { r: 0.03, iris: ['#d08a40', '#4a2a10'] } },
-  gbr: { thick: 0.36, depth: 0.44, pedU: 0.22, ped: 0.06, peak: 0.5, snout: 0.55, shade: ['#6b7a5a', '#b8b46a', '#d8c088'], tail: { type: 'round', h: 0.17, tint: '#b0907a' }, fin: '#b89a80',
+  gbr: { shimmer: 0.7, shimmerRgb: '125,222,238', gillLine: 0.28, finFade: 0.3, thick: 0.36, depth: 0.44, pedU: 0.22, ped: 0.06, peak: 0.5, snout: 0.55, shade: ['#6b7a5a', '#b8b46a', '#d8c088'], tail: { type: 'round', h: 0.17, tint: '#b0907a' }, fin: '#b89a80',
     // dorsal from over the gill cover to the peduncle: tall black front spines (male), soft rear drawn out to a point
     dorsal: { at: 0.8, len: 0.52, h: 0.12, spines: 0.5, nSp: 8, spineH: [0.17, 0.08], tip: 'point', trail: 0.07, edge: '#c8443a' },
     anal: { at: 0.52, len: 0.27, h: 0.1, spines: 0.25, nSp: 3, spineH: [0.04, 0.07], tip: 'point', trail: 0.05 }, pelvic: { u: 0.67, len: 0.11, ext: 0.07, tint: '#c84a3a' },
-    marks: [{ k: 'blob', u: 0.86, v: -0.02, ru: 0.12, rv: 0.12, c: '#e0b04a', a: 0.7 }, { k: 'bars', us: [0.87], w: 0.04, c: '#1a1a1e', a: 0.85 },
+    marks: [{ k: 'spots', n: 40, u0: 0.28, u1: 0.8, v0: -0.12, v1: 0.1, r: 0.006, c: '#4ad6e8', a: 0.85 }, { k: 'blob', u: 0.86, v: -0.02, ru: 0.12, rv: 0.12, c: '#e0b04a', a: 0.7 }, { k: 'bars', us: [0.87], w: 0.04, c: '#1a1a1e', a: 0.85 },
       { k: 'blob', u: 0.62, v: -0.04, ru: 0.05, rv: 0.06, c: '#1a1a1e', a: 0.75 }, { k: 'spots', n: 70, u0: 0.25, u1: 0.8, v0: -0.15, v1: 0.15, r: 0.012, c: '#5aa0d8', a: 0.75 }],
     finMarks: [{ k: 'spots', n: 50, u0: 0, u1: 0.65, v0: -0.4, v1: 0.4, r: 0.01, c: '#5aa0d8', a: 0.55 }, { k: 'band', u0: 0.66, u1: 0.8, v0: -0.6, v1: -0.2, c: '#1a1a1e', a: 0.85, f: 0.02 }],
     eye: { r: 0.032, iris: ['#c8443a', '#4a1210'] } },
-  bolivianram: { thick: 0.36, depth: 0.38, pedU: 0.22, ped: 0.055, peak: 0.5, snout: 0.5, shade: ['#6a6450', '#b8ae8a', '#d8cfb0'], tail: { type: 'lyre', h: 0.17, tint: '#c2a890', cut: 0.42 }, fin: '#c2ac94',
+  bolivianram: { shimmer: 0.5, shimmerRgb: '200,225,255', gillLine: 0.25, finFade: 0.3, thick: 0.36, depth: 0.38, pedU: 0.22, ped: 0.055, peak: 0.5, snout: 0.5, shade: ['#6a6450', '#b8ae8a', '#d8cfb0'], tail: { type: 'lyre', h: 0.17, tint: '#c2a890', cut: 0.42 }, fin: '#c2ac94',
     // raised front spines, soft rear to a point; a shallow tail fork with the outer rays drawn out; long pelvics
     dorsal: { at: 0.8, len: 0.54, h: 0.11, spines: 0.55, nSp: 9, spineH: [0.15, 0.075], tip: 'point', trail: 0.06, edge: '#c8443a' },
     anal: { at: 0.5, len: 0.26, h: 0.1, spines: 0.25, nSp: 3, spineH: [0.04, 0.07], tip: 'point', trail: 0.05 }, pelvic: { u: 0.67, len: 0.11, ext: 0.08, tint: '#d26a52' },
     marks: [{ k: 'blob', u: 0.58, v: -0.01, ru: 0.04, rv: 0.04, c: '#1a1a1e', a: 0.8 }, { k: 'bars', us: [0.87], w: 0.03, c: '#2a2a2c', a: 0.7 }, { k: 'blob', u: 0.8, v: 0.1, ru: 0.12, rv: 0.06, c: '#e8a868', a: 0.5 }],
     eye: { r: 0.03, iris: ['#c8443a', '#4a1210'] } },
-  kribensis: { thick: 0.45, belly: 0.2, depth: 0.27, pedU: 0.2, ped: 0.05, peak: 0.55, snout: 0.45, shade: ['#5c5848', '#b3aa90', '#d8b8a8'], tail: { type: 'notch', h: 0.15, tint: '#c8ac6a' }, fin: '#c0a674',
+  kribensis: { shimmer: 0.5, shimmerRgb: '235,205,255', gillLine: 0.25, finFade: 0.3, thick: 0.45, belly: 0.2, depth: 0.27, pedU: 0.2, ped: 0.05, peak: 0.55, snout: 0.45, shade: ['#5c5848', '#b3aa90', '#d8b8a8'], tail: { type: 'notch', h: 0.15, tint: '#c8ac6a' }, fin: '#c0a674',
     // dorsal over the gill cover to the peduncle, low spiny front; the male's soft dorsal and anal drawn out to points
     dorsal: { at: 0.8, len: 0.56, h: 0.09, spines: 0.6, nSp: 9, spineH: [0.05, 0.065], notch: 0.25, tip: 'point', trail: 0.09, rake: 0.6, edge: '#c8443a' },
     anal: { at: 0.5, len: 0.27, h: 0.09, spines: 0.25, nSp: 3, spineH: [0.035, 0.06], tip: 'point', trail: 0.08 }, pelvic: { u: 0.66, len: 0.1, ext: 0.03, tint: '#7a4ca0' },
     marks: [{ k: 'band', u0: 0.2, u1: 0.92, v0: -0.02, v1: 0.02, c: '#2a2620', a: 0.8, f: 0.012 }, { k: 'blob', u: 0.62, v: 0.1, ru: 0.15, rv: 0.06, c: '#d0405a', a: 0.75 }],
     finMarks: [{ k: 'blob', u: 0.3, v: -0.17, ru: 0.025, rv: 0.025, c: '#1a1a1a', a: 0.85 }], eye: { r: 0.028, iris: ['#c8a050', '#3a2a10'] } },
-  discus: { scale: 0.014, thick: 0.2, depth: 0.78, pedU: 0.13, ped: 0.07, peak: 0.45, snout: 0.85, mouth: 0.02, shade: ['#5a6a7a', '#3f8aa8', '#4a98b0'], tail: { type: 'notch', h: 0.14, tint: '#6a8a9a' }, fin: '#5a8698',
+  discus: { shimmer: 0.6, shimmerRgb: '125,215,235', gillLine: 0.25, finFade: 0.2, scale: 0.014, thick: 0.2, depth: 0.78, pedU: 0.13, ped: 0.07, peak: 0.45, snout: 0.85, mouth: 0.02, shade: ['#5a6a7a', '#3f8aa8', '#4a98b0'], tail: { type: 'notch', h: 0.14, tint: '#6a8a9a' }, fin: '#5a8698',
     // dorsal and anal follow the disc from behind the head and the pelvics round to the tail root
     dorsal: { at: 0.8, len: 0.64, h: 0.075, spines: 0.35, nSp: 7, spineH: [0.03, 0.06], notch: 0.15, rake: 0.75, trail: 0.05, drop: 0.85, edge: '#c8603a' },
     anal: { at: 0.7, len: 0.54, h: 0.075, spines: 0.2, nSp: 4, spineH: [0.03, 0.06], notch: 0.15, rake: 0.75, trail: 0.05, drop: 0.85, edge: '#c8603a' }, pelvic: { u: 0.72, len: 0.12, tint: '#c8603a' }, gape: 0.03,
     marks: [{ k: 'bars', us: [0.88, 0.2], w: 0.035, c: '#2a2a30', a: 0.55 }, ...[-0.3, -0.21, -0.12, -0.03, 0.06, 0.15, 0.24].map(v => ({ k: 'band' as const, u0: 0.12, u1: 0.98, v0: v, v1: v + 0.032, c: '#8a5a3a', a: 0.6, wave: 0.002 }))],
     eye: { r: 0.03, iris: ['#d04a2a', '#4a1208'] }, rim: 0.03 },
-  angel: { thick: 0.2, angular: 0.8, depth: 0.78, pedU: 0.2, ped: 0.045, peak: 0.375, snout: 0.25, shade: ['#9a998e', '#d0cec2', '#e4e1d7'], tail: { type: 'notch', h: 0.24, tint: '#c3c4bc' }, fin: '#c3c4bc',
+  angel: { shimmer: 0.5, shimmerRgb: '235,242,255', gillLine: 0.25, finFade: 0.4, thick: 0.2, angular: 0.8, depth: 0.78, pedU: 0.2, ped: 0.045, peak: 0.375, snout: 0.25, shade: ['#9a998e', '#d0cec2', '#e4e1d7'], tail: { type: 'notch', h: 0.24, tint: '#c3c4bc' }, fin: '#c3c4bc',
     // dorsal and anal: long bases, the spines stepping up the leading edge, the soft rays sweeping back to high trailing tips
     dorsal: { at: 0.68, len: 0.42, h: 0.42, spines: 0.3, nSp: 5, spineH: [0.04, 0.11], notch: 0.12, rake: 0.9, tip: 'point', trail: 0.13, drop: 1 },
     anal: { at: 0.66, len: 0.4, h: 0.4, spines: 0.25, nSp: 4, spineH: [0.04, 0.1], notch: 0.12, rake: 0.9, tip: 'point', trail: 0.13, drop: 1 }, pelvic: { u: 0.74, len: 0.45, thread: true, tint: '#e2ddcc', angle: 68 },
@@ -629,7 +630,7 @@ export const PLANS: Record<string, Plan> = {
     finMarks: [{ k: 'bars', us: [0.645, 0.43], w: 0.05, c: '#26262a', a: 0.8 }], eye: { r: 0.026, iris: ['#c8673f', '#5b2a1c'] } },
   // v2 body (lane S); colours from Nathan's reference photo (red tiger oscar): olive-grey head and upper front, near-black
   // rear body, many small orange spots, orange throat and gill cover; nose rounded slightly (noseCap)
-  oscar: { noseCap: 0.02, gape: 0.07, pec: { s: 1.6 }, thick: 0.48, depth: 0.42, pedU: 0.2, ped: 0.07, peak: 0.5, snout: 0.45, mouth: 0.025, shade: ['#3c3f31', '#1b1c17', '#2c241a'], tail: { type: 'round', h: 0.16, tint: '#1f201c', a: 0.9 }, fin: '#1f201c',
+  oscar: { shimmer: 0.4, shimmerRgb: '255,195,125', gillLine: 0.28, finFade: 0.25, noseCap: 0.02, gape: 0.07, pec: { s: 1.6 }, thick: 0.48, depth: 0.42, pedU: 0.2, ped: 0.07, peak: 0.5, snout: 0.45, mouth: 0.025, shade: ['#3c3f31', '#1b1c17', '#2c241a'], tail: { type: 'round', h: 0.16, tint: '#1f201c', a: 0.9 }, fin: '#1f201c',
     dorsal: { at: 0.76, len: 0.52, h: 0.11, spines: 0.6, nSp: 9, spineH: [0.05, 0.07], notch: 0.3, rake: 0.6, trail: 0.05, a: 0.9 },
     anal: { at: 0.48, len: 0.26, h: 0.1, spines: 0.25, nSp: 3, spineH: [0.04, 0.06], rake: 0.5, trail: 0.04, a: 0.9 }, pelvic: { u: 0.64, len: 0.1, w: 1.2 },
     marks: [{ k: 'blob', u: 0.42, v: 0.04, ru: 0.34, rv: 0.25, c: '#0e0f0c', a: 0.8 }, { k: 'blob', u: 0.85, v: -0.05, ru: 0.21, rv: 0.16, c: '#8f9274', a: 0.85 }, { k: 'blob', u: 0.95, v: 0.0, ru: 0.06, rv: 0.06, c: '#b0a878', a: 0.7 },
@@ -821,7 +822,7 @@ export const PLANS: Record<string, Plan> = {
     eye: { r: 0.022, iris: ['#b0a070', '#1a160e'], dv: -0.15, up: 0.75 } },
   // yellow lab (male): the first mbuna; lemon yellow, the long spiny dorsal with a black band under a white edge,
   // black pelvics and a dark anal fin
-  yellowlab: { gape: 0.035, gapeDrop: 0.008, thick: 0.42, belly: 0.1, depth: 0.29, pedU: 0.2, ped: 0.055, peak: 0.55, snout: 0.42, mouth: 0.01, shade: ['#d4a812', '#f2d02a', '#f6e070'], tail: { type: 'round', h: 0.15, tint: '#f0cc2a' }, fin: '#f0cc2a',
+  yellowlab: { shimmer: 0.5, shimmerRgb: '255,245,190', gillLine: 0.25, finFade: 0.3, gape: 0.035, gapeDrop: 0.008, thick: 0.42, belly: 0.1, depth: 0.29, pedU: 0.2, ped: 0.055, peak: 0.55, snout: 0.42, mouth: 0.01, shade: ['#d4a812', '#f2d02a', '#f6e070'], tail: { type: 'round', h: 0.15, tint: '#f0cc2a' }, fin: '#f0cc2a',
     dorsal: { at: 0.78, len: 0.6, h: 0.1, spines: 0.65, nSp: 14, spineH: [0.06, 0.085], notch: 0.2, rake: 0.6, tip: 'point', trail: 0.05, drop: 0.75, edge: '#f6f4ee' },
     anal: { at: 0.48, len: 0.26, h: 0.1, spines: 0.3, nSp: 3, spineH: [0.04, 0.07], notch: 0.2, tip: 'point', trail: 0.04, tint: '#2a2820', a: 0.85 }, pelvic: { u: 0.68, len: 0.11, ext: 0.03, tint: '#1a1a18' },
     marks: [{ k: 'blob', u: 0.6, v: -0.07, ru: 0.25, rv: 0.08, c: '#fff6c0', a: 0.18 }],
@@ -836,7 +837,7 @@ export const PLANS: Record<string, Plan> = {
     finMarks: [{ k: 'band', u0: 0, u1: 0.5, v0: -1, v1: 1, c: '#e8902a', a: 0.6, f: 0.05 }], eye: { r: 0.036, iris: ['#d8d0c0', '#2a2a2a'] } },
   // cockatoo dwarf cichlid (male): the "crest", tall front dorsal spines with deep notches; dark band eye to tail, lyre
   // tail spotted red; big mouth
-  cockatoo: { gape: 0.05, gapeDrop: 0.01, thick: 0.4, belly: 0.15, depth: 0.29, pedU: 0.22, ped: 0.055, peak: 0.55, snout: 0.4, mouth: 0.01, shade: ['#6a6248', '#c4b480', '#e8dcb0'], tail: { type: 'lyre', h: 0.18, cut: 0.32, tint: '#e0b050', edge: '#c8402a' }, fin: '#dcc070',
+  cockatoo: { shimmer: 0.4, shimmerRgb: '255,222,175', gillLine: 0.22, finFade: 0.3, gape: 0.05, gapeDrop: 0.01, thick: 0.4, belly: 0.15, depth: 0.29, pedU: 0.22, ped: 0.055, peak: 0.55, snout: 0.4, mouth: 0.01, shade: ['#6a6248', '#c4b480', '#e8dcb0'], tail: { type: 'lyre', h: 0.18, cut: 0.32, tint: '#e0b050', edge: '#c8402a' }, fin: '#dcc070',
     dorsal: { at: 0.8, len: 0.58, h: 0.1, spines: 0.6, nSp: 10, spineH: [0.22, 0.075], notch: 0.5, rake: 0.6, tip: 'point', trail: 0.08, drop: 0.8, edge: '#d8603a' },
     anal: { at: 0.5, len: 0.26, h: 0.11, spines: 0.25, nSp: 3, spineH: [0.04, 0.07], tip: 'point', trail: 0.07 }, pelvic: { u: 0.67, len: 0.12, ext: 0.05, tint: '#d8b060' },
     marks: [{ k: 'band', u0: 0.22, u1: 0.93, v0: -0.016, v1: 0.016, c: '#2a2418', a: 0.8, f: 0.01 }, ...[0.05, 0.085].map(v => ({ k: 'band' as const, u0: 0.3, u1: 0.72, v0: v - 0.006, v1: v + 0.006, c: '#5a4a30', a: 0.45, f: 0.006 })),
@@ -846,19 +847,19 @@ export const PLANS: Record<string, Plan> = {
   // ---------- Lake Malawi roster (lane CP, 2026-10-16) ----------
   // peacock (Aulonocara, male): deeper than a mbuna, steep forehead, big sensory-pit chin; electric blue, a yellow-orange
   // wash over the back and rear, long blue-edged dorsal and anal fins that trail behind
-  peacock: { gape: 0.045, gapeDrop: 0.01, thick: 0.4, belly: 0.12, depth: 0.31, pedU: 0.2, ped: 0.055, peak: 0.5, back: 0.5, snout: 0.38, mouth: 0.012, shade: ['#1c4fa8', '#2e7ad8', '#8cc4f0'], tail: { type: 'round', h: 0.16, tint: '#4a8ce0', edge: '#f0c040' }, fin: '#3a80d8',
+  peacock: { shimmer: 0.5, shimmerRgb: '155,222,255', gillLine: 0.25, finFade: 0.3, gape: 0.045, gapeDrop: 0.01, thick: 0.4, belly: 0.12, depth: 0.31, pedU: 0.2, ped: 0.055, peak: 0.5, back: 0.5, snout: 0.38, mouth: 0.012, shade: ['#1c4fa8', '#2e7ad8', '#8cc4f0'], tail: { type: 'round', h: 0.16, tint: '#4a8ce0', edge: '#f0c040' }, fin: '#3a80d8',
     dorsal: { at: 0.8, len: 0.66, h: 0.1, spines: 0.6, nSp: 16, spineH: [0.05, 0.075], notch: 0.15, rake: 0.7, tip: 'point', trail: 0.12, drop: 0.8, edge: '#f0c848' },
     anal: { at: 0.5, len: 0.26, h: 0.1, spines: 0.3, nSp: 3, spineH: [0.04, 0.07], tip: 'point', trail: 0.08, tint: '#4a88d8' }, pelvic: { u: 0.67, len: 0.13, ext: 0.05, tint: '#3070c8' },
     marks: [{ k: 'band', u0: 0.45, u1: 0.98, v0: -1, v1: 0.2, c: '#f0b830', a: 0.6, f: 0.22 }, { k: 'band', u0: 0.2, u1: 0.8, v0: -0.04, v1: -0.01, c: '#2a50a0', a: 0.3, f: 0.01 },
       { k: 'blob', u: 0.6, v: -0.06, ru: 0.22, rv: 0.07, c: '#a8d8ff', a: 0.25 }], eye: { r: 0.033, iris: ['#c8d8e8', '#0a1830'] } },
   // Demasoni (Pseudotropheus demasoni): a small slim mbuna, blue-grey with a ladder of black vertical bars
-  demasoni: { gape: 0.04, gapeDrop: 0.008, thick: 0.4, belly: 0.1, depth: 0.25, pedU: 0.2, ped: 0.055, peak: 0.55, snout: 0.4, mouth: 0.01, shade: ['#5a8cc0', '#8cb8e0', '#d8e8f4'], tail: { type: 'round', h: 0.14, tint: '#7aa8d4' }, fin: '#8ab4dc',
+  demasoni: { shimmer: 0.5, shimmerRgb: '175,205,255', gillLine: 0.25, finFade: 0.3, gape: 0.04, gapeDrop: 0.008, thick: 0.4, belly: 0.1, depth: 0.25, pedU: 0.2, ped: 0.055, peak: 0.55, snout: 0.4, mouth: 0.01, shade: ['#5a8cc0', '#8cb8e0', '#d8e8f4'], tail: { type: 'round', h: 0.14, tint: '#7aa8d4' }, fin: '#8ab4dc',
     dorsal: { at: 0.78, len: 0.62, h: 0.09, spines: 0.65, nSp: 17, spineH: [0.055, 0.075], notch: 0.15, rake: 0.5, tip: 'point', trail: 0.04, drop: 0.7 },
     anal: { at: 0.48, len: 0.24, h: 0.09, spines: 0.3, nSp: 3, spineH: [0.04, 0.06], tip: 'point', trail: 0.03 }, pelvic: { u: 0.68, len: 0.11, ext: 0.03, tint: '#6a98c8' },
     marks: [{ k: 'bars', us: [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], w: 0.034, c: '#141c2c', a: 0.88 }], finMarks: [{ k: 'band', u0: 0.18, u1: 0.8, v0: -0.4, v1: -0.2, c: '#18202c', a: 0.5, f: 0.008 }], eye: { r: 0.032, iris: ['#6a8ab0', '#0a0c14'] } },
   // kadango (Copadichromis borleyi, male): a slim open-water haplochromine; blue-grey body flushing red over the back and
   // the whole of the dorsal, anal and tail fins, a long jawed head
-  kadango: { gape: 0.05, gapeDrop: 0.01, thick: 0.36, belly: 0.08, depth: 0.25, pedU: 0.2, ped: 0.05, peak: 0.55, snout: 0.5, mouth: 0.012, shade: ['#3a5a88', '#7a9ac0', '#d0d8e0'], tail: { type: 'fork', h: 0.17, tint: '#d8402e', edge: '#f08a50' }, fin: '#d84a34',
+  kadango: { shimmer: 0.5, shimmerRgb: '255,205,175', gillLine: 0.25, finFade: 0.3, gape: 0.05, gapeDrop: 0.01, thick: 0.36, belly: 0.08, depth: 0.25, pedU: 0.2, ped: 0.05, peak: 0.55, snout: 0.5, mouth: 0.012, shade: ['#3a5a88', '#7a9ac0', '#d0d8e0'], tail: { type: 'fork', h: 0.17, tint: '#d8402e', edge: '#f08a50' }, fin: '#d84a34',
     dorsal: { at: 0.78, len: 0.58, h: 0.1, spines: 0.55, nSp: 15, spineH: [0.055, 0.08], notch: 0.15, rake: 0.6, tip: 'point', trail: 0.1, drop: 0.7, tint: '#d8402e', edge: '#f08a50' },
     anal: { at: 0.5, len: 0.24, h: 0.1, spines: 0.3, nSp: 3, spineH: [0.04, 0.07], tip: 'point', trail: 0.06, tint: '#d8402e' }, pelvic: { u: 0.67, len: 0.12, ext: 0.04, tint: '#c83a2a' },
     marks: [{ k: 'band', u0: 0.4, u1: 0.98, v0: -1, v1: -0.12, c: '#d03a2a', a: 0.55, f: 0.08 }, { k: 'bars', us: [0.3, 0.42, 0.54, 0.66], w: 0.03, c: '#2a3a58', a: 0.3 }], eye: { r: 0.033, iris: ['#d0d8e0', '#101820'] } },
@@ -870,18 +871,18 @@ export const PLANS: Record<string, Plan> = {
     finMarks: [{ k: 'spots', n: 18, u0: 0.1, u1: 0.8, v0: -0.4, v1: 0.1, r: 0.012, c: '#1c1610', a: 0.55 }], barbels: 0.075, eye: { r: 0.03, iris: ['#c8b890', '#20180e'], dv: -0.03 } },
   // blunt-nosed mbuna (Labeotropheus trewavasae, male): the fleshy overhanging snout, a deep blue body with a long
   // orange-edged dorsal
-  labeo: { gape: 0.03, gapeDrop: 0.016, thick: 0.46, belly: 0.1, depth: 0.31, pedU: 0.2, ped: 0.06, peak: 0.55, snout: 0.15, mouth: 0.03, shade: ['#2a4a8a', '#4a76b8', '#a0c0e0'], tail: { type: 'round', h: 0.15, tint: '#5a82c0' }, fin: '#4a78b8',
+  labeo: { shimmer: 0.5, shimmerRgb: '175,215,255', gillLine: 0.25, finFade: 0.3, gape: 0.03, gapeDrop: 0.016, thick: 0.46, belly: 0.1, depth: 0.31, pedU: 0.2, ped: 0.06, peak: 0.55, snout: 0.15, mouth: 0.03, shade: ['#2a4a8a', '#4a76b8', '#a0c0e0'], tail: { type: 'round', h: 0.15, tint: '#5a82c0' }, fin: '#4a78b8',
     dorsal: { at: 0.8, len: 0.68, h: 0.1, spines: 0.7, nSp: 17, spineH: [0.06, 0.085], notch: 0.15, rake: 0.55, tip: 'point', trail: 0.04, drop: 0.75, edge: '#f09a3a' },
     anal: { at: 0.48, len: 0.25, h: 0.1, spines: 0.3, nSp: 3, spineH: [0.04, 0.07], tip: 'point', trail: 0.03, tint: '#3a5a98' }, pelvic: { u: 0.68, len: 0.12, ext: 0.03, tint: '#2a3a68' },
     marks: [{ k: 'bars', us: [0.28, 0.4, 0.52, 0.64, 0.76], w: 0.03, c: '#1a2a52', a: 0.35 }, { k: 'blob', u: 0.6, v: -0.05, ru: 0.22, rv: 0.07, c: '#9cc4f0', a: 0.2 }], eye: { r: 0.03, iris: ['#c8b080', '#1a1408'] } },
   // golden mbuna (Melanochromis auratus, male): near black with a pale yellow-white stripe along the back and flank
-  auratus: { gape: 0.035, gapeDrop: 0.008, thick: 0.4, belly: 0.1, depth: 0.26, pedU: 0.2, ped: 0.055, peak: 0.55, snout: 0.42, mouth: 0.01, shade: ['#1a1814', '#2a2822', '#5a5444'], tail: { type: 'round', h: 0.15, tint: '#242018' }, fin: '#2a2620',
+  auratus: { shimmer: 0.5, shimmerRgb: '255,236,165', gillLine: 0.25, finFade: 0.3, gape: 0.035, gapeDrop: 0.008, thick: 0.4, belly: 0.1, depth: 0.26, pedU: 0.2, ped: 0.055, peak: 0.55, snout: 0.42, mouth: 0.01, shade: ['#1a1814', '#2a2822', '#5a5444'], tail: { type: 'round', h: 0.15, tint: '#242018' }, fin: '#2a2620',
     dorsal: { at: 0.78, len: 0.64, h: 0.1, spines: 0.65, nSp: 18, spineH: [0.055, 0.08], notch: 0.15, rake: 0.55, tip: 'point', trail: 0.04, drop: 0.75, edge: '#e8d070' },
     anal: { at: 0.48, len: 0.25, h: 0.09, spines: 0.3, nSp: 3, spineH: [0.04, 0.065], tip: 'point', trail: 0.03, tint: '#1e1c18' }, pelvic: { u: 0.68, len: 0.11, ext: 0.03, tint: '#181612' },
     marks: [{ k: 'band', u0: 0.12, u1: 0.96, v0: -0.075, v1: -0.045, c: '#f0e090', a: 0.9, f: 0.012 }, { k: 'band', u0: 0.2, u1: 0.94, v0: 0.04, v1: 0.07, c: '#f0e090', a: 0.8, f: 0.012 }],
     eye: { r: 0.03, iris: ['#d8c060', '#0a0806'] } },
   // Livingstone's cichlid (Nimbochromis livingstonii): a big, deep-headed predator; mottled yellow-grey with irregular blue-black blotches
-  livingstonii: { gape: 0.06, gapeDrop: 0.012, thick: 0.4, belly: 0.14, depth: 0.32, pedU: 0.22, ped: 0.06, peak: 0.5, snout: 0.5, mouth: 0.012, shade: ['#625638', '#8e7e4c', '#bcb088'], tail: { type: 'round', h: 0.16, tint: '#b8a060', edge: '#4a6a9a' }, fin: '#b0a068',
+  livingstonii: { shimmer: 0.5, shimmerRgb: '205,222,255', gillLine: 0.25, finFade: 0.3, gape: 0.06, gapeDrop: 0.012, thick: 0.4, belly: 0.14, depth: 0.32, pedU: 0.22, ped: 0.06, peak: 0.5, snout: 0.5, mouth: 0.012, shade: ['#625638', '#8e7e4c', '#bcb088'], tail: { type: 'round', h: 0.16, tint: '#b8a060', edge: '#4a6a9a' }, fin: '#b0a068',
     dorsal: { at: 0.8, len: 0.6, h: 0.11, spines: 0.55, nSp: 15, spineH: [0.06, 0.09], notch: 0.15, rake: 0.6, tip: 'point', trail: 0.1, drop: 0.8, edge: '#4a78b0' },
     anal: { at: 0.5, len: 0.26, h: 0.11, spines: 0.3, nSp: 3, spineH: [0.04, 0.07], tip: 'point', trail: 0.06 }, pelvic: { u: 0.67, len: 0.13, ext: 0.04, tint: '#a09060' },
     marks: [{ k: 'spots', n: 16, u0: 0.18, u1: 0.94, v0: -0.14, v1: 0.1, r: 0.045, c: '#2a3a6a', a: 0.65 }, { k: 'spots', n: 36, u0: 0.1, u1: 0.96, v0: -0.16, v1: 0.12, r: 0.016, c: '#2a2a40', a: 0.5 }],
