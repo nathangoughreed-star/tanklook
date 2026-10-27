@@ -97,6 +97,8 @@ const PALUDARIA: Candidate[] = [...CANDIDATES, ...PALUDARIUM_EXTRA.flatMap(id =>
 const TERRARIA: Candidate[] = TANK_MODELS.filter(m => m.terrarium)
   .map(m => { const T = tankFromModel(m); return { m, T, litres: volume(T).litres }; })
   .sort((a, b) => a.litres - b.litres || a.m.id.localeCompare(b.m.id));
+/** The catalogue sizes smallest first, wet (plain rectangular) or land (terrariums): for the group-minimum tank (groupMin.ts). */
+export const catalogueSizes = (land: boolean): Candidate[] => land ? TERRARIA : CANDIDATES;
 
 /**
  * The two builds, for these animals in this tank (the animals' part of a build: plants and CO2 belong to the scape step, lane P6).
