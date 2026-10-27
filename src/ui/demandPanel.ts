@@ -18,6 +18,7 @@ import { compliance, constraintsFromLimits, effectiveLimits, parseConstraints, r
 import { summaryOf } from './stockSummary';
 import { findSolutions, type Option, type Solutions } from '../demand/makefit';
 import { lidAdvice, type LidAdvice } from '../demand/lid';
+import { rhythmNote, rhythmOf } from '../demand/rhythm';
 
 const KEY = 'tanklook.demand';
 const DOMAIN_LABEL: [keyof UserProfile['skill'], string][] = [['fundamentals', 'Keeping a tank at all'], ['fish', 'Freshwater fish'], ['planted', 'Planted tanks'], ['salt', 'Saltwater'], ['terrarium', 'Terrariums']];
@@ -122,7 +123,7 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
   /** The compliance line (C2): amber under the Guardrails controls and a small header chip. It never interrupts an edit; welfare (stocking) is separate. */
   const chip = document.getElementById('guardChip') as HTMLButtonElement | null;
   function renderCompliance() {
-    const S = store.tank, c = compliance(S, D?.totals, Pe().limits, store.scene.units), el = q('.dmcomp');
+    const S = store.tank, rhy = D ? rhythmOf(D, S) : undefined, c = compliance(S, D?.totals, Pe().limits, store.scene.units, rhy), el = q('.dmcomp');
     let welfare = '';
     try { const w = S.fish.length ? summaryOf(S, store.scene.units) : null; if (w && w.worst === 'problem') welfare = `Welfare: ${w.cats.filter(k => k.level === 'problem').map(k => k.label).join(', ')} has a problem (see the stocking summary). Guardrails do not change that.`; } catch { /* ignore */ }
     const cls = c.overall === 'within' ? 'ok' : c.overall === 'off' ? 'off' : 'warn';
@@ -206,6 +207,12 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
     el.append(box);
   }
 
+  /** Under the minutes figure: the same minutes as a rhythm, and how long the tank can be left (demand/rhythm.ts; information only). */
+  function rhythmLine() {
+    const r = rhythmOf(D!, store.tank);
+    return `<div class="dmrhythm" style="font-size:11px;opacity:.85" title="${esc(rhythmNote(r))}">Rhythm: ${esc(r.text)} <em>(estimate)</em>${r.awayText ? `<br>Can be left: ${esc(r.awayText)}` : ''}</div>`;
+  }
+
   function row(b: typeof BARS[number], L: LimitState) {
     const el = document.createElement('div'), st = L[b.bar];
     el.className = 'dmrow' + (st.over ? ' over' : '') + (open === b.bar ? ' sel' : '');
@@ -229,7 +236,7 @@ Relative to your stated experience (see Your situation).`;
     const base = B ? (b.bar === 'risk' ? B.totals.risk : b.bar === 'setup' ? B.totals.setupUsd : b.bar === 'upkeep' ? B.totals.upkeepUsdMo : B.totals.minPerWeek) : undefined, chip = chips[b.bar];
     if (base !== undefined) track += `<i class="dmbase" style="left:${x(base)}" title="Without the animals"></i>`;
     const dtxt = chip && chip.until > Date.now() ? `<span class="dmchg ${chip.d > 0 ? 'up' : 'down'}">${chip.d > 0 ? '+' : '−'}${b.bar === 'risk' ? Math.abs(chip.d).toFixed(1) : b.bar === 'minutes' ? `${Math.round(Math.abs(chip.d))} min` : usd(Math.abs(chip.d))}</span>` : '';
-    el.innerHTML = `<div class="dmtop"><span class="dmname">${b.title}</span><b class="dmval">${esc(value)}</b>${dtxt}<span class="dmrange">${esc(range)}</span></div><div class="dmtrack">${track}</div>`;
+    el.innerHTML = `<div class="dmtop"><span class="dmname">${b.title}</span><b class="dmval">${esc(value)}</b>${dtxt}<span class="dmrange">${esc(range)}</span></div><div class="dmtrack">${track}</div>${b.bar === 'minutes' ? rhythmLine() : ''}`;
     el.onclick = () => { open = open === b.bar ? null : b.bar; render(); };
     return el;
   }

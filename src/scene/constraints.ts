@@ -94,11 +94,13 @@ export interface Compliance {
   /** 'off' = no guardrail is on (numbers only, nothing to pass or fail) */
   overall: 'within' | 'over' | 'unknown' | 'off';
   line: string;
+  /** information only, never a pass or fail: the care rhythm and how long the tank can be left (demand/rhythm.ts) */
+  info: string[];
 }
 export interface CostTotals { setupUsd: number; upkeepUsdMo: number; minPerWeek: number }
 
 /** @param totals the demand engine's expected totals, or undefined when they are not known yet. */
-export function compliance(S: Pick<TankSetup, 'constraints' | 'layout' | 'tank'>, totals: CostTotals | undefined, profile: Limits, units: Units = 'cm'): Compliance {
+export function compliance(S: Pick<TankSetup, 'constraints' | 'layout' | 'tank'>, totals: CostTotals | undefined, profile: Limits, units: Units = 'cm', rhythm?: { text: string; awayText: string }): Compliance {
   const L = effectiveLimits(S, profile);
   const usd = (v: number) => '$' + Math.round(v).toLocaleString();
   const known = (v: number | undefined): v is number => typeof v === 'number' && Number.isFinite(v);
@@ -124,6 +126,7 @@ export function compliance(S: Pick<TankSetup, 'constraints' | 'layout' | 'tank'>
     : overall === 'within' ? 'Within your guardrails'
     : overall === 'over' ? `${over} over: ${results.filter(r => r.state === 'over').map(r => `${r.label.toLowerCase()} ${r.text}`).join('; ')}`
     : `Not known: ${results.filter(r => r.state === 'unknown').map(r => r.text).join('; ')}`;
-  return { results, over, unknown, overall, line };
+  const info = rhythm ? [`Rhythm: ${rhythm.text} (estimate)`, ...(rhythm.awayText ? [`Can be left: ${rhythm.awayText}`] : [])] : [];
+  return { results, over, unknown, overall, line, info };
 }
 const upkeepCapOf = (u: Limits['upkeep']): number | undefined => u === 'free' || u === 'low' ? UPKEEP_USD[u] : undefined;

@@ -5,6 +5,7 @@
 import { getSpecies } from '../data/species';
 import type { Contribution, Demand } from '../demand/types';
 import { mean3 } from '../demand/range';
+import { rhythmNote, rhythmOf } from '../demand/rhythm';
 import { GEAR_SLOT_NAME, gearOffers } from '../demand/gearDeals';
 import { whysAnimal } from './animalfit';
 import { checkLevel, holdCheck, measuredCheck, operatingCheck, rangeVerdict, sharedRange } from './temprange';
@@ -47,6 +48,10 @@ export interface Plan {
   setupUsd: number;
   upkeepUsdMo: number;
   minPerWeek: number;
+  /** care rhythm and away-days (demand/rhythm.ts), information only */
+  rhythm: string;
+  awayText: string;
+  rhythmNote: string;
   deals: PlanDeal[];
   cycleNote: string;
 }
@@ -187,10 +192,12 @@ export function planOf(S: TankSetup, build?: Build, now = Date.now(), u: Units =
   if (build?.tankDeal) dealLine(`Tank on sale at ${build.tankDeal.retailer}: ${usd(build.tankDeal.usd)} (was ${usd(build.tankDeal.regularUsd)})`);
   for (const d of build?.gearDeals ?? []) dealLine(`${d.title} on sale at ${d.store}: ${usd(d.price.usd)} (was ${usd(d.price.regularUsd)})`);
   if (!build?.bundle) for (const d of gearOffers(S, D, now)) dealLine(`${GEAR_SLOT_NAME[d.slot][0].toUpperCase()}${GEAR_SLOT_NAME[d.slot].slice(1)}: ${d.title} on sale at ${d.store}, ${usd(d.price.usd)} (was ${usd(d.price.regularUsd)})`);
+  const rhy = rhythmOf(D, S);
   return {
     title: S.water.on ? 'Your animal tank: the plan' : 'Your terrarium: the plan', tank: build ? tankLabel(build.tank, u) : `${Math.round(volume(S.tank).gallons)} gal (${sizeTxt(S.tank.L, S.tank.D, u)})`, animals: names,
     spacePct: Math.round(st.spacePercent), waterPct: Math.round(st.waterPercent), floorPct: Math.round(st.floorPercent), filtrationPct: Math.round(st.filtrationPercent), fits, verdict, rows, missing,
     setupUsd: Math.round(D.totals.setupUsd), upkeepUsdMo: Math.round(D.totals.upkeepUsdMo), minPerWeek: Math.round(D.totals.minPerWeek),
+    rhythm: rhy.text, awayText: rhy.awayText, rhythmNote: rhythmNote(rhy),
     deals, cycleNote: CYCLE_NOTE,
   };
 }
@@ -203,7 +210,7 @@ export function planText(p: Plan): string {
   for (const m of p.missing) L.push(`  ! ${m}`);
   L.push('', 'Shopping list (each item and the need it serves)');
   for (const r of p.rows) L.push(`  ${usd(r.usd).padStart(7)}  ${r.item}${r.kind === 'extra' ? ' [not needed]' : ''}: ${r.serves}`);
-  L.push('', `Set-up ${usd(p.setupUsd)}; ${usd(p.upkeepUsdMo)} a month; about ${p.minPerWeek} minutes a week.`);
+  L.push('', `Set-up ${usd(p.setupUsd)}; ${usd(p.upkeepUsdMo)} a month; about ${p.minPerWeek} minutes a week.`, `Rhythm: ${p.rhythm} (estimate).${p.awayText ? ` Can be left: ${p.awayText}.` : ''}`);
   if (p.deals.length) { L.push('', 'Sales that fit'); for (const d of p.deals) L.push(`  ${d.text}`); }
   L.push('', p.cycleNote);
   return L.join('\n');

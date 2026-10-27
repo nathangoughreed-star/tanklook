@@ -23,6 +23,7 @@ import { add3, mean3, r3, scale3, widen3 } from './range';
 import { interp, price as rowPrice, priceRow, tankRowPrice } from './prices';
 import { defaultFilter, defaultHeater, filterName, matchFilter, matchHeater, type FilterSpec } from './gear';
 import { techDemand } from './tech';
+import { choreDays } from './rhythm';
 import { isLivePlantPatch, PATCH_PLANTS } from '../scene/nitrogen';
 import { waterChangeFraction } from '../scene/stocking';
 import { sumpLitres, techOf } from '../scene/tech';
@@ -194,7 +195,7 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   if (!wet) {
     // lane LT: hand misting is the bulk of a humid terrarium's work; an automatic mister leaves the refill; a dry one only the spot clean
     const mr = techOf(S).rows.mist, mist = mr === 'hand' ? 'hand' : mr === 'mister' || mr === 'fogger' ? 'auto' : 'none';
-    add('mistwork', mist === 'auto' ? 'Spot cleaning, refilling the mister' : mist === 'hand' ? 'Misting by hand and spot cleaning' : 'Spot cleaning', 'work', { minutes: pick(mist === 'hand' ? T.terrariumMistMin : mist === 'auto' ? T.terrariumAutoMistMin : T.terrariumDryMin) });
+    add('mistwork', mist === 'auto' ? 'Spot cleaning, refilling the mister' : mist === 'hand' ? 'Misting by hand and spot cleaning' : 'Spot cleaning', 'work', { minutes: pick(mist === 'hand' ? T.terrariumMistMin : mist === 'auto' ? T.terrariumAutoMistMin : T.terrariumDryMin), everyDays: choreDays('mistwork') });
   }
   else {
     // the share of the tank to change comes from the nitrogen budget (plants and the filter take part of it away), floored and capped
@@ -203,19 +204,19 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
     const water = (P.waterSource === 'bought-ro' ? rowPrice('gear:ro-bought') : undefined) ?? pick((FACTORS.waterUsdPerGal as Record<string, Range3>)[P.waterSource]), per = salt ? add3(water, rowPrice('gear:salt-mix') ?? pick(FACTORS.saltMixUsdPerGal)) : water;
     if (P.waterSource === 'own-ro' && rowPrice('gear:ro-unit')) add('rounit', 'RO unit', 'gear', { setup: price(rowPrice('gear:ro-unit')!) });
     if (rowPrice('gear:test-kit')) add('testkit', 'Water test kit', 'gear', { setup: price(rowPrice('gear:test-kit')!) });
-    add('waterchange', `Water changes (${Math.round(frac * 100)} % a week${hose ? ', by hose' : ''})`, 'work', { upkeep: scale3(per, galWk * 4.33), minutes: add3(scale3(pick(hose ? T.waterChangeHosePerGalMin : T.waterChangePerGalMin), galWk * sMul.minutes), scale3(pick(hose ? T.waterChangeHoseFixedMin : T.waterChangeFixedMin), sMul.minutes)) });
+    add('waterchange', `Water changes (${Math.round(frac * 100)} % a week${hose ? ', by hose' : ''})`, 'work', { upkeep: scale3(per, galWk * 4.33), minutes: add3(scale3(pick(hose ? T.waterChangeHosePerGalMin : T.waterChangePerGalMin), galWk * sMul.minutes), scale3(pick(hose ? T.waterChangeHoseFixedMin : T.waterChangeFixedMin), sMul.minutes)), everyDays: choreDays('waterchange') });
     // feeding trips (an automatic feeder leaves only the refill) and wiping the glass (algae follows the light; live plants take nutrients, artificial ones need a wipe)
     add('feeding', techOf(S).rows.feeder === 'auto' ? 'Feeding (automatic feeder: refills)' : 'Feeding trips', 'work', { minutes: pick(techOf(S).rows.feeder === 'auto' ? T.feederRefillMinPerWeek : T.feedingTripMinPerWeek), everyDays: techOf(S).rows.feeder === 'auto' ? 14 : 1 });
     const g = T.glass, wpg = Math.min(g.wpgCap, wattsOf(S) / Math.max(gal, 1)), live = S.items.filter(i => i.kind === 'plant').length + (S.patches ?? []).filter(isLivePlantPatch).length * PATCH_PLANTS;
     const fake = S.items.filter(i => i.kind === 'artificial').length, cover = Math.min(1, live / Math.max(gal / 10, 1));
     const glassMid = (g.baseMin + g.minPerHalfWpg * wpg / 0.5) * (1 - g.liveCut * cover) + Math.min(g.artificialCapMin, g.artificialEachMin * fake);
-    add('glass', 'Wiping the glass and algae', 'work', { minutes: { lo: glassMid * 0.6, mode: glassMid, hi: glassMid * 1.6 } });
+    add('glass', 'Wiping the glass and algae', 'work', { minutes: { lo: glassMid * 0.6, mode: glassMid, hi: glassMid * 1.6 }, everyDays: choreDays('glass') });
     const tt = T.testing, testDays = salt ? tt.salt.everyDays : animals.some(a => a.sp.id === 'goldfish') ? tt.goldfish.everyDays : tt.fresh.everyDays; // sourced intervals per tank type (research/maintenance/cadence.json)
     add('testing', 'Testing the water', 'work', { minutes: scale3(pick(tt.minPerSession), 7 / testDays), everyDays: testDays });
     if (!bare) add('filterclean', 'Cleaning the filter', 'work', { minutes: pick(T.filterCleanMinPerWeek), everyDays: 14 });
     if (salt) add('saltwork', 'Mixing salt water, top-off, dosing', 'work', { minutes: pick(T.saltExtraMin) });
   }
-  add('yearly', 'Yearly jobs (deep clean, replacing gear)', 'work', { minutes: pick(T.yearlyJobsMinPerWeek) });
+  add('yearly', 'Yearly jobs (deep clean, replacing gear)', 'work', { minutes: pick(T.yearlyJobsMinPerWeek), everyDays: choreDays('yearly') });
 
   // ---- tank-level risk: a small volume is unforgiving, salt is harder
   const small = DEFAULTS.risk.tankSmall.find(b => gal <= b.maxGal);

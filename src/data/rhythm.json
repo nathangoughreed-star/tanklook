@@ -1,0 +1,41 @@
+{
+ "_note": "Maintenance rhythm data (lane C6 wiring, 2026-10-27). Intervals and away-days come from research/maintenance/cadence.json (item ids below). Minutes per session are NOT sourced anywhere, so the rhythm line always reads (estimate); the weekly totals are untouched. Away-days rule: the LOWER end of the range a page states (the safe side); a status of estimate means no opened page states it.",
+ "chores": {
+  "waterchange": { "everyDays": 7, "status": "sourced", "item": "goldfish_wc" },
+  "glass": { "everyDays": 7, "status": "sourced", "item": "m-glass" },
+  "mistwork": { "everyDays": 1, "status": "sourced", "item": "m-mist" },
+  "yearly": { "everyDays": 365, "status": "estimate", "item": "m-yearly" }
+ },
+ "away": {
+  "_note": "days an animal can be left with no keeper. species id wins, else the category default.",
+  "species": {
+   "betta": { "days": 4, "status": "sourced", "item": "betta_fast", "says": "4-5 days maximum recommended" },
+   "goldfish": { "days": 14, "status": "sourced", "item": "goldfish_tetra_fast", "says": "goldfish 14 days unfed" },
+   "neon": { "days": 7, "status": "sourced", "item": "goldfish_tetra_fast", "says": "tetras 7 days" },
+   "greenneon": { "days": 7, "status": "sourced", "item": "goldfish_tetra_fast", "says": "tetras 7 days" },
+   "angel": { "days": 3, "status": "estimate", "item": "goldfish_tetra_fast", "says": "angelfish-type cichlids only a few days (no number)" },
+   "cherryshrimp": { "days": 7, "status": "estimate", "item": "shrimp_fast_adult", "says": "adult tolerance is an assumption" },
+   "dartfrog": { "days": 1, "status": "sourced", "item": "dart-mist", "says": "daily misting" },
+   "treefrog": { "days": 1, "status": "sourced", "item": "redeye-mist", "says": "daily misting" },
+   "crestedgecko": { "days": 1, "status": "sourced", "item": "crested-mist", "says": "daily misting" },
+   "crestedharlequin": { "days": 1, "status": "sourced", "item": "crested-mist", "says": "daily misting" },
+   "greenanole": { "days": 1, "status": "sourced", "item": "anole-mist", "says": "daily misting" },
+   "greenanolebrown": { "days": 1, "status": "sourced", "item": "anole-mist", "says": "daily misting" },
+   "brownanole": { "days": 1, "status": "sourced", "item": "anole-mist", "says": "daily misting" },
+   "leopardgecko": { "days": 1, "status": "sourced", "item": "gecko-vacation", "says": "1-2 days with no helper" },
+   "ballpython": { "days": 7, "status": "estimate", "item": "ball-python-vacation", "says": "no authoritative figure found" },
+   "chacogoldenknee": { "days": 14, "status": "sourced", "item": "tarantula-fast", "says": "weeks to months unfed" },
+   "regaljumper": { "days": 7, "status": "estimate", "item": "tarantula-fast", "says": "no page for jumping spiders" }
+  },
+  "cat": {
+   "fw-fish": { "days": 3, "status": "sourced", "item": "fw_fast_general", "says": "3-5 days comfortably" },
+   "fw-invert": { "days": 3, "status": "estimate", "item": "fw_fast_general", "says": "no page; taken from the freshwater fish rule" },
+   "sw-fish": { "days": 3, "status": "sourced", "item": "marine_fish_fast", "says": "a few days to about a week; tangs less" },
+   "sw-invert": { "days": 3, "status": "estimate", "item": "marine_fish_fast", "says": "no page; taken from the marine fish rule" },
+   "amphibian": { "days": 1, "status": "estimate", "item": "dart-mist", "says": "misted terrarium; no page for this species" },
+   "reptile": { "days": 1, "status": "estimate", "item": "gecko-vacation", "says": "no page for this species" },
+   "land-invert": { "days": 7, "status": "estimate", "item": "tarantula-fast", "says": "no page" }
+  },
+  "coral": { "days": 7, "status": "estimate", "item": "coral_neglect", "says": "forum anecdotes only" }
+ }
+}
