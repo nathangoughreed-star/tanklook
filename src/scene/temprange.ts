@@ -5,8 +5,8 @@
 //      none   = the ranges do not overlap: "No suitable shared temperature identified". Blocking.
 //      single = they meet at exactly one value: a mathematical intersection with zero operating margin, so no guided recommendation
 //               ("Only one shared temperature; no operating margin"). Blocking.
-//      narrow = the shared range is NARROW_C (2 °C) wide or less. A limited margin, NOT an incompatibility. Why 2 °C: the ranges are
-//               recorded to whole degrees, and a heater's swing plus a cold night (tech.ts HEAT.nightDropK) move the water about that much.
+//      narrow = the shared range is NARROW_C (1 °C) wide or less. A limited margin, NOT an incompatibility. Why 1 °C: the ranges are
+//               recorded to whole degrees, so 1 °C is one adjacent whole-degree step: essentially a single point of overlap (Nathan 2026-10-27: a 2 °C-wide range is not a caution).
 //               No risk points (Nathan's reviewer 2026-10-22): width alone cannot tell a target mid-range from one on the edge; a future
 //               penalty would use the target's distance to the nearest bound and the expected variation, charged once per tank.
 //      broad  = wider than NARROW_C.
@@ -26,7 +26,7 @@ import type { Species } from '../data/species';
 
 type R = [number, number];
 /** A shared range this wide or narrower (°C) is "narrow": a limited margin, not an incompatibility. */
-export const NARROW_C = 2;
+export const NARROW_C = 1;
 
 export type RangeState = 'none' | 'single' | 'narrow' | 'broad' | 'unknown';
 export interface SharedRange {
