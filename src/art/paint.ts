@@ -162,6 +162,34 @@ export function scales(l: Ctx, P: Proj, W: number, u0: number, head: number, s: 
   l.restore();
 }
 
+/**
+ * Warm, sparse scale reflections for naturally luminous fish. Drawn as short arcs rather than sharp white dots
+ * so the marks survive downsampling without looking like spots or an artificial glitter effect. Coordinates remain
+ * in total-length units; the supplied profile confines each glint to the flank. Called while the body is
+ * source-atop clipped, so no highlights escape the silhouette. Off unless a Plan asks for it.
+ */
+export function shimmer(ctx: Ctx, P: Proj, W: number, u0: number, u1: number,
+  prof: (u: number) => [number, number], amount: number) {
+  const strength = Math.max(0, Math.min(1, amount));
+  if (!strength) return;
+  const r = rng(4361);
+  ctx.save(); ctx.lineCap = 'round';
+  const count = Math.round(90 * strength);
+  for (let i = 0; i < count; i++) {
+    const u = u0 + (u1 - u0) * r(), [top, bottom] = prof(u);
+    // Faint, uneven flashes in the central and upper flank; avoid the forehead and ventral edge.
+    const v = top + (bottom - top) * (0.18 + 0.6 * r());
+    const len = (0.004 + 0.007 * r()) * W, thickness = (0.0008 + 0.0014 * r()) * W;
+    const [x, y] = P(u, v), a = (0.13 + 0.17 * r()) * strength;
+    ctx.strokeStyle = `rgba(255,228,148,${a})`;
+    ctx.lineWidth = Math.max(0.6, thickness);
+    ctx.beginPath(); ctx.moveTo(x - len * 0.55, y - thickness * 0.2);
+    ctx.quadraticCurveTo(x, y - thickness * 0.9, x + len * 0.45, y + thickness * 0.2);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
 /** Band with wavy, slightly irregular edges (amp in widths), hard but anti-aliased: a pattern, not an airbrush. */
 export function wavyBand(c: Ctx, P: Proj, u0: number, u1: number, v0: number, v1: number, amp: number, color: string, a: number, seed: number) {
   const r = rng(seed), ph = [r() * 6, r() * 6, r() * 6, r() * 6], n = 60, top: [number, number][] = [], bot: [number, number][] = [];

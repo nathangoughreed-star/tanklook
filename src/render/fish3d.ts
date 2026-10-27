@@ -46,7 +46,7 @@ function sections(p: Plan) {
  * belly (`belly`) and wider low or high (`wide`). Returns [v, z].
  */
 function ringPt({ vc, hv, t, p }: Section, th: number): [number, number] {
-  const c = Math.cos(th), e = c < 0 ? EXP * (1 + 2.5 * (p.belly ?? 0)) : EXP;
+  const c = Math.cos(th), exp = p.sectionExp ?? EXP, e = c < 0 ? exp * (1 + 2.5 * (p.belly ?? 0)) : exp;
   return [vc - hv * spE(c, e), t * spE(Math.sin(th), e) * (1 - 0.5 * (p.wide ?? 0) * c)];
 }
 
@@ -87,7 +87,13 @@ function bodyGeometry(p: Plan, aspect: number, bend: number) {
   g.setIndex(idx); g.computeVertexNormals();
   // soft form shading: the belly and the underside of the flanks turn away from the light above
   const n = g.attributes.normal, col: number[] = [];
-  for (let i = 0; i < n.count; i++) { const ny = n.getY(i), k = 1 - 0.28 * Math.max(0, -ny) + 0.04 * Math.max(0, ny); col.push(k, k, k); }
+  for (let i = 0; i < n.count; i++) {
+    const ny = n.getY(i), nz = Math.abs(n.getZ(i)), glow = p.shimmer ?? 0;
+    // A shallow glancing highlight on luminous flanks. No global lighting requirement (fish use MeshBasicMaterial).
+    const k = 1 - 0.28 * Math.max(0, -ny) + 0.04 * Math.max(0, ny)
+      + glow * (0.07 * Math.pow(Math.max(0, ny * 0.6 + nz * 0.4), 4) - 0.045 * Math.max(0, -ny));
+    col.push(k, k, k);
+  }
   g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
   // how squarely the surface faces the side (1 = flank, 0 = edge-on to the projection): where the paint is reliable
   g.setAttribute('aSide', new THREE.Float32BufferAttribute(Array.from({ length: n.count }, (_, i) => Math.abs(n.getZ(i))), 1));
@@ -123,6 +129,30 @@ function normalAtTh(p: Plan, u: number, th: number, side: number, bend: number) 
   const at = (uu: number, t: number) => pointAt(p, uu, t, side, bend), d = 0.004;
   const n = at(u + d, th).sub(at(u - d, th)).cross(at(u, th + d).sub(at(u, th - d))).normalize();
   return n.z * side < 0 ? n.negate() : n;
+}
+
+/**
+ * A fine operculum seam projected onto the actual head surface, rather than painted onto the flat body card.
+ * Geometry follows the head curvature on both flanks. Opt-in per Plan to avoid extra meshes elsewhere.
+ */
+function gillMeshes(art: string, p: Plan, bend: number, mat: THREE.Material) {
+  const out: THREE.Mesh[] = [], gu = 1 - (1 - p.pedU) * 0.2;
+  for (const side of [1, -1]) {
+    const key = `gill:${art}:${bend}:${side}`;
+    let g = geoCache.get(key);
+    if (!g) {
+      const pts = Array.from({ length: 11 }, (_, i) => {
+        const k = i / 10, u = gu - 0.021 * Math.sin(k * Math.PI);
+        const [top, bottom] = profile(p)(u), v = top + (bottom - top) * (0.18 + 0.66 * k);
+        const th = thetaAt(sections(p)(u), v);
+        return pointAt(p, u, th, side, bend).addScaledVector(normalAtTh(p, u, th, side, bend), 0.0014);
+      });
+      g = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 14, 0.0014, 4, false);
+      g.userData.keep = true; geoCache.set(key, g);
+    }
+    out.push(new THREE.Mesh(g, mat));
+  }
+  return out;
 }
 
 /**
@@ -542,6 +572,10 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
     for (const m of limbMeshes(art, p, b, mat)) grp.add(m);
   }
   if (p.gape) for (const m of gapeMeshes(art, p, b, fishMat('gape:' + art, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(p.shade[0]).multiplyScalar(0.35) })))) grp.add(m);
+  if (p.gillLine) {
+    const mat = fishMat('gill:' + art, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(p.shade[0]).multiplyScalar(0.5), transparent: true, opacity: p.gillLine, depthWrite: false }));
+    for (const m of gillMeshes(art, p, b, mat)) grp.add(m);
+  }
   if (p.barbels) {
     const mat = fishMat('barbel:' + art, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(p.shade[2]).multiplyScalar(0.85) }));
     for (const m of barbelMeshes(p, b, mat)) grp.add(m);
