@@ -744,3 +744,11 @@ export function parseTech(raw: unknown): TechSetup | undefined {
   }
   return Object.keys(rows).length || t.preset || t.heaters || t.filters || t.filterless || t.sump ? t : undefined;
 }
+
+/** The filter option the budget assumes while the owner has chosen none (filterState 'unset'): what inferTech picks for a tank not started from its animals
+ *  (hang-on up to 60 gal, canister above). The tile says "assumed" and the summary says "No filter chosen" (Nathan 2026-10-27, B1 audit). */
+export function assumedFilter(S: TankSetup): string | undefined {
+  if (filterState(S) !== 'unset') return undefined;
+  const t = techOf(S).rows.filter;
+  return t && t !== 'none' ? undefined : (galOf(S) <= 60 ? 'hob' : 'canister');
+}

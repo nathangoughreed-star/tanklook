@@ -17,6 +17,7 @@ function tank(L: number, D: number, H: number, stock: [string, number][], o: { s
   s.fish = stock.flatMap(([id, n]) => fish(id, n)).map((f, i) => ({ ...f, id: i + 1 }));
   s.items = Array.from({ length: o.plants ?? 0 }, (_, i) => ({ id: i + 1, kind: 'plant', variant: 'x', seed: i, x: 0, depth: 0, lift: 0, yaw: 0 }) as unknown as Item);
   if (o.filter) s.tech = withChoice(s, 'filter', o.filter);
+  if (o.filter === 'none') s.tech = { ...s.tech!, filterless: true }; // an owner's own no-filter tank; a bare 'none' with nothing chosen now runs on an assumed filter (B1)
   return s;
 }
 // S243 step 4: `percent` is room only now; these tests are about the whole load (room or filtration), loadPercent

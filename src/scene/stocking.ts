@@ -23,7 +23,7 @@ import { getSpecies, type Species } from '../data/species';
 import { FLOOR_FACTOR, GROUP_GROW, SPACE_FACTOR, SPACE_FACTOR_CLASS, SPACE_NUDGE } from '../data/spacefactor';
 import { bioloadLitres } from './starter';
 import { feedingOf, isLivePlantPatch, nitrogenBudget, tanOf, type Nitrogen } from './nitrogen';
-import { heatLoss, rowsFor, setWaterChangeFraction, stockCapacity, sumpLitres } from './tech';
+import { assumedFilter, heatLoss, rowsFor, setWaterChangeFraction, stockCapacity, sumpLitres } from './tech';
 import { floorOf } from './tankMin';
 import { zoneOf, type Zone } from './zone';
 import type { Fish, TankSetup } from './types';
@@ -268,7 +268,7 @@ export function stockingOf(S: TankSetup): Stocking {
   const pc = (l: number, cp: number) => cp > 0 ? l / cp * 100 : l > 0 ? Infinity : 0;
   const areaCm2 = floorOf(S.tank).areaCm2, waterPercent = pc(spaceLoad, cap.space), floorPercent = pc(floorUse, areaCm2);
   const spaceBy = floorPercent > waterPercent ? 'floor' as const : 'water' as const, spacePercent = Math.max(waterPercent, floorPercent);
-  const nitrogen = nitrogenBudget(S, cap.litres + sumpLitres(S), cap.tempC, load), // lane SU: the sump's water dilutes the waste too (not the swimming room)
+  const nitrogen = nitrogenBudget(S, cap.litres + sumpLitres(S), cap.tempC, load, assumedFilter(S)), // no filter chosen: an assumed default one, never bare glass (B1); lane SU: the sump's water dilutes the waste too (not the swimming room)
     filtrationPercent = nitrogen.ammoniaPercent, loadPercent = Math.max(spacePercent, filtrationPercent), percent = spacePercent;
   // shares are of the limit that binds
   const bySpace = spacePercent >= filtrationPercent;
@@ -313,7 +313,7 @@ export function stockingOf(S: TankSetup): Stocking {
 /** `stockingOf` remembered by what it reads (the UI asks every frame): animals and lengths, tank, water, tech, plants. */
 const memo = new Map<string, Stocking>();
 export function stockingMemo(S: TankSetup): Stocking {
-  const key = JSON.stringify([S.fish.map(f => [f.species, f.tl]), S.tank, S.water.on, S.water.level, S.water.salt, S.water.tapNitrate, S.tech, S.lid,
+  const key = JSON.stringify([S.fish.map(f => [f.species, f.tl]), S.tank, S.water.on, S.water.level, S.water.salt, S.water.tapNitrate, S.tech, S.stockFirst, S.lid,
     S.feeding, S.items.filter(i => i.kind === 'plant').map(i => i.variant).join(), (S.patches ?? []).filter(isLivePlantPatch).length]);
   let r = memo.get(key);
   if (!r) { r = stockingOf(S); if (memo.size > 16) memo.delete(memo.keys().next().value!); memo.set(key, r); }

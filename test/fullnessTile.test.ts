@@ -206,16 +206,32 @@ describe('tank minimum warnings (binary, AqAdvisor style)', () => {
     }
   });
 });
+import { summaryOf } from '../src/ui/stockSummary';
 
 // Filter gate (lane NB for Nathan 2026-10-21): no Filtration bar until the owner has a filter, or ticks "no filter" (Walstad).
 import { filterCapacity } from '../src/scene/nitrogen';
 import { filterState, setFilterless, withChoice as choose } from '../src/scene/tech';
 describe('filter gate', () => {
   const tank = () => { const s = withFish(); delete s.tech; return s; };
-  it('inferred gear is unset: the pill and the reason come from space alone', () => {
+  it('inferred gear is unset: the budget runs on an assumed default filter, and the summary is never green (B1, Nathan 2026-10-27)', () => {
     const s = tank(), r = stockingOf(s), st = tileState(s, r);
     expect(filterState(s)).toBe('unset'); expect(st.filter).toBe('unset');
-    expect(st.head.pct).toBeCloseTo(r.spacePercent, 9); expect(st.reason).not.toMatch(/filter/i);
+    expect(st.head.pct).toBeCloseTo(r.loadPercent, 9);
+    expect(r.nitrogen.filter.kind).not.toBe('none');
+    const env = summaryOf(s).cats.find(c => c.id === 'environment')!;
+    expect(env.level).not.toBe('ok'); expect(env.items.some(i => i.level === 'unknown' && /No filter chosen/.test(i.text))).toBe(true);
+    expect(env.items.map(i => i.text).join(' ')).not.toMatch(/impossible/i);
+  });
+  it('a path-1 tank (filter none until chosen) is worked against the same assumed filter as a plain inferred one', () => {
+    const a = tank(), b = tank(); b.stockFirst = true;
+    expect(stockingOf(b).filtrationPercent).toBeCloseTo(stockingOf(a).filtrationPercent, 9);
+    expect(stockingOf(b).nitrogen.filter.kind).not.toBe('none');
+  });
+  it('a chosen filter or the Walstad tick has no "No filter chosen" line', () => {
+    const s = tank(); s.tech = choose(s, 'filter', 'hob');
+    expect(summaryOf(s).cats.find(c => c.id === 'environment')!.items.some(i => /No filter chosen/.test(i.text))).toBe(false);
+    const w = tank(); setFilterless(w, true);
+    expect(summaryOf(w).cats.find(c => c.id === 'environment')!.items.some(i => /No filter chosen/.test(i.text))).toBe(false);
   });
   it('set to none by a kit or the Tech menu, without the box: still unset', () => {
     const s = tank(); s.tech = choose(s, 'filter', 'none');
