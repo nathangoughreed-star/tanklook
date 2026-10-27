@@ -169,7 +169,7 @@ export function scales(l: Ctx, P: Proj, W: number, u0: number, head: number, s: 
  * source-atop clipped, so no highlights escape the silhouette. Off unless a Plan asks for it.
  */
 export function shimmer(ctx: Ctx, P: Proj, W: number, u0: number, u1: number,
-  prof: (u: number) => [number, number], amount: number) {
+  prof: (u: number) => [number, number], amount: number, rgb = '255,228,148') {
   const strength = Math.max(0, Math.min(1, amount));
   if (!strength) return;
   const r = rng(4361);
@@ -181,7 +181,7 @@ export function shimmer(ctx: Ctx, P: Proj, W: number, u0: number, u1: number,
     const v = top + (bottom - top) * (0.18 + 0.6 * r());
     const len = (0.004 + 0.007 * r()) * W, thickness = (0.0008 + 0.0014 * r()) * W;
     const [x, y] = P(u, v), a = (0.13 + 0.17 * r()) * strength;
-    ctx.strokeStyle = `rgba(255,228,148,${a})`;
+    ctx.strokeStyle = `rgba(${rgb},${a})`;
     ctx.lineWidth = Math.max(0.6, thickness);
     ctx.beginPath(); ctx.moveTo(x - len * 0.55, y - thickness * 0.2);
     ctx.quadraticCurveTo(x, y - thickness * 0.9, x + len * 0.45, y + thickness * 0.2);

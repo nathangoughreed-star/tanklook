@@ -80,6 +80,7 @@ export interface Plan {
   thick?: number;     // 3D: max body thickness / max body depth (laterally compressed < 0.5 < rounder)
   sectionExp?: number; // 3D: cross-section exponent (2 = elliptical; >2 = boxier); default 2.4
   gillLine?: number;   // 3D: faint raised operculum seam opacity (0..1); opt-in to avoid extra meshes for other species
+  shimmerRgb?: string; // 2D: glint colour as 'r,g,b' (default warm gold)
   shimmer?: number;    // 2D: fine, deterministic warm scale glints (0..1); opt-in, projected to 3D flanks
   // 3D body shape (all optional): flat belly 0..1; cross-section widest low (+) or high (-); thickness at the peduncle
   // (share, default 0.55); head this share narrower than the trunk from the gill cover on; thickness kept to the snout
@@ -363,7 +364,7 @@ export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
   const [t0, b0] = [Math.min(...g.bodyPts.map(q => q[1])), Math.max(...g.bodyPts.map(q => q[1]))];
   body(ctx, P, W, g.bodyPts, t0, b0, [[0, p.shade[0]], [0.4, p.shade[1]], [0.65, p.shade[1]], [1, p.shade[2]]], p.rim ?? 0.035, l => {
     paintMarks(l, P, W, p.marks, 7);
-    if (p.shimmer) shimmer(l, P, W, p.pedU + 0.025, 1 - (1 - p.pedU) * 0.14, g.prof, p.shimmer);
+    if (p.shimmer) shimmer(l, P, W, p.pedU + 0.025, 1 - (1 - p.pedU) * 0.14, g.prof, p.shimmer, p.shimmerRgb);
     const gu = 1 - (1 - p.pedU) * 0.2, [gt, gb] = g.prof(gu);
     if (style.features) gill(l, P, W, gu, gt + (gb - gt) * 0.2, gt + (gb - gt) * 0.85, 0.02);
   }, l => {
@@ -460,16 +461,31 @@ const zigzag = (u0: number, u1: number, n: number, amp: number, t: number): [num
 };
 
 export const PLANS: Record<string, Plan> = {
-  cardinal: { noseCap: 0.03, gape: 0.022, gapeDrop: 0.005, thick: 0.42, depth: 0.23, pedU: 0.18, ped: 0.03, peak: 0.64, snout: 0.55, shade: ['#4d5443', '#9aa39a', '#c7c4bc'], tail: { type: 'lyre', h: 0.14, cut: 0.5 }, fin: '#b7c0bd',
+  cardinal: { shimmer: 0.8, shimmerRgb: '190,225,255', gillLine: 0.28, noseCap: 0.03, gape: 0.022, gapeDrop: 0.005, thick: 0.42, depth: 0.23, pedU: 0.18, ped: 0.03, peak: 0.64, snout: 0.55, shade: ['#4d5443', '#9aa39a', '#c7c4bc'], tail: { type: 'lyre', h: 0.14, cut: 0.5 }, fin: '#b7c0bd',
     // characin fins: dorsal mid-back, tall in front; anal on a long base, tallest in front
     dorsal: { at: 0.62, len: 0.06, h: 0.09, rake: 0.12, taper: 0.4, lead: 0.6, tip: 'point', trail: 0.05, drop: 0.2 }, anal: { at: 0.48, len: 0.21, h: 0.05, rake: 0.05, lead: 0.9, drop: 0.5, trail: 0.01 }, adipose: true, pelvic: { u: 0.62, len: 0.06 },
-    marks: [{ k: 'band', u0: 0.17, u1: 0.95, v0: -0.005, v1: 0.2, c: '#c02f38', a: 0.95, f: 0.012 }, { k: 'band', u0: 0.22, u1: 0.93, v0: -0.065, v1: -0.008, c: '#2aa9e0', a: 1, f: 0.01 }],
+    // Cardinal: the red band runs the whole length of the lower flank (thicker than the neon's), the blue line is the same length; silvery sheen at the belly edge
+    marks: [
+      { k: 'band', u0: 0.17, u1: 0.95, v0: -0.005, v1: 0.2, c: '#c02f38', a: 0.95, f: 0.012 },
+      { k: 'band', u0: 0.2, u1: 0.93, v0: 0.12, v1: 0.2, c: '#e8a0a0', a: 0.28, f: 0.03 },  // paler, translucent red toward the belly
+      { k: 'band', u0: 0.2, u1: 0.8, v0: -0.115, v1: -0.07, c: '#33402f', a: 0.35, f: 0.016 },
+      { k: 'band', u0: 0.2, u1: 0.94, v0: -0.082, v1: 0.004, c: '#5ac8ff', a: 0.2, f: 0.02 },
+      { k: 'band', u0: 0.22, u1: 0.93, v0: -0.062, v1: -0.014, c: '#2f7ff0', a: 1, f: 0.008 },
+      { k: 'band', u0: 0.28, u1: 0.9, v0: -0.052, v1: -0.03, c: '#78d6ff', a: 0.85, f: 0.006 }],
     eye: { r: 0.026, iris: ['#b9ccd2', '#4c5c63'] } },
   // neon: was hand-drawn (drawTetra); outline, fins and colours taken from that drawing
-  tetra: { noseCap: 0.03, gape: 0.022, gapeDrop: 0.005, thick: 0.42, depth: 0.22, pedU: 0.18, ped: 0.03, peak: 0.66, snout: 0.6, shade: ['#56604a', '#a4ada2', '#dcdad2'], tail: { type: 'lyre', h: 0.15, cut: 0.5 }, fin: '#aebbb8',
+  tetra: { shimmer: 0.8, shimmerRgb: '190,225,255', gillLine: 0.28, noseCap: 0.03, gape: 0.022, gapeDrop: 0.005, thick: 0.42, depth: 0.22, pedU: 0.18, ped: 0.03, peak: 0.66, snout: 0.6, shade: ['#56604a', '#a4ada2', '#dcdad2'], tail: { type: 'lyre', h: 0.15, cut: 0.5 }, fin: '#aebbb8',
     dorsal: { at: 0.62, len: 0.06, h: 0.085, rake: 0.12, taper: 0.4, lead: 0.6, tip: 'point', trail: 0.05, drop: 0.2 }, anal: { at: 0.48, len: 0.2, h: 0.045, rake: 0.05, lead: 0.9, drop: 0.5, trail: 0.01 }, adipose: true, pelvic: { u: 0.6, len: 0.05 },
-    marks: [{ k: 'band', u0: 0.15, u1: 0.6, v0: -0.008, v1: 0.2, c: '#c4303a', a: 0.95, f: 0.015 }, { k: 'band', u0: 0.24, u1: 0.93, v0: -0.07, v1: -0.006, c: '#2aa9e0', a: 1, f: 0.012 },
-      { k: 'band', u0: 0.3, u1: 0.85, v0: -0.05, v1: -0.025, c: '#bfeaf6', a: 0.45, f: 0.006 }],
+    // Reference (Wikimedia Commons, Neonsalmler 19/Portraet 3): a thin, glowing blue line from the eye to the adipose fin; the red band only on the
+    // rear half of the lower flank; a silvery, translucent belly under and ahead of it; a dark olive back.
+    marks: [
+      { k: 'band', u0: 0.22, u1: 0.93, v0: 0.05, v1: 0.17, c: '#f1f4f1', a: 0.5, f: 0.03 },    // silver translucent belly
+      { k: 'band', u0: 0.16, u1: 0.5, v0: 0.012, v1: 0.105, c: '#d2323c', a: 0.95, f: 0.012 }, // red band, rear half, rounded at its front
+      { k: 'blob', u: 0.5, v: 0.0585, ru: 0.095, rv: 0.0465, c: '#d2323c', a: 0.95 },
+      { k: 'band', u0: 0.2, u1: 0.8, v0: -0.115, v1: -0.07, c: '#33402f', a: 0.35, f: 0.016 }, // darker back
+      { k: 'band', u0: 0.2, u1: 0.94, v0: -0.075, v1: 0.004, c: '#5ac8ff', a: 0.2, f: 0.02 },  // glow around the stripe
+      { k: 'band', u0: 0.2, u1: 0.94, v0: -0.054, v1: -0.014, c: '#2f7ff0', a: 1, f: 0.008 }, // blue stripe
+      { k: 'band', u0: 0.26, u1: 0.9, v0: -0.045, v1: -0.027, c: '#78d6ff', a: 0.85, f: 0.006 }], // bright core
     eye: { r: 0.024, iris: ['#b9ccd2', '#4c5c63'] } },
   // Ember tetra (Hyphessobrycon amandae): luminous copper/orange, rounded snout, clear warm fins.
   // The shape and coloration describe a well-colored adult; adult total length is kept in species.json.
@@ -969,7 +985,12 @@ Object.assign(PLANS, {
 Object.assign(PLANS, {
   // green neon tetra (Paracheirodon simulans): a blue-green stripe from the eye to the tail base, a silvery-white belly, clear forked tail, no red band
   greenneon: her('tetra', { depth: 0.2, shade: ['#4e5e4a', '#a2b0a0', '#e8eae2'], tail: { type: 'fork', h: 0.14, tint: '#c4ccc8', a: 0.7 }, fin: '#c4ccc8',
-    marks: [{ k: 'band', u0: 0.2, u1: 0.95, v0: -0.07, v1: -0.004, c: '#1fb58c', a: 1, f: 0.012 }, { k: 'band', u0: 0.28, u1: 0.88, v0: -0.05, v1: -0.025, c: '#9af0d2', a: 0.5, f: 0.006 }],
+    marks: [
+      { k: 'band', u0: 0.22, u1: 0.93, v0: 0.04, v1: 0.17, c: '#f4f6f2', a: 0.5, f: 0.03 },    // silver translucent belly
+      { k: 'band', u0: 0.2, u1: 0.8, v0: -0.115, v1: -0.07, c: '#2f3f2b', a: 0.35, f: 0.016 },
+      { k: 'band', u0: 0.2, u1: 0.95, v0: -0.076, v1: 0.004, c: '#5af0c8', a: 0.2, f: 0.02 },
+      { k: 'band', u0: 0.2, u1: 0.95, v0: -0.056, v1: -0.014, c: '#1fb58c', a: 1, f: 0.008 },
+      { k: 'band', u0: 0.26, u1: 0.9, v0: -0.047, v1: -0.027, c: '#8ef2d4', a: 0.85, f: 0.006 }],
     eye: { r: 0.026, iris: ['#bcd2cc', '#3c5a52'] } }),
   // strawberry rasbora (Boraras merah): a red-orange body, a large dark blotch behind the gill cover and a smaller one at the tail base
   merah: her('chili', { shade: ['#b6402a', '#dc623a', '#eca882'], tail: { type: 'fork', h: 0.13, tint: '#d4684a', a: 0.8 }, fin: '#d8785a',
