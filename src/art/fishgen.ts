@@ -588,8 +588,8 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { at: 0.62, len: 0.38, h: 0.1, spines: 0.6, nSp: 7, spineH: [0.035, 0.07], notch: 0.18, tip: 'point', trail: 0.07, rake: 0.6, edge: '#3c74b0' },
     anal: { at: 0.68, len: 0.46, h: 0.12, spines: 0.5, nSp: 7, spineH: [0.03, 0.08], notch: 0.18, tip: 'point', trail: 0.06, rake: 0.65, edge: '#3c74b0' }, pelvic: { u: 0.72, len: 0.4, thread: true, tint: '#d68a5a' },
     // Commons (Colisa lalia): slanted bars alternating red and blue, the blue metallic
-    marks: [0.3, 0.37, 0.44, 0.51, 0.58, 0.65, 0.72, 0.79].map((u, i) => ({ k: 'poly' as const, pts: [[u + 0.07, -0.26], [u + 0.1, -0.26], [u + 0.03, 0.26], [u, 0.26]] as [number, number][], c: i % 2 ? '#c8402e' : '#3a78b8', a: i % 2 ? 0.5 : 0.75 })),
-    finMarks: [0.0, 0.05, 0.1, 0.15, 0.2, 0.3, 0.37, 0.44, 0.51, 0.58, 0.65, 0.72, 0.79, 0.86].map((u, i) => ({ k: 'poly' as const, pts: [[u + 0.05, -0.6], [u + 0.075, -0.6], [u + 0.025, 0.6], [u, 0.6]] as [number, number][], c: i % 2 ? '#c8402e' : '#3a78b8', a: 0.6 })),
+    marks: Array.from({ length: 18 }, (_, i) => { const u = 0.26 + i * 0.032; return { k: 'poly' as const, pts: [[u + 0.06, -0.26], [u + 0.072, -0.26], [u + 0.012, 0.26], [u, 0.26]] as [number, number][], c: i % 2 ? '#d8472f' : '#3d7fc0', a: i % 2 ? 0.55 : 0.8 }; }), // fine slanted pinstripes
+    finMarks: Array.from({ length: 30 }, (_, i) => { const u = i * 0.032; return { k: 'poly' as const, pts: [[u + 0.05, -0.6], [u + 0.061, -0.6], [u + 0.011, 0.6], [u, 0.6]] as [number, number][], c: i % 2 ? '#d8472f' : '#3d7fc0', a: 0.5 }; }),
     eye: { r: 0.032, iris: ['#c8603a', '#3a1a10'] } },
   honeygourami: { shimmer: 0.55, shimmerRgb: '255,228,165', gillLine: 0.25, finFade: 0.35, thick: 0.32, depth: 0.38, pedU: 0.2, ped: 0.06, peak: 0.5, snout: 0.55, mouth: -0.045, shade: ['#b06a2a', '#e09a42', '#eabc78'], tail: { type: 'round', h: 0.15, tint: '#dca064' }, fin: '#dca064',
     dorsal: { at: 0.6, len: 0.36, h: 0.085, spines: 0.6, nSp: 6, spineH: [0.03, 0.06], notch: 0.18, tip: 'point', trail: 0.05, rake: 0.6 },
