@@ -16,10 +16,10 @@ import { FEED_NAMES, GROW_RATE } from '../scene/growtime';
 import type { Store } from '../scene/store';
 import {
   ROOM_C, applyPreset, feedFor, feedOf, filterFor, filterSteps, filterUnits, heatLoss, offerChiller,
-  optionCost, optionDef, presetsFor, reefFeedOf, rowsFor, setFeed, singleFilter, stockCapacity, techOf, tempEvidence, unitCosts, walstadGaps, withChoice,
+  optionCost, optionDef, presetsFor, pumpFor, REEF_FLOW_X, reefFeedOf, rowsFor, setFeed, singleFilter, stockCapacity, techOf, tempEvidence, unitCosts, walstadGaps, withChoice,
   withUnits, withoutUnit, sumpDefault, sumpFromModel, sumpLitres, sumpName, sumpOf, SUMP_FILL, sumpDrainDown, sumpTooSmall, type FilterUnit, type SumpSize, type HeaterUnit, type OptionCost, type TechSetup,
 } from '../scene/tech';
-import { FILTER_PRODUCTS, HEATER_PRODUCTS, filtersNear, genericHeaterW, heatersNear, lightProduct, lightsFor, productName, type FilterProduct, type HeaterProduct, type LightProduct } from '../data/gearCatalog';
+import { FILTER_PRODUCTS, HEATER_PRODUCTS, filtersNear, genericHeaterW, heatersNear, lightProduct, lightsFor, productName, pumpRatedFor, pumpsFor, type FilterProduct, type HeaterProduct, type LightProduct, type PumpProduct } from '../data/gearCatalog';
 import { applyLightProduct, lightProductNote, productOn } from '../scene/lightproduct';
 import { TECHS, lightOutCached } from '../scene/lightout';
 import { integratedKit, lockNote, locksOf } from '../scene/integrated';
@@ -83,12 +83,13 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
       const cap = stockCapacity(S, t);
       chip(cap >= 1 ? 'good' : cap >= 0.8 ? '' : 'warn', `Stocking ${Math.round(cap * 100)} %`, 'How much of a normal stocking this filtration carries (AqAdvisor\'s figure assumes a matched filter)');
     }
+    if (row === 'flow' && c.turnover !== undefined) chip(c.turnover >= REEF_FLOW_X.sps ? 'good' : c.turnover >= REEF_FLOW_X.lps ? '' : 'warn', `${c.turnover.toFixed(c.turnover < 10 ? 1 : 0)}× / hour`, `The picked pump's rated flow each hour, as a multiple of the tank volume: about ${REEF_FLOW_X.lps}× holds soft corals and LPS, ${REEF_FLOW_X.sps}× SPS (a rule of thumb; the Corals chip follows it)`);
     if (row === 'co2' || row === 'ferts') {
       const f = feedOf(t);
       chip(f === 'co2' ? 'good' : f === 'ferts' ? '' : 'mute', `Growth: ${FEED_NAMES[f]} (fast growers ×${GROW_RATE[f].fast})`, 'How fast the plants grow with this feeding: stem plants and grass gain most, anubias and ferns hardly notice');
     }
     if (row === 'skimmer' || row === 'flow' || row === 'dosing') {
-      const f = reefFeedOf(t);
+      const f = reefFeedOf(t, 'low', volume(S.tank).gallons);
       chip(f === 'co2' ? 'good' : f === 'ferts' ? '' : 'mute', `Corals: ${REEF_NAME[f]}`, 'The corals this gear keeps: the lowest of skimmer, water movement and calcium / alkalinity dosing sets it (light still has to match)');
     }
     if (row === 'heater' && opt === 'none') {
@@ -150,6 +151,26 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
   const prodBtn = (act: string, label: string, priceUsd?: number, tip = '') => `<button type="button" data-act="${esc(act)}"${tip ? ` title="${esc(tip)}"` : ''}>${esc(label)}${priceUsd ? `<span class="tpp">$${Math.round(priceUsd)}</span>` : ''}</button>`;
   const heaterBtn = (h: HeaterProduct) => prodBtn(`addh|${h.id}`, productName(h), h.priceUsd, `${h.watts} W · ${h.lengthMm} mm long`);
   const filterBtn = (p: FilterProduct) => prodBtn(`addf|${p.kind}|${p.id}`, `${productName(p)}${p.gph ? ` · ${p.gph} gph` : ''}`, p.priceUsd, `${p.galMin ?? '?'}-${p.galMax ?? '?'} gal`);
+
+  /** A pump product picker (lane GP) for a gear part (airpump, powerhead, wavemaker): generic by default; a chosen product's price, watts and
+   *  flow replace the generic part's, and what the listing rates it for is checked against this tank. */
+  const pumpPicker = (S: TankSetup, t: TechSetup, gear: string, label = 'Product'): string => {
+    const gal = volume(S.tank).gallons, cur = pumpFor(t, gear), list = pumpsFor(gear, gal), ok = list.filter(p => pumpRatedFor(p, gal) !== false), no = list.filter(p => pumpRatedFor(p, gal) === false);
+    const opt = (p: PumpProduct) => `<option value="${p.id}"${p === cur ? ' selected' : ''}>${esc(`${productName(p)} · ${p.watts} W${p.gph ? ` · ${p.gph} gph` : p.airGph ? ` · ${p.airGph} gph of air` : ''} · ${usd(p.priceUsd)}`)}</option>`;
+    let html = `<div class="trow2" style="display:block"><label for="pp-${gear}" style="display:block;margin:.4em 0 .15em" title="A real pump from the catalogue (Amazon best sellers, read 2026-10-27): its listed price and watts are used instead of the generic part's. Generic: the sized default">${esc(label)}</label><select id="pp-${gear}" data-pump="${gear}" style="width:100%;max-width:100%;min-width:0"><option value="">Generic (sized to the tank)</option>${ok.length ? `<optgroup label="Rated for this tank, or no range listed">${ok.map(opt).join('')}</optgroup>` : ''}${no.length ? `<optgroup label="Rated for other tank sizes">${no.map(opt).join('')}</optgroup>` : ''}</select></div>`;
+    if (cur) {
+      const chips: string[] = [], chip = (cls: string, txt: string, tip = '') => chips.push(`<span class="tchip ${cls}"${tip ? ` title="${esc(tip)}"` : ''}>${esc(txt)}</span>`);
+      const rated = pumpRatedFor(cur, gal);
+      if (rated !== undefined) chip(rated ? 'good' : 'warn', `Rated ${cur.galMin ?? 0}-${cur.galMax ?? '∞'} gal`, `The listing's tank range; this tank holds ${Math.round(gal)} gal`);
+      if (cur.gph) chip('', `${cur.gph} gph`, 'Rated flow from the listing');
+      if (cur.outlets) chip('', `${cur.outlets} outlet${cur.outlets > 1 ? 's' : ''}`);
+      if (cur.depthIn !== undefined) { const water = S.tank.H * S.water.level / 25.4; chip(water > cur.depthIn ? 'warn' : '', `Water depth to ${cur.depthIn} in`, `The listing's depth rating; this tank's water is about ${Math.round(water)} in deep`); }
+      if (cur.dB) chip('', `up to ${cur.dB} dB`, 'The loudest figure the listing gives');
+      if (cur.controller) chip('good', 'Wave controller');
+      html += `<div class="tchips">${chips.join('')}</div>`;
+    }
+    return html;
+  };
 
   /** Heating, opened: a card per heater, or "No heater", and the Add picker. */
   const heaterBody = (S: TankSetup, t: TechSetup, cur: string, c: OptionCost): string => {
@@ -286,7 +307,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
       // an integrated kit's own filter (or heater): shown, not opened (scene/integrated.ts)
       if ((r.id === 'filter' && locksOf(S)?.filter) || (r.id === 'heater' && locksOf(S)?.heater)) { html += `<div class="hint">${esc(lockNote(S, r.id))}${unholdBtn(r.id)}</div></div>`; continue; }
       if (open === r.id && (r.id === 'heater' || r.id === 'filter')) {
-        html += `<div class="topts">${r.id === 'heater' ? heaterBody(S, t, cur, c) : filterBody(S, t, cur, c, r)}${def?.note ? `<div class="hint">${esc(def.note)}</div>` : ''}</div></div>`;
+        html += `<div class="topts">${r.id === 'heater' ? heaterBody(S, t, cur, c) : filterBody(S, t, cur, c, r)}${def?.note ? `<div class="hint">${esc(def.note)}</div>` : ''}${r.id === 'filter' && filterUnits(t).some(u => u.kind === 'sponge') ? pumpPicker(S, t, 'airpump', 'Air pump for the sponge') : ''}</div></div>`;
         if (r.id === 'filter') html += sumpRow(S, t);
         continue;
       }
@@ -297,6 +318,8 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
           html += `<button type="button" class="topt${op.id === cur ? ' on' : ''}" data-opt="${op.id}" aria-pressed="${op.id === cur}"${op.note ? ` title="${esc(op.note)}"` : ''}><span class="tol">${esc(op.label)}</span>${range(oc)}<span class="tchips">${chips(S, r.id, op.id, oc)}</span></button>`;
         }
         if (def?.note) html += `<div class="hint">${esc(def.note)}</div>`;
+        const pg = r.id === 'air' ? 'airpump' : r.id === 'flow' ? def?.parts[0] : undefined;
+        if (pg && cur !== 'none') html += pumpPicker(S, t, pg, r.id === 'air' ? 'Air pump' : pg === 'wavemaker' ? 'Wavemaker' : 'Powerhead');
         html += '</div>';
       }
       html += '</div>';
@@ -354,6 +377,11 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
   });
   mount.addEventListener('change', e => {
     const el = e.target as HTMLInputElement;
+    if (el.dataset.pump) { // a pump product (or generic: empty)
+      const gear = el.dataset.pump, id = (el as unknown as HTMLSelectElement).value;
+      edit(s => { const t = { ...techOf(s) }, pumps = { ...t.pumps }; if (id) pumps[gear] = id; else delete pumps[gear]; if (Object.keys(pumps).length) t.pumps = pumps; else delete t.pumps; return t; });
+      return;
+    }
     if (el.dataset.hw !== undefined) { // a generic heater's watts
       const i = +el.dataset.hw, w = Math.round(+el.value);
       if (el.value !== '' && isFinite(w)) edit(s => { const t = techOf(s); return withUnits(t, 'heater', heatersNow(s, t).map((u, k) => k === i ? { ...u, w: Math.min(2000, Math.max(5, w)) } : u)); });

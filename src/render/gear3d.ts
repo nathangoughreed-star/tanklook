@@ -8,7 +8,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { FILTER_MODELS, HEATER_MODELS, type FilterModel } from '../demand/gear';
 import { filterState, heatLoss, SUMP_FILL, sumpDefault, sumpOf, techOf, techParts, type GearPlace } from '../scene/tech';
 import { fitsInStand } from '../scene/standspace';
-import { filterProduct, genericHeaterW, heaterProduct, type FilterProduct, type PartColour } from '../data/gearCatalog';
+import { filterProduct, genericHeaterW, heaterProduct, pumpProduct, type FilterProduct, type PartColour, type PumpProduct } from '../data/gearCatalog';
 import { backdropDepth, glassThickness, tankUnderside, floorY, waterY, clamp, HOOD_H, RIM_DROP, RIM_H } from '../scene/physics';
 import { chord } from '../scene/shape';
 import { groundHeight } from '../scene/terrain';
@@ -48,7 +48,7 @@ export function gearPicks(S: TankSetup): GearPick[] {
   if (!gearView.on || (!S.tech && !DRAW_INFERRED)) return [];
   const out: GearPick[] = [], parts = techParts(S), sump = parts.some(p => p.gear === 'sump');
   for (const p of parts) {
-    const place = spotOf(S, p.place), pick = (id: string) => out.push({ id, row: p.row, ...(p.n > 1 ? { n: p.n } : {}), ...(place ? { place } : {}) });
+    const place = spotOf(S, p.place), pick = (id: string) => out.push({ id, row: p.row, ...(p.n > 1 ? { n: p.n } : {}), ...(p.gear === 'powerhead' || p.gear === 'wavemaker' ? (p.product ? { product: p.product } : {}) : {}), ...(place ? { place } : {}) });
     switch (p.gear) {
       case 'filter': if (p.model && !(S.stockFirst && filterState(S) !== 'chosen')) out.push({ id: p.model, row: p.row, ...(p.n > 1 ? { n: p.n } : {}), ...(p.product ? { product: p.product } : {}), ...(place ? { place } : {}) }); break;
       case 'heater': if (p.model) out.push({ id: p.model, row: p.row, watts: p.watts ?? genericHeaterW(heatLoss(S, techOf(S)).needW), ...(p.product ? { product: p.product } : {}), ...(place ? { place } : {}) }); break; // one pick per heater (scene/tech techParts)
@@ -731,26 +731,29 @@ function uv(f: Frame, sp: Spot, filter: FilterModel | undefined) {
   kit.tube('room', overRim(f, u, f.P(u, yT, b), b, f.top + 20), 2.6, C.black, 0, 6);
 }
 
-/** A powerhead / wavemaker on the frame's glass at u, aimed into the tank and a little along it. */
-function powerhead(f: Frame, sp: Spot, big: boolean) {
-  const { kit } = f, r = big ? 32 : 26, len = big ? 50 : 42, u = f.slot(sp.u, 2 * r + 6, 0, f.H, 0, len + 10, true);
+/** A powerhead / wavemaker on the frame's glass at u, aimed into the tank and a little along it. A catalogue pump (lane GP) is drawn
+ *  at its listed size (its longest side = the length from the mount to the cage, the middle one = the diameter) and its photo's colours. */
+function powerhead(f: Frame, sp: Spot, big: boolean, prod?: PumpProduct) {
+  const dims = prod?.bodyMm ? [prod.bodyMm.w, prod.bodyMm.d, prod.bodyMm.h].sort((a, b) => b - a) : undefined;
+  const mc = hexOr(prod?.colors.body, C.charcoal), cc = prod ? mc : C.black, hub = hexOr(prod?.colors.accent, C.grey);
+  const { kit } = f, r = dims ? clamp(dims[1] / 2, 12, 45) : big ? 32 : 26, len = dims ? clamp((dims[0] - 10) / 1.5, 24, 150) : big ? 50 : 42, u = f.slot(sp.u, 2 * r + 6, 0, f.H, 0, len + 10, true);
   const y = lerp(f.ground(u, 30) + r + 30, f.wy - r - 20, sp.y ?? 0.7), p0 = f.P(u, y, 0);
   const dir = f.inward.clone().addScaledVector(f.along, f.wall === 'back' ? 0.12 : -0.12).normalize();
   // the magnet mount on the glass, the motor body, the cage with its bars and the propeller hub inside
   kit.put('wet', new THREE.CylinderGeometry(r * 0.85, r * 0.85, 10, 28), C.black, along(p0, dir, 5));
-  kit.rod('wet', p0.clone().addScaledVector(dir, 10), p0.clone().addScaledVector(dir, 10 + len * 0.5), r, C.charcoal, { seg: 28 });
+  kit.rod('wet', p0.clone().addScaledVector(dir, 10), p0.clone().addScaledVector(dir, 10 + len * 0.5), r, mc, { seg: 28 });
   const cg = p0.clone().addScaledVector(dir, 10 + len * 0.5), ce = p0.clone().addScaledVector(dir, 10 + len);
-  kit.put('wet', new THREE.TorusGeometry(r - 1.5, 1.8, 6, 32), C.black, along(ce, dir, 0).multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2)));
+  kit.put('wet', new THREE.TorusGeometry(r - 1.5, 1.8, 6, 32), cc, along(ce, dir, 0).multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2)));
   const q = new THREE.Quaternion().setFromUnitVectors(UP, dir);
   for (let i = 0; i < 12; i++) {
     const a = (i / 12) * Math.PI * 2, o = V(Math.cos(a) * (r - 1.5), 0, Math.sin(a) * (r - 1.5)).applyQuaternion(q);
-    kit.rod('wet', cg.clone().add(o), ce.clone().add(o), 1.4, C.black, { seg: 5 });
+    kit.rod('wet', cg.clone().add(o), ce.clone().add(o), 1.4, cc, { seg: 5 });
   }
   for (let i = 0; i < 4; i++) {
     const a = (i / 4) * Math.PI * 2, o = V(Math.cos(a) * (r - 2), 0, Math.sin(a) * (r - 2)).applyQuaternion(q);
     kit.rod('wet', ce.clone().addScaledVector(o, -0.04), ce.clone().add(o), 1.2, C.black, { seg: 4 });
   }
-  kit.rod('wet', cg, cg.clone().addScaledVector(dir, len * 0.3), r * 0.3, C.grey, { seg: 16, r2: r * 0.2 });
+  kit.rod('wet', cg, cg.clone().addScaledVector(dir, len * 0.3), r * 0.3, hub, { seg: 16, r2: r * 0.2 });
   // the cord, up the glass and over the rim
   kit.tube('room', overRim(f, u, p0.clone().addScaledVector(dir, 12).add(V(0, r * 0.7, 0)), 6, f.top + 30), 2.4, C.black, 0, 6);
 }
@@ -980,8 +983,8 @@ export function buildGear(S: TankSetup, T: Tank, solids: THREE.Box3[], picks = g
     if (go(cp)) { const s0 = spot(cp!, outlet.u), f = cp!.place ? s0.f : outlet.f; track(cp!, () => co2(f, s0.sp, cp!.co2)); }
     // powerheads on the side glass (default: the near one on the gear side, a second or the wavemaker on the other)
     const ph = get('powerhead'), wm = get('wavemaker'), Db = T.D - backdropDepth(S.backdrop, T);
-    if (go(ph)) { const s0 = ph!.place ? spot(ph!, 0) : { f: fr(dflt), sp: { u: Db * 0.7, y: 0.7 } as Spot }; track(ph!, () => powerhead(s0.f, s0.sp, false)); if ((ph!.n ?? 1) > 1) powerhead(fr(opp), { u: Db * 0.45, y: 0.55 }, false); }
-    if (go(wm)) { const s0 = wm!.place ? spot(wm!, 0) : { f: fr(opp), sp: { u: Db * 0.45, y: 0.55 } as Spot }; track(wm!, () => powerhead(s0.f, s0.sp, true)); }
+    if (go(ph)) { const s0 = ph!.place ? spot(ph!, 0) : { f: fr(dflt), sp: { u: Db * 0.7, y: 0.7 } as Spot }; track(ph!, () => powerhead(s0.f, s0.sp, false, pumpProduct(ph!.product))); if ((ph!.n ?? 1) > 1) powerhead(fr(opp), { u: Db * 0.45, y: 0.55 }, false, pumpProduct(ph!.product)); }
+    if (go(wm)) { const s0 = wm!.place ? spot(wm!, 0) : { f: fr(opp), sp: { u: Db * 0.45, y: 0.55 } as Spot }; track(wm!, () => powerhead(s0.f, s0.sp, true, pumpProduct(wm!.product))); }
   }
   // a dry tank's top gear: anywhere on the top, the owner's spot or its default; the whole body is its grab box
   const taken: [number, number, number, number][] = [], tops = picks.filter(p => TOP[p.id]);

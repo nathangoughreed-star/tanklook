@@ -14,7 +14,7 @@ import { FILTER_MODELS, HEATER_MODELS, matchHeater, type FilterKind, type Filter
 import { price as rowPrice, tankRowPrice } from '../demand/prices';
 import type { Range3 } from '../demand/types';
 import { volume } from './physics';
-import { filterProduct, genericHeaterW, heaterProduct, listedPrice, type FilterProduct, type HeaterProduct } from '../data/gearCatalog';
+import { filterProduct, genericHeaterW, heaterProduct, listedPrice, pumpProduct, PUMP_GEAR_KINDS, type FilterProduct, type HeaterProduct, type PumpProduct } from '../data/gearCatalog';
 import { footprint } from './shape';
 import { getTankModel, TANK_MODELS, tankFromModel, type TankModel } from '../data/tanks';
 import type { GrowFeed, TankSetup } from './types';
@@ -54,6 +54,10 @@ export interface TechSetup {
   heaterW?: number;
   /** a real heater picked from the gear catalogue (data/gear-catalog.json; lane TG): its watts size the heat, its size is drawn */
   heaterProduct?: string;
+  /** real pumps picked from the gear catalogue (lane GP): gear part (airpump, powerhead, wavemaker) -> product id. A chosen product
+   *  replaces that part's generic price and watts, the flow rows count its gal/h, and it is drawn at its own size and colours;
+   *  absent = the generic pump, priced and powered as before */
+  pumps?: Record<string, string>;
   /** room temperature, deg C, where the tank stands; absent = tech.json roomC (21) */
   roomC?: number;
   /** the tank's target water temperature, deg C (the intended operating temperature, whatever holds it: heater, cooling or the room);
@@ -208,13 +212,32 @@ export function feedOf(t: TechSetup, fallback: GrowFeed = 'low'): GrowFeed {
  *  (0 = soft corals, 1 = LPS, 2 = SPS), as the grow feed plantfit reads for corals (low = light dosing, ferts = regular,
  *  co2 = daily). So corals gate on the tech without plantfit changing. */
 const TIER_FEED: GrowFeed[] = ['low', 'ferts', 'co2'];
-export function reefFeedOf(t: TechSetup, fallback: GrowFeed = 'low'): GrowFeed {
+export function reefFeedOf(t: TechSetup, fallback: GrowFeed = 'low', gal?: number): GrowFeed {
   if (t.rows.dosing === undefined && t.rows.flow === undefined && t.rows.skimmer === undefined) return fallback;
   const tier = (r: string) => optionDef(r, t.rows[r] ?? 'none')?.tier ?? 0;
-  return TIER_FEED[Math.max(0, Math.min(2, tier('dosing'), tier('flow'), tier('skimmer')))];
+  return TIER_FEED[Math.max(0, Math.min(2, tier('dosing'), Math.min(tier('flow'), flowTierCap(t, gal)), tier('skimmer')))];
+}
+/** Reef pump flow wanted per hour as a multiple of the tank volume (the usual reef-keeping rule of thumb, an estimate: ~10x for soft
+ *  corals and LPS, ~20x for SPS; Nathan 2026-10-27, lane GP: "from real GPH per gallon"). */
+export const REEF_FLOW_X = { lps: 10, sps: 20 };
+/** The flow row's chosen pumps' flow per hour as a multiple of `gal`; undefined with no product picked for the row's pump (the generic
+ *  pump has no rated flow, so it keeps the option's own tier). */
+export function pumpTurnover(t: TechSetup, gal: number): number | undefined {
+  const def = optionDef('flow', t.rows.flow ?? 'none'), gear = def?.parts[0], p = gear ? pumpFor(t, gear) : undefined;
+  return p?.gph && gal > 0 ? p.gph * (def?.count ?? 1) / gal : undefined;
+}
+/** The highest coral tier the flow of a picked pump supports (2 SPS, 1 LPS, 0 soft); 2 when no real pump is picked or the size is unknown. */
+export function flowTierCap(t: TechSetup, gal?: number): number {
+  const x = gal === undefined ? undefined : pumpTurnover(t, gal);
+  return x === undefined ? 2 : x >= REEF_FLOW_X.sps ? 2 : x >= REEF_FLOW_X.lps ? 1 : 0;
+}
+/** The catalogue pump picked for a gear part (airpump, powerhead, wavemaker), when it is of a kind the part accepts. */
+export function pumpFor(t: TechSetup, gear: string): PumpProduct | undefined {
+  const p = pumpProduct(t.pumps?.[gear]);
+  return p && PUMP_GEAR_KINDS[gear]?.includes(p.kind) ? p : undefined;
 }
 /** The tank's growth feed: derived from its tech when it has one (CO2 + ferts fresh, salt gear on a reef), else the saved grow.feed. */
-export const feedFor = (S: TankSetup): GrowFeed => !S.tech || !S.water.on ? S.grow.feed : isSalt(S) ? reefFeedOf(techOf(S), S.grow.feed) : feedOf(techOf(S), S.grow.feed);
+export const feedFor = (S: TankSetup): GrowFeed => !S.tech || !S.water.on ? S.grow.feed : isSalt(S) ? reefFeedOf(techOf(S), S.grow.feed, galOf(S)) : feedOf(techOf(S), S.grow.feed);
 
 /** The Plant care slider as a shortcut: set the CO2 + ferts rows (salt: dosing, flow, skimmer) so the derived feed is `feed`,
  *  keeping what already fits. */
@@ -552,7 +575,11 @@ export function optionCost(S: TankSetup, row: string, opt: string, o: { kwhUsd?:
       setup = p && s3(p, g.modelPriceK?.[f.model.id] ?? 1); est = !p;
       minutes = s3(minutes, g.byKind?.[def.kind] ?? 1);
       // sponges run off one air pump, however many there are (its price is spread over the units, as setup is multiplied by n below)
-      if (def.kind === 'sponge') { watts += (GEAR.airpump.watts ?? 2.5) / f.n; const ap = unitPrice(GEAR.airpump.price); if (setup && ap) setup = a3(setup, s3(ap.r, 1 / f.n)); }
+      if (def.kind === 'sponge') {
+        const air = pumpFor(t, 'airpump'); // a picked air pump (lane GP) runs the sponges in place of the generic one
+        watts += (air?.watts ?? GEAR.airpump.watts ?? 2.5) / f.n;
+        const ap = air ? { r: pricePoint(air.priceUsd) } : unitPrice(GEAR.airpump.price); if (setup && ap) setup = a3(setup, s3(ap.r, 1 / f.n));
+      }
     } else if (g.sized === 'heater') {
       // each heater its own price (a product's listing, else its class's row), spread over the units as setup is multiplied by n below
       const h = heatLoss(S, t), each = h.units.map(heaterPrice);
@@ -565,6 +592,9 @@ export function optionCost(S: TankSetup, row: string, opt: string, o: { kwhUsd?:
       const h = heatLoss(S, t);
       kwhMo = h.chillerKwhMo; watts = h.coolW / HEAT.chillerCop;
     }
+    // a real pump picked from the catalogue (lane GP): its own watts and listed price, in place of the generic part's
+    const pump = pumpFor(t, id);
+    if (pump) { watts = pump.watts; setup = pricePoint(pump.priceUsd); est = false; }
     if (!setup) { const u = unitPrice(g.price); if (u) { setup = s3(u.r, sizeK(g, gal, 'price')); est = u.est; } }
     if (g.monthly) {
       const m = 'key' in g.monthly ? (r => r && s3(r, 1 / (g.monthly as { months?: number }).months! || 1))(rowPrice(g.monthly.key)) : g.monthly;
@@ -573,6 +603,7 @@ export function optionCost(S: TankSetup, row: string, opt: string, o: { kwhUsd?:
     if (g.refill) { const r = rowPrice(g.refill.key); if (r) monthly = a3(monthly, s3(r, gal / g.refill.galMonthsPerRefill)); }
     if (g.perWaterChange) { const r = rowPrice(g.perWaterChange.key); if (r) monthly = a3(monthly, s3(r, wcGalWk(S) * 4.33 * g.perWaterChange.perGal)); }
     if (g.gphPerGal && id === 'returnpump') turnover = g.gphPerGal;
+    if (row === 'flow' && pump?.gph && gal > 0) turnover = pump.gph * n / gal; // lane GP: the picked pump's own flow
     if (doser && DOSING.has(id)) minutes = s3(minutes, 0.2);
     const kwh = kwhMo ?? watts * hours * 30 / 1000;
     parts.push({ gear: id, label: g.label, n, setup: setup && s3(setup, n), est, monthly: s3(monthly, 1), watts: watts * n, kwhMo: kwh * n, minutes: s3(minutes, n) });
@@ -683,6 +714,8 @@ export function techParts(S: TankSetup): TechPiece[] {
       if (g.sized === 'filter' && def?.kind) { const f = filterFor(S, def.kind, t.filterModel, t.filterProduct); Object.assign(piece, { model: f.model.id, n: f.n, gph: f.product?.gph ?? f.model.gph, watts: f.product?.watts ?? f.model.watts, ...(f.product ? { product: f.product.id } : {}) }); }
       else if (g.sized === 'heater') { const h = heatLoss(S, t); Object.assign(piece, { model: h.heater.id, n: h.n, watts: h.heater.watts }); }
       else if (g.watts) piece.watts = g.watts;
+      const pump = pumpFor(t, gear);
+      if (pump) Object.assign(piece, { product: pump.id, watts: pump.watts, ...(pump.gph ? { gph: pump.gph } : {}) });
       if (gear === 'returnpump') piece.gph = Math.round(galOf(S) * (g.gphPerGal ?? 6));
       out.push(piece);
     }
@@ -713,6 +746,11 @@ export function parseTech(raw: unknown): TechSetup | undefined {
   if (typeof r.heaterW === 'number' && HEATER_MODELS.some(m => m.watts === r.heaterW)) t.heaterW = r.heaterW;
   if (typeof r.filterProduct === 'string' && filterProduct(r.filterProduct)) t.filterProduct = r.filterProduct;
   if (typeof r.heaterProduct === 'string' && heaterProduct(r.heaterProduct)) t.heaterProduct = r.heaterProduct;
+  if (r.pumps && typeof r.pumps === 'object') {
+    const pumps: Record<string, string> = {};
+    for (const [gear, id] of Object.entries(r.pumps as Record<string, unknown>)) { const p = typeof id === 'string' ? pumpProduct(id) : undefined; if (p && PUMP_GEAR_KINDS[gear]?.includes(p.kind)) pumps[gear] = p.id; }
+    if (Object.keys(pumps).length) t.pumps = pumps;
+  }
   if (Array.isArray(r.heaters)) t.heaters = (r.heaters as unknown[]).slice(0, 8).flatMap(v => {
     const u = v as Partial<HeaterUnit> | null; if (!u || typeof u !== 'object') return [];
     return [{ ...(typeof u.product === 'string' && heaterProduct(u.product) ? { product: u.product } : {}), ...(typeof u.w === 'number' && isFinite(u.w) ? { w: Math.min(2000, Math.max(5, Math.round(u.w))) } : {}), ...(u.kit === true ? { kit: true } : {}) }];

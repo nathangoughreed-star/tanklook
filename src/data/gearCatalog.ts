@@ -166,3 +166,33 @@ export function lightsFor(lengthMm: number): LightProduct[] {
   const rank = (p: LightProduct) => Number(/#(\d+)/.exec(p.popularity?.evidence ?? '')?.[1] ?? 999);
   return LIGHT_PRODUCTS.filter(p => lengthMm >= p.fitMinMm && lengthMm <= p.fitMaxMm).sort((a, b) => rank(a) - rank(b));
 }
+
+// ---- pumps (lane GP, 2026-10-27): the Amazon air pumps, powerheads and wavemakers (research/gear-popular/pumps.md)
+
+/** 'air' = an air pump (airstone, sponge filter); 'powerhead' = a circulation pump or a wave maker with steady flow; 'wavemaker' =
+ *  one whose listing describes a wave / pulse controller (the only kind that counts for the Wavemaker row). */
+export type PumpKind = 'air' | 'powerhead' | 'wavemaker';
+export interface PumpProduct {
+  id: string; brand: string; model: string; kind: PumpKind; watts: number;
+  /** water pumps: rated flow, gal/h */ gph?: number;
+  /** air pumps: outlets, listed air flow (gal/h, or litres a minute where the listing gives that), water depth rating in inches */
+  outlets?: number; airGph?: number; airLpm?: number; depthIn?: number;
+  /** the tank sizes the listing rates it for */ galMin?: number; galMax?: number;
+  /** the loudest figure the listing gives, dB */ dB?: number;
+  /** a wave / pulse controller comes with it */ controller?: boolean;
+  /** listed size (L x W x H) as w across, d long, h tall, mm; absent on air pumps whose page gives none */ bodyMm?: { w: number; d: number; h: number };
+  priceUsd: number; url: string; asOf: string; est?: string[];
+  /** colours sampled from the listing photo: the body, and an accent (a knob, a nozzle) */ colors: { body: string; accent?: string }; colorsEst?: string[];
+  names?: string[]; note?: string; popularity?: Popularity;
+}
+export const PUMP_PRODUCTS = ((data as unknown as { pumps?: PumpProduct[] }).pumps ?? []);
+export const pumpProduct = (id?: string) => (id ? PUMP_PRODUCTS.find(p => p.id === id) : undefined);
+/** The gear parts (tech.json gear) a pump product stands in for, and the product kinds each accepts (a wavemaker also runs as a powerhead). */
+export const PUMP_GEAR_KINDS: Record<string, PumpKind[]> = { airpump: ['air'], powerhead: ['powerhead', 'wavemaker'], wavemaker: ['wavemaker'] };
+/** The pumps a gear part may be, those rated for a tank of `gal` gallons first (a rating the listing does not give counts as fitting), then by price. */
+export function pumpsFor(gear: string, gal: number): PumpProduct[] {
+  const kinds = PUMP_GEAR_KINDS[gear] ?? [], off = (p: PumpProduct) => (p.galMin !== undefined && gal < p.galMin) || (p.galMax !== undefined && gal > p.galMax) ? 1 : 0;
+  return PUMP_PRODUCTS.filter(p => kinds.includes(p.kind)).sort((a, b) => off(a) - off(b) || a.priceUsd - b.priceUsd);
+}
+/** Whether the listing rates the pump for a tank of `gal` gallons: true / false, undefined when it gives no range. */
+export const pumpRatedFor = (p: PumpProduct, gal: number): boolean | undefined => (p.galMin === undefined && p.galMax === undefined ? undefined : !((p.galMin !== undefined && gal < p.galMin) || (p.galMax !== undefined && gal > p.galMax)));
