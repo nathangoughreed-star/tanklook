@@ -8,6 +8,8 @@ const SC = {
   B: { name: 'Scenario B', tank: [20, 10, 12], stock: [['betta', 2], ['pandacory', 6]] },
   H: { name: 'Scenario H', tank: [36, 18, 16], stock: [['demasoni', 8]] },
   C: { name: 'Scenario C', tank: [48, 13, 21], stock: [['discus', 6], ['bristlenose', 2]] },
+  F: { name: 'Scenario F', tank: [36, 18, 16], stock: [['oscar', 1]] },
+  N: { name: 'Scenario N', tank: [48, 13, 21], stock: [['angel', 6]] },
   O: { name: 'Scenario O', tank: [30, 12, 12], stock: [['oscar', 1]] },
   D: { name: 'Scenario D', tank: [30, 12, 18], stock: [['oto', 25]] },
 };
