@@ -799,3 +799,4 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .lkRef { position: absolute; right: 12px; bottom: 12px; margin: 0; max-width: 240px; background: var(--panel, #222); padding: 4px; border-radius: 6px; z-index: 5 } .lkRef img { width: 100%; display: block; border-radius: 4px } .lkRef button { position: absolute; top: 6px; right: 6px }
 .lkPic { cursor: pointer }
 .lkp.lkSide { left: auto; width: 340px }
+.sgOwned { font-size: 12.5px } .sgOwnList { display: flex; flex-direction: column; gap: 2px; margin: 4px 0 4px 8px }

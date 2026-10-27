@@ -18,7 +18,9 @@ import { spaceFit } from '../scene/space';
 import { tankOptions, type AnimalCount } from '../scene/tankfit';
 import type { SpaceLimit, TankSetup, Units } from '../scene/types';
 import { summaryOf } from '../ui/stockSummary';
+import { demandOf } from './engine';
 import { NO_SUGGESTION, type Money } from './makefit';
+import { mean3 } from './range';
 import type { Limits, UserProfile } from './types';
 
 export { NO_SUGGESTION };
@@ -32,7 +34,28 @@ export const FAMILY_LABEL: Record<Family, string> = { fish: 'freshwater fish', i
 export interface Archetype { id: string; title: string; family: Family; tags: Tag[]; animals: AnimalCount[]; why: string }
 export const ARCHETYPES = data.archetypes as unknown as Archetype[];
 
+/** Equipment the person already has (lane C8, Nathan 2026-10-27). The model has no owned-gear concept, so this is the minimal version: an owned
+ *  item's set-up price comes off the proposal's set-up cost (and so off the budget guardrail). The proposal's own item still counts for husbandry
+ *  (an owned filter is assumed to be as good as the one the build needs); upkeep and minutes are unchanged. */
+export type OwnedKey = 'filter' | 'heater' | 'light' | 'lid' | 'stand' | 'testkit' | 'dryheat';
+export const OWNED: readonly { id: OwnedKey; label: string; rows: string[] }[] = [
+  { id: 'filter', label: 'Filter', rows: ['filter'] }, { id: 'heater', label: 'Heater', rows: ['heater'] }, { id: 'light', label: 'Light', rows: ['light'] },
+  { id: 'lid', label: 'Lid / hood', rows: ['lid'] }, { id: 'stand', label: 'Stand', rows: ['stand'] }, { id: 'testkit', label: 'Water test kit', rows: ['testkit'] },
+  { id: 'dryheat', label: 'Terrarium heat lamp, UVB, thermostat, gauge', rows: ['heatlamp', 'thermostat', 'uvb', 'gauge'] },
+];
+/** Set-up dollars the owned items (and an unneeded stand) take off a build's price. The build's price carries its deals, so each row's list price is
+ *  scaled by the build's own price / list-price ratio. Never below zero. */
+export function ownedSavings(b: Build, owned: readonly OwnedKey[], needStand: boolean, P: UserProfile): number {
+  const D = demandOf(b.setup, P), list = D.totals.setupUsd, k = list > 0 ? b.setupUsd / list : 1;
+  const rows = new Set<string>([...(needStand ? [] : ['stand']), ...OWNED.filter(o => owned.includes(o.id) && (needStand || o.id !== 'stand')).flatMap(o => o.rows)]);
+  return Math.min(b.setupUsd, Math.round(D.items.filter(i => rows.has(i.key) && i.setup).reduce((t, i) => t + mean3(i.setup!), 0) * k));
+}
+
 export interface Wants {
+  /** equipment already owned (set-up price $0) */
+  owned?: OwnedKey[];
+  /** will the person need a stand? default true (today's builds are priced with one); false = no stand cost */
+  needStand?: boolean;
   /** the guardrails the proposals are checked against (the same shape a tank stores) */
   constraints: Constraints;
   /** the space the tank must stand in, mm (read while the space guardrail is on) */
@@ -45,6 +68,8 @@ export interface Proposal {
   /** the scene a click opens: the build's tank with the guardrails and space set */
   scene: TankSetup;
   totals: Money;
+  /** set-up dollars the owned equipment / unneeded stand took off */
+  saved: number;
   status: Compliance['results'];
   score: number;
   /** husbandry lines that read "not enough information" (the setup is offered with this caveat) */
@@ -92,17 +117,18 @@ export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', no
     for (const m of tanksFor(a, space, SIZES_PER_ARCHETYPE)) {
       for (const b of distinctBuilds(buildsFor(a.animals, m, now))) {
         if (!meetsNeeds(b)) continue;
-        const scene: TankSetup = { ...b.setup, constraints: C, layout: { ...b.setup.layout, ...(w.space ? { space: w.space } : {}) } };
+        const needStand = w.needStand !== false, saved = ownedSavings(b, w.owned ?? [], needStand, P0);
+        const scene: TankSetup = { ...b.setup, ...(needStand ? {} : { stand: { ...b.setup.stand, show: false } }), constraints: C, layout: { ...b.setup.layout, ...(w.space ? { space: w.space } : {}) } };
         const sm = summaryOf(scene, units);
         // husbandry is never traded for money or time: the strict rule (Nathan 2026-10-27) = nothing the stocking screen words as a Problem OR a
         // Caution in any of its five categories (past-ideal fullness, a short sex ratio, a missing cave ...). Only "not enough information" passes, and it is shown.
         if (sm.cats.some(c => c.level === 'problem' || c.level === 'caution')) continue;
-        const t = money(b), L = effectiveLimits(scene, P0.limits);
+        const t = { ...money(b), startupUsd: b.setupUsd - saved }, L = effectiveLimits(scene, P0.limits);
         const cp = compliance(scene, { setupUsd: t.startupUsd, upkeepUsdMo: t.monthlyUsd, minPerWeek: t.minPerWeek }, L, units);
         if (cp.overall !== 'off') anyOn = true;
         if (cp.overall === 'within' || cp.overall === 'off') {
           const matched = tags.filter(x => a.tags.includes(x));
-          const p: Proposal = { archetype: a, build: b, scene, totals: t, status: cp.results, score: matched.length * 10 + headroom(t, L) * 5, matched,
+          const p: Proposal = { archetype: a, build: b, scene, totals: t, saved, status: cp.results, score: matched.length * 10 + headroom(t, L) * 5, matched,
             unknown: sm.cats.flatMap(c => c.items.filter(i => i.level === 'unknown').map(i => i.text)).slice(0, 1) };
           if (!best || p.score > best.score || p.score === best.score && t.startupUsd < best.totals.startupUsd) best = p;
         } else if (cp.overall === 'over' && cp.unknown === 0 && !cp.results.some(r => r.id === 'space' && r.state !== 'pass')) {

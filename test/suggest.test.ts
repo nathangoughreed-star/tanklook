@@ -90,4 +90,37 @@ describe('Suggest a setup', () => {
     console.log('suggestSetups ms', ms);
     expect(ms).toBeLessThan(8000);
   });
+
+  describe('equipment I already have, and the stand (Nathan 2026-10-27)', () => {
+    const wide: Constraints = { startupUsd: cap(5000) };
+    const first = (extra: Partial<Wants>) => run(wide, extra).proposals.find(p => p.archetype.id === 'betta')!;
+    it('owned items cost $0 in the set-up total; the animals and husbandry are untouched; upkeep and minutes unchanged', () => {
+      const a = first({}), b = first({ owned: ['filter', 'heater'] });
+      expect(b.saved).toBeGreaterThan(0);
+      expect(b.totals.startupUsd).toBe(b.build.setupUsd - b.saved);      // the build may differ: owning gear can change which build ranks best
+      expect(b.totals.monthlyUsd).toBe(b.build.upkeepUsdMo); expect(b.totals.minPerWeek).toBe(b.build.minPerWeek);
+      expect(a.saved).toBe(0);
+      expect(b.scene.fish.length).toBe(a.scene.fish.length);
+      expect(summaryOf(b.scene, 'in').cats.some(k => k.level === 'caution' || k.level === 'problem')).toBe(false);
+    });
+    it('a budget the setup just misses is met once the owned gear is taken off', () => {
+      const a = first({}), cap1 = a.totals.startupUsd - 5;
+      expect(run({ startupUsd: cap(cap1) }).proposals.some(p => p.archetype.id === 'betta' && p.build.id === a.build.id && p.totals.startupUsd === a.totals.startupUsd)).toBe(false);
+      const r = run({ startupUsd: cap(cap1) }, { owned: ['filter', 'heater', 'light', 'lid'] });
+      expect(r.proposals.some(p => p.archetype.id === 'betta' && p.totals.startupUsd <= cap1)).toBe(true);
+    });
+    it('stand off: no stand cost and the scene shows none; stand on: the default price', () => {
+      const on = first({ needStand: true }), off = first({ needStand: false });
+      expect(on.scene.stand.show).toBe(true); expect(off.scene.stand.show).toBe(false);
+      expect(off.saved).toBeGreaterThan(0);
+      expect(off.totals.startupUsd).toBeLessThan(on.totals.startupUsd);
+    });
+    it('an owned stand is $0 when a stand is needed, and is ignored when none is', () => {
+      const on = first({}), own = first({ owned: ['stand'] }), offOwn = first({ needStand: false, owned: ['stand'] }), off = first({ needStand: false });
+      expect(own.totals.startupUsd).toBe(off.totals.startupUsd);       // $0 stand = no stand cost
+      expect(own.scene.stand.show).toBe(true);                         // it is still a stand in the scene
+      expect(offOwn.totals.startupUsd).toBe(off.totals.startupUsd);   // no double count
+      expect(on.totals.startupUsd).toBeGreaterThan(own.totals.startupUsd);
+    });
+  });
 });
