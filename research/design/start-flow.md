@@ -25,7 +25,7 @@ guardrail; an animal-path user can untick everything.
  --- always on, not in this list ---
  Animal welfare: eaten, temperature, outgrows the tank, too few in a group (hard truths; "I understand" to override, as today)
 ```
-Ticked = a **gate**: the option is greyed in pickers, with why and what unlocks it (10-20 rule). Unticked = the number is
+Ticked = enforced as a **trade-off card** when broken, greyed only when nothing can make it fit (Revision 2 below). Unticked = the number is
 still shown (a badge on the option, the bar in the demand panel), never enforced. That is today's "Sandbox keeps gates as
 badges only", now per guardrail.
 
@@ -48,7 +48,46 @@ willing to do. Experience = what they know: it scales risk (`skillMul`, existing
   hook `gateOf(option, P)` used by tank / tech / animal / plant pickers, badges when unticked); the rest unchanged.
 - (h) Q7 (mode toggle) is void; new questions R1-R3 below.
 
+**Revision 2 (Nathan 2026-10-27): a ticked guardrail is a trade-off, not a wall.** Grey out only what the tool cannot
+make work. People trade time for money or money for time to get the build they want, so when an action breaks a ticked
+guardrail, the tool says so at that moment and offers the ways back, priced on every axis:
+```
+ Those 6 Cardinal tetras push your care time over: 52 of 45 min a week.
+   Undo adding them                                    0 min over   $0
+   4 Cardinals instead of 6                            44 min       -$9
+   Water-change hose (fills and drains from the tap)   41 min       +$28
+   Live plants: 8 stems (they eat nitrate: smaller
+     water changes)                                    43 min       +$35 start-up, +$2 / mo
+   Keep it, raise my care time to 55 min               (unticks nothing; edits the limit)
+```
+- **When it fires:** after any change (add an animal or plant, pick gear, resize the tank) that pushes a *ticked*
+  guardrail over. One card, on the viewer, dismissable; never blocks the click. Unticked guardrails never raise it.
+- **The options** are scene diffs searched over every lever the engines model: fewer or swapped animals (`swapsFor`,
+  existing), gear and tech rows (water-change hose, auto feeder, ATO for salt, misting system for dry tanks, filter
+  upgrade), live plants (the nitrogen model's uptake), tank size (step-up offers, existing). Each option shows its effect on
+  *all* the guardrails, so a time fix that costs money shows the money.
+- **Other ticked guardrails filter the options:** an option that breaks another ticked guardrail is not offered (a +$28
+  hose is dropped if the start-up budget is ticked and has less than $28 left). If time and money are both ticked and full,
+  the only option left may be Undo, as Nathan says.
+- **Grey-out (absolute gate) only when nothing works:** in a picker, an option is greyed only if no option set makes it
+  fit the ticked guardrails (the search above, run as a check: "even with a hose and plants, a 75 gal is 80 min a week").
+  The greyed option's tooltip names the guardrail and the nearest miss. Everything else stays clickable and leads to the card.
+- **Engine honesty, to settle before L9:** in today's model a **bigger filter does not cut water changes**: the
+  water-change share comes from the nitrogen budget (`waterChangeFraction` in scene/stocking.ts: nitrate to remove, after
+  plant uptake), and a filter turns ammonia into nitrate, it does not remove it. A bigger filter lowers the Filtration bar
+  (fullness), not the minutes. So the levers that move *time* today are: fewer / smaller animals, live plants, the
+  water-change hose (`wcmethod` row), auto feeder, ATO, misting system. An **automatic water-change system** is not in the
+  catalogue: a new tech row (price, minutes saved, provenance), from the gear research lane. See question R4.
+- Builds on: `swapsFor` / `applySwap` (demand/swaps.ts), `fitToLimits` (demand/fit.ts, greedy over swaps today; extended
+  with tech-row and plant moves), `limitState`, the fork card's step-up offers. The card is lane L9; the "can anything make
+  it fit" check is part of it, shared with the pickers' grey-out.
+
 **R questions (with recommendations):**
+- R4. Bigger filter vs water changes. Rec: keep the engine as it is (filters do not remove nitrate; sourced in the
+  nitrogen model) and leave a bigger filter out of the *time* options; offer it where it belongs, against the Filtration
+  bar. Add an automatic water-change system as a new researched tech row.
+- R5. How many options on the card? Rec: Undo plus the best 3, ranked by the smallest change to what the user just did
+  (keep their fish first), each with its full cost line; "more ways" folds out the rest.
 - R1. Name. Rec: **"Guardrails"** (Nathan's word; plain, says "keeps me in" not "forbids"). Alternatives: "My limits", "Ground rules".
 - R2. Default for a first-time user? Rec: all **off**, values empty; Discover pre-ticks the ones it asked. No silent gates.
 - R3. Experience: one level or per domain? Rec: one control shown ("new / some / experienced"), with "set per kind of tank"
