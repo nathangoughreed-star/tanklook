@@ -1,0 +1,726 @@
+{
+ "lane": "setup-auto",
+ "items": [
+  {
+   "id": "cyc-fw-1",
+   "applies_to": "freshwater community",
+   "field": "cycling_weeks",
+   "value": "4-6",
+   "unit": "weeks",
+   "status": "sourced",
+   "basis": "Practical Fishkeeping, method unspecified",
+   "sources": [
+    {
+     "url": "https://www.practicalfishkeeping.co.uk/features/how-to-cycle-a-fish-tank-the-complete-guide/",
+     "quote": "Most aquariums can often take four to six weeks to cycle fully.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "cyc-fw-2",
+   "applies_to": "freshwater community (fishless)",
+   "field": "cycling_weeks",
+   "value": "at least 4",
+   "unit": "weeks",
+   "status": "sourced",
+   "basis": "fishless FAQ",
+   "sources": [
+    {
+     "url": "https://www.practicalfishkeeping.co.uk/features/how-to-cycle-a-fish-tank-the-complete-guide/",
+     "quote": "Expect a fishless cycle to take at least a month",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "cyc-fw-3",
+   "applies_to": "freshwater community",
+   "field": "cycling_weeks",
+   "value": "2-8 (wait at least 4 before fish)",
+   "unit": "weeks",
+   "status": "sourced",
+   "basis": "aquariumscience.org",
+   "sources": [
+    {
+     "url": "https://aquariumscience.org/index.php/2-1-fish-less-cycling",
+     "quote": "Wait at least four weeks before adding the fish.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://aquariumscience.org/index.php/2-1-fish-less-cycling",
+     "quote": "take anywhere from 2 to 8 weeks to grow to sizable colonies in filter media.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "cyc-fw-4",
+   "applies_to": "freshwater community",
+   "field": "cycling_weeks",
+   "value": "2-6",
+   "unit": "weeks",
+   "status": "sourced",
+   "basis": "LiveAquaria",
+   "sources": [
+    {
+     "url": "https://www.liveaquaria.com/PIC/article.cfm?aid=74",
+     "quote": "Typically, new aquariums can be cycled in 2 to 6 weeks, but the actual length of time depends on many factors:",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "hands-fw-1",
+   "applies_to": "freshwater fishless cycle",
+   "field": "cadence",
+   "value": "daily water testing during cycle; no minutes stated",
+   "unit": "",
+   "status": "sourced",
+   "basis": "page states task frequency only",
+   "sources": [
+    {
+     "url": "https://www.practicalfishkeeping.co.uk/features/how-to-cycle-a-fish-tank-the-complete-guide/",
+     "quote": "Test the water daily to check for a decrease in the ammonia readings.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "cyc-plant-1",
+   "applies_to": "planted tank",
+   "field": "cycling_weeks",
+   "value": "about 2 dark-start before planting (vendor); forum advice 6-12 wk before livestock",
+   "unit": "weeks",
+   "status": "assumption",
+   "basis": "Only web-search snippets seen (2hraquarist page returned 403, UKAPS not opened); not verified by an opened page",
+   "sources": []
+  },
+  {
+   "id": "cyc-reef-1",
+   "applies_to": "reef",
+   "field": "cycling_weeks",
+   "value": "3 (zoas), ~4, 6+2 before coral; one at 8",
+   "unit": "weeks",
+   "status": "sourced",
+   "basis": "reef forum anecdotes, not authoritative",
+   "sources": [
+    {
+     "url": "https://marinecolorado.org/threads/be-honest.22533",
+     "quote": "3 weeks. Zoas.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://marinecolorado.org/threads/be-honest.22533",
+     "quote": "Roughly a month.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://marinecolorado.org/threads/be-honest.22533",
+     "quote": "I added coral 8 weeks in with this system.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "cyc-reef-2",
+   "applies_to": "reef",
+   "field": "cycling_weeks",
+   "value": "6 weeks cycle, then 2 more before first frags",
+   "unit": "weeks",
+   "status": "sourced",
+   "basis": "same forum thread",
+   "sources": [
+    {
+     "url": "https://marinecolorado.org/threads/be-honest.22533",
+     "quote": "cycled for 6 weeks",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://marinecolorado.org/threads/be-honest.22533",
+     "quote": "waited 2 weeks, added 3 frags of zoas.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "cyc-reef-3",
+   "applies_to": "reef with live rock",
+   "field": "cycling_weeks",
+   "value": "about 4-6 typical; shorter with cured rock",
+   "unit": "weeks",
+   "status": "assumption",
+   "basis": "search summary of Nano-Reef/Reef Central threads; pages 403 or not opened",
+   "sources": []
+  },
+  {
+   "id": "cyc-bio-1",
+   "applies_to": "bioactive vivarium",
+   "field": "cycling_weeks",
+   "value": "4-8 (tropical; longer arid) for ecosystem/cleanup crew population",
+   "unit": "weeks",
+   "status": "sourced",
+   "basis": "furrycritter",
+   "sources": [
+    {
+     "url": "https://www.furrycritter.com/pages/articles/reptiles/bioactive_enclosures.htm",
+     "quote": "Over four to eight weeks in tropical setups, and sometimes longer in arid ones",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://www.furrycritter.com/pages/articles/reptiles/bioactive_enclosures.htm",
+     "quote": "A bioactive system needs four to eight weeks minimum for the cleanup crew to reproduce to functional population levels",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "cyc-bio-2",
+   "applies_to": "bioactive vivarium",
+   "field": "cycling_weeks",
+   "value": "2-4 before introducing reptile (same article, lower figure)",
+   "unit": "weeks",
+   "status": "sourced",
+   "basis": "furrycritter",
+   "sources": [
+    {
+     "url": "https://www.furrycritter.com/pages/articles/reptiles/bioactive_enclosures.htm",
+     "quote": "let the enclosure run for two to four weeks before introducing your reptile",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "cyc-bio-3",
+   "applies_to": "springtail cleanup crew",
+   "field": "cycling_weeks",
+   "value": "a few weeks to a sustainable population",
+   "unit": "weeks",
+   "status": "sourced",
+   "basis": "reptifiles",
+   "sources": [
+    {
+     "url": "https://reptifiles.com/establishing-bioactive-clean-up-crew/",
+     "quote": "can quickly create a sustainable population in a vivarium within a few short weeks",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "setup-bio-1",
+   "applies_to": "bioactive vivarium",
+   "field": "setup_hours",
+   "value": "not stated on any opened page; sealant dry about 24 h",
+   "unit": "hours",
+   "status": "assumption",
+   "basis": "no build hours found",
+   "sources": [
+    {
+     "url": "https://reptilecentre.com/blog/2015/08/how-to-set-up-a-bioactive-royal-python-vivarium",
+     "quote": "It will take time for the vivarium to establish itself.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "setup-bio-2",
+   "applies_to": "bioactive vivarium plants",
+   "field": "cadence",
+   "value": "plants may droop first month under new light",
+   "unit": "",
+   "status": "sourced",
+   "basis": "furrycritter",
+   "sources": [
+    {
+     "url": "https://www.furrycritter.com/pages/articles/reptiles/bioactive_enclosures.htm",
+     "quote": "Plants may droop while adjusting to new light conditions",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "cyc-palu-1",
+   "applies_to": "paludarium (aquatic section)",
+   "field": "cycling_weeks",
+   "value": "2 minimum test phase before animals; plants root in",
+   "unit": "weeks",
+   "status": "sourced",
+   "basis": "Reptile Centre",
+   "sources": [
+    {
+     "url": "https://www.reptilecentre.com/blogs/reptile-blog/paludarium-set-up-guide",
+     "quote": "If adding fish or other aquatic species, we recommend a two-week testing phase before introducing any animals.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "cyc-palu-2",
+   "applies_to": "paludarium",
+   "field": "cadence",
+   "value": "partial water change of immersed section every 1-2 weeks",
+   "unit": "weeks",
+   "status": "sourced",
+   "basis": "PetSmart",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/fish-care/setting-up-a-paludarium",
+     "quote": "every 1-2 weeks",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "cyc-palu-3",
+   "applies_to": "paludarium",
+   "field": "cycling_weeks",
+   "value": "4-6 (search summary only, page not opened)",
+   "unit": "weeks",
+   "status": "assumption",
+   "basis": "unverified",
+   "sources": []
+  },
+  {
+   "id": "setup-all-hours",
+   "applies_to": "all tank types",
+   "field": "setup_hours",
+   "value": "no opened page states hands-on setup hours",
+   "unit": "hours",
+   "status": "assumption",
+   "basis": "absent",
+   "sources": []
+  },
+  {
+   "id": "awc-python-cost",
+   "applies_to": "Python No Spill Clean and Fill 75 ft",
+   "field": "cost",
+   "value": 119.99,
+   "unit": "USD",
+   "status": "sourced",
+   "basis": "listed price at fishtanksdirect",
+   "sources": [
+    {
+     "url": "https://fishtanksdirect.com/python-no-spill-clean-fill-75-ft/",
+     "quote": "Now: $119.99",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "awc-python-what",
+   "applies_to": "Python",
+   "field": "not_saved",
+   "value": "replaces buckets; freshwater refill only; saltwater needs separate mixing",
+   "unit": "",
+   "status": "sourced",
+   "basis": "what it replaces / not",
+   "sources": [
+    {
+     "url": "https://fishtanksdirect.com/python-no-spill-clean-fill-75-ft/",
+     "quote": "Works with your kitchen faucet to siphon water from your tank directly into the sink. No buckets required!",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://fishtanksdirect.com/python-no-spill-clean-fill-75-ft/",
+     "quote": "Refills the tank with water from the faucet (freshwater only).",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "awc-python-salt",
+   "applies_to": "Python, reef",
+   "field": "not_saved",
+   "value": "salt mix prepared in a separate container, pumped in",
+   "unit": "",
+   "status": "sourced",
+   "basis": "manual transcription 2008",
+   "sources": [
+    {
+     "url": "https://mail.redearslider.com/forum/viewtopic.php?p=158011",
+     "quote": "For saltwater tanks, fill a container next to your aquarium for salt mix preparation.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "awc-python-install",
+   "applies_to": "Python",
+   "field": "setup_hours",
+   "value": "4-step faucet hookup; no hours stated",
+   "unit": "",
+   "status": "sourced",
+   "basis": "steps only",
+   "sources": [
+    {
+     "url": "https://mail.redearslider.com/forum/viewtopic.php?p=158011",
+     "quote": "Remove the aerator and washer from the faucet you will be using.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "awc-python-limit",
+   "applies_to": "Python",
+   "field": "cadence",
+   "value": "do not remove more than 1/3; wait a week before repeating",
+   "unit": "",
+   "status": "sourced",
+   "basis": "manual rule",
+   "sources": [
+    {
+     "url": "https://mail.redearslider.com/forum/viewtopic.php?p=158011",
+     "quote": "If you need to repeat the cleaning procedure, wait at least a week before performing another water change.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "awc-drip-power",
+   "applies_to": "drip/automatic water change",
+   "field": "power",
+   "value": "under $1 per month running cost; gravity drip works in outage",
+   "unit": "",
+   "status": "sourced",
+   "basis": "gensou",
+   "sources": [
+    {
+     "url": "https://gensou.sg/how-to-set-up-auto-water-change/",
+     "quote": "this amounts to a negligible increase — well under $1 per month.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://gensou.sg/how-to-set-up-auto-water-change/",
+     "quote": "Gravity drip systems continue to function during power outages since they do not require electricity.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "awc-drip-fail",
+   "applies_to": "drip water change",
+   "field": "failure_mode",
+   "value": "overflow if drain clogs; add float valve",
+   "unit": "",
+   "status": "sourced",
+   "basis": "gensou",
+   "sources": [
+    {
+     "url": "https://gensou.sg/how-to-set-up-auto-water-change/",
+     "quote": "If the overflow mechanism fails or clogs while the inflow continues, your tank will overflow onto your floor.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://gensou.sg/how-to-set-up-auto-water-change/",
+     "quote": "Consider adding a float valve as a secondary safety measure.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "awc-drip-maint",
+   "applies_to": "drip water change",
+   "field": "cadence",
+   "value": "replace inline carbon media every 1-2 months; check flow weekly (tubing clogs with minerals)",
+   "unit": "",
+   "status": "sourced",
+   "basis": "gensou",
+   "sources": [
+    {
+     "url": "https://gensou.sg/how-to-set-up-auto-water-change/",
+     "quote": "Tubing can clog with mineral deposits over time",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://gensou.sg/how-to-set-up-auto-water-change/",
+     "quote": "An automated system is not entirely maintenance-free.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "awc-drip-notsaved",
+   "applies_to": "drip water change",
+   "field": "not_saved",
+   "value": "does not replace filtration",
+   "unit": "",
+   "status": "sourced",
+   "basis": "aquariumscience",
+   "sources": [
+    {
+     "url": "https://aquariumscience.org/index.php/18-2-drip-water-changes",
+     "quote": "Drip water changes do NOT replace good filtration.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "awc-drip-flood",
+   "applies_to": "drip water change",
+   "field": "failure_mode",
+   "value": "non-code plumbing fails and can cause large damage",
+   "unit": "",
+   "status": "sourced",
+   "basis": "aquariumscience",
+   "sources": [
+    {
+     "url": "https://aquariumscience.org/index.php/18-2-drip-water-changes",
+     "quote": "Systems which do not use approved \"to code\" plumbing frequently fail and can cause a huge amount of damage.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "awc-auto-cost",
+   "applies_to": "Neptune/Genesis/Octopus class",
+   "field": "cost",
+   "value": "not found (search snippet: $300-800+ fully automated, unverified)",
+   "unit": "",
+   "status": "assumption",
+   "basis": "unverified",
+   "sources": []
+  },
+  {
+   "id": "feed-eheim-cap",
+   "applies_to": "Eheim autofeeder 3581",
+   "field": "cadence",
+   "value": "capacity ca. 100 ml; refill interval not stated by Eheim",
+   "unit": "",
+   "status": "sourced",
+   "basis": "manufacturer",
+   "sources": [
+    {
+     "url": "https://eheim.com/en_GB/aquatics/accessories/feeding/autofeeder/autofeeder",
+     "quote": "Capacity ca. 100 ml",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "feed-eheim-batt",
+   "applies_to": "Eheim autofeeder",
+   "field": "cadence",
+   "value": "replace battery about every 6 months (retailer); no manufacturer figure",
+   "unit": "months",
+   "status": "sourced",
+   "basis": "Bulk Reef Supply",
+   "sources": [
+    {
+     "url": "https://www.bulkreefsupply.com/content/post/md-eheim-feed-air-automatic-fish-feeder-product-demo",
+     "quote": "Replace the battery every 6 months or so.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "feed-eheim-moist",
+   "applies_to": "Eheim autofeeder",
+   "field": "failure_mode",
+   "value": "built-in ventilator against moisture clogging",
+   "unit": "",
+   "status": "sourced",
+   "basis": "BRS",
+   "sources": [
+    {
+     "url": "https://www.bulkreefsupply.com/content/post/md-eheim-feed-air-automatic-fish-feeder-product-demo",
+     "quote": "An integrated ventilator prevents moisture from spoiling fish food and/or clogging the unit.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "feed-refill",
+   "applies_to": "any auto feeder",
+   "field": "cadence",
+   "value": "load 3-5 days of food at a time",
+   "unit": "days",
+   "status": "sourced",
+   "basis": "gensou guide",
+   "sources": [
+    {
+     "url": "https://gensou.sg/automated-aquarium-feeding-smart-feeders/",
+     "quote": "refilling with only three to five days’ worth of food at a time.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "feed-jam",
+   "applies_to": "any auto feeder",
+   "field": "failure_mode",
+   "value": "humidity clumps food, jams or dumps hopper",
+   "unit": "",
+   "status": "sourced",
+   "basis": "gensou",
+   "sources": [
+    {
+     "url": "https://gensou.sg/automated-aquarium-feeding-smart-feeders/",
+     "quote": "Clumped food jams the mechanism, leading to either no feeding or a catastrophic dump of the entire hopper into the tank.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://gensou.sg/how-to-feed-fish-while-on-holiday/",
+     "quote": "Place a small silica gel packet inside the hopper to absorb humidity",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "feed-vac",
+   "applies_to": "any auto feeder",
+   "field": "cadence",
+   "value": "test-run 3 days before departure",
+   "unit": "days",
+   "status": "sourced",
+   "basis": "gensou",
+   "sources": [
+    {
+     "url": "https://gensou.sg/how-to-feed-fish-while-on-holiday/",
+     "quote": "test it for three days before departure",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://gensou.sg/automated-aquarium-feeding-smart-feeders/",
+     "quote": "Before leaving for a week or more, test-run your feeder for three full days.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "feed-skip",
+   "applies_to": "fish",
+   "field": "neglect_tolerance",
+   "value": "healthy adults skip 1-3 days",
+   "unit": "days",
+   "status": "sourced",
+   "basis": "gensou",
+   "sources": [
+    {
+     "url": "https://gensou.sg/how-to-feed-fish-while-on-holiday/",
+     "quote": "Healthy adult fish handle one to three days without food easily",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "feed-notsaved",
+   "applies_to": "auto feeder",
+   "field": "not_saved",
+   "value": "overfeeding risk; does not replace observation",
+   "unit": "",
+   "status": "sourced",
+   "basis": "gensou",
+   "sources": [
+    {
+     "url": "https://gensou.sg/automated-aquarium-feeding-smart-feeders/",
+     "quote": "Overfeeding is the single most common cause of water quality issues in home aquariums.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://gensou.sg/how-to-feed-fish-while-on-holiday/",
+     "quote": "Overfeeding by well-meaning helpers causes more fish deaths than missed meals",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "ato-sensor",
+   "applies_to": "ATO",
+   "field": "cadence",
+   "value": "wipe sensor pins about monthly; pump impeller monthly",
+   "unit": "month",
+   "status": "sourced",
+   "basis": "Red Sea ATO manual",
+   "sources": [
+    {
+     "url": "https://redseafish.com/?p=105595",
+     "quote": "It is recommended to wipe the sensor pins to remove build-up about once a month.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://redseafish.com/?p=105595",
+     "quote": "Remove the impellor chamber cover about once a month",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "ato-sensor2",
+   "applies_to": "ATO",
+   "field": "failure_mode",
+   "value": "sensors foul; clean regularly; clean with vinegar",
+   "unit": "",
+   "status": "sourced",
+   "basis": "buildyouraquarium",
+   "sources": [
+    {
+     "url": "https://www.buildyouraquarium.com/best-auto-top-off-systems/",
+     "quote": "Floating sensors can fail if organic matter collects on their surfaces.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://www.buildyouraquarium.com/best-auto-top-off-systems/",
+     "quote": "To clean the sensor, dip it into vinegar.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "ato-flood",
+   "applies_to": "ATO",
+   "field": "failure_mode",
+   "value": "overflow, back siphon",
+   "unit": "",
+   "status": "sourced",
+   "basis": "buildyouraquarium",
+   "sources": [
+    {
+     "url": "https://www.buildyouraquarium.com/best-auto-top-off-systems/",
+     "quote": "Back siphoning is an issue with most ATOs.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://www.buildyouraquarium.com/best-auto-top-off-systems/",
+     "quote": "This unit may overflow your tank or reservoir if set up wrong.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "ato-dry",
+   "applies_to": "ATO",
+   "field": "failure_mode",
+   "value": "running pump dry damages it; keep reservoir filled",
+   "unit": "",
+   "status": "sourced",
+   "basis": "Red Sea",
+   "sources": [
+    {
+     "url": "https://redseafish.com/?p=105595",
+     "quote": "Run the ATO Pump only in liquid; running it dry can damage it.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "ato-interval",
+   "applies_to": "ATO reservoir refill interval",
+   "field": "cadence",
+   "value": "not stated by any opened page",
+   "unit": "",
+   "status": "assumption",
+   "basis": "depends on evaporation and reservoir size",
+   "sources": []
+  }
+ ],
+ "gaps": [
+  "No opened page states hands-on setup hours for any tank type",
+  "Eheim manual refill interval and battery life not found (manufacturer silent; retailer says 6 months)",
+  "Neptune/Genesis/Octopus automated water change prices and install hours not found",
+  "Planted-tank grow-in weeks: only search-snippet forum advice (2hraquarist 403)",
+  "Reef cycle: reefcentral/nano-reef/ultimatereef 403; only marinecolorado anecdotes opened",
+  "ATO reservoir refill interval and price not found",
+  "Python install hours and check-valve failure modes not found",
+  "Many sources are retailer blogs (gensou.sg, Singapore); weight low"
+ ]
+}

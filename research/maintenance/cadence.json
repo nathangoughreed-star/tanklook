@@ -1,0 +1,2395 @@
+{
+ "asOf": "2026-10-27",
+ "lane": "C6",
+ "note": "Research only; not wired into the app. status sourced = a page opened with WebFetch states it (quote in sources); assumption = basis says what it was derived from. Minutes per task are NOT stated by any opened page: every minute figure is an assumption (model_chores reuse demand-defaults.json weekly means and only add the interval).",
+ "items": [
+  {
+   "id": "betta_wc",
+   "applies_to": "betta/nano (over 2 gal)",
+   "field": "cadence",
+   "value": "weekly water change 25-45%",
+   "unit": "per week",
+   "status": "assumption",
+   "basis": "Hikari betta care sheet PDF is binary and could not be opened by WebFetch; figure comes only from a WebSearch summary. Cross-check: RSPCA goldfish page opened (see goldfish_wc).",
+   "sources": [],
+   "group": "freshwater"
+  },
+  {
+   "id": "goldfish_wc",
+   "applies_to": "goldfish",
+   "field": "cadence",
+   "value": "10-25% weekly",
+   "unit": "% of tank per week",
+   "status": "sourced",
+   "basis": "RSPCA Australia knowledge base",
+   "sources": [
+    {
+     "url": "https://kb.rspca.org.au/knowledge-base/how-should-i-care-for-my-goldfish/",
+     "quote": "Weekly partial water changes of 10 to 25% of the tank water are recommended.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "freshwater"
+  },
+  {
+   "id": "goldfish_feed",
+   "applies_to": "goldfish",
+   "field": "cadence",
+   "value": "once a day, only what is eaten in under 2 minutes",
+   "unit": "per day",
+   "status": "sourced",
+   "basis": "RSPCA Australia",
+   "sources": [
+    {
+     "url": "https://kb.rspca.org.au/knowledge-base/how-should-i-care-for-my-goldfish/",
+     "quote": "Feed your goldfish once a day and only what can be eaten in under two minutes.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "freshwater"
+  },
+  {
+   "id": "goldfish_filter",
+   "applies_to": "goldfish (any freshwater, sponge/canister media)",
+   "field": "cadence",
+   "value": "rinse filter in tank water monthly or when clogged, whichever first",
+   "unit": "monthly",
+   "status": "sourced",
+   "basis": "RSPCA Australia (paraphrase from fetch: rinse lightly in bucket of tank water when clogged or monthly)",
+   "sources": [
+    {
+     "url": "https://kb.rspca.org.au/knowledge-base/how-should-i-care-for-my-goldfish/",
+     "quote": "The filter should be rinsed lightly in a bucket of tank water",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "freshwater"
+  },
+  {
+   "id": "goldfish_test",
+   "applies_to": "freshwater, new tank then established",
+   "field": "cadence",
+   "value": "new tank: every 2-3 days for first 6 weeks; then every 1-2 weeks",
+   "unit": "days",
+   "status": "sourced",
+   "basis": "RSPCA Australia; second half paraphrased by fetch tool",
+   "sources": [
+    {
+     "url": "https://kb.rspca.org.au/knowledge-base/how-should-i-care-for-my-goldfish/",
+     "quote": "test the water every two to three days for ammonia and nitrite for the first six weeks.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "freshwater"
+  },
+  {
+   "id": "general_fw_wc",
+   "applies_to": "community freshwater fish",
+   "field": "cadence",
+   "value": "about 10% weekly; 25% weekly for small or heavily stocked tanks",
+   "unit": "% per week",
+   "status": "sourced",
+   "basis": "PureWow rule of thumb (lifestyle site, not a care authority)",
+   "sources": [
+    {
+     "url": "https://purewow.com/family/how-long-can-you-leave-a-fish-home",
+     "quote": "A good rule of thumb is changing about 10 percent of an aquarium's water every week.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://purewow.com/family/how-long-can-you-leave-a-fish-home",
+     "quote": "Smaller tanks or those with lots of fish should have about 25 percent of their water changed each week.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "freshwater"
+  },
+  {
+   "id": "cichlid_wc",
+   "applies_to": "African cichlids",
+   "field": "cadence",
+   "value": "25-30% weekly",
+   "unit": "% per week",
+   "status": "sourced",
+   "basis": "PetSmart learning center",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/fish-care/a-set-up-guide-for-your-new-african-cichlid/A0146.html",
+     "quote": "Change 25-30% of the water weekly.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "freshwater"
+  },
+  {
+   "id": "cichlid_feed",
+   "applies_to": "cichlids",
+   "field": "cadence",
+   "value": "not found",
+   "unit": "",
+   "status": "assumption",
+   "basis": "No opened page gave cichlid feeding frequency; only diet-matching advice found.",
+   "sources": [],
+   "group": "freshwater"
+  },
+  {
+   "id": "crayfish_wc",
+   "applies_to": "crayfish / freshwater crabs",
+   "field": "cadence",
+   "value": "25% weekly",
+   "unit": "% per week",
+   "status": "sourced",
+   "basis": "Ornamental Fish International care sheet",
+   "sources": [
+    {
+     "url": "https://ornamentalfish.org/what-we-do/advice-information/care-sheets/caresheets-tropical-freshwater-invertebrates/how-to-look-after-crayfish-and-freshwater-crabs/",
+     "quote": "At least once every week, a partial water change of 25% is strongly recommended.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "freshwater"
+  },
+  {
+   "id": "crayfish_test",
+   "applies_to": "crayfish / freshwater crabs",
+   "field": "cadence",
+   "value": "test at least weekly",
+   "unit": "per week",
+   "status": "sourced",
+   "basis": "OFI care sheet",
+   "sources": [
+    {
+     "url": "https://ornamentalfish.org/what-we-do/advice-information/care-sheets/caresheets-tropical-freshwater-invertebrates/how-to-look-after-crayfish-and-freshwater-crabs/",
+     "quote": "The water should be tested regularly (at least once per week) to ensure that ammonia and nitrites don't build up.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "freshwater"
+  },
+  {
+   "id": "crayfish_feed",
+   "applies_to": "crayfish / freshwater crabs",
+   "field": "cadence",
+   "value": "once a day",
+   "unit": "per day",
+   "status": "sourced",
+   "basis": "OFI care sheet",
+   "sources": [
+    {
+     "url": "https://ornamentalfish.org/what-we-do/advice-information/care-sheets/caresheets-tropical-freshwater-invertebrates/how-to-look-after-crayfish-and-freshwater-crabs/",
+     "quote": "Crayfish and freshwater crabs should only be fed once a day.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "freshwater"
+  },
+  {
+   "id": "shrimp_wc",
+   "applies_to": "neocaridina shrimp",
+   "field": "cadence",
+   "value": "25% every two weeks (page says 'biweekly', read as every 2 weeks)",
+   "unit": "% per 2 weeks",
+   "status": "sourced",
+   "basis": "The Shrimp Farm (retailer); other search snippets gave 10-20% weekly, so sources disagree",
+   "sources": [
+    {
+     "url": "https://www.theshrimpfarm.com/posts/neocaridina-shrimp-care-breeding/",
+     "quote": "It is recommended to do biweekly 25% water changes",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "freshwater"
+  },
+  {
+   "id": "shrimp_fast_adult",
+   "applies_to": "neocaridina shrimp, established tank",
+   "field": "neglect_tolerance",
+   "value": "a few days; about a week low risk",
+   "unit": "days",
+   "status": "assumption",
+   "basis": "Only forum anecdotes seen in search snippets (graze on algae/biofilm); no opened page. Lab data below gives outer limit for juveniles only.",
+   "sources": [],
+   "group": "freshwater"
+  },
+  {
+   "id": "shrimp_fast_juv",
+   "applies_to": "Neocaridina davidi juveniles",
+   "field": "neglect_tolerance",
+   "value": "point of no return 16.15 d (stage JI), 9.44 d (stage JIII)",
+   "unit": "days",
+   "status": "sourced",
+   "basis": "Lab starvation study (Journal of Crustacean Biology); outer limit, not a safe vacation length; adults not covered",
+   "sources": [
+    {
+     "url": "https://academic.oup.com/jcb/article/35/5/676/2547964",
+     "quote": "The estimated values of PNR50 for JI and JIII were 16.15 ± 0.31 and 9.44 ± 0.26 days, respectively.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "freshwater"
+  },
+  {
+   "id": "jbl_internal_filter",
+   "applies_to": "planted tank, internal filter",
+   "field": "cadence",
+   "value": "clean every 2 weeks",
+   "unit": "weeks",
+   "status": "sourced",
+   "basis": "JBL (manufacturer)",
+   "sources": [
+    {
+     "url": "https://www.jbl.de/en/areas/section/86/daily-care",
+     "quote": "Internal filters need to be cleaned every two weeks.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "planted"
+  },
+  {
+   "id": "jbl_external_filter",
+   "applies_to": "planted tank, external canister filter",
+   "field": "cadence",
+   "value": "about every 4 weeks, depends on dirt accumulation",
+   "unit": "weeks",
+   "status": "sourced",
+   "basis": "JBL (manufacturer); the 4-week figure is from the fetch summary, quote shows longer interval for external filters",
+   "sources": [
+    {
+     "url": "https://www.jbl.de/en/areas/section/86/daily-care",
+     "quote": "Since external filters have a larger volume their cleaning interval may be longer.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "planted"
+  },
+  {
+   "id": "jbl_wc",
+   "applies_to": "planted tank (JBL routine)",
+   "field": "cadence",
+   "value": "about 1/3 of water every two weeks, with substrate cleaning",
+   "unit": "per 2 weeks",
+   "status": "sourced",
+   "basis": "JBL daily care page",
+   "sources": [
+    {
+     "url": "https://www.jbl.de/en/areas/section/86/daily-care",
+     "quote": "Siphon about 1/3 of the aquarium water with a hose.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "planted"
+  },
+  {
+   "id": "jbl_fert",
+   "applies_to": "planted tank",
+   "field": "cadence",
+   "value": "basic liquid fertilizer once a week; demanding plants also daily",
+   "unit": "per week",
+   "status": "sourced",
+   "basis": "JBL",
+   "sources": [
+    {
+     "url": "https://www.jbl.de/en/areas/section/86/daily-care",
+     "quote": "please supply your aquarium plants 1 x per week with the basic liquid fertiliser",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "planted"
+  },
+  {
+   "id": "jbl_trim",
+   "applies_to": "planted tank",
+   "field": "cadence",
+   "value": "trim as needed when stems reach surface and shade others; JBL gives no fixed interval",
+   "unit": "as needed",
+   "status": "sourced",
+   "basis": "JBL; fixed intervals (weekly/fortnightly) come from other sites not opened",
+   "sources": [
+    {
+     "url": "https://www.jbl.de/en/areas/section/86/daily-care",
+     "quote": "Trim the plants with the scissors.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "planted"
+  },
+  {
+   "id": "ag_planted_wc",
+   "applies_to": "planted tank (UK retailer guide, high-tech leaning)",
+   "field": "cadence",
+   "value": "minimum 50% weekly; 2-3 times per week for first 2-4 weeks",
+   "unit": "% per week",
+   "status": "sourced",
+   "basis": "Aquarium Gardens; much larger than JBL and RSPCA numbers, so sources disagree (search snippet said 30%, opened page says 50%)",
+   "sources": [
+    {
+     "url": "https://www.aquariumgardens.co.uk/planted-aquarium-maintenance-guide-31-w.asp",
+     "quote": "Conduct a water change of a minimum 50% each week.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "planted"
+  },
+  {
+   "id": "ag_planted_other",
+   "applies_to": "planted tank",
+   "field": "cadence",
+   "value": "glass cleaned daily with top-up and weekly; trim weekly; fertilizer daily; filter media cleaned monthly",
+   "unit": "daily/weekly/monthly",
+   "status": "sourced",
+   "basis": "Aquarium Gardens maintenance schedule",
+   "sources": [
+    {
+     "url": "https://www.aquariumgardens.co.uk/planted-aquarium-maintenance-guide-31-w.asp",
+     "quote": "Clean out your filters.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://www.aquariumgardens.co.uk/planted-aquarium-maintenance-guide-31-w.asp",
+     "quote": "Clean glass, hardscape and plant leaves.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "planted"
+  },
+  {
+   "id": "fw_fast_general",
+   "applies_to": "healthy adult freshwater community fish",
+   "field": "neglect_tolerance",
+   "value": "3-5 days comfortably",
+   "unit": "days",
+   "status": "sourced",
+   "basis": "Gensou (Singapore aquarium service)",
+   "sources": [
+    {
+     "url": "https://gensou.sg/aquarium-vacation-prep-guide/",
+     "quote": "Healthy adult fish handle 3-5 days without food comfortably.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "freshwater"
+  },
+  {
+   "id": "fw_vacation_wc_before",
+   "applies_to": "freshwater tanks before a trip",
+   "field": "cadence",
+   "value": "40-50% water change the day before leaving; auto feeder if away more than 5 days",
+   "unit": "occasional",
+   "status": "sourced",
+   "basis": "Gensou; Figure is aggressive for some tanks, one source only",
+   "sources": [
+    {
+     "url": "https://gensou.sg/aquarium-vacation-prep-guide/",
+     "quote": "Perform a large water change of 40-50% the day before you leave.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://gensou.sg/aquarium-vacation-prep-guide/",
+     "quote": "For absences longer than five days, an automatic feeder provides measured portions on a schedule.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "freshwater"
+  },
+  {
+   "id": "fw_vacation_purewow",
+   "applies_to": "freshwater pet fish",
+   "field": "neglect_tolerance",
+   "value": "2-7 days alone; over 4 days get a sitter; week trip ok after partial water change",
+   "unit": "days",
+   "status": "sourced",
+   "basis": "PureWow (lifestyle site)",
+   "sources": [
+    {
+     "url": "https://purewow.com/family/how-long-can-you-leave-a-fish-home",
+     "quote": "More than four, it's best to invest in a pet sitter who can visit for a feeding.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://purewow.com/family/how-long-can-you-leave-a-fish-home",
+     "quote": "a week-long vacation isn't a cause for concern as long as you do a partial water change ahead of time.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "freshwater"
+  },
+  {
+   "id": "betta_fast",
+   "applies_to": "betta",
+   "field": "neglect_tolerance",
+   "value": "5-10 days survivable; 4-5 days maximum recommended; week-long trip needs a visit at least every other day",
+   "unit": "days",
+   "status": "sourced",
+   "basis": "Fish Tank Advisor",
+   "sources": [
+    {
+     "url": "https://fishtankadvisor.com/betta-fish-how-long-without-food/",
+     "quote": "four to five days should be the maximum amount of time that your betta is without food.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://fishtankadvisor.com/betta-fish-how-long-without-food/",
+     "quote": "Ideally, they should come by at least every other day to feed and check on your betta.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "freshwater"
+  },
+  {
+   "id": "goldfish_tetra_fast",
+   "applies_to": "goldfish; tetras; fragile cichlids (angelfish)",
+   "field": "neglect_tolerance",
+   "value": "goldfish 14 days; tetras 7 days; angelfish-type cichlids only a few days",
+   "unit": "days",
+   "status": "sourced",
+   "basis": "Coleman Concierge (estimates, health dependent)",
+   "sources": [
+    {
+     "url": "https://www.colemanconcierge.com/?p=19036",
+     "quote": "this hardy fish can go for two weeks (14 days) without feeding.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://www.colemanconcierge.com/?p=19036",
+     "quote": "They can go for one week (7 days) without food.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "freshwater"
+  },
+  {
+   "id": "wc_neglect_fw",
+   "applies_to": "freshwater tank, no water change",
+   "field": "neglect_tolerance",
+   "value": "about 1 week fine with a prior partial change; longer than a week needs someone to check water quality",
+   "unit": "days",
+   "status": "sourced",
+   "basis": "PureWow, Betta source says past about a week need a helper for water changes",
+   "sources": [
+    {
+     "url": "https://fishtankadvisor.com/betta-fish-how-long-without-food/",
+     "quote": "Anything past that, and you will need the help of a trusted friend to provide water changes for your fish.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "freshwater"
+  },
+  {
+   "id": "salt_topoff",
+   "applies_to": "reef / marine without ATO",
+   "field": "cadence",
+   "value": "top off evaporated water daily",
+   "unit": "daily",
+   "status": "sourced",
+   "basis": "Bulk Reef Supply weekly checklist",
+   "sources": [
+    {
+     "url": "https://www.bulkreefsupply.com/content/post/weekly-saltwater-aquarium-maintenance-checklist",
+     "quote": "manually top off evaporated water every day to maintain consistent salinity",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "saltwater"
+  },
+  {
+   "id": "salt_wc",
+   "applies_to": "reef / saltwater",
+   "field": "cadence",
+   "value": "at least 10% weekly or 20% every two weeks (Reefbuilders); 10-15% weekly or 20-25% fortnightly (Charterhouse)",
+   "unit": "% per week/2 weeks",
+   "status": "sourced",
+   "basis": "Reefbuilders 2013 guide and Charterhouse Aquatics (retailer)",
+   "sources": [
+    {
+     "url": "https://reefbuilders.com/2013/07/05/routine-marine-aquarium-maintenance-guide",
+     "quote": "Perform at least a 10% water change weekly or a 20% change biweekly.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://charterhouse-aquatics.com/blogs/help-guides/marine-aquarium-maintenance-explained-a-complete-guide-to-keeping-your-saltwater-aquarium-healthy-and-stable",
+     "quote": "Consistency is more important than volume.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "saltwater"
+  },
+  {
+   "id": "salt_skimmer",
+   "applies_to": "reef / marine with protein skimmer",
+   "field": "cadence",
+   "value": "empty cup daily to weekly (depends on skimmate); deep-clean skimmer monthly to bimonthly (Charterhouse says quarterly deep clean)",
+   "unit": "daily/weekly/monthly",
+   "status": "sourced",
+   "basis": "Reefbuilders 2013 (BRS lists cup deep clean weekly on Thursday)",
+   "sources": [
+    {
+     "url": "https://reefbuilders.com/2013/07/05/routine-marine-aquarium-maintenance-guide",
+     "quote": "Disassemble your protein skimmer and thoroughly clean all components.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://www.bulkreefsupply.com/content/post/weekly-saltwater-aquarium-maintenance-checklist",
+     "quote": "Give your protein skimmer cup a deep clean",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "saltwater"
+  },
+  {
+   "id": "salt_testing",
+   "applies_to": "reef / saltwater",
+   "field": "cadence",
+   "value": "weekly full test (BRS); weekly to biweekly (Reefbuilders)",
+   "unit": "per week",
+   "status": "sourced",
+   "basis": "BRS checklist; Reefbuilders",
+   "sources": [
+    {
+     "url": "https://www.bulkreefsupply.com/content/post/weekly-saltwater-aquarium-maintenance-checklist",
+     "quote": "Start the week with a full set of water tests.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "saltwater"
+  },
+  {
+   "id": "salt_glass_carbon_pumps",
+   "applies_to": "reef / saltwater",
+   "field": "cadence",
+   "value": "glass algae film every other day to weekly; carbon replaced monthly; pumps/powerheads/heaters soaked monthly to bimonthly",
+   "unit": "varies",
+   "status": "sourced",
+   "basis": "Reefbuilders 2013 (interval wording from fetch summary)",
+   "sources": [
+    {
+     "url": "https://reefbuilders.com/2013/07/05/routine-marine-aquarium-maintenance-guide",
+     "quote": "Replace any activated carbon used in the system (monthly).",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://reefbuilders.com/2013/07/05/routine-marine-aquarium-maintenance-guide",
+     "quote": "this may be every other day or weekly.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "saltwater"
+  },
+  {
+   "id": "salt_glass_weekly",
+   "applies_to": "reef / saltwater",
+   "field": "cadence",
+   "value": "weekly glass scrape (BRS Tuesday); reactor media replaced as needed",
+   "unit": "weekly",
+   "status": "sourced",
+   "basis": "BRS weekly checklist",
+   "sources": [
+    {
+     "url": "https://www.bulkreefsupply.com/content/post/weekly-saltwater-aquarium-maintenance-checklist",
+     "quote": "Use an algae scraper or sponge (appropriate for glass or acrylic) to clean the display glass.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "saltwater"
+  },
+  {
+   "id": "salt_dosing",
+   "applies_to": "reef with calcium/alkalinity dosing",
+   "field": "cadence",
+   "value": "replace 2-part dosing liquid on the weekly or bi-monthly schedule; test before dosing",
+   "unit": "weekly-biweekly",
+   "status": "sourced",
+   "basis": "Reefbuilders 2024; Charterhouse (dosing amounts not given)",
+   "sources": [
+    {
+     "url": "https://reefbuilders.com/2024/01/13/reef-tank-maintenance",
+     "quote": "replacing the liquid if using 2 part dosing for calcium and alkalinity",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://charterhouse-aquatics.com/blogs/help-guides/marine-aquarium-maintenance-explained-a-complete-guide-to-keeping-your-saltwater-aquarium-healthy-and-stable",
+     "quote": "Always test before dosing:",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "saltwater"
+  },
+  {
+   "id": "marine_fish_fast",
+   "applies_to": "marine fish (reef/fish-only)",
+   "field": "neglect_tolerance",
+   "value": "a few days to about a week; arrange feeding every 2-3 days beyond that; tangs/butterflyfish tolerate less",
+   "unit": "days",
+   "status": "sourced",
+   "basis": "Reefbuilders 2014 (Reef Builders article)",
+   "sources": [
+    {
+     "url": "https://reefbuilders.com/2014/01/08/how-long-can-marine-fish-go-without-food",
+     "quote": "will be fine for a few days to a week or so without eating",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://reefbuilders.com/2014/01/08/how-long-can-marine-fish-go-without-food",
+     "quote": "every two or three days",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "saltwater"
+  },
+  {
+   "id": "coral_neglect",
+   "applies_to": "corals",
+   "field": "neglect_tolerance",
+   "value": "not found; forum anecdotes say about 1 week without maintenance, 1-2 weeks for light fish load (reefs.com page 403, not opened)",
+   "unit": "days",
+   "status": "assumption",
+   "basis": "WebSearch summaries of forum posts only; no opened page",
+   "sources": [],
+   "group": "saltwater"
+  },
+  {
+   "id": "salt_fish_feed",
+   "applies_to": "clownfish / saltwater fish",
+   "field": "cadence",
+   "value": "once or twice daily, amounts eaten in a few minutes",
+   "unit": "per day",
+   "status": "assumption",
+   "basis": "Only from search summaries of forum posts; no opened page",
+   "sources": [],
+   "group": "saltwater"
+  },
+  {
+   "id": "leopard-gecko-feed",
+   "applies_to": "leopard gecko adult",
+   "field": "cadence",
+   "value": 2,
+   "unit": "days between feedings",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/leopard-gecko-care-guide",
+     "quote": "Adults typically eat every other day.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "leopard-gecko-spot",
+   "applies_to": "leopard gecko",
+   "field": "cadence",
+   "value": 1,
+   "unit": "days between spot cleans",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/leopard-gecko-care-guide",
+     "quote": "Spot clean daily and deep clean carpets or tile every two weeks",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "leopard-gecko-deep",
+   "applies_to": "leopard gecko",
+   "field": "cadence",
+   "value": 14,
+   "unit": "days between deep cleans (carpet/tile)",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/leopard-gecko-care-guide",
+     "quote": "Spot clean daily and deep clean carpets or tile every two weeks",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "leopard-gecko-water",
+   "applies_to": "leopard gecko",
+   "field": "cadence",
+   "value": 1,
+   "unit": "days between water changes",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/leopard-gecko-care-guide",
+     "quote": "Change the water daily and clean the dish frequently",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "leopard-gecko-humid-hide",
+   "applies_to": "leopard gecko",
+   "field": "cadence",
+   "value": 7,
+   "unit": "days between humid-hide moss changes",
+   "status": "sourced",
+   "basis": "page says the humidity hide's moss should be changed weekly",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/leopard-gecko-care-guide",
+     "quote": "should be changed weekly",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "leopard-gecko-dust",
+   "applies_to": "leopard gecko feeders",
+   "field": "cadence",
+   "value": "dust at each feeding",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/leopard-gecko-care-guide",
+     "quote": "Dust insects immediately before feeding.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "leopard-gecko-fast",
+   "applies_to": "geckos (page is general, not leopard-specific)",
+   "field": "neglect_tolerance",
+   "value": "10 days to 2 weeks without food, 'not ideal'",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://geckotime.com/?p=2881",
+     "quote": "can go without food for 10 days to 2 weeks",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "gecko-vacation",
+   "applies_to": "geckos incl. leopard",
+   "field": "neglect_tolerance",
+   "value": "1-2 days with no helper; 1-2 week trip needs a sitter visiting about daily for water, heat check, mist",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://geckotime.com/?p=2881",
+     "quote": "most geckos can survive without any intervention for one or two days.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "crested-feed",
+   "applies_to": "crested gecko adult",
+   "field": "cadence",
+   "value": "1 to 2 times per week",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/crested-gecko-care-guide",
+     "quote": "Feed 1 to 2 times per week",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "crested-spot",
+   "applies_to": "crested gecko",
+   "field": "cadence",
+   "value": 1,
+   "unit": "days between spot cleans",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/crested-gecko-care-guide",
+     "quote": "Spot clean daily and perform a full bedding replacement and deep clean monthly",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "crested-full",
+   "applies_to": "crested gecko",
+   "field": "cadence",
+   "value": 30,
+   "unit": "days between full bedding replacement + deep clean",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/crested-gecko-care-guide",
+     "quote": "Spot clean daily and perform a full bedding replacement and deep clean monthly",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "crested-water",
+   "applies_to": "crested gecko",
+   "field": "cadence",
+   "value": 1,
+   "unit": "days between water changes",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/crested-gecko-care-guide",
+     "quote": "Change the water daily and clean the dish regularly.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "crested-mist",
+   "applies_to": "crested gecko",
+   "field": "cadence",
+   "value": "daily misting; spikes to 80% humidity, baseline 40-50%",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/crested-gecko-care-guide",
+     "quote": "During daily misting, short-term spikes up to 80 percent are beneficial.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "ball-python-feed",
+   "applies_to": "ball python adult",
+   "field": "cadence",
+   "value": "every 10 to 14 days",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+     "quote": "Reduce to every 10 to 14 days for adults",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "ball-python-water",
+   "applies_to": "ball python",
+   "field": "cadence",
+   "value": 1,
+   "unit": "days between water changes",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+     "quote": "Change the water daily and clean the bowl regularly",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "ball-python-substrate",
+   "applies_to": "ball python",
+   "field": "cadence",
+   "value": 30,
+   "unit": "days between full substrate replacement (or as needed)",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+     "quote": "replace all substrate monthly or as needed",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "ball-python-humidity",
+   "applies_to": "ball python",
+   "field": "cadence",
+   "value": "monitor with digital hygrometer (no interval stated)",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+     "quote": "Use a digital hygrometer to monitor.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "ball-python-vacation",
+   "applies_to": "ball python adult",
+   "field": "neglect_tolerance",
+   "value": "no authoritative figure found",
+   "unit": "",
+   "status": "assumption",
+   "basis": "only forum opinions seen in search (about 10 days, visit about every 2 weeks); no page opened",
+   "sources": [],
+   "group": "terrarium"
+  },
+  {
+   "id": "uvb-t5ho-replace",
+   "applies_to": "UVB T5 HO tube (Zoo Med ReptiSun 5.0)",
+   "field": "cadence",
+   "value": 12,
+   "unit": "months between bulb replacements",
+   "status": "sourced",
+   "basis": "retailer page repeating manufacturer guidance; applies to any T5 HO user",
+   "sources": [
+    {
+     "url": "https://shop.morphmarket.com/products/zoo-med-reptisun-5-0-uvb-t5-ho-high-output-linear-lamp-24w",
+     "quote": "Replace the Zoo Med T5 HO ReptiSun 5.0 UVB bulb every 12 months to ensure consistent UVB output.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "anole-feed",
+   "applies_to": "green/brown anole",
+   "field": "cadence",
+   "value": "daily: 2 to 5 gut-loaded crickets or dubia (page does not split adult from juvenile)",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/anole-care-guide",
+     "quote": "Daily feeding: Offer 2 to 5 appropriately sized gut-loaded crickets or dubia roaches",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "anole-mist",
+   "applies_to": "green/brown anole",
+   "field": "cadence",
+   "value": "2 to 3 times daily",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/anole-care-guide",
+     "quote": "Mist the enclosure and your anole 2 to 3 times daily to encourage drinking and maintain proper humidity",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "anole-clean",
+   "applies_to": "green/brown anole",
+   "field": "cadence",
+   "value": "spot clean daily; stir bedding every other week; replace monthly",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/anole-care-guide",
+     "quote": "Spot clean daily, stir the bedding every other week, and replace monthly",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "anole-water",
+   "applies_to": "green/brown anole",
+   "field": "cadence",
+   "value": "shallow dish, clean dechlorinated water at all times (no change interval)",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/anole-care-guide",
+     "quote": "Provide a shallow dish of clean, dechlorinated water at all times",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "anole-dust",
+   "applies_to": "green/brown anole feeders",
+   "field": "cadence",
+   "value": "2 to 3 times per week",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/anole-care-guide",
+     "quote": "Dust prey 2 to 3 times per week to support bone health",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "gutload-hours",
+   "applies_to": "feeder insects",
+   "field": "cadence",
+   "value": "24-48 hours before feeding",
+   "unit": "",
+   "status": "assumption",
+   "basis": "from web-search summary of PetSmart crested gecko page; fetched page text lacked the hours, so no verbatim quote",
+   "sources": [],
+   "group": "terrarium"
+  },
+  {
+   "id": "whites-feed",
+   "applies_to": "White's tree frog adult",
+   "field": "cadence",
+   "value": "every other day (juveniles daily)",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/whites-tree-frog",
+     "quote": "Juveniles should be fed daily; adults can be fed every other day",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "whites-clean",
+   "applies_to": "White's tree frog",
+   "field": "cadence",
+   "value": "spot clean daily; stir bedding weekly; replace monthly",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/whites-tree-frog",
+     "quote": "Spot clean daily, stir the bedding weekly, and fully replace monthly",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "whites-water",
+   "applies_to": "White's tree frog",
+   "field": "cadence",
+   "value": 1,
+   "unit": "days between water changes",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/whites-tree-frog",
+     "quote": "Clean and refill the water daily",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "whites-mist",
+   "applies_to": "White's tree frog",
+   "field": "cadence",
+   "value": "automatic fogger/misting system or daily hand misting",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/whites-tree-frog",
+     "quote": "Use a misting system, automatic fogger, or daily hand misting to maintain humidity",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "whites-supp",
+   "applies_to": "White's tree frog",
+   "field": "cadence",
+   "value": "calcium twice weekly; multivitamin twice a month (adults)",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/whites-tree-frog",
+     "quote": "Calcium powder twice per week",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "redeye-feed",
+   "applies_to": "red-eyed tree frog adult",
+   "field": "cadence",
+   "value": "every 2-3 days",
+   "unit": "",
+   "status": "assumption",
+   "basis": "web-search snippet from a care sheet; page fetch returned empty",
+   "sources": [],
+   "group": "terrarium"
+  },
+  {
+   "id": "redeye-mist",
+   "applies_to": "red-eyed tree frog",
+   "field": "cadence",
+   "value": "2-3 times daily or automated mister, 60-80% humidity",
+   "unit": "",
+   "status": "assumption",
+   "basis": "web-search snippet only; page fetch returned empty",
+   "sources": [],
+   "group": "terrarium"
+  },
+  {
+   "id": "dart-mist",
+   "applies_to": "dart frogs",
+   "field": "cadence",
+   "value": "misting daily by hand or automated; humidity 80-100%",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://reptilesmagazine.com/?p=125236",
+     "quote": "Maintain humidity levels between 80-100% using a misting system or hand misting daily.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "dart-feed",
+   "applies_to": "dart frogs",
+   "field": "cadence",
+   "value": "fruit flies every day",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://reptilesmagazine.com/?p=125236",
+     "quote": "Daily feedings are recommended to support their rapid growth.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "dart-clean",
+   "applies_to": "dart frogs",
+   "field": "cadence",
+   "value": "regular cleaning of water and enclosure (no interval stated)",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://reptilesmagazine.com/?p=125236",
+     "quote": "regular cleaning of water and the enclosure itself is necessary to monitor for any problem areas that need attention.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "adf-water",
+   "applies_to": "african dwarf frog tank",
+   "field": "cadence",
+   "value": "10% weekly and 25% monthly water change",
+   "unit": "",
+   "status": "sourced",
+   "basis": "other search results ranged 25-50% weekly; sources conflict",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/african-dwarf-frog-care-guide/A0118.html",
+     "quote": "10% of the water should be changed weekly, and 25% of it should be changed monthly.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "freshwater"
+  },
+  {
+   "id": "adf-feed",
+   "applies_to": "african dwarf frog",
+   "field": "cadence",
+   "value": "twice daily (morning and night) per PetSmart; other sources say every other day (unopened)",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/african-dwarf-frog-care-guide/A0118.html",
+     "quote": "You should give them these once in the morning and once at night.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "freshwater"
+  },
+  {
+   "id": "adf-filter",
+   "applies_to": "african dwarf frog tank",
+   "field": "cadence",
+   "value": 1,
+   "unit": "months between filter-running checks",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/african-dwarf-frog-care-guide/A0118.html",
+     "quote": "Check at least once a month to make sure the filter is running properly.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "freshwater"
+  },
+  {
+   "id": "springtail-culture",
+   "applies_to": "springtails (cleanup crew)",
+   "field": "minutes",
+   "value": 1,
+   "unit": "minutes per week per culture (stated as under)",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://joshsfrogs.com/blog/microfauna-in-your-bioactive-dart-frog-vivarium",
+     "quote": "it takes less than a minute a week to care for.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "springtail-backup",
+   "applies_to": "cleanup crew",
+   "field": "cadence",
+   "value": "keep a backup mother culture outside tank; top up as needed",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://joshsfrogs.com/blog/microfauna-in-your-bioactive-dart-frog-vivarium",
+     "quote": "keeping a mother culture outside the tank; that way you are able to add springtails whenever you need to.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "isopod-feed",
+   "applies_to": "isopods",
+   "field": "cadence",
+   "value": "no interval found",
+   "unit": "",
+   "status": "assumption",
+   "basis": "no opened page gave an isopod feeding interval",
+   "sources": [],
+   "group": "terrarium"
+  },
+  {
+   "id": "tarantula-feed",
+   "applies_to": "tarantula adult",
+   "field": "cadence",
+   "value": "every 1-2 weeks",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://vetverified.com/articles/a-beginners-guide-to-feeding-your-pet-tarantula",
+     "quote": "Adults: Feed every 1-2 weeks.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "tarantula-fast",
+   "applies_to": "tarantula adult",
+   "field": "neglect_tolerance",
+   "value": "weeks or even months without food",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://vetverified.com/articles/a-beginners-guide-to-feeding-your-pet-tarantula",
+     "quote": "can go weeks or even months without food",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "tarantula-prey",
+   "applies_to": "tarantula",
+   "field": "cadence",
+   "value": 24,
+   "unit": "hours before removing uneaten prey",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://vetverified.com/articles/a-beginners-guide-to-feeding-your-pet-tarantula",
+     "quote": "Always remove uneaten prey after 24 hours to avoid stress or injury to your tarantula.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "millipede-clean",
+   "applies_to": "millipede",
+   "field": "cadence",
+   "value": "remove uneaten food daily; spot clean mold; keep substrate moist, not wet",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/millipede-care-guide",
+     "quote": "Remove any moldy food immediately, spot-clean affected areas.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "millipede-substrate",
+   "applies_to": "millipede",
+   "field": "cadence",
+   "value": "no routine replacement schedule on PetSmart page",
+   "unit": "",
+   "status": "sourced",
+   "basis": "forum caresheets suggest 1-2x/year or at 25-30% frass; not opened",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/millipede-care-guide",
+     "quote": "Deep clean the enclosure and completely replace the substrate.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "terrarium"
+  },
+  {
+   "id": "pal-daily",
+   "applies_to": "paludarium",
+   "field": "cadence",
+   "value": "daily: check temp/humidity, top up evaporated water with dechlorinated",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://vetverified.com/articles/how-to-set-up-a-paludarium-for-aquatic-species",
+     "quote": "Top up evaporated water with dechlorinated water.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "paludarium"
+  },
+  {
+   "id": "pal-weekly",
+   "applies_to": "paludarium",
+   "field": "cadence",
+   "value": "weekly: clean filter intakes",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://vetverified.com/articles/how-to-set-up-a-paludarium-for-aquatic-species",
+     "quote": "Clean filter intakes.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "paludarium"
+  },
+  {
+   "id": "pal-monthly-wc",
+   "applies_to": "paludarium",
+   "field": "cadence",
+   "value": "monthly partial water change 10-25%",
+   "unit": "",
+   "status": "sourced",
+   "basis": "Dooa says no orderly water change required; sources conflict",
+   "sources": [
+    {
+     "url": "https://vetverified.com/articles/how-to-set-up-a-paludarium-for-aquatic-species",
+     "quote": "Partial water changes (10–25%).",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "paludarium"
+  },
+  {
+   "id": "pal-prune",
+   "applies_to": "paludarium",
+   "field": "cadence",
+   "value": "monthly trim plants (vet guide); daily cutting of old leaves (Dooa)",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.adana.co.jp/en/aquajournal/system_11/",
+     "quote": "Daily cutting of old leaves is one of the basic maintenance practices.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "paludarium"
+  },
+  {
+   "id": "pal-nowc",
+   "applies_to": "paludarium",
+   "field": "cadence",
+   "value": "no routine aquarium-style water change needed",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.adana.co.jp/en/aquajournal/system_11/",
+     "quote": "Paludarium maintenance does not require an orderly water change as in an aquarium.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "paludarium"
+  },
+  {
+   "id": "pal-tap",
+   "applies_to": "paludarium filter",
+   "field": "failure_mode",
+   "value": "untreated tap water on filters/substrate kills beneficial bacteria",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://vetverified.com/articles/how-to-set-up-a-paludarium-for-aquatic-species",
+     "quote": "Never clean filters or substrate with untreated tap water, as this kills beneficial bacteria.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "paludarium"
+  },
+  {
+   "id": "cyc-fw-1",
+   "applies_to": "freshwater community",
+   "field": "cycling_weeks",
+   "value": "4-6",
+   "unit": "weeks",
+   "status": "sourced",
+   "basis": "Practical Fishkeeping, method unspecified",
+   "sources": [
+    {
+     "url": "https://www.practicalfishkeeping.co.uk/features/how-to-cycle-a-fish-tank-the-complete-guide/",
+     "quote": "Most aquariums can often take four to six weeks to cycle fully.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "setup"
+  },
+  {
+   "id": "cyc-fw-2",
+   "applies_to": "freshwater community (fishless)",
+   "field": "cycling_weeks",
+   "value": "at least 4",
+   "unit": "weeks",
+   "status": "sourced",
+   "basis": "fishless FAQ",
+   "sources": [
+    {
+     "url": "https://www.practicalfishkeeping.co.uk/features/how-to-cycle-a-fish-tank-the-complete-guide/",
+     "quote": "Expect a fishless cycle to take at least a month",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "setup"
+  },
+  {
+   "id": "cyc-fw-3",
+   "applies_to": "freshwater community",
+   "field": "cycling_weeks",
+   "value": "2-8 (wait at least 4 before fish)",
+   "unit": "weeks",
+   "status": "sourced",
+   "basis": "aquariumscience.org",
+   "sources": [
+    {
+     "url": "https://aquariumscience.org/index.php/2-1-fish-less-cycling",
+     "quote": "Wait at least four weeks before adding the fish.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://aquariumscience.org/index.php/2-1-fish-less-cycling",
+     "quote": "take anywhere from 2 to 8 weeks to grow to sizable colonies in filter media.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "setup"
+  },
+  {
+   "id": "cyc-fw-4",
+   "applies_to": "freshwater community",
+   "field": "cycling_weeks",
+   "value": "2-6",
+   "unit": "weeks",
+   "status": "sourced",
+   "basis": "LiveAquaria",
+   "sources": [
+    {
+     "url": "https://www.liveaquaria.com/PIC/article.cfm?aid=74",
+     "quote": "Typically, new aquariums can be cycled in 2 to 6 weeks, but the actual length of time depends on many factors:",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "setup"
+  },
+  {
+   "id": "hands-fw-1",
+   "applies_to": "freshwater fishless cycle",
+   "field": "cadence",
+   "value": "daily water testing during cycle; no minutes stated",
+   "unit": "",
+   "status": "sourced",
+   "basis": "page states task frequency only",
+   "sources": [
+    {
+     "url": "https://www.practicalfishkeeping.co.uk/features/how-to-cycle-a-fish-tank-the-complete-guide/",
+     "quote": "Test the water daily to check for a decrease in the ammonia readings.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "setup"
+  },
+  {
+   "id": "cyc-plant-1",
+   "applies_to": "planted tank",
+   "field": "cycling_weeks",
+   "value": "about 2 dark-start before planting (vendor); forum advice 6-12 wk before livestock",
+   "unit": "weeks",
+   "status": "assumption",
+   "basis": "Only web-search snippets seen (2hraquarist page returned 403, UKAPS not opened); not verified by an opened page",
+   "sources": [],
+   "group": "setup"
+  },
+  {
+   "id": "cyc-reef-1",
+   "applies_to": "reef",
+   "field": "cycling_weeks",
+   "value": "3 (zoas), ~4, 6+2 before coral; one at 8",
+   "unit": "weeks",
+   "status": "sourced",
+   "basis": "reef forum anecdotes, not authoritative",
+   "sources": [
+    {
+     "url": "https://marinecolorado.org/threads/be-honest.22533",
+     "quote": "3 weeks. Zoas.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://marinecolorado.org/threads/be-honest.22533",
+     "quote": "Roughly a month.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://marinecolorado.org/threads/be-honest.22533",
+     "quote": "I added coral 8 weeks in with this system.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "setup"
+  },
+  {
+   "id": "cyc-reef-2",
+   "applies_to": "reef",
+   "field": "cycling_weeks",
+   "value": "6 weeks cycle, then 2 more before first frags",
+   "unit": "weeks",
+   "status": "sourced",
+   "basis": "same forum thread",
+   "sources": [
+    {
+     "url": "https://marinecolorado.org/threads/be-honest.22533",
+     "quote": "cycled for 6 weeks",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://marinecolorado.org/threads/be-honest.22533",
+     "quote": "waited 2 weeks, added 3 frags of zoas.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "setup"
+  },
+  {
+   "id": "cyc-reef-3",
+   "applies_to": "reef with live rock",
+   "field": "cycling_weeks",
+   "value": "about 4-6 typical; shorter with cured rock",
+   "unit": "weeks",
+   "status": "assumption",
+   "basis": "search summary of Nano-Reef/Reef Central threads; pages 403 or not opened",
+   "sources": [],
+   "group": "setup"
+  },
+  {
+   "id": "cyc-bio-1",
+   "applies_to": "bioactive vivarium",
+   "field": "cycling_weeks",
+   "value": "4-8 (tropical; longer arid) for ecosystem/cleanup crew population",
+   "unit": "weeks",
+   "status": "sourced",
+   "basis": "furrycritter",
+   "sources": [
+    {
+     "url": "https://www.furrycritter.com/pages/articles/reptiles/bioactive_enclosures.htm",
+     "quote": "Over four to eight weeks in tropical setups, and sometimes longer in arid ones",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://www.furrycritter.com/pages/articles/reptiles/bioactive_enclosures.htm",
+     "quote": "A bioactive system needs four to eight weeks minimum for the cleanup crew to reproduce to functional population levels",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "setup"
+  },
+  {
+   "id": "cyc-bio-2",
+   "applies_to": "bioactive vivarium",
+   "field": "cycling_weeks",
+   "value": "2-4 before introducing reptile (same article, lower figure)",
+   "unit": "weeks",
+   "status": "sourced",
+   "basis": "furrycritter",
+   "sources": [
+    {
+     "url": "https://www.furrycritter.com/pages/articles/reptiles/bioactive_enclosures.htm",
+     "quote": "let the enclosure run for two to four weeks before introducing your reptile",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "setup"
+  },
+  {
+   "id": "cyc-bio-3",
+   "applies_to": "springtail cleanup crew",
+   "field": "cycling_weeks",
+   "value": "a few weeks to a sustainable population",
+   "unit": "weeks",
+   "status": "sourced",
+   "basis": "reptifiles",
+   "sources": [
+    {
+     "url": "https://reptifiles.com/establishing-bioactive-clean-up-crew/",
+     "quote": "can quickly create a sustainable population in a vivarium within a few short weeks",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "setup"
+  },
+  {
+   "id": "setup-bio-1",
+   "applies_to": "bioactive vivarium",
+   "field": "setup_hours",
+   "value": "not stated on any opened page; sealant dry about 24 h",
+   "unit": "hours",
+   "status": "assumption",
+   "basis": "no build hours found",
+   "sources": [
+    {
+     "url": "https://reptilecentre.com/blog/2015/08/how-to-set-up-a-bioactive-royal-python-vivarium",
+     "quote": "It will take time for the vivarium to establish itself.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "setup"
+  },
+  {
+   "id": "setup-bio-2",
+   "applies_to": "bioactive vivarium plants",
+   "field": "cadence",
+   "value": "plants may droop first month under new light",
+   "unit": "",
+   "status": "sourced",
+   "basis": "furrycritter",
+   "sources": [
+    {
+     "url": "https://www.furrycritter.com/pages/articles/reptiles/bioactive_enclosures.htm",
+     "quote": "Plants may droop while adjusting to new light conditions",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "setup"
+  },
+  {
+   "id": "cyc-palu-1",
+   "applies_to": "paludarium (aquatic section)",
+   "field": "cycling_weeks",
+   "value": "2 minimum test phase before animals; plants root in",
+   "unit": "weeks",
+   "status": "sourced",
+   "basis": "Reptile Centre",
+   "sources": [
+    {
+     "url": "https://www.reptilecentre.com/blogs/reptile-blog/paludarium-set-up-guide",
+     "quote": "If adding fish or other aquatic species, we recommend a two-week testing phase before introducing any animals.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "setup"
+  },
+  {
+   "id": "cyc-palu-2",
+   "applies_to": "paludarium",
+   "field": "cadence",
+   "value": "partial water change of immersed section every 1-2 weeks",
+   "unit": "weeks",
+   "status": "sourced",
+   "basis": "PetSmart",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/fish-care/setting-up-a-paludarium",
+     "quote": "every 1-2 weeks",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "setup"
+  },
+  {
+   "id": "cyc-palu-3",
+   "applies_to": "paludarium",
+   "field": "cycling_weeks",
+   "value": "4-6 (search summary only, page not opened)",
+   "unit": "weeks",
+   "status": "assumption",
+   "basis": "unverified",
+   "sources": [],
+   "group": "setup"
+  },
+  {
+   "id": "setup-all-hours",
+   "applies_to": "all tank types",
+   "field": "setup_hours",
+   "value": "no opened page states hands-on setup hours",
+   "unit": "hours",
+   "status": "assumption",
+   "basis": "absent",
+   "sources": [],
+   "group": "setup"
+  },
+  {
+   "id": "awc-python-cost",
+   "applies_to": "Python No Spill Clean and Fill 75 ft",
+   "field": "cost",
+   "value": 119.99,
+   "unit": "USD",
+   "status": "sourced",
+   "basis": "listed price at fishtanksdirect",
+   "sources": [
+    {
+     "url": "https://fishtanksdirect.com/python-no-spill-clean-fill-75-ft/",
+     "quote": "Now: $119.99",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "auto-water-change"
+  },
+  {
+   "id": "awc-python-what",
+   "applies_to": "Python",
+   "field": "not_saved",
+   "value": "replaces buckets; freshwater refill only; saltwater needs separate mixing",
+   "unit": "",
+   "status": "sourced",
+   "basis": "what it replaces / not",
+   "sources": [
+    {
+     "url": "https://fishtanksdirect.com/python-no-spill-clean-fill-75-ft/",
+     "quote": "Works with your kitchen faucet to siphon water from your tank directly into the sink. No buckets required!",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://fishtanksdirect.com/python-no-spill-clean-fill-75-ft/",
+     "quote": "Refills the tank with water from the faucet (freshwater only).",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "auto-water-change"
+  },
+  {
+   "id": "awc-python-salt",
+   "applies_to": "Python, reef",
+   "field": "not_saved",
+   "value": "salt mix prepared in a separate container, pumped in",
+   "unit": "",
+   "status": "sourced",
+   "basis": "manual transcription 2008",
+   "sources": [
+    {
+     "url": "https://mail.redearslider.com/forum/viewtopic.php?p=158011",
+     "quote": "For saltwater tanks, fill a container next to your aquarium for salt mix preparation.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "auto-water-change"
+  },
+  {
+   "id": "awc-python-install",
+   "applies_to": "Python",
+   "field": "setup_hours",
+   "value": "4-step faucet hookup; no hours stated",
+   "unit": "",
+   "status": "sourced",
+   "basis": "steps only",
+   "sources": [
+    {
+     "url": "https://mail.redearslider.com/forum/viewtopic.php?p=158011",
+     "quote": "Remove the aerator and washer from the faucet you will be using.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "auto-water-change"
+  },
+  {
+   "id": "awc-python-limit",
+   "applies_to": "Python",
+   "field": "cadence",
+   "value": "do not remove more than 1/3; wait a week before repeating",
+   "unit": "",
+   "status": "sourced",
+   "basis": "manual rule",
+   "sources": [
+    {
+     "url": "https://mail.redearslider.com/forum/viewtopic.php?p=158011",
+     "quote": "If you need to repeat the cleaning procedure, wait at least a week before performing another water change.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "auto-water-change"
+  },
+  {
+   "id": "awc-drip-power",
+   "applies_to": "drip/automatic water change",
+   "field": "power",
+   "value": "under $1 per month running cost; gravity drip works in outage",
+   "unit": "",
+   "status": "sourced",
+   "basis": "gensou",
+   "sources": [
+    {
+     "url": "https://gensou.sg/how-to-set-up-auto-water-change/",
+     "quote": "this amounts to a negligible increase — well under $1 per month.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://gensou.sg/how-to-set-up-auto-water-change/",
+     "quote": "Gravity drip systems continue to function during power outages since they do not require electricity.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "auto-water-change"
+  },
+  {
+   "id": "awc-drip-fail",
+   "applies_to": "drip water change",
+   "field": "failure_mode",
+   "value": "overflow if drain clogs; add float valve",
+   "unit": "",
+   "status": "sourced",
+   "basis": "gensou",
+   "sources": [
+    {
+     "url": "https://gensou.sg/how-to-set-up-auto-water-change/",
+     "quote": "If the overflow mechanism fails or clogs while the inflow continues, your tank will overflow onto your floor.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://gensou.sg/how-to-set-up-auto-water-change/",
+     "quote": "Consider adding a float valve as a secondary safety measure.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "auto-water-change"
+  },
+  {
+   "id": "awc-drip-maint",
+   "applies_to": "drip water change",
+   "field": "cadence",
+   "value": "replace inline carbon media every 1-2 months; check flow weekly (tubing clogs with minerals)",
+   "unit": "",
+   "status": "sourced",
+   "basis": "gensou",
+   "sources": [
+    {
+     "url": "https://gensou.sg/how-to-set-up-auto-water-change/",
+     "quote": "Tubing can clog with mineral deposits over time",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://gensou.sg/how-to-set-up-auto-water-change/",
+     "quote": "An automated system is not entirely maintenance-free.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "auto-water-change"
+  },
+  {
+   "id": "awc-drip-notsaved",
+   "applies_to": "drip water change",
+   "field": "not_saved",
+   "value": "does not replace filtration",
+   "unit": "",
+   "status": "sourced",
+   "basis": "aquariumscience",
+   "sources": [
+    {
+     "url": "https://aquariumscience.org/index.php/18-2-drip-water-changes",
+     "quote": "Drip water changes do NOT replace good filtration.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "auto-water-change"
+  },
+  {
+   "id": "awc-drip-flood",
+   "applies_to": "drip water change",
+   "field": "failure_mode",
+   "value": "non-code plumbing fails and can cause large damage",
+   "unit": "",
+   "status": "sourced",
+   "basis": "aquariumscience",
+   "sources": [
+    {
+     "url": "https://aquariumscience.org/index.php/18-2-drip-water-changes",
+     "quote": "Systems which do not use approved \"to code\" plumbing frequently fail and can cause a huge amount of damage.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "auto-water-change"
+  },
+  {
+   "id": "awc-auto-cost",
+   "applies_to": "Neptune/Genesis/Octopus class",
+   "field": "cost",
+   "value": "not found (search snippet: $300-800+ fully automated, unverified)",
+   "unit": "",
+   "status": "assumption",
+   "basis": "unverified",
+   "sources": [],
+   "group": "auto-water-change"
+  },
+  {
+   "id": "feed-eheim-cap",
+   "applies_to": "Eheim autofeeder 3581",
+   "field": "cadence",
+   "value": "capacity ca. 100 ml; refill interval not stated by Eheim",
+   "unit": "",
+   "status": "sourced",
+   "basis": "manufacturer",
+   "sources": [
+    {
+     "url": "https://eheim.com/en_GB/aquatics/accessories/feeding/autofeeder/autofeeder",
+     "quote": "Capacity ca. 100 ml",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "auto-feeder"
+  },
+  {
+   "id": "feed-eheim-batt",
+   "applies_to": "Eheim autofeeder",
+   "field": "cadence",
+   "value": "replace battery about every 6 months (retailer); no manufacturer figure",
+   "unit": "months",
+   "status": "sourced",
+   "basis": "Bulk Reef Supply",
+   "sources": [
+    {
+     "url": "https://www.bulkreefsupply.com/content/post/md-eheim-feed-air-automatic-fish-feeder-product-demo",
+     "quote": "Replace the battery every 6 months or so.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "auto-feeder"
+  },
+  {
+   "id": "feed-eheim-moist",
+   "applies_to": "Eheim autofeeder",
+   "field": "failure_mode",
+   "value": "built-in ventilator against moisture clogging",
+   "unit": "",
+   "status": "sourced",
+   "basis": "BRS",
+   "sources": [
+    {
+     "url": "https://www.bulkreefsupply.com/content/post/md-eheim-feed-air-automatic-fish-feeder-product-demo",
+     "quote": "An integrated ventilator prevents moisture from spoiling fish food and/or clogging the unit.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "auto-feeder"
+  },
+  {
+   "id": "feed-refill",
+   "applies_to": "any auto feeder",
+   "field": "cadence",
+   "value": "load 3-5 days of food at a time",
+   "unit": "days",
+   "status": "sourced",
+   "basis": "gensou guide",
+   "sources": [
+    {
+     "url": "https://gensou.sg/automated-aquarium-feeding-smart-feeders/",
+     "quote": "refilling with only three to five days’ worth of food at a time.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "auto-feeder"
+  },
+  {
+   "id": "feed-jam",
+   "applies_to": "any auto feeder",
+   "field": "failure_mode",
+   "value": "humidity clumps food, jams or dumps hopper",
+   "unit": "",
+   "status": "sourced",
+   "basis": "gensou",
+   "sources": [
+    {
+     "url": "https://gensou.sg/automated-aquarium-feeding-smart-feeders/",
+     "quote": "Clumped food jams the mechanism, leading to either no feeding or a catastrophic dump of the entire hopper into the tank.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://gensou.sg/how-to-feed-fish-while-on-holiday/",
+     "quote": "Place a small silica gel packet inside the hopper to absorb humidity",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "auto-feeder"
+  },
+  {
+   "id": "feed-vac",
+   "applies_to": "any auto feeder",
+   "field": "cadence",
+   "value": "test-run 3 days before departure",
+   "unit": "days",
+   "status": "sourced",
+   "basis": "gensou",
+   "sources": [
+    {
+     "url": "https://gensou.sg/how-to-feed-fish-while-on-holiday/",
+     "quote": "test it for three days before departure",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://gensou.sg/automated-aquarium-feeding-smart-feeders/",
+     "quote": "Before leaving for a week or more, test-run your feeder for three full days.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "auto-feeder"
+  },
+  {
+   "id": "feed-skip",
+   "applies_to": "fish",
+   "field": "neglect_tolerance",
+   "value": "healthy adults skip 1-3 days",
+   "unit": "days",
+   "status": "sourced",
+   "basis": "gensou",
+   "sources": [
+    {
+     "url": "https://gensou.sg/how-to-feed-fish-while-on-holiday/",
+     "quote": "Healthy adult fish handle one to three days without food easily",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "auto-feeder"
+  },
+  {
+   "id": "feed-notsaved",
+   "applies_to": "auto feeder",
+   "field": "not_saved",
+   "value": "overfeeding risk; does not replace observation",
+   "unit": "",
+   "status": "sourced",
+   "basis": "gensou",
+   "sources": [
+    {
+     "url": "https://gensou.sg/automated-aquarium-feeding-smart-feeders/",
+     "quote": "Overfeeding is the single most common cause of water quality issues in home aquariums.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://gensou.sg/how-to-feed-fish-while-on-holiday/",
+     "quote": "Overfeeding by well-meaning helpers causes more fish deaths than missed meals",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "auto-feeder"
+  },
+  {
+   "id": "ato-sensor",
+   "applies_to": "ATO",
+   "field": "cadence",
+   "value": "wipe sensor pins about monthly; pump impeller monthly",
+   "unit": "month",
+   "status": "sourced",
+   "basis": "Red Sea ATO manual",
+   "sources": [
+    {
+     "url": "https://redseafish.com/?p=105595",
+     "quote": "It is recommended to wipe the sensor pins to remove build-up about once a month.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://redseafish.com/?p=105595",
+     "quote": "Remove the impellor chamber cover about once a month",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "ato"
+  },
+  {
+   "id": "ato-sensor2",
+   "applies_to": "ATO",
+   "field": "failure_mode",
+   "value": "sensors foul; clean regularly; clean with vinegar",
+   "unit": "",
+   "status": "sourced",
+   "basis": "buildyouraquarium",
+   "sources": [
+    {
+     "url": "https://www.buildyouraquarium.com/best-auto-top-off-systems/",
+     "quote": "Floating sensors can fail if organic matter collects on their surfaces.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://www.buildyouraquarium.com/best-auto-top-off-systems/",
+     "quote": "To clean the sensor, dip it into vinegar.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "ato"
+  },
+  {
+   "id": "ato-flood",
+   "applies_to": "ATO",
+   "field": "failure_mode",
+   "value": "overflow, back siphon",
+   "unit": "",
+   "status": "sourced",
+   "basis": "buildyouraquarium",
+   "sources": [
+    {
+     "url": "https://www.buildyouraquarium.com/best-auto-top-off-systems/",
+     "quote": "Back siphoning is an issue with most ATOs.",
+     "accessed": "2026-10-27"
+    },
+    {
+     "url": "https://www.buildyouraquarium.com/best-auto-top-off-systems/",
+     "quote": "This unit may overflow your tank or reservoir if set up wrong.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "ato"
+  },
+  {
+   "id": "ato-dry",
+   "applies_to": "ATO",
+   "field": "failure_mode",
+   "value": "running pump dry damages it; keep reservoir filled",
+   "unit": "",
+   "status": "sourced",
+   "basis": "Red Sea",
+   "sources": [
+    {
+     "url": "https://redseafish.com/?p=105595",
+     "quote": "Run the ATO Pump only in liquid; running it dry can damage it.",
+     "accessed": "2026-10-27"
+    }
+   ],
+   "group": "ato"
+  },
+  {
+   "id": "ato-interval",
+   "applies_to": "ATO reservoir refill interval",
+   "field": "cadence",
+   "value": "not stated by any opened page",
+   "unit": "",
+   "status": "assumption",
+   "basis": "depends on evaporation and reservoir size",
+   "sources": [],
+   "group": "ato"
+  }
+ ],
+ "model_chores": [
+  {
+   "id": "m-water-change",
+   "chore": "Water change (fresh, hose or bucket)",
+   "everyDays": 7,
+   "minutesPerSession": "12 + 0.5 x gal changed (bucket); 8 + 0.2 x gal (hose)",
+   "weeklyMean": "same per week",
+   "status": "assumption",
+   "basis": "demand-defaults time.waterChange*; interval 7 d cited (americanaquariumproducts 10-20 % weekly); minutes per job not stated on any page (research/sourcing/minutes/minutes-A.json)"
+  },
+  {
+   "id": "m-testing",
+   "chore": "Water testing (established)",
+   "everyDays": 14,
+   "minutesPerSession": 6,
+   "weeklyMean": 3,
+   "status": "assumption",
+   "basis": "demand-defaults testingMin 3 min/wk = 6 min every 2 weeks; model interval cited FishyHub 2-4 wk, but aquatic sources here say 1-2 wk for goldfish (goldfish_test) and weekly for reef (salt_testing): the model sits at the lax end for fresh"
+  },
+  {
+   "id": "m-filter",
+   "chore": "Filter media rinse",
+   "everyDays": 14,
+   "minutesPerSession": 4,
+   "weeklyMean": 2,
+   "status": "assumption",
+   "basis": "demand-defaults filterCleanMinPerWeek mode 2; interval 14 d (JBL internal every 2 wk, cited); canister about 28 d (JBL) would be 8 min a job"
+  },
+  {
+   "id": "m-feeding",
+   "chore": "Feeding trip (fish, by hand)",
+   "everyDays": 1,
+   "minutesPerSession": 0.5,
+   "weeklyMean": 3.5,
+   "status": "assumption",
+   "basis": "demand-defaults feedingTripMinPerWeek 3.5; daily interval cited (goldfish_feed, crayfish_feed); 30 s a trip is stated nowhere"
+  },
+  {
+   "id": "m-glass",
+   "chore": "Glass wipe",
+   "everyDays": 7,
+   "minutesPerSession": "1-4 (light-scaled)",
+   "weeklyMean": "1-4",
+   "status": "assumption",
+   "basis": "demand-defaults glass.*; weekly cited (Charterhouse, via the MW lane); reef sources say every other day to weekly (salt_glass_carbon_pumps)"
+  },
+  {
+   "id": "m-yearly",
+   "chore": "Yearly jobs (deep clean, swaps, rescape)",
+   "everyDays": 365,
+   "minutesPerSession": 208,
+   "weeklyMean": 4,
+   "status": "assumption",
+   "basis": "demand-defaults yearlyJobsMinPerWeek 4 x 52"
+  },
+  {
+   "id": "m-salt",
+   "chore": "Salt work (mix, top-off, dosing, skimmer)",
+   "everyDays": "1-7 mixed",
+   "minutesPerSession": "n/a",
+   "weeklyMean": 15,
+   "status": "assumption",
+   "basis": "demand-defaults saltExtraMin 15 min/wk; cadences cited: top-off daily without ATO (salt_topoff), skimmer cup daily-weekly (salt_skimmer), dosing weekly (salt_dosing). The 15 min cannot be split across them from sources"
+  },
+  {
+   "id": "m-mist",
+   "chore": "Terrarium misting + spot clean",
+   "everyDays": 1,
+   "minutesPerSession": "about 1.3 (9 / 7)",
+   "weeklyMean": 9,
+   "status": "assumption",
+   "basis": "demand-defaults terrariumMistMin 9; daily misting cited for crested gecko, anole, White's frog, dart frogs; with an auto mister the model uses 7 (terrariumAutoMistMin, est)"
+  },
+  {
+   "id": "m-terr-dry",
+   "chore": "Dry terrarium spot clean",
+   "everyDays": 1,
+   "minutesPerSession": "about 0.7 (5 / 7)",
+   "weeklyMean": 5,
+   "status": "assumption",
+   "basis": "demand-defaults terrariumDryMin 5; daily spot clean cited (leopard / crested gecko)"
+  }
+ ],
+ "counts": {
+  "items_total": 131,
+  "items_sourced": 114,
+  "items_assumption": 17,
+  "model_chores_assumption": 9,
+  "by_group": {
+   "ato": {
+    "sourced": 4,
+    "assumption": 1
+   },
+   "auto-feeder": {
+    "sourced": 8,
+    "assumption": 0
+   },
+   "auto-water-change": {
+    "sourced": 10,
+    "assumption": 1
+   },
+   "freshwater": {
+    "sourced": 20,
+    "assumption": 3
+   },
+   "paludarium": {
+    "sourced": 6,
+    "assumption": 0
+   },
+   "planted": {
+    "sourced": 7,
+    "assumption": 0
+   },
+   "saltwater": {
+    "sourced": 8,
+    "assumption": 2
+   },
+   "setup": {
+    "sourced": 13,
+    "assumption": 5
+   },
+   "terrarium": {
+    "sourced": 38,
+    "assumption": 5
+   }
+  }
+ }
+}

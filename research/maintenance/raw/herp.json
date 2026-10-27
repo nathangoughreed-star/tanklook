@@ -1,0 +1,817 @@
+{
+ "lane": "herp",
+ "items": [
+  {
+   "id": "leopard-gecko-feed",
+   "applies_to": "leopard gecko adult",
+   "field": "cadence",
+   "value": 2,
+   "unit": "days between feedings",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/leopard-gecko-care-guide",
+     "quote": "Adults typically eat every other day.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "leopard-gecko-spot",
+   "applies_to": "leopard gecko",
+   "field": "cadence",
+   "value": 1,
+   "unit": "days between spot cleans",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/leopard-gecko-care-guide",
+     "quote": "Spot clean daily and deep clean carpets or tile every two weeks",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "leopard-gecko-deep",
+   "applies_to": "leopard gecko",
+   "field": "cadence",
+   "value": 14,
+   "unit": "days between deep cleans (carpet/tile)",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/leopard-gecko-care-guide",
+     "quote": "Spot clean daily and deep clean carpets or tile every two weeks",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "leopard-gecko-water",
+   "applies_to": "leopard gecko",
+   "field": "cadence",
+   "value": 1,
+   "unit": "days between water changes",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/leopard-gecko-care-guide",
+     "quote": "Change the water daily and clean the dish frequently",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "leopard-gecko-humid-hide",
+   "applies_to": "leopard gecko",
+   "field": "cadence",
+   "value": 7,
+   "unit": "days between humid-hide moss changes",
+   "status": "sourced",
+   "basis": "page says the humidity hide's moss should be changed weekly",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/leopard-gecko-care-guide",
+     "quote": "should be changed weekly",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "leopard-gecko-dust",
+   "applies_to": "leopard gecko feeders",
+   "field": "cadence",
+   "value": "dust at each feeding",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/leopard-gecko-care-guide",
+     "quote": "Dust insects immediately before feeding.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "leopard-gecko-fast",
+   "applies_to": "geckos (page is general, not leopard-specific)",
+   "field": "neglect_tolerance",
+   "value": "10 days to 2 weeks without food, 'not ideal'",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://geckotime.com/?p=2881",
+     "quote": "can go without food for 10 days to 2 weeks",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "gecko-vacation",
+   "applies_to": "geckos incl. leopard",
+   "field": "neglect_tolerance",
+   "value": "1-2 days with no helper; 1-2 week trip needs a sitter visiting about daily for water, heat check, mist",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://geckotime.com/?p=2881",
+     "quote": "most geckos can survive without any intervention for one or two days.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "crested-feed",
+   "applies_to": "crested gecko adult",
+   "field": "cadence",
+   "value": "1 to 2 times per week",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/crested-gecko-care-guide",
+     "quote": "Feed 1 to 2 times per week",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "crested-spot",
+   "applies_to": "crested gecko",
+   "field": "cadence",
+   "value": 1,
+   "unit": "days between spot cleans",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/crested-gecko-care-guide",
+     "quote": "Spot clean daily and perform a full bedding replacement and deep clean monthly",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "crested-full",
+   "applies_to": "crested gecko",
+   "field": "cadence",
+   "value": 30,
+   "unit": "days between full bedding replacement + deep clean",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/crested-gecko-care-guide",
+     "quote": "Spot clean daily and perform a full bedding replacement and deep clean monthly",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "crested-water",
+   "applies_to": "crested gecko",
+   "field": "cadence",
+   "value": 1,
+   "unit": "days between water changes",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/crested-gecko-care-guide",
+     "quote": "Change the water daily and clean the dish regularly.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "crested-mist",
+   "applies_to": "crested gecko",
+   "field": "cadence",
+   "value": "daily misting; spikes to 80% humidity, baseline 40-50%",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/crested-gecko-care-guide",
+     "quote": "During daily misting, short-term spikes up to 80 percent are beneficial.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "ball-python-feed",
+   "applies_to": "ball python adult",
+   "field": "cadence",
+   "value": "every 10 to 14 days",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+     "quote": "Reduce to every 10 to 14 days for adults",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "ball-python-water",
+   "applies_to": "ball python",
+   "field": "cadence",
+   "value": 1,
+   "unit": "days between water changes",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+     "quote": "Change the water daily and clean the bowl regularly",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "ball-python-substrate",
+   "applies_to": "ball python",
+   "field": "cadence",
+   "value": 30,
+   "unit": "days between full substrate replacement (or as needed)",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+     "quote": "replace all substrate monthly or as needed",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "ball-python-humidity",
+   "applies_to": "ball python",
+   "field": "cadence",
+   "value": "monitor with digital hygrometer (no interval stated)",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/ball-python-care-guide",
+     "quote": "Use a digital hygrometer to monitor.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "ball-python-vacation",
+   "applies_to": "ball python adult",
+   "field": "neglect_tolerance",
+   "value": "no authoritative figure found",
+   "unit": "",
+   "status": "assumption",
+   "basis": "only forum opinions seen in search (about 10 days, visit about every 2 weeks); no page opened",
+   "sources": []
+  },
+  {
+   "id": "uvb-t5ho-replace",
+   "applies_to": "UVB T5 HO tube (Zoo Med ReptiSun 5.0)",
+   "field": "cadence",
+   "value": 12,
+   "unit": "months between bulb replacements",
+   "status": "sourced",
+   "basis": "retailer page repeating manufacturer guidance; applies to any T5 HO user",
+   "sources": [
+    {
+     "url": "https://shop.morphmarket.com/products/zoo-med-reptisun-5-0-uvb-t5-ho-high-output-linear-lamp-24w",
+     "quote": "Replace the Zoo Med T5 HO ReptiSun 5.0 UVB bulb every 12 months to ensure consistent UVB output.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "anole-feed",
+   "applies_to": "green/brown anole",
+   "field": "cadence",
+   "value": "daily: 2 to 5 gut-loaded crickets or dubia (page does not split adult from juvenile)",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/anole-care-guide",
+     "quote": "Daily feeding: Offer 2 to 5 appropriately sized gut-loaded crickets or dubia roaches",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "anole-mist",
+   "applies_to": "green/brown anole",
+   "field": "cadence",
+   "value": "2 to 3 times daily",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/anole-care-guide",
+     "quote": "Mist the enclosure and your anole 2 to 3 times daily to encourage drinking and maintain proper humidity",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "anole-clean",
+   "applies_to": "green/brown anole",
+   "field": "cadence",
+   "value": "spot clean daily; stir bedding every other week; replace monthly",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/anole-care-guide",
+     "quote": "Spot clean daily, stir the bedding every other week, and replace monthly",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "anole-water",
+   "applies_to": "green/brown anole",
+   "field": "cadence",
+   "value": "shallow dish, clean dechlorinated water at all times (no change interval)",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/anole-care-guide",
+     "quote": "Provide a shallow dish of clean, dechlorinated water at all times",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "anole-dust",
+   "applies_to": "green/brown anole feeders",
+   "field": "cadence",
+   "value": "2 to 3 times per week",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/anole-care-guide",
+     "quote": "Dust prey 2 to 3 times per week to support bone health",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "gutload-hours",
+   "applies_to": "feeder insects",
+   "field": "cadence",
+   "value": "24-48 hours before feeding",
+   "unit": "",
+   "status": "assumption",
+   "basis": "from web-search summary of PetSmart crested gecko page; fetched page text lacked the hours, so no verbatim quote",
+   "sources": []
+  },
+  {
+   "id": "whites-feed",
+   "applies_to": "White's tree frog adult",
+   "field": "cadence",
+   "value": "every other day (juveniles daily)",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/whites-tree-frog",
+     "quote": "Juveniles should be fed daily; adults can be fed every other day",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "whites-clean",
+   "applies_to": "White's tree frog",
+   "field": "cadence",
+   "value": "spot clean daily; stir bedding weekly; replace monthly",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/whites-tree-frog",
+     "quote": "Spot clean daily, stir the bedding weekly, and fully replace monthly",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "whites-water",
+   "applies_to": "White's tree frog",
+   "field": "cadence",
+   "value": 1,
+   "unit": "days between water changes",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/whites-tree-frog",
+     "quote": "Clean and refill the water daily",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "whites-mist",
+   "applies_to": "White's tree frog",
+   "field": "cadence",
+   "value": "automatic fogger/misting system or daily hand misting",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/whites-tree-frog",
+     "quote": "Use a misting system, automatic fogger, or daily hand misting to maintain humidity",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "whites-supp",
+   "applies_to": "White's tree frog",
+   "field": "cadence",
+   "value": "calcium twice weekly; multivitamin twice a month (adults)",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/whites-tree-frog",
+     "quote": "Calcium powder twice per week",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "redeye-feed",
+   "applies_to": "red-eyed tree frog adult",
+   "field": "cadence",
+   "value": "every 2-3 days",
+   "unit": "",
+   "status": "assumption",
+   "basis": "web-search snippet from a care sheet; page fetch returned empty",
+   "sources": []
+  },
+  {
+   "id": "redeye-mist",
+   "applies_to": "red-eyed tree frog",
+   "field": "cadence",
+   "value": "2-3 times daily or automated mister, 60-80% humidity",
+   "unit": "",
+   "status": "assumption",
+   "basis": "web-search snippet only; page fetch returned empty",
+   "sources": []
+  },
+  {
+   "id": "dart-mist",
+   "applies_to": "dart frogs",
+   "field": "cadence",
+   "value": "misting daily by hand or automated; humidity 80-100%",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://reptilesmagazine.com/?p=125236",
+     "quote": "Maintain humidity levels between 80-100% using a misting system or hand misting daily.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "dart-feed",
+   "applies_to": "dart frogs",
+   "field": "cadence",
+   "value": "fruit flies every day",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://reptilesmagazine.com/?p=125236",
+     "quote": "Daily feedings are recommended to support their rapid growth.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "dart-clean",
+   "applies_to": "dart frogs",
+   "field": "cadence",
+   "value": "regular cleaning of water and enclosure (no interval stated)",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://reptilesmagazine.com/?p=125236",
+     "quote": "regular cleaning of water and the enclosure itself is necessary to monitor for any problem areas that need attention.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "adf-water",
+   "applies_to": "african dwarf frog tank",
+   "field": "cadence",
+   "value": "10% weekly and 25% monthly water change",
+   "unit": "",
+   "status": "sourced",
+   "basis": "other search results ranged 25-50% weekly; sources conflict",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/african-dwarf-frog-care-guide/A0118.html",
+     "quote": "10% of the water should be changed weekly, and 25% of it should be changed monthly.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "adf-feed",
+   "applies_to": "african dwarf frog",
+   "field": "cadence",
+   "value": "twice daily (morning and night) per PetSmart; other sources say every other day (unopened)",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/african-dwarf-frog-care-guide/A0118.html",
+     "quote": "You should give them these once in the morning and once at night.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "adf-filter",
+   "applies_to": "african dwarf frog tank",
+   "field": "cadence",
+   "value": 1,
+   "unit": "months between filter-running checks",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/african-dwarf-frog-care-guide/A0118.html",
+     "quote": "Check at least once a month to make sure the filter is running properly.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "springtail-culture",
+   "applies_to": "springtails (cleanup crew)",
+   "field": "minutes",
+   "value": 1,
+   "unit": "minutes per week per culture (stated as under)",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://joshsfrogs.com/blog/microfauna-in-your-bioactive-dart-frog-vivarium",
+     "quote": "it takes less than a minute a week to care for.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "springtail-backup",
+   "applies_to": "cleanup crew",
+   "field": "cadence",
+   "value": "keep a backup mother culture outside tank; top up as needed",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://joshsfrogs.com/blog/microfauna-in-your-bioactive-dart-frog-vivarium",
+     "quote": "keeping a mother culture outside the tank; that way you are able to add springtails whenever you need to.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "isopod-feed",
+   "applies_to": "isopods",
+   "field": "cadence",
+   "value": "no interval found",
+   "unit": "",
+   "status": "assumption",
+   "basis": "no opened page gave an isopod feeding interval",
+   "sources": []
+  },
+  {
+   "id": "tarantula-feed",
+   "applies_to": "tarantula adult",
+   "field": "cadence",
+   "value": "every 1-2 weeks",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://vetverified.com/articles/a-beginners-guide-to-feeding-your-pet-tarantula",
+     "quote": "Adults: Feed every 1-2 weeks.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "tarantula-fast",
+   "applies_to": "tarantula adult",
+   "field": "neglect_tolerance",
+   "value": "weeks or even months without food",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://vetverified.com/articles/a-beginners-guide-to-feeding-your-pet-tarantula",
+     "quote": "can go weeks or even months without food",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "tarantula-prey",
+   "applies_to": "tarantula",
+   "field": "cadence",
+   "value": 24,
+   "unit": "hours before removing uneaten prey",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://vetverified.com/articles/a-beginners-guide-to-feeding-your-pet-tarantula",
+     "quote": "Always remove uneaten prey after 24 hours to avoid stress or injury to your tarantula.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "millipede-clean",
+   "applies_to": "millipede",
+   "field": "cadence",
+   "value": "remove uneaten food daily; spot clean mold; keep substrate moist, not wet",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/millipede-care-guide",
+     "quote": "Remove any moldy food immediately, spot-clean affected areas.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "millipede-substrate",
+   "applies_to": "millipede",
+   "field": "cadence",
+   "value": "no routine replacement schedule on PetSmart page",
+   "unit": "",
+   "status": "sourced",
+   "basis": "forum caresheets suggest 1-2x/year or at 25-30% frass; not opened",
+   "sources": [
+    {
+     "url": "https://www.petsmart.com/learning-center/reptile-care/millipede-care-guide",
+     "quote": "Deep clean the enclosure and completely replace the substrate.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "pal-daily",
+   "applies_to": "paludarium",
+   "field": "cadence",
+   "value": "daily: check temp/humidity, top up evaporated water with dechlorinated",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://vetverified.com/articles/how-to-set-up-a-paludarium-for-aquatic-species",
+     "quote": "Top up evaporated water with dechlorinated water.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "pal-weekly",
+   "applies_to": "paludarium",
+   "field": "cadence",
+   "value": "weekly: clean filter intakes",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://vetverified.com/articles/how-to-set-up-a-paludarium-for-aquatic-species",
+     "quote": "Clean filter intakes.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "pal-monthly-wc",
+   "applies_to": "paludarium",
+   "field": "cadence",
+   "value": "monthly partial water change 10-25%",
+   "unit": "",
+   "status": "sourced",
+   "basis": "Dooa says no orderly water change required; sources conflict",
+   "sources": [
+    {
+     "url": "https://vetverified.com/articles/how-to-set-up-a-paludarium-for-aquatic-species",
+     "quote": "Partial water changes (10–25%).",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "pal-prune",
+   "applies_to": "paludarium",
+   "field": "cadence",
+   "value": "monthly trim plants (vet guide); daily cutting of old leaves (Dooa)",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.adana.co.jp/en/aquajournal/system_11/",
+     "quote": "Daily cutting of old leaves is one of the basic maintenance practices.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "pal-nowc",
+   "applies_to": "paludarium",
+   "field": "cadence",
+   "value": "no routine aquarium-style water change needed",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://www.adana.co.jp/en/aquajournal/system_11/",
+     "quote": "Paludarium maintenance does not require an orderly water change as in an aquarium.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  },
+  {
+   "id": "pal-tap",
+   "applies_to": "paludarium filter",
+   "field": "failure_mode",
+   "value": "untreated tap water on filters/substrate kills beneficial bacteria",
+   "unit": "",
+   "status": "sourced",
+   "basis": "",
+   "sources": [
+    {
+     "url": "https://vetverified.com/articles/how-to-set-up-a-paludarium-for-aquatic-species",
+     "quote": "Never clean filters or substrate with untreated tap water, as this kills beneficial bacteria.",
+     "accessed": "2026-10-27"
+    }
+   ]
+  }
+ ],
+ "gaps": [
+  "Ball python unfed/vacation tolerance: only forum posts, no authoritative page opened",
+  "Red-eyed tree frog: care sheet fetch empty; figures are search-snippet assumptions",
+  "Isopod feeding/upkeep cadence not found; springtail only 1 min/week",
+  "African dwarf frog vacation tolerance not found; sources disagree on water change %",
+  "Dart frog vacation / automatic mister tolerance not found",
+  "No page stated minutes for chores (only springtail under 1 min/week)",
+  "Leopard gecko fast figure is from a general-gecko page; vet page did not open",
+  "Millipede and tarantula substrate-change schedules not sourced; UVB interval only from Zoo Med T5 HO retailer page"
+ ]
+}
