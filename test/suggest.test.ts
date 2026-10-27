@@ -155,9 +155,14 @@ describe('Suggest a setup', () => {
       expect(v.map(p => p.archetype.id)).toEqual(['dart-paludarium']);
       expect(v[0].scene.water.on).toBe(true);
     });
-    it('arthropods only: nothing to offer yet, said plainly and not as a guardrail result', () => {
+    it('arthropods only: the tarantula and the jumping spider, each a terrarium that passes the strict rule', () => {
       const r = run({}, { kinds: ['terrarium'], groups: ['arthropod'] });
-      expect(r.proposals).toEqual([]); expect(r.unavailable).toMatch(/no setups of that kind/); expect(r.message).toBeUndefined();
+      expect(r.proposals.map(p => p.archetype.id).sort()).toEqual(['jumping-spider', 'tarantula']);
+      for (const p of r.proposals) { expect(p.scene.water.on).toBe(false); expect(summaryOf(p.scene, 'in').cats.some(k => k.level === 'caution' || k.level === 'problem')).toBe(false); }
+      expect(run({}, { kinds: ['terrarium'], groups: ['herp'] }).proposals.every(p => p.archetype.group === 'herp')).toBe(true);
+    });
+    it('every arthropod archetype names a species that exists (scorpions, isopods and mantises are not in the data)', () => {
+      expect(ARCHETYPES.filter(a => a.group === 'arthropod').map(a => a.animals[0].species).sort()).toEqual(['chacogoldenknee', 'regaljumper']);
     });
   });
 

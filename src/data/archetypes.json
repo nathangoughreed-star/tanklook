@@ -9,6 +9,8 @@
     { "id": "leopard-gecko", "kind": "terrarium", "group": "herp", "title": "Leopard gecko terrarium", "family": "terrarium", "tags": ["unusual", "calm", "low-maint"], "animals": [{ "species": "leopardgecko", "n": 1 }], "why": "A dry desert enclosure, no water to keep." },
     { "id": "crested-gecko", "kind": "terrarium", "group": "herp", "title": "Crested gecko terrarium", "family": "terrarium", "tags": ["unusual", "calm"], "animals": [{ "species": "crestedgecko", "n": 1 }], "why": "A tall, humid, planted enclosure for a gentle climber." },
     { "id": "dart-paludarium", "kind": "vivarium", "group": "herp", "title": "Dart frog paludarium", "family": "terrarium", "tags": ["colorful", "unusual", "natural"], "animals": [{ "species": "dartfrog", "n": 3 }, { "species": "nerite", "n": 2 }], "why": "Land for the frogs and a pool for a pair of snails: half water, half land." },
+    { "id": "tarantula", "kind": "terrarium", "group": "arthropod", "title": "Chaco golden knee tarantula terrarium", "family": "terrarium", "tags": ["unusual", "calm", "low-maint"], "animals": [{ "species": "chacogoldenknee", "n": 1 }], "why": "A big, slow, hardy tarantula: fed weekly, no daily care." },
+    { "id": "jumping-spider", "kind": "terrarium", "group": "arthropod", "title": "Regal jumping spider enclosure", "family": "terrarium", "tags": ["unusual", "active", "colorful"], "animals": [{ "species": "regaljumper", "n": 1 }], "why": "A small, curious, colourful spider in a tall little enclosure." },
     { "id": "dart-frogs", "kind": "terrarium", "group": "herp", "title": "Dart frog terrarium", "family": "terrarium", "tags": ["colorful", "unusual", "natural"], "animals": [{ "species": "dartfrog", "n": 3 }], "why": "A small living rainforest with bright frogs." }
   ]
 }

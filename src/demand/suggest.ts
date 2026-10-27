@@ -43,7 +43,7 @@ export const KINDS: readonly { id: Kind; label: string; blurb: string }[] = [
 ];
 /** Inside a terrarium or vivarium: reptiles and amphibians, or arthropods (tarantulas, scorpions, isopods, mantises). */
 export type DryGroup = 'herp' | 'arthropod';
-export const DRY_GROUPS: readonly { id: DryGroup; label: string }[] = [{ id: 'herp', label: 'Reptiles & amphibians' }, { id: 'arthropod', label: 'Arthropods (tarantulas, scorpions, isopods, mantises ...)' }];
+export const DRY_GROUPS: readonly { id: DryGroup; label: string }[] = [{ id: 'herp', label: 'Reptiles & amphibians' }, { id: 'arthropod', label: 'Arthropods (tarantula, jumping spider; no scorpions, isopods or mantises yet)' }];
 export interface Archetype { id: string; kind: Kind; group?: DryGroup; title: string; family: Family; tags: Tag[]; animals: AnimalCount[]; why: string }
 export const ARCHETYPES = data.archetypes as unknown as Archetype[];
 
@@ -228,7 +228,7 @@ export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', no
   shown.sort(rank);
   const kinds = [...new Set(sorted.map(p => p.archetype.family))];
   const out: Suggestions = { off: !anyOn, proposals: shown, qualified: sorted.map(p => p.archetype.id), kinds, misses: misses.sort((a, b) => relaxSize(a.needs) - relaxSize(b.needs)).slice(0, 3) };
-  if (!wanted.length) out.unavailable = 'There are no setups of that kind to suggest yet: the species data has no tarantulas, scorpions, isopods or mantises. Tick another kind, or Reptiles & amphibians.';
+  if (!wanted.length) out.unavailable = 'There are no setups of that kind to suggest yet. Tick another kind.';
   else if (!shown.length) out.message = NO_SUGGESTION;
   else if (kinds.length < 3 && anyOn) out.note = `Only ${kinds.length === 1 ? 'one kind' : `${kinds.length} kinds`} of setup fit${kinds.length === 1 ? 's' : ''} your guardrails: ${kinds.map(k => FAMILY_LABEL[k]).join(', ')}.`;
   return out;
