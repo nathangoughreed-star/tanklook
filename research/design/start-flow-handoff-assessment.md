@@ -110,3 +110,12 @@ C1 then C2 then C3 are sequential (same files); C4 and C6 run beside them (disjo
    button; no auto-opening card (handoff: no constant pop-ups). This replaces my Revision 2's card that opens on the edit.
 5. **"Firm" locks on guardrails:** Rec: not in v1. Every enabled limit is hard; options that need a limit raised are
    listed separately as "needs +$X". Add firm vs flexible only if users ask which one to relax.
+
+## Decisions (Nathan, 2026-10-27)
+Approved all five recommendations (name Guardrails; per project; v1 hard caps startup $, $/month, min/week, space; amber line + Find solutions; no locks in v1). Clarifications that bind C2 / C3:
+1. An enabled guardrail decides whether a COMPLETED build is recommended as compliant. It never blocks building or editing; users may exceed any limit on purpose and see the consequences.
+2. Every proposed solution is re-checked against ALL enabled guardrails AND the relevant husbandry requirements. Six fish to three that fixes minutes but breaks the minimum social group is not a suitable solution; a bigger tank that fixes crowding but breaks space or maintenance is not one either.
+3. When no modelled solution works, say "No available suggestions satisfy all your enabled guardrails", never "this setup is impossible" (the solver is not exhaustive; costs and times are estimates).
+4. Keep calculated quantities, estimated costs / times and actual husbandry requirements distinct. Claim that equipment saves time only where the existing model supports it.
+5. The solver is the central differentiator: validate it before widening its interventions. A few trustworthy, defensible suggestions beat a long speculative list.
+Start C1, C4, C6 now (2026-10-27); C2 then C3 follow C1 (same files).
