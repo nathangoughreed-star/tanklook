@@ -589,7 +589,7 @@ export const PLANS: Record<string, Plan> = {
     anal: { at: 0.68, len: 0.46, h: 0.12, spines: 0.5, nSp: 7, spineH: [0.03, 0.08], notch: 0.18, tip: 'point', trail: 0.06, rake: 0.65, edge: '#3c74b0' }, pelvic: { u: 0.72, len: 0.4, thread: true, tint: '#d68a5a' },
     // Commons (Colisa lalia): slanted bars alternating red and blue, the blue metallic
     marks: [0.3, 0.37, 0.44, 0.51, 0.58, 0.65, 0.72, 0.79].map((u, i) => ({ k: 'poly' as const, pts: [[u + 0.07, -0.26], [u + 0.1, -0.26], [u + 0.03, 0.26], [u, 0.26]] as [number, number][], c: i % 2 ? '#c8402e' : '#3a78b8', a: i % 2 ? 0.5 : 0.75 })),
-    finMarks: [{ k: 'spots', n: 40, u0: 0.05, u1: 0.7, v0: -0.35, v1: 0.35, r: 0.012, c: '#3a78b8', a: 0.6 }],
+    finMarks: [0.0, 0.05, 0.1, 0.15, 0.2, 0.3, 0.37, 0.44, 0.51, 0.58, 0.65, 0.72, 0.79, 0.86].map((u, i) => ({ k: 'poly' as const, pts: [[u + 0.05, -0.6], [u + 0.075, -0.6], [u + 0.025, 0.6], [u, 0.6]] as [number, number][], c: i % 2 ? '#c8402e' : '#3a78b8', a: 0.6 })),
     eye: { r: 0.032, iris: ['#c8603a', '#3a1a10'] } },
   honeygourami: { shimmer: 0.55, shimmerRgb: '255,228,165', gillLine: 0.25, finFade: 0.35, thick: 0.32, depth: 0.38, pedU: 0.2, ped: 0.06, peak: 0.5, snout: 0.55, mouth: -0.045, shade: ['#b06a2a', '#e09a42', '#eabc78'], tail: { type: 'round', h: 0.15, tint: '#dca064' }, fin: '#dca064',
     dorsal: { at: 0.6, len: 0.36, h: 0.085, spines: 0.6, nSp: 6, spineH: [0.03, 0.06], notch: 0.18, tip: 'point', trail: 0.05, rake: 0.6 },
@@ -613,13 +613,17 @@ export const PLANS: Record<string, Plan> = {
     // dorsal over the gill cover to the peduncle, low spiny front; the male's soft dorsal and anal drawn out to points
     dorsal: { at: 0.8, len: 0.56, h: 0.09, spines: 0.6, nSp: 9, spineH: [0.05, 0.065], notch: 0.25, tip: 'point', trail: 0.09, rake: 0.6, edge: '#c8443a' },
     anal: { at: 0.5, len: 0.27, h: 0.09, spines: 0.25, nSp: 3, spineH: [0.035, 0.06], tip: 'point', trail: 0.08 }, pelvic: { u: 0.66, len: 0.1, ext: 0.03, tint: '#7a4ca0' },
-    marks: [{ k: 'band', u0: 0.2, u1: 0.92, v0: -0.02, v1: 0.02, c: '#2a2620', a: 0.8, f: 0.012 }, { k: 'blob', u: 0.62, v: 0.1, ru: 0.15, rv: 0.06, c: '#d0405a', a: 0.75 }],
-    finMarks: [{ k: 'blob', u: 0.3, v: -0.17, ru: 0.025, rv: 0.025, c: '#1a1a1a', a: 0.85 }], eye: { r: 0.028, iris: ['#c8a050', '#3a2a10'] } },
+    marks: [{ k: 'band', u0: 0.2, u1: 0.92, v0: -0.02, v1: 0.02, c: '#2a2620', a: 0.8, f: 0.012 }, { k: 'band', u0: 0.24, u1: 0.9, v0: -0.075, v1: -0.055, c: '#3a3428', a: 0.45, f: 0.01 },
+      { k: 'blob', u: 0.6, v: 0.11, ru: 0.22, rv: 0.07, c: '#8a64b0', a: 0.3 }, { k: 'blob', u: 0.62, v: 0.1, ru: 0.15, rv: 0.06, c: '#d0405a', a: 0.75 }],
+    finMarks: [{ k: 'blob', u: 0.3, v: -0.17, ru: 0.025, rv: 0.025, c: '#1a1a1a', a: 0.85 }, { k: 'blob', u: 0.1, v: -0.04, ru: 0.022, rv: 0.022, c: '#e8c040', a: 0.9 }, { k: 'blob', u: 0.1, v: -0.04, ru: 0.01, rv: 0.01, c: '#1a1a1a', a: 0.9 },
+      { k: 'blob', u: 0.1, v: 0.04, ru: 0.022, rv: 0.022, c: '#e8c040', a: 0.9 }, { k: 'blob', u: 0.1, v: 0.04, ru: 0.01, rv: 0.01, c: '#1a1a1a', a: 0.9 }], eye: { r: 0.028, iris: ['#c8a050', '#3a2a10'] } },
   discus: { shimmer: 0.6, shimmerRgb: '125,215,235', gillLine: 0.25, finFade: 0.2, scale: 0.014, thick: 0.2, depth: 0.78, pedU: 0.13, ped: 0.07, peak: 0.45, snout: 0.85, mouth: 0.02, shade: ['#5a6a7a', '#3f8aa8', '#4a98b0'], tail: { type: 'notch', h: 0.14, tint: '#6a8a9a' }, fin: '#5a8698',
     // dorsal and anal follow the disc from behind the head and the pelvics round to the tail root
     dorsal: { at: 0.8, len: 0.64, h: 0.075, spines: 0.35, nSp: 7, spineH: [0.03, 0.06], notch: 0.15, rake: 0.75, trail: 0.05, drop: 0.85, edge: '#c8603a' },
     anal: { at: 0.7, len: 0.54, h: 0.075, spines: 0.2, nSp: 4, spineH: [0.03, 0.06], notch: 0.15, rake: 0.75, trail: 0.05, drop: 0.85, edge: '#c8603a' }, pelvic: { u: 0.72, len: 0.12, tint: '#c8603a' }, gape: 0.03,
-    marks: [{ k: 'bars', us: [0.88, 0.2], w: 0.035, c: '#2a2a30', a: 0.55 }, ...[-0.3, -0.21, -0.12, -0.03, 0.06, 0.15, 0.24].map(v => ({ k: 'band' as const, u0: 0.12, u1: 0.98, v0: v, v1: v + 0.032, c: '#8a5a3a', a: 0.6, wave: 0.002 }))],
+    marks: [{ k: 'bars', us: [0.88, 0.2], w: 0.035, c: '#2a2a30', a: 0.55 }, // wavy turquoise net over a blue-brown body (Commons: Blue Discus): thin wavy lines, neighbours out of phase, with fainter darker lines between
+      ...Array.from({ length: 15 }, (_, i) => ({ k: 'band' as const, u0: 0.12, u1: 0.98, v0: -0.34 + i * 0.045, v1: -0.34 + i * 0.045 + 0.013, c: i % 2 ? '#2f9ab8' : '#6adbe0', a: 0.75, wave: 0.014 })),
+      ...Array.from({ length: 14 }, (_, i) => ({ k: 'band' as const, u0: 0.12, u1: 0.98, v0: -0.318 + i * 0.045, v1: -0.318 + i * 0.045 + 0.01, c: '#7a4a38', a: 0.3, wave: 0.016 }))],
     eye: { r: 0.03, iris: ['#d04a2a', '#4a1208'] }, rim: 0.03 },
   angel: { shimmer: 0.5, shimmerRgb: '235,242,255', gillLine: 0.25, finFade: 0.4, thick: 0.2, angular: 0.8, depth: 0.78, pedU: 0.2, ped: 0.045, peak: 0.375, snout: 0.25, shade: ['#9a998e', '#d0cec2', '#e4e1d7'], tail: { type: 'notch', h: 0.24, tint: '#c3c4bc' }, fin: '#c3c4bc',
     // dorsal and anal: long bases, the spines stepping up the leading edge, the soft rays sweeping back to high trailing tips
@@ -826,7 +830,7 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { at: 0.78, len: 0.6, h: 0.1, spines: 0.65, nSp: 14, spineH: [0.06, 0.085], notch: 0.2, rake: 0.6, tip: 'point', trail: 0.05, drop: 0.75, edge: '#f6f4ee' },
     anal: { at: 0.48, len: 0.26, h: 0.1, spines: 0.3, nSp: 3, spineH: [0.04, 0.07], notch: 0.2, tip: 'point', trail: 0.04, tint: '#2a2820', a: 0.85 }, pelvic: { u: 0.68, len: 0.11, ext: 0.03, tint: '#1a1a18' },
     marks: [{ k: 'blob', u: 0.6, v: -0.07, ru: 0.25, rv: 0.08, c: '#fff6c0', a: 0.18 }],
-    finMarks: [{ k: 'band', u0: 0.18, u1: 0.8, v0: -0.4, v1: -0.192, c: '#1a1a18', a: 0.9, f: 0.008 }], eye: { r: 0.031, iris: ['#2a2420', '#0a0806'] } },
+    finMarks: [{ k: 'band', u0: 0.18, u1: 0.8, v0: -0.185, v1: -0.156, c: '#1a1a18', a: 0.9, f: 0.006 }], eye: { r: 0.031, iris: ['#2a2420', '#0a0806'] } },
   // Boeseman's rainbowfish (male): deep, keeled back, small pointed head, big eye; blue-grey front, orange rear,
   // dark bars between; a small first dorsal, a long second dorsal and a long anal reaching far forward
   boesemani: { gape: 0.02, gapeDrop: 0.004, thick: 0.3, angular: 0.3, depth: 0.38, pedU: 0.2, ped: 0.045, peak: 0.55, back: 0.56, snout: 0.3, mouth: -0.01, shade: ['#34446e', '#6e80a8', '#c8b878'], tail: { type: 'fork', h: 0.16, tint: '#e0902e' }, fin: '#d89a40',
