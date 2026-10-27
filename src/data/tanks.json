@@ -16060,6 +16060,117 @@
      }
     }
    ]
+  },
+  {
+   "id": "bowl14",
+   "name": "14 in glass bubble bowl",
+   "ratedGal": 5.5,
+   "shape": "bowl",
+   "outer": {
+    "L": 355.6,
+    "H": 279.4,
+    "D": 355.6
+   },
+   "bowlTop": 198.1,
+   "glassMm": 3,
+   "band": "nano",
+   "tags": [
+    "bowl",
+    "desktop",
+    "glass"
+   ],
+   "source": "vase retailer listing (search snippet; page not opened)",
+   "note": "Blown-glass bubble bowl; floor diameter not listed, fitted so the sphere reaches the listed height. Seller's 5.5 gal is an estimate.",
+   "variants": [
+    {
+     "brand": "Vase Market",
+     "line": "Glass Bubble Bowl H-11 in, body W-14 in",
+     "L_in": 14,
+     "D_in": 14,
+     "H_in": 11,
+     "glass_mm": null,
+     "price_usd": 47,
+     "price_kind": "street",
+     "retailer": "Vase Market",
+     "price_note": "from search snippet; opening 7.8 in, capacity ~5.5 gal as the seller states; not a fish-keeping product",
+     "url": "https://vasemarket.com/glass-bubble-bowl-gbb106",
+     "checked": "2026-10-27",
+     "confidence": "low"
+    }
+   ]
+  },
+  {
+   "id": "bowl16",
+   "name": "16 in glass bubble bowl",
+   "ratedGal": 8,
+   "shape": "bowl",
+   "outer": {
+    "L": 406.4,
+    "H": 304.8,
+    "D": 406.4
+   },
+   "bowlTop": 266.7,
+   "glassMm": 3,
+   "band": "nano",
+   "tags": [
+    "bowl",
+    "desktop",
+    "glass"
+   ],
+   "source": "vase retailer listing (search snippet; page not opened)",
+   "note": "Blown-glass bubble bowl; floor diameter not listed, fitted so the sphere reaches the listed height. Seller's 8 gal is an estimate.",
+   "variants": [
+    {
+     "brand": "Vase Market",
+     "line": "Glass Bubble Bowl H-12 in, body W-16 in",
+     "L_in": 16,
+     "D_in": 16,
+     "H_in": 12,
+     "glass_mm": null,
+     "price_usd": 67,
+     "price_kind": "street",
+     "retailer": "Vase Market",
+     "price_note": "from search snippet; a second listing shows $101.40 for a pack of 2 and $39 wholesale each; opening 10.5 in, capacity ~8 gal as the seller states",
+     "url": "https://vasemarket.com/16-inch-glass-fish-bubble-bowl",
+     "checked": "2026-10-27",
+     "confidence": "low"
+    }
+   ]
+  },
+  {
+   "id": "bowl155",
+   "name": "15.5 in glass bubble bowl (CYS Excel)",
+   "ratedGal": 7.4,
+   "shape": "bowl",
+   "outer": {
+    "L": 393.7,
+    "H": 342.9,
+    "D": 393.7
+   },
+   "glassMm": 3,
+   "band": "nano",
+   "tags": [
+    "bowl",
+    "desktop",
+    "glass"
+   ],
+   "source": "marketplace listing (search snippet; page not opened)",
+   "note": "Amazon ASIN B0B5VZ354G; listings give 7.4 to 9 gal and a buyer review says 9 is too high. Opening not listed (default fraction used).",
+   "variants": [
+    {
+     "brand": "CYS Excel",
+     "line": "Large Glass Bubble Bowl H-13.5 in, W-15.5 in",
+     "L_in": 15.5,
+     "D_in": 15.5,
+     "H_in": 13.5,
+     "glass_mm": null,
+     "price_usd": null,
+     "price_note": "no US price found; seen on desertcart (priced in rand)",
+     "url": "https://www.desertcart.co.za/products/515604150-large-glass-bubble-bowl-h-13-5-w-15-5.md",
+     "checked": "2026-10-27",
+     "confidence": "low"
+    }
+   ]
   }
  ]
 }
