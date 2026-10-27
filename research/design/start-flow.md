@@ -1,5 +1,59 @@
 # Start flow: Guided design and Sandbox (design spec, 2026-10-27, for Nathan's review; no app code yet)
 
+> **Revision 2026-10-27 (Nathan): Guardrails replace the Guided / Sandbox mode.** Nathan: a "guardrails" menu with a
+> checkbox per gate (budget money, budget time, effort, experience level) that runs *separately* from how the user
+> starts (a wanted stocking, a look, or sandbox). Section **(R)** below is the revised model; where it conflicts with
+> (a), (b), (g) or (h), (R) wins. The rest (paths' screens, Evaluate, the rhythm model, Discover's generator, Create a look) stands.
+
+## (R) Guardrails: one menu, independent of the start
+
+**Two independent choices.** *How you start* (Welcome: An animal / A look / Help me discover / Sandbox, plus Open) only decides
+the first screens and what gets pinned. *Which guardrails are on* decides what the tool enforces, from any start, at any time.
+There is no Guided / Sandbox mode any more: Sandbox is just the empty-tank start, and a Sandbox user can tick the budget
+guardrail; an animal-path user can untick everything.
+
+**The menu** (a builder header button "Guardrails 3", count = how many are on; same panel opens from each path's first screen):
+```
+ Guardrails                                         what it does when ticked
+ [x] Start-up budget    [$ 300     ]               gear / tank / animal choices over it are greyed, with the unlock cost
+ [x] Monthly budget     [$ 20 / mo ]               same, on $ a month (power, food, ferts, CO2, losses)
+ [ ] Care time          (5 min daily + weekends)   options that break the rhythm or the away-days are greyed
+     Away from home     [up to 3 days]
+ [x] Effort             (low | some | any)         CO2, high-light plants, salt, demanding species greyed above the level
+ [ ] Experience         (new | some | experienced) per domain (fish, planted, salt, terrarium): risk scaling + species / gear
+                                                   above the level greyed ("needs: some planted experience")
+ --- always on, not in this list ---
+ Animal welfare: eaten, temperature, outgrows the tank, too few in a group (hard truths; "I understand" to override, as today)
+```
+Ticked = a **gate**: the option is greyed in pickers, with why and what unlocks it (10-20 rule). Unticked = the number is
+still shown (a badge on the option, the bar in the demand panel), never enforced. That is today's "Sandbox keeps gates as
+badges only", now per guardrail.
+
+**Data: it already exists.** `UserProfile.limits` (setupUsd, upkeep, minPerWeek, risk) and `UserProfile.skill` (per
+domain) hold the values; the guardrails add one field `UserProfile.on: Partial<Record<'setup'|'upkeep'|'time'|'effort'|'skill', boolean>>`.
+A value with its box unticked is kept (untick and re-tick loses nothing). Profile, not scene: guardrails are about the
+person; the scene's `brief` keeps only what the start pinned (animals, style, space). `UserProfile.mode` is retired.
+
+**Effort vs experience.** Effort = how much the setup asks (minutes, CO2, salt, misting by hand): what the user is
+willing to do. Experience = what they know: it scales risk (`skillMul`, existing) and gates species and gear
+`care` levels above their level. Two boxes because a beginner may accept effort and an expert may refuse it.
+
+**What changes elsewhere in this spec:**
+- (a) Welcome: four start tiles in one row (An animal / A look / Help me discover / Start empty), no Guided / Sandbox split;
+  the goal-picker screen disappears (one click less). Discover *needs* guardrail values (its limits card *is* the Guardrails
+  panel with the boxes pre-ticked); the other starts show a one-line "Guardrails: off. Set them" link and ask nothing.
+- (b) "Switching modes" becomes ticking a box: the scene never changes; options re-grey live. The guided overlay's proposal
+  cards (L9) appear only for guardrails that are ticked and broken ("$40 over your start-up budget: 3 ways back").
+- (g) L1 becomes the four-tile Welcome (no mode split); L2 becomes **Guardrails menu** (profile field, panel, gating
+  hook `gateOf(option, P)` used by tank / tech / animal / plant pickers, badges when unticked); the rest unchanged.
+- (h) Q7 (mode toggle) is void; new questions R1-R3 below.
+
+**R questions (with recommendations):**
+- R1. Name. Rec: **"Guardrails"** (Nathan's word; plain, says "keeps me in" not "forbids"). Alternatives: "My limits", "Ground rules".
+- R2. Default for a first-time user? Rec: all **off**, values empty; Discover pre-ticks the ones it asked. No silent gates.
+- R3. Experience: one level or per domain? Rec: one control shown ("new / some / experienced"), with "set per kind of tank"
+  folding out to the existing four domains in `UserProfile.skill`.
+
 Source: Nathan's two-mode proposal, relayed by Coordinator 12, reconciled with the 2026-10-20 five-path design (HANDOFF-archive.md, "User flow: paths, budget, deals") and with what is built on main (build after 09ad88d).
 
 ## 0. Reconciling the two designs
