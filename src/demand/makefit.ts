@@ -14,7 +14,7 @@
 // automatic feeder; the next catalogue tank size. Numbers, thresholds and oracles are untouched; every figure is the engine's.
 import { compliance, effectiveLimits, type Compliance } from '../scene/constraints';
 import { catalogueSizes, tankLabel } from '../scene/tankfit';
-import { choiceOf, rowsFor, techOf, withChoice } from '../scene/tech';
+import { choiceOf, filterState, rowsFor, techOf, withChoice } from '../scene/tech';
 import { volume } from '../scene/physics';
 import type { TankSetup, Units } from '../scene/types';
 import { getSpecies } from '../data/species';
@@ -114,7 +114,9 @@ export function findSolutions(S: TankSetup, P0: UserProfile, o: FindOpts = {}): 
   // gear that saves work in the engine's own rows
   for (const [row, opt, title, detail] of [['wcmethod', 'hose', 'Water-change hose', 'Drains and fills from the tap: no buckets to carry.'], ['feeder', 'auto', 'Automatic feeder', 'Drops the daily feeding trips; you refill it every few weeks. Weekly minutes only; the daily attention it saves is not modelled.']] as const) {
     if (!S.water.on || !rowsFor(S).some(r => r.id === row) || choiceOf(S, row) === opt) continue;
-    push({ lever: row === 'wcmethod' ? 'hose' : 'feeder', title, detail, scene: { ...S, tech: withChoice(S, row, opt) }, removed: 0, demand });
+    // a gear change writes the whole inferred tech out, so the assumed filter of a no-filter tank (filterState 'unset') would become the owner's choice: say so
+    const note = filterState(S) === 'unset' && !S.tech ? ' It also records the filter the budget assumed (a default one) as your choice: you have not picked a filter yet.' : '';
+    push({ lever: row === 'wcmethod' ? 'hose' : 'feeder', title, detail: detail + note, scene: { ...S, tech: withChoice(S, row, opt) }, removed: 0, demand });
   }
 
   // the next catalogue tank size (a pinned kit or deal prices the OLD tank, so the new one is priced by the engine's own rule)

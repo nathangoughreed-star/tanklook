@@ -10,6 +10,7 @@ import { summaryOf } from '../src/ui/stockSummary';
 import { Store } from '../src/scene/store';
 import { defaultScene } from '../src/scene/defaults';
 import type { TankSetup } from '../src/scene/types';
+import { filterState, techOf } from '../src/scene/tech';
 
 const base = (): TankSetup => { const sc = parseScene(JSON.parse(SCENES[Object.keys(SCENES).find(k => { const t = parseScene(JSON.parse(SCENES[k])).scene; return t.tanks[t.active].water.on; })!])).scene; return sc.tanks[sc.active]; };
 const stock = (list: [string, number][], c?: Constraints): TankSetup => { const S = base(); let id = 1; return { ...S, ...(c ? { constraints: c } : {}), fish: list.flatMap(([sp, n]) => Array.from({ length: n }, () => ({ ...S.fish[0], id: id++, species: sp }))) }; };
@@ -121,5 +122,43 @@ describe('Find solutions (lane C3)', () => {
     expect(st.previousTank?.layout.space).toBeUndefined();   // the opened scene as it was, not the earlier tank
     st.undo();
     expect(st.previousTank).toBeUndefined();
+  });
+});
+
+describe('Find solutions on a tank with no filter chosen (lane B3, after B2 assumedFilter)', () => {
+  const unset = (): TankSetup => { const S = stock([['neon', 8], ['danio', 8]]); delete S.tech; delete S.stockFirst; return S; };
+  const capped = (S: TankSetup) => ({ ...S, constraints: { minutesPerWeek: { on: true, value: Math.floor(now(S).minPerWeek - 1) } } as Constraints });
+
+  it('is unset, and the like-for-like baseline is the same engine totals as before the lever search', () => {
+    const S = capped(unset());
+    expect(filterState(S)).toBe('unset');
+    const r = findSolutions(S, P), t = now(S);
+    expect(r.status).toBe('over');
+    for (const o of r.compliant) expect(o.totals.minPerWeek - o.delta.minPerWeek).toBeCloseTo(t.minPerWeek, 6);
+  });
+
+  it('offers sensible levers only; no filter or auto water changer credit', () => {
+    const r = findSolutions(capped(unset()), P);
+    expect(r.compliant.length).toBeGreaterThan(0);
+    for (const o of [...r.compliant, ...r.needsRelaxing]) {
+      expect(LEVERS).toContain(o.lever);
+      expect(`${o.title} ${o.detail}`).not.toMatch(/auto(matic)? water.?chang|bigger filter|larger filter|canister/i);
+      expect(o.scene.tech?.rows.ato ?? 'none').toBe('none');
+    }
+  });
+
+  it('a gear lever that records the assumed filter as chosen says so; levers that keep the tank unset do not', () => {
+    const r = findSolutions(capped(unset()), P), all = [...r.compliant, ...r.needsRelaxing];
+    for (const o of all) {
+      if (o.lever === 'hose' || o.lever === 'feeder') { expect(filterState(o.scene)).toBe('chosen'); expect(o.detail).toMatch(/not picked a filter|not picked|have not picked/); }
+      else expect(o.detail).not.toMatch(/assumed/);
+    }
+  });
+
+  it('a tank whose owner chose a filter gets no such note', () => {
+    const S = capped(stock([['neon', 8], ['danio', 8]]));
+    S.tech = { ...techOf(S), filters: undefined, rows: { ...techOf(S).rows, filter: 'canister' } };
+    const r = findSolutions(S, P);
+    for (const o of [...r.compliant, ...r.needsRelaxing]) expect(o.detail).not.toMatch(/assumed/);
   });
 });
