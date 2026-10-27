@@ -9,7 +9,7 @@ import type { Viewer } from '../render/viewer';
 import { defaultSpace, spaceFit, tankExtent, SPACE_MAX, SPACE_MIN, type SpaceFit } from '../scene/space';
 import { IDEAL_MAX, isOver, plural, stockingDetail, stockingMemo, type Stocking } from '../scene/stocking';
 import { MIN_SLACK_PCT } from '../scene/animalfit';
-import { minDataOf, notesIn, reasonIn, tankMinimum, type MinLine, type MinRow, type TankMinimum } from '../scene/tankMin';
+import { minDataOf, tankMinimum, type MinLine, type TankMinimum } from '../scene/tankMin';
 import { NO3_TO_N, PLANT_SHARE_MAX, type Nitrogen } from '../scene/nitrogen';
 import { filterState, setFilterless, type FilterState } from '../scene/tech';
 import dd from '../data/demand-defaults.json';
@@ -18,20 +18,13 @@ import type { Store } from '../scene/store';
 import type { SpaceLimit, TankSetup, Units } from '../scene/types';
 import { tankView } from '../render/tankView';
 import { GAUGE_TIP, gaugeStyle } from './gauge';
-import { stockSummary, type StockSummary } from './stockSummary';
-
-/** The five-category summary as the tile draws it (S243 step 1): one chip per category, each expanding into its reasons. */
-export function summaryHtml(sm: StockSummary, esc: (s: string) => string): string {
-  const rows = sm.cats.map(c => `<details class="ftCat"${c.level === 'problem' ? ' open' : ''}><summary><span>${esc(c.label)}</span><span class="ftChip ftc-${c.level}">${esc(c.word)}</span></summary>`
-    + `<div class="ftCatWhat">${esc(c.what)}</div>` + (c.items.length ? `<ul>${c.items.map(i => `<li class="ftc-${i.level}">${esc(i.text)}${i.also ? ` <em>(${esc(i.also)})</em>` : ''}</li>`).join('')}</ul>` : '<ul><li class="ftc-ok">Nothing found against it.</li></ul>') + '</details>').join('');
-  return `<div class="ftCats">${rows}${sm.noData ? `<div class="ftNoData" title="${esc(sm.noDataFor.join(', '))}">${sm.noData} check${sm.noData === 1 ? '' : 's'} had no data for this species</div>` : ''}</div>`;
-}
+import { stockSummary, summaryHtml, minWarnings, toUnits, fmtOf, type MinWarn } from './stockSummary';
+export { minWarnings, toUnits, type MinWarn };
 
 /** A bar at or over this reads "caution" (amber, past ideal); over 100 is over (red). */
 export const NEAR_FULL = IDEAL_MAX;
 export type Level = 'ok' | 'near' | 'over';
 export interface Bar { pct: number; /** fill width, 0..100 */ fill: number; level: Level; text: string }
-export interface MinWarn { level: 'over' | 'near'; text: string }
 export interface TopRow { name: string; n: number; /** share of this bar's load, 0..1 */ share: number; /** printed in place of the share (the minimum bar: what the species wants) */ note?: string }
 export interface TileState {
   /** anything to show: water on, and animals in it or a space set */
@@ -63,22 +56,6 @@ export function bar(pct: number): Bar {
 export function topBy(r: Stocking, by: 'space' | 'load' | 'floor', k = 3): TopRow[] {
   const tot = r.contributors.reduce((s, c) => s + c[by], 0);
   return [...r.contributors].filter(c => c[by] > 0).sort((a, b) => b[by] - a[by]).slice(0, k).map(c => ({ name: c.name, n: c.n, share: tot ? c[by] / tot : 0 }));
-}
-
-const fmtOf = (units: Units) => ({ len: (mm: number) => `${toUnits(mm, units)}${units === 'in' ? '"' : ' cm'}`, area: (cm2: number) => units === 'in' ? `${Math.round(cm2 / 6.4516)} sq in` : `${Math.round(cm2)} cm²`,
-  vol: (l: number) => units === 'in' ? `${Math.round(l / 3.785 * 10) / 10} gal` : `${Math.round(l)} L` });
-
-/**
- * The tank-minimum lines under the bar (Nathan 2026-10-21): a red line per species below its minimum (or that cannot be assessed),
- * naming the unmet measure, sourced or "estimated from a gallon figure"; a yellow line for advisories (deeper water than advised).
- * Below the recommended size is said by the yellow bar and its list, not by a line. Same 10 % slack as the animal gate and the
- * tank-fit engine (MIN_SLACK_PCT) on the red line.
- */
-export function minWarnings(m: TankMinimum, units: Units): MinWarn[] {
-  const f = fmtOf(units), name = (x: MinRow) => plural(x.n, x.name), out: MinWarn[] = [];
-  for (const x of [...m.rows].sort((a, b) => b.pct - a.pct)) if (x.pct > MIN_SLACK_PCT) out.push({ level: 'over', text: `${name(x)}: ${reasonIn(x, f)}` });
-  for (const x of m.rows) if (x.pct <= MIN_SLACK_PCT) for (const n of notesIn(x, f)) out.push({ level: 'near', text: `${name(x)}: ${n}` });
-  return out;
 }
 
 /** The tank-minimum bar: the fill is the tank against the most demanding red line; red below a minimum, yellow below a Recommended mark, green past every one. */
@@ -163,8 +140,6 @@ export function waterChangeText(n: Nitrogen): { value: string; note: string } {
 /** The fork card is due when an edit takes the tank from inside the space to past it (not every frame it stays past). */
 export const forkDue = (was: boolean | undefined, fits: boolean | undefined) => was === true && fits === false;
 
-/** mm in the scene's units, as typed in the fields: whole cm, or inches to a tenth. */
-export const toUnits = (mm: number, u: Units) => u === 'in' ? Math.round(mm / 25.4 * 10) / 10 : Math.round(mm / 10);
 export const fromUnits = (v: number, u: Units) => Math.round(u === 'in' ? v * 25.4 : v * 10);
 const fmt = (mm: number, u: Units) => `${toUnits(mm, u)}${u === 'in' ? '"' : ' cm'}`;
 const fmtBox = (w: number, d: number, u: Units) => `${toUnits(w, u)} × ${toUnits(d, u)}${u === 'in' ? ' in' : ' cm'}`;

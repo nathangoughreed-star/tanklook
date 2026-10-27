@@ -41,3 +41,18 @@ describe('stock summary', () => {
     expect(s.cats.every(c => c.level !== 'unknown' || c.items.every(i => i.level === 'unknown'))).toBe(true);
   });
 });
+
+describe('stock summary on the plan sheet', () => {
+  it('prints the same categories and worst status in the .txt and the page', async () => {
+    const { planOf } = await import('../src/scene/plan');
+    const { planHtml, planTextWithNeeds } = await import('../src/ui/planSheet');
+    const { summaryOf } = await import('../src/ui/stockSummary');
+    const S = stock('demasoni', 8, { L: 914, D: 457, H: 406 }), sm = summaryOf(S, 'in'), p = planOf(S, undefined, undefined, 'in');
+    const txt = planTextWithNeeds(p, [], sm), html = planHtml(p, [], sm);
+    expect(txt).toContain('Stocking summary: ' + sm.worstWord);
+    for (const c of sm.cats) { expect(txt).toContain(c.label + ': ' + c.word); expect(html).toContain(c.label); }
+    expect(txt.indexOf('Stocking summary')).toBeLessThan(txt.indexOf('Shopping list'));
+    expect(planTextWithNeeds(p, [])).not.toContain('Stocking summary');
+  });
+});
+

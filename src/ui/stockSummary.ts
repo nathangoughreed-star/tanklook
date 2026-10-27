@@ -10,13 +10,16 @@ import { getSpecies, type Species } from '../data/species';
 import { whysAnimal } from '../scene/animalfit';
 import { volume } from '../scene/physics';
 import { pairingIn } from '../scene/pairs';
-import { IDEAL_MAX, isOver, countsAgainstWater, type Stocking } from '../scene/stocking';
-import { minDataOf } from '../scene/tankMin';
+import { IDEAL_MAX, isOver, countsAgainstWater, stockingMemo, type Stocking } from '../scene/stocking';
+import { minDataOf, notesIn, reasonIn, tankMinimum, type MinRow, type TankMinimum } from '../scene/tankMin';
+import { MIN_SLACK_PCT } from '../scene/animalfit';
+import { plural } from '../scene/stocking';
 import { rangeLine, sharedRange } from '../scene/temprange';
 import { coverAdvice, crowdWarnings } from '../scene/territory';
-import type { TankSetup } from '../scene/types';
+import type { TankSetup, Units } from '../scene/types';
 import { notesOf } from './stockPlanLogic';
 
+export interface MinWarn { level: 'over' | 'near'; text: string }
 export type CatId = 'minimums' | 'social' | 'environment' | 'behaviour' | 'fullness';
 export type CatLevel = 'ok' | 'caution' | 'problem' | 'unknown';
 export interface CatItem { level: 'caution' | 'problem' | 'unknown'; text: string; /** a cross-link: the item is counted here, also relevant there */ also?: string }
@@ -114,4 +117,41 @@ export function stockSummary(S: TankSetup, r: Stocking, mins: { level: 'over' | 
   const cats = (Object.keys(by) as CatId[]).map((id): Category => { const level = levelOf(by[id]); return { id, label: LABELS[id][0], what: LABELS[id][1], level, word: LEVEL_WORD[level], items: by[id] }; });
   const worst = worstOf(cats.map(c => c.level));
   return { cats, worst, worstWord: LEVEL_WORD[worst], noData: [...noData.values()].reduce((a, s) => a + s.size, 0), noDataFor: [...noData.keys()] };
+}
+
+/** mm in the scene's units: whole cm, or inches to a tenth. */
+export const toUnits = (mm: number, u: Units) => u === 'in' ? Math.round(mm / 25.4 * 10) / 10 : Math.round(mm / 10);
+export const fmtOf = (units: Units) => ({ len: (mm: number) => `${toUnits(mm, units)}${units === 'in' ? '"' : ' cm'}`, area: (cm2: number) => units === 'in' ? `${Math.round(cm2 / 6.4516)} sq in` : `${Math.round(cm2)} cm²`,
+  vol: (l: number) => units === 'in' ? `${Math.round(l / 3.785 * 10) / 10} gal` : `${Math.round(l)} L` });
+
+/**
+ * The tank-minimum lines under the bar (Nathan 2026-10-21): a red line per species below its minimum (or that cannot be assessed),
+ * naming the unmet measure, sourced or "estimated from a gallon figure"; a yellow line for advisories (deeper water than advised).
+ * Below the recommended size is said by the yellow bar and its list, not by a line. Same 10 % slack as the animal gate and the
+ * tank-fit engine (MIN_SLACK_PCT) on the red line.
+ */
+export function minWarnings(m: TankMinimum, units: Units): MinWarn[] {
+  const f = fmtOf(units), name = (x: MinRow) => plural(x.n, x.name), out: MinWarn[] = [];
+  for (const x of [...m.rows].sort((a, b) => b.pct - a.pct)) if (x.pct > MIN_SLACK_PCT) out.push({ level: 'over', text: `${name(x)}: ${reasonIn(x, f)}` });
+  for (const x of m.rows) if (x.pct <= MIN_SLACK_PCT) for (const n of notesIn(x, f)) out.push({ level: 'near', text: `${name(x)}: ${n}` });
+  return out;
+}
+
+/** The five-category summary as the tile draws it (S243 step 1): one chip per category, each expanding into its reasons. */
+export function summaryHtml(sm: StockSummary, esc: (s: string) => string): string {
+  const rows = sm.cats.map(c => `<details class="ftCat"${c.level === 'problem' ? ' open' : ''}><summary><span>${esc(c.label)}</span><span class="ftChip ftc-${c.level}">${esc(c.word)}</span></summary>`
+    + `<div class="ftCatWhat">${esc(c.what)}</div>` + (c.items.length ? `<ul>${c.items.map(i => `<li class="ftc-${i.level}">${esc(i.text)}${i.also ? ` <em>(${esc(i.also)})</em>` : ''}</li>`).join('')}</ul>` : '<ul><li class="ftc-ok">Nothing found against it.</li></ul>') + '</details>').join('');
+  return `<div class="ftCats">${rows}${sm.noData ? `<div class="ftNoData" title="${esc(sm.noDataFor.join(', '))}">${sm.noData} check${sm.noData === 1 ? '' : 's'} had no data for this species</div>` : ''}</div>`;
+}
+
+
+/** The summary for a tank as it stands (the tile, the stocking screen and the plan sheet all read this one). */
+export const summaryOf = (S: TankSetup, units: Units = 'cm'): StockSummary => stockSummary(S, stockingMemo(S), minWarnings(tankMinimum(S), units));
+
+/** The same summary as plain lines (the plan sheet's .txt): headline, then one line per category with its reasons indented. */
+export function summaryText(sm: StockSummary): string[] {
+  const L = [`Stocking summary: ${sm.worstWord}`];
+  for (const c of sm.cats) { L.push(`  ${c.label}: ${c.word}`); for (const i of c.items) L.push(`      ${i.text}${i.also ? ` (${i.also})` : ''}`); }
+  if (sm.noData) L.push(`  ${sm.noData} check${sm.noData === 1 ? '' : 's'} had no data for this species`);
+  return L;
 }
