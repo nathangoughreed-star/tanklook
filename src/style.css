@@ -750,3 +750,4 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .ftc-ok.ftChip, .ftPill.ftc-ok { background: #2e9e6a } .ftc-caution.ftChip, .ftPill.ftc-caution { background: #d99a1e } .ftc-problem.ftChip, .ftPill.ftc-problem { background: #d8432f } .ftc-unknown.ftChip, .ftPill.ftc-unknown { background: #6b7686 }
 .ftCatWhat, .ftNoData { color: var(--muted, #8a93a3); font-size: 11px; margin: 2px 0 } .ftCat ul { margin: 3px 0 2px 16px; padding: 0; font-size: 12px }
 li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unknown { color: #aab3c2 } .ftCat li em { color: var(--muted, #8a93a3) }
+.ftCatAns { font-size: 12px; font-weight: 600; margin: 3px 0 }

@@ -56,3 +56,11 @@ describe('stock summary on the plan sheet', () => {
   });
 });
 
+describe('tank minimums answer', () => {
+  it('names the smallest tank for the minimum group and the species that sets it', async () => {
+    const { stockingGroupMinimum } = await import('../src/scene/groupMin');
+    const S = stock('neon', 6), c = sum(S).cats.find(x => x.id === 'minimums')!, g = stockingGroupMinimum(['neon']).tank;
+    if (g) { expect(c.answer).toContain(g.tank); expect(c.answer).toContain(g.by); } else expect(c.answer).toBeUndefined();
+  });
+});
+
