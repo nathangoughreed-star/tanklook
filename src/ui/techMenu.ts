@@ -448,6 +448,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
   const MOUNT_NAME: Record<LightProduct['mount'], string> = {
     bar: 'slim bar on extendable brackets resting on the rim', 'rim-legs': 'slab on two clip legs on the rim',
     gooseneck: 'disc on a gooseneck clamp', submersible: 'submersible stick on suction cups',
+    hanging: 'compact fixture on a rim arm or hanging kit',
   };
   let lightKey = '';
   function renderLight() {

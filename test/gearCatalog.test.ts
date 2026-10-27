@@ -33,17 +33,17 @@ describe('gear catalogue', () => {
 
 describe('light catalogue', () => {
   it('every light has a size, a rating and an https source', () => {
-    expect(LIGHT_PRODUCTS.length).toBe(18);
+    expect(LIGHT_PRODUCTS.length).toBe(33);
     for (const p of LIGHT_PRODUCTS) {
       expect(p.lengthMm, p.id).toBeGreaterThan(40); expect(p.widthMm, p.id).toBeGreaterThan(10); expect(p.heightMm, p.id).toBeGreaterThan(5);
       expect(p.watts, p.id).toBeGreaterThan(0); expect(p.url, p.id).toMatch(/^https:\/\//); expect(p.popularity?.url, p.id).toMatch(/^https:\/\//);
       expect(p.fitMaxMm, p.id).toBeGreaterThanOrEqual(p.fitMinMm);
-      expect(['bar', 'rim-legs', 'gooseneck', 'submersible']).toContain(p.mount);
+      expect(['bar', 'rim-legs', 'gooseneck', 'submersible', 'hanging']).toContain(p.mount);
       expect(p.colors.body, p.id).toMatch(/^#[0-9a-f]{6}$/i); expect(p.colors.leds.rows, p.id).toBeGreaterThan(0);
     }
-    // the four shapes are all there, the bar the most common
-    expect(LIGHT_PRODUCTS.filter(p => p.mount === 'bar').length).toBe(14);
-    expect(new Set(LIGHT_PRODUCTS.map(p => p.mount)).size).toBe(4);
+    // the five shapes are all there, the bar the most common
+    expect(LIGHT_PRODUCTS.filter(p => p.mount === 'bar').length).toBe(16);
+    expect(new Set(LIGHT_PRODUCTS.map(p => p.mount)).size).toBe(5);
   });
   it('the picker offers the lights that fit the tank length, most popular first', () => {
     const t20 = lightsFor(610); // a 24 in tank

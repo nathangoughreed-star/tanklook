@@ -72,6 +72,21 @@ export function addProductLight(sc: THREE.Scene, T: Tank, l: LightSettings, p: L
     } else rimLegs(T, { bl, bw, zc, y }, cap, edge, add);
     return;
   }
+  if (p.mount === 'hanging') {
+    // a compact reef box over the water: a slab (the listing's length x width x thickness) with a clear lens over the board, the
+    // LEDs as rings of dots under it, two thin hanging cables up (the rim-arm kit is not drawn: its mount is a clamp on the glass)
+    const E = emitters(T, l), bl = p.lengthMm, bw = p.widthMm, th = p.heightMm;
+    for (const e of E) {
+      add(new THREE.BoxGeometry(bl, th, bw), body, e[0], y + th / 2, e[2]);
+      for (const s of [1, -1]) {
+        add(new THREE.BoxGeometry(bl - 6, 1.2, 1.6), edge, e[0], y + th - 0.4, e[2] + s * (bw / 2 - 0.6));
+        add(new THREE.CylinderGeometry(1, 1, 160, 6), cap, e[0] + s * bl * 0.32, y + th + 80, e[2]);
+      }
+      add(new THREE.BoxGeometry(bl - 12, 0.6, bw - 12), board, e[0], y - 0.2, e[2]);
+      ledDots(sc, p, glow, bl - 24, bw - 24, (u, v) => mx.makeTranslation(e[0] + u, y - 0.7, e[2] + v).clone(), y);
+    }
+    return;
+  }
   if (p.mount === 'gooseneck') {
     // the disc head on a ball joint; the neck and the screw clamp on the nearest back or side glass (lighting's clipOns)
     const E = emitters(T, l), r = p.lengthMm / 2, th = Math.min(p.heightMm, 18);

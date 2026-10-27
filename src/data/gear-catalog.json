@@ -8942,6 +8942,850 @@
     "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
     "seen": "2026-10-20"
    }
+  },
+  {
+   "id": "nicrew-hyperreef-100-g2",
+   "brand": "NICREW",
+   "model": "HyperReef 100 Gen 2 (100 W)",
+   "mount": "hanging",
+   "fitMinMm": 250,
+   "fitMaxMm": 2440,
+   "lengthMm": 249,
+   "widthMm": 160,
+   "heightMm": 36,
+   "watts": 100,
+   "tech": "led-reef",
+   "spectrum": "violet + blue + white, 5 channels",
+   "controller": "USB-C ports, external controller sold separately",
+   "water": "salt",
+   "priceUsd": 199.99,
+   "url": "https://www.amazon.com/dp/B0DBHD2V1W",
+   "asOf": "2026-10-27",
+   "coverageMm": 610,
+   "beamDeg": 120,
+   "est": [
+    "fitMinMm",
+    "fitMaxMm",
+    "colorsEst"
+   ],
+   "colors": {
+    "body": "#1c1c1e",
+    "endcaps": "#1c1c1e",
+    "legs": "#26262a",
+    "lens": "clear",
+    "leds": {
+     "white": "#cfe0ff",
+     "kind": "dots",
+     "rows": 2,
+     "accents": [
+      "#2f6bff",
+      "#8a5bff"
+     ],
+     "every": 2
+    },
+    "ledLook": "two round blue/violet LED clusters",
+    "photo": "https://m.media-amazon.com/images/I/61b5CoCZF0L._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "endcaps",
+    "legs"
+   ],
+   "names": [
+    "hyperreef 100 gen 2 (100 w)"
+   ],
+   "popularity": {
+    "evidence": "Amazon product page 2026-10-27; 92 ratings; 100+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0DBHD2V1W",
+    "seen": "2026-10-27"
+   },
+   "note": "Body 9.8x6.3x1.4 in per retailer listings (Amazon lists a 9.8 in cube); coverage 24x24 in and 120 deg per retailer listing; no PAR published"
+  },
+  {
+   "id": "nicrew-hyperreef-150-g2",
+   "brand": "NICREW",
+   "model": "HyperReef 150 Gen 2 (150 W)",
+   "mount": "hanging",
+   "fitMinMm": 250,
+   "fitMaxMm": 2440,
+   "lengthMm": 300,
+   "widthMm": 190,
+   "heightMm": 40,
+   "watts": 150,
+   "tech": "led-reef",
+   "spectrum": "violet + blue + white, 5 channels",
+   "controller": "USB-C ports, external controller sold separately",
+   "water": "salt",
+   "priceUsd": 249.99,
+   "url": "https://www.amazon.com/dp/B0DBHCDPPZ",
+   "asOf": "2026-10-27",
+   "est": [
+    "fitMinMm",
+    "fitMaxMm",
+    "lengthMm",
+    "widthMm",
+    "heightMm"
+   ],
+   "colors": {
+    "body": "#1c1c1e",
+    "endcaps": "#1c1c1e",
+    "legs": "#26262a",
+    "lens": "clear",
+    "leds": {
+     "white": "#cfe0ff",
+     "kind": "dots",
+     "rows": 2,
+     "accents": [
+      "#2f6bff",
+      "#8a5bff"
+     ],
+     "every": 2
+    },
+    "ledLook": "two round blue/violet LED clusters",
+    "photo": "https://m.media-amazon.com/images/I/61SjUfoHPCL._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "endcaps",
+    "legs"
+   ],
+   "names": [
+    "hyperreef 150 gen 2 (150 w)"
+   ],
+   "popularity": {
+    "evidence": "Amazon product page 2026-10-27; 84 ratings; 50+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0DBHCDPPZ",
+    "seen": "2026-10-27"
+   },
+   "note": "Body size not read (package 16.1 x 10.8 x 6.8 in): drawn near the 100 W body, scaled; coverage not read; no PAR published"
+  },
+  {
+   "id": "nicrew-hyperreef-200-g2",
+   "brand": "NICREW",
+   "model": "HyperReef 200 Gen 2 (200 W)",
+   "mount": "hanging",
+   "fitMinMm": 250,
+   "fitMaxMm": 2440,
+   "lengthMm": 340,
+   "widthMm": 220,
+   "heightMm": 40,
+   "watts": 200,
+   "tech": "led-reef",
+   "spectrum": "violet + blue + white, 5 channels",
+   "controller": "USB-C ports, external controller sold separately",
+   "water": "salt",
+   "priceUsd": 319.99,
+   "url": "https://www.amazon.com/dp/B0DBHFBHQ2",
+   "asOf": "2026-10-27",
+   "est": [
+    "fitMinMm",
+    "fitMaxMm",
+    "lengthMm",
+    "widthMm",
+    "heightMm"
+   ],
+   "colors": {
+    "body": "#1c1c1e",
+    "endcaps": "#1c1c1e",
+    "legs": "#26262a",
+    "lens": "clear",
+    "leds": {
+     "white": "#cfe0ff",
+     "kind": "dots",
+     "rows": 2,
+     "accents": [
+      "#2f6bff",
+      "#8a5bff"
+     ],
+     "every": 2
+    },
+    "ledLook": "two round blue/violet LED clusters",
+    "photo": "https://m.media-amazon.com/images/I/61BPoGuSJJL._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "endcaps",
+    "legs"
+   ],
+   "names": [
+    "hyperreef 200 gen 2 (200 w)"
+   ],
+   "popularity": {
+    "evidence": "Amazon product page 2026-10-27; 122 ratings; 50+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0DBHFBHQ2",
+    "seen": "2026-10-27"
+   },
+   "note": "Body size not read (package 16.1 x 12.6 x 6.8 in): drawn near the 100 W body, scaled; coverage not read; no PAR published"
+  },
+  {
+   "id": "nicrew-navareef-65",
+   "brand": "NICREW",
+   "model": "NavaReef LED Reef Light 65 W",
+   "mount": "hanging",
+   "fitMinMm": 250,
+   "fitMaxMm": 2440,
+   "lengthMm": 230,
+   "widthMm": 150,
+   "heightMm": 38,
+   "watts": 65,
+   "tech": "led-reef",
+   "spectrum": "blue-focused, 90 deg lens",
+   "controller": "built-in timer",
+   "water": "salt",
+   "priceUsd": 95.99,
+   "url": "https://www.amazon.com/dp/B0DR82CYHW",
+   "asOf": "2026-10-27",
+   "beamDeg": 90,
+   "est": [
+    "fitMinMm",
+    "fitMaxMm",
+    "lengthMm",
+    "widthMm",
+    "heightMm"
+   ],
+   "colors": {
+    "body": "#1c1c1e",
+    "endcaps": "#1c1c1e",
+    "legs": "#26262a",
+    "lens": "clear",
+    "leds": {
+     "white": "#cfe0ff",
+     "kind": "dots",
+     "rows": 2,
+     "accents": [
+      "#2f6bff"
+     ],
+     "every": 2
+    },
+    "ledLook": "blue-focused oval of LEDs",
+    "photo": "https://m.media-amazon.com/images/I/61DNOLONN2L._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "endcaps",
+    "legs"
+   ],
+   "names": [
+    "navareef led reef light 65 w"
+   ],
+   "popularity": {
+    "evidence": "Amazon product page 2026-10-27; 115 ratings; 100+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0DR82CYHW",
+    "seen": "2026-10-27"
+   },
+   "note": "Body size and coverage not read; rim-friendly arm mount; no PAR published"
+  },
+  {
+   "id": "nicrew-navareef-135",
+   "brand": "NICREW",
+   "model": "NavaReef LED Reef Light 135 W",
+   "mount": "hanging",
+   "fitMinMm": 250,
+   "fitMaxMm": 2440,
+   "lengthMm": 300,
+   "widthMm": 170,
+   "heightMm": 40,
+   "watts": 135,
+   "tech": "led-reef",
+   "spectrum": "blue-focused, 90 deg lens",
+   "controller": "built-in timer",
+   "water": "salt",
+   "priceUsd": 165.99,
+   "url": "https://www.amazon.com/dp/B0DR2W9MPP",
+   "asOf": "2026-10-27",
+   "beamDeg": 90,
+   "est": [
+    "fitMinMm",
+    "fitMaxMm",
+    "lengthMm",
+    "widthMm",
+    "heightMm"
+   ],
+   "colors": {
+    "body": "#1c1c1e",
+    "endcaps": "#1c1c1e",
+    "legs": "#26262a",
+    "lens": "clear",
+    "leds": {
+     "white": "#cfe0ff",
+     "kind": "dots",
+     "rows": 2,
+     "accents": [
+      "#2f6bff"
+     ],
+     "every": 2
+    },
+    "ledLook": "blue-focused oval of LEDs",
+    "photo": "https://m.media-amazon.com/images/I/61FW82bW55L._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "endcaps",
+    "legs"
+   ],
+   "names": [
+    "navareef led reef light 135 w"
+   ],
+   "popularity": {
+    "evidence": "Amazon product page 2026-10-27; 62 ratings",
+    "url": "https://www.amazon.com/dp/B0DR2W9MPP",
+    "seen": "2026-10-27"
+   },
+   "note": "Body size and coverage not read; rim-friendly arm mount; no PAR published"
+  },
+  {
+   "id": "nicrew-classicled-marine-48-48-60",
+   "brand": "NICREW",
+   "model": "ClassicLED Marine 48W 48-60 in",
+   "mount": "bar",
+   "fitMinMm": 1219,
+   "fitMaxMm": 1524,
+   "lengthMm": 1200,
+   "widthMm": 95,
+   "heightMm": 20,
+   "watts": 48,
+   "tech": "led-reef",
+   "spectrum": "445/460 nm blue, 10,000 K white, RGB",
+   "controller": "day+night controller",
+   "water": "salt",
+   "priceUsd": 89.99,
+   "url": "https://www.amazon.com/dp/B08Q378RBY",
+   "asOf": "2026-10-27",
+   "est": [
+    "lengthMm",
+    "widthMm",
+    "heightMm"
+   ],
+   "colors": {
+    "body": "#1c1c1e",
+    "endcaps": "#1c1c1e",
+    "legs": "#26262a",
+    "lens": "clear",
+    "leds": {
+     "white": "#f4f7ff",
+     "kind": "dots",
+     "rows": 2,
+     "accents": [
+      "#2f6bff"
+     ],
+     "every": 2
+    },
+    "ledLook": "2 rows alternating white and blue",
+    "photo": "https://m.media-amazon.com/images/I/61LqPWXpScL._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "endcaps",
+    "legs"
+   ],
+   "names": [
+    "classicled marine 48w 48-60 in"
+   ],
+   "popularity": {
+    "evidence": "Amazon product page 2026-10-27; 1,816 ratings; 50+ bought in past month",
+    "url": "https://www.amazon.com/dp/B08Q378RBY",
+    "seen": "2026-10-27"
+   },
+   "note": "Fits 48-60 in per listing (package 52.7 in); body size copied from the 36 W row; no PAR published"
+  },
+  {
+   "id": "viparspectra-v165",
+   "brand": "VIPARSPECTRA",
+   "model": "165W LED Reef Light (V165)",
+   "mount": "hanging",
+   "fitMinMm": 250,
+   "fitMaxMm": 2440,
+   "lengthMm": 406,
+   "widthMm": 216,
+   "heightMm": 61,
+   "watts": 165,
+   "tech": "led-reef",
+   "spectrum": "full spectrum, 2 channels",
+   "controller": "remote + knob + timer",
+   "water": "salt",
+   "priceUsd": 129.99,
+   "url": "https://www.amazon.com/dp/B07SHR6HW1",
+   "asOf": "2026-10-27",
+   "coverageMm": 610,
+   "est": [],
+   "colors": {
+    "body": "#6b6e75",
+    "endcaps": "#6b6e75",
+    "legs": "#4a4c52",
+    "lens": "clear",
+    "leds": {
+     "white": "#f4f7ff",
+     "kind": "dots",
+     "rows": 5,
+     "accents": [
+      "#2f6bff",
+      "#8a5bff"
+     ],
+     "every": 2
+    },
+    "ledLook": "grid of white, blue and violet dots",
+    "photo": "https://m.media-amazon.com/images/I/610GOswaMqL._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "endcaps",
+    "legs"
+   ],
+   "names": [
+    "165w led reef light (v165)"
+   ],
+   "popularity": {
+    "evidence": "Amazon product page 2026-10-27; 1,174 ratings; 100+ bought in past month",
+    "url": "https://www.amazon.com/dp/B07SHR6HW1",
+    "seen": "2026-10-27"
+   },
+   "note": "16 x 8.5 x 2.4 in per listing; listing says 24x24 in coverage; slate-grey body with LCD (photo); no PAR published"
+  },
+  {
+   "id": "pawfly-48w-48-54-saltwater",
+   "brand": "Pawfly",
+   "model": "48W Saltwater Aquarium Light 48-54 in",
+   "mount": "bar",
+   "fitMinMm": 1219,
+   "fitMaxMm": 1346,
+   "lengthMm": 1180,
+   "widthMm": 60,
+   "heightMm": 15,
+   "watts": 48,
+   "tech": "led-reef",
+   "spectrum": "450/460 nm blue, UV, violet, green, red, 12,000 K white",
+   "controller": "M / N / D buttons, 8/10/12 h timer",
+   "water": "salt",
+   "priceUsd": 79.99,
+   "url": "https://www.amazon.com/dp/B0F3HZJVLX",
+   "asOf": "2026-10-27",
+   "est": [
+    "lengthMm",
+    "widthMm",
+    "heightMm"
+   ],
+   "colors": {
+    "body": "#1c1c1e",
+    "endcaps": "#1c1c1e",
+    "legs": "#26262a",
+    "lens": "clear",
+    "leds": {
+     "white": "#f4f7ff",
+     "kind": "dots",
+     "rows": 2,
+     "accents": [
+      "#2f6bff",
+      "#8a5bff"
+     ],
+     "every": 2
+    },
+    "ledLook": "2 rows white, blue and violet",
+    "photo": "https://m.media-amazon.com/images/I/71Y+etC4o1L._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "endcaps",
+    "legs"
+   ],
+   "names": [
+    "48w saltwater aquarium light 48-54 in"
+   ],
+   "popularity": {
+    "evidence": "Amazon product page 2026-10-27; 136 ratings; 50+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0F3HZJVLX",
+    "seen": "2026-10-27"
+   },
+   "note": "Brackets 48 to 53 in per listing. Listing says \"PAR: 128\" with no depth: kept out until a depth is stated; body size estimated"
+  },
+  {
+   "id": "smatfarm-reef-95w",
+   "brand": "SMATFARM",
+   "model": "95W Reef Light, sunrise / sunset / moonlight",
+   "mount": "hanging",
+   "fitMinMm": 250,
+   "fitMaxMm": 2440,
+   "lengthMm": 330,
+   "widthMm": 150,
+   "heightMm": 45,
+   "watts": 95,
+   "tech": "led-reef",
+   "spectrum": "white / blue / violet / UV / green / red",
+   "controller": "touch + remote, master-slave group control",
+   "water": "salt",
+   "priceUsd": 142.99,
+   "url": "https://www.amazon.com/dp/B08VWRJXS9",
+   "asOf": "2026-10-27",
+   "est": [
+    "fitMinMm",
+    "fitMaxMm",
+    "lengthMm",
+    "widthMm",
+    "heightMm"
+   ],
+   "colors": {
+    "body": "#1c1c1e",
+    "endcaps": "#1c1c1e",
+    "legs": "#26262a",
+    "lens": "clear",
+    "leds": {
+     "white": "#cfe0ff",
+     "kind": "dots",
+     "rows": 2,
+     "accents": [
+      "#2f6bff",
+      "#8a5bff"
+     ],
+     "every": 2
+    },
+    "ledLook": "two LED rings, blue and white",
+    "photo": "https://m.media-amazon.com/images/I/61v3tA2VhnL._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "endcaps",
+    "legs"
+   ],
+   "names": [
+    "95w reef light, sunrise / sunset / moonlight"
+   ],
+   "popularity": {
+    "evidence": "Amazon product page 2026-10-27; 703 ratings; 100+ bought in past month",
+    "url": "https://www.amazon.com/dp/B08VWRJXS9",
+    "seen": "2026-10-27"
+   },
+   "note": "G5; body size not read; bracket for 0.2-1.5 in glass or hanging; coverage not read; no PAR published"
+  },
+  {
+   "id": "smatfarm-reef-140w",
+   "brand": "SMATFARM",
+   "model": "140W Reef Light, sunrise / sunset / moonlight",
+   "mount": "hanging",
+   "fitMinMm": 250,
+   "fitMaxMm": 2440,
+   "lengthMm": 353,
+   "widthMm": 145,
+   "heightMm": 43,
+   "watts": 140,
+   "tech": "led-reef",
+   "spectrum": "white / blue / violet / UV / green / red",
+   "controller": "touch + remote, master-slave group control",
+   "water": "salt",
+   "priceUsd": 186.99,
+   "url": "https://www.amazon.com/dp/B0CKW2NZKS",
+   "asOf": "2026-10-27",
+   "est": [
+    "fitMinMm",
+    "fitMaxMm"
+   ],
+   "colors": {
+    "body": "#1c1c1e",
+    "endcaps": "#1c1c1e",
+    "legs": "#26262a",
+    "lens": "clear",
+    "leds": {
+     "white": "#cfe0ff",
+     "kind": "dots",
+     "rows": 2,
+     "accents": [
+      "#2f6bff",
+      "#8a5bff"
+     ],
+     "every": 2
+    },
+    "ledLook": "two LED rings, blue and white",
+    "photo": "https://m.media-amazon.com/images/I/61W3DOOp8uL._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "endcaps",
+    "legs"
+   ],
+   "names": [
+    "140w reef light, sunrise / sunset / moonlight"
+   ],
+   "popularity": {
+    "evidence": "Amazon product page 2026-10-27; 191 ratings; 100+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0CKW2NZKS",
+    "seen": "2026-10-27"
+   },
+   "note": "G6; 13.9 x 5.7 x 1.7 in per listing; bracket for 0.2-1.5 in glass or hanging; coverage not read; no PAR published"
+  },
+  {
+   "id": "pawfly-5w-8in-submersible",
+   "brand": "Pawfly",
+   "model": "5W 8 in Submersible Light (Bluetooth)",
+   "mount": "submersible",
+   "fitMinMm": 200,
+   "fitMaxMm": 380,
+   "lengthMm": 203,
+   "widthMm": 25,
+   "heightMm": 20,
+   "watts": 5,
+   "tech": "led-planted",
+   "spectrum": "6500 K white, 660 nm red, 525 nm green, 455 nm blue",
+   "controller": "Bluetooth app + 3 timer modes",
+   "water": "fresh",
+   "priceUsd": 16.99,
+   "url": "https://www.amazon.com/dp/B0FSZ4R3CH",
+   "asOf": "2026-10-27",
+   "est": [
+    "widthMm",
+    "heightMm",
+    "fitMinMm",
+    "fitMaxMm"
+   ],
+   "colors": {
+    "body": "#1c1c1e",
+    "endcaps": "#1c1c1e",
+    "legs": "#26262a",
+    "lens": "clear",
+    "leds": {
+     "white": "#f4f7ff",
+     "kind": "dots",
+     "rows": 2,
+     "accents": [
+      "#ff3a2e",
+      "#2fd35a",
+      "#2f6bff"
+     ],
+     "every": 4
+    },
+    "ledLook": "2 rows white + RGB",
+    "photo": "https://m.media-amazon.com/images/I/610lzQyjgAL._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "endcaps",
+    "legs"
+   ],
+   "names": [
+    "5w 8 in submersible light (bluetooth)"
+   ],
+   "popularity": {
+    "evidence": "Amazon product page 2026-10-27; 266 ratings; 100+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0FSZ4R3CH",
+    "seen": "2026-10-27"
+   },
+   "note": "Listing: 5 W, 8 in, for 8-15 in tanks; width and thickness estimated"
+  },
+  {
+   "id": "pawfly-6w-clip-nano",
+   "brand": "Pawfly",
+   "model": "6W Clip-On Light, 1-5 gal",
+   "mount": "gooseneck",
+   "fitMinMm": 200,
+   "fitMaxMm": 410,
+   "lengthMm": 130,
+   "widthMm": 130,
+   "heightMm": 16,
+   "watts": 6,
+   "tech": "led-planted",
+   "spectrum": "6500 K white, 450 nm blue, 520 nm green, 660 nm red",
+   "controller": "USB, M/N/D buttons, 8/10/12 h timer",
+   "water": "fresh",
+   "priceUsd": 12.99,
+   "url": "https://www.amazon.com/dp/B0DGSY8H53",
+   "asOf": "2026-10-27",
+   "est": [
+    "lengthMm",
+    "widthMm",
+    "heightMm",
+    "fitMinMm",
+    "fitMaxMm"
+   ],
+   "colors": {
+    "body": "#1c1c1e",
+    "endcaps": "#1c1c1e",
+    "legs": "#26262a",
+    "lens": "clear",
+    "leds": {
+     "white": "#f4f7ff",
+     "kind": "disc",
+     "rows": 1,
+     "accents": [
+      "#ff3a2e",
+      "#2fd35a",
+      "#2f6bff"
+     ],
+     "every": 4
+    },
+    "ledLook": "round disc of white/RGB dots",
+    "photo": "https://m.media-amazon.com/images/I/718pfCSV4kL._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "endcaps",
+    "legs"
+   ],
+   "names": [
+    "6w clip-on light, 1-5 gal"
+   ],
+   "popularity": {
+    "evidence": "Amazon product page 2026-10-27; 779 ratings; 600+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0DGSY8H53",
+    "seen": "2026-10-27"
+   },
+   "note": "Listing 7.48 x 5.12 x 0.63 in; its \"PAR: 2..\" is cut off and has no depth: kept out"
+  },
+  {
+   "id": "mq-8in-submersible",
+   "brand": "MQ",
+   "model": "8 in Submersible LED Light, 1.2W",
+   "mount": "submersible",
+   "fitMinMm": 250,
+   "fitMaxMm": 380,
+   "lengthMm": 203,
+   "widthMm": 25,
+   "heightMm": 20,
+   "watts": 1.2,
+   "tech": "led-white",
+   "spectrum": "RGB colour-changing, 16 colours",
+   "controller": "24-key remote",
+   "water": "fresh",
+   "priceUsd": 14.99,
+   "url": "https://www.amazon.com/dp/B07QNNDDLY",
+   "asOf": "2026-10-27",
+   "est": [
+    "widthMm",
+    "heightMm",
+    "fitMinMm",
+    "fitMaxMm"
+   ],
+   "colors": {
+    "body": "#1c1c1e",
+    "endcaps": "#1c1c1e",
+    "legs": "#26262a",
+    "lens": "clear",
+    "leds": {
+     "white": "#f4f7ff",
+     "kind": "dots",
+     "rows": 1,
+     "accents": [
+      "#ff3a2e",
+      "#2fd35a",
+      "#2f6bff"
+     ],
+     "every": 2
+    },
+    "ledLook": "1 row of 9 RGB LEDs",
+    "photo": "https://m.media-amazon.com/images/I/71o6Zhzw+qL._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "endcaps",
+    "legs"
+   ],
+   "names": [
+    "8 in submersible led light, 1.2w"
+   ],
+   "popularity": {
+    "evidence": "Amazon product page 2026-10-27; 3,426 ratings; 400+ bought in past month",
+    "url": "https://www.amazon.com/dp/B07QNNDDLY",
+    "seen": "2026-10-27"
+   },
+   "note": "9 LEDs, 12 V, for 10-15 in tanks; width and thickness estimated"
+  },
+  {
+   "id": "novique-8w-clip-nano",
+   "brand": "Novique",
+   "model": "Clip-On Light 8W, 1-5 gal",
+   "mount": "gooseneck",
+   "fitMinMm": 200,
+   "fitMaxMm": 410,
+   "lengthMm": 100,
+   "widthMm": 100,
+   "heightMm": 16,
+   "watts": 8,
+   "tech": "led-planted",
+   "spectrum": "full spectrum",
+   "controller": "USB, one button",
+   "water": "fresh",
+   "priceUsd": 5.87,
+   "url": "https://www.amazon.com/dp/B0FHQBRG51",
+   "asOf": "2026-10-27",
+   "est": [
+    "lengthMm",
+    "widthMm",
+    "heightMm",
+    "fitMinMm",
+    "fitMaxMm"
+   ],
+   "colors": {
+    "body": "#1c1c1e",
+    "endcaps": "#1c1c1e",
+    "legs": "#26262a",
+    "lens": "clear",
+    "leds": {
+     "white": "#f4f7ff",
+     "kind": "disc",
+     "rows": 1,
+     "accents": [
+      "#ff3a2e",
+      "#2fd35a",
+      "#2f6bff"
+     ],
+     "every": 4
+    },
+    "ledLook": "round disc of white/RGB dots",
+    "photo": "https://m.media-amazon.com/images/I/518nCBWP7pL._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "endcaps",
+    "legs"
+   ],
+   "names": [
+    "clip-on light 8w, 1-5 gal"
+   ],
+   "popularity": {
+    "evidence": "Amazon product page 2026-10-27; 231 ratings; 500+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0FHQBRG51",
+    "seen": "2026-10-27"
+   },
+   "note": "Listing: 8 W for 1-5 gal; head size estimated"
+  },
+  {
+   "id": "hygger-8w-7in-submersible",
+   "brand": "hygger",
+   "model": "8W 7 in Submersible LED Light (5 rows)",
+   "mount": "submersible",
+   "fitMinMm": 250,
+   "fitMaxMm": 380,
+   "lengthMm": 178,
+   "widthMm": 35,
+   "heightMm": 25,
+   "watts": 8,
+   "tech": "led-planted",
+   "spectrum": "full spectrum, 9 colours",
+   "controller": "24/7 timer",
+   "water": "fresh",
+   "priceUsd": 17.99,
+   "url": "https://www.amazon.com/dp/B0CYT486XP",
+   "asOf": "2026-10-27",
+   "est": [
+    "widthMm",
+    "heightMm",
+    "fitMinMm",
+    "fitMaxMm"
+   ],
+   "colors": {
+    "body": "#1c1c1e",
+    "endcaps": "#1c1c1e",
+    "legs": "#26262a",
+    "lens": "clear",
+    "leds": {
+     "white": "#f4f7ff",
+     "kind": "dots",
+     "rows": 5,
+     "accents": [
+      "#ff3a2e",
+      "#2fd35a",
+      "#2f6bff"
+     ],
+     "every": 4
+    },
+    "ledLook": "5 rows white + RGB",
+    "photo": "https://m.media-amazon.com/images/I/618e9y0Ne3L._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "endcaps",
+    "legs"
+   ],
+   "names": [
+    "8w 7 in submersible led light (5 rows)"
+   ],
+   "popularity": {
+    "evidence": "Amazon product page 2026-10-27; 586 ratings; 200+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0CYT486XP",
+    "seen": "2026-10-27"
+   },
+   "note": "Listing: 8 W, 7 in; width and thickness estimated"
   }
  ],
  "pumps": [

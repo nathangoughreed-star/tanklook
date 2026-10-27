@@ -6,6 +6,7 @@ import { bandsAt, lightEnvCached, lightOutCached, parOf, wattsOf, type LightScen
 import { FRESH_TIERS, NEEDS, isCoralNeed, isLand, parRange, type LightVerdict } from './lightneeds';
 import { outcomeOf, type Outcome } from './plantfit';
 import { groundHeight } from './terrain';
+import { lightProduct } from '../data/gearCatalog';
 import type { GrowFeed, Item } from './types';
 
 /** `verdict` is 'dim' / 'bright' only when the item will really struggle with the light (hardy plants outside their range are 'fine'
@@ -39,6 +40,15 @@ export function struggleOf(S: LightScene & { grow?: { feed: GrowFeed } }, it: It
   return env ? lightOfItem(S, env, it)?.outcome.severity ?? 0 : 0;
 }
 
+/** A catalogued bar or slab that no longer fits the tank's length (a light picked, then the tank resized): named in the tank's line.
+ *  Hanging and clip-on fixtures have no length to outgrow: for them the PAR at each plant / coral says whether the light carries. */
+export function lightFitNote(S: LightScene): string | null {
+  const p = lightProduct(S.light.product), L = S.tank.L;
+  if (!p || (p.mount !== 'bar' && p.mount !== 'rim-legs') || (L >= p.fitMinMm && L <= p.fitMaxMm)) return null;
+  const inch = (mm: number) => Math.round(mm / 25.4);
+  return `${p.brand} ${p.model} is made for ${inch(p.fitMinMm)}-${inch(p.fitMaxMm)} in tanks: this one is ${inch(L)} in long, so the light is too ${L < p.fitMinMm ? 'long' : 'short'} for it`;
+}
+
 const STEM = new Set(['stem', 'stemred', 'rotala', 'ludwigia', 'hornwort', 'anacharis']);
 const DEMAND = { none: 0, recommended: 1, required: 2 } as const;
 
@@ -48,8 +58,9 @@ export function tankSummary(S: LightScene & { items: Item[] }): string | null {
   if (!lo || !lights) return null;
   const plants = S.items.filter(i => i.kind === 'plant' && !isLand(NEEDS[i.variant]) && NEEDS[i.variant]);
   const corals = S.items.filter(i => i.kind === 'coral' && NEEDS[i.variant]);
-  if (!plants.length && !corals.length) return null;
-  const bits: string[] = [];
+  const fit = lightFitNote(S);
+  if (!plants.length && !corals.length) return fit ? fit + '.' : null;
+  const bits: string[] = fit ? [fit] : [];
   if (plants.length) {
     const tier = FRESH_TIERS.find(t => lo.mean < t.hi) ?? FRESH_TIERS[FRESH_TIERS.length - 1];
     const kinds = [plants.some(p => STEM.has(p.variant)) && 'stems', plants.some(p => isCarpet(p.variant)) && 'carpets'].filter(Boolean) as string[];
