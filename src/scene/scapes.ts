@@ -20,7 +20,8 @@ import { regenerate } from './starter';
 import { styleGround } from './scapeground';
 import { SWAMP_LEVEL } from './terrain';
 import { needsOf, type AnimalCount } from './tankfit';
-import type { Item, LayoutId, TankSetup } from './types';
+import type { FitLight } from './plantfit';
+import type { Item, LayerDens, LayoutId, TankSetup } from './types';
 
 export type PlantMode = 'live' | 'artificial' | 'mixed';
 export const PLANT_MODES: { id: PlantMode; label: string; blurb: string }[] = [
@@ -162,9 +163,10 @@ export interface ScapeOption {
 }
 
 /** The style placed in the build's tank: its ground, hardscape and plants (the animals stay where the build put them, re-scattered round the new pieces). */
-export function scapeSetup(build: Build, style: Exclude<LayoutId, 'none'>, mode: PlantMode, base: TankSetup = build.setup): TankSetup {
+export function scapeSetup(build: Build, style: Exclude<LayoutId, 'none'>, mode: PlantMode, base: TankSetup = build.setup, opts: { dens?: Partial<LayerDens>; fit?: FitLight } = {}): TankSetup {
   const S = structuredClone(base);
-  S.layout.id = style; S.layout.dens = { ...DEFAULT_DENS, animal: 0 };
+  S.layout.id = style; S.layout.dens = { ...DEFAULT_DENS, ...opts.dens, animal: 0 };
+  if (opts.fit) S.layout.fit = opts.fit; // only plants that suit this light (plantfit.fitItems), so a finished tank never has plants that would struggle
   if (isSwampy(style) && S.water.level > SWAMP_LEVEL) S.water.level = SWAMP_LEVEL;
   if (isLandStyle(style)) S.water.on = false;
   if (style === 'blackwater') Object.assign(S.water, { color: BLACKWATER[0], opacity: BLACKWATER[1] });

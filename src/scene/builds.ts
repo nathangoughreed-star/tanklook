@@ -69,6 +69,8 @@ export interface Build {
   bundle?: Deal;
   /** dollars the deals save against the list prices, whole */
   savingUsd: number;
+  /** set when the build is a finished tank (scene/finish.ts, lane C9): its tier and the substrate / hardscape / plants lines (also in `gear`) */
+  finish?: import('./finish').Finish;
   /** the other builds that came out as this same configuration and were merged into it (distinctBuilds) */
   also?: BuildId[];
 }

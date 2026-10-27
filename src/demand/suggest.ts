@@ -17,6 +17,7 @@ import { filterProduct, FILTER_PRODUCTS, heaterProduct, HEATER_PRODUCTS, lightPr
 import { stockingOf } from '../scene/stocking';
 import { heatLoss, techOf, withUnits } from '../scene/tech';
 import { volume } from '../scene/physics';
+import { finishTiers } from '../scene/finish';
 import { compliance, effectiveLimits, type Compliance, type Constraints } from '../scene/constraints';
 import { spaceFit } from '../scene/space';
 import { tankOptions, type AnimalCount } from '../scene/tankfit';
@@ -190,10 +191,17 @@ export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', no
     if (a.animals.some(x => !getSpecies(x.species))) continue;
     let best: Proposal | undefined, near: Miss | undefined;
     for (const m of tanksFor(a, space, SIZES_PER_ARCHETYPE)) {
-      for (const b of distinctBuilds(buildsFor(a.animals, m, now))) {
-        if (!meetsNeeds(b)) continue;
-        const needStand = w.needStand !== false, own = ownedAssess(b, w.owned ?? {}, needStand, P0), saved = own.saved;
-        const scene: TankSetup = { ...b.setup, ...(needStand ? {} : { stand: { ...b.setup.stand, show: false } }), ...(own.tech ? { tech: own.tech } : {}), constraints: C, layout: { ...b.setup.layout, ...(w.space ? { space: w.space } : {}) } };
+      for (const b0 of distinctBuilds(buildsFor(a.animals, m, now))) {
+        if (!meetsNeeds(b0)) continue;
+        // a proposal is a FINISHED tank (lane C9, scene/finish.ts): the best finish tier (lush, full, starter) that still passes every check.
+        // A build that already breaks a husbandry rule or a money / time cap before it is finished cannot be saved by plants (they only add), so it is not finished further.
+        const needStand = w.needStand !== false;
+        const scenOf = (b: Build, own: ReturnType<typeof ownedAssess>): TankSetup => ({ ...b.setup, ...(needStand ? {} : { stand: { ...b.setup.stand, show: false } }), ...(own.tech ? { tech: own.tech } : {}), constraints: C, layout: { ...b.setup.layout, ...(w.space ? { space: w.space } : {}) } });
+        const own0 = ownedAssess(b0, w.owned ?? {}, needStand, P0), scene0 = scenOf(b0, own0);
+        if (summaryOf(scene0, units).cats.some(c => c.level === 'problem' || c.level === 'caution')) continue;
+        const over0 = compliance(scene0, { setupUsd: b0.setupUsd - own0.saved, upkeepUsdMo: b0.upkeepUsdMo, minPerWeek: b0.minPerWeek }, effectiveLimits(scene0, P0.limits), units).overall === 'over';
+        for (const b of finishTiers(b0, now, over0)) {
+        const own = ownedAssess(b, w.owned ?? {}, needStand, P0), saved = own.saved, scene = scenOf(b, own);
         const sm = summaryOf(scene, units);
         // husbandry is never traded for money or time: the strict rule (Nathan 2026-10-27) = nothing the stocking screen words as a Problem OR a
         // Caution in any of its five categories (past-ideal fullness, a short sex ratio, a missing cave ...). Only "not enough information" passes, and it is shown.
@@ -203,9 +211,10 @@ export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', no
         if (cp.overall !== 'off') anyOn = true;
         if (cp.overall === 'within' || cp.overall === 'off') {
           const matched = tags.filter(x => a.tags.includes(x));
-          const p: Proposal = { archetype: a, build: b, scene, totals: t, saved, ownedNotes: own.notes, status: cp.results, score: matched.length * 10 + headroom(t, L) * 5, matched,
+          const p: Proposal = { archetype: a, build: b, scene, totals: t, saved, ownedNotes: own.notes, status: cp.results, score: matched.length * 10 + headroom(t, L) * 5 + (b.finish?.level ?? 0) * 2, matched,
             unknown: sm.cats.flatMap(c => c.items.filter(i => i.level === 'unknown').map(i => i.text)).slice(0, 1) };
           if (!best || p.score > best.score || p.score === best.score && t.startupUsd < best.totals.startupUsd) best = p;
+          break; // the best finish that passes: a lesser tier of the same build adds nothing
         } else if (cp.overall === 'over' && cp.unknown === 0 && !cp.results.some(r => r.id === 'space' && r.state !== 'pass')) {
           const needs: Partial<Money> = {};
           for (const r of cp.results) if (r.state === 'over') {
@@ -215,6 +224,7 @@ export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', no
           }
           const text = [needs.startupUsd ? `+${usd(needs.startupUsd)} set-up` : '', needs.monthlyUsd ? `+${usd(needs.monthlyUsd)} a month` : '', needs.minPerWeek ? `+${needs.minPerWeek} min a week` : ''].filter(Boolean).join(', ');
           if (text && (!near || relaxSize(needs) < relaxSize(near.needs))) near = { archetype: a, build: b, totals: t, needs, text };
+        }
         }
       }
     }

@@ -9,6 +9,7 @@ import { pinDeal } from '../demand/pinned';
 import { rhythmOf } from '../demand/rhythm';
 import { suggestSetups, DRY_GROUPS, KINDS, OWNED, PICK_CARE, PICK_UNKNOWN, asksDryGroups, type OwnedMap, type DryGroup, type Kind, TAGS, FAMILY_LABEL, type Proposal, type Suggestions, type Tag } from '../demand/suggest';
 import { CYCLE_NOTE } from '../scene/plan';
+import { TIER_LABEL } from '../scene/finish';
 import { compliance, lastUsed, rememberLastUsed, type Constraints } from '../scene/constraints';
 import type { Store } from '../scene/store';
 import { tankLabel } from '../scene/tankfit';
@@ -75,13 +76,14 @@ export function attachSuggest(store: Store, viewer: Viewer, status: (m: string, 
 <div class="bpPic">${pics[i] ? `<img src="${pics[i]}" alt="${esc(p.archetype.title)}: ${esc(tankLabel(b.tank, units()))} with the animals">` : ''}</div>
 <div class="bpHead"><b>${esc(p.archetype.title)}</b><span class="spNote">${esc(FAMILY_LABEL[p.archetype.family])}</span></div>
 <div class="spNote">${esc(p.archetype.why)} ${esc(tankLabel(b.tank, units()))} with ${animals}. ${esc(b.label)} build.</div>
+${b.finish ? `<ul class="bpGear sgFinish">${b.finish.lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}
 <div class="bpNums"><span><b>${usd(p.totals.startupUsd)}</b>set-up${p.saved ? `<i>${usd(p.saved)} less: what you have</i>` : ''}</span><span><b>${usd(p.totals.monthlyUsd)}</b>a month</span><span><b>${p.totals.minPerWeek}</b>min a week<i>estimate</i></span></div>
 <div class="spNote">Rhythm: ${esc(rh.text)} (estimate)${rh.awayText ? `. Can be left: ${esc(rh.awayText)}.` : ''}</div>
 ${p.ownedNotes.map(n => `<div class="${n.kind === 'credit' ? 'spNote' : 'spWarn'}">${esc(n.text)}</div>`).join('')}
 ${p.matched.length ? `<div class="spNote">Matches: ${p.matched.map(m => esc(TAGS.find(t => t.id === m)!.label.toLowerCase())).join(', ')}</div>` : ''}
 ${checks ? `<ul class="bpGear sgChecks">${checks}</ul>` : ''}
 ${p.unknown.length ? `<div class="spNote">Not enough information: ${esc(p.unknown[0])}</div>` : ''}
-<div class="spNote">${b.setup.water.on ? `${esc(CYCLE_NOTE)} ` : ''}Plants and the look are yours to add in the editor.</div>
+<div class="spNote">${b.setup.water.on ? `${esc(CYCLE_NOTE)} ` : ''}${b.finish ? `${esc(TIER_LABEL[b.finish.tier])}: the look, substrate, hardscape and plants are in the price and the time.` : ''}</div>
 <button type="button" class="primary" data-act="pick" data-i="${i}">Use this setup</button></li>`;
   };
 
