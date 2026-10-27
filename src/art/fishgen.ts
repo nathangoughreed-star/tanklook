@@ -528,16 +528,19 @@ export const PLANS: Record<string, Plan> = {
     finMarks: [{ k: 'blob', u: 0.17, v: 0.012, ru: 0.02, rv: 0.02, c: '#c8302a', a: 0.55 }],
     eye: { r: 0.026, iris: ['#d9c27a', '#4a3018'] }, scale: 0.014 },
   // rhomboid: deep at the shoulder, straight back and belly lines to a slender peduncle; the black patch a triangular rear-body wedge
-  harlequin: { sharp: true, thick: 0.38, depth: 0.33, pedU: 0.2, ped: 0.03, peak: 0.58, angular: 0.7, snout: 0.3, shade: ['#8a6f58', '#d29a7c', '#e8c3ad'], tail: { type: 'fork', h: 0.16, tint: '#d79c82' }, fin: '#d6a48c',
-    dorsal: { u0: 0.47, u1: 0.6, h: 0.09 }, anal: { u0: 0.33, u1: 0.47, h: 0.06 }, pelvic: { u: 0.6, len: 0.06 },
-    marks: [{ k: 'poly', pts: [[0.62, -0.115, 'c'], [0.6, -0.02], [0.61, 0.075, 'c'], [0.19, 0.004, 'c']], c: '#1f1d22', a: 0.9 }], eye: { r: 0.03, iris: ['#c8b8a0', '#55483a'] } },
-  chili: { noseCap: 0.03, gape: 0.02, gapeDrop: 0.005, thick: 0.42, depth: 0.21, pedU: 0.2, ped: 0.03, peak: 0.58, snout: 0.6, shade: ['#a5402e', '#d4563c', '#e07a5c'], tail: { type: 'fork', h: 0.13, tint: '#c95a44' }, fin: '#cf7056',
+  harlequin: { shimmer: 0.7, shimmerRgb: '255,215,175', gillLine: 0.28, finFade: 0.3, sharp: true, thick: 0.38, depth: 0.33, pedU: 0.2, ped: 0.03, peak: 0.58, angular: 0.7, snout: 0.3, shade: ['#9a5e48', '#e0937a', '#f0c9a8'], tail: { type: 'fork', h: 0.16, tint: '#e06a4a', a: 0.75 }, fin: '#e0866a',
+    dorsal: { u0: 0.47, u1: 0.6, h: 0.09, tint: '#e0704f' }, anal: { u0: 0.33, u1: 0.47, h: 0.06, tint: '#e0704f' }, pelvic: { u: 0.6, len: 0.06 },
+    marks: [{ k: 'blob', u: 0.3, v: -0.01, ru: 0.2, rv: 0.08, c: '#b08ac0', a: 0.22 },            // purple sheen aft of the wedge
+      { k: 'poly', pts: [[0.635, -0.125, 'c'], [0.615, -0.02], [0.625, 0.085, 'c'], [0.175, 0.006, 'c']], c: '#e8a85a', a: 0.75 }, // golden rim
+      { k: 'poly', pts: [[0.62, -0.115, 'c'], [0.6, -0.02], [0.61, 0.075, 'c'], [0.19, 0.004, 'c']], c: '#1f1d22', a: 0.92 }], eye: { r: 0.03, iris: ['#e8a050', '#5a3018'] } },
+  chili: { shimmer: 0.5, shimmerRgb: '255,195,155', gillLine: 0.22, finFade: 0.3, noseCap: 0.03, gape: 0.02, gapeDrop: 0.005, thick: 0.42, depth: 0.21, pedU: 0.2, ped: 0.03, peak: 0.58, snout: 0.6, shade: ['#a5402e', '#d4563c', '#e07a5c'], tail: { type: 'fork', h: 0.13, tint: '#c95a44' }, fin: '#cf7056',
     dorsal: { at: 0.53, len: 0.06, h: 0.08, rake: 0.3, lead: 0.6, tip: 'point', trail: 0.045, drop: 0.2 }, anal: { at: 0.45, len: 0.1, h: 0.055, rake: 0.05, lead: 0.85, tip: 'point', trail: 0.03, drop: 0.35 }, pelvic: { u: 0.56, len: 0.05 },
     marks: [{ k: 'band', u0: 0.22, u1: 0.85, v0: -0.012, v1: 0.012, c: '#2a1a18', a: 0.7, f: 0.01 }, { k: 'blob', u: 0.24, v: 0, ru: 0.03, rv: 0.025, c: '#1a1212', a: 0.8 }],
     eye: { r: 0.03, iris: ['#d07050', '#4a1a12'] } },
-  danio: { gape: 0.032, gapeDrop: 0.012, barbels: 0.018, thick: 0.5, depth: 0.19, pedU: 0.18, ped: 0.032, peak: 0.55, snout: 0.4, mouth: -0.025, shade: ['#9a9a7c', '#d6d2bc', '#ece8d8'], tail: { type: 'fork', h: 0.12 }, fin: N,
+  danio: { shimmer: 0.5, shimmerRgb: '255,235,170', gillLine: 0.25, finFade: 0.3, gape: 0.032, gapeDrop: 0.012, barbels: 0.018, thick: 0.5, depth: 0.19, pedU: 0.18, ped: 0.032, peak: 0.55, snout: 0.4, mouth: -0.025, shade: ['#6e7462', '#cdc6a2', '#ece6cc'], tail: { type: 'fork', h: 0.12, a: 0.7 }, fin: N,
     dorsal: { at: 0.5, len: 0.11, h: 0.07, rake: 0.3, lead: 0.7, drop: 0.5, trail: 0.02 }, anal: { at: 0.49, len: 0.2, h: 0.065, rake: 0.2, lead: 0.75, drop: 0.45, trail: 0.02 }, pelvic: { u: 0.58, len: 0.05 },
-    marks: [-0.055, -0.015, 0.025, 0.065].map(v => ({ k: 'band' as const, u0: 0.2, u1: 0.9, v0: v - 0.012, v1: v + 0.012, c: '#2b4f8c', a: 0.9, f: 0.008 })),
+    marks: [...[-0.035, 0.005, 0.045].map(v => ({ k: 'band' as const, u0: 0.2, u1: 0.9, v0: v - 0.011, v1: v + 0.011, c: '#e2c466', a: 0.55, f: 0.008 })), // gold between the stripes
+      ...[-0.055, -0.015, 0.025, 0.065].map(v => ({ k: 'band' as const, u0: 0.2, u1: 0.9, v0: v - 0.012, v1: v + 0.012, c: '#2b4f8c', a: 0.9, f: 0.008 }))],
     finMarks: [-0.03, 0, 0.03].map(v => ({ k: 'band' as const, u0: 0.0, u1: 0.25, v0: v - 0.007, v1: v + 0.007, c: '#2b4f8c', a: 0.8, f: 0.004 })),
     eye: { r: 0.026, iris: ['#c9c2a6', '#4e4a3c'] } },
   cherrybarb: { gape: 0.025, gapeDrop: 0.006, thick: 0.4, depth: 0.26, pedU: 0.2, ped: 0.04, peak: 0.6, snout: 0.5, shade: ['#8a3a2a', '#c4473a', '#d97a62'], tail: { type: 'fork', h: 0.15, tint: '#c25a48' }, fin: '#c96b58',
@@ -646,7 +649,7 @@ export const PLANS: Record<string, Plan> = {
       ...[0.26, 0.38, 0.5, 0.62].map(u => ({ k: 'poly' as const, pts: [[u, -0.01], [u + 0.03, -0.01], [u + 0.2, 0.34], [u + 0.165, 0.34]] as [number, number][], c: '#3a3426', a: 0.7 }))],
     eye: { r: 0.045, iris: ['#c8c4a8', '#3a3828'], dv: -0.02 } },
   // celestial pearl danio (male): blue-grey with pearly spots, orange belly, fins barred black and red-orange
-  cpd: { noseCap: 0.03, gape: 0.02, gapeDrop: 0.006, thick: 0.45, depth: 0.22, pedU: 0.2, ped: 0.038, peak: 0.55, snout: 0.75, shade: ['#26323e', '#40505e', '#d8743e'], tail: { type: 'lyre', h: 0.14, cut: 0.38, tint: '#e0502a', a: 0.7 }, fin: '#e0502a',
+  cpd: { shimmer: 0.5, shimmerRgb: '225,238,255', gillLine: 0.25, finFade: 0.3, noseCap: 0.03, gape: 0.02, gapeDrop: 0.006, thick: 0.45, depth: 0.22, pedU: 0.2, ped: 0.038, peak: 0.55, snout: 0.75, shade: ['#26323e', '#40505e', '#d8743e'], tail: { type: 'lyre', h: 0.14, cut: 0.38, tint: '#e0502a', a: 0.7 }, fin: '#e0502a',
     dorsal: { u0: 0.38, u1: 0.5, h: 0.08, shape: 'round', a: 0.75 }, anal: { u0: 0.3, u1: 0.46, h: 0.07, shape: 'round', a: 0.75 }, pelvic: { u: 0.58, len: 0.06, tint: '#e0502a' },
     marks: [{ k: 'blob', u: 0.62, v: 0.08, ru: 0.22, rv: 0.04, c: '#e07a3a', a: 0.7 }, { k: 'spots', n: 45, u0: 0.24, u1: 0.84, v0: -0.08, v1: 0.05, r: 0.011, c: '#ecdcb0', a: 0.9 }],
     finMarks: [{ k: 'bars', us: [0.055, 0.135], w: 0.022, c: '#1a1a1e', a: 0.8 },
@@ -661,9 +664,9 @@ export const PLANS: Record<string, Plan> = {
     eye: { r: 0.05, iris: ['#9ad0b8', '#1e2a24'], up: 0.3, bulge: 0.65 } },
   // white cloud mountain minnow: slim cool-water schooler; bronze back, a gold line over a dark band, red tail root,
   // red fins edged white
-  whitecloud: { gape: 0.025, gapeDrop: 0.006, thick: 0.45, depth: 0.2, pedU: 0.2, ped: 0.035, peak: 0.55, snout: 0.45, mouth: -0.015, shade: ['#5a4a32', '#9a8458', '#dcd0b4'], tail: { type: 'fork', h: 0.13, tint: '#c8483a', a: 0.75 }, fin: '#d87850',
+  whitecloud: { shimmer: 0.6, shimmerRgb: '255,235,170', gillLine: 0.25, finFade: 0.3, gape: 0.025, gapeDrop: 0.006, thick: 0.45, depth: 0.2, pedU: 0.2, ped: 0.035, peak: 0.55, snout: 0.45, mouth: -0.015, shade: ['#5a4a32', '#9a8458', '#dcd0b4'], tail: { type: 'fork', h: 0.13, tint: '#c8483a', a: 0.75 }, fin: '#d87850',
     dorsal: { at: 0.52, len: 0.1, h: 0.085, rake: 0.3, lead: 0.7, drop: 0.5, trail: 0.02, tint: '#c8483a', edge: '#f0ece0' }, anal: { at: 0.46, len: 0.12, h: 0.07, rake: 0.3, lead: 0.7, drop: 0.5, trail: 0.02, tint: '#c8483a', edge: '#f0ece0' }, pelvic: { u: 0.58, len: 0.05, tint: '#d87850' },
-    marks: [{ k: 'band', u0: 0.2, u1: 0.9, v0: -0.012, v1: 0.01, c: '#3a3428', a: 0.6, f: 0.008 }, { k: 'band', u0: 0.22, u1: 0.9, v0: -0.026, v1: -0.012, c: '#e8d880', a: 0.85, f: 0.005 },
+    marks: [{ k: 'band', u0: 0.2, u1: 0.9, v0: -0.012, v1: 0.01, c: '#3a3428', a: 0.6, f: 0.008 }, { k: 'band', u0: 0.22, u1: 0.9, v0: -0.026, v1: -0.012, c: '#e8d880', a: 0.85, f: 0.005 }, { k: 'band', u0: 0.24, u1: 0.88, v0: -0.044, v1: -0.027, c: '#4aa8c0', a: 0.4, f: 0.008 },
       { k: 'blob', u: 0.23, v: 0, ru: 0.05, rv: 0.025, c: '#c83a28', a: 0.75 }],
     finMarks: [{ k: 'band', u0: 0, u1: 0.18, v0: -0.03, v1: 0.03, c: '#a82a20', a: 0.6, f: 0.01 }], eye: { r: 0.03, iris: ['#c8b080', '#3a2a10'] } },
   // comet goldfish: the single-tailed, long-bodied goldfish; long deeply forked tail, big scales, orange-red
