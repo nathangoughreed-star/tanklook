@@ -1,6 +1,6 @@
 # Published stockings through our engine
 
-Each list as published (min and max counts where a range is given), standard tank dimensions unless the source gives them. Verdict percent = the larger of space and filtration (default filter).
+Each list as published (min and max counts where a range is given), standard tank dimensions unless the source gives them. Verdict percent = room only since S243 step 4 (2026-10-27; it was the larger of space and filtration: the flowerhorn read 111, the 55 gal angelfish 82 / 150); the filtration column is separate (default filter). Only those two rows were re-blessed, the rest of this table predates other engine changes.
 
 | list | gal | intent | min % | max % | space | filtration | binds on | top contributor |
 |---|---|---|---|---|---|---|---|---|
@@ -21,8 +21,8 @@ Each list as published (min and max counts where a range is given), standard tan
 | [Aquarium Co-Op 29 gal single fancy goldfish](https://www.aquariumcoop.com/blogs/aquarium/5-best-fish-tank-ideas-for-a-29-gallon-aquarium) | 29 | unspecified | 41 | 41 | 41 | 15 | space | 1 Fancy goldfish 100 % |
 | [Aquarium Co-Op 20 gal single fancy goldfish (minimum rule)](https://www.aquariumcoop.com/blogs/aquarium/care-guide-for-fancy-goldfish) | 20 | full | 58 | 58 | 58 | 17 | space | 1 Fancy goldfish 100 % |
 | [Aquarium Co-Op 40 gal saulosi colony](https://www.aquariumcoop.com/blogs/aquarium/40-gallon-fish) | 40 | unspecified | 28 | 39 | 39 | 1 | space | 7 Demasoni cichlid 100 % |
-| [Aquarium Co-Op 40 gal flowerhorn](https://www.aquariumcoop.com/blogs/aquarium/40-gallon-fish) | 40 | unspecified | 111 | 111 | 53 | 111 | filter | 1 Oscar 100 % |
-| [Aquarium Co-Op 55 gal angelfish school](https://www.aquariumcoop.com/blogs/aquarium/55-gallon-fish) | 55 | unspecified | 82 | 150 | 118 | 150 | filter | 10 Angelfish 100 % |
+| [Aquarium Co-Op 40 gal flowerhorn](https://www.aquariumcoop.com/blogs/aquarium/40-gallon-fish) | 40 | unspecified | 53 | 53 | 53 | 111 | filter | 1 Oscar 100 % |
+| [Aquarium Co-Op 55 gal angelfish school](https://www.aquariumcoop.com/blogs/aquarium/55-gallon-fish) | 55 | unspecified | 71 | 118 | 118 | 150 | filter | 10 Angelfish 100 % |
 | [Aquarium Co-Op 55 gal tiger barbs](https://www.aquariumcoop.com/blogs/aquarium/55-gallon-fish) | 55 | unspecified | 25 | 42 | 42 | 4 | space | 10 Tiger barb 100 % |
 | [Fishkeeping World 10 gal tetra centerpiece](https://fishkeepingworld.com/10-gallon-fish-tank/) | 10 | light | 94 | 106 | 106 | 6 | space | 8 Neon tetra 59 % |
 | [Fishkeeping World 10 gal ember school](https://fishkeepingworld.com/10-gallon-fish-tank/) | 10 | unspecified | 45 | 57 | 57 | 1 | space | 10 Ember tetra 100 % |

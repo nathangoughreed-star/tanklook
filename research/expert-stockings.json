@@ -449,9 +449,8 @@
   ],
   "quote": "we recommend only keeping one in the 40-gallon tank with no other tank mates.",
   "notes": "Single large cichlid; adult size comparable to oscar.",
-  "cap": "room",
-  "capReason": "Publisher stopped at what the tank holds (space / filtration / waste); no fighting rule sets the count",
-  "capBorderline": "One big cichlid in 40 gal: the publisher compares adult size to the tank, so room, but it is an aggressive fish"
+  "cap": "temper",
+  "capReason": "One big aggressive cichlid kept alone (no tank mates): the publisher's one-fish rule is about temper and adult size, and the engine's room reading is only 53 % (the 111 % it showed before S243 step 4 was filtration)"
  },
  {
   "name": "Aquarium Co-Op 55 gal angelfish school",
