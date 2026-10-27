@@ -140,7 +140,9 @@ export const productName = (p: { brand: string; model: string }) => (p.model.toL
 /** How it is held: 'bar' = a slim bar on extendable wire-loop brackets resting on the rim; 'rim-legs' = a flat slab raised
  *  on two clip legs; 'gooseneck' = a nano disc on a bendable neck from a screw clamp; 'submersible' = a stick on suction cups
  *  under the water. */
-export type LightMount = 'bar' | 'rim-legs' | 'gooseneck' | 'submersible';
+export type LightMount = 'bar' | 'rim-legs' | 'gooseneck' | 'submersible' | 'hanging';
+/* 'hanging' (lane GL, 2026-10-27) = a compact reef fixture (about 10-16 in) on a rim arm or hanging kit over the water: one
+ *  box per `coverageMm` of tank length (published coverage; absent = one fixture, and the light check says whether it carries). */
 /** The LEDs as seen from below: `rows` of white dots (front to back), one accent dot in `every` (0 = none; a row index in
  *  `accentRow` = that whole row in the accents), 'rings' = one row of ring clusters (NICREW C10), 'disc' = a round head. */
 export interface LightLeds { kind: 'dots' | 'rings' | 'disc'; rows: number; white: string; accents: string[]; every: number; accentRow?: number }
@@ -154,6 +156,8 @@ export interface LightProduct {
   watts: number; tech: 'led-white' | 'led-planted' | 'led-reef';
   /** published PAR at the substrate; absent on all 18 (2026-10-20): the light model estimates it from the watts */
   par?: number; kelvin?: number;
+  /** hanging fixtures: the tank length one unit covers (mm, published) and its beam angle (degrees, when published) */
+  coverageMm?: number; beamDeg?: number;
   spectrum?: string; controller?: string; water?: 'fresh' | 'salt';
   priceUsd?: number; url: string; priceUrl?: string; asOf: string;
   est?: string[]; colors: LightLook; colorsEst?: string[]; names?: string[];
