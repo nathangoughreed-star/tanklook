@@ -24,6 +24,7 @@ import { spaceFit } from '../scene/space';
 import { fitIn, tankOptions, type AnimalCount } from '../scene/tankfit';
 import type { SpaceLimit, TankSetup, Units } from '../scene/types';
 import { summaryOf } from '../ui/stockSummary';
+import { costLines, type CostLine } from './costlines';
 import { demandOf } from './engine';
 import { NO_SUGGESTION, type Money } from './makefit';
 import { mean3 } from './range';
@@ -96,7 +97,7 @@ export const OWNED: readonly OwnedDef[] = [
 ];
 /** What owning each item does to a build: set-up dollars off, the tank's tech when an owned filter goes in, and a note per item. The build's price
  *  carries its deals, so each row's list price is scaled by the build's own price / list-price ratio. Never below zero. */
-export function ownedAssess(b: Build, owned: OwnedMap, needStand: boolean, P: UserProfile): { saved: number; tech?: TankSetup['tech']; notes: OwnedNote[] } {
+export function ownedAssess(b: Build, owned: OwnedMap, needStand: boolean, P: UserProfile): { saved: number; tech?: TankSetup['tech']; notes: OwnedNote[]; rows: string[] } {
   const rows = new Set<string>(needStand ? [] : ['stand']), notes: OwnedNote[] = [];
   let tech: TankSetup['tech'];
   const D = demandOf(b.setup, P), present = new Set(D.items.map(i => i.key));
@@ -112,7 +113,7 @@ export function ownedAssess(b: Build, owned: OwnedMap, needStand: boolean, P: Us
   }
   const list = D.totals.setupUsd, k = list > 0 ? b.setupUsd / list : 1;
   const saved = Math.min(b.setupUsd, Math.round(D.items.filter(i => rows.has(i.key) && i.setup).reduce((t, i) => t + mean3(i.setup!), 0) * k));
-  return { saved, ...(tech ? { tech } : {}), notes };
+  return { saved, ...(tech ? { tech } : {}), notes, rows: [...rows] };
 }
 
 /** The sub-choice (reptiles & amphibians / arthropods) applies when Terrarium OR Vivarium is ticked. */
@@ -149,6 +150,8 @@ export interface Proposal {
   unknown: string[];
   /** the tags the person asked for that this one has */
   matched: Tag[];
+  /** the set-up total itemised (tank, stand, finish, animals, gear; owned items $0) */
+  costLines: CostLine[];
   /** set when the card uses well under the set-up budget because the animals' needs cap the build, not the money */
   capNote?: string;
 }
@@ -257,7 +260,7 @@ export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', no
           const matched = tags.filter(x => a.tags.includes(x));
           // a card that stops short because the animals' needs cap it (the biggest tank they gain from, at the fullest finish) is as good a use of the budget as the animals allow
           const limited = !!(ceiling && L.setupUsd && t.startupUsd < USES_BUDGET * L.setupUsd && b.finish?.level === 3);
-          const p: Proposal = { archetype: a, build: b, scene, totals: t, saved, ownedNotes: own.notes, status: cp.results, matched,
+          const p: Proposal = { archetype: a, build: b, scene, totals: t, saved, ownedNotes: own.notes, status: cp.results, matched, costLines: costLines(b, own.rows, t.startupUsd, needStand, P0),
             score: matched.length * 10 + headroom(t, L, !!L.setupUsd) * 5 + (L.setupUsd ? (limited ? 1 : Math.min(1, t.startupUsd / L.setupUsd)) * 20 : 0) + (b.finish?.level ?? 0) * 2,
             ...(limited ? { capNote: 'This is the most this kind needs: a bigger tank or more animals would not suit them, so part of your budget is left over.' } : {}),
             unknown: sm.cats.flatMap(c => c.items.filter(i => i.level === 'unknown').map(i => i.text)).slice(0, 1) };
