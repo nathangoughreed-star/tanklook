@@ -16,7 +16,7 @@ export function limitState(D: Demand, P: { limits: Limits }): LimitState {
   const bar = (value: number, limit?: number): BarState => ({ value, limit, over: limit !== undefined && value > limit });
   const label = riskLabel(T.risk), rc = RISK_CAP(L.risk);
   return {
-    setup: bar(T.setupUsd, L.setupUsd), upkeep: bar(T.upkeepUsdMo, UPKEEP_CAP(L.upkeep)), minutes: bar(T.minPerWeek, L.minPerWeek),
+    setup: bar(T.setupUsd, L.setupUsd), upkeep: bar(T.upkeepUsdMo, L.upkeepUsd ?? UPKEEP_CAP(L.upkeep)), minutes: bar(T.minPerWeek, L.minPerWeek),
     risk: { ...bar(T.risk), over: rc === 'safe' ? label !== 'safe' : rc === 'moderate' ? label === 'demanding' : false, label },
   };
 }

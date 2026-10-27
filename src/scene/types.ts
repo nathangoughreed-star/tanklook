@@ -413,6 +413,8 @@ export interface TankSetup {
   /** The library pick this tank is (2026-10-26, Nathan: "clearly distinguish if the tank being worked on is a real commercially
    *  available tank or a custom size"; no version bump). Absent = a custom size. scene/integrated.ts holds what the product fixes. */
   product?: TankProduct;
+  /** Guardrails (lane C1, 2026-10-27, no version bump): this tank's limits on startup $, monthly $, minutes a week and space; scene/constraints.ts. Absent = none set, the browser profile's limits apply. */
+  constraints?: import('./constraints').Constraints;
 }
 
 /** `model` a data/tanks.json size id; `key` the maker's product at that size (data/tanks.ts variantKey), absent for the catalogue size

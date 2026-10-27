@@ -24,6 +24,8 @@ export interface DemandAdd {
 export interface Limits {
   setupUsd?: number;
   upkeep?: 'free' | 'low' | 'flex';
+  /** A dollar cap a month (Guardrails, scene/constraints.ts); wins over `upkeep` when set. */
+  upkeepUsd?: number;
   minPerWeek?: number;
   risk?: 'safe' | 'moderate' | 'any';
 }

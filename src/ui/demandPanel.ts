@@ -14,6 +14,7 @@ import { DEAL_NOTE, NOT_SPONSORED, dealGuesses, savingLine, type Deal } from '..
 import { renderDealMatch } from './dealMatch';
 import { GEAR_SLOT_NAME, gearOffers, gearParts, pinGear, pinnedGear, unpinGear } from '../demand/gearDeals';
 import { GEAR_DEALS, gearPctOff } from '../data/gearDeals';
+import { constraintsFromLimits, effectiveLimits, parseConstraints, rememberLastUsed, type Cap, type Constraints } from '../scene/constraints';
 import { lidAdvice, type LidAdvice } from '../demand/lid';
 
 const KEY = 'tanklook.demand';
@@ -38,12 +39,14 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
   let P = load(), D: Demand | null = null, B: Demand | null = null, lid: (LidAdvice & { usd: number }) | null = null, open: Bar | null = null, timer = 0;
   /** What the last edit moved each bar by, shown as a chip for a few seconds so a change is seen as it happens. */
   let prev: Record<Bar, number> | null = null, chips: Partial<Record<Bar, { d: number; until: number }>> = {}, chipTimer = 0;
+  /** The profile with this tank's guardrails in place of its limits (a tank with none keeps the browser profile's limits). */
+  const Pe = (): UserProfile => ({ ...P, limits: effectiveLimits(store.tank, P.limits) });
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(P)); } catch { /* ignore */ } };
   const OPEN_KEY = 'tanklook.demandOpen';
   let shown = (() => { try { const v = localStorage.getItem(OPEN_KEY); if (v !== null) return v === '1'; } catch { /* ignore */ } return window.innerWidth > 900; })();
   mount.innerHTML = `<div class="dm"><button type="button" class="dmtog" aria-expanded="true" title="Show or hide what this tank costs and asks of you; it updates as you edit"><span class="dmhead">What this tank asks of you</span><span class="dmsum"></span><span class="dmcaret" aria-hidden="true">▾</span></button>
     <div class="dmbody"><div class="dmmode"></div><div class="dmbars"></div><div class="dmlid" hidden></div><div class="dmdeals" style="font-size:11px;opacity:.85"></div><div class="dmdrill" hidden></div>
-    <details class="dmset"><summary>Set limits</summary><div class="dmlimits"></div></details>
+    <details class="dmset"><summary>Guardrails</summary><div class="dmlimits"></div></details>
     <details class="dmset"><summary>Your situation</summary><div class="dmsit"></div></details></div></div>`;
   const q = <T extends HTMLElement>(s: string) => mount.querySelector(s) as T;
   const bars = q('.dmbars'), drill = q('.dmdrill'), tog = q('.dmtog'), body = q('.dmbody');
@@ -75,7 +78,7 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
   }
   const soon = () => { clearTimeout(timer); timer = window.setTimeout(recompute, 150); };
   // an edit to a part the starting price covers: say once that the bundle (or the preset's sale) no longer applies; undo restores it
-  let lost = '', warned: object | null = null;
+  let lost = '', warned: object | null = null, limitsReady = false;
   /** After a change to a bundled part: is the bundle still bought, with the new part on top? (pinnedKit picks the cheaper way) */
   const keepsBundle = (S: TankSetup, i: number, pin: Deal, drift: PricedPart[]) => !!drift.length && pinnedKit(S, i, P)?.id === pin.id;
   const checkStartPrice = (quiet = false) => {
@@ -91,14 +94,14 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
   store.subscribe(kind => {
     // undo / redo keeps the starting price and says nothing: undoing the change that broke a bundle prices the bundle again
     if (kind === 'load' && store.loadedBy === 'history') checkStartPrice(true);
-    else if (kind === 'load') { onSceneLoad(store.scene.active, store.tank); lost = ''; warned = null; }
+    else if (kind === 'load') { onSceneLoad(store.scene.active, store.tank); lost = ''; warned = null; limitsReady && limits(); }
     if (kind === 'scene') checkStartPrice();
     if (kind === 'scene' || kind === 'load') soon();
   });
 
   function render() {
     if (!D) return;
-    const L = limitState(D, P);
+    const L = limitState(D, Pe());
     bars.innerHTML = '';
     for (const b of BARS) bars.append(row(b, L));
     const S = store.tank, nA = S.fish.length, nP = S.items.filter(i => i.kind === 'plant' || i.kind === 'coral').length;
@@ -200,16 +203,33 @@ Relative to your stated experience (see Your situation).`;
   // ---- limits and situation forms
   const lim = q('.dmlimits'), sit = q('.dmsit');
   function limits() {
-    const L = P.limits;
-    lim.innerHTML = `<label>What do you want your expected set-up cost to be? <input type="number" min="0" step="10" id="dmSetup" placeholder="no limit" value="${L.setupUsd ?? ''}"> $</label>
-      <label>Upkeep <select id="dmUpkeep"><option value="">no limit</option><option value="free">near free (under $10 a month)</option><option value="low">low (under $40 a month)</option><option value="flex">flexible</option></select></label>
-      <label>Time <input type="number" min="0" step="5" id="dmMin" placeholder="no limit" value="${L.minPerWeek ?? ''}"> minutes a week</label>
-      <label>Difficulty <select id="dmRisk"><option value="any">no limit</option><option value="moderate">moderate at most</option><option value="safe">easy only</option></select></label>`;
-    (q('#dmUpkeep') as HTMLSelectElement).value = L.upkeep ?? ''; (q('#dmRisk') as HTMLSelectElement).value = L.risk ?? 'any';
-    const num = (id: string) => { const v = (q(id) as HTMLInputElement).value; return v === '' ? undefined : Math.max(0, +v); };
+    const C: Constraints = store.tank.constraints ?? constraintsFromLimits(P.limits), L = P.limits, sp = store.tank.layout.space;
+    const capRow = (id: string, label: string, c: Cap | undefined, step: number, unit: string) =>
+      `<label class="dmcap"><input type="checkbox" id="${id}On" ${c?.on ? 'checked' : ''}> ${label} <input type="number" min="0" step="${step}" id="${id}" value="${c?.value ?? ''}" ${c?.on ? '' : 'disabled'}> ${unit}</label>`;
+    lim.innerHTML = `<div class="hint">Switch a guardrail on to check this tank against it. A limit that is off is never held against the build; its cost and time still show above.</div>`
+      + capRow('dmSetup', 'Set-up cost under', C.startupUsd, 10, '$')
+      + capRow('dmMonthly', 'Upkeep under', C.monthlyUsd, 5, '$ a month')
+      + capRow('dmMin', 'Time under', C.minutesPerWeek, 5, 'minutes a week')
+      + `<label class="dmcap"><input type="checkbox" id="dmSpaceOn" ${C.space?.on !== false && sp ? 'checked' : ''} ${sp ? '' : 'disabled'}> Fits my space ${sp ? '' : '<i>(set your space on the fullness tile first)</i>'}</label>
+      <label>Difficulty <select id="dmRisk"><option value="any">no limit</option><option value="moderate">moderate at most</option><option value="safe">easy only</option></select></label>
+      <label>Care effort (advice only) <select id="dmEffort"><option value="">any</option><option value="low">low</option><option value="medium">medium</option><option value="high">high</option></select></label>
+      <label>Experience (advice only) <select id="dmExp"><option value="">not said</option>${SKILL.map((t, i) => `<option value="${i}">${t}</option>`).join('')}</select></label>`;
+    (q('#dmRisk') as HTMLSelectElement).value = L.risk ?? 'any'; (q('#dmEffort') as HTMLSelectElement).value = C.effort ?? ''; (q('#dmExp') as HTMLSelectElement).value = C.experience === undefined ? '' : String(C.experience);
+    const START: Record<string, number> = { dmSetup: 300, dmMonthly: 40, dmMin: 60 }; // what a newly switched-on limit starts at
+    const cap = (id: string, prev?: Cap): Cap | undefined => {
+      const on = (q(`#${id}On`) as HTMLInputElement).checked, v = (q('#' + id) as HTMLInputElement).value;
+      return v === '' ? (on ? { on: true, value: prev?.value || START[id] } : undefined) : { on, value: Math.max(0, +v) || START[id] };
+    };
     const change = () => {
-      P.limits = { ...P.limits, setupUsd: num('#dmSetup'), minPerWeek: num('#dmMin'), upkeep: ((q('#dmUpkeep') as HTMLSelectElement).value || undefined) as UserProfile['limits']['upkeep'], risk: (q('#dmRisk') as HTMLSelectElement).value as UserProfile['limits']['risk'] };
-      save(); render();
+      const c: Constraints = {}, s = cap('dmSetup', C.startupUsd), m = cap('dmMonthly', C.monthlyUsd), t = cap('dmMin', C.minutesPerWeek);
+      if (s) c.startupUsd = s; if (m) c.monthlyUsd = m; if (t) c.minutesPerWeek = t;
+      if (sp || C.space) c.space = { on: (q('#dmSpaceOn') as HTMLInputElement).checked };
+      const ef = (q('#dmEffort') as HTMLSelectElement).value, ex = (q('#dmExp') as HTMLSelectElement).value;
+      if (ef) c.effort = ef as Constraints['effort']; if (ex !== '') c.experience = +ex as Constraints['experience'];
+      P.limits = { ...P.limits, risk: (q('#dmRisk') as HTMLSelectElement).value as UserProfile['limits']['risk'] };
+      const out = parseConstraints(c) ?? {}; // an empty set is still "this tank has guardrails, all off"
+      store.edit(t2 => { t2.constraints = out; }, { coalesce: 'guardrails' });
+      rememberLastUsed(out); save(); limits(); render();
     };
     lim.querySelectorAll('input,select').forEach(e => e.addEventListener('change', change));
   }
@@ -226,9 +246,16 @@ Relative to your stated experience (see Your situation).`;
     };
     sit.querySelectorAll('input,select').forEach(e => e.addEventListener('change', change));
   }
-  limits(); situation();
+  limits(); situation(); limitsReady = true;
   recompute();
   /** Set some limits from outside (the care slider's shortcut): saved, the form and the bars follow. */
-  const setLimits = (l: Partial<UserProfile['limits']>) => { P.limits = { ...P.limits, ...l }; save(); limits(); render(); };
-  return { recompute, setLimits, profile: () => P, state: () => (D ? { demand: D, limits: limitState(D, P) } : null) };
+  const setLimits = (l: Partial<UserProfile['limits']>) => {
+    P.limits = { ...P.limits, ...l }; save();
+    if (store.tank.constraints) { // this tank has guardrails: the shortcut moves its time and upkeep caps too
+      const { upkeep, minPerWeek } = l, c = constraintsFromLimits({ upkeep, minPerWeek });
+      store.edit(t => { const k = { ...t.constraints }; if (minPerWeek !== undefined) k.minutesPerWeek = c.minutesPerWeek ?? { on: false, value: k.minutesPerWeek?.value ?? 0 }; if (upkeep !== undefined) k.monthlyUsd = c.monthlyUsd ?? { on: false, value: k.monthlyUsd?.value ?? 0 }; t.constraints = k; }, { coalesce: 'guardrails' });
+    }
+    limits(); render();
+  };
+  return { recompute, setLimits, profile: Pe, state: () => (D ? { demand: D, limits: limitState(D, Pe()) } : null) };
 }

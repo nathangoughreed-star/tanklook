@@ -8,7 +8,7 @@ import { applySwap, swapsFor, type Bar, type Swap } from './swaps';
 import type { Demand, UserProfile } from './types';
 import type { TankSetup } from '../scene/types';
 
-export const hasLimits = (P: UserProfile) => { const l = P.limits; return l.setupUsd !== undefined || !!l.upkeep && l.upkeep !== 'flex' || l.minPerWeek !== undefined || !!l.risk && l.risk !== 'any'; };
+export const hasLimits = (P: UserProfile) => { const l = P.limits; return l.setupUsd !== undefined || l.upkeepUsd !== undefined || !!l.upkeep && l.upkeep !== 'flex' || l.minPerWeek !== undefined || !!l.risk && l.risk !== 'any'; };
 
 /** How far over each bar is, as a ratio of its limit (0 = within). Risk: the score against the cut point of the allowed label. */
 function overBy(L: LimitState, D: Demand): Record<Bar, number> {
