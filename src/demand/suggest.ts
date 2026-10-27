@@ -12,6 +12,7 @@
 import data from '../data/archetypes.json';
 import { getSpecies } from '../data/species';
 import { tankFromModel } from '../data/tanks';
+import type { TankModel } from '../data/tanks';
 import { buildsFor, distinctBuilds, FILTRATION_LIMIT, meetsNeeds, type Build } from '../scene/builds';
 import { filterProduct, FILTER_PRODUCTS, heaterProduct, HEATER_PRODUCTS, lightProduct, lightsFor, LIGHT_PRODUCTS, productName, pumpProduct, pumpRatedFor, PUMP_PRODUCTS, skimmerSuitsGal, SKIMMER_PRODUCTS } from '../data/gearCatalog';
 import { stockingOf } from '../scene/stocking';
@@ -20,7 +21,7 @@ import { volume } from '../scene/physics';
 import { finishTiers } from '../scene/finish';
 import { compliance, effectiveLimits, type Compliance, type Constraints } from '../scene/constraints';
 import { spaceFit } from '../scene/space';
-import { tankOptions, type AnimalCount } from '../scene/tankfit';
+import { fitIn, tankOptions, type AnimalCount } from '../scene/tankfit';
 import type { SpaceLimit, TankSetup, Units } from '../scene/types';
 import { summaryOf } from '../ui/stockSummary';
 import { demandOf } from './engine';
@@ -148,6 +149,8 @@ export interface Proposal {
   unknown: string[];
   /** the tags the person asked for that this one has */
   matched: Tag[];
+  /** set when the card uses well under the set-up budget because the animals' needs cap the build, not the money */
+  capNote?: string;
 }
 export interface Miss { archetype: Archetype; build: Build; totals: Money; needs: Partial<Money>; text: string }
 export interface Suggestions {
@@ -169,17 +172,57 @@ export interface Suggestions {
 const money = (b: Build): Money => ({ startupUsd: b.setupUsd, monthlyUsd: b.upkeepUsdMo, minPerWeek: b.minPerWeek });
 const usd = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
 const relaxSize = (x: Partial<Money>) => (x.startupUsd ?? 0) / 100 + (x.monthlyUsd ?? 0) / 10 + (x.minPerWeek ?? 0) / 10;
-/** The tanks to try for an archetype: the sizes that hold the animals (smallest first), those that fit the space only, at most `n`. */
-const tanksFor = (a: Archetype, space: SpaceLimit | undefined, n: number) =>
-  tankOptions(a.animals).filter(t => !t.fails.length && (!space || spaceFit(tankFromModel(t.tank), space).fits)).slice(0, n).map(t => t.tank);
+/** The sizes that hold the animals (smallest first) and fit the space. */
+const fitsFor = (animals: AnimalCount[], space: SpaceLimit | undefined) =>
+  tankOptions(animals).filter(t => !t.fails.length && (!space || spaceFit(tankFromModel(t.tank), space).fits));
 
-/** Mean share left under each enabled money / time cap (0..1); 1 with none on. */
-function headroom(t: Money, L: Limits): number {
-  const parts = ([[t.startupUsd, L.setupUsd], [t.monthlyUsd, L.upkeepUsd], [t.minPerWeek, L.minPerWeek]] as [number, number | undefined][]).filter((p): p is [number, number] => p[1] !== undefined && p[1] > 0);
+/** buildsFor, remembered for ten minutes of prices: Suggest asks for the same tank at several budgets. */
+const BUILDS = new Map<string, Build[]>();
+function buildsCached(animals: AnimalCount[], tank: TankModel, now: number): Build[] {
+  const key = `${Math.floor(now / 600000)}|${tank.id}|${animals.map(x => x.species + x.n).join(',')}`;
+  let r = BUILDS.get(key);
+  if (!r) { r = distinctBuilds(buildsFor(animals, tank, now)); if (BUILDS.size >= 300) BUILDS.delete(BUILDS.keys().next().value!); BUILDS.set(key, r); }
+  return r;
+}
+
+/** One thing to build: these animals in this tank. */
+interface Rung { animals: AnimalCount[]; tank: TankModel }
+/** No tank is offered bigger than this many times the smallest that holds the animals: "more room" stops where the animals gain nothing from it. */
+const MAX_GROW = 5;
+const FINISH_ALLOWANCE = 1.12;
+/** Groups are offered at these multiples of the archetype's own count when the tank holds them (the most the stocking rules allow: each rung is rechecked). */
+const STOCK_UP = [2, 1.5];
+/**
+ * The budget is a TARGET as well as a limit (Nathan 2026-10-27): with a set-up cap on, the rungs are the biggest tank whose cheapest build is under it
+ * (found by bisection: cost only rises with size), one size down, and the top tank with a bigger group where its needs allow. `ceiling`: the top rung is
+ * the biggest size the animals gain from, so a budget left over is the animals' limit, not the money's. With no set-up cap: the smallest sizes, as before.
+ */
+function rungsFor(a: Archetype, space: SpaceLimit | undefined, cap: number | undefined, now: number): { rungs: Rung[]; ceiling: boolean } {
+  const fits = fitsFor(a.animals, space);
+  if (!fits.length) return { rungs: [], ceiling: false };
+  if (cap === undefined) return { rungs: fits.slice(0, 4).map(t => ({ animals: a.animals, tank: t.tank })), ceiling: false };
+  const list = fits.filter(t => t.litres <= fits[0].litres * MAX_GROW);
+  const cost = (i: number) => FINISH_ALLOWANCE * Math.min(Infinity, ...buildsCached(a.animals, list[i].tank, now).filter(meetsNeeds).map(b => b.setupUsd)); // the finish adds about this much to the cheapest build
+  let lo = 0, hi = list.length - 1;
+  if (cost(hi) > cap) { while (lo < hi) { const mid = Math.ceil((lo + hi) / 2); if (cost(mid) <= cap) lo = mid; else hi = mid - 1; } hi = lo; }
+  const top = list[hi], rungs: Rung[] = [{ animals: a.animals, tank: top.tank }];
+  for (const i of new Set([hi - 1, 0])) if (i >= 0 && i < hi) rungs.push({ animals: a.animals, tank: list[i].tank }); // then one size down and the smallest, tried only while nothing has qualified
+  if (a.animals.some(x => x.n >= 3)) for (const f of STOCK_UP) {
+    const more = a.animals.map(x => ({ ...x, n: x.n >= 3 ? Math.round(x.n * f) : x.n }));
+    const fit = fitIn(more, top.tank);
+    if (fit && !fit.fails.length) { rungs.unshift({ animals: more, tank: top.tank }); break; }
+  }
+  return { rungs, ceiling: hi === list.length - 1 };
+}
+
+/** Mean share left under each enabled money / time cap (0..1); 1 with none on. The set-up cap is a target, not a headroom, when `target` (it is scored by how much of it is used). */
+function headroom(t: Money, L: Limits, target = false): number {
+  const parts = ([[t.startupUsd, target ? undefined : L.setupUsd], [t.monthlyUsd, L.upkeepUsd], [t.minPerWeek, L.minPerWeek]] as [number, number | undefined][]).filter((p): p is [number, number] => p[1] !== undefined && p[1] > 0);
   return parts.length ? parts.reduce((s, [v, c]) => s + Math.max(0, 1 - v / c), 0) / parts.length : 1;
 }
 
-const SIZES_PER_ARCHETYPE = 4;
+/** The share of the set-up cap a card must use to count as using the budget; below it the card says why. */
+export const USES_BUDGET = 0.85;
 export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', now = Date.now()): Suggestions {
   const C = w.constraints, tags = w.tags ?? [];
   const space = C.space?.on === false ? undefined : w.space;
@@ -190,8 +233,9 @@ export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', no
   for (const a of wanted) {
     if (a.animals.some(x => !getSpecies(x.species))) continue;
     let best: Proposal | undefined, near: Miss | undefined;
-    for (const m of tanksFor(a, space, SIZES_PER_ARCHETYPE)) {
-      for (const b0 of distinctBuilds(buildsFor(a.animals, m, now))) {
+    const cap = C.startupUsd?.on ? C.startupUsd.value : undefined, { rungs, ceiling } = rungsFor(a, space, cap, now);
+    for (const { animals: stock, tank: m } of rungs) {
+      for (const b0 of buildsCached(stock, m, now)) {
         if (!meetsNeeds(b0)) continue;
         // a proposal is a FINISHED tank (lane C9, scene/finish.ts): the best finish tier (lush, full, starter) that still passes every check.
         // A build that already breaks a husbandry rule or a money / time cap before it is finished cannot be saved by plants (they only add), so it is not finished further.
@@ -211,7 +255,11 @@ export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', no
         if (cp.overall !== 'off') anyOn = true;
         if (cp.overall === 'within' || cp.overall === 'off') {
           const matched = tags.filter(x => a.tags.includes(x));
-          const p: Proposal = { archetype: a, build: b, scene, totals: t, saved, ownedNotes: own.notes, status: cp.results, score: matched.length * 10 + headroom(t, L) * 5 + (b.finish?.level ?? 0) * 2, matched,
+          // a card that stops short because the animals' needs cap it (the biggest tank they gain from, at the fullest finish) is as good a use of the budget as the animals allow
+          const limited = !!(ceiling && L.setupUsd && t.startupUsd < USES_BUDGET * L.setupUsd && b.finish?.level === 3);
+          const p: Proposal = { archetype: a, build: b, scene, totals: t, saved, ownedNotes: own.notes, status: cp.results, matched,
+            score: matched.length * 10 + headroom(t, L, !!L.setupUsd) * 5 + (L.setupUsd ? (limited ? 1 : Math.min(1, t.startupUsd / L.setupUsd)) * 20 : 0) + (b.finish?.level ?? 0) * 2,
+            ...(limited ? { capNote: 'This is the most this kind needs: a bigger tank or more animals would not suit them, so part of your budget is left over.' } : {}),
             unknown: sm.cats.flatMap(c => c.items.filter(i => i.level === 'unknown').map(i => i.text)).slice(0, 1) };
           if (!best || p.score > best.score || p.score === best.score && t.startupUsd < best.totals.startupUsd) best = p;
           break; // the best finish that passes: a lesser tier of the same build adds nothing
@@ -227,6 +275,8 @@ export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', no
         }
         }
       }
+      // the first rung that qualifies is the biggest the budget (or the animals) allows: the smaller rungs would only score lower, so they are not built
+      if (best && cap !== undefined) break;
     }
     if (best) proposals.push(best); else if (near) misses.push(near);
   }

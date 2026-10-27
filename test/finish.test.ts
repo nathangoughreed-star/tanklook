@@ -24,7 +24,7 @@ describe('finished builds', () => {
         const b = distinctBuilds(buildsFor(a.animals, t.tank, NOW)).filter(meetsNeeds)[0];
         if (!b) continue;
         const baseBad = caution(b.setup), tiers = [...finishTiers(b, NOW)];
-        expect(tiers.map(f => f.finish!.tier)).toEqual(['lush', 'standard', 'lean']);
+        expect(tiers.map(f => f.finish!.tier)).toEqual(['lush', 'standard', 'lean', 'starter']);
         for (const f of tiers) {
           expect(f.setup.substrate.show).toBe(true);
           expect(demandOf(f.setup, P).items.some(i => i.key === 'substrate' && !!i.setup)).toBe(true);
@@ -39,7 +39,8 @@ describe('finished builds', () => {
         // more finish costs more (slack where two tiers draw nearly the same pieces)
         expect(tiers[0].setupUsd).toBeGreaterThanOrEqual(tiers[1].setupUsd * 0.9);
         expect(tiers[1].setupUsd).toBeGreaterThanOrEqual(tiers[2].setupUsd * 0.9);
-        expect(tiers[0].setupUsd).toBeGreaterThan(tiers[2].setupUsd);
+        expect(tiers[2].setupUsd).toBeGreaterThanOrEqual(tiers[3].setupUsd * 0.9);
+        expect(tiers[0].setupUsd).toBeGreaterThan(tiers[3].setupUsd);
       }
     }, 120000);
   }
@@ -67,12 +68,33 @@ describe('finished builds', () => {
         expect(decor(p.scene)).toBeGreaterThan(0);
         expect(p.totals.startupUsd).toBeLessThanOrEqual(usd);
       }
-      return r.proposals.length ? Math.max(...r.proposals.map(p => p.build.finish!.level)) : 0;
+      return r.proposals.length ? Math.max(...r.proposals.map(p => p.build.finish!.level)) : -1;
     };
     const lo = level(500), mid = level(900), hi = level(3000);
-    expect(lo).toBeGreaterThan(0);
+    expect(lo).toBeGreaterThanOrEqual(0);
     expect(mid).toBeGreaterThanOrEqual(lo);
     expect(hi).toBeGreaterThanOrEqual(mid);
     expect(hi).toBe(3);
+  }, 300000);
+
+  it('the budget is a target (Nathan 2026-10-27): at $900 each terrarium card lands at 85 % of it or more, or says the animals cap it; never over', () => {
+    const r = suggestSetups({ constraints: { startupUsd: cap(900) }, kinds: ['terrarium'], groups: ['herp'] }, P, 'cm', NOW);
+    const ids = r.proposals.map(p => p.archetype.id);
+    for (const id of ['dart-frogs', 'crested-gecko', 'leopard-gecko']) expect(ids).toContain(id);
+    for (const p of r.proposals) {
+      expect(p.totals.startupUsd).toBeLessThanOrEqual(900);
+      expect(p.totals.startupUsd >= 0.85 * 900 || !!p.capNote).toBe(true);
+      expect(caution(p.scene)).toBe(false);
+    }
+  }, 300000);
+
+  it('a bigger budget buys a bigger or richer tank, still within every guardrail and the husbandry rule', () => {
+    const at = (usd: number) => suggestSetups({ constraints: { startupUsd: cap(usd), monthlyUsd: cap(80), minutesPerWeek: cap(120) }, kinds: ['freshwater'] }, P, 'cm', NOW);
+    const lo = at(500), hi = at(1500);
+    for (const p of [...lo.proposals, ...hi.proposals]) { expect(caution(p.scene)).toBe(false); expect(p.totals.monthlyUsd).toBeLessThanOrEqual(80); expect(p.totals.minPerWeek).toBeLessThanOrEqual(120); }
+    for (const p of lo.proposals) expect(p.totals.startupUsd).toBeLessThanOrEqual(500);
+    const spend = (r: typeof lo) => Math.max(...r.proposals.map(p => p.totals.startupUsd));
+    expect(spend(hi)).toBeGreaterThan(spend(lo));
+    for (const p of hi.proposals.filter(q => !q.capNote)) expect(p.totals.startupUsd).toBeGreaterThanOrEqual(0.85 * 1500);
   }, 300000);
 });

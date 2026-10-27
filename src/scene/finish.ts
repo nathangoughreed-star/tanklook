@@ -17,22 +17,23 @@ import { SUBSTRATES } from '../art/placeholder';
 import type { Build } from './builds';
 import type { Item, LayoutId, TankSetup } from './types';
 
-export type FinishTier = 'lean' | 'standard' | 'lush';
+export type FinishTier = 'starter' | 'lean' | 'standard' | 'lush';
 export interface Finish {
   tier: FinishTier;
-  /** 1 lean .. 3 lush: how finished the tank is (Suggest ranks the best tier that passes every guardrail first) */
-  level: 1 | 2 | 3;
+  /** 0 starter .. 3 lush: how finished the tank is (Suggest ranks the best tier that passes every guardrail first) */
+  level: 0 | 1 | 2 | 3;
   style: Exclude<LayoutId, 'none'>;
   /** one line each: the look, substrate, hardscape, plants */
   lines: string[];
 }
-export const TIER_LABEL: Record<FinishTier, string> = { lean: 'Starter finish', standard: 'Full finish', lush: 'Lush finish' };
-interface TierSpec { id: FinishTier; level: 1 | 2 | 3; dens: { hard: number; plant: number }; mode: PlantMode }
+export const TIER_LABEL: Record<FinishTier, string> = { starter: 'Starter finish', lean: 'Basic finish', standard: 'Full finish', lush: 'Lush finish' };
+interface TierSpec { id: FinishTier; level: 0 | 1 | 2 | 3; dens: { hard: number; plant: number }; mode: PlantMode; /** share of the plants and hardscape pieces kept (the leanest tier is a few well-placed pieces) */ keep: number }
 /** Layer densities are the starter sliders (0 none .. 4 dense; the default is 2). Lean keeps one anchor piece and a few hardy plants (artificial where the plant is demanding). */
 const TIERS: readonly TierSpec[] = [
-  { id: 'lush', level: 3, dens: { hard: 3, plant: 3 }, mode: 'live' },
-  { id: 'standard', level: 2, dens: { hard: 2, plant: 2 }, mode: 'mixed' },
-  { id: 'lean', level: 1, dens: { hard: 1, plant: 1 }, mode: 'mixed' },
+  { id: 'lush', level: 3, dens: { hard: 3, plant: 3 }, mode: 'live', keep: 1 },
+  { id: 'standard', level: 2, dens: { hard: 2, plant: 2 }, mode: 'mixed', keep: 1 },
+  { id: 'lean', level: 1, dens: { hard: 1, plant: 1 }, mode: 'mixed', keep: 1 },
+  { id: 'starter', level: 0, dens: { hard: 1, plant: 1 }, mode: 'mixed', keep: 0.4 },
 ];
 
 const LB_PER_L = 1.6 * 2.2046; // loose substrate: the set-up sheet's 1.6 kg a litre
@@ -92,10 +93,12 @@ function scaped(b: Build, mode: PlantMode, style: Exclude<LayoutId, 'none'>, den
 
 /** Hardscape at a size people really lay out (Nathan 2026-10-27: "comically large"): no piece longer than about a fifth of the tank (a third on a reef, which stacks
  *  rock into a wall) or a third of its height, and no more pieces than the glass has room for, thinned evenly. Caves and hides keep their own size. */
-function trimHardscape(S: TankSetup): TankSetup {
-  const T = S.tank, reef = !!(S.water.on && S.water.salt), maxLen = Math.min(T.L * (reef ? 0.3 : 0.2), T.H * 0.35), most = Math.max(3, Math.round(T.L / (reef ? 60 : 110)));
+function trimHardscape(S: TankSetup, keep: number): TankSetup {
+  const T = S.tank, reef = !!(S.water.on && S.water.salt), maxLen = Math.min(T.L * (reef ? 0.3 : 0.2), T.H * 0.35), most = Math.max(keep < 1 ? 2 : 3, Math.round(T.L / (reef ? 60 : 110) * keep));
   const hard = S.items.filter(i => i.kind === 'stone' || i.kind === 'wood'), drop = new Set<number>();
   if (hard.length > most) hard.forEach((it, i) => { if (Math.floor(i * most / hard.length) === Math.floor((i - 1) * most / hard.length) && i > 0) drop.add(it.id); });
+  const green = S.items.filter(i => i.kind === 'plant' || i.kind === 'artificial'), want = keep < 1 ? Math.max(3, Math.ceil(green.length * keep)) : green.length;
+  if (green.length > want) green.forEach((it, i) => { if (Math.floor(i * want / green.length) === Math.floor((i - 1) * want / green.length) && i > 0) drop.add(it.id); });
   return { ...S, items: S.items.filter(i => !drop.has(i.id)).map(i => (i.kind === 'stone' || i.kind === 'wood') && i.size > maxLen ? { ...i, size: Math.max(LIBRARY[i.variant]?.min ?? 15, Math.round(maxLen)) } : i) };
 }
 
@@ -105,7 +108,7 @@ export function finishBuild(b: Build, spec: TierSpec, style: Exclude<LayoutId, '
   const land = !b.setup.water.on, fit = fitFor(b.setup), mode = land ? 'live' : spec.mode;
   let T = scaped(b, mode, style, spec.dens, fit);
   for (let h = spec.dens.hard + 1; h <= 3 && !hasHardscape(T); h++) T = scaped(b, mode, style, { ...spec.dens, hard: h }, fit);
-  T = settle(trimHardscape(T), finSensitive(b.animals));
+  T = settle(trimHardscape(T, spec.keep), finSensitive(b.animals));
   T = { ...T, render: { ...T.render, bg: T.water.on && T.water.salt ? 'blue' : T.water.on ? 'black' : 'gradient' } }; // a background behind every finished tank (Nathan 2026-10-27)
   const D = priceScape(T, b, now);
   const setupUsd = Math.round(D.totals.setupUsd), add = setupUsd - b.setupUsd;
@@ -119,7 +122,7 @@ export function finishBuild(b: Build, spec: TierSpec, style: Exclude<LayoutId, '
 /** The build finished at each tier, best finish first, one at a time (a caller that stops at the first that passes builds as few as it must). `leanOnly`: just the starter finish, for a build already over a money or time cap, which no finish can bring back under.
  *  The style is the best-suited one that draws hardscape (a rock, wood or a hide to anchor the plants): styles scoring within 0.25 of the best are tried in order. */
 export function* finishTiers(b: Build, now = Date.now(), leanOnly = false): Generator<Build> {
-  const specs = leanOnly ? TIERS.slice(-1) : TIERS;
+  const specs = leanOnly ? TIERS.slice(-1) : TIERS; // the last is the leanest
   const ranked = rankStyles(b.animals), top = ranked[0]?.score ?? 0, tried = ranked.filter(r => r.score >= top - 0.25).slice(0, 4).map(r => r.style);
   let style = tried[0] ?? 'planted', first: Build | undefined;
   for (const st of tried.length ? tried : [style]) {

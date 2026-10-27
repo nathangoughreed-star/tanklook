@@ -71,7 +71,7 @@ export function attachSuggest(store: Store, viewer: Viewer, status: (m: string, 
   const card = (p: Proposal, i: number) => {
     const b = p.build, sp = placedSetup(b), D = demandOf(sp, loadProfile()), rh = rhythmOf(D, sp);
     const checks = p.status.map(s => `<li class="sgOk">${esc(s.label)}: ${esc(s.text)}</li>`).join('');
-    const animals = p.archetype.animals.map(a => `${a.n} ${esc(getSpecies(a.species)?.name ?? a.species)}`).join(', ');
+    const animals = b.animals.map(a => `${a.n} ${esc(getSpecies(a.species)?.name ?? a.species)}`).join(', ');
     return `<li class="bpCard" data-i="${i}">
 <div class="bpPic">${pics[i] ? `<img src="${pics[i]}" alt="${esc(p.archetype.title)}: ${esc(tankLabel(b.tank, units()))} with the animals">` : ''}</div>
 <div class="bpHead"><b>${esc(p.archetype.title)}</b><span class="spNote">${esc(FAMILY_LABEL[p.archetype.family])}</span></div>
@@ -82,6 +82,7 @@ ${b.finish ? `<ul class="bpGear sgFinish">${b.finish.lines.map(l => `<li>${esc(l
 ${p.ownedNotes.map(n => `<div class="${n.kind === 'credit' ? 'spNote' : 'spWarn'}">${esc(n.text)}</div>`).join('')}
 ${p.matched.length ? `<div class="spNote">Matches: ${p.matched.map(m => esc(TAGS.find(t => t.id === m)!.label.toLowerCase())).join(', ')}</div>` : ''}
 ${checks ? `<ul class="bpGear sgChecks">${checks}</ul>` : ''}
+${p.capNote ? `<div class="spNote">${esc(p.capNote)}</div>` : ''}
 ${p.unknown.length ? `<div class="spNote">Not enough information: ${esc(p.unknown[0])}</div>` : ''}
 <div class="spNote">${b.setup.water.on ? `${esc(CYCLE_NOTE)} ` : ''}${b.finish ? `${esc(TIER_LABEL[b.finish.tier])}: the look, substrate, hardscape and plants are in the price and the time.` : ''}</div>
 <button type="button" class="primary" data-act="pick" data-i="${i}">Use this setup</button></li>`;
