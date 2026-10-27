@@ -742,3 +742,11 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .scp.ask { left: auto; width: 340px }
 /* an integrated kit supplies this (scene/integrated.ts): greyed and inert */
 .row.locked, .btns.locked { opacity: .5; }
+
+/* S243 step 1: the five-category summary on the fullness tile */
+.ftCats { margin: 4px 0 8px } .ftCat { border-top: 1px solid var(--line, #3334); padding: 3px 0 }
+.ftCat summary { display: flex; justify-content: space-between; gap: 8px; cursor: pointer; font-weight: 600 }
+.ftChip, .ftPill.ftc-ok, .ftPill.ftc-caution, .ftPill.ftc-problem, .ftPill.ftc-unknown { border-radius: 9px; padding: 0 8px; font-size: 12px; font-weight: 600; white-space: nowrap; color: #fff }
+.ftc-ok.ftChip, .ftPill.ftc-ok { background: #2e9e6a } .ftc-caution.ftChip, .ftPill.ftc-caution { background: #d99a1e } .ftc-problem.ftChip, .ftPill.ftc-problem { background: #d8432f } .ftc-unknown.ftChip, .ftPill.ftc-unknown { background: #6b7686 }
+.ftCatWhat, .ftNoData { color: var(--muted, #8a93a3); font-size: 11px; margin: 2px 0 } .ftCat ul { margin: 3px 0 2px 16px; padding: 0; font-size: 12px }
+li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unknown { color: #aab3c2 } .ftCat li em { color: var(--muted, #8a93a3) }

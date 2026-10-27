@@ -17,7 +17,15 @@ const ROUTINE_FLOOR = dd.time.waterChangeFraction.floor;
 import type { Store } from '../scene/store';
 import type { SpaceLimit, TankSetup, Units } from '../scene/types';
 import { tankView } from '../render/tankView';
-import { GAUGE_TIP, gaugeColor, gaugeStyle, gaugeText } from './gauge';
+import { GAUGE_TIP, gaugeStyle } from './gauge';
+import { stockSummary, type StockSummary } from './stockSummary';
+
+/** The five-category summary as the tile draws it (S243 step 1): one chip per category, each expanding into its reasons. */
+export function summaryHtml(sm: StockSummary, esc: (s: string) => string): string {
+  const rows = sm.cats.map(c => `<details class="ftCat"${c.level === 'problem' ? ' open' : ''}><summary><span>${esc(c.label)}</span><span class="ftChip ftc-${c.level}">${esc(c.word)}</span></summary>`
+    + `<div class="ftCatWhat">${esc(c.what)}</div>` + (c.items.length ? `<ul>${c.items.map(i => `<li class="ftc-${i.level}">${esc(i.text)}${i.also ? ` <em>(${esc(i.also)})</em>` : ''}</li>`).join('')}</ul>` : '<ul><li class="ftc-ok">Nothing found against it.</li></ul>') + '</details>').join('');
+  return `<div class="ftCats">${rows}${sm.noData ? `<div class="ftNoData" title="${esc(sm.noDataFor.join(', '))}">${sm.noData} check${sm.noData === 1 ? '' : 's'} had no data for this species</div>` : ''}</div>`;
+}
 
 /** A bar at or over this reads "caution" (amber, past ideal); over 100 is over (red). */
 export const NEAR_FULL = IDEAL_MAX;
@@ -233,20 +241,21 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
     const animalsHidden = viewer.hidden.has('fish');
     el.hidden = !st.show || animalsHidden || tankView.ghost; // no tank chosen yet on the stocking screen: nothing to be full
     const crowd = crowdWarnings(S), cover = coverAdvice(S); // S196: fighting limits, a warning only (never in the percents); lane CP2: cover
-    const sig = JSON.stringify([st, u, editing, !!forkFn, tankExtent(S.tank), crowd, cover, stockingDetail(r), r.capacity, r.nitrogen, S.water.tapNitrate ?? 0]);
+    const sm = stockSummary(S, r, st.mins);
+    const sig = JSON.stringify([st, sm, u, editing, !!forkFn, tankExtent(S.tank), crowd, cover, stockingDetail(r), r.capacity, r.nitrogen, S.water.tapNitrate ?? 0]);
     if (sig === lastSig) return;
     lastSig = sig;
     el.classList.toggle('over', st.head.level === 'over' || st.fit?.fits === false);
-    pill.textContent = (st.fit?.fits === false ? `${st.head.text} · too big` : st.head.text) + (st.compat ? ` · ${st.compat.level === 'over' ? 'compat risk' : 'compat concern'}` : ''); // lane CP: seen while minimized, the bar colours stay load-only
-    pill.title = st.compat?.text ?? '';
-    pill.className = `ftPill ft-${st.fit?.fits === false ? 'over' : st.head.level}`;
-    const pc = st.fit?.fits === false || st.head.level === 'over' ? Infinity : st.head.pct; // the gauge's colour at this level, not the band's
-    pill.style.background = gaugeColor(pc); pill.style.color = gaugeText(pc);
+    // Nathan 2026-10-27: closed, the pill is the WORST of the five categories; the fullness number means room only
+    pill.textContent = st.fit?.fits === false ? `${sm.worstWord} · too big` : sm.worstWord;
+    pill.title = [st.compat?.text, ...sm.cats.filter(c => c.level !== 'ok').map(c => `${c.label}: ${c.word}`)].filter(Boolean).join('\n');
+    pill.className = `ftPill ftc-${sm.worst}`;
+    pill.style.background = ''; pill.style.color = '';
     const box = (on: boolean) => `<label class="ftNoFilt"><input type="checkbox" class="ftNoFilter"${on ? ' checked' : ''}> No filter: I am keeping this tank filterless (Walstad style)</label>`;
     // lane HB (Nathan 2026-10-21): Space split into its two limits; the pill and the tank fit use the larger
     const spaceRows = row('water', 'Water column', st.water, topBy(r, 'space'), 'water column', undefined, 'How full the water is: body size against the litres (fitted to AqAdvisor). More height counts here.')
       + row('floor', 'Floor', st.floor, st.topFloor, 'floor', 'Most of the floor:', 'Floor the bottom dwellers use: 15 sq in per inch of fish (research/habitat-model.md). A taller tank adds no floor.', 'No bottom dwellers: the floor is free.');
-    bars.innerHTML = `<div class="ftWhy ftSize">${esc(tankSizeLine(S, r, u))}</div>` + (st.compat ? `<div class="ftWarn ft-${st.compat.level} ftCompat">${esc(st.compat.text)}</div>` : '') + spaceRows
+    bars.innerHTML = `<div class="ftWhy ftSize">${esc(tankSizeLine(S, r, u))}</div>` + (r.contributors.length ? summaryHtml(sm, esc) : '') + (st.compat ? `<div class="ftWarn ft-${st.compat.level} ftCompat">${esc(st.compat.text)}</div>` : '') + spaceRows
       + (st.filter === 'unset' ? `<div class="ftWarn ft-near ftNeedFilter"><b>This tank needs a filter.</b> Add one in Tech › Filtration to see its filtration.${box(false)}</div>`
         : row('filt', 'Filtration', st.filt, st.topFilt, 'waste', undefined, 'Ammonia the filter bacteria can process, after the plants take their share. It does not measure nitrate, oxygen, pH or temperature.')
           + (st.filter === 'filterless' ? `<div class="ftWhy">${box(true)}: bacteria on glass, substrate and decor only.</div>` : ''))
