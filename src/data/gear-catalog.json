@@ -1,6 +1,1121 @@
 {
  "asOf": "2026-10-20",
  "note": "Real aquarium gear by brand (lane TG). lengthMm = tube + cap overall, diaMm = tube diameter; est lists the fields that are estimates. Sources: the maker's page or a major US retailer listing. Filters (63) and the heaters retail kits ship were added 2026-10-19 (lane TG step 3); `priceUsd` listed in `est` is a guess, and the cost then keeps the class price. 2026-10-20: Amazon best sellers and the mini heaters for small tanks added (research/gear-popular: popularity = rank / ratings / bought per month as seen); `controller` = an inline thermostat on the cord. 2026-10-20 (lights): the 18 Amazon best-selling aquarium lights (research/gear-popular/lights.*); mount bar = slim bar on extendable wire brackets, rim-legs = slab on two clip legs, gooseneck = nano disc on a clamp, submersible = a stick on suction cups; fitMinMm..fitMaxMm = tank lengths it fits; no PAR is published for any (the light model estimates it from watts); watts in est = the same brand's W per inch times the body.",
+ "skimmers": [
+  {
+   "id": "coralife-biocube",
+   "brand": "Coralife",
+   "model": "Biocube Protein Skimmer",
+   "kind": "hob",
+   "ratedGal": 32,
+   "priceUsd": 45.32,
+   "needSpec": [
+    "watts",
+    "size"
+   ],
+   "note": "Clip-on with its own air pump, for BioCubes and standard tanks up to 32 gal.",
+   "popularity": {
+    "evidence": "Amazon search \"aquarium protein skimmer\": 896 ratings, 4.0 stars, 100+ bought in past month",
+    "url": "https://www.amazon.com/dp/B07WT6QWP1",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#d9dde0",
+    "cup": "#d9dde0"
+   },
+   "colorsEst": [
+    "body",
+    "cup"
+   ],
+   "url": "https://www.amazon.com/dp/B07WT6QWP1",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "macroaqua-m50",
+   "brand": "Macro Aqua",
+   "model": "M-50 Mini Hang-on Skimmer",
+   "kind": "hob",
+   "ratedGal": 53,
+   "gph": 238,
+   "dimsMm": {
+    "w": 140,
+    "d": 140,
+    "h": 343
+   },
+   "priceUsd": 69.99,
+   "needSpec": [
+    "watts"
+   ],
+   "note": "Small hang-on, 238 gph pump, needle-wheel impeller, no priming. The same listing sells a 60 gal version.",
+   "popularity": {
+    "evidence": "Amazon search: 1,169 ratings, 3.8 stars, 50+ bought in past month",
+    "url": "https://www.amazon.com/dp/B01597SD8Y",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#f2f2f0",
+    "cup": "#f2f2f0"
+   },
+   "colorsEst": [
+    "cup"
+   ],
+   "url": "https://www.amazon.com/dp/B01597SD8Y",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "aqqa-nano-79",
+   "brand": "AQQA",
+   "model": "Aquarium Protein Skimmer (79 GPH, 50-80 gal)",
+   "kind": "hob",
+   "ratedGal": 80,
+   "gph": 79,
+   "dimsMm": {
+    "w": 220,
+    "d": 50,
+    "h": 80
+   },
+   "priceUsd": 36.99,
+   "needSpec": [
+    "watts"
+   ],
+   "note": "The listing also calls it a nano surface skimmer; 79 gph is a small pump for 80 gal.",
+   "popularity": {
+    "evidence": "Amazon search: 94 ratings, 3.5 stars, 100+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0FCFWJ9C7",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#1c1c1c",
+    "cup": "#cfd8dc"
+   },
+   "colorsEst": [
+    "cup"
+   ],
+   "url": "https://www.amazon.com/dp/B0FCFWJ9C7",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "ioaoi-hob-80",
+   "brand": "IOAOI",
+   "model": "Hang-On Protein Skimmer, DC pinwheel pump (up to 80 gal)",
+   "kind": "hob",
+   "ratedGal": 80,
+   "gph": 185,
+   "watts": 4,
+   "dimsMm": {
+    "w": 432,
+    "d": 86,
+    "h": 432
+   },
+   "priceUsd": 99.99,
+   "note": "12 V DC pinwheel pump with controller, 700 L/h; not for rimmed tanks.",
+   "popularity": {
+    "evidence": "Amazon search: 259 ratings, 4.2 stars",
+    "url": "https://www.amazon.com/dp/B09ZQCWHPM",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#f4f4f2",
+    "cup": "#f4f4f2"
+   },
+   "url": "https://www.amazon.com/dp/B09ZQCWHPM",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "ioaoi-nano-20",
+   "brand": "IOAOI",
+   "model": "Nano Protein Skimmer, DC pinwheel (20 gal)",
+   "kind": "hob",
+   "ratedGal": 20,
+   "priceUsd": 79.99,
+   "needSpec": [
+    "watts",
+    "size",
+    "flow"
+   ],
+   "note": "Hang-on or internal, for 20 gal; only the search row was read.",
+   "popularity": {
+    "evidence": "Amazon search: 259 ratings, 4.2 stars",
+    "url": "https://www.amazon.com/dp/B0GKRQMQS1",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#f4f4f2",
+    "cup": "#f4f4f2"
+   },
+   "colorsEst": [
+    "body",
+    "cup"
+   ],
+   "url": "https://www.amazon.com/dp/B0GKRQMQS1",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "ioaoi-sump-100",
+   "brand": "IOAOI",
+   "model": "In-Sump Protein Skimmer REEF 100 (60-100 gal)",
+   "kind": "sump",
+   "ratedGal": 100,
+   "dimsMm": {
+    "w": 150,
+    "d": 119,
+    "h": 460
+   },
+   "priceUsd": 139.99,
+   "needSpec": [
+    "watts",
+    "flow"
+   ],
+   "note": "Feed mode pauses the pump 10 minutes; 1 year pump, 2 years body warranty.",
+   "popularity": {
+    "evidence": "Amazon search: 25 ratings, 4.4 stars",
+    "url": "https://www.amazon.com/dp/B0G944ZJQ8",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#f4f4f2",
+    "cup": "#f4f4f2"
+   },
+   "url": "https://www.amazon.com/dp/B0G944ZJQ8",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "magtool-n100plus",
+   "brand": "MagTool",
+   "model": "DC Protein Skimmer N100 Plus",
+   "kind": "sump",
+   "gph": 265,
+   "priceUsd": 159.99,
+   "needSpec": [
+    "ratedGal",
+    "watts",
+    "size"
+   ],
+   "note": "265 gph DC pinwheel pump; the listing gives no rated gallons.",
+   "popularity": {
+    "evidence": "Amazon search: 6 ratings, 3.5 stars",
+    "url": "https://www.amazon.com/dp/B0H5V8DWJX",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#d8e6ea",
+    "cup": "#d8e6ea"
+   },
+   "colorsEst": [
+    "body",
+    "cup"
+   ],
+   "url": "https://www.amazon.com/dp/B0H5V8DWJX",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "magtool-n130plus",
+   "brand": "MagTool",
+   "model": "DC Protein Skimmer N130 Plus (105-135 gal)",
+   "kind": "sump",
+   "ratedGal": 135,
+   "gph": 400,
+   "priceUsd": 229,
+   "needSpec": [
+    "watts",
+    "size"
+   ],
+   "note": "400 gph DC sine-wave pump with 1-8 level controller, feed mode and delayed start.",
+   "popularity": {
+    "evidence": "Amazon search: 51 ratings, 4.3 stars, 50+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0B4TDJBSK",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#d8e6ea",
+    "cup": "#d8e6ea"
+   },
+   "colorsEst": [
+    "body",
+    "cup"
+   ],
+   "url": "https://www.amazon.com/dp/B0B4TDJBSK",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "magtool-n170plus",
+   "brand": "MagTool",
+   "model": "DC Protein Skimmer N170 Plus (135-185 gal)",
+   "kind": "sump",
+   "ratedGal": 185,
+   "gph": 660,
+   "priceUsd": 279.99,
+   "needSpec": [
+    "watts",
+    "size"
+   ],
+   "note": "660 gph DC sine-wave pump with controller.",
+   "popularity": {
+    "evidence": "Amazon search: 42 ratings, 4.5 stars",
+    "url": "https://www.amazon.com/dp/B0B4SZSPHC",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#d8e6ea",
+    "cup": "#d8e6ea"
+   },
+   "colorsEst": [
+    "body",
+    "cup"
+   ],
+   "url": "https://www.amazon.com/dp/B0B4SZSPHC",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "reefoctopus-classic-110int",
+   "brand": "Reef Octopus",
+   "model": "Classic 110-INT Needle Wheel Skimmer (100 gal)",
+   "kind": "sump",
+   "ratedGal": 100,
+   "priceUsd": 311.29,
+   "needSpec": [
+    "watts",
+    "size"
+   ],
+   "note": "The community pick for a sump; 4 in needle-wheel body, cone neck.",
+   "popularity": {
+    "evidence": "Amazon search: 293 ratings, 4.5 stars",
+    "url": "https://www.amazon.com/dp/B003TQ7Z8W",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#111111",
+    "cup": "#cfd8dc"
+   },
+   "colorsEst": [
+    "cup"
+   ],
+   "url": "https://www.amazon.com/dp/B003TQ7Z8W",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "oase-crystalskim-350",
+   "brand": "OASE",
+   "model": "CrystalSkim 350 Surface Skimmer",
+   "kind": "surface",
+   "ratedGal": 92,
+   "priceUsd": 39.99,
+   "needSpec": [
+    "watts",
+    "size"
+   ],
+   "note": "Freshwater and marine surface skimmer (film and oil), up to 92 gal (350 L); suction cups.",
+   "popularity": {
+    "evidence": "Amazon search: 586 ratings, 3.9 stars, 400+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0BFFY1ZGF",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#8a8d90",
+    "cup": "#8a8d90"
+   },
+   "url": "https://www.amazon.com/dp/B0BFFY1ZGF",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "oase-crystalskim-600",
+   "brand": "OASE",
+   "model": "CrystalSkim 600 Surface Skimmer",
+   "kind": "surface",
+   "ratedGal": 160,
+   "priceUsd": 59.99,
+   "needSpec": [
+    "watts",
+    "size"
+   ],
+   "note": "Freshwater and marine surface skimmer, up to 160 gal (600 L).",
+   "popularity": {
+    "evidence": "Amazon search: 257 ratings, 4.2 stars, 100+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0BFG4H6BR",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#8a8d90",
+    "cup": "#8a8d90"
+   },
+   "url": "https://www.amazon.com/dp/B0BFG4H6BR",
+   "asOf": "2026-10-27"
+  }
+ ],
+ "uv": [
+  {
+   "id": "coodia-gwk-pump",
+   "brand": "COODIA",
+   "model": "Internal Green Water Killer UV Pump",
+   "kind": "internal",
+   "galMax": 75,
+   "watts": 5,
+   "est": [
+    "watts"
+   ],
+   "priceUsd": 34.99,
+   "needSpec": [
+    "lamp watts"
+   ],
+   "note": "Submersible; 5 W is the built-in water pump, the lamp is not stated.",
+   "popularity": {
+    "evidence": "Amazon search: 7,483 ratings, 600+ bought in past month",
+    "url": "https://www.amazon.com/dp/B07V26V5MS",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#161616"
+   },
+   "url": "https://www.amazon.com/dp/B07V26V5MS",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "hygger-uv-3w-small",
+   "brand": "hygger",
+   "model": "UV Light with Timer 3 W (2-15 gal)",
+   "kind": "internal",
+   "galMin": 2,
+   "galMax": 15,
+   "watts": 3,
+   "priceUsd": 23.99,
+   "popularity": {
+    "evidence": "Amazon search: 37 ratings, 100+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0GYCXK2JG",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#161616"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B0GYCXK2JG",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "hygger-uv-3w",
+   "brand": "hygger",
+   "model": "UV Light with Timer 3 W (5-25 gal)",
+   "kind": "internal",
+   "galMin": 5,
+   "galMax": 25,
+   "watts": 3,
+   "priceUsd": 23.13,
+   "note": "Timer; the listing says 24 h a day shortens the bulb.",
+   "popularity": {
+    "evidence": "Amazon search: 284 ratings, 400+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0DX6YZPC2",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#161616"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B0DX6YZPC2",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "hygger-uv-9w",
+   "brand": "hygger",
+   "model": "UV Light with Timer 9 W (60-100 gal)",
+   "kind": "inline",
+   "galMin": 60,
+   "galMax": 100,
+   "watts": 9,
+   "priceUsd": 34.99,
+   "note": "Needs a hose in a filter line.",
+   "popularity": {
+    "evidence": "Amazon search: 141 ratings, 50+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0FN7GXHZQ",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#161616"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B0FN7GXHZQ",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "hygger-uv-11w",
+   "brand": "hygger",
+   "model": "UV Light with Timer 11 W (60-180 gal)",
+   "kind": "inline",
+   "galMin": 60,
+   "galMax": 180,
+   "watts": 11,
+   "priceUsd": 43.69,
+   "popularity": {
+    "evidence": "Amazon search: 106 ratings",
+    "url": "https://www.amazon.com/dp/B0G1MHKNFW",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#161616"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B0G1MHKNFW",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "uv-11w-55-150",
+   "brand": "Generic",
+   "model": "11 W UV Light (55-150 gal)",
+   "kind": "inline",
+   "galMin": 55,
+   "galMax": 150,
+   "watts": 11,
+   "priceUsd": 21.99,
+   "popularity": {
+    "evidence": "Amazon search: 149 ratings",
+    "url": "https://www.amazon.com/dp/B0CGHS831D",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#161616"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B0CGHS831D",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "uv-13w-clarifier",
+   "brand": "Generic",
+   "model": "13 W UV Water Clarifier (up to 300 gal)",
+   "kind": "inline",
+   "galMax": 300,
+   "watts": 13,
+   "bulbHours": 8000,
+   "dimsMm": {
+    "w": 240,
+    "d": 23,
+    "h": 23
+   },
+   "priceUsd": 19.99,
+   "popularity": {
+    "evidence": "Amazon search: 115 ratings, 200+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0FR8MS11Z",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#161616"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B0FR8MS11Z",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "uv-18w-100-1000",
+   "brand": "Generic",
+   "model": "18 W UV Light (100-1000 gal)",
+   "kind": "inline",
+   "galMin": 100,
+   "galMax": 1000,
+   "watts": 18,
+   "bulbHours": 8000,
+   "priceUsd": 59.99,
+   "popularity": {
+    "evidence": "Amazon search: 538 ratings, 300+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0CZLJ3YSR",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#161616"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B0CZLJ3YSR",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "fluval-inline-uvc",
+   "brand": "Fluval",
+   "model": "In-Line UVC Clarifier",
+   "kind": "inline",
+   "priceUsd": 102,
+   "needSpec": [
+    "watts",
+    "gallons"
+   ],
+   "note": "In a canister filter hose; the page lists a 30,000-hour LED UVC life.",
+   "popularity": {
+    "evidence": "Amazon search: 1,884 ratings, 200+ bought in past month",
+    "url": "https://www.amazon.com/dp/B08KSF2FT6",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#161616"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B08KSF2FT6",
+   "asOf": "2026-10-27"
+  }
+ ],
+ "co2": [
+  {
+   "id": "fzone-single-stage",
+   "brand": "FZONE",
+   "model": "CO2 Regulator, single stage (CGA320)",
+   "kind": "regulator",
+   "stages": 1,
+   "priceUsd": 54.99,
+   "needSpec": [
+    "watts",
+    "cylinder"
+   ],
+   "note": "Regulator only: the CO2 cylinder is bought separately.",
+   "popularity": {
+    "evidence": "Amazon search: 1,332 ratings, 100+ bought in past month",
+    "url": "https://www.amazon.com/dp/B07QFT69P8",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#b08d57"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B07QFT69P8",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "fzone-mini-kit",
+   "brand": "FZONE",
+   "model": "Mini CO2 Regulator Kit (CGA320)",
+   "kind": "regulator",
+   "stages": 1,
+   "priceUsd": 47.99,
+   "needSpec": [
+    "watts",
+    "cylinder"
+   ],
+   "note": "Regulator only: the CO2 cylinder is bought separately.",
+   "popularity": {
+    "evidence": "Amazon search: 63 ratings, 50+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0FX4T577M",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#b08d57"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B0FX4T577M",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "fzone-mini-dual",
+   "brand": "FZONE",
+   "model": "Dual Stage Mini CO2 Regulator (paintball tank / CGA320)",
+   "kind": "regulator",
+   "stages": 2,
+   "priceUsd": 94.99,
+   "needSpec": [
+    "watts",
+    "cylinder"
+   ],
+   "note": "Regulator only: the CO2 cylinder is bought separately.",
+   "popularity": {
+    "evidence": "Amazon search: 558 ratings, 50+ bought in past month",
+    "url": "https://www.amazon.com/dp/B08P5FKQDT",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#b08d57"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B08P5FKQDT",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "fzone-cga320-dual",
+   "brand": "FZONE",
+   "model": "Pro Dual Stage CO2 Regulator (CGA320)",
+   "kind": "regulator",
+   "stages": 2,
+   "priceUsd": 135.99,
+   "needSpec": [
+    "watts",
+    "cylinder"
+   ],
+   "note": "Regulator only: the CO2 cylinder is bought separately.",
+   "popularity": {
+    "evidence": "Amazon search: 669 ratings, 50+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0838KXK5D",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#b08d57"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B0838KXK5D",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "fzone-desktop-45g",
+   "brand": "FZONE",
+   "model": "Desktop CO2 System, 45 g cartridge",
+   "kind": "cartridge",
+   "cartridgeG": 45,
+   "lastsDays": 50,
+   "priceUsd": 47.99,
+   "needSpec": [
+    "cartridge price",
+    "watts"
+   ],
+   "note": "Disposable cartridge; up to 50 days at 1 bubble a second, 8 h a day.",
+   "popularity": {
+    "evidence": "Amazon search: 181 ratings, 100+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0DY46N5WV",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#2b2b2b"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B0DY46N5WV",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "fzone-desktop-80g",
+   "brand": "FZONE",
+   "model": "Desktop CO2 Kit with solenoid, 80 g cartridge",
+   "kind": "cartridge",
+   "cartridgeG": 80,
+   "lastsDays": 90,
+   "priceUsd": 72.99,
+   "needSpec": [
+    "cartridge price",
+    "watts"
+   ],
+   "note": "Disposable cartridge with solenoid; up to 90 days at 1 bubble a second, 8 h a day.",
+   "popularity": {
+    "evidence": "Amazon search: 181 ratings, 50+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0H6WS4C9N",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#2b2b2b"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B0H6WS4C9N",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "diy-co2-2l",
+   "brand": "Generic",
+   "model": "2 L DIY CO2 Generator with regulator and needle valve",
+   "kind": "diy",
+   "bottleL": 2,
+   "priceUsd": 85.98,
+   "popularity": {
+    "evidence": "Amazon search: 87 ratings, 50+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0F4N1GZJ4",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#cfcfcf"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B0F4N1GZJ4",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "fzone-diy-2-5l",
+   "brand": "FZONE",
+   "model": "2.5 L DIY CO2 Generator Kit",
+   "kind": "diy",
+   "bottleL": 2.5,
+   "priceUsd": 95.99,
+   "note": "About a month at 1 bubble a second, 8 h a day, on 300-400 g of raw material.",
+   "popularity": {
+    "evidence": "Amazon search: 1,014 ratings",
+    "url": "https://www.amazon.com/dp/B0B5R18XDV",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#cfcfcf"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B0B5R18XDV",
+   "asOf": "2026-10-27"
+  }
+ ],
+ "ato": [
+  {
+   "id": "ato-generic-qst",
+   "brand": "Generic",
+   "model": "Auto Top Off System (QST fill-time cut-off)",
+   "pump": "included pump",
+   "priceUsd": 39.99,
+   "needSpec": [
+    "brand",
+    "sensors",
+    "watts"
+   ],
+   "note": "Stops the pump if a refill takes 6 times longer than expected. The listing does not say how many sensors.",
+   "popularity": {
+    "evidence": "Amazon search: 891 ratings, 800+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0CFVWDKMC",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#2c6fd0"
+   },
+   "url": "https://www.amazon.com/dp/B0CFVWDKMC",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "fzone-ato-dual-optical",
+   "brand": "FZONE",
+   "model": "ATO System, dual optical sensors",
+   "sensors": 2,
+   "pump": "included pump",
+   "priceUsd": 39.99,
+   "needSpec": [
+    "watts"
+   ],
+   "note": "Two 1 mm optical sensors; the water rises less than 0.6 cm between top-offs.",
+   "popularity": {
+    "evidence": "Amazon search: 1,035 ratings, 100+ bought in past month",
+    "url": "https://www.amazon.com/dp/B09YVP3L22",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#2f8f55"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B09YVP3L22",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "fzone-ato-qst2",
+   "brand": "FZONE",
+   "model": "ATO System QST2.0",
+   "sensors": 2,
+   "pump": "included pump",
+   "priceUsd": 58.99,
+   "needSpec": [
+    "watts"
+   ],
+   "note": "Dual optical sensors with a pause button on the controller.",
+   "popularity": {
+    "evidence": "Amazon search: 460 ratings, 200+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0C68N3WK9",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#2f8f55"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B0C68N3WK9",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "fzone-nano-ato-solenoid",
+   "brand": "FZONE",
+   "model": "Nano ATO with solenoid valve (RO/DI)",
+   "sensors": 2,
+   "pump": "solenoid valve on the RO/DI line",
+   "priceUsd": 49.9,
+   "needSpec": [
+    "watts"
+   ],
+   "note": "Dual optical sensors; fills straight from an RO/DI unit through a solenoid valve, no pump.",
+   "popularity": {
+    "evidence": "Amazon search: 50 ratings",
+    "url": "https://www.amazon.com/dp/B0CR5H62Q7",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#2f8f55"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B0CR5H62Q7",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "magtool-ato-dual",
+   "brand": "MagTool",
+   "model": "Auto Top Off System, dual optical sensor",
+   "sensors": 2,
+   "pump": "included pump",
+   "priceUsd": 40.57,
+   "needSpec": [
+    "watts"
+   ],
+   "note": "One sensor watches the level and the other stops an overflow.",
+   "popularity": {
+    "evidence": "Amazon search: 559 ratings, 50+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0F6XZ8V9H",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#2c6fd0"
+   },
+   "url": "https://www.amazon.com/dp/B0F6XZ8V9H",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "magtool-duetto-2026",
+   "brand": "MagTool",
+   "model": "Duetto V2026 Auto Top Off, dual optical sensor",
+   "sensors": 2,
+   "pump": "included pump",
+   "priceUsd": 59,
+   "needSpec": [
+    "watts"
+   ],
+   "note": "External controller with a pause button and a buzzer for faults.",
+   "popularity": {
+    "evidence": "Amazon search: 186 ratings, 50+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0DS22KPDB",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#2c6fd0"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B0DS22KPDB",
+   "asOf": "2026-10-27"
+  }
+ ],
+ "chillers": [
+  {
+   "id": "paizoo-fan-3speed",
+   "brand": "PAIZOO",
+   "model": "Aquarium Chiller Fan, 3 speeds",
+   "kind": "fan",
+   "watts": 6.4,
+   "priceUsd": 25.99,
+   "needSpec": [
+    "cooling"
+   ],
+   "note": "Evaporative fan: it cools a few degrees at most. This listing does not state how many.",
+   "popularity": {
+    "evidence": "Amazon search: 382 ratings, 300+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0DJVBQD4Y",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#1c1c1c"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B0DJVBQD4Y",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "aquasmith-fan",
+   "brand": "AQUASMITH",
+   "model": "Aquarium Chiller Fan with temperature control",
+   "kind": "fan",
+   "coolF": [
+    3,
+    7
+   ],
+   "priceUsd": 45.99,
+   "needSpec": [
+    "watts"
+   ],
+   "note": "Evaporative cooling 3-7 F; minimum setting 59 F; under 40 dB.",
+   "popularity": {
+    "evidence": "Amazon search: 528 ratings, 600+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0F83J7J9J",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#1c1c1c"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B0F83J7J9J",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "chiller-110-42gal",
+   "brand": "Generic",
+   "model": "1/10 HP Aquarium Chiller 42 gal (160 L)",
+   "kind": "compressor",
+   "hp": "1/10",
+   "ratedGal": 42,
+   "priceUsd": 259.99,
+   "needSpec": [
+    "watts",
+    "drop"
+   ],
+   "note": "Holds 68-79 F; two built-in cooling fans.",
+   "popularity": {
+    "evidence": "Amazon search: 119 ratings",
+    "url": "https://www.amazon.com/dp/B09LLX1GY8",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#1c1c1c"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B09LLX1GY8",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "chiller-110-42gal-b",
+   "brand": "Generic",
+   "model": "1/10 HP Aquarium Chiller 42 gal, 110 V",
+   "kind": "compressor",
+   "hp": "1/10",
+   "ratedGal": 42,
+   "suitsGal": 33,
+   "dropF": 10,
+   "noiseDb": [
+    45,
+    50
+   ],
+   "priceUsd": 279.99,
+   "needSpec": [
+    "watts"
+   ],
+   "note": "Lowers the water up to 10 F; 33 gal recommended in peak summer.",
+   "popularity": {
+    "evidence": "Amazon search: 508 ratings, 50+ bought in past month",
+    "url": "https://www.amazon.com/dp/B0716XSSC4",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#1c1c1c"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B0716XSSC4",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "chiller-13-79gal",
+   "brand": "Generic",
+   "model": "1/3 HP Aquarium Chiller 79 gal (300 L)",
+   "kind": "compressor",
+   "hp": "1/3",
+   "ratedGal": 79,
+   "priceUsd": 279.99,
+   "needSpec": [
+    "watts",
+    "drop"
+   ],
+   "note": "Holds 68-79 F; two built-in cooling fans.",
+   "popularity": {
+    "evidence": "Amazon search: 119 ratings",
+    "url": "https://www.amazon.com/dp/B09LM4JBQR",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#1c1c1c"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B09LM4JBQR",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "chiller-13-79gal-b",
+   "brand": "Generic",
+   "model": "1/3 HP Aquarium Chiller up to 79 gal, 110 V",
+   "kind": "compressor",
+   "hp": "1/3",
+   "ratedGal": 79,
+   "suitsGal": 63,
+   "dropF": [
+    8,
+    15
+   ],
+   "noiseDb": [
+    45,
+    50
+   ],
+   "priceUsd": 329.99,
+   "needSpec": [
+    "watts"
+   ],
+   "note": "Drops the water 8-15 F; 63 gal recommended in peak summer.",
+   "popularity": {
+    "evidence": "Amazon search: 508 ratings",
+    "url": "https://www.amazon.com/dp/B087DVKYFT",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#1c1c1c"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B087DVKYFT",
+   "asOf": "2026-10-27"
+  },
+  {
+   "id": "vevor-chiller-110gal",
+   "brand": "VEVOR",
+   "model": "Aquarium Chiller 110 gal, 1/3 HP",
+   "kind": "compressor",
+   "hp": "1/3",
+   "ratedGal": 110,
+   "priceUsd": 399.9,
+   "needSpec": [
+    "watts",
+    "drop"
+   ],
+   "popularity": {
+    "evidence": "Amazon search: 23 ratings",
+    "url": "https://www.amazon.com/dp/B0FHFQVP6B",
+    "seen": "2026-10-27"
+   },
+   "colors": {
+    "body": "#1c1c1c"
+   },
+   "colorsEst": [
+    "body"
+   ],
+   "url": "https://www.amazon.com/dp/B0FHFQVP6B",
+   "asOf": "2026-10-27"
+  }
+ ],
  "heaters": [
   {
    "id": "topfin-50",
@@ -34,7 +1149,7 @@
      "hex": "#c9c8c2",
      "window": [
       0.45,
-      1.0
+      1
      ]
     },
     "thermometer": true,
@@ -7828,7 +8943,7 @@
     "seen": "2026-10-20"
    }
   }
- ],
+ ],
  "pumps": [
   {
    "id": "uniclife-ul080",

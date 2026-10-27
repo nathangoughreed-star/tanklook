@@ -14,7 +14,7 @@ import { FILTER_MODELS, HEATER_MODELS, matchHeater, type FilterKind, type Filter
 import { price as rowPrice, tankRowPrice } from '../demand/prices';
 import type { Range3 } from '../demand/types';
 import { volume } from './physics';
-import { filterProduct, genericHeaterW, heaterProduct, listedPrice, pumpProduct, PUMP_GEAR_KINDS, type FilterProduct, type HeaterProduct, type PumpProduct } from '../data/gearCatalog';
+import { filterProduct, genericHeaterW, heaterProduct, listedPrice, pumpProduct, PUMP_GEAR_KINDS, reefOptionProducts, reefProduct, skimmerSuitsGal, type AtoProduct, type ChillerProduct, type FilterProduct, type HeaterProduct, type PumpProduct, type SkimmerProduct, type UvProduct } from '../data/gearCatalog';
 import { footprint } from './shape';
 import { getTankModel, TANK_MODELS, tankFromModel, type TankModel } from '../data/tanks';
 import type { GrowFeed, TankSetup } from './types';
@@ -58,6 +58,9 @@ export interface TechSetup {
    *  replaces that part's generic price and watts, the flow rows count its gal/h, and it is drawn at its own size and colours;
    *  absent = the generic pump, priced and powered as before */
   pumps?: Record<string, string>;
+  /** real products picked from the reef / planted gear catalogue (lane GX), tech.json row id -> gear-catalog id: skimmer, surfskim,
+   *  uv, co2, ato, chiller. Each must belong to the row's chosen option (reefOptionProducts); absent = the generic part */
+  products?: Record<string, string>;
   /** room temperature, deg C, where the tank stands; absent = tech.json roomC (21) */
   roomC?: number;
   /** the tank's target water temperature, deg C (the intended operating temperature, whatever holds it: heater, cooling or the room);
@@ -279,6 +282,7 @@ export function withChoice(S: TankSetup, row: string, opt: string): TechSetup {
   const next: TechSetup = { ...t, rows, preset: 'custom' };
   if (row === 'filter') { delete next.filterModel; delete next.filterProduct; delete next.filters; if (opt !== 'none') delete next.filterless; } // as withUnits (S207 review)
   if (row === 'heater') { delete next.heaterW; delete next.heaterProduct; delete next.heaters; }
+  if (next.products?.[row]) { next.products = { ...next.products }; delete next.products[row]; if (!Object.keys(next.products).length) delete next.products; } // a product belongs to its option
   return next;
 }
 
@@ -595,6 +599,13 @@ export function optionCost(S: TankSetup, row: string, opt: string, o: { kwhUsd?:
     // a real pump picked from the catalogue (lane GP): its own watts and listed price, in place of the generic part's
     const pump = pumpFor(t, id);
     if (pump) { watts = pump.watts; setup = pricePoint(pump.priceUsd); est = false; }
+    // a catalogue product picked for this row (lane GX): its listed price and watts in place of the generic part's
+    const gp = rowProduct(t, row, opt);
+    if (gp && REEF_PARTS.has(id)) {
+      const lp = listedPrice(gp); if (lp) { setup = pricePoint(lp); est = false; }
+      if (gp.watts !== undefined) watts = gp.watts;
+      if ((gp as { kind?: string }).kind === 'regulator') est = true; // the cylinder is bought on top: the listed price is a floor
+    }
     if (!setup) { const u = unitPrice(g.price); if (u) { setup = s3(u.r, sizeK(g, gal, 'price')); est = u.est; } }
     if (g.monthly) {
       const m = 'key' in g.monthly ? (r => r && s3(r, 1 / (g.monthly as { months?: number }).months! || 1))(rowPrice(g.monthly.key)) : g.monthly;
@@ -614,6 +625,13 @@ export function optionCost(S: TankSetup, row: string, opt: string, o: { kwhUsd?:
   return { row, option: opt, parts, setup, monthly, kwhMo, minutes, monthlyUsd: { lo: monthly.lo + power, mode: monthly.mode + power, hi: monthly.hi + power }, est: parts.some(p => p.est), turnover };
 }
 
+/** The gear parts a reef / planted catalogue product stands in for. */
+const REEF_PARTS = new Set(['skimmerhob', 'skimmer', 'surfaceskim', 'uv', 'co2kit', 'co2cart', 'diyco2', 'ato', 'chiller', 'chillerfan']);
+/** The catalogue product picked for a row, if it belongs to the option chosen there. */
+export function rowProduct(t: TechSetup, row: string, opt = t.rows[row] ?? 'none') {
+  const p = reefProduct(row, t.products?.[row]);
+  return p && reefOptionProducts(row, opt).includes(p) ? p : undefined;
+}
 const heaterPrice = (u: HeatLoss['units'][number]): Range3 | undefined => { const lp = listedPrice(u.product); return lp ? pricePoint(lp) : rowPrice(u.model.priceKey); };
 /** Several units' costs as one row's (setup, consumables, power, minutes and flow added). */
 function mergeCosts(row: string, option: string, cs: OptionCost[]): OptionCost {
@@ -676,6 +694,7 @@ export function coldSpecies(S: TankSetup, t: TechSetup = techOf(S)): { id: strin
 export function techRisk(S: TankSetup, t: TechSetup = techOf(S)): number {
   let r = 0;
   for (const row of rowsFor(S)) r += optionDef(row.id, t.rows[row.id] ?? 'none')?.risk ?? 0;
+  if ((rowProduct(t, 'ato') as AtoProduct | undefined)?.sensors === 1) r += 0.4; // one sensor: a stuck one floods the tank (it takes back the ATO's own -0.2 and more)
   return r;
 }
 
@@ -716,6 +735,8 @@ export function techParts(S: TankSetup): TechPiece[] {
       else if (g.watts) piece.watts = g.watts;
       const pump = pumpFor(t, gear);
       if (pump) Object.assign(piece, { product: pump.id, watts: pump.watts, ...(pump.gph ? { gph: pump.gph } : {}) });
+      const rp = rowProduct(t, row.id, opt);
+      if (rp && REEF_PARTS.has(gear)) { piece.product = rp.id; if (rp.watts !== undefined) piece.watts = rp.watts; }
       if (gear === 'returnpump') piece.gph = Math.round(galOf(S) * (g.gphPerGal ?? 6));
       out.push(piece);
     }
@@ -750,6 +771,11 @@ export function parseTech(raw: unknown): TechSetup | undefined {
     const pumps: Record<string, string> = {};
     for (const [gear, id] of Object.entries(r.pumps as Record<string, unknown>)) { const p = typeof id === 'string' ? pumpProduct(id) : undefined; if (p && PUMP_GEAR_KINDS[gear]?.includes(p.kind)) pumps[gear] = p.id; }
     if (Object.keys(pumps).length) t.pumps = pumps;
+  }
+  if (r.products && typeof r.products === 'object') {
+    const products: Record<string, string> = {};
+    for (const [row, id] of Object.entries(r.products as Record<string, unknown>)) if (typeof id === 'string' && reefOptionProducts(row, rows[row] ?? '').some(p => p.id === id)) products[row] = id;
+    if (Object.keys(products).length) t.products = products;
   }
   if (Array.isArray(r.heaters)) t.heaters = (r.heaters as unknown[]).slice(0, 8).flatMap(v => {
     const u = v as Partial<HeaterUnit> | null; if (!u || typeof u !== 'object') return [];
@@ -789,4 +815,38 @@ export function assumedFilter(S: TankSetup): string | undefined {
   if (filterState(S) !== 'unset') return undefined;
   const t = techOf(S).rows.filter;
   return t && t !== 'none' ? undefined : (galOf(S) <= 60 ? 'hob' : 'canister');
+}
+
+// ---- checks on the picked reef / planted products (lane GX): the under-sized warnings, one line each
+
+export interface ReefCheck { row: string; level: 'warn' | 'note'; text: string }
+const toF = (k: number) => Math.round(k * 9 / 5);
+/** What the tank's picked skimmers, UV, CO2, ATO and chiller products say about it: too small for the water, a fan that cannot hold the
+ *  room, one ATO sensor, a regulator with no cylinder. The same texts in the Tech menu and the plan sheet. */
+export function reefChecks(S: TankSetup, t: TechSetup = techOf(S)): ReefCheck[] {
+  if (!S.water.on || !t.products) return [];
+  const out: ReefCheck[] = [], gal = Math.round(galOf(S) + sumpLitres(S) / 3.785), add = (row: string, level: ReefCheck['level'], text: string) => out.push({ row, level, text });
+  for (const row of ['skimmer', 'surfskim'] as const) {
+    const p = rowProduct(t, row) as SkimmerProduct | undefined; if (!p) continue;
+    const suits = skimmerSuitsGal(p);
+    if (suits === undefined) add(row, 'note', `${p.model}: the listing gives no rated gallons, so no size check.`);
+    else if (gal > suits * 1.15) add(row, 'warn', `${p.model} is rated for ${p.ratedGal} gal${p.kind === 'surface' ? '' : `, which is about ${Math.round(suits)} gal of real tank (skimmers are rated for 1.5-2 times their tank)`}: this system holds about ${gal} gal.`);
+  }
+  const uv = rowProduct(t, 'uv') as UvProduct | undefined;
+  if (uv?.galMax && gal > uv.galMax * 1.15) add('uv', 'warn', `${uv.model} is for tanks up to ${uv.galMax} gal: this system holds about ${gal} gal.`);
+  else if (uv?.galMin && gal < uv.galMin * 0.85) add('uv', 'note', `${uv.model} is made for ${uv.galMin} gal and up: its flow is a lot for ${gal} gal.`);
+  const ato = rowProduct(t, 'ato') as AtoProduct | undefined;
+  if (ato?.sensors === 1) add('ato', 'warn', `${ato.model} has one sensor: if it sticks or gets slimed the pump keeps running and the tank floods. Two sensors is the safe kind.`);
+  else if (ato && ato.sensors === undefined) add('ato', 'note', `${ato.model}: the listing does not say how many sensors it has, so the flood risk is not judged.`);
+  const ch = rowProduct(t, 'chiller') as ChillerProduct | undefined;
+  if (ch) {
+    const h = heatLoss(S, t), needF = toF(Math.max(0, h.roomC - h.targetC)), max = ch.kind === 'fan' ? ch.coolF?.[1] : Array.isArray(ch.dropF) ? ch.dropF[1] : ch.dropF;
+    if (ch.kind === 'fan' && max !== undefined && needF > max) add('chiller', 'warn', `${ch.model} cools about ${ch.coolF![0]}-${max} °F, and the room is ${needF} °F above the target: evaporation will not hold it.`);
+    else if (ch.kind === 'fan' && max === undefined) add('chiller', 'note', `${ch.model}: the listing does not say how much it cools; a fan does a few degrees at most.`);
+    else if (max !== undefined && needF > max) add('chiller', 'warn', `${ch.model} drops the water about ${max} °F, and the room is ${needF} °F above the target.`);
+    const lim = ch.kind === 'compressor' ? ch.suitsGal ?? ch.ratedGal : undefined;
+    if (lim && gal > lim * 1.1) add('chiller', 'warn', `${ch.model} is for ${ch.ratedGal} gal${ch.suitsGal ? ` (${ch.suitsGal} gal in a hot summer)` : ''}: this system holds about ${gal} gal.`);
+  }
+  if ((rowProduct(t, 'co2') as { kind?: string } | undefined)?.kind === 'regulator') add('co2', 'note', 'Regulator only: the CO2 cylinder and its refills are extra.');
+  return out;
 }

@@ -17,9 +17,9 @@ import type { Store } from '../scene/store';
 import {
   ROOM_C, applyPreset, feedFor, feedOf, filterFor, filterSteps, filterUnits, heatLoss, offerChiller,
   optionCost, optionDef, presetsFor, pumpFor, REEF_FLOW_X, reefFeedOf, rowsFor, setFeed, singleFilter, stockCapacity, techOf, tempEvidence, unitCosts, walstadGaps, withChoice,
-  withUnits, withoutUnit, sumpDefault, sumpFromModel, sumpLitres, sumpName, sumpOf, SUMP_FILL, sumpDrainDown, sumpTooSmall, type FilterUnit, type SumpSize, type HeaterUnit, type OptionCost, type TechSetup,
+  withUnits, withoutUnit, reefChecks, rowProduct, sumpDefault, sumpFromModel, sumpLitres, sumpName, sumpOf, SUMP_FILL, sumpDrainDown, sumpTooSmall, type FilterUnit, type SumpSize, type HeaterUnit, type OptionCost, type TechSetup,
 } from '../scene/tech';
-import { FILTER_PRODUCTS, HEATER_PRODUCTS, filtersNear, genericHeaterW, heatersNear, lightProduct, lightsFor, productName, pumpRatedFor, pumpsFor, type FilterProduct, type HeaterProduct, type LightProduct, type PumpProduct } from '../data/gearCatalog';
+import { FILTER_PRODUCTS, HEATER_PRODUCTS, reefOptionProducts, filtersNear, genericHeaterW, heatersNear, lightProduct, lightsFor, productName, pumpRatedFor, pumpsFor, type FilterProduct, type HeaterProduct, type LightProduct, type PumpProduct, type ReefProduct } from '../data/gearCatalog';
 import { applyLightProduct, lightProductNote, productOn } from '../scene/lightproduct';
 import { TECHS, lightOutCached } from '../scene/lightout';
 import { integratedKit, lockNote, locksOf } from '../scene/integrated';
@@ -259,6 +259,38 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     return html + `<div class="hint">${esc(optionDef('filter', 'sump')?.note ?? '')}</div></div></div>`;
   };
 
+  // ---- reef / planted gear (lane GX, 2026-10-27): a real skimmer, UV, CO2 kit, ATO or chiller picked from the catalogue
+  /** One product's specs as read from its listing, and what was not readable. */
+  const specText = (p: ReefProduct): string => {
+    const q = p as ReefProduct & Record<string, unknown>, bits: string[] = [];
+    if (q.kind) bits.push(String(q.kind === 'hob' ? 'hang-on' : q.kind === 'sump' ? 'in-sump' : q.kind === 'surface' ? 'surface skimmer' : q.kind));
+    if (q.hp) bits.push(`${q.hp} HP`);
+    if (q.ratedGal) bits.push(`rated ${q.ratedGal} gal`);
+    if (q.galMin || q.galMax) bits.push(`for ${q.galMin ?? 0}-${q.galMax ?? '?'} gal`);
+    if (q.gph) bits.push(`${q.gph} gph`);
+    if (p.watts !== undefined) bits.push(`${p.watts} W${p.est?.includes('watts') ? ' (pump only)' : ''}`);
+    if (q.sensors) bits.push(`${q.sensors} sensors`);
+    if (q.pump) bits.push(String(q.pump));
+    if (q.coolF) bits.push(`cools ${(q.coolF as number[]).join('-')} °F`);
+    if (q.dropF) bits.push(`drops ${([] as number[]).concat(q.dropF as number | number[]).join('-')} °F`);
+    if (q.cartridgeG) bits.push(`${q.cartridgeG} g cartridge, up to ${q.lastsDays} days`);
+    if (q.stages) bits.push(`${q.stages}-stage`);
+    return bits.join(' · ');
+  };
+  const reefPicker = (S: TankSetup, t: TechSetup, row: string, opt: string): string => {
+    const list = reefOptionProducts(row, opt);
+    if (!list.length) return '';
+    const cur = rowProduct(t, row, opt), label = (p: ReefProduct) => `${productName(p)}${p.priceUsd ? ` · ${usd(p.priceUsd)}` : ''}`;
+    let h = `<div class="row"><label for="rp-${row}" title="A real product from the catalogue (Amazon listings read 2026-10-27): its price, watts and size checks replace the generic part's">Product</label><select id="rp-${row}" class="span2" data-prod="${row}"><option value="">Generic</option>${list.map(p => `<option value="${p.id}"${p === cur ? ' selected' : ''}>${esc(label(p))}</option>`).join('')}</select></div>`;
+    if (!cur) return h;
+    const chk = reefChecks(S, t).filter(c => c.row === row).map(c => `<span class="tchip ${c.level === 'warn' ? 'warn' : 'mute'}">${esc(c.text)}</span>`).join('');
+    return h + `<div class="tunit"><div class="tuh"><span class="tun">${esc(productName(cur))}</span></div><div class="hint">${esc(specText(cur))}${cur.note ? `. ${esc(cur.note)}` : ''}</div>`
+      + (cur.needSpec?.length ? `<div class="hint">Not stated on the listing: ${esc(cur.needSpec.join(', '))}.</div>` : '')
+      + (chk ? `<span class="tchips">${chk}</span>` : '')
+      + (cur.popularity ? `<div class="hint">${esc(cur.popularity.evidence)} (seen ${esc(cur.popularity.seen)})</div>` : '')
+      + `<div class="hint"><a href="${esc(cur.url)}" target="_blank" rel="noopener">Listing</a></div></div>`;
+  };
+
   const delta = (d: Totals, b: Totals) => {
     const part = (v: number, f: (x: number) => string, cut: number) => Math.abs(v) < cut ? '<span class="tz">±0</span>' : `<span class="${v > 0 ? 'tup' : 'tdn'}">${v > 0 ? '+' : '−'}${f(Math.abs(v))}</span>`;
     return `Setup ${part(d.setup - b.setup, usd, 1)} · Monthly ${part(d.upkeep - b.upkeep, v => usd(v), 0.05)} · Time ${part(d.minutes - b.minutes, v => `${v.toFixed(v < 10 ? 1 : 0)} min/wk`, 0.05)} · Difficulty ${part(d.risk - b.risk, v => v.toFixed(1), 0.05)}`;
@@ -280,6 +312,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     const shared = sharedRange([...new Set(S.fish.map(f => f.species))].map(getSpecies).filter((x): x is NonNullable<typeof x> => !!x)), ev = tempEvidence(S);
     if (ev && shared.range) for (const k of [operatingCheck(shared, ev), holdCheck(ev), measuredCheck(shared, ev)]) if (k && (k.state === 'outside' || k.state === 'conditional')) warn.push(`${k.text}.`);
     if (offerChiller(S) && t.rows.chiller !== 'chiller') warn.push(`The room (${room(t)}) is warmer than the tank should be (${tempTxt(h.targetC)}): a chiller, or a cooler room.`);
+    for (const c of reefChecks(S, t)) if (c.level === 'warn') warn.push(c.text);
     if (t.rows.co2 === 'pressurized' && t.rows.air === 'airstone') warn.push('An airstone running by day blows off the injected CO2: put it on a timer for the night.');
     if (warn.length) html += `<div class="hint why">${warn.map(esc).join('<br>')}</div>`;
     return html;
@@ -303,6 +336,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
       // heaters and filters: the units by name (Nathan 2026-10-20: "Top Fin Submersible Heater 50 W" readily seen)
       if (r.id === 'heater' && cur !== 'none') name = heatLoss(S, t).units.map(u => u.product ? productName(u.product) : `Generic heater ${u.watts} W`).join(' + ');
       if (r.id === 'filter' && cur !== 'none') name = filterUnits(t).map(u => filterLabel(S, u)).join(' + ');
+      { const rp = rowProduct(t, r.id, cur); if (rp) name = productName(rp); }
       html += `<div class="trow${open === r.id ? ' open' : ''}" data-row="${r.id}"><button type="button" class="thead" aria-expanded="${open === r.id}"><span class="tlab">${esc(r.label)}</span><span class="tcur">${esc(name)}</span>${range(c, coveredOf(S, t, r.id))}</button>`;
       // an integrated kit's own filter (or heater): shown, not opened (scene/integrated.ts)
       if ((r.id === 'filter' && locksOf(S)?.filter) || (r.id === 'heater' && locksOf(S)?.heater)) { html += `<div class="hint">${esc(lockNote(S, r.id))}${unholdBtn(r.id)}</div></div>`; continue; }
@@ -317,6 +351,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
           const oc = optionCost(S, r.id, op.id, { tech: t, kwhUsd: kwhUsd() });
           html += `<button type="button" class="topt${op.id === cur ? ' on' : ''}" data-opt="${op.id}" aria-pressed="${op.id === cur}"${op.note ? ` title="${esc(op.note)}"` : ''}><span class="tol">${esc(op.label)}</span>${range(oc)}<span class="tchips">${chips(S, r.id, op.id, oc)}</span></button>`;
         }
+        html += reefPicker(S, t, r.id, cur);
         if (def?.note) html += `<div class="hint">${esc(def.note)}</div>`;
         const pg = r.id === 'air' ? 'airpump' : r.id === 'flow' ? def?.parts[0] : undefined;
         if (pg && cur !== 'none') html += pumpPicker(S, t, pg, r.id === 'air' ? 'Air pump' : pg === 'wavemaker' ? 'Wavemaker' : 'Powerhead');
@@ -380,6 +415,11 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     if (el.dataset.pump) { // a pump product (or generic: empty)
       const gear = el.dataset.pump, id = (el as unknown as HTMLSelectElement).value;
       edit(s => { const t = { ...techOf(s) }, pumps = { ...t.pumps }; if (id) pumps[gear] = id; else delete pumps[gear]; if (Object.keys(pumps).length) t.pumps = pumps; else delete t.pumps; return t; });
+      return;
+    }
+    if (el.dataset.prod) { // a catalogue product for a reef / planted row (lane GX); empty = the generic part
+      const row = el.dataset.prod, id = el.value;
+      edit(s => { const t = { ...techOf(s) }, products = { ...t.products }; if (id) products[row] = id; else delete products[row]; if (Object.keys(products).length) t.products = products; else delete t.products; return t; });
       return;
     }
     if (el.dataset.hw !== undefined) { // a generic heater's watts

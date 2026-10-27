@@ -23,12 +23,14 @@
   ]},
   { "id": "chiller", "label": "Chiller", "water": "wet", "options": [
    { "id": "none", "label": "No chiller", "parts": [] },
+   { "id": "fan", "label": "Chiller fan (evaporative)", "parts": ["chillerfan"], "note": "A fan over the water: it cools a few degrees only (3-7 °F on the listings), so it suits a warm room, not a heat wave." },
    { "id": "chiller", "label": "Chiller", "parts": ["chiller"], "note": "Only when the room runs warmer than the tank should be (reef in summer)." }
   ]},
   { "id": "co2", "label": "CO2", "water": "fresh", "options": [
    { "id": "none", "label": "None", "parts": [], "co2": 0 },
    { "id": "liquid", "label": "Liquid carbon", "parts": ["liquidcarbon"], "co2": 0.5, "note": "A little carbon boost; overdosing melts vallisneria and some mosses." },
    { "id": "diy", "label": "DIY yeast CO2", "parts": ["diyco2"], "co2": 1, "note": "Uneven output, weak above ~30 gal; a bottle every two weeks." },
+   { "id": "cartridge", "label": "Disposable-cartridge kit (desktop)", "parts": ["co2cart", "dropchecker"], "co2": 2, "risk": 0.4, "note": "A small regulator and solenoid on a disposable cartridge: real injection for a small tank; the cartridge runs out in 50-90 days." },
    { "id": "pressurized", "label": "Pressurized (regulator, solenoid, drop checker)", "parts": ["co2kit", "dropchecker"], "co2": 2, "risk": 0.8, "note": "Too much gas at night can suffocate fish: the solenoid on a timer and a drop checker are a must." }
   ]},
   { "id": "ferts", "label": "Fertilizer", "water": "fresh", "options": [
@@ -65,6 +67,10 @@
   { "id": "feeder", "label": "Feeding (quality of life)", "water": "wet", "options": [
    { "id": "none", "label": "Feed by hand", "parts": [] },
    { "id": "auto", "label": "Automatic feeder", "parts": ["autofeeder"], "note": "Drops the daily feeding trips; you refill it every few weeks. Fish go fine for a weekend, so this matters most for busy weeks." }
+  ]},
+  { "id": "surfskim", "label": "Surface skimmer (film and oil)", "water": "wet", "options": [
+   { "id": "none", "label": "None", "parts": [] },
+   { "id": "surface", "label": "Surface skimmer", "parts": ["surfaceskim"], "note": "Pulls the oily film off the water surface: more gas exchange, a clearer view. It does not replace a protein skimmer on a reef." }
   ]},
   { "id": "skimmer", "label": "Protein skimmer", "water": "salt", "options": [
    { "id": "none", "label": "None", "parts": [], "risk": 0.8, "tier": 0 },
@@ -153,6 +159,9 @@
   "fogger": { "draw": true, "label": "Fogger", "price": { "fallback": { "lo": 25, "mode": 40, "hi": 60 } }, "watts": 25, "hours": 4, "minutes": { "lo": 5, "mode": 10, "hi": 15 } },
   "timer": { "draw": true, "label": "Outlet timer", "price": { "key": "dry:timer" } },
   "ato": { "label": "Auto top-off", "price": { "key": "gear:ato" }, "watts": 8, "hours": 1, "minutes": { "lo": -4, "mode": -2, "hi": -1 }, "ref": 40, "exp": { "minutes": 0.3 } },
+  "surfaceskim": { "label": "Surface skimmer", "price": { "fallback": { "lo": 40, "mode": 50, "hi": 60 } }, "watts": 5, "hours": 24, "minutes": { "lo": 1, "mode": 2, "hi": 3 } },
+  "chillerfan": { "label": "Chiller fan", "price": { "fallback": { "lo": 17, "mode": 30, "hi": 46 } }, "watts": 6.4, "hours": 12, "minutes": { "lo": 0.2, "mode": 0.4, "hi": 0.8 } },
+  "co2cart": { "label": "Desktop CO2 kit (cartridge)", "price": { "fallback": { "lo": 48, "mode": 60, "hi": 73 } }, "minutes": { "lo": 1, "mode": 2, "hi": 3 }, "watts": 2, "hours": 8 },
   "skimmerhob": { "label": "Hang-on protein skimmer", "price": { "key": "gear:skimmer-hob" }, "watts": 11, "hours": 24, "minutes": { "lo": 2, "mode": 3, "hi": 5 }, "ref": 55, "exp": { "price": 0.5, "watts": 0.6 } },
   "skimmer":      { "label": "In-sump protein skimmer", "price": { "key": "gear:skimmer" }, "watts": 15, "hours": 24, "minutes": { "lo": 2, "mode": 4, "hi": 6 }, "ref": 75, "exp": { "price": 0.5, "watts": 0.6 } },
   "powerhead": { "label": "Powerhead", "price": { "key": "gear:powerhead" }, "watts": 3.5, "hours": 24, "minutes": { "lo": 0.3, "mode": 0.5, "hi": 1 }, "ref": 40, "exp": { "price": 0.4, "watts": 0.7 } },

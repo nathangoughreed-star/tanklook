@@ -8,7 +8,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { FILTER_MODELS, HEATER_MODELS, type FilterModel } from '../demand/gear';
 import { filterState, heatLoss, SUMP_FILL, sumpDefault, sumpOf, techOf, techParts, type GearPlace } from '../scene/tech';
 import { fitsInStand } from '../scene/standspace';
-import { filterProduct, genericHeaterW, heaterProduct, pumpProduct, type FilterProduct, type PartColour, type PumpProduct } from '../data/gearCatalog';
+import { filterProduct, genericHeaterW, heaterProduct, pumpProduct, reefProduct, type FilterProduct, type PartColour, type PumpProduct } from '../data/gearCatalog';
 import { backdropDepth, glassThickness, tankUnderside, floorY, waterY, clamp, HOOD_H, RIM_DROP, RIM_H } from '../scene/physics';
 import { chord } from '../scene/shape';
 import { groundHeight } from '../scene/terrain';
@@ -17,7 +17,7 @@ import type { Tank, TankSetup } from '../scene/types';
 // ---------- what is drawn ----------
 
 /** Gear classes beyond gear-models.json's filters and heaters. */
-export const EXTRA_GEAR = ['airstone', 'co2', 'uv', 'powerhead', 'wavemaker', 'skimmer', 'sump', 'ato', 'heatdome', 'uvb', 'mister', 'fogger', 'heatmat', 'thermostat', 'gauge', 'handmister', 'timer'] as const;
+export const EXTRA_GEAR = ['airstone', 'co2', 'uv', 'powerhead', 'wavemaker', 'skimmer', 'sump', 'ato', 'heatdome', 'uvb', 'mister', 'fogger', 'heatmat', 'thermostat', 'gauge', 'handmister', 'timer', 'surfskim', 'chillerfan'] as const;
 /** A dry tank's gear on the top (2026-10-21): the basking dome, the UVB tube, the misting nozzle, the fogger's outlet. */
 const LID_GEAR = new Set(['heatdome', 'uvb', 'mister', 'fogger']);
 export type ExtraGear = (typeof EXTRA_GEAR)[number];
@@ -48,12 +48,14 @@ export function gearPicks(S: TankSetup): GearPick[] {
   if (!gearView.on || (!S.tech && !DRAW_INFERRED)) return [];
   const out: GearPick[] = [], parts = techParts(S), sump = parts.some(p => p.gear === 'sump');
   for (const p of parts) {
-    const place = spotOf(S, p.place), pick = (id: string) => out.push({ id, row: p.row, ...(p.n > 1 ? { n: p.n } : {}), ...(p.gear === 'powerhead' || p.gear === 'wavemaker' ? (p.product ? { product: p.product } : {}) : {}), ...(place ? { place } : {}) });
+    const place = spotOf(S, p.place), pick = (id: string) => out.push({ id, row: p.row, ...(p.n > 1 ? { n: p.n } : {}), ...(p.product && p.gear !== 'airpump' ? { product: p.product } : {}), ...(place ? { place } : {}) });
     switch (p.gear) {
       case 'filter': if (p.model && !(S.stockFirst && filterState(S) !== 'chosen')) out.push({ id: p.model, row: p.row, ...(p.n > 1 ? { n: p.n } : {}), ...(p.product ? { product: p.product } : {}), ...(place ? { place } : {}) }); break;
       case 'heater': if (p.model) out.push({ id: p.model, row: p.row, watts: p.watts ?? genericHeaterW(heatLoss(S, techOf(S)).needW), ...(p.product ? { product: p.product } : {}), ...(place ? { place } : {}) }); break; // one pick per heater (scene/tech techParts)
       case 'sump': pick('sump'); break;
-      case 'co2kit': case 'diyco2': pick('co2'); break;
+      case 'co2kit': case 'diyco2': case 'co2cart': pick('co2'); break;
+      case 'surfaceskim': pick('surfskim'); break;
+      case 'chillerfan': pick('chillerfan'); break;
       case 'airpump': pick('airstone'); break;
       case 'uv': pick('uv'); break;
       case 'ato': pick('ato'); break;
@@ -90,7 +92,7 @@ export function mountOf(id: string): GearMount {
   const fm = isFilter(id);
   if (fm) return fm.kind === 'sponge' ? 'floor' : fm.kind === 'internal' ? 'glass' : 'rim';
   if (isHeater(id)) return 'glass';
-  return ({ airstone: 'floor', co2: 'glass', uv: 'glass', powerhead: 'glass', wavemaker: 'glass', skimmer: 'rim', sump: 'rim', ato: 'rim' } as Record<string, GearMount>)[id] ?? 'fixed';
+  return ({ airstone: 'floor', co2: 'glass', uv: 'glass', powerhead: 'glass', wavemaker: 'glass', skimmer: 'rim', sump: 'rim', ato: 'rim', surfskim: 'glass', chillerfan: 'rim' } as Record<string, GearMount>)[id] ?? 'fixed';
 }
 
 // ---------- show / hide (Viewer "Show equipment") ----------
@@ -617,13 +619,15 @@ function sump(f: Frame, sp: Spot) {
   kit.box('room', V(pumpX, base + pw * 0.45, cz), pw, pw * 0.9, pw * 0.9, C.black, 10);
 }
 
-function skimmerHob(f: Frame, sp: Spot) {
-  const { kit, t } = f, W = 120, D = 110, Hb = 300, yTop = f.H + 60;
+/** A catalogue product's part colour (lane GX, true colours): its listing's hex as a number, else the model's default. */
+const hexOf = (hex: string | undefined, dflt: number) => (hex && /^#[0-9a-f]{6}$/i.test(hex) ? parseInt(hex.slice(1), 16) : dflt);
+function skimmerHob(f: Frame, sp: Spot, pk?: GearPick) {
+  const { kit, t } = f, W = 120, D = 110, Hb = 300, yTop = f.H + 60, rp = reefProduct('skimmer', pk?.product), body = hexOf(rp?.colors?.body, C.black), cupc = hexOf(rp?.colors?.cup, C.cup);
   const u = f.slot(sp.fixed ? sp.u : sp.u + 40, 80, f.wy - 140, f.H, 0, 70, sp.fixed);
   // the reaction body behind the glass, its collection cup on top (skimmate in the bottom), the intake box inside
-  f.box('room', f.P(u, yTop - Hb / 2, -t - 6 - D / 2), W, Hb, D, C.black, 12);
+  f.box('room', f.P(u, yTop - Hb / 2, -t - 6 - D / 2), W, Hb, D, body, 12);
   const cc = f.P(u, yTop, -t - 6 - D / 2);
-  kit.rod('clear', cc, cc.clone().add(V(0, 110, 0)), 44, C.cup, { base: 0.18, seg: 28 });
+  kit.rod('clear', cc, cc.clone().add(V(0, 110, 0)), 44, cupc, { base: 0.18, seg: 28 });
   kit.rod('clear', cc.clone().add(V(0, 2, 0)), cc.clone().add(V(0, 12, 0)), 42, C.skimmate, { base: 0.55, seg: 28 }); // a thin layer of skimmate
   kit.rod('room', cc.clone().add(V(0, 110, 0)), cc.clone().add(V(0, 118, 0)), 46, C.black, { seg: 28 });
   kit.rod('clear', cc, cc.clone().add(V(0, 80, 0)), 14, C.cup, { base: 0.25, seg: 16 }); // the neck rising through the cup
@@ -710,21 +714,21 @@ function co2(f: Frame, sp: Spot, level: GearPick['co2']) {
   sucker(f, ud, yd + 44, 6);
 }
 
-function uv(f: Frame, sp: Spot, filter: FilterModel | undefined) {
+function uv(f: Frame, sp: Spot, filter: FilterModel | undefined, pk?: GearPick) {
   const u0 = sp.u;
-  const { kit, t } = f;
+  const { kit, t } = f, rp = reefProduct('uv', pk?.product), tube = hexOf(rp?.colors?.body, C.white);
   if (filter && filter.kind === 'canister' || !filter) {
     // inline on the outlet hose: in the stand beside the canister (behind the tank there is rarely room before the
     // wall), else behind the tank: a white tube with grey end caps and a blue indicator window
     const c = f.S.stand.show ? f.P(clamp(f.T.L * 0.25, 140, f.T.L - 140) + 190, f.floor + 170, f.T.D * 0.45) : f.P(u0, (f.floor + f.H) / 2, -t - 34);
-    kit.rod('room', c.clone().add(V(0, -140, 0)), c.clone().add(V(0, 140, 0)), 30, C.white, { seg: 28 });
+    kit.rod('room', c.clone().add(V(0, -140, 0)), c.clone().add(V(0, 140, 0)), 30, tube, { seg: 28 });
     for (const k of [-1, 1]) kit.rod('room', c.clone().add(V(0, k * 140, 0)), c.clone().add(V(0, k * 160, 0)), 32, C.grey, { seg: 28 });
     kit.box('glow', c.clone().add(V(0, 100, 30.2)), 8, 24, 1, C.uvBlue);
     return;
   }
   // a submersible unit on the back glass beside the filter: the lamp tube and its pump head
   const w = 46, h = 200, yT = lerp(Math.min(f.ground(u0, 32) + h + 10, f.wy - 30), f.wy - 30, sp.y ?? 1), u = f.slot(sp.fixed ? u0 : u0 + w / 2, w + 6, yT - h, yT, 0, 60, sp.fixed), b = 32;
-  kit.rod('wet', f.P(u, yT - h, b), f.P(u, yT - 40, b), 22, C.charcoal, { seg: 24 });
+  kit.rod('wet', f.P(u, yT - h, b), f.P(u, yT - 40, b), 22, rp ? hexOf(rp.colors?.body, C.charcoal) : C.charcoal, { seg: 24 });
   kit.rod('wet', f.P(u, yT - 40, b), f.P(u, yT, b), 24, C.black, { seg: 24 });
   f.box('glow', f.P(u, yT - 110, b + 22.2), 6, 40, 1, C.uvBlue);
   for (const k of [0.25, 0.7]) sucker(f, u, yT - h * k, b - 22);
@@ -758,12 +762,28 @@ function powerhead(f: Frame, sp: Spot, big: boolean, prod?: PumpProduct) {
   kit.tube('room', overRim(f, u, p0.clone().addScaledVector(dir, 12).add(V(0, r * 0.7, 0)), 6, f.top + 30), 2.4, C.black, 0, 6);
 }
 
-function ato(f: Frame, sp: Spot) {
-  const { kit, t } = f, u = f.slot(sp.u, 30, f.wy - 30, f.H, 0, 30, sp.fixed), y = f.wy;
-  f.box('wet', f.P(u, y + 8, 12), 22, 34, 18, C.black, 4);
+function ato(f: Frame, sp: Spot, pk?: GearPick) {
+  const { kit, t } = f, u = f.slot(sp.u, 30, f.wy - 30, f.H, 0, 30, sp.fixed), y = f.wy, body = hexOf(reefProduct('ato', pk?.product)?.colors?.body, C.black);
+  f.box('wet', f.P(u, y + 8, 12), 22, 34, 18, body, 4);
   kit.rod('clear', f.P(u, y - 2, 21), f.P(u, y - 14, 21), 4, C.glass, { base: 0.3, seg: 12 });
   f.box('wet', f.P(u, f.H + 6, (14 - t) / 2), 24, 6, 14 + t + 8, C.black, 2);
   kit.tube('room', overRim(f, u, f.P(u, y + 25, 12), 12, f.top + 20), 2, C.black, 0, 6);
+}
+
+/** A surface skimmer (OASE CrystalSkim style) on the back glass: a box on suction cups with its intake slot at the water line. */
+function surfaceSkim(f: Frame, sp: Spot, pk?: GearPick) {
+  const { kit } = f, body = hexOf(reefProduct('surfskim', pk?.product)?.colors?.body, C.grey), u = f.slot(sp.u, 70, f.wy - 150, f.wy + 6, 0, 60, sp.fixed), y = f.wy - 60;
+  f.box('wet', f.P(u, y, 34), 62, 120, 44, body, 8);
+  f.box('wet', f.P(u, f.wy - 2, 58), 50, 4, 12, C.black, 1); // the intake slot, riding the surface
+  for (const k of [0.25, 0.75]) sucker(f, u, y - 60 + 120 * k, 12);
+  kit.tube('room', overRim(f, u, f.P(u, y + 60, 34), 34, f.top + 20), 2.4, C.black, 0, 6);
+}
+/** A chiller fan on the rim: a housing with two fan rings blowing across the water. */
+function chillerFan(f: Frame, sp: Spot, pk?: GearPick) {
+  const { kit, t } = f, body = hexOf(reefProduct('chiller', pk?.product)?.colors?.body, C.charcoal), u = f.slot(sp.u, 120, f.H - 10, f.H + 60, 0, 70, sp.fixed);
+  f.box('room', f.P(u, f.H + 38, (50 - t) / 2), 110, 52, 56, body, 6);
+  for (const k of [-1, 1]) kit.put('room', new THREE.TorusGeometry(19, 2.2, 6, 24), C.black, along(f.P(u + k * 28, f.H + 38, -t / 2 + 28), f.inward, 0));
+  f.box('wet', f.P(u, f.H + 6, (30 - t) / 2), 80, 6, 30 + t + 8, C.black, 2);
 }
 
 // ---------- a dry tank's top: the lamps and misting (2026-10-21; Nathan: "slide anywhere theres surface") ----------
@@ -973,9 +993,10 @@ export function buildGear(S: TankSetup, T: Tank, solids: THREE.Box3[], picks = g
       if (mine.length && !k) outlet = { f, u: fk.kind === 'canister' ? mine[mine.length - 1][0] + 35 : (mine[0][0] + mine[0][1]) / 2 };
     });
     if (!pass) cursor = after();
-    const one = (id: string, b: (f: Frame, sp: Spot) => void, u = () => after()) => { const p = get(id); if (!go(p)) return; const { f, sp } = spot(p!, u()); track(p!, () => b(f, sp)); };
-    one('uv', (f, sp) => uv(f, sp, has('sump') ? undefined : fm), () => fm?.kind === 'canister' || has('sump') ? outlet.u + 40 : cursor);
+    const one = (id: string, b: (f: Frame, sp: Spot, pk?: GearPick) => void, u = () => after()) => { const p = get(id); if (!go(p)) return; const { f, sp } = spot(p!, u()); track(p!, () => b(f, sp, p)); };
+    one('uv', (f, sp, pk) => uv(f, sp, has('sump') ? undefined : fm, pk), () => fm?.kind === 'canister' || has('sump') ? outlet.u + 40 : cursor);
     if (!has('sump')) one('skimmer', skimmerHob);
+    one('surfskim', surfaceSkim); one('chillerfan', chillerFan);
     one('airstone', airstone);
     if (!has('sump')) one('ato', ato);
     // CO2 under the filter's outlet, on that wall, unless the owner moved it

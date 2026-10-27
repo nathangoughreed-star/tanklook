@@ -196,3 +196,55 @@ export function pumpsFor(gear: string, gal: number): PumpProduct[] {
 }
 /** Whether the listing rates the pump for a tank of `gal` gallons: true / false, undefined when it gives no range. */
 export const pumpRatedFor = (p: PumpProduct, gal: number): boolean | undefined => (p.galMin === undefined && p.galMax === undefined ? undefined : !((p.galMin !== undefined && gal < p.galMin) || (p.galMax !== undefined && gal > p.galMax)));
+// ---- reef and planted gear (lane GX, 2026-10-27): protein / surface skimmers, UV, CO2, auto top-off, chillers, read from Amazon
+// listings. A spec the listing does not give is absent and named in `needSpec`; est lists fields that are estimates.
+
+export interface GearListing {
+  id: string; brand: string; model: string; priceUsd?: number; url: string; asOf: string;
+  est?: string[]; needSpec?: string[]; note?: string; popularity?: Popularity;
+  /** part colours (hex) as far as the listing says; `colorsEst` the ones not seen in a photo */
+  colors?: { body: string; cup?: string }; colorsEst?: string[];
+  watts?: number;
+}
+/** hob = hang-on / clip-on, sump = in-sump, surface = a freshwater-and-marine surface (film) skimmer. */
+export interface SkimmerProduct extends GearListing {
+  kind: 'hob' | 'sump' | 'surface';
+  /** the maker's rated tank, gallons; protein skimmers are rated for about 1.5-2 times the tank they really keep (SKIM_RATED_K) */
+  ratedGal?: number; gph?: number; dimsMm?: { w: number; d: number; h: number };
+}
+export interface UvProduct extends GearListing {
+  kind: 'internal' | 'inline'; galMin?: number; galMax?: number; bulbHours?: number; dimsMm?: { w: number; d: number; h: number };
+}
+export interface Co2Product extends GearListing {
+  /** regulator = a regulator for a cylinder bought separately; cartridge = a disposable-cartridge desktop kit; diy = a yeast generator */
+  kind: 'regulator' | 'cartridge' | 'diy'; stages?: number; cartridgeG?: number; lastsDays?: number; bottleL?: number;
+}
+export interface AtoProduct extends GearListing { sensors?: number; pump?: string }
+export interface ChillerProduct extends GearListing {
+  kind: 'fan' | 'compressor'; hp?: string; ratedGal?: number; suitsGal?: number;
+  /** cooling a fan gives, deg F (min, max); a compressor's drop, deg F (one number or min-max) */
+  coolF?: [number, number]; dropF?: number | [number, number]; noiseDb?: [number, number];
+}
+const reef = data as unknown as { skimmers?: SkimmerProduct[]; uv?: UvProduct[]; co2?: Co2Product[]; ato?: AtoProduct[]; chillers?: ChillerProduct[] };
+export const SKIMMER_PRODUCTS = reef.skimmers ?? [];
+export const UV_PRODUCTS = reef.uv ?? [];
+export const CO2_PRODUCTS = reef.co2 ?? [];
+export const ATO_PRODUCTS = reef.ato ?? [];
+export const CHILLER_PRODUCTS = reef.chillers ?? [];
+export type ReefProduct = SkimmerProduct | UvProduct | Co2Product | AtoProduct | ChillerProduct;
+/** The Tech rows that take a catalogue product (TechSetup.products), with their products. */
+export const REEF_ROWS: Record<string, ReefProduct[]> = { skimmer: SKIMMER_PRODUCTS, surfskim: SKIMMER_PRODUCTS, uv: UV_PRODUCTS, co2: CO2_PRODUCTS, ato: ATO_PRODUCTS, chiller: CHILLER_PRODUCTS };
+/** A protein skimmer's rating is for about this many times the tank it keeps clean (Nathan's brief: 1.5 to 2). A surface skimmer is rated for its tank. */
+export const SKIM_RATED_K = 1.75;
+/** The tank size a skimmer really suits, gallons (undefined: no rating read). */
+export const skimmerSuitsGal = (p: SkimmerProduct) => p.ratedGal === undefined ? undefined : p.kind === 'surface' ? p.ratedGal : p.ratedGal / SKIM_RATED_K;
+/** The catalogue product a Tech row's saved id names, only when it belongs to that row's chosen option kind (the picker's rule). */
+export function reefProduct(row: string, id?: string): ReefProduct | undefined { return id ? REEF_ROWS[row]?.find(p => p.id === id) : undefined; }
+/** Which products a row's option offers: skimmer hob / sump, surface, UV, CO2 by option, ATO, chiller fan / compressor. */
+export function reefOptionProducts(row: string, opt: string): ReefProduct[] {
+  const all = REEF_ROWS[row] ?? [];
+  const kinds: Record<string, string> = { 'skimmer.hob': 'hob', 'skimmer.sump': 'sump', 'surfskim.surface': 'surface', 'co2.pressurized': 'regulator', 'co2.cartridge': 'cartridge', 'co2.diy': 'diy', 'chiller.fan': 'fan', 'chiller.chiller': 'compressor', 'uv.uv': '' };
+  const k = kinds[`${row}.${opt}`];
+  if (k === undefined) return row === 'ato' && opt === 'ato' ? all : [];
+  return k ? all.filter(p => (p as { kind?: string }).kind === k) : all;
+}
