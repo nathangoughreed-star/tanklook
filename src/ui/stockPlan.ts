@@ -19,8 +19,7 @@ import { tankView } from '../render/tankView';
 import { attachBuildPick } from './buildPick';
 import { attachStockGallery } from './stockGallery';
 import { onSpaceFork, type SpaceFork } from './fullnessTile';
-import { grazerLevel, grazerShort } from '../data/grazers';
-import { spaceBand, animalsInTank, animalsOf, bump, writePairs, FAIL_WORD, groupLineIn, type Pairing, forkOptions, isSexed, notesOf, overWarn, shownLengthMm, planFor, shownLitres, conflictsOf, rankTankmates, tempLinesOf, startPick, tankLabel, totalOf, type Pk, type Plan, type RoomOption } from './stockPlanLogic';
+import { spaceBand, animalsInTank, animalsOf, bump, writePairs, FAIL_WORD, groupLineIn, type Pairing, forkOptions, isSexed, notesOf, planFor, conflictsOf, rankTankmates, tempLinesOf, startPick, tankLabel, totalOf, type Pk, type Plan, type RoomOption } from './stockPlanLogic';
 import { allLand, isMixed, setPool, sizeTxt } from '../scene/tankfit';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
@@ -110,15 +109,13 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
   // ---------- drawing ----------
   const bandClass = (b: string) => `spb-${b}`;
   const pickRow = (p: Pk, plan: Plan) => {
-    const litres = shownLitres(plan);
-    const hungry = litres ? grazerShort(p.id, totalOf(p), litres) : null;
     const sp = getSpecies(p.id)!, nt = notesOf(p, store.scene.units), sexed = isSexed(p.id);
     const step = (which: 'n' | 'f' | 'u', label: string, v: number) =>
       `<span class="spStep"><span class="spLab">${label}</span><button type="button" data-act="dec" data-id="${p.id}" data-w="${which}" aria-label="One fewer ${esc(label || sp.name)}"${v <= 0 ? ' disabled' : ''}>−</button><b>${v}</b><button type="button" data-act="inc" data-id="${p.id}" data-w="${which}" aria-label="One more ${esc(label || sp.name)}">+</button></span>`;
     return `<li class="spPick"><div class="spName"><b>${esc(sp.name)}</b><i>${esc(sp.sci)}</i><button type="button" class="spX" data-act="del" data-id="${p.id}" aria-label="Take ${esc(sp.name)} out">✕</button></div>
 <div class="spSteps">${sexed ? step('n', 'Males', p.n) + step('f', 'Females', p.f ?? 0) + step('u', 'Unsexed', p.u ?? 0) : step('n', '', p.n)}</div>
 ${nt.pairing ? `<div class="spPair"><span class="spLab">Pair</span>${PAIR_OPTS.map(([v, t]) => `<button type="button" data-act="pair" data-id="${p.id}" data-v="${v}"${nt.pairing!.status === v ? ' class="on"' : ''} aria-pressed="${nt.pairing!.status === v}">${t}</button>`).join('')}</div><div class="${nt.pairing.status === 'established' ? 'spNote' : 'spWarn'}">${esc(nt.pairing.line)}</div>` : ''}
-${overWarn(p, litres || undefined, shownLengthMm(plan)) ? `<div class="spWarn">${esc(overWarn(p, litres || undefined, shownLengthMm(plan))!)}</div>` : ''}${hungry ? (grazerLevel(p.id, totalOf(p), litres) === 'severe' ? `<div class="spWarn">${esc(hungry.replace(/^algae: /, 'Problem, grazing: '))}</div>` : `<div class="spWarn spGraze">${esc(hungry.replace(/^algae: /, 'Caution, grazing: '))}</div>`) : ''}${conflictsOf(picks, p.id).map((w, i) => `<div class="${w.block && i === 0 ? 'spWarn' : 'spNote'}">${i ? 'Also: ' : ''}${esc(w.text)}</div>`).join('')}${nt.needs.map(x => `<div class="${x.severity === 'S3' ? 'spWarn' : 'spNote'} spNeed">${esc(x.text)}</div>`).join('')}${(() => { const g = groupLineIn(nt, plan); return `<div class="spMsg ${g.held ? 'spb-held' : bandClass(nt.band)}">${esc(g.text)}</div>`; })()}${nt.ratio ? `<div class="spNote">${esc(nt.ratio)}</div>` : ''}
+${conflictsOf(picks, p.id).filter(w => /^expertise:/.test(w.text)).map(w => `<div class="${w.block ? 'spWarn' : 'spNote'}">${esc(w.text)}</div>`).join('')}${(() => { const g = groupLineIn(nt, plan); return nt.line ? `<div class="spMsg ${g.held ? 'spb-held' : bandClass(nt.band)}">${esc(nt.line)}</div>` : ''; })()}${nt.ratio ? `<div class="spNote">${esc(nt.ratio)}</div>` : ''}
 ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</div>` : ''}</li>`;
   };
 

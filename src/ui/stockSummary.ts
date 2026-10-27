@@ -73,6 +73,7 @@ export function stockSummary(S: TankSetup, r: Stocking, mins: { level: 'over' | 
 
   // (c) environment + (d) behaviour from the pairwise care gates, each pair said once (the engine states it from the acting side)
   const seen = new Set<string>();
+  { const fresh = sp.filter(x => !x.salt), salt = sp.filter(x => x.salt); if (fresh.length && salt.length) add('environment', 'problem', `Fresh water and salt water animals cannot share a tank: ${fresh.map(x => x.name).join(', ')} with ${salt.map(x => x.name).join(', ')}`); }
   for (const s of sp) for (const o of sp) {
     if (o === s) continue;
     const ws = whysAnimal(s, Infinity, 3, [o]), blocked = ws.some(w => !w.concern && !w.temp);
