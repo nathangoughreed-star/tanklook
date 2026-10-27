@@ -82,7 +82,29 @@ guardrail, the tool says so at that moment and offers the ways back, priced on e
   with tech-row and plant moves), `limitState`, the fork card's step-up offers. The card is lane L9; the "can anything make
   it fit" check is part of it, shared with the pickers' grey-out.
 
+**Revision 3 (review notes, 2026-10-27): the search, the options, the concessions.**
+- **One search, three uses.** "Is there a configuration that keeps this choice and meets every ticked guardrail?" is one
+  function (`makeItFit(scene, change, P)` in a new demand/makefit.ts): the trade-off card's options, the pickers' grey-out
+  and Discover's viability check all call it. Levers: animals (count, swap), live plants, tech rows (hose, auto feeder,
+  ATO, mister, auto water changer once catalogued), tank size. Bounded, deterministic beam search (width ~8, depth 3);
+  lane L9 measures its time per call before the pickers call it for every option.
+- **Options are a Pareto set, not slots.** Drop any option another beats or ties on every guardrail; of the rest, show
+  closest to what the user did (fewest changes), cheapest, least work, only where they differ. One honest option is shown alone.
+- **Each option names the metric it moves.** An auto feeder mostly moves the *rhythm* (no daily trips, more away-days) and
+  only a few minutes a week; the card shows the guardrail line it actually changes (rhythm vs minutes vs $), from the
+  Chore cadence of (d). No hardware is credited with a saving the engine does not model.
+- **Over-limit is visible, never forbidden.** Any build can be modelled; while a ticked guardrail is broken the header
+  count turns amber ("Guardrails: 1 over") and the plan sheet's verdict says "over your care-time limit", never "fits".
+  Welfare (always-on hard truths) stays a separate, differently coloured line: it is not traded against money or time,
+  and only the welfare fixes the engine knows (bigger tank for "outgrows", a heater for temperature) are offered for it.
+- **Smallest concessions when nothing fits.** If `makeItFit` finds no option inside every ticked guardrail, it relaxes
+  each one in turn (the others held) and reports the smallest value that works: "Keep $500 and allow 45 min a week, or
+  keep 30 min and spend about $650 (auto water changer)." Guardrails marked **firm** (a lock on the row) are never relaxed.
+
 **R questions (with recommendations):**
+- R6. Prioritising guardrails: a full ranking or a "firm" lock per row? Rec: the **firm lock**. A ranking of five items
+  is fiddly and its meaning ("2nd beats 3rd by how much?") is vague; firm vs flexible says the one thing the concession
+  search needs.
 - R4. Bigger filter vs water changes. Rec: keep the engine as it is (filters do not remove nitrate; sourced in the
   nitrogen model) and leave a bigger filter out of the *time* options; offer it where it belongs, against the Filtration
   bar. Add an automatic water-change system as a new researched tech row.
