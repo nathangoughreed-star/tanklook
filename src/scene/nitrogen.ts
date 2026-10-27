@@ -96,6 +96,8 @@ const ROOT_FEEDERS = new Set(['sword', 'ozelot', 'crypt', 'balansae', 'lotus', '
 const ROOT_WATER = 0.5;
 /** Most of the day's TAN plants can take as ammonium; the filter always sees the rest. */
 export const PLANT_SHARE_MAX = 0.6;
+/** The same cap with no filter (Walstad, Nathan 2026-10-27): nothing buffers a feeding peak or a dead fish, so the plants are trusted with less. A guess, like the 60 %. */
+export const PLANT_SHARE_FILTERLESS = 0.4;
 /** mg N per litre per week a water-column fertilizer adds (as nitrate), by ferts option. Root tabs feed the substrate. */
 export const FERT_N: Record<string, number> = { none: 0, roottabs: 0, aio: 1.1, doser: 2.3, ei: 13.5 };
 /** Plant variant -> growth class and fresh weight g (floaters: cover in m2); guesses at the item's default size. */
@@ -189,7 +191,7 @@ export function waterChangeState(risePerWeek: number, tapMgN = 0): WaterChange {
 export const tapNitrateMgN = (S: TankSetup) => Math.max(0, S.water.tapNitrate ?? 0) * NO3_TO_N;
 export function nitrogenBudget(S: TankSetup, litres: number, tempC: number, tan: number, opt?: string): Nitrogen {
   const filter = filterCapacity(S, litres, tempC, opt), plants = plantUptake(S), feeding = feedingOf(S);
-  const byPlants = Math.min(tan * PLANT_SHARE_MAX, plants.gN), after = tan - byPlants, spare = plants.gN - byPlants;
+  const byPlants = Math.min(tan * (filter.kind === 'none' ? PLANT_SHARE_FILTERLESS : PLANT_SHARE_MAX), plants.gN), after = tan - byPlants, spare = plants.gN - byPlants;
   const safeG = filter.gDay * HEADROOM, byBacteria = Math.min(after, filter.gDay), unprocessed = Math.max(0, after - filter.gDay);
   const ammoniaPercent = safeG > 0 ? after / safeG * 100 : after > 0 ? Infinity : 0;
   // what the bacteria convert ends as nitrate; plants with capacity left take it before it counts

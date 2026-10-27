@@ -3,9 +3,9 @@ import { describe, expect, it } from 'vitest';
 import { defaultSetup } from '../src/scene/defaults';
 import { IN } from '../src/scene/physics';
 import { getSpecies } from '../src/data/species';
-import { NITRATE_TARGET_N, NO3_TO_N, filterCapacity, nitrogenBudget, plantUptake, tanOf, waterChangeState, type Nitrogen } from '../src/scene/nitrogen';
+import { NITRATE_TARGET_N, NO3_TO_N, PLANT_SHARE_FILTERLESS, PLANT_SHARE_MAX, filterCapacity, nitrogenBudget, plantUptake, tanOf, waterChangeState, type Nitrogen } from '../src/scene/nitrogen';
 import { stockingOf, massG, waterChangeFraction } from '../src/scene/stocking';
-import { withChoice } from '../src/scene/tech';
+import { setFilterless, withChoice } from '../src/scene/tech';
 import { nitrogenRows, waterChangeText } from '../src/ui/fullnessTile';
 import type { Item, TankSetup } from '../src/scene/types';
 
@@ -25,6 +25,14 @@ describe('nitrogen budget', () => {
     const neon = getSpecies('neon')!, wn = massG('neon');
     expect(tanOf(sp, w, 'normal', 25, false) / w).toBeLessThan(tanOf(neon, wn, 'normal', 25, false) / wn);
     expect(tanOf(sp, w, 'normal', 30, false)).toBeGreaterThan(tanOf(sp, w, 'normal', 22, false));
+  });
+  it('with no filter the plants are credited at most 40 % of the ammonia, with a filter 60 %', () => {
+    const stock = Array(8).fill('danio'), many = (s: TankSetup) => { s.items = Array.from({ length: 40 }, (_, i) => plant('stem', i)); return s; };
+    const none = stockingOf((() => { const t = many(bare(stock)); setFilterless(t, true); return t; })()).nitrogen, can = stockingOf(withTech(many(bare(stock)), 'canister')).nitrogen;
+    expect(none.plants.gN).toBeGreaterThan(none.tan); // plenty of plant, so the cap binds
+    expect(none.byPlants).toBeCloseTo(none.tan * PLANT_SHARE_FILTERLESS, 9);
+    expect(can.byPlants).toBeCloseTo(can.tan * PLANT_SHARE_MAX, 9);
+    expect(PLANT_SHARE_FILTERLESS).toBeLessThan(PLANT_SHARE_MAX);
   });
   it('a filter beats none, and a sourced canister uses its manual media litres', () => {
     const s = bare(['danio']), none = filterCapacity(withTech(s, 'none'), 150, 25), can = filterCapacity(withTech(s, 'canister'), 150, 25);

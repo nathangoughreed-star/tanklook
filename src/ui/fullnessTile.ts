@@ -10,7 +10,7 @@ import { defaultSpace, spaceFit, tankExtent, SPACE_MAX, SPACE_MIN, type SpaceFit
 import { IDEAL_MAX, isOver, plural, stockingDetail, stockingMemo, type Stocking } from '../scene/stocking';
 import { MIN_SLACK_PCT } from '../scene/animalfit';
 import { minDataOf, tankMinimum, type MinLine, type TankMinimum } from '../scene/tankMin';
-import { NO3_TO_N, PLANT_SHARE_MAX, type Nitrogen } from '../scene/nitrogen';
+import { NO3_TO_N, PLANT_SHARE_FILTERLESS, PLANT_SHARE_MAX, type Nitrogen } from '../scene/nitrogen';
 import { filterState, setFilterless, type FilterState } from '../scene/tech';
 import dd from '../data/demand-defaults.json';
 const ROUTINE_FLOOR = dd.time.waterChangeFraction.floor;
@@ -108,11 +108,12 @@ export interface NRow { label: string; value: string; note?: string }
 /** Where the day's ammonia goes (the nitrogen budget behind the filtration bar), for the expanded tile. */
 export function nitrogenRows(n: Nitrogen): NRow[] {
   const mgN = (g: number) => `${mg(g)} N`;
+  const share = n.filter.kind === 'none' ? PLANT_SHARE_FILTERLESS : PLANT_SHARE_MAX;
   const rows: NRow[] = [
     { label: 'Animals make', value: mgN(n.tan), note: `as ammonia (TAN), on ${n.feeding} feeding` },
     { label: 'Plants take', value: mgN(n.byPlants), note: !n.plants.count ? 'no live plants'
       : `of about ${mgN(n.plants.gN)} they can`
-        + (n.byPlants >= n.tan * PLANT_SHARE_MAX - 1e-9 ? `; held to ${Math.round(PLANT_SHARE_MAX * 100)}% of the animals' ammonia, the filter keeps the rest for nights and feeding peaks` : '')
+        + (n.byPlants >= n.tan * share - 1e-9 ? `; held to ${Math.round(share * 100)}% of the animals' ammonia, ${n.filter.kind === 'none' ? 'the surface bacteria keep the rest' : 'the filter keeps the rest'} for nights and feeding peaks` : '')
         + (n.plants.rootCount ? `. ${n.plants.rootCount} root feeder${n.plants.rootCount > 1 ? 's' : ''} counted at half: they feed from the substrate` : '') },
     { label: n.filter.kind === 'none' ? 'Surface bacteria' : 'Filter bacteria', value: mgN(n.byBacteria), note: `of about ${mgN(n.filterG)} they can; the bar is full at ${mgN(n.safeG)} (${n.filter.label})` },
   ];
