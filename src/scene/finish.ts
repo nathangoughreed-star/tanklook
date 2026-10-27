@@ -90,13 +90,23 @@ function scaped(b: Build, mode: PlantMode, style: Exclude<LayoutId, 'none'>, den
   return { ...structuredClone(S0), ...structuredClone(c) };
 }
 
+/** Hardscape at a size people really lay out (Nathan 2026-10-27: "comically large"): no piece longer than about a fifth of the tank (a third on a reef, which stacks
+ *  rock into a wall) or a third of its height, and no more pieces than the glass has room for, thinned evenly. Caves and hides keep their own size. */
+function trimHardscape(S: TankSetup): TankSetup {
+  const T = S.tank, reef = !!(S.water.on && S.water.salt), maxLen = Math.min(T.L * (reef ? 0.3 : 0.2), T.H * 0.35), most = Math.max(3, Math.round(T.L / (reef ? 60 : 110)));
+  const hard = S.items.filter(i => i.kind === 'stone' || i.kind === 'wood'), drop = new Set<number>();
+  if (hard.length > most) hard.forEach((it, i) => { if (Math.floor(i * most / hard.length) === Math.floor((i - 1) * most / hard.length) && i > 0) drop.add(it.id); });
+  return { ...S, items: S.items.filter(i => !drop.has(i.id)).map(i => (i.kind === 'stone' || i.kind === 'wood') && i.size > maxLen ? { ...i, size: Math.max(LIBRARY[i.variant]?.min ?? 15, Math.round(maxLen)) } : i) };
+}
+
 /** The finished build at one tier: the style scaped into the build's tank, priced and timed by the demand model with the build's own deals.
  *  A tier with no hardscape (a planted style at a light density) draws more of it until there is a piece to anchor the plants, up to the densest. */
 export function finishBuild(b: Build, spec: TierSpec, style: Exclude<LayoutId, 'none'>, now = Date.now()): Build {
   const land = !b.setup.water.on, fit = fitFor(b.setup), mode = land ? 'live' : spec.mode;
   let T = scaped(b, mode, style, spec.dens, fit);
   for (let h = spec.dens.hard + 1; h <= 3 && !hasHardscape(T); h++) T = scaped(b, mode, style, { ...spec.dens, hard: h }, fit);
-  T = settle(T, finSensitive(b.animals));
+  T = settle(trimHardscape(T), finSensitive(b.animals));
+  T = { ...T, render: { ...T.render, bg: T.water.on && T.water.salt ? 'blue' : T.water.on ? 'black' : 'gradient' } }; // a background behind every finished tank (Nathan 2026-10-27)
   const D = priceScape(T, b, now);
   const setupUsd = Math.round(D.totals.setupUsd), add = setupUsd - b.setupUsd;
   return {
