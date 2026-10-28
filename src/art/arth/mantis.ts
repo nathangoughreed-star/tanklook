@@ -43,7 +43,7 @@ const solids: Solid3D[] = [
   ...[0.25, 0.5, 0.75].map(t => spine(KNEE, TIP, t, 0.044, 0.011)),
   // head: a small triangular capsule, big conical lilac-grey eyes on its sides, a pointed crest between them, the mouth parts below
   { at: [0.915, -0.265, 0], r: [0.04, 0.03, 0.036], ax: [0.25, 1, 0], pt: 0.88, c: ['#f4eedb', '#eadfce'], one: true },
-  { at: [0.925, -0.305, 0.036], r: [0.072, 0.027, 0.027], ax: [0.1, -1, 0.6], pt: 0.9, c: ['#dcd8e6', '#a9a2be'] },
+  { at: [0.925, -0.305, 0.036], r: [0.076, 0.019, 0.019], ax: [0.1, -1, 0.6], pt: 0.92, c: ['#dcd8e6', '#a9a2be'] },
   { at: [0.9, -0.322, 0], r: [0.04, 0.011, 0.011], ax: [0.35, -1, 0], pt: 1, c: ['#f0efd6', '#cfd6a8'], one: true },
   { at: [0.935, -0.215, 0.012], r: [0.02, 0.008, 0.008], ax: [0.3, 1, 0.2], pt: 0.9, c: ['#e8dccc', '#bfa890'] },
   // pronotum: lobed edges, and the green mark at its base (pale green on the cream)

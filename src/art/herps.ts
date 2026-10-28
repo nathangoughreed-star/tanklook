@@ -405,7 +405,7 @@ const ISOPODS: Record<string, IsoSpec> = {
   asellus: { body: ['#5a5042', '#8a7c68', '#b0a288'], leg: ['#6a6050', '#90846c', '#b0a68c'], mark: '#3a3226', eye: ['#2a2420', '#080606'] },
   // land isopods (lane arthropods 2026-10-28): placeholders on the asellus body until their own colours are painted
   zebraisopod: { body: ['#121212', '#1c1c1c', '#34322e'], leg: ['#3a3836', '#5a5854', '#7a7874'], mark: '#f2f0e6', eye: ['#2a2420', '#080606'] },
-  powderblueisopod: { body: ['#3a4a64', '#5f7696', '#94a9c4'], leg: ['#58708e', '#86a0be', '#a8bcd4'], mark: '#34405a', eye: ['#1c1816', '#030202'] },
+  powderblueisopod: { body: ['#566a8a', '#7e94b6', '#a8bdd8'], leg: ['#6a9aca', '#8cb6de', '#b2d0ec'], mark: '#34405a', eye: ['#1c1816', '#030202'] },
 };
 const ISO_SIDE: Pt[] = [[0.84, 0.07, 'c'], [0.78, 0.03], [0.6, -0.005], [0.4, -0.01], [0.22, 0.0], [0.1, 0.04, 'c'], [0.14, 0.1], [0.4, 0.115], [0.7, 0.115], [0.8, 0.1]];
 const ISO_LIMBS: Limb3D[] = [
@@ -510,6 +510,7 @@ export interface Limb3D {
   seg?: string;                // an arthropod leg: segments swelling between narrow joints, the joints in this colour (hermit crab)
   claw?: { palm: number; r: number; finger: number }; // a chela on the end: palm length, palm half-height, finger length (widths)
   c?: [string, string];        // own colour (top, underside), else the species' legCol (hermit crab antennae)
+  smooth?: boolean;           // keep the tubes' own smooth normals instead of flat facets (a facet stripe shows on dark, glossy-edged legs: the scorpion's)
   waist?: number;             // `seg` legs: how narrow the joints are against the segments' swell (default 0.74; nearer 1 = a smooth tube, a scorpion's tail)
   far?: number;                // the far side's copy is scaled by this about the root (hermit crab: a small right claw; the near side is the big left one)
   farJs?: Joint[];              // the far side's own joint chain (mirrored in z), so left and right legs differ (stick insect); else the mirror of `js`

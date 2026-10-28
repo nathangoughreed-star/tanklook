@@ -292,7 +292,7 @@ function limbGeometry(l: Limb3D, ground: number, col: (ny: number) => THREE.Colo
     }
   }
   if (l.web && digits.length > 1) parts.push(webGeometry(digits, l.web));
-  const g = shade(mergeGeometries(parts)!, 0.3, col, !!l.thigh);
+  const g = shade(mergeGeometries(parts)!, 0.3, col, !!l.thigh || !!l.smooth);
   if (l.seg) {
     const c = g.attributes.color, n = g.attributes.normal, jc = new THREE.Color(l.seg);
     for (const [a, b] of bands) for (let i = a; i < b; i++) { const k = 1 - 0.3 * Math.max(0, -n.getY(i)); c.setXYZ(i, jc.r * k, jc.g * k, jc.b * k); }

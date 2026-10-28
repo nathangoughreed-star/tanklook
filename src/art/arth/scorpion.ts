@@ -10,12 +10,12 @@ const side: [number, number, string?][] = [[0.8, g - 0.07, 'c'], [0.75, g - 0.12
 const J = (u: number, dv: number, z: number, r: number): [number, number, number, number] => [u, g - dv, z, r];
 // four pairs of walking legs: femur up and out, tibia and foot down to the ground; the front pair reaches forward, the rear pair back
 const legs: Limb3D[] = [[0.66, 0.08], [0.55, 0.01], [0.43, -0.03], [0.32, -0.07]].map(([u, k]) => ({
-  js: [J(u, 0.05, 0.08, 0.019), J(u + k * 0.5 + 0.03, 0.105, 0.22, 0.017), J(u + k + 0.07, 0.06, 0.29, 0.0125), J(u + k + 0.1, 0.012, 0.33, 0.008)], toes: [[0.012, 0]] as [number, number][], toe: 0.007, seg: '#1c2230', waist: 0.82, c: ['#090d14', '#080b10'] as [string, string] }));
+  js: [J(u, 0.05, 0.08, 0.019), J(u + k * 0.5 + 0.03, 0.105, 0.22, 0.017), J(u + k + 0.07, 0.06, 0.29, 0.0125), J(u + k + 0.1, 0.012, 0.33, 0.008)], toes: [[0.012, 0]] as [number, number][], toe: 0.007, smooth: true, seg: '#1c2230', waist: 0.82, c: ['#090d14', '#080b10'] as [string, string] }));
 // pedipalps: short arm, then the big granular chela (palm and two fingers)
-const palp: Limb3D = { js: [J(0.72, 0.065, 0.06, 0.03), J(0.78, 0.095, 0.14, 0.028), J(0.835, 0.07, 0.17, 0.027)], toes: [], toe: 0, seg: '#222a38', waist: 0.86, claw: { palm: 0.105, r: 0.062, finger: 0.075 }, c: CLAW };
+const palp: Limb3D = { js: [J(0.72, 0.065, 0.06, 0.03), J(0.78, 0.095, 0.14, 0.028), J(0.835, 0.07, 0.17, 0.027)], toes: [], toe: 0, smooth: true, seg: '#222a38', waist: 0.86, claw: { palm: 0.105, r: 0.062, finger: 0.075 }, c: CLAW };
 // the tail: five slim segments climbing behind, arching over the back, tip pointing forward; the amber telson (bulb and sting) is its own limb
 const TAILJ = [J(0.23, 0.07, 0, 0.034), J(0.13, 0.11, 0, 0.032), J(0.085, 0.2, 0, 0.03), J(0.1, 0.29, 0, 0.0285), J(0.18, 0.35, 0, 0.027), J(0.28, 0.37, 0, 0.025), J(0.37, 0.345, 0, 0.0235)];
-const tail: Limb3D = { js: TAILJ, toes: [], toe: 0, seg: '#2a2c34', waist: 0.93, c: [SLATE, '#080b10'] };
+const tail: Limb3D = { js: TAILJ, toes: [], toe: 0, smooth: true, seg: '#2a2c34', waist: 0.93, c: [SLATE, '#080b10'] };
 const telson: Limb3D = { js: [J(0.36, 0.345, 0, 0.022), J(0.4, 0.33, 0, 0.0315), J(0.43, 0.31, 0, 0.012), J(0.445, 0.285, 0, 0.004)], toes: [], toe: 0, c: AMBER };
 // tergite plates across the back (grooves) over a pitted, granular carapace
 const marks: Mark3D[] = [

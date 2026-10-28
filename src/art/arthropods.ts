@@ -27,7 +27,19 @@ function drawArth(s: ArthSpec, ctx: Ctx, P: Proj, W: number) {
       const a = l.js[i - 1], b = l.js[i], [x0, y0] = P(a[0] - (far ? 0.015 : 0), a[1]), [x1, y1] = P(b[0] - (far ? 0.015 : 0), b[1]);
       ctx.lineWidth = Math.max(1, (a[3] + b[3]) * W); ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
     }
+    // knobbed knees (the 3D leg swells its interior joints by `knee`)
+    if (l.knee && !far) for (let i = 1; i < l.js.length - 1; i++) { const [x, y] = P(l.js[i][0], l.js[i][1]); ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x, y, Math.max(1, l.js[i][3] * l.knee * W), 0, 7); ctx.fill(); }
     ctx.globalAlpha = 1;
+  };
+  // the 3D body's extra solids (eye cones, wing panels, leg lobes, spines, hairs) as ellipses along their axis, near side and midline only
+  const solids = () => {
+    for (const sd of h.solids ?? []) {
+      if (sd.at[2] < 0) continue;
+      const [x, y] = P(sd.at[0], sd.at[1]), [x1, y1] = P(sd.at[0] + sd.ax[0], sd.at[1] + sd.ax[1]), rot = Math.atan2(y1 - y, x1 - x), len = Math.hypot(sd.ax[0], sd.ax[1]);
+      if (len < 0.05 || Math.max(sd.r[1], sd.r[2]) < 0.004) continue; // pointing at the viewer, or a hair or keel too fine for the card
+      const thick = sd.up && Math.abs(sd.up[2]) > 0.5 ? sd.r[2] : sd.r[1]; // the half-thickness seen from the side
+      ctx.fillStyle = sd.c[0]; ctx.beginPath(); ctx.ellipse(x, y, Math.max(1, sd.r[0] * W), Math.max(0.6, thick * W), rot, 0, 7); ctx.fill();
+    }
   };
   for (const l of h.limbs) chain(l, true);
   body(ctx, P, W, h.side, g - 0.3, g, [[0, col(0)], [0.5, col(1)], [1, col(2)]], 0.02, l => {
@@ -35,6 +47,7 @@ function drawArth(s: ArthSpec, ctx: Ctx, P: Proj, W: number) {
       if (m.k === 'spots') { const r = rng(m.seed); for (let i = 0; i < Math.min(m.n, 40); i++) blob(l, P, W, m.u[0] + r() * (m.u[1] - m.u[0]), g - 0.12 + r() * 0.06, m.r[1], m.r[1] * 0.7, m.c, m.o * 0.5); }
     }
   });
+  solids();
   for (const l of h.limbs) chain(l, false);
 }
 export const ARTH_ART: Record<string, (ctx: Ctx, P: Proj, W: number) => void> = Object.fromEntries(Object.entries(ARTH).map(([k, s]) => [k, (c: Ctx, P: Proj, W: number) => drawArth(s, c, P, W)]));
