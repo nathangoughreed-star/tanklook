@@ -50,7 +50,7 @@ export function costLines(b: Build, owned: readonly string[], total: number, nee
   const buy = priced.filter(i => !own.has(i.key)), lines: CostLine[] = [];
   const sum = new Map<string, number>(), gearId = 'gear';
   for (const i of buy) { const g = GROUPS.find(x => x.of(i.key))?.id ?? gearId; sum.set(g, (sum.get(g) ?? 0) + i.usd); }
-  for (const g of [...GROUPS, { id: gearId, label: 'Life-support gear (heat, UVB, lights, filter and the rest)', layer: 'welfare' as Layer }]) if ((sum.get(g.id) ?? 0) > 0.5) lines.push({ label: g.label, usd: Math.round(sum.get(g.id)!), layer: g.layer });
+  for (const g of [...GROUPS, { id: gearId, label: 'Life-support gear (heat, UVB, lights, filter and the rest)', layer: 'welfare' as Layer }]) if ((sum.get(g.id) ?? 0) > 0.5) lines.push({ label: g.id === 'supplies' && !buy.some(i => i.key === 'testkit') ? g.label.replace('test kit, ', '') : g.label, usd: Math.round(sum.get(g.id)!), layer: g.layer });
   if (lines.length) { // the rounding goes to the biggest line, so the lines are exactly the card's total
     const big = lines.reduce((m, l) => l.usd > m.usd ? l : m, lines[0]);
     big.usd += Math.round(total) - lines.reduce((t, l) => t + l.usd, 0);

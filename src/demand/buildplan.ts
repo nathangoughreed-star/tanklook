@@ -54,7 +54,7 @@ export function buyGroups(lines: readonly CostLine[], taxPct = 0, extras?: strin
 const cats = (p: Proposal) => p.build.animals.flatMap(a => { const sp = getSpecies(a.species); return sp ? [{ a, sp }] : []; });
 export const habitatOf = (p: Proposal): Habitat => !p.build.setup.water.on ? 'dry' : p.build.setup.water.salt ? 'salt' : 'fresh';
 
-function cyclingOf(p: Proposal, h: Habitat): Cycling | undefined {
+function cyclingOf(p: Proposal, h: Habitat, kitPriced: boolean): Cycling | undefined {
   if (h === 'dry') return undefined;
   const hasInvert = cats(p).some(x => x.sp.cat === 'fw-invert'), reef = h === 'salt';
   const weeks: [number, number] = reef ? [4, 8] : hasInvert ? [6, 8] : [4, 6];
@@ -64,7 +64,9 @@ function cyclingOf(p: Proposal, h: Habitat): Cycling | undefined {
   const text = reef
     ? 'Fishless cycle with the salt water mixed and the rock in: let the live rock cure, feed a pinch of food or ammonia daily to start it, and test every 3 to 4 days. Done when a dose of ammonia reads 0 ammonia and 0 nitrite within 24 hours. Corals and fish wait until then. A fish-in cycle is not offered on a reef: ammonia and nitrite harm marine fish quickly.'
     : `Fishless cycle: run the filter and heater, add an ammonia source (pure ammonia to about 2 ppm, or a pinch of fish food each day), and test every 2 to 3 days. Done when ammonia and nitrite both read 0 within 24 hours of a dose, and nitrate shows. Seeding the filter with media from a healthy established tank can cut it to 1 to 2 weeks. Why not fish-in: a fish-in cycle keeps the animals in ammonia and nitrite, which burns gills and fins, so this plan never offers it; welfare is not traded for speed.${hasInvert ? ' Shrimp and snails are more sensitive: wait 2 more weeks after the cycle, so the tank has algae and biofilm for them to graze.' : ''}`;
-  return { method: 'Fishless cycle', weeks, text, tests };
+  // the set-up price only carries a test kit for the more complex tanks; for the rest a cycle still needs ammonia readings, so say where they come from
+  const kitNote = kitPriced ? '' : ' A water test kit (ammonia, nitrite, nitrate) is recommended for the cycle and is not in the price above; if you have one, use it, otherwise many fish shops will test a water sample for free.';
+  return { method: 'Fishless cycle', weeks, text: text + kitNote, tests };
 }
 
 function setupSteps(p: Proposal, h: Habitat, gal: number): string[] {
@@ -145,7 +147,7 @@ export function buildPlanOf(p: Proposal, P: UserProfile): BuildPlan {
   const h = habitatOf(p), gal = modelGallons(p.build.tank), rh = rhythmOf(demandOf(p.build.setup, P), p.build.setup);
   return {
     title: `Build plan: ${p.archetype.title} (${p.strategyLabel})`, habitat: h, gallons: Math.round(gal * 10) / 10, totalUsd: p.totals.startupUsd, savedUsd: p.saved,
-    buy: buyGroups(p.costLines, p.taxPct, extrasLabel(p)), setup: setupSteps(p, h, gal), cycling: cyclingOf(p, h), stocking: stockingOf(p, h),
+    buy: buyGroups(p.costLines, p.taxPct, extrasLabel(p)), setup: setupSteps(p, h, gal), cycling: cyclingOf(p, h, demandOf(p.build.setup, P).items.some(c => c.key === 'testkit')), stocking: stockingOf(p, h),
     maintenance: maintenanceOf(h, gal, rh.text), rhythm: rh.text,
   };
 }

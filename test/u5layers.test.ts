@@ -19,9 +19,10 @@ describe('layers on the cost lines', () => {
       expect(layerTotals(p.costLines)).toEqual(p.layers);
     }
   });
-  it('a complete set-up prices the test kit, dechlorinator, siphon, net and thermometer', () => {
-    const l = r.proposals[0].costLines.find(x => x.layer === 'complete' && /test kit/.test(x.label));
-    expect(l && l.usd).toBeGreaterThan(40);
+  it('a complete set-up prices the dechlorinator, siphon, net and thermometer', () => {
+    const l = r.proposals[0].costLines.find(x => x.layer === 'complete' && /Supplies/.test(x.label));
+    expect(l && l.usd).toBeGreaterThan(20);
+    expect(l!.label).not.toMatch(/test kit/); // a simple betta tank does not pay for one: the build plan recommends it instead
     const p = r.proposals[0], rows = p.build.setup && p.costLines.filter(x => x.layer === 'complete').map(x => x.label).join(' ');
     expect(rows).toMatch(/dechlorinator/);
   });
@@ -67,7 +68,7 @@ describe('owned supplies', () => {
     const own = { siphon: 'care', net: 'care', conditioner: 'care', thermometer: 'care', bucket: 'care', testkit: 'care' } as const;
     const r = run({ constraints: { startupUsd: cap(250) }, animals: betta, owned: { ...own } }), base = run({ constraints: { startupUsd: cap(250) }, animals: betta });
     const p = r.proposals.find(q => q.strategy === 'economy')!, q = base.proposals.find(x => x.strategy === 'economy')!;
-    expect(p.totals.startupUsd).toBeLessThan(q.totals.startupUsd - 40);
+    expect(p.totals.startupUsd).toBeLessThan(q.totals.startupUsd - 15); // the test kit is not priced for a simple betta tank, so owning one saves nothing here
     expect(p.costLines.some(l => l.layer === 'complete' && l.usd > 0 && /Supplies/.test(l.label))).toBe(false);
     expect(p.costLines.filter(l => l.usd === 0 && l.note === 'you have').length).toBeGreaterThanOrEqual(5);
   });

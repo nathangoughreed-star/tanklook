@@ -210,7 +210,9 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
     const hose = techOf(S).rows.wcmethod === 'hose';
     const water = (P.waterSource === 'bought-ro' ? rowPrice('gear:ro-bought') : undefined) ?? pick((FACTORS.waterUsdPerGal as Record<string, Range3>)[P.waterSource]), per = salt ? add3(water, rowPrice('gear:salt-mix') ?? pick(FACTORS.saltMixUsdPerGal)) : water;
     if (P.waterSource === 'own-ro' && rowPrice('gear:ro-unit')) add('rounit', 'RO unit', 'gear', { setup: price(rowPrice('gear:ro-unit')!) });
-    if (rowPrice('gear:test-kit')) add('testkit', 'Water test kit (ammonia, nitrite, nitrate, pH)', 'gear', { setup: price(rowPrice('gear:test-kit')!) });
+    // a test kit is recommended, not required: only the setups where water chemistry can go wrong unseen carry it in the set-up cost (a simple betta or small community tank does not); the build plan's cycling section recommends one whenever this row is absent
+    const needsKit = salt || hasCorals(S.items) || gal >= 30 || animals.length >= 8 || S.items.filter(i => i.kind === 'plant').length >= 10;
+    if (needsKit && rowPrice('gear:test-kit')) add('testkit', 'Water test kit (ammonia, nitrite, nitrate, pH)', 'gear', { setup: price(rowPrice('gear:test-kit')!) });
     // lane U5: the rest of a COMPLETE set-up: the maintenance tools and first consumables every wet tank needs on day one (a salt tank mixes with RO water and needs a refractometer, not dechlorinator)
     if (salt) { if (rowPrice('gear:refractometer')) add('refractometer', 'Refractometer (salinity)', 'gear', { setup: price(rowPrice('gear:refractometer')!) }); }
     else if (rowPrice('gear:start-conditioner')) add('startconditioner', 'Dechlorinator (first bottle)', 'gear', { setup: price(rowPrice('gear:start-conditioner')!) });
