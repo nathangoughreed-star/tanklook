@@ -16080,6 +16080,7 @@
     "glass"
    ],
    "source": "vase retailer listing (search snippet; page not opened)",
+   "url": "https://vasemarket.com/glass-bubble-bowl-gbb106",
    "note": "Blown-glass bubble bowl; floor diameter not listed, fitted so the sphere reaches the listed height. Seller's 5.5 gal is an estimate.",
    "variants": [
     {
@@ -16118,8 +16119,24 @@
     "glass"
    ],
    "source": "vase retailer listing (search snippet; page not opened)",
+   "url": "https://www.glassvasesdepot.com/glass-vases/basics/bubble-bowls",
    "note": "Blown-glass bubble bowl; floor diameter not listed, fitted so the sphere reaches the listed height. Seller's 8 gal is an estimate.",
    "variants": [
+    {
+     "brand": "Glass Vases Depot",
+     "line": "Glass Bubble Bowl H-12 in, W-16 in",
+     "L_in": 16,
+     "D_in": 16,
+     "H_in": 12,
+     "glass_mm": null,
+     "price_usd": 78,
+     "price_kind": "street",
+     "retailer": "Glass Vases Depot",
+     "price_note": "from search snippet, single piece, free shipping per the listing; opening 10.5 in; page not opened",
+     "url": "https://www.glassvasesdepot.com/glass-vases/basics/bubble-bowls",
+     "checked": "2026-10-28",
+     "confidence": "low"
+    },
     {
      "brand": "Vase Market",
      "line": "Glass Bubble Bowl H-12 in, body W-16 in",
@@ -16130,7 +16147,7 @@
      "price_usd": 67,
      "price_kind": "street",
      "retailer": "Vase Market",
-     "price_note": "from search snippet; a second listing shows $101.40 for a pack of 2 and $39 wholesale each; opening 10.5 in, capacity ~8 gal as the seller states",
+     "price_note": "from search snippet; a second listing shows $101.40 for a pack of 2 and $39 wholesale each; opening 10.5 in, capacity ~8 gal as the seller states; the page title now reads W-15.5 in, 5 gal, so size and capacity here are uncertain; shipping not seen",
      "url": "https://vasemarket.com/16-inch-glass-fish-bubble-bowl",
      "checked": "2026-10-27",
      "confidence": "low"
@@ -16155,6 +16172,7 @@
     "glass"
    ],
    "source": "marketplace listing (search snippet; page not opened)",
+   "url": "https://www.desertcart.co.za/products/515604150-large-glass-bubble-bowl-h-13-5-w-15-5.md",
    "note": "Amazon ASIN B0B5VZ354G; listings give 7.4 to 9 gal and a buyer review says 9 is too high. Opening not listed (default fraction used).",
    "variants": [
     {
@@ -16169,6 +16187,60 @@
      "url": "https://www.desertcart.co.za/products/515604150-large-glass-bubble-bowl-h-13-5-w-15-5.md",
      "checked": "2026-10-27",
      "confidence": "low"
+    }
+   ]
+  },
+  {
+   "id": "bowl19",
+   "name": "19 in glass bubble bowl",
+   "ratedGal": 14.5,
+   "shape": "bowl",
+   "outer": {
+    "L": 482.6,
+    "H": 406.4,
+    "D": 482.6
+   },
+   "bowlTop": 254.0,
+   "glassMm": 3,
+   "band": "nano",
+   "tags": [
+    "bowl",
+    "desktop",
+    "glass"
+   ],
+   "source": "retailer product page read from a screenshot Nathan supplied 2026-10-27 (retailer name not visible)",
+   "url": "https://opusglassvases.com/vbw1916-clear-bubble-bowl-vase-19x16/",
+   "note": "Hand-blown bubble bowl, 19 in x 16 in, opening 10 in, seller says about 14.5 gal. Floor diameter not listed, fitted to the height.",
+   "variants": [
+    {
+     "brand": "Opus Glass Vases",
+     "line": "VBW1916 Clear Bubble Bowl Vase 19 in x 16 in H",
+     "L_in": 19,
+     "D_in": 19,
+     "H_in": 16,
+     "glass_mm": null,
+     "price_usd": 102.25,
+     "price_kind": "street",
+     "retailer": "Opus Glass Vases",
+     "price_note": "from search snippet, 1 pc foam packed, shipping not seen; opening 10 in, ~14.5 gal",
+     "url": "https://opusglassvases.com/vbw1916-clear-bubble-bowl-vase-19x16/",
+     "checked": "2026-10-28",
+     "confidence": "low"
+    },
+    {
+     "brand": "Clear Bubble Bowl Vase",
+     "line": "WVBW1916-F, 19 in x 16 in H",
+     "L_in": 19,
+     "D_in": 19,
+     "H_in": 16,
+     "glass_mm": null,
+     "price_usd": 149.5,
+     "price_kind": "street",
+     "price_note": "page also shows a struck-through $300 'retail' that is the seller's own markup, so no sale is recorded; vase product, not a fish-keeping one; in stock when read",
+     "checked": "2026-10-27",
+     "confidence": "medium",
+     "retailer": "EventsWholesale",
+     "url": "https://www.eventswholesale.com/bowl-vases/"
     }
    ]
   }

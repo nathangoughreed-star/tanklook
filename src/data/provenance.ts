@@ -209,6 +209,8 @@ export const RULES: Record<string, Rule[]> = {
   ],
   GEAR_CATALOG: [{ path: '*.*.{gph,galMin,galMax,watts,priceUsd}', status: 'cited', basis: 'source-stated', says: "the product page's figure", src: ['product-pages'], why: 'the product page at the row url', rowUrl: true }],
   TANKS: [{ path: '**', status: 'cited', basis: 'source-stated', says: "the listing's figure", src: ['product-pages'], why: 'the listing at the row url', rowUrl: true },
+    // bubble bowls (2026-10-28): the vase listings give no glass thickness; 3 mm is our figure for hand-blown glass
+    { path: '{bowl14,bowl16,bowl155,bowl19}.glassMm', status: 'assumption', basis: 'interpretation', why: 'vase listings state no wall thickness; 3 mm taken for hand-blown glass (the volume check bounds it)' },
     // S224 (2026-10-26): Petco lists no depth for its Frameless Shallow line; the row's `est` keeps the depth off the listing
     { path: '{n_imagitarium_shallow_6_8,n_imagitarium_shallow_13_3,n_imagitarium_shallow_28}.outer.D', status: 'derived', basis: 'derived', src: ['product-pages'], why: "Petco lists width and height only: depth back-solved from the rated gallons (the 6.8's shrimp kit box gives 20 x 10 x 8.62 in; Petco customer service gave roughly 32 x 15 for the 28)" },
     // S224b (2026-10-26): product-named library bases whose listing gave only a low-confidence size (a box or shipping size, or one
