@@ -55,4 +55,18 @@ describe('Build plan', () => {
     expect(b.stocking[0].title).toMatch(/habitat/i);
     expect(b.maintenance.join(' ')).not.toMatch(/water change/);
   });
+
+  it('the plan shows the own tank and strategy; the Extras row names only what the finish includes; fish-in is explained', () => {
+    const all = suggestSetups({ constraints: { startupUsd: cap(400) }, kinds: ['freshwater'], tags: ['calm'] }, P, 'cm', NOW).proposals.filter(p => p.archetype.id === 'betta');
+    expect(all.length).toBeGreaterThan(0);
+    for (const p of all) {
+      const b = buildPlanOf(p, P);
+      expect(b.title).toContain(p.strategyLabel);
+      const ex = b.buy.flatMap(g => g.rows).find(r => r.layer === 'enhance');
+      if (ex) { expect(ex.label).not.toMatch(/dosing/); expect(ex.label.startsWith('Extras')).toBe(true); }
+      expect(b.cycling!.text).toMatch(/Why not fish-in/);
+    }
+    const look = all.find(p => p.strategy === 'look');
+    if (look) expect(buildPlanOf(look, P).gallons).toBeGreaterThanOrEqual(10);
+  });
 });

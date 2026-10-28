@@ -5,6 +5,7 @@
 import { getSpecies } from '../data/species';
 import { modelGallons } from '../data/tanks';
 import type { CostLine, Layer } from './costlines';
+import { lightShare } from '../scene/finish';
 import { demandOf } from './engine';
 import { rhythmOf } from './rhythm';
 import type { Proposal } from './suggest';
@@ -33,8 +34,8 @@ const FIRST_ORDER = ['Tank', 'Starter kit', 'Stand', 'Life-support', 'Supplies',
 const rank = (l: CostLine) => { const i = FIRST_ORDER.findIndex(k => l.label.startsWith(k)); return i < 0 ? 2 : i; };
 
 /** What is bought and when: owned first ($0, "you have"), then everything the tank needs before animals, tank and stand first; the animals (and the tax on them) last. */
-export function buyGroups(lines: readonly CostLine[], taxPct = 0): BuyGroup[] {
-  const row = (l: CostLine): BuyRow => ({ label: l.label, usd: l.usd, owned: false, layer: l.layer ?? 'welfare', ...(l.note && l.note !== 'you have' ? { note: l.note } : {}) });
+export function buyGroups(lines: readonly CostLine[], taxPct = 0, extras?: string): BuyGroup[] {
+  const row = (l: CostLine): BuyRow => ({ label: l.layer === 'enhance' && extras ? extras : l.label, usd: l.usd, owned: false, layer: l.layer ?? 'welfare', ...(l.note && l.note !== 'you have' ? { note: l.note } : {}) });
   const have = lines.filter(l => l.usd === 0 && l.note !== 'not needed').map(l => ({ ...row(l), owned: true }));
   const paid = lines.filter(l => l.usd > 0), animals = paid.filter(l => l.label === 'Animals'), tax = paid.find(l => l.layer === 'tax');
   const animalsUsd = animals.reduce((t, l) => t + l.usd, 0), animalTax = tax ? Math.min(tax.usd, Math.round(animalsUsd * taxPct / 100)) : 0;
@@ -61,8 +62,8 @@ function cyclingOf(p: Proposal, h: Habitat): Cycling | undefined {
     ? ['Ammonia: should read 0 when the cycle is done', 'Nitrite: should read 0', 'Nitrate: rises, then holds low once the tank is settled', 'Salinity: 1.024 to 1.026 (refractometer), and keep it steady', 'Temperature: 76 to 80 °F']
     : ['Ammonia: should read 0 when the cycle is done', 'Nitrite: should read 0', 'Nitrate: appears as the cycle finishes; change water if it passes 40 ppm', 'Temperature: steady, in the animals\' range'];
   const text = reef
-    ? 'Fishless cycle with the salt water mixed and the rock in: let the live rock cure, feed a pinch of food or ammonia daily to start it, and test every 3 to 4 days. Done when a dose of ammonia reads 0 ammonia and 0 nitrite within 24 hours. Corals and fish wait until then.'
-    : `Fishless cycle: run the filter and heater, add an ammonia source (pure ammonia to about 2 ppm, or a pinch of fish food each day), and test every 2 to 3 days. Done when ammonia and nitrite both read 0 within 24 hours of a dose, and nitrate shows. Seeding the filter with media from a healthy established tank can cut it to 1 to 2 weeks.${hasInvert ? ' Shrimp and snails are more sensitive: wait 2 more weeks after the cycle, so the tank has algae and biofilm for them to graze.' : ''}`;
+    ? 'Fishless cycle with the salt water mixed and the rock in: let the live rock cure, feed a pinch of food or ammonia daily to start it, and test every 3 to 4 days. Done when a dose of ammonia reads 0 ammonia and 0 nitrite within 24 hours. Corals and fish wait until then. A fish-in cycle is not offered on a reef: ammonia and nitrite harm marine fish quickly.'
+    : `Fishless cycle: run the filter and heater, add an ammonia source (pure ammonia to about 2 ppm, or a pinch of fish food each day), and test every 2 to 3 days. Done when ammonia and nitrite both read 0 within 24 hours of a dose, and nitrate shows. Seeding the filter with media from a healthy established tank can cut it to 1 to 2 weeks. Why not fish-in: a fish-in cycle keeps the animals in ammonia and nitrite, which burns gills and fins, so this plan never offers it; welfare is not traded for speed.${hasInvert ? ' Shrimp and snails are more sensitive: wait 2 more weeks after the cycle, so the tank has algae and biofilm for them to graze.' : ''}`;
   return { method: 'Fishless cycle', weeks, text, tests };
 }
 
@@ -132,11 +133,19 @@ function maintenanceOf(h: Habitat, gal: number, rh: string): string[] {
   return out;
 }
 
+/** The Extras row names only what this finish actually includes (its plant-care line, the stronger light), not the whole list of what extras could be. */
+export function extrasLabel(p: Proposal): string | undefined {
+  const f = p.build.finish; if (!f) return undefined;
+  const care = f.lines.find(l => l.startsWith('Plant care:'))?.slice('Plant care:'.length).replace(/;\s*\d+ W light/, '').replace(/^\s*no extras\s*$/i, '').trim();
+  const parts = [care && !/no extras|artificial/i.test(care) ? care : '', lightShare(f.tier) > 0 ? 'a stronger light' : ''].filter(Boolean);
+  return parts.length ? `Extras (${parts.join('; ')})` : 'Extras';
+}
+
 export function buildPlanOf(p: Proposal, P: UserProfile): BuildPlan {
   const h = habitatOf(p), gal = modelGallons(p.build.tank), rh = rhythmOf(demandOf(p.build.setup, P), p.build.setup);
   return {
-    title: `Build plan: ${p.archetype.title}`, habitat: h, gallons: Math.round(gal * 10) / 10, totalUsd: p.totals.startupUsd, savedUsd: p.saved,
-    buy: buyGroups(p.costLines, p.taxPct), setup: setupSteps(p, h, gal), cycling: cyclingOf(p, h), stocking: stockingOf(p, h),
+    title: `Build plan: ${p.archetype.title} (${p.strategyLabel})`, habitat: h, gallons: Math.round(gal * 10) / 10, totalUsd: p.totals.startupUsd, savedUsd: p.saved,
+    buy: buyGroups(p.costLines, p.taxPct, extrasLabel(p)), setup: setupSteps(p, h, gal), cycling: cyclingOf(p, h), stocking: stockingOf(p, h),
     maintenance: maintenanceOf(h, gal, rh.text), rhythm: rh.text,
   };
 }
