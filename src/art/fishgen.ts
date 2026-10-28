@@ -575,13 +575,17 @@ export const PLANS: Record<string, Plan> = {
     finMarks: [{ k: 'spots', n: 60, u0: 0, u1: 0.6, v0: -0.4, v1: 0.4, r: 0.015, c: '#4f7fb8', a: 0.25 }],
     eye: { r: 0.03, iris: ['#7a3030', '#1a0808'] } },
   // pearl gourami: was hand-drawn (drawGourami); outline, fins and markings taken from that drawing
-  gourami: { shimmer: 0.6, shimmerRgb: '255,242,220', gillLine: 0.25, finFade: 0.3, thick: 0.32, depth: 0.39, pedU: 0.17, ped: 0.08, peak: 0.45, snout: 0.55, mouth: -0.045, shade: ['#5e5644', '#a09274', '#d3c6a8'], tail: { type: 'round', h: 0.16, tint: '#a8987a' }, fin: '#a8987a', ray: '#73654f',
+  gourami: { shimmer: 0.6, shimmerRgb: '255,242,220', gillLine: 0.25, finFade: 0.3, thick: 0.32, depth: 0.39, pedU: 0.17, ped: 0.08, peak: 0.45, snout: 0.55, mouth: -0.045, shade: ['#3e3d3a', '#8c7a66', '#d6a98a'], tail: { type: 'round', h: 0.16, tint: '#9a8a74' }, fin: '#a8826a', ray: '#6a5444',
     // short dorsal set back, pointed in the male; anal from behind the pelvics to the peduncle, its rear rays drawn out in a fringe
     dorsal: { at: 0.5, len: 0.26, h: 0.1, spines: 0.35, nSp: 5, spineH: [0.05, 0.07], notch: 0.3, tip: 'point', trail: 0.14, drop: 0.9, rake: 0.6 },
-    anal: { at: 0.7, len: 0.5, h: 0.11, spines: 0.4, nSp: 7, spineH: [0.03, 0.07], notch: 0.18, rake: 0.7, tip: 'point', trail: 0.07, fringe: true, edge: '#c87a3e' }, pelvic: { u: 0.72, len: 0.4, thread: true, tint: '#c8b48a' },
-    marks: [{ k: 'blob', u: 0.78, v: 0.15, ru: 0.2, rv: 0.09, c: '#cc5a22', a: 1 }, { k: 'spots', n: 200, u0: 0.18, u1: 0.88, v0: -0.2, v1: 0.12, r: 0.009, c: '#f2eadb', a: 0.9 },
-      { k: 'poly', pts: zigzag(0.86, 0.21, 13, 0.01, 0.006), c: '#2a251d', a: 0.6 }, { k: 'blob', u: 0.215, v: 0, ru: 0.03, rv: 0.03, c: '#2a251d', a: 0.7 }],
-    finMarks: [{ k: 'spots', n: 110, u0: 0.02, u1: 0.62, v0: -0.27, v1: 0.27, r: 0.009, c: '#f2eadb', a: 0.6 }],
+    anal: { at: 0.7, len: 0.5, h: 0.11, spines: 0.4, nSp: 7, spineH: [0.03, 0.07], notch: 0.18, rake: 0.7, tip: 'point', trail: 0.07, fringe: true, edge: '#e0702a', tint: '#c9703e' }, pelvic: { u: 0.72, len: 0.4, thread: true, tint: '#e0703a' },
+    // male in breeding colour: red-orange throat and breast, bronze flank, dense pearls, bold lateral stripe
+    marks: [{ k: 'blob', u: 0.62, v: 0.02, ru: 0.45, rv: 0.1, c: '#b8764e', a: 0.35 },
+      { k: 'blob', u: 0.8, v: 0.1, ru: 0.22, rv: 0.2, c: '#d8421c', a: 0.95 }, { k: 'blob', u: 0.84, v: 0.04, ru: 0.12, rv: 0.12, c: '#e8531e', a: 0.7 },
+      { k: 'spots', n: 380, u0: 0.18, u1: 0.8, v0: -0.2, v1: 0.14, r: 0.0075, c: '#f6efe0', a: 0.9 },
+      { k: 'spots', n: 60, u0: 0.55, u1: 0.84, v0: -0.04, v1: 0.14, r: 0.007, c: '#f6efe0', a: 0.7 },
+      { k: 'poly', pts: zigzag(0.86, 0.21, 13, 0.012, 0.007), c: '#1c1814', a: 0.85 }, { k: 'blob', u: 0.215, v: 0, ru: 0.03, rv: 0.03, c: '#1c1814', a: 0.8 }],
+    finMarks: [{ k: 'spots', n: 130, u0: 0.02, u1: 0.62, v0: -0.27, v1: 0.27, r: 0.009, c: '#f6efe0', a: 0.65 }],
     eye: { r: 0.024, iris: ['#d0b48a', '#5e4a2e'] } },
   dwarfgourami: { shimmer: 0.6, shimmerRgb: '175,205,255', gillLine: 0.28, finFade: 0.3, thick: 0.32, depth: 0.42, pedU: 0.2, ped: 0.06, peak: 0.5, snout: 0.55, mouth: -0.045, shade: ['#2f5c8a', '#c25a3a', '#d47a54'], tail: { type: 'round', h: 0.17, tint: '#c6603e' }, fin: '#c86a4a',
     // gourami fins: long bases, low spiny fronts deepening to the rear; the male's soft dorsal and anal end in points
