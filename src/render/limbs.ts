@@ -83,6 +83,8 @@ export interface FuzzOpts {
   frost?: number;
   /** Optional waviness 0..1 (default off = straight blades, unchanged): each strand becomes a ribbon of short pieces that wavers sideways about its axis (curly hair). */
   curl?: number;
+  /** Pieces along a curly strand (default 4; 2 = a far, coarse coat). */
+  segs?: number;
 }
 /**
  * Fine hair over a mesh: `count` strands (single tapered triangles, non-indexed with colours and normals; draw them double-sided) scattered over
@@ -130,7 +132,7 @@ export function fuzz(src: THREE.BufferGeometry, o: FuzzOpts): THREE.BufferGeomet
     c1.copy(c0).multiplyScalar(br); const ct = c1.clone().lerp(new THREE.Color(1, 1, 1), frost).multiplyScalar(1.05);
     if (o.curl) {
       // a wavy strand: 5 pieces along the path, each point swung sideways (a helix about the axis), width tapering to the tip
-      const NS = 4, ph = r() * TAU, cf = o.curl, pts: THREE.Vector3[] = [], half: number[] = [];
+      const NS = o.segs ?? 4, ph = r() * TAU, cf = o.curl, pts: THREE.Vector3[] = [], half: number[] = [];
       for (let m = 0; m <= NS; m++) {
         const f = m / NS, amp = cf * len * 0.22 * Math.sin(Math.PI * Math.min(1, f * 1.3 + 0.1));
         const q = p.clone().addScaledVector(dir, len * f).addScaledVector(t1, Math.sin(ph + f * 6) * amp).addScaledVector(t2, Math.cos(ph + f * 6) * amp);
@@ -165,10 +167,10 @@ export function fuzz(src: THREE.BufferGeometry, o: FuzzOpts): THREE.BufferGeomet
  * joints, round ends so every joint reads as a knuckle. `colour(i, ny)` = the colour of segment i at a normal's y.
  * Returns the segments' geometries (coloured, non-indexed, position / normal / color only) in order.
  */
-export function bandedChain(pts: THREE.Vector3[], r: number[], colour: (seg: number, ny: number) => THREE.Color) {
+export function bandedChain(pts: THREE.Vector3[], r: number[], colour: (seg: number, ny: number) => THREE.Color, lean = false) {
   const out: THREE.BufferGeometry[] = [];
   for (let i = 0; i + 1 < pts.length; i++) {
-    const g = jointTube([pts[i], pts[i + 1]], [r[i], r[i + 1]], 0, true), n = g.attributes.normal, c: number[] = [];
+    const g = jointTube([pts[i], pts[i + 1]], [r[i], r[i + 1]], 0, true, undefined, lean), n = g.attributes.normal, c: number[] = [];
     for (let k = 0; k < n.count; k++) { const q = colour(i, n.getY(k)); c.push(q.r, q.g, q.b); }
     g.setAttribute('color', new THREE.Float32BufferAttribute(c, 3));
     for (const k of Object.keys(g.attributes)) if (k !== 'position' && k !== 'normal' && k !== 'color') g.deleteAttribute(k);

@@ -1,0 +1,90 @@
+[
+ {
+  "species": "curlyhair",
+  "n": 1,
+  "meshes": 12,
+  "tris": 246430,
+  "uniqueGeos": 5,
+  "gpuHidden": 7.988,
+  "gpuShown": 7.867,
+  "gpuDelta": -0.063,
+  "cpuDelta": -0.05
+ },
+ {
+  "species": "curlyhair",
+  "n": 6,
+  "meshes": 72,
+  "tris": 1478580,
+  "uniqueGeos": 5,
+  "gpuHidden": 11.651,
+  "gpuShown": 24.804,
+  "gpuDelta": 13.199,
+  "cpuDelta": 0.35
+ },
+ {
+  "species": "emperorscorpion",
+  "n": 1,
+  "meshes": 22,
+  "tris": 136504,
+  "uniqueGeos": 12,
+  "gpuHidden": 7.128,
+  "gpuShown": 7.708,
+  "gpuDelta": 0.585,
+  "cpuDelta": 0.15
+ },
+ {
+  "species": "emperorscorpion",
+  "n": 6,
+  "meshes": 132,
+  "tris": 819024,
+  "uniqueGeos": 12,
+  "gpuHidden": 7.198,
+  "gpuShown": 10.076,
+  "gpuDelta": 2.882,
+  "cpuDelta": 0.15
+ },
+ {
+  "species": "indianstick",
+  "n": 1,
+  "meshes": 16,
+  "tris": 66880,
+  "uniqueGeos": 12,
+  "gpuHidden": 7.162,
+  "gpuShown": 7.298,
+  "gpuDelta": 0.125,
+  "cpuDelta": 0.2
+ },
+ {
+  "species": "indianstick",
+  "n": 6,
+  "meshes": 96,
+  "tris": 401280,
+  "uniqueGeos": 12,
+  "gpuHidden": 3.997,
+  "gpuShown": 4.337,
+  "gpuDelta": 0.31,
+  "cpuDelta": 0.3
+ },
+ {
+  "species": "orchidmantis",
+  "n": 1,
+  "meshes": 14,
+  "tris": 45232,
+  "uniqueGeos": 8,
+  "gpuHidden": 7.206,
+  "gpuShown": 7.392,
+  "gpuDelta": 0.182,
+  "cpuDelta": 0.1
+ },
+ {
+  "species": "orchidmantis",
+  "n": 6,
+  "meshes": 84,
+  "tris": 271392,
+  "uniqueGeos": 8,
+  "gpuHidden": 7.201,
+  "gpuShown": 7.984,
+  "gpuDelta": 0.803,
+  "cpuDelta": 0.2
+ }
+]

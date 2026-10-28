@@ -12,10 +12,11 @@
 // Frame: unit = the body length = the card width; x forward, y up, z + side; the surface it stands on is the plane
 // y = -ground (on a branch: the limb's top, its axis at y = -ground - R).
 import * as THREE from 'three';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { TARANTULAS, isTarantula, tarGround, type TarLeg, type TarSpec } from '../art/tarantulas';
-import { V, bandedChain, cylinder, fuzz, ik, merge, plane, smooth, tint, type Surf } from './limbs';
-import { boxUV, jointTube } from './herp3d';
-import { clampAbove, eyeTexture, geo, grainTexture, loft, mat, paint, texture, type Loft, type Paint } from './spider3d';
+import { V, bandedChain, cylinder, fuzz, ik, merge, plane, smooth, tint, type FuzzOpts, type Surf } from './limbs';
+import { bake, boxUV, jointTube } from './herp3d';
+import { clampAbove, eyeTexture, grainTexture, loft, mat, paint, texture, type Loft, type Paint } from './spider3d';
 
 export { isTarantula };
 export type TarPose = 'ground' | 'glass' | 'perch';
@@ -35,6 +36,22 @@ export const tarMode = (a?: number | boolean): TarMode => { const b = a === true
 export function tarPose(surface?: string, R?: number): TarPose {
   return surface === 'glass' ? 'glass' : surface === 'perch' && R ? 'perch' : 'ground';
 }
+
+/** Hair is built twice (lane A4, 2026-10-28): the full coat, and a far coat of about a fifth of the strands, each wider (curls in two pieces), which the
+ *  tank-distance level of the LOD draws: at that size a strand is under a pixel, so the coat reads the same for a sixth of the triangles. */
+const FAR = { k: 0.2, wide: 3, frac: 0.1 }; // `frac` = the body length's share of the view's height under which the far coat takes over
+/** The two coats as an LOD that switches on how big the animal looks, not on its distance (that would depend on the field of view and the animal's size). */
+class CoatLOD extends THREE.LOD {
+  override update(camera: THREE.Camera) {
+    const p = camera as THREE.PerspectiveCamera & THREE.OrthographicCamera, zoom = p.zoom || 1;
+    const view = p.isOrthographicCamera ? (p.top - p.bottom) / zoom : 2 * Math.tan(THREE.MathUtils.degToRad(p.fov / 2)) * CoatLOD.v.setFromMatrixPosition(camera.matrixWorld).distanceTo(CoatLOD.u.setFromMatrixPosition(this.matrixWorld)) / zoom;
+    const far = this.matrixWorld.getMaxScaleOnAxis() / view < FAR.frac; // the body is one unit long in its own frame, so its world length is the scale
+    this.levels[0].object.visible = !far; this.levels[1].object.visible = far;
+  }
+  private static v = new THREE.Vector3(); private static u = new THREE.Vector3();
+}
+type Hair = [THREE.BufferGeometry | null, THREE.BufferGeometry | null];
+const fuzz2 = (src: THREE.BufferGeometry, o: FuzzOpts): Hair => [fuzz(src, o), fuzz(src, { ...o, count: Math.max(8, Math.round(o.count * FAR.k)), rad: o.rad * FAR.wide, segs: 2 })];
 
 const bare = (g: THREE.BufferGeometry) => {
   const o = g.index ? g.toNonIndexed() : g;
@@ -114,7 +131,7 @@ const cone = (r: number, len: number, at: THREE.Vector3, dir: THREE.Vector3, seg
 function legGeometry(cx: Cx, l: TarLeg, i: number, side: number, seed: number) {
   const { S } = cx, pts = legPoints(cx, l, i, side), dark = col(S.legCol[0]), pale = col(S.legCol[1]), fur = col(S.legHair);
   const bands = new Set(S.legBands);
-  const parts = bandedChain(pts, [...l.r], (seg, ny) => (bands.has(seg) ? pale : dark.clone().lerp(fur, 0.25)).clone().multiplyScalar(0.62 + 0.38 * smooth(-0.6, 0.4, ny)));
+  const parts = bandedChain(pts, [...l.r], (seg, ny) => (bands.has(seg) ? pale : dark.clone().lerp(fur, 0.25)).clone().multiplyScalar(0.62 + 0.38 * smooth(-0.6, 0.4, ny)), true); // lean tubes (lane A4)
   const leg = merge(parts), extra: THREE.BufferGeometry[] = [];
   // tiny claws and, on the male's front pair, two hooks under the tibia's end
   const F = pts[7], dirT = F.clone().sub(pts[6]).normalize(), nF = cx.surf.n(F);
@@ -125,7 +142,7 @@ function legGeometry(cx: Cx, l: TarLeg, i: number, side: number, seed: number) {
   }
   const claws = tint(merge(extra), () => col('#1a110d'));
   // the hair: the leg's own colour at the root (nearest segment), long and dense
-  const hair = fuzz(leg, {
+  const hair = fuzz2(leg, {
     count: S.hair.leg, len: S.legHairLen ?? [0.014, 0.034], rad: 0.0052, seed, lean: S.curl ? 0.42 : 0.62, frost: S.curl ? 0.3 : 0, curl: S.curl,
     flow: () => F.clone().sub(pts[1]).normalize(),
     colour: (p, _uv, c) => {
@@ -135,7 +152,7 @@ function legGeometry(cx: Cx, l: TarLeg, i: number, side: number, seed: number) {
     keep: (p, n) => (n.dot(cx.surf.n(p)) < -0.4 ? 0.4 : 1),
   });
   // the scopula: a dense pad of short pale hair under the tarsus and the end of the metatarsus
-  const pad = fuzz(merge([parts[6], parts[5]]), {
+  const pad = fuzz2(merge([parts[6], parts[5]]), {
     count: 650, len: [0.007, 0.015], rad: 0.0035, seed: seed + 1, lean: 0.3, frost: 0.05,
     colour: (_p, _u, c) => c.copy(col(S.padCol ?? '#b69a86')),
     keep: (p, n) => (n.dot(cx.surf.n(p)) < -0.1 && p.distanceTo(pts[7]) < 0.3 ? 1 : 0),
@@ -152,7 +169,7 @@ function palpGeometry(cx: Cx, side: number) {
   const tube = bare(jointTube(pts, P.r, 0, true)), n = tube.attributes.normal, cl: number[] = [];
   for (let i = 0; i < n.count; i++) { const k = 0.7 + 0.3 * smooth(-0.6, 0.4, n.getY(i)), q = c.clone().lerp(fur, 0.3); cl.push(q.r * k, q.g * k, q.b * k); }
   tube.setAttribute('color', new THREE.Float32BufferAttribute(cl, 3));
-  return { g: tube, hair: fuzz(tube, { count: 1500, len: [0.012, 0.028], rad: 0.0042, seed: side > 0 ? 71 : 72, lean: 0.45, frost: 0, flow: () => V(0.5, -0.2, 0), colour: (_p, _u, cc) => cc.copy(c).lerp(fur, 0.45) }) };
+  return { g: tube, hair: fuzz2(tube, { count: 1500, len: [0.012, 0.028], rad: 0.0042, seed: side > 0 ? 71 : 72, lean: 0.45, frost: 0, flow: () => V(0.5, -0.2, 0), colour: (_p, _u, cc) => cc.copy(c).lerp(fur, 0.45) }) };
 }
 
 function chelGeometry(cx: Cx, side: number) {
@@ -171,7 +188,7 @@ function chelGeometry(cx: Cx, side: number) {
   const fcol = col('#4a1c0e'), fn = fang.attributes.normal, fc: number[] = [];
   for (let i = 0; i < fn.count; i++) { const k = 0.7 + 0.5 * smooth(-0.5, 0.8, fn.getY(i)); fc.push(fcol.r * k, fcol.g * k, fcol.b * k); }
   fang.setAttribute('color', new THREE.Float32BufferAttribute(fc, 3));
-  const hair = fuzz(tube, { count: 1300, len: [0.012, 0.03], rad: 0.004, seed: side > 0 ? 81 : 82, lean: 0.5, frost: 0, flow: () => b.clone().sub(a), colour: (_p, _u, c2) => c2.copy(col(S.chelCol)).lerp(col(S.legHair), 0.3) });
+  const hair = fuzz2(tube, { count: 1300, len: [0.012, 0.03], rad: 0.004, seed: side > 0 ? 81 : 82, lean: 0.5, frost: 0, flow: () => b.clone().sub(a), colour: (_p, _u, c2) => c2.copy(col(S.chelCol)).lerp(col(S.legHair), 0.3) });
   return { g: merge([tube, fang]), hair };
 }
 
@@ -197,7 +214,7 @@ function spinnerets(cx: Cx, xEnd: number, yc: number) {
 
 // ---------- assembly ----------
 
-type Built = { chains: THREE.Vector3[][]; body: THREE.BufferGeometry[]; limbs: THREE.BufferGeometry; hair: THREE.BufferGeometry; eyes: { c: THREE.Vector3; look: THREE.Vector3; r: number; fwd: THREE.Vector3 }[]; paints: Paint[] };
+type Built = { chains: THREE.Vector3[][]; body: THREE.BufferGeometry[]; limbs: THREE.BufferGeometry; hair: THREE.BufferGeometry; hairFar: THREE.BufferGeometry; eyeGeo?: THREE.BufferGeometry; eyes: { c: THREE.Vector3; look: THREE.Vector3; r: number; fwd: THREE.Vector3 }[]; paints: Paint[] };
 const poseCache = new Map<string, Built>();
 
 function build(S: TarSpec, pose: TarPose, R: number, mode: TarMode): Built {
@@ -212,14 +229,14 @@ function build(S: TarSpec, pose: TarPose, R: number, mode: TarMode): Built {
   dent(car.geo, S.fovea);
   const abdMinX = S.abdomen[S.abdomen.length - 1][0];
   const pCar = paint(S.carapaceCol, S.carapaceMarks, car.x0, car.x1, 0.5), pAbd = paint(S.abdomenCol, S.abdomenMarks, abd.x0, abd.x1, 0.6);
-  const up = V(0, 1, 0).transformDirection(body), hairParts: THREE.BufferGeometry[] = [], limbParts: THREE.BufferGeometry[] = [], chains: THREE.Vector3[][] = [];
+  const up = V(0, 1, 0).transformDirection(body), hairParts: Hair[] = [], limbParts: THREE.BufferGeometry[] = [], chains: THREE.Vector3[][] = [];
   const inPatch = (p: THREE.Vector3) => { const q = p.clone().applyMatrix4(inv); return q.y > 0.1 && Math.abs(q.x - S.patch.x) < 0.17 && Math.abs(q.z) < S.patch.hw * (1 - Math.abs(q.x - S.patch.x) * 2.4); };
   const finish = (l: Loft, p: Paint, hairN: number, seed: number, flowX: number, isAbd: boolean, len: [number, number], rad: number) => {
     const g = l.geo.clone(); g.applyMatrix4(body);
     const n = g.attributes.normal, cl: number[] = [], q = V();
     for (let i = 0; i < n.count; i++) { const ny = q.fromBufferAttribute(n, i).dot(up), k = 1 - 0.32 * Math.max(0, -ny) + 0.05 * Math.max(0, ny); cl.push(k * LIT, k * LIT, k * LIT); }
     g.setAttribute('color', new THREE.Float32BufferAttribute(cl, 3));
-    const hair = fuzz(g, {
+    const hair = fuzz2(g, {
       count: hairN, len, rad, seed, lean: S.curl ? 0.4 : 0.55, frost: S.curl ? 0.12 : 0, curl: S.curl,
       flow: () => V(flowX, 0.2, 0).transformDirection(body),
       colour: (_pt, uv, c) => p.at(uv!.x, uv!.y, c).convertSRGBToLinear().multiplyScalar(1.05 * LIT),
@@ -228,24 +245,24 @@ function build(S: TarSpec, pose: TarPose, R: number, mode: TarMode): Built {
     return { g, hair };
   };
   const cB = finish(car, pCar, S.hair.body * 0.4, 11, -1, false, [0.011, 0.024], 0.0042), aB = finish(abd, pAbd, S.hair.body * 0.6, 12, -1, true, [0.018, 0.042], 0.005);
-  for (const h of [cB.hair, aB.hair]) if (h) hairParts.push(h);
+  hairParts.push(cB.hair, aB.hair);
   // the urticating patch: a bald oval on the back of the abdomen, short stiff red bristles standing up
-  const bristles = fuzz(aB.g, { count: 3600, len: [0.008, 0.02], rad: 0.0016, seed: 14, lean: 0.1, frost: 0.05, colour: (_p, _u, c) => c.copy(col(S.patch.col)), keep: pt => (inPatch(pt) ? 1 : 0) });
-  if (bristles) hairParts.push(bristles);
+  const bristles = fuzz2(aB.g, { count: 3600, len: [0.008, 0.02], rad: 0.0016, seed: 14, lean: 0.1, frost: 0.05, colour: (_p, _u, c) => c.copy(col(S.patch.col)), keep: pt => (inPatch(pt) ? 1 : 0) });
+  hairParts.push(bristles);
   const tb = tubercle(cx, car); limbParts.push(tb.g);
-  const tbHair = fuzz(tb.g, { count: 500, len: [0.01, 0.022], rad: 0.002, seed: 15, lean: 0.4, frost: 0.02, flow: () => V(1, 0.1, 0).transformDirection(body), colour: (_p, _u, c) => c.copy(col(S.carapaceCol, 1.5)) });
-  if (tbHair) hairParts.push(tbHair);
+  const tbHair = fuzz2(tb.g, { count: 500, len: [0.01, 0.022], rad: 0.002, seed: 15, lean: 0.4, frost: 0.02, flow: () => V(1, 0.1, 0).transformDirection(body), colour: (_p, _u, c) => c.copy(col(S.carapaceCol, 1.5)) });
+  hairParts.push(tbHair);
   for (const side of [1, -1]) {
     S.legs.forEach((l, i) => {
       const L = legGeometry(cx, l, i, side, 100 + i * 7 + (side > 0 ? 0 : 3));
-      chains.push(L.pts); limbParts.push(L.leg, L.claws); for (const h of [L.hair, L.pad]) if (h) hairParts.push(h);
+      chains.push(L.pts); limbParts.push(L.leg, L.claws); hairParts.push(L.hair, L.pad);
     });
-    const P = palpGeometry(cx, side); limbParts.push(P.g); if (P.hair) hairParts.push(P.hair);
-    const C = chelGeometry(cx, side); limbParts.push(C.g); if (C.hair) hairParts.push(C.hair);
+    const P = palpGeometry(cx, side); limbParts.push(P.g); hairParts.push(P.hair);
+    const C = chelGeometry(cx, side); limbParts.push(C.g); hairParts.push(C.hair);
   }
   limbParts.push(spinnerets(cx, abdMinX, S.abdomen[S.abdomen.length - 1][4]));
-  const limbs = boxUV(merge(limbParts.map(bare))), hair = merge(hairParts);
-  clampAbove(limbs, surf); clampAbove(hair, surf);
+  const limbs = boxUV(merge(limbParts.map(bare))), cat = (i: 0 | 1) => merge(hairParts.map(h => h[i]).filter((g): g is THREE.BufferGeometry => !!g)), hair = cat(0), hairFar = cat(1);
+  clampAbove(limbs, surf); clampAbove(hair, surf); clampAbove(hairFar, surf);
   // eight small eyes on the tubercle, two rows of four, all looking up and out along its surface
   const T = S.tubercle, eyes: Built['eyes'] = [], fwd = V(1, 0, 0).transformDirection(body);
   const spot = (dx: number, z: number) => {
@@ -253,7 +270,7 @@ function build(S: TarSpec, pose: TarPose, R: number, mode: TarMode): Built {
     return { c: V(T.x + dx, y - S.eyeR * 0.45, z).applyMatrix4(body), look: V(dx / (T.rx * T.rx), Math.sqrt(Math.max(0.04, k)) / T.ry, z / (T.rz * T.rz)).normalize().transformDirection(body) };
   };
   for (const s of [1, -1]) for (const [dx, z] of [[0.017, 0.013], [0.006, 0.037], [-0.014, 0.012], [-0.014, 0.038]]) eyes.push({ ...spot(dx, s * z), r: S.eyeR, fwd });
-  return { chains, body: [cB.g, aB.g], limbs, hair, eyes, paints: [pCar, pAbd] };
+  return { chains, body: [cB.g, aB.g], limbs, hair, hairFar, eyes, paints: [pCar, pAbd] };
 }
 
 /**
@@ -267,22 +284,28 @@ export function tarantulaBody(art: string, w: number, surface?: string, Rmm?: nu
   let built = poseCache.get(key);
   if (!built) {
     built = build(S, pose, R, mode);
-    for (const g of [...built.body, built.limbs, built.hair]) g.userData.keep = true;
+    for (const g of [...built.body, built.limbs, built.hair, built.hairFar]) g.userData.keep = true;
     poseCache.set(key, built);
   }
   const b = built, grp = new THREE.Group();
   const tex = (i: number) => mat(`tabody${i}:${art}`, () => new THREE.MeshBasicMaterial({ map: texture(b.paints[i]), vertexColors: true }));
   b.body.forEach((g, i) => grp.add(new THREE.Mesh(g, tex(i))));
   grp.add(new THREE.Mesh(b.limbs, mat('talimb', () => new THREE.MeshBasicMaterial({ vertexColors: true, map: grainTexture() }))));
-  grp.add(new THREE.Mesh(b.hair, mat('tahair', () => new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide }))));
-  const dome = geo('taeye', () => new THREE.SphereGeometry(1, 16, 12)), eyeMat = mat('taeye', () => new THREE.MeshBasicMaterial({ map: eyeTexture(false) }));
-  for (const e of b.eyes) {
-    const look = e.look, f = e.fwd.clone().projectOnPlane(look).normalize();
-    if (f.lengthSq() < 0.5) f.set(0, 0, 1).projectOnPlane(look).normalize();
-    const m = new THREE.Mesh(dome, eyeMat);
-    m.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(f, look, V().crossVectors(f, look))); m.scale.setScalar(e.r); m.position.copy(e.c);
-    grp.add(m);
+  // the coat: the full one near, the far one (FAR) once the animal looks small (CoatLOD)
+  const hm = mat('tahair', () => new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide })), coat = new CoatLOD();
+  coat.addLevel(new THREE.Mesh(b.hair, hm), 0); coat.addLevel(new THREE.Mesh(b.hairFar, hm), 1); coat.levels[1].object.visible = false;
+  grp.add(coat);
+  // the eight eyes baked into one mesh (a draw call, not eight); their centres ride in userData
+  if (!b.eyeGeo) {
+    const dome = new THREE.SphereGeometry(1, 12, 8), gs = b.eyes.map(e => {
+      const look = e.look, f = e.fwd.clone().projectOnPlane(look).normalize();
+      if (f.lengthSq() < 0.5) f.set(0, 0, 1).projectOnPlane(look).normalize();
+      return bake(dome, new THREE.Matrix4().makeBasis(f, look, V().crossVectors(f, look)).scale(V(e.r, e.r, e.r)).setPosition(e.c));
+    });
+    b.eyeGeo = mergeGeometries(gs)!; b.eyeGeo.userData.keep = true;
   }
+  const eyeMesh = new THREE.Mesh(b.eyeGeo, mat('taeye', () => new THREE.MeshBasicMaterial({ map: eyeTexture(false) })));
+  eyeMesh.userData.eyes = b.eyes.map(e => e.c.clone()); grp.add(eyeMesh);
   grp.userData.tarantula = pose; grp.userData.mode = mode;
   grp.scale.setScalar(w);
   return grp;

@@ -57,7 +57,8 @@ describe('tarantula body plan', { timeout: 120000 }, () => {
     it(`${art} ${surface}${R ? ' r ' + R : ''} ${mode}: finite, eight eyes, standing on its surface, a leg span of about three body lengths`, () => {
       const w = 50, g = tarantulaBody(art, w, surface, R || undefined, bend), G = tarGround(TARANTULAS[art]) * w, vs = verts(g);
       expect(vs.every(v => Number.isFinite(v.x + v.y + v.z))).toBe(true);
-      expect(g.children.filter(o => (o as THREE.Mesh).geometry?.type === 'SphereGeometry').length).toBe(8);
+      expect(g.children.flatMap(o => o.userData.eyes ?? []).length).toBe(8); // the eyes are baked into one mesh, their centres in its userData
+      expect(g.children.some(o => o.type === 'LOD' && (o as THREE.LOD).levels.length === 2)).toBe(true); // the coat: full near, a lighter one far
       const box = new THREE.Box3().setFromPoints(vs), size = box.getSize(new THREE.Vector3());
       expect(g.userData.tarantula).toBe(surface === 'floor' ? 'ground' : surface); expect(g.userData.mode).toBe(mode);
       if (mode === 'walk' && surface !== 'perch') {
@@ -92,7 +93,7 @@ describe('tarantula body plan', { timeout: 120000 }, () => {
     expect(hs(1).filter(h => h > 0.3 * w).length).toBe(2);
     const span = (b: number) => { const s = new THREE.Box3().setFromObject(tarantulaBody('gpulchripes_f', w, 'floor', undefined, b)).getSize(new THREE.Vector3()); return Math.hypot(s.x, s.z); };
     expect(span(0.5)).toBeLessThan(0.7 * span(0));
-    const eyeY = (b: number) => Math.max(...tarantulaBody('gpulchripes_f', w, 'floor', undefined, b).children.filter(o => (o as THREE.Mesh).geometry?.type === 'SphereGeometry').map(o => o.position.y));
+    const eyeY = (b: number) => Math.max(...tarantulaBody('gpulchripes_f', w, 'floor', undefined, b).children.flatMap(o => (o.userData.eyes ?? []) as THREE.Vector3[]).map(p => p.y));
     expect(eyeY(0.5)).toBeLessThan(eyeY(0) - 0.05);   // the carapace sits lower
     expect(eyeY(1)).toBeGreaterThan(eyeY(0) + 0.05);  // and in a threat the head is up
   });
@@ -101,7 +102,7 @@ describe('tarantula body plan', { timeout: 120000 }, () => {
     expect(TARANTULAS.gpulchripes.hooks).toBe(true); expect(TARANTULAS.gpulchripes_f.hooks).toBe(false);
     const lum = (h: string) => { const n = parseInt(h.slice(1), 16); return ((n >> 16) + (n >> 8 & 255) + (n & 255)) / 3; };
     expect(lum(TARANTULAS.gpulchripes.carapaceCol)).toBeLessThan(lum(TARANTULAS.gpulchripes_f.carapaceCol));
-    const count = (a: string) => { let n = 0; tarantulaBody(a, 50, 'floor').children.forEach(o => { n += (o as THREE.Mesh).geometry.attributes.position.count; }); return n; };
+    const count = (a: string) => { let n = 0; tarantulaBody(a, 50, 'floor').traverse(o => { const g = (o as THREE.Mesh).geometry; if (g) n += g.attributes.position.count; }); return n; };
     expect(count('gpulchripes')).not.toBe(count('gpulchripes_f'));
   });
 });

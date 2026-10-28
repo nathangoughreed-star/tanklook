@@ -6,6 +6,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { HERP3D, HERP3D_FLOAT, HERP3D_GLASS, HERP3D_PERCH, type Herp3D, type Limb3D, type Mark3D, type Solid3D } from '../art/herps';
+import { ARTH3D } from '../art/arthropods';
 import { rng, type Pt } from '../art/paint';
 import type { Surface } from '../scene/types';
 import { taperTube } from './fish3d';
@@ -121,8 +122,10 @@ function wartBumps(b: Body, w: NonNullable<Herp3D['warts']>) {
   return (p: THREE.Vector3) => { let d = 0, f = 0; for (const q of ws) { const k = 1 - p.distanceToSquared(q.c) / (q.r * q.r); if (k > 0 && w.h * q.r * k * k > d) { d = w.h * q.r * k * k; f = k; } } return [d, f]; };
 }
 
-function bodyGeometry(b: Body, warts?: Herp3D['warts']) {
-  const ST = warts ? 200 : 72, RG = warts ? 120 : 40; // stations along the body, points round the section (fine enough for warts)
+const ARTH_GRID = [150, 96];
+function bodyGeometry(b: Body, warts?: Herp3D['warts'], arth = false) {
+  // stations along the body, points round the section (fine enough for warts; an arthropod's warts are pits too small to need more: lane A4, 2026-10-28)
+  const ST = warts ? (arth ? ARTH_GRID[0] : 200) : 72, RG = warts ? (arth ? ARTH_GRID[1] : 120) : 40;
   const bump = warts && wartBumps(b, warts), p = new THREE.Vector3(), lit: number[] = [];
   const pos: number[] = [], uv: number[] = [], idx: number[] = [];
   for (let i = 0; i <= ST; i++) {
@@ -227,8 +230,8 @@ function eyeTexture(e: Herp3D['eye'], lid: string) {
 /** A tube through the joints (Catmull-Rom), its radius blended between the joints' radii, with round ends.
  *  `thigh` = a frog's thigh over the first segment: a smooth teardrop swelling to that radius near the hip, flattened
  *  against the flank (squeezed in z), and built with smooth normals (finer rings) so it reads as a muscle, not a faceted tube. */
-export function jointTube(pts: THREE.Vector3[], radii: number[], thigh = 0, seg = false, waist = 0.74) {
-  const curve = new THREE.CatmullRomCurve3(pts, false, 'centripetal'), N = (thigh ? 18 : 10) * (pts.length - 1), R = thigh ? 24 : 12;
+export function jointTube(pts: THREE.Vector3[], radii: number[], thigh = 0, seg = false, waist = 0.74, lean = false) {
+  const curve = new THREE.CatmullRomCurve3(pts, false, 'centripetal'), N = (thigh ? 18 : lean ? 8 : 10) * (pts.length - 1), R = thigh ? 24 : lean ? 10 : 12; // `lean`: an arthropod's leg (lane A4)
   const tube = new THREE.TubeGeometry(curve, N, 1, R, false), pos = tube.attributes.position, c = new THREE.Vector3(), q = new THREE.Vector3();
   const len: number[] = [0]; for (let i = 1; i < pts.length; i++) len.push(len[i - 1] + pts[i].distanceTo(pts[i - 1]));
   // `seg`: an arthropod leg, each segment swelling between narrower joints
@@ -252,7 +255,7 @@ export function jointTube(pts: THREE.Vector3[], radii: number[], thigh = 0, seg 
     q.add(c); pos.setXYZ(k, q.x, q.y, q.z);
   }
   if (thigh) tube.computeVertexNormals();
-  const ends = [0, pts.length - 1].map(i => { const s = new THREE.SphereGeometry(radii[i], thigh ? 20 : 12, thigh ? 12 : 8); s.translate(pts[i].x, pts[i].y, pts[i].z); return s; });
+  const ends = [0, pts.length - 1].map(i => { const s = new THREE.SphereGeometry(radii[i], thigh ? 20 : lean ? 10 : 12, thigh ? 12 : lean ? 6 : 8); s.translate(pts[i].x, pts[i].y, pts[i].z); return s; });
   if (thigh) { // the hip cap is squeezed like the thigh
     const s = ends[0]; s.translate(-pts[0].x, -pts[0].y, -pts[0].z); s.scale(1, 1, 0.64); s.translate(pts[0].x, pts[0].y, pts[0].z);
     s.computeVertexNormals();
@@ -264,15 +267,15 @@ export function jointTube(pts: THREE.Vector3[], radii: number[], thigh = 0, seg 
 const P3 = (u: number, v: number, z: number) => new THREE.Vector3(u - 0.5, -v, z);
 
 /** One limb (the + side): the jointed tube, then toes from its last joint to tips on the ground, with pads. */
-function limbGeometry(l: Limb3D, ground: number, col: (ny: number) => THREE.Color) {
-  const js = l.js.map(j => P3(j[0], j[1], j[2])), end = js[js.length - 1], parts: THREE.BufferGeometry[] = [jointTube(js, l.js.map(j => j[3]), l.thigh, !!l.seg, l.waist)];
+function limbGeometry(l: Limb3D, ground: number, col: (ny: number) => THREE.Color, lean = false) {
+  const js = l.js.map(j => P3(j[0], j[1], j[2])), end = js[js.length - 1], parts: THREE.BufferGeometry[] = [jointTube(js, l.js.map(j => j[3]), l.thigh, !!l.seg, l.waist, lean)];
   // the joints of a segmented leg: a narrow ring in the joint colour (painted after shading, below)
   const bands: [number, number][] = [];
   if (l.seg) for (let i = 1; i < js.length; i++) {
-    const at = parts.reduce((n, g) => n + g.attributes.position.count, 0), s = new THREE.SphereGeometry(l.js[i][3] * 0.8, 10, 6).translate(js[i].x, js[i].y, js[i].z);
+    const at = parts.reduce((n, g) => n + g.attributes.position.count, 0), s = new THREE.SphereGeometry(l.js[i][3] * 0.8, lean ? 8 : 10, lean ? 5 : 6).translate(js[i].x, js[i].y, js[i].z);
     s.deleteAttribute('uv'); const g = s.toNonIndexed(); parts.push(g); bands.push([at, at + g.attributes.position.count]);
   }
-  if (l.knee) for (let i = 1; i < js.length - 1; i++) { const s = new THREE.SphereGeometry(l.js[i][3] * l.knee, 12, 8).translate(js[i].x, js[i].y, js[i].z); s.deleteAttribute('uv'); parts.push(s.toNonIndexed()); } // knobbed knees
+  if (l.knee) for (let i = 1; i < js.length - 1; i++) { const s = new THREE.SphereGeometry(l.js[i][3] * l.knee, lean ? 10 : 12, lean ? 6 : 8).translate(js[i].x, js[i].y, js[i].z); s.deleteAttribute('uv'); parts.push(s.toNonIndexed()); } // knobbed knees
   if (l.claw) parts.push(...clawGeometry(js[js.length - 2], end, l.claw));
   const digits: THREE.Curve<THREE.Vector3>[] = [], gv = l.toeV ?? ground; // a perch: the toes reach below the ground line
   for (const [du, dz] of l.toes) {
@@ -309,11 +312,13 @@ function limbGeometry(l: Limb3D, ground: number, col: (ny: number) => THREE.Colo
 
 /** Extra smooth solids (arthropods: eye cones, wing panels, leg lobes, spines): ellipsoids oriented along `ax`, tapering to a point
  *  when `pt` is set, with vertex colours (top / underside). Returns the pieces for the near side (z mirrored by the caller) and the midline pieces. */
-function solidGeometry(list: Solid3D[], mirrored: boolean) {
+function solidGeometry(list: Solid3D[], mirrored: boolean, arth = false) {
   const parts: THREE.BufferGeometry[] = [];
   for (const s of list) {
     if ((s.one || s.at[2] === 0) === mirrored) continue;
-    const g = new THREE.SphereGeometry(1, 20, 14), p = g.attributes.position;
+    // an arthropod's hairs and keels are slivers: their ellipsoids need far fewer facets than a wing panel or an eye cone
+    const cross = Math.max(s.r[1], s.r[2]), [ws, hs] = arth ? (cross >= 0.01 ? [20, 14] : cross >= 0.004 ? [12, 8] : [8, 5]) : [20, 14];
+    const g = new THREE.SphereGeometry(1, ws, hs), p = g.attributes.position;
     if (s.pt) for (let i = 0; i < p.count; i++) { const f = 1 - s.pt * Math.pow((p.getX(i) + 1) / 2, 1.25); p.setXYZ(i, p.getX(i), p.getY(i) * f, p.getZ(i) * f); }
     g.deleteAttribute('uv');
     const x = new THREE.Vector3(s.ax[0], -s.ax[1], s.ax[2]).normalize(), up = new THREE.Vector3(...(s.up ? [s.up[0], -s.up[1], s.up[2]] : [0, 1, 0]));
@@ -446,6 +451,24 @@ function gillGeometry(gl: NonNullable<Herp3D['gills']>) {
 
 // ---------- assembly ----------
 
+const arthCache = new Map<string, [THREE.BufferGeometry, THREE.Material][]>();
+/** A copy of g under the matrix m, its winding turned round when m mirrors (what a mesh with a negative scale draws). */
+export function bake(g: THREE.BufferGeometry, m: THREE.Matrix4) {
+  const o = g.index ? g.toNonIndexed() : g.clone();
+  o.applyMatrix4(m);
+  if (m.determinant() < 0) for (const a of Object.values(o.attributes)) {
+    const n = a.itemSize, arr = a.array as Float32Array;
+    for (let t = 0; t < a.count; t += 3) for (let k = 0; k < n; k++) { const i = (t + 1) * n + k, j = (t + 2) * n + k, x = arr[i]; arr[i] = arr[j]; arr[j] = x; }
+  }
+  return o;
+}
+/** The meshes' geometry baked with their own transforms and merged, one geometry per material. */
+function mergeByMaterial(meshes: THREE.Mesh[]) {
+  const by = new Map<THREE.Material, THREE.BufferGeometry[]>();
+  for (const m of meshes) { m.updateMatrix(); const l = by.get(m.material as THREE.Material) ?? []; l.push(bake(m.geometry, m.matrix)); by.set(m.material as THREE.Material, l); }
+  return [...by].map(([m, gs]) => { const g = mergeGeometries(gs)!; g.userData.keep = true; return [g, m] as [THREE.BufferGeometry, THREE.Material]; });
+}
+
 /** The 3D amphibian for a card of width w, origin at the card's centre (the card frame's v = 0); add it as the card's child.
  *  `surface` 'glass' = clinging to a pane: its glass pose if it has one (tree frog), belly on the ground line; 'top' =
  *  floating at the water surface: its float pose (African dwarf frog); 'perch' = on a branch or shelf: its perch pose.
@@ -456,46 +479,55 @@ export function herpBody(art: string, w: number, surface?: Surface | 'perch', li
   if (isTarantula(art)) return tarantulaBody(art, w, surface, limbR, alert);
   if (isSnake(art)) return snakeBody(art, w, surface, limbR, +alert); // the pose family rides in `bend` (lane BP)
   const pose = surface === 'glass' ? HERP3D_GLASS[art] : surface === 'top' ? HERP3D_FLOAT[art] : surface === 'perch' ? HERP3D_PERCH[art] : undefined;
-  const h = pose || HERP3D[art], b = bodyShape(h), grp = new THREE.Group(), key = pose ? art + '~' + surface : art;
+  const h = pose || HERP3D[art], b = bodyShape(h), grp = new THREE.Group(), key = pose ? art + '~' + surface : art, arth = art in ARTH3D;
   const K = (k: string, make: () => THREE.BufferGeometry) => geo(key + k, make);
-  grp.add(new THREE.Mesh(K(':body', () => bodyGeometry(b, h.warts)), mat('body:' + key, () => new THREE.MeshBasicMaterial({ map: bodyTexture(h, b), vertexColors: true }))));
-  // limbs: the + side, mirrored for the far side (a negative scale; three flips the winding)
-  const top = new THREE.Color(h.legCol[0]), under = new THREE.Color(h.legCol[1]);
-  const lcol = (ny: number) => under.clone().lerp(top, smooth(-0.5, 0.3, ny));
-  const lm = limbMaterial(art, h);
-  h.limbs.forEach((l, i) => {
-    const c = l.c, own = c && ((ny: number) => new THREE.Color(c[1]).lerp(new THREE.Color(c[0]), smooth(-0.5, 0.3, ny)));
-    const g = K(':limb' + i, () => limbGeometry(l, h.ground, own || lcol)), gf = l.farJs ? K(':limbf' + i, () => limbGeometry({ ...l, js: l.farJs! }, h.ground, own || lcol)) : g;
-    for (const side of [1, -1]) {
-      const m = new THREE.Mesh(side < 0 ? gf : g, lm); m.scale.z = side;
-      // `far`: the far side's copy is scaled about the limb's root (a hermit crab's small right claw against the big left one)
-      if (side < 0 && l.far && l.far !== 1) { const k = l.far, r = l.js[0]; m.scale.set(k, k, -k); m.position.set((r[0] - 0.5) * (1 - k), -r[1] * (1 - k), 0); }
-      grp.add(m);
+  grp.add(new THREE.Mesh(K(':body', () => bodyGeometry(b, h.warts, arth)), mat('body:' + key, () => new THREE.MeshBasicMaterial({ map: bodyTexture(h, b), vertexColors: true }))));
+  // an arthropod's limbs (both sides), solids and eyes are baked into one mesh per material, once per model (a draw call each instead of 20 or more; lane A4, 2026-10-28)
+  const hit = arth ? arthCache.get(key) : undefined, parts: THREE.Mesh[] = [], put = (o: THREE.Mesh) => { if (arth) parts.push(o); else grp.add(o); };
+  if (!hit) {
+    // limbs: the + side, mirrored for the far side (a negative scale; three flips the winding)
+    const top = new THREE.Color(h.legCol[0]), under = new THREE.Color(h.legCol[1]);
+    const lcol = (ny: number) => under.clone().lerp(top, smooth(-0.5, 0.3, ny));
+    const lm = limbMaterial(art, h);
+    h.limbs.forEach((l, i) => {
+      const c = l.c, own = c && ((ny: number) => new THREE.Color(c[1]).lerp(new THREE.Color(c[0]), smooth(-0.5, 0.3, ny)));
+      const g = K(':limb' + i, () => limbGeometry(l, h.ground, own || lcol, arth)), gf = l.farJs ? K(':limbf' + i, () => limbGeometry({ ...l, js: l.farJs! }, h.ground, own || lcol, arth)) : g;
+      for (const side of [1, -1]) {
+        const m = new THREE.Mesh(side < 0 ? gf : g, lm); m.scale.z = side;
+        // `far`: the far side's copy is scaled about the limb's root (a hermit crab's small right claw against the big left one)
+        if (side < 0 && l.far && l.far !== 1) { const k = l.far, r = l.js[0]; m.scale.set(k, k, -k); m.position.set((r[0] - 0.5) * (1 - k), -r[1] * (1 - k), 0); }
+        put(m);
+      }
+    });
+    if (h.solids) {
+      const sm = mat('solid:' + key, () => new THREE.MeshBasicMaterial({ vertexColors: true })), sl = h.solids;
+      const both = K(':solidm', () => solidGeometry(sl, true, arth) ?? new THREE.BufferGeometry()), one = K(':solid1', () => solidGeometry(sl, false, arth) ?? new THREE.BufferGeometry());
+      for (const side of [1, -1]) { const m = new THREE.Mesh(both, sm); m.scale.z = side; put(m); }
+      put(new THREE.Mesh(one, sm));
     }
-  });
-  if (h.solids) {
-    const sm = mat('solid:' + key, () => new THREE.MeshBasicMaterial({ vertexColors: true })), sl = h.solids;
-    const both = K(':solidm', () => solidGeometry(sl, true) ?? new THREE.BufferGeometry()), one = K(':solid1', () => solidGeometry(sl, false) ?? new THREE.BufferGeometry());
-    for (const side of [1, -1]) { const m = new THREE.Mesh(both, sm); m.scale.z = side; grp.add(m); }
-    grp.add(new THREE.Mesh(one, sm));
+    // eyes
+    const e = h.eye, lid = h.tone[0][1];
+    const dome = K(':eye', () => new THREE.SphereGeometry(1, 24, 16).scale(1, e.bulge, 1));
+    const em = mat('eye:' + art, () => new THREE.MeshBasicMaterial({ map: eyeTexture(e, lid) }));
+    // a low skin mound round the dome (the eyelid): blends the eye into the head instead of a ball sitting on it (frogs only; stalk eyes keep their own)
+    const mound = e.at ? null : K(':lid', () => shade(new THREE.SphereGeometry(1, 28, 16).scale(1.32, e.bulge * 0.7, 1.32), 0.3));
+    const lm2 = mound && mat('lid:' + art, () => new THREE.MeshBasicMaterial({ color: lid, vertexColors: true }));
+    for (const side of [1, -1]) {
+      // sits on the surface normal but looks out sideways and a little ahead (amphibian eyes face the side, not the sky)
+      // on a stalk (`at`): on its tip, looking out and ahead
+      const p = e.at ? P3(e.at[0], e.at[1], side * e.at[2]) : surf(b, e.u, e.th, side), n = e.at ? new THREE.Vector3(0.3, 0.5, side).normalize() : normalAt(b, e.u, e.th, side);
+      const look = n.clone().add(new THREE.Vector3(0.15, 0, side * 0.9)).normalize();
+      const fwd = new THREE.Vector3(1, 0, 0).projectOnPlane(look).normalize(), m = new THREE.Mesh(dome, em);
+      m.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(fwd, look, new THREE.Vector3().crossVectors(fwd, look)));
+      m.scale.setScalar(e.r); m.position.copy(p).addScaledVector(n, e.r * (e.bulge - (e.at ? 0.55 : 0.82)));
+      put(m);
+      if (mound) { const k = new THREE.Mesh(mound, lm2!); k.quaternion.copy(m.quaternion); k.scale.setScalar(e.r); k.position.copy(p).addScaledVector(n, e.r * (e.bulge * 0.7 - 0.9)); put(k); }
+    }
   }
-  // eyes
-  const e = h.eye, lid = h.tone[0][1];
-  const dome = K(':eye', () => new THREE.SphereGeometry(1, 24, 16).scale(1, e.bulge, 1));
-  const em = mat('eye:' + art, () => new THREE.MeshBasicMaterial({ map: eyeTexture(e, lid) }));
-  // a low skin mound round the dome (the eyelid): blends the eye into the head instead of a ball sitting on it (frogs only; stalk eyes keep their own)
-  const mound = e.at ? null : K(':lid', () => shade(new THREE.SphereGeometry(1, 28, 16).scale(1.32, e.bulge * 0.7, 1.32), 0.3));
-  const lm2 = mound && mat('lid:' + art, () => new THREE.MeshBasicMaterial({ color: lid, vertexColors: true }));
-  for (const side of [1, -1]) {
-    // sits on the surface normal but looks out sideways and a little ahead (amphibian eyes face the side, not the sky)
-    // on a stalk (`at`): on its tip, looking out and ahead
-    const p = e.at ? P3(e.at[0], e.at[1], side * e.at[2]) : surf(b, e.u, e.th, side), n = e.at ? new THREE.Vector3(0.3, 0.5, side).normalize() : normalAt(b, e.u, e.th, side);
-    const look = n.clone().add(new THREE.Vector3(0.15, 0, side * 0.9)).normalize();
-    const fwd = new THREE.Vector3(1, 0, 0).projectOnPlane(look).normalize(), m = new THREE.Mesh(dome, em);
-    m.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(fwd, look, new THREE.Vector3().crossVectors(fwd, look)));
-    m.scale.setScalar(e.r); m.position.copy(p).addScaledVector(n, e.r * (e.bulge - (e.at ? 0.55 : 0.82)));
-    grp.add(m);
-    if (mound) { const k = new THREE.Mesh(mound, lm2!); k.quaternion.copy(m.quaternion); k.scale.setScalar(e.r); k.position.copy(p).addScaledVector(n, e.r * (e.bulge * 0.7 - 0.9)); grp.add(k); }
+  if (arth) {
+    const made = hit ?? mergeByMaterial(parts);
+    if (!hit) arthCache.set(key, made);
+    for (const [g, m] of made) grp.add(new THREE.Mesh(g, m));
   }
   if (h.fin) {
     const f = h.fin;
