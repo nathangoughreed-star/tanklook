@@ -148,10 +148,10 @@ export function finishBuild(b: Build, spec: TierSpec, style: Exclude<LayoutId, '
 
 /** The build finished at each tier, best finish first, one at a time (a caller that stops at the first that passes builds as few as it must). `leanOnly`: just the starter finish, for a build already over a money or time cap, which no finish can bring back under. `maxLevel`: the richest tier offered (the finish ladder's top for this concept).
  *  The style is the best-suited one that draws hardscape (a rock, wood or a hide to anchor the plants): styles scoring within 0.25 of the best are tried in order. */
-export function* finishTiers(b: Build, now = Date.now(), leanOnly = false, maxLevel: 0 | 1 | 2 | 3 = 3): Generator<Build> {
+export function* finishTiers(b: Build, now = Date.now(), leanOnly = false, maxLevel: 0 | 1 | 2 | 3 = 3, forceStyle?: Exclude<LayoutId, 'none'>): Generator<Build> {
   // `maxLevel` (lane U2): a concept that is not climbing starts at its own tier and never builds the richer ones above it
   const specs = leanOnly ? TIERS.slice(-1) : TIERS.filter(t => t.level <= maxLevel); // the last is the leanest
-  const ranked = rankStyles(b.animals), top = ranked[0]?.score ?? 0, tried = ranked.filter(r => r.score >= top - 0.25).slice(0, 4).map(r => r.style);
+  const ranked = rankStyles(b.animals), top = ranked[0]?.score ?? 0, tried = forceStyle ? [forceStyle] : ranked.filter(r => r.score >= top - 0.25).slice(0, 4).map(r => r.style); // `forceStyle` (lane U2): a concept that is about a different look
   let style = tried[0] ?? 'planted', first: Build | undefined;
   for (const st of tried.length ? tried : [style]) {
     const f = finishBuild(b, specs[0], st, now);

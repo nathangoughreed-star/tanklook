@@ -13,7 +13,7 @@ const CASES: { id: string; title: string; w: Wants }[] = [
   { id: 'mid', title: 'Mid budget: $800 ceiling, no preferences', w: { constraints: { startupUsd: cap(800) } } },
   { id: 'high', title: 'High budget: $2,500 ceiling, no preferences', w: { constraints: { startupUsd: cap(2500) } } },
   { id: 'betta', title: 'Locked betta, $600 ceiling, 8.5 % tax (all-in)', w: { constraints: { startupUsd: cap(600) }, animals: [{ species: 'betta', n: 1 }], taxPct: 8.5 } },
-  { id: 'cap200', title: '$200 ceiling, no preferences, no stand needed (it goes on a counter)', w: { constraints: { startupUsd: cap(200) }, needStand: false } },
+  { id: 'cap200', title: '"I have $200 and want something cool": only the ceiling set, nothing else', w: { constraints: { startupUsd: cap(200) } } },
   { id: 'cap200own', title: '$200 ceiling, no preferences, I already have a stand, filter and heater', w: { constraints: { startupUsd: cap(200) }, owned: { stand: 'care', filter: 'care', heater: 'care' } } },
 ];
 describe.skipIf(!process.env.U2_CASES)('u2 cases', () => {
@@ -21,7 +21,7 @@ describe.skipIf(!process.env.U2_CASES)('u2 cases', () => {
     const out = CASES.map(c => {
       const t0 = Date.now(), r = suggestSetups(c.w, P, 'in', NOW), ms = Date.now() - t0;
       return { id: c.id, title: c.title, ms, stats: r.stats, message: r.message, note: r.note, misses: r.misses.map(m => `${m.archetype.title}: ${m.text}`),
-        proposals: r.proposals.map(p => ({ strategy: p.strategyLabel, blurb: p.strategyBlurb, archetype: p.archetype.title, tank: p.build.tank.name, tier: p.build.finish?.tier, finish: p.build.finish?.lines ?? [], gear: p.build.gear.filter(g => !(p.build.finish?.lines ?? []).includes(g)),
+        proposals: r.proposals.map(p => ({ strategy: p.strategyLabel, blurb: p.strategyBlurb, tradeoff: p.tradeoff, archetype: p.archetype.title, tank: p.build.tank.name, tier: p.build.finish?.tier, finish: p.build.finish?.lines ?? [], gear: p.build.gear.filter(g => !(p.build.finish?.lines ?? []).includes(g)),
           animals: p.build.animals.map(a => `${a.n} ${a.species}`).join(', '), total: Math.round(p.totals.startupUsd), preTax: p.preTaxUsd, tax: p.taxUsd, under: p.underCeilingUsd, monthly: Math.round(p.totals.monthlyUsd), min: Math.round(p.totals.minPerWeek), lines: p.costLines })) };
     });
     mkdirSync('research/audits/u2', { recursive: true });
@@ -31,7 +31,7 @@ describe.skipIf(!process.env.U2_CASES)('u2 cases', () => {
     const usd = (n: number) => '$' + n.toLocaleString('en-US');
     for (const c of out) {
       const cards = c.proposals.map(p => `<div class="card"><div class="tag">${esc(p.strategy)}</div><h2>${esc(p.archetype)}</h2><div class="sub">${esc(p.tank)} · ${esc(p.tier)} finish${p.under !== undefined ? ` · ${usd(p.under)} under the ceiling` : ''}</div>
-<div class="big">${usd(p.total)}<span> all-in set-up</span></div><div class="sub">${usd(p.monthly)} a month · ${p.min} min a week</div><p class="blurb">${esc(p.blurb)}</p>
+<div class="big">${usd(p.total)}<span> all-in set-up</span></div><div class="sub">${usd(p.monthly)} a month · ${p.min} min a week</div><p class="blurb">${esc(p.blurb)}</p><p class="blurb"><b>Trade-off:</b> ${esc(p.tradeoff)}</p>
 <table>${p.lines.map(l => `<tr><td>${esc(l.label)}</td><td class="n">${l.usd === 0 ? '$0 ' + esc(l.note ?? '') : usd(l.usd)}</td></tr>`).join('')}<tr class="tot"><td>Total</td><td class="n">${usd(p.total)}</td></tr></table>
 <ul>${p.finish.map(l => `<li>${esc(l)}</li>`).join('')}</ul></div>`).join('');
       writeFileSync(`research/audits/u2/${c.id}.html`, `<!doctype html><meta charset="utf-8"><title>${esc(c.title)}</title><style>

@@ -1,7 +1,8 @@
 // Suggest a setup (lane C8): proposals are rechecked on ALL enabled guardrails and husbandry; nothing qualifying says exactly the no-suggestion line.
 import { describe, expect, it } from 'vitest';
 import { defaultProfile } from '../src/demand/types';
-import { ARCHETYPES, asksDryGroups, conceptDistance, MIN_DISTANCE, suggestSetups, NO_SUGGESTION, type OwnedMap, type Wants } from '../src/demand/suggest';
+import { briefFromWants, setItem, emptyBrief } from '../src/scene/brief';
+import { ARCHETYPES, suggestFromBrief, asksDryGroups, conceptDistance, MIN_DISTANCE, suggestSetups, NO_SUGGESTION, type OwnedMap, type Wants } from '../src/demand/suggest';
 import { FILTER_PRODUCTS, HEATER_PRODUCTS, LIGHT_PRODUCTS } from '../src/data/gearCatalog';
 import { buildsFor } from '../src/scene/builds';
 import { tankOptions } from '../src/scene/tankfit';
@@ -224,6 +225,34 @@ describe('Suggest a setup', () => {
       for (const d of dist(r.proposals)) expect(d).toBeGreaterThanOrEqual(MIN_DISTANCE);
       for (const p of r.proposals) { expect(p.strategyLabel.length).toBeGreaterThan(0); expect(p.totals.startupUsd).toBeLessThanOrEqual(600); }
       expect(r.stats.pool).toBeGreaterThanOrEqual(3);
+    });
+    it('"I have $200 and want something cool" (only the ceiling set): three distinct concepts, each with a trade-off line, none over $200', () => {
+      const r = run({ startupUsd: cap(200) });
+      expect(r.proposals.length).toBe(3);
+      for (const d of dist(r.proposals)) expect(d).toBeGreaterThanOrEqual(MIN_DISTANCE);
+      for (const p of r.proposals) { expect(p.totals.startupUsd).toBeLessThanOrEqual(200); expect(p.tradeoff.length).toBeGreaterThan(20); expect(p.costLines.reduce((t, l) => t + l.usd, 0)).toBe(Math.round(p.totals.startupUsd)); }
+      expect(r.proposals.some(p => /No stand/.test(p.tradeoff))).toBe(true); // the cheapest start says it leaves out the stand
+    });
+    it('experience scales complexity only: a beginner and an expert get the same pool (never a prohibition), ranked differently, with a note where it matters', () => {
+      const lo = run({ startupUsd: cap(3000), experience: 0 }), hi = run({ startupUsd: cap(3000), experience: 2 });
+      expect(lo.stats.pool).toBe(hi.stats.pool);
+      for (const p of [...lo.proposals, ...hi.proposals]) { expect(p.complexity).toBeGreaterThanOrEqual(0); expect(p.complexity).toBeLessThanOrEqual(1); }
+      const avg = (r: typeof lo) => r.proposals.reduce((t, p) => t + p.complexity, 0) / r.proposals.length;
+      expect(avg(lo)).toBeLessThanOrEqual(avg(hi));
+    });
+    it('the brief is the entry point: a locked stocking list, a tax item and the budget are read through the adapter; the brief wins over Constraints', () => {
+      let b = briefFromWants({ constraints: { startupUsd: cap(9999) } });
+      b = setItem(b, 'constraints.budget', 600, 'hard'); b = setItem(b, 'constraints.taxPct', 8, 'hard'); b = setItem(b, 'animals.stock', [{ species: 'betta', count: 1 }], 'locked');
+      const r = suggestFromBrief(b, P, 'cm', NOW);
+      expect(r.proposals.length).toBeGreaterThan(0);
+      for (const p of r.proposals) { expect(p.build.animals).toEqual([{ species: 'betta', n: 1 }]); expect(p.taxPct).toBe(8); expect(p.totals.startupUsd).toBeLessThanOrEqual(600); }
+      expect(emptyBrief().items).toEqual({});
+    });
+    it('nothing qualifies: a structured reason with the limiting factor and alternatives (wording is lane U4)', () => {
+      const r = run({ startupUsd: cap(60) }, { animals: betta });
+      expect(r.proposals).toEqual([]);
+      expect(r.infeasible?.limitingFactor).toBe('budget');
+      expect(r.infeasible!.alternatives.some(a => a.kind === 'raise-budget' && (a.delta ?? 0) > 0)).toBe(true);
     });
     it('locked animal: the animals never change; the concepts differ by strategy, tank or finish', () => {
       const r = run({ startupUsd: cap(700) }, { animals: betta });

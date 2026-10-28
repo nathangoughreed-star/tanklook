@@ -24,9 +24,12 @@ import { volume } from '../scene/physics';
 import { finishTiers } from '../scene/finish';
 import { compliance, effectiveLimits, type Compliance, type Constraints } from '../scene/constraints';
 import { spaceFit } from '../scene/space';
+import { LAYOUTS } from '../scene/items';
+import { rankStyles } from '../scene/scapes';
 import { allLand, fitIn, isMixed, needsOf, tankOptions, type AnimalCount } from '../scene/tankfit';
-import type { SpaceLimit, TankSetup, Units } from '../scene/types';
+import type { LayoutId, SpaceLimit, TankSetup, Units } from '../scene/types';
 import { summaryOf } from '../ui/stockSummary';
+import { briefToWants, type Brief } from '../scene/brief';
 import { costLines, type CostLine } from './costlines';
 import { demandOf } from './engine';
 import { NO_SUGGESTION, type Money } from './makefit';
@@ -151,16 +154,17 @@ export interface Wants {
 }
 
 /** The design strategies a concept is built on (lane U2). Open animals: economy / size / look / balanced. Locked animals: economy / aquascape (look) / equipment / room (size). */
-export type StrategyId = 'economy' | 'size' | 'look' | 'balanced' | 'equipment';
-interface StrategyDef { id: StrategyId; size: 'small' | 'mid' | 'top'; build: BuildId; level: 0 | 1 | 2 | 3; grow?: boolean; label: string; lockedLabel?: string; blurb: string }
+export type StrategyId = 'economy' | 'size' | 'look' | 'balanced' | 'equipment' | 'scape';
+interface StrategyDef { /** a different aquascape style from the best-suited one */ scape?: true; id: StrategyId; size: 'small' | 'mid' | 'top'; build: BuildId; level: 0 | 1 | 2 | 3; grow?: boolean; label: string; lockedLabel?: string; blurb: string }
 const STRATEGIES: readonly StrategyDef[] = [
   { id: 'economy', size: 'small', build: 'cheapest', level: 0, label: 'Cheapest start', lockedLabel: 'Economy', blurb: 'The smallest tank that holds them, the cheapest gear and a starter finish: the lowest all-in cost that still passes every check.' },
   { id: 'size', size: 'top', build: 'cheapest', level: 1, grow: true, label: 'Size first', lockedLabel: 'Room to grow', blurb: 'The biggest tank the ceiling and the animals allow, a basic finish: room and stability before looks.' },
   { id: 'look', size: 'mid', build: 'cheapest', level: 3, label: 'Look first', lockedLabel: 'Aquascape first', blurb: 'A mid-size tank at the lushest finish: plants, hardscape and the light and feeding that keep them.' },
   { id: 'balanced', size: 'mid', build: 'balanced', level: 2, label: 'Balanced', blurb: 'A mid-size tank, filter headroom and a full finish.' },
   { id: 'equipment', size: 'mid', build: 'leastWork', level: 1, label: 'Equipment quality', lockedLabel: 'Equipment quality', blurb: 'Gear that takes chores off your hands (the least-work build) in a mid-size tank, a basic finish.' },
+  { id: 'scape', scape: true, size: 'mid', build: 'cheapest', level: 2, label: 'Different look', lockedLabel: 'Alternative aquascape', blurb: 'The same kind of animals in another aquascape style: different plants, hardscape and mood.' },
 ];
-const OPEN_STRATEGIES: StrategyId[] = ['economy', 'size', 'look', 'balanced'], LOCKED_STRATEGIES: StrategyId[] = ['economy', 'look', 'equipment', 'size'];
+const OPEN_STRATEGIES: StrategyId[] = ['economy', 'size', 'look', 'balanced', 'scape'], LOCKED_STRATEGIES: StrategyId[] = ['economy', 'look', 'scape', 'equipment', 'size'];
 export const strategyLabel = (id: StrategyId, locked = false) => { const d = STRATEGIES.find(x => x.id === id)!; return locked && d.lockedLabel ? d.lockedLabel : d.label; };
 
 export interface Proposal {
@@ -194,7 +198,16 @@ export interface Proposal {
   strategyBlurb: string;
   /** dollars left under the set-up ceiling (information only: never scored) */
   underCeilingUsd?: number;
+  /** what this concept gives up for what it gains, in one or two plain sentences with the real numbers (welfare is never one of the things traded) */
+  tradeoff: string;
+  /** how hands-on the concept is, 0 (simple) .. 1 (demanding); experience shapes how it ranks and what the guidance says, and never removes a concept */
+  complexity: number;
+  /** guidance for the person's experience level when it matters (a demanding build for a beginner, a very simple one for an expert) */
+  experienceNote?: string;
 }
+export type LimitingFactor = 'budget' | 'upkeep' | 'time' | 'space' | 'tank' | 'animals' | 'welfare';
+export interface Alternative { kind: 'raise-budget' | 'raise-upkeep' | 'more-time' | 'use-owned' | 'bigger-space' | 'other-tank' | 'change-animals' | 'phase'; text: string; /** the amount to raise, set-up $ / $ a month / min a week, when the kind is a raise */ delta?: number }
+export interface Infeasible { limitingFactor: LimitingFactor; text: string; alternatives: Alternative[] }
 export interface Miss { archetype: Archetype; build: Build; totals: Money; needs: Partial<Money>; text: string }
 export interface Suggestions {
   /** every guardrail is off: nothing to check against, proposals are ranked by appeal alone */
@@ -210,6 +223,8 @@ export interface Suggestions {
   message?: string;
   /** nothing is offered for what was ticked (not a guardrail result): there are no setups of that kind in the data yet */
   unavailable?: string;
+  /** nothing qualified: WHY, as data (lane U4 words it and adds alternatives): the factor that limits the request and what would change the answer */
+  infeasible?: Infeasible;
   /** the pool the three were chosen from: valid concepts, and how many candidates welfare (the strict stocking rule) or a hard constraint turned away */
   stats: { pool: number; rejectedWelfare: number; rejectedConstraint: number };
 }
@@ -280,11 +295,12 @@ export function lockedArchetype(animals: AnimalCount[]): Archetype | undefined {
   return { id: 'locked-' + sig(live), kind, family, title: names.join(', '), tags: [], animals: live, why: 'The animals you chose.' };
 }
 
-/** How different two concepts are (0..1): the kind of animal (family), the archetype, the tank, the finish tier, the price band, the strategy. Weights sum to 1. */
+/** How different two concepts are (0..1): the kind of animal (family), the archetype, the tank, the finish tier, the price band, the strategy, the aquascape style. Weights sum to 1. */
 export function conceptDistance(a: Proposal, b: Proposal): number {
   const hi = Math.max(a.totals.startupUsd, b.totals.startupUsd), lo = Math.min(a.totals.startupUsd, b.totals.startupUsd);
-  return (a.archetype.family !== b.archetype.family ? 0.25 : 0) + (a.archetype.id !== b.archetype.id ? 0.25 : 0) + (a.build.tank.id !== b.build.tank.id ? 0.15 : 0)
-    + ((a.build.finish?.tier ?? '') !== (b.build.finish?.tier ?? '') ? 0.1 : 0) + (hi > 0 && (hi - lo) / hi >= 0.25 ? 0.1 : 0) + (a.strategy !== b.strategy ? 0.15 : 0);
+  return (a.archetype.family !== b.archetype.family ? 0.2 : 0) + (a.archetype.id !== b.archetype.id ? 0.2 : 0) + (a.build.tank.id !== b.build.tank.id ? 0.15 : 0)
+    + ((a.build.finish?.tier ?? '') !== (b.build.finish?.tier ?? '') ? 0.1 : 0) + (hi > 0 && (hi - lo) / hi >= 0.25 ? 0.1 : 0) + (a.strategy !== b.strategy ? 0.15 : 0)
+    + ((a.build.finish?.style ?? '') !== (b.build.finish?.style ?? '') ? 0.1 : 0);
 }
 /** A pick must differ from every concept already chosen by at least this much, unless nothing does. */
 export const MIN_DISTANCE = 0.3;
@@ -305,6 +321,58 @@ export function selectDiverse(pool: Proposal[], n = 3): Proposal[] {
   return out.sort(rank);
 }
 
+type StyleId = Exclude<LayoutId, 'none'>;
+/** How hands-on a concept is (0..1): the minutes a week, salt water, a CO2 rig, a very small volume (little margin for error). Inputs are the build's own numbers, nothing new is modelled. */
+function complexityOf(b: Build, S: TankSetup): number {
+  const rows = S.water.on ? techOf(S).rows : {}, co2 = rows.co2 && rows.co2 !== 'none' ? 0.15 : 0, small = S.water.on && b.tank.ratedGal < 10 ? 0.1 : 0;
+  return Math.min(1, Math.min(b.minPerWeek, 120) / 120 * 0.5 + (S.water.on && S.water.salt ? 0.25 : 0) + co2 + small + (b.finish?.level === 3 ? 0.1 : 0));
+}
+function experienceNote(exp: 0 | 1 | 2 | undefined, cx: number, min: number): string | undefined {
+  if (exp === 0 && cx >= 0.5) return `More hands-on than a first tank usually needs (about ${Math.round(min)} min a week, more to learn): fine if you enjoy it.`;
+  if (exp === 2 && cx < 0.2) return 'A simple build: you could take it further (more plants, stronger light, CO2) if you want a project.';
+  return undefined;
+}
+/** The stand's price in this build (list price scaled by the build's deals), for the "no stand" trade-off line. */
+const standCost = (b: Build, P: UserProfile) => { const D = demandOf(b.setup, P), r = D.items.find(i => i.key === 'stand'), k = D.totals.setupUsd > 0 ? b.setupUsd / D.totals.setupUsd : 1; return r?.setup ? Math.round(mean3(r.setup) * k) : 0; };
+/** One or two plain sentences: what this concept gains and what it gives up, with the real numbers. Welfare is never on the list (it is a gate, not a trade). */
+function tradeoffOf(p: Pick<Proposal, 'build' | 'totals' | 'underCeilingUsd'>, sd: StrategyDef, needStand: boolean, standUsd: number): string {
+  const gal = Math.round(p.build.tank.ratedGal), tier = p.build.finish?.tier, left = p.underCeilingUsd ? ` ${usd(p.underCeilingUsd)} stays under your ceiling.` : '';
+  const stand = !needStand && standUsd > 0 ? ` No stand: it sits on a sturdy counter or dresser (a stand would add about ${usd(standUsd)}).` : '';
+  const finishWord = tier === 'starter' ? 'a starter finish (few plants, a little hardscape)' : tier === 'lean' ? 'a basic finish' : tier === 'standard' ? 'a full finish' : 'a lush finish';
+  const t: Record<StrategyId, string> = {
+    economy: `Lowest cost: the smallest tank that holds them (${gal} gal) and ${finishWord}, so less room and a plainer look.${left}`,
+    size: `Room first: ${gal} gal gives stability and space; the money goes to the tank, so ${finishWord}.${left}`,
+    look: `Look first: ${finishWord} in ${gal} gal; more plants mean more light and feeding (about ${Math.round(p.totals.minPerWeek)} min a week) and less room than the biggest tank.${left}`,
+    balanced: `A middle path: ${gal} gal, a filter with headroom and ${finishWord}; nothing is stretched, nothing is the best it could be.${left}`,
+    equipment: `Easier upkeep: gear that saves chores costs more than the plainest gear, in ${gal} gal with ${finishWord}.${left}`,
+    scape: `Same animals, another look (${p.build.finish ? LAYOUTS[p.build.finish.style].label : 'a different style'}): ${finishWord} in ${gal} gal; the cost is close to the other looks, the mood is different.${left}`,
+  };
+  return t[sd.id] + stand;
+}
+
+/** The structured "why not": the closest miss names the limit (the cap it would take to raise), else the hard input that left no tank (an existing tank, the space) or the welfare gate. Wording is lane U4's. */
+function infeasibleOf(w: Wants, misses: Miss[], stats: Suggestions['stats'], locked: boolean, spaceOn: boolean): Infeasible {
+  const alternatives: Alternative[] = [];
+  const m = misses[0];
+  if (m) {
+    const n = m.needs;
+    if (n.startupUsd) alternatives.push({ kind: 'raise-budget', delta: n.startupUsd, text: `Raise the set-up ceiling by ${usd(n.startupUsd)} for ${m.archetype.title}.` });
+    if (n.monthlyUsd) alternatives.push({ kind: 'raise-upkeep', delta: n.monthlyUsd, text: `Allow ${usd(n.monthlyUsd)} more a month for ${m.archetype.title}.` });
+    if (n.minPerWeek) alternatives.push({ kind: 'more-time', delta: n.minPerWeek, text: `Allow ${n.minPerWeek} more minutes a week for ${m.archetype.title}.` });
+  }
+  if (!w.owned || !Object.keys(w.owned).length) alternatives.push({ kind: 'use-owned', text: 'Tell us what equipment you already have or can borrow: it comes off the cost.' });
+  if (m?.needs.startupUsd) alternatives.push({ kind: 'phase', text: 'Buy the essentials first and stock the tank later.' });
+  const n = m?.needs;
+  const factor: LimitingFactor = n?.startupUsd ? 'budget' : n?.monthlyUsd ? 'upkeep' : n?.minPerWeek ? 'time' : w.ownTank ? 'tank' : spaceOn ? 'space' : locked && stats.rejectedWelfare > 0 ? 'welfare' : locked ? 'animals' : 'budget';
+  if (factor === 'tank') alternatives.push({ kind: 'other-tank', text: 'This tank does not hold those animals: another tank, or other animals.' });
+  if (factor === 'space') alternatives.push({ kind: 'bigger-space', text: 'No tank that holds them fits the space you gave.' });
+  if (factor === 'welfare' || factor === 'animals') alternatives.push({ kind: 'change-animals', text: 'These animals cannot be kept well in anything the limits allow: other animals, or fewer.' });
+  const text = factor === 'budget' && n?.startupUsd ? `The closest setup needs ${usd(n.startupUsd)} more than your ceiling.` : 'Nothing passes every check with these limits.';
+  return { limitingFactor: factor, text, alternatives };
+}
+
+/** The entry point for a setup brief (lane U1/U2): locks, hard items and the experience level are read through the adapter; the brief wins over any Constraints a caller keeps beside it. */
+export function suggestFromBrief(b: Brief, P0: UserProfile, units: Units = 'cm', now = Date.now()): Suggestions { return suggestSetups(briefToWants(b), P0, units, now); }
 export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', now = Date.now()): Suggestions {
   const C = w.constraints, tags = w.tags ?? [], taxPct = Math.min(25, Math.max(0, w.taxPct ?? 0)), taxK = 1 + taxPct / 100;
   const space = C.space?.on === false ? undefined : w.space;
@@ -314,38 +382,42 @@ export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', no
   const locked = w.animals?.some(a => a.n > 0) ? lockedArchetype(w.animals) : undefined, isLocked = !!w.animals?.some(a => a.n > 0);
   const wantKinds = w.kinds?.length ? w.kinds : KINDS.map(k => k.id), groups = w.groups?.length ? w.groups : DRY_GROUPS.map(g => g.id);
   const wanted = isLocked ? (locked ? [locked] : []) : ARCHETYPES.filter(a => wantKinds.includes(a.kind) && (!a.group || groups.includes(a.group)));
-  const needStand = w.needStand !== false, cap = C.startupUsd?.on ? C.startupUsd.value : undefined;
+  const cap = C.startupUsd?.on ? C.startupUsd.value : undefined;
+  /** A stand is priced unless the person said otherwise; the cheapest-start concept of a small tank (10 gal or less, about 100 lb full) is offered on a sturdy counter instead, and says so. */
+  const standFor = (tank: TankModel, noStand: boolean) => w.needStand ?? !(noStand && tank.ratedGal <= 10);
   const ownedMap = w.owned ?? {};
-  const scenOf = (b: Build, own: ReturnType<typeof ownedAssess>): TankSetup => ({ ...b.setup, ...(needStand ? {} : { stand: { ...b.setup.stand, show: false } }), ...(own.tech ? { tech: own.tech } : {}), constraints: C, layout: { ...b.setup.layout, ...(w.space ? { space: w.space } : {}) } });
+  const scenOf = (b: Build, own: ReturnType<typeof ownedAssess>, needStand: boolean): TankSetup => ({ ...b.setup, ...(needStand ? {} : { stand: { ...b.setup.stand, show: false } }), ...(own.tech ? { tech: own.tech } : {}), constraints: C, layout: { ...b.setup.layout, ...(w.space ? { space: w.space } : {}) } });
   const taxOf = (preTax: number) => Math.round(Math.max(0, preTax) * taxPct / 100);
   const wordsOf = (cats: ReturnType<typeof summaryOf>['cats']) => cats.some(c => c.level === 'problem' || c.level === 'caution');
 
   // one concept: these animals in this tank, this build, at most this finish tier -> the best passing tier, or why not. Remembered for the call (strategies often meet on one concept).
-  type Out = { p?: Omit<Proposal, 'strategy' | 'strategyLabel' | 'strategyBlurb' | 'score'> & { levelOf: number }; near?: Miss; welfare?: boolean };
+  type Out = { p?: Omit<Proposal, 'strategy' | 'strategyLabel' | 'strategyBlurb' | 'score' | 'tradeoff' | 'complexity' | 'experienceNote'> & { levelOf: number; needStand: boolean }; near?: Miss; welfare?: boolean };
   const MEMO = new Map<string, Out>();
-  const attempt = (a: Archetype, animals: AnimalCount[], tank: TankModel, pref: BuildId, maxLevel: 0 | 1 | 2 | 3): Out => {
+  const attempt = (a: Archetype, animals: AnimalCount[], tank: TankModel, pref: BuildId, maxLevel: 0 | 1 | 2 | 3, style?: StyleId, noStand = false): Out => {
+    const needStand = standFor(tank, noStand);
     const bs = buildsCached(animals, tank, now).filter(b => meetsNeeds(b) && !(w.ownTank && b.bundle));
     const b0 = bs.find(b => b.id === pref || b.also?.includes(pref)) ?? [...bs].sort((x, y) => pref === 'leastWork' ? x.minPerWeek - y.minPerWeek : pref === 'balanced' ? x.filtrationPct - y.filtrationPct : x.setupUsd - y.setupUsd)[0];
     if (!b0) return {};
-    const key = `${a.id}|${tank.id}|${animals.map(x => x.species + x.n).join(',')}|${configKey(b0)}|${maxLevel}`;
+    const key = `${a.id}|${tank.id}|${animals.map(x => x.species + x.n).join(',')}|${configKey(b0)}|${maxLevel}|${style ?? ''}|${needStand}`;
     const hit = MEMO.get(key); if (hit) return hit;
     let out: Out = {}, near: Miss | undefined;
-    const own0 = ownedAssess(b0, ownedMap, needStand, P0, !!w.ownTank), scene0 = scenOf(b0, own0);
+    const own0 = ownedAssess(b0, ownedMap, needStand, P0, !!w.ownTank), scene0 = scenOf(b0, own0, needStand);
     // a proposal is a FINISHED tank (lane C9, scene/finish.ts): the best finish tier up to maxLevel that still passes every check. A build that already breaks a husbandry rule or a money / time cap
     // before it is finished cannot be saved by plants (they only add), so it is not finished further.
     if (wordsOf(summaryOf(scene0, units).cats)) { out = { welfare: true }; MEMO.set(key, out); return out; }
     const pre0 = b0.setupUsd - own0.saved, over0 = compliance(scene0, { setupUsd: pre0 + taxOf(pre0), upkeepUsdMo: b0.upkeepUsdMo, minPerWeek: b0.minPerWeek }, effectiveLimits(scene0, P0.limits), units).overall === 'over';
     let welfare = false;
-    for (const b of finishTiers(b0, now, over0, maxLevel)) {
-      const own = ownedAssess(b, ownedMap, needStand, P0, !!w.ownTank), saved = own.saved, scene = scenOf(b, own), sm = summaryOf(scene, units);
+    for (const b of finishTiers(b0, now, over0, maxLevel, style)) {
+      const own = ownedAssess(b, ownedMap, needStand, P0, !!w.ownTank), saved = own.saved, scene = scenOf(b, own, needStand), sm = summaryOf(scene, units);
       // husbandry is never traded for money or time: the strict rule (Nathan 2026-10-27) = nothing the stocking screen words as a Problem OR a Caution in any of its five categories. Only "not enough information" passes, and it is shown.
+      if (style && !b.setup.items.some(i => i.kind === 'plant' || i.kind === 'artificial' || i.kind === 'coral')) continue; // another look is still a planted (or reefed) tank, never a pile of stones
       if (wordsOf(sm.cats)) { welfare = true; continue; }
       const preTax = b.setupUsd - saved, tax = taxOf(preTax), t = { ...money(b), startupUsd: preTax + tax }, L = effectiveLimits(scene, P0.limits);
       const cp = compliance(scene, { setupUsd: t.startupUsd, upkeepUsdMo: t.monthlyUsd, minPerWeek: t.minPerWeek }, L, units);
       if (cp.overall !== 'off') anyOn = true;
       if (cp.overall === 'within' || cp.overall === 'off') {
         const matched = tags.filter(x => a.tags.includes(x));
-        out = { p: { archetype: a, build: b, scene, totals: t, saved, preTaxUsd: preTax, taxUsd: tax, taxPct, ownedNotes: own.notes, status: cp.results, matched, levelOf: b.finish?.level ?? 0,
+        out = { p: { needStand, archetype: a, build: b, scene, totals: t, saved, preTaxUsd: preTax, taxUsd: tax, taxPct, ownedNotes: own.notes, status: cp.results, matched, levelOf: b.finish?.level ?? 0,
           costLines: costLines(b, own.rows, t.startupUsd, needStand, P0, tax, `Sales tax (${taxPct}%)`),
           unknown: sm.cats.flatMap(c => c.items.filter(i => i.level === 'unknown').map(i => i.text)).slice(0, 1) } };
         break; // the best finish that passes: a lesser tier of the same build adds nothing
@@ -369,8 +441,10 @@ export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', no
     const { list, top, ceiling } = sizesFor(a.animals, w, space, cap, taxK, now);
     if (!list.length) { stats.rejectedConstraint++; continue; }
     const mid = Math.ceil(top / 2), idxOf = (s: StrategyDef['size']) => s === 'small' ? 0 : s === 'top' ? top : mid;
+    const ranked = rankStyles(a.animals), altStyle = ranked.slice(1).find(r => r.score >= (ranked[0]?.score ?? 0) - 0.6)?.style;
     for (const id of isLocked ? LOCKED_STRATEGIES : OPEN_STRATEGIES) {
       const sd = STRATEGIES.find(x => x.id === id)!;
+      if (sd.scape && !altStyle) continue;
       const maxLevel = w.climb ? 3 : sd.level;
       let found: Out | undefined, near: Miss | undefined;
       // the strategy's own size first; a size the money cannot carry once finished falls back one size down at a time (at most three tries)
@@ -382,7 +456,9 @@ export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', no
         }
         stocks.push(a.animals);
         for (const stock of stocks) {
-          const r = attempt(a, stock, tank, sd.build, maxLevel);
+          let r = attempt(a, stock, tank, sd.build, maxLevel, sd.scape ? altStyle : undefined, id === 'economy');
+          // a small tank the stand makes unaffordable is offered on a sturdy counter instead (the card says so), when the person has not said they need a stand
+          if (!r.p && w.needStand === undefined && id !== 'economy') { const q = attempt(a, stock, tank, sd.build, maxLevel, sd.scape ? altStyle : undefined, true); if (q.p) r = q; }
           if (r.welfare && !r.p) stats.rejectedWelfare++;
           if (r.near && (!near || relaxSize(r.near.needs) < relaxSize(near.needs))) near = r.near;
           if (r.p) { found = r; break; }
@@ -390,19 +466,22 @@ export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', no
         }
       }
       if (!found?.p) { if (near) misses.push(near); continue; }
-      const { levelOf, ...p } = found.p, t = p.totals, L = effectiveLimits(p.scene, P0.limits);
+      const { levelOf, needStand, ...p } = found.p, t = p.totals, L = effectiveLimits(p.scene, P0.limits), cx = complexityOf(p.build, p.scene), exp = C.experience;
       // climb (the old target behaviour): a card that stops short because the animals' needs cap it (the biggest tank they gain from, at the fullest finish) is as good a use of the money as the animals allow
       const limited = !!(w.climb && ceiling && L.setupUsd && t.startupUsd < USES_BUDGET * L.setupUsd && levelOf === 3 && id === 'size');
-      const score = p.matched.length * 10 + headroom(t, L) * 5 + levelOf * 1.5 - p.unknown.length * 0.5
+      // experience shapes how hands-on concepts RANK (a gentle push), never whether one is offered
+      const score = p.matched.length * 10 + headroom(t, L) * 5 + levelOf * 1.5 - p.unknown.length * 0.5 + (exp === 0 ? -6 * cx : exp === 2 ? 3 * cx : 0)
         + (w.climb && L.setupUsd ? (limited ? 1 : Math.min(1, t.startupUsd / L.setupUsd)) * 20 : 0);
-      pool.push({ ...p, score, strategy: id, strategyLabel: strategyLabel(id, isLocked), strategyBlurb: sd.blurb,
+      const base = { ...p, score, strategy: id, strategyLabel: strategyLabel(id, isLocked), strategyBlurb: sd.blurb,
         ...(L.setupUsd ? { underCeilingUsd: Math.max(0, Math.round(L.setupUsd - t.startupUsd)) } : {}),
-        ...(limited ? { capNote: 'This is the most this kind needs: a bigger tank or more animals would not suit them, so part of your budget is left over.' } : {}) });
+        ...(limited ? { capNote: 'This is the most this kind needs: a bigger tank or more animals would not suit them, so part of your budget is left over.' } : {}) };
+      const note = experienceNote(exp, cx, t.minPerWeek);
+      pool.push({ ...base, complexity: cx, tradeoff: tradeoffOf(base, sd, needStand, standCost(p.build, P0)), ...(note ? { experienceNote: note } : {}) } as Proposal);
     }
   }
   // the same concept reached by two strategies is one concept: the first (strongest) keeps it
   const seen = new Set<string>(), uniq: Proposal[] = [];
-  for (const p of [...pool].sort((a, b) => b.score - a.score)) { const k = `${p.archetype.id}|${p.build.tank.id}|${configKey(p.build)}|${p.build.finish?.tier}|${p.build.animals.map(x => x.species + x.n).join(',')}`; if (!seen.has(k)) { seen.add(k); uniq.push(p); } }
+  for (const p of [...pool].sort((a, b) => b.score - a.score)) { const k = `${p.archetype.id}|${p.build.tank.id}|${configKey(p.build)}|${p.build.finish?.tier}|${p.build.finish?.style}|${p.build.animals.map(x => x.species + x.n).join(',')}`; if (!seen.has(k)) { seen.add(k); uniq.push(p); } }
   stats.pool = uniq.length;
   const shown = selectDiverse(uniq, 3);
   const rank = (a: Proposal, b: Proposal) => b.score - a.score || a.archetype.id.localeCompare(b.archetype.id);
@@ -412,6 +491,7 @@ export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', no
   const shownIds = new Set(sorted.map(p => p.archetype.id));
   const out: Suggestions = { off: !anyOn, proposals: shown, qualified: [...new Set(sorted.map(p => p.archetype.id))], kinds, stats,
     misses: [...bestMiss.values()].filter(m => !shownIds.has(m.archetype.id)).sort((a, b) => relaxSize(a.needs) - relaxSize(b.needs)).slice(0, 3) };
+  if (wanted.length && !shown.length) out.infeasible = infeasibleOf(w, out.misses, stats, isLocked, !!space);
   if (!wanted.length) out.unavailable = isLocked ? 'Those animals are not in the data yet.' : 'There are no setups of that kind to suggest yet. Tick another kind.';
   else if (!shown.length) out.message = NO_SUGGESTION;
   else if (!isLocked && kinds.length < 3 && anyOn && wanted.some(a => a.family !== kinds[0])) out.note = `Only ${kinds.length === 1 ? 'one kind' : `${kinds.length} kinds`} of setup fit${kinds.length === 1 ? 's' : ''} your guardrails: ${kinds.map(k => FAMILY_LABEL[k]).join(', ')}.`;

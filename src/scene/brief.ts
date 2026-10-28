@@ -7,6 +7,7 @@
 // Animal welfare is NOT a status: it stays the stocking gates (stocking.ts / stockSummary.ts), a feasibility check no item can switch off.
 // Storage: `TankSetup.brief` (types.ts), validated by `parseBrief` in scene/validate.ts, so it saves / loads / undoes with the project.
 // An item with `off: true` is switched off but keeps its value (the Guardrails "on" toggle); it counts as not specified.
+import { getTankModel } from '../data/tanks';
 import type { DryGroup, Kind, OwnedKey, OwnedMap, Tag, Wants } from '../demand/suggest';
 import type { Cap, Constraints, Effort } from './constraints';
 import type { PlantMode } from './scapes';
@@ -166,6 +167,9 @@ export function briefFromWants(w: Wants): Brief {
   if (w.space) put('constraints.maxSpace', { value: { ...w.space }, status: 'hard' });
   if (c.space) put('constraints.spaceGate', { value: c.space.on, status: 'hard' });
   pref('preferences.effort', c.effort); pref('preferences.experience', c.experience);
+  if (w.taxPct !== undefined) b = setItem(b, 'constraints.taxPct', w.taxPct, 'hard');
+  if (w.animals?.length) b = setItem(b, 'animals.stock', w.animals.map(a => ({ species: a.species, count: a.n })), 'locked');
+  if (w.ownTank) b = setItem(b, 'constraints.existingTank', { model: w.ownTank.id }, 'hard');
   return b;
 }
 
@@ -182,5 +186,11 @@ export function briefToWants(b: Brief): Wants {
   if (kinds) w.kinds = [...kinds.value]; if (groups) w.groups = [...groups.value]; if (owned) w.owned = { ...owned.value };
   if (stand) w.needStand = stand.value; if (tags) w.tags = [...tags.value];
   if (sp) w.space = { ...sp.value };
+  // lane U2 hooks: the sales tax, a LOCKED stocking list (the generator never changes it) and an existing tank (the only tank offered, $0)
+  const tax = g('constraints.taxPct'), stock = g('animals.stock'), own = g('constraints.existingTank');
+  if (tax && !tax.off) w.taxPct = tax.value;
+  if (stock && stock.status === 'locked' && stock.value.length) w.animals = stock.value.map(x => ({ species: x.species, n: x.count }));
+  const model = own?.value.model ? getTankModel(own.value.model) : undefined;
+  if (model) w.ownTank = model;
   return w;
 }
