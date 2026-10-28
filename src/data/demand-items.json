@@ -923,128 +923,128 @@
    "url": "https://reefexclusive.com/products/rex-black-sun-acro"
   },
   "plant:acropora": {
-   "lo": 20,
-   "mode": 40,
-   "hi": 80,
+   "lo": 30,
+   "mode": 60,
+   "hi": 140,
    "unit": "one frag; outlet $20-30, standard higher, judged",
    "url": "https://worldwidecorals.com/products/wwc-goblin-acropora-1"
   },
   "plant:agave": {
    "lo": 6,
-   "mode": 19,
-   "hi": 25,
+   "mode": 9,
+   "hi": 15,
    "unit": "4-inch potted; Walmart $18.99, eBay $24.99",
    "url": "https://www.walmart.com/ip/19979955321"
   },
   "plant:aloe": {
-   "lo": 6,
-   "mode": 14,
-   "hi": 26,
+   "lo": 5.97,
+   "mode": 6,
+   "hi": 9,
    "unit": "4-inch potted; IKEA $5.99 to HD $25.97",
    "url": "https://www.homedepot.com/p/p/Delray-Plants-Aloe-Vera-in-4-in-Pot-90408/202676728"
   },
   "plant:anacharis": {
-   "lo": 3,
-   "mode": 5,
-   "hi": 10,
+   "lo": 6.99,
+   "mode": 8.79,
+   "hi": 10.79,
    "unit": "one bunch; LiveAquaria $4.99, Walmart $9.79",
    "url": "https://www.liveaquaria.com/products/anacharis"
   },
   "plant:anemone": {
-   "lo": 40,
-   "mode": 50,
-   "hi": 120,
+   "lo": 50,
+   "mode": 70,
+   "hi": 175,
    "unit": "each; plain green $40-50, color morphs $115-240",
    "url": "https://www.liveaquaria.com/products/green-bubble-tip-anemone"
   },
   "plant:anubias": {
-   "lo": 9,
-   "mode": 11,
-   "hi": 14,
+   "lo": 5.99,
+   "mode": 8.99,
+   "hi": 13.99,
    "unit": "one potted plant; $9-13 across stores",
    "url": "https://www.aquariumplants.com/product/anubias-nana-golden-bareroot-clump/"
   },
   "plant:balansae": {
-   "lo": 7,
-   "mode": 8,
-   "hi": 12,
+   "lo": 8.99,
+   "mode": 9.99,
+   "hi": 12.99,
    "unit": "one potted/bare-root plant; $6.99-10.95",
    "url": "https://aquaticarts.com/products/cryptocoryne-balansae"
   },
   "plant:barrel": {
-   "lo": 10,
+   "lo": 12.99,
    "mode": 13,
-   "hi": 35,
+   "hi": 15,
    "unit": "4-inch potted; Walmart from $12.99, hi judged",
    "url": "https://www.walmart.com/ip/Ferocactus-emoryi-Star-Shaped-Emory-s-barrel-cactus-Coville-s-barrel-cactus-5-point-Cactus-in-4-inch-pot-well-rooted-healthy-starter/5004255375"
   },
   "plant:bromeliad": {
-   "lo": 15,
-   "mode": 25,
-   "hi": 31,
+   "lo": 7,
+   "mode": 14,
+   "hi": 22,
    "unit": "4-inch potted; $24.99-30.78, lo from larger pots",
    "url": "https://www.homedepot.com/p/Costa-Farms-Grower-s-Choice-Bromeliad-Indoor-Plant-in-4-in-Decor-Pot-Avg-Shipping-Height-1-2-ft-Tall-CO-BRO4-3-WHT-G/319495695"
   },
   "plant:buce": {
-   "lo": 8,
-   "mode": 15,
-   "hi": 25,
+   "lo": 8.99,
+   "mode": 10.99,
+   "hi": 19.99,
    "unit": "one pot/portion; BucePlant $7.99-24.99 by variety",
    "url": "https://buceplant.com/collections/aquarium-plants/collection_bucephalandra"
   },
   "plant:burrotail": {
-   "lo": 8,
-   "mode": 14,
-   "hi": 18,
+   "lo": 7.99,
+   "mode": 8,
+   "hi": 12,
    "unit": "4-inch potted; Tagawa $14.40 sale, $18 reg",
    "url": "https://shop.tagawagardens.com/item/165719/BURROS-TAIL-4-IN"
   },
   "plant:carpet": {
-   "lo": 5,
-   "mode": 9,
-   "hi": 13,
+   "lo": 7.99,
+   "mode": 8.99,
+   "hi": 12.99,
    "unit": "one cup/portion; Co-op $8.99, Buce $5-13",
    "url": "https://www.aquariumcoop.com/collections/type_carpeting-plants/light-requirements_high-light-plants"
   },
   "plant:columnar": {
-   "lo": 21,
-   "mode": 24,
+   "lo": 8.99,
+   "mode": 15,
    "hi": 25,
    "unit": "4-inch potted; Walmart $21-25",
    "url": "https://www.walmart.com/c/kp/columnar-cactus"
   },
   "plant:creeper": {
-   "lo": 16,
-   "mode": 19,
-   "hi": 26,
+   "lo": 7.99,
+   "mode": 15,
+   "hi": 19,
    "unit": "4-inch potted; Walmart $15.99-26",
    "url": "https://www.walmart.com/c/kp/creeping-fig"
   },
   "plant:crypt": {
-   "lo": 7,
-   "mode": 10,
-   "hi": 15,
+   "lo": 5.99,
+   "mode": 7.99,
+   "hi": 9.99,
    "unit": "one potted crypt; Walmart, Buceplant, Co-op",
    "url": "https://buceplant.com/collections/aquarium-plants/products/cryptocoryne-wendtii-green"
   },
   "plant:echeveria": {
-   "lo": 4,
-   "mode": 7,
-   "hi": 11,
+   "lo": 4.2,
+   "mode": 6.5,
+   "hi": 8,
    "unit": "one 4-inch potted plant; mode is judgement",
    "url": "https://www.walmart.com/ip/8-pots-of-4-Inch-Rosette-Echeveria-Succulent-fully-rooted/848396297"
   },
   "plant:fern": {
    "lo": 6,
-   "mode": 10,
-   "hi": 18,
-   "unit": "one potted plant; few US listings, range judgement",
-   "url": "https://www.ihsgonline.com/products/microsorum-pteropus-potted-008-java-fern/234586893/"
+   "mode": 7,
+   "hi": 12,
+   "unit": "one potted Java fern; $6.99-7.95 at Buceplant, Etsy, Aquarium Plants, Modern Aquarium (2026-10-27); the $56 Chewy mat is a different product",
+   "url": "https://buceplant.com/"
   },
   "plant:fittonia": {
-   "lo": 5,
-   "mode": 9,
-   "hi": 22,
+   "lo": 4,
+   "mode": 6,
+   "hi": 9,
    "unit": "one 3-4 inch pot; Home Depot $40 outlier dropped",
    "url": "https://www.ebay.com/str/bubblebloomsshop"
   },
@@ -1063,23 +1063,23 @@
    "url": "https://www.aquariumcoop.com/products/vallisneria"
   },
   "plant:hairgrass": {
-   "lo": 5,
-   "mode": 7,
-   "hi": 10,
+   "lo": 7.99,
+   "mode": 8.99,
+   "hi": 9.99,
    "unit": "one pot; Nature Aquariums, PetSmart $9.99",
    "url": "https://natureaquariums.com/products/eleocharis-parvulus-dwarf-hair-grass-potted"
   },
   "plant:hammer": {
-   "lo": 35,
+   "lo": 30,
    "mode": 60,
-   "hi": 90,
+   "hi": 120,
    "unit": "one frag; $37-90 listings, judged",
    "url": "https://worldwidecorals.com/collections/corals-coming-soon/products/wwc-rainbow-branching-hammer"
   },
   "plant:haworthia": {
-   "lo": 4,
+   "lo": 6,
    "mode": 6,
-   "hi": 21,
+   "hi": 8,
    "unit": "one 4-inch pot; $6/plant in 4-pack",
    "url": "https://www.homedepot.com/p/United-Nursery-Grower-s-Choice-Haworthia-Succulent-4-Pack-in-4-inch-Grower-Pot-79047/314962395"
   },
@@ -1091,23 +1091,23 @@
    "url": "https://joshsfrogs.com/sp/ceratophyllum-demersum--bunches--niwb039"
   },
   "plant:jade": {
-   "lo": 12,
-   "mode": 22,
-   "hi": 31,
+   "lo": 5,
+   "mode": 7,
+   "hi": 10,
    "unit": "4 inch potted plant",
    "url": "https://www.homedepot.com/p/Costa-Farms-4-in-Jade-Crassula-Plant-in-Ceramic-Pot-4JADEREDCER/306720668"
   },
   "plant:leather": {
-   "lo": 25,
-   "mode": 40,
-   "hi": 60,
+   "lo": 20,
+   "mode": 25,
+   "hi": 70,
    "unit": "one toadstool frag; $39.99 QCC, others judged",
    "url": "https://www.queencitycorals.com/?p=41457"
   },
   "plant:lettuce": {
-   "lo": 1,
-   "mode": 4,
-   "hi": 7,
+   "lo": 3.5,
+   "mode": 7,
+   "hi": 10,
    "unit": "one plant",
    "url": "https://aquaticarts.com/products/water-lettuce"
   },
@@ -1119,16 +1119,16 @@
    "url": "https://www.aquariumcoop.com/products/tiger-lotus-bulb-only"
   },
   "plant:ludwigia": {
-   "lo": 6,
-   "mode": 8,
-   "hi": 11,
+   "lo": 6.99,
+   "mode": 7.99,
+   "hi": 10.79,
    "unit": "one bunch, 6-12 stems",
    "url": "https://www.buceplant.com/products/ludwigia-repens"
   },
   "plant:macroalgae": {
-   "lo": 8,
-   "mode": 15,
-   "hi": 35,
+   "lo": 9,
+   "mode": 20,
+   "hi": 45,
    "unit": "one portion of chaeto/caulerpa; judged from sparse listings",
    "url": "https://www.saltwateraquarium.com/food/live-foods/macro-algae/"
   },
@@ -1147,16 +1147,16 @@
    "url": "https://topshelfaquatics.com/products/tsa-funky-fungia-plate-coral-almost-wysiwyg"
   },
   "plant:moss": {
-   "lo": 8,
-   "mode": 9,
-   "hi": 10,
+   "lo": 6.99,
+   "mode": 7.99,
+   "hi": 8.79,
    "unit": "one portion/cup",
    "url": "https://aquaticarts.com/products/deluxe-java-moss"
   },
   "plant:mushroom": {
-   "lo": 25,
-   "mode": 50,
-   "hi": 85,
+   "lo": 11,
+   "mode": 25,
+   "hi": 55,
    "unit": "single Discosoma head; $39.99-$84.99 listings",
    "url": "https://reefchasers.com/products/fire-red-disco-mushroom"
   },
@@ -1168,9 +1168,9 @@
    "url": "https://www.aquariumplants.com/product/ozelot-green-potted/?rating=2"
   },
   "plant:pothos": {
-   "lo": 9,
-   "mode": 22,
-   "hi": 27,
+   "lo": 7,
+   "mode": 9.4,
+   "hi": 12,
    "unit": "4 inch pot; multipack per-plant low end",
    "url": "https://homedepot.com/p/Costa-Farms-Pothos-Indoor-Plant-in-4-in-Decor-Pot-Avg-Shipping-Height-8-in-Tall-CO-GP04-3-WHTCY/319248976"
   },
@@ -1203,16 +1203,16 @@
    "url": "https://buceplant.com/products/salvinia-cucullata"
   },
   "plant:sansevieria": {
-   "lo": 12,
-   "mode": 19,
-   "hi": 27,
+   "lo": 9.96,
+   "mode": 10,
+   "hi": 17,
    "unit": "4 inch potted plant",
    "url": "https://homedepot.com/p/Snake-Plant-Gold-Hahnii-Sansevieria-Hahnii-Plant-in-4-in-Grower-Pot-4-SNAKE-GOLD-STAR/317501850"
   },
   "plant:seafan": {
-   "lo": 12,
-   "mode": 38,
-   "hi": 110,
+   "lo": 38,
+   "mode": 50,
+   "hi": 95,
    "unit": "one gorgonian; $12 live-plants to $110 LiveAquaria",
    "url": "https://www.liveaquaria.com/products/blueberry-sea-fan-expert-only.oembed"
   },
@@ -1224,9 +1224,9 @@
    "url": "https://www.chewy.com/galapagos-sphagnum-reptile-amphibian/dp/284071"
   },
   "plant:stem": {
-   "lo": 5,
-   "mode": 7,
-   "hi": 10,
+   "lo": 5.99,
+   "mode": 7.99,
+   "hi": 10.79,
    "unit": "one bunch of 4-8 stems",
    "url": "https://buceplant.com/collections/stem-plants"
   },
@@ -1238,9 +1238,9 @@
    "url": "https://buceplant.com/products/rotala-rotundifolia-red"
   },
   "plant:sword": {
-   "lo": 8,
-   "mode": 11,
-   "hi": 24,
+   "lo": 5.95,
+   "mode": 8.99,
+   "hi": 14.99,
    "unit": "potted plant; mother pots ~$23",
    "url": "https://buceplant.com/collections/echinodorus"
   },
