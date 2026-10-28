@@ -3,12 +3,9 @@
 // 1. SHARED RANGE (about the species): the intersection of the recorded comfortable ranges (CARE.temp: data/climatedata.ts, sourced in
 //    research/climate) of every aquatic species on the list, not pair by pair. States:
 //      none   = the ranges do not overlap: "No suitable shared temperature identified". Blocking.
-//      single = they meet at exactly one value: a mathematical intersection with zero operating margin, so no guided recommendation
-//               ("Only one shared temperature; no operating margin"). Blocking.
-//      narrow = the shared range is NARROW_C (1 °C) wide or less. A limited margin, NOT an incompatibility. Why 1 °C: the ranges are
-//               recorded to whole degrees, so 1 °C is one adjacent whole-degree step: essentially a single point of overlap (Nathan 2026-10-27: a 2 °C-wide range is not a caution).
-//               No risk points (Nathan's reviewer 2026-10-22): width alone cannot tell a target mid-range from one on the edge; a future
-//               penalty would use the target's distance to the nearest bound and the expected variation, charged once per tank.
+//      single = they meet at exactly one value: the ranges do overlap, so a caution (yellow), not an incompatibility
+//               ("Only one shared temperature; no operating margin"). Nathan 2026-10-28: red only when nothing satisfies all.
+//      narrow = (retired 2026-10-28, NARROW_C = 0: never produced) a range of any width is green.
 //      broad  = wider than NARROW_C.
 //    For ordinary intervals pairwise overlap guarantees a shared intersection, whose width runs from the highest low end to the lowest high end.
 // 2. THIS PLAN'S WATER (about the plan), three inputs kept apart (TempEvidence):
@@ -26,7 +23,7 @@ import type { Species } from '../data/species';
 
 type R = [number, number];
 /** A shared range this wide or narrower (°C) is "narrow": a limited margin, not an incompatibility. */
-export const NARROW_C = 1;
+export const NARROW_C = 0; // Nathan 2026-10-28: any real range is green; only one shared value is yellow, no overlap red
 
 export type RangeState = 'none' | 'single' | 'narrow' | 'broad' | 'unknown';
 export interface SharedRange {
@@ -42,7 +39,9 @@ export interface SharedRange {
 }
 
 const aquatic = (s: Species) => s.habitat !== 'land';
-export const fmtC = (r: R) => `${r[0]}–${r[1]} °C`;
+const toF = (c: number) => Math.round(c * 9 / 5 + 32);
+/** A range as text: °C, or °F when `us` (US units). */
+export const fmtC = (r: R, us?: boolean) => us ? `${toF(r[0])}–${toF(r[1])} °F` : `${r[0]}–${r[1]} °C`;
 
 /** Output 1: the intersection of every aquatic species' comfortable range (each species once). */
 export function sharedRange(list: Species[]): SharedRange {
@@ -65,16 +64,15 @@ export function sharedRange(list: Species[]): SharedRange {
 }
 
 /** Output 1 as a line. Passing temperature is temperature only: it never says "compatible". */
-export function rangeLine(r: SharedRange): string {
+export function rangeLine(r: SharedRange, us?: boolean): string {
   const miss = r.unrecorded.length ? ` (no recorded range for ${r.unrecorded.map(s => s.name).join(', ')})` : '';
   if (r.state === 'unknown') return `Temperature: no recorded ranges to compare${miss}`;
   if (r.state === 'none' || r.state === 'single') {
-    const f = r.floor!, c = r.ceiling!, pair = `${c.name} (${fmtC(CARE[c.id].temp!)}) and ${f.name} (${fmtC(CARE[f.id].temp!)})`;
+    const f = r.floor!, c = r.ceiling!, pair = `${c.name} (${fmtC(CARE[c.id].temp!, us)}) and ${f.name} (${fmtC(CARE[f.id].temp!, us)})`;
     return r.state === 'none' ? `Temperature: No suitable shared temperature identified. ${pair} have no recorded range in common${miss}`
-      : `Temperature: Only one shared temperature (${r.range![0]} °C); no operating margin. ${pair} meet at that one value${miss}`;
+      : `Temperature: Only one shared temperature (${us ? `${toF(r.range![0])} °F` : `${r.range![0]} °C`}); no operating margin. ${pair} meet at that one value${miss}`;
   }
-  if (r.state === 'narrow') return `Temperature: shared range ${fmtC(r.range!)}, a narrow margin (${NARROW_C} °C or less): the recorded ranges meet, with little room for heater swing or a cold night${miss}`;
-  return `Temperature: shared range ${fmtC(r.range!)}${miss}`;
+  return `Temperature: shared range ${fmtC(r.range!, us)}${miss}`;
 }
 
 /** This plan's water temperature inputs (tech.ts tempEvidence). */
@@ -156,13 +154,13 @@ export function measuredCheck(r: SharedRange, ev?: TempEvidence): TempCheck | nu
   return { state: 'outside', fix, text: `Measured water temperature ${c} °C: outside the shared range ${band} (${misses(r, c)}): ${fix}` };
 }
 
-/** The level of the shared-range line given this plan's checks: no shared range (or one value) blocks; a valid range is never shown as
+/** The level of the shared-range line given this plan's checks: no shared range blocks, one shared value is a caution; a valid range is never shown as
  *  positive while a definitive check (target, entered room, measurement) puts the water outside it; an assumed room only qualifies it. */
 export function rangeVerdict(r: SharedRange, checks: (TempCheck | null)[]): { level: 'ok' | 'warn' | 'bad'; text: string } {
   const text = rangeLine(r);
-  if (r.state === 'none' || r.state === 'single') return { level: 'bad', text };
+  if (r.state === 'none') return { level: 'bad', text };
   if (checks.some(c => c?.state === 'outside')) return { level: 'warn', text: `${text}; this plan's water is outside it as set (see below)` };
-  return { level: r.state === 'broad' ? 'ok' : 'warn', text };
+  return { level: r.state === 'broad' || r.state === 'narrow' ? 'ok' : 'warn', text };
 }
 /** A check's level on the plan sheet: outside fails the current setup, a conditional or unchecked one is a concern. */
 export const checkLevel = (c: TempCheck): 'ok' | 'warn' | 'bad' => c.state === 'outside' ? 'bad' : c.state === 'inside' ? 'ok' : 'warn';

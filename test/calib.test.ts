@@ -53,7 +53,7 @@ describe('calibration round generator (round 2 on)', () => {
   it('labels mixes by the compatibility gates and the shared temperature range, as the app judges them', () => {
     for (const r of [R, R3]) for (const s of r.filter(x => x.kind !== 'single')) {
       const cr = compatRisks(setupOf(s.dimsIn, s.stock)), temp = sharedRange(s.stock.map(([id]) => getSpecies(id)!)).state;
-      const clean = !cr && (temp === 'broad' || temp === 'unknown');
+      const clean = !cr && (temp === 'broad' || temp === 'narrow' || temp === 'unknown');
       expect(clean, `${s.id} (${s.kind}, temperature ${temp})`).toBe(s.kind === 'mix-ok');
     }
   });

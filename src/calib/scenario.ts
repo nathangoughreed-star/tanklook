@@ -164,13 +164,13 @@ export const SLOTS: Slot[] = [
 
 /** A mix's gate, as the app judges it: the compatibility risks (territory.ts compatRisks) and the shared temperature range (temprange.ts;
  *  S214 2026-10-23: white cloud with bristlenose share only 22 °C, white cloud with neon 21-22, and both passed as clean mixes in round 3).
- *  No overlap or a single shared degree blocks ('high'); a narrow overlap is a concern; only a broad overlap (or no range recorded) is clean. */
+ *  No overlap blocks ('high'); a single shared degree is a concern; any real range (or no range recorded) is clean. */
 export function gateOf(dims: Dims, ids: string[]): { gate: 'ok' | 'concern' | 'high'; items: string[] } {
   const cr = compatRisks(setupOf(dims, ids.map(i => [i, groupMin(i)])));
   let gate: 'ok' | 'concern' | 'high' = cr ? cr.level : 'ok';
   const items = [...(cr?.items ?? [])], temp = sharedRange(ids.map(i => getSpecies(i)!));
-  if (temp.state === 'none' || temp.state === 'single') { gate = 'high'; items.push(`temperature: ${temp.state === 'none' ? 'no shared range' : 'one shared degree, no operating margin'}`); }
-  else if (temp.state === 'narrow') { if (gate === 'ok') gate = 'concern'; items.push('temperature: narrow shared range'); }
+  if (temp.state === 'none') { gate = 'high'; items.push('temperature: no shared range'); }
+  else if (temp.state === 'single') { if (gate === 'ok') gate = 'concern'; items.push('temperature: one shared degree, no operating margin'); }
   return { gate, items };
 }
 

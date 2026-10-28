@@ -82,9 +82,9 @@ describe('air environment (terrarium / paludarium)', () => {
     expect(l.some(i => i.level === 'problem' && /^Air temperature: no shared range/.test(i.text))).toBe(true);
     expect(env(land(['curlyhair', 'orchidmantis'])).level).toBe('problem');
   });
-  it('one shared value is a Problem, a narrow band a Caution', () => {
-    expect(airLines(land(['chileanrose', 'orchidmantis'])).find(i => /Air/.test(i.text))?.level).toBe('problem');
-    expect(airLines(land(['crestedgecko', 'orchidmantis'])).find(i => /Air/.test(i.text))?.level).toBe('caution');
+  it('one shared value is a Caution, any real band green', () => {
+    expect(airLines(land(['chileanrose', 'orchidmantis'])).find(i => /Air/.test(i.text))?.level).toBe('caution');
+    expect(airLines(land(['crestedgecko', 'orchidmantis'])).find(i => /Air/.test(i.text))).toBeUndefined();
   });
   it('humidity: no comfortable overlap but a tolerable one is a Caution', () => {
     const h = airLines(land(['leopardgecko', 'crestedgecko'])).find(i => /^Humidity/.test(i.text));

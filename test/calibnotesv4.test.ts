@@ -108,7 +108,7 @@ describe('survey v4 notes as the lens on their tank', () => {
     const f = noted(), R = read(f), a = applyNotes(J, f, R), C = condTables(f, R);
     const { md, flags } = reviewV4(J, T, [a], C);
     expect(md).toMatch(/## Each noted tank, read through its note/);
-    expect(md).toMatch(/- reasons: restated \["temperature"\] -> \["aggression"\]: the caution is territory width/);
+    expect(md).toMatch(/- reasons: restated null -> \["aggression"\]: the caution is territory width/);
     expect(md).toMatch(/## Answered under the note's condition\n[\s\S]*\| A13 \| synth-agree \| neons at 20 mm \(juveniles\) \|/);
     expect(md).toMatch(/## What the notes claim, by rule/);
     // one AI model alone raises no rule

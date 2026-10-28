@@ -19,24 +19,26 @@ afterAll(() => { for (const id of Object.keys(FAKE)) delete CARE[id]; });
 
 describe('shared range: its states', () => {
   it('pairs sharing 0, 1, 2 and 4 °C: single, narrow, broad, broad; apart: none', () => {
-    expect(NARROW_C).toBe(1);
+    expect(NARROW_C).toBe(0); // any range is green: only one value (yellow) and none (red) are flagged
     expect(sharedRange([fake('tA'), fake('tB0')])).toMatchObject({ state: 'single', range: [25, 25] }); // they meet at one value
     expect(sharedRange([fake('tA'), fake('tD')]).state).toBe('none'); // 20-25 against 26-28: no overlap
-    expect(sharedRange([fake('tA'), fake('tB1')])).toMatchObject({ state: 'narrow', range: [24, 25] });
+    expect(sharedRange([fake('tA'), fake('tB1')])).toMatchObject({ state: 'broad', range: [24, 25] });
     expect(sharedRange([fake('tA'), fake('tB2')])).toMatchObject({ state: 'broad', range: [23, 25] }); // 2 °C wide is not a caution (Nathan 2026-10-27)
     expect(sharedRange([fake('tA'), fake('tB4')])).toMatchObject({ state: 'broad', range: [21, 25] });
   });
   it('none and one value block, each said as what it is; narrow is a concern that never reads as incompatible', () => {
     expect(whyAnimal(fake('tA'), 1e9, 3, [fake('tD')])?.text).toMatch(/No suitable shared temperature identified/);
-    expect(whyAnimal(fake('tA'), 1e9, 3, [fake('tB0')])?.text).toMatch(/Only one shared temperature \(25 °C\); no operating margin/);
+    expect(whysAnimal(fake('tA'), 1e9, 3, [fake('tB0')])[0]?.text).toMatch(/Only one shared temperature \(25 °C\); no operating margin/);
     expect(rangeLine(sharedRange([fake('tA'), fake('tB0')]))).toMatch(/^Temperature: Only one shared temperature \(25 °C\); no operating margin/);
     expect(whyAnimal(fake('tA'), 1e9, 3, [fake('tB1')])).toBeNull();
     expect(whysAnimal(fake('tA'), 1e9, 3, [fake('tB2')])).toEqual([]);
-    const narrow = whysAnimal(fake('tA'), 1e9, 3, [fake('tB1')]);
-    expect(narrow).toHaveLength(1);
-    expect(narrow[0]).toMatchObject({ concern: true, temp: true });
-    expect(narrow[0].text).toMatch(/shared range 24–25 °C/);
-    expect(narrow[0].text).not.toMatch(/compatib(le|ility):|incompatible with|cannot/i);
+    expect(whysAnimal(fake('tA'), 1e9, 3, [fake('tB1')])).toEqual([]); // a 1 °C range is a range: green
+    const one = whysAnimal(fake('tA'), 1e9, 3, [fake('tB0')]);
+    expect(one).toHaveLength(1); expect(one[0]).toMatchObject({ concern: true, temp: true }); // one value: yellow, never blocking
+    expect(rangeVerdict(sharedRange([fake('tA'), fake('tB0')]), []).level).toBe('warn');
+    expect(rangeVerdict(sharedRange([fake('tA'), fake('tB1')]), []).level).toBe('ok');
+    expect(rangeVerdict(sharedRange([fake('tA'), fake('tD')]), []).level).toBe('bad');
+    expect(rangeLine(sharedRange([fake('tA'), fake('tB0')]), true)).toMatch(/\(77 °F\)/);
     expect(whysAnimal(fake('tA'), 1e9, 3, [fake('tB4')])).toEqual([]);
   });
   it('passing temperature says "temperature: shared range", never "compatible"', () => {
@@ -48,7 +50,7 @@ describe('shared range: its states', () => {
     // always have a common value (Helly), so the whole-stock range is empty exactly when some pair's is: it never finds a clash the
     // pairs miss, it reports the range they all share and judges the setpoint against it.
     const r = sharedRange([fake('tA'), fake('tC'), fake('tB1')]);
-    expect(r).toMatchObject({ state: 'narrow', range: [24, 25] });
+    expect(r).toMatchObject({ state: 'broad', range: [24, 25] });
     expect(r.floor?.id).toBe('tB1'); expect(r.ceiling?.id).toBe('tA');
     // a newcomer that empties the shared range is named against the species setting the bound it misses
     expect(whyAnimal(fake('tA'), 1e9, 3, [fake('tC'), fake('tD')])?.text).toMatch(/No suitable shared temperature identified.*\(tD\)/);
@@ -135,11 +137,10 @@ describe('the cardinal (23-29 °C): 2 °C shared is broad, 1 °C is narrow', () 
     expect(r.range![1] - r.range![0]).toBe(2);
     expect(whysAnimal(sp(id), 1e9, 3, [sp('cardinal')]).filter(w => w.temp)).toHaveLength(0);
   });
-  it('goldfish (20-24 °C): 1 °C wide, narrow, a concern', () => {
+  it('goldfish (20-24 °C): 1 °C wide is still a range: green, no temperature line', () => {
     const r = sharedRange([sp('cardinal'), sp('goldfish')]);
-    expect(r).toMatchObject({ state: 'narrow', range: [23, 24] });
-    const t = whysAnimal(sp('goldfish'), 1e9, 3, [sp('cardinal')]).filter(w => w.temp);
-    expect(t).toHaveLength(1); expect(t[0].concern).toBe(true);
+    expect(r).toMatchObject({ state: 'broad', range: [23, 24] });
+    expect(whysAnimal(sp('goldfish'), 1e9, 3, [sp('cardinal')]).filter(w => w.temp)).toEqual([]);
   });
 });
 
@@ -153,8 +154,8 @@ describe('display: main reason first, other concerns under it', () => {
   });
   it('the planner shows the shared range and an unchecked setpoint as two lines', () => {
     const t = tempLinesOf([{ id: 'cardinal', n: 6 }, { id: 'goldfish', n: 2 }])!;
-    expect(t.rangeState).toBe('narrow');
-    expect(t.range).toMatch(/shared range 23–24 °C, a narrow margin/);
+    expect(t.rangeState).toBe('broad');
+    expect(t.range).toBe('Temperature: shared range 23–24 °C');
     expect(t.setpoint).toMatch(/^Water temperature: unchecked, no tank set up yet/);
   });
 });
@@ -163,7 +164,7 @@ describe('the plan sheet: the two outputs, said once for the whole stocking', ()
   const tank = (id: string) => parseScene(SCENES[id]).scene.tanks[0];
   it('reef, heated, no target: a narrow shared range, the water unchecked; no per-species temperature lines', () => {
     const S = tank('reef'), t = hardTruths(S, animalsOfSetup(S), true);
-    expect(t.filter(x => /^Temperature: /.test(x.text))).toEqual([{ text: expect.stringMatching(/shared range 24–25 °C, a narrow margin/), level: 'warn' }]);
+    expect(t.filter(x => /^Temperature: /.test(x.text))).toEqual([{ text: expect.stringMatching(/shared range 24–25 °C/), level: 'ok' }]);
     expect(t.find(x => /^Water temperature: /.test(x.text))).toMatchObject({ level: 'warn', text: expect.stringMatching(/unchecked, no target water temperature set/) });
     expect(t.some(x => /: (water )?temperature/.test(x.text))).toBe(false);
   });
@@ -204,13 +205,13 @@ describe('the plan sheet: the two outputs, said once for the whole stocking', ()
     expect(line(/^Temperature: /)?.level).toBe('warn'); // the range line is not positive either
     expect(p.fits).toBe(false);
   });
-  it('narrow: no blocking reason and no risk points, but the limited-margin concern stays visible', () => {
+  it('a 1 °C range: no blocking reason, no risk points, and green', () => {
     const S = { ...tank('betta'), fish: [], tech: { rows: { heater: 'one' }, targetC: 23 } } as ReturnType<typeof tank>;
     const t = hardTruths(S, [{ species: 'cardinal', n: 6 }, { species: 'goldfish', n: 2 }], true);
-    expect(t.find(v => /^Temperature: /.test(v.text))).toMatchObject({ level: 'warn', text: expect.stringMatching(/shared range 23–24 °C, a narrow margin/) });
+    expect(t.find(v => /^Temperature: /.test(v.text))).toMatchObject({ level: 'ok', text: expect.stringMatching(/shared range 23–24 °C/) });
     expect(t.some(v => v.level === 'bad' && /temperature/i.test(v.text))).toBe(false);
     expect(whyAnimal(sp('goldfish'), 1e9, 3, [sp('cardinal')])).toBeNull();
-    expect(whysAnimal(sp('goldfish'), 1e9, 3, [sp('cardinal')])).toEqual([expect.objectContaining({ concern: true, text: expect.stringMatching(/narrow margin/) })]);
+    expect(whysAnimal(sp('goldfish'), 1e9, 3, [sp('cardinal')])).toEqual([]);
   });
   it('a combination with no shared range leads with that, ahead of the setup fix (found in the browser check)', () => {
     const w = whysAnimal(sp('gbr'), 1e9, 3, [sp('amano')], { water: { heater: true, chiller: false, room: 21, roomSet: true, target: 24 } }).filter(x => !x.concern);
@@ -224,10 +225,10 @@ describe('species list (panels.ts animalGate via gateOf): blocker, concerns only
     const g = gateOf(whysAnimal(fake('tA'), 1e9, 3, [fake('tD'), sp('oscar')]))!;
     expect(g.block).toBe(true); expect(g.more.length).toBeGreaterThan(0);
   });
-  it('a lone narrow-temperature concern is the visible note, the animal not grayed', () => {
-    const g = gateOf(whysAnimal(sp('goldfish'), 1e9, 3, [sp('cardinal')]))!;
+  it('a lone one-value temperature concern is the visible note, the animal not grayed', () => {
+    const g = gateOf(whysAnimal(fake('tA'), 1e9, 3, [fake('tB0')]))!;
     expect(g).toMatchObject({ block: false, concern: true, more: [] });
-    expect(g.text).toMatch(/narrow margin/);
+    expect(g.text).toMatch(/Only one shared temperature/);
   });
   it('a lone advisory of any kind (e.g. the Amano predation note on invert-prey) is shown the same way', () => {
     expect(gateOf([{ kind: 'compat', concern: true, text: 'compatibility: may eat its small ones (Amano shrimp)' }])).toMatchObject({ block: false, text: expect.stringMatching(/Amano/) });

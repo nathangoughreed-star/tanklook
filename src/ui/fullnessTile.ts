@@ -217,7 +217,7 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
     const animalsHidden = viewer.hidden.has('fish');
     el.hidden = !st.show || animalsHidden || tankView.ghost; // no tank chosen yet on the stocking screen: nothing to be full
     const crowd = crowdWarnings(S), cover = coverAdvice(S); // S196: fighting limits, a warning only (never in the percents); lane CP2: cover
-    const sm = stockSummary(S, r, st.mins);
+    const sm = stockSummary(S, r, st.mins, u);
     const sig = JSON.stringify([st, sm, u, editing, !!forkFn, tankExtent(S.tank), crowd, cover, stockingDetail(r), r.capacity, r.nitrogen, S.water.tapNitrate ?? 0]);
     if (sig === lastSig) return;
     lastSig = sig;

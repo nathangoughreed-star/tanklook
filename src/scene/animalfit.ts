@@ -4,7 +4,7 @@
 // blocks adding it. Temperature is judged on the whole stocking (temprange.ts), not pair by pair (2026-10-22).
 import { CARE, EXPERTISE_NAME, SHRIMP, type Expertise } from '../data/care';
 import type { Species } from '../data/species';
-import { fmtC, operatingCheck, sharedRange, NARROW_C, type TempEvidence } from './temprange';
+import { fmtC, operatingCheck, sharedRange, type TempEvidence } from './temprange';
 
 /** A species' smallest tank is allowed 10 % slack (a 5 gal, 19 L, takes a 20 L species); shared by the animal gate, the tank-fit engine and the hard truths. */
 export const MIN_SLACK_PCT = 100 / 0.9;
@@ -122,11 +122,10 @@ function tempWhys(sp: Species, present: Species[]): AnimalWhy[] {
   const others = sharedRange(present.filter(o => o.id !== sp.id));
   if (others.state === 'unknown') return [];
   const none = (o: Species) => ({ kind: 'compat' as const, temp: true as const, text: `water temperature: No suitable shared temperature identified: its ${fmtC(t)} against ${fmtC(CARE[o.id].temp!)} (${o.name})` });
-  if (others.state === 'none' || others.state === 'single') return others.counted.filter(o => Math.min(t[1], CARE[o.id].temp![1]) < Math.max(t[0], CARE[o.id].temp![0])).map(none);
+  if (others.state === 'none') return others.counted.filter(o => Math.min(t[1], CARE[o.id].temp![1]) < Math.max(t[0], CARE[o.id].temp![0])).map(none);
   const all = sharedRange([sp, ...others.counted]);
   if (all.state === 'none') return [none(t[1] < others.range![0] ? others.floor! : others.ceiling!)];
-  if (all.state === 'single') return [{ kind: 'compat', temp: true, text: `water temperature: Only one shared temperature (${all.range![0]} °C); no operating margin (${(t[1] <= others.range![0] ? others.floor! : others.ceiling!).name})` }];
-  if (all.state === 'narrow') return [{ kind: 'compat', temp: true, concern: true, text: `temperature: shared range ${fmtC(all.range!)}, a narrow margin (${NARROW_C} °C or less), not an incompatibility` }];
+  if (all.state === 'single') return [{ kind: 'compat', temp: true, concern: true, text: `water temperature: Only one shared temperature (${all.range![0]} °C); no operating margin (${(t[1] <= others.range![0] ? others.floor! : others.ceiling!).name})` }];
   return [];
 }
 

@@ -128,7 +128,7 @@ export function verdictOf(a: Omit<AppReading, 'verdict' | 'by' | 'rest'>): { ver
   if (a.space && a.space.band === 'caution') by.push(['caution', `space ${Math.round(a.space.pct)} %`]);
   if (a.compat?.level === 'concern') by.push(['caution', 'compat concern']);
   for (const m of a.tankmin) if (m.level === 'yellow') by.push(['caution', `tankmin yellow: ${m.id}`]);
-  if (a.temp.shared === 'narrow') by.push(['caution', 'temperature narrow']);
+  if (a.temp.shared === 'single') by.push(['caution', 'temperature single value']);
   for (const h of a.herp) if (h.level === 'note' && /usual recommendation/.test(h.text)) by.push(['caution', `herp floor under recommended: ${h.who}`]);
   for (const g of a.groups) if (g.ratio && /Your mix/.test(g.ratio)) by.push(['caution', `sex mix: ${g.id}`]);
   const worst = by.reduce((k, [v]) => Math.max(k, VERDICTS.indexOf(v)), 0);
