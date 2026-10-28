@@ -9786,6 +9786,124 @@
     "seen": "2026-10-27"
    },
    "note": "Listing: 8 W, 7 in; width and thickness estimated"
+  },
+  {
+   "id": "kessil-a80-tuna-blue",
+   "brand": "Kessil",
+   "model": "A80 Tuna Blue",
+   "mount": "hanging",
+   "fitMinMm": 250,
+   "fitMaxMm": 2440,
+   "lengthMm": 124,
+   "widthMm": 124,
+   "heightMm": 25,
+   "watts": 15,
+   "tech": "led-reef",
+   "spectrum": "blue-weighted reef spectrum",
+   "controller": "Kessil Spectral Controller (sold separately), 0-10 V dimming",
+   "water": "salt",
+   "priceUsd": 149.0,
+   "url": "https://www.amazon.com/dp/B01LW8U9QP",
+   "asOf": "2026-10-28",
+   "coverageMm": 457,
+   "beamDeg": 90,
+   "est": [
+    "fitMinMm",
+    "fitMaxMm",
+    "beamDeg",
+    "coverageMm",
+    "colorsEst"
+   ],
+   "colors": {
+    "body": "#2b2b2f",
+    "endcaps": "#2b2b2f",
+    "legs": "#8f9096",
+    "lens": "clear",
+    "leds": {
+     "white": "#bcd2ff",
+     "kind": "dots",
+     "rows": 2,
+     "accents": [
+      "#2f6bff"
+     ],
+     "every": 2
+    },
+    "ledLook": "round disc, dense LED matrix",
+    "photo": "https://m.media-amazon.com/images/I/61Efebmt9NL._AC_SL1500_.jpg"
+   },
+   "colorsEst": [
+    "body",
+    "endcaps",
+    "legs"
+   ],
+   "names": [
+    "a80 tuna blue"
+   ],
+   "popularity": {
+    "evidence": "Amazon product page 2026-10-28; 113 ratings; maker spec 15 W, 4.88 in dia x 0.98 in",
+    "url": "https://www.amazon.com/dp/B01LW8U9QP",
+    "seen": "2026-10-28"
+   },
+   "note": "Maker: 15 W, 4.88 in diameter x 0.98 in high, coverage 14-24 in by scenario (18 in used); no PAR at a stated depth"
+  },
+  {
+   "id": "kessil-a80-tuna-sun",
+   "brand": "Kessil",
+   "model": "A80 Tuna Sun",
+   "mount": "hanging",
+   "fitMinMm": 250,
+   "fitMaxMm": 2440,
+   "lengthMm": 124,
+   "widthMm": 124,
+   "heightMm": 25,
+   "watts": 15,
+   "tech": "led-planted",
+   "spectrum": "warm full spectrum for planted tanks",
+   "controller": "Kessil Spectral Controller (sold separately), 0-10 V dimming",
+   "water": "fresh",
+   "priceUsd": 149.0,
+   "url": "https://www.amazon.com/dp/B0749X5BP2",
+   "asOf": "2026-10-28",
+   "coverageMm": 457,
+   "beamDeg": 90,
+   "est": [
+    "fitMinMm",
+    "fitMaxMm",
+    "beamDeg",
+    "coverageMm",
+    "colorsEst"
+   ],
+   "colors": {
+    "body": "#2b2b2f",
+    "endcaps": "#2b2b2f",
+    "legs": "#8f9096",
+    "lens": "clear",
+    "leds": {
+     "white": "#fff1d0",
+     "kind": "dots",
+     "rows": 2,
+     "accents": [
+      "#ffb347"
+     ],
+     "every": 2
+    },
+    "ledLook": "round disc, dense LED matrix",
+    "photo": "https://m.media-amazon.com/images/I/51HIqLYCzqL._AC_SL1000_.jpg"
+   },
+   "colorsEst": [
+    "body",
+    "endcaps",
+    "legs"
+   ],
+   "names": [
+    "a80 tuna sun"
+   ],
+   "popularity": {
+    "evidence": "Amazon product page 2026-10-28; 56 ratings; maker spec 15 W, 4.88 in dia x 0.98 in",
+    "url": "https://www.amazon.com/dp/B0749X5BP2",
+    "seen": "2026-10-28"
+   },
+   "note": "Maker: 15 W, 4.88 in diameter x 0.98 in high, coverage 14-24 in by scenario (18 in used); no PAR at a stated depth"
   }
  ],
  "pumps": [

@@ -33,7 +33,7 @@ describe('gear catalogue', () => {
 
 describe('light catalogue', () => {
   it('every light has a size, a rating and an https source', () => {
-    expect(LIGHT_PRODUCTS.length).toBe(33);
+    expect(LIGHT_PRODUCTS.length).toBe(35);
     for (const p of LIGHT_PRODUCTS) {
       expect(p.lengthMm, p.id).toBeGreaterThan(40); expect(p.widthMm, p.id).toBeGreaterThan(10); expect(p.heightMm, p.id).toBeGreaterThan(5);
       expect(p.watts, p.id).toBeGreaterThan(0); expect(p.url, p.id).toMatch(/^https:\/\//); expect(p.popularity?.url, p.id).toMatch(/^https:\/\//);
