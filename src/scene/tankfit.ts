@@ -40,13 +40,6 @@ export interface Needs {
   salt: boolean;
 }
 
-/** Animals with a herp rule (data/herpstock.ts): their floor and height by stage are part of the fit (S228). */
-/** Animals the tank list can judge: some in the water, or land animals with a herp rule. */
-const kept = (animals: AnimalCount[]) => wet(animals).length > 0 || landOnly(animals);
-const herps = (animals: AnimalCount[]) => animals.filter(a => { const sp = getSpecies(a.species); return sp && a.n > 0 && HERP[sp.sci]; });
-/** Land animals only (no animal in the water, a herp among them): judged in a dry enclosure (S228: the planner lists sizes for them). */
-export const landOnly = (animals: AnimalCount[]) => !wet(animals).length && herps(animals).length > 0;
-
 function wet(animals: AnimalCount[]) {
   return animals.flatMap(a => { const sp = getSpecies(a.species); return sp && a.n > 0 && countsAgainstWater(sp) ? [{ sp, n: a.n, tl: a.tl ?? sp.tl }] : []; });
 }
@@ -134,7 +127,7 @@ export function withDryGear(S: TankSetup, animals: AnimalCount[], build: DryBuil
 
 /** The bare tank with the animals in it and the build's gear: what stockingOf and the demand model are asked about. */
 function setupFor(c: Candidate, animals: AnimalCount[], build: BuildKind): TankSetup {
-  const S = bareSetup(), salt = needsOf(animals).salt, land = landOnly(animals);
+  const S = bareSetup(), salt = needsOf(animals).salt;
   S.tank = c.T;
   S.water.on = true; S.water.level = WATER_LEVEL; S.water.salt = salt;
   if (isMixed(animals)) setPool(S, animals);
@@ -143,7 +136,6 @@ function setupFor(c: Candidate, animals: AnimalCount[], build: BuildKind): TankS
   // a young pick (S228 `tl`) at that length, its females at the same share of theirs
   S.fish = animals.flatMap(a => { const sp = getSpecies(a.species), fem = sp?.female; return Array.from({ length: Math.max(0, a.n) }, (_, i): Fish => ({ id: id++, species: a.species, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0,
     ...(fem && i < (a.f ?? 0) ? { sex: 'f' as const, tl: a.tl && sp ? Math.round(fem.tl * a.tl / sp.tl) : fem.tl } : a.tl ? { tl: a.tl } : {}) })); });
-  if (land) return S; // a dry enclosure: no filter or heater to choose
   const preset = BASE_PRESET[salt ? 'salt' : 'fresh'];
   if (PRESETS.some(p => p.id === preset)) S.tech = applyPreset(S, preset);
   S.light = { ...S.light, type: 'led', tech: 'led-white', count: 1, watts: undefined };
