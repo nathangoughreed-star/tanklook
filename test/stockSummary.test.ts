@@ -64,3 +64,41 @@ describe('tank minimums answer', () => {
   });
 });
 
+
+// lane E1 (2026-10-28): a terrarium's Environment line compares the land animals' air bands (it used to read "unknown" because the water check
+// saw no animals). Aquarium numbers are untouched.
+describe('air environment (terrarium / paludarium)', () => {
+  const land = (ids: string[], water = false): TankSetup => { const S = base(); return { ...S, water: { ...S.water, on: water }, fish: ids.map(id => ({ ...S.fish[0], species: id })) }; };
+  const env = (S: TankSetup) => sum(S).cats.find(c => c.id === 'environment')!;
+  const airLines = (S: TankSetup) => env(S).items.filter(i => /^(Air|Humidity)/.test(i.text) || /air range/.test(i.text));
+  it('one land animal: no "unknown" temperature line any more', () => {
+    expect(env(land(['crestedgecko'])).items.some(i => /No recorded temperature range/.test(i.text))).toBe(false);
+  });
+  it('two land animals sharing a broad band: no air item', () => {
+    expect(airLines(land(['crestedgecko', 'indianstick']))).toEqual([]);
+  });
+  it('a gecko and a spider with no common air band: Problem', () => {
+    const l = airLines(land(['curlyhair', 'orchidmantis']));
+    expect(l.some(i => i.level === 'problem' && /^Air temperature: no shared range/.test(i.text))).toBe(true);
+    expect(env(land(['curlyhair', 'orchidmantis'])).level).toBe('problem');
+  });
+  it('one shared value is a Problem, a narrow band a Caution', () => {
+    expect(airLines(land(['chileanrose', 'orchidmantis'])).find(i => /Air/.test(i.text))?.level).toBe('problem');
+    expect(airLines(land(['crestedgecko', 'orchidmantis'])).find(i => /Air/.test(i.text))?.level).toBe('caution');
+  });
+  it('humidity: no comfortable overlap but a tolerable one is a Caution', () => {
+    const h = airLines(land(['leopardgecko', 'crestedgecko'])).find(i => /^Humidity/.test(i.text));
+    expect(h?.level).toBe('caution');
+  });
+  it('an empty terrarium keeps its old reading', () => {
+    expect(env({ ...land([]) }).items.map(i => i.text)).toEqual(env({ ...land([]), water: { ...land([]).water, on: false } }).items.map(i => i.text));
+  });
+  it('a paludarium checks water and land both; the land mismatch still shows', () => {
+    const S = land(['curlyhair', 'orchidmantis', 'nerite'], true), e = env(S);
+    expect(e.items.some(i => i.level === 'problem' && /^Air temperature/.test(i.text))).toBe(true);
+    expect(e.level).toBe('problem');
+  });
+  it('aquarium numbers are unchanged: a fish-only tank has no air items', () => {
+    expect(airLines(stock('danio', 6))).toEqual([]);
+  });
+});

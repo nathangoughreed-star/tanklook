@@ -15,6 +15,7 @@ import { notesIn, reasonIn, tankMinimum, type MinRow, type TankMinimum } from '.
 import { MIN_SLACK_PCT } from '../scene/animalfit';
 import { groupMinimum, stockingGroupMinimum } from '../scene/groupMin';
 import { plural } from '../scene/stocking';
+import { AIR } from '../data/climate';
 import { rangeLine, sharedRange } from '../scene/temprange';
 import { coverAdvice, crowdWarnings } from '../scene/territory';
 import { filterState } from '../scene/tech';
@@ -48,6 +49,33 @@ const LABELS: Record<CatId, [string, string]> = {
 
 const levelOf = (items: CatItem[]): CatLevel => items.some(i => i.level === 'problem') ? 'problem' : items.some(i => i.level === 'caution') ? 'caution' : items.some(i => i.level === 'unknown') ? 'unknown' : 'ok';
 export const worstOf = (ls: CatLevel[]): CatLevel => ls.reduce((a, b) => RANK[b] > RANK[a] ? b : a, 'ok' as CatLevel);
+
+/** Air margin: a shared air band this wide or narrower (°C) is a narrow margin. Same width as the water's NARROW_C: the air bands are
+ *  recorded to whole degrees too, and a lamp or a cold night moves the air at least as much as a heater moves water. */
+export const NARROW_AIR_C = 2;
+/** A shared humidity band this many points wide or narrower is a narrow margin (misting and ventilation hold it only loosely). */
+export const NARROW_RH = 10;
+type R2 = [number, number];
+const meet = (list: R2[]): R2 | null => { const lo = Math.max(...list.map(r => r[0])), hi = Math.min(...list.map(r => r[1])); return hi < lo ? null : [lo, hi]; };
+/** The land animals' shared air temperature and humidity, mirroring the water check (2026-10-28, lane E1): comfortable bands, no overlap or
+ *  a single value = Problem, a narrow overlap = Caution. Humidity is adjustable by misting, so with no shared comfortable band but a shared
+ *  tolerable one it is a Caution, and a Problem only when even the tolerable bands do not meet. Animals with no recorded air band: unknown. */
+function airChecks(land: Species[], add: (c: CatId, level: CatItem['level'], text: string) => void) {
+  if (!land.length) return;
+  const rec = land.filter(x => AIR[x.id]), miss = land.filter(x => !AIR[x.id]);
+  if (miss.length) add('environment', 'unknown', `No recorded air range for ${miss.map(x => x.name).join(', ')}`);
+  if (rec.length < 2) return; // one animal always fits its own band; the tank's setting follows it
+  const pair = (pick: (a: typeof AIR[string]) => R2, unit: string) => { const ps = rec.slice().sort((a, b) => pick(AIR[b.id])[0] - pick(AIR[a.id])[0]), hot = ps[0], cold = rec.slice().sort((a, b) => pick(AIR[a.id])[1] - pick(AIR[b.id])[1])[0]; return `${hot.name} (${pick(AIR[hot.id])[0]}-${pick(AIR[hot.id])[1]} ${unit}) and ${cold.name} (${pick(AIR[cold.id])[0]}-${pick(AIR[cold.id])[1]} ${unit})`; };
+  const t = meet(rec.map(x => AIR[x.id].c));
+  if (!t) add('environment', 'problem', `Air temperature: no shared range. ${pair(a => a.c, '°C')} have none in common`);
+  else if (t[0] === t[1]) add('environment', 'problem', `Air temperature: only one shared value (${t[0]} °C); no operating margin. ${pair(a => a.c, '°C')} meet there`);
+  else if (t[1] - t[0] <= NARROW_AIR_C) add('environment', 'caution', `Air temperature: shared range ${t[0]}-${t[1]} °C, a narrow margin`);
+  const h = meet(rec.map(x => AIR[x.id].rh));
+  if (!h) {
+    const tol = meet(rec.map(x => AIR[x.id].rhTol ?? [Math.max(0, AIR[x.id].rh[0] - 10), Math.min(100, AIR[x.id].rh[1] + 10)] as R2));
+    add('environment', tol ? 'caution' : 'problem', `Humidity: no shared comfortable range. ${pair(a => a.rh, '%')} ${tol ? `only overlap in the tolerable ${tol[0]}-${tol[1]} %` : 'have none in common'}`);
+  } else if (h[1] - h[0] <= NARROW_RH) add('environment', 'caution', `Humidity: shared range ${h[0]}-${h[1]} %, a narrow margin`);
+}
 
 /**
  * @param mins the tank-minimum lines (ui/fullnessTile.ts minWarnings), passed in so this file does not import the tile.
@@ -98,10 +126,13 @@ export function stockSummary(S: TankSetup, r: Stocking, mins: { level: 'over' | 
   if (sp.length === 1 && CARE[sp[0].id]?.temper === 2 && count.get(sp[0].id)! > 1 && !by.behaviour.length) add('behaviour', 'caution', `${sp[0].name}: rated aggressive; expect dominance fights, give them a big tank with cover`);
 
   // temperature of the whole stocking (the tank's own temperature is set automatically: no unverified state)
+  const land = [...new Set(S.fish.map(f => getSpecies(f.species)).filter((x): x is Species => !!x && (!countsAgainstWater(x) || (!S.water.on && x.habitat === 'both' && !!AIR[x.id]))))];
   const sh = sharedRange(sp);
-  if (sh.state === 'none' || sh.state === 'single') add('environment', 'problem', rangeLine(sh));
+  if (!sp.length && land.length) { /* terrarium: the air check below replaces the (empty) water one */ }
+  else if (sh.state === 'none' || sh.state === 'single') add('environment', 'problem', rangeLine(sh));
   else if (sh.state === 'narrow') add('environment', 'caution', `Shared temperature range ${sh.range![0]}-${sh.range![1]} °C: a narrow margin`);
   else if (sh.state === 'unknown') add('environment', 'unknown', 'No recorded temperature range for some of these animals');
+  airChecks(land, add);
   for (const t of coverAdvice(S)) add('environment', 'caution', t.replace(/\.$/, ''), 'it also limits fighting: see Behavior');
   for (const s of sp) for (const n of needsOf(s.id)) if (n.status === 'unchecked') add('environment', 'unknown', `${s.name}: ${n.text} (the tool cannot check this)`);
   const litres = volume(S.tank).litres;
