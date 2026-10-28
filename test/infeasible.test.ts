@@ -46,7 +46,7 @@ describe('infeasible requests explain themselves', () => {
   }, 300000);
 
   it('a different species is only an option: the locked animals change only when that alternative is clicked', () => {
-    const w: Wants = { constraints: { startupUsd: cap(200) }, animals: gold };
+    const w: Wants = { constraints: { startupUsd: cap(230) }, animals: gold };
     const inf = go(w).infeasible!, b0 = briefFromWants(w), sp = by(inf.alternatives, 'change-animals');
     expect(sp.length).toBeGreaterThan(0);
     expect(sp.every(a => a.text.includes('only if you want them') && a.text.includes('stay locked until you choose'))).toBe(true);
@@ -57,10 +57,12 @@ describe('infeasible requests explain themselves', () => {
   }, 300000);
 
   it('phased purchase: when the essentials alone fit, the tank stays unstocked until they are in, with phase 1 / phase 2 costs', () => {
-    const base = go({ constraints: { startupUsd: cap(200) }, animals: gold }).infeasible!.cheapest!;
+    // lane U5: a bare-bottom freshwater tank is now offered (compromise stated) whenever it fits, so with goldfish the essentials never fit without the whole build; a terrarium animal has no bare option
+    const pricey = [{ species: 'leopardgecko', n: 1 }];
+    const base = go({ constraints: { startupUsd: cap(100) }, animals: pricey }).infeasible!.cheapest!;
     const essentials = base.lines.filter(l => l.label !== 'Animals' && !l.label.startsWith('Sales tax')).reduce((t, l) => t + l.usd, 0);
     const c = Math.round(essentials) + 10; // the essentials fit, the whole build does not
-    const w: Wants = { constraints: { startupUsd: cap(c) }, animals: gold };
+    const w: Wants = { constraints: { startupUsd: cap(c) }, animals: pricey };
     const inf = go(w).infeasible!, ph = by(inf.alternatives, 'phase')[0];
     expect(ph.edit).toEqual({ op: 'phased' });
     expect(ph.phases!.phase1Usd).toBeLessThanOrEqual(c);
@@ -71,7 +73,7 @@ describe('infeasible requests explain themselves', () => {
     const r = again(applyAlternative(briefFromWants(w), ph.edit!));
     expect(r.proposals.length).toBeGreaterThan(0);
     welfareOk(r);
-    for (const p of r.proposals) { expect(p.build.animals).toEqual(gold); expect(p.phases!.phase1Usd).toBeLessThanOrEqual(c); expect(p.phases!.phase2Usd).toBeGreaterThan(0); }
+    for (const p of r.proposals) { expect(p.build.animals).toEqual(pricey); expect(p.phases!.phase1Usd).toBeLessThanOrEqual(c); expect(p.phases!.phase2Usd).toBeGreaterThan(0); }
   }, 300000);
 
   it('phases that cannot close the gap say so instead of offering them', () => {
@@ -82,7 +84,7 @@ describe('infeasible requests explain themselves', () => {
   }, 120000);
 
   it('high-tech planted for $200: the look is separated from the equipment approach, and the low-tech version is offered and verified', () => {
-    const w: Wants = { constraints: { startupUsd: cap(200) }, hightech: true, kinds: ['freshwater'], tags: ['natural'] };
+    const w: Wants = { constraints: { startupUsd: cap(230) }, hightech: true, kinds: ['freshwater'], tags: ['natural'] };
     const inf = go(w).infeasible!;
     expect(inf.limitingFactor).toBe('budget');
     expect(inf.text).toContain('high-tech planted tank');
@@ -91,7 +93,7 @@ describe('infeasible requests explain themselves', () => {
     const r = again(applyAlternative(briefFromWants(w), lt.edit!));
     expect(r.proposals.length).toBeGreaterThan(0);
     welfareOk(r);
-    for (const p of r.proposals) { expect(p.totals.startupUsd).toBeLessThanOrEqual(200); expect(p.build.finish).toBeDefined(); }
+    for (const p of r.proposals) { expect(p.totals.startupUsd).toBeLessThanOrEqual(230); expect(p.build.finish).toBeDefined(); }
   }, 300000);
 
   it('a stated high-tech approach is never silently swapped for a plainer one: with money enough every proposal is a CO2 tier', () => {

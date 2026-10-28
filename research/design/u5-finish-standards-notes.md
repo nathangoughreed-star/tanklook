@@ -23,3 +23,6 @@ Only the cheapest-start concept (finish ceiling 0, not `climb`) may fall back to
 
 ## Open / for later
 Light under a plantless bare tank is still welfare-layer gear (a lit tank is how fish are watched, not strictly care): arguably display. Owned supplies as an owned-equipment option. Terrarium enhancements (misters, programmable light) need price rows first (C9).
+
+## Merge with U4 (rebased onto dd70deb0)
+The compromise fallback is off under `hightech` (a stated approach is never swapped for a plainer one). U4's `infeasible.test.ts` re-blessed for the +$44 supplies: change-animals and high-tech cases at $230 (were $200); phased case uses a leopard gecko at $100, because a bare freshwater tank now fits whenever the essentials do (goldfish animals cost less than the finish), so the phased scenario only exists where no bare option does.

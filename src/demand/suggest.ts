@@ -425,7 +425,7 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
     let welfare = false;
     // lane U5: only the cheapest concept (finish ceiling 0) may fall back to a bare bottom when the money cannot carry even the starter finish, and it says so; richer concepts step DOWN a size instead
     const bareOk = a.kind === 'freshwater' && canBeBare(b0.setup); // a paludarium or any land side keeps its substrate
-    const tiers = function* () { yield* finishTiers(b0, now, over0, maxLevel, style, !!w.minimal && bareOk); if (!w.minimal && !style && maxLevel === 0 && !w.climb && bareOk) yield bareBuild(b0, now); };
+    const tiers = function* () { yield* finishTiers(b0, now, over0, maxLevel, style, !!w.minimal && bareOk); if (!w.minimal && !style && maxLevel === 0 && !w.climb && !w.hightech && bareOk) yield bareBuild(b0, now); };
     for (const b of tiers()) {
       const own = ownedAssess(b, ownedMap, needStand, P0, !!w.ownTank), saved = own.saved, scene = scenOf(b, own, needStand), sm = summaryOf(scene, units);
       // husbandry is never traded for money or time: the strict rule (Nathan 2026-10-27) = nothing the stocking screen words as a Problem OR a Caution in any of its five categories. Only "not enough information" passes, and it is shown.
