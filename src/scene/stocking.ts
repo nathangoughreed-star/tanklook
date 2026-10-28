@@ -26,7 +26,7 @@ import { feedingOf, isLivePlantPatch, nitrogenBudget, tanOf, type Nitrogen } fro
 import { assumedFilter, heatLoss, rowsFor, setWaterChangeFraction, stockCapacity, sumpLitres } from './tech';
 import { floorOf } from './tankMin';
 import { footprint } from './shape';
-import { TURN_K, turnNeedMm } from './turnclear';
+import { TURN_K, creditFraction } from './turnclear';
 import { zoneOf, type Zone } from './zone';
 import type { Fish, TankSetup } from './types';
 
@@ -177,7 +177,7 @@ export function heightMul(sp: Species, meanDepthCm: number): number {
 const epsOfArea = (area: number, run: number) => run > 0 ? Math.max(0, 1 - Math.sqrt(area / (run * run) / (Math.PI / 4))) : 0;
 /** eps of a W/L rectangle (the reference and the cap are defined on rectangles). */
 export const epsRect = (wl: number) => epsOfArea(wl, Math.hypot(1, wl));
-export const LENGTH_BONUS = { on: false, refEps: epsRect(0.5), maxEps: epsRect(0.125), beta: { none: 0, low: 0.2, mid: 0.4, high: 0.7 } };
+export const LENGTH_BONUS = { on: false, kCredit: 3, refEps: epsRect(0.5), maxEps: epsRect(0.125), beta: { none: 0, low: 0.2, mid: 0.4, high: 0.7 } };
 const runCache = new WeakMap<object, number>();
 /** Elongation eps of a tank's footprint, any shape: its area over its longest straight run (the farthest pair of outline points). */
 export function elongationOf(T: TankSetup['tank']): number {
@@ -199,12 +199,14 @@ export function lengthBetaOf(sp: Species): number {
 /** F_L: what a tank's elongation `eps` multiplies this species' room by, against the reference shape (1 with the bonus off). Nathan 2026-10-28:
  *  a geometry that fails turning clearance (shortest floor side `widthMm` under TURN_K x adult length) earns NO positive credit: the raw B_L is
  *  replaced by 1 before the reference normalisation (so such a tank reads 1 / B_L(ref) of the room, never more than a reference-shaped tank).
- *  Without `widthMm` the clearance is not checked. */
+ *  Between that width and kCredit x adult length the credit ramps in (creditFraction; it never touches a verdict, only this credit).
+ *  Without `widthMm` the clearance is not checked.
+ *  L_run assumes an unobstructed convex footprint: a concave outline or hardscape can break the straight path; not handled. */
 export function lengthFactor(sp: Species, eps: number, widthMm?: number): number {
   if (!LENGTH_BONUS.on) return 1;
   const b = lengthBetaOf(sp), bl = (e: number) => 1 + b * Math.min(LENGTH_BONUS.maxEps, Math.max(0, e));
-  const applied = widthMm !== undefined && widthMm < turnNeedMm(sp, TURN_K) ? 1 : bl(eps);
-  return applied / bl(LENGTH_BONUS.refEps);
+  // the credit ramps in with the width: 0 at TURN_K x adult length (the turning rule, B_L = 1), 1 at kCredit x adult length (a tank too narrow to use its run)
+  return bl(eps * creditFraction(sp, widthMm, TURN_K, LENGTH_BONUS.kCredit)) / bl(LENGTH_BONUS.refEps);
 }
 export const FLOOR_SHARE: Record<Zone, number> = { bottom: 1, all: 0.5, middle: 0, top: 0 };
 const FLOOR_REF = { id: 'bronzecory', tlMm: 65 }, SQIN_CM2 = 6.4516, IN_MM = 25.4;

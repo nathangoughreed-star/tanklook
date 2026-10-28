@@ -16,3 +16,12 @@ export const turnNeedMm = (sp: Species, k: number) => turnExempt(sp) ? 0 : k * s
 export const turnPct = (sp: Species, g: Pick<Geometry, 'widthMm'>, k: number) => 100 * turnNeedMm(sp, k) / Math.max(1, g.widthMm);
 /** The stronger of a sourced width (tankMin) and the heuristic, mm: sourced values are kept, never weakened. */
 export const turnWidthMm = (sp: Species, k: number, sourcedMm = 0) => Math.max(sourcedMm, turnNeedMm(sp, k));
+
+/** Fraction of the length credit a floor width earns (lane LB, Nathan 2026-10-28): none at the turning width (TURN_K x adult length), all at the credit
+ *  width (kCredit x adult length), a straight ramp between. It limits ONLY the length credit in the density model, never a stocking verdict.
+ *  Exempt bodies and an unknown width (undefined) earn it all. */
+export const creditFraction = (sp: Species, widthMm: number | undefined, kTurn: number, kCredit: number) => {
+  if (widthMm === undefined || turnExempt(sp)) return 1;
+  const lo = kTurn * sp.tl, hi = kCredit * sp.tl;
+  return hi > lo ? Math.min(1, Math.max(0, (widthMm - lo) / (hi - lo))) : widthMm >= lo ? 1 : 0;
+};

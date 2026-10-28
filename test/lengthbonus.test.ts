@@ -1,7 +1,7 @@
 // Lane LB prototype: the swimmer length bonus (stocking.ts, off by default) and the turning-clearance heuristic (turnclear.ts, not wired).
 import { afterEach, describe, expect, it } from 'vitest';
 import { LENGTH_BONUS, elongationOf, epsRect, lengthBetaOf, lengthFactor, stockingOf } from '../src/scene/stocking';
-import { TURN_K, turnExempt, turnNeedMm, turnPct, turnWidthMm } from '../src/scene/turnclear';
+import { TURN_K, creditFraction, turnExempt, turnNeedMm, turnPct, turnWidthMm } from '../src/scene/turnclear';
 import { getSpecies } from '../src/data/species';
 import { bareSetup } from '../src/scene/defaults';
 import { comboTank } from './aqcompare.test';
@@ -63,10 +63,10 @@ describe('length bonus x turning clearance (Nathan 2026-10-28)', () => {
   it('a geometry failing clearance gets no positive credit: raw B_L becomes 1 before the reference normalisation', () => {
     LENGTH_BONUS.on = true;
     const d = sp('danio'), ok = turnNeedMm(d, TURN_K), refBl = 1 + lengthBetaOf(d) * LENGTH_BONUS.refEps;
-    expect(lengthFactor(d, 0.5, ok)).toBeGreaterThan(1);                       // wide enough: full credit
+    expect(lengthFactor(d, 0.5, LENGTH_BONUS.kCredit * d.tl)).toBeGreaterThan(1); // wide enough for the full credit
     expect(lengthFactor(d, 0.5, ok - 1)).toBeCloseTo(1 / refBl, 12);            // one mm short: none, and the reference credit is gone too
     expect(lengthFactor(d, 0.5, ok - 1)).toBeLessThan(1);
-    expect(lengthFactor(d, 0.5)).toBe(lengthFactor(d, 0.5, ok));                // no width given: not checked
+    expect(lengthFactor(d, 0.5)).toBe(lengthFactor(d, 0.5, LENGTH_BONUS.kCredit * d.tl)); // no width given: not checked
   });
   it('stockingOf: the same fish read higher in a 72 x 2 in slot than in a 72 x 5 in tank of equal height once the bonus is on', () => {
     const at = (D: number) => stockingOf(comboTank({ name: 'x', tank: [72, D, 12], stock: [['danio', 6]] })).percent;
@@ -79,6 +79,34 @@ describe('length bonus x turning clearance (Nathan 2026-10-28)', () => {
   it('the exempt bodies are never refused', () => {
     LENGTH_BONUS.on = true;
     expect(lengthFactor(sp('kuhli'), 0.5, 10)).toBeCloseTo(lengthFactor(sp('kuhli'), 0.5), 12);
+  });
+});
+
+describe('minimum width for length credit (k_credit)', () => {
+  const neon = sp('neon'), kc = () => LENGTH_BONUS.kCredit;
+  it('ramps from 0 at the turning width to 1 at k_credit x adult length, straight in between; exempt and unknown widths get it all', () => {
+    expect(kc()).toBeGreaterThan(TURN_K);
+    expect(creditFraction(neon, TURN_K * neon.tl, TURN_K, kc())).toBe(0);
+    expect(creditFraction(neon, kc() * neon.tl, TURN_K, kc())).toBe(1);
+    expect(creditFraction(neon, (TURN_K + kc()) / 2 * neon.tl, TURN_K, kc())).toBeCloseTo(0.5, 12);
+    expect(creditFraction(neon, 1, TURN_K, kc())).toBe(0);
+    expect(creditFraction(neon, 1e6, TURN_K, kc())).toBe(1);
+    expect(creditFraction(sp('ballpython'), 1, TURN_K, kc())).toBe(1);
+    expect(creditFraction(neon, undefined, TURN_K, kc())).toBe(1);
+  });
+  it('a 72 x 3 in slot earns neon less credit than a 12 in wide long tank, and the factor never rises as the tank narrows', () => {
+    LENGTH_BONUS.on = true;
+    const eps = epsRect(0.125), w = (mm: number) => lengthFactor(neon, eps, mm);
+    let prev = Infinity;
+    for (const win of [20, 12, 6, 4.5, 3, 2.5, 2]) { const f = w(win * 25.4); expect(f).toBeLessThanOrEqual(prev + 1e-12); prev = f; }
+    expect(w(12 * 25.4)).toBeGreaterThan(w(3 * 25.4));
+    expect(w(12 * 25.4)).toBeCloseTo(lengthFactor(neon, eps), 12);               // an ordinary long aquarium keeps the full credit
+    expect(w(2 * 25.4)).toBeCloseTo(1 / (1 + lengthBetaOf(neon) * LENGTH_BONUS.refEps), 12); // below the turning width: none
+  });
+  it('it limits only the credit: stockingOf in a thin slot is never lower than with no credit at all', () => {
+    const s = comboTank({ name: 'x', tank: [72, 3, 12], stock: [['neon', 6]] });
+    LENGTH_BONUS.on = true; const on = stockingOf(s).percent; LENGTH_BONUS.on = false;
+    expect(on).toBeGreaterThanOrEqual(stockingOf(s).percent - 1e-9);
   });
 });
 
