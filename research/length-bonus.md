@@ -79,7 +79,7 @@ without my changes (checked by stashing), so none come from this lane.
 
 ---
 
-# Addendum 2026-10-28: Nathan's decisions and the geometry calibration
+# Addendum 2026-10-28: Nathan's decisions and the geometry calibration (elongation measure REVISED below: the sqrt(W/L) figures in the first half of this file are superseded)
 
 Decisions applied (from the coordinator, quoting Nathan): reference aspect 2:1; beta classes stay experimental (0.7 for fast schoolers included);
 k = 1.5 adult body lengths, provisional; clearance failures amber only, no axolotl exception (review before it ever becomes a hard gate); sourced gate and
@@ -89,151 +89,179 @@ NO positive credit: the raw B_L is replaced by 1 BEFORE the reference normalisat
 the bonus, it also loses the reference credit, so it reads stricter than a 2:1 reference tank (zebra danio in a 72 x 2 in slot: 111 % off, 134 % on).
 Exempt bodies (snakes, kuhli, long-tailed lizards) are never refused. Test: `test/lengthbonus.test.ts` ("length bonus x turning clearance").
 
-## Geometry calibration (the 37 lists stay a regression test only)
+## Elongation measure revised: the circle is the baseline (Nathan, same day; supersedes sqrt(W/L))
+Square and circle must not read alike: a circle holds the most area per unit of longest straight run. Now (`elongationOf`, `epsRect`, `LENGTH_BONUS` in `stocking.ts`,
+still `on: false`):
+- L_run = the longest straight run in the footprint = the farthest pair of points of `footprint(T).ring` (a rectangle's diagonal, a circle's diameter, any polygon); A = the footprint area.
+- eps = max(0, 1 - sqrt((A / L_run^2) / (pi/4))); B_L = 1 + beta x min(eps, maxEps).
+- eps: circle 0.00, hexagon 0.09, square 0.20, 2:1 0.29, 4:1 0.45, 8:1 0.60 (the expected values; the tests pin them), a 72 x 3 in slot 0.77, a 72 x 2 in slot 0.81.
+- Reference = the 2:1 rectangle, computed with the same measure (`refEps` 0.286), so density at the reference shape is unchanged (test). Beta classes, exempt bodies and the
+  turning rule are as before; the rule's width is still the shortest floor side (`floorOf` widthMm), under 1.5 x adult length means B_L = 1 before normalisation.
+- The 1:8 floor becomes a cap on eps: `maxEps` = eps of an 8:1 rectangle (0.604). Past it a slot earns nothing more (a 72 x 3 in slot would otherwise earn eps 0.77: danio B_L 1.54 instead of 1.42).
+- Tests (`test/lengthbonus.test.ts`): circle has the lowest B_L of all shapes; hexagon sits between circle and square; the reference tank is unchanged; a round tank reads
+  stricter than 2:1 for swimmers (danio 20 % higher) and unchanged for bottom dwellers; the cap holds.
+Consequence: with the circle as baseline, a square or round tank now reads STRICTER than today (the reference is 2:1, which sits above them), exactly as intended: round danio +20 %,
+square +5 %, hexagon +13 %; every elongated tank reads easier.
+
+## Geometry calibration (new measure; the 37 lists stay a regression test only)
 Method: `test/lengthcalib.scratch.test.ts` (`GEN_LB=1 LB_OUT=file npx vitest run ...`). Density = the space reading (water or floor, whichever binds; filtration
-excluded, it does not depend on shape), bonus off vs on with ref 2:1, betas .2 / .4 / .7 and the clearance rule above. "Sourced gate" = today's red-line percent
-from `tankMin.ts` (over 111 % fails); "turn %" = 1.5 x adult length / the tank's front-to-back width (over 100 = narrow; amber only). Stocks: 8 bronze corydoras
-(bottom dweller, beta 0), 1 betta (beta .2), 12 neon tetra (mid, .4), 12 zebra danio (fast schooler, .7). Water 90 % full.
+excluded, it does not depend on shape), bonus off vs on with the 2:1 reference, betas .2 / .4 / .7 and the clearance rule. "Sourced gate" = today's red-line percent
+from `tankMin.ts` (over 111 % fails); "turn %" = 1.5 x adult length / the tank's shortest floor side (over 100 = narrow; amber only). Stocks: 8 bronze corydoras
+(bottom dweller, beta 0), 1 betta (beta .2), 12 neon tetra (mid, .4), 12 zebra danio (fast schooler, .7). Water 90 % full. The hexagon is a regular six-sided tank
+sized to the same floor area.
 
 #### Equal floor area 1296 sq in, 16 in tall, 90 % full
 
 bottom dweller
 
-| tank | L x W x H in | W/L | stock | density off % | density on % | change | sourced gate % | turn % (k 1.5) | flags |
+| tank | L x W x H in | eps | stock | density off % | density on % | change | sourced gate % | turn % (k 1.5) | flags |
 |---|---|---|---|---|---|---|---|---|---|
-| 1:1 | 36 x 36.0 x 16 | 1.00 | 8 Bronze corydoras | 24 | 24 | 0 % | 30 | 11 |  |
-| 2:1 | 51 x 25.5 x 16 | 0.50 | 8 Bronze corydoras | 24 | 24 | 0 % | 30 | 15 |  |
-| 4:1 | 72 x 18.0 x 16 | 0.25 | 8 Bronze corydoras | 24 | 24 | 0 % | 30 | 21 |  |
-| 8:1 | 102 x 12.7 x 16 | 0.12 | 8 Bronze corydoras | 24 | 24 | 0 % | 30 | 30 |  |
-| round | 41 x 40.6 x 16 | 1.00 | 8 Bronze corydoras | 24 | 24 | 0 % | 30 | 9 |  |
+| 1:1 | 36 x 36.0 x 16 | 0.20 | 8 Bronze corydoras | 24 | 24 | 0 % | 30 | 11 |  |
+| 2:1 | 51 x 25.5 x 16 | 0.29 | 8 Bronze corydoras | 24 | 24 | 0 % | 30 | 15 |  |
+| 4:1 | 72 x 18.0 x 16 | 0.45 | 8 Bronze corydoras | 24 | 24 | 0 % | 30 | 21 |  |
+| 8:1 | 102 x 12.7 x 16 | 0.60 | 8 Bronze corydoras | 24 | 24 | 0 % | 30 | 30 |  |
+| round | 41 x 40.6 x 16 | 0.00 | 8 Bronze corydoras | 24 | 24 | 0 % | 30 | 9 |  |
+| hexagon | 45 x 38.7 x 16 | 0.09 | 8 Bronze corydoras | 24 | 24 | 0 % | 30 | 10 |  |
 
 betta
 
-| tank | L x W x H in | W/L | stock | density off % | density on % | change | sourced gate % | turn % (k 1.5) | flags |
+| tank | L x W x H in | eps | stock | density off % | density on % | change | sourced gate % | turn % (k 1.5) | flags |
 |---|---|---|---|---|---|---|---|---|---|
-| 1:1 | 36 x 36.0 x 16 | 1.00 | 1 Betta | 2 | 2 | 6 % | 44 | 11 |  |
-| 2:1 | 51 x 25.5 x 16 | 0.50 | 1 Betta | 2 | 2 | 0 % | 31 | 15 |  |
-| 4:1 | 72 x 18.0 x 16 | 0.25 | 1 Betta | 2 | 2 | -4 % | 22 | 21 |  |
-| 8:1 | 102 x 12.7 x 16 | 0.12 | 1 Betta | 2 | 2 | -6 % | 15 | 30 |  |
-| round | 41 x 40.6 x 16 | 1.00 | 1 Betta | 2 | 2 | 6 % | 39 | 9 |  |
+| 1:1 | 36 x 36.0 x 16 | 0.20 | 1 Betta | 2 | 2 | 2 % | 44 | 11 |  |
+| 2:1 | 51 x 25.5 x 16 | 0.29 | 1 Betta | 2 | 2 | 0 % | 31 | 15 |  |
+| 4:1 | 72 x 18.0 x 16 | 0.45 | 1 Betta | 2 | 2 | -3 % | 22 | 21 |  |
+| 8:1 | 102 x 12.7 x 16 | 0.60 | 1 Betta | 2 | 2 | -6 % | 15 | 30 |  |
+| round | 41 x 40.6 x 16 | 0.00 | 1 Betta | 2 | 2 | 6 % | 39 | 9 |  |
+| hexagon | 45 x 38.7 x 16 | 0.09 | 1 Betta | 2 | 2 | 4 % | 35 | 10 |  |
 
 tetra
 
-| tank | L x W x H in | W/L | stock | density off % | density on % | change | sourced gate % | turn % (k 1.5) | flags |
+| tank | L x W x H in | eps | stock | density off % | density on % | change | sourced gate % | turn % (k 1.5) | flags |
 |---|---|---|---|---|---|---|---|---|---|
-| 1:1 | 36 x 36.0 x 16 | 1.00 | 12 Neon tetra | 14 | 15 | 12 % | 55 | 6 |  |
-| 2:1 | 51 x 25.5 x 16 | 0.50 | 12 Neon tetra | 14 | 14 | 0 % | 39 | 9 |  |
-| 4:1 | 72 x 18.0 x 16 | 0.25 | 12 Neon tetra | 14 | 13 | -7 % | 28 | 12 |  |
-| 8:1 | 102 x 12.7 x 16 | 0.12 | 12 Neon tetra | 14 | 12 | -11 % | 19 | 18 |  |
-| round | 41 x 40.6 x 16 | 1.00 | 12 Neon tetra | 14 | 15 | 12 % | 49 | 6 |  |
+| 1:1 | 36 x 36.0 x 16 | 0.20 | 12 Neon tetra | 14 | 14 | 3 % | 55 | 6 |  |
+| 2:1 | 51 x 25.5 x 16 | 0.29 | 12 Neon tetra | 14 | 14 | 0 % | 39 | 9 |  |
+| 4:1 | 72 x 18.0 x 16 | 0.45 | 12 Neon tetra | 14 | 13 | -6 % | 28 | 12 |  |
+| 8:1 | 102 x 12.7 x 16 | 0.60 | 12 Neon tetra | 14 | 12 | -10 % | 19 | 18 |  |
+| round | 41 x 40.6 x 16 | 0.00 | 12 Neon tetra | 14 | 15 | 11 % | 49 | 6 |  |
+| hexagon | 45 x 38.7 x 16 | 0.09 | 12 Neon tetra | 14 | 15 | 8 % | 44 | 6 |  |
 
 zebra danio
 
-| tank | L x W x H in | W/L | stock | density off % | density on % | change | sourced gate % | turn % (k 1.5) | flags |
+| tank | L x W x H in | eps | stock | density off % | density on % | change | sourced gate % | turn % (k 1.5) | flags |
 |---|---|---|---|---|---|---|---|---|---|
-| 1:1 | 36 x 36.0 x 16 | 1.00 | 12 Zebra danio | 21 | 25 | 21 % | 55 | 8 |  |
-| 2:1 | 51 x 25.5 x 16 | 0.50 | 12 Zebra danio | 21 | 21 | 0 % | 39 | 12 |  |
-| 4:1 | 72 x 18.0 x 16 | 0.25 | 12 Zebra danio | 21 | 18 | -11 % | 28 | 16 |  |
-| 8:1 | 102 x 12.7 x 16 | 0.12 | 12 Zebra danio | 21 | 17 | -17 % | 19 | 23 |  |
-| round | 41 x 40.6 x 16 | 1.00 | 12 Zebra danio | 21 | 25 | 21 % | 49 | 7 |  |
+| 1:1 | 36 x 36.0 x 16 | 0.20 | 12 Zebra danio | 21 | 22 | 5 % | 55 | 8 |  |
+| 2:1 | 51 x 25.5 x 16 | 0.29 | 12 Zebra danio | 21 | 21 | 0 % | 39 | 12 |  |
+| 4:1 | 72 x 18.0 x 16 | 0.45 | 12 Zebra danio | 21 | 19 | -9 % | 28 | 16 |  |
+| 8:1 | 102 x 12.7 x 16 | 0.60 | 12 Zebra danio | 21 | 17 | -16 % | 19 | 23 |  |
+| round | 41 x 40.6 x 16 | 0.00 | 12 Zebra danio | 21 | 25 | 20 % | 49 | 7 |  |
+| hexagon | 45 x 38.7 x 16 | 0.09 | 12 Zebra danio | 21 | 23 | 13 % | 44 | 8 |  |
 
 #### Equal floor area 576 sq in, 12 in tall, 90 % full
 
 bottom dweller
 
-| tank | L x W x H in | W/L | stock | density off % | density on % | change | sourced gate % | turn % (k 1.5) | flags |
+| tank | L x W x H in | eps | stock | density off % | density on % | change | sourced gate % | turn % (k 1.5) | flags |
 |---|---|---|---|---|---|---|---|---|---|
-| 1:1 | 24 x 24.0 x 12 | 1.00 | 8 Bronze corydoras | 53 | 53 | 0 % | 67 | 16 |  |
-| 2:1 | 34 x 17.0 x 12 | 0.50 | 8 Bronze corydoras | 53 | 53 | 0 % | 67 | 23 |  |
-| 4:1 | 48 x 12.0 x 12 | 0.25 | 8 Bronze corydoras | 53 | 53 | 0 % | 67 | 32 |  |
-| 8:1 | 68 x 8.5 x 12 | 0.13 | 8 Bronze corydoras | 53 | 53 | 0 % | 67 | 45 |  |
+| 1:1 | 24 x 24.0 x 12 | 0.20 | 8 Bronze corydoras | 53 | 53 | 0 % | 67 | 16 |  |
+| 2:1 | 34 x 17.0 x 12 | 0.29 | 8 Bronze corydoras | 53 | 53 | 0 % | 67 | 23 |  |
+| 4:1 | 48 x 12.0 x 12 | 0.45 | 8 Bronze corydoras | 53 | 53 | 0 % | 67 | 32 |  |
+| 8:1 | 68 x 8.5 x 12 | 0.60 | 8 Bronze corydoras | 53 | 53 | 0 % | 67 | 45 |  |
+| round | 27 x 27.1 x 12 | 0.00 | 8 Bronze corydoras | 53 | 53 | 0 % | 67 | 14 |  |
+| hexagon | 30 x 25.8 x 12 | 0.09 | 8 Bronze corydoras | 53 | 53 | 0 % | 67 | 15 |  |
 
 betta
 
-| tank | L x W x H in | W/L | stock | density off % | density on % | change | sourced gate % | turn % (k 1.5) | flags |
+| tank | L x W x H in | eps | stock | density off % | density on % | change | sourced gate % | turn % (k 1.5) | flags |
 |---|---|---|---|---|---|---|---|---|---|
-| 1:1 | 24 x 24.0 x 12 | 1.00 | 1 Betta | 6 | 6 | 6 % | 65 | 16 |  |
-| 2:1 | 34 x 17.0 x 12 | 0.50 | 1 Betta | 6 | 6 | 0 % | 46 | 23 |  |
-| 4:1 | 48 x 12.0 x 12 | 0.25 | 1 Betta | 6 | 6 | -4 % | 33 | 32 |  |
-| 8:1 | 68 x 8.5 x 12 | 0.13 | 1 Betta | 6 | 6 | -6 % | 23 | 45 |  |
+| 1:1 | 24 x 24.0 x 12 | 0.20 | 1 Betta | 6 | 6 | 2 % | 65 | 16 |  |
+| 2:1 | 34 x 17.0 x 12 | 0.29 | 1 Betta | 6 | 6 | 0 % | 46 | 23 |  |
+| 4:1 | 48 x 12.0 x 12 | 0.45 | 1 Betta | 6 | 6 | -3 % | 33 | 32 |  |
+| 8:1 | 68 x 8.5 x 12 | 0.60 | 1 Betta | 6 | 6 | -6 % | 23 | 45 |  |
+| round | 27 x 27.1 x 12 | 0.00 | 1 Betta | 6 | 6 | 6 % | 58 | 14 |  |
+| hexagon | 30 x 25.8 x 12 | 0.09 | 1 Betta | 6 | 6 | 4 % | 53 | 15 |  |
 
 tetra
 
-| tank | L x W x H in | W/L | stock | density off % | density on % | change | sourced gate % | turn % (k 1.5) | flags |
+| tank | L x W x H in | eps | stock | density off % | density on % | change | sourced gate % | turn % (k 1.5) | flags |
 |---|---|---|---|---|---|---|---|---|---|
-| 1:1 | 24 x 24.0 x 12 | 1.00 | 12 Neon tetra | 36 | 41 | 12 % | 83 | 9 |  |
-| 2:1 | 34 x 17.0 x 12 | 0.50 | 12 Neon tetra | 36 | 36 | 0 % | 58 | 13 |  |
-| 4:1 | 48 x 12.0 x 12 | 0.25 | 12 Neon tetra | 36 | 34 | -7 % | 41 | 19 |  |
-| 8:1 | 68 x 8.5 x 12 | 0.13 | 12 Neon tetra | 36 | 32 | -11 % | 29 | 26 |  |
+| 1:1 | 24 x 24.0 x 12 | 0.20 | 12 Neon tetra | 36 | 38 | 3 % | 83 | 9 |  |
+| 2:1 | 34 x 17.0 x 12 | 0.29 | 12 Neon tetra | 36 | 36 | 0 % | 58 | 13 |  |
+| 4:1 | 48 x 12.0 x 12 | 0.45 | 12 Neon tetra | 36 | 34 | -6 % | 41 | 19 |  |
+| 8:1 | 68 x 8.5 x 12 | 0.60 | 12 Neon tetra | 36 | 33 | -10 % | 29 | 26 |  |
+| round | 27 x 27.1 x 12 | 0.00 | 12 Neon tetra | 37 | 41 | 11 % | 73 | 8 |  |
+| hexagon | 30 x 25.8 x 12 | 0.09 | 12 Neon tetra | 36 | 39 | 8 % | 67 | 9 |  |
 
 zebra danio
 
-| tank | L x W x H in | W/L | stock | density off % | density on % | change | sourced gate % | turn % (k 1.5) | flags |
+| tank | L x W x H in | eps | stock | density off % | density on % | change | sourced gate % | turn % (k 1.5) | flags |
 |---|---|---|---|---|---|---|---|---|---|
-| 1:1 | 24 x 24.0 x 12 | 1.00 | 12 Zebra danio | 53 | 64 | 21 % | 83 | 12 |  |
-| 2:1 | 34 x 17.0 x 12 | 0.50 | 12 Zebra danio | 53 | 53 | 0 % | 58 | 17 |  |
-| 4:1 | 48 x 12.0 x 12 | 0.25 | 12 Zebra danio | 53 | 47 | -11 % | 41 | 25 |  |
-| 8:1 | 68 x 8.5 x 12 | 0.13 | 12 Zebra danio | 53 | 44 | -17 % | 29 | 35 |  |
+| 1:1 | 24 x 24.0 x 12 | 0.20 | 12 Zebra danio | 53 | 55 | 5 % | 83 | 12 |  |
+| 2:1 | 34 x 17.0 x 12 | 0.29 | 12 Zebra danio | 53 | 53 | 0 % | 58 | 17 |  |
+| 4:1 | 48 x 12.0 x 12 | 0.45 | 12 Zebra danio | 53 | 48 | -9 % | 41 | 25 |  |
+| 8:1 | 68 x 8.5 x 12 | 0.60 | 12 Zebra danio | 53 | 44 | -16 % | 29 | 35 |  |
+| round | 27 x 27.1 x 12 | 0.00 | 12 Zebra danio | 53 | 63 | 20 % | 73 | 11 |  |
+| hexagon | 30 x 25.8 x 12 | 0.09 | 12 Zebra danio | 53 | 60 | 13 % | 67 | 11 |  |
 
 #### Edge cases (tank sizes as sold; 90 % full)
 
-| tank | L x W x H in | W/L | stock | density off % | density on % | change | sourced gate % | turn % (k 1.5) | flags |
+| tank | L x W x H in | eps | stock | density off % | density on % | change | sourced gate % | turn % (k 1.5) | flags |
 |---|---|---|---|---|---|---|---|---|---|
-| 72 x 2 slot | 72 x 2.0 x 12 | 0.03 | 3 Bronze corydoras | 80 | 80 | 0 % | 267 | 191 | AMBER: too narrow to turn; sourced gate red |
-| 72 x 2 slot | 72 x 2.0 x 12 | 0.03 | 1 Betta | 24 | 25 | 6 % | 22 | 191 | AMBER: too narrow to turn |
-| 72 x 2 slot | 72 x 2.0 x 12 | 0.03 | 6 Neon tetra | 77 | 86 | 12 % | 28 | 112 | AMBER: too narrow to turn |
-| 72 x 2 slot | 72 x 2.0 x 12 | 0.03 | 6 Zebra danio | 111 | 134 | 21 % | 28 | 147 | AMBER: too narrow to turn |
-| 72 x 3 slot | 72 x 3.0 x 12 | 0.04 | 3 Bronze corydoras | 53 | 53 | 0 % | 178 | 128 | AMBER: too narrow to turn; sourced gate red |
-| 72 x 3 slot | 72 x 3.0 x 12 | 0.04 | 1 Betta | 16 | 17 | 6 % | 22 | 128 | AMBER: too narrow to turn |
-| 72 x 3 slot | 72 x 3.0 x 12 | 0.04 | 6 Neon tetra | 51 | 45 | -11 % | 28 | 75 |  |
-| 72 x 3 slot | 72 x 3.0 x 12 | 0.04 | 6 Zebra danio | 74 | 61 | -17 % | 28 | 99 |  |
-| 18 in cube | 18 x 18.0 x 18 | 1.00 | 4 Bronze corydoras | 47 | 47 | 0 % | 119 | 21 ; sourced gate red |
-| 18 in cube | 18 x 18.0 x 18 | 1.00 | 1 Betta | 8 | 9 | 6 % | 87 | 21 |  |
-| 18 in cube | 18 x 18.0 x 18 | 1.00 | 8 Neon tetra | 36 | 41 | 12 % | 110 | 12 |  |
-| 18 in cube | 18 x 18.0 x 18 | 1.00 | 8 Zebra danio | 56 | 67 | 21 % | 110 | 16 |  |
-| 20 long | 30 x 12.0 x 12 | 0.40 | 1 Axolotl | 36 | 36 | 0 % | >999 | 148 | AMBER: too narrow to turn; sourced gate red |
-| 20 long | 30 x 12.0 x 12 | 0.40 | 2 Axolotl | 71 | 71 | 0 % | >999 | 148 | AMBER: too narrow to turn; sourced gate red |
-| 30 x 12 x 18 (29 gal) | 30 x 12.0 x 18 | 0.40 | 1 Axolotl | 36 | 36 | 0 % | 59 | 148 | AMBER: too narrow to turn |
-| 30 x 12 x 18 (29 gal) | 30 x 12.0 x 18 | 0.40 | 2 Axolotl | 71 | 71 | 0 % | 59 | 148 | AMBER: too narrow to turn |
-| 40 breeder | 36 x 18.0 x 16 | 0.50 | 2 Axolotl | 40 | 40 | 0 % | 49 | 98 |  |
-| 55 gal | 48 x 13.0 x 21 | 0.27 | 2 Axolotl | 41 | 41 | 0 % | 37 | 136 | AMBER: too narrow to turn |
-| 55 gal | 48 x 13.0 x 21 | 0.27 | 1 Oscar | 47 | 50 | 6 % | 182 | 136 | AMBER: too narrow to turn; sourced gate red |
-| 75 gal | 48 x 18.0 x 21 | 0.37 | 1 Oscar | 34 | 33 | -2 % | 131 | 98 ; sourced gate red |
-| 75 gal | 48 x 18.0 x 21 | 0.37 | 2 Oscar | 68 | 67 | -2 % | 131 | 98 ; sourced gate red |
-| 90 gal | 48 x 18.0 x 24 | 0.37 | 2 Oscar | 60 | 59 | -2 % | 131 | 98 ; sourced gate red |
-| 125 gal | 72 x 18.0 x 21 | 0.25 | 2 Oscar | 45 | 44 | -4 % | 131 | 98 ; sourced gate red |
-| 55 gal | 48 x 13.0 x 21 | 0.27 | 1 Livingstone's cichlid | 25 | 26 | 6 % | 100 | 114 | AMBER: too narrow to turn |
-| 75 gal | 48 x 18.0 x 21 | 0.37 | 3 Livingstone's cichlid | 53 | 52 | -2 % | 100 | 82 |  |
-| 125 gal | 72 x 18.0 x 21 | 0.25 | 5 Livingstone's cichlid | 59 | 57 | -4 % | 67 | 82 |  |
-| 75 gal | 48 x 18.0 x 21 | 0.37 | 8 Peacock cichlid | 48 | 46 | -3 % | 98 | 39 |  |
-| 75 gal | 48 x 18.0 x 21 | 0.37 | 2 Comet goldfish | 41 | 40 | -2 % | 74 | 82 |  |
+| 72 x 2 slot | 72 x 2.0 x 12 | 0.81 | 3 Bronze corydoras | 80 | 80 | 0 % | 267 | 191 | AMBER: too narrow to turn; sourced sourced gate red |
+| 72 x 2 slot | 72 x 2.0 x 12 | 0.81 | 1 Betta | 24 | 25 | 6 % | 22 | 191 | AMBER: too narrow to turn |
+| 72 x 2 slot | 72 x 2.0 x 12 | 0.81 | 6 Neon tetra | 77 | 86 | 11 % | 28 | 112 | AMBER: too narrow to turn |
+| 72 x 2 slot | 72 x 2.0 x 12 | 0.81 | 6 Zebra danio | 111 | 133 | 20 % | 28 | 147 | AMBER: too narrow to turn |
+| 72 x 3 slot | 72 x 3.0 x 12 | 0.77 | 3 Bronze corydoras | 53 | 53 | 0 % | 178 | 128 | AMBER: too narrow to turn; sourced sourced gate red |
+| 72 x 3 slot | 72 x 3.0 x 12 | 0.77 | 1 Betta | 16 | 17 | 6 % | 22 | 128 | AMBER: too narrow to turn |
+| 72 x 3 slot | 72 x 3.0 x 12 | 0.77 | 6 Neon tetra | 51 | 46 | -10 % | 28 | 75 |  |
+| 72 x 3 slot | 72 x 3.0 x 12 | 0.77 | 6 Zebra danio | 74 | 62 | -16 % | 28 | 99 |  |
+| 18 in cube | 18 x 18.0 x 18 | 0.20 | 4 Bronze corydoras | 47 | 47 | 0 % | 119 | 21 | sourced sourced gate red |
+| 18 in cube | 18 x 18.0 x 18 | 0.20 | 1 Betta | 8 | 9 | 2 % | 87 | 21 |  |
+| 18 in cube | 18 x 18.0 x 18 | 0.20 | 8 Neon tetra | 36 | 38 | 3 % | 110 | 12 |  |
+| 18 in cube | 18 x 18.0 x 18 | 0.20 | 8 Zebra danio | 56 | 59 | 5 % | 110 | 16 |  |
+| 20 long | 30 x 12.0 x 12 | 0.34 | 1 Axolotl | 36 | 36 | 0 % | >999 | 148 | AMBER: too narrow to turn; sourced sourced gate red |
+| 20 long | 30 x 12.0 x 12 | 0.34 | 2 Axolotl | 71 | 71 | 0 % | >999 | 148 | AMBER: too narrow to turn; sourced sourced gate red |
+| 30 x 12 x 18 (29 gal) | 30 x 12.0 x 18 | 0.34 | 1 Axolotl | 36 | 36 | 0 % | 59 | 148 | AMBER: too narrow to turn |
+| 30 x 12 x 18 (29 gal) | 30 x 12.0 x 18 | 0.34 | 2 Axolotl | 71 | 71 | 0 % | 59 | 148 | AMBER: too narrow to turn |
+| 40 breeder | 36 x 18.0 x 16 | 0.29 | 2 Axolotl | 40 | 40 | 0 % | 49 | 98 |  |
+| 55 gal | 48 x 13.0 x 21 | 0.43 | 2 Axolotl | 41 | 41 | 0 % | 37 | 136 | AMBER: too narrow to turn |
+| 55 gal | 48 x 13.0 x 21 | 0.43 | 1 Oscar | 47 | 50 | 6 % | 182 | 136 | AMBER: too narrow to turn; sourced sourced gate red |
+| 75 gal | 48 x 18.0 x 21 | 0.35 | 1 Oscar | 34 | 34 | -1 % | 131 | 98 | sourced sourced gate red |
+| 75 gal | 48 x 18.0 x 21 | 0.35 | 2 Oscar | 68 | 67 | -1 % | 131 | 98 | sourced sourced gate red |
+| 90 gal | 48 x 18.0 x 24 | 0.35 | 2 Oscar | 60 | 60 | -1 % | 131 | 98 | sourced sourced gate red |
+| 125 gal | 72 x 18.0 x 21 | 0.45 | 2 Oscar | 45 | 44 | -3 % | 131 | 98 | sourced sourced gate red |
+| 55 gal | 48 x 13.0 x 21 | 0.43 | 1 Livingstone's cichlid | 25 | 26 | 6 % | 100 | 114 | AMBER: too narrow to turn |
+| 75 gal | 48 x 18.0 x 21 | 0.35 | 3 Livingstone's cichlid | 53 | 53 | -1 % | 100 | 82 |  |
+| 125 gal | 72 x 18.0 x 21 | 0.45 | 5 Livingstone's cichlid | 59 | 57 | -3 % | 67 | 82 |  |
+| 75 gal | 48 x 18.0 x 21 | 0.35 | 8 Peacock cichlid | 48 | 47 | -2 % | 98 | 39 |  |
+| 75 gal | 48 x 18.0 x 21 | 0.35 | 2 Comet goldfish | 41 | 40 | -1 % | 74 | 82 |  |
 
 ## What the tables say
-1. **Equal area, 1:1 to 8:1.** Zebra danio: +21 % (square, circle) / 0 (2:1) / -11 % (4:1) / -17 % (8:1). Neon: +12 / 0 / -7 / -11 %. Betta: +6 / 0 / -4 / -6 %
-   (a 2 % reading, so invisible in practice). Bottom dweller: exactly 0 in every shape: the floor and the capped height already decide it. The circle equals the square.
-   Same pattern at 576 and 1296 sq in. The 8:1 tank (102 x 12.7 in or 68 x 8.5 in) never trips clearance for these four (worst 45 % of the limit), so the credit is real there.
-2. **The sourced gate already moves with shape, and faster than density.** Gate % for a danio is 55 / 39 / 28 / 19 from square to 8:1 at 1296 sq in
-   (the red length line), so shape counts for swimmers today through the gate; the bonus adds the density side, which is why the two never contradict
-   in the equal-area tables: the gate reads LOWER (better) exactly where the bonus does. No contradiction with a sourced minimum occurs in any equal-area case.
-3. **72 x 2 and 72 x 3 slots.** At 2 in wide clearance fails for everything but nothing small is red in the sourced gate (neon, danio, betta all read 22-28 %): the
-   hole this lane found. With rule (5) the slot is stricter than the reference (danio 134 %, neon 86 %), not a bargain. At **3 in wide neon (75 %) and danio (99 %) PASS clearance at k 1.5**
-   and take the full credit (danio 74 % off, 61 % on). So k = 1.5 closes the 2 in slot but not a 3 in one for fish up to 2 in; a 3 in x 72 in tank
-   for 6 danio reads fine in both gates. If that matters, the fix is a minimum absolute width (about 4 in) or k = 2, not a bigger beta. (The bottom dweller reads 267 % /
-   178 % on the sourced gate in those slots, red: consistent.)
-4. **18 in cube.** No shape credit or penalty beyond the square's +12 % to +21 % for neon and danio (they read 41 % / 67 %); clearance passes (12-21 %). The sourced gate is 110 %
-   for 8 neon or danio (just inside the 111 % slack) and 119 % red for the cory: the cube's tight reading comes from the gate (its 18 in run), not density, so the bonus never
-   rescues it.
-5. **Axolotl.** 20 long (30 x 12 x 12 in): density 36 % (one) and 71 % (two), unchanged by the bonus (bottom dweller); sourced gate red (>999 %: the sourced axolotl line, which this lane does not touch, fails a 20 long); turn 148 % amber. 30 x 12 x 18 (29 gal): gate passes (59 %), turn 148 % amber. 55 gal 48 x 13: gate 37 %, turn 136 % amber.
-   40 breeder (36 x 18): 98 %, no flag. **This is the one real conflict with a sourced minimum**: the 29 gal and the 55 gal pass the sourced axolotl
-   lines (59 % and 37 %) while turn clearance calls them amber. Per Nathan there is no exception; it stays a warning and the density number is unaffected.
-6. **Large cichlids.** Oscar: 1 in a 55 gal reads 47 % off / 50 % on; sourced gate 182 % red (it needs 18 in front to back), turn 136 % amber. 75, 90 and 125 gal: gate 131 % red
-   (a sourced width or length line; not changed here), the bonus moves density only -2 % to -4 % (oscar is class low), clearance 98 % passes at 75 gal (18 in = 1.5 x 11.8 in). So for oscars
-   the clearance rule is WEAKER than the sourced minimum (it passes 18 in wide; the source wants more): the gate must stay the binding line, the heuristic only adds
-   where no source exists, as the take-the-max rule says. Livingstone's cichlid: 55 gal gate 100 %, turn 114 % amber; 75 gal and 125 gal pass. Peacocks (8 in 75 gal) and 2 comets: no flag.
-7. **Where the bonus lowers a reading in a tank the sourced gate fails:** only the oscar in the 75 / 90 / 125 gal (-2 % to -4 %) and the cory (0 %) in thin slots. Never a rescue: all of
-   these stay red on the gate, and the density difference is under 5 points.
+1. **Equal area, density change against today (= against 2:1).** Zebra danio: round +20 % / hexagon +13 % / square +5 % / 2:1 0 / 4:1 -9 % / 8:1 -16 %. Neon: +11 / +8 / +3 / 0 / -6 / -11 %
+   (about the same at 576 sq in). Betta: +6 / +4 / +2 / 0 / -3 / -6 % (a 2 % reading, invisible). Bottom dweller: exactly 0 in every shape, round and hexagon included.
+   The order circle > hexagon > square > 2:1 > 4:1 > 8:1 holds for every swimmer class. Clearance never trips in the equal-area tanks (worst 45 % of the limit at 8:1, 576 sq in).
+2. **No contradiction with a sourced minimum in any equal-area case.** The sourced gate (danio 55 / 39 / 28 / 19 % square to 8:1) already falls with elongation, in the same direction.
+   One ordering difference to know: round and hexagon read better than the square on the gate (danio 49 % and 44 % against 55 %) but worse on density (25 % and 23 % against 22 %), because the
+   gate and density use different measures; by design each line is held on its own.
+3. **72 x 2 and 72 x 3 slots.** At 2 in wide clearance fails for everything but nothing small is red on the sourced gate (neon, danio, betta read 22-28 %): the hole this lane found.
+   With the turning rule the slot is stricter than the reference (danio 133 %, neon 86 %, betta 25 %), not a bargain. At **3 in wide, neon (75 %) and danio (99 %) PASS clearance at k 1.5**
+   and take the capped credit (danio 74 % off, 62 % on; neon 51 / 46 %). A 3 in x 72 in tank for 6 danio still reads fine in both gates; a minimum absolute width (about 4 in) or k = 2 would close it.
+4. **18 in cube.** Square-tank strictness: neon +3 % (38 %), danio +5 % (59 %), cory 0. Clearance passes (12-21 %). The sourced gate is 110 % for 8 neon or danio (just inside the 111 % slack) and 119 % red
+   for the cory: the cube's tight reading comes from the gate (its 18 in run), not density, and the bonus never rescues it.
+5. **Axolotl** (a bottom dweller here, no density change). 20 long (30 x 12 x 12 in): density 36 % (one) and 71 % (two); sourced gate red (>999 %, the sourced axolotl line this lane does not touch);
+   turn 148 % amber. 30 x 12 x 18 (29 gal): gate 59 % passes, turn 148 % amber. 55 gal 48 x 13: gate 37 %, turn 136 % amber. 40 breeder 36 x 18: 98 %, no flag. **The one real conflict with a
+   sourced minimum:** the 29 gal and the 55 gal pass the sourced axolotl lines while turn clearance calls them amber. No exception per Nathan; a warning only.
+6. **Large cichlids.** Oscar: 1 in a 55 gal 47 % off / 50 % on, sourced gate 182 % red, turn 136 % amber. 75, 90 and 125 gal: gate 131 % red, density -1 % to -3 %, clearance 98 % passes at 75 gal.
+   For oscars the sourced minimum is stricter than clearance, so it stays the binding line (take-the-max). Livingstone's cichlid: 55 gal gate 100 %, turn 114 % amber; 75 and 125 gal pass.
+   8 peacocks (75 gal) and 2 comet goldfish: no flag.
+7. **Where the bonus lowers a reading in a tank the sourced gate fails:** only the oscar in the 75 / 90 / 125 gal (-1 % to -3 %). Never a rescue: all stay red on the gate.
+
+## 37-list regression (new measure; `test/expert.test.ts` numbers unchanged, bonus off)
+Median at the published max 69.7 % off, 68.9 % on; sdlog 0.4428 off vs 0.444 on (neutral, as before). 12 lists over 100 % either way: nothing flips pass/fail.
+Seven lists move, all down, because they are in elongated 48 x 13 / 36 x 12 / 30 x 12 tanks: damselfish 55 gal 132 to 125 %, Gensou 55 gal small-tetra 70 to 66 %,
+tiger barbs 42 to 39 %, mixed community 74 to 72 %, rummynose-angel 103 to 101 %, 30 gal community 56 to 54 %, fancy goldfish 29 gal 156 to 155 %. None of the 37 is squarer than 2:1,
+so none gets stricter. Variants: half beta 0.444, double beta 0.446 (one list flips fail to pass), ref = square 0.445 (two flip to pass, median 66.8 %: not recommended).
 
 ## Open for Nathan
 - A minimum absolute width (about 4 in) or k = 2 for small schoolers, since k = 1.5 passes a 3 in wide slot for neon and danio.
-- Axolotl, 29 and 55 gal: amber on clearance, green on every sourced line; stays amber under his decision, but the warning text should say it is a heuristic.
+- Axolotl, 29 and 55 gal: amber on clearance, green on every sourced line; the warning text should say it is a heuristic.
 - Merge as is: bonus off, clearance unconnected, nothing visible changes.

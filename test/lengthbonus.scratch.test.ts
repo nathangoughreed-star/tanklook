@@ -1,6 +1,6 @@
 // Lane LB measurement (GEN_LB=1 LB_OUT=file npx vitest run test/lengthbonus.scratch.test.ts writes the numbers to $LB_OUT).
 import { describe, it } from 'vitest';
-import { stockingOf, LENGTH_BONUS, lengthBetaOf } from '../src/scene/stocking';
+import { stockingOf, LENGTH_BONUS, lengthBetaOf, epsRect } from '../src/scene/stocking';
 import { comboTank } from './aqcompare.test';
 import LISTS from '../research/expert-stockings.json';
 import { TANK_MODELS, tankFromModel } from '../src/data/tanks';
@@ -30,7 +30,7 @@ describe('lane LB', () => {
     out.wl = { med: med(wl), min: Math.min(...wl), max: Math.max(...wl), vals: wl.map(x => +x.toFixed(3)) };
     const ref = out.wl.med;
     const meas = (on: boolean, beta?: any, r = ref) => {
-      LENGTH_BONUS.on = on; LENGTH_BONUS.refWL = r; const saved = { ...LENGTH_BONUS.beta }; if (beta) Object.assign(LENGTH_BONUS.beta, beta);
+      LENGTH_BONUS.on = on; LENGTH_BONUS.refEps = epsRect(r); const saved = { ...LENGTH_BONUS.beta }; if (beta) Object.assign(LENGTH_BONUS.beta, beta);
       const mx = L.map(l => run(l, 2).percent), mn = L.map(l => run(l, 1).percent);
       Object.assign(LENGTH_BONUS.beta, saved); LENGTH_BONUS.on = false;
       return { mx, mn };
@@ -42,7 +42,7 @@ describe('lane LB', () => {
     out.base = row(base);
     out.variants = {} as any;
     const V: [string, any, number][] = [['provisional .2/.4/.7', undefined, ref], ['half beta', { low: .1, mid: .2, high: .35 }, ref], ['double beta', { low: .4, mid: .8, high: 1.4 }, ref],
-      ['ref = square (1.0)', undefined, 1], ['ref = 0.5', undefined, 0.5]];
+      ['ref = square', undefined, 1], ['ref = 0.5', undefined, 0.5]];
     for (const [k, b, r] of V) out.variants[k] = row(meas(true, b, r));
     const bm = meas(true);
     out.perList = L.map((l, i) => ({ name: l.name, d: dims(l).join('x'), wl: +wl[i].toFixed(2), base: +base.mx[i].toFixed(0), bonus: +bm.mx[i].toFixed(0) }));
@@ -68,7 +68,7 @@ describe('lane LB', () => {
     const rect = (w2l: number) => { const Lx = Math.sqrt(A / w2l); return { ...bareSetup().tank, shape: 'rect' as const, L: Lx * IN, D: (A / Lx) * IN, H: H * IN }; };
     for (const [n, r] of [['square 1:1', 1], ['2:1', .5], ['4:1', .25], ['8:1', .125]] as [string, number][]) shapes.push([n, rect(r)]);
     const R = Math.sqrt(A / Math.PI) * 2; shapes.push(['circle', { ...bareSetup().tank, shape: 'round' as const, L: R * IN, D: R * IN, H: H * IN }]);
-    const both = (s: TankSetup) => { LENGTH_BONUS.on = false; const a = stockingOf(s).percent; LENGTH_BONUS.on = true; LENGTH_BONUS.refWL = ref; const b = stockingOf(s).percent; LENGTH_BONUS.on = false; return [a, b]; };
+    const both = (s: TankSetup) => { LENGTH_BONUS.on = false; const a = stockingOf(s).percent; LENGTH_BONUS.on = true; LENGTH_BONUS.refEps = epsRect(ref); const b = stockingOf(s).percent; LENGTH_BONUS.on = false; return [a, b]; };
     out.shape = {} as any;
     for (const [cls, id, n] of [['none (cory)', 'bronzecory', 8], ['low (betta)', 'betta', 1], ['mid (neon)', 'neon', 24], ['high (danio)', 'danio', 24]] as [string, string, number][]) {
       out.shape[cls] = shapes.map(([sn, t]) => { const s = bareSetup(); s.tank = t; s.water.on = true; s.water.level = 1; s.water.salt = false; s.fish = fishOf(id, n);

@@ -1,28 +1,28 @@
 // Lane LB geometry calibration (GEN_LB=1 LB_OUT=file npx vitest run test/lengthcalib.scratch.test.ts): markdown tables, US units.
 import { describe, it } from 'vitest';
-import { stockingOf, LENGTH_BONUS } from '../src/scene/stocking';
+import { stockingOf, LENGTH_BONUS, elongationOf } from '../src/scene/stocking';
 import { getSpecies } from '../src/data/species';
 import { bareSetup } from '../src/scene/defaults';
-import { geometryOf, speciesMinimum } from '../src/scene/tankMin';
+import { geometryOf, speciesMinimum, floorOf } from '../src/scene/tankMin';
 import { TURN_K, turnPct } from '../src/scene/turnclear';
 import type { TankSetup } from '../src/scene/types';
 // @ts-expect-error node only
 const { writeFileSync } = await import('node:fs');
 const IN = 25.4;
 const fishOf = (id: string, n: number) => Array.from({ length: n }, (_, i) => ({ id: i + 1, species: id, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0 }));
-const mk = (L: number, D: number, H: number, id: string, n: number, shape: 'rect' | 'round' = 'rect'): TankSetup => {
-  const s = bareSetup(); s.tank = { ...s.tank, shape, L: L * IN, D: D * IN, H: H * IN }; s.water.on = true; s.water.level = 0.9; s.water.salt = false; s.fish = fishOf(id, n); return s;
+const mk = (L: number, D: number, H: number, id: string, n: number, shape: 'rect' | 'round' | 'poly' = 'rect'): TankSetup => {
+  const s = bareSetup(); s.tank = { ...s.tank, shape, L: L * IN, D: D * IN, H: H * IN, ...(shape === 'poly' ? { sides: 6 } : {}) }; s.water.on = true; s.water.level = 0.9; s.water.salt = false; s.fish = fishOf(id, n); return s;
 };
 const pc = (x: number) => Number.isFinite(x) ? Math.round(x) + '' : '>999';
-function row(label: string, L: number, D: number, H: number, id: string, n: number, shape: 'rect' | 'round' = 'rect') {
+function row(label: string, L: number, D: number, H: number, id: string, n: number, shape: 'rect' | 'round' | 'poly' = 'rect') {
   const S = mk(L, D, H, id, n, shape), sp = getSpecies(id)!, g = geometryOf(S);
   LENGTH_BONUS.on = false; const off = stockingOf(S).spacePercent; LENGTH_BONUS.on = true; const on = stockingOf(S).spacePercent; LENGTH_BONUS.on = false;
   const gate = speciesMinimum(sp, g).pct, turn = turnPct(sp, g, TURN_K), gal = g.tankLitres ? g.tankLitres / 3.785 : 0;
-  const flags = [turn > 100 ? (turn > 111 ? 'AMBER: too narrow to turn' : 'amber (within slack)') : '', gate > 111 && on <= 100 ? 'CONTRADICTION: bonus reads fine, sourced minimum fails' : '', gate > 111 ? 'gate red' : ''].filter(Boolean).join('; ');
-  const wl = Math.min(g.widthMm, g.lengthMm) / Math.max(g.widthMm, g.lengthMm);
+  const flags = [turn > 100 ? (turn > 111 ? 'AMBER: too narrow to turn' : 'amber (within slack)') : '', gate > 111 ? 'sourced gate red' : ''].filter(Boolean).join('; ');
+  const wl = elongationOf(S.tank);
   return `| ${label} | ${(g.lengthMm / IN).toFixed(0)} x ${(g.widthMm / IN).toFixed(1)} x ${H} | ${wl.toFixed(2)} | ${n} ${sp.name} | ${pc(off)} | ${pc(on)} | ${on === off ? 0 : Math.round((on / off - 1) * 100)} % | ${pc(gate)} | ${pc(turn)} | ${flags} |`;
 }
-const HEAD = '| tank | L x W x H in | W/L | stock | density off % | density on % | change | sourced gate % | turn % (k 1.5) | flags |\n|---|---|---|---|---|---|---|---|---|---|';
+const HEAD = '| tank | L x W x H in | eps | stock | density off % | density on % | change | sourced gate % | turn % (k 1.5) | flags |\n|---|---|---|---|---|---|---|---|---|---|';
 const STOCK: [string, string, number][] = [['bottom dweller', 'bronzecory', 8], ['betta', 'betta', 1], ['tetra', 'neon', 12], ['zebra danio', 'danio', 12]];
 
 describe('lane LB geometry calibration', () => {
@@ -34,7 +34,8 @@ describe('lane LB geometry calibration', () => {
       for (const [cls, id, n] of STOCK) {
         md += `\n${cls}\n\n${HEAD}\n`;
         for (const [nm, r] of [['1:1', 1], ['2:1', .5], ['4:1', .25], ['8:1', .125]] as [string, number][]) { const Lx = Math.sqrt(area / r); md += row(nm, Lx, area / Lx, H, id, n) + '\n'; }
-        if (area === 1296) { const R = Math.sqrt(area / Math.PI) * 2; md += row('round', R, R, H, id, n, 'round') + '\n'; }
+        { const R = Math.sqrt(area / Math.PI) * 2; md += row('round', R, R, H, id, n, 'round') + String.fromCharCode(10);
+          let x = 30; for (let i = 0; i < 40; i++) x *= Math.sqrt(area / (floorOf(mk(x, x, H, id, n, 'poly').tank).areaCm2 / 6.4516)); md += row('hexagon', x, x, H, id, n, 'poly') + String.fromCharCode(10); }
       }
     }
     md += '\n#### Edge cases (tank sizes as sold; 90 % full)\n\n' + HEAD + '\n';
