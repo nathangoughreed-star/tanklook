@@ -2,28 +2,18 @@
 // millipede, roach, mantis and stick insect, built on the amphibian generator (art/herps.ts Herp3D: one side outline + half-widths for the
 // body, Limb3D joint chains for legs, claws, feelers and the scorpion's tail), so one description feeds both the side card (picking, the
 // species picker) and the 3D body (render/herp3d.ts). Unit = the card width = the species' `tl`; u 0 rear .. 1 nose; v down from the centre
-// line in widths; the animal stands on the ground line g = aspect / 2 - 0.015. herps.ts spreads ARTH_ART / ARTH3D / arthMeta in. Each
-// family below is data only; colours are the true colours of the reference photos listed in research/arthropods/arthropods.json.
-import { type Ctx, type Proj, type Pt, body, blob, rng } from './paint';
+// line in widths; the animal stands on the ground line g = aspect / 2 - 0.015. herps.ts spreads ARTH_ART / ARTH3D / arthMeta in. One file per
+// family in art/arth/; each is data only, in the true colours of the reference photos listed in research/arthropods/arthropods.json.
+import { type Ctx, type Proj, body, blob, rng } from './paint';
 import type { Herp3D, Limb3D, Mark3D } from './herps';
+import { ground, type ArthSpec } from './arth/util';
+import { SPEC as EMPEROR } from './arth/scorpion';
+import { SPEC as AFRICAN } from './arth/millipede';
+import { SPEC as HISSING } from './arth/roach';
+import { SPEC as ORCHID } from './arth/mantis';
+import { SPEC as INDIAN } from './arth/stick';
 
-export interface ArthSpec { aspect: number; h: Herp3D }
-const ground = (aspect: number) => aspect / 2 - 0.015;
-
-/** A plain capsule body with no limbs: the placeholder every family starts from until its real drawing replaces it. */
-function stub(aspect: number, col: string): ArthSpec {
-  const g = ground(aspect), top = g - 0.16, side: Pt[] = [[0.98, g - 0.08, 'c'], [0.9, top + 0.03], [0.6, top], [0.2, top + 0.01], [0.04, g - 0.08, 'c'], [0.2, g - 0.01], [0.6, g], [0.9, g - 0.01]];
-  return { aspect, h: { side, wid: [[0.04, 0.03], [0.5, 0.08], [0.96, 0.03]], belly: 2.4, tone: [[0, col], [0.5, col], [1, col]], marks: [], limbs: [], legCol: [col, col],
-    eye: { u: 0.9, th: 0.3, r: 0.012, iris: ['#2a2420', '#080606'], pupil: 'dark', bulge: 0.6 }, ground: g } };
-}
-
-export const ARTH: Record<string, ArthSpec> = {
-  emperorscorpion: stub(0.4, '#1d2a24'),
-  africanmillipede: stub(0.12, '#2a2420'),
-  hissingroach: stub(0.34, '#4a2c18'),
-  orchidmantis: stub(0.55, '#f2e8ea'),
-  indianstick: stub(0.3, '#7a6a48'),
-};
+export const ARTH: Record<string, ArthSpec> = { emperorscorpion: EMPEROR, africanmillipede: AFRICAN, hissingroach: HISSING, orchidmantis: ORCHID, indianstick: INDIAN };
 export const ARTH3D: Record<string, Herp3D> = Object.fromEntries(Object.entries(ARTH).map(([k, s]) => [k, s.h]));
 export const arthMeta = (art: string) => { const s = ARTH[art]; return s && { aspect: s.aspect, rest: ground(s.aspect) }; };
 
