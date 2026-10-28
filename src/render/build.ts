@@ -32,14 +32,25 @@ import { isSpider } from './spider3d';
 import { isSnake, settleSnake, snakeBody, snakeContacts, type LimbPath } from './snake3d';
 import { isTarantula } from './tarantula3d';
 import { sagShell, snailBody } from './snail3d';
-import { blendTexture, lecaTexture, meshTexture, cardMaterial, pictureTexture, fishBodyTexture, fishTexture, gradientTexture, personTexture, substrateMaskTexture, substrateTexture } from './textures';
+import type { BgScene } from '../art/bgscenes';
+import { type BgGradient, sceneTexture, blendTexture, lecaTexture, meshTexture, cardMaterial, pictureTexture, fishBodyTexture, fishTexture, gradientTexture, personTexture, substrateMaskTexture, substrateTexture } from './textures';
 
 /** Back-wall options; color null = no background (back glass only); light = use dark grid lines. */
-export const BACKGROUNDS: Record<Background, { label: string; color: number | null; gradient?: boolean; light?: boolean; frost?: boolean }> = {
+export const BACKGROUNDS: Record<Background, { label: string; color: number | null; gradient?: BgGradient; scene?: BgScene; light?: boolean; frost?: boolean }> = {
   black: { label: 'Black', color: 0x0b0c0e },
   blue: { label: 'Deep blue', color: 0x15395a },
-  gradient: { label: 'Blue gradient', color: 0xffffff, gradient: true },
+  lightblue: { label: 'Light blue', color: 0x5aa9d6, light: true },
+  gradient: { label: 'Blue gradient', color: 0xffffff, gradient: 'ocean' },
+  abyss: { label: 'Deep-sea fade (blue to black)', color: 0xffffff, gradient: 'abyss' },
+  sky: { label: 'Sky fade (white to light blue)', color: 0xffffff, gradient: 'sky', light: true },
   grey: { label: 'Charcoal grey', color: 0x3a3e44 },
+  white: { label: 'White', color: 0xf4f6f7, light: true },
+  green: { label: 'Dark green (planted)', color: 0x1f3d2b },
+  sand: { label: 'Sand (desert)', color: 0xd6c6a0, light: true },
+  reefscene: { label: 'Scene: coral reef', color: 0xffffff, scene: 'reefscene' },
+  riverscene: { label: 'Scene: river bed', color: 0xffffff, scene: 'riverscene' },
+  plantscene: { label: 'Scene: planted jungle', color: 0xffffff, scene: 'plantscene' },
+  rockscene: { label: 'Scene: rock wall', color: 0xffffff, scene: 'rockscene' },
   frosted: { label: 'Frosted white', color: 0xe6ecee, light: true, frost: true },
   custom: { label: 'Plain colour (pick)', color: 0x2f4a36 },
   none: { label: 'None (clear glass)', color: null, light: true },
@@ -56,8 +67,8 @@ function lines(pts: number[], color: number, opacity: number) {
  * the opaque scene behind, rendered to a mipmapped target and sampled at a roughness-dependent mip), and the rest is the
  * white of the film itself, lit by the tank light like the other backgrounds (lighting `frost`) (Nathan 2026-10-12)
  */
-function bgMaterial(bg: (typeof BACKGROUNDS)[Background]): THREE.Material {
-  if (!bg.frost) return basic(bg.color!, { map: bg.gradient ? gradientTexture() : null, side: THREE.DoubleSide });
+function bgMaterial(bg: (typeof BACKGROUNDS)[Background], aspect = 2): THREE.Material {
+  if (!bg.frost) return basic(bg.color!, { map: bg.scene ? sceneTexture(bg.scene, aspect) : bg.gradient ? gradientTexture(bg.gradient) : null, side: THREE.DoubleSide });
   const m = new THREE.MeshPhysicalMaterial({ color: bg.color!, transmission: FROST.transmission, roughness: FROST.roughness, ior: 1.5, thickness: 0, metalness: 0, side: THREE.DoubleSide });
   m.userData.frost = true;
   return m;
@@ -296,9 +307,9 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
   // the OUTER face (0.5 mm off it), full pane height: the substrate ends at the inner face, the glass between (Nathan 2026-10-12).
   // A picture runs clockwise seen from above, so it reads the right way round from inside the tank across a corner;
   // it sits nearer the glass than the plain sheet, which it overlaps where a round tank's arcs meet.
-  const pad = bg.color === null || bg.gradient || bg.frost ? '#0b0c0e' : '#' + bg.color.toString(16).padStart(6, '0');
+  const pad = bg.color === null || bg.gradient || bg.scene || bg.frost ? '#0b0c0e' : '#' + bg.color.toString(16).padStart(6, '0');
   const sheets: BgSheet[] = [
-    ...backgroundRuns(T, plain, R.bgArc, t + 0.5).map(run => ({ run, gap: 0.5, mat: () => bgMaterial(bg) })),
+    ...backgroundRuns(T, plain, R.bgArc, t + 0.5).map(run => ({ run, gap: 0.5, mat: (aspect: number) => bgMaterial(bg, aspect) })),
     ...pics.flatMap((b, i) => backgroundRuns(T, b.sides, R.bgArc, t + 0.3 - 0.05 * i).map(r => ({
       run: clockwise(T, r), gap: 0.3 - 0.05 * i, // where round arcs overlap, the first picture is in front
       mat: (aspect: number) => basic(0xffffff, { map: pictureTexture(b.img, b.data, b.fit, b.scale, aspect, pad), side: THREE.DoubleSide }),
@@ -1017,7 +1028,7 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   // terrestrial ground (not in a bowl): the skirt in height bands, each vertex shaded wet or dry by its height, cut at
   // the water line and its damp band; 'layered': a flat clay-ball drainage layer at the bottom (40 % of the shallowest
   // ground at the glass, 6-40 mm) and a thin dark mesh sheet on it, the soil above
-  const banded = terra && !bowl, sideCol: number[] = [], leca: number[][] = [], lecaCol: number[] = [], mesh: number[][] = [], meshCol: number[] = [];
+  const banded = terra && !bowl, sideMk: number[] = [], sideCol: number[] = [], leca: number[][] = [], lecaCol: number[] = [], mesh: number[][] = [], meshCol: number[] = [];
   let dh = 0;
   if (sub.type === 'layered' && banded) {
     let lo = Infinity;
@@ -1059,6 +1070,9 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
         const uv = [[s0, pts[0][1]], [s1, pts[1][1]], [s1, pts[2][1]], [s0, pts[3][1]]], ends = [p, q, q, p], tops = [gp[1], gq[1], gq[1], gp[1]];
         for (const i of [0, 1, 2, 0, 2, 3]) {
           side.push(pts[i], [uv[i][0] / tile, uv[i][1] / tile]);
+          // patch mask: at the rim it is the top surface's own, and going down the skirt it reads further inside the tank
+          // (a skirt along one pane has one depth, so the mask read at (x, depth) alone made full-height vertical bands)
+          const dn = tops[i] - pts[i][1], mk0 = ends[i]; sideMk.push((mk0[0] - e.n[0] * dn) / tile, (mk0[1] - e.n[1] * dn) / tile);
           // the skirt starts at the top surface's own colour at the rim (a flat darker shade left a visible line where they
           // meet) and darkens toward the floor
           const c = colAt(ends[i]), f = 1 - SKIRT_DARK * (1 - clamp(pts[i][1] / (tops[i] || 1), 0, 1));
@@ -1067,7 +1081,7 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
       }
     }
   }
-  const mk = (arr: number[][], shade: number, cols?: number[], nrm?: number[], wet?: number[], map?: THREE.Texture) => {
+  const mk = (arr: number[][], shade: number, cols?: number[], nrm?: number[], wet?: number[], map?: THREE.Texture, maskAt?: number[]) => {
     if (!arr.length) return;
     const g = new THREE.BufferGeometry(); if (cols?.length) g.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
     if (nrm) g.setAttribute('normal', new THREE.Float32BufferAttribute(nrm, 3)); // applyLighting keeps a normal it finds
@@ -1076,7 +1090,7 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
     const m = new THREE.MeshBasicMaterial({ map: map ?? (sub.type === 'custom' ? blendTexture(sub.custom, 'a') : substrateTexture(sub.type)), color: shade, vertexColors: !!cols?.length, side: THREE.DoubleSide });
     m.userData.sub = true;
     if (sub.type === 'custom' && sub.custom.grain2 !== 'none') {
-      g.setAttribute('aMk', new THREE.Float32BufferAttribute(arr.filter((_, i) => i % 2 === 0).flatMap(v => [v[0] / tile, -v[2] / tile]), 2));
+      g.setAttribute('aMk', new THREE.Float32BufferAttribute(maskAt ?? arr.filter((_, i) => i % 2 === 0).flatMap(v => [v[0] / tile, -v[2] / tile]), 2));
       blendGrains(m, sub.custom);
     }
     if (wet && terra) wetSheen(m, g, wet);
@@ -1084,7 +1098,7 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   };
   // coarse grounds in 3D (render/grains.ts): the painted surface darkened to the shadowed gaps between the grains
   const gd = gl && !(sub.type === 'custom' && sub.custom.grain2 !== 'none'); // a blend darkens only its stones' patches (blendGrains)
-  mk(top, gd ? 0x6e6e6e : 0xffffff, topCol, topNrm, topWet); mk(side, gd ? 0x6e6e6e : 0xffffff, sideCol); // the skirt a touch darker so the layer reads through the glass
+  mk(top, gd ? 0x6e6e6e : 0xffffff, topCol, topNrm, topWet); mk(side, gd ? 0x6e6e6e : 0xffffff, sideCol, undefined, undefined, undefined, sideMk.length ? sideMk : undefined); // the skirt a touch darker so the layer reads through the glass
   mk(leca, 0xb4b4b4, lecaCol, undefined, undefined, lecaTexture()); mk(mesh, 0x3a3d38, meshCol, undefined, undefined, meshTexture());
   // the bottom of the ground, seen through the bottom pane from under a tank with no stand (Nathan 2026-10-20: a plain
   // sand-coloured sheet showed there); a layered ground's bottom is its clay balls

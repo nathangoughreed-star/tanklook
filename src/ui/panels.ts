@@ -302,7 +302,6 @@ export function attachPanels(store: Store, viewer: Viewer) {
   void import('./suggest').then(m => { suggestPanel = m.attachSuggest(store, viewer, status); }); // lane C8: Suggest a setup
   void import('./briefBar').then(m => { briefBarApi = m.attachBriefBar(store, { suggest: () => suggestPanel?.open() }); }); // lane U3: the setup brief bar, shown in every entry point
   $('suggestBtn').onclick = () => { if (startDlg.open) startDlg.close(); suggestPanel?.open(); };
-  $('welcomeBtn').onclick = () => { welcomeFirst = false; if (startDlg.open) startDlg.close(); welcome.show(); };
   $('startWelcome').onclick = () => { startDlg.close(); welcome.show(); };
   const showStart = () => { welcomeFirst = true; welcome.show(); };
   void import('./stockPlan').then(m => m.attachStockPlan(store, viewer, status, $('startAnimal'))); // lane P5: the stocking screen (path 1) and the fork card; loaded after start-up (it pulls in the tank-fit engine, whose imports must not run before starter.ts's)

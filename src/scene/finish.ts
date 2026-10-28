@@ -134,13 +134,30 @@ function trimHardscape(S: TankSetup, keep: number, plantArea: number): TankSetup
   return { ...S, items: S.items.filter(i => !drop.has(i.id)).map(i => (i.kind === 'stone' || i.kind === 'wood') && i.size > maxLen ? { ...i, size: Math.max(LIBRARY[i.variant]?.min ?? 15, Math.round(maxLen)) } : i) };
 }
 
+/** The starter finish's planting (lane U5, Nathan 2026-10-28): two hardy low-light plants, a Java fern and an anubias, the pair beginners buy for a betta tank
+ *  (about $16 at our prices, against four bunches of hornwort), set by the first stones. Any other green (moss, crypts) is dropped; floating plants and corals are left alone. */
+function starterPlants(S: TankSetup): TankSetup {
+  if (!S.water.on || S.water.salt) return S;
+  const live = S.items.filter(i => i.kind === 'plant' && !['frogbit', 'salvinia', 'lettuce', 'redroot'].includes(i.variant));
+  if (!live.length) return S;
+  const stones = S.items.filter(i => i.kind === 'stone' || i.kind === 'wood'), VARS = ['anubias', 'fern'];
+  const keep = new Map(live.slice(0, 2).map((it, k) => {
+    const v = VARS[k], to = LIBRARY[v], at = stones[k % Math.max(1, stones.length)];
+    const { spread: _s, stems: _t, dens: _d, ...rest } = it;
+    return [it.id, { ...rest, variant: v, size: Math.min(to.max, Math.max(to.min, to.size)), ...(at ? { x: at.x, depth: Math.min(at.depth + 30, S.tank.D / 2) } : {}) }] as const;
+  }));
+  return { ...S, items: S.items.flatMap(i => (keep.has(i.id) ? [keep.get(i.id)!] : live.includes(i) ? [] : [i])) };
+}
+
 /** The finished build at one tier: the style scaped into the build's tank, priced and timed by the demand model with the build's own deals.
  *  A tier with no hardscape (a planted style at a light density) draws more of it until there is a piece to anchor the plants, up to the densest. */
 export function finishBuild(b: Build, spec: TierSpec, style: Exclude<LayoutId, 'none'>, now = Date.now()): Build {
   const S1 = upgraded(b, spec), land = !S1.water.on, fit = fitFor(S1), mode = land ? 'live' : spec.mode;
   let T = scaped(b, S1, mode, style, spec.dens, fit);
   for (let h = spec.dens.hard + 1; h <= 3 && !hasHardscape(T); h++) T = scaped(b, S1, mode, style, { ...spec.dens, hard: h }, fit);
-  T = settle(trimHardscape(T, spec.keep, spec.plantArea), finSensitive(b.animals));
+  T = trimHardscape(T, spec.keep, spec.plantArea);
+  if (spec.id === 'starter') T = starterPlants(T);
+  T = settle(T, finSensitive(b.animals));
   T = { ...T, render: { ...T.render, bg: T.water.on && T.water.salt ? 'blue' : T.water.on ? 'black' : 'gradient' } }; // a background behind every finished tank (Nathan 2026-10-27)
   const D = priceScape(T, b, now);
   const setupUsd = Math.round(D.totals.setupUsd), add = setupUsd - b.setupUsd;

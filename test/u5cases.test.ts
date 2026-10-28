@@ -11,6 +11,7 @@ const P = defaultProfile(), NOW = Date.parse('2026-10-27'), cap = (value: number
 const betta = [{ species: 'betta', n: 1 }];
 const CASES: { id: string; title: string; w: Wants; pick: (p: any) => boolean }[] = [
   { id: 'finished', title: 'Finished betta (the default), no ceiling: display baseline included', w: { constraints: {}, animals: betta }, pick: p => p.build.finish?.tier === 'standard' },
+  { id: 'cheapest', title: 'Cheapest honest betta: the Top Fin cube kit, starter finish (Java fern and anubias)', w: { constraints: { startupUsd: cap(175) }, animals: betta }, pick: p => p.strategyLabel === 'Economy' },
   { id: 'enhanced', title: 'High budget, climb on: the lush finish and its enhancements', w: { constraints: { startupUsd: cap(2500) }, animals: betta, climb: true }, pick: p => p.layers.some(l => l.layer === 'enhance') },
 ];
 describe.skipIf(!process.env.U5_CASES)('u5 cases', () => {

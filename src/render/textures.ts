@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { LECA, drawBlendTile, drawFishCard, drawLook, drawPerson, drawSubstrate, substrateMask, type PresetSubstrate } from '../art/placeholder';
 import { drawPairedFin, type PairedFin } from '../art/fishgen';
+import { drawScene, type BgScene } from '../art/bgscenes';
 import { FIN_A, FIN_A2C, style } from '../art/paint';
 import type { Species } from '../data/species';
 import type { BgFit, EdgeMode, SubstrateBlend } from '../scene/types';
@@ -88,13 +89,30 @@ export const personTexture = () => cached('person', () => {
   drawPerson(c.getContext('2d')!, c.width, c.height);
   return finish(c);
 });
-export const gradientTexture = () => cached('bg-gradient', () => {
+/** Top-to-bottom colour stops of the gradient backgrounds (render/build.ts BACKGROUNDS.gradient). */
+export const BG_GRADIENTS = {
+  ocean: [[0, '#7fc0e3'], [0.55, '#2f7fb3'], [1, '#123a5e']],
+  abyss: [[0, '#1d5a8c'], [0.5, '#0d2c4a'], [1, '#03080f']],
+  sky: [[0, '#f2f8fc'], [0.5, '#bfe0f2'], [1, '#86c3e6']],
+} as const satisfies Record<string, readonly (readonly [number, string])[]>;
+export type BgGradient = keyof typeof BG_GRADIENTS;
+export const gradientTexture = (kind: BgGradient = 'ocean') => cached(kind === 'ocean' ? 'bg-gradient' : 'bg-gradient-' + kind, () => {
   const c = document.createElement('canvas'); c.width = 4; c.height = 256;
   const ctx = c.getContext('2d')!, g = ctx.createLinearGradient(0, 0, 0, 256);
-  g.addColorStop(0, '#7fc0e3'); g.addColorStop(0.55, '#2f7fb3'); g.addColorStop(1, '#123a5e');
+  for (const [at, col] of BG_GRADIENTS[kind]) g.addColorStop(at, col);
   ctx.fillStyle = g; ctx.fillRect(0, 0, 4, 256);
   return finish(c);
 });
+
+/** A printed-scene background, drawn at the sheet's aspect (rounded, so a resize does not repaint every frame). */
+export function sceneTexture(kind: BgScene, aspect: number) {
+  const a = Math.min(5, Math.max(1, Math.round(aspect * 2) / 2)), h = 512;
+  return cached(`bg-scene-${kind}-${a}`, () => {
+    const c = document.createElement('canvas'); c.height = h; c.width = Math.round(h * a);
+    drawScene(c.getContext('2d')!, kind, c.width, h);
+    return finish(c);
+  });
+}
 
 /** Card materials are shared across rebuilds (marked cached so scene disposal leaves them alone). */
 const matCache = new Map<string, THREE.MeshBasicMaterial>();

@@ -11,7 +11,7 @@ export type Pairing = 'established' | 'unconfirmed' | 'unknown';
 
 export type Units = 'in' | 'cm';
 export type EdgeMode = 'cutout' | 'a2c';
-export type Background = 'black' | 'blue' | 'gradient' | 'grey' | 'frosted' | 'custom' | 'none';
+export type Background = 'black' | 'blue' | 'lightblue' | 'gradient' | 'abyss' | 'sky' | 'grey' | 'white' | 'green' | 'sand' | 'reefscene' | 'riverscene' | 'plantscene' | 'rockscene' | 'frosted' | 'custom' | 'none';
 /** A side of the tank the background can cover. */
 export type BgSide = 'back' | 'left' | 'right' | 'front';
 /** How an uploaded background picture fills the glass it covers. */

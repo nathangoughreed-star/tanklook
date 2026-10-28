@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { defaultProfile } from '../src/demand/types';
 import { suggestSetups, type Proposal, type Wants } from '../src/demand/suggest';
+import { demandOf } from '../src/demand/engine';
 import { buildPlanOf, buildPlanText, habitatOf } from '../src/demand/buildplan';
 import { buildPlanHtml } from '../src/ui/buildPlanSheet';
 
@@ -27,6 +28,17 @@ describe('Build plan', () => {
     expect(b.maintenance.join(' ')).toMatch(/25 %/);
     expect(buildPlanText(b)).toContain('Buy last');
     expect(buildPlanHtml(b)).toContain('When to add the animals');
+  });
+
+  it('a test kit is recommended in the cycling section whenever the price leaves it out, and not listed as bought', () => {
+    for (const p of [betta(), reef()]) {
+      const b = buildPlanOf(p!, P), priced = demandOf(p!.build.setup, P).items.some(c => c.key === 'testkit');
+      expect(b.cycling).toBeDefined();
+      expect(/test kit[^.]*recommended/i.test(b.cycling!.text), b.title).toBe(!priced);
+      expect(b.buy.flatMap(g => g.rows).some(r => /test kit/i.test(r.label)), b.title).toBe(priced);
+    }
+    expect(demandOf(betta()!.build.setup, P).items.some(c => c.key === 'testkit')).toBe(false); // a simple betta tank does not pay for one
+    expect(demandOf(reef()!.build.setup, P).items.some(c => c.key === 'testkit')).toBe(true);
   });
 
   it('what you own is listed as you have at $0 and moves the total down', () => {
