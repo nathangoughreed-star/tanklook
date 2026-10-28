@@ -142,7 +142,7 @@ TARANTULAS.talbopilosus = variant({
 }, ['#16100c', '#16100c']);
 // Pinktoe (Avicularia avicularia; photo: slim, long thin black legs, a glossy blue-black carapace, a rounded black-velvet abdomen, the tarsi (toes) pink)
 TARANTULAS.aavicularia = variant({
-  carapaceCol: '#1e2024', abdomenCol: '#201c1a', palpCol: '#1e1c1c', hairCol: '#4a4a52', legHair: '#2a2628', chelCol: '#16100e', ...build(0.84, 0.92, 0.86, 1.22, 0.8, 1.18),
+  carapaceCol: '#1e2024', abdomenCol: '#201c1a', palpCol: '#1e1c1c', hairCol: '#4a4a52', legHair: '#2a2628', chelCol: '#16100e', ...build(0.84, 0.92, 0.86, 1.2, 0.8, 1.18),
   carapaceMarks: [rim('#5a5a66', 0.4), { k: 'band', x: [0.1, 0.45], s: [0.0, 0.25], c: '#30323a', o: 0.4, soft: 0.05 }, fovea('#08080a')],
   abdomenMarks: [{ k: 'mottle', n: 120, r: [0.02, 0.05], c: '#38302c', o: 0.4, seed: 10 }, patchMark('#2a2220')],
   legBands: [6], patch: { x: -0.27, hw: 0.12, col: '#5a3028' }, padCol: '#e08c9c', legHairLen: [0.012, 0.028],
