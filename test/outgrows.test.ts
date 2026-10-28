@@ -38,13 +38,13 @@ describe('growth curves', () => {
   });
 });
 
-describe('the leopard gecko in a 10 gal', () => {
-  const ten = gal('10 gal'), hatch = stage('leopardgecko', 'hatchling');
+describe('the leopard gecko in a 24 x 12 x 12 terrarium', () => {
+  const ten = getTankModel('t24x12x12')!, hatch = stage('leopardgecko', 'hatchling');
   it('a hatchling fits a 10 gal today; the grown gecko does not', () => {
     expect(fitIn([{ species: 'leopardgecko', n: 1, tl: hatch }], ten)!.fails).toEqual([]);
     expect(fitIn([{ species: 'leopardgecko', n: 1 }], ten)!.fails).toContain('floor');
   });
-  it('the planner lists sizes for a land animal, reads the 10 gal "fine for now" with a time, and still recommends the grown size', () => {
+  it('the planner lists sizes for a land animal, reads the small terrarium "fine for now" with a time, and still recommends the grown size', () => {
     const picks: Pk[] = [{ id: 'leopardgecko', n: 1, tl: hatch }];
     const plan = planFor(picks, ten.id);
     expect(plan.options.length).toBeGreaterThan(5);
@@ -53,7 +53,7 @@ describe('the leopard gecko in a 10 gal', () => {
     expect(l.months).toBeGreaterThan(1);
     expect(l.months).toBeLessThan(3);
     const line = laterLine(l, 'in');
-    expect(line).toMatch(/^Fine now\. In about 2 months, at about 4\.\d in, it needs 2\.48 sq ft \(0\.23 m²\) of floor: a 20 gal long/);
+    expect(line).toMatch(/^Fine now\. In about 2 months, at about 4\.\d in, it needs 2\.48 sq ft \(0\.23 m²\) of floor: Terrarium 30 x 12 in/);
     // the recommended size is the grown gecko's: 4.5 sq ft
     expect(plan.need!.fails).toEqual([]);
     expect(fitIn([{ species: 'leopardgecko', n: 1 }], plan.need!.tank)!.fails).toEqual([]);
@@ -63,7 +63,7 @@ describe('the leopard gecko in a 10 gal', () => {
     const plan = planFor([{ id: 'leopardgecko', n: 1 }], ten.id);
     expect(plan.fit!.fails).toContain('floor');
     expect(plan.later).toBeUndefined();
-    expect(plan.problem).toMatch(/floor/i);
+    expect(plan.problem).toMatch(/too small/i); // main's dryFit lists the species minimum first, so the generic wording
   });
 });
 
