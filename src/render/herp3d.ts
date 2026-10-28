@@ -439,7 +439,12 @@ export function herpBody(art: string, w: number, surface?: Surface | 'perch', li
   h.limbs.forEach((l, i) => {
     const c = l.c, own = c && ((ny: number) => new THREE.Color(c[1]).lerp(new THREE.Color(c[0]), smooth(-0.5, 0.3, ny)));
     const g = K(':limb' + i, () => limbGeometry(l, h.ground, own || lcol));
-    for (const side of [1, -1]) { const m = new THREE.Mesh(g, lm); m.scale.z = side; grp.add(m); }
+    for (const side of [1, -1]) {
+      const m = new THREE.Mesh(g, lm); m.scale.z = side;
+      // `far`: the far side's copy is scaled about the limb's root (a hermit crab's small right claw against the big left one)
+      if (side < 0 && l.far && l.far !== 1) { const k = l.far, r = l.js[0]; m.scale.set(k, k, -k); m.position.set((r[0] - 0.5) * (1 - k), -r[1] * (1 - k), 0); }
+      grp.add(m);
+    }
   });
   // eyes
   const e = h.eye, lid = h.tone[0][1];

@@ -126,7 +126,7 @@ function legGeometry(cx: Cx, l: TarLeg, i: number, side: number, seed: number) {
   const claws = tint(merge(extra), () => col('#1a110d'));
   // the hair: the leg's own colour at the root (nearest segment), long and dense
   const hair = fuzz(leg, {
-    count: S.hair.leg, len: [0.014, 0.034], rad: 0.0052, seed, lean: 0.62, frost: 0,
+    count: S.hair.leg, len: S.legHairLen ?? [0.014, 0.034], rad: 0.0052, seed, lean: 0.62, frost: 0,
     flow: () => F.clone().sub(pts[1]).normalize(),
     colour: (p, _uv, c) => {
       let best = 0, bd = 9; for (let k = 0; k < 7; k++) { const m = pts[k].clone().lerp(pts[k + 1], 0.5), d = m.distanceTo(p); if (d < bd) { bd = d; best = k; } }
@@ -137,7 +137,7 @@ function legGeometry(cx: Cx, l: TarLeg, i: number, side: number, seed: number) {
   // the scopula: a dense pad of short pale hair under the tarsus and the end of the metatarsus
   const pad = fuzz(merge([parts[6], parts[5]]), {
     count: 650, len: [0.007, 0.015], rad: 0.0035, seed: seed + 1, lean: 0.3, frost: 0.05,
-    colour: (_p, _u, c) => c.copy(col('#b69a86')),
+    colour: (_p, _u, c) => c.copy(col(S.padCol ?? '#b69a86')),
     keep: (p, n) => (n.dot(cx.surf.n(p)) < -0.1 && p.distanceTo(pts[7]) < 0.3 ? 1 : 0),
   });
   return { leg, claws, hair, pad, pts };

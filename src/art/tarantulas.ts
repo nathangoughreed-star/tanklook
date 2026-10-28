@@ -40,6 +40,8 @@ export interface TarSpec {
   patch: { x: number; hw: number; col: string };        // the urticating patch on the abdomen's back
   hooks: boolean;                       // the male's tibial hooks on the front pair
   hair: { body: number; leg: number };  // strands per body part / per leg
+  legHairLen?: [number, number];        // leg hair length range (default 0.014..0.034; the curly hair's long coat)
+  padCol?: string;                      // the scopula pad colour under the tarsi (default a pale tan; the pinktoe's pink toes)
 }
 
 /** The ground line v (card frame, + down), = the resting offset. */
@@ -109,10 +111,42 @@ export const TARANTULAS: Record<string, TarSpec> = {
 
 /** The other pet tarantulas (lane arthropods 2026-10-28): the Chaco golden knee female's build with each species' own colours; `body` = length in mm is the species' tl. */
 const variant = (c: Partial<TarSpec>, legCol: [string, string], extra: Partial<TarSpec> = {}): TarSpec => ({ ...TARANTULAS.gpulchripes_f, legCol, ...c, ...extra });
-TARANTULAS.bhamorii = variant({ carapaceCol: '#2a1c14', abdomenCol: '#352620', palpCol: '#2c1e16', hairCol: '#6a4630', legHair: '#5a4030', chelCol: '#1d1410' }, ['#24180f', '#c84a22']);
-TARANTULAS.grosea = variant({ carapaceCol: '#5c4a3e', abdomenCol: '#6a5448', palpCol: '#584638', hairCol: '#8a6a5a', legHair: '#806656', chelCol: '#3a2a22' }, ['#5a4638', '#8a6c5a']);
-TARANTULAS.talbopilosus = variant({ carapaceCol: '#241c16', abdomenCol: '#2a201a', palpCol: '#241c16', hairCol: '#6a5230', legHair: '#7a6038', chelCol: '#1c1410' }, ['#241c16', '#8a7448']);
-TARANTULAS.aavicularia = variant({ carapaceCol: '#3a3028', abdomenCol: '#3e342c', palpCol: '#3a2e26', hairCol: '#6a5848', legHair: '#6a5a4a', chelCol: '#241a14' }, ['#3a3028', '#c4666e']);
+/** Scale a build: carapace / abdomen width and height, leg length, leg thickness and foot spread (the arboreal pinktoe is slim and long-legged, the curly hair stocky). */
+const build = (cw: number, ch: number, aw: number, ll: number, lr: number, lf: number): Partial<TarSpec> => ({
+  carapace: CARAPACE.map(([x, hw, t, b, yc]) => [x, hw * cw, t * ch, b * ch, yc] as Stn),
+  abdomen: ABDOMEN.map(([x, hw, t, b, yc]) => [x, hw * aw, t * aw, b * aw, yc - (1 - aw) * 0.04] as Stn),
+  legs: LEGS_F.map(l => ({ ...l, len: l.len.map(v => v * ll) as TarLeg['len'], r: l.r.map(v => v * lr) as TarLeg['r'], foot: [l.foot[0] * lf, l.foot[1] * lf] })) as TarSpec['legs'],
+});
+const rim = (c: string, o = 0.5): SMark => ({ k: 'band', x: [0.06, 0.46], s: [0.38, 0.5], c, o, soft: 0.03 });
+const fovea = (c: string): SMark => ({ k: 'ell', x: 0.2, s: 0, rx: 0.012, rs: 0.075, c, o: 0.9, soft: 0.006 });
+// Mexican red knee (Brachypelma hamorii; photo: black-brown body, a bright rust-orange patella band on every leg, orange-red hair over the abdomen, orange hairs along the carapace edge)
+TARANTULAS.bhamorii = variant({
+  carapaceCol: '#1f1612', abdomenCol: '#4a2214', palpCol: '#241a14', hairCol: '#9a5a2e', legHair: '#4a3626', chelCol: '#1a120e', ...build(1, 1, 1, 1.03, 1, 1),
+  carapaceMarks: [rim('#c0702e', 0.6), { k: 'band', x: [0.1, 0.45], s: [0.0, 0.25], c: '#3a261c', o: 0.4, soft: 0.05 }, fovea('#0c0806')],
+  abdomenMarks: [{ k: 'mottle', n: 220, r: [0.02, 0.06], c: '#963c14', o: 0.4, seed: 6 }, { k: 'mottle', n: 90, r: [0.02, 0.05], c: '#3a2218', o: 0.4, seed: 7 }, patchMark('#5a2a18')],
+  legBands: [3], patch: { x: -0.27, hw: 0.14, col: '#8a3a1e' },
+}, ['#1b130e', '#cf6a28']);
+// Chilean rose (Grammostola rosea; photo: dark brown, the legs and carapace in long pink-copper hair, no bands, uniform)
+TARANTULAS.grosea = variant({
+  carapaceCol: '#3e2e28', abdomenCol: '#4a3834', palpCol: '#3e2c28', hairCol: '#8a6068', legHair: '#8a6068', chelCol: '#2e2018', ...build(1, 1, 1.02, 1.04, 1, 1),
+  carapaceMarks: [rim('#c08088', 0.55), { k: 'band', x: [0.1, 0.45], s: [0.0, 0.25], c: '#7a525a', o: 0.35, soft: 0.05 }, fovea('#1a0f0c')],
+  abdomenMarks: [{ k: 'mottle', n: 200, r: [0.02, 0.06], c: '#8a5c62', o: 0.4, seed: 8 }, patchMark('#4a3030')],
+  legBands: [], patch: { x: -0.27, hw: 0.14, col: '#7a3a30' }, legHairLen: [0.02, 0.046],
+}, ['#3a2c28', '#3a2c28']);
+// Curly hair (Tliltocatl albopilosus; photo: black stocky body and legs under long, wavy, pale gold-bronze hairs; the carapace's hair is cream)
+TARANTULAS.talbopilosus = variant({
+  carapaceCol: '#1c1612', abdomenCol: '#241c16', palpCol: '#1e1814', hairCol: '#6a5a3c', legHair: '#5a4c36', chelCol: '#16100c', ...build(1.07, 1.06, 1.04, 0.93, 1.12, 0.95),
+  carapaceMarks: [rim('#7a6a40', 0.6), { k: 'band', x: [0.1, 0.45], s: [0.0, 0.25], c: '#7a6238', o: 0.4, soft: 0.05 }, fovea('#0c0806')],
+  abdomenMarks: [{ k: 'mottle', n: 260, r: [0.02, 0.06], c: '#5e4e2e', o: 0.4, seed: 9 }, patchMark('#3a2c20')],
+  legBands: [], patch: { x: -0.27, hw: 0.14, col: '#5a3a24' }, legHairLen: [0.034, 0.075], hair: { body: 34000, leg: 9500 },
+}, ['#16100c', '#16100c']);
+// Pinktoe (Avicularia avicularia; photo: slim, long thin black legs, a glossy blue-black carapace, a rounded black-velvet abdomen, the tarsi (toes) pink)
+TARANTULAS.aavicularia = variant({
+  carapaceCol: '#1e2024', abdomenCol: '#201c1a', palpCol: '#1e1c1c', hairCol: '#4a4a52', legHair: '#2a2628', chelCol: '#16100e', ...build(0.84, 0.92, 0.86, 1.22, 0.8, 1.18),
+  carapaceMarks: [rim('#5a5a66', 0.4), { k: 'band', x: [0.1, 0.45], s: [0.0, 0.25], c: '#30323a', o: 0.4, soft: 0.05 }, fovea('#08080a')],
+  abdomenMarks: [{ k: 'mottle', n: 120, r: [0.02, 0.05], c: '#38302c', o: 0.4, seed: 10 }, patchMark('#2a2220')],
+  legBands: [6], patch: { x: -0.27, hw: 0.12, col: '#5a3028' }, padCol: '#e08c9c', legHairLen: [0.012, 0.028],
+}, ['#1c1a1c', '#e08c9c']);
 /** The `bend` values Shuffle stores for each pose (render/tarantula3d.ts tarMode reads them back): walking, resting tucked, the threat pose. */
 export const TAR_BEND = { walk: 0, tuck: 0.5, threat: 1 } as const;
 /** A pose for a tarantula drawn from `u` (0..1): mostly walking, a quarter resting, a tenth in the threat pose; `calm` = no threat or rest (on the glass). */
