@@ -197,7 +197,7 @@ describe('tank minimum warnings (binary, AqAdvisor style)', () => {
   it('gives a yellow bar when a species is above its minimum but below the recommended size (lane MM: danio red 20 in derived, green 35.5 in Seriously Fish)', () => {
     const S = one('danio', 650, 300, 330), st = tileState(S, stockingOf(S));
     expect(st.min.level).toBe('near'); // Nathan 2026-10-22: the yellow bar says why, in a yellow line
-    expect(st.mins).toEqual([{ level: 'near', text: '1 Zebra danio: below the recommended size: Seriously Fish recommends 90 cm long, this one is 65 cm long' }]);
+    expect(st.mins).toEqual([{ level: 'near', text: '1 Zebra danio: below the recommended size: Seriously Fish recommends 90 cm long, this one is 65 cm long', rec: true }]);
     expect(st.topMin[0].note).toBe('at least 50 cm x 26 cm (est. from gallons); Recommended 90 cm x 30 cm');
   });
   it('red and amber never name the same species twice', () => {

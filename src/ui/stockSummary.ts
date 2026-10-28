@@ -22,7 +22,8 @@ import { filterState } from '../scene/tech';
 import type { TankSetup, Units } from '../scene/types';
 import { notesOf } from './stockPlanLogic';
 
-export interface MinWarn { level: 'over' | 'near'; text: string }
+/** `rec`: the "below recommended size" line, said under the bar only; the category summary (and so the suggester's welfare gate) leaves it out. */
+export interface MinWarn { level: 'over' | 'near'; text: string; rec?: true }
 export type CatId = 'minimums' | 'social' | 'environment' | 'behaviour' | 'fullness';
 export type CatLevel = 'ok' | 'caution' | 'problem' | 'unknown';
 export interface CatItem { level: 'caution' | 'problem' | 'unknown'; text: string; /** a cross-link: the item is counted here, also relevant there */ also?: string; /** a load percent: the line is tinted along the gauge's green-amber-red scale */ pct?: number }
@@ -80,7 +81,7 @@ function airChecks(land: Species[], add: (c: CatId, level: CatItem['level'], tex
 /**
  * @param mins the tank-minimum lines (ui/fullnessTile.ts minWarnings), passed in so this file does not import the tile.
  */
-export function stockSummary(S: TankSetup, r: Stocking, mins: { level: 'over' | 'near'; text: string }[], units: Units = 'cm'): StockSummary {
+export function stockSummary(S: TankSetup, r: Stocking, mins: MinWarn[], units: Units = 'cm'): StockSummary {
   const us = units === 'in';
   const by: Record<CatId, CatItem[]> = { minimums: [], social: [], environment: [], behaviour: [], fullness: [] };
   const add = (c: CatId, level: CatItem['level'], text: string, also?: string, pct?: number) => by[c].push({ level, text, ...(also ? { also } : {}), ...(pct !== undefined ? { pct } : {}) });
@@ -91,7 +92,7 @@ export function stockSummary(S: TankSetup, r: Stocking, mins: { level: 'over' | 
   const none = (s: Species, check: string) => { if (!noData.has(s.name)) noData.set(s.name, new Set()); noData.get(s.name)!.add(check); };
 
   // (a) tank minimums: the species' own red line; a species with none on record simply has no check
-  for (const w of mins) add('minimums', w.level === 'over' ? 'problem' : 'caution', w.text);
+  for (const w of mins) if (!w.rec) add('minimums', w.level === 'over' ? 'problem' : 'caution', w.text);
   for (const s of sp) if (!groupMinimum(s)) none(s, 'tank minimum');
 
   // (b) social: group band, sex ratio, pairs
@@ -183,8 +184,8 @@ export function minWarnings(m: TankMinimum, units: Units): MinWarn[] {
   const f = fmtOf(units), name = (x: MinRow) => plural(x.n, x.name), out: MinWarn[] = [];
   for (const x of [...m.rows].sort((a, b) => b.pct - a.pct)) if (x.pct > MIN_SLACK_PCT) out.push({ level: 'over', text: `${name(x)}: ${reasonIn(x, f)}` });
   for (const x of [...m.rows].sort((a, b) => b.comfortPct - a.comfortPct)) if (x.pct <= MIN_SLACK_PCT) {
-    const near = [...(x.comfortPct > 100 ? [recommendedOf(x.comfort, f)] : []), ...notesIn(x, f)];
-    if (near.length) out.push({ level: 'near', text: `${name(x)}: ${near.join('; ')}` });
+    const rec = x.comfortPct > 100, near = [...(rec ? [recommendedOf(x.comfort, f)] : []), ...notesIn(x, f)];
+    if (near.length) out.push({ level: 'near', text: `${name(x)}: ${near.join('; ')}`, ...(rec && !notesIn(x, f).length ? { rec: true as const } : {}) });
   }
   return out;
 }
