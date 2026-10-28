@@ -778,14 +778,14 @@
   "gear:start-conditioner": {
    "lo": 4.99,
    "mode": 4.99,
-   "hi": 16,
+   "hi": 10,
    "unit": "first bottle: Top Fin Aquarium Water Conditioner 4 fl oz $4.99 (240 gal, PetSmart item 5291857, read 2026-10-28); All-in-One $8.99; Seachem Prime 250 mL $17.39 (Stateline Tack) for a big tank; lane U5",
    "url": "https://www.petsmart.com/fish/fish-shops/top-fin-aquarium-water-conditioner-5291857.html"
   },
   "gear:siphon": {
    "lo": 5.75,
    "mode": 6.5,
-   "hi": 20,
+   "hi": 12,
    "unit": "Aqueon mini 5 in siphon $5.75-7.61 across shops (read 2026-10-28; fishtanksdirect, petlife); 10 in $15.99-19.79; lane U5",
    "url": "https://fishtanksdirect.com/aqueon-aquarium-siphon-vacuum-gravel-cleaner-mini-5"
   },
@@ -1805,7 +1805,7 @@
   "gear:bucket": {
    "lo": 4,
    "mode": 5,
-   "hi": 10,
+   "hi": 8,
    "unit": "a bucket kept for the aquarium only: allowance (Nathan lead 2026-10-28), judgement; lane U5",
    "url": "",
    "est": true

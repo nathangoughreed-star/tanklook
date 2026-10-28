@@ -38,3 +38,10 @@ NOT reached: bare betta from nothing is still about $200, not $105-120. (1) The 
 - **Price rows from the sweep:** betta $3.99 (PetSmart veiltail, in store), dechlorinator $4.99 (Top Fin 4 oz, item 5291857), siphon $5.75-7.61 (Aqueon mini), heaters by class (<=25 W median $9.99: Aquaneat / Datoo / Orlushy / Pulaco; 50 W $13.97) from the Amazon / Chewy / Petco / Walmart catalogue rows. Bucket has no source (est $5). Not found: a Walmart bucket price.
 - **Kit stand credit fixed.** ownedAssess / costLines scaled owned and stand credits against the parts total instead of the kit-priced total (the stand credit on a kit build was about 40 % short). Owning a part of a kit now falls back to the parts build (a kit price cannot be split).
 - **Result.** Cheapest betta card (Top Fin Cube kit, starter finish, no stand) is $160 at default prices; the Aqua Culture 5 gal kit $166-193. Gap to Nathan's $115-135: plants (the starter finish draws hornwort + vallisneria ~$22-35 where he priced java fern + anubias $13.98), kit shipping $5.99, price-level factor ~1.07, no bucket/hide pricing.
+
+## Round 4 (2026-10-28): cheapest betta $160 -> $150
+- Starter finish planting is now a Java fern and an anubias (`starterPlants`, finish.ts), set by the first stones; hornwort (4 bunches, $24) was what the light-fit swap left. Plants $24 -> about $16.
+- Tail of three supply rows tightened (the card prices the mean of lo / mode / hi, so a $16-20 top end on a $5-6 item inflated it): dechlorinator hi 16 -> 10, siphon hi 20 -> 12, bucket hi 10 -> 8. Supplies $66 -> $49.
+- Locked price oracles re-blessed (demand GOLD, tech LOCK, gearFilters LOCK): setup only, upkeep and minutes unchanged.
+- Kit shipping $5.99 kept. PetSmart pickup is reportedly free with no minimum, and free shipping needs a Treats Rewards login at $49 (promo terms); neither is modelled.
+- "Sale through Nov 1": the PetSmart page shows no end date; the date is Nathan's and appears only in the internal deal note, never on the card. Left off the card.
