@@ -24,6 +24,7 @@ import { MAP_DIV, MAP_STEP, emitters, mapStepOf } from '../render/lighting';
 import { darkOf, darkStats } from '../render/lightShells';
 import { gateOf, hasCorals, whysAnimal, type AnimalWhy } from '../scene/animalfit';
 import { minFit } from '../scene/tankMin';
+import { startCount, strictReader } from './pickerStrict';
 import { OK_FIT, ROLES, SETUP_KINDS, applyKind, fitFrom, groupPicker, offeredIn, roleOf, rolesFor, tankKind, type Fit, type Role, type SetupKind } from '../scene/pickerKind';
 import { EXPERTISE_NAME } from '../data/care';
 import { CARE_NAME, FIT_PAR, fitCaption, whyNot, type FitLight } from '../scene/plantfit';
@@ -686,18 +687,37 @@ Cancel, then change the name, to keep both.`)) return;
   const roleName = () => ROLES.find(r => r[0] === role)?.[1] ?? '';
   /** The species this tank's kind offers that match the search and the chosen group. */
   const findSpecies = (q: string, r?: Role) => { const k = tankKind(S()); return searchSpecies(q).filter(sp => offeredIn(sp, k) && (!r || roleOf(sp) === r)); };
-  /** How each species sits in this tank (animalfit.ts, the stocking screen's engine), cached by the tank's state: the picker opens often. */
-  let fitKey = '', fitMemo = new Map<string, Fit>();
+  /** How each species sits in this tank. Two readings (lane S254): the cheap per-species one (animalfit.ts) is drawn at once; the exact one is the
+   *  Suggest rule (pickerStrict.ts: would the stocking summary word a new Caution / Problem with it added?), worked out a slice at a time after the
+   *  first paint, kept per stock signature (the picker opens often), and replaces the cheap one as it arrives. */
+  let fitKey = '', fitMemo = new Map<string, Fit>(), exact = new Map<string, Fit>(), exactRead: ((sp: Species) => Fit) | undefined, gen = 0, refining = -1;
+  const stockKey = (s: TankSetup) => JSON.stringify([s.tank, s.water, s.tech, s.fish.map(f => [f.species, f.sex, f.gender, f.tl]), s.items.map(it => [it.kind, it.variant]), s.layout.gateStock, s.layout.gateAnimals, s.layout.expertise, s.constraints, s.stand, s.lid, store.scene.units]);
   function fitsFor(s: TankSetup): (sp: Species) => Fit {
     const gated = !!s.layout.gateStock && !!s.layout.gateAnimals, ex = (s.layout.expertise ?? 1) as 1 | 2 | 3, present = [...new Set(s.fish.map(f => f.species))].sort();
-    const key = JSON.stringify([s.tank, s.water, present, s.tech, s.items.filter(it => it.kind === 'coral').length, gated, ex]);
+    const key = stockKey(s);
     if (key !== fitKey) {
-      fitKey = key; fitMemo = new Map();
+      fitKey = key; fitMemo = new Map(); exact = new Map(); gen++; refining = -1;
       const litres = volume(s.tank).litres, have = present.map(getSpecies).filter((x): x is Species => !!x);
       const env = { corals: hasCorals(s.items), water: s.tech ? tempEvidence(s) : undefined, fit: minFit(s) };
       for (const sp of SPECIES) fitMemo.set(sp.id, fitFrom(whysAnimal(sp, litres, ex, have, env), gated));
+      exactRead = strictReader(s, store.scene.units, sp => fitMemo.get(sp.id) ?? OK_FIT);
     }
-    return sp => fitMemo.get(sp.id) ?? OK_FIT;
+    return sp => exact.get(sp.id) ?? fitMemo.get(sp.id) ?? OK_FIT;
+  }
+  /** The exact reading of one species now (the picked one: Add anyway must read what the summary will say). */
+  const exactNow = (sp: Species): Fit => { fitsFor(S()); let f = exact.get(sp.id); if (!f && exactRead) exact.set(sp.id, f = exactRead(sp)); return f ?? OK_FIT; };
+  /** Works the exact reading through the species the picker lists (the open group first) in ~20 ms slices, then redraws once. */
+  function refineFits(list: Species[]) {
+    fitsFor(S()); const mine = gen, todo = list.filter(sp => !exact.has(sp.id));
+    if (!todo.length || !exactRead || refining === mine) return;
+    refining = mine;
+    const step = () => {
+      if (gen !== mine || !exactRead) return;
+      const t0 = performance.now();
+      while (todo.length && performance.now() - t0 < 20) { const sp = todo.shift()!; if (!exact.has(sp.id)) exact.set(sp.id, exactRead(sp)); }
+      if (todo.length) setTimeout(step, 0); else { refining = -1; renderResults(); }
+    };
+    setTimeout(step, 0);
   }
   const setKind = (k: SetupKind) => {
     if (tankKind(S()) === k) return;
@@ -752,6 +772,7 @@ Cancel, then change the name, to keep both.`)) return;
     }));
     search.setAttribute('placeholder', role ? `Search ${roleName().toLowerCase()}` : `Search ${salt ? 'marine ' : ''}species (common or scientific name)`);
     const list = findSpecies(search.value, role), fitOf = fitsFor(s), groups = groupPicker(list, kind, fitOf);
+    refineFits(list);
     if (list.length && !list.some(x => x.id === pickId)) pickId = groups[0].rows[0].sp.id;
     const other = search.value.trim() ? searchSpecies(search.value).length : 0; // matches in other kinds of setup
     results.innerHTML = list.length ? '' : `<div class="none">${search.value.trim() ? `Nothing for a ${kind} setup matches${other ? ` (${other} in other kinds: change the setup type above)` : ''}.` : 'No animals for this kind of setup yet.'}</div>`;
@@ -776,7 +797,7 @@ Cancel, then change the name, to keep both.`)) return;
     const add = $<HTMLButtonElement>('addFish');
     add.disabled = !list.length || !!why;
     add.title = why;
-    if (pick && list.length && !why && fitOf(pick).level !== 'ok') { add.textContent = add.textContent!.replace(/^Add/, 'Add anyway'); add.title = fitOf(pick).text; } // grayed, not blocked
+    if (pick && list.length && !why && exactNow(pick).level !== 'ok') { add.textContent = add.textContent!.replace(/^Add/, 'Add anyway'); add.title = exactNow(pick).text; } // grayed, not blocked
     $('addWhy').textContent = why; $('addWhy').hidden = !why || !list.length; // said under Add, not only in a tooltip (audit #9)
     setOut('oAddSize', sizeLabel(addPct(), getSpecies(pickId)));
     renderStages();
@@ -841,7 +862,6 @@ Cancel, then change the name, to keep both.`)) return;
     return '';
   }
   /** Default count when a species joins the list: a group for schooling / shoaling fish, else one. */
-  const startCount = (sp: Species) => (sp.pair ? 2 : sp.kind !== 'snail' && sp.group ? 6 : 1); // pairs: clownfish, cardinals
   /** Is this fish in the species' list row? A dimorphic species has a row per sex. */
   const inRow = (f: Fish, sp: Species, sex?: Sex) => f.species === sp.id && (!sp.female || (f.sex === 'f') === (sex === 'f'));
   /** Set how many of a species each edited tank holds (`to` gets the tank's current count). New animals take the
