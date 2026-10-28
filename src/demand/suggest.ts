@@ -34,6 +34,7 @@ import { costLines, type CostLine } from './costlines';
 import { demandOf } from './engine';
 import { NO_SUGGESTION, type Money } from './makefit';
 import { mean3 } from './range';
+import { explainInfeasible, phasesOf, type Infeasible, type Phases } from './infeasible';
 import type { Limits, UserProfile } from './types';
 
 export { NO_SUGGESTION };
@@ -153,6 +154,10 @@ export interface Wants {
   climb?: boolean;
   /** hours of set-up effort the person will spend (from the brief, lane U1; not read by the generator yet) */
   setupHours?: number;
+  /** the high-tech approach is a requirement (lane U4): only finishes with CO2 and a stronger light (the standard and lush tiers) are offered, so the look is not traded for a cheaper approach silently */
+  hightech?: boolean;
+  /** buy in phases (lane U4): the set-up ceiling is checked against the animal-care essentials only; the animals are a second purchase after the tank has cycled (each concept carries its `phases`) */
+  phased?: boolean;
 }
 
 /** The design strategies a concept is built on (lane U2). Open animals: economy / size / look / balanced. Locked animals: economy / aquascape (look) / equipment / room (size). */
@@ -204,12 +209,13 @@ export interface Proposal {
   tradeoff: string;
   /** how hands-on the concept is, 0 (simple) .. 1 (demanding); experience shapes how it ranks and what the guidance says, and never removes a concept */
   complexity: number;
+  /** buy-in-phases plan (only when the brief asks for phases): what to buy first, what after the tank has cycled */
+  phases?: Phases;
   /** guidance for the person's experience level when it matters (a demanding build for a beginner, a very simple one for an expert) */
   experienceNote?: string;
 }
 export type LimitingFactor = 'budget' | 'upkeep' | 'time' | 'space' | 'tank' | 'animals' | 'welfare';
-export interface Alternative { kind: 'raise-budget' | 'raise-upkeep' | 'more-time' | 'use-owned' | 'bigger-space' | 'other-tank' | 'change-animals' | 'phase'; text: string; /** the amount to raise, set-up $ / $ a month / min a week, when the kind is a raise */ delta?: number }
-export interface Infeasible { limitingFactor: LimitingFactor; text: string; alternatives: Alternative[] }
+export type { Alternative, AltEdit, Infeasible, Phases } from './infeasible';
 export interface Miss { archetype: Archetype; build: Build; totals: Money; needs: Partial<Money>; text: string }
 export interface Suggestions {
   /** every guardrail is off: nothing to check against, proposals are ranked by appeal alone */
@@ -227,6 +233,8 @@ export interface Suggestions {
   unavailable?: string;
   /** nothing qualified: WHY, as data (lane U4 words it and adds alternatives): the factor that limits the request and what would change the answer */
   infeasible?: Infeasible;
+  /** the cheapest concept that passed every check, whatever the ceiling said about money (lane U4 uses it for 'the cheapest honest build is $N'); absent when nothing passed */
+  cheapest?: Proposal;
   /** the pool the three were chosen from: valid concepts, and how many candidates welfare (the strict stocking rule) or a hard constraint turned away */
   stats: { pool: number; rejectedWelfare: number; rejectedConstraint: number };
 }
@@ -352,30 +360,23 @@ function tradeoffOf(p: Pick<Proposal, 'build' | 'totals' | 'underCeilingUsd'>, s
   return t[sd.id] + stand;
 }
 
-/** The structured "why not": the closest miss names the limit (the cap it would take to raise), else the hard input that left no tank (an existing tank, the space) or the welfare gate. Wording is lane U4's. */
-function infeasibleOf(w: Wants, misses: Miss[], stats: Suggestions['stats'], locked: boolean, spaceOn: boolean): Infeasible {
-  const alternatives: Alternative[] = [];
-  const m = misses[0];
-  if (m) {
-    const n = m.needs;
-    if (n.startupUsd) alternatives.push({ kind: 'raise-budget', delta: n.startupUsd, text: `Raise the set-up ceiling by ${usd(n.startupUsd)} for ${m.archetype.title}.` });
-    if (n.monthlyUsd) alternatives.push({ kind: 'raise-upkeep', delta: n.monthlyUsd, text: `Allow ${usd(n.monthlyUsd)} more a month for ${m.archetype.title}.` });
-    if (n.minPerWeek) alternatives.push({ kind: 'more-time', delta: n.minPerWeek, text: `Allow ${n.minPerWeek} more minutes a week for ${m.archetype.title}.` });
-  }
-  if (!w.owned || !Object.keys(w.owned).length) alternatives.push({ kind: 'use-owned', text: 'Tell us what equipment you already have or can borrow: it comes off the cost.' });
-  if (m?.needs.startupUsd) alternatives.push({ kind: 'phase', text: 'Buy the essentials first and stock the tank later.' });
-  const n = m?.needs;
-  const factor: LimitingFactor = n?.startupUsd ? 'budget' : n?.monthlyUsd ? 'upkeep' : n?.minPerWeek ? 'time' : w.ownTank ? 'tank' : spaceOn ? 'space' : locked && stats.rejectedWelfare > 0 ? 'welfare' : locked ? 'animals' : 'budget';
-  if (factor === 'tank') alternatives.push({ kind: 'other-tank', text: 'This tank does not hold those animals: another tank, or other animals.' });
-  if (factor === 'space') alternatives.push({ kind: 'bigger-space', text: 'No tank that holds them fits the space you gave.' });
-  if (factor === 'welfare' || factor === 'animals') alternatives.push({ kind: 'change-animals', text: 'These animals cannot be kept well in anything the limits allow: other animals, or fewer.' });
-  const text = factor === 'budget' && n?.startupUsd ? `The closest setup needs ${usd(n.startupUsd)} more than your ceiling.` : 'Nothing passes every check with these limits.';
-  return { limitingFactor: factor, text, alternatives };
-}
-
 /** The entry point for a setup brief (lane U1/U2): locks, hard items and the experience level are read through the adapter; the brief wins over any Constraints a caller keeps beside it. */
 export function suggestFromBrief(b: Brief, P0: UserProfile, units: Units = 'cm', now = Date.now()): Suggestions { return suggestSetups(briefToWants(b), P0, units, now); }
 export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', now = Date.now()): Suggestions {
+  const cap = w.constraints.startupUsd?.on ? w.constraints.startupUsd.value : undefined;
+  if (w.phased && cap !== undefined) {
+    // phased purchase: money is checked on the essentials only; the animals come after the tank has cycled
+    const off = { ...w, phased: false, constraints: { ...w.constraints, startupUsd: { ...w.constraints.startupUsd!, on: false } } };
+    const r = generate(off, P0, units, now, false), all = [...r.proposals, ...(r.cheapest ? [r.cheapest] : [])];
+    const ok = all.map(p => ({ ...p, phases: phasesOf(p) })).filter(p => p.phases.phase1Usd <= cap).map(p => ({ ...p, scene: { ...p.scene, constraints: w.constraints } }));
+    const shown = r.proposals.map(p => ok.find(q => q.build === p.build)).filter((p): p is typeof ok[number] => !!p);
+    const use = shown.length ? shown : ok.slice(0, 1);
+    if (use.length) return { ...r, off: false, proposals: use, misses: [], message: undefined, infeasible: undefined, note: `Phased: ${usd(cap)} covers the essentials now; the animals are bought after the tank has cycled.` };
+    return generate({ ...w, phased: false }, P0, units, now, true);
+  }
+  return generate(w, P0, units, now, true);
+}
+function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain: boolean): Suggestions {
   const C = w.constraints, tags = w.tags ?? [], taxPct = Math.min(25, Math.max(0, w.taxPct ?? 0)), taxK = 1 + taxPct / 100;
   const space = C.space?.on === false ? undefined : w.space;
   const pool: Proposal[] = [], misses: Miss[] = [];
@@ -414,6 +415,7 @@ export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', no
       // husbandry is never traded for money or time: the strict rule (Nathan 2026-10-27) = nothing the stocking screen words as a Problem OR a Caution in any of its five categories. Only "not enough information" passes, and it is shown.
       if (style && !b.setup.items.some(i => i.kind === 'plant' || i.kind === 'artificial' || i.kind === 'coral')) continue; // another look is still a planted (or reefed) tank, never a pile of stones
       if (wordsOf(sm.cats)) { welfare = true; continue; }
+      if (w.hightech && (b.finish?.level ?? 0) < 2) continue; // a stated high-tech approach is never silently swapped for a plainer one
       const preTax = b.setupUsd - saved, tax = taxOf(preTax), t = { ...money(b), startupUsd: preTax + tax }, L = effectiveLimits(scene, P0.limits);
       const cp = compliance(scene, { setupUsd: t.startupUsd, upkeepUsdMo: t.monthlyUsd, minPerWeek: t.minPerWeek }, L, units);
       if (cp.overall !== 'off') anyOn = true;
@@ -448,7 +450,7 @@ export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', no
     const mid = Math.ceil(top / 2), idxOf = (z: StrategyDef['size']) => z === 'small' ? 0 : z === 'top' ? top : mid;
     const sd = STRATEGIES.find(x => x.id === id)!;
     if (sd.scape && !altStyle) return;
-    const maxLevel = w.climb ? 3 : sd.level;
+    const maxLevel = w.climb ? 3 : w.hightech ? Math.max(sd.level, 2) as 0 | 1 | 2 | 3 : sd.level;
     let found: Out | undefined, near: Miss | undefined;
     // the strategy's own size first; a size the money cannot carry once finished falls back one size down at a time, a size the welfare rule turns away (too full) goes one size UP (at most three tries)
     for (let tries = 0, i = idxOf(sd.size), dir = -1; i >= 0 && i < list.length && tries < 3 && !found?.p; i += dir, tries++) {
@@ -511,7 +513,8 @@ export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', no
   const shownIds = new Set(sorted.map(p => p.archetype.id));
   const out: Suggestions = { off: !anyOn, proposals: shown, qualified: [...new Set(sorted.map(p => p.archetype.id))], kinds, stats,
     misses: [...bestMiss.values()].filter(m => !shownIds.has(m.archetype.id)).sort((a, b) => relaxSize(a.needs) - relaxSize(b.needs)).slice(0, 3) };
-  if (wanted.length && !shown.length) out.infeasible = infeasibleOf(w, out.misses, stats, isLocked, !!space);
+  if (uniq.length) out.cheapest = [...uniq].sort((a, b) => a.totals.startupUsd - b.totals.startupUsd)[0];
+  if (wanted.length && !shown.length && explain) out.infeasible = explainInfeasible({ w, misses: out.misses, stats, locked: isLocked, space, P: P0, units, now, run: x => generate(x, P0, units, now, false) });
   if (!wanted.length) out.unavailable = isLocked ? 'Those animals are not in the data yet.' : 'There are no setups of that kind to suggest yet. Tick another kind.';
   else if (!shown.length) out.message = NO_SUGGESTION;
   else if (!isLocked && kinds.length < 3 && anyOn && wanted.some(a => a.family !== kinds[0])) out.note = `Only ${kinds.length === 1 ? 'one kind' : `${kinds.length} kinds`} of setup fit${kinds.length === 1 ? 's' : ''} your guardrails: ${kinds.map(k => FAMILY_LABEL[k]).join(', ')}.`;

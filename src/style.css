@@ -787,6 +787,12 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .sg button.sgTag.on { background: #2a9bb0; border-color: #2a9bb0; color: #fff }
 .sgChecks .sgOk::marker { content: "✓ " } .sgChecks { font-size: 11.5px }
 .sgMiss { margin-top: 10px; font-size: 12px } .sgMiss ul { margin: 4px 0 0 16px; padding: 0 }
+.sgWhy { margin-top: 10px; font-size: 13px } .sgWhy .spWarn { margin: 0 0 6px }
+.sgAlts { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 8px }
+.sgAlt { display: flex; gap: 10px; align-items: center; justify-content: space-between; padding: 8px 10px; border: 1px solid var(--line, #888); border-radius: 8px } .sgAlt > div { flex: 1; min-width: 0 }
+.sgAlt button { flex: none; max-width: 40% }
+.sgPhases { margin: 6px 0; padding: 6px 8px; border: 1px dashed var(--line, #888); border-radius: 8px; font-size: 12px }
+.sgLocked { margin: 4px 0 }
 
 /* Create a look (lane C7) */
 .lkp { overflow: auto }

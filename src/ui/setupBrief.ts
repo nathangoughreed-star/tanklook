@@ -27,7 +27,7 @@ const OPEN_TEXT: Record<GroupId, string> = { animals: 'open', appearance: 'open'
 /** Where an item shows: U1 groups by id prefix; the tank you already own and the gear you own read as "Tank and equipment" to a person. */
 const SHOWN_IN: Partial<Record<ItemId, GroupId>> = { 'constraints.existingTank': 'equipment', 'constraints.owned': 'equipment' };
 const ORDER: ItemId[] = ['animals.stock', 'animals.kinds', 'animals.groups', 'appearance.look', 'appearance.plantMode', 'equipment.tank', 'constraints.existingTank', 'constraints.owned', 'equipment.needStand',
-  'constraints.budget', 'constraints.monthly', 'constraints.careMin', 'constraints.maxSpace', 'preferences.tags', 'preferences.wishes', 'preferences.experience', 'preferences.effort'];
+  'constraints.budget', 'constraints.monthly', 'constraints.careMin', 'constraints.maxSpace', 'constraints.phased', 'preferences.hightech', 'preferences.tags', 'preferences.wishes', 'preferences.experience', 'preferences.effort'];
 export const tankName = (model?: string) => TANK_MODELS.find(m => m.id === model)?.name ?? model ?? 'a tank';
 const EXP = ['beginner', 'some experience', 'experienced'];
 const TAG_WORD: Record<Tag, string> = { colorful: 'colorful', active: 'lively', calm: 'calm', natural: 'natural', unusual: 'unusual', 'low-maint': 'low upkeep' };
@@ -52,6 +52,8 @@ export function labelOf(b: Brief, id: ItemId): string {
     case 'preferences.tags': return (raw as Tag[]).map(t => TAG_WORD[t]).join(', ');
     case 'preferences.wishes': return (raw as (keyof typeof WISH_WORD)[]).map(w => WISH_WORD[w]).join(', ');
     case 'preferences.experience': return EXP[raw as number];
+    case 'constraints.phased': return 'buy in phases';
+    case 'preferences.hightech': return 'high-tech planted';
     case 'preferences.effort': return `${raw as string} effort`;
     default: return id;
   }

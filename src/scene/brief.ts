@@ -44,6 +44,8 @@ export interface Values {
   'constraints.existingTank': { model?: string };
   'constraints.owned': OwnedMap;
   'constraints.taxPct': number;          // sales tax %, editable, default 0
+  'constraints.phased': boolean;         // buy in phases: the tank stays unstocked until the animal-care essentials are in (lane U4); only the essentials count against the ceiling
+  'preferences.hightech': boolean;       // the person wants the high-tech approach (CO2, strong light) for the planted look; hard unless dropped (lane U4)
   'preferences.tags': Tag[];
   'preferences.wishes': Wish[];
   'preferences.effort': Effort;
@@ -52,7 +54,7 @@ export interface Values {
 export type ItemId = keyof Values;
 export const ITEM_IDS: readonly ItemId[] = ['animals.kinds', 'animals.groups', 'animals.stock', 'appearance.look', 'appearance.plantMode', 'equipment.tank',
   'equipment.needStand', 'constraints.budget', 'constraints.monthly', 'constraints.careMin', 'constraints.setupHours', 'constraints.maxSpace', 'constraints.spaceGate', 'constraints.existingTank',
-  'constraints.owned', 'constraints.taxPct', 'preferences.tags', 'preferences.wishes', 'preferences.effort', 'preferences.experience'];
+  'constraints.owned', 'constraints.taxPct', 'constraints.phased', 'preferences.tags', 'preferences.wishes', 'preferences.effort', 'preferences.experience', 'preferences.hightech'];
 
 export const BRIEF_VERSION = 1;
 export interface Brief { v: number; items: { [K in ItemId]?: Item<Values[K]> } }
@@ -130,6 +132,8 @@ const VALIDATE: { [K in ItemId]: (v: unknown) => Values[K] | undefined } = {
   'constraints.owned': v => { if (!v || typeof v !== 'object') return undefined; const o: OwnedMap = {};
     for (const k of OWNED_KEYS) { const p = (v as Record<string, unknown>)[k]; if (typeof p === 'string' && p) o[k] = p; } return Object.keys(o).length ? o : undefined; },
   'constraints.taxPct': v => num(v, 0, 100) ? v : undefined,
+  'constraints.phased': v => typeof v === 'boolean' ? v : undefined,
+  'preferences.hightech': v => typeof v === 'boolean' ? v : undefined,
   'preferences.tags': v => { const a = strs(v, TAG_IDS); return a?.length ? a : undefined; },
   'preferences.wishes': v => { const a = strs(v, WISHES); return a?.length ? a : undefined; },
   'preferences.effort': v => v === 'low' || v === 'medium' || v === 'high' ? v : undefined,
@@ -173,6 +177,8 @@ export function briefFromWants(w: Wants): Brief {
   if (w.taxPct !== undefined) b = setItem(b, 'constraints.taxPct', w.taxPct, 'hard');
   if (w.animals?.length) b = setItem(b, 'animals.stock', w.animals.map(a => ({ species: a.species, count: a.n })), 'locked');
   if (w.ownTank) b = setItem(b, 'constraints.existingTank', { model: w.ownTank.id }, 'hard');
+  if (w.phased) b = setItem(b, 'constraints.phased', true, 'hard');
+  if (w.hightech) b = setItem(b, 'preferences.hightech', true, 'hard');
   return b;
 }
 
@@ -196,5 +202,8 @@ export function briefToWants(b: Brief): Wants {
   if (stock && stock.status === 'locked' && stock.value.length) w.animals = stock.value.map(x => ({ species: x.species, n: x.count }));
   const model = own?.value.model ? getTankModel(own.value.model) : undefined;
   if (model) w.ownTank = model;
+  const ph = g('constraints.phased'), ht = g('preferences.hightech');
+  if (ph && !ph.off && ph.value) w.phased = true;
+  if (ht && !ht.off && ht.value) w.hightech = true;
   return w;
 }
