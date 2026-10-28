@@ -436,49 +436,67 @@ export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', no
     MEMO.set(key, out); return out;
   };
 
+  // two stages (speed): every archetype is first screened by its cheapest-start concept (the one most likely to pass: if that fails on money nothing of the kind will); the strategies
+  // beyond it are then run for the strongest few archetypes only (the best of each family first), the rest stay in the pool by their screening concept.
+  type Ctx = Sizes & { altStyle?: StyleId };
+  const ctxs = new Map<string, Ctx>();
+  const runStrategy = (a: Archetype, id: StrategyId) => {
+    const c = ctxs.get(a.id); if (!c) return;
+    const { list, top, ceiling, altStyle } = c;
+    const mid = Math.ceil(top / 2), idxOf = (z: StrategyDef['size']) => z === 'small' ? 0 : z === 'top' ? top : mid;
+    const sd = STRATEGIES.find(x => x.id === id)!;
+    if (sd.scape && !altStyle) return;
+    const maxLevel = w.climb ? 3 : sd.level;
+    let found: Out | undefined, near: Miss | undefined;
+    // the strategy's own size first; a size the money cannot carry once finished falls back one size down at a time, a size the welfare rule turns away (too full) goes one size UP (at most three tries)
+    for (let tries = 0, i = idxOf(sd.size), dir = -1; i >= 0 && i < list.length && tries < 3 && !found?.p; i += dir, tries++) {
+      const tank = list[i], stocks: AnimalCount[][] = [];
+      if (sd.grow && !isLocked && a.animals.some(x => x.n >= 3)) for (const f of STOCK_UP) {
+        const more = a.animals.map(x => ({ ...x, n: x.n >= 3 ? Math.round(x.n * f) : x.n })), fit = fitIn(more, tank);
+        if (fit && !fit.fails.length) { stocks.push(more); break; }
+      }
+      stocks.push(a.animals);
+      let welfareOnly = false;
+      for (const stock of stocks) {
+        let r = attempt(a, stock, tank, sd.build, maxLevel, sd.scape ? altStyle : undefined, id === 'economy');
+        // a small tank the stand makes unaffordable is offered on a sturdy counter instead (the card says so), when the person has not said they need a stand
+        if (!r.p && w.needStand === undefined && id !== 'economy') { const q = attempt(a, stock, tank, sd.build, maxLevel, sd.scape ? altStyle : undefined, true); if (q.p) r = q; }
+        if (r.welfare && !r.p) stats.rejectedWelfare++;
+        if (r.near && (!near || relaxSize(r.near.needs) < relaxSize(near.needs))) near = r.near;
+        if (r.p) { found = r; break; }
+        welfareOnly = !!r.welfare && !r.near;
+        if (!r.welfare && !r.near) stats.rejectedConstraint++;
+      }
+      dir = welfareOnly ? 1 : -1;
+    }
+    if (!found?.p) { if (near) misses.push(near); return; }
+    const { levelOf, needStand, ...p } = found.p, t = p.totals, L = effectiveLimits(p.scene, P0.limits), cx = complexityOf(p.build, p.scene), exp = C.experience;
+    // climb (the old target behaviour): a card that stops short because the animals' needs cap it (the biggest tank they gain from, at the fullest finish) is as good a use of the money as the animals allow
+    const limited = !!(w.climb && ceiling && L.setupUsd && t.startupUsd < USES_BUDGET * L.setupUsd && levelOf === 3 && id === 'size');
+    // experience shapes how hands-on concepts RANK (a gentle push), never whether one is offered
+    const score = p.matched.length * 10 + headroom(t, L) * 5 + levelOf * 1.5 - p.unknown.length * 0.5 + (exp === 0 ? -6 * cx : exp === 2 ? 3 * cx : 0)
+      + (w.climb && L.setupUsd ? (limited ? 1 : Math.min(1, t.startupUsd / L.setupUsd)) * 20 : 0);
+    const base = { ...p, score, strategy: id, strategyLabel: strategyLabel(id, isLocked), strategyBlurb: sd.blurb,
+      ...(L.setupUsd ? { underCeilingUsd: Math.max(0, Math.round(L.setupUsd - t.startupUsd)) } : {}),
+      ...(limited ? { capNote: 'This is the most this kind needs: a bigger tank or more animals would not suit them, so part of your budget is left over.' } : {}) };
+    const note = experienceNote(exp, cx, t.minPerWeek);
+    pool.push({ ...base, complexity: cx, tradeoff: tradeoffOf(base, sd, needStand, standCost(p.build, P0)), ...(note ? { experienceNote: note } : {}) } as Proposal);
+  };
+  const strategies = isLocked ? LOCKED_STRATEGIES : OPEN_STRATEGIES;
   for (const a of wanted) {
     if (a.animals.some(x => !getSpecies(x.species))) continue;
-    const { list, top, ceiling } = sizesFor(a.animals, w, space, cap, taxK, now);
-    if (!list.length) { stats.rejectedConstraint++; continue; }
-    const mid = Math.ceil(top / 2), idxOf = (s: StrategyDef['size']) => s === 'small' ? 0 : s === 'top' ? top : mid;
-    const ranked = rankStyles(a.animals), altStyle = ranked.slice(1).find(r => r.score >= (ranked[0]?.score ?? 0) - 0.6)?.style;
-    for (const id of isLocked ? LOCKED_STRATEGIES : OPEN_STRATEGIES) {
-      const sd = STRATEGIES.find(x => x.id === id)!;
-      if (sd.scape && !altStyle) continue;
-      const maxLevel = w.climb ? 3 : sd.level;
-      let found: Out | undefined, near: Miss | undefined;
-      // the strategy's own size first; a size the money cannot carry once finished falls back one size down at a time (at most three tries)
-      for (let tries = 0, i = idxOf(sd.size); i >= 0 && tries < 3 && !found?.p; i--, tries++) {
-        const tank = list[i], stocks: AnimalCount[][] = [];
-        if (sd.grow && !isLocked && a.animals.some(x => x.n >= 3)) for (const f of STOCK_UP) {
-          const more = a.animals.map(x => ({ ...x, n: x.n >= 3 ? Math.round(x.n * f) : x.n })), fit = fitIn(more, tank);
-          if (fit && !fit.fails.length) { stocks.push(more); break; }
-        }
-        stocks.push(a.animals);
-        for (const stock of stocks) {
-          let r = attempt(a, stock, tank, sd.build, maxLevel, sd.scape ? altStyle : undefined, id === 'economy');
-          // a small tank the stand makes unaffordable is offered on a sturdy counter instead (the card says so), when the person has not said they need a stand
-          if (!r.p && w.needStand === undefined && id !== 'economy') { const q = attempt(a, stock, tank, sd.build, maxLevel, sd.scape ? altStyle : undefined, true); if (q.p) r = q; }
-          if (r.welfare && !r.p) stats.rejectedWelfare++;
-          if (r.near && (!near || relaxSize(r.near.needs) < relaxSize(near.needs))) near = r.near;
-          if (r.p) { found = r; break; }
-          if (!r.p && !r.welfare && !r.near) stats.rejectedConstraint++;
-        }
-      }
-      if (!found?.p) { if (near) misses.push(near); continue; }
-      const { levelOf, needStand, ...p } = found.p, t = p.totals, L = effectiveLimits(p.scene, P0.limits), cx = complexityOf(p.build, p.scene), exp = C.experience;
-      // climb (the old target behaviour): a card that stops short because the animals' needs cap it (the biggest tank they gain from, at the fullest finish) is as good a use of the money as the animals allow
-      const limited = !!(w.climb && ceiling && L.setupUsd && t.startupUsd < USES_BUDGET * L.setupUsd && levelOf === 3 && id === 'size');
-      // experience shapes how hands-on concepts RANK (a gentle push), never whether one is offered
-      const score = p.matched.length * 10 + headroom(t, L) * 5 + levelOf * 1.5 - p.unknown.length * 0.5 + (exp === 0 ? -6 * cx : exp === 2 ? 3 * cx : 0)
-        + (w.climb && L.setupUsd ? (limited ? 1 : Math.min(1, t.startupUsd / L.setupUsd)) * 20 : 0);
-      const base = { ...p, score, strategy: id, strategyLabel: strategyLabel(id, isLocked), strategyBlurb: sd.blurb,
-        ...(L.setupUsd ? { underCeilingUsd: Math.max(0, Math.round(L.setupUsd - t.startupUsd)) } : {}),
-        ...(limited ? { capNote: 'This is the most this kind needs: a bigger tank or more animals would not suit them, so part of your budget is left over.' } : {}) };
-      const note = experienceNote(exp, cx, t.minPerWeek);
-      pool.push({ ...base, complexity: cx, tradeoff: tradeoffOf(base, sd, needStand, standCost(p.build, P0)), ...(note ? { experienceNote: note } : {}) } as Proposal);
-    }
+    const z = sizesFor(a.animals, w, space, cap, taxK, now);
+    if (!z.list.length) { stats.rejectedConstraint++; continue; }
+    const ranked = rankStyles(a.animals);
+    ctxs.set(a.id, { ...z, altStyle: ranked.slice(1).find(r => r.score >= (ranked[0]?.score ?? 0) - 0.6)?.style });
+    runStrategy(a, 'economy');
   }
+  const screened = [...new Set(pool.map(p => p.archetype.id))].map(id => ({ a: wanted.find(x => x.id === id)!, score: Math.max(...pool.filter(p => p.archetype.id === id).map(p => p.score)) })).sort((x, y) => y.score - x.score);
+  const MORE = isLocked ? 1 : 3, deep: Archetype[] = [];
+  for (const x of screened) if (!deep.some(d => d.family === x.a.family)) deep.push(x.a); // the best of each family first
+  for (const x of screened) if (deep.length < MORE && !deep.includes(x.a)) deep.push(x.a);
+  // the alternative-aquascape concept only for the strongest archetype (each strategy is a finished tank to build and price)
+  for (const a of deep.slice(0, MORE)) for (const id of strategies) if (id !== 'economy' && (id !== 'scape' || isLocked || a === deep[0])) runStrategy(a, id);
   // the same concept reached by two strategies is one concept: the first (strongest) keeps it
   const seen = new Set<string>(), uniq: Proposal[] = [];
   for (const p of [...pool].sort((a, b) => b.score - a.score)) { const k = `${p.archetype.id}|${p.build.tank.id}|${configKey(p.build)}|${p.build.finish?.tier}|${p.build.finish?.style}|${p.build.animals.map(x => x.species + x.n).join(',')}`; if (!seen.has(k)) { seen.add(k); uniq.push(p); } }

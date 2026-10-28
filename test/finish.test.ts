@@ -108,7 +108,8 @@ describe('finished builds', () => {
 
   it('the set-up price is itemised: tank, finish, animals and gear add up to the card total; owned items are $0 "you have"; a stand not wanted is $0', () => {
     const run = (extra: object) => suggestSetups({ constraints: { startupUsd: cap(1200) }, kinds: ['freshwater'], ...extra }, P, 'cm', NOW).proposals;
-    for (const p of run({})) {
+    // lane U2: with the stand unspecified the cheapest start of a small tank is priced without one (and says so), so the stand price is checked where a stand is asked for
+    for (const p of run({ needStand: true })) {
       expect(p.costLines.reduce((t, l) => t + l.usd, 0)).toBe(Math.round(p.totals.startupUsd));
       for (const label of ['Tank', 'Animals', 'Substrate, hardscape and plants']) expect(p.costLines.some(l => l.label === label && l.usd > 0)).toBe(true);
       expect(p.costLines.some(l => l.label === 'Stand' && l.usd > 0)).toBe(true);

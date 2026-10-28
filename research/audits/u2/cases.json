@@ -2,17 +2,17 @@
  {
   "id": "low",
   "title": "Low budget: $350 ceiling, no preferences",
-  "ms": 3629,
+  "ms": 4369,
   "stats": {
-   "pool": 12,
-   "rejectedWelfare": 7,
-   "rejectedConstraint": 1
+   "pool": 19,
+   "rejectedWelfare": 3,
+   "rejectedConstraint": 0
   },
   "note": "Only 2 kinds of setup fit your guardrails: terrarium animals, freshwater fish.",
   "misses": [
    "Zebra danio school: +$23 set-up",
-   "Neon tetras and corydoras community: +$117 set-up",
-   "Chaco golden knee tarantula terrarium: +$220 set-up"
+   "Madagascar hissing cockroach colony: +$39 set-up",
+   "Land hermit crab terrarium: +$66 set-up"
   ],
   "proposals": [
    {
@@ -175,16 +175,17 @@
  {
   "id": "mid",
   "title": "Mid budget: $800 ceiling, no preferences",
-  "ms": 6267,
+  "ms": 1501,
   "stats": {
-   "pool": 34,
+   "pool": 29,
    "rejectedWelfare": 1,
-   "rejectedConstraint": 3
+   "rejectedConstraint": 0
   },
   "note": "Only 2 kinds of setup fit your guardrails: freshwater fish, terrarium animals.",
   "misses": [
-   "Clownfish pair (saltwater): +$15 set-up",
-   "Dart frog paludarium: +$147 set-up"
+   "Giant African millipede enclosure: +$74 set-up",
+   "Dart frog paludarium: +$147 set-up",
+   "Clownfish pair (saltwater): +$458 set-up"
   ],
   "proposals": [
    {
@@ -241,99 +242,100 @@
     ]
    },
    {
-    "strategy": "Look first",
-    "blurb": "A mid-size tank at the lushest finish: plants, hardscape and the light and feeding that keep them.",
-    "tradeoff": "Look first: a lush finish in 51 gal; more plants mean more light and feeding (about 15 min a week) and less room than the biggest tank. $123 stays under your ceiling.",
+    "strategy": "Balanced",
+    "blurb": "A mid-size tank, filter headroom and a full finish.",
+    "tradeoff": "A middle path: 51 gal, a filter with headroom and a full finish; nothing is stretched, nothing is the best it could be. $33 stays under your ceiling.",
     "archetype": "Leopard gecko terrarium",
     "tank": "Wide terrestrial",
-    "tier": "lush",
+    "tier": "standard",
     "finish": [
      "Look: Arid (leopard gecko)",
      "Substrate: Clay, about 93 lb",
      "Hardscape: 10 pieces (rock ledge, dragon stone, half-log hide, cork tube, water dish (stone))",
-     "Plants: 12 live plants (haworthia, echeveria, burro's tail, barrel cactus, small aloe, dwarf sagittaria)"
+     "Plants: 8 live plants (barrel cactus, small aloe, echeveria, dwarf sagittaria)"
     ],
     "gear": [
-     "Dome heat lamp and basking bulb on an on/off thermostat",
+     "Dome heat lamp and basking bulb on a dimming thermostat",
      "UVB light (low output, shade dweller)",
      "Thermometer and hygrometer",
      "No misting: these animals want drier air"
     ],
     "animals": "1 leopardgecko",
-    "total": 677,
-    "preTax": 677,
+    "total": 767,
+    "preTax": 767,
     "tax": 0,
-    "under": 123,
-    "monthly": 23,
-    "min": 15,
+    "under": 33,
+    "monthly": 22,
+    "min": 14,
     "lines": [
      {
       "label": "Tank",
-      "usd": 157
+      "usd": 161
      },
      {
       "label": "Stand",
-      "usd": 123
+      "usd": 126
      },
      {
       "label": "Substrate, hardscape and plants",
-      "usd": 205
+      "usd": 149
      },
      {
       "label": "Animals",
-      "usd": 36
+      "usd": 37
      },
      {
       "label": "Gear (heat, UVB, lights, filter and the rest)",
-      "usd": 156
+      "usd": 294
      }
     ]
    },
    {
-    "strategy": "Balanced",
-    "blurb": "A mid-size tank, filter headroom and a full finish.",
-    "tradeoff": "A middle path: 8 gal, a filter with headroom and a full finish; nothing is stretched, nothing is the best it could be. $483 stays under your ceiling.",
-    "archetype": "Regal jumping spider enclosure",
+    "strategy": "Cheapest start",
+    "blurb": "The smallest tank that holds them, the cheapest gear and a starter finish: the lowest all-in cost that still passes every check.",
+    "tradeoff": "Lowest cost: the smallest tank that holds them (8 gal) and a starter finish (few plants, a little hardscape), so less room and a plainer look. $556 stays under your ceiling. No stand: it sits on a sturdy counter or dresser (a stand would add about $92).",
+    "archetype": "Chilean rose tarantula terrarium",
     "tank": "Cube terrarium",
-    "tier": "standard",
+    "tier": "starter",
     "finish": [
-     "Look: Jumping spider cage",
-     "Substrate: Soil / coco fibre, about 18 lb",
-     "Hardscape: 3 pieces (climbing branch, cork bark flat, cork tube)",
-     "Plants: 6 live plants (pothos, creeping fig, bromeliad, sphagnum moss)"
+     "Look: Swamp / paludarium",
+     "Substrate: Natural gravel, about 55 lb",
+     "Hardscape: 1 piece (river stone)",
+     "Plants: 3 live plants (vallisneria, amazon sword)"
     ],
     "gear": [
      "No heat: these animals are comfortable at room temperature",
      "Thermometer and hygrometer",
      "No misting: these animals want drier air"
     ],
-    "animals": "1 regaljumper",
-    "total": 317,
-    "preTax": 317,
+    "animals": "1 chileanrose",
+    "total": 244,
+    "preTax": 244,
     "tax": 0,
-    "under": 483,
-    "monthly": 4,
-    "min": 14,
+    "under": 556,
+    "monthly": 7,
+    "min": 12,
     "lines": [
      {
       "label": "Tank",
       "usd": 55
      },
      {
-      "label": "Stand",
-      "usd": 108
-     },
-     {
       "label": "Substrate, hardscape and plants",
-      "usd": 91
+      "usd": 51
      },
      {
       "label": "Animals",
-      "usd": 33
+      "usd": 108
      },
      {
       "label": "Gear (heat, UVB, lights, filter and the rest)",
       "usd": 30
+     },
+     {
+      "label": "Stand (terrarium)",
+      "usd": 0,
+      "note": "not needed"
      }
     ]
    }
@@ -342,11 +344,11 @@
  {
   "id": "high",
   "title": "High budget: $2,500 ceiling, no preferences",
-  "ms": 4255,
+  "ms": 2715,
   "stats": {
-   "pool": 49,
+   "pool": 33,
    "rejectedWelfare": 1,
-   "rejectedConstraint": 3
+   "rejectedConstraint": 0
   },
   "misses": [],
   "proposals": [
@@ -404,6 +406,62 @@
     ]
    },
    {
+    "strategy": "Look first",
+    "blurb": "A mid-size tank at the lushest finish: plants, hardscape and the light and feeding that keep them.",
+    "tradeoff": "Look first: a lush finish in 75 gal; more plants mean more light and feeding (about 72 min a week) and less room than the biggest tank. $650 stays under your ceiling.",
+    "archetype": "Dart frog paludarium",
+    "tank": "75 gal",
+    "tier": "lush",
+    "finish": [
+     "Look: Swamp / paludarium",
+     "Substrate: Natural gravel, about 575 lb",
+     "Hardscape: 11 pieces (river stone)",
+     "Plants: 37 live plants (vallisneria, anubias, amazon sword, java fern) and 14 artificial ones",
+     "Plant care: CO2: Pressurized (regulator, solenoid, drop checker), ferts: All-in-one liquid; 54 W light"
+    ],
+    "gear": [
+     "Filter: Internal filter (small) · 80 gph",
+     "Heater: about 100 W",
+     "Light: 30 W LED",
+     "Land side: No heat: these animals are comfortable at room temperature",
+     "Land side: Thermometer and hygrometer",
+     "Land side: Hand pressure mister"
+    ],
+    "animals": "3 dartfrog, 2 nerite",
+    "total": 1850,
+    "preTax": 1850,
+    "tax": 0,
+    "under": 650,
+    "monthly": 70,
+    "min": 72,
+    "lines": [
+     {
+      "label": "Tank",
+      "usd": 144
+     },
+     {
+      "label": "Stand",
+      "usd": 213
+     },
+     {
+      "label": "Substrate, hardscape and plants",
+      "usd": 725
+     },
+     {
+      "label": "Animals",
+      "usd": 174
+     },
+     {
+      "label": "Supplies (water test kit and the like)",
+      "usd": 36
+     },
+     {
+      "label": "Gear (heat, UVB, lights, filter and the rest)",
+      "usd": 558
+     }
+    ]
+   },
+   {
     "strategy": "Balanced",
     "blurb": "A mid-size tank, filter headroom and a full finish.",
     "tradeoff": "A middle path: 40 gal, a filter with headroom and a full finish; nothing is stretched, nothing is the best it could be. $32 stays under your ceiling.",
@@ -455,69 +513,13 @@
       "usd": 1499
      }
     ]
-   },
-   {
-    "strategy": "Different look",
-    "blurb": "The same kind of animals in another aquascape style: different plants, hardscape and mood.",
-    "tradeoff": "Same animals, another look (Paludarium (land + pools)): a full finish in 75 gal; the cost is close to the other looks, the mood is different. $676 stays under your ceiling.",
-    "archetype": "Dart frog paludarium",
-    "tank": "75 gal",
-    "tier": "standard",
-    "finish": [
-     "Look: Paludarium (land + pools)",
-     "Substrate: Layered: clay balls under soil, about 575 lb",
-     "Hardscape: 6 pieces (climbing branch, cork bark flat, river stone)",
-     "Plants: 37 live plants (pothos, creeping fig, sphagnum moss, tropical fern, fittonia, bromeliad, vallisneria)",
-     "Plant care: CO2: Pressurized (regulator, solenoid, drop checker), ferts: All-in-one liquid; 39 W light"
-    ],
-    "gear": [
-     "Filter: Internal filter (small) · 80 gph",
-     "Heater: about 100 W",
-     "Light: 30 W LED",
-     "Land side: No heat: these animals are comfortable at room temperature",
-     "Land side: Thermometer and hygrometer",
-     "Land side: Hand pressure mister"
-    ],
-    "animals": "3 dartfrog, 2 nerite",
-    "total": 1824,
-    "preTax": 1824,
-    "tax": 0,
-    "under": 676,
-    "monthly": 70,
-    "min": 73,
-    "lines": [
-     {
-      "label": "Tank",
-      "usd": 144
-     },
-     {
-      "label": "Stand",
-      "usd": 213
-     },
-     {
-      "label": "Substrate, hardscape and plants",
-      "usd": 696
-     },
-     {
-      "label": "Animals",
-      "usd": 177
-     },
-     {
-      "label": "Supplies (water test kit and the like)",
-      "usd": 36
-     },
-     {
-      "label": "Gear (heat, UVB, lights, filter and the rest)",
-      "usd": 558
-     }
-    ]
    }
   ]
  },
  {
   "id": "betta",
   "title": "Locked betta, $600 ceiling, 8.5 % tax (all-in)",
-  "ms": 329,
+  "ms": 367,
   "stats": {
    "pool": 5,
    "rejectedWelfare": 0,
@@ -705,17 +707,17 @@
  {
   "id": "cap200",
   "title": "\"I have $200 and want something cool\": only the ceiling set, nothing else",
-  "ms": 1305,
+  "ms": 1145,
   "stats": {
-   "pool": 6,
-   "rejectedWelfare": 6,
+   "pool": 10,
+   "rejectedWelfare": 2,
    "rejectedConstraint": 0
   },
   "note": "Only 2 kinds of setup fit your guardrails: terrarium animals, freshwater fish.",
   "misses": [
-   "Ember tetra nano school: +$87 set-up",
-   "Neon tetras and corydoras community: +$267 set-up",
-   "Chaco golden knee tarantula terrarium: +$370 set-up"
+   "Pinktoe arboreal tarantula enclosure: +$7 set-up",
+   "Chilean rose tarantula terrarium: +$44 set-up",
+   "Mexican red knee tarantula terrarium: +$59 set-up"
   ],
   "proposals": [
    {
@@ -822,54 +824,49 @@
     ]
    },
    {
-    "strategy": "Different look",
-    "blurb": "The same kind of animals in another aquascape style: different plants, hardscape and mood.",
-    "tradeoff": "Same animals, another look (Nature aquarium): a starter finish (few plants, a little hardscape) in 5 gal; the cost is close to the other looks, the mood is different. $8 stays under your ceiling. No stand: it sits on a sturdy counter or dresser (a stand would add about $69).",
-    "archetype": "A betta in its own tank",
-    "tank": "5 gal",
-    "tier": "starter",
+    "strategy": "Size first",
+    "blurb": "The biggest tank the ceiling and the animals allow, a basic finish: room and stability before looks.",
+    "tradeoff": "Room first: 2 gal gives stability and space; the money goes to the tank, so a basic finish. $18 stays under your ceiling. No stand: it sits on a sturdy counter or dresser (a stand would add about $92).",
+    "archetype": "Zebra isopod colony",
+    "tank": "Nano terrarium",
+    "tier": "lean",
     "finish": [
-     "Look: Nature aquarium",
-     "Substrate: blended, about 18 lb",
-     "Hardscape: 2 pieces (seiryu)",
-     "Plants: 3 live plants (java moss, cryptocoryne, hornwort)",
-     "Plant care: no extras; 4 W light"
+     "Look: Rainforest (crested gecko)",
+     "Substrate: Soil / coco fibre, about 5 lb",
+     "Hardscape: 4 pieces (climbing branch, cork bark flat, cork tube, half-log hide)",
+     "Plants: 3 live plants (pothos, sphagnum moss, bromeliad)"
     ],
     "gear": [
-     "Filter: Tetra Whisper 10i Internal Filter",
-     "Heater: about 50 W",
-     "Light: 4 W LED"
+     "No heat: these animals are comfortable at room temperature",
+     "Thermometer and hygrometer",
+     "No misting: these animals want drier air"
     ],
-    "animals": "1 betta",
-    "total": 192,
-    "preTax": 192,
+    "animals": "10 zebraisopod",
+    "total": 182,
+    "preTax": 182,
     "tax": 0,
-    "under": 8,
-    "monthly": 6,
-    "min": 31,
+    "under": 18,
+    "monthly": 22,
+    "min": 17,
     "lines": [
      {
       "label": "Tank",
-      "usd": 11
+      "usd": 78
      },
      {
       "label": "Substrate, hardscape and plants",
-      "usd": 23
+      "usd": 45
      },
      {
       "label": "Animals",
-      "usd": 12
-     },
-     {
-      "label": "Supplies (water test kit and the like)",
-      "usd": 28
+      "usd": 29
      },
      {
       "label": "Gear (heat, UVB, lights, filter and the rest)",
-      "usd": 118
+      "usd": 30
      },
      {
-      "label": "Stand",
+      "label": "Stand (terrarium)",
       "usd": 0,
       "note": "not needed"
      }
@@ -880,17 +877,17 @@
  {
   "id": "cap200own",
   "title": "$200 ceiling, no preferences, I already have a stand, filter and heater",
-  "ms": 702,
+  "ms": 891,
   "stats": {
-   "pool": 8,
-   "rejectedWelfare": 6,
+   "pool": 12,
+   "rejectedWelfare": 2,
    "rejectedConstraint": 0
   },
   "note": "Only 2 kinds of setup fit your guardrails: freshwater fish, terrarium animals.",
   "misses": [
+   "Pinktoe arboreal tarantula enclosure: +$7 set-up",
    "Ember tetra nano school: +$18 set-up",
-   "Neon tetras and corydoras community: +$115 set-up",
-   "Leopard gecko terrarium: +$254 set-up"
+   "Chilean rose tarantula terrarium: +$44 set-up"
   ],
   "proposals": [
    {
@@ -958,6 +955,55 @@
     ]
    },
    {
+    "strategy": "Look first",
+    "blurb": "A mid-size tank at the lushest finish: plants, hardscape and the light and feeding that keep them.",
+    "tradeoff": "Look first: a full finish in 2 gal; more plants mean more light and feeding (about 17 min a week) and less room than the biggest tank. $14 stays under your ceiling.",
+    "archetype": "Zebra isopod colony",
+    "tank": "Nano terrarium",
+    "tier": "standard",
+    "finish": [
+     "Look: Rainforest (crested gecko)",
+     "Substrate: Soil / coco fibre, about 5 lb",
+     "Hardscape: 4 pieces (climbing branch, cork bark flat, cork tube, half-log hide)",
+     "Plants: 3 live plants (pothos, bromeliad)"
+    ],
+    "gear": [
+     "No heat: these animals are comfortable at room temperature",
+     "Thermometer and hygrometer",
+     "No misting: these animals want drier air"
+    ],
+    "animals": "10 zebraisopod",
+    "total": 186,
+    "preTax": 186,
+    "tax": 0,
+    "under": 14,
+    "monthly": 22,
+    "min": 17,
+    "lines": [
+     {
+      "label": "Tank",
+      "usd": 78
+     },
+     {
+      "label": "Substrate, hardscape and plants",
+      "usd": 50
+     },
+     {
+      "label": "Animals",
+      "usd": 28
+     },
+     {
+      "label": "Gear (heat, UVB, lights, filter and the rest)",
+      "usd": 30
+     },
+     {
+      "label": "Stand (terrarium)",
+      "usd": 0,
+      "note": "you have"
+     }
+    ]
+   },
+   {
     "strategy": "Size first",
     "blurb": "The biggest tank the ceiling and the animals allow, a basic finish: room and stability before looks.",
     "tradeoff": "Room first: 2 gal gives stability and space; the money goes to the tank, so a basic finish. $10 stays under your ceiling.",
@@ -1001,70 +1047,6 @@
      },
      {
       "label": "Stand (terrarium)",
-      "usd": 0,
-      "note": "you have"
-     }
-    ]
-   },
-   {
-    "strategy": "Cheapest start",
-    "blurb": "The smallest tank that holds them, the cheapest gear and a starter finish: the lowest all-in cost that still passes every check.",
-    "tradeoff": "Lowest cost: the smallest tank that holds them (5 gal) and a starter finish (few plants, a little hardscape), so less room and a plainer look. $51 stays under your ceiling. No stand: it sits on a sturdy counter or dresser (a stand would add about $69).",
-    "archetype": "A betta in its own tank",
-    "tank": "5 gal",
-    "tier": "starter",
-    "finish": [
-     "Look: Dense planted",
-     "Substrate: blended, about 12 lb",
-     "Hardscape: 2 pieces (lava rock)",
-     "Plants: 3 live plants (hornwort, vallisneria)",
-     "Plant care: no extras; 4 W light"
-    ],
-    "gear": [
-     "Filter: Tetra Whisper 10i Internal Filter",
-     "Heater: about 50 W",
-     "Light: 4 W LED"
-    ],
-    "animals": "1 betta",
-    "total": 149,
-    "preTax": 149,
-    "tax": 0,
-    "under": 51,
-    "monthly": 6,
-    "min": 32,
-    "lines": [
-     {
-      "label": "Tank",
-      "usd": 11
-     },
-     {
-      "label": "Substrate, hardscape and plants",
-      "usd": 19
-     },
-     {
-      "label": "Animals",
-      "usd": 12
-     },
-     {
-      "label": "Supplies (water test kit and the like)",
-      "usd": 28
-     },
-     {
-      "label": "Gear (heat, UVB, lights, filter and the rest)",
-      "usd": 79
-     },
-     {
-      "label": "Stand",
-      "usd": 0,
-      "note": "not needed"
-     },
-     {
-      "label": "Filtration: Internal filter",
-      "usd": 0,
-      "note": "you have"
-     },
-     {
-      "label": "Heating: One heater",
       "usd": 0,
       "note": "you have"
      }

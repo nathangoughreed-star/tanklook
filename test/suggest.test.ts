@@ -172,8 +172,8 @@ describe('Suggest a setup', () => {
         for (const a of arth) {
           ARCHETYPES.splice(0, ARCHETYPES.length, a);
           const p = run({}, { kinds: ['terrarium'], groups: ['arthropod'] }).proposals;
-          expect(p.length, a.id).toBe(1);
-          expect(summaryOf(p[0].scene, 'in').cats.filter(k => k.level === 'caution' || k.level === 'problem').map(k => k.label), a.id).toEqual([]);
+          expect(p.length, a.id).toBeGreaterThan(0); // lane U2: one archetype can fill several slots with different concepts (strategies), each must pass
+          for (const q of p) expect(summaryOf(q.scene, 'in').cats.filter(k => k.level === 'caution' || k.level === 'problem').map(k => k.label), a.id).toEqual([]);
         }
       } finally { ARCHETYPES.splice(0, ARCHETYPES.length, ...all); }
     });
@@ -235,7 +235,7 @@ describe('Suggest a setup', () => {
     });
     it('experience scales complexity only: a beginner and an expert get the same pool (never a prohibition), ranked differently, with a note where it matters', () => {
       const lo = run({ startupUsd: cap(3000), experience: 0 }), hi = run({ startupUsd: cap(3000), experience: 2 });
-      expect(lo.stats.pool).toBe(hi.stats.pool);
+      expect(new Set(lo.qualified)).toEqual(new Set(hi.qualified)); // the same kinds qualify: experience never removes one
       for (const p of [...lo.proposals, ...hi.proposals]) { expect(p.complexity).toBeGreaterThanOrEqual(0); expect(p.complexity).toBeLessThanOrEqual(1); }
       const avg = (r: typeof lo) => r.proposals.reduce((t, p) => t + p.complexity, 0) / r.proposals.length;
       expect(avg(lo)).toBeLessThanOrEqual(avg(hi));
