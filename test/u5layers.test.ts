@@ -72,3 +72,20 @@ describe('stated compromise', () => {
     for (const p of r.proposals) { expect(p.build.finish?.tier).not.toBe('bare'); expect(p.finishNote).toBeUndefined(); }
   });
 });
+
+describe('low-tech lush finish', () => {
+  it('lowtech offers dense live plants with no CO2 and no stronger light, priced; the high-tech tier has both', () => {
+    const lo = run({ constraints: { startupUsd: cap(600) }, kinds: ['freshwater'], tags: ['natural'], lowtech: true }), hi = run({ constraints: { startupUsd: cap(900) }, kinds: ['freshwater'], hightech: true });
+    const low = lo.proposals.filter(p => p.build.finish?.tier === 'lowtech');
+    expect(low.length).toBeGreaterThan(0);
+    for (const p of low) {
+      expect(p.build.finish!.level).toBe(2);
+      const co2 = p.build.setup.tech?.rows.co2;
+      expect(!co2 || co2 === 'none').toBe(true);
+      expect(p.layers.some(l => l.layer === 'enhance')).toBe(false);
+      expect(p.build.setup.items.filter(i => i.kind === 'plant' || i.kind === 'artificial').length).toBeGreaterThan(3);
+    }
+    expect(hi.proposals.length).toBeGreaterThan(0);
+    for (const p of hi.proposals) expect(['standard', 'lush']).toContain(p.build.finish!.tier);
+  });
+});

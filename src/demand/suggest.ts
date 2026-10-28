@@ -159,6 +159,8 @@ export interface Wants {
   setupHours?: number;
   /** the high-tech approach is a requirement (lane U4): only finishes with CO2 and a stronger light (the standard and lush tiers) are offered, so the look is not traded for a cheaper approach silently */
   hightech?: boolean;
+  /** the planted look without CO2 (lane U5): the low-tech lush finish (dense live plants chosen for the light the tank has, liquid ferts only) is offered, then the basic and starter finishes */
+  lowtech?: boolean;
   /** buy in phases (lane U4): the set-up ceiling is checked against the animal-care essentials only; the animals are a second purchase after the tank has cycled (each concept carries its `phases`) */
   phased?: boolean;
 }
@@ -425,7 +427,7 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
     let welfare = false;
     // lane U5: only the cheapest concept (finish ceiling 0) may fall back to a bare bottom when the money cannot carry even the starter finish, and it says so; richer concepts step DOWN a size instead
     const bareOk = a.kind === 'freshwater' && canBeBare(b0.setup); // a paludarium or any land side keeps its substrate
-    const tiers = function* () { yield* finishTiers(b0, now, over0, maxLevel, style, !!w.minimal && bareOk); if (!w.minimal && !style && maxLevel === 0 && !w.climb && !w.hightech && bareOk) yield bareBuild(b0, now); };
+    const tiers = function* () { yield* finishTiers(b0, now, over0, maxLevel, style, !!w.minimal && bareOk, !!w.lowtech); if (!w.minimal && !style && maxLevel === 0 && !w.climb && !w.hightech && bareOk) yield bareBuild(b0, now); };
     for (const b of tiers()) {
       const own = ownedAssess(b, ownedMap, needStand, P0, !!w.ownTank), saved = own.saved, scene = scenOf(b, own, needStand), sm = summaryOf(scene, units);
       // husbandry is never traded for money or time: the strict rule (Nathan 2026-10-27) = nothing the stocking screen words as a Problem OR a Caution in any of its five categories. Only "not enough information" passes, and it is shown.
@@ -468,7 +470,7 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
     const mid = Math.ceil(top / 2), idxOf = (z: StrategyDef['size']) => z === 'small' ? 0 : z === 'top' ? top : mid;
     const sd = STRATEGIES.find(x => x.id === id)!;
     if (sd.scape && !altStyle) return;
-    const maxLevel = w.climb ? 3 : w.hightech ? Math.max(sd.level, 2) as 0 | 1 | 2 | 3 : sd.level;
+    const maxLevel = w.climb ? 3 : w.hightech || w.lowtech ? Math.max(sd.level, 2) as 0 | 1 | 2 | 3 : sd.level;
     let found: Out | undefined, near: Miss | undefined;
     // the strategy's own size first; a size the money cannot carry once finished falls back one size down at a time, a size the welfare rule turns away (too full) goes one size UP (at most three tries)
     for (let tries = 0, i = idxOf(sd.size), dir = -1; i >= 0 && i < list.length && tries < 3 && !found?.p; i += dir, tries++) {

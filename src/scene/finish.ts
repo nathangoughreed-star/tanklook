@@ -20,7 +20,7 @@ import { fixtureOf } from './lightout';
 import { volume } from './physics';
 import type { GrowFeed, Item, LayoutId, TankSetup } from './types';
 
-export type FinishTier = 'bare' | 'starter' | 'lean' | 'standard' | 'lush';
+export type FinishTier = 'bare' | 'lowtech' | 'starter' | 'lean' | 'standard' | 'lush';
 export interface Finish {
   tier: FinishTier;
   /** 0 starter .. 3 lush: how finished the tank is (Suggest ranks the best tier that passes every guardrail first) */
@@ -29,12 +29,14 @@ export interface Finish {
   /** one line each: the look, substrate, hardscape, plants */
   lines: string[];
 }
-export const TIER_LABEL: Record<FinishTier, string> = { bare: 'Bare-bottom (minimal)', starter: 'Starter finish', lean: 'Basic finish', standard: 'Full finish', lush: 'Lush finish' };
+export const TIER_LABEL: Record<FinishTier, string> = { bare: 'Bare-bottom (minimal)', lowtech: 'Low-tech lush finish', starter: 'Starter finish', lean: 'Basic finish', standard: 'Full finish', lush: 'Lush finish' };
 /** What a tier is: layer densities (the starter sliders, 0 none .. 4 dense; default 2) AND the equipment people add as they spend (research/design/finish-ladders.md):
  *  plant feed (ferts, then CO2 by the cheapest gas that suits the tank, then pressurised; on a reef dosing, flow, skimmer and an auto top-off), a stronger light
  *  (x the build's own watts), and a plant count that grows with the floor (cm2 of floor to one plant piece), never a clump of dozens. */
 interface TierSpec { id: Exclude<FinishTier, 'bare'>; level: 0 | 1 | 2 | 3; dens: { hard: number; plant: number }; mode: PlantMode; /** share of the hardscape kept (the leanest tier is a few well-placed pieces) */ keep: number;
   feed: GrowFeed; lightK: number; ato: boolean; plantArea: number }
+/** Dense live plants chosen for the light this build has (fit settles any that would struggle into artificial ones), liquid ferts, no CO2, no stronger light: lush to look at, cheap to run. Level 2 so it counts as a full finish. */
+const LOW_TECH: TierSpec = { id: 'lowtech', level: 2, dens: { hard: 3, plant: 3 }, mode: 'live', keep: 1, feed: 'ferts', lightK: 1, ato: false, plantArea: 110 };
 const TIERS: readonly TierSpec[] = [
   { id: 'lush', level: 3, dens: { hard: 3, plant: 3 }, mode: 'live', keep: 1, feed: 'co2', lightK: 1.8, ato: true, plantArea: 110 },
   { id: 'standard', level: 2, dens: { hard: 2, plant: 2 }, mode: 'mixed', keep: 1, feed: 'co2', lightK: 1.3, ato: false, plantArea: 150 },
@@ -174,10 +176,11 @@ export function baselineAddUsd(bare: Build, now = Date.now()): number {
 
 /** The build finished at each tier, best finish first, one at a time (a caller that stops at the first that passes builds as few as it must). `leanOnly`: just the starter finish, for a build already over a money or time cap, which no finish can bring back under. `maxLevel`: the richest tier offered (the finish ladder's top for this concept).
  *  The style is the best-suited one that draws hardscape (a rock, wood or a hide to anchor the plants): styles scoring within 0.25 of the best are tried in order. */
-export function* finishTiers(b: Build, now = Date.now(), leanOnly = false, maxLevel: 0 | 1 | 2 | 3 = 3, forceStyle?: Exclude<LayoutId, 'none'>, bare = false): Generator<Build> {
+export function* finishTiers(b: Build, now = Date.now(), leanOnly = false, maxLevel: 0 | 1 | 2 | 3 = 3, forceStyle?: Exclude<LayoutId, 'none'>, bare = false, lowTech = false): Generator<Build> {
   if (bare && canBeBare(b.setup)) { yield bareBuild(b, now); return; } // lane U5: the bare / minimal option
   // `maxLevel` (lane U2): a concept that is not climbing starts at its own tier and never builds the richer ones above it
-  const specs = leanOnly ? TIERS.slice(-1) : TIERS.filter(t => t.level <= maxLevel); // the last is the leanest
+  // `lowTech` (lane U5): the planted look without CO2: the low-tech lush tier replaces the CO2 tiers above the basic finish
+  const specs = leanOnly ? TIERS.slice(-1) : lowTech ? [LOW_TECH, ...TIERS.filter(t => t.level <= Math.min(1, maxLevel))] : TIERS.filter(t => t.level <= maxLevel); // the last is the leanest
   const ranked = rankStyles(b.animals), top = ranked[0]?.score ?? 0, tried = forceStyle ? [forceStyle] : ranked.filter(r => r.score >= top - 0.25).slice(0, 4).map(r => r.style); // `forceStyle` (lane U2): a concept that is about a different look
   let style = tried[0] ?? 'planted', first: Build | undefined;
   for (const st of tried.length ? tried : [style]) {

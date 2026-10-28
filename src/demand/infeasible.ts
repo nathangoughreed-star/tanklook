@@ -73,7 +73,7 @@ export function applyAlternative(b: Brief, e: AltEdit): Brief {
     case 'owned': { const map: OwnedMap = { ...(valueOf(b, 'constraints.owned') ?? {}) }; for (const k of e.keys) map[k] = PICK_CARE; const n = e.keys.length ? setItem(b, 'constraints.owned', map, 'hard') : b; return e.tank ? setItem(n, 'constraints.existingTank', { model: e.tank }, 'hard') : n; }
     case 'species': return setItem(b, 'animals.stock', e.animals.map(a => ({ species: a.species, count: a.n })), 'locked');
     case 'phased': return setItem(b, 'constraints.phased', true, 'hard');
-    case 'lowtech': return clearItem(b, 'preferences.hightech');
+    case 'lowtech': return setItem(clearItem(b, 'preferences.hightech'), 'preferences.lowtech', true, 'hard');
     case 'space': return e.w && e.d ? setItem(b, 'constraints.maxSpace', { w: e.w, d: e.d }, 'hard') : clearItem(b, 'constraints.maxSpace');
     case 'ownTank': return clearItem(b, 'constraints.existingTank');
   }
@@ -137,7 +137,7 @@ export function explainInfeasible(x: Ctx): Infeasible {
     }
     // the look and the equipment approach are two different things: keep the look, drop the expensive approach
     if (w.hightech) {
-      const r = x.run({ ...w, hightech: false });
+      const r = x.run({ ...w, hightech: false, lowtech: true });
       const p = r.proposals[0];
       if (p) alts.push({ kind: 'low-tech', label: 'Keep the planted look, low-tech', edit: { op: 'lowtech' }, resultUsd: p.totals.startupUsd,
         text: `Keep the planted look and drop the high-tech gear: ${p.build.finish ? TIER_LABEL[p.build.finish.tier].toLowerCase() : 'a planted finish'} in a ${tankText(p)} tank for ${usd(p.totals.startupUsd)}, ${p.build.finish && p.build.finish.level < 2 ? 'with plant fertiliser but no CO2 rig and no extra-strong light, so less to buy and less to run. ' : ''}The look is the goal; CO2 and strong light are only one way to get it.` });
