@@ -45,3 +45,8 @@ NOT reached: bare betta from nothing is still about $200, not $105-120. (1) The 
 - Locked price oracles re-blessed (demand GOLD, tech LOCK, gearFilters LOCK): setup only, upkeep and minutes unchanged.
 - Kit shipping $5.99 kept. PetSmart pickup is reportedly free with no minimum, and free shipping needs a Treats Rewards login at $49 (promo terms); neither is modelled.
 - "Sale through Nov 1": the PetSmart page shows no end date; the date is Nathan's and appears only in the internal deal note, never on the card. Left off the card.
+
+## Round 5 (2026-10-28): bucket $5; levers not sourced
+- Bucket priced $5 flat (Home Depot, Nathan's figure; we did not read the page, so still `est`). Cheapest betta now $149.
+- Cheaper ammonia test: only unbranded Walmart strips ($8.43) and an eBay Jungle strip pack ($4.99 + shipping) turned up, no brand page we can cite; not used. API ammonia $15.05 stays.
+- Kit pickup: PetSmart's pickup page says free in-store pickup, but no minimum and the user's store are unverified, so shipping $5.99 stays in. Stopped at $149.

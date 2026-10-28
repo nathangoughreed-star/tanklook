@@ -1803,10 +1803,10 @@
    "url": ""
   },
   "gear:bucket": {
-   "lo": 4,
+   "lo": 5,
    "mode": 5,
-   "hi": 8,
-   "unit": "a bucket kept for the aquarium only: allowance (Nathan lead 2026-10-28), judgement; lane U5",
+   "hi": 5,
+   "unit": "a bucket kept for the aquarium only: Home Depot about $5 (Nathan, 2026-10-28; page not read by us), judgement; lane U5",
    "url": "",
    "est": true
   },
