@@ -41,6 +41,7 @@ export interface TarSpec {
   hooks: boolean;                       // the male's tibial hooks on the front pair
   hair: { body: number; leg: number };  // strands per body part / per leg
   legHairLen?: [number, number];        // leg hair length range (default 0.014..0.034; the curly hair's long coat)
+  curl?: number;                        // waviness of the hair strands 0..1 (default off: straight; the curly hair's coat)
   padCol?: string;                      // the scopula pad colour under the tarsi (default a pale tan; the pinktoe's pink toes)
 }
 
@@ -135,10 +136,10 @@ TARANTULAS.grosea = variant({
 }, ['#3a2c28', '#3a2c28']);
 // Curly hair (Tliltocatl albopilosus; photo: black stocky body and legs under long, wavy, pale gold-bronze hairs; the carapace's hair is cream)
 TARANTULAS.talbopilosus = variant({
-  carapaceCol: '#1c1612', abdomenCol: '#241c16', palpCol: '#1e1814', hairCol: '#6a5a3c', legHair: '#5a4c36', chelCol: '#16100c', ...build(1.07, 1.06, 1.04, 0.93, 1.12, 0.95),
+  carapaceCol: '#1c1612', abdomenCol: '#241c16', palpCol: '#1e1814', hairCol: '#9a7e48', legHair: '#6e5630', chelCol: '#16100c', ...build(1.07, 1.06, 1.04, 0.93, 1.12, 0.95),
   carapaceMarks: [rim('#7a6a40', 0.6), { k: 'band', x: [0.1, 0.45], s: [0.0, 0.25], c: '#7a6238', o: 0.4, soft: 0.05 }, fovea('#0c0806')],
   abdomenMarks: [{ k: 'mottle', n: 260, r: [0.02, 0.06], c: '#5e4e2e', o: 0.4, seed: 9 }, patchMark('#3a2c20')],
-  legBands: [], patch: { x: -0.27, hw: 0.14, col: '#5a3a24' }, legHairLen: [0.034, 0.075], hair: { body: 34000, leg: 9500 },
+  legBands: [], patch: { x: -0.27, hw: 0.14, col: '#5a3a24' }, legHairLen: [0.05, 0.1], hair: { body: 11000, leg: 2400 }, curl: 0.9,
 }, ['#16100c', '#16100c']);
 // Pinktoe (Avicularia avicularia; photo: slim, long thin black legs, a glossy blue-black carapace, a rounded black-velvet abdomen, the tarsi (toes) pink)
 TARANTULAS.aavicularia = variant({

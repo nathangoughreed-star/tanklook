@@ -81,6 +81,8 @@ export interface FuzzOpts {
   keep?: (p: THREE.Vector3, n: THREE.Vector3) => number;
   /** Strand tips lighter by this much (frost on a dark coat); default 0.18. */
   frost?: number;
+  /** Optional waviness 0..1 (default off = straight blades, unchanged): each strand becomes a ribbon of short pieces that wavers sideways about its axis (curly hair). */
+  curl?: number;
 }
 /**
  * Fine hair over a mesh: `count` strands (single tapered triangles, non-indexed with colours and normals; draw them double-sided) scattered over
@@ -126,6 +128,23 @@ export function fuzz(src: THREE.BufferGeometry, o: FuzzOpts): THREE.BufferGeomet
     const ang = r() * TAU, wd = t1.clone().multiplyScalar(Math.cos(ang)).addScaledVector(t2, Math.sin(ang)).multiplyScalar(rad);
     const a0 = p.clone().addScaledVector(wd, -1).addScaledVector(n, -rad * 0.4), a1 = p.clone().add(wd).addScaledVector(n, -rad * 0.4), tip = p.clone().addScaledVector(dir, len);
     c1.copy(c0).multiplyScalar(br); const ct = c1.clone().lerp(new THREE.Color(1, 1, 1), frost).multiplyScalar(1.05);
+    if (o.curl) {
+      // a wavy strand: 5 pieces along the path, each point swung sideways (a helix about the axis), width tapering to the tip
+      const NS = 4, ph = r() * TAU, cf = o.curl, pts: THREE.Vector3[] = [], half: number[] = [];
+      for (let m = 0; m <= NS; m++) {
+        const f = m / NS, amp = cf * len * 0.22 * Math.sin(Math.PI * Math.min(1, f * 1.3 + 0.1));
+        const q = p.clone().addScaledVector(dir, len * f).addScaledVector(t1, Math.sin(ph + f * 6) * amp).addScaledVector(t2, Math.cos(ph + f * 6) * amp);
+        pts.push(q); half.push(rad * (1 - f));
+      }
+      const cc = (f: number) => c1.clone().lerp(ct, f * f);
+      const push = (q: THREE.Vector3, k: number) => { outP.push(q.x, q.y, q.z); outN.push(dir.x * 0.6 + n.x * 0.4, dir.y * 0.6 + n.y * 0.4, dir.z * 0.6 + n.z * 0.4); const c = cc(k / NS); outC.push(c.r, c.g, c.b); };
+      for (let m = 0; m < NS; m++) {
+        const L0 = pts[m].clone().addScaledVector(wd, -half[m] / rad), R0 = pts[m].clone().addScaledVector(wd, half[m] / rad);
+        const L1 = pts[m + 1].clone().addScaledVector(wd, -half[m + 1] / rad), R1 = pts[m + 1].clone().addScaledVector(wd, half[m + 1] / rad);
+        push(L0, m); push(R0, m); push(R1, m + 1); push(L0, m); push(R1, m + 1); push(L1, m + 1);
+      }
+      continue;
+    }
     outP.push(a0.x, a0.y, a0.z, a1.x, a1.y, a1.z, tip.x, tip.y, tip.z);
     for (let m = 0; m < 3; m++) outN.push(dir.x * 0.6 + n.x * 0.4, dir.y * 0.6 + n.y * 0.4, dir.z * 0.6 + n.z * 0.4);
     outC.push(c1.r, c1.g, c1.b, c1.r, c1.g, c1.b, ct.r, ct.g, ct.b);

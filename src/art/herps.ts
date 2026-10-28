@@ -405,7 +405,7 @@ const ISOPODS: Record<string, IsoSpec> = {
   asellus: { body: ['#5a5042', '#8a7c68', '#b0a288'], leg: ['#6a6050', '#90846c', '#b0a68c'], mark: '#3a3226', eye: ['#2a2420', '#080606'] },
   // land isopods (lane arthropods 2026-10-28): placeholders on the asellus body until their own colours are painted
   zebraisopod: { body: ['#121212', '#1c1c1c', '#34322e'], leg: ['#3a3836', '#5a5854', '#7a7874'], mark: '#f2f0e6', eye: ['#2a2420', '#080606'] },
-  powderblueisopod: { body: ['#3e4a5e', '#5c6e88', '#7c8ea8'], leg: ['#58708e', '#7e96b4', '#9cb0c8'], mark: '#34405a', eye: ['#2a2420', '#080606'] },
+  powderblueisopod: { body: ['#3a4a64', '#5f7696', '#94a9c4'], leg: ['#58708e', '#86a0be', '#a8bcd4'], mark: '#34405a', eye: ['#1c1816', '#030202'] },
 };
 const ISO_SIDE: Pt[] = [[0.84, 0.07, 'c'], [0.78, 0.03], [0.6, -0.005], [0.4, -0.01], [0.22, 0.0], [0.1, 0.04, 'c'], [0.14, 0.1], [0.4, 0.115], [0.7, 0.115], [0.8, 0.1]];
 const ISO_LIMBS: Limb3D[] = [
@@ -444,9 +444,10 @@ const ISO_SHAPES: Record<string, IsoShape> = {
     a: POW_A, top: -0.07, bot: 0.08, plates: plateRun(0.28, 0.8), nLegs: 7, eye: { u: 0.855, v: 0.0, r: 0.01 },
     side: [[0.91, 0.03, 'c'], [0.87, -0.02], [0.79, -0.052], [0.6, -0.07], [0.4, -0.072], [0.24, -0.056], [0.14, -0.02], [0.1, 0.03, 'c'], [0.14, 0.066], [0.4, 0.08], [0.7, 0.08], [0.86, 0.062]],
     limbs: [...isoLegs(POW_G, 0.06, 0.74, 0.34, 0.1, 0.25, 0.0065, 0.096),
-      { js: [[0.88, 0.02, 0.05, 0.0048], [0.99, -0.005, 0.15, 0.0042], [1.08, 0.0, 0.29, 0.003]], toes: [], toe: 0, c: ['#a8c0da', '#7a96b8'] },
-      { js: [[0.89, 0.035, 0.03, 0.0035], [0.95, 0.025, 0.06, 0.0028], [0.985, 0.025, 0.08, 0.002]], toes: [], toe: 0, c: ['#a8c0da', '#7a96b8'] },
-      { js: [[0.12, 0.04, 0.03, 0.0065], [0.04, 0.05, 0.075, 0.005], [-0.06, 0.06, 0.12, 0.0035]], toes: [], toe: 0, c: ['#8aa4c4', '#6a84a4'] }],
+      { js: [[0.88, 0.02, 0.05, 0.0062], [1.0, -0.012, 0.17, 0.0054], [1.1, 0.0, 0.33, 0.0036]], toes: [], toe: 0, c: ['#b8cce2', '#8aa4c4'] },
+      { js: [[0.89, 0.035, 0.03, 0.0042], [0.955, 0.025, 0.065, 0.0034], [0.99, 0.025, 0.09, 0.0024]], toes: [], toe: 0, c: ['#b8cce2', '#8aa4c4'] },
+      { js: [[0.12, 0.035, 0.03, 0.0075], [0.04, 0.045, 0.085, 0.0058], [-0.07, 0.055, 0.15, 0.004]], toes: [], toe: 0, c: ['#a4bcd6', '#7a94b4'] },
+      { js: [[0.12, 0.045, 0.015, 0.0065], [0.045, 0.058, 0.04, 0.005], [-0.06, 0.07, 0.065, 0.0035]], toes: [], toe: 0, c: ['#a4bcd6', '#7a94b4'] }],
   },
 };
 function drawIsopod(s: IsoSpec, ctx: Ctx, P: Proj, W: number, art = 'asellus') {
@@ -460,11 +461,12 @@ function drawIsopod(s: IsoSpec, ctx: Ctx, P: Proj, W: number, art = 'asellus') {
     }
     const v0 = sh.top + (sh.bot - sh.top) * 0.4, v1 = sh.bot - (sh.bot - sh.top) * 0.08;
     if (sh.stripe) for (const [u0, u1] of sh.plates) soft(l, P, u0 + 0.008, u1 - 0.006, v0, v1, sh.stripe, 0.92, [0.006, 0.006], [0.012, 0.012]);
-    for (const [u0] of sh.plates) soft(l, P, u0 - 0.003, u0 + 0.003, sh.top - 0.02, sh.bot, art === 'asellus' ? s.mark : '#0c0c0c', 0.5, [0, 0], [0.01, 0.01]);
+    if (art === 'powderblueisopod') for (const [u0] of sh.plates) soft(l, P, u0 + 0.004, u0 + 0.02, sh.top - 0.02, sh.bot, '#c8d8ec', 0.5, [0, 0], [0.01, 0.01]); // the pale rim of each plate
+    for (const [u0] of sh.plates) soft(l, P, u0 - 0.003, u0 + 0.003, sh.top - 0.02, sh.bot, art === 'asellus' ? s.mark : art === 'powderblueisopod' ? '#18203a' : '#0c0c0c', art === 'powderblueisopod' ? 0.85 : 0.5, [0, 0], [0.01, 0.01]);
     if (art !== 'zebraisopod') for (let i = 0; i < 10; i++) { const r = rng(9 + i); blob(l, P, W, 0.2 + r() * 0.6, sh.top + r() * (sh.bot - sh.top) * 0.6, 0.025, 0.012, art === 'asellus' ? s.mark : '#c4d0e0', 0.22); }
   });
   for (const l of sh.limbs.slice(sh.nLegs)) ant(l);
-  herpEye(ctx, P, W, sh.eye.u, sh.eye.v, sh.eye.r, s.eye, 'dark');
+  herpEye(ctx, P, W, sh.eye.u, sh.eye.v, art === 'powderblueisopod' ? sh.eye.r * 1.5 : sh.eye.r, s.eye, 'dark');
 }
 
 export const HERP_ART: Record<string, (ctx: Ctx, P: Proj, W: number) => void> = {
@@ -508,21 +510,21 @@ export interface Limb3D {
   seg?: string;                // an arthropod leg: segments swelling between narrow joints, the joints in this colour (hermit crab)
   claw?: { palm: number; r: number; finger: number }; // a chela on the end: palm length, palm half-height, finger length (widths)
   c?: [string, string];        // own colour (top, underside), else the species' legCol (hermit crab antennae)
-  far?: number;                // the far side's copy is scaled by this about the root (hermit crab: a small right claw; the near side is the big left one)
-}
   waist?: number;             // `seg` legs: how narrow the joints are against the segments' swell (default 0.74; nearer 1 = a smooth tube, a scorpion's tail)
-export type Mark3D =
+  far?: number;                // the far side's copy is scaled by this about the root (hermit crab: a small right claw; the near side is the big left one)
   farJs?: Joint[];              // the far side's own joint chain (mirrored in z), so left and right legs differ (stick insect); else the mirror of `js`
   knee?: number;                // arthropod leg: the interior joints swell to this multiple of the leg radius (a knobbed knee)
   tint?: { r: number; c: string }; // the leg's colour turns to c near its root, within r of it (the red inner base of a stick insect's forelegs)
+}
+export type Mark3D =
   | { k: 'band'; u: [number, number]; a: [number, number]; c: string; o: number; blur?: number }
   | { k: 'spots'; n: number; u: [number, number]; a: [number, number]; r: [number, number]; c: string; o: number; seed: number }
   | { k: 'line'; pts: [number, number][]; c: string; o: number; w: number };
-export interface Herp3D {
-  side: Pt[];                     // side outline (card frame), the loft's silhouette
 /** A smooth ellipsoid solid in the body frame (arthropods): at = centre (u, v, z; z != 0 is mirrored to the far side), r = semi-axes along / across
  *  (v-ish) / thick (z-ish), ax = the long axis (du, dv, dz; v down), pt = 0..1 how far it tapers to a point at the +ax end (a cone), c = top / underside colour. */
 export interface Solid3D { at: [number, number, number]; r: [number, number, number]; ax: [number, number, number]; pt?: number; c: [string, string]; up?: [number, number, number]; one?: boolean }
+export interface Herp3D {
+  side: Pt[];                     // side outline (card frame), the loft's silhouette
   wid: [number, number][];        // half-width by u (widths), smoothed; both ends are rounded
   belly: number;                  // section exponent below the mid-line (higher = flatter belly); 2.4 above
   tone: [number, string][];       // colour round the section by a
@@ -537,9 +539,9 @@ export interface Solid3D { at: [number, number, number]; r: [number, number, num
   top?: number;                   // floating pose: the line v (card frame) that sits at the water surface
   shell?: { s: Shell3D; shell: [string, string, string]; mark: string }; // a carried snail shell (hermit crab), from the snail generator
   warts?: { n: number; u: [number, number]; a: [number, number]; r: [number, number]; h: number; seed: number }; // raised skin bumps (a: round the section, h: height / radius)
+  solids?: Solid3D[];             // extra smooth solids (insect eye cones, wing panels, leg lobes, spines), see Solid3D
 }
 
-  solids?: Solid3D[];             // extra smooth solids (insect eye cones, wing panels, leg lobes, spines), see Solid3D
 /** Frogs share one sitting pose (design frame, see FROG_TORSO); `fat` widens the body. */
 function frog3D(s: FrogSpec, fat: number, tone: [number, string][], marks: Mark3D[], legSpots?: Herp3D['legSpots']): Herp3D {
   const V = (v: number) => frogV(s.aspect, v), J = (u: number, v: number, z: number, r: number): Joint => [u, V(v), z, r];
@@ -787,15 +789,24 @@ HERP3D.zebraisopod = {
   limbs: ISO_SHAPES.zebraisopod.limbs, legCol: [ISOPODS.zebraisopod.leg[1], ISOPODS.zebraisopod.leg[0]],
   eye: { u: 0.855, th: 0.3, r: 0.011, iris: ISOPODS.zebraisopod.eye, pupil: 'dark', bulge: 0.6 }, ground: ZEB_G,
 };
+// the seven pereon plates: a pale rim along each plate's rear edge over a dark groove, so the overlaps read at 11 mm
+const POW_PL = ISO_SHAPES.powderblueisopod.plates, POW_W: [number, number][] = [[0.1, 0.035], [0.16, 0.1], [0.24, 0.138], [0.27, 0.152]];
+for (const [u0, u1] of POW_PL) POW_W.push([u0 + 0.002, 0.168], [(u0 + u1) / 2 + 0.006, 0.19]);
+POW_W.push([0.8, 0.172], [0.87, 0.11], [0.91, 0.05]);
 HERP3D.powderblueisopod = {
-  side: ISO_SHAPES.powderblueisopod.side, wid: [[0.1, 0.035], [0.16, 0.1], [0.27, 0.152], [0.4, 0.18], [0.6, 0.19], [0.78, 0.172], [0.87, 0.11], [0.91, 0.05]], belly: 2.6,
-  tone: [[0, ISOPODS.powderblueisopod.body[0]], [0.5, ISOPODS.powderblueisopod.body[1]], [1, ISOPODS.powderblueisopod.body[2]]],
+  side: ISO_SHAPES.powderblueisopod.side, wid: POW_W, belly: 2.6,
+  tone: [[0, ISOPODS.powderblueisopod.body[0]], [0.45, ISOPODS.powderblueisopod.body[1]], [1, ISOPODS.powderblueisopod.body[2]]],
   marks: [
-    { k: 'spots', n: 70, u: [0.15, 0.85], a: [0.0, 0.8], r: [0.006, 0.014], c: '#b4c4d8', o: 0.26, seed: 14 },
-    { k: 'spots', n: 40, u: [0.2, 0.8], a: [0.0, 0.5], r: [0.008, 0.018], c: '#6a5a50', o: 0.3, seed: 15 },
-    { k: 'band', u: [0.3, 0.8], a: [0.0, 0.05], c: '#34405a', o: 0.35, blur: 0.01 },
-    ...[0.1, 0.17, 0.23, ...ISO_SHAPES.powderblueisopod.plates.map(p => p[1])].map((u): Mark3D => ({ k: 'band', u: [u - 0.003, u + 0.002], a: [0, 0.85], c: '#232c3e', o: 0.8, blur: 0.002 })),
+    // the powder bloom: pale dust over the plates, thicker on the back, plus the brown-grey mottling of the real animal
+    { k: 'spots', n: 160, u: [0.15, 0.85], a: [0.0, 0.7], r: [0.004, 0.011], c: '#cddcee', o: 0.3, seed: 14 },
+    { k: 'spots', n: 26, u: [0.2, 0.8], a: [0.0, 0.5], r: [0.008, 0.016], c: '#7a6a5e', o: 0.2, seed: 15 },
+    { k: 'band', u: [0.28, 0.8], a: [0.0, 0.07], c: '#2c3a54', o: 0.4, blur: 0.012 },
+    // lighter rim just in front of each groove (the rear margin of the plate), then the dark groove
+    ...POW_PL.map(([u0]): Mark3D => ({ k: 'band', u: [u0 + 0.004, u0 + 0.02], a: [0, 0.8], c: '#c4d4e8', o: 0.6, blur: 0.004 })),
+    ...[0.1, 0.17, 0.23, ...POW_PL.map(p => p[1])].map((u): Mark3D => ({ k: 'band', u: [u - 0.004, u + 0.002], a: [0, 0.9], c: '#18203a', o: 0.9, blur: 0.002 })),
+    // the head shield: paler, with the dark eyes' patch
+    { k: 'band', u: [0.82, 0.91], a: [0, 0.8], c: '#8aa0bc', o: 0.4, blur: 0.01 },
   ],
   limbs: ISO_SHAPES.powderblueisopod.limbs, legCol: [ISOPODS.powderblueisopod.leg[1], ISOPODS.powderblueisopod.leg[0]],
-  eye: { u: 0.855, th: 0.3, r: 0.01, iris: ISOPODS.powderblueisopod.eye, pupil: 'dark', bulge: 0.6 }, ground: POW_G,
+  eye: { u: 0.865, th: 0.3, r: 0.016, iris: ISOPODS.powderblueisopod.eye, pupil: 'dark', bulge: 0.8 }, ground: POW_G,
 };

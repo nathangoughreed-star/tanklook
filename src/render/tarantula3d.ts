@@ -126,7 +126,7 @@ function legGeometry(cx: Cx, l: TarLeg, i: number, side: number, seed: number) {
   const claws = tint(merge(extra), () => col('#1a110d'));
   // the hair: the leg's own colour at the root (nearest segment), long and dense
   const hair = fuzz(leg, {
-    count: S.hair.leg, len: S.legHairLen ?? [0.014, 0.034], rad: 0.0052, seed, lean: 0.62, frost: 0,
+    count: S.hair.leg, len: S.legHairLen ?? [0.014, 0.034], rad: 0.0052, seed, lean: S.curl ? 0.42 : 0.62, frost: S.curl ? 0.3 : 0, curl: S.curl,
     flow: () => F.clone().sub(pts[1]).normalize(),
     colour: (p, _uv, c) => {
       let best = 0, bd = 9; for (let k = 0; k < 7; k++) { const m = pts[k].clone().lerp(pts[k + 1], 0.5), d = m.distanceTo(p); if (d < bd) { bd = d; best = k; } }
@@ -220,7 +220,7 @@ function build(S: TarSpec, pose: TarPose, R: number, mode: TarMode): Built {
     for (let i = 0; i < n.count; i++) { const ny = q.fromBufferAttribute(n, i).dot(up), k = 1 - 0.32 * Math.max(0, -ny) + 0.05 * Math.max(0, ny); cl.push(k * LIT, k * LIT, k * LIT); }
     g.setAttribute('color', new THREE.Float32BufferAttribute(cl, 3));
     const hair = fuzz(g, {
-      count: hairN, len, rad, seed, lean: 0.55, frost: 0,
+      count: hairN, len, rad, seed, lean: S.curl ? 0.4 : 0.55, frost: S.curl ? 0.12 : 0, curl: S.curl,
       flow: () => V(flowX, 0.2, 0).transformDirection(body),
       colour: (_pt, uv, c) => p.at(uv!.x, uv!.y, c).convertSRGBToLinear().multiplyScalar(1.05 * LIT),
       keep: (pt, nn) => (nn.dot(up) < -0.5 ? 0.3 : isAbd && inPatch(pt) ? 0.12 : 1),
