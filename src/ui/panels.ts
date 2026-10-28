@@ -8,6 +8,7 @@ import { SUMP_MODELS, sumpFromModel, tempEvidence } from '../scene/tech';
 import { standMisfit } from '../scene/standspace';
 import { renderFeaturedDeals } from './featuredDeals';
 import { attachWelcome } from './welcome';
+import { editBrief, setTank as briefTank } from './setupBrief';
 import { startDeals, visibleTabs, pickTab, sortDeals, DEFAULT_SORT, type DealSort, type StartTab, type StartMenu } from './startEntries';
 import { DEALS_AS_OF, DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
 import { LEVELS, onPerf, perf, setAuto, setLevel } from '../render/perf';
@@ -285,17 +286,19 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // The Welcome screen (lane C4) is the front door: first launch shows it; New / Open… still open the chooser above.
   // At first launch the tank on screen is already a fresh one, so Sandbox just closes the Welcome screen.
   let welcomeFirst = false, lookPick: { open(): void } | undefined;
-  let suggestPanel: { open(): void } | undefined;
+  let suggestPanel: { open(): void } | undefined, briefBarApi: { open(): void } | undefined;
   const openLook = () => void import('./lookPick').then(m => { (lookPick ??= m.attachLookPick(store, viewer, status)).open(); }); // lane C7: Create a look (path 2)
   $('startLook').onclick = () => { startDlg.close(); openLook(); };
   const welcome = attachWelcome({
     stocking: () => $('startAnimal').click(),
     look: () => openLook(),
+    equipment: () => briefBarApi?.open(),
     suggest: () => suggestPanel?.open(),
     sandbox: () => welcomeFirst ? (welcomeFirst = false, true) : newEmptyTank(),
     browse: menu => showChooser(menu, menu === 'open' ? 'starters' : undefined, welcomeFirst),
   });
   void import('./suggest').then(m => { suggestPanel = m.attachSuggest(store, viewer, status); }); // lane C8: Suggest a setup
+  void import('./briefBar').then(m => { briefBarApi = m.attachBriefBar(store, { suggest: () => suggestPanel?.open() }); }); // lane U3: the setup brief bar, shown in every entry point
   $('suggestBtn').onclick = () => { if (startDlg.open) startDlg.close(); suggestPanel?.open(); };
   $('welcomeBtn').onclick = () => { welcomeFirst = false; if (startDlg.open) startDlg.close(); welcome.show(); };
   $('startWelcome').onclick = () => { startDlg.close(); welcome.show(); };
@@ -420,7 +423,7 @@ Cancel, then change the name, to keep both.`)) return;
     };
     let sumpDone: ((m: TankModel) => void) | null = null;
     dlg.addEventListener('close', () => { sumpDone = null; $('tankDlgTitle').textContent = 'Tank sizes'; });
-    const apply = (m: TankModel, v?: TankVariant) => { if (sumpDone) { sumpDone(m); dlg.close(); return; } v ??= soleProduct(m); const mm = v ? modelOfVariant(m, v) : m; setTank(() => tankFromModel(mm), undefined, mm.glassMm, standFor(m, v)); pinPreset(store.scene.active, store.tank, saleOf(m, v)); dlg.close(); };
+    const apply = (m: TankModel, v?: TankVariant) => { if (sumpDone) { sumpDone(m); dlg.close(); return; } editBrief(b => briefTank(b, { id: m.id, label: m.name })); v ??= soleProduct(m); const mm = v ? modelOfVariant(m, v) : m; setTank(() => tankFromModel(mm), undefined, mm.glassMm, standFor(m, v)); pinPreset(store.scene.active, store.tank, saleOf(m, v)); dlg.close(); };
     const draw = () => {
       const needle = q.value.trim().toLowerCase();
       const hit = (m: TankModel) => !needle || [m.name, m.shape, ...(m.tags ?? []), ...(m.variants ?? []).flatMap(v => [v.brand, v.line ?? ''])].join(' ').toLowerCase().includes(needle);

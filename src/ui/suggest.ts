@@ -17,6 +17,7 @@ import type { Viewer } from '../render/viewer';
 import type { SpaceLimit, Units } from '../scene/types';
 import { loadProfile } from './demandPanel';
 import { placedSetup, putTank, sceneForBuild } from './buildPick';
+import { constraintsOf, editBrief, getBrief, setBudget, setCareTime, setMonthly, setSpace } from './setupBrief';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
@@ -56,6 +57,12 @@ export function attachSuggest(store: Store, viewer: Viewer, status: (m: string, 
     const c = store.tank.constraints ?? lastUsed(), sp = store.tank.layout.space, k = units() === 'in' ? MM_IN : 10;
     const v = (x?: { on: boolean; value: number }) => x && x.on ? String(x.value) : '';
     f = { startup: v(c?.startupUsd), monthly: v(c?.monthlyUsd), time: v(c?.minutesPerWeek), spaceOn: !!(c?.space?.on && sp), w: sp ? String(Math.round(sp.w / k * 10) / 10) : '', d: sp ? String(Math.round(sp.d / k * 10) / 10) : '', needStand: f.needStand, owned: f.owned, kinds: f.kinds, groups: f.groups };
+    // the setup brief wins over the tank's own guardrails: what the person already told us is not asked again (lane U3)
+    const bc = constraintsOf(getBrief());
+    if (bc.startupUsd !== undefined) f.startup = String(bc.startupUsd);
+    if (bc.monthlyUsd !== undefined) f.monthly = String(bc.monthlyUsd);
+    if (bc.minutesPerWeek !== undefined) f.time = String(bc.minutesPerWeek);
+    if (bc.space) { f.spaceOn = true; f.w = String(Math.round(bc.space.w / k * 10) / 10); f.d = String(Math.round(bc.space.d / k * 10) / 10); }
     tags = new Set(); res = undefined; pics = []; note = '';
   };
   const readFields = () => {
@@ -98,8 +105,8 @@ ${res.note ? `<p class="spWarn sgNote">${esc(res.note)}</p>` : ''}<ul class="bpC
       else out = `<p class="spWarn" id="sgNone">${esc(res.message ?? res.unavailable ?? '')}</p>`;
       if (res.misses.length && !res.unavailable) out += `<div class="sgMiss"><b>Closest, if you raise a limit</b> (these do not fit your guardrails as set)<ul>${res.misses.map(m => `<li>${esc(m.archetype.title)}: ${esc(m.text)}</li>`).join('')}</ul></div>`;
     }
-    el.innerHTML = `<div class="spHead"><h2>Suggest a setup</h2><button type="button" data-act="close" aria-label="Close">✕</button></div>
-<p class="spNote">Tick the limits that matter to you and we propose setups that fit them, each checked against all of them and against what the animals need. Leave a box empty to keep that limit off.</p>
+    el.innerHTML = `<div class="spHead"><h2>Fill in what I left open</h2><button type="button" data-act="close" aria-label="Close">✕</button></div>
+<p class="spNote">Your setup brief (the bar above) already holds what you told us; fill in or change the rest here. Tick the limits that matter to you and we propose setups that fit them, each checked against all of them and against what the animals need. Leave a box empty to keep that limit off.</p>
 <div class="sgCard">
 <fieldset class="sgKinds"><legend>What kind of setup?</legend>${KINDS.map(k => `<label><input class="sgKind" type="checkbox" value="${k.id}" ${f.kinds.includes(k.id) ? 'checked' : ''}> ${k.label} <span class="spNote">${k.blurb}</span></label>`).join('')}
 ${asksDryGroups(f.kinds) ? `<div class="sgSub" role="group" aria-label="Terrarium and vivarium animals"><span class="spNote">For a terrarium or vivarium, which animals?</span>${DRY_GROUPS.map(g => `<label><input class="sgGroup" type="checkbox" value="${g.id}" ${f.groups.includes(g.id) ? 'checked' : ''}> ${g.label}</label>`).join('')}</div>` : ''}
@@ -128,6 +135,8 @@ ${f.kinds.length ? '' : '<div class="spWarn">Tick at least one kind.</div>'}</fi
     readFields();
     const w = wantsFrom(f, units());
     note = '';
+    // what was filled in here goes back into the brief, so every entry point shows it
+    editBrief(b => { const c = w.constraints; let n = setMonthly(setBudget(b, c.startupUsd?.on ? c.startupUsd.value : undefined), c.monthlyUsd?.on ? c.monthlyUsd.value : undefined); n = setCareTime(n, c.minutesPerWeek?.on ? c.minutesPerWeek.value : undefined); return w.space ? setSpace(n, w.space, units()) : n; });
     if (!w.kinds.length) { note = 'Tick at least one kind of setup.'; res = undefined; draw(); return; }
     if (w.spaceMissing) { note = 'Enter the width and depth of your space, or untick Space.'; res = undefined; draw(); return; }
     res = suggestSetups({ kinds: w.kinds, groups: w.groups, needStand: w.needStand, owned: w.owned, constraints: w.constraints, ...(w.space ? { space: w.space } : {}), tags: [...tags] }, loadProfile(), units());

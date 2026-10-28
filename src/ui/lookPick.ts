@@ -7,6 +7,7 @@
 import { PLANT_MODES, type PlantMode } from '../scene/scapes';
 import { LOOK_TILES, animalsFor, asksPlants, defaultSize, lookHint, lookLabel, lookOption, lookSizes, lookWithAnimals, type LookAnimal, type LookStyle } from '../scene/looks';
 import { tankLabel } from '../scene/tankfit';
+import { editBrief, lockAnimals, setLook, setTank } from './setupBrief';
 import type { TankModel } from '../data/tanks';
 import type { Store } from '../scene/store';
 import type { Viewer } from '../render/viewer';
@@ -90,14 +91,14 @@ ${asksPlants(style) ? `<div class="spNote">Plants</div><div class="lkChips">${PL
     switch (t.dataset.act) {
       case 'cancel': restore(); dropRef(); close(); orig = undefined; break;
       case 'tiles': picks = []; restore(); showTiles(); break;
-      case 'style': style = t.dataset.style as LookStyle; tank = defaultSize(style); picks = []; token++; tank2(); break;
-      case 'size': tank = lookSizes(style).find(m => m.id === t.dataset.id) ?? tank; picks = []; tank2(); break;
+      case 'style': style = t.dataset.style as LookStyle; tank = defaultSize(style); picks = []; token++; editBrief(b => setLook(b, style)); tank2(); break;
+      case 'size': tank = lookSizes(style).find(m => m.id === t.dataset.id) ?? tank; picks = []; editBrief(b => setTank(b, { id: tank.id, label: tankLabel(tank, store.scene.units) })); tank2(); break;
       case 'mode': mode = t.dataset.mode as PlantMode; tank2(); break;
       case 'animals': tank3(); break;
       case 'back': tank2(); break;
       case 'inc': case 'dec': { const p = picks[+(t.dataset.i ?? 0)]; p.n = t.dataset.act === 'inc' ? (p.n ? p.n + 1 : p.a.n) : Math.max(0, p.n - 1); tank3(); break; }
       case 'skip': finish([]); break;
-      case 'use': finish(picks.filter(p => p.n > 0).map(p => ({ species: p.a.id, n: p.n }))); break;
+      case 'use': editBrief(b => lockAnimals(b, picks.filter(p => p.n > 0).map(p => ({ species: p.a.id, name: p.a.name, n: p.n })))); finish(picks.filter(p => p.n > 0).map(p => ({ species: p.a.id, n: p.n }))); break;
     }
   };
   el.onchange = e => {

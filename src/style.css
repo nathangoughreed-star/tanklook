@@ -811,3 +811,68 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .startkind { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 0 0 8px }
 .startkind button, .kinds button { padding: 2px 8px; border-radius: 12px; font-size: 12px }
 .startkind button.on, .kinds button.on { background: var(--accent); border-color: var(--accent); color: #fff }
+
+/* ---- the setup brief bar (lane U3): one slim bar over the view in every entry point; panels start below it ---- */
+#view { --bb-h: 38px }
+.sp { top: calc(10px + var(--bb-h)) }
+.bb { position: absolute; z-index: 6; top: 6px; left: 10px; right: 10px; display: flex; flex-wrap: nowrap; gap: 4px; align-items: stretch; font-size: 12px; color: var(--ink) }
+.bb button { font: inherit; font-size: 12px; border: 1px solid var(--line); border-radius: 6px; background: color-mix(in srgb, var(--panel) 94%, transparent); color: var(--ink); cursor: pointer; padding: 3px 8px }
+.bb button:hover { background: color-mix(in srgb, var(--ink) 8%, var(--panel)) }
+.bb .bbHead { display: flex; gap: 6px; align-items: center; white-space: nowrap }
+.bb .bbNone { font-weight: 400; opacity: .65 }
+.bb .bbBadge { background: #2a9bb0; color: #fff; border-radius: 9px; padding: 0 7px; font-size: 11px }
+.bb .bbChip { display: flex; gap: 5px; align-items: baseline; min-width: 0; flex: 1 1 0; text-align: left; overflow: hidden }
+.bb .bbChip i { font-style: normal; font-weight: 600; flex: none }
+.bb .bbChip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.bb .bbChip.open { border-style: dashed; opacity: .7 }
+.bb .bbChip.set { border-color: #2a9bb0 }
+.bb .bbChip.locked i::after { content: ' \1F512'; font-size: 10px }
+.bb.empty .bbChip { opacity: .55 }
+.bbCard { position: absolute; top: 100%; left: 0; width: min(640px, 100%); margin-top: 4px; box-sizing: border-box; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); box-shadow: 0 2px 10px rgba(0, 0, 0, .3); max-height: calc(100vh - 120px); overflow-y: auto; display: flex; flex-direction: column; gap: 8px }
+.bbRow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center }
+.bbRow > b { min-width: 120px }
+.bbOpen { opacity: .6 }
+.bbItem { display: inline-flex; gap: 3px; align-items: center; border: 1px solid var(--line); border-radius: 12px; padding: 1px 3px 1px 8px }
+.bbItem.locked { border-color: #2a9bb0 }
+.bbItem i { font-style: normal; opacity: .65; font-size: 11px }
+.bbItem button { padding: 0 6px; font-size: 11px; border-radius: 10px }
+.bbLimits { display: flex; flex-wrap: wrap; gap: 8px 14px }
+.bbIn { display: inline-flex; gap: 5px; align-items: center }
+.bbIn input { width: 64px }
+.bbIn em { font-style: normal; opacity: .65 }
+.bbAsk { border: 1px solid #2a9bb0; border-radius: 8px; padding: 8px 10px }
+.bbOpts { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px }
+.bbEval { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px }
+.bbEval.bad { border-color: #c0392b }
+.bbCons.over span { color: #c0392b }
+.bbFoot { display: flex; flex-wrap: wrap; gap: 8px; align-items: center }
+.bb .primary { background: #2a9bb0; border-color: #2a9bb0; color: #fff; font-weight: 600; padding: 5px 12px }
+@media (max-width: 700px) { .bb .bbChip span { display: none } .bb .bbChip { flex: none } }
+.viewtools { top: calc(10px + var(--bb-h)) }
+.dmfloat { top: calc(10px + var(--bb-h)); max-height: calc(100% - 20px - var(--bb-h)) }
+#groupBar, #brushBar { top: calc(48px + var(--bb-h)) }
+.ft { top: calc(44px + var(--bb-h)); max-height: calc(100% - 230px - var(--bb-h)) }
+.lab { top: calc(8px + var(--bb-h)) }
+/* the Welcome screen as one page: starting points left, limits for every setup right (Nathan's mock-up 2026-10-28) */
+.welcomedlg { width: min(980px, 96vw) }
+.welcomeCols { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr); gap: 12px; align-items: start }
+.welcomeH { margin: 4px 0 8px; font-size: 15px; display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline }
+.welcomeH span { background: #2a9bb0; color: #fff; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px }
+.welcomeH i { font-style: normal; font-weight: 400; font-size: 12px; flex-basis: 100% }
+.welcomeCols .startpaths { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px }
+.welcomeGuard { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px }
+.welcomeGuard h3 { margin: 0 0 2px; font-size: 15px }
+.wgRow { display: flex; justify-content: space-between; align-items: center; gap: 8px }
+.wgRow input[type=number] { width: 84px }
+.wgChips { display: flex; flex-wrap: wrap; gap: 5px }
+.wgChips button { border-radius: 14px; padding: 3px 10px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; font: inherit; font-size: 12px }
+.wgChips button.on { background: #2a9bb0; border-color: #2a9bb0; color: #fff }
+.welcomeSuggest .primary { width: 100%; padding: 9px 12px; font-weight: 600 }
+@media (max-width: 760px) { .welcomeCols { grid-template-columns: 1fr } }
+
+.wgSet { border: 0; border-top: 1px solid var(--line); margin: 0; padding: 6px 0 2px; display: flex; flex-direction: column; gap: 5px }
+.wgSet legend { font-weight: 600; padding: 0 4px 0 0; font-size: 13px }
+.wgOwn summary { cursor: pointer; font-size: 13px; margin: 2px 0 5px }
+.wgAqua { border-top: 1px solid var(--line); padding-top: 6px }
+.wgAqua ul { margin: 4px 0 0; padding-left: 16px } .wgAqua li i { font-style: normal; font-weight: 600 }
+#welcomeManual { margin-left: auto }

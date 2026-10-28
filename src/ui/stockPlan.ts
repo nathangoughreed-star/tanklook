@@ -5,6 +5,7 @@
 import { rng } from '../art/paint';
 import { CARE } from '../data/care';
 import { getSpecies, searchSpecies } from '../data/species';
+import { editBrief, lockAnimals } from './setupBrief';
 import { tankFromModel, type TankModel } from '../data/tanks';
 import { emptyScene } from '../scene/defaults';
 import { placeNew, shuffleFish } from '../scene/scatter';
@@ -179,7 +180,9 @@ ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}` : ''}
     }
   };
 
-  const change = (rebuild = false) => { sync(rebuild); draw(); };
+  // what is picked here fills the brief's Animals group, locked: the animal is what the person came for (lane U3)
+  const toBrief = () => editBrief(b => lockAnimals(b, picks.map(p => ({ species: p.id, name: getSpecies(p.id)?.name ?? p.id, n: totalOf(p) }))));
+  const change = (rebuild = false) => { sync(rebuild); toBrief(); draw(); };
 
   el.oninput = e => { const t = e.target as HTMLInputElement; if (t.classList.contains('spQ')) { q = t.value; gallery.search(q); const w = el.querySelector('.spResWrap'); if (w) w.innerHTML = results(); } };
   el.onclick = e => {
