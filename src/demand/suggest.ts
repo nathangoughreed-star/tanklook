@@ -15,14 +15,14 @@
 import data from '../data/archetypes.json';
 import { getSpecies } from '../data/species';
 import { getTankModel, modelOfVariant, tankFromModel } from '../data/tanks';
-import { DEALS } from '../data/deals';
+import { DEALS, dealAsKit } from '../data/deals';
 import type { TankModel } from '../data/tanks';
 import { buildsFor, configKey, distinctBuilds, FILTRATION_LIMIT, meetsNeeds, type Build, type BuildId } from '../scene/builds';
 import { filterProduct, FILTER_PRODUCTS, heaterProduct, HEATER_PRODUCTS, lightProduct, lightsFor, LIGHT_PRODUCTS, productName, pumpProduct, pumpRatedFor, PUMP_PRODUCTS, skimmerSuitsGal, SKIMMER_PRODUCTS } from '../data/gearCatalog';
 import { stockingOf } from '../scene/stocking';
 import { heatLoss, techOf, withUnits } from '../scene/tech';
 import { volume } from '../scene/physics';
-import { baselineAddUsd, bareBuild, canBeBare, finishTiers } from '../scene/finish';
+import { finishTiers } from '../scene/finish';
 import { compliance, effectiveLimits, type Compliance, type Constraints } from '../scene/constraints';
 import { spaceFit } from '../scene/space';
 import { LAYOUTS } from '../scene/items';
@@ -110,7 +110,7 @@ export const OWNED: readonly OwnedDef[] = [
 export function ownedAssess(b: Build, owned: OwnedMap, needStand: boolean, P: UserProfile, ownTank = false): { saved: number; tech?: TankSetup['tech']; notes: OwnedNote[]; rows: string[] } {
   const rows = new Set<string>(needStand ? [] : ['stand']), notes: OwnedNote[] = [];
   let tech: TankSetup['tech'];
-  const D = demandOf(b.setup, P), present = new Set(D.items.map(i => i.key));
+  const D = demandOf(b.setup, P, b.bundle ? { kit: dealAsKit(b.bundle) } : {}), present = new Set(D.items.map(i => i.key)); // a bundle's rows are priced with its kit, so the credits scale against the build's real total (lane U5)
   if (ownTank && present.has('tank')) { rows.add('tank'); notes.push({ kind: 'credit', text: 'Your tank: $0 (the generator only offers setups this tank holds).' }); }
   for (const o of OWNED) {
     const pick = owned[o.id];
@@ -155,9 +155,6 @@ export interface Wants {
   /** the person wants to spend what they set (the old "target" behaviour, lane C9): every concept's finish tier climbs as far as the ceiling lets it, and the tank grows with the money.
    *  Off (default): each concept keeps its own tier (the ladder only decides how far UP a concept may climb). */
   climb?: boolean;
-  /** the BARE / MINIMAL option (lane U5): a purposeful bare-bottom freshwater fish tank (no substrate, no plants, one hide); every welfare and equipment requirement stays. Off (default): a finished, presentable tank.
-   *  A salt tank, terrarium or vivarium is never bare (their substrate is husbandry), so it keeps its starter finish. */
-  minimal?: boolean;
   /** hours of set-up effort the person will spend (from the brief, lane U1; not read by the generator yet) */
   setupHours?: number;
   /** the high-tech approach is a requirement (lane U4): only finishes with CO2 and a stronger light (the standard and lush tiers) are offered, so the look is not traded for a cheaper approach silently */
@@ -211,8 +208,6 @@ export interface Proposal {
   costLines: CostLine[];
   /** the cost lines summed by the four standards (welfare / complete / display / enhancements) and sales tax, those with money only (lane U5) */
   layers: { layer: Layer; label: string; usd: number }[];
-  /** what the finish gives up, stated and never silent: 'chosen' = the person asked for a bare bottom, 'compromise' = the budget could not carry the display baseline (lane U5) */
-  finishNote?: { kind: 'chosen' | 'compromise'; text: string };
   /** set when the card uses well under the set-up budget because the animals' needs cap the build, not the money (only while `climb` is on) */
   capNote?: string;
   /** the design strategy this concept was built on, with its name and one-line meaning (lane U2) */
@@ -372,12 +367,6 @@ function kitTanks(animals: AnimalCount[], now: number, smallest: TankModel): Tan
   }
   return out.slice(0, 2);
 }
-/** The stated finish compromise of a bare build (lane U5): chosen, or forced by the budget, with what the display baseline would add. */
-function bareNote(b: Build, chosen: boolean, now: number): { kind: 'chosen' | 'compromise'; text: string } {
-  const add = baselineAddUsd(b, now), hide = b.setup.items.length ? 'one hide for shelter' : 'no shelter piece', more = add > 0 ? `; the display baseline (substrate, hardscape, hardy plants) would add about ${usd(add)} before tax` : '';
-  return chosen ? { kind: 'chosen', text: `Bare-bottom by your choice: no substrate or plants, ${hide}${more}. Every welfare and equipment requirement is still in the price.` }
-    : { kind: 'compromise', text: `Compromise at this budget: no substrate or plants, ${hide}${more}. You can add them later; nothing the animals need was cut.` };
-}
 function tradeoffOf(p: Pick<Proposal, 'build' | 'totals' | 'underCeilingUsd'>, sd: StrategyDef, needStand: boolean, standUsd: number): string {
   const gal = Math.round(p.build.tank.ratedGal), tier = p.build.finish?.tier, left = p.underCeilingUsd ? ` ${usd(p.underCeilingUsd)} stays under your ceiling.` : '';
   const stand = !needStand && standUsd > 0 ? ` No stand: it sits on a sturdy counter or dresser (a stand would add about ${usd(standUsd)}).` : '';
@@ -422,6 +411,7 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
   /** A stand is priced unless the person said otherwise; the cheapest-start concept of a small tank (10 gal or less, about 100 lb full) is offered on a sturdy counter instead, and says so. */
   const standFor = (tank: TankModel, noStand: boolean) => w.needStand ?? !(noStand && tank.ratedGal <= 10);
   const ownedMap = w.owned ?? {};
+  const ownsKitPart = (inc: readonly string[]) => OWNED.some(o => o.id in ownedMap && o.rows.some(r => inc.includes(r)));
   const scenOf = (b: Build, own: ReturnType<typeof ownedAssess>, needStand: boolean): TankSetup => ({ ...b.setup, ...(needStand ? {} : { stand: { ...b.setup.stand, show: false } }), ...(own.tech ? { tech: own.tech } : {}), constraints: C, layout: { ...b.setup.layout, ...(w.space ? { space: w.space } : {}) } });
   const taxOf = (preTax: number) => Math.round(Math.max(0, preTax) * taxPct / 100);
   const wordsOf = (cats: ReturnType<typeof summaryOf>['cats']) => cats.some(c => c.level === 'problem' || c.level === 'caution');
@@ -431,7 +421,7 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
   const MEMO = new Map<string, Out>();
   const attempt = (a: Archetype, animals: AnimalCount[], tank: TankModel, pref: BuildId, maxLevel: 0 | 1 | 2 | 3, style?: StyleId, noStand = false): Out => {
     const needStand = standFor(tank, noStand);
-    const bs = buildsCached(animals, tank, now).filter(b => meetsNeeds(b) && !(w.ownTank && b.bundle));
+    const bs = buildsCached(animals, tank, now).filter(b => meetsNeeds(b) && !(w.ownTank && b.bundle) && !(b.bundle && ownsKitPart(b.bundle.includes))); // a kit price cannot be split: owning a part of it leaves the parts build (lane U5)
     const b0 = bs.find(b => b.id === pref || b.also?.includes(pref)) ?? [...bs].sort((x, y) => pref === 'leastWork' ? x.minPerWeek - y.minPerWeek : pref === 'balanced' ? x.filtrationPct - y.filtrationPct : x.setupUsd - y.setupUsd)[0];
     if (!b0) return {};
     const key = `${a.id}|${tank.id}|${animals.map(x => x.species + x.n).join(',')}|${configKey(b0)}|${maxLevel}|${style ?? ''}|${needStand}`;
@@ -443,10 +433,7 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
     if (wordsOf(summaryOf(scene0, units).cats)) { out = { welfare: true }; MEMO.set(key, out); return out; }
     const pre0 = b0.setupUsd - own0.saved, over0 = compliance(scene0, { setupUsd: pre0 + taxOf(pre0), upkeepUsdMo: b0.upkeepUsdMo, minPerWeek: b0.minPerWeek }, effectiveLimits(scene0, P0.limits), units).overall === 'over';
     let welfare = false;
-    // lane U5: only the cheapest concept (finish ceiling 0) may fall back to a bare bottom when the money cannot carry even the starter finish, and it says so; richer concepts step DOWN a size instead
-    const bareOk = a.kind === 'freshwater' && canBeBare(b0.setup); // a paludarium or any land side keeps its substrate
-    const tiers = function* () { yield* finishTiers(b0, now, over0, maxLevel, style, !!w.minimal && bareOk, !!w.lowtech); if (!w.minimal && !style && maxLevel === 0 && !w.climb && !w.hightech && bareOk) yield bareBuild(b0, now); };
-    for (const b of tiers()) {
+    for (const b of finishTiers(b0, now, over0, maxLevel, style, !!w.lowtech)) {
       const own = ownedAssess(b, ownedMap, needStand, P0, !!w.ownTank), saved = own.saved, scene = scenOf(b, own, needStand), sm = summaryOf(scene, units);
       // husbandry is never traded for money or time: the strict rule (Nathan 2026-10-27) = nothing the stocking screen words as a Problem OR a Caution in any of its five categories. Only "not enough information" passes, and it is shown.
       if (style && !b.setup.items.some(i => i.kind === 'plant' || i.kind === 'artificial' || i.kind === 'coral')) continue; // another look is still a planted (or reefed) tank, never a pile of stones
@@ -460,7 +447,6 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
         const cl = costLines(b, own.rows, t.startupUsd, needStand, P0, tax, `Sales tax (${taxPct}%)`);
         out = { p: { needStand, archetype: a, build: b, scene, totals: t, saved, preTaxUsd: preTax, taxUsd: tax, taxPct, ownedNotes: own.notes, status: cp.results, matched, levelOf: b.finish?.level ?? 0,
           costLines: cl, layers: layerTotals(cl),
-          ...(b.finish?.tier === 'bare' ? { finishNote: bareNote(b, !!w.minimal, now) } : {}),
           unknown: sm.cats.flatMap(c => c.items.filter(i => i.level === 'unknown').map(i => i.text)).slice(0, 1) } };
         break; // the best finish that passes: a lesser tier of the same build adds nothing
       } else if (cp.overall === 'over' && cp.unknown === 0 && !cp.results.some(r => r.id === 'space' && r.state !== 'pass')) {

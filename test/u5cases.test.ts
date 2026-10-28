@@ -10,10 +10,7 @@ import { LAYERS, LAYER_BLURB, LAYER_LABEL } from '../src/demand/costlines';
 const P = defaultProfile(), NOW = Date.parse('2026-10-27'), cap = (value: number) => ({ on: true, value });
 const betta = [{ species: 'betta', n: 1 }];
 const CASES: { id: string; title: string; w: Wants; pick: (p: any) => boolean }[] = [
-  { id: 'bare150', title: 'Bare / minimal betta, $150 ceiling, filter, heater, lid and light already owned', w: { constraints: { startupUsd: cap(150) }, animals: betta, minimal: true, owned: { filter: 'care', heater: 'care', lid: 'care', light: 'care' } }, pick: () => true },
-  { id: 'bare-scratch', title: 'Bare / minimal betta from nothing: the honest floor, no ceiling', w: { constraints: {}, animals: betta, minimal: true }, pick: p => p.strategy === 'economy' },
   { id: 'finished', title: 'Finished betta (the default), no ceiling: display baseline included', w: { constraints: {}, animals: betta }, pick: p => p.build.finish?.tier === 'standard' },
-  { id: 'compromise', title: 'A $215 ceiling cannot carry the display baseline: the compromise is stated', w: { constraints: { startupUsd: cap(215) } }, pick: p => p.finishNote?.kind === 'compromise' },
   { id: 'enhanced', title: 'High budget, climb on: the lush finish and its enhancements', w: { constraints: { startupUsd: cap(2500) }, animals: betta, climb: true }, pick: p => p.layers.some(l => l.layer === 'enhance') },
 ];
 describe.skipIf(!process.env.U5_CASES)('u5 cases', () => {

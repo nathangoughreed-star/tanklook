@@ -2,6 +2,7 @@
 // (heat, UVB, lights, filter ...), summing to the card's set-up price, with anything the person already owns shown as $0 "you have". Read off the
 // demand model's own rows (each row's list price scaled by the build's price / list-price ratio, so deals are in the lines), never priced here.
 import { demandOf } from './engine';
+import { dealAsKit } from '../data/deals';
 import { mean3 } from './range';
 import type { Build } from '../scene/builds';
 import { lightShare } from '../scene/finish';
@@ -28,6 +29,7 @@ const ENHANCE_KEYS = new Set(['co2', 'ferts', 'ato', 'dosing']);
 const SUPPLY_KEYS = new Set(['testkit', 'rounit', 'startconditioner', 'siphon', 'net', 'thermometer', 'refractometer', 'bucket']);
 const GROUPS: { id: string; label: string; layer: Layer; of: (key: string) => boolean }[] = [
   { id: 'tank', label: 'Tank', layer: 'welfare', of: k => k === 'tank' },
+  { id: 'kit', label: 'Starter kit (tank and the gear it includes)', layer: 'welfare', of: k => k === 'kit' },
   { id: 'stand', label: 'Stand', layer: 'complete', of: k => k === 'stand' },
   { id: 'finish', label: 'Substrate, hardscape and plants', layer: 'display', of: FINISH },
   { id: 'animals', label: 'Animals', layer: 'welfare', of: k => k.startsWith('animal:') },
@@ -42,7 +44,7 @@ const GROUPS: { id: string; label: string; layer: Layer; of: (key: string) => bo
  */
 export function costLines(b: Build, owned: readonly string[], total: number, needStand: boolean, P: UserProfile, tax = 0, taxLabel = 'Sales tax'): CostLine[] {
   total -= tax;
-  const D = demandOf(b.setup, P), own = new Set(owned), list = D.totals.setupUsd, k = list > 0 ? b.setupUsd / list : 1;
+  const D = demandOf(b.setup, P, b.bundle ? { kit: dealAsKit(b.bundle) } : {}), own = new Set(owned), list = D.totals.setupUsd, k = list > 0 ? b.setupUsd / list : 1;
   const up = lightShare(b.finish?.tier ?? 'starter'); // the stronger light a finish tier adds is an enhancement (its share of the light's price), the rest is the light every tank needs
   const priced = D.items.filter(i => i.setup).flatMap(i => { const usd = mean3(i.setup!) * k; return i.key === 'light' && up > 0 && !own.has('light') ? [{ key: 'light', label: i.label, usd: usd * (1 - up) }, { key: 'light+', label: 'Stronger light', usd: usd * up }] : [{ key: i.key, label: i.label, usd }]; });
   const buy = priced.filter(i => !own.has(i.key)), lines: CostLine[] = [];

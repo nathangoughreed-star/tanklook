@@ -70,13 +70,13 @@
   },
   "betta": {
    "red": {
-    "L": 398,
+    "L": 305,
     "W": 195,
-    "mark": "derived (est)",
+    "mark": "judgement",
     "est": true,
     "site": "Fishkeeping World",
     "url": "https://www.fishkeepingworld.com/betta-fish-care/",
-    "states": "5 gal -> 5 gal",
+    "states": "5 gal -> 5 gal; Nathan 2026-10-28: a 14 in cube sold as 10 gal counts, and Nathan: one betta is comfortable in a 12 in cube (green for one domestic betta, below the 18 x 12 in ideal), so the red length is 305 mm (12 in), not the 5 gal tank's 398",
     "from": "volume",
     "ref": "g5"
    },
@@ -89,6 +89,7 @@
     "states": "45 ∗ 30 cm",
     "from": "footprint"
    },
+   "volGate": "the gallon figure is a gate for this species (Nathan 2026-10-28): 5 gal is the floor, a 12 in cube (7.5 gal) passes",
    "vol": {
     "gal": 5,
     "mark": "sourced",

@@ -10,8 +10,8 @@
   { "id": "canister-l", "kind": "canister", "label": "Canister filter (large)", "gph": 500, "galMin": 55, "galMax": 200, "watts": 25, "priceKey": "gear:filter-canister", "aliases": ["fluval 407", "fluval 507", "fx4", "fx6"] }
  ],
  "heaters": [
-  { "id": "heater-25", "label": "Heater 25 W", "watts": 25, "galMin": 1, "galMax": 5, "priceKey": "gear:heater-small" },
-  { "id": "heater-50", "label": "Heater 50 W", "watts": 50, "galMin": 5, "galMax": 15, "priceKey": "gear:heater-small" },
+  { "id": "heater-25", "label": "Heater 25 W", "watts": 25, "galMin": 1, "galMax": 5, "priceKey": "gear:heater-mini" },
+  { "id": "heater-50", "label": "Heater 50 W", "watts": 50, "galMin": 5, "galMax": 15, "priceKey": "gear:heater-mid" },
   { "id": "heater-100", "label": "Heater 100 W", "watts": 100, "galMin": 15, "galMax": 30, "priceKey": "gear:heater-small" },
   { "id": "heater-200", "label": "Heater 200 W", "watts": 200, "galMin": 30, "galMax": 60, "priceKey": "gear:heater-large" },
   { "id": "heater-300", "label": "Heater 300 W", "watts": 300, "galMin": 60, "galMax": 100, "priceKey": "gear:heater-large" },

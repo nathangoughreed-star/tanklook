@@ -1,4 +1,4 @@
-// Lane U5: the four standards of a finished tank (welfare / complete / display / enhancements), the bare / minimal option and the stated compromise.
+// Lane U5: the four standards of a finished tank (welfare / complete / display / enhancements), .
 import { describe, expect, it } from 'vitest';
 import { defaultProfile } from '../src/demand/types';
 import { layerTotals } from '../src/demand/costlines';
@@ -33,43 +33,15 @@ describe('layers on the cost lines', () => {
   });
 });
 
-describe('bare / minimal', () => {
-  const r = run({ constraints: { startupUsd: cap(150) }, animals: betta, minimal: true, owned: { filter: 'care', heater: 'care', lid: 'care', light: 'care' } });
-  it('a bare-bottom betta tank exists under $150 when the person owns the gear, and says it was chosen', () => {
-    expect(r.proposals.length).toBeGreaterThan(0);
-    const p = r.proposals[0];
-    expect(p.totals.startupUsd).toBeLessThanOrEqual(150);
-    expect(p.build.finish?.tier).toBe('bare');
-    expect(p.build.setup.substrate.show).toBe(false);
-    expect(p.build.setup.items.some(i => i.kind === 'plant' || i.kind === 'artificial')).toBe(false);
-    expect(p.build.setup.items.length).toBeLessThanOrEqual(1); // one hide
-    expect(p.finishNote?.kind).toBe('chosen');
-    expect(p.finishNote?.text).toMatch(/display baseline/);
-  });
-  it('welfare is unchanged: the water test kit, supplies and the life-support gear stay in the price', () => {
-    const all = run({ constraints: {}, animals: betta, minimal: true }).proposals[0];
-    expect(all.costLines.some(l => /test kit/.test(l.label))).toBe(true);
-    expect(all.layers.map(l => l.layer)).toEqual(expect.arrayContaining(['welfare', 'complete']));
-    expect(all.layers.some(l => l.layer === 'display')).toBe(false);
-  });
-  it('is never offered to a salt tank, a terrarium or a vivarium (their substrate is husbandry)', () => {
-    for (const kind of ['saltwater', 'terrarium', 'vivarium'] as const) {
-      const q = run({ kinds: [kind], constraints: {}, minimal: true });
-      for (const p of q.proposals) expect(p.build.finish?.tier).not.toBe('bare');
+describe('no bare-bottom tanks (Nathan 2026-10-28)', () => {
+  it('every proposal keeps a substrate, shelter and the welfare set, at any budget', () => {
+    for (const w of [{ constraints: {}, animals: betta }, { constraints: { startupUsd: cap(215) } }, { constraints: { startupUsd: cap(900) } }] as Wants[]) {
+      for (const p of run(w).proposals) {
+        expect(p.build.finish).toBeDefined();
+        if (p.build.setup.water.on) expect(p.build.setup.substrate.show).toBe(true);
+        expect(p.layers.map(l => l.layer)).toEqual(expect.arrayContaining(p.build.setup.water.on ? ['welfare', 'complete', 'display'] : ['welfare', 'display'])); // a dry enclosure has no water-test supplies
+      }
     }
-  });
-});
-
-describe('stated compromise', () => {
-  it('a budget that cannot carry the display baseline gets a bare bottom with the compromise stated, never a silent strip', () => {
-    const r = run({ constraints: { startupUsd: cap(215) } });
-    const bare = r.proposals.filter(p => p.build.finish?.tier === 'bare');
-    expect(bare.length).toBeGreaterThan(0);
-    for (const p of bare) { expect(p.finishNote?.kind).toBe('compromise'); expect(p.finishNote?.text).toMatch(/\$\d+/); }
-  });
-  it('an ample budget never produces a bare tank or a compromise by default', () => {
-    const r = run({ constraints: { startupUsd: cap(900) } });
-    for (const p of r.proposals) { expect(p.build.finish?.tier).not.toBe('bare'); expect(p.finishNote).toBeUndefined(); }
   });
 });
 
@@ -93,7 +65,7 @@ describe('low-tech lush finish', () => {
 describe('owned supplies', () => {
   it('an owned siphon, net, dechlorinator, thermometer, bucket and test kit credit $0 and leave no supplies line', () => {
     const own = { siphon: 'care', net: 'care', conditioner: 'care', thermometer: 'care', bucket: 'care', testkit: 'care' } as const;
-    const r = run({ constraints: {}, animals: betta, minimal: true, owned: { ...own } }), base = run({ constraints: {}, animals: betta, minimal: true });
+    const r = run({ constraints: { startupUsd: cap(250) }, animals: betta, owned: { ...own } }), base = run({ constraints: { startupUsd: cap(250) }, animals: betta });
     const p = r.proposals.find(q => q.strategy === 'economy')!, q = base.proposals.find(x => x.strategy === 'economy')!;
     expect(p.totals.startupUsd).toBeLessThan(q.totals.startupUsd - 40);
     expect(p.costLines.some(l => l.layer === 'complete' && l.usd > 0 && /Supplies/.test(l.label))).toBe(false);

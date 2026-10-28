@@ -59,11 +59,11 @@
    "url": "https://reefexclusive.com/products/banggai-cardinalfish"
   },
   "animal:betta": {
-   "lo": 5,
-   "mode": 15,
-   "hi": 30,
-   "unit": "one betta; $5 pet store to $20-35 online",
-   "url": "https://aquaticsunlimited.com/?p=11525"
+   "lo": 3.99,
+   "mode": 3.99,
+   "hi": 15,
+   "unit": "one betta: PetSmart veiltail male or female $3.99 in store (read 2026-10-28), up to $20-35 online for show types",
+   "url": "https://www.petsmart.com/fish/live-fish/bettas"
   },
   "animal:bluetang": {
    "lo": 110,
@@ -769,25 +769,25 @@
    "url": "https://www.tractorsupply.com/tsc/product/fluval-stratum-88-lb"
   },
   "gear:test-kit": {
-   "lo": 35,
-   "mode": 39,
+   "lo": 15,
+   "mode": 28,
    "hi": 42,
-   "unit": "API master kit; Walmart $38.64, Dubia $41.84",
-   "url": "https://dubiaroaches.com/products/api-freshwater-master-test-kit"
+   "unit": "ammonia + nitrite + nitrate + pH, the cheapest set that reads ammonia and confirms a cycle: API Ammonia Test Kit 130 tests $15.05 (Walmart, read 2026-10-28) + Tetra EasyStrips 25 ct $13.24 (Walmart) = $28.29; API Freshwater Master Kit $39-42 is the one-box upgrade (Walmart $38.64, Dubia $41.84); lane U5",
+   "url": "https://www.walmart.com/ip/21982966"
   },
   "gear:start-conditioner": {
-   "lo": 3.99,
-   "mode": 4,
+   "lo": 4.99,
+   "mode": 4.99,
    "hi": 16,
-   "unit": "first bottle: Top Fin water conditioner about $3.99 (Nathan lead 2026-10-28, not re-verified), up to Seachem Prime 250 mL $17.39 (Stateline Tack) for a big tank; lane U5",
-   "url": "https://www.statelinetack.com/products/seachem-prime"
+   "unit": "first bottle: Top Fin Aquarium Water Conditioner 4 fl oz $4.99 (240 gal, PetSmart item 5291857, read 2026-10-28); All-in-One $8.99; Seachem Prime 250 mL $17.39 (Stateline Tack) for a big tank; lane U5",
+   "url": "https://www.petsmart.com/fish/fish-shops/top-fin-aquarium-water-conditioner-5291857.html"
   },
   "gear:siphon": {
-   "lo": 7.5,
-   "mode": 8,
+   "lo": 5.75,
+   "mode": 6.5,
    "hi": 20,
-   "unit": "Aqueon mini siphon about $7.52 (Nathan lead 2026-10-28, not re-verified); Aqueon 10 in $15.99 (That Pet Place), $19.79 (Walmart); lane U5",
-   "url": "https://www.thatpetplace.com/aqueon-siphon-vacuum-large-10"
+   "unit": "Aqueon mini 5 in siphon $5.75-7.61 across shops (read 2026-10-28; fishtanksdirect, petlife); 10 in $15.99-19.79; lane U5",
+   "url": "https://fishtanksdirect.com/aqueon-aquarium-siphon-vacuum-gravel-cleaner-mini-5"
   },
   "gear:net": {
    "lo": 3,
@@ -1809,6 +1809,20 @@
    "unit": "a bucket kept for the aquarium only: allowance (Nathan lead 2026-10-28), judgement; lane U5",
    "url": "",
    "est": true
+  },
+  "gear:heater-mini": {
+   "lo": 7.95,
+   "mode": 9.99,
+   "hi": 19.99,
+   "unit": "25 W or smaller submersible heater, tanks to 5 gal: Aquaneat 25 W $7.95, Datoo $7.99, Orlushy $8.99, Pulaco $9.99 (Amazon, catalogue 2026-10-20); Walmart Aquaneat 25 W $11.99 (2026-10-28); Hygger / Vcraze $16-20; lane U5",
+   "url": "https://www.walmart.com/ip/17095611490"
+  },
+  "gear:heater-mid": {
+   "lo": 7.99,
+   "mode": 13.97,
+   "hi": 22.99,
+   "unit": "50 W heater, tanks 5-15 gal: Aquaneat $8.87, Datoo $7.99, Hitop $13.97, Pulaco $13.99, Tetra HT50 $15.27 (Chewy), Aqueon preset $17.24 (Petco), GloFish $22.99 (Petco); catalogue 2026-10-19/20; lane U5",
+   "url": "https://www.chewy.com/tetra-ht10-submersible-aquarium/dp/191044"
   }
  }
 }

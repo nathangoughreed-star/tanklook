@@ -260,7 +260,8 @@ describe('Suggest a setup', () => {
       for (const p of r.proposals) expect(p.build.animals).toEqual(betta);
       expect(new Set(r.proposals.map(p => p.strategy)).size).toBe(r.proposals.length);
       for (const d of dist(r.proposals)) expect(d).toBeGreaterThanOrEqual(MIN_DISTANCE);
-      expect(r.proposals.some(p => /Economy/.test(p.strategyLabel))).toBe(true);
+      // lane U5: the cheapest start is a starter kit now, so at a roomy ceiling the stronger concepts can outrank it; at a tight one it is shown
+      expect(run({ startupUsd: cap(250) }, { animals: betta }).proposals.some(p => /Economy|Cheapest/.test(p.strategyLabel))).toBe(true);
     });
     it('the budget is a ceiling: a concept that leaves money unspent is shown, with no cap note and the money left under the ceiling reported', () => {
       const r = run({ startupUsd: cap(900) }, { animals: betta });

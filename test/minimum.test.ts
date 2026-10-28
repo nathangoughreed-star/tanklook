@@ -126,7 +126,7 @@ describe('noncompensation: each measure on its own', () => {
     // ample geometry and depth, almost no water: no species fails, the water shortfall is only the yellow advisory
     const dry: Geometry = { litres: 1, tankLitres: 1, areaCm2: 40000, lengthMm: 2400, widthMm: 1200, heightMm: 2000, depthMm: 550 };
     // S245 (Nathan 2026-10-26): a species with no red line takes CARE.minL as its minimum volume, so it does fail on water alone; every other species still never does
-    for (const sp of SPECIES) { const r = speciesMinimum(sp, dry); if (r.measure.site === MINL_SITE) { expect(r.measure.limiting, sp.id).toBe('water'); continue; } expect(r.pct, sp.id).toBeLessThanOrEqual(100); if (minDataOf(sp.id)?.vol) expect(r.comfort.limiting, sp.id).toBe('water'); }
+    for (const sp of SPECIES) { const r = speciesMinimum(sp, dry); if (r.measure.site === MINL_SITE || (minDataOf(sp.id) as { volGate?: string } | undefined)?.volGate) { expect(r.measure.limiting, sp.id).toBe('water'); continue; } expect(r.pct, sp.id).toBeLessThanOrEqual(100); if (minDataOf(sp.id)?.vol) expect(r.comfort.limiting, sp.id).toBe('water'); } // lane U5: a volGate species (betta, 5 gal) fails on water too
   });
   it('S245 (amends Decision 2): the mystery snail has no red line, so its care-table 19 L is its minimum: 10 L fails, 21 L passes', () => {
     const g = (litres: number) => ({ litres, tankLitres: litres, areaCm2: 1500, lengthMm: 400, widthMm: 250 });

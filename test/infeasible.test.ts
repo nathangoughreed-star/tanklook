@@ -84,7 +84,7 @@ describe('infeasible requests explain themselves', () => {
   }, 120000);
 
   it('high-tech planted for $200: the look is separated from the equipment approach, and the low-tech version is offered and verified', () => {
-    const w: Wants = { constraints: { startupUsd: cap(230) }, hightech: true, kinds: ['freshwater'], tags: ['natural'] };
+    const w: Wants = { constraints: { startupUsd: cap(180) }, hightech: true, kinds: ['freshwater'], tags: ['natural'] };
     const inf = go(w).infeasible!;
     expect(inf.limitingFactor).toBe('budget');
     expect(inf.text).toContain('high-tech planted tank');
@@ -93,7 +93,7 @@ describe('infeasible requests explain themselves', () => {
     const r = again(applyAlternative(briefFromWants(w), lt.edit!));
     expect(r.proposals.length).toBeGreaterThan(0);
     welfareOk(r);
-    for (const p of r.proposals) { expect(p.totals.startupUsd).toBeLessThanOrEqual(230); expect(p.build.finish).toBeDefined(); }
+    for (const p of r.proposals) { expect(p.totals.startupUsd).toBeLessThanOrEqual(180); expect(p.build.finish).toBeDefined(); }
   }, 300000);
 
   it('a stated high-tech approach is never silently swapped for a plainer one: with money enough every proposal is a CO2 tier', () => {

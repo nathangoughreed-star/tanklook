@@ -112,7 +112,8 @@ describe('finished builds', () => {
     // lane U2: with the stand unspecified the cheapest start of a small tank is priced without one (and says so), so the stand price is checked where a stand is asked for
     for (const p of run({ needStand: true })) {
       expect(p.costLines.reduce((t, l) => t + l.usd, 0)).toBe(Math.round(p.totals.startupUsd));
-      for (const label of ['Tank', 'Animals', 'Substrate, hardscape and plants']) expect(p.costLines.some(l => l.label === label && l.usd > 0)).toBe(true);
+      for (const label of ['Animals', 'Substrate, hardscape and plants']) expect(p.costLines.some(l => l.label === label && l.usd > 0)).toBe(true);
+      expect(p.costLines.some(l => (l.label === 'Tank' || l.label.startsWith('Starter kit')) && l.usd > 0)).toBe(true); // lane U5: a kit's one price is its own line
       expect(p.costLines.some(l => l.label === 'Stand' && l.usd > 0)).toBe(true);
     }
     for (const p of run({ owned: { filter: 'care' }, needStand: false })) {

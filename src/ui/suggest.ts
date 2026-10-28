@@ -31,10 +31,10 @@ const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
 const MM_IN = 25.4;
 
 /** The guardrails card's fields as the panel holds them (empty = that guardrail has no value yet, so it is off). */
-export interface Fields { startup: string; monthly: string; time: string; spaceOn: boolean; w: string; d: string; needStand: boolean; owned: OwnedMap; kinds: Kind[]; groups: DryGroup[]; /** bare / minimal: a bare-bottom freshwater fish tank (lane U5) */ minimal?: boolean }
+export interface Fields { startup: string; monthly: string; time: string; spaceOn: boolean; w: string; d: string; needStand: boolean; owned: OwnedMap; kinds: Kind[]; groups: DryGroup[] }
 const num = (s: string) => { const v = parseFloat(s); return Number.isFinite(v) && v >= 0 ? v : undefined; };
 /** Fields -> the constraints and space the generator checks. A box with no number is off; the space box needs both sizes. */
-export function wantsFrom(f: Fields, units: Units): { constraints: Constraints; space?: SpaceLimit; spaceMissing: boolean; needStand: boolean; owned: OwnedMap; kinds: Kind[]; groups: DryGroup[]; minimal: boolean } {
+export function wantsFrom(f: Fields, units: Units): { constraints: Constraints; space?: SpaceLimit; spaceMissing: boolean; needStand: boolean; owned: OwnedMap; kinds: Kind[]; groups: DryGroup[] } {
   const c: Constraints = {}, s = num(f.startup), m = num(f.monthly), t = num(f.time);
   if (s !== undefined) c.startupUsd = { on: true, value: s };
   if (m !== undefined) c.monthlyUsd = { on: true, value: m };
@@ -42,7 +42,7 @@ export function wantsFrom(f: Fields, units: Units): { constraints: Constraints; 
   const k = units === 'in' ? MM_IN : 10, w = num(f.w), d = num(f.d);
   let space: SpaceLimit | undefined;
   if (f.spaceOn) { c.space = { on: true }; if (w !== undefined && d !== undefined && w > 0 && d > 0) space = { w: Math.round(w * k), d: Math.round(d * k) }; }
-  return { constraints: c, ...(space ? { space } : {}), spaceMissing: f.spaceOn && !space, needStand: f.needStand, owned: f.owned, kinds: f.kinds, groups: f.groups, minimal: !!f.minimal };
+  return { constraints: c, ...(space ? { space } : {}), spaceMissing: f.spaceOn && !space, needStand: f.needStand, owned: f.owned, kinds: f.kinds, groups: f.groups };
 }
 
 export function attachSuggest(store: Store, viewer: Viewer, status: (m: string, bad?: boolean) => void) {
@@ -79,7 +79,6 @@ export function attachSuggest(store: Store, viewer: Viewer, status: (m: string, 
     const g = (id: string) => el.querySelector<HTMLInputElement>(`#sg${id}`);
     f = { startup: g('Startup')?.value ?? '', monthly: g('Monthly')?.value ?? '', time: g('Time')?.value ?? '', spaceOn: !!g('SpaceOn')?.checked, w: g('W')?.value ?? '', d: g('D')?.value ?? '', needStand: g('NeedStand')?.checked ?? true,
       owned: Object.fromEntries([...el.querySelectorAll<HTMLInputElement>('.sgOwn:checked')].map(x => [x.value, el.querySelector<HTMLSelectElement>(`.sgOwnPick[data-k="${x.value}"]`)?.value ?? PICK_CARE])) as OwnedMap,
-      minimal: !!g('Minimal')?.checked,
       kinds: [...el.querySelectorAll<HTMLInputElement>('.sgKind:checked')].map(x => x.value as Kind), groups: [...el.querySelectorAll<HTMLInputElement>('.sgGroup:checked')].map(x => x.value as DryGroup) };
   };
 
@@ -107,7 +106,6 @@ ${cardLines[i] ? `<div class="sgTrade" data-trade="${i}">${esc(cardLines[i])}</d
 <div class="bpHead"><b>${esc(p.archetype.title)}</b><span class="spNote">${esc(FAMILY_LABEL[p.archetype.family])}</span></div>
 <div class="spNote">${esc(p.archetype.why)} ${esc(tankLabel(b.tank, units()))} with ${animals}. ${esc(b.label)} build.</div>
 ${b.finish ? `<ul class="bpGear sgFinish">${b.finish.lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}
-${p.finishNote ? `<div class="${p.finishNote.kind === 'compromise' ? 'spWarn' : 'spNote'} sgFinishNote">${esc(p.finishNote.text)}</div>` : ''}
 ${p.costLines.length ? `<ul class="bpGear sgCost" aria-label="What the set-up price is made of, by standard">${layered(p.costLines)}</ul>` : ''}
 <div class="bpNums"><span><b>${usd(p.totals.startupUsd)}</b>set-up${p.saved ? `<i>${usd(p.saved)} less: what you have</i>` : ''}</span><span><b>${usd(p.totals.monthlyUsd)}</b>a month</span><span><b>${p.totals.minPerWeek}</b>min a week<i>estimate</i></span></div>
 ${p.phases ? `<div class="sgPhases"><b>Buy in two phases</b><div>Phase 1, ${usd(p.phases.phase1Usd)} now: ${esc(p.phases.phase1.join(', '))}.</div><div>Phase 2, ${usd(p.phases.phase2Usd)} after the tank has cycled: ${esc(p.phases.phase2.join(', ') || 'the animals')}.</div><div class="spNote">${esc(p.phases.note)}</div></div>` : ''}
@@ -117,7 +115,7 @@ ${p.matched.length ? `<div class="spNote">Matches: ${p.matched.map(m => esc(TAGS
 ${checks ? `<ul class="bpGear sgChecks">${checks}</ul>` : ''}
 ${p.capNote ? `<div class="spNote">${esc(p.capNote)}</div>` : ''}
 ${p.unknown.length ? `<div class="spNote">Not enough information: ${esc(p.unknown[0])}</div>` : ''}
-<div class="spNote">${b.setup.water.on ? `${esc(CYCLE_NOTE)} ` : ''}${b.finish && b.finish.tier !== 'bare' ? `${esc(TIER_LABEL[b.finish.tier])}: the look, substrate, hardscape and plants are in the price and the time.` : ''}</div>
+<div class="spNote">${b.setup.water.on ? `${esc(CYCLE_NOTE)} ` : ''}${b.finish ? `${esc(TIER_LABEL[b.finish.tier])}: the look, substrate, hardscape and plants are in the price and the time.` : ''}</div>
 <button type="button" class="primary" data-act="pick" data-i="${i}">Use this setup</button> <button type="button" data-act="plan" data-i="${i}">Build plan</button></li>`;
   };
 
@@ -133,7 +131,7 @@ ${p.unknown.length ? `<div class="spNote">Not enough information: ${esc(p.unknow
     if (!res?.proposals.length) return '';
     const b = getBrief(), on = (valueOf(b, 'preferences.wishes') ?? []).filter(w => w === 'more-planted' || w === 'larger-tank');
     const WORD: Record<string, string> = { 'more-planted': 'More planted', 'larger-tank': 'Larger tank' };
-    return `<div class="sgChips" role="group" aria-label="Refine these setups"><span class="spNote">Refine:</span>${chipsFor(b, res).map(c => `<button type="button" class="sgChip" data-chip="${c.id}">${esc(c.label)}</button>`).join('')}${on.map(w => `<button type="button" class="sgChip on" data-drop="${w}" title="Switch off">${WORD[w]} ✓</button>`).join('')}</div>${refineLine ? `<div class="spNote sgRefined" role="status">${esc(refineLine)}</div>` : ''}`;
+    return `<div class="sgChips" role="group" aria-label="Refine these setups"><span class="spNote">Refine:</span>${chipsFor(b, res).map(c => `<button type="button" class="sgChip" data-chip="${c.id}">${esc(c.label)}</button>`).join('')}${on.map(w => `<button type="button" class="sgChip on" data-drop="${w}" title="Switch off">${WORD[w]} âœ“</button>`).join('')}</div>${refineLine ? `<div class="spNote sgRefined" role="status">${esc(refineLine)}</div>` : ''}`;
   };
 
   const draw = () => {
@@ -146,7 +144,7 @@ ${res.note ? `<p class="spWarn sgNote">${esc(res.note)}</p>` : ''}${chipRow()}<u
       else out = `<p class="spWarn" id="sgNone">${esc(res.message ?? res.unavailable ?? '')}</p>`;
       if (res.misses.length && !res.unavailable) out += `<div class="sgMiss"><b>Closest, if you raise a limit</b> (these do not fit your guardrails as set)<ul>${res.misses.map(m => `<li>${esc(m.archetype.title)}: ${esc(m.text)}</li>`).join('')}</ul></div>`;
     }
-    el.innerHTML = `<div class="spHead"><h2>Fill in what I left open</h2><button type="button" data-act="close" aria-label="Close">✕</button></div>
+    el.innerHTML = `<div class="spHead"><h2>Fill in what I left open</h2><button type="button" data-act="close" aria-label="Close">âœ•</button></div>
 <p class="spNote">Your setup brief (the bar above) already holds what you told us; fill in or change the rest here. Tick the limits that matter to you and we propose setups that fit them, each checked against all of them and against what the animals need. Leave a box empty to keep that limit off.</p>
 <div class="sgCard">
 <fieldset class="sgKinds"><legend>What kind of setup?</legend>${KINDS.map(k => `<label><input class="sgKind" type="checkbox" value="${k.id}" ${f.kinds.includes(k.id) ? 'checked' : ''}> ${k.label} <span class="spNote">${k.blurb}</span></label>`).join('')}
@@ -158,7 +156,6 @@ ${lockedStock(getBrief()).length ? `<div class="spNote sgLocked">Locked animals:
 <label class="sgRow"><span>Care time (min a week)</span><input id="sgTime" type="number" min="0" step="5" inputmode="decimal" value="${esc(f.time)}" placeholder="no limit"></label>
 <div class="sgRow"><label><input id="sgSpaceOn" type="checkbox" ${f.spaceOn ? 'checked' : ''}> Space (${k})</label><span class="sgSp"><input id="sgW" type="number" min="0" aria-label="Width" value="${esc(f.w)}" placeholder="wide"> x <input id="sgD" type="number" min="0" aria-label="Depth" value="${esc(f.d)}" placeholder="deep"></span></div>
 <label class="sgRow"><span><input id="sgNeedStand" type="checkbox" ${f.needStand ? 'checked' : ''}> I'll need a stand</span></label>
-<label class="sgRow"><span><input id="sgMinimal" type="checkbox" ${f.minimal ? 'checked' : ''}> Bare / minimal: bare bottom, one hide, no plants</span> <span class="spNote">Freshwater fish tanks only. Everything the animals need stays in the price; the look is yours to add later.</span></label>
 <details class="sgOwned"${nOwned ? ' open' : ''}><summary>Equipment I already have${nOwned ? ` (${nOwned})` : ''}</summary><div class="sgOwnList">${OWNED.map(o => { const on = o.id in f.owned, pick = f.owned[o.id] ?? PICK_CARE;
   return `<div class="sgOwnRow"><label><input class="sgOwn" type="checkbox" value="${o.id}" ${on ? 'checked' : ''}${o.id === 'stand' && !f.needStand ? ' disabled' : ''}> ${o.label}</label>${on ? `<select class="sgOwnPick" data-k="${o.id}" aria-label="Which ${esc(o.label.toLowerCase())}"><option value="${PICK_CARE}"${pick === PICK_CARE ? ' selected' : ''}>I don't care</option><option value="${PICK_UNKNOWN}"${pick === PICK_UNKNOWN ? ' selected' : ''}>I don't know</option>${o.products ? `<optgroup label="From the catalogue">${o.products().map(p => `<option value="${p.id}"${pick === p.id ? ' selected' : ''}>${esc(p.label)}</option>`).join('')}</optgroup>` : ''}</select>` : ''}</div>`; }).join('')}</div><div class="spNote">Pick the real one and it is credited at its real size (too small and we say so and price a new one). "I don't care": $0, the setup's own is assumed to suit it. "I don't know": priced as bought, with a note to check yours.</div></details>
 <label class="sgRow"><span><input id="sgHigh" type="checkbox" ${valueOf(getBrief(), 'preferences.hightech') ? 'checked' : ''}> High-tech planted tank (CO2, strong light)</span></label>
@@ -196,7 +193,7 @@ ${lockedStock(getBrief()).length ? `<div class="spNote sgLocked">Locked animals:
   /** The generator call from the boxes plus what the brief holds that this panel has no box for: locked animals, an existing tank, tax, the high-tech, phased and refinement choices. */
   const generate = (w: ReturnType<typeof wantsFrom>): Suggestions => {
     const bw = briefToWants(getBrief());
-    return suggestSetups({ kinds: w.kinds, groups: w.groups, needStand: w.needStand, owned: w.owned, ...(w.minimal ? { minimal: true } : {}), constraints: w.constraints, ...(w.space ? { space: w.space } : {}), tags: [...tags],
+    return suggestSetups({ kinds: w.kinds, groups: w.groups, needStand: w.needStand, owned: w.owned, constraints: w.constraints, ...(w.space ? { space: w.space } : {}), tags: [...tags],
       ...(bw.animals ? { animals: bw.animals } : {}), ...(bw.ownTank ? { ownTank: bw.ownTank } : {}), ...(bw.taxPct !== undefined ? { taxPct: bw.taxPct } : {}), ...(bw.hightech ? { hightech: true } : {}), ...(bw.phased ? { phased: true } : {}), ...(bw.lowtech ? { lowtech: true } : {}), ...(bw.planted ? { planted: true } : {}), ...(bw.larger ? { larger: true } : {}) }, loadProfile(), units());
   };
 
@@ -204,8 +201,8 @@ ${lockedStock(getBrief()).length ? `<div class="spNote sgLocked">Locked animals:
   const takeChip = (c: Chip) => {
     const before = res; if (!before) return;
     readFields();
-    const old = getBrief(), keep = new Set(tags), kinds = f.kinds, groups = f.groups, stand = f.needStand, minimal = f.minimal, oldPics = pics;
-    const restore = () => { seed(); f = { ...f, kinds, groups, needStand: stand, minimal }; tags = new Set(keep); };
+    const old = getBrief(), keep = new Set(tags), kinds = f.kinds, groups = f.groups, stand = f.needStand, oldPics = pics;
+    const restore = () => { seed(); f = { ...f, kinds, groups, needStand: stand }; tags = new Set(keep); };
     const r = refine(old, c, before, nb => { editBrief(() => nb); restore(); return generate(wantsFrom(f, units())); });
     if (!r.ok) editBrief(() => old);
     restore(); res = r.result; refineLine = r.line; cardLines = r.cards;

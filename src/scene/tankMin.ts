@@ -173,6 +173,12 @@ export function speciesMinimum(sp: Species, g: Geometry): MinRow {
   // sourced per species in provenance.ts) is the line, held in litres against the tank's full volume with the same 10 % slack.
   const minL = !d?.red && countsAgainstWater(sp) ? careOf(sp.id)?.minL ?? 0 : 0;
   if (minL > 0) { const have = g.tankLitres ?? g.litres; r.red = { pct: 100 * (have > 0 ? minL / have : Infinity), limiting: 'water', need: minL, have, mark: 'advisory', site: MINL_SITE, states: `${minL} L` }; }
+  // lane U5 (Nathan 2026-10-28): for a species marked `volGate` the gallon figure is a gate too, so a short tank is not saved by a length that suits a 12 in cube (betta: 5 gal floor)
+  const vd = d as unknown as { volGate?: string; vol?: { gal: number; site: string } } | undefined;
+  if (vd?.volGate && vd.vol && countsAgainstWater(sp)) {
+    const need = vd.vol.gal * GAL_L, have = g.tankLitres ?? g.litres, pct = 100 * (have > 0 ? need / have : Infinity);
+    if (pct > r.red.pct) r.red = { pct, limiting: 'water', need, have, mark: 'advisory', site: vd.vol.site, states: `${vd.vol.gal} gal` };
+  }
   const row: MinRow = { id: sp.id, name: sp.name, n: 1, kind: w.floor ? 'area' : 'run', pct: r.assessed ? r.red.pct : Infinity, comfortPct: r.green.pct, minLengthMm: d?.red?.L ?? 0,
     limiting: r.red.limiting, reason: '', comfortReason: recommendedOf(r.green), measure: r.red, comfort: r.green,
     derived: r.red.mark === 'derived (est)', assessed: r.assessed, depthMm: r.depthMm, tl: w.tl, tooDeepMm: r.tooDeepMm,

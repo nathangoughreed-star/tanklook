@@ -793,7 +793,7 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .sgAlt button { flex: none; max-width: 40% }
 .sgPhases { margin: 6px 0; padding: 6px 8px; border: 1px dashed var(--line, #888); border-radius: 8px; font-size: 12px }
 .sgLocked { margin: 4px 0 }
-.sgLayer { list-style: none; margin: 6px 0 0 -14px } .sgLayer ul { margin: 2px 0 0 16px; padding: 0 } .sgLayer > b { font-size: 12px } .sgFinishNote { margin: 6px 0 }
+.sgLayer { list-style: none; margin: 6px 0 0 -14px } .sgLayer ul { margin: 2px 0 0 16px; padding: 0 } .sgLayer > b { font-size: 12px }
 
 /* Create a look (lane C7) */
 .lkp { overflow: auto }
