@@ -162,6 +162,27 @@ export function heightMul(sp: Species, meanDepthCm: number): number {
   const w = zoneOf(sp) === 'all' ? ALL_CURVE : 1;
   return 1 / (w * r + (1 - w));
 }
+/**
+ * Length bonus (lane LB, PROTOTYPE, off by default, needs Nathan's yes): a swimmer in a long tank has more run than the same water in a squarer
+ * one. B_L = 1 + beta x (1 - sqrt(W / L)) on the footprint's bounding box (W <= L), so a square, circle or hexagon gets none; the swimmer's room is
+ * scaled by B_L / B_L(ref), ref = the median elongation of the 37 published lists (W/L 0.5, a 2:1 tank), so that shape reads as before. W/L is floored at
+ * minWL (8:1): past that a slot of a tank earns no more bonus (the turning-clearance check, turnclear.ts, is what blocks it). beta is a judgment class
+ * (research/length-bonus.md): bottom and land animals 0 (their floor is already counted), slow or hovering fish low, the rest mid, fast
+ * horizontal schoolers (HS_LOW_IDS) high; "all"-zone fish half (ALL_CURVE). The tankMin.ts gate is untouched.
+ */
+export const LENGTH_BONUS = { on: false, refWL: 0.5, minWL: 0.125, beta: { none: 0, low: 0.2, mid: 0.4, high: 0.7 } };
+export function lengthBetaOf(sp: Species): number {
+  const z = zoneOf(sp);
+  if (sp.habitat === 'land' || z === 'bottom') return 0;
+  const b = LENGTH_BONUS.beta, c = HS_LOW_IDS.has(sp.id) ? b.high : HS_HIGH_IDS.has(sp.id) || sp.aspect >= 0.9 || sp.id === 'betta' ? b.low : b.mid;
+  return z === 'all' ? c * ALL_CURVE : c;
+}
+/** F_L: what a tank's elongation W/L (0..1) multiplies this species' room by, against the reference shape (1 with the bonus off). */
+export function lengthFactor(sp: Species, wl: number): number {
+  if (!LENGTH_BONUS.on) return 1;
+  const b = lengthBetaOf(sp), bl = (x: number) => 1 + b * (1 - Math.sqrt(Math.min(1, Math.max(LENGTH_BONUS.minWL, x))));
+  return bl(wl) / bl(LENGTH_BONUS.refWL);
+}
 export const FLOOR_SHARE: Record<Zone, number> = { bottom: 1, all: 0.5, middle: 0, top: 0 };
 const FLOOR_REF = { id: 'bronzecory', tlMm: 65 }, SQIN_CM2 = 6.4516, IN_MM = 25.4;
 const isInvert = (sp: Species) => sp.kind === 'snail' || sp.cat.endsWith('invert');
@@ -256,7 +277,7 @@ export function stockingOf(S: TankSetup): Stocking {
   const cap = capacityOf(S), salt = !!(S.water.on && S.water.salt), by = new Map<string, Contributor>(), feeding = feedingOf(S);
   let load = 0, spaceLoad = 0, floorUse = 0;
   const each: { c: Contributor; s: number }[] = [];
-  const meanDepthCm = cap.litres * 1000 / Math.max(1e-9, floorOf(S.tank).areaCm2);
+  const fo = floorOf(S.tank), meanDepthCm = cap.litres * 1000 / Math.max(1e-9, fo.areaCm2), wl = fo.runMm > 0 ? fo.widthMm / fo.runMm : 1;
   // a species whose room grows with its group (GROUP_GROW): every animal of it carries (n / ref)^exp past ref
   const nOf = new Map<string, number>(); for (const f of S.fish) nOf.set(f.species, (nOf.get(f.species) ?? 0) + 1);
   const grow = (id: string) => { const g = GROUP_GROW[id], n = nOf.get(id) ?? 0; return g && n > g[0] ? (n / g[0]) ** g[1] : 1; };
@@ -266,7 +287,7 @@ export function stockingOf(S: TankSetup): Stocking {
     load += l;
     const c = by.get(sp.id) ?? { id: sp.id, name: sp.name, n: 0, load: 0, space: 0, share: 0, grams: 0, cls: metClass(sp), floor: 0, spaceFactor: spaceFactor(sp) };
     const gr = grow(sp.id), fl = floorUseCm2(sp, f.tl ?? sp.tl) * gr;
-    const s = spaceOf(sp, f.tl ?? sp.tl) * heightMul(sp, meanDepthCm) * waterShare(sp) * gr;
+    const s = spaceOf(sp, f.tl ?? sp.tl) * heightMul(sp, meanDepthCm) * waterShare(sp) * gr / lengthFactor(sp, wl);
     if (s > 0) each.push({ c, s });
     c.n++; c.load += l; c.floor += fl; floorUse += fl; c.grams += massG(sp.id, f.tl ?? sp.tl); by.set(sp.id, c);
   }
