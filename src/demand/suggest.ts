@@ -354,9 +354,9 @@ const standCost = (b: Build, P: UserProfile) => { const D = demandOf(b.setup, P)
 /** One or two plain sentences: what this concept gains and what it gives up, with the real numbers. Welfare is never on the list (it is a gate, not a trade). */
 /** The stated finish compromise of a bare build (lane U5): chosen, or forced by the budget, with what the display baseline would add. */
 function bareNote(b: Build, chosen: boolean, now: number): { kind: 'chosen' | 'compromise'; text: string } {
-  const add = baselineAddUsd(b, now), more = add > 0 ? `; the display baseline (substrate, hardscape, hardy plants) would add about ${usd(add)} before tax` : '';
-  return chosen ? { kind: 'chosen', text: `Bare-bottom by your choice: no substrate or plants, one hide for shelter${more}. Every welfare and equipment requirement is still in the price.` }
-    : { kind: 'compromise', text: `Compromise at this budget: no substrate, plants or hardscape beyond one hide${more}. You can add them later; nothing the animals need was cut.` };
+  const add = baselineAddUsd(b, now), hide = b.setup.items.length ? 'one hide for shelter' : 'no shelter piece', more = add > 0 ? `; the display baseline (substrate, hardscape, hardy plants) would add about ${usd(add)} before tax` : '';
+  return chosen ? { kind: 'chosen', text: `Bare-bottom by your choice: no substrate or plants, ${hide}${more}. Every welfare and equipment requirement is still in the price.` }
+    : { kind: 'compromise', text: `Compromise at this budget: no substrate or plants, ${hide}${more}. You can add them later; nothing the animals need was cut.` };
 }
 function tradeoffOf(p: Pick<Proposal, 'build' | 'totals' | 'underCeilingUsd'>, sd: StrategyDef, needStand: boolean, standUsd: number): string {
   const gal = Math.round(p.build.tank.ratedGal), tier = p.build.finish?.tier, left = p.underCeilingUsd ? ` ${usd(p.underCeilingUsd)} stays under your ceiling.` : '';

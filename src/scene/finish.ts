@@ -158,6 +158,7 @@ export const canBeBare = (S: TankSetup) => S.water.on && !S.water.salt;
 export function bareBuild(b: Build, now = Date.now()): Build {
   const spec = TIERS[TIERS.length - 1], S1 = upgraded(b, spec), style = rankStyles(b.animals)[0]?.style ?? 'planted';
   let T = scaped(b, S1, 'mixed', style, { hard: 1, plant: 0 }, fitFor(S1));
+  for (let h = 2; h <= 3 && !hasHardscape(T); h++) T = scaped(b, S1, 'mixed', style, { hard: h, plant: 0 }, fitFor(S1)); // draw more until there is a hide or piece to keep
   const shelter = T.items.find(i => i.kind === 'cave') ?? T.items.find(i => i.kind === 'wood') ?? T.items.find(i => i.kind === 'stone');
   T = { ...T, items: shelter ? [{ ...shelter, size: Math.min(shelter.size, Math.round(T.tank.L * 0.2)) }] : [], patches: [], substrate: { ...T.substrate, show: false }, render: { ...T.render, bg: 'none' } };
   const D = priceScape(T, b, now), setupUsd = Math.round(D.totals.setupUsd), add = setupUsd - b.setupUsd;
