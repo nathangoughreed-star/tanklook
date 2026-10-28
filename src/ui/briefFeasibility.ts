@@ -9,14 +9,15 @@ import { buildsFor } from '../scene/builds';
 import { compliance, type Constraints } from '../scene/constraints';
 import type { Units, TankSetup } from '../scene/types';
 import { planFor } from './stockPlanLogic';
-import { budgetOf, careTimeOf, lockedAnimals, spaceOf, type Brief } from './setupBrief';
+import { briefToWants } from '../scene/brief';
+import { budgetOf, lockedStock, spaceOf, type Brief } from './setupBrief';
 
 const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
 
 export interface Evaluation { gal?: number; tank?: string; cheapestUsd?: number; fits?: boolean; text: string }
 /** The locked animals against the budget: the smallest catalogue tank that holds them, its cheapest finished build, and whether that is within the ceiling. */
 export function evaluateAnimals(b: Brief): Evaluation {
-  const animals = lockedAnimals(b).map(i => i.value as { species: string; n: number }).filter(v => v && getSpecies(v.species));
+  const animals = lockedStock(b).filter(v => getSpecies(v.species));
   if (!animals.length) return { text: '' };
   const plan = planFor(animals.map(a => ({ id: a.species, n: a.n })));
   const m = plan.need?.tank;
@@ -30,14 +31,8 @@ export function evaluateAnimals(b: Brief): Evaluation {
     text: `${base} ${fits ? `That is within your ${usd(cap)} ceiling, with ${usd(cap - cheapest.setupUsd)} to spare.` : `That is ${usd(cheapest.setupUsd - cap)} over your ${usd(cap)} ceiling: the animals' needs are not changed to fit it. Raise the ceiling, use gear you own, or pick other animals.`}` };
 }
 
-/** The brief's limits as the guardrail shape the tank stores. */
-export function constraintsFrom(b: Brief): Constraints {
-  const c: Constraints = {}, s = budgetOf(b), t = careTimeOf(b);
-  if (s !== undefined) c.startupUsd = { on: true, value: s };
-  if (t !== undefined) c.minutesPerWeek = { on: true, value: t };
-  if (spaceOf(b)) c.space = { on: true };
-  return c;
-}
+/** The brief's limits as the guardrail shape the tank stores (U1's adapter). */
+export const constraintsFrom = (b: Brief): Constraints => briefToWants(b).constraints;
 /** The tank on screen against the brief's limits: its totals, and how they stand against the ceiling, time and space. */
 export function consequence(T: TankSetup, b: Brief, P: UserProfile, units: Units): { totals: string; line?: string; over: boolean } {
   const D = demandOf(T, P), t = D.totals;

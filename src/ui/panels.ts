@@ -8,7 +8,7 @@ import { SUMP_MODELS, sumpFromModel, tempEvidence } from '../scene/tech';
 import { standMisfit } from '../scene/standspace';
 import { renderFeaturedDeals } from './featuredDeals';
 import { attachWelcome } from './welcome';
-import { editBrief, setTank as briefTank } from './setupBrief';
+import { bindBriefStore, editBrief, setTank as briefTank } from './setupBrief';
 import { startDeals, visibleTabs, pickTab, sortDeals, DEFAULT_SORT, type DealSort, type StartTab, type StartMenu } from './startEntries';
 import { DEALS_AS_OF, DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
 import { LEVELS, onPerf, perf, setAuto, setLevel } from '../render/perf';
@@ -285,6 +285,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   }
   // The Welcome screen (lane C4) is the front door: first launch shows it; New / Open… still open the chooser above.
   // At first launch the tank on screen is already a fresh one, so Sandbox just closes the Welcome screen.
+  bindBriefStore(store); // lane U3: the setup brief lives in the active tank (TankSetup.brief)
   let welcomeFirst = false, lookPick: { open(): void } | undefined;
   let suggestPanel: { open(): void } | undefined, briefBarApi: { open(): void } | undefined;
   const openLook = () => void import('./lookPick').then(m => { (lookPick ??= m.attachLookPick(store, viewer, status)).open(); }); // lane C7: Create a look (path 2)

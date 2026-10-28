@@ -28,7 +28,7 @@ export const onBuildPicked = (fn: (e: BuildPicked) => void) => { listeners.add(f
 /** The build's tank with its animals scattered (a fixed seed per build: the picture does not change from one open to the next). */
 /** Put tank `T` in the active tank's place, key for key: a plain Object.assign leaves the old tank's extra settings behind (a terrarium's front doors
  *  stayed on the aquarium that came after it in the pictures; Nathan 2026-10-27). */
-export function putTank(A: TankSetup, T: TankSetup): void { for (const k of Object.keys(A)) delete (A as unknown as Record<string, unknown>)[k]; Object.assign(A, T); }
+export function putTank(A: TankSetup, T: TankSetup): void { const brief = A.brief; for (const k of Object.keys(A)) delete (A as unknown as Record<string, unknown>)[k]; Object.assign(A, T); if (brief && !A.brief) A.brief = brief; } // the setup brief belongs to the person's project, not to one build
 
 export function placedSetup(b: Build): TankSetup {
   const T = structuredClone(b.setup);

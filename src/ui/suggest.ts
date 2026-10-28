@@ -152,6 +152,7 @@ ${f.kinds.length ? '' : '<div class="spWarn">Tick at least one kind.</div>'}</fi
     const next = sceneForBuild(p.build, store.scene.units);
     next.name = p.archetype.title;
     const T = next.tanks[next.active];
+    if (store.tank.brief) T.brief = structuredClone(store.tank.brief); // the brief stays with the project (lane U3)
     T.constraints = p.scene.constraints; T.stand = { ...T.stand, show: p.scene.stand.show }; if (p.scene.layout.space) T.layout = { ...T.layout, space: p.scene.layout.space };
     rememberLastUsed(p.scene.constraints);
     store.replace(next); close(); store.seal();
