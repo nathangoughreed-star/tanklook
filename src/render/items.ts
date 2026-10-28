@@ -18,6 +18,7 @@ import { artificialGeometry, bendPlant, carpetOnGround, clumpOnGround, dropPlant
 import { reefShape } from './coral3d';
 import { equipShape } from './equipment';
 import { CELL_N, NOISE_N, gritUniforms } from './gritTex';
+import { stoneCap } from './stonecap';
 
 type R = () => number;
 const LIGHT = new THREE.Vector3(-0.35, 1, 0.55).normalize();
@@ -619,7 +620,6 @@ const _box = new THREE.Box3(), _p = new THREE.Vector3(), _c = new THREE.Vector3(
  *  Each piece's three passes draw together, in an order set by its item `id`: a running count made an incremental build
  *  (one piece rebuilt, numbered last) stack two overlapping capped pieces differently from a full rebuild. */
 function capPasses(m: THREE.Mesh, T: Tank, id: number) {
-  if (!capping.on) return;
   const g = m.geometry;
   if (!g.boundingBox) g.computeBoundingBox();
   m.updateMatrix();
@@ -632,6 +632,13 @@ function capPasses(m: THREE.Mesh, T: Tank, id: number) {
     cut = planes.some(pl => pl.distanceToPoint(_p) < 0) || (!!bowl && _p.y < bowl.H && _p.distanceTo(_c) > bowl.R);
   }
   if (!cut) return;
+  if (!bowl) { // planar glass: the cut face is real geometry (render/stonecap.ts), whatever the renderer's buffers
+    const inv = m.matrix.clone().invert(), q = m.quaternion.clone().invert();
+    const cap = stoneCap(g, planes.slice(1).map(pl => pl.clone().applyMatrix4(inv)), LIGHT.clone().applyQuaternion(q), V(0, 1, 0).applyQuaternion(q));
+    if (cap) { const o = new THREE.Mesh(cap, solidMaterial(T)); o.raycast = () => {}; o.userData.capPass = true; m.add(o); }
+    return;
+  }
+  if (!capping.on) return; // a bowl's sphere cut is still stencil-capped
   const M = capMaterials(T), ro = 6 + (Math.abs(id) % 4000) * 2e-4;
   for (const [mat, r] of [[M.back, ro], [M.front, ro], [M.cap, ro + 1e-4]] as const) {
     const o = new THREE.Mesh(g, mat);
