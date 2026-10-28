@@ -255,6 +255,8 @@ export interface LayoutSettings { id: LayoutId; seed: number; plantSeed?: number
   gatePlants?: true; gateAnimals?: true; gateStock?: true;
   /** The keeper's expertise (1 beginner .. 3 expert), chosen in Animals; gating waits for it. */
   expertise?: 1 | 2 | 3;
+  /** The kind of setup the owner chose (lane S252, 2026-10-27): steers the species picker. Used only while it agrees with the water (scene/pickerKind.ts); absent = read from the water and the style. */
+  kind?: 'freshwater' | 'saltwater' | 'terrarium' | 'vivarium';
   /** The owner's space for the tank (lane P3, 2026-10-20, no version bump): "Set my space" on the fullness tile, drawn as a dashed outline. Absent = not set. */
   space?: SpaceLimit }
 /** The area the owner has for the tank, mm: w along the tank's length, d front to back, h (optional) the height it may reach (scene/space.ts). */

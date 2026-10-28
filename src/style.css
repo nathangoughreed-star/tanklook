@@ -803,3 +803,11 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .sgKinds { border: 1px solid var(--line); border-radius: 6px; margin: 0; padding: 4px 8px 6px; display: flex; flex-direction: column; gap: 2px; font-size: 12.5px } .sgKinds legend { font-weight: 600; padding: 0 4px }
 .sgSub { margin: 2px 0 2px 18px; display: flex; flex-direction: column; gap: 2px }
 .sgOwnRow { display: flex; align-items: center; justify-content: space-between; gap: 6px } .sgOwnPick { max-width: 55%; font: inherit; font-size: 11.5px; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 4px }
+.kinds { margin: 2px 0 6px }
+.results .grp { margin: 6px 0 1px; padding: 0 8px; font: 600 11px/1.4 system-ui, sans-serif; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); position: sticky; top: 0; background: var(--panel, var(--bg, #1a1d21)) }
+.results .grp .n { font-weight: 400 }
+.results button.gated { opacity: .55 }
+.results button.gated .nm { filter: grayscale(1) }
+.startkind { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 0 0 8px }
+.startkind button, .kinds button { padding: 2px 8px; border-radius: 12px; font-size: 12px }
+.startkind button.on, .kinds button.on { background: var(--accent); border-color: var(--accent); color: #fff }

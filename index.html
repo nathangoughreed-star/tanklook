@@ -58,6 +58,7 @@
   <dialog id="startDlg" class="libdlg startdlg" aria-labelledby="startTitle">
     <form method="dialog" class="libhead"><h2 id="startTitle">TankLook</h2><button value="close" aria-label="Close">✕</button></form>
     <p class="hint" id="startIntro"></p>
+    <div id="startKind" class="kinds startkind" role="group" aria-label="Kind of tank"><span class="hint">Kind of tank:</span></div>
     <div class="startbtns startpaths" id="startBtns">
       <button id="startAnimal" class="startpath"><b>An animal I want</b><span>Pick the animal; the tank it needs, and what it costs, follow</span></button>
       <button id="startLook" class="startpath"><b>A look I want</b><span>Start from a style: nature, iwagumi, jungle, reef</span></button>
@@ -271,6 +272,7 @@
   <div class="btns" id="growAsk" hidden><span class="hint">Keep these changes?</span><span class="grow"></span><button id="growKeep">Keep</button><button id="growUndo">Undo</button></div>
   </details>
   <details class="sec" data-sec="fish"><summary><h2>Animals</h2></summary>
+  <div id="spKinds" class="seg kinds" role="group" aria-label="Kind of setup"></div>
   <div id="spCats" class="cats" role="tablist" aria-label="Animal groups"></div>
   <input id="spSearch" type="search" placeholder="Search species (common or scientific name)" aria-label="Search species">
   <div id="spResults" class="results" role="listbox" aria-label="Species"></div>

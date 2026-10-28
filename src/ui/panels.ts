@@ -15,7 +15,7 @@ import { lifeStages } from '../data/lifestages';
 import { rng } from '../art/paint';
 import { GRAIN_LOOK, SUBSTRATES, drawFishCard } from '../art/placeholder';
 import { drawSnailCard } from '../art/snails';
-import { CATEGORIES, SPECIES, fishTL, getSpecies, needsWater, searchSpecies, speciesOf, speciesTag, type Category, type Sex, type Species } from '../data/species';
+import { SPECIES, fishTL, getSpecies, needsWater, searchSpecies, speciesOf, speciesTag, type Sex, type Species } from '../data/species';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { BACKDROPS } from '../render/backdrop';
 import { gearShown, setGearShown } from '../render/gear3d';
@@ -23,6 +23,7 @@ import { MAP_DIV, MAP_STEP, emitters, mapStepOf } from '../render/lighting';
 import { darkOf, darkStats } from '../render/lightShells';
 import { gateOf, hasCorals, whysAnimal, type AnimalWhy } from '../scene/animalfit';
 import { minFit } from '../scene/tankMin';
+import { OK_FIT, ROLES, SETUP_KINDS, applyKind, fitFrom, groupPicker, offeredIn, roleOf, rolesFor, tankKind, type Fit, type Role, type SetupKind } from '../scene/pickerKind';
 import { EXPERTISE_NAME } from '../data/care';
 import { CARE_NAME, FIT_PAR, fitCaption, whyNot, type FitLight } from '../scene/plantfit';
 import { itemLights, tankSummary } from '../scene/lightcheck';
@@ -147,9 +148,10 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('newScene').onclick = () => showChooser('new', undefined, false);
   $('openScene').onclick = () => showChooser('open', 'open', false);
   /** The old New button: an empty tank, after a warning when the current one has animals (Undo brings it back). */
+  let newKind: SetupKind = 'freshwater'; // the chooser's Tank type (lane S252): applied to the empty tank it starts
   const newEmptyTank = () => {
     if (G().tanks.some(t => t.fish.length) && !confirm('Start a new, empty tank? (Undo brings this one back.)')) return false;
-    const s = emptyScene(); s.name = 'New tank';
+    const s = emptyScene(); s.name = 'New tank'; applyKind(s.tanks[0], newKind); // the water type is settled when the tank is made
     s.tanks[0].camera = { ...S().camera }; s.units = G().units;
     store.replace(s); setLibId(null); status('New tank. Undo brings the previous one back.');
     return true;
@@ -241,9 +243,10 @@ export function attachPanels(store: Store, viewer: Viewer) {
   const startDlg = $<HTMLDialogElement>('startDlg');
   let firstLaunch = false;
   const dealSort = { ...DEFAULT_SORT }; // each deal tab keeps its own order
+  $('startKind').replaceChildren($('startKind').firstElementChild!, ...SETUP_KINDS.map(([k, label, tip]) => { const b = document.createElement('button'); b.type = 'button'; b.dataset.kind = k; b.textContent = label; b.title = tip; b.onclick = () => { newKind = k; for (const x of $('startKind').querySelectorAll<HTMLButtonElement>('button')) { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', String(x === b)); } }; return b; }));
   $('startEx').onclick = e => openExample(e, startDlg);
   $('startFresh').onclick = () => { // at first launch the tank on screen is already a fresh one
-    if (firstLaunch) startDlg.close(); else if (newEmptyTank()) startDlg.close();
+    if (firstLaunch) { startDlg.close(); store.edit(s => applyKind(s, newKind)); } else if (newEmptyTank()) startDlg.close();
   };
   const openDeal = (name: string, scene: Scene) => { startDlg.close(); store.replace(scene); setLibId(null); status(`Opened the deal "${name}". Customise it; the demand panel prices the bundle. Undo brings the previous tank back.`); };
   const setTab = (tab: StartTab) => {
@@ -258,7 +261,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
     $('startIntro').textContent = isNew
       ? 'Plan an aquarium, paludarium or terrarium: tank, ground, plants, animals and light, all to scale. Start empty, or from a kit or set you can buy now.'
       : 'A ready-made starter tank to look at or build on, or one you saved.';
-    $('startBtns').hidden = !isNew;
+    $('startBtns').hidden = !isNew; $('startKind').hidden = !isNew;
+    for (const b of $('startKind').querySelectorAll<HTMLButtonElement>('button')) { const on = b.dataset.kind === newKind; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); }
     $('startTabs').hidden = !shown.length;
     const swap = $<HTMLButtonElement>('startSwap');
     swap.textContent = isNew ? 'Open a starter or saved tank instead…' : 'Start a new tank instead…';
@@ -671,19 +675,42 @@ Cancel, then change the name, to keep both.`)) return;
   const misfits = (s: TankSetup) => s.fish.filter(f => { const sp = getSpecies(f.species); return !!sp && !fitsWater(sp, s); });
   let pickId = 'neon';
   const search = $('spSearch'), results = $<HTMLDivElement>('spResults');
-  // sub menus: All, then one chip per group; the search looks only inside the chosen group
-  let cat: Category | undefined;
-  const cats = $('spCats');
-  for (const [k, label] of [[undefined, 'All'], ...CATEGORIES] as const) {
-    const b = document.createElement('button');
-    b.setAttribute('role', 'tab'); b.dataset.cat = k ?? ''; b.innerHTML = `${esc(label)} <span class="n"></span>`;
-    b.onclick = () => { cat = k; renderResults(); };
-    cats.append(b);
+  // role groups (lane S252, 2026-10-27): the picker offers what this kind of setup keeps (freshwater, saltwater, terrarium,
+  // vivarium), as role groups (schooling fish, centerpiece fish, ...) with the best fit for this tank first; chips jump to one group
+  let role: Role | undefined;
+  const cats = $('spCats'), kinds = $('spKinds');
+  const roleName = () => ROLES.find(r => r[0] === role)?.[1] ?? '';
+  /** The species this tank's kind offers that match the search and the chosen group. */
+  const findSpecies = (q: string, r?: Role) => { const k = tankKind(S()); return searchSpecies(q).filter(sp => offeredIn(sp, k) && (!r || roleOf(sp) === r)); };
+  /** How each species sits in this tank (animalfit.ts, the stocking screen's engine), cached by the tank's state: the picker opens often. */
+  let fitKey = '', fitMemo = new Map<string, Fit>();
+  function fitsFor(s: TankSetup): (sp: Species) => Fit {
+    const gated = !!s.layout.gateStock && !!s.layout.gateAnimals, ex = (s.layout.expertise ?? 1) as 1 | 2 | 3, present = [...new Set(s.fish.map(f => f.species))].sort();
+    const key = JSON.stringify([s.tank, s.water, present, s.tech, s.items.filter(it => it.kind === 'coral').length, gated, ex]);
+    if (key !== fitKey) {
+      fitKey = key; fitMemo = new Map();
+      const litres = volume(s.tank).litres, have = present.map(getSpecies).filter((x): x is Species => !!x);
+      const env = { corals: hasCorals(s.items), water: s.tech ? tempEvidence(s) : undefined, fit: minFit(s) };
+      for (const sp of SPECIES) fitMemo.set(sp.id, fitFrom(whysAnimal(sp, litres, ex, have, env), gated));
+    }
+    return sp => fitMemo.get(sp.id) ?? OK_FIT;
   }
-  const catName = () => CATEGORIES.find(c => c[0] === cat)?.[1] ?? '';
-  /** The species list shows only animals for this tank's water (2026-10-13): salt species in a saltwater tank, the rest
-   *  (no `salt` flag) in a freshwater or dry one. */
-  const findSpecies = (q: string, c?: Category) => searchSpecies(q, c).filter(sp => fitsWater(sp, S()));
+  const setKind = (k: SetupKind) => {
+    if (tankKind(S()) === k) return;
+    store.edit(s => {
+      const was = !!s.water.salt;
+      applyKind(s, k);
+      // the other type's clear water becomes this type's (as setSalt does); the reef starter is salt only
+      if (was !== (k === 'saltwater') && k !== 'terrarium') {
+        const [c, o] = k === 'saltwater' ? FRESH_CLEAR : SALT_CLEAR;
+        if (s.water.color === c && s.water.opacity === o) [s.water.color, s.water.opacity] = k === 'saltwater' ? SALT_CLEAR : FRESH_CLEAR;
+        if (STYLE_KIND[s.layout.id] === (k === 'saltwater' ? 'fresh' : 'salt')) s.layout = { ...s.layout, id: 'none' };
+      }
+    });
+    const n = misfits(S()).length;
+    status(`${SETUP_KINDS.find(x => x[0] === k)![1]}: the Animals list shows what suits it.${n ? ` ${n} animal${n > 1 ? 's' : ''} here ${n > 1 ? 'do' : 'does'} not fit the water: they are marked in the stocking list.` : ''}`);
+  };
+  kinds.replaceChildren(...SETUP_KINDS.map(([k, label, tip]) => { const b = document.createElement('button'); b.dataset.kind = k; b.textContent = label; b.title = tip; b.onclick = () => setKind(k); return b; }));
   /** What each care level asks of the keeper: rough, typical aquarium / vivarium practice, not a rule. */
   const CARE_LEVEL: Record<1 | 2 | 3, string> = {
     1: 'Hardy, forgiving animals that take small mistakes: a basic filter or a simple setup, a weekly water change of about a quarter, and 15 to 30 minutes of care a week.',
@@ -706,49 +733,46 @@ Cancel, then change the name, to keep both.`)) return;
   }
   $('gateAnimals').onchange = e => store.edit(s => { if ((e.target as HTMLInputElement).checked) s.layout.gateAnimals = true; else delete s.layout.gateAnimals; });
   function renderResults() {
-    const salt = isSalt(S());
-    for (const b of cats.children as HTMLCollectionOf<HTMLButtonElement>) {
-      const on = b.dataset.cat === (cat ?? ''), k = b.dataset.cat as Category | '';
-      const n = SPECIES.filter(sp => (!k || sp.cat === k) && fitsWater(sp, S())).length;
-      b.querySelector('.n')!.textContent = String(n); b.classList.toggle('empty', !n);
-      b.classList.toggle('on', on); b.setAttribute('aria-selected', String(on));
-    }
-    // the group names already say fresh or salt, so only the All search adds "marine" (audit #10)
-    search.setAttribute('placeholder', cat ? `Search ${catName().toLowerCase()}` : `Search ${salt ? 'marine ' : ''}species (common or scientific name)`);
-    const list = findSpecies(search.value, cat);
-    if (list.length && !list.some(s => s.id === pickId)) pickId = list[0].id;
-    const elsewhere = !list.length && cat && search.value.trim() ? findSpecies(search.value).length : 0;
-    const other = !list.length && search.value.trim() ? searchSpecies(search.value, cat).length : 0; // matches for the other water
-    const inCat = cat && !search.value.trim() ? searchSpecies('', cat).length : 0; // the whole group, any water
-    // a group that is empty only because of this tank's water says how to get it (audit #11)
-    const toSalt = cat ? cat.startsWith('sw-') : !salt, swap = `<button type="button" class="linkbtn" id="spSwap">Switch the tank to ${toSalt ? 'Saltwater' : 'Freshwater'}</button>`;
-    results.innerHTML = list.length ? '' : `<div class="none">${!search.value.trim() && salt && !findSpecies('').length ? 'No saltwater species yet.'
-      : !cat || search.value.trim() ? `No ${salt ? 'saltwater ' : ''}species match${other ? ` (${other} ${salt ? 'freshwater' : 'saltwater'}). ${swap}` : '.'}`
-      : inCat ? `${esc(catName())} need a ${toSalt ? 'saltwater' : 'freshwater'} tank. ${swap} to see ${inCat}.`
-      : `No ${esc(catName().toLowerCase())} yet.`}${elsewhere ? ` <a href="#" id="spAll">${elsewhere} in other groups</a>` : ''}</div>`;
-    const all = results.querySelector<HTMLAnchorElement>('#spAll');
-    if (all) all.onclick = e => { e.preventDefault(); cat = undefined; renderResults(); };
-    const sw = results.querySelector<HTMLButtonElement>('#spSwap');
-    if (sw) sw.onclick = () => { if (!S().water.on) store.edit(s => { s.water.on = true; }); setSalt(toSalt); };
-    const gate = animalGate(S()), whyOf = (sp: Species) => gate?.(sp) ?? null;
-    list.sort((a, b) => +!!whyOf(a)?.block - +!!whyOf(b)?.block); // stable: the unfit sink, order kept (a concern alone does not)
-    for (const sp of list) {
-      const b = document.createElement('button'), gw = whyOf(sp);
-      b.setAttribute('role', 'option'); b.setAttribute('aria-selected', String(sp.id === pickId));
-      b.className = sp.id === pickId ? 'on' : '';
-      const tag = speciesTag(sp) ? `<b class="tag">${speciesTag(sp)}</b>` : '';
-      b.innerHTML = `<span class="nm">${esc(sp.name)} ${tag}</span><span>${fmt(sp.tl)}</span><i class="sci" title="${esc(sp.sci)}">${esc(sp.sci)}</i>${gw ? `<small class="why${gw.block ? '' : ' note'}"${gw.more.length ? ` title="${esc(gw.more.join('; '))}"` : ''}>${esc(gw.text)}${gw.more.length ? ` (+${gw.more.length} more)` : ''}</small>` : ''}`;
-      if (gw?.block) b.classList.add('gated');
-      if (sp.note) b.title = sp.note;
-      b.onclick = () => { pickId = sp.id; preview.hidden = false; renderResults(); };
-      b.ondblclick = () => addOne(sp);
-      b.onpointerdown = e => dragOut(e, sp.name, { drop: at => at && dropSpecies(sp, sp.id === pickId && sp.female ? previewSex : undefined, at) });
-      results.append(b);
+    const s = S(), kind = tankKind(s), salt = kind === 'saltwater';
+    animalGate(s); // keeps its box and hint in step with the care gates
+    for (const b of kinds.children as HTMLCollectionOf<HTMLButtonElement>) { const on = b.dataset.kind === kind; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); }
+    // chips: All, then one per role group this kind of setup has (a group with nothing here is not shown, not shown as 0)
+    const counts = new Map<Role, number>();
+    for (const sp of SPECIES) if (offeredIn(sp, kind)) counts.set(roleOf(sp), (counts.get(roleOf(sp)) ?? 0) + 1);
+    const chips = [[undefined, 'All', [...counts.values()].reduce((a, n) => a + n, 0)] as const, ...rolesFor(kind).filter(r => counts.has(r)).map(r => [r, ROLES.find(x => x[0] === r)![1], counts.get(r)!] as const)];
+    if (role && !counts.has(role)) role = undefined;
+    cats.replaceChildren(...chips.map(([k, label, n]) => {
+      const b = document.createElement('button'); b.setAttribute('role', 'tab'); b.dataset.cat = k ?? ''; b.innerHTML = `${esc(label)} <span class="n">${n}</span>`;
+      const on = k === role; b.classList.toggle('on', on); b.setAttribute('aria-selected', String(on)); b.onclick = () => { role = k; renderResults(); };
+      return b;
+    }));
+    search.setAttribute('placeholder', role ? `Search ${roleName().toLowerCase()}` : `Search ${salt ? 'marine ' : ''}species (common or scientific name)`);
+    const list = findSpecies(search.value, role), fitOf = fitsFor(s), groups = groupPicker(list, kind, fitOf);
+    if (list.length && !list.some(x => x.id === pickId)) pickId = groups[0].rows[0].sp.id;
+    const other = search.value.trim() ? searchSpecies(search.value).length : 0; // matches in other kinds of setup
+    results.innerHTML = list.length ? '' : `<div class="none">${search.value.trim() ? `Nothing for a ${kind} setup matches${other ? ` (${other} in other kinds: change the setup type above)` : ''}.` : 'No animals for this kind of setup yet.'}</div>`;
+    for (const g of groups) {
+      if (!role) { const h = document.createElement('div'); h.className = 'grp'; h.setAttribute('role', 'presentation'); h.title = ROLES.find(x => x[0] === g.role)![2]; h.innerHTML = `${esc(g.label)} <span class="n">${g.rows.length}</span>`; results.append(h); }
+      for (const { sp, fit } of g.rows) {
+        const b = document.createElement('button');
+        b.setAttribute('role', 'option'); b.setAttribute('aria-selected', String(sp.id === pickId));
+        b.className = sp.id === pickId ? 'on' : '';
+        const tag = speciesTag(sp) ? `<b class="tag">${speciesTag(sp)}</b>` : '';
+        b.innerHTML = `<span class="nm">${esc(sp.name)} ${tag}</span><span>${fmt(sp.tl)}</span><i class="sci" title="${esc(sp.sci)}">${esc(sp.sci)}</i>${fit.level !== 'ok' ? `<small class="why${fit.level === 'problem' ? '' : ' note'}"${fit.more.length ? ` title="${esc(fit.more.join('; '))}"` : ''}>${esc(fit.text)}${fit.more.length ? ` (+${fit.more.length} more)` : ''}</small>` : ''}`;
+        if (fit.level !== 'ok') b.classList.add('gated');
+        b.title = fit.level !== 'ok' ? [fit.text, ...fit.more, 'Still selectable: Add anyway.'].join('; ') : sp.note ?? '';
+        b.onclick = () => { pickId = sp.id; preview.hidden = false; renderResults(); };
+        b.ondblclick = () => addOne(sp);
+        b.onpointerdown = e => dragOut(e, sp.name, { drop: at => at && dropSpecies(sp, sp.id === pickId && sp.female ? previewSex : undefined, at) });
+        results.append(b);
+      }
     }
     const pick = getSpecies(pickId), why = pick ? blocked(pick) : '';
     showPreview(list.length ? pick : undefined);
-    $<HTMLButtonElement>('addFish').disabled = !list.length || !!why;
-    $('addFish').title = why;
+    const add = $<HTMLButtonElement>('addFish');
+    add.disabled = !list.length || !!why;
+    add.title = why;
+    if (pick && list.length && !why && fitOf(pick).level !== 'ok') { add.textContent = add.textContent!.replace(/^Add/, 'Add anyway'); add.title = fitOf(pick).text; } // grayed, not blocked
     $('addWhy').textContent = why; $('addWhy').hidden = !why || !list.length; // said under Add, not only in a tooltip (audit #9)
     setOut('oAddSize', sizeLabel(addPct(), getSpecies(pickId)));
     renderStages();
@@ -784,7 +808,7 @@ Cancel, then change the name, to keep both.`)) return;
     const adult = base.female ? `Adult ♂ ${fmt(base.tl)}, ♀ ${fmt(base.female.tl)}` : `Adult ${fmt(sp.tl)}`;
     $('spPreviewInfo').textContent = [adult, speciesTag(sp), sp.note].filter(Boolean).join(' · ');
   }
-  search.onkeydown = e => { if (e.key === 'Enter') { const sp = findSpecies(search.value, cat)[0]; if (sp) { pickId = sp.id; addOne(sp); renderResults(); } } };
+  search.onkeydown = e => { if (e.key === 'Enter') { const sp = groupPicker(findSpecies(search.value, role), tankKind(S()), fitsFor(S()))[0]?.rows[0].sp; if (sp) { pickId = sp.id; addOne(sp); renderResults(); } } };
 
   /** Size for newly added fish: % of adult length (100 = adult, stored as no override). */
   const addPct = () => clamp(Math.round(+$('addSize').value || 100), 15, 130);
@@ -2070,7 +2094,7 @@ Cancel, then change the name, to keep both.`)) return;
       $('wMisfit').textContent = `Not ${isSalt(s) ? 'saltwater' : 'freshwater'} animals: ${[...by].map(([nm, n]) => `${n} ${nm}`).join(', ')}.`;
       $('wMisfitDel').textContent = `Remove ${mis.length}`;
     }
-    const wk = `${isSalt(s)}|${s.layout.gateStock ? 1 : 0}${s.layout.gateAnimals ? 1 : 0}${s.layout.expertise ?? 1}|${s.layout.gateStock && s.layout.gateAnimals ? Math.round(volume(s.tank).litres) + [...new Set(s.fish.map(f => f.species))].join() : ''}`; if (wk !== waterKind) { waterKind = wk; renderResults(); } // the species list follows the water
+    const wk = `${tankKind(s)}|${s.layout.gateStock ? 1 : 0}${s.layout.gateAnimals ? 1 : 0}${s.layout.expertise ?? 1}|${Math.round(volume(s.tank).litres)}${[...new Set(s.fish.map(f => f.species))].join()}|${s.tech ? JSON.stringify(s.tech) : ''}`; if (wk !== waterKind) { waterKind = wk; renderResults(); } // the species list follows the water
     setVal('wLevel', wa.level); setOut('oLevel', wa.level >= 1 ? 'Full' : `${fmt(waterY(A, wa.level))} high`);
     const cl = s.condition.level; setVal('cond', Math.round(cl * 100)); setOut('oCond', cl <= 0 ? 'Pristine' : cl < 0.35 ? 'A few weeks' : cl < 0.7 ? 'Overdue' : 'Neglected');
     setVal('wOpac', wa.opacity); setOut('oOpac', wa.opacity < 0.01 ? 'Clear' : Math.round(wa.opacity * 100) + '%'); setVal('wColor', wa.color);
