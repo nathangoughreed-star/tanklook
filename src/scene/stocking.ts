@@ -25,6 +25,7 @@ import { bioloadLitres } from './starter';
 import { feedingOf, isLivePlantPatch, nitrogenBudget, tanOf, type Nitrogen } from './nitrogen';
 import { assumedFilter, heatLoss, rowsFor, setWaterChangeFraction, stockCapacity, sumpLitres } from './tech';
 import { floorOf } from './tankMin';
+import { TURN_K, turnNeedMm } from './turnclear';
 import { zoneOf, type Zone } from './zone';
 import type { Fish, TankSetup } from './types';
 
@@ -177,11 +178,15 @@ export function lengthBetaOf(sp: Species): number {
   const b = LENGTH_BONUS.beta, c = HS_LOW_IDS.has(sp.id) ? b.high : HS_HIGH_IDS.has(sp.id) || sp.aspect >= 0.9 || sp.id === 'betta' ? b.low : b.mid;
   return z === 'all' ? c * ALL_CURVE : c;
 }
-/** F_L: what a tank's elongation W/L (0..1) multiplies this species' room by, against the reference shape (1 with the bonus off). */
-export function lengthFactor(sp: Species, wl: number): number {
+/** F_L: what a tank's elongation W/L (0..1) multiplies this species' room by, against the reference shape (1 with the bonus off). Nathan 2026-10-28:
+ *  a geometry that fails turning clearance (front-to-back width `widthMm` under TURN_K x adult length) earns NO positive credit: the raw B_L is
+ *  replaced by 1 before the reference normalisation (so such a tank reads 1 / B_L(ref) of the room, never more than a reference-shaped tank).
+ *  Without `widthMm` the clearance is not checked. */
+export function lengthFactor(sp: Species, wl: number, widthMm?: number): number {
   if (!LENGTH_BONUS.on) return 1;
   const b = lengthBetaOf(sp), bl = (x: number) => 1 + b * (1 - Math.sqrt(Math.min(1, Math.max(LENGTH_BONUS.minWL, x))));
-  return bl(wl) / bl(LENGTH_BONUS.refWL);
+  const applied = widthMm !== undefined && widthMm < turnNeedMm(sp, TURN_K) ? 1 : bl(wl);
+  return applied / bl(LENGTH_BONUS.refWL);
 }
 export const FLOOR_SHARE: Record<Zone, number> = { bottom: 1, all: 0.5, middle: 0, top: 0 };
 const FLOOR_REF = { id: 'bronzecory', tlMm: 65 }, SQIN_CM2 = 6.4516, IN_MM = 25.4;
@@ -287,7 +292,7 @@ export function stockingOf(S: TankSetup): Stocking {
     load += l;
     const c = by.get(sp.id) ?? { id: sp.id, name: sp.name, n: 0, load: 0, space: 0, share: 0, grams: 0, cls: metClass(sp), floor: 0, spaceFactor: spaceFactor(sp) };
     const gr = grow(sp.id), fl = floorUseCm2(sp, f.tl ?? sp.tl) * gr;
-    const s = spaceOf(sp, f.tl ?? sp.tl) * heightMul(sp, meanDepthCm) * waterShare(sp) * gr / lengthFactor(sp, wl);
+    const s = spaceOf(sp, f.tl ?? sp.tl) * heightMul(sp, meanDepthCm) * waterShare(sp) * gr / lengthFactor(sp, wl, fo.widthMm);
     if (s > 0) each.push({ c, s });
     c.n++; c.load += l; c.floor += fl; floorUse += fl; c.grams += massG(sp.id, f.tl ?? sp.tl); by.set(sp.id, c);
   }

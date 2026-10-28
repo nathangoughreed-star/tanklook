@@ -6,6 +6,8 @@ import type { Species } from '../data/species';
 import type { Geometry } from './tankMin';
 
 export const TURN_K_SWEEP = [1, 1.5, 2];
+/** Nathan 2026-10-28: 1.5 adult body lengths, provisional; a failure is amber only (never a red gate) until the rule is reviewed. */
+export const TURN_K = 1.5;
 /** Bodies that bend or coil to turn: snakes, eel-shaped kuhli, long-tailed lizards (card aspect < 0.2). */
 export const turnExempt = (sp: Species) => sp.body === 'snake' || sp.id === 'kuhli' || sp.aspect < 0.2;
 /** Front-to-back width the species wants, mm (0 = exempt). */

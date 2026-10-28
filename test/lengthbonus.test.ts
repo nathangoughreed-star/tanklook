@@ -1,7 +1,7 @@
 // Lane LB prototype: the swimmer length bonus (stocking.ts, off by default) and the turning-clearance heuristic (turnclear.ts, not wired).
 import { afterEach, describe, expect, it } from 'vitest';
 import { LENGTH_BONUS, lengthBetaOf, lengthFactor, stockingOf } from '../src/scene/stocking';
-import { turnExempt, turnNeedMm, turnPct, turnWidthMm } from '../src/scene/turnclear';
+import { TURN_K, turnExempt, turnNeedMm, turnPct, turnWidthMm } from '../src/scene/turnclear';
 import { getSpecies } from '../src/data/species';
 import { bareSetup } from '../src/scene/defaults';
 import { comboTank } from './aqcompare.test';
@@ -37,6 +37,29 @@ describe('length bonus', () => {
     expect(Math.abs(on[1] / off[1] - 1)).toBeLessThan(0.01);
     expect(on[2]).toBeLessThan(off[2]);
     expect(bareSetup().fish.length).toBe(0);
+  });
+});
+
+describe('length bonus x turning clearance (Nathan 2026-10-28)', () => {
+  it('a geometry failing clearance gets no positive credit: raw B_L becomes 1 before the reference normalisation', () => {
+    LENGTH_BONUS.on = true;
+    const d = sp('danio'), ok = turnNeedMm(d, TURN_K), refBl = 1 + lengthBetaOf(d) * (1 - Math.sqrt(LENGTH_BONUS.refWL));
+    expect(lengthFactor(d, 0.1, ok)).toBeGreaterThan(1);                       // wide enough: full credit
+    expect(lengthFactor(d, 0.1, ok - 1)).toBeCloseTo(1 / refBl, 12);            // one mm short: none, and the reference credit is gone too
+    expect(lengthFactor(d, 0.1, ok - 1)).toBeLessThan(1);
+    expect(lengthFactor(d, 0.1)).toBe(lengthFactor(d, 0.1, ok));                // no width given: not checked
+  });
+  it('stockingOf: the same fish read higher in a 72 x 2 in slot than in a 72 x 5 in tank of equal height once the bonus is on', () => {
+    const at = (D: number) => stockingOf(comboTank({ name: 'x', tank: [72, D, 12], stock: [['danio', 6]] })).percent;
+    LENGTH_BONUS.on = true;
+    const thinPct = at(2) / at(3.5);
+    LENGTH_BONUS.on = false;
+    const offPct = at(2) / at(3.5);
+    expect(thinPct).toBeGreaterThan(offPct); // the credit is withdrawn from the failing slot (2 in < 1.5 x 2.5 in), not given
+  });
+  it('the exempt bodies are never refused', () => {
+    LENGTH_BONUS.on = true;
+    expect(lengthFactor(sp('kuhli'), 0.1, 10)).toBeCloseTo(lengthFactor(sp('kuhli'), 0.1), 12);
   });
 });
 
