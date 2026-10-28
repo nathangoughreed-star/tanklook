@@ -883,3 +883,6 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .wgAqua { border-top: 1px solid var(--line); padding-top: 6px }
 .wgAqua ul { margin: 4px 0 0; padding-left: 16px } .wgAqua li i { font-style: normal; font-weight: 600 }
 #welcomeManual { margin-left: auto }
+#sheetView .bpBuy, #sheetView .bpStock { width: 100%; border-collapse: collapse }
+#sheetView .bpBuy tr.own th, #sheetView .bpBuy tr.own td { color: #3c6b3c }
+#sheetView .bpStock th { width: 9em; vertical-align: top; text-align: left }

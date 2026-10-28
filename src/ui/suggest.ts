@@ -20,6 +20,7 @@ import { loadProfile } from './demandPanel';
 import { placedSetup, putTank, sceneForBuild } from './buildPick';
 import { constraintsOf, editBrief, getBrief, lockedStock, setBudget, setCareTime, setMonthly, setSpace } from './setupBrief';
 import { briefToWants, clearItem, setItem, valueOf } from '../scene/brief';
+import { openBuildPlan } from './buildPlanSheet';
 import { applyAlternative, type Alternative, type Infeasible } from '../demand/infeasible';
 import { getSpecies as speciesOf } from '../data/species';
 
@@ -112,7 +113,7 @@ ${checks ? `<ul class="bpGear sgChecks">${checks}</ul>` : ''}
 ${p.capNote ? `<div class="spNote">${esc(p.capNote)}</div>` : ''}
 ${p.unknown.length ? `<div class="spNote">Not enough information: ${esc(p.unknown[0])}</div>` : ''}
 <div class="spNote">${b.setup.water.on ? `${esc(CYCLE_NOTE)} ` : ''}${b.finish && b.finish.tier !== 'bare' ? `${esc(TIER_LABEL[b.finish.tier])}: the look, substrate, hardscape and plants are in the price and the time.` : ''}</div>
-<button type="button" class="primary" data-act="pick" data-i="${i}">Use this setup</button></li>`;
+<button type="button" class="primary" data-act="pick" data-i="${i}">Use this setup</button> <button type="button" data-act="plan" data-i="${i}">Build plan</button></li>`;
   };
 
   /** The "why not" card (lane U4): the limiting factor in plain words with the numbers, what the cheapest honest build is made of, and one button per way out. Each button edits the brief (locks kept) and re-runs. */
@@ -207,7 +208,7 @@ ${lockedStock(getBrief()).length ? `<div class="spNote sgLocked">Locked animals:
     const alt = (e.target as HTMLElement).closest<HTMLElement>('[data-alt]'); if (alt) { takeAlt(+(alt.dataset.alt ?? -1)); return; }
     const t = (e.target as HTMLElement).closest<HTMLElement>('[data-act],[data-tag]'); if (!t) return;
     if (t.dataset.tag) { readFields(); const id = t.dataset.tag as Tag; tags.has(id) ? tags.delete(id) : tags.add(id); draw(); return; }
-    switch (t.dataset.act) { case 'close': close(); break; case 'go': go(); break; case 'pick': pick(+(t.dataset.i ?? -1)); break; }
+    switch (t.dataset.act) { case 'close': close(); break; case 'go': go(); break; case 'pick': pick(+(t.dataset.i ?? -1)); break; case 'plan': { const q = res?.proposals[+(t.dataset.i ?? -1)]; if (q) openBuildPlan(q, loadProfile()); break; } }
   };
   el.onchange = e => { if ((e.target as HTMLElement).id === 'sgNeedStand' || (e.target as HTMLElement).classList.contains('sgKind') || (e.target as HTMLElement).classList.contains('sgOwn')) { readFields(); draw(); } };
   el.onkeydown = e => { if (e.key === 'Enter' && (e.target as HTMLElement).tagName === 'INPUT') go(); };
