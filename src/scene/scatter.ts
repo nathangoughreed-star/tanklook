@@ -9,6 +9,7 @@ import { clingsTo, fishTL, getSpecies, onLeaves, speciesOf, type Species } from 
 import { backdropDepth, clamp, clampFish, spawnSnail, waterY } from './physics';
 import { hardscape, itemDims, itemToTank, underside } from './items';
 import { isTarantula, tarantulaBend } from '../art/tarantulas';
+import { ARTH_BEHAVIOR } from '../data/arthBehavior';
 import { footprint, inside } from './shape';
 import { groundHeight, randomLand } from './terrain';
 import type { Fish, TankSetup } from './types';
@@ -112,7 +113,7 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
       // the rest of a group of shrimp or otos left on the floor forage there as usual. A clinging fish (oto, pleco) takes
       // the glass at a third of its area: in a tall tank the panes outsize the floor two to one and would hold nearly all
       // A land climber (tree frog) takes the dry glass and hardscape above the water line; on the floor it goes to land.
-      const land = sp.habitat === 'land', glass = clingsTo(sp, 'glass') && (sp.kind === 'snail' || (land ? (isTarantula(sp.art) ? GLASS_TARANTULA : GLASS_FROG) : GLASS_FISH));
+      const land = sp.habitat === 'land', glass = clingsTo(sp, 'glass') && (sp.kind === 'snail' || (land ? (ARTH_BEHAVIOR[sp.id]?.glass ?? (isTarantula(sp.art) ? GLASS_TARANTULA : GLASS_FROG)) : GLASS_FISH));
       const on = { glass, hard: clingsTo(sp, 'hardscape') ? (land ? (sp.body === 'snake' ? perchSnake : perchy) : onLeaves(sp) ? hardLeaf : hard) : undefined, above: land && s.water.on ? waterY(A, s.water.level) : undefined }, left: Fish[] = [];
       // the share that cling to leaf and rock faces (undersides and sides) is their area against the floor and the tops
       const underP = Math.min(0.6, leafSpots.area / (leafSpots.area + footprint(A).area + hard.area * 2 || 1));
@@ -134,11 +135,11 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
           continue;
         }
         // a tarantula takes a hide when there is one big enough: the rear of the body just inside the mouth, facing out (lane TA)
-        if (land && isTarantula(sp.art)) {
-          const w = fishTL(f, sp), roomy = hides.filter(it => it.size >= 3 * w);
-          if (roomy.length && r() < TARANTULA_HIDE) {
+        if (land && (isTarantula(sp.art) || ARTH_BEHAVIOR[sp.id]?.hide)) {
+          const w = fishTL(f, sp), roomy = hides.filter(it => it.size >= (ARTH_BEHAVIOR[sp.id]?.fit ?? 3) * w);
+          if (roomy.length && r() < (ARTH_BEHAVIOR[sp.id]?.hide ?? TARANTULA_HIDE)) {
             const it = roomy[Math.floor(r() * roomy.length)], end = r() < 0.5 ? 1 : -1, q = itemToTank(s, it, [end * (it.size / 2 - 0.1 * w), 0, 0]);
-            Object.assign(f, { x: q.x, depth: q.depth, y: g(q.x, q.depth), surface: 'floor' as const, yaw: wrap(Math.round(it.yaw + (end < 0 ? 180 : 0) + (r() - 0.5) * 40)), pitch: 0, roll: 0, bend: tarantulaBend(r() * 0.5 + 0.1) }); note(f, w);
+            Object.assign(f, { x: q.x, depth: q.depth, y: g(q.x, q.depth), surface: 'floor' as const, yaw: wrap(Math.round(it.yaw + (end < 0 ? 180 : 0) + (r() - 0.5) * 40)), pitch: 0, roll: 0, bend: isTarantula(sp.art) ? tarantulaBend(r() * 0.5 + 0.1) : 0 }); note(f, w);
             continue;
           }
         }
