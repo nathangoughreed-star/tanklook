@@ -5,7 +5,7 @@
 // adds tail-fin membranes and gill stalks. Unit frame as a fish card: width 1, x = u - 0.5, y = -v, z to the side.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { HERP3D, HERP3D_FLOAT, HERP3D_GLASS, HERP3D_PERCH, type Herp3D, type Limb3D, type Mark3D } from '../art/herps';
+import { HERP3D, HERP3D_FLOAT, HERP3D_GLASS, HERP3D_PERCH, type Herp3D, type Limb3D, type Mark3D, type Solid3D } from '../art/herps';
 import { rng, type Pt } from '../art/paint';
 import type { Surface } from '../scene/types';
 import { taperTube } from './fish3d';
@@ -227,7 +227,7 @@ function eyeTexture(e: Herp3D['eye'], lid: string) {
 /** A tube through the joints (Catmull-Rom), its radius blended between the joints' radii, with round ends.
  *  `thigh` = a frog's thigh over the first segment: a smooth teardrop swelling to that radius near the hip, flattened
  *  against the flank (squeezed in z), and built with smooth normals (finer rings) so it reads as a muscle, not a faceted tube. */
-export function jointTube(pts: THREE.Vector3[], radii: number[], thigh = 0, seg = false) {
+export function jointTube(pts: THREE.Vector3[], radii: number[], thigh = 0, seg = false, waist = 0.74) {
   const curve = new THREE.CatmullRomCurve3(pts, false, 'centripetal'), N = (thigh ? 18 : 10) * (pts.length - 1), R = thigh ? 24 : 12;
   const tube = new THREE.TubeGeometry(curve, N, 1, R, false), pos = tube.attributes.position, c = new THREE.Vector3(), q = new THREE.Vector3();
   const len: number[] = [0]; for (let i = 1; i < pts.length; i++) len.push(len[i - 1] + pts[i].distanceTo(pts[i - 1]));
@@ -236,7 +236,7 @@ export function jointTube(pts: THREE.Vector3[], radii: number[], thigh = 0, seg 
     const d = f * len[len.length - 1];
     for (let i = 1; i < len.length; i++) if (d <= len[i]) {
       const t = (d - len[i - 1]) / (len[i] - len[i - 1]), r = radii[i - 1] + (radii[i] - radii[i - 1]) * smooth(0, 1, t);
-      return seg ? r * (0.74 + 0.34 * Math.sin(Math.PI * t) ** 0.6) : r;
+      return seg ? r * (waist + (1.08 - waist) * Math.sin(Math.PI * t) ** 0.6) : r;
     }
     return radii[radii.length - 1];
   };
@@ -265,13 +265,14 @@ const P3 = (u: number, v: number, z: number) => new THREE.Vector3(u - 0.5, -v, z
 
 /** One limb (the + side): the jointed tube, then toes from its last joint to tips on the ground, with pads. */
 function limbGeometry(l: Limb3D, ground: number, col: (ny: number) => THREE.Color) {
-  const js = l.js.map(j => P3(j[0], j[1], j[2])), end = js[js.length - 1], parts: THREE.BufferGeometry[] = [jointTube(js, l.js.map(j => j[3]), l.thigh, !!l.seg)];
+  const js = l.js.map(j => P3(j[0], j[1], j[2])), end = js[js.length - 1], parts: THREE.BufferGeometry[] = [jointTube(js, l.js.map(j => j[3]), l.thigh, !!l.seg, l.waist)];
   // the joints of a segmented leg: a narrow ring in the joint colour (painted after shading, below)
   const bands: [number, number][] = [];
   if (l.seg) for (let i = 1; i < js.length; i++) {
     const at = parts.reduce((n, g) => n + g.attributes.position.count, 0), s = new THREE.SphereGeometry(l.js[i][3] * 0.8, 10, 6).translate(js[i].x, js[i].y, js[i].z);
     s.deleteAttribute('uv'); const g = s.toNonIndexed(); parts.push(g); bands.push([at, at + g.attributes.position.count]);
   }
+  if (l.knee) for (let i = 1; i < js.length - 1; i++) { const s = new THREE.SphereGeometry(l.js[i][3] * l.knee, 12, 8).translate(js[i].x, js[i].y, js[i].z); s.deleteAttribute('uv'); parts.push(s.toNonIndexed()); } // knobbed knees
   if (l.claw) parts.push(...clawGeometry(js[js.length - 2], end, l.claw));
   const digits: THREE.Curve<THREE.Vector3>[] = [], gv = l.toeV ?? ground; // a perch: the toes reach below the ground line
   for (const [du, dz] of l.toes) {
@@ -296,7 +297,33 @@ function limbGeometry(l: Limb3D, ground: number, col: (ny: number) => THREE.Colo
     const c = g.attributes.color, n = g.attributes.normal, jc = new THREE.Color(l.seg);
     for (const [a, b] of bands) for (let i = a; i < b; i++) { const k = 1 - 0.3 * Math.max(0, -n.getY(i)); c.setXYZ(i, jc.r * k, jc.g * k, jc.b * k); }
   }
+  if (l.tint) { // the leg's own colour turns toward `tint.c` near its root
+    const c = g.attributes.color, p = g.attributes.position, tc = new THREE.Color(l.tint.c), r0 = js[0];
+    for (let i = 0; i < c.count; i++) {
+      const k = 1 - smooth(l.tint.r * 0.55, l.tint.r, Math.hypot(p.getX(i) - r0.x, p.getY(i) - r0.y, p.getZ(i) - r0.z));
+      if (k > 0) c.setXYZ(i, c.getX(i) + (tc.r * 0.9 - c.getX(i)) * k, c.getY(i) + (tc.g * 0.9 - c.getY(i)) * k, c.getZ(i) + (tc.b * 0.9 - c.getZ(i)) * k);
+    }
+  }
   return boxUV(g);
+}
+
+/** Extra smooth solids (arthropods: eye cones, wing panels, leg lobes, spines): ellipsoids oriented along `ax`, tapering to a point
+ *  when `pt` is set, with vertex colours (top / underside). Returns the pieces for the near side (z mirrored by the caller) and the midline pieces. */
+function solidGeometry(list: Solid3D[], mirrored: boolean) {
+  const parts: THREE.BufferGeometry[] = [];
+  for (const s of list) {
+    if ((s.one || s.at[2] === 0) === mirrored) continue;
+    const g = new THREE.SphereGeometry(1, 20, 14), p = g.attributes.position;
+    if (s.pt) for (let i = 0; i < p.count; i++) { const f = 1 - s.pt * Math.pow((p.getX(i) + 1) / 2, 1.25); p.setXYZ(i, p.getX(i), p.getY(i) * f, p.getZ(i) * f); }
+    g.deleteAttribute('uv');
+    const x = new THREE.Vector3(s.ax[0], -s.ax[1], s.ax[2]).normalize(), up = new THREE.Vector3(...(s.up ? [s.up[0], -s.up[1], s.up[2]] : [0, 1, 0]));
+    const y = up.sub(x.clone().multiplyScalar(up.dot(x))).normalize(), z = new THREE.Vector3().crossVectors(x, y);
+    g.applyMatrix4(new THREE.Matrix4().makeScale(s.r[0], s.r[1], s.r[2]));
+    g.applyMatrix4(new THREE.Matrix4().makeBasis(x, y, z).setPosition(P3(s.at[0], s.at[1], s.at[2])));
+    const top = new THREE.Color(s.c[0]), under = new THREE.Color(s.c[1]), ng = g.toNonIndexed();
+    parts.push(shade(ng, 0.3, ny => under.clone().lerp(top, smooth(-0.5, 0.3, ny))));
+  }
+  return parts.length ? mergeGeometries(parts) : null;
 }
 
 /** A crab's claw (chela) on the end of the arm: a heavy palm flattened side to side, the fixed finger running on from
@@ -438,14 +465,20 @@ export function herpBody(art: string, w: number, surface?: Surface | 'perch', li
   const lm = limbMaterial(art, h);
   h.limbs.forEach((l, i) => {
     const c = l.c, own = c && ((ny: number) => new THREE.Color(c[1]).lerp(new THREE.Color(c[0]), smooth(-0.5, 0.3, ny)));
-    const g = K(':limb' + i, () => limbGeometry(l, h.ground, own || lcol));
+    const g = K(':limb' + i, () => limbGeometry(l, h.ground, own || lcol)), gf = l.farJs ? K(':limbf' + i, () => limbGeometry({ ...l, js: l.farJs! }, h.ground, own || lcol)) : g;
     for (const side of [1, -1]) {
-      const m = new THREE.Mesh(g, lm); m.scale.z = side;
+      const m = new THREE.Mesh(side < 0 ? gf : g, lm); m.scale.z = side;
       // `far`: the far side's copy is scaled about the limb's root (a hermit crab's small right claw against the big left one)
       if (side < 0 && l.far && l.far !== 1) { const k = l.far, r = l.js[0]; m.scale.set(k, k, -k); m.position.set((r[0] - 0.5) * (1 - k), -r[1] * (1 - k), 0); }
       grp.add(m);
     }
   });
+  if (h.solids) {
+    const sm = mat('solid:' + key, () => new THREE.MeshBasicMaterial({ vertexColors: true })), sl = h.solids;
+    const both = K(':solidm', () => solidGeometry(sl, true) ?? new THREE.BufferGeometry()), one = K(':solid1', () => solidGeometry(sl, false) ?? new THREE.BufferGeometry());
+    for (const side of [1, -1]) { const m = new THREE.Mesh(both, sm); m.scale.z = side; grp.add(m); }
+    grp.add(new THREE.Mesh(one, sm));
+  }
   // eyes
   const e = h.eye, lid = h.tone[0][1];
   const dome = K(':eye', () => new THREE.SphereGeometry(1, 24, 16).scale(1, e.bulge, 1));

@@ -510,12 +510,19 @@ export interface Limb3D {
   c?: [string, string];        // own colour (top, underside), else the species' legCol (hermit crab antennae)
   far?: number;                // the far side's copy is scaled by this about the root (hermit crab: a small right claw; the near side is the big left one)
 }
+  waist?: number;             // `seg` legs: how narrow the joints are against the segments' swell (default 0.74; nearer 1 = a smooth tube, a scorpion's tail)
 export type Mark3D =
+  farJs?: Joint[];              // the far side's own joint chain (mirrored in z), so left and right legs differ (stick insect); else the mirror of `js`
+  knee?: number;                // arthropod leg: the interior joints swell to this multiple of the leg radius (a knobbed knee)
+  tint?: { r: number; c: string }; // the leg's colour turns to c near its root, within r of it (the red inner base of a stick insect's forelegs)
   | { k: 'band'; u: [number, number]; a: [number, number]; c: string; o: number; blur?: number }
   | { k: 'spots'; n: number; u: [number, number]; a: [number, number]; r: [number, number]; c: string; o: number; seed: number }
   | { k: 'line'; pts: [number, number][]; c: string; o: number; w: number };
 export interface Herp3D {
   side: Pt[];                     // side outline (card frame), the loft's silhouette
+/** A smooth ellipsoid solid in the body frame (arthropods): at = centre (u, v, z; z != 0 is mirrored to the far side), r = semi-axes along / across
+ *  (v-ish) / thick (z-ish), ax = the long axis (du, dv, dz; v down), pt = 0..1 how far it tapers to a point at the +ax end (a cone), c = top / underside colour. */
+export interface Solid3D { at: [number, number, number]; r: [number, number, number]; ax: [number, number, number]; pt?: number; c: [string, string]; up?: [number, number, number]; one?: boolean }
   wid: [number, number][];        // half-width by u (widths), smoothed; both ends are rounded
   belly: number;                  // section exponent below the mid-line (higher = flatter belly); 2.4 above
   tone: [number, string][];       // colour round the section by a
@@ -532,6 +539,7 @@ export interface Herp3D {
   warts?: { n: number; u: [number, number]; a: [number, number]; r: [number, number]; h: number; seed: number }; // raised skin bumps (a: round the section, h: height / radius)
 }
 
+  solids?: Solid3D[];             // extra smooth solids (insect eye cones, wing panels, leg lobes, spines), see Solid3D
 /** Frogs share one sitting pose (design frame, see FROG_TORSO); `fat` widens the body. */
 function frog3D(s: FrogSpec, fat: number, tone: [number, string][], marks: Mark3D[], legSpots?: Herp3D['legSpots']): Herp3D {
   const V = (v: number) => frogV(s.aspect, v), J = (u: number, v: number, z: number, r: number): Joint => [u, V(v), z, r];
