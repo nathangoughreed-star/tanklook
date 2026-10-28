@@ -30,7 +30,9 @@ Brief travels with the project (stocking builder, scape builder, tank picker, Sa
 Order: U1 now. Then U2 and U3 in parallel (disjoint files: engine vs UI). Then U4 and U5 (parallel), then U6.
 Known merge hazards: `src/demand/suggest.ts` (U2, U4, U6; also price-audit and terrarium-bundles chats); `panels.ts` / `style.css` (U3, S252 just landed).
 
-## Decision needed from Nathan before U2
+## DECIDED (Nathan, 2026-10-28: "i agree"): budget reconciliation below is approved. U2/U3 start in parallel with U1: U2 codes against `Wants` (U1 adds the Wants<->Brief adapter), U3 codes UI + question logic against the planned Brief shape and rebases onto U1's branch when its sha lands.
+
+## Budget semantics (approved)
 Budget semantics. Your note: "the budget is a ceiling, not a target". C9's finish ladder (just shipped, your yes) treats the budget as a TARGET with a finish tier and a "most this kind needs" cap. Proposed reconciliation (my rec): keep the tier ladder but let the generator return candidates that spend LESS (a $145 option is not penalised); the "target" behaviour only decides how far UP a given concept's finish tier climbs when the user says they want to spend it. Needs your yes.
 
 ## Open design questions (small)
