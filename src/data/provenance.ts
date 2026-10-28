@@ -198,6 +198,7 @@ export const RULES: Record<string, Rule[]> = {
     { path: '*.{lo,hi}', status: 'assumption', basis: 'interpretation', why: 'band around the one listing: sales and other stores, partly judgement (demand-items _note)' },
     { path: 'hard:silkmoss.mode', status: 'assumption', basis: 'interpretation', why: 'no silk moss mat listing found: judged from the plastic mats and silk plants (lane P4)' },
     { path: '*.mode', status: 'cited', basis: 'source-stated', says: "the listing's price on the day it was read", src: ['kk-prices'], why: 'the listing at the row url', rowUrl: true },
+    { path: '{gear:net,gear:thermometer,gear:refractometer}.mode', status: 'assumption', basis: 'interpretation', why: 'no retailer page read for these set-up supplies: a judged price for a cheap common item (lane U5, 2026-10-28)' },
   ],
   FILTER_MEDIA: [
     { path: '*.0', status: 'cited', basis: 'source-stated', says: "the manual or spec page's media volume (or the retailer's figure)", src: ['product-pages', 'nitrogen-research'], why: "manufacturer manual or spec page ('manual') or retailer figure ('retail'); urls in research/filtration/research-filter-media-volumes.md" },

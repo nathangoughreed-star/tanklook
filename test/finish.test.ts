@@ -103,7 +103,8 @@ describe('finished builds', () => {
     for (const p of lo.proposals) expect(p.totals.startupUsd).toBeLessThanOrEqual(500);
     const spend = (r: typeof lo) => Math.max(...r.proposals.map(p => p.totals.startupUsd));
     expect(spend(hi)).toBeGreaterThan(spend(lo));
-    for (const p of hi.proposals.filter(q => !q.capNote)) expect(p.totals.startupUsd).toBeGreaterThanOrEqual(0.85 * 1500);
+    // lane U5: the complete set-up's supplies (+$44) moved the next tank size over the ceiling for some concepts (Ember tetras stop at 29 gal, $999); sizes are discrete, so the floor is 0.6, not 0.85
+    for (const p of hi.proposals.filter(q => !q.capNote)) expect(p.totals.startupUsd).toBeGreaterThanOrEqual(0.6 * 1500);
   }, 300000);
 
   it('the set-up price is itemised: tank, finish, animals and gear add up to the card total; owned items are $0 "you have"; a stand not wanted is $0', () => {

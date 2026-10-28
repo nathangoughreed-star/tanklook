@@ -20,7 +20,7 @@ import { fixtureOf } from './lightout';
 import { volume } from './physics';
 import type { GrowFeed, Item, LayoutId, TankSetup } from './types';
 
-export type FinishTier = 'starter' | 'lean' | 'standard' | 'lush';
+export type FinishTier = 'bare' | 'starter' | 'lean' | 'standard' | 'lush';
 export interface Finish {
   tier: FinishTier;
   /** 0 starter .. 3 lush: how finished the tank is (Suggest ranks the best tier that passes every guardrail first) */
@@ -29,11 +29,11 @@ export interface Finish {
   /** one line each: the look, substrate, hardscape, plants */
   lines: string[];
 }
-export const TIER_LABEL: Record<FinishTier, string> = { starter: 'Starter finish', lean: 'Basic finish', standard: 'Full finish', lush: 'Lush finish' };
+export const TIER_LABEL: Record<FinishTier, string> = { bare: 'Bare-bottom (minimal)', starter: 'Starter finish', lean: 'Basic finish', standard: 'Full finish', lush: 'Lush finish' };
 /** What a tier is: layer densities (the starter sliders, 0 none .. 4 dense; default 2) AND the equipment people add as they spend (research/design/finish-ladders.md):
  *  plant feed (ferts, then CO2 by the cheapest gas that suits the tank, then pressurised; on a reef dosing, flow, skimmer and an auto top-off), a stronger light
  *  (x the build's own watts), and a plant count that grows with the floor (cm2 of floor to one plant piece), never a clump of dozens. */
-interface TierSpec { id: FinishTier; level: 0 | 1 | 2 | 3; dens: { hard: number; plant: number }; mode: PlantMode; /** share of the hardscape kept (the leanest tier is a few well-placed pieces) */ keep: number;
+interface TierSpec { id: Exclude<FinishTier, 'bare'>; level: 0 | 1 | 2 | 3; dens: { hard: number; plant: number }; mode: PlantMode; /** share of the hardscape kept (the leanest tier is a few well-placed pieces) */ keep: number;
   feed: GrowFeed; lightK: number; ato: boolean; plantArea: number }
 const TIERS: readonly TierSpec[] = [
   { id: 'lush', level: 3, dens: { hard: 3, plant: 3 }, mode: 'live', keep: 1, feed: 'co2', lightK: 1.8, ato: true, plantArea: 110 },
@@ -41,6 +41,9 @@ const TIERS: readonly TierSpec[] = [
   { id: 'lean', level: 1, dens: { hard: 1, plant: 1 }, mode: 'mixed', keep: 1, feed: 'ferts', lightK: 1, ato: false, plantArea: 200 },
   { id: 'starter', level: 0, dens: { hard: 1, plant: 1 }, mode: 'mixed', keep: 0.4, feed: 'low', lightK: 1, ato: false, plantArea: 300 },
 ];
+
+/** The share of the light's price a tier's stronger light adds (lane U5: that part is an enhancement, the rest is the light every tank needs). */
+export const lightShare = (tier: FinishTier) => { const k = TIERS.find(t => t.id === tier)?.lightK ?? 1; return k > 1 ? 1 - 1 / k : 0; };
 
 /** The build with this tier's equipment: plant feed (the cheapest CO2 that suits the tank: yeast to about 20 gal, a disposable-cartridge kit to about 45, a regulator and
  *  cylinder above or at the lush tier), a stronger light, an auto top-off on a reef. A dry tank has no such rows and is left as it is. */
@@ -146,9 +149,32 @@ export function finishBuild(b: Build, spec: TierSpec, style: Exclude<LayoutId, '
   };
 }
 
+/** A freshwater fish tank can be left bare-bottomed on purpose (a purposeful, legitimate choice: easy to clean, nothing to rot); a salt tank, a terrarium and a vivarium need their
+ *  substrate (burrowing, the reef's live sand, the bioactive layer), so they are never bare. */
+export const canBeBare = (S: TankSetup) => S.water.on && !S.water.salt;
+
+/** Lane U5: the bare / minimal build: the equipment and animals the build already has, a bare bottom (no substrate), ONE hide or piece of hardscape for shelter and no plants, no background.
+ *  Chosen on purpose (Wants.minimal), or the stated fallback when the money cannot carry the display baseline (the card then says what is left out and what it would add). */
+export function bareBuild(b: Build, now = Date.now()): Build {
+  const spec = TIERS[TIERS.length - 1], S1 = upgraded(b, spec), style = rankStyles(b.animals)[0]?.style ?? 'planted';
+  let T = scaped(b, S1, 'mixed', style, { hard: 1, plant: 0 }, fitFor(S1));
+  const shelter = T.items.find(i => i.kind === 'cave') ?? T.items.find(i => i.kind === 'wood') ?? T.items.find(i => i.kind === 'stone');
+  T = { ...T, items: shelter ? [{ ...shelter, size: Math.min(shelter.size, Math.round(T.tank.L * 0.2)) }] : [], patches: [], substrate: { ...T.substrate, show: false }, render: { ...T.render, bg: 'none' } };
+  const D = priceScape(T, b, now), setupUsd = Math.round(D.totals.setupUsd), add = setupUsd - b.setupUsd;
+  const lines = ['Look: bare-bottom, no substrate, no plants', shelter ? `Shelter: one ${(LIBRARY[shelter.variant]?.label ?? shelter.variant).toLowerCase()} so the animals can get out of sight` : 'Shelter: none drawn'];
+  return { ...b, setup: T, setupUsd, listUsd: b.listUsd + Math.max(0, add), upkeepUsdMo: Math.round(D.totals.upkeepUsdMo), minPerWeek: Math.round(D.totals.minPerWeek),
+    gear: [...b.gear, ...lines], finish: { tier: 'bare', level: 0, style, lines } };
+}
+/** What the display baseline (the starter finish: substrate, hardscape, hardy plants) would add to a bare build, whole dollars. */
+export function baselineAddUsd(bare: Build, now = Date.now()): number {
+  const base = finishBuild(bare, TIERS[TIERS.length - 1], bare.finish?.style ?? 'planted', now);
+  return Math.max(0, base.setupUsd - bare.setupUsd);
+}
+
 /** The build finished at each tier, best finish first, one at a time (a caller that stops at the first that passes builds as few as it must). `leanOnly`: just the starter finish, for a build already over a money or time cap, which no finish can bring back under. `maxLevel`: the richest tier offered (the finish ladder's top for this concept).
  *  The style is the best-suited one that draws hardscape (a rock, wood or a hide to anchor the plants): styles scoring within 0.25 of the best are tried in order. */
-export function* finishTiers(b: Build, now = Date.now(), leanOnly = false, maxLevel: 0 | 1 | 2 | 3 = 3, forceStyle?: Exclude<LayoutId, 'none'>): Generator<Build> {
+export function* finishTiers(b: Build, now = Date.now(), leanOnly = false, maxLevel: 0 | 1 | 2 | 3 = 3, forceStyle?: Exclude<LayoutId, 'none'>, bare = false): Generator<Build> {
+  if (bare && canBeBare(b.setup)) { yield bareBuild(b, now); return; } // lane U5: the bare / minimal option
   // `maxLevel` (lane U2): a concept that is not climbing starts at its own tier and never builds the richer ones above it
   const specs = leanOnly ? TIERS.slice(-1) : TIERS.filter(t => t.level <= maxLevel); // the last is the leanest
   const ranked = rankStyles(b.animals), top = ranked[0]?.score ?? 0, tried = forceStyle ? [forceStyle] : ranked.filter(r => r.score >= top - 0.25).slice(0, 4).map(r => r.style); // `forceStyle` (lane U2): a concept that is about a different look

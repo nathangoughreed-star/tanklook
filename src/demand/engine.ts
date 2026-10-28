@@ -211,6 +211,12 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
     const water = (P.waterSource === 'bought-ro' ? rowPrice('gear:ro-bought') : undefined) ?? pick((FACTORS.waterUsdPerGal as Record<string, Range3>)[P.waterSource]), per = salt ? add3(water, rowPrice('gear:salt-mix') ?? pick(FACTORS.saltMixUsdPerGal)) : water;
     if (P.waterSource === 'own-ro' && rowPrice('gear:ro-unit')) add('rounit', 'RO unit', 'gear', { setup: price(rowPrice('gear:ro-unit')!) });
     if (rowPrice('gear:test-kit')) add('testkit', 'Water test kit', 'gear', { setup: price(rowPrice('gear:test-kit')!) });
+    // lane U5: the rest of a COMPLETE set-up: the maintenance tools and first consumables every wet tank needs on day one (a salt tank mixes with RO water and needs a refractometer, not dechlorinator)
+    if (salt) { if (rowPrice('gear:refractometer')) add('refractometer', 'Refractometer (salinity)', 'gear', { setup: price(rowPrice('gear:refractometer')!) }); }
+    else if (rowPrice('gear:start-conditioner')) add('startconditioner', 'Dechlorinator (first bottle)', 'gear', { setup: price(rowPrice('gear:start-conditioner')!) });
+    if (rowPrice('gear:siphon')) add('siphon', 'Siphon / gravel vacuum', 'gear', { setup: price(rowPrice('gear:siphon')!) });
+    if (rowPrice('gear:net')) add('net', 'Fish net', 'gear', { setup: price(rowPrice('gear:net')!) });
+    if (rowPrice('gear:thermometer')) add('thermometer', 'Thermometer', 'gear', { setup: price(rowPrice('gear:thermometer')!) });
     add('waterchange', `Water changes (${Math.round(frac * 100)} % a week${hose ? ', by hose' : ''})`, 'work', { upkeep: scale3(per, galWk * 4.33), minutes: add3(scale3(pick(hose ? T.waterChangeHosePerGalMin : T.waterChangePerGalMin), galWk * sMul.minutes), scale3(pick(hose ? T.waterChangeHoseFixedMin : T.waterChangeFixedMin), sMul.minutes)), everyDays: choreDays('waterchange') });
     // feeding trips (an automatic feeder leaves only the refill) and wiping the glass (algae follows the light; live plants take nutrients, artificial ones need a wipe)
     add('feeding', techOf(S).rows.feeder === 'auto' ? 'Feeding (automatic feeder: refills)' : 'Feeding trips', 'work', { minutes: pick(techOf(S).rows.feeder === 'auto' ? T.feederRefillMinPerWeek : T.feedingTripMinPerWeek), everyDays: techOf(S).rows.feeder === 'auto' ? 14 : 1 });

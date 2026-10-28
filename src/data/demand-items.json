@@ -775,6 +775,44 @@
    "unit": "API master kit; Walmart $38.64, Dubia $41.84",
    "url": "https://dubiaroaches.com/products/api-freshwater-master-test-kit"
   },
+  "gear:start-conditioner": {
+   "lo": 12,
+   "mode": 16,
+   "hi": 18,
+   "unit": "first bottle of dechlorinator, Seachem Prime 250 mL: $17.39 (Stateline Tack); lane U5, 2026-10-28",
+   "url": "https://www.statelinetack.com/products/seachem-prime"
+  },
+  "gear:siphon": {
+   "lo": 8,
+   "mode": 14,
+   "hi": 20,
+   "unit": "gravel vacuum / siphon for water changes, Aqueon 10 in $15.99 (That Pet Place), $19.79 (Walmart); small sizes about $7-13; lane U5, 2026-10-28",
+   "url": "https://www.thatpetplace.com/aqueon-siphon-vacuum-large-10"
+  },
+  "gear:net": {
+   "lo": 3,
+   "mode": 5,
+   "hi": 8,
+   "unit": "fish net; no retailer page read, judgement (lane U5, 2026-10-28)",
+   "url": "",
+   "est": true
+  },
+  "gear:thermometer": {
+   "lo": 3,
+   "mode": 6,
+   "hi": 12,
+   "unit": "aquarium thermometer (stick-on or digital); no retailer page read, judgement; checks the heater works (lane U5, 2026-10-28)",
+   "url": "",
+   "est": true
+  },
+  "gear:refractometer": {
+   "lo": 25,
+   "mode": 35,
+   "hi": 60,
+   "unit": "salinity refractometer for a salt tank; no retailer page read, judgement (lane U5, 2026-10-28)",
+   "url": "",
+   "est": true
+  },
   "hard:arch": {
    "lo": 4,
    "mode": 11,

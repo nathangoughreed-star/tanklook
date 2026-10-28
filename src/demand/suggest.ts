@@ -21,7 +21,7 @@ import { filterProduct, FILTER_PRODUCTS, heaterProduct, HEATER_PRODUCTS, lightPr
 import { stockingOf } from '../scene/stocking';
 import { heatLoss, techOf, withUnits } from '../scene/tech';
 import { volume } from '../scene/physics';
-import { finishTiers } from '../scene/finish';
+import { baselineAddUsd, bareBuild, canBeBare, finishTiers } from '../scene/finish';
 import { compliance, effectiveLimits, type Compliance, type Constraints } from '../scene/constraints';
 import { spaceFit } from '../scene/space';
 import { LAYOUTS } from '../scene/items';
@@ -30,7 +30,7 @@ import { allLand, fitIn, isMixed, needsOf, tankOptions, type AnimalCount } from 
 import type { LayoutId, SpaceLimit, TankSetup, Units } from '../scene/types';
 import { summaryOf } from '../ui/stockSummary';
 import { briefToWants, type Brief } from '../scene/brief';
-import { costLines, type CostLine } from './costlines';
+import { costLines, layerTotals, type CostLine, type Layer } from './costlines';
 import { demandOf } from './engine';
 import { NO_SUGGESTION, type Money } from './makefit';
 import { mean3 } from './range';
@@ -152,6 +152,9 @@ export interface Wants {
   /** the person wants to spend what they set (the old "target" behaviour, lane C9): every concept's finish tier climbs as far as the ceiling lets it, and the tank grows with the money.
    *  Off (default): each concept keeps its own tier (the ladder only decides how far UP a concept may climb). */
   climb?: boolean;
+  /** the BARE / MINIMAL option (lane U5): a purposeful bare-bottom freshwater fish tank (no substrate, no plants, one hide); every welfare and equipment requirement stays. Off (default): a finished, presentable tank.
+   *  A salt tank, terrarium or vivarium is never bare (their substrate is husbandry), so it keeps its starter finish. */
+  minimal?: boolean;
   /** hours of set-up effort the person will spend (from the brief, lane U1; not read by the generator yet) */
   setupHours?: number;
   /** the high-tech approach is a requirement (lane U4): only finishes with CO2 and a stronger light (the standard and lush tiers) are offered, so the look is not traded for a cheaper approach silently */
@@ -197,6 +200,10 @@ export interface Proposal {
   matched: Tag[];
   /** the set-up total itemised (tank, stand, finish, animals, gear, supplies, tax; owned items $0) */
   costLines: CostLine[];
+  /** the cost lines summed by the four standards (welfare / complete / display / enhancements) and sales tax, those with money only (lane U5) */
+  layers: { layer: Layer; label: string; usd: number }[];
+  /** what the finish gives up, stated and never silent: 'chosen' = the person asked for a bare bottom, 'compromise' = the budget could not carry the display baseline (lane U5) */
+  finishNote?: { kind: 'chosen' | 'compromise'; text: string };
   /** set when the card uses well under the set-up budget because the animals' needs cap the build, not the money (only while `climb` is on) */
   capNote?: string;
   /** the design strategy this concept was built on, with its name and one-line meaning (lane U2) */
@@ -345,6 +352,12 @@ function experienceNote(exp: 0 | 1 | 2 | undefined, cx: number, min: number): st
 /** The stand's price in this build (list price scaled by the build's deals), for the "no stand" trade-off line. */
 const standCost = (b: Build, P: UserProfile) => { const D = demandOf(b.setup, P), r = D.items.find(i => i.key === 'stand'), k = D.totals.setupUsd > 0 ? b.setupUsd / D.totals.setupUsd : 1; return r?.setup ? Math.round(mean3(r.setup) * k) : 0; };
 /** One or two plain sentences: what this concept gains and what it gives up, with the real numbers. Welfare is never on the list (it is a gate, not a trade). */
+/** The stated finish compromise of a bare build (lane U5): chosen, or forced by the budget, with what the display baseline would add. */
+function bareNote(b: Build, chosen: boolean, now: number): { kind: 'chosen' | 'compromise'; text: string } {
+  const add = baselineAddUsd(b, now), more = add > 0 ? `; the display baseline (substrate, hardscape, hardy plants) would add about ${usd(add)} before tax` : '';
+  return chosen ? { kind: 'chosen', text: `Bare-bottom by your choice: no substrate or plants, one hide for shelter${more}. Every welfare and equipment requirement is still in the price.` }
+    : { kind: 'compromise', text: `Compromise at this budget: no substrate, plants or hardscape beyond one hide${more}. You can add them later; nothing the animals need was cut.` };
+}
 function tradeoffOf(p: Pick<Proposal, 'build' | 'totals' | 'underCeilingUsd'>, sd: StrategyDef, needStand: boolean, standUsd: number): string {
   const gal = Math.round(p.build.tank.ratedGal), tier = p.build.finish?.tier, left = p.underCeilingUsd ? ` ${usd(p.underCeilingUsd)} stays under your ceiling.` : '';
   const stand = !needStand && standUsd > 0 ? ` No stand: it sits on a sturdy counter or dresser (a stand would add about ${usd(standUsd)}).` : '';
@@ -410,7 +423,10 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
     if (wordsOf(summaryOf(scene0, units).cats)) { out = { welfare: true }; MEMO.set(key, out); return out; }
     const pre0 = b0.setupUsd - own0.saved, over0 = compliance(scene0, { setupUsd: pre0 + taxOf(pre0), upkeepUsdMo: b0.upkeepUsdMo, minPerWeek: b0.minPerWeek }, effectiveLimits(scene0, P0.limits), units).overall === 'over';
     let welfare = false;
-    for (const b of finishTiers(b0, now, over0, maxLevel, style)) {
+    // lane U5: only the cheapest concept (finish ceiling 0) may fall back to a bare bottom when the money cannot carry even the starter finish, and it says so; richer concepts step DOWN a size instead
+    const bareOk = a.kind === 'freshwater' && canBeBare(b0.setup); // a paludarium or any land side keeps its substrate
+    const tiers = function* () { yield* finishTiers(b0, now, over0, maxLevel, style, !!w.minimal && bareOk); if (!w.minimal && !style && maxLevel === 0 && !w.climb && bareOk) yield bareBuild(b0, now); };
+    for (const b of tiers()) {
       const own = ownedAssess(b, ownedMap, needStand, P0, !!w.ownTank), saved = own.saved, scene = scenOf(b, own, needStand), sm = summaryOf(scene, units);
       // husbandry is never traded for money or time: the strict rule (Nathan 2026-10-27) = nothing the stocking screen words as a Problem OR a Caution in any of its five categories. Only "not enough information" passes, and it is shown.
       if (style && !b.setup.items.some(i => i.kind === 'plant' || i.kind === 'artificial' || i.kind === 'coral')) continue; // another look is still a planted (or reefed) tank, never a pile of stones
@@ -421,8 +437,10 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
       if (cp.overall !== 'off') anyOn = true;
       if (cp.overall === 'within' || cp.overall === 'off') {
         const matched = tags.filter(x => a.tags.includes(x));
+        const cl = costLines(b, own.rows, t.startupUsd, needStand, P0, tax, `Sales tax (${taxPct}%)`);
         out = { p: { needStand, archetype: a, build: b, scene, totals: t, saved, preTaxUsd: preTax, taxUsd: tax, taxPct, ownedNotes: own.notes, status: cp.results, matched, levelOf: b.finish?.level ?? 0,
-          costLines: costLines(b, own.rows, t.startupUsd, needStand, P0, tax, `Sales tax (${taxPct}%)`),
+          costLines: cl, layers: layerTotals(cl),
+          ...(b.finish?.tier === 'bare' ? { finishNote: bareNote(b, !!w.minimal, now) } : {}),
           unknown: sm.cats.flatMap(c => c.items.filter(i => i.level === 'unknown').map(i => i.text)).slice(0, 1) } };
         break; // the best finish that passes: a lesser tier of the same build adds nothing
       } else if (cp.overall === 'over' && cp.unknown === 0 && !cp.results.some(r => r.id === 'space' && r.state !== 'pass')) {
