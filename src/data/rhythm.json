@@ -25,7 +25,19 @@
    "leopardgecko": { "days": 1, "status": "sourced", "item": "gecko-vacation", "says": "1-2 days with no helper" },
    "ballpython": { "days": 7, "status": "estimate", "item": "ball-python-vacation", "says": "no authoritative figure found" },
    "chacogoldenknee": { "days": 14, "status": "sourced", "item": "tarantula-fast", "says": "weeks to months unfed" },
-   "regaljumper": { "days": 7, "status": "estimate", "item": "tarantula-fast", "says": "no page for jumping spiders" }
+   "regaljumper": { "days": 7, "status": "estimate", "item": "tarantula-fast", "says": "no page for jumping spiders" },
+   "redknee": { "days": 14, "status": "estimate", "item": "tarantula-fast", "says": "adult tarantulas fast for weeks to months (no page states a left-alone figure; lane arthropods 2026-10-28)" },
+   "chileanrose": { "days": 14, "status": "estimate", "item": "tarantula-fast", "says": "long fasts are normal (no page states a left-alone figure; lane arthropods 2026-10-28)" },
+   "curlyhair": { "days": 14, "status": "estimate", "item": "tarantula-fast", "says": "adults fast for weeks (no page states a left-alone figure; lane arthropods 2026-10-28)" },
+   "pinktoe": { "days": 14, "status": "estimate", "item": "tarantula-fast", "says": "adults fast for weeks (assumed) (no page states a left-alone figure; lane arthropods 2026-10-28)" },
+   "emperorscorpion": { "days": 14, "status": "estimate", "item": "tarantula-fast", "says": "fed every 7-14 days (adult) (no page states a left-alone figure; lane arthropods 2026-10-28)" },
+   "africanmillipede": { "days": 7, "status": "estimate", "item": "tarantula-fast", "says": "moist substrate; fresh food every 2-3 days (assumed fast tolerance) (no page states a left-alone figure; lane arthropods 2026-10-28)" },
+   "hissingroach": { "days": 7, "status": "estimate", "item": "tarantula-fast", "says": "adults left a week with food and water (assumed) (no page states a left-alone figure; lane arthropods 2026-10-28)" },
+   "zebraisopod": { "days": 7, "status": "estimate", "item": "tarantula-fast", "says": "a moist colony tolerates a week unfed (assumed) (no page states a left-alone figure; lane arthropods 2026-10-28)" },
+   "powderblueisopod": { "days": 7, "status": "estimate", "item": "tarantula-fast", "says": "a moist colony tolerates a week unfed (assumed) (no page states a left-alone figure; lane arthropods 2026-10-28)" },
+   "orchidmantis": { "days": 3, "status": "estimate", "item": "tarantula-fast", "says": "feeds every 2-3 days; fast tolerance about a week (assumed) (no page states a left-alone figure; lane arthropods 2026-10-28)" },
+   "indianstick": { "days": 3, "status": "estimate", "item": "tarantula-fast", "says": "needs fresh leaves; a few days unattended (assumed) (no page states a left-alone figure; lane arthropods 2026-10-28)" },
+   "purplepincher": { "days": 3, "status": "estimate", "item": "tarantula-fast", "says": "needs fresh and salt water topped up daily (assumed) (no page states a left-alone figure; lane arthropods 2026-10-28)" }
   },
   "cat": {
    "fw-fish": { "days": 3, "status": "sourced", "item": "fw_fast_general", "says": "3-5 days comfortably" },

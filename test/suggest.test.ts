@@ -7,6 +7,7 @@ import { buildsFor } from '../src/scene/builds';
 import { tankOptions } from '../src/scene/tankfit';
 import { compliance, type Constraints } from '../src/scene/constraints';
 import { summaryOf } from '../src/ui/stockSummary';
+import { getSpecies } from '../src/data/species';
 
 const P = defaultProfile(), NOW = Date.parse('2026-10-27');
 const cap = (value: number) => ({ on: true, value });
@@ -155,14 +156,26 @@ describe('Suggest a setup', () => {
       expect(v.map(p => p.archetype.id)).toEqual(['dart-paludarium']);
       expect(v[0].scene.water.on).toBe(true);
     });
-    it('arthropods only: the tarantula and the jumping spider, each a terrarium that passes the strict rule', () => {
+    it('arthropods only: a terrarium each, passing the strict rule', () => {
       const r = run({}, { kinds: ['terrarium'], groups: ['arthropod'] });
-      expect(r.proposals.map(p => p.archetype.id).sort()).toEqual(['jumping-spider', 'tarantula']);
-      for (const p of r.proposals) { expect(p.scene.water.on).toBe(false); expect(summaryOf(p.scene, 'in').cats.some(k => k.level === 'caution' || k.level === 'problem')).toBe(false); }
+      expect(r.proposals.length).toBe(3);
+      for (const p of r.proposals) { expect(p.archetype.group).toBe('arthropod'); expect(p.scene.water.on).toBe(false); expect(summaryOf(p.scene, 'in').cats.some(k => k.level === 'caution' || k.level === 'problem')).toBe(false); }
       expect(run({}, { kinds: ['terrarium'], groups: ['herp'] }).proposals.every(p => p.archetype.group === 'herp')).toBe(true);
     });
-    it('every arthropod archetype names a species that exists (scorpions, isopods and mantises are not in the data)', () => {
-      expect(ARCHETYPES.filter(a => a.group === 'arthropod').map(a => a.animals[0].species).sort()).toEqual(['chacogoldenknee', 'regaljumper']);
+    it('every arthropod archetype, offered alone, is a terrarium that passes the strict rule (no Caution or Problem in any category)', () => {
+      const all = [...ARCHETYPES], arth = all.filter(a => a.group === 'arthropod');
+      expect(arth.map(a => a.id).sort()).toEqual(['african-millipede', 'chilean-rose', 'curly-hair', 'emperor-scorpion', 'hermit-crabs', 'hissing-roach', 'indian-stick', 'jumping-spider', 'orchid-mantis', 'pinktoe', 'powder-blue-isopods', 'redknee-tarantula', 'tarantula', 'zebra-isopods']);
+      try {
+        for (const a of arth) {
+          ARCHETYPES.splice(0, ARCHETYPES.length, a);
+          const p = run({}, { kinds: ['terrarium'], groups: ['arthropod'] }).proposals;
+          expect(p.length, a.id).toBe(1);
+          expect(summaryOf(p[0].scene, 'in').cats.filter(k => k.level === 'caution' || k.level === 'problem').map(k => k.label), a.id).toEqual([]);
+        }
+      } finally { ARCHETYPES.splice(0, ARCHETYPES.length, ...all); }
+    });
+    it('every arthropod archetype names species that exist', () => {
+      for (const a of ARCHETYPES.filter(x => x.group === 'arthropod')) for (const s of a.animals) expect(getSpecies(s.species), a.id).toBeTruthy();
     });
   });
 

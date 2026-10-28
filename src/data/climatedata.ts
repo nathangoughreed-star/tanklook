@@ -88,4 +88,17 @@ export const AIRDATA: Record<string, { c: R; tol: R; rh?: R; rhTol?: R; warm?: R
   crestedharlequin: { c: [21,26], tol: [16,29], rh: [60,80], rhTol: [40,80], warm: [26,29], night: [18,22] },
   regaljumper: { c: [21,26], tol: [15,29], rh: [55,70], rhTol: [40,90] },
   chacogoldenknee: { c: [21,26], tol: [16,30], rh: [55,70], rhTol: [40,75] },
+  // arthropod research 2026-10-28 (research/arthropods): c / rh from the care sheets; tol / rhTol are our own margins (est)
+  redknee: { c: [21,25], tol: [16,29], rh: [50,65], rhTol: [35,80], est: true },
+  chileanrose: { c: [20,25], tol: [15,29], rh: [40,60], rhTol: [25,75], est: true },
+  curlyhair: { c: [20,24], tol: [15,28], rh: [50,65], rhTol: [35,80], est: true },
+  pinktoe: { c: [21,27], tol: [16,31], rh: [60,70], rhTol: [45,85], est: true },
+  emperorscorpion: { c: [22,28], tol: [17,32], rh: [75,80], rhTol: [60,95], est: true },
+  africanmillipede: { c: [22,26], tol: [17,30], rh: [70,80], rhTol: [55,95], est: true },
+  hissingroach: { c: [25,28], tol: [20,32], rh: [60,70], rhTol: [45,85], est: true },
+  zebraisopod: { c: [18,25], tol: [13,29], rh: [40,75], rhTol: [25,90], est: true },
+  powderblueisopod: { c: [21,27], tol: [16,31], rh: [50,75], rhTol: [35,90], est: true },
+  orchidmantis: { c: [25,35], tol: [20,39], rh: [60,80], rhTol: [45,95], est: true },
+  indianstick: { c: [18,25], tol: [13,29], rh: [60,75], rhTol: [45,90], est: true },
+  purplepincher: { c: [24,29], tol: [19,33], rh: [70,80], rhTol: [55,95], est: true },
 };

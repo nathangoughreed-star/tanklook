@@ -95,6 +95,19 @@ export const CARE: Record<string, AnimalCare> = {
   brownanole: A(1, 40, 1, undefined, { prey: { mm: 25, cats: ['land-invert'] } }),
   leopardgecko: A(1, 76, 1, undefined, { solo: true, prey: { mm: 60, cats: ['land-invert'] } }), regaljumper: A(1, 2, 0, undefined, { solo: true, prey: { mm: 15 } }),
   ballpython: A(2, 450, 0, undefined, { solo: true, prey: { mm: 600 } }), chacogoldenknee: A(1, 57, 0, undefined, { solo: true, prey: { mm: 60 } }),
+  // arthropod research 2026-10-28: minL = the enclosure's floor x height from the care sheets (litres)
+  redknee: A(1, 13, 0, undefined, { solo: true, prey: { mm: 60 } }),
+  chileanrose: A(1, 15, 0, undefined, { solo: true, prey: { mm: 60 } }),
+  curlyhair: A(1, 20, 0, undefined, { solo: true, prey: { mm: 60 } }),
+  pinktoe: A(2, 12, 0, undefined, { solo: true, prey: { mm: 50 } }),
+  emperorscorpion: A(1, 35, 1, undefined, { solo: true, prey: { mm: 60 } }),
+  africanmillipede: A(1, 193, 0, undefined),
+  hissingroach: A(1, 41, 0, undefined),
+  zebraisopod: A(1, 4, 0, undefined),
+  powderblueisopod: A(1, 3, 0, undefined),
+  orchidmantis: A(2, 9, 1, undefined, { solo: true, prey: { mm: 40 } }),
+  indianstick: A(1, 24, 0, undefined),
+  purplepincher: A(2, 41, 0, undefined),
 };
 // Researched temperature bands (research/climate, 2026-10-19) replace the first-guess ranges above.
 for (const [id, w] of Object.entries(WATER)) { const c = CARE[id]; if (c) { c.temp = w.ok; c.tol = w.tol; if (w.est) c.tolEst = true; } }

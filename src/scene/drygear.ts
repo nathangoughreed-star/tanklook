@@ -27,6 +27,8 @@ export const DRY_NEEDS: Record<string, { uvb?: 't5' | 'low'; heat?: 'lamp' | 'ma
   treefrog: { uvb: 'low', heat: 'lamp' },
   // optional or advised against (dartfrog.pet), room temperature: no UVB, no heat
   dartfrog: { heat: 'none' }, regaljumper: { heat: 'none' }, chacogoldenknee: { heat: 'none' },
+  // arthropod research 2026-10-28: the heat the care sheets ask for (a heat mat on a thermostat, a lamp for the mantis); none for the room-temperature species
+  redknee: { heat: 'none' }, chileanrose: { heat: 'none' }, curlyhair: { heat: 'none' }, pinktoe: { heat: 'none' }, emperorscorpion: { heat: 'mat' }, africanmillipede: { heat: 'mat' }, hissingroach: { heat: 'mat' }, zebraisopod: { heat: 'none' }, powderblueisopod: { heat: 'none' }, orchidmantis: { heat: 'lamp' }, indianstick: { heat: 'none' }, purplepincher: { heat: 'mat' },
 };
 
 export interface DryNeeds { heat: 'lamp' | 'mat' | 'none'; uvb: 't5' | 'low' | 'none'; mist: boolean }

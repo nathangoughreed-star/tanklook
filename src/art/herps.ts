@@ -9,6 +9,7 @@ import { LIZARD_ART, lizardMeta } from './lizards';
 import { SPIDER_ART, spiderMeta } from './spiders';
 import { SNAKE_ART, snakeMeta } from './snakes';
 import { TARANTULA_ART, tarantulaMeta } from './tarantulas';
+import { ARTH_ART, ARTH3D, arthMeta } from './arthropods';
 
 type J = [number, number, number]; // joint: u, v, radius (widths)
 
@@ -293,6 +294,8 @@ const HERMIT_A = 0.7, HG = HERMIT_A / 2 - 0.015;
 const HERMITS: Record<string, HermitSpec> = {
   // blue-leg (Clibanarius tricolor): blue legs, orange-red antennae, olive-brown body, a dull brown shell
   hermit: { shell: ['#4a4234', '#7a6c54', '#a49478'], mark: '#3a2e22', body: ['#4a4030', '#6a5c46', '#8a7a62'], leg: ['#1c2c5c', '#2c4c9c', '#4a66b0'], eye: ['#2a2a2a', '#0a0a0a'] },
+  // land hermit crab (purple pincher, lane arthropods 2026-10-28): placeholder colours
+  purplepincher: { shell: ['#5a4632', '#8c6a46', '#b8946a'], mark: '#3a2a1c', body: ['#7a3a28', '#a85a3a', '#c88a62'], leg: ['#5a2a62', '#8a4a96', '#b078b8'], eye: ['#2a2a2a', '#0a0a0a'] },
 };
 // the cephalothorax out of the aperture, the soft abdomen running back into the shell (HERP3D's `shell` lines the aperture up on it)
 const HERMIT_SIDE: Pt[] = [[0.88, 0.17, 'c'], [0.83, 0.1], [0.7, 0.085], [0.57, 0.095], [0.45, 0.115], [0.38, 0.165], [0.44, 0.225], [0.57, 0.245], [0.66, 0.245], [0.8, 0.225]];
@@ -376,6 +379,9 @@ const ISO_A = 0.34, IG = ISO_A / 2 - 0.015;
 interface IsoSpec { body: [string, string, string]; leg: [string, string, string]; mark: string; eye: [string, string] }
 const ISOPODS: Record<string, IsoSpec> = {
   asellus: { body: ['#5a5042', '#8a7c68', '#b0a288'], leg: ['#6a6050', '#90846c', '#b0a68c'], mark: '#3a3226', eye: ['#2a2420', '#080606'] },
+  // land isopods (lane arthropods 2026-10-28): placeholders on the asellus body until their own colours are painted
+  zebraisopod: { body: ['#7a7a76', '#b8b8b0', '#d8d8d0'], leg: ['#6a6a64', '#9a9a92', '#b8b8b0'], mark: '#1c1c1a', eye: ['#2a2420', '#080606'] },
+  powderblueisopod: { body: ['#5a7898', '#86a4c0', '#aac0d4'], leg: ['#5a6a7a', '#8a9aaa', '#a8b6c4'], mark: '#3a4a5c', eye: ['#2a2420', '#080606'] },
 };
 const ISO_SIDE: Pt[] = [[0.84, 0.07, 'c'], [0.78, 0.03], [0.6, -0.005], [0.4, -0.01], [0.22, 0.0], [0.1, 0.04, 'c'], [0.14, 0.1], [0.4, 0.115], [0.7, 0.115], [0.8, 0.1]];
 const ISO_LIMBS: Limb3D[] = [
@@ -411,6 +417,7 @@ export const HERP_ART: Record<string, (ctx: Ctx, P: Proj, W: number) => void> = 
   ...SPIDER_ART,
   ...SNAKE_ART,
   ...TARANTULA_ART,
+  ...ARTH_ART,
 };
 
 /** Aspect + resting offset (the ground line) for amphibian art keys. */
@@ -418,7 +425,7 @@ export function herpMeta(art: string): { aspect: number; rest: number } | undefi
   if (HERMITS[art]) return { aspect: HERMIT_A, rest: HG };
   if (CRABS[art]) return { aspect: CRAB_A, rest: CG };
   if (ISOPODS[art]) return { aspect: ISO_A, rest: IG };
-  const s = FROGS[art] ?? SALS[art]; if (!s) return lizardMeta(art) ?? spiderMeta(art) ?? tarantulaMeta(art) ?? snakeMeta(art);
+  const s = FROGS[art] ?? SALS[art]; if (!s) return lizardMeta(art) ?? spiderMeta(art) ?? tarantulaMeta(art) ?? snakeMeta(art) ?? arthMeta(art);
   return { aspect: s.aspect, rest: s.aspect / 2 - 0.015 };
 }
 
@@ -689,3 +696,10 @@ HERP3D_FLOAT.adf = (() => {
     ground: V(0.34), top: V(adfV(-0.07)),
   };
 })();
+
+// the pet arthropods of art/arthropods.ts (scorpion, millipede, roach, mantis, stick insect)
+Object.assign(HERP3D, ARTH3D);
+HERP3D.zebraisopod = { ...HERP3D.asellus, tone: [[0, ISOPODS.zebraisopod.body[0]], [0.5, ISOPODS.zebraisopod.body[1]], [1, ISOPODS.zebraisopod.body[2]]], legCol: [ISOPODS.zebraisopod.leg[1], ISOPODS.zebraisopod.leg[0]] };
+HERP3D.powderblueisopod = { ...HERP3D.asellus, tone: [[0, ISOPODS.powderblueisopod.body[0]], [0.5, ISOPODS.powderblueisopod.body[1]], [1, ISOPODS.powderblueisopod.body[2]]], legCol: [ISOPODS.powderblueisopod.leg[1], ISOPODS.powderblueisopod.leg[0]] };
+HERP3D.purplepincher = { ...HERP3D.hermit, tone: [[0, HERMITS.purplepincher.body[0]], [0.5, HERMITS.purplepincher.body[1]], [1, HERMITS.purplepincher.body[2]]], legCol: [HERMITS.purplepincher.leg[1], HERMITS.purplepincher.leg[0]],
+  shell: { ...HERP3D.hermit.shell!, shell: HERMITS.purplepincher.shell, mark: HERMITS.purplepincher.mark } };

@@ -106,6 +106,13 @@ export const TARANTULAS: Record<string, TarSpec> = {
     legBands: [3], patch: { x: -0.27, hw: 0.14, col: '#7a3a24' }, hooks: false, hair: { body: 26000, leg: 6500 },
   },
 };
+
+/** The other pet tarantulas (lane arthropods 2026-10-28): the Chaco golden knee female's build with each species' own colours; `body` = length in mm is the species' tl. */
+const variant = (c: Partial<TarSpec>, legCol: [string, string], extra: Partial<TarSpec> = {}): TarSpec => ({ ...TARANTULAS.gpulchripes_f, legCol, ...c, ...extra });
+TARANTULAS.bhamorii = variant({ carapaceCol: '#2a1c14', abdomenCol: '#352620', palpCol: '#2c1e16', hairCol: '#6a4630', legHair: '#5a4030', chelCol: '#1d1410' }, ['#24180f', '#c84a22']);
+TARANTULAS.grosea = variant({ carapaceCol: '#5c4a3e', abdomenCol: '#6a5448', palpCol: '#584638', hairCol: '#8a6a5a', legHair: '#806656', chelCol: '#3a2a22' }, ['#5a4638', '#8a6c5a']);
+TARANTULAS.talbopilosus = variant({ carapaceCol: '#241c16', abdomenCol: '#2a201a', palpCol: '#241c16', hairCol: '#6a5230', legHair: '#7a6038', chelCol: '#1c1410' }, ['#241c16', '#8a7448']);
+TARANTULAS.aavicularia = variant({ carapaceCol: '#3a3028', abdomenCol: '#3e342c', palpCol: '#3a2e26', hairCol: '#6a5848', legHair: '#6a5a4a', chelCol: '#241a14' }, ['#3a3028', '#c4666e']);
 /** The `bend` values Shuffle stores for each pose (render/tarantula3d.ts tarMode reads them back): walking, resting tucked, the threat pose. */
 export const TAR_BEND = { walk: 0, tuck: 0.5, threat: 1 } as const;
 /** A pose for a tarantula drawn from `u` (0..1): mostly walking, a quarter resting, a tenth in the threat pose; `calm` = no threat or rest (on the glass). */

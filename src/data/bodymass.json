@@ -606,6 +606,78 @@
    "b": 3,
    "src": "estimate",
    "note": "typical adult mass 0.02 g (judgement from a 12 mm adult; scales with length cubed)"
+  },
+  "redknee": {
+   "a": 0.1679,
+   "b": 3,
+   "src": "estimate",
+   "note": "typical adult mass 25 g (keeper references, not FishBase)"
+  },
+  "chileanrose": {
+   "a": 0.16,
+   "b": 3,
+   "src": "estimate",
+   "note": "typical adult mass 20 g (keeper references, not FishBase)"
+  },
+  "curlyhair": {
+   "a": 0.135,
+   "b": 3,
+   "src": "estimate",
+   "note": "typical adult mass 25 g (keeper references, not FishBase)"
+  },
+  "pinktoe": {
+   "a": 0.096,
+   "b": 3,
+   "src": "estimate",
+   "note": "typical adult mass 12 g (keeper references, not FishBase)"
+  },
+  "emperorscorpion": {
+   "a": 0.01736,
+   "b": 3,
+   "src": "estimate",
+   "note": "typical adult mass 30 g (keeper references, not FishBase)"
+  },
+  "africanmillipede": {
+   "a": 0.00512,
+   "b": 3,
+   "src": "estimate",
+   "note": "typical adult mass 80 g (keeper references, not FishBase)"
+  },
+  "hissingroach": {
+   "a": 0.02041,
+   "b": 3,
+   "src": "estimate",
+   "note": "typical adult mass 7 g (keeper references, not FishBase)"
+  },
+  "zebraisopod": {
+   "a": 0.05144,
+   "b": 3,
+   "src": "estimate",
+   "note": "typical adult mass 0.3 g (keeper references, not FishBase)"
+  },
+  "powderblueisopod": {
+   "a": 0.03757,
+   "b": 3,
+   "src": "estimate",
+   "note": "typical adult mass 0.05 g (keeper references, not FishBase)"
+  },
+  "orchidmantis": {
+   "a": 0.008746,
+   "b": 3,
+   "src": "estimate",
+   "note": "typical adult mass 3 g (keeper references, not FishBase)"
+  },
+  "indianstick": {
+   "a": 0.002344,
+   "b": 3,
+   "src": "estimate",
+   "note": "typical adult mass 1.2 g (keeper references, not FishBase)"
+  },
+  "purplepincher": {
+   "a": 0.07111,
+   "b": 3,
+   "src": "estimate",
+   "note": "typical adult mass 30 g (keeper references, not FishBase)"
   }
  }
 }

@@ -1981,6 +1981,338 @@
     "url": "https://pondinformer.com/aquatic-sow-bugs-asellidae"
    },
    "why": "aquatic invertebrate: clearance only (Decision 3)"
+  },
+  "redknee": {
+   "red": {
+    "L": 420,
+    "W": 210,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "thetarantulacollective.com",
+    "url": "https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii",
+    "states": "42 x 21 cm floor (derived)",
+    "from": "footprint"
+   },
+   "hRed": {
+    "H": 150,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "thetarantulacollective.com",
+    "url": "https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii",
+    "states": "15 cm high (assumption)"
+   },
+   "vol": {
+    "gal": 3.5,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "research/arthropods",
+    "url": "https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii"
+   },
+   "why": "arthropod research 2026-10-28: floor derived, height assumption; see research/arthropods/arthropods.json"
+  },
+  "chileanrose": {
+   "red": {
+    "L": 450,
+    "W": 220,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "thetarantulacollective.com",
+    "url": "https://www.thetarantulacollective.com/caresheets/grammostola-rosea",
+    "states": "45 x 22 cm floor (derived)",
+    "from": "footprint"
+   },
+   "hRed": {
+    "H": 150,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "thetarantulacollective.com",
+    "url": "https://www.thetarantulacollective.com/caresheets/grammostola-rosea",
+    "states": "15 cm high (assumption)"
+   },
+   "vol": {
+    "gal": 3.9,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "research/arthropods",
+    "url": "https://www.thetarantulacollective.com/caresheets/grammostola-rosea"
+   },
+   "why": "arthropod research 2026-10-28: floor derived, height assumption; see research/arthropods/arthropods.json"
+  },
+  "curlyhair": {
+   "red": {
+    "L": 510,
+    "W": 260,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "thetarantulacollective.com",
+    "url": "https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus",
+    "states": "51 x 26 cm floor (derived)",
+    "from": "footprint"
+   },
+   "hRed": {
+    "H": 150,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "thetarantulacollective.com",
+    "url": "https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus",
+    "states": "15 cm high (assumption)"
+   },
+   "vol": {
+    "gal": 5.3,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "research/arthropods",
+    "url": "https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus"
+   },
+   "why": "arthropod research 2026-10-28: floor derived, height assumption; see research/arthropods/arthropods.json"
+  },
+  "pinktoe": {
+   "red": {
+    "L": 200,
+    "W": 200,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "thetarantulacollective.com",
+    "url": "https://www.thetarantulacollective.com/caresheets/avicularia-avicularia",
+    "states": "20 x 20 cm floor (assumption)",
+    "from": "footprint"
+   },
+   "hRed": {
+    "H": 300,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "thetarantulacollective.com",
+    "url": "https://www.thetarantulacollective.com/caresheets/avicularia-avicularia",
+    "states": "30 cm high (assumption)"
+   },
+   "vol": {
+    "gal": 3.2,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "research/arthropods",
+    "url": "https://www.thetarantulacollective.com/caresheets/avicularia-avicularia"
+   },
+   "why": "arthropod research 2026-10-28: floor assumption, height assumption; see research/arthropods/arthropods.json"
+  },
+  "emperorscorpion": {
+   "red": {
+    "L": 460,
+    "W": 300,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "thetarantulacollective.com",
+    "url": "https://www.thetarantulacollective.com/caresheets/emperor-scorpion",
+    "states": "46 x 30 cm floor (assumption)",
+    "from": "footprint"
+   },
+   "hRed": {
+    "H": 250,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "thetarantulacollective.com",
+    "url": "https://www.thetarantulacollective.com/caresheets/emperor-scorpion",
+    "states": "25 cm high (assumption)"
+   },
+   "vol": {
+    "gal": 9.1,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "research/arthropods",
+    "url": "https://www.thetarantulacollective.com/caresheets/emperor-scorpion"
+   },
+   "why": "arthropod research 2026-10-28: floor assumption, height assumption; see research/arthropods/arthropods.json"
+  },
+  "africanmillipede": {
+   "red": {
+    "L": 910,
+    "W": 460,
+    "mark": "sourced",
+    "site": "dubiaroaches.com",
+    "url": "https://dubiaroaches.com/blogs/invert-care/african-giant-millipede-care-sheet",
+    "states": "91 x 46 cm floor (sourced)",
+    "from": "footprint"
+   },
+   "hRed": {
+    "H": 460,
+    "mark": "sourced",
+    "site": "dubiaroaches.com",
+    "url": "https://dubiaroaches.com/blogs/invert-care/african-giant-millipede-care-sheet",
+    "states": "46 cm high (sourced)"
+   },
+   "vol": {
+    "gal": 50.9,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "research/arthropods",
+    "url": "https://dubiaroaches.com/blogs/invert-care/african-giant-millipede-care-sheet"
+   },
+   "why": "arthropod research 2026-10-28: floor sourced, height sourced; see research/arthropods/arthropods.json"
+  },
+  "hissingroach": {
+   "red": {
+    "L": 510,
+    "W": 260,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "joshsfrogs.com",
+    "url": "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html",
+    "states": "51 x 26 cm floor (derived)",
+    "from": "footprint"
+   },
+   "hRed": {
+    "H": 310,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "joshsfrogs.com",
+    "url": "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html",
+    "states": "31 cm high (derived)"
+   },
+   "vol": {
+    "gal": 10.9,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "research/arthropods",
+    "url": "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html"
+   },
+   "why": "arthropod research 2026-10-28: floor derived, height derived; see research/arthropods/arthropods.json"
+  },
+  "zebraisopod": {
+   "red": {
+    "L": 250,
+    "W": 150,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "research",
+    "url": "",
+    "states": "25 x 15 cm floor (assumption)",
+    "from": "footprint"
+   },
+   "hRed": {
+    "H": 100,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "research",
+    "url": "",
+    "states": "10 cm high (assumption)"
+   },
+   "vol": {
+    "gal": 1,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "research/arthropods",
+    "url": ""
+   },
+   "why": "arthropod research 2026-10-28: floor assumption, height assumption; see research/arthropods/arthropods.json"
+  },
+  "powderblueisopod": {
+   "red": {
+    "L": 200,
+    "W": 150,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "research",
+    "url": "",
+    "states": "20 x 15 cm floor (assumption)",
+    "from": "footprint"
+   },
+   "hRed": {
+    "H": 100,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "research",
+    "url": "",
+    "states": "10 cm high (assumption)"
+   },
+   "vol": {
+    "gal": 0.8,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "research/arthropods",
+    "url": ""
+   },
+   "why": "arthropod research 2026-10-28: floor assumption, height assumption; see research/arthropods/arthropods.json"
+  },
+  "orchidmantis": {
+   "red": {
+    "L": 160,
+    "W": 240,
+    "mark": "sourced",
+    "site": "insectkeeper.com",
+    "url": "https://insectkeeper.com/?p=111",
+    "states": "16 x 24 cm floor (sourced)",
+    "from": "footprint"
+   },
+   "hRed": {
+    "H": 240,
+    "mark": "sourced",
+    "site": "insectkeeper.com",
+    "url": "https://insectkeeper.com/?p=111",
+    "states": "24 cm high (sourced)"
+   },
+   "vol": {
+    "gal": 2.4,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "research/arthropods",
+    "url": "https://insectkeeper.com/?p=111"
+   },
+   "why": "arthropod research 2026-10-28: floor sourced, height sourced; see research/arthropods/arthropods.json"
+  },
+  "indianstick": {
+   "red": {
+    "L": 250,
+    "W": 250,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "furrycritter.com",
+    "url": "https://www.furrycritter.com/pages/descriptions/invertebrates/indian_stick_insect.htm",
+    "states": "25 x 25 cm floor (derived)",
+    "from": "footprint"
+   },
+   "hRed": {
+    "H": 380,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "furrycritter.com",
+    "url": "https://www.furrycritter.com/pages/descriptions/invertebrates/indian_stick_insect.htm",
+    "states": "38 cm high (derived)"
+   },
+   "vol": {
+    "gal": 6.3,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "research/arthropods",
+    "url": "https://www.furrycritter.com/pages/descriptions/invertebrates/indian_stick_insect.htm"
+   },
+   "why": "arthropod research 2026-10-28: floor derived, height derived; see research/arthropods/arthropods.json"
+  },
+  "purplepincher": {
+   "red": {
+    "L": 510,
+    "W": 260,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "thetyedyediguana.com",
+    "url": "https://thetyedyediguana.com/care-sheets/hermit-crab-coenobita-clypeatus",
+    "states": "51 x 26 cm floor (derived)",
+    "from": "footprint"
+   },
+   "hRed": {
+    "H": 310,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "thetyedyediguana.com",
+    "url": "https://thetyedyediguana.com/care-sheets/hermit-crab-coenobita-clypeatus",
+    "states": "31 cm high (derived)"
+   },
+   "vol": {
+    "gal": 10.9,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "research/arthropods",
+    "url": "https://thetyedyediguana.com/care-sheets/hermit-crab-coenobita-clypeatus"
+   },
+   "why": "arthropod research 2026-10-28: floor derived, height derived; see research/arthropods/arthropods.json"
   }
  }
 }

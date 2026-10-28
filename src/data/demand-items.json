@@ -1685,6 +1685,92 @@
    "hi": 2,
    "unit": "each; no live aquatic culture price found (Ward's listing discontinued), judgement",
    "url": "https://pondinformer.com/aquatic-sow-bugs-asellidae"
+  },
+  "animal:redknee": {
+   "lo": 20,
+   "mode": 100,
+   "hi": 199,
+   "unit": "each; retailer prices, some judged (arthropod research 2026-10-28)",
+   "url": "https://arachnoboards.com/goto/post?id=2100197"
+  },
+  "animal:chileanrose": {
+   "lo": 50,
+   "mode": 75,
+   "hi": 150,
+   "unit": "each; retailer prices, some judged (arthropod research 2026-10-28)",
+   "url": "https://www.thetarantulacollective.com/store/p/grammostola-rosea-rcf-chilean-rose-hair-0375-075-spiderlings"
+  },
+  "animal:curlyhair": {
+   "lo": 25,
+   "mode": 42,
+   "hi": 90,
+   "unit": "each; retailer prices, some judged (arthropod research 2026-10-28)",
+   "url": "https://reach.dog/shop/fear-not-tarantulas-inc/products/tliltocatl-albopilosus-curlyhair-tarantula"
+  },
+  "animal:pinktoe": {
+   "lo": 30,
+   "mode": 35,
+   "hi": 75,
+   "unit": "each; retailer prices, some judged (arthropod research 2026-10-28)",
+   "url": "https://tydyeexotic.com/products/avicularia-avicularia-guyana-pinktoe"
+  },
+  "animal:emperorscorpion": {
+   "lo": 44,
+   "mode": 60,
+   "hi": 150,
+   "unit": "each; retailer prices, some judged (arthropod research 2026-10-28)",
+   "url": "https://tydyeexotic.com/products/pandinus-imperator-emperor-scorpion-perfect-beginner-species-live-arrival-guarantee"
+  },
+  "animal:africanmillipede": {
+   "lo": 49.99,
+   "mode": 84.99,
+   "hi": 99.99,
+   "unit": "each; retailer prices, some judged (arthropod research 2026-10-28)",
+   "url": "https://bugsincyberspace.com/product/agb-african-giant-black-millipede"
+  },
+  "animal:hissingroach": {
+   "lo": 4.99,
+   "mode": 4.99,
+   "hi": 15,
+   "unit": "each; retailer prices, some judged (arthropod research 2026-10-28)",
+   "url": "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html"
+  },
+  "animal:zebraisopod": {
+   "lo": 2,
+   "mode": 3,
+   "hi": 3.5,
+   "unit": "each; retailer prices, some judged (arthropod research 2026-10-28)",
+   "url": "https://joshsfrogs.com/sp/armadillidium-maculatum-zebra-isopods-10-count-jfd58005"
+  },
+  "animal:powderblueisopod": {
+   "lo": 0.8,
+   "mode": 1.1,
+   "hi": 2,
+   "unit": "each; retailer prices, some judged (arthropod research 2026-10-28)",
+   "est": true,
+   "url": ""
+  },
+  "animal:orchidmantis": {
+   "lo": 50,
+   "mode": 59.99,
+   "hi": 65,
+   "unit": "each; retailer prices, some judged (arthropod research 2026-10-28)",
+   "url": "https://tydyeexotic.com/products/orchid-mantis-hymenopus-coronatus"
+  },
+  "animal:indianstick": {
+   "lo": 2,
+   "mode": 3.4,
+   "hi": 10,
+   "unit": "each; retailer prices, some judged (arthropod research 2026-10-28)",
+   "url": "https://bugpets.co.uk/indian-stick-insect-carausius-morosus"
+  },
+  "animal:purplepincher": {
+   "lo": 5,
+   "mode": 10,
+   "hi": 49.99,
+   "unit": "each; retailer prices, some judged (arthropod research 2026-10-28)",
+   "est": true,
+   "url": ""
   }
  }
 }

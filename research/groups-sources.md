@@ -101,3 +101,15 @@ practice rather than quoted from the source. Researched by Sonnet agents with we
 - **regaljumper** (Regal jumping spider): https://www.poramorart.ca/spider-enclosure-size-guide (est).
 - **ballpython** (Ball python): https://www.scribd.com/document/713034456/Ball-Python-Care-Sheet-PDF-1 (est).
 - **chacogoldenknee** (Chaco golden knee tarantula): https://www.thetarantulacollective.com/tarantula-thoughts/how-big-should-a-tarantula-enclosure-be (est).
+- **redknee** (Mexican red knee tarantula): https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii (est).
+- **chileanrose** (Chilean rose tarantula): https://www.thetarantulacollective.com/caresheets/grammostola-rosea (est).
+- **curlyhair** (Curly hair tarantula): https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus (est).
+- **pinktoe** (Pinktoe tarantula): https://www.thetarantulacollective.com/caresheets/avicularia-avicularia (est).
+- **emperorscorpion** (Emperor scorpion): https://www.thetarantulacollective.com/caresheets/emperor-scorpion (est).
+- **africanmillipede** (Giant African millipede): https://dubiaroaches.com/blogs/invert-care/african-giant-millipede-care-sheet (est).
+- **hissingroach** (Madagascar hissing cockroach): https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html (est).
+- **zebraisopod** (Zebra isopod): https://www.richardsinverts.com/care-sheet-armadillidium-maculatum (est).
+- **powderblueisopod** (Powder blue isopod): https://terrariumtribe.com/powder-blue-isopods/ (est).
+- **orchidmantis** (Orchid mantis): https://insectkeeper.com/?p=111 (est).
+- **indianstick** (Indian stick insect): https://www.furrycritter.com/pages/descriptions/invertebrates/indian_stick_insect.htm (est).
+- **purplepincher** (Purple pincher hermit crab): https://thetyedyediguana.com/care-sheets/hermit-crab-coenobita-clypeatus (est).

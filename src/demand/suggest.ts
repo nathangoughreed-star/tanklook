@@ -46,7 +46,7 @@ export const KINDS: readonly { id: Kind; label: string; blurb: string }[] = [
 ];
 /** Inside a terrarium or vivarium: reptiles and amphibians, or arthropods (tarantulas, scorpions, isopods, mantises). */
 export type DryGroup = 'herp' | 'arthropod';
-export const DRY_GROUPS: readonly { id: DryGroup; label: string }[] = [{ id: 'herp', label: 'Reptiles & amphibians' }, { id: 'arthropod', label: 'Arthropods (tarantula, jumping spider; no scorpions, isopods or mantises yet)' }];
+export const DRY_GROUPS: readonly { id: DryGroup; label: string }[] = [{ id: 'herp', label: 'Reptiles & amphibians' }, { id: 'arthropod', label: 'Arthropods (tarantulas, scorpion, millipede, roach, isopods, mantis, stick insect, hermit crab, jumping spider)' }];
 export interface Archetype { id: string; kind: Kind; group?: DryGroup; title: string; family: Family; tags: Tag[]; animals: AnimalCount[]; why: string }
 export const ARCHETYPES = data.archetypes as unknown as Archetype[];
 
