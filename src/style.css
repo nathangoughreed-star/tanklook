@@ -18,7 +18,7 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); 
 #app { display: flex; height: 100% }
 #side { width: 350px; flex: none; overflow-y: auto; background: var(--panel); border-right: 1px solid var(--line); padding: 10px 14px 40px }
 #view { flex: 1; position: relative; min-width: 0; min-height: 300px; overflow: hidden } /* nothing inside may widen the page (audit #2) */
-/* viewpoint map, one per view at its bottom-left corner; × hides them, "⌖ Map" brings them back */
+/* viewpoint map, one per view at its bottom-left corner; Ã— hides them, "âŒ– Map" brings them back */
 .vmap { position: absolute; left: 10px; bottom: 10px; width: 190px; height: 150px; border-radius: 6px; background: color-mix(in srgb, var(--panel) 88%, transparent); border: 1px solid var(--line) }
 .vmap canvas { display: block; width: 100%; height: 100%; pointer-events: none }
 .vmap.off, #mapShow.off { display: none }
@@ -170,7 +170,7 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 .sec > summary { list-style: none; display: flex; align-items: center; padding: 9px 0; user-select: none }
 .sec > summary::-webkit-details-marker { display: none }
 .sec > summary h2 { flex: 1; margin: 0; padding: 0; border: 0 }
-.sec > summary::after { content: '▸'; color: var(--muted); font-size: 12px; transition: transform .12s }
+.sec > summary::after { content: 'â–¸'; color: var(--muted); font-size: 12px; transition: transform .12s }
 .sec[open] > summary::after { transform: rotate(90deg) }
 .sec[open] { padding-bottom: 10px }
 .sec > summary:hover h2, .sec > summary:hover::after { color: var(--ink) }
@@ -272,7 +272,7 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 .lab .diffs span { display: inline-flex; align-items: center; gap: 4px; padding: 1px 3px 1px 6px; border-radius: 3px; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .16); white-space: nowrap }
 .lab .close { font: inherit; font-size: 11px; color: #fff; background: rgba(255, 255, 255, .14); border: 0; border-radius: 3px; padding: 2px 7px; cursor: pointer }
 .lab .acts { display: flex; gap: 5px }
-/* folded until hovered (or reached by keyboard): the ▾ hint stands in for the second row */
+/* folded until hovered (or reached by keyboard): the â–¾ hint stands in for the second row */
 .lab.tab .diffs { display: none }
 .lab.tab:hover .diffs, .lab.tab:has(:focus-visible) .diffs { display: flex }
 .lab .more { font-size: 11px; color: rgba(255, 255, 255, .6) }
@@ -281,7 +281,7 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 .lab .edbox { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; cursor: pointer; user-select: none }
 .lab .edbox input { margin: 0; accent-color: var(--accent); cursor: pointer }
 .lab .edbox input:disabled { cursor: default }
-/* × on a difference: this tank takes the other tank's setting */
+/* Ã— on a difference: this tank takes the other tank's setting */
 .lab .match { font: inherit; font-size: 11px; line-height: 1; color: rgba(255, 255, 255, .6); background: none; border: 0; border-radius: 2px; padding: 1px 3px; cursor: pointer }
 .lab .match:hover { color: #fff; background: rgba(255, 255, 255, .22) }
 .lab .close:hover { background: rgba(255, 255, 255, .28) }
@@ -337,7 +337,7 @@ footer { margin-top: 18px }
 .row output.typein:hover, .row output.typein:focus-visible { background: var(--chip); outline: 1px solid var(--line) }
 .row .typeinBox { width: 100%; padding: 1px 4px; text-align: right; font-variant-numeric: tabular-nums }
 
-/* Open…: tanks saved in this browser */
+/* Openâ€¦: tanks saved in this browser */
 .libdlg { width: min(640px, calc(100vw - 32px)); max-height: calc(100vh - 48px); padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--ink) }
 .libdlg::backdrop { background: rgb(0 0 0 / .45) }
 /* the warning before a starter-set redraw throws away hand edits (Nathan 2026-10-15: "a very obvious warning popup") */
@@ -525,7 +525,7 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .tsub > summary { list-style: none; display: flex; align-items: center; padding: 8px 0; cursor: pointer; user-select: none }
 .tsub > summary::-webkit-details-marker { display: none }
 .tsub > summary h3 { flex: 1; margin: 0; font-size: 13px }
-.tsub > summary::after { content: '▸'; color: var(--muted); font-size: 12px; transition: transform .12s }
+.tsub > summary::after { content: 'â–¸'; color: var(--muted); font-size: 12px; transition: transform .12s }
 .tsub[open] > summary::after { transform: rotate(90deg) }
 .tpre { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin: 6px 0 }
 .tpre button { font: inherit; font-size: 12px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 4px; background: none; color: var(--ink); cursor: pointer }
@@ -785,7 +785,7 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .sgSp input[type=number] { width: 64px }
 .sgTags { display: flex; flex-wrap: wrap; gap: 4px; margin: 2px 0 }
 .sg button.sgTag.on { background: #2a9bb0; border-color: #2a9bb0; color: #fff }
-.sgChecks .sgOk::marker { content: "✓ " } .sgChecks { font-size: 11.5px }
+.sgChecks .sgOk::marker { content: "âœ“ " } .sgChecks { font-size: 11.5px }
 .sgMiss { margin-top: 10px; font-size: 12px } .sgMiss ul { margin: 4px 0 0 16px; padding: 0 }
 .sgWhy { margin-top: 10px; font-size: 13px } .sgWhy .spWarn { margin: 0 0 6px }
 .sgAlts { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 8px }
@@ -886,3 +886,9 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 #sheetView .bpBuy, #sheetView .bpStock { width: 100%; border-collapse: collapse }
 #sheetView .bpBuy tr.own th, #sheetView .bpBuy tr.own td { color: #3c6b3c }
 #sheetView .bpStock th { width: 9em; vertical-align: top; text-align: left }
+/* refinement chips on a Suggest result (lane U6) */
+.sgChips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 8px 0 4px }
+.sgChip { border: 1px solid var(--line, #888); border-radius: 999px; padding: 4px 12px; background: transparent; color: inherit; cursor: pointer; font: inherit }
+.sgChip:hover { border-color: var(--accent, #4a9) } .sgChip.on { background: var(--accent, #4a9); color: #fff; border-color: transparent }
+.sgRefined { margin: 2px 0 8px }
+.sgTrade { margin: 6px 0 2px; padding: 5px 9px; border-left: 3px solid var(--accent, #4a9); font-size: 0.92em }

@@ -23,6 +23,8 @@ import { briefToWants, clearItem, setItem, valueOf } from '../scene/brief';
 import { openBuildPlan } from './buildPlanSheet';
 import { applyAlternative, type Alternative, type Infeasible } from '../demand/infeasible';
 import { getSpecies as speciesOf } from '../data/species';
+import { chipsFor, dropWish, refine, type Chip } from '../demand/refine';
+import type { Wish } from '../scene/brief';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
@@ -55,6 +57,8 @@ export function attachSuggest(store: Store, viewer: Viewer, status: (m: string, 
   };
   let f: Fields = { startup: '', monthly: '', time: '', spaceOn: false, w: '', d: '', needStand: true, owned: {}, kinds: KINDS.map(k => k.id), groups: DRY_GROUPS.map(g => g.id) };
   let tags = new Set<Tag>(), res: Suggestions | undefined, pics: string[] = [], note = '';
+  /** refinement chips (lane U6): what the last chip did, and one tradeoff line per card */
+  let refineLine = '', cardLines: string[] = [];
   const units = () => store.scene.units ?? 'in';
 
   /** Start from what this tank already has as guardrails, else the person's last-used set. */
@@ -99,6 +103,7 @@ export function attachSuggest(store: Store, viewer: Viewer, status: (m: string, 
     const animals = b.animals.map(a => `${a.n} ${esc(getSpecies(a.species)?.name ?? a.species)}`).join(', ');
     return `<li class="bpCard" data-i="${i}">
 <div class="bpPic">${pics[i] ? `<img src="${pics[i]}" alt="${esc(p.archetype.title)}: ${esc(tankLabel(b.tank, units()))} with the animals">` : ''}</div>
+${cardLines[i] ? `<div class="sgTrade" data-trade="${i}">${esc(cardLines[i])}</div>` : ''}
 <div class="bpHead"><b>${esc(p.archetype.title)}</b><span class="spNote">${esc(FAMILY_LABEL[p.archetype.family])}</span></div>
 <div class="spNote">${esc(p.archetype.why)} ${esc(tankLabel(b.tank, units()))} with ${animals}. ${esc(b.label)} build.</div>
 ${b.finish ? `<ul class="bpGear sgFinish">${b.finish.lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}
@@ -123,12 +128,20 @@ ${p.unknown.length ? `<div class="spNote">Not enough information: ${esc(p.unknow
     return `<div class="sgNone sgWhy" id="sgNone" data-factor="${inf.limitingFactor}"><p class="spWarn"><b>No setup fits all of that.</b> ${esc(inf.text)}</p>${lines}${inf.alternatives.length ? `<b>What would change that</b><ul class="sgAlts">${inf.alternatives.map(alt).join('')}</ul>` : ''}</div>`;
   };
 
+  /** The refinement chips (lane U6): one click edits the brief (locks kept) and the setups are worked out again; an applied wish can be switched back off. */
+  const chipRow = () => {
+    if (!res?.proposals.length) return '';
+    const b = getBrief(), on = (valueOf(b, 'preferences.wishes') ?? []).filter(w => w === 'more-planted' || w === 'larger-tank');
+    const WORD: Record<string, string> = { 'more-planted': 'More planted', 'larger-tank': 'Larger tank' };
+    return `<div class="sgChips" role="group" aria-label="Refine these setups"><span class="spNote">Refine:</span>${chipsFor(b, res).map(c => `<button type="button" class="sgChip" data-chip="${c.id}">${esc(c.label)}</button>`).join('')}${on.map(w => `<button type="button" class="sgChip on" data-drop="${w}" title="Switch off">${WORD[w]} ✓</button>`).join('')}</div>${refineLine ? `<div class="spNote sgRefined" role="status">${esc(refineLine)}</div>` : ''}`;
+  };
+
   const draw = () => {
     const scroll = el.scrollTop, k = lenU(), nOwned = Object.keys(f.owned).length;
     let out = '';
     if (res) {
       if (res.proposals.length) out = `<p class="spNote">${esc(res.off ? 'No guardrail is on, so these are ranked by what you picked below, not checked against a limit.' : 'Each one passes every guardrail you switched on and the animals\' care checks. Prices are expected costs; minutes are estimates.')}</p>
-${res.note ? `<p class="spWarn sgNote">${esc(res.note)}</p>` : ''}<ul class="bpCards">${res.proposals.map(card).join('')}</ul>`;
+${res.note ? `<p class="spWarn sgNote">${esc(res.note)}</p>` : ''}${chipRow()}<ul class="bpCards">${res.proposals.map(card).join('')}</ul>`;
       else if (res.infeasible) out = infeasibleCard(res.infeasible);
       else out = `<p class="spWarn" id="sgNone">${esc(res.message ?? res.unavailable ?? '')}</p>`;
       if (res.misses.length && !res.unavailable) out += `<div class="sgMiss"><b>Closest, if you raise a limit</b> (these do not fit your guardrails as set)<ul>${res.misses.map(m => `<li>${esc(m.archetype.title)}: ${esc(m.text)}</li>`).join('')}</ul></div>`;
@@ -173,14 +186,31 @@ ${lockedStock(getBrief()).length ? `<div class="spNote sgLocked">Locked animals:
     editBrief(b => { let n = hi ? setItem(b, 'preferences.hightech', true, 'hard') : clearItem(b, 'preferences.hightech'); n = ph ? setItem(n, 'constraints.phased', true, 'hard') : clearItem(n, 'constraints.phased'); return Object.keys(w.owned).length ? setItem(n, 'constraints.owned', { ...w.owned }, 'hard') : clearItem(n, 'constraints.owned'); });
     if (!w.kinds.length) { note = 'Tick at least one kind of setup.'; res = undefined; draw(); return; }
     if (w.spaceMissing) { note = 'Enter the width and depth of your space, or untick Space.'; res = undefined; draw(); return; }
-    // what the brief holds that this panel has no box for: locked animals, an existing tank, tax, the high-tech and phased choices
-    const bw = briefToWants(getBrief());
-    res = suggestSetups({ kinds: w.kinds, groups: w.groups, needStand: w.needStand, owned: w.owned, ...(w.minimal ? { minimal: true } : {}), constraints: w.constraints, ...(w.space ? { space: w.space } : {}), tags: [...tags],
-      ...(bw.animals ? { animals: bw.animals } : {}), ...(bw.ownTank ? { ownTank: bw.ownTank } : {}), ...(bw.taxPct !== undefined ? { taxPct: bw.taxPct } : {}), ...(bw.hightech ? { hightech: true } : {}), ...(bw.phased ? { phased: true } : {}) }, loadProfile(), units());
-    pics = [];
+    res = generate(w);
+    refineLine = ''; cardLines = []; pics = [];
     if (res.proposals.length) shoot(res.proposals);
     draw();
     el.querySelector('.bpCards, #sgNone')?.scrollIntoView?.({ block: 'nearest' });
+  };
+
+  /** The generator call from the boxes plus what the brief holds that this panel has no box for: locked animals, an existing tank, tax, the high-tech, phased and refinement choices. */
+  const generate = (w: ReturnType<typeof wantsFrom>): Suggestions => {
+    const bw = briefToWants(getBrief());
+    return suggestSetups({ kinds: w.kinds, groups: w.groups, needStand: w.needStand, owned: w.owned, ...(w.minimal ? { minimal: true } : {}), constraints: w.constraints, ...(w.space ? { space: w.space } : {}), tags: [...tags],
+      ...(bw.animals ? { animals: bw.animals } : {}), ...(bw.ownTank ? { ownTank: bw.ownTank } : {}), ...(bw.taxPct !== undefined ? { taxPct: bw.taxPct } : {}), ...(bw.hightech ? { hightech: true } : {}), ...(bw.phased ? { phased: true } : {}), ...(bw.lowtech ? { lowtech: true } : {}), ...(bw.planted ? { planted: true } : {}), ...(bw.larger ? { larger: true } : {}) }, loadProfile(), units());
+  };
+
+  /** One click on a chip: edit the brief, run the generator on it, keep the old setups when the edit leaves none (the brief goes back too). */
+  const takeChip = (c: Chip) => {
+    const before = res; if (!before) return;
+    readFields();
+    const old = getBrief(), keep = new Set(tags), kinds = f.kinds, groups = f.groups, stand = f.needStand, minimal = f.minimal, oldPics = pics;
+    const restore = () => { seed(); f = { ...f, kinds, groups, needStand: stand, minimal }; tags = new Set(keep); };
+    const r = refine(old, c, before, nb => { editBrief(() => nb); restore(); return generate(wantsFrom(f, units())); });
+    if (!r.ok) editBrief(() => old);
+    restore(); res = r.result; refineLine = r.line; cardLines = r.cards;
+    if (r.ok && !r.unchanged) { pics = []; shoot(res.proposals); } else pics = oldPics;
+    draw();
   };
 
   const pick = (i: number) => {
@@ -206,6 +236,9 @@ ${lockedStock(getBrief()).length ? `<div class="spNote sgLocked">Locked animals:
   };
   el.onclick = e => {
     const alt = (e.target as HTMLElement).closest<HTMLElement>('[data-alt]'); if (alt) { takeAlt(+(alt.dataset.alt ?? -1)); return; }
+    const ch = (e.target as HTMLElement).closest<HTMLElement>('[data-chip],[data-drop]');
+    if (ch?.dataset.chip && res) { const c = chipsFor(getBrief(), res).find(x => x.id === ch.dataset.chip); if (c) takeChip(c); return; }
+    if (ch?.dataset.drop) { editBrief(b => dropWish(b, ch.dataset.drop as Wish)); readFields(); go(); return; }
     const t = (e.target as HTMLElement).closest<HTMLElement>('[data-act],[data-tag]'); if (!t) return;
     if (t.dataset.tag) { readFields(); const id = t.dataset.tag as Tag; tags.has(id) ? tags.delete(id) : tags.add(id); draw(); return; }
     switch (t.dataset.act) { case 'close': close(); break; case 'go': go(); break; case 'pick': pick(+(t.dataset.i ?? -1)); break; case 'plan': { const q = res?.proposals[+(t.dataset.i ?? -1)]; if (q) openBuildPlan(q, loadProfile()); break; } }

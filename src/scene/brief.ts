@@ -209,5 +209,8 @@ export function briefToWants(b: Brief): Wants {
   if (ph && !ph.off && ph.value) w.phased = true;
   if (ht && !ht.off && ht.value) w.hightech = true;
   if (lt && !lt.off && lt.value) w.lowtech = true;
+  const wi = valueOf(b, 'preferences.wishes');   // lane U6: the refinement chips write these
+  if (wi?.includes('more-planted')) w.planted = true;
+  if (wi?.includes('larger-tank')) w.larger = true;
   return w;
 }

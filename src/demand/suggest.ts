@@ -166,6 +166,10 @@ export interface Wants {
   lowtech?: boolean;
   /** buy in phases (lane U4): the set-up ceiling is checked against the animal-care essentials only; the animals are a second purchase after the tank has cycled (each concept carries its `phases`) */
   phased?: boolean;
+  /** refinement chips (lane U6): "more planted" = every concept reaches for the lushest finish the ceiling carries (live, dense plants) */
+  planted?: boolean;
+  /** refinement chips (lane U6): "larger tank" = every concept sits one size up from where its strategy would (the ceiling and the animals still cap it) */
+  larger?: boolean;
 }
 
 /** The design strategies a concept is built on (lane U2). Open animals: economy / size / look / balanced. Locked animals: economy / aquascape (look) / equipment / room (size). */
@@ -481,10 +485,10 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
   const runStrategy = (a: Archetype, id: StrategyId) => {
     const c = ctxs.get(a.id); if (!c) return;
     const { list, top, ceiling, altStyle } = c;
-    const mid = Math.ceil(top / 2), idxOf = (z: StrategyDef['size']) => z === 'small' ? 0 : z === 'top' ? top : mid;
+    const mid = Math.ceil(top / 2), idxOf = (z: StrategyDef['size']) => Math.min(top, (z === 'small' ? 0 : z === 'top' ? top : mid) + (w.larger ? 1 : 0));
     const sd = STRATEGIES.find(x => x.id === id)!;
     if (sd.scape && !altStyle) return;
-    const maxLevel = w.climb ? 3 : w.hightech || w.lowtech ? Math.max(sd.level, 2) as 0 | 1 | 2 | 3 : sd.level;
+    const maxLevel = w.climb || w.planted ? 3 : w.hightech || w.lowtech ? Math.max(sd.level, 2) as 0 | 1 | 2 | 3 : sd.level;
     let found: Out | undefined, near: Miss | undefined;
     // the strategy's own size first; a size the money cannot carry once finished falls back one size down at a time, a size the welfare rule turns away (too full) goes one size UP (at most three tries)
     for (let tries = 0, i = idxOf(sd.size), dir = -1; i >= 0 && i < list.length && tries < 3 && !found?.p; i += dir, tries++) {
