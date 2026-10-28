@@ -1,0 +1,1879 @@
+[
+ {
+  "id": "dwarfwhiteisopod",
+  "name": "Dwarf white isopod",
+  "sci": "Trichorhina tomentosa",
+  "group": "isopod",
+  "popularity": {
+   "v": 4,
+   "src": "https://en.wikipedia.org/wiki/Trichorhina_tomentosa",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 4,
+   "src": "https://exuvium.net/trichorhina-tomentosa-dwarf-white-isopods-for-sale",
+   "status": "derived"
+  },
+  "lifespan_yr": {
+   "v": 2.5,
+   "src": "https://exuvium.net/trichorhina-tomentosa-dwarf-white-isopods-for-sale",
+   "status": "derived"
+  },
+  "temp_c": {
+   "v": [
+    15,
+    28
+   ],
+   "src": "https://exuvium.net/trichorhina-tomentosa-dwarf-white-isopods-for-sale",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    55,
+    75
+   ],
+   "src": "https://exuvium.net/trichorhina-tomentosa-dwarf-white-isopods-for-sale",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 50,
+   "src": "https://exuvium.net/trichorhina-tomentosa-dwarf-white-isopods-for-sale",
+   "status": "sourced"
+  },
+  "min_floor_cm": {
+   "v": [
+    15,
+    10
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 8,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Fruit, vegetables, greens, fish food, forest moss, decaying leaves, rotting white wood, mushrooms, shed skins; protein at least twice a week; calcium (cuttlebone/limestone)",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Sheds in two halves like all isopods; stays hidden",
+  "group_rule": "colony: 50-500+ per tub, parthenogenetic",
+  "venom_handling": "None; harmless, do not handle (fragile)",
+  "price_usd": {
+   "lo": {
+    "v": 0.1,
+    "src": "https://exuvium.net/trichorhina-tomentosa-dwarf-white-isopods-for-sale",
+    "status": "derived"
+   },
+   "typical": {
+    "v": 0.14,
+    "src": "https://exuvium.net/trichorhina-tomentosa-dwarf-white-isopods-for-sale",
+    "status": "derived"
+   },
+   "hi": {
+    "v": 0.3,
+    "src": "https://exuvium.net/trichorhina-tomentosa-dwarf-white-isopods-for-sale",
+    "status": "assumption"
+   }
+  },
+  "colour": "Uniformly transparent/opaque white, no patterning, tiny soft body with dark eyes (Wikipedia 'uniformly white'; Exuvium 'transparent white')",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Trichorhina_tomentosa",
+   "https://exuvium.net/trichorhina-tomentosa-dwarf-white-isopods-for-sale"
+  ],
+  "behaviors": [
+   "burrow into leaf litter",
+   "hide under bark",
+   "molt-hide",
+   "clumping"
+  ],
+  "notes": "Sources fetched: Exuvium product page (3-4 mm, 15-28 C, 55-75 %, >=5 cm substrate, 2-3 yr, EUR 4 per 30 = ~USD 0.14 each, EUR 19 per 150), Wikipedia (2-3 mm, white, tropical Americas). Bio Dude page 429-blocked; search snippet there says 72-82 F ideal. Adult size 3-4 mm per Exuvium (brief's 4-5 mm is slightly high; 4 mm used). Per-animal USD price derived from EUR pack at ~1.08; hi is assumption (US small-pack price). Popularity is an assumption (ubiquitous clean-up crew). Floor/height/feed interval/fast tolerance/group size remain assumptions from round 1."
+ },
+ {
+  "id": "powderblueisopod",
+  "name": "Powder blue isopod",
+  "sci": "Porcellionides pruinosus",
+  "group": "isopod",
+  "popularity": {
+   "v": 4,
+   "src": "https://terrariumtribe.com/powder-blue-isopods/",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 11,
+   "src": "https://terrariumtribe.com/powder-blue-isopods/",
+   "status": "sourced"
+  },
+  "lifespan_yr": {
+   "v": 2.5,
+   "src": "https://en.wikipedia.org/wiki/Porcellionides_pruinosus",
+   "status": "derived"
+  },
+  "temp_c": {
+   "v": [
+    21,
+    27
+   ],
+   "src": "https://terrariumtribe.com/powder-blue-isopods/",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    75
+   ],
+   "src": "https://terrariumtribe.com/powder-blue-isopods/",
+   "status": "derived"
+  },
+  "substrate_depth_mm": {
+   "v": 40,
+   "src": "https://terrariumtribe.com/powder-blue-isopods/",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    20,
+    15
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 10,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Detritus (leaf litter, rotting wood) main food; vegetable cuttings; protein (fish flakes/pellets) a couple of times a week; calcium (cuttlebone, eggshell); less fruit (attracts pests)",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "https://terrariumtribe.com/powder-blue-isopods/",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Sheds in halves; hides",
+  "group_rule": "colony: 20-100+ per tub; very prolific",
+  "venom_handling": "None",
+  "price_usd": {
+   "lo": {
+    "v": 0.8,
+    "src": "search-result snippet: Reptile Supply 10 count $8 (not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 1.1,
+    "src": "search-result snippet: Dubia.com / MorphMarket 10 count $10.99 (not fetched)",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 2,
+    "src": "search-result snippet: Imperial Reptiles 10 ct $19.99 (not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Bluish-grey 'powdered' body with light brown or grey mottling; underside, legs and antennae bright powder blue (Bantam); pale silver to darker chrome with soft metallic blue hues (Terrarium Tribe). Powder orange and other colour forms exist (Wikipedia).",
+  "reference_photo_urls": [
+   "https://terrariumtribe.com/powder-blue-isopods/",
+   "https://bantam.earth/?p=15178",
+   "https://en.wikipedia.org/wiki/Porcellionides_pruinosus"
+  ],
+  "behaviors": [
+   "burrow",
+   "hide under bark",
+   "fast runner",
+   "clump"
+  ],
+  "notes": "Fetched in full: Terrarium Tribe care guide (just over 1 cm, 70-80 F = 21-27 C, >50 % RH, shoebox culture, protein a couple times a week, colour), Bantam (colour; 64-80 F; 1-2 yr; conflicting sizes), Wikipedia (captive 2-3 yr, wild 11-14 months; colour forms Orange, Powder Blue, Red Koi). Humidity 50-75 % = lower bound sourced (>50 %), upper bound assumed. Prices are per animal derived from 10-count snippet listings ($8-20 per 10; retailer pages 429 on fetch) so all assumption. Brief's 10-12 mm size confirmed. Remaining assumptions: popularity, substrate depth, humidity upper bound, floor/height, fast tolerance, all prices."
+ },
+ {
+  "id": "zebraisopod",
+  "name": "Zebra isopod",
+  "sci": "Armadillidium maculatum",
+  "group": "isopod",
+  "popularity": {
+   "v": 5,
+   "src": "https://joshsfrogs.com/sp/armadillidium-maculatum-zebra-isopods-10-count-jfd58005",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 18,
+   "src": "https://www.richardsinverts.com/care-sheet-armadillidium-maculatum",
+   "status": "sourced"
+  },
+  "lifespan_yr": {
+   "v": 3,
+   "src": "https://en.wikipedia.org/wiki/Armadillidium_maculatum",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    18,
+    25
+   ],
+   "src": "https://www.richardsinverts.com/care-sheet-armadillidium-maculatum",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    40,
+    75
+   ],
+   "src": "https://www.richardsinverts.com/care-sheet-armadillidium-maculatum",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 30,
+   "src": "https://www.richardsinverts.com/care-sheet-armadillidium-maculatum",
+   "status": "sourced"
+  },
+  "min_floor_cm": {
+   "v": [
+    25,
+    15
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 10,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Mainly detritus (hardwood leaf litter, moss, rotting wood); supplements 1-2x/week of vegetables, fruit and protein; calcium (cuttlebone/eggshell); also lichen, bark, algae, shed skins (Wikipedia)",
+  "feed_interval_days": {
+   "v": 4,
+   "src": "https://www.richardsinverts.com/care-sheet-armadillidium-maculatum",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Sheds in halves; hides; may stop eating before molt",
+  "group_rule": "colony: 10-50 per tub; slow breeder",
+  "venom_handling": "None; rolls into ball",
+  "price_usd": {
+   "lo": {
+    "v": 2,
+    "src": "search-result snippet: reach.dog 'zebra 10 ct' $20 (not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 3,
+    "src": "https://joshsfrogs.com/sp/armadillidium-maculatum-zebra-isopods-10-count-jfd58005",
+    "status": "derived"
+   },
+   "hi": {
+    "v": 3.5,
+    "src": "search-result snippet: Rubber Ducky Isopods 10 count $34.99 (not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Black and white stripes (name source); wild form is spotted, with connected white spots reading as stripes; dark grey-black body, legs grey. Hobby morphs: Chocolate, Champagne, Yellow, Paradox, Yellow Paradox, High White (Richard's Inverts, Wikipedia).",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Armadillidium_maculatum",
+   "https://www.richardsinverts.com/care-sheet-armadillidium-maculatum",
+   "https://joshsfrogs.com/sp/armadillidium-maculatum-zebra-isopods-10-count-jfd58005"
+  ],
+  "behaviors": [
+   "burrow",
+   "roll into ball when threatened",
+   "hide under bark",
+   "molt-hide"
+  ],
+  "notes": "Fetched in full: Richard's Inverts care sheet (up to 18 mm, 18-25 C, 'medium' humidity = half moist half dry, >=3 cm substrate, supplements 1-2x/week, morphs), Wikipedia (up to 18 mm, SE France/Monaco, diet), Josh's Frogs product page ($29.99 per 10 = ~$3 each, 'large', stripes, sold out, 1 five-star review). Round-1 price of $2 each (Dubia.com) was not verified and is replaced; 10-count prices run $20-35 per 10 in snippets. Round-1 humidity 40-75 % was from a Bio Dude snippet (page 429 this round), now marked assumption (Richard's gives only 'medium'). Dubia.com and Bio Dude pages returned 429. Remaining assumptions: popularity, lifespan (3 yr), humidity, floor/height, fast tolerance, lo/hi price."
+ },
+ {
+  "id": "rubberduckyisopod",
+  "name": "Rubber ducky isopod",
+  "sci": "Cubaris sp. 'Rubber Ducky'",
+  "group": "isopod",
+  "popularity": {
+   "v": 5,
+   "src": "https://bantam.earth/?p=13335",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 20,
+   "src": "https://bantam.earth/?p=13335",
+   "status": "sourced"
+  },
+  "lifespan_yr": {
+   "v": 3,
+   "src": "https://bantam.earth/?p=13335",
+   "status": "derived"
+  },
+  "temp_c": {
+   "v": [
+    24,
+    29
+   ],
+   "src": "https://www.formiculture.com/topic/21977-the-ultimate-cubaris-guide-from-the-wild-to-captivity/",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    70,
+    80
+   ],
+   "src": "https://bantam.earth/?p=13335",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "https://www.formiculture.com/topic/21977-the-ultimate-cubaris-guide-from-the-wild-to-captivity/",
+   "status": "sourced"
+  },
+  "min_floor_cm": {
+   "v": [
+    30,
+    20
+   ],
+   "src": "https://www.formiculture.com/topic/21977-the-ultimate-cubaris-guide-from-the-wild-to-captivity/",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 15,
+   "src": "https://www.formiculture.com/topic/21977-the-ultimate-cubaris-guide-from-the-wild-to-captivity/",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Leaf litter is most of the diet; small amounts of carrot, sweet potato, squash, soft fruit, fish flakes/pellets or other protein, live moss; calcium (cuttlebone, eggshell powder, limestone)",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "https://www.formiculture.com/topic/21977-the-ultimate-cubaris-guide-from-the-wild-to-captivity/",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Sheds in halves; hides in substrate; very little ventilation needed (half-vented bin with moisture gradient)",
+  "group_rule": "colony: 10+ starter colony (6-qt bin standard for a new colony); slow breeder; can also be kept alone or in a small group",
+  "venom_handling": "None; shy, rolls into a ball when exposed; burrows",
+  "price_usd": {
+   "lo": {
+    "v": 5,
+    "src": "search-result snippet: The Tarantula Collective 10+ colony $50 (page 404 on fetch)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 6,
+    "src": "search-result snippet: Reptanicals 10+ listing $59.99 (page 410 on fetch)",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 25,
+    "src": "search-result snippet: Rubber Ducky Isopods 'Rubber Ducky OG' 6-count $149.49",
+    "status": "assumption"
+   }
+  },
+  "colour": "Bright yellow, shades of yellow and brown on adults, juveniles start out white (Bantam); the dark brown-black head/rear patches are from author knowledge; the face is 'ducky like' (Formiculture).",
+  "reference_photo_urls": [
+   "https://bantam.earth/?p=13335",
+   "https://www.formiculture.com/topic/21977-the-ultimate-cubaris-guide-from-the-wild-to-captivity/",
+   "https://arachnoboards.com/threads/cubaris-sp-rubber-ducky-care.334545"
+  ],
+  "behaviors": [
+   "burrow",
+   "hide under bark",
+   "molt-hide"
+  ],
+  "notes": "Fetched in full: Bantam guide (max ~0.8 in = 20 mm, 1-2 yr up to 4, 70-80 % RH, 25-30 C tank, 70-80 F general, yellow), Formiculture Cubaris guide (75-85 F ideal, >=4 in substrate, 6-qt starter bin, half-vented), Arachnoboards thread (needs little ventilation, eat dog food/fruit/moss, slow breeders, expensive). Brief's search-snippet 2 cm max agrees. Retailer pages (Tarantula Collective, Reptanicals, rubberduckyisopods.com, Fearnot) were 404/410/429 on fetch, so ALL price fields are snippet-only assumptions (per-animal USD derived: $50 and $59.99 per 10+ colony, $149.49 per 6 of the premium OG line). Lifespan 3 = midpoint of 1-4 yr. Cubaris sp. 'Rubber Ducky' is undescribed; some sold stock may be different species. Remaining assumptions: popularity, floor/height, feed interval, fast tolerance, all prices."
+ },
+ {
+  "id": "giantorangeisopod",
+  "name": "Giant orange isopod",
+  "sci": "Porcellio expansus 'Orange'",
+  "group": "isopod",
+  "popularity": {
+   "v": 4,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 16,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    18,
+    26
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    75
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 40,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    25,
+    15
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 10,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Leaf litter, rotting wood, vegetables, protein, calcium",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Sheds in halves; hides",
+  "group_rule": "colony: 10-50 per tub",
+  "venom_handling": "None",
+  "price_usd": {
+   "lo": {
+    "v": 3,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 5,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 10,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Bright orange body, pale mottled orange legs; dark eyes",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Porcellio+expansus",
+   "https://commons.wikimedia.org/w/index.php?search=Porcellio+expansus"
+  ],
+  "behaviors": [
+   "burrow",
+   "hide under bark",
+   "climb bark"
+  ],
+  "notes": "Brief listed 'Porcellio expansus / Porcellionides pruinosus?': orange morph here is P. expansus 'Orange'; P. pruinosus 'Powder Orange' is a separate smaller form. Price assumed. Reference photo URLs are generic taxon-search pages (iNaturalist / Wikimedia Commons), not individually reviewed photos; colour text is from author knowledge."
+ },
+ {
+  "id": "dairycowisopod",
+  "name": "Dairy cow / clown isopod",
+  "sci": "Porcellio laevis",
+  "group": "isopod",
+  "popularity": {
+   "v": 5,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 18,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    18,
+    28
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    70
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 40,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    25,
+    15
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 10,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Leaf litter, rotting wood, vegetables, protein, calcium",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Sheds in halves; hides",
+  "group_rule": "colony: 10-100 per tub",
+  "venom_handling": "None",
+  "price_usd": {
+   "lo": {
+    "v": 2,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 3,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 6,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Cream-white body with black-brown irregular patches like Holstein cow markings; legs pale grey",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Porcellio+laevis",
+   "https://commons.wikimedia.org/w/index.php?search=Porcellio+laevis"
+  ],
+  "behaviors": [
+   "fast runner",
+   "burrow",
+   "hide under bark"
+  ],
+  "notes": "Fast and prolific; price assumed. Reference photo URLs are generic taxon-search pages (iNaturalist / Wikimedia Commons), not individually reviewed photos; colour text is from author knowledge."
+ },
+ {
+  "id": "pillbug",
+  "name": "Pill bug / common roly-poly",
+  "sci": "Armadillidium vulgare",
+  "group": "isopod",
+  "popularity": {
+   "v": 4,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 18,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    15,
+    26
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    75
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 40,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    25,
+    15
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 10,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Leaf litter, rotting wood, vegetables, calcium",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Sheds in halves; hides",
+  "group_rule": "colony: 10-100 per tub",
+  "venom_handling": "None; rolls into a perfect ball",
+  "price_usd": {
+   "lo": {
+    "v": 1.5,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 2,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 5,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Slate grey to dark charcoal smooth domed carapace; legs grey; some lines (magic potion, orange, white) differ",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Armadillidium+vulgare",
+   "https://commons.wikimedia.org/w/index.php?search=Armadillidium+vulgare"
+  ],
+  "behaviors": [
+   "roll into ball",
+   "burrow",
+   "hide under bark"
+  ],
+  "notes": "Common; price assumed. Reference photo URLs are generic taxon-search pages (iNaturalist / Wikimedia Commons), not individually reviewed photos; colour text is from author knowledge."
+ },
+ {
+  "id": "pandakingisopod",
+  "name": "Panda king isopod",
+  "sci": "Cubaris sp. 'Panda King'",
+  "group": "isopod",
+  "popularity": {
+   "v": 5,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 16,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    22,
+    28
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    75
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 40,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    25,
+    15
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 10,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Leaf litter, rotting wood, vegetables, protein, calcium",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Sheds in halves; sensitive to dry or cold",
+  "group_rule": "colony: 10-30 per tub; slow breeder",
+  "venom_handling": "None; rolls into ball",
+  "price_usd": {
+   "lo": {
+    "v": 15,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 25,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 60,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Glossy black body with sharply contrasting white head/ends and white edging, panda-like; legs black",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Cubaris+panda+king",
+   "https://commons.wikimedia.org/w/index.php?search=Cubaris+panda+king"
+  ],
+  "behaviors": [
+   "roll into ball",
+   "burrow",
+   "hide under bark",
+   "molt-hide"
+  ],
+  "notes": "Highly sought Cubaris morph; price range assumed. Reference photo URLs are generic taxon-search pages (iNaturalist / Wikimedia Commons), not individually reviewed photos; colour text is from author knowledge."
+ },
+ {
+  "id": "giantafricanmillipede",
+  "name": "Giant African millipede",
+  "sci": "Archispirostreptus gigas",
+  "group": "millipede",
+  "popularity": {
+   "v": 5,
+   "src": "https://www.reptilecentre.com/info-giant-african-millipede-care-sheet",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 250,
+   "src": "https://vetverified.com/articles/the-complete-guide-to-keeping-african-giant-millipedes",
+   "status": "derived"
+  },
+  "lifespan_yr": {
+   "v": 8.5,
+   "src": "https://vetverified.com/articles/the-complete-guide-to-keeping-african-giant-millipedes",
+   "status": "sourced"
+  },
+  "temp_c": {
+   "v": [
+    22,
+    26
+   ],
+   "src": "https://vetverified.com/articles/the-complete-guide-to-keeping-african-giant-millipedes",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    70,
+    80
+   ],
+   "src": "https://vetverified.com/articles/the-complete-guide-to-keeping-african-giant-millipedes",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 125,
+   "src": "https://vetverified.com/articles/the-complete-guide-to-keeping-african-giant-millipedes",
+   "status": "derived"
+  },
+  "min_floor_cm": {
+   "v": [
+    91,
+    46
+   ],
+   "src": "https://dubiaroaches.com/blogs/invert-care/african-giant-millipede-care-sheet",
+   "status": "sourced"
+  },
+  "min_height_cm": {
+   "v": 46,
+   "src": "https://dubiaroaches.com/blogs/invert-care/african-giant-millipede-care-sheet",
+   "status": "sourced"
+  },
+  "lifestyle": "burrower",
+  "diet": "Decaying leaves and rotting hardwood staples; cucumber, courgette, carrot, sweet potato, occasional apple/banana; calcium (cuttlebone, crushed eggshell); avoid citrus, salted/processed food, pesticide-treated food",
+  "feed_interval_days": {
+   "v": 2.5,
+   "src": "https://vetverified.com/articles/the-complete-guide-to-keeping-african-giant-millipedes",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Stays buried while molting; do not disturb; frequent disturbance causes failed (often fatal) molts; higher humidity helps",
+  "group_rule": "colony or solitary; vetverified: avoid overcrowding, larger enclosure for pairs/groups; Dubia.com guide (earlier round, not re-fetched): 2-5 per 40 gal",
+  "venom_handling": "Curls into a spiral and secretes a mild defensive fluid (toluquinone, 2-methoxy-3-methylbenzoquinone per Wikipedia); can irritate skin/eyes; wash hands after handling",
+  "price_usd": {
+   "lo": {
+    "v": 49.99,
+    "src": "search-result snippet of a US retailer listing (page not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 84.99,
+    "src": "https://bugsincyberspace.com/product/agb-african-giant-black-millipede",
+    "status": "sourced"
+   },
+   "hi": {
+    "v": 99.99,
+    "src": "search-result snippet of a US captive-bred listing (page not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Glossy black to dark brown cylindrical body, legs rust/orange-brown, often slightly rust-tinted rear edges of segments (not described on any fetched page; from author knowledge and the 'black' trade name).",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Archispirostreptus_gigas",
+   "https://bugsincyberspace.com/product/agb-african-giant-black-millipede"
+  ],
+  "behaviors": [
+   "burrow",
+   "climb enclosure walls",
+   "coil when threatened",
+   "secrete defensive fluid",
+   "molt-hide underground"
+  ],
+  "notes": "Fetched in full: VetVerified guide (20-30 cm, 7-10 yr, 22-26 C, 70-80 %, substrate >=10-15 cm, 2-3 feedings/week, molt/secretion), Wikipedia (up to 33.5 cm, 7-10 yr, E. Africa lowland forest, secretion chemistry), Bugs in Cyberspace product page ($84.99, ~8 in specimen, out of stock). Dubia.com and Reptile Centre pages returned 429/not retrieved this round; floor/height 91x46x46 cm (36x18x18 in) and 70-75 F come from the dubia/reptilecentre search snippets (round 1). Reptile Centre advises >=2 in substrate, Bugz UK >=10 cm; substrate depth 125 mm is the midpoint of 10-15 cm. Prices lo/hi are snippet-only. Colour not on fetched pages. Fast tolerance remains assumption."
+ },
+ {
+  "id": "ivorymillipede",
+  "name": "Ivory millipede",
+  "sci": "Chicobolus spinigerus",
+  "group": "millipede",
+  "popularity": {
+   "v": 4,
+   "src": "https://www.furrycritter.com/pages/articles/invertebrates/ivory_millipede.htm",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 100,
+   "src": "https://exuvium.net/chicobolus-spinigerus-salmon-ivory-millipede-for-sale/",
+   "status": "sourced"
+  },
+  "lifespan_yr": {
+   "v": 7.5,
+   "src": "https://exuvium.net/chicobolus-spinigerus-salmon-ivory-millipede-for-sale/",
+   "status": "derived"
+  },
+  "temp_c": {
+   "v": [
+    21,
+    27
+   ],
+   "src": "https://exuvium.net/chicobolus-spinigerus-salmon-ivory-millipede-for-sale/",
+   "status": "derived"
+  },
+  "humidity_pct": {
+   "v": [
+    65,
+    75
+   ],
+   "src": "https://exuvium.net/chicobolus-spinigerus-salmon-ivory-millipede-for-sale/",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "https://www.furrycritter.com/pages/articles/invertebrates/ivory_millipede.htm",
+   "status": "sourced"
+  },
+  "min_floor_cm": {
+   "v": [
+    40,
+    25
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 25,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "burrower",
+  "diet": "Hardwood (oak, magnolia) leaf litter always available, decaying wood, cucumber/squash, lichen, moss, fish flakes, fruit; calcium (cuttlebone/crushed eggshell)",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 10,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Burrows deep (about a week or more) to molt; give undisturbed hides; molt frequency drops at adult size",
+  "group_rule": "colony: 5-10 per 10-gal tub",
+  "venom_handling": "Rarely secretes under normal handling; any millipede may secrete when stressed; wash hands",
+  "price_usd": {
+   "lo": {
+    "v": 5,
+    "src": "https://www.furrycritter.com/pages/articles/invertebrates/ivory_millipede.htm",
+    "status": "sourced"
+   },
+   "typical": {
+    "v": 10,
+    "src": "https://exuvium.net/chicobolus-spinigerus-salmon-ivory-millipede-for-sale/",
+    "status": "derived"
+   },
+   "hi": {
+    "v": 15,
+    "src": "https://www.furrycritter.com/pages/articles/invertebrates/ivory_millipede.htm",
+    "status": "sourced"
+   }
+  },
+  "colour": "Alternating bands of cream/ivory against dark brown-to-black segments (furrycritter); Exuvium lists an off-white form plus salmon and purple colour forms of the species; legs not described on fetched pages (amber/orange from author knowledge).",
+  "reference_photo_urls": [
+   "https://exuvium.net/chicobolus-spinigerus-salmon-ivory-millipede-for-sale/",
+   "https://www.furrycritter.com/pages/articles/invertebrates/ivory_millipede.htm",
+   "https://en.wikipedia.org/wiki/Chicobolus_spinigerus"
+  ],
+  "behaviors": [
+   "burrow",
+   "coil",
+   "climb",
+   "molt-hide"
+  ],
+  "notes": "Fetched in full: Furrycritter care article (4-6 in, several years to a decade, 70-80 F, >=4 in substrate, price $5-15, banded colour), Exuvium product page (up to 100 mm, 5-10 yr, 20-27 C, 65-75 %, substrate slightly deeper than body length, EUR 9 for 40-50 mm = ~USD 10), Wikipedia (males 40-85 mm, females up to 90 mm). Adult 100 mm chosen (Furrycritter 100-150 vs Wikipedia max 90); lifespan 7.5 is the midpoint of 5-10 yr. Substrate 100 mm = 4 in. Remaining assumptions: popularity, floor/height, feed interval, fast tolerance, group number (5-10 per 10 gal, round 1), leg colour."
+ },
+ {
+  "id": "americangiantmillipede",
+  "name": "American giant millipede",
+  "sci": "Narceus americanus",
+  "group": "millipede",
+  "popularity": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 100,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 8,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    18,
+    24
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    65,
+    80
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    40,
+    25
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 25,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "burrower",
+  "diet": "Rotting hardwood, leaf litter, vegetables, calcium",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 10,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Burrows to molt",
+  "group_rule": "colony: 3-5 per 10-gal tub",
+  "venom_handling": "Defensive secretion can stain and irritate; wash hands",
+  "price_usd": {
+   "lo": {
+    "v": 8,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 12,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 20,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Dark grey-brown to blackish body with red-orange margin on rear edge of segments; red legs",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Narceus+americanus",
+   "https://commons.wikimedia.org/w/index.php?search=Narceus+americanus"
+  ],
+  "behaviors": [
+   "burrow",
+   "coil",
+   "hide under bark"
+  ],
+  "notes": "Native US; often wild-caught; values assumed. Reference photo URLs are generic taxon-search pages (iNaturalist / Wikimedia Commons), not individually reviewed photos; colour text is from author knowledge."
+ },
+ {
+  "id": "desertmillipede",
+  "name": "Desert millipede",
+  "sci": "Orthoporus ornatus",
+  "group": "millipede",
+  "popularity": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 150,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 8,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    22,
+    28
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    70
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    40,
+    25
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 25,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "burrower",
+  "diet": "Leaf litter, decaying wood, vegetables, calcium",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Burrows to molt; sensitive to too-wet conditions",
+  "group_rule": "colony: 3-6 per 20-gal tub",
+  "venom_handling": "Mild secretion; wash hands",
+  "price_usd": {
+   "lo": {
+    "v": 10,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 15,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 25,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Brown-tan to orange-brown with darker segment edges (banded look); legs light tan",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Orthoporus+ornatus",
+   "https://commons.wikimedia.org/w/index.php?search=Orthoporus+ornatus"
+  ],
+  "behaviors": [
+   "burrow",
+   "coil",
+   "hide"
+  ],
+  "notes": "Drier-substrate species; values assumed. Reference photo URLs are generic taxon-search pages (iNaturalist / Wikimedia Commons), not individually reviewed photos; colour text is from author knowledge."
+ },
+ {
+  "id": "dubiaroach",
+  "name": "Dubia roach",
+  "sci": "Blaptica dubia",
+  "group": "roach",
+  "popularity": {
+   "v": 5,
+   "src": "https://joshsfrogs.com/cms/blaptica-dubia-roaches",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 44,
+   "src": "https://joshsfrogs.com/cms/blaptica-dubia-roaches",
+   "status": "derived"
+  },
+  "lifespan_yr": {
+   "v": 1.75,
+   "src": "https://thetyedyediguana.com/care-sheets/dubia-cockroach-blaptica-sp",
+   "status": "derived"
+  },
+  "temp_c": {
+   "v": [
+    24,
+    35
+   ],
+   "src": "https://thetyedyediguana.com/care-sheets/dubia-cockroach-blaptica-sp",
+   "status": "derived"
+  },
+  "humidity_pct": {
+   "v": [
+    40,
+    60
+   ],
+   "src": "https://abdragons.com/blog/dubia-roach-care-sheet/",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 0,
+   "src": "https://abdragons.com/blog/dubia-roach-care-sheet/",
+   "status": "sourced"
+  },
+  "min_floor_cm": {
+   "v": [
+    51,
+    26
+   ],
+   "src": "https://topflightdubia.com/blog/dubia-roaches-care-guide-by-topflight-dubia-experts",
+   "status": "derived"
+  },
+  "min_height_cm": {
+   "v": 31,
+   "src": "https://topflightdubia.com/blog/dubia-roaches-care-guide-by-topflight-dubia-experts",
+   "status": "derived"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Roach chow (Roach Rations) always available, water gel/crystals, fruit and vegetables (carrots, oranges, apples, squash, banana) 1-2x/week; remove uneaten fresh food within 24-48 h",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "https://abdragons.com/blog/dubia-roach-care-sheet/",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Nymphs molt through ~8 instars; pale after molt",
+  "group_rule": "colony: breeding culture 1 male : 3 females (Josh's Frogs); start with 100+; 22-gal bin or larger",
+  "venom_handling": "None; cannot climb smooth plastic (nymphs can climb silicone); keep lids on; handling can cause allergy",
+  "price_usd": {
+   "lo": {
+    "v": 0.12,
+    "src": "https://joshsfrogs.com/cp/josh-s-frogs-1-2-3-4-dubia-roaches-blaptica-dubia-jfdr1234",
+    "status": "derived"
+   },
+   "typical": {
+    "v": 0.23,
+    "src": "https://joshsfrogs.com/cp/josh-s-frogs-1-2-3-4-dubia-roaches-blaptica-dubia-jfdr1234",
+    "status": "derived"
+   },
+   "hi": {
+    "v": 2.49,
+    "src": "https://joshsfrogs.com/cms/blaptica-dubia-roaches",
+    "status": "sourced"
+   }
+  },
+  "colour": "Wikipedia: adults dark brown to black with lighter orange spotting/striping sometimes visible in bright light; males fully winged (wings cover abdomen, tan-brown), females have only small wing stubs and a rounder dark-brown body. Josh's Frogs confirms wing difference only.",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Blaptica_dubia",
+   "https://joshsfrogs.com/cms/blaptica-dubia-roaches"
+  ],
+  "behaviors": [
+   "hide in egg crate",
+   "cannot climb smooth surfaces",
+   "nocturnal scavenging",
+   "males flutter wings, cannot fly"
+  ],
+  "notes": "Fetched in full: Josh's Frogs Blaptica dubia page (1.5-2 in adults, 1-2 yr, 2 in coco bedding at ~85 F room, 1:3 ratio, adult prices M $1.49/F $2.49 single), Josh's Frogs medium 100-count page ($22.99/100; $124.99/1000 ~ 0.12 each), ABDragons (40-60 % RH, 80-95 F, no substrate, 22-gal bin), Tye Dyed Iguana (1.5-2 in, 1.5-2 yr, 75-95 F, ~60 %), TopFlight (70-90 F, 60 %, >=10 gal; its 'lifespan several months' is inconsistent and ignored), Wikipedia (40-45 mm, up to 2 yr, 25-30 C, RH>60 %). Temp 24-35 C is the span of 75-95 F; ABDragons recommends 80-95 F; Wikipedia optimum 25-30 C. Substrate: bare bottom per ABDragons, JF suggests 2 in coco (conflict). Popularity assumption: no explicit best-seller label, but a staple feeder insect. Fast tolerance and group number remain assumptions."
+ },
+ {
+  "id": "madagascarhissingroach",
+  "name": "Madagascar hissing cockroach",
+  "sci": "Gromphadorhina portentosa",
+  "group": "roach",
+  "popularity": {
+   "v": 5,
+   "src": "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 70,
+   "src": "https://en.wikipedia.org/wiki/Madagascar_hissing_cockroach",
+   "status": "derived"
+  },
+  "lifespan_yr": {
+   "v": 3,
+   "src": "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html",
+   "status": "sourced"
+  },
+  "temp_c": {
+   "v": [
+    25,
+    28
+   ],
+   "src": "https://flukerfarms.com/reptile-u/care-sheets/hissing-cockroaches-care-sheet",
+   "status": "derived"
+  },
+  "humidity_pct": {
+   "v": [
+    60,
+    70
+   ],
+   "src": "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 25,
+   "src": "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    51,
+    26
+   ],
+   "src": "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html",
+   "status": "derived"
+  },
+  "min_height_cm": {
+   "v": 31,
+   "src": "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html",
+   "status": "derived"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Herbivore/detritivore: Roach Rations dry chow, fresh fruit (banana) a few times a week, dark greens (romaine, dandelion), dry dog food; separate water source (Josh's Frogs, Fluker, Wikipedia)",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Nymphs molt several times, pale after molt",
+  "group_rule": "colony: 3-30 per tub or solitary pet",
+  "venom_handling": "None; hissing is defensive; handle gently",
+  "price_usd": {
+   "lo": {
+    "v": 4.99,
+    "src": "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html",
+    "status": "sourced"
+   },
+   "typical": {
+    "v": 4.99,
+    "src": "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html",
+    "status": "sourced"
+   },
+   "hi": {
+    "v": 15,
+    "src": "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html",
+    "status": "assumption"
+   }
+  },
+  "colour": "Glossy chestnut to dark brown/mahogany wingless oval body, with paler tan-cream edge to the pronotum and abdominal segments; males have two pronounced horn-like bumps on the pronotum; nymphs lighter. (Colour not described on the fetched pages; from author knowledge.)",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Madagascar_hissing_cockroach",
+   "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html"
+  ],
+  "behaviors": [
+   "hiss",
+   "climb",
+   "hide",
+   "wander at night"
+  ],
+  "notes": "Fetched in full: Josh's Frogs product page ($4.99 single female; 2-4 in adults, males ~4 in; 2-3 yr up to 4-5; 50 %+ RH, 60-70 % preferred; room temp OK, up to 95 F, breeding 80-90 F; group needs 10 gal+; 13 reviews 92 % 5-star), Fluker Farms care sheet (77-82 F day = 25-28 C, mid-high 70s F night, >=5 gal, moderate-high humidity, peat moss), Wikipedia (5-7.5 cm, up to 5 yr, hissing). Temp 25-28 C derived from Fluker day temp. Floor/height = standard 10-gal tank (51x26x31 cm), derived. Popularity not directly sourced (no best-seller label). Substrate depth, hi price, fast tolerance, group size remain assumptions."
+ },
+ {
+  "id": "orangeheadroach",
+  "name": "Orange head roach",
+  "sci": "Eublaberus posticus",
+  "group": "roach",
+  "popularity": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 45,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 2,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    24,
+    30
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    70
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 25,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    30,
+    20
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 20,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Vegetables, fruit, chow",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Nymphs molt in hides",
+  "group_rule": "colony: 20-100 per bin",
+  "venom_handling": "None; cannot climb smooth walls",
+  "price_usd": {
+   "lo": {
+    "v": 0.3,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 0.5,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 1.5,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Brown-black body with orange to yellow head shield and orange-yellow patterned edges",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Eublaberus+posticus",
+   "https://commons.wikimedia.org/w/index.php?search=Eublaberus+posticus"
+  ],
+  "behaviors": [
+   "hide",
+   "scavenge"
+  ],
+  "notes": "Feeder or pet; values assumed. Reference photo URLs are generic taxon-search pages (iNaturalist / Wikimedia Commons), not individually reviewed photos; colour text is from author knowledge."
+ },
+ {
+  "id": "deathsheadroach",
+  "name": "Death's head roach",
+  "sci": "Blaberus craniifer",
+  "group": "roach",
+  "popularity": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 60,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 2,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    24,
+    30
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    70
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 25,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    30,
+    20
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 25,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Vegetables, fruit, chow",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Nymphs molt 7-8 times",
+  "group_rule": "colony: 10-50 per bin",
+  "venom_handling": "None; winged but poor flier",
+  "price_usd": {
+   "lo": {
+    "v": 0.5,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 1,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 3,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Pale tan to yellowish wings with dark skull-like mark on pronotum; body tan-brown",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Blaberus+craniifer",
+   "https://commons.wikimedia.org/w/index.php?search=Blaberus+craniifer"
+  ],
+  "behaviors": [
+   "hide",
+   "glide-fly",
+   "scavenge"
+  ],
+  "notes": "Feeder or pet; values assumed. Reference photo URLs are generic taxon-search pages (iNaturalist / Wikimedia Commons), not individually reviewed photos; colour text is from author knowledge."
+ },
+ {
+  "id": "lobsterroach",
+  "name": "Lobster roach",
+  "sci": "Nauphoeta cinerea",
+  "group": "roach",
+  "popularity": {
+   "v": 4,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 30,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 1,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    26,
+    32
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    40,
+    60
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 25,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    30,
+    20
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 20,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Vegetables, fruit, grain chow",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Nymphs molt several times",
+  "group_rule": "colony: 100s per bin",
+  "venom_handling": "None; cannot climb glass",
+  "price_usd": {
+   "lo": {
+    "v": 0.1,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 0.2,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 1.0,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Mottled tan-brown with cream-yellow edging and dark flecks",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Nauphoeta+cinerea",
+   "https://commons.wikimedia.org/w/index.php?search=Nauphoeta+cinerea"
+  ],
+  "behaviors": [
+   "hide",
+   "scavenge"
+  ],
+  "notes": "Primarily feeder insect; values assumed. Reference photo URLs are generic taxon-search pages (iNaturalist / Wikimedia Commons), not individually reviewed photos; colour text is from author knowledge."
+ },
+ {
+  "id": "purplepincherhermitcrab",
+  "name": "Purple pincher hermit crab",
+  "sci": "Coenobita clypeatus",
+  "group": "hermitcrab",
+  "popularity": {
+   "v": 5,
+   "src": "https://thetyedyediguana.com/care-sheets/hermit-crab-coenobita-clypeatus",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 75,
+   "src": "https://thetyedyediguana.com/care-sheets/hermit-crab-coenobita-clypeatus",
+   "status": "derived"
+  },
+  "lifespan_yr": {
+   "v": 12,
+   "src": "https://en.wikipedia.org/wiki/Coenobita_clypeatus",
+   "status": "sourced"
+  },
+  "temp_c": {
+   "v": [
+    24,
+    29
+   ],
+   "src": "https://www.joshsfrogs.com/captive-bred-hermit-crab.html",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    70,
+    80
+   ],
+   "src": "https://www.joshsfrogs.com/captive-bred-hermit-crab.html",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 150,
+   "src": "https://www.joshsfrogs.com/captive-bred-hermit-crab.html",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    51,
+    26
+   ],
+   "src": "https://thetyedyediguana.com/care-sheets/hermit-crab-coenobita-clypeatus",
+   "status": "derived"
+  },
+  "min_height_cm": {
+   "v": 31,
+   "src": "https://thetyedyediguana.com/care-sheets/hermit-crab-coenobita-clypeatus",
+   "status": "derived"
+  },
+  "lifestyle": "semi-arboreal",
+  "diet": "Omnivorous scavenger: prepared hermit crab food, oak/maple leaves and bark, fruit, greens, raw coconut, seeds, freeze-dried insects/shrimp; calcium (cuttlebone) always available; fresh AND dechlorinated salt water; avoid copper sulfate and ethoxyquin",
+  "feed_interval_days": {
+   "v": 1,
+   "src": "https://thetyedyediguana.com/care-sheets/hermit-crab-coenobita-clypeatus",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Burrows under substrate to molt for weeks to months; do not disturb",
+  "group_rule": "colony: very social; 2 crabs in 10 gal minimum (TDI); 2-4 small crabs in 20 gal; budget >=10 gal per adult crab (Josh's Frogs); 'do well in very large communities' (HCA)",
+  "venom_handling": "Large claw can pinch; handle gently",
+  "price_usd": {
+   "lo": {
+    "v": 5,
+    "src": "round-1 estimate, no retailer page fetched",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 10,
+    "src": "round-1 estimate, no retailer page fetched",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 49.99,
+    "src": "https://www.joshsfrogs.com/captive-bred-hermit-crab.html",
+    "status": "sourced"
+   }
+  },
+  "colour": "Body/legs tan to brown (Josh's Frogs 'usually tan or brown'); large LEFT claw usually purple or blue, can be shades of red; young crabs pale lavender, pink, cream or peach; medium-large darker orange, red, magenta, purple; large adults maroon, dark purple to nearly black (HCA species sheet).",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Coenobita_clypeatus",
+   "https://www.joshsfrogs.com/captive-bred-hermit-crab.html",
+   "https://hermitcrabassociation.com/phpBB/viewtopic.php?p=852148"
+  ],
+  "behaviors": [
+   "burrow",
+   "climb",
+   "change shells",
+   "molt-burrow",
+   "pinch"
+  ],
+  "notes": "Fetched in full: HCA species care sheet forum page (75-85 F, 80 recommended; 70-80 % RH, <70 % damages gills; colour description; PPs do well in large communities), Tye Dyed Iguana (2-6 in, 10+ yr, 75-85 F, >=75 %, 10 gal for 2), Josh's Frogs captive-bred page ($49.99 each, sold out; 75-85 F, 70-80 %, 20 gal/18 in cube for 2-4 small crabs, >=10 gal per adult; claims 30-40 yr), Wikipedia (verified 12 yr, owner claims 40). Lifespan 12 yr = Wikipedia verified; hobby claims up to 30-40. Temp 24-29 C = 75-85 F. Adult size 2-6 in is shell/crab size; 75 mm (3 in) chosen as typical pet adult. The main HCA ppcaresheet.htm returned 403; round-1 figure 74-78 F from it superseded by 75-85 F on 3 fetched pages. Min floor = standard 10-gal tank (51x26x31 cm). Remaining assumptions: popularity, substrate depth (HCA: deep enough to bury largest crab), lo/typical price (wild-caught pet-store), fast tolerance."
+ },
+ {
+  "id": "ecuadorianhermitcrab",
+  "name": "Ecuadorian hermit crab",
+  "sci": "Coenobita compressus",
+  "group": "hermitcrab",
+  "popularity": {
+   "v": 4,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 50,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 10,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    24,
+    29
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    70,
+    80
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 150,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    75,
+    40
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 40,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "semi-arboreal",
+  "diet": "Commercial hermit crab food, fruit, vegetables, protein, calcium",
+  "feed_interval_days": {
+   "v": 1,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Burrows under substrate to molt for weeks to months",
+  "group_rule": "colony: 2-5 per 10-gal tank; needs salt and fresh water",
+  "venom_handling": "Claws can pinch",
+  "price_usd": {
+   "lo": {
+    "v": 5,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 10,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 20,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Tan to gray-brown legs with pale-peach or purple-tinged claws; pale body, black eyes",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Coenobita+compressus",
+   "https://commons.wikimedia.org/w/index.php?search=Coenobita+compressus"
+  ],
+  "behaviors": [
+   "burrow",
+   "climb",
+   "change shells",
+   "molt-burrow"
+  ],
+  "notes": "More aquatic than clypeatus; needs salt water; values assumed. Reference photo URLs are generic taxon-search pages (iNaturalist / Wikimedia Commons), not individually reviewed photos; colour text is from author knowledge."
+ }
+]

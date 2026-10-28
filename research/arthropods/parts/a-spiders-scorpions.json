@@ -1,0 +1,1496 @@
+[
+ {
+  "id": "mexican-red-knee",
+  "name": "Mexican red knee",
+  "sci": "Brachypelma hamorii",
+  "group": "tarantula",
+  "popularity": {
+   "v": 5,
+   "src": "https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii (classic beginner species, stocked by every dealer and chains; judged, not measured)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 53,
+   "src": "https://en.wikipedia.org/wiki/Brachypelma_hamorii",
+   "status": "sourced"
+  },
+  "lifespan_yr": {
+   "v": 27,
+   "src": "https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii",
+   "status": "derived"
+  },
+  "temp_c": {
+   "v": [
+    21,
+    25
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    65
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii",
+   "status": "derived"
+  },
+  "min_floor_cm": {
+   "v": [
+    42,
+    21
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii",
+   "status": "derived"
+  },
+  "min_height_cm": {
+   "v": 15,
+   "src": "https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii",
+   "status": "assumption"
+  },
+  "lifestyle": "burrower",
+  "diet": "Crickets, roaches; adult 4-5 large crickets or 1 large dubia every 2-3 weeks",
+  "feed_interval_days": {
+   "v": 17,
+   "src": "https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 60,
+   "src": "https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii",
+   "status": "assumption"
+  },
+  "molt_note": "Wait 5-10 days after an adult molt before feeding; fangs must be solid black and exoskeleton hard (TTC). Refuses food and hides/webs shut before molt.",
+  "group_rule": "solitary, 1 per enclosure",
+  "venom_handling": "Venom not medically significant; urticating hairs kicked from abdomen cause irritation; fang puncture can get infected (Wikipedia). Docile.",
+  "price_usd": {
+   "lo": {
+    "v": 20,
+    "src": "https://silkyburrow.pages.dev/posts/redknee-tarantula-price-guide-updated",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 100,
+    "src": "https://arachnoboards.com/goto/post?id=2100197",
+    "status": "sourced"
+   },
+   "hi": {
+    "v": 199,
+    "src": "https://reach.dog/shop/fear-not-tarantulas-inc/products/brachypelma-hamorii-mexican-redknee-tarantula-female-for-sale",
+    "status": "sourced"
+   }
+  },
+  "colour": "Body black (adult male upper abdomen black; female carapace mainly black with brownish-pink border or pale orange-yellow starburst). Legs black to reddish-black with the signature bright orange knee (patella base deep orange, rest of patella and lower tibia pale orange-yellow, metatarsus tips yellowish-white). Sources: https://en.wikipedia.org/wiki/Brachypelma_hamorii and https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii (vivid black with bright orange markings on legs).",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Brachypelma_hamorii",
+   "https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii"
+  ],
+  "behaviors": [
+   "burrow",
+   "silk-seal burrow entrance",
+   "kick urticating hairs",
+   "retreat to burrow when disturbed",
+   "molt-hide",
+   "threat pose"
+  ],
+  "notes": "Fetched: TTC care sheet, Wikipedia. Humidity only \"moderate\" on TTC (no %), so range is assumption. Floor = 3x leg span long, half that wide (derived from TTC rule 3-4x leg span; no height given, 15 cm assumed). Lifespan 25-30 yr female TTC, 30 Wikipedia. Prices from search-result text of retailer pages, not full fetches."
+ },
+ {
+  "id": "chilean-rose",
+  "name": "Chilean rose",
+  "sci": "Grammostola rosea",
+  "group": "tarantula",
+  "popularity": {
+   "v": 5,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-rosea (long-standing top beginner species at pet chains; judged)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 60,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-rosea",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 20,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-rosea",
+   "status": "sourced"
+  },
+  "temp_c": {
+   "v": [
+    20,
+    25
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-rosea",
+   "status": "derived"
+  },
+  "humidity_pct": {
+   "v": [
+    40,
+    60
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-rosea",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-rosea",
+   "status": "derived"
+  },
+  "min_floor_cm": {
+   "v": [
+    45,
+    22
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-rosea",
+   "status": "derived"
+  },
+  "min_height_cm": {
+   "v": 15,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-rosea",
+   "status": "assumption"
+  },
+  "lifestyle": "burrower",
+  "diet": "Crickets, roaches; adult every 2-3 weeks",
+  "feed_interval_days": {
+   "v": 17,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-rosea",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 90,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-rosea",
+   "status": "derived"
+  },
+  "molt_note": "Adult wait 5-10 days after molt before feeding; can be defensive for days after molt (Wikipedia). Famous for fasting months, often pre-molt.",
+  "group_rule": "solitary, 1 per enclosure",
+  "venom_handling": "Venom mild; Type III urticating hairs flicked when startled; mood swings docile to defensive.",
+  "price_usd": {
+   "lo": {
+    "v": 50,
+    "src": "https://thespidershop.co.uk/?p=153209",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 75,
+    "src": "https://www.thetarantulacollective.com/store/p/grammostola-rosea-rcf-chilean-rose-hair-0375-075-spiderlings",
+    "status": "sourced"
+   },
+   "hi": {
+    "v": 150,
+    "src": "https://tydyeexotic.com/products/grammostola-rosea-rcf-chilean-rose-hair-red-tarantula-for-sale-live-arrival-guarantee",
+    "status": "assumption"
+   }
+  },
+  "colour": "Red colour form: warm brown-pink to rosy carapace and legs with pinkish hairs over a darker base; the grey form (now often G. porteri) is cooler, muted grey-brown. TTC: pinkish hues often seen on the carapace. Sources: https://www.thetarantulacollective.com/caresheets/grammostola-rosea and https://en.wikipedia.org/wiki/Grammostola_rosea (colour morph names only, no full description).",
+  "reference_photo_urls": [
+   "https://www.thetarantulacollective.com/caresheets/grammostola-rosea",
+   "https://en.wikipedia.org/wiki/Grammostola_rosea"
+  ],
+  "behaviors": [
+   "opportunistic burrow",
+   "climb walls sometimes",
+   "flick urticating hairs",
+   "raise front legs/show fangs",
+   "fast for months",
+   "molt-hide"
+  ],
+  "notes": "Fetched: TTC, Wikipedia. Leg span 15 cm (TTC); body length not on either page (assumption). Temp: TTC 20-23 C ambient, Wikipedia says keepers use 25-30 C; used 20-25. No humidity % given (dry upland desert origin); assumption."
+ },
+ {
+  "id": "curly-hair",
+  "name": "Curly hair",
+  "sci": "Tliltocatl albopilosus",
+  "group": "tarantula",
+  "popularity": {
+   "v": 5,
+   "src": "https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus (cheap, hardy, constant stock at big dealers; judged)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 80,
+   "src": "https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus",
+   "status": "sourced"
+  },
+  "lifespan_yr": {
+   "v": 22,
+   "src": "https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus",
+   "status": "derived"
+  },
+  "temp_c": {
+   "v": [
+    20,
+    24
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    65
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus",
+   "status": "derived"
+  },
+  "min_floor_cm": {
+   "v": [
+    51,
+    26
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus",
+   "status": "derived"
+  },
+  "min_height_cm": {
+   "v": 15,
+   "src": "https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus",
+   "status": "assumption"
+  },
+  "lifestyle": "burrower",
+  "diet": "Crickets, roaches; adult every 2-3 weeks",
+  "feed_interval_days": {
+   "v": 17,
+   "src": "https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 60,
+   "src": "https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus",
+   "status": "assumption"
+  },
+  "molt_note": "Wait 5-10 days after an adult molt before feeding; fangs must be solid black and exoskeleton hard (TTC). Refuses food and hides/webs shut before molt.",
+  "group_rule": "solitary, 1 per enclosure",
+  "venom_handling": "Venom mild; urticating hairs flicked when stressed; docile adult.",
+  "price_usd": {
+   "lo": {
+    "v": 25,
+    "src": "https://fearnottarantulas.com/products/tliltocatl-albopilosus-tarantula-curly-hair-for-sale-free",
+    "status": "sourced"
+   },
+   "typical": {
+    "v": 42,
+    "src": "https://reach.dog/shop/fear-not-tarantulas-inc/products/tliltocatl-albopilosus-curlyhair-tarantula",
+    "status": "sourced"
+   },
+   "hi": {
+    "v": 90,
+    "src": "https://virginiacheeseman.co.uk/tliltocatl-albopilosus-curly-hair-tarantula-large-size-believed-to-be-female-collection-only",
+    "status": "derived"
+   }
+  },
+  "colour": "Plump body covered in dark brown to black hairs (lighter in juveniles, darkening with age) with long gold/bronze bristles giving a golden sheen, densest on hind legs; males lighter bronze (Wikipedia; TTC: some golden-brown, others darker). Sources: https://en.wikipedia.org/wiki/Tliltocatl_albopilosus, https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus.",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Tliltocatl_albopilosus",
+   "https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus"
+  ],
+  "behaviors": [
+   "burrow",
+   "web anchors / web tunnels on bark",
+   "kick urticating hairs",
+   "nocturnal ambush",
+   "molt-hide"
+  ],
+  "notes": "Fetched: TTC, Wikipedia. Body 8 cm, leg span 17 cm per TTC. TTC humidity text garbled; value assumption. Hi price = GBP 70 converted (derived). Fear Not 1 in $42, tydye 3/4-1 in $27.99."
+ },
+ {
+  "id": "brazilian-black",
+  "name": "Brazilian black",
+  "sci": "Grammostola pulchra",
+  "group": "tarantula",
+  "popularity": {
+   "v": 4,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-pulchra (popular beginner pick, pricier, name disputed (often G. quirogai); judged)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 70,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-pulchra",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 25,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-pulchra",
+   "status": "derived"
+  },
+  "temp_c": {
+   "v": [
+    20,
+    23
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-pulchra",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    60
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-pulchra",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-pulchra",
+   "status": "derived"
+  },
+  "min_floor_cm": {
+   "v": [
+    51,
+    26
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-pulchra",
+   "status": "derived"
+  },
+  "min_height_cm": {
+   "v": 15,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-pulchra",
+   "status": "assumption"
+  },
+  "lifestyle": "burrower",
+  "diet": "Crickets, roaches; adult every 2-3 weeks",
+  "feed_interval_days": {
+   "v": 17,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-pulchra",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 90,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-pulchra",
+   "status": "assumption"
+  },
+  "molt_note": "Adult wait 5-10 days after molt before feeding; long pre-molt fasts; colour muted before molt and pops after.",
+  "group_rule": "solitary, 1 per enclosure",
+  "venom_handling": "Venom mild; urticating hairs rarely flicked; docile. Falls dangerous.",
+  "price_usd": {
+   "lo": {
+    "v": 85,
+    "src": "https://fearnottarantulas.com/products/grammostola-pulchra-brazilian-black-tarantula-for-sale-2",
+    "status": "sourced"
+   },
+   "typical": {
+    "v": 96,
+    "src": "https://reach.dog/shop/marshall-arachnids/products/grammostola-pulchra",
+    "status": "sourced"
+   },
+   "hi": {
+    "v": 155,
+    "src": "https://exoticsunlimitedusa.com/products/grammastola-pulchra-brazilian-black-2-2-5",
+    "status": "sourced"
+   }
+  },
+  "colour": "Deep velvety jet-black over the whole body and legs; almost entirely black when mature (TTC, Wikipedia). Sources: https://www.thetarantulacollective.com/caresheets/grammostola-pulchra, https://en.wikipedia.org/wiki/Grammostola_pulchra.",
+  "reference_photo_urls": [
+   "https://www.thetarantulacollective.com/caresheets/grammostola-pulchra",
+   "https://en.wikipedia.org/wiki/Grammostola_pulchra"
+  ],
+  "behaviors": [
+   "shallow burrow under log/rock",
+   "sits motionless for long periods",
+   "slow",
+   "molt-hide",
+   "rare hair kicking"
+  ],
+  "notes": "Fetched: TTC, Wikipedia. Leg span 15-18 cm; body 70 mm assumed. Slow growth (up to 8 yr to maturity, Wikipedia). Hi price: 2-2.5 in listing $125 (was $155), sold out."
+ },
+ {
+  "id": "brazilian-salmon-pink",
+  "name": "Brazilian salmon pink birdeater",
+  "sci": "Lasiodora parahybana",
+  "group": "tarantula",
+  "popularity": {
+   "v": 4,
+   "src": "https://www.thetarantulacollective.com/caresheets (judged from retailer stock / Arachnoboards frequency)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 200,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 15,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    22,
+    28
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    65,
+    75
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    40,
+    40
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 25,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Large crickets/roaches; adults 1-2 large per week",
+  "feed_interval_days": {
+   "v": 7,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 45,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "molt_note": "Fast grower; molts every 6-12 months as adult",
+  "group_rule": "solitary",
+  "venom_handling": "Bite medically mild (bee-sting-like) but handling discouraged: fall risk, stress. Urticating hairs flicked at threats; irritate eyes/skin. Heavy hair kicker, large fangs.",
+  "price_usd": {
+   "lo": {
+    "v": 25,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 90,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 200,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   }
+  },
+  "colour": "Dark brown-black body with pinkish-salmon hairs fringing legs and abdomen (from general knowledge; verify against the photo pages)",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Lasiodora_parahybana",
+   "https://arachnoboards.com/"
+  ],
+  "behaviors": [
+   "dig",
+   "kick urticating hairs heavily",
+   "threat pose"
+  ],
+  "notes": "Popularity 4. One of the largest tarantulas (leg span up to 25 cm). Fields marked assumption are best estimates from general hobby knowledge, not read from a specific page; prices from tlist/retailer snippets only."
+ },
+ {
+  "id": "pinktoe",
+  "name": "Pinktoe",
+  "sci": "Avicularia avicularia",
+  "group": "tarantula",
+  "popularity": {
+   "v": 5,
+   "src": "https://www.thetarantulacollective.com/caresheets/avicularia-avicularia (default arboreal beginner species; judged)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 70,
+   "src": "https://www.thetarantulacollective.com/caresheets/avicularia-avicularia",
+   "status": "sourced"
+  },
+  "lifespan_yr": {
+   "v": 12,
+   "src": "https://www.thetarantulacollective.com/caresheets/avicularia-avicularia",
+   "status": "sourced"
+  },
+  "temp_c": {
+   "v": [
+    21,
+    27
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/avicularia-avicularia",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    60,
+    70
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/avicularia-avicularia",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 50,
+   "src": "https://www.thetarantulacollective.com/caresheets/avicularia-avicularia",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    20,
+    20
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/avicularia-avicularia",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 30,
+   "src": "https://www.thetarantulacollective.com/caresheets/avicularia-avicularia",
+   "status": "assumption"
+  },
+  "lifestyle": "arboreal",
+  "diet": "Crickets, roaches; adult every 2-3 weeks",
+  "feed_interval_days": {
+   "v": 17,
+   "src": "https://www.thetarantulacollective.com/caresheets/avicularia-avicularia",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 45,
+   "src": "https://www.thetarantulacollective.com/caresheets/avicularia-avicularia",
+   "status": "assumption"
+  },
+  "molt_note": "Wait 5-10 days after an adult molt before feeding; fangs must be solid black and exoskeleton hard (TTC). Refuses food and hides/webs shut before molt. Molts in a silk-sealed hide.",
+  "group_rule": "solitary, 1 per enclosure",
+  "venom_handling": "Venom mild; Type II urticating hairs (contact only, not kicked); may squirt feces; fast, jumps when startled.",
+  "price_usd": {
+   "lo": {
+    "v": 30,
+    "src": "https://joshsfrogs.com/sp/guyana-pink-toe-tarantula-avicularia-avicularia-captive-bred-jfgptt1218",
+    "status": "sourced"
+   },
+   "typical": {
+    "v": 35,
+    "src": "https://tydyeexotic.com/products/avicularia-avicularia-guyana-pinktoe",
+    "status": "sourced"
+   },
+   "hi": {
+    "v": 75,
+    "src": "https://www.newlands.ie/products/avicularia-avicularia-pink-toe-tarantula",
+    "status": "derived"
+   }
+  },
+  "colour": "Adult: dark/black-brown velvety body and legs with pink-tipped feet (Wikipedia: adults dark body with pinkish feet; juveniles reverse: pink body, dark feet). Sources: https://www.thetarantulacollective.com/caresheets/avicularia-avicularia, https://en.wikipedia.org/wiki/Avicularia_avicularia.",
+  "reference_photo_urls": [
+   "https://www.thetarantulacollective.com/caresheets/avicularia-avicularia",
+   "https://en.wikipedia.org/wiki/Avicularia_avicularia"
+  ],
+  "behaviors": [
+   "climb",
+   "web tubes between vertical hides",
+   "jump/run when startled",
+   "flick feces",
+   "threat pose",
+   "molt in web hide"
+  ],
+  "notes": "Fetched: TTC, Wikipedia. Substrate, floor and height: TTC gives no dimensions (arboreal, tall enclosure 20x20x30 cm assumed). Wikipedia females 6-9 yr, TTC 12 yr. Hi price EUR 69.99 converted."
+ },
+ {
+  "id": "mexican-redrump",
+  "name": "Mexican redrump",
+  "sci": "Tliltocatl vagans",
+  "group": "tarantula",
+  "popularity": {
+   "v": 4,
+   "src": "https://www.thetarantulacollective.com/caresheets (judged from retailer stock / Arachnoboards frequency)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 130,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 20,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    22,
+    27
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    60,
+    70
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    30,
+    30
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 20,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Crickets, roaches; adults 1-2 per week",
+  "feed_interval_days": {
+   "v": 7,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 60,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "molt_note": "Molts about once a year as adult",
+  "group_rule": "solitary",
+  "venom_handling": "Bite medically mild (bee-sting-like) but handling discouraged: fall risk, stress. Urticating hairs flicked at threats; irritate eyes/skin.",
+  "price_usd": {
+   "lo": {
+    "v": 25,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 55,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 100,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   }
+  },
+  "colour": "Black body and legs with reddish-orange hairs on the abdomen (from general knowledge; verify against the photo pages)",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Tliltocatl_vagans",
+   "https://arachnoboards.com/"
+  ],
+  "behaviors": [
+   "burrow",
+   "kick hairs",
+   "threat pose",
+   "dig"
+  ],
+  "notes": "Popularity 4. Often more defensive than albopilosus. Fields marked assumption are best estimates from general hobby knowledge, not read from a specific page; prices from tlist/retailer snippets only."
+ },
+ {
+  "id": "greenbottle-blue",
+  "name": "Greenbottle blue",
+  "sci": "Chromatopelma cyaneopubescens",
+  "group": "tarantula",
+  "popularity": {
+   "v": 4,
+   "src": "https://www.thetarantulacollective.com/caresheets/chromatopelma-cyaneopubescens (top-selling colourful New World tarantula; judged)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 70,
+   "src": "https://www.thetarantulacollective.com/caresheets/chromatopelma-cyaneopubescens",
+   "status": "sourced"
+  },
+  "lifespan_yr": {
+   "v": 14,
+   "src": "https://www.thetarantulacollective.com/caresheets/chromatopelma-cyaneopubescens",
+   "status": "sourced"
+  },
+  "temp_c": {
+   "v": [
+    20,
+    24
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/chromatopelma-cyaneopubescens",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    60
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/chromatopelma-cyaneopubescens",
+   "status": "derived"
+  },
+  "substrate_depth_mm": {
+   "v": 75,
+   "src": "https://www.thetarantulacollective.com/caresheets/chromatopelma-cyaneopubescens",
+   "status": "derived"
+  },
+  "min_floor_cm": {
+   "v": [
+    48,
+    24
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/chromatopelma-cyaneopubescens",
+   "status": "derived"
+  },
+  "min_height_cm": {
+   "v": 20,
+   "src": "https://www.thetarantulacollective.com/caresheets/chromatopelma-cyaneopubescens",
+   "status": "assumption"
+  },
+  "lifestyle": "semi-arboreal",
+  "diet": "Crickets, roaches; adult every 2-3 weeks; strong feeding response",
+  "feed_interval_days": {
+   "v": 17,
+   "src": "https://www.thetarantulacollective.com/caresheets/chromatopelma-cyaneopubescens",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 60,
+   "src": "https://www.thetarantulacollective.com/caresheets/chromatopelma-cyaneopubescens",
+   "status": "assumption"
+  },
+  "molt_note": "Wait 5-10 days after an adult molt before feeding; fangs must be solid black and exoskeleton hard (TTC). Refuses food and hides/webs shut before molt. Refuses food in premolt.",
+  "group_rule": "solitary, 1 per enclosure",
+  "venom_handling": "Venom mild; urticating hairs rarely kicked; skittish and fast, handling discouraged.",
+  "price_usd": {
+   "lo": {
+    "v": 44,
+    "src": "https://reach.dog/shop/spider-shoppe/products/chromatopelma-cyanopubescens-green-bottle-blue-0-5",
+    "status": "sourced"
+   },
+   "typical": {
+    "v": 50,
+    "src": "https://exoticsunlimitedusa.com/products/chromatopelma-cyaneopubescens-green-bottle-blue-0-5-free-after-200-spent",
+    "status": "sourced"
+   },
+   "hi": {
+    "v": 138,
+    "src": "https://reach.dog/shop/spider-shoppe/products/chromatopelma-cyanopubescens-green-bottle-blue-0-5",
+    "status": "sourced"
+   }
+  },
+  "colour": "Electric/metallic blue legs, metallic green carapace, fiery orange-red abdomen (TTC); Wikipedia: metallic blue legs, blue-green carapace. Sources: https://www.thetarantulacollective.com/caresheets/chromatopelma-cyaneopubescens, https://en.wikipedia.org/wiki/Chromatopelma_cyaneopubescens.",
+  "reference_photo_urls": [
+   "https://www.thetarantulacollective.com/caresheets/chromatopelma-cyaneopubescens",
+   "https://en.wikipedia.org/wiki/Chromatopelma_cyaneopubescens"
+  ],
+  "behaviors": [
+   "heavy webbing and silk tunnels",
+   "web-extended burrow entrance",
+   "active, out in open",
+   "fast",
+   "kick urticating hairs",
+   "molt-hide"
+  ],
+  "notes": "Fetched: TTC, Wikipedia. Desert Paraguana Peninsula (Venezuela) origin. TTC humidity moderate, breeding 50-60 %; used 50-60 derived. Substrate 1/3-1/2 of enclosure. Hi price is a 2 in specimen $138 (same page now shows $44 for 0.75 in)."
+ },
+ {
+  "id": "mexican-fireleg",
+  "name": "Mexican fireleg",
+  "sci": "Brachypelma boehmei",
+  "group": "tarantula",
+  "popularity": {
+   "v": 4,
+   "src": "https://www.thetarantulacollective.com/caresheets (judged from retailer stock / Arachnoboards frequency)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 150,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 25,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    22,
+    27
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    60,
+    70
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    30,
+    30
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 20,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifestyle": "burrower",
+  "diet": "Crickets, roaches; adults 1 per week",
+  "feed_interval_days": {
+   "v": 10,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 60,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "molt_note": "Annual molt as adult",
+  "group_rule": "solitary",
+  "venom_handling": "Bite medically mild (bee-sting-like) but handling discouraged: fall risk, stress. Urticating hairs flicked at threats; irritate eyes/skin.",
+  "price_usd": {
+   "lo": {
+    "v": 35,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 90,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 150,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   }
+  },
+  "colour": "Black carapace; orange-red legs with black bands; orange abdomen (from general knowledge; verify against the photo pages)",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Brachypelma_boehmei",
+   "https://arachnoboards.com/"
+  ],
+  "behaviors": [
+   "burrow",
+   "hide",
+   "kick hairs"
+  ],
+  "notes": "Popularity 4. CITES II. Fields marked assumption are best estimates from general hobby knowledge, not read from a specific page; prices from tlist/retailer snippets only."
+ },
+ {
+  "id": "texas-brown",
+  "name": "Texas brown / desert blond",
+  "sci": "Aphonopelma hentzi / chalcodes",
+  "group": "tarantula",
+  "popularity": {
+   "v": 3,
+   "src": "https://www.thetarantulacollective.com/caresheets (judged from retailer stock / Arachnoboards frequency)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 120,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 25,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    18,
+    30
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    40,
+    60
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    30,
+    30
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 20,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifestyle": "burrower",
+  "diet": "Crickets, roaches; adults 1 per 1-2 weeks",
+  "feed_interval_days": {
+   "v": 14,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 120,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "molt_note": "Females molt about yearly",
+  "group_rule": "solitary",
+  "venom_handling": "Bite medically mild (bee-sting-like) but handling discouraged: fall risk, stress. Urticating hairs flicked at threats; irritate eyes/skin.",
+  "price_usd": {
+   "lo": {
+    "v": 20,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 50,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 90,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   }
+  },
+  "colour": "Texas brown: tan to brown hairs, dark abdomen; desert blond: pale sand/tan hairs, darker abdomen (from general knowledge; verify against the photo pages)",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Aphonopelma_hentzi",
+   "https://arachnoboards.com/"
+  ],
+  "behaviors": [
+   "burrow",
+   "hide",
+   "tolerates dry conditions"
+  ],
+  "notes": "Popularity 3. Species varies in trade; many are wild-collected (not CITES). Fields marked assumption are best estimates from general hobby knowledge, not read from a specific page; prices from tlist/retailer snippets only."
+ },
+ {
+  "id": "emperor-scorpion",
+  "name": "Emperor scorpion",
+  "sci": "Pandinus imperator",
+  "group": "scorpion",
+  "popularity": {
+   "v": 5,
+   "src": "https://www.thetarantulacollective.com/caresheets/emperor-scorpion (standard beginner scorpion; sold at chains; judged)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 165,
+   "src": "https://www.thetarantulacollective.com/caresheets/emperor-scorpion",
+   "status": "derived"
+  },
+  "lifespan_yr": {
+   "v": 7,
+   "src": "https://www.thetarantulacollective.com/caresheets/emperor-scorpion",
+   "status": "derived"
+  },
+  "temp_c": {
+   "v": [
+    22,
+    28
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/emperor-scorpion",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    75,
+    80
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/emperor-scorpion",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "https://www.thetarantulacollective.com/caresheets/emperor-scorpion",
+   "status": "derived"
+  },
+  "min_floor_cm": {
+   "v": [
+    46,
+    30
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/emperor-scorpion",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 25,
+   "src": "https://www.thetarantulacollective.com/caresheets/emperor-scorpion",
+   "status": "assumption"
+  },
+  "lifestyle": "burrower",
+  "diet": "Crickets, dubia roaches; adult larger prey every 7-14 days",
+  "feed_interval_days": {
+   "v": 10,
+   "src": "https://www.thetarantulacollective.com/caresheets/emperor-scorpion",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 30,
+   "src": "https://www.thetarantulacollective.com/caresheets/emperor-scorpion",
+   "status": "assumption"
+  },
+  "molt_note": "Molts several times as juvenile, about yearly as adult; stays burrowed and soft for days, do not feed or handle then.",
+  "group_rule": "solitary recommended; communal only for experienced keepers with ample space and hides (TTC)",
+  "venom_handling": "Sting mild, no medical significance unless allergic; prefers to pinch with big claws; handling discouraged, use tongs.",
+  "price_usd": {
+   "lo": {
+    "v": 44,
+    "src": "https://bugsincyberspace.com/product/emperor-scorpion",
+    "status": "sourced"
+   },
+   "typical": {
+    "v": 60,
+    "src": "https://tydyeexotic.com/products/pandinus-imperator-emperor-scorpion-perfect-beginner-species-live-arrival-guarantee",
+    "status": "sourced"
+   },
+   "hi": {
+    "v": 150,
+    "src": "https://reach.dog/shop/reptile-pets-direct/products/emperor-scorpion",
+    "status": "sourced"
+   }
+  },
+  "colour": "Glossy black, metallic greenish-black body (Wikipedia); large pincers blackish-red with granular texture; telson amber to reddish (TTC); fluoresces blue-green under UV. Leg colour not described on either page (assumption: black to dark brown). Sources: https://en.wikipedia.org/wiki/Pandinus_imperator, https://www.thetarantulacollective.com/caresheets/emperor-scorpion.",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Pandinus_imperator",
+   "https://www.thetarantulacollective.com/caresheets/emperor-scorpion"
+  ],
+  "behaviors": [
+   "burrow",
+   "hide under bark/rocks",
+   "claw threat pose",
+   "nocturnal",
+   "pinch rather than sting",
+   "glows under UV"
+  ],
+  "notes": "Fetched: TTC, Wikipedia; dubiaroaches page gave HTTP 429. Search summary of other sheets: 70-90 % RH, 78-82 F. Size 6-7 in TTC (152-178 mm), 20 cm Wikipedia; 165 mm derived. TTC names 12-18 in cube enclosures; floor 46x30 cm assumed from 10 gallon in search summaries. Lo price listing is out of stock; tydye and reach.dog prices from search-result text."
+ },
+ {
+  "id": "asian-forest-scorpion",
+  "name": "Asian forest scorpion",
+  "sci": "Heterometrus spinifer",
+  "group": "scorpion",
+  "popularity": {
+   "v": 4,
+   "src": "https://thetyedyediguana.com/care-sheets/asian-forest-scorpion-heterometrus-spinifer (common second scorpion after emperor, sold at chains; judged)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 110,
+   "src": "https://en.wikipedia.org/wiki/Heterometrus_spinifer",
+   "status": "derived"
+  },
+  "lifespan_yr": {
+   "v": 5,
+   "src": "https://thetyedyediguana.com/care-sheets/asian-forest-scorpion-heterometrus-spinifer",
+   "status": "sourced"
+  },
+  "temp_c": {
+   "v": [
+    22,
+    29
+   ],
+   "src": "https://thetyedyediguana.com/care-sheets/asian-forest-scorpion-heterometrus-spinifer",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    70,
+    80
+   ],
+   "src": "https://thetyedyediguana.com/care-sheets/asian-forest-scorpion-heterometrus-spinifer",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 127,
+   "src": "https://thetyedyediguana.com/care-sheets/asian-forest-scorpion-heterometrus-spinifer",
+   "status": "derived"
+  },
+  "min_floor_cm": {
+   "v": [
+    51,
+    25
+   ],
+   "src": "https://thetyedyediguana.com/care-sheets/asian-forest-scorpion-heterometrus-spinifer",
+   "status": "derived"
+  },
+  "min_height_cm": {
+   "v": 25,
+   "src": "https://thetyedyediguana.com/care-sheets/asian-forest-scorpion-heterometrus-spinifer",
+   "status": "assumption"
+  },
+  "lifestyle": "burrower",
+  "diet": "Crickets, dubia roaches, locusts; once a week",
+  "feed_interval_days": {
+   "v": 7,
+   "src": "https://thetyedyediguana.com/care-sheets/asian-forest-scorpion-heterometrus-spinifer",
+   "status": "sourced"
+  },
+  "fast_tolerance_days": {
+   "v": 21,
+   "src": "https://thetyedyediguana.com/care-sheets/asian-forest-scorpion-heterometrus-spinifer",
+   "status": "assumption"
+  },
+  "molt_note": "Never feed during molt; wait at least a week after, mandibles and exoskeleton are soft (Tye Dye).",
+  "group_rule": "solitary best; communal only same-size animals, cannibalism if sizes differ (Tye Dye)",
+  "venom_handling": "Sting causes severe pain and mild numbness, not lethal (Wikipedia); uses big pincers first; skittish, defensive; handle only with tongs.",
+  "price_usd": {
+   "lo": {
+    "v": 30,
+    "src": "https://www.wardsci.com/us/en/product/26084858/wards-malaysian-forest-scorpion",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 49.95,
+    "src": "https://www.wardsci.com/us/en/product/26084858/wards-malaysian-forest-scorpion",
+    "status": "sourced"
+   },
+   "hi": {
+    "v": 100,
+    "src": "https://www.wardsci.com/us/en/product/26084858/wards-malaysian-forest-scorpion",
+    "status": "assumption"
+   }
+  },
+  "colour": "Shiny black body with grey-green reflections (Wikipedia); pincers and legs not described on any fetched page (assumption: black to dark brown). Sources: https://en.wikipedia.org/wiki/Heterometrus_spinifer.",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Heterometrus_spinifer",
+   "https://thetyedyediguana.com/care-sheets/asian-forest-scorpion-heterometrus-spinifer"
+  ],
+  "behaviors": [
+   "burrow by day",
+   "hide under logs/bark",
+   "pincer threat pose",
+   "climbs and escapes lids",
+   "nocturnal"
+  ],
+  "notes": "Fetched: Wikipedia, Tye Dye Iguana care sheet. reptilesupply page gave HTTP 429. Length 10-12 cm Wikipedia, 3-5 in Tye Dye; 110 mm used. Substrate 4-6 in (102-152 mm); 127 mm midpoint. Floor from 10 gallon (20x10 in). Only price: Ward Science classroom listing $49.95 via search snippet; lo/hi assumption."
+ },
+ {
+  "id": "arizona-hairy-scorpion",
+  "name": "Arizona desert hairy scorpion",
+  "sci": "Hadrurus arizonensis",
+  "group": "scorpion",
+  "popularity": {
+   "v": 2,
+   "src": "https://www.thetarantulacollective.com/caresheets (judged from retailer stock / Arachnoboards frequency)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 150,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 15,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    24,
+    32
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    20,
+    40
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    50,
+    30
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 20,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifestyle": "fossorial",
+  "diet": "Crickets, roaches; adults 1 per week",
+  "feed_interval_days": {
+   "v": 7,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 30,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "molt_note": "Molts about yearly as adult",
+  "group_rule": "Solitary",
+  "venom_handling": "Sting painful, not deadly; escape-proof lid, use tongs.",
+  "price_usd": {
+   "lo": {
+    "v": 30,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 60,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 100,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   }
+  },
+  "colour": "Yellow-tan carapace and limbs, dark brown mesosoma, black claws, hairy (from general knowledge; verify against the photo pages)",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Hadrurus_arizonensis",
+   "https://arachnoboards.com/"
+  ],
+  "behaviors": [
+   "dig deep burrow",
+   "claw threat",
+   "tail up"
+  ],
+  "notes": "Popularity 2: less common in trade; included because still kept. Dry desert conditions 20-40 % RH. Fields marked assumption are best estimates from general hobby knowledge, not read from a specific page; prices from tlist/retailer snippets only."
+ },
+ {
+  "id": "bold-jumping-spider",
+  "name": "Bold jumping spider",
+  "sci": "Phidippus audax",
+  "group": "jumpingspider",
+  "popularity": {
+   "v": 5,
+   "src": "https://www.thetarantulacollective.com/caresheets (judged from retailer stock / Arachnoboards frequency)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 13,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 1.5,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    21,
+    27
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    70
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 20,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    15,
+    15
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 20,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifestyle": "semi-arboreal",
+  "diet": "Fruit flies, houseflies, small crickets; adults every 2-3 days",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "molt_note": "Molts in silk nest; leave undisturbed",
+  "group_rule": "Solitary",
+  "venom_handling": "Bite mild; may bite if squeezed.",
+  "price_usd": {
+   "lo": {
+    "v": 10,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 25,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 45,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   }
+  },
+  "colour": "Black with white spots on abdomen, iridescent green chelicerae (from general knowledge; verify against the photo pages)",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Phidippus_audax",
+   "https://arachnoboards.com/"
+  ],
+  "behaviors": [
+   "jump",
+   "silk nest",
+   "hunt by sight",
+   "molt-hide in silk"
+  ],
+  "notes": "Popularity 5: widely kept and easy to find. Fields marked assumption are best estimates from general hobby knowledge, not read from a specific page; prices from tlist/retailer snippets only."
+ },
+ {
+  "id": "hyllus-diardi",
+  "name": "Heavy jumper",
+  "sci": "Hyllus diardi",
+  "group": "jumpingspider",
+  "popularity": {
+   "v": 4,
+   "src": "https://www.thetarantulacollective.com/caresheets (judged from retailer stock / Arachnoboards frequency)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 20,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 2,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    25,
+    30
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    60,
+    75
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 20,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    20,
+    20
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 30,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifestyle": "semi-arboreal",
+  "diet": "Crickets, flies; adults every 2-3 days",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "molt_note": "Molts in silk nest",
+  "group_rule": "Solitary",
+  "venom_handling": "Bite mild; handle with care.",
+  "price_usd": {
+   "lo": {
+    "v": 20,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 55,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 100,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   }
+  },
+  "colour": "Black body with orange-gold fringe and white face hairs; males black with orange/yellow bands (from general knowledge; verify against the photo pages)",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Hyllus_diardi",
+   "https://arachnoboards.com/"
+  ],
+  "behaviors": [
+   "jump",
+   "silk nest",
+   "climb",
+   "molt-hide"
+  ],
+  "notes": "Popularity 4: popular hobby spider. Fields marked assumption are best estimates from general hobby knowledge, not read from a specific page; prices from tlist/retailer snippets only."
+ }
+]

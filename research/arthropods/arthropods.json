@@ -1,0 +1,4835 @@
+[
+ {
+  "id": "mexican-red-knee",
+  "name": "Mexican red knee",
+  "sci": "Brachypelma hamorii",
+  "group": "tarantula",
+  "popularity": {
+   "v": 5,
+   "src": "https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii (classic beginner species, stocked by every dealer and chains; judged, not measured)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 53,
+   "src": "https://en.wikipedia.org/wiki/Brachypelma_hamorii",
+   "status": "sourced"
+  },
+  "lifespan_yr": {
+   "v": 27,
+   "src": "https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii",
+   "status": "derived"
+  },
+  "temp_c": {
+   "v": [
+    21,
+    25
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    65
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii",
+   "status": "derived"
+  },
+  "min_floor_cm": {
+   "v": [
+    42,
+    21
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii",
+   "status": "derived"
+  },
+  "min_height_cm": {
+   "v": 15,
+   "src": "https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii",
+   "status": "assumption"
+  },
+  "lifestyle": "burrower",
+  "diet": "Crickets, roaches; adult 4-5 large crickets or 1 large dubia every 2-3 weeks",
+  "feed_interval_days": {
+   "v": 17,
+   "src": "https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 60,
+   "src": "https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii",
+   "status": "assumption"
+  },
+  "molt_note": "Wait 5-10 days after an adult molt before feeding; fangs must be solid black and exoskeleton hard (TTC). Refuses food and hides/webs shut before molt.",
+  "group_rule": "solitary, 1 per enclosure",
+  "venom_handling": "Venom not medically significant; urticating hairs kicked from abdomen cause irritation; fang puncture can get infected (Wikipedia). Docile.",
+  "price_usd": {
+   "lo": {
+    "v": 20,
+    "src": "https://silkyburrow.pages.dev/posts/redknee-tarantula-price-guide-updated",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 100,
+    "src": "https://arachnoboards.com/goto/post?id=2100197",
+    "status": "sourced"
+   },
+   "hi": {
+    "v": 199,
+    "src": "https://reach.dog/shop/fear-not-tarantulas-inc/products/brachypelma-hamorii-mexican-redknee-tarantula-female-for-sale",
+    "status": "sourced"
+   }
+  },
+  "colour": "Body black (adult male upper abdomen black; female carapace mainly black with brownish-pink border or pale orange-yellow starburst). Legs black to reddish-black with the signature bright orange knee (patella base deep orange, rest of patella and lower tibia pale orange-yellow, metatarsus tips yellowish-white). Sources: https://en.wikipedia.org/wiki/Brachypelma_hamorii and https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii (vivid black with bright orange markings on legs).",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Brachypelma_hamorii",
+   "https://www.thetarantulacollective.com/caresheets/brachypelma-hamorii"
+  ],
+  "behaviors": [
+   "burrow",
+   "silk-seal burrow entrance",
+   "kick urticating hairs",
+   "retreat to burrow when disturbed",
+   "molt-hide",
+   "threat pose"
+  ],
+  "notes": "Fetched: TTC care sheet, Wikipedia. Humidity only \"moderate\" on TTC (no %), so range is assumption. Floor = 3x leg span long, half that wide (derived from TTC rule 3-4x leg span; no height given, 15 cm assumed). Lifespan 25-30 yr female TTC, 30 Wikipedia. Prices from search-result text of retailer pages, not full fetches."
+ },
+ {
+  "id": "chilean-rose",
+  "name": "Chilean rose",
+  "sci": "Grammostola rosea",
+  "group": "tarantula",
+  "popularity": {
+   "v": 5,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-rosea (long-standing top beginner species at pet chains; judged)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 60,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-rosea",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 20,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-rosea",
+   "status": "sourced"
+  },
+  "temp_c": {
+   "v": [
+    20,
+    25
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-rosea",
+   "status": "derived"
+  },
+  "humidity_pct": {
+   "v": [
+    40,
+    60
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-rosea",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-rosea",
+   "status": "derived"
+  },
+  "min_floor_cm": {
+   "v": [
+    45,
+    22
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-rosea",
+   "status": "derived"
+  },
+  "min_height_cm": {
+   "v": 15,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-rosea",
+   "status": "assumption"
+  },
+  "lifestyle": "burrower",
+  "diet": "Crickets, roaches; adult every 2-3 weeks",
+  "feed_interval_days": {
+   "v": 17,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-rosea",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 90,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-rosea",
+   "status": "derived"
+  },
+  "molt_note": "Adult wait 5-10 days after molt before feeding; can be defensive for days after molt (Wikipedia). Famous for fasting months, often pre-molt.",
+  "group_rule": "solitary, 1 per enclosure",
+  "venom_handling": "Venom mild; Type III urticating hairs flicked when startled; mood swings docile to defensive.",
+  "price_usd": {
+   "lo": {
+    "v": 50,
+    "src": "https://thespidershop.co.uk/?p=153209",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 75,
+    "src": "https://www.thetarantulacollective.com/store/p/grammostola-rosea-rcf-chilean-rose-hair-0375-075-spiderlings",
+    "status": "sourced"
+   },
+   "hi": {
+    "v": 150,
+    "src": "https://tydyeexotic.com/products/grammostola-rosea-rcf-chilean-rose-hair-red-tarantula-for-sale-live-arrival-guarantee",
+    "status": "assumption"
+   }
+  },
+  "colour": "Red colour form: warm brown-pink to rosy carapace and legs with pinkish hairs over a darker base; the grey form (now often G. porteri) is cooler, muted grey-brown. TTC: pinkish hues often seen on the carapace. Sources: https://www.thetarantulacollective.com/caresheets/grammostola-rosea and https://en.wikipedia.org/wiki/Grammostola_rosea (colour morph names only, no full description).",
+  "reference_photo_urls": [
+   "https://www.thetarantulacollective.com/caresheets/grammostola-rosea",
+   "https://en.wikipedia.org/wiki/Grammostola_rosea"
+  ],
+  "behaviors": [
+   "opportunistic burrow",
+   "climb walls sometimes",
+   "flick urticating hairs",
+   "raise front legs/show fangs",
+   "fast for months",
+   "molt-hide"
+  ],
+  "notes": "Fetched: TTC, Wikipedia. Leg span 15 cm (TTC); body length not on either page (assumption). Temp: TTC 20-23 C ambient, Wikipedia says keepers use 25-30 C; used 20-25. No humidity % given (dry upland desert origin); assumption."
+ },
+ {
+  "id": "curly-hair",
+  "name": "Curly hair",
+  "sci": "Tliltocatl albopilosus",
+  "group": "tarantula",
+  "popularity": {
+   "v": 5,
+   "src": "https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus (cheap, hardy, constant stock at big dealers; judged)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 80,
+   "src": "https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus",
+   "status": "sourced"
+  },
+  "lifespan_yr": {
+   "v": 22,
+   "src": "https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus",
+   "status": "derived"
+  },
+  "temp_c": {
+   "v": [
+    20,
+    24
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    65
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus",
+   "status": "derived"
+  },
+  "min_floor_cm": {
+   "v": [
+    51,
+    26
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus",
+   "status": "derived"
+  },
+  "min_height_cm": {
+   "v": 15,
+   "src": "https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus",
+   "status": "assumption"
+  },
+  "lifestyle": "burrower",
+  "diet": "Crickets, roaches; adult every 2-3 weeks",
+  "feed_interval_days": {
+   "v": 17,
+   "src": "https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 60,
+   "src": "https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus",
+   "status": "assumption"
+  },
+  "molt_note": "Wait 5-10 days after an adult molt before feeding; fangs must be solid black and exoskeleton hard (TTC). Refuses food and hides/webs shut before molt.",
+  "group_rule": "solitary, 1 per enclosure",
+  "venom_handling": "Venom mild; urticating hairs flicked when stressed; docile adult.",
+  "price_usd": {
+   "lo": {
+    "v": 25,
+    "src": "https://fearnottarantulas.com/products/tliltocatl-albopilosus-tarantula-curly-hair-for-sale-free",
+    "status": "sourced"
+   },
+   "typical": {
+    "v": 42,
+    "src": "https://reach.dog/shop/fear-not-tarantulas-inc/products/tliltocatl-albopilosus-curlyhair-tarantula",
+    "status": "sourced"
+   },
+   "hi": {
+    "v": 90,
+    "src": "https://virginiacheeseman.co.uk/tliltocatl-albopilosus-curly-hair-tarantula-large-size-believed-to-be-female-collection-only",
+    "status": "derived"
+   }
+  },
+  "colour": "Plump body covered in dark brown to black hairs (lighter in juveniles, darkening with age) with long gold/bronze bristles giving a golden sheen, densest on hind legs; males lighter bronze (Wikipedia; TTC: some golden-brown, others darker). Sources: https://en.wikipedia.org/wiki/Tliltocatl_albopilosus, https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus.",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Tliltocatl_albopilosus",
+   "https://www.thetarantulacollective.com/caresheets/tliltocatl-albopilosus"
+  ],
+  "behaviors": [
+   "burrow",
+   "web anchors / web tunnels on bark",
+   "kick urticating hairs",
+   "nocturnal ambush",
+   "molt-hide"
+  ],
+  "notes": "Fetched: TTC, Wikipedia. Body 8 cm, leg span 17 cm per TTC. TTC humidity text garbled; value assumption. Hi price = GBP 70 converted (derived). Fear Not 1 in $42, tydye 3/4-1 in $27.99."
+ },
+ {
+  "id": "brazilian-black",
+  "name": "Brazilian black",
+  "sci": "Grammostola pulchra",
+  "group": "tarantula",
+  "popularity": {
+   "v": 4,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-pulchra (popular beginner pick, pricier, name disputed (often G. quirogai); judged)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 70,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-pulchra",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 25,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-pulchra",
+   "status": "derived"
+  },
+  "temp_c": {
+   "v": [
+    20,
+    23
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-pulchra",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    60
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-pulchra",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-pulchra",
+   "status": "derived"
+  },
+  "min_floor_cm": {
+   "v": [
+    51,
+    26
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-pulchra",
+   "status": "derived"
+  },
+  "min_height_cm": {
+   "v": 15,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-pulchra",
+   "status": "assumption"
+  },
+  "lifestyle": "burrower",
+  "diet": "Crickets, roaches; adult every 2-3 weeks",
+  "feed_interval_days": {
+   "v": 17,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-pulchra",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 90,
+   "src": "https://www.thetarantulacollective.com/caresheets/grammostola-pulchra",
+   "status": "assumption"
+  },
+  "molt_note": "Adult wait 5-10 days after molt before feeding; long pre-molt fasts; colour muted before molt and pops after.",
+  "group_rule": "solitary, 1 per enclosure",
+  "venom_handling": "Venom mild; urticating hairs rarely flicked; docile. Falls dangerous.",
+  "price_usd": {
+   "lo": {
+    "v": 85,
+    "src": "https://fearnottarantulas.com/products/grammostola-pulchra-brazilian-black-tarantula-for-sale-2",
+    "status": "sourced"
+   },
+   "typical": {
+    "v": 96,
+    "src": "https://reach.dog/shop/marshall-arachnids/products/grammostola-pulchra",
+    "status": "sourced"
+   },
+   "hi": {
+    "v": 155,
+    "src": "https://exoticsunlimitedusa.com/products/grammastola-pulchra-brazilian-black-2-2-5",
+    "status": "sourced"
+   }
+  },
+  "colour": "Deep velvety jet-black over the whole body and legs; almost entirely black when mature (TTC, Wikipedia). Sources: https://www.thetarantulacollective.com/caresheets/grammostola-pulchra, https://en.wikipedia.org/wiki/Grammostola_pulchra.",
+  "reference_photo_urls": [
+   "https://www.thetarantulacollective.com/caresheets/grammostola-pulchra",
+   "https://en.wikipedia.org/wiki/Grammostola_pulchra"
+  ],
+  "behaviors": [
+   "shallow burrow under log/rock",
+   "sits motionless for long periods",
+   "slow",
+   "molt-hide",
+   "rare hair kicking"
+  ],
+  "notes": "Fetched: TTC, Wikipedia. Leg span 15-18 cm; body 70 mm assumed. Slow growth (up to 8 yr to maturity, Wikipedia). Hi price: 2-2.5 in listing $125 (was $155), sold out."
+ },
+ {
+  "id": "brazilian-salmon-pink",
+  "name": "Brazilian salmon pink birdeater",
+  "sci": "Lasiodora parahybana",
+  "group": "tarantula",
+  "popularity": {
+   "v": 4,
+   "src": "https://www.thetarantulacollective.com/caresheets (judged from retailer stock / Arachnoboards frequency)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 200,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 15,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    22,
+    28
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    65,
+    75
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    40,
+    40
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 25,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Large crickets/roaches; adults 1-2 large per week",
+  "feed_interval_days": {
+   "v": 7,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 45,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "molt_note": "Fast grower; molts every 6-12 months as adult",
+  "group_rule": "solitary",
+  "venom_handling": "Bite medically mild (bee-sting-like) but handling discouraged: fall risk, stress. Urticating hairs flicked at threats; irritate eyes/skin. Heavy hair kicker, large fangs.",
+  "price_usd": {
+   "lo": {
+    "v": 25,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 90,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 200,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   }
+  },
+  "colour": "Dark brown-black body with pinkish-salmon hairs fringing legs and abdomen (from general knowledge; verify against the photo pages)",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Lasiodora_parahybana",
+   "https://arachnoboards.com/"
+  ],
+  "behaviors": [
+   "dig",
+   "kick urticating hairs heavily",
+   "threat pose"
+  ],
+  "notes": "Popularity 4. One of the largest tarantulas (leg span up to 25 cm). Fields marked assumption are best estimates from general hobby knowledge, not read from a specific page; prices from tlist/retailer snippets only."
+ },
+ {
+  "id": "pinktoe",
+  "name": "Pinktoe",
+  "sci": "Avicularia avicularia",
+  "group": "tarantula",
+  "popularity": {
+   "v": 5,
+   "src": "https://www.thetarantulacollective.com/caresheets/avicularia-avicularia (default arboreal beginner species; judged)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 70,
+   "src": "https://www.thetarantulacollective.com/caresheets/avicularia-avicularia",
+   "status": "sourced"
+  },
+  "lifespan_yr": {
+   "v": 12,
+   "src": "https://www.thetarantulacollective.com/caresheets/avicularia-avicularia",
+   "status": "sourced"
+  },
+  "temp_c": {
+   "v": [
+    21,
+    27
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/avicularia-avicularia",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    60,
+    70
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/avicularia-avicularia",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 50,
+   "src": "https://www.thetarantulacollective.com/caresheets/avicularia-avicularia",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    20,
+    20
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/avicularia-avicularia",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 30,
+   "src": "https://www.thetarantulacollective.com/caresheets/avicularia-avicularia",
+   "status": "assumption"
+  },
+  "lifestyle": "arboreal",
+  "diet": "Crickets, roaches; adult every 2-3 weeks",
+  "feed_interval_days": {
+   "v": 17,
+   "src": "https://www.thetarantulacollective.com/caresheets/avicularia-avicularia",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 45,
+   "src": "https://www.thetarantulacollective.com/caresheets/avicularia-avicularia",
+   "status": "assumption"
+  },
+  "molt_note": "Wait 5-10 days after an adult molt before feeding; fangs must be solid black and exoskeleton hard (TTC). Refuses food and hides/webs shut before molt. Molts in a silk-sealed hide.",
+  "group_rule": "solitary, 1 per enclosure",
+  "venom_handling": "Venom mild; Type II urticating hairs (contact only, not kicked); may squirt feces; fast, jumps when startled.",
+  "price_usd": {
+   "lo": {
+    "v": 30,
+    "src": "https://joshsfrogs.com/sp/guyana-pink-toe-tarantula-avicularia-avicularia-captive-bred-jfgptt1218",
+    "status": "sourced"
+   },
+   "typical": {
+    "v": 35,
+    "src": "https://tydyeexotic.com/products/avicularia-avicularia-guyana-pinktoe",
+    "status": "sourced"
+   },
+   "hi": {
+    "v": 75,
+    "src": "https://www.newlands.ie/products/avicularia-avicularia-pink-toe-tarantula",
+    "status": "derived"
+   }
+  },
+  "colour": "Adult: dark/black-brown velvety body and legs with pink-tipped feet (Wikipedia: adults dark body with pinkish feet; juveniles reverse: pink body, dark feet). Sources: https://www.thetarantulacollective.com/caresheets/avicularia-avicularia, https://en.wikipedia.org/wiki/Avicularia_avicularia.",
+  "reference_photo_urls": [
+   "https://www.thetarantulacollective.com/caresheets/avicularia-avicularia",
+   "https://en.wikipedia.org/wiki/Avicularia_avicularia"
+  ],
+  "behaviors": [
+   "climb",
+   "web tubes between vertical hides",
+   "jump/run when startled",
+   "flick feces",
+   "threat pose",
+   "molt in web hide"
+  ],
+  "notes": "Fetched: TTC, Wikipedia. Substrate, floor and height: TTC gives no dimensions (arboreal, tall enclosure 20x20x30 cm assumed). Wikipedia females 6-9 yr, TTC 12 yr. Hi price EUR 69.99 converted."
+ },
+ {
+  "id": "mexican-redrump",
+  "name": "Mexican redrump",
+  "sci": "Tliltocatl vagans",
+  "group": "tarantula",
+  "popularity": {
+   "v": 4,
+   "src": "https://www.thetarantulacollective.com/caresheets (judged from retailer stock / Arachnoboards frequency)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 130,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 20,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    22,
+    27
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    60,
+    70
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    30,
+    30
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 20,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Crickets, roaches; adults 1-2 per week",
+  "feed_interval_days": {
+   "v": 7,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 60,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "molt_note": "Molts about once a year as adult",
+  "group_rule": "solitary",
+  "venom_handling": "Bite medically mild (bee-sting-like) but handling discouraged: fall risk, stress. Urticating hairs flicked at threats; irritate eyes/skin.",
+  "price_usd": {
+   "lo": {
+    "v": 25,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 55,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 100,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   }
+  },
+  "colour": "Black body and legs with reddish-orange hairs on the abdomen (from general knowledge; verify against the photo pages)",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Tliltocatl_vagans",
+   "https://arachnoboards.com/"
+  ],
+  "behaviors": [
+   "burrow",
+   "kick hairs",
+   "threat pose",
+   "dig"
+  ],
+  "notes": "Popularity 4. Often more defensive than albopilosus. Fields marked assumption are best estimates from general hobby knowledge, not read from a specific page; prices from tlist/retailer snippets only."
+ },
+ {
+  "id": "greenbottle-blue",
+  "name": "Greenbottle blue",
+  "sci": "Chromatopelma cyaneopubescens",
+  "group": "tarantula",
+  "popularity": {
+   "v": 4,
+   "src": "https://www.thetarantulacollective.com/caresheets/chromatopelma-cyaneopubescens (top-selling colourful New World tarantula; judged)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 70,
+   "src": "https://www.thetarantulacollective.com/caresheets/chromatopelma-cyaneopubescens",
+   "status": "sourced"
+  },
+  "lifespan_yr": {
+   "v": 14,
+   "src": "https://www.thetarantulacollective.com/caresheets/chromatopelma-cyaneopubescens",
+   "status": "sourced"
+  },
+  "temp_c": {
+   "v": [
+    20,
+    24
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/chromatopelma-cyaneopubescens",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    60
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/chromatopelma-cyaneopubescens",
+   "status": "derived"
+  },
+  "substrate_depth_mm": {
+   "v": 75,
+   "src": "https://www.thetarantulacollective.com/caresheets/chromatopelma-cyaneopubescens",
+   "status": "derived"
+  },
+  "min_floor_cm": {
+   "v": [
+    48,
+    24
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/chromatopelma-cyaneopubescens",
+   "status": "derived"
+  },
+  "min_height_cm": {
+   "v": 20,
+   "src": "https://www.thetarantulacollective.com/caresheets/chromatopelma-cyaneopubescens",
+   "status": "assumption"
+  },
+  "lifestyle": "semi-arboreal",
+  "diet": "Crickets, roaches; adult every 2-3 weeks; strong feeding response",
+  "feed_interval_days": {
+   "v": 17,
+   "src": "https://www.thetarantulacollective.com/caresheets/chromatopelma-cyaneopubescens",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 60,
+   "src": "https://www.thetarantulacollective.com/caresheets/chromatopelma-cyaneopubescens",
+   "status": "assumption"
+  },
+  "molt_note": "Wait 5-10 days after an adult molt before feeding; fangs must be solid black and exoskeleton hard (TTC). Refuses food and hides/webs shut before molt. Refuses food in premolt.",
+  "group_rule": "solitary, 1 per enclosure",
+  "venom_handling": "Venom mild; urticating hairs rarely kicked; skittish and fast, handling discouraged.",
+  "price_usd": {
+   "lo": {
+    "v": 44,
+    "src": "https://reach.dog/shop/spider-shoppe/products/chromatopelma-cyanopubescens-green-bottle-blue-0-5",
+    "status": "sourced"
+   },
+   "typical": {
+    "v": 50,
+    "src": "https://exoticsunlimitedusa.com/products/chromatopelma-cyaneopubescens-green-bottle-blue-0-5-free-after-200-spent",
+    "status": "sourced"
+   },
+   "hi": {
+    "v": 138,
+    "src": "https://reach.dog/shop/spider-shoppe/products/chromatopelma-cyanopubescens-green-bottle-blue-0-5",
+    "status": "sourced"
+   }
+  },
+  "colour": "Electric/metallic blue legs, metallic green carapace, fiery orange-red abdomen (TTC); Wikipedia: metallic blue legs, blue-green carapace. Sources: https://www.thetarantulacollective.com/caresheets/chromatopelma-cyaneopubescens, https://en.wikipedia.org/wiki/Chromatopelma_cyaneopubescens.",
+  "reference_photo_urls": [
+   "https://www.thetarantulacollective.com/caresheets/chromatopelma-cyaneopubescens",
+   "https://en.wikipedia.org/wiki/Chromatopelma_cyaneopubescens"
+  ],
+  "behaviors": [
+   "heavy webbing and silk tunnels",
+   "web-extended burrow entrance",
+   "active, out in open",
+   "fast",
+   "kick urticating hairs",
+   "molt-hide"
+  ],
+  "notes": "Fetched: TTC, Wikipedia. Desert Paraguana Peninsula (Venezuela) origin. TTC humidity moderate, breeding 50-60 %; used 50-60 derived. Substrate 1/3-1/2 of enclosure. Hi price is a 2 in specimen $138 (same page now shows $44 for 0.75 in)."
+ },
+ {
+  "id": "mexican-fireleg",
+  "name": "Mexican fireleg",
+  "sci": "Brachypelma boehmei",
+  "group": "tarantula",
+  "popularity": {
+   "v": 4,
+   "src": "https://www.thetarantulacollective.com/caresheets (judged from retailer stock / Arachnoboards frequency)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 150,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 25,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    22,
+    27
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    60,
+    70
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    30,
+    30
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 20,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifestyle": "burrower",
+  "diet": "Crickets, roaches; adults 1 per week",
+  "feed_interval_days": {
+   "v": 10,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 60,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "molt_note": "Annual molt as adult",
+  "group_rule": "solitary",
+  "venom_handling": "Bite medically mild (bee-sting-like) but handling discouraged: fall risk, stress. Urticating hairs flicked at threats; irritate eyes/skin.",
+  "price_usd": {
+   "lo": {
+    "v": 35,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 90,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 150,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   }
+  },
+  "colour": "Black carapace; orange-red legs with black bands; orange abdomen (from general knowledge; verify against the photo pages)",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Brachypelma_boehmei",
+   "https://arachnoboards.com/"
+  ],
+  "behaviors": [
+   "burrow",
+   "hide",
+   "kick hairs"
+  ],
+  "notes": "Popularity 4. CITES II. Fields marked assumption are best estimates from general hobby knowledge, not read from a specific page; prices from tlist/retailer snippets only."
+ },
+ {
+  "id": "texas-brown",
+  "name": "Texas brown / desert blond",
+  "sci": "Aphonopelma hentzi / chalcodes",
+  "group": "tarantula",
+  "popularity": {
+   "v": 3,
+   "src": "https://www.thetarantulacollective.com/caresheets (judged from retailer stock / Arachnoboards frequency)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 120,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 25,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    18,
+    30
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    40,
+    60
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    30,
+    30
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 20,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifestyle": "burrower",
+  "diet": "Crickets, roaches; adults 1 per 1-2 weeks",
+  "feed_interval_days": {
+   "v": 14,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 120,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "molt_note": "Females molt about yearly",
+  "group_rule": "solitary",
+  "venom_handling": "Bite medically mild (bee-sting-like) but handling discouraged: fall risk, stress. Urticating hairs flicked at threats; irritate eyes/skin.",
+  "price_usd": {
+   "lo": {
+    "v": 20,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 50,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 90,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   }
+  },
+  "colour": "Texas brown: tan to brown hairs, dark abdomen; desert blond: pale sand/tan hairs, darker abdomen (from general knowledge; verify against the photo pages)",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Aphonopelma_hentzi",
+   "https://arachnoboards.com/"
+  ],
+  "behaviors": [
+   "burrow",
+   "hide",
+   "tolerates dry conditions"
+  ],
+  "notes": "Popularity 3. Species varies in trade; many are wild-collected (not CITES). Fields marked assumption are best estimates from general hobby knowledge, not read from a specific page; prices from tlist/retailer snippets only."
+ },
+ {
+  "id": "emperor-scorpion",
+  "name": "Emperor scorpion",
+  "sci": "Pandinus imperator",
+  "group": "scorpion",
+  "popularity": {
+   "v": 5,
+   "src": "https://www.thetarantulacollective.com/caresheets/emperor-scorpion (standard beginner scorpion; sold at chains; judged)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 165,
+   "src": "https://www.thetarantulacollective.com/caresheets/emperor-scorpion",
+   "status": "derived"
+  },
+  "lifespan_yr": {
+   "v": 7,
+   "src": "https://www.thetarantulacollective.com/caresheets/emperor-scorpion",
+   "status": "derived"
+  },
+  "temp_c": {
+   "v": [
+    22,
+    28
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/emperor-scorpion",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    75,
+    80
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/emperor-scorpion",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "https://www.thetarantulacollective.com/caresheets/emperor-scorpion",
+   "status": "derived"
+  },
+  "min_floor_cm": {
+   "v": [
+    46,
+    30
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/emperor-scorpion",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 25,
+   "src": "https://www.thetarantulacollective.com/caresheets/emperor-scorpion",
+   "status": "assumption"
+  },
+  "lifestyle": "burrower",
+  "diet": "Crickets, dubia roaches; adult larger prey every 7-14 days",
+  "feed_interval_days": {
+   "v": 10,
+   "src": "https://www.thetarantulacollective.com/caresheets/emperor-scorpion",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 30,
+   "src": "https://www.thetarantulacollective.com/caresheets/emperor-scorpion",
+   "status": "assumption"
+  },
+  "molt_note": "Molts several times as juvenile, about yearly as adult; stays burrowed and soft for days, do not feed or handle then.",
+  "group_rule": "solitary recommended; communal only for experienced keepers with ample space and hides (TTC)",
+  "venom_handling": "Sting mild, no medical significance unless allergic; prefers to pinch with big claws; handling discouraged, use tongs.",
+  "price_usd": {
+   "lo": {
+    "v": 44,
+    "src": "https://bugsincyberspace.com/product/emperor-scorpion",
+    "status": "sourced"
+   },
+   "typical": {
+    "v": 60,
+    "src": "https://tydyeexotic.com/products/pandinus-imperator-emperor-scorpion-perfect-beginner-species-live-arrival-guarantee",
+    "status": "sourced"
+   },
+   "hi": {
+    "v": 150,
+    "src": "https://reach.dog/shop/reptile-pets-direct/products/emperor-scorpion",
+    "status": "sourced"
+   }
+  },
+  "colour": "Glossy black, metallic greenish-black body (Wikipedia); large pincers blackish-red with granular texture; telson amber to reddish (TTC); fluoresces blue-green under UV. Leg colour not described on either page (assumption: black to dark brown). Sources: https://en.wikipedia.org/wiki/Pandinus_imperator, https://www.thetarantulacollective.com/caresheets/emperor-scorpion.",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Pandinus_imperator",
+   "https://www.thetarantulacollective.com/caresheets/emperor-scorpion"
+  ],
+  "behaviors": [
+   "burrow",
+   "hide under bark/rocks",
+   "claw threat pose",
+   "nocturnal",
+   "pinch rather than sting",
+   "glows under UV"
+  ],
+  "notes": "Fetched: TTC, Wikipedia; dubiaroaches page gave HTTP 429. Search summary of other sheets: 70-90 % RH, 78-82 F. Size 6-7 in TTC (152-178 mm), 20 cm Wikipedia; 165 mm derived. TTC names 12-18 in cube enclosures; floor 46x30 cm assumed from 10 gallon in search summaries. Lo price listing is out of stock; tydye and reach.dog prices from search-result text."
+ },
+ {
+  "id": "asian-forest-scorpion",
+  "name": "Asian forest scorpion",
+  "sci": "Heterometrus spinifer",
+  "group": "scorpion",
+  "popularity": {
+   "v": 4,
+   "src": "https://thetyedyediguana.com/care-sheets/asian-forest-scorpion-heterometrus-spinifer (common second scorpion after emperor, sold at chains; judged)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 110,
+   "src": "https://en.wikipedia.org/wiki/Heterometrus_spinifer",
+   "status": "derived"
+  },
+  "lifespan_yr": {
+   "v": 5,
+   "src": "https://thetyedyediguana.com/care-sheets/asian-forest-scorpion-heterometrus-spinifer",
+   "status": "sourced"
+  },
+  "temp_c": {
+   "v": [
+    22,
+    29
+   ],
+   "src": "https://thetyedyediguana.com/care-sheets/asian-forest-scorpion-heterometrus-spinifer",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    70,
+    80
+   ],
+   "src": "https://thetyedyediguana.com/care-sheets/asian-forest-scorpion-heterometrus-spinifer",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 127,
+   "src": "https://thetyedyediguana.com/care-sheets/asian-forest-scorpion-heterometrus-spinifer",
+   "status": "derived"
+  },
+  "min_floor_cm": {
+   "v": [
+    51,
+    25
+   ],
+   "src": "https://thetyedyediguana.com/care-sheets/asian-forest-scorpion-heterometrus-spinifer",
+   "status": "derived"
+  },
+  "min_height_cm": {
+   "v": 25,
+   "src": "https://thetyedyediguana.com/care-sheets/asian-forest-scorpion-heterometrus-spinifer",
+   "status": "assumption"
+  },
+  "lifestyle": "burrower",
+  "diet": "Crickets, dubia roaches, locusts; once a week",
+  "feed_interval_days": {
+   "v": 7,
+   "src": "https://thetyedyediguana.com/care-sheets/asian-forest-scorpion-heterometrus-spinifer",
+   "status": "sourced"
+  },
+  "fast_tolerance_days": {
+   "v": 21,
+   "src": "https://thetyedyediguana.com/care-sheets/asian-forest-scorpion-heterometrus-spinifer",
+   "status": "assumption"
+  },
+  "molt_note": "Never feed during molt; wait at least a week after, mandibles and exoskeleton are soft (Tye Dye).",
+  "group_rule": "solitary best; communal only same-size animals, cannibalism if sizes differ (Tye Dye)",
+  "venom_handling": "Sting causes severe pain and mild numbness, not lethal (Wikipedia); uses big pincers first; skittish, defensive; handle only with tongs.",
+  "price_usd": {
+   "lo": {
+    "v": 30,
+    "src": "https://www.wardsci.com/us/en/product/26084858/wards-malaysian-forest-scorpion",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 49.95,
+    "src": "https://www.wardsci.com/us/en/product/26084858/wards-malaysian-forest-scorpion",
+    "status": "sourced"
+   },
+   "hi": {
+    "v": 100,
+    "src": "https://www.wardsci.com/us/en/product/26084858/wards-malaysian-forest-scorpion",
+    "status": "assumption"
+   }
+  },
+  "colour": "Shiny black body with grey-green reflections (Wikipedia); pincers and legs not described on any fetched page (assumption: black to dark brown). Sources: https://en.wikipedia.org/wiki/Heterometrus_spinifer.",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Heterometrus_spinifer",
+   "https://thetyedyediguana.com/care-sheets/asian-forest-scorpion-heterometrus-spinifer"
+  ],
+  "behaviors": [
+   "burrow by day",
+   "hide under logs/bark",
+   "pincer threat pose",
+   "climbs and escapes lids",
+   "nocturnal"
+  ],
+  "notes": "Fetched: Wikipedia, Tye Dye Iguana care sheet. reptilesupply page gave HTTP 429. Length 10-12 cm Wikipedia, 3-5 in Tye Dye; 110 mm used. Substrate 4-6 in (102-152 mm); 127 mm midpoint. Floor from 10 gallon (20x10 in). Only price: Ward Science classroom listing $49.95 via search snippet; lo/hi assumption."
+ },
+ {
+  "id": "arizona-hairy-scorpion",
+  "name": "Arizona desert hairy scorpion",
+  "sci": "Hadrurus arizonensis",
+  "group": "scorpion",
+  "popularity": {
+   "v": 2,
+   "src": "https://www.thetarantulacollective.com/caresheets (judged from retailer stock / Arachnoboards frequency)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 150,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 15,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    24,
+    32
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    20,
+    40
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    50,
+    30
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 20,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifestyle": "fossorial",
+  "diet": "Crickets, roaches; adults 1 per week",
+  "feed_interval_days": {
+   "v": 7,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 30,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "molt_note": "Molts about yearly as adult",
+  "group_rule": "Solitary",
+  "venom_handling": "Sting painful, not deadly; escape-proof lid, use tongs.",
+  "price_usd": {
+   "lo": {
+    "v": 30,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 60,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 100,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   }
+  },
+  "colour": "Yellow-tan carapace and limbs, dark brown mesosoma, black claws, hairy (from general knowledge; verify against the photo pages)",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Hadrurus_arizonensis",
+   "https://arachnoboards.com/"
+  ],
+  "behaviors": [
+   "dig deep burrow",
+   "claw threat",
+   "tail up"
+  ],
+  "notes": "Popularity 2: less common in trade; included because still kept. Dry desert conditions 20-40 % RH. Fields marked assumption are best estimates from general hobby knowledge, not read from a specific page; prices from tlist/retailer snippets only."
+ },
+ {
+  "id": "bold-jumping-spider",
+  "name": "Bold jumping spider",
+  "sci": "Phidippus audax",
+  "group": "jumpingspider",
+  "popularity": {
+   "v": 5,
+   "src": "https://www.thetarantulacollective.com/caresheets (judged from retailer stock / Arachnoboards frequency)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 13,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 1.5,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    21,
+    27
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    70
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 20,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    15,
+    15
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 20,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifestyle": "semi-arboreal",
+  "diet": "Fruit flies, houseflies, small crickets; adults every 2-3 days",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "molt_note": "Molts in silk nest; leave undisturbed",
+  "group_rule": "Solitary",
+  "venom_handling": "Bite mild; may bite if squeezed.",
+  "price_usd": {
+   "lo": {
+    "v": 10,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 25,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 45,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   }
+  },
+  "colour": "Black with white spots on abdomen, iridescent green chelicerae (from general knowledge; verify against the photo pages)",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Phidippus_audax",
+   "https://arachnoboards.com/"
+  ],
+  "behaviors": [
+   "jump",
+   "silk nest",
+   "hunt by sight",
+   "molt-hide in silk"
+  ],
+  "notes": "Popularity 5: widely kept and easy to find. Fields marked assumption are best estimates from general hobby knowledge, not read from a specific page; prices from tlist/retailer snippets only."
+ },
+ {
+  "id": "hyllus-diardi",
+  "name": "Heavy jumper",
+  "sci": "Hyllus diardi",
+  "group": "jumpingspider",
+  "popularity": {
+   "v": 4,
+   "src": "https://www.thetarantulacollective.com/caresheets (judged from retailer stock / Arachnoboards frequency)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 20,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 2,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    25,
+    30
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    60,
+    75
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 20,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    20,
+    20
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 30,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "lifestyle": "semi-arboreal",
+  "diet": "Crickets, flies; adults every 2-3 days",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "https://www.thetarantulacollective.com/caresheets",
+   "status": "assumption"
+  },
+  "molt_note": "Molts in silk nest",
+  "group_rule": "Solitary",
+  "venom_handling": "Bite mild; handle with care.",
+  "price_usd": {
+   "lo": {
+    "v": 20,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 55,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 100,
+    "src": "https://tlist.pages.dev/",
+    "status": "assumption"
+   }
+  },
+  "colour": "Black body with orange-gold fringe and white face hairs; males black with orange/yellow bands (from general knowledge; verify against the photo pages)",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Hyllus_diardi",
+   "https://arachnoboards.com/"
+  ],
+  "behaviors": [
+   "jump",
+   "silk nest",
+   "climb",
+   "molt-hide"
+  ],
+  "notes": "Popularity 4: popular hobby spider. Fields marked assumption are best estimates from general hobby knowledge, not read from a specific page; prices from tlist/retailer snippets only."
+ },
+ {
+  "id": "dwarfwhiteisopod",
+  "name": "Dwarf white isopod",
+  "sci": "Trichorhina tomentosa",
+  "group": "isopod",
+  "popularity": {
+   "v": 4,
+   "src": "https://en.wikipedia.org/wiki/Trichorhina_tomentosa",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 4,
+   "src": "https://exuvium.net/trichorhina-tomentosa-dwarf-white-isopods-for-sale",
+   "status": "derived"
+  },
+  "lifespan_yr": {
+   "v": 2.5,
+   "src": "https://exuvium.net/trichorhina-tomentosa-dwarf-white-isopods-for-sale",
+   "status": "derived"
+  },
+  "temp_c": {
+   "v": [
+    15,
+    28
+   ],
+   "src": "https://exuvium.net/trichorhina-tomentosa-dwarf-white-isopods-for-sale",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    55,
+    75
+   ],
+   "src": "https://exuvium.net/trichorhina-tomentosa-dwarf-white-isopods-for-sale",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 50,
+   "src": "https://exuvium.net/trichorhina-tomentosa-dwarf-white-isopods-for-sale",
+   "status": "sourced"
+  },
+  "min_floor_cm": {
+   "v": [
+    15,
+    10
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 8,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Fruit, vegetables, greens, fish food, forest moss, decaying leaves, rotting white wood, mushrooms, shed skins; protein at least twice a week; calcium (cuttlebone/limestone)",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Sheds in two halves like all isopods; stays hidden",
+  "group_rule": "colony: 50-500+ per tub, parthenogenetic",
+  "venom_handling": "None; harmless, do not handle (fragile)",
+  "price_usd": {
+   "lo": {
+    "v": 0.1,
+    "src": "https://exuvium.net/trichorhina-tomentosa-dwarf-white-isopods-for-sale",
+    "status": "derived"
+   },
+   "typical": {
+    "v": 0.14,
+    "src": "https://exuvium.net/trichorhina-tomentosa-dwarf-white-isopods-for-sale",
+    "status": "derived"
+   },
+   "hi": {
+    "v": 0.3,
+    "src": "https://exuvium.net/trichorhina-tomentosa-dwarf-white-isopods-for-sale",
+    "status": "assumption"
+   }
+  },
+  "colour": "Uniformly transparent/opaque white, no patterning, tiny soft body with dark eyes (Wikipedia 'uniformly white'; Exuvium 'transparent white')",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Trichorhina_tomentosa",
+   "https://exuvium.net/trichorhina-tomentosa-dwarf-white-isopods-for-sale"
+  ],
+  "behaviors": [
+   "burrow into leaf litter",
+   "hide under bark",
+   "molt-hide",
+   "clumping"
+  ],
+  "notes": "Sources fetched: Exuvium product page (3-4 mm, 15-28 C, 55-75 %, >=5 cm substrate, 2-3 yr, EUR 4 per 30 = ~USD 0.14 each, EUR 19 per 150), Wikipedia (2-3 mm, white, tropical Americas). Bio Dude page 429-blocked; search snippet there says 72-82 F ideal. Adult size 3-4 mm per Exuvium (brief's 4-5 mm is slightly high; 4 mm used). Per-animal USD price derived from EUR pack at ~1.08; hi is assumption (US small-pack price). Popularity is an assumption (ubiquitous clean-up crew). Floor/height/feed interval/fast tolerance/group size remain assumptions from round 1."
+ },
+ {
+  "id": "powderblueisopod",
+  "name": "Powder blue isopod",
+  "sci": "Porcellionides pruinosus",
+  "group": "isopod",
+  "popularity": {
+   "v": 4,
+   "src": "https://terrariumtribe.com/powder-blue-isopods/",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 11,
+   "src": "https://terrariumtribe.com/powder-blue-isopods/",
+   "status": "sourced"
+  },
+  "lifespan_yr": {
+   "v": 2.5,
+   "src": "https://en.wikipedia.org/wiki/Porcellionides_pruinosus",
+   "status": "derived"
+  },
+  "temp_c": {
+   "v": [
+    21,
+    27
+   ],
+   "src": "https://terrariumtribe.com/powder-blue-isopods/",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    75
+   ],
+   "src": "https://terrariumtribe.com/powder-blue-isopods/",
+   "status": "derived"
+  },
+  "substrate_depth_mm": {
+   "v": 40,
+   "src": "https://terrariumtribe.com/powder-blue-isopods/",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    20,
+    15
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 10,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Detritus (leaf litter, rotting wood) main food; vegetable cuttings; protein (fish flakes/pellets) a couple of times a week; calcium (cuttlebone, eggshell); less fruit (attracts pests)",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "https://terrariumtribe.com/powder-blue-isopods/",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Sheds in halves; hides",
+  "group_rule": "colony: 20-100+ per tub; very prolific",
+  "venom_handling": "None",
+  "price_usd": {
+   "lo": {
+    "v": 0.8,
+    "src": "search-result snippet: Reptile Supply 10 count $8 (not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 1.1,
+    "src": "search-result snippet: Dubia.com / MorphMarket 10 count $10.99 (not fetched)",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 2,
+    "src": "search-result snippet: Imperial Reptiles 10 ct $19.99 (not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Bluish-grey 'powdered' body with light brown or grey mottling; underside, legs and antennae bright powder blue (Bantam); pale silver to darker chrome with soft metallic blue hues (Terrarium Tribe). Powder orange and other colour forms exist (Wikipedia).",
+  "reference_photo_urls": [
+   "https://terrariumtribe.com/powder-blue-isopods/",
+   "https://bantam.earth/?p=15178",
+   "https://en.wikipedia.org/wiki/Porcellionides_pruinosus"
+  ],
+  "behaviors": [
+   "burrow",
+   "hide under bark",
+   "fast runner",
+   "clump"
+  ],
+  "notes": "Fetched in full: Terrarium Tribe care guide (just over 1 cm, 70-80 F = 21-27 C, >50 % RH, shoebox culture, protein a couple times a week, colour), Bantam (colour; 64-80 F; 1-2 yr; conflicting sizes), Wikipedia (captive 2-3 yr, wild 11-14 months; colour forms Orange, Powder Blue, Red Koi). Humidity 50-75 % = lower bound sourced (>50 %), upper bound assumed. Prices are per animal derived from 10-count snippet listings ($8-20 per 10; retailer pages 429 on fetch) so all assumption. Brief's 10-12 mm size confirmed. Remaining assumptions: popularity, substrate depth, humidity upper bound, floor/height, fast tolerance, all prices."
+ },
+ {
+  "id": "zebraisopod",
+  "name": "Zebra isopod",
+  "sci": "Armadillidium maculatum",
+  "group": "isopod",
+  "popularity": {
+   "v": 5,
+   "src": "https://joshsfrogs.com/sp/armadillidium-maculatum-zebra-isopods-10-count-jfd58005",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 18,
+   "src": "https://www.richardsinverts.com/care-sheet-armadillidium-maculatum",
+   "status": "sourced"
+  },
+  "lifespan_yr": {
+   "v": 3,
+   "src": "https://en.wikipedia.org/wiki/Armadillidium_maculatum",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    18,
+    25
+   ],
+   "src": "https://www.richardsinverts.com/care-sheet-armadillidium-maculatum",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    40,
+    75
+   ],
+   "src": "https://www.richardsinverts.com/care-sheet-armadillidium-maculatum",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 30,
+   "src": "https://www.richardsinverts.com/care-sheet-armadillidium-maculatum",
+   "status": "sourced"
+  },
+  "min_floor_cm": {
+   "v": [
+    25,
+    15
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 10,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Mainly detritus (hardwood leaf litter, moss, rotting wood); supplements 1-2x/week of vegetables, fruit and protein; calcium (cuttlebone/eggshell); also lichen, bark, algae, shed skins (Wikipedia)",
+  "feed_interval_days": {
+   "v": 4,
+   "src": "https://www.richardsinverts.com/care-sheet-armadillidium-maculatum",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Sheds in halves; hides; may stop eating before molt",
+  "group_rule": "colony: 10-50 per tub; slow breeder",
+  "venom_handling": "None; rolls into ball",
+  "price_usd": {
+   "lo": {
+    "v": 2,
+    "src": "search-result snippet: reach.dog 'zebra 10 ct' $20 (not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 3,
+    "src": "https://joshsfrogs.com/sp/armadillidium-maculatum-zebra-isopods-10-count-jfd58005",
+    "status": "derived"
+   },
+   "hi": {
+    "v": 3.5,
+    "src": "search-result snippet: Rubber Ducky Isopods 10 count $34.99 (not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Black and white stripes (name source); wild form is spotted, with connected white spots reading as stripes; dark grey-black body, legs grey. Hobby morphs: Chocolate, Champagne, Yellow, Paradox, Yellow Paradox, High White (Richard's Inverts, Wikipedia).",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Armadillidium_maculatum",
+   "https://www.richardsinverts.com/care-sheet-armadillidium-maculatum",
+   "https://joshsfrogs.com/sp/armadillidium-maculatum-zebra-isopods-10-count-jfd58005"
+  ],
+  "behaviors": [
+   "burrow",
+   "roll into ball when threatened",
+   "hide under bark",
+   "molt-hide"
+  ],
+  "notes": "Fetched in full: Richard's Inverts care sheet (up to 18 mm, 18-25 C, 'medium' humidity = half moist half dry, >=3 cm substrate, supplements 1-2x/week, morphs), Wikipedia (up to 18 mm, SE France/Monaco, diet), Josh's Frogs product page ($29.99 per 10 = ~$3 each, 'large', stripes, sold out, 1 five-star review). Round-1 price of $2 each (Dubia.com) was not verified and is replaced; 10-count prices run $20-35 per 10 in snippets. Round-1 humidity 40-75 % was from a Bio Dude snippet (page 429 this round), now marked assumption (Richard's gives only 'medium'). Dubia.com and Bio Dude pages returned 429. Remaining assumptions: popularity, lifespan (3 yr), humidity, floor/height, fast tolerance, lo/hi price."
+ },
+ {
+  "id": "rubberduckyisopod",
+  "name": "Rubber ducky isopod",
+  "sci": "Cubaris sp. 'Rubber Ducky'",
+  "group": "isopod",
+  "popularity": {
+   "v": 5,
+   "src": "https://bantam.earth/?p=13335",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 20,
+   "src": "https://bantam.earth/?p=13335",
+   "status": "sourced"
+  },
+  "lifespan_yr": {
+   "v": 3,
+   "src": "https://bantam.earth/?p=13335",
+   "status": "derived"
+  },
+  "temp_c": {
+   "v": [
+    24,
+    29
+   ],
+   "src": "https://www.formiculture.com/topic/21977-the-ultimate-cubaris-guide-from-the-wild-to-captivity/",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    70,
+    80
+   ],
+   "src": "https://bantam.earth/?p=13335",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "https://www.formiculture.com/topic/21977-the-ultimate-cubaris-guide-from-the-wild-to-captivity/",
+   "status": "sourced"
+  },
+  "min_floor_cm": {
+   "v": [
+    30,
+    20
+   ],
+   "src": "https://www.formiculture.com/topic/21977-the-ultimate-cubaris-guide-from-the-wild-to-captivity/",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 15,
+   "src": "https://www.formiculture.com/topic/21977-the-ultimate-cubaris-guide-from-the-wild-to-captivity/",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Leaf litter is most of the diet; small amounts of carrot, sweet potato, squash, soft fruit, fish flakes/pellets or other protein, live moss; calcium (cuttlebone, eggshell powder, limestone)",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "https://www.formiculture.com/topic/21977-the-ultimate-cubaris-guide-from-the-wild-to-captivity/",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Sheds in halves; hides in substrate; very little ventilation needed (half-vented bin with moisture gradient)",
+  "group_rule": "colony: 10+ starter colony (6-qt bin standard for a new colony); slow breeder; can also be kept alone or in a small group",
+  "venom_handling": "None; shy, rolls into a ball when exposed; burrows",
+  "price_usd": {
+   "lo": {
+    "v": 5,
+    "src": "search-result snippet: The Tarantula Collective 10+ colony $50 (page 404 on fetch)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 6,
+    "src": "search-result snippet: Reptanicals 10+ listing $59.99 (page 410 on fetch)",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 25,
+    "src": "search-result snippet: Rubber Ducky Isopods 'Rubber Ducky OG' 6-count $149.49",
+    "status": "assumption"
+   }
+  },
+  "colour": "Bright yellow, shades of yellow and brown on adults, juveniles start out white (Bantam); the dark brown-black head/rear patches are from author knowledge; the face is 'ducky like' (Formiculture).",
+  "reference_photo_urls": [
+   "https://bantam.earth/?p=13335",
+   "https://www.formiculture.com/topic/21977-the-ultimate-cubaris-guide-from-the-wild-to-captivity/",
+   "https://arachnoboards.com/threads/cubaris-sp-rubber-ducky-care.334545"
+  ],
+  "behaviors": [
+   "burrow",
+   "hide under bark",
+   "molt-hide"
+  ],
+  "notes": "Fetched in full: Bantam guide (max ~0.8 in = 20 mm, 1-2 yr up to 4, 70-80 % RH, 25-30 C tank, 70-80 F general, yellow), Formiculture Cubaris guide (75-85 F ideal, >=4 in substrate, 6-qt starter bin, half-vented), Arachnoboards thread (needs little ventilation, eat dog food/fruit/moss, slow breeders, expensive). Brief's search-snippet 2 cm max agrees. Retailer pages (Tarantula Collective, Reptanicals, rubberduckyisopods.com, Fearnot) were 404/410/429 on fetch, so ALL price fields are snippet-only assumptions (per-animal USD derived: $50 and $59.99 per 10+ colony, $149.49 per 6 of the premium OG line). Lifespan 3 = midpoint of 1-4 yr. Cubaris sp. 'Rubber Ducky' is undescribed; some sold stock may be different species. Remaining assumptions: popularity, floor/height, feed interval, fast tolerance, all prices."
+ },
+ {
+  "id": "giantorangeisopod",
+  "name": "Giant orange isopod",
+  "sci": "Porcellio expansus 'Orange'",
+  "group": "isopod",
+  "popularity": {
+   "v": 4,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 16,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    18,
+    26
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    75
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 40,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    25,
+    15
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 10,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Leaf litter, rotting wood, vegetables, protein, calcium",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Sheds in halves; hides",
+  "group_rule": "colony: 10-50 per tub",
+  "venom_handling": "None",
+  "price_usd": {
+   "lo": {
+    "v": 3,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 5,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 10,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Bright orange body, pale mottled orange legs; dark eyes",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Porcellio+expansus",
+   "https://commons.wikimedia.org/w/index.php?search=Porcellio+expansus"
+  ],
+  "behaviors": [
+   "burrow",
+   "hide under bark",
+   "climb bark"
+  ],
+  "notes": "Brief listed 'Porcellio expansus / Porcellionides pruinosus?': orange morph here is P. expansus 'Orange'; P. pruinosus 'Powder Orange' is a separate smaller form. Price assumed. Reference photo URLs are generic taxon-search pages (iNaturalist / Wikimedia Commons), not individually reviewed photos; colour text is from author knowledge."
+ },
+ {
+  "id": "dairycowisopod",
+  "name": "Dairy cow / clown isopod",
+  "sci": "Porcellio laevis",
+  "group": "isopod",
+  "popularity": {
+   "v": 5,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 18,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    18,
+    28
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    70
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 40,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    25,
+    15
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 10,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Leaf litter, rotting wood, vegetables, protein, calcium",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Sheds in halves; hides",
+  "group_rule": "colony: 10-100 per tub",
+  "venom_handling": "None",
+  "price_usd": {
+   "lo": {
+    "v": 2,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 3,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 6,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Cream-white body with black-brown irregular patches like Holstein cow markings; legs pale grey",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Porcellio+laevis",
+   "https://commons.wikimedia.org/w/index.php?search=Porcellio+laevis"
+  ],
+  "behaviors": [
+   "fast runner",
+   "burrow",
+   "hide under bark"
+  ],
+  "notes": "Fast and prolific; price assumed. Reference photo URLs are generic taxon-search pages (iNaturalist / Wikimedia Commons), not individually reviewed photos; colour text is from author knowledge."
+ },
+ {
+  "id": "pillbug",
+  "name": "Pill bug / common roly-poly",
+  "sci": "Armadillidium vulgare",
+  "group": "isopod",
+  "popularity": {
+   "v": 4,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 18,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    15,
+    26
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    75
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 40,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    25,
+    15
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 10,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Leaf litter, rotting wood, vegetables, calcium",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Sheds in halves; hides",
+  "group_rule": "colony: 10-100 per tub",
+  "venom_handling": "None; rolls into a perfect ball",
+  "price_usd": {
+   "lo": {
+    "v": 1.5,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 2,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 5,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Slate grey to dark charcoal smooth domed carapace; legs grey; some lines (magic potion, orange, white) differ",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Armadillidium+vulgare",
+   "https://commons.wikimedia.org/w/index.php?search=Armadillidium+vulgare"
+  ],
+  "behaviors": [
+   "roll into ball",
+   "burrow",
+   "hide under bark"
+  ],
+  "notes": "Common; price assumed. Reference photo URLs are generic taxon-search pages (iNaturalist / Wikimedia Commons), not individually reviewed photos; colour text is from author knowledge."
+ },
+ {
+  "id": "pandakingisopod",
+  "name": "Panda king isopod",
+  "sci": "Cubaris sp. 'Panda King'",
+  "group": "isopod",
+  "popularity": {
+   "v": 5,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 16,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    22,
+    28
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    75
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 40,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    25,
+    15
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 10,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Leaf litter, rotting wood, vegetables, protein, calcium",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Sheds in halves; sensitive to dry or cold",
+  "group_rule": "colony: 10-30 per tub; slow breeder",
+  "venom_handling": "None; rolls into ball",
+  "price_usd": {
+   "lo": {
+    "v": 15,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 25,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 60,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Glossy black body with sharply contrasting white head/ends and white edging, panda-like; legs black",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Cubaris+panda+king",
+   "https://commons.wikimedia.org/w/index.php?search=Cubaris+panda+king"
+  ],
+  "behaviors": [
+   "roll into ball",
+   "burrow",
+   "hide under bark",
+   "molt-hide"
+  ],
+  "notes": "Highly sought Cubaris morph; price range assumed. Reference photo URLs are generic taxon-search pages (iNaturalist / Wikimedia Commons), not individually reviewed photos; colour text is from author knowledge."
+ },
+ {
+  "id": "giantafricanmillipede",
+  "name": "Giant African millipede",
+  "sci": "Archispirostreptus gigas",
+  "group": "millipede",
+  "popularity": {
+   "v": 5,
+   "src": "https://www.reptilecentre.com/info-giant-african-millipede-care-sheet",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 250,
+   "src": "https://vetverified.com/articles/the-complete-guide-to-keeping-african-giant-millipedes",
+   "status": "derived"
+  },
+  "lifespan_yr": {
+   "v": 8.5,
+   "src": "https://vetverified.com/articles/the-complete-guide-to-keeping-african-giant-millipedes",
+   "status": "sourced"
+  },
+  "temp_c": {
+   "v": [
+    22,
+    26
+   ],
+   "src": "https://vetverified.com/articles/the-complete-guide-to-keeping-african-giant-millipedes",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    70,
+    80
+   ],
+   "src": "https://vetverified.com/articles/the-complete-guide-to-keeping-african-giant-millipedes",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 125,
+   "src": "https://vetverified.com/articles/the-complete-guide-to-keeping-african-giant-millipedes",
+   "status": "derived"
+  },
+  "min_floor_cm": {
+   "v": [
+    91,
+    46
+   ],
+   "src": "https://dubiaroaches.com/blogs/invert-care/african-giant-millipede-care-sheet",
+   "status": "sourced"
+  },
+  "min_height_cm": {
+   "v": 46,
+   "src": "https://dubiaroaches.com/blogs/invert-care/african-giant-millipede-care-sheet",
+   "status": "sourced"
+  },
+  "lifestyle": "burrower",
+  "diet": "Decaying leaves and rotting hardwood staples; cucumber, courgette, carrot, sweet potato, occasional apple/banana; calcium (cuttlebone, crushed eggshell); avoid citrus, salted/processed food, pesticide-treated food",
+  "feed_interval_days": {
+   "v": 2.5,
+   "src": "https://vetverified.com/articles/the-complete-guide-to-keeping-african-giant-millipedes",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Stays buried while molting; do not disturb; frequent disturbance causes failed (often fatal) molts; higher humidity helps",
+  "group_rule": "colony or solitary; vetverified: avoid overcrowding, larger enclosure for pairs/groups; Dubia.com guide (earlier round, not re-fetched): 2-5 per 40 gal",
+  "venom_handling": "Curls into a spiral and secretes a mild defensive fluid (toluquinone, 2-methoxy-3-methylbenzoquinone per Wikipedia); can irritate skin/eyes; wash hands after handling",
+  "price_usd": {
+   "lo": {
+    "v": 49.99,
+    "src": "search-result snippet of a US retailer listing (page not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 84.99,
+    "src": "https://bugsincyberspace.com/product/agb-african-giant-black-millipede",
+    "status": "sourced"
+   },
+   "hi": {
+    "v": 99.99,
+    "src": "search-result snippet of a US captive-bred listing (page not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Glossy black to dark brown cylindrical body, legs rust/orange-brown, often slightly rust-tinted rear edges of segments (not described on any fetched page; from author knowledge and the 'black' trade name).",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Archispirostreptus_gigas",
+   "https://bugsincyberspace.com/product/agb-african-giant-black-millipede"
+  ],
+  "behaviors": [
+   "burrow",
+   "climb enclosure walls",
+   "coil when threatened",
+   "secrete defensive fluid",
+   "molt-hide underground"
+  ],
+  "notes": "Fetched in full: VetVerified guide (20-30 cm, 7-10 yr, 22-26 C, 70-80 %, substrate >=10-15 cm, 2-3 feedings/week, molt/secretion), Wikipedia (up to 33.5 cm, 7-10 yr, E. Africa lowland forest, secretion chemistry), Bugs in Cyberspace product page ($84.99, ~8 in specimen, out of stock). Dubia.com and Reptile Centre pages returned 429/not retrieved this round; floor/height 91x46x46 cm (36x18x18 in) and 70-75 F come from the dubia/reptilecentre search snippets (round 1). Reptile Centre advises >=2 in substrate, Bugz UK >=10 cm; substrate depth 125 mm is the midpoint of 10-15 cm. Prices lo/hi are snippet-only. Colour not on fetched pages. Fast tolerance remains assumption."
+ },
+ {
+  "id": "ivorymillipede",
+  "name": "Ivory millipede",
+  "sci": "Chicobolus spinigerus",
+  "group": "millipede",
+  "popularity": {
+   "v": 4,
+   "src": "https://www.furrycritter.com/pages/articles/invertebrates/ivory_millipede.htm",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 100,
+   "src": "https://exuvium.net/chicobolus-spinigerus-salmon-ivory-millipede-for-sale/",
+   "status": "sourced"
+  },
+  "lifespan_yr": {
+   "v": 7.5,
+   "src": "https://exuvium.net/chicobolus-spinigerus-salmon-ivory-millipede-for-sale/",
+   "status": "derived"
+  },
+  "temp_c": {
+   "v": [
+    21,
+    27
+   ],
+   "src": "https://exuvium.net/chicobolus-spinigerus-salmon-ivory-millipede-for-sale/",
+   "status": "derived"
+  },
+  "humidity_pct": {
+   "v": [
+    65,
+    75
+   ],
+   "src": "https://exuvium.net/chicobolus-spinigerus-salmon-ivory-millipede-for-sale/",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "https://www.furrycritter.com/pages/articles/invertebrates/ivory_millipede.htm",
+   "status": "sourced"
+  },
+  "min_floor_cm": {
+   "v": [
+    40,
+    25
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 25,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "burrower",
+  "diet": "Hardwood (oak, magnolia) leaf litter always available, decaying wood, cucumber/squash, lichen, moss, fish flakes, fruit; calcium (cuttlebone/crushed eggshell)",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 10,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Burrows deep (about a week or more) to molt; give undisturbed hides; molt frequency drops at adult size",
+  "group_rule": "colony: 5-10 per 10-gal tub",
+  "venom_handling": "Rarely secretes under normal handling; any millipede may secrete when stressed; wash hands",
+  "price_usd": {
+   "lo": {
+    "v": 5,
+    "src": "https://www.furrycritter.com/pages/articles/invertebrates/ivory_millipede.htm",
+    "status": "sourced"
+   },
+   "typical": {
+    "v": 10,
+    "src": "https://exuvium.net/chicobolus-spinigerus-salmon-ivory-millipede-for-sale/",
+    "status": "derived"
+   },
+   "hi": {
+    "v": 15,
+    "src": "https://www.furrycritter.com/pages/articles/invertebrates/ivory_millipede.htm",
+    "status": "sourced"
+   }
+  },
+  "colour": "Alternating bands of cream/ivory against dark brown-to-black segments (furrycritter); Exuvium lists an off-white form plus salmon and purple colour forms of the species; legs not described on fetched pages (amber/orange from author knowledge).",
+  "reference_photo_urls": [
+   "https://exuvium.net/chicobolus-spinigerus-salmon-ivory-millipede-for-sale/",
+   "https://www.furrycritter.com/pages/articles/invertebrates/ivory_millipede.htm",
+   "https://en.wikipedia.org/wiki/Chicobolus_spinigerus"
+  ],
+  "behaviors": [
+   "burrow",
+   "coil",
+   "climb",
+   "molt-hide"
+  ],
+  "notes": "Fetched in full: Furrycritter care article (4-6 in, several years to a decade, 70-80 F, >=4 in substrate, price $5-15, banded colour), Exuvium product page (up to 100 mm, 5-10 yr, 20-27 C, 65-75 %, substrate slightly deeper than body length, EUR 9 for 40-50 mm = ~USD 10), Wikipedia (males 40-85 mm, females up to 90 mm). Adult 100 mm chosen (Furrycritter 100-150 vs Wikipedia max 90); lifespan 7.5 is the midpoint of 5-10 yr. Substrate 100 mm = 4 in. Remaining assumptions: popularity, floor/height, feed interval, fast tolerance, group number (5-10 per 10 gal, round 1), leg colour."
+ },
+ {
+  "id": "americangiantmillipede",
+  "name": "American giant millipede",
+  "sci": "Narceus americanus",
+  "group": "millipede",
+  "popularity": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 100,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 8,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    18,
+    24
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    65,
+    80
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    40,
+    25
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 25,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "burrower",
+  "diet": "Rotting hardwood, leaf litter, vegetables, calcium",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 10,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Burrows to molt",
+  "group_rule": "colony: 3-5 per 10-gal tub",
+  "venom_handling": "Defensive secretion can stain and irritate; wash hands",
+  "price_usd": {
+   "lo": {
+    "v": 8,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 12,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 20,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Dark grey-brown to blackish body with red-orange margin on rear edge of segments; red legs",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Narceus+americanus",
+   "https://commons.wikimedia.org/w/index.php?search=Narceus+americanus"
+  ],
+  "behaviors": [
+   "burrow",
+   "coil",
+   "hide under bark"
+  ],
+  "notes": "Native US; often wild-caught; values assumed. Reference photo URLs are generic taxon-search pages (iNaturalist / Wikimedia Commons), not individually reviewed photos; colour text is from author knowledge."
+ },
+ {
+  "id": "desertmillipede",
+  "name": "Desert millipede",
+  "sci": "Orthoporus ornatus",
+  "group": "millipede",
+  "popularity": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 150,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 8,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    22,
+    28
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    70
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    40,
+    25
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 25,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "burrower",
+  "diet": "Leaf litter, decaying wood, vegetables, calcium",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Burrows to molt; sensitive to too-wet conditions",
+  "group_rule": "colony: 3-6 per 20-gal tub",
+  "venom_handling": "Mild secretion; wash hands",
+  "price_usd": {
+   "lo": {
+    "v": 10,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 15,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 25,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Brown-tan to orange-brown with darker segment edges (banded look); legs light tan",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Orthoporus+ornatus",
+   "https://commons.wikimedia.org/w/index.php?search=Orthoporus+ornatus"
+  ],
+  "behaviors": [
+   "burrow",
+   "coil",
+   "hide"
+  ],
+  "notes": "Drier-substrate species; values assumed. Reference photo URLs are generic taxon-search pages (iNaturalist / Wikimedia Commons), not individually reviewed photos; colour text is from author knowledge."
+ },
+ {
+  "id": "dubiaroach",
+  "name": "Dubia roach",
+  "sci": "Blaptica dubia",
+  "group": "roach",
+  "popularity": {
+   "v": 5,
+   "src": "https://joshsfrogs.com/cms/blaptica-dubia-roaches",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 44,
+   "src": "https://joshsfrogs.com/cms/blaptica-dubia-roaches",
+   "status": "derived"
+  },
+  "lifespan_yr": {
+   "v": 1.75,
+   "src": "https://thetyedyediguana.com/care-sheets/dubia-cockroach-blaptica-sp",
+   "status": "derived"
+  },
+  "temp_c": {
+   "v": [
+    24,
+    35
+   ],
+   "src": "https://thetyedyediguana.com/care-sheets/dubia-cockroach-blaptica-sp",
+   "status": "derived"
+  },
+  "humidity_pct": {
+   "v": [
+    40,
+    60
+   ],
+   "src": "https://abdragons.com/blog/dubia-roach-care-sheet/",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 0,
+   "src": "https://abdragons.com/blog/dubia-roach-care-sheet/",
+   "status": "sourced"
+  },
+  "min_floor_cm": {
+   "v": [
+    51,
+    26
+   ],
+   "src": "https://topflightdubia.com/blog/dubia-roaches-care-guide-by-topflight-dubia-experts",
+   "status": "derived"
+  },
+  "min_height_cm": {
+   "v": 31,
+   "src": "https://topflightdubia.com/blog/dubia-roaches-care-guide-by-topflight-dubia-experts",
+   "status": "derived"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Roach chow (Roach Rations) always available, water gel/crystals, fruit and vegetables (carrots, oranges, apples, squash, banana) 1-2x/week; remove uneaten fresh food within 24-48 h",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "https://abdragons.com/blog/dubia-roach-care-sheet/",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Nymphs molt through ~8 instars; pale after molt",
+  "group_rule": "colony: breeding culture 1 male : 3 females (Josh's Frogs); start with 100+; 22-gal bin or larger",
+  "venom_handling": "None; cannot climb smooth plastic (nymphs can climb silicone); keep lids on; handling can cause allergy",
+  "price_usd": {
+   "lo": {
+    "v": 0.12,
+    "src": "https://joshsfrogs.com/cp/josh-s-frogs-1-2-3-4-dubia-roaches-blaptica-dubia-jfdr1234",
+    "status": "derived"
+   },
+   "typical": {
+    "v": 0.23,
+    "src": "https://joshsfrogs.com/cp/josh-s-frogs-1-2-3-4-dubia-roaches-blaptica-dubia-jfdr1234",
+    "status": "derived"
+   },
+   "hi": {
+    "v": 2.49,
+    "src": "https://joshsfrogs.com/cms/blaptica-dubia-roaches",
+    "status": "sourced"
+   }
+  },
+  "colour": "Wikipedia: adults dark brown to black with lighter orange spotting/striping sometimes visible in bright light; males fully winged (wings cover abdomen, tan-brown), females have only small wing stubs and a rounder dark-brown body. Josh's Frogs confirms wing difference only.",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Blaptica_dubia",
+   "https://joshsfrogs.com/cms/blaptica-dubia-roaches"
+  ],
+  "behaviors": [
+   "hide in egg crate",
+   "cannot climb smooth surfaces",
+   "nocturnal scavenging",
+   "males flutter wings, cannot fly"
+  ],
+  "notes": "Fetched in full: Josh's Frogs Blaptica dubia page (1.5-2 in adults, 1-2 yr, 2 in coco bedding at ~85 F room, 1:3 ratio, adult prices M $1.49/F $2.49 single), Josh's Frogs medium 100-count page ($22.99/100; $124.99/1000 ~ 0.12 each), ABDragons (40-60 % RH, 80-95 F, no substrate, 22-gal bin), Tye Dyed Iguana (1.5-2 in, 1.5-2 yr, 75-95 F, ~60 %), TopFlight (70-90 F, 60 %, >=10 gal; its 'lifespan several months' is inconsistent and ignored), Wikipedia (40-45 mm, up to 2 yr, 25-30 C, RH>60 %). Temp 24-35 C is the span of 75-95 F; ABDragons recommends 80-95 F; Wikipedia optimum 25-30 C. Substrate: bare bottom per ABDragons, JF suggests 2 in coco (conflict). Popularity assumption: no explicit best-seller label, but a staple feeder insect. Fast tolerance and group number remain assumptions."
+ },
+ {
+  "id": "madagascarhissingroach",
+  "name": "Madagascar hissing cockroach",
+  "sci": "Gromphadorhina portentosa",
+  "group": "roach",
+  "popularity": {
+   "v": 5,
+   "src": "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 70,
+   "src": "https://en.wikipedia.org/wiki/Madagascar_hissing_cockroach",
+   "status": "derived"
+  },
+  "lifespan_yr": {
+   "v": 3,
+   "src": "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html",
+   "status": "sourced"
+  },
+  "temp_c": {
+   "v": [
+    25,
+    28
+   ],
+   "src": "https://flukerfarms.com/reptile-u/care-sheets/hissing-cockroaches-care-sheet",
+   "status": "derived"
+  },
+  "humidity_pct": {
+   "v": [
+    60,
+    70
+   ],
+   "src": "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 25,
+   "src": "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    51,
+    26
+   ],
+   "src": "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html",
+   "status": "derived"
+  },
+  "min_height_cm": {
+   "v": 31,
+   "src": "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html",
+   "status": "derived"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Herbivore/detritivore: Roach Rations dry chow, fresh fruit (banana) a few times a week, dark greens (romaine, dandelion), dry dog food; separate water source (Josh's Frogs, Fluker, Wikipedia)",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Nymphs molt several times, pale after molt",
+  "group_rule": "colony: 3-30 per tub or solitary pet",
+  "venom_handling": "None; hissing is defensive; handle gently",
+  "price_usd": {
+   "lo": {
+    "v": 4.99,
+    "src": "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html",
+    "status": "sourced"
+   },
+   "typical": {
+    "v": 4.99,
+    "src": "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html",
+    "status": "sourced"
+   },
+   "hi": {
+    "v": 15,
+    "src": "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html",
+    "status": "assumption"
+   }
+  },
+  "colour": "Glossy chestnut to dark brown/mahogany wingless oval body, with paler tan-cream edge to the pronotum and abdominal segments; males have two pronounced horn-like bumps on the pronotum; nymphs lighter. (Colour not described on the fetched pages; from author knowledge.)",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Madagascar_hissing_cockroach",
+   "https://www.joshsfrogs.com/female-madagascar-hissing-cockroach-gromphadorhina-portentosa.html"
+  ],
+  "behaviors": [
+   "hiss",
+   "climb",
+   "hide",
+   "wander at night"
+  ],
+  "notes": "Fetched in full: Josh's Frogs product page ($4.99 single female; 2-4 in adults, males ~4 in; 2-3 yr up to 4-5; 50 %+ RH, 60-70 % preferred; room temp OK, up to 95 F, breeding 80-90 F; group needs 10 gal+; 13 reviews 92 % 5-star), Fluker Farms care sheet (77-82 F day = 25-28 C, mid-high 70s F night, >=5 gal, moderate-high humidity, peat moss), Wikipedia (5-7.5 cm, up to 5 yr, hissing). Temp 25-28 C derived from Fluker day temp. Floor/height = standard 10-gal tank (51x26x31 cm), derived. Popularity not directly sourced (no best-seller label). Substrate depth, hi price, fast tolerance, group size remain assumptions."
+ },
+ {
+  "id": "orangeheadroach",
+  "name": "Orange head roach",
+  "sci": "Eublaberus posticus",
+  "group": "roach",
+  "popularity": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 45,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 2,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    24,
+    30
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    70
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 25,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    30,
+    20
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 20,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Vegetables, fruit, chow",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Nymphs molt in hides",
+  "group_rule": "colony: 20-100 per bin",
+  "venom_handling": "None; cannot climb smooth walls",
+  "price_usd": {
+   "lo": {
+    "v": 0.3,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 0.5,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 1.5,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Brown-black body with orange to yellow head shield and orange-yellow patterned edges",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Eublaberus+posticus",
+   "https://commons.wikimedia.org/w/index.php?search=Eublaberus+posticus"
+  ],
+  "behaviors": [
+   "hide",
+   "scavenge"
+  ],
+  "notes": "Feeder or pet; values assumed. Reference photo URLs are generic taxon-search pages (iNaturalist / Wikimedia Commons), not individually reviewed photos; colour text is from author knowledge."
+ },
+ {
+  "id": "deathsheadroach",
+  "name": "Death's head roach",
+  "sci": "Blaberus craniifer",
+  "group": "roach",
+  "popularity": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 60,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 2,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    24,
+    30
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    70
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 25,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    30,
+    20
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 25,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Vegetables, fruit, chow",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Nymphs molt 7-8 times",
+  "group_rule": "colony: 10-50 per bin",
+  "venom_handling": "None; winged but poor flier",
+  "price_usd": {
+   "lo": {
+    "v": 0.5,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 1,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 3,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Pale tan to yellowish wings with dark skull-like mark on pronotum; body tan-brown",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Blaberus+craniifer",
+   "https://commons.wikimedia.org/w/index.php?search=Blaberus+craniifer"
+  ],
+  "behaviors": [
+   "hide",
+   "glide-fly",
+   "scavenge"
+  ],
+  "notes": "Feeder or pet; values assumed. Reference photo URLs are generic taxon-search pages (iNaturalist / Wikimedia Commons), not individually reviewed photos; colour text is from author knowledge."
+ },
+ {
+  "id": "lobsterroach",
+  "name": "Lobster roach",
+  "sci": "Nauphoeta cinerea",
+  "group": "roach",
+  "popularity": {
+   "v": 4,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 30,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 1,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    26,
+    32
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    40,
+    60
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 25,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    30,
+    20
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 20,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "terrestrial",
+  "diet": "Vegetables, fruit, grain chow",
+  "feed_interval_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 14,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Nymphs molt several times",
+  "group_rule": "colony: 100s per bin",
+  "venom_handling": "None; cannot climb glass",
+  "price_usd": {
+   "lo": {
+    "v": 0.1,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 0.2,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 1.0,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Mottled tan-brown with cream-yellow edging and dark flecks",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Nauphoeta+cinerea",
+   "https://commons.wikimedia.org/w/index.php?search=Nauphoeta+cinerea"
+  ],
+  "behaviors": [
+   "hide",
+   "scavenge"
+  ],
+  "notes": "Primarily feeder insect; values assumed. Reference photo URLs are generic taxon-search pages (iNaturalist / Wikimedia Commons), not individually reviewed photos; colour text is from author knowledge."
+ },
+ {
+  "id": "purplepincherhermitcrab",
+  "name": "Purple pincher hermit crab",
+  "sci": "Coenobita clypeatus",
+  "group": "hermitcrab",
+  "popularity": {
+   "v": 5,
+   "src": "https://thetyedyediguana.com/care-sheets/hermit-crab-coenobita-clypeatus",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 75,
+   "src": "https://thetyedyediguana.com/care-sheets/hermit-crab-coenobita-clypeatus",
+   "status": "derived"
+  },
+  "lifespan_yr": {
+   "v": 12,
+   "src": "https://en.wikipedia.org/wiki/Coenobita_clypeatus",
+   "status": "sourced"
+  },
+  "temp_c": {
+   "v": [
+    24,
+    29
+   ],
+   "src": "https://www.joshsfrogs.com/captive-bred-hermit-crab.html",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    70,
+    80
+   ],
+   "src": "https://www.joshsfrogs.com/captive-bred-hermit-crab.html",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 150,
+   "src": "https://www.joshsfrogs.com/captive-bred-hermit-crab.html",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    51,
+    26
+   ],
+   "src": "https://thetyedyediguana.com/care-sheets/hermit-crab-coenobita-clypeatus",
+   "status": "derived"
+  },
+  "min_height_cm": {
+   "v": 31,
+   "src": "https://thetyedyediguana.com/care-sheets/hermit-crab-coenobita-clypeatus",
+   "status": "derived"
+  },
+  "lifestyle": "semi-arboreal",
+  "diet": "Omnivorous scavenger: prepared hermit crab food, oak/maple leaves and bark, fruit, greens, raw coconut, seeds, freeze-dried insects/shrimp; calcium (cuttlebone) always available; fresh AND dechlorinated salt water; avoid copper sulfate and ethoxyquin",
+  "feed_interval_days": {
+   "v": 1,
+   "src": "https://thetyedyediguana.com/care-sheets/hermit-crab-coenobita-clypeatus",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Burrows under substrate to molt for weeks to months; do not disturb",
+  "group_rule": "colony: very social; 2 crabs in 10 gal minimum (TDI); 2-4 small crabs in 20 gal; budget >=10 gal per adult crab (Josh's Frogs); 'do well in very large communities' (HCA)",
+  "venom_handling": "Large claw can pinch; handle gently",
+  "price_usd": {
+   "lo": {
+    "v": 5,
+    "src": "round-1 estimate, no retailer page fetched",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 10,
+    "src": "round-1 estimate, no retailer page fetched",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 49.99,
+    "src": "https://www.joshsfrogs.com/captive-bred-hermit-crab.html",
+    "status": "sourced"
+   }
+  },
+  "colour": "Body/legs tan to brown (Josh's Frogs 'usually tan or brown'); large LEFT claw usually purple or blue, can be shades of red; young crabs pale lavender, pink, cream or peach; medium-large darker orange, red, magenta, purple; large adults maroon, dark purple to nearly black (HCA species sheet).",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Coenobita_clypeatus",
+   "https://www.joshsfrogs.com/captive-bred-hermit-crab.html",
+   "https://hermitcrabassociation.com/phpBB/viewtopic.php?p=852148"
+  ],
+  "behaviors": [
+   "burrow",
+   "climb",
+   "change shells",
+   "molt-burrow",
+   "pinch"
+  ],
+  "notes": "Fetched in full: HCA species care sheet forum page (75-85 F, 80 recommended; 70-80 % RH, <70 % damages gills; colour description; PPs do well in large communities), Tye Dyed Iguana (2-6 in, 10+ yr, 75-85 F, >=75 %, 10 gal for 2), Josh's Frogs captive-bred page ($49.99 each, sold out; 75-85 F, 70-80 %, 20 gal/18 in cube for 2-4 small crabs, >=10 gal per adult; claims 30-40 yr), Wikipedia (verified 12 yr, owner claims 40). Lifespan 12 yr = Wikipedia verified; hobby claims up to 30-40. Temp 24-29 C = 75-85 F. Adult size 2-6 in is shell/crab size; 75 mm (3 in) chosen as typical pet adult. The main HCA ppcaresheet.htm returned 403; round-1 figure 74-78 F from it superseded by 75-85 F on 3 fetched pages. Min floor = standard 10-gal tank (51x26x31 cm). Remaining assumptions: popularity, substrate depth (HCA: deep enough to bury largest crab), lo/typical price (wild-caught pet-store), fast tolerance."
+ },
+ {
+  "id": "ecuadorianhermitcrab",
+  "name": "Ecuadorian hermit crab",
+  "sci": "Coenobita compressus",
+  "group": "hermitcrab",
+  "popularity": {
+   "v": 4,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 50,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 10,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    24,
+    29
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    70,
+    80
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 150,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    75,
+    40
+   ],
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 40,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "lifestyle": "semi-arboreal",
+  "diet": "Commercial hermit crab food, fruit, vegetables, protein, calcium",
+  "feed_interval_days": {
+   "v": 1,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 3,
+   "src": "n/a (author knowledge of hobby norms; not fetched)",
+   "status": "assumption"
+  },
+  "molt_note": "Burrows under substrate to molt for weeks to months",
+  "group_rule": "colony: 2-5 per 10-gal tank; needs salt and fresh water",
+  "venom_handling": "Claws can pinch",
+  "price_usd": {
+   "lo": {
+    "v": 5,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 10,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 20,
+    "src": "n/a (author knowledge of hobby norms; not fetched)",
+    "status": "assumption"
+   }
+  },
+  "colour": "Tan to gray-brown legs with pale-peach or purple-tinged claws; pale body, black eyes",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Coenobita+compressus",
+   "https://commons.wikimedia.org/w/index.php?search=Coenobita+compressus"
+  ],
+  "behaviors": [
+   "burrow",
+   "climb",
+   "change shells",
+   "molt-burrow"
+  ],
+  "notes": "More aquatic than clypeatus; needs salt water; values assumed. Reference photo URLs are generic taxon-search pages (iNaturalist / Wikimedia Commons), not individually reviewed photos; colour text is from author knowledge."
+ },
+ {
+  "id": "orchid_mantis",
+  "name": "Orchid mantis",
+  "sci": "Hymenopus coronatus",
+  "group": "mantis",
+  "lifestyle": "arboreal",
+  "diet": "Live flying insects (house/blue bottle flies, small moths), supplemented with small crickets/locusts; fruit flies for early nymphs; mist for drink.",
+  "molt_note": "Hangs upside down from mesh to molt; ventilation matters as much as humidity; do not disturb or feed during molt.",
+  "group_rule": "solitary, 1 per enclosure (cannibalistic)",
+  "venom_handling": "Not venomous; delicate, do not handle.",
+  "colour": "Female: semi-translucent white body with pink (or yellow/orange/green/brown) accents; fin-like petal lobes on the walking legs, pink-white; green 'necklace' mark on neck and sometimes a green spot on the back. Male: smaller, more orange-toned, brownish spot on back, brown-red neck mark. Nymph: pink and white with semi-opalescent flattened limbs and a small black spot at abdomen tip (Wikipedia, IK, Swell UK pages).",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Hymenopus_coronatus",
+   "https://www.inaturalist.org/taxa/search?q=Hymenopus+coronatus",
+   "https://commons.wikimedia.org/wiki/Category:Hymenopus_coronatus"
+  ],
+  "behaviors": [
+   "climb",
+   "sway like a petal in wind",
+   "threat pose (raptorial legs raised)",
+   "molt-hang upside down",
+   "ambush at flowers"
+  ],
+  "notes": "Round 2: numbers from insectkeeper, Swell UK, Wikipedia, BugsInCyberspace pages. Sources disagree: lifespan 5-9 months, temp 25-35 C day (night min 18 C), size female 6-7 cm. Popularity 4 is a judgement (several US retailers stock it at $50-65; not a measured best-seller rank). Price low $50 fetched from Bugs in Cyberspace (2nd-3rd instar, out of stock); typical/hi are round-1 snippet prices, retailer pages returned 429/410 this pass. Substrate irrelevant (mesh climber); 20 mm assumed.",
+  "sources_used": [
+   "https://insectkeeper.com/?p=111",
+   "https://www.reptiles.swelluk.com/help-guides/orchid-mantis-hymenopus-coronatus-care-sheet/",
+   "https://en.wikipedia.org/wiki/Hymenopus_coronatus",
+   "https://bugsincyberspace.com/?p=1040",
+   "https://dubiaroaches.com/blogs/invert-care/orchid-mantis-care-sheet (429, round 1 snippet only)"
+  ],
+  "popularity": {
+   "v": 4,
+   "src": "https://bugsincyberspace.com/?p=1040",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 70,
+   "src": "https://insectkeeper.com/?p=111",
+   "status": "sourced"
+  },
+  "lifespan_yr": {
+   "v": 0.6,
+   "src": "https://www.reptiles.swelluk.com/help-guides/orchid-mantis-hymenopus-coronatus-care-sheet/",
+   "status": "derived"
+  },
+  "temp_c": {
+   "v": [
+    25,
+    35
+   ],
+   "src": "https://www.reptiles.swelluk.com/help-guides/orchid-mantis-hymenopus-coronatus-care-sheet/",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    60,
+    80
+   ],
+   "src": "https://insectkeeper.com/?p=111",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 20,
+   "src": "",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    16,
+    24
+   ],
+   "src": "https://insectkeeper.com/?p=111",
+   "status": "sourced"
+  },
+  "min_height_cm": {
+   "v": 24,
+   "src": "https://insectkeeper.com/?p=111",
+   "status": "sourced"
+  },
+  "price_usd": {
+   "lo": {
+    "v": 50.0,
+    "src": "https://bugsincyberspace.com/?p=1040",
+    "status": "sourced"
+   },
+   "typical": {
+    "v": 59.99,
+    "src": "https://tydyeexotic.com/products/orchid-mantis-hymenopus-coronatus",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 65.0,
+    "src": "https://reach.dog/shop/usmantis/products/hymenopus-coronatus-orchid-flower-mantis",
+    "status": "assumption"
+   }
+  },
+  "feed_interval_days": {
+   "v": 2.5,
+   "src": "https://insectkeeper.com/?p=111",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 7,
+   "src": "",
+   "status": "assumption"
+  }
+ },
+ {
+  "id": "ghost_mantis",
+  "name": "Ghost mantis",
+  "sci": "Phyllocrania paradoxa",
+  "group": "mantis",
+  "lifestyle": "arboreal",
+  "diet": "Flies (fruit flies for newborns), small moths, small crickets; prey about head-sized; feed when abdomen looks thin.",
+  "molt_note": "Hangs upside down to molt; low humidity can strand it in old skin; colour can change drastically between molts.",
+  "group_rule": "solitary, 1 per enclosure",
+  "venom_handling": "Not venomous; adult females play dead when threatened (thanatosis).",
+  "colour": "Dead-leaf mimic: usually dark brown, also sand, light brown, reddish brown or greenish grey (green more likely in humid conditions); forewings look like a dried leaf with pigment 'creases'; leaf-like lobes on legs and an elongated crest on the head. First/second instar nymphs dark (ant mimics). Males have transparent wings longer than the abdomen (Wikipedia, keepinginsects pages).",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Phyllocrania_paradoxa",
+   "https://www.inaturalist.org/taxa/search?q=Phyllocrania+paradoxa",
+   "https://commons.wikimedia.org/wiki/Category:Phyllocrania_paradoxa"
+  ],
+  "behaviors": [
+   "climb",
+   "dead-leaf sway",
+   "play dead",
+   "threat pose",
+   "molt-hang",
+   "ant-mimic as young nymph"
+  ],
+  "notes": "Round 2: keepinginsects, jackofallinverts, Wikipedia, BugsInCyberspace pages fetched (dubiaroaches/reptilesupply returned 429). Humidity conflicts: jackofallinverts 35-50%, keepinginsects 60-90%; stored 50-70 as derived compromise (round-1 dubiaroaches figure). Lifespan jackofallinverts: females 6-8 mo after adult molt, males 2-4 mo. Popularity 4 assumed (widely stocked). Price: $19 unsexed L2/L3 fetched (out of stock); hi $36 from Mantisplace search snippet only.",
+  "sources_used": [
+   "https://keepinginsects.com/?p=98",
+   "https://jackofallinverts.github.io/caresheets/ghost.html",
+   "https://en.wikipedia.org/wiki/Phyllocrania_paradoxa",
+   "https://bugsincyberspace.com/product/ghost-mantis/"
+  ],
+  "popularity": {
+   "v": 4,
+   "src": "https://bugsincyberspace.com/product/ghost-mantis/",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 50,
+   "src": "https://keepinginsects.com/?p=98",
+   "status": "sourced"
+  },
+  "lifespan_yr": {
+   "v": 0.7,
+   "src": "https://jackofallinverts.github.io/caresheets/ghost.html",
+   "status": "derived"
+  },
+  "temp_c": {
+   "v": [
+    22,
+    27
+   ],
+   "src": "https://jackofallinverts.github.io/caresheets/ghost.html",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    70
+   ],
+   "src": "https://jackofallinverts.github.io/caresheets/ghost.html",
+   "status": "derived"
+  },
+  "substrate_depth_mm": {
+   "v": 20,
+   "src": "",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    20,
+    20
+   ],
+   "src": "https://keepinginsects.com/?p=98",
+   "status": "sourced"
+  },
+  "min_height_cm": {
+   "v": 30,
+   "src": "https://keepinginsects.com/?p=98",
+   "status": "sourced"
+  },
+  "price_usd": {
+   "lo": {
+    "v": 19.0,
+    "src": "https://bugsincyberspace.com/product/ghost-mantis/",
+    "status": "sourced"
+   },
+   "typical": {
+    "v": 19.0,
+    "src": "https://bugsincyberspace.com/product/ghost-mantis/",
+    "status": "sourced"
+   },
+   "hi": {
+    "v": 36.0,
+    "src": "https://www.mantisplace.com/product-page/phyllocrania-paradoxa-nymphs-2",
+    "status": "assumption"
+   }
+  },
+  "feed_interval_days": {
+   "v": 3,
+   "src": "https://jackofallinverts.github.io/caresheets/ghost.html",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 7,
+   "src": "",
+   "status": "assumption"
+  }
+ },
+ {
+  "id": "chinese_mantis",
+  "name": "Chinese mantis",
+  "sci": "Tenodera sinensis",
+  "group": "mantis",
+  "lifestyle": "arboreal",
+  "diet": "Flies, crickets, moths; adults take larger prey.",
+  "molt_note": "Hangs to molt, needs height.",
+  "group_rule": "solitary, 1 per enclosure",
+  "venom_handling": "Not venomous; pinches.",
+  "colour": "Green or brown with a green stripe along the wing margin; long slender body (assumption from general knowledge).",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Tenodera+sinensis",
+   "https://commons.wikimedia.org/wiki/Category:Tenodera_sinensis"
+  ],
+  "behaviors": [
+   "climb",
+   "threat pose",
+   "molt-hang",
+   "ambush"
+  ],
+  "notes": "Popularity 4: Josh's Frogs sells captive-bred ones. Adults ~100 mm (4 in), up to 125; 22-30 C; 50-70% RH; 8-12 month life. Price is an assumption (not found on a retailer page this pass).",
+  "sources_used": [
+   "https://training.joshsfrogs.com/care-sheet/chinese-mantis-tenodera-sinensis-care-guide",
+   "https://dubiaroaches.com/blogs/invert-care/chinese-mantis-care-sheet",
+   "https://joshsfrogs.com/p/chinese-praying-mantis-tenodera-sinensis-captive-bred-jfc81578"
+  ],
+  "popularity": {
+   "v": 4,
+   "src": "https://joshsfrogs.com/p/chinese-praying-mantis-tenodera-sinensis-captive-bred-jfc81578",
+   "status": "sourced"
+  },
+  "adult_mm": {
+   "v": 100,
+   "src": "https://training.joshsfrogs.com/care-sheet/chinese-mantis-tenodera-sinensis-care-guide",
+   "status": "sourced"
+  },
+  "lifespan_yr": {
+   "v": 0.8,
+   "src": "https://dubiaroaches.com/blogs/invert-care/chinese-mantis-care-sheet",
+   "status": "sourced"
+  },
+  "temp_c": {
+   "v": [
+    22,
+    30
+   ],
+   "src": "https://dubiaroaches.com/blogs/invert-care/chinese-mantis-care-sheet",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    70
+   ],
+   "src": "https://training.joshsfrogs.com/care-sheet/chinese-mantis-tenodera-sinensis-care-guide",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 20,
+   "src": "",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    20,
+    20
+   ],
+   "src": "https://training.joshsfrogs.com/care-sheet/chinese-mantis-tenodera-sinensis-care-guide",
+   "status": "sourced"
+  },
+  "min_height_cm": {
+   "v": 30,
+   "src": "https://training.joshsfrogs.com/care-sheet/chinese-mantis-tenodera-sinensis-care-guide",
+   "status": "sourced"
+  },
+  "price_usd": {
+   "lo": {
+    "v": 10,
+    "src": "",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 15,
+    "src": "",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 30,
+    "src": "",
+    "status": "assumption"
+   }
+  },
+  "feed_interval_days": {
+   "v": 3,
+   "src": "",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 10,
+   "src": "",
+   "status": "assumption"
+  }
+ },
+ {
+  "id": "spiny_flower_mantis",
+  "name": "Spiny flower mantis",
+  "sci": "Pseudocreobotra wahlbergii",
+  "group": "mantis",
+  "lifestyle": "arboreal",
+  "diet": "Flies and small moths (not large prey like adult locusts); adults every few days, nymphs daily; mist for drink.",
+  "molt_note": "Hangs upside down to molt; prone to mould/fungus so ventilation is critical; keep on the dry side.",
+  "group_rule": "solitary (nymphs to L4 can share; cannibalistic later), 1 per enclosure",
+  "venom_handling": "Not venomous.",
+  "colour": "Adult: mostly white with bright green stripes/accents on legs and orange-green stripes on body (Wikipedia: typically light green, also yellow, pink or red); eyes lilac to deep purple; forewings carry a black, green and cream eyespot ringed by a green patch; inner hind wings bright orange-yellow, outer hind wings transparent. Nymphs black until L3, then orange-pink spots fading to white each molt.",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Pseudocreobotra_wahlbergii",
+   "https://www.inaturalist.org/taxa/search?q=Pseudocreobotra+wahlbergii",
+   "https://commons.wikimedia.org/wiki/Category:Pseudocreobotra_wahlbergii"
+  ],
+  "behaviors": [
+   "climb",
+   "deimatic wing spread with eyespot",
+   "flower mimicry ambush",
+   "molt-hang"
+  ],
+  "notes": "Round 2: insectkeeper, keepinginsects, Wikipedia fetched. Size conflict: Wikipedia 40 mm, insectkeeper 1.5 in, keepinginsects '4-5 in' (unit unclear, rejected). Humidity: insectkeeper 40-60%, keepinginsects ~60% (stored 40-60). Temp 25-30 C (keepinginsects), insectkeeper ~27 C. Lifespan insectkeeper ~6 mo, up to 1 yr. Popularity 4 assumed. Price NOT found on a fetched retailer page (usmantis/tydye returned 429): assumption.",
+  "sources_used": [
+   "https://keepinginsects.com/praying-mantis/species/spiny-flower-mantis/",
+   "https://insectkeeper.com/?p=213",
+   "https://en.wikipedia.org/wiki/Pseudocreobotra_wahlbergii"
+  ],
+  "popularity": {
+   "v": 4,
+   "src": "",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 40,
+   "src": "https://en.wikipedia.org/wiki/Pseudocreobotra_wahlbergii",
+   "status": "sourced"
+  },
+  "lifespan_yr": {
+   "v": 0.5,
+   "src": "https://insectkeeper.com/?p=213",
+   "status": "sourced"
+  },
+  "temp_c": {
+   "v": [
+    25,
+    30
+   ],
+   "src": "https://keepinginsects.com/praying-mantis/species/spiny-flower-mantis/",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    40,
+    60
+   ],
+   "src": "https://insectkeeper.com/?p=213",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 20,
+   "src": "",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    10,
+    15
+   ],
+   "src": "https://keepinginsects.com/praying-mantis/species/spiny-flower-mantis/",
+   "status": "sourced"
+  },
+  "min_height_cm": {
+   "v": 20,
+   "src": "https://keepinginsects.com/praying-mantis/species/spiny-flower-mantis/",
+   "status": "sourced"
+  },
+  "price_usd": {
+   "lo": {
+    "v": 15,
+    "src": "",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 25,
+    "src": "",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 40,
+    "src": "",
+    "status": "assumption"
+   }
+  },
+  "feed_interval_days": {
+   "v": 3,
+   "src": "https://insectkeeper.com/?p=213",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 7,
+   "src": "",
+   "status": "assumption"
+  }
+ },
+ {
+  "id": "giant_asian_mantis",
+  "name": "Giant Asian mantis",
+  "sci": "Hierodula membranacea",
+  "group": "mantis",
+  "lifestyle": "arboreal",
+  "diet": "Flies, crickets, roaches.",
+  "molt_note": "Hangs to molt.",
+  "group_rule": "solitary, cannibalistic",
+  "venom_handling": "Not venomous; bites if handled roughly.",
+  "colour": "Bright green (some brown) with yellow/orange-marked inner raptorial legs and wing margins (assumption: no source fetched).",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Hierodula+membranacea",
+   "https://commons.wikimedia.org/wiki/Category:Hierodula_membranacea"
+  ],
+  "behaviors": [
+   "climb",
+   "threat pose with wing flare",
+   "molt-hang"
+  ],
+  "notes": "NO source retrieved this pass; all values assumptions. Price is an assumption (not found on a retailer page this pass).",
+  "sources_used": [],
+  "popularity": {
+   "v": 4,
+   "src": "",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 90,
+   "src": "",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 0.8,
+   "src": "",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    22,
+    30
+   ],
+   "src": "",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    70
+   ],
+   "src": "",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 20,
+   "src": "",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    20,
+    20
+   ],
+   "src": "",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 30,
+   "src": "",
+   "status": "assumption"
+  },
+  "price_usd": {
+   "lo": {
+    "v": 10,
+    "src": "",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 15,
+    "src": "",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 25,
+    "src": "",
+    "status": "assumption"
+   }
+  },
+  "feed_interval_days": {
+   "v": 3,
+   "src": "",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 10,
+   "src": "",
+   "status": "assumption"
+  }
+ },
+ {
+  "id": "indian_stick_insect",
+  "name": "Indian / laboratory stick insect",
+  "sci": "Carausius morosus",
+  "group": "phasmid",
+  "lifestyle": "arboreal",
+  "diet": "Privet (staple), bramble, ivy, hawthorn, rose, raspberry, oak, hazel; mist leaves for water; feeds at night.",
+  "molt_note": "Hangs upside down to molt; cage height ~25 cm+ needed; may drop legs.",
+  "group_rule": "colony, 5-10 per 25 cm cage (all female, parthenogenetic; ~1 in 1000 male)",
+  "venom_handling": "Harmless; feigns death when disturbed.",
+  "colour": "Wingless thin twig body. Bright green in young or humid, well-lit conditions; brown, tan or grey-green when drier/darker, shifting across molts. Adult females: light green to dark brown with red patches at the base of the forelegs and yellow patches on the mid-legs (Wikipedia, FurryCritter, Bug Pets pages). Males thin and brown.",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Carausius_morosus",
+   "https://www.inaturalist.org/taxa/search?q=Carausius+morosus",
+   "https://commons.wikimedia.org/wiki/Category:Carausius_morosus"
+  ],
+  "behaviors": [
+   "climb",
+   "freeze like a twig",
+   "sway",
+   "molt-hang",
+   "drop and play dead",
+   "nocturnal feeding"
+  ],
+  "notes": "Round 2: Wikipedia, PSG species page (female 80 mm, male 55 mm, 'very easy'), FurryCritter, Bug Pets (UK) fetched; dubiaroaches/reptilesupply 429. Popularity 5 assumed (classic pet/school insect; no ranking page). Temp 18-25 C (FurryCritter) vs lab 23 C (round 1 JoVE snippet; page fetch empty). Price is UK retailer: GBP 12.99 for 5 nymphs (out of stock) = GBP 2.60 each, converted at 1.30 USD/GBP (derived); lo/hi assumptions.",
+  "sources_used": [
+   "https://www.furrycritter.com/pages/descriptions/invertebrates/indian_stick_insect.htm",
+   "https://phasmidstudygroup.org/phasmid-info/psg-culture-list/species-info?psg_no=1",
+   "https://en.wikipedia.org/wiki/Carausius_morosus",
+   "https://bugpets.co.uk/indian-stick-insect-carausius-morosus"
+  ],
+  "popularity": {
+   "v": 5,
+   "src": "https://phasmidstudygroup.org/phasmid-info/psg-culture-list/species-info?psg_no=1",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 80,
+   "src": "https://phasmidstudygroup.org/phasmid-info/psg-culture-list/species-info?psg_no=1",
+   "status": "sourced"
+  },
+  "lifespan_yr": {
+   "v": 1.25,
+   "src": "https://www.furrycritter.com/pages/descriptions/invertebrates/indian_stick_insect.htm",
+   "status": "derived"
+  },
+  "temp_c": {
+   "v": [
+    18,
+    25
+   ],
+   "src": "https://www.furrycritter.com/pages/descriptions/invertebrates/indian_stick_insect.htm",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    60,
+    75
+   ],
+   "src": "https://www.furrycritter.com/pages/descriptions/invertebrates/indian_stick_insect.htm",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 10,
+   "src": "",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    25,
+    25
+   ],
+   "src": "https://www.furrycritter.com/pages/descriptions/invertebrates/indian_stick_insect.htm",
+   "status": "derived"
+  },
+  "min_height_cm": {
+   "v": 38,
+   "src": "https://www.furrycritter.com/pages/descriptions/invertebrates/indian_stick_insect.htm",
+   "status": "derived"
+  },
+  "price_usd": {
+   "lo": {
+    "v": 2,
+    "src": "",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 3.4,
+    "src": "https://bugpets.co.uk/indian-stick-insect-carausius-morosus",
+    "status": "derived"
+   },
+   "hi": {
+    "v": 10,
+    "src": "",
+    "status": "assumption"
+   }
+  },
+  "feed_interval_days": {
+   "v": 1,
+   "src": "https://en.wikipedia.org/wiki/Carausius_morosus",
+   "status": "derived"
+  },
+  "fast_tolerance_days": {
+   "v": 5,
+   "src": "",
+   "status": "assumption"
+  }
+ },
+ {
+  "id": "vietnamese_stick_insect",
+  "name": "Vietnamese / Annam walking stick",
+  "sci": "Medauroidea extradentata",
+  "group": "phasmid",
+  "lifestyle": "arboreal",
+  "diet": "Bramble (blackberry/raspberry), hawthorn, oak, rose, red maple; mist foliage.",
+  "molt_note": "Hangs to molt; height at least 3x body length; legs regrow.",
+  "group_rule": "colony, several adults per 30x30x45 cm (mostly parthenogenetic)",
+  "venom_handling": "Harmless.",
+  "colour": "Wingless, slim twig-like. Nymphs hatch light tan/beige, often turning green during early molts; adults usually brown from light tan to dark chocolate or golden brown, some stay green (FurryCritter, Wikipedia, Bug Pets pages). Eggs mottled black and white.",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Medauroidea_extradentata",
+   "https://www.inaturalist.org/taxa/search?q=Medauroidea+extradentata",
+   "https://commons.wikimedia.org/wiki/Category:Medauroidea_extradentata"
+  ],
+  "behaviors": [
+   "climb",
+   "freeze",
+   "molt-hang",
+   "drop legs",
+   "nocturnal feeding"
+  ],
+  "notes": "Round 2: FurryCritter species page, PSG (female 110 mm, male 75 mm), Wikipedia (100-120 mm, 5-7 months), Bug Pets UK fetched; dubiaroaches/arent.pl blocked. Lifespan conflicts: 5-7 months (Wikipedia, FurryCritter, Bug Pets) vs 12-18 months (FurryCritter article page, German sheet ~12). Humidity 50-60% (FurryCritter) vs 60-80% (Polish round-1 snippet). Enclosure: FurryCritter 12x12x18 in (30x30x45 cm). Popularity 4 assumed. Price UK Bug Pets: GBP 14.99 for 2 = GBP 7.50 each, x1.30 = $9.75 (derived); lo/hi assumptions.",
+  "sources_used": [
+   "https://www.furrycritter.com/pages/descriptions/invertebrates/vietnamese_stick_insect.htm",
+   "https://phasmidstudygroup.org/phasmid-info/psg-culture-list/species-info?psg_no=5",
+   "https://en.wikipedia.org/wiki/Medauroidea_extradentata",
+   "https://bugpets.co.uk/vietnamese-stick-insect-medauroidea-extradentata/"
+  ],
+  "popularity": {
+   "v": 4,
+   "src": "",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 110,
+   "src": "https://phasmidstudygroup.org/phasmid-info/psg-culture-list/species-info?psg_no=5",
+   "status": "sourced"
+  },
+  "lifespan_yr": {
+   "v": 0.5,
+   "src": "https://en.wikipedia.org/wiki/Medauroidea_extradentata",
+   "status": "sourced"
+  },
+  "temp_c": {
+   "v": [
+    20,
+    30
+   ],
+   "src": "https://bugpets.co.uk/vietnamese-stick-insect-medauroidea-extradentata/",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    60
+   ],
+   "src": "https://www.furrycritter.com/pages/descriptions/invertebrates/vietnamese_stick_insect.htm",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 10,
+   "src": "",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    30,
+    30
+   ],
+   "src": "https://www.furrycritter.com/pages/descriptions/invertebrates/vietnamese_stick_insect.htm",
+   "status": "derived"
+  },
+  "min_height_cm": {
+   "v": 45,
+   "src": "https://www.furrycritter.com/pages/descriptions/invertebrates/vietnamese_stick_insect.htm",
+   "status": "derived"
+  },
+  "price_usd": {
+   "lo": {
+    "v": 3,
+    "src": "",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 9.75,
+    "src": "https://bugpets.co.uk/vietnamese-stick-insect-medauroidea-extradentata/",
+    "status": "derived"
+   },
+   "hi": {
+    "v": 15,
+    "src": "",
+    "status": "assumption"
+   }
+  },
+  "feed_interval_days": {
+   "v": 1,
+   "src": "",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 5,
+   "src": "",
+   "status": "assumption"
+  }
+ },
+ {
+  "id": "giant_prickly_stick_insect",
+  "name": "Giant prickly stick insect",
+  "sci": "Extatosoma tiaratum",
+  "group": "phasmid",
+  "lifestyle": "arboreal",
+  "diet": "Bramble, raspberry, oak, rose, hazel, eucalyptus (may colour/size less on non-eucalyptus); mist leaves for water; nocturnal.",
+  "molt_note": "Hangs to molt; ventilation very important; nymphs molt best near 60% RH; eucalyptus can mould in moist cages.",
+  "group_rule": "colony ok, 3-6 per 30x30x45 cm; one male + one female for breeding",
+  "venom_handling": "Harmless; spines scratchy.",
+  "colour": "Highly variable: usually light to mid brown, also green, beige, dark brown, reddish, cream or white. Female: thorn-like spikes over the body incl. a tuft on the head, lobed leaf-like legs, tiny non-functional wings, curled tail held over the back; male: slim, brown with dark brown specks, long wings, thorns only around the face. Rare lichen-coloured young females (Wikipedia, keepinginsects, Bug Pets pages).",
+  "reference_photo_urls": [
+   "https://en.wikipedia.org/wiki/Extatosoma_tiaratum",
+   "https://www.inaturalist.org/taxa/search?q=Extatosoma+tiaratum",
+   "https://commons.wikimedia.org/wiki/Category:Extatosoma_tiaratum"
+  ],
+  "behaviors": [
+   "climb",
+   "tail-curl scorpion pose",
+   "freeze",
+   "molt-hang",
+   "sway like a leaf"
+  ],
+  "notes": "Round 2: Wikipedia (female 20 cm incl. legs/ ~18 mo; male 11 cm, 6-8 mo), keepinginsects (female ~15 cm body; 20-30 C), Bug Pets UK (20-25 C, 60% RH, GBP 13.99) fetched; dubiaroaches/reptilesupply 429 (round-1 snippet figures 20-28 C, 50-70% RH kept as reference). Body length 150 mm taken from keepinginsects/Bug Pets. Popularity 5 assumed (widely sold beginner phasmid). Price: UK GBP 13.99 subadult x1.30 = $18.2 (derived); US nymph price from a 2007 forum post ($30, not used). lo/hi assumptions.",
+  "sources_used": [
+   "https://keepinginsects.com/?p=442",
+   "https://en.wikipedia.org/wiki/Extatosoma_tiaratum",
+   "https://bugpets.co.uk/giant-prickly-stick-insect-extatosoma-tiaratum/"
+  ],
+  "popularity": {
+   "v": 5,
+   "src": "",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 150,
+   "src": "https://keepinginsects.com/?p=442",
+   "status": "sourced"
+  },
+  "lifespan_yr": {
+   "v": 1.5,
+   "src": "https://en.wikipedia.org/wiki/Extatosoma_tiaratum",
+   "status": "sourced"
+  },
+  "temp_c": {
+   "v": [
+    20,
+    28
+   ],
+   "src": "https://keepinginsects.com/?p=442",
+   "status": "derived"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    70
+   ],
+   "src": "https://bugpets.co.uk/giant-prickly-stick-insect-extatosoma-tiaratum/",
+   "status": "derived"
+  },
+  "substrate_depth_mm": {
+   "v": 10,
+   "src": "",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    30,
+    30
+   ],
+   "src": "https://keepinginsects.com/?p=442",
+   "status": "sourced"
+  },
+  "min_height_cm": {
+   "v": 45,
+   "src": "https://keepinginsects.com/?p=442",
+   "status": "sourced"
+  },
+  "price_usd": {
+   "lo": {
+    "v": 8,
+    "src": "",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 18.2,
+    "src": "https://bugpets.co.uk/giant-prickly-stick-insect-extatosoma-tiaratum/",
+    "status": "derived"
+   },
+   "hi": {
+    "v": 35,
+    "src": "",
+    "status": "assumption"
+   }
+  },
+  "feed_interval_days": {
+   "v": 1,
+   "src": "",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 5,
+   "src": "",
+   "status": "assumption"
+  }
+ },
+ {
+  "id": "peruvian_fire_stick",
+  "name": "Peruvian fire stick",
+  "sci": "Oreophoetes peruana",
+  "group": "phasmid",
+  "lifestyle": "arboreal",
+  "diet": "Ferns (Boston fern, Pteris).",
+  "molt_note": "Hangs to molt.",
+  "group_rule": "colony, 5-10 per 30x30x45 cm",
+  "venom_handling": "Mild irritating defensive spray; harmless.",
+  "colour": "Black elongated body with orange-red head and neck (assumption: no source fetched).",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Oreophoetes+peruana",
+   "https://commons.wikimedia.org/wiki/Category:Oreophoetes_peruana"
+  ],
+  "behaviors": [
+   "climb",
+   "freeze",
+   "chemical defence spray"
+  ],
+  "notes": "NO source fetched; all values assumptions. Popularity 3 assumed (needs fern food). Price is an assumption (not found on a retailer page this pass).",
+  "sources_used": [],
+  "popularity": {
+   "v": 3,
+   "src": "",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 75,
+   "src": "",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 1.5,
+   "src": "",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    20,
+    25
+   ],
+   "src": "",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    70,
+    90
+   ],
+   "src": "",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 10,
+   "src": "",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    30,
+    30
+   ],
+   "src": "",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 45,
+   "src": "",
+   "status": "assumption"
+  },
+  "price_usd": {
+   "lo": {
+    "v": 10,
+    "src": "",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 20,
+    "src": "",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 40,
+    "src": "",
+    "status": "assumption"
+   }
+  },
+  "feed_interval_days": {
+   "v": 1,
+   "src": "",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 5,
+   "src": "",
+   "status": "assumption"
+  }
+ },
+ {
+  "id": "jungle_nymph",
+  "name": "Malaysian jungle nymph",
+  "sci": "Heteropteryx dilatata",
+  "group": "phasmid",
+  "lifestyle": "semi-arboreal",
+  "diet": "Bramble, oak, rose, hazel.",
+  "molt_note": "Hangs to molt; long life cycle.",
+  "group_rule": "pair or small group, 1 per 60 cm cage",
+  "venom_handling": "Spined legs can scratch; not venomous.",
+  "colour": "Female bright green with spiny body and pink-tinted wings; nymph brown/olive; male brown-grey winged (assumption: no source fetched).",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Heteropteryx+dilatata",
+   "https://commons.wikimedia.org/wiki/Category:Heteropteryx_dilatata"
+  ],
+  "behaviors": [
+   "climb",
+   "burrow to lay eggs",
+   "hiss and spine threat",
+   "molt-hang"
+  ],
+  "notes": "NO source fetched; all values assumptions. Popularity 3 assumed (big cage, 2-3 year cycle). Price is an assumption (not found on a retailer page this pass).",
+  "sources_used": [],
+  "popularity": {
+   "v": 3,
+   "src": "",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 150,
+   "src": "",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 2.5,
+   "src": "",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    22,
+    27
+   ],
+   "src": "",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    70,
+    85
+   ],
+   "src": "",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    40,
+    40
+   ],
+   "src": "",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 60,
+   "src": "",
+   "status": "assumption"
+  },
+  "price_usd": {
+   "lo": {
+    "v": 25,
+    "src": "",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 50,
+    "src": "",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 100,
+    "src": "",
+    "status": "assumption"
+   }
+  },
+  "feed_interval_days": {
+   "v": 1,
+   "src": "",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 5,
+   "src": "",
+   "status": "assumption"
+  }
+ },
+ {
+  "id": "leaf_insect",
+  "name": "Leaf insect",
+  "sci": "Phyllium spp. (e.g. P. philippinicum)",
+  "group": "phasmid",
+  "lifestyle": "arboreal",
+  "diet": "Bramble, oak, guava.",
+  "molt_note": "Hangs to molt; needs higher humidity.",
+  "group_rule": "group, 3-6 per 40 cm cage",
+  "venom_handling": "Harmless.",
+  "colour": "Leaf-green flat body with veined, brown-edged wings and lobed legs (assumption: no source fetched).",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Phyllium+spp.+(e.g.+P.+philippinicum)",
+   "https://commons.wikimedia.org/wiki/Category:Phyllium_spp._(e.g._P._philippinicum)"
+  ],
+  "behaviors": [
+   "climb",
+   "leaf sway",
+   "molt-hang"
+  ],
+  "notes": "NO source fetched; all values assumptions. Popularity 2 assumed (more demanding, parthenogenetic). Price is an assumption (not found on a retailer page this pass).",
+  "sources_used": [],
+  "popularity": {
+   "v": 2,
+   "src": "",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 80,
+   "src": "",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 1.2,
+   "src": "",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    22,
+    28
+   ],
+   "src": "",
+   "status": "assumption"
+  },
+  "humidity_pct": {
+   "v": [
+    60,
+    80
+   ],
+   "src": "",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 10,
+   "src": "",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    30,
+    30
+   ],
+   "src": "",
+   "status": "assumption"
+  },
+  "min_height_cm": {
+   "v": 45,
+   "src": "",
+   "status": "assumption"
+  },
+  "price_usd": {
+   "lo": {
+    "v": 15,
+    "src": "",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 30,
+    "src": "",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 60,
+    "src": "",
+    "status": "assumption"
+   }
+  },
+  "feed_interval_days": {
+   "v": 1,
+   "src": "",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 5,
+   "src": "",
+   "status": "assumption"
+  }
+ },
+ {
+  "id": "giant_vinegaroon",
+  "name": "Giant vinegaroon",
+  "sci": "Mastigoproctus giganteus",
+  "group": "other",
+  "lifestyle": "burrower",
+  "diet": "Crickets, roaches, worms; 1-3 prey items; weekly (Tye Dye Iguana) to every 3-4 weeks (Tarantula Collective); may refuse when full; wait a week after molt.",
+  "molt_note": "Seals into burrow to molt; no feeding until hard (5-7 days slings, 7-10 days juveniles, at least a week adults).",
+  "group_rule": "solitary, 1 per enclosure",
+  "venom_handling": "Not venomous; seldom pinches; sprays ~85% acetic acid from tail base that stings eyes/mucous membranes, so wash hands.",
+  "colour": "Body typically black (Bugs in Cyberspace photo caption), with some sections and appendages brown or reddish-brown (Animal Diversity Web); Texas animals slightly lighter brown, Arizona larger and darker (Tarantula Collective). Flat oval carapace and abdomen, two heavy pincer pedipalps, a long thin flexible whip tail, one pair of long sensory front legs held forward, six walking legs.",
+  "reference_photo_urls": [
+   "https://animaldiversity.org/accounts/Mastigoproctus_giganteus/",
+   "https://en.wikipedia.org/wiki/Mastigoproctus_giganteus",
+   "https://www.inaturalist.org/taxa/search?q=Mastigoproctus+giganteus",
+   "https://commons.wikimedia.org/wiki/Category:Mastigoproctus_giganteus"
+  ],
+  "behaviors": [
+   "burrow",
+   "tail-raise acetic acid spray threat",
+   "pedipalp pinch threat",
+   "climb glass",
+   "molt-hide in sealed burrow",
+   "nocturnal"
+  ],
+  "notes": "Round 2: Tye Dye Iguana, Tarantula Collective, Animal Diversity Web, Wikipedia, Bugs in Cyberspace pages fetched. Size conflicts: ADW/Wikipedia 40-60 mm body excl. tail; Tarantula Collective 10 cm body; Tye Dye 4-6 in; BIC 2.75-3 in with pedipalps; stored 75 mm as a derived middle. Lifespan: females up to 20 yr, males 5-10 (Tye Dye/TC); ADW 4-7 wild; stored 10. Humidity 70-80% only on Tye Dye (TC gives none). Feed interval conflicts 7 d vs 21-28 d. Popularity 4 assumed. Price: $23 fetched (BIC, 1.5 in unsexed, out of stock); typical $35 and hi $40 only from search snippets (Reach.dog $34.95, Hardcore Arachnids $40, Tydye $39.99 wild-caught) because those pages returned 429.",
+  "sources_used": [
+   "https://thetyedyediguana.com/care-sheets/giant-vinegaroon-mastigoproctus-giganteus",
+   "https://www.thetarantulacollective.com/caresheets/vinegaroon",
+   "https://animaldiversity.org/accounts/Mastigoproctus_giganteus/",
+   "https://en.wikipedia.org/wiki/Mastigoproctus_giganteus",
+   "https://bugsincyberspace.com/?p=1321"
+  ],
+  "popularity": {
+   "v": 4,
+   "src": "",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 75,
+   "src": "https://animaldiversity.org/accounts/Mastigoproctus_giganteus/",
+   "status": "derived"
+  },
+  "lifespan_yr": {
+   "v": 10,
+   "src": "https://thetyedyediguana.com/care-sheets/giant-vinegaroon-mastigoproctus-giganteus",
+   "status": "derived"
+  },
+  "temp_c": {
+   "v": [
+    22,
+    29
+   ],
+   "src": "https://thetyedyediguana.com/care-sheets/giant-vinegaroon-mastigoproctus-giganteus",
+   "status": "derived"
+  },
+  "humidity_pct": {
+   "v": [
+    70,
+    80
+   ],
+   "src": "https://thetyedyediguana.com/care-sheets/giant-vinegaroon-mastigoproctus-giganteus",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 125,
+   "src": "https://thetyedyediguana.com/care-sheets/giant-vinegaroon-mastigoproctus-giganteus",
+   "status": "derived"
+  },
+  "min_floor_cm": {
+   "v": [
+    40,
+    20
+   ],
+   "src": "https://thetyedyediguana.com/care-sheets/giant-vinegaroon-mastigoproctus-giganteus",
+   "status": "derived"
+  },
+  "min_height_cm": {
+   "v": 25,
+   "src": "",
+   "status": "assumption"
+  },
+  "price_usd": {
+   "lo": {
+    "v": 23.0,
+    "src": "https://bugsincyberspace.com/?p=1321",
+    "status": "sourced"
+   },
+   "typical": {
+    "v": 35.0,
+    "src": "https://reach.dog/shop/insect-salescom/products/vinegaroon-whiptail-scropion-mastigoproctus-giganteus-fun-pet-educational",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 40.0,
+    "src": "https://hardcorearachnids.com/products/mastigoproctus-giganteus-2-4",
+    "status": "assumption"
+   }
+  },
+  "feed_interval_days": {
+   "v": 7,
+   "src": "https://thetyedyediguana.com/care-sheets/giant-vinegaroon-mastigoproctus-giganteus",
+   "status": "sourced"
+  },
+  "fast_tolerance_days": {
+   "v": 30,
+   "src": "",
+   "status": "assumption"
+  }
+ },
+ {
+  "id": "giant_desert_centipede",
+  "name": "Giant desert centipede",
+  "sci": "Scolopendra heros",
+  "group": "other",
+  "lifestyle": "burrower",
+  "diet": "Crickets, roaches, worms.",
+  "molt_note": "Seals in burrow to molt.",
+  "group_rule": "solitary (cannibalistic)",
+  "venom_handling": "VENOMOUS: painful bite; do not handle, use tongs; escape artist.",
+  "colour": "Banded: dark head and tail segments with orange-red mid-body, yellow legs; colour morphs vary by subspecies (assumption).",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Scolopendra+heros",
+   "https://commons.wikimedia.org/wiki/Category:Scolopendra_heros"
+  ],
+  "behaviors": [
+   "burrow",
+   "fast runner",
+   "bite threat",
+   "molt-hide"
+  ],
+  "notes": "VENOMOUS: painful bite, not usually lethal. Lifespan 5-10 yr (Terminix); enclosure and 70-75 F from a generic tropical Scolopendra sheet, not S. heros specific; arid species so humidity is an assumption. Popularity 3 assumed. Price is an assumption (not found on a retailer page this pass).",
+  "sources_used": [
+   "https://thetyedyediguana.com/content/care-sheet-pdfs/Tropical-Centipede-Scolopendra-Sp-Care-Sheet.pdf",
+   "https://www.terminix.com/blog/education/giant-desert-centipedes/",
+   "https://arachnoboards.com/threads/s-heros-supplies-and-care.286728/post-2522418"
+  ],
+  "popularity": {
+   "v": 3,
+   "src": "",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 200,
+   "src": "",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 7,
+   "src": "https://www.terminix.com/blog/education/giant-desert-centipedes/",
+   "status": "sourced"
+  },
+  "temp_c": {
+   "v": [
+    21,
+    27
+   ],
+   "src": "https://thetyedyediguana.com/content/care-sheet-pdfs/Tropical-Centipede-Scolopendra-Sp-Care-Sheet.pdf",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    50,
+    70
+   ],
+   "src": "",
+   "status": "assumption"
+  },
+  "substrate_depth_mm": {
+   "v": 100,
+   "src": "",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    40,
+    25
+   ],
+   "src": "https://thetyedyediguana.com/content/care-sheet-pdfs/Tropical-Centipede-Scolopendra-Sp-Care-Sheet.pdf",
+   "status": "sourced"
+  },
+  "min_height_cm": {
+   "v": 25,
+   "src": "https://thetyedyediguana.com/content/care-sheet-pdfs/Tropical-Centipede-Scolopendra-Sp-Care-Sheet.pdf",
+   "status": "sourced"
+  },
+  "price_usd": {
+   "lo": {
+    "v": 15,
+    "src": "",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 25,
+    "src": "",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 45,
+    "src": "",
+    "status": "assumption"
+   }
+  },
+  "feed_interval_days": {
+   "v": 7,
+   "src": "",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 21,
+   "src": "",
+   "status": "assumption"
+  }
+ },
+ {
+  "id": "tailless_whip_spider",
+  "name": "Tailless whip spider",
+  "sci": "Damon diadema / Phrynus",
+  "group": "other",
+  "lifestyle": "arboreal",
+  "diet": "Crickets, roaches; weekly.",
+  "molt_note": "Hangs from vertical cork to molt.",
+  "group_rule": "solitary (some groups tolerated)",
+  "venom_handling": "Harmless to humans.",
+  "colour": "Brown to tan, flat body with spined pedipalps; very long thin banded antenniform front legs (assumption).",
+  "reference_photo_urls": [
+   "https://www.inaturalist.org/taxa/search?q=Damon+diadema+/+Phrynus",
+   "https://commons.wikimedia.org/wiki/Category:Damon_diadema_/_Phrynus"
+  ],
+  "behaviors": [
+   "climb",
+   "hang from mesh",
+   "antenniform probe",
+   "molt-hang",
+   "flatten into crevice"
+  ],
+  "notes": "Popularity 3 assumed. Temperature differs by source (65-77 F generic; 75-85 F Damon); humidity 65-80%; tall enclosure, height greater than leg span. Price is an assumption (not found on a retailer page this pass).",
+  "sources_used": [
+   "https://www.thetarantulacollective.com/caresheets/whip-scorpion",
+   "https://dubiaroaches.com/blogs/invert-care/tailless-whip-scorpion-care-sheet",
+   "https://reptilesupply.com/blogs/misc-invertebrate-care-sheets/how-to-care-for-your-tailless-whip-scorpion"
+  ],
+  "popularity": {
+   "v": 3,
+   "src": "",
+   "status": "assumption"
+  },
+  "adult_mm": {
+   "v": 45,
+   "src": "",
+   "status": "assumption"
+  },
+  "lifespan_yr": {
+   "v": 10,
+   "src": "",
+   "status": "assumption"
+  },
+  "temp_c": {
+   "v": [
+    22,
+    28
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/whip-scorpion",
+   "status": "sourced"
+  },
+  "humidity_pct": {
+   "v": [
+    65,
+    80
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/whip-scorpion",
+   "status": "sourced"
+  },
+  "substrate_depth_mm": {
+   "v": 50,
+   "src": "",
+   "status": "assumption"
+  },
+  "min_floor_cm": {
+   "v": [
+    20,
+    20
+   ],
+   "src": "https://www.thetarantulacollective.com/caresheets/whip-scorpion",
+   "status": "sourced"
+  },
+  "min_height_cm": {
+   "v": 30,
+   "src": "https://www.thetarantulacollective.com/caresheets/whip-scorpion",
+   "status": "sourced"
+  },
+  "price_usd": {
+   "lo": {
+    "v": 30,
+    "src": "",
+    "status": "assumption"
+   },
+   "typical": {
+    "v": 45,
+    "src": "",
+    "status": "assumption"
+   },
+   "hi": {
+    "v": 80,
+    "src": "",
+    "status": "assumption"
+   }
+  },
+  "feed_interval_days": {
+   "v": 7,
+   "src": "",
+   "status": "assumption"
+  },
+  "fast_tolerance_days": {
+   "v": 21,
+   "src": "",
+   "status": "assumption"
+  }
+ }
+]
