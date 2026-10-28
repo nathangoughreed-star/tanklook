@@ -32,3 +32,18 @@ Sources: [Aquifarm terrarium cost](https://aquifarm.com/is-terrarium-expensive),
    - Terrarium: starter = plain bioactive-lite (substrate, hides, a few plants); full = + cleanup crew, drainage, real plant set; lush = + background, automatic misting, programmable lighting.
 3. Cap plant and rock counts by tank size at every tier (done for rocks in commit d4f16938; plants not yet).
 4. Open: the cost of these 'upgrade' items must come from `demand-items.json` rows; several (controller, dosing, CO2 kit, background, mister, cleanup crew) may not exist there yet, so a price-audit lane needs to source them before Suggest can price a lush tier honestly.
+
+## CO2 ladder (research 2026-10-28; Nathan: DIY vs paintball / mid vs specialty)
+Sources: [FishPotter CO2 systems guide](https://fishpotter.pages.dev/guides/co2-systems-guide), [UKAPS DIY thread](https://ukaps.org/forum/threads/complete-aquarium-diy-co2-system-for-tank-up-to-500l.39927/page-2), [Aquarium Co-Op nano CO2 thread](https://forum.aquariumcoop.com/topic/29985-co2-kit-for-nano-tank-suggestions/); product prices already in `src/data/demand-items.json` (`gear:diy-co2` $22-45, `gear:co2-kit` $90-250 paintball-style UNS kit $227-240, `gear:co2-refill` $15-30) and the CO2 catalogue (`gear-catalog.json` co2: Fzone regulators, desktop cartridge kits, DIY bottles).
+| Tier | What | Rough price | Fits |
+|---|---|---|---|
+| Liquid carbon | bottle | ~$10-15 a bottle | any; weak, melts vallisneria if overdosed |
+| DIY yeast / citric | 2 bottles + diffuser | $20-60 | to ~20-30 gal; refill every 2-4 weeks; uneven output |
+| Disposable cartridge desktop kit | small regulator + solenoid | catalogued (Fzone desktop) | to ~45 gal; cartridge lasts 50-90 days |
+| Paintball canister kit (UNS-class) | micro regulator + paintball tank | $90 regulator only, $227-240 kit; refill $15-25 | small-mid tanks |
+| 5 lb cylinder + single/dual stage regulator + solenoid + diffuser + drop checker | pressurised | cylinder $50-80, regulator $40-150 (Fzone ~$60-70, GLA $120-200+), solenoid $20-40 if separate; complete $150-400 | 30-75 gal+; refill $15-25 every 3-6 months |
+| Specialty: regulator with pH controller (sera Seramic ~€380, GLA / Dennerle bundles) | pH-controlled injection | $300-600 | showpiece; not found: a verified complete-system price (sources conflict / out of date) |
+Model status: rows 'none / liquid / diy / cartridge / pressurized' exist in the Tech menu; **no pH-controller option exists** (data gap: add `co2: 'phcontrol'` with a priced part, $300-600).
+
+## Status of the tier rebuild (this commit)
+Tiers now add equipment, not clutter: starter (hardy plants, no CO2/ferts) -> basic (+ ferts) -> full (+ CO2: yeast to 20 gal, cartridge to 45 gal, regulator above; stronger light x1.3; reef: dosing + flow + skimmer) -> lush (+ regulator CO2 at any size, light x1.8, reef auto top-off). Plant pieces are capped by floor area (1 per 300 / 200 / 150 / 110 cm2). Terrarium tiers still only change plants/hardscape: the gear steps (auto-mister, programmable light, cleanup crew, background, bioactive drainage) need price rows first; the pH-controller CO2 step also needs one.

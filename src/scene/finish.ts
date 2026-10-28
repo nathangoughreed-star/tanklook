@@ -15,7 +15,10 @@ import { fakeFor, finSensitive, rankStyles, scapeSetup, priceScape, type PlantMo
 import { groundVolume } from './setupsheet';
 import { SUBSTRATES } from '../art/placeholder';
 import type { Build } from './builds';
-import type { Item, LayoutId, TankSetup } from './types';
+import { feedFor, optionDef, setFeed, techOf, withChoice } from './tech';
+import { fixtureOf } from './lightout';
+import { volume } from './physics';
+import type { GrowFeed, Item, LayoutId, TankSetup } from './types';
 
 export type FinishTier = 'starter' | 'lean' | 'standard' | 'lush';
 export interface Finish {
@@ -27,14 +30,33 @@ export interface Finish {
   lines: string[];
 }
 export const TIER_LABEL: Record<FinishTier, string> = { starter: 'Starter finish', lean: 'Basic finish', standard: 'Full finish', lush: 'Lush finish' };
-interface TierSpec { id: FinishTier; level: 0 | 1 | 2 | 3; dens: { hard: number; plant: number }; mode: PlantMode; /** share of the plants and hardscape pieces kept (the leanest tier is a few well-placed pieces) */ keep: number }
-/** Layer densities are the starter sliders (0 none .. 4 dense; the default is 2). Lean keeps one anchor piece and a few hardy plants (artificial where the plant is demanding). */
+/** What a tier is: layer densities (the starter sliders, 0 none .. 4 dense; default 2) AND the equipment people add as they spend (research/design/finish-ladders.md):
+ *  plant feed (ferts, then CO2 by the cheapest gas that suits the tank, then pressurised; on a reef dosing, flow, skimmer and an auto top-off), a stronger light
+ *  (x the build's own watts), and a plant count that grows with the floor (cm2 of floor to one plant piece), never a clump of dozens. */
+interface TierSpec { id: FinishTier; level: 0 | 1 | 2 | 3; dens: { hard: number; plant: number }; mode: PlantMode; /** share of the hardscape kept (the leanest tier is a few well-placed pieces) */ keep: number;
+  feed: GrowFeed; lightK: number; ato: boolean; plantArea: number }
 const TIERS: readonly TierSpec[] = [
-  { id: 'lush', level: 3, dens: { hard: 3, plant: 3 }, mode: 'live', keep: 1 },
-  { id: 'standard', level: 2, dens: { hard: 2, plant: 2 }, mode: 'mixed', keep: 1 },
-  { id: 'lean', level: 1, dens: { hard: 1, plant: 1 }, mode: 'mixed', keep: 1 },
-  { id: 'starter', level: 0, dens: { hard: 1, plant: 1 }, mode: 'mixed', keep: 0.4 },
+  { id: 'lush', level: 3, dens: { hard: 3, plant: 3 }, mode: 'live', keep: 1, feed: 'co2', lightK: 1.8, ato: true, plantArea: 110 },
+  { id: 'standard', level: 2, dens: { hard: 2, plant: 2 }, mode: 'mixed', keep: 1, feed: 'co2', lightK: 1.3, ato: false, plantArea: 150 },
+  { id: 'lean', level: 1, dens: { hard: 1, plant: 1 }, mode: 'mixed', keep: 1, feed: 'ferts', lightK: 1, ato: false, plantArea: 200 },
+  { id: 'starter', level: 0, dens: { hard: 1, plant: 1 }, mode: 'mixed', keep: 0.4, feed: 'low', lightK: 1, ato: false, plantArea: 300 },
 ];
+
+/** The build with this tier's equipment: plant feed (the cheapest CO2 that suits the tank: yeast to about 20 gal, a disposable-cartridge kit to about 45, a regulator and
+ *  cylinder above or at the lush tier), a stronger light, an auto top-off on a reef. A dry tank has no such rows and is left as it is. */
+export function upgraded(b: Build, spec: TierSpec): TankSetup {
+  const S = structuredClone(b.setup);
+  if (!S.water.on) return S;
+  const salt = !!S.water.salt, gal = volume(S.tank).gallons;
+  let t = setFeed(techOf(S), spec.feed, salt);
+  if (!salt && spec.feed === 'co2') t = { ...t, rows: { ...t.rows, co2: spec.id === 'lush' || gal > 45 ? 'pressurized' : gal > 20 ? 'cartridge' : 'diy' } };
+  S.tech = t;
+  if (salt && spec.ato && t.rows.ato !== undefined) S.tech = withChoice(S, 'ato', 'ato');
+  const fx = fixtureOf(S.light);
+  if (spec.lightK > 1 && fx !== 'tube' && fx !== 'pendant' && fx !== 'flat') S.light = { ...S.light, watts: Math.round(wattsOf(S) * spec.lightK) };
+  S.grow = { ...S.grow, feed: feedFor(S) };
+  return S;
+}
 
 const LB_PER_L = 1.6 * 2.2046; // loose substrate: the set-up sheet's 1.6 kg a litre
 
@@ -70,6 +92,11 @@ export function finishLines(S: TankSetup, style: Exclude<LayoutId, 'none'>): str
   if (live.length) lines.push(`Plants: ${plural(live.length, 'live plant')} (${names(live).join(', ').toLowerCase()})${fake.length ? ` and ${plural(fake.length, 'artificial one')}` : ''}`);
   else if (fake.length) lines.push(`Plants: ${plural(fake.length, 'artificial plant')}, no light or feeding needed`);
   if (corals.length) lines.push(`Corals: ${plural(corals.length, 'piece')} (${names(corals).join(', ').toLowerCase()})`);
+  if (S.water.on) {
+    const r = techOf(S).rows, label = (row: string) => optionDef(row, r[row] ?? 'none')?.label, on = (row: string) => r[row] && r[row] !== 'none';
+    const care = S.water.salt ? [on('dosing') && `dosing: ${label('dosing')}`, on('flow') && `flow: ${label('flow')}`, on('ato') && 'auto top-off'] : [on('co2') && `CO2: ${label('co2')}`, on('ferts') && `ferts: ${label('ferts')}`];
+    if (care.some(Boolean) || wattsOf(S) > 0) lines.push(`${S.water.salt ? 'Reef care' : 'Plant care'}: ${care.filter(Boolean).join(', ') || 'no extras'}; ${Math.round(wattsOf(S))} W light`);
+  }
   return lines;
 }
 
@@ -79,11 +106,11 @@ const hasHardscape = (S: TankSetup) => S.items.some(i => i.kind === 'stone' || i
  *  three builds (and a re-ask with other guardrails) share one scape. Bounded. */
 type Scape = Pick<TankSetup, 'items' | 'substrate' | 'terrain' | 'layout' | 'water' | 'fish' | 'patches'>;
 const SCAPES = new Map<string, Scape>();
-function scaped(b: Build, mode: PlantMode, style: Exclude<LayoutId, 'none'>, dens: { hard: number; plant: number }, fit: FitLight): TankSetup {
-  const S0 = b.setup, key = JSON.stringify([S0.tank, S0.water, S0.grow, S0.layout, S0.fish.map(f => f.species), mode, style, dens, fit]);
+function scaped(b: Build, S0: TankSetup, mode: PlantMode, style: Exclude<LayoutId, 'none'>, dens: { hard: number; plant: number }, fit: FitLight): TankSetup {
+  const key = JSON.stringify([S0.tank, S0.water, S0.grow, S0.layout, S0.fish.map(f => f.species), mode, style, dens, fit]);
   let c = SCAPES.get(key);
   if (!c) {
-    const T = scapeSetup(b, style, mode, S0, { dens, fit });
+    const T = scapeSetup({ ...b, setup: S0 }, style, mode, S0, { dens, fit });
     c = structuredClone({ items: T.items, substrate: T.substrate, terrain: T.terrain, layout: T.layout, water: T.water, fish: T.fish, patches: T.patches }) as Scape;
     if (SCAPES.size >= 96) SCAPES.delete(SCAPES.keys().next().value!);
     SCAPES.set(key, c);
@@ -93,11 +120,11 @@ function scaped(b: Build, mode: PlantMode, style: Exclude<LayoutId, 'none'>, den
 
 /** Hardscape at a size people really lay out (Nathan 2026-10-27: "comically large"): no piece longer than about a fifth of the tank (a third on a reef, which stacks
  *  rock into a wall) or a third of its height, and no more pieces than the glass has room for, thinned evenly. Caves and hides keep their own size. */
-function trimHardscape(S: TankSetup, keep: number): TankSetup {
+function trimHardscape(S: TankSetup, keep: number, plantArea: number): TankSetup {
   const T = S.tank, reef = !!(S.water.on && S.water.salt), maxLen = Math.min(T.L * (reef ? 0.3 : 0.2), T.H * 0.35), most = Math.max(keep < 1 ? 2 : 3, Math.round(T.L / (reef ? 60 : 110) * keep));
   const hard = S.items.filter(i => i.kind === 'stone' || i.kind === 'wood'), drop = new Set<number>();
   if (hard.length > most) hard.forEach((it, i) => { if (Math.floor(i * most / hard.length) === Math.floor((i - 1) * most / hard.length) && i > 0) drop.add(it.id); });
-  const green = S.items.filter(i => i.kind === 'plant' || i.kind === 'artificial'), want = keep < 1 ? Math.max(3, Math.ceil(green.length * keep)) : green.length;
+  const green = S.items.filter(i => i.kind === 'plant' || i.kind === 'artificial'), want = Math.max(3, Math.round(T.L * T.D / 100 / plantArea)); // pieces of plant by floor area (cm2)
   if (green.length > want) green.forEach((it, i) => { if (Math.floor(i * want / green.length) === Math.floor((i - 1) * want / green.length) && i > 0) drop.add(it.id); });
   return { ...S, items: S.items.filter(i => !drop.has(i.id)).map(i => (i.kind === 'stone' || i.kind === 'wood') && i.size > maxLen ? { ...i, size: Math.max(LIBRARY[i.variant]?.min ?? 15, Math.round(maxLen)) } : i) };
 }
@@ -105,10 +132,10 @@ function trimHardscape(S: TankSetup, keep: number): TankSetup {
 /** The finished build at one tier: the style scaped into the build's tank, priced and timed by the demand model with the build's own deals.
  *  A tier with no hardscape (a planted style at a light density) draws more of it until there is a piece to anchor the plants, up to the densest. */
 export function finishBuild(b: Build, spec: TierSpec, style: Exclude<LayoutId, 'none'>, now = Date.now()): Build {
-  const land = !b.setup.water.on, fit = fitFor(b.setup), mode = land ? 'live' : spec.mode;
-  let T = scaped(b, mode, style, spec.dens, fit);
-  for (let h = spec.dens.hard + 1; h <= 3 && !hasHardscape(T); h++) T = scaped(b, mode, style, { ...spec.dens, hard: h }, fit);
-  T = settle(trimHardscape(T, spec.keep), finSensitive(b.animals));
+  const S1 = upgraded(b, spec), land = !S1.water.on, fit = fitFor(S1), mode = land ? 'live' : spec.mode;
+  let T = scaped(b, S1, mode, style, spec.dens, fit);
+  for (let h = spec.dens.hard + 1; h <= 3 && !hasHardscape(T); h++) T = scaped(b, S1, mode, style, { ...spec.dens, hard: h }, fit);
+  T = settle(trimHardscape(T, spec.keep, spec.plantArea), finSensitive(b.animals));
   T = { ...T, render: { ...T.render, bg: T.water.on && T.water.salt ? 'blue' : T.water.on ? 'black' : 'gradient' } }; // a background behind every finished tank (Nathan 2026-10-27)
   const D = priceScape(T, b, now);
   const setupUsd = Math.round(D.totals.setupUsd), add = setupUsd - b.setupUsd;
