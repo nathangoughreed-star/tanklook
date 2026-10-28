@@ -235,3 +235,12 @@ describe('species list (panels.ts animalGate via gateOf): blocker, concerns only
   });
   it('no reasons: nothing shown', () => { expect(gateOf(whysAnimal(fake('tA'), 1e9, 3, [fake('tB4')]))).toBeNull(); });
 });
+
+describe('a one-value pair is flagged even when the others already share nothing (invert-prey finding, 2026-10-22)', () => {
+  it('ember 23-27 with a German blue ram 27-30, alone and beside Amano shrimp and cardinals', () => {
+    for (const have of [['gbr'], ['gbr', 'amano'], ['gbr', 'amano', 'cardinal']]) {
+      const w = whysAnimal(sp('ember'), 600, 3, have.map(sp)).find(x => x.temp); // yellow (a concern), never blocking
+      expect(w?.text, have.join('+')).toMatch(/Only one shared temperature \(27 °C\); no operating margin \(German blue ram\)/);
+    }
+  });
+});

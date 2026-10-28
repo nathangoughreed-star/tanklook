@@ -122,7 +122,10 @@ function tempWhys(sp: Species, present: Species[]): AnimalWhy[] {
   const others = sharedRange(present.filter(o => o.id !== sp.id));
   if (others.state === 'unknown') return [];
   const none = (o: Species) => ({ kind: 'compat' as const, temp: true as const, text: `water temperature: No suitable shared temperature identified: its ${fmtC(t)} against ${fmtC(CARE[o.id].temp!)} (${o.name})` });
-  if (others.state === 'none') return others.counted.filter(o => Math.min(t[1], CARE[o.id].temp![1]) < Math.max(t[0], CARE[o.id].temp![0])).map(none);
+  // the others already share nothing (or one value): judge this one against each, a pair meeting at one value included
+  const gap = (o: Species) => Math.min(t[1], CARE[o.id].temp![1]) - Math.max(t[0], CARE[o.id].temp![0]);
+  const single = (o: Species) => ({ kind: 'compat' as const, temp: true as const, concern: true as const, text: `water temperature: Only one shared temperature (${Math.max(t[0], CARE[o.id].temp![0])} °C); no operating margin (${o.name})` });
+  if (others.state === 'none' || others.state === 'single') return others.counted.flatMap(o => gap(o) < 0 ? [none(o)] : gap(o) === 0 ? [single(o)] : []);
   const all = sharedRange([sp, ...others.counted]);
   if (all.state === 'none') return [none(t[1] < others.range![0] ? others.floor! : others.ceiling!)];
   if (all.state === 'single') return [{ kind: 'compat', temp: true, concern: true, text: `water temperature: Only one shared temperature (${all.range![0]} °C); no operating margin (${(t[1] <= others.range![0] ? others.floor! : others.ceiling!).name})` }];

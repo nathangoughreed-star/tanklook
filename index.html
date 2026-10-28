@@ -24,17 +24,23 @@
   </header>
 
   <div class="toolbar">
-    <button id="suggestBtn" title="Fill in what you left open in your setup brief: proposals that fit your budget, time and space">Suggest</button>
-    <button id="welcomeBtn" title="Back to the Welcome screen: pick how to start">Welcome</button>
     <button id="newScene" title="Start a new, empty tank">New</button>
     <button id="openScene" title="Open a tank saved in this browser, or a downloaded file">Open…</button>
     <button id="saveScene" title="Save this tank in this browser, with a picture (Open… lists them)">Save</button>
-    <button id="downloadScene" title="Download this tank as a .json file to back up or share">Download</button>
-    <button id="shareScene" title="Copy a link that opens this exact tank for whoever you send it to (no file, no account)">Copy share link</button>
+    <button id="downloadScene" title="Download this tank as a file, or copy a link that opens it">Download</button>
     <input id="fileIn" type="file" accept=".json,.tank" hidden>
+  </div>
+  <div class="toolbar">
     <button id="multiBtn" class="sidetog" aria-pressed="false" title="Multi-select: tap animals and pieces to add them to the selection or take them out; drag on empty water to draw a box round some. On a computer: Shift-click and Shift-drag.">☐ Multi</button>
     <button id="brushBtn" class="sidetog" aria-pressed="false" title="Scatter brush: paint leaf litter, pebbles, moss, twigs or a carpet of plants onto the ground or a piece; Erase takes them off again.">🖌 Brush</button>
   </div>
+  <dialog id="dlDlg" class="libdlg">
+    <form method="dialog" class="libhead"><h2>Download or share</h2><button value="close" aria-label="Close">✕</button></form>
+    <div class="startbtns startpaths">
+      <button id="dlFile" class="startpath"><b>Download a file</b><span>A .json file to back up or send; Open… reads it back, pictures included</span></button>
+      <button id="shareScene" class="startpath"><b>Copy share link</b><span>A link that opens this exact tank for whoever you send it to (no file, no account)</span></button>
+    </div>
+  </dialog>
   <dialog id="scapeWarn" class="libdlg warndlg" aria-labelledby="scapeWarnTitle" aria-describedby="scapeWarnText">
     <div class="warnhead"><span class="warnicon" aria-hidden="true">⚠</span><h2 id="scapeWarnTitle">This replaces your current scape</h2></div>
     <p id="scapeWarnText"></p>
@@ -95,7 +101,7 @@
       <div id="libList" class="libgrid"></div>
       <div class="btns"><button id="openFile">Open a downloaded file…</button></div>
     </section>
-    <p class="hint startswap"><button type="button" id="startSwap" class="linkbtn"></button> · <button type="button" id="startWelcome" class="linkbtn">Back to Welcome</button></p>
+    <p class="hint startswap"><button type="button" id="startSwap" class="linkbtn"></button> · <button type="button" id="startWelcome" class="linkbtn">Back to Welcome</button> · <button type="button" id="suggestBtn" class="linkbtn" title="Fill in what you left open in your setup brief: proposals that fit your budget, time and space">Suggest a setup</button></p>
     <p class="hint">Drag (one finger on a phone) to look around, wheel or pinch to zoom; <i>How to use</i> at the top of the panel has the rest.</p>
   </dialog>
   <div id="busy" class="busy" role="status" aria-live="polite" hidden><div class="busybox"><span class="spin" aria-hidden="true"></span><span id="busyText">Opening…</span></div></div>

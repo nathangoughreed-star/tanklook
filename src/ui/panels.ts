@@ -346,10 +346,13 @@ Cancel, then change the name, to keep both.`)) return;
   };
   const saveFile = (scene: Scene) => download(new Blob([JSON.stringify(withImages(scene), null, 1)], { type: 'application/json' }), `${slug(scene.name)}.json`);
   // the whole scene: with split tanks, one file holding both (opens split again)
-  $('downloadScene').onclick = () => saveFile(G());
+  const dlDlg = $<HTMLDialogElement>('dlDlg');
+  $('downloadScene').onclick = () => dlDlg.showModal();
+  $('dlFile').onclick = () => { dlDlg.close(); saveFile(G()); };
   // Share link (lane N, R12): the scene deflated into the URL hash, no server. The single-file build (file://) links to
   // the live site, since a file path means nothing on another computer.
   $('shareScene').onclick = async () => {
+    dlDlg.close();
     const made = shareUrl(G(), location.protocol === 'file:' ? 'https://tanklook.com/' : location.href);
     const copied = copyText(made); // started inside the click: Safari allows the clipboard only there
     let url: string;
