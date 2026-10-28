@@ -29,7 +29,7 @@ export interface BuildPlan {
 }
 
 const usd = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
-const FIRST_ORDER = ['Tank', 'Stand', 'Life-support', 'Supplies', 'Substrate', 'Extras'];
+const FIRST_ORDER = ['Tank', 'Starter kit', 'Stand', 'Life-support', 'Supplies', 'Substrate', 'Extras'];
 const rank = (l: CostLine) => { const i = FIRST_ORDER.findIndex(k => l.label.startsWith(k)); return i < 0 ? 2 : i; };
 
 /** What is bought and when: owned first ($0, "you have"), then everything the tank needs before animals, tank and stand first; the animals (and the tax on them) last. */

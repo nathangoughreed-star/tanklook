@@ -19,7 +19,7 @@ describe('Build plan', () => {
     expect(b.habitat).toBe('fresh');
     const ids = b.buy.map(g => g.id), first = b.buy.find(g => g.id === 'first')!;
     expect(ids[ids.length - 1]).toBe('later');
-    expect(first.rows[0].label).toBe('Tank');
+    expect(first.rows[0].label).toMatch(/^(Tank|Starter kit)/); // lane U5: a kit's one price is its own line
     const sum = b.buy.reduce((t, g) => t + g.usd, 0);
     expect(sum).toBe(b.totalUsd);
     expect(b.cycling?.weeks[0]).toBeGreaterThanOrEqual(4);
