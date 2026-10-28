@@ -5,7 +5,8 @@
 import { getSpecies } from '../data/species';
 import { demandOf } from '../demand/engine';
 import type { UserProfile } from '../demand/types';
-import { buildsFor } from '../scene/builds';
+import { suggestSetups, type Proposal } from '../demand/suggest';
+import { loadProfile } from './demandPanel';
 import { compliance, type Constraints } from '../scene/constraints';
 import type { Units, TankSetup } from '../scene/types';
 import { planFor } from './stockPlanLogic';
@@ -15,20 +16,32 @@ import { budgetOf, lockedStock, spaceOf, type Brief } from './setupBrief';
 const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
 
 export interface Evaluation { gal?: number; tank?: string; cheapestUsd?: number; fits?: boolean; text: string }
-/** The locked animals against the budget: the smallest catalogue tank that holds them, its cheapest finished build, and whether that is within the ceiling. */
+/** The cheapest honest build for the locked animals, from the generator itself (the same figure the Suggest panel's "no setup fits" card shows: one source). Money limits off, everything else the brief says kept. Remembered per brief. */
+const CHEAP = new Map<string, Proposal | null>();
+function cheapestFor(b: Brief): Proposal | undefined {
+  const w = briefToWants(b), c = w.constraints, off = <T extends { on: boolean }>(x: T | undefined) => x ? { ...x, on: false } : undefined;
+  const key = JSON.stringify({ a: w.animals, o: w.owned, t: w.ownTank?.id, x: w.taxPct, s: w.needStand, sp: w.space, h: w.hightech, sc: c.space });
+  if (!CHEAP.has(key)) {
+    if (CHEAP.size > 20) CHEAP.clear();
+    const r = suggestSetups({ ...w, phased: false, constraints: { ...c, startupUsd: off(c.startupUsd), monthlyUsd: off(c.monthlyUsd), minutesPerWeek: off(c.minutesPerWeek) } }, loadProfile(), 'in');
+    CHEAP.set(key, r.cheapest ?? r.proposals[0] ?? null);
+  }
+  return CHEAP.get(key) ?? undefined;
+}
+/** The locked animals against the budget: the cheapest welfare-appropriate build (the generator's, all-in) and whether that is within the ceiling. */
 export function evaluateAnimals(b: Brief): Evaluation {
   const animals = lockedStock(b).filter(v => getSpecies(v.species));
   if (!animals.length) return { text: '' };
   const plan = planFor(animals.map(a => ({ id: a.species, n: a.n })));
-  const m = plan.need?.tank;
-  if (!m) return { text: 'These animals do not live in a tank from the catalogue, so a cost cannot be read yet.' };
-  const cheapest = buildsFor(animals.map(a => ({ species: a.species, n: a.n })), m)[0];
-  const cap = budgetOf(b);
-  const base = `The smallest tank that holds them is about ${m.ratedGal} gal; the cheapest finished build is ${usd(cheapest.setupUsd)}.`;
-  if (cap === undefined) return { gal: m.ratedGal, tank: m.name, cheapestUsd: cheapest.setupUsd, text: base };
-  const fits = cheapest.setupUsd <= cap;
-  return { gal: m.ratedGal, tank: m.name, cheapestUsd: cheapest.setupUsd, fits,
-    text: `${base} ${fits ? `That is within your ${usd(cap)} ceiling, with ${usd(cap - cheapest.setupUsd)} to spare.` : `That is ${usd(cheapest.setupUsd - cap)} over your ${usd(cap)} ceiling: the animals' needs are not changed to fit it. Raise the ceiling, use gear you own, or pick other animals.`}` };
+  if (!plan.need?.tank) return { text: 'These animals do not live in a tank from the catalogue, so a cost cannot be read yet.' };
+  const p = cheapestFor(b);
+  if (!p) return { gal: plan.need.tank.ratedGal, tank: plan.need.tank.name, text: 'No welfare-appropriate setup for these animals can be built with the other things the brief says.' };
+  const m = p.build.tank, price = p.totals.startupUsd, cap = budgetOf(b);
+  const base = `The cheapest welfare-appropriate build is ${usd(price)} all-in, in a ${Math.round(m.ratedGal)} gal tank.`;
+  if (cap === undefined) return { gal: m.ratedGal, tank: m.name, cheapestUsd: price, text: base };
+  const fits = price <= cap;
+  return { gal: m.ratedGal, tank: m.name, cheapestUsd: price, fits,
+    text: `${base} ${fits ? `That is within your ${usd(cap)} ceiling, with ${usd(cap - price)} to spare.` : `That is ${usd(price - cap)} over your ${usd(cap)} ceiling: the animals' needs are not changed to fit it. Raise the ceiling, use gear you own, or pick other animals.`}` };
 }
 
 /** The brief's limits as the guardrail shape the tank stores (U1's adapter). */

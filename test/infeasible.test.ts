@@ -139,3 +139,14 @@ describe('infeasible requests explain themselves', () => {
     expect(valueOf(back, 'constraints.phased')).toBe(true);
   });
 });
+
+describe('one source for the cheapest honest build', () => {
+  it('the brief bar evaluate line and the infeasible card give the same figure', async () => {
+    const { evaluateAnimals } = await import('../src/ui/briefFeasibility');
+    const w: Wants = { constraints: { startupUsd: cap(200) }, animals: gold };
+    const inf = suggestSetups(w, defaultProfile(), 'in', Date.now()).infeasible!, ev = evaluateAnimals(briefFromWants(w));
+    expect(ev.cheapestUsd).toBe(inf.cheapest!.usd);
+    expect(ev.text).toContain(`$${inf.cheapest!.usd.toLocaleString('en-US')}`);
+    expect(ev.fits).toBe(false);
+  }, 120000);
+});
