@@ -215,6 +215,7 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
     if (salt) { if (rowPrice('gear:refractometer')) add('refractometer', 'Refractometer (salinity)', 'gear', { setup: price(rowPrice('gear:refractometer')!) }); }
     else if (rowPrice('gear:start-conditioner')) add('startconditioner', 'Dechlorinator (first bottle)', 'gear', { setup: price(rowPrice('gear:start-conditioner')!) });
     if (rowPrice('gear:siphon')) add('siphon', 'Siphon / gravel vacuum', 'gear', { setup: price(rowPrice('gear:siphon')!) });
+    if (rowPrice('gear:bucket')) add('bucket', 'Bucket (aquarium only)', 'gear', { setup: price(rowPrice('gear:bucket')!) });
     if (rowPrice('gear:net')) add('net', 'Fish net', 'gear', { setup: price(rowPrice('gear:net')!) });
     if (rowPrice('gear:thermometer')) add('thermometer', 'Thermometer', 'gear', { setup: price(rowPrice('gear:thermometer')!) });
     add('waterchange', `Water changes (${Math.round(frac * 100)} % a week${hose ? ', by hose' : ''})`, 'work', { upkeep: scale3(per, galWk * 4.33), minutes: add3(scale3(pick(hose ? T.waterChangeHosePerGalMin : T.waterChangePerGalMin), galWk * sMul.minutes), scale3(pick(hose ? T.waterChangeHoseFixedMin : T.waterChangeFixedMin), sMul.minutes)), everyDays: choreDays('waterchange') });

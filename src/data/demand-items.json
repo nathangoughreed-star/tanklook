@@ -776,17 +776,17 @@
    "url": "https://dubiaroaches.com/products/api-freshwater-master-test-kit"
   },
   "gear:start-conditioner": {
-   "lo": 12,
-   "mode": 16,
-   "hi": 18,
-   "unit": "first bottle of dechlorinator, Seachem Prime 250 mL: $17.39 (Stateline Tack); lane U5, 2026-10-28",
+   "lo": 3.99,
+   "mode": 4,
+   "hi": 16,
+   "unit": "first bottle: Top Fin water conditioner about $3.99 (Nathan lead 2026-10-28, not re-verified), up to Seachem Prime 250 mL $17.39 (Stateline Tack) for a big tank; lane U5",
    "url": "https://www.statelinetack.com/products/seachem-prime"
   },
   "gear:siphon": {
-   "lo": 8,
-   "mode": 14,
+   "lo": 7.5,
+   "mode": 8,
    "hi": 20,
-   "unit": "gravel vacuum / siphon for water changes, Aqueon 10 in $15.99 (That Pet Place), $19.79 (Walmart); small sizes about $7-13; lane U5, 2026-10-28",
+   "unit": "Aqueon mini siphon about $7.52 (Nathan lead 2026-10-28, not re-verified); Aqueon 10 in $15.99 (That Pet Place), $19.79 (Walmart); lane U5",
    "url": "https://www.thatpetplace.com/aqueon-siphon-vacuum-large-10"
   },
   "gear:net": {
@@ -806,12 +806,11 @@
    "est": true
   },
   "gear:refractometer": {
-   "lo": 25,
-   "mode": 35,
-   "hi": 60,
-   "unit": "salinity refractometer for a salt tank; no retailer page read, judgement (lane U5, 2026-10-28)",
-   "url": "",
-   "est": true
+   "lo": 15,
+   "mode": 20,
+   "hi": 170,
+   "unit": "each; budget ATC eBay/Amazon $15-20, Milwaukee MA887 digital $169.99",
+   "url": "https://fishtanksdirect.com/milwaukee-ma887-digital-seawater-sg-refractometer-mil00887/"
   },
   "hard:arch": {
    "lo": 4,
@@ -1431,13 +1430,6 @@
    "url": "https://www.ebay.com/itm/156923601627",
    "est": true
   },
-  "gear:refractometer": {
-   "lo": 15,
-   "mode": 20,
-   "hi": 170,
-   "unit": "each; budget ATC eBay/Amazon $15-20, Milwaukee MA887 digital $169.99",
-   "url": "https://fishtanksdirect.com/milwaukee-ma887-digital-seawater-sg-refractometer-mil00887/"
-  },
   "gear:return-pump": {
    "lo": 86,
    "mode": 170,
@@ -1809,6 +1801,14 @@
    "unit": "each; retailer prices, some judged (arthropod research 2026-10-28)",
    "est": true,
    "url": ""
+  },
+  "gear:bucket": {
+   "lo": 4,
+   "mode": 5,
+   "hi": 10,
+   "unit": "a bucket kept for the aquarium only: allowance (Nathan lead 2026-10-28), judgement; lane U5",
+   "url": "",
+   "est": true
   }
  }
 }

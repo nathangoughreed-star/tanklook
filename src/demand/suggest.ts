@@ -14,7 +14,8 @@
 // Deterministic: fixed archetype order, scores, ties by id. Only the guardrails are filters; appeal tags only rank.
 import data from '../data/archetypes.json';
 import { getSpecies } from '../data/species';
-import { tankFromModel } from '../data/tanks';
+import { getTankModel, modelOfVariant, tankFromModel } from '../data/tanks';
+import { DEALS } from '../data/deals';
 import type { TankModel } from '../data/tanks';
 import { buildsFor, configKey, distinctBuilds, FILTRATION_LIMIT, meetsNeeds, type Build, type BuildId } from '../scene/builds';
 import { filterProduct, FILTER_PRODUCTS, heaterProduct, HEATER_PRODUCTS, lightProduct, lightsFor, LIGHT_PRODUCTS, productName, pumpProduct, pumpRatedFor, PUMP_PRODUCTS, skimmerSuitsGal, SKIMMER_PRODUCTS } from '../data/gearCatalog';
@@ -62,7 +63,7 @@ export const ARCHETYPES = data.archetypes as unknown as Archetype[];
  *  not credited); "I don't care" (credited $0, the setup's own spec assumed adequate); or "I don't know" (not credited: priced as bought, with a
  *  note to check). Credit = the item's set-up price comes off the proposal's set-up cost and so off the budget guardrail. Upkeep and minutes are
  *  unchanged. */
-export type OwnedKey = 'filter' | 'heater' | 'light' | 'skimmer' | 'flow' | 'lid' | 'stand' | 'testkit' | 'dryheat';
+export type OwnedKey = 'filter' | 'heater' | 'light' | 'skimmer' | 'flow' | 'lid' | 'stand' | 'testkit' | 'dryheat' | 'siphon' | 'net' | 'conditioner' | 'thermometer' | 'bucket';
 /** 'care' = I don't care, 'unknown' = I don't know, anything else = a catalogue product id. */
 export type OwnedPick = string;
 export type OwnedMap = Partial<Record<OwnedKey, OwnedPick>>;
@@ -100,6 +101,8 @@ export const OWNED: readonly OwnedDef[] = [
     products: () => PUMP_PRODUCTS.filter(p => p.kind !== 'air').map(p => ({ id: p.id, label: `${nm(p)} (${p.gph ?? '?'} gph)` })),
     check: (b, id) => { const p = pumpProduct(id); return p && pumpRatedFor(p, galOf(b.setup)) === false ? { flag: `Your ${nm(p)} is not rated for this ${Math.round(galOf(b.setup))} gal tank: the setup's own pump is priced instead.` } : {}; } },
   { id: 'lid', label: 'Lid / hood', rows: ['lid'] }, { id: 'stand', label: 'Stand', rows: ['stand'] }, { id: 'testkit', label: 'Water test kit', rows: ['testkit'] },
+  { id: 'siphon', label: 'Siphon / gravel vacuum', rows: ['siphon'] }, { id: 'net', label: 'Fish net', rows: ['net'] }, { id: 'conditioner', label: 'Dechlorinator', rows: ['startconditioner'] },
+  { id: 'thermometer', label: 'Thermometer', rows: ['thermometer'] }, { id: 'bucket', label: 'Bucket', rows: ['bucket'] },
   { id: 'dryheat', label: 'Terrarium heat lamp, UVB, thermostat, gauge', rows: ['heatlamp', 'thermostat', 'uvb', 'gauge'] },
 ];
 /** What owning each item does to a build: set-up dollars off, the tank's tech when an owned filter goes in, and a note per item. The build's price
@@ -354,6 +357,17 @@ function experienceNote(exp: 0 | 1 | 2 | undefined, cx: number, min: number): st
 /** The stand's price in this build (list price scaled by the build's deals), for the "no stand" trade-off line. */
 const standCost = (b: Build, P: UserProfile) => { const D = demandOf(b.setup, P), r = D.items.find(i => i.key === 'stand'), k = D.totals.setupUsd > 0 ? b.setupUsd / D.totals.setupUsd : 1; return r?.setup ? Math.round(mean3(r.setup) * k) : 0; };
 /** One or two plain sentences: what this concept gains and what it gives up, with the real numbers. Welfare is never on the list (it is a gate, not a trade). */
+/** The tanks of the current kit deals (a starter kit that includes tank, filter and heater, not sold out), each as the maker's own variant of its catalogue tank, when the animals fit in it (lane U5). */
+function kitTanks(animals: AnimalCount[], now: number, smallest: TankModel): TankModel[] {
+  const out: TankModel[] = [], cap = smallest.ratedGal * 2; // speed: kits within double the smallest size, the two cheapest
+  for (const d of [...DEALS].sort((x, y) => x.price.usd - y.price.usd)) {
+    if (d.terrarium || d.gal > cap || d.gal < smallest.ratedGal || !['tank', 'filter', 'heater'].every(k => d.includes.includes(k as never)) || (d.saleEnds && Date.parse(d.saleEnds) < now)) continue;
+    const cat = d.tank ? getTankModel(d.tank) : undefined; if (!cat) continue;
+    const m = d.dims ? modelOfVariant(cat, d.dims) : cat, f = fitIn(animals, m);
+    if (f && !f.fails.length) out.push(m);
+  }
+  return out.slice(0, 2);
+}
 /** The stated finish compromise of a bare build (lane U5): chosen, or forced by the budget, with what the display baseline would add. */
 function bareNote(b: Build, chosen: boolean, now: number): { kind: 'chosen' | 'compromise'; text: string } {
   const add = baselineAddUsd(b, now), hide = b.setup.items.length ? 'one hide for shelter' : 'no shelter piece', more = add > 0 ? `; the display baseline (substrate, hardscape, hardy plants) would add about ${usd(add)} before tax` : '';
@@ -493,6 +507,8 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
       }
       dir = welfareOnly ? 1 : -1;
     }
+    // lane U5: the cheapest start also looks at the next sizes up and at starter kits with their own tank (heater, filter, light, thermometer and net in one price): a kit can undercut the smallest tank's parts
+    if (id === 'economy' && found?.p && !w.ownTank) for (const tk of kitTanks(a.animals, now, list[0])) { const q = attempt(a, a.animals, tk, sd.build, maxLevel, undefined, true); if (q.p && q.p.totals.startupUsd < found!.p!.totals.startupUsd) found = q; }
     if (!found?.p) { if (near) misses.push(near); return; }
     const { levelOf, needStand, ...p } = found.p, t = p.totals, L = effectiveLimits(p.scene, P0.limits), cx = complexityOf(p.build, p.scene), exp = C.experience;
     // climb (the old target behaviour): a card that stops short because the animals' needs cap it (the biggest tank they gain from, at the fullest finish) is as good a use of the money as the animals allow

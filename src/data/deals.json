@@ -292,7 +292,7 @@
    "id": "petsmart-top-fin-cube-10",
    "retailer": "PetSmart",
    "name": "Top Fin Cube Essentials Starter Kit 10 gal",
-   "gal": 10,
+   "gal": 8,
    "tank": "g8c",
    "dims": {
     "L_in": 14.09,
@@ -304,7 +304,9 @@
     "lid",
     "light",
     "filter",
-    "heater"
+    "heater",
+    "thermometer",
+    "net"
    ],
    "filter": {
     "kind": "hob",
@@ -319,7 +321,7 @@
    },
    "url": "https://www.petsmart.com/fish/starter-kits/top-fin-cube-aquarium-essentials-starter-kit---10-gallon-100213.html",
    "asOf": "2026-10-19",
-   "note": "Page read live, half price. Tank 14.09 in cube; hood, white LED, Silenstream PF10, 50 W heater.",
+   "note": "Page read live, half price. Sold as 10 gallon, but the glass is a 14.09 in cube (about 8 gal by volume, catalogue g8c). Tank 14.09 in cube; hood, white LED, Silenstream PF10, 50 W heater, thermometer, 4 in net, test vial. Lane U5 re-read 2026-10-28: $44.99 / $89.99; no end date on the page (Nathan: sale through 2026-11-01), so treat the price as sale-limited.",
    "look": {
     "lid": "hood",
     "light": {

@@ -89,3 +89,14 @@ describe('low-tech lush finish', () => {
     for (const p of hi.proposals) expect(['standard', 'lush']).toContain(p.build.finish!.tier);
   });
 });
+
+describe('owned supplies', () => {
+  it('an owned siphon, net, dechlorinator, thermometer, bucket and test kit credit $0 and leave no supplies line', () => {
+    const own = { siphon: 'care', net: 'care', conditioner: 'care', thermometer: 'care', bucket: 'care', testkit: 'care' } as const;
+    const r = run({ constraints: {}, animals: betta, minimal: true, owned: { ...own } }), base = run({ constraints: {}, animals: betta, minimal: true });
+    const p = r.proposals.find(q => q.strategy === 'economy')!, q = base.proposals.find(x => x.strategy === 'economy')!;
+    expect(p.totals.startupUsd).toBeLessThan(q.totals.startupUsd - 40);
+    expect(p.costLines.some(l => l.layer === 'complete' && l.usd > 0 && /Supplies/.test(l.label))).toBe(false);
+    expect(p.costLines.filter(l => l.usd === 0 && l.note === 'you have').length).toBeGreaterThanOrEqual(5);
+  });
+});

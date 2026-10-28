@@ -108,7 +108,7 @@ const strs = <T extends string>(v: unknown, ok: readonly T[]): T[] | undefined =
 const KINDS: readonly Kind[] = ['freshwater', 'saltwater', 'terrarium', 'vivarium'];
 const DRY: readonly DryGroup[] = ['herp', 'arthropod'];
 const TAG_IDS: readonly Tag[] = ['colorful', 'active', 'calm', 'natural', 'unusual', 'low-maint'];
-const OWNED_KEYS: readonly OwnedKey[] = ['filter', 'heater', 'light', 'skimmer', 'flow', 'lid', 'stand', 'testkit', 'dryheat'];
+const OWNED_KEYS: readonly OwnedKey[] = ['filter', 'heater', 'light', 'skimmer', 'flow', 'lid', 'stand', 'testkit', 'dryheat', 'siphon', 'net', 'conditioner', 'thermometer', 'bucket'];
 const MODES: readonly PlantMode[] = ['live', 'artificial', 'mixed'];
 const modelOf = (v: unknown): { model?: string } | undefined => v && typeof v === 'object' ? (typeof (v as { model?: unknown }).model === 'string' ? { model: (v as { model: string }).model } : {}) : undefined;
 

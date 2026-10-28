@@ -25,14 +25,14 @@ export const LAYERS: readonly Layer[] = ['welfare', 'complete', 'display', 'enha
 export interface CostLine { label: string; usd: number; note?: string; layer?: Layer }
 const FINISH = (key: string) => key === 'substrate' || key === 'patch' || key.startsWith('hard:') || key.startsWith('plant:');
 const ENHANCE_KEYS = new Set(['co2', 'ferts', 'ato', 'dosing']);
-const SUPPLY_KEYS = new Set(['testkit', 'rounit', 'startconditioner', 'siphon', 'net', 'thermometer', 'refractometer']);
+const SUPPLY_KEYS = new Set(['testkit', 'rounit', 'startconditioner', 'siphon', 'net', 'thermometer', 'refractometer', 'bucket']);
 const GROUPS: { id: string; label: string; layer: Layer; of: (key: string) => boolean }[] = [
   { id: 'tank', label: 'Tank', layer: 'welfare', of: k => k === 'tank' },
   { id: 'stand', label: 'Stand', layer: 'complete', of: k => k === 'stand' },
   { id: 'finish', label: 'Substrate, hardscape and plants', layer: 'display', of: FINISH },
   { id: 'animals', label: 'Animals', layer: 'welfare', of: k => k.startsWith('animal:') },
   // what the demand model prices as a set-up purchase to start the tank (lane U5: test kit, first dechlorinator, siphon, net, thermometer, refractometer, an RO unit); refills of food, conditioner and salt mix are in the monthly upkeep
-  { id: 'supplies', label: 'Supplies and maintenance tools (test kit, dechlorinator, siphon, net, thermometer)', layer: 'complete', of: k => SUPPLY_KEYS.has(k) },
+  { id: 'supplies', label: 'Supplies and maintenance tools (test kit, dechlorinator, siphon, bucket, net, thermometer)', layer: 'complete', of: k => SUPPLY_KEYS.has(k) },
   { id: 'enhance', label: 'Extras (stronger light, CO2, fertiliser, dosing)', layer: 'enhance', of: k => ENHANCE_KEYS.has(k) || k === 'light+' },
 ];
 /**
