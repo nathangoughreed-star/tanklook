@@ -1,0 +1,9 @@
+{
+  "packs": [],
+  "shipping": [
+    {"retailer":"LiveAquaria","standardShipUsd":"12.98 under $49 order; 6.99 at $49+ (UPS Ground, up to 5 days)","freeOverUsd":229,"plantsNote":"Freshwater plants, pond plants and live food are processed as separate orders (special handling); aquatic-life vs supply totals counted separately; exclusions apply","sourceUrl":"https://www.liveaquaria.com/pages/shipping-information"},
+    {"retailer":"Aquatic Arts","standardShipUsd":null,"freeOverUsd":75,"plantsNote":"UNCONFIRMED: third-party directory snippet only, undated; not from retailer site","sourceUrl":"search snippet only"},
+    {"retailer":"Aquarium Plants Factory","standardShipUsd":null,"freeOverUsd":100,"plantsNote":"UNCONFIRMED: coupon-site snippet only","sourceUrl":"https://simplycodes.com/store/aquariumplantsfactory.com"}
+  ],
+  "notFound": "No verifiable pack with a live price: store /products.json and collection fetches mostly returned HTTP 429 (Aquarium Co-Op, Aquatic Arts, LiveAquaria packs, Plants Factory), Aquasabi 410, Modern Aquarium 404; Modern Aquarium's 18-plant ($74.95) and 48-plant ($149.95) packages are random-species (skipped); Co-Op and Modern Aquarium shipping policies not found."
+}

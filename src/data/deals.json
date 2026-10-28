@@ -1257,6 +1257,32 @@
    "url": "https://www.target.com/p/-/A-88867032",
    "asOf": "2026-10-27",
    "note": "Search snippet only: $205.99 against $249.99 (a second Target listing $249.99, was $299.99). Bare terrarium with screen top; dearer than the Thrive kit."
+  },
+  {
+   "id": "joshsfrogs-beardie-24x18x18",
+   "retailer": "Josh's Frogs",
+   "name": "Bearded Dragon Complete Kit (Exo Terra Pro 24x18x18)",
+   "gal": 33,
+   "terrarium": true,
+   "confidence": "medium",
+   "dims": {
+    "L_in": 24,
+    "D_in": 18,
+    "H_in": 18
+   },
+   "includes": [
+    "tank",
+    "dome",
+    "bulb",
+    "uvb",
+    "gauge"
+   ],
+   "price": {
+    "usd": 341.06
+   },
+   "url": "https://joshsfrogs.com/kp/bearded-dragon-complete-kit-24x18x18-kit0016",
+   "asOf": "2026-10-28",
+   "note": "Page read 2026-10-28 by the deals sweep (agentC/sweep-terrarium.json): Exo Terra Pro glass terrarium 24x18x18 in, two 5.5 in reflector dome fixtures, 75 W basking bulb, 13 W desert UVB bulb, digital thermometer, liner, dish, manzanita wood. In stock. No regular price shown. NOT listed: thermostat, substrate. Rated gallons not stated (about 33 from the size). Shipping on dry goods is quoted in the cart, so none is added here."
   }
  ]
 }

@@ -1,17 +1,168 @@
-{"asOf":"2026-10-27","retailers":{
-"PetSmart":{"standardShipUsd":5.99,"freeOverUsd":49,"pickupFree":true,"pickupNote":"free buy-online pickup in store","bigItemNote":"tanks/kits usually ship free over threshold or ship to store/pickup; large items can carry surcharge","plantsShipNote":"n/a (live fish in store only)","sourceUrl":"https://www.petsmart.com/help/shipping","asOf":"2026-10-27","est":true},
-"Walmart":{"standardShipUsd":6.99,"freeOverUsd":35,"pickupFree":true,"pickupNote":"free store pickup","bigItemNote":"1P tanks ship free over $35; Marketplace items set own shipping and do not count toward threshold","plantsShipNote":"Marketplace plant sellers vary","sourceUrl":"https://www.walmart.com/cp/shipping-delivery/","asOf":"2026-10-27"},
-"Petco":{"standardShipUsd":5.99,"freeOverUsd":35,"pickupFree":true,"pickupNote":"free same-day pickup","bigItemNote":"tanks ship free over threshold or ship to store; free shipping excludes litter, live fish and live feeds","plantsShipNote":"no live plants online","sourceUrl":"https://www.petco.com/shop/en/petcostore/shipping","asOf":"2026-10-27","est":true},
-"Chewy":{"standardShipUsd":4.95,"freeOverUsd":49,"pickupFree":false,"pickupNote":"none (Chewy+ $59/yr gives free shipping no minimum; some sources report $35 threshold)","bigItemNote":"tanks/kits ship free over threshold, may arrive in separate boxes","plantsShipNote":"no live plants","sourceUrl":"https://www.chewy.com/app/content/shipping","asOf":"2026-10-27"},
-"Amazon non-Prime":{"standardShipUsd":6.99,"freeOverUsd":35,"pickupFree":false,"pickupNote":"lockers only","bigItemNote":"large items ship free over $35 if sold/fulfilled by Amazon; marketplace sellers set own fee","plantsShipNote":"live plants/fish often seller-shipped; heat/cold risk","sourceUrl":"https://www.amazon.com/gp/help/customer/display.html?nodeId=GZXW7X6AKTHdh","asOf":"2026-10-27","est":true},
-"Amazon Prime":{"standardShipUsd":0,"freeOverUsd":0,"pickupFree":false,"pickupNote":"lockers only","bigItemNote":"free 2-day on eligible items, no minimum; some oversize excluded","plantsShipNote":"same as above","sourceUrl":"https://www.amazon.com/prime","asOf":"2026-10-27"},
-"Buce Plant":{"standardShipUsd":9.5,"freeOverUsd":50,"pickupFree":false,"pickupNote":"none found","bigItemNote":"plants only","plantsShipNote":"free over $50 is IN-APP ONLY per site banner; carrier/service unconfirmed; likely Priority Mail, weather holds","sourceUrl":"https://buceplant.com/pages/faqs","asOf":"2026-10-27","est":true},
-"Aqua Forest Aquarium":{"standardShipUsd":9.99,"freeOverUsd":null,"pickupFree":false,"pickupNote":"unknown","bigItemNote":"plants/gear small parcels","plantsShipNote":"not verified; likely Priority Mail, heat packs seasonal","sourceUrl":"https://aquaforestaquarium.com","asOf":"2026-10-27","est":true},
-"Bulk Reef Supply":{"standardShipUsd":9.99,"freeOverUsd":49,"pickupFree":true,"pickupNote":"Wisconsin warehouse pickup (unverified)","bigItemNote":"freshwater storefront: dry goods free $49+; large tanks/rock/sand/salt excluded or freight","plantsShipNote":"live animals: $39.99 flat under $179 (free $179+), UPS Next Day Air Mon-Thu only; $1,500 wholesale threshold is a different program","sourceUrl":"https://fresh.bulkreefsupply.com/livestock-shipping","asOf":"2026-10-27"},
-"Aquarium Co-Op":{"standardShipUsd":8.99,"freeOverUsd":74.99,"pickupFree":true,"pickupNote":"Edmonds WA store pickup (unverified)","bigItemNote":"mostly small gear; AK/HI surcharge $17.99","plantsShipNote":"plants ship 2-5 business days via appropriate service; dry goods next day","sourceUrl":"https://www.aquariumcoop.com","asOf":"2026-10-27","est":true},
-"Aquarium Plants Factory":{"standardShipUsd":8.5,"freeOverUsd":100,"pickupFree":false,"pickupNote":"none","bigItemNote":"plants only","plantsShipNote":"USPS Ground Advantage on some listings; threshold from coupon site","sourceUrl":"https://aquariumplantsfactory.com","asOf":"2026-10-27","est":true},
-"Flip Aquatics":{"standardShipUsd":29.99,"freeOverUsd":200,"pickupFree":false,"pickupNote":"none","bigItemNote":"plants/livestock only","plantsShipNote":"promo flat FedEx Priority Overnight $29.99, free over $200; some pages say free non-fish over $100; DOA claim same day","sourceUrl":"https://www.flipaquatics.com/collections/all-plants","asOf":"2026-10-27","est":true},
-"Modern Aquarium":{"standardShipUsd":19.99,"freeOverUsd":null,"pickupFree":false,"pickupNote":"none","bigItemNote":"gear ships separately; plants/snails FedEx 2-Day","plantsShipNote":"orders Sun-Tue ship that week, Wed-Sat next week; subsidized shipping, no threshold found","sourceUrl":"https://www.modernaquarium.com/pages.php?pageid=2","asOf":"2026-10-27","est":true},
-"LiveAquaria":{"standardShipUsd":29.99,"freeOverUsd":229,"pickupFree":false,"pickupNote":"none","bigItemNote":"aquatic life and supplies processed as separate orders; large gear ships ground","plantsShipNote":"overnight $24.99-$29.99; free aquatic-life over $229; live arrival guarantee","sourceUrl":"https://www.liveaquaria.com/pages/shipping-information","asOf":"2026-10-27"},
-"Etsy plant sellers (typical)":{"standardShipUsd":7.5,"freeOverUsd":50,"pickupFree":false,"pickupNote":"none","bigItemNote":"plants only","plantsShipNote":"Priority Mail typical; many ship Mon-Wed only; heat/cold packs add cost; free Priority upgrade at $50 seen on one listing","sourceUrl":"https://www.etsy.com/listing/4386731477","asOf":"2026-10-27","est":true}
-}}
+{
+ "asOf": "2026-10-27",
+ "retailers": {
+  "PetSmart": {
+   "standardShipUsd": 5.99,
+   "freeOverUsd": 49,
+   "pickupFree": true,
+   "pickupNote": "free buy-online pickup in store",
+   "bigItemNote": "tanks/kits usually ship free over threshold or ship to store/pickup; large items can carry surcharge",
+   "plantsShipNote": "n/a (live fish in store only)",
+   "sourceUrl": "https://www.petsmart.com/help/shipping",
+   "asOf": "2026-10-27",
+   "est": true
+  },
+  "Walmart": {
+   "standardShipUsd": 6.99,
+   "freeOverUsd": 35,
+   "pickupFree": true,
+   "pickupNote": "free store pickup",
+   "bigItemNote": "1P tanks ship free over $35; Marketplace items set own shipping and do not count toward threshold",
+   "plantsShipNote": "Marketplace plant sellers vary",
+   "sourceUrl": "https://www.walmart.com/cp/shipping-delivery/",
+   "asOf": "2026-10-27"
+  },
+  "Petco": {
+   "standardShipUsd": 5.99,
+   "freeOverUsd": 35,
+   "pickupFree": true,
+   "pickupNote": "free same-day pickup",
+   "bigItemNote": "tanks ship free over threshold or ship to store; free shipping excludes litter, live fish and live feeds",
+   "plantsShipNote": "no live plants online",
+   "sourceUrl": "https://www.petco.com/shop/en/petcostore/shipping",
+   "asOf": "2026-10-27",
+   "est": true
+  },
+  "Chewy": {
+   "standardShipUsd": 4.95,
+   "freeOverUsd": 49,
+   "pickupFree": false,
+   "pickupNote": "none (Chewy+ $59/yr gives free shipping no minimum; some sources report $35 threshold)",
+   "bigItemNote": "tanks/kits ship free over threshold, may arrive in separate boxes",
+   "plantsShipNote": "no live plants",
+   "sourceUrl": "https://www.chewy.com/app/content/shipping",
+   "asOf": "2026-10-27"
+  },
+  "Amazon non-Prime": {
+   "standardShipUsd": 6.99,
+   "freeOverUsd": 35,
+   "pickupFree": false,
+   "pickupNote": "lockers only",
+   "bigItemNote": "large items ship free over $35 if sold/fulfilled by Amazon; marketplace sellers set own fee",
+   "plantsShipNote": "live plants/fish often seller-shipped; heat/cold risk",
+   "sourceUrl": "https://www.amazon.com/gp/help/customer/display.html?nodeId=GZXW7X6AKTHdh",
+   "asOf": "2026-10-27",
+   "est": true
+  },
+  "Amazon Prime": {
+   "standardShipUsd": 0,
+   "freeOverUsd": 0,
+   "pickupFree": false,
+   "pickupNote": "lockers only",
+   "bigItemNote": "free 2-day on eligible items, no minimum; some oversize excluded",
+   "plantsShipNote": "same as above",
+   "sourceUrl": "https://www.amazon.com/prime",
+   "asOf": "2026-10-27"
+  },
+  "Buce Plant": {
+   "standardShipUsd": 9.5,
+   "freeOverUsd": 50,
+   "pickupFree": false,
+   "pickupNote": "none found",
+   "bigItemNote": "plants only",
+   "plantsShipNote": "free over $50 is IN-APP ONLY per site banner; carrier/service unconfirmed; likely Priority Mail, weather holds",
+   "sourceUrl": "https://buceplant.com/pages/faqs",
+   "asOf": "2026-10-27",
+   "est": true
+  },
+  "Aqua Forest Aquarium": {
+   "standardShipUsd": 9.99,
+   "freeOverUsd": null,
+   "pickupFree": false,
+   "pickupNote": "unknown",
+   "bigItemNote": "plants/gear small parcels",
+   "plantsShipNote": "not verified; likely Priority Mail, heat packs seasonal",
+   "sourceUrl": "https://aquaforestaquarium.com",
+   "asOf": "2026-10-27",
+   "est": true
+  },
+  "Bulk Reef Supply": {
+   "standardShipUsd": 9.99,
+   "freeOverUsd": 49,
+   "pickupFree": true,
+   "pickupNote": "Wisconsin warehouse pickup (unverified)",
+   "bigItemNote": "freshwater storefront: dry goods free $49+; large tanks/rock/sand/salt excluded or freight",
+   "plantsShipNote": "live animals: $39.99 flat under $179 (free $179+), UPS Next Day Air Mon-Thu only; $1,500 wholesale threshold is a different program",
+   "sourceUrl": "https://fresh.bulkreefsupply.com/livestock-shipping",
+   "asOf": "2026-10-27"
+  },
+  "Aquarium Co-Op": {
+   "standardShipUsd": 8.99,
+   "freeOverUsd": 74.99,
+   "pickupFree": true,
+   "pickupNote": "Edmonds WA store pickup (unverified)",
+   "bigItemNote": "mostly small gear; AK/HI surcharge $17.99",
+   "plantsShipNote": "plants ship 2-5 business days via appropriate service; dry goods next day",
+   "sourceUrl": "https://www.aquariumcoop.com",
+   "asOf": "2026-10-27",
+   "est": true
+  },
+  "Aquarium Plants Factory": {
+   "standardShipUsd": 8.5,
+   "freeOverUsd": 100,
+   "pickupFree": false,
+   "pickupNote": "none",
+   "bigItemNote": "plants only",
+   "plantsShipNote": "USPS Ground Advantage on some listings; threshold from coupon site",
+   "sourceUrl": "https://aquariumplantsfactory.com",
+   "asOf": "2026-10-27",
+   "est": true
+  },
+  "Flip Aquatics": {
+   "standardShipUsd": 29.99,
+   "freeOverUsd": 200,
+   "pickupFree": false,
+   "pickupNote": "none",
+   "bigItemNote": "plants/livestock only",
+   "plantsShipNote": "promo flat FedEx Priority Overnight $29.99, free over $200; some pages say free non-fish over $100; DOA claim same day",
+   "sourceUrl": "https://www.flipaquatics.com/collections/all-plants",
+   "asOf": "2026-10-27",
+   "est": true
+  },
+  "Modern Aquarium": {
+   "standardShipUsd": 19.99,
+   "freeOverUsd": null,
+   "pickupFree": false,
+   "pickupNote": "none",
+   "bigItemNote": "gear ships separately; plants/snails FedEx 2-Day",
+   "plantsShipNote": "orders Sun-Tue ship that week, Wed-Sat next week; subsidized shipping, no threshold found",
+   "sourceUrl": "https://www.modernaquarium.com/pages.php?pageid=2",
+   "asOf": "2026-10-27",
+   "est": true
+  },
+  "LiveAquaria": {
+   "standardShipUsd": 12.98,
+   "freeOverUsd": 229,
+   "pickupFree": false,
+   "pickupNote": "none",
+   "bigItemNote": "aquatic life and supplies processed as separate orders; large gear ships ground",
+   "plantsShipNote": "ground: $12.98 under $49, $6.99 from $49, free from $229 (confirmed 2026-10-28 by the sweep); overnight $24.99-$29.99; live arrival guarantee",
+   "sourceUrl": "https://www.liveaquaria.com/pages/shipping-information",
+   "asOf": "2026-10-28",
+   "tier2Usd": 6.99,
+   "tier2OverUsd": 49,
+   "est": false
+  },
+  "Etsy plant sellers (typical)": {
+   "standardShipUsd": 7.5,
+   "freeOverUsd": 50,
+   "pickupFree": false,
+   "pickupNote": "none",
+   "bigItemNote": "plants only",
+   "plantsShipNote": "Priority Mail typical; many ship Mon-Wed only; heat/cold packs add cost; free Priority upgrade at $50 seen on one listing",
+   "sourceUrl": "https://www.etsy.com/listing/4386731477",
+   "asOf": "2026-10-27",
+   "est": true
+  }
+ }
+}
