@@ -38,6 +38,7 @@ export interface Values {
   'constraints.budget': number;          // startup $ ceiling
   'constraints.monthly': number;         // $ a month
   'constraints.careMin': number;         // minutes a week (a field only: no model derives it yet)
+  'constraints.setupHours': number;      // hours of set-up effort the person will spend (separate from upkeep)
   'constraints.maxSpace': SpaceLimit;    // mm
   'constraints.spaceGate': boolean;      // the Guardrails space switch (Constraints.space.on); absent = never set
   'constraints.existingTank': { model?: string };
@@ -50,7 +51,7 @@ export interface Values {
 }
 export type ItemId = keyof Values;
 export const ITEM_IDS: readonly ItemId[] = ['animals.kinds', 'animals.groups', 'animals.stock', 'appearance.look', 'appearance.plantMode', 'equipment.tank',
-  'equipment.needStand', 'constraints.budget', 'constraints.monthly', 'constraints.careMin', 'constraints.maxSpace', 'constraints.spaceGate', 'constraints.existingTank',
+  'equipment.needStand', 'constraints.budget', 'constraints.monthly', 'constraints.careMin', 'constraints.setupHours', 'constraints.maxSpace', 'constraints.spaceGate', 'constraints.existingTank',
   'constraints.owned', 'constraints.taxPct', 'preferences.tags', 'preferences.wishes', 'preferences.effort', 'preferences.experience'];
 
 export const BRIEF_VERSION = 1;
@@ -122,6 +123,7 @@ const VALIDATE: { [K in ItemId]: (v: unknown) => Values[K] | undefined } = {
   'constraints.monthly': v => num(v, 0, 1e7) ? v : undefined,
   'constraints.careMin': v => num(v, 0, 10080) ? v : undefined,
   'constraints.spaceGate': v => typeof v === 'boolean' ? v : undefined,
+  'constraints.setupHours': v => num(v, 0, 1000) ? v : undefined,
   'constraints.maxSpace': v => { const o = v as Partial<SpaceLimit> | undefined;
     return o && typeof o === 'object' && num(o.w, 1, 1e5) && num(o.d, 1, 1e5) ? { w: o.w, d: o.d, ...(num(o.h, 1, 1e5) ? { h: o.h } : {}) } : undefined; },
   'constraints.existingTank': modelOf,
@@ -166,6 +168,7 @@ export function briefFromWants(w: Wants): Brief {
   put('constraints.budget', capItem(c.startupUsd)); put('constraints.monthly', capItem(c.monthlyUsd)); put('constraints.careMin', capItem(c.minutesPerWeek));
   if (w.space) put('constraints.maxSpace', { value: { ...w.space }, status: 'hard' });
   if (c.space) put('constraints.spaceGate', { value: c.space.on, status: 'hard' });
+  if (w.setupHours !== undefined) b = setItem(b, 'constraints.setupHours', w.setupHours, 'hard');
   pref('preferences.effort', c.effort); pref('preferences.experience', c.experience);
   if (w.taxPct !== undefined) b = setItem(b, 'constraints.taxPct', w.taxPct, 'hard');
   if (w.animals?.length) b = setItem(b, 'animals.stock', w.animals.map(a => ({ species: a.species, count: a.n })), 'locked');
@@ -182,6 +185,7 @@ export function briefToWants(b: Brief): Wants {
   const ef = g('preferences.effort'), ex = g('preferences.experience');
   if (ef) c.effort = ef.value; if (ex) c.experience = ex.value;
   const w: Wants = { constraints: c };
+  const sh = g('constraints.setupHours'); if (sh && !sh.off) w.setupHours = sh.value;
   const kinds = g('animals.kinds'), groups = g('animals.groups'), owned = g('constraints.owned'), stand = g('equipment.needStand'), tags = g('preferences.tags');
   if (kinds) w.kinds = [...kinds.value]; if (groups) w.groups = [...groups.value]; if (owned) w.owned = { ...owned.value };
   if (stand) w.needStand = stand.value; if (tags) w.tags = [...tags.value];

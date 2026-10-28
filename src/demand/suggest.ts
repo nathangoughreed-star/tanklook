@@ -151,6 +151,8 @@ export interface Wants {
   /** the person wants to spend what they set (the old "target" behaviour, lane C9): every concept's finish tier climbs as far as the ceiling lets it, and the tank grows with the money.
    *  Off (default): each concept keeps its own tier (the ladder only decides how far UP a concept may climb). */
   climb?: boolean;
+  /** hours of set-up effort the person will spend (from the brief, lane U1; not read by the generator yet) */
+  setupHours?: number;
 }
 
 /** The design strategies a concept is built on (lane U2). Open animals: economy / size / look / balanced. Locked animals: economy / aquascape (look) / equipment / room (size). */

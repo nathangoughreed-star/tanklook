@@ -9,7 +9,7 @@ import { Store } from '../src/scene/store';
 const WANTS: Wants = {
   kinds: ['freshwater', 'vivarium'], groups: ['herp'], owned: { filter: 'care', heater: 'unknown', light: 'x' }, needStand: false,
   constraints: { startupUsd: { on: true, value: 400 }, monthlyUsd: { on: false, value: 20 }, minutesPerWeek: { on: true, value: 45 }, space: { on: true }, effort: 'low', experience: 1 },
-  space: { w: 900, d: 400, h: 600 }, tags: ['calm', 'natural'],
+  space: { w: 900, d: 400, h: 600 }, setupHours: 6, tags: ['calm', 'natural'],
 };
 
 describe('setup brief', () => {
@@ -49,6 +49,13 @@ describe('setup brief', () => {
     expect(parseBrief({ v: 1, items: {} })).toBeUndefined();
     expect(parseBrief({ v: 1, items: { 'constraints.budget': { value: -5, status: 'hard' }, 'preferences.tags': { value: ['nope'], status: 'preference' }, bogus: { value: 1, status: 'hard' } } })).toBeUndefined();
     expect(parseBrief({ v: 9, items: { 'constraints.budget': { value: 50, status: 'weird' } } })?.items['constraints.budget']).toEqual({ value: 50, status: 'preference' });
+  });
+  it('set-up hours: own item, parsed, off drops it from Wants', () => {
+    let b = setItem(emptyBrief(), 'constraints.setupHours', 4, 'hard');
+    expect(parseBrief(JSON.parse(serializeBrief(b)))).toEqual(b);
+    expect(parseBrief({ v: 1, items: { 'constraints.setupHours': { value: -1, status: 'hard' } } })).toBeUndefined();
+    expect(briefToWants(b).setupHours).toBe(4);
+    expect(briefToWants(setOff(b, 'constraints.setupHours', true)).setupHours).toBeUndefined();
   });
   it('Wants <-> Brief is lossless', () => {
     expect(briefToWants(briefFromWants(WANTS))).toEqual(WANTS);
