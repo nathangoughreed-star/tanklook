@@ -1,7 +1,7 @@
 // Suggest a setup (lane C8): proposals are rechecked on ALL enabled guardrails and husbandry; nothing qualifying says exactly the no-suggestion line.
 import { describe, expect, it } from 'vitest';
 import { defaultProfile } from '../src/demand/types';
-import { ARCHETYPES, asksDryGroups, suggestSetups, NO_SUGGESTION, type OwnedMap, type Wants } from '../src/demand/suggest';
+import { ARCHETYPES, asksDryGroups, conceptDistance, MIN_DISTANCE, suggestSetups, NO_SUGGESTION, type OwnedMap, type Wants } from '../src/demand/suggest';
 import { FILTER_PRODUCTS, HEATER_PRODUCTS, LIGHT_PRODUCTS } from '../src/data/gearCatalog';
 import { buildsFor } from '../src/scene/builds';
 import { tankOptions } from '../src/scene/tankfit';
@@ -146,14 +146,16 @@ describe('Suggest a setup', () => {
       expect(slot.doors).toBeUndefined();
     });
     it('kinds: only archetypes of the ticked kinds are proposed; saltwater alone is the clownfish', () => {
-      expect(run({}, { kinds: ['saltwater'] }).proposals.map(p => p.archetype.kind)).toEqual(['saltwater']);
+      // lane U2: one archetype can fill the three slots with different concepts (economy / look / size ...), so the check is on kind and id, not on a count of one
+      const salt = run({}, { kinds: ['saltwater'] }).proposals;
+      expect(salt.length).toBeGreaterThan(0); expect(salt.every(p => p.archetype.kind === 'saltwater' && p.archetype.id === 'clown-nano')).toBe(true);
       expect(run({}, { kinds: ['freshwater'] }).proposals.every(p => p.archetype.kind === 'freshwater')).toBe(true);
       const dry = run({}, { kinds: ['terrarium', 'vivarium'] }).proposals;
       expect(dry.length).toBeGreaterThan(0); expect(dry.every(p => p.archetype.kind === 'terrarium' || p.archetype.kind === 'vivarium')).toBe(true);
     });
     it('vivarium: a water-and-land mix (dart frogs on land, snails in the pool)', () => {
       const v = run({}, { kinds: ['vivarium'] }).proposals;
-      expect(v.map(p => p.archetype.id)).toEqual(['dart-paludarium']);
+      expect(new Set(v.map(p => p.archetype.id))).toEqual(new Set(['dart-paludarium']));
       expect(v[0].scene.water.on).toBe(true);
     });
     it('arthropods only: a terrarium each, passing the strict rule', () => {
@@ -210,6 +212,61 @@ describe('Suggest a setup', () => {
     it('the terrarium / vivarium sub-choice is asked when Terrarium OR Vivarium is ticked, and not otherwise', () => {
       expect(asksDryGroups(['terrarium'])).toBe(true); expect(asksDryGroups(['vivarium'])).toBe(true);
       expect(asksDryGroups(['terrarium', 'vivarium'])).toBe(true); expect(asksDryGroups(['freshwater', 'saltwater'])).toBe(false);
+    });
+  });
+
+  describe('generator (lane U2): pool, diversity, ceiling, all-in cost', () => {
+    const betta = [{ species: 'betta', n: 1 }];
+    const dist = (ps: ReturnType<typeof run>['proposals']) => ps.flatMap((a, i) => ps.slice(i + 1).map(b => conceptDistance(a, b)));
+    it('no preferences at $600: three meaningfully different concepts (every pair at least MIN_DISTANCE apart), each with a named strategy', () => {
+      const r = run({ startupUsd: cap(600) });
+      expect(r.proposals.length).toBe(3);
+      for (const d of dist(r.proposals)) expect(d).toBeGreaterThanOrEqual(MIN_DISTANCE);
+      for (const p of r.proposals) { expect(p.strategyLabel.length).toBeGreaterThan(0); expect(p.totals.startupUsd).toBeLessThanOrEqual(600); }
+      expect(r.stats.pool).toBeGreaterThanOrEqual(3);
+    });
+    it('locked animal: the animals never change; the concepts differ by strategy, tank or finish', () => {
+      const r = run({ startupUsd: cap(700) }, { animals: betta });
+      expect(r.proposals.length).toBeGreaterThanOrEqual(2);
+      for (const p of r.proposals) expect(p.build.animals).toEqual(betta);
+      expect(new Set(r.proposals.map(p => p.strategy)).size).toBe(r.proposals.length);
+      for (const d of dist(r.proposals)) expect(d).toBeGreaterThanOrEqual(MIN_DISTANCE);
+      expect(r.proposals.some(p => /Economy/.test(p.strategyLabel))).toBe(true);
+    });
+    it('the budget is a ceiling: a concept that leaves money unspent is shown, with no cap note and the money left under the ceiling reported', () => {
+      const r = run({ startupUsd: cap(900) }, { animals: betta });
+      const cheapest = [...r.proposals].sort((a, b) => a.totals.startupUsd - b.totals.startupUsd)[0];
+      expect(cheapest.totals.startupUsd).toBeLessThan(0.85 * 900);
+      for (const p of r.proposals) { expect(p.capNote).toBeUndefined(); expect(p.underCeilingUsd).toBe(Math.max(0, Math.round(900 - p.totals.startupUsd))); }
+    });
+    it('tax: the all-in total carries the tax, the ceiling is on the all-in total, and the cost lines add up to it exactly', () => {
+      const r = run({ startupUsd: cap(600) }, { animals: betta, taxPct: 8.5 });
+      expect(r.proposals.length).toBeGreaterThan(0);
+      for (const p of r.proposals) {
+        expect(p.taxUsd).toBe(Math.round(p.preTaxUsd * 0.085));
+        expect(p.totals.startupUsd).toBe(p.preTaxUsd + p.taxUsd);
+        expect(p.totals.startupUsd).toBeLessThanOrEqual(600);
+        expect(p.costLines.reduce((t, l) => t + l.usd, 0)).toBe(Math.round(p.totals.startupUsd));
+        expect(p.costLines.some(l => /Sales tax/.test(l.label) && l.usd === p.taxUsd)).toBe(true);
+      }
+      const free = run({ startupUsd: cap(600) }, { animals: betta }).proposals;
+      expect(free.every(p => p.taxUsd === 0 && !p.costLines.some(l => /tax/i.test(l.label)))).toBe(true);
+    });
+    it('hard constraints: a longest tank is never exceeded; an existing tank is the only tank and costs $0 ("you have")', () => {
+      const r = run({}, { animals: betta, maxLengthMm: 450 });
+      expect(r.proposals.length).toBeGreaterThan(0);
+      for (const p of r.proposals) expect(p.build.tank.outer.L).toBeLessThanOrEqual(450);
+      const own = tankOptions(betta).find(t => !t.fails.length && /^10 gal/.test(t.tank.name))!.tank;
+      const o = run({}, { animals: betta, ownTank: own });
+      expect(o.proposals.length).toBeGreaterThan(0);
+      for (const p of o.proposals) { expect(p.build.tank.id).toBe(own.id); expect(p.costLines.some(l => l.label.startsWith('Tank') && l.usd === 0 && l.note === 'you have')).toBe(true); expect(p.costLines.reduce((t, l) => t + l.usd, 0)).toBe(Math.round(p.totals.startupUsd)); }
+      const tiny = tankOptions(betta).filter(t => !t.fails.length)[0].tank;
+      expect(run({}, { animals: [{ species: 'danio', n: 8 }], ownTank: tiny }).proposals).toEqual([]); // a tank that does not hold them is never resized silently
+    });
+    it('welfare is a gate, not a score: a locked group is never offered in a tank that reads Caution, whatever the money', () => {
+      const r = run({ startupUsd: cap(5000) }, { animals: [{ species: 'danio', n: 8 }] });
+      for (const p of r.proposals) expect(summaryOf(p.scene, 'in').cats.some(k => k.level === 'caution' || k.level === 'problem')).toBe(false);
+      expect(r.proposals.some(p => p.build.tank.name === '10 gal')).toBe(false);
     });
   });
 });

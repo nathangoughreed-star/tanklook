@@ -77,10 +77,11 @@ describe('finished builds', () => {
     expect(hi).toBe(3);
   }, 300000);
 
-  it('the budget is a target (Nathan 2026-10-27): at $900 each terrarium card lands at 85 % of it or more, or says the animals cap it; never over', () => {
-    const r = suggestSetups({ constraints: { startupUsd: cap(900) }, kinds: ['terrarium'], groups: ['herp'] }, P, 'cm', NOW);
-    const ids = r.proposals.map(p => p.archetype.id);
-    for (const id of ['dart-frogs', 'crested-gecko', 'leopard-gecko']) expect(ids).toContain(id);
+  // Lane U2 (Nathan 2026-10-28, "the budget is a ceiling, not a target"): the old 'budget is a target' checks (USES_BUDGET 0.85) now hold only with `climb: true`, which is how far UP a concept's
+  // finish tier and tank climb when the person wants to spend what they set. By default a cheaper concept is not penalised: see the ceiling test below.
+  it('climb on (the old target, Nathan 2026-10-27): at $900 each terrarium card lands at 85 % of it or more, or says the animals cap it; never over', () => {
+    const r = suggestSetups({ constraints: { startupUsd: cap(900) }, kinds: ['terrarium'], groups: ['herp'], climb: true }, P, 'cm', NOW);
+    expect(r.proposals.length).toBeGreaterThan(0);
     for (const p of r.proposals) {
       expect(p.totals.startupUsd).toBeLessThanOrEqual(900);
       expect(p.totals.startupUsd >= 0.85 * 900 || !!p.capNote).toBe(true);
@@ -88,8 +89,15 @@ describe('finished builds', () => {
     }
   }, 300000);
 
-  it('a bigger budget buys a bigger or richer tank, still within every guardrail and the husbandry rule', () => {
-    const at = (usd: number) => suggestSetups({ constraints: { startupUsd: cap(usd), monthlyUsd: cap(80), minutesPerWeek: cap(120) }, kinds: ['freshwater'] }, P, 'cm', NOW);
+  it('ceiling (the default): at $3000 a terrarium card may leave money unspent and says nothing about it; never over', () => {
+    const r = suggestSetups({ constraints: { startupUsd: cap(3000) }, kinds: ['terrarium'], groups: ['herp'] }, P, 'cm', NOW);
+    expect(r.proposals.length).toBeGreaterThan(0);
+    expect(r.proposals.some(p => p.totals.startupUsd < 0.85 * 3000)).toBe(true);
+    for (const p of r.proposals) { expect(p.totals.startupUsd).toBeLessThanOrEqual(3000); expect(p.capNote).toBeUndefined(); expect(caution(p.scene)).toBe(false); }
+  }, 300000);
+
+  it('climb on: a bigger budget buys a bigger or richer tank, still within every guardrail and the husbandry rule', () => {
+    const at = (usd: number) => suggestSetups({ constraints: { startupUsd: cap(usd), monthlyUsd: cap(80), minutesPerWeek: cap(120) }, kinds: ['freshwater'], climb: true }, P, 'cm', NOW);
     const lo = at(500), hi = at(1500);
     for (const p of [...lo.proposals, ...hi.proposals]) { expect(caution(p.scene)).toBe(false); expect(p.totals.monthlyUsd).toBeLessThanOrEqual(80); expect(p.totals.minPerWeek).toBeLessThanOrEqual(120); }
     for (const p of lo.proposals) expect(p.totals.startupUsd).toBeLessThanOrEqual(500);

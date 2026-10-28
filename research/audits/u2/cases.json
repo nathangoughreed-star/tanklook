@@ -1,0 +1,1002 @@
+[
+ {
+  "id": "low",
+  "title": "Low budget: $350 ceiling, no preferences",
+  "ms": 10519,
+  "stats": {
+   "pool": 8,
+   "rejectedWelfare": 6,
+   "rejectedConstraint": 0
+  },
+  "note": "Only 2 kinds of setup fit your guardrails: terrarium animals, freshwater fish.",
+  "misses": [
+   "Ember tetra nano school: +$4 set-up",
+   "Zebra danio school: +$23 set-up",
+   "Neon tetras and corydoras community: +$159 set-up"
+  ],
+  "proposals": [
+   {
+    "strategy": "Look first",
+    "blurb": "A mid-size tank at the lushest finish: plants, hardscape and the light and feeding that keep them.",
+    "archetype": "Regal jumping spider enclosure",
+    "tank": "Cube terrarium",
+    "tier": "lush",
+    "finish": [
+     "Look: Jumping spider cage",
+     "Substrate: Soil / coco fibre, about 18 lb",
+     "Hardscape: 3 pieces (climbing branch, cork tube)",
+     "Plants: 8 live plants (pothos, creeping fig, sphagnum moss, bromeliad)"
+    ],
+    "gear": [
+     "No heat: these animals are comfortable at room temperature",
+     "Thermometer and hygrometer",
+     "No misting: these animals want drier air"
+    ],
+    "animals": "1 regaljumper",
+    "total": 337,
+    "preTax": 337,
+    "tax": 0,
+    "under": 13,
+    "monthly": 4,
+    "min": 14,
+    "lines": [
+     {
+      "label": "Tank",
+      "usd": 55
+     },
+     {
+      "label": "Stand",
+      "usd": 92
+     },
+     {
+      "label": "Substrate, hardscape and plants",
+      "usd": 127
+     },
+     {
+      "label": "Animals",
+      "usd": 33
+     },
+     {
+      "label": "Gear (heat, UVB, lights, filter and the rest)",
+      "usd": 30
+     }
+    ]
+   },
+   {
+    "strategy": "Balanced",
+    "blurb": "A mid-size tank, filter headroom and a full finish.",
+    "archetype": "A betta in its own tank",
+    "tank": "5.5 gal",
+    "tier": "lean",
+    "finish": [
+     "Look: Dense planted",
+     "Substrate: blended, about 13 lb",
+     "Hardscape: 4 pieces (lava rock)",
+     "Plants: 3 live plants (ludwigia) and 1 artificial one",
+     "Plant care: ferts: All-in-one liquid; 16 W light"
+    ],
+    "gear": [
+     "Filter: HOB filter (small) · 100 gph",
+     "Heater: about 50 W",
+     "Light: LED"
+    ],
+    "animals": "1 betta",
+    "total": 344,
+    "preTax": 344,
+    "tax": 0,
+    "under": 6,
+    "monthly": 9,
+    "min": 37,
+    "lines": [
+     {
+      "label": "Tank",
+      "usd": 16
+     },
+     {
+      "label": "Stand",
+      "usd": 97
+     },
+     {
+      "label": "Substrate, hardscape and plants",
+      "usd": 44
+     },
+     {
+      "label": "Animals",
+      "usd": 17
+     },
+     {
+      "label": "Supplies (water test kit and the like)",
+      "usd": 39
+     },
+     {
+      "label": "Gear (heat, UVB, lights, filter and the rest)",
+      "usd": 131
+     }
+    ]
+   },
+   {
+    "strategy": "Cheapest start",
+    "blurb": "The smallest tank that holds them, the cheapest gear and a starter finish: the lowest all-in cost that still passes every check.",
+    "archetype": "A betta in its own tank",
+    "tank": "5 gal",
+    "tier": "starter",
+    "finish": [
+     "Look: Dense planted",
+     "Substrate: blended, about 12 lb",
+     "Hardscape: 2 pieces (lava rock)",
+     "Plants: 3 live plants (hornwort, vallisneria)",
+     "Plant care: no extras; 4 W light"
+    ],
+    "gear": [
+     "Filter: Tetra Whisper 10i Internal Filter",
+     "Heater: about 50 W",
+     "Light: 4 W LED"
+    ],
+    "animals": "1 betta",
+    "total": 257,
+    "preTax": 257,
+    "tax": 0,
+    "under": 93,
+    "monthly": 6,
+    "min": 32,
+    "lines": [
+     {
+      "label": "Tank",
+      "usd": 11
+     },
+     {
+      "label": "Stand",
+      "usd": 69
+     },
+     {
+      "label": "Substrate, hardscape and plants",
+      "usd": 19
+     },
+     {
+      "label": "Animals",
+      "usd": 12
+     },
+     {
+      "label": "Supplies (water test kit and the like)",
+      "usd": 28
+     },
+     {
+      "label": "Gear (heat, UVB, lights, filter and the rest)",
+      "usd": 118
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "mid",
+  "title": "Mid budget: $800 ceiling, no preferences",
+  "ms": 9401,
+  "stats": {
+   "pool": 30,
+   "rejectedWelfare": 1,
+   "rejectedConstraint": 0
+  },
+  "note": "Only 2 kinds of setup fit your guardrails: freshwater fish, terrarium animals.",
+  "misses": [
+   "Clownfish pair (saltwater): +$15 set-up",
+   "Dart frog paludarium: +$147 set-up"
+  ],
+  "proposals": [
+   {
+    "strategy": "Look first",
+    "blurb": "A mid-size tank at the lushest finish: plants, hardscape and the light and feeding that keep them.",
+    "archetype": "A betta in its own tank",
+    "tank": "15 gal",
+    "tier": "lush",
+    "finish": [
+     "Look: Dense planted",
+     "Substrate: blended, about 37 lb",
+     "Hardscape: 6 pieces (lava rock)",
+     "Plants: 4 live plants (red stem plant, carpet patch) and 13 artificial ones",
+     "Plant care: CO2: Pressurized (regulator, solenoid, drop checker), ferts: All-in-one liquid; 43 W light"
+    ],
+    "gear": [
+     "Filter: Internal filter (small) · 80 gph",
+     "Heater: about 100 W",
+     "Light: LED"
+    ],
+    "animals": "1 betta",
+    "total": 780,
+    "preTax": 780,
+    "tax": 0,
+    "under": 20,
+    "monthly": 22,
+    "min": 47,
+    "lines": [
+     {
+      "label": "Tank",
+      "usd": 45
+     },
+     {
+      "label": "Stand",
+      "usd": 96
+     },
+     {
+      "label": "Substrate, hardscape and plants",
+      "usd": 201
+     },
+     {
+      "label": "Animals",
+      "usd": 17
+     },
+     {
+      "label": "Supplies (water test kit and the like)",
+      "usd": 39
+     },
+     {
+      "label": "Gear (heat, UVB, lights, filter and the rest)",
+      "usd": 382
+     }
+    ]
+   },
+   {
+    "strategy": "Look first",
+    "blurb": "A mid-size tank at the lushest finish: plants, hardscape and the light and feeding that keep them.",
+    "archetype": "Leopard gecko terrarium",
+    "tank": "Wide terrestrial",
+    "tier": "lush",
+    "finish": [
+     "Look: Arid (leopard gecko)",
+     "Substrate: Clay, about 93 lb",
+     "Hardscape: 10 pieces (rock ledge, dragon stone, half-log hide, cork tube, water dish (stone))",
+     "Plants: 12 live plants (haworthia, echeveria, burro's tail, barrel cactus, small aloe, dwarf sagittaria)"
+    ],
+    "gear": [
+     "Dome heat lamp and basking bulb on an on/off thermostat",
+     "UVB light (low output, shade dweller)",
+     "Thermometer and hygrometer",
+     "No misting: these animals want drier air"
+    ],
+    "animals": "1 leopardgecko",
+    "total": 677,
+    "preTax": 677,
+    "tax": 0,
+    "under": 123,
+    "monthly": 23,
+    "min": 15,
+    "lines": [
+     {
+      "label": "Tank",
+      "usd": 157
+     },
+     {
+      "label": "Stand",
+      "usd": 123
+     },
+     {
+      "label": "Substrate, hardscape and plants",
+      "usd": 205
+     },
+     {
+      "label": "Animals",
+      "usd": 36
+     },
+     {
+      "label": "Gear (heat, UVB, lights, filter and the rest)",
+      "usd": 156
+     }
+    ]
+   },
+   {
+    "strategy": "Balanced",
+    "blurb": "A mid-size tank, filter headroom and a full finish.",
+    "archetype": "Regal jumping spider enclosure",
+    "tank": "Cube terrarium",
+    "tier": "standard",
+    "finish": [
+     "Look: Jumping spider cage",
+     "Substrate: Soil / coco fibre, about 18 lb",
+     "Hardscape: 3 pieces (climbing branch, cork bark flat, cork tube)",
+     "Plants: 6 live plants (pothos, creeping fig, bromeliad, sphagnum moss)"
+    ],
+    "gear": [
+     "No heat: these animals are comfortable at room temperature",
+     "Thermometer and hygrometer",
+     "No misting: these animals want drier air"
+    ],
+    "animals": "1 regaljumper",
+    "total": 317,
+    "preTax": 317,
+    "tax": 0,
+    "under": 483,
+    "monthly": 4,
+    "min": 14,
+    "lines": [
+     {
+      "label": "Tank",
+      "usd": 55
+     },
+     {
+      "label": "Stand",
+      "usd": 108
+     },
+     {
+      "label": "Substrate, hardscape and plants",
+      "usd": 91
+     },
+     {
+      "label": "Animals",
+      "usd": 33
+     },
+     {
+      "label": "Gear (heat, UVB, lights, filter and the rest)",
+      "usd": 30
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "high",
+  "title": "High budget: $2,500 ceiling, no preferences",
+  "ms": 5819,
+  "stats": {
+   "pool": 43,
+   "rejectedWelfare": 1,
+   "rejectedConstraint": 0
+  },
+  "misses": [],
+  "proposals": [
+   {
+    "strategy": "Look first",
+    "blurb": "A mid-size tank at the lushest finish: plants, hardscape and the light and feeding that keep them.",
+    "archetype": "A betta in its own tank",
+    "tank": "15 gal",
+    "tier": "lush",
+    "finish": [
+     "Look: Dense planted",
+     "Substrate: blended, about 37 lb",
+     "Hardscape: 6 pieces (lava rock)",
+     "Plants: 4 live plants (red stem plant, carpet patch) and 13 artificial ones",
+     "Plant care: CO2: Pressurized (regulator, solenoid, drop checker), ferts: All-in-one liquid; 43 W light"
+    ],
+    "gear": [
+     "Filter: Internal filter (small) · 80 gph",
+     "Heater: about 100 W",
+     "Light: LED"
+    ],
+    "animals": "1 betta",
+    "total": 780,
+    "preTax": 780,
+    "tax": 0,
+    "under": 1720,
+    "monthly": 22,
+    "min": 47,
+    "lines": [
+     {
+      "label": "Tank",
+      "usd": 45
+     },
+     {
+      "label": "Stand",
+      "usd": 96
+     },
+     {
+      "label": "Substrate, hardscape and plants",
+      "usd": 201
+     },
+     {
+      "label": "Animals",
+      "usd": 17
+     },
+     {
+      "label": "Supplies (water test kit and the like)",
+      "usd": 39
+     },
+     {
+      "label": "Gear (heat, UVB, lights, filter and the rest)",
+      "usd": 382
+     }
+    ]
+   },
+   {
+    "strategy": "Look first",
+    "blurb": "A mid-size tank at the lushest finish: plants, hardscape and the light and feeding that keep them.",
+    "archetype": "Dart frog paludarium",
+    "tank": "75 gal",
+    "tier": "lush",
+    "finish": [
+     "Look: Swamp / paludarium",
+     "Substrate: Natural gravel, about 575 lb",
+     "Hardscape: 11 pieces (river stone)",
+     "Plants: 37 live plants (vallisneria, anubias, amazon sword, java fern) and 14 artificial ones",
+     "Plant care: CO2: Pressurized (regulator, solenoid, drop checker), ferts: All-in-one liquid; 54 W light"
+    ],
+    "gear": [
+     "Filter: Internal filter (small) · 80 gph",
+     "Heater: about 100 W",
+     "Light: 30 W LED",
+     "Land side: No heat: these animals are comfortable at room temperature",
+     "Land side: Thermometer and hygrometer",
+     "Land side: Hand pressure mister"
+    ],
+    "animals": "3 dartfrog, 2 nerite",
+    "total": 1850,
+    "preTax": 1850,
+    "tax": 0,
+    "under": 650,
+    "monthly": 70,
+    "min": 72,
+    "lines": [
+     {
+      "label": "Tank",
+      "usd": 144
+     },
+     {
+      "label": "Stand",
+      "usd": 213
+     },
+     {
+      "label": "Substrate, hardscape and plants",
+      "usd": 725
+     },
+     {
+      "label": "Animals",
+      "usd": 174
+     },
+     {
+      "label": "Supplies (water test kit and the like)",
+      "usd": 36
+     },
+     {
+      "label": "Gear (heat, UVB, lights, filter and the rest)",
+      "usd": 558
+     }
+    ]
+   },
+   {
+    "strategy": "Balanced",
+    "blurb": "A mid-size tank, filter headroom and a full finish.",
+    "archetype": "Clownfish pair (saltwater)",
+    "tank": "40 gal breeder",
+    "tier": "standard",
+    "finish": [
+     "Look: Reef",
+     "Substrate: Aragonite sand (marine), about 68 lb",
+     "Hardscape: 15 pieces (live rock)",
+     "Corals: 9 pieces (hammer coral, leather coral)",
+     "Reef care: dosing: Dosing pump + two-part, flow: Wavemaker pumps; 47 W light"
+    ],
+    "gear": [
+     "Filter: HOB filter (large) · 250 gph",
+     "Heater: about 200 W",
+     "Light: LED"
+    ],
+    "animals": "2 ocellaris",
+    "total": 2468,
+    "preTax": 2468,
+    "tax": 0,
+    "under": 32,
+    "monthly": 95,
+    "min": 87,
+    "lines": [
+     {
+      "label": "Tank",
+      "usd": 75
+     },
+     {
+      "label": "Stand",
+      "usd": 140
+     },
+     {
+      "label": "Substrate, hardscape and plants",
+      "usd": 654
+     },
+     {
+      "label": "Animals",
+      "usd": 63
+     },
+     {
+      "label": "Supplies (water test kit and the like)",
+      "usd": 37
+     },
+     {
+      "label": "Gear (heat, UVB, lights, filter and the rest)",
+      "usd": 1499
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "betta",
+  "title": "Locked betta, $600 ceiling, 8.5 % tax (all-in)",
+  "ms": 359,
+  "stats": {
+   "pool": 4,
+   "rejectedWelfare": 0,
+   "rejectedConstraint": 0
+  },
+  "misses": [],
+  "proposals": [
+   {
+    "strategy": "Aquascape first",
+    "blurb": "A mid-size tank at the lushest finish: plants, hardscape and the light and feeding that keep them.",
+    "archetype": "A betta in its own tank",
+    "tank": "15 gal",
+    "tier": "standard",
+    "finish": [
+     "Look: Dense planted",
+     "Substrate: blended, about 37 lb",
+     "Hardscape: 6 pieces (lava rock)",
+     "Plants: 2 live plants (stem plant) and 11 artificial ones",
+     "Plant care: CO2: DIY yeast CO2, ferts: All-in-one liquid; 31 W light"
+    ],
+    "gear": [
+     "Filter: Internal filter (small) · 80 gph",
+     "Heater: about 100 W",
+     "Light: LED"
+    ],
+    "animals": "1 betta",
+    "total": 585,
+    "preTax": 539,
+    "tax": 46,
+    "under": 15,
+    "monthly": 19,
+    "min": 50,
+    "lines": [
+     {
+      "label": "Tank",
+      "usd": 45
+     },
+     {
+      "label": "Stand",
+      "usd": 96
+     },
+     {
+      "label": "Substrate, hardscape and plants",
+      "usd": 153
+     },
+     {
+      "label": "Animals",
+      "usd": 17
+     },
+     {
+      "label": "Supplies (water test kit and the like)",
+      "usd": 38
+     },
+     {
+      "label": "Gear (heat, UVB, lights, filter and the rest)",
+      "usd": 190
+     },
+     {
+      "label": "Sales tax (8.5%)",
+      "usd": 46,
+      "note": "estimate"
+     }
+    ]
+   },
+   {
+    "strategy": "Room to grow",
+    "blurb": "The biggest tank the ceiling and the animals allow, a basic finish: room and stability before looks.",
+    "archetype": "A betta in its own tank",
+    "tank": "20 gal long",
+    "tier": "lean",
+    "finish": [
+     "Look: Dense planted",
+     "Substrate: blended, about 50 lb",
+     "Hardscape: 7 pieces (lava rock)",
+     "Plants: 12 live plants (ludwigia, stem plant, vallisneria)",
+     "Plant care: ferts: All-in-one liquid; 30 W light"
+    ],
+    "gear": [
+     "Filter: Internal filter (small) · 80 gph",
+     "Heater: about 200 W",
+     "Light: LED"
+    ],
+    "animals": "1 betta",
+    "total": 567,
+    "preTax": 523,
+    "tax": 44,
+    "under": 33,
+    "monthly": 20,
+    "min": 47,
+    "lines": [
+     {
+      "label": "Tank",
+      "usd": 35
+     },
+     {
+      "label": "Stand",
+      "usd": 97
+     },
+     {
+      "label": "Substrate, hardscape and plants",
+      "usd": 138
+     },
+     {
+      "label": "Animals",
+      "usd": 16
+     },
+     {
+      "label": "Supplies (water test kit and the like)",
+      "usd": 38
+     },
+     {
+      "label": "Gear (heat, UVB, lights, filter and the rest)",
+      "usd": 199
+     },
+     {
+      "label": "Sales tax (8.5%)",
+      "usd": 44,
+      "note": "estimate"
+     }
+    ]
+   },
+   {
+    "strategy": "Economy",
+    "blurb": "The smallest tank that holds them, the cheapest gear and a starter finish: the lowest all-in cost that still passes every check.",
+    "archetype": "A betta in its own tank",
+    "tank": "5 gal",
+    "tier": "starter",
+    "finish": [
+     "Look: Dense planted",
+     "Substrate: blended, about 12 lb",
+     "Hardscape: 2 pieces (lava rock)",
+     "Plants: 3 live plants (hornwort, vallisneria)",
+     "Plant care: no extras; 4 W light"
+    ],
+    "gear": [
+     "Filter: Tetra Whisper 10i Internal Filter",
+     "Heater: about 50 W",
+     "Light: 4 W LED"
+    ],
+    "animals": "1 betta",
+    "total": 279,
+    "preTax": 257,
+    "tax": 22,
+    "under": 321,
+    "monthly": 6,
+    "min": 32,
+    "lines": [
+     {
+      "label": "Tank",
+      "usd": 11
+     },
+     {
+      "label": "Stand",
+      "usd": 69
+     },
+     {
+      "label": "Substrate, hardscape and plants",
+      "usd": 19
+     },
+     {
+      "label": "Animals",
+      "usd": 12
+     },
+     {
+      "label": "Supplies (water test kit and the like)",
+      "usd": 28
+     },
+     {
+      "label": "Gear (heat, UVB, lights, filter and the rest)",
+      "usd": 118
+     },
+     {
+      "label": "Sales tax (8.5%)",
+      "usd": 22,
+      "note": "estimate"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "cap200",
+  "title": "$200 ceiling, no preferences, no stand needed (it goes on a counter)",
+  "ms": 774,
+  "stats": {
+   "pool": 5,
+   "rejectedWelfare": 5,
+   "rejectedConstraint": 0
+  },
+  "note": "Only 2 kinds of setup fit your guardrails: terrarium animals, freshwater fish.",
+  "misses": [
+   "Ember tetra nano school: +$87 set-up",
+   "Neon tetras and corydoras community: +$210 set-up",
+   "Leopard gecko terrarium: +$254 set-up"
+  ],
+  "proposals": [
+   {
+    "strategy": "Look first",
+    "blurb": "A mid-size tank at the lushest finish: plants, hardscape and the light and feeding that keep them.",
+    "archetype": "Regal jumping spider enclosure",
+    "tank": "Nano terrarium",
+    "tier": "standard",
+    "finish": [
+     "Look: Jumping spider cage",
+     "Substrate: Soil / coco fibre, about 7 lb",
+     "Hardscape: 3 pieces (climbing branch, cork bark flat, cork tube)",
+     "Plants: 3 live plants (pothos, bromeliad)"
+    ],
+    "gear": [
+     "No heat: these animals are comfortable at room temperature",
+     "Thermometer and hygrometer",
+     "No misting: these animals want drier air"
+    ],
+    "animals": "1 regaljumper",
+    "total": 190,
+    "preTax": 190,
+    "tax": 0,
+    "under": 10,
+    "monthly": 3,
+    "min": 12,
+    "lines": [
+     {
+      "label": "Tank",
+      "usd": 79
+     },
+     {
+      "label": "Substrate, hardscape and plants",
+      "usd": 48
+     },
+     {
+      "label": "Animals",
+      "usd": 33
+     },
+     {
+      "label": "Gear (heat, UVB, lights, filter and the rest)",
+      "usd": 30
+     },
+     {
+      "label": "Stand (terrarium)",
+      "usd": 0,
+      "note": "not needed"
+     }
+    ]
+   },
+   {
+    "strategy": "Size first",
+    "blurb": "The biggest tank the ceiling and the animals allow, a basic finish: room and stability before looks.",
+    "archetype": "A betta in its own tank",
+    "tank": "5 gal",
+    "tier": "lean",
+    "finish": [
+     "Look: Dense planted",
+     "Substrate: blended, about 12 lb",
+     "Hardscape: 4 pieces (lava rock)",
+     "Plants: 4 live plants (hornwort, amazon sword, vallisneria)",
+     "Plant care: ferts: All-in-one liquid; 4 W light"
+    ],
+    "gear": [
+     "Filter: Tetra Whisper 10i Internal Filter",
+     "Heater: about 50 W",
+     "Light: 4 W LED"
+    ],
+    "animals": "1 betta",
+    "total": 198,
+    "preTax": 198,
+    "tax": 0,
+    "under": 2,
+    "monthly": 7,
+    "min": 37,
+    "lines": [
+     {
+      "label": "Tank",
+      "usd": 11
+     },
+     {
+      "label": "Substrate, hardscape and plants",
+      "usd": 28
+     },
+     {
+      "label": "Animals",
+      "usd": 12
+     },
+     {
+      "label": "Supplies (water test kit and the like)",
+      "usd": 28
+     },
+     {
+      "label": "Gear (heat, UVB, lights, filter and the rest)",
+      "usd": 119
+     },
+     {
+      "label": "Stand",
+      "usd": 0,
+      "note": "not needed"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "cap200own",
+  "title": "$200 ceiling, no preferences, I already have a stand, filter and heater",
+  "ms": 850,
+  "stats": {
+   "pool": 7,
+   "rejectedWelfare": 5,
+   "rejectedConstraint": 0
+  },
+  "note": "Only 2 kinds of setup fit your guardrails: freshwater fish, terrarium animals.",
+  "misses": [
+   "Ember tetra nano school: +$18 set-up",
+   "Neon tetras and corydoras community: +$157 set-up",
+   "Leopard gecko terrarium: +$254 set-up"
+  ],
+  "proposals": [
+   {
+    "strategy": "Look first",
+    "blurb": "A mid-size tank at the lushest finish: plants, hardscape and the light and feeding that keep them.",
+    "archetype": "A betta in its own tank",
+    "tank": "5 gal",
+    "tier": "standard",
+    "finish": [
+     "Look: Dense planted",
+     "Substrate: blended, about 12 lb",
+     "Hardscape: 4 pieces (lava rock)",
+     "Plants: 4 live plants (stem plant, vallisneria) and 1 artificial one",
+     "Plant care: CO2: DIY yeast CO2, ferts: All-in-one liquid; 5 W light"
+    ],
+    "gear": [
+     "Filter: Tetra Whisper 10i Internal Filter",
+     "Heater: about 50 W",
+     "Light: 4 W LED"
+    ],
+    "animals": "1 betta",
+    "total": 200,
+    "preTax": 200,
+    "tax": 0,
+    "under": 0,
+    "monthly": 9,
+    "min": 48,
+    "lines": [
+     {
+      "label": "Tank",
+      "usd": 12
+     },
+     {
+      "label": "Substrate, hardscape and plants",
+      "usd": 37
+     },
+     {
+      "label": "Animals",
+      "usd": 13
+     },
+     {
+      "label": "Supplies (water test kit and the like)",
+      "usd": 29
+     },
+     {
+      "label": "Gear (heat, UVB, lights, filter and the rest)",
+      "usd": 109
+     },
+     {
+      "label": "Stand",
+      "usd": 0,
+      "note": "you have"
+     },
+     {
+      "label": "Filtration: Internal filter",
+      "usd": 0,
+      "note": "you have"
+     },
+     {
+      "label": "Heating: One heater",
+      "usd": 0,
+      "note": "you have"
+     }
+    ]
+   },
+   {
+    "strategy": "Size first",
+    "blurb": "The biggest tank the ceiling and the animals allow, a basic finish: room and stability before looks.",
+    "archetype": "Regal jumping spider enclosure",
+    "tank": "Nano terrarium",
+    "tier": "lean",
+    "finish": [
+     "Look: Jumping spider cage",
+     "Substrate: Soil / coco fibre, about 7 lb",
+     "Hardscape: 3 pieces (climbing branch, cork bark flat, cork tube)",
+     "Plants: 3 live plants (pothos, bromeliad)"
+    ],
+    "gear": [
+     "No heat: these animals are comfortable at room temperature",
+     "Thermometer and hygrometer",
+     "No misting: these animals want drier air"
+    ],
+    "animals": "1 regaljumper",
+    "total": 190,
+    "preTax": 190,
+    "tax": 0,
+    "under": 10,
+    "monthly": 3,
+    "min": 12,
+    "lines": [
+     {
+      "label": "Tank",
+      "usd": 79
+     },
+     {
+      "label": "Substrate, hardscape and plants",
+      "usd": 48
+     },
+     {
+      "label": "Animals",
+      "usd": 33
+     },
+     {
+      "label": "Gear (heat, UVB, lights, filter and the rest)",
+      "usd": 30
+     },
+     {
+      "label": "Stand (terrarium)",
+      "usd": 0,
+      "note": "you have"
+     }
+    ]
+   },
+   {
+    "strategy": "Cheapest start",
+    "blurb": "The smallest tank that holds them, the cheapest gear and a starter finish: the lowest all-in cost that still passes every check.",
+    "archetype": "A betta in its own tank",
+    "tank": "5 gal",
+    "tier": "starter",
+    "finish": [
+     "Look: Dense planted",
+     "Substrate: blended, about 12 lb",
+     "Hardscape: 2 pieces (lava rock)",
+     "Plants: 3 live plants (hornwort, vallisneria)",
+     "Plant care: no extras; 4 W light"
+    ],
+    "gear": [
+     "Filter: Tetra Whisper 10i Internal Filter",
+     "Heater: about 50 W",
+     "Light: 4 W LED"
+    ],
+    "animals": "1 betta",
+    "total": 149,
+    "preTax": 149,
+    "tax": 0,
+    "under": 51,
+    "monthly": 6,
+    "min": 32,
+    "lines": [
+     {
+      "label": "Tank",
+      "usd": 11
+     },
+     {
+      "label": "Substrate, hardscape and plants",
+      "usd": 19
+     },
+     {
+      "label": "Animals",
+      "usd": 12
+     },
+     {
+      "label": "Supplies (water test kit and the like)",
+      "usd": 28
+     },
+     {
+      "label": "Gear (heat, UVB, lights, filter and the rest)",
+      "usd": 79
+     },
+     {
+      "label": "Stand",
+      "usd": 0,
+      "note": "you have"
+     },
+     {
+      "label": "Filtration: Internal filter",
+      "usd": 0,
+      "note": "you have"
+     },
+     {
+      "label": "Heating: One heater",
+      "usd": 0,
+      "note": "you have"
+     }
+    ]
+   }
+  ]
+ }
+]
