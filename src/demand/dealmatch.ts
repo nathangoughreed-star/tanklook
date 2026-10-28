@@ -4,12 +4,15 @@
 // tolerance, via dealOffers); what may differ is the gear: light, lid, stand, filter, heater. Livestock, plants and hardscape
 // carry over unchanged. A deal whose gear does worse for this build (a plant loses its light, the filter or heater is smaller,
 // the risk goes up) is kept out of the offer, with what it breaks.
-import { dealAsKit, dealGuesses, type Deal } from '../data/deals';
+import { dealAsKit, dealGuesses, dealShip, dealsFor, type Deal } from '../data/deals';
 import { productName } from '../data/gearCatalog';
 import { getTankModel, modelOfVariant, tankFromModel } from '../data/tanks';
 import { applyKitLight } from '../scene/kitlight';
 import { shapeOf } from '../scene/shape';
 import { volume } from '../scene/physics';
+import { stockingOf } from '../scene/stocking';
+import { lightOutCached } from '../scene/lightout';
+import { standAsked } from '../scene/types';
 import { heatLoss, filterFor, filterUnits, techOf } from '../scene/tech';
 import type { Tank, TankSetup, Units } from '../scene/types';
 import { tankDiff } from '../ui/diff';
@@ -137,3 +140,58 @@ export function bestMatch(S: TankSetup, P: UserProfile, opts: DemandOpts & { uni
 
 /** "A bundle close to your build: PetSmart Top Fin ..., saves about $40." */
 export const matchLine = (m: DealMatch) => `A bundle close to your build: ${m.deal.retailer} ${m.deal.name}, saves about $${Math.round(m.savingUsd).toLocaleString('en-US')}.`;
+
+/** One entry of the swap menu: a bundle or sale kit for this build, with the money and what you give up. */
+export interface DealSwap {
+  deal: Deal;
+  /** the build with the deal's parts (and its tank, when that differs) swapped in */
+  setup: TankSetup;
+  sameTank: boolean;
+  /** setup $ now, and as the deal (shipping included) */
+  currentUsd: number; withDealUsd: number; savingUsd: number;
+  /** what changes, in plain words */
+  changes: string[];
+  /** what you give up or risk: stocking, light, filter, heater, tank size, engine warnings. Empty = nothing worse found */
+  tradeoffs: string[];
+  guesses: string[];
+  /** the shipping phrase ("free shipping", "about +$6 shipping", "store pickup, no shipping") */
+  shipText: string;
+}
+const pct = (v: number) => `${Math.round(v)} %`;
+/** What the swap gives up, beyond the engine's own warnings: tank size, stocking up / down, a dimmer light, a smaller filter or heater. */
+function tradeoffsOf(S: TankSetup, B: TankSetup, d: Deal, same: boolean, breaks: string[]): string[] {
+  const t: string[] = [], g0 = volume(S.tank).gallons, g1 = volume(B.tank).gallons;
+  if (!same) t.push(`tank size: ${Math.round(g0)} gal becomes ${Math.round(g1)} gal (${g1 > g0 ? 'more' : 'less'} water, ${g1 > g0 ? 'room to stock up' : 'stock fewer animals'}); this is a different tank, so it is a link, not a Tank B`);
+  if (S.fish.length) {
+    const a = stockingOf(S).percent, b = stockingOf(B).percent;
+    if (Math.abs(b - a) >= 5 && !same) t.push(b > a ? `stocking: the tank would be ${pct(b)} full, up from ${pct(a)}: stock down` : `stocking: ${pct(b)} full, down from ${pct(a)}: room to stock up`);
+    else if (b > 100 && a <= 100) t.push(`stocking: ${pct(b)} full: stock down`);
+  }
+  if (d.includes.includes('light')) {
+    const a = lightOutCached(S), b = lightOutCached(B);
+    if (a && b && b.mean < a.mean * 0.85) t.push(`light: ${Math.round(b.mean)} PAR at the substrate, against ${Math.round(a.mean)} now (worse for plants that need light)`);
+  }
+  return [...t, ...breaks.map(b => `${b}`)];
+}
+
+/**
+ * Every deal for this build as a swap, best saving first, nothing hidden: a deal with worse gear is listed with what it
+ * gives up, and a kit with another tank is listed with the tank-size change (Nathan 2026-10-27). `sameTank` swaps can be
+ * shown as Tank B; the others are a link only. Deals within ~40 % of the tank's gallons are considered.
+ */
+export function dealSwaps(S: TankSetup, P: UserProfile, opts: DemandOpts & { units?: Units } = {}, deals?: Deal[]): DealSwap[] {
+  if (!S.water.on) return [];
+  const units = opts.units ?? 'in', cur = pinnedKit(S, 0, P), pin = pinnedDeal(S), now = demandOf(S, P, { ...opts, kit: cur }), gal = volume(S.tank).gallons;
+  const out: DealSwap[] = [];
+  for (const deal of dealsFor(gal, S.stand.show || standAsked(S.stand), opts.now, gal * 0.4, deals)) {
+    if (pin?.id === deal.id) continue;
+    const same = sameTank(S.tank, deal), DT = same ? undefined : dealTank(deal);
+    if (!same && !DT) continue; // a tank we cannot draw or size: not offered
+    let B = withDealGear(S, deal);
+    if (DT) B = { ...B, tank: { ...DT } };
+    const after = demandOf(B, P, { ...opts, kit: dealAsKit(deal) });
+    const { changes, breaks } = compare(S, B, deal, units, now, after);
+    out.push({ deal, setup: B, sameTank: same, currentUsd: now.totals.setupUsd, withDealUsd: after.totals.setupUsd, savingUsd: now.totals.setupUsd - after.totals.setupUsd, changes, tradeoffs: tradeoffsOf(S, B, deal, same, breaks), guesses: dealGuesses(deal), shipText: dealShip(deal).text });
+  }
+  return out.filter(o => o.savingUsd > 1).sort((a, b) => b.savingUsd - a.savingUsd);
+}

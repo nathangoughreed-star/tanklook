@@ -2,6 +2,8 @@
 // from the stocking engine, hard truths from the care gates), what to buy with each item tied to the need it serves (an item no need asks for
 // is flagged, a need with nothing on the list is flagged), the totals (the demand model's one number each) and the sales that fit.
 // Pure; src/ui/planSheet.ts draws it and writes the text. It READS stocking, tankfit, tech, the care gates and the demand model.
+import { dealShip } from '../data/deals';
+import { gearShip } from '../data/gearDeals';
 import { getSpecies } from '../data/species';
 import type { Contribution, Demand } from '../demand/types';
 import { mean3 } from '../demand/range';
@@ -88,7 +90,7 @@ export function hardTruths(S: TankSetup, animals: AnimalCount[], heater: boolean
     // the Tech menu's heater choice when one is made (the shopping list keeps a heater row even when it is set to none), else the list's
     const ev = tempEvidence(S, salt ? true : S.tech?.rows.heater !== undefined ? undefined : heater), checks = ev ? [operatingCheck(shared, ev), holdCheck(ev), measuredCheck(shared, ev)] : [];
     out.push(rangeVerdict(shared, checks)); // never positive while the plan's water is definitively outside the range
-    for (const k of checks) if (k && shared.range && shared.state !== 'single') out.push({ text: k.text, level: checkLevel(k) }); // no usable range: the range line says it
+    for (const k of checks) if (k && shared.range) out.push({ text: k.text, level: checkLevel(k) }); // no usable range: the range line says it
   }
   const longFinned = finSensitiveNames(animals);
   if (longFinned.length && S.items.some(it => it.variant.startsWith('plastic'))) out.push({ text: `Hard plastic leaves can tear the long fins of ${longFinned.join(', ')}: use silk plants`, level: 'warn' });
@@ -188,10 +190,10 @@ export function planOf(S: TankSetup, build?: Build, now = Date.now(), u: Units =
   const fits = verdict.every(v => v.level !== 'bad') && missing.length === 0;
   const deals: PlanDeal[] = [];
   const dealLine = (s: string) => { if (!deals.some(d => d.text === s)) deals.push({ text: s }); };
-  if (build?.bundle) dealLine(`Bundle: ${build.bundle.retailer} ${build.bundle.name}, ${usd(build.bundle.price.usd)}${build.bundle.price.regularUsd ? ` (was ${usd(build.bundle.price.regularUsd)})` : ''}`);
+  if (build?.bundle) dealLine(`Bundle: ${build.bundle.retailer} ${build.bundle.name}, ${usd(build.bundle.price.usd)}${build.bundle.price.regularUsd ? ` (was ${usd(build.bundle.price.regularUsd)})` : ''}, ${dealShip(build.bundle).text}`);
   if (build?.tankDeal) dealLine(`Tank on sale at ${build.tankDeal.retailer}: ${usd(build.tankDeal.usd)} (was ${usd(build.tankDeal.regularUsd)})`);
-  for (const d of build?.gearDeals ?? []) dealLine(`${d.title} on sale at ${d.store}: ${usd(d.price.usd)} (was ${usd(d.price.regularUsd)})`);
-  if (!build?.bundle) for (const d of gearOffers(S, D, now)) dealLine(`${GEAR_SLOT_NAME[d.slot][0].toUpperCase()}${GEAR_SLOT_NAME[d.slot].slice(1)}: ${d.title} on sale at ${d.store}, ${usd(d.price.usd)} (was ${usd(d.price.regularUsd)})`);
+  for (const d of build?.gearDeals ?? []) dealLine(`${d.title} on sale at ${d.store}: ${usd(d.price.usd)} (was ${usd(d.price.regularUsd)}), ${gearShip(d).text}`);
+  if (!build?.bundle) for (const d of gearOffers(S, D, now)) dealLine(`${GEAR_SLOT_NAME[d.slot][0].toUpperCase()}${GEAR_SLOT_NAME[d.slot].slice(1)}: ${d.title} on sale at ${d.store}, ${usd(d.price.usd)} (was ${usd(d.price.regularUsd)}), ${gearShip(d).text}`);
   const rhy = rhythmOf(D, S);
   return {
     title: S.water.on ? 'Your animal tank: the plan' : 'Your terrarium: the plan', tank: build ? tankLabel(build.tank, u) : `${Math.round(volume(S.tank).gallons)} gal (${sizeTxt(S.tank.L, S.tank.D, u)})`, animals: names,

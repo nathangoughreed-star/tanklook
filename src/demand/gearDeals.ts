@@ -3,7 +3,7 @@
 // like `dealPin` (pinned.ts): undo and split carry it, a saved file drops it. A pin stops counting, silently, once the deal no
 // longer fits (the tank was resized, the heater changed) or is older than GEAR_DEAL_DAYS; the deal's own sale price is what
 // the row then costs, so picking a dearer product than the typical one raises the cost (that is the point: it is the real thing).
-import { GEAR_DEALS, GEAR_DEAL_DAYS, gearPctOff, type GearDeal, type GearSlot } from '../data/gearDeals';
+import { GEAR_DEALS, GEAR_DEAL_DAYS, gearPctOff, gearShip, gearTotalUsd, type GearDeal, type GearSlot } from '../data/gearDeals';
 import { heatLoss } from '../scene/tech';
 import { volume } from '../scene/physics';
 import type { TankSetup } from '../scene/types';
@@ -40,7 +40,7 @@ export function pinnedGear(S: TankSetup, now = Date.now(), list: GearDeal[] = GE
 /** The engine's `parts` option: each pinned deal's price for its row. */
 export function gearParts(S: TankSetup, now = Date.now()) {
   const out: Record<string, { usd: number; asOf: string; label: string }> = {};
-  for (const d of pinnedGear(S, now)) out[d.slot] = { usd: d.price.usd, asOf: d.asOf, label: `${d.title}, on sale at ${d.store}` };
+  for (const d of pinnedGear(S, now)) out[d.slot] = { usd: gearTotalUsd(d), asOf: d.asOf, label: `${d.title}, on sale at ${d.store}${gearShip(d).usd ? ` (+$${gearShip(d).usd} shipping)` : ''}` };
   return out;
 }
 
@@ -51,8 +51,8 @@ export function gearOffers(S: TankSetup, D: Demand, now = Date.now(), maxOver = 
   for (const slot of Object.keys(GEAR_SLOT_NAME) as GearSlot[]) {
     const row = D.items.find(c => c.key === slot);
     if (!row?.setup || pinned.has(slot)) continue;
-    const cap = mean3(row.setup) * maxOver;
-    const best = list.filter(d => d.slot === slot && d.price.usd <= cap && gearFits(S, d, now)).sort((a, b) => gearPctOff(b) - gearPctOff(a))[0];
+    const typical = mean3(row.setup), cap = typical * maxOver;
+    const best = list.filter(d => d.slot === slot && gearTotalUsd(d) <= cap && gearTotalUsd(d) < d.price.regularUsd && gearFits(S, d, now)).sort((a, b) => gearPctOff(b) - gearPctOff(a))[0];
     if (best) out.push(best);
   }
   return out;

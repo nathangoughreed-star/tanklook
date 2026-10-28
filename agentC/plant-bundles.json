@@ -1,0 +1,517 @@
+{
+ "asOf": "2026-10-27",
+ "bundles": [
+  {
+   "id": "buce-assorted-anubias-5",
+   "retailer": "Buce Plant",
+   "shipUsd": null,
+   "freeShipOverUsd": null,
+   "name": "Assorted Anubias Plant Pack (5 Pack)",
+   "priceUsd": 42.99,
+   "regularUsd": null,
+   "contents": [
+    {
+     "plant": "Anubias (5 distinct varieties, potted)",
+     "count": 5
+    }
+   ],
+   "individualUsd": null,
+   "url": "https://buceplant.com/products/assorted-anubias-plant-pack",
+   "asOf": "2026-10-27",
+   "note": "Shipping charge not stated on policy page; contents are 'hand-selected' mixed species, exact counts not listed. 100% DOA protection. IN STOCK. 10 Pack $72.99 in stock; 15 Pack $92.99 sold out."
+  },
+  {
+   "id": "buce-beginner-plant-pack-5",
+   "retailer": "Buce Plant",
+   "shipUsd": null,
+   "freeShipOverUsd": null,
+   "name": "Beginner Plant Pack (5 Pack)",
+   "priceUsd": 34.99,
+   "regularUsd": null,
+   "contents": [
+    {
+     "plant": "Anubias",
+     "count": null
+    },
+    {
+     "plant": "Aquarium Moss",
+     "count": null
+    },
+    {
+     "plant": "Java Fern",
+     "count": null
+    },
+    {
+     "plant": "Cryptocoryne",
+     "count": null
+    }
+   ],
+   "individualUsd": null,
+   "url": "https://buceplant.com/products/beginner-plant-pack",
+   "asOf": "2026-10-27",
+   "note": "Shipping charge not stated on policy page; contents are 'hand-selected' mixed species, exact counts not listed. 100% DOA protection. SOLD OUT at check. 10 Pack $59.99, 15 Pack $84.99. Counts per type unspecified."
+  },
+  {
+   "id": "buce-dutch-stem-pack-5",
+   "retailer": "Buce Plant",
+   "shipUsd": null,
+   "freeShipOverUsd": null,
+   "name": "Dutch Stem Plant Pack (5 Pack)",
+   "priceUsd": 34.99,
+   "regularUsd": null,
+   "contents": [
+    {
+     "plant": "Stem plants (5 distinct species)",
+     "count": 5
+    }
+   ],
+   "individualUsd": null,
+   "url": "https://buceplant.com/products/stem-plant-pack",
+   "asOf": "2026-10-27",
+   "note": "Shipping charge not stated on policy page; contents are 'hand-selected' mixed species, exact counts not listed. 100% DOA protection. SOLD OUT at check. 10 Pack $59.99, 15 Pack $69.99. Emersed or submerged form varies."
+  },
+  {
+   "id": "buce-red-stem-pack-5",
+   "retailer": "Buce Plant",
+   "shipUsd": null,
+   "freeShipOverUsd": null,
+   "name": "Red Stem Plant Pack (5 Pack)",
+   "priceUsd": 34.99,
+   "regularUsd": null,
+   "contents": [
+    {
+     "plant": "Red stem plants",
+     "count": 5
+    }
+   ],
+   "individualUsd": null,
+   "url": "https://buceplant.com/products/red-stem-plant-pack",
+   "asOf": "2026-10-27",
+   "note": "Shipping charge not stated on policy page; contents are 'hand-selected' mixed species, exact counts not listed. 100% DOA protection. SOLD OUT at check. 10 Pack $59.99, 15 Pack $69.99."
+  },
+  {
+   "id": "buce-assorted-crypt-pack-5",
+   "retailer": "Buce Plant",
+   "shipUsd": null,
+   "freeShipOverUsd": null,
+   "name": "Assorted Cryptocoryne Plant Pack (5 Pack)",
+   "priceUsd": 34.99,
+   "regularUsd": null,
+   "contents": [
+    {
+     "plant": "Cryptocoryne (potted)",
+     "count": 5
+    }
+   ],
+   "individualUsd": null,
+   "url": "https://buceplant.com/products/assorted-cryptocoryne-plant-pack",
+   "asOf": "2026-10-27",
+   "note": "Shipping charge not stated on policy page; contents are 'hand-selected' mixed species, exact counts not listed. 100% DOA protection. SOLD OUT at check. 10 Pack $59.99, 15 Pack $83.99."
+  },
+  {
+   "id": "buce-assorted-echinodorus-5",
+   "retailer": "Buce Plant",
+   "shipUsd": null,
+   "freeShipOverUsd": null,
+   "name": "Assorted Echinodorus Plant Pack (5 Pack, pot)",
+   "priceUsd": 29.99,
+   "regularUsd": null,
+   "contents": [
+    {
+     "plant": "Echinodorus / Amazon Sword",
+     "count": 5
+    }
+   ],
+   "individualUsd": null,
+   "url": "https://buceplant.com/products/assorted-echinodorus-plant-pack",
+   "asOf": "2026-10-27",
+   "note": "Shipping charge not stated on policy page; contents are 'hand-selected' mixed species, exact counts not listed. 100% DOA protection. SOLD OUT at check. Bunch version $27.99."
+  },
+  {
+   "id": "buce-moss-collector-5",
+   "retailer": "Buce Plant",
+   "shipUsd": null,
+   "freeShipOverUsd": null,
+   "name": "Aquarium Moss Collector Pack (5 Pack golfball)",
+   "priceUsd": 28.99,
+   "regularUsd": null,
+   "contents": [
+    {
+     "plant": "Aquarium moss (5 varieties)",
+     "count": 5
+    }
+   ],
+   "individualUsd": null,
+   "url": "https://buceplant.com/products/aquarium-moss-collector-pack",
+   "asOf": "2026-10-27",
+   "note": "Shipping charge not stated on policy page; contents are 'hand-selected' mixed species, exact counts not listed. 100% DOA protection. SOLD OUT at check. On stainless steel version $69.99."
+  },
+  {
+   "id": "buce-team-buce-starter",
+   "retailer": "Buce Plant",
+   "shipUsd": null,
+   "freeShipOverUsd": null,
+   "name": "Team Buce Plant Starter Pack",
+   "priceUsd": 36.99,
+   "regularUsd": null,
+   "contents": [
+    {
+     "plant": "Bucephalandra (distinct)",
+     "count": 5
+    }
+   ],
+   "individualUsd": null,
+   "url": "https://buceplant.com/products/team-buce-plant-starter-pack",
+   "asOf": "2026-10-27",
+   "note": "Shipping charge not stated on policy page; contents are 'hand-selected' mixed species, exact counts not listed. 100% DOA protection. SOLD OUT at check. Mini clump package $104.99."
+  },
+  {
+   "id": "flip-popular-plants-bundle",
+   "retailer": "Flip Aquatics",
+   "shipUsd": 34.99,
+   "freeShipOverUsd": 200,
+   "name": "Popular Aquarium Plants Bundle",
+   "priceUsd": 79.99,
+   "regularUsd": 96.39,
+   "contents": [
+    {
+     "plant": "Anubias Nana Petite",
+     "count": 2
+    },
+    {
+     "plant": "Red Root Floaters",
+     "count": 2
+    },
+    {
+     "plant": "Monte Carlo",
+     "count": 2
+    },
+    {
+     "plant": "Amazon Sword",
+     "count": 2
+    },
+    {
+     "plant": "Java Fern",
+     "count": 2
+    }
+   ],
+   "individualUsd": null,
+   "url": "https://flipaquatics.com/products/popular-aquarium-plant-bundle",
+   "asOf": "2026-10-27",
+   "note": "Shipping: flat-rate FedEx Priority Overnight $34.99, free over $200 (site banner). Also includes 1 bottle Shrimple all-in-one fertilizer (not a plant). In stock."
+  },
+  {
+   "id": "flip-beginner-plant-pack",
+   "retailer": "Flip Aquatics",
+   "shipUsd": 34.99,
+   "freeShipOverUsd": 200,
+   "name": "Beginner Aquarium Plant Pack",
+   "priceUsd": 49.99,
+   "regularUsd": 89.99,
+   "contents": [
+    {
+     "plant": "Floating plant",
+     "count": 1
+    },
+    {
+     "plant": "Fern",
+     "count": 1
+    },
+    {
+     "plant": "Anubias",
+     "count": 1
+    },
+    {
+     "plant": "Dwarf Lily or Red Tiger Lotus",
+     "count": 1
+    },
+    {
+     "plant": "Sword plant",
+     "count": 1
+    },
+    {
+     "plant": "Cryptocoryne",
+     "count": 1
+    },
+    {
+     "plant": "Carpeting plant",
+     "count": 1
+    }
+   ],
+   "individualUsd": null,
+   "url": "https://flipaquatics.com/products/beginner-plant-pack",
+   "asOf": "2026-10-27",
+   "note": "Shipping: flat-rate FedEx Priority Overnight $34.99, free over $200 (site banner). Species vary, no requests; listing says valued at $90. List may have more items beyond the 7 read. In stock."
+  },
+  {
+   "id": "flip-mixmatch-crypt-5",
+   "retailer": "Flip Aquatics",
+   "shipUsd": 34.99,
+   "freeShipOverUsd": 200,
+   "name": "Mix + Match Crypt Plant Bundle",
+   "priceUsd": 39.99,
+   "regularUsd": 49.95,
+   "contents": [
+    {
+     "plant": "Crypt Wendtii Red / Parva / Spiralis / Lutea / Undulata / Balansae (choose 5)",
+     "count": 5
+    }
+   ],
+   "individualUsd": null,
+   "url": "https://flipaquatics.com/products/mix-match-crypt-plant-bundle",
+   "asOf": "2026-10-27",
+   "note": "Shipping: flat-rate FedEx Priority Overnight $34.99, free over $200 (site banner). Pick 5 from list. In stock."
+  },
+  {
+   "id": "flip-mixmatch-anubias-5",
+   "retailer": "Flip Aquatics",
+   "shipUsd": 34.99,
+   "freeShipOverUsd": 200,
+   "name": "Mix + Match Anubias Bundle",
+   "priceUsd": 39.99,
+   "regularUsd": 49.95,
+   "contents": [
+    {
+     "plant": "Anubias Nana Petite / Nana / Nana Golden / Coffeefolia / Barteri / Congensis / Hastifolia (choose 5)",
+     "count": 5
+    }
+   ],
+   "individualUsd": null,
+   "url": "https://flipaquatics.com/products/mix-match-anubias-bundle",
+   "asOf": "2026-10-27",
+   "note": "Shipping: flat-rate FedEx Priority Overnight $34.99, free over $200 (site banner). Pick 5. In stock."
+  },
+  {
+   "id": "flip-mixmatch-red-5",
+   "retailer": "Flip Aquatics",
+   "shipUsd": 34.99,
+   "freeShipOverUsd": 200,
+   "name": "Mix + Match Red Plant Bundle",
+   "priceUsd": 39.99,
+   "regularUsd": 49.95,
+   "contents": [
+    {
+     "plant": "Red Tiger Lotus / Alternanthera Reineckii / Crypt Wendtii Red / Dwarf Lily / Red Flame Sword / Ludwigia Repens Red (choose 5)",
+     "count": 5
+    }
+   ],
+   "individualUsd": null,
+   "url": "https://flipaquatics.com/products/mix-match-red-plant-bundle",
+   "asOf": "2026-10-27",
+   "note": "Shipping: flat-rate FedEx Priority Overnight $34.99, free over $200 (site banner). Pick 5. In stock."
+  },
+  {
+   "id": "flip-floater-bundle",
+   "retailer": "Flip Aquatics",
+   "shipUsd": 34.99,
+   "freeShipOverUsd": 200,
+   "name": "Floater Bundle",
+   "priceUsd": 19.99,
+   "regularUsd": 23.79,
+   "contents": [
+    {
+     "plant": "Giant Duckweed",
+     "count": 1
+    },
+    {
+     "plant": "Red Root Floaters",
+     "count": 1
+    },
+    {
+     "plant": "Amazon Frogbit",
+     "count": 1
+    }
+   ],
+   "individualUsd": null,
+   "url": "https://flipaquatics.com/products/floating-aquarium-plants-for-sale",
+   "asOf": "2026-10-27",
+   "note": "Shipping: flat-rate FedEx Priority Overnight $34.99, free over $200 (site banner). Quantities per plant not stated. In stock."
+  },
+  {
+   "id": "aa-3-plant-combo",
+   "retailer": "Aquatic Arts",
+   "shipUsd": null,
+   "freeShipOverUsd": null,
+   "name": "3 Plant Combo: Hornwort, Duckweed, Java Moss",
+   "priceUsd": 19.99,
+   "regularUsd": 22.99,
+   "contents": [
+    {
+     "plant": "Hornwort",
+     "count": 1
+    },
+    {
+     "plant": "Duckweed",
+     "count": 1
+    },
+    {
+     "plant": "Java Moss",
+     "count": 1
+    }
+   ],
+   "individualUsd": null,
+   "url": "https://aquaticarts.com/products/3-plant-combo-1",
+   "asOf": "2026-10-27",
+   "note": "Shipping for live plants not stated on policy page (free shipping only on dry goods over $50). In stock. Quantities not stated."
+  },
+  {
+   "id": "aa-stem-plant-combo",
+   "retailer": "Aquatic Arts",
+   "shipUsd": null,
+   "freeShipOverUsd": null,
+   "name": "Stem Plant Combo",
+   "priceUsd": 15.99,
+   "regularUsd": null,
+   "contents": [
+    {
+     "plant": "Moneywort",
+     "count": 1
+    },
+    {
+     "plant": "Dark Red Ludwigia",
+     "count": 1
+    },
+    {
+     "plant": "Green Cabomba",
+     "count": 1
+    }
+   ],
+   "individualUsd": null,
+   "url": "https://aquaticarts.com/products/stem-plant-combo",
+   "asOf": "2026-10-27",
+   "note": "Shipping for live plants not stated on policy page (free shipping only on dry goods over $50). In stock. Cabomba cannot ship to MI, NY, WI."
+  },
+  {
+   "id": "aa-crypt-wendtii-multicolor",
+   "retailer": "Aquatic Arts",
+   "shipUsd": null,
+   "freeShipOverUsd": null,
+   "name": "Cryptocoryne wendtii Multi-Color Combo Pack",
+   "priceUsd": 16.99,
+   "regularUsd": null,
+   "contents": [
+    {
+     "plant": "Cryptocoryne wendtii Bronze",
+     "count": 1
+    },
+    {
+     "plant": "Cryptocoryne wendtii Green",
+     "count": 1
+    },
+    {
+     "plant": "Cryptocoryne wendtii Red",
+     "count": 1
+    }
+   ],
+   "individualUsd": null,
+   "url": "https://aquaticarts.com/products/cryptocoryne-wendtii-multi-color-combo-pack",
+   "asOf": "2026-10-27",
+   "note": "Shipping for live plants not stated on policy page (free shipping only on dry goods over $50). In stock. Bare root clumps."
+  },
+  {
+   "id": "aa-floating-combo",
+   "retailer": "Aquatic Arts",
+   "shipUsd": null,
+   "freeShipOverUsd": null,
+   "name": "Floating Plant Combo Pack (1/3 cup)",
+   "priceUsd": 4.99,
+   "regularUsd": 5.99,
+   "contents": [
+    {
+     "plant": "Water Spangles (Salvinia minima)",
+     "count": 1
+    },
+    {
+     "plant": "Fairy Fern (Azolla)",
+     "count": 1
+    },
+    {
+     "plant": "Duckweed",
+     "count": 1
+    }
+   ],
+   "individualUsd": null,
+   "url": "https://aquaticarts.com/products/floatingplantcombopack",
+   "asOf": "2026-10-27",
+   "note": "Shipping for live plants not stated on policy page (free shipping only on dry goods over $50). In stock. May also include red root floater/riccia."
+  },
+  {
+   "id": "aa-ludwigia-beginner-stem",
+   "retailer": "Aquatic Arts",
+   "shipUsd": null,
+   "freeShipOverUsd": null,
+   "name": "Ludwigia Beginner Stem Plant Combo",
+   "priceUsd": 18.99,
+   "regularUsd": null,
+   "contents": [
+    {
+     "plant": "Ludwigia repens",
+     "count": 1
+    },
+    {
+     "plant": "Ludwigia repens Dark Red",
+     "count": 1
+    },
+    {
+     "plant": "Ludwigia palustris",
+     "count": 1
+    },
+    {
+     "plant": "Ludwigia ovalis",
+     "count": 1
+    }
+   ],
+   "individualUsd": null,
+   "url": "https://aquaticarts.com/products/ludwigia-beginner-stem-plant-combo",
+   "asOf": "2026-10-27",
+   "note": "Shipping for live plants not stated on policy page (free shipping only on dry goods over $50). SOLD OUT at check. 1 bunch each."
+  },
+  {
+   "id": "aa-anubias-beginner-combo",
+   "retailer": "Aquatic Arts",
+   "shipUsd": null,
+   "freeShipOverUsd": null,
+   "name": "Anubias Beginner Combo Pack",
+   "priceUsd": 19.99,
+   "regularUsd": null,
+   "contents": [
+    {
+     "plant": "Anubias barteri",
+     "count": 1
+    },
+    {
+     "plant": "Anubias coffeefolia",
+     "count": 1
+    },
+    {
+     "plant": "Anubias frazeri",
+     "count": 1
+    }
+   ],
+   "individualUsd": null,
+   "url": "https://aquaticarts.com/products/anubias-beginner-combo-pack",
+   "asOf": "2026-10-27",
+   "note": "Shipping for live plants not stated on policy page (free shipping only on dry goods over $50). SOLD OUT at check. Bare root clumps."
+  },
+  {
+   "id": "apf-tissue-culture-5",
+   "retailer": "Aquarium Plants Factory",
+   "shipUsd": null,
+   "freeShipOverUsd": null,
+   "name": "Tissue Culture Plants Package, Grower's Choice (5 varieties)",
+   "priceUsd": 29.99,
+   "regularUsd": null,
+   "contents": [
+    {
+     "plant": "Tissue culture plants, random species",
+     "count": 5
+    }
+   ],
+   "individualUsd": null,
+   "url": "https://aquariumplantsfactory.com/products/vitro-culture-plants-package-growers-choice",
+   "asOf": "2026-10-27",
+   "note": "In stock. 10 varieties $49.99. Species unlabeled. Site says lowest-priced eligible plants free (promo, details not verified); shipping not verified."
+  }
+ ],
+ "coverageNotes": "Verified via Shopify product feeds. Not found/no bundles: Aquarium Co-Op, Modern Aquarium (feed empty). Amazon, Walmart, Etsy, Petco, PetSmart, LiveAquaria not checked (no feed). No terrarium/paludarium packs found at checked stores. Prices include no tax."
+}

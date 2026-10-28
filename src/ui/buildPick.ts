@@ -3,6 +3,8 @@
 // it opens in the editor ("make it yours": the look is free, the gates hold). Logic is scene/builds.ts (pure, tested); this file draws it,
 // takes the pictures with the main viewer, and loads the choice. Lane P6b (scape choice, plan sheet) listens through onBuildPicked().
 import { rng } from '../art/paint';
+import { dealShip } from '../data/deals';
+import { gearShip } from '../data/gearDeals';
 import { getSpecies } from '../data/species';
 import { pinDeal } from '../demand/pinned';
 import { emptyScene } from '../scene/defaults';
@@ -73,9 +75,9 @@ export function attachBuildPick(store: Store, viewer: Viewer, status: (m: string
   const card = (b: Build, i: number) => {
     const twin = builds.slice(0, i).find(o => same(o, b));
     const deals = [
-      b.bundle ? `<li class="bpDeal">Bundle: ${esc(b.bundle.retailer)} ${esc(b.bundle.name)} · ${usd(b.bundle.price.usd)}${b.bundle.price.regularUsd ? ` (was ${usd(b.bundle.price.regularUsd)})` : ''}</li>` : '',
+      b.bundle ? `<li class="bpDeal">Bundle: ${esc(b.bundle.retailer)} ${esc(b.bundle.name)} · ${usd(b.bundle.price.usd)}${b.bundle.price.regularUsd ? ` (was ${usd(b.bundle.price.regularUsd)})` : ''}, ${esc(dealShip(b.bundle).text)}</li>` : '',
       b.tankDeal ? `<li class="bpDeal">Tank on sale at ${esc(b.tankDeal.retailer)}: ${usd(b.tankDeal.usd)} (was ${usd(b.tankDeal.regularUsd)})</li>` : '',
-      ...b.gearDeals.map(d => `<li class="bpDeal">${esc(d.title)} on sale at ${esc(d.store)}: ${usd(d.price.usd)} (was ${usd(d.price.regularUsd)})</li>`),
+      ...b.gearDeals.map(d => `<li class="bpDeal">${esc(d.title)} on sale at ${esc(d.store)}: ${usd(d.price.usd)} (was ${usd(d.price.regularUsd)}), ${esc(gearShip(d).text)}</li>`),
     ].join('');
     return `<li class="bpCard" data-i="${i}">
 <div class="bpPic">${pics[i] ? `<img src="${pics[i]}" alt="The ${esc(b.label)} build: ${esc(tankLabel(b.tank, store.scene.units))} with the animals">` : ''}</div>

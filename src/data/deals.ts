@@ -1,5 +1,6 @@
 import data from './deals.json';
 import { kitById, kitGear } from './kits';
+import { shipping } from './shipping';
 import type { FilterSpec } from '../demand/gear';
 
 /** Retailer bundle deals (lane KD, 2026-10): a tank sold with its stand (and sometimes lid, light, filter, heater) for one price.
@@ -38,6 +39,8 @@ export interface Deal {
   terrarium?: boolean;
   /** how sure the row is: 'low' = read from a search snippet, page not opened (such a row never prices a build, whether or not it is `est`) */
   confidence?: 'high' | 'medium' | 'low';
+  /** sold for store pickup only: no shipping to add (lane BS) */
+  pickupOnly?: boolean;
   note?: string;
 }
 /** Every guess behind a deal, in plain words: the row's own list plus a light whose power the listing does not give. */
@@ -68,11 +71,16 @@ export function dealsFor(gal: number, stand: boolean, now = Date.now(), tol = 2.
     .sort((a, b) => a.price.usd - b.price.usd);
 }
 
-/** The engine's `kit` option for a deal (its price replaces the parts it includes). */
+/** What it costs to get the deal to your door: free over the retailer's threshold, none for store pickup (shipping.json). */
+export const dealShip = (d: Deal) => shipping(d.retailer, d.price.usd, d.pickupOnly);
+/** Listing price plus shipping: what the deal costs you. */
+export const dealTotalUsd = (d: Deal) => d.price.usd + dealShip(d).usd;
+
+/** The engine's `kit` option for a deal (its price, shipping included, replaces the parts it includes). */
 export const dealAsKit = (d: Deal) => {
   const k = d.kit ? kitById(d.kit) : undefined, g = k ? kitGear(k) : undefined;
   return {
-    id: d.id, priceUsd: d.price.usd, asOf: d.asOf, includes: d.includes.map((p) => DRY_KEY[p] ?? p), label: `${d.retailer} ${d.name}`,
+    id: d.id, priceUsd: dealTotalUsd(d), asOf: d.asOf, includes: d.includes.map((p) => DRY_KEY[p] ?? p), label: `${d.retailer} ${d.name}`,
     filter: d.includes.includes('filter') ? d.filter ?? g?.filter : undefined,
     heater: d.includes.includes('heater') ? d.heater ?? g?.heater : undefined,
   };

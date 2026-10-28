@@ -42,6 +42,8 @@ export interface DemandOpts {
   /** A product on sale the user picked for a gear row (lane GD, demand/gearDeals.ts): row key -> its price, which replaces the
    *  row's typical price (power use stays). A kit covering the same part still wins. */
   parts?: Record<string, { usd: number; asOf: string; label: string }>;
+  /** A plant pack the user bought (lane BS, demand/plantBundles.ts): the first `covers[variant]` plants of each variant it contains carry no set-up price of their own; one `bundle:<id>` row (price + shipping) stands in. Covers nothing in this tank = no row. */
+  plantBundle?: { id: string; priceUsd: number; asOf: string; label: string; covers: Record<string, number> };
   /** For the price-age widening; default now. */
   now?: number;
 }
@@ -149,7 +151,8 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
 
   // ---- plants and corals
   const lights = watts > 0 ? itemLights(S) : null;
-  const pdom = domOf('plant');
+  const pdom = domOf('plant'), left = { ...(opts.plantBundle?.covers ?? {}) };
+  let packed = 0;
   for (const it of plants) {
     const n = NEEDS[it.variant], label = LIBRARY[it.variant]?.label ?? it.variant, diff = plantDifficulty(it.variant);
     const cls = !wet || (n && isLand(n)) ? 'land' : n && isCoralNeed(n) ? `coral-${n.band}` : (n as PlantNeed | undefined)?.note === 'succulent' ? 'succulent' : (['easy', 'medium', 'hard'] as const)[diff];
@@ -159,11 +162,15 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
     const struggle = out && out.state === 'struggle' ? Math.max(out.severity, DEFAULTS.risk.struggleMinPts) : 0;
     if (out && out.state === 'struggle') { const w = `${label}: ${out.short}`; if (!warnings.includes(w)) warnings.push(w); }
     const raw = (n && !isLand(n) ? DEFAULTS.risk.plantDifficulty[diff] : 0) + struggle;
+    const inPack = (left[it.variant] ?? 0) > 0 && !!n && !isLand(n);
+    if (inPack) { left[it.variant]--; packed++; }
     add(`plant:${it.variant}`, label, 'plant', {
-      setup: rowPrice(`plant:${it.variant}`) ? price(rowPrice(`plant:${it.variant}`)!) : unit ? price(pick(unit.setup)) : undefined, livestock: true, domain: pdom,
+      setup: inPack ? undefined : rowPrice(`plant:${it.variant}`) ? price(rowPrice(`plant:${it.variant}`)!) : unit ? price(pick(unit.setup)) : undefined, livestock: true, domain: pdom,
       minutes: r3(DEFAULTS.plants.minPerWeekEach * Math.pow(plants.filter(q => q.variant === it.variant).length, -DEFAULTS.plants.bunchExp) * (isFloat(it.variant) ? DEFAULTS.plants.floaterMinK : 1) * growRate(it.variant, S.grow.feed) * (it.size / DEFAULTS.plants.refSizeMm)), risk: raw * skillMul(P, pdom),
     });
   }
+
+  if (opts.plantBundle && packed) add(`bundle:${opts.plantBundle.id}`, opts.plantBundle.label, 'plant', { setup: widen3({ lo: opts.plantBundle.priceUsd * 0.95, mode: opts.plantBundle.priceUsd, hi: opts.plantBundle.priceUsd * 1.05 }, Math.min(FACTORS.priceAgeMax, 1 + FACTORS.priceAgePerMonth * Math.max(0, ((opts.now ?? Date.now()) - Date.parse(opts.plantBundle.asOf)) / (30.44 * 864e5)))) });
 
   // painted patches of live plants (carpets, moss mats) are trimmed too
   for (const pt of S.patches ?? []) if (isLivePlantPatch(pt)) add('patch', 'Live plant patches (carpet, moss)', 'plant', { minutes: r3(DEFAULTS.time.plantPatchMin.mode * growRate(pt.brush.slice(6), S.grow.feed)) });

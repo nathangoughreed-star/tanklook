@@ -14,6 +14,8 @@ import { dryDealsFor } from '../demand/drydeals';
 import { dealMatches, MIN_SAVING_FRAC, MIN_SAVING_USD } from '../demand/dealmatch';
 import { filterName } from '../demand/gear';
 import { gearOffers, gearParts, pinGear } from '../demand/gearDeals';
+import { gearTotalUsd } from '../data/gearDeals';
+import { mean3 } from '../demand/range';
 import { kitTech } from '../demand/tech';
 import { bareSetup } from './defaults';
 import { volume } from './physics';
@@ -111,7 +113,8 @@ function price(S0: TankSetup, now: number, bundle?: Deal, withGearDeals = true):
   let D = demandOf(S, P, opts);
   const gearDeals: GearDeal[] = [];
   if (withGearDeals && !bundle) {
-    for (const d of gearOffers(S, D, now)) { pinGear(S, d); gearDeals.push(d); }
+    // a sale only goes into a build when the part, delivered, costs less than the row's typical price
+    for (const d of gearOffers(S, D, now)) { const row = D.items.find(c => c.key === d.slot); if (row?.setup && gearTotalUsd(d) >= mean3(row.setup)) continue; pinGear(S, d); gearDeals.push(d); }
     if (gearDeals.length) D = demandOf(S, P, { ...opts, parts: gearParts(S, now) });
   }
   const r = stockingOf(S);

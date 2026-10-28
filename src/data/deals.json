@@ -681,7 +681,8 @@
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
    },
-   "img": "https://assets.petco.com/petco/image/upload/f_auto,q_auto/3946395-center-1"
+   "img": "https://assets.petco.com/petco/image/upload/f_auto,q_auto/3946395-center-1",
+   "pickupOnly": true
   },
   {
    "id": "petco-imagitarium-led-20",
@@ -717,7 +718,8 @@
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
    },
-   "img": "https://assets.petco.com/petco/image/upload/f_auto,q_auto/3946408-center-1"
+   "img": "https://assets.petco.com/petco/image/upload/f_auto,q_auto/3946408-center-1",
+   "pickupOnly": true
   },
   {
    "id": "petco-imagitarium-led-40",
@@ -753,7 +755,8 @@
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
    },
-   "img": "https://assets.petco.com/petco/image/upload/f_auto,q_auto/3946424-center-1"
+   "img": "https://assets.petco.com/petco/image/upload/f_auto,q_auto/3946424-center-1",
+   "pickupOnly": true
   },
   {
    "id": "petco-imagitarium-led-29",
@@ -789,7 +792,8 @@
     "kind": "hob",
     "name": "Imagitarium power filter"
    },
-   "img": "https://assets.petco.com/petco/image/upload/f_auto,q_auto/3946416-center-1"
+   "img": "https://assets.petco.com/petco/image/upload/f_auto,q_auto/3946416-center-1",
+   "pickupOnly": true
   },
   {
    "id": "petco-imagitarium-led-55",
@@ -825,7 +829,8 @@
     "kind": "hob",
     "name": "Imagitarium power filter"
    },
-   "img": "https://assets.petco.com/petco/image/upload/f_auto,q_auto/3946432-center-1"
+   "img": "https://assets.petco.com/petco/image/upload/f_auto,q_auto/3946432-center-1",
+   "pickupOnly": true
   },
   {
    "id": "petco-aqueon-led-20h",
@@ -865,7 +870,8 @@
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
    },
-   "img": "https://assets.petco.com/petco/image/upload/f_auto,q_auto/2471092-center-3"
+   "img": "https://assets.petco.com/petco/image/upload/f_auto,q_auto/2471092-center-3",
+   "pickupOnly": true
   },
   {
    "id": "chewy-tetra-complete-10",

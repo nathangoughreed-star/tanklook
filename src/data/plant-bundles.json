@@ -1,0 +1,286 @@
+{
+ "asOf": "2026-10-27",
+ "note": "Researched 2026-10-27 (agentC/plant-bundles.json); Aquarium Plants Factory tissue-culture pack left out (random species, nothing to map). Counts are units of our plant variants; guessed where the listing is a mixed pack.",
+ "bundles": [
+  {
+   "id": "buce-assorted-anubias-5",
+   "retailer": "Buce Plant",
+   "name": "Assorted Anubias Plant Pack (5 Pack)",
+   "priceUsd": 42.99,
+   "url": "https://buceplant.com/products/assorted-anubias-plant-pack",
+   "asOf": "2026-10-27",
+   "inStock": true,
+   "covers": {
+    "anubias": 5
+   },
+   "guessed": "the pack lists mixed or hand-picked species: the count of each kind of plant is our guess"
+  },
+  {
+   "id": "buce-beginner-plant-pack-5",
+   "retailer": "Buce Plant",
+   "name": "Beginner Plant Pack (5 Pack)",
+   "priceUsd": 34.99,
+   "url": "https://buceplant.com/products/beginner-plant-pack",
+   "asOf": "2026-10-27",
+   "inStock": false,
+   "covers": {
+    "anubias": 1,
+    "moss": 1,
+    "fern": 1,
+    "crypt": 1
+   },
+   "guessed": "the pack lists mixed or hand-picked species: the count of each kind of plant is our guess"
+  },
+  {
+   "id": "buce-dutch-stem-pack-5",
+   "retailer": "Buce Plant",
+   "name": "Dutch Stem Plant Pack (5 Pack)",
+   "priceUsd": 34.99,
+   "url": "https://buceplant.com/products/stem-plant-pack",
+   "asOf": "2026-10-27",
+   "inStock": false,
+   "covers": {
+    "stem": 5
+   },
+   "guessed": "the pack lists mixed or hand-picked species: the count of each kind of plant is our guess"
+  },
+  {
+   "id": "buce-red-stem-pack-5",
+   "retailer": "Buce Plant",
+   "name": "Red Stem Plant Pack (5 Pack)",
+   "priceUsd": 34.99,
+   "url": "https://buceplant.com/products/red-stem-plant-pack",
+   "asOf": "2026-10-27",
+   "inStock": false,
+   "covers": {
+    "stemred": 5
+   },
+   "guessed": "the pack lists mixed or hand-picked species: the count of each kind of plant is our guess"
+  },
+  {
+   "id": "buce-assorted-crypt-pack-5",
+   "retailer": "Buce Plant",
+   "name": "Assorted Cryptocoryne Plant Pack (5 Pack)",
+   "priceUsd": 34.99,
+   "url": "https://buceplant.com/products/assorted-cryptocoryne-plant-pack",
+   "asOf": "2026-10-27",
+   "inStock": false,
+   "covers": {
+    "crypt": 5
+   }
+  },
+  {
+   "id": "buce-assorted-echinodorus-5",
+   "retailer": "Buce Plant",
+   "name": "Assorted Echinodorus Plant Pack (5 Pack, pot)",
+   "priceUsd": 29.99,
+   "url": "https://buceplant.com/products/assorted-echinodorus-plant-pack",
+   "asOf": "2026-10-27",
+   "inStock": false,
+   "covers": {
+    "sword": 5
+   },
+   "guessed": "the pack lists mixed or hand-picked species: the count of each kind of plant is our guess"
+  },
+  {
+   "id": "buce-moss-collector-5",
+   "retailer": "Buce Plant",
+   "name": "Aquarium Moss Collector Pack (5 Pack golfball)",
+   "priceUsd": 28.99,
+   "url": "https://buceplant.com/products/aquarium-moss-collector-pack",
+   "asOf": "2026-10-27",
+   "inStock": false,
+   "covers": {
+    "moss": 5
+   },
+   "guessed": "the pack lists mixed or hand-picked species: the count of each kind of plant is our guess"
+  },
+  {
+   "id": "buce-team-buce-starter",
+   "retailer": "Buce Plant",
+   "name": "Team Buce Plant Starter Pack",
+   "priceUsd": 36.99,
+   "url": "https://buceplant.com/products/team-buce-plant-starter-pack",
+   "asOf": "2026-10-27",
+   "inStock": false,
+   "covers": {
+    "buce": 5
+   },
+   "guessed": "the pack lists mixed or hand-picked species: the count of each kind of plant is our guess"
+  },
+  {
+   "id": "flip-popular-plants-bundle",
+   "retailer": "Flip Aquatics",
+   "name": "Popular Aquarium Plants Bundle",
+   "priceUsd": 79.99,
+   "regularUsd": 96.39,
+   "url": "https://flipaquatics.com/products/popular-aquarium-plant-bundle",
+   "asOf": "2026-10-27",
+   "inStock": true,
+   "covers": {
+    "anubias": 2,
+    "redroot": 2,
+    "carpet": 2,
+    "sword": 2,
+    "fern": 2
+   }
+  },
+  {
+   "id": "flip-beginner-plant-pack",
+   "retailer": "Flip Aquatics",
+   "name": "Beginner Aquarium Plant Pack",
+   "priceUsd": 49.99,
+   "regularUsd": 89.99,
+   "url": "https://flipaquatics.com/products/beginner-plant-pack",
+   "asOf": "2026-10-27",
+   "inStock": true,
+   "covers": {
+    "redroot": 1,
+    "fern": 1,
+    "anubias": 1,
+    "lotus": 1,
+    "sword": 1,
+    "crypt": 1,
+    "carpet": 1
+   },
+   "guessed": "the pack lists mixed or hand-picked species: the count of each kind of plant is our guess"
+  },
+  {
+   "id": "flip-mixmatch-crypt-5",
+   "retailer": "Flip Aquatics",
+   "name": "Mix + Match Crypt Plant Bundle",
+   "priceUsd": 39.99,
+   "regularUsd": 49.95,
+   "url": "https://flipaquatics.com/products/mix-match-crypt-plant-bundle",
+   "asOf": "2026-10-27",
+   "inStock": true,
+   "covers": {
+    "crypt": 5
+   }
+  },
+  {
+   "id": "flip-mixmatch-anubias-5",
+   "retailer": "Flip Aquatics",
+   "name": "Mix + Match Anubias Bundle",
+   "priceUsd": 39.99,
+   "regularUsd": 49.95,
+   "url": "https://flipaquatics.com/products/mix-match-anubias-bundle",
+   "asOf": "2026-10-27",
+   "inStock": true,
+   "covers": {
+    "anubias": 5
+   }
+  },
+  {
+   "id": "flip-mixmatch-red-5",
+   "retailer": "Flip Aquatics",
+   "name": "Mix + Match Red Plant Bundle",
+   "priceUsd": 39.99,
+   "regularUsd": 49.95,
+   "url": "https://flipaquatics.com/products/mix-match-red-plant-bundle",
+   "asOf": "2026-10-27",
+   "inStock": true,
+   "covers": {
+    "lotus": 2,
+    "stemred": 3
+   },
+   "guessed": "the pack lists mixed or hand-picked species: the count of each kind of plant is our guess"
+  },
+  {
+   "id": "flip-floater-bundle",
+   "retailer": "Flip Aquatics",
+   "name": "Floater Bundle",
+   "priceUsd": 19.99,
+   "regularUsd": 23.79,
+   "url": "https://flipaquatics.com/products/floating-aquarium-plants-for-sale",
+   "asOf": "2026-10-27",
+   "inStock": true,
+   "covers": {
+    "salvinia": 1,
+    "redroot": 1,
+    "frogbit": 1
+   }
+  },
+  {
+   "id": "aa-3-plant-combo",
+   "retailer": "Aquatic Arts",
+   "name": "3 Plant Combo: Hornwort, Duckweed, Java Moss",
+   "priceUsd": 19.99,
+   "regularUsd": 22.99,
+   "url": "https://aquaticarts.com/products/3-plant-combo-1",
+   "asOf": "2026-10-27",
+   "inStock": true,
+   "covers": {
+    "hornwort": 1,
+    "salvinia": 1,
+    "moss": 1
+   },
+   "guessed": "the pack lists mixed or hand-picked species: the count of each kind of plant is our guess"
+  },
+  {
+   "id": "aa-stem-plant-combo",
+   "retailer": "Aquatic Arts",
+   "name": "Stem Plant Combo",
+   "priceUsd": 15.99,
+   "url": "https://aquaticarts.com/products/stem-plant-combo",
+   "asOf": "2026-10-27",
+   "inStock": true,
+   "covers": {
+    "stem": 2,
+    "stemred": 1
+   },
+   "guessed": "the pack lists mixed or hand-picked species: the count of each kind of plant is our guess"
+  },
+  {
+   "id": "aa-crypt-wendtii-multicolor",
+   "retailer": "Aquatic Arts",
+   "name": "Cryptocoryne wendtii Multi-Color Combo Pack",
+   "priceUsd": 16.99,
+   "url": "https://aquaticarts.com/products/cryptocoryne-wendtii-multi-color-combo-pack",
+   "asOf": "2026-10-27",
+   "inStock": true,
+   "covers": {
+    "crypt": 3
+   }
+  },
+  {
+   "id": "aa-floating-combo",
+   "retailer": "Aquatic Arts",
+   "name": "Floating Plant Combo Pack (1/3 cup)",
+   "priceUsd": 4.99,
+   "regularUsd": 5.99,
+   "url": "https://aquaticarts.com/products/floatingplantcombopack",
+   "asOf": "2026-10-27",
+   "inStock": true,
+   "covers": {
+    "salvinia": 3
+   },
+   "guessed": "the pack lists mixed or hand-picked species: the count of each kind of plant is our guess"
+  },
+  {
+   "id": "aa-ludwigia-beginner-stem",
+   "retailer": "Aquatic Arts",
+   "name": "Ludwigia Beginner Stem Plant Combo",
+   "priceUsd": 18.99,
+   "url": "https://aquaticarts.com/products/ludwigia-beginner-stem-plant-combo",
+   "asOf": "2026-10-27",
+   "inStock": false,
+   "covers": {
+    "ludwigia": 4
+   },
+   "guessed": "the pack lists mixed or hand-picked species: the count of each kind of plant is our guess"
+  },
+  {
+   "id": "aa-anubias-beginner-combo",
+   "retailer": "Aquatic Arts",
+   "name": "Anubias Beginner Combo Pack",
+   "priceUsd": 19.99,
+   "url": "https://aquaticarts.com/products/anubias-beginner-combo-pack",
+   "asOf": "2026-10-27",
+   "inStock": false,
+   "covers": {
+    "anubias": 3
+   }
+  }
+ ]
+}

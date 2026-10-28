@@ -5,15 +5,15 @@ import { defaultProfile, demandOf, drivers, limitState, type LimitState, type Us
 import { swapsFor, type Bar } from '../demand/swaps';
 import type { Demand } from '../demand';
 import type { Store } from '../scene/store';
-import { dealOffers } from '../demand/deals';
 import { dealDrift, onSceneLoad, pinnedDeal, pinnedKit, pinnedPreset, presetDrift, unpinDeal } from '../demand/pinned';
 import { partList, type PricedPart } from '../demand/dealdrift';
 import type { TankSetup } from '../scene/types';
 import { showPriceNotice } from './priceNotice';
-import { DEAL_NOTE, NOT_SPONSORED, dealGuesses, savingLine, type Deal } from '../data/deals';
+import { DEAL_NOTE, NOT_SPONSORED, dealGuesses, dealShip, type Deal } from '../data/deals';
 import { renderDealMatch } from './dealMatch';
+import { bundleShip, pinPlantBundle, pinnedPlantBundle, plantBundleOffers, plantBundleOpt, unpinPlantBundle } from '../demand/plantBundles';
 import { GEAR_SLOT_NAME, gearOffers, gearParts, pinGear, pinnedGear, unpinGear } from '../demand/gearDeals';
-import { GEAR_DEALS, gearPctOff } from '../data/gearDeals';
+import { GEAR_DEALS, gearPctOff, gearShip } from '../data/gearDeals';
 import { compliance, constraintsFromLimits, effectiveLimits, parseConstraints, rememberLastUsed, type Cap, type Constraints } from '../scene/constraints';
 import { summaryOf } from './stockSummary';
 import { findSolutions, type Option, type Solutions } from '../demand/makefit';
@@ -67,12 +67,13 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
     sol = null; // a result is for the scene it was found on
     const kit = pinnedKit(S, store.scene.active, P);
     const parts = gearParts(S);
-    D = demandOf(S, P, { kit, parts });
+    const plantBundle = plantBundleOpt(S);
+    D = demandOf(S, P, { kit, parts, plantBundle });
     // the same tank without its animals: what keeping just the plants (or the bare tank) costs, so adding animals reads as a jump from it
-    B = S.fish.length ? demandOf({ ...S, fish: [] }, P, { kit, parts }) : null;
+    B = S.fish.length ? demandOf({ ...S, fish: [] }, P, { kit, parts, plantBundle }) : null;
     // animals that get out of an open top: suggest the lid, with what adding it costs (not counted until it is added)
     const adv = lidAdvice(S);
-    lid = adv ? { ...adv, usd: demandOf({ ...S, lid: adv.lid }, P, { kit, parts }).totals.setupUsd - D.totals.setupUsd } : null;
+    lid = adv ? { ...adv, usd: demandOf({ ...S, lid: adv.lid }, P, { kit, parts, plantBundle }).totals.setupUsd - D.totals.setupUsd } : null;
     const now = { setup: D.totals.setupUsd, upkeep: D.totals.upkeepUsdMo, minutes: D.totals.minPerWeek, risk: D.totals.risk };
     if (prev) {
       const T: Record<Bar, number> = { setup: 1, upkeep: 0.5, minutes: 0.5, risk: 0.05 }, until = Date.now() + 6000;
@@ -91,7 +92,7 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
     const S = store.tank, i = store.scene.active, pin = pinnedDeal(S), drift = dealDrift(S, i), key = drift.join();
     if (pin && key && !lost && !quiet) showPriceNotice(keepsBundle(S, i, pin, drift)
       ? `You already have a ${esc(partList(drift))} from the bundle, buying ${drift.length > 1 ? 'these' : 'this one'} will cost extra.`
-      : `You changed the ${esc(partList(drift))}, so this is no longer the ${esc(pin.retailer + ' ' + pin.name)} bundle: ${drift.includes('tank') ? 'the bundle is that tank, so' : 'buying the bundle and your new part on top would cost more, so'} the bundle discount (${usd(pin.price.usd)}) no longer applies and each part is priced on its own.`, () => store.undo());
+      : `You changed the ${esc(partList(drift))}, so this is no longer the ${esc(pin.retailer + ' ' + pin.name)} bundle: ${drift.includes('tank') ? 'the bundle is that tank, so' : 'buying the bundle and your new part on top would cost more, so'} the bundle discount (${usd(pin.price.usd)}, ${esc(dealShip(pin).text)}) no longer applies and each part is priced on its own.`, () => store.undo());
     lost = key;
     const ps = pinnedPreset(), pd = presetDrift(S, i);
     if (ps && pd && warned !== ps && !quiet) showPriceNotice(`You changed the tank size, so this is no longer the ${esc(ps.product)} on sale at ${esc(ps.retailer)} (${usd(ps.usd)}): that price no longer applies.`, () => store.undo());
@@ -181,10 +182,10 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
   function renderDeals() {
     const el = q('.dmdeals'), pin = pinnedDeal(store.tank), drift = pin ? dealDrift(store.tank, store.scene.active) : [];
     // priced as a bundle: another deal only counts by what it saves against that bundle (D), not against the parts (lane DM)
-    const vsPin = !!pin && (!drift.length || keepsBundle(store.tank, store.scene.active, pin, drift)), offers = dealOffers(store.tank, P).map(o => (vsPin ? { ...o, savingUsd: D!.totals.setupUsd - o.withDealUsd } : o)).filter(o => o.savingUsd > 1).slice(0, 2);
-    el.innerHTML = (pin && keepsBundle(store.tank, store.scene.active, pin, drift) ? `<div>Priced as the ${esc(pin.retailer + ' ' + pin.name)} bundle (${usd(pin.price.usd)}) with your own ${esc(partList(drift))} bought on top: cheaper than buying every part separately. <a href="${esc(pin.url)}" target="_blank" rel="noopener">See it at ${esc(pin.retailer)} &#8599;</a> &middot; <a href="#" class="dmunpin">Price the parts instead</a></div>` : pin && drift.length ? `<div style="color:var(--warn)">Not priced as the ${esc(pin.retailer + ' ' + pin.name)} bundle: you changed its ${esc(partList(drift))}. ${drift.includes('tank') ? '' : `Buying the bundle and your ${esc(partList(drift))} on top would cost more than the parts. `}Put ${drift.length > 1 ? 'them' : 'it'} back (Undo) to price the bundle again.</div>` : pin ? `<div>Priced as the ${esc(pin.retailer + ' ' + pin.name)} bundle (${usd(pin.price.usd)}, ${esc(pin.asOf)}). <a href="${esc(pin.url)}" target="_blank" rel="noopener">See it at ${esc(pin.retailer)} &#8599;</a> &middot; <a href="#" class="dmunpin">Price the parts instead</a>${dealGuesses(pin).length ? `<br><i>Guessed: ${esc(dealGuesses(pin).join('; '))}</i>` : ''}</div>` : '') + offers.filter(o => o.deal.id !== pin?.id).map(o => `<div>Deal: <a href="${esc(o.deal.url)}" target="_blank" rel="noopener">${esc(o.deal.retailer + ' ' + o.deal.name)}</a> ${usd(o.deal.price.usd)}${o.deal.price.regularUsd ? ` (was ${usd(o.deal.price.regularUsd)})` : ''}. ${esc(vsPin ? `About ${usd(o.savingUsd)} less than the ${pin!.retailer} bundle` : savingLine(o.deal, o.savingUsd))}${o.deal.est ? ' (estimate)' : ''}${o.deal.saleEnds ? `, sale ends ${esc(o.deal.saleEnds)}` : ''}; ${esc(o.deal.asOf)}</div>`).join('') + (offers.length || pin ? `<div style="opacity:.7">Prices ${esc(DEAL_NOTE)}. ${esc(NOT_SPONSORED)}.</div>` : '');
+    el.innerHTML = (pin && keepsBundle(store.tank, store.scene.active, pin, drift) ? `<div>Priced as the ${esc(pin.retailer + ' ' + pin.name)} bundle (${usd(pin.price.usd)}, ${esc(dealShip(pin).text)}) with your own ${esc(partList(drift))} bought on top: cheaper than buying every part separately. <a href="${esc(pin.url)}" target="_blank" rel="noopener">See it at ${esc(pin.retailer)} &#8599;</a> &middot; <a href="#" class="dmunpin">Price the parts instead</a></div>` : pin && drift.length ? `<div style="color:var(--warn)">Not priced as the ${esc(pin.retailer + ' ' + pin.name)} bundle: you changed its ${esc(partList(drift))}. ${drift.includes('tank') ? '' : `Buying the bundle and your ${esc(partList(drift))} on top would cost more than the parts. `}Put ${drift.length > 1 ? 'them' : 'it'} back (Undo) to price the bundle again.</div>` : pin ? `<div>Priced as the ${esc(pin.retailer + ' ' + pin.name)} bundle (${usd(pin.price.usd)}, ${esc(dealShip(pin).text)}; ${esc(pin.asOf)}). <a href="${esc(pin.url)}" target="_blank" rel="noopener">See it at ${esc(pin.retailer)} &#8599;</a> &middot; <a href="#" class="dmunpin">Price the parts instead</a>${dealGuesses(pin).length ? `<br><i>Guessed: ${esc(dealGuesses(pin).join('; '))}</i>` : ''}</div>` : '') + (pin ? `<div style="opacity:.7">Prices ${esc(DEAL_NOTE)}. ${esc(NOT_SPONSORED)}.</div>` : '');
     el.querySelector<HTMLAnchorElement>('.dmunpin')?.addEventListener('click', e => { e.preventDefault(); unpinDeal(store.tank); recompute(); });
     renderGearDeals(el);
+    renderPlantBundles(el);
     renderDealMatch(el, store, P, recompute);
   }
 
@@ -196,8 +197,8 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
     const link = (d: { url: string; title: string }) => `<a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.title)}</a>`;
     const box = document.createElement('div');
     box.className = 'dmgear';
-    box.innerHTML = pinned.map(d => `<div>Your ${GEAR_SLOT_NAME[d.slot]}: ${link(d)} at ${esc(d.store)}, ${usd(d.price.usd)} on sale (was ${usd(d.price.regularUsd)}); ${esc(d.asOf)}. <a href="#" data-unpin="${d.slot}">Price a typical one instead</a></div>`).join('')
-      + offers.map(d => `<div>On sale for your ${GEAR_SLOT_NAME[d.slot]}: ${link(d)} at ${esc(d.store)}, ${usd(d.price.usd)} (was ${usd(d.price.regularUsd)}, ${gearPctOff(d)} % off); ${esc(d.asOf)}. <a href="#" data-pin="${esc(d.id)}">Price my ${GEAR_SLOT_NAME[d.slot]} as this</a></div>`).join('')
+    box.innerHTML = pinned.map(d => `<div>Your ${GEAR_SLOT_NAME[d.slot]}: ${link(d)} at ${esc(d.store)}, ${usd(d.price.usd)} on sale (was ${usd(d.price.regularUsd)}), ${esc(gearShip(d).text)}; ${esc(d.asOf)}. <a href="#" data-unpin="${d.slot}">Price a typical one instead</a></div>`).join('')
+      + offers.map(d => `<div>On sale for your ${GEAR_SLOT_NAME[d.slot]}: ${link(d)} at ${esc(d.store)}, ${usd(d.price.usd)} (was ${usd(d.price.regularUsd)}, ${gearPctOff(d)} % off), ${esc(gearShip(d).text)}; ${esc(d.asOf)}. <a href="#" data-pin="${esc(d.id)}">Price my ${GEAR_SLOT_NAME[d.slot]} as this</a></div>`).join('')
       + `<div style="opacity:.7">Gear prices ${esc(DEAL_NOTE)}. ${esc(NOT_SPONSORED)}.</div>`;
     box.querySelectorAll<HTMLAnchorElement>('[data-pin]').forEach(a => a.addEventListener('click', e => {
       e.preventDefault(); const d = GEAR_DEALS.find(x => x.id === a.dataset.pin); if (d) { pinGear(store.tank, d); recompute(); }
@@ -212,6 +213,21 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
   function rhythmLine() {
     const r = rhythmOf(D!, store.tank);
     return `<div class="dmrhythm" style="font-size:11px;opacity:.85" title="${esc(rhythmNote(r))}">Rhythm: ${esc(r.text)} <em>(estimate)</em>${r.awayText ? `<br>Can be left: ${esc(r.awayText)}` : ''}</div>`;
+  }
+
+  /** Plant packs (lane BS): the pinned pack with a Remove link, and up to 2 packs that cost less than setting up the plants this tank has. */
+  function renderPlantBundles(el: HTMLElement) {
+    const S = store.tank, pin = pinnedPlantBundle(S), offers = pin ? [] : plantBundleOffers(S, P).slice(0, 2);
+    if (!pin && !offers.length) return;
+    const box = document.createElement('div');
+    box.className = 'dmplants';
+    const link = (b: { url: string; retailer: string; name: string }) => `<a href="${esc(b.url)}" target="_blank" rel="noopener">${esc(b.retailer + ' ' + b.name)}</a>`;
+    box.innerHTML = (pin ? `<div>Your plants: priced as the ${link(pin)} pack, ${usd(pin.priceUsd)}, ${esc(bundleShip(pin).text)}; ${esc(pin.asOf)}. Plants beyond the pack are priced one by one.${pin.guessed ? ` <i>Guessed: ${esc(pin.guessed)}</i>` : ''} <a href="#" data-unpackplants>Remove</a></div>` : '')
+      + offers.map((o, i) => `<div>Plant pack: ${link(o.bundle)} ${usd(o.bundle.priceUsd)}${o.bundle.regularUsd ? ` (was ${usd(o.bundle.regularUsd)})` : ''}, ${esc(o.shipText)}: covers ${o.covered} of your plants, <b>saves about ${usd(o.savingUsd)}</b>; ${esc(o.bundle.asOf)}.${o.bundle.guessed ? ` <i>Guessed: ${esc(o.bundle.guessed)}</i>` : ''} <a href="#" data-packplants="${i}">Apply</a></div>`).join('')
+      + `<div style="opacity:.7">Plant prices ${esc(DEAL_NOTE)}. ${esc(NOT_SPONSORED)}.</div>`;
+    box.querySelector<HTMLAnchorElement>('[data-unpackplants]')?.addEventListener('click', e => { e.preventDefault(); unpinPlantBundle(S); recompute(); });
+    box.querySelectorAll<HTMLAnchorElement>('[data-packplants]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); pinPlantBundle(S, offers[+a.dataset.packplants!].bundle); recompute(); }));
+    el.append(box);
   }
 
   function row(b: typeof BARS[number], L: LimitState) {
