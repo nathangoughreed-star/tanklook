@@ -417,6 +417,8 @@ export interface TankSetup {
   product?: TankProduct;
   /** Guardrails (lane C1, 2026-10-27, no version bump): this tank's limits on startup $, monthly $, minutes a week and space; scene/constraints.ts. Absent = none set, the browser profile's limits apply. */
   constraints?: import('./constraints').Constraints;
+  /** The setup brief (lane U1, 2026-10-28, no version bump): hard constraints, preferences and locked choices every entry point pre-fills; scene/brief.ts. Absent = none yet. */
+  brief?: import('./brief').Brief;
 }
 
 /** `model` a data/tanks.json size id; `key` the maker's product at that size (data/tanks.ts variantKey), absent for the catalogue size

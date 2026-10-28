@@ -18,6 +18,7 @@ import { parseTech } from './tech';
 import { pairRule } from '../data/groups';
 import { prunePairs } from './pairs';
 import { parseConstraints } from './constraints';
+import { parseBrief } from './brief';
 import { parseIntegrated, parseProduct } from './integrated';
 import { parseSpace } from './space'; // lane P3: layout.space
 
@@ -358,6 +359,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
   if (raw.feeding === 'light' || raw.feeding === 'heavy') setup.feeding = raw.feeding; // lane SE2 2026-10-20, absent = normal
   if (raw.stockFirst === true) setup.stockFirst = true; // 2026-10-21: path 1 tank, no filter drawn until one is added
   { const cn = parseConstraints(raw.constraints); if (cn) setup.constraints = cn; } // lane C1 2026-10-27: Guardrails, absent = none set
+  { const br = parseBrief(raw.brief); if (br) setup.brief = br; } // lane U1 2026-10-28: the setup brief, absent = none yet
   { const pr = parsePairs(raw.pairs, setup.fish); if (pr) setup.pairs = pr; } // 2026-10-22: pairing per pair species, absent = unknown
   keepInWater(setup); fitTable(setup);
   fitFixture(setup.light, setup.tank, false); // 2026-10-15: older lights clamped into their fixture's usual ranges
