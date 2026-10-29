@@ -1,0 +1,13 @@
+# Lane NG4: Vision vs constraints, four paths (closes gap 6)
+
+Coordinator: Coordinator 16, local_543b9920-e805-4bf4-be11-6109c6498477. Report ONCE with send_message (session_id = that id) when ready to merge, done, or blocked; questions for Nathan stay in your own chat and come WITH pictures (screenshots saved as files, cropped, marked, sent with SendUserFile). Read research/design/guided-sandbox-plan.md, HANDOFF.md "Start here" + lane rules, and the HANDOFF "NG2" section (the brief v2 API you build on: targetOf, isFlex, futureOf, addFuture, answeredOf, directionOf ...). NG1 (Guided / Sandbox entry), NG2 and NG6 (effort, validated / provisional badges) are on main.
+Start: `git fetch`, then create your branch from origin/main (`git checkout -b <name> origin/main`; reset --hard may be denied).
+Rules: touch only the files you own (a one-line hook elsewhere is fine, say so). Sibling lanes at the same time: NG3 (live loop), NG4 (conflict paths), NG5 (taste). Never loosen a welfare gate; a strong preference never compensates for a welfare failure. US units in chat (gal, in, deg F). Before reporting: npm run build + FULL vitest (in the background; end the turn rather than polling), browser check with preview_start, screenshots SAVED AS FILES (paths in your report). Do not push: send sha(s), suite result, screenshot paths; the coordinator merges. Stop your preview servers when done.
+
+Owns: src/demand/infeasible.ts, src/ui/infeasibleCard.ts (new: move infeasibleCard out of src/ui/suggest.ts, leaving one import / call line there; NG3 owns the rest of that file, so do this move FIRST and in a small separate commit), src/ui/stockPlan.ts, src/ui/stockPlanLogic.ts.
+PDF rule: never quietly violate a hard limit, substitute a defining vision, or present a welfare failure as a valid tradeoff. Example: a group of discus, $250 ceiling, room for a 20 gal.
+Do:
+- Every conflict offers four paths, each verified by rerunning the generator: Keep the vision (the true tank, gear, $ upfront and monthly, care time); Keep the limits (nearest animals / designs that keep some of the look or behaviour, said plainly as a change); Keep the look (lower complexity or equipment only where welfare holds); Save the ambition (stored via NG2 addFuture with its real requirements, plus a responsible smaller project now).
+- Show the saved ambitions in a small list on the card (futureOf).
+- The animal screen (stockPlan) reads the brief's budget max / target and shows the conflict the same way; no silent swap anywhere.
+Report: shas, suite, screenshots: the discus / $250 / 20 gal case with all four paths; a saved ambition; the animal screen over budget.
