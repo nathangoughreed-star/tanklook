@@ -172,7 +172,7 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
     if (!t || !animals.length) return saved;
     const gap = budgetGap(animals, t, valueOf(b, 'constraints.budget'), targetOf(b, 'constraints.budget'));
     if (!gap) return saved;
-    if (!gap.over) return `<div class="spNote sgBudgetNote">The cheapest build of ${esc(tankLabel(t, store.scene.units))} is about ${usd(gap.cheapestUsd)}, ${usd(gap.overTarget)} over your target of ${usd(gap.targetUsd!)}. Your ${usd(gap.maxUsd!)} maximum still holds.</div>${saved}`;
+    if (!gap.over) return `<div class="spNote sgBudgetNote">The cheapest build of a ${Math.round(t.ratedGal)} gal tank is about ${usd(gap.cheapestUsd)}, ${usd(gap.overTarget)} over your target of ${usd(gap.targetUsd!)}. Your ${usd(gap.maxUsd!)} maximum still holds.</div>${saved}`;
     const key = `${animals.map(a => `${a.species}${a.n}`).join(',')}|${t.id}|${gap.maxUsd}|${(valueOf(b, 'preferences.future') ?? []).length}`;
     if (cf.key !== key) {
       cf = { key };
@@ -183,7 +183,7 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
         if (!el.hidden) draw();
       }, 0);
     }
-    const head = `<div class="spWarn sgBudgetOver">Over your budget: the cheapest honest build of ${esc(tankLabel(t, store.scene.units))} is about ${usd(gap.cheapestUsd)} to set up, ${usd(gap.over)} over your ${usd(gap.maxUsd!)} maximum. Nothing is swapped or cut to hide that.</div>`;
+    const head = `<div class="spWarn sgBudgetOver">Over your budget: the cheapest honest build of a ${Math.round(t.ratedGal)} gal tank is about ${usd(gap.cheapestUsd)} to set up, ${usd(gap.over)} over your ${usd(gap.maxUsd!)} maximum. Nothing is swapped or cut to hide that.</div>`;
     return head + (cf.inf ? infeasibleCard(cf.inf, b) : cf.note ? `<div class="spNote">${esc(cf.note)}</div>${saved}` : '<div class="spNote">Working out your four options...</div>' + saved);
   };
 
