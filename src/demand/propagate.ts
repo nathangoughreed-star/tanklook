@@ -110,7 +110,7 @@ export function changeStrip(a: Inputs, b: Inputs, before: Suggestions | undefine
   if (!ch.length) return undefined;
   const d = resultDiff(before, after);
   if (!after.proposals.length) return { text: `${ch.join('; ')}: no setup fits now.`, lines: [] };
-  const got = d.upgrades ? `${d.upgrades} upgrade${d.upgrades === 1 ? '' : 's'} now fit${d.upgrades === 1 ? 's' : ''}` : d.added || d.dropped ? 'the concepts changed' : 'the setups are unchanged';
+  const got = d.upgrades ? `${d.upgrades} upgrade${d.upgrades === 1 ? '' : 's'} now fit${d.upgrades === 1 ? 's' : ''}` : d.added || d.dropped || d.lines.length ? 'the concepts changed' : 'the setups are unchanged';
   const flags = [...new Set(after.proposals.flatMap(p => p.ownedNotes.filter(n => n.kind === 'flag').map(n => n.text)))];
   const newOwn = b.owned.filter(x => !a.owned.includes(x));
   if (newOwn.length && !ch.some(c => !c.startsWith('You own'))) {

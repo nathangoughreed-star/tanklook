@@ -260,7 +260,7 @@ ${lockedStock(getBrief()).length ? `<div class="spNote sgLocked">Locked animals:
     window.clearTimeout(timer);
     timer = window.setTimeout(() => {
       if (el.hidden || !res) return;
-      if (fromBrief) { const keep = new Set(tags), kinds = f.kinds, groups = f.groups, stand = f.needStand, r0 = res, p0 = pics, a0 = lastAsk, s0 = strip; seed(); f = { ...f, kinds, groups, needStand: stand }; tags = keep; res = r0; pics = p0; lastAsk = a0; strip = s0; }
+      if (fromBrief) { const keep = new Set(tags), kinds = f.kinds, groups = f.groups, stand = f.needStand, r0 = res, p0 = pics, a0 = lastAsk, s0 = strip; seed(); f = { ...f, kinds, groups, needStand: stand }; tags = keep; res = r0; pics = p0; lastAsk = a0; strip = s0; draw(); } // the boxes are redrawn from the brief, or go() would read the stale ones back over it
       else readFields();
       const w = wantsFrom(f, units());
       if (!w.kinds.length || w.spaceMissing) return;
