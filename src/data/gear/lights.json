@@ -51,7 +51,7 @@
    "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
    "seen": "2026-10-20"
   },
-  "note": "Body 2.7x18x0.4 in per Amazon page"
+  "note": "Body 2.7x18x0.4 in per Amazon page needSpec 2026-10-29: Amazon spec table not readable by the fetch tool (only title and breadcrumbs), so the estimated fields stay estimated."
  },
  {
   "id": "pawfly-11w-12-18",
@@ -164,7 +164,7 @@
    "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
    "seen": "2026-10-20"
   },
-  "note": "Several length variants exist; size not verified"
+  "note": "Several length variants exist; size not verified needSpec 2026-10-29: Amazon spec table not readable by the fetch tool (only title and breadcrumbs), so the estimated fields stay estimated. The page title now reads '14W for 12~20in Tank' vs the 18 W here: the listing may have changed, recheck before relying on it."
  },
  {
   "id": "hygger-submersible-24-7",
@@ -223,7 +223,7 @@
    "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
    "seen": "2026-10-20"
   },
-  "note": "Suction cups; in-water accent bar"
+  "note": "Suction cups; in-water accent bar needSpec 2026-10-29: Amazon spec table not readable by the fetch tool (only title and breadcrumbs), so the estimated fields stay estimated."
  },
  {
   "id": "seaoura-12-18",
@@ -277,7 +277,7 @@
    "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
    "seen": "2026-10-20"
   },
-  "note": "Body 3.4x11.22x0.47 in per Amazon page"
+  "note": "Body 3.4x11.22x0.47 in per Amazon page needSpec 2026-10-29: Amazon spec table not readable by the fetch tool (only title and breadcrumbs), so the estimated fields stay estimated."
  },
  {
   "id": "aquaneat-12",
@@ -336,7 +336,7 @@
    "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
    "seen": "2026-10-20"
   },
-  "note": "Page blocked, photo not read; colours from sibling AQUANEAT 18-24"
+  "note": "Page blocked, photo not read; colours from sibling AQUANEAT 18-24 needSpec 2026-10-29: Amazon spec table not readable by the fetch tool (only title and breadcrumbs), so the estimated fields stay estimated."
  },
  {
   "id": "hygger-18w-24-7",
@@ -452,7 +452,8 @@
    "evidence": "Amazon Best Sellers > Aquarium Lights #12; 3,642 reviews; 300+ bought in past month",
    "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
    "seen": "2026-10-20"
-  }
+  },
+  "note": "needSpec 2026-10-29: Amazon spec table not readable by the fetch tool (only title and breadcrumbs), so the estimated fields stay estimated."
  },
  {
   "id": "datoo-mini-clip-7w",
@@ -566,7 +567,7 @@
    "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
    "seen": "2026-10-20"
   },
-  "note": "Page blocked, photo not read; colours from sibling hygger/SEAOURA bars"
+  "note": "Page blocked, photo not read; colours from sibling hygger/SEAOURA bars needSpec 2026-10-29: Amazon spec table not readable by the fetch tool (only title and breadcrumbs), so the estimated fields stay estimated."
  },
  {
   "id": "seaoura-clip-12-20",
@@ -625,7 +626,7 @@
    "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
    "seen": "2026-10-20"
   },
-  "note": "Page blocked, photo not read"
+  "note": "Page blocked, photo not read needSpec 2026-10-29: Amazon spec table not readable by the fetch tool (only title and breadcrumbs), so the estimated fields stay estimated. The page title now reads '20W' vs the 12 W here: recheck."
  },
  {
   "id": "nicrew-c10-18-24",
@@ -738,7 +739,8 @@
    "evidence": "Amazon Best Sellers > Aquarium Lights #24; 3,955 reviews; 200+ bought in past month",
    "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
    "seen": "2026-10-20"
-  }
+  },
+  "note": "needSpec 2026-10-29: Amazon spec table not readable by the fetch tool (only title and breadcrumbs), so the estimated fields stay estimated."
  },
  {
   "id": "nicrew-classicled-36-48",
@@ -962,7 +964,8 @@
    "evidence": "Amazon Best Sellers > Aquarium Lights #51; 1,495 reviews; 50+ bought in past month",
    "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
    "seen": "2026-10-20"
-  }
+  },
+  "note": "needSpec 2026-10-29: Amazon spec table not readable by the fetch tool (only title and breadcrumbs), so the estimated fields stay estimated."
  },
  {
   "id": "hygger-programmable-48-55",
@@ -1020,7 +1023,8 @@
    "evidence": "Amazon Best Sellers > Aquarium Lights #67; 1,008 reviews; 50+ bought in past month",
    "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
    "seen": "2026-10-20"
-  }
+  },
+  "note": "needSpec 2026-10-29: Amazon spec table not readable by the fetch tool (only title and breadcrumbs), so the estimated fields stay estimated."
  },
  {
   "id": "nicrew-hyperreef-100-g2",
