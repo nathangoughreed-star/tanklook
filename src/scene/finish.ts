@@ -182,5 +182,13 @@ export function* finishTiers(b: Build, now = Date.now(), leanOnly = false, maxLe
     if (hasHardscape(f.setup)) { first = f; style = st; break; }
   }
   yield first!;
-  for (const spec of specs.slice(1)) yield finishBuild(b, spec, style, now);
+  // The ladder never rises downhill: a light that keeps fewer corals (or plants) than the starter set draws can leave the tier above it cheaper than the starter
+  // (clown-nano 20 high after the 2026-10-27 LED audit: lean 830 against starter 953), so the starter is then the tier above it, relabelled, not a dearer tank.
+  let above = first!;
+  for (const spec of specs.slice(1)) {
+    let f = finishBuild(b, spec, style, now);
+    if (spec.id === 'starter' && f.setupUsd > above.setupUsd && above.finish) f = { ...above, finish: { ...above.finish, tier: spec.id, level: spec.level } };
+    above = f;
+    yield f;
+  }
 }
