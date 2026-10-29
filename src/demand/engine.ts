@@ -109,7 +109,8 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   const stand = interp('gear:stand-', [20, 55], gal);
   // only a stand the owner added counts (Nathan 2026-10-26: an undecided stand is not in the price)
   const tStand = !wet ? rowPrice(TERRARIUM_STAND_ROW) : undefined; // a terrarium: its own reptile-stand row, by footprint (S240b)
-  if (S.stand.show) add('stand', tStand ? 'Stand (terrarium)' : 'Stand', 'gear', { setup: price(tStand ? scale3(tStand, terrariumStandK(S.tank)) : stand ? scale3(stand, gal > 55 ? Math.pow(gal / 55, 0.8) : 1) : add3(pick(G.stand.base), scale3(pick(G.stand.perGal), gal))) });
+  // a table is furniture the user already owns (Nathan 2026-10-28): only a cabinet, frame or custom stand is priced
+  if (S.stand.show && S.stand.style !== 'table') add('stand', tStand ? 'Stand (terrarium)' : 'Stand', 'gear', { setup: price(tStand ? scale3(tStand, terrariumStandK(S.tank)) : stand ? scale3(stand, gal > 55 ? Math.pow(gal / 55, 0.8) : 1) : add3(pick(G.stand.base), scale3(pick(G.stand.perGal), gal))) });
   const lidRow = S.lid === 'open' ? undefined : rowPrice(`gear:lid-${S.lid === 'glass' ? 'glass' : S.lid === 'mesh' ? 'mesh' : 'hood'}`), lidK = Math.min(2.5, Math.max(0.6, Math.sqrt(gal / 25)));
   const lid = (G.lid as Record<string, Rangeish>)[S.lid];
   if (lidRow) add('lid', `Lid (${S.lid})`, 'gear', { setup: price(scale3(lidRow, lidK)) });
@@ -153,6 +154,7 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   const lights = watts > 0 ? itemLights(S) : null;
   const pdom = domOf('plant'), left = { ...(opts.plantBundle?.covers ?? {}) };
   let packed = 0;
+  const bought: Record<string, number> = {}; // placements paid for so far, per kind: one retail unit covers several (portionsPerUnit)
   for (const it of plants) {
     const n = NEEDS[it.variant], label = LIBRARY[it.variant]?.label ?? it.variant, diff = plantDifficulty(it.variant);
     const cls = !wet || (n && isLand(n)) ? 'land' : n && isCoralNeed(n) ? `coral-${n.band}` : (n as PlantNeed | undefined)?.note === 'succulent' ? 'succulent' : (['easy', 'medium', 'hard'] as const)[diff];
@@ -164,8 +166,9 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
     const raw = (n && !isLand(n) ? DEFAULTS.risk.plantDifficulty[diff] : 0) + struggle;
     const inPack = (left[it.variant] ?? 0) > 0 && !!n && !isLand(n);
     if (inPack) { left[it.variant]--; packed++; }
+    const ppu = (DEFAULTS.plants.portionsPerUnit as Record<string, number>)[it.variant] ?? 1, newUnit = !inPack && (bought[it.variant] = (bought[it.variant] ?? 0) + 1) % ppu === 1 % ppu;
     add(`plant:${it.variant}`, label, 'plant', {
-      setup: inPack ? undefined : rowPrice(`plant:${it.variant}`) ? price(rowPrice(`plant:${it.variant}`)!) : unit ? price(pick(unit.setup)) : undefined, livestock: true, domain: pdom,
+      setup: inPack || !newUnit ? undefined : rowPrice(`plant:${it.variant}`) ? price(rowPrice(`plant:${it.variant}`)!) : unit ? price(pick(unit.setup)) : undefined, livestock: true, domain: pdom,
       minutes: r3(DEFAULTS.plants.minPerWeekEach * Math.pow(plants.filter(q => q.variant === it.variant).length, -DEFAULTS.plants.bunchExp) * (isFloat(it.variant) ? DEFAULTS.plants.floaterMinK : 1) * growRate(it.variant, S.grow.feed) * (it.size / DEFAULTS.plants.refSizeMm)), risk: raw * skillMul(P, pdom),
     });
   }

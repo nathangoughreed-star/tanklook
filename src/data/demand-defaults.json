@@ -171,6 +171,8 @@
   "refSizeMm": 150,
   "floaterMinK": 0.5,
   "bunchExp": 0.35,
+  "portionsPerUnit": { "carpet": 4, "moss": 3, "crypt": 2, "buce": 2, "grass": 2, "hairgrass": 3 },
+  "portionsNote": "placements one retail unit covers: a carpet cup is divided into patches, a crypt pot or a buce rhizome is split, a moss portion spreads. Plants not listed are one per placement. Assumption (Nathan 2026-10-28, a 12 in cube priced $325 for 33 placements)",
   "bunchNote": "plants of one kind are trimmed in bunches, not one by one: each plant's minutes x (how many of that kind)^-0.35 (assumption: 15 stems take about 40 % of 15 single trims, 144 blades about 18 %)"
  },
  "hardscape": {
