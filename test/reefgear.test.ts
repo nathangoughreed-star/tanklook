@@ -18,10 +18,10 @@ function sized(L: number, D: number, H: number, rows: Record<string, string> = {
 const G20 = () => ({ L: 762, D: 305, H: 305 }), G75 = () => ({ L: 1219, D: 457, H: 533 });
 
 describe('reef and planted gear catalogue (lane GX)', () => {
-  it('about 35 products, each with a real Amazon URL, a price and a date, and a unique id', () => {
+  it('about 35 products, each with a real https source URL, a price and a date, and a unique id', () => {
     const all = Object.values(REEF_ROWS).flat(), ids = new Set<string>();
     expect(SKIMMER_PRODUCTS.length + UV_PRODUCTS.length + CO2_PRODUCTS.length + ATO_PRODUCTS.length + CHILLER_PRODUCTS.length).toBeGreaterThanOrEqual(35);
-    for (const p of new Set(all)) { expect(ids.has(p.id)).toBe(false); ids.add(p.id); expect(p.url).toMatch(/^https:\/\/www\.amazon\.com\/dp\/B[0-9A-Z]{9}$/); expect(p.priceUsd).toBeGreaterThan(0); expect(p.asOf).toBe('2026-10-27'); }
+    for (const p of new Set(all)) { expect(ids.has(p.id)).toBe(false); ids.add(p.id); expect(p.url).toMatch(/^https:\/\/\S+$/); expect(p.priceUsd).toBeGreaterThan(0); expect(p.asOf).toMatch(/^2026-10-(27|29)$/); }
   });
   it('a protein skimmer is rated for 1.5-2 times its real tank; a surface skimmer for its tank', () => {
     const m130 = SKIMMER_PRODUCTS.find(p => p.id === 'magtool-n130plus')!, oase = SKIMMER_PRODUCTS.find(p => p.id === 'oase-crystalskim-350')!;
@@ -32,7 +32,7 @@ describe('reef and planted gear catalogue (lane GX)', () => {
   it('each option offers only its own kind of product', () => {
     expect(reefOptionProducts('skimmer', 'hob').every(p => (p as { kind: string }).kind === 'hob')).toBe(true);
     expect(reefOptionProducts('skimmer', 'sump').every(p => (p as { kind: string }).kind === 'sump')).toBe(true);
-    expect(reefOptionProducts('co2', 'cartridge').length).toBe(2);
+    expect(reefOptionProducts('co2', 'cartridge').length).toBe(4);
     expect(reefOptionProducts('co2', 'diy').length).toBe(2);
     expect(reefOptionProducts('chiller', 'fan').length).toBe(2);
     expect(reefOptionProducts('co2', 'liquid')).toEqual([]);

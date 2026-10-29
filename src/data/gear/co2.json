@@ -199,5 +199,35 @@
   ],
   "url": "https://www.amazon.com/dp/B0B5R18XDV",
   "asOf": "2026-10-27"
+ },
+ {
+  "id": "fluval-mini-20g-kit",
+  "brand": "Fluval",
+  "model": "Mini Pressurized 20 g CO2 Kit",
+  "kind": "cartridge",
+  "cartridgeG": 20,
+  "priceUsd": 29.99,
+  "needSpec": [
+   "lastsDays",
+   "stages"
+  ],
+  "note": "For planted tanks up to 15 gal; page showed a waiting-list button (stock).",
+  "url": "https://saltwaterfish.com/product-fluval-mini-pressurized-20-g-co2-kit",
+  "asOf": "2026-10-29"
+ },
+ {
+  "id": "fluval-pressurized-88g-kit",
+  "brand": "Fluval",
+  "model": "Pressurized 88 g CO2 Kit",
+  "kind": "cartridge",
+  "cartridgeG": 88,
+  "priceUsd": 89.98,
+  "needSpec": [
+   "lastsDays",
+   "stages"
+  ],
+  "note": "For planted tanks of 15-40 gal.",
+  "url": "https://www.saltwaterfish.com/product-fluval-pressurized-88-g-co2-kit",
+  "asOf": "2026-10-29"
  }
 ]

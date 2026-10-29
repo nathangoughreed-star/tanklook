@@ -198,5 +198,24 @@
   ],
   "url": "https://www.amazon.com/dp/B0FHFQVP6B",
   "asOf": "2026-10-27"
+ },
+ {
+  "id": "jbj-arctica-110hp",
+  "brand": "JBJ",
+  "model": "Arctica Chiller 1/10 HP (DBA-075)",
+  "kind": "compressor",
+  "hp": "1/10",
+  "priceUsd": 765.98,
+  "needSpec": [
+   "ratedGal",
+   "drop",
+   "noiseDb"
+  ],
+  "note": "Page: 115 V 2.63 A, 1270 BTU/hr, flow 240-960 GPH, 9.8x16.5x18.5 in; watts and tank rating not stated. customaquariums.com page of DBA-075 prints \"1/10 HP @ 75w\" (compressor rating) and up to 130 gal; another retailer reportedly says 75 gal, so ratedGal stays open.",
+  "url": "https://www.bulkreefsupply.com/jbj-arctica-chiller-1-10-hp.html",
+  "asOf": "2026-10-29",
+  "watts": 75,
+  "specUrl": "https://www.customaquariums.com/product/jbj-arctica-titanium-chiller-1-10hp/",
+  "specAsOf": "2026-10-29"
  }
 ]

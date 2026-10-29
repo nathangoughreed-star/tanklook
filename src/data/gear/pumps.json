@@ -904,5 +904,193 @@
    "url": "https://www.amazon.com/dp/B0FDWHCWTQ",
    "seen": "2026-10-27"
   }
+ },
+ {
+  "id": "sicce-voyager-nano-270",
+  "brand": "Sicce",
+  "model": "Voyager Nano Stream Pump (270 GPH)",
+  "kind": "powerhead",
+  "url": "https://www.bulkreefsupply.com/sicce-voyager-nano-250-gph-stream-pump.html",
+  "asOf": "2026-10-29",
+  "watts": 2.8,
+  "gph": 270,
+  "priceUsd": 42.99,
+  "colors": {
+   "body": "#2b2b2b"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "note": "Bulk Reef Supply page title says 250 gph, its specifications say 270 GPH (used). Fixed flow, on/off control only; 12 mm max glass; 3 year warranty. Colour not seen (listing photo not sampled), so the body hex is an estimate."
+ },
+ {
+  "id": "sicce-voyager-nano-530",
+  "brand": "Sicce",
+  "model": "Voyager Nano Stream Pump (530 GPH)",
+  "kind": "powerhead",
+  "url": "https://www.bulkreefsupply.com/sicce-voyager-nano-530-gph-stream-pump.html",
+  "asOf": "2026-10-29",
+  "watts": 3,
+  "gph": 530,
+  "priceUsd": 49.99,
+  "colors": {
+   "body": "#2b2b2b"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "note": "Fixed flow, on/off control only; 12 mm max glass; 3 year warranty. Colour not seen (listing photo not sampled), so the body hex is an estimate."
+ },
+ {
+  "id": "sicce-voyager-2",
+  "brand": "Sicce",
+  "model": "Voyager 2 Stream Pump (800 GPH)",
+  "kind": "powerhead",
+  "url": "https://www.bulkreefsupply.com/sicce-voyager-2-stream-pump-800-gph.html",
+  "asOf": "2026-10-29",
+  "watts": 7,
+  "gph": 800,
+  "priceUsd": 69.99,
+  "colors": {
+   "body": "#2b2b2b"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "note": "Adjustable flow, 360 degree pivot; magnetic mount to 15 mm glass; 3 year warranty. Dimensions not on the page. Colour not seen (listing photo not sampled), so the body hex is an estimate."
+ },
+ {
+  "id": "sicce-voyager-3",
+  "brand": "Sicce",
+  "model": "Voyager 3 Stream Pump (1200 GPH)",
+  "kind": "powerhead",
+  "url": "https://www.bulkreefsupply.com/sicce-voyager-3-stream-pump-1200-gph.html",
+  "asOf": "2026-10-29",
+  "watts": 10,
+  "gph": 1200,
+  "priceUsd": 79.99,
+  "colors": {
+   "body": "#2b2b2b"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "note": "Adjustable flow, 360 degree pivot; magnetic mount to 15 mm glass; 3 year warranty. Dimensions not on the page. Colour not seen (listing photo not sampled), so the body hex is an estimate."
+ },
+ {
+  "id": "tunze-nanostream-6040-hub",
+  "brand": "Tunze",
+  "model": "Turbelle nanostream 6040 HUB Edition",
+  "kind": "powerhead",
+  "url": "https://www.bulkreefsupply.com/turbelle-nanostream-6040-hub-edition-tunze.html",
+  "asOf": "2026-10-29",
+  "watts": 13,
+  "gph": 1190,
+  "galMin": 5,
+  "galMax": 132,
+  "controller": true,
+  "bodyMm": {
+   "w": 60,
+   "d": 43,
+   "h": 68
+  },
+  "priceUsd": 229.99,
+  "colors": {
+   "body": "#2b2b2b"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "note": "Flow 53-1190 GPH on the included Turbelle Controller 7020, 1.5-13 W (watts = the 13 W maximum). Dimensions 2.36 x 1.69 x 2.68 in without deflector and magnet holder. Price read on the Bulk Reef Supply category listing. Page describes adjustable flow, not a wave or pulse mode (kind powerhead). Colour not seen (listing photo not sampled), so the body hex is an estimate."
+ },
+ {
+  "id": "tunze-nanostream-6015-eco",
+  "brand": "Tunze",
+  "model": "Turbelle nanostream 6015 eco",
+  "kind": "powerhead",
+  "url": "https://www.bulkreefsupply.com/turbelle-nanostream-6015-eco-tunze.html",
+  "asOf": "2026-10-29",
+  "watts": 3.2,
+  "gph": 977,
+  "galMin": 10,
+  "galMax": 55,
+  "priceUsd": 59.99,
+  "colors": {
+   "body": "#2b2b2b"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "note": "Manual flow ring 132-977 GPH, no controller; 10-55 gal; 12 mm max glass; 70 mm diameter (no length given). Price read on the Bulk Reef Supply category listing. Colour not seen (listing photo not sampled), so the body hex is an estimate."
+ },
+ {
+  "id": "marineland-maxi-jet-400",
+  "brand": "Marineland",
+  "model": "Maxi-Jet Powerhead 400",
+  "kind": "powerhead",
+  "url": "https://www.bulkreefsupply.com/maxi-jet-powerhead-400.html",
+  "asOf": "2026-10-29",
+  "watts": 8,
+  "gph": 500,
+  "bodyMm": {
+   "w": 89,
+   "d": 83,
+   "h": 51
+  },
+  "priceUsd": 21.92,
+  "colors": {
+   "body": "#2b2b2b"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "note": "Page gives 110 GPH powerhead mode and 500 GPH circulation mode (gph = circulation). Pump 3.25 x 3.5 x 2 in. Price read on the Bulk Reef Supply category listing. Colour not seen (listing photo not sampled), so the body hex is an estimate."
+ },
+ {
+  "id": "marineland-maxi-jet-900",
+  "brand": "Marineland",
+  "model": "Maxi-Jet Powerhead 900",
+  "kind": "powerhead",
+  "url": "https://www.bulkreefsupply.com/maxi-jet-powerhead-900.html",
+  "asOf": "2026-10-29",
+  "watts": 10,
+  "gph": 1000,
+  "bodyMm": {
+   "w": 89,
+   "d": 83,
+   "h": 51
+  },
+  "priceUsd": 29.57,
+  "colors": {
+   "body": "#2b2b2b"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "note": "Page gives 230 GPH powerhead mode and 1000 GPH circulation mode (gph = circulation). Pump 3.25 x 3.5 x 2 in. Price read on the Bulk Reef Supply category listing. Colour not seen (listing photo not sampled), so the body hex is an estimate."
+ },
+ {
+  "id": "sicce-xstream-1320",
+  "brand": "Sicce",
+  "model": "XStream Wave Pump 1320 GPH",
+  "kind": "powerhead",
+  "url": "https://www.bulkreefsupply.com/sicce-xstream-1320-wave-pump-powerhead-1320-gph.html",
+  "asOf": "2026-10-29",
+  "watts": 6,
+  "gph": 1320,
+  "galMax": 90,
+  "bodyMm": {
+   "w": 53,
+   "d": 70,
+   "h": 62
+  },
+  "priceUsd": 99.99,
+  "colors": {
+   "body": "#2b2b2b"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "note": "Rated for saltwater tanks to 90 gal and freshwater to 130 gal (galMax = saltwater). 2.08 x 2.75 x 2.44 in; 5/8 in max glass. Named 'wave pump' but the page describes no wave or pulse controller (kind powerhead). Price read on the Bulk Reef Supply category listing. Colour not seen (listing photo not sampled), so the body hex is an estimate."
  }
 ]

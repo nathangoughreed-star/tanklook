@@ -16,7 +16,7 @@ describe('pump catalogue (lane GP)', () => {
     expect(new Set(PUMP_PRODUCTS.map(p => p.id)).size).toBe(PUMP_PRODUCTS.length);
     for (const p of PUMP_PRODUCTS) {
       expect(p.priceUsd, p.id).toBeGreaterThan(0); expect(p.watts, p.id).toBeGreaterThan(0);
-      expect(p.url, p.id).toMatch(/^https:\/\/www\.amazon\.com\/dp\/B/); expect(p.asOf, p.id).toBe('2026-10-27');
+      expect(p.url, p.id).toMatch(/^https:\/\/\S+$/); expect(p.asOf, p.id).toMatch(/^2026-10-(27|29)$/);
       expect(p.colors.body, p.id).toMatch(/^#[0-9a-f]{6}$/i);
       if (p.kind !== 'air') expect(p.gph, p.id).toBeGreaterThan(0);
       if (p.kind === 'wavemaker') expect(p.controller, p.id).toBe(true);

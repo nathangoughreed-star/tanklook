@@ -9,14 +9,14 @@ describe('gear catalogue split per type', () => {
   it('keeps the old key order and counts', () => {
     expect(Object.keys(gearCatalog)).toEqual(['asOf', 'note', 'skimmers', 'uv', 'co2', 'ato', 'chillers', 'heaters', 'filters', 'lights', 'pumps']);
     expect([gearCatalog.skimmers, gearCatalog.uv, gearCatalog.co2, gearCatalog.ato, gearCatalog.chillers, gearCatalog.heaters, gearCatalog.filters, gearCatalog.lights, gearCatalog.pumps].map(a => a.length))
-      .toEqual([12, 9, 8, 6, 7, 40, 79, 47, 34]);
+      .toEqual([12, 13, 10, 6, 8, 48, 88, 47, 43]);
   });
   it('the wrappers expose the same arrays', () => {
     expect(HEATER_PRODUCTS).toBe(gearCatalog.heaters);
     expect(FILTER_PRODUCTS).toBe(gearCatalog.filters);
     expect(LIGHT_PRODUCTS).toBe(gearCatalog.lights);
     expect(PUMP_PRODUCTS).toBe(gearCatalog.pumps);
-    expect(SKIMMER_PRODUCTS.length + UV_PRODUCTS.length + CO2_PRODUCTS.length + ATO_PRODUCTS.length + CHILLER_PRODUCTS.length).toBe(42);
+    expect(SKIMMER_PRODUCTS.length + UV_PRODUCTS.length + CO2_PRODUCTS.length + ATO_PRODUCTS.length + CHILLER_PRODUCTS.length).toBe(49);
   });
 });
 

@@ -7,10 +7,9 @@
   "ratedGal": 32,
   "priceUsd": 45.32,
   "needSpec": [
-   "watts",
-   "size"
+   "watts"
   ],
-  "note": "Clip-on with its own air pump, for BioCubes and standard tanks up to 32 gal.",
+  "note": "Clip-on with its own air pump, for BioCubes and standard tanks up to 32 gal. Checked 2026-10-29: page lists 4 x 3.13 x 11.75 in; wattage not stated. Page price now $39.99 (list kept at $45.32 pending recheck).",
   "popularity": {
    "evidence": "Amazon search \"aquarium protein skimmer\": 896 ratings, 4.0 stars, 100+ bought in past month",
    "url": "https://www.amazon.com/dp/B07WT6QWP1",
@@ -25,7 +24,12 @@
    "cup"
   ],
   "url": "https://www.amazon.com/dp/B07WT6QWP1",
-  "asOf": "2026-10-27"
+  "asOf": "2026-10-27",
+  "dimsMm": {
+   "w": 102,
+   "d": 80,
+   "h": 298
+  }
  },
  {
   "id": "macroaqua-m50",
@@ -188,7 +192,7 @@
    "watts",
    "size"
   ],
-  "note": "265 gph DC pinwheel pump; the listing gives no rated gallons.",
+  "note": "Listing title rates it 50-100 gal but a bullet says up to 50 gal at high bioload, so ratedGal is left open (checked 2026-10-29). Footprint 5.0 x 4.3 in only, no height.",
   "popularity": {
    "evidence": "Amazon search: 6 ratings, 3.5 stars",
    "url": "https://www.amazon.com/dp/B0H5V8DWJX",

@@ -204,7 +204,7 @@
    "watts",
    "gallons"
   ],
-  "note": "In a canister filter hose; the page lists a 30,000-hour LED UVC life.",
+  "note": "In a canister filter hose; the page lists a 30,000-hour LED UVC life. A retailer page of the Fluval A203 shows 100 US gal but could not be tied to this ASIN, so gallons stay unknown.",
   "popularity": {
    "evidence": "Amazon search: 1,884 ratings, 200+ bought in past month",
    "url": "https://www.amazon.com/dp/B08KSF2FT6",
@@ -218,5 +218,103 @@
   ],
   "url": "https://www.amazon.com/dp/B08KSF2FT6",
   "asOf": "2026-10-27"
+ },
+ {
+  "id": "aqua-uv-classic-8w",
+  "brand": "Aqua Ultraviolet",
+  "model": "Classic 8 Watt UV Sterilizer (White), 3/4 in barb",
+  "kind": "inline",
+  "galMax": 70,
+  "watts": 8,
+  "priceUsd": 304.9,
+  "dimsMm": {
+   "w": 406,
+   "d": 95,
+   "h": 152
+  },
+  "colors": {
+   "body": "#f2f2f2"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "note": "BRS page: saltwater sterilization to 70 gal at 214 GPH suggested; reef flow range given; lamp life not stated on the page. Webb's Online (same Aqua Classic line): lamps last up to 14 months of continuous operation; bulbHours is 14 x 730 h, a line-wide claim not stated per wattage.",
+  "url": "https://www.bulkreefsupply.com/8-watt-classic-uv-sterilizer-white-body-aqua-ultraviolet.html",
+  "asOf": "2026-10-29",
+  "needSpec": [
+   "bulbHours"
+  ]
+ },
+ {
+  "id": "aqua-uv-classic-15w",
+  "brand": "Aqua Ultraviolet",
+  "model": "Classic 15 Watt UV Sterilizer (White), 3/4 in barb",
+  "kind": "inline",
+  "galMax": 75,
+  "watts": 15,
+  "priceUsd": 334.21,
+  "dimsMm": {
+   "w": 406,
+   "d": 95,
+   "h": 152
+  },
+  "colors": {
+   "body": "#f2f2f2"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "note": "BRS page: saltwater sterilization to 75 gal at 233 GPH suggested; reef flow range given; lamp life not stated on the page. Webb's Online (same Aqua Classic line): lamps last up to 14 months of continuous operation; bulbHours is 14 x 730 h, a line-wide claim not stated per wattage.",
+  "url": "https://www.bulkreefsupply.com/15-watt-classic-uv-sterilizer-white-body-aqua-ultraviolet.html",
+  "asOf": "2026-10-29",
+  "needSpec": [
+   "bulbHours"
+  ]
+ },
+ {
+  "id": "aqua-uv-classic-25w",
+  "brand": "Aqua Ultraviolet",
+  "model": "Classic 25 Watt UV Sterilizer (White), 3/4 in barb",
+  "kind": "inline",
+  "galMax": 150,
+  "watts": 25,
+  "priceUsd": 449.48,
+  "dimsMm": {
+   "w": 508,
+   "d": 95,
+   "h": 152
+  },
+  "colors": {
+   "body": "#f2f2f2"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "note": "BRS page: saltwater sterilization to 150 gal at 400 GPH suggested; reef flow range given; lamp life not stated on the page. Webb's Online (same Aqua Classic line): lamps last up to 14 months of continuous operation; bulbHours is 14 x 730 h, a line-wide claim not stated per wattage.",
+  "url": "https://www.bulkreefsupply.com/25-watt-classic-uv-sterilizer-white-body-aqua-ultraviolet.html",
+  "asOf": "2026-10-29",
+  "needSpec": [
+   "bulbHours"
+  ]
+ },
+ {
+  "id": "coralife-turbo-twist-3x-9w",
+  "brand": "Coralife",
+  "model": "Turbo-Twist 3X UV Sterilizer 9W",
+  "kind": "inline",
+  "galMax": 125,
+  "watts": 9,
+  "priceUsd": 135.99,
+  "note": "Page: needs a pump of 100-200 gph. saltwateraquarium.com: 13.5 x 7.825 x 3.75 in; 4,000 h is the recommended lamp replacement interval on the 9 W replacement lamp listing.",
+  "url": "https://www.thatpetplace.com/coralife-turbo-twist-uv-sterilizer-3x-9w",
+  "asOf": "2026-10-29",
+  "dimsMm": {
+   "w": 343,
+   "d": 199,
+   "h": 95
+  },
+  "bulbHours": 4000,
+  "specUrl": "https://www.saltwateraquarium.com/turbo-twist-3x-ultraviolet-sterilizer-9w-125-gal-coralife",
+  "specAsOf": "2026-10-29"
  }
 ]

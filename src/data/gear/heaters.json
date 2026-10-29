@@ -2085,5 +2085,350 @@
    "url": "https://www.amazon.com/dp/B001VMSK0I",
    "seen": "2026-10-20"
   }
+ },
+ {
+  "id": "eheim-jager-75",
+  "brand": "Eheim",
+  "model": "Jager TruTemp 75 W",
+  "watts": 75,
+  "lengthMm": 259,
+  "diaMm": 36,
+  "look": "glass",
+  "galMin": 16,
+  "galMax": 26,
+  "priceUsd": 32.88,
+  "url": "https://www.bulkreefsupply.com/eheim-jager-trutemp-aquarium-heater.html",
+  "asOf": "2026-10-29",
+  "est": [
+   "diaMm"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#16171a",
+    "dial": true
+   },
+   "foot": {
+    "hex": "#2a2b2d"
+   },
+   "tube": {
+    "kind": "glass",
+    "hex": "#dfe7e8"
+   },
+   "element": {
+    "kind": "coil",
+    "hex": "#d9d2b8"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "photo": "https://media2.cdn.bulkreefsupply.com/media/catalog/product/cache/c8225047e3f199b6e75c4a7f9e30955e/2/0/207479-eheim-jager-100w-heater-fr_1__1.jpg"
+  },
+  "colorsEst": [
+   "foot"
+  ],
+  "colorsNote": "Photo is the 100 W; same look across sizes. Black head with blue ring (not drawn), glass tube with coil, clamp with two black suction cups. Model 3613. Length and gallons from the Bulk Reef Supply Quick Compare; the page states no diameter (36 mm is the 50 W record's figure)."
+ },
+ {
+  "id": "eheim-jager-100",
+  "brand": "Eheim",
+  "model": "Jager TruTemp 100 W",
+  "watts": 100,
+  "lengthMm": 310,
+  "diaMm": 36,
+  "look": "glass",
+  "galMin": 26,
+  "galMax": 40,
+  "priceUsd": 32.88,
+  "url": "https://www.bulkreefsupply.com/eheim-jager-trutemp-aquarium-heater.html",
+  "asOf": "2026-10-29",
+  "est": [
+   "diaMm"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#16171a",
+    "dial": true
+   },
+   "foot": {
+    "hex": "#2a2b2d"
+   },
+   "tube": {
+    "kind": "glass",
+    "hex": "#dfe7e8"
+   },
+   "element": {
+    "kind": "coil",
+    "hex": "#d9d2b8"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "photo": "https://media2.cdn.bulkreefsupply.com/media/catalog/product/cache/c8225047e3f199b6e75c4a7f9e30955e/2/0/207479-eheim-jager-100w-heater-fr_1__1.jpg"
+  },
+  "colorsEst": [
+   "foot"
+  ],
+  "colorsNote": "Photo is the 100 W; same look across sizes. Black head with blue ring (not drawn), glass tube with coil, clamp with two black suction cups. Model 3614. Length and gallons from the Bulk Reef Supply Quick Compare; the page states no diameter (36 mm is the 50 W record's figure)."
+ },
+ {
+  "id": "eheim-jager-150",
+  "brand": "Eheim",
+  "model": "Jager TruTemp 150 W",
+  "watts": 150,
+  "lengthMm": 340,
+  "diaMm": 36,
+  "look": "glass",
+  "galMin": 53,
+  "galMax": 79,
+  "priceUsd": 32.88,
+  "url": "https://www.bulkreefsupply.com/eheim-jager-trutemp-aquarium-heater.html",
+  "asOf": "2026-10-29",
+  "est": [
+   "diaMm"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#16171a",
+    "dial": true
+   },
+   "foot": {
+    "hex": "#2a2b2d"
+   },
+   "tube": {
+    "kind": "glass",
+    "hex": "#dfe7e8"
+   },
+   "element": {
+    "kind": "coil",
+    "hex": "#d9d2b8"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "photo": "https://media2.cdn.bulkreefsupply.com/media/catalog/product/cache/c8225047e3f199b6e75c4a7f9e30955e/2/0/207479-eheim-jager-100w-heater-fr_1__1.jpg"
+  },
+  "colorsEst": [
+   "foot"
+  ],
+  "colorsNote": "Photo is the 100 W; same look across sizes. Black head with blue ring (not drawn), glass tube with coil, clamp with two black suction cups. Model 3616. Length and gallons from the Bulk Reef Supply Quick Compare; the page states no diameter (36 mm is the 50 W record's figure)."
+ },
+ {
+  "id": "eheim-jager-200",
+  "brand": "Eheim",
+  "model": "Jager TruTemp 200 W",
+  "watts": 200,
+  "lengthMm": 399,
+  "diaMm": 36,
+  "look": "glass",
+  "galMin": 79,
+  "galMax": 106,
+  "priceUsd": 38.88,
+  "url": "https://www.bulkreefsupply.com/eheim-jager-trutemp-aquarium-heater.html",
+  "asOf": "2026-10-29",
+  "est": [
+   "diaMm"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#16171a",
+    "dial": true
+   },
+   "foot": {
+    "hex": "#2a2b2d"
+   },
+   "tube": {
+    "kind": "glass",
+    "hex": "#dfe7e8"
+   },
+   "element": {
+    "kind": "coil",
+    "hex": "#d9d2b8"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "photo": "https://media2.cdn.bulkreefsupply.com/media/catalog/product/cache/c8225047e3f199b6e75c4a7f9e30955e/2/0/207479-eheim-jager-100w-heater-fr_1__1.jpg"
+  },
+  "colorsEst": [
+   "foot"
+  ],
+  "colorsNote": "Photo is the 100 W; same look across sizes. Black head with blue ring (not drawn), glass tube with coil, clamp with two black suction cups. Model 3617. Length and gallons from the Bulk Reef Supply Quick Compare; the page states no diameter (36 mm is the 50 W record's figure)."
+ },
+ {
+  "id": "eheim-jager-300",
+  "brand": "Eheim",
+  "model": "Jager TruTemp 300 W",
+  "watts": 300,
+  "lengthMm": 498,
+  "diaMm": 36,
+  "look": "glass",
+  "galMin": 159,
+  "galMax": 264,
+  "priceUsd": 38.88,
+  "url": "https://www.bulkreefsupply.com/eheim-jager-trutemp-aquarium-heater.html",
+  "asOf": "2026-10-29",
+  "est": [
+   "diaMm"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#16171a",
+    "dial": true
+   },
+   "foot": {
+    "hex": "#2a2b2d"
+   },
+   "tube": {
+    "kind": "glass",
+    "hex": "#dfe7e8"
+   },
+   "element": {
+    "kind": "coil",
+    "hex": "#d9d2b8"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "photo": "https://media2.cdn.bulkreefsupply.com/media/catalog/product/cache/c8225047e3f199b6e75c4a7f9e30955e/2/0/207479-eheim-jager-100w-heater-fr_1__1.jpg"
+  },
+  "colorsEst": [
+   "foot"
+  ],
+  "colorsNote": "Photo is the 100 W; same look across sizes. Black head with blue ring (not drawn), glass tube with coil, clamp with two black suction cups. Model 3619. Length and gallons from the Bulk Reef Supply Quick Compare; the page states no diameter (36 mm is the 50 W record's figure)."
+ },
+ {
+  "id": "cobalt-neotherm-75",
+  "brand": "Cobalt Aquatics",
+  "model": "Neo-Therm 75 W",
+  "watts": 75,
+  "lengthMm": 165,
+  "diaMm": 20,
+  "look": "glass",
+  "galMax": 20,
+  "url": "https://www.bulkreefsupply.com/cobalt-neo-therm-submersible-heater.html",
+  "asOf": "2026-10-29",
+  "est": [],
+  "colors": {
+   "cap": {
+    "hex": "#2b2d30",
+    "dial": true,
+    "led": "#3ddc5a"
+   },
+   "tube": {
+    "kind": "opaque",
+    "hex": "#2b2d30"
+   },
+   "element": {
+    "kind": "none",
+    "hex": "#e8e8e8"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "flat",
+   "photo": "https://media2.cdn.bulkreefsupply.com/media/catalog/product/cache/c8225047e3f199b6e75c4a7f9e30955e/2/0/207705-cobalt-neo-therm-submersible-heater-a.jpg"
+  },
+  "colorsEst": [
+   "cups",
+   "cord"
+  ],
+  "colorsNote": "Flat black housing with a round dial face of red/yellow/green LEDs and side clips (box photo shows the 100 W). Length and gallons from the Bulk Reef Supply Quick Compare (L x 2 1/8 in wide x 4/5 in thick at the bezel, so diaMm is the thickness, 20 mm); that page showed no per-size price, so none is entered. The page's own note says its quick overview may be wrong; check against the manual."
+ },
+ {
+  "id": "cobalt-neotherm-100",
+  "brand": "Cobalt Aquatics",
+  "model": "Neo-Therm 100 W",
+  "watts": 100,
+  "lengthMm": 248,
+  "diaMm": 20,
+  "look": "glass",
+  "galMax": 29,
+  "url": "https://www.bulkreefsupply.com/cobalt-neo-therm-submersible-heater.html",
+  "asOf": "2026-10-29",
+  "est": [],
+  "colors": {
+   "cap": {
+    "hex": "#2b2d30",
+    "dial": true,
+    "led": "#3ddc5a"
+   },
+   "tube": {
+    "kind": "opaque",
+    "hex": "#2b2d30"
+   },
+   "element": {
+    "kind": "none",
+    "hex": "#e8e8e8"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "flat",
+   "photo": "https://media2.cdn.bulkreefsupply.com/media/catalog/product/cache/c8225047e3f199b6e75c4a7f9e30955e/2/0/207705-cobalt-neo-therm-submersible-heater-a.jpg"
+  },
+  "colorsEst": [
+   "cups",
+   "cord"
+  ],
+  "colorsNote": "Flat black housing with a round dial face of red/yellow/green LEDs and side clips (box photo shows the 100 W). Length and gallons from the Bulk Reef Supply Quick Compare (L x 2 1/8 in wide x 4/5 in thick at the bezel, so diaMm is the thickness, 20 mm); that page showed no per-size price, so none is entered. The page's own note says its quick overview may be wrong; check against the manual."
+ },
+ {
+  "id": "cobalt-neotherm-150",
+  "brand": "Cobalt Aquatics",
+  "model": "Neo-Therm 150 W",
+  "watts": 150,
+  "lengthMm": 276,
+  "diaMm": 20,
+  "look": "glass",
+  "galMax": 40,
+  "url": "https://www.bulkreefsupply.com/cobalt-neo-therm-submersible-heater.html",
+  "asOf": "2026-10-29",
+  "est": [],
+  "colors": {
+   "cap": {
+    "hex": "#2b2d30",
+    "dial": true,
+    "led": "#3ddc5a"
+   },
+   "tube": {
+    "kind": "opaque",
+    "hex": "#2b2d30"
+   },
+   "element": {
+    "kind": "none",
+    "hex": "#e8e8e8"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "flat",
+   "photo": "https://media2.cdn.bulkreefsupply.com/media/catalog/product/cache/c8225047e3f199b6e75c4a7f9e30955e/2/0/207705-cobalt-neo-therm-submersible-heater-a.jpg"
+  },
+  "colorsEst": [
+   "cups",
+   "cord"
+  ],
+  "colorsNote": "Flat black housing with a round dial face of red/yellow/green LEDs and side clips (box photo shows the 100 W). Length and gallons from the Bulk Reef Supply Quick Compare (L x 2 1/8 in wide x 4/5 in thick at the bezel, so diaMm is the thickness, 20 mm); that page showed no per-size price, so none is entered. The page's own note says its quick overview may be wrong; check against the manual."
  }
 ]

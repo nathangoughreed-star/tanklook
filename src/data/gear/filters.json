@@ -4710,5 +4710,556 @@
    "url": "https://www.amazon.com/dp/B098SGW6QS",
    "seen": "2026-10-20"
   }
+ },
+ {
+  "id": "penn-plax-cascade-500",
+  "brand": "Penn-Plax",
+  "model": "Cascade 500 Canister Filter",
+  "kind": "canister",
+  "gph": 115,
+  "galMax": 30,
+  "watts": 10.5,
+  "bodyMm": {
+   "w": 292,
+   "d": 229,
+   "h": 343
+  },
+  "intakeMm": 300,
+  "url": "https://penn-plax.focuspointsap.com/ccf1ul",
+  "asOf": "2026-10-29",
+  "names": [
+   "penn-plax cascade 500",
+   "cascade 500",
+   "penn plax cascade 500"
+  ],
+  "est": [
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1f5fc0",
+    "translucent": true
+   },
+   "lid": {
+    "hex": "#16171a"
+   },
+   "motor": {
+    "hex": "#16171a"
+   },
+   "intake": {
+    "hex": "#16171a"
+   },
+   "strainer": {
+    "hex": "#16171a"
+   },
+   "outlet": {
+    "hex": "#16171a"
+   },
+   "foot": {
+    "hex": "#2a2b2d"
+   },
+   "clips": {
+    "hex": "#16171a"
+   },
+   "accent": {
+    "hex": "#2f8fe8",
+    "where": "light-blue valve taps and elbow on the head"
+   },
+   "photo": "https://penn-plax.focuspointsap.com/images/thumbs/0001354_cascade-500-canister-filter-115-gph-up-to-30-gallons_520.jpeg"
+  },
+  "colorsEst": [
+   "intake",
+   "strainer",
+   "outlet",
+   "clips"
+  ],
+  "colorsNote": "Penn-Plax trade page (price hidden behind a login, so none entered). Translucent blue media tank, black head, handle and base, blue/black valve taps. Dimensions: the Measurements W x D x H figures (the Dimensions section differs slightly). intakeMm is an estimate."
+ },
+ {
+  "id": "penn-plax-cascade-700",
+  "brand": "Penn-Plax",
+  "model": "Cascade 700 Canister Filter",
+  "kind": "canister",
+  "gph": 185,
+  "galMax": 65,
+  "watts": 25,
+  "bodyMm": {
+   "w": 292,
+   "d": 254,
+   "h": 381
+  },
+  "intakeMm": 300,
+  "url": "https://penn-plax.focuspointsap.com/ccf2ul",
+  "asOf": "2026-10-29",
+  "names": [
+   "penn-plax cascade 700",
+   "cascade 700",
+   "penn plax cascade 700"
+  ],
+  "est": [
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1f5fc0",
+    "translucent": true
+   },
+   "lid": {
+    "hex": "#16171a"
+   },
+   "motor": {
+    "hex": "#16171a"
+   },
+   "intake": {
+    "hex": "#16171a"
+   },
+   "strainer": {
+    "hex": "#16171a"
+   },
+   "outlet": {
+    "hex": "#16171a"
+   },
+   "foot": {
+    "hex": "#2a2b2d"
+   },
+   "clips": {
+    "hex": "#16171a"
+   },
+   "accent": {
+    "hex": "#2f8fe8",
+    "where": "light-blue valve taps and elbow on the head"
+   },
+   "photo": "https://penn-plax.focuspointsap.com/images/thumbs/0001304_cascade-700-canister-filter-185-gph-up-to-65-gallons_520.jpeg"
+  },
+  "colorsEst": [
+   "intake",
+   "strainer",
+   "outlet",
+   "clips"
+  ],
+  "colorsNote": "Penn-Plax trade page (price hidden behind a login, so none entered). Translucent blue media tank, black head, handle and base, blue/black valve taps. Dimensions: the Measurements W x D x H figures (the Dimensions section differs slightly). intakeMm is an estimate."
+ },
+ {
+  "id": "penn-plax-cascade-1000",
+  "brand": "Penn-Plax",
+  "model": "Cascade 1000 Canister Filter",
+  "kind": "canister",
+  "gph": 265,
+  "galMax": 100,
+  "watts": 28.5,
+  "bodyMm": {
+   "w": 292,
+   "d": 254,
+   "h": 432
+  },
+  "intakeMm": 300,
+  "url": "https://penn-plax.focuspointsap.com/ccf3ul",
+  "asOf": "2026-10-29",
+  "names": [
+   "penn-plax cascade 1000",
+   "cascade 1000",
+   "penn plax cascade 1000"
+  ],
+  "est": [
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1f5fc0",
+    "translucent": true
+   },
+   "lid": {
+    "hex": "#16171a"
+   },
+   "motor": {
+    "hex": "#16171a"
+   },
+   "intake": {
+    "hex": "#16171a"
+   },
+   "strainer": {
+    "hex": "#16171a"
+   },
+   "outlet": {
+    "hex": "#16171a"
+   },
+   "foot": {
+    "hex": "#2a2b2d"
+   },
+   "clips": {
+    "hex": "#16171a"
+   },
+   "accent": {
+    "hex": "#2f8fe8",
+    "where": "light-blue valve taps and elbow on the head"
+   },
+   "photo": "https://penn-plax.focuspointsap.com/images/thumbs/0001272_cascade-1000-canister-filter-265-gph-up-to-100-gallons_520.jpeg"
+  },
+  "colorsEst": [
+   "intake",
+   "strainer",
+   "outlet",
+   "clips"
+  ],
+  "colorsNote": "Penn-Plax trade page (price hidden behind a login, so none entered). Translucent blue media tank, black head, handle and base, blue/black valve taps. Dimensions: the Measurements W x D x H figures (the Dimensions section differs slightly). intakeMm is an estimate. The maker photo for the 1000 is the same picture as the 700."
+ },
+ {
+  "id": "penn-plax-cascade-1200",
+  "brand": "Penn-Plax",
+  "model": "Cascade 1200 Canister Filter",
+  "kind": "canister",
+  "gph": 315,
+  "galMax": 150,
+  "watts": 45.5,
+  "bodyMm": {
+   "w": 292,
+   "d": 279,
+   "h": 521
+  },
+  "intakeMm": 300,
+  "url": "https://penn-plax.focuspointsap.com/ccf4ul",
+  "asOf": "2026-10-29",
+  "names": [
+   "penn-plax cascade 1200",
+   "cascade 1200",
+   "penn plax cascade 1200"
+  ],
+  "est": [
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1f5fc0",
+    "translucent": true
+   },
+   "lid": {
+    "hex": "#16171a"
+   },
+   "motor": {
+    "hex": "#16171a"
+   },
+   "intake": {
+    "hex": "#16171a"
+   },
+   "strainer": {
+    "hex": "#16171a"
+   },
+   "outlet": {
+    "hex": "#16171a"
+   },
+   "foot": {
+    "hex": "#2a2b2d"
+   },
+   "clips": {
+    "hex": "#16171a"
+   },
+   "accent": {
+    "hex": "#2f8fe8",
+    "where": "light-blue valve taps and elbow on the head"
+   },
+   "photo": "https://penn-plax.focuspointsap.com/images/thumbs/0001251_cascade-1200-canister-filter-315-gph-up-to-150-gallons_520.jpeg"
+  },
+  "colorsEst": [
+   "intake",
+   "strainer",
+   "outlet",
+   "clips"
+  ],
+  "colorsNote": "Penn-Plax trade page (price hidden behind a login, so none entered). Translucent blue media tank, black head, handle and base, blue/black valve taps. Dimensions: the Measurements W x D x H figures (the Dimensions section differs slightly). intakeMm is an estimate."
+ },
+ {
+  "id": "oase-filtosmart-thermo-200",
+  "brand": "Oase",
+  "model": "FiltoSmart Thermo 200 Canister Filter",
+  "kind": "canister",
+  "gph": 210,
+  "galMax": 55,
+  "watts": 200,
+  "bodyMm": {
+   "w": 279,
+   "d": 178,
+   "h": 338
+  },
+  "intakeMm": 300,
+  "url": "https://fishtanksdirect.com/oase-filtosmart-thermo-200-canister-filter-w-heater/",
+  "asOf": "2026-10-29",
+  "names": [
+   "oase filtosmart thermo 200",
+   "filtosmart thermo 200",
+   "oase filtosmart 200"
+  ],
+  "est": [
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#4a4d52"
+   },
+   "lid": {
+    "hex": "#2f3236"
+   },
+   "motor": {
+    "hex": "#2f3236"
+   },
+   "intake": {
+    "hex": "#2f3236"
+   },
+   "strainer": {
+    "hex": "#2f3236"
+   },
+   "outlet": {
+    "hex": "#2f3236"
+   },
+   "clips": {
+    "hex": "#2a6fc8"
+   },
+   "accent": {
+    "hex": "#2a6fc8",
+    "where": "blue latch/handle on the head and blue valve caps"
+   },
+   "photo": "https://cdn11.bigcommerce.com/s-15h88fcyw7/images/stencil/1280x1280/products/6497/9761/OASE_FiltoSmart_Thermo_200_Canister_Filter_w-_Heater__36246.1630681029.jpg?c=1"
+  },
+  "colorsEst": [
+   "intake",
+   "strainer",
+   "outlet"
+  ],
+  "colorsNote": "Grey body with blue latch and caps (from a small product photo; the page states no colours). Page shows a single price labelled Now ($219.99) with no list price, so priceUsd is left out. watts = the integrated 200 W heater. Specs: 210 GPH max, up to 55 gal, 11.0 x 7.0 x 13.3 in."
+ },
+ {
+  "id": "fluval-c2",
+  "brand": "Fluval",
+  "model": "C2 Power Filter",
+  "kind": "hob",
+  "gph": 119,
+  "galMax": 30,
+  "bodyMm": {
+   "w": 152,
+   "d": 89,
+   "h": 152
+  },
+  "intakeMm": 200,
+  "priceUsd": 49.99,
+  "url": "https://aquacave.com/fluval-c3-power-filter.html",
+  "asOf": "2026-10-29",
+  "names": [
+   "fluval c2",
+   "fluval c2 power filter"
+  ],
+  "est": [
+   "bodyMm",
+   "intakeMm",
+   "watts"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#3a3d41",
+    "translucent": true
+   },
+   "lid": {
+    "hex": "#3a3d41",
+    "translucent": true
+   },
+   "motor": {
+    "hex": "#16171a"
+   },
+   "intake": {
+    "hex": "#5f6b73",
+    "translucent": true
+   },
+   "strainer": {
+    "hex": "#5f6b73",
+    "translucent": true
+   },
+   "outlet": {
+    "hex": "#3a3d41",
+    "translucent": true
+   },
+   "accent": {
+    "hex": "#8a1c22",
+    "where": "deep red filter pads seen through the smoky cover"
+   },
+   "photo": "https://cdn11.bigcommerce.com/s-zrfsy1cc33/images/stencil/1280x1280/products/5831/46573/fluval-c3-2-500__12237.1703063507.jpg?c=1"
+  },
+  "colorsEst": [
+   "motor",
+   "intake",
+   "strainer",
+   "outlet"
+  ],
+  "colorsNote": "Colours from the C3 BOX photo (smoky translucent cover over red media); same family look for C2/C4. The Aquacave page gives price, max gph and tank rating (C2 119 gph, 30 gal, listed sold out; C3 153 gph, 50 gal; C4 264 gph, 70 gal) but no dimensions or watts, so bodyMm is an estimate."
+ },
+ {
+  "id": "fluval-c3",
+  "brand": "Fluval",
+  "model": "C3 Power Filter",
+  "kind": "hob",
+  "gph": 153,
+  "galMax": 50,
+  "bodyMm": {
+   "w": 178,
+   "d": 102,
+   "h": 178
+  },
+  "intakeMm": 200,
+  "priceUsd": 59.99,
+  "url": "https://aquacave.com/fluval-c3-power-filter.html",
+  "asOf": "2026-10-29",
+  "names": [
+   "fluval c3",
+   "fluval c3 power filter"
+  ],
+  "est": [
+   "bodyMm",
+   "intakeMm",
+   "watts"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#3a3d41",
+    "translucent": true
+   },
+   "lid": {
+    "hex": "#3a3d41",
+    "translucent": true
+   },
+   "motor": {
+    "hex": "#16171a"
+   },
+   "intake": {
+    "hex": "#5f6b73",
+    "translucent": true
+   },
+   "strainer": {
+    "hex": "#5f6b73",
+    "translucent": true
+   },
+   "outlet": {
+    "hex": "#3a3d41",
+    "translucent": true
+   },
+   "accent": {
+    "hex": "#8a1c22",
+    "where": "deep red filter pads seen through the smoky cover"
+   },
+   "photo": "https://cdn11.bigcommerce.com/s-zrfsy1cc33/images/stencil/1280x1280/products/5831/46573/fluval-c3-2-500__12237.1703063507.jpg?c=1"
+  },
+  "colorsEst": [
+   "motor",
+   "intake",
+   "strainer",
+   "outlet"
+  ],
+  "colorsNote": "Colours from the C3 BOX photo (smoky translucent cover over red media); same family look for C2/C4. The Aquacave page gives price, max gph and tank rating (C2 119 gph, 30 gal, listed sold out; C3 153 gph, 50 gal; C4 264 gph, 70 gal) but no dimensions or watts, so bodyMm is an estimate."
+ },
+ {
+  "id": "fluval-c4",
+  "brand": "Fluval",
+  "model": "C4 Power Filter",
+  "kind": "hob",
+  "gph": 264,
+  "galMax": 70,
+  "bodyMm": {
+   "w": 208,
+   "d": 152,
+   "h": 216
+  },
+  "intakeMm": 200,
+  "priceUsd": 79.99,
+  "url": "https://aquacave.com/fluval-c3-power-filter.html",
+  "asOf": "2026-10-29",
+  "names": [
+   "fluval c4",
+   "fluval c4 power filter"
+  ],
+  "est": [
+   "bodyMm",
+   "intakeMm",
+   "watts"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#3a3d41",
+    "translucent": true
+   },
+   "lid": {
+    "hex": "#3a3d41",
+    "translucent": true
+   },
+   "motor": {
+    "hex": "#16171a"
+   },
+   "intake": {
+    "hex": "#5f6b73",
+    "translucent": true
+   },
+   "strainer": {
+    "hex": "#5f6b73",
+    "translucent": true
+   },
+   "outlet": {
+    "hex": "#3a3d41",
+    "translucent": true
+   },
+   "accent": {
+    "hex": "#8a1c22",
+    "where": "deep red filter pads seen through the smoky cover"
+   },
+   "photo": "https://cdn11.bigcommerce.com/s-zrfsy1cc33/images/stencil/1280x1280/products/5831/46573/fluval-c3-2-500__12237.1703063507.jpg?c=1"
+  },
+  "colorsEst": [
+   "motor",
+   "intake",
+   "strainer",
+   "outlet"
+  ],
+  "colorsNote": "Colours from the C3 BOX photo (smoky translucent cover over red media); same family look for C2/C4. The Aquacave page gives price, max gph and tank rating (C2 119 gph, 30 gal, listed sold out; C3 153 gph, 50 gal; C4 264 gph, 70 gal) but no dimensions or watts, so bodyMm is an estimate."
+ },
+ {
+  "id": "hikari-bacto-surge-large",
+  "brand": "Hikari",
+  "model": "Bacto-Surge Sponge Filter Kit (Large)",
+  "kind": "sponge",
+  "galMax": 75,
+  "bodyMm": {
+   "w": 114,
+   "d": 114,
+   "h": 102
+  },
+  "priceUsd": 13.99,
+  "url": "https://fitzfishponds.com/bacto-surge-sponge-filter-large/",
+  "asOf": "2026-10-29",
+  "names": [
+   "hikari bacto-surge large",
+   "bacto-surge sponge filter large",
+   "bacto surge large"
+  ],
+  "est": [
+   "bodyMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1c1c1c"
+   },
+   "sponge": "#1c1c1c",
+   "intake": {
+    "hex": "#d8dde0",
+    "translucent": true
+   },
+   "outlet": {
+    "hex": "#d8dde0",
+    "translucent": true
+   },
+   "accent": {
+    "hex": "#151515",
+    "where": "black round base disc with a black collar; lift tube is clear"
+   },
+   "cups": "black",
+   "photo": "https://cdn11.bigcommerce.com/s-m39bqdjce8/images/stencil/1280x1280/products/2823/4980/xjxcme6mjyukgitv5xxt__96562.1722100198.png?c=1"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Black fluted foam, clear lift tube, black base disc (box photo). Page states foam size 4 in H x 4.5 in D and up to 75 gal; bodyMm w/d = 4.5 in, h = 4 in foam only (overall height with tube/base not stated)."
  }
 ]
