@@ -20,7 +20,8 @@ import { loadProfile } from './demandPanel';
 import { placedSetup, putTank, sceneForBuild } from './buildPick';
 import { constraintsOf, editBrief, getBrief, lockedStock, setBudget, setCareTime, setMonthly, setSpace } from './setupBrief';
 import { briefToWants, clearItem, setItem, valueOf } from '../scene/brief';
-import { openBuildPlan } from './buildPlanSheet';
+import { openBuildPlan, confBadge } from './buildPlanSheet';
+import { buildPlanOf } from '../demand/buildplan';
 import { applyAlternative, type Alternative, type Infeasible } from '../demand/infeasible';
 import { getSpecies as speciesOf } from '../data/species';
 import { chipsFor, dropWish, refine, type Chip } from '../demand/refine';
@@ -97,7 +98,7 @@ export function attachSuggest(store: Store, viewer: Viewer, status: (m: string, 
   };
 
   const card = (p: Proposal, i: number) => {
-    const b = p.build, sp = placedSetup(b), D = demandOf(sp, loadProfile()), rh = rhythmOf(D, sp);
+    const b = p.build, sp = placedSetup(b), D = demandOf(sp, loadProfile()), rh = rhythmOf(D, sp), cf = buildPlanOf(p, loadProfile()).figures;
     const checks = p.status.map(s => `<li class="sgOk">${esc(s.label)}: ${esc(s.text)}</li>`).join('');
     const animals = b.animals.map(a => `${a.n} ${esc(getSpecies(a.species)?.name ?? a.species)}`).join(', ');
     return `<li class="bpCard" data-i="${i}">
@@ -107,7 +108,7 @@ ${cardLines[i] ? `<div class="sgTrade" data-trade="${i}">${esc(cardLines[i])}</d
 <div class="spNote">${esc(p.archetype.why)} ${esc(tankLabel(b.tank, units()))} with ${animals}. ${esc(b.label)} build.</div>
 ${b.finish ? `<ul class="bpGear sgFinish">${b.finish.lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}
 ${p.costLines.length ? `<ul class="bpGear sgCost" aria-label="What the set-up price is made of, by standard">${layered(p.costLines)}</ul>` : ''}
-<div class="bpNums"><span><b>${usd(p.totals.startupUsd)}</b>set-up${p.saved ? `<i>${usd(p.saved)} less: what you have</i>` : ''}</span><span><b>${usd(p.totals.monthlyUsd)}</b>a month</span><span><b>${p.totals.minPerWeek}</b>min a week<i>estimate</i></span></div>
+<div class="bpNums"><span><b>${usd(p.totals.startupUsd)}</b>set-up${confBadge(cf.startup)}${p.saved ? `<i>${usd(p.saved)} less: what you have</i>` : ''}</span><span><b>${usd(p.totals.monthlyUsd)}</b>a month${confBadge(cf.monthly)}</span><span><b>${p.totals.minPerWeek}</b>min a week${confBadge(cf.care)}</span><span><b>${cf.setupHours}</b>h to set up${confBadge(cf.setup)}</span></div>
 ${p.phases ? `<div class="sgPhases"><b>Buy in two phases</b><div>Phase 1, ${usd(p.phases.phase1Usd)} now: ${esc(p.phases.phase1.join(', '))}.</div><div>Phase 2, ${usd(p.phases.phase2Usd)} after the tank has cycled: ${esc(p.phases.phase2.join(', ') || 'the animals')}.</div><div class="spNote">${esc(p.phases.note)}</div></div>` : ''}
 <div class="spNote">Rhythm: ${esc(rh.text)} (estimate)${rh.awayText ? `. Can be left: ${esc(rh.awayText)}.` : ''}</div>
 ${p.ownedNotes.map(n => `<div class="${n.kind === 'credit' ? 'spNote' : 'spWarn'}">${esc(n.text)}</div>`).join('')}

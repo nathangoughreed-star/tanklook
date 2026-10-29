@@ -82,3 +82,33 @@ describe('Build plan', () => {
     if (look) expect(buildPlanOf(look, P).gallons).toBeGreaterThanOrEqual(10);
   });
 });
+
+describe('Setup effort, care commitment and confidence (lane NG6)', () => {
+  it('betta plan: hours derived from parts, care line, gates, badges', () => {
+    const b = buildPlanOf(betta()!, P);
+    expect(b.effort.hours).toBeGreaterThan(1);
+    expect(b.effort.hours).toBeCloseTo(b.effort.parts.reduce((t, x) => t + x.hours, 0), 0);
+    expect(b.effort.parts.every(x => x.basis.length > 0)).toBe(true);
+    expect(b.effort.conf).toBe('provisional');
+    expect(b.care.text).toMatch(/^about \d+ min a week, 1 x [\d.]+ gal water change$/);
+    expect(b.care.minPerWeek).toBe(Math.round(demandOf(betta()!.build.setup, P).totals.minPerWeek));
+    expect(b.setupGates.length).toBe(b.setup.length);
+    expect(b.setupGates.join(' ')).toMatch(/Ammonia 0 and nitrite 0 for 7 days/);
+    expect(b.stocking.some(s => /Ammonia 0/.test(s.gate ?? ''))).toBe(true);
+    const html = buildPlanHtml(b);
+    expect(html).toContain('Ready when:');
+    expect(html).toMatch(/data-conf="provisional"[^>]*title="[^"]+"/);
+    expect(buildPlanText(b)).toContain('Your time: about');
+  });
+  it('a bigger tank takes longer to set up; dry has no cycling hours', () => {
+    const d = buildPlanOf(dry(), P), r = buildPlanOf(reef(), P);
+    expect(d.effort.parts.some(x => x.id === 'cycling')).toBe(false);
+    expect(r.effort.parts.some(x => x.id === 'cycling')).toBe(true);
+    expect(d.care.waterChange).toBeUndefined();
+  });
+  it('cost confidence is validated only when listings back most of the price', () => {
+    const f = buildPlanOf(betta()!, P).figures.startup;
+    expect(['validated', 'provisional']).toContain(f.conf);
+    expect(f.why).toMatch(/\d+ %/);
+  });
+});

@@ -8,13 +8,14 @@ import type { CostLine, Layer } from './costlines';
 import { lightShare } from '../scene/finish';
 import { demandOf } from './engine';
 import { rhythmOf } from './rhythm';
+import { careCommitmentOf, figuresOf, setupEffortOf, type CareCommitment, type Figures, type SetupEffort } from './effort';
 import type { Proposal } from './suggest';
 import type { UserProfile } from './types';
 
 export type Habitat = 'fresh' | 'salt' | 'dry';
 export interface BuyRow { label: string; usd: number; owned: boolean; layer: Layer; note?: string }
 export interface BuyGroup { id: 'have' | 'first' | 'later'; title: string; blurb: string; rows: BuyRow[]; usd: number }
-export interface Stage { week: string; title: string; animals: string; why: string }
+export interface Stage { week: string; title: string; animals: string; why: string; /** what the tests must show before this stage (a readiness gate) */ gate?: string }
 export interface Cycling { method: string; weeks: [number, number]; text: string; tests: string[] }
 export interface BuildPlan {
   title: string; habitat: Habitat; gallons: number;
@@ -22,6 +23,14 @@ export interface BuildPlan {
   totalUsd: number; savedUsd: number;
   buy: BuyGroup[];
   setup: string[];
+  /** the readiness gate after each set-up step (same index as `setup`), when there is one */
+  setupGates: (string | undefined)[];
+  /** setup hours from the build's parts, one stated basis each */
+  effort: SetupEffort;
+  /** the one-line weekly care commitment */
+  care: CareCommitment;
+  /** validated / provisional per headline figure */
+  figures: Figures;
   cycling?: Cycling;
   stocking: Stage[];
   maintenance: string[];
@@ -87,6 +96,18 @@ function setupSteps(p: Proposal, h: Habitat, gal: number): string[] {
   return out;
 }
 
+/** The check that must pass before the next step, one per set-up step (undefined = none). Matches the order of setupSteps. */
+function setupGatesOf(h: Habitat, steps: string[]): (string | undefined)[] {
+  return steps.map(s => {
+    if (/^Set the tank on its stand/.test(s)) return h === 'dry' ? undefined : 'Level on both axes; before decor goes in, fill and check the seams stay dry for 24 hours.';
+    if (/^Fill with tap|^Mix the salt/.test(s)) return h === 'salt' ? 'Salinity reads 1.024 to 1.026 and the water is at temperature before the rock goes in.' : 'Water at the heater\'s set temperature for 2 days with no swing of more than 2 °F.';
+    if (/^Install the heat, UVB/.test(s)) return 'Warm side, cool side and humidity in range at the animal\'s level for 2 days.';
+    if (/^Fit the lid/.test(s)) return 'No gap an animal could use; the lid is latched.';
+    if (/^Start the cycle/.test(s)) return h === 'salt' ? 'Ammonia 0, nitrite 0 and nitrate steady for 7 days before any coral or fish.' : 'Ammonia 0 and nitrite 0 for 7 days in a row (tested 24 hours after a dose) before any fish.';
+    return undefined;
+  });
+}
+
 function stockingOf(p: Proposal, h: Habitat): Stage[] {
   const xs = cats(p), name = (x: { a: { n: number }; sp: { name: string } }) => `${x.a.n} ${x.sp.name}`;
   if (!xs.length) return [];
@@ -143,11 +164,21 @@ export function extrasLabel(p: Proposal): string | undefined {
   return parts.length ? `Extras (${parts.join('; ')})` : 'Extras';
 }
 
+const gateOf = (st: Stage, h: Habitat): string | undefined =>
+  /Quarantine|Check the habitat/.test(st.title) ? undefined
+  : h === 'dry' ? 'Gradient and humidity held in range for 2 days.'
+  : /second batch/i.test(st.title) ? 'Ammonia 0 and nitrite 0 two weeks after the first batch.'
+  : /Corals/.test(st.title) ? 'Nitrate and salinity steady for a month.'
+  : /^(Day 1|Week)/.test(st.week) ? 'Ammonia 0 and nitrite 0 (cycle done, 7 days) before this stage.' : undefined;
+
 export function buildPlanOf(p: Proposal, P: UserProfile): BuildPlan {
   const h = habitatOf(p), gal = modelGallons(p.build.tank), rh = rhythmOf(demandOf(p.build.setup, P), p.build.setup);
+  const setup = setupSteps(p, h, gal), cycling = cyclingOf(p, h, demandOf(p.build.setup, P).items.some(c => c.key === 'testkit'));
+  const stocking = stockingOf(p, h).map(st => { const gate = gateOf(st, h); return gate ? { ...st, gate } : st; });
   return {
     title: `Build plan: ${p.archetype.title} (${p.strategyLabel})`, habitat: h, gallons: Math.round(gal * 10) / 10, totalUsd: p.totals.startupUsd, savedUsd: p.saved,
-    buy: buyGroups(p.costLines, p.taxPct, extrasLabel(p)), setup: setupSteps(p, h, gal), cycling: cyclingOf(p, h, demandOf(p.build.setup, P).items.some(c => c.key === 'testkit')), stocking: stockingOf(p, h),
+    buy: buyGroups(p.costLines, p.taxPct, extrasLabel(p)), setup, setupGates: setupGatesOf(h, setup), cycling, stocking,
+    effort: setupEffortOf(p, h, gal, P, cycling?.weeks), care: careCommitmentOf(p, h, gal, P), figures: figuresOf(p, h, gal, P, cycling?.weeks),
     maintenance: maintenanceOf(h, gal, rh.text), rhythm: rh.text,
   };
 }
@@ -156,9 +187,10 @@ export function buildPlanOf(p: Proposal, P: UserProfile): BuildPlan {
 export function buildPlanText(b: BuildPlan): string {
   const L = [b.title, `${b.gallons} gal, ${usd(b.totalUsd)} all in${b.savedUsd ? ` (${usd(b.savedUsd)} less: what you have)` : ''}`, ''];
   for (const g of b.buy) L.push(`${g.title}${g.id === 'have' ? '' : `: ${usd(g.usd)}`}`, ...g.rows.map(r => `  - ${r.label}: ${r.owned ? 'you have' : usd(r.usd)}`), '');
-  L.push('Set up', ...b.setup.map((s, i) => `  ${i + 1}. ${s}`), '');
+  L.push(`Your time: about ${b.effort.hours} h to set up (provisional), then ${b.care.text} (provisional)`, '');
+  L.push('Set up', ...b.setup.flatMap((s, i) => [`  ${i + 1}. ${s}`, ...(b.setupGates[i] ? [`     Ready when: ${b.setupGates[i]}`] : [])]), '');
   if (b.cycling) L.push(`Cycling: ${b.cycling.method}, ${b.cycling.weeks[0]} to ${b.cycling.weeks[1]} weeks`, '  ' + b.cycling.text, ...b.cycling.tests.map(t => `  - Test ${t}`), '');
-  if (b.stocking.length) L.push('Adding animals', ...b.stocking.map(s => `  ${s.week}: ${s.title} (${s.animals}). ${s.why}`), '');
+  if (b.stocking.length) L.push('Adding animals', ...b.stocking.map(s => `  ${s.week}: ${s.title} (${s.animals}). ${s.why}${s.gate ? ` Ready when: ${s.gate}` : ''}`), '');
   L.push('Maintenance', ...b.maintenance.map(m => `  - ${m}`));
   return L.join('\n');
 }

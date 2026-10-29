@@ -5,17 +5,20 @@ import type { Proposal } from '../demand/suggest';
 import type { UserProfile } from '../demand/types';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+/** validated / provisional badge: provisional = dotted underline and a tooltip with why (inline style, so no stylesheet is touched) */
+export const confBadge = (f: { conf: string; why: string }) => `<span class="confBadge" data-conf="${f.conf}" title="${esc(f.why)}" style="font-size:.75em;margin-left:.3em;cursor:help;${f.conf === 'provisional' ? 'border-bottom:1px dotted currentColor' : 'font-weight:600'}">${f.conf}</span>`;
 const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
 
 export function buildPlanHtml(b: BuildPlan): string {
   const group = (g: BuildPlan['buy'][number]) => `<h3>${esc(g.title)}${g.id === 'have' ? '' : `: ${usd(g.usd)}`}</h3><p class="sheetNote">${esc(g.blurb)}</p><table class="bpBuy" data-group="${g.id}">${g.rows.map((r, i) =>
     `<tr class="${r.owned ? 'own' : ''}"><th scope="row">${g.id === 'have' ? '' : `${i + 1}. `}${esc(r.label)}${r.note ? ` <em>(${esc(r.note)})</em>` : ''}</th><td class="q">${r.owned ? 'you have' : usd(r.usd)}</td></tr>`).join('')}</table>`;
   const c = b.cycling;
-  return `<h1>${esc(b.title)}</h1><p class="sheetSub">${b.gallons} gal · ${usd(b.totalUsd)} all in${b.savedUsd ? ` (${usd(b.savedUsd)} less: what you have)` : ''} · ${b.habitat === 'dry' ? 'dry enclosure' : b.habitat === 'salt' ? 'saltwater' : 'freshwater'}</p>
+  return `<h1>${esc(b.title)}</h1><p class="sheetSub">${b.gallons} gal · ${usd(b.totalUsd)}${confBadge(b.figures.startup)} all in${b.savedUsd ? ` (${usd(b.savedUsd)} less: what you have)` : ''} · ${b.habitat === 'dry' ? 'dry enclosure' : b.habitat === 'salt' ? 'saltwater' : 'freshwater'}</p>
+<div class="bpCare"><b>Your time:</b> about ${b.effort.hours} h to set up${confBadge(b.effort)} · <span data-care>${esc(b.care.text)}</span>${confBadge(b.care)}<details><summary>Where the set-up hours come from</summary><ul>${b.effort.parts.map(x => `<li>${esc(x.label)}: ${Math.round(x.hours * 10) / 10} h <em>(${esc(x.basis)})</em></li>`).join('')}</ul></details></div>
 <h2>1. What to buy, in order</h2>${b.buy.map(group).join('')}
-<h2>2. Set it up</h2><ol class="bpSteps">${b.setup.map(s => `<li>${esc(s)}</li>`).join('')}</ol>
+<h2>2. Set it up</h2><ol class="bpSteps">${b.setup.map((s, i) => `<li>${esc(s)}${b.setupGates[i] ? `<div class="bpGate"><b>Ready when:</b> ${esc(b.setupGates[i]!)}</div>` : ''}</li>`).join('')}</ol>
 ${c ? `<h2>3. Cycle the tank: ${esc(c.method.toLowerCase())}, ${c.weeks[0]} to ${c.weeks[1]} weeks</h2><p>${esc(c.text)}</p><b>What to test</b><ul>${c.tests.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : '<h2>3. No cycling needed</h2><p>A dry enclosure has no water to cycle. Run it for 2 days first (see the steps above).</p>'}
-${b.stocking.length ? `<h2>4. When to add the animals</h2><table class="bpStock">${b.stocking.map(s => `<tr><th scope="row">${esc(s.week)}</th><td><b>${esc(s.title)}</b>: ${esc(s.animals)}<br>${esc(s.why)}</td></tr>`).join('')}</table>` : ''}
+${b.stocking.length ? `<h2>4. When to add the animals</h2><table class="bpStock">${b.stocking.map(s => `<tr><th scope="row">${esc(s.week)}</th><td><b>${esc(s.title)}</b>: ${esc(s.animals)}<br>${esc(s.why)}${s.gate ? `<div class="bpGate"><b>Ready when:</b> ${esc(s.gate)}</div>` : ''}</td></tr>`).join('')}</table>` : ''}
 <h2>5. Keep it going</h2><ul class="bpKeep">${b.maintenance.map(m => `<li>${esc(m)}</li>`).join('')}</ul>
 <p class="sheetNote">A plan from the data, not advice from a vet or a shop: follow the care needs shown for each animal, and slow down if the tests say so.</p>`;
 }
