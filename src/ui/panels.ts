@@ -701,7 +701,7 @@ Cancel, then change the name, to keep both.`)) return;
     if (key !== fitKey) {
       fitKey = key; fitMemo = new Map(); exact = new Map(); gen++; refining = -1;
       const litres = volume(s.tank).litres, have = present.map(getSpecies).filter((x): x is Species => !!x);
-      const env = { corals: hasCorals(s.items), water: s.tech ? tempEvidence(s) : undefined, fit: minFit(s) };
+      const env = { corals: hasCorals(s.items), water: s.tech ? tempEvidence(s, undefined, store.scene.units === 'in') : undefined, fit: minFit(s) };
       for (const sp of SPECIES) fitMemo.set(sp.id, fitFrom(whysAnimal(sp, litres, ex, have, env), gated));
       exactRead = strictReader(s, store.scene.units, sp => fitMemo.get(sp.id) ?? OK_FIT);
     }
@@ -753,7 +753,7 @@ Cancel, then change the name, to keep both.`)) return;
     hint.hidden = !on; hint.textContent = on ? 'Grayed in the list: does not suit this tank, the care level or the animals already in it. They can still be added.' : '';
     if (!on) return null;
     const litres = volume(s.tank).litres, present = [...new Set(s.fish.map(f => f.species))].map(getSpecies).filter((x): x is Species => !!x);
-    const env = { corals: hasCorals(s.items), water: s.tech ? tempEvidence(s) : undefined, fit: minFit(s) }; // the tank's target, or with no heater the room it follows
+    const env = { corals: hasCorals(s.items), water: s.tech ? tempEvidence(s, undefined, store.scene.units === 'in') : undefined, fit: minFit(s) }; // the tank's target, or with no heater the room it follows
     // the main blocking reason, and how many other material concerns stand under it (all of them in the tooltip); with no blocker the
     // first concern is the visible message (a note, the item not grayed), so an advisory never hides behind a clean-looking row
     return sp => gateOf(whysAnimal(sp, litres, ex, present, env));

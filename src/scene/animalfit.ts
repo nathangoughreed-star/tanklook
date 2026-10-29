@@ -5,7 +5,7 @@
 import { CARE, EXPERTISE_NAME, SHRIMP, type Expertise } from '../data/care';
 import type { Species } from '../data/species';
 import { shareOf } from '../data/growth';
-import { fmtC, operatingCheck, sharedRange, type TempEvidence } from './temprange';
+import { fmtC, fmtT, operatingCheck, sharedRange, type TempEvidence } from './temprange';
 
 /** A species' smallest tank is allowed 10 % slack (a 5 gal, 19 L, takes a 20 L species); shared by the animal gate, the tank-fit engine and the hard truths. */
 export const MIN_SLACK_PCT = 100 / 0.9;
@@ -100,7 +100,7 @@ export function whysAnimal(sp: Species, litres: number, expertise: Expertise, pr
       }
     }
   }
-  out.push(...tempWhys(sp, present)); // the combination first: no setting fixes it
+  out.push(...tempWhys(sp, present, env.water?.us)); // the combination first: no setting fixes it
   const setup = setupTemp(sp, env.water); if (setup) out.push(setup); // then the setup, not the combination: fixable, said with the fix
   return [...out.filter(w => !w.concern), ...out.filter(w => w.concern)];
 }
@@ -112,26 +112,26 @@ function setupTemp(sp: Species, water?: TempEvidence): AnimalWhy | null {
   if (!t || !water || sp.habitat === 'land') return null;
   const k = operatingCheck(sharedRange([sp]), water);
   if (k.state !== 'outside' && k.state !== 'conditional') return null;
-  const at = water.target ?? water.room, need = at < t[0] ? 'requires heating' : 'requires cooling';
-  const why = water.target !== undefined ? `the target is ${at} °C` : `no heater, the water is estimated at the ${water.roomSet ? '' : 'assumed '}${at} °C room`;
-  return { kind: 'compat', temp: true, ...(k.state === 'conditional' ? { concern: true as const } : {}), text: `water temperature: ${need}, wants ${fmtC(t)}, ${why}: ${k.fix}` };
+  const us = water.us, at = water.target ?? water.room, need = at < t[0] ? 'requires heating' : 'requires cooling';
+  const why = water.target !== undefined ? `the target is ${fmtT(at, us)}` : `no heater, the water is estimated at the ${water.roomSet ? '' : 'assumed '}${fmtT(at, us)} room`;
+  return { kind: 'compat', temp: true, ...(k.state === 'conditional' ? { concern: true as const } : {}), text: `water temperature: ${need}, wants ${fmtC(t, us)}, ${why}: ${k.fix}` };
 }
 
 /** Water temperature on the whole stocking (temprange.ts): adding `sp` empties the shared comfortable range (blocking), or leaves it
  *  NARROW_C wide or less (a concern, not an incompatibility). When the others already share nothing, `sp` is judged against each. */
-function tempWhys(sp: Species, present: Species[]): AnimalWhy[] {
+function tempWhys(sp: Species, present: Species[], us?: boolean): AnimalWhy[] {
   const t = CARE[sp.id]?.temp;
   if (!t || sp.habitat === 'land') return [];
   const others = sharedRange(present.filter(o => o.id !== sp.id));
   if (others.state === 'unknown') return [];
-  const none = (o: Species) => ({ kind: 'compat' as const, temp: true as const, text: `water temperature: No suitable shared temperature identified: its ${fmtC(t)} against ${fmtC(CARE[o.id].temp!)} (${o.name})` });
+  const none = (o: Species) => ({ kind: 'compat' as const, temp: true as const, text: `water temperature: No suitable shared temperature identified: its ${fmtC(t, us)} against ${fmtC(CARE[o.id].temp!, us)} (${o.name})` });
   // the others already share nothing (or one value): judge this one against each, a pair meeting at one value included
   const gap = (o: Species) => Math.min(t[1], CARE[o.id].temp![1]) - Math.max(t[0], CARE[o.id].temp![0]);
-  const single = (o: Species) => ({ kind: 'compat' as const, temp: true as const, concern: true as const, text: `water temperature: Only one shared temperature (${Math.max(t[0], CARE[o.id].temp![0])} °C); no operating margin (${o.name})` });
+  const single = (o: Species) => ({ kind: 'compat' as const, temp: true as const, concern: true as const, text: `water temperature: Only one shared temperature (${fmtT(Math.max(t[0], CARE[o.id].temp![0]), us)}); no operating margin (${o.name})` });
   if (others.state === 'none' || others.state === 'single') return others.counted.flatMap(o => gap(o) < 0 ? [none(o)] : gap(o) === 0 ? [single(o)] : []);
   const all = sharedRange([sp, ...others.counted]);
   if (all.state === 'none') return [none(t[1] < others.range![0] ? others.floor! : others.ceiling!)];
-  if (all.state === 'single') return [{ kind: 'compat', temp: true, concern: true, text: `water temperature: Only one shared temperature (${all.range![0]} °C); no operating margin (${(t[1] <= others.range![0] ? others.floor! : others.ceiling!).name})` }];
+  if (all.state === 'single') return [{ kind: 'compat', temp: true, concern: true, text: `water temperature: Only one shared temperature (${fmtT(all.range![0], us)}); no operating margin (${(t[1] <= others.range![0] ? others.floor! : others.ceiling!).name})` }];
   return [];
 }
 

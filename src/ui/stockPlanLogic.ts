@@ -200,10 +200,10 @@ export const preyLaterLine = (l: PreyLater, u: Units = 'cm') =>
   `Fine for now: in about ${span(l.months)}, at about ${lenAbout(l.lengthMm, u === 'in' ? 'in' : 'cm')}, the ${l.eater.toLowerCase()} can eat the ${l.eaten.toLowerCase()}.`;
 /** The whole list's water temperature, two separate lines (temprange.ts): the shared range of every aquatic pick, then the setpoint,
  *  which the planner cannot know before a tank is set up (unchecked). Null with no aquatic pick. */
-export function tempLinesOf(picks: Pk[]): { range: string; rangeState: string; setpoint: string } | null {
+export function tempLinesOf(picks: Pk[], us?: boolean): { range: string; rangeState: string; setpoint: string } | null {
   const r = sharedRange(picks.filter(p => totalOf(p) > 0).map(p => getSpecies(p.id)).filter((x): x is Species => !!x));
   if (r.state === 'unknown' && !r.unrecorded.length) return null;
-  return { range: rangeLine(r), rangeState: r.state, setpoint: operatingCheck(r).text };
+  return { range: rangeLine(r, us), rangeState: r.state, setpoint: operatingCheck(r, undefined, us).text };
 }
 
 // ---------- tankmates ----------

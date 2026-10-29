@@ -264,10 +264,10 @@ export function setFeed(t: TechSetup, feed: GrowFeed, salt = false): TechSetup {
 /** This tank's water temperature inputs for the temperature checks (temprange.ts): the target, a measurement, the heater and chiller,
  *  the room (entered or assumed). Undefined for a dry tank. `heater` overrides the tech's heater row (the plan sheet passes the shopping
  *  list's); a tank with no tech chosen counts as heated (the inferred tech has one). */
-export function tempEvidence(S: TankSetup, heater?: boolean): TempEvidence | undefined {
+export function tempEvidence(S: TankSetup, heater?: boolean, us?: boolean): TempEvidence | undefined {
   if (!S.water.on) return undefined;
   const t = techOf(S), heated = heater ?? (!S.tech || (t.rows.heater ?? 'one') !== 'none');
-  const ev: TempEvidence = { heater: heated, chiller: t.rows.chiller === 'chiller', room: t.roomC ?? ROOM_C, roomSet: S.tech?.roomC !== undefined };
+  const ev: TempEvidence = { heater: heated, chiller: t.rows.chiller === 'chiller', room: t.roomC ?? ROOM_C, roomSet: S.tech?.roomC !== undefined, ...(us ? { us } : {}) };
   if (S.tech?.targetC !== undefined) { ev.target = S.tech.targetC; if (heated) { const h = heatLoss(S, t); ev.heatHolds = h.totalW >= h.lossW; } }
   if (S.tech?.measuredC !== undefined) ev.measured = S.tech.measuredC;
   return ev;

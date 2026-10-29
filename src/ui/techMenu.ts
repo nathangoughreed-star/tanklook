@@ -94,7 +94,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     }
     if (row === 'heater' && opt === 'none') {
       // no heater: the water is modelled from the room (temprange.ts operatingCheck, the plan sheet's own check), never passed on an assumed room
-      const ev = tempEvidence({ ...S, tech: { ...t, rows: { ...t.rows, heater: 'none' } } }, false), shared = sharedRange([...new Set(S.fish.map(f => f.species))].map(getSpecies).filter((x): x is NonNullable<typeof x> => !!x));
+      const ev = tempEvidence({ ...S, tech: { ...t, rows: { ...t.rows, heater: 'none' } } }, false, fahr()), shared = sharedRange([...new Set(S.fish.map(f => f.species))].map(getSpecies).filter((x): x is NonNullable<typeof x> => !!x));
       const k = ev && shared.range && ev.target === undefined ? operatingCheck(shared, ev) : null;
       if (k?.state === 'outside' || k?.state === 'conditional') chip('warn', `${k.state === 'conditional' ? 'If the room is ' : ''}${room(t)} room: outside the shared range${k.state === 'conditional' ? ' (assumed)' : ' (estimate)'}`, k.text);
       else if (k?.state === 'inside') chip('good', `In range at the ${room(t)} room (estimate)`, k.text);
@@ -309,7 +309,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     const warn: string[] = [];
     if (t.rows.filter === 'none' || shownPreset === 'walstad') warn.push(...walstadGaps(S));
     // the same temperature checks as the plan sheet (temprange.ts): the target or the modelled unheated water, holding it, a measurement
-    const shared = sharedRange([...new Set(S.fish.map(f => f.species))].map(getSpecies).filter((x): x is NonNullable<typeof x> => !!x)), ev = tempEvidence(S);
+    const shared = sharedRange([...new Set(S.fish.map(f => f.species))].map(getSpecies).filter((x): x is NonNullable<typeof x> => !!x)), ev = tempEvidence(S, undefined, fahr());
     if (ev && shared.range) for (const k of [operatingCheck(shared, ev), holdCheck(ev), measuredCheck(shared, ev)]) if (k && (k.state === 'outside' || k.state === 'conditional')) warn.push(`${k.text}.`);
     if (offerChiller(S) && t.rows.chiller !== 'chiller') warn.push(`The room (${room(t)}) is warmer than the tank should be (${tempTxt(h.targetC)}): a chiller, or a cooler room.`);
     for (const c of reefChecks(S, t)) if (c.level === 'warn') warn.push(c.text);

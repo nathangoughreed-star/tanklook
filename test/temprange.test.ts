@@ -244,3 +244,21 @@ describe('a one-value pair is flagged even when the others already share nothing
     }
   });
 });
+
+describe('US units: every temperature in the water checks reads in °F', () => {
+  const ev = (o: Partial<TempEvidence> = {}): TempEvidence => ({ heater: true, chiller: false, room: 21, roomSet: true, us: true, ...o });
+  it("the 'set it to / inside' text and the band say °F, with the same values in °C when not US", () => {
+    const r = sharedRange([fake('tA'), fake('tB4')]); // 21-25 °C = 70-77 °F
+    expect(operatingCheck(r, ev()).text).toMatch(/set it inside 70–77 °F/);
+    expect(operatingCheck(r, undefined, true).text).toMatch(/set it inside 70–77 °F/);
+    expect(operatingCheck(r, ev({ us: false })).text).toMatch(/set it inside 21–25 °C/);
+    const t = operatingCheck(r, ev({ target: 30 }));
+    expect(t.text).toMatch(/Target water temperature 86 °F: outside the shared range 70–77 °F/);
+    expect(t.fix).toMatch(/lower the target to 70–77 °F/);
+    expect(operatingCheck(r, ev({ heater: false, room: 15 })).text).toMatch(/59 °F room.*70–77 °F/);
+    expect(measuredCheck(r, ev({ measured: 16 }))!.text).toMatch(/Measured water temperature 61 °F: outside the shared range 70–77 °F/);
+    expect(holdCheck(ev({ target: 24, room: 18, heater: false }))!.text).toMatch(/Holding 75 °F.*64 °F room/);
+    expect(rangeVerdict(r, [], true).text).toBe('Temperature: shared range 70–77 °F');
+    for (const k of [operatingCheck(r, ev({ target: 30 })), operatingCheck(r, ev()), measuredCheck(r, ev({ measured: 16 }))!]) expect(k.text + (k.fix ?? '')).not.toMatch(/°C/);
+  });
+});

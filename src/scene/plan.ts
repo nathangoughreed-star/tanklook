@@ -88,8 +88,8 @@ export function hardTruths(S: TankSetup, animals: AnimalCount[], heater: boolean
   const shared = sharedRange(sp);
   if (shared.state !== 'unknown') {
     // the Tech menu's heater choice when one is made (the shopping list keeps a heater row even when it is set to none), else the list's
-    const ev = tempEvidence(S, salt ? true : S.tech?.rows.heater !== undefined ? undefined : heater), checks = ev ? [operatingCheck(shared, ev), holdCheck(ev), measuredCheck(shared, ev)] : [];
-    out.push(rangeVerdict(shared, checks)); // never positive while the plan's water is definitively outside the range
+    const ev = tempEvidence(S, salt ? true : S.tech?.rows.heater !== undefined ? undefined : heater, u === 'in'), checks = ev ? [operatingCheck(shared, ev), holdCheck(ev), measuredCheck(shared, ev)] : [];
+    out.push(rangeVerdict(shared, checks, u === 'in')); // never positive while the plan's water is definitively outside the range
     for (const k of checks) if (k && shared.range) out.push({ text: k.text, level: checkLevel(k) }); // no usable range: the range line says it
   }
   const longFinned = finSensitiveNames(animals);
