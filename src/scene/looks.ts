@@ -5,10 +5,11 @@ import { SPECIES } from '../data/species';
 import { emptyBuild, buildsFor, type Build } from './builds';
 import { groupMinimum } from './groupMin';
 import { LAYOUTS, STYLES, STYLE_KIND } from './items';
-import { allowedStyles, scapeOption, scapeSetup, type PlantMode, type ScapeOption } from './scapes';
+import { allowedStyles, finSensitive, plantNeeds, priceScape, scapeOption, scapeSetup, type PlantMode, type ScapeOption } from './scapes';
+import { itemLights } from './lightcheck';
 import { catalogueSizes, fitIn, type AnimalCount } from './tankfit';
 import type { TankModel } from '../data/tanks';
-import type { LayoutId } from './types';
+import type { LayerDens, LayoutId } from './types';
 
 export type LookStyle = Exclude<LayoutId, 'none'>;
 /** The tiles of screen 1: the spec's eight plus the biotopes people ask for by name. */
@@ -55,4 +56,36 @@ export function animalsFor(style: LookStyle, tank: TankModel, max = 12): LookAni
 export function lookWithAnimals(style: LookStyle, tank: TankModel, mode: PlantMode, animals: AnimalCount[], now = Date.now()): { build: Build; setup: ReturnType<typeof scapeSetup> } {
   const build = buildsFor(animals, tank, now)[2];
   return { build, setup: scapeSetup(build, style, asksPlants(style) ? mode : 'live') };
+}
+
+// ---- seeded variant tiles (lane NG5, demand/taste.ts): several real rendered examples per look, told apart by size, plant mode, density and seed ----
+/** One example of a look. A style cue only: it promises neither species nor gear (the tank is drawn empty, priced as the empty-stocking build). */
+export interface LookVariant { id: string; style: LookStyle; tank: TankModel; mode: PlantMode; dens: Partial<LayerDens>; seed: number; caption: string }
+const MODE_WORD: Record<PlantMode, string> = { live: 'live plants', artificial: 'artificial plants', mixed: 'live and artificial' };
+/** Three examples per look: a small, plain one; the look's usual size; a larger, fuller one (water looks also change plant mode, so cost and care really differ). */
+export function lookVariants(style: LookStyle): LookVariant[] {
+  const sizes = lookSizes(style), plants = asksPlants(style), at = (i: number) => sizes[Math.max(0, Math.min(sizes.length - 1, i))];
+  const defs: { key: string; tank: TankModel; mode: PlantMode; dens: Partial<LayerDens>; seed: number; word: string }[] = [
+    { key: 'small', tank: at(0), mode: 'artificial', dens: { hard: 1, plant: 1 }, seed: 1101, word: 'sparse' },
+    { key: 'usual', tank: defaultSize(style), mode: 'live', dens: {}, seed: 2203, word: 'balanced' },
+    { key: 'full', tank: at(Math.min(3, sizes.length - 1)), mode: 'live', dens: { hard: 2, plant: 3 }, seed: 3307, word: 'full' },
+  ];
+  return defs.map(d => {
+    const mode: PlantMode = plants ? d.mode : 'live';
+    return { id: `${style}.${d.key}`, style, tank: d.tank, mode, dens: d.dens, seed: d.seed, caption: `${d.word}${plants ? `, ${MODE_WORD[mode]}` : ''}` };
+  });
+}
+/** A variant drawn and priced, in the shape of lookOption's result (the same engines; the light note is read off the variant's own plants). */
+export function lookVariant(v: LookVariant, now = Date.now()): ScapeOption {
+  const build = emptyBuild(v.tank, now), base = structuredClone(build.setup);
+  base.layout = { ...base.layout, seed: v.seed };
+  const setup = scapeSetup(build, v.style, v.mode, base, { dens: v.dens }), D = priceScape(setup, build, now), needs = plantNeeds(setup);
+  const lights = itemLights(setup), hard = lights ? [...lights.values()].filter(l => l.outcome.state === 'struggle') : [];
+  return {
+    style: v.style, label: lookLabel(v.style), hint: lookHint(v.style), score: 1, why: [], setup,
+    setupUsd: Math.round(D.totals.setupUsd), upkeepUsdMo: Math.round(D.totals.upkeepUsdMo), minPerWeek: Math.round(D.totals.minPerWeek),
+    light: needs.light, co2: needs.co2,
+    ...(hard.length ? { lightNote: `${hard.length} of ${needs.live} live plants would struggle under this build's light. A stronger light, CO2 or other plants fix it`, struggling: hard.length } : {}),
+    liveCount: needs.live, fakeCount: setup.items.filter(it => it.kind === 'artificial').length, mode: v.mode, silk: finSensitive(build.animals),
+  };
 }

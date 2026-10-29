@@ -37,6 +37,7 @@ import { NO_SUGGESTION, type Money } from './makefit';
 import { mean3 } from './range';
 import { explainInfeasible, phasesOf, type Infeasible, type Phases } from './infeasible';
 import type { Limits, UserProfile } from './types';
+import { tasteBonus, type Taste } from './taste';
 
 export { NO_SUGGESTION };
 export type Family = 'fish' | 'invert' | 'salt' | 'terrarium';
@@ -161,6 +162,8 @@ export interface Wants {
   hightech?: boolean;
   /** the planted look without CO2 (lane U5): the low-tech lush finish (dense live plants chosen for the light the tank has, liquid ferts only) is offered, then the basic and starter finishes */
   lowtech?: boolean;
+  /** what the look picker's picks and rejections taught (lane NG5): adds to the score of concepts in a liked look, subtracts for a rejected one; ranking only, after every gate */
+  taste?: Taste;
   /** buy in phases (lane U4): the set-up ceiling is checked against the animal-care essentials only; the animals are a second purchase after the tank has cycled (each concept carries its `phases`) */
   phased?: boolean;
   /** refinement chips (lane U6): "more planted" = every concept reaches for the lushest finish the ceiling carries (live, dense plants) */
@@ -505,7 +508,8 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
     const limited = !!(w.climb && ceiling && L.setupUsd && t.startupUsd < USES_BUDGET * L.setupUsd && levelOf === 3 && id === 'size');
     // experience shapes how hands-on concepts RANK (a gentle push), never whether one is offered
     const score = p.matched.length * 10 + headroom(t, L) * 5 + levelOf * 1.5 - p.unknown.length * 0.5 + (exp === 0 ? -6 * cx : exp === 2 ? 3 * cx : 0)
-      + (w.climb && L.setupUsd ? (limited ? 1 : Math.min(1, t.startupUsd / L.setupUsd)) * 20 : 0);
+      + (w.climb && L.setupUsd ? (limited ? 1 : Math.min(1, t.startupUsd / L.setupUsd)) * 20 : 0)
+      + tasteBonus(w.taste, p.build.finish?.style);   // lane NG5 hook: ranking only
     const base = { ...p, score, strategy: id, strategyLabel: strategyLabel(id, isLocked), strategyBlurb: sd.blurb,
       ...(L.setupUsd ? { underCeilingUsd: Math.max(0, Math.round(L.setupUsd - t.startupUsd)) } : {}),
       ...(limited ? { capNote: 'This is the most this kind needs: a bigger tank or more animals would not suit them, so part of your budget is left over.' } : {}) };

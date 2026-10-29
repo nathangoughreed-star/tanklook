@@ -19,6 +19,7 @@ import type { SpaceLimit, Units } from '../scene/types';
 import { loadProfile } from './demandPanel';
 import { placedSetup, putTank, sceneForBuild } from './buildPick';
 import { constraintsOf, editBrief, getBrief, lockedStock, setBudget, setCareTime, setMonthly, setSpace } from './setupBrief';
+import { tasteOf, tasteWhy } from '../demand/taste';
 import { briefToWants, clearItem, setItem, valueOf } from '../scene/brief';
 import { openBuildPlan, confBadge } from './buildPlanSheet';
 import { buildPlanOf } from '../demand/buildplan';
@@ -116,6 +117,7 @@ ${p.ownedNotes.map(n => `<div class="${n.kind === 'credit' ? 'spNote' : 'spWarn'
 ${p.matched.length ? `<div class="spNote">Matches: ${p.matched.map(m => esc(TAGS.find(t => t.id === m)!.label.toLowerCase())).join(', ')}</div>` : ''}
 ${checks ? `<ul class="bpGear sgChecks">${checks}</ul>` : ''}
 ${p.capNote ? `<div class="spNote">${esc(p.capNote)}</div>` : ''}
+${tasteWhy(tasteOf(getBrief()), b.finish?.style) ? `<div class="spNote sgTaste">${esc(tasteWhy(tasteOf(getBrief()), b.finish?.style)!)}</div>` : ''}
 ${p.unknown.length ? `<div class="spNote">Not enough information: ${esc(p.unknown[0])}</div>` : ''}
 <div class="spNote">${b.setup.water.on ? `${esc(CYCLE_NOTE)} ` : ''}${b.finish ? `${esc(TIER_LABEL[b.finish.tier])}: the look, substrate, hardscape and plants are in the price and the time.` : ''}</div>
 <button type="button" class="primary" data-act="pick" data-i="${i}">Use this setup</button> <button type="button" data-act="plan" data-i="${i}">Build plan</button></li>`;
@@ -189,6 +191,7 @@ ${lockedStock(getBrief()).length ? `<div class="spNote sgLocked">Locked animals:
   const generate = (w: ReturnType<typeof wantsFrom>): Suggestions => {
     const bw = briefToWants(getBrief());
     return suggestSetups({ kinds: w.kinds, groups: w.groups, needStand: w.needStand, owned: w.owned, constraints: w.constraints, ...(w.space ? { space: w.space } : {}), tags: [...tags],
+      ...(bw.taste ? { taste: bw.taste } : {}), // lane NG5 hook: ranking only
       ...(bw.animals ? { animals: bw.animals } : {}), ...(bw.ownTank ? { ownTank: bw.ownTank } : {}), ...(bw.taxPct !== undefined ? { taxPct: bw.taxPct } : {}), ...(bw.hightech ? { hightech: true } : {}), ...(bw.phased ? { phased: true } : {}), ...(bw.lowtech ? { lowtech: true } : {}), ...(bw.planted ? { planted: true } : {}), ...(bw.larger ? { larger: true } : {}) }, loadProfile(), units());
   };
 

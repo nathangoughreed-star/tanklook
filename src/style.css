@@ -805,6 +805,12 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .lkStep { display: flex; align-items: center; gap: 8px } .lkStep b { min-width: 1.5em; text-align: center }
 .lkRef { position: absolute; right: 12px; bottom: 12px; margin: 0; max-width: 240px; background: var(--panel, #222); padding: 4px; border-radius: 6px; z-index: 5 } .lkRef img { width: 100%; display: block; border-radius: 4px } .lkRef button { position: absolute; top: 6px; right: 6px }
 .lkPic { cursor: pointer }
+.lkGroup h3 { margin: 10px 0 0; font-size: 13.5px } .lkGroup p { margin: 0 0 2px }
+.lkFilter { display: flex; flex-direction: column; gap: 0; margin: 4px 0 6px }
+.lkVar { display: flex; flex-direction: column; gap: 2px } .lkVar .lkTile { height: auto; flex: 1 }
+.lkCost { font-size: 12px; font-weight: 600 } .lkVarAct { display: flex; gap: 10px; font-size: 12px }
+.lkNo .lkTile { opacity: .4 } .lkTaste { padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; margin: 4px 0 }
+.sgTaste { font-size: 12.5px; font-style: italic }
 .lkp.lkSide { left: auto; width: 340px }
 .sgOwned { font-size: 12.5px } .sgOwnList { display: flex; flex-direction: column; gap: 2px; margin: 4px 0 4px 8px }
 .sgKinds { border: 1px solid var(--line); border-radius: 6px; margin: 0; padding: 4px 8px 6px; display: flex; flex-direction: column; gap: 2px; font-size: 12.5px } .sgKinds legend { font-weight: 600; padding: 0 4px }

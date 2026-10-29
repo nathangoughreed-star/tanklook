@@ -11,6 +11,7 @@ import { getTankModel } from '../data/tanks';
 import type { DryGroup, Kind, OwnedKey, OwnedMap, Tag, Wants } from '../demand/suggest';
 import type { Cap, Constraints, Effort } from './constraints';
 import type { PlantMode } from './scapes';
+import { parseTaste, type Taste } from '../demand/taste';
 import type { LayoutId, SpaceLimit } from './types';
 
 export type Status = 'hard' | 'preference' | 'locked';
@@ -57,6 +58,7 @@ export interface Values {
   'constraints.tapWater': TapWater;      // where the water comes from and how hard it is
   'preferences.desired': Desire[];       // what the person wants from the tank
   'preferences.adapt': Adapt;            // how willing they are to change the plan
+  'preferences.taste': Taste;            // what look-picker picks / rejections taught the ranking (lane NG5, demand/taste.ts)
   'preferences.future': Ambition[];      // future ambitions saved for later (the slot is empty until lane NG4 fills it)
 }
 export type WaterSrc = 'tap' | 'well' | 'ro';
@@ -75,7 +77,7 @@ export type ItemId = keyof Values;
 export const ITEM_IDS: readonly ItemId[] = ['animals.kinds', 'animals.groups', 'animals.stock', 'appearance.look', 'appearance.plantMode', 'equipment.tank',
   'equipment.needStand', 'constraints.budget', 'constraints.monthly', 'constraints.careMin', 'constraints.setupHours', 'constraints.maxSpace', 'constraints.spaceGate', 'constraints.existingTank',
   'constraints.owned', 'constraints.taxPct', 'constraints.phased', 'preferences.tags', 'preferences.wishes', 'preferences.effort', 'preferences.experience', 'preferences.hightech', 'preferences.lowtech',
-  'constraints.roomTempC', 'constraints.tapWater', 'preferences.desired', 'preferences.adapt', 'preferences.future'];
+  'constraints.roomTempC', 'constraints.tapWater', 'preferences.desired', 'preferences.adapt', 'preferences.future', 'preferences.taste'];
 /** Items that take a target below their max: money, time, space. */
 export const LIMIT_IDS = ['constraints.budget', 'constraints.monthly', 'constraints.careMin', 'constraints.setupHours', 'constraints.maxSpace'] as const satisfies readonly ItemId[];
 export type LimitId = typeof LIMIT_IDS[number];
@@ -201,6 +203,7 @@ const VALIDATE: { [K in ItemId]: (v: unknown) => Values[K] | undefined } = {
     return { source: o.source as WaterSrc, ...(num(o.hardnessDgh, 0, 60) ? { hardnessDgh: o.hardnessDgh } : {}), ...(num(o.ph, 0, 14) ? { ph: o.ph } : {}) }; },
   'preferences.desired': v => { const a = strs(v, DESIRES); return a?.length ? a : undefined; },
   'preferences.adapt': v => ADAPTS.includes(v as Adapt) ? v as Adapt : undefined,
+  'preferences.taste': parseTaste,
   'preferences.future': v => { if (!Array.isArray(v)) return undefined;
     const a = v.filter((x): x is Ambition => !!x && typeof x.text === 'string' && x.text.trim().length > 0).slice(0, 20)
       .map(x => ({ text: x.text.trim().slice(0, 300), ...(typeof x.from === 'string' && x.from ? { from: x.from.slice(0, 120) } : {}) })); return a.length ? a : undefined; },
@@ -281,6 +284,7 @@ export function briefToWants(b: Brief): Wants {
   if (ph && !ph.off && ph.value) w.phased = true;
   if (ht && !ht.off && ht.value) w.hightech = true;
   if (lt && !lt.off && lt.value) w.lowtech = true;
+  const tz = valueOf(b, 'preferences.taste'); if (tz) w.taste = tz;   // lane NG5: ranking only
   const wi = valueOf(b, 'preferences.wishes');   // lane U6: the refinement chips write these
   if (wi?.includes('more-planted')) w.planted = true;
   if (wi?.includes('larger-tank')) w.larger = true;

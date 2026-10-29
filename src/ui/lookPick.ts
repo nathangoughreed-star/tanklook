@@ -5,9 +5,10 @@
 // Then the editor. Cancelling before the end puts back the tank that was there. Logic is scene/looks.ts (pure, tested).
 // Deferred from the spec's screen 2: the "today / month 6" growth slider (no growth model to read yet).
 import { PLANT_MODES, type PlantMode } from '../scene/scapes';
-import { LOOK_TILES, animalsFor, asksPlants, defaultSize, lookHint, lookLabel, lookOption, lookSizes, lookWithAnimals, type LookAnimal, type LookStyle } from '../scene/looks';
+import { LOOK_TILES, animalsFor, asksPlants, defaultSize, lookHint, lookLabel, lookOption, lookSizes, lookVariant, lookVariants, lookWithAnimals, type LookAnimal, type LookStyle, type LookVariant } from '../scene/looks';
+import { clearTaste, forgetVariant, recordTaste, tasteOf, tasteSummary, weightsOf } from '../demand/taste';
 import { tankLabel } from '../scene/tankfit';
-import { editBrief, lockAnimals, setLook, setTank } from './setupBrief';
+import { editBrief, getBrief, lockAnimals, setLook, setTank } from './setupBrief';
 import type { TankModel } from '../data/tanks';
 import type { Store } from '../scene/store';
 import type { Viewer } from '../render/viewer';
@@ -16,6 +17,8 @@ import type { TankSetup } from '../scene/types';
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
 const VIEW = { az: 28, el: 16, zoom: 0.8 };
+/** The cost and care filters of the example tiles (lane NG5): up to $ of set-up, up to minutes a week. */
+const USD_CHIPS: (number | undefined)[] = [undefined, 400, 800, 1500], MIN_CHIPS: (number | undefined)[] = [undefined, 25, 40, 60];
 
 export function attachLookPick(store: Store, viewer: Viewer, status: (m: string, bad?: boolean) => void) {
   const view = document.getElementById('view')!;
@@ -33,33 +36,52 @@ export function attachLookPick(store: Store, viewer: Viewer, status: (m: string,
   };
 
   let orig: TankSetup | undefined, style: LookStyle = 'nature', tank: TankModel = defaultSize('nature'), mode: PlantMode = 'live';
-  let picks: { a: LookAnimal; n: number }[] = [], pics: string[] = [], token = 0;
+  let picks: { a: LookAnimal; n: number }[] = [], token = 0;
+  // lane NG5: seeded example tiles per look, drawn and priced a few at a time; the cost / care filters read what is priced so far
+  const vars: LookVariant[] = LOOK_TILES.flatMap(lookVariants), info = new Map<string, { setupUsd: number; minPerWeek: number }>(), vpics = new Map<string, string>();
+  let maxUsd: number | undefined, maxMin: number | undefined, drawing = false, seedV: LookVariant | undefined;
+  const usingSeed = () => seedV && seedV.tank === tank && seedV.mode === mode && seedV.style === style ? seedV : undefined;
   const put = (T: TankSetup) => store.update(s => { Object.assign(s.tanks[s.active], structuredClone(T)); }, { coalesce: 'lookpick' });
   const framed = (T: TankSetup): TankSetup => ({ ...T, camera: { ...T.camera, ...VIEW } });
   const restore = () => { if (orig) put(orig); };
   const close = () => { token++; el.hidden = true; side(false); };
 
+  const chip = (act: string, on: boolean, v: number | undefined, label: string) => `<button type="button" class="lkChip${on ? ' on' : ''}" data-act="${act}" data-v="${v ?? ''}" aria-pressed="${on}">${label}</button>`;
   const tiles = () => {
-    el.classList.remove('lkSide');
+    const keep = el.scrollTop; el.classList.remove('lkSide');
+    const taste = tasteOf(getBrief()), w = weightsOf(taste), sum = tasteSummary(taste), rejected = new Set(taste?.events.filter(e => e.kind === 'reject').map(e => e.variant));
+    const shown = (v: LookVariant) => { const i = info.get(v.id); return !i || ((maxUsd === undefined || i.setupUsd <= maxUsd) && (maxMin === undefined || i.minPerWeek <= maxMin)); };
+    const tile = (v: LookVariant) => { const i = info.get(v.id), no = rejected.has(v.id), pic = vpics.get(v.id);
+      return `<li class="lkVar${no ? ' lkNo' : ''}" data-v="${esc(v.id)}"><button type="button" class="lkTile" data-act="style" data-v="${esc(v.id)}"><span class="lkPicBox">${pic ? `<img src="${pic}" alt="${esc(lookLabel(v.style))}: ${esc(v.caption)}">` : ''}</span><b>${esc(lookLabel(v.style))}</b><span class="spNote">${esc(tankLabel(v.tank, store.scene.units))}, ${esc(v.caption)}</span><span class="lkCost">${i ? `${usd(i.setupUsd)} set-up · ${i.minPerWeek} min a week` : 'pricing…'}</span></button>
+<span class="lkVarAct">${no ? `<button type="button" class="spLink" data-act="unno" data-v="${esc(v.id)}">Undo "not this"</button>` : `<button type="button" class="spLink" data-act="like" data-v="${esc(v.id)}" title="Teach the suggestions you like this, and keep looking">More like this</button><button type="button" class="spLink" data-act="no" data-v="${esc(v.id)}" title="Teach the suggestions you do not want this">Not this</button>`}</span></li>`; };
+    const groups = [...LOOK_TILES].sort((a, b) => (w[b] ?? 0) - (w[a] ?? 0)).map(st => ({ st, vs: vars.filter(v => v.style === st && shown(v)) })).filter(g => g.vs.length);
     el.innerHTML = `<div class="spHead"><h2>Pick a look</h2><button type="button" data-act="cancel" aria-label="Close">✕</button></div>
-<p class="spNote">Start from how you want the tank to look. Animals that suit it come next, and are optional.</p>
-<ul class="lkTiles">${LOOK_TILES.map((s, i) => `<li><button type="button" class="lkTile" data-act="style" data-style="${s}"><span class="lkPicBox">${pics[i] ? `<img src="${pics[i]}" alt="">` : ''}</span><b>${esc(lookLabel(s))}</b><span class="spNote">${esc(lookHint(s))}</span></button></li>`).join('')}</ul>
+<p class="spNote">Start from how you want the tank to look. These are style examples, empty tanks: not a promise of any animal or gear. Animals that suit the look come next, and are optional.</p>
+<div class="lkFilter"><span class="spNote">Set-up cost</span><span class="lkChips">${USD_CHIPS.map(n => chip('fUsd', n === maxUsd, n, n === undefined ? 'Any' : `Up to ${usd(n)}`)).join('')}</span><span class="spNote">Care a week</span><span class="lkChips">${MIN_CHIPS.map(n => chip('fMin', n === maxMin, n, n === undefined ? 'Any' : `Up to ${n} min`)).join('')}</span></div>
+${sum ? `<div class="lkTaste spNote">What your picks have taught the suggestions: ${sum.toward.length ? `leaning to ${esc(sum.toward.join(', '))}` : ''}${sum.toward.length && sum.away.length ? '; ' : ''}${sum.away.length ? `away from ${esc(sum.away.join(', '))}` : ''}. It only changes the order of suggestions, never what is allowed, and fades as you pick. <button type="button" class="spLink" data-act="forget">Clear</button></div>` : ''}
+${drawing ? '<div class="spNote lkDraw">Drawing the examples…</div>' : ''}
+${groups.map(g => `<section class="lkGroup"><h3>${esc(lookLabel(g.st))}</h3><p class="spNote">${esc(lookHint(g.st))}</p><ul class="lkTiles">${g.vs.map(tile).join('')}</ul></section>`).join('') || '<p class="spNote">No example fits both filters: loosen one.</p>'}
 <div class="spFoot"><label class="spLink lkPic">Use my own picture<input type="file" accept="image/*" hidden data-act="pic"></label><span class="spNote">It stays on this computer, beside the tank, so you can pick the closest look with it in view.</span></div>`;
+    el.scrollTop = keep;
+  };
+  // each pass draws and prices a few examples (a hidden tab runs no frames, so a timer paces it), then shows what is ready
+  const draw = (me: number) => {
+    if (me !== token || el.hidden) return;
+    const todo = vars.filter(v => !vpics.has(v.id));
+    if (!todo.length) { drawing = false; restore(); tiles(); return; }
+    el.hidden = true;
+    for (const v of todo.slice(0, 4)) { const o = lookVariant(v); info.set(v.id, { setupUsd: o.setupUsd, minPerWeek: o.minPerWeek }); put(framed(o.setup)); vpics.set(v.id, viewer.thumbnail(480)); }
+    el.hidden = false; tiles(); setTimeout(() => draw(me), 0);
   };
   const showTiles = () => {
-    const me = ++token; tiles(); el.hidden = false; side(true);
+    const me = ++token; drawing = vpics.size < vars.length; tiles(); el.hidden = false; side(true);
     // thumbnails wait for the side panel's collapse to give the view its width (a timer, not a frame: a hidden tab runs no frames)
-    if (pics.length) return;
-    setTimeout(() => {
-      if (me !== token || el.hidden) return;
-      el.hidden = true;
-      pics = LOOK_TILES.map(s => { put(framed(lookOption(s, defaultSize(s), 'live').setup)); return viewer.thumbnail(480); });
-      el.hidden = false; restore(); tiles();
-    }, 150);
+    if (!drawing) return;
+    setTimeout(() => draw(me), 150);
   };
 
   const tank2 = () => {
-    const o = lookOption(style, tank, mode);
+    const v = usingSeed(), o = v ? lookVariant(v) : lookOption(style, tank, mode);
     put(framed(o.setup)); el.classList.add('lkSide');
     el.innerHTML = `<div class="spHead"><h2>${esc(lookLabel(style))}</h2><button type="button" data-act="cancel" aria-label="Close">✕</button></div>
 <p class="spNote">${esc(lookHint(style))}</p>
@@ -81,7 +103,8 @@ ${asksPlants(style) ? `<div class="spNote">Plants</div><div class="lkChips">${PL
 
   const finish = (animals: { species: string; n: number }[]) => {
     token++;
-    put(framed((animals.length ? lookWithAnimals(style, tank, mode, animals).setup : lookOption(style, tank, mode).setup)));
+    const v = usingSeed();
+    put(framed((animals.length ? lookWithAnimals(style, tank, mode, animals).setup : v ? lookVariant(v).setup : lookOption(style, tank, mode).setup)));
     dropRef(); close(); store.seal(); orig = undefined;
     status(`${lookLabel(style)} opened in the editor${animals.length ? ' with your animals' : ''}. It is yours to change; Undo steps back.`);
   };
@@ -91,9 +114,15 @@ ${asksPlants(style) ? `<div class="spNote">Plants</div><div class="lkChips">${PL
     switch (t.dataset.act) {
       case 'cancel': restore(); dropRef(); close(); orig = undefined; break;
       case 'tiles': picks = []; restore(); showTiles(); break;
-      case 'style': style = t.dataset.style as LookStyle; tank = defaultSize(style); picks = []; token++; editBrief(b => setLook(b, style)); tank2(); break;
-      case 'size': tank = lookSizes(style).find(m => m.id === t.dataset.id) ?? tank; picks = []; editBrief(b => setTank(b, { id: tank.id, label: tankLabel(tank, store.scene.units) })); tank2(); break;
-      case 'mode': mode = t.dataset.mode as PlantMode; tank2(); break;
+      case 'style': { const v = vars.find(x => x.id === t.dataset.v)!; seedV = v; style = v.style; tank = v.tank; mode = v.mode; picks = []; token++; drawing = false;
+        editBrief(b => recordTaste(setLook(b, style), { style, kind: 'pick', variant: v.id })); tank2(); break; }
+      case 'like': case 'no': { const v = vars.find(x => x.id === t.dataset.v)!; editBrief(b => recordTaste(b, { style: v.style, kind: t.dataset.act === 'no' ? 'reject' : 'pick', variant: v.id })); tiles(); break; }
+      case 'unno': editBrief(b => forgetVariant(b, t.dataset.v!, 'reject')); tiles(); break;
+      case 'forget': editBrief(clearTaste); tiles(); break;
+      case 'fUsd': maxUsd = t.dataset.v ? +t.dataset.v : undefined; tiles(); break;
+      case 'fMin': maxMin = t.dataset.v ? +t.dataset.v : undefined; tiles(); break;
+      case 'size': tank = lookSizes(style).find(m => m.id === t.dataset.id) ?? tank; picks = []; editBrief(b => recordTaste(setTank(b, { id: tank.id, label: tankLabel(tank, store.scene.units) }), { style, kind: 'refine' })); tank2(); break;
+      case 'mode': mode = t.dataset.mode as PlantMode; editBrief(b => recordTaste(b, { style, kind: 'refine' })); tank2(); break;
       case 'animals': tank3(); break;
       case 'back': tank2(); break;
       case 'inc': case 'dec': { const p = picks[+(t.dataset.i ?? 0)]; p.n = t.dataset.act === 'inc' ? (p.n ? p.n + 1 : p.a.n) : Math.max(0, p.n - 1); tank3(); break; }
