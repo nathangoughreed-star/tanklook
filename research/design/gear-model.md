@@ -1,6 +1,7 @@
 # Gear model: generic pieces plus a locked product library (design note)
 
-Status: DESIGN ONLY, nothing coded. Written 2026-10-29 off origin/main (d235e0d8). Waiting on Nathan's answers (end of note).
+Status: DESIGN ONLY, nothing coded. Written 2026-10-29 off origin/main (d235e0d8). Amended same day for Nathan's ruling: brands do not matter for minor
+gear ("I dont really care what brand your thermometer is"), so each type has a CLASS (section 2a): `library` (generic + real products) or `generic` (one tunable item, no catalogue).
 Ask (Nathan): "a generic version of every piece of equipment, with tunable stats (wattage for a light, flow for a filter, etc), but also a
 library of actual products (ideally a large share of the most popular of each type) with non-editable attributes like wattage, light hue, flow."
 
@@ -32,13 +33,15 @@ Key findings:
 One record shape for both tiers. A **StatBlock** per equipment type is the only thing physics ever sees.
 
 ```ts
+const CLASS: Record<GearType, 'library' | 'generic'> = { light: 'library', heater: 'library', /* ... table 2a */ mister: 'generic', /* ... */ };
 type GearType = 'light' | 'heater' | 'filter' | 'powerhead' | 'wavemaker' | 'airpump' | 'skimmer' | 'uv' | 'co2' | 'ato'
   | 'chiller' | 'thermostat' | 'timer' | 'controller' | 'mister' | 'fogger' | 'uvb' | 'heatlamp' | 'heatmat' | 'lilypipe' | 'lid' | ...;
 
 // Tier 1 (generic): the user's own numbers, within hard limits per stat.
 interface GenericGear<T extends GearType> { type: T; stats: StatBlock[T] }
 
-// Tier 2 (library): identity + locked stats + look.
+// Tier 2 (library types only): identity + locked stats + look. A generic-only type has no ProductGear: just a default StatBlock,
+// limits, a price curve and one simple model.
 interface ProductGear<T extends GearType> {
   id: string; type: T; brand: string; model: string;
   stats: StatBlock[T];            // LOCKED: read-only in the UI
@@ -56,6 +59,37 @@ interface GearRef { type: GearType; product?: string; stats?: Partial<StatBlock>
 ```
 
 `statsOf(ref): StatBlock` returns the product's locked stats or the generic's tuned ones. **Everything downstream calls `statsOf`**, so a product and a generic of equal stats give identical PAR, turnover, watts per gallon and welfare results (tested by one parameterised test per type: product vs generic copy of it, same outputs).
+
+### 2a. Class per type (Nathan 2026-10-29)
+
+Each type declares `class: 'library' | 'generic'`. A **library** type has the generic piece AND a product catalogue with locked stats. A **generic** type has ONE item with tunable stats, a default, a price curve and a simple model; no product records, no brand, no research. Test used: does choosing a particular product change welfare, the light/flow/heat numbers, or the cost line by more than the generic's tunables already capture?
+
+| Type | Class | One-line reason |
+|---|---|---|
+| Light | library | PAR, spectrum and price vary hugely by product |
+| Heater (aquarium) | library | watts and size drive the heat-holds gate; catalogue already there (40) |
+| Filter (hob, canister, internal, sponge) | library | real gph and rated range drive turnover and capacity (79 done) |
+| Powerhead / wavemaker | library | flow and wave mode set the reef flow tier (16 done) |
+| Air pump | library | already catalogued (18), cheap to keep; low stakes |
+| Skimmer | library | rated gal differs a lot from the label; sets the reef care tier |
+| CO2 system | library | stages, cartridge vs cylinder change cost and dosing control |
+| UV sterilizer | library | lamp watts vs flow decides whether it clears water |
+| Chiller | library | cooling capacity (dF, hp) differs by product and decides a hot-tank pass/fail |
+| ATO | library (borderline) | sensor count (1 or 2) changes flood risk in `tech.ts`; 6 done, keep small |
+| Thermometer / hygrometer | generic | accuracy is not modelled; one item, price curve only |
+| Thermostat / controller (heat or light) | generic | stats are channels and on-off vs dimming; brand adds nothing we model |
+| Timer | generic | channels only |
+| Heat lamp (dome / basking bulb) | generic | watts and beam decide basking temp; tunable watts covers it |
+| Heat mat | generic | watts and size only |
+| Mister, fogger | generic | nozzles and ml/h; brand adds nothing we model |
+| Lily pipe / inflow-outflow | generic | outlet diameter and look only |
+| Doser, auto feeder, RO/DI unit, drop checker | generic | priced and powered rows only (they already live as `tech.json` `gear`) |
+| Return pump | generic (borderline) | gph and head set sump turnover, both tunable; no product changes more |
+| Sump | generic | already modelled by size (`sumpFromModel`) |
+| Lid / hood | generic | open %, material, hood-LED; feeds `heat.surface` evaporation term |
+| UVB tube | generic (borderline, welfare) | see question 4: UVB output (5.0 / 10.0 / 12 %) is the welfare stat and is a tunable; real UVI by brand is not modelled |
+
+Welfare-sensitive generic-only types (UVB, heat lamp, thermostat, lid) carry the welfare-relevant stat as a tunable with a safe default and the usual warn-not-block limits, so the gate still works without a catalogue.
 
 ### Stat schema per type (editable on generic; ALWAYS locked on a product). Units: stored metric, shown per scene units (US in chat: gal, in, deg F, W, gph).
 
@@ -78,6 +112,8 @@ interface GearRef { type: GearType; product?: string; stats?: Partial<StatBlock>
 
 Hard limits stop absurd values but only warn, never block (a 500 W heater in a 5 gal tank gets the welfare warning, same as a library one would).
 
+The stat table below applies to both classes; the "locked-only" column is meaningful only for library types.
+
 ### Where it lives
 - Split `gear-catalog.json` into `src/data/gear/<type>.json` (one file per type) plus `src/data/gear/index.ts` that merges them, so lanes add products without touching the same file. Existing lookups (`lightProduct`, `heaterProduct`, ...) stay as thin wrappers: no caller changes.
 - New `src/scene/gearSpec.ts`: `StatBlock`, `statsOf`, per-type limits and defaults, adapters from old fields (`HeaterUnit.w`, `FilterUnit.model`, `LightSettings.watts/product`) so saved files keep loading with no version bump.
@@ -97,7 +133,8 @@ A product is a generic whose stats are frozen plus identity and look.
 - **Picking**: the card has three tabs: Generic | Library | I own one. Library lists products near the size the tank needs first (exists: `heatersNear`, `filtersNear`, `lightsFor`, `pumpsFor`), with price and the "popular" evidence line.
 - **Swap menu** (`demand/swaps.ts` exists): shows each alternative's stat deltas, price delta and welfare effect (e.g. "+40 gph turnover, +$12, +3 W").
 - **I own this**: sets `owned: true` and optionally `paidUsd`. Cost lines show $0 "you have" (existing layer logic), electricity and welfare still count, and the plan sheet lists it under "Already have". An owned piece can be a library product, a generic, or a "my own: [free-text name] + stats" generic.
-- **Pricing**: product = `priceUsd` (listed, one retailer, one day, +-10 %, existing); generic = price curve per stat (watts or gph) fitted from the library's own prices of that type, replacing the hand-set `gear-models.json` price rows over time; both reach the budget ceiling via the existing `demandOf`. Welfare is a gate: a cheaper pick is only offered if its `statsOf` passes the welfare check.
+- **Pricing, generic-only types**: one price curve per type from the existing `tech.json` `gear` price rows (watts, ml/h or nozzles as the driver); no per-product price. Cost accuracy risk: where those rows are thin (UVB, heat lamp), the curve carries the usual range; if Nathan wants better, add 3-5 anchor prices to the curve, not a catalogue.
+- **Pricing, library types**: product = `priceUsd` (listed, one retailer, one day, +-10 %, existing); generic = price curve per stat (watts or gph) fitted from the library's own prices of that type, replacing the hand-set `gear-models.json` price rows over time; both reach the budget ceiling via the existing `demandOf`. Welfare is a gate: a cheaper pick is only offered if its `statsOf` passes the welfare check.
 
 ## 5. Screens (mocks, illustrative numbers)
 
@@ -113,7 +150,9 @@ Placement: one **gear card** component (`ui/gearCard.ts`, new) used for every ty
 
 ## 6. Equipment types missing today
 
-Present with library: light, heater, filter, air pump, powerhead, wavemaker, skimmer, UV, CO2 (partial), ATO, chiller. Missing a library AND a generic model: thermostat (dry and wet), timers / light controllers, misters and foggers, UVB tubes and heat lamps, heat mats, lily pipes / glass inflow-outflow, return pumps, dosers, auto feeders, RO/DI units, drop checkers / CO2 diffusers, lids and hoods (generic exists in `demand/lid.ts`, no products), sumps (`sumpFromModel`, partly modelled). Many exist in `tech.json` `gear` with a price and watts, but only as a priced row.
+Library types present: light, heater, filter, air pump, powerhead, wavemaker, skimmer, UV, CO2 (partial), ATO, chiller. Nothing is missing there beyond gaps (section 7).
+
+Generic-only types still to define (no library, one item each): thermometer / hygrometer, thermostat and light controller, timer, heat lamp, heat mat, mister, fogger, lily pipe, doser, auto feeder, RO/DI, drop checker, return pump, lid / hood, UVB tube. Most already exist as a priced and powered row in `tech.json` `gear`; the work is a stat block with limits, a default and one simple model, not data research. Lids have a model in `demand/lid.ts`; sumps in `sumpFromModel`.
 
 ## 7. Ranked library plan (top products per type)
 
@@ -128,10 +167,7 @@ Popularity sources already collected in `research/gear-popular/` (Amazon US Best
 | Powerhead / wavemaker | 16 | top 15 | Jebao, Hydor Koralia, Tunze, Maxspect Gyre (candidates) |
 | Air pump | 18 | done | |
 | Skimmer, UV, CO2, ATO, chiller | 42 | top 8 each | close the `needSpec` fields (watts, size, flow) from product pages |
-| Thermostat / controller | 0 | top 8 | Inkbird ITC-308, Inkbird ITC-310T, Herpstat, Hydrofarm, Kessil spectral controller (candidates) |
-| Mister / fogger | 0 | top 6 | MistKing, Mega Sea fogger, Zoo Med mister (candidates) |
-| UVB / heat lamp | 0 | top 10 | Arcadia T5 HO 6% / 12%, Zoo Med ReptiSun T5 HO, Exo Terra Solar-Glo (candidates; pair with UVI data where published) |
-| Lily pipe / inflow-outflow | 0 | top 6 | Lily pipe kits (Eheim, Aquarium Co-Op generic glass) (candidates) |
+| Generic-only types (thermostat, mister, fogger, UVB, heat lamp, lily pipe, ...) | n/a | n/a | **No product research.** Default stats and a price curve only. |
 
 "Candidates" = brand/product names I expect to be popular from general knowledge, to be confirmed on an Amazon / maker page before entry; the lane records the evidence line like the existing rows. Primary popularity source going forward: Amazon US Best Sellers + "bought in past month", cross-checked against Chewy and PetSmart rankings (both already used for heater prices).
 
@@ -140,6 +176,7 @@ Popularity sources already collected in `research/gear-popular/` (Amazon US Best
 - **Generic**: one simple, crisp neutral model per type, scaled by the tunables (a heater whose length follows watts exists; a bar whose length follows the length slider; a canister body whose size follows gph). Reuse the best of `render/equipment.ts` (lathe lily pipe, mister nozzles) and the existing `gear3d.ts` shapes; neutral grey/white, matching the real tank render (not cartoony, per Nathan).
 - **Product**: the same builder fed that product's per-part colours (`HeaterLook`, `FilterLook`, `LightLook`, pump/other `colors`), its own `dims`. Geometry may be simple; colours must be true. Variants beyond colour (a different body shape) are rare; add a `shape` key on `look` (already done for heaters: `tube` / `flat`).
 - `render/gear3d.ts` (1053 lines) is split per type (`render/gear/heater.ts`, `filter.ts`, `light.ts`, ...) so lanes do not touch the same file; its public functions keep their names.
+- Generic-only types need one simple model each (heat lamp dome, mist nozzle line, lily pipe, thermostat box, lid), neutral colours, scaled by the tunables; no per-product variants.
 - Retire `render/equipment.ts` + `scene/equipment.ts` and the `equip` kind once the lily-pipe / mister pieces live in the new per-type builders (saved `equip` items load as plain objects until then).
 
 ## 9. Build order (lanes; each owns its files)
@@ -152,14 +189,16 @@ Popularity sources already collected in `research/gear-popular/` (Amazon US Best
 | G3 generic render + split gear3d | per-type builders, generic models, retire equipment items | `src/render/gear/*`, `src/render/gear3d.ts`, `src/scene/equipment.ts` | G0 |
 | G4a library: lights | close est gaps, add planted + reef names | `src/data/gear/lights.json`, `src/scene/lightproduct.ts` | G0 |
 | G4b library: heaters, filters, pumps | add sizes / brands | `src/data/gear/{heaters,filters,pumps}.json` | G0 |
-| G4c library: reef + planted gear | close `needSpec`, add controllers | `src/data/gear/{skimmers,uv,co2,ato,chillers}.json` | G0 |
-| G5 new types | thermostat, controller, mister, fogger, UVB, lily pipe: stats, models, products | new `src/data/gear/*.json`, `tech.json` rows, `render/gear/*` | G0, G3 |
+| G4c library: reef gear | close `needSpec` on skimmer, UV, CO2, ATO, chiller | `src/data/gear/{skimmers,uv,co2,ato,chillers}.json` | G0 |
+| G5 generic-only types | stat block, limits, default, price curve and one simple model per type (thermostat, mister, fogger, UVB, heat lamp, heat mat, lily pipe, doser, lid, ...); no catalogue | `src/scene/gearSpec.ts` (type entries), `tech.json` rows, `src/render/gear/*` | G0, G3 |
 
-G4a-c run in parallel after G0 (distinct JSON files). G1 and G2 run in parallel after G0 (UI vs demand). G3 after G0, parallel to G1/G2. G5 last.
+G4a-c are small (data gaps only) and run in parallel after G0 (distinct JSON files); G4b and G4c could merge into one lane. G1 and G2 run in parallel after G0 (UI vs demand). G3 after G0, parallel to G1/G2. G5 last.
 
 ## 10. Questions for Nathan (max 4)
 
 1. **Where should the card live?** A gear card inside each Tech-menu row (Heating, Filtration, Lighting...) with three tabs Generic | Library | I own one, as in the two pictures above (generic sliders; locked library stats). The Items panel keeps decor only (stones, wood, plants). Yes, or do you want gear in the Items panel?
 2. **Locked stats escape hatch.** On a library product the stats are read-only, with a "Tune as generic..." button that copies them into an editable generic light (picture 2, bottom). Keep that button, or strictly no editing of a product?
-3. **Library breadth.** Same rule as now: a product is entered only when its page states the spec (the rest is marked "estimated" or left out), target about 20-40 popular products per type, ranked by Amazon "bought in past month", cross-checked with Chewy and PetSmart. OK, or do you want estimates allowed to fill gaps for popularity's sake?
-4. **Retire the five equipment items?** The heater, hang-on filter, lily pipe, mister line and light bar you called "not great" (2026-10-16) duplicate what the Tech menu already draws. Plan: delete that Items path and rebuild the generic models for those five types in the new per-type builders. OK to retire them?
+3. **Library breadth.** Library types only (lights, heaters, filters, pumps, skimmers, CO2, UV, chillers, ATO): a product is entered only when its page states the spec (the rest marked "estimated" or left out), target about 20-40 popular per type, ranked by Amazon "bought in past month", cross-checked with Chewy and PetSmart. OK, or may estimates fill gaps?
+4. **UVB tubes: generic-only OK?** UVB output is a welfare stat for reptiles. Plan: one UVB tube item with a tunable strength (5.0 / 10.0 / 12 %), length and distance, no brands; real UVI by brand is not modelled. Fine, or should UVB tubes (and heat lamps) get a small product library?
+
+Retiring the five old equipment items needs no question now: with the class rule they become the generic models (the heater is library-class and already drawn by `gear3d.ts`), so I treat the retirement as decided unless Nathan objects.
