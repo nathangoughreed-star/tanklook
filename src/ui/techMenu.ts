@@ -15,16 +15,18 @@ import { defaultProfile, type UserProfile } from '../demand/types';
 import { FEED_NAMES, GROW_RATE } from '../scene/growtime';
 import type { Store } from '../scene/store';
 import {
-  ROOM_C, applyPreset, feedFor, feedOf, filterFor, filterSteps, filterUnits, heatLoss, offerChiller,
+  ROOM_C, applyPreset, feedFor, feedOf, filterFor, filterUnits, heatLoss, offerChiller,
   optionCost, optionDef, presetsFor, pumpFor, REEF_FLOW_X, reefFeedOf, rowsFor, setFeed, singleFilter, stockCapacity, techOf, tempEvidence, unitCosts, walstadGaps, withChoice,
   withUnits, withoutUnit, reefChecks, rowProduct, sumpDefault, sumpFromModel, sumpLitres, sumpName, sumpOf, SUMP_FILL, sumpDrainDown, sumpTooSmall, type FilterUnit, type SumpSize, type HeaterUnit, type OptionCost, type TechSetup,
 } from '../scene/tech';
 import { FILTER_PRODUCTS, HEATER_PRODUCTS, reefOptionProducts, filtersNear, genericHeaterW, heatersNear, lightProduct, lightsFor, productName, pumpRatedFor, pumpsFor, type FilterProduct, type HeaterProduct, type LightProduct, type PumpProduct, type ReefProduct } from '../data/gearCatalog';
 import { applyLightProduct, lightProductNote, productOn } from '../scene/lightproduct';
-import { TECHS, lightOutCached } from '../scene/lightout';
+import { TECHS, fixtureOf, lightOutCached, wattsOf } from '../scene/lightout';
 import { integratedKit, lockNote, locksOf } from '../scene/integrated';
 import { unholdBtn } from './tankPick';
-import type { FilterKind } from '../demand/gear';
+import { FILTER_MODELS, type FilterKind } from '../demand/gear';
+import { gearCard, defaultTab, flowText, galText, lenText, wattText, type GearCardSpec, type GearSlider, type GearStat, type GearTab } from './gearCard';
+import { GEAR_LIMITS } from '../scene/gearSpec';
 import { volume } from '../scene/physics';
 import type { TankSetup } from '../scene/types';
 import { getSpecies } from '../data/species';
@@ -46,6 +48,9 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
   let open: string | null = null, base: Totals | null = null, baseKey = '';
   /** the Add picker open under Heating / Filtration (for filters: the type picked, then generic or a product) */
   let adding: { row: UnitRow; kind?: string } | null = null;
+  /** gear card (lane GM2): the tab the owner opened per card key ('heater|0'), and the pieces marked "I own one" (session-only UI state;
+   *  TODO(lane G2): owned / paidUsd on GearRef, then cost lines show $0 "you have") */
+  const tabs = new Map<string, GearTab>(), owned = new Set<string>();
   const P = () => o.profile() ?? defaultProfile();
   const kwhUsd = () => P().kwhUsd ?? (FACTORS.kwhUsd.lo + FACTORS.kwhUsd.mode + FACTORS.kwhUsd.hi) / 3;
   const fahr = () => store.scene.units === 'in';
@@ -172,6 +177,72 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     return html;
   };
 
+  // ---- the gear card (lane GM2): Generic | Library | I own one on each heater, filter and light
+  const us = () => fahr();
+  const priceTxt = (v?: number) => v ? usd(v) : '';
+  const pop = (p?: { evidence: string; seen: string }) => p ? [`${p.evidence} (seen ${p.seen})`] : [];
+  const heaterSpec = (i: number, watts: number, productId?: string): GearCardSpec => {
+    const key = `heater|${i}`, prod = HEATER_PRODUCTS.find(p => p.id === productId), near = heatersNear(watts), nearIds = new Set(near.map(p => p.id));
+    const opt = (p: HeaterProduct) => ({ id: p.id, label: `${productName(p)} · ${p.watts} W${p.priceUsd ? ` · ${usd(p.priceUsd)}` : ''}` });
+    const lim = GEAR_LIMITS.heater!.watts!;
+    const stats: GearStat[] = prod ? [
+      { label: 'Power', value: wattText(prod.watts), est: prod.est?.includes('watts') },
+      { label: 'Length', value: lenText(prod.lengthMm, us()), est: prod.est?.includes('lengthMm') },
+      ...(prod.galMin || prod.galMax ? [{ label: 'Rated for', value: `${galText(prod.galMin ?? 0, us())}-${prod.galMax ? galText(prod.galMax, us()) : 'up'}` }] : []),
+      ...(prod.priceUsd ? [{ label: 'Price', value: priceTxt(prod.priceUsd) }] : []),
+    ] : [];
+    return {
+      key, type: 'heater', tab: defaultTab(!!prod, tabs.get(key)), product: !!prod, owned: owned.has(key),
+      sliders: [{ stat: 'watts', label: 'Power', min: lim[0], max: lim[1], step: 5, value: watts, show: wattText(watts), unit: ' W', typed: { min: 5, max: 2000 }, tip: 'The heater makes up the heat the tank loses; its length follows its watts' }],
+      genericNote: 'A generic heater: its length follows its watts. The check above says whether it holds the tank on a cold night.',
+      library: { groups: [{ label: 'Near the size this tank needs', options: near.map(opt) }, { label: 'Other heaters', options: HEATER_PRODUCTS.filter(p => !nearIds.has(p.id)).sort((a, b) => a.watts - b.watts || productName(a).localeCompare(productName(b))).map(opt) }], current: prod?.id, stats, notes: prod ? pop(prod.popularity) : [], link: prod?.url },
+    };
+  };
+  const filterModels = (kind: FilterKind) => FILTER_MODELS.filter(m => m.kind === kind).sort((a, b) => a.gph - b.gph);
+  const filterSpec = (S: TankSetup, i: number, u: FilterUnit): GearCardSpec => {
+    const key = `filter|${i}`, kind = optionDef('filter', u.kind)?.kind, prod = FILTER_PRODUCTS.find(p => p.id === u.product && p.kind === u.kind), gal = volume(S.tank).gallons;
+    const pool = kind ? filterModels(kind) : [], f = kind ? filterFor(S, kind, u.model, u.product) : undefined, idx = f ? Math.max(0, pool.findIndex(m => m.id === f.model.id)) : 0;
+    const near = filtersNear(u.kind, gal), nearIds = new Set(near.map(p => p.id));
+    const opt = (p: FilterProduct) => ({ id: p.id, label: `${productName(p)}${p.gph ? ` · ${flowText(p.gph, us())}` : ''}${p.priceUsd ? ` · ${usd(p.priceUsd)}` : ''}` });
+    const labels = pool.map(m => flowText(m.gph, us()));
+    const sliders: GearSlider[] = pool.length > 1 ? [{ stat: 'model', label: 'Flow', min: 0, max: pool.length - 1, step: 1, value: idx, show: labels[idx], labels, tip: 'Generic filters come in set sizes: slide to the next size up or down' }] : [];
+    const stats: GearStat[] = prod ? [
+      ...(prod.gph ? [{ label: 'Flow', value: flowText(prod.gph, us()) }] : []),
+      ...(prod.galMin || prod.galMax ? [{ label: 'Rated for', value: `${galText(prod.galMin ?? 0, us())}-${prod.galMax ? galText(prod.galMax, us()) : 'up'}` }] : []),
+      ...(prod.watts ? [{ label: 'Power', value: wattText(prod.watts) }] : []),
+      ...(prod.priceUsd ? [{ label: 'Price', value: priceTxt(prod.priceUsd) }] : []),
+    ] : [];
+    return {
+      key, type: 'filter', tab: defaultTab(!!prod, tabs.get(key)), product: !!prod, owned: owned.has(key), sliders,
+      genericNote: pool.length > 1 ? undefined : 'One generic size for this kind.',
+      library: { groups: [{ label: 'Rated near this tank', options: near.map(opt) }, { label: `Other ${KIND_NAME[u.kind] ?? u.kind}s`, options: FILTER_PRODUCTS.filter(p => p.kind === u.kind && !nearIds.has(p.id)).sort((a, b) => (a.gph ?? 0) - (b.gph ?? 0)).map(opt) }], current: prod?.id, stats, notes: prod ? pop(prod.popularity) : [], link: prod?.url },
+    };
+  };
+  /** The light's card: Library = the catalogued lights that fit the length (the select that was here), Generic = its watts. */
+  const lightSpec = (S: TankSetup, fits: LightProduct[], cur: LightProduct | undefined, extra: string[]): GearCardSpec => {
+    const key = 'light|0', l = S.light, fx = fixtureOf(l), lim = GEAR_LIMITS.light!.watts!, W = wattsOf(S);
+    const list = cur && !fits.includes(cur) ? [cur, ...fits] : fits;
+    const stats: GearStat[] = cur ? [
+      { label: 'Power', value: wattText(cur.watts), est: cur.est?.includes('watts') },
+      { label: 'PAR', value: cur.par ? `${cur.par}` : 'not published', est: !cur.par },
+      ...(cur.kelvin ? [{ label: 'Colour', value: `${cur.kelvin} K` }] : []),
+      { label: 'Size', value: `${lenText(cur.lengthMm, us())} long`, est: ['lengthMm', 'widthMm', 'heightMm'].some(f => cur.est?.includes(f)) },
+      ...(cur.priceUsd ? [{ label: 'Price', value: priceTxt(cur.priceUsd) }] : []),
+    ] : [];
+    const sliders: GearSlider[] = fx === 'flat' || fx === 'tube' || fx === 'pendant' || fx === 'bulb' ? [] : [{ stat: 'watts', label: 'Total power', min: lim[0], max: lim[1], step: 1, value: Math.round(W), show: wattText(W), unit: ' W', typed: { min: 1, max: 1000 }, tip: 'The power of all the lights over the tank together' }];
+    return {
+      key, type: 'light', tab: defaultTab(!!cur, tabs.get(key)), product: !!cur, owned: owned.has(key), sliders,
+      genericNote: sliders.length ? 'A generic light: more fixture controls (type, lamp, height, beam) are below.' : 'The power of this fixture is set by its lamps: see the controls below.',
+      library: { groups: [{ label: 'Fits this tank length', options: list.map(p => ({ id: p.id, label: `${productName(p)} · ${p.watts} W${p.est?.includes('watts') ? ' (est.)' : ''}${p.priceUsd ? ` · ${usd(p.priceUsd)}` : ''}` })) }], current: cur?.id, stats, notes: [...extra, ...(cur ? pop(cur.popularity) : [])], link: cur?.url },
+    };
+  };
+  /** After a unit of `row` is removed, its later cards' tabs and owned marks move up one. */
+  const shiftCards = (row: string, gone: number) => {
+    const at = (k: string) => { const [r, n] = k.split('|'); return r === row ? +n : -1; };
+    for (const [k, v] of [...tabs]) { const n = at(k); if (n < 0) continue; tabs.delete(k); if (n > gone) tabs.set(`${row}|${n - 1}`, v); }
+    for (const k of [...owned]) { const n = at(k); if (n < 0) continue; owned.delete(k); if (n > gone) owned.add(`${row}|${n - 1}`); }
+  };
+
   /** Heating, opened: a card per heater, or "No heater", and the Add picker. */
   const heaterBody = (S: TankSetup, t: TechSetup, cur: string, c: OptionCost): string => {
     const h = heatLoss(S, t), costs = unitCosts(S, 'heater', { tech: t, kwhUsd: kwhUsd() }), kit = inBundle(S, t, 'heater');
@@ -179,7 +250,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     if (!h.n) html += card('No heater', undefined, false, '', `<span class="tchips">${chips(S, 'heater', 'none', c)}</span>`);
     h.units.forEach((u, i) => {
       const name = u.product ? esc(productName(u.product)) : 'Generic heater';
-      html += card(name, costs[i], kit[i], `del|heater|${i}`, u.product ? '' : `<label class="tuw">Watts <input type="number" data-hw="${i}" min="5" max="2000" step="5" value="${u.watts}"></label>`);
+      html += card(name, costs[i], kit[i], `del|heater|${i}`, gearCard(heaterSpec(i, u.watts, u.product?.id)));
     });
     html += '</div>';
     if (h.n) {
@@ -205,9 +276,9 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     let html = '<div class="tunits">';
     if (!us.length) html += card('None (Walstad)', undefined, false, '', `<span class="tchips">${chips(S, 'filter', 'none', c)}</span>`);
     us.forEach((u, i) => {
-      const kind = optionDef('filter', u.kind)?.kind, f = kind ? filterFor(S, kind, u.model, u.product) : undefined, st = kind && f && !f.product ? filterSteps(kind, f.model.id) : undefined;
-      const turn = costs[i].turnover, steps = st ? `${st.down ? `<button type="button" data-act="fm|${i}|${st.down.id}">Smaller</button>` : ''}${st.up ? `<button type="button" data-act="fm|${i}|${st.up.id}">Larger</button>` : ''}` : '';
-      const body = `<span class="tchips"><span class="tchip mute">${esc(optionDef('filter', u.kind)?.label ?? u.kind)}</span>${turn !== undefined && us.length > 1 ? `<span class="tchip">${turn.toFixed(1)}× / hour</span>` : ''}</span>${steps ? `<div class="tstep">${steps}</div>` : ''}`;
+      
+      const turn = costs[i].turnover;
+      const body = `<span class="tchips"><span class="tchip mute">${esc(optionDef('filter', u.kind)?.label ?? u.kind)}</span>${turn !== undefined && us.length > 1 ? `<span class="tchip">${turn.toFixed(1)}× / hour</span>` : ''}</span>${u.kind !== 'sump' ? gearCard(filterSpec(S, i, u)) : ''}`;
       html += card(esc(filterLabel(S, u)), costs[i], kit[i], `del|filter|${i}`, body);
     });
     html += '</div>';
@@ -397,9 +468,14 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     const lk = locksOf(store.tank);
     if (el.closest('.thead') && row && ((row === 'filter' && lk?.filter) || (row === 'heater' && lk?.heater))) return;
     if (el.closest('.thead') && row) { open = open === row ? null : row; adding = null; render(); return; }
+    const gt = el.closest<HTMLElement>('[data-gc-tab]')?.dataset.gcTab;
+    if (gt) { const cut = gt.lastIndexOf('|'); tabs.set(gt.slice(0, cut), gt.slice(cut + 1) as GearTab); render(); lightKey = ''; renderLight(); return; }
+    const tune = el.closest<HTMLElement>('[data-gc-tune]')?.dataset.gcTune;
+    if (tune) { tuneAsGeneric(tune); return; }
     const act = el.closest<HTMLElement>('[data-act]')?.dataset.act;
     if (act) {
       const [a, b, c] = act.split('|');
+      if (a === 'del') shiftCards(b, +c);
       if (a === 'adding') { adding = b ? { row: b as UnitRow, ...(c ? { kind: c } : {}) } : null; render(); return; }
       if (a === 'addh' || a === 'addf') adding = null;
       if (a === 'sump' && b === 'pick') { o.pickSump?.(m => edit(s => ({ ...techOf(s), sump: sumpFromModel(m) }))); return; }
@@ -410,8 +486,52 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     const op = el.closest<HTMLElement>('[data-opt]');
     if (op && row) { edit(s => withChoice(s, row, op.dataset.opt!)); return; }
   });
+  /** A gear card control changed (heater, filter or light): true when it was one. */
+  const gearChange = (el: HTMLInputElement): boolean => {
+    if (el.dataset.gcPick !== undefined) { // a library product; empty = no change
+      const [row, n] = el.dataset.gcPick.split('|'), i = +n, id = el.value;
+      if (!id) return true;
+      tabs.set(el.dataset.gcPick, 'library');
+      if (row === 'heater') edit(s => { const t = techOf(s); return withUnits(t, 'heater', heatersNow(s, t).map((u, k) => k === i ? { product: id } : u)); });
+      else if (row === 'filter') edit(s => { const t = techOf(s); return withUnits(t, 'filter', filterUnits(t).map((u, k) => k === i ? { kind: u.kind, product: id } : u)); });
+      else if (row === 'light') { lightKey = ''; store.edit(s => applyLightProduct(s.light, s.tank, lightProduct(id))); }
+      return true;
+    }
+    if (el.dataset.gcOwn !== undefined) { if (el.checked) owned.add(el.dataset.gcOwn); else owned.delete(el.dataset.gcOwn); render(); lightKey = ''; renderLight(); return true; }
+    if (el.dataset.gc !== undefined) { // a slider or number box (generic stats)
+      const [row, n] = el.dataset.gc.split('|'), i = +n, v = +el.value, stat = el.dataset.gcStat;
+      if (el.value === '' || !isFinite(v)) return true;
+      if (row === 'heater' && stat === 'watts') edit(s => { const t = techOf(s); return withUnits(t, 'heater', heatersNow(s, t).map((u, k) => k === i ? { ...u, w: Math.min(2000, Math.max(5, Math.round(v))) } : u)); });
+      else if (row === 'filter' && stat === 'model') edit(s => { const t = techOf(s), us = filterUnits(t), kind = optionDef('filter', us[i]?.kind ?? '')?.kind, m = kind ? filterModels(kind)[Math.round(v)] : undefined; return m ? withUnits(t, 'filter', us.map((u, k) => k === i ? { kind: u.kind, model: m.id, ...(u.kit ? { kit: true } : {}) } : u)) : t; });
+      else if (row === 'light' && stat === 'watts') { lightKey = ''; store.edit(s => { s.light.watts = Math.min(1000, Math.max(1, Math.round(v))); }); }
+      return true;
+    }
+    return false;
+  };
+  /** "Tune as generic...": a library product becomes a generic with its numbers (the product name is dropped). */
+  const tuneAsGeneric = (key: string) => {
+    const [row, n] = key.split('|'), i = +n;
+    tabs.set(key, 'generic');
+    if (row === 'heater') edit(s => { const t = techOf(s), us = heatersNow(s, t), p = HEATER_PRODUCTS.find(x => x.id === us[i]?.product); return p ? withUnits(t, 'heater', us.map((u, k) => k === i ? { w: p.watts, ...(u.kit ? { kit: true } : {}) } : u)) : t; });
+    else if (row === 'filter') edit(s => {
+      const t = techOf(s), us = filterUnits(t), p = FILTER_PRODUCTS.find(x => x.id === us[i]?.product);
+      if (!p) return t;
+      const near = filterModels(p.kind as FilterKind).sort((a, b) => Math.abs(Math.log(a.gph / (p.gph ?? a.gph))) - Math.abs(Math.log(b.gph / (p.gph ?? b.gph))))[0];
+      return withUnits(t, 'filter', us.map((x, k) => k === i ? { kind: x.kind, ...(near ? { model: near.id } : {}), ...(x.kit ? { kit: true } : {}) } : x));
+    });
+    else if (row === 'light') { store.edit(s => { delete s.light.product; }); lightKey = ''; }
+    render(); renderLight();
+  };
+  const slideLabel = (e: Event) => { // a gear card slider: the label follows the thumb; the edit lands on release (change)
+    const el = e.target as HTMLInputElement;
+    if (el.dataset.gc === undefined || el.type !== 'range') return;
+    const val = el.parentElement?.querySelector('.gc-val'), labels = el.dataset.gcLabels ? JSON.parse(el.dataset.gcLabels) as string[] : undefined;
+    if (val) val.textContent = labels ? labels[+el.value] : `${el.value}${el.dataset.gcUnit ?? ''}`;
+  };
+  mount.addEventListener('input', slideLabel);
   mount.addEventListener('change', e => {
     const el = e.target as HTMLInputElement;
+    if (gearChange(el)) return;
     if (el.dataset.pump) { // a pump product (or generic: empty)
       const gear = el.dataset.pump, id = (el as unknown as HTMLSelectElement).value;
       edit(s => { const t = { ...techOf(s) }, pumps = { ...t.pumps }; if (id) pumps[gear] = id; else delete pumps[gear]; if (Object.keys(pumps).length) t.pumps = pumps; else delete t.pumps; return t; });
@@ -455,7 +575,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     if (!lightMount) return;
     const S = store.tank, l = S.light, cur = productOn(l), inch = (mm: number) => Math.round(mm / 25.4), o = cur ? lightOutCached(S) : null;
     const kitLight = locksOf(S)?.light ? integratedKit(S) : undefined;
-    const key = JSON.stringify([S.lid, S.tank.L, cur?.id, o && Math.round(o.mean), store.scene.units, kitLight?.id, l.watts]);
+    const key = JSON.stringify([S.lid, S.tank.L, cur?.id, o && Math.round(o.mean), store.scene.units, kitLight?.id, l.watts, l.type, l.tech, tabs.get('light|0'), owned.has('light|0')]);
     if (key === lightKey) return;
     lightKey = key;
     if (kitLight) { // an integrated kit has its own light: no catalogue to pick from
@@ -464,25 +584,23 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
       return;
     }
     if (S.lid === 'hood') { lightMount.innerHTML = '<div class="hint">The hood holds its own lamps: take the hood off (Lid) to fit one of the catalogued lights.</div>'; return; }
-    const fits = lightsFor(S.tank.L), list = cur && !fits.includes(cur) ? [cur, ...fits] : fits;
-    const label = (p: LightProduct) => `${productName(p)} · ${p.watts} W${p.est?.includes('watts') ? ' (est.)' : ''}${p.priceUsd ? ` · ${usd(p.priceUsd)}` : ''}`;
-    let html = `<div class="row"><label for="lProd" title="A real light from the catalogue (the Amazon best sellers), drawn at its own size and colours: the ones whose brackets fit this tank's length. Generic: the fixture set below">Product</label><select id="lProd" class="span2"><option value="">Generic (set below)</option>${list.map(p => `<option value="${p.id}"${p === cur ? ' selected' : ''}>${esc(label(p))}</option>`).join('')}</select></div>`;
-    if (!fits.length) html += `<div class="hint">No catalogued light fits a ${Math.round(S.tank.L)} mm (${inch(S.tank.L)} in) long tank: the generic fixture below.</div>`;
+    const fits = lightsFor(S.tank.L), notes: string[] = [];
+    if (!fits.length) notes.push(`No catalogued light fits a ${Math.round(S.tank.L)} mm (${inch(S.tank.L)} in) long tank: the generic fixture below.`);
     if (cur) {
       const sz = ['lengthMm', 'widthMm', 'heightMm'].some(f => cur.est?.includes(f)) ? ' (size estimated)' : '';
       const fit = cur.mount === 'bar' || cur.mount === 'rim-legs' ? `, fits ${inch(cur.fitMinMm)}-${inch(cur.fitMaxMm)} in tanks` : '';
       const par = o ? ` About ${Math.round(o.mean)} PAR on the substrate here (${cur.par ? 'scaled to the published figure' : 'estimated'}).` : '';
-      html += `<div class="tunit"><div class="tuh"><span class="tun">${esc(productName(cur))}</span></div>`
-        + `<div class="hint">${cur.lengthMm} × ${cur.widthMm} × ${cur.heightMm} mm ${esc(MOUNT_NAME[cur.mount])}${fit}${sz}. ${esc(lightProductNote(cur))}${par}</div>`
-        + `${cur.popularity ? `<div class="hint">${esc(cur.popularity.evidence)} (seen ${esc(cur.popularity.seen)})</div>` : ''}`
-        + `<div class="hint"><a href="${esc(cur.url)}" target="_blank" rel="noopener">Listing</a>${cur.controller ? ` · controller: ${esc(cur.controller)}` : ''}</div></div>`;
+      notes.push(`${cur.lengthMm} × ${cur.widthMm} × ${cur.heightMm} mm ${MOUNT_NAME[cur.mount]}${fit}${sz}. ${lightProductNote(cur)}${par}`);
+      if (cur.controller) notes.push(`Controller: ${cur.controller}`);
     }
-    lightMount.innerHTML = html;
+    lightMount.innerHTML = `<div class="tunit"><div class="tuh"><span class="tun">${esc(cur ? productName(cur) : 'Generic light')}</span></div>${gearCard(lightSpec(S, fits, cur, notes))}</div>`;
   }
-  lightMount?.addEventListener('change', e => {
-    const el = e.target as HTMLSelectElement;
-    if (el.id !== 'lProd') return;
-    store.edit(s => applyLightProduct(s.light, s.tank, lightProduct(el.value)));
+  lightMount?.addEventListener('change', e => { gearChange(e.target as HTMLInputElement); });
+  lightMount?.addEventListener('input', slideLabel);
+  lightMount?.addEventListener('click', e => {
+    const el = e.target as HTMLElement, gt = el.closest<HTMLElement>('[data-gc-tab]')?.dataset.gcTab, tune = el.closest<HTMLElement>('[data-gc-tune]')?.dataset.gcTune;
+    if (gt) { const cut = gt.lastIndexOf('|'); tabs.set(gt.slice(0, cut), gt.slice(cut + 1) as GearTab); lightKey = ''; renderLight(); }
+    else if (tune) tuneAsGeneric(tune);
   });
   render(); renderLight();
   return { render };

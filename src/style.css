@@ -928,3 +928,20 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .sgPath { margin-top: 10px; padding: 8px 10px; border: 1px solid var(--line, #888); border-radius: 8px } .sgPath h4 { margin: 0 0 2px; font-size: 14px }
 .sgPath .sgAlts { margin-top: 6px } .sgTrue { margin: 6px 0; font-size: 13px } .sgNoPath { margin-top: 6px; font-style: italic }
 .sgFuture { margin-top: 10px; font-size: 13px } .sgFuture ul { margin: 4px 0 0; padding-left: 18px }
+
+/* the gear card (src/ui/gearCard.ts, lane GM2): Generic | Library | I own one on each heater, filter and light */
+.gear-card { margin-top: 6px }
+.gc-tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); margin-bottom: 6px }
+.gc-tab { font: inherit; font-size: 11px; padding: 3px 8px; border: 1px solid transparent; border-bottom: 0; border-radius: 4px 4px 0 0; background: none; color: var(--muted); cursor: pointer }
+.gc-tab:hover, .gc-tab:focus-visible { color: var(--ink) }
+.gc-tab.on { color: var(--ink); font-weight: 600; border-color: var(--line); background: var(--panel, transparent); margin-bottom: -1px }
+.gc-slide { display: grid; grid-template-columns: 1fr auto; gap: 2px 6px; align-items: center; margin: 4px 0 }
+.gc-slide label { grid-column: 1 / -1; font-size: 11px; color: var(--muted) } .gc-slide label b { color: var(--ink) }
+.gc-slide input[type=range] { width: 100%; min-width: 0 }
+.gc-num { width: 56px; font: inherit; font-size: 11px }
+.gc-pick { width: 100%; max-width: 100%; min-width: 0; font: inherit; font-size: 11px }
+.gc-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 2px 8px; margin: 6px 0; font-size: 11px }
+.gc-stats div { display: flex; justify-content: space-between; gap: 6px; border-bottom: 1px dotted var(--line) }
+.gc-stats dt { color: var(--muted) } .gc-stats dd { margin: 0; font-weight: 600 } .gc-stats i { font-weight: 400; font-style: normal; color: var(--muted) }
+.gc-tune { font: inherit; font-size: 11px; margin-top: 4px; padding: 3px 8px; border: 1px solid var(--line); border-radius: 4px; background: none; color: var(--accent); cursor: pointer }
+.gc-own { display: flex; align-items: center; gap: 6px; font-size: 12px }
