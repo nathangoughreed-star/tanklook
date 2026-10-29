@@ -1,0 +1,203 @@
+[
+ {
+  "id": "fzone-single-stage",
+  "brand": "FZONE",
+  "model": "CO2 Regulator, single stage (CGA320)",
+  "kind": "regulator",
+  "stages": 1,
+  "priceUsd": 54.99,
+  "needSpec": [
+   "watts",
+   "cylinder"
+  ],
+  "note": "Regulator only: the CO2 cylinder is bought separately.",
+  "popularity": {
+   "evidence": "Amazon search: 1,332 ratings, 100+ bought in past month",
+   "url": "https://www.amazon.com/dp/B07QFT69P8",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#b08d57"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B07QFT69P8",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "fzone-mini-kit",
+  "brand": "FZONE",
+  "model": "Mini CO2 Regulator Kit (CGA320)",
+  "kind": "regulator",
+  "stages": 1,
+  "priceUsd": 47.99,
+  "needSpec": [
+   "watts",
+   "cylinder"
+  ],
+  "note": "Regulator only: the CO2 cylinder is bought separately.",
+  "popularity": {
+   "evidence": "Amazon search: 63 ratings, 50+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0FX4T577M",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#b08d57"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B0FX4T577M",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "fzone-mini-dual",
+  "brand": "FZONE",
+  "model": "Dual Stage Mini CO2 Regulator (paintball tank / CGA320)",
+  "kind": "regulator",
+  "stages": 2,
+  "priceUsd": 94.99,
+  "needSpec": [
+   "watts",
+   "cylinder"
+  ],
+  "note": "Regulator only: the CO2 cylinder is bought separately.",
+  "popularity": {
+   "evidence": "Amazon search: 558 ratings, 50+ bought in past month",
+   "url": "https://www.amazon.com/dp/B08P5FKQDT",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#b08d57"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B08P5FKQDT",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "fzone-cga320-dual",
+  "brand": "FZONE",
+  "model": "Pro Dual Stage CO2 Regulator (CGA320)",
+  "kind": "regulator",
+  "stages": 2,
+  "priceUsd": 135.99,
+  "needSpec": [
+   "watts",
+   "cylinder"
+  ],
+  "note": "Regulator only: the CO2 cylinder is bought separately.",
+  "popularity": {
+   "evidence": "Amazon search: 669 ratings, 50+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0838KXK5D",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#b08d57"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B0838KXK5D",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "fzone-desktop-45g",
+  "brand": "FZONE",
+  "model": "Desktop CO2 System, 45 g cartridge",
+  "kind": "cartridge",
+  "cartridgeG": 45,
+  "lastsDays": 50,
+  "priceUsd": 47.99,
+  "needSpec": [
+   "cartridge price",
+   "watts"
+  ],
+  "note": "Disposable cartridge; up to 50 days at 1 bubble a second, 8 h a day.",
+  "popularity": {
+   "evidence": "Amazon search: 181 ratings, 100+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0DY46N5WV",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#2b2b2b"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B0DY46N5WV",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "fzone-desktop-80g",
+  "brand": "FZONE",
+  "model": "Desktop CO2 Kit with solenoid, 80 g cartridge",
+  "kind": "cartridge",
+  "cartridgeG": 80,
+  "lastsDays": 90,
+  "priceUsd": 72.99,
+  "needSpec": [
+   "cartridge price",
+   "watts"
+  ],
+  "note": "Disposable cartridge with solenoid; up to 90 days at 1 bubble a second, 8 h a day.",
+  "popularity": {
+   "evidence": "Amazon search: 181 ratings, 50+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0H6WS4C9N",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#2b2b2b"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B0H6WS4C9N",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "diy-co2-2l",
+  "brand": "Generic",
+  "model": "2 L DIY CO2 Generator with regulator and needle valve",
+  "kind": "diy",
+  "bottleL": 2,
+  "priceUsd": 85.98,
+  "popularity": {
+   "evidence": "Amazon search: 87 ratings, 50+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0F4N1GZJ4",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#cfcfcf"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B0F4N1GZJ4",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "fzone-diy-2-5l",
+  "brand": "FZONE",
+  "model": "2.5 L DIY CO2 Generator Kit",
+  "kind": "diy",
+  "bottleL": 2.5,
+  "priceUsd": 95.99,
+  "note": "About a month at 1 bubble a second, 8 h a day, on 300-400 g of raw material.",
+  "popularity": {
+   "evidence": "Amazon search: 1,014 ratings",
+   "url": "https://www.amazon.com/dp/B0B5R18XDV",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#cfcfcf"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B0B5R18XDV",
+  "asOf": "2026-10-27"
+ }
+]

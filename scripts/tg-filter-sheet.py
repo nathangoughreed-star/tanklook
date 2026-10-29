@@ -3,7 +3,7 @@
 # colours were read from (argument: a JSON map id -> image file). Writes shots/tg_fsheet_<n>.png.
 import sys, json, os
 from PIL import Image, ImageDraw, ImageFont
-photos = json.load(open(sys.argv[1])); cat = json.load(open('src/data/gear-catalog.json', encoding='utf-8'))
+photos = json.load(open(sys.argv[1])); cat = {k: json.load(open(f'src/data/gear/{k}.json', encoding='utf-8')) for k in ('filters', 'heaters')}
 names = {x['id']: f"{x['brand']} {x['model']}" for x in cat['filters'] + cat['heaters']}
 font = ImageFont.truetype('arial.ttf', 17); small = ImageFont.truetype('arial.ttf', 13); H = 300
 def fit(im, h=H): return im.resize((max(1, round(im.width * h / im.height)), h))

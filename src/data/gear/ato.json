@@ -1,0 +1,147 @@
+[
+ {
+  "id": "ato-generic-qst",
+  "brand": "Generic",
+  "model": "Auto Top Off System (QST fill-time cut-off)",
+  "pump": "included pump",
+  "priceUsd": 39.99,
+  "needSpec": [
+   "brand",
+   "sensors",
+   "watts"
+  ],
+  "note": "Stops the pump if a refill takes 6 times longer than expected. The listing does not say how many sensors.",
+  "popularity": {
+   "evidence": "Amazon search: 891 ratings, 800+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0CFVWDKMC",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#2c6fd0"
+  },
+  "url": "https://www.amazon.com/dp/B0CFVWDKMC",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "fzone-ato-dual-optical",
+  "brand": "FZONE",
+  "model": "ATO System, dual optical sensors",
+  "sensors": 2,
+  "pump": "included pump",
+  "priceUsd": 39.99,
+  "needSpec": [
+   "watts"
+  ],
+  "note": "Two 1 mm optical sensors; the water rises less than 0.6 cm between top-offs.",
+  "popularity": {
+   "evidence": "Amazon search: 1,035 ratings, 100+ bought in past month",
+   "url": "https://www.amazon.com/dp/B09YVP3L22",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#2f8f55"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B09YVP3L22",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "fzone-ato-qst2",
+  "brand": "FZONE",
+  "model": "ATO System QST2.0",
+  "sensors": 2,
+  "pump": "included pump",
+  "priceUsd": 58.99,
+  "needSpec": [
+   "watts"
+  ],
+  "note": "Dual optical sensors with a pause button on the controller.",
+  "popularity": {
+   "evidence": "Amazon search: 460 ratings, 200+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0C68N3WK9",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#2f8f55"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B0C68N3WK9",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "fzone-nano-ato-solenoid",
+  "brand": "FZONE",
+  "model": "Nano ATO with solenoid valve (RO/DI)",
+  "sensors": 2,
+  "pump": "solenoid valve on the RO/DI line",
+  "priceUsd": 49.9,
+  "needSpec": [
+   "watts"
+  ],
+  "note": "Dual optical sensors; fills straight from an RO/DI unit through a solenoid valve, no pump.",
+  "popularity": {
+   "evidence": "Amazon search: 50 ratings",
+   "url": "https://www.amazon.com/dp/B0CR5H62Q7",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#2f8f55"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B0CR5H62Q7",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "magtool-ato-dual",
+  "brand": "MagTool",
+  "model": "Auto Top Off System, dual optical sensor",
+  "sensors": 2,
+  "pump": "included pump",
+  "priceUsd": 40.57,
+  "needSpec": [
+   "watts"
+  ],
+  "note": "One sensor watches the level and the other stops an overflow.",
+  "popularity": {
+   "evidence": "Amazon search: 559 ratings, 50+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0F6XZ8V9H",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#2c6fd0"
+  },
+  "url": "https://www.amazon.com/dp/B0F6XZ8V9H",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "magtool-duetto-2026",
+  "brand": "MagTool",
+  "model": "Duetto V2026 Auto Top Off, dual optical sensor",
+  "sensors": 2,
+  "pump": "included pump",
+  "priceUsd": 59,
+  "needSpec": [
+   "watts"
+  ],
+  "note": "External controller with a pause button and a buzzer for faults.",
+  "popularity": {
+   "evidence": "Amazon search: 186 ratings, 50+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0DS22KPDB",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#2c6fd0"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B0DS22KPDB",
+  "asOf": "2026-10-27"
+ }
+]

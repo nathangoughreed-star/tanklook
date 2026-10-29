@@ -1,0 +1,1987 @@
+[
+ {
+  "id": "aquaneat-18-24",
+  "brand": "AQUANEAT",
+  "model": "LED Aquarium Light 18-24 inch full spectrum",
+  "mount": "bar",
+  "fitMinMm": 457,
+  "fitMaxMm": 610,
+  "lengthMm": 457,
+  "widthMm": 69,
+  "heightMm": 10,
+  "watts": 12,
+  "tech": "led-planted",
+  "spectrum": "white+RGB full spectrum",
+  "controller": "none (cord)",
+  "water": "fresh",
+  "priceUsd": 14.88,
+  "url": "https://www.amazon.com/dp/B07T9Y7LQ4",
+  "asOf": "2026-10-20",
+  "est": [
+   "watts"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 2,
+    "accents": [
+     "#ff3a2e",
+     "#2fd35a",
+     "#2f6bff"
+    ],
+    "every": 6
+   },
+   "ledLook": "2 rows white, few RGB dots",
+   "photo": "https://m.media-amazon.com/images/I/61UcsXNJKkL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "led aquarium light 18-24 inch full spectrum"
+  ],
+  "popularity": {
+   "evidence": "Amazon Best Sellers > Aquarium Lights #1; 18,896 reviews; 3K+ bought in past month",
+   "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
+   "seen": "2026-10-20"
+  },
+  "note": "Body 2.7x18x0.4 in per Amazon page"
+ },
+ {
+  "id": "pawfly-11w-12-18",
+  "brand": "Pawfly",
+  "model": "11W LED Aquarium Light 12-18 in",
+  "mount": "bar",
+  "fitMinMm": 305,
+  "fitMaxMm": 457,
+  "lengthMm": 290,
+  "widthMm": 60,
+  "heightMm": 15,
+  "watts": 11,
+  "tech": "led-planted",
+  "spectrum": "white+blue+red+RGB",
+  "controller": "inline W/M/B switch",
+  "water": "fresh",
+  "priceUsd": 8.99,
+  "url": "https://www.amazon.com/dp/B0C89F87VV",
+  "asOf": "2026-10-20",
+  "est": [
+   "lengthMm",
+   "widthMm",
+   "heightMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 2,
+    "accents": [
+     "#2f6bff",
+     "#ff3a2e"
+    ],
+    "every": 3
+   },
+   "ledLook": "2 rows white/blue, red dots",
+   "photo": "https://m.media-amazon.com/images/I/81Y8jkl771L._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "11w led aquarium light 12-18 in"
+  ],
+  "popularity": {
+   "evidence": "Amazon Best Sellers > Aquarium Lights #3; 2,524 reviews; 1K+ bought in past month",
+   "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "hygger-clip-24-7",
+  "brand": "hygger",
+  "model": "Clip On 24/7 Lighting LED Light",
+  "mount": "rim-legs",
+  "fitMinMm": 305,
+  "fitMaxMm": 1219,
+  "lengthMm": 457,
+  "widthMm": 100,
+  "heightMm": 15,
+  "watts": 18,
+  "tech": "led-planted",
+  "spectrum": "white+RGB 24/7",
+  "controller": "inline timer",
+  "water": "fresh",
+  "priceUsd": 28.49,
+  "url": "https://www.amazon.com/dp/B093GZKYM9",
+  "asOf": "2026-10-20",
+  "est": [
+   "lengthMm",
+   "widthMm",
+   "heightMm",
+   "watts",
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 3,
+    "accents": [
+     "#ff3a2e",
+     "#2fd35a",
+     "#2f6bff"
+    ],
+    "every": 5
+   },
+   "ledLook": "hidden under lid",
+   "photo": "https://m.media-amazon.com/images/I/71WY09nSviL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "clip on 24/7 lighting led light"
+  ],
+  "popularity": {
+   "evidence": "Amazon Best Sellers > Aquarium Lights #4; 2,944 reviews; 2K+ bought in past month",
+   "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
+   "seen": "2026-10-20"
+  },
+  "note": "Several length variants exist; size not verified"
+ },
+ {
+  "id": "hygger-submersible-24-7",
+  "brand": "hygger",
+  "model": "24/7 Mode Submersible LED Light (3 rows)",
+  "mount": "submersible",
+  "fitMinMm": 350,
+  "fitMaxMm": 1220,
+  "lengthMm": 300,
+  "widthMm": 35,
+  "heightMm": 25,
+  "watts": 6,
+  "tech": "led-planted",
+  "spectrum": "white+RGB 24/7",
+  "controller": "inline timer",
+  "water": "fresh",
+  "priceUsd": 15.19,
+  "url": "https://www.amazon.com/dp/B09CL6Y32S",
+  "asOf": "2026-10-20",
+  "est": [
+   "lengthMm",
+   "widthMm",
+   "heightMm",
+   "watts",
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 3,
+    "accents": [
+     "#ff3a2e",
+     "#2fd35a",
+     "#2f6bff"
+    ],
+    "every": 4
+   },
+   "ledLook": "3 rows white + coloured",
+   "photo": "https://m.media-amazon.com/images/I/615n39+hOCL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "24/7 mode submersible led light (3 rows)"
+  ],
+  "popularity": {
+   "evidence": "Amazon Best Sellers > Aquarium Lights #5; 3,787 reviews; 700+ bought in past month",
+   "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
+   "seen": "2026-10-20"
+  },
+  "note": "Suction cups; in-water accent bar"
+ },
+ {
+  "id": "seaoura-12-18",
+  "brand": "SEAOURA",
+  "model": "LED Aquarium Light for Plants 12-18 in",
+  "mount": "bar",
+  "fitMinMm": 305,
+  "fitMaxMm": 457,
+  "lengthMm": 285,
+  "widthMm": 86,
+  "heightMm": 12,
+  "watts": 8,
+  "tech": "led-planted",
+  "spectrum": "white+RGB full spectrum",
+  "controller": "inline 4-button",
+  "water": "fresh",
+  "priceUsd": 16.99,
+  "url": "https://www.amazon.com/dp/B0B4VJRX7Y",
+  "asOf": "2026-10-20",
+  "est": [
+   "watts"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 5,
+    "accents": [
+     "#ff3a2e",
+     "#2fd35a",
+     "#2f6bff"
+    ],
+    "every": 6
+   },
+   "ledLook": "5 columns white, RGB dots",
+   "photo": "https://m.media-amazon.com/images/I/713fphWRDyL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "led aquarium light for plants 12-18 in"
+  ],
+  "popularity": {
+   "evidence": "Amazon Best Sellers > Aquarium Lights #6; 6,233 reviews; 500+ bought in past month",
+   "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
+   "seen": "2026-10-20"
+  },
+  "note": "Body 3.4x11.22x0.47 in per Amazon page"
+ },
+ {
+  "id": "aquaneat-12",
+  "brand": "AQUANEAT",
+  "model": "LED Aquarium Light 12 inch auto on/off",
+  "mount": "bar",
+  "fitMinMm": 254,
+  "fitMaxMm": 330,
+  "lengthMm": 254,
+  "widthMm": 60,
+  "heightMm": 12,
+  "watts": 6,
+  "tech": "led-planted",
+  "spectrum": "white+RGB full spectrum",
+  "controller": "timer",
+  "water": "fresh",
+  "priceUsd": 7.99,
+  "url": "https://www.amazon.com/dp/B0BQM48ZT2",
+  "asOf": "2026-10-20",
+  "est": [
+   "lengthMm",
+   "widthMm",
+   "heightMm",
+   "watts",
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 2,
+    "accents": [
+     "#ff3a2e",
+     "#2fd35a",
+     "#2f6bff"
+    ],
+    "every": 6
+   },
+   "ledLook": "2-3 rows white + RGB dots",
+   "photo": "https://m.media-amazon.com/images/I/61UcsXNJKkL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "led aquarium light 12 inch auto on/off"
+  ],
+  "popularity": {
+   "evidence": "Amazon Best Sellers > Aquarium Lights #7; 2,110 reviews; bought-per-month not captured (page blocked)",
+   "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
+   "seen": "2026-10-20"
+  },
+  "note": "Page blocked, photo not read; colours from sibling AQUANEAT 18-24"
+ },
+ {
+  "id": "hygger-18w-24-7",
+  "brand": "hygger",
+  "model": "18W 24/7 Lighting LED Light 18-24 in",
+  "mount": "bar",
+  "fitMinMm": 457,
+  "fitMaxMm": 610,
+  "lengthMm": 457,
+  "widthMm": 75,
+  "heightMm": 15,
+  "watts": 18,
+  "tech": "led-planted",
+  "spectrum": "white+RGB 24/7",
+  "controller": "inline 5-button controller",
+  "water": "fresh",
+  "priceUsd": 37.04,
+  "url": "https://www.amazon.com/dp/B08N19TY71",
+  "asOf": "2026-10-20",
+  "est": [
+   "lengthMm",
+   "widthMm",
+   "heightMm",
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 4,
+    "accents": [
+     "#2f6bff",
+     "#ff3a2e",
+     "#2fd35a"
+    ],
+    "every": 4
+   },
+   "ledLook": "4-5 rows white with blue/red/green",
+   "photo": "https://m.media-amazon.com/images/I/81M5bDULgQL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "18w 24/7 lighting led light 18-24 in"
+  ],
+  "popularity": {
+   "evidence": "Amazon Best Sellers > Aquarium Lights #10; 937 reviews; 300+ bought in past month",
+   "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "hygger-978-48-54",
+  "brand": "hygger",
+  "model": "Advanced LED Light 24/7 (978) 48-54 in",
+  "mount": "bar",
+  "fitMinMm": 1219,
+  "fitMaxMm": 1372,
+  "lengthMm": 1170,
+  "widthMm": 100,
+  "heightMm": 20,
+  "watts": 36,
+  "tech": "led-planted",
+  "kelvin": 6500,
+  "spectrum": "white 6500K+RGB",
+  "controller": "inline 4-button",
+  "water": "fresh",
+  "priceUsd": 64.59,
+  "url": "https://www.amazon.com/dp/B08N4CBTJP",
+  "asOf": "2026-10-20",
+  "est": [
+   "lengthMm",
+   "widthMm",
+   "heightMm",
+   "watts",
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 4,
+    "accents": [
+     "#2f6bff",
+     "#ff3a2e",
+     "#2fd35a"
+    ],
+    "every": 4
+   },
+   "ledLook": "wide multi-row white, blue/red/green",
+   "photo": "https://m.media-amazon.com/images/I/71FYclz46WL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "advanced led light 24/7 (978) 48-54 in"
+  ],
+  "popularity": {
+   "evidence": "Amazon Best Sellers > Aquarium Lights #12; 3,642 reviews; 300+ bought in past month",
+   "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "datoo-mini-clip-7w",
+  "brand": "DaToo",
+  "model": "Mini Clip On Aquarium Light 7W",
+  "mount": "gooseneck",
+  "fitMinMm": 200,
+  "fitMaxMm": 410,
+  "lengthMm": 70,
+  "widthMm": 70,
+  "heightMm": 70,
+  "watts": 7,
+  "tech": "led-planted",
+  "spectrum": "white+red+blue+green",
+  "controller": "inline 4-button touch",
+  "water": "fresh",
+  "priceUsd": 6.99,
+  "url": "https://www.amazon.com/dp/B0D4TT1XSD",
+  "asOf": "2026-10-20",
+  "est": [
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "disc",
+    "rows": 1,
+    "accents": [
+     "#ff3a2e",
+     "#2f6bff",
+     "#2fd35a"
+    ],
+    "every": 4
+   },
+   "ledLook": "round disc of ~30 white/RGB dots",
+   "photo": "https://m.media-amazon.com/images/I/51iTm+-3OwL._AC_SL1000_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "mini clip on aquarium light 7w"
+  ],
+  "popularity": {
+   "evidence": "Amazon Best Sellers > Aquarium Lights #14; 924 reviews; 800+ bought in past month",
+   "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
+   "seen": "2026-10-20"
+  },
+  "note": "70 mm disc on gooseneck with screw clamp; nano 1-5 gal"
+ },
+ {
+  "id": "seaoura-planted-48-54",
+  "brand": "SEAOURA",
+  "model": "Planted Light 24/7 Timer 48-54 in",
+  "mount": "bar",
+  "fitMinMm": 1219,
+  "fitMaxMm": 1372,
+  "lengthMm": 1170,
+  "widthMm": 100,
+  "heightMm": 20,
+  "watts": 30,
+  "tech": "led-planted",
+  "spectrum": "white+RGB planted",
+  "controller": "timer",
+  "water": "fresh",
+  "priceUsd": 70.99,
+  "url": "https://www.amazon.com/dp/B0DG5LK4VW",
+  "asOf": "2026-10-20",
+  "est": [
+   "lengthMm",
+   "widthMm",
+   "heightMm",
+   "watts",
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 3,
+    "accents": [
+     "#ff3a2e",
+     "#2fd35a",
+     "#2f6bff"
+    ],
+    "every": 5
+   },
+   "ledLook": "2-3 rows white + RGB dots",
+   "photo": "https://m.media-amazon.com/images/I/81KNAyJEaTL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "planted light 24/7 timer 48-54 in"
+  ],
+  "popularity": {
+   "evidence": "Amazon Best Sellers > Aquarium Lights #15; 1,568 reviews; bought-per-month not captured (page blocked)",
+   "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
+   "seen": "2026-10-20"
+  },
+  "note": "Page blocked, photo not read; colours from sibling hygger/SEAOURA bars"
+ },
+ {
+  "id": "seaoura-clip-12-20",
+  "brand": "SEAOURA",
+  "model": "Clip On Aquarium Light for Plants 12-20 in",
+  "mount": "rim-legs",
+  "fitMinMm": 305,
+  "fitMaxMm": 508,
+  "lengthMm": 300,
+  "widthMm": 80,
+  "heightMm": 15,
+  "watts": 12,
+  "tech": "led-planted",
+  "spectrum": "white+RGB full spectrum",
+  "controller": "timer",
+  "water": "fresh",
+  "priceUsd": 28.99,
+  "url": "https://www.amazon.com/dp/B0CGXBLZ54",
+  "asOf": "2026-10-20",
+  "est": [
+   "lengthMm",
+   "widthMm",
+   "heightMm",
+   "watts",
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 3,
+    "accents": [
+     "#ff3a2e",
+     "#2fd35a",
+     "#2f6bff"
+    ],
+    "every": 5
+   },
+   "ledLook": "2-3 rows white + RGB dots",
+   "photo": "https://m.media-amazon.com/images/I/71WY09nSviL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "clip on aquarium light for plants 12-20 in"
+  ],
+  "popularity": {
+   "evidence": "Amazon Best Sellers > Aquarium Lights #17; 1,069 reviews; bought-per-month not captured (page blocked)",
+   "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
+   "seen": "2026-10-20"
+  },
+  "note": "Page blocked, photo not read"
+ },
+ {
+  "id": "nicrew-c10-18-24",
+  "brand": "NICREW",
+  "model": "C10 Plant Aquarium Light 18-24 in 13W",
+  "mount": "bar",
+  "fitMinMm": 457,
+  "fitMaxMm": 610,
+  "lengthMm": 457,
+  "widthMm": 60,
+  "heightMm": 15,
+  "watts": 13,
+  "tech": "led-planted",
+  "spectrum": "full spectrum plant",
+  "controller": "timer",
+  "water": "fresh",
+  "priceUsd": 26.99,
+  "url": "https://www.amazon.com/dp/B0BXCK4VC9",
+  "asOf": "2026-10-20",
+  "est": [
+   "lengthMm",
+   "widthMm",
+   "heightMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "rings",
+    "rows": 1,
+    "accents": [
+     "#2f6bff"
+    ],
+    "every": 0
+   },
+   "ledLook": "single column of ring-style white/blue clusters",
+   "photo": "https://m.media-amazon.com/images/I/71RQ-Zm-U6L._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "c10 plant aquarium light 18-24 in 13w"
+  ],
+  "popularity": {
+   "evidence": "Amazon Best Sellers > Aquarium Lights #18; 1,129 reviews; bought-per-month not captured (page blocked)",
+   "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
+   "seen": "2026-10-20"
+  },
+  "note": "Page blocked; photo is the 48-60 C10 sibling (same look)"
+ },
+ {
+  "id": "hygger-957-48-55",
+  "brand": "hygger",
+  "model": "Auto On/Off LED Light 48-55 in (957)",
+  "mount": "bar",
+  "fitMinMm": 1219,
+  "fitMaxMm": 1397,
+  "lengthMm": 1170,
+  "widthMm": 100,
+  "heightMm": 20,
+  "watts": 36,
+  "tech": "led-planted",
+  "kelvin": 6500,
+  "spectrum": "white 6500K+RGB",
+  "controller": "inline LCD",
+  "water": "fresh",
+  "priceUsd": 71.24,
+  "url": "https://www.amazon.com/dp/B0896Y818P",
+  "asOf": "2026-10-20",
+  "est": [
+   "lengthMm",
+   "widthMm",
+   "heightMm",
+   "watts",
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 4,
+    "accents": [
+     "#2f6bff",
+     "#ff3a2e",
+     "#2fd35a"
+    ],
+    "every": 3
+   },
+   "ledLook": "multi-row; 140 W, 23 B, 12 R, 11 G, 62 RGB LEDs per listing",
+   "photo": "https://m.media-amazon.com/images/I/81KNAyJEaTL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "auto on/off led light 48-55 in (957)"
+  ],
+  "popularity": {
+   "evidence": "Amazon Best Sellers > Aquarium Lights #24; 3,955 reviews; 200+ bought in past month",
+   "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "nicrew-classicled-36-48",
+  "brand": "NICREW",
+  "model": "ClassicLED Marine 36W 36-48 in",
+  "mount": "bar",
+  "fitMinMm": 914,
+  "fitMaxMm": 1219,
+  "lengthMm": 900,
+  "widthMm": 95,
+  "heightMm": 20,
+  "watts": 36,
+  "tech": "led-reef",
+  "spectrum": "blue+white marine",
+  "controller": "LCD controller box",
+  "water": "salt",
+  "priceUsd": 72.99,
+  "url": "https://www.amazon.com/dp/B0899BVX9Q",
+  "asOf": "2026-10-20",
+  "est": [
+   "lengthMm",
+   "widthMm",
+   "heightMm",
+   "fitMinMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 2,
+    "accents": [
+     "#2f6bff"
+    ],
+    "every": 2
+   },
+   "ledLook": "2 rows alternating white and blue",
+   "photo": "https://m.media-amazon.com/images/I/61LqPWXpScL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "classicled marine 36w 36-48 in"
+  ],
+  "popularity": {
+   "evidence": "Amazon Best Sellers > Aquarium Lights #62; 1,814 reviews; bought-per-month not captured (page blocked)",
+   "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "hygger-14w-12-18",
+  "brand": "hygger",
+  "model": "14W LED Light 12-18 in with timer",
+  "mount": "bar",
+  "fitMinMm": 305,
+  "fitMaxMm": 457,
+  "lengthMm": 290,
+  "widthMm": 80,
+  "heightMm": 15,
+  "watts": 14,
+  "tech": "led-planted",
+  "spectrum": "white+RGB sunrise/sunset",
+  "controller": "inline controller",
+  "water": "fresh",
+  "priceUsd": 26.99,
+  "url": "https://www.amazon.com/dp/B0D54975CH",
+  "asOf": "2026-10-20",
+  "est": [
+   "lengthMm",
+   "widthMm",
+   "heightMm",
+   "fitMinMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 3,
+    "accents": [
+     "#2f6bff",
+     "#ff3a2e",
+     "#2fd35a"
+    ],
+    "every": 4
+   },
+   "ledLook": "2-3 rows white, blue/red/green",
+   "photo": "https://m.media-amazon.com/images/I/71hWGwLxC3L._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "14w led light 12-18 in with timer"
+  ],
+  "popularity": {
+   "evidence": "Amazon Best Sellers > Aquarium Lights #71; 241 reviews; 50+ bought in past month",
+   "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "fluval-aquasky-2-36-48",
+  "brand": "Fluval",
+  "model": "Aquasky 2.0 Bluetooth LED 27W 36-48 in",
+  "mount": "bar",
+  "fitMinMm": 914,
+  "fitMaxMm": 1219,
+  "lengthMm": 914,
+  "widthMm": 90,
+  "heightMm": 14,
+  "watts": 27,
+  "tech": "led-planted",
+  "kelvin": 6500,
+  "spectrum": "RGB + 6500K white",
+  "controller": "app (Bluetooth)",
+  "water": "fresh",
+  "priceUsd": 132.99,
+  "url": "https://www.amazon.com/dp/B07BBSXP6K",
+  "asOf": "2026-10-20",
+  "est": [
+   "lengthMm",
+   "widthMm",
+   "heightMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 3,
+    "accents": [
+     "#ff3a2e",
+     "#2fd35a",
+     "#2f6bff"
+    ],
+    "every": 1,
+    "accentRow": 1
+   },
+   "ledLook": "2 rows white with RGB between",
+   "photo": "https://m.media-amazon.com/images/I/51BEJrGM6pL._AC_SL1000_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "aquasky 2.0 bluetooth led 27w 36-48 in"
+  ],
+  "popularity": {
+   "evidence": "Amazon Best Sellers > Aquarium Lights #80; 335 reviews; 50+ bought in past month",
+   "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
+   "seen": "2026-10-20"
+  },
+  "note": "Amazon dims 36x36x0.55 in (length, ?, thickness); photo is retail box art"
+ },
+ {
+  "id": "nicrew-c10-48-60",
+  "brand": "NICREW",
+  "model": "C10 24/7 LED Light 48-60 in",
+  "mount": "bar",
+  "fitMinMm": 1219,
+  "fitMaxMm": 1524,
+  "lengthMm": 1170,
+  "widthMm": 60,
+  "heightMm": 15,
+  "watts": 33,
+  "tech": "led-planted",
+  "spectrum": "full spectrum plant",
+  "controller": "IR remote + timer",
+  "water": "fresh",
+  "priceUsd": 58.99,
+  "url": "https://www.amazon.com/dp/B0BRPZY9LT",
+  "asOf": "2026-10-20",
+  "est": [
+   "lengthMm",
+   "widthMm",
+   "heightMm",
+   "watts",
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "rings",
+    "rows": 1,
+    "accents": [
+     "#2f6bff"
+    ],
+    "every": 0
+   },
+   "ledLook": "single column of ring-style white/blue clusters",
+   "photo": "https://m.media-amazon.com/images/I/71RQ-Zm-U6L._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "c10 24/7 led light 48-60 in"
+  ],
+  "popularity": {
+   "evidence": "Amazon Best Sellers > Aquarium Lights #51; 1,495 reviews; 50+ bought in past month",
+   "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "hygger-programmable-48-55",
+  "brand": "hygger",
+  "model": "Programmable LED Light 48-55 in (LCD)",
+  "mount": "bar",
+  "fitMinMm": 1219,
+  "fitMaxMm": 1397,
+  "lengthMm": 1170,
+  "widthMm": 100,
+  "heightMm": 20,
+  "watts": 36,
+  "tech": "led-white",
+  "spectrum": "full spectrum",
+  "controller": "inline LCD",
+  "water": "fresh",
+  "priceUsd": 71.24,
+  "url": "https://www.amazon.com/dp/B086SVC2FH",
+  "asOf": "2026-10-20",
+  "est": [
+   "lengthMm",
+   "widthMm",
+   "heightMm",
+   "watts",
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 4,
+    "accents": [
+     "#2f6bff",
+     "#ff3a2e",
+     "#2fd35a"
+    ],
+    "every": 4
+   },
+   "ledLook": "multi-row; LCD module at left end",
+   "photo": "https://m.media-amazon.com/images/I/71WA7I-DDAL._AC_SL1100_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "programmable led light 48-55 in (lcd)"
+  ],
+  "popularity": {
+   "evidence": "Amazon Best Sellers > Aquarium Lights #67; 1,008 reviews; 50+ bought in past month",
+   "url": "https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Lights/zgbs/pet-supplies/2975458011",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "nicrew-hyperreef-100-g2",
+  "brand": "NICREW",
+  "model": "HyperReef 100 Gen 2 (100 W)",
+  "mount": "hanging",
+  "fitMinMm": 250,
+  "fitMaxMm": 2440,
+  "lengthMm": 249,
+  "widthMm": 160,
+  "heightMm": 36,
+  "watts": 100,
+  "tech": "led-reef",
+  "spectrum": "violet + blue + white, 5 channels",
+  "controller": "USB-C ports, external controller sold separately",
+  "water": "salt",
+  "priceUsd": 199.99,
+  "url": "https://www.amazon.com/dp/B0DBHD2V1W",
+  "asOf": "2026-10-27",
+  "coverageMm": 610,
+  "beamDeg": 120,
+  "est": [
+   "fitMinMm",
+   "fitMaxMm",
+   "colorsEst"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#cfe0ff",
+    "kind": "dots",
+    "rows": 2,
+    "accents": [
+     "#2f6bff",
+     "#8a5bff"
+    ],
+    "every": 2
+   },
+   "ledLook": "two round blue/violet LED clusters",
+   "photo": "https://m.media-amazon.com/images/I/61b5CoCZF0L._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "hyperreef 100 gen 2 (100 w)"
+  ],
+  "popularity": {
+   "evidence": "Amazon product page 2026-10-27; 92 ratings; 100+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0DBHD2V1W",
+   "seen": "2026-10-27"
+  },
+  "note": "Body 9.8x6.3x1.4 in per retailer listings (Amazon lists a 9.8 in cube); coverage 24x24 in and 120 deg per retailer listing; no PAR published"
+ },
+ {
+  "id": "nicrew-hyperreef-150-g2",
+  "brand": "NICREW",
+  "model": "HyperReef 150 Gen 2 (150 W)",
+  "mount": "hanging",
+  "fitMinMm": 250,
+  "fitMaxMm": 2440,
+  "lengthMm": 300,
+  "widthMm": 190,
+  "heightMm": 40,
+  "watts": 150,
+  "tech": "led-reef",
+  "spectrum": "violet + blue + white, 5 channels",
+  "controller": "USB-C ports, external controller sold separately",
+  "water": "salt",
+  "priceUsd": 249.99,
+  "url": "https://www.amazon.com/dp/B0DBHCDPPZ",
+  "asOf": "2026-10-27",
+  "est": [
+   "fitMinMm",
+   "fitMaxMm",
+   "lengthMm",
+   "widthMm",
+   "heightMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#cfe0ff",
+    "kind": "dots",
+    "rows": 2,
+    "accents": [
+     "#2f6bff",
+     "#8a5bff"
+    ],
+    "every": 2
+   },
+   "ledLook": "two round blue/violet LED clusters",
+   "photo": "https://m.media-amazon.com/images/I/61SjUfoHPCL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "hyperreef 150 gen 2 (150 w)"
+  ],
+  "popularity": {
+   "evidence": "Amazon product page 2026-10-27; 84 ratings; 50+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0DBHCDPPZ",
+   "seen": "2026-10-27"
+  },
+  "note": "Body size not read (package 16.1 x 10.8 x 6.8 in): drawn near the 100 W body, scaled; coverage not read; no PAR published"
+ },
+ {
+  "id": "nicrew-hyperreef-200-g2",
+  "brand": "NICREW",
+  "model": "HyperReef 200 Gen 2 (200 W)",
+  "mount": "hanging",
+  "fitMinMm": 250,
+  "fitMaxMm": 2440,
+  "lengthMm": 340,
+  "widthMm": 220,
+  "heightMm": 40,
+  "watts": 200,
+  "tech": "led-reef",
+  "spectrum": "violet + blue + white, 5 channels",
+  "controller": "USB-C ports, external controller sold separately",
+  "water": "salt",
+  "priceUsd": 319.99,
+  "url": "https://www.amazon.com/dp/B0DBHFBHQ2",
+  "asOf": "2026-10-27",
+  "est": [
+   "fitMinMm",
+   "fitMaxMm",
+   "lengthMm",
+   "widthMm",
+   "heightMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#cfe0ff",
+    "kind": "dots",
+    "rows": 2,
+    "accents": [
+     "#2f6bff",
+     "#8a5bff"
+    ],
+    "every": 2
+   },
+   "ledLook": "two round blue/violet LED clusters",
+   "photo": "https://m.media-amazon.com/images/I/61BPoGuSJJL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "hyperreef 200 gen 2 (200 w)"
+  ],
+  "popularity": {
+   "evidence": "Amazon product page 2026-10-27; 122 ratings; 50+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0DBHFBHQ2",
+   "seen": "2026-10-27"
+  },
+  "note": "Body size not read (package 16.1 x 12.6 x 6.8 in): drawn near the 100 W body, scaled; coverage not read; no PAR published"
+ },
+ {
+  "id": "nicrew-navareef-65",
+  "brand": "NICREW",
+  "model": "NavaReef LED Reef Light 65 W",
+  "mount": "hanging",
+  "fitMinMm": 250,
+  "fitMaxMm": 2440,
+  "lengthMm": 230,
+  "widthMm": 150,
+  "heightMm": 38,
+  "watts": 65,
+  "tech": "led-reef",
+  "spectrum": "blue-focused, 90 deg lens",
+  "controller": "built-in timer",
+  "water": "salt",
+  "priceUsd": 95.99,
+  "url": "https://www.amazon.com/dp/B0DR82CYHW",
+  "asOf": "2026-10-27",
+  "beamDeg": 90,
+  "est": [
+   "fitMinMm",
+   "fitMaxMm",
+   "lengthMm",
+   "widthMm",
+   "heightMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#cfe0ff",
+    "kind": "dots",
+    "rows": 2,
+    "accents": [
+     "#2f6bff"
+    ],
+    "every": 2
+   },
+   "ledLook": "blue-focused oval of LEDs",
+   "photo": "https://m.media-amazon.com/images/I/61DNOLONN2L._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "navareef led reef light 65 w"
+  ],
+  "popularity": {
+   "evidence": "Amazon product page 2026-10-27; 115 ratings; 100+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0DR82CYHW",
+   "seen": "2026-10-27"
+  },
+  "note": "Body size and coverage not read; rim-friendly arm mount; no PAR published"
+ },
+ {
+  "id": "nicrew-navareef-135",
+  "brand": "NICREW",
+  "model": "NavaReef LED Reef Light 135 W",
+  "mount": "hanging",
+  "fitMinMm": 250,
+  "fitMaxMm": 2440,
+  "lengthMm": 300,
+  "widthMm": 170,
+  "heightMm": 40,
+  "watts": 135,
+  "tech": "led-reef",
+  "spectrum": "blue-focused, 90 deg lens",
+  "controller": "built-in timer",
+  "water": "salt",
+  "priceUsd": 165.99,
+  "url": "https://www.amazon.com/dp/B0DR2W9MPP",
+  "asOf": "2026-10-27",
+  "beamDeg": 90,
+  "est": [
+   "fitMinMm",
+   "fitMaxMm",
+   "lengthMm",
+   "widthMm",
+   "heightMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#cfe0ff",
+    "kind": "dots",
+    "rows": 2,
+    "accents": [
+     "#2f6bff"
+    ],
+    "every": 2
+   },
+   "ledLook": "blue-focused oval of LEDs",
+   "photo": "https://m.media-amazon.com/images/I/61FW82bW55L._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "navareef led reef light 135 w"
+  ],
+  "popularity": {
+   "evidence": "Amazon product page 2026-10-27; 62 ratings",
+   "url": "https://www.amazon.com/dp/B0DR2W9MPP",
+   "seen": "2026-10-27"
+  },
+  "note": "Body size and coverage not read; rim-friendly arm mount; no PAR published"
+ },
+ {
+  "id": "nicrew-classicled-marine-48-48-60",
+  "brand": "NICREW",
+  "model": "ClassicLED Marine 48W 48-60 in",
+  "mount": "bar",
+  "fitMinMm": 1219,
+  "fitMaxMm": 1524,
+  "lengthMm": 1200,
+  "widthMm": 95,
+  "heightMm": 20,
+  "watts": 48,
+  "tech": "led-reef",
+  "spectrum": "445/460 nm blue, 10,000 K white, RGB",
+  "controller": "day+night controller",
+  "water": "salt",
+  "priceUsd": 89.99,
+  "url": "https://www.amazon.com/dp/B08Q378RBY",
+  "asOf": "2026-10-27",
+  "est": [
+   "lengthMm",
+   "widthMm",
+   "heightMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 2,
+    "accents": [
+     "#2f6bff"
+    ],
+    "every": 2
+   },
+   "ledLook": "2 rows alternating white and blue",
+   "photo": "https://m.media-amazon.com/images/I/61LqPWXpScL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "classicled marine 48w 48-60 in"
+  ],
+  "popularity": {
+   "evidence": "Amazon product page 2026-10-27; 1,816 ratings; 50+ bought in past month",
+   "url": "https://www.amazon.com/dp/B08Q378RBY",
+   "seen": "2026-10-27"
+  },
+  "note": "Fits 48-60 in per listing (package 52.7 in); body size copied from the 36 W row; no PAR published"
+ },
+ {
+  "id": "viparspectra-v165",
+  "brand": "VIPARSPECTRA",
+  "model": "165W LED Reef Light (V165)",
+  "mount": "hanging",
+  "fitMinMm": 250,
+  "fitMaxMm": 2440,
+  "lengthMm": 406,
+  "widthMm": 216,
+  "heightMm": 61,
+  "watts": 165,
+  "tech": "led-reef",
+  "spectrum": "full spectrum, 2 channels",
+  "controller": "remote + knob + timer",
+  "water": "salt",
+  "priceUsd": 129.99,
+  "url": "https://www.amazon.com/dp/B07SHR6HW1",
+  "asOf": "2026-10-27",
+  "coverageMm": 610,
+  "est": [],
+  "colors": {
+   "body": "#6b6e75",
+   "endcaps": "#6b6e75",
+   "legs": "#4a4c52",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 5,
+    "accents": [
+     "#2f6bff",
+     "#8a5bff"
+    ],
+    "every": 2
+   },
+   "ledLook": "grid of white, blue and violet dots",
+   "photo": "https://m.media-amazon.com/images/I/610GOswaMqL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "165w led reef light (v165)"
+  ],
+  "popularity": {
+   "evidence": "Amazon product page 2026-10-27; 1,174 ratings; 100+ bought in past month",
+   "url": "https://www.amazon.com/dp/B07SHR6HW1",
+   "seen": "2026-10-27"
+  },
+  "note": "16 x 8.5 x 2.4 in per listing; listing says 24x24 in coverage; slate-grey body with LCD (photo); no PAR published"
+ },
+ {
+  "id": "pawfly-48w-48-54-saltwater",
+  "brand": "Pawfly",
+  "model": "48W Saltwater Aquarium Light 48-54 in",
+  "mount": "bar",
+  "fitMinMm": 1219,
+  "fitMaxMm": 1346,
+  "lengthMm": 1180,
+  "widthMm": 60,
+  "heightMm": 15,
+  "watts": 48,
+  "tech": "led-reef",
+  "spectrum": "450/460 nm blue, UV, violet, green, red, 12,000 K white",
+  "controller": "M / N / D buttons, 8/10/12 h timer",
+  "water": "salt",
+  "priceUsd": 79.99,
+  "url": "https://www.amazon.com/dp/B0F3HZJVLX",
+  "asOf": "2026-10-27",
+  "est": [
+   "lengthMm",
+   "widthMm",
+   "heightMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 2,
+    "accents": [
+     "#2f6bff",
+     "#8a5bff"
+    ],
+    "every": 2
+   },
+   "ledLook": "2 rows white, blue and violet",
+   "photo": "https://m.media-amazon.com/images/I/71Y+etC4o1L._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "48w saltwater aquarium light 48-54 in"
+  ],
+  "popularity": {
+   "evidence": "Amazon product page 2026-10-27; 136 ratings; 50+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0F3HZJVLX",
+   "seen": "2026-10-27"
+  },
+  "note": "Brackets 48 to 53 in per listing. Listing says \"PAR: 128\" with no depth: kept out until a depth is stated; body size estimated"
+ },
+ {
+  "id": "smatfarm-reef-95w",
+  "brand": "SMATFARM",
+  "model": "95W Reef Light, sunrise / sunset / moonlight",
+  "mount": "hanging",
+  "fitMinMm": 250,
+  "fitMaxMm": 2440,
+  "lengthMm": 330,
+  "widthMm": 150,
+  "heightMm": 45,
+  "watts": 95,
+  "tech": "led-reef",
+  "spectrum": "white / blue / violet / UV / green / red",
+  "controller": "touch + remote, master-slave group control",
+  "water": "salt",
+  "priceUsd": 142.99,
+  "url": "https://www.amazon.com/dp/B08VWRJXS9",
+  "asOf": "2026-10-27",
+  "est": [
+   "fitMinMm",
+   "fitMaxMm",
+   "lengthMm",
+   "widthMm",
+   "heightMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#cfe0ff",
+    "kind": "dots",
+    "rows": 2,
+    "accents": [
+     "#2f6bff",
+     "#8a5bff"
+    ],
+    "every": 2
+   },
+   "ledLook": "two LED rings, blue and white",
+   "photo": "https://m.media-amazon.com/images/I/61v3tA2VhnL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "95w reef light, sunrise / sunset / moonlight"
+  ],
+  "popularity": {
+   "evidence": "Amazon product page 2026-10-27; 703 ratings; 100+ bought in past month",
+   "url": "https://www.amazon.com/dp/B08VWRJXS9",
+   "seen": "2026-10-27"
+  },
+  "note": "G5; body size not read; bracket for 0.2-1.5 in glass or hanging; coverage not read; no PAR published"
+ },
+ {
+  "id": "smatfarm-reef-140w",
+  "brand": "SMATFARM",
+  "model": "140W Reef Light, sunrise / sunset / moonlight",
+  "mount": "hanging",
+  "fitMinMm": 250,
+  "fitMaxMm": 2440,
+  "lengthMm": 353,
+  "widthMm": 145,
+  "heightMm": 43,
+  "watts": 140,
+  "tech": "led-reef",
+  "spectrum": "white / blue / violet / UV / green / red",
+  "controller": "touch + remote, master-slave group control",
+  "water": "salt",
+  "priceUsd": 186.99,
+  "url": "https://www.amazon.com/dp/B0CKW2NZKS",
+  "asOf": "2026-10-27",
+  "est": [
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#cfe0ff",
+    "kind": "dots",
+    "rows": 2,
+    "accents": [
+     "#2f6bff",
+     "#8a5bff"
+    ],
+    "every": 2
+   },
+   "ledLook": "two LED rings, blue and white",
+   "photo": "https://m.media-amazon.com/images/I/61W3DOOp8uL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "140w reef light, sunrise / sunset / moonlight"
+  ],
+  "popularity": {
+   "evidence": "Amazon product page 2026-10-27; 191 ratings; 100+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0CKW2NZKS",
+   "seen": "2026-10-27"
+  },
+  "note": "G6; 13.9 x 5.7 x 1.7 in per listing; bracket for 0.2-1.5 in glass or hanging; coverage not read; no PAR published"
+ },
+ {
+  "id": "pawfly-5w-8in-submersible",
+  "brand": "Pawfly",
+  "model": "5W 8 in Submersible Light (Bluetooth)",
+  "mount": "submersible",
+  "fitMinMm": 200,
+  "fitMaxMm": 380,
+  "lengthMm": 203,
+  "widthMm": 25,
+  "heightMm": 20,
+  "watts": 5,
+  "tech": "led-planted",
+  "spectrum": "6500 K white, 660 nm red, 525 nm green, 455 nm blue",
+  "controller": "Bluetooth app + 3 timer modes",
+  "water": "fresh",
+  "priceUsd": 16.99,
+  "url": "https://www.amazon.com/dp/B0FSZ4R3CH",
+  "asOf": "2026-10-27",
+  "est": [
+   "widthMm",
+   "heightMm",
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 2,
+    "accents": [
+     "#ff3a2e",
+     "#2fd35a",
+     "#2f6bff"
+    ],
+    "every": 4
+   },
+   "ledLook": "2 rows white + RGB",
+   "photo": "https://m.media-amazon.com/images/I/610lzQyjgAL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "5w 8 in submersible light (bluetooth)"
+  ],
+  "popularity": {
+   "evidence": "Amazon product page 2026-10-27; 266 ratings; 100+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0FSZ4R3CH",
+   "seen": "2026-10-27"
+  },
+  "note": "Listing: 5 W, 8 in, for 8-15 in tanks; width and thickness estimated"
+ },
+ {
+  "id": "pawfly-6w-clip-nano",
+  "brand": "Pawfly",
+  "model": "6W Clip-On Light, 1-5 gal",
+  "mount": "gooseneck",
+  "fitMinMm": 200,
+  "fitMaxMm": 410,
+  "lengthMm": 130,
+  "widthMm": 130,
+  "heightMm": 16,
+  "watts": 6,
+  "tech": "led-planted",
+  "spectrum": "6500 K white, 450 nm blue, 520 nm green, 660 nm red",
+  "controller": "USB, M/N/D buttons, 8/10/12 h timer",
+  "water": "fresh",
+  "priceUsd": 12.99,
+  "url": "https://www.amazon.com/dp/B0DGSY8H53",
+  "asOf": "2026-10-27",
+  "est": [
+   "lengthMm",
+   "widthMm",
+   "heightMm",
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "disc",
+    "rows": 1,
+    "accents": [
+     "#ff3a2e",
+     "#2fd35a",
+     "#2f6bff"
+    ],
+    "every": 4
+   },
+   "ledLook": "round disc of white/RGB dots",
+   "photo": "https://m.media-amazon.com/images/I/718pfCSV4kL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "6w clip-on light, 1-5 gal"
+  ],
+  "popularity": {
+   "evidence": "Amazon product page 2026-10-27; 779 ratings; 600+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0DGSY8H53",
+   "seen": "2026-10-27"
+  },
+  "note": "Listing 7.48 x 5.12 x 0.63 in; its \"PAR: 2..\" is cut off and has no depth: kept out"
+ },
+ {
+  "id": "mq-8in-submersible",
+  "brand": "MQ",
+  "model": "8 in Submersible LED Light, 1.2W",
+  "mount": "submersible",
+  "fitMinMm": 250,
+  "fitMaxMm": 380,
+  "lengthMm": 203,
+  "widthMm": 25,
+  "heightMm": 20,
+  "watts": 1.2,
+  "tech": "led-white",
+  "spectrum": "RGB colour-changing, 16 colours",
+  "controller": "24-key remote",
+  "water": "fresh",
+  "priceUsd": 14.99,
+  "url": "https://www.amazon.com/dp/B07QNNDDLY",
+  "asOf": "2026-10-27",
+  "est": [
+   "widthMm",
+   "heightMm",
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 1,
+    "accents": [
+     "#ff3a2e",
+     "#2fd35a",
+     "#2f6bff"
+    ],
+    "every": 2
+   },
+   "ledLook": "1 row of 9 RGB LEDs",
+   "photo": "https://m.media-amazon.com/images/I/71o6Zhzw+qL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "8 in submersible led light, 1.2w"
+  ],
+  "popularity": {
+   "evidence": "Amazon product page 2026-10-27; 3,426 ratings; 400+ bought in past month",
+   "url": "https://www.amazon.com/dp/B07QNNDDLY",
+   "seen": "2026-10-27"
+  },
+  "note": "9 LEDs, 12 V, for 10-15 in tanks; width and thickness estimated"
+ },
+ {
+  "id": "novique-8w-clip-nano",
+  "brand": "Novique",
+  "model": "Clip-On Light 8W, 1-5 gal",
+  "mount": "gooseneck",
+  "fitMinMm": 200,
+  "fitMaxMm": 410,
+  "lengthMm": 100,
+  "widthMm": 100,
+  "heightMm": 16,
+  "watts": 8,
+  "tech": "led-planted",
+  "spectrum": "full spectrum",
+  "controller": "USB, one button",
+  "water": "fresh",
+  "priceUsd": 5.87,
+  "url": "https://www.amazon.com/dp/B0FHQBRG51",
+  "asOf": "2026-10-27",
+  "est": [
+   "lengthMm",
+   "widthMm",
+   "heightMm",
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "disc",
+    "rows": 1,
+    "accents": [
+     "#ff3a2e",
+     "#2fd35a",
+     "#2f6bff"
+    ],
+    "every": 4
+   },
+   "ledLook": "round disc of white/RGB dots",
+   "photo": "https://m.media-amazon.com/images/I/518nCBWP7pL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "clip-on light 8w, 1-5 gal"
+  ],
+  "popularity": {
+   "evidence": "Amazon product page 2026-10-27; 231 ratings; 500+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0FHQBRG51",
+   "seen": "2026-10-27"
+  },
+  "note": "Listing: 8 W for 1-5 gal; head size estimated"
+ },
+ {
+  "id": "hygger-8w-7in-submersible",
+  "brand": "hygger",
+  "model": "8W 7 in Submersible LED Light (5 rows)",
+  "mount": "submersible",
+  "fitMinMm": 250,
+  "fitMaxMm": 380,
+  "lengthMm": 178,
+  "widthMm": 35,
+  "heightMm": 25,
+  "watts": 8,
+  "tech": "led-planted",
+  "spectrum": "full spectrum, 9 colours",
+  "controller": "24/7 timer",
+  "water": "fresh",
+  "priceUsd": 17.99,
+  "url": "https://www.amazon.com/dp/B0CYT486XP",
+  "asOf": "2026-10-27",
+  "est": [
+   "widthMm",
+   "heightMm",
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 5,
+    "accents": [
+     "#ff3a2e",
+     "#2fd35a",
+     "#2f6bff"
+    ],
+    "every": 4
+   },
+   "ledLook": "5 rows white + RGB",
+   "photo": "https://m.media-amazon.com/images/I/618e9y0Ne3L._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "8w 7 in submersible led light (5 rows)"
+  ],
+  "popularity": {
+   "evidence": "Amazon product page 2026-10-27; 586 ratings; 200+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0CYT486XP",
+   "seen": "2026-10-27"
+  },
+  "note": "Listing: 8 W, 7 in; width and thickness estimated"
+ },
+ {
+  "id": "kessil-a80-tuna-blue",
+  "brand": "Kessil",
+  "model": "A80 Tuna Blue",
+  "mount": "hanging",
+  "fitMinMm": 250,
+  "fitMaxMm": 2440,
+  "lengthMm": 124,
+  "widthMm": 124,
+  "heightMm": 25,
+  "watts": 15,
+  "tech": "led-reef",
+  "spectrum": "blue-weighted reef spectrum",
+  "controller": "Kessil Spectral Controller (sold separately), 0-10 V dimming",
+  "water": "salt",
+  "priceUsd": 149.0,
+  "url": "https://www.amazon.com/dp/B01LW8U9QP",
+  "asOf": "2026-10-28",
+  "coverageMm": 457,
+  "beamDeg": 90,
+  "est": [
+   "fitMinMm",
+   "fitMaxMm",
+   "beamDeg",
+   "coverageMm",
+   "colorsEst"
+  ],
+  "colors": {
+   "body": "#2b2b2f",
+   "endcaps": "#2b2b2f",
+   "legs": "#8f9096",
+   "lens": "clear",
+   "leds": {
+    "white": "#bcd2ff",
+    "kind": "dots",
+    "rows": 2,
+    "accents": [
+     "#2f6bff"
+    ],
+    "every": 2
+   },
+   "ledLook": "round disc, dense LED matrix",
+   "photo": "https://m.media-amazon.com/images/I/61Efebmt9NL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "body",
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "a80 tuna blue"
+  ],
+  "popularity": {
+   "evidence": "Amazon product page 2026-10-28; 113 ratings; maker spec 15 W, 4.88 in dia x 0.98 in",
+   "url": "https://www.amazon.com/dp/B01LW8U9QP",
+   "seen": "2026-10-28"
+  },
+  "note": "Maker: 15 W, 4.88 in diameter x 0.98 in high, coverage 14-24 in by scenario (18 in used); no PAR at a stated depth"
+ },
+ {
+  "id": "kessil-a80-tuna-sun",
+  "brand": "Kessil",
+  "model": "A80 Tuna Sun",
+  "mount": "hanging",
+  "fitMinMm": 250,
+  "fitMaxMm": 2440,
+  "lengthMm": 124,
+  "widthMm": 124,
+  "heightMm": 25,
+  "watts": 15,
+  "tech": "led-planted",
+  "spectrum": "warm full spectrum for planted tanks",
+  "controller": "Kessil Spectral Controller (sold separately), 0-10 V dimming",
+  "water": "fresh",
+  "priceUsd": 149.0,
+  "url": "https://www.amazon.com/dp/B0749X5BP2",
+  "asOf": "2026-10-28",
+  "coverageMm": 457,
+  "beamDeg": 90,
+  "est": [
+   "fitMinMm",
+   "fitMaxMm",
+   "beamDeg",
+   "coverageMm",
+   "colorsEst"
+  ],
+  "colors": {
+   "body": "#2b2b2f",
+   "endcaps": "#2b2b2f",
+   "legs": "#8f9096",
+   "lens": "clear",
+   "leds": {
+    "white": "#fff1d0",
+    "kind": "dots",
+    "rows": 2,
+    "accents": [
+     "#ffb347"
+    ],
+    "every": 2
+   },
+   "ledLook": "round disc, dense LED matrix",
+   "photo": "https://m.media-amazon.com/images/I/51HIqLYCzqL._AC_SL1000_.jpg"
+  },
+  "colorsEst": [
+   "body",
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "a80 tuna sun"
+  ],
+  "popularity": {
+   "evidence": "Amazon product page 2026-10-28; 56 ratings; maker spec 15 W, 4.88 in dia x 0.98 in",
+   "url": "https://www.amazon.com/dp/B0749X5BP2",
+   "seen": "2026-10-28"
+  },
+  "note": "Maker: 15 W, 4.88 in diameter x 0.98 in high, coverage 14-24 in by scenario (18 in used); no PAR at a stated depth"
+ }
+]

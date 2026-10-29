@@ -1,0 +1,222 @@
+[
+ {
+  "id": "coodia-gwk-pump",
+  "brand": "COODIA",
+  "model": "Internal Green Water Killer UV Pump",
+  "kind": "internal",
+  "galMax": 75,
+  "watts": 5,
+  "est": [
+   "watts"
+  ],
+  "priceUsd": 34.99,
+  "needSpec": [
+   "lamp watts"
+  ],
+  "note": "Submersible; 5 W is the built-in water pump, the lamp is not stated.",
+  "popularity": {
+   "evidence": "Amazon search: 7,483 ratings, 600+ bought in past month",
+   "url": "https://www.amazon.com/dp/B07V26V5MS",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#161616"
+  },
+  "url": "https://www.amazon.com/dp/B07V26V5MS",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "hygger-uv-3w-small",
+  "brand": "hygger",
+  "model": "UV Light with Timer 3 W (2-15 gal)",
+  "kind": "internal",
+  "galMin": 2,
+  "galMax": 15,
+  "watts": 3,
+  "priceUsd": 23.99,
+  "popularity": {
+   "evidence": "Amazon search: 37 ratings, 100+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0GYCXK2JG",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#161616"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B0GYCXK2JG",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "hygger-uv-3w",
+  "brand": "hygger",
+  "model": "UV Light with Timer 3 W (5-25 gal)",
+  "kind": "internal",
+  "galMin": 5,
+  "galMax": 25,
+  "watts": 3,
+  "priceUsd": 23.13,
+  "note": "Timer; the listing says 24 h a day shortens the bulb.",
+  "popularity": {
+   "evidence": "Amazon search: 284 ratings, 400+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0DX6YZPC2",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#161616"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B0DX6YZPC2",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "hygger-uv-9w",
+  "brand": "hygger",
+  "model": "UV Light with Timer 9 W (60-100 gal)",
+  "kind": "inline",
+  "galMin": 60,
+  "galMax": 100,
+  "watts": 9,
+  "priceUsd": 34.99,
+  "note": "Needs a hose in a filter line.",
+  "popularity": {
+   "evidence": "Amazon search: 141 ratings, 50+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0FN7GXHZQ",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#161616"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B0FN7GXHZQ",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "hygger-uv-11w",
+  "brand": "hygger",
+  "model": "UV Light with Timer 11 W (60-180 gal)",
+  "kind": "inline",
+  "galMin": 60,
+  "galMax": 180,
+  "watts": 11,
+  "priceUsd": 43.69,
+  "popularity": {
+   "evidence": "Amazon search: 106 ratings",
+   "url": "https://www.amazon.com/dp/B0G1MHKNFW",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#161616"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B0G1MHKNFW",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "uv-11w-55-150",
+  "brand": "Generic",
+  "model": "11 W UV Light (55-150 gal)",
+  "kind": "inline",
+  "galMin": 55,
+  "galMax": 150,
+  "watts": 11,
+  "priceUsd": 21.99,
+  "popularity": {
+   "evidence": "Amazon search: 149 ratings",
+   "url": "https://www.amazon.com/dp/B0CGHS831D",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#161616"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B0CGHS831D",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "uv-13w-clarifier",
+  "brand": "Generic",
+  "model": "13 W UV Water Clarifier (up to 300 gal)",
+  "kind": "inline",
+  "galMax": 300,
+  "watts": 13,
+  "bulbHours": 8000,
+  "dimsMm": {
+   "w": 240,
+   "d": 23,
+   "h": 23
+  },
+  "priceUsd": 19.99,
+  "popularity": {
+   "evidence": "Amazon search: 115 ratings, 200+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0FR8MS11Z",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#161616"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B0FR8MS11Z",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "uv-18w-100-1000",
+  "brand": "Generic",
+  "model": "18 W UV Light (100-1000 gal)",
+  "kind": "inline",
+  "galMin": 100,
+  "galMax": 1000,
+  "watts": 18,
+  "bulbHours": 8000,
+  "priceUsd": 59.99,
+  "popularity": {
+   "evidence": "Amazon search: 538 ratings, 300+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0CZLJ3YSR",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#161616"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B0CZLJ3YSR",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "fluval-inline-uvc",
+  "brand": "Fluval",
+  "model": "In-Line UVC Clarifier",
+  "kind": "inline",
+  "priceUsd": 102,
+  "needSpec": [
+   "watts",
+   "gallons"
+  ],
+  "note": "In a canister filter hose; the page lists a 30,000-hour LED UVC life.",
+  "popularity": {
+   "evidence": "Amazon search: 1,884 ratings, 200+ bought in past month",
+   "url": "https://www.amazon.com/dp/B08KSF2FT6",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#161616"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B08KSF2FT6",
+  "asOf": "2026-10-27"
+ }
+]

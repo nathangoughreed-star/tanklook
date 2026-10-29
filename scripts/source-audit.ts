@@ -8,7 +8,7 @@ import factors from '../src/data/factors.json';
 import demandDefaults from '../src/data/demand-defaults.json';
 import demandItems from '../src/data/demand-items.json';
 import tech from '../src/data/tech.json';
-import gearCatalog from '../src/data/gear-catalog.json';
+import { gearCatalog } from '../src/data/gear';
 import tanks from '../src/data/tanks.json';
 import tankmin from '../src/data/tankmin.json';
 import kits from '../src/data/kits.json';
@@ -56,7 +56,7 @@ export const TARGETS: Target[] = [
   { name: 'DEMAND_DEFAULTS', label: 'Category cost / time defaults (demand-defaults.json)', data: demandDefaults, leaf: num },
   { name: 'FACTORS', label: 'Shared cost factors: kWh, water, salt, losses (factors.json)', data: factors, leaf: num },
   { name: 'DEMAND_ITEMS', label: 'Per-item retail prices (demand-items.json)', data: (demandItems as { rows: Obj }).rows, leaf: (k, v) => typeof v === 'number' && ['lo', 'mode', 'hi'].includes(k) },
-  { name: 'GEAR_CATALOG', label: 'Filter and heater specs (gear-catalog.json)', data: { filters: byId((gearCatalog as { filters: Obj[] }).filters), heaters: byId((gearCatalog as { heaters: Obj[] }).heaters) },
+  { name: 'GEAR_CATALOG', label: 'Filter and heater specs (data/gear/)', data: { filters: byId((gearCatalog as { filters: Obj[] }).filters), heaters: byId((gearCatalog as { heaters: Obj[] }).heaters) },
     leaf: (k, v) => typeof v === 'number' && ['gph', 'galMin', 'galMax', 'watts', 'priceUsd'].includes(k) },
   { name: 'TANKS', label: 'Tank sizes and prices (tanks.json)', data: byId((tanks as { tanks: Obj[] }).tanks),
     leaf: (k, v, p) => typeof v === 'number' && !['bowMin', 'sides', 'pieDeg'].includes(k) && !p.includes('price_note') },

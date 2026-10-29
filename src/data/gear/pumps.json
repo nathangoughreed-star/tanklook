@@ -1,0 +1,908 @@
+[
+ {
+  "id": "uniclife-ul080",
+  "brand": "Uniclife",
+  "model": "Dual Outlet Air Pump 64 GPH (UL080)",
+  "kind": "air",
+  "url": "https://www.amazon.com/dp/B01EBXI7PG",
+  "asOf": "2026-10-27",
+  "watts": 4,
+  "outlets": 2,
+  "airGph": 64,
+  "galMin": 5,
+  "galMax": 100,
+  "dB": 45,
+  "bodyMm": {
+   "w": 71,
+   "d": 130,
+   "h": 64
+  },
+  "priceUsd": 14.99,
+  "colors": {
+   "body": "#4a4f57"
+  },
+  "names": [
+   "uniclife aquarium air pump"
+  ],
+  "note": "The title says 5-200 gal; the bullets say 10-100 gal (galMax uses the bullets). 25 dB on low, 45 dB at most.",
+  "popularity": {
+   "evidence": "#1 in Amazon Aquarium Air Pumps; 14,747 ratings, 4.5 stars; 4K+ bought in past month",
+   "url": "https://www.amazon.com/dp/B01EBXI7PG",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "pawfly-dual-2490",
+  "brand": "Pawfly",
+  "model": "Dual Outlet Air Pump 50 GPH (2490)",
+  "kind": "air",
+  "url": "https://www.amazon.com/dp/B0CY296NKH",
+  "asOf": "2026-10-27",
+  "watts": 1.25,
+  "outlets": 2,
+  "airGph": 50,
+  "galMin": 10,
+  "galMax": 60,
+  "dB": 30,
+  "priceUsd": 9.99,
+  "colors": {
+   "body": "#313133"
+  },
+  "note": "Title 10-200 gal; the bullets say up to 60 gal (galMax uses the bullets). Under 30 dB. Dimensions not on the page.",
+  "popularity": {
+   "evidence": "#2 in Amazon Aquarium Air Pumps; 1,399 ratings, 4.6 stars; 3K+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0CY296NKH",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "nicrew-piezo-nano",
+  "brand": "NICREW",
+  "model": "Nano Silent Air Pump (piezo, to 10 gal)",
+  "kind": "air",
+  "url": "https://www.amazon.com/dp/B09JKHPT2S",
+  "asOf": "2026-10-27",
+  "watts": 1.5,
+  "outlets": 1,
+  "airLpm": 0.3,
+  "galMax": 10,
+  "bodyMm": {
+   "w": 15,
+   "d": 46,
+   "h": 48
+  },
+  "priceUsd": 12.99,
+  "colors": {
+   "body": "#191919"
+  },
+  "note": "Piezo ceramic plate, listed 0.3 L/min of air.",
+  "popularity": {
+   "evidence": "#3 in Amazon Aquarium Air Pumps; 3,187 ratings, 4.4 stars; 2K+ bought in past month",
+   "url": "https://www.amazon.com/dp/B09JKHPT2S",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "aquaneat-300gph",
+  "brand": "AQUANEAT",
+  "model": "Air Pump 300 GPH, 4 outlets (to 200 gal)",
+  "kind": "air",
+  "url": "https://www.amazon.com/dp/B0BHVXC4DJ",
+  "asOf": "2026-10-27",
+  "watts": 8.5,
+  "outlets": 4,
+  "airGph": 300,
+  "galMax": 200,
+  "bodyMm": {
+   "w": 140,
+   "d": 191,
+   "h": 89
+  },
+  "priceUsd": 25.85,
+  "colors": {
+   "body": "#2d2d2d"
+  },
+  "popularity": {
+   "evidence": "#21 in Amazon Aquarium Air Pumps; 1,038 ratings, 4.3 stars; 800+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0BHVXC4DJ",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "pawfly-nano-30gph",
+  "brand": "Pawfly",
+  "model": "Compact Air Pump 15-40 GPH (2 W)",
+  "kind": "air",
+  "url": "https://www.amazon.com/dp/B073DWVX5P",
+  "asOf": "2026-10-27",
+  "watts": 2,
+  "outlets": 1,
+  "airGph": 30,
+  "galMin": 5,
+  "galMax": 20,
+  "bodyMm": {
+   "w": 46,
+   "d": 84,
+   "h": 41
+  },
+  "priceUsd": 9.99,
+  "colors": {
+   "body": "#10d7fe"
+  },
+  "popularity": {
+   "evidence": "#8 in Amazon Aquarium Air Pumps; 7,993 ratings, 4.4 stars; 1K+ bought in past month",
+   "url": "https://www.amazon.com/dp/B073DWVX5P",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "pawfly-nano-piezo",
+  "brand": "Pawfly",
+  "model": "Nano Silent Air Pump (piezo, 1.3 W)",
+  "kind": "air",
+  "url": "https://www.amazon.com/dp/B0FRM7Y4SN",
+  "asOf": "2026-10-27",
+  "watts": 1.3,
+  "outlets": 1,
+  "galMin": 1,
+  "galMax": 15,
+  "dB": 30,
+  "bodyMm": {
+   "w": 51,
+   "d": 51,
+   "h": 18
+  },
+  "priceUsd": 9.99,
+  "colors": {
+   "body": "#2f3031"
+  },
+  "note": "Piezo plate, 30 dB. Air flow not usable from the page (the listing field reads 7.1 gpm), so no airGph.",
+  "popularity": {
+   "evidence": "#5 in Amazon Aquarium Air Pumps; 330 ratings, 4.5 stars; 1K+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0FRM7Y4SN",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "hitop-3w-dual",
+  "brand": "HITOP",
+  "model": "Dual Outlet Air Pump 3 W",
+  "kind": "air",
+  "url": "https://www.amazon.com/dp/B07RJ3XLM8",
+  "asOf": "2026-10-27",
+  "watts": 3,
+  "outlets": 2,
+  "airLpm": 5,
+  "galMin": 10,
+  "galMax": 100,
+  "bodyMm": {
+   "w": 71,
+   "d": 130,
+   "h": 56
+  },
+  "priceUsd": 14.97,
+  "colors": {
+   "body": "#cdcfd3",
+   "accent": "#2f3030"
+  },
+  "colorsEst": [
+   "accent"
+  ],
+  "popularity": {
+   "evidence": "#6 in Amazon Aquarium Air Pumps; 9,429 ratings, 4.5 stars; 1K+ bought in past month",
+   "url": "https://www.amazon.com/dp/B07RJ3XLM8",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "hitop-2w-nano",
+  "brand": "HITOP",
+  "model": "2 W Nano Air Pump 57 GPH",
+  "kind": "air",
+  "url": "https://www.amazon.com/dp/B0F5WJKVQ8",
+  "asOf": "2026-10-27",
+  "watts": 2,
+  "outlets": 2,
+  "airGph": 57,
+  "galMin": 1,
+  "galMax": 50,
+  "bodyMm": {
+   "w": 56,
+   "d": 94,
+   "h": 41
+  },
+  "priceUsd": 13.97,
+  "colors": {
+   "body": "#ccd1cf",
+   "accent": "#1b1b1b"
+  },
+  "colorsEst": [
+   "accent"
+  ],
+  "popularity": {
+   "evidence": "#6 in Amazon Aquarium Air Pumps; 214 ratings, 4.6 stars; 400+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0F5WJKVQ8",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "hitop-4w-shark",
+  "brand": "HITOP",
+  "model": "4 W Shark Air Pump 110 GPH",
+  "kind": "air",
+  "url": "https://www.amazon.com/dp/B08HMZSH9J",
+  "asOf": "2026-10-27",
+  "watts": 4,
+  "outlets": 2,
+  "airGph": 110,
+  "bodyMm": {
+   "w": 109,
+   "d": 160,
+   "h": 102
+  },
+  "priceUsd": 20.98,
+  "colors": {
+   "body": "#343434"
+  },
+  "popularity": {
+   "evidence": "#38 in Amazon Aquarium Air Pumps; 1,927 ratings, 4.4 stars; 200+ bought in past month",
+   "url": "https://www.amazon.com/dp/B08HMZSH9J",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "aqqa-3-5w",
+  "brand": "AQQA",
+  "model": "Air Pump 3.5 W Dual Outlet",
+  "kind": "air",
+  "url": "https://www.amazon.com/dp/B09S3Q5MQ4",
+  "asOf": "2026-10-27",
+  "watts": 3.5,
+  "outlets": 2,
+  "airLpm": 3,
+  "depthIn": 24,
+  "bodyMm": {
+   "w": 80,
+   "d": 99,
+   "h": 99
+  },
+  "priceUsd": 9.99,
+  "colors": {
+   "body": "#2c2d30"
+  },
+  "note": "Water depth rating 2 ft (listing).",
+  "popularity": {
+   "evidence": "#9 in Amazon Aquarium Air Pumps; 2,069 ratings, 4.5 stars; 1K+ bought in past month",
+   "url": "https://www.amazon.com/dp/B09S3Q5MQ4",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "aqqa-3w-100gph",
+  "brand": "AQQA",
+  "model": "Air Pump 3 W 100 GPH, stainless outlets (to 80 gal)",
+  "kind": "air",
+  "url": "https://www.amazon.com/dp/B0CG5PRMSD",
+  "asOf": "2026-10-27",
+  "watts": 3,
+  "outlets": 2,
+  "airGph": 100,
+  "galMax": 80,
+  "priceUsd": 27.99,
+  "colors": {
+   "body": "#15171a",
+   "accent": "#091129"
+  },
+  "note": "18 kPa. Sizes 6 W (120 gal) and 10 W (200 gal) exist as variants, specs not read.",
+  "popularity": {
+   "evidence": "#7 in Amazon Aquarium Air Pumps; 1,184 ratings, 4.7 stars; 2K+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0CG5PRMSD",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "tetra-whisper-10",
+  "brand": "Tetra",
+  "model": "Whisper Air Pump 10 gal",
+  "kind": "air",
+  "url": "https://www.amazon.com/dp/B0009YJ4N6",
+  "asOf": "2026-10-27",
+  "watts": 2.5,
+  "outlets": 1,
+  "airLpm": 0.67,
+  "galMax": 10,
+  "bodyMm": {
+   "w": 71,
+   "d": 99,
+   "h": 140
+  },
+  "priceUsd": 17.39,
+  "colors": {
+   "body": "#384888"
+  },
+  "note": "Watts from the size table on the page (10, 20, 40, 60, 100 gal = 2.5, 2.5, 2.9, 4.0, 4.8 W).",
+  "popularity": {
+   "evidence": "#10 in Amazon Aquarium Air Pumps; 45,002 ratings (the Whisper family), 4.5 stars; 400+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0009YJ4N6",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "tetra-whisper-40",
+  "brand": "Tetra",
+  "model": "Whisper Air Pump 40 gal",
+  "kind": "air",
+  "url": "https://www.amazon.com/dp/B0009YF4FI",
+  "asOf": "2026-10-27",
+  "watts": 2.9,
+  "outlets": 1,
+  "airLpm": 3.3,
+  "galMin": 20,
+  "galMax": 40,
+  "bodyMm": {
+   "w": 71,
+   "d": 99,
+   "h": 140
+  },
+  "priceUsd": 25.97,
+  "colors": {
+   "body": "#384888"
+  },
+  "note": "Watts from the size table on the page.",
+  "popularity": {
+   "evidence": "#10 in Amazon Aquarium Air Pumps; 45,002 ratings (the Whisper family), 4.5 stars; 300+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0009YF4FI",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "hygger-4w-dual",
+  "brand": "hygger",
+  "model": "Air Pump 4 W, 95 GPH x 2 (to 120 gal)",
+  "kind": "air",
+  "url": "https://www.amazon.com/dp/B0F3WNXVXB",
+  "asOf": "2026-10-27",
+  "watts": 4,
+  "outlets": 2,
+  "airGph": 190,
+  "galMax": 120,
+  "bodyMm": {
+   "w": 102,
+   "d": 102,
+   "h": 102
+  },
+  "priceUsd": 27.89,
+  "colors": {
+   "body": "#4d4d4d",
+   "accent": "#8d918e"
+  },
+  "note": "7 W (to 300 gal) and 11 W (to 600 gal) sizes are variants, specs not read. 20 kPa.",
+  "popularity": {
+   "evidence": "#11 in Amazon Aquarium Air Pumps; 361 ratings, 4.7 stars; 1K+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0F3WNXVXB",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "hygger-3-5w-quiet",
+  "brand": "hygger",
+  "model": "Quiet Air Pump 3.5 W 80 GPH (under 30 dB)",
+  "kind": "air",
+  "url": "https://www.amazon.com/dp/B0F3WTRFBJ",
+  "asOf": "2026-10-27",
+  "watts": 3.5,
+  "outlets": 2,
+  "airGph": 80,
+  "dB": 30,
+  "priceUsd": 27.99,
+  "colors": {
+   "body": "#313035"
+  },
+  "popularity": {
+   "evidence": "#19 in Amazon Aquarium Air Pumps; 150 ratings, 4.7 stars; 500+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0F3WTRFBJ",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "hygger-3w-set",
+  "brand": "hygger",
+  "model": "Silent Air Pump 3 W set (50 GPH)",
+  "kind": "air",
+  "url": "https://www.amazon.com/dp/B0B6W2CK5Y",
+  "asOf": "2026-10-27",
+  "watts": 3,
+  "airGph": 50,
+  "bodyMm": {
+   "w": 66,
+   "d": 119,
+   "h": 51
+  },
+  "priceUsd": 20.99,
+  "colors": {
+   "body": "#25273a"
+  },
+  "note": "The 3 W set of a listing sold as 2 / 3 / 4.5 / 6 W with one or two outlets; the outlet count of the 3 W set is not on the page.",
+  "popularity": {
+   "evidence": "#42 in Amazon Aquarium Air Pumps; 175 ratings, 4.2 stars; 100+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0B6W2CK5Y",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "aquamiracle-4w-120gph",
+  "brand": "AquaMiracle",
+  "model": "All-in-One Air Pump Kit 4 W 120 GPH (20-80 gal)",
+  "kind": "air",
+  "url": "https://www.amazon.com/dp/B0CKQPKTXN",
+  "asOf": "2026-10-27",
+  "watts": 4,
+  "outlets": 2,
+  "airGph": 120,
+  "galMin": 20,
+  "galMax": 80,
+  "bodyMm": {
+   "w": 99,
+   "d": 160,
+   "h": 75
+  },
+  "priceUsd": 19.99,
+  "colors": {
+   "body": "#cccdcf"
+  },
+  "popularity": {
+   "evidence": "#12 in Amazon Aquarium Air Pumps; 1,404 ratings, 4.5 stars; 100+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0CKQPKTXN",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "aquamiracle-1w-50gph",
+  "brand": "AquaMiracle",
+  "model": "All-in-One Air Pump Kit 1 W 50 GPH (1-20 gal)",
+  "kind": "air",
+  "url": "https://www.amazon.com/dp/B0B1ZYY4RG",
+  "asOf": "2026-10-27",
+  "watts": 1,
+  "outlets": 1,
+  "airGph": 50,
+  "galMin": 1,
+  "galMax": 20,
+  "bodyMm": {
+   "w": 63,
+   "d": 104,
+   "h": 43
+  },
+  "priceUsd": 9.99,
+  "colors": {
+   "body": "#cdcdcd"
+  },
+  "popularity": {
+   "evidence": "#12 in Amazon Aquarium Air Pumps; 1,404 ratings, 4.5 stars; 900+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0B1ZYY4RG",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "aquaneat-480-powerhead",
+  "brand": "AQUANEAT",
+  "model": "Circulation Pump 480 GPH wave maker (60-75 gal)",
+  "kind": "powerhead",
+  "url": "https://www.amazon.com/dp/B07ZR3G275",
+  "asOf": "2026-10-27",
+  "watts": 3,
+  "gph": 480,
+  "galMin": 60,
+  "galMax": 75,
+  "bodyMm": {
+   "w": 51,
+   "d": 51,
+   "h": 70
+  },
+  "priceUsd": 9.98,
+  "colors": {
+   "body": "#303030",
+   "accent": "#121212"
+  },
+  "popularity": {
+   "evidence": "#23 in Amazon Aquarium Water Pumps; 2,314 ratings, 4.2 stars; 200+ bought in past month",
+   "url": "https://www.amazon.com/dp/B07ZR3G275",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "hygger-mini-wave-530",
+  "brand": "hygger",
+  "model": "Mini Wave Maker 530 GPH (15-40 gal)",
+  "kind": "powerhead",
+  "url": "https://www.amazon.com/dp/B0B51H591W",
+  "asOf": "2026-10-27",
+  "watts": 3,
+  "gph": 530,
+  "galMin": 15,
+  "galMax": 40,
+  "bodyMm": {
+   "w": 55,
+   "d": 66,
+   "h": 119
+  },
+  "priceUsd": 24.99,
+  "colors": {
+   "body": "#7a2e4a"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "note": "Colour listed as Berry; the hex is an estimate. Listed as a wave maker with a magnetic mount; no pulse controller is described, so it counts as a powerhead.",
+  "popularity": {
+   "evidence": "#10 in Amazon Aquarium Water Pumps; 534 ratings, 4.4 stars; 800+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0B51H591W",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "hygger-1050-powerhead",
+  "brand": "hygger",
+  "model": "Wave Maker Pump 1050 GPH, magnetic base",
+  "kind": "powerhead",
+  "url": "https://www.amazon.com/dp/B09MLYTYZS",
+  "asOf": "2026-10-27",
+  "watts": 5,
+  "gph": 1050,
+  "bodyMm": {
+   "w": 100,
+   "d": 100,
+   "h": 150
+  },
+  "priceUsd": 24.99,
+  "colors": {
+   "body": "#2d2e32"
+  },
+  "note": "The title says 1050 GPH; the spec table says 35 gpm. The title is used.",
+  "est": [
+   "bodyMm"
+  ],
+  "popularity": {
+   "evidence": "#50 in Amazon Aquarium Water Pumps; 529 ratings, 4.1 stars; 200+ bought in past month",
+   "url": "https://www.amazon.com/dp/B09MLYTYZS",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "datoo-800-powerhead",
+  "brand": "DaToo",
+  "model": "Mini Circulation Pump 3 W (800 L/h)",
+  "kind": "powerhead",
+  "url": "https://www.amazon.com/dp/B0F6C1PBPZ",
+  "asOf": "2026-10-27",
+  "watts": 3,
+  "gph": 211,
+  "bodyMm": {
+   "w": 30,
+   "d": 30,
+   "h": 68
+  },
+  "priceUsd": 7.69,
+  "colors": {
+   "body": "#303031"
+  },
+  "note": "The title says 800GPH but the spec table says 800 liters per hour (211 gal/h, which fits a 3 W pump): 211 is used.",
+  "popularity": {
+   "evidence": "#19 in Amazon Aquarium Water Pumps; 229 ratings, 4.0 stars; 600+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0F6C1PBPZ",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "aquamiracle-135-powerhead",
+  "brand": "AquaMiracle",
+  "model": "Powerhead Pump 135 GPH (10-40 gal)",
+  "kind": "powerhead",
+  "url": "https://www.amazon.com/dp/B08H25X93C",
+  "asOf": "2026-10-27",
+  "watts": 4.8,
+  "gph": 135,
+  "galMin": 10,
+  "galMax": 40,
+  "bodyMm": {
+   "w": 51,
+   "d": 122,
+   "h": 99
+  },
+  "priceUsd": 16.99,
+  "colors": {
+   "body": "#282828"
+  },
+  "popularity": {
+   "evidence": "#39 in Amazon Aquarium Water Pumps; 980 ratings, 4.3 stars; 200+ bought in past month",
+   "url": "https://www.amazon.com/dp/B08H25X93C",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "sicce-syncra-silent-0-5",
+  "brand": "Sicce",
+  "model": "Syncra Silent 0.5 (185 GPH)",
+  "kind": "powerhead",
+  "url": "https://www.amazon.com/dp/B004ZJDN4W",
+  "asOf": "2026-10-27",
+  "watts": 8,
+  "gph": 185,
+  "bodyMm": {
+   "w": 76,
+   "d": 127,
+   "h": 152
+  },
+  "priceUsd": 49.99,
+  "colors": {
+   "body": "#111313"
+  },
+  "note": "The listing sizes (5 x 3 x 6 in) look like the pack; used for the drawing only.",
+  "est": [
+   "bodyMm"
+  ],
+  "popularity": {
+   "evidence": "#27 in Amazon Aquarium Water Pumps; 396 ratings, 4.3 stars; 100+ bought in past month",
+   "url": "https://www.amazon.com/dp/B004ZJDN4W",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "sicce-syncra-silent-1-0",
+  "brand": "Sicce",
+  "model": "Syncra Silent 1.0 (251 GPH)",
+  "kind": "powerhead",
+  "url": "https://www.amazon.com/dp/B004ZJDN5Q",
+  "asOf": "2026-10-27",
+  "watts": 16,
+  "gph": 251,
+  "bodyMm": {
+   "w": 48,
+   "d": 89,
+   "h": 71
+  },
+  "priceUsd": 49.95,
+  "colors": {
+   "body": "#2f2f31"
+  },
+  "popularity": {
+   "evidence": "#27 in Amazon Aquarium Water Pumps; 534 ratings, 4.4 stars",
+   "url": "https://www.amazon.com/dp/B004ZJDN5Q",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "freesea-magnetic-1600",
+  "brand": "FREESEA",
+  "model": "Magnetic Wave Maker 8 W (1600 GPH, 55-125 gal)",
+  "kind": "powerhead",
+  "url": "https://www.amazon.com/dp/B07Z4PC69M",
+  "asOf": "2026-10-27",
+  "watts": 8,
+  "gph": 1600,
+  "galMin": 55,
+  "galMax": 125,
+  "bodyMm": {
+   "w": 102,
+   "d": 140,
+   "h": 81
+  },
+  "priceUsd": 24.49,
+  "colors": {
+   "body": "#0b0909"
+  },
+  "note": "Mounts on glass up to 15 mm thick.",
+  "popularity": {
+   "evidence": "#35 in Amazon Aquarium Water Pumps; 1,900 ratings, 4.3 stars; 300+ bought in past month",
+   "url": "https://www.amazon.com/dp/B07Z4PC69M",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "freesea-1050-powerhead",
+  "brand": "FREESEA",
+  "model": "Wave Maker Powerhead 6 W 1050 GPH, magnetic mount (blue)",
+  "kind": "powerhead",
+  "url": "https://www.amazon.com/dp/B07NVDG6RZ",
+  "asOf": "2026-10-27",
+  "watts": 6,
+  "gph": 1050,
+  "bodyMm": {
+   "w": 102,
+   "d": 140,
+   "h": 81
+  },
+  "priceUsd": 21.59,
+  "colors": {
+   "body": "#2d6fc4"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "note": "Colour listed as Blue; the hex is an estimate (the photo sits on a beige background).",
+  "popularity": {
+   "evidence": "#35 in Amazon Aquarium Water Pumps; 833 ratings, 4.3 stars",
+   "url": "https://www.amazon.com/dp/B07NVDG6RZ",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "vivosun-800-pump",
+  "brand": "VIVOSUN",
+  "model": "Submersible Pump 800 GPH (pond / aquarium / statuary)",
+  "kind": "powerhead",
+  "url": "https://www.amazon.com/dp/B07L54HB83",
+  "asOf": "2026-10-27",
+  "watts": 50,
+  "gph": 800,
+  "bodyMm": {
+   "w": 89,
+   "d": 110,
+   "h": 104
+  },
+  "priceUsd": 25.99,
+  "colors": {
+   "body": "#2d2e32",
+   "accent": "#03af46"
+  },
+  "note": "A fountain pump the title also names for aquariums; 10 ft lift.",
+  "popularity": {
+   "evidence": "#1 in Amazon Aquarium Water Pumps; 26,255 ratings, 4.4 stars; 9K+ bought in past month",
+   "url": "https://www.amazon.com/dp/B07L54HB83",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "pulaco-95-pump",
+  "brand": "PULACO",
+  "model": "Mini Submersible Pump 95 GPH 5 W (aquarium fish tank)",
+  "kind": "powerhead",
+  "url": "https://www.amazon.com/dp/B07SLKDW5J",
+  "asOf": "2026-10-27",
+  "watts": 5,
+  "gph": 95,
+  "bodyMm": {
+   "w": 46,
+   "d": 46,
+   "h": 36
+  },
+  "priceUsd": 9.99,
+  "colors": {
+   "body": "#131313",
+   "accent": "#b3b4b4"
+  },
+  "popularity": {
+   "evidence": "#4 in Amazon Aquarium Water Pumps; 9,004 ratings, 4.2 stars; 3K+ bought in past month",
+   "url": "https://www.amazon.com/dp/B07SLKDW5J",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "pulaco-160-pump",
+  "brand": "PULACO",
+  "model": "Small Submersible Pump 160 GPH 10 W",
+  "kind": "powerhead",
+  "url": "https://www.amazon.com/dp/B07YLHVZ4Q",
+  "asOf": "2026-10-27",
+  "watts": 10,
+  "gph": 160,
+  "bodyMm": {
+   "w": 46,
+   "d": 61,
+   "h": 53
+  },
+  "priceUsd": 11.59,
+  "colors": {
+   "body": "#2c2c2d",
+   "accent": "#b4b4b4"
+  },
+  "popularity": {
+   "evidence": "#2 in Amazon Aquarium Water Pumps; 4,858 ratings, 4.2 stars; 3K+ bought in past month",
+   "url": "https://www.amazon.com/dp/B07YLHVZ4Q",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "pulaco-400-pump",
+  "brand": "PULACO",
+  "model": "Submersible Pump 400 GPH 25 W",
+  "kind": "powerhead",
+  "url": "https://www.amazon.com/dp/B07VR1BGC5",
+  "asOf": "2026-10-27",
+  "watts": 25,
+  "gph": 400,
+  "bodyMm": {
+   "w": 76,
+   "d": 130,
+   "h": 102
+  },
+  "priceUsd": 18.99,
+  "colors": {
+   "body": "#2d2d2e",
+   "accent": "#b3b3b3"
+  },
+  "popularity": {
+   "evidence": "#3 in Amazon Aquarium Water Pumps; 5,250 ratings, 4.2 stars; 2K+ bought in past month",
+   "url": "https://www.amazon.com/dp/B07VR1BGC5",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "growneer-550-pump",
+  "brand": "GROWNEER",
+  "model": "Submersible Pump 550 GPH 30 W (fountain / aquarium)",
+  "kind": "powerhead",
+  "url": "https://www.amazon.com/dp/B07MDBYTLS",
+  "asOf": "2026-10-27",
+  "watts": 30,
+  "gph": 550,
+  "bodyMm": {
+   "w": 56,
+   "d": 84,
+   "h": 69
+  },
+  "priceUsd": 19.99,
+  "colors": {
+   "body": "#303030"
+  },
+  "popularity": {
+   "evidence": "#5 in Amazon Aquarium Water Pumps; 11,963 ratings, 4.2 stars; 3K+ bought in past month",
+   "url": "https://www.amazon.com/dp/B07MDBYTLS",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "hygger-crossflow-18w",
+  "brand": "hygger",
+  "model": "Cross Flow Wave Maker 18 W with LED controller (HG070)",
+  "kind": "wavemaker",
+  "url": "https://www.amazon.com/dp/B0C33GVBGY",
+  "asOf": "2026-10-27",
+  "watts": 18,
+  "gph": 1849,
+  "controller": true,
+  "bodyMm": {
+   "w": 51,
+   "d": 216,
+   "h": 51
+  },
+  "priceUsd": 79,
+  "colors": {
+   "body": "#131314"
+  },
+  "note": "7000 L/h, 5 wave modes on a display controller (pulse, sine, ...).",
+  "popularity": {
+   "evidence": "#26 in Amazon Aquarium Water Pumps; 412 ratings, 4.4 stars; 300+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0C33GVBGY",
+   "seen": "2026-10-27"
+  }
+ },
+ {
+  "id": "hygger-dc-wave-5-10",
+  "brand": "hygger",
+  "model": "DC Wave Maker for 5-10 gal with controller (HG222)",
+  "kind": "wavemaker",
+  "url": "https://www.amazon.com/dp/B0FDWHCWTQ",
+  "asOf": "2026-10-27",
+  "watts": 9,
+  "gph": 660,
+  "galMin": 5,
+  "galMax": 10,
+  "controller": true,
+  "bodyMm": {
+   "w": 40,
+   "d": 40,
+   "h": 50
+  },
+  "priceUsd": 45.99,
+  "colors": {
+   "body": "#333333"
+  },
+  "note": "2500 L/h, three outlet nozzles, wave controller.",
+  "popularity": {
+   "evidence": "#24 in Amazon Aquarium Water Pumps; 149 ratings, 4.2 stars; 300+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0FDWHCWTQ",
+   "seen": "2026-10-27"
+  }
+ }
+]

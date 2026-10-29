@@ -1,0 +1,4714 @@
+[
+ {
+  "id": "aquaclear-20",
+  "brand": "AquaClear",
+  "model": "AquaClear 20 Power Filter",
+  "kind": "hob",
+  "gph": 100,
+  "galMin": 5,
+  "galMax": 20,
+  "watts": 4,
+  "bodyMm": {
+   "w": 178,
+   "d": 114,
+   "h": 165
+  },
+  "intakeMm": 230,
+  "priceUsd": 32.99,
+  "url": "https://www.chewy.com/aquaclear-cycleguard-power-filter/dp/128692",
+  "asOf": "2026-10-19",
+  "names": [
+   "aquaclear 20",
+   "aquaclear ac20",
+   "aquaclear 20 power filter"
+  ],
+  "est": [
+   "watts",
+   "intakeMm",
+   "priceUsd"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#3c3f42",
+    "translucent": true
+   },
+   "lid": {
+    "hex": "#8a8d90"
+   },
+   "motor": {
+    "hex": "#111111"
+   },
+   "intake": {
+    "hex": "#5a5e60",
+    "translucent": true
+   },
+   "strainer": {
+    "hex": "#5a5e60",
+    "translucent": true
+   },
+   "outlet": {
+    "hex": "#8a8d90"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/61KzCiCcjsL._AC_SY879_.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Matches calibration: smoky translucent grey body, opaque mid-grey lid, translucent grey intake, black motor housing. Photo is the 20; same look across sizes (110 is the same family). Dims from Chewy listing (inches converted)."
+ },
+ {
+  "id": "aquaclear-30",
+  "brand": "AquaClear",
+  "model": "AquaClear 30 Power Filter",
+  "kind": "hob",
+  "gph": 150,
+  "galMin": 10,
+  "galMax": 30,
+  "watts": 6,
+  "bodyMm": {
+   "w": 208,
+   "d": 114,
+   "h": 170
+  },
+  "intakeMm": 250,
+  "priceUsd": 39.99,
+  "url": "https://www.chewy.com/aquaclear-cycleguard-power-filter/dp/128692",
+  "asOf": "2026-10-19",
+  "names": [
+   "aquaclear 30",
+   "aquaclear ac30",
+   "aquaclear 30 power filter"
+  ],
+  "est": [
+   "watts",
+   "intakeMm",
+   "priceUsd"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#3c3f42",
+    "translucent": true
+   },
+   "lid": {
+    "hex": "#8a8d90"
+   },
+   "motor": {
+    "hex": "#111111"
+   },
+   "intake": {
+    "hex": "#5a5e60",
+    "translucent": true
+   },
+   "strainer": {
+    "hex": "#5a5e60",
+    "translucent": true
+   },
+   "outlet": {
+    "hex": "#8a8d90"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/61KzCiCcjsL._AC_SY879_.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Matches calibration: smoky translucent grey body, opaque mid-grey lid, translucent grey intake, black motor housing. Photo is the 20; same look across sizes (110 is the same family). Dims from Chewy listing (inches converted)."
+ },
+ {
+  "id": "aquaclear-50",
+  "brand": "AquaClear",
+  "model": "AquaClear 50 Power Filter",
+  "kind": "hob",
+  "gph": 200,
+  "galMin": 20,
+  "galMax": 50,
+  "watts": 9,
+  "bodyMm": {
+   "w": 229,
+   "d": 102,
+   "h": 203
+  },
+  "intakeMm": 300,
+  "priceUsd": 54.99,
+  "url": "https://www.chewy.com/aquaclear-cycleguard-power-filter/dp/128692",
+  "asOf": "2026-10-19",
+  "names": [
+   "aquaclear 50",
+   "aquaclear ac50",
+   "aquaclear 50 power filter"
+  ],
+  "est": [
+   "watts",
+   "intakeMm",
+   "priceUsd"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#3c3f42",
+    "translucent": true
+   },
+   "lid": {
+    "hex": "#8a8d90"
+   },
+   "motor": {
+    "hex": "#111111"
+   },
+   "intake": {
+    "hex": "#5a5e60",
+    "translucent": true
+   },
+   "strainer": {
+    "hex": "#5a5e60",
+    "translucent": true
+   },
+   "outlet": {
+    "hex": "#8a8d90"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/61KzCiCcjsL._AC_SY879_.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Matches calibration: smoky translucent grey body, opaque mid-grey lid, translucent grey intake, black motor housing. Photo is the 20; same look across sizes (110 is the same family). Dims from Chewy listing (inches converted)."
+ },
+ {
+  "id": "aquaclear-70",
+  "brand": "AquaClear",
+  "model": "AquaClear 70 Power Filter",
+  "kind": "hob",
+  "gph": 300,
+  "galMin": 40,
+  "galMax": 70,
+  "watts": 14,
+  "bodyMm": {
+   "w": 272,
+   "d": 157,
+   "h": 218
+  },
+  "intakeMm": 330,
+  "priceUsd": 69.99,
+  "url": "https://www.chewy.com/aquaclear-cycleguard-power-filter/dp/128692",
+  "asOf": "2026-10-19",
+  "names": [
+   "aquaclear 70",
+   "aquaclear ac70",
+   "aquaclear 70 power filter"
+  ],
+  "est": [
+   "watts",
+   "intakeMm",
+   "priceUsd"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#3c3f42",
+    "translucent": true
+   },
+   "lid": {
+    "hex": "#8a8d90"
+   },
+   "motor": {
+    "hex": "#111111"
+   },
+   "intake": {
+    "hex": "#5a5e60",
+    "translucent": true
+   },
+   "strainer": {
+    "hex": "#5a5e60",
+    "translucent": true
+   },
+   "outlet": {
+    "hex": "#8a8d90"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/61KzCiCcjsL._AC_SY879_.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Matches calibration: smoky translucent grey body, opaque mid-grey lid, translucent grey intake, black motor housing. Photo is the 20; same look across sizes (110 is the same family). Dims from Chewy listing (inches converted)."
+ },
+ {
+  "id": "aquaclear-110",
+  "brand": "AquaClear",
+  "model": "AquaClear 110 Power Filter",
+  "kind": "hob",
+  "gph": 500,
+  "galMin": 60,
+  "galMax": 110,
+  "watts": 19,
+  "bodyMm": {
+   "w": 353,
+   "d": 180,
+   "h": 231
+  },
+  "intakeMm": 380,
+  "priceUsd": 89.99,
+  "url": "https://www.chewy.com/aquaclear-cycleguard-power-filter/dp/128692",
+  "asOf": "2026-10-19",
+  "names": [
+   "aquaclear 110",
+   "aquaclear ac110",
+   "aquaclear 110 power filter"
+  ],
+  "est": [
+   "watts",
+   "intakeMm",
+   "priceUsd"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#3c3f42",
+    "translucent": true
+   },
+   "lid": {
+    "hex": "#8a8d90"
+   },
+   "motor": {
+    "hex": "#111111"
+   },
+   "intake": {
+    "hex": "#5a5e60",
+    "translucent": true
+   },
+   "strainer": {
+    "hex": "#5a5e60",
+    "translucent": true
+   },
+   "outlet": {
+    "hex": "#8a8d90"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/61KzCiCcjsL._AC_SY879_.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Matches calibration: smoky translucent grey body, opaque mid-grey lid, translucent grey intake, black motor housing. Photo is the 20; same look across sizes (110 is the same family). Dims from Chewy listing (inches converted)."
+ },
+ {
+  "id": "tetra-whisper-pf10",
+  "brand": "Tetra",
+  "model": "Tetra Whisper PF10 Power Filter",
+  "kind": "hob",
+  "gph": 90,
+  "galMin": 5,
+  "galMax": 10,
+  "watts": 5,
+  "bodyMm": {
+   "w": 127,
+   "d": 89,
+   "h": 159
+  },
+  "intakeMm": 200,
+  "priceUsd": 19.49,
+  "url": "https://www.thatpetplace.com/whisper-30-power-filter-30-gal",
+  "asOf": "2026-10-19",
+  "names": [
+   "whisper 10",
+   "tetra whisper 10",
+   "whisper pf10",
+   "tetra whisper pf10",
+   "tetra whisper"
+  ],
+  "est": [
+   "watts",
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1e1f21"
+   },
+   "lid": {
+    "hex": "#222325"
+   },
+   "motor": {
+    "hex": "#151515"
+   },
+   "intake": {
+    "hex": "#cfd6d8",
+    "translucent": true
+   },
+   "strainer": {
+    "hex": "#cfd6d8",
+    "translucent": true
+   },
+   "outlet": {
+    "hex": "#2a2b2d"
+   },
+   "cups": "black",
+   "photo": "https://i.ebayimg.com/images/g/JBMAAeSwwKRoaJjd/s-l960.jpg"
+  },
+  "colorsEst": [],
+  "colorsNote": "Real product photo (PF40): body and lid are OPAQUE near-black, not dark brown-grey; flat vented lid with a round flow-control well; lower body/motor box slightly lighter charcoal; the intake tube is CLEAR translucent with a clear ribbed strainer; black cord.",
+  "priceUrl": "https://www.thatpetplace.com/whisper-advanced-pf10-power-filter-10-gal"
+ },
+ {
+  "id": "tetra-whisper-pf20",
+  "brand": "Tetra",
+  "model": "Tetra Whisper PF20 Power Filter",
+  "kind": "hob",
+  "gph": 105,
+  "galMin": 10,
+  "galMax": 20,
+  "watts": 6,
+  "bodyMm": {
+   "w": 178,
+   "d": 102,
+   "h": 175
+  },
+  "intakeMm": 220,
+  "priceUsd": 25.99,
+  "url": "https://www.thatpetplace.com/whisper-30-power-filter-30-gal",
+  "asOf": "2026-10-19",
+  "names": [
+   "whisper 20",
+   "tetra whisper 20",
+   "whisper pf20",
+   "tetra whisper pf20",
+   "tetra whisper"
+  ],
+  "est": [
+   "watts",
+   "priceUsd",
+   "intakeMm",
+   "bodyMm",
+   "gph"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1e1f21"
+   },
+   "lid": {
+    "hex": "#222325"
+   },
+   "motor": {
+    "hex": "#151515"
+   },
+   "intake": {
+    "hex": "#cfd6d8",
+    "translucent": true
+   },
+   "strainer": {
+    "hex": "#cfd6d8",
+    "translucent": true
+   },
+   "outlet": {
+    "hex": "#2a2b2d"
+   },
+   "cups": "black",
+   "photo": "https://i.ebayimg.com/images/g/JBMAAeSwwKRoaJjd/s-l960.jpg"
+  },
+  "colorsEst": [],
+  "colorsNote": "Real product photo (PF40): body and lid are OPAQUE near-black, not dark brown-grey; flat vented lid with a round flow-control well; lower body/motor box slightly lighter charcoal; the intake tube is CLEAR translucent with a clear ribbed strainer; black cord."
+ },
+ {
+  "id": "tetra-whisper-pf30",
+  "brand": "Tetra",
+  "model": "Tetra Whisper PF30 Power Filter",
+  "kind": "hob",
+  "gph": 145,
+  "galMin": 20,
+  "galMax": 30,
+  "watts": 8,
+  "bodyMm": {
+   "w": 203,
+   "d": 114,
+   "h": 184
+  },
+  "intakeMm": 240,
+  "priceUsd": 31.99,
+  "url": "https://www.thatpetplace.com/whisper-30-power-filter-30-gal",
+  "asOf": "2026-10-19",
+  "names": [
+   "whisper 30",
+   "tetra whisper 30",
+   "whisper pf30",
+   "tetra whisper pf30",
+   "tetra whisper"
+  ],
+  "est": [
+   "watts",
+   "priceUsd",
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1e1f21"
+   },
+   "lid": {
+    "hex": "#222325"
+   },
+   "motor": {
+    "hex": "#151515"
+   },
+   "intake": {
+    "hex": "#cfd6d8",
+    "translucent": true
+   },
+   "strainer": {
+    "hex": "#cfd6d8",
+    "translucent": true
+   },
+   "outlet": {
+    "hex": "#2a2b2d"
+   },
+   "cups": "black",
+   "photo": "https://i.ebayimg.com/images/g/JBMAAeSwwKRoaJjd/s-l960.jpg"
+  },
+  "colorsEst": [],
+  "colorsNote": "Real product photo (PF40): body and lid are OPAQUE near-black, not dark brown-grey; flat vented lid with a round flow-control well; lower body/motor box slightly lighter charcoal; the intake tube is CLEAR translucent with a clear ribbed strainer; black cord."
+ },
+ {
+  "id": "tetra-whisper-pf40",
+  "brand": "Tetra",
+  "model": "Tetra Whisper PF40 Power Filter",
+  "kind": "hob",
+  "gph": 210,
+  "galMin": 20,
+  "galMax": 40,
+  "watts": 10,
+  "bodyMm": {
+   "w": 203,
+   "d": 127,
+   "h": 191
+  },
+  "intakeMm": 260,
+  "priceUsd": 36.99,
+  "url": "https://www.thatpetplace.com/whisper-30-power-filter-30-gal",
+  "asOf": "2026-10-19",
+  "names": [
+   "whisper 40",
+   "tetra whisper 40",
+   "whisper pf40",
+   "tetra whisper pf40",
+   "tetra whisper"
+  ],
+  "est": [
+   "watts",
+   "priceUsd",
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1e1f21"
+   },
+   "lid": {
+    "hex": "#222325"
+   },
+   "motor": {
+    "hex": "#151515"
+   },
+   "intake": {
+    "hex": "#cfd6d8",
+    "translucent": true
+   },
+   "strainer": {
+    "hex": "#cfd6d8",
+    "translucent": true
+   },
+   "outlet": {
+    "hex": "#2a2b2d"
+   },
+   "cups": "black",
+   "photo": "https://i.ebayimg.com/images/g/JBMAAeSwwKRoaJjd/s-l960.jpg"
+  },
+  "colorsEst": [],
+  "colorsNote": "Real product photo (PF40): body and lid are OPAQUE near-black, not dark brown-grey; flat vented lid with a round flow-control well; lower body/motor box slightly lighter charcoal; the intake tube is CLEAR translucent with a clear ribbed strainer; black cord."
+ },
+ {
+  "id": "fluval-107",
+  "brand": "Fluval",
+  "model": "Fluval 107 Performance Canister Filter",
+  "kind": "canister",
+  "gph": 145,
+  "galMin": 10,
+  "galMax": 30,
+  "watts": 10,
+  "bodyMm": {
+   "w": 190,
+   "d": 190,
+   "h": 348
+  },
+  "intakeMm": 308,
+  "priceUsd": 152.99,
+  "url": "https://www.bulkreefsupply.com/fluval-107-canister-filter-fluval.html",
+  "asOf": "2026-10-19",
+  "names": [
+   "fluval 107",
+   "fluval 107 canister",
+   "fluval a440"
+  ],
+  "est": [
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#2c2d2f"
+   },
+   "lid": {
+    "hex": "#2c2d2f"
+   },
+   "motor": {
+    "hex": "#2c2d2f"
+   },
+   "clips": {
+    "hex": "#8d9094"
+   },
+   "foot": {
+    "hex": "#8d9094"
+   },
+   "intake": {
+    "hex": "#1e1e1f"
+   },
+   "strainer": {
+    "hex": "#1e1e1f"
+   },
+   "outlet": {
+    "hex": "#1e1e1f"
+   },
+   "hose": "#1f1f1f",
+   "accent": {
+    "hex": "#c0161c",
+    "where": "red hose connectors/taps on top and red lid latch"
+   },
+   "photo": "https://m.media-amazon.com/images/I/61mJR7p-ZvL.jpg"
+  },
+  "colorsEst": [
+   "intake",
+   "strainer",
+   "outlet",
+   "hose"
+  ],
+  "colorsNote": "Real product photo of the 207 (Amazon listing): body and lid opaque charcoal-black (not translucent), LIGHT-GREY side clamps and base ring (previous all-dark guess missed these), red top connectors and red lid latch. Hose and in-tank pipes read black in shopping thumbnails of the Fluval ribbed hose and kit; not seen installed.",
+  "priceUrl": "https://www.bulkreefsupply.com/brands/fluval.html"
+ },
+ {
+  "id": "fluval-207",
+  "brand": "Fluval",
+  "model": "Fluval 207 Performance Canister Filter",
+  "kind": "canister",
+  "gph": 206,
+  "galMin": 20,
+  "galMax": 45,
+  "watts": 10,
+  "bodyMm": {
+   "w": 190,
+   "d": 190,
+   "h": 419
+  },
+  "intakeMm": 379,
+  "priceUsd": 170.99,
+  "url": "https://www.bulkreefsupply.com/fluval-207-canister-filter-fluval.html",
+  "asOf": "2026-10-19",
+  "names": [
+   "fluval 207",
+   "fluval 207 canister",
+   "fluval a443"
+  ],
+  "est": [
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#2c2d2f"
+   },
+   "lid": {
+    "hex": "#2c2d2f"
+   },
+   "motor": {
+    "hex": "#2c2d2f"
+   },
+   "clips": {
+    "hex": "#8d9094"
+   },
+   "foot": {
+    "hex": "#8d9094"
+   },
+   "intake": {
+    "hex": "#1e1e1f"
+   },
+   "strainer": {
+    "hex": "#1e1e1f"
+   },
+   "outlet": {
+    "hex": "#1e1e1f"
+   },
+   "hose": "#1f1f1f",
+   "accent": {
+    "hex": "#c0161c",
+    "where": "red hose connectors/taps on top and red lid latch"
+   },
+   "photo": "https://m.media-amazon.com/images/I/61mJR7p-ZvL.jpg"
+  },
+  "colorsEst": [
+   "intake",
+   "strainer",
+   "outlet",
+   "hose"
+  ],
+  "colorsNote": "Real product photo of the 207 (Amazon listing): body and lid opaque charcoal-black (not translucent), LIGHT-GREY side clamps and base ring (previous all-dark guess missed these), red top connectors and red lid latch. Hose and in-tank pipes read black in shopping thumbnails of the Fluval ribbed hose and kit; not seen installed.",
+  "priceUrl": "https://www.bulkreefsupply.com/brands/fluval.html"
+ },
+ {
+  "id": "fluval-307",
+  "brand": "Fluval",
+  "model": "Fluval 307 Performance Canister Filter",
+  "kind": "canister",
+  "gph": 303,
+  "galMin": 40,
+  "galMax": 70,
+  "watts": 16,
+  "bodyMm": {
+   "w": 240,
+   "d": 240,
+   "h": 419
+  },
+  "intakeMm": 379,
+  "priceUsd": 217.99,
+  "url": "https://www.bulkreefsupply.com/fluval-307-canister-filter-fluval.html",
+  "asOf": "2026-10-19",
+  "names": [
+   "fluval 307",
+   "fluval 307 canister",
+   "fluval a446"
+  ],
+  "est": [
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#2c2d2f"
+   },
+   "lid": {
+    "hex": "#2c2d2f"
+   },
+   "motor": {
+    "hex": "#2c2d2f"
+   },
+   "clips": {
+    "hex": "#8d9094"
+   },
+   "foot": {
+    "hex": "#8d9094"
+   },
+   "intake": {
+    "hex": "#1e1e1f"
+   },
+   "strainer": {
+    "hex": "#1e1e1f"
+   },
+   "outlet": {
+    "hex": "#1e1e1f"
+   },
+   "hose": "#1f1f1f",
+   "accent": {
+    "hex": "#c0161c",
+    "where": "red hose connectors/taps on top and red lid latch"
+   },
+   "photo": "https://m.media-amazon.com/images/I/61mJR7p-ZvL.jpg"
+  },
+  "colorsEst": [
+   "intake",
+   "strainer",
+   "outlet",
+   "hose"
+  ],
+  "colorsNote": "Real product photo of the 207 (Amazon listing): body and lid opaque charcoal-black (not translucent), LIGHT-GREY side clamps and base ring (previous all-dark guess missed these), red top connectors and red lid latch. Hose and in-tank pipes read black in shopping thumbnails of the Fluval ribbed hose and kit; not seen installed.",
+  "priceUrl": "https://www.bulkreefsupply.com/brands/fluval.html"
+ },
+ {
+  "id": "fluval-407",
+  "brand": "Fluval",
+  "model": "Fluval 407 Performance Canister Filter",
+  "kind": "canister",
+  "gph": 383,
+  "galMin": 50,
+  "galMax": 100,
+  "watts": 23,
+  "bodyMm": {
+   "w": 240,
+   "d": 240,
+   "h": 490
+  },
+  "intakeMm": 450,
+  "priceUsd": 256.99,
+  "url": "https://www.bulkreefsupply.com/fluval-407-canister-filter-fluval.html",
+  "asOf": "2026-10-19",
+  "names": [
+   "fluval 407",
+   "fluval 407 canister",
+   "fluval a449"
+  ],
+  "est": [
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#2c2d2f"
+   },
+   "lid": {
+    "hex": "#2c2d2f"
+   },
+   "motor": {
+    "hex": "#2c2d2f"
+   },
+   "clips": {
+    "hex": "#8d9094"
+   },
+   "foot": {
+    "hex": "#8d9094"
+   },
+   "intake": {
+    "hex": "#1e1e1f"
+   },
+   "strainer": {
+    "hex": "#1e1e1f"
+   },
+   "outlet": {
+    "hex": "#1e1e1f"
+   },
+   "hose": "#1f1f1f",
+   "accent": {
+    "hex": "#c0161c",
+    "where": "red hose connectors/taps on top and red lid latch"
+   },
+   "photo": "https://m.media-amazon.com/images/I/61mJR7p-ZvL.jpg"
+  },
+  "colorsEst": [
+   "intake",
+   "strainer",
+   "outlet",
+   "hose"
+  ],
+  "colorsNote": "Real product photo of the 207 (Amazon listing): body and lid opaque charcoal-black (not translucent), LIGHT-GREY side clamps and base ring (previous all-dark guess missed these), red top connectors and red lid latch. Hose and in-tank pipes read black in shopping thumbnails of the Fluval ribbed hose and kit; not seen installed.",
+  "priceUrl": "https://www.bulkreefsupply.com/brands/fluval.html"
+ },
+ {
+  "id": "hygger-double-sponge-small",
+  "brand": "Hygger",
+  "model": "Hygger Double Sponge Filter (small)",
+  "kind": "sponge",
+  "galMin": 10,
+  "galMax": 40,
+  "watts": 2.5,
+  "bodyMm": {
+   "w": 50,
+   "d": 50,
+   "h": 110
+  },
+  "priceUsd": 16.99,
+  "url": "https://www.harveynorman.com.au/hygger-aquarium-double-sponge-filter-small.html",
+  "asOf": "2026-10-19",
+  "names": [
+   "hygger double sponge filter small",
+   "hygger sponge filter small",
+   "hygger double sponge filter"
+  ],
+  "est": [
+   "bodyMm",
+   "priceUsd",
+   "gph"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#151515",
+    "translucent": false
+   },
+   "sponge": "#1c1c1c",
+   "intake": {
+    "hex": "#151515"
+   },
+   "outlet": {
+    "hex": "#151515"
+   },
+   "accent": {
+    "hex": "#5a3a28",
+    "where": "bio-ceramic ball cartridge under each sponge (translucent brown); lift tube is bronze #8a7762"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/71KbUFThB2L._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Air-driven (watts = suggested air pump). Two black coarse sponges, black plastic pipes/base, bronze tube, brown ceramic-ball cartridges at sponge base. bodyMm is per sponge (retailers list 50x110 mm); overall unit is about 230 mm wide. Sizes disagree between listings."
+ },
+ {
+  "id": "hygger-double-sponge-medium",
+  "brand": "Hygger",
+  "model": "Hygger Double Sponge Filter (medium)",
+  "kind": "sponge",
+  "galMin": 15,
+  "galMax": 55,
+  "watts": 4,
+  "bodyMm": {
+   "w": 60,
+   "d": 60,
+   "h": 130
+  },
+  "priceUsd": 19.99,
+  "url": "https://www.harveynorman.com.au/hygger-aquarium-double-sponge-filter-medium.html",
+  "asOf": "2026-10-19",
+  "names": [
+   "hygger double sponge filter medium",
+   "hygger sponge filter medium",
+   "hygger double sponge filter"
+  ],
+  "est": [
+   "bodyMm",
+   "priceUsd",
+   "gph"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#151515",
+    "translucent": false
+   },
+   "sponge": "#1c1c1c",
+   "intake": {
+    "hex": "#151515"
+   },
+   "outlet": {
+    "hex": "#151515"
+   },
+   "accent": {
+    "hex": "#5a3a28",
+    "where": "bio-ceramic ball cartridge under each sponge (translucent brown); lift tube is bronze #8a7762"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/71KbUFThB2L._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Air-driven (watts = suggested air pump). Two black coarse sponges, black plastic pipes/base, bronze tube, brown ceramic-ball cartridges at sponge base. bodyMm is per sponge (retailers list 50x110 mm); overall unit is about 230 mm wide. Sizes disagree between listings."
+ },
+ {
+  "id": "aqueon-quietflow-10",
+  "brand": "Aqueon",
+  "model": "Aqueon QuietFlow LED PRO 10",
+  "kind": "hob",
+  "gph": 100,
+  "galMin": 5,
+  "galMax": 20,
+  "watts": 4,
+  "bodyMm": {
+   "w": 97,
+   "d": 160,
+   "h": 163
+  },
+  "intakeMm": 223,
+  "priceUsd": 29.99,
+  "url": "https://fishtanksdirect.com/aqueon-quietflow-led-pro10-power-filter/",
+  "asOf": "2026-10-19",
+  "names": [
+   "aqueon quietflow 10",
+   "quietflow 10",
+   "aqueon quietflow led pro 10",
+   "quietflow led pro 10",
+   "aqueon 10",
+   "aqueon quietflow"
+  ],
+  "est": [
+   "watts",
+   "intakeMm",
+   "gph"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#26272a"
+   },
+   "lid": {
+    "hex": "#303134"
+   },
+   "motor": {
+    "hex": "#141415"
+   },
+   "intake": {
+    "hex": "#1c1c1e"
+   },
+   "strainer": {
+    "hex": "#1c1c1e"
+   },
+   "outlet": {
+    "hex": "#26272a"
+   },
+   "accent": {
+    "hex": "#c43a2a",
+    "where": "red LED cartridge-change indicator on the lid"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/81nNAGg23+L._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "intake",
+   "strainer",
+   "outlet"
+  ],
+  "colorsNote": "Opaque black/charcoal plastic, vented lid with LED indicator. Looked at BOX ART only (Aqueon retail shows only boxes); lid/body split and intake colour are inferred from the pictured unit. GPH figures conflict between retailers (10: 100 vs 250)."
+ },
+ {
+  "id": "aqueon-quietflow-20",
+  "brand": "Aqueon",
+  "model": "Aqueon QuietFlow LED PRO 20",
+  "kind": "hob",
+  "gph": 125,
+  "galMin": 10,
+  "galMax": 30,
+  "watts": 6,
+  "bodyMm": {
+   "w": 112,
+   "d": 201,
+   "h": 188
+  },
+  "intakeMm": 248,
+  "priceUsd": 34.95,
+  "url": "https://www.thatpetplace.com/aqueon-quietflow-20-power-filter",
+  "asOf": "2026-10-19",
+  "names": [
+   "aqueon quietflow 20",
+   "quietflow 20",
+   "aqueon quietflow led pro 20",
+   "quietflow led pro 20",
+   "aqueon 20",
+   "aqueon quietflow"
+  ],
+  "est": [
+   "watts",
+   "intakeMm",
+   "gph",
+   "priceUsd"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#26272a"
+   },
+   "lid": {
+    "hex": "#303134"
+   },
+   "motor": {
+    "hex": "#141415"
+   },
+   "intake": {
+    "hex": "#1c1c1e"
+   },
+   "strainer": {
+    "hex": "#1c1c1e"
+   },
+   "outlet": {
+    "hex": "#26272a"
+   },
+   "accent": {
+    "hex": "#c43a2a",
+    "where": "red LED cartridge-change indicator on the lid"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/81nNAGg23+L._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "intake",
+   "strainer",
+   "outlet"
+  ],
+  "colorsNote": "Opaque black/charcoal plastic, vented lid with LED indicator. Looked at BOX ART only (Aqueon retail shows only boxes); lid/body split and intake colour are inferred from the pictured unit. GPH figures conflict between retailers (10: 100 vs 250)."
+ },
+ {
+  "id": "aqueon-quietflow-30",
+  "brand": "Aqueon",
+  "model": "Aqueon QuietFlow LED PRO 30",
+  "kind": "hob",
+  "gph": 200,
+  "galMin": 20,
+  "galMax": 45,
+  "watts": 8,
+  "bodyMm": {
+   "w": 117,
+   "d": 201,
+   "h": 213
+  },
+  "intakeMm": 273,
+  "priceUsd": 44.99,
+  "url": "https://fishtanksdirect.com/aqueon-quietflow-led-pro30-power-filter/",
+  "asOf": "2026-10-19",
+  "names": [
+   "aqueon quietflow 30",
+   "quietflow 30",
+   "aqueon quietflow led pro 30",
+   "quietflow led pro 30",
+   "aqueon 30",
+   "aqueon quietflow"
+  ],
+  "est": [
+   "watts",
+   "intakeMm",
+   "gph"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#26272a"
+   },
+   "lid": {
+    "hex": "#303134"
+   },
+   "motor": {
+    "hex": "#141415"
+   },
+   "intake": {
+    "hex": "#1c1c1e"
+   },
+   "strainer": {
+    "hex": "#1c1c1e"
+   },
+   "outlet": {
+    "hex": "#26272a"
+   },
+   "accent": {
+    "hex": "#c43a2a",
+    "where": "red LED cartridge-change indicator on the lid"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/81nNAGg23+L._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "intake",
+   "strainer",
+   "outlet"
+  ],
+  "colorsNote": "Opaque black/charcoal plastic, vented lid with LED indicator. Looked at BOX ART only (Aqueon retail shows only boxes); lid/body split and intake colour are inferred from the pictured unit. GPH figures conflict between retailers (10: 100 vs 250)."
+ },
+ {
+  "id": "aqueon-quietflow-50",
+  "brand": "Aqueon",
+  "model": "Aqueon QuietFlow LED PRO 50",
+  "kind": "hob",
+  "gph": 250,
+  "galMin": 30,
+  "galMax": 50,
+  "watts": 10,
+  "bodyMm": {
+   "w": 104,
+   "d": 201,
+   "h": 213
+  },
+  "intakeMm": 273,
+  "priceUsd": 49.99,
+  "url": "https://fishtanksdirect.com/aqueon-quietflow-led-pro50-power-filter/",
+  "asOf": "2026-10-19",
+  "names": [
+   "aqueon quietflow 50",
+   "quietflow 50",
+   "aqueon quietflow led pro 50",
+   "quietflow led pro 50",
+   "aqueon 50",
+   "aqueon quietflow"
+  ],
+  "est": [
+   "watts",
+   "intakeMm",
+   "gph"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#26272a"
+   },
+   "lid": {
+    "hex": "#303134"
+   },
+   "motor": {
+    "hex": "#141415"
+   },
+   "intake": {
+    "hex": "#1c1c1e"
+   },
+   "strainer": {
+    "hex": "#1c1c1e"
+   },
+   "outlet": {
+    "hex": "#26272a"
+   },
+   "accent": {
+    "hex": "#c43a2a",
+    "where": "red LED cartridge-change indicator on the lid"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/81nNAGg23+L._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "intake",
+   "strainer",
+   "outlet"
+  ],
+  "colorsNote": "Opaque black/charcoal plastic, vented lid with LED indicator. Looked at BOX ART only (Aqueon retail shows only boxes); lid/body split and intake colour are inferred from the pictured unit. GPH figures conflict between retailers (10: 100 vs 250)."
+ },
+ {
+  "id": "aqueon-quietflow-75",
+  "brand": "Aqueon",
+  "model": "Aqueon QuietFlow LED PRO 75",
+  "kind": "hob",
+  "gph": 400,
+  "galMin": 55,
+  "galMax": 90,
+  "watts": 15,
+  "bodyMm": {
+   "w": 168,
+   "d": 213,
+   "h": 328
+  },
+  "intakeMm": 388,
+  "priceUsd": 72.99,
+  "url": "https://fishtanksdirect.com/aqueon-quietflow-led-pro75-power-filter/",
+  "asOf": "2026-10-19",
+  "names": [
+   "aqueon quietflow 75",
+   "quietflow 75",
+   "aqueon quietflow led pro 75",
+   "quietflow led pro 75",
+   "aqueon 75",
+   "aqueon quietflow"
+  ],
+  "est": [
+   "watts",
+   "intakeMm",
+   "gph"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#26272a"
+   },
+   "lid": {
+    "hex": "#303134"
+   },
+   "motor": {
+    "hex": "#141415"
+   },
+   "intake": {
+    "hex": "#1c1c1e"
+   },
+   "strainer": {
+    "hex": "#1c1c1e"
+   },
+   "outlet": {
+    "hex": "#26272a"
+   },
+   "accent": {
+    "hex": "#c43a2a",
+    "where": "red LED cartridge-change indicator on the lid"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/81nNAGg23+L._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "intake",
+   "strainer",
+   "outlet"
+  ],
+  "colorsNote": "Opaque black/charcoal plastic, vented lid with LED indicator. Looked at BOX ART only (Aqueon retail shows only boxes); lid/body split and intake colour are inferred from the pictured unit. GPH figures conflict between retailers (10: 100 vs 250)."
+ },
+ {
+  "id": "topfin-silenstream-pf10",
+  "brand": "Top Fin",
+  "model": "Top Fin Silenstream PF10 Power Filter",
+  "kind": "hob",
+  "gph": 100,
+  "galMin": 3,
+  "galMax": 10,
+  "watts": 4,
+  "bodyMm": {
+   "w": 150,
+   "d": 95,
+   "h": 170
+  },
+  "intakeMm": 170,
+  "priceUsd": 14.99,
+  "url": "https://www.petsmart.com/fish/filters-and-pumps/filters/",
+  "asOf": "2026-10-19",
+  "names": [
+   "top fin pf10",
+   "silenstream pf10",
+   "top fin silenstream pf10",
+   "silenstream pf10",
+   "topfin pf10",
+   "top fin pf10",
+   "silenstream 10",
+   "top fin silenstream 10"
+  ],
+  "est": [
+   "gph",
+   "watts",
+   "bodyMm",
+   "intakeMm",
+   "priceUsd"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1b1b1d"
+   },
+   "lid": {
+    "hex": "#1d1d1f"
+   },
+   "motor": {
+    "hex": "#111111"
+   },
+   "intake": {
+    "hex": "#141414"
+   },
+   "strainer": {
+    "hex": "#161616"
+   },
+   "outlet": {
+    "hex": "#1b1b1d"
+   },
+   "accent": {
+    "hex": "#2a63d4",
+    "where": "blue foam pad in the spillway tray"
+   },
+   "cups": "black",
+   "photo": "https://i.ebayimg.com/images/g/VEIAAOSwCoVnRhwX/s-l1600.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "outlet"
+  ],
+  "colorsNote": "Real seller photo of a PF20 (not box art): fully opaque black plastic, black slotted strainer, blue foam pad visible in the tray, black cord. Same look assumed for the other sizes. Only PF20 120 gph was confirmed; other sizes' gph, dims and prices are estimates."
+ },
+ {
+  "id": "topfin-silenstream-pf20",
+  "brand": "Top Fin",
+  "model": "Top Fin Silenstream PF20 Power Filter",
+  "kind": "hob",
+  "gph": 120,
+  "galMin": 10,
+  "galMax": 20,
+  "watts": 5,
+  "bodyMm": {
+   "w": 180,
+   "d": 105,
+   "h": 185
+  },
+  "intakeMm": 230,
+  "priceUsd": 19.99,
+  "url": "https://www.petsmart.com/fish/filters-and-pumps/filters/",
+  "asOf": "2026-10-19",
+  "names": [
+   "top fin pf20",
+   "silenstream pf20",
+   "top fin silenstream pf20",
+   "silenstream pf20",
+   "topfin pf20",
+   "top fin pf20",
+   "silenstream 20",
+   "top fin silenstream 20"
+  ],
+  "est": [
+   "watts",
+   "bodyMm",
+   "intakeMm",
+   "priceUsd"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1b1b1d"
+   },
+   "lid": {
+    "hex": "#1d1d1f"
+   },
+   "motor": {
+    "hex": "#111111"
+   },
+   "intake": {
+    "hex": "#141414"
+   },
+   "strainer": {
+    "hex": "#161616"
+   },
+   "outlet": {
+    "hex": "#1b1b1d"
+   },
+   "accent": {
+    "hex": "#2a63d4",
+    "where": "blue foam pad in the spillway tray"
+   },
+   "cups": "black",
+   "photo": "https://i.ebayimg.com/images/g/VEIAAOSwCoVnRhwX/s-l1600.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "outlet"
+  ],
+  "colorsNote": "Real seller photo of a PF20 (not box art): fully opaque black plastic, black slotted strainer, blue foam pad visible in the tray, black cord. Same look assumed for the other sizes. Only PF20 120 gph was confirmed; other sizes' gph, dims and prices are estimates."
+ },
+ {
+  "id": "topfin-silenstream-pf40",
+  "brand": "Top Fin",
+  "model": "Top Fin Silenstream PF40 Power Filter",
+  "kind": "hob",
+  "gph": 200,
+  "galMin": 20,
+  "galMax": 40,
+  "watts": 7,
+  "bodyMm": {
+   "w": 215,
+   "d": 120,
+   "h": 205
+  },
+  "intakeMm": 230,
+  "priceUsd": 29.99,
+  "url": "https://www.petsmart.com/fish/filters-and-pumps/filters/",
+  "asOf": "2026-10-19",
+  "names": [
+   "top fin pf40",
+   "silenstream pf40",
+   "top fin silenstream pf40",
+   "silenstream pf40",
+   "topfin pf40",
+   "top fin pf40",
+   "silenstream 40",
+   "top fin silenstream 40"
+  ],
+  "est": [
+   "gph",
+   "watts",
+   "bodyMm",
+   "intakeMm",
+   "priceUsd"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1b1b1d"
+   },
+   "lid": {
+    "hex": "#1d1d1f"
+   },
+   "motor": {
+    "hex": "#111111"
+   },
+   "intake": {
+    "hex": "#141414"
+   },
+   "strainer": {
+    "hex": "#161616"
+   },
+   "outlet": {
+    "hex": "#1b1b1d"
+   },
+   "accent": {
+    "hex": "#2a63d4",
+    "where": "blue foam pad in the spillway tray"
+   },
+   "cups": "black",
+   "photo": "https://i.ebayimg.com/images/g/VEIAAOSwCoVnRhwX/s-l1600.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "outlet"
+  ],
+  "colorsNote": "Real seller photo of a PF20 (not box art): fully opaque black plastic, black slotted strainer, blue foam pad visible in the tray, black cord. Same look assumed for the other sizes. Only PF20 120 gph was confirmed; other sizes' gph, dims and prices are estimates."
+ },
+ {
+  "id": "topfin-silenstream-pf75",
+  "brand": "Top Fin",
+  "model": "Top Fin Silenstream PF75 Power Filter",
+  "kind": "hob",
+  "gph": 300,
+  "galMin": 40,
+  "galMax": 75,
+  "watts": 9,
+  "bodyMm": {
+   "w": 250,
+   "d": 135,
+   "h": 225
+  },
+  "intakeMm": 230,
+  "priceUsd": 49.99,
+  "url": "https://www.petsmart.com/fish/filters-and-pumps/filters/",
+  "asOf": "2026-10-19",
+  "names": [
+   "top fin pf75",
+   "silenstream pf75",
+   "top fin silenstream pf75",
+   "silenstream pf75",
+   "topfin pf75",
+   "top fin pf75",
+   "silenstream 75",
+   "top fin silenstream 75"
+  ],
+  "est": [
+   "gph",
+   "watts",
+   "bodyMm",
+   "intakeMm",
+   "priceUsd"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1b1b1d"
+   },
+   "lid": {
+    "hex": "#1d1d1f"
+   },
+   "motor": {
+    "hex": "#111111"
+   },
+   "intake": {
+    "hex": "#141414"
+   },
+   "strainer": {
+    "hex": "#161616"
+   },
+   "outlet": {
+    "hex": "#1b1b1d"
+   },
+   "accent": {
+    "hex": "#2a63d4",
+    "where": "blue foam pad in the spillway tray"
+   },
+   "cups": "black",
+   "photo": "https://i.ebayimg.com/images/g/VEIAAOSwCoVnRhwX/s-l1600.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "outlet"
+  ],
+  "colorsNote": "Real seller photo of a PF20 (not box art): fully opaque black plastic, black slotted strainer, blue foam pad visible in the tray, black cord. Same look assumed for the other sizes. Only PF20 120 gph was confirmed; other sizes' gph, dims and prices are estimates."
+ },
+ {
+  "id": "seachem-tidal-35",
+  "brand": "Seachem",
+  "model": "Seachem Tidal 35",
+  "kind": "hob",
+  "gph": 130,
+  "galMin": 10,
+  "galMax": 35,
+  "watts": 6,
+  "bodyMm": {
+   "w": 155,
+   "d": 130,
+   "h": 181
+  },
+  "intakeMm": 231,
+  "priceUsd": 48.47,
+  "url": "https://seachem.com/tidal-compare.php",
+  "asOf": "2026-10-19",
+  "names": [
+   "seachem tidal 35",
+   "tidal 35"
+  ],
+  "est": [
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1e1f21"
+   },
+   "lid": {
+    "hex": "#222325"
+   },
+   "motor": {
+    "hex": "#151515"
+   },
+   "intake": {
+    "hex": "#1a1a1a"
+   },
+   "strainer": {
+    "hex": "#1a1a1a"
+   },
+   "outlet": {
+    "hex": "#1e1f21"
+   },
+   "accent": {
+    "hex": "#1e8fe0",
+    "where": "blue latch tabs and media-door buttons"
+   },
+   "cups": "black",
+   "photo": "https://www.seachem.com/img/product-images/tidal-55-front.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "intake",
+   "strainer",
+   "outlet"
+  ],
+  "colorsNote": "Manufacturer photo of the Tidal 55: opaque matte black throughout, with small bright-blue latch/button accents. Assumed identical for 35/75/110.",
+  "priceUrl": "https://www.bulkreefsupply.com/brands/seachem.html"
+ },
+ {
+  "id": "seachem-tidal-55",
+  "brand": "Seachem",
+  "model": "Seachem Tidal 55",
+  "kind": "hob",
+  "gph": 250,
+  "galMin": 20,
+  "galMax": 55,
+  "watts": 6,
+  "bodyMm": {
+   "w": 205,
+   "d": 155,
+   "h": 214
+  },
+  "intakeMm": 264,
+  "priceUsd": 60.16,
+  "url": "https://www.saltwateraquarium.com/tidal-55-hob-power-filter-up-to-35-gal-seachem/",
+  "asOf": "2026-10-19",
+  "names": [
+   "seachem tidal 55",
+   "tidal 55"
+  ],
+  "est": [
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1e1f21"
+   },
+   "lid": {
+    "hex": "#222325"
+   },
+   "motor": {
+    "hex": "#151515"
+   },
+   "intake": {
+    "hex": "#1a1a1a"
+   },
+   "strainer": {
+    "hex": "#1a1a1a"
+   },
+   "outlet": {
+    "hex": "#1e1f21"
+   },
+   "accent": {
+    "hex": "#1e8fe0",
+    "where": "blue latch tabs and media-door buttons"
+   },
+   "cups": "black",
+   "photo": "https://www.seachem.com/img/product-images/tidal-55-front.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "intake",
+   "strainer",
+   "outlet"
+  ],
+  "colorsNote": "Manufacturer photo of the Tidal 55: opaque matte black throughout, with small bright-blue latch/button accents. Assumed identical for 35/75/110."
+ },
+ {
+  "id": "seachem-tidal-75",
+  "brand": "Seachem",
+  "model": "Seachem Tidal 75",
+  "kind": "hob",
+  "gph": 350,
+  "galMin": 40,
+  "galMax": 75,
+  "watts": 8,
+  "bodyMm": {
+   "w": 234,
+   "d": 178,
+   "h": 242
+  },
+  "intakeMm": 292,
+  "priceUsd": 76.52,
+  "url": "https://seachem.com/tidal-compare.php",
+  "asOf": "2026-10-19",
+  "names": [
+   "seachem tidal 75",
+   "tidal 75"
+  ],
+  "est": [
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1e1f21"
+   },
+   "lid": {
+    "hex": "#222325"
+   },
+   "motor": {
+    "hex": "#151515"
+   },
+   "intake": {
+    "hex": "#1a1a1a"
+   },
+   "strainer": {
+    "hex": "#1a1a1a"
+   },
+   "outlet": {
+    "hex": "#1e1f21"
+   },
+   "accent": {
+    "hex": "#1e8fe0",
+    "where": "blue latch tabs and media-door buttons"
+   },
+   "cups": "black",
+   "photo": "https://www.seachem.com/img/product-images/tidal-55-front.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "intake",
+   "strainer",
+   "outlet"
+  ],
+  "colorsNote": "Manufacturer photo of the Tidal 55: opaque matte black throughout, with small bright-blue latch/button accents. Assumed identical for 35/75/110.",
+  "priceUrl": "https://www.bulkreefsupply.com/tidal-75-hob-power-filter-seachem.html"
+ },
+ {
+  "id": "seachem-tidal-110",
+  "brand": "Seachem",
+  "model": "Seachem Tidal 110",
+  "kind": "hob",
+  "gph": 450,
+  "galMin": 60,
+  "galMax": 110,
+  "watts": 12,
+  "bodyMm": {
+   "w": 295,
+   "d": 192,
+   "h": 242
+  },
+  "intakeMm": 292,
+  "priceUsd": 92.26,
+  "url": "https://seachem.com/tidal-compare.php",
+  "asOf": "2026-10-19",
+  "names": [
+   "seachem tidal 110",
+   "tidal 110"
+  ],
+  "est": [
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1e1f21"
+   },
+   "lid": {
+    "hex": "#222325"
+   },
+   "motor": {
+    "hex": "#151515"
+   },
+   "intake": {
+    "hex": "#1a1a1a"
+   },
+   "strainer": {
+    "hex": "#1a1a1a"
+   },
+   "outlet": {
+    "hex": "#1e1f21"
+   },
+   "accent": {
+    "hex": "#1e8fe0",
+    "where": "blue latch tabs and media-door buttons"
+   },
+   "cups": "black",
+   "photo": "https://www.seachem.com/img/product-images/tidal-55-front.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "intake",
+   "strainer",
+   "outlet"
+  ],
+  "colorsNote": "Manufacturer photo of the Tidal 55: opaque matte black throughout, with small bright-blue latch/button accents. Assumed identical for 35/75/110.",
+  "priceUrl": "https://www.bulkreefsupply.com/brands/seachem.html"
+ },
+ {
+  "id": "marineland-penguin-150",
+  "brand": "Marineland",
+  "model": "Marineland Penguin 150 Bio-Wheel",
+  "kind": "hob",
+  "gph": 150,
+  "galMin": 10,
+  "galMax": 30,
+  "watts": 7,
+  "bodyMm": {
+   "w": 250,
+   "d": 120,
+   "h": 215
+  },
+  "intakeMm": 240,
+  "priceUsd": 32.99,
+  "url": "https://www.petsmart.com/fish/filters-and-pumps/filters/",
+  "asOf": "2026-10-19",
+  "names": [
+   "marineland penguin 150",
+   "penguin 150",
+   "penguin 150b",
+   "marineland penguin 150b",
+   "penguin bio-wheel 150"
+  ],
+  "est": [
+   "watts",
+   "bodyMm",
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#26272c"
+   },
+   "lid": {
+    "hex": "#2c2d32"
+   },
+   "motor": {
+    "hex": "#151516"
+   },
+   "intake": {
+    "hex": "#1a1a1c"
+   },
+   "strainer": {
+    "hex": "#1a1a1c"
+   },
+   "outlet": {
+    "hex": "#26272c"
+   },
+   "accent": {
+    "hex": "#3b4252",
+    "where": "smoky translucent front window over the Bio-Wheel / cartridge",
+    "translucent": true
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/91x-zqxBbAL._AC_UF894,1000_QL80_.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "intake",
+   "strainer",
+   "outlet"
+  ],
+  "colorsNote": "BOX ART only (Penguin 150 box shown): near-black opaque shell with a smoky translucent navy-grey front window through which the Bio-Wheel shows; black top with grille vents. Only Bio-Wheel assembly sizes were published, so shell dimensions are estimates.",
+  "priceUrl": "https://www.thatpetplace.com/penguin-150-bio-wheel-power-filter-30-gal"
+ },
+ {
+  "id": "marineland-penguin-200",
+  "brand": "Marineland",
+  "model": "Marineland Penguin 200 Bio-Wheel",
+  "kind": "hob",
+  "gph": 200,
+  "galMin": 20,
+  "galMax": 50,
+  "watts": 7,
+  "bodyMm": {
+   "w": 260,
+   "d": 125,
+   "h": 220
+  },
+  "intakeMm": 240,
+  "priceUsd": 64.99,
+  "url": "https://www.ebay.com/p/2254775672",
+  "asOf": "2026-10-19",
+  "names": [
+   "marineland penguin 200",
+   "penguin 200",
+   "penguin 200b",
+   "marineland penguin 200b",
+   "penguin bio-wheel 200"
+  ],
+  "est": [
+   "watts",
+   "bodyMm",
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#26272c"
+   },
+   "lid": {
+    "hex": "#2c2d32"
+   },
+   "motor": {
+    "hex": "#151516"
+   },
+   "intake": {
+    "hex": "#1a1a1c"
+   },
+   "strainer": {
+    "hex": "#1a1a1c"
+   },
+   "outlet": {
+    "hex": "#26272c"
+   },
+   "accent": {
+    "hex": "#3b4252",
+    "where": "smoky translucent front window over the Bio-Wheel / cartridge",
+    "translucent": true
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/91x-zqxBbAL._AC_UF894,1000_QL80_.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "intake",
+   "strainer",
+   "outlet"
+  ],
+  "colorsNote": "BOX ART only (Penguin 150 box shown): near-black opaque shell with a smoky translucent navy-grey front window through which the Bio-Wheel shows; black top with grille vents. Only Bio-Wheel assembly sizes were published, so shell dimensions are estimates."
+ },
+ {
+  "id": "marineland-penguin-350",
+  "brand": "Marineland",
+  "model": "Marineland Penguin 350 Bio-Wheel",
+  "kind": "hob",
+  "gph": 350,
+  "galMin": 30,
+  "galMax": 75,
+  "watts": 9,
+  "bodyMm": {
+   "w": 370,
+   "d": 125,
+   "h": 225
+  },
+  "intakeMm": 240,
+  "priceUsd": 53.65,
+  "url": "https://www.shopabunda.com/products/marineland-penguin-350-power-filter",
+  "asOf": "2026-10-19",
+  "names": [
+   "marineland penguin 350",
+   "penguin 350",
+   "penguin 350b",
+   "marineland penguin 350b",
+   "penguin bio-wheel 350"
+  ],
+  "est": [
+   "watts",
+   "bodyMm",
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#26272c"
+   },
+   "lid": {
+    "hex": "#2c2d32"
+   },
+   "motor": {
+    "hex": "#151516"
+   },
+   "intake": {
+    "hex": "#1a1a1c"
+   },
+   "strainer": {
+    "hex": "#1a1a1c"
+   },
+   "outlet": {
+    "hex": "#26272c"
+   },
+   "accent": {
+    "hex": "#3b4252",
+    "where": "smoky translucent front window over the Bio-Wheel / cartridge",
+    "translucent": true
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/91x-zqxBbAL._AC_UF894,1000_QL80_.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "intake",
+   "strainer",
+   "outlet"
+  ],
+  "colorsNote": "BOX ART only (Penguin 150 box shown): near-black opaque shell with a smoky translucent navy-grey front window through which the Bio-Wheel shows; black top with grille vents. Only Bio-Wheel assembly sizes were published, so shell dimensions are estimates."
+ },
+ {
+  "id": "imagitarium-exfil-10",
+  "brand": "Imagitarium",
+  "model": "Imagitarium EX-FIL 10 Hang-On-Back Filter",
+  "kind": "hob",
+  "gph": 100,
+  "galMin": 3,
+  "galMax": 10,
+  "watts": 4,
+  "bodyMm": {
+   "w": 150,
+   "d": 100,
+   "h": 200
+  },
+  "intakeMm": 230,
+  "priceUsd": 14.99,
+  "url": "https://www.petco.com/shop/en/petcostore/s/imagitarium-ex-fil",
+  "asOf": "2026-10-19",
+  "names": [
+   "imagitarium ex-fil 10",
+   "ex-fil 10",
+   "imagitarium power filter 10",
+   "imagitarium hob 10",
+   "imagitarium power filter"
+  ],
+  "est": [
+   "gph",
+   "watts",
+   "intakeMm",
+   "priceUsd",
+   "bodyMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#3a3c3f"
+   },
+   "lid": {
+    "hex": "#2b2d2f"
+   },
+   "motor": {
+    "hex": "#1a1a1a"
+   },
+   "intake": {
+    "hex": "#2a2a2a"
+   },
+   "strainer": {
+    "hex": "#2a2a2a"
+   },
+   "outlet": {
+    "hex": "#3a3c3f"
+   },
+   "sponge": "#2a2a2a",
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/41iFboMGLIL._AC_.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "outlet",
+   "strainer"
+  ],
+  "colorsNote": "BOX art for EX-FIL 20 (product pictured; box states 11.7 x 7.4 x 4.6 in H x W x D): opaque dark grey body, light-grey intake tube with a black foam prefilter sponge on the end instead of a strainer. Petco sells EX-FIL 10, 20, 30 and 55 (no 50/60 found); others assumed same look. GPH/prices unconfirmed. Intake tube black, checked on the EX-FIL 20 box photo (2026-10-19)."
+ },
+ {
+  "id": "imagitarium-exfil-20",
+  "brand": "Imagitarium",
+  "model": "Imagitarium EX-FIL 20 Hang-On-Back Filter",
+  "kind": "hob",
+  "gph": 130,
+  "galMin": 10,
+  "galMax": 20,
+  "watts": 5,
+  "bodyMm": {
+   "w": 188,
+   "d": 117,
+   "h": 297
+  },
+  "intakeMm": 230,
+  "priceUsd": 19.99,
+  "url": "https://www.petco.com/shop/en/petcostore/s/imagitarium-ex-fil",
+  "asOf": "2026-10-19",
+  "names": [
+   "imagitarium ex-fil 20",
+   "ex-fil 20",
+   "imagitarium power filter 20",
+   "imagitarium hob 20",
+   "imagitarium power filter"
+  ],
+  "est": [
+   "gph",
+   "watts",
+   "intakeMm",
+   "priceUsd"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#3a3c3f"
+   },
+   "lid": {
+    "hex": "#2b2d2f"
+   },
+   "motor": {
+    "hex": "#1a1a1a"
+   },
+   "intake": {
+    "hex": "#2a2a2a"
+   },
+   "strainer": {
+    "hex": "#2a2a2a"
+   },
+   "outlet": {
+    "hex": "#3a3c3f"
+   },
+   "sponge": "#2a2a2a",
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/41iFboMGLIL._AC_.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "outlet",
+   "strainer"
+  ],
+  "colorsNote": "BOX art for EX-FIL 20 (product pictured; box states 11.7 x 7.4 x 4.6 in H x W x D): opaque dark grey body, light-grey intake tube with a black foam prefilter sponge on the end instead of a strainer. Petco sells EX-FIL 10, 20, 30 and 55 (no 50/60 found); others assumed same look. GPH/prices unconfirmed. Intake tube black, checked on the EX-FIL 20 box photo (2026-10-19)."
+ },
+ {
+  "id": "imagitarium-exfil-30",
+  "brand": "Imagitarium",
+  "model": "Imagitarium EX-FIL 30 Hang-On-Back Filter",
+  "kind": "hob",
+  "gph": 250,
+  "galMin": 20,
+  "galMax": 30,
+  "watts": 7,
+  "bodyMm": {
+   "w": 215,
+   "d": 120,
+   "h": 300
+  },
+  "intakeMm": 230,
+  "priceUsd": 29.99,
+  "url": "https://www.petco.com/shop/en/petcostore/s/imagitarium-ex-fil",
+  "asOf": "2026-10-19",
+  "names": [
+   "imagitarium ex-fil 30",
+   "ex-fil 30",
+   "imagitarium power filter 30",
+   "imagitarium hob 30",
+   "imagitarium power filter"
+  ],
+  "est": [
+   "gph",
+   "watts",
+   "intakeMm",
+   "priceUsd",
+   "bodyMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#3a3c3f"
+   },
+   "lid": {
+    "hex": "#2b2d2f"
+   },
+   "motor": {
+    "hex": "#1a1a1a"
+   },
+   "intake": {
+    "hex": "#2a2a2a"
+   },
+   "strainer": {
+    "hex": "#2a2a2a"
+   },
+   "outlet": {
+    "hex": "#3a3c3f"
+   },
+   "sponge": "#2a2a2a",
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/41iFboMGLIL._AC_.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "outlet",
+   "strainer"
+  ],
+  "colorsNote": "BOX art for EX-FIL 20 (product pictured; box states 11.7 x 7.4 x 4.6 in H x W x D): opaque dark grey body, light-grey intake tube with a black foam prefilter sponge on the end instead of a strainer. Petco sells EX-FIL 10, 20, 30 and 55 (no 50/60 found); others assumed same look. GPH/prices unconfirmed. Intake tube black, checked on the EX-FIL 20 box photo (2026-10-19)."
+ },
+ {
+  "id": "imagitarium-exfil-55",
+  "brand": "Imagitarium",
+  "model": "Imagitarium EX-FIL 55 Hang-On-Back Filter",
+  "kind": "hob",
+  "gph": 300,
+  "galMin": 30,
+  "galMax": 55,
+  "watts": 9,
+  "bodyMm": {
+   "w": 250,
+   "d": 130,
+   "h": 320
+  },
+  "intakeMm": 230,
+  "priceUsd": 44.99,
+  "url": "https://www.petco.com/shop/en/petcostore/s/imagitarium-ex-fil",
+  "asOf": "2026-10-19",
+  "names": [
+   "imagitarium ex-fil 55",
+   "ex-fil 55",
+   "imagitarium power filter 55",
+   "imagitarium hob 55",
+   "imagitarium power filter"
+  ],
+  "est": [
+   "gph",
+   "watts",
+   "intakeMm",
+   "priceUsd",
+   "bodyMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#3a3c3f"
+   },
+   "lid": {
+    "hex": "#2b2d2f"
+   },
+   "motor": {
+    "hex": "#1a1a1a"
+   },
+   "intake": {
+    "hex": "#2a2a2a"
+   },
+   "strainer": {
+    "hex": "#2a2a2a"
+   },
+   "outlet": {
+    "hex": "#3a3c3f"
+   },
+   "sponge": "#2a2a2a",
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/41iFboMGLIL._AC_.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "outlet",
+   "strainer"
+  ],
+  "colorsNote": "BOX art for EX-FIL 20 (product pictured; box states 11.7 x 7.4 x 4.6 in H x W x D): opaque dark grey body, light-grey intake tube with a black foam prefilter sponge on the end instead of a strainer. Petco sells EX-FIL 10, 20, 30 and 55 (no 50/60 found); others assumed same look. GPH/prices unconfirmed. Intake tube black, checked on the EX-FIL 20 box photo (2026-10-19)."
+ },
+ {
+  "id": "vibrantlife-medium-75",
+  "brand": "Vibrant Life",
+  "model": "Vibrant Life Medium Power Filter (5-10 gal)",
+  "kind": "hob",
+  "gph": 75,
+  "galMin": 5,
+  "galMax": 10,
+  "watts": 4,
+  "bodyMm": {
+   "w": 125,
+   "d": 85,
+   "h": 160
+  },
+  "intakeMm": 190,
+  "priceUsd": 14.97,
+  "url": "https://www.walmart.com/ip/15316464908",
+  "asOf": "2026-10-19",
+  "names": [
+   "vibrant life power filter",
+   "vibrant life medium power filter",
+   "vibrant life filter",
+   "vibrant life 10 gallon filter"
+  ],
+  "est": [
+   "watts",
+   "bodyMm",
+   "intakeMm",
+   "priceUsd"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#3c3d40"
+   },
+   "lid": {
+    "hex": "#2e2f31"
+   },
+   "motor": {
+    "hex": "#1a1a1a"
+   },
+   "intake": {
+    "hex": "#1c1c1c"
+   },
+   "strainer": {
+    "hex": "#1c1c1c"
+   },
+   "outlet": {
+    "hex": "#3c3d40"
+   },
+   "cups": "black",
+   "photo": "https://www.instacart.com/image-server/1200x1200/www.instacart.com/assets/domains/product-image/file/large_aa1c21f1-6151-4af7-bfc3-8535cd47b92b.jpeg"
+  },
+  "colorsEst": [
+   "motor",
+   "outlet",
+   "strainer"
+  ],
+  "colorsNote": "BOX ART only: dark charcoal opaque body with a black vertical intake tube and spillway; sold in the Vibrant Life 10 gal kit (Walmart pages hit a bot check, so standalone price is an estimate)."
+ },
+ {
+  "id": "fluval-fx4",
+  "brand": "Fluval",
+  "model": "Fluval FX4 High Performance Canister Filter",
+  "kind": "canister",
+  "gph": 700,
+  "galMin": 0,
+  "galMax": 250,
+  "watts": 30,
+  "bodyMm": {
+   "w": 400,
+   "d": 400,
+   "h": 419
+  },
+  "intakeMm": 300,
+  "priceUsd": 337.99,
+  "url": "https://fluvalaquatics.com/us (price per aggregator listing of maker page)",
+  "asOf": "2026-10-19",
+  "names": [
+   "fluval fx4",
+   "fx4"
+  ],
+  "est": [
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#2b2c2e"
+   },
+   "lid": {
+    "hex": "#232426"
+   },
+   "motor": {
+    "hex": "#232426"
+   },
+   "intake": {
+    "hex": "#1c1c1d"
+   },
+   "strainer": {
+    "hex": "#1c1c1d"
+   },
+   "outlet": {
+    "hex": "#1c1c1d"
+   },
+   "hose": "#262626",
+   "accent": {
+    "hex": "#b3121a",
+    "where": "red hose connectors, tap valves and lid trim"
+   },
+   "clips": {
+    "hex": "#e8e8e6"
+   },
+   "photo": "https://m.media-amazon.com/images/I/61VLOLz-WIL.jpg"
+  },
+  "colorsEst": [
+   "hose",
+   "intake",
+   "strainer",
+   "outlet"
+  ],
+  "colorsNote": "FX6 photo only (shared FX family look): charcoal-black opaque body, white lid clips, red hose connectors and red lid/footer trim. Hose and in-tank pipes not visible in photo; Fluval FX ships ribbed black hose.",
+  "priceUrl": "https://www.bulkreefsupply.com/brands/fluval.html"
+ },
+ {
+  "id": "fluval-fx6",
+  "brand": "Fluval",
+  "model": "Fluval FX6 High Performance Canister Filter",
+  "kind": "canister",
+  "gph": 925,
+  "galMin": 0,
+  "galMax": 400,
+  "watts": 43,
+  "bodyMm": {
+   "w": 400,
+   "d": 400,
+   "h": 528
+  },
+  "intakeMm": 300,
+  "priceUsd": 406.99,
+  "url": "https://fluvalaquatics.com/us (price per aggregator listing of maker page)",
+  "asOf": "2026-10-19",
+  "names": [
+   "fluval fx6",
+   "fx6"
+  ],
+  "est": [
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#2b2c2e"
+   },
+   "lid": {
+    "hex": "#232426"
+   },
+   "motor": {
+    "hex": "#232426"
+   },
+   "intake": {
+    "hex": "#1c1c1d"
+   },
+   "strainer": {
+    "hex": "#1c1c1d"
+   },
+   "outlet": {
+    "hex": "#1c1c1d"
+   },
+   "hose": "#262626",
+   "accent": {
+    "hex": "#b3121a",
+    "where": "red hose connectors, tap valves and lid trim"
+   },
+   "clips": {
+    "hex": "#e8e8e6"
+   },
+   "photo": "https://m.media-amazon.com/images/I/61VLOLz-WIL.jpg"
+  },
+  "colorsEst": [
+   "hose",
+   "intake",
+   "strainer",
+   "outlet"
+  ],
+  "colorsNote": "FX6 photo only (shared FX family look): charcoal-black opaque body, white lid clips, red hose connectors and red lid/footer trim. Hose and in-tank pipes not visible in photo; Fluval FX ships ribbed black hose.",
+  "priceUrl": "https://www.bulkreefsupply.com/brands/fluval.html"
+ },
+ {
+  "id": "eheim-2213",
+  "brand": "Eheim",
+  "model": "Eheim Classic 250 (2213)",
+  "kind": "canister",
+  "gph": 120,
+  "galMin": 0,
+  "galMax": 66,
+  "watts": 8,
+  "bodyMm": {
+   "w": 165,
+   "d": 165,
+   "h": 355
+  },
+  "intakeMm": 350,
+  "priceUsd": 171.99,
+  "url": "https://piscespets.com/products/eheim-classic-canister-filter-250-2213",
+  "asOf": "2026-10-19",
+  "names": [
+   "eheim classic 250",
+   "eheim 2213",
+   "eheim classic 2213"
+  ],
+  "est": [
+   "bodyMm",
+   "intakeMm",
+   "priceUsd",
+   "gph"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#233a2c"
+   },
+   "lid": {
+    "hex": "#1a1a1a"
+   },
+   "motor": {
+    "hex": "#1a1a1a"
+   },
+   "intake": {
+    "hex": "#a9c9b0",
+    "translucent": true
+   },
+   "strainer": {
+    "hex": "#a9c9b0",
+    "translucent": true
+   },
+   "outlet": {
+    "hex": "#a9c9b0",
+    "translucent": true
+   },
+   "hose": "#2f6b3a",
+   "accent": {
+    "hex": "#b3121a",
+    "where": "red EHEIM label on lid"
+   },
+   "photo": "https://modestfish.com/wp-content/uploads/2022/03/Eheim-canister-filter-set-up.jpg"
+  },
+  "colorsEst": [
+   "intake",
+   "strainer",
+   "outlet"
+  ],
+  "colorsNote": "Owner photo of a Classic 250 (2213) with its kit: deep green-black body, black head and lid, translucent green hose, clear-to-light-green glass/plastic pipes. Same family look for 2215/2217; pipe tint is light-green clear, body hex approximate under room light."
+ },
+ {
+  "id": "eheim-2215",
+  "brand": "Eheim",
+  "model": "Eheim Classic 350 (2215)",
+  "kind": "canister",
+  "gph": 164,
+  "galMin": 0,
+  "galMax": 92,
+  "watts": 15,
+  "bodyMm": {
+   "w": 185,
+   "d": 185,
+   "h": 370
+  },
+  "intakeMm": 350,
+  "priceUsd": 226.49,
+  "url": "https://piscespets.com/products/eheim-classic-canister-filter-350-2215",
+  "asOf": "2026-10-19",
+  "names": [
+   "eheim classic 350",
+   "eheim 2215",
+   "eheim classic 2215"
+  ],
+  "est": [
+   "bodyMm",
+   "intakeMm",
+   "priceUsd",
+   "gph"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#233a2c"
+   },
+   "lid": {
+    "hex": "#1a1a1a"
+   },
+   "motor": {
+    "hex": "#1a1a1a"
+   },
+   "intake": {
+    "hex": "#a9c9b0",
+    "translucent": true
+   },
+   "strainer": {
+    "hex": "#a9c9b0",
+    "translucent": true
+   },
+   "outlet": {
+    "hex": "#a9c9b0",
+    "translucent": true
+   },
+   "hose": "#2f6b3a",
+   "accent": {
+    "hex": "#b3121a",
+    "where": "red EHEIM label on lid"
+   },
+   "photo": "https://modestfish.com/wp-content/uploads/2022/03/Eheim-canister-filter-set-up.jpg"
+  },
+  "colorsEst": [
+   "intake",
+   "strainer",
+   "outlet"
+  ],
+  "colorsNote": "Owner photo of a Classic 250 (2213) with its kit: deep green-black body, black head and lid, translucent green hose, clear-to-light-green glass/plastic pipes. Same family look for 2215/2217; pipe tint is light-green clear, body hex approximate under room light."
+ },
+ {
+  "id": "eheim-2217",
+  "brand": "Eheim",
+  "model": "Eheim Classic 600 (2217)",
+  "kind": "canister",
+  "gph": 264,
+  "galMin": 0,
+  "galMax": 160,
+  "watts": 20,
+  "bodyMm": {
+   "w": 203,
+   "d": 203,
+   "h": 406
+  },
+  "intakeMm": 350,
+  "priceUsd": 299.95,
+  "url": "https://www.saltwateraquarium.com/external-canister-filter-classic-600-model-2217-60-180-gallons-eheim/",
+  "asOf": "2026-10-19",
+  "names": [
+   "eheim classic 600",
+   "eheim 2217",
+   "eheim classic 2217"
+  ],
+  "est": [
+   "bodyMm",
+   "intakeMm",
+   "gph"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#233a2c"
+   },
+   "lid": {
+    "hex": "#1a1a1a"
+   },
+   "motor": {
+    "hex": "#1a1a1a"
+   },
+   "intake": {
+    "hex": "#a9c9b0",
+    "translucent": true
+   },
+   "strainer": {
+    "hex": "#a9c9b0",
+    "translucent": true
+   },
+   "outlet": {
+    "hex": "#a9c9b0",
+    "translucent": true
+   },
+   "hose": "#2f6b3a",
+   "accent": {
+    "hex": "#b3121a",
+    "where": "red EHEIM label on lid"
+   },
+   "photo": "https://modestfish.com/wp-content/uploads/2022/03/Eheim-canister-filter-set-up.jpg"
+  },
+  "colorsEst": [
+   "intake",
+   "strainer",
+   "outlet"
+  ],
+  "colorsNote": "Owner photo of a Classic 250 (2213) with its kit: deep green-black body, black head and lid, translucent green hose, clear-to-light-green glass/plastic pipes. Same family look for 2215/2217; pipe tint is light-green clear, body hex approximate under room light.",
+  "priceUrl": "https://www.saltwateraquarium.com/external-canister-filter-classic-600-model-2217-60-180-gallons-eheim/"
+ },
+ {
+  "id": "marineland-magniflow-220",
+  "brand": "Marineland",
+  "model": "Marineland Magniflow 220 Canister Filter",
+  "kind": "canister",
+  "gph": 220,
+  "galMin": 0,
+  "galMax": 55,
+  "watts": 10,
+  "bodyMm": {
+   "w": 233,
+   "d": 233,
+   "h": 413
+  },
+  "intakeMm": 330,
+  "priceUsd": 89.99,
+  "url": "https://fishtanksdirect.com/marineland-magniflow-220-canister-filter/",
+  "asOf": "2026-10-19",
+  "names": [
+   "magniflow 220",
+   "marineland c-220",
+   "marineland c220"
+  ],
+  "est": [
+   "watts",
+   "bodyMm",
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#4a4c4f"
+   },
+   "lid": {
+    "hex": "#2a2b2d"
+   },
+   "motor": {
+    "hex": "#2a2b2d"
+   },
+   "intake": {
+    "hex": "#2a2b2d"
+   },
+   "strainer": {
+    "hex": "#2a2b2d"
+   },
+   "outlet": {
+    "hex": "#2a2b2d"
+   },
+   "hose": "#2e2e2e",
+   "accent": {
+    "hex": "#d8452a",
+    "where": "red-orange hose connectors and priming button"
+   },
+   "photo": "https://reefgoods.com/cdn/shop/files/s-l1600_1024x1024.jpg?v=1693511974"
+  },
+  "colorsEst": [
+   "intake",
+   "strainer",
+   "outlet",
+   "hose",
+   "lid"
+  ],
+  "colorsNote": "BOX ART only (Magniflow 360 and 400 boxes): mid charcoal-grey body with darker grey clamps/lid, red-orange tap connectors and priming button. Pipes and hose not visible, estimated black/dark grey."
+ },
+ {
+  "id": "marineland-magniflow-360",
+  "brand": "Marineland",
+  "model": "Marineland Magniflow 360 Canister Filter",
+  "kind": "canister",
+  "gph": 360,
+  "galMin": 0,
+  "galMax": 100,
+  "watts": 14,
+  "bodyMm": {
+   "w": 280,
+   "d": 280,
+   "h": 457
+  },
+  "intakeMm": 380,
+  "priceUsd": 199.99,
+  "url": "https://aquariumdepot.ca/products/marineland-magniflow-canister-filter-360-gph",
+  "asOf": "2026-10-19",
+  "names": [
+   "magniflow 360",
+   "marineland c-360",
+   "marineland c360"
+  ],
+  "est": [
+   "watts",
+   "bodyMm",
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#4a4c4f"
+   },
+   "lid": {
+    "hex": "#2a2b2d"
+   },
+   "motor": {
+    "hex": "#2a2b2d"
+   },
+   "intake": {
+    "hex": "#2a2b2d"
+   },
+   "strainer": {
+    "hex": "#2a2b2d"
+   },
+   "outlet": {
+    "hex": "#2a2b2d"
+   },
+   "hose": "#2e2e2e",
+   "accent": {
+    "hex": "#d8452a",
+    "where": "red-orange hose connectors and priming button"
+   },
+   "photo": "https://reefgoods.com/cdn/shop/files/s-l1600_1024x1024.jpg?v=1693511974"
+  },
+  "colorsEst": [
+   "intake",
+   "strainer",
+   "outlet",
+   "hose",
+   "lid"
+  ],
+  "colorsNote": "BOX ART only (Magniflow 360 and 400 boxes): mid charcoal-grey body with darker grey clamps/lid, red-orange tap connectors and priming button. Pipes and hose not visible, estimated black/dark grey. Price is CAD from Aquarium Depot, no US page read.",
+  "priceUrl": "https://www.petsmart.com/5119416.html"
+ },
+ {
+  "id": "sunsun-hw-304b",
+  "brand": "SunSun",
+  "model": "SunSun HW-304B Canister Filter with 9 W UV",
+  "kind": "canister",
+  "gph": 525,
+  "galMin": 0,
+  "galMax": 150,
+  "watts": 55,
+  "bodyMm": {
+   "w": 260,
+   "d": 260,
+   "h": 430
+  },
+  "intakeMm": 360,
+  "priceUsd": 109.69,
+  "url": "https://www.ebay.de/itm/160475154986",
+  "asOf": "2026-10-19",
+  "names": [
+   "sunsun hw-304b",
+   "hw304b",
+   "sunsun 304b",
+   "sunsun hw 304b"
+  ],
+  "est": [
+   "watts",
+   "bodyMm",
+   "intakeMm",
+   "priceUsd",
+   "galMax"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#e9eaec"
+   },
+   "lid": {
+    "hex": "#e9eaec"
+   },
+   "motor": {
+    "hex": "#5a6f9a"
+   },
+   "intake": {
+    "hex": "#1d1d1d"
+   },
+   "strainer": {
+    "hex": "#1d1d1d"
+   },
+   "outlet": {
+    "hex": "#1d1d1d"
+   },
+   "hose": "#4d9a3a",
+   "accent": {
+    "hex": "#5a6f9a",
+    "where": "slate-blue clamps and UV lamp housing on top"
+   },
+   "photo": "https://m.media-amazon.com/images/I/51lB3lMrZmL.jpg"
+  },
+  "colorsEst": [
+   "lid"
+  ],
+  "colorsNote": "Product photo of HW-304B kit: WHITE body (not dark), slate-blue-grey clamps and blue-grey top housing, black rigid in-tank pipes, translucent apple-green hoses. Top housing is where the 9 W UV lamp sits (UV versions only). Listing watts conflicting."
+ },
+ {
+  "id": "sunsun-hw-404b",
+  "brand": "SunSun",
+  "model": "SunSun HW-404B Canister Filter with 9 W UV",
+  "kind": "canister",
+  "gph": 525,
+  "galMin": 0,
+  "galMax": 200,
+  "watts": 55,
+  "bodyMm": {
+   "w": 280,
+   "d": 280,
+   "h": 470
+  },
+  "intakeMm": 380,
+  "priceUsd": 115.99,
+  "url": "https://www.ebay.de/itm/362963663849",
+  "asOf": "2026-10-19",
+  "names": [
+   "sunsun hw-404b",
+   "hw404b",
+   "sunsun 404b",
+   "sunsun hw 404b"
+  ],
+  "est": [
+   "watts",
+   "bodyMm",
+   "intakeMm",
+   "priceUsd",
+   "galMax",
+   "gph"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#e9eaec"
+   },
+   "lid": {
+    "hex": "#e9eaec"
+   },
+   "motor": {
+    "hex": "#5a6f9a"
+   },
+   "intake": {
+    "hex": "#1d1d1d"
+   },
+   "strainer": {
+    "hex": "#1d1d1d"
+   },
+   "outlet": {
+    "hex": "#1d1d1d"
+   },
+   "hose": "#4d9a3a",
+   "accent": {
+    "hex": "#5a6f9a",
+    "where": "slate-blue clamps and UV lamp housing on top"
+   },
+   "photo": "https://m.media-amazon.com/images/I/51lB3lMrZmL.jpg"
+  },
+  "colorsEst": [
+   "lid"
+  ],
+  "colorsNote": "Product photo of HW-304B kit: WHITE body (not dark), slate-blue-grey clamps and blue-grey top housing, black rigid in-tank pipes, translucent apple-green hoses. Top housing is where the 9 W UV lamp sits (UV versions only). Listing watts conflicting. 404B specs thin; no official sheet found, look assumed shared with 304B."
+ },
+ {
+  "id": "coop-coarse-small",
+  "brand": "Aquarium Co-Op",
+  "model": "Aquarium Co-Op Coarse Sponge Filter (Small)",
+  "kind": "sponge",
+  "galMin": 5,
+  "galMax": 10,
+  "watts": 0,
+  "bodyMm": {
+   "w": 60,
+   "d": 60,
+   "h": 85
+  },
+  "priceUsd": 11.99,
+  "url": "https://www.aquariumcoop.com/collections/filters/products/aquarium-co-op-coarse-sponge-filter",
+  "asOf": "2026-10-19",
+  "names": [
+   "aquarium co-op sponge filter",
+   "coop sponge filter",
+   "coarse sponge filter",
+   "aquarium coop small sponge filter"
+  ],
+  "est": [
+   "bodyMm",
+   "galMin",
+   "galMax"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#2a2a2a"
+   },
+   "sponge": "#2a2a2a",
+   "intake": {
+    "hex": "#5fc23a",
+    "translucent": true
+   },
+   "outlet": {
+    "hex": "#5fc23a",
+    "translucent": true
+   },
+   "accent": {
+    "hex": "#2fa02a",
+    "where": "green base plate and collar"
+   },
+   "cups": "black",
+   "photo": "https://www.aquariumcoop.com/cdn/shop/files/aquarium-co-op-coarse-sponge-filter-w-easy-flow-kit-33198610415685.jpg?v=1701309415"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Photo of the green Easy Flow kit: charcoal coarse sponge, translucent lime-green lift tube and uplift pipe, solid mid-green base and collar. A black-plastic version also exists; green is the standard. Cups not visible, estimated."
+ },
+ {
+  "id": "coop-coarse-medium",
+  "brand": "Aquarium Co-Op",
+  "model": "Aquarium Co-Op Coarse Sponge Filter (Medium)",
+  "kind": "sponge",
+  "galMin": 20,
+  "galMax": 30,
+  "watts": 0,
+  "bodyMm": {
+   "w": 75,
+   "d": 75,
+   "h": 110
+  },
+  "priceUsd": 12.99,
+  "url": "https://www.aquariumcoop.com/collections/filters/products/aquarium-co-op-coarse-sponge-filter",
+  "asOf": "2026-10-19",
+  "names": [
+   "aquarium co-op sponge filter",
+   "coop sponge filter",
+   "coarse sponge filter",
+   "aquarium coop medium sponge filter"
+  ],
+  "est": [
+   "bodyMm",
+   "galMin",
+   "galMax"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#2a2a2a"
+   },
+   "sponge": "#2a2a2a",
+   "intake": {
+    "hex": "#5fc23a",
+    "translucent": true
+   },
+   "outlet": {
+    "hex": "#5fc23a",
+    "translucent": true
+   },
+   "accent": {
+    "hex": "#2fa02a",
+    "where": "green base plate and collar"
+   },
+   "cups": "black",
+   "photo": "https://www.aquariumcoop.com/cdn/shop/files/aquarium-co-op-coarse-sponge-filter-w-easy-flow-kit-33198610415685.jpg?v=1701309415"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Photo of the green Easy Flow kit: charcoal coarse sponge, translucent lime-green lift tube and uplift pipe, solid mid-green base and collar. A black-plastic version also exists; green is the standard. Cups not visible, estimated."
+ },
+ {
+  "id": "coop-coarse-large",
+  "brand": "Aquarium Co-Op",
+  "model": "Aquarium Co-Op Coarse Sponge Filter (Large)",
+  "kind": "sponge",
+  "galMin": 30,
+  "galMax": 40,
+  "watts": 0,
+  "bodyMm": {
+   "w": 95,
+   "d": 95,
+   "h": 140
+  },
+  "priceUsd": 14.99,
+  "url": "https://www.aquariumcoop.com/collections/filters/products/aquarium-co-op-coarse-sponge-filter",
+  "asOf": "2026-10-19",
+  "names": [
+   "aquarium co-op sponge filter",
+   "coop sponge filter",
+   "coarse sponge filter",
+   "aquarium coop large sponge filter"
+  ],
+  "est": [
+   "bodyMm",
+   "galMin",
+   "galMax"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#2a2a2a"
+   },
+   "sponge": "#2a2a2a",
+   "intake": {
+    "hex": "#5fc23a",
+    "translucent": true
+   },
+   "outlet": {
+    "hex": "#5fc23a",
+    "translucent": true
+   },
+   "accent": {
+    "hex": "#2fa02a",
+    "where": "green base plate and collar"
+   },
+   "cups": "black",
+   "photo": "https://www.aquariumcoop.com/cdn/shop/files/aquarium-co-op-coarse-sponge-filter-w-easy-flow-kit-33198610415685.jpg?v=1701309415"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Photo of the green Easy Flow kit: charcoal coarse sponge, translucent lime-green lift tube and uplift pipe, solid mid-green base and collar. A black-plastic version also exists; green is the standard. Cups not visible, estimated."
+ },
+ {
+  "id": "aquaneat-bio-small",
+  "brand": "Aquaneat",
+  "model": "Aquaneat Bio Sponge Filter (Small, up to 10 gal, cylinder)",
+  "kind": "sponge",
+  "galMin": 5,
+  "galMax": 10,
+  "watts": 0,
+  "bodyMm": {
+   "w": 51,
+   "d": 51,
+   "h": 121
+  },
+  "priceUsd": 5.98,
+  "url": "https://www.amazon.com/dp/B08F79B7MS",
+  "asOf": "2026-10-20",
+  "names": [
+   "aquaneat sponge filter",
+   "aquaneat bio sponge filter",
+   "aquaneat small sponge filter"
+  ],
+  "est": [
+   "spongeParts.neckMm",
+   "spongeParts.neckDiaMm",
+   "spongeParts.baseMm",
+   "spongeParts.collarMm",
+   "spongeParts.collarDiaMm",
+   "spongeParts.flutes"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1f1f1f"
+   },
+   "sponge": "#1f1f1f",
+   "intake": {
+    "hex": "#a4acb1",
+    "translucent": true
+   },
+   "outlet": {
+    "hex": "#a4acb1",
+    "translucent": true
+   },
+   "accent": {
+    "hex": "#1a1a1a",
+    "where": "black weighted base and cap"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/71ViR2nOuBL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Amazon listing image (Nathan 2026-10-20): overall 4.75 in, sponge + base 2.75 in, 2 in across, tube 1/2 in. Part heights read off that image's scale: tube 51 mm, black collar 9, fluted charcoal sponge 47, base neck 5 + disc 10. Clear lift tube (looks pale grey), black collar and base. Also sold: up to 3 gal $5.87, 20 gal $7.98, 50 gal $8.98, 60 gal $9.98; a Triangle pattern exists. Cups not visible.",
+  "spongeParts": {
+   "neckMm": 5,
+   "neckDiaMm": 38,
+   "baseMm": 10,
+   "baseDiaMm": 51,
+   "spongeMm": 47,
+   "flutes": 6,
+   "collarMm": 9,
+   "collarDiaMm": 15,
+   "tubeMm": 51,
+   "tubeDiaMm": 13
+  },
+  "priceUrl": "https://www.amazon.com/dp/B08F79B7MS",
+  "popularity": {
+   "evidence": "Amazon 'Overall Pick', 4.6 stars from 4,879 ratings, 400+ bought in past month; $5.98 (list $7.98)",
+   "url": "https://www.amazon.com/dp/B08F79B7MS",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "aquaneat-bio-medium",
+  "brand": "Aquaneat",
+  "model": "Aquaneat Bio Sponge Filter (Medium, up to 20 gal)",
+  "kind": "sponge",
+  "galMin": 0,
+  "galMax": 20,
+  "watts": 0,
+  "bodyMm": {
+   "w": 70,
+   "d": 70,
+   "h": 150
+  },
+  "priceUsd": 7.98,
+  "url": "https://www.walmart.com/ip/964127842",
+  "asOf": "2026-10-19",
+  "names": [
+   "aquaneat medium sponge filter",
+   "aquaneat bio sponge filter medium"
+  ],
+  "est": [
+   "bodyMm",
+   "galMin"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1f1f1f"
+   },
+   "sponge": "#1f1f1f",
+   "intake": {
+    "hex": "#d8e2e8",
+    "translucent": true
+   },
+   "outlet": {
+    "hex": "#d8e2e8",
+    "translucent": true
+   },
+   "accent": {
+    "hex": "#1a1a1a",
+    "where": "black weighted base and cap"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/71ViR2nOuBL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Photo of the Aquaneat three-pack: charcoal-black foam, clear (colourless) acrylic lift tube, black cap and base ring; no green anywhere. Cups not visible. Medium price and size not found (Walmart page behind bot check).",
+  "priceUrl": "https://www.amazon.com/dp/B08F79B7MS"
+ },
+ {
+  "id": "fluval-u1",
+  "brand": "Fluval",
+  "model": "Fluval U1 Underwater Filter",
+  "kind": "internal",
+  "gph": 65,
+  "galMin": 5,
+  "galMax": 15,
+  "watts": 5,
+  "bodyMm": {
+   "w": 57,
+   "d": 70,
+   "h": 146
+  },
+  "priceUsd": 24.99,
+  "url": "https://www.liveaquaria.com/products/fluval-u-series-underwater-filter-parts",
+  "asOf": "2026-10-19",
+  "names": [
+   "fluval u1",
+   "fluval u1 underwater filter",
+   "fluval u1 internal filter"
+  ],
+  "est": [
+   "priceUsd",
+   "cups"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#232526",
+    "translucent": false
+   },
+   "motor": {
+    "hex": "#131415"
+   },
+   "intake": {
+    "hex": "#1c1d1e"
+   },
+   "strainer": {
+    "hex": "#1c1d1e"
+   },
+   "outlet": {
+    "hex": "#232526"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/813P8qg31uL._AC_SX679_.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Fluval U series: opaque charcoal-black slotted body with black flow cover; photo seen was a U3 plus box art, same look across U1-U4. Cups assumed black (not visible). Prices are estimates (retailer pages did not load). Photo source: Bing Shopping thumbnails, Fluval U3 retail photo (Amazon/Petco listings)."
+ },
+ {
+  "id": "fluval-u2",
+  "brand": "Fluval",
+  "model": "Fluval U2 Underwater Filter",
+  "kind": "internal",
+  "gph": 105,
+  "galMin": 12,
+  "galMax": 30,
+  "watts": 5,
+  "bodyMm": {
+   "w": 76,
+   "d": 89,
+   "h": 203
+  },
+  "priceUsd": 32.99,
+  "url": "https://www.liveaquaria.com/products/fluval-u-series-underwater-filter-parts",
+  "asOf": "2026-10-19",
+  "names": [
+   "fluval u2",
+   "fluval u2 underwater filter",
+   "fluval u2 internal filter"
+  ],
+  "est": [
+   "priceUsd",
+   "cups"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#232526",
+    "translucent": false
+   },
+   "motor": {
+    "hex": "#131415"
+   },
+   "intake": {
+    "hex": "#1c1d1e"
+   },
+   "strainer": {
+    "hex": "#1c1d1e"
+   },
+   "outlet": {
+    "hex": "#232526"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/813P8qg31uL._AC_SX679_.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Fluval U series: opaque charcoal-black slotted body with black flow cover; photo seen was a U3 plus box art, same look across U1-U4. Cups assumed black (not visible). Prices are estimates (retailer pages did not load). Photo source: Bing Shopping thumbnails, Fluval U3 retail photo (Amazon/Petco listings)."
+ },
+ {
+  "id": "fluval-u3",
+  "brand": "Fluval",
+  "model": "Fluval U3 Underwater Filter",
+  "kind": "internal",
+  "gph": 155,
+  "galMin": 24,
+  "galMax": 40,
+  "watts": 7.5,
+  "bodyMm": {
+   "w": 76,
+   "d": 89,
+   "h": 267
+  },
+  "priceUsd": 42.99,
+  "url": "https://www.liveaquaria.com/products/fluval-u-series-underwater-filter-parts",
+  "asOf": "2026-10-19",
+  "names": [
+   "fluval u3",
+   "fluval u3 underwater filter",
+   "fluval u3 internal filter"
+  ],
+  "est": [
+   "priceUsd",
+   "cups"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#232526",
+    "translucent": false
+   },
+   "motor": {
+    "hex": "#131415"
+   },
+   "intake": {
+    "hex": "#1c1d1e"
+   },
+   "strainer": {
+    "hex": "#1c1d1e"
+   },
+   "outlet": {
+    "hex": "#232526"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/813P8qg31uL._AC_SX679_.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Fluval U series: opaque charcoal-black slotted body with black flow cover; photo seen was a U3 plus box art, same look across U1-U4. Cups assumed black (not visible). Prices are estimates (retailer pages did not load). Photo source: Bing Shopping thumbnails, Fluval U3 retail photo (Amazon/Petco listings)."
+ },
+ {
+  "id": "fluval-u4",
+  "brand": "Fluval",
+  "model": "Fluval U4 Underwater Filter",
+  "kind": "internal",
+  "gph": 260,
+  "galMin": 34,
+  "galMax": 65,
+  "watts": 12,
+  "bodyMm": {
+   "w": 76,
+   "d": 89,
+   "h": 330
+  },
+  "priceUsd": 54.99,
+  "url": "https://www.liveaquaria.com/products/fluval-u-series-underwater-filter-parts",
+  "asOf": "2026-10-19",
+  "names": [
+   "fluval u4",
+   "fluval u4 underwater filter",
+   "fluval u4 internal filter"
+  ],
+  "est": [
+   "priceUsd",
+   "cups"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#232526",
+    "translucent": false
+   },
+   "motor": {
+    "hex": "#131415"
+   },
+   "intake": {
+    "hex": "#1c1d1e"
+   },
+   "strainer": {
+    "hex": "#1c1d1e"
+   },
+   "outlet": {
+    "hex": "#232526"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/813P8qg31uL._AC_SX679_.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Fluval U series: opaque charcoal-black slotted body with black flow cover; photo seen was a U3 plus box art, same look across U1-U4. Cups assumed black (not visible). Prices are estimates (retailer pages did not load). Photo source: Bing Shopping thumbnails, Fluval U3 retail photo (Amazon/Petco listings)."
+ },
+ {
+  "id": "tetra-whisper-3i",
+  "brand": "Tetra",
+  "model": "Tetra Whisper 3i Internal Filter",
+  "kind": "internal",
+  "gph": 24,
+  "galMin": 1,
+  "galMax": 3,
+  "watts": 3,
+  "bodyMm": {
+   "w": 70,
+   "d": 60,
+   "h": 150
+  },
+  "priceUsd": 12.99,
+  "url": "https://www.thatpetplace.com/whisper-20iin-tank-filter-20-gal",
+  "asOf": "2026-10-19",
+  "names": [
+   "tetra whisper 3i",
+   "whisper 3i",
+   "tetra 3i",
+   "tetra internal filter",
+   "tetra whisper internal filter",
+   "tetra whisper internal power filter",
+   "glofish internal filter"
+  ],
+  "est": [
+   "gph",
+   "watts",
+   "bodyMm",
+   "priceUsd",
+   "galMin"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1d1f20",
+    "translucent": false
+   },
+   "lid": {
+    "hex": "#2a2c2e"
+   },
+   "motor": {
+    "hex": "#111111"
+   },
+   "accent": {
+    "hex": "#4fa84a",
+    "where": "green Bio-Bag cartridge top above the black housing (checked on the 10i box photo)"
+   },
+   "cups": "black",
+   "photo": "https://undergroundreptiles.com/wp-content/uploads/2020/12/10i_42222.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Tetra Whisper in-tank: black opaque housing, white/green bio-bag cartridge visible at top; box art used for colour. GloFish kits ship this same Tetra Whisper i filter (identical look). Cups assumed black. 3i specs are guessed from the 4i/3i line, weakly sourced. Photo source: Bing image results for Tetra Whisper 20i/40i (retail box art + product photo)."
+ },
+ {
+  "id": "tetra-whisper-10i",
+  "brand": "Tetra",
+  "model": "Tetra Whisper 10i Internal Filter",
+  "kind": "internal",
+  "gph": 80,
+  "galMin": 5,
+  "galMax": 10,
+  "watts": 4,
+  "bodyMm": {
+   "w": 90,
+   "d": 70,
+   "h": 190
+  },
+  "priceUsd": 19.99,
+  "url": "https://www.thatpetplace.com/whisper-20iin-tank-filter-20-gal",
+  "asOf": "2026-10-19",
+  "names": [
+   "tetra whisper 10i",
+   "whisper 10i",
+   "tetra 10i",
+   "tetra internal filter",
+   "tetra whisper internal filter",
+   "tetra whisper internal power filter",
+   "glofish internal filter"
+  ],
+  "est": [
+   "watts",
+   "bodyMm",
+   "priceUsd"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1d1f20",
+    "translucent": false
+   },
+   "lid": {
+    "hex": "#2a2c2e"
+   },
+   "motor": {
+    "hex": "#111111"
+   },
+   "accent": {
+    "hex": "#4fa84a",
+    "where": "green Bio-Bag cartridge top above the black housing (checked on the 10i box photo)"
+   },
+   "cups": "black",
+   "photo": "https://undergroundreptiles.com/wp-content/uploads/2020/12/10i_42222.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Tetra Whisper in-tank: black opaque housing, white/green bio-bag cartridge visible at top; box art used for colour. GloFish kits ship this same Tetra Whisper i filter (identical look). Cups assumed black. Photo source: Bing image results for Tetra Whisper 20i/40i (retail box art + product photo)."
+ },
+ {
+  "id": "tetra-whisper-20i",
+  "brand": "Tetra",
+  "model": "Tetra Whisper 20i Internal Filter",
+  "kind": "internal",
+  "gph": 125,
+  "galMin": 10,
+  "galMax": 30,
+  "watts": 5,
+  "bodyMm": {
+   "w": 100,
+   "d": 80,
+   "h": 225
+  },
+  "priceUsd": 24.99,
+  "url": "https://www.thatpetplace.com/whisper-20iin-tank-filter-20-gal",
+  "asOf": "2026-10-19",
+  "names": [
+   "tetra whisper 20i",
+   "whisper 20i",
+   "tetra 20i",
+   "tetra internal filter",
+   "tetra whisper internal filter",
+   "tetra whisper internal power filter",
+   "glofish internal filter"
+  ],
+  "est": [
+   "watts",
+   "bodyMm",
+   "priceUsd"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1d1f20",
+    "translucent": false
+   },
+   "lid": {
+    "hex": "#2a2c2e"
+   },
+   "motor": {
+    "hex": "#111111"
+   },
+   "accent": {
+    "hex": "#4fa84a",
+    "where": "green Bio-Bag cartridge top above the black housing (checked on the 10i box photo)"
+   },
+   "cups": "black",
+   "photo": "https://undergroundreptiles.com/wp-content/uploads/2020/12/10i_42222.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Tetra Whisper in-tank: black opaque housing, white/green bio-bag cartridge visible at top; box art used for colour. GloFish kits ship this same Tetra Whisper i filter (identical look). Cups assumed black. Photo source: Bing image results for Tetra Whisper 20i/40i (retail box art + product photo)."
+ },
+ {
+  "id": "tetra-whisper-40i",
+  "brand": "Tetra",
+  "model": "Tetra Whisper 40i Internal Filter",
+  "kind": "internal",
+  "gph": 170,
+  "galMin": 20,
+  "galMax": 40,
+  "watts": 6.5,
+  "bodyMm": {
+   "w": 108,
+   "d": 83,
+   "h": 241
+  },
+  "priceUsd": 29.99,
+  "url": "https://www.thatpetplace.com/whisper-20iin-tank-filter-20-gal",
+  "asOf": "2026-10-19",
+  "names": [
+   "tetra whisper 40i",
+   "whisper 40i",
+   "tetra 40i",
+   "tetra internal filter",
+   "tetra whisper internal filter",
+   "tetra whisper internal power filter",
+   "glofish internal filter"
+  ],
+  "est": [
+   "watts",
+   "priceUsd"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1d1f20",
+    "translucent": false
+   },
+   "lid": {
+    "hex": "#2a2c2e"
+   },
+   "motor": {
+    "hex": "#111111"
+   },
+   "accent": {
+    "hex": "#4fa84a",
+    "where": "green Bio-Bag cartridge top above the black housing (checked on the 10i box photo)"
+   },
+   "cups": "black",
+   "photo": "https://undergroundreptiles.com/wp-content/uploads/2020/12/10i_42222.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Tetra Whisper in-tank: black opaque housing, white/green bio-bag cartridge visible at top; box art used for colour. GloFish kits ship this same Tetra Whisper i filter (identical look). Cups assumed black. Photo source: Bing image results for Tetra Whisper 20i/40i (retail box art + product photo)."
+ },
+ {
+  "id": "aqueon-smartclean-10-20",
+  "brand": "Aqueon",
+  "model": "Aqueon SmartClean Power Filter 10-20 gal",
+  "kind": "hob",
+  "gph": 100,
+  "galMin": 10,
+  "galMax": 20,
+  "watts": 6,
+  "bodyMm": {
+   "w": 167,
+   "d": 110,
+   "h": 178
+  },
+  "priceUsd": 28.99,
+  "url": "https://fishtanksdirect.com/aqueon-smartclean-power-filter-10-20-gal/",
+  "asOf": "2026-10-19",
+  "names": [
+   "aqueon smartclean 10-20",
+   "aqueon smartclean power filter",
+   "aqueon smartclean",
+   "aqueon smartclean 10"
+  ],
+  "est": [
+   "gph",
+   "watts",
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#232628",
+    "translucent": false
+   },
+   "lid": {
+    "hex": "#1b1d1e"
+   },
+   "motor": {
+    "hex": "#111111"
+   },
+   "intake": {
+    "hex": "#232628"
+   },
+   "outlet": {
+    "hex": "#232628"
+   },
+   "accent": {
+    "hex": "#e8721c",
+    "where": "orange flow-control lever on top"
+   },
+   "photo": "https://www.aqueon.com/-/media/project/oneweb/aqueon/us/products/smart-clean-power-filters/10-20/100551030_aq_smartclean_hob_filter_10_pkg_jan24-front-hero.jpeg"
+  },
+  "colorsEst": [
+   "intake",
+   "cups"
+  ],
+  "colorsNote": "Aqueon SmartClean in kits is a HANG-ON-BACK power filter (not in-tank): black opaque body, orange flow lever, EcoRenew cartridge in blue-label holster. The separate QuietFlow SmartClean INTERNAL filter (grey, Petco) is a different product. GPH not published by retailers. Photo source: Bing image results, Aqueon SmartClean product photo (Snapklik/Petco).",
+  "intakeMm": 150
+ },
+ {
+  "id": "aqueon-smartclean-20-30",
+  "brand": "Aqueon",
+  "model": "Aqueon SmartClean Power Filter 20-30 gal",
+  "kind": "hob",
+  "gph": 130,
+  "galMin": 20,
+  "galMax": 30,
+  "watts": 6,
+  "bodyMm": {
+   "w": 192,
+   "d": 118,
+   "h": 200
+  },
+  "priceUsd": 33.99,
+  "url": "https://fishtanksdirect.com/aqueon-smartclean-power-filter-20-30-gal/",
+  "asOf": "2026-10-19",
+  "names": [
+   "aqueon smartclean 20-30",
+   "aqueon smartclean 20"
+  ],
+  "est": [
+   "gph",
+   "watts",
+   "intakeMm",
+   "priceUsd"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#232628",
+    "translucent": false
+   },
+   "lid": {
+    "hex": "#1b1d1e"
+   },
+   "motor": {
+    "hex": "#111111"
+   },
+   "intake": {
+    "hex": "#232628"
+   },
+   "outlet": {
+    "hex": "#232628"
+   },
+   "accent": {
+    "hex": "#e8721c",
+    "where": "orange flow-control lever on top"
+   },
+   "photo": "https://www.aqueon.com/-/media/project/oneweb/aqueon/us/products/smart-clean-power-filters/10-20/100551030_aq_smartclean_hob_filter_10_pkg_jan24-front-hero.jpeg"
+  },
+  "colorsEst": [
+   "intake",
+   "cups"
+  ],
+  "colorsNote": "Aqueon SmartClean in kits is a HANG-ON-BACK power filter (not in-tank): black opaque body, orange flow lever, EcoRenew cartridge in blue-label holster. The separate QuietFlow SmartClean INTERNAL filter (grey, Petco) is a different product. GPH not published by retailers. Photo source: Bing image results, Aqueon SmartClean product photo (Snapklik/Petco).",
+  "intakeMm": 150
+ },
+ {
+  "id": "aqueon-smartclean-30-50",
+  "brand": "Aqueon",
+  "model": "Aqueon SmartClean Power Filter 30-50 gal",
+  "kind": "hob",
+  "gph": 170,
+  "galMin": 30,
+  "galMax": 50,
+  "watts": 6,
+  "bodyMm": {
+   "w": 210,
+   "d": 130,
+   "h": 210
+  },
+  "priceUsd": 39.99,
+  "url": "https://fishtanksdirect.com/aqueon-smartclean-power-filter-30-50-gal/",
+  "asOf": "2026-10-19",
+  "names": [
+   "aqueon smartclean 30-50"
+  ],
+  "est": [
+   "gph",
+   "watts",
+   "intakeMm",
+   "priceUsd"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#232628",
+    "translucent": false
+   },
+   "lid": {
+    "hex": "#1b1d1e"
+   },
+   "motor": {
+    "hex": "#111111"
+   },
+   "intake": {
+    "hex": "#232628"
+   },
+   "outlet": {
+    "hex": "#232628"
+   },
+   "accent": {
+    "hex": "#e8721c",
+    "where": "orange flow-control lever on top"
+   },
+   "photo": "https://www.aqueon.com/-/media/project/oneweb/aqueon/us/products/smart-clean-power-filters/10-20/100551030_aq_smartclean_hob_filter_10_pkg_jan24-front-hero.jpeg"
+  },
+  "colorsEst": [
+   "intake",
+   "cups"
+  ],
+  "colorsNote": "Aqueon SmartClean in kits is a HANG-ON-BACK power filter (not in-tank): black opaque body, orange flow lever, EcoRenew cartridge in blue-label holster. The separate QuietFlow SmartClean INTERNAL filter (grey, Petco) is a different product. GPH not published by retailers. Photo source: Bing image results, Aqueon SmartClean product photo (Snapklik/Petco).",
+  "intakeMm": 150
+ },
+ {
+  "id": "topfin-if20",
+  "brand": "Top Fin",
+  "model": "Top Fin IF20 Internal Filter",
+  "kind": "internal",
+  "gph": 90,
+  "galMin": 10,
+  "galMax": 20,
+  "watts": 5,
+  "bodyMm": {
+   "w": 70,
+   "d": 76,
+   "h": 165
+  },
+  "priceUsd": 22.99,
+  "url": "https://www.petsmart.com/fish/filters-and-pumps/filters/top-fin-if20-internal-aquarium-filter---fish-tank-internal-filter---90-gph-52178.html",
+  "asOf": "2026-10-19",
+  "names": [
+   "top fin if20",
+   "top fin internal filter",
+   "top fin in-tank filter",
+   "top fin if20 internal filter",
+   "top fin multi stage internal filter"
+  ],
+  "est": [
+   "bodyMm",
+   "watts",
+   "galMin"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1f2123",
+    "translucent": false
+   },
+   "motor": {
+    "hex": "#111111"
+   },
+   "accent": {
+    "hex": "#e6e9e4",
+    "where": "light foam/cartridge visible at top"
+   },
+   "cups": "black",
+   "photo": "https://i.ebayimg.com/images/g/3t4AAOSwRTlkaCI6/s-l640.jpg"
+  },
+  "colorsEst": [
+   "body",
+   "accent",
+   "cups"
+  ],
+  "colorsNote": "Top Fin multi-stage internal filter (IF20 assumed to be the one in the 20 gal LED Bubble Wall kit, not verified against the kit listing); box art only, black housing, colours partly inferred. Photo source: Bing image results, Top Fin IF20 box art (PetSmart)."
+ },
+ {
+  "id": "topfin-if40",
+  "brand": "Top Fin",
+  "model": "Top Fin IF40 Internal Filter",
+  "kind": "internal",
+  "gph": 140,
+  "galMin": 20,
+  "galMax": 40,
+  "watts": 7,
+  "bodyMm": {
+   "w": 76,
+   "d": 90,
+   "h": 215
+  },
+  "priceUsd": 29.99,
+  "url": "https://www.petsmart.com/fish/filters-and-pumps/filters/top-fin-if20-internal-aquarium-filter---fish-tank-internal-filter---90-gph-52178.html",
+  "asOf": "2026-10-19",
+  "names": [
+   "top fin if40",
+   "top fin internal filter",
+   "top fin in-tank filter",
+   "top fin if40 internal filter",
+   "top fin multi stage internal filter"
+  ],
+  "est": [
+   "bodyMm",
+   "watts",
+   "galMin",
+   "galMax"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1f2123",
+    "translucent": false
+   },
+   "motor": {
+    "hex": "#111111"
+   },
+   "accent": {
+    "hex": "#e6e9e4",
+    "where": "light foam/cartridge visible at top"
+   },
+   "cups": "black",
+   "photo": "https://i.ebayimg.com/images/g/3t4AAOSwRTlkaCI6/s-l640.jpg"
+  },
+  "colorsEst": [
+   "body",
+   "accent",
+   "cups"
+  ],
+  "colorsNote": "Top Fin multi-stage internal filter (IF20 assumed to be the one in the 20 gal LED Bubble Wall kit, not verified against the kit listing); box art only, black housing, colours partly inferred. Photo source: Bing image results, Top Fin IF20 box art (PetSmart)."
+ },
+ {
+  "id": "tetra-whisper-iq-20",
+  "brand": "Tetra",
+  "model": "Tetra Whisper IQ 20 Power Filter (130 GPH)",
+  "kind": "hob",
+  "gph": 130,
+  "galMin": 0,
+  "galMax": 20,
+  "bodyMm": {
+   "w": 175,
+   "d": 152,
+   "h": 175
+  },
+  "priceUsd": 23.17,
+  "url": "https://www.amazon.com/dp/B01NC2P7BM",
+  "asOf": "2026-10-20",
+  "names": [
+   "tetra whisper iq 20",
+   "whisper iq 20",
+   "tetra iq 20",
+   "tetra whisper iq 130 gph"
+  ],
+  "est": [
+   "watts",
+   "intakeMm",
+   "bodyMm axes"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1d1d1f"
+   },
+   "lid": {
+    "hex": "#202022"
+   },
+   "motor": {
+    "hex": "#151515"
+   },
+   "intake": {
+    "hex": "#151515"
+   },
+   "strainer": {
+    "hex": "#1a1a1a"
+   },
+   "outlet": {
+    "hex": "#1d1d1f"
+   },
+   "accent": {
+    "hex": "#2236b8",
+    "where": "blue cartridge frame and rails inside the spillway tray"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/61R5vWSzEfL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "outlet",
+   "cups"
+  ],
+  "colorsNote": "Amazon main photo (cutaway render): fully opaque black body and lid, black intake tube with ribbed strainer, blue cartridge frame and rails inside the tray, orange impeller in the motor window. Photo is the 20; 30 and 45 share the look. Dims are the Amazon L x W x H (6.88 x 6 x 6.88 in), axes mapped to w/d/h by guess.",
+  "popularity": {
+   "evidence": "Amazon US Aquarium Filters Best Sellers #1; 14,212 ratings; 2K+ bought in past month; overall BSR #1,277 in Pet Supplies",
+   "url": "https://www.amazon.com/dp/B01NC2P7BM",
+   "seen": "2026-10-20"
+  },
+  "intakeMm": 230
+ },
+ {
+  "id": "tetra-whisper-iq-45",
+  "brand": "Tetra",
+  "model": "Tetra Whisper IQ 45 Power Filter (215 GPH)",
+  "kind": "hob",
+  "gph": 215,
+  "galMin": 30,
+  "galMax": 45,
+  "bodyMm": {
+   "w": 178,
+   "d": 159,
+   "h": 222
+  },
+  "priceUsd": 37.27,
+  "url": "https://www.amazon.com/dp/B01MZI5N6R",
+  "asOf": "2026-10-20",
+  "names": [
+   "tetra whisper iq 45",
+   "whisper iq 45",
+   "tetra iq 45",
+   "tetra whisper iq 215 gph"
+  ],
+  "est": [
+   "galMin",
+   "watts",
+   "intakeMm",
+   "bodyMm axes"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1a1a1c"
+   },
+   "lid": {
+    "hex": "#1c1c1e"
+   },
+   "motor": {
+    "hex": "#151515"
+   },
+   "intake": {
+    "hex": "#141414"
+   },
+   "strainer": {
+    "hex": "#141414"
+   },
+   "outlet": {
+    "hex": "#1a1a1c"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/812nRMBqNvL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "intake",
+   "strainer",
+   "cups"
+  ],
+  "colorsNote": "Amazon lifestyle photo of the IQ: opaque matte black lid and body, spillway with dark media, black intake; motor and intake only partly visible (assumed black). Same housing family as the IQ 20.",
+  "popularity": {
+   "evidence": "Amazon US Aquarium Filters Best Sellers #1; 14,212 (shared with the IQ 20 variation listing) ratings; 1K+ bought in past month; overall BSR #1,277 in Pet Supplies; same Amazon listing as the IQ 20, so both sizes sit at #1 together",
+   "url": "https://www.amazon.com/dp/B01MZI5N6R",
+   "seen": "2026-10-20"
+  },
+  "intakeMm": 280,
+  "priceUrl": "https://www.asinsight.com/report/US/canister-filter (Amazon price $37.27 for the 45)"
+ },
+ {
+  "id": "tetra-whisper-ex-70",
+  "brand": "Tetra",
+  "model": "Tetra Whisper EX 70 Power Filter",
+  "kind": "hob",
+  "gph": 300,
+  "galMin": 45,
+  "galMax": 70,
+  "bodyMm": {
+   "w": 330,
+   "d": 166,
+   "h": 246
+  },
+  "priceUsd": 42.74,
+  "url": "https://www.amazon.com/dp/B001CHVKPY",
+  "asOf": "2026-10-20",
+  "names": [
+   "tetra whisper ex 70",
+   "whisper ex70",
+   "ex 70",
+   "tetra ex70"
+  ],
+  "est": [
+   "gph",
+   "watts",
+   "intakeMm",
+   "bodyMm axes"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1c1c1e"
+   },
+   "lid": {
+    "hex": "#212123"
+   },
+   "motor": {
+    "hex": "#151515"
+   },
+   "intake": {
+    "hex": "#151515"
+   },
+   "strainer": {
+    "hex": "#151515"
+   },
+   "outlet": {
+    "hex": "#1c1c1e"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/91a0GD8s5WL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "outlet",
+   "cups"
+  ],
+  "colorsNote": "Amazon main photo is the retail box with the unit rendered on it: opaque black two-bay body and lid, black intake pipe. Inner colours not shown.",
+  "popularity": {
+   "evidence": "Amazon US Aquarium Filters Best Sellers #10; 12,829 ratings; overall BSR #5,949 in Pet Supplies",
+   "url": "https://www.amazon.com/dp/B001CHVKPY",
+   "seen": "2026-10-20"
+  },
+  "intakeMm": 330
+ },
+ {
+  "id": "nicrew-slim-hob-5",
+  "brand": "NICREW",
+  "model": "NICREW Slim HOB Filter (42 GPH, up to 5 gal)",
+  "kind": "hob",
+  "gph": 42,
+  "galMin": 1,
+  "galMax": 5,
+  "watts": 3,
+  "bodyMm": {
+   "w": 89,
+   "d": 74,
+   "h": 185
+  },
+  "priceUsd": 12.99,
+  "url": "https://www.amazon.com/dp/B0CGN1TV1G",
+  "asOf": "2026-10-20",
+  "names": [
+   "nicrew slim",
+   "nicrew slim hob",
+   "nicrew hob filter",
+   "nicrew 42 gph"
+  ],
+  "est": [
+   "intakeMm",
+   "bodyMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#4a4b4d",
+    "translucent": true
+   },
+   "lid": {
+    "hex": "#1c1c1e"
+   },
+   "motor": {
+    "hex": "#151515"
+   },
+   "intake": {
+    "hex": "#bfc4c8",
+    "translucent": true
+   },
+   "strainer": {
+    "hex": "#222222"
+   },
+   "outlet": {
+    "hex": "#bfc4c8",
+    "translucent": true
+   },
+   "cups": "clear",
+   "photo": "https://m.media-amazon.com/images/I/61A1ENvv+bL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Amazon main photo: black lid and base, smoky translucent grey body, clear tube with a knob, black reticulated sponge pre-filter on the intake. Listing carries two size sets (3.5 x 2.9 x 7.3 in vs 5.67 x 5.12 x 2.6 in); the first is used.",
+  "popularity": {
+   "evidence": "Amazon US Aquarium Filters Best Sellers #5; 3,036 ratings; 3K+ bought in past month; overall BSR #3,212 in Pet Supplies",
+   "url": "https://www.amazon.com/dp/B0CGN1TV1G",
+   "seen": "2026-10-20"
+  },
+  "intakeMm": 150
+ },
+ {
+  "id": "ix120-turtle-filter",
+  "brand": "IX-120",
+  "model": "IX-120 Turtle Tank Waterfall Filter (290 GPH, 30-55 gal)",
+  "kind": "internal",
+  "gph": 290,
+  "galMin": 30,
+  "galMax": 55,
+  "bodyMm": {
+   "w": 209,
+   "d": 111,
+   "h": 286
+  },
+  "priceUsd": 39.99,
+  "url": "https://www.amazon.com/dp/B0CDMQSQV8",
+  "asOf": "2026-10-20",
+  "names": [
+   "ix-120 turtle filter",
+   "ix120 turtle tank filter",
+   "turtle tank filter 290gph"
+  ],
+  "est": [
+   "watts",
+   "bodyMm axes"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#222426"
+   },
+   "lid": {
+    "hex": "#1d1f21"
+   },
+   "motor": {
+    "hex": "#1d1f21"
+   },
+   "intake": {
+    "hex": "#1d1f21"
+   },
+   "strainer": {
+    "hex": "#1d1f21"
+   },
+   "outlet": {
+    "hex": "#222426"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/717VwVf+SUL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "cups",
+   "motor",
+   "strainer"
+  ],
+  "colorsNote": "Amazon main photo: opaque charcoal-black box with a slotted base and waterfall lip, black top knob. Same style sold as a 290 GPH 20-85 gal variant (B0DPKX1NXQ, BSR #17). Dims 11.26 x 8.23 x 4.37 in mapped to h 286 / w 209 / d 111 (photo is taller than wide).",
+  "popularity": {
+   "evidence": "Amazon US Aquarium Filters Best Sellers #6; 1,869 ratings; 900+ bought in past month; overall BSR #3,951 in Pet Supplies",
+   "url": "https://www.amazon.com/dp/B0CDMQSQV8",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "aquamiracle-3stage-10-40",
+  "brand": "AquaMiracle",
+  "model": "AquaMiracle 3-Stage In-Tank Filter (130 GPH, 10-40 gal)",
+  "kind": "internal",
+  "gph": 130,
+  "galMin": 10,
+  "galMax": 40,
+  "watts": 3.5,
+  "bodyMm": {
+   "w": 114,
+   "d": 82,
+   "h": 230
+  },
+  "priceUsd": 19.99,
+  "url": "https://www.amazon.com/dp/B0B3DCSG7Q",
+  "asOf": "2026-10-20",
+  "names": [
+   "aquamiracle 3 stage filter",
+   "aquamiracle internal filter",
+   "aquamiracle 130gph"
+  ],
+  "est": [
+   "bodyMm axes"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#d6dde0",
+    "translucent": true
+   },
+   "motor": {
+    "hex": "#161616"
+   },
+   "intake": {
+    "hex": "#d6dde0",
+    "translucent": true
+   },
+   "strainer": {
+    "hex": "#d6dde0",
+    "translucent": true
+   },
+   "outlet": {
+    "hex": "#161616"
+   },
+   "sponge": "#e8c21a",
+   "accent": {
+    "hex": "#2aa7d9",
+    "where": "light-blue motor cap and blue bottom sponge; middle sponge black, top yellow"
+   },
+   "cups": "clear",
+   "photo": "https://m.media-amazon.com/images/I/71TRynvUKaL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Amazon main photo: clear transparent chamber showing three stacked sponges (yellow, black, blue), black motor head with a light-blue lid, black outlet arms and a thin clear air tube. Dims 9.06 x 4.49 x 3.23 in mapped to h 230 / w 114 / d 82.",
+  "popularity": {
+   "evidence": "Amazon US Aquarium Filters Best Sellers #8; 1,862 ratings; 800+ bought in past month; overall BSR #5,324 in Pet Supplies",
+   "url": "https://www.amazon.com/dp/B0B3DCSG7Q",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "coospider-repta-uv-200",
+  "brand": "coospider-repta",
+  "model": "coospider-repta 200 GPH UV Internal Filter (20-75 gal)",
+  "kind": "internal",
+  "gph": 200,
+  "galMin": 20,
+  "galMax": 75,
+  "watts": 10,
+  "bodyMm": {
+   "w": 140,
+   "d": 88,
+   "h": 290
+  },
+  "priceUsd": 39.99,
+  "url": "https://www.amazon.com/dp/B0CSSVQL32",
+  "asOf": "2026-10-20",
+  "names": [
+   "coospider-repta 200gph",
+   "coospider repta uv filter",
+   "coospider uv filter"
+  ],
+  "est": [
+   "bodyMm axes"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#27363a"
+   },
+   "motor": {
+    "hex": "#1f2c30"
+   },
+   "intake": {
+    "hex": "#27363a"
+   },
+   "strainer": {
+    "hex": "#27363a"
+   },
+   "outlet": {
+    "hex": "#1c1c1c"
+   },
+   "sponge": "#1a1a1a",
+   "accent": {
+    "hex": "#3b7bff",
+    "where": "blue UV lamp glow in the body window and blue ring on the motor head"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/81XokcqFAdL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "strainer"
+  ],
+  "colorsNote": "Amazon main photo (composite with splashes): opaque dark slate-teal body with slotted intake side, darker motor head with a blue ring, black outlet fan nozzle, clear air tube with black knob, black foam inserts. Dims 11.42 x 5.51 x 3.46 in.",
+  "popularity": {
+   "evidence": "Amazon US Aquarium Filters Best Sellers #9; 1,863 ratings; 500+ bought in past month; overall BSR #5,668 in Pet Supplies",
+   "url": "https://www.amazon.com/dp/B0CSSVQL32",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "pondforse-canister-265",
+  "brand": "PONDFORSE",
+  "model": "PONDFORSE Canister Filter (external)",
+  "kind": "canister",
+  "gph": 264,
+  "galMin": 0,
+  "galMax": 100,
+  "watts": 25,
+  "bodyMm": {
+   "w": 292,
+   "d": 197,
+   "h": 400
+  },
+  "priceUsd": 79.99,
+  "url": "https://www.amazon.com/dp/B0FRSBKP5S",
+  "asOf": "2026-10-20",
+  "names": [
+   "pondforse canister filter",
+   "pondforse 265gph",
+   "pondforse external filter"
+  ],
+  "est": [
+   "gph",
+   "galMax",
+   "watts",
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1c1c1d"
+   },
+   "lid": {
+    "hex": "#1c1c1d"
+   },
+   "motor": {
+    "hex": "#1c1c1d"
+   },
+   "intake": {
+    "hex": "#1c1c1d"
+   },
+   "strainer": {
+    "hex": "#1c1c1d"
+   },
+   "outlet": {
+    "hex": "#1c1c1d"
+   },
+   "hose": "#222222",
+   "accent": {
+    "hex": "#c8141c",
+    "where": "red hose connectors, priming cap and band round the lid"
+   },
+   "clips": {
+    "hex": "#1c1c1d"
+   },
+   "foot": {
+    "hex": "#1c1c1d"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/61oMNBeHYnL._AC_SL1200_.jpg"
+  },
+  "colorsEst": [
+   "hose",
+   "intake",
+   "strainer",
+   "outlet"
+  ],
+  "colorsNote": "Amazon main photo: opaque black canister with a red band under the lid, red connector elbows and red priming cap, black latches and feet. Listing does not state flow rate; the maker sells 172/225/265 GPH units, 264 assumed for this 15.75 in tall body. Pond-and-aquarium filter.",
+  "popularity": {
+   "evidence": "Amazon US Aquarium Filters Best Sellers #13; 1,767 ratings; 500+ bought in past month; overall BSR #6,859 in Pet Supplies",
+   "url": "https://www.amazon.com/dp/B0FRSBKP5S",
+   "seen": "2026-10-20"
+  },
+  "intakeMm": 330
+ },
+ {
+  "id": "aqqa-sponge-5-20",
+  "brand": "AQQA",
+  "model": "AQQA Square Sponge Filter (5-20 gal)",
+  "kind": "sponge",
+  "galMin": 5,
+  "galMax": 20,
+  "watts": 2.5,
+  "bodyMm": {
+   "w": 67,
+   "d": 66,
+   "h": 118
+  },
+  "priceUsd": 14.99,
+  "url": "https://www.amazon.com/dp/B0BLH38Q43",
+  "asOf": "2026-10-20",
+  "names": [
+   "aqqa sponge filter",
+   "aqqa aquarium sponge filter"
+  ],
+  "est": [
+   "watts",
+   "bodyMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#17171a"
+   },
+   "sponge": "#3a3b3c",
+   "intake": {
+    "hex": "#17171a"
+   },
+   "outlet": {
+    "hex": "#17171a"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/811ZW70-hUL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Amazon lifestyle photo: square grooved sponge in medium charcoal grey (lit), black plastic base with the AQQA logo, black air cap on top and a black elbow. Air-driven (watts = suggested air pump). Dims 4.65 x 2.64 x 2.6 in as the Amazon item size.",
+  "popularity": {
+   "evidence": "Amazon US Aquarium Filters Best Sellers #15; 796 ratings; 800+ bought in past month; overall BSR #6,784 in Pet Supplies",
+   "url": "https://www.amazon.com/dp/B0BLH38Q43",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "nicrew-internal-40",
+  "brand": "NICREW",
+  "model": "NICREW Internal Filter (40 GPH, up to 5 gal)",
+  "kind": "internal",
+  "gph": 40,
+  "galMin": 1,
+  "galMax": 5,
+  "watts": 3,
+  "bodyMm": {
+   "w": 103,
+   "d": 47,
+   "h": 161
+  },
+  "priceUsd": 14.99,
+  "url": "https://www.amazon.com/dp/B09DPHDF8Z",
+  "asOf": "2026-10-20",
+  "names": [
+   "nicrew internal filter",
+   "nicrew 40 gph"
+  ],
+  "est": [
+   "watts",
+   "bodyMm axes",
+   "priceUsd"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#141415"
+   },
+   "motor": {
+    "hex": "#141415"
+   },
+   "intake": {
+    "hex": "#141415"
+   },
+   "strainer": {
+    "hex": "#141415"
+   },
+   "outlet": {
+    "hex": "#d5d9dc",
+    "translucent": true
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/71Wq56pRoFL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "cups",
+   "outlet"
+  ],
+  "colorsNote": "Amazon main photo: opaque glossy black rectangular body with slotted side and intake, black elbow and a clear spray bar with black end cap. Dims 6.34 x 4.06 x 1.85 in.",
+  "popularity": {
+   "evidence": "Amazon US Aquarium Filters Best Sellers #19; 1,796 ratings; 800+ bought in past month; overall BSR #7,502 in Pet Supplies",
+   "url": "https://www.amazon.com/dp/B09DPHDF8Z",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "datoo-dtf-01",
+  "brand": "DaToo",
+  "model": "DaToo DTF-01 In-Tank Filter (1-10 gal)",
+  "kind": "internal",
+  "gph": 53,
+  "galMin": 1,
+  "galMax": 10,
+  "watts": 3,
+  "bodyMm": {
+   "w": 50,
+   "d": 40,
+   "h": 185
+  },
+  "priceUsd": 7.99,
+  "url": "https://www.amazon.com/dp/B07DW577GB",
+  "asOf": "2026-10-20",
+  "names": [
+   "datoo filter",
+   "datoo dtf-01",
+   "datoo in-tank filter"
+  ],
+  "est": [
+   "bodyMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#f2f2f0"
+   },
+   "lid": {
+    "hex": "#f5f5f3"
+   },
+   "motor": {
+    "hex": "#f2f2f0"
+   },
+   "intake": {
+    "hex": "#f2f2f0"
+   },
+   "strainer": {
+    "hex": "#f2f2f0"
+   },
+   "outlet": {
+    "hex": "#f2f2f0"
+   },
+   "accent": {
+    "hex": "#1b1b1b",
+    "where": "two black suction cups and black power cord"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/41s0g7jvY+L._AC_SL1000_.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "outlet"
+  ],
+  "colorsNote": "Amazon main photo: glossy WHITE slim rectangular body with a white waterfall-lip hood over a dark foam block, two black suction cups, black cord. Flow listed as 200 L/h (about 53 gph).",
+  "popularity": {
+   "evidence": "Amazon US Aquarium Filters Best Sellers #23; 3,325 ratings; 1K+ bought in past month; overall BSR #7,872 in Pet Supplies",
+   "url": "https://www.amazon.com/dp/B07DW577GB",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "pawfly-mini-sponge-3",
+  "brand": "Pawfly",
+  "model": "Pawfly Mini Sponge Filter Kit (up to 3 gal)",
+  "kind": "sponge",
+  "galMin": 1,
+  "galMax": 3,
+  "watts": 1.5,
+  "bodyMm": {
+   "w": 51,
+   "d": 51,
+   "h": 105
+  },
+  "priceUsd": 5.98,
+  "url": "https://www.amazon.com/dp/B09BND5YQ6",
+  "asOf": "2026-10-20",
+  "names": [
+   "pawfly mini sponge filter",
+   "pawfly sponge filter"
+  ],
+  "est": [
+   "bodyMm",
+   "watts"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#17171a"
+   },
+   "sponge": "#222224",
+   "intake": {
+    "hex": "#a6aec8",
+    "translucent": true
+   },
+   "outlet": {
+    "hex": "#a6aec8",
+    "translucent": true
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/61WB4KuBxIS._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Amazon main photo: black scalloped sponge on a black round base with a tall clear lift tube (faint blue tint); airline and valve are accessories. Air-driven (watts = small suggested pump).",
+  "popularity": {
+   "evidence": "Amazon US Aquarium Filters Best Sellers #26; 2,041 ratings; 700+ bought in past month; overall BSR #8,089 in Pet Supplies",
+   "url": "https://www.amazon.com/dp/B09BND5YQ6",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "hygger-hob-105",
+  "brand": "hygger",
+  "model": "hygger HOB Filter 105 GPH (10-20 gal)",
+  "kind": "hob",
+  "gph": 105,
+  "galMin": 10,
+  "galMax": 20,
+  "bodyMm": {
+   "w": 198,
+   "d": 124,
+   "h": 189
+  },
+  "priceUsd": 28.49,
+  "url": "https://www.amazon.com/dp/B0DCS2G2HR",
+  "asOf": "2026-10-20",
+  "names": [
+   "hygger hob filter",
+   "hygger power filter 105"
+  ],
+  "est": [
+   "watts",
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#2b2e30",
+    "translucent": true
+   },
+   "lid": {
+    "hex": "#232628",
+    "translucent": true
+   },
+   "motor": {
+    "hex": "#151515"
+   },
+   "intake": {
+    "hex": "#26292b"
+   },
+   "strainer": {
+    "hex": "#1a1a1a"
+   },
+   "outlet": {
+    "hex": "#3a3d3f",
+    "translucent": true
+   },
+   "cups": "clear",
+   "photo": "https://m.media-amazon.com/images/I/61FRtl2iqwL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "cups"
+  ],
+  "colorsNote": "Amazon main photo: smoky translucent dark-grey body and tray, black extendable intake tube with a black reticulated sponge, black clip. Dims 7.8 x 7.44 x 4.88 in. Rank #56 only; included because hygger is already a catalogue brand.",
+  "popularity": {
+   "evidence": "Amazon US Aquarium Filters Best Sellers #56; 308 ratings; 100+ bought in past month; overall BSR #17,013 in Pet Supplies",
+   "url": "https://www.amazon.com/dp/B0DCS2G2HR",
+   "seen": "2026-10-20"
+  },
+  "intakeMm": 200
+ },
+ {
+  "id": "jp024f-internal-300",
+  "brand": "Generic (JP-024F)",
+  "model": "Crystal 300 GPH Internal Filter JP-024F (55-150 gal)",
+  "kind": "internal",
+  "gph": 300,
+  "galMin": 55,
+  "galMax": 150,
+  "bodyMm": {
+   "w": 64,
+   "d": 51,
+   "h": 330
+  },
+  "priceUsd": 29.99,
+  "url": "https://www.amazon.com/dp/B0933FMG7B",
+  "asOf": "2026-10-20",
+  "names": [
+   "crystal 300gph internal filter",
+   "jp-024f filter"
+  ],
+  "est": [
+   "watts",
+   "bodyMm axes"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1d1d1f"
+   },
+   "motor": {
+    "hex": "#161617"
+   },
+   "intake": {
+    "hex": "#1d1d1f"
+   },
+   "strainer": {
+    "hex": "#1d1d1f"
+   },
+   "outlet": {
+    "hex": "#161617"
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/71rlEJHIiCL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Amazon main photo: tall opaque matte-black square column with wavy louvres, black motor head with side outlet and a thin clear air tube. Brand not stated on the page; size options 160/300/420/700 GPH exist.",
+  "popularity": {
+   "evidence": "Amazon US Aquarium Filters Best Sellers #20; 2,212 ratings; 500+ bought in past month; overall BSR #7,629 in Pet Supplies",
+   "url": "https://www.amazon.com/dp/B0933FMG7B",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "aquaneat-bio-large",
+  "brand": "Aquaneat",
+  "model": "AQUANEAT Bio Sponge Filter (Large, up to 60 gal)",
+  "kind": "sponge",
+  "galMin": 40,
+  "galMax": 60,
+  "watts": 5,
+  "bodyMm": {
+   "w": 124,
+   "d": 124,
+   "h": 152
+  },
+  "priceUsd": 19.99,
+  "url": "https://www.amazon.com/dp/B071HVZVMP",
+  "asOf": "2026-10-20",
+  "names": [
+   "aquaneat large sponge filter",
+   "aquaneat sponge filter large"
+  ],
+  "est": [
+   "watts",
+   "priceUsd",
+   "bodyMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#17171a"
+   },
+   "sponge": "#1b1b1d",
+   "intake": {
+    "hex": "#bcc3cc",
+    "translucent": true
+   },
+   "outlet": {
+    "hex": "#bcc3cc",
+    "translucent": true
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/71gH8e7oVyL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Amazon main photo: very dark charcoal-black coarse sponge with deep vertical channels, black collar and base, tall clear lift tube.",
+  "popularity": {
+   "evidence": "Amazon US listing (no Aquarium Filters rank); 9,250 ratings; 400+ bought in past month; overall BSR #5,768 in Pet Supplies (#23 in Aquarium Filter Accessories); Amazon files sponge filters under Aquarium Filter Accessories (no Aquarium Filters rank); amazonseo.ai: 6.1% click share on the 'sponge filter' search",
+   "url": "https://www.amazon.com/dp/B071HVZVMP",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "pawfly-sponge-3pack",
+  "brand": "Pawfly",
+  "model": "Pawfly Sponge Filter 3-Pack (5-10 gal)",
+  "kind": "sponge",
+  "galMin": 5,
+  "galMax": 10,
+  "watts": 2,
+  "bodyMm": {
+   "w": 80,
+   "d": 80,
+   "h": 125
+  },
+  "priceUsd": 17.99,
+  "url": "https://www.amazon.com/dp/B098SGW6QS",
+  "asOf": "2026-10-20",
+  "names": [
+   "pawfly sponge filter 3 pack",
+   "pawfly aquarium sponge filter"
+  ],
+  "est": [
+   "bodyMm",
+   "watts",
+   "priceUsd"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#18181a"
+   },
+   "sponge": "#232326",
+   "intake": {
+    "hex": "#a9b0c6",
+    "translucent": true
+   },
+   "outlet": {
+    "hex": "#a9b0c6",
+    "translucent": true
+   },
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/71usigAJyxL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "colorsNote": "Amazon main photo: three black scalloped-sponge units, black round bases, clear lift tubes with a slight blue tint. bodyMm is per unit (estimated); price is for the 3-pack.",
+  "popularity": {
+   "evidence": "Amazon US listing (no Aquarium Filters rank); 2,307 ratings; 900+ bought in past month; overall BSR #6,899 in Pet Supplies (#34 in Aquarium Filter Accessories); amazonseo.ai: 8.7% click share on the 'sponge filter' search (#2)",
+   "url": "https://www.amazon.com/dp/B098SGW6QS",
+   "seen": "2026-10-20"
+  }
+ }
+]

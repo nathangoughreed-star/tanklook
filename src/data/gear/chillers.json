@@ -1,0 +1,202 @@
+[
+ {
+  "id": "paizoo-fan-3speed",
+  "brand": "PAIZOO",
+  "model": "Aquarium Chiller Fan, 3 speeds",
+  "kind": "fan",
+  "watts": 6.4,
+  "priceUsd": 25.99,
+  "needSpec": [
+   "cooling"
+  ],
+  "note": "Evaporative fan: it cools a few degrees at most. This listing does not state how many.",
+  "popularity": {
+   "evidence": "Amazon search: 382 ratings, 300+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0DJVBQD4Y",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#1c1c1c"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B0DJVBQD4Y",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "aquasmith-fan",
+  "brand": "AQUASMITH",
+  "model": "Aquarium Chiller Fan with temperature control",
+  "kind": "fan",
+  "coolF": [
+   3,
+   7
+  ],
+  "priceUsd": 45.99,
+  "needSpec": [
+   "watts"
+  ],
+  "note": "Evaporative cooling 3-7 F; minimum setting 59 F; under 40 dB.",
+  "popularity": {
+   "evidence": "Amazon search: 528 ratings, 600+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0F83J7J9J",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#1c1c1c"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B0F83J7J9J",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "chiller-110-42gal",
+  "brand": "Generic",
+  "model": "1/10 HP Aquarium Chiller 42 gal (160 L)",
+  "kind": "compressor",
+  "hp": "1/10",
+  "ratedGal": 42,
+  "priceUsd": 259.99,
+  "needSpec": [
+   "watts",
+   "drop"
+  ],
+  "note": "Holds 68-79 F; two built-in cooling fans.",
+  "popularity": {
+   "evidence": "Amazon search: 119 ratings",
+   "url": "https://www.amazon.com/dp/B09LLX1GY8",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#1c1c1c"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B09LLX1GY8",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "chiller-110-42gal-b",
+  "brand": "Generic",
+  "model": "1/10 HP Aquarium Chiller 42 gal, 110 V",
+  "kind": "compressor",
+  "hp": "1/10",
+  "ratedGal": 42,
+  "suitsGal": 33,
+  "dropF": 10,
+  "noiseDb": [
+   45,
+   50
+  ],
+  "priceUsd": 279.99,
+  "needSpec": [
+   "watts"
+  ],
+  "note": "Lowers the water up to 10 F; 33 gal recommended in peak summer.",
+  "popularity": {
+   "evidence": "Amazon search: 508 ratings, 50+ bought in past month",
+   "url": "https://www.amazon.com/dp/B0716XSSC4",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#1c1c1c"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B0716XSSC4",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "chiller-13-79gal",
+  "brand": "Generic",
+  "model": "1/3 HP Aquarium Chiller 79 gal (300 L)",
+  "kind": "compressor",
+  "hp": "1/3",
+  "ratedGal": 79,
+  "priceUsd": 279.99,
+  "needSpec": [
+   "watts",
+   "drop"
+  ],
+  "note": "Holds 68-79 F; two built-in cooling fans.",
+  "popularity": {
+   "evidence": "Amazon search: 119 ratings",
+   "url": "https://www.amazon.com/dp/B09LM4JBQR",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#1c1c1c"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B09LM4JBQR",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "chiller-13-79gal-b",
+  "brand": "Generic",
+  "model": "1/3 HP Aquarium Chiller up to 79 gal, 110 V",
+  "kind": "compressor",
+  "hp": "1/3",
+  "ratedGal": 79,
+  "suitsGal": 63,
+  "dropF": [
+   8,
+   15
+  ],
+  "noiseDb": [
+   45,
+   50
+  ],
+  "priceUsd": 329.99,
+  "needSpec": [
+   "watts"
+  ],
+  "note": "Drops the water 8-15 F; 63 gal recommended in peak summer.",
+  "popularity": {
+   "evidence": "Amazon search: 508 ratings",
+   "url": "https://www.amazon.com/dp/B087DVKYFT",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#1c1c1c"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B087DVKYFT",
+  "asOf": "2026-10-27"
+ },
+ {
+  "id": "vevor-chiller-110gal",
+  "brand": "VEVOR",
+  "model": "Aquarium Chiller 110 gal, 1/3 HP",
+  "kind": "compressor",
+  "hp": "1/3",
+  "ratedGal": 110,
+  "priceUsd": 399.9,
+  "needSpec": [
+   "watts",
+   "drop"
+  ],
+  "popularity": {
+   "evidence": "Amazon search: 23 ratings",
+   "url": "https://www.amazon.com/dp/B0FHFQVP6B",
+   "seen": "2026-10-27"
+  },
+  "colors": {
+   "body": "#1c1c1c"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "url": "https://www.amazon.com/dp/B0FHFQVP6B",
+  "asOf": "2026-10-27"
+ }
+]

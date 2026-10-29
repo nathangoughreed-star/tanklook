@@ -1,7 +1,7 @@
 // Real aquarium gear by brand (lane TG, Nathan 2026-10-19: "a generic 50 W heater as the default as long as it's sized
 // correctly, and the Top Fin 50 W to choose from"). Data in gear-catalog.json: each product's rating, measured size and
 // a source; the drawing uses its own size, the Tech menu lists the products near the size the tank needs.
-import data from './gear-catalog.json';
+import { gearCatalog as data } from './gear';
 
 export interface HeaterProduct {
   id: string; brand: string; model: string; watts: number;

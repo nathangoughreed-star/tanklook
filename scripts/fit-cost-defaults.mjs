@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const rd = (p) => JSON.parse(readFileSync(join(root, p), 'utf8'));
-const DEF = rd('src/data/demand-defaults.json'), ITEMS = rd('src/data/demand-items.json').rows, GEAR = rd('src/data/gear-catalog.json');
+const DEF = rd('src/data/demand-defaults.json'), ITEMS = rd('src/data/demand-items.json').rows, GEAR = { heaters: rd('src/data/gear/heaters.json'), filters: rd('src/data/gear/filters.json') };
 const TANKS = rd('src/data/tanks.json').tanks, SPECIES = rd('src/data/species.json').species;
 
 const q = (a, p) => { const s = [...a].sort((x, y) => x - y); if (!s.length) return NaN; const i = (s.length - 1) * p, f = Math.floor(i), c = Math.ceil(i); return s[f] + (s[c] - s[f]) * (i - f); };

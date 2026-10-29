@@ -1,0 +1,2089 @@
+[
+ {
+  "id": "topfin-50",
+  "brand": "Top Fin",
+  "model": "Submersible Heater 50 W",
+  "watts": 50,
+  "lengthMm": 269,
+  "diaMm": 25,
+  "look": "glass",
+  "galMin": 5,
+  "galMax": 15,
+  "priceUsd": 31.99,
+  "url": "https://www.petsmart.com/fish/heating-and-lighting/heaters/top-fin-submersible-aquarium-heater---fish-tank-heater---50-300-watt-5343048.html",
+  "est": [
+   "diaMm",
+   "galMin"
+  ],
+  "asOf": "2026-10-19",
+  "colors": {
+   "cap": {
+    "hex": "#a3a7aa",
+    "ribbed": true,
+    "dial": false
+   },
+   "foot": {
+    "hex": "#a3a7aa",
+    "ribbed": true
+   },
+   "tube": {
+    "kind": "opaque",
+    "hex": "#c9c8c2",
+    "window": [
+     0.45,
+     1
+    ]
+   },
+   "thermometer": true,
+   "element": {
+    "kind": "none",
+    "hex": "#e8e8e8"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "clear",
+   "shape": "tube",
+   "photo": "https://s7d2.scene7.com/is/image/PetSmart/5343048?fmt=jpg&wid=700&hei=700"
+  }
+ },
+ {
+  "id": "aqueon-pro-50",
+  "brand": "Aqueon",
+  "model": "Pro Adjustable Heater 50 W",
+  "watts": 50,
+  "lengthMm": 229,
+  "diaMm": 35,
+  "look": "glass",
+  "galMin": 5,
+  "galMax": 20,
+  "priceUsd": 45.95,
+  "url": "https://www.liveaquaria.com/products/aqueon-proheater",
+  "est": [
+   "diaMm",
+   "galMin"
+  ],
+  "asOf": "2026-10-19",
+  "colors": {
+   "cap": {
+    "hex": "#1f2022",
+    "ribbed": true,
+    "dial": true,
+    "led": "#c8784a"
+   },
+   "foot": {
+    "hex": "#2a2b2d"
+   },
+   "tube": {
+    "kind": "opaque",
+    "hex": "#37393b"
+   },
+   "element": {
+    "kind": "none",
+    "hex": "#e8e8e8"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "clear",
+   "photo": "https://m.media-amazon.com/images/I/61kYJEk+1GL._AC_SL700_.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "priceUrl": "https://www.walmart.com/ip/Aqueon-Preset-Aquarium-Heater-Black-50-Watts-Up-to-20-Gallons/46274736"
+ },
+ {
+  "id": "tetra-ht-50",
+  "brand": "Tetra",
+  "model": "HT10 Submersible Heater 50 W",
+  "watts": 50,
+  "lengthMm": 178,
+  "diaMm": 30,
+  "look": "shroud",
+  "galMin": 2,
+  "galMax": 10,
+  "priceUsd": 15.27,
+  "url": "https://www.chewy.com/tetra-ht10-submersible-aquarium/dp/191044",
+  "est": [
+   "diaMm"
+  ],
+  "asOf": "2026-10-19",
+  "colors": {
+   "cap": {
+    "hex": "#1a1a1c",
+    "dial": false
+   },
+   "foot": {
+    "hex": "#1a1a1c",
+    "ribbed": true
+   },
+   "tube": {
+    "kind": "opaque",
+    "hex": "#4a4c4f"
+   },
+   "element": {
+    "kind": "none",
+    "hex": "#e8e8e8"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/81zeKALepDL._AC_SL700_.jpg"
+  },
+  "priceUrl": "https://www.petsmart.com/5230281.html"
+ },
+ {
+  "id": "fluval-e50",
+  "brand": "Fluval",
+  "model": "E 50 Electronic Heater",
+  "watts": 50,
+  "lengthMm": 247,
+  "diaMm": 28,
+  "look": "shroud",
+  "galMin": 3,
+  "galMax": 13,
+  "priceUsd": 38,
+  "url": "https://aquasabi.com/Fluval-E-Serie-Aquarium-Heater-E50",
+  "est": [
+   "galMin",
+   "galMax",
+   "priceUsd"
+  ],
+  "asOf": "2026-10-19",
+  "colors": {
+   "cap": {
+    "hex": "#232527",
+    "dial": false,
+    "display": "#3ddc5a"
+   },
+   "tube": {
+    "kind": "hidden",
+    "hex": "#2b2b2b"
+   },
+   "element": {
+    "kind": "none",
+    "hex": "#e8742a"
+   },
+   "guard": {
+    "has": true,
+    "hex": "#1e1f21",
+    "pattern": "slots"
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "flat",
+   "photo": "https://m.media-amazon.com/images/I/61zyT28Ol0L._AC_SL700_.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ]
+ },
+ {
+  "id": "fluval-m50",
+  "brand": "Fluval",
+  "model": "M50 Submersible Heater",
+  "watts": 50,
+  "lengthMm": 280,
+  "diaMm": 25,
+  "look": "glass",
+  "galMin": 5,
+  "galMax": 15,
+  "priceUsd": 30.99,
+  "url": "https://www.petsmart.com/fish/heating-and-lighting/heaters/fluval-m-series-submersible-heater-58652.html",
+  "est": [
+   "galMin"
+  ],
+  "asOf": "2026-10-19",
+  "colors": {
+   "cap": {
+    "hex": "#3a3d40",
+    "dial": true,
+    "led": "#3aa0ff"
+   },
+   "tube": {
+    "kind": "metal",
+    "hex": "#c3c7cb"
+   },
+   "element": {
+    "kind": "none",
+    "hex": "#d8d8d8"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/71JRKsqOfHL._AC_SL700_.jpg"
+  },
+  "colorsNote": "mirrored glass tube, drawn as a silver metal finish"
+ },
+ {
+  "id": "eheim-jager-50",
+  "brand": "Eheim",
+  "model": "Jager TruTemp 50 W",
+  "watts": 50,
+  "lengthMm": 245,
+  "diaMm": 36,
+  "look": "glass",
+  "galMin": 7,
+  "galMax": 16,
+  "priceUsd": 39.88,
+  "url": "https://plantedaquaria.ca/shop/brands/eheim/eheim-jager-trutemp-submersible-heater-50-w/",
+  "est": [],
+  "asOf": "2026-10-19",
+  "colors": {
+   "cap": {
+    "hex": "#3c3f44",
+    "dial": true
+   },
+   "tube": {
+    "kind": "glass",
+    "hex": "#e4ecec"
+   },
+   "element": {
+    "kind": "coil",
+    "hex": "#d9d2b8"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/617tBxtuJxL._AC_SL700_.jpg"
+  },
+  "colorsNote": "blue ring at the top of the head (not drawn)",
+  "priceUrl": "https://www.bulkreefsupply.com/eheim-jager-trutemp-aquarium-heater.html"
+ },
+ {
+  "id": "hygger-50",
+  "brand": "Hygger",
+  "model": "Titanium Heater 50 W",
+  "watts": 50,
+  "lengthMm": 221,
+  "diaMm": 18,
+  "look": "titanium",
+  "galMin": 5,
+  "galMax": 10,
+  "priceUsd": 20,
+  "url": "https://aqualabaquaria.com/products/titanium-pro-heater-hygger",
+  "est": [
+   "diaMm",
+   "priceUsd"
+  ],
+  "asOf": "2026-10-19",
+  "colors": {
+   "cap": {
+    "hex": "#151515",
+    "dial": false
+   },
+   "foot": {
+    "hex": "#151515"
+   },
+   "tube": {
+    "kind": "metal",
+    "hex": "#b9bcbf"
+   },
+   "element": {
+    "kind": "none",
+    "hex": "#b9bcbf"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "photo": "https://m.media-amazon.com/images/I/51doMEL9zgL._AC_SL1001_.jpg"
+  },
+  "colorsNote": "separate light grey controller box with red displays (not drawn)"
+ },
+ {
+  "id": "cobalt-neotherm-50",
+  "brand": "Cobalt Aquatics",
+  "model": "Neo-Therm 50 W",
+  "watts": 50,
+  "lengthMm": 165,
+  "diaMm": 20,
+  "look": "glass",
+  "galMin": 5,
+  "galMax": 12,
+  "priceUsd": 45,
+  "url": "https://aqualabaquaria.com/products/neo-therm-aquarium-heater-cobalt-aquatics",
+  "est": [
+   "diaMm",
+   "galMin",
+   "priceUsd"
+  ],
+  "asOf": "2026-10-19",
+  "colors": {
+   "cap": {
+    "hex": "#34363a",
+    "dial": true,
+    "led": "#3ddc5a"
+   },
+   "tube": {
+    "kind": "opaque",
+    "hex": "#34363a"
+   },
+   "element": {
+    "kind": "none",
+    "hex": "#e8e8e8"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "flat",
+   "photo": "https://m.media-amazon.com/images/I/7178P9bO43L.jpg"
+  }
+ },
+ {
+  "id": "aqueon-pro-150",
+  "brand": "Aqueon",
+  "model": "Pro Adjustable Heater 150 W",
+  "watts": 150,
+  "lengthMm": 324,
+  "diaMm": 35,
+  "look": "glass",
+  "galMin": 30,
+  "galMax": 55,
+  "priceUsd": 45,
+  "url": "https://www.liveaquaria.com/products/aqueon-proheater",
+  "est": [
+   "diaMm",
+   "galMin",
+   "priceUsd"
+  ],
+  "asOf": "2026-10-19",
+  "colors": {
+   "cap": {
+    "hex": "#1f2022",
+    "ribbed": true,
+    "dial": true,
+    "led": "#c8784a"
+   },
+   "foot": {
+    "hex": "#2a2b2d"
+   },
+   "tube": {
+    "kind": "opaque",
+    "hex": "#37393b"
+   },
+   "element": {
+    "kind": "none",
+    "hex": "#e8e8e8"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "clear",
+   "photo": "https://m.media-amazon.com/images/I/71h2daFZ6TL._AC_SL700_.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ]
+ },
+ {
+  "id": "fluval-e100",
+  "brand": "Fluval",
+  "model": "E 100 Electronic Heater",
+  "watts": 100,
+  "lengthMm": 298,
+  "diaMm": 28,
+  "look": "shroud",
+  "galMin": 13,
+  "galMax": 30,
+  "priceUsd": 54.99,
+  "url": "https://www.aquasabi.com/Fluval-E-Serie-Aquarium-Heater-E100",
+  "est": [
+   "galMin"
+  ],
+  "asOf": "2026-10-19",
+  "colors": {
+   "cap": {
+    "hex": "#232527",
+    "dial": false,
+    "display": "#3ddc5a"
+   },
+   "tube": {
+    "kind": "hidden",
+    "hex": "#2b2b2b"
+   },
+   "element": {
+    "kind": "none",
+    "hex": "#e8742a"
+   },
+   "guard": {
+    "has": true,
+    "hex": "#1e1f21",
+    "pattern": "slots"
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "flat",
+   "photo": "https://m.media-amazon.com/images/I/61zyT28Ol0L._AC_SL700_.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "priceUrl": "https://fishtanksdirect.com/fluval-e-100-watt-electronic-heater/"
+ },
+ {
+  "id": "topfin-100",
+  "brand": "Top Fin",
+  "model": "Top Fin Submersible Heater 100W",
+  "watts": 100,
+  "lengthMm": 290,
+  "diaMm": 25,
+  "look": "shroud",
+  "galMin": 10,
+  "galMax": 30,
+  "priceUsd": 34.99,
+  "url": "https://www.petsmart.com/fish/heating-and-lighting/heaters/top-fin-submersible-aquarium-heater-5342964.html",
+  "asOf": "2026-10-19",
+  "names": [
+   "top fin 100w",
+   "top fin heater",
+   "top fin submersible heater",
+   "top fin 100 watt heater"
+  ],
+  "est": [
+   "lengthMm",
+   "galMin",
+   "galMax",
+   "diaMm"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#a3a7aa",
+    "ribbed": true,
+    "dial": false
+   },
+   "foot": {
+    "hex": "#a3a7aa",
+    "ribbed": true
+   },
+   "tube": {
+    "kind": "opaque",
+    "hex": "#c4c7c9",
+    "window": [
+     0.45,
+     1
+    ]
+   },
+   "thermometer": true,
+   "element": {
+    "kind": "none",
+    "hex": "#888888"
+   },
+   "guard": {
+    "has": false,
+    "hex": "#888888",
+    "pattern": "solid"
+   },
+   "cord": "#111111",
+   "cups": "clear",
+   "shape": "tube",
+   "photo": "https://i.ebayimg.com/images/g/WY4AAOSwxpVl7KJY/s-l1600.jpg"
+  },
+  "colorsEst": [],
+  "colorsNote": "Same look as the catalogued 50 W: grey ribbed cap/foot, light grey opaque tube with window, thermometer. Not re-verified on a photo of this exact wattage. Photo source: inherited from the catalogued Top Fin 50 W; PetSmart thumbnails looked the same.",
+  "kit": true
+ },
+ {
+  "id": "topfin-200",
+  "brand": "Top Fin",
+  "model": "Top Fin Submersible Heater 200W",
+  "watts": 200,
+  "lengthMm": 325,
+  "diaMm": 25,
+  "look": "shroud",
+  "galMin": 40,
+  "galMax": 65,
+  "priceUsd": 38.99,
+  "url": "https://www.petsmart.com/fish/heating-and-lighting/heaters/top-fin-submersible-aquarium-heater---fish-tank-heater---50-300-watt-5343046.html",
+  "asOf": "2026-10-19",
+  "names": [
+   "top fin 200w",
+   "top fin heater",
+   "top fin submersible heater",
+   "top fin 200 watt heater"
+  ],
+  "est": [
+   "galMin",
+   "diaMm"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#a3a7aa",
+    "ribbed": true,
+    "dial": false
+   },
+   "foot": {
+    "hex": "#a3a7aa",
+    "ribbed": true
+   },
+   "tube": {
+    "kind": "opaque",
+    "hex": "#c4c7c9",
+    "window": [
+     0.45,
+     1
+    ]
+   },
+   "thermometer": true,
+   "element": {
+    "kind": "none",
+    "hex": "#888888"
+   },
+   "guard": {
+    "has": false,
+    "hex": "#888888",
+    "pattern": "solid"
+   },
+   "cord": "#111111",
+   "cups": "clear",
+   "shape": "tube",
+   "photo": "https://i.ebayimg.com/images/g/WY4AAOSwxpVl7KJY/s-l1600.jpg"
+  },
+  "colorsEst": [],
+  "colorsNote": "Same look as the catalogued 50 W: grey ribbed cap/foot, light grey opaque tube with window, thermometer. Not re-verified on a photo of this exact wattage. Photo source: inherited from the catalogued Top Fin 50 W; PetSmart thumbnails looked the same.",
+  "kit": true
+ },
+ {
+  "id": "tetra-ht30",
+  "brand": "Tetra",
+  "model": "Tetra HT30 Submersible Heater",
+  "watts": 100,
+  "lengthMm": 215,
+  "diaMm": 41,
+  "look": "shroud",
+  "galMin": 10,
+  "galMax": 30,
+  "priceUsd": 17.99,
+  "url": "https://www.chewy.com/tetra-ht30-submersible-aquarium-heater/dp/",
+  "asOf": "2026-10-19",
+  "names": [
+   "tetra ht30",
+   "tetra ht 100w",
+   "tetra 100w heater",
+   "tetra ht submersible heater 100w",
+   "tetra submersible heater"
+  ],
+  "est": [
+   "lengthMm",
+   "diaMm"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#1c1d1f",
+    "ribbed": true,
+    "dial": false,
+    "led": "#e03030"
+   },
+   "foot": {
+    "hex": "#1c1d1f",
+    "ribbed": false
+   },
+   "tube": {
+    "kind": "opaque",
+    "hex": "#383b3e"
+   },
+   "thermometer": false,
+   "element": {
+    "kind": "none",
+    "hex": "#444444"
+   },
+   "guard": {
+    "has": false,
+    "hex": "#222222",
+    "pattern": "solid"
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "photo": "https://image.chewy.com/catalog/general/images/tetra-ht30-submersible-aquarium-heater-electronic-thermosat-100-watt/img-65931._V1_.jpg"
+  },
+  "colorsEst": [
+   "foot",
+   "element",
+   "cap"
+  ],
+  "colorsNote": "Tetra HT/GloFish look from retail photos: black cap with ribs, smoky dark-grey tube (looks opaque-tinted in thumbnails), black cup(s). Preset, red/green indicator LED. Photo source: Bing image results, Tetra HT30 / GloFish retail photos. Tube darkened to the smoky dark grey of the box photo (checked 2026-10-19).",
+  "kit": true,
+  "priceUrl": "https://www.chewy.com/tetra-ht30-submersible-aquarium/dp/191045"
+ },
+ {
+  "id": "tetra-ht55",
+  "brand": "Tetra",
+  "model": "Tetra HT55 Submersible Heater",
+  "watts": 200,
+  "lengthMm": 280,
+  "diaMm": 41,
+  "look": "shroud",
+  "galMin": 40,
+  "galMax": 55,
+  "priceUsd": 39.99,
+  "url": "https://www.petsmart.com/fish/heating-and-lighting/heaters/tetra-ht-submersible-aquarium-heater---40-55-gallon-for-fish-tanks-5369032.html",
+  "asOf": "2026-10-19",
+  "names": [
+   "tetra ht55",
+   "tetra ht 200w",
+   "tetra 200w heater",
+   "tetra ht submersible heater 200w"
+  ],
+  "est": [
+   "lengthMm",
+   "diaMm"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#1c1d1f",
+    "ribbed": true,
+    "dial": false,
+    "led": "#e03030"
+   },
+   "foot": {
+    "hex": "#1c1d1f",
+    "ribbed": false
+   },
+   "tube": {
+    "kind": "opaque",
+    "hex": "#383b3e"
+   },
+   "thermometer": false,
+   "element": {
+    "kind": "none",
+    "hex": "#444444"
+   },
+   "guard": {
+    "has": false,
+    "hex": "#222222",
+    "pattern": "solid"
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "photo": "https://image.chewy.com/catalog/general/images/tetra-ht30-submersible-aquarium-heater-electronic-thermosat-100-watt/img-65931._V1_.jpg"
+  },
+  "colorsEst": [
+   "foot",
+   "element",
+   "cap"
+  ],
+  "colorsNote": "Tetra HT/GloFish look from retail photos: black cap with ribs, smoky dark-grey tube (looks opaque-tinted in thumbnails), black cup(s). Preset, red/green indicator LED. Photo source: Bing image results, Tetra HT30 / GloFish retail photos. Tube darkened to the smoky dark grey of the box photo (checked 2026-10-19).",
+  "kit": true
+ },
+ {
+  "id": "glofish-50",
+  "brand": "GloFish",
+  "model": "GloFish Submersible Heater 50W",
+  "watts": 50,
+  "lengthMm": 190,
+  "diaMm": 40,
+  "look": "shroud",
+  "galMin": 2,
+  "galMax": 10,
+  "priceUsd": 22.99,
+  "url": "https://www.petco.com/shop/en/petcostore/product/glofish-preset-aquarium-heater-50w",
+  "asOf": "2026-10-19",
+  "names": [
+   "glofish heater",
+   "glofish 50w heater",
+   "glofish submersible heater",
+   "glofish preset heater"
+  ],
+  "est": [
+   "lengthMm",
+   "diaMm"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#1c1d1f",
+    "ribbed": true,
+    "dial": false,
+    "led": "#e03030"
+   },
+   "foot": {
+    "hex": "#1c1d1f",
+    "ribbed": false
+   },
+   "tube": {
+    "kind": "opaque",
+    "hex": "#383b3e"
+   },
+   "thermometer": false,
+   "element": {
+    "kind": "none",
+    "hex": "#444444"
+   },
+   "guard": {
+    "has": false,
+    "hex": "#222222",
+    "pattern": "solid"
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "photo": "https://www.bestaquariumfish.com/wp-content/uploads/glofish-50-watt-preset-heater-1749210589-600x600.jpg"
+  },
+  "colorsEst": [
+   "foot",
+   "element",
+   "cap"
+  ],
+  "colorsNote": "GloFish 50 W is its own product (Tetra-made preset): black cap, smoky dark tube, black foot. Tetra HT/GloFish look from retail photos: black cap with ribs, smoky dark-grey tube (looks opaque-tinted in thumbnails), black cup(s). Preset, red/green indicator LED. Photo source: Bing image results, Tetra HT30 / GloFish retail photos. Tube darkened to the smoky dark grey of the box photo (checked 2026-10-19).",
+  "kit": true
+ },
+ {
+  "id": "aqueon-preset-50",
+  "brand": "Aqueon",
+  "model": "Aqueon Preset Heater 50W",
+  "watts": 50,
+  "lengthMm": 178,
+  "diaMm": 38,
+  "look": "shroud",
+  "galMin": 2,
+  "galMax": 20,
+  "priceUsd": 17.24,
+  "url": "https://www.petco.com/shop/en/petcostore/product/aqueon-preset-aquarium-heater-50w",
+  "asOf": "2026-10-19",
+  "names": [
+   "aqueon preset 50w",
+   "aqueon preset heater",
+   "aqueon heater",
+   "aqueon 50 watt heater",
+   "aqueon preset aquarium heater"
+  ],
+  "est": [
+   "diaMm"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#171819",
+    "ribbed": true,
+    "dial": false
+   },
+   "foot": {
+    "hex": "#171819",
+    "ribbed": true
+   },
+   "tube": {
+    "kind": "opaque",
+    "hex": "#1c1d1e"
+   },
+   "thermometer": false,
+   "element": {
+    "kind": "none",
+    "hex": "#333333"
+   },
+   "guard": {
+    "has": false,
+    "hex": "#171819",
+    "pattern": "solid"
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "photo": "https://aquascapingpro.com/wp-content/uploads/2020/12/Aqueon-Preset-Aquarium-Heater-100w-1024x1024.jpg"
+  },
+  "colorsEst": [
+   "element",
+   "foot"
+  ],
+  "colorsNote": "All black matte opaque plastic tube with ribbed cap and foot; tank-size ratings differ across sellers (50 W: 20-30 gal; 100 W: 30-40 gal). Photo source: Bing image results, Aqueon Preset 50W.",
+  "kit": true
+ },
+ {
+  "id": "aqueon-preset-100",
+  "brand": "Aqueon",
+  "model": "Aqueon Preset Heater 100W",
+  "watts": 100,
+  "lengthMm": 230,
+  "diaMm": 38,
+  "look": "shroud",
+  "galMin": 20,
+  "galMax": 30,
+  "priceUsd": 20.82,
+  "url": "https://www.chewy.com/aqueon-preset-aquarium-heater/dp/167116",
+  "asOf": "2026-10-19",
+  "names": [
+   "aqueon preset 100w",
+   "aqueon preset heater",
+   "aqueon heater",
+   "aqueon 100 watt heater",
+   "aqueon preset aquarium heater"
+  ],
+  "est": [
+   "lengthMm",
+   "diaMm",
+   "galMin"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#171819",
+    "ribbed": true,
+    "dial": false
+   },
+   "foot": {
+    "hex": "#171819",
+    "ribbed": true
+   },
+   "tube": {
+    "kind": "opaque",
+    "hex": "#1c1d1e"
+   },
+   "thermometer": false,
+   "element": {
+    "kind": "none",
+    "hex": "#333333"
+   },
+   "guard": {
+    "has": false,
+    "hex": "#171819",
+    "pattern": "solid"
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "photo": "https://aquascapingpro.com/wp-content/uploads/2020/12/Aqueon-Preset-Aquarium-Heater-100w-1024x1024.jpg"
+  },
+  "colorsEst": [
+   "element",
+   "foot"
+  ],
+  "colorsNote": "All black matte opaque plastic tube with ribbed cap and foot; tank-size ratings differ across sellers (50 W: 20-30 gal; 100 W: 30-40 gal). Photo source: Bing image results, Aqueon Preset 50W.",
+  "kit": true
+ },
+ {
+  "id": "hygger-mini-10",
+  "brand": "hygger",
+  "model": "Mini Betta Heater HG-031 10 W",
+  "watts": 10,
+  "lengthMm": 105,
+  "diaMm": 26,
+  "look": "glass",
+  "galMin": 1,
+  "galMax": 5,
+  "priceUsd": 16.99,
+  "url": "https://www.amazon.com/dp/B0BGG7Z3N9",
+  "priceUrl": "https://www.amazon.com/dp/B0BGG7Z3N9",
+  "asOf": "2026-10-20",
+  "est": [
+   "diaMm",
+   "controller dims"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#151515"
+   },
+   "foot": {
+    "hex": "#151515"
+   },
+   "tube": {
+    "kind": "glass",
+    "hex": "#d9dfe3"
+   },
+   "element": {
+    "kind": "core",
+    "hex": "#9a9a9a"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "controller": {
+    "hex": "#1b1b1b",
+    "display": "#e8141c",
+    "wMm": 28,
+    "hMm": 75,
+    "dMm": 20
+   },
+   "photo": "https://m.media-amazon.com/images/I/71dOmlu4+LL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "controller dims"
+  ],
+  "names": [
+   "hygger mini heater"
+  ],
+  "colorsNote": "Inline controller box on the cord (black, red LED digits, 59-93 F / 15-34 C, SET button); cord about 1 ft on the heater side + 4.3 ft to the plug. Clear quartz glass tube over a speckled grey fill; one black clip + one black suction cup; 1.2 in (30 mm) is the cap flange, tube est 26 mm. This is the product Nathan showed.",
+  "popularity": {
+   "evidence": "Listing B0BGG7Z3N9 (hygger HG-031 10/25/50/100 W) is #2 in Amazon Best Sellers 'Aquarium Heaters' (4.5 stars, 830 reviews); this 10 W variant: '5K+ bought in past month'. Seen 2026-10-20. Best Sellers list: https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Heaters/zgbs/pet-supplies/23128582011",
+   "url": "https://www.amazon.com/dp/B0BGG7Z3N9",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "hygger-mini-25",
+  "brand": "hygger",
+  "model": "Mini Betta Heater HG-031 25 W",
+  "watts": 25,
+  "lengthMm": 105,
+  "diaMm": 26,
+  "look": "glass",
+  "galMin": 5,
+  "galMax": 10,
+  "priceUsd": 18.99,
+  "url": "https://www.amazon.com/dp/B0BGG8DB25",
+  "priceUrl": "https://www.amazon.com/dp/B0BGG8DB25",
+  "asOf": "2026-10-20",
+  "est": [
+   "diaMm",
+   "controller dims"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#151515"
+   },
+   "foot": {
+    "hex": "#151515"
+   },
+   "tube": {
+    "kind": "glass",
+    "hex": "#d9dfe3"
+   },
+   "element": {
+    "kind": "core",
+    "hex": "#9a9a9a"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "controller": {
+    "hex": "#1b1b1b",
+    "display": "#e8141c",
+    "wMm": 28,
+    "hMm": 75,
+    "dMm": 20
+   },
+   "photo": "https://m.media-amazon.com/images/I/71dOmlu4+LL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "controller dims"
+  ],
+  "names": [
+   "hygger mini heater"
+  ],
+  "colorsNote": "Inline controller box on the cord (black, red LED digits, 59-93 F / 15-34 C, SET button); cord about 1 ft on the heater side + 4.3 ft to the plug. Clear quartz glass tube over a speckled grey fill; one black clip + one black suction cup; 1.2 in (30 mm) is the cap flange, tube est 26 mm. This is the product Nathan showed.",
+  "popularity": {
+   "evidence": "Listing B0BGG7Z3N9 (hygger HG-031 10/25/50/100 W) is #2 in Amazon Best Sellers 'Aquarium Heaters' (4.5 stars, 830 reviews); this 25 W variant: '2K+ bought in past month'. Seen 2026-10-20. Best Sellers list: https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Heaters/zgbs/pet-supplies/23128582011",
+   "url": "https://www.amazon.com/dp/B0BGG8DB25",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "hygger-mini-50",
+  "brand": "hygger",
+  "model": "Mini Betta Heater HG-031 50 W",
+  "watts": 50,
+  "lengthMm": 105,
+  "diaMm": 26,
+  "look": "glass",
+  "galMin": 8,
+  "galMax": 16,
+  "priceUsd": 19.99,
+  "url": "https://www.amazon.com/dp/B0BGGB163G",
+  "priceUrl": "https://www.amazon.com/dp/B0BGGB163G",
+  "asOf": "2026-10-20",
+  "est": [
+   "diaMm",
+   "controller dims"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#151515"
+   },
+   "foot": {
+    "hex": "#151515"
+   },
+   "tube": {
+    "kind": "glass",
+    "hex": "#d9dfe3"
+   },
+   "element": {
+    "kind": "core",
+    "hex": "#9a9a9a"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "controller": {
+    "hex": "#1b1b1b",
+    "display": "#e8141c",
+    "wMm": 28,
+    "hMm": 75,
+    "dMm": 20
+   },
+   "photo": "https://m.media-amazon.com/images/I/71dOmlu4+LL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "controller dims"
+  ],
+  "names": [
+   "hygger mini heater"
+  ],
+  "colorsNote": "Inline controller box on the cord (black, red LED digits, 59-93 F / 15-34 C, SET button); cord about 1 ft on the heater side + 4.3 ft to the plug. Clear quartz glass tube over a speckled grey fill; one black clip + one black suction cup; 1.2 in (30 mm) is the cap flange, tube est 26 mm. This is the product Nathan showed.",
+  "popularity": {
+   "evidence": "Listing B0BGG7Z3N9 (hygger HG-031 10/25/50/100 W) is #2 in Amazon Best Sellers 'Aquarium Heaters' (4.5 stars, 830 reviews); this 50 W variant: '1K+ bought in past month'. Seen 2026-10-20. Best Sellers list: https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Heaters/zgbs/pet-supplies/23128582011",
+   "url": "https://www.amazon.com/dp/B0BGGB163G",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "hygger-mini-100",
+  "brand": "hygger",
+  "model": "Mini Betta Heater HG-031 100 W",
+  "watts": 100,
+  "lengthMm": 135,
+  "diaMm": 26,
+  "look": "glass",
+  "galMin": 10,
+  "galMax": 26,
+  "priceUsd": 25.99,
+  "url": "https://www.amazon.com/dp/B0BGG8P8XS",
+  "priceUrl": "https://www.amazon.com/dp/B0BGG8P8XS",
+  "asOf": "2026-10-20",
+  "est": [
+   "diaMm",
+   "controller dims"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#151515"
+   },
+   "foot": {
+    "hex": "#151515"
+   },
+   "tube": {
+    "kind": "glass",
+    "hex": "#d9dfe3"
+   },
+   "element": {
+    "kind": "core",
+    "hex": "#9a9a9a"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "controller": {
+    "hex": "#1b1b1b",
+    "display": "#e8141c",
+    "wMm": 28,
+    "hMm": 75,
+    "dMm": 20
+   },
+   "photo": "https://m.media-amazon.com/images/I/71dOmlu4+LL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "controller dims"
+  ],
+  "names": [
+   "hygger mini heater"
+  ],
+  "colorsNote": "Inline controller box on the cord (black, red LED digits, 59-93 F / 15-34 C, SET button); cord about 1 ft on the heater side + 4.3 ft to the plug. Clear quartz glass tube over a speckled grey fill; one black clip + one black suction cup; 1.2 in (30 mm) is the cap flange, tube est 26 mm. This is the product Nathan showed.",
+  "popularity": {
+   "evidence": "Listing B0BGG7Z3N9 (hygger HG-031 10/25/50/100 W) is #2 in Amazon Best Sellers 'Aquarium Heaters' (4.5 stars, 830 reviews); this 100 W variant: '500+ bought in past month'. Seen 2026-10-20. Best Sellers list: https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Heaters/zgbs/pet-supplies/23128582011",
+   "url": "https://www.amazon.com/dp/B0BGG8P8XS",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "vcraze-10",
+  "brand": "VCRAZE",
+  "model": "Thumb-Sized Mini Heater SC-17010 (5V/2A USB)",
+  "watts": 10,
+  "lengthMm": 51,
+  "diaMm": 12,
+  "look": "titanium",
+  "galMin": 0,
+  "galMax": 1,
+  "priceUsd": 15.99,
+  "url": "https://www.amazon.com/dp/B0FJRP5DLY",
+  "priceUrl": "https://www.amazon.com/dp/B0FJRP5DLY",
+  "asOf": "2026-10-20",
+  "est": [
+   "controller dims"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#151515"
+   },
+   "tube": {
+    "kind": "opaque",
+    "hex": "#151515"
+   },
+   "element": {
+    "kind": "none",
+    "hex": "#151515"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "controller": {
+    "hex": "#1b1b1b",
+    "display": "#e8141c",
+    "wMm": 40,
+    "hMm": 52,
+    "dMm": 18
+   },
+   "photo": "https://m.media-amazon.com/images/I/61+Hta3tO+L._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "controller dims"
+  ],
+  "colorsNote": "Solid black alumina-ceramic bar 0.47 in (12 mm) diameter; inline black rounded controller with red LED digits, 64-93 F, black suction cups. lengthMm 51 is the TRUE length (2.0 in), under 100.",
+  "popularity": {
+   "evidence": "Listing family B0FJRL784Z: #12 in Amazon Best Sellers 'Aquarium Heaters' (4.2 stars, 343 reviews); '400+ bought in past month' for this 10 W variant. Seen 2026-10-20. https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Heaters/zgbs/pet-supplies/23128582011",
+   "url": "https://www.amazon.com/dp/B0FJRP5DLY",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "vcraze-15",
+  "brand": "VCRAZE",
+  "model": "Thumb-Sized Mini Heater SC-17015",
+  "watts": 15,
+  "lengthMm": 81,
+  "diaMm": 12,
+  "look": "titanium",
+  "galMin": 1,
+  "galMax": 3,
+  "priceUsd": 17.99,
+  "url": "https://www.amazon.com/dp/B0FJRQJXNB",
+  "priceUrl": "https://www.amazon.com/dp/B0FJRQJXNB",
+  "asOf": "2026-10-20",
+  "est": [
+   "controller dims"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#151515"
+   },
+   "tube": {
+    "kind": "opaque",
+    "hex": "#151515"
+   },
+   "element": {
+    "kind": "none",
+    "hex": "#151515"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "controller": {
+    "hex": "#1b1b1b",
+    "display": "#e8141c",
+    "wMm": 40,
+    "hMm": 52,
+    "dMm": 18
+   },
+   "photo": "https://m.media-amazon.com/images/I/61+Hta3tO+L._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "controller dims"
+  ],
+  "colorsNote": "Solid black alumina-ceramic bar 0.47 in (12 mm) diameter; inline black rounded controller with red LED digits, 64-93 F, black suction cups. lengthMm 81 is the TRUE length (3.2 in), under 100.",
+  "popularity": {
+   "evidence": "Listing family B0FJRL784Z: #12 in Amazon Best Sellers 'Aquarium Heaters' (4.2 stars, 343 reviews); '400+ bought in past month' for this 15 W variant. Seen 2026-10-20. https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Heaters/zgbs/pet-supplies/23128582011",
+   "url": "https://www.amazon.com/dp/B0FJRQJXNB",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "vcraze-25",
+  "brand": "VCRAZE",
+  "model": "Thumb-Sized Mini Heater SC-17025",
+  "watts": 25,
+  "lengthMm": 81,
+  "diaMm": 12,
+  "look": "titanium",
+  "galMin": 3,
+  "galMax": 5,
+  "priceUsd": 19.99,
+  "url": "https://www.amazon.com/dp/B0FJRMSC5T",
+  "priceUrl": "https://www.amazon.com/dp/B0FJRMSC5T",
+  "asOf": "2026-10-20",
+  "est": [
+   "controller dims"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#151515"
+   },
+   "tube": {
+    "kind": "opaque",
+    "hex": "#151515"
+   },
+   "element": {
+    "kind": "none",
+    "hex": "#151515"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "controller": {
+    "hex": "#1b1b1b",
+    "display": "#e8141c",
+    "wMm": 40,
+    "hMm": 52,
+    "dMm": 18
+   },
+   "photo": "https://m.media-amazon.com/images/I/61+Hta3tO+L._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "controller dims"
+  ],
+  "colorsNote": "Solid black alumina-ceramic bar 0.47 in (12 mm) diameter; inline black rounded controller with red LED digits, 64-93 F, black suction cups. lengthMm 81 is the TRUE length (3.2 in), under 100.",
+  "popularity": {
+   "evidence": "Listing family B0FJRL784Z: #12 in Amazon Best Sellers 'Aquarium Heaters' (4.2 stars, 343 reviews); '200+ bought in past month' for this 25 W variant. Seen 2026-10-20. https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Heaters/zgbs/pet-supplies/23128582011",
+   "url": "https://www.amazon.com/dp/B0FJRMSC5T",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "vcraze-50",
+  "brand": "VCRAZE",
+  "model": "Thumb-Sized Mini Heater SC-17050",
+  "watts": 50,
+  "lengthMm": 112,
+  "diaMm": 12,
+  "look": "titanium",
+  "galMin": 5,
+  "galMax": 10,
+  "priceUsd": 21.99,
+  "url": "https://www.amazon.com/dp/B0FJRL784Z",
+  "priceUrl": "https://www.amazon.com/dp/B0FJRL784Z",
+  "asOf": "2026-10-20",
+  "est": [
+   "controller dims"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#151515"
+   },
+   "tube": {
+    "kind": "opaque",
+    "hex": "#151515"
+   },
+   "element": {
+    "kind": "none",
+    "hex": "#151515"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "controller": {
+    "hex": "#1b1b1b",
+    "display": "#e8141c",
+    "wMm": 40,
+    "hMm": 52,
+    "dMm": 18
+   },
+   "photo": "https://m.media-amazon.com/images/I/61+Hta3tO+L._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "controller dims"
+  ],
+  "colorsNote": "Solid black alumina-ceramic bar 0.47 in (12 mm) diameter; inline black rounded controller with red LED digits, 64-93 F, black suction cups. ",
+  "popularity": {
+   "evidence": "Listing family B0FJRL784Z: #12 in Amazon Best Sellers 'Aquarium Heaters' (4.2 stars, 343 reviews); '50+ bought in past month' for this 50 W variant. Seen 2026-10-20. https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Heaters/zgbs/pet-supplies/23128582011",
+   "url": "https://www.amazon.com/dp/B0FJRL784Z",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "datoo-25",
+  "brand": "DaToo",
+  "model": "Mini Aquarium Heater DT-25A 25 W",
+  "watts": 25,
+  "lengthMm": 124,
+  "diaMm": 22,
+  "look": "glass",
+  "galMin": 1,
+  "galMax": 5,
+  "priceUsd": 7.99,
+  "url": "https://www.amazon.com/dp/B0893T67LX",
+  "priceUrl": "https://www.amazon.com/dp/B0893T67LX",
+  "asOf": "2026-10-20",
+  "est": [
+   "diaMm"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#151515"
+   },
+   "foot": {
+    "hex": "#151515"
+   },
+   "tube": {
+    "kind": "glass",
+    "hex": "#d9dfe3"
+   },
+   "element": {
+    "kind": "coil",
+    "hex": "#2a2a2a"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "photo": "https://m.media-amazon.com/images/I/61u1WDt2FpL._AC_SL1000_.jpg"
+  },
+  "names": [
+   "datoo"
+  ],
+  "popularity": {
+   "evidence": "#3 in Amazon Best Sellers 'Aquarium Heaters' (4.4 stars, 6,082 reviews); '5K+ bought in past month'. Seen 2026-10-20. https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Heaters/zgbs/pet-supplies/23128582011",
+   "url": "https://www.amazon.com/dp/B0893T67LX",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "datoo-50",
+  "brand": "DaToo",
+  "model": "Aquarium Heater D1-50W 50 W",
+  "watts": 50,
+  "lengthMm": 173,
+  "diaMm": 24,
+  "look": "glass",
+  "galMin": 5,
+  "galMax": 15,
+  "priceUsd": 7.99,
+  "url": "https://www.amazon.com/dp/B0BL81M8LX",
+  "priceUrl": "https://www.amazon.com/dp/B0BL81M8LX",
+  "asOf": "2026-10-20",
+  "est": [
+   "diaMm"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#151515"
+   },
+   "foot": {
+    "hex": "#151515"
+   },
+   "tube": {
+    "kind": "glass",
+    "hex": "#d9dfe3"
+   },
+   "element": {
+    "kind": "coil",
+    "hex": "#2a2a2a"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "photo": "https://m.media-amazon.com/images/I/612xSaWMHiL._AC_SL1000_.jpg"
+  },
+  "popularity": {
+   "evidence": "#22 in Amazon Best Sellers 'Aquarium Heaters' (4.2 stars, 642 reviews); '300+ bought in past month'. Seen 2026-10-20. https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Heaters/zgbs/pet-supplies/23128582011",
+   "url": "https://www.amazon.com/dp/B0BL81M8LX",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "pulaco-25",
+  "brand": "PULACO",
+  "model": "Mini Betta Heater 25 W",
+  "watts": 25,
+  "lengthMm": 124,
+  "diaMm": 22,
+  "look": "glass",
+  "galMin": 1,
+  "galMax": 6,
+  "priceUsd": 9.99,
+  "url": "https://www.amazon.com/dp/B081VN41FQ",
+  "priceUrl": "https://www.amazon.com/dp/B081VN41FQ",
+  "asOf": "2026-10-20",
+  "est": [
+   "diaMm"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#151515"
+   },
+   "foot": {
+    "hex": "#151515"
+   },
+   "tube": {
+    "kind": "glass",
+    "hex": "#d9dfe3"
+   },
+   "element": {
+    "kind": "coil",
+    "hex": "#222222"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "photo": "https://m.media-amazon.com/images/I/61PrJ9gAPSS._SL1200_.jpg"
+  },
+  "popularity": {
+   "evidence": "#4 in Amazon Best Sellers 'Aquarium Heaters' (4.3 stars, 12,044 reviews, most-reviewed mini); '3K+ bought in past month'. Seen 2026-10-20. https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Heaters/zgbs/pet-supplies/23128582011",
+   "url": "https://www.amazon.com/dp/B081VN41FQ",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "pulaco-50",
+  "brand": "PULACO",
+  "model": "Small Betta Heater PL-168 50 W",
+  "watts": 50,
+  "lengthMm": 99,
+  "diaMm": 20,
+  "look": "glass",
+  "galMin": 1,
+  "galMax": 10,
+  "priceUsd": 13.99,
+  "url": "https://www.amazon.com/dp/B0CN6Q326B",
+  "priceUrl": "https://www.amazon.com/dp/B0CN6Q326B",
+  "asOf": "2026-10-20",
+  "est": [
+   "controller dims"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#151515"
+   },
+   "foot": {
+    "hex": "#151515"
+   },
+   "tube": {
+    "kind": "glass",
+    "hex": "#d9dfe3"
+   },
+   "element": {
+    "kind": "coil",
+    "hex": "#222222"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "controller": {
+    "hex": "#1b1b1b",
+    "display": "#e8141c",
+    "wMm": 35,
+    "hMm": 80,
+    "dMm": 20
+   },
+   "photo": "https://m.media-amazon.com/images/I/61nDw1TQYFL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "controller dims"
+  ],
+  "colorsNote": "External controller box with red LED digits and a red button (dark grey body). lengthMm 99 is the TRUE length (3.9 in), just under 100.",
+  "popularity": {
+   "evidence": "#28 in Amazon Best Sellers 'Aquarium Heaters' (4.2 stars, 514 reviews); '50+ bought in past month'. Seen 2026-10-20. https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Heaters/zgbs/pet-supplies/23128582011",
+   "url": "https://www.amazon.com/dp/B0CN6Q326B",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "orlushy-25",
+  "brand": "Orlushy",
+  "model": "Submersible Heater 25 W",
+  "watts": 25,
+  "lengthMm": 119,
+  "diaMm": 28,
+  "look": "shroud",
+  "galMin": 1,
+  "galMax": 6,
+  "priceUsd": 8.99,
+  "url": "https://www.amazon.com/dp/B0BC6HLMY1",
+  "priceUrl": "https://www.amazon.com/dp/B0BC6HLMY1",
+  "asOf": "2026-10-20",
+  "est": [
+   "diaMm"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#151515"
+   },
+   "tube": {
+    "kind": "hidden",
+    "hex": "#1a1a1a"
+   },
+   "element": {
+    "kind": "none",
+    "hex": "#151515"
+   },
+   "guard": {
+    "has": true,
+    "hex": "#1a1a1a",
+    "pattern": "slots"
+   },
+   "cord": "#8a8d90",
+   "cups": "black",
+   "shape": "tube",
+   "photo": "https://m.media-amazon.com/images/I/61lvfpKGgGL._AC_SL1500_.jpg"
+  },
+  "colorsNote": "Black plastic shroud, grey cord.",
+  "popularity": {
+   "evidence": "Orlushy listing family (B07H2KRWFF) is #1 in Amazon Best Sellers 'Aquarium Heaters'; this 25 W (4.0 stars, 2,236 reviews): '700+ bought in past month'. Seen 2026-10-20. https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Heaters/zgbs/pet-supplies/23128582011",
+   "url": "https://www.amazon.com/dp/B0BC6HLMY1",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "orlushy-300",
+  "brand": "Orlushy",
+  "model": "Submersible Heater 300 W",
+  "watts": 300,
+  "lengthMm": 279,
+  "diaMm": 30,
+  "look": "glass",
+  "galMin": 40,
+  "galMax": 75,
+  "priceUsd": 21.59,
+  "url": "https://www.amazon.com/dp/B07H2KRWFF",
+  "priceUrl": "https://www.amazon.com/dp/B07H2KRWFF",
+  "asOf": "2026-10-20",
+  "est": [
+   "galMin",
+   "galMax",
+   "diaMm"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#151515",
+    "dial": true,
+    "note": "orange temperature knob #e8731c"
+   },
+   "foot": {
+    "hex": "#151515"
+   },
+   "tube": {
+    "kind": "glass",
+    "hex": "#d9dfe3"
+   },
+   "element": {
+    "kind": "coil",
+    "hex": "#7a7a7a"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "photo": "https://m.media-amazon.com/images/I/61XL6vQCa1L._AC_SL1000_.jpg"
+  },
+  "colorsEst": [
+   "cups"
+  ],
+  "popularity": {
+   "evidence": "#1 in Amazon Best Sellers 'Aquarium Heaters' (4.4 stars, 8,386 reviews); '1K+ bought in past month'. Seen 2026-10-20. https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Heaters/zgbs/pet-supplies/23128582011",
+   "url": "https://www.amazon.com/dp/B07H2KRWFF",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "aquaneat-25",
+  "brand": "AQUANEAT",
+  "model": "Mini Preset Heater G405 25 W",
+  "watts": 25,
+  "lengthMm": 114,
+  "diaMm": 24,
+  "look": "glass",
+  "galMin": 3,
+  "galMax": 5.5,
+  "priceUsd": 7.95,
+  "url": "https://www.amazon.com/dp/B0CCD6PX96",
+  "priceUrl": "https://www.amazon.com/dp/B0CCD6PX96",
+  "asOf": "2026-10-20",
+  "est": [
+   "diaMm"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#151515"
+   },
+   "foot": {
+    "hex": "#151515"
+   },
+   "tube": {
+    "kind": "glass",
+    "hex": "#d9dfe3"
+   },
+   "element": {
+    "kind": "coil",
+    "hex": "#8c8c8c"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "photo": "https://m.media-amazon.com/images/I/61e87utI+hL._AC_SL1500_.jpg"
+  },
+  "popularity": {
+   "evidence": "#17 in Amazon Best Sellers 'Aquarium Heaters' (4.3 stars, 1,333 reviews); '100+ bought in past month' (search page; 50+ on product page). Seen 2026-10-20. https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Heaters/zgbs/pet-supplies/23128582011",
+   "url": "https://www.amazon.com/dp/B0CCD6PX96",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "aquaneat-50",
+  "brand": "AQUANEAT",
+  "model": "Adjustable Heater G416 50 W",
+  "watts": 50,
+  "lengthMm": 171,
+  "diaMm": 25,
+  "look": "glass",
+  "galMin": 5,
+  "galMax": 15,
+  "priceUsd": 8.87,
+  "url": "https://www.amazon.com/dp/B0CWQW6FYX",
+  "priceUrl": "https://www.amazon.com/dp/B0CWQW6FYX",
+  "asOf": "2026-10-20",
+  "est": [
+   "diaMm"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#151515",
+    "dial": true,
+    "note": "blue dial"
+   },
+   "foot": {
+    "hex": "#151515"
+   },
+   "tube": {
+    "kind": "glass",
+    "hex": "#d9dfe3"
+   },
+   "element": {
+    "kind": "coil",
+    "hex": "#8c8c8c"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "photo": "https://m.media-amazon.com/images/I/61sSk--CpgL._AC_SL1500_.jpg"
+  },
+  "popularity": {
+   "evidence": "#9 in Amazon Best Sellers 'Aquarium Heaters' (4.1 stars, 956 reviews); '300+ bought in past month'. Seen 2026-10-20. https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Heaters/zgbs/pet-supplies/23128582011",
+   "url": "https://www.amazon.com/dp/B0CWQW6FYX",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "aquaneat-100",
+  "brand": "AQUANEAT",
+  "model": "Adjustable Heater G419 100 W",
+  "watts": 100,
+  "lengthMm": 210,
+  "diaMm": 26,
+  "look": "glass",
+  "galMin": 15,
+  "galMax": 30,
+  "priceUsd": 13.88,
+  "url": "https://www.amazon.com/dp/B0DMDYCFLR",
+  "priceUrl": "https://www.amazon.com/dp/B0DMDYCFLR",
+  "asOf": "2026-10-20",
+  "est": [
+   "diaMm"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#151515",
+    "dial": true,
+    "note": "blue dial"
+   },
+   "foot": {
+    "hex": "#151515"
+   },
+   "tube": {
+    "kind": "glass",
+    "hex": "#d9dfe3"
+   },
+   "element": {
+    "kind": "coil",
+    "hex": "#8c8c8c"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "photo": "https://m.media-amazon.com/images/I/61feAkWuA-L._AC_SL1500_.jpg"
+  },
+  "popularity": {
+   "evidence": "#23 in Amazon Best Sellers 'Aquarium Heaters' (4.2 stars, 151 reviews); '400+ bought in past month'. Seen 2026-10-20. https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Heaters/zgbs/pet-supplies/23128582011",
+   "url": "https://www.amazon.com/dp/B0DMDYCFLR",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "hitop-50",
+  "brand": "HITOP",
+  "model": "Adjustable Heater HP-608 50 W",
+  "watts": 50,
+  "lengthMm": 200,
+  "diaMm": 25,
+  "look": "glass",
+  "galMin": 6,
+  "galMax": 15,
+  "priceUsd": 13.97,
+  "url": "https://www.amazon.com/dp/B07MJJJ4QQ",
+  "priceUrl": "https://www.amazon.com/dp/B07MJJJ4QQ",
+  "asOf": "2026-10-20",
+  "est": [
+   "diaMm"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#151515",
+    "dial": false
+   },
+   "foot": {
+    "hex": "#151515"
+   },
+   "tube": {
+    "kind": "glass",
+    "hex": "#d9dfe3"
+   },
+   "thermometer": true,
+   "element": {
+    "kind": "none",
+    "hex": "#e8e8e8"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "photo": "https://m.media-amazon.com/images/I/61toMyTmngL._SL1500_.jpg"
+  },
+  "colorsNote": "Listing dimensions 7.87 x 0.98 in.",
+  "popularity": {
+   "evidence": "#6 in Amazon Best Sellers 'Aquarium Heaters' (4.3 stars, 4,211 reviews); '1K+ bought in past month'. Seen 2026-10-20. https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Heaters/zgbs/pet-supplies/23128582011",
+   "url": "https://www.amazon.com/dp/B07MJJJ4QQ",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "hitop-mini-50",
+  "brand": "HITOP",
+  "model": "Mini Digital Heater Q2 50 W",
+  "watts": 50,
+  "lengthMm": 110,
+  "diaMm": 18,
+  "look": "glass",
+  "galMin": 5,
+  "galMax": 12,
+  "priceUsd": 17.97,
+  "url": "https://www.amazon.com/dp/B0B6FQHK8T",
+  "priceUrl": "https://www.amazon.com/dp/B0B6FQHK8T",
+  "asOf": "2026-10-20",
+  "est": [
+   "controller dims"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#151515"
+   },
+   "tube": {
+    "kind": "glass",
+    "hex": "#4a4f52"
+   },
+   "element": {
+    "kind": "none",
+    "hex": "#151515"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "controller": {
+    "hex": "#1b1b1b",
+    "display": "#e8141c",
+    "wMm": 35,
+    "hMm": 110,
+    "dMm": 22
+   },
+   "photo": "https://m.media-amazon.com/images/I/71LlDV+UnvL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "controller dims",
+   "cups"
+  ],
+  "colorsNote": "Smoked glass tube; inline controller with red digits.",
+  "popularity": {
+   "evidence": "#19 in Amazon Best Sellers 'Aquarium Heaters' (4.4 stars, 443 reviews). Seen 2026-10-20. https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Heaters/zgbs/pet-supplies/23128582011",
+   "url": "https://www.amazon.com/dp/B0B6FQHK8T",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "hygger-mini2-50",
+  "brand": "hygger",
+  "model": "Mini Heater HG142 50 W",
+  "watts": 50,
+  "lengthMm": 102,
+  "diaMm": 25,
+  "look": "titanium",
+  "galMin": 5,
+  "galMax": 10,
+  "priceUsd": 19.99,
+  "url": "https://www.amazon.com/dp/B0D53VDS9J",
+  "priceUrl": "https://www.amazon.com/dp/B0D53VDS9J",
+  "asOf": "2026-10-20",
+  "est": [
+   "diaMm",
+   "controller dims"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#151515"
+   },
+   "tube": {
+    "kind": "opaque",
+    "hex": "#151515"
+   },
+   "element": {
+    "kind": "none",
+    "hex": "#151515"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "flat",
+   "controller": {
+    "hex": "#1b1b1b",
+    "display": "#e8141c",
+    "wMm": 30,
+    "hMm": 70,
+    "dMm": 18
+   },
+   "photo": "https://m.media-amazon.com/images/I/61aCcw5MGnL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "controller dims"
+  ],
+  "colorsNote": "Flat black rectangular body 4 in x 1 in (diaMm is the 1 in height); inline controller with red digits.",
+  "popularity": {
+   "evidence": "#8 in Amazon Best Sellers 'Aquarium Heaters' (4.5 stars, 419 reviews); '1K+ bought in past month'. Seen 2026-10-20. https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Heaters/zgbs/pet-supplies/23128582011",
+   "url": "https://www.amazon.com/dp/B0D53VDS9J",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "hitauing-300",
+  "brand": "HiTauing",
+  "model": "Aquarium Heater AP02 300 W",
+  "watts": 300,
+  "lengthMm": 330,
+  "diaMm": 32,
+  "look": "shroud",
+  "galMin": 40,
+  "galMax": 75,
+  "priceUsd": 38.99,
+  "url": "https://www.amazon.com/dp/B09H4K5BJD",
+  "priceUrl": "https://www.amazon.com/dp/B09H4K5BJD",
+  "asOf": "2026-10-20",
+  "est": [
+   "lengthMm",
+   "diaMm",
+   "galMin",
+   "galMax",
+   "controller dims"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#151515"
+   },
+   "tube": {
+    "kind": "hidden",
+    "hex": "#1a1a1a"
+   },
+   "element": {
+    "kind": "none",
+    "hex": "#151515"
+   },
+   "guard": {
+    "has": true,
+    "hex": "#1a1a1a",
+    "pattern": "slots"
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "controller": {
+    "hex": "#1b1b1b",
+    "display": "#ff8a1a",
+    "wMm": 45,
+    "hMm": 70,
+    "dMm": 22
+   },
+   "photo": "https://m.media-amazon.com/images/I/61O6mmO9iEL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "controller dims"
+  ],
+  "colorsNote": "Black slotted plastic shroud; inline oval controller with orange digits.",
+  "popularity": {
+   "evidence": "#5 in Amazon Best Sellers 'Aquarium Heaters' (4.4 stars, 2,475 reviews); '1K+ bought in past month'. Seen 2026-10-20. https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Heaters/zgbs/pet-supplies/23128582011",
+   "url": "https://www.amazon.com/dp/B09H4K5BJD",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "fluval-m200",
+  "brand": "Fluval",
+  "model": "M 200 W Submersible Heater",
+  "watts": 200,
+  "lengthMm": 315,
+  "diaMm": 30,
+  "look": "glass",
+  "galMin": 40,
+  "galMax": 65,
+  "priceUsd": 39.99,
+  "url": "https://www.amazon.com/dp/B0027VQ0WM",
+  "priceUrl": "https://www.amazon.com/dp/B0027VQ0WM",
+  "asOf": "2026-10-20",
+  "est": [
+   "lengthMm",
+   "diaMm",
+   "galMin"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#9aa0a6"
+   },
+   "foot": {
+    "hex": "#9aa0a6"
+   },
+   "tube": {
+    "kind": "glass",
+    "hex": "#d9dfe3"
+   },
+   "element": {
+    "kind": "none",
+    "hex": "#e8e8e8"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "clear",
+   "shape": "tube",
+   "photo": "https://m.media-amazon.com/images/I/61h4x3C2sPL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "cap",
+   "foot",
+   "element",
+   "cups"
+  ],
+  "colorsNote": "Photo is the retail card.",
+  "popularity": {
+   "evidence": "#18 in Amazon Best Sellers 'Aquarium Heaters' (4.3 stars, 1,592 reviews). Seen 2026-10-20. https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Heaters/zgbs/pet-supplies/23128582011",
+   "url": "https://www.amazon.com/dp/B0027VQ0WM",
+   "seen": "2026-10-20"
+  }
+ },
+ {
+  "id": "fluval-e300",
+  "brand": "Fluval",
+  "model": "E 300 W Electronic Heater",
+  "watts": 300,
+  "lengthMm": 368,
+  "diaMm": 40,
+  "look": "shroud",
+  "galMin": 50,
+  "galMax": 100,
+  "priceUsd": 72.99,
+  "url": "https://www.amazon.com/dp/B001VMSK0I",
+  "priceUrl": "https://www.amazon.com/dp/B001VMSK0I",
+  "asOf": "2026-10-20",
+  "est": [
+   "lengthMm",
+   "diaMm"
+  ],
+  "colors": {
+   "cap": {
+    "hex": "#151515",
+    "display": "#3fbf5a"
+   },
+   "tube": {
+    "kind": "hidden",
+    "hex": "#1a1a1a"
+   },
+   "element": {
+    "kind": "none",
+    "hex": "#151515"
+   },
+   "guard": {
+    "has": true,
+    "hex": "#1a1a1a",
+    "pattern": "slots"
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "photo": "https://m.media-amazon.com/images/I/61AOPqZZuxL._AC_SL1500_.jpg"
+  },
+  "colorsEst": [
+   "cap",
+   "cups"
+  ],
+  "colorsNote": "Low-res retail box photo; colours est.",
+  "popularity": {
+   "evidence": "#30 in Amazon Best Sellers 'Aquarium Heaters' (4.3 stars, 3,584 reviews). Seen 2026-10-20. https://www.amazon.com/Best-Sellers-Pet-Supplies-Aquarium-Heaters/zgbs/pet-supplies/23128582011",
+   "url": "https://www.amazon.com/dp/B001VMSK0I",
+   "seen": "2026-10-20"
+  }
+ }
+]

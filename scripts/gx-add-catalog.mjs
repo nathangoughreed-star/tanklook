@@ -1,3 +1,4 @@
+// HISTORICAL (applied once; since lane GM1 the catalogue is one file per type in src/data/gear/, this script no longer runs).
 // Lane GX (2026-10-27): adds the reef / planted gear sections (skimmers, uv, co2, ato, chillers) to src/data/gear-catalog.json.
 // Specs are only what the Amazon listing says (read 2026-10-27); a spec not read is left out and named in `needSpec`.
 // Re-runnable: replaces the five sections, keeps the rest of the file. Sections go before "heaters" (a spot other lanes do not edit).
