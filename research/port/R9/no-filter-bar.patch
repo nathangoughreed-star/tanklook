@@ -1,0 +1,54 @@
+diff --git a/src/ui/fullnessTile.ts b/src/ui/fullnessTile.ts
+index 96be3e5f..5dcd9cea 100644
+--- a/src/ui/fullnessTile.ts
++++ b/src/ui/fullnessTile.ts
+@@ -107,11 +107,13 @@ export function tileState(S: TankSetup, r: Stocking, units: Units = 'cm'): TileS
+   const m = tankMinimum(S), mins = minWarnings(m, units), tooSmall = mins.some(w => w.level === 'over'), limit = S.layout.space, fit = limit ? spaceFit(S.tank, limit) : undefined;
+   // no filter of the owner's yet (Nathan 2026-10-21): the pill and the reason come from space alone, not from an assumed filter
+   const filter = filterState(S), unset = filter === 'unset', head = bar(unset ? r.spacePercent : r.percent), cr = compatRisks(S);
++  // no filter chosen: show the bar as it stands with none (surface bacteria only), high, never an assumed filter (Nathan 2026-10-29)
++  const rf = unset ? stockingMemo((() => { const c = structuredClone(S); setFilterless(c, true); return c; })()) : r;
+   return {
+     show: S.water.on && (r.contributors.length > 0 || !!limit),
+-    space: bar(r.spacePercent), filt: bar(r.filtrationPercent), min: minBar(m), mins, head: tooSmall && head.level !== 'over' ? { ...head, level: 'over', text: 'Too small' } : head,
++    space: bar(r.spacePercent), filt: bar(rf.filtrationPercent), min: minBar(m), mins, head: tooSmall && head.level !== 'over' ? { ...head, level: 'over', text: 'Too small' } : head,
+     water: bar(r.waterPercent), floor: bar(r.floorPercent), spaceBy: r.spaceBy, topFloor: topBy(r, 'floor'),
+-    topSpace: topBy(r, r.spaceBy === 'floor' ? 'floor' : 'space'), topFilt: topBy(r, 'load'), topMin: topMin(m, units), reason: unset ? spaceReason(r) : r.reasons.join(' '), filter, // every reason, the fix that would bring it under 100 % too (the sidebar line moved here, Nathan 2026-10-22)
++    topSpace: topBy(r, r.spaceBy === 'floor' ? 'floor' : 'space'), topFilt: topBy(rf, 'load'), topMin: topMin(m, units), reason: unset ? spaceReason(r) : r.reasons.join(' '), filter, // every reason, the fix that would bring it under 100 % too (the sidebar line moved here, Nathan 2026-10-22)
+     ...(limit ? { limit, fit } : {}), ...(cr ? { compat: { level: cr.level === 'high' ? 'over' as const : 'near' as const, text: compatLine(cr) } } : {}),
+   };
+ }
+@@ -249,7 +251,8 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
+     const spaceRows = row('water', 'Water column', st.water, topBy(r, 'space'), 'water column', undefined, 'How full the water is: body size against the litres (fitted to AqAdvisor). More height counts here.')
+       + row('floor', 'Floor', st.floor, st.topFloor, 'floor', 'Most of the floor:', 'Floor the bottom dwellers use: 15 sq in per inch of fish (research/habitat-model.md). A taller tank adds no floor.', 'No bottom dwellers: the floor is free.');
+     bars.innerHTML = `<div class="ftWhy ftSize">${esc(tankSizeLine(S, r, u))}</div>` + (st.compat ? `<div class="ftWarn ft-${st.compat.level} ftCompat">${esc(st.compat.text)}</div>` : '') + spaceRows
+-      + (st.filter === 'unset' ? `<div class="ftWarn ft-near ftNeedFilter"><b>This tank needs a filter.</b> Add one in Tech › Filtration to see its filtration.${box(false)}</div>`
++      + (st.filter === 'unset' ? `<div class="ftWarn ft-near ftNeedFilter"><b>No filter chosen.</b> The Filtration bar is high because there is no filter yet: add one in Tech › Filtration.${box(false)}</div>`
++          + row('filt', 'Filtration (no filter yet)', st.filt, st.topFilt, 'waste', undefined, 'High because you have not chosen a filter: this counts only the bacteria on the glass and decor. Add one in Tech › Filtration to bring it down.')
+         : row('filt', 'Filtration', st.filt, st.topFilt, 'waste', undefined, 'Ammonia the filter bacteria can process, after the plants take their share. It does not measure nitrate, oxygen, pH or temperature.')
+           + (st.filter === 'filterless' ? `<div class="ftWhy">${box(true)}: bacteria on glass, substrate and decor only.</div>` : ''))
+       + (st.topMin.length ? row('min', 'Tank minimum', st.min, st.topMin, 'minimum', 'Smallest tank they want, whatever the count:', Number.isFinite(st.min.pct) ? `Their minimum tank is ${Math.round(st.min.pct)}% of this one: green past every Recommended size, yellow between the minimum and Recommended, red below the minimum.` : '') : '')
+diff --git a/test/fullnessTile.test.ts b/test/fullnessTile.test.ts
+index dbd2c628..5c2e877b 100644
+--- a/test/fullnessTile.test.ts
++++ b/test/fullnessTile.test.ts
+@@ -79,8 +79,8 @@ describe('fullness bars', () => {
+     const S = withFish(), r = stockingOf(S);
+     const st = tileState(S, r);
+     expect(st.show).toBe(true);
+-    expect(st.space.pct).toBeCloseTo(r.spacePercent); expect(st.filt.pct).toBeCloseTo(r.filtrationPercent);
+-    expect(st.head.pct).toBeCloseTo(Math.max(r.spacePercent, r.filtrationPercent)); // the minimum no longer feeds the percentage (it warns by name)
++    expect(st.space.pct).toBeCloseTo(r.spacePercent); expect(st.filt.pct).toBeGreaterThan(r.filtrationPercent); // no filter chosen: the bar shows the no-filter load, high, not an assumed filter
++    expect(st.head.pct).toBeCloseTo(r.spacePercent); // the minimum no longer feeds the percentage (it warns by name)
+     const empty = { ...S, fish: [] }, re = stockingOf(empty);
+     expect(tileState(empty, re).show).toBe(false);
+     expect(tileState({ ...empty, layout: { ...S.layout, space: { w: 900, d: 400 } } }, re).show).toBe(true);
+@@ -253,7 +253,7 @@ describe('filter gate follow-ups (Nathan 2026-10-21)', () => {
+     const filters = (S: TankSetup) => gearPicks(S).filter(p => p.row?.startsWith('filter')).length;
+     const plain = tank(); expect(filters(plain)).toBeGreaterThan(0);
+     const p1 = { ...tank(), stockFirst: true }; expect(filters(p1)).toBe(0);
+-    expect(gearPicks(p1).length).toBeGreaterThan(0); // the heater is still drawn
++    expect(gearPicks(p1).some(p => p.row?.startsWith('heater'))).toBe(false); // no heater either until one is added (Nathan 2026-10-26)
+     p1.tech = choose(p1, 'filter', 'hob'); expect(filters(p1)).toBeGreaterThan(0);
+   });
+ });
