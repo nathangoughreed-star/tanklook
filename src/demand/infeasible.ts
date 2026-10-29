@@ -7,6 +7,8 @@ import { getSpecies } from '../data/species';
 import { TANK_MODELS } from '../data/tanks';
 import { TIER_LABEL } from '../scene/finish';
 import { clearItem, setItem, valueOf, type Brief } from '../scene/brief';
+// Lane NG4 (2026-10-29): every conflict is framed as FOUR PATHS (keep the vision, keep the limits, keep the look, save the ambition), each one verified by re-running the generator (`pathsOf` at the bottom).
+// Nothing here loosens a welfare gate: a path whose animals cannot be kept well says so and offers no button.
 import { OWNED, PICK_CARE, lockedArchetype, ownedAssess, type Miss, type OwnedKey, type OwnedMap, type Proposal, type Suggestions, type Wants } from './suggest';
 import type { CostLine } from './costlines';
 import type { SpaceLimit } from '../scene/types';
@@ -21,10 +23,19 @@ export type AltEdit =
   | { op: 'owned'; keys: OwnedKey[]; tank?: string }
   | { op: 'species'; animals: { species: string; n: number }[] }
   | { op: 'phased' } | { op: 'lowtech' }
-  | { op: 'space'; w?: number; d?: number } | { op: 'ownTank' };
+  | { op: 'space'; w?: number; d?: number } | { op: 'ownTank' }
+  /** several edits in one click (the vision path: every limit it breaks, together) */
+  | { op: 'all'; edits: AltEdit[] }
+  /** save an ambition in the brief (preferences.future), then optionally also a smaller project now */
+  | { op: 'future'; text: string; from?: string; now?: AltEdit };
+
+/** The four ways out of a conflict (the design plan's section 05). */
+export type PathId = 'vision' | 'limits' | 'look' | 'future';
 
 export interface Alternative {
-  kind: 'raise-budget' | 'raise-upkeep' | 'more-time' | 'use-owned' | 'bigger-space' | 'other-tank' | 'change-animals' | 'phase' | 'low-tech';
+  kind: 'raise-budget' | 'raise-upkeep' | 'more-time' | 'use-owned' | 'bigger-space' | 'other-tank' | 'change-animals' | 'phase' | 'low-tech' | 'keep-vision' | 'save-ambition';
+  /** which of the four paths this belongs to (set by pathsOf) */
+  path?: PathId;
   /** one or two plain sentences with the numbers */
   text: string;
   /** the short button label */
@@ -46,7 +57,12 @@ export interface Infeasible {
   alternatives: Alternative[];
   /** the cheapest honest build when the limit is money or time: its name, all-in $, how far over, and what it is made of */
   cheapest?: { title: string; usd: number; over: number; lines: { label: string; usd: number }[] };
+  /** the four paths, always all four, each with its verified buttons (indexes into `alternatives`) or the plain reason it has none */
+  paths?: ConflictPath[];
 }
+/** The true build behind the vision: what it really is and costs, and which of the person's limits it breaks. */
+export interface VisionFacts { title: string; animals: string; gal: number; outerIn: [number, number]; usd: number; monthlyUsd: number; minPerWeek: number; gear: string[]; breaks: string[] }
+export interface ConflictPath { id: PathId; title: string; blurb: string; alts: number[]; none?: string; facts?: VisionFacts }
 
 const usd = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
 const inch = (mm: number) => Math.round(mm / 25.4);
@@ -76,6 +92,8 @@ export function applyAlternative(b: Brief, e: AltEdit): Brief {
     case 'lowtech': return setItem(clearItem(b, 'preferences.hightech'), 'preferences.lowtech', true, 'hard');
     case 'space': return e.w && e.d ? setItem(b, 'constraints.maxSpace', { w: e.w, d: e.d }, 'hard') : clearItem(b, 'constraints.maxSpace');
     case 'ownTank': return clearItem(b, 'constraints.existingTank');
+    case 'all': return e.edits.reduce(applyAlternative, b);
+    case 'future': { const n = e.text.trim() ? setItem(b, 'preferences.future', [...(valueOf(b, 'preferences.future') ?? []), { text: e.text.trim(), ...(e.from ? { from: e.from } : {}) }], 'preference') : b; return e.now ? applyAlternative(n, e.now) : n; } // same write as setupBrief.addFuture
   }
 }
 
@@ -85,7 +103,7 @@ const capsOff = (w: Wants): Wants => { const c = w.constraints, off = <T extends
 const cheapestOf = (r: Suggestions): Proposal | undefined => r.cheapest ?? r.proposals[0];
 
 /** Explain why nothing passed and what would change that. Each alternative is checked by running the generator with its edit. */
-export function explainInfeasible(x: Ctx): Infeasible {
+function explainBase(x: Ctx): Infeasible {
   const { w, locked } = x, C = w.constraints;
   const cap = C.startupUsd?.on ? C.startupUsd.value : undefined, mo = C.monthlyUsd?.on ? C.monthlyUsd.value : undefined, mi = C.minutesPerWeek?.on ? C.minutesPerWeek.value : undefined;
   const what = locked && w.animals ? animalsText(w.animals) : w.hightech ? 'a high-tech planted tank' : 'any kind of setup you ticked';
@@ -169,4 +187,137 @@ export function explainInfeasible(x: Ctx): Infeasible {
     return { limitingFactor: welfare ? 'welfare' : 'animals', alternatives: alts, text: welfare ? `${animalsText(w.animals)} cannot be kept to the stocking rules in any tank we can build (tank size, group size, water and care), whatever the budget. We will not propose a setup that fails them, and your animals stay as you locked them.` : 'Those animals are not in the data yet, so no setup can be checked for them.' };
   }
   return { limitingFactor: 'budget', alternatives: alts, text: 'Nothing passes every check with these limits. Loosen a limit or tick another kind of setup.' };
+}
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// Lane NG4: the four paths. Each is built from real generator runs; a path with nothing that verifies says so in words and has no button (never a silent swap, never a welfare failure shown as a tradeoff).
+
+/** The same edit applied to the generator's input, so an alternative can be verified without a brief. */
+const wantsWith = (w: Wants, e: AltEdit): Wants => {
+  const C = w.constraints, on = (value: number) => ({ on: true, value });
+  switch (e.op) {
+    case 'budget': return { ...w, constraints: { ...C, startupUsd: on(e.usd) } };
+    case 'upkeep': return { ...w, constraints: { ...C, monthlyUsd: on(e.usd) } };
+    case 'time': return { ...w, constraints: { ...C, minutesPerWeek: on(e.min) } };
+    case 'owned': { const have = { ...(w.owned ?? {}) }; for (const k of e.keys) have[k] = PICK_CARE; return { ...w, owned: have, ...(e.tank ? { ownTank: TANK_MODELS.find(m => m.id === e.tank) } : {}) }; }
+    case 'species': return { ...w, animals: e.animals };
+    case 'phased': return { ...w, phased: true };
+    case 'lowtech': return { ...w, hightech: false, lowtech: true };
+    case 'space': return e.w && e.d ? { ...w, space: { w: e.w, d: e.d }, constraints: { ...C, ...(C.space ? { space: { ...C.space, on: true } } : {}) } } : { ...w, space: undefined, constraints: { ...C, space: C.space ? { ...C.space, on: false } : undefined } };
+    case 'ownTank': return { ...w, ownTank: undefined };
+    case 'all': return e.edits.reduce(wantsWith, w);
+    case 'future': return e.now ? wantsWith(w, e.now) : w;
+  }
+};
+
+/** How alike two animals are in what a person sees and gets: same family of animal, same genus, same way of swimming, similar size, same water level. Only used to order the "nearest animals" shown. */
+function likeness(a: string, b: string): { score: number; keeps: string[] } {
+  const A = getSpecies(a), B = getSpecies(b); if (!A || !B) return { score: 0, keeps: [] };
+  const keeps: string[] = []; let score = 0;
+  if (A.sci.split(' ')[0] === B.sci.split(' ')[0]) { score += 3; keeps.push('the same genus'); }
+  if (A.cat === B.cat) score += 2;
+  if (A.group && A.group === B.group) { score += 1; keeps.push(A.group === 'school' ? 'a tight school' : 'a loose shoal'); }
+  if ((A.level ?? 'mid') === (B.level ?? 'mid')) score += 0.5;
+  const r = Math.min(A.tl, B.tl) / Math.max(A.tl, B.tl); score += r * 1.5; if (r > 0.6) keeps.push('a similar size');
+  return { score, keeps };
+}
+
+/** Money / time edits scaled up in small steps until a real run passes: the build's own price is not always a limit the generator accepts (it checks the all-in price with its margins). */
+const scaled = (e: AltEdit, f: number): AltEdit => e.op === 'budget' ? { op: 'budget', usd: Math.ceil(e.usd * f) } : e.op === 'upkeep' ? { op: 'upkeep', usd: Math.ceil(e.usd * f) } : e.op === 'time' ? { op: 'time', min: Math.ceil(e.min * f) } : e.op === 'all' ? { op: 'all', edits: e.edits.map(x => scaled(x, f)) } : e;
+function verified(x: Ctx, e: AltEdit): { edit: AltEdit; best: number } | undefined {
+  for (const f of [1, 1.03, 1.06, 1.1, 1.15, 1.2, 1.3]) { const edit = scaled(e, f), r = x.run(wantsWith(x.w, edit)); if (r.proposals.length) return { edit, best: Math.min(...r.proposals.map(p => p.totals.startupUsd)) }; }
+  return undefined;
+}
+
+const key = (e?: AltEdit) => JSON.stringify(e);
+const PATH_OF: Partial<Record<Alternative['kind'], PathId>> = { 'raise-budget': 'vision', 'raise-upkeep': 'vision', 'more-time': 'vision', 'use-owned': 'vision', 'phase': 'vision', 'other-tank': 'vision', 'bigger-space': 'vision', 'change-animals': 'limits', 'low-tech': 'look' };
+
+/** Explain why nothing passed and what would change that, as four verified paths (keep the vision, keep the limits, keep the look, save the ambition). Every button re-runs the generator before it is offered. */
+export function explainInfeasible(x: Ctx): Infeasible {
+  const base = explainBase(x), { w, locked } = x, C = w.constraints;
+  const cap = C.startupUsd?.on ? C.startupUsd.value : undefined, mo = C.monthlyUsd?.on ? C.monthlyUsd.value : undefined, mi = C.minutesPerWeek?.on ? C.minutesPerWeek.value : undefined;
+  const what = locked && w.animals ? animalsText(w.animals) : 'this setup';
+  const la = locked && w.animals ? lockedArchetype(w.animals) : undefined;
+  const alts: Alternative[] = [];
+  const add = (path: PathId, a: Alternative) => { alts.push({ ...a, path }); return alts.length - 1; };
+  const paths: ConflictPath[] = [
+    { id: 'vision', title: 'Keep the vision', blurb: 'The true build, whatever it takes: the tank, gear and care it really needs.', alts: [] },
+    { id: 'limits', title: 'Keep the limits', blurb: 'Your budget, tank and time stay as they are; the animals or design change, and we say so.', alts: [] },
+    { id: 'look', title: 'Keep the look', blurb: 'The same animals and look with less equipment or complexity, only where welfare still holds.', alts: [] },
+    { id: 'future', title: 'Save the ambition', blurb: 'Keep the dream in your brief with what it really needs, and start something responsible now.', alts: [] }];
+  const P = (id: PathId) => paths.find(p => p.id === id)!;
+
+  // ---- the single-purpose alternatives that still verify by a real run (raise a limit, use what you own, phases, a new tank, more room) belong to the vision; the animal ones are rebuilt below ----
+  for (let a of base.alternatives) {
+    const path = PATH_OF[a.kind]; if (!path || a.kind === 'change-animals') continue;
+    if (a.edit && a.kind !== 'phase' && a.kind !== 'low-tech') { // phase and low-tech were verified where they were made; the rest get a real run now
+      const v = verified(x, a.edit); if (!v) continue;
+      if (key(v.edit) !== key(a.edit)) { // the exact raise was not enough: the verified amount, said as it is
+        const e = v.edit;
+        if (e.op === 'budget' && cap !== undefined) a = { ...a, edit: e, delta: e.usd - cap, label: `Raise the budget to ${usd(e.usd)}`, text: `Raise the set-up ceiling by ${usd(e.usd - cap)}, to ${usd(e.usd)}: that buys this build, with the margin the price check needs.` };
+        else if (e.op === 'upkeep' && mo !== undefined) a = { ...a, edit: e, delta: e.usd - mo, label: `Allow ${usd(e.usd)} a month`, text: `Allow ${usd(e.usd - mo)} more a month, ${usd(e.usd)} in all.` };
+        else if (e.op === 'time' && mi !== undefined) a = { ...a, edit: e, delta: e.min - mi, label: `Allow ${e.min} min a week`, text: `Allow ${e.min - mi} more minutes a week, ${e.min} in all.` };
+        else a = { ...a, edit: e };
+      }
+      a = { ...a, resultUsd: a.resultUsd ?? v.best }; }
+    add(path, a);
+  }
+
+  // ---- keep the vision: the true build with every money / time / tank / space limit off ----
+  const vw: Wants = { ...capsOff(w), ownTank: undefined, space: undefined }; vw.constraints = { ...vw.constraints, space: C.space ? { ...C.space, on: false } : undefined };
+  const vb = cheapestOf(x.run(vw));
+  let ambition = '', reqs = '';
+  if (vb) {
+    const t = vb.totals, o = vb.build.tank.outer, L = inch(o.L), D = inch(o.D), gal = Math.round(vb.build.tank.ratedGal), sp = x.space;
+    const breaks: string[] = [], edits: AltEdit[] = [];
+    if (cap !== undefined && t.startupUsd > cap) { breaks.push(`${usd(t.startupUsd - cap)} over your ${usd(cap)} set-up ceiling`); edits.push({ op: 'budget', usd: Math.ceil(t.startupUsd) }); }
+    if (mo !== undefined && t.monthlyUsd > mo) { breaks.push(`${usd(t.monthlyUsd - mo)} a month over your ${usd(mo)} limit`); edits.push({ op: 'upkeep', usd: Math.ceil(t.monthlyUsd) }); }
+    if (mi !== undefined && t.minPerWeek > mi) { breaks.push(`${Math.round(t.minPerWeek - mi)} minutes a week over your ${mi}`); edits.push({ op: 'time', min: Math.ceil(t.minPerWeek) }); }
+    if (w.ownTank && vb.build.tank.ratedGal > w.ownTank.ratedGal + 0.5) { breaks.push(`a ${gal} gal tank, not your ${Math.round(w.ownTank.ratedGal)} gal`); edits.push({ op: 'ownTank' }); }
+    if (sp && !((o.L <= sp.w && o.D <= sp.d) || (o.L <= sp.d && o.D <= sp.w))) { breaks.push(`${L} x ${D} in of floor, your space is ${inch(sp.w)} x ${inch(sp.d)} in`); edits.push({ op: 'space', w: Math.max(sp.w, o.L), d: Math.max(sp.d, o.D) }); }
+    const facts: VisionFacts = { title: vb.archetype.title, animals: animalsText(vb.build.animals), gal, outerIn: [L, D], usd: t.startupUsd, monthlyUsd: t.monthlyUsd, minPerWeek: t.minPerWeek, gear: FIRST(vb.costLines).slice(0, 6), breaks };
+    P('vision').facts = facts;
+    reqs = `needs a ${gal} gal tank (${L} x ${D} in outside), ${usd(t.startupUsd)} to set up, about ${usd(t.monthlyUsd)} a month and about ${Math.round(t.minPerWeek)} minutes a week`;
+    ambition = `${facts.animals} in a ${gal} gal tank`;
+    if (edits.length) {
+      const v = verified(x, edits.length === 1 ? edits[0] : { op: 'all', edits }), edit = v?.edit ?? edits[0], best = v?.best;
+      const rise = edit.op === 'budget' ? ` Set-up ceiling: ${usd(edit.usd)}.` : edit.op === 'all' ? (() => { const b = edit.edits.find(e => e.op === 'budget'); return b && b.op === 'budget' ? ` Set-up ceiling: ${usd(b.usd)}.` : ''; })() : '';
+      const dup = edits.length === 1 && alts.some(a => a.path === 'vision' && a.edit?.op === edits[0].op && a.kind !== 'keep-vision'); // the single raise is already there, verified
+      if (best !== undefined && !dup) add('vision', { kind: 'keep-vision', label: `Keep it: ${gal} gal, ${usd(best)}`, edit, resultUsd: best, text: `Keep ${what}, as it really is: ${gal} gal, ${usd(t.startupUsd)} to set up, ${usd(t.monthlyUsd)} a month, about ${Math.round(t.minPerWeek)} minutes a week. This changes your limits, not the animals: ${breaks.join('; ')}.${rise}` });
+    } else P('vision').none = 'This build already fits every limit you set.';
+  } else P('vision').none = `${what} cannot be kept to the stocking rules in any tank we can build, whatever the budget, so there is no way to keep this vision. That is a welfare limit, not a tradeoff: we will not offer it.`;
+
+  // ---- keep the limits: every limit stays; the nearest animals that are kept well here, each with what it keeps and what it changes ----
+  if (locked && w.animals && la) {
+    const r = x.run({ ...w, animals: undefined, kinds: [la.kind], ...(la.group ? { groups: [la.group] } : {}) });
+    const from = w.animals.filter(a => a.n > 0), seen = new Set<string>();
+    const opts = r.proposals.filter(p => { const k = animalsText(p.build.animals); return !seen.has(k) && seen.add(k) && p.archetype.id !== la.id; })
+      .map(p => { const best = p.build.animals.flatMap(a => from.map(f => ({ a, ...likeness(f.species, a.species) }))).sort((m, n) => n.score - m.score)[0]; return { p, score: best?.score ?? 0, keeps: best?.keeps ?? [] }; })
+      .sort((m, n) => n.score - m.score).slice(0, 2);
+    for (const { p, keeps } of opts) {
+      const t = p.totals, now = animalsText(p.build.animals);
+      add('limits', { kind: 'change-animals', label: `Use ${now} instead`, edit: { op: 'species', animals: p.build.animals }, resultUsd: t.startupUsd,
+        text: `Different animals, only if you want them: ${now} instead of ${animalsText(from)}, in a ${tankText(p)} tank for ${usd(t.startupUsd)} to set up, ${usd(t.monthlyUsd)} a month, about ${Math.round(t.minPerWeek)} minutes a week. ${keeps.length ? `Keeps ${list(keeps)}; ` : 'Keeps little of the look or the behaviour; '}it is not the same animal. Your ${animalsText(from)} stay locked until you choose this.` });
+    }
+    if (!opts.length) P('limits').none = `No other animals of this kind can be kept well within your limits (${[cap !== undefined ? `${usd(cap)} to set up` : '', w.ownTank ? `your ${Math.round(w.ownTank.ratedGal)} gal tank` : '', x.space ? `${inch(x.space.w)} x ${inch(x.space.d)} in of space` : ''].filter(Boolean).join(', ') || 'the limits you set'}), so there is no honest swap to offer.`;
+  } else P('limits').none = locked ? 'Those animals are not in the data yet, so nothing can be compared.' : 'Your animals are not locked, so there is no animal to swap: nothing in the catalogue of that kind fits these limits either.';
+
+  // ---- keep the look: same animals, every limit; less complexity, only if the engine still passes welfare ----
+  if (!alts.some(a => a.path === 'look') && !w.lowtech) {
+    const edit: AltEdit = { op: 'lowtech' }, r = x.run(wantsWith(w, edit)), p = r.proposals[0];
+    if (p) add('look', { kind: 'low-tech', label: w.hightech ? 'Keep the planted look, low-tech' : 'Same look, low-tech', edit, resultUsd: p.totals.startupUsd,
+      text: `Keep ${what} and the look, with less to buy and run: ${p.build.finish ? TIER_LABEL[p.build.finish.tier].toLowerCase() : 'a planted finish'} in a ${tankText(p)} tank for ${usd(p.totals.startupUsd)}, no CO2 rig and no extra-strong light. Welfare checks are the same.` });
+  }
+  if (!alts.some(a => a.path === 'look')) P('look').none = `Nothing simpler passes: the cost here comes from what ${what} need (tank size, group size, filtration), not from the look, so there is nothing safe to take out.`;
+
+  // ---- save the ambition: stored in the brief with its real requirements, plus the smaller project now ----
+  if (ambition) {
+    const nowAlt = alts.find(a => a.path === 'limits' && a.edit), now = nowAlt?.edit, text = `${ambition}: ${reqs}.`;
+    add('future', { kind: 'save-ambition', label: nowAlt ? 'Save it, start smaller now' : 'Save it for later', edit: { op: 'future', text, from: 'conflict', ...(now ? { now } : {}) }, resultUsd: nowAlt?.resultUsd,
+      text: `Save "${ambition}" in your brief for later: it ${reqs}.${nowAlt ? ` And start with something smaller now: ${nowAlt.label.replace(/^Use /, '').replace(/ instead$/, '')}, ${nowAlt.resultUsd !== undefined ? usd(nowAlt.resultUsd) + ' to set up, ' : ''}within your limits.` : ' We found no smaller project that fits your limits yet, so only the ambition is saved and your animals stay as they are.'}` });
+  } else P('future').none = 'There is no build to save yet: this vision cannot be kept well at any size, so it is not stored as a plan.';
+
+  alts.forEach((a, i) => P(a.path!).alts.push(i));
+  for (const p of paths) if (p.alts.length) p.none = undefined;
+  return { ...base, alternatives: alts, paths };
 }

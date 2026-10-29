@@ -917,3 +917,7 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .sb-flag { border-left: 4px solid #c9a227; padding: 2px 6px }
 .sb-flag.problem { border-left-color: #d12b2b; color: #b01919; font-weight: 600 }
 .sb-flag i { font-style: normal; font-weight: 700; margin-right: 4px }
+/* lane NG4: the four conflict paths on the "why not" card (hook in NG1's file) */
+.sgPath { margin-top: 10px; padding: 8px 10px; border: 1px solid var(--line, #888); border-radius: 8px } .sgPath h4 { margin: 0 0 2px; font-size: 14px }
+.sgPath .sgAlts { margin-top: 6px } .sgTrue { margin: 6px 0; font-size: 13px } .sgNoPath { margin-top: 6px; font-style: italic }
+.sgFuture { margin-top: 10px; font-size: 13px } .sgFuture ul { margin: 4px 0 0; padding-left: 18px }

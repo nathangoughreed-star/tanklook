@@ -405,3 +405,13 @@ export function forkOptions(animals: AnimalCount[], limit: SpaceLimit, current?:
   }
   return { animals, room, ...(inSpace ? { inSpace } : {}), fitsAsIs, swaps };
 }
+
+// ---------- the budget on the animal screen (lane NG4) ----------
+/** The cheapest honest set-up of these animals in this tank against the brief's budget: `over` is how far the cheapest build is above the MAX (a conflict; the max is a filter), `overTarget` how far above the TARGET (a softer note: a target ranks, it does not filter). Undefined when it fits both. */
+export interface BudgetGap { tank: TankModel; cheapestUsd: number; maxUsd?: number; targetUsd?: number; over: number; overTarget: number }
+export function budgetGap(animals: AnimalCount[], tank: TankModel, maxUsd?: number, targetUsd?: number): BudgetGap | undefined {
+  if (!animals.length || (maxUsd === undefined && targetUsd === undefined)) return undefined;
+  const cheapestUsd = buildSpan(animals, tank)?.setupUsd.cheapest; if (cheapestUsd === undefined) return undefined;
+  const over = maxUsd !== undefined ? Math.max(0, Math.ceil(cheapestUsd - maxUsd)) : 0, overTarget = targetUsd !== undefined ? Math.max(0, Math.ceil(cheapestUsd - targetUsd)) : 0;
+  return over || overTarget ? { tank, cheapestUsd, ...(maxUsd !== undefined ? { maxUsd } : {}), ...(targetUsd !== undefined ? { targetUsd } : {}), over, overTarget } : undefined;
+}

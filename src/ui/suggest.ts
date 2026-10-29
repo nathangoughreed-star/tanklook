@@ -23,7 +23,7 @@ import { briefToWants, clearItem, setItem, valueOf } from '../scene/brief';
 import { openBuildPlan, confBadge } from './buildPlanSheet';
 import { buildPlanOf } from '../demand/buildplan';
 import { applyAlternative } from '../demand/infeasible';
-import { infeasibleCard } from './infeasibleCard';
+import { infeasibleCard, futureHtml } from './infeasibleCard';
 import { getSpecies as speciesOf } from '../data/species';
 import { chipsFor, dropWish, refine, type Chip } from '../demand/refine';
 import type { Wish } from '../scene/brief';
@@ -134,7 +134,7 @@ ${p.unknown.length ? `<div class="spNote">Not enough information: ${esc(p.unknow
     let out = '';
     if (res) {
       if (res.proposals.length) out = `<p class="spNote">${esc(res.off ? 'No guardrail is on, so these are ranked by what you picked below, not checked against a limit.' : 'Each one passes every guardrail you switched on and the animals\' care checks. Prices are expected costs; minutes are estimates.')}</p>
-${res.note ? `<p class="spWarn sgNote">${esc(res.note)}</p>` : ''}${chipRow()}<ul class="bpCards">${res.proposals.map(card).join('')}</ul>`;
+${res.note ? `<p class="spWarn sgNote">${esc(res.note)}</p>` : ''}${futureHtml(getBrief())}${chipRow()}<ul class="bpCards">${res.proposals.map(card).join('')}</ul>`;
       else if (res.infeasible) out = infeasibleCard(res.infeasible, getBrief());
       else out = `<p class="spWarn" id="sgNone">${esc(res.message ?? res.unavailable ?? '')}</p>`;
       if (res.misses.length && !res.unavailable) out += `<div class="sgMiss"><b>Closest, if you raise a limit</b> (these do not fit your guardrails as set)<ul>${res.misses.map(m => `<li>${esc(m.archetype.title)}: ${esc(m.text)}</li>`).join('')}</ul></div>`;

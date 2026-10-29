@@ -38,7 +38,7 @@ describe('infeasible requests explain themselves', () => {
       const r = again(applyAlternative(b0, a.edit!));
       expect(r.proposals.length, a.kind).toBeGreaterThan(0);
       welfareOk(r);
-      if (a.kind !== 'change-animals') for (const p of r.proposals) expect(p.build.animals).toEqual(gold); // a locked animal is never swapped to hit a number
+      if (a.kind !== 'change-animals' && a.kind !== 'save-ambition') for (const p of r.proposals) expect(p.build.animals).toEqual(gold); // save-ambition carries the explicit smaller-project swap (lane NG4) // a locked animal is never swapped to hit a number
     }
     const o = by(inf.alternatives, 'use-owned')[0]; // what you own comes off the cost: it fits the same $200
     for (const p of again(applyAlternative(b0, o.edit!)).proposals) expect(p.totals.startupUsd).toBeLessThanOrEqual(200);
@@ -50,7 +50,7 @@ describe('infeasible requests explain themselves', () => {
     const inf = go(w).infeasible!, b0 = briefFromWants(w), sp = by(inf.alternatives, 'change-animals');
     expect(sp.length).toBeGreaterThan(0);
     expect(sp.every(a => a.text.includes('only if you want them') && a.text.includes('stay locked until you choose'))).toBe(true);
-    for (const a of inf.alternatives.filter(x => x.kind !== 'change-animals' && x.edit)) expect(valueOf(applyAlternative(b0, a.edit!), 'animals.stock')).toEqual([{ species: 'goldfish', count: 2 }]);
+    for (const a of inf.alternatives.filter(x => x.kind !== 'change-animals' && x.kind !== 'save-ambition' && x.edit)) expect(valueOf(applyAlternative(b0, a.edit!), 'animals.stock')).toEqual([{ species: 'goldfish', count: 2 }]);
     const after = applyAlternative(b0, sp[0].edit!);
     expect(valueOf(after, 'animals.stock')).not.toEqual([{ species: 'goldfish', count: 2 }]);
     expect(again(after).proposals.length).toBeGreaterThan(0);

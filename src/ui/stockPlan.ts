@@ -5,7 +5,12 @@
 import { rng } from '../art/paint';
 import { CARE } from '../data/care';
 import { getSpecies, searchSpecies } from '../data/species';
-import { editBrief, lockAnimals } from './setupBrief';
+import { editBrief, getBrief, lockAnimals, lockedStock } from './setupBrief';
+import { applyAlternative, type Infeasible } from '../demand/infeasible';
+import { suggestFromBrief } from '../demand/suggest';
+import { targetOf, valueOf } from '../scene/brief';
+import { loadProfile } from './demandPanel';
+import { futureHtml, infeasibleCard } from './infeasibleCard';
 import { tankFromModel, type TankModel } from '../data/tanks';
 import { emptyScene } from '../scene/defaults';
 import { placeNew, shuffleFish } from '../scene/scatter';
@@ -23,7 +28,7 @@ import { onSpaceFork, type SpaceFork } from './fullnessTile';
 import { spaceBand, animalsInTank, animalsOf, bump, sexFish, writePairs, FAIL_WORD, groupLineIn, type Pairing, forkOptions, isSexed, notesOf, planFor, conflictsOf, rankTankmates, tempLinesOf, startPick, tankLabel, totalOf, type Pk, type Plan, type RoomOption } from './stockPlanLogic';
 import { allLand, isMixed, setPool, sizeTxt } from '../scene/tankfit';
 import { lifeStages } from '../data/lifestages';
-import { laterLine, preyLater, preyLaterLine } from './stockPlanLogic';
+import { budgetGap, laterLine, preyLater, preyLaterLine } from './stockPlanLogic';
 import { span } from '../scene/outgrows';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
@@ -159,6 +164,29 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
     return h;
   };
 
+  // ---------- the budget (lane NG4): the brief's max filters, its target ranks. Over the max: the same four paths the setup screen shows, each verified by the generator; never a silent swap ----------
+  let cf: { key: string; inf?: Infeasible; note?: string } = { key: '' };
+  const budgetBlock = () => {
+    const b = getBrief(), animals = animalsOf(picks), plan = planFor(picks, chosen), t = plan.tank ?? plan.need?.tank;
+    const saved = futureHtml(b);
+    if (!t || !animals.length) return saved;
+    const gap = budgetGap(animals, t, valueOf(b, 'constraints.budget'), targetOf(b, 'constraints.budget'));
+    if (!gap) return saved;
+    if (!gap.over) return `<div class="spNote sgBudgetNote">The cheapest build of ${esc(tankLabel(t, store.scene.units))} is about ${usd(gap.cheapestUsd)}, ${usd(gap.overTarget)} over your target of ${usd(gap.targetUsd!)}. Your ${usd(gap.maxUsd!)} maximum still holds.</div>${saved}`;
+    const key = `${animals.map(a => `${a.species}${a.n}`).join(',')}|${t.id}|${gap.maxUsd}|${(valueOf(b, 'preferences.future') ?? []).length}`;
+    if (cf.key !== key) {
+      cf = { key };
+      setTimeout(() => { // the generator is not instant: show the numbers now, the four paths when they are worked out
+        if (cf.key !== key) return;
+        const r = suggestFromBrief(getBrief(), loadProfile(), store.scene.units, Date.now());
+        cf = { key, ...(r.infeasible ? { inf: r.infeasible } : { note: r.proposals.length ? `A smaller tank does fit: ${r.proposals[0].archetype.title} in ${Math.round(r.proposals[0].build.tank.ratedGal)} gal for ${usd(r.proposals[0].totals.startupUsd)}. Open "Continue" to see it.` : 'No build passes every limit.' }) };
+        if (!el.hidden) draw();
+      }, 0);
+    }
+    const head = `<div class="spWarn sgBudgetOver">Over your budget: the cheapest honest build of ${esc(tankLabel(t, store.scene.units))} is about ${usd(gap.cheapestUsd)} to set up, ${usd(gap.over)} over your ${usd(gap.maxUsd!)} maximum. Nothing is swapped or cut to hide that.</div>`;
+    return head + (cf.inf ? infeasibleCard(cf.inf, b) : cf.note ? `<div class="spNote">${esc(cf.note)}</div>${saved}` : '<div class="spNote">Working out your four options...</div>' + saved);
+  };
+
   const results = () => {
     if (!q.trim() || !picks.length) return ''; // with nothing picked the gallery behind the panel is the list
     const have = new Set(picks.map(p => p.id)), list = searchSpecies(q).filter(s => !have.has(s.id)).slice(0, 8);
@@ -179,7 +207,7 @@ ${picks.length ? `${(() => { const pl = planFor(picks, chosen); const tl = tempL
   return (pl.tank && pl.problem ? `<div class="spWarn spVerdict">Tank verdict: ${esc(pl.problem)}</div>` : first ? `<div class="spLater spVerdict">⏱ Tank verdict: ${esc(first)}</div>` : '') + (pl.caution ? `<div class="spNote">${esc(pl.caution)}</div>` : '') + (() => { const sm = summaryOf(store.tank, store.scene.units); return `<div class="spHd">Stocking summary: ${esc(sm.worstWord)}</div>${summaryHtml(sm, esc)}`; })() + (tl ? `<div class="${tl.rangeState === 'none' ? 'spWarn' : 'spNote'}">${esc(tl.range)}</div><div class="spNote">${esc(tl.setpoint)}</div>` : ''); })()}<ul class="spPicks">${picks.map(p => pickRow(p, planFor(picks, chosen))).join('')}</ul>
 <div class="spHd">Other animals in with them?</div>
 ${mates ? `<p class="spNote">Pick from the pictures on the left; each goes in at the smallest group it is kept in.</p><button type="button" class="primary" data-act="nomates">Done adding</button>` : `<div class="spYN"><button type="button" data-act="mates">Yes, show me what suits them</button></div>`}` : '<p class="spNote">Search for the animal you have in mind, or pick one from the pictures. It goes in at the smallest group it is kept in and shows in the view; then pick a tank for them.</p>'}
-${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}` : ''}
+${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}${budgetBlock()}` : ''}
 <div class="spFoot"><button type="button" class="primary" data-act="builds"${picks.length && planFor(picks, chosen).tank ? '' : ' disabled'}>Continue: ways to build it</button><button type="button" class="spLink" data-act="done"${picks.length ? '' : ' disabled'}>Open in the editor as it is</button><span class="spNote">Everything stays editable in the editor.</span></div>`;
     const q2 = el.querySelector<HTMLInputElement>('.spQ')!;
     { const t = planFor(picks, chosen).tank; gallery.mates(mates && picks.length ? rankTankmates(picks, t, store.scene.units === 'in').map(m => ({ ...m, bigger: m.bigger ? tankLabel(m.bigger, store.scene.units) : undefined })) : null, !!t); }
@@ -199,6 +227,11 @@ ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}` : ''}
 
   el.oninput = e => { const t = e.target as HTMLInputElement; if (t.classList.contains('spQ')) { q = t.value; gallery.search(q); const w = el.querySelector('.spResWrap'); if (w) w.innerHTML = results(); } };
   el.onclick = e => {
+    const alt = (e.target as HTMLElement).closest<HTMLElement>('[data-alt]'), a = alt && cf.inf?.alternatives[+(alt.dataset.alt ?? -1)];
+    if (a && a.edit) { // one path chosen: write its edit into the brief (locks kept; animals change only when that path says so), then follow the brief's animals
+      const edit = a.edit; editBrief(b => applyAlternative(b, edit)); cf = { key: '' };
+      const stock = lockedStock(getBrief()); picks = stock.map(x => ({ ...startPick(x.species), n: x.n })); chosen = undefined; shown = ''; change(true); return;
+    }
     const b = (e.target as HTMLElement).closest<HTMLElement>('[data-act]'); if (!b) return;
     const id = b.dataset.id!, i = picks.findIndex(p => p.id === id);
     switch (b.dataset.act) {
