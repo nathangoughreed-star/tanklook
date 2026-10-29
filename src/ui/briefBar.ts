@@ -7,7 +7,7 @@ import type { Store } from '../scene/store';
 import { onBuildPicked } from './buildPick';
 import { loadProfile } from './demandPanel';
 import {
-  answer, budgetOf, careTimeOf, editBrief, getBrief, isEmpty, lockedStock, nextQuestions, onBrief, removeItem, setBudget, setCareTime, setSpace, setTank, spaceOf, summarise, toggleLock,
+  answer, answeredOf, directionOf, recordAnswer, setDirection, budgetOf, careTimeOf, editBrief, getBrief, isEmpty, lockedStock, nextQuestions, onBrief, removeItem, setBudget, setCareTime, setSpace, setTank, spaceOf, summarise, toggleLock,
   emptyBrief, setBrief, type Direction, type GroupView, type ItemId, type QId, type Question,
 } from './setupBrief';
 import { consequence, evaluateAnimals } from './briefFeasibility';
@@ -22,8 +22,7 @@ export function attachBriefBar(store: Store, host: { suggest(): void }) {
   bar.className = 'bb'; bar.setAttribute('role', 'region'); bar.setAttribute('aria-label', 'Setup brief');
   view.append(bar);
   let openCard = false;
-  // what the person said that the brief itself cannot show (a "no limit", the direction that matters most): this session only
-  let direction: Direction | undefined; const answered = new Set<QId>();
+  // what the person said that the items cannot show (a "no limit", the direction that matters most) lives in the brief's dialog: saved, shared, undoable
   const units = () => (store.scene.units ?? 'in') as 'in' | 'cm';
   const k = () => units() === 'in' ? MM_IN : 10;
 
@@ -40,7 +39,7 @@ export function attachBriefBar(store: Store, host: { suggest(): void }) {
 
   const draw = () => {
     const b = getBrief(), rows = summarise(b);
-    const ctx = { direction, answered: [...answered] as QId[], animalTankGal: undefined as number | undefined };
+    const ctx = { direction: directionOf(b), answered: answeredOf(b), animalTankGal: undefined as number | undefined };
     let next = nextQuestions(b, ctx), ev: ReturnType<typeof evaluateAnimals> | undefined;
     if (lockedStock(b).length) {
       try { ev = evaluateAnimals(b); } catch { ev = undefined; }
@@ -62,9 +61,7 @@ ${items}${cons}
   };
 
   const take = (q: QId, option: string) => {
-    answered.add(q);
-    if (q === 'priority') direction = option as Direction;
-    editBrief(b => answer(b, q, option));
+    editBrief(b => { let n = recordAnswer(answer(b, q, option), q); if (q === 'priority') n = setDirection(n, option as Direction); return n; });
     draw();
   };
   bar.onclick = e => {
@@ -74,7 +71,7 @@ ${items}${cons}
     if (t.dataset.lock) { editBrief(b => toggleLock(b, t.dataset.lock as ItemId)); return; }
     if (t.dataset.del) { editBrief(b => removeItem(b, t.dataset.del as ItemId)); return; }
     if (t.dataset.g || t.dataset.act === 'toggle') { openCard = t.dataset.act === 'toggle' ? !openCard : true; draw(); return; }
-    if (t.dataset.act === 'clear') { direction = undefined; answered.clear(); setBrief(emptyBrief()); return; }
+    if (t.dataset.act === 'clear') { setBrief(emptyBrief()); return; }
     if (t.dataset.act === 'fill') { openCard = false; draw(); host.suggest(); }
   };
   bar.onchange = e => {

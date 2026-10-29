@@ -15,7 +15,8 @@ import type { LayoutId, SpaceLimit } from './types';
 
 export type Status = 'hard' | 'preference' | 'locked';
 export const STATUSES: readonly Status[] = ['hard', 'preference', 'locked'];
-export interface Item<T> { value: T; status: Status; off?: true }
+/** `value` is the hard ceiling (max); `target` (limits only, never above `value`) is the flexible figure the person would like; `flex` = willing to change this item (brief v2, lane NG2). */
+export interface Item<T> { value: T; status: Status; off?: true; target?: T; flex?: true }
 export type GroupId = 'animals' | 'appearance' | 'equipment' | 'constraints' | 'preferences';
 export const GROUPS: readonly { id: GroupId; label: string }[] = [
   { id: 'animals', label: 'Animals' }, { id: 'appearance', label: 'Appearance' }, { id: 'equipment', label: 'Tank and equipment' },
@@ -51,14 +52,36 @@ export interface Values {
   'preferences.wishes': Wish[];
   'preferences.effort': Effort;
   'preferences.experience': 0 | 1 | 2;
+  // ---- brief v2 (lane NG2, 2026-10-29) ----
+  'constraints.roomTempC': number;       // room temperature, stored metric (deg C); shown in deg F
+  'constraints.tapWater': TapWater;      // where the water comes from and how hard it is
+  'preferences.desired': Desire[];       // what the person wants from the tank
+  'preferences.adapt': Adapt;            // how willing they are to change the plan
+  'preferences.future': Ambition[];      // future ambitions saved for later (the slot is empty until lane NG4 fills it)
 }
+export type WaterSrc = 'tap' | 'well' | 'ro';
+export const WATER_SOURCES: readonly WaterSrc[] = ['tap', 'well', 'ro'];
+/** hardness in dGH, pH 0-14; both optional (blank = not known) */
+export interface TapWater { source: WaterSrc; hardnessDgh?: number; ph?: number }
+export type Desire = 'watch' | 'plants' | 'breed' | 'centerpiece' | 'relax' | 'learn' | 'kids';
+export const DESIRES: readonly Desire[] = ['watch', 'plants', 'breed', 'centerpiece', 'relax', 'learn', 'kids'];
+export type Adapt = 'fixed' | 'some' | 'open';
+export const ADAPTS: readonly Adapt[] = ['fixed', 'some', 'open'];
+/** A goal parked for later: `text` is what the person said, `from` an optional note of the conflict it came from. */
+export interface Ambition { text: string; from?: string }
+/** Persistent conversation state: questions answered (QId strings of setupBrief) and the chosen direction. Open questions are derived from the items and this. */
+export interface Dialog { answered: string[]; direction?: string }
 export type ItemId = keyof Values;
 export const ITEM_IDS: readonly ItemId[] = ['animals.kinds', 'animals.groups', 'animals.stock', 'appearance.look', 'appearance.plantMode', 'equipment.tank',
   'equipment.needStand', 'constraints.budget', 'constraints.monthly', 'constraints.careMin', 'constraints.setupHours', 'constraints.maxSpace', 'constraints.spaceGate', 'constraints.existingTank',
-  'constraints.owned', 'constraints.taxPct', 'constraints.phased', 'preferences.tags', 'preferences.wishes', 'preferences.effort', 'preferences.experience', 'preferences.hightech', 'preferences.lowtech'];
+  'constraints.owned', 'constraints.taxPct', 'constraints.phased', 'preferences.tags', 'preferences.wishes', 'preferences.effort', 'preferences.experience', 'preferences.hightech', 'preferences.lowtech',
+  'constraints.roomTempC', 'constraints.tapWater', 'preferences.desired', 'preferences.adapt', 'preferences.future'];
+/** Items that take a target below their max: money, time, space. */
+export const LIMIT_IDS = ['constraints.budget', 'constraints.monthly', 'constraints.careMin', 'constraints.setupHours', 'constraints.maxSpace'] as const satisfies readonly ItemId[];
+export type LimitId = typeof LIMIT_IDS[number];
 
-export const BRIEF_VERSION = 1;
-export interface Brief { v: number; items: { [K in ItemId]?: Item<Values[K]> } }
+export const BRIEF_VERSION = 2;   // v2 (NG2): item target / flex, environment, desired, adapt, future, dialog. v1 saves load unchanged.
+export interface Brief { v: number; items: { [K in ItemId]?: Item<Values[K]> }; dialog?: Dialog }
 
 export const emptyBrief = (): Brief => ({ v: BRIEF_VERSION, items: {} });
 export const groupOf = (id: ItemId): GroupId => id.split('.')[0] as GroupId;
@@ -70,9 +93,39 @@ export function valueOf<K extends ItemId>(b: Brief, id: K): Values[K] | undefine
 /** The editable tax rate; 0 when unset. */
 export const taxPct = (b: Brief): number => valueOf(b, 'constraints.taxPct') ?? 0;
 
+/** A target never exceeds its max (numbers, or both sides of a footprint). */
+export function targetOk(max: unknown, t: unknown): boolean {
+  if (typeof max === 'number') return typeof t === 'number' && t <= max;
+  const m = max as { w?: number; d?: number; h?: number } | undefined, x = t as { w?: number; d?: number; h?: number } | undefined;
+  return !!m && !!x && typeof m === 'object' && typeof x === 'object' && (x.w ?? 0) <= (m.w ?? 0) && (x.d ?? 0) <= (m.d ?? 0) && (x.h === undefined || m.h === undefined || x.h <= m.h);
+}
+/** The flexible figure of a limit (undefined = none); the generator reads the max as a filter and, from lane NG3, the target as a ranking. */
+export function targetOf<K extends LimitId>(b: Brief, id: K): Values[K] | undefined { const it = getItem(b, id); return it && !it.off ? it.target : undefined; }
+/** Set or clear (undefined) a limit's target. Ignored when the limit is absent or the target exceeds the max. */
+export function setTarget<K extends LimitId>(b: Brief, id: K, target: Values[K] | undefined): Brief {
+  const it = getItem(b, id); if (!it) return b;
+  const { target: _t, ...rest } = it;
+  if (target === undefined) return { ...b, items: { ...b.items, [id]: rest } };
+  return targetOk(it.value, target) ? { ...b, items: { ...b.items, [id]: { ...rest, target } } } : b;
+}
+/** "Willing to change" flag on any item. */
+export function setFlex(b: Brief, id: ItemId, flex: boolean): Brief {
+  const it = b.items[id]; if (!it) return b;
+  const { flex: _f, ...rest } = it; return { ...b, items: { ...b.items, [id]: (flex ? { ...rest, flex: true } : rest) as Item<unknown> } };
+}
+export const isFlex = (b: Brief, id: ItemId): boolean => !!b.items[id]?.flex;
+/** The persistent conversation state (never undefined). */
+export const dialogOf = (b: Brief): Dialog => b.dialog ?? { answered: [] };
+export function setDialog(b: Brief, d: Dialog): Brief {
+  const { dialog: _d, ...rest } = b;
+  return d.answered.length || d.direction ? { ...rest, dialog: { answered: [...new Set(d.answered)], ...(d.direction ? { direction: d.direction } : {}) } } : rest;
+}
+
 /** Set an item (new value; the status stays if it already had one, else 'preference' unless given). Returns a new brief. */
 export function setItem<K extends ItemId>(b: Brief, id: K, value: Values[K], status?: Status): Brief {
   const old = getItem(b, id), it: Item<Values[K]> = { value, status: status ?? old?.status ?? 'preference' };
+  if (old?.target !== undefined && targetOk(value, old.target)) it.target = old.target;
+  if (old?.flex) it.flex = true;
   return { ...b, items: { ...b.items, [id]: it } };
 }
 export function clearItem(b: Brief, id: ItemId): Brief {
@@ -99,6 +152,8 @@ export const isSpecified = (b: Brief, g: GroupId): boolean => idsOf(g).some(i =>
 /** The groups still empty, in display order: what progressive questions (lane U3) may still ask. */
 export const openGroups = (b: Brief): GroupId[] => GROUPS.map(g => g.id).filter(g => !isSpecified(b, g));
 export const isEmpty = (b: Brief): boolean => ITEM_IDS.every(i => !(i in b.items));
+/** Anything worth saving: items or conversation state (isEmpty looks at items only). */
+export const hasState = (b: Brief): boolean => !isEmpty(b) || !!b.dialog;
 
 // ---- serialisable form: the brief is plain JSON already; parseBrief validates anything saved or shared ----
 export const serializeBrief = (b: Brief): string => JSON.stringify(b);
@@ -140,6 +195,15 @@ const VALIDATE: { [K in ItemId]: (v: unknown) => Values[K] | undefined } = {
   'preferences.wishes': v => { const a = strs(v, WISHES); return a?.length ? a : undefined; },
   'preferences.effort': v => v === 'low' || v === 'medium' || v === 'high' ? v : undefined,
   'preferences.experience': v => v === 0 || v === 1 || v === 2 ? v : undefined,
+  'constraints.roomTempC': v => num(v, -10, 60) ? Math.round(v * 10) / 10 : undefined,
+  'constraints.tapWater': v => { const o = v as Partial<TapWater> | undefined;
+    if (!o || typeof o !== 'object' || !WATER_SOURCES.includes(o.source as WaterSrc)) return undefined;
+    return { source: o.source as WaterSrc, ...(num(o.hardnessDgh, 0, 60) ? { hardnessDgh: o.hardnessDgh } : {}), ...(num(o.ph, 0, 14) ? { ph: o.ph } : {}) }; },
+  'preferences.desired': v => { const a = strs(v, DESIRES); return a?.length ? a : undefined; },
+  'preferences.adapt': v => ADAPTS.includes(v as Adapt) ? v as Adapt : undefined,
+  'preferences.future': v => { if (!Array.isArray(v)) return undefined;
+    const a = v.filter((x): x is Ambition => !!x && typeof x.text === 'string' && x.text.trim().length > 0).slice(0, 20)
+      .map(x => ({ text: x.text.trim().slice(0, 300), ...(typeof x.from === 'string' && x.from ? { from: x.from.slice(0, 120) } : {}) })); return a.length ? a : undefined; },
 };
 
 /** Validate a saved / shared value; undefined when absent or empty (an old save without a brief). A newer version is read as far as it is understood. */
@@ -149,13 +213,21 @@ export function parseBrief(raw: unknown): Brief | undefined {
   if (!items || typeof items !== 'object') return undefined;
   const dst = out.items as Record<string, Item<unknown>>;
   for (const id of ITEM_IDS) {
-    const it = (items as Record<string, unknown>)[id] as { value?: unknown; status?: unknown; off?: unknown } | undefined;
+    const it = (items as Record<string, unknown>)[id] as { value?: unknown; status?: unknown; off?: unknown; target?: unknown; flex?: unknown } | undefined;
     if (!it || typeof it !== 'object') continue;
-    const value = (VALIDATE[id] as (v: unknown) => unknown)(it.value);
+    const check = VALIDATE[id] as (v: unknown) => unknown, value = check(it.value);
     if (value === undefined) continue;
-    dst[id] = { value, status: STATUSES.includes(it.status as Status) ? it.status as Status : 'preference', ...(it.off === true ? { off: true as const } : {}) };
+    const target = (LIMIT_IDS as readonly ItemId[]).includes(id) && it.target !== undefined ? check(it.target) : undefined;
+    dst[id] = { value, status: STATUSES.includes(it.status as Status) ? it.status as Status : 'preference', ...(it.off === true ? { off: true as const } : {}),
+      ...(target !== undefined && targetOk(value, target) ? { target } : {}), ...(it.flex === true ? { flex: true as const } : {}) };
   }
-  return isEmpty(out) ? undefined : out;
+  const d = (raw as { dialog?: { answered?: unknown; direction?: unknown } }).dialog;
+  if (d && typeof d === 'object') {
+    const answered = Array.isArray(d.answered) ? d.answered.filter((x): x is string => typeof x === 'string' && x.length < 30).slice(0, 40) : [];
+    const dl = setDialog(out, { answered, direction: typeof d.direction === 'string' && d.direction.length < 30 ? d.direction : undefined }).dialog;
+    if (dl) out.dialog = dl;
+  }
+  return hasState(out) ? out : undefined;
 }
 
 // ---- adapter: Wants <-> Brief, lossless for everything Wants holds (suggestSetups is unchanged and still reads Wants) ----

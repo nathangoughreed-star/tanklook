@@ -880,6 +880,11 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .wgSet { border: 0; border-top: 1px solid var(--line); margin: 0; padding: 6px 0 2px; display: flex; flex-direction: column; gap: 5px }
 .wgSet legend { font-weight: 600; padding: 0 4px 0 0; font-size: 13px }
 .wgOwn summary { cursor: pointer; font-size: 13px; margin: 2px 0 5px }
+.wgMax { display: flex; align-items: center; gap: 6px }
+.wgTog { border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 10px; padding: 1px 7px; font: inherit; font-size: 11px; cursor: pointer; white-space: nowrap }
+.wgTog[aria-pressed=true] { border-color: #2a9bb0 }
+.wgTgt { padding-left: 10px; font-size: 12px } .wgFlex { padding-left: 10px; font-size: 12px; display: flex; gap: 5px; align-items: center }
+.wgRow select { max-width: 150px }
 .wgAqua { border-top: 1px solid var(--line); padding-top: 6px }
 .wgAqua ul { margin: 4px 0 0; padding-left: 16px } .wgAqua li i { font-style: normal; font-weight: 600 }
 #welcomeManual { margin-left: auto }

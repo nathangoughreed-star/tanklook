@@ -7,15 +7,15 @@ import { getSpecies } from '../data/species';
 import { TANK_MODELS } from '../data/tanks';
 import { PICK_CARE, OWNED, type OwnedMap, type Tag } from '../demand/suggest';
 import {
-  GROUPS, clearItem, emptyBrief, getItem, isEmpty, lock, setItem, unlock, valueOf,
-  type Brief, type GroupId, type ItemId, type Status,
+  ADAPTS, DESIRES, GROUPS, clearItem, dialogOf, emptyBrief, getItem, hasState, isEmpty, lock, setDialog, setFlex, setItem, setTarget, targetOf, unlock, valueOf,
+  type Adapt, type Brief, type Desire, type GroupId, type ItemId, type LimitId, type Status, type TapWater, type WaterSrc,
 } from '../scene/brief';
 import { lookLabel, LOOK_TILES, type LookStyle } from '../scene/looks';
 import type { Store } from '../scene/store';
 import type { TankSetup } from '../scene/types';
 
-export { emptyBrief, isEmpty, GROUPS };
-export type { Brief, GroupId, ItemId, Status };
+export { emptyBrief, isEmpty, GROUPS, ADAPTS, DESIRES, setFlex, setTarget, targetOf, dialogOf };
+export type { Brief, GroupId, ItemId, Status, LimitId, Adapt, Desire, TapWater, WaterSrc };
 
 const MM_IN = 25.4;
 const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
@@ -27,11 +27,16 @@ const OPEN_TEXT: Record<GroupId, string> = { animals: 'open', appearance: 'open'
 /** Where an item shows: U1 groups by id prefix; the tank you already own and the gear you own read as "Tank and equipment" to a person. */
 const SHOWN_IN: Partial<Record<ItemId, GroupId>> = { 'constraints.existingTank': 'equipment', 'constraints.owned': 'equipment' };
 const ORDER: ItemId[] = ['animals.stock', 'animals.kinds', 'animals.groups', 'appearance.look', 'appearance.plantMode', 'equipment.tank', 'constraints.existingTank', 'constraints.owned', 'equipment.needStand',
-  'constraints.budget', 'constraints.monthly', 'constraints.careMin', 'constraints.maxSpace', 'constraints.phased', 'preferences.hightech', 'preferences.tags', 'preferences.wishes', 'preferences.experience', 'preferences.effort'];
+  'constraints.budget', 'constraints.monthly', 'constraints.careMin', 'constraints.maxSpace', 'constraints.phased', 'preferences.hightech', 'preferences.tags', 'preferences.wishes', 'preferences.experience', 'preferences.effort',
+  'constraints.roomTempC', 'constraints.tapWater', 'preferences.desired', 'preferences.adapt', 'preferences.future'];
 export const tankName = (model?: string) => TANK_MODELS.find(m => m.id === model)?.name ?? model ?? 'a tank';
 const EXP = ['beginner', 'some experience', 'experienced'];
 const TAG_WORD: Record<Tag, string> = { colorful: 'colorful', active: 'lively', calm: 'calm', natural: 'natural', unusual: 'unusual', 'low-maint': 'low upkeep' };
 const WISH_WORD = { 'larger-tank': 'a larger tank', 'more-planted': 'more planted', 'less-maintenance': 'less upkeep', cheaper: 'cheaper' } as const;
+const WATER_WORD: Record<WaterSrc, string> = { tap: 'tap', well: 'well', ro: 'RO' };
+export const DESIRE_WORD: Record<Desire, string> = { watch: 'watch the activity', plants: 'grow plants', breed: 'breed', centerpiece: 'a centerpiece', relax: 'relax', learn: 'learn', kids: 'for kids' };
+export const ADAPT_WORD: Record<Adapt, string> = { fixed: 'keep my plan', some: 'open to some changes', open: 'open to changes' };
+const tgt = (b: Brief, id: LimitId, f: (n: number) => string) => { const t = targetOf(b, id); return typeof t === 'number' ? `target ${f(t)}, ` : ''; };
 /** One plain label per item, in the person's units. */
 export function labelOf(b: Brief, id: ItemId): string {
   const raw = (getItem(b, id) as { value: unknown } | undefined)?.value;
@@ -45,9 +50,14 @@ export function labelOf(b: Brief, id: ItemId): string {
     case 'constraints.existingTank': return `own ${tankName((raw as { model?: string }).model)}`;
     case 'constraints.owned': return `own ${Object.keys(raw as object).join(', ')}`;
     case 'equipment.needStand': return (raw as boolean) ? 'needs a stand' : 'has a stand';
-    case 'constraints.budget': return `up to ${usd(raw as number)}`;
-    case 'constraints.monthly': return `up to ${usd(raw as number)} a month`;
-    case 'constraints.careMin': return `up to ${raw as number} min a week`;
+    case 'constraints.budget': return `${tgt(b, id, usd)}up to ${usd(raw as number)}`;
+    case 'constraints.monthly': return `${tgt(b, id, usd)}up to ${usd(raw as number)} a month`;
+    case 'constraints.careMin': return `${tgt(b, id, n => `${n} min`)}up to ${raw as number} min a week`;
+    case 'constraints.roomTempC': return `room ${Math.round((raw as number) * 9 / 5 + 32)} deg F`;
+    case 'constraints.tapWater': { const w = raw as TapWater; return `${WATER_WORD[w.source]} water${w.hardnessDgh !== undefined ? `, ${w.hardnessDgh} dGH` : ''}${w.ph !== undefined ? `, pH ${w.ph}` : ''}`; }
+    case 'preferences.desired': return (raw as Desire[]).map(d => DESIRE_WORD[d]).join(', ');
+    case 'preferences.adapt': return ADAPT_WORD[raw as Adapt];
+    case 'preferences.future': return `saved for later: ${(raw as { text: string }[]).map(a => a.text).join('; ')}`;
     case 'constraints.maxSpace': { const s = raw as { w: number; d: number }; const r = (mm: number) => Math.round(mm / MM_IN * 10) / 10; return `space ${r(s.w)} x ${r(s.d)} in`; }
     case 'preferences.tags': return (raw as Tag[]).map(t => TAG_WORD[t]).join(', ');
     case 'preferences.wishes': return (raw as (keyof typeof WISH_WORD)[]).map(w => WISH_WORD[w]).join(', ');
@@ -76,7 +86,39 @@ export const budgetOf = (b: Brief) => valueOf(b, 'constraints.budget');
 export const monthlyOf = (b: Brief) => valueOf(b, 'constraints.monthly');
 export const careTimeOf = (b: Brief) => valueOf(b, 'constraints.careMin');
 export const spaceOf = (b: Brief): { w: number; d: number } | undefined => { const s = valueOf(b, 'constraints.maxSpace'); return s ? { w: s.w, d: s.d } : undefined; };
+export const targetBudgetOf = (b: Brief) => targetOf(b, 'constraints.budget');
+export const roomTempFOf = (b: Brief): number | undefined => { const c = valueOf(b, 'constraints.roomTempC'); return c === undefined ? undefined : Math.round(c * 9 / 5 + 32); };
+export const tapWaterOf = (b: Brief) => valueOf(b, 'constraints.tapWater');
+export const desiredOf = (b: Brief): Desire[] => valueOf(b, 'preferences.desired') ?? [];
+export const adaptOf = (b: Brief) => valueOf(b, 'preferences.adapt');
+/** Future ambitions saved in the brief (empty until lane NG4 writes them). */
+export const futureOf = (b: Brief) => valueOf(b, 'preferences.future') ?? [];
+/** The profile's waterSource ('tap' | 'well' | 'bought-ro' | 'own-ro') implied by the brief; undefined for RO (the profile keeps bought vs own) or when unset. Pricing still reads the profile. */
+export const profileWaterSource = (b: Brief): 'tap' | 'well' | undefined => { const s = tapWaterOf(b)?.source; return s === 'tap' || s === 'well' ? s : undefined; };
 export const experienceOf = (b: Brief) => valueOf(b, 'preferences.experience');
+/** The flexible target of a money / time limit; undefined clears it. A target above the max is ignored. */
+export function setLimitTarget(b: Brief, id: 'constraints.budget' | 'constraints.monthly' | 'constraints.careMin' | 'constraints.setupHours', target: number | undefined): Brief {
+  return setTarget(b, id, target !== undefined && target >= 0 ? target : undefined);
+}
+/** Footprint target in mm (never above the max footprint). */
+export const setSpaceTarget = (b: Brief, s: { w: number; d: number } | undefined): Brief => setTarget(b, 'constraints.maxSpace', s);
+export const spaceTargetOf = (b: Brief): { w: number; d: number } | undefined => { const s = targetOf(b, 'constraints.maxSpace'); return s ? { w: s.w, d: s.d } : undefined; };
+/** Room temperature typed in deg F (stored deg C); undefined / NaN clears. */
+export const setRoomTempF = (b: Brief, f: number | undefined): Brief => f === undefined || !Number.isFinite(f) ? clearItem(b, 'constraints.roomTempC') : setItem(b, 'constraints.roomTempC', Math.round((f - 32) * 5 / 9 * 10) / 10, 'preference');
+export function setTapWater(b: Brief, w: Partial<TapWater> | undefined): Brief {
+  if (!w || !w.source) return clearItem(b, 'constraints.tapWater');
+  return setItem(b, 'constraints.tapWater', { source: w.source, ...(w.hardnessDgh !== undefined && w.hardnessDgh >= 0 ? { hardnessDgh: w.hardnessDgh } : {}), ...(w.ph !== undefined && w.ph >= 0 && w.ph <= 14 ? { ph: w.ph } : {}) }, 'preference');
+}
+export const setDesired = (b: Brief, d: readonly Desire[]): Brief => d.length ? setItem(b, 'preferences.desired', [...d], 'preference') : clearItem(b, 'preferences.desired');
+export const setAdapt = (b: Brief, a: Adapt | undefined): Brief => a ? setItem(b, 'preferences.adapt', a, 'preference') : clearItem(b, 'preferences.adapt');
+/** Park a goal for later (a smaller project now): lane NG4 calls this. */
+export const addFuture = (b: Brief, text: string, from?: string): Brief => text.trim() ? setItem(b, 'preferences.future', [...futureOf(b), { text: text.trim(), ...(from ? { from } : {}) }], 'preference') : b;
+export const removeFuture = (b: Brief, i: number): Brief => { const l = futureOf(b).filter((_, k) => k !== i); return l.length ? setItem(b, 'preferences.future', l, 'preference') : clearItem(b, 'preferences.future'); };
+// the conversation state: answered questions and the chosen direction persist in the brief
+export const answeredOf = (b: Brief): QId[] => dialogOf(b).answered as QId[];
+export const directionOf = (b: Brief): Direction | undefined => dialogOf(b).direction as Direction | undefined;
+export const recordAnswer = (b: Brief, q: QId): Brief => setDialog(b, { ...dialogOf(b), answered: [...dialogOf(b).answered, q] });
+export const setDirection = (b: Brief, d: Direction | undefined): Brief => setDialog(b, { ...dialogOf(b), direction: d });
 export const hasTag = (b: Brief, t: Tag) => !!valueOf(b, 'preferences.tags')?.includes(t);
 
 // ---------- progressive discovery ----------
@@ -219,7 +261,7 @@ export function setBrief(b: Brief) {
   const before = getBrief();
   bound.update(s => {
     const T = s.tanks[s.active];
-    if (isEmpty(b)) delete T.brief; else T.brief = b;
+    if (!hasState(b)) delete T.brief; else T.brief = b;
     syncCaps(T, before, b);
   });
 }
