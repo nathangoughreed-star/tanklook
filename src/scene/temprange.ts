@@ -43,7 +43,7 @@ const toF = (c: number) => Math.round(c * 9 / 5 + 32);
 /** One temperature as text: °C, or °F when `us`. */
 export const fmtT = (c: number, us?: boolean) => us ? `${toF(c)} °F` : `${c} °C`;
 /** A range as text: °C, or °F when `us` (US units). */
-export const fmtC = (r: R, us?: boolean) => us ? `${toF(r[0])}–${toF(r[1])} °F` : `${r[0]}–${r[1]} °C`;
+export const fmtC = (r: R, us?: boolean) => r[0] === r[1] ? (us ? `${toF(r[0])} °F` : `${r[0]} °C`) : us ? `${toF(r[0])}–${toF(r[1])} °F` : `${r[0]}–${r[1]} °C`;
 
 /** Output 1: the intersection of every aquatic species' comfortable range (each species once). */
 export function sharedRange(list: Species[]): SharedRange {
@@ -111,9 +111,9 @@ function misses(r: SharedRange, c: number): string {
 /** Does this plan's intended operating temperature fit the shared range? The target if set; with no target and no heater, the water
  *  modelled from the room (an estimate); otherwise unchecked. A default room outside the range is a conditional concern, not a failure. */
 export function operatingCheck(r: SharedRange, ev?: TempEvidence, usArg?: boolean): TempCheck {
-  const us = ev?.us ?? usArg, inRange = r.range && r.state !== 'single' ? `set it inside ${fmtC(r.range, us)}` : 'there is no shared range to set';
+  const us = ev?.us ?? usArg, inRange = r.range ? `set it ${r.state === 'single' ? 'to' : 'inside'} ${fmtC(r.range, us)}` : 'there is no shared range to set';
   if (!ev) return { state: 'unchecked', text: `Water temperature: unchecked, no tank set up yet (${inRange})` };
-  if (!r.range || r.state === 'single') return { state: 'unchecked', text: `Water temperature: ${inRange}` };
+  if (!r.range) return { state: 'unchecked', text: `Water temperature: ${inRange}` };
   const band = fmtC(r.range, us);
   if (ev.target !== undefined) {
     const c = ev.target;
@@ -151,8 +151,8 @@ export function holdCheck(ev?: TempEvidence): TempCheck | null {
 
 /** An existing tank's measured water temperature against the shared range: the observation, assessed directly. */
 export function measuredCheck(r: SharedRange, ev?: TempEvidence): TempCheck | null {
-  if (!ev || ev.measured === undefined || !r.range || r.state === 'single') return null;
-  const c = ev.measured, band = fmtC(r.range, ev.us), us = ev.us;
+  if (!ev || ev.measured === undefined || !r.range) return null;
+  const us = ev.us, c = ev.measured, band = fmtC(r.range, us);
   if (c >= r.range[0] && c <= r.range[1]) return { state: 'inside', text: `Measured water temperature ${fmtT(c, us)}: inside the shared range ${band}` };
   const fix = correction(c, r.range, { heater: ev.heater, target: false }, us);
   return { state: 'outside', fix, text: `Measured water temperature ${fmtT(c, us)}: outside the shared range ${band} (${misses(r, c)}): ${fix}` };
