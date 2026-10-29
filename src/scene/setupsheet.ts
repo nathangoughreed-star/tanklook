@@ -126,7 +126,7 @@ export function buildSheet(scene: Scene, index = scene.active, opts: SheetOpts =
     }
     return rows;
   };
-  const hr = group(['stone', 'wood', 'cave']);
+  const hr = group(['stone', 'wood', 'cave', 'equip']);
   sections.push({ title: 'Hardscape', rows: hr.length ? hr : [{ item: 'None', qty: '', detail: '' }] });
   const pr = group(['plant']);
   sections.push({ title: 'Plants', rows: pr.length ? [...pr, { item: 'Total', qty: String(S.items.filter(i => i.kind === 'plant').length), detail: '' }] : [{ item: 'None', qty: '', detail: '' }] });

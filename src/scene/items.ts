@@ -6,6 +6,7 @@ import { PLANT3D, PLANT_ASPECT, grownSize, growthLen, growthOf, isCarpet, isClum
 import { fitItems } from './plantfit';
 import { backdropDepth, clamp, clearOfWall, D2R } from './physics';
 import { bowlDims, bowlRadius, clampIn, footprint, shapeOf } from './shape';
+import { EQUIP_ENABLED, equipDims, equipLibrary } from './equipment';
 import { clampGround, groundHeight, radialTerrain, type Ground } from './terrain';
 import type { CompId, Item, ItemKind, LayerDens, LayoutId, Tank, TankSetup } from './types';
 
@@ -18,6 +19,7 @@ export interface Fake { mat: 'silk' | 'plastic'; form: 'stem' | 'rosette' | 'mat
 export const FAKE_ASPECT: Record<Fake['form'], number> = { stem: 0.5, rosette: 0.95, mat: 0.2 };
 export const isFake = (it: Pick<Item, 'kind'>) => it.kind === 'artificial';
 export const LIBRARY: Record<string, Variant> = {
+  ...equipLibrary(), // lane EN: heater, filter, outlet, mister, light bar (scene/equipment.ts)
   river: { kind: 'stone', label: 'River stone', hint: 'Smooth, rounded, brown-grey.', size: 110, min: 15, max: 600 },
   seiryu: { kind: 'stone', label: 'Seiryu', hint: 'Upright blue-grey crag with pale veins.', size: 130, min: 20, max: 600 },
   dragon: { kind: 'stone', label: 'Dragon stone', hint: 'Clay-brown, pitted with holes.', size: 140, min: 20, max: 600 },
@@ -100,7 +102,7 @@ export const LIBRARY: Record<string, Variant> = {
   seafan: { kind: 'coral', label: 'Sea fan', hint: 'A gorgonian: a fine fan of branches in one upright plane. Size = width.', size: 180, min: 50, max: 500, salt: true },
   macroalgae: { kind: 'coral', label: 'Macroalgae', hint: 'Marine algae for a planted reef: feather or grape caulerpa, or red ogo (by seed). Size = width.', size: 160, min: 40, max: 450, salt: true },
 };
-export const KINDS: Record<ItemKind, string> = { stone: 'Stones', wood: 'Wood', cave: 'Caves', plant: 'Plants', coral: 'Corals', artificial: 'Artificial plants' };
+export const KINDS: Record<ItemKind, string> = { stone: 'Stones', wood: 'Wood', cave: 'Caves', plant: 'Plants', coral: 'Corals', artificial: 'Artificial plants', ...(EQUIP_ENABLED ? { equip: 'Equipment' } : {}) } as Record<ItemKind, string>; // no 'equip' row while it is off
 export const MAX_ITEMS = 600;
 /** A floater's density range (times the species' own rosettes per area). */
 export const DENS = [0.1, 3] as const;
@@ -308,6 +310,7 @@ export function spreadMax(T: Tank, x?: number, depth?: number) {
 export function itemDims(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size' | 'spread' | 'growth'>): V3 {
   const s = it.kind === 'plant' ? grownSize(it.variant as PlantType, it.size, it.growth) : it.size; // a plant at its growth
   if (it.kind === 'stone') return stoneDims(it.variant, it.seed, s);
+  if (it.kind === 'equip') return equipDims(it.variant, s);
   // an upright plant grown past its saved size gets longer much faster than its footprint widens (long leaves and stems
   // lie over at the surface), so its width follows its length only up to 1.4x the saved size
   const sw = Math.min(s, it.size * 1.4);

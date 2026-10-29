@@ -16,6 +16,7 @@ import { clampGround, groundHeight, groundInsideBy } from '../scene/terrain';
 import type { Item, Tank, TankSetup } from '../scene/types';
 import { artificialGeometry, bendPlant, carpetOnGround, clumpOnGround, dropPlant, growShader, grownView, plant3d, plantGeometry, plantRaycast, revealPlant, unpackGeometry, uploadPlant, type JobOut, type PlantJob } from './plant3d';
 import { reefShape } from './coral3d';
+import { equipShape } from './equipment';
 import { CELL_N, NOISE_N, gritUniforms } from './gritTex';
 
 type R = () => number;
@@ -692,12 +693,12 @@ const dispose = (g: THREE.BufferGeometry) => g.dispose();
 
 function solidShape(it: Item) {
   const k = `${it.variant}|${it.seed}|${it.size}`;
-  const make = () => noAlgae(it, grit(it.kind === 'coral' || it.variant === 'liverock' ? reefShape(it.variant, it.seed, it.size) : it.kind === 'stone' ? stoneShape(it.variant, it.seed, it.size) : it.kind === 'wood' ? woodShape(it.variant, it.seed, it.size) : caveShape(it.variant, it.seed, it.size), GRIT_KIND[it.variant] ?? 2, it.seed));
+  const make = () => noAlgae(it, grit(it.kind === 'equip' ? equipShape(it.variant, it.size) : it.kind === 'coral' || it.variant === 'liverock' ? reefShape(it.variant, it.seed, it.size) : it.kind === 'stone' ? stoneShape(it.variant, it.seed, it.size) : it.kind === 'wood' ? woodShape(it.variant, it.seed, it.size) : caveShape(it.variant, it.seed, it.size), it.kind === 'equip' ? 0 : GRIT_KIND[it.variant] ?? 2, it.seed));
   return shapes.get(k) ?? remember(shapes, k, make(), 150, dispose);
 }
 /** Corals stay clean in the condition view (lane AL, render/algae.ts): aNoAlg = 1 (absent = 0, algae allowed). */
 function noAlgae(it: Item, g: THREE.BufferGeometry) {
-  if (it.kind === 'coral') g.setAttribute('aNoAlg', new THREE.Float32BufferAttribute(new Float32Array(g.attributes.position.count).fill(1), 1));
+  if (it.kind === 'coral' || it.kind === 'equip') g.setAttribute('aNoAlg', new THREE.Float32BufferAttribute(new Float32Array(g.attributes.position.count).fill(1), 1));
   return g;
 }
 /** A piece's turn: yaw about the vertical, then pitch (tip forward / back), then roll (lean sideways). */
