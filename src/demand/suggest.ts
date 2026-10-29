@@ -156,6 +156,8 @@ export interface Wants {
   /** the person wants to spend what they set (the old "target" behaviour, lane C9): every concept's finish tier climbs as far as the ceiling lets it, and the tank grows with the money.
    *  Off (default): each concept keeps its own tier (the ladder only decides how far UP a concept may climb). */
   climb?: boolean;
+  /** the set-up TARGET (lane NG3; the constraint above is the max and filters, this one ranks): a concept nearer it scores higher, one over the max never appears. Never touches a welfare gate. */
+  startupTarget?: number;
   /** hours of set-up effort the person will spend (from the brief, lane U1; not read by the generator yet) */
   setupHours?: number;
   /** the high-tech approach is a requirement (lane U4): only finishes with CO2 and a stronger light (the standard and lush tiers) are offered, so the look is not traded for a cheaper approach silently */
@@ -302,6 +304,10 @@ function headroom(t: Money, L: Limits): number {
   const parts = ([[t.monthlyUsd, L.upkeepUsd], [t.minPerWeek, L.minPerWeek]] as [number, number | undefined][]).filter((p): p is [number, number] => p[1] !== undefined && p[1] > 0);
   return parts.length ? parts.reduce((s, [v, c]) => s + Math.max(0, 1 - v / c), 0) / parts.length : 1;
 }
+
+/** Ranking by the person's set-up target (lane NG3): 0 with no target; up to TARGET_WEIGHT when the cost sits on it, falling to 0 a full target away. */
+export const TARGET_WEIGHT = 8;
+export function targetBonus(cost: number, target?: number): number { return target && target > 0 ? TARGET_WEIGHT * (1 - Math.min(1, Math.abs(cost - target) / target)) : 0; }
 
 /** The share of the set-up cap a card must use to count as using the budget when `climb` is on; below it the card says why. */
 export const USES_BUDGET = 0.85;
@@ -509,6 +515,7 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
     // experience shapes how hands-on concepts RANK (a gentle push), never whether one is offered
     const score = p.matched.length * 10 + headroom(t, L) * 5 + levelOf * 1.5 - p.unknown.length * 0.5 + (exp === 0 ? -6 * cx : exp === 2 ? 3 * cx : 0)
       + (w.climb && L.setupUsd ? (limited ? 1 : Math.min(1, t.startupUsd / L.setupUsd)) * 20 : 0)
+      + targetBonus(t.startupUsd, w.startupTarget)
       + tasteBonus(w.taste, p.build.finish?.style);   // lane NG5 hook: ranking only
     const base = { ...p, score, strategy: id, strategyLabel: strategyLabel(id, isLocked), strategyBlurb: sd.blurb,
       ...(L.setupUsd ? { underCeilingUsd: Math.max(0, Math.round(L.setupUsd - t.startupUsd)) } : {}),

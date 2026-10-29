@@ -692,6 +692,7 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .sgIntro { padding: 6px 24px 4px } .sgIntro h1 { margin: 0 0 4px; font-size: 26px } .sgIntro p { margin: 0; max-width: 60ch; opacity: .8 }
 .sgChips { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 24px 0; position: sticky; top: 0; z-index: 1; background: linear-gradient(#14202a 70%, transparent) }
 .sgChips button { font: inherit; font-size: 13px; padding: 5px 12px; border-radius: 16px; border: 1px solid #4a6677; background: transparent; color: inherit; cursor: pointer }
+.sgChange { margin: 10px 24px 0; padding: 8px 12px; border-left: 3px solid #2a9bb0; background: rgba(42,155,176,.12); font-size: 13px }
 .sgChips button.on { background: #2a9bb0; border-color: #2a9bb0; color: #fff }
 .sgList h3 { margin: 22px 24px 8px; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; opacity: .75 }
 .sgGrid { list-style: none; margin: 0; padding: 0 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 12px }
