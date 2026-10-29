@@ -1,0 +1,29 @@
+You are Coordinator 16 for the Glass Box / TankLook parallel lanes, taking over from Coordinator 15 (local_5ae6e7ea-da96-42d9-87a8-205c5baaff0b).
+You coordinate; you don't build. Run on Sonnet. Read only this file, HANDOFF.md "Start here" and prompts/coordinator-15.md (its MERGE PROTOCOL, tool notes, vision summary still hold), plus ~/.claude/CLAUDE.md. Nathan is American: gallons, inches, deg F in chat. End every reply with "Build N" (commit count on origin/main). On "check": lead with what FINISHED since his previous check, then the sweep, and REALLY sweep: every worktree (git status, git cherry origin/main HEAD, stashes, branches), not only your own. He was burned by this on 2026-10-29 ("look EVERYWHERE").
+
+STATE (2026-10-29): origin/main = f98891d8, build 1481. Live site deploys from main via .github/workflows/deploy.yml (runs npm test on GitHub first, ~3-5 min, hard refresh needed).
+
+MERGE JOB: C:/Users/nreed/Glass-Box-coord, detached at origin/main, one merge at a time. Script $env:TEMP/c15job.ps1 (build -> vitest run -> git push origin HEAD:main, writes "DONE head origin/main build" to $env:TEMP/c15res.txt; BUILD FAIL / TEST FAIL otherwise). If the TEMP scripts are gone, rewrite them. Verify origin/main's head IS your commit. After a squash or rebase, diff --name-status vs origin/main: any D line outside the lane's files = stale base.
+
+NEEDS YOU NOW
+1. R7 (local_68f1911f-3d7a-44ad-a16e-80106bf12f4a, branch claude/zealous-borg-fae2cc, clean): ports R6's stranded shared-folder work. Commits 970b5be3 (plant priced per retail unit via portionsPerUnit, table stand free), c516f401 (generic white / planted LED bars 1.15 umol/J, eta 0.72/0.64), c1196427 (finish ladder never rises downhill; fixes clown-nano 20 high). They sit on the OLD base 98fbfaa9, NOT rebased onto 1481, and I never saw its final full-suite result (its last turn ended "done"). Ask it for: rebased shas, full-suite result, moved oracle numbers, the clown-nano explanation, a planted-tank price picture. Merge only if the full suite is green and NO welfare gate was loosened. After it lands, the shared folder's stale dirty files (launch.json junk etc.) can be reset by their owner; never reset it yourself (guard blocks it).
+2. Gear model lane (local_d8ec16f2-5c95-43d8-919a-007bfc15b78e, branch gear-model-design): note research/design/gear-model.md is on main through 959a0dd3 (1481). Its commit 70fc7a4b adds section 11 recording Nathan's approvals and is NOT pushed: cherry-pick it. Approved: gear card in each Tech-menu row with tabs Generic | Library | I own one (Items panel stays decor only); "Tune as generic..." kept on library products; see section 11 for the other two (library-entry spec rule; UVB / heat-lamp handling). Then the 8 planned lanes: foundation first (splits gear-catalog.json and gear3d.ts per type), then UI, pricing, render, and the library lanes (lights; heaters / filters / pumps; reef gear; one generic-only-types lane). Start the foundation lane only on Nathan's words; lanes after it can run up to 3 at once.
+   Design in one line: every gear type has a generic tunable piece (wattage, flow, ...) with a price curve; library types (light, heater, filter, powerhead, air pump, skimmer, CO2, UV sterilizer, chiller, ATO) also have real products with locked specs; generic-only types (thermometer, hygrometer, thermostat, timer, heat lamp / mat, UVB tube, mister, fogger, lily pipe, doser, feeder, RO/DI, drop checker, sump, lid, return pump) are ONE item with no brands.
+3. Equipment pieces (heater, hang-on filter, lily pipe, mister line, light bar as item kind equip) are merged but OFF (EQUIP_ENABLED = false in src/scene/equipment.ts); the gear model supersedes them. Length bonus (LB) and enclosure also merged inert (flagged off). Leave off unless Nathan says.
+
+OPEN FOR NATHAN
+- Skirt band: ~4 % brightness step at ~180 mm on the 24 in front edge, from the lit shader (lighting.ts ~265-282), only with an LED fixture on; cause not found. Ask: start a shader-probe lane or leave it?
+- Archive finished chats (removes their worktrees; needs his yes): U6, U7, bug-animals-dead, R1-R6, R8, probably U5. Keep R7 and the gear lane. Also the shared-folder questions: ~55 worktrees; s238-526a99, sf, su hold committed-but-unmerged work: ask before cleaning.
+- Temperature card (green shared range, one shared degree yellow, none red, deg F) was fixed on main but never eyeballed in the browser by me: a quick check would close it.
+- Sidebar: Nathan wants ONE group sorted by recency; sessions still sit in "Glass Box: Active" / "Glass Box: Inactive": propose moving all to ungrouped and deleting both groups (see coordinator-15.md).
+
+LESSONS FROM 2026-10-29
+- An animal picker that "won't click" was a null handler: attachPanels threw because #welcomeBtn was deleted from index.html; test/uiids.test.ts now asserts every $('id') literal in src/ui exists in index.html. If the live site looks broken, check the console first.
+- "Build N" must move whenever you push; he checks the live footer. Say when a push is queued behind a deploy.
+- Betta cheapest card is $119 (price factor 1.07, $5 bucket, test kit optional, kit shipping $5.99). Don't re-litigate.
+- git cherry flags lanes merged with conflict edits as unmerged; verify by subject grep before re-merging. Merging a shared-folder ship.sh blocks on conflicts: cherry-pick instead.
+- A dev server on port 5183 once stopped serving src/main.ts; delegate such repros to a lane, stop the preview.
+
+Lane IDs: next free as in coordinator-15.md plus R9+, GM1+ (gear model lanes).
+
+STEP 1: get_session "self"; set_session_title "Coordinator 16"; group "Glass Box: Active" (id cg-353f4d2f-6e1e-4ed2-8850-05435931acf5); in HANDOFF.md "Start here" replace Coordinator 15's id with yours and add 15 to the predecessor chain; commit from the coordinator worktree, push, VERIFY; tell Nathan you are live in a few lines.
