@@ -5,7 +5,8 @@
 import type { Store } from '../scene/store';
 import { ITEM_IDS, type Brief, type ItemId } from '../scene/brief';
 import { SETUP_KINDS, type SetupKind } from '../scene/pickerKind';
-import { labelOf, getBrief, editBrief, onBrief } from './setupBrief';
+import { labelOf, getBrief, editBrief, onBrief, budgetOf, monthlyOf, targetBudgetOf } from './setupBrief';
+import { demandOf } from '../demand';
 import { setOff } from '../scene/brief';
 import { summaryOf, LEVEL_WORD, type StockSummary } from './stockSummary';
 
@@ -20,8 +21,22 @@ export const NOT_VALID_TRADEOFF = 'not a valid tradeoff';
 export function guardrailRows(b: Brief): { id: ItemId; label: string }[] {
   return ITEM_IDS.filter(i => b.items[i]?.off).map(id => ({ id, label: labelOf(b, id) }));
 }
+/** The brief items still checking (on), the ones the Guardrails dialog can turn off. Welfare checks are not brief items, so never appear. */
+export function activeRows(b: Brief): { id: ItemId; label: string }[] {
+  return ITEM_IDS.filter(i => b.items[i] && !b.items[i]!.off).map(id => ({ id, label: labelOf(b, id) }));
+}
 
-export interface Flag { level: 'problem' | 'caution'; text: string; /** an animal-welfare failure: always red, never a choice */ welfare: boolean; cat: string }
+/** Cost against the brief: red over a max, amber over a target (never blocks). `item` is the brief item that can be turned off. */
+export function costFlags(b: Brief, setupUsd: number, monthlyUsd: number): Flag[] {
+  const out: Flag[] = [], usd = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
+  const max = budgetOf(b), tgt = targetBudgetOf(b), mo = monthlyOf(b);
+  if (max !== undefined && setupUsd > max) out.push({ level: 'problem', welfare: false, cat: 'Cost', item: 'constraints.budget', text: `Set-up ${usd(setupUsd)} is over your ${usd(max)} maximum.` });
+  else if (tgt !== undefined && setupUsd > tgt) out.push({ level: 'caution', welfare: false, cat: 'Cost', item: 'constraints.budget', text: `Set-up ${usd(setupUsd)} is over your ${usd(tgt)} target (maximum ${max === undefined ? 'not set' : usd(max)}).` });
+  if (mo !== undefined && monthlyUsd > mo) out.push({ level: 'problem', welfare: false, cat: 'Cost', item: 'constraints.monthly', text: `Upkeep ${usd(monthlyUsd)} a month is over your ${usd(mo)} maximum.` });
+  return out;
+}
+
+export interface Flag { level: 'problem' | 'caution'; text: string; /** an animal-welfare failure: always red, never a choice */ welfare: boolean; cat: string; /** the brief item behind this flag; only such flags can be turned off */ item?: ItemId }
 /** Sandbox flags from the stocking summary: every Problem is a welfare failure (red, labelled), every Caution an amber flag. Nothing here blocks. */
 export function sandboxFlags(sm: StockSummary): Flag[] {
   const out: Flag[] = [];
@@ -35,7 +50,7 @@ export interface StartModeHost {
   /** Enter the Welcome workspace (Guided). */ guided(): void;
   /** An empty tank of the kind (false when the person cancelled the replace warning). */ sandbox(kind: SetupKind): boolean;
   /** The deals / starters / saved-tank lists. */ browse(menu: 'new' | 'open', tab?: 'starters' | 'open'): void;
-  /** An extra flag line (cost against the brief's ceiling); optional. */ costFlag?(): string | undefined;
+  /** The demand profile for the cost flags (lazy: the demand panel loads after start-up). */ profile?(): Parameters<typeof demandOf>[1] | undefined;
 }
 
 export function attachStartMode(store: Store, host: StartModeHost, initialKind: SetupKind = 'freshwater') {
@@ -55,25 +70,30 @@ export function attachStartMode(store: Store, host: StartModeHost, initialKind: 
     if (getMode() !== 'sandbox') { bar.hidden = true; return; }
     let flags: Flag[] = [];
     try { flags = sandboxFlags(summaryOf(store.tank, (store.scene.units ?? 'in') === 'in' ? 'in' : 'cm')); } catch { /* an empty tank has nothing to flag */ }
-    const cost = host.costFlag?.(), off = guardrailRows(getBrief()).length;
+    try { const P = host.profile?.(); if (P) { const t = demandOf(store.tank, P).totals; flags.push(...costFlags(getBrief(), t.setupUsd, t.upkeepUsdMo)); } } catch { /* no price yet */ }
+    flags.sort((a, c) => +(c.level === 'problem') - +(a.level === 'problem'));
+    const off = guardrailRows(getBrief()).length;
     bar.hidden = false;
     bar.innerHTML = `<div class="sb-head"><b>Sandbox</b> <span class="hint">every check is a flag; none blocks you</span>` +
       `<span class="sb-btns"><button type="button" class="linkbtn" data-sb="guard">Guardrails${off ? ` (${off} off)` : ''}</button> · <button type="button" class="linkbtn" data-sb="guided" title="Keep this tank and open the Guided workspace">Switch to Guided</button></span></div>` +
-      (flags.length || cost ? `<ul class="sb-flags">${flags.map(f => `<li class="sb-flag ${f.level}"><i>${f.welfare ? 'Welfare problem, ' + NOT_VALID_TRADEOFF : LEVEL_WORD.caution}</i> ${esc(f.text)}</li>`).join('')}${cost ? `<li class="sb-flag caution"><i>Cost</i> ${esc(cost)}</li>` : ''}</ul>` : '<div class="hint">No flags.</div>');
+      (flags.length ? `<ul class="sb-flags">${flags.map(f => `<li class="sb-flag ${f.level}"><i>${f.welfare ? 'Welfare problem, ' + NOT_VALID_TRADEOFF : f.cat === 'Cost' ? (f.level === 'problem' ? 'Over budget' : 'Over target') : LEVEL_WORD.caution}</i> ${esc(f.text)}${f.item ? ` <button type="button" class="linkbtn" data-off="${f.item}" title="Stop checking this against your brief (Guardrails turns it back on)">Turn off this check</button>` : ''}</li>`).join('')}</ul>` : '<div class="hint">No flags.</div>');
   };
   const drawGuard = () => {
-    const rows = guardrailRows(getBrief());
-    $('guardList').innerHTML = rows.length
-      ? rows.map(r => `<div class="bbRow"><b>${esc(r.label)}</b> <span class="hint">off</span> <button type="button" data-on="${r.id}">Turn back on</button></div>`).join('')
-      : '<p class="hint">Nothing is switched off: every item in your brief is being checked.</p>';
+    const b = getBrief(), off = guardrailRows(b), on = activeRows(b);
+    $('guardList').innerHTML = (off.length ? `<h3>Off</h3>${off.map(r => `<div class="bbRow"><b>${esc(r.label)}</b> <span class="hint">off</span> <button type="button" data-on="${r.id}">Turn back on</button></div>`).join('')}` : '<p class="hint">Nothing is switched off: every item in your brief is being checked.</p>')
+      + (on.length ? `<h3>Checking</h3>${on.map(r => `<div class="bbRow"><b>${esc(r.label)}</b> <button type="button" data-off="${r.id}">Turn off this check</button></div>`).join('')}` : '')
+      + '<p class="hint">Animal welfare checks always apply: they are not listed because they cannot be turned off.</p>';
   };
   bar.onclick = e => {
+    const o = (e.target as HTMLElement).closest<HTMLElement>('[data-off]');
+    if (o) { editBrief(b => setOff(b, o.dataset.off as ItemId, true)); return; }
     const t = (e.target as HTMLElement).closest<HTMLElement>('[data-sb]'); if (!t) return;
     if (t.dataset.sb === 'guard') { drawGuard(); guard.showModal(); } else { setMode('guided'); drawBar(); host.guided(); }
   };
   guard.addEventListener('click', e => {
-    const t = (e.target as HTMLElement).closest<HTMLElement>('[data-on]'); if (!t) return;
-    editBrief(b => setOff(b, t.dataset.on as ItemId, false)); drawGuard();
+    const t = (e.target as HTMLElement).closest<HTMLElement>('[data-on],[data-off]'); if (!t) return;
+    const id = (t.dataset.on ?? t.dataset.off) as ItemId, off = t.dataset.off !== undefined;
+    editBrief(b => setOff(b, id, off)); drawGuard();
   });
   dlg.addEventListener('click', e => {
     const t = (e.target as HTMLElement).closest<HTMLElement>('[data-browse]'); if (!t) return;

@@ -1,7 +1,7 @@
 // Sidebar wiring. Inputs write through store.update(); one sync() pulls every control back from the scene,
 // so undo/redo, file open and pointer drags all refresh the panels the same way.
 import { FOCUS_SECS, type FocusSec } from '../render/menuFocus';
-import { attachDemandPanel } from './demandPanel';
+import { attachDemandPanel, loadProfile } from './demandPanel';
 import { fitToLimits, hasLimits } from '../demand/fit';
 import { attachTechMenu } from './techMenu';
 import { SUMP_MODELS, sumpFromModel, tempEvidence } from '../scene/tech';
@@ -296,6 +296,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     guided: () => welcome.show(),
     sandbox: kind => { if (welcomeFirst) { welcomeFirst = false; store.edit(s => applyKind(s, kind)); return true; } return newEmptyTank(kind); },
     browse: (menu, tab) => showChooser(menu, tab, welcomeFirst),
+    profile: () => { try { return loadProfile(); } catch { return undefined; } },
   });
   void import('./suggest').then(m => { suggestPanel = m.attachSuggest(store, viewer, status); }); // lane C8: Suggest a setup
   void import('./briefBar').then(m => { briefBarApi = m.attachBriefBar(store, { suggest: () => suggestPanel?.open() }); }); // lane U3: the setup brief bar, shown in every entry point

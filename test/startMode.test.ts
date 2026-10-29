@@ -22,3 +22,21 @@ describe('start mode: Guided or Sandbox', () => {
     expect(NOT_VALID_TRADEOFF).toBe('not a valid tradeoff');
   });
 });
+
+import { activeRows, costFlags } from '../src/ui/startMode';
+import { setLimitTarget } from '../src/ui/setupBrief';
+describe('sandbox cost flags and guardrails', () => {
+  it('amber over the target, red over the max, none under; each names the item to turn off', () => {
+    let b = setItem(emptyBrief(), 'constraints.budget', 300, 'hard');
+    b = setLimitTarget(b, 'constraints.budget', 200);
+    expect(costFlags(b, 150, 0)).toEqual([]);
+    expect(costFlags(b, 250, 0).map(f => [f.level, f.item])).toEqual([['caution', 'constraints.budget']]);
+    expect(costFlags(b, 350, 0).map(f => [f.level, f.item])).toEqual([['problem', 'constraints.budget']]);
+    expect(costFlags(setOff(b, 'constraints.budget', true), 999, 0)).toEqual([]);
+  });
+  it('active rows are the items still on', () => {
+    let b = setItem(emptyBrief(), 'constraints.budget', 300, 'hard');
+    expect(activeRows(b).map(r => r.id)).toEqual(['constraints.budget']);
+    expect(activeRows(setOff(b, 'constraints.budget', true))).toEqual([]);
+  });
+});
