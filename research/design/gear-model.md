@@ -202,3 +202,7 @@ G4a-c are small (data gaps only) and run in parallel after G0 (distinct JSON fil
 4. **UVB tubes: generic-only OK?** UVB output is a welfare stat for reptiles. Plan: one UVB tube item with a tunable strength (5.0 / 10.0 / 12 %), length and distance, no brands; real UVI by brand is not modelled. Fine, or should UVB tubes (and heat lamps) get a small product library?
 
 Retiring the five old equipment items needs no question now: with the class rule they become the generic models (the heater is library-class and already drawn by `gear3d.ts`), so I treat the retirement as decided unless Nathan objects.
+
+## 11. Decisions (Nathan, 2026-10-29)
+
+All four recommendations approved: (1) gear card in each Tech-menu row, tabs Generic | Library | I own one; Items stays decor only. (2) Keep "Tune as generic..." on library products. (3) Library types only, spec must be stated on the product page, estimates marked, 20-40 popular per type. (4) UVB tubes and heat lamps are generic-only with a tunable UVB strength, no brands. Old equipment items are retired (rebuilt as generic models). Next: build lane G0.
