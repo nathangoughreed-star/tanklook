@@ -9,6 +9,7 @@ import { standMisfit } from '../scene/standspace';
 import { renderFeaturedDeals } from './featuredDeals';
 import { attachWelcome } from './welcome';
 import { bindBriefStore, editBrief, setTank as briefTank } from './setupBrief';
+import { attachStartMode, setMode } from './startMode';
 import { startDeals, visibleTabs, pickTab, sortDeals, DEFAULT_SORT, type DealSort, type StartTab, type StartMenu } from './startEntries';
 import { DEALS_AS_OF, DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
 import { LEVELS, onPerf, perf, setAuto, setLevel } from '../render/perf';
@@ -148,11 +149,10 @@ export function attachPanels(store: Store, viewer: Viewer) {
   viewer.onPan(() => { recenter.hidden = !viewer.panned; });
   $('redo').onclick = () => store.redo();
   // New and Open… are two separate menus of the start chooser (below): New = scratch + deals, Open… = starter + saved tanks
-  $('newScene').onclick = () => showChooser('new', undefined, false);
+  $('newScene').onclick = () => { welcomeFirst = false; startMode.show(); }; // New: Guided or Sandbox (ui/startMode.ts)
   $('openScene').onclick = () => showChooser('open', 'open', false);
   /** The old New button: an empty tank, after a warning when the current one has animals (Undo brings it back). */
-  let newKind: SetupKind = 'freshwater'; // the chooser's Tank type (lane S252): applied to the empty tank it starts
-  const newEmptyTank = () => {
+  const newEmptyTank = (newKind: SetupKind = 'freshwater') => { // the Sandbox card's Tank type (lane S252): applied to the empty tank it starts
     if (G().tanks.some(t => t.fish.length) && !confirm('Start a new, empty tank? (Undo brings this one back.)')) return false;
     const s = emptyScene(); s.name = 'New tank'; applyKind(s.tanks[0], newKind); // the water type is settled when the tank is made
     s.tanks[0].camera = { ...S().camera }; s.units = G().units;
@@ -244,13 +244,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // (empty ones hide). Open: tabs Starter tanks / Saved tanks. A link at the bottom swaps menus. Shown on first launch
   // (New) when no tank was restored from this browser (Nathan 2026-10-14; Esc keeps the empty tank), and by New / Open….
   const startDlg = $<HTMLDialogElement>('startDlg');
-  let firstLaunch = false;
   const dealSort = { ...DEFAULT_SORT }; // each deal tab keeps its own order
-  $('startKind').replaceChildren($('startKind').firstElementChild!, ...SETUP_KINDS.map(([k, label, tip]) => { const b = document.createElement('button'); b.type = 'button'; b.dataset.kind = k; b.textContent = label; b.title = tip; b.onclick = () => { newKind = k; for (const x of $('startKind').querySelectorAll<HTMLButtonElement>('button')) { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', String(x === b)); } }; return b; }));
   $('startEx').onclick = e => openExample(e, startDlg);
-  $('startFresh').onclick = () => { // at first launch the tank on screen is already a fresh one
-    if (firstLaunch) { startDlg.close(); store.edit(s => applyKind(s, newKind)); } else if (newEmptyTank()) startDlg.close();
-  };
   const openDeal = (name: string, scene: Scene) => { startDlg.close(); store.replace(scene); setLibId(null); status(`Opened the deal "${name}". Customise it; the demand panel prices the bundle. Undo brings the previous tank back.`); };
   const setTab = (tab: StartTab) => {
     for (const b of startDlg.querySelectorAll<HTMLElement>('[data-tab]')) { const on = b.dataset.tab === tab; b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1; }
@@ -258,18 +253,15 @@ export function attachPanels(store: Store, viewer: Viewer) {
   };
   $('startTabs').onclick = e => { const b = (e.target as HTMLElement).closest<HTMLElement>('[data-tab]'); if (b) setTab(b.dataset.tab as StartTab); };
   function showChooser(menu: StartMenu, tab: StartTab | undefined, first: boolean) {
-    firstLaunch = first;
     const { sale, bundles } = startDeals(), shown = visibleTabs(menu, { sale: sale.length, bundles: bundles.length }), isNew = menu === 'new';
-    $('startTitle').textContent = isNew ? 'What do you have so far?' : 'Open a tank';
+    $('startTitle').textContent = isNew ? 'Deals and bundles' : 'Open a tank';
     $('startIntro').textContent = isNew
-      ? 'Plan an aquarium, paludarium or terrarium: tank, ground, plants, animals and light, all to scale. Start empty, or from a kit or set you can buy now.'
+      ? 'Starter kits and tank-and-stand sets you can buy now: pick one, then make it yours.'
       : 'A ready-made starter tank to look at or build on, or one you saved.';
-    $('startBtns').hidden = !isNew; $('startKind').hidden = !isNew;
-    for (const b of $('startKind').querySelectorAll<HTMLButtonElement>('button')) { const on = b.dataset.kind === newKind; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); }
     $('startTabs').hidden = !shown.length;
     const swap = $<HTMLButtonElement>('startSwap');
-    swap.textContent = isNew ? 'Open a starter or saved tank instead…' : 'Start a new tank instead…';
-    swap.onclick = () => showChooser(isNew ? 'open' : 'new', undefined, firstLaunch);
+    swap.textContent = isNew ? 'Open a starter or saved tank instead…' : 'Deals and bundles instead…';
+    swap.onclick = () => showChooser(isNew ? 'open' : 'new', undefined, first);
     for (const b of startDlg.querySelectorAll<HTMLElement>('[data-tab]')) b.hidden = !shown.includes(b.dataset.tab as StartTab);
     for (const n of startDlg.querySelectorAll('.dealasof')) n.textContent = `Prices as of ${DEALS_AS_OF}; ${DEAL_NOTE.replace(/^as of the date shown; /, '')}. ${NOT_SPONSORED}.`;
     // each deal tab sorts on its own; the labels name the key and direction ($ saved, % saved, price, size)
@@ -283,7 +275,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     const land = pickTab(tab, shown);
     if (land) setTab(land); else for (const p of startDlg.querySelectorAll<HTMLElement>('[data-pane]')) p.hidden = true;
     if (!startDlg.open) startDlg.showModal();
-    (isNew ? $('startFresh') : startDlg.querySelector<HTMLElement>('[data-tab][aria-selected="true"]') ?? swap).focus();
+    (startDlg.querySelector<HTMLElement>('[data-tab][aria-selected="true"]') ?? swap).focus();
   }
   // The Welcome screen (lane C4) is the front door: first launch shows it; New / Open… still open the chooser above.
   // At first launch the tank on screen is already a fresh one, so Sandbox just closes the Welcome screen.
@@ -291,20 +283,25 @@ export function attachPanels(store: Store, viewer: Viewer) {
   let welcomeFirst = false, lookPick: { open(): void } | undefined;
   let suggestPanel: { open(): void } | undefined, briefBarApi: { open(): void } | undefined;
   const openLook = () => void import('./lookPick').then(m => { (lookPick ??= m.attachLookPick(store, viewer, status)).open(); }); // lane C7: Create a look (path 2)
-  $('startLook').onclick = () => { startDlg.close(); openLook(); };
   const welcome = attachWelcome({
     stocking: () => $('startAnimal').click(),
     look: () => openLook(),
     equipment: () => briefBarApi?.open(),
     suggest: () => suggestPanel?.open(),
-    sandbox: () => welcomeFirst ? (welcomeFirst = false, true) : newEmptyTank(),
+    sandbox: () => { const ok = welcomeFirst ? (welcomeFirst = false, true) : newEmptyTank(); if (ok) { setMode('sandbox'); startMode.drawBar(); } return ok; },
     browse: menu => showChooser(menu, menu === 'open' ? 'starters' : undefined, welcomeFirst),
+  });
+  // lane NG1: New and first launch offer Guided (the Welcome workspace) or Sandbox (an empty tank, checks as flags)
+  const startMode = attachStartMode(store, {
+    guided: () => welcome.show(),
+    sandbox: kind => { if (welcomeFirst) { welcomeFirst = false; store.edit(s => applyKind(s, kind)); return true; } return newEmptyTank(kind); },
+    browse: (menu, tab) => showChooser(menu, tab, welcomeFirst),
   });
   void import('./suggest').then(m => { suggestPanel = m.attachSuggest(store, viewer, status); }); // lane C8: Suggest a setup
   void import('./briefBar').then(m => { briefBarApi = m.attachBriefBar(store, { suggest: () => suggestPanel?.open() }); }); // lane U3: the setup brief bar, shown in every entry point
   $('suggestBtn').onclick = () => { if (startDlg.open) startDlg.close(); suggestPanel?.open(); };
-  $('startWelcome').onclick = () => { startDlg.close(); welcome.show(); };
-  const showStart = () => { welcomeFirst = true; welcome.show(); };
+  $('startWelcome').onclick = () => { startDlg.close(); startMode.show(); };
+  const showStart = () => { welcomeFirst = true; startMode.show(); };
   void import('./stockPlan').then(m => m.attachStockPlan(store, viewer, status, $('startAnimal'))); // lane P5: the stocking screen (path 1) and the fork card; loaded after start-up (it pulls in the tank-fit engine, whose imports must not run before starter.ts's)
   $('libList').onclick = e => {
     const t = e.target as HTMLElement, del = t.closest<HTMLButtonElement>('[data-libdel]'), op = t.closest<HTMLButtonElement>('[data-lib]');

@@ -363,7 +363,7 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .starttabs button[aria-selected="true"] { background: var(--panel); border-color: var(--line); border-bottom-color: var(--panel); font-weight: 600; color: var(--accent) }
 .starttabs[hidden], .starttabs button[hidden], .startpane[hidden], .startbtns[hidden] { display: none }
 .startswap { margin: 10px 0 0 }
-.startbtns #startGuided:not([hidden]) { flex: 1 1 200px }
+
 @media (max-width: 480px) { .starttabs button { flex: 1 1 40%; text-align: center } .startdlg { padding: 10px } }
 /* opening a tank blocks the page for a few seconds while it builds: the spinner is a transform animation, so the
    compositor keeps it turning while the main thread is busy */
@@ -895,3 +895,20 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 /* S228 "fine for now": amber with a clock and the months, apart from the amber "past ideal" (Nathan 2026-10-26) */
 .spLater { color: #b07a10; font-weight: 600; margin: 4px 0; font-size: 12px }
 .spStage { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 4px 0 } .spStage button { padding: 2px 7px; font-size: 11.5px } .spStage button.on { outline: 2px solid #2a9bb0 } .spStage .spNote { margin-left: 4px }
+
+/* lane NG1: New = Guided or Sandbox */
+.modedlg { width: min(760px, 96vw) }
+.start-mode { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 8px 0 }
+.start-mode-card { border: 1px solid var(--line, #8886); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px }
+.start-mode-card h3 { margin: 0; font-size: 17px }
+.start-mode-card p { margin: 0; font-size: 13px }
+.start-mode-card .primary { align-self: flex-start; margin-top: auto }
+.start-mode-links { margin-top: 2px }
+@media (max-width: 600px) { .start-mode { grid-template-columns: 1fr } }
+.sandbox-bar { border: 1px solid var(--line, #8886); border-radius: 8px; padding: 6px 8px; margin: 6px 0; font-size: 12px }
+.sandbox-bar .sb-head { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline }
+.sandbox-bar .sb-btns { margin-left: auto }
+.sb-flags { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 3px }
+.sb-flag { border-left: 4px solid #c9a227; padding: 2px 6px }
+.sb-flag.problem { border-left-color: #d12b2b; color: #b01919; font-weight: 600 }
+.sb-flag i { font-style: normal; font-weight: 700; margin-right: 4px }

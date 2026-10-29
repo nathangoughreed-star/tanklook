@@ -59,23 +59,37 @@
     <div class="welcomeCols"><div><h3 class="welcomeH"><span>1</span> Start with anything you already know <i class="hint">Give us a piece, or nothing at all. You can add or change things as you go; each piece lands in your aquarium summary.</i></h3><div class="startbtns startpaths" id="welcomeTiles"></div></div>
     <section class="welcomeGuard" id="welcomeGuard" aria-label="Limits for every setup"></section></div>
     <p class="welcomeSuggest"><button type="button" class="primary" data-w="suggest" id="welcomeSuggest">Explore setup ideas</button> <span class="hint" id="welcomeNext">Welfare checks always apply; they are not a setting.</span>
-    <button type="button" class="linkbtn" data-w="sandbox" id="welcomeManual">Build manually: an empty tank, no questions</button></p>
+    <button type="button" class="linkbtn" data-w="sandbox" id="welcomeManual">Switch to Sandbox: an empty tank, no questions</button></p>
     <p class="hint welcomeSoon" id="welcomeSoon" role="status" hidden></p>
     <p class="hint startswap"><button type="button" class="linkbtn" data-browse="new">On sale now and bundles</button> · <button type="button" class="linkbtn" data-browse="open">Starter tanks and saved tanks</button></p>
+  </dialog>
+  <dialog id="modeDlg" class="libdlg startdlg modedlg" aria-labelledby="modeTitle">
+    <form method="dialog" class="libhead"><h2 id="modeTitle">New tank</h2><button value="close" aria-label="Close">✕</button></form>
+    <p class="hint">How do you want to start? You can switch from Sandbox to Guided later and keep your tank.</p>
+    <div class="start-mode">
+      <section class="start-mode-card" aria-labelledby="modeGuidedH">
+        <h3 id="modeGuidedH">Guided</h3>
+        <p>Tell us what you know (animals, a look, your budget, a tank you own) and we propose a complete, healthy setup that fits, with the tradeoffs shown.</p>
+        <button type="button" class="primary" id="modeGuided">Start guided</button>
+        <p class="hint start-mode-links"><button type="button" class="linkbtn" data-browse="new">On sale now and bundles</button> · <button type="button" class="linkbtn" data-browse="starters">Starter tanks</button> · <button type="button" class="linkbtn" data-browse="open">Open a saved tank</button></p>
+      </section>
+      <section class="start-mode-card" aria-labelledby="modeSandboxH">
+        <h3 id="modeSandboxH">Sandbox</h3>
+        <p>An empty tank to build yourself, no questions. Every check still runs and shows as a flag; none blocks you. Animal welfare problems are always red: they are never a valid tradeoff.</p>
+        <div id="modeKind" class="kinds startkind" role="group" aria-label="Kind of tank"><span class="hint">Kind of tank:</span></div>
+        <button type="button" class="primary" id="modeSandbox">Start sandbox</button>
+      </section>
+    </div>
+  </dialog>
+  <dialog id="guardDlg" class="libdlg startdlg" aria-labelledby="guardTitle">
+    <form method="dialog" class="libhead"><h2 id="guardTitle">Guardrails</h2><button value="close" aria-label="Close">✕</button></form>
+    <p class="hint">Brief items switched off in this tank. Turn one back on and the tank is checked against it again. Animal welfare checks are not on this list: they cannot be switched off.</p>
+    <div id="guardList"></div>
   </dialog>
   <dialog id="startDlg" class="libdlg startdlg" aria-labelledby="startTitle">
     <form method="dialog" class="libhead"><h2 id="startTitle">TankLook</h2><button value="close" aria-label="Close">✕</button></form>
     <p class="hint" id="startIntro"></p>
-    <div id="startKind" class="kinds startkind" role="group" aria-label="Kind of tank"><span class="hint">Kind of tank:</span></div>
-    <div class="startbtns startpaths" id="startBtns">
-      <button id="startAnimal" class="startpath"><b>An animal I want</b><span>Pick the animal; the tank it needs, and what it costs, follow</span></button>
-      <button id="startLook" class="startpath"><b>A look I want</b><span>Start from a style: nature, iwagumi, jungle, reef</span></button>
-      <button class="startpath soon" disabled aria-disabled="true"><b>A tank I already own</b><span>Coming soon</span></button>
-      <button class="startpath soon" disabled aria-disabled="true"><b>I just want to try the hobby</b><span>Coming soon</span></button>
-      <button id="startFresh" class="startpath"><b>Sandbox</b><span>An empty tank to fill yourself, no questions</span></button>
-      <!-- guided start / wizard hook: a future lane fills #startGuided with its entry button and unhides it (see showChooser in ui/panels.ts) -->
-      <div id="startGuided" hidden></div>
-    </div>
+    <button id="startAnimal" hidden aria-hidden="true" tabindex="-1">Animal</button><!-- opener the stocking screen binds to (Guided, Animals tile) -->
     <div class="starttabs" role="tablist" id="startTabs">
       <button role="tab" id="tab-sale" data-tab="sale">On sale now</button>
       <button role="tab" id="tab-bundles" data-tab="bundles">Bundles</button>
@@ -101,13 +115,14 @@
       <div id="libList" class="libgrid"></div>
       <div class="btns"><button id="openFile">Open a downloaded file…</button></div>
     </section>
-    <p class="hint startswap"><button type="button" id="startSwap" class="linkbtn"></button> · <button type="button" id="startWelcome" class="linkbtn">Back to Welcome</button> · <button type="button" id="suggestBtn" class="linkbtn" title="Fill in what you left open in your setup brief: proposals that fit your budget, time and space">Suggest a setup</button></p>
+    <p class="hint startswap"><button type="button" id="startSwap" class="linkbtn"></button> · <button type="button" id="startWelcome" class="linkbtn">Back to New</button> · <button type="button" id="suggestBtn" class="linkbtn" title="Fill in what you left open in your setup brief: proposals that fit your budget, time and space">Suggest a setup</button></p>
     <p class="hint">Drag (one finger on a phone) to look around, wheel or pinch to zoom; <i>How to use</i> at the top of the panel has the rest.</p>
   </dialog>
   <div id="busy" class="busy" role="status" aria-live="polite" hidden><div class="busybox"><span class="spin" aria-hidden="true"></span><span id="busyText">Opening…</span></div></div>
   <div class="namerow"><input id="sceneName" type="text" maxlength="80" aria-label="Scene name"><span id="saveState" class="hint"></span></div>
   <div id="status" class="status" role="status" hidden></div>
   <div id="editing" class="editing" hidden></div>
+  <div id="sandboxBar" class="sandbox-bar" role="region" aria-label="Sandbox checks" hidden></div>
 
   <details class="help" id="help"><summary>How to use</summary>
     <ul class="hint">
