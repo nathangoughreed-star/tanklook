@@ -111,6 +111,14 @@ describe("this plan's water: target, holding it, a measurement, kept apart", () 
     expect(measuredCheck(broad, ev({ measured: 27, target: 23 }))).toMatchObject({ state: 'outside', fix: 'lower the temperature to 21–25 °C: cool it with a fan, a chiller or a cooler room' });
     expect(measuredCheck(broad, ev({}))).toBeNull();
   });
+  it('one shared degree: say "set it to X" and keep checking the target and the measurement', () => {
+    const one = sharedRange([fake('tA'), fake('tB0')]);
+    expect(operatingCheck(one, ev({}))).toMatchObject({ state: 'unchecked', text: expect.stringMatching(/no target water temperature set \(set it to 25 °C/) });
+    expect(operatingCheck(one, ev({ target: 25 })).state).toBe('inside');
+    expect(operatingCheck(one, ev({ target: 27 })).state).toBe('outside');
+    expect(measuredCheck(one, ev({ measured: 25 }))?.state).toBe('inside');
+    expect(measuredCheck(one, ev({ measured: 27 }))?.state).toBe('outside');
+  });
   it('unknown: unchecked, never passed', () => {
     expect(operatingCheck(broad).state).toBe('unchecked');
     expect(operatingCheck(broad, ev({}))).toMatchObject({ state: 'unchecked', text: expect.stringMatching(/no target water temperature set \(set it inside 21–25 °C/) });
