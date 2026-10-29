@@ -22,7 +22,8 @@ import { constraintsOf, editBrief, getBrief, lockedStock, setBudget, setCareTime
 import { briefToWants, clearItem, setItem, valueOf } from '../scene/brief';
 import { openBuildPlan, confBadge } from './buildPlanSheet';
 import { buildPlanOf } from '../demand/buildplan';
-import { applyAlternative, type Alternative, type Infeasible } from '../demand/infeasible';
+import { applyAlternative } from '../demand/infeasible';
+import { infeasibleCard } from './infeasibleCard';
 import { getSpecies as speciesOf } from '../data/species';
 import { chipsFor, dropWish, refine, type Chip } from '../demand/refine';
 import type { Wish } from '../scene/brief';
@@ -120,13 +121,6 @@ ${p.unknown.length ? `<div class="spNote">Not enough information: ${esc(p.unknow
 <button type="button" class="primary" data-act="pick" data-i="${i}">Use this setup</button> <button type="button" data-act="plan" data-i="${i}">Build plan</button></li>`;
   };
 
-  /** The "why not" card (lane U4): the limiting factor in plain words with the numbers, what the cheapest honest build is made of, and one button per way out. Each button edits the brief (locks kept) and re-runs. */
-  const infeasibleCard = (inf: Infeasible) => {
-    const alt = (a: Alternative, i: number) => `<li class="sgAlt" data-kind="${a.kind}"><div>${esc(a.text)}</div>${a.edit ? `<button type="button" class="primary" data-alt="${i}">${esc(a.label)}</button>` : ''}</li>`;
-    const lines = inf.cheapest ? `<ul class="bpGear sgCost" aria-label="The cheapest honest build, itemised">${inf.cheapest.lines.map(l => `<li>${esc(l.label)}: ${usd(l.usd)}</li>`).join('')}<li><b>Total ${usd(inf.cheapest.usd)}</b>${inf.cheapest.over ? ` (${usd(inf.cheapest.over)} over)` : ''}</li></ul>` : '';
-    return `<div class="sgNone sgWhy" id="sgNone" data-factor="${inf.limitingFactor}"><p class="spWarn"><b>No setup fits all of that.</b> ${esc(inf.text)}</p>${lines}${inf.alternatives.length ? `<b>What would change that</b><ul class="sgAlts">${inf.alternatives.map(alt).join('')}</ul>` : ''}</div>`;
-  };
-
   /** The refinement chips (lane U6): one click edits the brief (locks kept) and the setups are worked out again; an applied wish can be switched back off. */
   const chipRow = () => {
     if (!res?.proposals.length) return '';
@@ -141,7 +135,7 @@ ${p.unknown.length ? `<div class="spNote">Not enough information: ${esc(p.unknow
     if (res) {
       if (res.proposals.length) out = `<p class="spNote">${esc(res.off ? 'No guardrail is on, so these are ranked by what you picked below, not checked against a limit.' : 'Each one passes every guardrail you switched on and the animals\' care checks. Prices are expected costs; minutes are estimates.')}</p>
 ${res.note ? `<p class="spWarn sgNote">${esc(res.note)}</p>` : ''}${chipRow()}<ul class="bpCards">${res.proposals.map(card).join('')}</ul>`;
-      else if (res.infeasible) out = infeasibleCard(res.infeasible);
+      else if (res.infeasible) out = infeasibleCard(res.infeasible, getBrief());
       else out = `<p class="spWarn" id="sgNone">${esc(res.message ?? res.unavailable ?? '')}</p>`;
       if (res.misses.length && !res.unavailable) out += `<div class="sgMiss"><b>Closest, if you raise a limit</b> (these do not fit your guardrails as set)<ul>${res.misses.map(m => `<li>${esc(m.archetype.title)}: ${esc(m.text)}</li>`).join('')}</ul></div>`;
     }
