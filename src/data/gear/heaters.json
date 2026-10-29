@@ -2430,5 +2430,52 @@
    "cord"
   ],
   "colorsNote": "Flat black housing with a round dial face of red/yellow/green LEDs and side clips (box photo shows the 100 W). Length and gallons from the Bulk Reef Supply Quick Compare (L x 2 1/8 in wide x 4/5 in thick at the bezel, so diaMm is the thickness, 20 mm); that page showed no per-size price, so none is entered. The page's own note says its quick overview may be wrong; check against the manual."
+ },
+ {
+  "id": "aqueon-pro-100",
+  "brand": "Aqueon",
+  "model": "Pro Adjustable Heater 100 W",
+  "watts": 100,
+  "lengthMm": 264,
+  "diaMm": 38,
+  "look": "glass",
+  "galMax": 30,
+  "url": "https://www.amazon.com/dp/B07JG9XKWK",
+  "est": [
+   "diaMm"
+  ],
+  "asOf": "2026-10-29",
+  "colors": {
+   "cap": {
+    "hex": "#1f2022",
+    "ribbed": true,
+    "dial": true,
+    "led": "#c8784a"
+   },
+   "foot": {
+    "hex": "#2a2b2d"
+   },
+   "tube": {
+    "kind": "opaque",
+    "hex": "#37393b"
+   },
+   "element": {
+    "kind": "none",
+    "hex": "#e8e8e8"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "clear",
+   "photo": "https://m.media-amazon.com/images/I/61kYJEk+1GL._AC_SL700_.jpg"
+  },
+  "colorsEst": [
+   "cap",
+   "foot",
+   "tube",
+   "cups"
+  ],
+  "note": "Amazon page read 2026-10-29: 100 W, up to 30 gal, product dimensions 1.5 x 1.75 x 10.38 in (length 264 mm; diaMm uses the 1.5 in side). The page shows $62.48, which sits far above the line's other prices, so no price is entered. Colours are the Aqueon Pro line's, copied from the Pro 50 record."
  }
 ]

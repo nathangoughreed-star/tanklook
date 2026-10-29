@@ -6,10 +6,7 @@
   "kind": "fan",
   "watts": 6.4,
   "priceUsd": 25.99,
-  "needSpec": [
-   "cooling"
-  ],
-  "note": "Evaporative fan: it cools a few degrees at most. This listing does not state how many.",
+  "note": "Evaporative fan: it cools a few degrees at most. This listing does not state how many. Amazon title, read 2026-10-29: effective cooling 3-7 F; for tanks up to 20 gal.",
   "popularity": {
    "evidence": "Amazon search: 382 ratings, 300+ bought in past month",
    "url": "https://www.amazon.com/dp/B0DJVBQD4Y",
@@ -22,7 +19,11 @@
    "body"
   ],
   "url": "https://www.amazon.com/dp/B0DJVBQD4Y",
-  "asOf": "2026-10-27"
+  "asOf": "2026-10-27",
+  "coolF": [
+   3,
+   7
+  ]
  },
  {
   "id": "aquasmith-fan",
