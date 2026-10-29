@@ -1,31 +1,31 @@
 # Calibration review, round 3: chatgpt (an AI model)
 
-Engine readings: the current engine (research/calib/tables, 2026-10-26). Answers 2026-10-23. Ideal = 75 %, limit = 100 %. Counts are read on the dimension their species fills (floor for bottom dwellers, water for swimmers, the larger for fish that use both). "fix" is what the engine's reading would need to be multiplied by to match the answers: below 0 % the engine reads the tank too full, above it too empty.
+Engine readings: the current engine (research/calib/tables, 2026-10-29). Answers 2026-10-23. Ideal = 75 %, limit = 100 %. Counts are read on the dimension their species fills (floor for bottom dwellers, water for swimmers, the larger for fish that use both). "fix" is what the engine's reading would need to be multiplied by to match the answers: below 0 % the engine reads the tank too full, above it too empty.
 
 ## Tank by tank
 
 | tank | gal | animals | engine water / floor | answer floor / water / overall | ideal count -> engine | limit count -> engine | tankmate ideal -> engine | fix |
 |---|---|---|---|---|---|---|---|---|
-| p2b (pair of p2a) | 30 | 19 Panda corydoras* ⚠ | 60 % / 84 % | amber / green / amber | 16 -> 71 % | 24 -> 106 % | - | 0 % |
-| f12 | 40 | 17 Bronze corydoras* + 10 Rummy-nose tetra° ⚠ | 75 % / 101 % | green / green / green | 20 -> 118 % | 30 -> 178 % | 25 -> 96 % | -35 % |
-| f14 | 55 | 4 Bristlenose pleco* + 45 Otocinclus° ⚠ | 108 % / 70 % | amber / green / amber | 0 (on review) | 4 -> 70 % | 30 -> 89 % | +10 % |
+| p2b (pair of p2a) | 30 | 19 Panda corydoras* ⚠ | 42 % / 84 % | amber / green / amber | 16 -> 71 % | 24 -> 106 % | - | 0 % |
+| f12 | 40 | 17 Bronze corydoras* + 10 Rummy-nose tetra° ⚠ | 57 % / 101 % | green / green / green | 20 -> 118 % | 30 -> 178 % | 25 -> 78 % | -30 % |
+| f14 | 55 | 4 Bristlenose pleco* + 45 Otocinclus° ⚠ | 94 % / 70 % | amber / green / amber | 0 (on review) | 4 -> 70 % | 30 -> 76 % | +19 % |
 | f1 | 10 | 4 Guppy* + 1 Pea puffer + 6 Pygmy corydoras° | 107 % / 0 % | green / green / green | 4 -> 107 % | 8 -> 161 % | 10 -> 122 % | -36 % |
-| f8 | 20 | 11 Panda corydoras* | 48 % / 59 % | green / green / green | 13 -> 69 % | 20 -> 106 % | - | +1 % |
-| f11 | 29 | 13 Panda corydoras* | 54 % / 69 % | - / - / - | - | - | - | - |
+| f8 | 20 | 11 Panda corydoras* | 34 % / 59 % | green / green / green | 13 -> 69 % | 20 -> 106 % | - | +1 % |
+| f11 | 29 | 13 Panda corydoras* | 38 % / 69 % | - / - / - | - | - | - | - |
 | f3 | 10 | 8 Dwarf pencilfish* | 82 % / 0 % | - / - / - | - | - | - | - |
-| f7 | 20 | 10 Panda corydoras* + 5 Pea puffer° | 80 % / 53 % | - / - / - | - | - | - | - |
-| f16 | 75 | 29 Bronze corydoras* + 14 Harlequin rasbora° ⚠ | 78 % / 129 % | - / - / - | - | - | - | - |
+| f7 | 20 | 10 Panda corydoras* + 5 Pea puffer° | 68 % / 53 % | - / - / - | - | - | - | - |
+| f16 | 75 | 29 Bronze corydoras* + 14 Harlequin rasbora° ⚠ | 58 % / 129 % | - / - / - | - | - | - | - |
 | f5 | 20 | 13 Neon tetra* + 24 Amano shrimp° | 86 % / 25 % | - / - / - | - | - | - | - |
-| f9 | 29 | 3 Bristlenose pleco* + 38 Otocinclus° ⚠ | 167 % / 95 % | - / - / - | - | - | - | - |
+| f9 | 29 | 3 Bristlenose pleco* + 38 Otocinclus° ⚠ | 150 % / 95 % | - / - / - | - | - | - | - |
 | f4 | 15 | 6 Cherry barb* | 49 % / 0 % | - / - / - | - | - | - | - |
 | p1b (pair of p1a) | 20 | 32 Dwarf pencilfish* ⚠ | 131 % / 0 % | - / - / - | - | - | - | - |
-| f10 | 29 | 6 Panda corydoras* + 49 Celestial pearl danio° ⚠ | 80 % / 32 % | - / - / - | - | - | - | - |
+| f10 | 29 | 6 Panda corydoras* + 49 Celestial pearl danio° ⚠ | 72 % / 32 % | - / - / - | - | - | - | - |
 | f6 | 20 | 3 Platy* + 10 Cherry shrimp + 6 White cloud mountain minnow° | 56 % / 7 % | - / - / - | - | - | - | - |
-| f15 | 55 | 26 Panda corydoras* ⚠ | 52 % / 80 % | - / - / - | - | - | - | - |
+| f15 | 55 | 26 Panda corydoras* ⚠ | 36 % / 80 % | - / - / - | - | - | - | - |
 | f2 | 10 | 30 Ember tetra* ⚠ | 139 % / 0 % | - / - / - | - | - | - | - |
-| p2a (pair) | 29 | 19 Panda corydoras* ⚠ | 71 % / 101 % | - / - / - | - | - | - | - |
+| p2a (pair) | 29 | 19 Panda corydoras* ⚠ | 50 % / 101 % | - / - / - | - | - | - | - |
 | r1 (repeat of f5) | 20 | 13 Neon tetra* + 24 Amano shrimp° | 86 % / 25 % | - / - / - | - | - | - | - |
-| f13 | 40 | 13 Bronze corydoras* + 14 Reticulated hillstream loach° | 95 % / 128 % | - / - / - | - | - | - | - |
+| f13 | 40 | 13 Bronze corydoras* + 14 Reticulated hillstream loach° | 66 % / 128 % | - / - / - | - | - | - | - |
 | a1 (anchor) | 125 | 87 Harlequin rasbora* + 28 Rummy-nose tetra° ⚠ | 66 % / 0 % | - / - / - | - | - | - | - |
 | p1a (pair) | 20 | 32 Dwarf pencilfish* ⚠ | 140 % / 0 % | - / - / - | - | - | - | - |
 
@@ -35,10 +35,10 @@ Engine readings: the current engine (research/calib/tables, 2026-10-26). Answers
 
 ## Overall
 
-5 tanks with counts. Median fix 0 %; the engine reads 2 of them more than 10 % too full, 0 more than 10 % too empty.
+5 tanks with counts. Median fix 0 %; the engine reads 2 of them more than 10 % too full, 1 more than 10 % too empty.
 Floor bands: 3 of 5 agree; the engine is a band fuller on 1, emptier on 1.
-Water bands: 2 of 5 agree; the engine is a band fuller on 3, emptier on 0.
-Overall bands: 2 of 5 agree; the engine is a band fuller on 3, emptier on 0.
+Water bands: 3 of 5 agree; the engine is a band fuller on 2, emptier on 0.
+Overall bands: 3 of 5 agree; the engine is a band fuller on 2, emptier on 0.
 Limit / ideal count, one-species tanks (2): yours median 1.52, the engine's 1.31 (a higher ratio from you means later fish crowd the tank less than the engine's school curve says; noisy, read it over rounds).
 
 ## Patterns
@@ -47,19 +47,19 @@ Median fix per group (tanks with counts, repeats and left-out tanks excluded). F
 
 | pattern | group | tanks | median fix | range | |
 |---|---|---|---|---|---|
-| focal body class | mid | 2 | -13 % | -35 % to +10 % |  |
+| focal body class | mid | 2 | -5 % | -30 % to +19 % |  |
 | focal body class | tiny | 3 | 0 % | -36 % to +1 % |  |
-| focal zone | bottom | 4 | +0 % | -35 % to +10 % |  |
+| focal zone | bottom | 4 | +0 % | -30 % to +19 % |  |
 | focal zone | top | 1 | -36 % | -36 % to -36 % |  |
-| tight dimension (engine) | floor | 3 | 0 % | -35 % to +1 % |  |
-| tight dimension (engine) | water | 2 | -13 % | -36 % to +10 % |  |
-| one species or a mix | mix | 3 | -35 % | -36 % to +10 % | **flag** |
+| tight dimension (engine) | floor | 3 | 0 % | -30 % to +1 % |  |
+| tight dimension (engine) | water | 2 | -8 % | -36 % to +19 % |  |
+| one species or a mix | mix | 3 | -30 % | -36 % to +19 % | **flag** |
 | one species or a mix | one species | 2 | +0 % | 0 % to +1 % |  |
 | tank size | 10-20 gal | 2 | -17 % | -36 % to +1 % |  |
-| tank size | 29-40 gal | 2 | -18 % | -35 % to 0 % |  |
-| tank size | 55 gal and up | 1 | +10 % | +10 % to +10 % |  |
-| focal count as shown | 10 or fewer | 2 | -13 % | -36 % to +10 % |  |
-| focal count as shown | 11-30 | 3 | 0 % | -35 % to +1 % |  |
+| tank size | 29-40 gal | 2 | -15 % | -30 % to 0 % |  |
+| tank size | 55 gal and up | 1 | +19 % | +19 % to +19 % |  |
+| focal count as shown | 10 or fewer | 2 | -8 % | -36 % to +19 % |  |
+| focal count as shown | 11-30 | 3 | 0 % | -30 % to +1 % |  |
 
 ## The max rule
 
@@ -88,8 +88,8 @@ Confidence: low 1, medium 4, high 0. In a bare tank: the same 0, a little lower 
 Counts nobody keeps (30 or more of one species, 40 for shrimp and snails, 15 or more corydoras, or 50 or more animals). They stay in the fit at full weight (Nathan 2026-10-26) but read their answers with that in mind: 12 of 22 tanks, 3 with counts. Median fix 0 % on them, -17 % on the others.
 
 - p2b: 19 Panda corydoras; fix 0 % (has a note)
-- f12: 17 Bronze corydoras; fix -35 % (has a note)
-- f14: 45 Otocinclus; fix +10 % (has a note)
+- f12: 17 Bronze corydoras; fix -30 % (has a note)
+- f14: 45 Otocinclus; fix +19 % (has a note)
 - f16: 29 Bronze corydoras
 - f9: 38 Otocinclus
 - p1b: 32 Dwarf pencilfish
@@ -102,9 +102,8 @@ Counts nobody keeps (30 or more of one species, 40 for shrimp and snails, 15 or 
 
 ## Compatibility: gate vs you
 
-1 of 3 agree.
+2 of 3 agree.
 
-- f12 (Bronze corydoras + Rummy-nose tetra): gate concern (temperature: narrow shared range), you yes (see the note)
 - f14 (Bristlenose pleco + Otocinclus): gate ok, you caution (see the note)
 
 ## Notes (the expert's own words)

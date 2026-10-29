@@ -1,25 +1,25 @@
 # Calibration review, round 1: ngr
 
-Engine readings: the current engine (research/calib/tables, 2026-10-26). Answers 2026-10-23 (survey with pictures). Ideal = 75 %, limit = 100 %. Counts are read on the dimension their species fills (floor for bottom dwellers, water for swimmers, the larger for fish that use both). "fix" is what the engine's reading would need to be multiplied by to match the answers: below 0 % the engine reads the tank too full, above it too empty.
+Engine readings: the current engine (research/calib/tables, 2026-10-29). Answers 2026-10-23 (survey with pictures). Ideal = 75 %, limit = 100 %. Counts are read on the dimension their species fills (floor for bottom dwellers, water for swimmers, the larger for fish that use both). "fix" is what the engine's reading would need to be multiplied by to match the answers: below 0 % the engine reads the tank too full, above it too empty.
 
 ## Tank by tank
 
 | tank | gal | animals | engine | engine band | answer band | ideal count -> engine | limit count -> engine | fix |
 |---|---|---|---|---|---|---|---|---|
-| f18 | 125 | 84 Cardinal tetra* + 9 Reticulated hillstream loach + 13 Dwarf pencilfish ⚠ | 77 % | amber | green (engine fuller) | 100 -> 84 % | 150 -> 104 % | -7 % |
-| f4 | 30 | 35 White cloud mountain minnow* + 6 Panda corydoras ⚠ | 76 % | amber | amber | 25 -> 64 % | 40 -> 82 % | +20 % |
+| f18 | 125 | 84 Cardinal tetra* + 9 Reticulated hillstream loach + 13 Dwarf pencilfish ⚠ | 70 % | green | green | 100 -> 77 % | 150 -> 98 % | 0 % |
+| f4 | 30 | 35 White cloud mountain minnow* + 6 Panda corydoras ⚠ | 69 % | green | amber (engine emptier) | 25 -> 57 % | 40 -> 75 % | +33 % |
 | f12 | 29 | 28 Ember tetra* | 60 % | green | green | 40 -> 77 % | 65 -> 109 % | -6 % |
 | f5 | 29 | 22 Panda corydoras* + 4 Pea puffer + 1 Malawi synodontis ⚠ | 141 % floor | red | red | no valid count | no valid count | - |
 | f20 | 15 | 34 Cherry shrimp* + 8 Cardinal tetra + 2 Honey gourami | 113 % | red | green (engine fuller) | 50 -> 124 % | not assessable | -39 % |
 | f15 | 125 | 60 Kadango (red-fin) cichlid* ⚠ | 154 % | red | - | - | - | - |
 | f13 | 15 | 15 Otocinclus* + 2 Pea puffer | 111 % | red | - | - | - | - |
 | f3 | 15 | 6 Sterba's corydoras* + 1 Bristlenose pleco | 99 % floor | amber | - | - | - | - |
-| r2 (repeat of f4) | 30 | 35 White cloud mountain minnow* + 6 Panda corydoras ⚠ | 76 % | amber | - | - | - | - |
+| r2 (repeat of f4) | 30 | 35 White cloud mountain minnow* + 6 Panda corydoras ⚠ | 69 % | green | - | - | - | - |
 | f10 | 90 | 90 Neon tetra* + 71 Ember tetra ⚠ | 98 % | amber | - | - | - | - |
 | a2 (anchor) | 75 | 21 Peacock cichlid* | 95 % | amber | - | - | - | - |
-| f17 | 40 | 22 Cardinal tetra* + 1 Malawi synodontis | 67 % | green | - | - | - | - |
+| f17 | 40 | 22 Cardinal tetra* + 1 Malawi synodontis | 61 % | green | - | - | - | - |
 | f1 | 75 | 39 Guppy* ⚠ | 77 % | amber | - | - | - | - |
-| f6 | 20 | 9 Kuhli loach* | 86 % | amber | - | - | - | - |
+| f6 | 20 | 9 Kuhli loach* | 68 % floor | green | - | - | - | - |
 | r1 (repeat of f3) | 15 | 6 Sterba's corydoras* + 1 Bristlenose pleco | 99 % floor | amber | - | - | - | - |
 | f14 | 40 | 101 Pygmy corydoras* + 33 Ember tetra + 55 Celestial pearl danio ⚠ | 115 % | red | - | - | - | - |
 | a1 (anchor) | 90 | 18 Bronze corydoras* + 56 Pygmy corydoras + 4 Bristlenose pleco ⚠ | 108 % floor | red | - | - | - | - |
@@ -37,8 +37,8 @@ Engine readings: the current engine (research/calib/tables, 2026-10-26). Answers
 
 ## Overall
 
-4 tanks with counts. Median fix -7 %; the engine reads 1 of them more than 10 % too full, 1 more than 10 % too empty.
-Bands: 3 of 5 agree; the engine is a band fuller on 2, emptier on 0.
+4 tanks with counts. Median fix -3 %; the engine reads 1 of them more than 10 % too full, 1 more than 10 % too empty.
+Bands: 3 of 5 agree; the engine is a band fuller on 1, emptier on 1.
 Limit / ideal count, one-species tanks (1): yours median 1.63, the engine's 1.49 (a higher ratio from you means later fish crowd the tank less than the engine's school curve says; noisy, read it over rounds).
 
 ## Patterns
@@ -48,24 +48,24 @@ Median fix per group (tanks with counts, repeats and left-out tanks excluded). F
 | pattern | group | tanks | median fix | range | |
 |---|---|---|---|---|---|
 | focal body class | invert | 1 | -39 % | -39 % to -39 % |  |
-| focal body class | tiny | 3 | -6 % | -7 % to +20 % |  |
-| focal zone | all | 2 | -10 % | -39 % to +20 % |  |
-| focal zone | middle | 2 | -7 % | -7 % to -6 % |  |
-| tight dimension (engine) | water | 4 | -7 % | -39 % to +20 % |  |
-| one species or a mix | mix | 3 | -7 % | -39 % to +20 % |  |
+| focal body class | tiny | 3 | 0 % | -6 % to +33 % |  |
+| focal zone | all | 2 | -3 % | -39 % to +33 % |  |
+| focal zone | middle | 2 | -3 % | -6 % to 0 % |  |
+| tight dimension (engine) | water | 4 | -3 % | -39 % to +33 % |  |
+| one species or a mix | mix | 3 | 0 % | -39 % to +33 % |  |
 | one species or a mix | one species | 1 | -6 % | -6 % to -6 % |  |
 | tank size | 10-20 gal | 1 | -39 % | -39 % to -39 % |  |
-| tank size | 29-40 gal | 2 | +7 % | -6 % to +20 % |  |
-| tank size | 55 gal and up | 1 | -7 % | -7 % to -7 % |  |
+| tank size | 29-40 gal | 2 | +13 % | -6 % to +33 % |  |
+| tank size | 55 gal and up | 1 | 0 % | 0 % to 0 % |  |
 | focal count as shown | 11-30 | 1 | -6 % | -6 % to -6 % |  |
-| focal count as shown | over 30 | 3 | -7 % | -39 % to +20 % |  |
+| focal count as shown | over 30 | 3 | 0 % | -39 % to +33 % |  |
 
 ## Implausible-count tanks
 
-Counts nobody keeps (30 or more of one species, 40 for shrimp and snails, 15 or more corydoras, or 50 or more animals). They stay in the fit at full weight (Nathan 2026-10-26) but read their answers with that in mind: 12 of 24 tanks, 2 with counts. Median fix +6 % on them, -22 % on the others.
+Counts nobody keeps (30 or more of one species, 40 for shrimp and snails, 15 or more corydoras, or 50 or more animals). They stay in the fit at full weight (Nathan 2026-10-26) but read their answers with that in mind: 12 of 24 tanks, 2 with counts. Median fix +16 % on them, -22 % on the others.
 
-- f18: 84 Cardinal tetra; fix -7 % (has a note)
-- f4: 35 White cloud mountain minnow; fix +20 % (has a note)
+- f18: 84 Cardinal tetra; fix 0 % (has a note)
+- f4: 35 White cloud mountain minnow; fix +33 % (has a note)
 - f5: 22 Panda corydoras (has a note)
 - f15: 60 Kadango (red-fin) cichlid
 - r2: 35 White cloud mountain minnow
@@ -79,9 +79,10 @@ Counts nobody keeps (30 or more of one species, 40 for shrimp and snails, 15 or 
 
 ## Compatibility: gate vs you
 
-3 of 4 agree.
+2 of 4 agree.
 
-- f4 (White cloud mountain minnow + Panda corydoras): gate concern (temperature: narrow shared range), you yes (see the note)
+- f18 (Cardinal tetra + Reticulated hillstream loach + Dwarf pencilfish): gate ok, you caution (see the note)
+- f20 (Cherry shrimp + Cardinal tetra + Honey gourami): gate ok, you caution (see the note)
 
 ## Notes (the expert's own words)
 

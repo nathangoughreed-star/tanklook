@@ -1,6 +1,6 @@
 # Calibration review, round 2: ngr-ai (an AI model)
 
-Engine readings: the current engine (research/calib/tables, 2026-10-26). Answers 2026-10-23. Ideal = 75 %, limit = 100 %. Counts are read on the dimension their species fills (floor for bottom dwellers, water for swimmers, the larger for fish that use both). "fix" is what the engine's reading would need to be multiplied by to match the answers: below 0 % the engine reads the tank too full, above it too empty.
+Engine readings: the current engine (research/calib/tables, 2026-10-29). Answers 2026-10-23. Ideal = 75 %, limit = 100 %. Counts are read on the dimension their species fills (floor for bottom dwellers, water for swimmers, the larger for fish that use both). "fix" is what the engine's reading would need to be multiplied by to match the answers: below 0 % the engine reads the tank too full, above it too empty.
 
 ## Tank by tank
 
@@ -9,24 +9,24 @@ Engine readings: the current engine (research/calib/tables, 2026-10-26). Answers
 | f10 | 40 | 11 Marbled hatchetfish* + 8 Honey gourami + 8 Chili rasbora° | 75 % / 0 % | - / amber / amber | 12 -> 77 % | 20 -> 89 % | 20 -> 89 % | -3 % |
 | f8 | 40 | 66 Ember tetra* ⚠ | 65 % / 0 % | - / green / green | 70 -> 68 % | 110 -> 94 % | - | +9 % |
 | f9 | 29 | 18 Guppy* | 111 % / 0 % | - / green / green | 25 -> 140 % | 40 -> 0 % | - | -47 % |
-| p2b (pair of p2a) | 40 | 15 Bronze corydoras* ⚠ | 62 % / 100 % | green / - / green | 18 -> 120 % | 28 -> 187 % | - | -42 % |
+| p2b (pair of p2a) | 40 | 15 Bronze corydoras* ⚠ | 43 % / 100 % | green / - / green | 18 -> 120 % | 28 -> 187 % | - | -42 % |
 | a1 (anchor) | 125 | 87 Harlequin rasbora* + 28 Rummy-nose tetra° ⚠ | 66 % / 0 % | - / amber / amber | 70 -> 59 % | 110 -> 75 % | 12 -> 58 % | +30 % |
-| f6 | 40 | 28 Panda corydoras* + 25 White cloud mountain minnow° ⚠ | 73 % / 83 % | amber / green / amber | 20 -> 59 % | 32 -> 95 % | 25 -> 73 % | +11 % |
-| f4 | 75 | 59 Panda corydoras* + 49 Rummy-nose tetra° ⚠ | 102 % / 131 % | red / green / red | 28 -> 62 % | 42 -> 93 % | no valid count | +14 % |
+| f6 | 40 | 28 Panda corydoras* + 25 White cloud mountain minnow° ⚠ | 57 % / 83 % | amber / green / amber | 20 -> 59 % | 32 -> 95 % | 25 -> 57 % | +21 % |
+| f4 | 75 | 59 Panda corydoras* + 49 Rummy-nose tetra° ⚠ | 88 % / 131 % | red / green / red | 28 -> 62 % | 42 -> 93 % | no valid count | +14 % |
 | f7 | 40 | 52 Neon tetra* ⚠ | 75 % / 0 % | - / amber / amber | 40 -> 62 % | 65 -> 88 % | - | +17 % |
-| f15 | 75 | 4 Siamese algae eater* + 109 Celestial pearl danio° ⚠ | 77 % / 29 % | amber / amber / amber | can't say | 4 -> 29 % | 70 -> 67 % | +96 % |
-| f13 | 30 | 4 Reticulated hillstream loach* + 38 Otocinclus° ⚠ | 127 % / 59 % | amber / green / amber | can't say | 4 -> 59 % | 20 -> 86 % | +21 % |
-| f14 | 125 | 37 Bronze corydoras* + 23 Kadango (red-fin) cichlid° ⚠ | 114 % / 110 % | amber / amber / amber | can't say | can't say | can't say | - |
-| f16 | 75 | 5 Kribensis* + 16 Yellow lab cichlid° | 74 % / 75 % | - / - / - | - | - | - | - |
-| f5 | 125 | 59 Kuhli loach* + 11 Sterba's corydoras° ⚠ | 92 % / 131 % | - / - / - | - | - | - | - |
+| f15 | 75 | 4 Siamese algae eater* + 109 Celestial pearl danio° ⚠ | 65 % / 29 % | amber / amber / amber | can't say | 4 -> 29 % | 70 -> 55 % | +117 % |
+| f13 | 30 | 4 Reticulated hillstream loach* + 38 Otocinclus° ⚠ | 118 % / 59 % | amber / green / amber | can't say | 4 -> 59 % | 20 -> 77 % | +28 % |
+| f14 | 125 | 37 Bronze corydoras* + 23 Kadango (red-fin) cichlid° ⚠ | 103 % / 110 % | amber / amber / amber | can't say | can't say | can't say | - |
+| f16 | 75 | 5 Kribensis* + 16 Yellow lab cichlid° | 70 % / 75 % | - / - / - | - | - | - | - |
+| f5 | 125 | 59 Kuhli loach* + 11 Sterba's corydoras° ⚠ | 65 % / 131 % | - / - / - | - | - | - | - |
 | f12 | 40 | 37 Harlequin rasbora* + 9 Pea puffer° ⚠ | 83 % / 0 % | - / - / - | - | - | - | - |
 | p1a (pair) | 20 | 23 Neon tetra* | 94 % / 0 % | - / - / - | - | - | - | - |
-| f2 | 90 | 27 Bronze corydoras* ⚠ | 63 % / 120 % | - / - / - | - | - | - | - |
+| f2 | 90 | 27 Bronze corydoras* ⚠ | 44 % / 120 % | - / - / - | - | - | - | - |
 | p1b (pair of p1a) | 20 | 23 Neon tetra* | 88 % / 0 % | - / - / - | - | - | - | - |
-| f3 | 30 | 9 Bronze corydoras* | 55 % / 80 % | - / - / - | - | - | - | - |
-| f1 | 55 | 34 Panda corydoras* ⚠ | 63 % / 104 % | - / - / - | - | - | - | - |
-| p2a (pair) | 40 | 15 Bronze corydoras* ⚠ | 55 % / 89 % | - / - / - | - | - | - | - |
-| r1 (repeat of f13) | 30 | 4 Reticulated hillstream loach* + 38 Otocinclus° ⚠ | 127 % / 59 % | - / - / - | - | - | - | - |
+| f3 | 30 | 9 Bronze corydoras* | 39 % / 80 % | - / - / - | - | - | - | - |
+| f1 | 55 | 34 Panda corydoras* ⚠ | 44 % / 104 % | - / - / - | - | - | - | - |
+| p2a (pair) | 40 | 15 Bronze corydoras* ⚠ | 38 % / 89 % | - / - / - | - | - | - | - |
+| r1 (repeat of f13) | 30 | 4 Reticulated hillstream loach* + 38 Otocinclus° ⚠ | 118 % / 59 % | - / - / - | - | - | - | - |
 | f11 | 90 | 115 Dwarf pencilfish* + 9 Pearl gourami° ⚠ | 124 % / 0 % | - / - / - | - | - | - | - |
 
 ⚠ = an implausible stocking count (see "Implausible-count tanks").
@@ -35,10 +35,10 @@ Engine readings: the current engine (research/calib/tables, 2026-10-26). Answers
 
 ## Overall
 
-10 tanks with counts. Median fix +13 %; the engine reads 2 of them more than 10 % too full, 6 more than 10 % too empty.
+10 tanks with counts. Median fix +15 %; the engine reads 2 of them more than 10 % too full, 6 more than 10 % too empty.
 Floor bands: 2 of 6 agree; the engine is a band fuller on 2, emptier on 2.
-Water bands: 5 of 10 agree; the engine is a band fuller on 4, emptier on 1.
-Overall bands: 6 of 11 agree; the engine is a band fuller on 4, emptier on 1.
+Water bands: 4 of 10 agree; the engine is a band fuller on 4, emptier on 2.
+Overall bands: 5 of 11 agree; the engine is a band fuller on 4, emptier on 2.
 Limit / ideal count, one-species tanks (4): yours median 1.59, the engine's 1.47 (a higher ratio from you means later fish crowd the tank less than the engine's school curve says; noisy, read it over rounds).
 
 ## Patterns
@@ -47,21 +47,20 @@ Median fix per group (tanks with counts, repeats and left-out tanks excluded). F
 
 | pattern | group | tanks | median fix | range | |
 |---|---|---|---|---|---|
-| focal body class | big | 1 | +96 % | +96 % to +96 % |  |
+| focal body class | big | 1 | +117 % | +117 % to +117 % |  |
 | focal body class | mid | 2 | -6 % | -42 % to +30 % |  |
-| focal body class | tiny | 7 | +11 % | -47 % to +21 % |  |
-| focal zone | bottom | 5 | +14 % | -42 % to +96 % |  |
+| focal body class | tiny | 7 | +14 % | -47 % to +28 % |  |
+| focal zone | bottom | 5 | +21 % | -42 % to +117 % | **flag** |
 | focal zone | middle | 3 | +17 % | +9 % to +30 % | **flag** |
 | focal zone | top | 2 | -25 % | -47 % to -3 % |  |
-| tight dimension (engine) | both | 2 | +13 % | +11 % to +14 % |  |
-| tight dimension (engine) | floor | 1 | -42 % | -42 % to -42 % |  |
-| tight dimension (engine) | water | 7 | +17 % | -47 % to +96 % | **flag** |
-| one species or a mix | mix | 6 | +17 % | -3 % to +96 % | **flag** |
+| tight dimension (engine) | floor | 3 | +14 % | -42 % to +21 % |  |
+| tight dimension (engine) | water | 7 | +17 % | -47 % to +117 % | **flag** |
+| one species or a mix | mix | 6 | +24 % | -3 % to +117 % | **flag** |
 | one species or a mix | one species | 4 | -17 % | -47 % to +17 % | **flag** |
-| tank size | 29-40 gal | 7 | +9 % | -47 % to +21 % |  |
-| tank size | 55 gal and up | 3 | +30 % | +14 % to +96 % | **flag** |
-| focal count as shown | 10 or fewer | 2 | +59 % | +21 % to +96 % |  |
-| focal count as shown | 11-30 | 4 | -23 % | -47 % to +11 % | **flag** |
+| tank size | 29-40 gal | 7 | +9 % | -47 % to +28 % |  |
+| tank size | 55 gal and up | 3 | +30 % | +14 % to +117 % | **flag** |
+| focal count as shown | 10 or fewer | 2 | +72 % | +28 % to +117 % |  |
+| focal count as shown | 11-30 | 4 | -23 % | -47 % to +21 % | **flag** |
 | focal count as shown | over 30 | 4 | +15 % | +9 % to +30 % | **flag** |
 
 ## The max rule
@@ -70,7 +69,9 @@ The engine's overall is the larger of floor and water. Your overall matched your
 
 ## What limits the room first
 
-0 tank(s) "not room" (left out of the room numbers). Of the rest, your limiting species matches the engine's biggest contributor on the binding dimension on 11 of 11.
+0 tank(s) "not room" (left out of the room numbers). Of the rest, your limiting species matches the engine's biggest contributor on the binding dimension on 9 of 11.
+- f15: you Siamese algae eater, engine Celestial pearl danio
+- f14: you Kadango (red-fin) cichlid, engine Bronze corydoras
 
 ## Big enough per species
 
@@ -87,16 +88,16 @@ Confidence: low 4, medium 7, high 0. In a bare tank: the same 0, a little lower 
 
 ## Implausible-count tanks
 
-Counts nobody keeps (30 or more of one species, 40 for shrimp and snails, 15 or more corydoras, or 50 or more animals). They stay in the fit at full weight (Nathan 2026-10-26) but read their answers with that in mind: 16 of 22 tanks, 8 with counts. Median fix +15 % on them, -25 % on the others.
+Counts nobody keeps (30 or more of one species, 40 for shrimp and snails, 15 or more corydoras, or 50 or more animals). They stay in the fit at full weight (Nathan 2026-10-26) but read their answers with that in mind: 16 of 22 tanks, 8 with counts. Median fix +19 % on them, -25 % on the others.
 
 - f8: 66 Ember tetra; fix +9 % (has a note)
 - p2b: 15 Bronze corydoras; fix -42 % (has a note)
 - a1: 87 Harlequin rasbora; fix +30 % (has a note)
-- f6: 28 Panda corydoras; fix +11 % (has a note)
+- f6: 28 Panda corydoras; fix +21 % (has a note)
 - f4: 59 Panda corydoras, 49 Rummy-nose tetra; fix +14 % (has a note)
 - f7: 52 Neon tetra; fix +17 % (has a note)
-- f15: 109 Celestial pearl danio; fix +96 % (has a note)
-- f13: 38 Otocinclus; fix +21 % (has a note)
+- f15: 109 Celestial pearl danio; fix +117 % (has a note)
+- f13: 38 Otocinclus; fix +28 % (has a note)
 - f14: 37 Bronze corydoras (has a note)
 - f5: 59 Kuhli loach
 - f12: 37 Harlequin rasbora
@@ -108,15 +109,12 @@ Counts nobody keeps (30 or more of one species, 40 for shrimp and snails, 15 or 
 
 ## Compatibility: gate vs you
 
-0 of 7 agree.
+3 of 7 agree.
 
 - f10 (Marbled hatchetfish + Honey gourami + Chili rasbora): gate ok, you caution (see the note)
-- a1 (Harlequin rasbora + Rummy-nose tetra): gate concern (temperature: narrow shared range), you yes (see the note)
-- f6 (Panda corydoras + White cloud mountain minnow): gate concern (temperature: narrow shared range), you yes (see the note)
-- f4 (Panda corydoras + Rummy-nose tetra): gate concern (temperature: narrow shared range), you yes (see the note)
 - f15 (Siamese algae eater + Celestial pearl danio): gate ok, you caution (see the note)
 - f13 (Reticulated hillstream loach + Otocinclus): gate ok, you caution (see the note)
-- f14 (Bronze corydoras + Kadango (red-fin) cichlid): gate concern (temperature: narrow shared range), you no (see the note)
+- f14 (Bronze corydoras + Kadango (red-fin) cichlid): gate ok, you no (see the note)
 
 ## Notes (the expert's own words)
 
