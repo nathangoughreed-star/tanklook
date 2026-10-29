@@ -63,7 +63,7 @@ export function buyGroups(lines: readonly CostLine[], taxPct = 0, extras?: strin
 const cats = (p: Proposal) => p.build.animals.flatMap(a => { const sp = getSpecies(a.species); return sp ? [{ a, sp }] : []; });
 export const habitatOf = (p: Proposal): Habitat => !p.build.setup.water.on ? 'dry' : p.build.setup.water.salt ? 'salt' : 'fresh';
 
-function cyclingOf(p: Proposal, h: Habitat, kitPriced: boolean): Cycling | undefined {
+export function cyclingOf(p: Proposal, h: Habitat, kitPriced: boolean): Cycling | undefined {
   if (h === 'dry') return undefined;
   const hasInvert = cats(p).some(x => x.sp.cat === 'fw-invert'), reef = h === 'salt';
   const weeks: [number, number] = reef ? [4, 8] : hasInvert ? [6, 8] : [4, 6];

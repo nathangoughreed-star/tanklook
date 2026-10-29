@@ -38,6 +38,9 @@ import { mean3 } from './range';
 import { explainInfeasible, phasesOf, type Infeasible, type Phases } from './infeasible';
 import type { Limits, UserProfile } from './types';
 import { tasteBonus, type Taste } from './taste';
+import { setupEffortOf } from './effort';
+import { cyclingOf, habitatOf } from './buildplan';
+import { modelGallons } from '../data/tanks';
 
 export { NO_SUGGESTION };
 export type Family = 'fish' | 'invert' | 'salt' | 'terrarium';
@@ -160,6 +163,8 @@ export interface Wants {
   startupTarget?: number;
   /** hours of set-up effort the person will spend (from the brief, lane U1; not read by the generator yet) */
   setupHours?: number;
+  /** set-up hours TARGET (lane NG3b): the max above filters (hours from effort.ts), a target ranks (nearer scores higher) */
+  setupHoursTarget?: number;
   /** the high-tech approach is a requirement (lane U4): only finishes with CO2 and a stronger light (the standard and lush tiers) are offered, so the look is not traded for a cheaper approach silently */
   hightech?: boolean;
   /** the planted look without CO2 (lane U5): the low-tech lush finish (dense live plants chosen for the light the tank has, liquid ferts only) is offered, then the basic and starter finishes */
@@ -305,6 +310,12 @@ function headroom(t: Money, L: Limits): number {
   return parts.length ? parts.reduce((s, [v, c]) => s + Math.max(0, 1 - v / c), 0) / parts.length : 1;
 }
 
+/** Hands-on set-up hours of a build (effort.ts, lane NG6); only the build is read, so the Proposal wrapper is a stand-in. */
+export function setupHoursOf(b: Build, P: UserProfile): number {
+  const p = { build: b } as Proposal, h = habitatOf(p);
+  return setupEffortOf(p, h, modelGallons(b.tank), P, cyclingOf(p, h, false)?.weeks).hours;
+}
+
 /** Ranking by the person's set-up target (lane NG3): 0 with no target; up to TARGET_WEIGHT when the cost sits on it, falling to 0 a full target away. */
 export const TARGET_WEIGHT = 8;
 export function targetBonus(cost: number, target?: number): number { return target && target > 0 ? TARGET_WEIGHT * (1 - Math.min(1, Math.abs(cost - target) / target)) : 0; }
@@ -433,7 +444,7 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
     const bs = buildsCached(animals, tank, now).filter(b => meetsNeeds(b) && !(w.ownTank && b.bundle) && !(b.bundle && ownsKitPart(b.bundle.includes))); // a kit price cannot be split: owning a part of it leaves the parts build (lane U5)
     const b0 = bs.find(b => b.id === pref || b.also?.includes(pref)) ?? [...bs].sort((x, y) => pref === 'leastWork' ? x.minPerWeek - y.minPerWeek : pref === 'balanced' ? x.filtrationPct - y.filtrationPct : x.setupUsd - y.setupUsd)[0];
     if (!b0) return {};
-    const key = `${a.id}|${tank.id}|${animals.map(x => x.species + x.n).join(',')}|${configKey(b0)}|${maxLevel}|${style ?? ''}|${needStand}`;
+    const key = `${a.id}|${tank.id}|${animals.map(x => x.species + x.n).join(',')}|${configKey(b0)}|${maxLevel}|${style ?? ''}|${needStand}|${w.setupHours ?? ''}`;
     const hit = MEMO.get(key); if (hit) return hit;
     let out: Out = {}, near: Miss | undefined;
     const own0 = ownedAssess(b0, ownedMap, needStand, P0, !!w.ownTank), scene0 = scenOf(b0, own0, needStand);
@@ -447,6 +458,7 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
       // husbandry is never traded for money or time: the strict rule (Nathan 2026-10-27) = nothing the stocking screen words as a Problem OR a Caution in any of its five categories. Only "not enough information" passes, and it is shown.
       if (style && !b.setup.items.some(i => i.kind === 'plant' || i.kind === 'artificial' || i.kind === 'coral')) continue; // another look is still a planted (or reefed) tank, never a pile of stones
       if (wordsOf(sm.cats)) { welfare = true; continue; }
+      if (w.setupHours !== undefined && setupHoursOf(b, P0) > w.setupHours) continue; // the person's set-up time is a max (lane NG3b): a lighter finish of the same build may still fit
       if (w.hightech && (b.finish?.level ?? 0) < 2) continue; // a stated high-tech approach is never silently swapped for a plainer one
       const preTax = b.setupUsd - saved, tax = taxOf(preTax), t = { ...money(b), startupUsd: preTax + tax }, L = effectiveLimits(scene, P0.limits);
       const cp = compliance(scene, { setupUsd: t.startupUsd, upkeepUsdMo: t.monthlyUsd, minPerWeek: t.minPerWeek }, L, units);
@@ -483,7 +495,9 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
     const mid = Math.ceil(top / 2), idxOf = (z: StrategyDef['size']) => Math.min(top, (z === 'small' ? 0 : z === 'top' ? top : mid) + (w.larger ? 1 : 0));
     const sd = STRATEGIES.find(x => x.id === id)!;
     if (sd.scape && !altStyle) return;
-    const maxLevel = w.climb || w.planted ? 3 : w.hightech || w.lowtech ? Math.max(sd.level, 2) as 0 | 1 | 2 | 3 : sd.level;
+    // owned gear frees set-up money (lane NG3b): the finish ladder may reach one tier higher, still only as far as the ceiling lets it
+    const freed = id !== 'economy' && Object.keys(ownedMap).length > 0 && !!w.constraints.startupUsd?.on ? 1 : 0;
+    const maxLevel = Math.min(3, freed + (w.climb || w.planted ? 3 : w.hightech || w.lowtech ? Math.max(sd.level, 2) : sd.level)) as 0 | 1 | 2 | 3;
     let found: Out | undefined, near: Miss | undefined;
     // the strategy's own size first; a size the money cannot carry once finished falls back one size down at a time, a size the welfare rule turns away (too full) goes one size UP (at most three tries)
     for (let tries = 0, i = idxOf(sd.size), dir = -1; i >= 0 && i < list.length && tries < 3 && !found?.p; i += dir, tries++) {
@@ -515,7 +529,7 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
     // experience shapes how hands-on concepts RANK (a gentle push), never whether one is offered
     const score = p.matched.length * 10 + headroom(t, L) * 5 + levelOf * 1.5 - p.unknown.length * 0.5 + (exp === 0 ? -6 * cx : exp === 2 ? 3 * cx : 0)
       + (w.climb && L.setupUsd ? (limited ? 1 : Math.min(1, t.startupUsd / L.setupUsd)) * 20 : 0)
-      + targetBonus(t.startupUsd, w.startupTarget)
+      + targetBonus(t.startupUsd, w.startupTarget) + targetBonus(setupHoursOf(p.build, P0), w.setupHoursTarget)
       + tasteBonus(w.taste, p.build.finish?.style);   // lane NG5 hook: ranking only
     const base = { ...p, score, strategy: id, strategyLabel: strategyLabel(id, isLocked), strategyBlurb: sd.blurb,
       ...(L.setupUsd ? { underCeilingUsd: Math.max(0, Math.round(L.setupUsd - t.startupUsd)) } : {}),

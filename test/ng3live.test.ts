@@ -4,7 +4,7 @@ import { defaultProfile } from '../src/demand/types';
 import { emptyBrief, setItem, type Brief } from '../src/scene/brief';
 import { briefToWants } from '../src/scene/brief';
 import { setLimitTarget } from '../src/ui/setupBrief';
-import { suggestSetups, suggestFromBrief, targetBonus, TARGET_WEIGHT } from '../src/demand/suggest';
+import { suggestSetups, suggestFromBrief, targetBonus, TARGET_WEIGHT, setupHoursOf } from '../src/demand/suggest';
 import { changeStrip, inputChanges, inputsOf, resultDiff, tankShift } from '../src/demand/propagate';
 
 const P = defaultProfile(), NOW = Date.parse('2026-10-27');
@@ -53,5 +53,31 @@ describe('target ranks, max filters', () => {
     const gap = (r: typeof r0) => Math.abs(r.proposals[0].totals.startupUsd - 400);
     expect(gap(r1)).toBeLessThanOrEqual(gap(r0));
     expect(t).toBeDefined();
+  });
+});
+
+describe('NG3b: setup hours and owned gear', () => {
+  const hours = (r: ReturnType<typeof run>) => r.proposals.map(p => setupHoursOf(p.build, P));
+  it('setup hours max filters: every shown concept is within it; a tight cap shows fewer / lighter ones', () => {
+    const b = base(1500), w = briefToWants(b), open = suggestSetups(w, P, 'cm', NOW);
+    const cap = Math.min(...hours(open)) + 0.5, tight = suggestSetups({ ...w, setupHours: cap }, P, 'cm', NOW);
+    expect(tight.proposals.length).toBeGreaterThan(0);
+    for (const h of hours(tight)) expect(h).toBeLessThanOrEqual(cap + 1e-9);
+    expect(Math.max(...hours(tight))).toBeLessThanOrEqual(Math.max(...hours(open)));
+  });
+  it('an impossible hours cap leaves no concept (welfare untouched)', () => {
+    const w = briefToWants(base(1500)), r = suggestSetups({ ...w, setupHours: 0.1 }, P, 'cm', NOW);
+    expect(r.proposals.length).toBe(0);
+  });
+  it('hours target ranks, never filters', () => {
+    const w = briefToWants(base(1500)), r = suggestSetups({ ...w, setupHoursTarget: 3 }, P, 'cm', NOW);
+    expect(r.proposals.length).toBeGreaterThan(0);
+  });
+  it('an owned filter frees money, which climbs the finish ladder, and the strip says where it went', () => {
+    const b = base(600), w = briefToWants(b), w2 = { ...w, owned: { filter: 'care' } as const };
+    const ra = suggestSetups(w, P, 'cm', NOW), rb = suggestSetups(w2, P, 'cm', NOW);
+    const s = changeStrip(inputsOf(w, b), inputsOf(w2, b), ra, rb)!;
+    expect(s.text).toMatch(/^You own a filter: \$\d+ freed, /);
+    expect(rb.proposals.every(p => p.totals.startupUsd <= 600)).toBe(true);
   });
 });

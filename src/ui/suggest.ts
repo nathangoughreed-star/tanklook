@@ -197,14 +197,14 @@ ${lockedStock(getBrief()).length ? `<div class="spNote sgLocked">Locked animals:
   };
 
   /** The Wants the generator is given, for the diff (the same call `generate` makes). */
-  const wantsAsked = (w: ReturnType<typeof wantsFrom>) => { const bw = briefToWants(getBrief()); return { kinds: w.kinds, constraints: w.constraints, ...(bw.animals ? { animals: bw.animals } : {}), ...(bw.ownTank ? { ownTank: bw.ownTank } : {}), owned: w.owned }; };
+  const wantsAsked = (w: ReturnType<typeof wantsFrom>) => { const bw = briefToWants(getBrief()); return { kinds: w.kinds, constraints: w.constraints, ...(bw.setupHours !== undefined ? { setupHours: bw.setupHours } : {}), ...(bw.animals ? { animals: bw.animals } : {}), ...(bw.ownTank ? { ownTank: bw.ownTank } : {}), owned: w.owned }; };
 
   /** The generator call from the boxes plus what the brief holds that this panel has no box for: locked animals, an existing tank, tax, the high-tech, phased and refinement choices. */
   const generate = (w: ReturnType<typeof wantsFrom>): Suggestions => {
     const bw = briefToWants(getBrief());
     return suggestSetups({ kinds: w.kinds, groups: w.groups, needStand: w.needStand, owned: w.owned, constraints: w.constraints, ...(w.space ? { space: w.space } : {}), tags: [...tags],
       ...(bw.taste ? { taste: bw.taste } : {}), // lane NG5 hook: ranking only
-      ...(bw.animals ? { animals: bw.animals } : {}), ...(bw.ownTank ? { ownTank: bw.ownTank } : {}), ...(bw.taxPct !== undefined ? { taxPct: bw.taxPct } : {}), ...(bw.hightech ? { hightech: true } : {}), ...(bw.phased ? { phased: true } : {}), ...(bw.lowtech ? { lowtech: true } : {}), ...(bw.planted ? { planted: true } : {}), ...(bw.larger ? { larger: true } : {}), ...(targetOf(getBrief(), 'constraints.budget') !== undefined ? { startupTarget: targetOf(getBrief(), 'constraints.budget')! } : {}) }, loadProfile(), units());
+      ...(bw.animals ? { animals: bw.animals } : {}), ...(bw.ownTank ? { ownTank: bw.ownTank } : {}), ...(bw.taxPct !== undefined ? { taxPct: bw.taxPct } : {}), ...(bw.hightech ? { hightech: true } : {}), ...(bw.phased ? { phased: true } : {}), ...(bw.lowtech ? { lowtech: true } : {}), ...(bw.planted ? { planted: true } : {}), ...(bw.larger ? { larger: true } : {}), ...(briefToWants(getBrief()).setupHours !== undefined ? { setupHours: briefToWants(getBrief()).setupHours! } : {}), ...(targetOf(getBrief(), 'constraints.setupHours') !== undefined ? { setupHoursTarget: targetOf(getBrief(), 'constraints.setupHours')! } : {}), ...(targetOf(getBrief(), 'constraints.budget') !== undefined ? { startupTarget: targetOf(getBrief(), 'constraints.budget')! } : {}) }, loadProfile(), units());
   };
 
   /** One click on a chip: edit the brief, run the generator on it, keep the old setups when the edit leaves none (the brief goes back too). */

@@ -8,7 +8,7 @@ import type { TankModel } from '../data/tanks';
 import type { Proposal, Suggestions, Wants } from './suggest';
 
 export interface Inputs {
-  startup?: number; startupTarget?: number; monthly?: number; time?: number;
+  startup?: number; startupTarget?: number; monthly?: number; time?: number; hours?: number; hoursTarget?: number;
   owned: string[];
   tank?: { gal: number; L: number; D: number; H: number };
   locked: { species: string; n: number }[];
@@ -20,10 +20,11 @@ const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
 /** What the generator was asked, from its Wants (the budget target comes from the brief: the Wants carry only the max). */
 export function inputsOf(w: Wants, b?: Brief): Inputs {
   const c = w.constraints, t: TankModel | undefined = w.ownTank;
-  const tgt = b ? targetOf(b, 'constraints.budget') : undefined;
+  const tgt = b ? targetOf(b, 'constraints.budget') : undefined, htg = b ? targetOf(b, 'constraints.setupHours') : undefined;
   return {
     ...(c.startupUsd?.on ? { startup: c.startupUsd.value } : {}), ...(tgt !== undefined ? { startupTarget: tgt } : {}),
     ...(c.monthlyUsd?.on ? { monthly: c.monthlyUsd.value } : {}), ...(c.minutesPerWeek?.on ? { time: c.minutesPerWeek.value } : {}),
+    ...(w.setupHours !== undefined ? { hours: w.setupHours } : {}), ...(htg !== undefined ? { hoursTarget: htg } : {}),
     owned: Object.keys(w.owned ?? {}).sort(),
     ...(t ? { tank: { gal: t.ratedGal, L: t.outer.L, D: t.outer.D, H: t.outer.H } } : {}),
     locked: (w.animals ?? []).map(a => ({ species: a.species, n: a.n })).sort((x, y) => x.species.localeCompare(y.species)),
@@ -31,8 +32,8 @@ export function inputsOf(w: Wants, b?: Brief): Inputs {
   };
 }
 
-const LIMITS: readonly [keyof Inputs, string, string][] = [['startup', 'Budget', '$'], ['monthly', 'Monthly budget', '$'], ['time', 'Care time', 'min']];
-const lim = (n: number | undefined, unit: string) => n === undefined ? 'no limit' : unit === '$' ? usd(n) : `${round(n)} min a week`;
+const LIMITS: readonly [keyof Inputs, string, string][] = [['startup', 'Budget', '$'], ['monthly', 'Monthly budget', '$'], ['time', 'Care time', 'min'], ['hours', 'Set-up time', 'h']];
+const lim = (n: number | undefined, unit: string) => n === undefined ? 'no limit' : unit === '$' ? usd(n) : unit === 'h' ? `${round(n)} h` : `${round(n)} min a week`;
 
 /** Tank edit in plain words: "20 gal high -> 20 gal long" when the volume holds and the footprint turns, else the gallons. */
 export function tankShift(a: NonNullable<Inputs['tank']>, b: NonNullable<Inputs['tank']>): string {
@@ -69,20 +70,22 @@ export interface ResultDiff {
   upgrades: number;
   /** concepts that are new / gone */
   added: number; dropped: number;
+  /** set-up dollars the concepts now save on owned gear (twin by twin) */
+  freedUsd: number;
   /** the most telling lines: swim length, animals, tank, finish */
   lines: string[];
 }
 
 /** What the new concepts are against the old, concept by concept (twin = same strategy and archetype). */
 export function resultDiff(before: Suggestions | undefined, after: Suggestions): ResultDiff {
-  const out: ResultDiff = { upgrades: 0, added: 0, dropped: 0, lines: [] };
+  const out: ResultDiff = { upgrades: 0, added: 0, dropped: 0, freedUsd: 0, lines: [] };
   if (!before) return out;
   const bp = before.proposals, ap = after.proposals;
   const seen = new Set<Proposal>();
   for (const p of ap) {
     const q = twinOf(p, bp);
     if (!q) { out.added++; continue; }
-    seen.add(q);
+    seen.add(q); out.freedUsd += Math.max(0, (p.saved ?? 0) - (q.saved ?? 0));
     const up = gal(p) > gal(q) || level(p) > level(q) || count(p) > count(q) || lenMm(p) > lenMm(q) + 20;
     if (up) out.upgrades++;
     const bits: string[] = [];
@@ -108,6 +111,14 @@ export function changeStrip(a: Inputs, b: Inputs, before: Suggestions | undefine
   const d = resultDiff(before, after);
   if (!after.proposals.length) return { text: `${ch.join('; ')}: no setup fits now.`, lines: [] };
   const got = d.upgrades ? `${d.upgrades} upgrade${d.upgrades === 1 ? '' : 's'} now fit${d.upgrades === 1 ? 's' : ''}` : d.added || d.dropped ? 'the concepts changed' : 'the setups are unchanged';
+  const flags = [...new Set(after.proposals.flatMap(p => p.ownedNotes.filter(n => n.kind === 'flag').map(n => n.text)))];
+  const newOwn = b.owned.filter(x => !a.owned.includes(x));
+  if (newOwn.length && !ch.some(c => !c.startsWith('You own'))) {
+    const name = newOwn.join(' and ');
+    const freed = d.freedUsd > 0 ? `${usd(d.freedUsd / Math.max(1, after.proposals.length))} freed` : 'no set-up money freed';
+    const goes = d.upgrades ? `now goes to ${d.lines[0] ?? 'a fuller build'}` : 'stays under your ceiling (nothing next-best fit)';
+    return { text: `You own a ${name}: ${freed}, ${goes}.${flags.length ? ` Not credited: ${flags[0]}` : ''}`, lines: [] };
+  }
   const loosened = (b.startup ?? Infinity) > (a.startup ?? Infinity);
   return { text: `${ch.join('; ')}: ${got}${!d.upgrades && loosened ? ' (the budget is a ceiling, so a cheaper concept is not penalised)' : ''}.`, lines: d.lines };
 }
