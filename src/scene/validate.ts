@@ -14,7 +14,7 @@ import { keepInWater } from './water';
 import { pieSize, radialSize, sameGrid, sampleTerrain, swampTerrain, type Ground } from './terrain';
 import { SCENE_VERSION, type BgImage, type BgSide, type Fish, type Item, type LightTech, type Scene, type Tank, type TankSetup } from './types';
 import { adoptImages, sidesTouch } from './images';
-import { parseTech } from './tech';
+import { ownParse, parseTech } from './tech';
 import { pairRule } from '../data/groups';
 import { prunePairs } from './pairs';
 import { parseConstraints } from './constraints';
@@ -254,6 +254,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       ...(l.mount === 'legs' || l.mount === 'hang' ? { mount: l.mount } : {}),
       // a catalogued light (added 2026-10-20, no version bump): kept only when it is still in the catalogue and not in a hood
       ...(typeof l.product === 'string' && lightProduct(l.product) && raw.lid !== 'hood' ? { product: l.product } : {}),
+      ...ownParse(l),
       ...(l.pos != null && Number(l.pos) !== 0 ? { pos: Math.round(num(l.pos, 0, -1500, 1500)) } : {}),
       ...(l.mapUnit === 'par' || l.mapUnit === 'lux' ? { mapUnit: l.mapUnit } : {}),
       ...(l.mapStep != null ? { mapStep: Math.round(num(l.mapStep, 10, 5, 100) / 5) * 5 } : {}),

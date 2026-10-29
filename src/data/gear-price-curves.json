@@ -1,0 +1,50 @@
+{
+ "asOf": "2026-10-29",
+ "note": "Generic gear price = a * stat^b, a power law fitted by least squares in log-log space to the library's own listed prices of that type (src/data/gearCatalog.ts, estimated prices excluded). `use` is true only where n >= 7 and r2 >= 0.7: there the curve replaces the hand-set demand-items.json price row's mode (its lo / hi keep the row's proportions); elsewhere the row stays. test/gearpricecurves.test.ts refits the library and fails when a curve drifts, so regenerate (see HANDOFF lane GM6) after the library changes.",
+ "curves": {
+  "heater": {
+   "driver": "watts",
+   "a": 4.3791,
+   "b": 0.3836,
+   "n": 36,
+   "r2": 0.35,
+   "sdLog": 0.468,
+   "xMin": 10,
+   "xMax": 300,
+   "use": false
+  },
+  "filter:hob": {
+   "driver": "gph",
+   "a": 0.8584,
+   "b": 0.7434,
+   "n": 18,
+   "r2": 0.83,
+   "sdLog": 0.221,
+   "xMin": 42,
+   "xMax": 450,
+   "use": true
+  },
+  "filter:canister": {
+   "driver": "gph",
+   "a": 4.1481,
+   "b": 0.668,
+   "n": 10,
+   "r2": 0.49,
+   "sdLog": 0.407,
+   "xMin": 145,
+   "xMax": 925,
+   "use": false
+  },
+  "filter:internal": {
+   "driver": "gph",
+   "a": 0.5272,
+   "b": 0.7687,
+   "n": 7,
+   "r2": 0.75,
+   "sdLog": 0.305,
+   "xMin": 53,
+   "xMax": 300,
+   "use": true
+  }
+ }
+}

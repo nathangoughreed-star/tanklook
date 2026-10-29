@@ -10,6 +10,7 @@
 import { standMisfit } from '../scene/standspace';
 import { FACTORS, demandOf } from '../demand/engine';
 import { pinnedKit } from '../demand/pinned';
+import { gearSwapsFor, swapText } from '../demand/swaps';
 import { mean3 as mean } from '../demand/range';
 import { defaultProfile, type UserProfile } from '../demand/types';
 import { FEED_NAMES, GROW_RATE } from '../scene/growtime';
@@ -17,7 +18,7 @@ import type { Store } from '../scene/store';
 import {
   ROOM_C, applyPreset, feedFor, feedOf, filterFor, filterUnits, heatLoss, offerChiller,
   optionCost, optionDef, presetsFor, pumpFor, REEF_FLOW_X, reefFeedOf, rowsFor, setFeed, singleFilter, stockCapacity, techOf, tempEvidence, unitCosts, walstadGaps, withChoice,
-  withUnits, withoutUnit, reefChecks, rowProduct, sumpDefault, sumpFromModel, sumpLitres, sumpName, sumpOf, SUMP_FILL, sumpDrainDown, sumpTooSmall, type FilterUnit, type SumpSize, type HeaterUnit, type OptionCost, type TechSetup,
+  withUnits, withoutUnit, ownKeep, reefChecks, rowProduct, sumpDefault, sumpFromModel, sumpLitres, sumpName, sumpOf, SUMP_FILL, sumpDrainDown, sumpTooSmall, type FilterUnit, type SumpSize, type HeaterUnit, type OptionCost, type TechSetup,
 } from '../scene/tech';
 import { FILTER_PRODUCTS, HEATER_PRODUCTS, reefOptionProducts, filtersNear, genericHeaterW, heatersNear, lightProduct, lightsFor, productName, pumpRatedFor, pumpsFor, type FilterProduct, type HeaterProduct, type LightProduct, type PumpProduct, type ReefProduct } from '../data/gearCatalog';
 import { applyLightProduct, lightProductNote, productOn } from '../scene/lightproduct';
@@ -25,7 +26,7 @@ import { TECHS, fixtureOf, lightOutCached, wattsOf } from '../scene/lightout';
 import { integratedKit, lockNote, locksOf } from '../scene/integrated';
 import { unholdBtn } from './tankPick';
 import { FILTER_MODELS, type FilterKind } from '../demand/gear';
-import { gearCard, defaultTab, flowText, galText, lenText, wattText, type GearCardSpec, type GearSlider, type GearStat, type GearTab } from './gearCard';
+import { gearCard, defaultTab, flowText, galText, lenText, wattText, type GearCardSpec, type GearSwapRow, type GearSlider, type GearStat, type GearTab } from './gearCard';
 import { GEAR_LIMITS } from '../scene/gearSpec';
 import { genericPanel, genericSet } from './genericGearCard';
 import { volume } from '../scene/physics';
@@ -49,9 +50,21 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
   let open: string | null = null, base: Totals | null = null, baseKey = '';
   /** the Add picker open under Heating / Filtration (for filters: the type picked, then generic or a product) */
   let adding: { row: UnitRow; kind?: string } | null = null;
-  /** gear card (lane GM2): the tab the owner opened per card key ('heater|0'), and the pieces marked "I own one" (session-only UI state;
-   *  TODO(lane G2): owned / paidUsd on GearRef, then cost lines show $0 "you have") */
-  const tabs = new Map<string, GearTab>(), owned = new Set<string>();
+  /** gear card (lane GM2): the tab the owner opened per card key ('heater|0'). "I own one" (lane GM6) is saved on the unit itself (owned / paidUsd). */
+  const tabs = new Map<string, GearTab>();
+  /** the ownership of the piece at a card key ('heater|0', 'filter|1', 'light|0'), as the card shows it */
+  const ownOf = (key: string): { owned: boolean; paidUsd?: number } => {
+    const [row, n] = key.split('|'), S = store.tank;
+    const u: { owned?: boolean; paidUsd?: number } | undefined = row === 'light' ? S.light : row === 'heater' ? heatLoss(S, techOf(S)).units[+n] : filterUnits(techOf(S))[+n];
+    return { owned: !!u?.owned, ...(u?.owned && u.paidUsd !== undefined ? { paidUsd: u.paidUsd } : {}) };
+  };
+  /** Mark the piece at `key` owned (or not), with what was paid (empty / absent = not recorded): saved with the scene, so it undoes and shares. */
+  const setOwn = (key: string, on: boolean, paid?: number) => {
+    const [row, n] = key.split('|'), i = +n, mark = <T extends { owned?: boolean; paidUsd?: number }>(u: T): T => { const { owned: _o, paidUsd: _p, ...rest } = u; return { ...rest, ...(on ? { owned: true, ...(paid !== undefined ? { paidUsd: paid } : {}) } : {}) } as T; };
+    if (row === 'light') { lightKey = ''; store.edit(s => { s.light = mark(s.light); }); }
+    else if (row === 'heater') edit(s => { const t = techOf(s); return withUnits(t, 'heater', heatersNow(s, t).map((u, k) => k === i ? mark(u) : u)); });
+    else if (row === 'filter') edit(s => { const t = techOf(s); return withUnits(t, 'filter', filterUnits(t).map((u, k) => k === i ? mark(u) : u)); });
+  };
   const P = () => o.profile() ?? defaultProfile();
   const kwhUsd = () => P().kwhUsd ?? (FACTORS.kwhUsd.lo + FACTORS.kwhUsd.mode + FACTORS.kwhUsd.hi) / 3;
   const fahr = () => store.scene.units === 'in';
@@ -130,7 +143,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     return unitCosts(S, row, { tech: t, kwhUsd: kwhUsd() }).reduce((a, c, i) => a + (k[i] ? mean(c.setup) : 0), 0);
   };
   /** The heaters as saved units, each at the size it has now (a heater sized to the need keeps that size once another is added). */
-  const heatersNow = (S: TankSetup, t: TechSetup): HeaterUnit[] => heatLoss(S, t).units.map(u => ({ ...(u.product ? { product: u.product.id } : { w: u.watts }), ...(u.kit ? { kit: true } : {}) }));
+  const heatersNow = (S: TankSetup, t: TechSetup): HeaterUnit[] => heatLoss(S, t).units.map(u => ({ ...(u.product ? { product: u.product.id } : { w: u.watts }), ...(u.kit ? { kit: true } : {}), ...ownKeep(u) }));
   const filterLabel = (S: TankSetup, u: FilterUnit) => {
     if (u.kind === 'sump') return `Sump · ${sumpTitle(sumpOf(S, true)!)}`;
     const kind = optionDef('filter', u.kind)?.kind;
@@ -182,6 +195,9 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
   const us = () => fahr();
   const priceTxt = (v?: number) => v ? usd(v) : '';
   const pop = (p?: { evidence: string; seen: string }) => p ? [`${p.evidence} (seen ${p.seen})`] : [];
+  /** The swaps shown on a heater or filter card's Library tab (computed only while that tab is open: each one prices a whole scene). */
+  const swapsOf = (row: 'heater' | 'filter', i: number): GearSwapRow[] | undefined => tabs.get(`${row}|${i}`) !== 'library' ? undefined
+    : gearSwapsFor(store.tank, P(), row, i, { kit: pinnedKit(store.tank, store.scene.active, P()) }, 4).map(w => ({ id: w.toId, name: w.name, change: swapText(w), welfare: w.welfare }));
   const heaterSpec = (i: number, watts: number, productId?: string): GearCardSpec => {
     const key = `heater|${i}`, prod = HEATER_PRODUCTS.find(p => p.id === productId), near = heatersNear(watts), nearIds = new Set(near.map(p => p.id));
     const opt = (p: HeaterProduct) => ({ id: p.id, label: `${productName(p)} · ${p.watts} W${p.priceUsd ? ` · ${usd(p.priceUsd)}` : ''}` });
@@ -193,10 +209,10 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
       ...(prod.priceUsd ? [{ label: 'Price', value: priceTxt(prod.priceUsd) }] : []),
     ] : [];
     return {
-      key, type: 'heater', tab: defaultTab(!!prod, tabs.get(key)), product: !!prod, owned: owned.has(key),
+      key, type: 'heater', tab: defaultTab(!!prod, tabs.get(key)), product: !!prod, ...ownOf(key),
       sliders: [{ stat: 'watts', label: 'Power', min: lim[0], max: lim[1], step: 5, value: watts, show: wattText(watts), unit: ' W', typed: { min: 5, max: 2000 }, tip: 'The heater makes up the heat the tank loses; its length follows its watts' }],
       genericNote: 'A generic heater: its length follows its watts. The check above says whether it holds the tank on a cold night.',
-      library: { groups: [{ label: 'Near the size this tank needs', options: near.map(opt) }, { label: 'Other heaters', options: HEATER_PRODUCTS.filter(p => !nearIds.has(p.id)).sort((a, b) => a.watts - b.watts || productName(a).localeCompare(productName(b))).map(opt) }], current: prod?.id, stats, notes: prod ? pop(prod.popularity) : [], link: prod?.url },
+      library: { groups: [{ label: 'Near the size this tank needs', options: near.map(opt) }, { label: 'Other heaters', options: HEATER_PRODUCTS.filter(p => !nearIds.has(p.id)).sort((a, b) => a.watts - b.watts || productName(a).localeCompare(productName(b))).map(opt) }], current: prod?.id, stats, notes: prod ? pop(prod.popularity) : [], link: prod?.url, swaps: swapsOf('heater', i) },
     };
   };
   const filterModels = (kind: FilterKind) => FILTER_MODELS.filter(m => m.kind === kind).sort((a, b) => a.gph - b.gph);
@@ -214,9 +230,9 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
       ...(prod.priceUsd ? [{ label: 'Price', value: priceTxt(prod.priceUsd) }] : []),
     ] : [];
     return {
-      key, type: 'filter', tab: defaultTab(!!prod, tabs.get(key)), product: !!prod, owned: owned.has(key), sliders,
+      key, type: 'filter', tab: defaultTab(!!prod, tabs.get(key)), product: !!prod, ...ownOf(key), sliders,
       genericNote: pool.length > 1 ? undefined : 'One generic size for this kind.',
-      library: { groups: [{ label: 'Rated near this tank', options: near.map(opt) }, { label: `Other ${KIND_NAME[u.kind] ?? u.kind}s`, options: FILTER_PRODUCTS.filter(p => p.kind === u.kind && !nearIds.has(p.id)).sort((a, b) => (a.gph ?? 0) - (b.gph ?? 0)).map(opt) }], current: prod?.id, stats, notes: prod ? pop(prod.popularity) : [], link: prod?.url },
+      library: { groups: [{ label: 'Rated near this tank', options: near.map(opt) }, { label: `Other ${KIND_NAME[u.kind] ?? u.kind}s`, options: FILTER_PRODUCTS.filter(p => p.kind === u.kind && !nearIds.has(p.id)).sort((a, b) => (a.gph ?? 0) - (b.gph ?? 0)).map(opt) }], current: prod?.id, stats, notes: prod ? pop(prod.popularity) : [], link: prod?.url, swaps: swapsOf('filter', i) },
     };
   };
   /** The light's card: Library = the catalogued lights that fit the length (the select that was here), Generic = its watts. */
@@ -232,16 +248,15 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     ] : [];
     const sliders: GearSlider[] = fx === 'flat' || fx === 'tube' || fx === 'pendant' || fx === 'bulb' ? [] : [{ stat: 'watts', label: 'Total power', min: lim[0], max: lim[1], step: 1, value: Math.round(W), show: wattText(W), unit: ' W', typed: { min: 1, max: 1000 }, tip: 'The power of all the lights over the tank together' }];
     return {
-      key, type: 'light', tab: defaultTab(!!cur, tabs.get(key)), product: !!cur, owned: owned.has(key), sliders,
+      key, type: 'light', tab: defaultTab(!!cur, tabs.get(key)), product: !!cur, ...ownOf(key), sliders,
       genericNote: sliders.length ? 'A generic light: more fixture controls (type, lamp, height, beam) are below.' : 'The power of this fixture is set by its lamps: see the controls below.',
       library: { groups: [{ label: 'Fits this tank length', options: list.map(p => ({ id: p.id, label: `${productName(p)} · ${p.watts} W${p.est?.includes('watts') ? ' (est.)' : ''}${p.priceUsd ? ` · ${usd(p.priceUsd)}` : ''}` })) }], current: cur?.id, stats, notes: [...extra, ...(cur ? pop(cur.popularity) : [])], link: cur?.url },
     };
   };
-  /** After a unit of `row` is removed, its later cards' tabs and owned marks move up one. */
+  /** After a unit of `row` is removed, its later cards' tabs move up one (the owned marks travel with the units). */
   const shiftCards = (row: string, gone: number) => {
     const at = (k: string) => { const [r, n] = k.split('|'); return r === row ? +n : -1; };
     for (const [k, v] of [...tabs]) { const n = at(k); if (n < 0) continue; tabs.delete(k); if (n > gone) tabs.set(`${row}|${n - 1}`, v); }
-    for (const k of [...owned]) { const n = at(k); if (n < 0) continue; owned.delete(k); if (n > gone) owned.add(`${row}|${n - 1}`); }
   };
 
   /** Heating, opened: a card per heater, or "No heater", and the Add picker. */
@@ -471,6 +486,8 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     if (el.closest('.thead') && row) { open = open === row ? null : row; adding = null; render(); return; }
     const gt = el.closest<HTMLElement>('[data-gc-tab]')?.dataset.gcTab;
     if (gt) { const cut = gt.lastIndexOf('|'); tabs.set(gt.slice(0, cut), gt.slice(cut + 1) as GearTab); render(); lightKey = ''; renderLight(); return; }
+    const swap = el.closest<HTMLElement>('[data-gc-swap]')?.dataset.gcSwap;
+    if (swap) { const cut = swap.lastIndexOf('|'); pickProduct(swap.slice(0, cut), swap.slice(cut + 1)); return; }
     const tune = el.closest<HTMLElement>('[data-gc-tune]')?.dataset.gcTune;
     if (tune) { tuneAsGeneric(tune); return; }
     const act = el.closest<HTMLElement>('[data-act]')?.dataset.act;
@@ -487,24 +504,25 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     const op = el.closest<HTMLElement>('[data-opt]');
     if (op && row) { edit(s => withChoice(s, row, op.dataset.opt!)); return; }
   });
+  /** A library product chosen for the piece at card `key` (the select, or a swap button): its owned mark stays. */
+  const pickProduct = (key: string, id: string) => {
+    const [row, n] = key.split('|'), i = +n;
+    tabs.set(key, 'library');
+    if (row === 'heater') edit(s => { const t = techOf(s); return withUnits(t, 'heater', heatersNow(s, t).map((u, k) => k === i ? { product: id, ...(u.kit ? { kit: true } : {}), ...ownKeep(u) } : u)); });
+    else if (row === 'filter') edit(s => { const t = techOf(s); return withUnits(t, 'filter', filterUnits(t).map((u, k) => k === i ? { kind: u.kind, product: id, ...(u.kit ? { kit: true } : {}), ...ownKeep(u) } : u)); });
+    else if (row === 'light') { lightKey = ''; store.edit(s => applyLightProduct(s.light, s.tank, lightProduct(id))); }
+  };
   /** A gear card control changed (heater, filter or light): true when it was one. */
   const gearChange = (el: HTMLInputElement): boolean => {
-    if (el.dataset.gcPick !== undefined) { // a library product; empty = no change
-      const [row, n] = el.dataset.gcPick.split('|'), i = +n, id = el.value;
-      if (!id) return true;
-      tabs.set(el.dataset.gcPick, 'library');
-      if (row === 'heater') edit(s => { const t = techOf(s); return withUnits(t, 'heater', heatersNow(s, t).map((u, k) => k === i ? { product: id } : u)); });
-      else if (row === 'filter') edit(s => { const t = techOf(s); return withUnits(t, 'filter', filterUnits(t).map((u, k) => k === i ? { kind: u.kind, product: id } : u)); });
-      else if (row === 'light') { lightKey = ''; store.edit(s => applyLightProduct(s.light, s.tank, lightProduct(id))); }
-      return true;
-    }
-    if (el.dataset.gcOwn !== undefined) { if (el.checked) owned.add(el.dataset.gcOwn); else owned.delete(el.dataset.gcOwn); render(); lightKey = ''; renderLight(); return true; }
+    if (el.dataset.gcPick !== undefined) { if (el.value) pickProduct(el.dataset.gcPick, el.value); return true; } // a library product; empty = no change
+    if (el.dataset.gcOwn !== undefined) { setOwn(el.dataset.gcOwn, el.checked); return true; }
+    if (el.dataset.gcPaid !== undefined) { const v = parseFloat(el.value.replace(/[$,]/g, '')); setOwn(el.dataset.gcPaid, true, el.value.trim() !== '' && isFinite(v) && v >= 0 ? Math.min(100000, Math.round(v * 100) / 100) : undefined); return true; }
     if (el.dataset.gc !== undefined) { // a slider or number box (generic stats)
       const [row, n] = el.dataset.gc.split('|'), i = +n, v = +el.value, stat = el.dataset.gcStat;
       if (el.value === '' || !isFinite(v)) return true;
       if (genericSet(el.dataset.gc, stat!, v)) { render(); return true; }
       if (row === 'heater' && stat === 'watts') edit(s => { const t = techOf(s); return withUnits(t, 'heater', heatersNow(s, t).map((u, k) => k === i ? { ...u, w: Math.min(2000, Math.max(5, Math.round(v))) } : u)); });
-      else if (row === 'filter' && stat === 'model') edit(s => { const t = techOf(s), us = filterUnits(t), kind = optionDef('filter', us[i]?.kind ?? '')?.kind, m = kind ? filterModels(kind)[Math.round(v)] : undefined; return m ? withUnits(t, 'filter', us.map((u, k) => k === i ? { kind: u.kind, model: m.id, ...(u.kit ? { kit: true } : {}) } : u)) : t; });
+      else if (row === 'filter' && stat === 'model') edit(s => { const t = techOf(s), us = filterUnits(t), kind = optionDef('filter', us[i]?.kind ?? '')?.kind, m = kind ? filterModels(kind)[Math.round(v)] : undefined; return m ? withUnits(t, 'filter', us.map((u, k) => k === i ? { kind: u.kind, model: m.id, ...(u.kit ? { kit: true } : {}), ...ownKeep(u) } : u)) : t; });
       else if (row === 'light' && stat === 'watts') { lightKey = ''; store.edit(s => { s.light.watts = Math.min(1000, Math.max(1, Math.round(v))); }); }
       return true;
     }
@@ -514,12 +532,12 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
   const tuneAsGeneric = (key: string) => {
     const [row, n] = key.split('|'), i = +n;
     tabs.set(key, 'generic');
-    if (row === 'heater') edit(s => { const t = techOf(s), us = heatersNow(s, t), p = HEATER_PRODUCTS.find(x => x.id === us[i]?.product); return p ? withUnits(t, 'heater', us.map((u, k) => k === i ? { w: p.watts, ...(u.kit ? { kit: true } : {}) } : u)) : t; });
+    if (row === 'heater') edit(s => { const t = techOf(s), us = heatersNow(s, t), p = HEATER_PRODUCTS.find(x => x.id === us[i]?.product); return p ? withUnits(t, 'heater', us.map((u, k) => k === i ? { w: p.watts, ...(u.kit ? { kit: true } : {}), ...ownKeep(u) } : u)) : t; });
     else if (row === 'filter') edit(s => {
       const t = techOf(s), us = filterUnits(t), p = FILTER_PRODUCTS.find(x => x.id === us[i]?.product);
       if (!p) return t;
       const near = filterModels(p.kind as FilterKind).sort((a, b) => Math.abs(Math.log(a.gph / (p.gph ?? a.gph))) - Math.abs(Math.log(b.gph / (p.gph ?? b.gph))))[0];
-      return withUnits(t, 'filter', us.map((x, k) => k === i ? { kind: x.kind, ...(near ? { model: near.id } : {}), ...(x.kit ? { kit: true } : {}) } : x));
+      return withUnits(t, 'filter', us.map((x, k) => k === i ? { kind: x.kind, ...(near ? { model: near.id } : {}), ...(x.kit ? { kit: true } : {}), ...ownKeep(x) } : x));
     });
     else if (row === 'light') { store.edit(s => { delete s.light.product; }); lightKey = ''; }
     render(); renderLight();
@@ -577,7 +595,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     if (!lightMount) return;
     const S = store.tank, l = S.light, cur = productOn(l), inch = (mm: number) => Math.round(mm / 25.4), o = cur ? lightOutCached(S) : null;
     const kitLight = locksOf(S)?.light ? integratedKit(S) : undefined;
-    const key = JSON.stringify([S.lid, S.tank.L, cur?.id, o && Math.round(o.mean), store.scene.units, kitLight?.id, l.watts, l.type, l.tech, tabs.get('light|0'), owned.has('light|0')]);
+    const key = JSON.stringify([S.lid, S.tank.L, cur?.id, o && Math.round(o.mean), store.scene.units, kitLight?.id, l.watts, l.type, l.tech, tabs.get('light|0'), JSON.stringify(ownOf('light|0'))]);
     if (key === lightKey) return;
     lightKey = key;
     if (kitLight) { // an integrated kit has its own light: no catalogue to pick from

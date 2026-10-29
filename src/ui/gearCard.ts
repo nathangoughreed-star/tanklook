@@ -2,9 +2,11 @@
 // row, with three tabs: Generic (sliders for the type's stat block, within gearSpec limits), Library (real products, specs LOCKED,
 // "Tune as generic..." copies them into the generic) and I own one (UI only for now). Pure string rendering, no DOM and no store:
 // techMenu.ts builds a GearCardSpec per unit and handles the data-gc-* events. Units follow the scene's (US: gph, in, W; metric: L/h, cm).
-// TODO(lane G2): "I own one" is session-only UI state in techMenu.ts; G2 adds owned / paidUsd to GearRef and the $0 "you have" cost lines.
+// "I own one" (lane GM6) is saved on the unit (owned / paidUsd) and shows as a $0 "you have" cost line.
 import { GEAR_LIMITS, type GearType } from '../scene/gearSpec';
 
+/** One swap on the Library tab (lane GM6): the product, its stat / price / power change and why it still passes the welfare check. */
+export interface GearSwapRow { id: string; name: string; change: string; welfare: string }
 export type GearTab = 'generic' | 'library' | 'own';
 export const GEAR_TABS: readonly { id: GearTab; label: string }[] = [{ id: 'generic', label: 'Generic' }, { id: 'library', label: 'Library' }, { id: 'own', label: 'I own one' }];
 
@@ -39,10 +41,12 @@ export interface GearCardSpec {
   /** shown under the sliders (what the generic stands for, or a welfare range note) */
   genericNote?: string;
   /** the Library tab: products (the first group is "near the size this tank needs"), the current one, its locked stats and what is not published */
-  library: { groups: { label: string; options: GearLibOption[] }[]; current?: string; stats: GearStat[]; notes: string[]; link?: string };
+  library: { groups: { label: string; options: GearLibOption[] }[]; current?: string; stats: GearStat[]; notes: string[]; link?: string; /** lane GM6: swaps that pass the welfare check, with the stat, price and power change */ swaps?: GearSwapRow[] };
   owned: boolean;
   /** a generic-only type (lane GM7): no Library or I-own tabs, just the sliders */
   genericOnly?: boolean;
+  /** what the owner paid for it (the I own one tab; shown, never priced) */
+  paidUsd?: number;
 }
 
 /** True when `v` of generic stat `stat` of `type` falls outside the usual range: a warning, never a block (design section 2). */
@@ -72,6 +76,7 @@ function libraryPane(c: GearCardSpec): string {
   if (!l.groups.some(g => g.options.length)) return '<div class="hint">No catalogued product for this piece.</div>';
   let h = `<select class="gc-pick" data-gc-pick="${esc(c.key)}" aria-label="Library product"><option value="">${c.product ? '(pick another)' : 'Pick a product…'}</option>`
     + l.groups.filter(g => g.options.length).map(g => `<optgroup label="${esc(g.label)}">${g.options.map(o => `<option value="${esc(o.id)}"${o.id === l.current ? ' selected' : ''}>${esc(o.label)}</option>`).join('')}</optgroup>`).join('') + '</select>';
+  if (l.swaps?.length) h += `<div class="gc-swaps"><div class="hint">Swap for this tank (each still passes the welfare check):</div>${l.swaps.map(w => `<button type="button" class="gc-swap" data-gc-swap="${esc(c.key)}|${esc(w.id)}" title="${esc(w.welfare)}"><b>${esc(w.name)}</b> <span>${esc(w.change)}</span></button>`).join('')}</div>`;
   if (!c.product || !l.stats.length) return h;
   h += `<dl class="gc-stats" title="Locked: a real product's numbers cannot be edited">${l.stats.map(s => `<div><dt>${esc(s.label)}</dt><dd>${esc(s.value)}${s.est ? ' <i title="Not published: estimated by the model">est</i>' : ''}</dd></div>`).join('')}</dl>`;
   for (const n of l.notes) h += `<div class="hint">${esc(n)}</div>`;
@@ -81,7 +86,8 @@ function libraryPane(c: GearCardSpec): string {
 
 function ownPane(c: GearCardSpec): string {
   return `<label class="gc-own"><input type="checkbox" data-gc-own="${esc(c.key)}"${c.owned ? ' checked' : ''}> I already have this one</label>`
-    + `<div class="hint">${c.owned ? 'Marked as owned. The price will show $0 "you have" once pricing learns about owned gear; its power and welfare effects count either way.' : 'Tick it if this is gear you already own: it stays in the plan, and its running cost and welfare effect still count.'}</div>`;
+    + (c.owned ? `<label class="gc-paid">What I paid (optional) $<input type="number" min="0" step="1" inputmode="decimal" data-gc-paid="${esc(c.key)}" value="${c.paidUsd ?? ''}" placeholder="not recorded"></label>` : '')
+    + `<div class="hint">${c.owned ? 'Marked as owned: it shows $0 "you have" in the costs and under "Already have" in the plan. Its power use and welfare effect count either way.' : 'Tick it if this is gear you already own: it stays in the plan at $0, and its running cost and welfare effect still count.'}</div>`;
 }
 
 /** The card's tab strip and the active tab's pane (the wrapper, name and cost line belong to the caller). */

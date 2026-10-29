@@ -945,3 +945,8 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .gc-stats dt { color: var(--muted) } .gc-stats dd { margin: 0; font-weight: 600 } .gc-stats i { font-weight: 400; font-style: normal; color: var(--muted) }
 .gc-tune { font: inherit; font-size: 11px; margin-top: 4px; padding: 3px 8px; border: 1px solid var(--line); border-radius: 4px; background: none; color: var(--accent); cursor: pointer }
 .gc-own { display: flex; align-items: center; gap: 6px; font-size: 12px }
+.gc-paid { display: flex; align-items: center; gap: 4px; font-size: 12px; margin-top: 4px }
+.gc-paid input { width: 6em; font: inherit; font-size: 12px }
+.gc-swaps { margin-top: 6px; display: flex; flex-direction: column; gap: 3px }
+.gc-swap { text-align: left; font: inherit; font-size: 11px; padding: 3px 6px; cursor: pointer }
+.gc-swap span { opacity: .75 }

@@ -7,6 +7,7 @@ import { mean3 } from './range';
 import type { Build } from '../scene/builds';
 import { lightShare } from '../scene/finish';
 import type { UserProfile } from './types';
+import { ownedGearLines } from '../scene/ownedGear';
 
 /** The four standards of a finished aquarium (lane U5, Nathan 2026-10-28), in the order they are paid for, plus sales tax (which belongs to none of them).
  *  welfare: what responsible long-term care needs, never optional, never cut for price (the tank, the animals, their life-support gear: heat, filtration, light, lid, UVB).
@@ -57,6 +58,7 @@ export function costLines(b: Build, owned: readonly string[], total: number, nee
   }
   if (tax > 0) lines.push({ label: taxLabel, usd: tax, note: 'estimate', layer: 'tax' });
   for (const i of priced.filter(x => own.has(x.key))) lines.push({ label: i.label, usd: 0, note: i.key === 'stand' && !needStand ? 'not needed' : 'you have', layer: GROUPS.find(x => x.of(i.key))?.layer ?? 'welfare' });
+  lines.push(...ownedGearLines(b.setup));
   return lines;
 }
 

@@ -161,6 +161,9 @@ export interface LightSettings {
   /** A catalogued light (added 2026-10-20, data/gear-catalog.json `lights`): drawn as that product at its own size and
    * colours, its emitters along its own body (scene/lightproduct.ts sets type, tech, watts). Absent = the generic fixture. */
   product?: string;
+  /** The owner already has this light (lane GM6): its set-up price is $0 "you have" (power and welfare still count); `paidUsd` is what it cost them, shown only. */
+  owned?: boolean;
+  paidUsd?: number;
   /** Light output (added 2026-10-14, all optional, no version bump; model in scene/lightout.ts). Power draw (W); 0 or
    * absent = off, Brightness stays the manual knob. Set: the render brightness follows the computed lux, `bright` is an exposure. */
   watts?: number;

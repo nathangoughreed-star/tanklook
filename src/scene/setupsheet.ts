@@ -8,6 +8,7 @@ import { IN, fmtDims, fmtLen, glassThickness, volume, waterY } from './physics';
 import { SHAPES, footprint, inside, shapeOf } from './shape';
 import { groundHeight } from './terrain';
 import type { Scene, TankSetup } from './types';
+import { ownedGearLines } from './ownedGear';
 import { tankWeight } from './weight';
 
 export interface SheetRow { item: string; qty: string; detail: string }
@@ -147,11 +148,13 @@ export function buildSheet(scene: Scene, index = scene.active, opts: SheetOpts =
 
   // ---- equipment (only what the scene holds)
   const L = S.light, fx = fixtureOf(L), eq: SheetRow[] = [];
-  if (fx !== 'flat') {
+  if (fx !== 'flat' && !L.owned) {
     const w = Math.round(wattsOf(S));
     eq.push({ item: FIXTURES[fx].label, qty: String(fx === 'led' ? 1 : L.count), detail: `${TECHS[techOf(L)].label}, ${L.kelvin} K${w ? `, ${w} W in all` : ''}${L.par ? `, PAR ${L.par} at the substrate (as set)` : ''}` });
   }
   if (eq.length) sections.push({ title: 'Equipment', rows: eq });
+  const have = ownedGearLines(S); // lane GM6: gear marked "I own one"
+  if (have.length) sections.push({ title: 'Already have', rows: have.map(h => ({ item: h.label, qty: '', detail: h.note === 'you have' ? 'you have it: $0' : `you have it: $0 (${h.note})` })) });
 
   return {
     title: scene.name || 'Untitled tank',
