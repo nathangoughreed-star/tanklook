@@ -1067,5 +1067,79 @@
    "accent": "#9898a8"
   },
   "note": "Rated for saltwater tanks to 90 gal and freshwater to 130 gal (galMax = saltwater). 2.08 x 2.75 x 2.44 in; 5/8 in max glass. Named 'wave pump' but the page describes no wave or pulse controller (kind powerhead). Price read on the Bulk Reef Supply category listing. Colour not seen (listing photo not sampled), so the body hex is an estimate. Colours: dominant pixels of the Bulk Reef Supply product photo 208994_sicce_xstream5000-d.jpg (grey-blue = suction-cup mount), read 2026-10-29."
+ },
+ {
+  "id": "hydor-koralia-nano-425",
+  "brand": "Hydor",
+  "model": "Koralia Nano 425 Circulation Pump (P29201)",
+  "kind": "powerhead",
+  "url": "https://www.amazon.com/dp/B0036S70ZG",
+  "asOf": "2026-10-29",
+  "watts": 4,
+  "gph": 425,
+  "galMin": 15,
+  "galMax": 50,
+  "names": [
+   "koralia nano 425"
+  ],
+  "priceUsd": 34.99,
+  "colors": {
+   "body": "#1e1e1e"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "note": "Amazon page read 2026-10-29: 4 W, 425 gph; fresh 28-50 gal, salt 15-30 gal (galMin/galMax span both). Product dimensions contradict between rows (5.52 x 3.51 x 5.52 in vs 3.5 x 2 x 2 in; the title says it measures 2.4 in), so no size is entered. Colour: the listing says Color Black; the hex is a typical black, not sampled from a photo."
+ },
+ {
+  "id": "hydor-koralia-nano-565",
+  "brand": "Hydor",
+  "model": "Koralia Nano 565 Circulation Pump (P29231)",
+  "kind": "powerhead",
+  "url": "https://www.amazon.com/dp/B00P5P8V0Q",
+  "asOf": "2026-10-29",
+  "watts": 3.5,
+  "gph": 565,
+  "galMin": 20,
+  "galMax": 65,
+  "names": [
+   "koralia nano 565"
+  ],
+  "priceUsd": 45.39,
+  "colors": {
+   "body": "#1e1e1e"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "note": "Amazon page read 2026-10-29: 3.5 W, 565 gph; fresh 40-65 gal, salt 20-40 gal (galMin/galMax span both). Same contradictory dimensions as the 425, so no size is entered. Colour: the listing says Color Black; the hex is a typical black, not sampled from a photo."
+ },
+ {
+  "id": "jebao-ow-10",
+  "brand": "Jebao",
+  "model": "OW-10 Wavemaker with Controller",
+  "kind": "wavemaker",
+  "url": "https://www.amazon.com/dp/B0FT738TG4",
+  "asOf": "2026-10-29",
+  "watts": 12,
+  "gph": 1056,
+  "controller": true,
+  "bodyMm": {
+   "w": 51,
+   "d": 76,
+   "h": 76
+  },
+  "names": [
+   "jebao ow-10",
+   "jebao ow10"
+  ],
+  "priceUsd": 59.98,
+  "colors": {
+   "body": "#1e1e1e"
+  },
+  "colorsEst": [
+   "body"
+  ],
+  "note": "Amazon page read 2026-10-29: 12 W (24 V DC), 132-1,056 gph, controller with wave modes included; no gallon rating stated (the text says tanks 40-70 cm). Dimensions 3 in long x 2 in wide x 3 in high. Colour: the listing says Color Black; the hex is a typical black, not sampled from a photo."
  }
 ]
