@@ -9,7 +9,7 @@ describe('gear catalogue split per type', () => {
   it('keeps the old key order and counts', () => {
     expect(Object.keys(gearCatalog)).toEqual(['asOf', 'note', 'skimmers', 'uv', 'co2', 'ato', 'chillers', 'heaters', 'filters', 'lights', 'pumps']);
     expect([gearCatalog.skimmers, gearCatalog.uv, gearCatalog.co2, gearCatalog.ato, gearCatalog.chillers, gearCatalog.heaters, gearCatalog.filters, gearCatalog.lights, gearCatalog.pumps].map(a => a.length))
-      .toEqual([12, 9, 8, 6, 7, 40, 79, 35, 34]);
+      .toEqual([12, 9, 8, 6, 7, 40, 79, 47, 34]);
   });
   it('the wrappers expose the same arrays', () => {
     expect(HEATER_PRODUCTS).toBe(gearCatalog.heaters);

@@ -1983,5 +1983,672 @@
    "seen": "2026-10-28"
   },
   "note": "Maker: 15 W, 4.88 in diameter x 0.98 in high, coverage 14-24 in by scenario (18 in used); no PAR at a stated depth"
+ },
+ {
+  "id": "fluval-plant3-22w",
+  "brand": "Fluval",
+  "model": "Plant 3.0 Bluetooth LED 22 W (15-24 in)",
+  "mount": "bar",
+  "fitMinMm": 381,
+  "fitMaxMm": 610,
+  "lengthMm": 381,
+  "widthMm": 64,
+  "heightMm": 19,
+  "watts": 22,
+  "kelvin": 6500,
+  "tech": "led-planted",
+  "spectrum": "6500 K white + 3000 K, 15000 K, pink, 460 nm, 480 nm channels; 1450 lm",
+  "controller": "Bluetooth app (ramp, schedule)",
+  "water": "fresh",
+  "url": "https://www.bulkreefsupply.com/fluval-plant-3-0-bluetooth-led-light-fluval.html",
+  "asOf": "2026-10-29",
+  "est": [
+   "colors"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "kind": "dots",
+    "rows": 2,
+    "white": "#f4f7ff",
+    "accents": [
+     "#ff7ab8",
+     "#2f6bff"
+    ],
+    "every": 4
+   },
+   "ledLook": "2 rows white, pink and blue dots"
+  },
+  "colorsEst": [
+   "body",
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "plant 3.0 bluetooth led 22 w (15-24 in)"
+  ],
+  "note": "Listing dims 15 x 2.5 x 0.75 in; no PAR published; body colour not stated on the page (estimated)",
+  "priceUsd": 149.99,
+  "priceSeen": "2026-10-29",
+  "popularity": {
+   "evidence": "Bulk Reef Supply product page 2026-10-29",
+   "url": "https://www.bulkreefsupply.com/fluval-plant-3-0-bluetooth-led-light-fluval.html",
+   "seen": "2026-10-29"
+  }
+ },
+ {
+  "id": "fluval-plant3-32w",
+  "brand": "Fluval",
+  "model": "Plant 3.0 Bluetooth LED 32 W (24-34 in)",
+  "mount": "bar",
+  "fitMinMm": 610,
+  "fitMaxMm": 864,
+  "lengthMm": 610,
+  "widthMm": 64,
+  "heightMm": 19,
+  "watts": 32,
+  "kelvin": 6500,
+  "tech": "led-planted",
+  "spectrum": "6500 K white + 3000 K, 15000 K, pink, 460 nm, 480 nm channels; 2350 lm",
+  "controller": "Bluetooth app (ramp, schedule)",
+  "water": "fresh",
+  "url": "https://www.bulkreefsupply.com/fluval-plant-3-0-bluetooth-led-light-fluval.html",
+  "asOf": "2026-10-29",
+  "est": [
+   "colors",
+   "priceUsd"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "kind": "dots",
+    "rows": 2,
+    "white": "#f4f7ff",
+    "accents": [
+     "#ff7ab8",
+     "#2f6bff"
+    ],
+    "every": 4
+   },
+   "ledLook": "2 rows white, pink and blue dots"
+  },
+  "colorsEst": [
+   "body",
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "plant 3.0 bluetooth led 32 w (24-34 in)"
+  ],
+  "note": "Listing dims 24 x 2.5 x 0.75 in; no PAR published; body colour not stated on the page (estimated)",
+  "popularity": {
+   "evidence": "Bulk Reef Supply product page 2026-10-29",
+   "url": "https://www.bulkreefsupply.com/fluval-plant-3-0-bluetooth-led-light-fluval.html",
+   "seen": "2026-10-29"
+  }
+ },
+ {
+  "id": "fluval-plant3-46w",
+  "brand": "Fluval",
+  "model": "Plant 3.0 Bluetooth LED 46 W (36-48 in)",
+  "mount": "bar",
+  "fitMinMm": 914,
+  "fitMaxMm": 1219,
+  "lengthMm": 914,
+  "widthMm": 64,
+  "heightMm": 19,
+  "watts": 46,
+  "kelvin": 6500,
+  "tech": "led-planted",
+  "spectrum": "6500 K white + 3000 K, 15000 K, pink, 460 nm, 480 nm channels; 3300 lm",
+  "controller": "Bluetooth app (ramp, schedule)",
+  "water": "fresh",
+  "url": "https://www.bulkreefsupply.com/fluval-plant-3-0-bluetooth-led-light-fluval.html",
+  "asOf": "2026-10-29",
+  "est": [
+   "colors",
+   "priceUsd"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "kind": "dots",
+    "rows": 2,
+    "white": "#f4f7ff",
+    "accents": [
+     "#ff7ab8",
+     "#2f6bff"
+    ],
+    "every": 4
+   },
+   "ledLook": "2 rows white, pink and blue dots"
+  },
+  "colorsEst": [
+   "body",
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "plant 3.0 bluetooth led 46 w (36-48 in)"
+  ],
+  "note": "Listing dims 36 x 2.5 x 0.75 in; no PAR published; body colour not stated on the page (estimated)",
+  "popularity": {
+   "evidence": "Bulk Reef Supply product page 2026-10-29",
+   "url": "https://www.bulkreefsupply.com/fluval-plant-3-0-bluetooth-led-light-fluval.html",
+   "seen": "2026-10-29"
+  }
+ },
+ {
+  "id": "fluval-plant3-59w",
+  "brand": "Fluval",
+  "model": "Plant 3.0 Bluetooth LED 59 W (48-60 in)",
+  "mount": "bar",
+  "fitMinMm": 1219,
+  "fitMaxMm": 1524,
+  "lengthMm": 1219,
+  "widthMm": 64,
+  "heightMm": 19,
+  "watts": 59,
+  "kelvin": 6500,
+  "tech": "led-planted",
+  "spectrum": "6500 K white + 3000 K, 15000 K, pink, 460 nm, 480 nm channels; 4250 lm",
+  "controller": "Bluetooth app (ramp, schedule)",
+  "water": "fresh",
+  "url": "https://www.bulkreefsupply.com/fluval-plant-3-0-bluetooth-led-light-fluval.html",
+  "asOf": "2026-10-29",
+  "est": [
+   "colors"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "kind": "dots",
+    "rows": 2,
+    "white": "#f4f7ff",
+    "accents": [
+     "#ff7ab8",
+     "#2f6bff"
+    ],
+    "every": 4
+   },
+   "ledLook": "2 rows white, pink and blue dots"
+  },
+  "colorsEst": [
+   "body",
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "plant 3.0 bluetooth led 59 w (48-60 in)"
+  ],
+  "note": "Listing dims 48 (BRS staff; listing misprints 36) x 2.5 x 0.75 in; no PAR published; body colour not stated on the page (estimated)",
+  "priceUsd": 239.99,
+  "priceSeen": "2026-10-29",
+  "popularity": {
+   "evidence": "Bulk Reef Supply product page 2026-10-29",
+   "url": "https://www.bulkreefsupply.com/fluval-plant-3-0-bluetooth-led-light-fluval.html",
+   "seen": "2026-10-29"
+  }
+ },
+ {
+  "id": "kessil-a160we-tuna-blue",
+  "brand": "Kessil",
+  "model": "A160WE Tuna Blue",
+  "mount": "hanging",
+  "fitMinMm": 250,
+  "fitMaxMm": 2440,
+  "lengthMm": 127,
+  "widthMm": 64,
+  "heightMm": 64,
+  "watts": 40,
+  "tech": "led-reef",
+  "spectrum": "blue-weighted reef spectrum, tunable",
+  "controller": "Two knobs, 0-10 V external control",
+  "water": "salt",
+  "url": "https://www.bulkreefsupply.com/kessil-a160we-tuna-blue-led-light.html",
+  "asOf": "2026-10-29",
+  "coverageMm": 610,
+  "est": [
+   "fitMinMm",
+   "fitMaxMm",
+   "coverageMm",
+   "colorsEst"
+  ],
+  "colors": {
+   "body": "#2b2b2f",
+   "endcaps": "#2b2b2f",
+   "legs": "#8f9096",
+   "lens": "clear",
+   "leds": {
+    "kind": "dots",
+    "rows": 2,
+    "white": "#bcd2ff",
+    "accents": [
+     "#2f6bff"
+    ],
+    "every": 2
+   },
+   "ledLook": "round disc, dense LED matrix"
+  },
+  "colorsEst": [
+   "body",
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "a160we tuna blue"
+  ],
+  "note": "Bulk Reef Supply page: 40 W, 5 x 2.5 x 2.5 in with knobs, 2.3 lb with PSU, coverage 12-24 in at 12-24 in height; no PAR published; body colour not stated",
+  "priceUsd": 289.0,
+  "priceSeen": "2026-10-29",
+  "popularity": {
+   "evidence": "Bulk Reef Supply product page 2026-10-29; maker spec 40 W",
+   "url": "https://www.bulkreefsupply.com/kessil-a160we-tuna-blue-led-light.html",
+   "seen": "2026-10-29"
+  }
+ },
+ {
+  "id": "kessil-a160we-tuna-sun",
+  "brand": "Kessil",
+  "model": "A160WE Tuna Sun",
+  "mount": "hanging",
+  "fitMinMm": 250,
+  "fitMaxMm": 2440,
+  "lengthMm": 127,
+  "widthMm": 64,
+  "heightMm": 64,
+  "watts": 40,
+  "tech": "led-planted",
+  "spectrum": "tunable 6,000-9,000 K",
+  "controller": "Two knobs, 0-10 V external control",
+  "water": "fresh",
+  "url": "https://www.liveaquaria.com/products/kessil%c2%ae-aquarium-tuna-sun-led-aquarium-lights-a160we-a360we",
+  "asOf": "2026-10-29",
+  "coverageMm": 610,
+  "est": [
+   "fitMinMm",
+   "fitMaxMm",
+   "coverageMm",
+   "colorsEst"
+  ],
+  "colors": {
+   "body": "#2b2b2f",
+   "endcaps": "#2b2b2f",
+   "legs": "#8f9096",
+   "lens": "clear",
+   "leds": {
+    "kind": "dots",
+    "rows": 2,
+    "white": "#fff3dc",
+    "accents": [
+     "#ffb347"
+    ],
+    "every": 2
+   },
+   "ledLook": "round disc, dense LED matrix"
+  },
+  "colorsEst": [
+   "body",
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "a160we tuna sun"
+  ],
+  "note": "LiveAquaria page: 40 W, 2.48 x 4 in, coverage up to 24 in, listing shows $239.00 but was sold out when read; no PAR published",
+  "priceUsd": 239.0,
+  "priceSeen": "2026-10-29",
+  "popularity": {
+   "evidence": "LiveAquaria product page 2026-10-29 (sold out when read); 40 W",
+   "url": "https://www.liveaquaria.com/products/kessil%c2%ae-aquarium-tuna-sun-led-aquarium-lights-a160we-a360we",
+   "seen": "2026-10-29"
+  }
+ },
+ {
+  "id": "ai-prime-16-hd-black",
+  "brand": "AquaIllumination",
+  "model": "Prime 16 HD (black body)",
+  "mount": "hanging",
+  "fitMinMm": 250,
+  "fitMaxMm": 2440,
+  "lengthMm": 124,
+  "widthMm": 124,
+  "heightMm": 34,
+  "watts": 59,
+  "tech": "led-reef",
+  "spectrum": "cool white, blue, royal blue, photo red, green, violet, UV, moonlight",
+  "controller": "myAI / Mobius app",
+  "water": "salt",
+  "url": "https://www.bulkreefsupply.com/prime-16-hd-led-reef-light-black-body-aqua-illumination-1.html",
+  "asOf": "2026-10-29",
+  "coverageMm": 610,
+  "est": [
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#26262a",
+   "endcaps": "#26262a",
+   "legs": "#8f9096",
+   "lens": "clear",
+   "leds": {
+    "kind": "dots",
+    "rows": 2,
+    "white": "#cfe0ff",
+    "accents": [
+     "#2f6bff",
+     "#8a5bff"
+    ],
+    "every": 2
+   },
+   "ledLook": "round disc, dense LED matrix"
+  },
+  "colorsEst": [
+   "legs"
+  ],
+  "names": [
+   "prime 16 hd (black body)"
+  ],
+  "note": "Listing: 4.88 x 4.88 x 1.34 in, 59 W at max output (description says 55 W from the wall; 59 used), spread 24 x 24 in, mounting height 8-10 in; the page states 'peak PAR of 100 umol at a depth of 24 inches' with no tank or setting, so `par` stays unset",
+  "priceUsd": 264.99,
+  "priceSeen": "2026-10-29",
+  "popularity": {
+   "evidence": "Bulk Reef Supply product page 2026-10-29; list $264.99 (sale shown)",
+   "url": "https://www.bulkreefsupply.com/prime-16-hd-led-reef-light-black-body-aqua-illumination-1.html",
+   "seen": "2026-10-29"
+  }
+ },
+ {
+  "id": "ai-prime-16-hd-white",
+  "brand": "AquaIllumination",
+  "model": "Prime 16 HD (white body)",
+  "mount": "hanging",
+  "fitMinMm": 250,
+  "fitMaxMm": 2440,
+  "lengthMm": 124,
+  "widthMm": 124,
+  "heightMm": 34,
+  "watts": 59,
+  "tech": "led-reef",
+  "spectrum": "cool white, blue, royal blue, photo red, green, violet, UV, moonlight",
+  "controller": "myAI / Mobius app",
+  "water": "salt",
+  "url": "https://www.bulkreefsupply.com/prime-16-hd-led-reef-light-white-body-aqua-illumination.html",
+  "asOf": "2026-10-29",
+  "coverageMm": 610,
+  "est": [
+   "fitMinMm",
+   "fitMaxMm",
+   "colorsEst"
+  ],
+  "colors": {
+   "body": "#e8e8ea",
+   "endcaps": "#e8e8ea",
+   "legs": "#8f9096",
+   "lens": "clear",
+   "leds": {
+    "kind": "dots",
+    "rows": 2,
+    "white": "#cfe0ff",
+    "accents": [
+     "#2f6bff",
+     "#8a5bff"
+    ],
+    "every": 2
+   },
+   "ledLook": "round disc, dense LED matrix"
+  },
+  "colorsEst": [
+   "legs",
+   "body",
+   "endcaps"
+  ],
+  "names": [
+   "prime 16 hd (white body)"
+  ],
+  "note": "Listing: 4.88 x 4.88 x 1.34 in, 59 W at max output (description says 55 W from the wall; 59 used), spread 24 x 24 in, mounting height 8-10 in; the page states 'peak PAR of 100 umol at a depth of 24 inches' with no tank or setting, so `par` stays unset",
+  "priceUsd": 264.99,
+  "priceSeen": "2026-10-29",
+  "popularity": {
+   "evidence": "Bulk Reef Supply product page 2026-10-29; list $264.99 (sale shown)",
+   "url": "https://www.bulkreefsupply.com/prime-16-hd-led-reef-light-white-body-aqua-illumination.html",
+   "seen": "2026-10-29"
+  }
+ },
+ {
+  "id": "chihiros-wrgb2-pro-45",
+  "brand": "Chihiros",
+  "model": "WRGB II Pro 45",
+  "mount": "bar",
+  "fitMinMm": 350,
+  "fitMaxMm": 650,
+  "lengthMm": 450,
+  "widthMm": 140,
+  "heightMm": 18,
+  "watts": 56,
+  "tech": "led-planted",
+  "spectrum": "WRGB, 50 LEDs, 5000 lm",
+  "controller": "Bluetooth app (Chihiros)",
+  "water": "fresh",
+  "url": "https://shop.glassaqua.com/products/chihiros-led-light-wrgb-ii-pro",
+  "asOf": "2026-10-29",
+  "est": [
+   "fitMinMm",
+   "fitMaxMm",
+   "colorsEst",
+   "priceUsd"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "kind": "dots",
+    "rows": 2,
+    "white": "#f4f7ff",
+    "accents": [
+     "#ff3a2e",
+     "#2fd35a",
+     "#2f6bff"
+    ],
+    "every": 3
+   },
+   "ledLook": "2 rows white with R, G, B dots"
+  },
+  "colorsEst": [
+   "body",
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "wrgb ii pro 45"
+  ],
+  "popularity": {
+   "evidence": "Glass Aqua product page 2026-10-29 (sizes table)",
+   "url": "https://shop.glassaqua.com/products/chihiros-led-light-wrgb-ii-pro",
+   "seen": "2026-10-29"
+  },
+  "note": "Glass Aqua spec table (W x D x H in): Pro 45 is 17.72 x 5.51 x 0.71 in, 56 W; the page gives one price for all sizes ($251.99, not entered: which size it is not stated); no PAR published; body colour not stated"
+ },
+ {
+  "id": "chihiros-wrgb2-pro-60",
+  "brand": "Chihiros",
+  "model": "WRGB II Pro 60",
+  "mount": "bar",
+  "fitMinMm": 500,
+  "fitMaxMm": 800,
+  "lengthMm": 600,
+  "widthMm": 140,
+  "heightMm": 18,
+  "watts": 74,
+  "tech": "led-planted",
+  "spectrum": "WRGB, 60 LEDs, 6630 lm",
+  "controller": "Bluetooth app (Chihiros)",
+  "water": "fresh",
+  "url": "https://shop.glassaqua.com/products/chihiros-led-light-wrgb-ii-pro",
+  "asOf": "2026-10-29",
+  "est": [
+   "fitMinMm",
+   "fitMaxMm",
+   "colorsEst",
+   "priceUsd"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "kind": "dots",
+    "rows": 2,
+    "white": "#f4f7ff",
+    "accents": [
+     "#ff3a2e",
+     "#2fd35a",
+     "#2f6bff"
+    ],
+    "every": 3
+   },
+   "ledLook": "2 rows white with R, G, B dots"
+  },
+  "colorsEst": [
+   "body",
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "wrgb ii pro 60"
+  ],
+  "popularity": {
+   "evidence": "Glass Aqua product page 2026-10-29 (sizes table)",
+   "url": "https://shop.glassaqua.com/products/chihiros-led-light-wrgb-ii-pro",
+   "seen": "2026-10-29"
+  },
+  "note": "Glass Aqua spec table (W x D x H in): Pro 60 is 23.62 x 5.51 x 0.71 in, 74 W; the page gives one price for all sizes ($251.99, not entered: which size it is not stated); no PAR published; body colour not stated"
+ },
+ {
+  "id": "chihiros-wrgb2-pro-90",
+  "brand": "Chihiros",
+  "model": "WRGB II Pro 90",
+  "mount": "bar",
+  "fitMinMm": 800,
+  "fitMaxMm": 1100,
+  "lengthMm": 900,
+  "widthMm": 140,
+  "heightMm": 18,
+  "watts": 110,
+  "tech": "led-planted",
+  "spectrum": "WRGB, 90 LEDs, 9250 lm",
+  "controller": "Bluetooth app (Chihiros)",
+  "water": "fresh",
+  "url": "https://shop.glassaqua.com/products/chihiros-led-light-wrgb-ii-pro",
+  "asOf": "2026-10-29",
+  "est": [
+   "fitMinMm",
+   "fitMaxMm",
+   "colorsEst",
+   "priceUsd"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "kind": "dots",
+    "rows": 2,
+    "white": "#f4f7ff",
+    "accents": [
+     "#ff3a2e",
+     "#2fd35a",
+     "#2f6bff"
+    ],
+    "every": 3
+   },
+   "ledLook": "2 rows white with R, G, B dots"
+  },
+  "colorsEst": [
+   "body",
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "wrgb ii pro 90"
+  ],
+  "popularity": {
+   "evidence": "Glass Aqua product page 2026-10-29 (sizes table)",
+   "url": "https://shop.glassaqua.com/products/chihiros-led-light-wrgb-ii-pro",
+   "seen": "2026-10-29"
+  },
+  "note": "Glass Aqua spec table (W x D x H in): Pro 90 is 35.43 x 5.51 x 0.71 in, 110 W; the page gives one price for all sizes ($251.99, not entered: which size it is not stated); no PAR published; body colour not stated"
+ },
+ {
+  "id": "chihiros-wrgb2-pro-120",
+  "brand": "Chihiros",
+  "model": "WRGB II Pro 120",
+  "mount": "bar",
+  "fitMinMm": 1100,
+  "fitMaxMm": 1400,
+  "lengthMm": 1200,
+  "widthMm": 140,
+  "heightMm": 18,
+  "watts": 138,
+  "tech": "led-planted",
+  "spectrum": "WRGB, 120 LEDs, 11170 lm",
+  "controller": "Bluetooth app (Chihiros)",
+  "water": "fresh",
+  "url": "https://shop.glassaqua.com/products/chihiros-led-light-wrgb-ii-pro",
+  "asOf": "2026-10-29",
+  "est": [
+   "fitMinMm",
+   "fitMaxMm",
+   "colorsEst",
+   "priceUsd"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "kind": "dots",
+    "rows": 2,
+    "white": "#f4f7ff",
+    "accents": [
+     "#ff3a2e",
+     "#2fd35a",
+     "#2f6bff"
+    ],
+    "every": 3
+   },
+   "ledLook": "2 rows white with R, G, B dots"
+  },
+  "colorsEst": [
+   "body",
+   "endcaps",
+   "legs"
+  ],
+  "names": [
+   "wrgb ii pro 120"
+  ],
+  "popularity": {
+   "evidence": "Glass Aqua product page 2026-10-29 (sizes table)",
+   "url": "https://shop.glassaqua.com/products/chihiros-led-light-wrgb-ii-pro",
+   "seen": "2026-10-29"
+  },
+  "note": "Glass Aqua spec table (W x D x H in): Pro 120 is 47.24 x 5.51 x 0.71 in, 138 W; the page gives one price for all sizes ($251.99, not entered: which size it is not stated); no PAR published; body colour not stated"
  }
 ]
