@@ -291,10 +291,18 @@ export function attachPanels(store: Store, viewer: Viewer) {
     sandbox: () => { const ok = welcomeFirst ? (welcomeFirst = false, true) : newEmptyTank(); if (ok) { setMode('sandbox'); startMode.drawBar(); } return ok; },
     browse: menu => showChooser(menu, menu === 'open' ? 'starters' : undefined, welcomeFirst),
   });
+  // lane R9: the owned-gear sheet (Guided, "Starting from something I have now"); its Tank row borrows the tank picker and reports when it closes
+  let ownedSheet: { open(): void } | undefined;
+  const pickTank = (done: (name: string) => void) => {
+    const dlg = $<HTMLDialogElement>('tankDlg'), before = JSON.stringify([store.tank.tank, store.tank.product]);
+    dlg.addEventListener('close', () => { if (JSON.stringify([store.tank.tank, store.tank.product]) !== before) done(`${Math.round(volume(store.tank.tank).gallons)} gal tank`); }, { once: true });
+    $('presetA').click();
+  };
   // lane NG1: New and first launch offer Guided (the Welcome workspace) or Sandbox (an empty tank, checks as flags)
   const startMode = attachStartMode(store, {
     guided: () => welcome.show(),
     sandbox: kind => { if (welcomeFirst) { welcomeFirst = false; store.edit(s => applyKind(s, kind)); return true; } return newEmptyTank(kind); },
+    owned: () => { void import('./ownedGear').then(m => { (ownedSheet ??= m.attachOwnedGear(store, { status, pickTank })).open(); }); },
     browse: (menu, tab) => showChooser(menu, tab, welcomeFirst),
     profile: () => { try { return loadProfile(); } catch { return undefined; } },
   });

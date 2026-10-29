@@ -49,6 +49,7 @@ const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;
 export interface StartModeHost {
   /** Enter the Welcome workspace (Guided). */ guided(): void;
   /** An empty tank of the kind (false when the person cancelled the replace warning). */ sandbox(kind: SetupKind): boolean;
+  /** The owned-gear sheet (ui/ownedGear.ts): tick the tank, light, heater and filter you already have. */ owned(): void;
   /** The deals / starters / saved-tank lists. */ browse(menu: 'new' | 'open', tab?: 'starters' | 'open'): void;
   /** The demand profile for the cost flags (lazy: the demand panel loads after start-up). */ profile?(): Parameters<typeof demandOf>[1] | undefined;
 }
@@ -100,6 +101,7 @@ export function attachStartMode(store: Store, host: StartModeHost, initialKind: 
     const w = t.dataset.browse!; dlg.close(); setMode('guided'); drawBar();
     host.browse(w === 'new' ? 'new' : 'open', w === 'starters' ? 'starters' : w === 'open' ? 'open' : undefined);
   });
+  $('modeOwned').onclick = () => { setMode('guided'); dlg.close(); drawBar(); host.owned(); };
   $('modeGuided').onclick = () => { setMode('guided'); dlg.close(); drawBar(); host.guided(); };
   $('modeSandbox').onclick = () => { if (host.sandbox(kind)) { setMode('sandbox'); dlg.close(); drawBar(); } };
   store.subscribe(drawBar); onBrief(drawBar); drawBar();

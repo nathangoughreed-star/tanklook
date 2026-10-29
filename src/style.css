@@ -950,3 +950,10 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .gc-swaps { margin-top: 6px; display: flex; flex-direction: column; gap: 3px }
 .gc-swap { text-align: left; font: inherit; font-size: 11px; padding: 3px 6px; cursor: pointer }
 .gc-swap span { opacity: .75 }
+/* owned-gear start sheet (lane R9, ui/ownedGear.ts) */
+.owndlg { width: min(560px, calc(100vw - 32px)) }
+.ownlist { display: flex; flex-direction: column; gap: 8px; margin: 8px 0 }
+.ownrow { border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px }
+.ownrow .chk { display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap }
+.ownpick { margin: 6px 0 2px 22px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap }
+.ownpick select { max-width: 100% }
