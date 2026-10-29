@@ -371,7 +371,9 @@ function parseItems(raw: unknown[], T: Tank, warn: (m: string) => void, g: Groun
   const out: Item[] = [], seen = new Set<number>(), fin = (v: unknown, def: number) => (typeof v === 'number' && Number.isFinite(v) ? v : def);
   let nextId = 1, bad = 0;
   for (const o of raw) if (isObj(o) && typeof o.id === 'number') nextId = Math.max(nextId, o.id + 1);
-  for (const o of raw.slice(0, MAX_ITEMS)) {
+  for (let o of raw.slice(0, MAX_ITEMS)) {
+    // the retired equipment pieces (lane GM3, 2026-10-29: gear is drawn from the Tech menu now): a saved one loads as a plain river stone
+    if (isObj(o) && o.kind === 'equip' && typeof o.variant === 'string') o = { ...o, kind: 'stone', variant: 'river', size: Math.min(fin(o.size, 100), 120) };
     const v = isObj(o) && typeof o.variant === 'string' && Object.hasOwn(LIBRARY, o.variant) ? LIBRARY[o.variant] : null;
     if (!isObj(o) || !v) { bad++; continue; }
     const id = typeof o.id === 'number' && Number.isInteger(o.id) && o.id > 0 && !seen.has(o.id) ? o.id : nextId++;
