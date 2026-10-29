@@ -972,16 +972,27 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   const sheenAt = (y: number) => y <= wetY ? 0.25 : wetAt(y); // under water the sheen is the water's, not the ground's
   const WET = [0.47, 0.44, 0.41]; // wet ground: darker, a little richer (blue drops most)
   const vcol: number[][] = [];
+  // colour, normal and sheen of the ground at a point q with the surface tilt `a` (along x) and `b` (along depth)
+  const shadeAt = (q: V3, a: THREE.Vector3, b: THREE.Vector3): number[] => {
+    const n = new THREE.Vector3().crossVectors(a, b).normalize(); if (n.y < 0) n.negate();
+    const k = clamp(0.55 + 0.6 * n.dot(light), 0, 1.15) / 1.15;
+    if (terra) { const w = wetAt(q[1]); return [...WET.map(c => k * (1 - w * (1 - c))), n.x, n.y, n.z, sheenAt(q[1])]; }
+    // emerged ground reads as damp soil and moss (mottled), not aquarium gravel
+    const dry = clamp((q[1] - wy) / 12, 0, 1), mo = 0.5 + 0.5 * Math.sin(q[0] * 0.045 + Math.sin(q[2] * 0.05) * 2.4);
+    return [k * (1 - dry * (0.42 + 0.12 * mo)), k * (1 - dry * (0.3 - 0.12 * mo)), k * (1 - dry * (0.62 + 0.05 * mo)), n.x, n.y, n.z, 0];
+  };
   for (let i = 0; i <= N; i++) for (let j = 0; j <= N; j++) {
     const i0 = Math.max(0, i - 1), i1 = Math.min(N, i + 1), j0 = Math.max(0, j - 1), j1 = Math.min(N, j + 1);
     const a = new THREE.Vector3(...P3(i1, j)).sub(new THREE.Vector3(...P3(i0, j))), b = new THREE.Vector3(...P3(i, j1)).sub(new THREE.Vector3(...P3(i, j0)));
-    const n = new THREE.Vector3().crossVectors(a, b).normalize(); if (n.y < 0) n.negate();
-    const k = clamp(0.55 + 0.6 * n.dot(light), 0, 1.15) / 1.15, q = P3(i, j);
-    if (terra) { const w = wetAt(q[1]); vcol[i * (N + 1) + j] = [...WET.map(c => k * (1 - w * (1 - c))), n.x, n.y, n.z, sheenAt(q[1])]; continue; }
-    // emerged ground reads as damp soil and moss (mottled), not aquarium gravel
-    const dry = clamp((q[1] - wy) / 12, 0, 1), mo = 0.5 + 0.5 * Math.sin(q[0] * 0.045 + Math.sin(q[2] * 0.05) * 2.4);
-    vcol[i * (N + 1) + j] = [k * (1 - dry * (0.42 + 0.12 * mo)), k * (1 - dry * (0.3 - 0.12 * mo)), k * (1 - dry * (0.62 + 0.05 * mo)), n.x, n.y, n.z, 0];
+    vcol[i * (N + 1) + j] = shadeAt(P3(i, j), a, b);
   }
+  // the same at any point, from the ground's own height a few mm either side (not blended between the 16x16 vertices,
+  // whose kinks ran down the whole skirt as full-height bands where it follows a slope)
+  const exactAt = (p: P) => {
+    const e = 4, x0 = clamp(p[0] - e, 0, L), x1 = clamp(p[0] + e, 0, L), d0 = clamp(p[1] - e, 0, D), d1 = clamp(p[1] + e, 0, D);
+    const a = new THREE.Vector3(...G([x1, p[1]])).sub(new THREE.Vector3(...G([x0, p[1]]))), b = new THREE.Vector3(...G([p[0], d1])).sub(new THREE.Vector3(...G([p[0], d0])));
+    return shadeAt(G(p), a, b);
+  };
   const colAt = (p: P) => { // colour, normal and sheen, bilinear between the grid vertices round p
     const fx = clamp(p[0] / L * N, 0, N), fz = clamp(p[1] / D * N, 0, N), i = Math.min(N - 1, Math.floor(fx)), j = Math.min(N - 1, Math.floor(fz)), u = fx - i, w = fz - j;
     const c00 = vcol[i * (N + 1) + j], c10 = vcol[(i + 1) * (N + 1) + j], c01 = vcol[i * (N + 1) + j + 1], c11 = vcol[(i + 1) * (N + 1) + j + 1];
@@ -1065,6 +1076,7 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
         if (!bowl || j === bands) return j === bands ? (c === p ? gp : gq) : [c[0], 0, -c[1]];
         const f = (bowlRadius(T, y) - 0.5) / rb; return [cx + (c[0] - cx) * f, y, -(cd + (c[1] - cd) * f)];
       };
+      const rim = [exactAt(p), exactAt(q)];
       for (let j = 0; j < bands; j++) {
         const pts: V3[] = [on(p, gp[1], j), on(q, gq[1], j), on(q, gq[1], j + 1), on(p, gp[1], j + 1)];
         const uv = [[s0, pts[0][1]], [s1, pts[1][1]], [s1, pts[2][1]], [s0, pts[3][1]]], ends = [p, q, q, p], tops = [gp[1], gq[1], gq[1], gp[1]];
@@ -1075,7 +1087,7 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
           const dn = tops[i] - pts[i][1], mk0 = ends[i]; sideMk.push((mk0[0] - e.n[0] * dn) / tile, (mk0[1] - e.n[1] * dn) / tile);
           // the skirt starts at the top surface's own colour at the rim (a flat darker shade left a visible line where they
           // meet) and darkens toward the floor
-          const c = colAt(ends[i]), f = 1 - SKIRT_DARK * (1 - clamp(pts[i][1] / (tops[i] || 1), 0, 1));
+          const c = rim[ends[i] === p ? 0 : 1], f = 1 - SKIRT_DARK * (1 - clamp(pts[i][1] / (tops[i] || 1), 0, 1));
           sideCol.push(c[0] * f, c[1] * f, c[2] * f);
         }
       }
