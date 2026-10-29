@@ -41,6 +41,8 @@ export interface GearCardSpec {
   /** the Library tab: products (the first group is "near the size this tank needs"), the current one, its locked stats and what is not published */
   library: { groups: { label: string; options: GearLibOption[] }[]; current?: string; stats: GearStat[]; notes: string[]; link?: string };
   owned: boolean;
+  /** a generic-only type (lane GM7): no Library or I-own tabs, just the sliders */
+  genericOnly?: boolean;
 }
 
 /** True when `v` of generic stat `stat` of `type` falls outside the usual range: a warning, never a block (design section 2). */
@@ -84,6 +86,7 @@ function ownPane(c: GearCardSpec): string {
 
 /** The card's tab strip and the active tab's pane (the wrapper, name and cost line belong to the caller). */
 export function gearCard(c: GearCardSpec): string {
+  if (c.genericOnly) return `<div class="gear-card" data-gc-card="${esc(c.key)}"><div class="gc-pane">${genericPane(c)}</div></div>`;
   const tabs = GEAR_TABS.map(t => `<button type="button" role="tab" class="gc-tab${t.id === c.tab ? ' on' : ''}" aria-selected="${t.id === c.tab}" data-gc-tab="${esc(c.key)}|${t.id}">${t.label}${t.id === 'own' && c.owned ? ' ✓' : ''}</button>`).join('');
   return `<div class="gear-card" data-gc-card="${esc(c.key)}"><div class="gc-tabs" role="tablist">${tabs}</div><div class="gc-pane" role="tabpanel">`
     + (c.tab === 'generic' ? genericPane(c) : c.tab === 'library' ? libraryPane(c) : ownPane(c)) + '</div></div>';

@@ -27,6 +27,7 @@ import { unholdBtn } from './tankPick';
 import { FILTER_MODELS, type FilterKind } from '../demand/gear';
 import { gearCard, defaultTab, flowText, galText, lenText, wattText, type GearCardSpec, type GearSlider, type GearStat, type GearTab } from './gearCard';
 import { GEAR_LIMITS } from '../scene/gearSpec';
+import { genericPanel, genericSet } from './genericGearCard';
 import { volume } from '../scene/physics';
 import type { TankSetup } from '../scene/types';
 import { getSpecies } from '../data/species';
@@ -422,7 +423,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
           const oc = optionCost(S, r.id, op.id, { tech: t, kwhUsd: kwhUsd() });
           html += `<button type="button" class="topt${op.id === cur ? ' on' : ''}" data-opt="${op.id}" aria-pressed="${op.id === cur}"${op.note ? ` title="${esc(op.note)}"` : ''}><span class="tol">${esc(op.label)}</span>${range(oc)}<span class="tchips">${chips(S, r.id, op.id, oc)}</span></button>`;
         }
-        html += reefPicker(S, t, r.id, cur);
+        html += reefPicker(S, t, r.id, cur) + genericPanel(r.id, cur);
         if (def?.note) html += `<div class="hint">${esc(def.note)}</div>`;
         const pg = r.id === 'air' ? 'airpump' : r.id === 'flow' ? def?.parts[0] : undefined;
         if (pg && cur !== 'none') html += pumpPicker(S, t, pg, r.id === 'air' ? 'Air pump' : pg === 'wavemaker' ? 'Wavemaker' : 'Powerhead');
@@ -501,6 +502,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     if (el.dataset.gc !== undefined) { // a slider or number box (generic stats)
       const [row, n] = el.dataset.gc.split('|'), i = +n, v = +el.value, stat = el.dataset.gcStat;
       if (el.value === '' || !isFinite(v)) return true;
+      if (genericSet(el.dataset.gc, stat!, v)) { render(); return true; }
       if (row === 'heater' && stat === 'watts') edit(s => { const t = techOf(s); return withUnits(t, 'heater', heatersNow(s, t).map((u, k) => k === i ? { ...u, w: Math.min(2000, Math.max(5, Math.round(v))) } : u)); });
       else if (row === 'filter' && stat === 'model') edit(s => { const t = techOf(s), us = filterUnits(t), kind = optionDef('filter', us[i]?.kind ?? '')?.kind, m = kind ? filterModels(kind)[Math.round(v)] : undefined; return m ? withUnits(t, 'filter', us.map((u, k) => k === i ? { kind: u.kind, model: m.id, ...(u.kit ? { kit: true } : {}) } : u)) : t; });
       else if (row === 'light' && stat === 'watts') { lightKey = ''; store.edit(s => { s.light.watts = Math.min(1000, Math.max(1, Math.round(v))); }); }

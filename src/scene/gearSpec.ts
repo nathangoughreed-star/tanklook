@@ -11,13 +11,20 @@ import {
 import type { FilterUnit, HeaterUnit } from './tech';
 import type { LightSettings } from './types';
 
-/** The types with a stat block today (library-class types of the design, section 2a); generic-only types join in lane G5. */
-export type GearType = 'light' | 'heater' | 'filter' | 'powerhead' | 'wavemaker' | 'airpump' | 'skimmer' | 'uv' | 'co2' | 'ato' | 'chiller';
-export const GEAR_TYPES: readonly GearType[] = ['light', 'heater', 'filter', 'powerhead', 'wavemaker', 'airpump', 'skimmer', 'uv', 'co2', 'ato', 'chiller'];
-/** Library = a generic piece AND a product catalogue; generic = one tunable item only. Every type above is library class. */
+/** The library-class types of the design (section 2a): a generic piece AND a product catalogue. */
+export type LibraryType = 'light' | 'heater' | 'filter' | 'powerhead' | 'wavemaker' | 'airpump' | 'skimmer' | 'uv' | 'co2' | 'ato' | 'chiller';
+/** The generic-only types (lane GM7, design G5): ONE tunable item each, no brands and no catalogue (curves in data/genericGear.ts). */
+export type GenericType = 'thermometer' | 'hygrometer' | 'thermostat' | 'timer' | 'heatlamp' | 'heatmat' | 'uvb' | 'mister' | 'fogger' | 'lilypipe' | 'doser' | 'feeder'
+  | 'rodi' | 'dropchecker' | 'sump' | 'lid' | 'returnpump';
+export type GearType = LibraryType | GenericType;
+export const GEAR_TYPES: readonly LibraryType[] = ['light', 'heater', 'filter', 'powerhead', 'wavemaker', 'airpump', 'skimmer', 'uv', 'co2', 'ato', 'chiller'];
+export const GENERIC_TYPES: readonly GenericType[] = ['thermometer', 'hygrometer', 'thermostat', 'timer', 'heatlamp', 'heatmat', 'uvb', 'mister', 'fogger', 'lilypipe', 'doser', 'feeder', 'rodi', 'dropchecker', 'sump', 'lid', 'returnpump'];
+/** Library = a generic piece AND a product catalogue; generic = one tunable item only. */
 export const GEAR_CLASS: Record<GearType, 'library' | 'generic'> = {
   light: 'library', heater: 'library', filter: 'library', powerhead: 'library', wavemaker: 'library', airpump: 'library',
   skimmer: 'library', uv: 'library', co2: 'library', ato: 'library', chiller: 'library',
+  thermometer: 'generic', hygrometer: 'generic', thermostat: 'generic', timer: 'generic', heatlamp: 'generic', heatmat: 'generic', uvb: 'generic', mister: 'generic',
+  fogger: 'generic', lilypipe: 'generic', doser: 'generic', feeder: 'generic', rodi: 'generic', dropchecker: 'generic', sump: 'generic', lid: 'generic', returnpump: 'generic',
 };
 
 export interface StatBlock {
@@ -32,6 +39,26 @@ export interface StatBlock {
   co2: { stages?: number; cartridgeG?: number };
   ato: { sensors?: number };
   chiller: { ratedGal?: number; hp?: string; watts?: number };
+  // generic-only types (lane GM7): every number is the owner's, within GEAR_LIMITS; a flag is 0 or 1
+  thermometer: { probes: number };
+  hygrometer: { probes: number };
+  thermostat: { channels: number; dimming: number };
+  timer: { channels: number };
+  heatlamp: { watts: number };
+  heatmat: { watts: number };
+  /** UVB output as % of the lamp's light (5.0 / 10.0 / 12 tubes: the welfare stat); length in inches */
+  uvb: { strengthPct: number; lengthIn: number };
+  mister: { nozzles: number; mlPerHour: number };
+  fogger: { mlPerHour: number };
+  lilypipe: { diameterIn: number };
+  doser: { heads: number };
+  feeder: { hoppers: number };
+  rodi: { gpd: number };
+  dropchecker: { count: number };
+  sump: { gal: number };
+  /** material 0 glass, 1 mesh, 2 hood (the keys of tech.json heat.surface); openPct = how much of the top is left open */
+  lid: { openPct: number; material: number; hoodLed: number; lengthIn: number };
+  returnpump: { gph: number };
 }
 
 /** What a scene stores for one piece: a product id (stats come from the library) or, absent, the generic's own stats. */
@@ -44,6 +71,10 @@ export const GEAR_LIMITS: { [T in GearType]?: { [K in keyof StatBlock[T]]?: [num
   filter: { gph: [20, 1500] },
   powerhead: { gph: [100, 5000] },
   wavemaker: { gph: [100, 5000] },
+  thermometer: { probes: [1, 3] }, hygrometer: { probes: [1, 2] }, thermostat: { channels: [1, 4], dimming: [0, 1] }, timer: { channels: [1, 8] },
+  heatlamp: { watts: [25, 250] }, heatmat: { watts: [4, 60] }, uvb: { strengthPct: [2, 14], lengthIn: [12, 48] }, mister: { nozzles: [1, 8], mlPerHour: [100, 2000] },
+  fogger: { mlPerHour: [100, 1500] }, lilypipe: { diameterIn: [0.5, 2] }, doser: { heads: [1, 6] }, feeder: { hoppers: [1, 2] }, rodi: { gpd: [25, 300] },
+  dropchecker: { count: [1, 2] }, sump: { gal: [5, 200] }, lid: { openPct: [0, 100], material: [0, 2], hoodLed: [0, 1], lengthIn: [12, 72] }, returnpump: { gph: [100, 3000] },
 };
 
 /** The listed fields of `o` that are present. */
@@ -76,6 +107,10 @@ export function productStats<T extends GearType>(type: T, id?: string): StatBloc
 const DEFAULTS: { [T in GearType]: StatBlock[T] } = {
   light: { watts: 20 }, heater: { watts: 50 }, filter: { kind: 'hob' }, powerhead: {}, wavemaker: {}, airpump: {},
   skimmer: {}, uv: {}, co2: {}, ato: {}, chiller: {},
+  // generic-only defaults: the size the Tech menu's row has always priced (a 24 in 5.0 T5 HO, a 75 W basking bulb, a 1-channel on/off thermostat ...)
+  thermometer: { probes: 1 }, hygrometer: { probes: 1 }, thermostat: { channels: 1, dimming: 0 }, timer: { channels: 1 }, heatlamp: { watts: 75 }, heatmat: { watts: 20 },
+  uvb: { strengthPct: 5, lengthIn: 24 }, mister: { nozzles: 2, mlPerHour: 400 }, fogger: { mlPerHour: 400 }, lilypipe: { diameterIn: 1 }, doser: { heads: 2 }, feeder: { hoppers: 1 },
+  rodi: { gpd: 75 }, dropchecker: { count: 1 }, sump: { gal: 20 }, lid: { openPct: 0, material: 0, hoodLed: 0, lengthIn: 24 }, returnpump: { gph: 600 },
 };
 
 /** The stats physics reads for a piece: the product's locked stats when it names a catalogue product, else the generic's own over defaults. */
