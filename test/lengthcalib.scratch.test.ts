@@ -17,7 +17,7 @@ const pc = (x: number) => Number.isFinite(x) ? Math.round(x) + '' : '>999';
 function row(label: string, L: number, D: number, H: number, id: string, n: number, shape: 'rect' | 'round' | 'poly' = 'rect') {
   const S = mk(L, D, H, id, n, shape), sp = getSpecies(id)!, g = geometryOf(S);
   LENGTH_BONUS.on = false; const off = stockingOf(S).spacePercent; LENGTH_BONUS.on = true; const on = stockingOf(S).spacePercent; LENGTH_BONUS.on = false;
-  const gate = speciesMinimum(sp, g).pct, turn = turnPct(sp, g, TURN_K), gal = g.tankLitres ? g.tankLitres / 3.785 : 0;
+  const gate = speciesMinimum(sp, g).pct, turn = turnPct(sp, g, TURN_K);
   const flags = [turn > 100 ? (turn > 111 ? 'AMBER: too narrow to turn' : 'amber (within slack)') : '', gate > 111 ? 'sourced gate red' : ''].filter(Boolean).join('; ');
   const wl = elongationOf(S.tank);
   return `| ${label} | ${(g.lengthMm / IN).toFixed(0)} x ${(g.widthMm / IN).toFixed(1)} x ${H} | ${wl.toFixed(2)} | ${n} ${sp.name} | ${pc(off)} | ${pc(on)} | ${on === off ? 0 : Math.round((on / off - 1) * 100)} % | ${pc(gate)} | ${pc(turn)} | ${flags} |`;
