@@ -128,6 +128,9 @@ export interface Tech {
 // Barr Report readings at eta 0.65 once the side glass is modelled (the first hand check, which left the glass out,
 // suggested 0.4-0.5); bare T5 and T8 scaled with it. LED band splits are set from the lux factors (white ~67, planted
 // ~48, reef ~26 lux per µmol), not measured.
+// Audit 2026-10-27 (Nathan): a 32 W white bar read 20-90% above independent PAR-at-depth reports (Fluval Plant 3.0 46 W, Gensou
+// planted bars; reference/par-calibration-data.md), so a generic white / planted bar is now 1.15 µmol/J at the wall (ppe x eta)
+// instead of 1.44 / 1.62. The JBL Solar Natur fit keeps its premium-bar 1.44 (JBL_PPE in test/lightout.test.ts).
 // Lane K2 (2026-10-14): metal halide from Joshi's lab tests (reefs.com, grade A). Bare lamps at 18 in give 0.34-0.49
 // PPFD per wall watt for 10K bulbs, 0.23-0.35 for 13-14K, 0.17-0.24 for 20K; as photons (between a sin θ and an
 // isotropic lamp) ppe ~0.83 for 10-14K and ~0.47 for 20K. Four pendant reflectors with one 400 W 14K lamp fit the cos^m
@@ -140,8 +143,8 @@ export interface Tech {
 // of it sideways: eta 0.6, warmer split); LED T8 tube (directional, eta 0.8, white LED split); T12 (older, below T8).
 // Colour ranges (k) are what each is usually sold as, not limits.
 export const TECHS: Record<LightTech, Tech> = {
-  'led-white': { label: 'LED, white', on: ['puck', 'led'], k: [5000, 10000, 6500], ppe: 1.6, eta: 0.9, split: [0.22, 0.53, 0.25], unc: 0.3 },
-  'led-planted': { label: 'LED, planted RGB', on: ['puck', 'led'], k: [6000, 8000, 7000], ppe: 1.8, eta: 0.9, split: [0.33, 0.33, 0.34], unc: 0.3 },
+  'led-white': { label: 'LED, white', on: ['puck', 'led'], k: [5000, 10000, 6500], ppe: 1.6, eta: 0.72, split: [0.22, 0.53, 0.25], unc: 0.3 },
+  'led-planted': { label: 'LED, planted RGB', on: ['puck', 'led'], k: [6000, 8000, 7000], ppe: 1.8, eta: 0.64, split: [0.33, 0.33, 0.34], unc: 0.3 },
   'led-reef': { label: 'LED, reef (blue)', on: ['puck', 'led'], k: [10000, 20000, 14000], ppe: 1.75, eta: 0.9, split: [0.78, 0.13, 0.09], unc: 0.3 },
   't5-refl': { label: 'T5 HO, own reflectors', on: ['tube'], k: [5000, 20000, 6500], ppe: 1.2, eta: 0.65, split: [0.2, 0.6, 0.2], unc: 0.5 },
   't5-bare': { label: 'T5 HO, bare', on: ['tube'], k: [5000, 20000, 6500], ppe: 1.2, eta: 0.4, split: [0.2, 0.6, 0.2], unc: 0.5 },

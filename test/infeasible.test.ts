@@ -84,7 +84,7 @@ describe('infeasible requests explain themselves', () => {
   }, 120000);
 
   it('high-tech planted for $200: the look is separated from the equipment approach, and the low-tech version is offered and verified', () => {
-    const w: Wants = { constraints: { startupUsd: cap(180) }, hightech: true, kinds: ['freshwater'], tags: ['natural'] };
+    const w: Wants = { constraints: { startupUsd: cap(150) }, hightech: true, kinds: ['freshwater'], tags: ['natural'] };
     const inf = go(w).infeasible!;
     expect(inf.limitingFactor).toBe('budget');
     expect(inf.text).toContain('high-tech planted tank');

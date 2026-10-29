@@ -32,7 +32,7 @@ describe('budget bars: the model against published bar readings', () => {
     expect(below('led-white')).toBe(BAR_CHECK.highPct); expect(below('led-planted')).toBe(BAR_CHECK.lowPct);
   });
   it('the 12 W AQUANEAT bar is labelled an assumption, with that check', () => {
-    expect(lightProductNote(lightProduct('aquaneat-18-24')!)).toMatch(/Assumption, not a measurement: the model reads 18-27 % below 9 published bar readings/);
+    expect(lightProductNote(lightProduct('aquaneat-18-24')!)).toMatch(/Assumption, not a measurement: the model reads 42 % below 9 published bar readings/);
     expect(lightProductNote(lightProduct('hygger-submersible-24-7')!)).not.toMatch(/Assumption/);
   });
 });

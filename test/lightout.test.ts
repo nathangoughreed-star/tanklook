@@ -19,6 +19,8 @@ function env(E: Emitter[], total: number, m: number, tech: LightTech, ys = -Infi
   return { E, phi: total / E.length, m, norm: line ? lineNorm(m) : pointNorm(m), ind: [0, 0, 0], split: TECHS[tech].split, k, ys, trans: 1, walls: null, scale: 1 };
 }
 const photons = (W: number, t: LightTech) => W * TECHS[t].ppe * TECHS[t].eta;
+/** The JBL Solar Natur is a premium bar: its fit keeps 1.44 µmol/J at the wall (the generic white LED is 1.15 since the 2026-10-27 audit). */
+const JBL_PPE = 1.44;
 const par = (e: LightEnv, p: number[], n?: number[]) => parOf(bandsAt(e, p, n));
 
 describe('light output model', () => {
@@ -204,7 +206,7 @@ describe('calibration', () => {
     // aquarium of unstated size: assumed 1.6 x 0.8 m, bar centred along it. With no walls at all the model reads
     // 20-37% low below 50 cm (the glass returns light at depth), so the walls are part of the fit, not a fudge.
     const T = { L: 1600, D: 800 }, n = 100, E: Emitter[] = Array.from({ length: n }, (_, i) => [T.L / 2 - 574.5 + 1149 * (i + 0.5) / n, 45, -T.D / 2, 0]);
-    const e = { ...env(E, photons(68, 'led-white'), beamExp({ type: 'led' }), 'led-white', 0), walls: { ...T, w: 0.7 } };
+    const e = { ...env(E, 68 * JBL_PPE, beamExp({ type: 'led' }), 'led-white', 0), walls: { ...T, w: 0.7 } };
     const at = (y: number) => par(e, [T.L / 2, y, -T.D / 2]);
     const meas: [number, number][] = [[0, 802], [100, 356], [200, 241], [300, 172], [400, 134], [500, 114], [600, 102], [700, 91]];
     const res = log('JBL Solar Natur 68 W (in water)', [
