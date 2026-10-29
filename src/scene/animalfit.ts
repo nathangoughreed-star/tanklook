@@ -25,7 +25,7 @@ const band = (r: [number, number], d = 0) => `${r[0].toFixed(d)}-${r[1].toFixed(
 /** the shared part of two ranges, as a band */
 const both = (a: [number, number], b: [number, number], d = 0) => band([Math.max(a[0], b[0]), Math.min(a[1], b[1])], d);
 /** The tank around the animal: `corals`: any coral in it (not macroalgae or the anemone). */
-export interface AnimalEnv { /** S228: the animals' current lengths by species id (mm; absent = adult): the prey gate reads them */ tl?: Record<string, number>; /** the tank's own answer (tankMin.ts minFit): size is judged by floor area, length and water, not litres alone; absent = litres only */ fit?: (sp: Species) => { pct: number; reason: string }; corals?: boolean; /** this tank's water temperature inputs (tech.ts tempEvidence): its target, or with no heater the room it follows */ water?: TempEvidence }
+export interface AnimalEnv { /** S228: the animals' current lengths by species id (mm; absent = adult): the prey gate reads them */ tl?: Record<string, number>; /** the tank's own answer (tankMin.ts minFit): size is judged by floor area, length and water, not litres alone; absent = litres only */ fit?: (sp: Species) => { pct: number; reason: string }; corals?: boolean; /** this tank's water temperature inputs (tech.ts tempEvidence): its target, or with no heater the room it follows */ water?: TempEvidence; /** US units without a tank's evidence (the planner): say temperatures in °F */ us?: boolean }
 
 /** Predation between two animals that share space (lane IP 2026-10-22): 'eats' when `pred` takes `prey`, 'young' when only its young
  *  and small ones are at risk (prey.young: keep large adults). Reads lengths and kinds only, never temperature, so a band edit that
@@ -100,7 +100,7 @@ export function whysAnimal(sp: Species, litres: number, expertise: Expertise, pr
       }
     }
   }
-  out.push(...tempWhys(sp, present, env.water?.us)); // the combination first: no setting fixes it
+  out.push(...tempWhys(sp, present, env.us ?? env.water?.us)); // the combination first: no setting fixes it
   const setup = setupTemp(sp, env.water); if (setup) out.push(setup); // then the setup, not the combination: fixable, said with the fix
   return [...out.filter(w => !w.concern), ...out.filter(w => w.concern)];
 }

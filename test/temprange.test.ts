@@ -5,7 +5,7 @@ import { CARE } from '../src/data/care';
 import { getSpecies, type Species } from '../src/data/species';
 import { gateOf, whyAnimal, whysAnimal } from '../src/scene/animalfit';
 import { checkLevel, holdCheck, measuredCheck, NARROW_C, operatingCheck, rangeLine, rangeVerdict, sharedRange, type TempEvidence } from '../src/scene/temprange';
-import { conflictsOf, tempLinesOf } from '../src/ui/stockPlanLogic';
+import { conflictOf, conflictsOf, rankTankmates, tempLinesOf } from '../src/ui/stockPlanLogic';
 import { animalsOfSetup, hardTruths, planOf } from '../src/scene/plan';
 import { SCENES } from '../src/examples/scenes';
 import { parseScene } from '../src/scene/validate';
@@ -268,5 +268,19 @@ describe('US units: every temperature in the water checks reads in °F', () => {
     expect(holdCheck(ev({ target: 24, room: 18, heater: false }))!.text).toMatch(/Holding 75 °F.*64 °F room/);
     expect(rangeVerdict(r, [], true).text).toBe('Temperature: shared range 70–77 °F');
     for (const k of [operatingCheck(r, ev({ target: 30 })), operatingCheck(r, ev()), measuredCheck(r, ev({ measured: 16 }))!]) expect(k.text + (k.fix ?? '')).not.toMatch(/°C/);
+  });
+});
+
+describe('US units in the stock planner: the species-list temperature reasons read in °F', () => {
+  const picks = [{ id: 'gbr', n: 2 }];
+  it('conflictsOf says the clash in °F when `us`, in °C otherwise', () => {
+    const f = conflictsOf(picks, 'amano', true).find(w => /temperature/.test(w.text))!, c = conflictsOf(picks, 'amano').find(w => /temperature/.test(w.text))!;
+    expect(f.text).toMatch(/°F/); expect(f.text).not.toMatch(/°C/);
+    expect(c.text).toMatch(/°C/); expect(c.text).not.toMatch(/°F/);
+    expect(conflictOf(picks, 'amano', true)).toMatch(/°F/);
+  });
+  it('the tankmate ranking names the clash in °F too', () => {
+    const m = rankTankmates(picks, undefined, true).find(x => x.sp.id === 'amano');
+    expect(m?.why ?? '').toMatch(/°F/);
   });
 });

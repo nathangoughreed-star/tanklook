@@ -160,18 +160,18 @@ export function groupLineIn(nt: PickNotes, plan: Plan): { text: string; held: bo
 }
 
 /** Why this pick does not suit the others on the list: the main blocking reason, or undefined. Advice only: nothing is blocked. */
-export function conflictOf(picks: Pk[], id: string): string | undefined {
-  const w = conflictsOf(picks, id)[0];
+export function conflictOf(picks: Pk[], id: string, us?: boolean): string | undefined {
+  const w = conflictsOf(picks, id, us)[0];
   return w?.block ? w.text : undefined;
 }
 /** Every reason this pick does not suit the others: the main blocking reason first, then the other material concerns (`block` false:
  *  a concern that does not block, e.g. a narrow shared temperature range). Empty when nothing is said. */
-export function conflictsOf(picks: Pk[], id: string): { text: string; block: boolean }[] {
+export function conflictsOf(picks: Pk[], id: string, us?: boolean): { text: string; block: boolean }[] {
   const sp = getSpecies(id), others = picks.filter(p => p.id !== id && totalOf(p) > 0).map(p => getSpecies(p.id)).filter((x): x is Species => !!x);
   if (!sp || !others.length) return [];
   const clash = others.find(o => !!o.salt !== !!sp.salt);
   const out = clash ? [{ text: `${sp.salt ? 'Salt' : 'Fresh'} water: it cannot share a tank with ${clash.name}`, block: true }] : [];
-  for (const w of whysAnimal(sp, Infinity, 3, others, { tl: lengthsOf(picks) })) out.push({ text: w.text.replace(/^compatibility: /, ''), block: !w.concern });
+  for (const w of whysAnimal(sp, Infinity, 3, others, { tl: lengthsOf(picks), us })) out.push({ text: w.text.replace(/^compatibility: /, ''), block: !w.concern });
   return out;
 }
 
@@ -220,7 +220,7 @@ const overlap = (a?: [number, number], b?: [number, number]) => a && b ? Math.ma
 /** Every animal that is not already picked, in three runs: the ones that suit ALL the picks and fit `tank` (none chosen yet: any tank) at their
  *  smallest group, best first; the ones that suit them but need a bigger tank (`bigger`), best first; then the ones that do not
  *  suit (each with the first reason, naming the occupant it clashes with), by name. Salt against fresh counts as a clash. */
-export function rankTankmates(picks: Pk[], tank?: TankModel): Mate[] {
+export function rankTankmates(picks: Pk[], tank?: TankModel, us?: boolean): Mate[] {
   const have = picks.filter(p => totalOf(p) > 0).map(p => getSpecies(p.id)).filter((s): s is Species => !!s);
   if (!have.length) return [];
   const animals = animalsOf(picks);
@@ -230,7 +230,7 @@ export function rankTankmates(picks: Pk[], tank?: TankModel): Mate[] {
     if (taken.has(sp.id) || !countsAgainstWater(sp)) continue;
     const c = CARE[sp.id]; if (!c) continue;
     const salty = have.find(o => !!o.salt !== !!sp.salt);
-    const why = salty ? `${sp.salt ? 'Salt' : 'Fresh'} water: it cannot share a tank with ${salty.name}` : whyAnimal(sp, Infinity, 3, have, { tl: lengthsOf(picks) })?.text.replace(/^compatibility: /, '') ?? '';
+    const why = salty ? `${sp.salt ? 'Salt' : 'Fresh'} water: it cannot share a tank with ${salty.name}` : whyAnimal(sp, Infinity, 3, have, { tl: lengthsOf(picks), us })?.text.replace(/^compatibility: /, '') ?? '';
     let score = why ? 0 : 100;
     if (!why) {
       // fills a part of the tank the others leave empty, shares their water, easy to keep, and likes the same things

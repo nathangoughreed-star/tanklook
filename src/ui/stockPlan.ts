@@ -124,7 +124,7 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
     return `<li class="spPick"><div class="spName"><b>${esc(sp.name)}</b><i>${esc(sp.sci)}</i><button type="button" class="spX" data-act="del" data-id="${p.id}" aria-label="Take ${esc(sp.name)} out">✕</button></div>
 <div class="spSteps">${sexed ? step('n', 'Males', p.n) + step('f', 'Females', p.f ?? 0) + step('u', 'Unsexed', p.u ?? 0) : step('n', '', p.n)}</div>
 ${stageRow(p)}${nt.pairing ? `<div class="spPair"><span class="spLab">Pair</span>${PAIR_OPTS.map(([v, t]) => `<button type="button" data-act="pair" data-id="${p.id}" data-v="${v}"${nt.pairing!.status === v ? ' class="on"' : ''} aria-pressed="${nt.pairing!.status === v}">${t}</button>`).join('')}</div><div class="${nt.pairing.status === 'established' ? 'spNote' : 'spWarn'}">${esc(nt.pairing.line)}</div>` : ''}
-${conflictsOf(picks, p.id).filter(w => /^expertise:/.test(w.text)).map(w => `<div class="${w.block ? 'spWarn' : 'spNote'}">${esc(w.text)}</div>`).join('')}${(() => { const g = groupLineIn(nt, plan); return nt.line ? `<div class="spMsg ${g.held ? 'spb-held' : bandClass(nt.band)}">${esc(nt.line)}</div>` : ''; })()}${nt.ratio ? `<div class="spNote">${esc(nt.ratio)}</div>` : ''}
+${conflictsOf(picks, p.id, store.scene.units === 'in').filter(w => /^expertise:/.test(w.text)).map(w => `<div class="${w.block ? 'spWarn' : 'spNote'}">${esc(w.text)}</div>`).join('')}${(() => { const g = groupLineIn(nt, plan); return nt.line ? `<div class="spMsg ${g.held ? 'spb-held' : bandClass(nt.band)}">${esc(nt.line)}</div>` : ''; })()}${nt.ratio ? `<div class="spNote">${esc(nt.ratio)}</div>` : ''}
 ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</div>` : ''}</li>`;
   };
 
@@ -182,7 +182,7 @@ ${mates ? `<p class="spNote">Pick from the pictures on the left; each goes in at
 ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}` : ''}
 <div class="spFoot"><button type="button" class="primary" data-act="builds"${picks.length && planFor(picks, chosen).tank ? '' : ' disabled'}>Continue: ways to build it</button><button type="button" class="spLink" data-act="done"${picks.length ? '' : ' disabled'}>Open in the editor as it is</button><span class="spNote">Everything stays editable in the editor.</span></div>`;
     const q2 = el.querySelector<HTMLInputElement>('.spQ')!;
-    { const t = planFor(picks, chosen).tank; gallery.mates(mates && picks.length ? rankTankmates(picks, t).map(m => ({ ...m, bigger: m.bigger ? tankLabel(m.bigger, store.scene.units) : undefined })) : null, !!t); }
+    { const t = planFor(picks, chosen).tank; gallery.mates(mates && picks.length ? rankTankmates(picks, t, store.scene.units === 'in').map(m => ({ ...m, bigger: m.bigger ? tankLabel(m.bigger, store.scene.units) : undefined })) : null, !!t); }
     gallery.search(q); gallery.show(!el.hidden && (!picks.length || mates));
     if (hadFocus || focusSearch) { q2.focus(); q2.setSelectionRange(pos, pos); focusSearch = false; }
     el.scrollTop = scroll;
