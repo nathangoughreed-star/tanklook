@@ -37,7 +37,7 @@ const lim = (n: number | undefined, unit: string) => n === undefined ? 'no limit
 /** Tank edit in plain words: "20 gal high -> 20 gal long" when the volume holds and the footprint turns, else the gallons. */
 export function tankShift(a: NonNullable<Inputs['tank']>, b: NonNullable<Inputs['tank']>): string {
   const sameVol = Math.abs(a.gal - b.gal) <= Math.max(1, a.gal * 0.08);
-  const shape = (t: NonNullable<Inputs['tank']>) => t.H > t.L * 0.9 || t.H > t.D * 1.4 && t.H >= t.L * 0.75 ? 'high' : t.L >= t.H * 1.4 ? 'long' : 'standard';
+  const shape = (t: NonNullable<Inputs['tank']>) => t.H >= t.L * 0.65 ? 'high' : t.L >= t.H * 1.8 ? 'long' : 'standard';
   if (sameVol && shape(a) !== shape(b)) return `${round(a.gal)} gal ${shape(a)} -> ${round(b.gal)} gal ${shape(b)}`;
   return `${round(a.gal)} gal -> ${round(b.gal)} gal`;
 }
@@ -107,7 +107,7 @@ export function changeStrip(a: Inputs, b: Inputs, before: Suggestions | undefine
   if (!ch.length) return undefined;
   const d = resultDiff(before, after);
   if (!after.proposals.length) return { text: `${ch.join('; ')}: no setup fits now.`, lines: [] };
-  const got = d.upgrades ? `${d.upgrades} upgrade${d.upgrades === 1 ? '' : 's'} now fit` : d.added || d.dropped ? 'the concepts changed' : 'the setups are unchanged';
+  const got = d.upgrades ? `${d.upgrades} upgrade${d.upgrades === 1 ? '' : 's'} now fit${d.upgrades === 1 ? 's' : ''}` : d.added || d.dropped ? 'the concepts changed' : 'the setups are unchanged';
   const loosened = (b.startup ?? Infinity) > (a.startup ?? Infinity);
   return { text: `${ch.join('; ')}: ${got}${!d.upgrades && loosened ? ' (the budget is a ceiling, so a cheaper concept is not penalised)' : ''}.`, lines: d.lines };
 }

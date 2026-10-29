@@ -26,7 +26,7 @@ describe('propagate', () => {
     expect(changeStrip(i, i, run(a), run(a))).toBeUndefined();
   });
   it('tank edit: 20 gal high -> 20 gal long', () => {
-    expect(tankShift({ gal: 20, L: 305, D: 305, H: 508 }, { gal: 20, L: 760, D: 330, H: 305 })).toBe('20 gal high -> 20 gal long');
+    expect(tankShift({ gal: 20, L: 616, D: 318, H: 425 }, { gal: 20, L: 760, D: 330, H: 305 })).toBe('20 gal high -> 20 gal long');
     expect(tankShift({ gal: 10, L: 510, D: 260, H: 310 }, { gal: 20, L: 760, D: 330, H: 305 })).toBe('10 gal -> 20 gal');
   });
   it('says so when no setup fits any more', () => {
