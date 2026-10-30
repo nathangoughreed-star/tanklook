@@ -34,8 +34,8 @@ import { span } from '../scene/outgrows';
 import { needsOf, withNeedGear, type Need } from '../demand/needs';
 import { genericHeaterW } from '../data/gearCatalog';
 import { heatLoss, techOf, withUnits } from '../scene/tech';
-import { TANK_MODELS } from '../data/tanks';
 import { volume } from '../scene/physics';
+import { readState } from './guided/steps';
 import { filterState } from '../scene/tech';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
@@ -225,9 +225,9 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
   // need prompts (GV2's needsOf): gear appears only once a species calls for it; each says why, what it costs and offers the one-click add
   const needRows = (): { n: Need; have: boolean; owns: boolean }[] => {
     if (!picks.length) return [];
-    const T = store.tank, own = valueOf(getBrief(), 'constraints.owned') ?? {};
+    const T = store.tank;
     return needsOf(T, getBrief()).filter(n => n.kind !== 'tank' || !n.have).map(n => {
-      const ownsIt = n.kind === 'heater' || n.kind === 'filter' || n.kind === 'light' ? !!own[n.kind] && own[n.kind] !== 'care' : false;
+      const ownsIt = n.kind === 'heater' ? !!T.tech?.heaters?.some(u => u.owned) : n.kind === 'filter' ? !!T.tech?.filters?.some(u => u.owned) : n.kind === 'light' ? !!T.light.owned : false;
       const have = ownsIt || (n.kind === 'heater' ? !!T.tech?.heaters?.length : n.kind === 'filter' ? filterState(T) === 'chosen' : n.have);
       return { n, have, owns: ownsIt };
     });
@@ -283,7 +283,13 @@ ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}${budgetBlock()}
 
   // what is picked here fills the brief's Animals group, locked: the animal is what the person came for (lane U3)
   const toBrief = () => editBrief(b => lockAnimals(b, picks.map(p => ({ species: p.id, name: getSpecies(p.id)?.name ?? p.id, n: totalOf(p) }))));
-  const change = (rebuild = false) => { sync(rebuild); toBrief(); draw(); };
+  // an owned tank (from Guided) is the tank chosen: the catalogue size nearest its volume that the picks are judged in
+  const adoptOwned = () => {
+    if (chosen || !kept?.tank || !picks.length) return;
+    const gal = volume(kept.tank).gallons, o = planFor(picks).options.reduce<TankModel | undefined>((a, x) => !a || Math.abs(x.tank.ratedGal - gal) < Math.abs(a.ratedGal - gal) ? x.tank : a, undefined);
+    if (o && Math.abs(o.ratedGal - gal) <= gal * 0.12) chosen = o.id;
+  };
+  const change = (rebuild = false) => { adoptOwned(); sync(rebuild); toBrief(); draw(); };
 
   el.oninput = e => { const t = e.target as HTMLInputElement; if (t.classList.contains('spQ')) { q = t.value; gallery.search(q); const w = el.querySelector('.spResWrap'); if (w) w.innerHTML = results(); } };
   el.onclick = e => {
@@ -323,11 +329,13 @@ ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}${budgetBlock()}
     const units = store.scene.units, s = emptyScene();
     s.name = 'My animal tank'; s.units = units; s.tanks[0].camera = { ...store.tank.camera };
     s.tanks[0].stand.show = false; s.tanks[0].stand.need = 'ask'; // no stand yet: the budget still counts a typical one
-    const own = valueOf(getBrief(), 'constraints.owned') ?? {}, prev = store.tank, has = (k: 'heater' | 'filter' | 'light') => !!own[k] && own[k] !== 'care';
-    // the Guided "What you have" step wrote its gear into the current scene: an owned tank is one that is not the untouched default
-    const ownTank = (has('heater') || has('filter') || has('light') || !!prev.light.owned || !!valueOf(getBrief(), 'constraints.existingTank')) && (!!prev.product || JSON.stringify(prev.tank) !== JSON.stringify(emptyScene().tanks[0].tank));
+    const prev = store.tank, gearUnits = [...(prev.tech?.heaters ?? []), ...(prev.tech?.filters ?? [])];
+    // the Guided "What you have" step wrote its gear into the current scene (ownedGear.applyOwned), not into the brief: owned units and light are flagged there;
+    // an owned tank is one that is not the untouched default, when the person came through Guided
+    const ownGear = gearUnits.some(u => u.owned) || !!prev.light.owned, guided = !!readState(getBrief()).intent;
+    const ownTank = guided && (!!prev.product || JSON.stringify(prev.tank) !== JSON.stringify(emptyScene().tanks[0].tank));
     kept = undefined; needLight = '';
-    if (ownTank || has('heater') || has('filter') || has('light')) {
+    if (ownTank || ownGear) {
       kept = { ...(ownTank ? { tank: structuredClone(prev.tank), ...(prev.product ? { product: prev.product } : {}) } : {}), ...(prev.tech ? { tech: structuredClone(prev.tech) } : {}), ...(prev.light.owned ? { light: structuredClone(prev.light) } : {}) };
       if (kept.tech) s.tanks[0].tech = kept.tech;
       if (kept.light) s.tanks[0].light = kept.light;
@@ -335,8 +343,7 @@ ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}${budgetBlock()}
     }
     s.tanks[0].stockFirst = true; // no filter drawn until the owner adds one (Nathan 2026-10-21; the tile says "This tank needs a filter")
     store.replace(s);
-    const ownGal = kept?.tank ? volume(kept.tank).gallons : 0, near = ownGal ? TANK_MODELS.reduce((a, m) => Math.abs(m.ratedGal - ownGal) < Math.abs(a.ratedGal - ownGal) ? m : a) : undefined;
-    picks = []; chosen = near && Math.abs(near.ratedGal - ownGal) <= ownGal * 0.12 ? near.id : undefined; mates = false; q = ''; shown = ''; undoFix = undefined;
+    picks = []; chosen = undefined; mates = false; q = ''; shown = ''; undoFix = undefined;
     el.hidden = false; side(true); bare(true); ghost(true); focusSearch = true; draw();
   };
   openBtn.onclick = () => { (document.getElementById('startDlg') as HTMLDialogElement | null)?.close(); open(); };
