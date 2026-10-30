@@ -1,11 +1,12 @@
 // Create a look (lane C7, spec research/design/start-flow.md section (e)), the Welcome tile "A look I want": style first, animals second.
 //  1 Pick a look  (tiles pictured in a 20 gal long; "Use my own picture" pins a reference photo beside the viewer, local, no matching in v1)
 //  2 Your tank    (the style in the main viewer; size chips, live / artificial / mixed; set-up $, $ a month, minutes a week)
+// A tank that already has its animals (lane GV5) opens on "A look for this tank" instead: scapes of THAT tank, roster and gear kept, with the plants', light and CO2 / ferts cost on each card; "Start from a look instead" is the flow below.
 //  3 Animals that suit it (optional; counts start at the recommended group; the balanced build is re-planned for them)
 // Then the editor. Cancelling before the end puts back the tank that was there. Logic is scene/looks.ts (pure, tested).
 // Deferred from the spec's screen 2: the "today / month 6" growth slider (no growth model to read yet).
 import { PLANT_MODES, type PlantMode } from '../scene/scapes';
-import { LOOK_TILES, animalsFor, asksPlants, defaultSize, lookHint, lookLabel, lookOption, lookSizes, lookVariant, lookVariants, lookWithAnimals, type LookAnimal, type LookStyle, type LookVariant } from '../scene/looks';
+import { LOOK_TILES, animalsFor, asksPlants, defaultSize, lookHint, lookLabel, lookOption, lookSizes, lookVariant, lookVariants, lookWithAnimals, looksForTank, tankLookTitle, hasRoster, type TankLook, type LookAnimal, type LookStyle, type LookVariant } from '../scene/looks';
 import { clearTaste, forgetVariant, recordTaste, tasteOf, tasteSummary, weightsOf } from '../demand/taste';
 import { tankLabel } from '../scene/tankfit';
 import { editBrief, getBrief, lockAnimals, setLook, setTank } from './setupBrief';
@@ -80,6 +81,30 @@ ${groups.map(g => `<section class="lkGroup"><h3>${esc(lookLabel(g.st))}</h3><p c
     setTimeout(() => draw(me), 150);
   };
 
+  // lane GV5: a look for the tank in hand (its roster, size and gear kept); each card prices the plants and what they need above the basic light
+  let cards: TankLook[] = [], cpics: string[] = [];
+  const card = (c: TankLook, i: number) => {
+    const rows: [string, string][] = [['Plants', usd(c.plantUsd)]];
+    if (c.light) rows.push([`Light upgrade (${c.light.label})`, `+${usd(c.light.deltaUsd)}`]);
+    if (c.co2) rows.push(['CO2 kit', `+${usd(c.co2.deltaUsd)}`]);
+    const mo = c.fertsUsdMo + (c.co2?.usdMo ?? 0);
+    return `<li class="bpCard look-card${c.lowTech ? ' look-low' : ''}" data-i="${i}"><div class="bpPic">${cpics[i] ? `<img src="${cpics[i]}" alt="${esc(tankLookTitle(c))} in your tank">` : ''}</div>
+<div class="bpHead"><b>${esc(tankLookTitle(c))}</b>${c.lowTech ? '<span class="look-tag">Low-tech</span>' : ''}</div>
+<div class="spNote">${esc(c.why[0] ?? c.hint)}</div>
+<div class="bpNums"><span><b>${usd(c.setupUsd)}</b>set-up</span><span><b>${usd(c.upkeepUsdMo)}</b>a month</span><span><b>${c.minPerWeek}</b>min a week</span></div>
+<table class="look-cost" aria-label="What the plants add">${rows.map(([k, v]) => `<tr><td>${esc(k)}</td><td>${v}</td></tr>`).join('')}<tr><td>${c.lowTech ? 'No CO2, no light upgrade' : 'Ferts and CO2 refills'}</td><td>${mo ? `${usd(mo)} a month` : 'none'}</td></tr></table>
+<button type="button" class="primary" data-act="tpick" data-i="${i}">Use this look</button></li>`;
+  };
+  const forTank = () => {
+    const me = ++token; el.classList.remove('lkSide'); cards = looksForTank(orig!); cpics = [];
+    const draw2 = () => { el.innerHTML = `<div class="spHead"><h2>A look for this tank</h2><button type="button" data-act="cancel" aria-label="Close">✕</button></div>
+<p class="spNote">Your animals, tank and gear stay as they are. Each look shows what its plants add: their price, a stronger light and CO2 where they need it, and ferts a month. The low-tech one asks for none of that.</p>
+<ul class="bpCards look-cards">${cards.map(card).join('') || '<li class="spNote">No look fits this roster.</li>'}</ul>
+<div class="spFoot"><button type="button" class="spLink" data-act="fromlook">Start from a look instead</button><span class="spNote">That replaces this tank with an empty one in the look you pick.</span></div>`; };
+    draw2(); el.hidden = false; side(true);
+    setTimeout(() => { if (me !== token || el.hidden) return; el.hidden = true; cpics = cards.map(c => { put(framed(c.setup)); return viewer.thumbnail(480); }); restore(); el.hidden = false; draw2(); }, 150);
+  };
+
   const tank2 = () => {
     const v = usingSeed(), o = v ? lookVariant(v) : lookOption(style, tank, mode);
     put(framed(o.setup)); el.classList.add('lkSide');
@@ -113,6 +138,11 @@ ${asksPlants(style) ? `<div class="spNote">Plants</div><div class="lkChips">${PL
     const t = (e.target as HTMLElement).closest<HTMLElement>('[data-act]'); if (!t || t.tagName === 'INPUT') return;
     switch (t.dataset.act) {
       case 'cancel': restore(); dropRef(); close(); orig = undefined; break;
+      case 'fromlook': token++; restore(); showTiles(); break;
+      case 'tpick': { const c = cards[+(t.dataset.i ?? 0)]; token++;
+        editBrief(b => recordTaste(setLook(b, c.style), { style: c.style, kind: 'pick', variant: c.id }));
+        put(framed(c.setup)); dropRef(); close(); store.seal(); orig = undefined;
+        status(`${tankLookTitle(c)} placed in your tank: animals and gear kept, ${usd(c.plantUsd)} of plants${c.light ? `, a stronger light (+${usd(c.light.deltaUsd)})` : ''}${c.co2 ? `, CO2 (+${usd(c.co2.deltaUsd)})` : ''}. Undo steps back.`); break; }
       case 'tiles': picks = []; restore(); showTiles(); break;
       case 'style': { const v = vars.find(x => x.id === t.dataset.v)!; seedV = v; style = v.style; tank = v.tank; mode = v.mode; picks = []; token++; drawing = false;
         editBrief(b => recordTaste(setLook(b, style), { style, kind: 'pick', variant: v.id })); tank2(); break; }
@@ -137,5 +167,5 @@ ${asksPlants(style) ? `<div class="spNote">Plants</div><div class="lkChips">${PL
     ref.hidden = false; (ref.querySelector('button') as HTMLButtonElement).onclick = dropRef; f.value = '';
   };
 
-  return { open() { orig = structuredClone(store.scene.tanks[store.scene.active]); mode = 'live'; picks = []; showTiles(); } };
+  return { open() { orig = structuredClone(store.scene.tanks[store.scene.active]); mode = 'live'; picks = []; if (hasRoster(orig)) forTank(); else showTiles(); } };
 }

@@ -1016,3 +1016,10 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
   #sheetView .rp-page { font-size: 11.5pt } #sheetView .rp-sec { break-inside: avoid-page } #sheetView .rp-shot img { max-height: 3.6in }
   #sheetView .rp-warn li, #sheetView .rp-shot { break-inside: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact }
 }
+/* lane GV5: a look for this tank (ui/lookPick.ts) */
+.look-cards { flex-wrap: wrap } .look-cards .bpCard { flex: 1 1 210px }
+.look-tag { margin-left: 6px; padding: 1px 7px; border-radius: 9px; font-size: 11px; background: color-mix(in srgb, #2e8b57 22%, transparent); }
+.look-cost { width: 100%; font-size: 12px; border-collapse: collapse; margin: 4px 0 8px; }
+.look-cost td { padding: 2px 0; border-top: 1px solid color-mix(in srgb, currentColor 14%, transparent); }
+.look-cost td:last-child { text-align: right; white-space: nowrap; }
+.look-low { outline: 1px solid color-mix(in srgb, #2e8b57 55%, transparent); }
