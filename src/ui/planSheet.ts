@@ -33,6 +33,8 @@ export function planTextWithNeeds(p: Plan, needs: { text: string }[], sm?: Stock
 const bar = (label: string, pct: number) => `<div class="planBar"><span>${label}</span><div class="gauge" style="${gaugeStyle(pct)}"><i></i></div><b>${pct}%</b></div>`;
 
 export function planHtml(p: Plan, needs: { severity: string; text: string }[] = [], sm?: StockSummary): string {
+  // lane GV9: the set-up total is the listed prices x the engine's price level (prices vary between stores): the same line as the report's
+  const spread = Math.max(0, Math.round(p.setupUsd - p.rows.reduce((t, r) => t + r.usd, 0)));
   const needRows = p.rows.map(r => `<tr class="${r.kind}"><th scope="row">${esc(r.item)}${r.kind === 'extra' ? ' <em>(not needed)</em>' : ''}</th><td class="q">${usd(r.usd)}</td><td>${esc(r.serves)}</td></tr>`).join('');
   return `<h1>${esc(p.title)}</h1><p class="sheetSub">${esc(p.tank)}: ${esc(p.animals.join(', '))}</p>
 <h2>Does it fit?</h2>
@@ -41,7 +43,7 @@ ${sm ? `<h3>Stocking summary: ${esc(sm.worstWord)}</h3>${summaryHtml(sm, esc)}` 
 <ul class="planTruths">${p.verdict.slice(2).map(v => `<li class="${v.level}"><b>${MARK[v.level]}</b> ${esc(v.text)}${v.more?.length ? `<ul class="planMore">${v.more.map(m => `<li>also: ${esc(m)}</li>`).join('')}</ul>` : ''}</li>`).join('')}${p.missing.map(m => `<li class="bad"><b>${MARK.bad}</b> ${esc(m)}</li>`).join('')}</ul>
 ${needs.length ? `<h3>Care needs the tool cannot check</h3><ul class="planTruths">${needs.map(n => `<li class="${n.severity === 'S3' ? 'bad' : 'warn'}"><b>?</b> ${esc(n.text)}</li>`).join('')}</ul>` : ''}
 <h2>What to buy, and why</h2>
-<table>${needRows}</table>
+<table>${needRows}</table>${spread ? `<p class="sheetNote">The set-up cost below adds about ${usd(spread)} to these listed prices: prices vary between stores.</p>` : ''}
 <h2>What it costs</h2>
 <table><tr><th scope="row">Set-up</th><td class="q">${usd(p.setupUsd)}</td><td>once, with the sales below that fit</td></tr>
 <tr><th scope="row">Each month</th><td class="q">${usd(p.upkeepUsdMo)}</td><td>food, salt or supplies, power, replacing what dies</td></tr>

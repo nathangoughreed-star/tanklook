@@ -140,4 +140,16 @@ describe('the plan sheet lists the care needs (lane RF item 1)', () => {
     if (p.fits) expect(html).toMatch(/with care needs to confirm/);
     expect(planTextWithNeeds(p, needs)).toMatch(/\? .*copepods[\s\S]*Shopping list/);
   });
+  it('says why the set-up total is above the listed prices (lane GV9: the price level, as the report says)', async () => {
+    const { planHtml } = await import('../src/ui/planSheet');
+    const { planOf } = await import('../src/scene/plan');
+    const { buildsFor } = await import('../src/scene/builds');
+    const { tankFor } = await import('../src/scene/tankfit');
+    const animals = [{ species: 'betta', n: 1 }], b = buildsFor(animals, tankFor(animals)!.tank, Date.parse('2026-10-22T12:00:00Z'))[0];
+    const p = planOf(b.setup, b), spread = Math.round(p.setupUsd - p.rows.reduce((t, r) => t + r.usd, 0));
+    const html = planHtml(p);
+    if (spread > 0) expect(html).toContain(`adds about $${spread.toLocaleString('en-US')} to these listed prices: prices vary between stores`);
+    else expect(html).not.toContain('prices vary between stores');
+    expect(spread).toBeGreaterThan(0); // the price level is above 1
+  });
 });
