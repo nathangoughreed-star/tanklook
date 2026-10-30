@@ -1001,3 +1001,18 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 @media (max-width: 520px) { .gv-dock .gv-r:not(.current):not(:last-child) button { font-size: 11px; padding: 2px 2px } }
 .gvNeeds { list-style: none; margin: 4px 0; padding: 0; display: flex; flex-direction: column; gap: 6px }
 .gvNeeds li { display: flex; flex-direction: column; gap: 4px; padding: 6px 8px; border-radius: 8px; font-size: 12.5px; background: #1d3140; border-left: 3px solid #7fd0de } .gvNeeds li.gvHave { opacity: .7; border-color: #5aa86a } .gvNeeds button { align-self: flex-start; font-size: 12px }
+
+/* The printable report (lane GV3, 2026-10-30): one US Letter page set over the setup sheet's page and print rules */
+#sheetView .rp-page h3 { margin: 10px 0 2px; font-size: 13px }
+#sheetView .rp-rundown th { width: 22% }
+#sheetView .rp-shot { margin: 6px 0 0; text-align: center } #sheetView .rp-shot img { max-width: 100%; max-height: 4.2in; border: 1px solid #cfd4dc; border-radius: 4px }
+#sheetView .rp-none { margin: 4px 0; color: #5d6676; font-style: italic }
+#sheetView .rp-costs th[scope="col"] { width: auto; text-align: right; padding-right: 8px } #sheetView .rp-costs td.q { width: 30%; text-align: right; padding-right: 8px }
+#sheetView .rp-warn { list-style: none; margin: 4px 0; padding: 0 } #sheetView .rp-warn li { padding: 3px 0 3px 8px; border-left: 4px solid #8a93a3; margin: 3px 0 }
+#sheetView .rp-warn b { margin-right: 4px } #sheetView .rp-warn li.rp-problem { border-color: #c0392b; color: #a3271b } #sheetView .rp-warn li.rp-caution { border-color: #d9a21b }
+#sheetView .rp-welfare { margin: 6px 0 0; color: #a3271b; font-weight: 600 }
+@media print {
+  @page { size: letter; margin: 0.5in }
+  #sheetView .rp-page { font-size: 11.5pt } #sheetView .rp-sec { break-inside: avoid-page } #sheetView .rp-shot img { max-height: 3.6in }
+  #sheetView .rp-warn li, #sheetView .rp-shot { break-inside: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact }
+}

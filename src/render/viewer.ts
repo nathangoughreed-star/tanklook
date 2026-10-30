@@ -892,6 +892,14 @@ export class Viewer {
     return t.toDataURL('image/jpeg', 0.75);
   }
 
+  /** The printable report's picture (lane GV3): the view as it is, but each tank straight from the front at the default zoom, drawn and read
+   *  in one go (the cameras are put back at once). '' when there is nothing to picture. */
+  reportShot(w = 1200): string {
+    const cams = this.store.scene.tanks.map(S => S.camera);
+    for (const S of this.store.scene.tanks) S.camera = { ...S.camera, az: 0, el: 0, zoom: 1 };
+    try { return this.thumbnail(w); } finally { this.store.scene.tanks.forEach((S, i) => { S.camera = cams[i]; }); this.invalidate(); }
+  }
+
   /** Per drawn view: the tank + stand's box on the canvas (CSS px) and the view's own left / width. */
   private content: { x0: number; x1: number; y0: number; y1: number; vx: number; vw: number }[] = [];
 

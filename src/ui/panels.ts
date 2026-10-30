@@ -288,6 +288,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     stocking: () => $('startAnimal').click(),
     look: () => openLook(),
     suggest: () => suggestPanel?.open(),
+    openReport: () => void import('./report').then(m => m.openReport()), // lane GV3: the printable report
     sandbox: () => { const ok = welcomeFirst ? (welcomeFirst = false, true) : newEmptyTank(); if (ok) { setMode('sandbox'); startMode.drawBar(); } return ok; },
     browse: menu => showChooser(menu, menu === 'open' ? 'starters' : undefined, welcomeFirst),
   });
