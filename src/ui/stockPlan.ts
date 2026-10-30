@@ -28,6 +28,7 @@ import { onSpaceFork, type SpaceFork } from './fullnessTile';
 import { spaceBand, animalsInTank, animalsOf, bump, sexFish, writePairs, FAIL_WORD, groupLineIn, type Pairing, forkOptions, isSexed, notesOf, planFor, conflictsOf, rankTankmates, tempLinesOf, startPick, tankLabel, totalOf, type Pk, type Plan, type RoomOption } from './stockPlanLogic';
 import { allLand, isMixed, setPool, sizeTxt } from '../scene/tankfit';
 import { lifeStages } from '../data/lifestages';
+import { applyRosterFix, rosterTotals, rosterWarnings, type RosterFixOp } from './stockPlanLogic';
 import { budgetGap, laterLine, preyLater, preyLaterLine } from './stockPlanLogic';
 import { span } from '../scene/outgrows';
 
@@ -56,6 +57,7 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
     else if (!hide && stepped && app) { app.classList.remove('collapsed'); stepped = false; viewer.invalidate(); }
   };
   let picks: Pk[] = [], chosen: string | undefined, mates = false, q = '', shown = '';
+  let undoFix: { picks: Pk[]; chosen?: string; label: string } | undefined; // lane GV4: the roster before the last applied fix
   // the tank is shown bare here: no filter, heater or stand until the build is chosen (the scene keeps its gear; only the view leaves it out)
   const bare = (on: boolean) => { if (gearView.on === on) { gearView.on = !on; viewer.rebuild(); } };
   // before the first pick there is no tank on show, only the animals to choose from
@@ -187,6 +189,25 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
     return head + (cf.inf ? infeasibleCard(cf.inf, b) : cf.note ? `<div class="spNote">${esc(cf.note)}</div>${saved}` : '<div class="spNote">Working out your four options...</div>' + saved);
   };
 
+
+  // ---------- the roster as a whole (lane GV4): running totals and one warnings list with fixes ----------
+  const rosterBlock = () => {
+    const st = { picks, chosen }, t = rosterTotals(st);
+    if (!t) return '';
+    const b = getBrief(), max = valueOf(b, 'constraints.budget'), target = targetOf(b, 'constraints.budget'), { minimum: mn, ideal: id } = t.tiers;
+    const lvl = (n: number) => max !== undefined && n > max ? ' gvOver' : target !== undefined && n > target ? ' gvNear' : '';
+    const ws = rosterWarnings(st, { maxUsd: max, targetUsd: target }, store.scene.units === 'in');
+    const mins = (a: number, c: number) => a === c ? `${a}` : `${a}-${c}`;
+    return `<div class="spHd">What this roster comes to</div><div class="gvTotals" aria-label="Running totals">
+<div class="gvDiff"><span class="spLab">Difficulty</span><b>${esc(t.difficulty.word)}</b><span class="spNote">${esc(t.difficulty.why)}</span></div>
+<div class="gvTier${lvl(mn.setupUsd)}"><span class="spLab">Minimum viable set-up</span><b>${usd(mn.setupUsd)}</b><span class="spNote">animal-care essentials only</span></div>
+<div class="gvTier${lvl(id.setupUsd)}"><span class="spLab">Ideal set-up</span><b>${usd(id.setupUsd)}</b><span class="spNote">the full build</span></div>
+<div class="gvTier"><span class="spLab">Monthly</span><b>${Math.round(mn.upkeepUsdMo) === Math.round(id.upkeepUsdMo) ? usd(mn.upkeepUsdMo) : `${usd(mn.upkeepUsdMo)}-${usd(id.upkeepUsdMo)}`}</b></div>
+<div class="gvTier"><span class="spLab">Care</span><b>${mins(Math.round(mn.minPerWeek), Math.round(id.minPerWeek))} min</b><span class="spNote">a week</span></div></div>
+<div class="spHd">Warnings${ws.length ? ` (${ws.length})` : ''}</div>${ws.length ? `<ul class="gvWarns">${ws.map((w, i) => `<li class="${w.welfare ? 'gvRed' : 'gvAmber'}"><span>${esc(w.text)}${w.welfare ? ' <em>Not a valid tradeoff.</em>' : ''}</span>${w.fix ? `<button type="button" data-fix="${i}">${esc(w.fix.label)}</button>` : ''}</li>`).join('')}</ul>` : '<p class="spNote">No conflicts so far.</p>'}${undoFix ? `<button type="button" class="spLink" data-act="undofix">Undo: ${esc(undoFix.label)}</button>` : ''}`;
+  };
+  const fixesNow = (): ({ op: RosterFixOp; label: string } | undefined)[] => { const b = getBrief(); return rosterWarnings({ picks, chosen }, { maxUsd: valueOf(b, 'constraints.budget'), targetUsd: targetOf(b, 'constraints.budget') }, store.scene.units === 'in').map(w => w.fix); };
+
   const results = () => {
     if (!q.trim() || !picks.length) return ''; // with nothing picked the gallery behind the panel is the list
     const have = new Set(picks.map(p => p.id)), list = searchSpecies(q).filter(s => !have.has(s.id)).slice(0, 8);
@@ -207,7 +228,7 @@ ${picks.length ? `${(() => { const pl = planFor(picks, chosen); const tl = tempL
   return (pl.tank && pl.problem ? `<div class="spWarn spVerdict">Tank verdict: ${esc(pl.problem)}</div>` : first ? `<div class="spLater spVerdict">⏱ Tank verdict: ${esc(first)}</div>` : '') + (pl.caution ? `<div class="spNote">${esc(pl.caution)}</div>` : '') + (() => { const sm = summaryOf(store.tank, store.scene.units); return `<div class="spHd">Stocking summary: ${esc(sm.worstWord)}</div>${summaryHtml(sm, esc)}`; })() + (tl ? `<div class="${tl.rangeState === 'none' ? 'spWarn' : 'spNote'}">${esc(tl.range)}</div><div class="spNote">${esc(tl.setpoint)}</div>` : ''); })()}<ul class="spPicks">${picks.map(p => pickRow(p, planFor(picks, chosen))).join('')}</ul>
 <div class="spHd">Other animals in with them?</div>
 ${mates ? `<p class="spNote">Pick from the pictures on the left; each goes in at the smallest group it is kept in.</p><button type="button" class="primary" data-act="nomates">Done adding</button>` : `<div class="spYN"><button type="button" data-act="mates">Yes, show me what suits them</button></div>`}` : '<p class="spNote">Search for the animal you have in mind, or pick one from the pictures. It goes in at the smallest group it is kept in and shows in the view; then pick a tank for them.</p>'}
-${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}${budgetBlock()}` : ''}
+${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}${budgetBlock()}${rosterBlock()}` : ''}
 <div class="spFoot"><button type="button" class="primary" data-act="builds"${picks.length && planFor(picks, chosen).tank ? '' : ' disabled'}>Continue: ways to build it</button><button type="button" class="spLink" data-act="done"${picks.length ? '' : ' disabled'}>Open in the editor as it is</button><span class="spNote">Everything stays editable in the editor.</span></div>`;
     const q2 = el.querySelector<HTMLInputElement>('.spQ')!;
     { const t = planFor(picks, chosen).tank; gallery.mates(mates && picks.length ? rankTankmates(picks, t, store.scene.units === 'in').map(m => ({ ...m, bigger: m.bigger ? tankLabel(m.bigger, store.scene.units) : undefined })) : null, !!t); }
@@ -232,10 +253,17 @@ ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}${budgetBlock()}
       const edit = a.edit; editBrief(b => applyAlternative(b, edit)); cf = { key: '' };
       const stock = lockedStock(getBrief()); picks = stock.map(x => ({ ...startPick(x.species), n: x.n })); chosen = undefined; shown = ''; change(true); return;
     }
+    const fx = (e.target as HTMLElement).closest<HTMLElement>('[data-fix]');
+    if (fx) { // one click applies the verified fix; the roster before it is kept for Undo
+      const f = fixesNow()[+(fx.dataset.fix ?? -1)]; if (!f) return;
+      const next = applyRosterFix({ picks, chosen }, f.op);
+      undoFix = { picks, chosen, label: f.label.split(':')[0] }; picks = next.picks; chosen = next.chosen; if (!picks.length) mates = false; change(true); return;
+    }
     const b = (e.target as HTMLElement).closest<HTMLElement>('[data-act]'); if (!b) return;
     const id = b.dataset.id!, i = picks.findIndex(p => p.id === id);
     switch (b.dataset.act) {
       case 'close': close(); break;
+      case 'undofix': if (undoFix) { picks = undoFix.picks; chosen = undoFix.chosen; undoFix = undefined; change(true); } break;
       case 'done': close(); store.seal(); status('Opened in the editor. The animals and tank are yours to change; Undo steps back.'); break;
       case 'builds': { const plan = planFor(picks, chosen); if (plan.tank) { /* warn, never block: the problem line stays on the screen (Nathan 2026-10-22) */ el.hidden = true; bare(false); settle(); builds.open(animalsOf(picks), plan.tank, () => { el.hidden = false; side(true); bare(true); shown = ''; change(true); }); } break; }
       case 'add': if (i < 0) { picks.push(startPick(id)); q = ''; change(); } break;
@@ -257,7 +285,7 @@ ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}${budgetBlock()}
     s.tanks[0].stand.show = false; s.tanks[0].stand.need = 'ask'; // no stand yet: the budget still counts a typical one
     s.tanks[0].stockFirst = true; // no filter drawn until the owner adds one (Nathan 2026-10-21; the tile says "This tank needs a filter")
     store.replace(s);
-    picks = []; chosen = undefined; mates = false; q = ''; shown = '';
+    picks = []; chosen = undefined; mates = false; q = ''; shown = ''; undoFix = undefined;
     el.hidden = false; side(true); bare(true); ghost(true); focusSearch = true; draw();
   };
   openBtn.onclick = () => { (document.getElementById('startDlg') as HTMLDialogElement | null)?.close(); open(); };

@@ -124,8 +124,8 @@ export function attachStockGallery(view: HTMLElement, pick: (id: string) => void
     // a reptile or amphibian says how it takes company (a badge in place of "kept alone"), and the floor a group needs
     const grp = hg ? `<span class="sgGrp ${hg.kind}">${esc(hg.label)}${hg.kind === 'alone' ? '' : `<em>${hg.n} need ${floorText(hg.floor, rule.hMin, sp.habitat !== 'water')}</em>`}</span>` : '';
     const bits = [sp.tl ? `adult ${inchText(sp.tl)}` : '', hg ? '' : min && min > 1 ? `group of ${min}+` : c?.solo ? 'kept alone' : '', tag].filter(Boolean).join(' · ');
-    const extra = mate ? (mate.ok ? `<span class="sgAdd">Add ${mate.n}</span>${mate.fits ? '' : `<span class="sgWhy">Needs a bigger tank: ${esc(mate.bigger ?? '')}</span>`}` : `<span class="sgWhy">Not with these: ${esc(mate.why ?? '')}</span>`) : '';
-    return `<li><button type="button" class="sgTile${mate && !mate.ok ? ' no' : ''}"${mate && !mate.ok ? ' disabled' : ''} data-id="${sp.id}"><span class="sgImg"><img alt="" data-look="${sp.id}"></span><b>${esc(sp.name)}</b><i>${esc(sp.sci)}</i>${bits ? `<span class="sgBits">${esc(bits)}</span>` : ''}${grp}${extra}</button></li>`;
+    const extra = mate ? (mate.ok ? `<span class="sgAdd">Add ${mate.n}</span>${mate.fits ? '' : `<span class="sgWhy">Needs a bigger tank: ${esc(mate.bigger ?? '')}</span>`}` : `<span class="sgWhy">Not with these: ${esc(mate.why ?? '')}</span><span class="sgAdd sgAnyway">Add anyway</span>`) : '';
+    return `<li><button type="button" class="sgTile${mate && !mate.ok ? ' no' : ''}" data-id="${sp.id}"><span class="sgImg"><img alt="" data-look="${sp.id}"></span><b>${esc(sp.name)}</b><i>${esc(sp.sci)}</i>${bits ? `<span class="sgBits">${esc(bits)}</span>` : ''}${grp}${extra}</button></li>`;
   };
 
   const list = () => {
@@ -134,7 +134,7 @@ export function attachStockGallery(view: HTMLElement, pick: (id: string) => void
       const runs: [string, string, Mate[]][] = [
         [haveTank ? 'Fit your tank' : 'Suit your picks', haveTank ? "Get along with your picks, and at their smallest group stay inside the tank's stocking limit." : 'Choose a tank first and these split by what it can hold.', mateList.filter(m => m.fits)],
         ['Compatible, but need a bigger tank', 'These suit your picks but would overfill the tank you chose. You can still add one, then choose a bigger tank.', mateList.filter(m => m.ok && !m.fits)],
-        ['Not with these', '', mateList.filter(m => !m.ok)],
+        ['Not with these', 'Greyed, but you can still add one: it goes in with a warning, and the warning offers a fix.', mateList.filter(m => !m.ok)],
       ];
       return runs.filter(([, , r]) => r.length).map(([h, note, r]) => `<h3>${h}</h3>${note ? `<p class="sgRunNote">${note}</p>` : ''}<ul class="sgGrid">${r.map(m => tile(m.sp, m)).join('')}</ul>`).join('');
     }

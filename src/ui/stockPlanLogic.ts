@@ -1,7 +1,8 @@
 // Pure logic for the stocking screen and the fork card (lane P5, 2026-10-20): picks and counts, tankmate ranking, the tank the picks need,
 // fork options. No DOM; src/ui/stockPlan.ts draws it. Reads CARE (with the P1 group data merged in) and the P2 engine (scene/tankfit.ts).
 import { IDEAL_MAX } from '../scene/stocking';
-import { CARE } from '../data/care';
+import { CARE, EXPERTISE_NAME } from '../data/care';
+import { rosterTiers, type CostTiers } from '../demand/tiers';
 import { bandMessage, bandOf, fightsOverCount, malesWarning, mostFor, mostMalesFor, PAIR_FORMERS, pairRule, type GroupBand } from '../data/groups';
 import { needLine, needsOf, type NeedSeverity } from '../data/careNeeds';
 import { getSpecies, SPECIES, type Species } from '../data/species';
@@ -414,4 +415,91 @@ export function budgetGap(animals: AnimalCount[], tank: TankModel, maxUsd?: numb
   const cheapestUsd = buildSpan(animals, tank)?.setupUsd.cheapest; if (cheapestUsd === undefined) return undefined;
   const over = maxUsd !== undefined ? Math.max(0, Math.ceil(cheapestUsd - maxUsd)) : 0, overTarget = targetUsd !== undefined ? Math.max(0, Math.ceil(cheapestUsd - targetUsd)) : 0;
   return over || overTarget ? { tank, cheapestUsd, ...(maxUsd !== undefined ? { maxUsd } : {}), ...(targetUsd !== undefined ? { targetUsd } : {}), over, overTarget } : undefined;
+}
+
+// ---------- the roster as a whole (lane GV4): totals, warnings, fixes ----------
+export interface RosterState { picks: Pk[]; chosen?: string }
+/** The tank the totals are priced in: the one chosen, else the smallest that holds the picks. */
+export const costTankOf = (st: RosterState): TankModel | undefined => { const pl = planFor(st.picks, st.chosen); return pl.tank ?? pl.need?.tank; };
+
+export interface Difficulty { word: string; level: 1 | 2 | 3; why: string }
+/** How hard this roster is to keep: the hardest animal on it (data/care.ts expertise), named. */
+export function difficultyOf(picks: Pk[]): Difficulty | undefined {
+  const live = picks.filter(p => totalOf(p) > 0).map(p => ({ p, c: CARE[p.id], sp: getSpecies(p.id) })).filter(x => x.c && x.sp);
+  if (!live.length) return undefined;
+  const level = Math.max(...live.map(x => x.c!.care)) as 1 | 2 | 3, hard = live.filter(x => x.c!.care === level).map(x => x.sp!.name);
+  return { word: EXPERTISE_NAME[level], level, why: level === 1 ? 'every animal on the list suits a first tank' : `${hard.join(', ')} ${hard.length > 1 ? 'are' : 'is'} the hardest to keep` };
+}
+
+export interface RosterTotals { tank: TankModel; tiers: CostTiers; difficulty: Difficulty }
+/** The running totals strip: difficulty, minimum viable and ideal (set-up, monthly, minutes a week) for the roster in its tank. */
+export function rosterTotals(st: RosterState): RosterTotals | undefined {
+  const tank = costTankOf(st), difficulty = difficultyOf(st.picks), animals = animalsOf(st.picks);
+  if (!tank || !difficulty || !animals.length) return undefined;
+  return { tank, difficulty, tiers: rosterTiers(animals, tank) };
+}
+
+export type RosterFixOp = { op: 'remove'; id: string } | { op: 'add'; id: string; n: number } | { op: 'tank'; tank: string };
+export interface RosterWarning {
+  kind: 'temperament' | 'temperature' | 'tank' | 'school' | 'budget';
+  /** animal-welfare problem: stays red and is not a valid tradeoff; a budget miss is the person's call */
+  welfare: boolean;
+  text: string;
+  fix?: { label: string; op: RosterFixOp; /** the change in minimum-viable set-up $ after the fix, recomputed (not estimated) */ deltaUsd: number };
+}
+export interface RosterLimits { maxUsd?: number; targetUsd?: number }
+
+/** Apply one fix to a roster. Pure: the screen keeps the old state for Undo. */
+export function applyRosterFix(st: RosterState, op: RosterFixOp): RosterState {
+  if (op.op === 'tank') return { ...st, chosen: op.tank };
+  if (op.op === 'remove') return { ...st, picks: st.picks.filter(p => p.id !== op.id) };
+  return { ...st, picks: st.picks.map(p => p.id === op.id ? { ...p, n: p.n + op.n } : p) };
+}
+const minSetup = (st: RosterState) => rosterTotals(st)?.tiers.minimum.setupUsd ?? 0;
+const withDelta = (st: RosterState, label: (d: number) => string, op: RosterFixOp) => {
+  const deltaUsd = Math.round(minSetup(applyRosterFix(st, op)) - minSetup(st));
+  return { label: label(deltaUsd), op, deltaUsd };
+};
+const signedUsd = (d: number) => d === 0 ? 'no change in set-up' : `${d > 0 ? '+' : '-'}$${Math.abs(d)} set-up`;
+
+/** Every conflict on the whole roster, accumulated (temperament, temperature, tank size, school size, budget), each with a verified fix. Nothing is blocked. */
+export function rosterWarnings(st: RosterState, limits: RosterLimits = {}, us = true): RosterWarning[] {
+  const out: RosterWarning[] = [], live = st.picks.filter(p => totalOf(p) > 0);
+  const nameOf = (id: string) => getSpecies(id)?.name ?? id;
+  // one warning per clashing pair (both animals report it); the fix removes the animal added later, the one the person just brought in
+  const pairs = new Map<string, { i: number; w: RosterWarning }>();
+  live.forEach((p, i) => {
+    for (const w of conflictsOf(live, p.id, us)) {
+      if (/^expertise:/.test(w.text)) continue;
+      const other = /\(([^)]+)\)/.exec(w.text)?.[1], key = [nameOf(p.id), other ?? w.text].sort().join('|') + (/temperature|warm|cold|degrees|°/i.test(w.text) ? '|t' : '');
+      const cur = pairs.get(key);
+      if (cur && cur.i >= i) continue;
+      pairs.set(key, { i, w: { kind: /temperature|warm|cold|degrees|°/i.test(w.text) ? 'temperature' : 'temperament', welfare: true, text: `${nameOf(p.id)}: ${w.text}`,
+        fix: withDelta(st, d => `Remove the ${nameOf(p.id).toLowerCase()}: ${signedUsd(d)}`, { op: 'remove', id: p.id }) } });
+    }
+  });
+  out.push(...[...pairs.values()].map(x => x.w));
+  const plan = planFor(st.picks, st.chosen);
+  if (plan.tank && plan.fit?.fails.length && plan.need && plan.need.tank.id !== plan.tank.id && !plan.fit.fails.includes('temperature')) {
+    const next = plan.need.tank;
+    out.push({ kind: 'tank', welfare: true, text: plan.problem ?? 'This tank is too small for these animals', fix: withDelta(st, d => `Upgrade to a comfortable tank: ${tankLabel(next, us ? 'in' : 'cm').replace(/^About /, '')}, ${signedUsd(d)}`, { op: 'tank', tank: next.id }) });
+  }
+  for (const p of live) {
+    const want = minOf(p.id), have = totalOf(p), c = CARE[p.id];
+    if (want > 1 && have < want && !c?.solo) {
+      out.push({ kind: 'school', welfare: true, text: `${nameOf(p.id)} is a group animal: ${have} is below the ${want} it is kept in`, fix: withDelta(st, d => `Add ${want - have} more for a proper school: ${signedUsd(d)}`, { op: 'add', id: p.id, n: want - have }) });
+    }
+  }
+  const t = rosterTotals(st);
+  if (t && (limits.maxUsd !== undefined || limits.targetUsd !== undefined)) {
+    const min = t.tiers.minimum.setupUsd, ideal = t.tiers.ideal.setupUsd, usd = (n: number) => `$${Math.round(n)}`;
+    const msg = limits.maxUsd !== undefined && min > limits.maxUsd ? `Even the minimum viable set-up, ${usd(min)}, is over your ${usd(limits.maxUsd)} maximum`
+      : limits.maxUsd !== undefined && ideal > limits.maxUsd ? `The ideal set-up, ${usd(ideal)}, is over your ${usd(limits.maxUsd)} maximum; the minimum viable one, ${usd(min)}, fits`
+      : limits.targetUsd !== undefined && min > limits.targetUsd ? `The minimum viable set-up, ${usd(min)}, is over your ${usd(limits.targetUsd)} target` : '';
+    if (msg) {
+      const cheaper = plan.need && plan.need.tank.id !== t.tank.id && minSetup({ ...st, chosen: plan.need.tank.id }) < minSetup(st) ? plan.need.tank : undefined;
+      out.push({ kind: 'budget', welfare: false, text: msg, ...(cheaper ? { fix: withDelta(st, d => `Use the smallest tank that holds them: ${tankLabel(cheaper, us ? 'in' : 'cm').replace(/^About /, '')}, ${signedUsd(d)}`, { op: 'tank', tank: cheaper.id }) } : {}) });
+    }
+  }
+  return out;
 }

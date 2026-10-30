@@ -331,6 +331,8 @@ export interface BuildSpan {
   /** minutes a week (means), cheapest build to balanced build */
   minPerWeek: { cheapest: number; balanced: number };
 }
+/** Lane GV4: the full totals (set-up, monthly, minutes a week) of one build of these animals in this tank. */
+export function buildTotals(animals: AnimalCount[], tank: TankModel, build: BuildKind = 'balanced') { return demand(candidateOf(tank), animals, build); }
 /** What this stocking in this tank costs to set up and how much work it is, from the cheapest build to the balanced one. */
 export function buildSpan(animals: AnimalCount[], tank: TankModel | string): BuildSpan | undefined {
   const m = typeof tank === 'string' ? getTankModel(tank) : tank;

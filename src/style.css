@@ -703,7 +703,7 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .sgImg[data-ruler]::before { content: ''; position: absolute; left: 8px; bottom: 8px; width: var(--ruler); height: 5px; border: 1.5px solid #17303d; border-top: 0; opacity: .75; pointer-events: none }
 .sgImg[data-ruler]::after { content: attr(data-ruler); position: absolute; left: 8px; bottom: 15px; font-size: 10px; font-weight: 600; color: #17303d; opacity: .8; pointer-events: none }
 .sg .sgMateHd { display: none } .sg.sgMates .sgMateHd { display: block; padding: 20px 24px 6px } .sg.sgMates .sgHero, .sg.sgMates .sgIntro, .sg.sgMates .sgChips { display: none }
-.sgTile.no { opacity: .5; cursor: default } .sgAdd { font-size: 12px; font-weight: 600; color: #0e2a33; background: #7fd0de; border-radius: 5px; padding: 2px 8px; align-self: flex-start; margin-top: 3px } .sgWhy { font-size: 11px; color: #e0a45a }
+.sgTile.no { opacity: .55; cursor: pointer } .sgTile.no:hover { opacity: .85 } .sgAnyway { background: #5a4a36; color: #f3d9a8 } .sgAdd { font-size: 12px; font-weight: 600; color: #0e2a33; background: #7fd0de; border-radius: 5px; padding: 2px 8px; align-self: flex-start; margin-top: 3px } .sgWhy { font-size: 11px; color: #e0a45a }
 .sgTile b { font-size: 14px } .sgTile i { font-size: 11px; opacity: .65 } .sgBits { font-size: 11.5px; color: #7fd0de }
 /* reptiles and amphibians: how they take company (S246, Nathan 2026-10-26); the group-living ones stand out */
 .sgGrp { font-size: 11.5px; font-weight: 600; border-radius: 5px; padding: 2px 7px; align-self: flex-start; margin-top: 3px; display: flex; flex-direction: column; gap: 1px }
@@ -957,3 +957,13 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .ownrow .chk { display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap }
 .ownpick { margin: 6px 0 2px 22px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap }
 .ownpick select { max-width: 100% }
+
+/* lane GV4: roster totals strip and warnings list on the stocking screen */
+.gvTotals { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 6px 0 }
+.gvTotals > div { display: flex; flex-direction: column; gap: 1px; padding: 6px 8px; border-radius: 8px; background: #1d3140; border: 1px solid #36505f }
+.gvTotals b { font-size: 15px } .gvDiff { grid-column: 1 / -1 }
+.gvTier.gvNear { border-color: #e0a45a } .gvTier.gvNear b { color: #e0a45a } .gvTier.gvOver { border-color: #e05a5a } .gvTier.gvOver b { color: #f08080 }
+.gvWarns { list-style: none; margin: 4px 0; padding: 0; display: flex; flex-direction: column; gap: 6px }
+.gvWarns li { display: flex; flex-direction: column; gap: 4px; padding: 6px 8px; border-radius: 8px; font-size: 12.5px; border-left: 3px solid }
+.gvWarns li.gvRed { border-color: #e05a5a; background: #3a2229 } .gvWarns li.gvAmber { border-color: #e0a45a; background: #372f1f }
+.gvWarns em { font-style: normal; font-weight: 600; color: #f08080 } .gvWarns button { align-self: flex-start; font-size: 12px }
