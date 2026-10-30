@@ -143,13 +143,10 @@ export function stockSummary(S: TankSetup, r: Stocking, mins: MinWarn[], units: 
     if (g) add('environment', grazerLevel(s.id, count.get(s.id)!, litres) === 'severe' ? 'problem' : 'caution', `${s.name}: ${g.replace(/^algae: /, 'food: ')}`);
   }
 
-  // filtration is not fullness (S243 step 4): it reads under Environment, as its own item. With no filter chosen it is worked against an assumed default
-  // filter and says so; the missing choice itself is "Not enough information" (never green, B1 audit, Nathan 2026-10-27)
+  // Filtration bar shelved (Nathan 2026-10-30): no filtration percent is shown. The missing choice is still "Not enough information" (never green, B1 audit), the nitrate lines stay
   if (r.contributors.length) {
-    const unset = filterState(S) === 'unset', f = r.filtrationPercent, wc = r.nitrogen.waterChange.state, of = unset ? `an assumed ${r.nitrogen.filter.label}` : 'what the filter and plants clear';
-    if (unset) add('environment', 'unknown', 'No filter chosen: filtration below is worked out for an assumed filter, so pick one in Tech › Filtration');
-    if (isOver(f)) add('environment', 'problem', `Filtration: ${Number.isFinite(f) ? Math.round(f) : 'over 999'}% of ${unset ? of : 'what the filter and plants clear'}: ${unset ? 'a filter this size cannot keep up' : 'the filter cannot keep up'}, so a bigger filter or fewer animals`);
-    else if (Math.round(f) >= IDEAL_MAX) add('environment', 'caution', `Filtration: ${Math.round(f)}% of ${unset ? of : 'what the filter and plants clear'}: heavier than normal water changes`);
+    const unset = filterState(S) === 'unset', wc = r.nitrogen.waterChange.state;
+    if (unset) add('environment', 'unknown', 'No filter chosen: a filter sized for this tank is strongly recommended, so pick one in Tech › Filtration');
     if (wc === 'failure') add('environment', 'problem', 'Water changes cannot hold nitrate near 40 ppm for this stock (see the nitrate line)');
     else if (wc === 'high') add('environment', 'caution', 'High water-change maintenance to hold nitrate near 40 ppm (see the nitrate line)');
   }

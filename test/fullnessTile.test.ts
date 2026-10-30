@@ -79,8 +79,9 @@ describe('fullness bars', () => {
     const S = withFish(), r = stockingOf(S);
     const st = tileState(S, r);
     expect(st.show).toBe(true);
-    expect(st.space.pct).toBeCloseTo(r.spacePercent); expect(st.filt.pct).toBeGreaterThanOrEqual(r.filtrationPercent - 1e-9); // withFish has no filter chosen: the bar shows the no-filter load, never an assumed filter
-    expect(st.head.pct).toBeCloseTo(Math.max(r.spacePercent, r.filtrationPercent)); // the minimum no longer feeds the percentage (it warns by name)
+    expect(st.space.pct).toBeCloseTo(r.spacePercent);
+    expect(st.head.pct).toBeCloseTo(r.spacePercent); // room only: the Filtration bar is shelved (2026-10-30) and the minimum no longer feeds the percentage (it warns by name)
+    expect('filt' in st).toBe(false);
     const empty = { ...S, fish: [] }, re = stockingOf(empty);
     expect(tileState(empty, re).show).toBe(false);
     expect(tileState({ ...empty, layout: { ...S.layout, space: { w: 900, d: 400 } } }, re).show).toBe(true);
@@ -217,9 +218,7 @@ describe('filter gate', () => {
   it('inferred gear is unset: the budget runs on an assumed default filter, and the summary is never green (B1, Nathan 2026-10-27)', () => {
     const s = tank(), r = stockingOf(s), st = tileState(s, r);
     expect(filterState(s)).toBe('unset'); expect(st.filter).toBe('unset');
-    expect(st.head.pct).toBeCloseTo(r.loadPercent, 9);
     expect(r.nitrogen.filter.kind).not.toBe('none');
-    expect(st.filt.pct).toBeGreaterThan(r.filtrationPercent); // display only: the Filtration bar is the no-filter load, high (Nathan 2026-10-29)
     const env = summaryOf(s).cats.find(c => c.id === 'environment')!;
     expect(env.level).not.toBe('ok'); expect(env.items.some(i => i.level === 'unknown' && /No filter chosen/.test(i.text))).toBe(true);
     expect(env.items.map(i => i.text).join(' ')).not.toMatch(/impossible/i);
