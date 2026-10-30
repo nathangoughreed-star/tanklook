@@ -5,7 +5,7 @@
 // setup passes every enabled guardrail and the husbandry checks it says exactly "No available suggestions satisfy all your enabled guardrails".
 import { getSpecies } from '../data/species';
 import { demandOf } from '../demand/engine';
-import { pinDeal } from '../demand/pinned';
+import { pinTank } from '../demand/pinned';
 import { rhythmOf } from '../demand/rhythm';
 import { narrowBack, narrowPick, narrowStart, narrowTaste, picksOf, suggestSetups, variationsOf, type Narrowing, type Option, type Wants, DRY_GROUPS, KINDS, OWNED, PICK_CARE, PICK_UNKNOWN, asksDryGroups, type OwnedMap, type DryGroup, type Kind, TAGS, FAMILY_LABEL, type Proposal, type Suggestions, type Tag } from '../demand/suggest';
 import { CYCLE_NOTE } from '../scene/plan';
@@ -53,12 +53,12 @@ export function wantsFrom(f: Fields, units: Units): { constraints: Constraints; 
 
 /** "I like this one" -> make it mine (lane GV6): the option replaces the open project as one undoable step, named after it, with the brief, the limits, the stand choice and the space kept. */
 export function makeItMine(store: Store, p: Proposal) {
-  if (p.build.bundle) pinDeal(p.build.bundle);
   const next = sceneForBuild(p.build, store.scene.units);
   next.name = p.archetype.title;
   const T = next.tanks[next.active];
   if (store.tank.brief) T.brief = structuredClone(store.tank.brief); // the brief stays with the project (lane U3)
   T.constraints = p.scene.constraints; T.stand = { ...T.stand, show: p.scene.stand.show }; if (p.scene.layout.space) T.layout = { ...T.layout, space: p.scene.layout.space };
+  if (p.build.bundle) pinTank(T, p.build.bundle); // lane GV9: the kit price rides on the tank (saved, reloaded, read by the brief bar)
   rememberLastUsed(p.scene.constraints);
   store.replace(next); store.seal();
   return T;

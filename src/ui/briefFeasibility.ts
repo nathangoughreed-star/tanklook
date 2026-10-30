@@ -3,7 +3,7 @@
 //    against the budget ceiling, so "goldfish + $200" is answered BEFORE anything is proposed.
 //  - consequence: the tank on screen's totals against the brief's limits, through scene/constraints compliance.
 import { getSpecies } from '../data/species';
-import { demandOf } from '../demand/engine';
+import { demandOf, type DemandOpts } from '../demand/engine';
 import type { UserProfile } from '../demand/types';
 import { suggestSetups, type Proposal } from '../demand/suggest';
 import { loadProfile } from './demandPanel';
@@ -47,8 +47,8 @@ export function evaluateAnimals(b: Brief): Evaluation {
 /** The brief's limits as the guardrail shape the tank stores (U1's adapter). */
 export const constraintsFrom = (b: Brief): Constraints => briefToWants(b).constraints;
 /** The tank on screen against the brief's limits: its totals, and how they stand against the ceiling, time and space. */
-export function consequence(T: TankSetup, b: Brief, P: UserProfile, units: Units): { totals: string; line?: string; over: boolean } {
-  const D = demandOf(T, P), t = D.totals;
+export function consequence(T: TankSetup, b: Brief, P: UserProfile, units: Units, kit?: DemandOpts['kit']): { totals: string; line?: string; over: boolean } {
+  const D = demandOf(T, P, kit ? { kit } : {}), t = D.totals; // `kit`: a pinned starter-kit price (demand/pinned.ts pinnedKit), as the demand panel prices it
   const totals = `${usd(t.setupUsd)} to set up, ${usd(t.upkeepUsdMo)} a month, ${Math.round(t.minPerWeek)} min a week`;
   const c = constraintsFrom(b), lo = rangeOf(b, 'constraints.budget').min, under = lo !== undefined && t.setupUsd < lo;
   if (!Object.keys(c).length) return under ? { totals, line: `Set-up ${usd(t.setupUsd)} is under your ${usd(lo!)} minimum.`, over: false } : { totals, over: false };

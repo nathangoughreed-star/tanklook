@@ -3,8 +3,8 @@
 // The bundle price holds only while the parts it includes are unchanged (dealdrift.ts); undoing the change brings it back.
 // A preset tank picked on sale (pinPreset) is tracked the same way: its sale price holds while the tank stays that size.
 // Per tank (lane DM, 2026-10-19): a deal pinned to one tank (Tank B built from a bundle) rides on the tank object as `dealPin`
-// (the deal id and its parts' fingerprint), so undo, split and close carry it with the tank; a saved file drops it (parseSetup
-// keeps known keys only). A tank's own pin comes before the scene's.
+// (the deal id and its parts' fingerprint), so undo, split and close carry it with the tank, and since lane GV9 (2026-10-30) a saved
+// file and a reload keep it too (parseSetup `dealPin`). A tank's own pin comes before the scene's.
 import { DEALS, dealAsKit, type Deal } from '../data/deals';
 import { changedParts, partList, partSig, type PartSig, type PricedPart } from './dealdrift';
 import { demandOf } from './engine';

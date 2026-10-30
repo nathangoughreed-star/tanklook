@@ -11,6 +11,7 @@ import {
   emptyBrief, setBrief, type Direction, type GroupView, type ItemId, type QId, type Question,
 } from './setupBrief';
 import { consequence, evaluateAnimals } from './briefFeasibility';
+import { pinnedKit } from '../demand/pinned';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const MM_IN = 25.4;
@@ -50,7 +51,7 @@ export function attachBriefBar(store: Store, host: { suggest(): void }) {
     bar.classList.toggle('empty', isEmpty(b));
     if (!openCard) return;
     let cons = '';
-    try { const c = consequence(store.tank, b, loadProfile(), units()); cons = `<div class="bbCons${c.over ? ' over' : ''}"><b>This tank now:</b> ${esc(c.totals)}.${c.line ? ` <span>${esc(c.line)}</span>` : ''}</div>`; } catch { /* no tank to price yet */ }
+    try { const P = loadProfile(), c = consequence(store.tank, b, P, units(), pinnedKit(store.tank, store.scene.active, P)); cons = `<div class="bbCons${c.over ? ' over' : ''}"><b>This tank now:</b> ${esc(c.totals)}.${c.line ? ` <span>${esc(c.line)}</span>` : ''}</div>`; } catch { /* no tank to price yet */ }
     const items = rows.map(r => `<div class="bbRow"><b>${esc(r.label)}</b>${r.rows.length ? r.rows.map(i => `<span class="bbItem ${i.status}">${esc(i.label)}${i.status === 'hard' ? ' <i>limit</i>' : ''}<button type="button" data-lock="${i.id}" aria-pressed="${i.status === 'locked'}" title="${i.status === 'locked' ? 'Locked: suggestions keep it. Click to unlock.' : 'Lock it: suggestions will keep it.'}">${i.status === 'locked' ? 'Locked' : 'Lock'}</button><button type="button" data-del="${i.id}" aria-label="Remove ${esc(i.label)}">✕</button></span>`).join('') : `<span class="bbOpen">${esc(r.text)}</span>`}</div>`).join('');
     const sp = spaceOf(b), cap = budgetOf(b), t = careTimeOf(b), rb = rangeOf(b, 'constraints.budget'), rt = rangeOf(b, 'constraints.careMin'), r1 = (mm: number) => String(Math.round(mm / k() * 10) / 10);
     const evalBox = next.action === 'evaluate' && ev?.text ? `<div class="bbEval ${ev.fits === false ? 'bad' : ''}" role="status"><b>Checked before proposing:</b> ${esc(ev.text)}</div>` : '';

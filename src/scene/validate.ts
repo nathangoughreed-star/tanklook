@@ -140,6 +140,13 @@ export function parseScene(input: unknown): { scene: Scene; warnings: string[] }
 /** Background pictures: at most 4, each side under one picture only, a picture's sides touching (else it keeps its first). */
 /** TankSetup.pairs: known pair species, 'established' or 'unconfirmed' (unknown is never stored), for two fish ids that are exactly the
  *  tank's two animals of that species; anything else (an old save without the field included) loads as unknown. */
+/** A tank's pinned bundle (demand/pinned.ts `dealPin`: the deal id and its parts' fingerprint, plain JSON); anything else = none. */
+function parseDealPin(v: unknown): { id: string; sig: Record<string, unknown[]> } | undefined {
+  if (!v || typeof v !== 'object') return undefined;
+  const { id, sig } = v as { id?: unknown; sig?: unknown };
+  if (typeof id !== 'string' || !sig || typeof sig !== 'object' || !Object.values(sig).every(Array.isArray)) return undefined;
+  return { id, sig: structuredClone(sig as Record<string, unknown[]>) };
+}
 function parsePairs(v: unknown, fish: Fish[]): TankSetup['pairs'] {
   if (!v || typeof v !== 'object' || Array.isArray(v)) return undefined;
   const T: Pick<TankSetup, 'fish' | 'pairs'> = { fish };
@@ -361,6 +368,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
   if (raw.stockFirst === true) setup.stockFirst = true; // 2026-10-21: path 1 tank, no filter drawn until one is added
   { const cn = parseConstraints(raw.constraints); if (cn) setup.constraints = cn; } // lane C1 2026-10-27: Guardrails, absent = none set
   { const br = parseBrief(raw.brief); if (br) setup.brief = br; } // lane U1 2026-10-28: the setup brief, absent = none yet
+  { const dp = parseDealPin(raw.dealPin); if (dp) (setup as TankSetup & { dealPin?: typeof dp }).dealPin = dp; } // lane GV9 2026-10-30: the bundle the tank is priced as (demand/pinned.ts), absent = none
   { const pr = parsePairs(raw.pairs, setup.fish); if (pr) setup.pairs = pr; } // 2026-10-22: pairing per pair species, absent = unknown
   keepInWater(setup); fitTable(setup);
   fitFixture(setup.light, setup.tank, false); // 2026-10-15: older lights clamped into their fixture's usual ranges
