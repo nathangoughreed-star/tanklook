@@ -1,0 +1,43 @@
+diff --git a/src/scene/nitrogen.ts b/src/scene/nitrogen.ts
+index 1840211e..f3d3c6f2 100644
+--- a/src/scene/nitrogen.ts
++++ b/src/scene/nitrogen.ts
+@@ -48,6 +48,8 @@ const MEDIA_RATE = { hob: 0.15, canister: 0.1, internal: 0.15, sponge: 0.15, sum
+ const THROUGH = { hob: 0.6, canister: 0.9, internal: 0.8, sponge: 0.9, sump: 0.9 } as const;
+ /** Bacteria on glass, substrate and decor: a small floor (g TAN per litre of water per day), also what a filterless Walstad tank has. */
+ const SURFACE_RATE = 0.0004;
++/** EXPERIMENT (filterless sweep, not shipped): the sweep test overrides these. */
++export const EXP = { surface: SURFACE_RATE, plantShareNone: 0.4, peak: 1 };
+ const HEADROOM = 0.7;
+ /** The most a filter bigger than the tank's baseline (the generic model of its kind fitted to the tank) adds to the capacity: +50 % (Nathan 2026-10-26). */
+ export const FILTER_BOOST_MAX = 0.5;
+@@ -59,13 +61,13 @@ export function filterCapacity(S: TankSetup, litres: number, tempC: number, opt?
+   const t = techOf(S);
+   // several filters (Nathan 2026-10-20): each one's bacteria added up, the surface counted once
+   if (!opt && t.filters?.length) {
+-    const surface = litres * SURFACE_RATE * warm(tempC), each = t.filters.map(u => filterCapacity({ ...S, tech: singleFilter(t, u) }, litres, tempC));
++    const surface = litres * EXP.surface * warm(tempC), each = t.filters.map(u => filterCapacity({ ...S, tech: singleFilter(t, u) }, litres, tempC));
+     const top = each.reduce((a, c) => c.gDay > a.gDay ? c : a);
+     const sum = surface + each.reduce((a, c) => a + c.gDay - surface, 0), base = top.baseG ?? 0; // several filters share the one +50 % over a single baseline filter (lane SR)
+     return { kind: top.kind, mediaL: each.reduce((a, c) => a + c.mediaL, 0), src: top.src, gDay: base > 0 ? Math.min(sum, surface + base * (1 + FILTER_BOOST_MAX)) : sum, flowGate: top.flowGate, label: each.map(c => c.label).join(' + '), baseG: base };
+   }
+   const choice = opt ?? t.rows.filter ?? 'none', def = optionDef('filter', choice);
+-  const surface = litres * SURFACE_RATE * warm(tempC);
++  const surface = litres * EXP.surface * warm(tempC);
+   if (choice === 'none' || !def) return { kind: 'none', mediaL: 0, src: 'none', gDay: surface, flowGate: 1, label: 'no filter' };
+   const sump = choice === 'sump', kind = (sump ? 'sump' : def.kind ?? 'hob') as keyof typeof MEDIA_RATE;
+   let mediaL: number, src = 'derived', gph = 0, label = def.label, baseG = 0;
+@@ -191,9 +193,11 @@ export function waterChangeState(risePerWeek: number, tapMgN = 0): WaterChange {
+ export const tapNitrateMgN = (S: TankSetup) => Math.max(0, S.water.tapNitrate ?? 0) * NO3_TO_N;
+ export function nitrogenBudget(S: TankSetup, litres: number, tempC: number, tan: number, opt?: string): Nitrogen {
+   const filter = filterCapacity(S, litres, tempC, opt), plants = plantUptake(S), feeding = feedingOf(S);
+-  const byPlants = Math.min(tan * (filter.kind === 'none' ? PLANT_SHARE_FILTERLESS : PLANT_SHARE_MAX), plants.gN), after = tan - byPlants, spare = plants.gN - byPlants;
++  const byPlants = Math.min(tan * (filter.kind === 'none' ? EXP.plantShareNone : PLANT_SHARE_MAX), plants.gN), after = tan - byPlants, spare = plants.gN - byPlants;
+   const safeG = filter.gDay * HEADROOM, byBacteria = Math.min(after, filter.gDay), unprocessed = Math.max(0, after - filter.gDay);
+-  const ammoniaPercent = safeG > 0 ? after / safeG * 100 : after > 0 ? Infinity : 0;
++  const avgPct = safeG > 0 ? after / safeG * 100 : after > 0 ? Infinity : 0;
++  // EXPERIMENT: a feeding peak (peak x the day's TAN, plants not counted) against the filterless tank's whole instantaneous capacity
++  const ammoniaPercent = filter.kind === 'none' && EXP.peak > 1 ? Math.max(avgPct, filter.gDay > 0 ? tan * EXP.peak / filter.gDay * 100 : Infinity) : avgPct;
+   // what the bacteria convert ends as nitrate; plants with capacity left take it before it counts
+   const fromNitrate = Math.min(spare, byBacteria), room = spare - fromNitrate;
+   const fOpt = S.water.salt ? 'none' : techOf(S).rows.ferts ?? 'none', fertG = (FERT_N[fOpt] ?? 0) * litres / 7 / 1000, fertToPlants = Math.min(room, fertG);
