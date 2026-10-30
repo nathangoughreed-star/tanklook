@@ -17,6 +17,8 @@ import { tankLabel } from '../scene/tankfit';
 import type { Viewer } from '../render/viewer';
 import type { SpaceLimit, Units } from '../scene/types';
 import { loadProfile } from './demandPanel';
+import { minWarnings } from './stockSummary';
+import { tankMinimum } from '../scene/tankMin';
 import { placedSetup, putTank, sceneForBuild } from './buildPick';
 import { constraintsOf, editBrief, getBrief, lockedStock, onBrief, setBudget, setCareTime, setMonthly, setSpace } from './setupBrief';
 import { recordTaste, tasteOf, tasteWhy } from '../demand/taste';
@@ -135,6 +137,7 @@ ${p.costLines.length ? `<ul class="bpGear sgCost" aria-label="What the set-up pr
 ${p.phases ? `<div class="sgPhases"><b>Buy in two phases</b><div>Phase 1, ${usd(p.phases.phase1Usd)} now: ${esc(p.phases.phase1.join(', '))}.</div><div>Phase 2, ${usd(p.phases.phase2Usd)} after the tank has cycled: ${esc(p.phases.phase2.join(', ') || 'the animals')}.</div><div class="spNote">${esc(p.phases.note)}</div></div>` : ''}
 <div class="spNote">Rhythm: ${esc(rh.text)} (estimate)${rh.awayText ? `. Can be left: ${esc(rh.awayText)}.` : ''}</div>
 ${p.ownedNotes.map(n => `<div class="${n.kind === 'credit' ? 'spNote' : 'spWarn'}">${esc(n.text)}</div>`).join('')}
+${minWarnings(tankMinimum(sp), units()).filter(w => w.rec).map(w => `<div class="spWarn sgRec">${esc(w.text)}</div>`).join('')}
 ${p.matched.length ? `<div class="spNote">Matches: ${p.matched.map(m => esc(TAGS.find(t => t.id === m)!.label.toLowerCase())).join(', ')}</div>` : ''}
 ${checks ? `<ul class="bpGear sgChecks">${checks}</ul>` : ''}
 ${p.capNote ? `<div class="spNote">${esc(p.capNote)}</div>` : ''}
