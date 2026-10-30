@@ -8,7 +8,7 @@ Before reporting: npm run build + FULL vitest with the Bash tool's run_in_backgr
 Nathan (2026-10-30): "I am trying to get the proper tree built and functional now." Art: "make simple placeholders and I will replace them with better ones at a later time."
 
 Build `src/scene/archetypes.ts`: the canonical registry of environments, water types, visual families and archetypes, exactly to the "Registry contract" in the plan (types, exports, helpers).
-Sources (shared folder, absolute paths, not on main): `research/taste-tree/TREE.md` (fingerprints, taglines, look mappings) and the research files A / B / C beside it (grep by node id; never read whole). The plan's "Draft taxonomy" tables are the starting list. The spec's family lists and its environment / water card copy are fixed: use them verbatim.
+Sources (on origin/main): `research/taste-tree/TREE.md` (fingerprints, taglines, look mappings) and the research files A / B / C beside it (grep by node id; never read whole). The plan's "Draft taxonomy" tables are the starting list. The spec's family lists and its environment / water card copy are fixed: use them verbatim.
 
 **Milestone 1** (report it; it unblocks VD3 and VD4): the contract types and helpers, all ENVIRONMENTS / WATERS / FAMILIES with taglines, and ONE complete archetype per family. Ship it through the coordinator as its own commit.
 **Milestone 2:** every archetype. Each passes the spec's "valid ending archetype" test (02): recognizable, no palette / count / layout choice needed, distinct from siblings (merge look-alikes and say which), no unsafe default. Every family has at least 2 archetypes; no dead ends. Taglines: one line, playful, an upside and a quiet catch; no claims the engine could contradict ("cheap", "easy").
