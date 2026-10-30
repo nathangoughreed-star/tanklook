@@ -43,7 +43,7 @@ describe('archetype registry (lane VD1)', () => {
       expect(f!.water, a.id).toBe(a.water);
       for (const x of a.alsoIn ?? []) expect(family(x), `${a.id} alsoIn ${x}`).toBeDefined();
       if (a.alternative) expect(archetype(a.alternative), `${a.id} alternative`).toBeDefined();
-      // Milestone 1 names siblings that milestone 2 adds; milestone 2 makes this strict.
+      expect(archetype(a.contrast.sibling), `${a.id} contrast ${a.contrast.sibling}`).toBeDefined();
       expect(a.contrast.sibling, a.id).not.toBe(a.id);
     }
   });
@@ -77,7 +77,7 @@ describe('archetype registry (lane VD1)', () => {
   });
 
   it('has archetypes in every family (no dead ends), cross-links included', () => {
-    for (const f of FAMILIES) expect(archetypesOf(f.id).length, f.id).toBeGreaterThanOrEqual(1);
+    for (const f of FAMILIES) expect(archetypesOf(f.id).length, f.id).toBeGreaterThanOrEqual(2);
     // The mudskipper mudflat is found under Brackish and shown again under the paludarium creature habitats (spec 01).
     expect(archetypesOf('pa-creature').map(a => a.id)).toContain('mudskipper-mudflat');
     expect(archetype('mudskipper-mudflat')!.resolvesTo).toBe('paludarium');
