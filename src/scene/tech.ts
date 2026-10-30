@@ -17,6 +17,8 @@ import type { Range3 } from '../demand/types';
 import { volume } from './physics';
 import { filterProduct, genericHeaterW, heaterProduct, listedPrice, pumpProduct, PUMP_GEAR_KINDS, reefOptionProducts, reefProduct, skimmerSuitsGal, type AtoProduct, type ChillerProduct, type FilterProduct, type HeaterProduct, type PumpProduct, type SkimmerProduct, type UvProduct } from '../data/gearCatalog';
 import { footprint } from './shape';
+import { NEEDS, isCoralNeed, isLand, type PlantNeed } from './lightneeds';
+import { isFloat } from '../art/plants';
 import { valueOf } from './brief';
 import { getTankModel, TANK_MODELS, tankFromModel, type TankModel } from '../data/tanks';
 import type { GrowFeed, TankSetup } from './types';
@@ -172,7 +174,7 @@ export function rowsFor(S: TankSetup): TechRow[] {
 export function inferTech(S: TankSetup): TechSetup {
   // a dry tank: the cheapest gear its animals call for (scene/drygear.ts: heat, thermostat, UVB, gauge, misting), one model for the Tech menu, the 3D and the totals
   if (!S.water.on) return { rows: dryInferred(S.fish.map(f => f.species)) };
-  const gal = galOf(S), feed = S.grow.feed, salt = isSalt(S);
+  const gal = galOf(S), salt = isSalt(S), feed = S.stockFirst && !salt ? needFeed(S) : S.grow.feed;
   const rows: Record<string, string> = {
     filter: gal <= 60 ? 'hob' : 'canister', heater: 'one', chiller: 'none', air: 'none', uv: 'none',
     conditioner: salt ? 'none' : 'yes', rodi: 'none', ato: 'none',
@@ -187,6 +189,13 @@ export function inferTech(S: TankSetup): TechSetup {
   return { rows };
 }
 
+/** A tank started from its animals is fed for its plants (lane GV2): ferts when one needs them, CO2 when one needs injected gas; never below the saved feed. */
+export function needFeed(S: TankSetup): GrowFeed {
+  const live = S.items.filter(it => it.kind === 'plant' && !isFloat(it.variant) && NEEDS[it.variant] && !isLand(NEEDS[it.variant]) && !isCoralNeed(NEEDS[it.variant]));
+  const req = (w: 'co2' | 'ferts') => live.some(it => (NEEDS[it.variant] as PlantNeed)[w] === 'required');
+  const want: GrowFeed = req('co2') ? 'co2' : req('ferts') ? 'ferts' : 'low', rank = { low: 0, ferts: 1, co2: 2 };
+  return rank[want] > rank[S.grow.feed] ? want : S.grow.feed;
+}
 /** The room the water is judged against: the Tech menu's, else the brief's (deg C; shown in deg F), else the usual 70 deg F (ROOM_C); `set` = the owner gave one. */
 export function roomOf(S: TankSetup): { c: number; set: boolean } {
   const c = S.tech?.roomC ?? (S.brief ? valueOf(S.brief, 'constraints.roomTempC') : undefined);
@@ -220,9 +229,11 @@ export function setFilterless(S: TankSetup, on: boolean) {
 }
 /** The tank's tech: its own `tech` with any missing row filled from the inferred defaults. */
 export function techOf(S: TankSetup): TechSetup {
-  const inf = inferTech(S);
-  if (!S.tech) return inf;
+  const inf = inferTech(S), room = roomOf(S);
+  // the brief's room temperature (Limits step) is the room unless the Tech menu set its own (lane GV2): the menu, the heat loss and the checks all read it from here
+  if (!S.tech) return room.set ? { ...inf, roomC: room.c } : inf;
   const t: TechSetup = { ...S.tech, rows: { ...inf.rows, ...S.tech.rows } };
+  if (t.roomC === undefined && room.set) t.roomC = room.c;
   // a missing skimmer follows the saved filters, not the inferred one (lane SF)
   if (inf.rows.skimmer && S.tech.rows.skimmer === undefined) t.rows.skimmer = hasSump(t) ? 'sump' : 'hob';
   return t;
@@ -294,7 +305,7 @@ export function setFeed(t: TechSetup, feed: GrowFeed, salt = false): TechSetup {
 export function tempEvidence(S: TankSetup, heater?: boolean, us?: boolean): TempEvidence | undefined {
   if (!S.water.on) return undefined;
   const t = techOf(S), heated = heater ?? (!S.tech || (t.rows.heater ?? 'one') !== 'none');
-  const ev: TempEvidence = { heater: heated, chiller: t.rows.chiller === 'chiller', room: t.roomC ?? ROOM_C, roomSet: S.tech?.roomC !== undefined, ...(us ? { us } : {}) };
+  const ev: TempEvidence = { heater: heated, chiller: t.rows.chiller === 'chiller', room: t.roomC ?? ROOM_C, roomSet: roomOf(S).set, ...(us ? { us } : {}) };
   if (S.tech?.targetC !== undefined) { ev.target = S.tech.targetC; if (heated) { const h = heatLoss(S, t); ev.heatHolds = h.totalW >= h.lossW; } }
   if (S.tech?.measuredC !== undefined) ev.measured = S.tech.measuredC;
   return ev;

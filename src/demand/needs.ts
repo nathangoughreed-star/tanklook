@@ -6,7 +6,7 @@ import { NEEDS, isCoralNeed, isLand, minPar, type PlantNeed } from '../scene/lig
 import { isFloat } from '../art/plants';
 import { lightOutCached } from '../scene/lightout';
 import { applyLightProduct } from '../scene/lightproduct';
-import { filterNeeded, feedFor, heaterNeeded, optionCost, roomOf, techOf } from '../scene/tech';
+import { filterNeeded, feedFor, needFeed, heaterNeeded, optionCost, roomOf, techOf } from '../scene/tech';
 import { tankFor, type AnimalCount } from '../scene/tankfit';
 import { volume } from '../scene/physics';
 import { getSpecies } from '../data/species';
@@ -95,9 +95,9 @@ export function withNeedGear(S: TankSetup): TankSetup {
     const pick = lightFor(S);
     if (pick) { applyLightProduct(T.light, T.tank, pick.product); changed = true; }
   }
-  if (S.tech?.rows.co2 === undefined && S.tech?.rows.ferts === undefined) { // the owner has not chosen the care rows
-    const feed = carePlants(S, 'co2').length ? 'co2' : carePlants(S, 'ferts').length ? 'ferts' : undefined;
-    if (feed && (S.grow.feed === 'low' || (feed === 'co2' && S.grow.feed !== 'co2'))) { T.grow.feed = feed; changed = true; }
+  if (S.tech?.rows.co2 === undefined && S.tech?.rows.ferts === undefined) { // the owner has not chosen the care rows: the feed is the plants' (tech.ts needFeed)
+    const feed = needFeed(S);
+    if (feed !== S.grow.feed) { T.grow.feed = feed; changed = true; }
   }
   return changed ? T : S;
 }

@@ -6,7 +6,7 @@ import { needsOf, basicLight, lightFor, withNeedGear } from '../src/demand/needs
 import { bareSetup } from '../src/scene/defaults';
 import { makeItem } from '../src/scene/items';
 import { IN } from '../src/scene/physics';
-import { filterState, inferTech, techOf, type TechSetup } from '../src/scene/tech';
+import { filterState, inferTech, techOf, tempEvidence, type TechSetup } from '../src/scene/tech';
 import type { TankSetup } from '../src/scene/types';
 
 const P = defaultProfile();
@@ -97,4 +97,17 @@ describe('light tiers', () => {
     expect(needsOf(S, brief).find(n => n.kind === 'light')!.fix).toBeUndefined();
   });
   it('techOf keeps filterState unset until a species needs it', () => { expect(filterState(tankOf(['neon'], 68))).toBe('unset'); expect(techOf(tankOf(['neon'], 68)).rows.filter).not.toBe('none'); });
+});
+
+describe('the Tech panel and the price agree', () => {
+  it('a plant that requires CO2 and ferts sets the inferred CO2 and ferts rows', () => {
+    const S = plant(deep(tankOf(['cardinal'], 68)), 'carpet', 90), r = techOf(S).rows;
+    expect(r.co2).toBe('pressurized'); expect(r.ferts).not.toBe('none');
+    expect(techOf(deep(tankOf(['cardinal'], 68))).rows.co2).toBe('none');
+  });
+  it("the brief's room temperature is the room in the tech and the temperature checks", () => {
+    const S = tankOf(['cardinal']); S.brief = { v: 2, items: { 'constraints.roomTempC': { status: 'hard', value: 20 } } } as never;
+    expect(techOf(S).roomC).toBe(20); expect(tempEvidence(S)!.room).toBe(20); expect(tempEvidence(S)!.roomSet).toBe(true);
+    S.tech = { rows: {}, roomC: 25 } as TechSetup; expect(techOf(S).roomC).toBe(25);
+  });
 });
