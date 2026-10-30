@@ -8,7 +8,7 @@ import { buildSheet } from '../scene/setupsheet';
 import { ownedGearLines } from '../scene/ownedGear';
 import { volume, IN } from '../scene/physics';
 import { SETUP_KINDS, tankKind } from '../scene/pickerKind';
-import { valueOf } from '../scene/brief';
+import { rangeOf, valueOf, type NumLimitId, type Range } from '../scene/brief';
 import { getSpecies } from '../data/species';
 import { costTiers, type CostTiers } from '../demand/tiers';
 import type { UserProfile } from '../demand/types';
@@ -16,12 +16,16 @@ import type { Scene } from '../scene/types';
 import type { Store } from '../scene/store';
 import { summaryOf } from './stockSummary';
 import { difficultyOf, type Difficulty } from './stockPlanLogic';
-import { OWNED_CHOICES } from './setupBrief';
+import { OWNED_CHOICES, labelOf } from './setupBrief';
 import { loadProfile } from './demandPanel';
 
 export interface ReportLine { label: string; usd: number; note?: string }
 export interface ReportLiving { title: string; rows: { name: string; n: string; detail: string }[] }
 export type WarnLevel = 'problem' | 'caution' | 'unknown';
+export type Outside = 'under' | 'over';
+/** One of the brief's limits (lane GV8 ranges, lane GV9): its text as the brief says it, and per figure whether that falls outside it (absent = inside) */
+export interface ReportLimit { text: string; minimum?: Outside; ideal?: Outside }
+export type LimitRow = 'budget' | 'monthly' | 'care' | 'tank' | 'hours';
 export interface Report {
   title: string; kind: string; gallons: number; dims: string;
   animals: { name: string; n: number }[]; difficulty?: Difficulty; minPerWeek: number;
@@ -30,10 +34,13 @@ export interface Report {
   /** what the engine's set-up total adds to the listed prices for prices varying between stores (demand FACTORS.priceLevel) */ spreadUsd: number;
   /** minimum viable vs ideal (demand/tiers.ts), less what the brief says is owned but the scene still prices */ tiers: CostTiers;
   living: ReportLiving[];
+  /** the brief's limits beside the matching figure (tank: gallons, in `ideal`; set-up hours: no figure in the report) */ limits: Partial<Record<LimitRow, ReportLimit>>;
   /** problem = animal welfare (red, never a tradeoff), caution = check it, unknown = no data to check */ warnings: { level: WarnLevel; text: string }[];
 }
 
 const r1 = (n: number) => Math.round(n * 10) / 10;
+const outside = (r: Range, v: number): Outside | undefined => { v = Math.round(v); return r.min !== undefined && v < r.min ? 'under' : r.max !== undefined && v > r.max ? 'over' : undefined; };
+const LIMIT_OF: Record<LimitRow, NumLimitId> = { budget: 'constraints.budget', monthly: 'constraints.monthly', care: 'constraints.careMin', tank: 'constraints.tankGal', hours: 'constraints.setupHours' };
 
 /** The report's numbers for the scene's active tank (pure: the profile and the clock are passed in). */
 export function reportOf(scene: Scene, active: number, P: UserProfile, now = Date.now()): Report {
@@ -76,12 +83,18 @@ export function reportOf(scene: Scene, active: number, P: UserProfile, now = Dat
   const rank: Record<WarnLevel, number> = { problem: 0, caution: 1, unknown: 2 };
   warnings.sort((a, b) => rank[a.level] - rank[b.level]);
 
-  const T = S.tank;
+  const T = S.tank, gallons = Math.round(volume(T).gallons), limits: Report['limits'] = {};
+  const figure: Record<LimitRow, [number, number] | undefined> = { budget: [minimum.setupUsd, ideal.setupUsd], monthly: [minimum.upkeepUsdMo, ideal.upkeepUsdMo], care: [minimum.minPerWeek, ideal.minPerWeek], tank: [gallons, gallons], hours: undefined };
+  if (S.brief) for (const k of Object.keys(LIMIT_OF) as LimitRow[]) {
+    const r = rangeOf(S.brief, LIMIT_OF[k]); if (r.min === undefined && r.max === undefined) continue;
+    const f = figure[k], lo = f && k !== 'tank' ? outside(r, f[0]) : undefined, hi = f && outside(r, f[1]);
+    limits[k] = { text: labelOf(S.brief, LIMIT_OF[k]), ...(lo ? { minimum: lo } : {}), ...(hi ? { ideal: hi } : {}) };
+  }
   return {
     title: scene.name || 'Your tank', kind: SETUP_KINDS.find(k => k[0] === tankKind(S))?.[1] ?? 'Aquarium',
-    gallons: Math.round(volume(T).gallons), dims: `${r1(T.L / IN)} x ${r1(T.D / IN)} x ${r1(T.H / IN)} in`,
+    gallons, dims: `${r1(T.L / IN)} x ${r1(T.D / IN)} x ${r1(T.H / IN)} in`,
     animals, ...(difficulty ? { difficulty } : {}), minPerWeek: plan.minPerWeek,
-    have, buyFirst, buyLater, spreadUsd: Math.max(0, plan.setupUsd - plan.rows.reduce((t, x) => t + x.usd, 0)), tiers: { minimum, ideal }, living, warnings,
+    have, buyFirst, buyLater, spreadUsd: Math.max(0, plan.setupUsd - plan.rows.reduce((t, x) => t + x.usd, 0)), tiers: { minimum, ideal }, living, warnings, limits,
   };
 }
 
@@ -92,13 +105,16 @@ const lines = (l: ReportLine[], empty: string) => l.length ? `<table class="rp-l
   `<tr><th scope="row">${esc(x.label)}${x.note && x.note !== 'you have' ? ` <em>(${esc(x.note)})</em>` : ''}</th><td class="q">${x.usd ? usd(x.usd) : '$0 you have'}</td></tr>`).join('')}</table>` : none(empty);
 const sum = (l: ReportLine[]) => l.reduce((t, x) => t + x.usd, 0);
 const WORD: Record<WarnLevel, string> = { problem: 'Problem', caution: 'Caution', unknown: 'Check' };
+/** a figure the brief limits: marked when it falls outside the range */
+const fig = (txt: string, o?: Outside) => o ? `<span class="rp-out">${txt} <em>(${o} your limit)</em></span>` : txt;
 
 /** The report page. `shot` is a data URL of the tank render ('' = no picture: WebGL off or nothing drawn). */
 export function reportHtml(r: Report, shot = ''): string {
-  const { minimum: lo, ideal: hi } = r.tiers;
+  const { minimum: lo, ideal: hi } = r.tiers, L = r.limits, anyLim = !!(L.budget || L.monthly || L.care);
+  const limCell = (l?: ReportLimit) => anyLim ? `<td class="rp-lim">${l ? esc(l.text) : ''}</td>` : '';
   return `<header class="rp-head"><h1>${esc(r.title)}</h1><p class="sheetSub">${esc(r.kind)} · ${r.gallons} gal · ${esc(r.dims)}</p></header>
 <section class="rp-sec rp-rundown" data-rp="rundown"><h2>Quick rundown</h2><table>
-<tr><th scope="row">Tank</th><td>${r.gallons} gal, ${esc(r.dims)} (L x W x H)</td></tr>
+<tr><th scope="row">Tank</th><td>${fig(`${r.gallons} gal`, L.tank?.ideal)}, ${esc(r.dims)} (L x W x H)${L.tank ? ` <span class="rp-lim">Your limit: ${esc(L.tank.text)}</span>` : ''}</td></tr>
 <tr><th scope="row">Kind</th><td>${esc(r.kind)}</td></tr>
 <tr><th scope="row">Animals</th><td>${r.animals.length ? esc(r.animals.map(a => `${a.n} ${a.name}`).join(', ')) : 'None yet'}</td></tr>
 <tr><th scope="row">Difficulty</th><td>${r.difficulty ? `<b>${esc(r.difficulty.word)}</b>: ${esc(r.difficulty.why)}` : 'No animals yet'}</td></tr>
@@ -108,10 +124,10 @@ export function reportHtml(r: Report, shot = ''): string {
 <section class="rp-sec" data-rp="shopping"><h2>Shopping list</h2>
 <h3>Buy first (before any animal): ${usd(sum(r.buyFirst))}</h3>${lines(r.buyFirst, 'None.')}
 <h3>Buy last (after the tank has cycled): ${usd(sum(r.buyLater))}</h3>${lines(r.buyLater, 'None: no animals yet.')}${r.spreadUsd ? `<p class="sheetNote">The costs below add about ${usd(r.spreadUsd)} to these listed prices: prices vary between stores.</p>` : ''}</section>
-<section class="rp-sec" data-rp="costs"><h2>Expected costs</h2><table class="rp-costs"><tr><td></td><th scope="col">Minimum viable</th><th scope="col">Ideal</th></tr>
-<tr><th scope="row">Set-up</th><td class="q">${usd(lo.setupUsd)}</td><td class="q">${usd(hi.setupUsd)}</td></tr>
-<tr><th scope="row">Each month</th><td class="q">${usd(lo.upkeepUsdMo)}</td><td class="q">${usd(hi.upkeepUsdMo)}</td></tr>
-<tr><th scope="row">Your time</th><td class="q">${Math.round(lo.minPerWeek)} min/wk</td><td class="q">${Math.round(hi.minPerWeek)} min/wk</td></tr></table>
+<section class="rp-sec" data-rp="costs"><h2>Expected costs</h2><table class="rp-costs"><tr><td></td><th scope="col">Minimum viable</th><th scope="col">Ideal</th>${anyLim ? '<th scope="col">Your limit</th>' : ''}</tr>
+<tr><th scope="row">Set-up</th><td class="q">${fig(usd(lo.setupUsd), L.budget?.minimum)}</td><td class="q">${fig(usd(hi.setupUsd), L.budget?.ideal)}</td>${limCell(L.budget)}</tr>
+<tr><th scope="row">Each month</th><td class="q">${fig(usd(lo.upkeepUsdMo), L.monthly?.minimum)}</td><td class="q">${fig(usd(hi.upkeepUsdMo), L.monthly?.ideal)}</td>${limCell(L.monthly)}</tr>
+<tr><th scope="row">Your time</th><td class="q">${fig(`${Math.round(lo.minPerWeek)} min/wk`, L.care?.minimum)}</td><td class="q">${fig(`${Math.round(hi.minPerWeek)} min/wk`, L.care?.ideal)}</td>${limCell(L.care)}</tr></table>${L.hours ? `<p class="sheetNote">Your set-up time limit: ${esc(L.hours.text)}.</p>` : ''}
 <p class="sheetNote">Minimum viable: what the animals need to live well (tank, filter, heat, light, water care, the animals). Ideal: the full build as designed.</p></section>
 <section class="rp-sec" data-rp="living"><h2>Plants and corals</h2>${r.living.map(l => `<h3>${esc(l.title)}</h3>${l.rows.length ? `<table class="rp-lines">${l.rows.map(x =>
   `<tr><th scope="row">${esc(x.name)}</th><td class="q">${esc(x.n)}</td><td>${esc(x.detail)}</td></tr>`).join('')}</table>` : none('None.')}`).join('') || none('None.')}</section>
