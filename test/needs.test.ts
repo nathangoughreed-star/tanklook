@@ -6,7 +6,7 @@ import { needsOf, basicLight, lightFor, withNeedGear } from '../src/demand/needs
 import { bareSetup } from '../src/scene/defaults';
 import { makeItem } from '../src/scene/items';
 import { IN } from '../src/scene/physics';
-import { filterState, inferTech, techOf, tempEvidence, type TechSetup } from '../src/scene/tech';
+import { filterState, inferTech, keepSet, techOf, tempEvidence, withChoice, withUnits, type TechSetup } from '../src/scene/tech';
 import type { TankSetup } from '../src/scene/types';
 
 const P = defaultProfile();
@@ -109,5 +109,30 @@ describe('the Tech panel and the price agree', () => {
     const S = tankOf(['cardinal']); S.brief = { v: 2, items: { 'constraints.roomTempC': { status: 'hard', value: 20 } } } as never;
     expect(techOf(S).roomC).toBe(20); expect(tempEvidence(S)!.room).toBe(20); expect(tempEvidence(S)!.roomSet).toBe(true);
     S.tech = { rows: {}, roomC: 25 } as TechSetup; expect(techOf(S).roomC).toBe(25);
+  });
+});
+
+// Lane GV9 fix 6: a Tech-menu edit saves only the rows the person set, so need-driven gear keeps following the animals and the room.
+describe('Tech-menu edits keep untouched rows inferred', () => {
+  it('a heater added for a 68 deg F room goes when the room is raised to 76 deg F in the Tech menu', () => {
+    const S = tankOf(['neon', 'neon', 'neon'], 68);
+    expect(techOf(S).rows.heater).toBe('one');
+    S.tech = keepSet(S, { ...techOf(S), roomC: F(76) }); // the Tech menu's room box
+    expect(S.tech.rows).toEqual({});
+    expect(techOf(S).rows.heater).toBe('none');
+    expect(needsOf(S).some(n => n.kind === 'heater')).toBe(false);
+    S.tech = keepSet(S, { ...techOf(S), roomC: F(68) }); // and back
+    expect(techOf(S).rows.heater).toBe('one');
+  });
+  it('a row the person edited stays as set; the other rows still follow', () => {
+    const S = tankOf(['neon', 'neon', 'neon'], 68);
+    S.tech = keepSet(S, withChoice(S, 'air', 'airstone'));
+    expect(Object.keys(S.tech.rows)).toEqual(['air']);
+    S.tech = keepSet(S, withUnits(techOf(S), 'heater', [{ w: 50 }])); // a heater unit set by hand
+    S.tech = keepSet(S, { ...techOf(S), roomC: F(76) });
+    expect(techOf(S).rows.heater).toBe('one');
+    expect(techOf(S).rows.air).toBe('airstone');
+    expect(S.tech.rows.filter).toBeUndefined(); // never touched: still the inferred filter
+    expect(techOf(S).rows.filter).toBe(inferTech(S).rows.filter);
   });
 });

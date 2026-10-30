@@ -311,6 +311,18 @@ export function tempEvidence(S: TankSetup, heater?: boolean, us?: boolean): Temp
   return ev;
 }
 
+/** What a Tech-menu edit saves (lane GV9, 2026-10-30): only the rows the person has set, before or in this edit (a row's option, its product,
+ *  and for the heater / filter their units); every other row is left out of `S.tech.rows`, so it keeps following the animals and the room
+ *  (inferTech, techOf: a heater comes and goes with the room temperature, a filter with the first water animal). A preset's own rows count as set. */
+export function keepSet(S: TankSetup, next: TechSetup): TechSetup {
+  const was = techOf(S), own = new Set(Object.keys(S.tech?.rows ?? {}));
+  const sig = (t: TechSetup, r: string) => JSON.stringify([t.rows[r], t.products?.[r], ...(r === 'heater' ? [t.heaters, t.heaterW, t.heaterProduct] : r === 'filter' ? [t.filters, t.filterModel, t.filterProduct, t.filterless] : [])]);
+  const preset = next.preset && next.preset !== 'custom' ? PRESETS.find(p => p.id === next.preset) : undefined;
+  const rows: Record<string, string> = {};
+  for (const [r, o] of Object.entries(next.rows)) if (own.has(r) || preset?.rows[r] !== undefined || sig(next, r) !== sig(was, r)) rows[r] = o;
+  return { ...next, rows };
+}
+
 /** One row changed by hand: the tech is now custom. Choosing an option that needs another row's option sets that too. */
 export function withChoice(S: TankSetup, row: string, opt: string): TechSetup {
   const t = techOf(S), rows = { ...t.rows, [row]: opt };

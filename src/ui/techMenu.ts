@@ -18,7 +18,7 @@ import type { Store } from '../scene/store';
 import {
   ROOM_C, applyPreset, feedFor, feedOf, filterFor, filterUnits, heatLoss, offerChiller,
   optionCost, optionDef, presetsFor, pumpFor, REEF_FLOW_X, reefFeedOf, rowsFor, setFeed, singleFilter, stockCapacity, techOf, tempEvidence, unitCosts, walstadGaps, withChoice,
-  withUnits, withoutUnit, ownKeep, reefChecks, rowProduct, sumpDefault, sumpFromModel, sumpLitres, sumpName, sumpOf, SUMP_FILL, sumpDrainDown, sumpTooSmall, type FilterUnit, type SumpSize, type HeaterUnit, type OptionCost, type TechSetup,
+  withUnits, withoutUnit, keepSet, ownKeep, reefChecks, rowProduct, sumpDefault, sumpFromModel, sumpLitres, sumpName, sumpOf, SUMP_FILL, sumpDrainDown, sumpTooSmall, type FilterUnit, type SumpSize, type HeaterUnit, type OptionCost, type TechSetup,
 } from '../scene/tech';
 import { FILTER_PRODUCTS, HEATER_PRODUCTS, reefOptionProducts, filtersNear, genericHeaterW, heatersNear, lightProduct, lightsFor, productName, pumpRatedFor, pumpsFor, type FilterProduct, type HeaterProduct, type LightProduct, type PumpProduct, type ReefProduct } from '../data/gearCatalog';
 import { applyLightProduct, lightProductNote, productOn } from '../scene/lightproduct';
@@ -77,14 +77,14 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     return base;
   };
 
-  const edit = (fn: (s: TankSetup) => TechSetup) => store.edit(s => { s.tech = fn(s); if (s.water.on) s.grow.feed = feedFor(s); });
+  const edit = (fn: (s: TankSetup) => TechSetup) => store.edit(s => { s.tech = keepSet(s, fn(s)); if (s.water.on) s.grow.feed = feedFor(s); }); // lane GV9: rows never touched stay inferred
 
   // the Plant care slider and the Feeding select write grow.feed: carry it into the CO2 + ferts rows (one source of truth)
   store.subscribe(kind => {
     if (kind === 'view') return;
     const S = store.tank;
     if (S.tech && S.water.on && feedFor(S) !== S.grow.feed)
-      queueMicrotask(() => { const s = store.tank; if (s.tech && s.water.on && feedFor(s) !== s.grow.feed) store.edit(x => { x.tech = setFeed(techOf(x), x.grow.feed, !!x.water.salt); }, { history: false }); });
+      queueMicrotask(() => { const s = store.tank; if (s.tech && s.water.on && feedFor(s) !== s.grow.feed) store.edit(x => { x.tech = keepSet(x, setFeed(techOf(x), x.grow.feed, !!x.water.salt)); }, { history: false }); });
     render(); renderLight();
   });
   /** One expected value per figure (Nathan 2026-10-19: no ranges or percentiles shown): the mean of each lo / mode / hi. */
