@@ -34,6 +34,8 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 
 **UNIFIED SETUP VISION (Nathan 2026-10-28; read `research/design/unified-setup-plan.md`):** "An animal I want", "A look I want", Sandbox and "Suggest a setup" are NOT separate workflows: they are ways of filling ONE setup brief (`src/scene/brief.ts`, saved per tank as `TankSetup.brief`) that feeds one feasibility engine and several design strategies. Rules for every lane touching the flow: welfare is a non-negotiable gate (never a toggle, never traded for price, never satisfied by swapping a locked animal); budget is a CEILING (a cheaper concept is not penalised; C9's finish ladder only decides how far up a concept climbs); hard constraints vs preferences vs locked choices are distinct; experience level shapes complexity and guidance, never a prohibition; ask a question only when it changes the design; Sandbox stays zero-question; show tradeoffs instead of hiding them. Two product levels: design (a tank) and BUILD PLAN (buy order, reuse, setup + cycling, when to add animals, maintenance; lane U7). Lanes U1 (done), U2 generator, U3 UI running; U4 infeasibility, U5 finish baseline, U6 refinement, U7 build plan queued. Lane ids used: U1-U7.
 
+**Guided v2 (2026-10-30, Nathan spec):** plan research/design/guided-flow-plan.md, art slots research/design/guided-art-brief.md, lanes GV1-GV7 (prompts/lane-GV*.md). Phase 1 GV1 + GV2 + GV4; phase 2 GV3, GV5 (after GV2), GV6; phase 3 GV7 (after GV4, GV5).
+
 **Current lanes** (coordinator "Coordinator 17", `local_44e5506c`):
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
