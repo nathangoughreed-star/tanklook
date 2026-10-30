@@ -48,13 +48,15 @@ export function applyOwned(S: TankSetup, s: OwnedState) {
   // light: a product, or (generic / unticked) back to the generic fixture
   const lp = s.on.has('light') && s.light && s.light !== GENERIC ? lightProduct(s.light) : undefined;
   if (s.on.has('light') || S.light.product) applyLightProduct(S.light, S.tank, lp);
+  // everything ticked and answered here is gear in hand: saved owned (lane GM6 flag), so it prices $0 "you have"; no paid price is asked on this sheet
+  if (s.on.has('light') && s.light) S.light.owned = true; else { delete S.light.owned; delete S.light.paidUsd; }
   let t = techOf(S);
   // heater: unticked = none; generic = sized to the tank's heat loss
   const heaters: HeaterUnit[] = !s.on.has('heater') || s.heater === undefined ? [] : s.heater === GENERIC
-    ? [{ w: genericHeaterW(heatLoss(S, t).needW) }] : [{ product: s.heater }];
+    ? [{ w: genericHeaterW(heatLoss(S, t).needW), owned: true }] : [{ product: s.heater, owned: true }];
   t = withUnits(t, 'heater', heaters);
   const filters: FilterUnit[] = !s.on.has('filter') || !s.filterKind || s.filter === undefined ? []
-    : [{ kind: s.filterKind, ...(s.filter !== GENERIC ? { product: s.filter } : {}) }];
+    : [{ kind: s.filterKind, ...(s.filter !== GENERIC ? { product: s.filter } : {}), owned: true }];
   t = withUnits(t, 'filter', filters);
   S.tech = t;
   if (S.water.on) S.grow.feed = feedFor(S);
@@ -65,7 +67,6 @@ export function attachOwnedGear(store: Store, o: { pickTank: (done: (name: strin
   dlg.className = 'libdlg owndlg'; dlg.setAttribute('aria-labelledby', 'ownTitle');
   document.body.append(dlg);
   let st = emptyOwned();
-  // TODO(GM6): when GearRef gets `owned` / `paidUsd` on main, mark every ticked item owned (paid $0) here in applyOwned
   const apply = () => store.edit(S => applyOwned(S, st), { coalesce: 'owned' });
   const sel = (id: string, cur: string | undefined, first: string, opts: [string, string][]) =>
     `<select id="${id}" aria-label="${esc(first)}"><option value=""${cur === undefined ? ' selected' : ''} disabled>${esc(first)}</option><option value="${GENERIC}"${cur === GENERIC ? ' selected' : ''}>Not sure: use a generic one</option>${opts.map(([v, l]) => `<option value="${esc(v)}"${cur === v ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
