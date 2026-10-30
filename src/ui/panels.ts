@@ -8,7 +8,7 @@ import { SUMP_MODELS, sumpFromModel, tempEvidence } from '../scene/tech';
 import { standMisfit } from '../scene/standspace';
 import { renderFeaturedDeals } from './featuredDeals';
 import { attachWelcome } from './welcome';
-import { bindBriefStore, editBrief, setTank as briefTank } from './setupBrief';
+import { bindBriefStore, editBrief, getBrief, setTank as briefTank } from './setupBrief';
 import { attachStartMode, setMode } from './startMode';
 import { startDeals, visibleTabs, pickTab, sortDeals, DEFAULT_SORT, type DealSort, type StartTab, type StartMenu } from './startEntries';
 import { DEALS_AS_OF, DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
@@ -295,8 +295,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // lane R9: the owned-gear sheet (Guided, "Starting from something I have now"); its Tank row borrows the tank picker and reports when it closes
   let ownedSheet: { open(): void } | undefined;
   const pickTank = (done: (name: string) => void) => {
-    const dlg = $<HTMLDialogElement>('tankDlg'), before = JSON.stringify([store.tank.tank, store.tank.product]);
-    dlg.addEventListener('close', () => { if (JSON.stringify([store.tank.tank, store.tank.product]) !== before) done(`${Math.round(volume(store.tank.tank).gallons)} gal tank`); }, { once: true });
+    const dlg = $<HTMLDialogElement>('tankDlg'), before = JSON.stringify([store.tank.tank, store.tank.product]), brief0 = getBrief(); // lane GV9: a pick of the tank already shown writes the brief, and counts
+    dlg.addEventListener('close', () => { if (JSON.stringify([store.tank.tank, store.tank.product]) !== before || getBrief() !== brief0) done(`${Math.round(volume(store.tank.tank).gallons)} gal tank`); }, { once: true });
     $('presetA').click();
   };
   // lane NG1: New and first launch offer Guided (the Welcome workspace) or Sandbox (an empty tank, checks as flags)
