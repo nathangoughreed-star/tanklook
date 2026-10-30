@@ -114,6 +114,7 @@ ${groups.map(g => `<section class="lkGroup"><h3>${esc(lookLabel(g.st))}</h3><p c
 ${asksPlants(style) ? `<div class="spNote">Plants</div><div class="lkChips">${PLANT_MODES.map(m => `<button type="button" class="lkChip${m.id === mode ? ' on' : ''}" data-act="mode" data-mode="${m.id}" title="${esc(m.blurb)}">${esc(m.label)}</button>`).join('')}</div>` : ''}
 <div class="bpNums"><span><b>${usd(o.setupUsd)}</b>set-up</span><span><b>${usd(o.upkeepUsdMo)}</b>a month</span><span><b>${o.minPerWeek}</b>min a week</span></div>
 <ul class="bpGear"><li>Light: ${esc(o.light)}</li><li>${esc(o.co2)}</li></ul>${o.lightNote ? `<div class="spWarn">${esc(o.lightNote)}</div>` : ''}
+<div class="cmpSlot" data-cmp-look="${esc(JSON.stringify({ style, tank: tank.id, animals: picks.filter(p => p.n > 0).map(p => ({ species: p.a.id, n: p.n })) }))}"></div>
 <div class="spFoot"><button type="button" class="primary" data-act="animals">Animals that suit it</button><button type="button" class="spLink" data-act="skip">Skip, no animals yet: open the editor</button><button type="button" class="spLink" data-act="tiles">‹ Pick another look</button></div>`;
     el.hidden = false; side(true);
   };

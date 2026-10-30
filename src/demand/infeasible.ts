@@ -14,6 +14,8 @@ import type { CostLine } from './costlines';
 import type { SpaceLimit } from '../scene/types';
 import type { Units } from '../scene/types';
 import type { UserProfile } from './types';
+import type { Anchor, StyleId } from './compromise';
+import { allowedStyles } from '../scene/scapes';
 
 export type LimitingFactor = 'budget' | 'upkeep' | 'time' | 'space' | 'tank' | 'animals' | 'welfare';
 
@@ -59,7 +61,11 @@ export interface Infeasible {
   cheapest?: { title: string; usd: number; over: number; lines: { label: string; usd: number }[] };
   /** the four paths, always all four, each with its verified buttons (indexes into `alternatives`) or the plain reason it has none */
   paths?: ConflictPath[];
+  /** lane GV7: the look to keep and everything compromise.ts needs to search its compound edits (plain data; the card asks for it when it is shown, the search takes a second or two) */
+  look?: LookCtx;
 }
+/** The input of `compromiseFor`, kept with the card (lane GV7). */
+export interface LookCtx { anchor: Anchor; w: Wants; P: UserProfile; units: Units; now: number }
 /** The true build behind the vision: what it really is and costs, and which of the person's limits it breaks. */
 export interface VisionFacts { title: string; animals: string; gal: number; outerIn: [number, number]; usd: number; monthlyUsd: number; minPerWeek: number; gear: string[]; breaks: string[] }
 export interface ConflictPath { id: PathId; title: string; blurb: string; alts: number[]; none?: string; facts?: VisionFacts }
@@ -319,5 +325,14 @@ export function explainInfeasible(x: Ctx): Infeasible {
 
   alts.forEach((a, i) => P(a.path!).alts.push(i));
   for (const p of paths) if (p.alts.length) p.none = undefined;
-  return { ...base, alternatives: alts, paths };
+  // ---- lane GV7: keep the look itself (the last look the person picked that suits these animals, else the true build's own) as a compound compromise, searched when the card shows ----
+  const look = vb ? lookOf(w, vb) : undefined;
+  return { ...base, alternatives: alts, paths, ...(vb && look ? { look: { anchor: { style: look, animals: vb.build.animals.filter(a => a.n > 0), tank: vb.build.tank, level: 3 }, w, P: x.P, units: x.units, now: x.now } } : {}) };
+}
+
+/** The look a conflict should keep: the newest look picked (taste) that these animals can live in, else the style of the true build. */
+function lookOf(w: Wants, vb: Proposal): StyleId | undefined {
+  const ok = new Set<string>(allowedStyles(vb.build.animals));
+  const picked = [...(w.taste?.events ?? [])].reverse().find(e => e.kind === 'pick' && ok.has(e.style))?.style as StyleId | undefined;
+  return picked ?? vb.build.finish?.style;
 }

@@ -29,8 +29,36 @@ const copyPaths = (paths: string[]): Match => (to, from) => {
   }
 };
 
+// Compare (lane GV7): a compromise opened beside another style shows the money and care first: the limit that was broken, then set-up / a month / care where they differ.
+// The figures were priced when Compare was pressed, so they show only while both tanks are still as they were opened (`sigOf`); an edit to either drops them.
+export interface Totals { startupUsd: number; monthlyUsd: number; minPerWeek: number }
+export type CompareLimit = 'startup' | 'monthly' | 'care';
+interface Compare { rows: [string, string][]; sigs: [string, string] }
+let compare: Compare | undefined;
+/** What a compare's figures hold for: the tank's size, its animals and its scape. */
+export const sigOf = (t: TankSetup) => JSON.stringify([t.tank.L, t.tank.D, t.tank.H, t.fish.map(f => f.species).sort(), t.items.map(i => i.variant).sort()]);
+const money = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
+/** Rows for two priced tanks: the broken limit first (with the bound), then each figure that differs. */
+export function compareRows(a: Totals, b: Totals, lead?: CompareLimit, bound?: number): [string, string][] {
+  const defs: [CompareLimit, (t: Totals) => string, (n: number) => string][] = [
+    ['startup', t => `Set-up ${money(t.startupUsd)}`, n => `limit ${money(n)}`],
+    ['monthly', t => `${money(t.monthlyUsd)} a month`, n => `limit ${money(n)}`],
+    ['care', t => `${Math.round(t.minPerWeek)} min a week`, n => `limit ${n} min`]];
+  const rows: [string, string][] = [];
+  for (const [k, f, lim] of [...defs.filter(d => d[0] === lead), ...defs.filter(d => d[0] !== lead)]) {
+    const x = f(a), y = f(b);
+    if (k === lead && bound !== undefined) rows.push([`${x} (${lim(bound)})`, `${y} (${lim(bound)})`]);
+    else if (x !== y) rows.push([x, y]);
+  }
+  return rows;
+}
+/** Show `rows` first on the split tabs while tanks A and B are still `a` and `b` (undefined clears). */
+export function setCompare(a?: TankSetup, b?: TankSetup, rows: [string, string][] = []) { compare = a && b ? { rows, sigs: [sigOf(a), sigOf(b)] } : undefined; }
+
 export function tankDiff(a: TankSetup, b: TankSetup, u: Units): DiffItem[] {
   const out: DiffItem[] = [];
+  // the compare's figures first (lane GV7); matching one takes the other tank whole
+  if (compare && compare.sigs[0] === sigOf(a) && compare.sigs[1] === sigOf(b)) for (const r of compare.rows) out.push([r[0], r[1], (to, from) => { Object.assign(to, structuredClone(from)); }]);
   const len = (mm: number) => fmtLen(mm, u, mm >= 100 ? 0 : 1);
   /** Add an entry when the two settings differ and read differently; `f` renders each side. Settings, not derived values:
    * a size change alone does not list auto glass thickness or the depth of a full tank.

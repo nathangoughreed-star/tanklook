@@ -308,6 +308,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     profile: () => { try { return loadProfile(); } catch { return undefined; } },
   });
   void import('./suggest').then(m => { suggestPanel = m.attachSuggest(store, viewer, status); }); // lane C8: Suggest a setup
+  void import('./infeasibleCard').then(m => m.attachCompare(store, status)); // lane GV7: compromise slots fill as they show; Use this / Compare (split view, money and care first on the tabs)
   void import('./briefBar').then(m => { m.attachBriefBar(store, { suggest: () => suggestPanel?.open() }); }); // lane U3: the setup brief bar, shown in every entry point
   $('suggestBtn').onclick = () => { if (startDlg.open) startDlg.close(); suggestPanel?.open(); };
   $('startWelcome').onclick = () => { startDlg.close(); startMode.show(); };

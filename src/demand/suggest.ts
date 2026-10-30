@@ -689,3 +689,4 @@ export function narrowTaste(options: Proposal[], i: number): { style: string; ki
   const passed = [...new Set(options.map(p => p.build.finish?.style).filter((s): s is StyleId => !!s && s !== pick))];
   return [...passed.map(style => ({ style, kind: 'reject' as const })), { style: pick, kind: 'pick' as const }];
 }
+export { conceptMaker, fitsFor }; // lane GV7 hook: demand/compromise.ts builds its compound edits through the same concept builder and tank list
