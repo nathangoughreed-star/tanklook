@@ -17,3 +17,5 @@ Build:
 Owns: `src/demand/compromise.ts` + test, `src/demand/infeasible.ts`, `src/ui/infeasibleCard.ts`, `src/ui/diff.ts`, one hook line in `src/ui/panels.ts` for opening the compare.
 Tests: an over-budget iwagumi 75 gal with a neon school gets a compound compromise that meets the budget and keeps the look; welfare never broken; Compare opens two tanks with the right diffs.
 Screenshots: the compromise card, the split compare.
+
+Note (Nathan 2026-10-30, lane GV8): limits are ranges (optional lower and upper bound per parameter; no separate target). "Breaks a limit" means outside a set range, above or below; read the bounds through GV8's brief helpers.
