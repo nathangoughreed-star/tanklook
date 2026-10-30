@@ -8,7 +8,7 @@ import { feedFor, heatLoss, techOf, withUnits, type FilterUnit, type HeaterUnit 
 import { volume } from '../scene/physics';
 import type { Store } from '../scene/store';
 import type { TankSetup } from '../scene/types';
-import { valueOf } from '../scene/brief';
+import { clearItem, setItem, valueOf, type Brief } from '../scene/brief';
 import { editBrief, getBrief, ownedKeys, setOwnedKey } from './setupBrief';
 import { setNeedStand } from './guided/steps';
 
@@ -67,11 +67,17 @@ export function applyOwned(S: TankSetup, s: OwnedState) {
   if (S.water.on) S.grow.feed = feedFor(S);
 }
 
+/** The owned tank in the brief (lane GV9): `constraints.existingTank`, the item an existing tank is recorded with everywhere else (Suggest, the report,
+ *  the animal screen), locked: the library model, or {} for a custom size. It replaces a picked tank. No tank = cleared. */
+export const recordOwnedTank = (b: Brief, S: Pick<TankSetup, 'product'> | undefined): Brief =>
+  S ? setItem(clearItem(b, 'equipment.tank'), 'constraints.existingTank', S.product ? { model: S.product.model } : {}, 'locked') : clearItem(b, 'constraints.existingTank');
 export interface OwnedHost { pickTank: (done: (name: string) => void) => void; status: (m: string, bad?: boolean) => void }
 /** Draw the owned-gear sheet into `root` (a dialog body, or the Guided "What you have" step). `done` adds a Done button (the dialog); a step has its own Next instead. */
 export function mountOwnedSheet(store: Store, o: OwnedHost, root: HTMLElement, opts: { title?: boolean; done?: () => void; state?: OwnedState } = {}) {
   const st = opts.state ?? emptyOwned();
   const apply = () => store.edit(S => applyOwned(S, st), { coalesce: 'owned' });
+  const ownTank = (on: boolean) => editBrief(b => recordOwnedTank(b, on ? store.tank : undefined));
+  const tankPicked = (n: string) => { st.tank = n; apply(); ownTank(true); draw(); };
   const sel = (id: string, cur: string | undefined, first: string, list: [string, string][]) =>
     `<select id="${id}" aria-label="${esc(first)}"><option value=""${cur === undefined ? ' selected' : ''} disabled>${esc(first)}</option><option value="${GENERIC}"${cur === GENERIC ? ' selected' : ''}>Not sure: use a generic one</option>${list.map(([v, l]) => `<option value="${esc(v)}"${cur === v ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
   const picker = (id: OwnedItem): string => {
@@ -107,8 +113,8 @@ export function mountOwnedSheet(store: Store, o: OwnedHost, root: HTMLElement, o
     if (el instanceof HTMLInputElement && el.hasAttribute('data-stand-have')) { editBrief(b => setOwnedKey(b, 'stand', el.checked)); draw(); return; }
     if (el instanceof HTMLInputElement && el.dataset.item) {
       const id = el.dataset.item as OwnedItem;
-      if (el.checked) { st.on.add(id); if (id === 'tank' && !st.tank) { draw(); o.pickTank(n => { st.tank = n; apply(); draw(); }); return; } }
-      else { st.on.delete(id); if (id === 'tank') delete st.tank; delete st[id === 'filter' ? 'filter' : id]; if (id === 'filter') delete st.filterKind; }
+      if (el.checked) { st.on.add(id); if (id === 'tank' && !st.tank) { draw(); o.pickTank(tankPicked); return; } }
+      else { st.on.delete(id); if (id === 'tank') { delete st.tank; ownTank(false); } delete st[id === 'filter' ? 'filter' : id]; if (id === 'filter') delete st.filterKind; }
     } else if (el.id === 'ownLight') st.light = el.value;
     else if (el.id === 'ownHeater') st.heater = el.value;
     else if (el.id === 'ownFilterKind') { st.filterKind = el.value; delete st.filter; }
@@ -119,7 +125,7 @@ export function mountOwnedSheet(store: Store, o: OwnedHost, root: HTMLElement, o
   root.addEventListener('click', e => {
     const t = e.target as HTMLElement, sb = t.closest<HTMLElement>('[data-stand]');
     if (sb) { const v = sb.dataset.stand; editBrief(b => setNeedStand(b, v === 'unsure' ? undefined : v === 'true')); draw(); return; }
-    if (t.closest('[data-own="tank"]')) o.pickTank(n => { st.tank = n; apply(); draw(); });
+    if (t.closest('[data-own="tank"]')) o.pickTank(tankPicked);
     else if (t.id === 'ownDone') opts.done?.();
   });
   draw();

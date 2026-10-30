@@ -35,7 +35,6 @@ import { needsOf, withNeedGear, type Need } from '../demand/needs';
 import { genericHeaterW } from '../data/gearCatalog';
 import { heatLoss, techOf, withUnits } from '../scene/tech';
 import { volume } from '../scene/physics';
-import { readState } from './guided/steps';
 import { filterState } from '../scene/tech';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
@@ -330,10 +329,10 @@ ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}${budgetBlock()}
     s.name = 'My animal tank'; s.units = units; s.tanks[0].camera = { ...store.tank.camera };
     s.tanks[0].stand.show = false; s.tanks[0].stand.need = 'ask'; // no stand yet: the budget still counts a typical one
     const prev = store.tank, gearUnits = [...(prev.tech?.heaters ?? []), ...(prev.tech?.filters ?? [])];
-    // the Guided "What you have" step wrote its gear into the current scene (ownedGear.applyOwned), not into the brief: owned units and light are flagged there;
-    // an owned tank is one that is not the untouched default, when the person came through Guided
-    const ownGear = gearUnits.some(u => u.owned) || !!prev.light.owned, guided = !!readState(getBrief()).intent;
-    const ownTank = guided && (!!prev.product || JSON.stringify(prev.tank) !== JSON.stringify(emptyScene().tanks[0].tank));
+    // the Guided "What you have" step wrote its gear into the current scene (ownedGear.applyOwned): owned units and light are flagged there,
+    // and an owned tank is recorded in the brief as `constraints.existingTank` (lane GV9)
+    const ownGear = gearUnits.some(u => u.owned) || !!prev.light.owned;
+    const ownTank = !!valueOf(getBrief(), 'constraints.existingTank');
     kept = undefined; needLight = '';
     if (ownTank || ownGear) {
       kept = { ...(ownTank ? { tank: structuredClone(prev.tank), ...(prev.product ? { product: prev.product } : {}) } : {}), ...(prev.tech ? { tech: structuredClone(prev.tech) } : {}), ...(prev.light.owned ? { light: structuredClone(prev.light) } : {}) };

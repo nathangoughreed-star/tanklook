@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { GENERIC, applyOwned, emptyOwned, ownedMissing, ownedReady } from '../src/ui/ownedGear';
+import { GENERIC, applyOwned, emptyOwned, ownedMissing, ownedReady, recordOwnedTank } from '../src/ui/ownedGear';
+import { briefToWants, setItem, valueOf } from '../src/scene/brief';
+import { emptyBrief } from '../src/ui/setupBrief';
+import { reportOf } from '../src/ui/report';
+import { defaultProfile } from '../src/demand/types';
 import { emptyScene } from '../src/scene/defaults';
 import { filterUnits, heaterUnits, techOf, unitCosts } from '../src/scene/tech';
 import { ownedGearLines } from '../src/scene/ownedGear';
@@ -55,5 +59,18 @@ describe('owned gear sheet', () => {
     // ticked but not yet answered: not owned yet
     s.on.add('light'); s.light = undefined; applyOwned(S, s);
     expect(S.light.owned).toBeUndefined();
+  });
+  it('records an owned tank in the brief as constraints.existingTank, which Suggest and the report read (lane GV9)', () => {
+    const sc = emptyScene(), S = sc.tanks[0];
+    S.product = { model: 'g20h' };
+    S.brief = recordOwnedTank(setItem(emptyBrief(), 'equipment.tank', { model: 'g20l' }, 'preference'), S);
+    expect(valueOf(S.brief, 'constraints.existingTank')).toEqual({ model: 'g20h' });
+    expect(valueOf(S.brief, 'equipment.tank')).toBeUndefined(); // the owned tank replaces a picked one
+    expect(briefToWants(S.brief).ownTank?.id).toBe('g20h');
+    const r = reportOf(sc, 0, defaultProfile(), Date.parse('2026-10-30'));
+    expect(r.have.find(h => /^tank/i.test(h.label))?.usd).toBe(0);
+    expect(r.buyFirst.some(l => /^tank/i.test(l.label))).toBe(false);
+    expect(valueOf(recordOwnedTank(S.brief, { product: undefined }), 'constraints.existingTank')).toEqual({}); // a custom size
+    expect(valueOf(recordOwnedTank(S.brief, undefined), 'constraints.existingTank')).toBeUndefined();
   });
 });
