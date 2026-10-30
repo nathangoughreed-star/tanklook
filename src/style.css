@@ -999,3 +999,5 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .gv-dock { position: fixed; z-index: 30; top: 8px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; max-width: 96vw; padding: 4px 10px; border: 1px solid var(--line); border-radius: 20px; background: var(--panel); color: var(--ink); box-shadow: 0 2px 10px rgb(0 0 0 / .25) }
 .gv-dock[hidden] { display: none } .gv-dock .gv-rail { margin: 0 }
 @media (max-width: 520px) { .gv-dock .gv-r:not(.current):not(:last-child) button { font-size: 11px; padding: 2px 2px } }
+.gvNeeds { list-style: none; margin: 4px 0; padding: 0; display: flex; flex-direction: column; gap: 6px }
+.gvNeeds li { display: flex; flex-direction: column; gap: 4px; padding: 6px 8px; border-radius: 8px; font-size: 12.5px; background: #1d3140; border-left: 3px solid #7fd0de } .gvNeeds li.gvHave { opacity: .7; border-color: #5aa86a } .gvNeeds button { align-self: flex-start; font-size: 12px }

@@ -16,7 +16,7 @@ import { emptyScene } from '../scene/defaults';
 import { placeNew, shuffleFish } from '../scene/scatter';
 import { summaryHtml, summaryOf } from './stockSummary';
 import type { Store } from '../scene/store';
-import type { Fish } from '../scene/types';
+import type { Fish, TankSetup } from '../scene/types';
 import { IDEAL_MAX } from '../scene/stocking';
 import { GAUGE_TIP, gaugeColor, gaugeStyle } from './gauge';
 import type { Viewer } from '../render/viewer';
@@ -31,6 +31,12 @@ import { lifeStages } from '../data/lifestages';
 import { applyRosterFix, rosterTotals, rosterWarnings, type RosterFixOp } from './stockPlanLogic';
 import { budgetGap, laterLine, preyLater, preyLaterLine } from './stockPlanLogic';
 import { span } from '../scene/outgrows';
+import { needsOf, withNeedGear, type Need } from '../demand/needs';
+import { genericHeaterW } from '../data/gearCatalog';
+import { heatLoss, techOf, withUnits } from '../scene/tech';
+import { TANK_MODELS } from '../data/tanks';
+import { volume } from '../scene/physics';
+import { filterState } from '../scene/tech';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
@@ -57,6 +63,8 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
     else if (!hide && stepped && app) { app.classList.remove('collapsed'); stepped = false; viewer.invalidate(); }
   };
   let picks: Pk[] = [], chosen: string | undefined, mates = false, q = '', shown = '';
+  let kept: { tank?: TankSetup['tank']; product?: TankSetup['product']; tech?: TankSetup['tech']; light?: TankSetup['light'] } | undefined; // lane GV4: gear the Guided "What you have" step applied, carried into the animal screen
+  let needLight = ''; // the catalogue light the screen put on a stock-first tank (so a size change can pick it again, never an owned one)
   let undoFix: { picks: Pk[]; chosen?: string; label: string } | undefined; // lane GV4: the roster before the last applied fix
   // the tank is shown bare here: no filter, heater or stand until the build is chosen (the scene keeps its gear; only the view leaves it out)
   const bare = (on: boolean) => { if (gearView.on === on) { gearView.on = !on; viewer.rebuild(); } };
@@ -106,6 +114,12 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
         keep.push(...have);
       }
       T.fish = keep;
+      if (kept?.tank) { T.tank = { ...kept.tank }; if (kept.product) T.product = kept.product; } // an owned tank stays as it is (never swapped for a catalogue size)
+      // lane GV4: the basic light GV2 prices is drawn: a catalogue light for the tank's length (owned lights stay)
+      if (!T.light.owned && (!T.light.product || T.light.product === needLight)) {
+        if (needLight) { T.light = { ...emptyScene().tanks[0].light }; needLight = ''; }
+        const g = withNeedGear(T); if (g !== T) { T.light = g.light; needLight = g.light.product ?? ''; }
+      }
       writePairs(T, picks); // saved with the tank for these two animals: survives Save, share links and the build pick
       const r = rng(1 + Math.floor(Math.random() * 1e6));
       if (rebuild) shuffleFish(T, r, undefined, 100); else if (added.size) placeNew(T, r, added);
@@ -208,6 +222,31 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
   };
   const fixesNow = (): ({ op: RosterFixOp; label: string } | undefined)[] => { const b = getBrief(); return rosterWarnings({ picks, chosen }, { maxUsd: valueOf(b, 'constraints.budget'), targetUsd: targetOf(b, 'constraints.budget') }, store.scene.units === 'in').map(w => w.fix); };
 
+  // need prompts (GV2's needsOf): gear appears only once a species calls for it; each says why, what it costs and offers the one-click add
+  const needRows = (): { n: Need; have: boolean; owns: boolean }[] => {
+    if (!picks.length) return [];
+    const T = store.tank, own = valueOf(getBrief(), 'constraints.owned') ?? {};
+    return needsOf(T, getBrief()).filter(n => n.kind !== 'tank' || !n.have).map(n => {
+      const ownsIt = n.kind === 'heater' || n.kind === 'filter' || n.kind === 'light' ? !!own[n.kind] && own[n.kind] !== 'care' : false;
+      const have = ownsIt || (n.kind === 'heater' ? !!T.tech?.heaters?.length : n.kind === 'filter' ? filterState(T) === 'chosen' : n.have);
+      return { n, have, owns: ownsIt };
+    });
+  };
+  const needBlock = () => {
+    const rows = needRows(); if (!rows.length) return '';
+    return `<div class="spHd">What they need</div><ul class="gvNeeds">${rows.map((r, i) => `<li class="${r.have ? 'gvHave' : ''}"><span>${esc(r.n.why)}${r.owns ? '. You own one: it is covered.' : r.have ? '. Covered.' : ''}</span>${!r.have && r.n.fix && ['tank', 'heater', 'filter'].includes(r.n.kind) ? `<button type="button" data-need="${i}">${esc(r.n.fix.label)}, +$${r.n.fix.deltaUsd}</button>` : !r.have && r.n.fix ? `<span class="spNote">${esc(r.n.fix.label)}, +$${r.n.fix.deltaUsd}: included in the price when plants are added</span>` : ''}</li>`).join('')}</ul>`;
+  };
+  const applyNeed = (i: number) => {
+    const r = needRows()[i]; if (!r) return;
+    if (r.n.kind === 'tank') { const m = planFor(picks, chosen).need?.tank; if (m) { chosen = m.id; change(); } return; }
+    store.update(s => {
+      const T = s.tanks[s.active], t = techOf(T);
+      if (r.n.kind === 'heater') T.tech = withUnits(T.tech ?? { rows: {} }, 'heater', [{ w: genericHeaterW(heatLoss(T, t).needW) }]);
+      else if (r.n.kind === 'filter') T.tech = withUnits(T.tech ?? { rows: {} }, 'filter', [{ kind: volume(T.tank).gallons <= 60 ? 'hob' : 'canister' }]);
+    });
+    viewer.rebuild(); draw();
+  };
+
   const results = () => {
     if (!q.trim() || !picks.length) return ''; // with nothing picked the gallery behind the panel is the list
     const have = new Set(picks.map(p => p.id)), list = searchSpecies(q).filter(s => !have.has(s.id)).slice(0, 8);
@@ -228,7 +267,7 @@ ${picks.length ? `${(() => { const pl = planFor(picks, chosen); const tl = tempL
   return (pl.tank && pl.problem ? `<div class="spWarn spVerdict">Tank verdict: ${esc(pl.problem)}</div>` : first ? `<div class="spLater spVerdict">⏱ Tank verdict: ${esc(first)}</div>` : '') + (pl.caution ? `<div class="spNote">${esc(pl.caution)}</div>` : '') + (() => { const sm = summaryOf(store.tank, store.scene.units); return `<div class="spHd">Stocking summary: ${esc(sm.worstWord)}</div>${summaryHtml(sm, esc)}`; })() + (tl ? `<div class="${tl.rangeState === 'none' ? 'spWarn' : 'spNote'}">${esc(tl.range)}</div><div class="spNote">${esc(tl.setpoint)}</div>` : ''); })()}<ul class="spPicks">${picks.map(p => pickRow(p, planFor(picks, chosen))).join('')}</ul>
 <div class="spHd">Other animals in with them?</div>
 ${mates ? `<p class="spNote">Pick from the pictures on the left; each goes in at the smallest group it is kept in.</p><button type="button" class="primary" data-act="nomates">Done adding</button>` : `<div class="spYN"><button type="button" data-act="mates">Yes, show me what suits them</button></div>`}` : '<p class="spNote">Search for the animal you have in mind, or pick one from the pictures. It goes in at the smallest group it is kept in and shows in the view; then pick a tank for them.</p>'}
-${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}${budgetBlock()}${rosterBlock()}` : ''}
+${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}${budgetBlock()}${rosterBlock()}${needBlock()}` : ''}
 <div class="spFoot"><button type="button" class="primary" data-act="builds"${picks.length && planFor(picks, chosen).tank ? '' : ' disabled'}>Continue: ways to build it</button><button type="button" class="spLink" data-act="done"${picks.length ? '' : ' disabled'}>Open in the editor as it is</button><span class="spNote">Everything stays editable in the editor.</span></div>`;
     const q2 = el.querySelector<HTMLInputElement>('.spQ')!;
     { const t = planFor(picks, chosen).tank; gallery.mates(mates && picks.length ? rankTankmates(picks, t, store.scene.units === 'in').map(m => ({ ...m, bigger: m.bigger ? tankLabel(m.bigger, store.scene.units) : undefined })) : null, !!t); }
@@ -253,6 +292,7 @@ ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}${budgetBlock()}
       const edit = a.edit; editBrief(b => applyAlternative(b, edit)); cf = { key: '' };
       const stock = lockedStock(getBrief()); picks = stock.map(x => ({ ...startPick(x.species), n: x.n })); chosen = undefined; shown = ''; change(true); return;
     }
+    const nd = (e.target as HTMLElement).closest<HTMLElement>('[data-need]'); if (nd) { applyNeed(+(nd.dataset.need ?? -1)); return; }
     const fx = (e.target as HTMLElement).closest<HTMLElement>('[data-fix]');
     if (fx) { // one click applies the verified fix; the roster before it is kept for Undo
       const f = fixesNow()[+(fx.dataset.fix ?? -1)]; if (!f) return;
@@ -283,9 +323,20 @@ ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}${budgetBlock()}
     const units = store.scene.units, s = emptyScene();
     s.name = 'My animal tank'; s.units = units; s.tanks[0].camera = { ...store.tank.camera };
     s.tanks[0].stand.show = false; s.tanks[0].stand.need = 'ask'; // no stand yet: the budget still counts a typical one
+    const own = valueOf(getBrief(), 'constraints.owned') ?? {}, prev = store.tank, has = (k: 'heater' | 'filter' | 'light') => !!own[k] && own[k] !== 'care';
+    // the Guided "What you have" step wrote its gear into the current scene: an owned tank is one that is not the untouched default
+    const ownTank = (has('heater') || has('filter') || has('light') || !!prev.light.owned || !!valueOf(getBrief(), 'constraints.existingTank')) && (!!prev.product || JSON.stringify(prev.tank) !== JSON.stringify(emptyScene().tanks[0].tank));
+    kept = undefined; needLight = '';
+    if (ownTank || has('heater') || has('filter') || has('light')) {
+      kept = { ...(ownTank ? { tank: structuredClone(prev.tank), ...(prev.product ? { product: prev.product } : {}) } : {}), ...(prev.tech ? { tech: structuredClone(prev.tech) } : {}), ...(prev.light.owned ? { light: structuredClone(prev.light) } : {}) };
+      if (kept.tech) s.tanks[0].tech = kept.tech;
+      if (kept.light) s.tanks[0].light = kept.light;
+      if (kept.tank) { s.tanks[0].tank = structuredClone(kept.tank); if (kept.product) s.tanks[0].product = kept.product; }
+    }
     s.tanks[0].stockFirst = true; // no filter drawn until the owner adds one (Nathan 2026-10-21; the tile says "This tank needs a filter")
     store.replace(s);
-    picks = []; chosen = undefined; mates = false; q = ''; shown = ''; undoFix = undefined;
+    const ownGal = kept?.tank ? volume(kept.tank).gallons : 0, near = ownGal ? TANK_MODELS.reduce((a, m) => Math.abs(m.ratedGal - ownGal) < Math.abs(a.ratedGal - ownGal) ? m : a) : undefined;
+    picks = []; chosen = near && Math.abs(near.ratedGal - ownGal) <= ownGal * 0.12 ? near.id : undefined; mates = false; q = ''; shown = ''; undoFix = undefined;
     el.hidden = false; side(true); bare(true); ghost(true); focusSearch = true; draw();
   };
   openBtn.onclick = () => { (document.getElementById('startDlg') as HTMLDialogElement | null)?.close(); open(); };
