@@ -52,6 +52,11 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
+## GV10: GV9 follow-ups (2026-10-30; branch gv10-followups; Coordinator 17)
+1. Owned gear before animals: `applyOwned` (src/ui/ownedGear.ts) writes only ticked + answered items (owned) and runs its tech through `keepSet`; an unticked heater / filter means "I don't own one", so its row stays inferred and need-driven gear adds it (owned 20 gal high, then neons at 68 deg F -> heater and filter listed as needs, +$28 each). A heater / filter the sheet saved and then unticked goes back to inferred; one set in the Tech menu (not owned) is left alone.
+2. Plan sheet kit price: `planOf` (src/scene/plan.ts) takes an optional pinned kit (5th arg); `attachPlanSheet` passes `pinnedKit(...)`, so the betta Top Fin Cube build prints $232 with "Priced as the bundle: <kit>, $51, in place of the parts it includes." (`bundleLine`, also in the .txt).
+3. Make it mine (src/ui/suggest.ts) writes the chosen tank into the brief with `setTank` in the same undo step (an owned tank, `constraints.existingTank`, stays). test/narrow.test.ts updated for it.
+
 ## GV6: Narrowing (2026-10-30; branch gv6-narrowing; Coordinator 17)
 - Landed: `demand/suggest.ts` shares one concept builder (`conceptMaker`: attempt + finalize) between the generator and `variationsOf(anchor, wants)`: up to four variations of a pick, one axis each (stocking, look, tank size, finish tier), each labelled with what changed and the $ / care difference, all through the same welfare + limit gates (nothing over a max is offered; no compromise variations). Locked animals: no stocking axis; an existing tank: no size axis. Pure round state: `narrowStart` / `narrowPick` / `narrowBack` / `picksOf`; `narrowTaste` = a pass per other look shown, then the pick (recorded with taste.ts `recordTaste`, muted from the live loop).
 - UI (`ui/suggest.ts`): Round 1 note, "More like this" anchors the next round, breadcrumb + Back (rounds and their pictures kept unchanged), "I like this one" (was "Use this setup") = `makeItMine`: one undoable replace, brief kept; refine chips only in round 1. No numbers moved (generate refactor is mechanical; full suite unchanged). Tests: test/narrow.test.ts. Shots: research/design/gv6-shots/.

@@ -4,7 +4,7 @@
 // tank behind the sheet is the one being described. Done stays off until each ticked item has an answer.
 import { filtersNear, genericHeaterW, heatersNear, lightProduct, lightsFor, productName } from '../data/gearCatalog';
 import { applyLightProduct } from '../scene/lightproduct';
-import { feedFor, heatLoss, techOf, withUnits, type FilterUnit, type HeaterUnit } from '../scene/tech';
+import { feedFor, filterUnits, heaterUnits, heatLoss, keepSet, techOf, withUnits } from '../scene/tech';
 import { volume } from '../scene/physics';
 import type { Store } from '../scene/store';
 import type { TankSetup } from '../scene/types';
@@ -56,14 +56,18 @@ export function applyOwned(S: TankSetup, s: OwnedState) {
   // everything ticked and answered here is gear in hand: saved owned (lane GM6 flag), so it prices $0 "you have"; no paid price is asked on this sheet
   if (s.on.has('light') && s.light) S.light.owned = true; else { delete S.light.owned; delete S.light.paidUsd; }
   let t = techOf(S);
-  // heater: unticked = none; generic = sized to the tank's heat loss
-  const heaters: HeaterUnit[] = !s.on.has('heater') || s.heater === undefined ? [] : s.heater === GENERIC
-    ? [{ w: genericHeaterW(heatLoss(S, t).needW), owned: true }] : [{ product: s.heater, owned: true }];
-  t = withUnits(t, 'heater', heaters);
-  const filters: FilterUnit[] = !s.on.has('filter') || !s.filterKind || s.filter === undefined ? []
-    : [{ kind: s.filterKind, ...(s.filter !== GENERIC ? { product: s.filter } : {}), owned: true }];
-  t = withUnits(t, 'filter', filters);
-  S.tech = t;
+  // lane GV10 (Coordinator 17, from Nathan's "the tool doesn't assume you need anything until a species needs it"): unticked means "I don't own one",
+  // not "I don't want one", so only ticked and answered gear is written; an unticked heater / filter stays inferred and need-driven gear adds it later
+  const heater = s.on.has('heater') && s.heater !== undefined, filter = s.on.has('filter') && !!s.filterKind && s.filter !== undefined;
+  // heater: generic = sized to the tank's heat loss
+  if (heater) t = withUnits(t, 'heater', [s.heater === GENERIC ? { w: genericHeaterW(heatLoss(S, t).needW), owned: true } : { product: s.heater!, owned: true }]);
+  if (filter) t = withUnits(t, 'filter', [{ kind: s.filterKind!, ...(s.filter !== GENERIC ? { product: s.filter } : {}), owned: true }]);
+  const next = keepSet(S, t);
+  if (S.tech?.roomC === undefined) delete next.roomC; // techOf's room from the brief stays the brief's
+  // a heater / filter this sheet saved before and now unticked goes back to inferred (one set in the Tech menu, not owned, is left alone)
+  if (!heater && heaterUnits(next).some(u => u.owned) && heaterUnits(next).every(u => u.owned)) { delete next.rows.heater; delete next.heaters; delete next.heaterW; delete next.heaterProduct; }
+  if (!filter && filterUnits(next).some(u => u.owned) && filterUnits(next).every(u => u.owned)) { delete next.rows.filter; delete next.filters; delete next.filterModel; delete next.filterProduct; }
+  S.tech = next;
   if (S.water.on) S.grow.feed = feedFor(S);
 }
 

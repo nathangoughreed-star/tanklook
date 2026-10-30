@@ -20,7 +20,7 @@ import { loadProfile } from './demandPanel';
 import { minWarnings } from './stockSummary';
 import { tankMinimum } from '../scene/tankMin';
 import { placedSetup, putTank, sceneForBuild } from './buildPick';
-import { constraintsOf, editBrief, getBrief, lockedStock, onBrief, setBudget, setCareTime, setMonthly, setSpace } from './setupBrief';
+import { constraintsOf, editBrief, emptyBrief, getBrief, lockedStock, onBrief, setBudget, setCareTime, setMonthly, setSpace, setTank } from './setupBrief';
 import { recordTaste, tasteOf, tasteWhy } from '../demand/taste';
 import { briefToWants, clearItem, setItem, targetOf, valueOf } from '../scene/brief';
 import { openBuildPlan, confBadge } from './buildPlanSheet';
@@ -57,6 +57,9 @@ export function makeItMine(store: Store, p: Proposal) {
   next.name = p.archetype.title;
   const T = next.tanks[next.active];
   if (store.tank.brief) T.brief = structuredClone(store.tank.brief); // the brief stays with the project (lane U3)
+  // lane GV10: the chosen tank fills the brief's Tank row (a tank the person owns stays theirs); in the same step, so Undo brings the old row back
+  const brief = T.brief ?? emptyBrief();
+  if (!valueOf(brief, 'constraints.existingTank')) T.brief = setTank(brief, { id: p.build.tank.id, label: p.build.tank.name });
   T.constraints = p.scene.constraints; T.stand = { ...T.stand, show: p.scene.stand.show }; if (p.scene.layout.space) T.layout = { ...T.layout, space: p.scene.layout.space };
   if (p.build.bundle) pinTank(T, p.build.bundle); // lane GV9: the kit price rides on the tank (saved, reloaded, read by the brief bar)
   rememberLastUsed(p.scene.constraints);

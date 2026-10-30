@@ -76,7 +76,9 @@ describe('make it mine', () => {
     expect(st.scene.name).toBe(v.archetype.title);
     expect(st.tank.tank.L).toBe(v.build.setup.tank.L);
     expect(st.tank.fish.map(f => f.species).sort()).toEqual(v.build.animals.flatMap(a => Array(a.n).fill(a.species)).sort());
-    expect(st.tank.brief).toEqual(brief);
+    // lane GV10: the brief is kept, with the chosen tank in its Tank row
+    const { emptyBrief, setTank } = await import('../src/ui/setupBrief');
+    expect(st.tank.brief).toEqual(setTank(brief ?? emptyBrief(), { id: v.build.tank.id }));
     st.undo();
     expect(st.scene.name).toBe(was.name);
     expect(st.scene.tanks.map(t => [t.tank, t.fish.length, t.items.length])).toEqual(was.tanks.map(t => [t.tank, t.fish.length, t.items.length]));

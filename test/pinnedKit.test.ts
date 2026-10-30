@@ -8,7 +8,9 @@ import { defaultScene } from '../src/scene/defaults';
 import { parseScene } from '../src/scene/validate';
 import { makeItMine } from '../src/ui/suggest';
 import { consequence } from '../src/ui/briefFeasibility';
-import { emptyBrief } from '../src/ui/setupBrief';
+import { emptyBrief, setTank } from '../src/ui/setupBrief';
+import { valueOf } from '../src/scene/brief';
+import { planOf, planText } from '../src/scene/plan';
 
 // Lane GV9 fix 5: a starter kit picked through "I like this one" stays priced as the kit, in the brief bar and through save / reload.
 describe('a pinned starter-kit price', () => {
@@ -24,6 +26,26 @@ describe('a pinned starter-kit price', () => {
     expect(withKit).toBeLessThan(parts);
     const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
     expect(consequence(store.tank, emptyBrief(), P, 'in', kit).totals).toContain(`${usd(withKit)} to set up`);
+  });
+  it('make it mine fills the Tank row of the brief, and Undo brings the old row back (lane GV10)', () => {
+    const st = new Store(defaultScene());
+    st.tank.brief = setTank(emptyBrief(), { id: 'g20l' }); st.seal();
+    makeItMine(st, p);
+    expect(valueOf(st.tank.brief!, 'equipment.tank')).toEqual({ model: p.build.tank.id });
+    st.undo();
+    expect(valueOf(st.tank.brief!, 'equipment.tank')).toEqual({ model: 'g20l' });
+    const own = new Store(defaultScene()); // a tank the person owns is not replaced by a picked one
+    own.tank.brief = setTank(emptyBrief(), { id: 'g20h', owned: true }); makeItMine(own, p);
+    expect(valueOf(own.tank.brief!, 'constraints.existingTank')).toEqual({ model: 'g20h' });
+  });
+  it('prices the plan sheet as the bundle, with its line (lane GV10)', () => {
+    const kit = pinnedKit(store.tank, store.scene.active, P)!;
+    const plan = planOf(store.tank, undefined, Date.parse('2026-10-30'), 'in', kit), parts = planOf(store.tank, undefined, Date.parse('2026-10-30'), 'in');
+    expect(plan.setupUsd).toBe(Math.round(demandOf(store.tank, defaultProfile(), { now: Date.parse('2026-10-30'), kit }).totals.setupUsd));
+    expect(plan.setupUsd).toBeLessThan(parts.setupUsd);
+    expect(plan.bundle?.label).toContain(kit.label!);
+    expect(planText(plan)).toContain('Priced as the bundle: ');
+    expect(planText(parts)).not.toContain('Priced as the bundle');
   });
   it('survives a save and reload', () => {
     const back = parseScene(JSON.parse(JSON.stringify(store.scene))).scene, T = back.tanks[back.active];

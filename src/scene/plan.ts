@@ -5,7 +5,8 @@
 import { dealShip } from '../data/deals';
 import { gearShip } from '../data/gearDeals';
 import { getSpecies } from '../data/species';
-import type { Contribution, Demand } from '../demand/types';
+import { defaultProfile, type Contribution, type Demand } from '../demand/types';
+import { demandOf, type DemandOpts } from '../demand/engine';
 import { mean3 } from '../demand/range';
 import { rhythmNote, rhythmOf } from '../demand/rhythm';
 import { GEAR_SLOT_NAME, gearOffers } from '../demand/gearDeals';
@@ -48,6 +49,8 @@ export interface Plan {
   /** needs that have no item on the list */
   missing: string[];
   setupUsd: number;
+  /** a pinned starter kit (demand/pinned.ts pinnedKit) the set-up is priced as (lane GV10): the brief bar's price, not the parts */
+  bundle?: { label: string; usd: number };
   upkeepUsdMo: number;
   minPerWeek: number;
   /** care rhythm and away-days (demand/rhythm.ts), information only */
@@ -150,9 +153,9 @@ function serve(r: Contribution, S: TankSetup, animals: AnimalCount[], needs: Ret
  * The plan for the tank in `S` (the editor's current tank). `build`: the build the user picked, for its bundle and gear sales (it prices
  * the set-up the way the builds screen did). Without one, list prices.
  */
-export function planOf(S: TankSetup, build?: Build, now = Date.now(), u: Units = 'cm'): Plan {
+export function planOf(S: TankSetup, build?: Build, now = Date.now(), u: Units = 'cm', pinKit?: DemandOpts['kit']): Plan {
   const animals = animalsOfSetup(S), st = stockingOf(S);
-  const D: Demand = priceScape(S, build ?? ({ animals, gearDeals: [] } as unknown as Build), now);
+  const D: Demand = pinKit ? demandOf(S, defaultProfile(), { now, kit: pinKit }) : priceScape(S, build ?? ({ animals, gearDeals: [] } as unknown as Build), now);
   const needs = plantNeeds(S);
   const wantsHeat = (S.water.on && !!S.water.salt) || animals.some(a => { const sp = getSpecies(a.species); return sp && countsAgainstWater(sp) && tempFit(sp.id, roomOf(S)) !== 'ok'; });
   const rows: PlanRow[] = [];
@@ -193,16 +196,20 @@ export function planOf(S: TankSetup, build?: Build, now = Date.now(), u: Units =
   if (build?.bundle) dealLine(`Bundle: ${build.bundle.retailer} ${build.bundle.name}, ${usd(build.bundle.price.usd)}${build.bundle.price.regularUsd ? ` (was ${usd(build.bundle.price.regularUsd)})` : ''}, ${dealShip(build.bundle).text}`);
   if (build?.tankDeal) dealLine(`Tank on sale at ${build.tankDeal.retailer}: ${usd(build.tankDeal.usd)} (was ${usd(build.tankDeal.regularUsd)})`);
   for (const d of build?.gearDeals ?? []) dealLine(`${d.title} on sale at ${d.store}: ${usd(d.price.usd)} (was ${usd(d.price.regularUsd)}), ${gearShip(d).text}`);
-  if (!build?.bundle) for (const d of gearOffers(S, D, now)) dealLine(`${GEAR_SLOT_NAME[d.slot][0].toUpperCase()}${GEAR_SLOT_NAME[d.slot].slice(1)}: ${d.title} on sale at ${d.store}, ${usd(d.price.usd)} (was ${usd(d.price.regularUsd)}), ${gearShip(d).text}`);
+  if (!build?.bundle && !pinKit) for (const d of gearOffers(S, D, now)) dealLine(`${GEAR_SLOT_NAME[d.slot][0].toUpperCase()}${GEAR_SLOT_NAME[d.slot].slice(1)}: ${d.title} on sale at ${d.store}, ${usd(d.price.usd)} (was ${usd(d.price.regularUsd)}), ${gearShip(d).text}`);
   const rhy = rhythmOf(D, S);
   return {
     title: S.water.on ? 'Your animal tank: the plan' : 'Your terrarium: the plan', tank: build ? tankLabel(build.tank, u) : `${Math.round(volume(S.tank).gallons)} gal (${sizeTxt(S.tank.L, S.tank.D, u)})`, animals: names,
     spacePct: Math.round(st.spacePercent), waterPct: Math.round(st.waterPercent), floorPct: Math.round(st.floorPercent), filtrationPct: Math.round(st.filtrationPercent), fits, verdict, rows, missing,
     setupUsd: Math.round(D.totals.setupUsd), upkeepUsdMo: Math.round(D.totals.upkeepUsdMo), minPerWeek: Math.round(D.totals.minPerWeek),
+    ...(pinKit ? { bundle: { label: pinKit.label ?? pinKit.id, usd: Math.round(pinKit.priceUsd) } } : {}),
     rhythm: rhy.text, awayText: rhy.awayText, rhythmNote: rhythmNote(rhy),
     deals, cycleNote: CYCLE_NOTE,
   };
 }
+
+/** The pinned kit's line (lane GV10): the set-up is the bundle's one price in place of the parts it includes. */
+export const bundleLine = (b: NonNullable<Plan['bundle']>) => `Priced as the bundle: ${b.label}, ${usd(b.usd)}, in place of the parts it includes.`;
 
 /** The plan as plain text (the .txt download and the clipboard copy). */
 export function planText(p: Plan): string {
@@ -212,7 +219,7 @@ export function planText(p: Plan): string {
   for (const m of p.missing) L.push(`  ! ${m}`);
   L.push('', 'Shopping list (each item and the need it serves)');
   for (const r of p.rows) L.push(`  ${usd(r.usd).padStart(7)}  ${r.item}${r.kind === 'extra' ? ' [not needed]' : ''}: ${r.serves}`);
-  L.push('', `Set-up ${usd(p.setupUsd)}; ${usd(p.upkeepUsdMo)} a month; about ${p.minPerWeek} minutes a week.`, `Rhythm: ${p.rhythm} (estimate).${p.awayText ? ` Can be left: ${p.awayText}.` : ''}`);
+  L.push('', ...(p.bundle ? [bundleLine(p.bundle)] : []), `Set-up ${usd(p.setupUsd)}; ${usd(p.upkeepUsdMo)} a month; about ${p.minPerWeek} minutes a week.`, `Rhythm: ${p.rhythm} (estimate).${p.awayText ? ` Can be left: ${p.awayText}.` : ''}`);
   if (p.deals.length) { L.push('', 'Sales that fit'); for (const d of p.deals) L.push(`  ${d.text}`); }
   L.push('', p.cycleNote);
   return L.join('\n');

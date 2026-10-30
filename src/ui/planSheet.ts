@@ -2,7 +2,9 @@
 // out from the tank as it stands in the editor: the verdict (space and filtration bars, hard truths), the shopping list with the need each item
 // serves, the totals, the sales that fit, and the one-line cycle note. Print uses the browser's print dialog; .txt downloads the same text.
 import type { Build } from '../scene/builds';
-import { planOf, planText, type Level, type Plan } from '../scene/plan';
+import { bundleLine, planOf, planText, type Level, type Plan } from '../scene/plan';
+import { pinnedKit } from '../demand/pinned';
+import { loadProfile } from './demandPanel';
 import type { Store } from '../scene/store';
 import type { TankSetup } from '../scene/types';
 import { gaugeStyle } from './gauge';
@@ -44,7 +46,7 @@ ${sm ? `<h3>Stocking summary: ${esc(sm.worstWord)}</h3>${summaryHtml(sm, esc)}` 
 ${needs.length ? `<h3>Care needs the tool cannot check</h3><ul class="planTruths">${needs.map(n => `<li class="${n.severity === 'S3' ? 'bad' : 'warn'}"><b>?</b> ${esc(n.text)}</li>`).join('')}</ul>` : ''}
 <h2>What to buy, and why</h2>
 <table>${needRows}</table>${spread ? `<p class="sheetNote">The set-up cost below adds about ${usd(spread)} to these listed prices: prices vary between stores.</p>` : ''}
-<h2>What it costs</h2>
+<h2>What it costs</h2>${p.bundle ? `<p class="sheetNote">${esc(bundleLine(p.bundle))}</p>` : ''}
 <table><tr><th scope="row">Set-up</th><td class="q">${usd(p.setupUsd)}</td><td>once, with the sales below that fit</td></tr>
 <tr><th scope="row">Each month</th><td class="q">${usd(p.upkeepUsdMo)}</td><td>food, salt or supplies, power, replacing what dies</td></tr>
 <tr><th scope="row">Your time</th><td class="q">${p.minPerWeek} min</td><td>a week, once it is running</td></tr>
@@ -60,7 +62,8 @@ export function attachPlanSheet(store: Store) {
   const close = () => { host?.remove(); host = null; document.body.classList.remove('sheet-open'); document.removeEventListener('keydown', onKey); };
   const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
   const setup = () => store.scene.tanks[store.scene.active] ?? store.scene.tanks[0];
-  const current = () => planOf(setup(), build, undefined, store.scene.units);
+  // lane GV10: a pinned kit prices the plan as the bundle, as the brief bar and the demand panel do
+  const current = () => planOf(setup(), build, undefined, store.scene.units, build?.bundle ? undefined : pinnedKit(setup(), store.scene.active, loadProfile()));
   const save = (text: string) => {
     const url = URL.createObjectURL(new Blob([text], { type: 'text/plain' })), a = document.createElement('a');
     a.href = url; a.download = `${slug(store.scene.name)}-plan.txt`; document.body.append(a); a.click(); a.remove();
