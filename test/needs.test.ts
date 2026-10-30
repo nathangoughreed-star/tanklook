@@ -6,7 +6,7 @@ import { needsOf, basicLight, lightFor, withNeedGear } from '../src/demand/needs
 import { bareSetup } from '../src/scene/defaults';
 import { makeItem } from '../src/scene/items';
 import { IN } from '../src/scene/physics';
-import { filterState, inferTech, keepSet, techOf, tempEvidence, withChoice, withUnits, type TechSetup } from '../src/scene/tech';
+import { filterState, inferTech, keepSet, parseTech, techOf, tempEvidence, withChoice, withUnits, type TechSetup } from '../src/scene/tech';
 import type { TankSetup } from '../src/scene/types';
 
 const P = defaultProfile();
@@ -123,6 +123,7 @@ describe('Tech-menu edits keep untouched rows inferred', () => {
     expect(needsOf(S).some(n => n.kind === 'heater')).toBe(false);
     S.tech = keepSet(S, { ...techOf(S), roomC: F(68) }); // and back
     expect(techOf(S).rows.heater).toBe('one');
+    expect(parseTech(JSON.parse(JSON.stringify(S.tech)))?.roomC).toBeCloseTo(F(68)); // a room alone survives a save and reload
   });
   it('a row the person edited stays as set; the other rows still follow', () => {
     const S = tankOf(['neon', 'neon', 'neon'], 68);
