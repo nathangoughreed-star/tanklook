@@ -8,6 +8,9 @@ import { feedFor, heatLoss, techOf, withUnits, type FilterUnit, type HeaterUnit 
 import { volume } from '../scene/physics';
 import type { Store } from '../scene/store';
 import type { TankSetup } from '../scene/types';
+import { valueOf } from '../scene/brief';
+import { editBrief, getBrief, ownedKeys, setOwnedKey } from './setupBrief';
+import { setNeedStand } from './guided/steps';
 
 export type OwnedItem = 'tank' | 'light' | 'heater' | 'filter';
 export const OWNED_ITEMS: { id: OwnedItem; label: string; hint: string }[] = [
@@ -37,6 +40,8 @@ export function ownedMissing(s: OwnedState): OwnedItem[] {
   }
   return out;
 }
+/** The stand is not a tank unit: it is the brief's `constraints.owned.stand`, with "do you need a stand?" in `equipment.needStand` (lane GV1). */
+export const STAND_ITEM = { id: 'stand', label: 'Stand', hint: 'The cabinet or table the tank sits on' } as const;
 export const ownedReady = (s: OwnedState) => s.on.size > 0 && !ownedMissing(s).length;
 
 const FILTER_KINDS: [string, string][] = [['sponge', 'Sponge filter + air pump'], ['internal', 'Internal filter'], ['hob', 'Hang-on-back filter'], ['canister', 'Canister filter']];
@@ -62,14 +67,13 @@ export function applyOwned(S: TankSetup, s: OwnedState) {
   if (S.water.on) S.grow.feed = feedFor(S);
 }
 
-export function attachOwnedGear(store: Store, o: { pickTank: (done: (name: string) => void) => void; status: (m: string, bad?: boolean) => void }) {
-  const dlg = document.createElement('dialog');
-  dlg.className = 'libdlg owndlg'; dlg.setAttribute('aria-labelledby', 'ownTitle');
-  document.body.append(dlg);
-  let st = emptyOwned();
+export interface OwnedHost { pickTank: (done: (name: string) => void) => void; status: (m: string, bad?: boolean) => void }
+/** Draw the owned-gear sheet into `root` (a dialog body, or the Guided "What you have" step). `done` adds a Done button (the dialog); a step has its own Next instead. */
+export function mountOwnedSheet(store: Store, o: OwnedHost, root: HTMLElement, opts: { title?: boolean; done?: () => void; state?: OwnedState } = {}) {
+  const st = opts.state ?? emptyOwned();
   const apply = () => store.edit(S => applyOwned(S, st), { coalesce: 'owned' });
-  const sel = (id: string, cur: string | undefined, first: string, opts: [string, string][]) =>
-    `<select id="${id}" aria-label="${esc(first)}"><option value=""${cur === undefined ? ' selected' : ''} disabled>${esc(first)}</option><option value="${GENERIC}"${cur === GENERIC ? ' selected' : ''}>Not sure: use a generic one</option>${opts.map(([v, l]) => `<option value="${esc(v)}"${cur === v ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
+  const sel = (id: string, cur: string | undefined, first: string, list: [string, string][]) =>
+    `<select id="${id}" aria-label="${esc(first)}"><option value=""${cur === undefined ? ' selected' : ''} disabled>${esc(first)}</option><option value="${GENERIC}"${cur === GENERIC ? ' selected' : ''}>Not sure: use a generic one</option>${list.map(([v, l]) => `<option value="${esc(v)}"${cur === v ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
   const picker = (id: OwnedItem): string => {
     const S = store.tank;
     if (id === 'tank') return `<button type="button" data-own="tank">${st.tank ? 'Change tank…' : 'Choose your tank…'}</button> <b>${st.tank ? esc(st.tank) : '<i>not chosen yet</i>'}</b>`;
@@ -87,14 +91,20 @@ export function attachOwnedGear(store: Store, o: { pickTank: (done: (name: strin
   };
   const draw = () => {
     const missing = ownedMissing(st), name = (id: OwnedItem) => OWNED_ITEMS.find(x => x.id === id)!.label.toLowerCase();
-    dlg.innerHTML = `<form method="dialog" class="libhead"><h2 id="ownTitle">What do you already have?</h2><button value="close" aria-label="Close">✕</button></form>
+    const b = getBrief(), haveStand = ownedKeys(b).includes('stand'), need = valueOf(b, 'equipment.needStand');
+    const yn = (v: boolean | undefined, l: string) => `<button type="button" class="${need === v ? 'on' : ''}" data-stand="${v === undefined ? 'unsure' : v}" aria-pressed="${need === v}">${l}</button>`;
+    root.innerHTML = `${opts.title ? '<form method="dialog" class="libhead"><h2 id="ownTitle">What do you already have?</h2><button value="close" aria-label="Close">✕</button></form>' : ''}
       <p class="hint">Tick each thing you own and want to use. Each one opens its list so you can pick the exact product; if you do not know, pick the generic one. Anything you leave unticked is something you still need to buy.</p>
-      <div class="ownlist">${OWNED_ITEMS.map(x => `<div class="ownrow"><label class="chk"><input type="checkbox" data-item="${x.id}"${st.on.has(x.id) ? ' checked' : ''}> <b>${x.label}</b> <span class="hint">${x.hint}</span></label>${st.on.has(x.id) ? `<div class="ownpick">${picker(x.id)}</div>` : ''}</div>`).join('')}</div>
-      <div class="btns"><button type="button" id="ownDone" class="primary"${ownedReady(st) ? '' : ' disabled'}>Done</button>
-      <span class="hint">${!st.on.size ? 'Tick at least one thing.' : missing.length ? `Still to choose: ${missing.map(name).join(', ')}.` : ''}</span></div>`;
+      <div class="ownlist">${OWNED_ITEMS.map(x => `<div class="ownrow"><label class="chk"><input type="checkbox" data-item="${x.id}"${st.on.has(x.id) ? ' checked' : ''}> <b>${x.label}</b> <span class="hint">${x.hint}</span></label>${st.on.has(x.id) ? `<div class="ownpick">${picker(x.id)}</div>` : ''}</div>`).join('')}
+      <div class="ownrow"><label class="chk"><input type="checkbox" data-stand-have${haveStand ? ' checked' : ''}> <b>${STAND_ITEM.label}</b> <span class="hint">${STAND_ITEM.hint}</span></label></div></div>
+      ${haveStand ? '' : `<div class="ownstand" role="group" aria-label="Do you need a stand?"><b>Do you need a stand?</b> <span class="wgChips">${yn(true, 'Yes')}${yn(false, 'No, it sits on furniture I have')}${yn(undefined, 'Not sure')}</span></div>`}
+      ${opts.done ? `<div class="btns"><button type="button" id="ownDone" class="primary"${ownedReady(st) ? '' : ' disabled'}>Done</button>
+      <span class="hint">${!st.on.size ? 'Tick at least one thing.' : missing.length ? `Still to choose: ${missing.map(name).join(', ')}.` : ''}</span></div>`
+      : missing.length ? `<p class="hint">Still to choose: ${missing.map(name).join(', ')}. You can go on; anything unanswered is priced as still to buy.</p>` : ''}`;
   };
-  dlg.addEventListener('change', e => {
+  root.addEventListener('change', e => {
     const el = e.target as HTMLInputElement | HTMLSelectElement;
+    if (el instanceof HTMLInputElement && el.hasAttribute('data-stand-have')) { editBrief(b => setOwnedKey(b, 'stand', el.checked)); draw(); return; }
     if (el instanceof HTMLInputElement && el.dataset.item) {
       const id = el.dataset.item as OwnedItem;
       if (el.checked) { st.on.add(id); if (id === 'tank' && !st.tank) { draw(); o.pickTank(n => { st.tank = n; apply(); draw(); }); return; } }
@@ -106,11 +116,26 @@ export function attachOwnedGear(store: Store, o: { pickTank: (done: (name: strin
     else return;
     apply(); draw();
   });
-  dlg.addEventListener('click', e => {
-    const t = e.target as HTMLElement;
+  root.addEventListener('click', e => {
+    const t = e.target as HTMLElement, sb = t.closest<HTMLElement>('[data-stand]');
+    if (sb) { const v = sb.dataset.stand; editBrief(b => setNeedStand(b, v === 'unsure' ? undefined : v === 'true')); draw(); return; }
     if (t.closest('[data-own="tank"]')) o.pickTank(n => { st.tank = n; apply(); draw(); });
-    else if (t.id === 'ownDone') { dlg.close(); o.status('Your gear is in. Add the rest from the panel; the demand panel prices what you still need.'); }
+    else if (t.id === 'ownDone') opts.done?.();
   });
-  // Esc / ✕ before Done keeps what was answered so far; the sheet can be opened again from the start menu
-  return { open() { st = emptyOwned(); draw(); dlg.showModal(); } };
+  draw();
+  return { redraw: draw };
+}
+
+export function attachOwnedGear(store: Store, o: OwnedHost) {
+  const dlg = document.createElement('dialog');
+  dlg.className = 'libdlg owndlg'; dlg.setAttribute('aria-labelledby', 'ownTitle');
+  document.body.append(dlg);
+  // Esc / ✕ before Done keeps what was answered so far; the sheet can be opened again from the start menu (a fresh sheet each time)
+  return {
+    open() {
+      const box = document.createElement('div'); dlg.replaceChildren(box);
+      mountOwnedSheet(store, o, box, { title: true, done: () => { dlg.close(); o.status('Your gear is in. Add the rest from the panel; the demand panel prices what you still need.'); } });
+      dlg.showModal();
+    },
+  };
 }

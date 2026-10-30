@@ -281,12 +281,12 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // At first launch the tank on screen is already a fresh one, so Sandbox just closes the Welcome screen.
   bindBriefStore(store); // lane U3: the setup brief lives in the active tank (TankSetup.brief)
   let welcomeFirst = false, lookPick: { open(): void } | undefined;
-  let suggestPanel: { open(): void } | undefined, briefBarApi: { open(): void } | undefined;
+  let suggestPanel: { open(): void } | undefined;
   const openLook = () => void import('./lookPick').then(m => { (lookPick ??= m.attachLookPick(store, viewer, status)).open(); }); // lane C7: Create a look (path 2)
-  const welcome = attachWelcome({
+  const welcome = attachWelcome(store, { // lane GV1: the Guided stepper (ui/guided/); its owned-gear step borrows the tank picker and the status line
+    pickTank: done => pickTank(done), status,
     stocking: () => $('startAnimal').click(),
     look: () => openLook(),
-    equipment: () => briefBarApi?.open(),
     suggest: () => suggestPanel?.open(),
     sandbox: () => { const ok = welcomeFirst ? (welcomeFirst = false, true) : newEmptyTank(); if (ok) { setMode('sandbox'); startMode.drawBar(); } return ok; },
     browse: menu => showChooser(menu, menu === 'open' ? 'starters' : undefined, welcomeFirst),
@@ -307,7 +307,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     profile: () => { try { return loadProfile(); } catch { return undefined; } },
   });
   void import('./suggest').then(m => { suggestPanel = m.attachSuggest(store, viewer, status); }); // lane C8: Suggest a setup
-  void import('./briefBar').then(m => { briefBarApi = m.attachBriefBar(store, { suggest: () => suggestPanel?.open() }); }); // lane U3: the setup brief bar, shown in every entry point
+  void import('./briefBar').then(m => { m.attachBriefBar(store, { suggest: () => suggestPanel?.open() }); }); // lane U3: the setup brief bar, shown in every entry point
   $('suggestBtn').onclick = () => { if (startDlg.open) startDlg.close(); suggestPanel?.open(); };
   $('startWelcome').onclick = () => { startDlg.close(); startMode.show(); };
   const showStart = () => { welcomeFirst = true; startMode.show(); };
