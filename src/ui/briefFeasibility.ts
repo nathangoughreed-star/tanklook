@@ -10,7 +10,7 @@ import { loadProfile } from './demandPanel';
 import { compliance, type Constraints } from '../scene/constraints';
 import type { Units, TankSetup } from '../scene/types';
 import { planFor } from './stockPlanLogic';
-import { briefToWants } from '../scene/brief';
+import { briefToWants, rangeOf } from '../scene/brief';
 import { budgetOf, lockedStock, spaceOf, type Brief } from './setupBrief';
 
 const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
@@ -23,7 +23,7 @@ function cheapestFor(b: Brief): Proposal | undefined {
   const key = JSON.stringify({ a: w.animals, o: w.owned, t: w.ownTank?.id, x: w.taxPct, s: w.needStand, sp: w.space, h: w.hightech, sc: c.space });
   if (!CHEAP.has(key)) {
     if (CHEAP.size > 20) CHEAP.clear();
-    const r = suggestSetups({ ...w, phased: false, constraints: { ...c, startupUsd: off(c.startupUsd), monthlyUsd: off(c.monthlyUsd), minutesPerWeek: off(c.minutesPerWeek) } }, loadProfile(), 'in');
+    const r = suggestSetups({ ...w, mins: undefined, tankGal: undefined, startupTarget: undefined, setupHoursTarget: undefined, phased: false, constraints: { ...c, startupUsd: off(c.startupUsd), monthlyUsd: off(c.monthlyUsd), minutesPerWeek: off(c.minutesPerWeek) } }, loadProfile(), 'in');
     CHEAP.set(key, r.cheapest ?? r.proposals[0] ?? null);
   }
   return CHEAP.get(key) ?? undefined;
@@ -50,9 +50,9 @@ export const constraintsFrom = (b: Brief): Constraints => briefToWants(b).constr
 export function consequence(T: TankSetup, b: Brief, P: UserProfile, units: Units): { totals: string; line?: string; over: boolean } {
   const D = demandOf(T, P), t = D.totals;
   const totals = `${usd(t.setupUsd)} to set up, ${usd(t.upkeepUsdMo)} a month, ${Math.round(t.minPerWeek)} min a week`;
-  const c = constraintsFrom(b);
-  if (!Object.keys(c).length) return { totals, over: false };
+  const c = constraintsFrom(b), lo = rangeOf(b, 'constraints.budget').min, under = lo !== undefined && t.setupUsd < lo;
+  if (!Object.keys(c).length) return under ? { totals, line: `Set-up ${usd(t.setupUsd)} is under your ${usd(lo!)} minimum.`, over: false } : { totals, over: false };
   const S = { constraints: c, layout: { ...T.layout, space: spaceOf(b) ?? T.layout.space }, tank: T.tank };
   const r = compliance(S, t, P.limits, units);
-  return { totals, line: r.line, over: r.over > 0 };
+  return { totals, line: under ? `${r.line ? r.line + ' ' : ''}Set-up ${usd(t.setupUsd)} is under your ${usd(lo!)} minimum.` : r.line, over: r.over > 0 };
 }

@@ -8,7 +8,7 @@ import { getSpecies, searchSpecies } from '../data/species';
 import { editBrief, getBrief, lockAnimals, lockedStock } from './setupBrief';
 import { applyAlternative, type Infeasible } from '../demand/infeasible';
 import { suggestFromBrief } from '../demand/suggest';
-import { targetOf, valueOf } from '../scene/brief';
+import { minOf, valueOf } from '../scene/brief';
 import { loadProfile } from './demandPanel';
 import { futureHtml, infeasibleCard } from './infeasibleCard';
 import { tankFromModel, type TankModel } from '../data/tanks';
@@ -186,7 +186,7 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
     const b = getBrief(), animals = animalsOf(picks), plan = planFor(picks, chosen), t = plan.tank ?? plan.need?.tank;
     const saved = futureHtml(b);
     if (!t || !animals.length) return saved;
-    const gap = budgetGap(animals, t, valueOf(b, 'constraints.budget'), targetOf(b, 'constraints.budget'));
+    const gap = budgetGap(animals, t, valueOf(b, 'constraints.budget'));
     if (!gap) return saved;
     if (!gap.over) return `<div class="spNote sgBudgetNote">The cheapest build of a ${Math.round(t.ratedGal)} gal tank is about ${usd(gap.cheapestUsd)}, ${usd(gap.overTarget)} over your target of ${usd(gap.targetUsd!)}. Your ${usd(gap.maxUsd!)} maximum still holds.</div>${saved}`;
     const key = `${animals.map(a => `${a.species}${a.n}`).join(',')}|${t.id}|${gap.maxUsd}|${(valueOf(b, 'preferences.future') ?? []).length}`;
@@ -208,9 +208,9 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
   const rosterBlock = () => {
     const st = { picks, chosen }, t = rosterTotals(st);
     if (!t) return '';
-    const b = getBrief(), max = valueOf(b, 'constraints.budget'), target = targetOf(b, 'constraints.budget'), { minimum: mn, ideal: id } = t.tiers;
-    const lvl = (n: number) => max !== undefined && n > max ? ' gvOver' : target !== undefined && n > target ? ' gvNear' : '';
-    const ws = rosterWarnings(st, { maxUsd: max, targetUsd: target }, store.scene.units === 'in');
+    const b = getBrief(), max = valueOf(b, 'constraints.budget'), lo = minOf(b, 'constraints.budget'), { minimum: mn, ideal: id } = t.tiers;
+    const lvl = (n: number) => max !== undefined && n > max || lo !== undefined && n < lo ? ' gvOver' : '';   // lane GV8: red outside the band, above or below
+    const ws = rosterWarnings(st, { maxUsd: max, minUsd: lo }, store.scene.units === 'in');
     const mins = (a: number, c: number) => a === c ? `${a}` : `${a}-${c}`;
     return `<div class="spHd">What this roster comes to</div><div class="gvTotals" aria-label="Running totals">
 <div class="gvDiff"><span class="spLab">Difficulty</span><b>${esc(t.difficulty.word)}</b><span class="spNote">${esc(t.difficulty.why)}</span></div>
@@ -220,7 +220,7 @@ ${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</
 <div class="gvTier"><span class="spLab">Care</span><b>${mins(Math.round(mn.minPerWeek), Math.round(id.minPerWeek))} min</b><span class="spNote">a week</span></div></div>
 <div class="spHd">Warnings${ws.length ? ` (${ws.length})` : ''}</div>${ws.length ? `<ul class="gvWarns">${ws.map((w, i) => `<li class="${w.welfare ? 'gvRed' : 'gvAmber'}"><span>${esc(w.text)}${w.welfare ? ' <em>Not a valid tradeoff.</em>' : ''}</span>${w.fix ? `<button type="button" data-fix="${i}">${esc(w.fix.label)}</button>` : ''}</li>`).join('')}</ul>` : '<p class="spNote">No conflicts so far.</p>'}${undoFix ? `<button type="button" class="spLink" data-act="undofix">Undo: ${esc(undoFix.label)}</button>` : ''}`;
   };
-  const fixesNow = (): ({ op: RosterFixOp; label: string } | undefined)[] => { const b = getBrief(); return rosterWarnings({ picks, chosen }, { maxUsd: valueOf(b, 'constraints.budget'), targetUsd: targetOf(b, 'constraints.budget') }, store.scene.units === 'in').map(w => w.fix); };
+  const fixesNow = (): ({ op: RosterFixOp; label: string } | undefined)[] => { const b = getBrief(); return rosterWarnings({ picks, chosen }, { maxUsd: valueOf(b, 'constraints.budget'), minUsd: minOf(b, 'constraints.budget') }, store.scene.units === 'in').map(w => w.fix); };
 
   // need prompts (GV2's needsOf): gear appears only once a species calls for it; each says why, what it costs and offers the one-click add
   const needRows = (): { n: Need; have: boolean; owns: boolean }[] => {

@@ -1,7 +1,7 @@
 // Guided v2, steps 1-4 (lane GV1, 2026-10-30): the pure part. Step order, the picture cards (kind, start from), what each start
 // intent routes to, and the Guided position saved IN THE BRIEF (`dialog.answered` entries prefixed "gv:"), so reload and share keep the place.
 // Nothing here draws: flow.ts does. Nothing hard-gates: every step can be skipped, Back works everywhere.
-import { clearItem, dialogOf, setDialog, setItem, type Brief } from '../../scene/brief';
+import { clearItem, dialogOf, setBound, setDialog, setItem, type Brief } from '../../scene/brief';
 import type { Kind } from '../../demand/suggest';
 import type { SetupKind } from '../../scene/pickerKind';
 
@@ -83,10 +83,10 @@ export function applyKindChoice(b: Brief, k: GKind): Brief {
 }
 
 /** The limits step's "No": nothing is set. Clears every limit item, target and flag the editors write. */
-export const LIMIT_ITEMS = ['constraints.budget', 'constraints.monthly', 'constraints.careMin', 'constraints.setupHours', 'constraints.maxSpace', 'constraints.spaceGate', 'constraints.roomTempC', 'constraints.tapWater'] as const;
+export const LIMIT_ITEMS = ['constraints.budget', 'constraints.monthly', 'constraints.careMin', 'constraints.setupHours', 'constraints.maxSpace', 'constraints.tankGal', 'constraints.spaceGate', 'constraints.roomTempC', 'constraints.tapWater'] as const;
 export const clearLimits = (b: Brief): Brief => LIMIT_ITEMS.reduce((x, id) => clearItem(x, id), b);
-/** Set-up time (hours): the one limit the Welcome editors do not draw yet. */
-export const setSetupHours = (b: Brief, h: number | undefined): Brief => h === undefined || !(h >= 0) ? clearItem(b, 'constraints.setupHours') : setItem(b, 'constraints.setupHours', h, 'hard');
+/** Set-up time (hours), a range like the others: `which` is the bound (default the upper one); undefined / negative clears that bound and keeps the other. */
+export const setSetupHours = (b: Brief, h: number | undefined, which: 'min' | 'max' = 'max'): Brief => setBound(b, 'constraints.setupHours', which, h !== undefined && h >= 0 ? h : undefined);
 /** "Do you need a stand?": yes / no / not answered. */
 export const setNeedStand = (b: Brief, v: boolean | undefined): Brief => v === undefined ? clearItem(b, 'equipment.needStand') : setItem(b, 'equipment.needStand', v, 'preference');
 

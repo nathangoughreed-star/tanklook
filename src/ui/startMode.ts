@@ -5,9 +5,9 @@
 import type { Store } from '../scene/store';
 import { ITEM_IDS, type Brief, type ItemId } from '../scene/brief';
 import { SETUP_KINDS, type SetupKind } from '../scene/pickerKind';
-import { labelOf, getBrief, editBrief, onBrief, budgetOf, monthlyOf, targetBudgetOf } from './setupBrief';
+import { labelOf, getBrief, editBrief, onBrief, rangeOf } from './setupBrief';
 import { demandOf } from '../demand';
-import { setOff } from '../scene/brief';
+import { setOff, against } from '../scene/brief';
 import { summaryOf, LEVEL_WORD, type StockSummary } from './stockSummary';
 
 export type Mode = 'guided' | 'sandbox';
@@ -26,17 +26,19 @@ export function activeRows(b: Brief): { id: ItemId; label: string }[] {
   return ITEM_IDS.filter(i => b.items[i] && !b.items[i]!.off).map(id => ({ id, label: labelOf(b, id) }));
 }
 
-/** Cost against the brief: red over a max, amber over a target (never blocks). `item` is the brief item that can be turned off. */
+/** Cost against the brief's ranges (lane GV8): red above an upper bound, amber below a lower bound; never blocks. `item` is the brief item that can be turned off. */
 export function costFlags(b: Brief, setupUsd: number, monthlyUsd: number): Flag[] {
   const out: Flag[] = [], usd = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
-  const max = budgetOf(b), tgt = targetBudgetOf(b), mo = monthlyOf(b);
-  if (max !== undefined && setupUsd > max) out.push({ level: 'problem', welfare: false, cat: 'Cost', item: 'constraints.budget', text: `Set-up ${usd(setupUsd)} is over your ${usd(max)} maximum.` });
-  else if (tgt !== undefined && setupUsd > tgt) out.push({ level: 'caution', welfare: false, cat: 'Cost', item: 'constraints.budget', text: `Set-up ${usd(setupUsd)} is over your ${usd(tgt)} target (maximum ${max === undefined ? 'not set' : usd(max)}).` });
-  if (mo !== undefined && monthlyUsd > mo) out.push({ level: 'problem', welfare: false, cat: 'Cost', item: 'constraints.monthly', text: `Upkeep ${usd(monthlyUsd)} a month is over your ${usd(mo)} maximum.` });
+  const one = (id: 'constraints.budget' | 'constraints.monthly', what: string, v: number, unit: string) => {
+    const r = rangeOf(b, id), at = against(r, v);
+    if (at === 'above') out.push({ level: 'problem', side: 'over', welfare: false, cat: 'Cost', item: id, text: `${what} ${usd(v)}${unit} is over your ${usd(r.max!)}${unit} maximum.` });
+    else if (at === 'below') out.push({ level: 'caution', side: 'under', welfare: false, cat: 'Cost', item: id, text: `${what} ${usd(v)}${unit} is under your ${usd(r.min!)}${unit} minimum.` });
+  };
+  one('constraints.budget', 'Set-up', setupUsd, ''); one('constraints.monthly', 'Upkeep', monthlyUsd, ' a month');
   return out;
 }
 
-export interface Flag { level: 'problem' | 'caution'; text: string; /** an animal-welfare failure: always red, never a choice */ welfare: boolean; cat: string; /** the brief item behind this flag; only such flags can be turned off */ item?: ItemId }
+export interface Flag { level: 'problem' | 'caution'; /** cost flags: above the upper bound or below the lower one */ side?: 'over' | 'under'; text: string; /** an animal-welfare failure: always red, never a choice */ welfare: boolean; cat: string; /** the brief item behind this flag; only such flags can be turned off */ item?: ItemId }
 /** Sandbox flags from the stocking summary: every Problem is a welfare failure (red, labelled), every Caution an amber flag. Nothing here blocks. */
 export function sandboxFlags(sm: StockSummary): Flag[] {
   const out: Flag[] = [];
@@ -77,7 +79,7 @@ export function attachStartMode(store: Store, host: StartModeHost, initialKind: 
     bar.hidden = false;
     bar.innerHTML = `<div class="sb-head"><b>Sandbox</b> <span class="hint">every check is a flag; none blocks you</span>` +
       `<span class="sb-btns"><button type="button" class="linkbtn" data-sb="guard">Guardrails${off ? ` (${off} off)` : ''}</button> · <button type="button" class="linkbtn" data-sb="guided" title="Keep this tank and open the Guided workspace">Switch to Guided</button></span></div>` +
-      (flags.length ? `<ul class="sb-flags">${flags.map(f => `<li class="sb-flag ${f.level}"><i>${f.welfare ? 'Welfare problem, ' + NOT_VALID_TRADEOFF : f.cat === 'Cost' ? (f.level === 'problem' ? 'Over budget' : 'Over target') : LEVEL_WORD.caution}</i> ${esc(f.text)}${f.item ? ` <button type="button" class="linkbtn" data-off="${f.item}" title="Stop checking this against your brief (Guardrails turns it back on)">Turn off this check</button>` : ''}</li>`).join('')}</ul>` : '<div class="hint">No flags.</div>');
+      (flags.length ? `<ul class="sb-flags">${flags.map(f => `<li class="sb-flag ${f.level}"><i>${f.welfare ? 'Welfare problem, ' + NOT_VALID_TRADEOFF : f.cat === 'Cost' ? (f.side === 'under' ? 'Under budget' : 'Over budget') : LEVEL_WORD.caution}</i> ${esc(f.text)}${f.item ? ` <button type="button" class="linkbtn" data-off="${f.item}" title="Stop checking this against your brief (Guardrails turns it back on)">Turn off this check</button>` : ''}</li>`).join('')}</ul>` : '<div class="hint">No flags.</div>');
   };
   const drawGuard = () => {
     const b = getBrief(), off = guardrailRows(b), on = activeRows(b);

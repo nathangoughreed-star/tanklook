@@ -447,7 +447,7 @@ export interface RosterWarning {
   text: string;
   fix?: { label: string; op: RosterFixOp; /** the change in minimum-viable set-up $ after the fix, recomputed (not estimated) */ deltaUsd: number };
 }
-export interface RosterLimits { maxUsd?: number; targetUsd?: number }
+export interface RosterLimits { maxUsd?: number; /** the lower bound of the budget range (lane GV8): a roster whose ideal set-up still falls under it is flagged */ minUsd?: number }
 
 /** Apply one fix to a roster. Pure: the screen keeps the old state for Undo. */
 export function applyRosterFix(st: RosterState, op: RosterFixOp): RosterState {
@@ -491,14 +491,14 @@ export function rosterWarnings(st: RosterState, limits: RosterLimits = {}, us = 
     }
   }
   const t = rosterTotals(st);
-  if (t && (limits.maxUsd !== undefined || limits.targetUsd !== undefined)) {
+  if (t && (limits.maxUsd !== undefined || limits.minUsd !== undefined)) {
     const min = t.tiers.minimum.setupUsd, ideal = t.tiers.ideal.setupUsd, usd = (n: number) => `$${Math.round(n)}`;
     const msg = limits.maxUsd !== undefined && min > limits.maxUsd ? `Even the minimum viable set-up, ${usd(min)}, is over your ${usd(limits.maxUsd)} maximum`
       : limits.maxUsd !== undefined && ideal > limits.maxUsd ? `The ideal set-up, ${usd(ideal)}, is over your ${usd(limits.maxUsd)} maximum; the minimum viable one, ${usd(min)}, fits`
-      : limits.targetUsd !== undefined && min > limits.targetUsd ? `The minimum viable set-up, ${usd(min)}, is over your ${usd(limits.targetUsd)} target` : '';
+      : limits.minUsd !== undefined && ideal < limits.minUsd ? `Even the ideal set-up, ${usd(ideal)}, is under your ${usd(limits.minUsd)} minimum` : '';
     if (msg) {
       const cheaper = plan.need && plan.need.tank.id !== t.tank.id && minSetup({ ...st, chosen: plan.need.tank.id }) < minSetup(st) ? plan.need.tank : undefined;
-      out.push({ kind: 'budget', welfare: false, text: msg, ...(cheaper ? { fix: withDelta(st, d => `Use the smallest tank that holds them: ${tankLabel(cheaper, us ? 'in' : 'cm').replace(/^About /, '')}, ${signedUsd(d)}`, { op: 'tank', tank: cheaper.id }) } : {}) });
+      out.push({ kind: 'budget', welfare: false, text: msg, ...(cheaper && !/under your/.test(msg) ? { fix: withDelta(st, d => `Use the smallest tank that holds them: ${tankLabel(cheaper, us ? 'in' : 'cm').replace(/^About /, '')}, ${signedUsd(d)}`, { op: 'tank', tank: cheaper.id }) } : {}) });
     }
   }
   return out;

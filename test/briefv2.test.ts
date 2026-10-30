@@ -1,29 +1,24 @@
 import { describe, expect, it } from 'vitest';
-import { emptyBrief, parseBrief, serializeBrief, setItem, setFlex, targetOf, isFlex, hasState } from '../src/scene/brief';
-import { addFuture, answeredOf, directionOf, futureOf, recordAnswer, removeFuture, roomTempFOf, setBudget, setDirection, setLimitTarget, setRoomTempF, setSpace, setSpaceTarget, setTapWater, spaceTargetOf, tapWaterOf, labelOf, profileWaterSource } from '../src/ui/setupBrief';
+import { emptyBrief, parseBrief, serializeBrief, setItem, setFlex, setRange, isFlex, hasState } from '../src/scene/brief';
+import { addFuture, answeredOf, directionOf, futureOf, recordAnswer, removeFuture, roomTempFOf, setBudget, setDirection, setRoomTempF, setTapWater, tapWaterOf, labelOf, profileWaterSource } from '../src/ui/setupBrief';
 
 describe('brief v2', () => {
-  it('stores max vs target and survives a value edit and a round trip', () => {
+  it('stores a range and survives an upper-bound edit and a round trip', () => {
     let b = setBudget(emptyBrief(), 250);
-    b = setLimitTarget(b, 'constraints.budget', 200); b = setFlex(b, 'constraints.budget', true);
-    expect(targetOf(b, 'constraints.budget')).toBe(200);
+    b = setRange(b, 'constraints.budget', { min: 200, max: 250 }); b = setFlex(b, 'constraints.budget', true);
     b = setBudget(b, 300);
-    expect(targetOf(b, 'constraints.budget')).toBe(200); expect(isFlex(b, 'constraints.budget')).toBe(true);
-    expect(labelOf(b, 'constraints.budget')).toBe('target $200, up to $300');
+    expect(b.items['constraints.budget']).toMatchObject({ value: 300, min: 200, flex: true });
+    expect(isFlex(b, 'constraints.budget')).toBe(true);
+    expect(labelOf(b, 'constraints.budget')).toBe('$200-300');
     const r = parseBrief(JSON.parse(serializeBrief(b)))!;
-    expect(r).toEqual(b); expect(r.v).toBe(2);
+    expect(r).toEqual(b); expect(r.v).toBe(3);
   });
-  it('a target above the max is refused, and dropped when the max falls below it', () => {
-    let b = setBudget(emptyBrief(), 250);
-    expect(setLimitTarget(b, 'constraints.budget', 300)).toBe(b);
-    b = setLimitTarget(b, 'constraints.budget', 200); b = setBudget(b, 150);
-    expect(targetOf(b, 'constraints.budget')).toBeUndefined();
-    expect(parseBrief({ v: 2, items: { 'constraints.budget': { value: 100, status: 'hard', target: 500 } } })!.items['constraints.budget']!.target).toBeUndefined();
-  });
-  it('space target is a footprint under the max', () => {
-    let b = setSpace(emptyBrief(), { w: 1000, d: 400 });
-    b = setSpaceTarget(b, { w: 900, d: 350 }); expect(spaceTargetOf(b)).toEqual({ w: 900, d: 350 });
-    expect(setSpaceTarget(b, { w: 1100, d: 350 })).toBe(b);
+  it('a lower bound the new maximum falls below is dropped; an old target is dropped on load', () => {
+    let b = setRange(emptyBrief(), 'constraints.budget', { min: 200, max: 250 });
+    b = setItem(b, 'constraints.budget', 150);
+    expect((b.items['constraints.budget'] as { min?: number }).min).toBeUndefined();
+    const old = parseBrief({ v: 2, items: { 'constraints.budget': { value: 100, status: 'hard', target: 50 } } })!.items['constraints.budget']!;
+    expect(old).toEqual({ value: 100, status: 'hard' });
   });
   it('environment: deg F in, deg C stored; tap water validated', () => {
     let b = setRoomTempF(emptyBrief(), 68); expect(b.items['constraints.roomTempC']!.value).toBe(20); expect(roomTempFOf(b)).toBe(68);

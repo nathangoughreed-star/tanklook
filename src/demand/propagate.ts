@@ -3,12 +3,12 @@
 // `inputChanges` says what moved between two snapshots; `resultDiff` says what that bought in the shown concepts (upgrades that now fit,
 // more swim length, more animals). Nothing here ranks or filters: welfare stays the generator's own gate, so a diff never reads as a tradeoff on it.
 import type { Brief } from '../scene/brief';
-import { targetOf, valueOf } from '../scene/brief';
+import { minOf, valueOf } from '../scene/brief';
 import type { TankModel } from '../data/tanks';
 import type { Proposal, Suggestions, Wants } from './suggest';
 
 export interface Inputs {
-  startup?: number; startupTarget?: number; monthly?: number; time?: number; hours?: number; hoursTarget?: number;
+  startup?: number; startupMin?: number; monthly?: number; time?: number; hours?: number; hoursMin?: number;
   owned: string[];
   tank?: { gal: number; L: number; D: number; H: number };
   locked: { species: string; n: number }[];
@@ -17,14 +17,14 @@ export interface Inputs {
 const round = (n: number) => Math.round(n);
 const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
 
-/** What the generator was asked, from its Wants (the budget target comes from the brief: the Wants carry only the max). */
+/** What the generator was asked, from its Wants (the lower bounds come from the brief, lane GV8: the guardrail shape carries only the maxima). */
 export function inputsOf(w: Wants, b?: Brief): Inputs {
   const c = w.constraints, t: TankModel | undefined = w.ownTank;
-  const tgt = b ? targetOf(b, 'constraints.budget') : undefined, htg = b ? targetOf(b, 'constraints.setupHours') : undefined;
+  const lo = b ? minOf(b, 'constraints.budget') : undefined, hlo = b ? minOf(b, 'constraints.setupHours') : undefined;
   return {
-    ...(c.startupUsd?.on ? { startup: c.startupUsd.value } : {}), ...(tgt !== undefined ? { startupTarget: tgt } : {}),
+    ...(c.startupUsd?.on ? { startup: c.startupUsd.value } : {}), ...(lo !== undefined ? { startupMin: lo } : {}),
     ...(c.monthlyUsd?.on ? { monthly: c.monthlyUsd.value } : {}), ...(c.minutesPerWeek?.on ? { time: c.minutesPerWeek.value } : {}),
-    ...(w.setupHours !== undefined ? { hours: w.setupHours } : {}), ...(htg !== undefined ? { hoursTarget: htg } : {}),
+    ...(w.setupHours !== undefined ? { hours: w.setupHours } : {}), ...(hlo !== undefined ? { hoursMin: hlo } : {}),
     owned: Object.keys(w.owned ?? {}).sort(),
     ...(t ? { tank: { gal: t.ratedGal, L: t.outer.L, D: t.outer.D, H: t.outer.H } } : {}),
     locked: (w.animals ?? []).map(a => ({ species: a.species, n: a.n })).sort((x, y) => x.species.localeCompare(y.species)),
@@ -47,7 +47,8 @@ export function tankShift(a: NonNullable<Inputs['tank']>, b: NonNullable<Inputs[
 export function inputChanges(a: Inputs, b: Inputs): string[] {
   const out: string[] = [];
   for (const [k, label, unit] of LIMITS) { const x = a[k] as number | undefined, y = b[k] as number | undefined; if (x !== y) out.push(`${label} ${lim(x, unit)} -> ${lim(y, unit)}`); }
-  if (a.startupTarget !== b.startupTarget && a.startup === b.startup) out.push(`Budget target ${a.startupTarget === undefined ? 'none' : usd(a.startupTarget)} -> ${b.startupTarget === undefined ? 'none' : usd(b.startupTarget)}`);
+  if (a.startupMin !== b.startupMin) out.push(`Budget minimum ${a.startupMin === undefined ? 'none' : usd(a.startupMin)} -> ${b.startupMin === undefined ? 'none' : usd(b.startupMin)}`);
+  if (a.hoursMin !== b.hoursMin) out.push(`Set-up time minimum ${a.hoursMin === undefined ? 'none' : `${round(a.hoursMin)} h`} -> ${b.hoursMin === undefined ? 'none' : `${round(b.hoursMin)} h`}`);
   if (a.tank && b.tank && (a.tank.L !== b.tank.L || a.tank.D !== b.tank.D || a.tank.H !== b.tank.H)) out.push(`Tank ${tankShift(a.tank, b.tank)}`);
   else if (!a.tank && b.tank) out.push(`Your tank: ${round(b.tank.gal)} gal`);
   else if (a.tank && !b.tank) out.push('Your tank removed');
@@ -123,5 +124,5 @@ export function changeStrip(a: Inputs, b: Inputs, before: Suggestions | undefine
   return { text: `${ch.join('; ')}: ${got}${!d.upgrades && loosened ? ' (the budget is a ceiling, so a cheaper concept is not penalised)' : ''}.`, lines: d.lines };
 }
 
-/** The brief's budget target, for callers that hold only a brief. */
-export const budgetOf = (b: Brief): { max?: number; target?: number } => ({ max: valueOf(b, 'constraints.budget'), target: targetOf(b, 'constraints.budget') });
+/** The brief's budget range, for callers that hold only a brief. */
+export const budgetOf = (b: Brief): { min?: number; max?: number } => ({ min: minOf(b, 'constraints.budget'), max: valueOf(b, 'constraints.budget') });

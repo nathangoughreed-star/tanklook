@@ -7,7 +7,7 @@ import type { Store } from '../scene/store';
 import { onBuildPicked } from './buildPick';
 import { loadProfile } from './demandPanel';
 import {
-  answer, answeredOf, directionOf, recordAnswer, setDirection, budgetOf, careTimeOf, editBrief, getBrief, isEmpty, lockedStock, nextQuestions, onBrief, removeItem, setBudget, setCareTime, setSpace, setTank, spaceOf, summarise, toggleLock,
+  answer, answeredOf, directionOf, recordAnswer, setDirection, budgetOf, careTimeOf, editBrief, rangeOf, setLimitBound, getBrief, isEmpty, lockedStock, nextQuestions, onBrief, removeItem, setBudget, setCareTime, setSpace, setTank, spaceOf, summarise, toggleLock,
   emptyBrief, setBrief, type Direction, type GroupView, type ItemId, type QId, type Question,
 } from './setupBrief';
 import { consequence, evaluateAnimals } from './briefFeasibility';
@@ -34,7 +34,7 @@ export function attachBriefBar(store: Store, host: { suggest(): void }) {
     return `<button type="button" class="bbChip ${g.open ? 'open' : 'set'}${locked ? ' locked' : ''}" data-g="${g.id}" title="${esc(g.label)}: ${esc(g.text)}"><i>${esc(SHORT[g.id])}</i><span>${esc(g.text)}</span></button>`;
   };
   const input = (id: string, label: string, v: string, unit: string, step = 1) =>
-    `<label class="bbIn"><span>${label}</span><input id="${id}" type="number" min="0" step="${step}" inputmode="decimal" value="${esc(v)}" placeholder="open">${unit ? `<em>${unit}</em>` : ''}</label>`;
+    `<label class="bbIn"><span>${label}</span><input id="${id}" type="number" min="0" step="${step}" inputmode="decimal" value="${esc(v)}" placeholder="no bound">${unit ? `<em>${unit}</em>` : ''}</label>`;
   const askCard = (q: Question) => `<div class="bbAsk" data-q="${q.id}"><b>${esc(q.text)}</b> <span class="spNote">${esc(q.why)}</span><div class="bbOpts">${q.options.map(o => `<button type="button" data-ans="${o.id}">${esc(o.label)}</button>`).join('')}<button type="button" class="spLink" data-skip="${q.id}">Not sure</button></div></div>`;
 
   const draw = () => {
@@ -52,10 +52,10 @@ export function attachBriefBar(store: Store, host: { suggest(): void }) {
     let cons = '';
     try { const c = consequence(store.tank, b, loadProfile(), units()); cons = `<div class="bbCons${c.over ? ' over' : ''}"><b>This tank now:</b> ${esc(c.totals)}.${c.line ? ` <span>${esc(c.line)}</span>` : ''}</div>`; } catch { /* no tank to price yet */ }
     const items = rows.map(r => `<div class="bbRow"><b>${esc(r.label)}</b>${r.rows.length ? r.rows.map(i => `<span class="bbItem ${i.status}">${esc(i.label)}${i.status === 'hard' ? ' <i>limit</i>' : ''}<button type="button" data-lock="${i.id}" aria-pressed="${i.status === 'locked'}" title="${i.status === 'locked' ? 'Locked: suggestions keep it. Click to unlock.' : 'Lock it: suggestions will keep it.'}">${i.status === 'locked' ? 'Locked' : 'Lock'}</button><button type="button" data-del="${i.id}" aria-label="Remove ${esc(i.label)}">✕</button></span>`).join('') : `<span class="bbOpen">${esc(r.text)}</span>`}</div>`).join('');
-    const sp = spaceOf(b), cap = budgetOf(b), t = careTimeOf(b), r1 = (mm: number) => String(Math.round(mm / k() * 10) / 10);
+    const sp = spaceOf(b), cap = budgetOf(b), t = careTimeOf(b), rb = rangeOf(b, 'constraints.budget'), rt = rangeOf(b, 'constraints.careMin'), r1 = (mm: number) => String(Math.round(mm / k() * 10) / 10);
     const evalBox = next.action === 'evaluate' && ev?.text ? `<div class="bbEval ${ev.fits === false ? 'bad' : ''}" role="status"><b>Checked before proposing:</b> ${esc(ev.text)}</div>` : '';
     bar.insertAdjacentHTML('beforeend', `<div class="bbCard">${evalBox}${next.questions[0] ? askCard(next.questions[0]) : ''}
-<div class="bbLimits">${input('bbBudget', 'Up to', cap === undefined ? '' : String(cap), '$ set-up', 10)}${input('bbTime', 'Time', t === undefined ? '' : String(t), 'min a week', 5)}<span class="bbIn"><span>Space</span><input id="bbW" type="number" min="0" aria-label="Width" placeholder="wide" value="${sp ? r1(sp.w) : ''}"> x <input id="bbD" type="number" min="0" aria-label="Depth" placeholder="deep" value="${sp ? r1(sp.d) : ''}"><em>${units()}</em></span></div>
+<div class="bbLimits">${input('bbBudgetMin', 'At least', rb.min === undefined ? '' : String(rb.min), '$ set-up', 10)}${input('bbBudget', 'At most', cap === undefined ? '' : String(cap), '$ set-up', 10)}${input('bbTimeMin', 'Time, at least', rt.min === undefined ? '' : String(rt.min), 'min a week', 5)}${input('bbTime', 'at most', t === undefined ? '' : String(t), 'min a week', 5)}<span class="bbIn"><span>Space</span><input id="bbW" type="number" min="0" aria-label="Width" placeholder="wide" value="${sp ? r1(sp.w) : ''}"> x <input id="bbD" type="number" min="0" aria-label="Depth" placeholder="deep" value="${sp ? r1(sp.d) : ''}"><em>${units()}</em></span></div>
 ${items}${cons}
 <div class="bbFoot"><button type="button" class="primary" data-act="fill">Fill in what I left open</button><button type="button" class="spLink" data-act="clear">Clear the brief</button><button type="button" disabled title="Coming: shopping list, set-up steps, cycling and stocking order">Build plan</button><span class="spNote">Locked items stay as they are. Welfare checks always apply; they are not a setting.</span></div></div>`);
   };
@@ -77,7 +77,9 @@ ${items}${cons}
   bar.onchange = e => {
     const el = e.target as HTMLInputElement, v = el.value.trim() === '' ? undefined : parseFloat(el.value);
     if (el.id === 'bbBudget') editBrief(b => setBudget(b, v));
+    else if (el.id === 'bbBudgetMin') editBrief(b => setLimitBound(b, 'constraints.budget', 'min', v));
     else if (el.id === 'bbTime') editBrief(b => setCareTime(b, v));
+    else if (el.id === 'bbTimeMin') editBrief(b => setLimitBound(b, 'constraints.careMin', 'min', v));
     else if (el.id === 'bbW' || el.id === 'bbD') {
       const w = parseFloat((bar.querySelector('#bbW') as HTMLInputElement).value), d = parseFloat((bar.querySelector('#bbD') as HTMLInputElement).value);
       editBrief(b => Number.isFinite(w) && Number.isFinite(d) && w > 0 && d > 0 ? setSpace(b, { w: Math.round(w * k()), d: Math.round(d * k()) }, units()) : setSpace(b, undefined));

@@ -7,18 +7,18 @@ import { getSpecies } from '../data/species';
 import { TANK_MODELS } from '../data/tanks';
 import { PICK_CARE, OWNED, type OwnedMap, type Tag } from '../demand/suggest';
 import {
-  ADAPTS, DESIRES, GROUPS, clearItem, dialogOf, emptyBrief, getItem, hasState, isEmpty, lock, setDialog, setFlex, setItem, setTarget, targetOf, unlock, valueOf,
-  type Adapt, type Brief, type Desire, type GroupId, type ItemId, type LimitId, type Status, type TapWater, type WaterSrc,
+  ADAPTS, DESIRES, GROUPS, clearItem, dialogOf, emptyBrief, getItem, hasState, isEmpty, lock, setDialog, setFlex, setItem, setRange, setBound, rangeOf, rangeText, targetOf, unlock, valueOf,
+  type Adapt, type Brief, type Desire, type GroupId, type ItemId, type LimitId, type NumLimitId, type Range, type Status, type TapWater, type WaterSrc,
 } from '../scene/brief';
 import { lookLabel, LOOK_TILES, type LookStyle } from '../scene/looks';
 import type { Store } from '../scene/store';
 import type { TankSetup } from '../scene/types';
 
-export { emptyBrief, isEmpty, GROUPS, ADAPTS, DESIRES, setFlex, setTarget, targetOf, dialogOf };
-export type { Brief, GroupId, ItemId, Status, LimitId, Adapt, Desire, TapWater, WaterSrc };
+export { emptyBrief, isEmpty, GROUPS, ADAPTS, DESIRES, setFlex, setRange, setBound, rangeOf, rangeText, targetOf, dialogOf };
+export type { Brief, GroupId, ItemId, Status, LimitId, NumLimitId, Range, Adapt, Desire, TapWater, WaterSrc };
 
 const MM_IN = 25.4;
-const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
+const NUM_LIMITS: readonly ItemId[] = ['constraints.budget', 'constraints.monthly', 'constraints.careMin', 'constraints.setupHours', 'constraints.tankGal'];
 
 // ---------- reading the brief ----------
 export interface RowView { id: ItemId; label: string; status: Status; off: boolean }
@@ -27,7 +27,7 @@ const OPEN_TEXT: Record<GroupId, string> = { animals: 'open', appearance: 'open'
 /** Where an item shows: U1 groups by id prefix; the tank you already own and the gear you own read as "Tank and equipment" to a person. */
 const SHOWN_IN: Partial<Record<ItemId, GroupId>> = { 'constraints.existingTank': 'equipment', 'constraints.owned': 'equipment' };
 const ORDER: ItemId[] = ['animals.stock', 'animals.kinds', 'animals.groups', 'appearance.look', 'appearance.plantMode', 'equipment.tank', 'constraints.existingTank', 'constraints.owned', 'equipment.needStand',
-  'constraints.budget', 'constraints.monthly', 'constraints.careMin', 'constraints.maxSpace', 'constraints.phased', 'preferences.hightech', 'preferences.tags', 'preferences.wishes', 'preferences.experience', 'preferences.effort',
+  'constraints.budget', 'constraints.monthly', 'constraints.careMin', 'constraints.setupHours', 'constraints.tankGal', 'constraints.maxSpace', 'constraints.phased', 'preferences.hightech', 'preferences.tags', 'preferences.wishes', 'preferences.experience', 'preferences.effort',
   'constraints.roomTempC', 'constraints.tapWater', 'preferences.desired', 'preferences.adapt', 'preferences.future'];
 export const tankName = (model?: string) => TANK_MODELS.find(m => m.id === model)?.name ?? model ?? 'a tank';
 const EXP = ['beginner', 'some experience', 'experienced'];
@@ -36,9 +36,20 @@ const WISH_WORD = { 'larger-tank': 'a larger tank', 'more-planted': 'more plante
 const WATER_WORD: Record<WaterSrc, string> = { tap: 'tap', well: 'well', ro: 'RO' };
 export const DESIRE_WORD: Record<Desire, string> = { watch: 'watch the activity', plants: 'grow plants', breed: 'breed', centerpiece: 'a centerpiece', relax: 'relax', learn: 'learn', kids: 'for kids' };
 export const ADAPT_WORD: Record<Adapt, string> = { fixed: 'keep my plan', some: 'open to some changes', open: 'open to changes' };
-const tgt = (b: Brief, id: LimitId, f: (n: number) => string) => { const t = targetOf(b, id); return typeof t === 'number' ? `target ${f(t)}, ` : ''; };
+/** A limit as one chip: "$300-600", "at least $300", "up to $600 a month", "20-40 min a week" (lane GV8). */
+export function limitText(b: Brief, id: NumLimitId): string {
+  const r = rangeOf(b, id);
+  switch (id) {
+    case 'constraints.budget': return rangeText(r, '', '$');
+    case 'constraints.monthly': return rangeText(r, ' a month', '$');
+    case 'constraints.careMin': return rangeText(r, ' min a week');
+    case 'constraints.setupHours': return rangeText(r, ' h of set-up');
+    case 'constraints.tankGal': return rangeText(r, ' gal');
+  }
+}
 /** One plain label per item, in the person's units. */
 export function labelOf(b: Brief, id: ItemId): string {
+  if ((NUM_LIMITS as readonly string[]).includes(id)) return limitText(b, id as NumLimitId);
   const raw = (getItem(b, id) as { value: unknown } | undefined)?.value;
   switch (id) {
     case 'animals.stock': return (raw as { species: string; count: number }[]).map(a => `${a.count} ${getSpecies(a.species)?.name ?? a.species}`).join(', ');
@@ -50,9 +61,6 @@ export function labelOf(b: Brief, id: ItemId): string {
     case 'constraints.existingTank': return `own ${tankName((raw as { model?: string }).model)}`;
     case 'constraints.owned': return `own ${Object.keys(raw as object).join(', ')}`;
     case 'equipment.needStand': return (raw as boolean) ? 'needs a stand' : 'has a stand';
-    case 'constraints.budget': return `${tgt(b, id, usd)}up to ${usd(raw as number)}`;
-    case 'constraints.monthly': return `${tgt(b, id, usd)}up to ${usd(raw as number)} a month`;
-    case 'constraints.careMin': return `${tgt(b, id, n => `${n} min`)}up to ${raw as number} min a week`;
     case 'constraints.roomTempC': return `room ${Math.round((raw as number) * 9 / 5 + 32)} deg F`;
     case 'constraints.tapWater': { const w = raw as TapWater; return `${WATER_WORD[w.source]} water${w.hardnessDgh !== undefined ? `, ${w.hardnessDgh} dGH` : ''}${w.ph !== undefined ? `, pH ${w.ph}` : ''}`; }
     case 'preferences.desired': return (raw as Desire[]).map(d => DESIRE_WORD[d]).join(', ');
@@ -86,7 +94,8 @@ export const budgetOf = (b: Brief) => valueOf(b, 'constraints.budget');
 export const monthlyOf = (b: Brief) => valueOf(b, 'constraints.monthly');
 export const careTimeOf = (b: Brief) => valueOf(b, 'constraints.careMin');
 export const spaceOf = (b: Brief): { w: number; d: number } | undefined => { const s = valueOf(b, 'constraints.maxSpace'); return s ? { w: s.w, d: s.d } : undefined; };
-export const targetBudgetOf = (b: Brief) => targetOf(b, 'constraints.budget');
+/** The lower bounds ("at least"): undefined = none. */
+export const budgetMinOf = (b: Brief) => rangeOf(b, 'constraints.budget').min;
 export const roomTempFOf = (b: Brief): number | undefined => { const c = valueOf(b, 'constraints.roomTempC'); return c === undefined ? undefined : Math.round(c * 9 / 5 + 32); };
 export const tapWaterOf = (b: Brief) => valueOf(b, 'constraints.tapWater');
 export const desiredOf = (b: Brief): Desire[] => valueOf(b, 'preferences.desired') ?? [];
@@ -96,13 +105,8 @@ export const futureOf = (b: Brief) => valueOf(b, 'preferences.future') ?? [];
 /** The profile's waterSource ('tap' | 'well' | 'bought-ro' | 'own-ro') implied by the brief; undefined for RO (the profile keeps bought vs own) or when unset. Pricing still reads the profile. */
 export const profileWaterSource = (b: Brief): 'tap' | 'well' | undefined => { const s = tapWaterOf(b)?.source; return s === 'tap' || s === 'well' ? s : undefined; };
 export const experienceOf = (b: Brief) => valueOf(b, 'preferences.experience');
-/** The flexible target of a money / time limit; undefined clears it. A target above the max is ignored. */
-export function setLimitTarget(b: Brief, id: 'constraints.budget' | 'constraints.monthly' | 'constraints.careMin' | 'constraints.setupHours', target: number | undefined): Brief {
-  return setTarget(b, id, target !== undefined && target >= 0 ? target : undefined);
-}
-/** Footprint target in mm (never above the max footprint). */
-export const setSpaceTarget = (b: Brief, s: { w: number; d: number } | undefined): Brief => setTarget(b, 'constraints.maxSpace', s);
-export const spaceTargetOf = (b: Brief): { w: number; d: number } | undefined => { const s = targetOf(b, 'constraints.maxSpace'); return s ? { w: s.w, d: s.d } : undefined; };
+/** One bound of a range limit ("at least" = min, "at most" = max); undefined clears that bound and keeps the other. Lower above upper is swapped (see scene/brief cleanRange). */
+export const setLimitBound = (b: Brief, id: NumLimitId, which: 'min' | 'max', v: number | undefined): Brief => setBound(b, id, which, v !== undefined && v >= 0 ? v : undefined);
 /** Room temperature typed in deg F (stored deg C); undefined / NaN clears. */
 export const setRoomTempF = (b: Brief, f: number | undefined): Brief => f === undefined || !Number.isFinite(f) ? clearItem(b, 'constraints.roomTempC') : setItem(b, 'constraints.roomTempC', Math.round((f - 32) * 5 / 9 * 10) / 10, 'preference');
 export function setTapWater(b: Brief, w: Partial<TapWater> | undefined): Brief {
@@ -188,8 +192,10 @@ export function setTank(b: Brief, tank: { id: string; label?: string; owned?: bo
   if (tank) n = tank.owned ? setItem(n, 'constraints.existingTank', { model: tank.id }, 'locked') : setItem(n, 'equipment.tank', { model: tank.id }, 'preference');
   return n;
 }
-const cap = (id: 'constraints.budget' | 'constraints.monthly' | 'constraints.careMin') => (b: Brief, v: number | undefined): Brief => v === undefined || !(v >= 0) ? clearItem(b, id) : setItem(b, id, v, 'hard');
+/** The UPPER bound of a limit (the one every v1 / v2 caller means); the lower bound is kept. */
+const cap = (id: NumLimitId) => (b: Brief, v: number | undefined): Brief => setLimitBound(b, id, 'max', v);
 export const setBudget = cap('constraints.budget'), setMonthly = cap('constraints.monthly'), setCareTime = cap('constraints.careMin');
+export const setBudgetMin = (b: Brief, v: number | undefined): Brief => setLimitBound(b, 'constraints.budget', 'min', v);
 /** Space in mm; setting it also switches the space guardrail on, clearing it removes both. */
 export function setSpace(b: Brief, s: { w: number; d: number } | undefined, _units: 'in' | 'cm' = 'in'): Brief {
   return s ? setItem(setItem(b, 'constraints.maxSpace', { w: s.w, d: s.d }, 'hard'), 'constraints.spaceGate', true, 'hard') : clearItem(clearItem(b, 'constraints.maxSpace'), 'constraints.spaceGate');
@@ -252,7 +258,7 @@ function syncCaps(T: TankSetup, before: Brief, after: Brief) {
   const c = { ...(T.constraints ?? {}) };
   for (const [id, key] of CAPS) {
     const it = getItem(after, id);
-    if (it) c[key] = { on: !it.off, value: it.value }; else if (getItem(before, id)) delete c[key];
+    if (it?.value !== undefined) c[key] = { on: !it.off, value: it.value }; else if (getItem(before, id)) delete c[key];   // the guardrail shape holds the upper bound only
   }
   if (Object.keys(c).length) T.constraints = c; else delete T.constraints;
 }

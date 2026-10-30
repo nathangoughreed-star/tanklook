@@ -6,7 +6,7 @@ import { applyKind, tankKind } from '../../scene/pickerKind';
 import { editBrief, getBrief, onBrief, ownedKeys } from '../setupBrief';
 import { attachWelcomeGuard } from '../welcomeGuard';
 import { mountOwnedSheet, emptyOwned, type OwnedHost } from '../ownedGear';
-import { valueOf } from '../../scene/brief';
+import { rangeOf } from '../../scene/brief';
 import {
   INTENT_CARDS, KIND_CARDS, STEP_ASK, applyKindChoice, artPath, clearLimits, kindOf, nextStep, prevStep, railOf, readState, routeOf, setSetupHours, writeState,
   type GCard, type GIntent, type GKind, type GRoute, type GState, type GStep, type RailItem,
@@ -72,9 +72,9 @@ export function attachGuidedFlow(dlg: HTMLDialogElement, store: Store, host: Gui
       if (lim) {
         const box = stepEl.querySelector<HTMLElement>('#gvLimBox')!;
         if (!guardEl) { guardEl = document.createElement('section'); guardEl.className = 'welcomeGuard'; attachWelcomeGuard(guardEl); }
-        const h = valueOf(getBrief(), 'constraints.setupHours');
+        const h = rangeOf(getBrief(), 'constraints.setupHours');
         const hours = document.createElement('label'); hours.className = 'wgRow gv-hours';
-        hours.innerHTML = `<span>Set-up time you will spend (hours)</span><input id="gvHours" type="number" min="0" step="1" placeholder="not specified" value="${h ?? ''}">`;
+        hours.innerHTML = `<span>Set-up time you will spend (hours)</span><span class="wgMax wgBand"><input id="gvHoursMin" type="number" min="0" step="1" placeholder="at least" value="${h.min ?? ''}" aria-label="Set-up hours: at least"> to <input id="gvHours" type="number" min="0" step="1" placeholder="at most" value="${h.max ?? ''}" aria-label="Set-up hours: at most"></span>`;
         box.append(guardEl, hours);
       }
     }
@@ -121,7 +121,7 @@ export function attachGuidedFlow(dlg: HTMLDialogElement, store: Store, host: Gui
   };
   dlg.addEventListener('change', e => {
     const el = e.target as HTMLInputElement;
-    if (el.id === 'gvHours') { const n = el.value.trim() === '' ? undefined : parseFloat(el.value); editBrief(b => setSetupHours(b, n)); }
+    if (el.id === 'gvHours' || el.id === 'gvHoursMin') { const n = el.value.trim() === '' ? undefined : parseFloat(el.value); editBrief(b => setSetupHours(b, n, el.id === 'gvHours' ? 'max' : 'min')); }
     updateNext();
   });
   dlg.addEventListener('click', () => queueMicrotask(updateNext));

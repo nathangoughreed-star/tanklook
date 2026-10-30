@@ -165,6 +165,10 @@ export interface Wants {
   setupHours?: number;
   /** set-up hours TARGET (lane NG3b): the max above filters (hours from effort.ts), a target ranks (nearer scores higher) */
   setupHoursTarget?: number;
+  /** LOWER bounds of the brief's ranges (lane GV8): the maxima above filter from above, these from below ("do not offer builds under this"); a figure inside every set range is the only kind offered. Welfare never reads them. */
+  mins?: { startupUsd?: number; monthlyUsd?: number; minPerWeek?: number; setupHours?: number };
+  /** tank size range in rated gallons (lane GV8): no tank outside it is offered (an existing tank is never resized) */
+  tankGal?: { min?: number; max?: number };
   /** the high-tech approach is a requirement (lane U4): only finishes with CO2 and a stronger light (the standard and lush tiers) are offered, so the look is not traded for a cheaper approach silently */
   hightech?: boolean;
   /** the planted look without CO2 (lane U5): the low-tech lush finish (dense live plants chosen for the light the tank has, liquid ferts only) is offered, then the basic and starter finishes */
@@ -264,8 +268,9 @@ const money = (b: Build): Money => ({ startupUsd: b.setupUsd, monthlyUsd: b.upke
 const usd = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
 const relaxSize = (x: Partial<Money>) => (x.startupUsd ?? 0) / 100 + (x.monthlyUsd ?? 0) / 10 + (x.minPerWeek ?? 0) / 10;
 /** The sizes that hold the animals (smallest first) and fit the space and the longest tank allowed. */
-const fitsFor = (animals: AnimalCount[], space: SpaceLimit | undefined, maxLengthMm?: number) =>
-  tankOptions(animals).filter(t => !t.fails.length && (!space || spaceFit(tankFromModel(t.tank), space).fits) && (!maxLengthMm || t.tank.outer.L <= maxLengthMm));
+const fitsFor = (animals: AnimalCount[], space: SpaceLimit | undefined, maxLengthMm?: number, gal?: Wants['tankGal']) =>
+  tankOptions(animals).filter(t => !t.fails.length && (!space || spaceFit(tankFromModel(t.tank), space).fits) && (!maxLengthMm || t.tank.outer.L <= maxLengthMm)
+    && (!gal || ((gal.min === undefined || t.tank.ratedGal >= gal.min) && (gal.max === undefined || t.tank.ratedGal <= gal.max))));
 
 /** buildsFor, remembered for ten minutes of prices: Suggest asks for the same tank at several budgets. */
 const BUILDS = new Map<string, Build[]>();
@@ -294,7 +299,7 @@ function sizesFor(animals: AnimalCount[], w: Wants, space: SpaceLimit | undefine
     const ok = f && !f.fails.length && (!space || spaceFit(tankFromModel(t), space).fits) && (!w.maxLengthMm || t.outer.L <= w.maxLengthMm);
     return ok ? { list: [t], top: 0, ceiling: true } : { list: [], top: 0, ceiling: false };
   }
-  const fits = fitsFor(animals, space, w.maxLengthMm);
+  const fits = fitsFor(animals, space, w.maxLengthMm, w.tankGal);
   if (!fits.length) return { list: [], top: 0, ceiling: false };
   if (cap === undefined) { const list = fits.slice(0, 4).map(t => t.tank); return { list, top: list.length - 1, ceiling: false }; }
   const list = fits.filter(t => t.litres <= fits[0].litres * MAX_GROW).map(t => t.tank);
@@ -419,11 +424,11 @@ export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', no
   return generate(w, P0, units, now, true);
 }
 /** One concept attempt's outcome: the best passing finish (with its level and whether a stand is priced), or the closest miss, or a welfare refusal. */
-type Out = { p?: Omit<Proposal, 'strategy' | 'strategyLabel' | 'strategyBlurb' | 'score' | 'tradeoff' | 'complexity' | 'experienceNote'> & { levelOf: number; needStand: boolean }; near?: Miss; welfare?: boolean };
+type Out = { p?: Omit<Proposal, 'strategy' | 'strategyLabel' | 'strategyBlurb' | 'score' | 'tradeoff' | 'complexity' | 'experienceNote'> & { levelOf: number; needStand: boolean }; near?: Miss; welfare?: boolean; /** every finish tier was turned away only by a lower bound (lane GV8): a bigger concept may pass */ below?: boolean };
 /** The concept builder the generator and the narrowing rounds share (lane GV6): `attempt` finishes and checks one concept, `finalize` scores it and words it. */
 function conceptMaker(w: Wants, P0: UserProfile, units: Units, now: number) {
   const C = w.constraints, tags = w.tags ?? [], taxPct = Math.min(25, Math.max(0, w.taxPct ?? 0));
-  const st = { anyOn: false };
+  const st = { anyOn: false, below: [] as string[] };   // `below`: the lower bounds that turned a concept away (lane GV8), named in the "nothing fits" message
   /** A stand is priced unless the person said otherwise; the cheapest-start concept of a small tank (10 gal or less, about 100 lb full) is offered on a sturdy counter instead, and says so. */
   const standFor = (tank: TankModel, noStand: boolean) => w.needStand ?? !(noStand && tank.ratedGal <= 10);
   const ownedMap = w.owned ?? {};
@@ -448,17 +453,22 @@ function conceptMaker(w: Wants, P0: UserProfile, units: Units, now: number) {
     // before it is finished cannot be saved by plants (they only add), so it is not finished further.
     if (wordsOf(summaryOf(scene0, units).cats)) { out = { welfare: true }; MEMO.set(key, out); return out; }
     const pre0 = b0.setupUsd - own0.saved, over0 = compliance(scene0, { setupUsd: pre0 + taxOf(pre0), upkeepUsdMo: b0.upkeepUsdMo, minPerWeek: b0.minPerWeek }, effectiveLimits(scene0, P0.limits), units).overall === 'over';
-    let welfare = false;
+    let welfare = false, belowMin = false;
     for (const b of finishTiers(b0, now, over0, maxLevel, style, !!w.lowtech)) {
       const own = ownedAssess(b, ownedMap, needStand, P0, !!w.ownTank), saved = own.saved, scene = scenOf(b, own, needStand), sm = summaryOf(scene, units);
       // husbandry is never traded for money or time: the strict rule (Nathan 2026-10-27) = nothing the stocking screen words as a Problem OR a Caution in any of its five categories. Only "not enough information" passes, and it is shown.
       if (style && planted && !b.setup.items.some(i => i.kind === 'plant' || i.kind === 'artificial' || i.kind === 'coral')) continue; // another look is still a planted (or reefed) tank, never a pile of stones
       if (wordsOf(sm.cats)) { welfare = true; continue; }
       if (w.setupHours !== undefined && setupHoursOf(b, P0) > w.setupHours) continue; // the person's set-up time is a max (lane NG3b): a lighter finish of the same build may still fit
+      if (w.mins?.setupHours !== undefined && setupHoursOf(b, P0) < w.mins.setupHours) { st.below.push(`set-up time of at least ${w.mins.setupHours} h`); belowMin = true; continue; } // lane GV8: a lower bound
       if (w.hightech && (b.finish?.level ?? 0) < 2) continue; // a stated high-tech approach is never silently swapped for a plainer one
       const preTax = b.setupUsd - saved, tax = taxOf(preTax), t = { ...money(b), startupUsd: preTax + tax }, L = effectiveLimits(scene, P0.limits);
       const cp = compliance(scene, { setupUsd: t.startupUsd, upkeepUsdMo: t.monthlyUsd, minPerWeek: t.minPerWeek }, L, units);
       if (cp.overall !== 'off') st.anyOn = true;
+      // lane GV8: a figure under a lower bound is not offered (the next finish tier up may be); the bound that turned it away is remembered for the message
+      const lo = w.mins, under = lo && [t.startupUsd < (lo.startupUsd ?? 0) && `set-up of at least ${usd(lo.startupUsd!)}`, t.monthlyUsd < (lo.monthlyUsd ?? 0) && `upkeep of at least ${usd(lo.monthlyUsd!)} a month`,
+        t.minPerWeek < (lo.minPerWeek ?? 0) && `care of at least ${lo.minPerWeek} min a week`].filter(Boolean) as string[];
+      if (under?.length) { st.below.push(...under); belowMin = true; continue; }
       if (cp.overall === 'within' || cp.overall === 'off') {
         const matched = tags.filter(x => a.tags.includes(x));
         const cl = costLines(b, own.rows, t.startupUsd, needStand, P0, tax, `Sales tax (${taxPct}%)`);
@@ -477,7 +487,7 @@ function conceptMaker(w: Wants, P0: UserProfile, units: Units, now: number) {
         if (text && (!near || relaxSize(needs) < relaxSize(near.needs))) near = { archetype: a, build: b, totals: t, needs, text };
       }
     }
-    if (!out.p) out = { ...(near ? { near } : {}), ...(welfare ? { welfare: true } : {}) };
+    if (!out.p) out = { ...(near ? { near } : {}), ...(welfare ? { welfare: true } : {}), ...(belowMin ? { below: true } : {}) };
     MEMO.set(key, out); return out;
   };
 
@@ -541,7 +551,7 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
         if (r.welfare && !r.p) stats.rejectedWelfare++;
         if (r.near && (!near || relaxSize(r.near.needs) < relaxSize(near.needs))) near = r.near;
         if (r.p) { found = r; break; }
-        welfareOnly = !!r.welfare && !r.near;
+        welfareOnly = (!!r.welfare && !r.near) || !!r.below;   // a build under the lower bound looks one size UP, like a welfare turn-away
         if (!r.welfare && !r.near) stats.rejectedConstraint++;
       }
       dir = welfareOnly ? 1 : -1;
@@ -559,6 +569,8 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
     const ranked = rankStyles(a.animals);
     ctxs.set(a.id, { ...z, altStyle: ranked.slice(1).find(r => r.score >= (ranked[0]?.score ?? 0) - 0.6)?.style });
     runStrategy(a, 'economy');
+    // the cheapest-start screen cannot stand for a kind once a lower bound is set (it is the concept most likely to fall under it): try the dearer strategies for it
+    if (w.mins && Object.values(w.mins).some(v => v !== undefined)) for (const id of strategies) if (id !== 'economy' && !pool.some(p => p.archetype.id === a.id)) runStrategy(a, id);
   }
   const screened = [...new Set(pool.map(p => p.archetype.id))].map(id => ({ a: wanted.find(x => x.id === id)!, score: Math.max(...pool.filter(p => p.archetype.id === id).map(p => p.score)) })).sort((x, y) => y.score - x.score);
   const MORE = isLocked ? 1 : 3, deep: Archetype[] = [];
@@ -581,7 +593,7 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
   if (uniq.length) out.cheapest = [...uniq].sort((a, b) => a.totals.startupUsd - b.totals.startupUsd)[0];
   if (wanted.length && !shown.length && explain) out.infeasible = explainInfeasible({ w, misses: out.misses, stats, locked: isLocked, space, P: P0, units, now, run: x => generate(x, P0, units, now, false) });
   if (!wanted.length) out.unavailable = isLocked ? 'Those animals are not in the data yet.' : 'There are no setups of that kind to suggest yet. Tick another kind.';
-  else if (!shown.length) out.message = NO_SUGGESTION;
+  else if (!shown.length) out.message = st.below.length ? `Nothing fits your lower bound: no build comes in at ${[...new Set(st.below)].join(' or ')}. Lower that bound, or raise your maximum so a fuller build can be offered.` : NO_SUGGESTION;
   else if (!isLocked && kinds.length < 3 && st.anyOn && wanted.some(a => a.family !== kinds[0])) out.note = `Only ${kinds.length === 1 ? 'one kind' : `${kinds.length} kinds`} of setup fit${kinds.length === 1 ? 's' : ''} your guardrails: ${kinds.map(k => FAMILY_LABEL[k]).join(', ')}.`;
   return out;
 }
@@ -650,7 +662,7 @@ export function variationsOf(anchor: Proposal, w: Wants, P0: UserProfile, units:
     out.push(one('look', p => `Different look: ${LAYOUTS[p.build.finish!.style].label}`, ranked.filter(r => r.style !== style && r.score >= top - 0.6).slice(0, 3).map((r): Try => [a0, animals0, b0.tank, lvl, r.style as StyleId])));
   }
   if (!w.ownTank) { // size: the next size up the animals gain from (within the limits), else the next size down
-    const fits = fitsFor(animals0, w.constraints.space?.on === false ? undefined : w.space, w.maxLengthMm), smallest = fits[0]?.tank.ratedGal ?? 0, G0 = b0.tank.ratedGal;
+    const fits = fitsFor(animals0, w.constraints.space?.on === false ? undefined : w.space, w.maxLengthMm, w.tankGal), smallest = fits[0]?.tank.ratedGal ?? 0, G0 = b0.tank.ratedGal;
     const up = fits.filter(t => t.tank.ratedGal > G0 && t.tank.ratedGal <= smallest * MAX_GROW).slice(0, 2), down = fits.filter(t => t.tank.ratedGal < G0).reverse().slice(0, 2);
     out.push(one('size', p => `${p.build.tank.ratedGal > G0 ? 'Bigger' : 'Smaller'} tank: ${gal(p.build.tank)} gal (was ${gal(b0.tank)} gal)`, [...up, ...down].map((t): Try => [a0, animals0, t.tank, lvl, style])));
   }

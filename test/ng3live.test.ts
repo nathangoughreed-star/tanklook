@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { defaultProfile } from '../src/demand/types';
 import { emptyBrief, setItem, type Brief } from '../src/scene/brief';
 import { briefToWants } from '../src/scene/brief';
-import { setLimitTarget } from '../src/ui/setupBrief';
+import { setRange } from '../src/scene/brief';
 import { suggestSetups, suggestFromBrief, targetBonus, TARGET_WEIGHT, setupHoursOf } from '../src/demand/suggest';
 import { changeStrip, inputChanges, inputsOf, resultDiff, tankShift } from '../src/demand/propagate';
 
@@ -47,7 +47,7 @@ describe('target ranks, max filters', () => {
     expect(targetBonus(2000, 300)).toBe(0);
   });
   it('no target: numbers unchanged; a target never lets a concept past the max', () => {
-    const b = base(900), t = setLimitTarget(b, 'constraints.budget', 400);
+    const b = base(900), t = setRange(b, 'constraints.budget', { min: 300, max: 900 });
     const w0 = briefToWants(b), r0 = suggestSetups(w0, P, 'cm', NOW), r1 = suggestSetups({ ...w0, startupTarget: 400 }, P, 'cm', NOW);
     expect(r1.proposals.every(p => p.totals.startupUsd <= 900)).toBe(true);
     const gap = (r: typeof r0) => Math.abs(r.proposals[0].totals.startupUsd - 400);
