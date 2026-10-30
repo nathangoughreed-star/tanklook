@@ -29,12 +29,12 @@ export interface TopRow { name: string; n: number; /** share of this bar's load,
 export interface TileState {
   /** anything to show: water on, and animals in it or a space set */
   show: boolean;
-  space: Bar; filt: Bar;
+  space: Bar;
   /** the tank against the most demanding species' red line (scene/tankMin.ts): red below a minimum, yellow below a Recommended mark, green at or past every one (Nathan 2026-10-21, "Bar back, keep lines") */
   min: Bar;
   /** species the tank is too small for (red), by name and unmet measure (scene/tankMin.ts), and advisories (yellow: deeper water than advised); empty when every species has its minimum */
   mins: MinWarn[];
-  topSpace: TopRow[]; topFilt: TopRow[]; topMin: TopRow[];
+  topSpace: TopRow[]; topMin: TopRow[];
   /** the two limits behind Space (lane HB): the water limit, the floor limit (bottom dwellers), which binds, and who uses the floor */
   water: Bar; floor: Bar; spaceBy: 'water' | 'floor'; topFloor: TopRow[];
   /** the larger of the two, for the minimized pill */
@@ -42,7 +42,7 @@ export interface TileState {
   reason: string;
   /** compatibility, apart from the bars (lane CP 2026-10-22): leads the tile's lines when the stock has a risk */
   compat?: { level: 'over' | 'near'; text: string };
-  /** whose filter counts (scene/tech.ts filterState): 'unset' shows the Filtration bar as it stands with no filter (surface bacteria only), labelled "no filter yet" */
+  /** whose filter counts (scene/tech.ts filterState): 'unset' shows a note recommending a filter sized for the tank (the Filtration bar is shelved, Nathan 2026-10-30) */
   filter: FilterState;
   limit?: SpaceLimit; fit?: SpaceFit;
 }
@@ -91,15 +91,13 @@ export function spaceReason(r: Stocking): string {
 }
 export function tileState(S: TankSetup, r: Stocking, units: Units = 'cm'): TileState {
   const m = tankMinimum(S), mins = minWarnings(m, units), tooSmall = mins.some(w => w.level === 'over'), limit = S.layout.space, fit = limit ? spaceFit(S.tank, limit) : undefined;
-  // no filter of the owner's yet: the budget runs on an assumed default filter and the tile says so (B1, Nathan 2026-10-27)
-  // Nathan 2026-10-29: with none chosen the Filtration bar shows the tank as it stands with no filter (bacteria on glass and decor only), high, never an assumed one; display only, the engine and plan sheet still use the assumed filter
-  const filter = filterState(S), head = bar(r.loadPercent), cr = compatRisks(S);
-  const rf = filter === 'unset' ? stockingMemo((() => { const c = structuredClone(S); setFilterless(c, true); return c; })()) : r;
+  // Filtration bar shelved (Nathan 2026-10-30): the engine still runs (scene/nitrogen.ts, builds, plan sheet sizing), only the bar is gone; the headline is room only
+  const filter = filterState(S), head = bar(r.spacePercent), cr = compatRisks(S);
   return {
     show: S.water.on && (r.contributors.length > 0 || !!limit),
-    space: bar(r.spacePercent), filt: bar(rf.filtrationPercent), min: minBar(m), mins, head: tooSmall && head.level !== 'over' ? { ...head, level: 'over', text: 'Too small' } : head,
+    space: bar(r.spacePercent), min: minBar(m), mins, head: tooSmall && head.level !== 'over' ? { ...head, level: 'over', text: 'Too small' } : head,
     water: bar(r.waterPercent), floor: bar(r.floorPercent), spaceBy: r.spaceBy, topFloor: topBy(r, 'floor'),
-    topSpace: topBy(r, r.spaceBy === 'floor' ? 'floor' : 'space'), topFilt: topBy(rf, 'load'), topMin: topMin(m, units), reason: r.reasons.join(' '), filter, // every reason, the fix that would bring it under 100 % too (the sidebar line moved here, Nathan 2026-10-22)
+    topSpace: topBy(r, r.spaceBy === 'floor' ? 'floor' : 'space'), topMin: topMin(m, units), reason: r.reasons.join(' '), filter, // every reason, the fix that would bring it under 100 % too (the sidebar line moved here, Nathan 2026-10-22)
     ...(limit ? { limit, fit } : {}), ...(cr ? { compat: { level: cr.level === 'high' ? 'over' as const : 'near' as const, text: compatLine(cr) } } : {}),
   };
 }
@@ -202,7 +200,7 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
   setMin(min, false);
   head.onclick = () => setMin(!min);
 
-  // Load bars (water, floor, filt; Nathan 2026-10-26): the whole-scale gauge (ui/gauge.ts, style.css .gauge), shared with the stocking
+  // Load bars (water, floor; Nathan 2026-10-26): the whole-scale gauge (ui/gauge.ts, style.css .gauge), shared with the stocking
   // screen's space bars. The minimum bar keeps one colour per level: its yellow line is Recommended, not the ideal.
   const row = (key: string, label: string, b: Bar, top: TopRow[], what: string, hd = `Most of the ${what}:`, tip = '', none = 'No animals in the water yet.', load = key !== 'min') => {
     const t = (tip + (load ? ` ${GAUGE_TIP}` : '')).trim();
@@ -234,9 +232,8 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
     const spaceRows = row('water', 'Water column', st.water, topBy(r, 'space'), 'water column', undefined, 'How full the water is: body size against the litres (fitted to AqAdvisor). More height counts here.')
       + row('floor', 'Floor', st.floor, st.topFloor, 'floor', 'Most of the floor:', 'Floor the bottom dwellers use: 15 sq in per inch of fish (research/habitat-model.md). A taller tank adds no floor.', 'No bottom dwellers: the floor is free.');
     bars.innerHTML = `<div class="ftWhy ftSize">${esc(tankSizeLine(S, r, u))}</div>` + (r.contributors.length ? summaryHtml(sm, esc) : '') + (st.compat ? `<div class="ftWarn ft-${st.compat.level} ftCompat">${esc(st.compat.text)}</div>` : '') + spaceRows
-      + (st.filter === 'unset' ? `<div class="ftWarn ft-near ftNeedFilter"><b>No filter chosen.</b> The Filtration bar is high because there is no filter yet: add one in Tech › Filtration.${box(false)}</div>` : '')
-      + row('filt', st.filter === 'unset' ? 'Filtration (no filter yet)' : 'Filtration', st.filt, st.topFilt, 'waste', undefined, st.filter === 'unset' ? 'High because you have not chosen a filter: this counts only the bacteria on the glass and decor. Add one in Tech › Filtration to bring it down.' : 'Ammonia the filter bacteria can process, after the plants take their share. It does not measure nitrate, oxygen, pH or temperature.')
-      + (st.filter === 'filterless' ? `<div class="ftWhy">${box(true)}: bacteria on glass, substrate and decor only.</div>` : '')
+      + (st.filter === 'unset' ? `<div class="ftWarn ft-near ftNeedFilter"><b>No filter chosen.</b> A filter sized for this tank is strongly recommended: it circulates and aerates the water, catches debris and holds the bacteria that clear ammonia. Pick one in Tech › Filtration.${box(false)}</div>` : '')
+      + (st.filter === 'filterless' ? `<div class="ftWhy">${box(true)}: it needs dense plants, a light stock and some water movement.</div>` : '')
       + (st.topMin.length ? row('min', 'Tank minimum', st.min, st.topMin, 'minimum', 'Smallest tank they want, whatever the count:', Number.isFinite(st.min.pct) ? `Their minimum tank is ${Math.round(st.min.pct)}% of this one: green past every Recommended size, yellow between the minimum and Recommended, red below the minimum.` : '') : '')
       + st.mins.map(w => `<div class="ftWarn ft-${w.level}">${esc(w.text)}</div>`).join('')
       + crowd.map(t => `<div class="ftWarn ft-near ftCrowd">${esc(t)}</div>`).join('')
