@@ -7,7 +7,7 @@ import { getSpecies } from '../data/species';
 import { demandOf } from '../demand/engine';
 import { pinDeal } from '../demand/pinned';
 import { rhythmOf } from '../demand/rhythm';
-import { suggestSetups, DRY_GROUPS, KINDS, OWNED, PICK_CARE, PICK_UNKNOWN, asksDryGroups, type OwnedMap, type DryGroup, type Kind, TAGS, FAMILY_LABEL, type Proposal, type Suggestions, type Tag } from '../demand/suggest';
+import { narrowBack, narrowPick, narrowStart, narrowTaste, picksOf, suggestSetups, variationsOf, type Narrowing, type Option, type Wants, DRY_GROUPS, KINDS, OWNED, PICK_CARE, PICK_UNKNOWN, asksDryGroups, type OwnedMap, type DryGroup, type Kind, TAGS, FAMILY_LABEL, type Proposal, type Suggestions, type Tag } from '../demand/suggest';
 import { CYCLE_NOTE } from '../scene/plan';
 import { TIER_LABEL } from '../scene/finish';
 import { LAYERS, LAYER_BLURB, LAYER_LABEL, type CostLine } from '../demand/costlines';
@@ -19,7 +19,7 @@ import type { SpaceLimit, Units } from '../scene/types';
 import { loadProfile } from './demandPanel';
 import { placedSetup, putTank, sceneForBuild } from './buildPick';
 import { constraintsOf, editBrief, getBrief, lockedStock, onBrief, setBudget, setCareTime, setMonthly, setSpace } from './setupBrief';
-import { tasteOf, tasteWhy } from '../demand/taste';
+import { recordTaste, tasteOf, tasteWhy } from '../demand/taste';
 import { briefToWants, clearItem, setItem, targetOf, valueOf } from '../scene/brief';
 import { openBuildPlan, confBadge } from './buildPlanSheet';
 import { buildPlanOf } from '../demand/buildplan';
@@ -49,6 +49,19 @@ export function wantsFrom(f: Fields, units: Units): { constraints: Constraints; 
   return { constraints: c, ...(space ? { space } : {}), spaceMissing: f.spaceOn && !space, needStand: f.needStand, owned: f.owned, kinds: f.kinds, groups: f.groups };
 }
 
+/** "I like this one" -> make it mine (lane GV6): the option replaces the open project as one undoable step, named after it, with the brief, the limits, the stand choice and the space kept. */
+export function makeItMine(store: Store, p: Proposal) {
+  if (p.build.bundle) pinDeal(p.build.bundle);
+  const next = sceneForBuild(p.build, store.scene.units);
+  next.name = p.archetype.title;
+  const T = next.tanks[next.active];
+  if (store.tank.brief) T.brief = structuredClone(store.tank.brief); // the brief stays with the project (lane U3)
+  T.constraints = p.scene.constraints; T.stand = { ...T.stand, show: p.scene.stand.show }; if (p.scene.layout.space) T.layout = { ...T.layout, space: p.scene.layout.space };
+  rememberLastUsed(p.scene.constraints);
+  store.replace(next); store.seal();
+  return T;
+}
+
 export function attachSuggest(store: Store, viewer: Viewer, status: (m: string, bad?: boolean) => void) {
   const view = document.getElementById('view')!;
   const el = document.createElement('aside');
@@ -66,6 +79,10 @@ export function attachSuggest(store: Store, viewer: Viewer, status: (m: string, 
   /** live loop (lane NG3): what the last run was asked, what it said changed, and the debounce timer */
   let lastAsk: Inputs | undefined, strip: Strip | undefined, timer: number | undefined, muted = false;
   const LIVE_MS = 400;
+  /** narrowing (lane GV6): the rounds shown so far (round 1 = the generator's set; each pick adds a round of its variations), each round's pictures, and the Wants they were made under */
+  let narrow: Narrowing | undefined, roundPics: string[][] = [], asked: Wants | undefined;
+  const cur = () => narrow?.rounds[narrow.rounds.length - 1];
+  const shownNow = (): Option[] => cur()?.options ?? res?.proposals ?? [];
   const units = () => store.scene.units ?? 'in';
 
   /** Start from what this tank already has as guardrails, else the person's last-used set. */
@@ -80,7 +97,7 @@ export function attachSuggest(store: Store, viewer: Viewer, status: (m: string, 
     if (bc.minutesPerWeek !== undefined) f.time = String(bc.minutesPerWeek);
     if (bc.space) { f.spaceOn = true; f.w = String(Math.round(bc.space.w / k * 10) / 10); f.d = String(Math.round(bc.space.d / k * 10) / 10); }
     const bo = valueOf(getBrief(), 'constraints.owned'); if (bo) f.owned = { ...bo };
-    tags = new Set(); res = undefined; pics = []; note = ''; strip = undefined;
+    tags = new Set(); res = undefined; pics = []; note = ''; strip = undefined; narrow = undefined; roundPics = [];
   };
   const readFields = () => {
     const g = (id: string) => el.querySelector<HTMLInputElement>(`#sg${id}`);
@@ -103,13 +120,13 @@ export function attachSuggest(store: Store, viewer: Viewer, status: (m: string, 
     return `${blocks}${lines.filter(l => l.layer === 'tax').map(item).join('')}${none.length ? `<li class="spNote">${none.join('; ')}</li>` : ''}`;
   };
 
-  const card = (p: Proposal, i: number) => {
+  const card = (p: Option, i: number) => {
     const b = p.build, sp = placedSetup(b), D = demandOf(sp, loadProfile()), rh = rhythmOf(D, sp), cf = buildPlanOf(p, loadProfile()).figures;
     const checks = p.status.map(s => `<li class="sgOk">${esc(s.label)}: ${esc(s.text)}</li>`).join('');
     const animals = b.animals.map(a => `${a.n} ${esc(getSpecies(a.species)?.name ?? a.species)}`).join(', ');
     return `<li class="bpCard" data-i="${i}">
 <div class="bpPic">${pics[i] ? `<img src="${pics[i]}" alt="${esc(p.archetype.title)}: ${esc(tankLabel(b.tank, units()))} with the animals">` : ''}</div>
-${cardLines[i] ? `<div class="sgTrade" data-trade="${i}">${esc(cardLines[i])}</div>` : ''}
+${p.variation ? `<div class="sgTrade sgVar" data-axis="${p.variation.axis}"><b>${esc(p.variation.label)}</b>: ${esc(p.variation.deltaText)}</div>` : cardLines[i] ? `<div class="sgTrade" data-trade="${i}">${esc(cardLines[i])}</div>` : ''}
 <div class="bpHead"><b>${esc(p.archetype.title)}</b><span class="spNote">${esc(FAMILY_LABEL[p.archetype.family])}</span></div>
 <div class="spNote">${esc(p.archetype.why)} ${esc(tankLabel(b.tank, units()))} with ${animals}. ${esc(b.label)} build.</div>
 ${b.finish ? `<ul class="bpGear sgFinish">${b.finish.lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}
@@ -124,12 +141,12 @@ ${p.capNote ? `<div class="spNote">${esc(p.capNote)}</div>` : ''}
 ${tasteWhy(tasteOf(getBrief()), b.finish?.style) ? `<div class="spNote sgTaste">${esc(tasteWhy(tasteOf(getBrief()), b.finish?.style)!)}</div>` : ''}
 ${p.unknown.length ? `<div class="spNote">Not enough information: ${esc(p.unknown[0])}</div>` : ''}
 <div class="spNote">${b.setup.water.on ? `${esc(CYCLE_NOTE)} ` : ''}${b.finish ? `${esc(TIER_LABEL[b.finish.tier])}: the look, substrate, hardscape and plants are in the price and the time.` : ''}</div>
-<button type="button" class="primary" data-act="pick" data-i="${i}">Use this setup</button> <button type="button" data-act="plan" data-i="${i}">Build plan</button></li>`;
+<button type="button" class="primary" data-act="pick" data-i="${i}" title="Make it mine: it opens in the editor, where you can add or remove anything (Undo steps back)">I like this one</button> <button type="button" data-act="narrow" data-i="${i}" title="Show variations of this one, each changing one thing">More like this</button> <button type="button" data-act="plan" data-i="${i}">Build plan</button></li>`;
   };
 
   /** The refinement chips (lane U6): one click edits the brief (locks kept) and the setups are worked out again; an applied wish can be switched back off. */
   const chipRow = () => {
-    if (!res?.proposals.length) return '';
+    if (!res?.proposals.length || (narrow && narrow.rounds.length > 1)) return '';
     const b = getBrief(), on = (valueOf(b, 'preferences.wishes') ?? []).filter(w => w === 'more-planted' || w === 'larger-tank');
     const WORD: Record<string, string> = { 'more-planted': 'More planted', 'larger-tank': 'Larger tank' };
     return `<div class="sgChips" role="group" aria-label="Refine these setups"><span class="spNote">Refine:</span>${chipsFor(b, res).map(c => `<button type="button" class="sgChip" data-chip="${c.id}">${esc(c.label)}</button>`).join('')}${on.map(w => `<button type="button" class="sgChip on" data-drop="${w}" title="Switch off">${WORD[w]} âœ“</button>`).join('')}</div>${refineLine ? `<div class="spNote sgRefined" role="status">${esc(refineLine)}</div>` : ''}`;
@@ -138,12 +155,21 @@ ${p.unknown.length ? `<div class="spNote">Not enough information: ${esc(p.unknow
   /** The "what changed" strip (lane NG3): the edit that moved, then what it bought. */
   const stripHtml = () => strip ? `<div class="sgChange" id="sgChange" role="status"><b>What changed:</b> ${esc(strip.text)}${strip.lines.map(l => ` <span class="spNote">${esc(l)}.</span>`).join('')}</div>` : '';
 
+  /** The narrowing trail (lane GV6): the round, the picks so far (oldest first), Back to the previous round, and the current anchor with its own "I like this one". */
+  const trailHtml = () => {
+    if (!narrow || narrow.rounds.length < 2) return res?.proposals.length ? `<p class="spNote sgRound">Round 1: pick the one you like most and we show variations of it, or take it as it is.</p>` : '';
+    const picks = picksOf(narrow), a = cur()!.anchor!;
+    return `<div class="sgChips sgTrail" role="navigation" aria-label="Your picks"><button type="button" data-act="back">&larr; Back</button><span class="spNote">Round ${narrow.rounds.length}: ${picks.map(p => esc(p.variation?.label ?? p.archetype.title)).join(' &rsaquo; ')}</span></div>
+<div class="sgAnchor"><span class="spNote">Your pick: <b>${esc(a.archetype.title)}</b>, ${esc(tankLabel(a.build.tank, units()))}, ${usd(a.totals.startupUsd)} set-up, ${usd(a.totals.monthlyUsd)} a month, ${a.totals.minPerWeek} min a week.</span> <button type="button" class="primary" data-act="pickAnchor">I like this one</button></div>
+${cur()!.options.length ? '<p class="spNote">Each variation changes one thing and keeps the rest; all fit your limits.</p>' : '<p class="spWarn">No variation of this one fits your limits: take it as it is, or go back.</p>'}`;
+  };
+
   const draw = () => {
     const scroll = el.scrollTop, k = lenU(), nOwned = Object.keys(f.owned).length;
     let out = '';
     if (res) {
       if (res.proposals.length) out = `<p class="spNote">${esc(res.off ? 'No guardrail is on, so these are ranked by what you picked below, not checked against a limit.' : 'Each one passes every guardrail you switched on and the animals\' care checks. Prices are expected costs; minutes are estimates.')}</p>
-${res.note ? `<p class="spWarn sgNote">${esc(res.note)}</p>` : ''}${futureHtml(getBrief())}${stripHtml()}${chipRow()}<ul class="bpCards">${res.proposals.map(card).join('')}</ul>`;
+${res.note ? `<p class="spWarn sgNote">${esc(res.note)}</p>` : ''}${futureHtml(getBrief())}${stripHtml()}${chipRow()}${trailHtml()}<ul class="bpCards">${shownNow().map(card).join('')}</ul>`;
       else if (res.infeasible) out = infeasibleCard(res.infeasible, getBrief());
       else out = `<p class="spWarn" id="sgNone">${esc(res.message ?? res.unavailable ?? '')}</p>`;
       if (res.misses.length && !res.unavailable) out += `<div class="sgMiss"><b>Closest, if you raise a limit</b> (these do not fit your guardrails as set)<ul>${res.misses.map(m => `<li>${esc(m.archetype.title)}: ${esc(m.text)}</li>`).join('')}</ul></div>`;
@@ -192,6 +218,7 @@ ${lockedStock(getBrief()).length ? `<div class="spNote sgLocked">Locked animals:
     strip = live && lastAsk ? changeStrip(lastAsk, asked, before, res) : undefined; lastAsk = asked;
     refineLine = ''; cardLines = []; pics = [];
     if (res.proposals.length) shoot(res.proposals);
+    narrow = narrowStart(res.proposals); roundPics = [pics];
     draw();
     el.querySelector('.bpCards, #sgNone')?.scrollIntoView?.({ block: 'nearest' });
   };
@@ -202,7 +229,7 @@ ${lockedStock(getBrief()).length ? `<div class="spNote sgLocked">Locked animals:
   /** The generator call from the boxes plus what the brief holds that this panel has no box for: locked animals, an existing tank, tax, the high-tech, phased and refinement choices. */
   const generate = (w: ReturnType<typeof wantsFrom>): Suggestions => {
     const bw = briefToWants(getBrief());
-    return suggestSetups({ kinds: w.kinds, groups: w.groups, needStand: w.needStand, owned: w.owned, constraints: w.constraints, ...(w.space ? { space: w.space } : {}), tags: [...tags],
+    return suggestSetups(asked = { kinds: w.kinds, groups: w.groups, needStand: w.needStand, owned: w.owned, constraints: w.constraints, ...(w.space ? { space: w.space } : {}), tags: [...tags],
       ...(bw.taste ? { taste: bw.taste } : {}), // lane NG5 hook: ranking only
       ...(bw.animals ? { animals: bw.animals } : {}), ...(bw.ownTank ? { ownTank: bw.ownTank } : {}), ...(bw.taxPct !== undefined ? { taxPct: bw.taxPct } : {}), ...(bw.hightech ? { hightech: true } : {}), ...(bw.phased ? { phased: true } : {}), ...(bw.lowtech ? { lowtech: true } : {}), ...(bw.planted ? { planted: true } : {}), ...(bw.larger ? { larger: true } : {}), ...(briefToWants(getBrief()).setupHours !== undefined ? { setupHours: briefToWants(getBrief()).setupHours! } : {}), ...(targetOf(getBrief(), 'constraints.setupHours') !== undefined ? { setupHoursTarget: targetOf(getBrief(), 'constraints.setupHours')! } : {}), ...(targetOf(getBrief(), 'constraints.budget') !== undefined ? { startupTarget: targetOf(getBrief(), 'constraints.budget')! } : {}) }, loadProfile(), units());
   };
@@ -217,21 +244,33 @@ ${lockedStock(getBrief()).length ? `<div class="spNote sgLocked">Locked animals:
     if (!r.ok) editBrief(() => old);
     restore(); res = r.result; refineLine = r.line; cardLines = r.cards;
     if (r.ok && !r.unchanged) { pics = []; shoot(res.proposals); } else pics = oldPics;
+    narrow = narrowStart(res.proposals); roundPics = [pics];
     draw();
   };
 
+  /** Picks and passes teach taste (demand/taste.ts, ranking only); the brief edit is muted so the live loop does not re-run Suggest over the rounds. */
+  const teach = (options: Proposal[], i: number) => { const ev = narrowTaste(options, i); if (!ev.length) return; muted = true; try { editBrief(b => ev.reduce((n, e) => recordTaste(n, e), b)); } finally { muted = false; } };
+
+  /** "More like this": the pick anchors a new round of its variations (one axis each, all inside the limits). */
+  const narrowOn = (i: number) => {
+    if (!narrow || !asked) return;
+    const opts = shownNow(); if (!opts[i]) return;
+    teach(opts, i);
+    const w = asked;
+    narrow = narrowPick(narrow, i, a => variationsOf(a, w, loadProfile(), units()));
+    pics = []; shoot(cur()!.options); roundPics = [...roundPics, pics];
+    draw(); el.querySelector('.sgTrail')?.scrollIntoView?.({ block: 'nearest' });
+  };
+  /** Back: the previous round as it was, pictures and all. */
+  const back = () => { if (!narrow || narrow.rounds.length < 2) return; narrow = narrowBack(narrow); roundPics = roundPics.slice(0, narrow.rounds.length); pics = roundPics[roundPics.length - 1] ?? []; draw(); };
+
+  /** "I like this one" -> make it mine: the option opens in the editor (the brief stays with the tank; Undo steps back). i = -1: the current round's anchor. */
   const pick = (i: number) => {
-    const p = res?.proposals[i]; if (!p) return;
-    if (p.build.bundle) pinDeal(p.build.bundle);
-    const next = sceneForBuild(p.build, store.scene.units);
-    next.name = p.archetype.title;
-    const T = next.tanks[next.active];
-    if (store.tank.brief) T.brief = structuredClone(store.tank.brief); // the brief stays with the project (lane U3)
-    T.constraints = p.scene.constraints; T.stand = { ...T.stand, show: p.scene.stand.show }; if (p.scene.layout.space) T.layout = { ...T.layout, space: p.scene.layout.space };
-    rememberLastUsed(p.scene.constraints);
-    store.replace(next); close(); store.seal();
+    const opts = shownNow(), p = i < 0 ? cur()?.anchor : opts[i]; if (!p) return;
+    if (i >= 0) teach(opts, i);
+    const T = makeItMine(store, p); close();
     const c = compliance(T, { setupUsd: p.totals.startupUsd, upkeepUsdMo: p.totals.monthlyUsd, minPerWeek: p.totals.minPerWeek }, loadProfile().limits, units());
-    status(`${p.archetype.title} opened in the editor: ${usd(p.totals.startupUsd)} set-up, ${usd(p.totals.monthlyUsd)} a month. ${c.line}. Undo steps back.`);
+    status(`${p.archetype.title} is yours to edit: ${usd(p.totals.startupUsd)} set-up, ${usd(p.totals.monthlyUsd)} a month. ${c.line}. Add or remove anything; Undo steps back.`);
   };
 
   /** One click on an alternative: write its edit into the brief (locks kept), refill the boxes from the brief, run the generator again. */
@@ -248,7 +287,7 @@ ${lockedStock(getBrief()).length ? `<div class="spNote sgLocked">Locked animals:
     if (ch?.dataset.drop) { editBrief(b => dropWish(b, ch.dataset.drop as Wish)); readFields(); go(); return; }
     const t = (e.target as HTMLElement).closest<HTMLElement>('[data-act],[data-tag]'); if (!t) return;
     if (t.dataset.tag) { readFields(); const id = t.dataset.tag as Tag; tags.has(id) ? tags.delete(id) : tags.add(id); draw(); return; }
-    switch (t.dataset.act) { case 'close': close(); break; case 'go': go(); break; case 'pick': pick(+(t.dataset.i ?? -1)); break; case 'plan': { const q = res?.proposals[+(t.dataset.i ?? -1)]; if (q) openBuildPlan(q, loadProfile()); break; } }
+    switch (t.dataset.act) { case 'close': close(); break; case 'go': go(); break; case 'pick': pick(+(t.dataset.i ?? -1)); break; case 'pickAnchor': pick(-1); break; case 'narrow': narrowOn(+(t.dataset.i ?? -1)); break; case 'back': back(); break; case 'plan': { const q = shownNow()[+(t.dataset.i ?? -1)]; if (q) openBuildPlan(q, loadProfile()); break; } }
   };
   el.onchange = e => { if ((e.target as HTMLElement).id === 'sgNeedStand' || (e.target as HTMLElement).classList.contains('sgKind') || (e.target as HTMLElement).classList.contains('sgOwn')) { readFields(); draw(); } };
   el.onkeydown = e => { if (e.key === 'Enter' && (e.target as HTMLElement).tagName === 'INPUT') go(); };
@@ -260,7 +299,7 @@ ${lockedStock(getBrief()).length ? `<div class="spNote sgLocked">Locked animals:
     window.clearTimeout(timer);
     timer = window.setTimeout(() => {
       if (el.hidden || !res) return;
-      if (fromBrief) { const keep = new Set(tags), kinds = f.kinds, groups = f.groups, stand = f.needStand, r0 = res, p0 = pics, a0 = lastAsk, s0 = strip; seed(); f = { ...f, kinds, groups, needStand: stand }; tags = keep; res = r0; pics = p0; lastAsk = a0; strip = s0; draw(); } // the boxes are redrawn from the brief, or go() would read the stale ones back over it
+      if (fromBrief) { const keep = new Set(tags), kinds = f.kinds, groups = f.groups, stand = f.needStand, r0 = res, p0 = pics, a0 = lastAsk, s0 = strip, n0 = narrow, rp0 = roundPics; seed(); f = { ...f, kinds, groups, needStand: stand }; tags = keep; res = r0; pics = p0; lastAsk = a0; strip = s0; narrow = n0; roundPics = rp0; draw(); } // the boxes are redrawn from the brief, or go() would read the stale ones back over it
       else readFields();
       const w = wantsFrom(f, units());
       if (!w.kinds.length || w.spaceMissing) return;

@@ -52,6 +52,11 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
+## GV6: Narrowing (2026-10-30; branch gv6-narrowing; Coordinator 17)
+- Landed: `demand/suggest.ts` shares one concept builder (`conceptMaker`: attempt + finalize) between the generator and `variationsOf(anchor, wants)`: up to four variations of a pick, one axis each (stocking, look, tank size, finish tier), each labelled with what changed and the $ / care difference, all through the same welfare + limit gates (nothing over a max is offered; no compromise variations). Locked animals: no stocking axis; an existing tank: no size axis. Pure round state: `narrowStart` / `narrowPick` / `narrowBack` / `picksOf`; `narrowTaste` = a pass per other look shown, then the pick (recorded with taste.ts `recordTaste`, muted from the live loop).
+- UI (`ui/suggest.ts`): Round 1 note, "More like this" anchors the next round, breadcrumb + Back (rounds and their pictures kept unchanged), "I like this one" (was "Use this setup") = `makeItMine`: one undoable replace, brief kept; refine chips only in round 1. No numbers moved (generate refactor is mechanical; full suite unchanged). Tests: test/narrow.test.ts. Shots: research/design/gv6-shots/.
+- Open: round 1 stays at 3 options (selectDiverse n=3, unchanged to keep Suggest numbers); a pick's variations take ~2-3 s on a busy machine. The 8 gal cube variation of the lone betta passes Suggest's welfare rule but the editor's Fullness panel shows "below the recommended size" (17.7 in): an existing engine disagreement, not GV6's.
+
 ## NG2: Brief v2, persistent design state (2026-10-29; branch exciting-bouman; closes gaps 2, 3, 4)
 Files: scene/brief.ts, ui/setupBrief.ts, ui/welcomeGuard.ts, ui/briefBar.ts, test/briefv2.test.ts; one `.wgTog` / `.wgTgt` block in style.css (hook, NG1 owns the file). No SCENE bump: `BRIEF_VERSION` 2 lives inside the brief; v1 saves and share links parse unchanged. No engine number moves (`briefToWants` still reads the max only).
 **API for NG3 / NG4 / NG5** (import from `ui/setupBrief` or `scene/brief`):
