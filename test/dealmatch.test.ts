@@ -92,9 +92,9 @@ describe('per-tank pins', () => {
     unpinDeal(B);
     expect(pinnedDeal(B)).toBeNull();
   });
-  it('a saved file drops the pin', () => {
+  it('a saved file keeps the pin (lane GV9; it used to drop it)', () => {
     const sc = parseScene(SCENES.planted).scene; pinTank(sc.tanks[0], deal('petsmart-marineland-hd-45'));
-    expect(pinnedDeal(parseScene(JSON.stringify(sc)).scene.tanks[0])).toBeNull();
+    expect(pinnedDeal(parseScene(JSON.stringify(sc)).scene.tanks[0])?.id).toBe('petsmart-marineland-hd-45');
   });
 });
 
