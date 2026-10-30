@@ -17,6 +17,7 @@ import type { Range3 } from '../demand/types';
 import { volume } from './physics';
 import { filterProduct, genericHeaterW, heaterProduct, listedPrice, pumpProduct, PUMP_GEAR_KINDS, reefOptionProducts, reefProduct, skimmerSuitsGal, type AtoProduct, type ChillerProduct, type FilterProduct, type HeaterProduct, type PumpProduct, type SkimmerProduct, type UvProduct } from '../data/gearCatalog';
 import { footprint } from './shape';
+import { valueOf } from './brief';
 import { getTankModel, TANK_MODELS, tankFromModel, type TankModel } from '../data/tanks';
 import type { GrowFeed, TankSetup } from './types';
 import type { TempEvidence } from './temprange';
@@ -176,14 +177,33 @@ export function inferTech(S: TankSetup): TechSetup {
     filter: gal <= 60 ? 'hob' : 'canister', heater: 'one', chiller: 'none', air: 'none', uv: 'none',
     conditioner: salt ? 'none' : 'yes', rodi: 'none', ato: 'none',
   };
-  // a tank started from its animals (path 1): no filter or heater until the owner adds one (Nathan 2026-10-26)
-  if (S.stockFirst) Object.assign(rows, { filter: 'none', heater: 'none' });
+  // a tank started from its animals (path 1): only the gear a species needs (lane GV2, Nathan 2026-10-30): a heater when one needs warmer
+  // water than the room, a filter when one lives in the water; sized as any other (heat loss, gallons)
+  if (S.stockFirst) Object.assign(rows, { filter: filterNeeded(S) ? rows.filter : 'none', heater: heaterNeeded(S).length ? 'one' : 'none' });
   if (hasLand(S)) Object.assign(rows, dryInferred(S.fish.filter(f => getSpecies(f.species)?.habitat === 'land').map(f => f.species)));
   // the skimmer follows the filter (lane SF): in the sump with one, else hang-on
   if (salt) Object.assign(rows, { skimmer: rows.filter === 'sump' ? 'sump' : 'hob', flow: feed === 'co2' ? 'wave' : feed === 'ferts' ? 'two' : 'none', dosing: feed === 'co2' ? 'doser' : feed === 'ferts' ? 'twopart' : 'none', salinity: 'refractometer', saltmix: 'mix' });
   else Object.assign(rows, { co2: feed === 'co2' ? 'pressurized' : 'none', ferts: feed === 'low' ? 'none' : 'aio' });
   return { rows };
 }
+
+/** The room the water is judged against: the Tech menu's, else the brief's (deg C; shown in deg F), else the usual 70 deg F (ROOM_C); `set` = the owner gave one. */
+export function roomOf(S: TankSetup): { c: number; set: boolean } {
+  const c = S.tech?.roomC ?? (S.brief ? valueOf(S.brief, 'constraints.roomTempC') : undefined);
+  return c === undefined ? { c: ROOM_C, set: false } : { c, set: true };
+}
+/** The water animals whose comfortable range starts above the room (a heater is needed to keep them), each species once. */
+export function heaterNeeded(S: TankSetup): { id: string; name: string; lowC: number }[] {
+  if (!S.water.on) return [];
+  const room = roomOf(S).c, out: { id: string; name: string; lowC: number }[] = [];
+  for (const id of new Set(S.fish.map(f => f.species))) {
+    const sp = getSpecies(id), low = CARE[id]?.temp?.[0];
+    if (sp && sp.habitat !== 'land' && low !== undefined && low > room) out.push({ id, name: sp.name, lowC: low });
+  }
+  return out;
+}
+/** A filter is needed when any animal lives in the water (a terrarium's land animals, a bare or plant-only tank do not). */
+export const filterNeeded = (S: TankSetup) => S.water.on && S.fish.some(f => { const sp = getSpecies(f.species); return !!sp && sp.habitat !== 'land'; });
 
 /** Whose filter the budget counts (Nathan 2026-10-21): 'chosen' = the owner's own tech has a filter; 'filterless' = the owner ticked
  *  "no filter" and none is in; 'unset' = no filter of the owner's (inferred gear, or set to none by a kit or the Tech menu). */

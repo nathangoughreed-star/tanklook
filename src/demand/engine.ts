@@ -27,7 +27,8 @@ import { techDemand } from './tech';
 import { choreDays } from './rhythm';
 import { isLivePlantPatch, PATCH_PLANTS } from '../scene/nitrogen';
 import { waterChangeFraction } from '../scene/stocking';
-import { sumpLitres, techOf } from '../scene/tech';
+import { filterNeeded, heaterNeeded, sumpLitres, techOf } from '../scene/tech';
+import { withNeedGear } from './needs';
 import { TERRARIUM_STAND_ROW, terrariumPrice, terrariumStandK } from '../scene/drygear';
 import type { Contribution, Demand, Domain, Group, Range3, Rangeish, UserProfile } from './types';
 
@@ -87,6 +88,7 @@ function fold(items: Contribution[]): Contribution[] {
 export const kwhRate = (P: Pick<UserProfile, 'kwhUsd'>) => P.kwhUsd ?? mean3(FACTORS.kwhUsd);
 
 export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): Demand {
+  if (S.stockFirst && !opts.kit) S = withNeedGear(S); // lane GV2: a tank started from its animals is priced for what they and its plants need (basic light, feed)
   const wid = ageWiden(DEFAULTS.asOf, opts.now ?? Date.now());
   const wet = S.water.on, salt = !!S.water.salt && wet, vol = volume(S.tank), gal = vol.gallons, litres = vol.litres;
   const animals = S.fish.map(f => ({ f, sp: getSpecies(f.species) })).filter((a): a is { f: typeof a.f; sp: Species } => !!a.sp);
@@ -128,10 +130,13 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   }
   // a tank started from its animals (path 1) has no filter or heater until the owner adds one (Nathan 2026-10-26: not in the price either)
   const bare = !!S.stockFirst && !opts.kit;
+  const noFilter = bare && !filterNeeded(S), noHeater = bare && !heaterNeeded(S).length; // lane GV2: only the gear a species needs
   if (wet) {
-    if (!bare) {
+    if (!noFilter) {
       const fm = (opts.kit?.filter && matchFilter({ ...opts.kit.filter, gal })?.model) || defaultFilter(gal);
       add('filter', opts.kit?.filter ? `Filter (${filterName(fm)})` : 'Filter', 'gear', { setup: price(scale3(filterModelPrice(fm) ?? add3(pick(G.filter.base), scale3(pick(G.filter.perGal), gal)), sMul.setup)), upkeep: scale3(pick(G.filter.upkeepUsdMo), sMul.upkeep), kwhMo: fm.watts * 24 * 30 / 1000 });
+    }
+    if (!noHeater) {
       const hm = opts.kit?.heater ? matchHeater(opts.kit.heater.watts) : defaultHeater(gal, G.heater.wattsPerGal);
       add('heater', opts.kit?.heater ? `Heater (${hm.label})` : 'Heater', 'gear', { setup: price(scale3(rowPrice(hm.priceKey) ?? add3(pick(G.heater.base), scale3(pick(G.heater.perGal), gal)), sMul.setup)), kwhMo: (opts.kit?.heater?.watts ?? hm.watts) * 24 * 30 * G.heater.duty / 1000 });
     }
@@ -233,7 +238,7 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
     add('glass', 'Wiping the glass and algae', 'work', { minutes: { lo: glassMid * 0.6, mode: glassMid, hi: glassMid * 1.6 }, everyDays: choreDays('glass') });
     const tt = T.testing, testDays = salt ? tt.salt.everyDays : animals.some(a => a.sp.id === 'goldfish') ? tt.goldfish.everyDays : tt.fresh.everyDays; // sourced intervals per tank type (research/maintenance/cadence.json)
     add('testing', 'Testing the water', 'work', { minutes: scale3(pick(tt.minPerSession), 7 / testDays), everyDays: testDays });
-    if (!bare) add('filterclean', 'Cleaning the filter', 'work', { minutes: pick(T.filterCleanMinPerWeek), everyDays: 14 });
+    if (!noFilter) add('filterclean', 'Cleaning the filter', 'work', { minutes: pick(T.filterCleanMinPerWeek), everyDays: 14 });
     if (salt) add('saltwork', 'Mixing salt water, top-off, dosing', 'work', { minutes: pick(T.saltExtraMin) });
   }
   add('yearly', 'Yearly jobs (deep clean, replacing gear)', 'work', { minutes: pick(T.yearlyJobsMinPerWeek), everyDays: choreDays('yearly') });

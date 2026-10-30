@@ -271,7 +271,7 @@ describe('filter gate follow-ups (Nathan 2026-10-21)', () => {
     const filters = (S: TankSetup) => gearPicks(S).filter(p => p.row?.startsWith('filter')).length;
     const plain = tank(); expect(filters(plain)).toBeGreaterThan(0);
     const p1 = { ...tank(), stockFirst: true }; expect(filters(p1)).toBe(0);
-    expect(gearPicks(p1).some(p => p.row?.startsWith('heater'))).toBe(false); // no heater either until one is added (Nathan 2026-10-26)
+    expect(gearPicks({ ...p1, fish: [] }).some(p => p.row?.startsWith('heater'))).toBe(false); // no heater until a species needs one (Nathan 2026-10-26; lane GV2: need-driven)
     p1.tech = choose(p1, 'filter', 'hob'); expect(filters(p1)).toBeGreaterThan(0);
   });
 });

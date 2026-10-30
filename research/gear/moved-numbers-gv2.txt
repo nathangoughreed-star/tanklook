@@ -1,0 +1,10 @@
+Moved numbers, lane GV2 (need-driven gear), 2026-10-30
+Only tanks with stockFirst move. Examples, starters, builds and Suggest steps are not stockFirst: unchanged. Full vitest (calibtables / calibtablesv4 locks included) passes without re-blessing, so no calibration regen was needed.
+
+Stock-first 40 gal (36x16x16 in), set-up total, after (before: no light, no filter / heater rows):
+40 gal, no animals: setup $323; rows light $28
+6 cardinals, room 76F: setup $423; rows light $28, filter $55
+6 cardinals, room 68F: setup $467; rows light $28, filter $55, heater $40
+6 cardinals 68F + carpet: setup $811; rows light $133, filter $55, heater $40, co2 $250, ferts
+Before this lane the same tanks priced only tank + substrate-free extras: light 0, filter 0, heater 0 for every roster.
+CO2 $250 comes from the existing co2-kit price row; ferts are monthly upkeep (no set-up).
