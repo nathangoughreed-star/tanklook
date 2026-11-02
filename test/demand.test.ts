@@ -7,7 +7,7 @@ import { mean3 } from '../src/demand/range';
 import { parseScene } from '../src/scene/validate';
 
 // Demand model engine (lane KK phase 1, 2026-10-19). Fixed `now` keeps the price-age widening stable.
-const NOW = Date.parse('2026-10-19');
+const NOW = Date.parse('2026-11-02');
 const run = (id: string, mod: (p: ReturnType<typeof defaultProfile>) => void = () => {}) => {
   const S = parseScene(SCENES[id]).scene.tanks[0], P = defaultProfile(); mod(P);
   const D = demandOf(S, P, { now: NOW });

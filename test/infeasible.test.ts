@@ -8,7 +8,7 @@ import { applyAlternative } from '../src/demand/infeasible';
 import { TANK_MODELS } from '../src/data/tanks';
 import { summaryOf } from '../src/ui/stockSummary';
 
-const P = defaultProfile(), NOW = Date.parse('2026-10-27');
+const P = defaultProfile(), NOW = Date.parse('2026-11-02');
 const cap = (value: number) => ({ on: true, value });
 const gold = [{ species: 'goldfish', n: 2 }], betta = [{ species: 'betta', n: 1 }];
 const go = (w: Wants) => suggestSetups(w, P, 'cm', NOW);
