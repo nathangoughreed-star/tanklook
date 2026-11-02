@@ -50,14 +50,14 @@ describe('personalized discovery tiles (lane VD6)', () => {
     const a = ARCHETYPES.find(x => x.support === 'partial' && x.recipe.looks[0] === 'iwagumi')!;
     let n = 0;
     const pv = new Previews(() => `data:image/png;base64,${++n}`);
-    const s1 = pv.render(a, 'balanced', BREEDER40)!, s2 = pv.render(a, 'balanced', BREEDER40)!;
+    const s1 = pv.render(a, 2, BREEDER40)!, s2 = pv.render(a, 2, BREEDER40)!;
     expect(s2).toBe(s1); expect(n).toBe(1);
     expect(pv.scenesOf(a, BREEDER40)).toBe(pv.scenesOf(a, BREEDER40));
-    pv.render(a, 'full', BREEDER40); expect(n).toBe(2);
-    pv.render(a, 'balanced', byName('20 gal long')); expect(n).toBe(3);
+    pv.render(a, 4, BREEDER40); expect(n).toBe(2);
+    pv.render(a, 2, byName('20 gal long')); expect(n).toBe(3);
     expect(pv.log.length).toBe(3);
-    expect(new Previews().render(a, 'open', BREEDER40)).toBeUndefined();   // no viewer: flat tiles
-    expect(new Previews(() => '').render(a, 'open', BREEDER40)).toBeUndefined();   // nothing to picture: flat tiles
+    expect(new Previews().render(a, 0, BREEDER40)).toBeUndefined();   // no viewer: flat tiles
+    expect(new Previews(() => '').render(a, 0, BREEDER40)).toBeUndefined();   // nothing to picture: flat tiles
   });
 
   it('coming-soon archetypes are not drawn', () => {
@@ -76,5 +76,17 @@ describe('personalized discovery tiles (lane VD6)', () => {
     // the old hand-off built an unrelated scene from the look's own default size; the two paths agree on the recipe's look
     expect(recipeOf(a, 'balanced')!.look).toBe(a.recipe.looks[0]);
     expect(sceneFor(a, recipeOf(a, 'balanced')!, undefined, BREEDER40.id).layout.id).toBe(shown('balanced').layout.id);
+  });
+
+  it('the slider: five stops per archetype, the three named ones are the recipe trio, the steps between are drawn once and cached', () => {
+    const a = ARCHETYPES.find(x => x.support === 'partial' && x.recipe.looks[0] === 'iwagumi')!;
+    const pv = previewOf(a, BREEDER40)!, all = [0, 1, 2, 3, 4].map(i => pv.stop(i));
+    expect(all[0].items).toEqual(pv.scenes.open.items); expect(all[2].items).toEqual(pv.scenes.balanced.items); expect(all[4].items).toEqual(pv.scenes.full.items);
+    expect(pv.stop(1).items).toEqual(all[1].items);
+    let n = 0;
+    const cache = new Previews(() => `data:image/png;base64,${++n}`);
+    for (const i of [2, 0, 4, 1, 3]) expect(cache.render(a, i, BREEDER40)).toBeDefined();
+    expect(n).toBe(5); cache.render(a, 3, BREEDER40); expect(n).toBe(5);
+    expect(cache.shotOf(a, 1, BREEDER40)).toBeDefined(); expect(cache.shotOf(a, 1, byName('20 gal long'))).toBeUndefined();
   });
 });

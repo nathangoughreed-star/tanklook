@@ -14,7 +14,7 @@ import { CARE } from '../../data/care';
 import { getTankModel, type TankModel } from '../../data/tanks';
 import { emptyBuild, type Build } from '../../scene/builds';
 import { scapeSetup } from '../../scene/scapes';
-import { recipeBg, withBg } from '../../scene/recipes';
+import { STOP_OF, densityOfStop, recipeBg, withBg, type Stop } from '../../scene/recipes';
 import { asksPlants, defaultSize, lookSizes } from '../../scene/looks';
 import type { TankSetup } from '../../scene/types';
 
@@ -86,7 +86,7 @@ export function fits(a: Archetype, k: Known): boolean {
 
 // ---- the choices at each step ----
 /** The picks so far (vision without its saved extras). */
-export type Picks = Pick<Vision, 'environment' | 'waterType' | 'familyId' | 'archetypeId' | 'density'>;
+export type Picks = Pick<Vision, 'environment' | 'waterType' | 'familyId' | 'archetypeId' | 'density' | 'densityStop'>;
 export interface Choices<T> { items: T[]; /** pruning would have left nothing, so every choice is shown with a warning */ loose: boolean }
 const prune = <T>(all: T[], ok: (x: T) => boolean): Choices<T> => { const items = all.filter(ok); return items.length ? { items, loose: false } : { items: all, loose: all.length > 0 }; };
 const familiesFor = (env: Env, water: Water | null | undefined) => familiesOf(env, env === 'aquarium' ? water ?? null : null);
@@ -128,7 +128,7 @@ export function setPick(p: Picks, step: VStep, id: string, k: Known = NOTHING_KN
   else if (step === 'water') n.waterType = id as Water;
   else if (step === 'family') n.familyId = id;
   else if (step === 'archetype') n.archetypeId = id;
-  else n.density = id as Density;
+  else { const stop = id in STOP_OF ? STOP_OF[id as Density] : Number(id) as Stop; n.density = densityOfStop(stop); n.densityStop = stop; }
   return keepCompatible(n, k);
 }
 /** Drop the picks that no longer belong after an earlier one changed. */

@@ -158,7 +158,7 @@ export const shelterCount = (S: TankSetup) => S.items.filter(it => it.kind === '
 
 /** One archetype in one tank, ready for its three densities: the build (tank, gear, animals) every level shares, and the
  *  composition seed the trio is drawn with. */
-export interface RecipeBase { archetype: Archetype; tank: TankModel; animals: AnimalCount[]; build: Build; seed: number; scenes: Record<Density, TankSetup> }
+export interface RecipeBase { archetype: Archetype; tank: TankModel; animals: AnimalCount[]; build: Build; seed: number; scenes: Record<Density, TankSetup>; /** the in-between stops 1 and 3, drawn on first use (`stopScene`) */ mids: (TankSetup | undefined)[] }
 
 function draw(a: Archetype, b: Build, seed: number, d: Density): TankSetup {
   const tw = TWEAKS[a.id] ?? {}, setup = structuredClone(b.setup);
@@ -201,11 +201,11 @@ export const MIX_MIN = 4;
  * larger or smaller by archetype) and set to a size in the tier's band of the biggest stone, which stays the biggest and so keeps `PIECE_GROWTH` and
  * the cover step. Stones stacked on another go with the one beneath.
  */
-function mixSizes(a: Archetype, d: Density, S: TankSetup, cap: number) {
+function mixSizes(a: Archetype, d: Density | 'mid', S: TankSetup, cap: number, o: { B?: number; tiers?: [number, number, number] } = {}) {
   const free = S.items.filter(it => it.kind === 'stone' && it.lift <= 1).sort((x, y) => reach(y) - reach(x));
   if (free.length < MIX_MIN) return;
-  const lean = leanOf(a), n = free.length, B = d === 'open' ? reach(free[0]) : Math.min(cap, reach(free[0]) * PIECE_GROWTH); // a fuller level may bring its biggest stone up to the growth limit
-  let [pl, pm, ps] = TIERS[d];
+  const lean = leanOf(a), n = free.length, B = o.B ?? (d === 'open' ? reach(free[0]) : Math.min(cap, reach(free[0]) * PIECE_GROWTH)); // a fuller level may bring its biggest stone up to the growth limit
+  let [pl, pm, ps] = o.tiers ?? TIERS[d as Density];
   if (lean === 'large') { pl *= 1.4; ps *= 0.8; } else if (lean === 'small') { pl *= 0.6; ps *= 1.15; }
   const tot = pl + pm + ps, nl = Math.max(1, Math.round(n * pl / tot)), ns = Math.min(n - nl - 1, Math.round(n * ps / tot)), h = hashOf(a.id + d);
   const factor = new Map<Item, number>();
@@ -277,7 +277,78 @@ export function recipeBase(a: Archetype | string, tank: TankModel, animals?: Ani
   const pick = (mix: boolean) => seeds.find(s => progresses(arch, at(s, mix), 0.08)) ?? seeds.find(s => progresses(arch, at(s, mix), 0));
   const seedMixed = pick(true), seedPlain = seedMixed === undefined ? pick(false) : undefined, mixed = seedPlain === undefined;
   const seed = seedMixed ?? seedPlain ?? bestStep(seeds.map(s => at(s, true)), seeds, own);
-  return { archetype: arch, tank, animals: roster, build, seed, scenes: at(seed, mixed) };
+  return { archetype: arch, tank, animals: roster, build, seed, scenes: at(seed, mixed), mids: [undefined, undefined] };
+}
+
+/** The density slider's stops: 0 Open, 2 A Bit of Both (Balanced), 4 Full, and a step between each pair. */
+export const STOPS = 5;
+export type Stop = 0 | 1 | 2 | 3 | 4;
+export const STOP_OF: Record<Density, Stop> = { open: 0, balanced: 2, full: 4 };
+/** The named level a stop belongs to: its own, or for the steps between, the one nearer the middle (the saved `density`). */
+export const densityOfStop = (s: number): Density => s <= 0 ? 'open' : s >= 4 ? 'full' : s === 1 ? 'open' : s === 3 ? 'full' : 'balanced';
+const lerp = (x: number, y: number, t: number) => x + (y - x) * t;
+const hardShare = (T: TankSetup) => coverOf({ ...T, items: T.items.filter(isHard) });
+/**
+ * The step between two named levels (stop 1 = Open..Balanced, 3 = Balanced..Full), same build, seed and composition. Its layer stops sit part way between
+ * its neighbours'; the draw is then brought between them like the named levels are: each kind's biggest piece about the geometric mean of its neighbours'
+ * (never past the upper one), the same size spread, hardscape cover no higher than the upper level's. A random draw can still land outside its neighbours'
+ * total cover, so positions along the way are tried and the first strictly between them wins (else the nearest).
+ */
+function drawMid(base: RecipeBase, i: 1 | 3): TankSetup {
+  const a = base.archetype, [lo, hi] = i === 1 ? ['open', 'balanced'] as const : ['balanced', 'full'] as const, L = base.scenes[lo], H = base.scenes[hi];
+  const cl = coverOf(L), ch = coverOf(H), kinds = [(it: Item) => it.kind === 'stone', (it: Item) => it.kind !== 'stone'];
+  const maxOf = (S: TankSetup, k: number) => Math.max(0, ...S.items.filter(it => isHard(it) && kinds[k](it)).map(reach));
+  const tiers = TIERS[lo].map((x, j) => (x + TIERS[hi][j]) / 2) as [number, number, number];
+  const make = (t: number) => {
+    const dl = recipeDens(a, lo), dh = recipeDens(a, hi);
+    const tw = TWEAKS[a.id] ?? {}, setup = structuredClone(base.build.setup);
+    setup.layout = { ...setup.layout, seed: base.seed, comp: tw.comp ?? 'any' }; delete setup.layout.plantSeed; delete setup.layout.animalSeed;
+    const S = scapeSetup(base.build, recipeLook(a)!, a.recipe.plantMode ?? 'live', setup, { dens: { hard: lerp(dl.hard, dh.hard, t), plant: lerp(dl.plant, dh.plant, t) } });
+    if (tw.noPlants) S.items = S.items.filter(it => it.kind !== 'plant' && it.kind !== 'artificial');
+    if (a.recipe.looks[0] === 'none' && lo === 'open') S.items = [];
+    withBg(a, S);
+    kinds.forEach((of, k) => {
+      const lm = maxOf(L, k), hm = maxOf(H, k), own = maxOf(S, k), want = lm > 0 && hm > 0 ? Math.sqrt(lm * hm) : hm * 0.8, cap = hm || S.tank.H * FIRST_PIECE;
+      if (!own) return;
+      const m = Math.min(cap, want) / own;
+      for (const it of S.items) if (isHard(it) && of(it)) { it.size *= m; it.lift *= m; }
+      if (k === 0) mixSizes(a, 'mid', S, cap, { B: Math.min(cap, want), tiers });
+    });
+    const n0 = L.items.filter(isHard).length;
+    while (hardShare(S) > hardShare(H) && S.items.filter(isHard).length > n0) {
+      const big = S.items.filter(it => isHard(it) && it.lift <= 1).sort((x, y) => reach(y) - reach(x))[0]; if (!big) break;
+      S.items = S.items.filter(it => it !== big && !(isHard(it) && it.lift > 1 && Math.abs(it.x - big.x) < reach(big) && Math.abs(it.depth - big.depth) < reach(big)));
+    }
+    return S;
+  };
+  // the first position whose total cover sits strictly between its neighbours'; else the one nearest to between them
+  const off = (S: TankSetup) => Math.max(0, cl - coverOf(S), coverOf(S) - ch) + (coverOf(S) === cl || coverOf(S) === ch ? 1e-6 : 0);
+  let best: TankSetup | undefined, bestOff = Infinity;
+  for (const t of [0.5, 0.45, 0.55, 0.4, 0.6, 0.35, 0.65, 0.3, 0.7, 0.25, 0.75, 0.2, 0.8, 0.15, 0.85]) {
+    const S = make(t), o = off(S);
+    if (o < bestOff) { best = S; bestOff = o; }
+    if (o === 0) break;
+  }
+  if (bestOff === 0) return best!;
+  // no position landed between them (two levels almost as full as each other): the upper level, thinned until its cover is half way, so the step is nested in it
+  const S = structuredClone(H), target = (cl + ch) / 2, area = (it: Item) => { const [l, h, w] = itemDims(it); return l * w + l * h; };
+  const plants = S.items.filter(it => !isHard(it)).sort((x, y) => area(y) - area(x));
+  while (coverOf(S) > target && plants.length) S.items = S.items.filter(it => it !== plants.shift());
+  for (let k = 0; k < 8 && coverOf(S) > target; k++) for (const it of S.items) if (isHard(it)) { it.size *= 0.85; it.lift *= 0.85; }
+  return coverOf(S) > cl && coverOf(S) < ch ? S : best!;
+}
+/** The layer stops of any slider stop 0..4: the named levels' own, the steps between half way. */
+export function recipeDensAt(a: Archetype, stop: number): Stops {
+  const x = Math.max(0, Math.min(4, stop)) / 2, i = Math.min(1, Math.floor(x)), t = x - i, [lo, hi] = [DENSITIES[i], DENSITIES[i + 1]], dl = recipeDens(a, lo), dh = recipeDens(a, hi);
+  return { hard: lerp(dl.hard, dh.hard, t), plant: lerp(dl.plant, dh.plant, t) };
+}
+/** The scene of one slider stop 0..4 (a copy). The three named stops come with the base; the two between are drawn here, once. */
+export function stopScene(base: RecipeBase, stop: number): TankSetup {
+  const s = Math.max(0, Math.min(4, Math.round(stop)));
+  if (s % 2 === 0) return structuredClone(base.scenes[s === 0 ? 'open' : s === 2 ? 'balanced' : 'full']);
+  const k = s === 1 ? 0 : 1;
+  base.mids[k] ??= drawMid(base, s as 1 | 3);
+  return structuredClone(base.mids[k]!);
 }
 
 /** The starting scene of an archetype at a density (a copy: the base can hand it out again). */

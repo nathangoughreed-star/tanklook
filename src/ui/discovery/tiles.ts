@@ -5,7 +5,7 @@
 // suggestion, and a scene is built once per (archetype, tank, roster) and drawn once per density, then cached. Pure apart from the `shot` callback
 // (the viewer, see panels.ts): no DOM here, so the tank choice and the scenes are tested without WebGL.
 import type { Archetype, Density } from '../../scene/archetypes';
-import { recipeBase, recipeDens, recipeLook, minTank, sceneAt, withBg, DENSITIES } from '../../scene/recipes';
+import { recipeBase, recipeDensAt, recipeLook, minTank, sceneAt, stopScene, withBg, DENSITIES } from '../../scene/recipes';
 import { scapeSetup } from '../../scene/scapes';
 import { catalogueSizes, fitIn, type AnimalCount } from '../../scene/tankfit';
 import type { TankModel } from '../../data/tanks';
@@ -55,7 +55,7 @@ export function rosterOf(T: TankSetup): AnimalCount[] {
   return out;
 }
 
-export interface Preview { archetype: Archetype; scenes: Record<Density, TankSetup>; /** ms spent building the three scenes */ buildMs: number }
+export interface Preview { archetype: Archetype; scenes: Record<Density, TankSetup>; /** the scene of slider stop 0..4 (0 Open, 2 Balanced, 4 Full; 1 and 3 are drawn on first use), a copy */ stop(i: number): TankSetup; /** ms spent building the three named scenes */ buildMs: number }
 export interface Shot { url: string; ms: number }
 
 /** The three scenes of an archetype. With animals in hand the person's own tank is kept (roster, size, gear) and only the scape changes, drawn
@@ -65,15 +65,16 @@ export function previewOf(a: Archetype, tank: TankModel, inHand?: TankSetup): Pr
   const t0 = performance.now();
   if (inHand?.fish.length) {
     const look = recipeLook(a)!, animals = rosterOf(inHand), mode = a.recipe.plantMode ?? 'live';
-    const scenes = {} as Record<Density, TankSetup>;
-    for (const d of DENSITIES) scenes[d] = withBg(a, a.recipe.looks[0] === 'none' ? structuredClone(inHand) : scapeSetup({ animals, setup: inHand } as never, look, mode, inHand, { dens: recipeDens(a, d) }));
-    return { archetype: a, scenes, buildMs: performance.now() - t0 };
+    const scenes = {} as Record<Density, TankSetup>, made = new Map<number, TankSetup>();
+    const at = (i: number) => { i = Math.max(0, Math.min(4, Math.round(i))); if (!made.has(i)) made.set(i, withBg(a, a.recipe.looks[0] === 'none' ? structuredClone(inHand) : scapeSetup({ animals, setup: inHand } as never, look, mode, inHand, { dens: recipeDensAt(a, i) }))); return structuredClone(made.get(i)!); };
+    for (const d of DENSITIES) scenes[d] = at(d === 'open' ? 0 : d === 'balanced' ? 2 : 4);
+    return { archetype: a, scenes, stop: at, buildMs: performance.now() - t0 };
   }
   const base = recipeBase(a, tank);
   if (!base) return undefined;
   const scenes = {} as Record<Density, TankSetup>;
   for (const d of DENSITIES) scenes[d] = sceneAt(base, d);
-  return { archetype: a, scenes, buildMs: performance.now() - t0 };
+  return { archetype: a, scenes, stop: i => stopScene(base, i), buildMs: performance.now() - t0 };
 }
 
 /** Scenes and pictures, cached per (archetype, tank, roster) and per density. One draw at a time; `draw` returns '' when nothing can be pictured
@@ -82,7 +83,7 @@ export class Previews {
   private scenes = new Map<string, Preview | null>();
   private shots = new Map<string, Shot>();
   /** every picture drawn so far: for the measurements the lane reports */
-  readonly log: { id: string; density: Density; tank: string; buildMs: number; shotMs: number }[] = [];
+  readonly log: { id: string; stop: number; tank: string; buildMs: number; shotMs: number }[] = [];
   constructor(private draw?: (T: TankSetup) => string) {}
 
   private keyOf = (a: Archetype, tank: TankModel, inHand?: TankSetup) =>
@@ -92,19 +93,19 @@ export class Previews {
     if (!this.scenes.has(k)) this.scenes.set(k, previewOf(a, tank, inHand) ?? null);
     return this.scenes.get(k) ?? undefined;
   }
-  shotOf(a: Archetype, d: Density, tank: TankModel, inHand?: TankSetup): Shot | undefined { return this.shots.get(`${this.keyOf(a, tank, inHand)}|${d}`); }
+  shotOf(a: Archetype, stop: number, tank: TankModel, inHand?: TankSetup): Shot | undefined { return this.shots.get(`${this.keyOf(a, tank, inHand)}|${stop}`); }
   /** Build (if needed) and draw one picture; undefined when it cannot be drawn. */
-  render(a: Archetype, d: Density, tank: TankModel, inHand?: TankSetup): Shot | undefined {
-    const k = `${this.keyOf(a, tank, inHand)}|${d}`, have = this.shots.get(k);
+  render(a: Archetype, stop: number, tank: TankModel, inHand?: TankSetup): Shot | undefined {
+    const k = `${this.keyOf(a, tank, inHand)}|${stop}`, have = this.shots.get(k);
     if (have) return have;
     if (!this.draw) return undefined;
     const t0 = performance.now(), pv = this.scenesOf(a, tank, inHand);
     if (!pv) return undefined;
-    const t1 = performance.now(), url = this.draw({ ...pv.scenes[d], camera: { ...pv.scenes[d].camera, ...TILE_VIEW } });
+    const t1 = performance.now(), sc = pv.stop(stop), url = this.draw({ ...sc, camera: { ...sc.camera, ...TILE_VIEW } });
     if (!url) return undefined;
     const shot = { url, ms: Math.round(performance.now() - t0) };
     this.shots.set(k, shot);
-    this.log.push({ id: a.id, density: d, tank: tank.name, buildMs: Math.round(t1 - t0), shotMs: Math.round(performance.now() - t1) });
+    this.log.push({ id: a.id, stop, tank: tank.name, buildMs: Math.round(t1 - t0), shotMs: Math.round(performance.now() - t1) });
     return shot;
   }
 }

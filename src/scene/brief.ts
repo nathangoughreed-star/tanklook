@@ -85,6 +85,8 @@ export interface Dialog { answered: string[]; direction?: string }
  *  editable starting scene Make It Your Own opened with. Not an item: it never checks anything, so it never shows in Guardrails. */
 export interface Vision {
   environment?: Env; waterType?: Water | null; familyId?: string; archetypeId?: string; density?: Density;
+  /** the density slider's stop 0..4 (lane VD6: 0 Open, 2 A Bit of Both, 4 Full, 1 and 3 the steps between); `density` is the named level it belongs to */
+  densityStop?: 0 | 1 | 2 | 3 | 4;
   secondaryLikes: string[]; renderRecipe?: VisionRecipe;
 }
 /** The first mapped look, its plant mode, the density as layer stops (scene/items.ts DENS_NAMES), and the enclosure it is built in. */
@@ -316,6 +318,7 @@ export function parseVision(raw: unknown): Vision | undefined {
   if (idOk(r.familyId)) v.familyId = r.familyId;
   if (idOk(r.archetypeId)) v.archetypeId = r.archetypeId;
   if (DENSITY_IDS.includes(r.density as Density)) v.density = r.density as Density;
+  if (r.densityStop === 0 || r.densityStop === 1 || r.densityStop === 2 || r.densityStop === 3 || r.densityStop === 4) v.densityStop = r.densityStop;
   if (Array.isArray(r.secondaryLikes)) v.secondaryLikes = [...new Set(r.secondaryLikes.filter(idOk))].slice(0, 30);
   const rr = r.renderRecipe as Record<string, unknown> | undefined, d = rr?.dens as Record<string, unknown> | undefined;
   if (rr && typeof rr === 'object' && typeof rr.look === 'string' && rr.look.length < 40 && MODES.includes(rr.plantMode as PlantMode) && ENV_IDS.includes(rr.env as Env)

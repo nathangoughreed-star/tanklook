@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ARCHETYPES } from '../src/scene/archetypes';
-import { coverOf, shelterCount, minTank, recipeBase, recipeBg, recipeScene, sceneAt, isHard, PIECE_GROWTH, COVER_STEP, MIX_MIN, DENSITIES } from '../src/scene/recipes';
+import { coverOf, shelterCount, minTank, recipeBase, recipeBg, recipeScene, sceneAt, isHard, PIECE_GROWTH, COVER_STEP, MIX_MIN, STOPS, stopScene, densityOfStop, recipeDensAt, recipeDens, DENSITIES } from '../src/scene/recipes';
 import { itemDims } from '../src/scene/items';
 import { TANK_MODELS } from '../src/data/tanks';
 import { summaryOf } from '../src/ui/stockSummary';
@@ -75,6 +75,31 @@ describe('density recipes (lane VD4)', () => {
     for (const f of fams) {
       const bgs = new Set(withLooks.filter(a => a.familyId === f).map(a => recipeBg(a).bg));
       for (const bg of bgs) { expect(bg, f).not.toBe('none'); expect(bg, f).not.toBe('green'); expect(bg, f).not.toBe('plantscene'); }
+    }
+  });
+  describe('the five slider stops (lane VD6)', () => {
+    it('maps stops to the named levels and layer stops', () => {
+      expect(STOPS).toBe(5);
+      expect([0, 1, 2, 3, 4].map(densityOfStop)).toEqual(['open', 'open', 'balanced', 'full', 'full']);
+      const a = withLooks[0];
+      expect(recipeDensAt(a, 0)).toEqual(recipeDens(a, 'open')); expect(recipeDensAt(a, 2)).toEqual(recipeDens(a, 'balanced')); expect(recipeDensAt(a, 4)).toEqual(recipeDens(a, 'full'));
+      expect(recipeDensAt(a, 1).plant).toBeCloseTo((recipeDens(a, 'open').plant + recipeDens(a, 'balanced').plant) / 2, 6);
+    });
+    for (const a of withLooks) {
+      it(`${a.id}: the steps between sit between their neighbours (cover, piece size), same animals and background`, () => {
+        const base = recipeBase(a, minTank(a), undefined, NOW)!, sc = [0, 1, 2, 3, 4].map(i => stopScene(base, i));
+        expect(sc[0].items).toEqual(sceneAt(base, 'open').items); expect(sc[2].items).toEqual(sceneAt(base, 'balanced').items); expect(sc[4].items).toEqual(sceneAt(base, 'full').items);
+        const cov = sc.map(coverOf);
+        for (let i = 1; i < 5; i++) expect(cov[i], `${a.id} stop ${i}`).toBeGreaterThanOrEqual(cov[i - 1] - 1e-9);   // a saturated tank can tie
+        expect(cov[0]).toBeLessThan(cov[2]); expect(cov[2]).toBeLessThan(cov[4]);
+        for (const S of sc) { expect(roster(S)).toBe(roster(sc[2])); expect(S.render.bg).toBe(sc[2].render.bg); expect(S.tank).toEqual(sc[2].tank); expect(S.layout.seed).toBe(sc[2].layout.seed); }
+        for (const stone of [true, false]) {
+          const reach = (S: typeof sc[0]) => Math.max(0, ...S.items.filter(it => isHard(it) && (it.kind === 'stone') === stone).map(it => Math.max(...itemDims(it))));
+          for (const i of [1, 3]) expect(reach(sc[i]), `${a.id} stop ${i} ${stone ? 'stones' : 'wood'}`).toBeLessThanOrEqual(Math.max(reach(sc[i - 1]), reach(sc[i + 1])) + 1);
+        }
+        for (const i of [1, 3]) expect(coverOf({ ...sc[i], items: sc[i].items.filter(isHard) }) - coverOf({ ...sc[i - 1], items: sc[i - 1].items.filter(isHard) }), `${a.id} ${i}`).toBeLessThanOrEqual(COVER_STEP + 0.005);
+        expect(stopScene(base, 1).items).toEqual(sc[1].items);   // drawn once, then the same
+      });
     }
   });
 });

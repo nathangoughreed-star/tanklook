@@ -199,4 +199,19 @@ describe('vision in the brief (spec 06)', () => {
     expect(parseBrief({ v: 3, items: {}, vision: { environment: 'pond', density: 'max', secondaryLikes: ['<b>', 3] } })).toBeUndefined();
     expect(setVision(old, { secondaryLikes: [] })).toEqual(old);
   });
+
+  it('the density slider pick (lane VD6): a stop saves with the named level it belongs to and survives the brief round trip', () => {
+    const base: Picks = { environment: 'aquarium', waterType: 'freshwater', familyId: 'fw-gardens', archetypeId: 'planted-community' };
+    expect(setPick(base, 'density', 'open')).toMatchObject({ density: 'open', densityStop: 0 });
+    expect(setPick(base, 'density', 'full')).toMatchObject({ density: 'full', densityStop: 4 });
+    for (const [stop, level] of [[0, 'open'], [1, 'open'], [2, 'balanced'], [3, 'full'], [4, 'full']] as const) {
+      const p = setPick(base, 'density', String(stop));
+      expect(p).toMatchObject({ density: level, densityStop: stop });
+      const b = setVision(emptyBrief(), { ...p, secondaryLikes: [] });
+      expect(visionOf(parseBrief(JSON.parse(serializeBrief(b)))!)).toMatchObject({ density: level, densityStop: stop });
+    }
+    expect(visionOf(parseBrief(JSON.parse(serializeBrief(setVision(emptyBrief(), { density: 'balanced', secondaryLikes: [] }))))!).densityStop).toBeUndefined();   // an older save: no stop
+    // a later pick above it keeps the stop (the density always stays)
+    expect(setPick({ ...base, density: 'full', densityStop: 3 }, 'family', 'fw-gardens')).toMatchObject({ density: 'full', densityStop: 3 });
+  });
 });
