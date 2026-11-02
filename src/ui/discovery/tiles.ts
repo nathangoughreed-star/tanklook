@@ -7,9 +7,13 @@
 import type { Archetype, Density } from '../../scene/archetypes';
 import { recipeBase, recipeDensAt, recipeLook, minTank, sceneAt, stopScene, withBg, DENSITIES } from '../../scene/recipes';
 import { scapeSetup } from '../../scene/scapes';
+import { buildsFor } from '../../scene/builds';
+import { shuffleFish } from '../../scene/scatter';
+import { rng } from '../../art/paint';
 import { catalogueSizes, fitIn, type AnimalCount } from '../../scene/tankfit';
-import type { TankModel } from '../../data/tanks';
-import type { TankSetup } from '../../scene/types';
+import { tankFromModel, type TankModel } from '../../data/tanks';
+import { spaceFit } from '../../scene/space';
+import type { SpaceLimit, TankSetup } from '../../scene/types';
 
 /** The one view every tile is drawn from (the look picker's), so two tiles differ only in what is in the tank. */
 export const TILE_VIEW = { az: 28, el: 16, zoom: 0.8 };
@@ -18,6 +22,9 @@ export interface TankChoice {
   model: TankModel;
   /** yours = the tank the person told us about; suggested = we picked it from their limits / animals / the archetypes; picked = they changed our suggestion */
   source: 'yours' | 'suggested' | 'picked';
+  /** what a suggestion rests on (Guided Setup Rev 03, lane GS3): the person's own tank, else known space / size limits / animals / budget (a provisional
+   *  enclosure), else an editable example size when nothing at all is known. Never a question: all of it is a default the person can change. */
+  basis: 'yours' | 'space' | 'size' | 'animals' | 'budget' | 'example' | 'picked';
   /** one short clause: why this tank (shown beside the label) */
   why: string;
 }
@@ -28,18 +35,25 @@ const isBuildable = (a: Archetype) => a.support !== 'coming-soon' && !!recipeLoo
 /** The tank every tile of a step is drawn in. The person's own tank when the brief names one; else a suggestion: the smallest catalogue tank that
  *  holds every drawn archetype of the step (the largest `minGallons`), their gallon floor (the brief's tank-size minimum) and any known animals
  *  (`fitIn`). `pick` is a catalogue tank id the person chose over the suggestion. */
-export function tankChoice(arches: readonly Archetype[], o: { yours?: TankModel; pick?: string; floorGal?: number; animals?: AnimalCount[] } = {}): TankChoice | undefined {
+export function tankChoice(arches: readonly Archetype[], o: { yours?: TankModel; pick?: string; floorGal?: number; maxGal?: number; space?: SpaceLimit; budgetKnown?: boolean; animals?: AnimalCount[] } = {}): TankChoice | undefined {
   const drawn = arches.filter(isBuildable);
   if (!drawn.length) return undefined;
   const sizes = catalogueSizes(land(drawn));
-  if (o.yours) return { model: o.yours, source: 'yours', why: 'your tank' };
+  if (o.yours) return { model: o.yours, source: 'yours', basis: 'yours', why: 'your tank' };
   const picked = o.pick ? sizes.find(c => c.m.id === o.pick) : undefined;
-  if (picked) return { model: picked.m, source: 'picked', why: 'the one you chose' };
+  if (picked) return { model: picked.m, source: 'picked', basis: 'picked', why: 'the one you chose' };
+  // the provisional enclosure (spec 4): known dimensions first (the biggest size that fits the space), else known size limits / animals / budget (the
+  // smallest that suits), else an example size. A limit no size can meet is dropped rather than asked about: the suggestion stays editable.
   const archMin = Math.max(...drawn.map(a => minTank(a).ratedGal)), need = Math.max(o.floorGal ?? 0, archMin);
-  const ok = (m: TankModel) => m.ratedGal >= need && (!o.animals?.length || !fitIn(o.animals, m)?.fails.length);
-  const m = sizes.find(c => ok(c.m))?.m ?? sizes[sizes.length - 1].m;
-  const why = o.animals?.length ? 'big enough for your animals' : (o.floorGal ?? 0) > archMin ? 'from your size limit' : 'big enough for every look here';
-  return { model: m, source: 'suggested', why };
+  const holds = (m: TankModel) => m.ratedGal >= need && (!o.maxGal || m.ratedGal <= o.maxGal) && (!o.animals?.length || !fitIn(o.animals, m)?.fails.length);
+  const inSpace = (m: TankModel) => !o.space || spaceFit(tankFromModel(m), o.space).fits;
+  const both = sizes.filter(c => holds(c.m) && inSpace(c.m)).map(c => c.m);
+  if (o.space && both.length) return { model: both[both.length - 1], source: 'suggested', basis: 'space', why: 'the biggest that fits your space' };
+  const ok = sizes.find(c => holds(c.m))?.m ?? sizes.find(c => c.m.ratedGal >= need)?.m ?? sizes[sizes.length - 1].m;
+  if (o.animals?.length) return { model: ok, source: 'suggested', basis: 'animals', why: 'big enough for your animals' };
+  if ((o.floorGal ?? 0) > archMin || o.maxGal) return { model: ok, source: 'suggested', basis: 'size', why: 'from your size limit' };
+  if (o.budgetKnown) return { model: ok, source: 'suggested', basis: 'budget', why: 'the smallest that suits, to keep within your budget' };
+  return { model: ok, source: 'suggested', basis: 'example', why: 'an example size: big enough for every look here' };
 }
 
 /** Catalogue tanks the person can switch the suggestion to: any that holds every drawn archetype of the step. */
@@ -53,6 +67,19 @@ export function rosterOf(T: TankSetup): AnimalCount[] {
   const out: AnimalCount[] = [];
   for (const f of T.fish) { const x = out.find(y => y.species === f.species); if (x) x.n++; else out.push({ species: f.species, n: 1 }); }
   return out;
+}
+
+/** The scene Make It Your Own opens when animals were added at the Suitable Animals step: exactly what the density step showed (same tank, look, density stop,
+ *  hardscape and plants), plus the animals and the gear their balanced build needs, the animals placed round the pieces already there. The look never moves
+ *  and the density never changes the animals (Rev 03 section 4). `pv` is the Previews cache of the flow, so the bare scene is the one already drawn. */
+export function sceneWithAnimals(pv: Previews, a: Archetype, tank: TankModel, animals: AnimalCount[], stop: number): TankSetup | undefined {
+  const bare = pv.scenesOf(a, tank)?.stop(stop); if (!bare) return undefined;
+  if (!animals.length) return bare;
+  const hand = buildsFor(animals, tank)[2].setup, withAn = new Previews().scenesOf(a, tank, hand)?.stop(stop);
+  if (!withAn) return undefined;
+  const T: TankSetup = { ...withAn, items: structuredClone(bare.items), layout: structuredClone(bare.layout) };   // the pieces and the density settings the person saw
+  shuffleFish(T, rng(11 + T.layout.id.length * 17 + T.fish.length), undefined, 100);
+  return T;
 }
 
 export interface Preview { archetype: Archetype; scenes: Record<Density, TankSetup>; /** the scene of slider stop 0..4 (0 Open, 2 Balanced, 4 Full; 1 and 3 are drawn on first use), a copy */ stop(i: number): TankSetup; /** ms spent building the three named scenes */ buildMs: number }

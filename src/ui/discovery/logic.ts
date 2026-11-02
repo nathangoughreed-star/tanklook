@@ -18,12 +18,16 @@ import { STOP_OF, densityOfStop, recipeBg, withBg, type Stop } from '../../scene
 import { asksPlants, defaultSize, lookSizes } from '../../scene/looks';
 import type { TankSetup } from '../../scene/types';
 
-export type VStep = 'environment' | 'water' | 'family' | 'archetype' | 'density';
-export const VSTEPS: readonly VStep[] = ['environment', 'water', 'family', 'archetype', 'density'];
-export const STEP_LABEL: Record<VStep, string> = { environment: 'World', water: 'Water', family: 'Family', archetype: 'Look', density: 'Density' };
+export type VStep = 'environment' | 'water' | 'family' | 'archetype' | 'density' | 'animals';
+export const VSTEPS: readonly VStep[] = ['environment', 'water', 'family', 'archetype', 'density', 'animals'];
+export const STEP_LABEL: Record<VStep, string> = { environment: 'World', water: 'Water', family: 'Family', archetype: 'Look', density: 'Density', animals: 'Animals' };
 export const STEP_ASK: Record<VStep, string> = {
-  environment: 'What kind of world?', water: 'Which water?', family: 'Pick the broad look', archetype: 'Pick the look', density: 'How full?',
+  environment: 'What kind of world?', water: 'Which water?', family: 'Pick the broad look', archetype: 'Pick the look', density: 'How full?', animals: 'Which animals would suit it?',
 };
+/** Guided Setup Rev 03 (lane GS3): the fourth World card. Not a world: picking it keeps the whole tree open (every family, grouped), and the
+ *  family the person picks then says which world and water they were in. Never offered when the animals already fix the world. */
+export const ANY_WORLD = 'any';
+export const ANY_CARD: Card = { id: ANY_WORLD, name: 'Open to anything', tagline: 'Not sure yet? Browse every kind of look, from reef to rainforest, and settle on one as you go.' };
 export const DENSITIES: readonly Density[] = ['open', 'balanced', 'full'];
 /** The spec's density cards (section 03); each archetype adds its own label and note under them. */
 export const DENSITY_CARD: Record<Density, { name: string; line: string }> = {
@@ -35,7 +39,7 @@ export const DENSITY_CARD: Record<Density, { name: string; line: string }> = {
 export const DENS_OF: Record<Density, { hard: number; plant: number }> = { open: { hard: 0, plant: 0 }, balanced: { hard: 2, plant: 2 }, full: { hard: 3, plant: 3 } };
 /** Flat placeholder colours for the environment and water cards (families carry their own). */
 export const CARD_COLOUR: Record<string, string> = {
-  aquarium: '#2f6fb0', terrarium: '#8a6a3b', paludarium: '#3f8f6e', freshwater: '#3f8f4e', saltwater: '#1f5fa8', brackish: '#6e7a3a',
+  any: '#7a6fb0', aquarium: '#2f6fb0', terrarium: '#8a6a3b', paludarium: '#3f8f6e', freshwater: '#3f8f4e', saltwater: '#1f5fa8', brackish: '#6e7a3a',
 };
 
 // ---- what a known roster / tank says ----
@@ -86,19 +90,34 @@ export function fits(a: Archetype, k: Known): boolean {
 
 // ---- the choices at each step ----
 /** The picks so far (vision without its saved extras). */
-export type Picks = Pick<Vision, 'environment' | 'waterType' | 'familyId' | 'archetypeId' | 'density' | 'densityStop'>;
+export type Picks = Pick<Vision, 'environment' | 'waterType' | 'familyId' | 'archetypeId' | 'density' | 'densityStop'> & {
+  /** "Open to anything" was picked at World (local to discovery: the brief's vision has no field for it, so GS4 moves it onto GS2's project state) */
+  anyWorld?: boolean;
+};
 export interface Choices<T> { items: T[]; /** pruning would have left nothing, so every choice is shown with a warning */ loose: boolean }
 const prune = <T>(all: T[], ok: (x: T) => boolean): Choices<T> => { const items = all.filter(ok); return items.length ? { items, loose: false } : { items: all, loose: all.length > 0 }; };
 const familiesFor = (env: Env, water: Water | null | undefined) => familiesOf(env, env === 'aquarium' ? water ?? null : null);
 const familyFits = (f: Family, k: Known) => archetypesOf(f.id).some(a => fits(a, k));
 
 export function envChoices(k: Known): Choices<Card> {
-  return prune(ENVIRONMENTS, c => (!k.env || c.id === k.env) && ARCHETYPES.some(a => a.env === c.id && fits(a, k)));
+  const c = prune(ENVIRONMENTS, c => (!k.env || c.id === k.env) && ARCHETYPES.some(a => a.env === c.id && fits(a, k)));
+  return k.env ? c : { ...c, items: [...c.items, ANY_CARD] };   // the animals already answer the world: nothing left to be open about
 }
 export function waterChoices(k: Known): Choices<Card> {
   return prune(WATERS, c => (!k.water || c.id === k.water) && ARCHETYPES.some(a => a.env === 'aquarium' && a.water === c.id && fits(a, k)));
 }
+/** Every family of every world, grouped for "Open to anything": each aquarium water, then terrarium and paludarium. */
+export interface FamilyGroup { label: string; items: Family[] }
+const WORLDS: { label: string; env: Env; water: Water | null }[] = [
+  { label: 'Freshwater aquariums', env: 'aquarium', water: 'freshwater' }, { label: 'Saltwater aquariums', env: 'aquarium', water: 'saltwater' },
+  { label: 'Brackish aquariums', env: 'aquarium', water: 'brackish' }, { label: 'Terrariums', env: 'terrarium', water: null }, { label: 'Paludariums', env: 'paludarium', water: null },
+];
+export function openFamilyGroups(k: Known): FamilyGroup[] {
+  const groups = WORLDS.map(w => ({ label: w.label, items: familiesOf(w.env, w.water).filter(f => familyFits(f, k)) })).filter(g => g.items.length);
+  return groups.length ? groups : WORLDS.map(w => ({ label: w.label, items: familiesOf(w.env, w.water) })).filter(g => g.items.length);
+}
 export function familyChoices(p: Picks, k: Known): Choices<Family> {
+  if (p.anyWorld) { const items = openFamilyGroups(k).flatMap(g => g.items); return { items, loose: items.length > 0 && !items.some(f => familyFits(f, k)) }; }
   return p.environment ? prune(familiesFor(p.environment, p.waterType), f => familyFits(f, k)) : { items: [], loose: false };
 }
 export function archetypeChoices(p: Picks, k: Known): Choices<Archetype> {
@@ -112,21 +131,25 @@ export function choiceIds(step: VStep, p: Picks, k: Known): string[] {
     case 'family': return familyChoices(p, k).items.map(c => c.id);
     case 'archetype': return archetypeChoices(p, k).items.map(c => c.id);
     case 'density': return [...DENSITIES];
+    case 'animals': return [];   // optional and open-ended: never answered for the person, never a blocker
   }
 }
 
-/** The steps this path walks: water only for an aquarium. */
-export const stepsOf = (p: Picks): VStep[] => VSTEPS.filter(s => s !== 'water' || (p.environment ?? 'aquarium') === 'aquarium');
+/** The steps this path walks. Water only once an aquarium is picked (a terrarium, a paludarium and "Open to anything" never ask it: the
+ *  family carries it); Animals last, and optional. */
+export const stepsOf = (p: Picks): VStep[] => VSTEPS.filter(s => s !== 'water' || (p.environment === 'aquarium' && !p.anyWorld));
 const valueAt = (p: Picks, s: VStep): string | null | undefined =>
-  s === 'environment' ? p.environment : s === 'water' ? p.waterType : s === 'family' ? p.familyId : s === 'archetype' ? p.archetypeId : p.density;
+  s === 'environment' ? (p.anyWorld ? ANY_WORLD : p.environment) : s === 'water' ? p.waterType : s === 'family' ? p.familyId : s === 'archetype' ? p.archetypeId : p.density;
 
 /** Set one pick and keep every later pick that still fits (spec 06): a family of another environment / water, or an archetype no longer
  *  offered, is dropped; the density always stays. */
 export function setPick(p: Picks, step: VStep, id: string, k: Known = NOTHING_KNOWN): Picks {
   const n: Picks = { ...p };
-  if (step === 'environment') { n.environment = id as Env; n.waterType = id === 'aquarium' ? p.waterType ?? undefined : null; }
+  if (step === 'environment' && id === ANY_WORLD) { n.anyWorld = true; delete n.environment; delete n.waterType; }
+  else if (step === 'environment') { delete n.anyWorld; n.environment = id as Env; n.waterType = id === 'aquarium' ? p.waterType ?? undefined : null; }
   else if (step === 'water') n.waterType = id as Water;
   else if (step === 'family') n.familyId = id;
+  else if (step === 'animals') return n;
   else if (step === 'archetype') n.archetypeId = id;
   else { const stop = id in STOP_OF ? STOP_OF[id as Density] : Number(id) as Stop; n.density = densityOfStop(stop); n.densityStop = stop; }
   return keepCompatible(n, k);
@@ -134,9 +157,16 @@ export function setPick(p: Picks, step: VStep, id: string, k: Known = NOTHING_KN
 /** Drop the picks that no longer belong after an earlier one changed. */
 export function keepCompatible(p: Picks, k: Known): Picks {
   const n: Picks = { ...p };
+  if (n.anyWorld && k.env) delete n.anyWorld;   // the animals have since fixed the world
+  const f = n.familyId ? family(n.familyId) : undefined;
+  if (n.anyWorld) {
+    // the family of an open world says which world and water it lives in
+    if (f) { n.environment = f.env; n.waterType = f.env === 'aquarium' ? f.water : null; } else { delete n.familyId; delete n.archetypeId; delete n.environment; delete n.waterType; }
+    if (n.archetypeId && (!n.familyId || !archetypeChoices(n, k).items.some(a => a.id === n.archetypeId))) delete n.archetypeId;
+    return n;
+  }
   if (n.environment && n.environment !== 'aquarium') n.waterType = null;
   if (n.waterType === null && n.environment === 'aquarium') delete n.waterType;
-  const f = n.familyId ? family(n.familyId) : undefined;
   if (n.familyId && (!f || !n.environment || f.env !== n.environment || (n.environment === 'aquarium' && f.water !== n.waterType))) { delete n.familyId; delete n.archetypeId; }
   if (n.archetypeId && (!n.familyId || !archetypeChoices(n, k).items.some(a => a.id === n.archetypeId))) delete n.archetypeId;
   return n;
@@ -160,7 +190,7 @@ export function settle(p: Picks, k: Known): { picks: Picks; auto: VStep[] } {
 /** The first step still waiting for the person ('done' when everything is picked). */
 export function firstOpen(p: Picks, k: Known): VStep | 'done' {
   const { picks, auto } = settle(p, k);
-  for (const s of stepsOf(picks)) if (!auto.includes(s) && (valueAt(picks, s) == null || !choiceIds(s, picks, k).includes(String(valueAt(picks, s))))) return s;
+  for (const s of stepsOf(picks)) if (s !== 'animals' && !auto.includes(s) && (valueAt(picks, s) == null || !choiceIds(s, picks, k).includes(String(valueAt(picks, s))))) return s;
   return 'done';
 }
 /** The step after this one, skipping the ones answered for the person. */

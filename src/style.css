@@ -1011,6 +1011,18 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .vd-note:empty { display: none }
 .vd-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-top: 6px }
 .vd-tiles.vd-environment, .vd-tiles.vd-water, .vd-tiles.vd-density { grid-template-columns: repeat(3, minmax(0, 1fr)) }
+.vd-tiles.vd-environment:has(.vd-tile:nth-child(4)) { grid-template-columns: repeat(4, minmax(0, 1fr)) } /* lane GS3: the fourth, "Open to anything" card */
+.vd-tiles.vd-family:has(.vd-group), .vd-tiles.vd-animals { display: block } /* lane GS3: families grouped by world; the animals list */
+.vd-group { margin: 10px 0 4px; font-size: 13px; color: var(--muted); font-weight: 600 }
+.vd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px }
+.vd-set { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 4px 0 8px; padding: 8px 12px; border: 1px solid #2a9bb0; border-radius: 10px; background: var(--panel) }
+.vd-set > span { flex: 1 1 220px }
+.vd-alist { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; margin: 6px 0 }
+.vd-acard { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel) }
+.vd-acard.on { border-color: #2a9bb0; box-shadow: 0 0 0 2px #2a9bb0 inset }
+.vd-acard .vd-atxt { flex: 1; min-width: 0; display: grid; gap: 1px } .vd-acard b { font-size: 14px } .vd-acard .vd-aline { font-size: 12px; color: var(--muted) }
+.vd-acard button { flex: none }
+.vd-added { margin: 4px 0 }
 .vd-tile { display: flex; flex-direction: column; gap: 3px; text-align: left; padding: 0 0 9px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); color: var(--ink); cursor: pointer; font: inherit; overflow: hidden }
 .vd-tiles .vd-tile:hover, .vd-tiles .vd-tile:focus { background: var(--panel); color: var(--ink); border-color: #2a9bb0 }
 .vd-tiles .vd-tile.on { background: var(--panel); color: var(--ink); border-color: #2a9bb0; box-shadow: 0 0 0 2px #2a9bb0 inset }

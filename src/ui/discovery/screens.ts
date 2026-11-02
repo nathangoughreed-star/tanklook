@@ -4,17 +4,21 @@
 // public/art/discovery/<id>.webp (density: <archetype>-<density>.webp) replaces one when it exists, and a missing file removes its <img>
 // quietly. Picks are saved in the brief (`vision`) as they are made, so a refresh keeps them. Logic: ./logic.ts (pure, tested).
 import { archetype, family, type Archetype, type Card, type Family } from '../../scene/archetypes';
-import { minOf, setVision, visionOf, type Vision } from '../../scene/brief';
+import { getSpecies } from '../../data/species';
+import { minOf, rangeOf, setVision, visionOf, type Vision } from '../../scene/brief';
 import { recordTaste, recordWish } from '../../demand/taste';
-import { editBrief, getBrief, lockedStock, setLook } from '../setupBrief';
+import { budgetOf, editBrief, getBrief, lockedStock, setLook, spaceOf } from '../setupBrief';
 import { getTankModel } from '../../data/tanks';
 import type { Store } from '../../scene/store';
 import type { TankSetup } from '../../scene/types';
 import { STOP_OF, recipeDensAt } from '../../scene/recipes';
-import { Previews, rosterOf, tankChoice, tankOptions, type TankChoice } from './tiles';
+import { Previews, rosterOf, sceneWithAnimals, tankChoice, tankOptions, type TankChoice } from './tiles';
+import { addAnimal, dropAnimal, stockingSuggestion, suitableAnimals } from './animals';
+import { plural } from '../../scene/stocking';
+import { fitIn, type AnimalCount } from '../../scene/tankfit';
 import {
-  CARD_COLOUR, DENSITIES, DENSITY_CARD, STEP_ASK, STEP_LABEL, addLike, alternativeOf, archetypeChoices, depsLine, envChoices, familyChoices, firstOpen, knownOf,
-  nextOf, pickAlternative, prevOf, recipeOf, sceneFor, setPick, settle, stepsOf, waterChoices, type Known, type Picks, type VStep,
+  ANY_WORLD, CARD_COLOUR, DENSITIES, DENSITY_CARD, STEP_ASK, STEP_LABEL, addLike, alternativeOf, archetypeChoices, depsLine, envChoices, familyChoices, firstOpen, knownOf,
+  nextOf, openFamilyGroups, pickAlternative, prevOf, recipeOf, sceneFor, setPick, settle, stepsOf, waterChoices, type Known, type Picks, type VStep,
 } from './logic';
 
 export interface DiscoveryHost {
@@ -58,6 +62,8 @@ export function attachDiscovery(store: Store, host: DiscoveryHost) {
   // the density slider (step 5): stops 0..4 (0 Open, 2 A Bit of Both, 4 Full); the picture shown follows `stopNow`, the rest draw in behind it
   let stopNow = 2, sliderOn = false, curA: Archetype | undefined, curTc: TankChoice | undefined;
   let at: VStep = 'environment', known: Known = knownOf([]), soonId: string | undefined, tankPick: string | undefined, token = 0;
+  // GS3: "Open to anything" was picked at World, and the animals added at the Suitable Animals step (both local until GS4 moves them onto GS2's project state)
+  let anyWorld = false, chosen: AnimalCount[] = [];
   const previews = new Previews(host.shot);
 
   // what the person already fixed: the locked roster in the brief and the animals in the tank; the brief's tank
@@ -67,15 +73,17 @@ export function attachDiscovery(store: Store, host: DiscoveryHost) {
     return knownOf(roster, m?.ratedGal);   // only a tank the person chose prunes by size (the animal screen's placeholder tank is not a choice)
   };
   const vision = (): Vision => visionOf(getBrief());
-  const picksOf = (v: Vision): Picks => { const { secondaryLikes: _s, renderRecipe: _r, ...p } = v; return p; };
-  const save = (p: Picks) => editBrief(b => { const v = visionOf(b); return setVision(b, { ...p, secondaryLikes: v.secondaryLikes, ...(v.renderRecipe ? { renderRecipe: v.renderRecipe } : {}) }); });
+  const picksOf = (v: Vision): Picks => { const { secondaryLikes: _s, renderRecipe: _r, ...p } = v; return anyWorld ? { ...p, anyWorld } : p; };
+  const save = (p: Picks) => { anyWorld = !!p.anyWorld; const { anyWorld: _a, ...rest } = p; editBrief(b => { const v = visionOf(b); return setVision(b, { ...rest, secondaryLikes: v.secondaryLikes, ...(v.renderRecipe ? { renderRecipe: v.renderRecipe } : {}) }); }); };
   const picks = (): Picks => settle(picksOf(vision()), known).picks;
 
   function drawRail(p: Picks) {
     const { auto } = settle(p, known), steps = stepsOf(p);
-    rail.innerHTML = steps.map(s => {
+    // the breadcrumb shows only the steps still the person's to take: a step the animals already answered, or one that does not apply (Water for a
+    // terrarium or an open world), is left out rather than greyed (Rev 03 section 8)
+    rail.innerHTML = steps.filter(s => !auto.includes(s)).map(s => {
       const cur = s === at, done = !cur && steps.indexOf(s) < steps.indexOf(at);
-      return `<li class="vd-r${cur ? ' current' : done ? ' done' : ''}${auto.includes(s) ? ' auto' : ''}"${cur ? ' aria-current="step"' : ''}><button type="button" data-rail="${s}"${auto.includes(s) ? ' title="Answered by your animals"' : ''}>${STEP_LABEL[s]}</button></li>`;
+      return `<li class="vd-r${cur ? ' current' : done ? ' done' : ''}"${cur ? ' aria-current="step"' : ''}><button type="button" data-rail="${s}">${STEP_LABEL[s]}</button></li>`;
     }).join('') + '<li class="vd-r"><span>Make it your own</span></li>';
   }
   const cardTile = (c: Card, on: boolean) => tileHtml({ id: c.id, name: c.name, line: c.tagline, colour: CARD_COLOUR[c.id] ?? '#5f7f6a', art: c.id, on }, base);
@@ -91,7 +99,9 @@ export function attachDiscovery(store: Store, host: DiscoveryHost) {
   const briefTank = () => { const b = getBrief(), v = (b.items['constraints.existingTank'] ?? b.items['equipment.tank'])?.value as { model?: string } | undefined; return v?.model ? getTankModel(v.model) : undefined; };
   const tankOf = (p: Picks): TankChoice | undefined => {
     const arches = archetypeChoices(p, known).items, hand = inHand();
-    return tankChoice(arches, { yours: briefTank(), pick: tankPick, floorGal: minOf(getBrief(), 'constraints.tankGal'), animals: hand ? rosterOf(hand) : undefined });
+    const b = getBrief(), space = spaceOf(b);
+    // known dimensions, size limits, animals in hand and budget make the provisional enclosure; with none of them it is an editable example size
+    return tankChoice(arches, { yours: briefTank(), pick: tankPick, floorGal: minOf(b, 'constraints.tankGal'), maxGal: rangeOf(b, 'constraints.tankGal').max, ...(space ? { space } : {}), budgetKnown: budgetOf(b) !== undefined, animals: hand ? rosterOf(hand) : undefined });
   };
   /** The order the slider's stops are drawn in: the one on show, then the two ends, then the steps between. */
   const STOP_ORDER = [2, 0, 4, 1, 3];
@@ -149,13 +159,34 @@ export function attachDiscovery(store: Store, host: DiscoveryHost) {
     setTimeout(step, 80);
   }
   function drawTankLine(tc: TankChoice | undefined) {
-    tankLine.hidden = !tc || !host.shot || (at !== 'archetype' && at !== 'density');
+    tankLine.hidden = !tc || (at === 'animals' ? false : !host.shot || (at !== 'archetype' && at !== 'density'));
     if (tankLine.hidden || !tc) { tankLine.innerHTML = ''; return; }
     if (inHand()) { tankLine.textContent = 'Pictures are drawn in your tank, with your animals.'; return; }
-    const opts = tankOptions(archetypeChoices(picks(), known).items), sel = tc.source === 'yours' ? '' : `<select data-vd="tank" aria-label="Tank for the pictures">${opts.map(m => `<option value="${esc(m.id)}"${m.id === tc.model.id ? ' selected' : ''}>${esc(m.name)}</option>`).join('')}</select>`;
-    tankLine.innerHTML = tc.source === 'yours' ? `Pictures are drawn in your tank: <b>${esc(tc.model.name)}</b>.`
-      : `Pictures use a <b>suggested tank</b>, not one you have: ${esc(tc.model.name)}, ${esc(tc.why)}. Change it: ${sel}`;
+    const opts = tankOptions(archetypeChoices(picks(), known).items), sel = tc.source === 'yours' ? '' : `<select data-vd="tank" aria-label="${at === 'animals' ? 'Tank for the animals' : 'Tank for the pictures'}">${opts.map(m => `<option value="${esc(m.id)}"${m.id === tc.model.id ? ' selected' : ''}>${esc(m.name)}</option>`).join('')}</select>`;
+    const what = at === 'animals' ? 'Suggestions are checked against' : 'Pictures use';
+    // the enclosure chain (Rev 03 section 4): your tank, else a provisional one worked out from what is known, else an example; the last two can always be changed
+    tankLine.innerHTML = tc.source === 'yours' ? `${at === 'animals' ? 'Suggestions are checked against' : 'Pictures are drawn in'} your tank: <b>${esc(tc.model.name)}</b>.`
+      : `${what} a <b>suggested tank</b>, not one you have${tc.basis === 'example' || tc.basis === 'picked' ? '' : ' (provisional)'}: ${esc(tc.model.name)}, ${esc(tc.why)}. Change it: ${sel}`;
   }
+
+  // the Suitable Animals step (Rev 03 section 4): animals that suit the chosen look in the enclosure, one click each, all optional
+  const suitMemo = new Map<string, ReturnType<typeof suitableAnimals>>(), setMemo = new Map<string, AnimalCount[]>();
+  const keyOf = (a: Archetype, tankId: string, ch: readonly AnimalCount[]) => `${a.id}|${tankId}|${ch.map(c => c.species + c.n).join(',')}`;
+  const suitOf = (a: Archetype, tankModel: TankChoice['model']) => { const k = keyOf(a, tankModel.id, chosen); if (!suitMemo.has(k)) suitMemo.set(k, suitableAnimals(a, tankModel, chosen)); return suitMemo.get(k)!; };
+  const setOf = (a: Archetype, tankModel: TankChoice['model']) => { const k = keyOf(a, tankModel.id, []); if (!setMemo.has(k)) setMemo.set(k, stockingSuggestion(a, tankModel)); return setMemo.get(k)!; };
+  const nameOf = (c: AnimalCount) => plural(c.n, getSpecies(c.species)?.name ?? c.species);
+  const animalsHtml = (p: Picks, tc: TankChoice | undefined): string => {
+    const a = p.archetypeId ? archetype(p.archetypeId) : undefined, hand = inHand();
+    if (!a || !tc) return '<p class="hint">Pick a look first.</p>';
+    if (hand) return `<p class="vd-added">The animals in your tank come with you: ${esc(rosterOf(hand).map(nameOf).join(', '))}. Change them any time in the editor.</p>`;
+    const res = suitOf(a, tc.model), card = (id: string, name: string, line: string, on: boolean) =>
+      `<div class="vd-acard${on ? ' on' : ''}"><span class="vd-atxt"><b>${esc(name)}</b><span class="vd-aline">${esc(line)}</span></span><button type="button" ${on ? `data-drop="${esc(id)}">Remove` : `data-add="${esc(id)}">Add`}</button></div>`;
+    const added = chosen.map(c => card(c.species, nameOf(c), 'Added', true)).join(''), set = chosen.length ? [] : setOf(a, tc.model);
+    return (added ? `<div class="vd-alist">${added}</div>` : '')
+      + (set.length ? `<div class="vd-set"><span><b>A ready stocking suggestion:</b> ${esc(set.map(nameOf).join(', '))}</span><button type="button" data-vd="addset">Add this set</button></div>` : '')
+      + (res.list.length ? `<div class="vd-alist">${res.list.map(s => card(s.sp.id, s.sp.name, s.line, false)).join('')}</div>` : res.note ? `<p class="hint">${esc(res.note)}</p>` : chosen.length ? '<p class="hint">Nothing else suits with these.</p>' : '<p class="hint">Nothing in our list suits this look in this enclosure yet.</p>')
+      + (res.tooBig ? `<p class="hint">${res.tooBig} more suit the look but need a bigger enclosure than this one.</p>` : '');
+  };
 
   function draw() {
     const p = picks();
@@ -164,10 +195,17 @@ export function attachDiscovery(store: Store, host: DiscoveryHost) {
     const lines: string[] = [];
     if (known.roster.length) lines.push(`Showing what suits your animals${known.gallons ? ` in ${known.gallons} gal` : ''}.`);
     let loose = false, html = ''; sliderOn = false;
-    const tc = (at === 'archetype' || at === 'density') ? tankOf(p) : undefined;
-    if (at === 'environment') { const c = envChoices(known); loose = c.loose; html = c.items.map(x => cardTile(x, p.environment === x.id)).join(''); }
+    const tc = (at === 'archetype' || at === 'density' || at === 'animals') ? tankOf(p) : undefined;
+    if (at === 'environment') { const c = envChoices(known); loose = c.loose; html = c.items.map(x => cardTile(x, x.id === ANY_WORLD ? !!p.anyWorld : !p.anyWorld && p.environment === x.id)).join(''); }
     else if (at === 'water') { const c = waterChoices(known); loose = c.loose; html = c.items.map(x => cardTile(x, p.waterType === x.id)).join(''); }
-    else if (at === 'family') { const c = familyChoices(p, known); loose = c.loose; html = c.items.map(x => famTile(x, p.familyId === x.id)).join(''); }
+    else if (at === 'family') {
+      const c = familyChoices(p, known); loose = c.loose;
+      // "Open to anything": every family of every world, under a heading per world (each tile still says which, through its group)
+      html = p.anyWorld ? openFamilyGroups(known).map(g => `<h4 class="vd-group">${esc(g.label)}</h4><div class="vd-grid">${g.items.map(x => famTile(x, p.familyId === x.id)).join('')}</div>`).join('')
+        : c.items.map(x => famTile(x, p.familyId === x.id)).join('');
+      if (p.anyWorld) lines.push('Open to anything: every kind of look, grouped by world. Water and enclosure come with the one you pick.');
+    }
+    else if (at === 'animals') { html = animalsHtml(p, tc); lines.push('All optional: add none, some or all, and change them in the editor. How full the tank looks never changes how many animals it holds, and welfare checks always apply.'); }
     else if (at === 'archetype') { const c = archetypeChoices(p, known); loose = c.loose; html = c.items.map(x => archTile(x, p.archetypeId === x.id, tc)).join(''); }
     else {
       const a = p.archetypeId ? archetype(p.archetypeId) : undefined;
@@ -191,8 +229,8 @@ export function attachDiscovery(store: Store, host: DiscoveryHost) {
     tiles.className = `vd-tiles vd-${at}${sliderOn ? ' vd-slidermode' : ''}`; tiles.innerHTML = html;
     drawPanel(); drawTankLine(tc); if (sliderOn) paintStops(); drawShots(p, tc);
     back.hidden = !prevOf(at, p, known);
-    const has = at === 'environment' ? !!p.environment : at === 'water' ? !!p.waterType : at === 'family' ? !!p.familyId : at === 'archetype' ? !!p.archetypeId : sliderOn || !!p.density;
-    next.hidden = !has; next.textContent = at === 'density' ? 'Make it your own' : 'Next';
+    const has = at === 'environment' ? !!(p.environment || p.anyWorld) : at === 'water' ? !!p.waterType : at === 'family' ? !!p.familyId : at === 'archetype' ? !!p.archetypeId : at === 'animals' ? true : sliderOn || !!p.density;
+    next.hidden = !has; next.textContent = at === 'animals' ? 'Continue to Make It Your Own' : 'Next';
   }
   function drawPanel() {
     const a = soonId && at === 'archetype' ? archetype(soonId) : undefined;
@@ -212,6 +250,7 @@ export function attachDiscovery(store: Store, host: DiscoveryHost) {
       soonId = id; draw(); panel.scrollIntoView?.({ block: 'nearest' }); return;
     }
     const n = setPick(p, at, id, known); save(n);
+    if (n.archetypeId !== p.archetypeId || n.familyId !== p.familyId) chosen = [];   // the animals were chosen for that look
     go(nextOf(at, n, known));
   }
   function finish() {
@@ -219,15 +258,19 @@ export function attachDiscovery(store: Store, host: DiscoveryHost) {
     if (!a || !p.density) { go(firstOpen(p, known)); return; }
     const stop = p.densityStop ?? STOP_OF[p.density], r = recipeOf(a, p.density);
     if (!r) { go('archetype'); return; }
-    const b0 = getBrief(), tc = tankOf(p), hand = inHand();
+    const b0 = getBrief(), tc = tankOf(p);
+    // animals added at the Suitable Animals step go into the same scene the density step showed (same tank, look and density, only the animals are new);
+    // with a tank in hand its own animals win and nothing is added. Welfare checks run in the editor as on any other path.
+    const hand = inHand(), fresh = !hand && chosen.length && tc ? sceneWithAnimals(previews, a, tc.model, chosen, stop) : undefined;
     // the scene the person saw in the density step (same build, tank and composition), not a new layout; density = the recipe's stops
-    const pv = tc && previews.scenesOf(a, tc.model, hand), T: TankSetup = pv ? pv.stop(stop) : sceneFor(a, r, hand, briefTank()?.id);
+    const pv = tc && previews.scenesOf(a, tc.model, hand), T: TankSetup = fresh ?? (pv ? pv.stop(stop) : sceneFor(a, r, hand, briefTank()?.id));
     r.dens = recipeDensAt(a, stop);
     // the scene replaces the tank's contents; the brief (which lives in the tank) is carried over with the recipe written into it
     let keep = setVision(b0, { ...visionOf(b0), ...p, renderRecipe: r });
     if (r.look !== 'none') keep = recordTaste(setLook(keep, r.look, 'preference'), { style: r.look, kind: 'pick', variant: `vd:${a.id}` });
     store.update(s => { Object.assign(s.tanks[s.active], structuredClone(T)); }, { coalesce: 'discovery' });
     editBrief(() => keep); store.seal();
+    chosen = [];
     dlg.close();
     host.status(`${a.name}, ${STOP_NAME[stop].toLowerCase()}, opened in the editor. Make it your own: change anything; Undo steps back.${a.support === 'partial' && a.deps.length ? ' ' + depsLine(a) : ''}`);
   }
@@ -235,7 +278,10 @@ export function attachDiscovery(store: Store, host: DiscoveryHost) {
   dlg.addEventListener('error', e => { const t = e.target; if (t instanceof HTMLImageElement && t.classList.contains('vd-img')) t.remove(); }, true);
   dlg.addEventListener('load', e => { const t = e.target; if (t instanceof HTMLImageElement && t.classList.contains('vd-img')) t.classList.add('ok'); }, true);
   dlg.addEventListener('close', () => { token++; });
-  tankLine.addEventListener('change', e => { const t = e.target as HTMLSelectElement; if (t.dataset.vd === 'tank') { tankPick = t.value; draw(); } });
+  tankLine.addEventListener('change', e => {
+    const t = e.target as HTMLSelectElement;
+    if (t.dataset.vd === 'tank') { tankPick = t.value; const m = getTankModel(t.value); if (chosen.length && !(m && !fitIn(chosen, m)?.fails.length)) chosen = []; draw(); }   // animals that no longer fit the changed tank are dropped
+  });
   const moveTo = (n: number, commit: boolean) => {
     stopNow = Math.max(0, Math.min(4, Math.round(n))); const rg = tiles.querySelector<HTMLInputElement>('.vd-range'); if (rg) rg.value = String(stopNow);
     // the stop on show draws first when it is not ready yet
@@ -246,8 +292,13 @@ export function attachDiscovery(store: Store, host: DiscoveryHost) {
   tiles.addEventListener('change', e => { const t = e.target as HTMLInputElement; if (t.classList.contains('vd-range')) moveTo(Number(t.value), true); });
   dlg.addEventListener('click', e => {
     const end = (e.target as HTMLElement).closest<HTMLElement>('[data-stop]'); if (end) { moveTo(Number(end.dataset.stop), true); return; }
-    const t = (e.target as HTMLElement).closest<HTMLElement>('[data-pick],[data-vd],[data-rail]'); if (!t) return;
+    const t = (e.target as HTMLElement).closest<HTMLElement>('[data-pick],[data-vd],[data-rail],[data-add],[data-drop]'); if (!t) return;
     if (t.dataset.pick) { choose(t.dataset.pick); return; }
+    if (t.dataset.add || t.dataset.drop) {
+      const a = picks().archetypeId ? archetype(picks().archetypeId!) : undefined, tc = tankOf(picks()), s = a && tc && suitOf(a, tc.model).list.find(x => x.sp.id === t.dataset.add);
+      if (t.dataset.drop) chosen = dropAnimal(chosen, t.dataset.drop); else if (s) chosen = addAnimal(chosen, s.add);
+      draw(); return;
+    }
     if (t.dataset.rail) { const s = t.dataset.rail as VStep, p = picks(), steps = stepsOf(p); if (steps.indexOf(s) <= steps.indexOf(at) || firstOpen(p, known) === 'done' || steps.indexOf(s) <= steps.indexOf(firstOpen(p, known) as VStep)) go(s); return; }
     const p = picks();
     switch (t.dataset.vd) {
@@ -255,6 +306,7 @@ export function attachDiscovery(store: Store, host: DiscoveryHost) {
       case 'next': if (at === 'density' && sliderOn) save(setPick(p, 'density', String(stopNow), known)); go(nextOf(at, p, known)); break;
       case 'alt': { const a = soonId ? archetype(soonId) : undefined, alt = a && alternativeOf(a); if (alt) { save(pickAlternative(p, alt)); go('density'); } break; }
       case 'explore': soonId = undefined; draw(); break;
+      case 'addset': { const a = p.archetypeId ? archetype(p.archetypeId) : undefined, tc = tankOf(p); if (a && tc) chosen = setOf(a, tc.model).reduce(addAnimal, chosen); draw(); break; }
       case 'animals': { dlg.close(); const keep = getBrief(); host.stocking(); if (getBrief() !== keep) editBrief(() => keep); dock.hidden = false; break; }
       case 'sandbox': void Promise.resolve(host.sandbox?.()).then(ok => { if (ok) dlg.close(); }); break;
       case 'deals': case 'saved': dlg.close(); host.browse?.(t.dataset.vd === 'deals' ? 'new' : 'open'); break;

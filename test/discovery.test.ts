@@ -15,7 +15,7 @@ import {
 /** Walk the flow picking `pick(step, ids)` at each step the person sees; returns the picks and how many choices it took. */
 function walk(k: Known, pick: (s: VStep, ids: string[]) => string, start: Picks = {}): { p: Picks; n: number } {
   let p = start, n = 0, at = firstOpen(p, k);
-  while (at !== 'done') {
+  while (at !== 'done' && at !== 'animals') {   // Suitable Animals (GS3) is optional: the picks are complete without it
     const ids = choiceIds(at, settle(p, k).picks, k);
     expect(ids.length, `no choices at ${at}`).toBeGreaterThan(0);
     p = setPick(settle(p, k).picks, at, pick(at, ids), k); n++;
@@ -44,7 +44,7 @@ describe('discovery flow (lane VD3)', () => {
   it('reaches Make It Your Own in 5 picks for an aquarium and 4 for a terrarium or paludarium', () => {
     const aq = walk(NOTHING_KNOWN, (s, ids) => s === 'environment' ? 'aquarium' : buildable(s, ids));
     expect(aq.n).toBe(5);
-    expect(stepsOf(aq.p)).toEqual(['environment', 'water', 'family', 'archetype', 'density']);
+    expect(stepsOf(aq.p)).toEqual(['environment', 'water', 'family', 'archetype', 'density', 'animals']);
     for (const env of ['terrarium', 'paludarium']) {
       const r = walk(NOTHING_KNOWN, (s, ids) => s === 'environment' ? env : buildable(s, ids));
       expect(r.n, env).toBe(4);
