@@ -332,3 +332,10 @@ Track unsupported-style interest separately from completed builds; use results t
 Scope boundary
 Ponds, patio tubs, and outdoor water gardens remain outside this initial indoor-enclosure discovery tree. They can become a separate environment branch later without changing existing archetype IDs.
 ```
+
+## Note 2026-11-02 (Nathan, lane VD6): where curated pictures end and personalized renders begin
+The cutoff for the image-led flow: steps 1-3 (Environment, Water, Visual Family) stay CURATED inspiration pictures (`public/art/discovery/<id>.webp`, flat colour tile when the file is missing). From step 4 on the pictures are PERSONALIZED 3D RENDERS in the person's tank:
+- Step 4 (Archetype): each buildable archetype of the chosen family drawn by `recipeBase` at Balanced density; coming-soon archetypes keep the flat / reference tile and the coming-soon panel.
+- Step 5 (Density): the chosen archetype at Open / Balanced / Full from the same `recipeBase` (`sceneAt`); the default selection is Balanced.
+- Step 6 (Make It Your Own) opens that exact scene (archetype + density kept in `brief.vision`), not a new layout.
+Rules: the tank is the person's own when the brief names one, else a clearly labelled "suggested tank" (the smallest catalogue tank that holds every drawn archetype of the step, their tank-size floor and any known animals), never presented as theirs, and changeable; animals already in the tank keep their tank and gear. Same tank, same camera and same render quality for every tile of a step. Tiles are drawn lazily, one per timer tick, cached per (archetype, tank, roster, density); the UI never waits on them. Code: `src/ui/discovery/tiles.ts`, hook `shot` on the discovery host (panels.ts draws a scene in the viewer and puts the tank back).

@@ -1049,6 +1049,10 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .vd-ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 8px; text-align: center; color: #fff; font-weight: 600; font-size: 14px; opacity: .9; text-shadow: 0 1px 2px rgb(0 0 0 / .35) }
 .vd-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover }
 .vd-img:not(.ok) { visibility: hidden } /* no broken-image icon while a missing art file 404s */
+.vd-shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #0b1b2b } /* lane VD6: the personalized render of the person's tank */
+.vd-wait .vd-ph { font-weight: 500; font-size: 12px; animation: vdWait 1.4s ease-in-out infinite }
+@keyframes vdWait { 50% { opacity: .45 } }
+.vd-tank { margin: 6px 0 } .vd-tank select { max-width: 100%; font: inherit }
 .vd-soon-tile .vd-art { filter: saturate(.55) }
 .vd-badge { position: absolute; top: 6px; right: 6px; padding: 1px 7px; border-radius: 9px; background: rgb(255 255 255 / .92); color: #333; font-size: 11px; font-style: normal; font-weight: 600 }
 .vd-panel .vd-badge { position: static; display: inline-block; background: #eef1f3 }

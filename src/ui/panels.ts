@@ -289,6 +289,11 @@ export function attachPanels(store: Store, viewer: Viewer) {
     look: () => openLook(),
     suggest: () => suggestPanel?.open(),
     openReport: () => void import('./report').then(m => m.openReport()), // lane GV3: the printable report
+    // lane VD6: a personalized discovery picture = the scene shown in the viewer for one draw, then the tank put back (no undo step, the brief kept)
+    shot: T => {
+      const orig = structuredClone(store.tank), put = (S: TankSetup) => store.update(s => { Object.assign(s.tanks[s.active], structuredClone(S), { brief: orig.brief }); }, { history: false });
+      try { put(T); return viewer.thumbnail(480); } finally { put(orig); }
+    },
     sandbox: () => { const ok = welcomeFirst ? (welcomeFirst = false, true) : newEmptyTank(); if (ok) { setMode('sandbox'); startMode.drawBar(); } return ok; },
     browse: menu => showChooser(menu, menu === 'open' ? 'starters' : undefined, welcomeFirst),
   });

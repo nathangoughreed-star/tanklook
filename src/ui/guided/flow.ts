@@ -9,6 +9,7 @@ import { editBrief, getBrief, onBrief, ownedKeys } from '../setupBrief';
 import { attachWelcomeGuard } from '../welcomeGuard';
 import { mountOwnedSheet, emptyOwned, type OwnedHost } from '../ownedGear';
 import { rangeOf } from '../../scene/brief';
+import type { TankSetup } from '../../scene/types';
 import { attachDiscovery, type DiscoveryHost } from '../discovery/screens';
 import {
   INTENT_CARDS, KIND_CARDS, STEP_ASK, applyKindChoice, artPath, clearLimits, kindOf, nextStep, prevStep, railOf, readState, routeOf, setSetupHours, writeState,
@@ -20,6 +21,7 @@ export interface GuidedHost extends OwnedHost {
   /** The look step (Appearance). */ look(): void;
   /** Suggest (Existing equipment, Open to ideas). */ suggest(): void;
   /** The printable report (lane GV3). Absent until that lane lands: the rail's last slot then waits. */ openReport?(): void;
+  /** Discovery's personalized pictures (lane VD6): draw a scene in the viewer, return a small picture. */ shot?(T: TankSetup): string;
 }
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
@@ -135,10 +137,10 @@ export function attachGuidedFlow(dlg: HTMLDialogElement, store: Store, host: Gui
 
   // lane VD3: the Guided entry is discovery; the Welcome host's sandbox / browse links ride along when it has them
   let discovery: ReturnType<typeof attachDiscovery> | undefined;
-  const extra = host as GuidedHost & Partial<Pick<DiscoveryHost, 'sandbox' | 'browse'>>;
+  const extra = host as GuidedHost & Partial<Pick<DiscoveryHost, 'sandbox' | 'browse' | 'shot'>>;
   return {
     /** Open Guided: Visual Discovery at its first open step (a fresh tank starts at Environment; a known roster usually at Family). */
-    show() { dock.hidden = true; if (dlg.open) dlg.close(); (discovery ??= attachDiscovery(store, { status: host.status, stocking: host.stocking, sandbox: extra.sandbox, browse: extra.browse })).open(); },
+    show() { dock.hidden = true; if (dlg.open) dlg.close(); (discovery ??= attachDiscovery(store, { status: host.status, stocking: host.stocking, sandbox: extra.sandbox, browse: extra.browse, shot: extra.shot })).open(); },
     /** The old GV1 stepper at its saved step (kept for its dock until lane VD5 retires it). */
     stepper() { g = readState(getBrief()); dock.hidden = true; if (!dlg.open) dlg.showModal(); draw(); (stepEl.querySelector('button') as HTMLElement | null)?.focus(); },
     state: () => g,
