@@ -1083,3 +1083,14 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .gs-limin input { width: 96px }
 .gs-kind button { padding: 2px 10px; font-size: 12.5px }
 @media (max-width: 520px) { .gs-start { grid-template-columns: 1fr } }
+/* Guided Setup Rev 03, Animals First (lane GS5): the roster picker and enclosure card inside the shell's dialog; the .sp row styles are reused, the panel's own placement is not */
+.sp.af { position: static; width: auto; max-width: none; z-index: auto; overflow: visible; padding: 0; border: 0; box-shadow: none; background: transparent }
+.sp.af .spQ { margin-top: 2px }
+.afChips { display: flex; flex-wrap: wrap; gap: 4px; margin: 4px 0 6px }
+.afChips button.on { background: #2a9bb0; border-color: #2a9bb0; color: #fff }
+.afRes { max-height: 210px; overflow-y: auto; border: 1px solid var(--line); border-radius: 8px }
+.afRec { display: grid; gap: 6px; margin: 8px 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel) }
+.afRec .primary { justify-self: start }
+.afSizes { max-height: 240px }
+.afSizes button { display: flex; width: 100%; text-align: left }
+.afSizes button:disabled { opacity: .5 }

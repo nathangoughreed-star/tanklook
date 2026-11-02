@@ -61,6 +61,10 @@ export interface DiscoveryOpts {
   limits?: { floorGal?: number; maxGal?: number; maxSpace?: SpaceLimit; budgetKnown?: boolean };
   /** The old dialog owns the World step and offers "Open to anything" itself. */
   ownsWorld?: boolean;
+  /** A catalogue tank id the person already confirmed (Animals First's enclosure step): the pictures start in it, as if they had chosen it from the tank list here. */
+  pickTank?: string;
+  /** The person changed the tank here (the tank list): the shell keeps the project's enclosure the same. */
+  onTankPick?(id: string): void;
   /** Show Back on the first step too (the shell takes it back to its own previous step through onExit('back')). */
   allowBack?: boolean;
   /** The shell draws the breadcrumb: only this route's steps, Water and World hidden when irrelevant or resolved. */
@@ -87,7 +91,7 @@ export function mountDiscovery(store: Store, host: DiscoveryHost, root: HTMLElem
 
   // the density slider (step 5): stops 0..4 (0 Open, 2 A Bit of Both, 4 Full); the picture shown follows `stopNow`, the rest draw in behind it
   let stopNow = 2, sliderOn = false, curA: Archetype | undefined, curTc: TankChoice | undefined;
-  let at: VStep = 'environment', known: Known = knownOf([]), soonId: string | undefined, tankPick: string | undefined, token = 0;
+  let at: VStep = 'environment', known: Known = knownOf([]), soonId: string | undefined, tankPick: string | undefined = opts.pickTank, token = 0;
   // GS3: "Open to anything" was picked at World, and the animals added at the Suitable Animals step (both local until GS4 moves them onto GS2's project state)
   // (lane GS4: the shell hands the animals back in `suggested` and hears every change, so a refresh or revisit keeps them; Open to anything is the project's world 'any')
   let worldOpen = false, chosen: AnimalCount[] = opts.suggested ? [...opts.suggested] : [];
@@ -311,7 +315,8 @@ export function mountDiscovery(store: Store, host: DiscoveryHost, root: HTMLElem
       keep = setItem(keep, 'animals.stock', [...have.filter(x => !accepted.some(c => c.species === x.species)), ...accepted.map(c => ({ species: c.species, count: c.n }))], getItem(keep, 'animals.stock')?.status ?? 'preference');
     }
     const same = lookUnchanged(store.tank, b0, { archetypeId: a.id, density: p.density, densityStop: stop }, tc?.model.id);
-    const ho = same ? undefined : handOff(store.tank, T, { accept: accepted.map(c => c.species), brief: b0 });
+    // Animals First (lane GS5): the roster the shell passed is the person's own stocking, so those animals go into the scene with the look (a roster only in the brief is not in the scene yet)
+    const ho = same ? undefined : handOff(store.tank, T, { accept: [...accepted.map(c => c.species), ...(opts.roster ?? []).map(r => r.species)], brief: b0 });
     if (ho) store.update(s => { Object.assign(s.tanks[s.active], structuredClone(ho.scene)); }, { coalesce: 'discovery' });
     editBrief(() => keep); store.seal();
     setChosen([]);
@@ -323,7 +328,7 @@ export function mountDiscovery(store: Store, host: DiscoveryHost, root: HTMLElem
   root.addEventListener('load', e => { const t = e.target; if (t instanceof HTMLImageElement && t.classList.contains('vd-img')) t.classList.add('ok'); }, true);
   tankLine.addEventListener('change', e => {
     const t = e.target as HTMLSelectElement;
-    if (t.dataset.vd === 'tank') { tankPick = t.value; const m = getTankModel(t.value); if (chosen.length && !(m && !fitIn(chosen, m)?.fails.length)) setChosen([]); draw(); }   // animals that no longer fit the changed tank are dropped
+    if (t.dataset.vd === 'tank') { tankPick = t.value; opts.onTankPick?.(t.value); const m = getTankModel(t.value); if (chosen.length && !(m && !fitIn(chosen, m)?.fails.length)) setChosen([]); draw(); }   // animals that no longer fit the changed tank are dropped
   });
   const moveTo = (n: number, commit: boolean) => {
     stopNow = Math.max(0, Math.min(4, Math.round(n))); const rg = tiles.querySelector<HTMLInputElement>('.vd-range'); if (rg) rg.value = String(stopNow);

@@ -26,10 +26,10 @@ import { gearView } from '../render/gear3d';
 import { tankView } from '../render/tankView';
 import { attachBuildPick } from './buildPick';
 import { attachStockGallery } from './stockGallery';
+import { pickRowHtml } from './stockRows';
 import { onSpaceFork, type SpaceFork } from './fullnessTile';
-import { spaceBand, animalsInTank, animalsOf, bump, sexFish, writePairs, FAIL_WORD, groupLineIn, type Pairing, forkOptions, isSexed, notesOf, planFor, conflictsOf, rankTankmates, tempLinesOf, startPick, tankLabel, totalOf, type Pk, type Plan, type RoomOption } from './stockPlanLogic';
+import { spaceBand, animalsInTank, animalsOf, bump, sexFish, writePairs, FAIL_WORD, type Pairing, forkOptions, planFor, rankTankmates, tempLinesOf, startPick, tankLabel, totalOf, type Pk, type Plan, type RoomOption } from './stockPlanLogic';
 import { allLand, isMixed, setPool, sizeTxt } from '../scene/tankfit';
-import { lifeStages } from '../data/lifestages';
 import { applyRosterFix, rosterTotals, rosterWarnings, type RosterFixOp } from './stockPlanLogic';
 import { budgetGap, laterLine, preyLater, preyLaterLine } from './stockPlanLogic';
 import { span } from '../scene/outgrows';
@@ -44,7 +44,6 @@ const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
 const range = (a: number, b: number, f: (n: number) => string) => a === b ? f(a) : `${f(Math.min(a, b))} to ${f(Math.max(a, b))}`;
 const signed = (n: number) => n >= 0 ? `+${usd(n)}` : `-${usd(-n)}`;
 const WATER_LEVEL = 1; // tanks start full (Nathan 2026-10-22)
-const PAIR_OPTS: [Pairing, string][] = [['established', 'Established'], ['unconfirmed', 'Not confirmed'], ['unknown', "Don't know"]];
 
 export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string, bad?: boolean) => void, openBtn: HTMLElement) {
   const view = document.getElementById('view')!;
@@ -137,24 +136,8 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
 
   // ---------- drawing ----------
   const solo = () => picks.filter(p => totalOf(p) > 0).length === 1;
-  const bandClass = (b: string) => `spb-${b}`;
-  // S228: the editor's life-stage buttons on a pick (herps, fish 100 mm or longer); adult is the default and clears the size
-  const stageRow = (p: Pk) => {
-    const sp = getSpecies(p.id), st = sp && lifeStages(sp); if (!st || !sp) return '';
-    const cur = p.tl ?? sp.tl, u = store.scene.units;
-    return `<div class="spStage"><span class="spLab">Size now</span>${st.map(([n, mm], i) => { const adult = i === st.length - 1, on = adult ? !p.tl : p.tl === mm;
-      return `<button type="button" data-act="stage" data-id="${p.id}" data-mm="${adult ? 0 : mm}"${on ? ' class="on"' : ''} aria-pressed="${on}" title="${n}: about ${u === 'in' ? `${+(mm / 25.4).toFixed(1)} in` : `${Math.round(mm / 10)} cm`}">${n}</button>`; }).join('')}${p.tl ? `<span class="spNote">about ${u === 'in' ? `${+(cur / 25.4).toFixed(1)} in` : `${Math.round(cur / 10)} cm`} now</span>` : ''}</div>`;
-  };
-  const pickRow = (p: Pk, plan: Plan) => {
-    const sp = getSpecies(p.id)!, nt = notesOf(p, store.scene.units), sexed = isSexed(p.id);
-    const step = (which: 'n' | 'f' | 'u', label: string, v: number) =>
-      `<span class="spStep"><span class="spLab">${label}</span><button type="button" data-act="dec" data-id="${p.id}" data-w="${which}" aria-label="One fewer ${esc(label || sp.name)}"${v <= 0 ? ' disabled' : ''}>−</button><b>${v}</b><button type="button" data-act="inc" data-id="${p.id}" data-w="${which}" aria-label="One more ${esc(label || sp.name)}">+</button></span>`;
-    return `<li class="spPick"><div class="spName"><b>${esc(sp.name)}</b><i>${esc(sp.sci)}</i><button type="button" class="spX" data-act="del" data-id="${p.id}" aria-label="Take ${esc(sp.name)} out">✕</button></div>
-<div class="spSteps">${sexed ? step('n', 'Males', p.n) + step('f', 'Females', p.f ?? 0) + step('u', 'Unsexed', p.u ?? 0) : step('n', '', p.n)}</div>
-${stageRow(p)}${nt.pairing ? `<div class="spPair"><span class="spLab">Pair</span>${PAIR_OPTS.map(([v, t]) => `<button type="button" data-act="pair" data-id="${p.id}" data-v="${v}"${nt.pairing!.status === v ? ' class="on"' : ''} aria-pressed="${nt.pairing!.status === v}">${t}</button>`).join('')}</div><div class="${nt.pairing.status === 'established' ? 'spNote' : 'spWarn'}">${esc(nt.pairing.line)}</div>` : ''}
-${conflictsOf(picks, p.id, store.scene.units === 'in').filter(w => /^expertise:/.test(w.text)).map(w => `<div class="${w.block ? 'spWarn' : 'spNote'}">${esc(w.text)}</div>`).join('')}${(() => { const g = groupLineIn(nt, plan); return nt.line ? `<div class="spMsg ${g.held ? 'spb-held' : bandClass(nt.band)}">${esc(nt.line)}</div>` : ''; })()}${nt.ratio ? `<div class="spNote">${esc(nt.ratio)}</div>` : ''}
-${nt.habitat.length ? `<div class="spNote">${nt.habitat.map(esc).join(' · ')}</div>` : ''}</li>`;
-  };
+  // the row itself is shared with Animals First's embedded roster picker (ui/stockRows.ts, lane GS5)
+  const pickRow = (p: Pk, plan: Plan) => pickRowHtml(p, picks, plan, store.scene.units);
 
   // S229 (Nathan 2026-10-26, "yes"): the space bar is the whole-scale gauge the Fullness tile uses (ui/gauge.ts); spaceBand still drives the
   // label and the class. The tank-size bar (the animals' minimum against this tank) keeps one colour per band, like the tile's minimum bar.

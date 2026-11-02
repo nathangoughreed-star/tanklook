@@ -4,12 +4,14 @@
 // route's own steps after it (Water hidden when resolved). Back works across the seam. Every answer is written to the one project state (scene/project.ts); the
 // shell never replaces the scene: only discovery's own exit to the editor does, and an onboarding step never deletes what is on screen.
 import { clearItem, getItem, setItem, type Brief, type Route } from '../../scene/brief';
-import { envOf, routeOf, worldOf } from '../../scene/project';
+import { applyChange, envOf, routeOf, worldOf } from '../../scene/project';
 import type { Store } from '../../scene/store';
 import type { AnimalCount } from '../../scene/tankfit';
 import { mountDiscovery, type CrumbState, type DiscoveryHost, type Mounted } from '../discovery/screens';
 import type { VStep } from '../discovery/logic';
 import { editBrief, getBrief, lockedStock, setBrief } from '../setupBrief';
+import { animalsFirst } from './animalsFirst';
+import { pickedTank } from './animalsLogic';
 import { mountEquipmentStep } from './equipmentStep';
 import { mountLimitsStep } from './limitsStep';
 import { ONBOARD_STEPS, exploresOf, nextOnboard, onboardCrumbs, ownedTankOf, placeOf, prevOnboard, setSuggested, suggestedOf, type OnboardStep, type ShellCrumb } from './logic';
@@ -66,7 +68,7 @@ export function attachGuided(store: Store, host: DiscoveryHost, o: GuidedOpts = 
   dock.innerHTML = '<button type="button" class="primary" data-vd="resume">Next: pick the look for these animals</button><button type="button" class="linkbtn" data-vd="hide" aria-label="Hide">✕</button>';
   document.body.append(dock);
   const rail = dlg.querySelector<HTMLElement>('.gs-crumbs')!, body = dlg.querySelector<HTMLElement>('.gs-body')!;
-  const entry = o.animalsEntry ?? placeholderAnimals, explore = o.exploreEntry ?? placeholderExplore;
+  const entry = o.animalsEntry ?? animalsFirst, explore = o.exploreEntry ?? placeholderExplore;
 
   let parked: Brief | undefined;   // the project as it was when the side panel opened (that panel starts a new scene and brief until lane GS6 / GS5 change it)
   let mounted: Mounted | undefined, part: { destroy(): void } | undefined, at: OnboardStep = 'world', route: Route | undefined;
@@ -87,7 +89,7 @@ export function attachGuided(store: Store, host: DiscoveryHost, o: GuidedOpts = 
       case 'world': part = mountWorldStep(root, { host, next: advance, leave: () => dlg.close() }); break;
       case 'equipment': part = mountEquipmentStep(root, { store, status: host.status, next: advance, back }); break;
       case 'limits': part = mountLimitsStep(root, { next: advance, back }); break;
-      case 'start': part = exploresOf(getBrief()) ? explore({ store, host, root, back, pickWorld: () => showStep('world'), close: () => dlg.close() }) : mountStartStep(root, { pick: r => showRoute(r), back }); break;
+      case 'start': part = exploresOf(getBrief()) ? explore({ store, host, root, back, pickWorld: () => showStep('world'), close: () => dlg.close() }) : mountStartStep(root, { pick: r => r === 'animals' ? showAnimals() : showRoute(r), back }); break;
     }
     (root.querySelector('button') as HTMLElement | null)?.focus();
   }
@@ -112,16 +114,18 @@ export function attachGuided(store: Store, host: DiscoveryHost, o: GuidedOpts = 
       park: () => { dlg.close(); const keep = getBrief(); host.stocking(); parked = keep; if (getBrief() !== keep) editBrief(() => keep); dock.hidden = false; } });
   }
   function mountRoute(r: Route) {
-    const b = getBrief(), own = ownedTankOf(b), env = envOf(b), roster = r === 'animals' ? rosterNow() : undefined;
+    const b = getBrief(), env = envOf(b), roster = r === 'animals' ? rosterNow() : undefined;
+    // Animals First: the enclosure the person confirmed (a tank picked in the design) is the one the pictures use, unless their own tank is Required
+    const pick = r === 'animals' ? pickedTank(b) : undefined, own = pick ? undefined : ownedTankOf(b);
     // the pictures use the enclosure the project stands on: the owned tank (Required or Available) when there is one, else discovery's own provisional chain (known
     // space, size limits, animals, budget; else an example size) which it labels as a suggestion
     mounted = mountDiscovery(store, host, pane(), {
-      route: r, ...(env ? { world: env } : {}), ...(roster ? { roster } : {}), ...(own ? { tank: { model: own.model, use: own.use } } : {}), allowBack: true,
+      route: r, ...(env ? { world: env } : {}), ...(roster ? { roster } : {}), ...(own ? { tank: { model: own.model, use: own.use } } : {}), ...(pick ? { pickTank: pick, onTankPick: id => editBrief(bb => applyChange(bb, { tank: { model: id } }).state) } : {}), allowBack: true,
       ...(r === 'look' ? { suggested: suggestedOf(b) } : {}), onSuggested: list => editBrief(bb => setSuggested(bb, list)),
       onCrumbs: steps => {
         drawCrumbs([...(r === 'animals' ? [{ id: 'roster', label: 'Animals', state: 'done' as const }] : []), ...steps.map((c: CrumbState) => ({ id: c.id, label: c.label, state: c.state }))]);
       },
-      onExit: kind => { if (kind === 'back') showStep('start'); else dlg.close(); },
+      onExit: kind => { if (kind === 'back') { if (r === 'animals') showAnimals(); else showStep('start'); } else dlg.close(); },
     });
     mounted.restart();
   }
