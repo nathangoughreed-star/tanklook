@@ -5,7 +5,7 @@
 // suggestion, and a scene is built once per (archetype, tank, roster) and drawn once per density, then cached. Pure apart from the `shot` callback
 // (the viewer, see panels.ts): no DOM here, so the tank choice and the scenes are tested without WebGL.
 import type { Archetype, Density } from '../../scene/archetypes';
-import { recipeBase, recipeDens, recipeLook, minTank, sceneAt, DENSITIES } from '../../scene/recipes';
+import { recipeBase, recipeDens, recipeLook, minTank, sceneAt, withBg, DENSITIES } from '../../scene/recipes';
 import { scapeSetup } from '../../scene/scapes';
 import { catalogueSizes, fitIn, type AnimalCount } from '../../scene/tankfit';
 import type { TankModel } from '../../data/tanks';
@@ -66,7 +66,7 @@ export function previewOf(a: Archetype, tank: TankModel, inHand?: TankSetup): Pr
   if (inHand?.fish.length) {
     const look = recipeLook(a)!, animals = rosterOf(inHand), mode = a.recipe.plantMode ?? 'live';
     const scenes = {} as Record<Density, TankSetup>;
-    for (const d of DENSITIES) scenes[d] = a.recipe.looks[0] === 'none' ? structuredClone(inHand) : scapeSetup({ animals, setup: inHand } as never, look, mode, inHand, { dens: recipeDens(a, d) });
+    for (const d of DENSITIES) scenes[d] = withBg(a, a.recipe.looks[0] === 'none' ? structuredClone(inHand) : scapeSetup({ animals, setup: inHand } as never, look, mode, inHand, { dens: recipeDens(a, d) }));
     return { archetype: a, scenes, buildMs: performance.now() - t0 };
   }
   const base = recipeBase(a, tank);

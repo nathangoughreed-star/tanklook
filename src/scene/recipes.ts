@@ -7,21 +7,24 @@
 // numbers: the scene is the look's starter set through scapes.ts `scapeSetup`, as Create a look draws it. Archetypes
 // without a mapped look stay coming-soon (no recipe).
 import { emptyBuild, buildsFor, type Build } from './builds';
-import { itemDims, STYLES } from './items';
+import { itemDims, layerOf, STYLES } from './items';
 import { getSpecies } from '../data/species';
 import { groupMinimum } from './groupMin';
 import { scapeSetup, type PlantMode } from './scapes';
 import { catalogueSizes, fitIn, type AnimalCount } from './tankfit';
 import { archetype as archetypeById, type Archetype, type Density } from './archetypes';
 import type { TankModel } from '../data/tanks';
-import type { CompId, LayerDens, LayoutId, TankSetup } from './types';
+import type { Background, CompId, Item, LayerDens, LayoutId, TankSetup } from './types';
 
 export const DENSITIES: readonly Density[] = ['open', 'balanced', 'full'];
 type Stops = Pick<LayerDens, 'hard' | 'plant'>;
 type Trio = Record<Density, Stops>;
+/** The most hardscape a Full level asks for (stop 2 = the set as designed). Past about 2.8 the starter layers stop adding "a bit more" and start
+ *  piling: one level above, rocks go from a few pieces to a wall (VD6, Nathan 2026-11-02), so Full stays within one step of the designed set. */
+const HARD_FULL = 2.6;
 /** Density slider stops (items.ts DENS_RANGE: -1 one piece .. 2 the set as designed .. 6 far too much) per level. */
 const t = (o: [number, number], b: [number, number], f: [number, number]): Trio =>
-  ({ open: { hard: o[0], plant: o[1] }, balanced: { hard: b[0], plant: b[1] }, full: { hard: f[0], plant: f[1] } });
+  ({ open: { hard: o[0], plant: o[1] }, balanced: { hard: b[0], plant: b[1] }, full: { hard: Math.min(f[0], HARD_FULL), plant: f[1] } });
 
 /**
  * The stops per look (spec 04 where it names the archetype; the archetype's own `density` notes otherwise). Balanced is
@@ -63,6 +66,26 @@ const TWEAKS: Record<string, Tweak> = {
   // Big Fish Showcase: bare floor / one rock / sand, rocks and a root, no plants (big fish uproot them)
   'big-fish-showcase': { noPlants: true, dens: t([-1, -1], [-1, -1], [0, -1]) },
 };
+
+/** The back-glass background each family is drawn on (existing engine options; the person changes it in the editor's Background control). Chosen
+ *  so a render is never a bare tank: dark where the tank is bright (corals, glow), green behind plants and moss, sand for dry and shore looks. */
+const FAMILY_BG: Record<string, { bg: Background; color?: string }> = {
+  'fw-gardens': { bg: 'green' }, 'fw-sculpted': { bg: 'black' }, 'fw-wild': { bg: 'grey' }, 'fw-minimal': { bg: 'white' }, 'fw-playful': { bg: 'lightblue' }, 'fw-showcase': { bg: 'black' },
+  'sw-coral': { bg: 'blue' }, 'sw-fish': { bg: 'abyss' }, 'sw-habitat': { bg: 'gradient' }, 'sw-sculpted': { bg: 'black' }, 'sw-glow': { bg: 'black' },
+  'bk-mangrove': { bg: 'green' }, 'bk-shore': { bg: 'sand' }, 'bk-rocky': { bg: 'grey' }, 'bk-fish': { bg: 'blue' }, 'bk-planted': { bg: 'green' },
+  'te-rainforest': { bg: 'green' }, 'te-desert': { bg: 'sand' }, 'te-woodland': { bg: 'custom', color: '#2b3a2a' }, 'te-climb': { bg: 'grey' }, 'te-botanical': { bg: 'green' }, 'te-creature': { bg: 'black' },
+  'pa-waterfall': { bg: 'green' }, 'pa-riverbank': { bg: 'green' }, 'pa-swamp': { bg: 'custom', color: '#2b3326' }, 'pa-stream': { bg: 'grey' }, 'pa-fantasy': { bg: 'abyss' }, 'pa-creature': { bg: 'green' },
+};
+/** Per-archetype exceptions to its family's background. */
+const ARCH_BG: Record<string, { bg: Background; color?: string }> = { 'blackwater-creek': { bg: 'black' }, 'african-cichlid-rockscape': { bg: 'blue' } };
+/** The background an archetype's recipe draws on (a family default; never none, so a render always has one). */
+export const recipeBg = (a: Archetype): { bg: Background; color?: string } => ARCH_BG[a.id] ?? FAMILY_BG[a.familyId] ?? { bg: 'black' };
+/** A scene with the archetype's background on the back glass. */
+export function withBg(a: Archetype, S: TankSetup): TankSetup {
+  const { bg, color } = recipeBg(a);
+  S.render = { ...S.render, bg, bgSides: ['back'] }; if (color) S.render.bgColor = color; else delete S.render.bgColor;
+  return S;
+}
 
 const land = (a: Archetype) => a.env === 'terrarium';
 /** The look an archetype's scene is drawn in (its first mapped look); 'none' (bare) is drawn as plain stones. */
@@ -117,13 +140,52 @@ function draw(a: Archetype, b: Build, seed: number, d: Density): TankSetup {
   const S = scapeSetup(b, recipeLook(a)!, mode, setup, { dens: recipeDens(a, d) });
   if (tw.noPlants) S.items = S.items.filter(it => it.kind !== 'plant' && it.kind !== 'artificial');
   if (a.recipe.looks[0] === 'none' && d === 'open') S.items = [];
-  return S;
+  return withBg(a, S);
 }
 /** The trio reads as a progression: each level visibly fuller than the one before (by `margin`, a share of the level
  *  below), and a terrarium's open level keeps every hide and climb the balanced one has. */
 function progresses(a: Archetype, s: Record<Density, TankSetup>, margin: number) {
   const [o, b, f] = DENSITIES.map(d => coverOf(s[d]));
   return o * (1 + margin) < b && b * (1 + margin) < f && (!land(a) || shelterCount(s.open) >= shelterCount(s.balanced));
+}
+/** The most the covered share of the tank by hardscape may rise from one level to the next (see `coverOf`: boxes, a relative measure). */
+export const COVER_STEP = 0.3;
+/** The largest side of a hardscape piece, mm. */
+const reach = (it: Item) => Math.max(...itemDims(it));
+export const isHard = (it: Item) => layerOf(it) === 'hard';
+/** The most a piece may grow from one level to the next (its longest side, as a share of the biggest piece the lower levels have). */
+export const PIECE_GROWTH = 1.25;
+/** With no hardscape below, the biggest piece a level may add, as a share of the tank height (a first accent, not a wall). */
+const FIRST_PIECE = 0.3;
+/**
+ * The starter layers re-roll their pieces at every stop, so one stop up can swap a few small stones for a single huge one or add a whole rock
+ * wall (Nathan 2026-11-02: a planted tank with no rock at Open and Balanced had boulders over half the tank at Full). A level reads as the
+ * same scape a bit fuller only when its pieces are the same size as the level below's, so the pieces of a fuller level are brought down to
+ * `PIECE_GROWTH` times the biggest piece below (`FIRST_PIECE` of the tank height where there is none): counts still rise, scale does not jump.
+ * Anything stacked on a shrunk piece is lowered with it.
+ */
+function evenScale(a: Archetype, s: Record<Density, TankSetup>): Record<Density, TankSetup> {
+  let below = 0;
+  for (const d of DENSITIES) {
+    const S = s[d], hard = S.items.filter(isHard), top = Math.max(0, ...hard.map(reach));
+    const cap = below > 0 ? below * PIECE_GROWTH : S.tank.H * FIRST_PIECE;
+    if (d !== 'open' && top > cap) {
+      const f = cap / top;
+      for (const it of hard) { const k = reach(it) > cap ? cap / reach(it) : 1; it.size *= k; it.lift *= f; }
+    }
+    // a still-too-big step in covered share (a rock group where there was one stone): drop the biggest new pieces, and anything stacked on them, until it is gradual
+    const share = (T: TankSetup) => coverOf({ ...T, items: T.items.filter(isHard) }), prev = d === 'full' ? s.balanced : d === 'balanced' ? s.open : undefined;
+    if (prev && d !== 'open') {
+      const base = share(prev), n0 = prev.items.filter(isHard).length;
+      while (share(S) - base > COVER_STEP && S.items.filter(isHard).length > n0) {
+        const big = S.items.filter(it => isHard(it) && it.lift <= 1).sort((x, y) => reach(y) - reach(x))[0]; if (!big) break;
+        S.items = S.items.filter(it => it !== big && !(isHard(it) && it.lift > 1 && Math.abs(it.x - big.x) < reach(big) && Math.abs(it.depth - big.depth) < reach(big)));
+      }
+    }
+    below = Math.max(below, ...S.items.filter(isHard).map(reach), 0);
+  }
+  void a;
+  return s;
 }
 /** Composition seeds tried, after the archetype's own (seed 1 = the set as designed). */
 const SEEDS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -140,7 +202,7 @@ export function recipeBase(a: Archetype | string, tank: TankModel, animals?: Ani
   const roster = animals ?? focalAnimals(arch, tank);
   const build = roster.length ? buildsFor(roster, tank, now)[2] : emptyBuild(tank, now);
   const own = TWEAKS[arch.id]?.seed ?? 1, seeds = [own, ...SEEDS.filter(s => s !== own)];
-  const trio = (seed: number) => ({ open: draw(arch, build, seed, 'open'), balanced: draw(arch, build, seed, 'balanced'), full: draw(arch, build, seed, 'full') });
+  const trio = (seed: number) => evenScale(arch, { open: draw(arch, build, seed, 'open'), balanced: draw(arch, build, seed, 'balanced'), full: draw(arch, build, seed, 'full') });
   const tried = new Map<number, Record<Density, TankSetup>>(), at = (s: number) => tried.get(s) ?? (tried.set(s, trio(s)), tried.get(s)!);
   const seed = seeds.find(s => progresses(arch, at(s), 0.08)) ?? seeds.find(s => progresses(arch, at(s), 0)) ?? own;
   return { archetype: arch, tank, animals: roster, build, seed, scenes: at(seed) };

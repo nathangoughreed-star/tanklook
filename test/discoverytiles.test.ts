@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { ARCHETYPES, archetypesOf, type Density } from '../src/scene/archetypes';
 import { TANK_MODELS } from '../src/data/tanks';
-import { DENSITIES, coverOf, minTank } from '../src/scene/recipes';
+import { DENSITIES, coverOf, minTank, recipeBg } from '../src/scene/recipes';
 import { Previews, previewOf, tankChoice, tankOptions } from '../src/ui/discovery/tiles';
 import { sceneFor, recipeOf } from '../src/ui/discovery/logic';
 
@@ -41,6 +41,8 @@ describe('personalized discovery tiles (lane VD6)', () => {
     const [o, b, f] = DENSITIES.map(d => pv.scenes[d]);
     expect(o.tank).toEqual(b.tank); expect(b.tank).toEqual(f.tank);
     expect(o.fish.map(x => x.species)).toEqual(b.fish.map(x => x.species));
+    for (const S of [o, b, f]) expect(S.render.bg).toBe(recipeBg(a).bg);
+    expect(recipeOf(a, 'open')!.bg).toBe(recipeBg(a).bg);
     expect(coverOf(o)).toBeLessThan(coverOf(b)); expect(coverOf(b)).toBeLessThan(coverOf(f));
   });
 

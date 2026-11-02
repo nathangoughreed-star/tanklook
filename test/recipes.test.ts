@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { ARCHETYPES } from '../src/scene/archetypes';
-import { coverOf, shelterCount, minTank, recipeBase, recipeScene, sceneAt, DENSITIES } from '../src/scene/recipes';
+import { coverOf, shelterCount, minTank, recipeBase, recipeBg, recipeScene, sceneAt, isHard, PIECE_GROWTH, COVER_STEP, DENSITIES } from '../src/scene/recipes';
+import { itemDims } from '../src/scene/items';
 import { TANK_MODELS } from '../src/data/tanks';
 import { summaryOf } from '../src/ui/stockSummary';
 import type { TankSetup } from '../src/scene/types';
@@ -41,6 +42,18 @@ describe('density recipes (lane VD4)', () => {
         expect(coverOf(o), where).toBeLessThan(coverOf(b));
         expect(coverOf(b), where).toBeLessThan(coverOf(f));
         if (a.env === 'terrarium') expect(hidesAndClimbs(o), where).toBeGreaterThanOrEqual(hidesAndClimbs(b));
+        // one background per archetype, never none, the same at all three levels
+        expect(b.render.bg, where).toBe(recipeBg(a).bg); expect(b.render.bg, where).not.toBe('none');
+        expect(o.render.bg, where).toBe(b.render.bg); expect(f.render.bg, where).toBe(b.render.bg);
+        // gradual hardscape (Nathan 2026-11-02): no level brings a piece more than PIECE_GROWTH times the biggest below it (a first piece no more than
+        // 0.3 of the tank height), so rocks do not jump from none / small to a wall; the covered share of the tank rises in steps, not a cliff
+        const reach = (S: typeof b) => Math.max(0, ...S.items.filter(isHard).map(it => Math.max(...itemDims(it))));
+        const hardCover = (S: typeof b) => coverOf({ ...S, items: S.items.filter(isHard) });
+        expect(reach(b), where).toBeLessThanOrEqual((reach(o) > 0 ? reach(o) * PIECE_GROWTH : b.tank.H * 0.3) + 1);
+        expect(reach(f), where).toBeLessThanOrEqual((Math.max(reach(o), reach(b)) > 0 ? Math.max(reach(o), reach(b)) * PIECE_GROWTH : f.tank.H * 0.3) + 1);
+        expect(hardCover(f) - hardCover(b), where).toBeLessThanOrEqual(COVER_STEP + 0.005);
+        expect(hardCover(b) - hardCover(o), where).toBeLessThanOrEqual(COVER_STEP + 0.005);
+        if (hardCover(b) >= 0.1) expect(hardCover(f) / hardCover(b), where).toBeLessThanOrEqual(3.5);
       }
     });
   }

@@ -14,6 +14,7 @@ import { CARE } from '../../data/care';
 import { getTankModel, type TankModel } from '../../data/tanks';
 import { emptyBuild, type Build } from '../../scene/builds';
 import { scapeSetup } from '../../scene/scapes';
+import { recipeBg, withBg } from '../../scene/recipes';
 import { asksPlants, defaultSize, lookSizes } from '../../scene/looks';
 import type { TankSetup } from '../../scene/types';
 
@@ -194,7 +195,7 @@ const listOf = (xs: readonly string[]) => xs.length < 2 ? xs.join('') : `${xs.sl
 export function recipeOf(a: Archetype, d: Density): VisionRecipe | undefined {
   const look = a.recipe.looks[0]; if (!look) return undefined;
   const plantMode = look !== 'none' && asksPlants(look) ? a.recipe.plantMode ?? 'live' : 'live';
-  return { look, plantMode, dens: { ...DENS_OF[d] }, env: a.resolvesTo ?? a.env };
+  return { look, plantMode, dens: { ...DENS_OF[d] }, env: a.resolvesTo ?? a.env, bg: recipeBg(a).bg, ...(recipeBg(a).color ? { bgColor: recipeBg(a).color } : {}) };
 }
 
 const galOf = (m: TankModel) => m.ratedGal;
@@ -211,11 +212,11 @@ export function tankFor(a: Archetype, r: VisionRecipe, briefTank?: string): Tank
  *  fresh tank in the archetype's size. The density moves the hardscape and plant layers only; the animal list is never touched. */
 export function sceneFor(a: Archetype, r: VisionRecipe, inHand: TankSetup | undefined, briefTank?: string, now = Date.now()): TankSetup {
   if (inHand && inHand.fish.length) {
-    if (r.look === 'none') return structuredClone(inHand);
+    if (r.look === 'none') return withBg(a, structuredClone(inHand));
     const animals: Build['animals'] = [];
     for (const f of inHand.fish) { const x = animals.find(y => y.species === f.species); if (x) x.n++; else animals.push({ species: f.species, n: 1 }); }
-    return scapeSetup({ animals, setup: inHand } as Build, r.look, r.plantMode, inHand, { dens: r.dens });
+    return withBg(a, scapeSetup({ animals, setup: inHand } as Build, r.look, r.plantMode, inHand, { dens: r.dens }));
   }
   const build = emptyBuild(tankFor(a, r, briefTank), now);
-  return r.look === 'none' ? build.setup : scapeSetup(build, r.look, r.plantMode, build.setup, { dens: r.dens });
+  return withBg(a, r.look === 'none' ? build.setup : scapeSetup(build, r.look, r.plantMode, build.setup, { dens: r.dens }));
 }

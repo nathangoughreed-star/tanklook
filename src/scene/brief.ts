@@ -12,7 +12,9 @@ import type { DryGroup, Kind, OwnedKey, OwnedMap, Tag, Wants } from '../demand/s
 import type { Cap, Constraints, Effort } from './constraints';
 import type { PlantMode } from './scapes';
 import { parseTaste, type Taste } from '../demand/taste';
-import type { LayoutId, SpaceLimit } from './types';
+import type { Background, LayoutId, SpaceLimit } from './types';
+/** The background ids a saved recipe may name (types.ts Background). */
+const BG_IDS: readonly string[] = ['black', 'blue', 'lightblue', 'gradient', 'abyss', 'sky', 'grey', 'white', 'green', 'sand', 'reefscene', 'riverscene', 'plantscene', 'rockscene', 'frosted', 'custom', 'none'];
 import type { Density, Env, Water } from './archetypes';
 
 export type Status = 'hard' | 'preference' | 'locked';
@@ -86,7 +88,7 @@ export interface Vision {
   secondaryLikes: string[]; renderRecipe?: VisionRecipe;
 }
 /** The first mapped look, its plant mode, the density as layer stops (scene/items.ts DENS_NAMES), and the enclosure it is built in. */
-export interface VisionRecipe { look: LayoutId; plantMode: PlantMode; dens: { hard: number; plant: number }; env: Env }
+export interface VisionRecipe { look: LayoutId; plantMode: PlantMode; dens: { hard: number; plant: number }; env: Env; /** the back-glass background the render used (lane VD6); the editor opens with it selected */ bg?: Background; bgColor?: string }
 export type ItemId = keyof Values;
 export const ITEM_IDS: readonly ItemId[] = ['animals.kinds', 'animals.groups', 'animals.stock', 'appearance.look', 'appearance.plantMode', 'equipment.tank',
   'equipment.needStand', 'constraints.budget', 'constraints.monthly', 'constraints.careMin', 'constraints.setupHours', 'constraints.maxSpace', 'constraints.spaceGate', 'constraints.existingTank',
@@ -318,7 +320,8 @@ export function parseVision(raw: unknown): Vision | undefined {
   const rr = r.renderRecipe as Record<string, unknown> | undefined, d = rr?.dens as Record<string, unknown> | undefined;
   if (rr && typeof rr === 'object' && typeof rr.look === 'string' && rr.look.length < 40 && MODES.includes(rr.plantMode as PlantMode) && ENV_IDS.includes(rr.env as Env)
     && d && stop(d.hard) !== undefined && stop(d.plant) !== undefined)
-    v.renderRecipe = { look: rr.look as LayoutId, plantMode: rr.plantMode as PlantMode, dens: { hard: d.hard as number, plant: d.plant as number }, env: rr.env as Env };
+    v.renderRecipe = { look: rr.look as LayoutId, plantMode: rr.plantMode as PlantMode, dens: { hard: d.hard as number, plant: d.plant as number }, env: rr.env as Env,
+      ...(BG_IDS.includes(rr.bg as Background) ? { bg: rr.bg as Background } : {}), ...(typeof rr.bgColor === 'string' && /^#[0-9a-fA-F]{6}$/.test(rr.bgColor) ? { bgColor: rr.bgColor } : {}) };
   const { secondaryLikes, ...rest } = v;
   return Object.keys(rest).length || secondaryLikes.length ? v : undefined;
 }
