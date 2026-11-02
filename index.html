@@ -47,6 +47,12 @@
     <p class="hint">Ctrl+Z (Undo) brings it back straight after.</p>
     <div class="btns"><span class="grow"></span><button id="scapeKeep" autofocus>Keep my scape</button><button id="scapeReplace" class="danger">Replace it</button></div>
   </dialog>
+  <dialog id="newDlg" class="libdlg warndlg" aria-labelledby="newDlgTitle" aria-describedby="newDlgText">
+    <div class="warnhead"><span class="warnicon" aria-hidden="true">⚠</span><h2 id="newDlgTitle">Start a new tank?</h2></div>
+    <p id="newDlgText">Starting new replaces your current tank. It will be lost unless you save it first.</p>
+    <p class="hint">Save keeps it in this browser (Open… brings it back).</p>
+    <div class="btns"><button id="newCancel" autofocus>Cancel</button><span class="grow"></span><button id="newSave">Save</button><button id="newGo" class="danger">Start new</button></div>
+  </dialog>
   <dialog id="tankDlg" class="libdlg tankdlg" aria-labelledby="tankDlgTitle">
     <form method="dialog" class="libhead"><h2 id="tankDlgTitle">Tank sizes</h2><button value="close" aria-label="Close">✕</button></form>
     <div class="tankbar"><input id="tankQ" type="search" placeholder="Search size, brand or shape (e.g. 75, Petco, bowfront)" aria-label="Search tanks"><label class="chk"><input id="tankTerra" type="checkbox"> Terrariums</label></div>

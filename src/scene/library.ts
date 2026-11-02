@@ -57,3 +57,8 @@ export function deleteFromLib(id: string, st: St = ls()) {
     st?.setItem(LIB_KEY, JSON.stringify(listLib(st).filter(x => x.id !== id)));
   } catch { /* storage blocked */ }
 }
+
+/** The stored JSON of a saved tank (what Save wrote), or null: lets New tell a tank that is already saved from one that would be lost. */
+export function libText(id: string, st: St = ls()): string | null {
+  try { return st?.getItem(sceneKey(id)) ?? null; } catch { return null; }
+}

@@ -8,7 +8,7 @@ import { attachDiscovery, type DiscoveryHost } from './discovery/screens';
 export interface WelcomeHost {
   status(m: string, bad?: boolean): void;
   /** The animal screen (Animals): "I already know my animals". */ stocking(): void;
-  /** An empty tank in the editor. */ sandbox(): boolean;
+  /** An empty tank in the editor. */ sandbox(): boolean | Promise<boolean>;
   /** Open the old New / Open chooser (deals, starters, saved tanks). */ browse(menu: 'new' | 'open'): void;
   /** Discovery's personalized pictures (lane VD6): draw a scene in the viewer, return a small picture. */ shot?(T: TankSetup): string;
 }

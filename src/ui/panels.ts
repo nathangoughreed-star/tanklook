@@ -10,6 +10,7 @@ import { renderFeaturedDeals } from './featuredDeals';
 import { attachWelcome } from './welcome';
 import { bindBriefStore, editBrief, getBrief, setTank as briefTank } from './setupBrief';
 import { attachStartMode, setMode } from './startMode';
+import { atStake, confirmNew } from './newTank';
 import { startDeals, visibleTabs, pickTab, sortDeals, DEFAULT_SORT, type DealSort, type StartTab, type StartMenu } from './startEntries';
 import { DEALS_AS_OF, DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
 import { LEVELS, onPerf, perf, setAuto, setLevel } from '../render/perf';
@@ -76,7 +77,7 @@ import { pairingIn, setPairing } from '../scene/pairs';
 import { FEED_NAMES, beginGrow, endGrow, setGrowTime, setPlantGrowth, timeChanges } from '../scene/growtime';
 import { syncBroods } from '../scene/propagate';
 import { GLASS_CHOICES, LIMITS, SceneError, parseScene } from '../scene/validate';
-import { deleteFromLib, listLib, loadFromLib, saveToLib } from '../scene/library';
+import { deleteFromLib, libText, listLib, loadFromLib, saveToLib } from '../scene/library';
 import { EXAMPLES, exampleScenes } from '../examples';
 import { LONG_LINK, readShare, shareUrl } from '../scene/share';
 import { getImage, putImage, readPicture, sceneImageIds, sidesTouch, withImages } from '../scene/images';
@@ -151,9 +152,10 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // New and Open… are two separate menus of the start chooser (below): New = scratch + deals, Open… = starter + saved tanks
   $('newScene').onclick = () => { welcomeFirst = false; startMode.show(); }; // New: Guided or Sandbox (ui/startMode.ts)
   $('openScene').onclick = () => showChooser('open', 'open', false);
-  /** The old New button: an empty tank, after a warning when the current one has animals (Undo brings it back). */
-  const newEmptyTank = (newKind: SetupKind = 'freshwater') => { // the Sandbox card's Tank type (lane S252): applied to the empty tank it starts
-    if (G().tanks.some(t => t.fish.length) && !confirm('Start a new, empty tank? (Undo brings this one back.)')) return false;
+  /** An empty tank and an empty brief (lane NW1). Warns first when the current tank has something to lose and is not saved: Save / Start new / Cancel (false = cancelled). Undo brings it back. */
+  const newEmptyTank = async (newKind: SetupKind = 'freshwater') => { // the Sandbox card's Tank type (lane S252): applied to the empty tank it starts
+    const id = libId();
+    if (atStake(G(), id ? libText(id) : null) && !await confirmNew(() => { $('saveScene').click(); const now = libId(); return !!now && JSON.stringify(G()) === libText(now); })) return false;
     const s = emptyScene(); s.name = 'New tank'; applyKind(s.tanks[0], newKind); // the water type is settled when the tank is made
     s.tanks[0].camera = { ...S().camera }; s.units = G().units;
     store.replace(s); setLibId(null); status('New tank. Undo brings the previous one back.');
@@ -290,7 +292,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
       const orig = structuredClone(store.tank), put = (S: TankSetup) => store.update(s => { Object.assign(s.tanks[s.active], structuredClone(S), { brief: orig.brief }); }, { history: false });
       try { put(T); return viewer.thumbnail(480); } finally { put(orig); }
     },
-    sandbox: () => { const ok = welcomeFirst ? (welcomeFirst = false, true) : newEmptyTank(); if (ok) { setMode('sandbox'); startMode.drawBar(); } return ok; },
+    sandbox: async () => { const ok = welcomeFirst ? (welcomeFirst = false, true) : await newEmptyTank(); if (ok) { setMode('sandbox'); startMode.drawBar(); } return ok; },
     browse: menu => showChooser(menu, menu === 'open' ? 'starters' : undefined, welcomeFirst),
   });
   // lane R9: the owned-gear sheet (Guided, "Starting from something I have now"); its Tank row borrows the tank picker and reports when it closes
@@ -307,6 +309,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   const openLimits = () => void import('./limitsPanel').then(m => { (limitsPanel ??= m.attachLimitsPanel()).open(); });
   const startMode = attachStartMode(store, {
     guided: () => welcome.show(),
+    guidedNew: async () => { if (welcomeFirst) welcomeFirst = false; else if (!await newEmptyTank()) return false; welcome.show(); return true; },
     sandbox: kind => { if (welcomeFirst) { welcomeFirst = false; store.edit(s => applyKind(s, kind)); return true; } return newEmptyTank(kind); },
     owned: openOwned,
     browse: (menu, tab) => showChooser(menu, tab, welcomeFirst),

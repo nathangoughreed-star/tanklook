@@ -20,7 +20,7 @@ import {
 export interface DiscoveryHost {
   status(m: string, bad?: boolean): void;
   /** The animal screen (GV4's roster): "I already know my animals". */ stocking(): void;
-  /** An empty tank, no questions (false when the person cancelled). */ sandbox?(): boolean;
+  /** An empty tank, no questions (false when the person cancelled). */ sandbox?(): boolean | Promise<boolean>;
   /** The deals / starters / saved-tank lists. */ browse?(menu: 'new' | 'open'): void;
   /** Draw a scene from the editor's viewer and return a small picture of it ('' when nothing can be pictured); steps 4 and 5 show these personalized renders (lane VD6). Absent = flat tiles. */
   shot?(T: TankSetup): string;
@@ -256,7 +256,7 @@ export function attachDiscovery(store: Store, host: DiscoveryHost) {
       case 'alt': { const a = soonId ? archetype(soonId) : undefined, alt = a && alternativeOf(a); if (alt) { save(pickAlternative(p, alt)); go('density'); } break; }
       case 'explore': soonId = undefined; draw(); break;
       case 'animals': { dlg.close(); const keep = getBrief(); host.stocking(); if (getBrief() !== keep) editBrief(() => keep); dock.hidden = false; break; }
-      case 'sandbox': if (host.sandbox?.()) dlg.close(); break;
+      case 'sandbox': void Promise.resolve(host.sandbox?.()).then(ok => { if (ok) dlg.close(); }); break;
       case 'deals': case 'saved': dlg.close(); host.browse?.(t.dataset.vd === 'deals' ? 'new' : 'open'); break;
     }
   });
