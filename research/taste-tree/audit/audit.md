@@ -10,7 +10,14 @@ Method: every archetype with a mapped look rendered by `recipeBase` at open / ba
 
 ## Contact sheets (this folder, one per family with a buildable archetype)
 Rendered: `vd2_fw-gardens`, `vd2_fw-sculpted`, `vd2_fw-wild`, `vd2_fw-minimal`, `vd2_fw-showcase`, `vd2_sw-coral`, `vd2_sw-fish`, `vd2_bk-shore`, `vd2_bk-rocky`, `vd2_bk-fish`, `vd2_bk-planted`, `vd2_te-creature` (.png).
-NOT rendered (Nathan stopped renders; headless runs also crashed twice under parallel load): `fw-playful` (silk-plant-natural), `sw-sculpted` (reef-arches / islands / rock-art / skyline), `sw-glow` (blue-glow-reef), `te-rainforest`, `te-desert`, `pa-waterfall`, `pa-riverbank`, `pa-swamp`. Families with no buildable archetype have no sheet (sw-habitat, bk-mangrove, te-woodland, te-climb, te-botanical, te-fantasy/pa-stream/pa-fantasy/pa-creature). Archetypes in the unrendered families stay `partial` (rule value), unaudited by picture. Re-run: dev server, then `node seq.mjs <family,...>` style loop over `import('/scripts/vd2-audit.js').family(id)`.
+Sampled afterwards (one archetype per family, Balanced only, under the Machine load rules; sheet `vd2_samples_balanced.png` plus one `vd2_<archetype>_balanced.png` each): silk-plant-natural, reef-arches, blue-glow-reef, dart-frog-rainforest, rocky-desert-canyon, rainforest-waterfall, riverbank-shore, cypress-swamp. No status changed: all stay `partial`.
+- silk-plant-natural: artificial stems in neon red / green on black gravel read as silk plants but no natural driftwood look; fine as partial.
+- reef-arches: a rock mound, no visible arch (the `v` composition does not make one); needs reef rock layouts. blue-glow-reef: same mound, no actinic light, so it looks like any reef.
+- dart-frog-rainforest: purple back, big-leaf plants, no leaf litter; the frog is not visible at this framing.
+- rocky-desert-canyon: the sample framing shows an empty teal back with one rock (the audit crop is tuned for aquariums), so the look could not be judged; re-frame before upgrading.
+- rainforest-waterfall, riverbank-shore, cypress-swamp: the three paludarium samples look the same from the front (plants on soil, no visible water, shore or waterfall), so these siblings are not yet distinguishable; they stay partial on `waterfall / flowing water`, `shoreline slope`, `water tint`.
+Families without a sheet or sample have no buildable archetype (sw-habitat, bk-mangrove, te-woodland, te-climb, te-botanical, pa-stream, pa-fantasy, pa-creature) or were sampled once above.
+Re-run: dev server, then `import('/scripts/vd2-audit.js').family(id)` (whole family) or `.sample(id)` (one archetype, Balanced) in headless Chrome.
 The sheets of bk-*, sw-fish and te-creature were rendered but not inspected in this pass; their archetypes also keep `partial` (brackish ones all wait on `brackish water type`).
 
 ## Support set (fields changed in `src/scene/archetypes.ts`: `support`, one `deps`)

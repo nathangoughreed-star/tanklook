@@ -57,3 +57,13 @@ export async function facts() {
   }
   return out;
 }
+/** One archetype at Balanced only (low-load sample): shots/vd2_<id>_balanced.png. */
+export async function sample(id) {
+  const M = await mods(), { R, A } = M, a = A.archetype(id), tank = tankFor(M, a), base = R.recipeBase(a, tank);
+  const im = await view(R.sceneAt(base, 'balanced')), y0 = 0.1, y1 = 0.76, w = 700, h = Math.round(w * im.height * (y1 - y0) / im.width), c = new OffscreenCanvas(w, h + 30), g = c.getContext('2d');
+  g.fillStyle = '#fff'; g.fillRect(0, 0, w, h + 30); g.fillStyle = '#222'; g.font = '14px sans-serif';
+  g.fillText(`${a.id} [${a.support}] balanced | ${tank.name} | ${base.animals.map(x => `${x.n} ${x.species}`).join(', ') || 'no animals'}`, 6, 18);
+  g.drawImage(im, 0, im.height * y0, im.width, im.height * (y1 - y0), 0, 30, w, h);
+  await fetch('/__shot?name=vd2_' + id + '_balanced', { method: 'POST', body: await c.convertToBlob({ type: 'image/png' }) });
+  return id;
+}
