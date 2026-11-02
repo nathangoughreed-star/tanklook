@@ -43,6 +43,7 @@ const suits = (a: Archetype, sp: Species): boolean => {
   return fits(a, { ...k, env: undefined, water: undefined, gallons: undefined });
 };
 
+const invert = (sp: Species) => /invert$/.test(sp.cat);
 const present = (chosen: readonly AnimalCount[]) => chosen.flatMap(c => SPECIES.find(s => s.id === c.species) ?? []);
 
 /** The animals that suit this archetype in this enclosure, easiest first. `chosen` (already added) are left out and the list only holds animals that
@@ -58,7 +59,7 @@ export function suitableAnimals(a: Archetype, tank: TankModel, chosen: readonly 
     if (!here || here.fails.length) { tooBig++; continue; }
     const c = CARE[sp.id], n = add.n;
     const line = [EXPERTISE_NAME[c.care], sp.habitat === 'land' ? undefined : `${ZONE_WORD[zoneOf(sp)]}`, n > 1 ? `a group of ${n}` : 'one'].filter(Boolean).join(', ');
-    out.push({ s: { sp, add, line }, rank: c.care * 10 + c.temper * 6 + (have.some(h => zoneOf(h) === zoneOf(sp)) ? 3 : 0) });
+    out.push({ s: { sp, add, line }, rank: c.care * 10 + c.temper * 6 + (invert(sp) ? 15 : 0) + (have.some(h => zoneOf(h) === zoneOf(sp)) ? 3 : 0) });
   }
   out.sort((x, y) => x.rank - y.rank || x.s.sp.name.localeCompare(y.s.sp.name));
   return { list: out.slice(0, max).map(o => o.s), tooBig };
@@ -70,7 +71,9 @@ export function stockingSuggestion(a: Archetype, tank: TankModel, kinds = 3): An
   const set: AnimalCount[] = [], zones = new Set<Zone>();
   while (set.length < kinds) {
     // the list is re-ranked against the set so far before each pick: the easiest one at a level not yet used, else the easiest left
-    const list = suitableAnimals(a, tank, set, 40).list, pick = list.find(s => !zones.has(zoneOf(s.sp))) ?? list[0];
+    // at most one invertebrate in a set: the fish are the stocking, the shrimp and snails a bonus
+    const haveInv = set.some(c => { const sp = SPECIES.find(s => s.id === c.species); return !!sp && invert(sp); });
+    const list = suitableAnimals(a, tank, set, 40).list.filter(s => !(haveInv && invert(s.sp))), pick = list.find(s => !zones.has(zoneOf(s.sp))) ?? list[0];
     if (!pick) break;
     set.push(pick.add); zones.add(zoneOf(pick.sp));
   }

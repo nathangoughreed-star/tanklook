@@ -14,7 +14,6 @@ import type { TankSetup } from '../../scene/types';
 import { STOP_OF, recipeDensAt } from '../../scene/recipes';
 import { Previews, rosterOf, sceneWithAnimals, tankChoice, tankOptions, type TankChoice } from './tiles';
 import { addAnimal, dropAnimal, stockingSuggestion, suitableAnimals } from './animals';
-import { plural } from '../../scene/stocking';
 import { fitIn, type AnimalCount } from '../../scene/tankfit';
 import {
   ANY_WORLD, CARD_COLOUR, DENSITIES, DENSITY_CARD, STEP_ASK, STEP_LABEL, addLike, alternativeOf, archetypeChoices, depsLine, envChoices, familyChoices, firstOpen, knownOf,
@@ -174,7 +173,7 @@ export function attachDiscovery(store: Store, host: DiscoveryHost) {
   const keyOf = (a: Archetype, tankId: string, ch: readonly AnimalCount[]) => `${a.id}|${tankId}|${ch.map(c => c.species + c.n).join(',')}`;
   const suitOf = (a: Archetype, tankModel: TankChoice['model']) => { const k = keyOf(a, tankModel.id, chosen); if (!suitMemo.has(k)) suitMemo.set(k, suitableAnimals(a, tankModel, chosen)); return suitMemo.get(k)!; };
   const setOf = (a: Archetype, tankModel: TankChoice['model']) => { const k = keyOf(a, tankModel.id, []); if (!setMemo.has(k)) setMemo.set(k, stockingSuggestion(a, tankModel)); return setMemo.get(k)!; };
-  const nameOf = (c: AnimalCount) => plural(c.n, getSpecies(c.species)?.name ?? c.species);
+  const nameOf = (c: AnimalCount) => `${c.n} ${getSpecies(c.species)?.name ?? c.species}`;   // "6 Cardinal tetra": no plural to get wrong
   const animalsHtml = (p: Picks, tc: TankChoice | undefined): string => {
     const a = p.archetypeId ? archetype(p.archetypeId) : undefined, hand = inHand();
     if (!a || !tc) return '<p class="hint">Pick a look first.</p>';
