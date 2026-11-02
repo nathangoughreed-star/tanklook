@@ -136,7 +136,12 @@ export interface HandOff {
  *  the look's fields come from the generated scene (the tank, its gear and the roster stay), and a different tank adapts the roster instead of regenerating it. The generated
  *  scene's own animals are SUGGESTIONS: they join the roster only when `accept` names their species (the person picked them), never silently.
  *  `current` is not mutated. */
-export function handOff(current: TankSetup, generated: TankSetup, opts: { accept?: readonly string[]; brief?: Brief } = {}): HandOff {
+export function handOff(current: TankSetup, generated: TankSetup, opts: {
+  /** 'look' (the only mode today): keep tank, gear and roster, swap the look. Reserved: a future 'install' mode (a whole candidate from Explore Complete Setups, "Make This Mine") would take the
+   *  snapshot verbatim, confirm before replacing a design, and be one undo step; add it as another `mode` here, the callers need not change. */
+  mode?: 'look';
+  accept?: readonly string[]; brief?: Brief;
+} = {}): HandOff {
   const accept = new Set(opts.accept ?? []), suggested = generated.fish.filter(f => !accept.has(f.species));
   const gen = structuredClone(generated); gen.fish = gen.fish.filter(f => accept.has(f.species));
   if (!hasDesign(current, opts.brief)) return { scene: gen, fresh: true, kept: [], changed: [suggested.length ? `The look's own animals (${[...new Set(suggested.map(f => nameOf(f.species)))].join(', ')}) are suggestions, not part of your stocking.` : ''].filter(Boolean) };
