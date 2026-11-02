@@ -14,7 +14,7 @@
 // Deterministic: fixed archetype order, scores, ties by id. Only the guardrails are filters; appeal tags only rank.
 import data from '../data/archetypes.json';
 import { getSpecies } from '../data/species';
-import { getTankModel, modelOfVariant, tankFromModel } from '../data/tanks';
+import { bandOf, getTankModel, modelOfVariant, tankFromModel } from '../data/tanks';
 import { DEALS, dealAsKit } from '../data/deals';
 import type { TankModel } from '../data/tanks';
 import { buildsFor, configKey, distinctBuilds, FILTRATION_LIMIT, meetsNeeds, type Build, type BuildId } from '../scene/builds';
@@ -30,7 +30,7 @@ import { rankStyles } from '../scene/scapes';
 import { allLand, fitIn, isMixed, needsOf, tankOptions, type AnimalCount } from '../scene/tankfit';
 import type { LayoutId, SpaceLimit, TankSetup, Units } from '../scene/types';
 import { summaryOf } from '../ui/stockSummary';
-import { briefToWants, type Brief } from '../scene/brief';
+import { briefToWants, equipUseOf, getItem, projectExtras, type Brief } from '../scene/brief';
 import { costLines, layerTotals, type CostLine, type Layer } from './costlines';
 import { demandOf } from './engine';
 import { NO_SUGGESTION, type Money } from './makefit';
@@ -591,9 +591,71 @@ function conceptMaker(w: Wants, P0: UserProfile, units: Units, now: number) {
     const note = experienceNote(exp, cx, t.minPerWeek);
     return { ...base, complexity: cx, tradeoff: tradeoffOf(base, sd, needStand, standCost(p.build, P0)), ...(note ? { experienceNote: note } : {}) } as Proposal;
   };
-  return { attempt, finalize, st };
+  /** Lane OX3 (Explore): the gates of `attempt` on ONE given concept: this build in this tank with these animals, and the scene that will open (default: the build's own). No finish ladder, no memo, no pool:
+   *  the caller decides what a failure means. Everything `attempt` reads is read the same way (owned credit, the stand, the strict welfare rule, the hard-only limits), so a verdict here and one in the
+   *  generator agree on the same concept. A scene other than the build's own is priced by the demand model and scaled by the build's own deal ratio (kits, sales). */
+  const evaluate = (c: { animals: AnimalCount[]; tank: TankModel; build: Build; scene?: TankSetup; noStand?: boolean }): ConceptEval => {
+    const { tank, build: b } = c, needStand = standFor(tank, !!c.noStand), own = ownedAssess(b, ownedMap, needStand, P0, ownIs(tank), oOpts);
+    const base = c.scene ?? b.setup, kit = b.bundle ? { kit: dealAsKit(b.bundle) } : {};
+    const scene: TankSetup = { ...base, ...(needStand ? {} : { stand: { ...base.stand, show: false } }), ...(own.tech ? { tech: own.tech } : {}), constraints: C, layout: { ...base.layout, ...(w.space ? { space: w.space } : {}) } };
+    const sm = summaryOf(scene, units), words = sm.cats.flatMap(k => k.items.filter(i => i.level === 'problem' || i.level === 'caution').map(i => i.text));
+    const D = demandOf(scene, P0, { ...kit, now }), D0 = c.scene ? demandOf(b.setup, P0, { ...kit, now }) : D;
+    const k = D0.totals.setupUsd > 0 ? b.setupUsd / D0.totals.setupUsd : 1, gross = c.scene ? Math.round(D.totals.setupUsd * k) : b.setupUsd;
+    const saved = Math.min(gross, own.saved), preTax = gross - saved, tax = taxOf(preTax);
+    const totals: Money = { startupUsd: preTax + tax, monthlyUsd: c.scene ? D.totals.upkeepUsdMo : b.upkeepUsdMo, minPerWeek: c.scene ? D.totals.minPerWeek : b.minPerWeek };
+    const cl = costLines(b, own.rows, totals.startupUsd, needStand, P0, tax, `Sales tax (${taxPct}%)`), sceneH = hard(scene), hardC = compliance(sceneH, { setupUsd: totals.startupUsd, upkeepUsdMo: totals.monthlyUsd, minPerWeek: totals.minPerWeek }, effectiveLimits(sceneH, P0.limits), units);
+    const owns = !!w.ownTank || (!!w.availTank && tank.id === w.availTank.id), gal = Math.round(tank.ratedGal), credit = owns ? Math.min(own.tankSaved, gross) : 0;
+    const tankInfo = w.ownTank ? { tankSource: 'owned-required' as const, tankNote: `Uses your ${gal} gal (Required).` }
+      : w.availTank ? owns ? { tankSource: 'owned-available' as const, tankNote: `Uses your ${gal} gal: ${credit > 0 ? `its price is credited (${usd(credit)} off)` : 'it is credited as yours'}.` } : { tankSource: 'new' as const } : {};
+    const fr = flexReview(w, totals, w.flexLimits?.setupHours ? setupHoursOf(b, P0) : 0, tank.outer, C.space?.on === false ? undefined : w.space);
+    return { scene, needStand, welfareWords: words, unknown: sm.cats.flatMap(k => k.items.filter(i => i.level === 'unknown').map(i => i.text)), needsOk: meetsNeeds(b), totals, grossUsd: gross, saved, preTaxUsd: preTax, taxUsd: tax, taxPct,
+      ownedNotes: own.notes, costLines: cl, layers: layerTotals(cl), tankCreditUsd: credit, ...tankInfo, warnings: fr.warnings, hard: hardC, demand: D, priceK: k };
+  };
+  return { attempt, finalize, st, evaluate };
 }
-function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain: boolean): Suggestions {
+/** What `evaluateCandidate` says about one concept: the gates' raw material (the Explore gate decides what a failure means). */
+export interface ConceptEval {
+  /** the scene as it will open: tank, the stand shown or not, an owned filter's tech, the guardrails and the space set */
+  scene: TankSetup; needStand: boolean;
+  /** the stocking screen's Problem / Caution lines (empty = the strict welfare rule passes) and its "not enough information" lines */
+  welfareWords: string[]; unknown: string[];
+  /** the build's own filtration / space limit holds */
+  needsOk: boolean;
+  /** ALL-IN set-up (after owned credit, with tax), monthly and minutes a week: means */
+  totals: Money;
+  grossUsd: number; saved: number; preTaxUsd: number; taxUsd: number; taxPct: number;
+  ownedNotes: OwnedNote[]; costLines: CostLine[]; layers: { layer: Layer; label: string; usd: number }[];
+  tankSource?: Proposal['tankSource']; tankNote?: string; tankCreditUsd: number; warnings: string[];
+  /** compliance on the HARD limits only (a flexible cap is switched off), as the generator's gate sees it */
+  hard: Compliance;
+  /** the scene's own demand rows (ranges live here) and the factor that scales them to the build's deal prices */
+  demand: ReturnType<typeof demandOf>; priceK: number;
+}
+/** Lane OX3: one concept through the generator's gates (see `conceptMaker().evaluate`). `a` is any archetype (a synthetic one for a VD look: no tags are read). */
+export function evaluateCandidate(w: Wants, P: UserProfile, units: Units, now: number, c: { animals: AnimalCount[]; tank: TankModel; build: Build; scene?: TankSetup; noStand?: boolean }): ConceptEval {
+  return conceptMaker(w, P, units, now).evaluate(c);
+}
+/** Lane OX3: the pool `suggestSetups` picks its three from: every concept (archetype x tank x strategy x finish) that passed every gate, deduplicated and unranked by diversity, plus the counts and the near misses. Same gates, same numbers. */
+export function candidatePool(w: Wants, P: UserProfile, units: Units = 'cm', now = Date.now()): { pool: Proposal[]; misses: Miss[]; stats: Suggestions['stats'] } {
+  const r = poolOf(w, P, units, now); return { pool: r.uniq, misses: r.misses, stats: r.stats };
+}
+/** Lane OX3: the Available / Required reason an owned tank cannot be used for these animals (undefined = it can). */
+export { ownTankWhy };
+/** Lane OX3 (reconcile 4.1): an owned tank typed as outer inches, as a synthetic catalogue-shaped model the generator can use (no product, no variants; priced by the gallon rule). */
+export function tankFromDims(d: { L: number; D: number; H: number }, glassMm = 5): TankModel {
+  const IN = 25.4, f = (n: number) => Math.round(n * 10) / 10, gal = Math.max(0.5, Math.round((d.L - 0.5) * (d.D - 0.5) * (d.H - 0.25) / 231 * 10) / 10);
+  return { id: `custom-${f(d.L)}x${f(d.D)}x${f(d.H)}`, name: `Your ${f(d.L)} x ${f(d.D)} x ${f(d.H)} in tank`, ratedGal: gal, shape: 'rect', outer: { L: d.L * IN, D: d.D * IN, H: d.H * IN }, glassMm, band: bandOf(gal), source: 'custom' };
+}
+/** Lane OX3 (reconcile 4.1): `briefToWants` only sees a catalogue model; an owned tank measured by hand (`project.tankDims`) is added here as the Required or Available tank. A catalogue pick is left as it is. */
+export function customTankWants(b: Brief, w: Wants): Wants {
+  const t = getItem(b, 'constraints.existingTank'), dims = projectExtras(b).tankDims;
+  if (!t || t.off || t.value.model || !dims || w.ownTank || w.availTank) return w;
+  const m = tankFromDims(dims);
+  return equipUseOf(b, 'tank') === 'required' ? { ...w, ownTank: m } : { ...w, availTank: m };
+}
+/** Everything `generate` finds before it picks: the deduplicated pool of concepts that passed every gate, the near misses and the counts (lane OX3: `candidatePool` exports it). */
+interface PoolRun { uniq: Proposal[]; misses: Miss[]; stats: Suggestions['stats']; st: ReturnType<typeof conceptMaker>['st']; wanted: Archetype[]; isLocked: boolean; space: SpaceLimit | undefined }
+function poolOf(w: Wants, P0: UserProfile, units: Units, now: number): PoolRun {
   const C = w.constraints, taxPct = Math.min(25, Math.max(0, w.taxPct ?? 0)), taxK = 1 + taxPct / 100;
   const space = C.space?.on === false || w.flexLimits?.space ? undefined : w.space;   // a flexible space does not filter the tank list (the card warns instead, lane GA1)
   const pool: Proposal[] = [], misses: Miss[] = [];
@@ -675,6 +737,10 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
   const seen = new Set<string>(), uniq: Proposal[] = [];
   for (const p of [...pool].sort((a, b) => b.score - a.score)) { const k = `${p.archetype.id}|${p.build.tank.id}|${configKey(p.build)}|${p.build.finish?.tier}|${p.build.finish?.style}|${p.build.animals.map(x => x.species + x.n).join(',')}`; if (!seen.has(k)) { seen.add(k); uniq.push(p); } }
   stats.pool = uniq.length;
+  return { uniq, misses, stats, st, wanted, isLocked, space };
+}
+function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain: boolean): Suggestions {
+  const { uniq, misses, stats, st, wanted, isLocked, space } = poolOf(w, P0, units, now);
   const shown = selectDiverse(uniq, 3);
   const rank = (a: Proposal, b: Proposal) => b.score - a.score || a.archetype.id.localeCompare(b.archetype.id);
   const sorted = [...uniq].sort(rank), kinds = [...new Set(sorted.map(p => p.archetype.family))];
