@@ -1,14 +1,14 @@
 // Guided Setup Rev 03, Look First tail (lane GS3): the "Open to anything" World card, contextual water, the Suitable Animals step and the provisional
 // enclosure chain. Pure logic only (no WebGL): src/ui/discovery/{logic,animals,tiles}.ts.
 import { describe, expect, it } from 'vitest';
-import { ARCHETYPES, ENVIRONMENTS, FAMILIES, archetype, archetypesOf, family, type Archetype } from '../src/scene/archetypes';
+import { ARCHETYPES, ENVIRONMENTS, archetype, archetypesOf, type Archetype } from '../src/scene/archetypes';
 import { TANK_MODELS, tankFromModel } from '../src/data/tanks';
 import { getSpecies } from '../src/data/species';
 import { whyAnimal } from '../src/scene/animalfit';
 import { fitIn, type AnimalCount } from '../src/scene/tankfit';
 import { spaceFit, tankExtent } from '../src/scene/space';
 import {
-  ANY_WORLD, NOTHING_KNOWN, choiceIds, envChoices, familyChoices, firstOpen, knownOf, nextOf, openFamilyGroups, prevOf, setPick, settle, stepsOf, type Picks,
+  ANY_WORLD, NOTHING_KNOWN, animalsFirstSteps, choiceIds, envChoices, firstIn, firstOpen, knownOf, lookFirstSteps, nextIn, nextOf, prevOf, routeSteps, setPick, settle, stepsOf, type Picks,
 } from '../src/ui/discovery/logic';
 import { addAnimal, belongsIn, dropAnimal, stockingSuggestion, suitableAnimals } from '../src/ui/discovery/animals';
 import { Previews, sceneWithAnimals, tankChoice } from '../src/ui/discovery/tiles';
@@ -17,63 +17,48 @@ const byName = (n: string) => TANK_MODELS.find(m => m.name === n && !m.terrarium
 const BREEDER40 = byName('40 gal breeder');
 const built = (a: Archetype) => a.support !== 'coming-soon' && a.recipe.looks.length > 0;
 const firstOf = (pred: (a: Archetype) => boolean) => ARCHETYPES.find(a => built(a) && pred(a))!;
-const SALTY_FAMILY = FAMILIES.find(f => f.env === 'aquarium' && f.water === 'saltwater')!.id;
 
-describe('Open to anything (World step)', () => {
-  it('is the fourth, equal card, and goes away once the animals answer the world', () => {
-    const ids = envChoices(NOTHING_KNOWN).items.map(c => c.id);
-    expect(ids).toEqual([...ENVIRONMENTS.map(e => e.id), ANY_WORLD]);
+describe('Open to anything (World step): it defers the world', () => {
+  it('is the fourth, equal card in the old dialog, and goes away once the animals answer the world or it was already picked', () => {
+    expect(envChoices(NOTHING_KNOWN).items.map(c => c.id)).toEqual([...ENVIRONMENTS.map(e => e.id), ANY_WORLD]);
     expect(choiceIds('environment', {}, NOTHING_KNOWN)).toContain(ANY_WORLD);
+    expect(envChoices(NOTHING_KNOWN, false).items.map(c => c.id)).toEqual(ENVIRONMENTS.map(e => e.id));
     expect(envChoices(knownOf(['betta'])).items.map(c => c.id)).toEqual(['aquarium']);
   });
 
-  it('shows the families of every world, grouped, with no Water step', () => {
-    const p = setPick({}, 'environment', ANY_WORLD);
-    expect(p.anyWorld).toBe(true);
-    expect(stepsOf(p)).toEqual(['environment', 'family', 'archetype', 'density', 'animals']);
-    expect(nextOf('environment', p, NOTHING_KNOWN)).toBe('family');
-    const groups = openFamilyGroups(NOTHING_KNOWN);
-    expect(groups.map(g => g.label)).toEqual(['Freshwater aquariums', 'Saltwater aquariums', 'Brackish aquariums', 'Terrariums', 'Paludariums']);
-    const flat = familyChoices(p, NOTHING_KNOWN).items;
-    expect(flat.length).toBe(groups.flatMap(g => g.items).length);
-    expect(new Set(flat.map(f => f.env))).toEqual(new Set(['aquarium', 'terrarium', 'paludarium']));
-    expect(new Set(flat.filter(f => f.env === 'aquarium').map(f => f.water))).toEqual(new Set(['freshwater', 'saltwater', 'brackish']));
+  it('picking it decides nothing: no world, no water, and the World step comes back right before Water', () => {
+    const p = setPick({ environment: 'aquarium', waterType: 'freshwater', familyId: 'fw-wild' }, 'environment', ANY_WORLD);
+    expect(p.worldOpen).toBe(true);
+    expect(p.environment).toBeUndefined(); expect(p.waterType).toBeUndefined(); expect(p.familyId).toBeUndefined();
+    // Look First (World belongs to the shared onboarding, so it is only here because it was deferred)
+    expect(firstIn('look', false, p, NOTHING_KNOWN)).toBe('environment');
+    expect(lookFirstSteps(p).map(c => c.id)).toEqual(['environment', 'family', 'archetype', 'density', 'animals']);
+    const q = setPick(p, 'environment', 'aquarium');
+    expect(q.worldOpen).toBe(true);   // stays, so the breadcrumb keeps World
+    expect(lookFirstSteps(q).map(c => c.id)).toEqual(['environment', 'water', 'family', 'archetype', 'density', 'animals']);
+    expect(nextIn('look', false, 'environment', q, NOTHING_KNOWN)).toBe('water');
   });
 
-  it('the family picked says which world and water it lives in, and the rest of the path follows', () => {
-    const ids = ['aquarium|freshwater', 'aquarium|saltwater', 'terrarium|', 'paludarium|'].map(k => FAMILIES.find(f => `${f.env}|${f.water ?? ''}` === k && archetypesOf(f.id).some(built))!.id);
-    for (const fid of ids) {
-      const f = family(fid)!;
-      let p = setPick({}, 'environment', ANY_WORLD);
-      p = setPick(p, 'family', fid);
-      expect(p.environment, fid).toBe(f.env);
-      expect(p.waterType ?? null, fid).toBe(f.env === 'aquarium' ? f.water : null);
-      expect(p.anyWorld, fid).toBe(true);
-      const arch = archetypesOf(fid).find(built)!;
-      p = setPick(p, 'archetype', arch.id);
-      p = setPick(p, 'density', 'balanced');
-      expect(firstOpen(p, NOTHING_KNOWN), fid).toBe('done');
-      expect(nextOf('density', p, NOTHING_KNOWN)).toBe('animals');
-    }
-  });
-
-  it('a real world picked afterwards ends the open world and drops a family from another one', () => {
-    let p = setPick(setPick({}, 'environment', ANY_WORLD), 'family', 'fw-wild');
-    p = setPick(p, 'environment', 'terrarium');
-    expect(p.anyWorld).toBeUndefined();
-    expect(p.familyId).toBeUndefined();
-    // and "Open to anything" again keeps a family that is still a family
-    let q = setPick({ environment: 'aquarium', waterType: 'freshwater', familyId: 'fw-wild' }, 'environment', ANY_WORLD);
-    expect(q.familyId).toBe('fw-wild'); expect(q.environment).toBe('aquarium'); expect(q.waterType).toBe('freshwater');
-    q = setPick(q, 'family', SALTY_FAMILY);
-    expect(q.environment).toBe('aquarium'); expect(q.waterType).toBe('saltwater');
-  });
-
-  it('animals that fix the world still prune it: the open flag drops and the roster answers', () => {
-    const k = knownOf(['ocellaris']), r = settle({ anyWorld: true }, k);
-    expect(r.picks.anyWorld).toBeUndefined();
+  it('animals that fix the world still answer it: nothing is deferred', () => {
+    const k = knownOf(['ocellaris']), r = settle({ worldOpen: true }, k);
     expect(r.picks.environment).toBe('aquarium'); expect(r.picks.waterType).toBe('saltwater');
     expect(r.auto).toContain('environment'); expect(r.auto).toContain('water');
+    expect(lookFirstSteps({ worldOpen: true }, k).map(c => c.id)).toEqual(['family', 'archetype', 'density', 'animals']);
+  });
+});
+
+describe('the steps of each route (breadcrumbs)', () => {
+  it('Look First: Water (aquariums only), Family, Look, Density, Animals; World only when deferred or when discovery owns it', () => {
+    expect(lookFirstSteps({ environment: 'aquarium' }).map(c => c.id)).toEqual(['water', 'family', 'archetype', 'density', 'animals']);
+    expect(lookFirstSteps({ environment: 'terrarium', waterType: null }).map(c => c.id)).toEqual(['family', 'archetype', 'density', 'animals']);
+    expect(lookFirstSteps({ environment: 'aquarium' }, NOTHING_KNOWN, true).map(c => c.id)).toEqual(['environment', 'water', 'family', 'archetype', 'density', 'animals']);
+    expect(lookFirstSteps({ environment: 'aquarium' }).map(c => c.label)).toEqual(['Water', 'Family', 'Look', 'Density', 'Animals']);
+  });
+  it('Animals First: Family, Look, Density, with the water answered by the animals and no Suitable Animals step', () => {
+    expect(animalsFirstSteps({}, knownOf(['betta'])).map(c => c.id)).toEqual(['family', 'archetype', 'density']);
+    expect(animalsFirstSteps({}, knownOf(['ocellaris'])).map(c => c.id)).toEqual(['family', 'archetype', 'density']);
+    expect(routeSteps('animals', { environment: 'aquarium' })).not.toContain('animals');
+    expect(firstIn('animals', false, {}, knownOf(['betta']))).toBe('family');
   });
 });
 
@@ -127,6 +112,12 @@ describe('suitable animals', () => {
     expect(suitableAnimals(land, TANK_MODELS.find(m => m.terrarium && m.ratedGal >= 20)!).list.every(s => s.sp.habitat === 'land')).toBe(true);
   });
 
+  it('the look own animals lead (the archetype focal animal first), and nothing but welfare-passing animals follow', () => {
+    const l = suitableAnimals(blackwater, BREEDER40).list, lead = l.filter(s => s.ofLook).length;
+    expect(l[0].sp.id).toBe('cardinal');
+    expect(l.slice(0, lead).every(s => s.ofLook) && l.slice(lead).every(s => !s.ofLook)).toBe(true);
+  });
+
   it('after one is added, the rest suit it and still fit with it', () => {
     const first = suitableAnimals(blackwater, BREEDER40).list[0], chosen = addAnimal([], first.add);
     const next = suitableAnimals(blackwater, BREEDER40, chosen);
@@ -178,7 +169,8 @@ describe('animals carry into Make It Your Own; density never changes stocking', 
 describe('the provisional enclosure chain (Rev 03 section 4)', () => {
   const arches = archetypesOf('fw-wild');
   it('your tank first, then a labelled provisional one from what is known, then an editable example', () => {
-    expect(tankChoice(arches, { yours: BREEDER40 })).toMatchObject({ source: 'yours', basis: 'yours' });
+    expect(tankChoice(arches, { yours: BREEDER40 })).toMatchObject({ source: 'owned-required', basis: 'yours' });
+    expect(tankChoice(arches, { yours: BREEDER40, use: 'available' })).toMatchObject({ source: 'owned-available', basis: 'yours', model: { id: BREEDER40.id } });
     expect(tankChoice(arches)).toMatchObject({ source: 'suggested', basis: 'example' });
     expect(tankChoice(arches, { budgetKnown: true })).toMatchObject({ source: 'suggested', basis: 'budget' });
     expect(tankChoice(arches, { floorGal: 75 })).toMatchObject({ source: 'suggested', basis: 'size' });
@@ -191,16 +183,16 @@ describe('the provisional enclosure chain (Rev 03 section 4)', () => {
 
   it('known dimensions give the biggest suitable tank that fits the space, never one past it', () => {
     const e = tankExtent(tankFromModel(tankChoice(arches, { floorGal: 40 })!.model)), space = { w: e.w + 30, d: e.d + 30 };   // just room for a tank of the 40 gal class
-    const tc = tankChoice(arches, { space })!;
+    const tc = tankChoice(arches, { maxSpace: space })!;
     expect(tc).toMatchObject({ source: 'suggested', basis: 'space' });
     expect(spaceFit(tankFromModel(tc.model), space).fits).toBe(true);
-    const bigger = tankChoice(arches, { space: { w: 1500, d: 700 } })!;
+    const bigger = tankChoice(arches, { maxSpace: { w: 1500, d: 700 } })!;
     expect(bigger.model.ratedGal).toBeGreaterThanOrEqual(tc.model.ratedGal);
     expect(spaceFit(tankFromModel(bigger.model), { w: 1500, d: 700 }).fits).toBe(true);
   });
 
   it('a limit no size can meet is dropped, never a dead end: a tank still comes back, still editable', () => {
-    const tc = tankChoice(arches, { space: { w: 100, d: 100 } })!;
+    const tc = tankChoice(arches, { maxSpace: { w: 100, d: 100 } })!;
     expect(tc.source).toBe('suggested'); expect(tc.model).toBeDefined();
     expect(tankChoice(arches, { maxGal: 1 })!.model).toBeDefined();
   });

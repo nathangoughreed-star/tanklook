@@ -24,10 +24,13 @@ export const STEP_LABEL: Record<VStep, string> = { environment: 'World', water: 
 export const STEP_ASK: Record<VStep, string> = {
   environment: 'What kind of world?', water: 'Which water?', family: 'Pick the broad look', archetype: 'Pick the look', density: 'How full?', animals: 'Which animals would suit it?',
 };
-/** Guided Setup Rev 03 (lane GS3): the fourth World card. Not a world: picking it keeps the whole tree open (every family, grouped), and the
- *  family the person picks then says which world and water they were in. Never offered when the animals already fix the world. */
+/** Guided Setup Rev 03 (lane GS3): the fourth World card. Not a world and not a project type: it DEFERS the choice. Look First then asks the world
+ *  (the three real cards, curated pictures) right before Water, so the person still decides it, just later; Animals First resolves it from the animals.
+ *  Never offered when the animals already fix the world. */
 export const ANY_WORLD = 'any';
-export const ANY_CARD: Card = { id: ANY_WORLD, name: 'Open to anything', tagline: 'Not sure yet? Browse every kind of look, from reef to rainforest, and settle on one as you go.' };
+export const ANY_CARD: Card = { id: ANY_WORLD, name: 'Open to anything', tagline: 'Not sure yet? Pick the world a little later, once you have a feel for the looks.' };
+/** The ask when the world was left open and is now being decided. */
+export const WORLD_REASK = 'Which world should we start with? You can change it any time.';
 export const DENSITIES: readonly Density[] = ['open', 'balanced', 'full'];
 /** The spec's density cards (section 03); each archetype adds its own label and note under them. */
 export const DENSITY_CARD: Record<Density, { name: string; line: string }> = {
@@ -91,33 +94,24 @@ export function fits(a: Archetype, k: Known): boolean {
 // ---- the choices at each step ----
 /** The picks so far (vision without its saved extras). */
 export type Picks = Pick<Vision, 'environment' | 'waterType' | 'familyId' | 'archetypeId' | 'density' | 'densityStop'> & {
-  /** "Open to anything" was picked at World (local to discovery: the brief's vision has no field for it, so GS4 moves it onto GS2's project state) */
-  anyWorld?: boolean;
+  /** "Open to anything" was picked at World: the world is decided later, in Look First's own World step (local to discovery: the brief's vision has no
+   *  field for it, so GS4 moves it onto GS2's project state as world = 'open'). Stays true once the world is then picked, so the breadcrumb keeps World. */
+  worldOpen?: boolean;
 };
 export interface Choices<T> { items: T[]; /** pruning would have left nothing, so every choice is shown with a warning */ loose: boolean }
 const prune = <T>(all: T[], ok: (x: T) => boolean): Choices<T> => { const items = all.filter(ok); return items.length ? { items, loose: false } : { items: all, loose: all.length > 0 }; };
 const familiesFor = (env: Env, water: Water | null | undefined) => familiesOf(env, env === 'aquarium' ? water ?? null : null);
 const familyFits = (f: Family, k: Known) => archetypesOf(f.id).some(a => fits(a, k));
 
-export function envChoices(k: Known): Choices<Card> {
+/** The World cards. `open`: add "Open to anything" (the animals already answering the world leave nothing to defer, and once it was picked it is not offered again). */
+export function envChoices(k: Known, open = true): Choices<Card> {
   const c = prune(ENVIRONMENTS, c => (!k.env || c.id === k.env) && ARCHETYPES.some(a => a.env === c.id && fits(a, k)));
-  return k.env ? c : { ...c, items: [...c.items, ANY_CARD] };   // the animals already answer the world: nothing left to be open about
+  return k.env || !open ? c : { ...c, items: [...c.items, ANY_CARD] };
 }
 export function waterChoices(k: Known): Choices<Card> {
   return prune(WATERS, c => (!k.water || c.id === k.water) && ARCHETYPES.some(a => a.env === 'aquarium' && a.water === c.id && fits(a, k)));
 }
-/** Every family of every world, grouped for "Open to anything": each aquarium water, then terrarium and paludarium. */
-export interface FamilyGroup { label: string; items: Family[] }
-const WORLDS: { label: string; env: Env; water: Water | null }[] = [
-  { label: 'Freshwater aquariums', env: 'aquarium', water: 'freshwater' }, { label: 'Saltwater aquariums', env: 'aquarium', water: 'saltwater' },
-  { label: 'Brackish aquariums', env: 'aquarium', water: 'brackish' }, { label: 'Terrariums', env: 'terrarium', water: null }, { label: 'Paludariums', env: 'paludarium', water: null },
-];
-export function openFamilyGroups(k: Known): FamilyGroup[] {
-  const groups = WORLDS.map(w => ({ label: w.label, items: familiesOf(w.env, w.water).filter(f => familyFits(f, k)) })).filter(g => g.items.length);
-  return groups.length ? groups : WORLDS.map(w => ({ label: w.label, items: familiesOf(w.env, w.water) })).filter(g => g.items.length);
-}
 export function familyChoices(p: Picks, k: Known): Choices<Family> {
-  if (p.anyWorld) { const items = openFamilyGroups(k).flatMap(g => g.items); return { items, loose: items.length > 0 && !items.some(f => familyFits(f, k)) }; }
   return p.environment ? prune(familiesFor(p.environment, p.waterType), f => familyFits(f, k)) : { items: [], loose: false };
 }
 export function archetypeChoices(p: Picks, k: Known): Choices<Archetype> {
@@ -135,18 +129,17 @@ export function choiceIds(step: VStep, p: Picks, k: Known): string[] {
   }
 }
 
-/** The steps this path walks. Water only once an aquarium is picked (a terrarium, a paludarium and "Open to anything" never ask it: the
- *  family carries it); Animals last, and optional. */
-export const stepsOf = (p: Picks): VStep[] => VSTEPS.filter(s => s !== 'water' || (p.environment === 'aquarium' && !p.anyWorld));
+/** The steps this path walks. Water only once an aquarium is picked (a terrarium and a paludarium never ask it); Animals last, and optional. */
+export const stepsOf = (p: Picks): VStep[] => VSTEPS.filter(s => s !== 'water' || p.environment === 'aquarium');
 const valueAt = (p: Picks, s: VStep): string | null | undefined =>
-  s === 'environment' ? (p.anyWorld ? ANY_WORLD : p.environment) : s === 'water' ? p.waterType : s === 'family' ? p.familyId : s === 'archetype' ? p.archetypeId : p.density;
+  s === 'environment' ? p.environment : s === 'water' ? p.waterType : s === 'family' ? p.familyId : s === 'archetype' ? p.archetypeId : p.density;
 
 /** Set one pick and keep every later pick that still fits (spec 06): a family of another environment / water, or an archetype no longer
  *  offered, is dropped; the density always stays. */
 export function setPick(p: Picks, step: VStep, id: string, k: Known = NOTHING_KNOWN): Picks {
   const n: Picks = { ...p };
-  if (step === 'environment' && id === ANY_WORLD) { n.anyWorld = true; delete n.environment; delete n.waterType; }
-  else if (step === 'environment') { delete n.anyWorld; n.environment = id as Env; n.waterType = id === 'aquarium' ? p.waterType ?? undefined : null; }
+  if (step === 'environment' && id === ANY_WORLD) { n.worldOpen = true; delete n.environment; delete n.waterType; }   // deferred: nothing under it can stand
+  else if (step === 'environment') { n.environment = id as Env; n.waterType = id === 'aquarium' ? p.waterType ?? undefined : null; }
   else if (step === 'water') n.waterType = id as Water;
   else if (step === 'family') n.familyId = id;
   else if (step === 'animals') return n;
@@ -157,14 +150,7 @@ export function setPick(p: Picks, step: VStep, id: string, k: Known = NOTHING_KN
 /** Drop the picks that no longer belong after an earlier one changed. */
 export function keepCompatible(p: Picks, k: Known): Picks {
   const n: Picks = { ...p };
-  if (n.anyWorld && k.env) delete n.anyWorld;   // the animals have since fixed the world
   const f = n.familyId ? family(n.familyId) : undefined;
-  if (n.anyWorld) {
-    // the family of an open world says which world and water it lives in
-    if (f) { n.environment = f.env; n.waterType = f.env === 'aquarium' ? f.water : null; } else { delete n.familyId; delete n.archetypeId; delete n.environment; delete n.waterType; }
-    if (n.archetypeId && (!n.familyId || !archetypeChoices(n, k).items.some(a => a.id === n.archetypeId))) delete n.archetypeId;
-    return n;
-  }
   if (n.environment && n.environment !== 'aquarium') n.waterType = null;
   if (n.waterType === null && n.environment === 'aquarium') delete n.waterType;
   if (n.familyId && (!f || !n.environment || f.env !== n.environment || (n.environment === 'aquarium' && f.water !== n.waterType))) { delete n.familyId; delete n.archetypeId; }
@@ -249,4 +235,39 @@ export function sceneFor(a: Archetype, r: VisionRecipe, inHand: TankSetup | unde
   }
   const build = emptyBuild(tankFor(a, r, briefTank), now);
   return withBg(a, r.look === 'none' ? build.setup : scapeSetup(build, r.look, r.plantMode, build.setup, { dens: r.dens }));
+}
+
+// ---- the steps of each route (Rev 03 section 8: after the branch only that route's steps; conditional steps hidden when irrelevant or resolved) ----
+export type Route = 'look' | 'animals';
+/** One breadcrumb: the step and its label. */
+export interface Crumb { id: VStep; label: string }
+/** The steps a route walks, before the ones answered for the person are taken out. World belongs to the shared onboarding, so it is only here when the
+ *  person deferred it ("Open to anything") or when discovery stands alone (`ownsWorld`, the old Guided dialog). Animals First has no Suitable Animals
+ *  step (its animals are already in); its Water step is answered by the animals (it only shows when they leave it open). */
+export function routeSteps(route: Route, p: Picks, ownsWorld = false): VStep[] {
+  return stepsOf(p).filter(s => (s !== 'environment' || ownsWorld || !!p.worldOpen) && (route === 'look' || s !== 'animals'));
+}
+const crumbsOf = (route: Route, p: Picks, k: Known, ownsWorld: boolean): Crumb[] => {
+  const { picks, auto } = settle(p, k);
+  return routeSteps(route, picks, ownsWorld).filter(s => !auto.includes(s)).map(s => ({ id: s, label: STEP_LABEL[s] }));
+};
+/** Look First: (World, if deferred), Water (aquariums, when the animals have not answered it), Family, Look, Density, Animals. */
+export const lookFirstSteps = (p: Picks, k: Known = NOTHING_KNOWN, ownsWorld = false): Crumb[] => crumbsOf('look', p, k, ownsWorld);
+/** Animals First: Family, Look, Density (the water comes from the animals). */
+export const animalsFirstSteps = (p: Picks, k: Known = NOTHING_KNOWN, ownsWorld = false): Crumb[] => crumbsOf('animals', p, k, ownsWorld);
+/** `nextOf`, `prevOf` and `firstOpen` within one route's steps (what the mountable discovery walks). */
+export function nextIn(route: Route, ownsWorld: boolean, step: VStep, p: Picks, k: Known): VStep | 'done' {
+  const { picks, auto } = settle(p, k), steps = routeSteps(route, picks, ownsWorld);
+  for (let i = steps.indexOf(step) + 1; i < steps.length; i++) if (!auto.includes(steps[i])) return steps[i];
+  return 'done';
+}
+export function prevIn(route: Route, ownsWorld: boolean, step: VStep, p: Picks, k: Known): VStep | undefined {
+  const { picks, auto } = settle(p, k), steps = routeSteps(route, picks, ownsWorld);
+  for (let i = steps.indexOf(step) - 1; i >= 0; i--) if (!auto.includes(steps[i])) return steps[i];
+  return undefined;
+}
+export function firstIn(route: Route, ownsWorld: boolean, p: Picks, k: Known): VStep | 'done' {
+  const { picks, auto } = settle(p, k);
+  for (const s of routeSteps(route, picks, ownsWorld)) if (s !== 'animals' && !auto.includes(s) && (valueAt(picks, s) == null || !choiceIds(s, picks, k).includes(String(valueAt(picks, s))))) return s;
+  return 'done';
 }

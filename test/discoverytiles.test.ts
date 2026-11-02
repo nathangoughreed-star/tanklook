@@ -25,7 +25,7 @@ describe('personalized discovery tiles (lane VD6)', () => {
 
   it("the person's own tank wins, a chosen one beats the suggestion, and their size floor raises it", () => {
     const arches = buildable('fw-planted').length ? family('fw-planted') : family(ARCHETYPES.find(a => a.recipe.looks.length)!.familyId);
-    expect(tankChoice(arches, { yours: BREEDER40 })).toMatchObject({ source: 'yours' });
+    expect(tankChoice(arches, { yours: BREEDER40 })).toMatchObject({ source: 'owned-required' });
     expect(tankChoice(arches, { yours: BREEDER40 })!.model.id).toBe(BREEDER40.id);
     const small = tankChoice(arches)!, big = tankChoice(arches, { floorGal: 55 })!;
     expect(big.model.ratedGal).toBeGreaterThanOrEqual(55);

@@ -20,8 +20,9 @@ export const TILE_VIEW = { az: 28, el: 16, zoom: 0.8 };
 
 export interface TankChoice {
   model: TankModel;
-  /** yours = the tank the person told us about; suggested = we picked it from their limits / animals / the archetypes; picked = they changed our suggestion */
-  source: 'yours' | 'suggested' | 'picked';
+  /** owned-required / owned-available = the tank the person has (Rev 03: only Required locks it; the pictures and the starting scene use it either way);
+   *  suggested = we picked it from their limits / animals / the archetypes; picked = they changed our suggestion */
+  source: 'owned-required' | 'owned-available' | 'suggested' | 'picked';
   /** what a suggestion rests on (Guided Setup Rev 03, lane GS3): the person's own tank, else known space / size limits / animals / budget (a provisional
    *  enclosure), else an editable example size when nothing at all is known. Never a question: all of it is a default the person can change. */
   basis: 'yours' | 'space' | 'size' | 'animals' | 'budget' | 'example' | 'picked';
@@ -35,20 +36,20 @@ const isBuildable = (a: Archetype) => a.support !== 'coming-soon' && !!recipeLoo
 /** The tank every tile of a step is drawn in. The person's own tank when the brief names one; else a suggestion: the smallest catalogue tank that
  *  holds every drawn archetype of the step (the largest `minGallons`), their gallon floor (the brief's tank-size minimum) and any known animals
  *  (`fitIn`). `pick` is a catalogue tank id the person chose over the suggestion. */
-export function tankChoice(arches: readonly Archetype[], o: { yours?: TankModel; pick?: string; floorGal?: number; maxGal?: number; space?: SpaceLimit; budgetKnown?: boolean; animals?: AnimalCount[] } = {}): TankChoice | undefined {
+export function tankChoice(arches: readonly Archetype[], o: { yours?: TankModel; use?: 'required' | 'available'; pick?: string; floorGal?: number; maxGal?: number; maxSpace?: SpaceLimit; budgetKnown?: boolean; animals?: AnimalCount[] } = {}): TankChoice | undefined {
   const drawn = arches.filter(isBuildable);
   if (!drawn.length) return undefined;
   const sizes = catalogueSizes(land(drawn));
-  if (o.yours) return { model: o.yours, source: 'yours', basis: 'yours', why: 'your tank' };
+  if (o.yours) return { model: o.yours, source: o.use === 'available' ? 'owned-available' : 'owned-required', basis: 'yours', why: o.use === 'available' ? 'your tank, free to swap' : 'your tank' };
   const picked = o.pick ? sizes.find(c => c.m.id === o.pick) : undefined;
   if (picked) return { model: picked.m, source: 'picked', basis: 'picked', why: 'the one you chose' };
   // the provisional enclosure (spec 4): known dimensions first (the biggest size that fits the space), else known size limits / animals / budget (the
   // smallest that suits), else an example size. A limit no size can meet is dropped rather than asked about: the suggestion stays editable.
   const archMin = Math.max(...drawn.map(a => minTank(a).ratedGal)), need = Math.max(o.floorGal ?? 0, archMin);
   const holds = (m: TankModel) => m.ratedGal >= need && (!o.maxGal || m.ratedGal <= o.maxGal) && (!o.animals?.length || !fitIn(o.animals, m)?.fails.length);
-  const inSpace = (m: TankModel) => !o.space || spaceFit(tankFromModel(m), o.space).fits;
+  const inSpace = (m: TankModel) => !o.maxSpace || spaceFit(tankFromModel(m), o.maxSpace).fits;
   const both = sizes.filter(c => holds(c.m) && inSpace(c.m)).map(c => c.m);
-  if (o.space && both.length) return { model: both[both.length - 1], source: 'suggested', basis: 'space', why: 'the biggest that fits your space' };
+  if (o.maxSpace && both.length) return { model: both[both.length - 1], source: 'suggested', basis: 'space', why: 'the biggest that fits your space' };
   const ok = sizes.find(c => holds(c.m))?.m ?? sizes.find(c => c.m.ratedGal >= need)?.m ?? sizes[sizes.length - 1].m;
   if (o.animals?.length) return { model: ok, source: 'suggested', basis: 'animals', why: 'big enough for your animals' };
   if ((o.floorGal ?? 0) > archMin || o.maxGal) return { model: ok, source: 'suggested', basis: 'size', why: 'from your size limit' };

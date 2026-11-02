@@ -9,7 +9,9 @@ import { CARE, EXPERTISE_NAME } from '../../data/care';
 import type { TankModel } from '../../data/tanks';
 import { whyAnimal } from '../../scene/animalfit';
 import { fitIn, zoneOf, type AnimalCount, type Zone } from '../../scene/tankfit';
-import { animalsOf, startPick } from '../stockPlanLogic';
+import { animalsOf, rankTankmates, startPick, type Pk } from '../stockPlanLogic';
+import { focalAnimals, recipeLook } from '../../scene/recipes';
+import { STYLES } from '../../scene/items';
 import { fits, knownOf } from './logic';
 
 export interface Suggestion {
@@ -18,6 +20,8 @@ export interface Suggestion {
   add: AnimalCount;
   /** care level and where it lives, e.g. "Beginner, swims mid-water, a group of 6" */
   line: string;
+  /** it is one of this look's own animals (the archetype's headliner or the look's pool), so it leads the list */
+  ofLook: boolean;
 }
 export interface Suitable {
   list: Suggestion[];
@@ -46,10 +50,19 @@ const suits = (a: Archetype, sp: Species): boolean => {
 const invert = (sp: Species) => /invert$/.test(sp.cat);
 const present = (chosen: readonly AnimalCount[]) => chosen.flatMap(c => SPECIES.find(s => s.id === c.species) ?? []);
 
-/** The animals that suit this archetype in this enclosure, easiest first. `chosen` (already added) are left out and the list only holds animals that
+/** The look's own animals, headliner first: the archetype's focal animal, then the look's pool (scene/items.ts STYLES). */
+const lookPool = (a: Archetype, tank: TankModel): string[] => {
+  const look = recipeLook(a), pool = look && a.recipe.looks[0] !== 'none' && a.water !== 'brackish' ? STYLES[look].animals : [];
+  return [...new Set([...focalAnimals(a, tank).map(c => c.species), ...pool])];
+};
+
+/** The animals that suit this archetype in this enclosure: the look's own animals first, then the easiest. With some added already, the ones
+ *  `rankTankmates` likes best with them come first.
+ `chosen` (already added) are left out and the list only holds animals that
  *  suit all of them and still fit with them; a group is judged at its recommended smallest. Capped at `max`. */
 export function suitableAnimals(a: Archetype, tank: TankModel, chosen: readonly AnimalCount[] = [], max = 12): Suitable {
   if (a.water === 'brackish') return { list: [], tooBig: 0, note: 'We do not list brackish animals yet. Add any in the editor: its welfare checks apply to them like any other.' };
+  const pool = lookPool(a, tank), mates = chosen.length ? new Map(rankTankmates(chosen.map((c): Pk => ({ id: c.species, n: c.n, ...(c.f ? { f: c.f } : {}) })), tank).filter(m => m.fits).map(m => [m.sp.id, m.score])) : undefined;
   const have = present(chosen), taken = new Set(chosen.map(c => c.species)), out: { s: Suggestion; rank: number }[] = [];
   let tooBig = 0;
   for (const sp of SPECIES) {
@@ -59,7 +72,8 @@ export function suitableAnimals(a: Archetype, tank: TankModel, chosen: readonly 
     if (!here || here.fails.length) { tooBig++; continue; }
     const c = CARE[sp.id], n = add.n;
     const line = [EXPERTISE_NAME[c.care], sp.habitat === 'land' ? undefined : `${ZONE_WORD[zoneOf(sp)]}`, n > 1 ? `a group of ${n}` : 'one'].filter(Boolean).join(', ');
-    out.push({ s: { sp, add, line }, rank: c.care * 10 + c.temper * 6 + (invert(sp) ? 15 : 0) + (have.some(h => zoneOf(h) === zoneOf(sp)) ? 3 : 0) });
+    const at = pool.indexOf(sp.id);
+    out.push({ s: { sp, add, line, ofLook: at >= 0 }, rank: (at >= 0 ? at - 1000 : 0) + c.care * 10 + c.temper * 6 + (invert(sp) ? 15 : 0) + (have.some(h => zoneOf(h) === zoneOf(sp)) ? 3 : 0) - (mates?.get(sp.id) ?? 0) / 20 });
   }
   out.sort((x, y) => x.rank - y.rank || x.s.sp.name.localeCompare(y.s.sp.name));
   return { list: out.slice(0, max).map(o => o.s), tooBig };
