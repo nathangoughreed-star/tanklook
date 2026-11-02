@@ -259,3 +259,13 @@ Pictures: no Explore screen exists yet, so these use the existing screens they w
 **Q6: where do saved candidates live?** Recommendation: browser-local like "My tanks", capped (60), likes and saves never evicted; not in share links (a shared project carries the chosen design only). Alternative: also put the liked ones in the project file so they follow a download or share link, at the cost of a bigger project file.
 
 (Order that keeps the work moving: Q1 and Q4 block Stage X1; Q2 and Q3 block only the terrarium / paludarium / brackish cards; Q5 and Q6 block Stage X4. None blocks X0, the cost spike.)
+
+## 11. Decision (Nathan 2026-11-02, after this document)
+"I just take your recommendations for those open questions. I will dogfood them tomorrow and tell you what needs to be changed." So Q1-Q6 are accepted as recommended, provisional until dogfooded:
+Q1 firm care / setup time certify on the high end of the estimate range, shown as an estimate; money certifies on the high end of the price range; within 10 % of a cap goes to the provisional strip.
+Q2 terrarium / paludarium candidates are provisional (separate strip) until their figures come from the same model as aquariums.
+Q3 no brackish candidates until a brackish roster exists.
+Q4 difficulty derived from husbandry risk with a fixed reference profile, bands Beginner / Intermediate / Advanced; salt or CO2 never reads Beginner.
+Q5 Make This Mine over an existing design asks first, one undoable step.
+Q6 saved candidates browser-local, capped at 60, likes and saves never evicted, not in share links.
+Expect tuning after dogfooding; keep the thresholds (10 %, 60, 6 per batch, 25 % exploration) as constants in one file.
