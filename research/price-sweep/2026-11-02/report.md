@@ -1,0 +1,266 @@
+# Price sweep 2026-11-02
+
+667 variants read: 456 unchanged, 61 price changes, 11 sales seen, 6 sales ended, 10 unpriced ones with a price shown, 21 dead links, 3 held for review, 116 unreadable.
+
+## Sales seen (11)
+- g10: Allcolor Low Iron Rimless Aquarium Classic Silhouette 15 Gal (Amazon): $126.65, list $141.55 (11 % off)
+- g6c: Allcolor Low Iron Rimless Aquarium Classic Silhouette 7 Gal (Amazon): $75.05, list $79.00 (5 % off)
+- n_ewonlife_3_betta_plastic_all: eWonLife 3 Gallon Betta Tank Plastic All-in-One Starter Kit (acrylic) (Amazon): $62.99, list $69.99 (10 % off)
+- n_ewonlife_3_betta_plastic_all: MCCKLE 5 Gallon Fish Tank Starter Kit (acrylic) (Amazon): $61.89, list $65.99 (6 % off)
+- n_fluval_visi_white_60p_set_20: Allcolor Low Iron Rimless Aquarium Classic Silhouette 21 Gal (Amazon): $186.15, list $197.10 (6 % off)
+- n_jbj_aquazen_rimless_desktop_: JBJ Nano Rimless 10G AIO (10 gal) (Petco): $153.48, list $154.99 (1 % off)
+- n_minilake_5_vertical_rimless_: minilake 5 Gallon Vertical Rimless Fish Tank (Amazon): $59.99, list $65.59 (9 % off)
+- t18x18x18: Exo Terra Pro Terrarium 18x18x18 (PT4404): $149.99, list $164.99 (9 % off)
+- t18x18x18: Reptizoo RK0105S Glass Terrarium: $179.99, list $199.99 (10 % off)
+- t18x24x18: Reptizoo RK0110NS knock-down Glass Terrarium: $199.99, list $249.99 (20 % off)
+- t18x24x18: Zoo Med Naturalistic Terrarium 18x18x24 (ZMNT4): $151.43, list $159.99 (5 % off)
+
+## Price changes (61)
+- g10: Allcolor Low Iron Rimless Aquarium Classic Silhouette 15 Gal (Amazon): $134.10 -> $126.65 (on sale) [no price in the page source]
+- g10: FZONE 10 Gal Rimless Aquarium (S45-W30) (Amazon): $108.89 -> $120.99 [no price in the page source]
+- g10: Wonderfactory 10 Gallon Fish Tank Set Glass Aquarium Starter Kit (Amazon): $110.99 -> $115.99 [no price in the page source]
+- g10: AQUA DAREN 10 Gallon Rimless Aquarium Ultra-Clear (Amazon): $74.56 -> $78.49 [no price in the page source]
+- g10: Top Fin LED Bubble Wall Aquarium Kit 10 gal (PetSmart): $89.99 -> $72.99 [2 offers, nearest taken]
+- g10: Top Fin LED Black Glass Aquarium Kit 10 gal (PetSmart): $89.99 -> $72.99 [2 offers, nearest taken]
+- g120: Fiji Cube 108 Gallon Internal Overflow Rimless Aquarium with Stand (Bulk Reef Supply): $2949.99 -> $2359.99
+- g120: Fiji Cube 108 Gallon External Overflow Rimless Aquarium (Bulk Reef Supply): $1799.99 -> $1439.99
+- g120: Fiji Cube 108 Gallon External Overflow Rimless Aquarium with Stand (Bulk Reef Supply): $2949.99 -> $2359.99
+- g120: Fiji Cube 108 Gallon Internal Overflow Rimless Aquarium (Bulk Reef Supply): $1799.99 -> $1439.99
+- g125: Marineland High-Definition LED Aquarium & Stand Ensemble 125 gal: $999.99 -> $704.99
+- g180: Custom Aquariums 180 Gallon Tall: $7605.30 -> $5403.56
+- g2_5: Top Fin Custom Colorflow Aquarium with 7 Color-Changing LEDs 3 gal (PetSmart): $54.99 -> $56.99 [2 offers, nearest taken]
+- g2_5: Fluval Spec (2.6 gal / 10 L): $89.99 -> $124.99
+- g20h: XDPET Ultra Clear Glass Aquarium Large Rimmed (25 gal) (Amazon): $129.99 -> $135.99 [no price in the page source]
+- g20h: Pro Clear Aquatic Systems ProStar Rimless AIO 23 Aquarium & Stand (23 Gallons) (Bulk Reef Supply): $839.99 -> $1049.99
+- g20l: CLBA 20 Gallon Rectangular Rimless Ultra Clear Nano Aquarium (Amazon): $199.99 -> $219.99 [no price in the page source]
+- g29: Tetra 29 Gallon Complete Tropical Fish Tank Kit (Amazon): $189.97 -> $204.18 [no price in the page source]
+- g37: Top Fin Aquarium & Stand Ensemble 36 gal (PetSmart): $399.99 -> $249.99
+- g5: Top Fin Custom Colorflow Aquarium with 7 Color-Changing LEDs 5 gal (PetSmart): $69.99 -> $56.99 [2 offers, nearest taken]
+- g5: minilake 5 Gallon Glass Aquarium Starter Kit Rimless (Amazon): $87.64 -> $87.39 [no price in the page source]
+- g50b: LANDEN Aquarium 90P Wide 55 Gallon Rimless (Amazon): $609.99 -> $599.99 [no price in the page source]
+- g55: Tetra LED 55 Gallon Complete Fish Tank Kit (Amazon): $378.29 -> $378.97 [no price in the page source]
+- g55: Tetra LED 55 Gallon Complete Fish Tank Kit (second listing) (Amazon): $411.88 -> $423.08 [no price in the page source]
+- g6c: Allcolor Low Iron Rimless Aquarium Classic Silhouette 7 Gal (Amazon): $79.00 -> $75.05 (on sale) [no price in the page source]
+- g6c: Lifegard Aquatics 5 Gallon Cube Low Iron 5mm (Amazon): $59.00 -> $49.99 [no price in the page source]
+- n_allcolor_low_iron_rimless_6: Allcolor Low Iron Rimless Aquarium 6 Gal (Amazon): $71.10 -> $79.00 [no price in the page source]
+- n_allcolor_low_iron_rimless_6: Top Fin Premium Glass Aquarium 5 gal (PetSmart): $69.99 -> $56.99
+- n_aqua_daren_15_rimless_ultra_: AQUA DAREN 15 Gallon Rimless Aquarium Ultra-Clear (Amazon): $90.71 -> $95.49 [no price in the page source]
+- n_clear_for_life_uniquarium_40: Fiji Cube 38 Gallon Peninsula Rimless AIO Nano Aquarium PRO Series (Bulk Reef Supply): $729.99 -> $583.99
+- n_clear_for_life_uniquarium_40: Pro Clear Aquatic Systems ProStar Rimless AIO 35 Aquarium & Stand (35 Gallons) (Bulk Reef Supply): $999.99 -> $1249.99
+- n_coralife_biocube_16: Coralife LED Biocube Aquarium Starter Kit 14 Gallon (acrylic) (Amazon): $238.51 -> $238.38 [no price in the page source]
+- n_ewonlife_3_betta_plastic_all: eWonLife 3 Gallon Betta Tank Plastic All-in-One Starter Kit (acrylic) (Amazon): $59.99 -> $62.99 (on sale) [no price in the page source]
+- n_ewonlife_3_betta_plastic_all: MCCKLE 5 Gallon Fish Tank Starter Kit (acrylic) (Amazon): $60.89 -> $61.89 (on sale) [no price in the page source]
+- n_ewonlife_3_betta_plastic_all: Top Fin LED Black Glass Aquarium 3 gal (PetSmart): $54.99 -> $43.99 [2 offers, nearest taken]
+- n_fiji_cube_48_shallow_externa: Fiji Cube 48 Gallon Shallow External Overflow Rimless Aquarium Full Package (Bulk Reef Supply): $2149.99 -> $1719.99
+- n_fiji_cube_48_shallow_externa: Fiji Cube 48 Gallon Shallow External Overflow Rimless Aquarium (Bulk Reef Supply): $899.99 -> $719.99
+- n_fiji_cube_48_shallow_externa: Fiji Cube 48 Gallon Shallow Internal Overflow Rimless Aquarium (Bulk Reef Supply): $899.99 -> $719.99
+- n_fiji_cube_57_shallow_externa: Fiji Cube 57 Gallon Shallow External Overflow Rimless Aquarium with Stand (Bulk Reef Supply): $2049.99 -> $1639.99
+- n_fiji_cube_57_shallow_externa: Fiji Cube 57 Gallon Shallow External Overflow Rimless Aquarium (Bulk Reef Supply): $1299.99 -> $1039.99
+- n_fiji_cube_57_shallow_externa: Fiji Cube 57 Gallon Shallow Internal Overflow Rimless Aquarium (Bulk Reef Supply): $1299.99 -> $1039.99
+- n_fiji_cube_57_shallow_externa: Fiji Cube 57 Gallon Shallow Internal Overflow Rimless Aquarium with Stand (Bulk Reef Supply): $2049.99 -> $1639.99
+- n_fluval_siena_and_cabinet_set: Fiji Cube 81 Gallon External Overflow Rimless Aquarium with Stand (Bulk Reef Supply): $2349.99 -> $1879.99
+- n_fluval_siena_and_cabinet_set: Fiji Cube 81 Gallon Internal Overflow Rimless Aquarium (Bulk Reef Supply): $1449.99 -> $1159.99
+- n_fluval_siena_and_cabinet_set: Fiji Cube 81 Gallon Internal Overflow Rimless Aquarium with Stand (Bulk Reef Supply): $2349.99 -> $1879.99
+- n_fluval_visi_white_60p_set_20: Allcolor Low Iron Rimless Aquarium Classic Silhouette 21 Gal (Amazon): $219.00 -> $186.15 (on sale) [no price in the page source]
+- n_g45_tall: Marineland High Definition LED Aquarium & Stand Ensemble 45 gal: $349.99 -> $549.99
+- n_imagitarium_cube_14: HelloReef Clownfish & Anemone Aquarium Kit (15 gal) (Bulk Reef Supply): $589.99 -> $501.49
+- n_marineland_exhibit_series_wi: Fiji Cube 32 Gallon Rimless AIO Nano Aquarium PRO Series (Bulk Reef Supply): $649.99 -> $519.99
+- n_sc_empire_usa_starfire_glass: Fiji Cube 142 Gallon External Overflow Rimless Aquarium (Bulk Reef Supply): $2349.99 -> $1879.99
+- n_sc_empire_usa_starfire_glass: Fiji Cube 142 Gallon External Overflow Rimless Aquarium Full Package (Bulk Reef Supply): $4149.99 -> $3319.99
+- n_sc_empire_usa_starfire_glass: Fiji Cube 142 Gallon Internal Overflow Rimless Aquarium (Bulk Reef Supply): $2349.99 -> $1879.99
+- n_vehipa_vehipa_betta_fish_2_4: Vehipa Betta Fish Tank 2.4 Gallon Glass Kit (Amazon): $49.99 -> $59.99 [no price in the page source]
+- n_vehipa_vehipa_betta_fish_2_4: EVIEUN 2.9 Gallon Small Glass Fish Tank Kit (Amazon): $41.64 -> $48.99 [no price in the page source]
+- n_vivohome_vivohome_2_smart_fi: VIVOHOME 2 Gallon Smart Fish Tank with App and Auto Feeder (Amazon): $64.99 -> $59.99 [no price in the page source]
+- n_waterbox_infinia_frag_1254: Fiji Cube 76 Gallon Shallow External Overflow Rimless Aquarium with Stand (Bulk Reef Supply): $2449.99 -> $1959.99
+- n_waterbox_infinia_frag_1254: Fiji Cube 76 Gallon Shallow External Overflow Rimless Aquarium (Bulk Reef Supply): $1549.99 -> $1239.99
+- n_waterbox_infinia_frag_1254: Fiji Cube 76 Gallon Shallow Internal Overflow Rimless Aquarium (Bulk Reef Supply): $1549.99 -> $1239.99
+- n_waterbox_infinia_frag_1254: Fiji Cube 76 Gallon Shallow Internal Overflow Rimless Aquarium with Stand (Bulk Reef Supply): $2449.99 -> $1959.99
+- t48x18x24: Zen Habitats Zen Habitat 3.0 low-profile 4x2x16 in: $349.00 -> $279.20
+- t48x24x24: Zen Habitats Zen Habitat 3.0 4x2x2 (wood): $324.00 -> $259.20
+
+## Sales ended (6)
+- g10: FZONE 10 Gal Rimless Aquarium (S45-W30) (Amazon): sale gone, now $120.99 (was $108.89 off $120.00)
+- g10: AQUA DAREN 10 Gallon Rimless Aquarium Ultra-Clear (Amazon): sale gone, now $78.49 (was $74.56 off $78.49)
+- n_allcolor_low_iron_rimless_6: Allcolor Low Iron Rimless Aquarium 6 Gal (Amazon): sale gone, now $79.00 (was $71.10 off $75.05)
+- n_aqua_daren_15_rimless_ultra_: AQUA DAREN 15 Gallon Rimless Aquarium Ultra-Clear (Amazon): sale gone, now $95.49 (was $90.71 off $95.49)
+- n_vehipa_vehipa_betta_fish_2_4: Vehipa Betta Fish Tank 2.4 Gallon Glass Kit (Amazon): sale gone, now $59.99 (was $49.99 off $59.99)
+- n_vehipa_vehipa_betta_fish_2_4: EVIEUN 2.9 Gallon Small Glass Fish Tank Kit (Amazon): sale gone, now $48.99 (was $41.64 off $44.09)
+
+## Unpriced entries that now show a price (NOT applied) (10)
+- g120: Marineland 120 Gallon black standard: no price stored, page shows $19.99 (19 offers, nearest taken) - NOT applied - https://piscespets.com/products/marineland-aquarium-black
+- g150: Marineland Corner-Flo reef-ready 150 gal (2 overflows): no price stored, page shows $495.95 (8 offers, nearest taken) - NOT applied - https://natureaquariums.com/products/marineland-corner-flo-rectangular-aquarium-black-clear-1ea90-gal-48x18x24-in
+- g30b: Marineland 30 gal (36 x 13 x 16): no price stored, page shows $19.99 (19 offers, nearest taken) - NOT applied - https://piscespets.com/products/marineland-aquarium-black
+- g5: Aqueon MiniBow LED SmartClean kit: no price stored, page shows $72.99 (no price in the page source) - NOT applied - https://www.thatpetplace.com/aqueon-5g-mini-bow-led-smartclean-aquarium-kit
+- g50b: Custom Aquariums (glass) 50 Gallon 30H x 36L x 12D tank only: no price stored, page shows $880.00 - NOT applied - https://www.customaquariums.com/product/50-gallon-30h-x-36l-x-12d-glass-aquarium-tank-only/
+- g55: Marineland 55 Gallon black: no price stored, page shows $19.99 (19 offers, nearest taken) - NOT applied - https://piscespets.com/products/marineland-aquarium-black
+- g55: Tetra Glass 55 gal: no price stored, page shows $99.99 - NOT applied - https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/tetra-open-glass-aquarium-glass-fish-tank-5380173.html
+- g65: Marineland 65 Gallon black: no price stored, page shows $19.99 (19 offers, nearest taken) - NOT applied - https://piscespets.com/products/marineland-aquarium-black
+- g90: Marineland 90 Gallon black standard: no price stored, page shows $19.99 (19 offers, nearest taken) - NOT applied - https://piscespets.com/products/marineland-aquarium-black
+- t18x24x18: Dubia.com 18x18x24A PVC enclosure: no price stored, page shows $299.00 - NOT applied - https://dubiaroaches.com/products/24x24x48-pvc-panel-reptile-enclosure-hinged-doors
+
+## Dead links (21)
+- bow72: Clear-For-Life 80 gal bow front acrylic (rated 80) - HTTP 404 - https://fishtanksdirect.com/80-gallon-48-l-x-18-w-x-24-h-bow-front-aquarium
+- bow72: SeaClear 72 gal bow front acrylic - HTTP 404 - https://fishtanksdirect.com/sea-clear-72-gallon-48lx18wx20h-bow-front-acrylic-fish-tank/
+- bow72: Tsunami 72 gal bow front acrylic - HTTP 404 - https://fishtanksdirect.com/tsunami-72-gallon-48lx18wx20h-bow-front-acrylic-aquarium
+- c6: Glasscages 72 in Rimless (180 gal) - HTTP 404 - https://www.bulkreefsupply.com/72-rimless-low-iron-glass-aquarium-w-black-stand-157-gallons-glasscages.html
+- cor50: Clear-For-Life Quadra 60 gal quarter-cylinder acrylic (rated 60) - HTTP 404 - https://fishtanksdirect.com/clear-for-life-quadra-60-gallon-24lx24wx30h-quarter-cylinder-acrylic-fish-tank-60g-quadra/
+- cor50: SeaClear 50 gal pentagon acrylic - HTTP 404 - https://fishtanksdirect.com/seaclear-50-gallon-24lx24lwx24h-pentagon-acrylic-fish-tank
+- g10: Tetra 10 Gallon STEM Aquarium Kit - redirects to the home page - https://www.petsmart.com/5342454.html
+- g125: Aqueon LED Aquarium & Stand Ensemble 125 gal - PetSmart product URL now lands on the "Fish Tanks" category page - https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/aqueon-led-aquarium-and-stand-ensemble---125-gallon-5262172.html
+- g240: SeaClear / FishTanksDirect 240 Gallon Trapezoid Overflow - HTTP 404 - https://fishtanksdirect.com/seaclear-240-gallon-96lx24wx24h-trapezoid-overflow-aquarium
+- g3c: Marineland Contour Aquarium Kit - redirects to the home page - https://www.petsmart.com/5362412.html
+- g40b: Generic (That Pet Place listing) 40 Gallon Breeder Black - thatpetplace "Page not found" - https://www.thatpetplace.com/40-Gallon-Breeder-Aquarium-Black
+- g5: GloFish LED Aquarium Kit 5 gal (PetSmart) - redirects to the home page - https://www.petsmart.com/5369363.html
+- g5: GloFish LED Aquarium Kit 5 gal (PetSmart) - PetSmart product URL now lands on the "Fish Starter Kits" category page - https://www.petsmart.com/fish/starter-kits/glofish-led-aquarium-kit-94257.html
+- g50b: SeaClear 50 gal rectangle acrylic (not a breeder footprint) - HTTP 404 - https://fishtanksdirect.com/seaclear-50-gallon-36lx15wx20h-rectangular-acrylic-fish-tank-10-100-1250/
+- g65: SeaClear System II 65 gal acrylic - HTTP 404 - https://fishtanksdirect.com/seaclear-system-ii-65-gallon-48lx15wx20h-rectangular-acrylic-aquarium/
+- g75: SeaClear System II 75 gal acrylic - HTTP 404 - https://fishtanksdirect.com/seaclear-system-ii-75-gallon-48lx18wx20h-rectangular-acrylic-aquarium/
+- hex35: Clear-For-Life 35 Gallon Hexagon (acrylic) - redirects to the home page - https://www.petsmart.com/5187060.html
+- n_evieun_evieun_2_2_small_glas: EVIEUN 2.2 Gallon Small Glass Fish Tank Kit (Amazon) - Amazon "Page Not Found" - https://www.amazon.com/dp/B0H4FMVF5W
+- n_flex_15gal: Fluval Flex 15 (curved front) - HTTP 404 - https://fishtanksdirect.com/flex-15-gallon-aquarium-kit-16-l-x-15-w-x-15-h-black
+- t12x18x12: Zoo Med Naturalistic Terrarium 12x12x18 - redirects to the home page - https://shop.reptifiles.com/products/zoo-med-naturalistic-terrarium-12x12x18
+- t18x18x18: Zoo Med Naturalistic Terrarium 18x18x18 - redirects to the home page - https://shop.reptifiles.com/products/zoo-med-naturalistic-terrarium-18x18x18
+
+## Held for review (price far from the stored one; NOT applied) (3)
+- g120: SeaClear 120 gal rectangle acrylic: stored $1299.99, page $3079.99 (x2.37) - https://fishtanksdirect.com/clear-for-life-100-gallon-48lx24wx24h-half-cylinder-acrylic-fish-tank-100g-mezzo/
+- g40b: Zoo Med Aquatic Turtle Kit 40 gal (Petco): stored $329.99, page $165.00 (x0.50) - https://www.petco.com/category/fish/fish-aquariums-kits/aquarium-kits-ensembles
+- n_marineland_half_moon_combo_2: TARARIUM 20 Gallon Fish Tank Betta Starter Kit 100% Glass (Amazon): stored $189.99, page $89.99 (x0.47) - https://www.amazon.com/dp/B0GVY18QWW
+
+## Listed unavailable (19)
+- g10: Innovative Marine Nuvo Fusion Nano 10 (Bulk Reef Supply) - page lists it unavailable - https://www.bulkreefsupply.com/10-nuvo-fusion-pro-aio-aquarium-bundle-innovative-marine.html
+- g20h: Tetra Open Glass Aquarium 20 (PetSmart) - page lists it unavailable - https://www.petsmart.com/5380617.html
+- g20l: Innovative Marine Nuvo Fusion 20 AIO - page lists it unavailable - https://www.bulkreefsupply.com/20-nuvo-fusion-aio-long-aquarium-innovative-marine.html
+- g3c: Top Fin Shrimp & Plant Oasis Tank Aquarium 3 gal (PetSmart) - page lists it unavailable - https://www.petsmart.com/5321024.html
+- g5: Top Fin Shrimp & Plant Aquarium 5 gal (PetSmart) - page lists it unavailable - https://www.petsmart.com/5342771.html
+- g55: Tetra Glass 55 gal - page lists it unavailable - https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/tetra-open-glass-aquarium-glass-fish-tank-5380173.html
+- n_20gal_long_terrarium: Zoo Med ReptiHabitat 20 gal (PetSmart) - page lists it unavailable - https://www.petsmart.com/reptile/habitats-and-decor/terrariums/zoo-med-20-gallon-leopard-gecko-reptihabitat-5351767.html
+- n_36x18x24: Reptizoo 67 Gallon Front-Opening Glass (RHK11) - page lists it unavailable - https://www.reptiledeli.com/products/reptizoo-reptile-glass-terrarium-double-hinge-door-36-x-18-x-24-rhk11
+- n_flex_9gal: Fluval Flex 9 (curved front) - page lists it unavailable - https://www.bulkreefsupply.com/9-gallon-fluval-flex-2-0-aquarium-fluval.html
+- n_fluval_visi_white_60p_set_20: Waterbox Cube 25 Peninsula Nano AIO Aquarium (25 gal) (Bulk Reef Supply) - page lists it unavailable - https://www.bulkreefsupply.com/cube-25-peninsula-nano-aio-aquarium-waterbox-aquariums.html
+- n_imagitarium_cube_14: JBJ 15 Gallon Nano Rimless AIO Aquarium (Bulk Reef Supply) - page lists it unavailable - https://www.bulkreefsupply.com/15-gallon-nano-rimless-aio-aquarium-jbj.html
+- n_innovative_marine_innovative: Innovative Marine 25 NUVO Fusion AIO Lagoon Aquarium (25 gal) (Bulk Reef Supply) - page lists it unavailable - https://www.bulkreefsupply.com/25-nuvo-fusion-aio-lagoon-aquarium-innovative-marine.html
+- n_jbj_aquazen_rimless_desktop_: JBJ 10 Gallon Nano Rimless AIO Aquarium (Bulk Reef Supply) - page lists it unavailable - https://www.bulkreefsupply.com/10-gallon-nano-rimless-aio-aquarium-jbj.html
+- n_top_fin_betta_bamboo_3: Top Fin Betta Bamboo Aquarium 3 gal (PetSmart) - page lists it unavailable - https://www.petsmart.com/5282472.html
+- n_waterbox_cube_20: JBJ 20 Gallon Nano Rimless AIO Aquarium (Bulk Reef Supply) - page lists it unavailable - https://www.bulkreefsupply.com/20-gallon-nano-rimless-aio-aquarium-jbj.html
+- t18x18x18: Reptizoo RK0105S Glass Terrarium - page lists it unavailable - https://reptiledeli.com/products/reptizoo-rk0105s-18-x-18-x-18-reptile-glass-terrarium-single-hinge-door
+- t18x24x18: Exo Terra Glass Terrarium 18x18x24 (Pangea listing) - page lists it unavailable - https://www.pangeareptile.com/products/exo-terra-18x18x24-glass-terrarium-available-for-pick-up-at-our-warehouse-only
+- t18x24x18: Reptizoo RK0110NS knock-down Glass Terrarium - page lists it unavailable - https://www.reptiledeli.com/products/reptizoo-rk0110ns-18x18x24-knock-down-reptile-glass-terrarium-single-hinge-door
+- t48x24x24: Zen Habitats Zen Habitat 3.0 4x2x2 (wood) - page lists it unavailable - https://www.zenhabitats.com/products/4x2x2-reptile-enclosure-the-zen-habitat-3-0
+
+## Unreadable (left as they were) (116)
+- bowl14: Vase Market Glass Bubble Bowl H-11 in, body W-14 in (Vase Market) - ambiguous page (multi-size / pack pricing or variant not shown); skipped rather than guessed
+- bowl16: Glass Vases Depot Glass Bubble Bowl H-12 in, W-16 in (Glass Vases Depot) - ambiguous page (multi-size / pack pricing or variant not shown); skipped rather than guessed
+- bowl16: Vase Market Glass Bubble Bowl H-12 in, body W-16 in (Vase Market) - ambiguous page (multi-size / pack pricing or variant not shown); skipped rather than guessed
+- bowl19: Clear Bubble Bowl Vase WVBW1916-F, 19 in x 16 in H (EventsWholesale) - SKU WVBW1916 not on the bowl-vases listing; skipped
+- c6: Marineland Standard Rectangular 220 gal Extra-High (Marineland (maker)) - spec-sheet PDF, no price
+- g10: Aqueon LED SmartClean Starter Kit 10 gal (Aqueon (maker)) - maker page, no price shown (none stored); not read
+- g10: Aqueon Rectangle LED Kit 10 gal (Aqueon (maker)) - maker page, no price shown (none stored); not read
+- g10: Tetra STEM Aquarium Kit with Activity Guide 10 gal (Tetra (maker)) - maker page, no price shown (none stored); not read
+- g10: Tetra PLAYMOBIL Explore Your Aquarium Kit 10 gal (Tetra (maker)) - maker page, no price shown (none stored); not read
+- g10: Tetra Goldfish LED Aquarium Kit (Tetra (maker)) - maker page, no price shown (none stored); not read
+- g10: Fluval Visi-White 45P Aquarium Set 10.7 gal (Fluval (maker)) - maker page, no price shown (none stored); not read
+- g10: Marina LED Aquarium Kit 10 gallon (Amazon) - Amazon: no buy-box price (only "see all buying choices")
+- g10: GloFish Premium Seamless Kit 10 gal (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- g10: Tetra Complete LED Aquarium Kit 10 gal (Chewy) - Chewy blank page in Chrome (bot wall), skipped
+- g120: Fluval Siena Aquarium & Cabinet Set 88 gal (Fluval (maker)) - maker page, no price shown (none stored); not read
+- g15: Marineland Standard Rectangular 15 gal (Marineland (maker)) - spec-sheet PDF, no price
+- g15: LANDEN Aquarium 60P 16 Gallon Rimless (Amazon) - renderer froze (javascript_tool timed out at 45 s)
+- g15: Lifegard Aquatics Ultra Low Iron Glass Aquarium 23.62 x 11.81 x 14.17 (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- g2_5: Aqueon MiniBow LED kit - maker page, no price shown (none stored); not read
+- g2_5: Marineland Standard Rectangular 2.5 gal (Marineland (maker)) - spec-sheet PDF, no price
+- g2_5: Imagitarium Open-Glass Aquarium Tank 2.5 gal (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- g20h: Marineland Standard Rectangular 20 gal High (Marineland (maker)) - spec-sheet PDF, no price
+- g20h: Fluval EVO XII Marine Kit 13.5 gal (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- g20h: Aqueon LED SmartClean Starter Kit 20 gal (Aqueon (maker)) - maker page, no price shown (none stored); not read
+- g20h: Aqueon Rectangle LED Kit 20 High gal (20 gal) (Aqueon (maker)) - maker page, no price shown (none stored); not read
+- g20h: Marineland BIO-Wheel LED Aquarium Kit (Marineland (maker)) - maker page, no price shown (none stored); not read
+- g20l: Aqueon 20 Gallon Long (Tractor Supply listing) - maker page, no price shown (none stored); not read
+- g20l: Marineland Standard Rectangular 20 long - maker page, no price shown (none stored); not read
+- g29: Marineland Standard Rectangular 29 - maker page, no price shown (none stored); not read
+- g29: Tetra 29 Gallon Glass LED Aquarium Kit (Walmart (sold and shipped by Walmart.com)) - Walmart "technical issues" error page twice; skipped
+- g29: Aqueon Rectangle LED Kit 29 gal (Aqueon (maker)) - maker page, no price shown (none stored); not read
+- g29: Tetra Complete LED Aquarium Kit 29 gal (Tetra (maker)) - maker page, no price shown (none stored); not read
+- g300: Marineland Standard Rectangular 265 gal (Marineland (maker)) - spec-sheet PDF, no price
+- g37: Marineland Standard Rectangular 37 gal (Marineland (maker)) - spec-sheet PDF, no price
+- g3c: Aqueon Frameless Cube 3 gal (Aqueon (maker)) - maker page, no price shown (none stored); not read
+- g3c: Lifegard Aquatics Ultra Low Iron Betta Filter Kit (alt) (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- g5_5: Lifegard Aquatics Ultra Low Iron Glass Aquarium 14.17 x 8.66 x 10.24 (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- g5_5: Aqueon Standard Glass Rectangle 5.5 gal (Aqueon (maker)) - maker page, no price shown (none stored); not read
+- g5_5: Aqueon Rimless Rectangle 5.5 gal (Aqueon (maker)) - maker page, no price shown (none stored); not read
+- g5_5: Aqueon 5.5 LED Aquarium Starter Kit (5.5 gal) (Aqueon (maker)) - maker page, no price shown (none stored); not read
+- g5_5: Imagitarium Open-Glass Aquarium Tank 5.5 gal (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- g5: Marineland Standard Rectangular 5.5 gal (Marineland (maker)) - spec-sheet PDF, no price
+- g5: Tetra ColorFusion Bubbling LED Aquarium Kit (Tetra (maker)) - maker page, no price shown (none stored); not read
+- g50b: Fluval Premium LED Kit 45 gal Bow (Fluval (maker)) - maker page, no price shown (none stored); not read
+- g50b: Fluval Visi-White 90P Aquarium Set 53.6 gal (Fluval (maker)) - maker page, no price shown (none stored); not read
+- g50b: Fluval Premium Aquarium Kit 45 Bow with Cabinet 45 gal (Fluval (maker)) - maker page, no price shown (none stored); not read
+- g55: Aqueon Rectangle LED Kit 55 gal (Aqueon (maker)) - maker page, no price shown (none stored); not read
+- g65: Fluval Shaker Aquarium & Cabinet Set 66.5 gal (Fluval (maker)) - maker page, no price shown (none stored); not read
+- g6c: Aqueon Frameless Cube 6 gal (Aqueon (maker)) - maker page, no price shown (none stored); not read
+- g75: Aqueon Reef-Ready Rectangle 75 gal (Aqueon (maker)) - maker page, no price shown (none stored); not read
+- g75: Aqueon Standard Glass Rectangle 75 gal (Aqueon (maker)) - maker page, no price shown (none stored); not read
+- g75: Aqueon Standard Glass Rectangle 75 gal (second variant, SKU 100116075) (Aqueon (maker)) - maker page, no price shown (none stored); not read
+- g8c: Fluval Plant Aquarium Starter Kit 9 gal (Fluval (maker)) - maker page, no price shown (none stored); not read
+- n_aqueon_frameless_cube_1: Aqueon Frameless Cube 1 gal (Aqueon (maker)) - maker page, no price shown (none stored); not read
+- n_aqueon_frameless_cube_60: Aqueon Frameless Cube 60 gal (Aqueon (maker)) - maker page, no price shown (none stored); not read
+- n_aqueon_standard_glass_rectan: Aqueon Standard Glass Rectangle 38 gal (Aqueon (maker)) - maker page, no price shown (none stored); not read
+- n_aqueon_standard_glass_rectan: Marineland Standard Rectangular 40 gal High (Marineland (maker)) - spec-sheet PDF, no price
+- n_coralife_biocube_16: Coralife Smart BioCube Jr 14 gal (Coralife (maker)) - maker page, no price shown (none stored); not read
+- n_exo_terra_24x18x24: Reptizoo Double Hinge Glass Terrarium 24x18x24 - ambiguous page (multi-size / pack pricing or variant not shown); skipped rather than guessed
+- n_fluval_evo_13_5: Fluval Evo 13.5 gal (Fluval (maker)) - maker page, no price shown (none stored); not read
+- n_fluval_kuhl_microscaping_bla: JBJ AquaZen Rimless Desktop 4 gal (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- n_fluval_kuhl_microscaping_bla: JBJ AquaZen Rimless Desktop 4 gal kit (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- n_fluval_shaker_and_cabinet_se: Fluval Shaker Aquarium & Cabinet Set 44 gal (Fluval (maker)) - maker page, no price shown (none stored); not read
+- n_fluval_siena_and_cabinet_set: Fluval Siena Aquarium & Cabinet Set 72 gal (Fluval (maker)) - maker page, no price shown (none stored); not read
+- n_fluval_siena_and_cabinet_set: JBJ All-in-One Rimless Flat Panel 65 gal (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- n_fluval_spec_v_5: Fluval Spec V 5 gal (Fluval (maker)) - maker page, no price shown (none stored); not read
+- n_fluval_visi_white_60p_set_20: Fluval Visi-White 60P Aquarium Set 20.6 gal (Fluval (maker)) - maker page, no price shown (none stored); not read
+- n_imagitarium_cube_14: Aqueon Frameless Cube 14 gal (Aqueon (maker)) - maker page, no price shown (none stored); not read
+- n_imagitarium_cube_14: Fluval Flex 15 Kit (black) (15 gal) (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- n_imagitarium_cube_14: Penn-Plax Planting kit (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- n_imagitarium_cube_14: Marineland 10 Gallon Glass Aquarium Kit (Marineland (maker)) - maker page, no price shown (none stored); not read
+- n_imagitarium_cube_14: Fluval Flex 9 gal (Fluval (maker)) - maker page, no price shown (none stored); not read
+- n_imagitarium_cube_14: Fluval Flex 2.0 9 gal (Fluval (maker)) - maker page, no price shown (none stored); not read
+- n_imagitarium_cube_14: Fluval Flex 9 Gallon Glass Aquarium Kit, Black (Amazon) - Amazon: no buy-box price
+- n_imagitarium_cube_14: Lifegard Aquatics 15 Gallon Cube Low Iron 6mm (Amazon) - renderer froze (javascript_tool timed out at 45 s)
+- n_imagitarium_cube_35: Aqueon Frameless Cube 35 gal (Aqueon (maker)) - maker page, no price shown (none stored); not read
+- n_imagitarium_cube_35: Marineland Frameless Cube Aquarium (Marineland (maker)) - maker page, no price shown (none stored); not read
+- n_imagitarium_glass_versa_6_6: Imagitarium Glass Versa Aquarium 6.6 gal (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- n_imagitarium_shallow_13_3: Imagitarium (Petco) Frameless Shallow 13.3 gal (Petco) - ambiguous page (multi-size / pack pricing or variant not shown); skipped rather than guessed
+- n_imagitarium_shallow_28: Imagitarium (Petco) Frameless Shallow 28 gal (Petco) - ambiguous page (multi-size / pack pricing or variant not shown); skipped rather than guessed
+- n_imagitarium_shallow_28: Marineland Exhibit Series Wi-Fi LED Kit 25 gal (with stand) (Marineland (maker)) - maker page, no price shown (none stored); not read
+- n_imagitarium_shallow_28: Fluval Flex 32.5 gal (Fluval (maker)) - maker page, no price shown (none stored); not read
+- n_jbj_all_in_one_rimless_flat_: JBJ All-in-One Rimless Flat Panel 45 gal (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- n_jbj_aquazen_rimless_desktop_: JBJ AquaZen Rimless Desktop 10 gal (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- n_jbj_aquazen_rimless_desktop_: JBJ AquaZen Rimless Desktop 10 gal kit (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- n_jbj_aquazen_rimless_desktop_: Dennerle Shrimp King Kit 10 gal (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- n_jbj_aquazen_rimless_desktop_: Dennerle Scapers Tank Kit (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- n_landen_landen_long_10_8_riml: Lifegard Aquatics Ultra Low Iron Bookshelf Glass 31.89 in (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- n_lifegard_lifegard_bookshelf_: Lifegard Aquatics Ultra Low Iron Bookshelf Glass 33.85 in (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- n_lifegard_ultra_low_iron_book_: Lifegard Aquatics Ultra Low Iron Bookshelf Glass 35.82 in (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- n_lifegard_ultra_low_iron_book: Lifegard Aquatics Ultra Low Iron Bookshelf Glass 29.92 in (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- n_lifegard_ultra_low_iron_w_fi: Lifegard Aquatics Ultra Low Iron Aquarium w/ filter 11.81 x 11.81 x 13.77 (alt) (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- n_marineland_exhibit_series_wi: Marineland Exhibit Series Wi-Fi LED Kit 29 gal (with stand) (Marineland (maker)) - maker page, no price shown (none stored); not read
+- n_marineland_half_moon_combo_2: Marineland Half-Moon Aquarium Combo 20 / 30 gal (Marineland (maker)) - maker page, no price shown (none stored); not read
+- n_marineland_half_moon_combo_2: Marineland Standard Rectangular 30 gal Extra-High (Marineland (maker)) - spec-sheet PDF, no price
+- n_marineland_high_definition_l: Marineland High Definition LED Ensemble Aquarium and Stand 60 gal (Marineland (maker)) - maker page, no price shown (none stored); not read
+- n_marineland_high_definition_l: Marineland Standard Rectangular 60 gal (Marineland (maker)) - spec-sheet PDF, no price
+- n_marineland_portrait_desktop_: Marineland Portrait Desktop Kit 5 gal (Marineland (maker)) - maker page, no price shown (none stored); not read
+- n_marineland_portrait_desktop_: Fluval Chi Aquarium Kit (Fluval (maker)) - maker page, no price shown (none stored); not read
+- n_marineland_standard_rectangu______: Marineland Standard Rectangular 150 gal Extra-High (Marineland (maker)) - spec-sheet PDF, no price
+- n_marineland_standard_rectangu_____: Marineland Standard Rectangular 110 gal (Marineland (maker)) - spec-sheet PDF, no price
+- n_marineland_standard_rectangu____: Marineland Standard Rectangular 40 gal (Marineland (maker)) - spec-sheet PDF, no price
+- n_marineland_standard_rectangu___: Marineland Standard Rectangular 30 gal Breeder (Marineland (maker)) - spec-sheet PDF, no price
+- n_marineland_standard_rectangu__: Marineland Standard Rectangular 25 gal (Marineland (maker)) - spec-sheet PDF, no price
+- n_marineland_standard_rectangu_: Marineland Standard Rectangular 20 gal Extra-High (Marineland (maker)) - spec-sheet PDF, no price
+- n_marineland_standard_rectangu: Marineland Standard Rectangular 16 gal High (Marineland (maker)) - spec-sheet PDF, no price
+- n_marineland_standard_rectangu: Fluval Spec 16 gal (Fluval (maker)) - maker page, no price shown (none stored); not read
+- n_penn_plax_educational: Penn-Plax Educational Aquarium (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- n_penn_plax_prism_nano_black: Penn-Plax Prism Nano Kit (black) (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- n_tetra_tetra_connect_28_wi_fi: Tetra Connect 28 gal Aquarium Kit (Wi-Fi feeder) (Tetra (maker)) - maker page, no price shown (none stored); not read
+- n_tropical_marine_centre_kreis: Tropical Marine Centre Kreisel for Aquatics 10 L (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- n_waterbox_cube_20: Marineland Exhibit Series Wi-Fi LED Kit 20 gal (with stand) (Marineland (maker)) - maker page, no price shown (none stored); not read
+- n_waterbox_cube_20: JBJ All-in-One Rimless Flat Panel 25 gal (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- n_waterbox_cube_20: Penn-Plax Aquaterrium (Petco) - not found as a single-price tile on the Petco category pages (multi-size "Starting at" tile or not listed); skipped
+- t36x18x18: Reptizoo Glass Terrarium 36x18x18 - ambiguous page (multi-size / pack pricing or variant not shown); skipped rather than guessed
+- t48x24x24: Carolina Custom Cages 4x2x2 PVC - no price stored; not read this sweep
