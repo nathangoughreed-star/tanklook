@@ -72,7 +72,7 @@ export function topMin(m: TankMinimum, units: Units, k = 3): TopRow[] {
   const f = fmtOf(units), dims = (l: MinLine) => `${f.len(l.L)}${l.W ? ` x ${f.len(l.W)}` : ' long'}${l.areaCm2 ? `, ${f.area(l.areaCm2)} of floor` : ''}${l.mark === 'derived (est)' ? ' (est. from gallons)' : ''}`;
   return [...m.rows].sort((a, b) => b.pct - a.pct || b.comfortPct - a.comfortPct).slice(0, k).map(x => {
     const d = minDataOf(x.id), red = d?.red ? dims(d.red) : '', h = d?.hRed ? `${f.len(d.hRed.H)} tall` : '';
-    const rec = d?.green ? dims(d.green) : d?.hGreen ? `${f.len(d.hGreen.H)} tall` : d?.vol ? `${units === 'in' ? `${d.vol.gal} gal` : `${Math.round(d.vol.gal * 3.785)} L`} of water` : '';
+    const gl = (x.alone && d?.greenAlone) || d?.green, rec = gl ? dims(gl) : d?.hGreen ? `${f.len(d.hGreen.H)} tall` : d?.vol ? `${units === 'in' ? `${d.vol.gal} gal` : `${Math.round(d.vol.gal * 3.785)} L`} of water` : '';
     const least = [red, h].filter(Boolean).join(', ');
     return { name: x.name, n: x.n, share: 0, note: [least ? `at least ${least}` : 'no minimum stated', rec && `Recommended ${rec}`].filter(Boolean).join('; ') };
   });

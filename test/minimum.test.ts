@@ -290,3 +290,28 @@ describe('turning-clearance sweep (diagnostic)', () => {
     writeFileSync('research/clearance-sweep.md', out.join('\n'));
   });
 });
+
+describe('a lone betta in a 12 in cube reads green, near yellow (BT1, Nathan 2026-11-02)', () => {
+  const cube = (inches: number, ids: string[]) => { const S = setupOf(rectIn(inches, inches, inches), true); S.fish = fishOf(ids); return tankMinimum(S); };
+  it('one betta alone: a 12 in cube is green, high in the green band; an 8 gal cube (13.8 in) green too', () => {
+    const m = cube(12, ['betta']);
+    expect(minBar(m).level).toBe('ok');
+    expect(m.comfortPercent).toBeGreaterThan(90); // the top part of the green band, not mid-green
+    expect(m.comfortPercent).toBeLessThanOrEqual(100);
+    expect(m.rows[0].alone).toBe(true);
+    expect(minWarnings(m, 'in').filter(w => w.rec)).toEqual([]); // Suggest's "below the recommended size" line goes
+    expect(minBar(cube(13.8, ['betta'])).level).toBe('ok');
+  });
+  it('below 12 in it is not green: a 10 in cube, an 11.5 in cube', () => {
+    expect(minBar(cube(10, ['betta'])).level).not.toBe('ok');
+    expect(minBar(cube(11.5, ['betta'])).level).toBe('near');
+  });
+  it('a betta with tankmates keeps Seriously Fish\'s 45 x 30 cm Recommended mark', () => {
+    for (const mates of [['betta', 'nerite'], ['betta', 'betta', 'nerite'], ['betta', 'ember', 'ember', 'ember', 'ember', 'ember', 'ember']]) {
+      const m = cube(12, mates), row = m.rows.find(r => r.id === 'betta')!;
+      expect(row.alone, mates.join()).toBeUndefined();
+      expect(row.comfort.need, mates.join()).toBe(minDataOf('betta')!.green!.L);
+      expect(minBar(m).level, mates.join()).not.toBe('ok');
+    }
+  });
+});

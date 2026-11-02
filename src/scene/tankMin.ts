@@ -25,7 +25,7 @@ export interface MinLine { L: number; W?: number; areaCm2?: number; mark: Mark; 
 export interface HeightLine { H: number; mark: Mark; site: string; url: string; states: string }
 /** Decision 4 depth notes (no page states a required minimum water depth for any species, MX7). */
 export interface DepthNote { recommendedTankHeightMm?: number; advisoryTankHeightMm?: number; maxWaterDepthMm?: number; mark?: string; note: string }
-export interface MinData { red?: MinLine; green?: MinLine; hRed?: HeightLine; hGreen?: HeightLine; depth?: DepthNote; vol?: { gal: number; mark: string; site: string; url: string }; why: string }
+export interface MinData { red?: MinLine; green?: MinLine; /** the green line when this species' one animal is alone in the water (betta, Nathan 2026-11-02: a lone betta in a 12 in cube reads green) */ greenAlone?: MinLine; hRed?: HeightLine; hGreen?: HeightLine; depth?: DepthNote; vol?: { gal: number; mark: string; site: string; url: string }; why: string }
 const lines = (TM as unknown as { species: Record<string, MinData> }).species;
 /** The decided lines of one species; undefined = none (aquatic invertebrates and the regal jumper: never fail on size). */
 export const minDataOf = (id: string): MinData | undefined => lines[id];
@@ -151,6 +151,8 @@ export interface MinRow {
   depthMm: number; tl: number; tooDeepMm: number;
   /** the deepest water it tolerates, mm (GroupCare maxDepthMm, a limit even beside a sourced advisory maximum: ADF, Nathan 2026-10-22); Infinity = no limit */
   maxDepthMm: number;
+  /** judged as the only animal in the water: its `greenAlone` line stood in for the green one */
+  alone?: boolean;
 }
 export interface TankMinimum {
   /** the highest species percent; 0 with no animals in the water; Infinity when a species cannot be assessed */
@@ -175,12 +177,14 @@ export function scaleMin(d: MinData | undefined, k: number): MinData | undefined
   const at = (site: string) => `${site}'s adult line, scaled to its length`;
   const l = (x?: MinLine) => x && { ...x, site: at(x.site), L: x.L * k, ...(x.W ? { W: x.W * k } : {}), ...(x.areaCm2 ? { areaCm2: x.areaCm2 * k } : {}) };
   const h = (x?: HeightLine) => x && { ...x, site: at(x.site), H: x.H * k };
-  return { ...d, red: l(d.red), green: l(d.green), hRed: h(d.hRed), hGreen: h(d.hGreen), ...(d.vol ? { vol: { ...d.vol, gal: d.vol.gal * k } } : {}) };
+  return { ...d, red: l(d.red), green: l(d.green), ...(d.greenAlone ? { greenAlone: l(d.greenAlone) } : {}), hRed: h(d.hRed), hGreen: h(d.hGreen), ...(d.vol ? { vol: { ...d.vol, gal: d.vol.gal * k } } : {}) };
 }
 
-/** One species against a tank (the same answer the Fullness tile, the tank-fit engine, the animal gate and the hard truths all use). */
-export function speciesMinimum(sp: Species, g: Geometry, tl?: number): MinRow {
-  const k = shareOf(tl, sp.tl), w = whoOf(sp), d = scaleMin(minDataOf(sp.id), k), r = measureLines(w, d, g);
+/** One species against a tank (the same answer the Fullness tile, the tank-fit engine, the animal gate and the hard truths all use).
+ *  `alone` = its one animal is the only one in the water: a `greenAlone` line replaces the green one (BT1, Nathan 2026-11-02). */
+export function speciesMinimum(sp: Species, g: Geometry, tl?: number, alone = false): MinRow {
+  const k = shareOf(tl, sp.tl), w = whoOf(sp), d0 = scaleMin(minDataOf(sp.id), k), solo = alone && !!d0?.greenAlone;
+  const d = solo ? { ...d0, green: d0!.greenAlone } : d0, r = measureLines(w, d, g);
   // S245 (Nathan 2026-10-26): no animal in the water is exempt from a minimum. With no red line the care table's minimum volume (CARE.minL,
   // sourced per species in provenance.ts) is the line, held in litres against the tank's full volume with the same 10 % slack.
   const minL = !d?.red && countsAgainstWater(sp) ? (careOf(sp.id)?.minL ?? 0) * Math.min(1, k) : 0; // S228: a juvenile's line scales with its length share, like the others
@@ -194,7 +198,7 @@ export function speciesMinimum(sp: Species, g: Geometry, tl?: number): MinRow {
   const row: MinRow = { id: sp.id, name: sp.name, n: 1, kind: w.floor ? 'area' : 'run', pct: r.assessed ? r.red.pct : Infinity, comfortPct: r.green.pct, minLengthMm: d?.red?.L ?? 0,
     limiting: r.red.limiting, reason: '', comfortReason: recommendedOf(r.green), measure: r.red, comfort: r.green,
     derived: r.red.mark === 'derived (est)', assessed: r.assessed, depthMm: r.depthMm, tl: w.tl, tooDeepMm: r.tooDeepMm,
-    maxDepthMm: careOf(sp.id)?.maxDepthMm ?? Infinity };
+    maxDepthMm: careOf(sp.id)?.maxDepthMm ?? Infinity, ...(solo ? { alone: true } : {}) };
   row.reason = reasonIn(row);
   return row;
 }
@@ -202,12 +206,11 @@ export function speciesMinimum(sp: Species, g: Geometry, tl?: number): MinRow {
 export function tankMinimum(S: TankSetup): TankMinimum {
   // each species is judged at its largest animal's length (S228: a juvenile by its own; an adult-sized one as decided)
   const g = geometryOf(S), by = new Map<string, MinRow>(), young = youngLengths(S.fish);
-  for (const fi of S.fish) {
-    const sp = getSpecies(fi.species);
-    if (!sp || !countsAgainstWater(sp)) continue;
+  const wet = S.fish.map(fi => getSpecies(fi.species)).filter((sp): sp is Species => !!sp && countsAgainstWater(sp)), alone = wet.length === 1;
+  for (const sp of wet) {
     const have = by.get(sp.id);
     if (have) { have.n++; continue; }
-    by.set(sp.id, speciesMinimum(sp, g, young[sp.id]));
+    by.set(sp.id, speciesMinimum(sp, g, young[sp.id], alone));
   }
   const rows = [...by.values()].sort((a, b) => b.pct - a.pct);
   const depthMm = depthOf(g), maxDepthMm = Math.min(Infinity, ...rows.map(r => r.maxDepthMm));

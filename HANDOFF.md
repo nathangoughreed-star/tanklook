@@ -52,6 +52,12 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
+## BT1: A lone betta in a 12 in cube reads green (2026-11-02; branch bt1-betta-cube; Coordinator 17)
+- Nathan 2026-11-02: "yea it should be green but upper/almost borderline yellow". Data, not code: betta's tankmin.json entry has `greenAlone` (300 x 300 mm, 11.8 in, site "TankLook (one betta alone)", states "Nathan 2026-11-02: ..."). `tankMinimum` passes `alone` to `speciesMinimum` when exactly one animal counts against the water; the line then stands in for the green one (scaled for a juvenile like the others; `MinRow.alone` set). The Fullness tile's list prints that line. Red line (305 mm) and the 5 gal volGate unchanged; betta + any tankmate unchanged.
+- 12 in cube: 98 % of the lone line, green ("Meets recommended"); 8 gal cube green; 11.5 in cube yellow; 10 in cube red. 300 mm (not 304.8) so the catalogue's 30 cm "12 in" cubes (Lifegard 300, LANDEN 30T 299.7) read green too.
+- Moved: research/design/moved-numbers-bt1.txt (Suggest: 8 gal cube / 5 gal lone-betta cards turn green and lose the "below recommended" line; Stock plan g5, g5_5, g8c lose "a bit cramped"; tankFor / steps / builds / starters / sumps / examples 0). research/calib/tables/v4.json regenerated (A01 caution -> ideal). Test: test/minimum.test.ts "a lone betta in a 12 in cube". Screenshots: shots/bt1/.
+- Open: the tile list reads "at least 12" x 7.7"; Recommended 11.8" x 11.8"" (the lone Recommended mark is 0.2 in under the red length). Suggest's top lone-betta pick is the 6 gal cube (11.2 in inside): stays yellow.
+
 ## GV10: GV9 follow-ups (2026-10-30; branch gv10-followups; Coordinator 17)
 1. Owned gear before animals: `applyOwned` (src/ui/ownedGear.ts) writes only ticked + answered items (owned) and runs its tech through `keepSet`; an unticked heater / filter means "I don't own one", so its row stays inferred and need-driven gear adds it (owned 20 gal high, then neons at 68 deg F -> heater and filter listed as needs, +$28 each). A heater / filter the sheet saved and then unticked goes back to inferred; one set in the Tech menu (not owned) is left alone.
 2. Plan sheet kit price: `planOf` (src/scene/plan.ts) takes an optional pinned kit (5th arg); `attachPlanSheet` passes `pinnedKit(...)`, so the betta Top Fin Cube build prints $232 with "Priced as the bundle: <kit>, $51, in place of the parts it includes." (`bundleLine`, also in the .txt).

@@ -89,6 +89,15 @@
     "states": "45 ∗ 30 cm",
     "from": "footprint"
    },
+   "greenAlone": {
+    "L": 300,
+    "W": 300,
+    "mark": "judgement",
+    "site": "TankLook (one betta alone)",
+    "url": "",
+    "states": "Nathan 2026-11-02: a lone betta in a 12 in cube reads green, high in the green band near yellow: the Recommended mark for one betta with no tankmates is 300 mm (11.8 in), so a 12 in cube (305 mm) sits at 98 % of it; with tankmates Seriously Fish's 45 x 30 cm stands",
+    "from": "footprint"
+   },
    "volGate": "the gallon figure is a gate for this species (Nathan 2026-10-28): 5 gal is the floor, a 12 in cube (7.5 gal) passes",
    "vol": {
     "gal": 5,

@@ -1,0 +1,46 @@
+Moved numbers, lane BT1 (a lone betta in a 12 in cube reads green), 2026-11-02
+Rule: betta's tankmin.json entry has a `greenAlone` line (300 x 300 mm, 11.8 in; "Nathan 2026-11-02") that replaces Seriously Fish's
+45 x 30 cm Recommended mark when the betta is the ONLY animal in the water (one betta, nothing else that counts against the water).
+Red line (305 mm, Nathan 2026-10-28) and the 5 gal volGate are unchanged. Betta + any tankmate (snail, shrimp, embers, a 2nd betta): unchanged.
+
+Fullness tile, one betta alone (tankMinimum: red-line %, green-line %, level):
+  12 in cube (12 x 12 x 12 in):      100 % red, 98.4 % green  -> GREEN (was yellow, 148 % of Seriously Fish's line)
+  8 gal cube (13.8 in):              86.9 % red, 85.5 % green -> GREEN (was yellow)
+  11.5 in cube:                      104.5 % red, 102.7 % green -> yellow (unchanged colour)
+  10 in cube:                        120 % red -> red (unchanged)
+  12 in cube, betta + nerite:        148 % green -> yellow (unchanged)
+Catalogue 30 cm "12 in" cubes (Lifegard Ultra Low Iron 300 mm, LANDEN 30T 299.7 mm) sit at 100 % of the lone line: green, at the edge.
+
+scripts/moved-numbers.mjs (--now 2026-11-02), main vs branch:
+  changed rows: tankFor 0 of 648, steps 0 of 648, builds 0 of 648, starters 0 of 1620, sumps 0 of 132, examples 0 of 11
+  (none of these carry the Recommended colour; no rank moved)
+
+Suggest (suggestSetups, betta x1, 'in', 2026-11-02): same proposals, same order, same prices; colour and the "below recommended" line:
+  after:  suggest no limits #1 betta | g6c 11.2x11.2x11.3 in | $523 | min near | rec: 1 Betta: below the recommended size: TankLook (one betta alone) recommends 11.8" long, this one is 11.2" long
+  after:  suggest no limits #2 betta | g6c 11.2x11.2x11.3 in | $314 | min near | rec: 1 Betta: below the recommended size: TankLook (one betta alone) recommends 11.8" long, this one is 11.2" long
+  after:  suggest no limits #3 betta | g8c 13.8x13.8x13.9 in | $232 | min ok | rec: -
+  after:  suggest set-up $175 #1 betta | g5 15.7x7.7x9.8 in | $141 | min ok | rec: -
+  after:  suggest set-up $175 #2 betta | g8c 13.8x13.8x13.9 in | $120 | min ok | rec: -
+  after:  suggest set-up $400 #2 betta | g8c 13.8x13.8x13.9 in | $120 | min ok | rec: -
+  after:  suggest set-up $250 #1 betta | g6c 11.2x11.2x11.3 in | $242 | min near | rec: 1 Betta: below the recommended size: TankLook (one betta alone) recommends 11.8" long, this one is 11.2" long
+  after:  suggest set-up $250 #2 betta | g8c 13.8x13.8x13.9 in | $120 | min ok | rec: -
+  before: suggest no limits #1 betta | g6c 11.2x11.2x11.3 in | $523 | min near | rec: 1 Betta: below the recommended size: Seriously Fish recommends 17.7" long, this one is 11.2" long
+  before: suggest no limits #2 betta | g6c 11.2x11.2x11.3 in | $314 | min near | rec: 1 Betta: below the recommended size: Seriously Fish recommends 17.7" long, this one is 11.2" long
+  before: suggest no limits #3 betta | g8c 13.8x13.8x13.9 in | $232 | min near | rec: 1 Betta: below the recommended size: Seriously Fish recommends 17.7" long, this one is 13.8" long
+  before: suggest set-up $175 #1 betta | g5 15.7x7.7x9.8 in | $141 | min near | rec: 1 Betta: below the recommended size: Seriously Fish recommends 17.7" long, this one is 15.7" long
+  before: suggest set-up $175 #2 betta | g8c 13.8x13.8x13.9 in | $120 | min near | rec: 1 Betta: below the recommended size: Seriously Fish recommends 17.7" long, this one is 13.8" long
+  before: suggest set-up $400 #2 betta | g8c 13.8x13.8x13.9 in | $120 | min near | rec: 1 Betta: below the recommended size: Seriously Fish recommends 17.7" long, this one is 13.8" long
+  before: suggest set-up $250 #1 betta | g6c 11.2x11.2x11.3 in | $242 | min near | rec: 1 Betta: below the recommended size: Seriously Fish recommends 17.7" long, this one is 11.2" long
+  before: suggest set-up $250 #2 betta | g8c 13.8x13.8x13.9 in | $120 | min near | rec: 1 Betta: below the recommended size: Seriously Fish recommends 17.7" long, this one is 13.8" long
+  Note: Suggest's top lone-betta pick is the 6 gal cube (g6c, 11.2 in inside): below 12 in, so it stays yellow; its line now quotes
+  the lone line ("TankLook (one betta alone) recommends 11.8\" long") instead of Seriously Fish's 17.7 in.
+
+Stock plan tank list (tankOptions, betta x1): "workable, a bit cramped" label gone (cramped true -> false):
+  tankOptions betta x1 | g5 | cramped false | fails - | min 97
+  tankOptions betta x1 | g5_5 | cramped false | fails - | min 87
+  tankOptions betta x1 | g8c | cramped false | fails - | min 91
+
+Calibration: GEN_RETABLE_V4 rewrites research/calib/tables/v4.json. A01 (one betta) moves caution -> ideal, tankmin yellow -> green
+(comfort 111 % -> 81 %), minHead "Meets minimum" -> "Meets recommended". The same regen also refreshes six space.head strings
+(B01, B05, C02, C03, C08, D14) that main's table had stale (main's lock does not compare them; unrelated to bettas).
+GEN_RETABLE (v1-3a tables), the fit (calib-fit.mjs, file order as test/calibv4.test.ts) and calib-review rounds 1 and 2 regenerate identical.
