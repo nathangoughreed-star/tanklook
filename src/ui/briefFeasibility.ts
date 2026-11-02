@@ -10,7 +10,10 @@ import { loadProfile } from './demandPanel';
 import { compliance, type Constraints } from '../scene/constraints';
 import type { Units, TankSetup } from '../scene/types';
 import { planFor } from './stockPlanLogic';
-import { briefToWants, rangeOf } from '../scene/brief';
+import { briefToWants, rangeOf, type Brief as SceneBrief } from '../scene/brief';
+import { adaptToTank, stockingChange } from '../scene/reeval';
+import { applyChange, feasibilityOf, type Feasibility } from '../scene/project';
+import type { Tank } from '../scene/types';
 import { budgetOf, lockedStock, spaceOf, type Brief } from './setupBrief';
 
 const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
@@ -56,3 +59,28 @@ export function consequence(T: TankSetup, b: Brief, P: UserProfile, units: Units
   const r = compliance(S, t, P.limits, units);
   return { totals, line: under ? `${r.line ? r.line + ' ' : ''}Set-up ${usd(t.setupUsd)} is under your ${usd(lo!)} minimum.` : r.line, over: r.over > 0 };
 }
+
+// ---- lane GS6 (2026-11-02): re-evaluation instead of replacement ----
+/** What a change to the tank did to the design, for the brief bar to show: plain sentences, and a named warning when the animals are over for the new tank. */
+export interface ReevalNote { lines: string[]; warning?: string }
+const noteListeners = new Set<(n: ReevalNote) => void>();
+export const onReeval = (fn: (n: ReevalNote) => void) => { noteListeners.add(fn); return () => { noteListeners.delete(fn); }; };
+/** The tank's dimensions change inside a store edit: the same pieces are scaled, repositioned and thinned (scene/reeval.ts adaptToTank), never regenerated, and the stocking is re-assessed
+ *  with a named warning when over. A slider drag (`thin` false) only moves and scales; thinning waits for a discrete choice, so dragging back and forth loses nothing. */
+export function adaptForEdit(s: TankSetup, next: Tank, thin: boolean): void {
+  const before = s.fish.length && thin ? structuredClone(s) : undefined, rep = adaptToTank(s, next, { thin });
+  if (!rep.lines.length) return;
+  const stock = before ? stockingChange(before, s) : undefined, note: ReevalNote = { lines: rep.lines, ...(stock?.warning ? { warning: stock.warning } : {}) };
+  queueMicrotask(() => noteListeners.forEach(fn => fn(note)));
+}
+/** What was asked for but cannot work as things stand: each is kept in the project with the reason and the viable adjustments, never dropped (Nathan 2026-11-02). */
+export function retainedHtml(f: Feasibility, esc: (s: string) => string): string {
+  if (!f.retained.length) return '';
+  return `<div class="bbKeep" role="status"><b>Kept as your request, but it cannot work as things stand:</b><ul>${f.retained.map((r, i) => `<li class="${r.severity}"><span><b>${esc(r.what)}.</b> ${esc(r.reason)}</span>${r.fixes.map((x, j) => `<button type="button" data-keepfix="${i}.${j}">${esc(x.label)}</button>`).join('')}</li>`).join('')}</ul></div>`;
+}
+/** Apply one of the offered adjustments (the person's click); everything else in the project stays. */
+export function applyRetainedFix(b: SceneBrief, f: Feasibility, key: string): SceneBrief | undefined {
+  const [i, j] = key.split('.').map(Number), fix = f.retained[i]?.fixes[j];
+  return fix ? applyChange(b, fix.patch).state : undefined;
+}
+export const feasibilityNow = (b: SceneBrief, T?: TankSetup): Feasibility => feasibilityOf(b, T?.product ? { product: T.product } : undefined);

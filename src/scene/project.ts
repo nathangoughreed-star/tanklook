@@ -30,8 +30,12 @@ import type { SpaceLimit } from './types';
 export type ConstraintId = 'space' | 'startup' | 'ongoing' | 'setup' | 'care' | 'experience';
 export const CONSTRAINT_IDS: readonly ConstraintId[] = ['space', 'startup', 'ongoing', 'setup', 'care', 'experience'];
 export type ConstraintKind = 'hard' | 'flexible';
-/** Pending Nathan (2026-11-02): what a typed limit is when the person does not say ("Firm" = hard, with a Flexible toggle), and what an owned item is. One constant each, to flip. */
-export const DEFAULT_LIMIT_KIND: ConstraintKind = 'hard';
+/** Nathan's Q3 (2026-11-02): what a typed limit is when the person does not say, per constraint. Space is Firm (hard); startup budget, ongoing budget, setup time and care time are
+ *  Flexible targets unless the person marks them hard; experience is advisory (guidance only, it never blocks a pick). */
+export const DEFAULT_LIMIT_KINDS: Record<ConstraintId, ConstraintKind | 'advisory'> = { space: 'hard', startup: 'flexible', ongoing: 'flexible', setup: 'flexible', care: 'flexible', experience: 'advisory' };
+/** The kind a limit takes when the person gives a value and does not say (advisory reads as flexible: the UI marks experience as advice). */
+export const defaultKindOf = (id: ConstraintId): ConstraintKind => DEFAULT_LIMIT_KINDS[id] === 'hard' ? 'hard' : 'flexible';
+/** What an owned item is when the person does not say (pending Nathan's confirmation of the one-tap Required toggle). */
 export const DEFAULT_OWNED_USE: Use = 'available';
 /** Inches (the brief stores the footprint in mm). */
 export interface SpaceIn { w: number; d: number; h?: number }
@@ -61,7 +65,7 @@ export const constraintsOf = (b: Brief): Record<ConstraintId, Constraint> => Obj
 const known = (b: Brief, id: ConstraintId) => !constraintOf(b, id).unknown;
 
 /** Give a constraint a value and a kind. Hard = a valid design must satisfy it; flexible = a target that ranks designs. A number sets the upper bound, a { min, max } both. */
-export function setConstraint(b: Brief, id: ConstraintId, value: number | Range | SpaceIn, kind: ConstraintKind = DEFAULT_LIMIT_KIND): Brief {
+export function setConstraint(b: Brief, id: ConstraintId, value: number | Range | SpaceIn, kind: ConstraintKind = defaultKindOf(id)): Brief {
   const status = kind === 'hard' ? 'hard' : 'preference';
   let out: Brief;
   if (id === 'experience') out = setItem(b, 'preferences.experience', Math.max(0, Math.min(2, Math.round(value as number))) as 0 | 1 | 2, 'preference');
@@ -300,6 +304,8 @@ export interface Conflict {
   severity: 'hard' | 'advice';
   /** what it is about, for the UI to point at: the animals, the look, the enclosure, the water */
   subject: 'animals' | 'look' | 'enclosure' | 'water' | 'equipment';
+  /** the species the conflict is about, when it is about animals (they stay in the roster; this is how the requested design names what cannot work now) */
+  species?: string[];
   text: string;
   /** viable adjustments, each a patch applyChange can apply; the UI offers them, nothing is applied for the person */
   fixes: Fix[];
@@ -314,17 +320,17 @@ export function conflictsOf(b: Brief, scene?: SceneTank): Conflict[] {
   // water against the animals: an asked water type (fresh / salt) against animals of the other
   if (asked === 'freshwater' || asked === 'saltwater') {
     const bad = wet.filter(i => waterOfSpecies(i) !== asked);
-    if (bad.length) out.push({ id: 'water-vs-animals', kind: 'water-vs-animals', severity: 'hard', subject: 'water',
+    if (bad.length) out.push({ id: 'water-vs-animals', kind: 'water-vs-animals', severity: 'hard', subject: 'water', species: bad,
       text: `${list(bad.map(nameOf))} ${bad.length > 1 ? 'need' : 'needs'} ${asked === 'freshwater' ? 'salt' : 'fresh'} water, not the ${asked === 'freshwater' ? 'fresh' : 'salt'} water chosen.`,
       fixes: [{ label: `Switch the water to ${asked === 'freshwater' ? 'saltwater' : 'freshwater'}`, patch: { water: asked === 'freshwater' ? 'saltwater' : 'freshwater' } },
         { label: `Take ${list(bad.map(nameOf))} out of the stocking`, patch: { animals: stock.filter(s => !bad.includes(s.species)) } }] });
   } else if (!asked && new Set(wet.map(i => waterOfSpecies(i))).size > 1)
-    out.push({ id: 'water-vs-animals', kind: 'water-vs-animals', severity: 'hard', subject: 'animals', text: 'The animals mix freshwater and saltwater species, which cannot share a tank.',
+    out.push({ id: 'water-vs-animals', kind: 'water-vs-animals', severity: 'hard', subject: 'animals', species: wet, text: 'The animals mix freshwater and saltwater species, which cannot share a tank.',
       fixes: [{ label: 'Keep only the freshwater animals', patch: { animals: stock.filter(s => waterOfSpecies(s.species) !== 'saltwater') } }, { label: 'Keep only the saltwater animals', patch: { animals: stock.filter(s => waterOfSpecies(s.species) !== 'freshwater') } }] });
   // world against the animals
   if (env === 'aquarium' || env === 'terrarium') {
     const bad = ids.filter(i => env === 'aquarium' ? waterOfSpecies(i) === 'dry' : (waterOfSpecies(i) === 'freshwater' || waterOfSpecies(i) === 'saltwater') && getSpecies(i)?.habitat === 'water');
-    if (bad.length) out.push({ id: 'world-vs-animals', kind: 'world-vs-animals', severity: 'hard', subject: 'animals',
+    if (bad.length) out.push({ id: 'world-vs-animals', kind: 'world-vs-animals', severity: 'hard', subject: 'animals', species: bad,
       text: `${list(bad.map(nameOf))} ${env === 'aquarium' ? 'live on land and do not suit an aquarium' : 'live in water and do not suit a terrarium'}.`,
       fixes: [{ label: `Make it a paludarium (water and land)`, patch: { world: 'paludarium' } }, { label: `Take ${list(bad.map(nameOf))} out of the stocking`, patch: { animals: stock.filter(s => !bad.includes(s.species)) } }] });
   }
@@ -342,7 +348,7 @@ export function conflictsOf(b: Brief, scene?: SceneTank): Conflict[] {
   const enc = enclosureOf(b, scene);
   if (enc.kind !== 'provisional') {
     const min = rosterMinGal(b);
-    if (min !== undefined && enc.gal < min * 0.9) out.push({ id: 'animals-vs-enclosure', kind: 'animals-vs-enclosure', severity: 'hard', subject: 'enclosure',
+    if (min !== undefined && enc.gal < min * 0.9) out.push({ id: 'animals-vs-enclosure', kind: 'animals-vs-enclosure', severity: 'hard', subject: 'enclosure', species: ids,
       text: `The animals' minimum group needs about ${galText(min)}; ${enc.kind === 'owned-required' ? 'your required tank' : 'this enclosure'} is ${galText(enc.gal)}.`,
       fixes: [...(enc.kind === 'owned-required' ? [{ label: 'Treat your tank as flexible so a bigger one can be recommended', patch: { equipment: [{ key: 'tank' as const, use: 'available' as const }] } }] : [{ label: 'Let TankLook recommend a tank for these animals', patch: { tank: null } }])] });
     const sp = spaceMm(b), c = constraintOf(b, 'space');
@@ -357,6 +363,28 @@ export function conflictsOf(b: Brief, scene?: SceneTank): Conflict[] {
   if (chosen && own?.use === 'required' && own.model && own.model !== chosen) out.push({ id: 'tank-vs-owned', kind: 'tank-vs-owned', severity: 'advice', subject: 'equipment',
     text: 'A different tank was picked than the one marked Required.', fixes: [{ label: 'Go back to your tank', patch: { tank: null } }, { label: 'Treat your tank as flexible', patch: { equipment: [{ key: 'tank', use: 'available' }] } }] });
   return out;
+}
+
+// ---------------------------------------------------------------------------------------------------------------- requested vs feasible
+/** One thing the person asked for that cannot work in the design as it stands: kept as their request, with the reason and the viable adjustments (nothing is dropped). */
+export interface Retained { subject: Conflict['subject']; /** what was asked for, in words */ what: string; /** why it cannot work now */ reason: string; severity: Conflict['severity']; fixes: Fix[]; conflict: string }
+export interface Feasibility {
+  /** what the person asked for: the roster, the look, the enclosure, the space (always the full request, whatever is feasible now) */
+  requested: { animals: Stocked[]; archetype?: string; density?: Density; enclosure: Enclosure; space?: SpaceIn };
+  /** what can be built as things stand: the roster minus the animals no choice of the design can house, and the enclosure the design stands on */
+  feasible: { animals: Stocked[]; enclosure: Enclosure; ok: boolean };
+  retained: Retained[];
+}
+/** Keep what was REQUESTED apart from what is currently FEASIBLE (Nathan 2026-11-02, invariant 8): an incompatible choice stays in the project as a preference with the reason it cannot work. */
+export function feasibilityOf(b: Brief, scene?: SceneTank): Feasibility {
+  const v = visionOf(b), animals = (valueOf(b, 'animals.stock') ?? []).map(s => ({ ...s })), cs = conflictsOf(b, scene), enclosure = enclosureOf(b, scene), sp = constraintOf(b, 'space');
+  const blocked = new Set(cs.filter(c => c.severity === 'hard' && c.kind !== 'animals-vs-enclosure').flatMap(c => c.species ?? []));
+  const what = (c: Conflict) => c.subject === 'animals' || c.subject === 'water' ? `${list((c.species ?? []).map(nameOf)) || 'the animals'}` : c.subject === 'look' ? `the ${archetype(v.archetypeId ?? '')?.name ?? family(v.familyId ?? '')?.name ?? 'look'} look` : c.subject === 'enclosure' ? `the ${enclosure.label.split(':')[0].toLowerCase()}` : 'your tank';
+  return {
+    requested: { animals, archetype: v.archetypeId, density: v.density, enclosure, ...(!sp.unknown && sp.value && typeof sp.value === 'object' ? { space: sp.value } : {}) },
+    feasible: { animals: animals.filter(a => !blocked.has(a.species)), enclosure, ok: !cs.some(c => c.severity === 'hard') },
+    retained: cs.map(c => ({ subject: c.subject, what: what(c), reason: c.text, severity: c.severity, fixes: c.fixes, conflict: c.id })),
+  };
 }
 
 // ---------------------------------------------------------------------------------------------------------------- assumptions and unresolved
@@ -502,7 +530,7 @@ function applyPatch(b: Brief, p: ProjectPatch): Brief {
   if (p.tank !== undefined) s = p.tank ? setItem(s, 'equipment.tank', p.tank, 'preference') : clearItem(s, 'equipment.tank');
   for (const c of p.constraints ?? []) {
     if (c.skip) s = skipConstraint(s, c.id);
-    else if (c.value !== undefined) s = setConstraint(s, c.id, c.value as number | Range | SpaceIn, c.kind ?? (constraintOf(s, c.id).unknown ? 'flexible' : (constraintOf(s, c.id) as { kind: ConstraintKind }).kind));
+    else if (c.value !== undefined) s = setConstraint(s, c.id, c.value as number | Range | SpaceIn, c.kind ?? (constraintOf(s, c.id).unknown ? defaultKindOf(c.id) : (constraintOf(s, c.id) as { kind: ConstraintKind }).kind));
     else if (c.kind) s = setConstraintKind(s, c.id, c.kind);
   }
   if (p.skipStep) s = skipStep(s, p.skipStep);

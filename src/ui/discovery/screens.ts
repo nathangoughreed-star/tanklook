@@ -5,7 +5,8 @@
 // quietly. Picks are saved in the brief (`vision`) as they are made, so a refresh keeps them. Logic: ./logic.ts (pure, tested).
 import { archetype, family, type Archetype, type Card, type Family } from '../../scene/archetypes';
 import { getSpecies } from '../../data/species';
-import { minOf, rangeOf, setVision, visionOf, type Vision } from '../../scene/brief';
+import { getItem, minOf, rangeOf, setItem, setVision, valueOf, visionOf, type Vision } from '../../scene/brief';
+import { handOff, lookUnchanged } from '../../scene/reeval';
 import { buildsFor } from '../../scene/builds';
 import { recordTaste, recordWish } from '../../demand/taste';
 import { budgetOf, editBrief, getBrief, lockedStock, setLook, spaceOf } from '../setupBrief';
@@ -293,13 +294,22 @@ export function mountDiscovery(store: Store, host: DiscoveryHost, root: HTMLElem
     // the scene the person saw in the density step (same build, tank and composition), not a new layout; density = the recipe's stops
     const pv = tc && previews.scenesOf(a, tc.model, hand), T: TankSetup = fresh ?? (pv ? pv.stop(stop) : sceneFor(a, r, hand, (opts.tank?.model ?? briefTank())?.id));
     r.dens = recipeDensAt(a, stop);
-    // the scene replaces the tank's contents; the brief (which lives in the tank) is carried over with the recipe written into it
+    // lane GS6 (Nathan 2026-11-02, one persistent project): the hand-off is an UPDATE of the scene that is there. A pristine scene is taken whole; a design in place keeps its tank, gear and
+    // roster and only the look (pieces, ground, background) changes; re-choosing the look already in the editor changes nothing, so hand edits survive. The look's own animals are suggestions:
+    // they join the roster only when picked at the Suitable Animals step, and the roster is written to the brief (the desired roster) so the look never discards it.
     let keep = setVision(b0, { ...visionOf(b0), ...p, renderRecipe: r });
     if (r.look !== 'none') keep = recordTaste(setLook(keep, r.look, 'preference'), { style: r.look, kind: 'pick', variant: `vd:${a.id}` });
-    store.update(s => { Object.assign(s.tanks[s.active], structuredClone(T)); }, { coalesce: 'discovery' });
+    const accepted = fresh ? chosen : [];   // with a tank in hand its own animals win and nothing is added
+    if (accepted.length) {
+      const have = valueOf(keep, 'animals.stock') ?? [];
+      keep = setItem(keep, 'animals.stock', [...have.filter(x => !accepted.some(c => c.species === x.species)), ...accepted.map(c => ({ species: c.species, count: c.n }))], getItem(keep, 'animals.stock')?.status ?? 'preference');
+    }
+    const same = lookUnchanged(store.tank, b0, { archetypeId: a.id, density: p.density, densityStop: stop }, tc?.model.id);
+    const ho = same ? undefined : handOff(store.tank, T, { accept: accepted.map(c => c.species), brief: b0 });
+    if (ho) store.update(s => { Object.assign(s.tanks[s.active], structuredClone(ho.scene)); }, { coalesce: 'discovery' });
     editBrief(() => keep); store.seal();
     chosen = [];
-    host.status(`${a.name}, ${STOP_NAME[stop].toLowerCase()}, opened in the editor. Make it your own: change anything; Undo steps back.${a.support === 'partial' && a.deps.length ? ' ' + depsLine(a) : ''}`);
+    host.status(`${a.name}, ${STOP_NAME[stop].toLowerCase()}, opened in the editor. ${same ? 'It was already your look: nothing was changed.' : ho && !ho.fresh ? 'Your tank, gear and animals were kept; only the look changed.' : 'Make it your own: change anything;'} Undo steps back.${a.support === 'partial' && a.deps.length ? ' ' + depsLine(a) : ''}`);
     opts.onExit?.('editor');
   }
 

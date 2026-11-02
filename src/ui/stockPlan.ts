@@ -6,12 +6,14 @@ import { rng } from '../art/paint';
 import { CARE } from '../data/care';
 import { getSpecies, searchSpecies } from '../data/species';
 import { editBrief, getBrief, lockAnimals, lockedStock } from './setupBrief';
+import { adaptForEdit } from './briefFeasibility';
+import { hasDesign } from '../scene/reeval';
 import { applyAlternative, type Infeasible } from '../demand/infeasible';
 import { suggestFromBrief } from '../demand/suggest';
 import { minOf, valueOf } from '../scene/brief';
 import { loadProfile } from './demandPanel';
 import { futureHtml, infeasibleCard } from './infeasibleCard';
-import { tankFromModel, type TankModel } from '../data/tanks';
+import { getTankModel, tankFromModel, type TankModel } from '../data/tanks';
 import { emptyScene } from '../scene/defaults';
 import { placeNew, shuffleFish } from '../scene/scatter';
 import { summaryHtml, summaryOf } from './stockSummary';
@@ -63,6 +65,9 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
   };
   let picks: Pk[] = [], chosen: string | undefined, mates = false, q = '', shown = '';
   let kept: { tank?: TankSetup['tank']; product?: TankSetup['product']; tech?: TankSetup['tech']; light?: TankSetup['light'] } | undefined; // lane GV4: gear the Guided "What you have" step applied, carried into the animal screen
+  // lane GS6 (Nathan 2026-11-02, one persistent project): true while the screen is open over a scene that already holds a design. Opening never replaces that scene: the picks start from the
+  // roster (the brief's, else the scene's animals), the tank in the editor stays the tank until a different size is chosen, and a chosen size ADAPTS the scene (ui/briefFeasibility adaptForEdit).
+  let design = false;
   let needLight = ''; // the catalogue light the screen put on a stock-first tank (so a size change can pick it again, never an owned one)
   let undoFix: { picks: Pk[]; chosen?: string; label: string } | undefined; // lane GV4: the roster before the last applied fix
   // the tank is shown bare here: no filter, heater or stand until the build is chosen (the scene keeps its gear; only the view leaves it out)
@@ -87,12 +92,15 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
   // ---------- the scene follows the picks ----------
   const sync = (rebuild = false) => {
     // the chosen tank, else the invisible box around the smallest size that holds them (it follows the picks: it is not a choice)
-    const plan = planFor(picks, chosen), box = plan.tank ? undefined : plan.need?.tank ?? plan.options.at(-1)?.tank, show = plan.tank ?? box;
+    const plan = planFor(picks, chosen), box = plan.tank || design ? undefined : plan.need?.tank ?? plan.options.at(-1)?.tank, show = plan.tank ?? box;
     const mixed = isMixed(animalsOf(picks)), key = show ? `${box ? 'box:' : ''}${show.id}${mixed ? ':' + animalsOf(picks).map(a => `${a.species}${a.n}`).join(',') : ''}` : ''; // a paludarium's pool follows the picks
-    ghost(!plan.tank); // nothing chosen (or nothing picked yet): no tank drawn; set before the update so the fullness tile reads it
+    ghost(!plan.tank && !design); // nothing chosen (or nothing picked yet): no tank drawn; set before the update so the fullness tile reads it
     store.update(s => {
       const T = s.tanks[s.active];
-      if (show && key !== shown) {
+      if (design && show && key !== shown && !kept?.tank) {   // a different size chosen over a design: the same pieces adapt to it, nothing is regenerated and the animals are kept
+        if (T.product?.model !== show.id) { adaptForEdit(T, tankFromModel(show), true); T.product = { model: show.id }; }
+        shown = key;
+      } else if (!design && show && key !== shown) {
         // land animals get a terrarium: no water, a mesh top and front doors (lane LT); water animals a full tank
         const land = allLand(animalsOf(picks));
         T.tank = tankFromModel(show); T.water.on = !land; T.water.level = WATER_LEVEL; shown = key; rebuild = true;
@@ -115,7 +123,7 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
       T.fish = keep;
       if (kept?.tank) { T.tank = { ...kept.tank }; if (kept.product) T.product = kept.product; } // an owned tank stays as it is (never swapped for a catalogue size)
       // lane GV4: the basic light GV2 prices is drawn: a catalogue light for the tank's length (owned lights stay)
-      if (!T.light.owned && (!T.light.product || T.light.product === needLight)) {
+      if (!design && !T.light.owned && (!T.light.product || T.light.product === needLight)) {
         if (needLight) { T.light = { ...emptyScene().tanks[0].light }; needLight = ''; }
         const g = withNeedGear(T); if (g !== T) { T.light = g.light; needLight = g.light.product ?? ''; }
       }
@@ -325,6 +333,19 @@ ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}${budgetBlock()}
 
   // ---------- opening ----------
   const open = () => {
+    // a scene that holds a design is never replaced: the screen opens over it
+    if (hasDesign(store.tank, getBrief())) {
+      const prev = store.tank, b = getBrief(), stock = valueOf(b, 'animals.stock') ?? [];
+      design = true; kept = undefined; needLight = ''; undoFix = undefined; mates = false; q = ''; shown = '';
+      const seed = stock.length ? stock.map(x => ({ species: x.species, n: x.count })) : [...new Set(prev.fish.map(f => f.species))].map(sp => ({ species: sp, n: prev.fish.filter(f => f.species === sp).length }));
+      picks = seed.filter(x => getSpecies(x.species)).map(x => ({ ...startPick(x.species), n: x.n }));
+      const m = prev.product?.model ? getTankModel(prev.product.model) : undefined;
+      if (m) { chosen = m.id; const plan = planFor(picks, chosen); if (plan.tank) shown = `${plan.tank.id}${isMixed(animalsOf(picks)) ? ':' + animalsOf(picks).map(a => `${a.species}${a.n}`).join(',') : ''}`; else chosen = undefined; }
+      else { chosen = undefined; kept = { tank: structuredClone(prev.tank), ...(prev.product ? { product: prev.product } : {}) }; }   // a custom size stays as it is
+      ghost(false); el.hidden = false; side(true); bare(true); focusSearch = !picks.length; draw();
+      return;
+    }
+    design = false;
     const units = store.scene.units, s = emptyScene();
     s.name = 'My animal tank'; s.units = units; s.tanks[0].camera = { ...store.tank.camera };
     s.tanks[0].stand.show = false; s.tanks[0].stand.need = 'ask'; // no stand yet: the budget still counts a typical one
@@ -341,7 +362,7 @@ ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}${budgetBlock()}
       if (kept.tank) { s.tanks[0].tank = structuredClone(kept.tank); if (kept.product) s.tanks[0].product = kept.product; }
     }
     s.tanks[0].stockFirst = true; // no filter drawn until the owner adds one (Nathan 2026-10-21; the tile says "This tank needs a filter")
-    store.replace(s);
+    store.replace(s);   // only a pristine scene gets here (hasDesign above): nothing is lost
     picks = []; chosen = undefined; mates = false; q = ''; shown = ''; undoFix = undefined;
     el.hidden = false; side(true); bare(true); ghost(true); focusSearch = true; draw();
   };

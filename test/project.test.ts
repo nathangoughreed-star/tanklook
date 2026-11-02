@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { briefToWants, clearItem, emptyBrief, getItem, parseBrief, serializeBrief, setItem, setRange, setFlex, setVision, valueOf, visionOf, type Brief } from '../src/scene/brief';
 import {
   STARTER_CAP_GAL, applyChange, assumptionsInUse, availableEquipment, conflictsOf, constraintOf, enclosureOf, equipmentOf, galOfDims, impliedWater, needsWaterQuestion, projectOf, provisionalEnclosure,
-  DEFAULT_LIMIT_KIND, DEFAULT_OWNED_USE, markSkipped, onboardingOf, reevalInput, setLimitKind, setOwnedUse, removeEquipment, requiredEquipment, routeOf, setConstraint, setConstraintKind, setEquipment, setEquipmentUse, setRoute, setScratch, setWater, setWorld, skipConstraint, skipStep, unresolved, waterOf, worldOf,
+  DEFAULT_LIMIT_KINDS, DEFAULT_OWNED_USE, defaultKindOf, markSkipped, onboardingOf, reevalInput, setLimitKind, setOwnedUse, removeEquipment, requiredEquipment, routeOf, setConstraint, setConstraintKind, setEquipment, setEquipmentUse, setRoute, setScratch, setWater, setWorld, skipConstraint, skipStep, unresolved, waterOf, worldOf,
 } from '../src/scene/project';
 import { defaultScene } from '../src/scene/defaults';
 import { parseScene } from '../src/scene/validate';
@@ -385,10 +385,14 @@ describe('storage: old saves load unchanged, new answers travel with the project
 });
 
 describe('Rev 03 read model for the UI lanes (GS4-GS6)', () => {
-  it('defaults pending Nathan are one constant each: owned items Available (tank too), typed limits hard', () => {
-    expect(DEFAULT_OWNED_USE).toBe('available'); expect(DEFAULT_LIMIT_KIND).toBe('hard');
+  it('defaults: owned items Available (tank too); typed limits take their own default kind (Nathan Q3, 2026-11-02): space hard, budgets and times flexible, experience advisory', () => {
+    expect(DEFAULT_OWNED_USE).toBe('available');
+    expect(DEFAULT_LIMIT_KINDS).toEqual({ space: 'hard', startup: 'flexible', ongoing: 'flexible', setup: 'flexible', care: 'flexible', experience: 'advisory' });
+    expect(defaultKindOf('space')).toBe('hard'); expect(defaultKindOf('care')).toBe('flexible'); expect(defaultKindOf('experience')).toBe('flexible');
     expect(equipmentOf(setEquipment(emptyBrief(), 'tank', { model: 'g40b' })).items[0].use).toBe('available');
-    expect(constraintOf(setConstraint(emptyBrief(), 'startup', 300), 'startup')).toMatchObject({ kind: 'hard' });
+    expect(constraintOf(setConstraint(emptyBrief(), 'startup', 300), 'startup')).toMatchObject({ kind: 'flexible' });
+    expect(constraintOf(setConstraint(emptyBrief(), 'startup', 300, 'hard'), 'startup')).toMatchObject({ kind: 'hard' });
+    expect(constraintOf(setConstraint(emptyBrief(), 'space', { w: 40, d: 16 }), 'space')).toMatchObject({ kind: 'hard' });
   });
   it('onboarding step states: pending / done / skipped, done wins over skipped', () => {
     expect(onboardingOf(emptyBrief())).toEqual({ world: 'pending', equipment: 'pending', limits: 'pending', start: 'pending' });
@@ -440,10 +444,10 @@ describe('Rev 03 read model for the UI lanes (GS4-GS6)', () => {
     expect(p.assumptions.length).toBe(p.assumptionList.length);
   });
   it('reevalInput names what changed; a route switch alone needs no re-check', () => {
-    const b = setConstraint(setWater(setWorld(emptyBrief(), 'aquarium'), 'freshwater'), 'startup', 300);
+    const b = setConstraint(setWater(setWorld(emptyBrief(), 'aquarium'), 'freshwater'), 'startup', 300, 'hard');
     expect(reevalInput(b, b)).toEqual({ fields: [], limits: [], equipment: [], recheck: false });
     expect(reevalInput(b, setRoute(b, 'look'))).toMatchObject({ fields: ['route'], recheck: false });
-    const c = reevalInput(b, setConstraint(setEquipment(setItem(b, 'animals.stock', fish(['neon', 6]), 'preference'), 'tank', { model: 'g40b', use: 'required' }), 'startup', 500));
+    const c = reevalInput(b, setConstraint(setEquipment(setItem(b, 'animals.stock', fish(['neon', 6]), 'preference'), 'tank', { model: 'g40b', use: 'required' }), 'startup', 500, 'hard'));
     expect(c).toMatchObject({ limits: ['startup'], equipment: ['tank'], recheck: true });
     expect(c.fields).toEqual(expect.arrayContaining(['equipment', 'limits', 'animals', 'enclosure']));
     expect(reevalInput(b, setConstraintKind(b, 'startup', 'flexible')).limits).toEqual(['startup']);

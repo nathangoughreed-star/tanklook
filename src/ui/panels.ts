@@ -47,10 +47,11 @@ import { growthOf, isClump, isFloat, isPatch, type PlantType } from '../art/plan
 import { clumpAuto } from '../render/plant3d';
 import { canPrebuild, plantWarm, prebuildHooks, prebuildPlants } from '../render/items';
 import { placeAt, type PlaceAt } from '../interact/pointer';
+import { adaptForEdit } from './briefFeasibility';
 import { tankDiff } from './diff';
 import { attachTypeIns, parseLen, plainNum, tidy, type TypeIn } from './typein';
 import {
-  CEILING_MAX, CEILING_MIN, IN, backdropDepth, ceilingH, clamp, clampFish, fmtLen, fromUnit, glassThickness, rescaleTank, toUnit, volume, WALL_GAP_MAX, waterY,
+  CEILING_MAX, CEILING_MIN, IN, backdropDepth, ceilingH, clamp, clampFish, fmtLen, fromUnit, glassThickness, toUnit, volume, WALL_GAP_MAX, waterY,
 } from '../scene/physics';
 import type { Store } from '../scene/store';
 import { NEW_POOL, SWAMP_LEVEL, groundHeight, nearestLand, sameGrid, sampleTerrain } from '../scene/terrain';
@@ -499,7 +500,7 @@ Cancel, then change the name, to keep both.`)) return;
       if (also) also(s); else unhold(s, 'size');
       const T = next(s.tank);
       if (glass != null) s.render.glass = glass;
-      rescaleTank(s, T); // keep fish at the same relative spot (and apply the shape's rules, e.g. round D = L)
+      adaptForEdit(s, T, coalesce === undefined); // lane GS6: rescaleTank (fish and pieces keep their relative spot; the shape's rules, e.g. round D = L) plus scaled hardscape, thinned plants and a named stocking warning; never a regenerated scene
       // round tanks and bowls shape their terrain on rings, a pie slice on arcs, any other on a rectangular grid: resample into the new kind
       const te = s.terrain;
       if (te.h.length && !sameGrid(te, s.tank)) s.terrain = { ...sampleTerrain(s, s.tank, te.cols), on: te.on };
