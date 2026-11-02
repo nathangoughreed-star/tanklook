@@ -13,6 +13,7 @@ import type { Cap, Constraints, Effort } from './constraints';
 import type { PlantMode } from './scapes';
 import { parseTaste, type Taste } from '../demand/taste';
 import type { LayoutId, SpaceLimit } from './types';
+import type { Density, Env, Water } from './archetypes';
 
 export type Status = 'hard' | 'preference' | 'locked';
 export const STATUSES: readonly Status[] = ['hard', 'preference', 'locked'];
@@ -77,6 +78,15 @@ export const ADAPTS: readonly Adapt[] = ['fixed', 'some', 'open'];
 export interface Ambition { text: string; from?: string }
 /** Persistent conversation state: questions answered (QId strings of setupBrief) and the chosen direction. Open questions are derived from the items and this. */
 export interface Dialog { answered: string[]; direction?: string }
+/** The Guided Visual Discovery picks (lane VD3, spec 06 contract): what the person chose to look at, saved with the project. Every field is
+ *  optional while the flow is under way. `secondaryLikes` holds coming-soon archetypes saved as aspirations (spec 08); `renderRecipe` the
+ *  editable starting scene Make It Your Own opened with. Not an item: it never checks anything, so it never shows in Guardrails. */
+export interface Vision {
+  environment?: Env; waterType?: Water | null; familyId?: string; archetypeId?: string; density?: Density;
+  secondaryLikes: string[]; renderRecipe?: VisionRecipe;
+}
+/** The first mapped look, its plant mode, the density as layer stops (scene/items.ts DENS_NAMES), and the enclosure it is built in. */
+export interface VisionRecipe { look: LayoutId; plantMode: PlantMode; dens: { hard: number; plant: number }; env: Env }
 export type ItemId = keyof Values;
 export const ITEM_IDS: readonly ItemId[] = ['animals.kinds', 'animals.groups', 'animals.stock', 'appearance.look', 'appearance.plantMode', 'equipment.tank',
   'equipment.needStand', 'constraints.budget', 'constraints.monthly', 'constraints.careMin', 'constraints.setupHours', 'constraints.maxSpace', 'constraints.spaceGate', 'constraints.existingTank',
@@ -93,7 +103,7 @@ export type ItemOf<K extends ItemId> = K extends LimitId ? LimitItem<Values[K]> 
 
 // v3 (GV8): every limit is a range; `target` is retired (a narrow band does its job). v1 / v2 saves load with `value` as the upper bound, and an old `target` is dropped.
 export const BRIEF_VERSION = 3;
-export interface Brief { v: number; items: { [K in ItemId]?: ItemOf<K> }; dialog?: Dialog }
+export interface Brief { v: number; items: { [K in ItemId]?: ItemOf<K> }; dialog?: Dialog; vision?: Vision }
 
 export const emptyBrief = (): Brief => ({ v: BRIEF_VERSION, items: {} });
 export const groupOf = (id: ItemId): GroupId => id.split('.')[0] as GroupId;
@@ -196,7 +206,14 @@ export const isSpecified = (b: Brief, g: GroupId): boolean => idsOf(g).some(i =>
 export const openGroups = (b: Brief): GroupId[] => GROUPS.map(g => g.id).filter(g => !isSpecified(b, g));
 export const isEmpty = (b: Brief): boolean => ITEM_IDS.every(i => !(i in b.items));
 /** Anything worth saving: items or conversation state (isEmpty looks at items only). */
-export const hasState = (b: Brief): boolean => !isEmpty(b) || !!b.dialog;
+export const hasState = (b: Brief): boolean => !isEmpty(b) || !!b.dialog || !!b.vision;
+/** The discovery picks (never undefined). */
+export const visionOf = (b: Brief): Vision => b.vision ?? { secondaryLikes: [] };
+/** Replace the discovery picks; an empty vision is removed. */
+export function setVision(b: Brief, v: Vision): Brief {
+  const { vision: _v, ...rest } = b, clean = parseVision(v);
+  return clean ? { ...rest, vision: clean } : rest;
+}
 
 // ---- serialisable form: the brief is plain JSON already; parseBrief validates anything saved or shared ----
 export const serializeBrief = (b: Brief): string => JSON.stringify(b);
@@ -279,7 +296,31 @@ export function parseBrief(raw: unknown): Brief | undefined {
     const dl = setDialog(out, { answered, direction: typeof d.direction === 'string' && d.direction.length < 30 ? d.direction : undefined }).dialog;
     if (dl) out.dialog = dl;
   }
+  const vi = parseVision((raw as { vision?: unknown }).vision);
+  if (vi) out.vision = vi;
   return hasState(out) ? out : undefined;
+}
+
+const ENV_IDS: readonly Env[] = ['aquarium', 'terrarium', 'paludarium'], WATER_IDS: readonly Water[] = ['freshwater', 'saltwater', 'brackish'];
+const DENSITY_IDS: readonly Density[] = ['open', 'balanced', 'full'];
+const idOk = (v: unknown): v is string => typeof v === 'string' && /^[a-z0-9-]{1,40}$/.test(v);
+const stop = (v: unknown) => num(v, -1, 6) ? v : undefined;
+/** Validate saved discovery picks (ids are checked for shape only: the flow drops an id the registry no longer knows). Undefined when empty. */
+export function parseVision(raw: unknown): Vision | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const r = raw as Record<string, unknown>, v: Vision = { secondaryLikes: [] };
+  if (ENV_IDS.includes(r.environment as Env)) v.environment = r.environment as Env;
+  if (r.waterType === null || WATER_IDS.includes(r.waterType as Water)) v.waterType = r.waterType as Water | null;
+  if (idOk(r.familyId)) v.familyId = r.familyId;
+  if (idOk(r.archetypeId)) v.archetypeId = r.archetypeId;
+  if (DENSITY_IDS.includes(r.density as Density)) v.density = r.density as Density;
+  if (Array.isArray(r.secondaryLikes)) v.secondaryLikes = [...new Set(r.secondaryLikes.filter(idOk))].slice(0, 30);
+  const rr = r.renderRecipe as Record<string, unknown> | undefined, d = rr?.dens as Record<string, unknown> | undefined;
+  if (rr && typeof rr === 'object' && typeof rr.look === 'string' && rr.look.length < 40 && MODES.includes(rr.plantMode as PlantMode) && ENV_IDS.includes(rr.env as Env)
+    && d && stop(d.hard) !== undefined && stop(d.plant) !== undefined)
+    v.renderRecipe = { look: rr.look as LayoutId, plantMode: rr.plantMode as PlantMode, dens: { hard: d.hard as number, plant: d.plant as number }, env: rr.env as Env };
+  const { secondaryLikes, ...rest } = v;
+  return Object.keys(rest).length || secondaryLikes.length ? v : undefined;
 }
 
 // ---- adapter: Wants <-> Brief, lossless for everything Wants holds (suggestSetups is unchanged and still reads Wants) ----

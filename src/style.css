@@ -1024,3 +1024,39 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .look-cost td { padding: 2px 0; border-top: 1px solid color-mix(in srgb, currentColor 14%, transparent); }
 .look-cost td:last-child { text-align: right; white-space: nowrap; }
 .look-low { outline: 1px solid color-mix(in srgb, #2e8b57 55%, transparent); }
+
+/* Guided Visual Discovery (lane VD3, 2026-11-02): the Guided entry. Flat placeholder tiles in the family colour; an art file covers one when it exists */
+.vd { width: min(860px, 96vw) }
+.vd-rail { list-style: none; margin: 0 0 8px; padding: 0; display: flex; flex-wrap: wrap; gap: 2px 0; align-items: center }
+.vd-r { display: flex; align-items: center; font-size: 12.5px }
+.vd-r + .vd-r::before { content: '›'; color: var(--muted); margin: 0 5px }
+.vd-r button, .vd-r span { border: 0; background: none; color: var(--muted); font: inherit; padding: 2px 4px; border-radius: 6px }
+.vd-r button { cursor: pointer }
+.vd-r.done button { color: var(--ink) } .vd-r.done button::before { content: '✓ '; color: #2e9e6a }
+.vd-r.auto button { font-style: italic }
+.vd-r.current button { background: #2a9bb0; color: #fff; font-weight: 600 }
+.vd-ask { margin: 2px 0 4px; font-size: 18px }
+.vd-note:empty { display: none }
+.vd-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-top: 6px }
+.vd-tiles.vd-environment, .vd-tiles.vd-water, .vd-tiles.vd-density { grid-template-columns: repeat(3, minmax(0, 1fr)) }
+.vd-tile { display: flex; flex-direction: column; gap: 3px; text-align: left; padding: 0 0 9px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); color: var(--ink); cursor: pointer; font: inherit; overflow: hidden }
+.vd-tiles .vd-tile:hover, .vd-tiles .vd-tile:focus { background: var(--panel); color: var(--ink); border-color: #2a9bb0 }
+.vd-tiles .vd-tile.on { background: var(--panel); color: var(--ink); border-color: #2a9bb0; box-shadow: 0 0 0 2px #2a9bb0 inset }
+.vd-tile b { padding: 0 10px; font-size: 15px }
+.vd-sub { padding: 0 10px; font-size: 12.5px; font-weight: 600; color: var(--ink) }
+.vd-line { padding: 0 10px; font-size: 12px; color: var(--muted); white-space: normal }
+.vd-art { position: relative; display: block; aspect-ratio: 16 / 10; background: var(--vd-c, #5f7f6a); overflow: hidden }
+.vd-ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 8px; text-align: center; color: #fff; font-weight: 600; font-size: 14px; opacity: .9; text-shadow: 0 1px 2px rgb(0 0 0 / .35) }
+.vd-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover }
+.vd-img:not(.ok) { visibility: hidden } /* no broken-image icon while a missing art file 404s */
+.vd-soon-tile .vd-art { filter: saturate(.55) }
+.vd-badge { position: absolute; top: 6px; right: 6px; padding: 1px 7px; border-radius: 9px; background: rgb(255 255 255 / .92); color: #333; font-size: 11px; font-style: normal; font-weight: 600 }
+.vd-panel .vd-badge { position: static; display: inline-block; background: #eef1f3 }
+.vd-panel { margin: 6px 0; padding: 8px 12px; border: 1px solid #2a9bb0; border-radius: 10px; background: var(--panel) }
+.vd-panel p { margin: 4px 0 }
+.vd-acts { display: flex; flex-wrap: wrap; gap: 8px }
+.vd-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 10px 0 4px }
+.vd-nav .primary, .vd-acts .primary, .vd-dock .primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600 }
+.vd-dock { position: fixed; z-index: 30; top: 8px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; max-width: 96vw; padding: 4px 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); box-shadow: 0 2px 10px rgb(0 0 0 / .15) }
+.vd-dock[hidden] { display: none }
+@media (max-width: 520px) { .vd-tiles, .vd-tiles.vd-environment, .vd-tiles.vd-water, .vd-tiles.vd-density { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px } .vd-art { aspect-ratio: 4 / 3 } .vd-tile b { font-size: 14px } }

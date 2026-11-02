@@ -6,15 +6,17 @@
 import { clearItem, getItem, setItem, type Brief } from '../scene/brief';
 import { LAYOUTS } from '../scene/items';
 
-export type TasteKind = 'pick' | 'reject' | 'refine';
-export const TASTE_KINDS: readonly TasteKind[] = ['pick', 'reject', 'refine'];
-/** One signal, oldest first in the list. `style` is a look id (LayoutId); `variant` the example tile it came from, when there was one. */
+/** 'wish' (lane VD3, spec 08): interest in a coming-soon archetype, kept for product priorities. It is not a pick: it carries no weight, never
+ *  fades the picks and never ranks anything; `style` is then the archetype id. */
+export type TasteKind = 'pick' | 'reject' | 'refine' | 'wish';
+export const TASTE_KINDS: readonly TasteKind[] = ['pick', 'reject', 'refine', 'wish'];
+/** One signal, oldest first in the list. `style` is a look id (LayoutId), or an archetype id for a wish; `variant` the example tile it came from, when there was one. */
 export interface TasteEvent { style: string; kind: TasteKind; variant?: string }
 export interface Taste { events: TasteEvent[] }
 
 export const MAX_EVENTS = 30;
 /** What one signal is worth when new, and how much of an older signal is left after each later event. */
-export const STEP: Record<TasteKind, number> = { pick: 1, reject: -1, refine: 0.5 };
+export const STEP: Record<TasteKind, number> = { pick: 1, reject: -1, refine: 0.5, wish: 0 };
 export const DECAY = 0.8;
 /** Score points per unit of weight, and the cap either way. A matched appeal tag is worth 10, so taste breaks ties and nudges; it never outvotes what the person asked for. */
 export const POINTS = 2.5;
@@ -47,10 +49,15 @@ export function forgetVariant(b: Brief, variant: string, kind: TasteKind): Brief
   return events.length ? setItem(b, 'preferences.taste', { events }, 'preference') : clearTaste(b);
 }
 
-/** The weight of every look with a signal: each event's step, faded by 0.8 for every later event. */
+/** Record interest in a coming-soon archetype (a wish, apart from the picks). */
+export const recordWish = (b: Brief, archetypeId: string): Brief => recordTaste(b, { style: archetypeId, kind: 'wish' });
+/** The archetypes wished for, oldest first, each once. */
+export const wishesOf = (t: Taste | undefined): string[] => [...new Set(t?.events.filter(e => e.kind === 'wish').map(e => e.style) ?? [])];
+
+/** The weight of every look with a signal: each event's step, faded by 0.8 for every later event. Wishes are not signals here. */
 export function weightsOf(t: Taste | undefined): Record<string, number> {
-  const w: Record<string, number> = {}, n = t?.events.length ?? 0;
-  t?.events.forEach((e, i) => { w[e.style] = (w[e.style] ?? 0) + STEP[e.kind] * Math.pow(DECAY, n - 1 - i); });
+  const w: Record<string, number> = {}, ev = t?.events.filter(e => e.kind !== 'wish') ?? [], n = ev.length;
+  ev.forEach((e, i) => { w[e.style] = (w[e.style] ?? 0) + STEP[e.kind] * Math.pow(DECAY, n - 1 - i); });
   return w;
 }
 export const weightOf = (t: Taste | undefined, style: string | undefined): number => style ? weightsOf(t)[style] ?? 0 : 0;

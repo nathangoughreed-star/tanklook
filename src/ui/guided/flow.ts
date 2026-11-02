@@ -1,12 +1,15 @@
 // Guided v2 stepper (lane GV1, 2026-10-30): Kind > Start from > What you have > Limits, then the screen the intent leads to. One dialog (the Welcome
 // dialog of index.html), a step rail, Back on every step, nothing disabled. The position is saved in the brief (steps.ts), so reload and share keep the place.
 // The destination screens are other lanes' (stocking: GV4, look: GV5, Suggest: GV6, Report: GV3); this file only calls their existing entries.
+// Since 2026-11-02 (Nathan, plan question 2 of research/design/visual-discovery-plan.md) Guided opens Visual Discovery (ui/discovery/, lane VD3)
+// instead of this stepper: `show()` routes there. The stepper below stays reachable from its dock until lane VD5 retires it.
 import type { Store } from '../../scene/store';
 import { applyKind, tankKind } from '../../scene/pickerKind';
 import { editBrief, getBrief, onBrief, ownedKeys } from '../setupBrief';
 import { attachWelcomeGuard } from '../welcomeGuard';
 import { mountOwnedSheet, emptyOwned, type OwnedHost } from '../ownedGear';
 import { rangeOf } from '../../scene/brief';
+import { attachDiscovery, type DiscoveryHost } from '../discovery/screens';
 import {
   INTENT_CARDS, KIND_CARDS, STEP_ASK, applyKindChoice, artPath, clearLimits, kindOf, nextStep, prevStep, railOf, readState, routeOf, setSetupHours, writeState,
   type GCard, type GIntent, type GKind, type GRoute, type GState, type GStep, type RailItem,
@@ -130,9 +133,14 @@ export function attachGuidedFlow(dlg: HTMLDialogElement, store: Store, host: Gui
   onBrief(() => { if (dlg.open) updateNext(); });
   store.subscribe(() => { if (dlg.open) updateNext(); });
 
+  // lane VD3: the Guided entry is discovery; the Welcome host's sandbox / browse links ride along when it has them
+  let discovery: ReturnType<typeof attachDiscovery> | undefined;
+  const extra = host as GuidedHost & Partial<Pick<DiscoveryHost, 'sandbox' | 'browse'>>;
   return {
-    /** Open the stepper at the saved step (a fresh tank starts at Kind). */
-    show() { g = readState(getBrief()); dock.hidden = true; if (!dlg.open) dlg.showModal(); draw(); (stepEl.querySelector('button') as HTMLElement | null)?.focus(); },
+    /** Open Guided: Visual Discovery at its first open step (a fresh tank starts at Environment; a known roster usually at Family). */
+    show() { dock.hidden = true; if (dlg.open) dlg.close(); (discovery ??= attachDiscovery(store, { status: host.status, stocking: host.stocking, sandbox: extra.sandbox, browse: extra.browse })).open(); },
+    /** The old GV1 stepper at its saved step (kept for its dock until lane VD5 retires it). */
+    stepper() { g = readState(getBrief()); dock.hidden = true; if (!dlg.open) dlg.showModal(); draw(); (stepEl.querySelector('button') as HTMLElement | null)?.focus(); },
     state: () => g,
   };
 }
