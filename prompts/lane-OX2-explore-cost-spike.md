@@ -1,0 +1,10 @@
+# Lane OX2: Explore Complete Setups, stage X0 cost spike (report + one script, no UI)
+
+Coordinator: Coordinator 18, local_a9a242cb-2560-4fe6-8c3a-0e51e36644b4. Report ONCE with send_message when ready to merge, done, or blocked.
+Own worktree, never the shared folder: `git fetch`, `git checkout -b ox2-cost-spike origin/main`. Read HANDOFF.md "Start here" (incl. "OPEN TO ANYTHING = EXPLORE COMPLETE SETUPS" and "Machine load"), research/design/open-to-anything.md, research/design/open-to-anything-reconcile.md (sections 1.0, 3, 8.2 X0, 8.3, 11: Nathan accepted Q1-Q6 as recommended).
+You OWN: one new script scripts/explore-spike.mjs (or .ts run via vitest like other scripts), and one new file research/design/explore-cost-spike.md. Do NOT edit src/ or tests (lane OX3 is adding candidatePool / evaluateCandidate to src/demand/suggest.ts and creating src/explore/* in parallel; GS5 owns stockPlan / guided). If you need the pool before OX3 lands, approximate it in your script from the VD registry (src/scene/archetypes.ts, recipes.ts) and today's suggestSetups internals, and say how close the approximation is.
+Measure (machine load rules: every heavy run via `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/lowprio.ps1 <cmd>`, one browser, one page, a SAMPLE):
+1. Pool: for the 44 buildable archetypes x 2-3 tank sizes, how many candidates exist, wall time to build the pool WITHOUT rendering (scene build buildMs per candidate, total), and how many survive typical limit sets (e.g. firm $300 startup; firm $600; firm 36 x 18 in space; firm 30 min/week care, read on the high end of the estimate per Q1) per world (FW / SW / BK / terrarium / paludarium).
+2. Render: shotMs for 6 cards at Balanced in one browser (Previews.log), first batch and a second "Show more" batch, idle machine; note GPU vs software.
+3. Recommend the numbers for the plan: batch size, how many to pre-render, cache policy, whether 6 is affordable, and the "fewer than six, here is why" frequency under tight limits.
+Report in research/design/explore-cost-spike.md with a short table per measurement. Don't push: send branch, sha, the file path and the headline numbers.
