@@ -123,7 +123,7 @@ const arch = (r: Raw): Archetype => {
 
 const FW: Raw[] = [
   // Underwater Gardens
-  { id: 'dutch-garden', name: 'Dutch Garden', tagline: 'A flower garden underwater. You’re the gardener.', env: 'aquarium', water: 'freshwater', familyId: 'fw-gardens',
+  { id: 'dutch-garden', support: 'supported', name: 'Dutch Garden', tagline: 'A flower garden underwater. You’re the gardener.', env: 'aquarium', water: 'freshwater', familyId: 'fw-gardens',
     fingerprint: ['terraced "streets" of stem plants', 'contrasting reds and greens in groups', 'little or no hardscape', 'no carpet'],
     contrast: { sibling: 'planted-community', how: 'Formal colour-blocked streets of one species each, not a relaxed mix with wood.' },
     recipe: { looks: ['dutch'], notes: 'The dutch look as drawn: rows of stems stepping up to the back.' },
@@ -131,7 +131,7 @@ const FW: Raw[] = [
     labels: ['Minimal', 'Classic', 'Layered'],
     deps: [], tags: { chem: ['soft'], temp: 'tropical', minGallons: 20 } },
   // Sculpted Nature
-  { id: 'iwagumi-stone-garden', name: 'Iwagumi Stone Garden', tagline: 'Zen in a box. The lawn has opinions.', env: 'aquarium', water: 'freshwater', familyId: 'fw-sculpted',
+  { id: 'iwagumi-stone-garden', support: 'supported', name: 'Iwagumi Stone Garden', tagline: 'Zen in a box. The lawn has opinions.', env: 'aquarium', water: 'freshwater', familyId: 'fw-sculpted',
     fingerprint: ['angular stones in one main group', 'a low green carpet', 'open water above', 'no wood'],
     contrast: { sibling: 'driftwood-nature', how: 'Stone and lawn only; driftwood nature adds wood, moss and a mixed backdrop.' },
     recipe: { looks: ['iwagumi'], notes: 'The iwagumi look: a main stone and companions on a carpet.' },
@@ -139,7 +139,7 @@ const FW: Raw[] = [
     labels: ['Minimal', 'Classic', 'Layered'],
     deps: [], tags: { chem: ['soft'], temp: 'tropical', minGallons: 10 } },
   // Wild Habitats
-  { id: 'blackwater-creek', name: 'Blackwater Creek', tagline: 'Amber water, fallen leaves. Not for the clean-glass crowd.', env: 'aquarium', water: 'freshwater', familyId: 'fw-wild',
+  { id: 'blackwater-creek', support: 'supported', name: 'Blackwater Creek', tagline: 'Amber water, fallen leaves. Not for the clean-glass crowd.', env: 'aquarium', water: 'freshwater', familyId: 'fw-wild',
     fingerprint: ['amber tea-coloured water', 'leaf litter on sand', 'tangled roots and branches', 'floating plants for shade'],
     contrast: { sibling: 'african-cichlid-rockscape', how: 'Wood, leaves and tinted water; the cichlid rockscape is pale sand and stacked stone in clear water.' },
     recipe: { looks: ['blackwater'], notes: 'The blackwater look tints the water and lays leaf litter; spec 07 worked example.' },
@@ -168,13 +168,13 @@ const FW: Raw[] = [
     deps: ['plain background', 'bare bottom'], tags: { chem: ['soft', 'hard'], temp: 'tropical', minGallons: 75 } },
   // milestone 2
   // Underwater Gardens
-  { id: 'planted-community', name: 'Planted Community', tagline: 'The classic: fish, plants, happy everybody. Plants want trimming.', env: 'aquarium', water: 'freshwater', familyId: 'fw-gardens',
+  { id: 'planted-community', support: 'supported', name: 'Planted Community', tagline: 'The classic: fish, plants, happy everybody. Plants want trimming.', env: 'aquarium', water: 'freshwater', familyId: 'fw-gardens',
     fingerprint: ['a relaxed mix of stems, swords and grasses', 'a low carpet in front', 'a schooling community fish front and centre'],
     contrast: { sibling: 'overgrown-jungle', how: 'Kept and tidy with an open front; the jungle is left to grow wild to the surface.' },
     recipe: { looks: ['planted'], notes: 'The dense planted look as drawn.' },
     density: ['A plant backdrop and an open sand front', 'Back, sides and a carpet, a clear swimming lane', 'Plants from glass to glass, a lane at the front'],
     deps: [], tags: { chem: ['soft', 'hard'], temp: 'tropical', minGallons: 20 } },
-  { id: 'overgrown-jungle', name: 'Overgrown Jungle', tagline: 'Let it grow wild. Pruning optional, mostly.', env: 'aquarium', water: 'freshwater', familyId: 'fw-gardens',
+  { id: 'overgrown-jungle', support: 'supported', name: 'Overgrown Jungle', tagline: 'Let it grow wild. Pruning optional, mostly.', env: 'aquarium', water: 'freshwater', familyId: 'fw-gardens',
     fingerprint: ['tall vallisneria and crypts to the surface', 'roots poking through', 'floating plants shading the water', 'no visible layout'],
     contrast: { sibling: 'floating-canopy', how: 'Growth from the floor up; the floating canopy is a surface mat with roots hanging down over open water.' },
     recipe: { looks: ['jungle'], notes: 'The jungle look as drawn (low-tech, Walstad-style).' },
@@ -191,16 +191,16 @@ const FW: Raw[] = [
     contrast: { sibling: 'planted-community', how: 'Everything grows on the wood, nothing in the sand; the community tank is rooted plants in rows.' },
     recipe: { looks: ['driftwood'], notes: 'The driftwood look as drawn (low-light epiphytes).' },
     density: ['One branch, a few ferns, open sand', 'Branches with ferns, anubias and moss', 'A wood tangle green from end to end'],
-    deps: [], tags: { chem: ['soft', 'hard'], temp: 'tropical', minGallons: 10 } },
+    deps: ['moss carpet'], tags: { chem: ['soft', 'hard'], temp: 'tropical', minGallons: 10 } },
   // Sculpted Nature
-  { id: 'driftwood-nature', name: 'Driftwood Nature', tagline: 'Driftwood, moss and patience. The layout takes years to fill in.', env: 'aquarium', water: 'freshwater', familyId: 'fw-sculpted',
+  { id: 'driftwood-nature', support: 'supported', name: 'Driftwood Nature', tagline: 'Driftwood, moss and patience. The layout takes years to fill in.', env: 'aquarium', water: 'freshwater', familyId: 'fw-sculpted',
     fingerprint: ['wood and stone together in one composition', 'moss on the wood', 'mixed plants behind', 'an open midground'],
     contrast: { sibling: 'underwater-forest', how: 'Branchy wood and stone in a landscape; the forest is thin upright trunks under a moss canopy.' },
     recipe: { looks: ['nature'], notes: 'The nature aquarium look as drawn (Amano style).' },
     density: ['One wood piece and a stone, carpet and open sand', 'A wood and stone ridge, plants behind', 'Wood across the tank, plants filling every gap but the midground'],
     labels: ['Minimal', 'Classic', 'Layered'],
     deps: [], tags: { chem: ['soft'], temp: 'tropical', minGallons: 20 } },
-  { id: 'underwater-forest', name: 'Underwater Forest', tagline: 'Trees underwater. Your scissors get a workout.', env: 'aquarium', water: 'freshwater', familyId: 'fw-sculpted',
+  { id: 'underwater-forest', support: 'supported', name: 'Underwater Forest', tagline: 'Trees underwater. Your scissors get a workout.', env: 'aquarium', water: 'freshwater', familyId: 'fw-sculpted',
     fingerprint: ['thin upright wood like tree trunks', 'a moss canopy at the top', 'a fine carpet', 'a sand path into the distance'],
     contrast: { sibling: 'driftwood-nature', how: 'Vertical trunks and a path; driftwood nature is a sideways composition of wood and stone.' },
     recipe: { looks: ['forest'], notes: 'The forest look as drawn.' },
@@ -215,7 +215,7 @@ const FW: Raw[] = [
     labels: ['Minimal', 'Classic', 'Layered'],
     deps: ['cliff / bonsai hardscape'], alternative: 'iwagumi-stone-garden', tags: { chem: ['soft'], temp: 'tropical', minGallons: 20 } },
   // Wild Habitats
-  { id: 'african-cichlid-rockscape', name: 'African Cichlid Rockscape', tagline: 'Freshwater fish in saltwater colours. Feisty, too.', env: 'aquarium', water: 'freshwater', familyId: 'fw-wild',
+  { id: 'african-cichlid-rockscape', support: 'supported', name: 'African Cichlid Rockscape', tagline: 'Freshwater fish in saltwater colours. Feisty, too.', env: 'aquarium', water: 'freshwater', familyId: 'fw-wild',
     fingerprint: ['stacked rock caves and arches', 'pale sand', 'almost no plants', 'bright mbuna in clear water'],
     contrast: { sibling: 'shell-bed-lake', how: 'Tall rock piles to the surface; the shell bed is open sand strewn with snail shells.' },
     recipe: { looks: ['malawi'], notes: 'The Lake Malawi rock look as drawn.' },
@@ -273,7 +273,7 @@ const FW: Raw[] = [
     recipe: { looks: [], notes: 'Upright wood and swords on sand; no current look is this sparse.' },
     density: ['Bare sand, one root', 'Roots and two swords', 'Roots and a sword backdrop, open front'],
     deps: ['plain background'], alternative: 'planted-community', tags: { chem: ['soft'], temp: 'tropical', minGallons: 75 } },
-  { id: 'goldfish-palace', name: 'Goldfish Palace', tagline: 'Fancy goldfish with room to waddle. They are messier than they look.', env: 'aquarium', water: 'freshwater', familyId: 'fw-showcase',
+  { id: 'goldfish-palace', support: 'supported', name: 'Goldfish Palace', tagline: 'Fancy goldfish with room to waddle. They are messier than they look.', env: 'aquarium', water: 'freshwater', familyId: 'fw-showcase',
     fingerprint: ['smooth rounded stones', 'sand floor', 'wide open water', 'tough cool-water plants'],
     contrast: { sibling: 'axolotl-den', how: 'Bright, open water for swimmers; the axolotl den is dim, low and full of caves.' },
     recipe: { looks: ['stones'], notes: 'The river stones look on sand; nothing sharp.' },

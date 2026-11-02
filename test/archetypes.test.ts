@@ -67,9 +67,9 @@ describe('archetype registry (lane VD1)', () => {
     for (const a of ARCHETYPES) for (const l of a.recipe.looks) expect(LAYOUTS[l], `${a.id} look ${l}`).toBeDefined();
   });
 
-  it('sets support by rule and gives every coming-soon a partial alternative', () => {
+  it('sets support (VD2 audit: a mapped look is supported or partial, none is coming-soon) and gives every coming-soon a partial alternative', () => {
     for (const a of ARCHETYPES) {
-      expect(a.support, a.id).toBe(a.recipe.looks.length ? 'partial' : 'coming-soon');
+      if (a.recipe.looks.length) expect(['supported', 'partial'], a.id).toContain(a.support); else expect(a.support, a.id).toBe('coming-soon');
       if (a.support !== 'coming-soon') continue;
       expect(a.alternative, `${a.id} needs an alternative`).toBeDefined();
       expect(archetype(a.alternative!)!.support, `${a.id} -> ${a.alternative}`).not.toBe('coming-soon');

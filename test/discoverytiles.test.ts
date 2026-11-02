@@ -35,7 +35,7 @@ describe('personalized discovery tiles (lane VD6)', () => {
   });
 
   it('a family trio shares one tank; the density trio shares build, animals and composition and gets fuller', () => {
-    const a = ARCHETYPES.find(x => x.support === 'partial' && x.recipe.looks[0] === 'iwagumi')!;
+    const a = ARCHETYPES.find(x => x.support !== 'coming-soon' && x.recipe.looks[0] === 'iwagumi')!;
     const tank = tankChoice(family(a.familyId))!.model, pv = previewOf(a, tank)!;
     expect(pv).toBeDefined();
     const [o, b, f] = DENSITIES.map(d => pv.scenes[d]);
@@ -47,7 +47,7 @@ describe('personalized discovery tiles (lane VD6)', () => {
   });
 
   it('caches scenes and pictures per (archetype, tank, density) and draws each once', () => {
-    const a = ARCHETYPES.find(x => x.support === 'partial' && x.recipe.looks[0] === 'iwagumi')!;
+    const a = ARCHETYPES.find(x => x.support !== 'coming-soon' && x.recipe.looks[0] === 'iwagumi')!;
     let n = 0;
     const pv = new Previews(() => `data:image/png;base64,${++n}`);
     const s1 = pv.render(a, 2, BREEDER40)!, s2 = pv.render(a, 2, BREEDER40)!;
@@ -66,7 +66,7 @@ describe('personalized discovery tiles (lane VD6)', () => {
   });
 
   it("Make It Your Own gets the scene the density step showed: the cached scene of the chosen archetype and density, no other layout", () => {
-    const a = ARCHETYPES.find(x => x.support === 'partial' && x.recipe.looks[0] === 'iwagumi')!;
+    const a = ARCHETYPES.find(x => x.support !== 'coming-soon' && x.recipe.looks[0] === 'iwagumi')!;
     const pv = new Previews(() => 'x'), shown = (d: Density) => pv.scenesOf(a, BREEDER40)!.scenes[d];
     for (const d of DENSITIES) {
       const again = pv.scenesOf(a, BREEDER40)!.scenes[d];
