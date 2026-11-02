@@ -21,8 +21,8 @@ pushes from a throwaway worktree without touching other chats' edits. A hook (`s
 
 **Chat IDs (Nathan 2026-10-20):** every chat has a unique ID and a title of the form `ID: Short Title` (`P2b: Tank Filtration & Honest Span`; coordinators are just `Coordinator N`). The COORDINATOR assigns the ID and sets the title when it starts a chat; chats never rename themselves and never reuse an ID. Lanes keep their letter code (P1-P6b, SE, SE2, LO, GD, DM, TG, UF = user flow design, SB source backfill, ST source traceability, ER equipment research, LC light catalogue, MC menu close, SF sponge filter, TV tank sizes, HM heater menu, HL hood lighting, BT bare tank, SC substrate contour, SO stand and cost). Side and older chats are `S001`-`S164` (numbered by age on 2026-10-20); the next free number is S165, the next lane codes are chosen by the coordinator and checked against this list. Chats started by hand get an ID at the next coordinator `check`.
 
-**Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_44e5506c-3362-4ae4-9201-786513054e8f`
-("Coordinator 17", took over 2026-10-29 from `local_543b9920` (Coordinator 16); before it `local_5ae6e7ea` (Coordinator 15); before it `local_6541e5de` (Coordinator 14); before it `local_839d7504` (Coordinator 13; before it `local_33210e19`, Coordinator 12)). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
+**Coordinator protocol (Nathan 2026-10-13):** the coordinator chat is session `local_a9a242cb-2560-4fe6-8c3a-0e51e36644b4`
+("Coordinator 18", took over 2026-11-02 from `local_44e5506c` (Coordinator 17); before it `local_543b9920` (Coordinator 16); before it `local_5ae6e7ea` (Coordinator 15); before it `local_6541e5de` (Coordinator 14); before it `local_839d7504` (Coordinator 13; before it `local_33210e19`, Coordinator 12)). Every lane messages it (send_message to that id) when its work is pushed to main, when it is done,
 and at any milestone that unblocks another lane (A: plants pushed; D: shots/audit/AUDIT.md written). The message says
 what landed (commit), what is still open, and which files are now free. The coordinator then sends Nathan the prompts
 for any chats that can start now. If a prompt is still waiting when another lane opens, it sends all waiting prompts again
@@ -36,7 +36,7 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 
 **Guided v2 (2026-10-30, Nathan spec):** plan research/design/guided-flow-plan.md, art slots research/design/guided-art-brief.md, lanes GV1-GV7 (prompts/lane-GV*.md). Phase 1 GV1 + GV2 + GV4; phase 2 GV3, GV5 (after GV2), GV6; phase 3 GV7 (after GV4, GV5).
 
-**Current lanes** (coordinator "Coordinator 17", `local_44e5506c`):
+**Current lanes** (coordinator "Coordinator 18", `local_a9a242cb`):
 | Lane | Worktree / branch | Port | Owns | State |
 |---|---|---|---|---|
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 DONE 2026-10-16 (lane SS2, see archive; its gaps: no water dish, no succulents, Malawi has only yellowlab / cockatoo); multi-select / duplicate (lane MS) + scatter brush (lane SB) DONE 2026-10-16, see archive; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
