@@ -1,5 +1,8 @@
 # Guided path v2 (plan, 2026-10-30, Coordinator 17)
 
+> **Superseded in part (2026-11-02, Nathan):** the Guided entry and look steps now follow the Visual Discovery spec, Revision 02 (research/design/visual-discovery-plan.md, question 2). GV1 kind / start-from cards, GV5 look-after-stocking cards and GV6 variation rounds leave the Guided path (lane VD5); owned gear and Limits move into Make It Your Own. GV2, GV3, GV4, GV7, GV8 stand.
+
+
 Source: Nathan's Guided-path spec, pasted to Coordinator 17 on 2026-10-30 (quoted in full at the bottom).
 Builds on the NG1-NG6 work (research/design/guided-sandbox-plan.md), all on main by build 1524.
 

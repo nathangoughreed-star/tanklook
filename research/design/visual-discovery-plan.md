@@ -98,10 +98,12 @@ No engine numbers move: discovery picks a look and a recipe; prices and checks s
    the name, tagline and a "Reference" or "Coming soon" badge. A real image at `public/art/discovery/<id>.webp`
    replaces the placeholder automatically when it exists (Nathan drops art in later). Supported / Partial tiles
    may show the in-app render instead, if it is cheap; placeholders are fine for the first version.
-2. **Where discovery sits in Guided** (not answered; went with the proposal 2026-10-30, change if Nathan says so):
-   discovery is the "A look I want" entry AND the look step after stocking (there the roster answers environment
-   and water, so the person starts at family). GV5's priced cards and GV6's variations become the first screen of
-   Make It Your Own.
+2. **Where discovery sits in Guided** (answered 2026-11-02, Nathan: "it should reflect the most recent document I have sent about the topic. This likely means getting rid of aspects of the old plan."). Revision 02 wins over the Guided v2 plan (guided-flow-plan.md):
+   - **Guided IS the discovery journey:** Environment -> Water (aquarium only) -> Family -> Archetype -> Density -> Make It Your Own. It replaces GV1's "What kind of tank?" and "Where do you want to start?" cards as the Guided entry.
+   - **Animals first** stays only as the spec's edge case "user already selected an animal": a secondary link ("I already know my animals") opens the GV4 roster; discovery then starts at the first unanswered step (usually Family), pruned by the roster.
+   - **Practical constraints move into Make It Your Own** (spec: "edit layout, ingredients, livestock, and practical constraints"): GV1's owned-gear + stand step and its Limits step leave the guided sequence and become panels reachable from Make It Your Own, carrying their brief data unchanged.
+   - **Retired from Guided:** GV5's "look for this tank" cards (discovery after stocking replaces them) and GV6's variation rounds (the spec stops branching at the archetype; density is the last guided choice). Suggest keeps its first round and "I like this one" outside Guided. GV7's compromise stays (spec: "propose a close viable interpretation"). GV3's report stays as the end.
+   - Lane split: VD3 builds discovery and makes it the Guided entry; VD5 (after VD3) retires the old steps listed above.
 
 ## Speed-ups (Nathan wants the tree functional now)
 
