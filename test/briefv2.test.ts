@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { emptyBrief, parseBrief, serializeBrief, setItem, setFlex, setRange, isFlex, hasState } from '../src/scene/brief';
+import { BRIEF_VERSION, emptyBrief, parseBrief, serializeBrief, setItem, setFlex, setRange, isFlex, hasState } from '../src/scene/brief';
 import { addFuture, answeredOf, directionOf, futureOf, recordAnswer, removeFuture, roomTempFOf, setBudget, setDirection, setRoomTempF, setTapWater, tapWaterOf, labelOf, profileWaterSource } from '../src/ui/setupBrief';
 
 describe('brief v2', () => {
@@ -11,7 +11,7 @@ describe('brief v2', () => {
     expect(isFlex(b, 'constraints.budget')).toBe(true);
     expect(labelOf(b, 'constraints.budget')).toBe('$200-300');
     const r = parseBrief(JSON.parse(serializeBrief(b)))!;
-    expect(r).toEqual(b); expect(r.v).toBe(3);
+    expect(r).toEqual(b); expect(r.v).toBe(BRIEF_VERSION);
   });
   it('a lower bound the new maximum falls below is dropped; an old target is dropped on load', () => {
     let b = setRange(emptyBrief(), 'constraints.budget', { min: 200, max: 250 });

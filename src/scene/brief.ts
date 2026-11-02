@@ -106,8 +106,47 @@ export const isLimitId = (id: ItemId): id is LimitId => (LIMIT_IDS as readonly s
 export type ItemOf<K extends ItemId> = K extends LimitId ? LimitItem<Values[K]> : Item<Values[K]>;
 
 // v3 (GV8): every limit is a range; `target` is retired (a narrow band does its job). v1 / v2 saves load with `value` as the upper bound, and an old `target` is dropped.
-export const BRIEF_VERSION = 3;
-export interface Brief { v: number; items: { [K in ItemId]?: ItemOf<K> }; dialog?: Dialog; vision?: Vision }
+// v4 (GS2, Guided Setup Rev 03): the optional `project` block (below). v1-v3 saves have none and read with the meaning they always had (scene/project.ts); no SCENE bump.
+export const BRIEF_VERSION = 4;
+export interface Brief { v: number; items: { [K in ItemId]?: ItemOf<K> }; dialog?: Dialog; vision?: Vision; /** Guided Setup Rev 03 (lane GS2): what the items cannot say; absent in every older save, which reads with the same meaning (scene/project.ts) */ project?: ProjectExtras }
+
+// ---- the project's extra answers (Guided Setup Rev 03, lane GS2, 2026-11-02; research/design/guided-setup-rev03.md section 5) ----
+// Additive and optional, so BRIEF_VERSION and SCENE stay as they are: an old save has no `project` and projectOf (scene/project.ts) derives the same meaning from
+// the items it has (an existing tank is Required, owned gear Available, a limit's status is hard / flexible, vision.environment is the world).
+export type World = 'aquarium' | 'terrarium' | 'paludarium' | 'any';
+export const WORLDS: readonly World[] = ['aquarium', 'terrarium', 'paludarium', 'any'];
+/** Which decision comes first. NOT a mode: switching it keeps everything. */
+export type Route = 'animals' | 'look';
+export const ROUTES: readonly Route[] = ['animals', 'look'];
+/** Required = a fixed requirement when designing; Available = counts toward savings, alternatives may be recommended. Ownership alone never makes it Required. */
+export type Use = 'required' | 'available';
+export const USES: readonly Use[] = ['required', 'available'];
+export type EquipKey = 'tank' | OwnedKey;
+/** Outer inches, as measured. */
+export interface DimsIn { L: number; D: number; H: number }
+/** The shared onboarding steps `World -> Equipment -> Limits -> Starting Point`. A skipped step is answered: it is never asked again, and what it would have set stays UNKNOWN. */
+export type OnboardingStep = 'world' | 'equipment' | 'limits' | 'start';
+export const ONBOARDING_STEPS: readonly OnboardingStep[] = ['world', 'equipment', 'limits', 'start'];
+export type SkipStep = OnboardingStep;
+export const SKIP_STEPS: readonly SkipStep[] = ONBOARDING_STEPS;
+export interface ProjectExtras {
+  world?: World; water?: Water; route?: Route;
+  /** "Starting from scratch": an answer of its own, distinct from the step never being answered */
+  scratch?: true; skipped?: SkipStep[];
+  /** Required / Available per owned thing; a thing with no entry reads as the older saves meant it (the tank Required, everything else Available) */
+  use?: Partial<Record<EquipKey, Use>>;
+  /** an owned tank measured by hand rather than picked from the catalogue (`constraints.existingTank` carries the catalogue pick) */
+  tankDims?: DimsIn;
+}
+/** The project's extra answers (never undefined). */
+export const projectExtras = (b: Brief): ProjectExtras => b.project ?? {};
+/** Replace the extras; an empty one is removed. */
+export function setProjectExtras(b: Brief, p: ProjectExtras): Brief {
+  const { project: _p, ...rest } = b, clean = parseProject(p);
+  return clean ? { ...rest, project: clean } : rest;
+}
+/** Required or Available for one owned thing. Old saves: the existing tank was the only tank offered (Required); owned gear was credited but replaceable (Available). */
+export const equipUseOf = (b: Brief, key: EquipKey): Use => b.project?.use?.[key] ?? (key === 'tank' ? 'required' : 'available');
 
 export const emptyBrief = (): Brief => ({ v: BRIEF_VERSION, items: {} });
 export const groupOf = (id: ItemId): GroupId => id.split('.')[0] as GroupId;
@@ -210,7 +249,7 @@ export const isSpecified = (b: Brief, g: GroupId): boolean => idsOf(g).some(i =>
 export const openGroups = (b: Brief): GroupId[] => GROUPS.map(g => g.id).filter(g => !isSpecified(b, g));
 export const isEmpty = (b: Brief): boolean => ITEM_IDS.every(i => !(i in b.items));
 /** Anything worth saving: items or conversation state (isEmpty looks at items only). */
-export const hasState = (b: Brief): boolean => !isEmpty(b) || !!b.dialog || !!b.vision;
+export const hasState = (b: Brief): boolean => !isEmpty(b) || !!b.dialog || !!b.vision || !!b.project;
 /** The discovery picks (never undefined). */
 export const visionOf = (b: Brief): Vision => b.vision ?? { secondaryLikes: [] };
 /** Replace the discovery picks; an empty vision is removed. */
@@ -302,6 +341,8 @@ export function parseBrief(raw: unknown): Brief | undefined {
   }
   const vi = parseVision((raw as { vision?: unknown }).vision);
   if (vi) out.vision = vi;
+  const pj = parseProject((raw as { project?: unknown }).project);
+  if (pj) out.project = pj;
   return hasState(out) ? out : undefined;
 }
 
@@ -309,6 +350,26 @@ const ENV_IDS: readonly Env[] = ['aquarium', 'terrarium', 'paludarium'], WATER_I
 const DENSITY_IDS: readonly Density[] = ['open', 'balanced', 'full'];
 const idOk = (v: unknown): v is string => typeof v === 'string' && /^[a-z0-9-]{1,40}$/.test(v);
 const stop = (v: unknown) => num(v, -1, 6) ? v : undefined;
+const dimOk = (v: unknown): v is number => num(v, 1, 1000);
+/** Validate the saved project extras; undefined when empty (every save before Guided Setup Rev 03). */
+export function parseProject(raw: unknown): ProjectExtras | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const r = raw as Record<string, unknown>, p: ProjectExtras = {};
+  if (WORLDS.includes(r.world as World)) p.world = r.world as World;
+  if (WATER_IDS.includes(r.water as Water)) p.water = r.water as Water;
+  if (ROUTES.includes(r.route as Route)) p.route = r.route as Route;
+  if (r.scratch === true) p.scratch = true;
+  const sk = strs(r.skipped, SKIP_STEPS); if (sk?.length) p.skipped = sk;
+  if (r.use && typeof r.use === 'object') {
+    const u: ProjectExtras['use'] = {};
+    for (const k of ['tank', ...OWNED_KEYS] as EquipKey[]) { const v = (r.use as Record<string, unknown>)[k]; if (USES.includes(v as Use)) u[k] = v as Use; }
+    if (Object.keys(u).length) p.use = u;
+  }
+  const d = r.tankDims as Record<string, unknown> | undefined;
+  if (d && typeof d === 'object' && dimOk(d.L) && dimOk(d.D) && dimOk(d.H)) p.tankDims = { L: Math.round(d.L * 10) / 10, D: Math.round(d.D * 10) / 10, H: Math.round(d.H * 10) / 10 };
+  return Object.keys(p).length ? p : undefined;
+}
+
 /** Validate saved discovery picks (ids are checked for shape only: the flow drops an id the registry no longer knows). Undefined when empty. */
 export function parseVision(raw: unknown): Vision | undefined {
   if (!raw || typeof raw !== 'object') return undefined;
@@ -375,7 +436,7 @@ export function briefToWants(b: Brief): Wants {
   if (tax && !tax.off) w.taxPct = tax.value;
   if (stock && stock.status === 'locked' && stock.value.length) w.animals = stock.value.map(x => ({ species: x.species, n: x.count }));
   const model = own?.value.model ? getTankModel(own.value.model) : undefined;
-  if (model) w.ownTank = model;
+  if (model && equipUseOf(b, 'tank') === 'required') w.ownTank = model;   // Guided Setup Rev 03: an Available tank is credited but alternatives may be offered
   const ph = g('constraints.phased'), ht = g('preferences.hightech'), lt = g('preferences.lowtech');
   if (ph && !ph.off && ph.value) w.phased = true;
   if (ht && !ht.off && ht.value) w.hightech = true;
