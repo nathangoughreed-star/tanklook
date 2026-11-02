@@ -280,15 +280,11 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // The Welcome screen (lane C4) is the front door: first launch shows it; New / Open… still open the chooser above.
   // At first launch the tank on screen is already a fresh one, so Sandbox just closes the Welcome screen.
   bindBriefStore(store); // lane U3: the setup brief lives in the active tank (TankSetup.brief)
-  let welcomeFirst = false, lookPick: { open(): void } | undefined;
+  let welcomeFirst = false;
   let suggestPanel: { open(): void } | undefined;
-  const openLook = () => void import('./lookPick').then(m => { (lookPick ??= m.attachLookPick(store, viewer, status)).open(); }); // lane C7: Create a look (path 2)
-  const welcome = attachWelcome(store, { // lane GV1: the Guided stepper (ui/guided/); its owned-gear step borrows the tank picker and the status line
-    pickTank: done => pickTank(done), status,
+  const welcome = attachWelcome(store, { // lane VD5: Guided = Visual Discovery (ui/discovery/)
+    status,
     stocking: () => $('startAnimal').click(),
-    look: () => openLook(),
-    suggest: () => suggestPanel?.open(),
-    openReport: () => void import('./report').then(m => m.openReport()), // lane GV3: the printable report
     // lane VD6: a personalized discovery picture = the scene shown in the viewer for one draw, then the tank put back (no undo step, the brief kept)
     shot: T => {
       const orig = structuredClone(store.tank), put = (S: TankSetup) => store.update(s => { Object.assign(s.tanks[s.active], structuredClone(S), { brief: orig.brief }); }, { history: false });
@@ -305,16 +301,20 @@ export function attachPanels(store: Store, viewer: Viewer) {
     $('presetA').click();
   };
   // lane NG1: New and first launch offer Guided (the Welcome workspace) or Sandbox (an empty tank, checks as flags)
+  // lane VD5: Make It Your Own panels (brief bar): owned gear + stand, and limits (the old Guided steps 3-4); "owned" is also the start menu's link
+  const openOwned = () => void import('./ownedGear').then(m => { (ownedSheet ??= m.attachOwnedGear(store, { status, pickTank })).open(); });
+  let limitsPanel: { open(): void } | undefined;
+  const openLimits = () => void import('./limitsPanel').then(m => { (limitsPanel ??= m.attachLimitsPanel()).open(); });
   const startMode = attachStartMode(store, {
     guided: () => welcome.show(),
     sandbox: kind => { if (welcomeFirst) { welcomeFirst = false; store.edit(s => applyKind(s, kind)); return true; } return newEmptyTank(kind); },
-    owned: () => { void import('./ownedGear').then(m => { (ownedSheet ??= m.attachOwnedGear(store, { status, pickTank })).open(); }); },
+    owned: openOwned,
     browse: (menu, tab) => showChooser(menu, tab, welcomeFirst),
     profile: () => { try { return loadProfile(); } catch { return undefined; } },
   });
   void import('./suggest').then(m => { suggestPanel = m.attachSuggest(store, viewer, status); }); // lane C8: Suggest a setup
   void import('./infeasibleCard').then(m => m.attachCompare(store, status)); // lane GV7: compromise slots fill as they show; Use this / Compare (split view, money and care first on the tabs)
-  void import('./briefBar').then(m => { m.attachBriefBar(store, { suggest: () => suggestPanel?.open() }); }); // lane U3: the setup brief bar, shown in every entry point
+  void import('./briefBar').then(m => { m.attachBriefBar(store, { suggest: () => suggestPanel?.open(), owned: openOwned, limits: openLimits, report: () => void import('./report').then(m => m.openReport()) }); }); // lane U3: the setup brief bar, shown in every entry point
   $('suggestBtn').onclick = () => { if (startDlg.open) startDlg.close(); suggestPanel?.open(); };
   $('startWelcome').onclick = () => { startDlg.close(); startMode.show(); };
   const showStart = () => { welcomeFirst = true; startMode.show(); };

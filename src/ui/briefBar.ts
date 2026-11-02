@@ -17,7 +17,7 @@ const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;
 const MM_IN = 25.4;
 const SHORT: Record<string, string> = { animals: 'Animals', appearance: 'Look', equipment: 'Tank', constraints: 'Limits', preferences: 'Preferences' };
 
-export function attachBriefBar(store: Store, host: { suggest(): void }) {
+export function attachBriefBar(store: Store, host: { suggest(): void; /** the "What you already have" panel */ owned(): void; /** the "Your limits" panel */ limits(): void; /** the printable report */ report(): void }) {
   const view = document.getElementById('view')!;
   const bar = document.createElement('div');
   bar.className = 'bb'; bar.setAttribute('role', 'region'); bar.setAttribute('aria-label', 'Setup brief');
@@ -47,7 +47,7 @@ export function attachBriefBar(store: Store, host: { suggest(): void }) {
       if (ev?.gal !== undefined) { ctx.animalTankGal = ev.gal; next = nextQuestions(b, ctx); }
     }
     const nq = next.questions.length;
-    bar.innerHTML = `<button type="button" class="bbHead" data-act="toggle" aria-expanded="${openCard}"><b>Setup brief</b>${isEmpty(b) ? '<span class="bbNone">nothing set: optional</span>' : ''}${nq ? `<span class="bbBadge">${nq} to ask</span>` : ''}</button>${rows.map(chip).join('')}`;
+    bar.innerHTML = `<button type="button" class="bbHead" data-act="toggle" aria-expanded="${openCard}"><b>Setup brief</b>${isEmpty(b) ? '<span class="bbNone">nothing set: optional</span>' : ''}${nq ? `<span class="bbBadge">${nq} to ask</span>` : ''}</button>${rows.map(chip).join('')}<button type="button" class="bbChip bbPanel" data-act="owned" title="Tick the tank, light, heater, filter and stand you already own"><span>What you already have</span></button><button type="button" class="bbChip bbPanel" data-act="limits" title="Money, time, space, room and water: all optional"><span>Your limits</span></button><button type="button" class="bbChip bbPanel" data-act="report" title="The printable report for this setup"><span>Report</span></button>`;
     bar.classList.toggle('empty', isEmpty(b));
     if (!openCard) return;
     let cons = '';
@@ -71,6 +71,9 @@ ${items}${cons}
     if (t.dataset.skip) { const q = t.dataset.skip as QId; take(q, q === 'space' || q === 'careTime' ? 'none' : q === 'activity' ? 'either' : 'small'); return; }
     if (t.dataset.lock) { editBrief(b => toggleLock(b, t.dataset.lock as ItemId)); return; }
     if (t.dataset.del) { editBrief(b => removeItem(b, t.dataset.del as ItemId)); return; }
+    if (t.dataset.act === 'owned') { host.owned(); return; }
+    if (t.dataset.act === 'limits') { host.limits(); return; }
+    if (t.dataset.act === 'report') { host.report(); return; }
     if (t.dataset.g || t.dataset.act === 'toggle') { openCard = t.dataset.act === 'toggle' ? !openCard : true; draw(); return; }
     if (t.dataset.act === 'clear') { setBrief(emptyBrief()); return; }
     if (t.dataset.act === 'fill') { openCard = false; draw(); host.suggest(); }

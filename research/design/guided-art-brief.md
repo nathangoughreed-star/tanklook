@@ -1,3 +1,5 @@
+> **SUPERSEDED 2026-11-02 (lane VD5).** The GV1 kind / start-from picture cards are retired and `public/art/guided/` is gone. Art for Guided now lives at `public/art/discovery/` (Visual Discovery, research/design/visual-discovery-plan.md). Kept for history only.
+
 # Guided art brief (Nathan makes these separately; 2026-10-30)
 
 AI-generated art, NOT engine renders. Realistic and crisp, not cartoony (the painted-fish style was rejected twice).

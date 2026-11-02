@@ -108,6 +108,10 @@ export const experienceOf = (b: Brief) => valueOf(b, 'preferences.experience');
 /** One bound of a range limit ("at least" = min, "at most" = max); undefined clears that bound and keeps the other. Lower above upper is swapped (see scene/brief cleanRange). */
 export const setLimitBound = (b: Brief, id: NumLimitId, which: 'min' | 'max', v: number | undefined): Brief => setBound(b, id, which, v !== undefined && v >= 0 ? v : undefined);
 /** Room temperature typed in deg F (stored deg C); undefined / NaN clears. */
+/** Set-up time (hours), a range like the others: `which` is the bound (default the upper one); undefined / negative clears that bound and keeps the other. */
+export const setSetupHours = (b: Brief, h: number | undefined, which: 'min' | 'max' = 'max'): Brief => setBound(b, 'constraints.setupHours', which, h !== undefined && h >= 0 ? h : undefined);
+/** "Do you need a stand?": yes / no / not answered (the owned-gear panel's question). */
+export const setNeedStand = (b: Brief, v: boolean | undefined): Brief => v === undefined ? clearItem(b, 'equipment.needStand') : setItem(b, 'equipment.needStand', v, 'preference');
 export const setRoomTempF = (b: Brief, f: number | undefined): Brief => f === undefined || !Number.isFinite(f) ? clearItem(b, 'constraints.roomTempC') : setItem(b, 'constraints.roomTempC', Math.round((f - 32) * 5 / 9 * 10) / 10, 'preference');
 export function setTapWater(b: Brief, w: Partial<TapWater> | undefined): Brief {
   if (!w || !w.source) return clearItem(b, 'constraints.tapWater');

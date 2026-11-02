@@ -22,7 +22,7 @@ import { filterProduct, FILTER_PRODUCTS, heaterProduct, HEATER_PRODUCTS, lightPr
 import { stockingOf } from '../scene/stocking';
 import { heatLoss, techOf, withUnits } from '../scene/tech';
 import { volume } from '../scene/physics';
-import { finishTiers, TIER_LABEL } from '../scene/finish';
+import { finishTiers } from '../scene/finish';
 import { compliance, effectiveLimits, type Compliance, type Constraints } from '../scene/constraints';
 import { spaceFit } from '../scene/space';
 import { LAYOUTS } from '../scene/items';
@@ -598,91 +598,16 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
   return out;
 }
 
-// Narrowing (lane GV6, Nathan's Guided v2 spec 2026-10-30): "the user chooses which out of the group they like the most, then the next screen with multiple options
-// each with some sort of variation focused around the original choice are presented". Round 1 is the generator's own diverse set; every later round is up to four
-// variations of the pick, each changing ONE axis (stocking, look, tank size, finish tier) and keeping the rest, all through the same concept builder and the same
-// gates (welfare, every enabled limit): a variation that would break a max limit is simply not offered. Pure: the panel holds the rounds and draws them.
-export type Axis = 'stocking' | 'look' | 'size' | 'tier';
-export const AXES: readonly Axis[] = ['stocking', 'look', 'size', 'tier'];
-export interface Variation { axis: Axis; label: string; /** this option minus the anchor: set-up $ (all-in), $ a month, minutes a week */ delta: Money; deltaText: string }
-export type Option = Proposal & { variation?: Variation };
-export interface Round { anchor?: Option; options: Option[] }
-export interface Narrowing { rounds: Round[] }
-
-/** What a concept is along each axis; a variation differs from its anchor in exactly its own. */
-export function axesOf(p: Proposal): Record<Axis, string> {
-  return { stocking: p.build.animals.filter(a => a.n > 0).map(a => a.species + a.n).sort().join(','), look: p.build.finish?.style ?? '', size: p.build.tank.id, tier: p.build.finish?.tier ?? '' };
-}
-export const changedAxes = (a: Proposal, b: Proposal): Axis[] => { const A = axesOf(a), B = axesOf(b); return AXES.filter(k => A[k] !== B[k]); };
+// Lane VD5 (2026-11-02): the GV6 variation rounds (narrowing, "More like this") are retired with the old Guided steps; round 1 and "I like this one" stay.
+export type Option = Proposal;
 
 const signed = (n: number, unit: (x: number) => string) => Math.round(n) === 0 ? '' : `${n < 0 ? '-' : '+'}${unit(Math.abs(n))}`;
-/** "+$85 set-up, +$3 a month" (zero differences left out; "same cost and care time" when nothing moves) */
+/** "+$85 set-up, +$3 a month" (zero differences left out; "same cost and care time" when nothing moves); compromise.ts words its edits with it */
 export function deltaText(d: Money): string {
   const min = (x: number) => `${Math.round(x)} min`;
   const parts = [signed(d.startupUsd, usd) && `${signed(d.startupUsd, usd)} set-up`, signed(d.monthlyUsd, usd) && `${signed(d.monthlyUsd, usd)} a month`, signed(d.minPerWeek, min) && `${signed(d.minPerWeek, min)} a week`].filter(Boolean);
   return parts.length ? parts.join(', ') : 'same cost and care time';
 }
-
-type Try = [Archetype, AnimalCount[], TankModel, 0 | 1 | 2 | 3, StyleId | undefined];
-/**
- * Up to four variations of `anchor`, one per axis, each labelled with what changed and its $ / care difference. Locked animals are never varied (no stocking axis then),
- * an existing tank is never resized (no size axis). Every one passes the same gates the anchor passed; an axis with no passing variation is left out.
- */
-export function variationsOf(anchor: Proposal, w: Wants, P0: UserProfile, units: Units = 'cm', now = Date.now()): Option[] {
-  const cap = w.constraints.startupUsd?.on ? w.constraints.startupUsd.value : undefined;
-  if (w.phased && cap !== undefined) { // phased (as suggestSetups): the ceiling covers the essentials only
-    const off = { ...w, phased: false, constraints: { ...w.constraints, startupUsd: { ...w.constraints.startupUsd!, on: false } } };
-    return variationsOf(anchor, off, P0, units, now).map(p => ({ ...p, phases: phasesOf(p) })).filter(p => p.phases.phase1Usd <= cap).map(p => ({ ...p, scene: { ...p.scene, constraints: w.constraints } }));
-  }
-  const { attempt, finalize } = conceptMaker(w, P0, units, now);
-  const isLocked = !!w.animals?.some(a => a.n > 0), b0 = anchor.build, a0 = anchor.archetype, pref = b0.id, lvl = (b0.finish?.level ?? 0) as 0 | 1 | 2 | 3;
-  const style = b0.finish?.style, noStand = !anchor.scene.stand.show, gal = (t: TankModel) => Math.round(t.ratedGal);
-  const holds = (animals: AnimalCount[], t: TankModel) => { const f = fitIn(animals, t); return !!f && !f.fails.length; };
-  const one = (axis: Axis, label: (p: Proposal) => string, tries: Try[]): Option | undefined => {
-    for (const [a, animals, tank, maxLevel, st] of tries) {
-      const r = attempt(a, animals, tank, pref, maxLevel, st, noStand, axis === 'look' && b0.setup.water.on);
-      if (!r.p) continue;
-      const p = finalize(r.p, anchor.strategy, isLocked, false), ch = changedAxes(anchor, p);
-      if (ch.length !== 1 || ch[0] !== axis) continue;
-      const delta: Money = { startupUsd: p.totals.startupUsd - anchor.totals.startupUsd, monthlyUsd: p.totals.monthlyUsd - anchor.totals.monthlyUsd, minPerWeek: p.totals.minPerWeek - anchor.totals.minPerWeek };
-      return { ...p, variation: { axis, label: label(p), delta, deltaText: deltaText(delta) } };
-    }
-    return undefined;
-  };
-  const out: (Option | undefined)[] = [], animals0 = b0.animals.filter(a => a.n > 0);
-  if (!isLocked) { // stocking: a bigger group of the same animals when the tank holds it, else another set of animals of the same kind in this tank
-    const more = [...STOCK_UP].reverse().map(f => animals0.map(x => ({ ...x, n: x.n >= 3 ? Math.round(x.n * f) : x.n }))).filter(m => m.some((x, i) => x.n !== animals0[i].n) && holds(m, b0.tank));
-    const kinds = w.kinds?.length ? w.kinds : KINDS.map(k => k.id), groups = w.groups?.length ? w.groups : DRY_GROUPS.map(g => g.id);
-    const others = ARCHETYPES.filter(a => a.id !== a0.id && a.kind === a0.kind && kinds.includes(a.kind) && (!a.group || groups.includes(a.group)) && a.animals.every(x => getSpecies(x.species)) && holds(a.animals, b0.tank)).slice(0, 3);
-    out.push(one('stocking', p => p.archetype.id === a0.id ? `More of them: ${p.build.animals.map(x => `${x.n} ${getSpecies(x.species)?.name ?? x.species}`).join(', ')}` : `Different animals: ${p.archetype.title}`,
-      [...more.map((m): Try => [a0, m, b0.tank, lvl, style]), ...others.map((a): Try => [a, a.animals, b0.tank, lvl, style])]));
-  }
-  if (style) { // look: another style these animals suit, same tank and tier
-    const ranked = rankStyles(animals0), top = ranked[0]?.score ?? 0;
-    out.push(one('look', p => `Different look: ${LAYOUTS[p.build.finish!.style].label}`, ranked.filter(r => r.style !== style && r.score >= top - 0.6).slice(0, 3).map((r): Try => [a0, animals0, b0.tank, lvl, r.style as StyleId])));
-  }
-  if (!w.ownTank) { // size: the next size up the animals gain from (within the limits), else the next size down
-    const fits = fitsFor(animals0, w.constraints.space?.on === false ? undefined : w.space, w.maxLengthMm, w.tankGal), smallest = fits[0]?.tank.ratedGal ?? 0, G0 = b0.tank.ratedGal;
-    const up = fits.filter(t => t.tank.ratedGal > G0 && t.tank.ratedGal <= smallest * MAX_GROW).slice(0, 2), down = fits.filter(t => t.tank.ratedGal < G0).reverse().slice(0, 2);
-    out.push(one('size', p => `${p.build.tank.ratedGal > G0 ? 'Bigger' : 'Smaller'} tank: ${gal(p.build.tank)} gal (was ${gal(b0.tank)} gal)`, [...up, ...down].map((t): Try => [a0, animals0, t.tank, lvl, style])));
-  }
-  // finish tier: one step richer when the limits carry it, else one step plainer
-  const tiers = [lvl + 1, lvl - 1].filter(l => l >= 0 && l <= 3) as (0 | 1 | 2 | 3)[];
-  out.push(one('tier', p => `${(p.build.finish?.level ?? 0) > lvl ? 'Richer' : 'Plainer'} finish: ${p.build.finish ? TIER_LABEL[p.build.finish.tier] : 'none'}`, tiers.map((l): Try => [a0, animals0, b0.tank, l, style])));
-  return out.filter((p): p is Option => !!p);
-}
-
-/** Round 1: the generator's own options. */
-export const narrowStart = (options: Proposal[]): Narrowing => ({ rounds: [{ options }] });
-/** Pick option `i` of the current round: it anchors the next round of its variations. The earlier rounds are kept as they were (Back returns to them unchanged). */
-export function narrowPick(n: Narrowing, i: number, vary: (anchor: Option) => Option[]): Narrowing {
-  const a = n.rounds[n.rounds.length - 1]?.options[i];
-  return a ? { rounds: [...n.rounds, { anchor: a, options: vary(a) }] } : n;
-}
-/** Back: the previous round, exactly as it was shown. Round 1 has no Back. */
-export const narrowBack = (n: Narrowing): Narrowing => n.rounds.length > 1 ? { rounds: n.rounds.slice(0, -1) } : n;
-/** The picks so far, oldest first (the breadcrumb). */
-export const picksOf = (n: Narrowing): Option[] => n.rounds.slice(1).map(r => r.anchor!);
 /** What a pick teaches taste (demand/taste.ts): a pass for each other look shown beside it (one per look), then the picked look. */
 export function narrowTaste(options: Proposal[], i: number): { style: string; kind: 'pick' | 'reject' }[] {
   const pick = options[i]?.build.finish?.style; if (!pick) return [];

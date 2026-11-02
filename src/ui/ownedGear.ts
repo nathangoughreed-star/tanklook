@@ -9,8 +9,7 @@ import { volume } from '../scene/physics';
 import type { Store } from '../scene/store';
 import type { TankSetup } from '../scene/types';
 import { clearItem, setItem, valueOf, type Brief } from '../scene/brief';
-import { editBrief, getBrief, ownedKeys, setOwnedKey } from './setupBrief';
-import { setNeedStand } from './guided/steps';
+import { editBrief, getBrief, ownedKeys, setNeedStand, setOwnedKey } from './setupBrief';
 
 export type OwnedItem = 'tank' | 'light' | 'heater' | 'filter';
 export const OWNED_ITEMS: { id: OwnedItem; label: string; hint: string }[] = [
@@ -76,7 +75,7 @@ export function applyOwned(S: TankSetup, s: OwnedState) {
 export const recordOwnedTank = (b: Brief, S: Pick<TankSetup, 'product'> | undefined): Brief =>
   S ? setItem(clearItem(b, 'equipment.tank'), 'constraints.existingTank', S.product ? { model: S.product.model } : {}, 'locked') : clearItem(b, 'constraints.existingTank');
 export interface OwnedHost { pickTank: (done: (name: string) => void) => void; status: (m: string, bad?: boolean) => void }
-/** Draw the owned-gear sheet into `root` (a dialog body, or the Guided "What you have" step). `done` adds a Done button (the dialog); a step has its own Next instead. */
+/** Draw the owned-gear sheet into `root` (a dialog body: the "What you already have" panel). `done` adds a Done button (the dialog). */
 export function mountOwnedSheet(store: Store, o: OwnedHost, root: HTMLElement, opts: { title?: boolean; done?: () => void; state?: OwnedState } = {}) {
   const st = opts.state ?? emptyOwned();
   const apply = () => store.edit(S => applyOwned(S, st), { coalesce: 'owned' });

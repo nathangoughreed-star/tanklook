@@ -3,11 +3,10 @@ import { describe, expect, it } from 'vitest';
 import { defaultProfile } from '../src/demand/types';
 import { suggestSetups, suggestFromBrief } from '../src/demand/suggest';
 import { emptyBrief, parseBrief, serializeBrief, setItem, setRange, rangeOf, targetOf, against, rangeText, briefToWants, BRIEF_VERSION, NUM_LIMIT_IDS, type Brief, type NumLimitId } from '../src/scene/brief';
-import { labelOf, setBudget, setBudgetMin } from '../src/ui/setupBrief';
+import { labelOf, setBudget, setBudgetMin, setSetupHours } from '../src/ui/setupBrief';
 import { costFlags } from '../src/ui/startMode';
 import { rosterWarnings, startPick } from '../src/ui/stockPlanLogic';
 import { inputChanges, inputsOf } from '../src/demand/propagate';
-import { setSetupHours } from '../src/ui/guided/steps';
 
 const P = defaultProfile(), NOW = Date.parse('2026-10-27');
 const fw = (b: Brief) => setItem(b, 'animals.kinds', ['freshwater'], 'preference');

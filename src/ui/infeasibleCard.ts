@@ -3,7 +3,7 @@
 // The button index is the alternative's index in `inf.alternatives` (suggest.ts reads data-alt).
 // Lane GV7: the "keep the look" path also carries a compound compromise (compromise.ts: drop / shrink a group, a smaller tank, a plainer tier, low-tech plants, all verified) and the
 // other style with the roster kept; "Compare" opens the two side by side in the split view, with the broken limit and the money / care differences first on the tabs (diff.ts).
-// The search takes a second or two, so the card holds a slot that is filled once it is on screen (`attachCompare`, hooked from panels.ts; the same slot sits in the look step).
+// The search takes a second or two, so the card holds a slot that is filled once it is on screen (`attachCompare`, hooked from panels.ts;).
 import type { Alternative, ConflictPath, Infeasible, LookCtx } from '../demand/infeasible';
 import type { Anchor, CompromiseResult, LimitKey } from '../demand/compromise';
 import type { Proposal } from '../demand/suggest';
@@ -65,15 +65,7 @@ export function compromiseHtml(id: string, r: CompromiseResult, label: string): 
 ${items || other ? `<ul class="sgAlts">${items}${other}</ul>` : ''}${r.none && !items ? `<div class="spNote sgNoPath">${esc(r.none)}</div>` : ''}${cmp}</div>`;
 }
 
-/** The look step's slot (one template line in lookPick.ts): `data-cmp-look` = {style, tank id, animals}; it shows only when that look breaks a limit of the brief. */
-async function lookSlot(el: HTMLElement, units: Units): Promise<string | undefined> {
-  const { getTankModel } = await import('../data/tanks');
-  try { const v = JSON.parse(el.dataset.cmpLook!) as { style: Anchor['style']; tank: string; animals: Anchor['animals'] }, tank = getTankModel(v.tank); if (!tank) return undefined;
-    const id = `cmp${++seq}`; remember(SLOTS, id, { anchor: { style: v.style, tank, animals: v.animals, level: 3 }, units, quiet: true }); return id; } catch { return undefined; }
-}
-
-async function fill(slot: HTMLElement, units: Units) {
-  if (slot.dataset.cmpLook && !slot.dataset.cmpSlot) { const id = await lookSlot(slot, units); if (!id) { slot.remove(); return; } slot.dataset.cmpSlot = id; }
+async function fill(slot: HTMLElement) {
   const id = slot.dataset.cmpSlot!, s = SLOTS.get(id);
   if (!s) { slot.remove(); return; }
   const [{ compromiseFor, styleLabel }, { briefToWants }, { loadProfile }] = await Promise.all([import('../demand/compromise'), import('../scene/brief'), import('./demandPanel')]);
@@ -118,8 +110,8 @@ export function attachCompare(store: Store, status: (m: string, bad?: boolean) =
   let timer: ReturnType<typeof setTimeout> | undefined;
   const scan = () => {
     timer = undefined;
-    const s = document.querySelector<HTMLElement>('[data-cmp-slot]:not([data-busy]), [data-cmp-look]:not([data-busy])'); if (!s) return;
-    s.dataset.busy = '1'; void fill(s, store.scene.units).finally(() => { if (!timer) timer = setTimeout(scan, 30); });
+    const s = document.querySelector<HTMLElement>('[data-cmp-slot]:not([data-busy])'); if (!s) return;
+    s.dataset.busy = '1'; void fill(s).finally(() => { if (!timer) timer = setTimeout(scan, 30); });
   };
   new MutationObserver(() => { if (!timer) timer = setTimeout(scan, 60); }).observe(document.body, { childList: true, subtree: true });
   const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
