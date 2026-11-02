@@ -44,7 +44,7 @@ Partial (kept or newly given a dep):
 No `wish` events exist yet (taste.ts), so interest is research-based only. "Decor first" does NOT win on coverage: it unlocks 3 for the highest effort.
 | Rank | Pack (deps) | Unlocks | Also upgrades | Effort |
 |---|---|---|---|---|
-| 1 | Bare & clean (plain background, bare bottom, white / black sand, single feature rock) | white-sand-stone, discus-showcase, axolotl-den (3) | big-fish-showcase, reef-rock-art, reef-skyline, stone-wood-sculpture | low: existing options, new presets |
+| 1 (DONE, lane BC1 2026-11-02: see "Pack 1 landed") | Bare & clean (plain background, bare bottom, white / black sand, single feature rock) | white-sand-stone, discus-showcase, axolotl-den (3) | big-fish-showcase, reef-rock-art, reef-skyline, stone-wood-sculpture | low: existing options, new presets |
 | 2 | Marine fish-first (live rock without coral, coral skeleton decor) | marine-fish-rock, predator-display, octopus-den, classic-skeleton-decor (4) | | low-medium: reuse reef rock, drop coral |
 | 3 | Forest floor (leaf litter, moss carpet, cork bark, mushrooms / woodland decor) | mossy-woodland, fairy-forest, closed-jar-garden, bioactive-planted (4) | mossy-wood-ferns, dart-frog-rainforest, betta-retreat | medium |
 | 4 | Brackish scenery (mangrove prop roots, mud, shoreline slope, oyster shell, water tint) | mangrove-estuary, estuary-root-tangle, brackish-tidepool, mangrove-paludarium, crab-shore (5) | 5 brackish partials, cypress-swamp | high, large fidelity gain |
@@ -55,3 +55,14 @@ No `wish` events exist yet (taste.ts), so interest is research-based only. "Deco
 
 ## Rock size (Nathan's screenshot, Full on a 20 gal long)
 Checked on main at build 1569 after VD6's size-mix commit: the largest Full rock in driftwood-nature is about 4 in wide in the 20 gal long (it was 2-3x that). Already fixed, no tank-size cap added; Full still has one boulder that is the biggest piece, so a hard per-tank cap remains an option if Nathan wants it.
+
+## Pack 1 landed (lane BC1, 2026-11-02): Bare & clean
+Existing options only, as presets in `scene/recipes.ts` `TWEAKS` (`ground`, `flat`, `rocks`, `wood`, `caves`, `plantsOnly`) plus a solid backdrop colour per archetype in `ARCH_BG` (complementary rule kept). Each level lists its own rock sizes (shares of the biggest stone), so Open / Balanced / Full still progress (cover steps, size spread tests pass).
+- white-sand-stone: coming-soon -> supported (stones look cut to one feature rock plus pebbles, flat white sand, solid slate back, no plants).
+- discus-showcase: coming-soon -> supported (jungle look cut to a root or two and the big swords, flat fine sand, 4 discus; 75 gal).
+- axolotl-den: coming-soon -> supported (flat fine sand, 1 / 2 / 3 stone arches as caves, a low stone or two, 1 axolotl; 20 gal).
+- stone-wood-sculpture: partial -> supported (nature look: wood plus stone, no plants, flat sand; 1 / 1 + 2 stones / 2 + 4 stones). Was a wall of stones.
+- reef-rock-art: partial -> supported (3 / 5 / 7 stones on flat white aragonite, corals only on those stones).
+- reef-skyline: stays partial. Bare glass bottom now and 2 / 3 / 6 rocks, but the rocks are low boulders, not towers (needs reef rock layouts, pack 3).
+- big-fish-showcase: stays partial. Solid dark backdrop, tan sand, 0 / 1 / 2 rocks, but no animal is drawn: the engine only fits one oscar from 180 gal (75 gal rating in the card is too low for the fit check). Either raise `minGallons` to 180 or lower the oscar fit; Nathan's call.
+Counts now (of 85): supported 14, partial 29, coming-soon 42 (was 9 / 31 / 45).

@@ -7,14 +7,14 @@
 // numbers: the scene is the look's starter set through scapes.ts `scapeSetup`, as Create a look draws it. Archetypes
 // without a mapped look stay coming-soon (no recipe).
 import { emptyBuild, buildsFor, type Build } from './builds';
-import { itemDims, layerOf, STYLES } from './items';
+import { itemDims, layerOf, makeItem, STYLES } from './items';
 import { getSpecies } from '../data/species';
 import { groupMinimum } from './groupMin';
 import { scapeSetup, type PlantMode } from './scapes';
 import { catalogueSizes, fitIn, type AnimalCount } from './tankfit';
 import { archetype as archetypeById, type Archetype, type Density } from './archetypes';
 import type { TankModel } from '../data/tanks';
-import type { Background, CompId, Item, LayerDens, LayoutId, TankSetup } from './types';
+import type { Background, CompId, Item, LayerDens, LayoutId, SubstrateBlend, SubstrateType, TankSetup } from './types';
 
 export const DENSITIES: readonly Density[] = ['open', 'balanced', 'full'];
 type Stops = Pick<LayerDens, 'hard' | 'plant'>;
@@ -51,20 +51,35 @@ const BY_LOOK: Partial<Record<Exclude<LayoutId, 'none'>, Trio>> = {
 const LAND: Trio = t([2, 0.5], [2, 2], [3, 3.5]);
 const WATER: Trio = t([0.5, 0.5], [2, 2], [3.5, 3.5]);
 
+/** Fine tan sand (a custom substrate) for the clean tanks that are not white. */
+const SAND: SubstrateBlend = { grain: 'sand', color: '#cdb994', grain2: 'none', color2: '#000000', share: 0, mix: 0 };
+
 /** Per-archetype choices on top of the look: the composition that tells siblings sharing one look apart (fixed across
  *  the trio), and archetypes whose recipe is not the look's own plants. */
-interface Tweak { comp?: CompId; seed?: number; noPlants?: boolean; dens?: Trio }
+interface Tweak {
+  comp?: CompId; seed?: number; noPlants?: boolean; dens?: Trio;
+  /** Bare and clean presets (lane BC1, 2026-11-02), existing options only: the floor ('bare' = no substrate, bare glass; a type or a custom blend
+   *  = plain sand), flat (no hills), the stones kept per level (their sizes as shares of the biggest: one feature rock and pebbles), hides added
+   *  per level (stone arches), plants cut to these variants (the few big swords of a showcase). */
+  ground?: 'bare' | { type: SubstrateType; custom?: SubstrateBlend }; flat?: boolean; rocks?: Record<Density, number[]>; wood?: Record<Density, number>; caves?: Record<Density, number>; plantsOnly?: string[];
+}
 const TWEAKS: Record<string, Tweak> = {
   // reef siblings (one 'reef' look): the shape of the rock is the archetype
-  'reef-arches': { comp: 'v' }, 'reef-islands': { comp: 'u' }, 'reef-rock-art': { comp: 'mound' }, 'reef-skyline': { comp: 'scattered' },
-  'mixed-reef': { comp: 'scattered', seed: 2 }, 'blue-glow-reef': { comp: 'mound', seed: 3 },
+  'reef-arches': { comp: 'v' }, 'reef-islands': { comp: 'u' },   'mixed-reef': { comp: 'scattered', seed: 2 }, 'blue-glow-reef': { comp: 'mound', seed: 3 },
   // driftwood siblings
   'betta-retreat': { comp: 'side' }, 'puffer-den': { comp: 'mound' }, 'brackish-planted': { comp: 'u' },
   // shore: open mud / beach kept to one side
   'mudskipper-mudflat': { comp: 'side' }, 'fiddler-crab-beach': { comp: 'side', seed: 2 }, 'riverbank-shore': { comp: 'side' },
   'basking-scrubland': { comp: 'mound' }, 'cascade-wall': { comp: 'u' },
   // Big Fish Showcase: bare floor / one rock / sand, rocks and a root, no plants (big fish uproot them)
-  'big-fish-showcase': { noPlants: true, dens: t([-1, -1], [-1, -1], [0, -1]) },
+  'big-fish-showcase': { noPlants: true, dens: t([-1, -1], [-1, -1], [0, -1]), ground: { type: 'custom', custom: SAND }, flat: true, rocks: { open: [], balanced: [1], full: [1, 0.6] } },
+  // bare and clean (lane BC1): plain floor, flat, one feature rock; the density only adds a few small companions
+  'white-sand-stone': { noPlants: true, dens: t([0, 0], [2, 0], [2.6, 0]), ground: { type: 'white' }, flat: true, rocks: { open: [1], balanced: [1, 0.2, 0.15], full: [1, 0.4, 0.17, 0.14, 0.12, 0.1] } },
+  'discus-showcase': { dens: t([0, 0], [1.2, 0.5], [2, 1.2]), ground: { type: 'custom', custom: SAND }, flat: true, plantsOnly: ['sword', 'ozelot'], rocks: { open: [], balanced: [], full: [] }, wood: { open: 1, balanced: 2, full: 2 } },
+  'axolotl-den': { dens: t([0, 0], [1, 0.5], [1.6, 1.5]), ground: { type: 'custom', custom: SAND }, flat: true, rocks: { open: [], balanced: [0.5], full: [0.5, 0.3] }, caves: { open: 1, balanced: 2, full: 3 } },
+  'stone-wood-sculpture': { noPlants: true, dens: t([0, 0], [1.2, 0], [2.6, 0]), ground: { type: 'custom', custom: SAND }, flat: true, wood: { open: 1, balanced: 1, full: 2 }, rocks: { open: [], balanced: [1, 0.5], full: [1, 0.6, 0.4, 0.3] } },
+  'reef-rock-art': { comp: 'mound', flat: true, rocks: { open: [1, 0.65, 0.45], balanced: [1, 0.65, 0.5, 0.35, 0.3], full: [1, 0.7, 0.55, 0.45, 0.35, 0.3, 0.25] } },
+  'reef-skyline': { comp: 'scattered', ground: 'bare', rocks: { open: [1, 0.9], balanced: [1, 0.9, 0.8], full: [1, 0.9, 0.8, 0.6, 0.45, 0.35] } },
 };
 
 /** The back-glass background each family is drawn on (existing engine options; the person changes it in the editor's Background control). A
@@ -105,6 +120,10 @@ const ARCH_BG: Record<string, { bg: Background; color?: string }> = {
   'blackwater-creek': { bg: 'blue' },      // amber water, brown leaves and wood against deep blue (black would swallow them)
   'african-cichlid-rockscape': { bg: 'black' }, // blue and yellow cichlids against black
   'betta-retreat': { bg: 'black' },        // a blue or red betta must not vanish into blue
+  // bare and clean (BC1): one plain solid colour behind, never a scene, chosen against the sand and the stone
+  'white-sand-stone': { bg: 'custom', color: '#26303a' }, // white sand and a pale or dark stone against a solid slate
+  'stone-wood-sculpture': { bg: 'custom', color: '#1d2a36' }, // tan wood and grey stone against a solid deep slate
+  'big-fish-showcase': { bg: 'custom', color: '#1d2b3a' },   // an orange or dark oscar against a solid dark blue-slate
 };
 /** The background an archetype's recipe draws on (a family default; never none, so a render always has one). */
 export const recipeBg = (a: Archetype): { bg: Background; color?: string } => ARCH_BG[a.id] ?? FAMILY_BG[a.familyId] ?? { bg: 'black' };
@@ -138,7 +157,7 @@ const FOCAL: Record<string, string> = {
   'goldfish-palace': 'goldfish', 'big-fish-showcase': 'oscar', 'betta-retreat': 'betta', 'clownfish-anemone': 'ocellaris',
   'african-cichlid-rockscape': 'labeo', 'blackwater-creek': 'cardinal', 'snake-hideaway': 'ballpython', 'rocky-desert-canyon': 'leopardgecko',
   'basking-scrubland': 'leopardgecko', 'tarantula-burrow': 'chacogoldenknee', 'jumping-spider-loft': 'regaljumper',
-  'dart-frog-rainforest': 'dartfrog', 'rainforest-canopy': 'crestedgecko',
+  'dart-frog-rainforest': 'dartfrog', 'rainforest-canopy': 'crestedgecko', 'discus-showcase': 'discus', 'axolotl-den': 'axolotl',
 };
 /** The focal animals that stay fixed across the trio: the archetype's own animal, else the first species of the look's
  *  pool (its headliner), at its recommended minimum group and only if it fits the tank. None when nothing fits, and none
@@ -160,15 +179,57 @@ export const shelterCount = (S: TankSetup) => S.items.filter(it => it.kind === '
  *  composition seed the trio is drawn with. */
 export interface RecipeBase { archetype: Archetype; tank: TankModel; animals: AnimalCount[]; build: Build; seed: number; scenes: Record<Density, TankSetup>; /** the in-between stops 1 and 3, drawn on first use (`stopScene`) */ mids: (TankSetup | undefined)[] }
 
+/** The bare and clean presets (`Tweak.ground`, `flat`, `rocks`, `caves`, `plantsOnly`) applied to a drawn level. */
+function clean(a: Archetype, d: Density, S: TankSetup): void {
+  const tw = TWEAKS[a.id]; if (!tw) return;
+  const sub = S.substrate;
+  if (tw.ground === 'bare') { sub.show = false; S.terrain = { ...S.terrain, on: false }; } // terrain is drawn in the substrate, so bare glass needs it off too
+  else if (tw.ground) { sub.type = tw.ground.type; if (tw.ground.custom) sub.custom = { ...tw.ground.custom }; delete sub.litter; }
+  if (tw.flat) { sub.fl = sub.fr = sub.bl = sub.br = Math.round(Math.min(40, S.tank.H * 0.06)); S.terrain = { ...S.terrain, on: false }; }
+  if (tw.plantsOnly) S.items = S.items.filter(it => it.kind !== 'plant' || tw.plantsOnly!.includes(it.variant));
+  if (tw.rocks || tw.wood) {
+    const freeOf = (k: string) => S.items.filter(it => it.kind === k && it.lift <= 1).sort((x, y) => reach(y) - reach(x));
+    const stones = freeOf('stone'), woods = freeOf('wood'), keep = new Set<Item>(), factor = new Map<Item, number>();
+    const rel = tw.rocks?.[d] ?? stones.map(() => 1), top = stones.length ? reach(stones[0]) : 0;
+    stones.slice(0, rel.length).forEach((it, i) => { keep.add(it); const f = top * rel[i] / reach(it); factor.set(it, f); it.size *= f; });
+    woods.slice(0, tw.wood?.[d] ?? woods.length).forEach(it => keep.add(it));
+    const bases = [...stones, ...woods];
+    S.items = S.items.filter(it => {
+      if (it.kind === 'stone' && it.lift > 1) return false;       // no stacked stones in a clean tank
+      if (bases.includes(it)) return keep.has(it);
+      if (it.lift <= 1 || !bases.length) return true;
+      // something resting on a piece (coral, a plant): it stays with its piece or goes with it
+      const base = bases.reduce((b, c) => Math.hypot(c.x - it.x, c.depth - it.depth) < Math.hypot(b.x - it.x, b.depth - it.depth) ? c : b), f = factor.get(base) ?? 1;
+      if (!keep.has(base)) return false;
+      if (isHard(it)) { it.size *= f; it.lift *= f; }
+      else if (base.kind === 'stone') it.lift = Math.min(it.lift, itemDims(base)[1] * 0.85); // coral from a stack that was dropped sits on the stone's top, not above it
+      return true;
+    });
+  }
+  if (tw.caves) {
+    const n = tw.caves[d], T = S.tank, size = Math.min(170, T.H * 0.4);
+    for (let i = 0; i < n; i++) {
+      const u = n === 1 ? 0.5 : 0.2 + 0.6 * i / (n - 1), id = 1 + Math.max(0, ...S.items.map(x => x.id));
+      S.items.push(makeItem(T, 'arch', id, 7 + i, T.L * u, T.D * (0.3 + 0.1 * (i % 2)), { size, yaw: i % 2 ? 160 : 20 }));
+    }
+  }
+}
+/** What every level and step gets after its starter set is drawn: the archetype's own cuts, then its background. */
+function finish(a: Archetype, d: Density, S: TankSetup): TankSetup {
+  const tw = TWEAKS[a.id] ?? {};
+  if (tw.noPlants) S.items = S.items.filter(it => it.kind !== 'plant' && it.kind !== 'artificial');
+  if (a.recipe.looks[0] === 'none' && d === 'open') S.items = [];
+  clean(a, d, S);
+  return withBg(a, S);
+}
+
 function draw(a: Archetype, b: Build, seed: number, d: Density): TankSetup {
   const tw = TWEAKS[a.id] ?? {}, setup = structuredClone(b.setup);
   setup.layout = { ...setup.layout, seed, comp: tw.comp ?? 'any' };
   delete setup.layout.plantSeed; delete setup.layout.animalSeed;
   const mode: PlantMode = a.recipe.plantMode ?? 'live';
   const S = scapeSetup(b, recipeLook(a)!, mode, setup, { dens: recipeDens(a, d) });
-  if (tw.noPlants) S.items = S.items.filter(it => it.kind !== 'plant' && it.kind !== 'artificial');
-  if (a.recipe.looks[0] === 'none' && d === 'open') S.items = [];
-  return withBg(a, S);
+  return finish(a, d, S);
 }
 /** The trio reads as a progression: each level visibly fuller than the one before (by `margin`, a share of the level
  *  below), and a terrarium's open level keeps every hide and climb the balanced one has. */
@@ -185,6 +246,18 @@ export const isHard = (it: Item) => layerOf(it) === 'hard';
 export const PIECE_GROWTH = 1.25;
 /** With no hardscape below, the biggest piece a level may add, as a share of the tank height (a first accent, not a wall). */
 const FIRST_PIECE = 0.3;
+/** A preset's listed rock sizes (`Tweak.rocks`) against the biggest stone as it now stands (the caps may have brought it down); what rests on a shrunk stone is lowered with it. */
+function relSizes(a: Archetype, d: Density, S: TankSetup): void {
+  const rel = TWEAKS[a.id]?.rocks?.[d]; if (!rel) return;
+  const free = S.items.filter(it => it.kind === 'stone' && it.lift <= 1).sort((x, y) => reach(y) - reach(x)); if (!free.length) return;
+  const top = reach(free[0]), factor = new Map<Item, number>();
+  free.forEach((it, i) => { const f = Math.min(1, top * (rel[i] ?? 1) / reach(it)); factor.set(it, f); it.size *= f; });
+  for (const it of S.items) {
+    if (it.lift <= 1) continue;
+    const base = free.reduce((b, c) => Math.hypot(c.x - it.x, c.depth - it.depth) < Math.hypot(b.x - it.x, b.depth - it.depth) ? c : b), f = factor.get(base) ?? 1;
+    it.lift *= f; if (isHard(it)) it.size *= f;
+  }
+}
 /** Which way an archetype's rock mix leans (Nathan 2026-11-02): few big stones, mostly mid-small, or both. */
 type Lean = 'large' | 'small' | 'both';
 const LEAN: Record<string, Lean> = { 'iwagumi-stone-garden': 'large', 'rocky-river-stream': 'small', 'boulder-creek': 'small', 'brackish-rocky-coast': 'small', 'african-cichlid-rockscape': 'large', 'stone-wood-sculpture': 'large' };
@@ -203,7 +276,7 @@ export const MIX_MIN = 4;
  */
 function mixSizes(a: Archetype, d: Density | 'mid', S: TankSetup, cap: number, o: { B?: number; tiers?: [number, number, number] } = {}) {
   const free = S.items.filter(it => it.kind === 'stone' && it.lift <= 1).sort((x, y) => reach(y) - reach(x));
-  if (free.length < MIX_MIN) return;
+  if (free.length < MIX_MIN || TWEAKS[a.id]?.rocks) return; // a preset that lists its own rock sizes keeps them
   const lean = leanOf(a), n = free.length, B = o.B ?? (d === 'open' ? reach(free[0]) : Math.min(cap, reach(free[0]) * PIECE_GROWTH)); // a fuller level may bring its biggest stone up to the growth limit
   let [pl, pm, ps] = o.tiers ?? TIERS[d as Density];
   if (lean === 'large') { pl *= 1.4; ps *= 0.8; } else if (lean === 'small') { pl *= 0.6; ps *= 1.15; }
@@ -237,6 +310,7 @@ function evenScale(a: Archetype, s: Record<Density, TankSetup>, mix = true): Rec
       if (d !== 'open' && t > cap) { const f = cap / t; for (const it of hard) { const m = reach(it) > cap ? cap / reach(it) : 1; it.size *= m; it.lift *= f; } }
     });
     capTo(); if (mix) { mixSizes(a, d, S, capOf(0)); capTo(); }
+    relSizes(a, d, S);
     // a still-too-big step in covered share (a rock group where there was one stone): drop the biggest new pieces, and anything stacked on them, until it is gradual
     const share = (T: TankSetup) => coverOf({ ...T, items: T.items.filter(isHard) }), prev = d === 'full' ? s.balanced : d === 'balanced' ? s.open : undefined;
     if (prev && d !== 'open') {
@@ -304,9 +378,7 @@ function drawMid(base: RecipeBase, i: 1 | 3): TankSetup {
     const tw = TWEAKS[a.id] ?? {}, setup = structuredClone(base.build.setup);
     setup.layout = { ...setup.layout, seed: base.seed, comp: tw.comp ?? 'any' }; delete setup.layout.plantSeed; delete setup.layout.animalSeed;
     const S = scapeSetup(base.build, recipeLook(a)!, a.recipe.plantMode ?? 'live', setup, { dens: { hard: lerp(dl.hard, dh.hard, t), plant: lerp(dl.plant, dh.plant, t) } });
-    if (tw.noPlants) S.items = S.items.filter(it => it.kind !== 'plant' && it.kind !== 'artificial');
-    if (a.recipe.looks[0] === 'none' && lo === 'open') S.items = [];
-    withBg(a, S);
+    finish(a, lo, S);
     kinds.forEach((of, k) => {
       const lm = maxOf(L, k), hm = maxOf(H, k), own = maxOf(S, k), want = lm > 0 && hm > 0 ? Math.sqrt(lm * hm) : hm * 0.8, cap = hm || S.tank.H * FIRST_PIECE;
       if (!own) return;
@@ -314,6 +386,7 @@ function drawMid(base: RecipeBase, i: 1 | 3): TankSetup {
       for (const it of S.items) if (isHard(it) && of(it)) { it.size *= m; it.lift *= m; }
       if (k === 0) mixSizes(a, 'mid', S, cap, { B: Math.min(cap, want), tiers });
     });
+    relSizes(a, lo, S);
     const n0 = L.items.filter(isHard).length;
     while (hardShare(S) > hardShare(H) && S.items.filter(isHard).length > n0) {
       const big = S.items.filter(it => isHard(it) && it.lift <= 1).sort((x, y) => reach(y) - reach(x))[0]; if (!big) break;
