@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ARCHETYPES } from '../src/scene/archetypes';
-import { coverOf, shelterCount, minTank, recipeBase, recipeBg, recipeScene, sceneAt, isHard, PIECE_GROWTH, COVER_STEP, DENSITIES } from '../src/scene/recipes';
+import { coverOf, shelterCount, minTank, recipeBase, recipeBg, recipeScene, sceneAt, isHard, PIECE_GROWTH, COVER_STEP, MIX_MIN, DENSITIES } from '../src/scene/recipes';
 import { itemDims } from '../src/scene/items';
 import { TANK_MODELS } from '../src/data/tanks';
 import { summaryOf } from '../src/ui/stockSummary';
@@ -47,14 +47,34 @@ describe('density recipes (lane VD4)', () => {
         expect(o.render.bg, where).toBe(b.render.bg); expect(f.render.bg, where).toBe(b.render.bg);
         // gradual hardscape (Nathan 2026-11-02): no level brings a piece more than PIECE_GROWTH times the biggest below it (a first piece no more than
         // 0.3 of the tank height), so rocks do not jump from none / small to a wall; the covered share of the tank rises in steps, not a cliff
-        const reach = (S: typeof b) => Math.max(0, ...S.items.filter(isHard).map(it => Math.max(...itemDims(it))));
+        // (stones and other pieces, wood and caves, each against its own kind)
+        for (const stone of [true, false]) {
+          const reach = (S: typeof b) => Math.max(0, ...S.items.filter(it => isHard(it) && (it.kind === 'stone') === stone).map(it => Math.max(...itemDims(it))));
+          expect(reach(b), `${where} ${stone ? 'stones' : 'wood'}`).toBeLessThanOrEqual((reach(o) > 0 ? reach(o) * PIECE_GROWTH : b.tank.H * 0.3) + 1);
+          expect(reach(f), `${where} ${stone ? 'stones' : 'wood'}`).toBeLessThanOrEqual((Math.max(reach(o), reach(b)) > 0 ? Math.max(reach(o), reach(b)) * PIECE_GROWTH : f.tank.H * 0.3) + 1);
+        }
         const hardCover = (S: typeof b) => coverOf({ ...S, items: S.items.filter(isHard) });
-        expect(reach(b), where).toBeLessThanOrEqual((reach(o) > 0 ? reach(o) * PIECE_GROWTH : b.tank.H * 0.3) + 1);
-        expect(reach(f), where).toBeLessThanOrEqual((Math.max(reach(o), reach(b)) > 0 ? Math.max(reach(o), reach(b)) * PIECE_GROWTH : f.tank.H * 0.3) + 1);
+        // a spread of rock sizes, not one repeated size (Nathan 2026-11-02): at Balanced and Full the biggest free stone is at least 2.5x the smallest and
+        // the stones are not all within 20% of one size; Full has at least as large a share of small stones as Balanced (many more small, a few large)
+        const stones = (S: typeof b) => S.items.filter(it => it.kind === 'stone' && it.lift <= 1).map(it => Math.max(...itemDims(it)));
+        const small = (S: typeof b) => { const r = stones(S), m = Math.max(...r); return r.filter(x => x < 0.4 * m).length / r.length; };
+        for (const [lvl, S] of [['balanced', b], ['full', f]] as const) {
+          const r = stones(S); if (r.length < MIX_MIN) continue;
+          expect(Math.max(...r) / Math.min(...r), `${where} ${lvl}`).toBeGreaterThanOrEqual(2.5);
+          expect(r.some(x => x < 0.8 * Math.max(...r)) && r.some(x => x > 1.2 * Math.min(...r)), `${where} ${lvl}`).toBe(true);
+        }
+        if (stones(b).length >= MIX_MIN && stones(f).length >= MIX_MIN) expect(small(f), where).toBeGreaterThanOrEqual(small(b) - 0.05);
         expect(hardCover(f) - hardCover(b), where).toBeLessThanOrEqual(COVER_STEP + 0.005);
         expect(hardCover(b) - hardCover(o), where).toBeLessThanOrEqual(COVER_STEP + 0.005);
         if (hardCover(b) >= 0.1) expect(hardCover(f) / hardCover(b), where).toBeLessThanOrEqual(3.5);
       }
     });
   }
+  it('backgrounds complement the scene, never match it, never none (Nathan 2026-11-02)', () => {
+    const fams = new Set(withLooks.map(a => a.familyId));
+    for (const f of fams) {
+      const bgs = new Set(withLooks.filter(a => a.familyId === f).map(a => recipeBg(a).bg));
+      for (const bg of bgs) { expect(bg, f).not.toBe('none'); expect(bg, f).not.toBe('green'); expect(bg, f).not.toBe('plantscene'); }
+    }
+  });
 });

@@ -67,17 +67,45 @@ const TWEAKS: Record<string, Tweak> = {
   'big-fish-showcase': { noPlants: true, dens: t([-1, -1], [-1, -1], [0, -1]) },
 };
 
-/** The back-glass background each family is drawn on (existing engine options; the person changes it in the editor's Background control). Chosen
- *  so a render is never a bare tank: dark where the tank is bright (corals, glow), green behind plants and moss, sand for dry and shore looks. */
+/** The back-glass background each family is drawn on (existing engine options; the person changes it in the editor's Background control). A
+ *  COMPLEMENT, not a match (Nathan 2026-11-02): each is chosen against the scene's dominant colours so plants, wood, stone, fish and coral stand out,
+ *  dark enough to read the silhouettes and never muddy. The line beside each says what it sets off. */
 const FAMILY_BG: Record<string, { bg: Background; color?: string }> = {
-  'fw-gardens': { bg: 'green' }, 'fw-sculpted': { bg: 'black' }, 'fw-wild': { bg: 'grey' }, 'fw-minimal': { bg: 'white' }, 'fw-playful': { bg: 'lightblue' }, 'fw-showcase': { bg: 'black' },
-  'sw-coral': { bg: 'blue' }, 'sw-fish': { bg: 'abyss' }, 'sw-habitat': { bg: 'gradient' }, 'sw-sculpted': { bg: 'black' }, 'sw-glow': { bg: 'black' },
-  'bk-mangrove': { bg: 'green' }, 'bk-shore': { bg: 'sand' }, 'bk-rocky': { bg: 'grey' }, 'bk-fish': { bg: 'blue' }, 'bk-planted': { bg: 'green' },
-  'te-rainforest': { bg: 'green' }, 'te-desert': { bg: 'sand' }, 'te-woodland': { bg: 'custom', color: '#2b3a2a' }, 'te-climb': { bg: 'grey' }, 'te-botanical': { bg: 'green' }, 'te-creature': { bg: 'black' },
-  'pa-waterfall': { bg: 'green' }, 'pa-riverbank': { bg: 'green' }, 'pa-swamp': { bg: 'custom', color: '#2b3326' }, 'pa-stream': { bg: 'grey' }, 'pa-fantasy': { bg: 'abyss' }, 'pa-creature': { bg: 'green' },
+  'fw-gardens': { bg: 'blue' },            // green and red stems against deep blue pop more than green on green
+  'fw-sculpted': { bg: 'abyss' },          // pale sand, grey stone and tan wood against a blue-to-black fade: a gallery wall
+  'fw-wild': { bg: 'black' },              // cichlid blues and yellows, river stone and bark all read cleanest against black
+  'fw-minimal': { bg: 'black' },           // white sand and a few stones: the sparest scene gets the strongest contrast
+  'fw-playful': { bg: 'black' },           // neon, glow and bright decor against black
+  'fw-showcase': { bg: 'blue' },           // orange goldfish, red betta, oscar: warm bodies against deep blue
+  'sw-coral': { bg: 'black' },             // coral colours against black
+  'sw-fish': { bg: 'blue' },               // orange clowns and yellow tangs against deep blue
+  'sw-habitat': { bg: 'abyss' },           // pale sand, green seagrass and kelp against a deep-sea fade
+  'sw-sculpted': { bg: 'blue' },           // pale live-rock arches and islands against deep blue
+  'sw-glow': { bg: 'black' },              // fluorescent corals and neon against black
+  'bk-mangrove': { bg: 'abyss' },          // brown roots and green leaves against a blue-black fade
+  'bk-shore': { bg: 'blue' },              // tan mud and sand against deep blue
+  'bk-rocky': { bg: 'lightblue' },         // dark rock and shell are the silhouettes here: a light back shows them
+  'bk-fish': { bg: 'blue' },               // silver shoals and yellow archers against deep blue
+  'bk-planted': { bg: 'black' },           // green fern on brown wood against black
+  'te-rainforest': { bg: 'custom', color: '#33223a' }, // greens and bromeliad reds against dark plum, the opposite of green
+  'te-desert': { bg: 'custom', color: '#14414a' },     // orange sand and tan rock against deep teal
+  'te-woodland': { bg: 'custom', color: '#22303f' },   // bark, moss and red toadstools against slate blue
+  'te-climb': { bg: 'black' },             // grey rock, cork and green against black
+  'te-botanical': { bg: 'blue' },          // succulent greens and pale pots against deep blue
+  'te-creature': { bg: 'blue' },           // tan and brown animals and bark against deep blue
+  'pa-waterfall': { bg: 'black' },         // mossy rock, falling water and green against black
+  'pa-riverbank': { bg: 'blue' },          // brown mud and green growth against deep blue
+  'pa-swamp': { bg: 'custom', color: '#14414a' },      // tea-brown water and cypress against deep teal
+  'pa-stream': { bg: 'abyss' },            // grey boulders and moss against a blue-black fade
+  'pa-fantasy': { bg: 'black' },           // glow and colour against black
+  'pa-creature': { bg: 'blue' },           // green and brown shells and shore against deep blue
 };
 /** Per-archetype exceptions to its family's background. */
-const ARCH_BG: Record<string, { bg: Background; color?: string }> = { 'blackwater-creek': { bg: 'black' }, 'african-cichlid-rockscape': { bg: 'blue' } };
+const ARCH_BG: Record<string, { bg: Background; color?: string }> = {
+  'blackwater-creek': { bg: 'blue' },      // amber water, brown leaves and wood against deep blue (black would swallow them)
+  'african-cichlid-rockscape': { bg: 'black' }, // blue and yellow cichlids against black
+  'betta-retreat': { bg: 'black' },        // a blue or red betta must not vanish into blue
+};
 /** The background an archetype's recipe draws on (a family default; never none, so a render always has one). */
 export const recipeBg = (a: Archetype): { bg: Background; color?: string } => ARCH_BG[a.id] ?? FAMILY_BG[a.familyId] ?? { bg: 'black' };
 /** A scene with the archetype's background on the back glass. */
@@ -157,6 +185,41 @@ export const isHard = (it: Item) => layerOf(it) === 'hard';
 export const PIECE_GROWTH = 1.25;
 /** With no hardscape below, the biggest piece a level may add, as a share of the tank height (a first accent, not a wall). */
 const FIRST_PIECE = 0.3;
+/** Which way an archetype's rock mix leans (Nathan 2026-11-02): few big stones, mostly mid-small, or both. */
+type Lean = 'large' | 'small' | 'both';
+const LEAN: Record<string, Lean> = { 'iwagumi-stone-garden': 'large', 'rocky-river-stream': 'small', 'boulder-creek': 'small', 'brackish-rocky-coast': 'small', 'african-cichlid-rockscape': 'large', 'stone-wood-sculpture': 'large' };
+const hashOf = (id: string) => [...id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+const leanOf = (a: Archetype): Lean => LEAN[a.id] ?? (['large', 'both', 'small'] as const)[hashOf(a.id) % 3];
+/** Share of a level's free stones in each size tier (large / mid / small): Open = a few large + mid, Balanced = a mix, Full = many small + a few large. */
+const TIERS: Record<Density, [number, number, number]> = { open: [0.5, 0.35, 0.15], balanced: [0.2, 0.4, 0.4], full: [0.12, 0.23, 0.65] };
+/** Tier sizes as a share of the level's biggest stone (a band each, so two stones of one tier still differ). */
+const TIER_SIZE: [number, number][] = [[0.9, 1], [0.5, 0.65], [0.27, 0.35]];
+/** The fewest free stones a level needs for a size spread to mean anything (fewer = a hero and an accent, left as drawn). */
+export const MIX_MIN = 4;
+/**
+ * Piece sizes follow a spread, not one repeated size: the level's stones, biggest first, are dealt into large / mid / small tiers by `TIERS` (leaning to
+ * larger or smaller by archetype) and set to a size in the tier's band of the biggest stone, which stays the biggest and so keeps `PIECE_GROWTH` and
+ * the cover step. Stones stacked on another go with the one beneath.
+ */
+function mixSizes(a: Archetype, d: Density, S: TankSetup, cap: number) {
+  const free = S.items.filter(it => it.kind === 'stone' && it.lift <= 1).sort((x, y) => reach(y) - reach(x));
+  if (free.length < MIX_MIN) return;
+  const lean = leanOf(a), n = free.length, B = d === 'open' ? reach(free[0]) : Math.min(cap, reach(free[0]) * PIECE_GROWTH); // a fuller level may bring its biggest stone up to the growth limit
+  let [pl, pm, ps] = TIERS[d];
+  if (lean === 'large') { pl *= 1.4; ps *= 0.8; } else if (lean === 'small') { pl *= 0.6; ps *= 1.15; }
+  const tot = pl + pm + ps, nl = Math.max(1, Math.round(n * pl / tot)), ns = Math.min(n - nl - 1, Math.round(n * ps / tot)), h = hashOf(a.id + d);
+  const factor = new Map<Item, number>();
+  free.forEach((it, i) => {
+    const tier = i < nl ? 0 : i < n - ns ? 1 : 2, [lo, hi] = TIER_SIZE[tier], j = ((h + i * 2654435761) >>> 0) % 1000 / 1000;
+    const f = B * (i === 0 ? 1 : lo + (hi - lo) * j) / reach(it);
+    factor.set(it, f); it.size *= f;
+  });
+  for (const it of S.items) {
+    if (it.lift <= 1 || layerOf(it) !== 'hard') continue;
+    const base = free.reduce((b, c) => Math.hypot(c.x - it.x, c.depth - it.depth) < Math.hypot(b.x - it.x, b.depth - it.depth) ? c : b), f = factor.get(base) ?? 1;
+    it.size *= f; it.lift *= f;
+  }
+}
 /**
  * The starter layers re-roll their pieces at every stop, so one stop up can swap a few small stones for a single huge one or add a whole rock
  * wall (Nathan 2026-11-02: a planted tank with no rock at Open and Balanced had boulders over half the tank at Full). A level reads as the
@@ -164,15 +227,16 @@ const FIRST_PIECE = 0.3;
  * `PIECE_GROWTH` times the biggest piece below (`FIRST_PIECE` of the tank height where there is none): counts still rise, scale does not jump.
  * Anything stacked on a shrunk piece is lowered with it.
  */
-function evenScale(a: Archetype, s: Record<Density, TankSetup>): Record<Density, TankSetup> {
-  let below = 0;
+function evenScale(a: Archetype, s: Record<Density, TankSetup>, mix = true): Record<Density, TankSetup> {
+  // stones and the other pieces (wood, caves) are capped each against their own kind below: a stone must not grow to the size of a branch
+  const kinds = [(it: Item) => it.kind === 'stone', (it: Item) => it.kind !== 'stone'], below = [0, 0];
   for (const d of DENSITIES) {
-    const S = s[d], hard = S.items.filter(isHard), top = Math.max(0, ...hard.map(reach));
-    const cap = below > 0 ? below * PIECE_GROWTH : S.tank.H * FIRST_PIECE;
-    if (d !== 'open' && top > cap) {
-      const f = cap / top;
-      for (const it of hard) { const k = reach(it) > cap ? cap / reach(it) : 1; it.size *= k; it.lift *= f; }
-    }
+    const S = s[d], capOf = (k: number) => below[k] > 0 ? below[k] * PIECE_GROWTH : S.tank.H * FIRST_PIECE;
+    const capTo = () => kinds.forEach((of, k) => {
+      const hard = S.items.filter(it => isHard(it) && of(it)), cap = capOf(k), t = Math.max(0, ...hard.map(reach));
+      if (d !== 'open' && t > cap) { const f = cap / t; for (const it of hard) { const m = reach(it) > cap ? cap / reach(it) : 1; it.size *= m; it.lift *= f; } }
+    });
+    capTo(); if (mix) { mixSizes(a, d, S, capOf(0)); capTo(); }
     // a still-too-big step in covered share (a rock group where there was one stone): drop the biggest new pieces, and anything stacked on them, until it is gradual
     const share = (T: TankSetup) => coverOf({ ...T, items: T.items.filter(isHard) }), prev = d === 'full' ? s.balanced : d === 'balanced' ? s.open : undefined;
     if (prev && d !== 'open') {
@@ -182,10 +246,15 @@ function evenScale(a: Archetype, s: Record<Density, TankSetup>): Record<Density,
         S.items = S.items.filter(it => it !== big && !(isHard(it) && it.lift > 1 && Math.abs(it.x - big.x) < reach(big) && Math.abs(it.depth - big.depth) < reach(big)));
       }
     }
-    below = Math.max(below, ...S.items.filter(isHard).map(reach), 0);
+    kinds.forEach((of, k) => { below[k] = Math.max(below[k], ...S.items.filter(it => isHard(it) && of(it)).map(reach), 0); });
   }
-  void a;
   return s;
+}
+/** No seed progresses: the one whose smaller step between levels is the biggest (else the archetype's own). */
+function bestStep(trios: Record<Density, TankSetup>[], seeds: number[], own: number): number {
+  const gap = (t: Record<Density, TankSetup>) => Math.min(coverOf(t.balanced) - coverOf(t.open), coverOf(t.full) - coverOf(t.balanced));
+  const i = trios.reduce((b, t, k) => gap(t) > gap(trios[b]) ? k : b, 0);
+  return gap(trios[i]) > 0 ? seeds[i] : own;
 }
 /** Composition seeds tried, after the archetype's own (seed 1 = the set as designed). */
 const SEEDS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -202,10 +271,13 @@ export function recipeBase(a: Archetype | string, tank: TankModel, animals?: Ani
   const roster = animals ?? focalAnimals(arch, tank);
   const build = roster.length ? buildsFor(roster, tank, now)[2] : emptyBuild(tank, now);
   const own = TWEAKS[arch.id]?.seed ?? 1, seeds = [own, ...SEEDS.filter(s => s !== own)];
-  const trio = (seed: number) => evenScale(arch, { open: draw(arch, build, seed, 'open'), balanced: draw(arch, build, seed, 'balanced'), full: draw(arch, build, seed, 'full') });
-  const tried = new Map<number, Record<Density, TankSetup>>(), at = (s: number) => tried.get(s) ?? (tried.set(s, trio(s)), tried.get(s)!);
-  const seed = seeds.find(s => progresses(arch, at(s), 0.08)) ?? seeds.find(s => progresses(arch, at(s), 0)) ?? own;
-  return { archetype: arch, tank, animals: roster, build, seed, scenes: at(seed) };
+  // the size spread comes first; a composition where it leaves the levels no fuller than each other (a tank with almost no stone) keeps the plain caps instead
+  const trio = (seed: number, mix: boolean) => evenScale(arch, { open: draw(arch, build, seed, 'open'), balanced: draw(arch, build, seed, 'balanced'), full: draw(arch, build, seed, 'full') }, mix);
+  const tried = new Map<string, Record<Density, TankSetup>>(), at = (s: number, mix = true) => { const k = `${s}:${mix}`; return tried.get(k) ?? (tried.set(k, trio(s, mix)), tried.get(k)!); };
+  const pick = (mix: boolean) => seeds.find(s => progresses(arch, at(s, mix), 0.08)) ?? seeds.find(s => progresses(arch, at(s, mix), 0));
+  const seedMixed = pick(true), seedPlain = seedMixed === undefined ? pick(false) : undefined, mixed = seedPlain === undefined;
+  const seed = seedMixed ?? seedPlain ?? bestStep(seeds.map(s => at(s, true)), seeds, own);
+  return { archetype: arch, tank, animals: roster, build, seed, scenes: at(seed, mixed) };
 }
 
 /** The starting scene of an archetype at a density (a copy: the base can hand it out again). */
