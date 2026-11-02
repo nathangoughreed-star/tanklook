@@ -52,7 +52,7 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
-## BT1: A lone betta in a 12 in cube reads green (2026-11-02; branch bt1-betta-cube; Coordinator 17)
+## BT1: A lone betta in a 12 in cube reads green (2026-11-02; branch bt1-betta-cube; Coordinator 17, reported to 18)
 - Nathan 2026-11-02: "yea it should be green but upper/almost borderline yellow". Data, not code: betta's tankmin.json entry has `greenAlone` (300 x 300 mm, 11.8 in, site "TankLook (one betta alone)", states "Nathan 2026-11-02: ..."). `tankMinimum` passes `alone` to `speciesMinimum` when exactly one animal counts against the water; the line then stands in for the green one (scaled for a juvenile like the others; `MinRow.alone` set). The Fullness tile's list prints that line. Red line (305 mm) and the 5 gal volGate unchanged; betta + any tankmate unchanged.
 - 12 in cube: 98 % of the lone line, green ("Meets recommended"); 8 gal cube green; 11.5 in cube yellow; 10 in cube red. 300 mm (not 304.8) so the catalogue's 30 cm "12 in" cubes (Lifegard 300, LANDEN 30T 299.7) read green too.
 - Moved: research/design/moved-numbers-bt1.txt (Suggest: 8 gal cube / 5 gal lone-betta cards turn green and lose the "below recommended" line; Stock plan g5, g5_5, g8c lose "a bit cramped"; tankFor / steps / builds / starters / sumps / examples 0). research/calib/tables/v4.json regenerated (A01 caution -> ideal). Test: test/minimum.test.ts "a lone betta in a 12 in cube". Screenshots: shots/bt1/.
