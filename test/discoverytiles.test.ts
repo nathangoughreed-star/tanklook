@@ -79,7 +79,7 @@ describe('personalized discovery tiles (lane VD6)', () => {
   });
 
   it('the slider: five stops per archetype, the three named ones are the recipe trio, the steps between are drawn once and cached', () => {
-    const a = ARCHETYPES.find(x => x.support === 'partial' && x.recipe.looks[0] === 'iwagumi')!;
+    const a = ARCHETYPES.find(x => x.support !== 'coming-soon' && x.recipe.looks[0] === 'iwagumi')!;
     const pv = previewOf(a, BREEDER40)!, all = [0, 1, 2, 3, 4].map(i => pv.stop(i));
     expect(all[0].items).toEqual(pv.scenes.open.items); expect(all[2].items).toEqual(pv.scenes.balanced.items); expect(all[4].items).toEqual(pv.scenes.full.items);
     expect(pv.stop(1).items).toEqual(all[1].items);
