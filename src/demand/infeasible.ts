@@ -7,6 +7,7 @@ import { getSpecies } from '../data/species';
 import { TANK_MODELS } from '../data/tanks';
 import { TIER_LABEL } from '../scene/finish';
 import { clearItem, setItem, valueOf, type Brief } from '../scene/brief';
+import { setLimitKind, setOwnedUse, type ConstraintId } from '../scene/project';
 // Lane NG4 (2026-10-29): every conflict is framed as FOUR PATHS (keep the vision, keep the limits, keep the look, save the ambition), each one verified by re-running the generator (`pathsOf` at the bottom).
 // Nothing here loosens a welfare gate: a path whose animals cannot be kept well says so and offers no button.
 import { OWNED, PICK_CARE, lockedArchetype, ownedAssess, type Miss, type OwnedKey, type OwnedMap, type Proposal, type Suggestions, type Wants } from './suggest';
@@ -17,7 +18,11 @@ import type { UserProfile } from './types';
 import type { Anchor, StyleId } from './compromise';
 import { allowedStyles } from '../scene/scapes';
 
-export type LimitingFactor = 'budget' | 'upkeep' | 'time' | 'space' | 'tank' | 'animals' | 'welfare';
+export type LimitingFactor = 'budget' | 'upkeep' | 'time' | 'space' | 'tank' | 'equipment' | 'animals' | 'welfare';
+/** Guided Setup Rev 03: the limits a person can make flexible, by the name the edits use. */
+export type FlexKey = 'budget' | 'upkeep' | 'time' | 'space' | 'setup';
+const FLEX_CONSTRAINT: Record<FlexKey, ConstraintId> = { budget: 'startup', upkeep: 'ongoing', time: 'care', space: 'space', setup: 'setup' };
+const FLEX_WANTS: Record<FlexKey, keyof NonNullable<Wants['flexLimits']>> = { budget: 'startupUsd', upkeep: 'monthlyUsd', time: 'minPerWeek', space: 'space', setup: 'setupHours' };
 
 /** What a one-click alternative writes into the brief. */
 export type AltEdit =
@@ -25,6 +30,10 @@ export type AltEdit =
   | { op: 'owned'; keys: OwnedKey[]; tank?: string }
   | { op: 'species'; animals: { species: string; n: number }[] }
   | { op: 'phased' } | { op: 'lowtech' }
+  /** Guided Setup Rev 03 (lane GA1): mark owned things Available ("I'm flexible": credited when used, alternatives may be recommended) instead of Required */
+  | { op: 'available'; keys: (OwnedKey | 'tank')[] }
+  /** make limits flexible: they rank and warn instead of filtering */
+  | { op: 'flexible'; limits: FlexKey[] }
   | { op: 'space'; w?: number; d?: number } | { op: 'ownTank' }
   /** several edits in one click (the vision path: every limit it breaks, together) */
   | { op: 'all'; edits: AltEdit[] }
@@ -35,7 +44,7 @@ export type AltEdit =
 export type PathId = 'vision' | 'limits' | 'look' | 'future';
 
 export interface Alternative {
-  kind: 'raise-budget' | 'raise-upkeep' | 'more-time' | 'use-owned' | 'bigger-space' | 'other-tank' | 'change-animals' | 'phase' | 'low-tech' | 'keep-vision' | 'save-ambition';
+  kind: 'mark-available' | 'make-flexible' | 'raise-budget' | 'raise-upkeep' | 'more-time' | 'use-owned' | 'bigger-space' | 'other-tank' | 'change-animals' | 'phase' | 'low-tech' | 'keep-vision' | 'save-ambition';
   /** which of the four paths this belongs to (set by pathsOf) */
   path?: PathId;
   /** one or two plain sentences with the numbers */
@@ -94,6 +103,8 @@ export function applyAlternative(b: Brief, e: AltEdit): Brief {
     case 'time': return setItem(b, 'constraints.careMin', e.min, 'hard');
     case 'owned': { const map: OwnedMap = { ...(valueOf(b, 'constraints.owned') ?? {}) }; for (const k of e.keys) map[k] = PICK_CARE; const n = e.keys.length ? setItem(b, 'constraints.owned', map, 'hard') : b; return e.tank ? setItem(n, 'constraints.existingTank', { model: e.tank }, 'hard') : n; }
     case 'species': return setItem(b, 'animals.stock', e.animals.map(a => ({ species: a.species, count: a.n })), 'locked');
+    case 'available': return e.keys.reduce((x, k) => setOwnedUse(x, k, 'available'), b);
+    case 'flexible': return e.limits.reduce((x, k) => setLimitKind(x, FLEX_CONSTRAINT[k], 'flexible'), b);
     case 'phased': return setItem(b, 'constraints.phased', true, 'hard');
     case 'lowtech': return setItem(clearItem(b, 'preferences.hightech'), 'preferences.lowtech', true, 'hard');
     case 'space': return e.w && e.d ? setItem(b, 'constraints.maxSpace', { w: e.w, d: e.d }, 'hard') : clearItem(b, 'constraints.maxSpace');
@@ -114,6 +125,17 @@ function explainBase(x: Ctx): Infeasible {
   const cap = C.startupUsd?.on ? C.startupUsd.value : undefined, mo = C.monthlyUsd?.on ? C.monthlyUsd.value : undefined, mi = C.minutesPerWeek?.on ? C.minutesPerWeek.value : undefined;
   const what = locked && w.animals ? animalsText(w.animals) : w.hightech ? 'a high-tech planted tank' : 'any kind of setup you ticked';
   const alts: Alternative[] = [];
+  // Guided Setup Rev 03: owned gear marked Required is kept, never swapped; when that alone is what stops every setup, say which item and offer "mark it Available"
+  const req = w.requiredOwned ?? [];
+  if (req.length) {
+    const free = x.run({ ...w, requiredOwned: [] }), labels = req.map(k => OWNED.find(o => o.id === k)?.label.toLowerCase() ?? k);
+    if (free.proposals.length) {
+      const p = free.proposals[0];
+      alts.push({ kind: 'mark-available', label: `Mark your ${labels.join(' and ')} Available`, edit: { op: 'available', keys: [...req] }, resultUsd: p.totals.startupUsd,
+        text: `Mark your ${labels.join(' and ')} Available instead of Required: TankLook then replaces ${req.length > 1 ? 'them' : 'it'} where ${req.length > 1 ? 'they do' : 'it does'} not suit (${tankText(p)} tank, ${usd(p.totals.startupUsd)} all-in) and still uses ${req.length > 1 ? 'them' : 'it'} where ${req.length > 1 ? 'they do' : 'it does'}.` });
+      return { limitingFactor: 'equipment', alternatives: alts, text: `Your ${labels.join(' and ')} (marked Required) ${req.length > 1 ? 'do' : 'does'} not suit ${what}: Required gear is kept as it is, never swapped, so nothing that passes the stocking rules is left. Marked Available, setups come back.` };
+    }
+  }
   const rel = cap !== undefined || mo !== undefined || mi !== undefined ? x.run(capsOff(w)) : undefined;
   const cheap = rel ? cheapestOf(rel) : undefined;
 
@@ -130,6 +152,11 @@ function explainBase(x: Ctx): Infeasible {
     if (overM) alts.push({ kind: 'raise-upkeep', label: `Allow ${usd(mo! + overM)} a month`, delta: overM, edit: { op: 'upkeep', usd: mo! + overM }, text: `Allow ${usd(overM)} more a month, ${usd(mo! + overM)} in all.` });
     if (overT) alts.push({ kind: 'more-time', label: `Allow ${mi! + overT} min a week`, delta: overT, edit: { op: 'time', min: mi! + overT }, text: `Allow ${overT} more minutes a week, ${mi! + overT} in all.` });
 
+    // a hard limit can be made flexible: the build is then shown, ranked lower, with the overrun said
+    const flexFor = (k: FlexKey, label: string, over: string) => alts.push({ kind: 'make-flexible', label: `Make the ${label} flexible`, edit: { op: 'flexible', limits: [k] }, text: `Make your ${label} flexible instead of hard: this build is then shown, ranked lower, and marked "${over}".` });
+    if (overS && !w.flexLimits?.startupUsd) flexFor('budget', `${usd(cap!)} set-up budget`, `over your ${usd(cap!)} setup target by ${usd(overS)}`);
+    if (overM && !w.flexLimits?.monthlyUsd) flexFor('upkeep', `${usd(mo!)} a month budget`, `over your ${usd(mo!)} a month target by ${usd(overM)} a month`);
+    if (overT && !w.flexLimits?.minPerWeek) flexFor('time', `${mi} min a week limit`, `over your ${mi} min a week target by ${overT} min`);
     if (overS) {
       // use what you already own: the pieces of this build that would close the gap (verified by a run)
       const need = overS / (1 + cheap.taxPct / 100), have = x.w.owned ?? {}, needStand = x.w.needStand ?? true;
@@ -166,7 +193,8 @@ function explainBase(x: Ctx): Infeasible {
       if (p) alts.push({ kind: 'low-tech', label: 'Keep the planted look, low-tech', edit: { op: 'lowtech' }, resultUsd: p.totals.startupUsd,
         text: `Keep the planted look and drop the high-tech gear: ${p.build.finish ? TIER_LABEL[p.build.finish.tier].toLowerCase() : 'a planted finish'} in a ${tankText(p)} tank for ${usd(p.totals.startupUsd)}, ${p.build.finish && p.build.finish.level < 2 ? 'with plant fertiliser but no CO2 rig and no extra-strong light, so less to buy and less to run. ' : ''}The look is the goal; CO2 and strong light are only one way to get it.` });
     }
-    return { limitingFactor: factor, text, alternatives: alts, cheapest: { title: cheap.archetype.title, usd: t.startupUsd, over: overS, lines } };
+    const hardNote = alts.some(a => a.kind === 'make-flexible') ? ` The limit${alts.filter(a => a.kind === 'make-flexible').length > 1 ? 's' : ''} stopping it ${alts.filter(a => a.kind === 'make-flexible').length > 1 ? 'are' : 'is'} set as hard; flexible, ${alts.filter(a => a.kind === 'make-flexible').length > 1 ? 'they rank and warn' : 'it ranks and warns'} instead of filtering.` : '';
+    return { limitingFactor: factor, text: text + hardNote, alternatives: alts, cheapest: { title: cheap.archetype.title, usd: t.startupUsd, over: overS, lines } };
   }
 
   // ---- nothing passes even with every money / time limit off: a structural limit (the tank you own, the space, the animals) ----
@@ -176,16 +204,18 @@ function explainBase(x: Ctx): Infeasible {
     .map((p): Alternative => ({ kind: 'change-animals', label: `Use ${animalsText(p.build.animals)} instead`, edit: { op: 'species', animals: p.build.animals }, resultUsd: p.totals.startupUsd, text: label(p) }));
   if (w.ownTank) {
     const own = w.ownTank, r = relOpen({ ownTank: undefined }, false), c = cheapestOf(r);
+    if (c) alts.push({ kind: 'mark-available', label: 'Mark your tank Available', edit: { op: 'available', keys: ['tank'] }, resultUsd: c.totals.startupUsd, text: `Mark your ${own.name} Available instead of Required: the ${tankText(c)} that does hold ${what} can then be recommended (${usd(c.totals.startupUsd)} all-in), and your tank is still used wherever it suits.` });
     alts.push(...(c ? [{ kind: 'other-tank', label: 'Use a new tank instead', edit: { op: 'ownTank' }, resultUsd: c.totals.startupUsd, text: `Use a new tank instead: the smallest that holds ${what} is ${tankText(c)} (${c.totals.startupUsd ? usd(c.totals.startupUsd) + ' all-in' : ''}).` } as Alternative] : []));
     if (locked) alts.push(...nearest(relOpen({ animals: undefined, ...(la ? { kinds: [la.kind] } : {}) }), p => `Different animals, only if you want them: ${animalsText(p.build.animals)} fit your ${own.name} (${Math.round(own.ratedGal)} gal). ${locked && w.animals ? `Your ${animalsText(w.animals)} stay locked until you choose this.` : ''}`));
-    return { limitingFactor: 'tank', alternatives: alts, text: `Your ${own.name} (${Math.round(own.ratedGal)} gal) does not hold ${what} to the stocking rules${c ? `: the smallest tank that does is ${tankText(c)}` : ''}. We never put animals in a tank that is too small, and we do not resize your tank.` };
+    return { limitingFactor: 'tank', alternatives: alts, text: `Your ${own.name} (${Math.round(own.ratedGal)} gal, marked Required) does not hold ${what} to the stocking rules${c ? `: the smallest tank that does is ${tankText(c)}` : ''}. We never put animals in a tank that is too small, and we do not resize your tank.` };
   }
   if (x.space) {
     const sp = x.space, r = relOpen({ space: undefined, constraints: { ...C, space: C.space ? { ...C.space, on: false } : undefined } }, false), c = cheapestOf(r);
     if (c) { const L = c.build.tank.outer.L, D = c.build.tank.outer.D;
       alts.push({ kind: 'bigger-space', label: `Make room for ${inch(L)} x ${inch(D)} in`, edit: { op: 'space', w: Math.max(sp.w, L), d: Math.max(sp.d, D) }, text: `The smallest tank that holds ${what} is ${tankText(c)}, ${inch(L)} x ${inch(D)} in outside; your space is ${inch(sp.w)} x ${inch(sp.d)} in. Make about ${inch(Math.max(sp.w, L))} x ${inch(Math.max(sp.d, D))} in available.` }); }
+    if (c && !w.flexLimits?.space) alts.push({ kind: 'make-flexible', label: 'Make the space flexible', edit: { op: 'flexible', limits: ['space'] }, text: `Make your ${inch(sp.w)} x ${inch(sp.d)} in space flexible instead of hard: the ${tankText(c)} is then shown, ranked lower, with a note that it is bigger than your space.` });
     if (locked) alts.push(...nearest(relOpen({ animals: undefined, ...(la ? { kinds: [la.kind] } : {}) }), p => `Different animals, only if you want them: ${animalsText(p.build.animals)} fit your ${inch(sp.w)} x ${inch(sp.d)} in space (${tankText(p)}). Your animals stay locked until you choose this.`));
-    return { limitingFactor: 'space', alternatives: alts, text: c ? `No tank that holds ${what} fits your ${inch(sp.w)} x ${inch(sp.d)} in space: the smallest that does is ${tankText(c)} (${inch(c.build.tank.outer.L)} x ${inch(c.build.tank.outer.D)} in).` : `No tank fits your ${inch(sp.w)} x ${inch(sp.d)} in space with these animals.` };
+    return { limitingFactor: 'space', alternatives: alts, text: c ? `No tank that holds ${what} fits your ${inch(sp.w)} x ${inch(sp.d)} in space (a hard limit): the smallest that does is ${tankText(c)} (${inch(c.build.tank.outer.L)} x ${inch(c.build.tank.outer.D)} in).` : `No tank fits your ${inch(sp.w)} x ${inch(sp.d)} in space with these animals.` };
   }
   if (locked && w.animals) {
     const welfare = x.stats.rejectedWelfare > 0;
@@ -207,6 +237,8 @@ const wantsWith = (w: Wants, e: AltEdit): Wants => {
     case 'time': return { ...w, constraints: { ...C, minutesPerWeek: on(e.min) } };
     case 'owned': { const have = { ...(w.owned ?? {}) }; for (const k of e.keys) have[k] = PICK_CARE; return { ...w, owned: have, ...(e.tank ? { ownTank: TANK_MODELS.find(m => m.id === e.tank) } : {}) }; }
     case 'species': return { ...w, animals: e.animals };
+    case 'available': return { ...w, ...(e.keys.includes('tank') && w.ownTank ? { ownTank: undefined, availTank: w.ownTank } : {}), requiredOwned: (w.requiredOwned ?? []).filter(k => !e.keys.includes(k)) };
+    case 'flexible': return { ...w, flexLimits: { ...(w.flexLimits ?? {}), ...Object.fromEntries(e.limits.map(k => [FLEX_WANTS[k], true])) } };
     case 'phased': return { ...w, phased: true };
     case 'lowtech': return { ...w, hightech: false, lowtech: true };
     case 'space': return e.w && e.d ? { ...w, space: { w: e.w, d: e.d }, constraints: { ...C, ...(C.space ? { space: { ...C.space, on: true } } : {}) } } : { ...w, space: undefined, constraints: { ...C, space: C.space ? { ...C.space, on: false } : undefined } };
@@ -236,7 +268,7 @@ function verified(x: Ctx, e: AltEdit): { edit: AltEdit; best: number } | undefin
 }
 
 const key = (e?: AltEdit) => JSON.stringify(e);
-const PATH_OF: Partial<Record<Alternative['kind'], PathId>> = { 'raise-budget': 'vision', 'raise-upkeep': 'vision', 'more-time': 'vision', 'use-owned': 'vision', 'phase': 'vision', 'other-tank': 'vision', 'bigger-space': 'vision', 'change-animals': 'limits', 'low-tech': 'look' };
+const PATH_OF: Partial<Record<Alternative['kind'], PathId>> = { 'raise-budget': 'vision', 'raise-upkeep': 'vision', 'more-time': 'vision', 'use-owned': 'vision', 'mark-available': 'vision', 'make-flexible': 'vision', 'phase': 'vision', 'other-tank': 'vision', 'bigger-space': 'vision', 'change-animals': 'limits', 'low-tech': 'look' };
 
 /** Explain why nothing passed and what would change that, as four verified paths (keep the vision, keep the limits, keep the look, save the ambition). Every button re-runs the generator before it is offered. */
 export function explainInfeasible(x: Ctx): Infeasible {

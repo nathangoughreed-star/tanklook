@@ -1,0 +1,81 @@
+GA1 moved numbers: 9 of 13 briefs changed
+
+same  | no equipment, no limits
+    before: #1 betta | 6 gal | $523 | Look first
+            #2 clown-nano | 20 gal | $2252 | Balanced
+            #3 leopard-gecko | 120 gal | $1073 | Size first
+    after:  #1 betta | 6 gal | $523 | Look first
+            #2 clown-nano | 20 gal | $2252 | Balanced
+            #3 leopard-gecko | 120 gal | $1073 | Size first
+same  | budget $400 hard
+    before: #1 jumping-spider | 8 gal | $338 | Look first
+            #2 betta | 10 gal | $336 | Different look
+            #3 chilean-rose | 10 gal | $226 | Cheapest start
+    after:  #1 jumping-spider | 8 gal | $338 | Look first
+            #2 betta | 10 gal | $336 | Different look
+            #3 chilean-rose | 10 gal | $226 | Cheapest start
+MOVED | budget $400 flexible
+    before: #1 jumping-spider | 8 gal | $338 | Look first
+            #2 betta | 10 gal | $336 | Different look
+            #3 chilean-rose | 10 gal | $226 | Cheapest start
+    after:  #1 jumping-spider | 8 gal | $338 | Look first
+            #2 betta | 10 gal | $327 | Balanced
+            #3 chilean-rose | 10 gal | $226 | Cheapest start
+MOVED | budget $200 hard, 2 goldfish locked
+    before: (none) budget: raise-budget,use-owned,phase,change-animals,save-ambition
+    after:  (none) budget: raise-budget,make-flexible,use-owned,phase,change-animals,save-ambition
+MOVED | budget $200 flexible, 2 goldfish locked
+    before: (none) budget: raise-budget,use-owned,phase,change-animals,save-ambition
+    after:  #1 locked-goldfish2 | 29 gal | $652 | Aquascape first | Over your $200 setup target by $452.
+            #2 locked-goldfish2 | 29 gal | $420 | Room to grow | Over your $200 setup target by $220.
+            #3 locked-goldfish2 | 29 gal | $418 | Alternative aquascape | Over your $200 setup target by $218.
+MOVED | space 24x12 in flexible, 2 goldfish
+    before: (none) space: bigger-space,change-animals,change-animals,save-ambition
+    after:  #1 locked-goldfish2 | 37 gal | $796 | Aquascape first | The tank is 30.5 x 13 in outside; your space is 24 x 12 in.
+            #2 locked-goldfish2 | 37 gal | $692 | Alternative aquascape | The tank is 30.5 x 13 in outside; your space is 24 x 12 in.
+            #3 locked-goldfish2 | 40 gal | $573 | Room to grow | The tank is 36 x 18 in outside; your space is 24 x 12 in.
+MOVED | owned 20 gal Required, budget $600
+    before: #1 tarantula | 20 gal | $396 | Look first
+            #2 betta | 20 gal | $579 | Different look
+            #3 indian-stick | 20 gal | $270 | Cheapest start
+    after:  #1 tarantula | 20 gal | $396 | Look first | owned-required
+            #2 betta | 20 gal | $579 | Different look | owned-required
+            #3 indian-stick | 20 gal | $270 | Cheapest start | owned-required
+MOVED | owned 20 gal Available, budget $600
+    before: #1 betta | 10 gal | $567 | Look first
+            #2 leopard-gecko | 51 gal | $597 | Size first
+            #3 chilean-rose | 10 gal | $226 | Cheapest start
+    after:  #1 jumping-spider | 20 gal | $449 | Look first | owned-available
+            #2 tarantula | 20 gal | $330 | Balanced | owned-available
+            #3 danio | 29 gal | $494 | Balanced | new
+MOVED | owned 10 gal Required, 4 goldfish
+    before: (none) tank: other-tank,change-animals,change-animals,save-ambition
+    after:  (none) tank: mark-available,other-tank,change-animals,change-animals,save-ambition
+MOVED | owned 10 gal Available, 4 goldfish
+    before: #1 locked-goldfish4 | 60 gal | $866 | Alternative aquascape
+            #2 locked-goldfish4 | 65 gal | $917 | Room to grow
+            #3 locked-goldfish4 | 55 gal | $660 | Economy
+    after:  #1 locked-goldfish4 | 60 gal | $866 | Alternative aquascape | new
+            #2 locked-goldfish4 | 65 gal | $917 | Room to grow | new
+            #3 locked-goldfish4 | 55 gal | $660 | Economy | new
+MOVED | owned 40 gal Available, no limits
+    before: #1 betta | 6 gal | $523 | Look first
+            #2 clown-nano | 20 gal | $2252 | Balanced
+            #3 leopard-gecko | 120 gal | $1073 | Size first
+    after:  #1 dart-frogs | 40 gal | $820 | Look first | owned-available
+            #2 danio | 40 gal | $760 | Balanced | owned-available
+            #3 clown-nano | 20 gal | $2252 | Balanced | new
+same  | owned filter + heater (Available), betta
+    before: #1 betta | 6 gal | $490 | Aquascape first
+            #2 betta | 6 gal | $281 | Alternative aquascape
+            #3 betta | 8 gal | $403 | Room to grow
+    after:  #1 betta | 6 gal | $490 | Aquascape first
+            #2 betta | 6 gal | $281 | Alternative aquascape
+            #3 betta | 8 gal | $403 | Room to grow
+same  | owned filter + heater (Required), betta
+    before: #1 betta | 6 gal | $490 | Aquascape first
+            #2 betta | 6 gal | $281 | Alternative aquascape
+            #3 betta | 8 gal | $403 | Room to grow
+    after:  #1 betta | 6 gal | $490 | Aquascape first
+            #2 betta | 6 gal | $281 | Alternative aquascape
+            #3 betta | 8 gal | $403 | Room to grow

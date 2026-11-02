@@ -78,7 +78,7 @@ interface OwnedDef {
   /** catalogue products to pick from (absent: no catalogue for it) */
   products?: () => { id: string; label: string }[];
   /** the real product: undersized / does not fit -> a flag; else no flag, with the tank's tech changed when the product goes into it */
-  check?: (b: Build, id: string) => { flag?: string; tech?: TankSetup['tech'] };
+  check?: (b: Build, id: string) => { flag?: string; tech?: TankSetup['tech'] }; // `tech` rides with a flag so a Required filter can still go in the tank (GA1)
 }
 const galOf = (S: TankSetup) => volume(S.tank).litres / 3.785;
 const nm = (p: { brand: string; model: string }) => productName(p);
@@ -87,7 +87,7 @@ export const OWNED: readonly OwnedDef[] = [
     products: () => FILTER_PRODUCTS.map(f => ({ id: f.id, label: `${nm(f)} (${f.kind}${f.gph ? `, ${f.gph} gph` : ''})` })),
     check: (b, id) => { const f = filterProduct(id); if (!f || !b.setup.water.on) return {};
       const tech = withUnits(techOf(b.setup), 'filter', [{ kind: f.kind, product: f.id }]), pct = Math.round(stockingOf({ ...b.setup, tech }).filtrationPercent), lim = FILTRATION_LIMIT[b.id];
-      return pct > lim ? { flag: `Your ${nm(f)} is too small for this setup (filtration ${pct}%, over ${lim}%): the setup's own filter is priced instead.` } : { tech }; } },
+      return pct > lim ? { flag: `Your ${nm(f)} is too small for this setup (filtration ${pct}%, over ${lim}%): the setup's own filter is priced instead.`, tech } : { tech }; } },
   { id: 'heater', label: 'Heater', rows: ['heater'],
     products: () => HEATER_PRODUCTS.map(h => ({ id: h.id, label: `${nm(h)} (${h.watts} W)` })),
     check: (b, id) => { const h = heaterProduct(id); if (!h || !b.setup.water.on) return {}; const need = heatLoss(b.setup).needW;
@@ -111,29 +111,41 @@ export const OWNED: readonly OwnedDef[] = [
 ];
 /** What owning each item does to a build: set-up dollars off, the tank's tech when an owned filter goes in, and a note per item. The build's price
  *  carries its deals, so each row's list price is scaled by the build's own price / list-price ratio. Never below zero. */
-export function ownedAssess(b: Build, owned: OwnedMap, needStand: boolean, P: UserProfile, ownTank = false): { saved: number; tech?: TankSetup['tech']; notes: OwnedNote[]; rows: string[] } {
+export function ownedAssess(b: Build, owned: OwnedMap, needStand: boolean, P: UserProfile, ownTank = false, opts: OwnedOpts = {}): { saved: number; tankSaved: number; tech?: TankSetup['tech']; notes: OwnedNote[]; rows: string[] } {
   const rows = new Set<string>(needStand ? [] : ['stand']), notes: OwnedNote[] = [];
   let tech: TankSetup['tech'];
   const D = demandOf(b.setup, P, b.bundle ? { kit: dealAsKit(b.bundle) } : {}), present = new Set(D.items.map(i => i.key)); // a bundle's rows are priced with its kit, so the credits scale against the build's real total (lane U5)
-  if (ownTank && present.has('tank')) { rows.add('tank'); notes.push({ kind: 'credit', text: 'Your tank: $0 (the generator only offers setups this tank holds).' }); }
+  const gal = Math.round(b.tank.ratedGal);
+  if (ownTank && present.has('tank')) { rows.add('tank'); notes.push({ kind: 'credit', text: opts.tankUse === 'available' ? `Your ${gal} gal tank: $0 (used here; it is Available, so a different tank can still be suggested).` : 'Your tank: $0 (the generator only offers setups this tank holds).' }); }
   for (const o of OWNED) {
     const pick = owned[o.id];
     if (!pick || (o.id === 'stand' && !needStand) || !o.rows.some(r => present.has(r))) continue;
     if (pick === PICK_UNKNOWN) { notes.push({ kind: 'ask', text: `Check your ${o.label.toLowerCase()}: not credited, the setup's own is priced.` }); continue; }
     const r = pick !== PICK_CARE && o.check ? o.check(b, pick) : {};
-    if (r.flag) { notes.push({ kind: 'flag', text: r.flag }); continue; }
+    if (r.flag) {
+      // GA1 (Nathan 2026-11-02): Available gear that does not suit is REPLACED, with the reason; Required gear is KEPT and credited, with a warning, never silently swapped
+      if (!opts.required?.includes(o.id)) { notes.push({ kind: 'flag', text: r.flag }); continue; }
+      if (r.tech) tech = r.tech;
+      o.rows.forEach(x => rows.add(x));
+      notes.push({ kind: 'flag', text: `${r.flag.replace(/: the setup's own .* is priced instead\.$/, '')}. You marked it Required, so it is kept; mark it Available to let TankLook replace it.` });
+      continue;
+    }
     if (r.tech) tech = r.tech;
     o.rows.forEach(x => rows.add(x));
     notes.push({ kind: 'credit', text: pick === PICK_CARE ? `Your ${o.label.toLowerCase()}: $0 (the setup's spec is assumed to suit it).` : `Your ${o.products?.().find(x => x.id === pick)?.label ?? o.label}: $0, ${r.tech ? "and used in the tank" : "checked against this tank"}.` });
   }
-  const list = D.totals.setupUsd, k = list > 0 ? b.setupUsd / list : 1;
-  const saved = Math.min(b.setupUsd, Math.round(D.items.filter(i => rows.has(i.key) && i.setup).reduce((t, i) => t + mean3(i.setup!), 0) * k));
-  return { saved, ...(tech ? { tech } : {}), notes, rows: [...rows] };
+  const list = D.totals.setupUsd, k = list > 0 ? b.setupUsd / list : 1, worth = (keep: (key: string) => boolean) => Math.min(b.setupUsd, Math.round(D.items.filter(i => keep(i.key) && i.setup).reduce((t, i) => t + mean3(i.setup!), 0) * k));
+  const saved = worth(key => rows.has(key));
+  return { saved, tankSaved: ownTank ? worth(key => key === 'tank') : 0, ...(tech ? { tech } : {}), notes, rows: [...rows] };
 }
+/** Guided Setup Rev 03 (lane GA1): `tankUse` words the tank credit; `required` = the owned items marked Required (kept, with a warning, when they do not suit); every other owned item is Available (replaced, with the reason, when it does not suit). */
+export interface OwnedOpts { tankUse?: 'required' | 'available'; required?: readonly OwnedKey[] }
 
 /** The sub-choice (reptiles & amphibians / arthropods) applies when Terrarium OR Vivarium is ticked. */
 export const asksDryGroups = (kinds: readonly Kind[]) => kinds.includes('terrarium') || kinds.includes('vivarium');
 
+/** Which limits are flexible (true) rather than hard. */
+export interface FlexLimits { startupUsd?: true; monthlyUsd?: true; minPerWeek?: true; setupHours?: true; space?: true }
 export interface Wants {
   /** the kinds of setup wanted (default all four; at least one) */
   kinds?: Kind[];
@@ -154,6 +166,13 @@ export interface Wants {
   maxLengthMm?: number;
   /** an EXISTING tank: the only tank offered, credited $0 ("you have"); a concept with no setup that this tank holds is not offered (never silently resized) */
   ownTank?: TankModel;
+  /** Guided Setup Rev 03 (lane GA1): an owned tank marked AVAILABLE ("I'm flexible"). Not a restriction: setups in other tanks are still offered when they suit the brief better; a setup that uses it is credited its price,
+   *  ranks a little higher for the saving, and each card says which tank it uses and why. (A Required tank is `ownTank` above.) brief: briefToWants, existing tank with use 'available'. */
+  availTank?: TankModel;
+  /** the owned items (keys of `owned`) marked REQUIRED: kept in every design, with a warning when one does not suit, never swapped. Every other owned item is Available (credited when it suits, replaced with a reason when it does not). brief: equipUseOf(b, key) === 'required'. */
+  requiredOwned?: OwnedKey[];
+  /** limits the person made FLEXIBLE (a target, not a rule): they rank and warn instead of filtering; a limit not named here is hard and filters. An unset limit is unknown: neither filters nor ranks. brief: the limit's kind (constraintOf: status 'preference' or flex). */
+  flexLimits?: FlexLimits;
   /** sales tax, percent of the set-up purchase (default 0, editable); the all-in total and the budget ceiling both include it */
   taxPct?: number;
   /** the person wants to spend what they set (the old "target" behaviour, lane C9): every concept's finish tier climbs as far as the ceiling lets it, and the tank grows with the money.
@@ -236,10 +255,19 @@ export interface Proposal {
   complexity: number;
   /** buy-in-phases plan (only when the brief asks for phases): what to buy first, what after the tank has cycled */
   phases?: Phases;
+  /** Guided Setup Rev 03 (lane GA1): which tank this setup stands on. 'owned-required' = the Required tank (the only tank offered), 'owned-available' = the Available tank, used because it suits; 'new' = a tank to buy. Absent when nothing is owned. */
+  tankSource?: 'owned-required' | 'owned-available' | 'new';
+  /** one line saying which: "Uses your 20 gal: ..." or "A 40 gal breeder instead: your 20 gal is too small for this." Absent when nothing is owned. */
+  tankNote?: string;
+  /** set-up dollars the owned (Available) tank's price took off this setup, and the ranking points that saving earned it */
+  tankCreditUsd?: number;
+  tankBonus?: number;
+  /** flexible limits this setup is over / under, and Required gear that does not suit, each in one line with the numbers ("Over your $300 target by $40."); ranking has already counted them */
+  warnings?: string[];
   /** guidance for the person's experience level when it matters (a demanding build for a beginner, a very simple one for an expert) */
   experienceNote?: string;
 }
-export type LimitingFactor = 'budget' | 'upkeep' | 'time' | 'space' | 'tank' | 'animals' | 'welfare';
+export type LimitingFactor = 'budget' | 'upkeep' | 'time' | 'space' | 'tank' | 'equipment' | 'animals' | 'welfare';
 export type { Alternative, AltEdit, Infeasible, Phases } from './infeasible';
 export interface Miss { archetype: Archetype; build: Build; totals: Money; needs: Partial<Money>; text: string }
 export interface Suggestions {
@@ -287,13 +315,28 @@ const FINISH_ALLOWANCE = 1.12;
 /** Groups are offered at these multiples of the archetype's own count when the tank holds them (the most the stocking rules allow: each rung is rechecked). Open animals only. */
 const STOCK_UP = [2, 1.5];
 
-interface Sizes { list: TankModel[]; top: number; ceiling: boolean }
+interface Sizes { list: TankModel[]; top: number; ceiling: boolean; /** the Available tank, when it holds these animals in the space (lane GA1): one more tank to try, beside the list, never a restriction */ own?: TankModel }
 /**
  * The tank sizes a concept can use, smallest first, and the index of the biggest one the ceiling allows (found by bisection on the cheapest build's cost, which
  * only rises with size; `taxK` = 1 + the tax rate). `ceiling`: that top size is the biggest the animals gain from, so a ceiling left over is the animals' limit, not the money's.
  * An existing tank is the only size. No set-up cap: the four smallest sizes.
  */
 function sizesFor(animals: AnimalCount[], w: Wants, space: SpaceLimit | undefined, cap: number | undefined, taxK: number, now: number): Sizes {
+  const z = sizesCore(animals, w, space, cap, taxK, now);
+  return !w.ownTank && w.availTank && !ownTankWhy(animals, w, space) ? { ...z, own: w.availTank } : z;
+}
+/** Why the Available tank cannot be used for these animals (undefined = it can): too small for them, over the space, longer than allowed, or outside the tank size range. */
+function ownTankWhy(animals: AnimalCount[], w: Wants, space: SpaceLimit | undefined): string | undefined {
+  const t = w.availTank; if (!t) return undefined;
+  const gal = `${Math.round(t.ratedGal)} gal`, f = fitIn(animals, t);
+  if (!f) return `your ${gal} cannot be checked for these animals`;
+  if (f.fails.length) return f.spacePct > 100 || f.minPct > 100 / 0.9 ? `your ${gal} is too small for this` : `your ${gal} does not meet the stocking rules for these animals`;
+  if (space && !spaceFit(tankFromModel(t), space).fits) return `your ${gal} does not fit your space`;
+  if (w.maxLengthMm && t.outer.L > w.maxLengthMm) return `your ${gal} is longer than you allowed`;
+  const g = w.tankGal; if (g && ((g.min !== undefined && t.ratedGal < g.min) || (g.max !== undefined && t.ratedGal > g.max))) return `your ${gal} is outside the tank size range you set`;
+  return undefined;
+}
+function sizesCore(animals: AnimalCount[], w: Wants, space: SpaceLimit | undefined, cap: number | undefined, taxK: number, now: number): Sizes {
   if (w.ownTank) {
     const t = w.ownTank, f = fitIn(animals, t);
     const ok = f && !f.fails.length && (!space || spaceFit(tankFromModel(t), space).fits) && (!w.maxLengthMm || t.outer.L <= w.maxLengthMm);
@@ -324,6 +367,29 @@ export function setupHoursOf(b: Build, P: UserProfile): number {
 /** Ranking by the person's set-up target (lane NG3): 0 with no target; up to TARGET_WEIGHT when the cost sits on it, falling to 0 a full target away. */
 export const TARGET_WEIGHT = 8;
 export function targetBonus(cost: number, target?: number): number { return target && target > 0 ? TARGET_WEIGHT * (1 - Math.min(1, Math.abs(cost - target) / target)) : 0; }
+
+/** Guided Setup Rev 03 (lane GA1): a FLEXIBLE limit never filters; the further over it a setup is the lower it ranks (up to FLEX_WEIGHT points per limit) and the card says so. */
+export const FLEX_WEIGHT = 12;
+/** An Available tank that a setup uses ranks up by its saving: one point per AVAIL_USD_PER_POINT dollars credited, at most AVAIL_BONUS_MAX points ("a little": about half a liked tag). */
+export const AVAIL_USD_PER_POINT = 60, AVAIL_BONUS_MAX = 5;
+export const REQUIRED_KEPT = 'You marked it Required';
+const inchOf = (mm: number) => Math.round(mm / 25.4 * 10) / 10;
+function flexReview(w: Wants, t: Money, hours: number, tankOuter: { L: number; D: number }, space: SpaceLimit | undefined): { warnings: string[]; penalty: number } {
+  const fx = w.flexLimits, C = w.constraints, warnings: string[] = []; let penalty = 0;
+  if (!fx) return { warnings, penalty };
+  const over = (flag: boolean | undefined, v: number, capv: number | undefined, text: (d: number) => string) => { if (flag && capv !== undefined && capv > 0 && v > capv) { warnings.push(text(v - capv)); penalty += FLEX_WEIGHT * Math.min(1, (v - capv) / capv); } };
+  over(fx.startupUsd && C.startupUsd?.on, t.startupUsd, C.startupUsd?.value, d => `Over your ${usd(C.startupUsd!.value)} setup target by ${usd(d)}.`);
+  over(fx.monthlyUsd && C.monthlyUsd?.on, t.monthlyUsd, C.monthlyUsd?.value, d => `Over your ${usd(C.monthlyUsd!.value)} a month target by ${usd(d)} a month.`);
+  over(fx.minPerWeek && C.minutesPerWeek?.on, t.minPerWeek, C.minutesPerWeek?.value, d => `Over your ${Math.round(C.minutesPerWeek!.value)} min a week target by ${Math.round(d)} min.`);
+  over(fx.setupHours, hours, w.setupHours, d => `Setting it up takes about ${Math.round(hours * 10) / 10} h, over your ${w.setupHours} h target by ${Math.round(d * 10) / 10} h.`);
+  const lo = w.mins;
+  if (lo) for (const [flag, v, floor, text] of [[fx.startupUsd, t.startupUsd, lo.startupUsd, (d: number) => `Under the ${usd(lo.startupUsd!)} you wanted to spend by ${usd(d)}.`], [fx.monthlyUsd, t.monthlyUsd, lo.monthlyUsd, (d: number) => `Under the ${usd(lo.monthlyUsd!)} a month you wanted by ${usd(d)} a month.`]] as const)
+    if (flag && floor !== undefined && floor > 0 && v < floor) { warnings.push(text(floor - v)); penalty += FLEX_WEIGHT / 3 * Math.min(1, (floor - v) / floor); }
+  if (fx.space && space && !((tankOuter.L <= space.w && tankOuter.D <= space.d) || (tankOuter.L <= space.d && tankOuter.D <= space.w))) {
+    warnings.push(`The tank is ${inchOf(tankOuter.L)} x ${inchOf(tankOuter.D)} in outside; your space is ${inchOf(space.w)} x ${inchOf(space.d)} in.`); penalty += FLEX_WEIGHT / 2;
+  }
+  return { warnings, penalty };
+}
 
 /** The share of the set-up cap a card must use to count as using the budget when `climb` is on; below it the card says why. */
 export const USES_BUDGET = 0.85;
@@ -410,7 +476,7 @@ function tradeoffOf(p: Pick<Proposal, 'build' | 'totals' | 'underCeilingUsd'>, s
 /** The entry point for a setup brief (lane U1/U2): locks, hard items and the experience level are read through the adapter; the brief wins over any Constraints a caller keeps beside it. */
 export function suggestFromBrief(b: Brief, P0: UserProfile, units: Units = 'cm', now = Date.now()): Suggestions { return suggestSetups(briefToWants(b), P0, units, now); }
 export function suggestSetups(w: Wants, P0: UserProfile, units: Units = 'cm', now = Date.now()): Suggestions {
-  const cap = w.constraints.startupUsd?.on ? w.constraints.startupUsd.value : undefined;
+  const cap = w.constraints.startupUsd?.on && !w.flexLimits?.startupUsd ? w.constraints.startupUsd.value : undefined;   // a flexible set-up target is not a ceiling the phases must fit (lane GA1)
   if (w.phased && cap !== undefined) {
     // phased purchase: money is checked on the essentials only; the animals come after the tank has cycled
     const off = { ...w, phased: false, constraints: { ...w.constraints, startupUsd: { ...w.constraints.startupUsd!, on: false } } };
@@ -432,6 +498,14 @@ function conceptMaker(w: Wants, P0: UserProfile, units: Units, now: number) {
   /** A stand is priced unless the person said otherwise; the cheapest-start concept of a small tank (10 gal or less, about 100 lb full) is offered on a sturdy counter instead, and says so. */
   const standFor = (tank: TankModel, noStand: boolean) => w.needStand ?? !(noStand && tank.ratedGal <= 10);
   const ownedMap = w.owned ?? {};
+  // lane GA1: the tank the person owns, Required (the only tank) or Available (one tank among others); owned gear marked Required is kept, the rest is Available
+  const ownIs = (t: TankModel) => !!w.ownTank || (!!w.availTank && w.availTank.id === t.id);
+  const oOpts: OwnedOpts = { tankUse: w.ownTank ? 'required' : 'available', ...(w.requiredOwned?.length ? { required: w.requiredOwned } : {}) };
+  // lane GA1: a FLEXIBLE limit does not filter. `hard` is the scene as the filters see it (flexible caps switched off); the proposal's own scene keeps every cap, so the card still shows where it stands against them.
+  const fx = w.flexLimits ?? {}, hasFlex = Object.values(fx).some(Boolean), off = <T extends { on: boolean }>(x: T | undefined, f: boolean | undefined) => x && f ? { ...x, on: false } : x;
+  const Ch: Constraints = hasFlex ? { ...C, ...(C.startupUsd ? { startupUsd: off(C.startupUsd, fx.startupUsd) } : {}), ...(C.monthlyUsd ? { monthlyUsd: off(C.monthlyUsd, fx.monthlyUsd) } : {}), ...(C.minutesPerWeek ? { minutesPerWeek: off(C.minutesPerWeek, fx.minPerWeek) } : {}), ...(fx.space ? { space: { on: false } } : {}) } : C;
+  const hard = (sc: TankSetup): TankSetup => hasFlex ? { ...sc, constraints: Ch } : sc;
+  const lows = w.mins && hasFlex ? { ...w.mins, ...(fx.startupUsd ? { startupUsd: undefined } : {}), ...(fx.monthlyUsd ? { monthlyUsd: undefined } : {}), ...(fx.setupHours ? { setupHours: undefined } : {}) } : w.mins;
   const ownsKitPart = (inc: readonly string[]) => OWNED.some(o => o.id in ownedMap && o.rows.some(r => inc.includes(r)));
   const scenOf = (b: Build, own: ReturnType<typeof ownedAssess>, needStand: boolean): TankSetup => ({ ...b.setup, ...(needStand ? {} : { stand: { ...b.setup.stand, show: false } }), ...(own.tech ? { tech: own.tech } : {}), constraints: C, layout: { ...b.setup.layout, ...(w.space ? { space: w.space } : {}) } });
   const taxOf = (preTax: number) => Math.round(Math.max(0, preTax) * taxPct / 100);
@@ -442,37 +516,38 @@ function conceptMaker(w: Wants, P0: UserProfile, units: Units, now: number) {
   const MEMO = new Map<string, Out>();
   const attempt = (a: Archetype, animals: AnimalCount[], tank: TankModel, pref: BuildId, maxLevel: 0 | 1 | 2 | 3, style?: StyleId, noStand = false, planted = true): Out => {
     const needStand = standFor(tank, noStand);
-    const bs = buildsCached(animals, tank, now).filter(b => meetsNeeds(b) && !(w.ownTank && b.bundle) && !(b.bundle && ownsKitPart(b.bundle.includes))); // a kit price cannot be split: owning a part of it leaves the parts build (lane U5)
+    const bs = buildsCached(animals, tank, now).filter(b => meetsNeeds(b) && !(ownIs(tank) && b.bundle) && !(b.bundle && ownsKitPart(b.bundle.includes))); // a kit price cannot be split: owning a part of it leaves the parts build (lane U5)
     const b0 = bs.find(b => b.id === pref || b.also?.includes(pref)) ?? [...bs].sort((x, y) => pref === 'leastWork' ? x.minPerWeek - y.minPerWeek : pref === 'balanced' ? x.filtrationPct - y.filtrationPct : x.setupUsd - y.setupUsd)[0];
     if (!b0) return {};
     const key = `${a.id}|${tank.id}|${animals.map(x => x.species + x.n).join(',')}|${configKey(b0)}|${maxLevel}|${style ?? ''}|${needStand}|${w.setupHours ?? ''}|${planted}`;
     const hit = MEMO.get(key); if (hit) return hit;
     let out: Out = {}, near: Miss | undefined;
-    const own0 = ownedAssess(b0, ownedMap, needStand, P0, !!w.ownTank), scene0 = scenOf(b0, own0, needStand);
+    const own0 = ownedAssess(b0, ownedMap, needStand, P0, ownIs(tank), oOpts), scene0 = scenOf(b0, own0, needStand);
     // a proposal is a FINISHED tank (lane C9, scene/finish.ts): the best finish tier up to maxLevel that still passes every check. A build that already breaks a husbandry rule or a money / time cap
     // before it is finished cannot be saved by plants (they only add), so it is not finished further.
     if (wordsOf(summaryOf(scene0, units).cats)) { out = { welfare: true }; MEMO.set(key, out); return out; }
-    const pre0 = b0.setupUsd - own0.saved, over0 = compliance(scene0, { setupUsd: pre0 + taxOf(pre0), upkeepUsdMo: b0.upkeepUsdMo, minPerWeek: b0.minPerWeek }, effectiveLimits(scene0, P0.limits), units).overall === 'over';
+    const pre0 = b0.setupUsd - own0.saved, sceneH0 = hard(scene0), over0 = compliance(sceneH0, { setupUsd: pre0 + taxOf(pre0), upkeepUsdMo: b0.upkeepUsdMo, minPerWeek: b0.minPerWeek }, effectiveLimits(sceneH0, P0.limits), units).overall === 'over';
     let welfare = false, belowMin = false;
     for (const b of finishTiers(b0, now, over0, maxLevel, style, !!w.lowtech)) {
-      const own = ownedAssess(b, ownedMap, needStand, P0, !!w.ownTank), saved = own.saved, scene = scenOf(b, own, needStand), sm = summaryOf(scene, units);
+      const own = ownedAssess(b, ownedMap, needStand, P0, ownIs(tank), oOpts), saved = own.saved, scene = scenOf(b, own, needStand), sm = summaryOf(scene, units);
       // husbandry is never traded for money or time: the strict rule (Nathan 2026-10-27) = nothing the stocking screen words as a Problem OR a Caution in any of its five categories. Only "not enough information" passes, and it is shown.
       if (style && planted && !b.setup.items.some(i => i.kind === 'plant' || i.kind === 'artificial' || i.kind === 'coral')) continue; // another look is still a planted (or reefed) tank, never a pile of stones
       if (wordsOf(sm.cats)) { welfare = true; continue; }
-      if (w.setupHours !== undefined && setupHoursOf(b, P0) > w.setupHours) continue; // the person's set-up time is a max (lane NG3b): a lighter finish of the same build may still fit
-      if (w.mins?.setupHours !== undefined && setupHoursOf(b, P0) < w.mins.setupHours) { st.below.push(`set-up time of at least ${w.mins.setupHours} h`); belowMin = true; continue; } // lane GV8: a lower bound
+      if (w.setupHours !== undefined && !fx.setupHours && setupHoursOf(b, P0) > w.setupHours) continue; // the person's set-up time is a max (lane NG3b): a lighter finish of the same build may still fit
+      if (lows?.setupHours !== undefined && setupHoursOf(b, P0) < lows.setupHours) { st.below.push(`set-up time of at least ${lows.setupHours} h`); belowMin = true; continue; } // lane GV8: a lower bound
       if (w.hightech && (b.finish?.level ?? 0) < 2) continue; // a stated high-tech approach is never silently swapped for a plainer one
-      const preTax = b.setupUsd - saved, tax = taxOf(preTax), t = { ...money(b), startupUsd: preTax + tax }, L = effectiveLimits(scene, P0.limits);
-      const cp = compliance(scene, { setupUsd: t.startupUsd, upkeepUsdMo: t.monthlyUsd, minPerWeek: t.minPerWeek }, L, units);
-      if (cp.overall !== 'off') st.anyOn = true;
+      const preTax = b.setupUsd - saved, tax = taxOf(preTax), t = { ...money(b), startupUsd: preTax + tax }, sceneH = hard(scene), L = effectiveLimits(sceneH, P0.limits);
+      const cpTotals = { setupUsd: t.startupUsd, upkeepUsdMo: t.monthlyUsd, minPerWeek: t.minPerWeek };
+      const cp = compliance(sceneH, cpTotals, L, units), cpShown = hasFlex ? compliance(scene, cpTotals, effectiveLimits(scene, P0.limits), units) : cp; // cp decides (hard limits only); cpShown is what the card shows (every cap)
+      if (cpShown.overall !== 'off') st.anyOn = true;
       // lane GV8: a figure under a lower bound is not offered (the next finish tier up may be); the bound that turned it away is remembered for the message
-      const lo = w.mins, under = lo && [t.startupUsd < (lo.startupUsd ?? 0) && `set-up of at least ${usd(lo.startupUsd!)}`, t.monthlyUsd < (lo.monthlyUsd ?? 0) && `upkeep of at least ${usd(lo.monthlyUsd!)} a month`,
+      const lo = lows, under = lo && [t.startupUsd < (lo.startupUsd ?? 0) && `set-up of at least ${usd(lo.startupUsd!)}`, t.monthlyUsd < (lo.monthlyUsd ?? 0) && `upkeep of at least ${usd(lo.monthlyUsd!)} a month`,
         t.minPerWeek < (lo.minPerWeek ?? 0) && `care of at least ${lo.minPerWeek} min a week`].filter(Boolean) as string[];
       if (under?.length) { st.below.push(...under); belowMin = true; continue; }
       if (cp.overall === 'within' || cp.overall === 'off') {
         const matched = tags.filter(x => a.tags.includes(x));
         const cl = costLines(b, own.rows, t.startupUsd, needStand, P0, tax, `Sales tax (${taxPct}%)`);
-        out = { p: { needStand, archetype: a, build: b, scene, totals: t, saved, preTaxUsd: preTax, taxUsd: tax, taxPct, ownedNotes: own.notes, status: cp.results, matched, levelOf: b.finish?.level ?? 0,
+        out = { p: { needStand, archetype: a, build: b, scene, totals: t, saved, preTaxUsd: preTax, taxUsd: tax, taxPct, ownedNotes: own.notes, status: cpShown.results, matched, levelOf: b.finish?.level ?? 0, tankCreditUsd: own.tankSaved,
           costLines: cl, layers: layerTotals(cl),
           unknown: sm.cats.flatMap(c => c.items.filter(i => i.level === 'unknown').map(i => i.text)).slice(0, 1) } };
         break; // the best finish that passes: a lesser tier of the same build adds nothing
@@ -502,7 +577,15 @@ function conceptMaker(w: Wants, P0: UserProfile, units: Units, now: number) {
       + (w.climb && L.setupUsd ? (limited ? 1 : Math.min(1, t.startupUsd / L.setupUsd)) * 20 : 0)
       + targetBonus(t.startupUsd, w.startupTarget) + targetBonus(setupHoursOf(p.build, P0), w.setupHoursTarget)
       + tasteBonus(w.taste, p.build.finish?.style);   // lane NG5 hook: ranking only
-    const base = { ...p, score, strategy: id, strategyLabel: strategyLabel(id, isLocked), strategyBlurb: sd.blurb,
+    // lane GA1: a flexible limit ranks (further over = lower) and warns; an Available tank this setup uses ranks up by its saving; Required gear that does not suit is kept and warned about
+    const sp = C.space?.on === false ? undefined : w.space, fr = flexReview(w, t, w.flexLimits?.setupHours ? setupHoursOf(p.build, P0) : 0, p.build.tank.outer, sp);
+    const owns = !!w.ownTank || (!!w.availTank && p.build.tank.id === w.availTank.id), gal = Math.round(p.build.tank.ratedGal), credit = p.tankCreditUsd ?? 0;
+    const tankBonus = w.availTank && !w.ownTank && owns ? Math.min(AVAIL_BONUS_MAX, credit / AVAIL_USD_PER_POINT) : 0;
+    const warnings = [...p.ownedNotes.filter(n => n.kind === 'flag' && n.text.includes(REQUIRED_KEPT)).map(n => n.text), ...fr.warnings];
+    const tankInfo = w.ownTank ? { tankSource: 'owned-required' as const, tankNote: `Uses your ${gal} gal (Required).` }
+      : w.availTank ? owns ? { tankSource: 'owned-available' as const, tankNote: `Uses your ${gal} gal: ${credit > 0 ? `its price is credited (${usd(credit)} off) and the setup ranks a little higher for it` : 'it is credited as yours'}.`, tankBonus }
+        : { tankSource: 'new' as const } : {};
+    const base = { ...p, score: score - fr.penalty + tankBonus, ...tankInfo, ...(owns && credit > 0 ? {} : { tankCreditUsd: undefined }), ...(warnings.length ? { warnings } : {}), strategy: id, strategyLabel: strategyLabel(id, isLocked), strategyBlurb: sd.blurb,
       ...(L.setupUsd ? { underCeilingUsd: Math.max(0, Math.round(L.setupUsd - t.startupUsd)) } : {}),
       ...(limited ? { capNote: 'This is the most this kind needs: a bigger tank or more animals would not suit them, so part of your budget is left over.' } : {}) };
     const note = experienceNote(exp, cx, t.minPerWeek);
@@ -512,7 +595,7 @@ function conceptMaker(w: Wants, P0: UserProfile, units: Units, now: number) {
 }
 function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain: boolean): Suggestions {
   const C = w.constraints, taxPct = Math.min(25, Math.max(0, w.taxPct ?? 0)), taxK = 1 + taxPct / 100;
-  const space = C.space?.on === false ? undefined : w.space;
+  const space = C.space?.on === false || w.flexLimits?.space ? undefined : w.space;   // a flexible space does not filter the tank list (the card warns instead, lane GA1)
   const pool: Proposal[] = [], misses: Miss[] = [];
   const stats = { pool: 0, rejectedWelfare: 0, rejectedConstraint: 0 };
   const locked = w.animals?.some(a => a.n > 0) ? lockedArchetype(w.animals) : undefined, isLocked = !!w.animals?.some(a => a.n > 0);
@@ -525,10 +608,11 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
   // beyond it are then run for the strongest few archetypes only (the best of each family first), the rest stay in the pool by their screening concept.
   type Ctx = Sizes & { altStyle?: StyleId };
   const ctxs = new Map<string, Ctx>();
-  const runStrategy = (a: Archetype, id: StrategyId) => {
-    const c = ctxs.get(a.id); if (!c) return;
-    const { list, top, ceiling, altStyle } = c;
-    const mid = Math.ceil(top / 2), idxOf = (z: StrategyDef['size']) => Math.min(top, (z === 'small' ? 0 : z === 'top' ? top : mid) + (w.larger ? 1 : 0));
+  // `own`: the Available tank as the one tank of this concept (lane GA1); the strategy then only picks the build and the finish
+  const runStrategy = (a: Archetype, id: StrategyId, own = false) => {
+    const c = ctxs.get(a.id); if (!c || (own && !c.own)) return;
+    const { top, ceiling, altStyle } = c, list = own ? [c.own!] : c.list;
+    const mid = Math.ceil(top / 2), idxOf = (z: StrategyDef['size']) => own ? 0 : Math.min(top, (z === 'small' ? 0 : z === 'top' ? top : mid) + (w.larger ? 1 : 0));
     const sd = STRATEGIES.find(x => x.id === id)!;
     if (sd.scape && !altStyle) return;
     // owned gear frees set-up money (lane NG3b): the finish ladder may reach one tier higher, still only as far as the ceiling lets it
@@ -536,7 +620,7 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
     const maxLevel = Math.min(3, freed + (w.climb || w.planted ? 3 : w.hightech || w.lowtech ? Math.max(sd.level, 2) : sd.level)) as 0 | 1 | 2 | 3;
     let found: Out | undefined, near: Miss | undefined;
     // the strategy's own size first; a size the money cannot carry once finished falls back one size down at a time, a size the welfare rule turns away (too full) goes one size UP (at most three tries)
-    for (let tries = 0, i = idxOf(sd.size), dir = -1; i >= 0 && i < list.length && tries < 3 && !found?.p; i += dir, tries++) {
+    for (let tries = 0, i = idxOf(sd.size), dir = -1; i >= 0 && i < list.length && tries < (own ? 1 : 3) && !found?.p; i += dir, tries++) {
       const tank = list[i], stocks: AnimalCount[][] = [];
       if (sd.grow && !isLocked && a.animals.some(x => x.n >= 3)) for (const f of STOCK_UP) {
         const more = a.animals.map(x => ({ ...x, n: x.n >= 3 ? Math.round(x.n * f) : x.n })), fit = fitIn(more, tank);
@@ -557,7 +641,7 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
       dir = welfareOnly ? 1 : -1;
     }
     // lane U5: the cheapest start also looks at the next sizes up and at starter kits with their own tank (heater, filter, light, thermometer and net in one price): a kit can undercut the smallest tank's parts
-    if (id === 'economy' && found?.p && !w.ownTank) for (const tk of kitTanks(a.animals, now, list[0])) { const q = attempt(a, a.animals, tk, sd.build, maxLevel, undefined, true); if (q.p && q.p.totals.startupUsd < found!.p!.totals.startupUsd) found = q; }
+    if (id === 'economy' && found?.p && !w.ownTank && !own) for (const tk of kitTanks(a.animals, now, list[0])) { const q = attempt(a, a.animals, tk, sd.build, maxLevel, undefined, true); if (q.p && q.p.totals.startupUsd < found!.p!.totals.startupUsd) found = q; }
     if (!found?.p) { if (near) misses.push(near); return; }
     pool.push(finalize(found.p, id, isLocked, ceiling));
   };
@@ -569,6 +653,7 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
     const ranked = rankStyles(a.animals);
     ctxs.set(a.id, { ...z, altStyle: ranked.slice(1).find(r => r.score >= (ranked[0]?.score ?? 0) - 0.6)?.style });
     runStrategy(a, 'economy');
+    if (z.own) runStrategy(a, 'economy', true);   // lane GA1: the Available tank is always one candidate, so a setup that uses it is never missed
     // the cheapest-start screen cannot stand for a kind once a lower bound is set (it is the concept most likely to fall under it): try the dearer strategies for it
     if (w.mins && Object.values(w.mins).some(v => v !== undefined)) for (const id of strategies) if (id !== 'economy' && !pool.some(p => p.archetype.id === a.id)) runStrategy(a, id);
   }
@@ -577,7 +662,15 @@ function generate(w: Wants, P0: UserProfile, units: Units, now: number, explain:
   for (const x of screened) if (!deep.some(d => d.family === x.a.family)) deep.push(x.a); // the best of each family first
   for (const x of screened) if (deep.length < MORE && !deep.includes(x.a)) deep.push(x.a);
   // the alternative-aquascape concept only for the strongest archetype (each strategy is a finished tank to build and price)
-  for (const a of deep.slice(0, MORE)) for (const id of strategies) if (id !== 'economy' && (id !== 'scape' || isLocked || a === deep[0])) runStrategy(a, id);
+  for (const a of deep.slice(0, MORE)) for (const id of strategies) if (id !== 'economy' && (id !== 'scape' || isLocked || a === deep[0])) { runStrategy(a, id); if (id !== 'scape') runStrategy(a, id, true); }
+  // lane GA1: a setup in a NEW tank says why it is not in the Available one (too small for the animals, over the space, or it suits the approach better)
+  if (w.availTank && !w.ownTank) {
+    const ownPassed = new Set(pool.filter(p => p.tankSource === 'owned-available').map(p => p.archetype.id)), mine = Math.round(w.availTank.ratedGal);
+    for (const p of pool) if (p.tankSource === 'new') {
+      const why = ownTankWhy(p.build.animals, w, space), g = Math.round(p.build.tank.ratedGal);
+      p.tankNote = `A ${g} gal instead: ${why ?? (ownPassed.has(p.archetype.id) ? `it suits the ${p.strategyLabel.toLowerCase()} approach better; your ${mine} gal would also hold these animals` : `no setup in your ${mine} gal passes all your checks`)}.`;
+    }
+  }
   // the same concept reached by two strategies is one concept: the first (strongest) keeps it
   const seen = new Set<string>(), uniq: Proposal[] = [];
   for (const p of [...pool].sort((a, b) => b.score - a.score)) { const k = `${p.archetype.id}|${p.build.tank.id}|${configKey(p.build)}|${p.build.finish?.tier}|${p.build.finish?.style}|${p.build.animals.map(x => x.species + x.n).join(',')}`; if (!seen.has(k)) { seen.add(k); uniq.push(p); } }

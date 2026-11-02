@@ -437,6 +437,14 @@ export function briefToWants(b: Brief): Wants {
   if (stock && stock.status === 'locked' && stock.value.length) w.animals = stock.value.map(x => ({ species: x.species, n: x.count }));
   const model = own?.value.model ? getTankModel(own.value.model) : undefined;
   if (model && equipUseOf(b, 'tank') === 'required') w.ownTank = model;   // Guided Setup Rev 03: an Available tank is credited but alternatives may be offered
+  // lane GA1 hooks (suggest.ts reads them): the Available tank, the owned gear marked Required, and which limits are flexible (the same rule as project.ts constraintOf: kind 'flexible' = status not hard, or flex)
+  if (model && equipUseOf(b, 'tank') === 'available') w.availTank = model;
+  const req = owned ? OWNED_KEYS.filter(k => k in owned.value && equipUseOf(b, k) === 'required') : []; if (req.length) w.requiredOwned = req;
+  const flexLim = (id: ItemId) => { const it = b.items[id]; return !!it && !it.off && (it.status !== 'hard' || !!it.flex); };
+  const fl: NonNullable<Wants['flexLimits']> = {};
+  if (flexLim('constraints.budget')) fl.startupUsd = true; if (flexLim('constraints.monthly')) fl.monthlyUsd = true; if (flexLim('constraints.careMin')) fl.minPerWeek = true;
+  if (flexLim('constraints.setupHours')) fl.setupHours = true; if (flexLim('constraints.maxSpace')) fl.space = true;
+  if (Object.keys(fl).length) w.flexLimits = fl;
   const ph = g('constraints.phased'), ht = g('preferences.hightech'), lt = g('preferences.lowtech');
   if (ph && !ph.off && ph.value) w.phased = true;
   if (ht && !ht.off && ht.value) w.hightech = true;
