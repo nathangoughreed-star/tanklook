@@ -1,0 +1,13 @@
+# Lane GS3: Look First tail of Guided Setup Rev 03 (src/ui/discovery)
+
+Coordinator: Coordinator 18, local_a9a242cb-2560-4fe6-8c3a-0e51e36644b4. Report ONCE with send_message when ready to merge, done, or blocked.
+Own worktree, never the shared folder: `git fetch`, `git checkout -b gs3-look-first origin/main`. Read HANDOFF.md "Start here" (incl. "GUIDED SETUP REV 03" and "Machine load": renders only via `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/lowprio.ps1 <cmd>`, a sample not a sweep), research/design/guided-setup-rev03.md sections 4, 6 and 8, src/ui/discovery/ (VD3 / VD6), src/scene/recipes.ts.
+You OWN: src/ui/discovery/* and test/discovery*.ts, plus the .vd-* block in style.css. Do NOT edit src/scene/brief.ts or a new src/scene/project.ts (lane GS2 builds the shared state there in parallel). If you need a new field, keep it inside the existing brief.vision shape or local to discovery, and list it in your report so GS4 can move it onto GS2's state.
+Do (Look First route, spec sections 4 and 8):
+1. World step: add "Open to anything / Not sure yet" as a fourth equal card (curated tile slot `any`); picking it shows families from every environment, grouped, instead of forcing a choice.
+2. Water: shown only when relevant and not already implied (keep VD3's knownOf rule); the breadcrumb hides steps that are irrelevant or resolved.
+3. After Density, a "Suitable animals" step: compatible animals and stocking suggestions for the chosen archetype + enclosure (reuse the existing roster / suggest / stocking code; welfare checks stay authoritative), each addable in one click, all optional: "Continue to Make It Your Own" works with none chosen. Visual density never changes stocking.
+4. Provisional enclosure when there is no tank: known dimensions -> labelled provisional from known space / budget / animals -> editable example enclosure; never a mandatory question. Keep VD6's "suggested tank, not one you have" label and selector.
+5. The chosen archetype, density stop and any added animals carry into Make It Your Own unchanged (VD6 scene cache).
+Tests for each. Browser check: the spec's journey A (Aquarium, Look First, Freshwater, Wild Habitats, Blackwater Creek, Balanced, suitable fish, editor), screenshots SAVED AS FILES (SendUserFile the key ones). The shared-onboarding steps (Equipment, Limits, Starting Point) are lane GS4's, so start from the World step that exists today.
+Rules: gallons, inches, deg F, US $. Questions for Nathan WITH pictures. Before reporting: npm run build + FULL vitest via Bash run_in_background (never Start-Process; end the turn, no polling). Kill your Chrome / node / vite when you report. Don't push: send branch, sha(s), suite result, screenshot paths, and the fields you need GS2 to own.
