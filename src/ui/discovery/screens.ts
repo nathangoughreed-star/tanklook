@@ -65,6 +65,10 @@ export interface DiscoveryOpts {
   allowBack?: boolean;
   /** The shell draws the breadcrumb: only this route's steps, Water and World hidden when irrelevant or resolved. */
   onCrumbs?(steps: CrumbState[], current: VStep): void;
+  /** The Suitable Animals the person chose before (Look First): the shell keeps them in the project state as unlocked suggestions and hands them back here. */
+  suggested?: AnimalCount[];
+  /** Every change of those suggestions (the shell writes them to the project state, never as locked animals). */
+  onSuggested?(animals: AnimalCount[]): void;
   /** 'editor': the person finished and the scene has replaced the tank's contents (the only place that happens); 'back': Back on the first step. */
   onExit?(kind: 'editor' | 'back'): void;
 }
@@ -85,7 +89,9 @@ export function mountDiscovery(store: Store, host: DiscoveryHost, root: HTMLElem
   let stopNow = 2, sliderOn = false, curA: Archetype | undefined, curTc: TankChoice | undefined;
   let at: VStep = 'environment', known: Known = knownOf([]), soonId: string | undefined, tankPick: string | undefined, token = 0;
   // GS3: "Open to anything" was picked at World, and the animals added at the Suitable Animals step (both local until GS4 moves them onto GS2's project state)
-  let worldOpen = false, chosen: AnimalCount[] = [];
+  // (lane GS4: the shell hands the animals back in `suggested` and hears every change, so a refresh or revisit keeps them; Open to anything is the project's world 'any')
+  let worldOpen = false, chosen: AnimalCount[] = opts.suggested ? [...opts.suggested] : [];
+  const setChosen = (c: AnimalCount[]) => { if (JSON.stringify(c) === JSON.stringify(chosen)) return; chosen = c; opts.onSuggested?.(c); };
   const previews = new Previews(host.shot);
 
   // what the person already fixed: the animals the shell passes (else the locked roster in the brief and the animals in the tank) and the tank they have
@@ -278,7 +284,7 @@ export function mountDiscovery(store: Store, host: DiscoveryHost, root: HTMLElem
       soonId = id; draw(); panel.scrollIntoView?.({ block: 'nearest' }); return;
     }
     const n = setPick(p, at, id, known); save(n);
-    if (n.archetypeId !== p.archetypeId || n.familyId !== p.familyId) chosen = [];   // the animals were chosen for that look
+    if (n.archetypeId !== p.archetypeId || n.familyId !== p.familyId) setChosen([]);   // the animals were chosen for that look
     if (at === 'environment' && id === ANY_WORLD) { draw(); return; }   // "Open to anything" defers the world: this step asks again, without that card
     go(nextIn(route, ownsWorld, at, n, known));
   }
@@ -308,7 +314,7 @@ export function mountDiscovery(store: Store, host: DiscoveryHost, root: HTMLElem
     const ho = same ? undefined : handOff(store.tank, T, { accept: accepted.map(c => c.species), brief: b0 });
     if (ho) store.update(s => { Object.assign(s.tanks[s.active], structuredClone(ho.scene)); }, { coalesce: 'discovery' });
     editBrief(() => keep); store.seal();
-    chosen = [];
+    setChosen([]);
     host.status(`${a.name}, ${STOP_NAME[stop].toLowerCase()}, opened in the editor. ${same ? 'It was already your look: nothing was changed.' : ho && !ho.fresh ? 'Your tank, gear and animals were kept; only the look changed.' : 'Make it your own: change anything;'} Undo steps back.${a.support === 'partial' && a.deps.length ? ' ' + depsLine(a) : ''}`);
     opts.onExit?.('editor');
   }
@@ -317,7 +323,7 @@ export function mountDiscovery(store: Store, host: DiscoveryHost, root: HTMLElem
   root.addEventListener('load', e => { const t = e.target; if (t instanceof HTMLImageElement && t.classList.contains('vd-img')) t.classList.add('ok'); }, true);
   tankLine.addEventListener('change', e => {
     const t = e.target as HTMLSelectElement;
-    if (t.dataset.vd === 'tank') { tankPick = t.value; const m = getTankModel(t.value); if (chosen.length && !(m && !fitIn(chosen, m)?.fails.length)) chosen = []; draw(); }   // animals that no longer fit the changed tank are dropped
+    if (t.dataset.vd === 'tank') { tankPick = t.value; const m = getTankModel(t.value); if (chosen.length && !(m && !fitIn(chosen, m)?.fails.length)) setChosen([]); draw(); }   // animals that no longer fit the changed tank are dropped
   });
   const moveTo = (n: number, commit: boolean) => {
     stopNow = Math.max(0, Math.min(4, Math.round(n))); const rg = tiles.querySelector<HTMLInputElement>('.vd-range'); if (rg) rg.value = String(stopNow);
@@ -333,17 +339,17 @@ export function mountDiscovery(store: Store, host: DiscoveryHost, root: HTMLElem
     if (t.dataset.pick) { choose(t.dataset.pick); return; }
     if (t.dataset.add || t.dataset.drop) {
       const a = picks().archetypeId ? archetype(picks().archetypeId!) : undefined, tc = tankOf(picks()), s = a && tc && suitOf(a, tc.model).list.find(x => x.sp.id === t.dataset.add);
-      if (t.dataset.drop) chosen = dropAnimal(chosen, t.dataset.drop); else if (s) chosen = addAnimal(chosen, s.add);
+      if (t.dataset.drop) setChosen(dropAnimal(chosen, t.dataset.drop)); else if (s) setChosen(addAnimal(chosen, s.add));
       draw(); return;
     }
     const p = picks();
     switch (t.dataset.vd) {
       case 'back': { const s = prevIn(route, ownsWorld, at, p, known); if (s) go(s); else opts.onExit?.('back'); break; }
       case 'next': if (at === 'density' && sliderOn) save(setPick(p, 'density', String(stopNow), known)); go(nextIn(route, ownsWorld, at, p, known)); break;
-      case 'skipanimals': chosen = []; finish(); break;
+      case 'skipanimals': setChosen([]); finish(); break;
       case 'alt': { const a = soonId ? archetype(soonId) : undefined, alt = a && alternativeOf(a); if (alt) { save(pickAlternative(p, alt)); go('density'); } break; }
       case 'explore': soonId = undefined; draw(); break;
-      case 'addset': { const a = p.archetypeId ? archetype(p.archetypeId) : undefined, tc = tankOf(p); if (a && tc) chosen = setOf(a, tc.model).reduce(addAnimal, chosen); draw(); break; }
+      case 'addset': { const a = p.archetypeId ? archetype(p.archetypeId) : undefined, tc = tankOf(p); if (a && tc) setChosen(setOf(a, tc.model).reduce(addAnimal, chosen)); draw(); break; }
     }
   });
   /** Settle what the shell passed (the world, the animals, the tank), then show the first step still waiting (a roster usually starts at Family; a finished path shows Density). */

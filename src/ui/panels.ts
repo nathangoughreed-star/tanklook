@@ -310,7 +310,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   const openLimits = () => void import('./limitsPanel').then(m => { (limitsPanel ??= m.attachLimitsPanel()).open(); });
   const startMode = attachStartMode(store, {
     guided: () => welcome.show(),
-    guidedNew: async () => { if (welcomeFirst) welcomeFirst = false; else if (!await newEmptyTank()) return false; welcome.show(); return true; },
+    guidedNew: async at => { if (welcomeFirst) welcomeFirst = false; else if (!await newEmptyTank()) return false; welcome.show(at); return true; },
     sandbox: kind => { if (welcomeFirst) { welcomeFirst = false; store.edit(s => applyKind(s, kind)); return true; } return newEmptyTank(kind); },
     owned: openOwned,
     browse: (menu, tab) => showChooser(menu, tab, welcomeFirst),

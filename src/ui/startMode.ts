@@ -50,7 +50,7 @@ const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;
 
 export interface StartModeHost {
   /** Enter the Welcome workspace (Guided). */ guided(): void;
-  /** Guided from New (lane NW1): a clean tank and brief (after the replace warning), then Discovery at World; false when cancelled. */ guidedNew(): boolean | Promise<boolean>;
+  /** Guided from New (lane NW1): a clean tank and brief (after the replace warning), then Guided Setup at World (or at the step asked for: Equipment); false when cancelled. */ guidedNew(at?: 'equipment'): boolean | Promise<boolean>;
   /** An empty tank of the kind (false when the person cancelled the replace warning). */ sandbox(kind: SetupKind): boolean | Promise<boolean>;
   /** The owned-gear sheet (ui/ownedGear.ts): tick the tank, light, heater and filter you already have. */ owned(): void;
   /** The deals / starters / saved-tank lists. */ browse(menu: 'new' | 'open', tab?: 'starters' | 'open'): void;
@@ -104,7 +104,7 @@ export function attachStartMode(store: Store, host: StartModeHost, initialKind: 
     const w = t.dataset.browse!; dlg.close(); setMode('guided'); drawBar();
     host.browse(w === 'new' ? 'new' : 'open', w === 'starters' ? 'starters' : w === 'open' ? 'open' : undefined);
   });
-  $('modeOwned').onclick = () => { setMode('guided'); dlg.close(); drawBar(); host.owned(); };
+  $('modeOwned').onclick = async () => { if (await host.guidedNew('equipment')) { setMode('guided'); dlg.close(); drawBar(); } };   // Guided Setup Rev 03: "something I have now" opens Guided at Equipment
   $('modeGuided').onclick = async () => { if (await host.guidedNew()) { setMode('guided'); dlg.close(); drawBar(); } };
   $('modeSandbox').onclick = async () => { if (await host.sandbox(kind)) { setMode('sandbox'); dlg.close(); drawBar(); } };
   store.subscribe(drawBar); onBrief(drawBar); drawBar();
