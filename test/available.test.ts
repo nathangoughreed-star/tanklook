@@ -186,8 +186,9 @@ describe('the brief: limit kind and Required / Available reach the generator by 
     }
     expect(briefToWants(emptyBrief()).flexLimits).toBeUndefined();
   });
-  it('a typed limit is hard by default, so it filters', () => {
-    expect(briefToWants(setConstraint(emptyBrief(), 'startup', 300)).flexLimits).toBeUndefined();
+  it('typed limits take the per-constraint default kind (Nathan 2026-11-02: a budget is a flexible target, space is firm)', () => {
+    expect(briefToWants(setConstraint(emptyBrief(), 'startup', 300)).flexLimits).toEqual({ startupUsd: true });
+    expect(briefToWants(setConstraint(emptyBrief(), 'startup', 300, 'hard')).flexLimits).toBeUndefined();
   });
 });
 
