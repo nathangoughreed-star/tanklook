@@ -141,7 +141,9 @@ export function waterVolumeMaterial() {
 ${WATER_FILTER_GLSL}
 void main() {
   vec3 f = aqWaterFilter();
-  gl_FragColor = uXr > 0.5 ? vec4(uWCol * 0.85, 1.0 - dot(f, vec3(0.2126, 0.7152, 0.0722))) : vec4(f, 1.0);
+  // (a ShaderMaterial writes no colour-space conversion: the multiply happens on the sRGB page, so the filter is sRGB too)
+  vec3 fs = mix(f * 12.92, 1.055 * pow(f, vec3(1.0 / 2.4)) - 0.055, step(0.0031308, f));
+  gl_FragColor = uXr > 0.5 ? vec4(uWCol * 0.85, 1.0 - dot(f, vec3(0.2126, 0.7152, 0.0722))) : vec4(fs, 1.0);
   gl_FragDepth = 0.9999999;
 }`,
     transparent: true, depthWrite: false, depthFunc: THREE.LessDepth, side: THREE.BackSide,
@@ -415,7 +417,7 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
       '} else if (aqM > 1.0) outgoingLight /= aqM;\n' +
       // water colour (lane WT1): one filter colour for whatever sits behind water, however deep (no depth haze), only on
       // sightlines that cross the water at all; fish ease off it as they stand out (render.pop)
-      'if (uWater.w > 0.0) { float aqF = smoothstep(0.0, 0.5, aqWaterPath()) * (1.0 - 0.6 * uPop * max(uFish, uFishCard)); outgoingLight *= mix(vec3(1.0), aqWaterFilter(), aqF); }\n' +
+      'if (uWater.w > 0.0) { float aqF = smoothstep(0.0, 0.5, aqWaterPath()) * (1.0 - 0.6 * uPop * max(uFish, uFishCard)); outgoingLight = outgoingLight * mix(vec3(1.0), aqWaterFilter(), aqF) + aqWaterVeil() * (aqF * min(dot(aqLt, vec3(0.2126, 0.7152, 0.0722)), 1.0)); }\n' +
       // light map on the substrate (beam overlay on): false colour by level, a dark contour line at each doubling (valued by ui/lightContours), the
       // grain kept faintly so the relief still reads; replaces the lit colour and the water haze
       'if (uMapOn > 0.5 && uSub > 0.5) { float aqI = max(aqIrr(), 1e-6), aqT = log2(aqI / uMapDiv);\n' +

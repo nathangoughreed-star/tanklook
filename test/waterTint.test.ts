@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import * as THREE from 'three';
 import { LU, setWaterUniforms, setWaterVolumeMode, waterVolumeMaterial } from '../src/render/lighting';
-import { TINT_EXP, WATER_FILTER_GLSL, opacityOfK, waterFilter, waterHue, type RGB } from '../src/render/waterTint';
+import { TINT_EXP, WATER_FILTER_GLSL, opacityOfK, waterFilter, waterHue, waterVeil, type RGB } from '../src/render/waterTint';
 import { waterK } from '../src/scene/physics';
 import { defaultSetup } from '../src/scene/defaults';
 
@@ -44,6 +44,15 @@ describe('water colour as a filter through the glass (WT1)', () => {
     for (const o of [0.05, 0.2, 0.42, 0.8]) expect(opacityOfK(waterK(o))).toBeCloseTo(o, 6);
     expect(opacityOfK(0)).toBe(0);
     expect(TINT_EXP).toBeGreaterThan(0);
+  });
+
+  it('the veil (so a black background still shows the colour) is zero for clear water, small, hue-shaped and depth-free', () => {
+    const h = waterHue(lin(BLACKWATER));
+    expect(waterVeil(h, 0)).toEqual([0, 0, 0]);
+    const v = waterVeil(h, 0.42);
+    expect(v[0]).toBeGreaterThan(v[1]); expect(v[1]).toBeGreaterThan(v[2]);
+    expect(Math.max(...v)).toBeLessThan(0.08); // faint: it must not wash out contrast
+    expect(WATER_FILTER_GLSL).toContain('aqWaterVeil');
   });
 
   it('pure red / blue water never goes black in the other channels', () => {
