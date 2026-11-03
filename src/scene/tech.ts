@@ -220,7 +220,11 @@ export type FilterState = 'chosen' | 'filterless' | 'unset';
 export function filterState(S: TankSetup): FilterState {
   const t = S.tech;
   if (t && (t.filters?.length || (t.rows.filter && t.rows.filter !== 'none'))) return 'chosen';
-  return t?.filterless ? 'filterless' : 'unset';
+  if (t?.filterless) return 'filterless';
+  // FL1 (Nathan 2026-11-03): a filter the scene DRAWS is the tank's filter. Any tank not started from its animals draws the inferred one
+  // (gear3d DRAW_INFERRED), so it counts as chosen; only a stock-first tank (draws none until one is added) or a row set to none reads 'unset'.
+  if (!S.stockFirst && S.water.on) { const f = techOf(S).rows.filter; if (f && f !== 'none') return 'chosen'; }
+  return 'unset';
 }
 /** Tick or untick "no filter" (one edit): ticking writes filter none, no filters, filterless, and leaves the other rows inferred. */
 export function setFilterless(S: TankSetup, on: boolean) {

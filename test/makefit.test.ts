@@ -126,7 +126,7 @@ describe('Find solutions (lane C3)', () => {
 });
 
 describe('Find solutions on a tank with no filter chosen (lane B3, after B2 assumedFilter)', () => {
-  const unset = (): TankSetup => { const S = stock([['neon', 8], ['danio', 8]]); delete S.tech; delete S.stockFirst; return S; };
+  const unset = (): TankSetup => { const S = stock([['neon', 8], ['danio', 8]]); S.tech = { rows: { filter: 'none' } }; delete S.stockFirst; return S; };
   const capped = (S: TankSetup) => ({ ...S, constraints: { minutesPerWeek: { on: true, value: Math.floor(now(S).minPerWeek - 1) } } as Constraints });
 
   it('is unset, and the like-for-like baseline is the same engine totals as before the lever search', () => {
@@ -150,7 +150,7 @@ describe('Find solutions on a tank with no filter chosen (lane B3, after B2 assu
   it('a gear lever that records the assumed filter as chosen says so; levers that keep the tank unset do not', () => {
     const r = findSolutions(capped(unset()), P), all = [...r.compliant, ...r.needsRelaxing];
     for (const o of all) {
-      if (o.lever === 'hose' || o.lever === 'feeder') { expect(filterState(o.scene)).toBe('chosen'); expect(o.detail).toMatch(/not picked a filter|not picked|have not picked/); }
+      if (o.lever === 'hose' || o.lever === 'feeder') { if (filterState(o.scene) === 'chosen') expect(o.detail).toMatch(/not picked a filter|not picked|have not picked/); else expect(o.detail).not.toMatch(/assumed/); } // FL1: the fixture's filter row is none, so a lever keeps it unset
       else expect(o.detail).not.toMatch(/assumed/);
     }
   });

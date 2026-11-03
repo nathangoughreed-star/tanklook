@@ -214,9 +214,9 @@ import { summaryOf } from '../src/ui/stockSummary';
 import { filterCapacity } from '../src/scene/nitrogen';
 import { filterState, setFilterless, withChoice as choose } from '../src/scene/tech';
 describe('filter gate', () => {
-  const tank = () => { const s = withFish(); delete s.tech; return s; };
-  it('inferred gear is unset: the budget runs on an assumed default filter, and the summary is never green (B1, Nathan 2026-10-27)', () => {
-    const s = tank(), r = stockingOf(s), st = tileState(s, r);
+  const tank = () => { const s = withFish(); delete s.tech; return s; }, unsetTank = () => { const s = tank(); s.tech = { rows: { filter: 'none' } }; return s; }; // FL1: inferred (drawn) gear is chosen; unset = filter row none, nothing drawn
+  it('a tank with no filter drawn is unset: the budget runs on an assumed default filter, and the summary is never green (B1, Nathan 2026-10-27; FL1)', () => {
+    const s = unsetTank(), r = stockingOf(s), st = tileState(s, r);
     expect(filterState(s)).toBe('unset'); expect(st.filter).toBe('unset');
     expect(r.nitrogen.filter.kind).not.toBe('none');
     const env = summaryOf(s).cats.find(c => c.id === 'environment')!;
