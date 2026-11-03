@@ -14,6 +14,7 @@ import { waterY } from './physics';
 import { getSpecies } from '../data/species';
 import { groupMinimum } from './groupMin';
 import { scapeSetup, type PlantMode } from './scapes';
+import { pieceKg } from './setupsheet';
 import { catalogueSizes, fitIn, type AnimalCount } from './tankfit';
 import { archetype as archetypeById, type Archetype, type Density } from './archetypes';
 import type { TankModel } from '../data/tanks';
@@ -287,6 +288,30 @@ export const COVER_STEP = 0.3;
 /** The largest side of a hardscape piece, mm. */
 const reach = (it: Item) => Math.max(...itemDims(it));
 export const isHard = (it: Item) => layerOf(it) === 'hard';
+/**
+ * Rock weight budget (lane RK1, Nathan 2026-11-03: eleven dragon stones in a 60 gal breeder came to ~450 lb and $1,797 of a $1,000 set-up).
+ * Real rockwork runs about 1-2.5 lb per gallon of tank (glass, stand and floor load, and a rock pile is bought by the pound). Per family:
+ * rock-pile looks (Malawi, coast, creek, reef rock art, Iwagumi...) sit at `HEAVY_LB` at Balanced, everything else (live-rock reef, planted, terrarium) at `LIGHT_LB`; Open is
+ * `LB_STEP.open` of it, Full `LB_STEP.full`, never above `LB_CAP`. A level over its budget is brought down by shrinking all its stones and caves
+ * together (weight goes as size cubed), so the large / mid / small mix and the cover steps stay; nothing is dropped. Never grown.
+ */
+export const HEAVY_LB = 2.0, LIGHT_LB = 1.4, LB_CAP = 3.0;
+export const LB_STEP: Record<Density, number> = { open: 0.55, balanced: 1, full: 1.4 };
+const HEAVY = new Set(['african-cichlid-rockscape', 'brackish-rocky-coast', 'boulder-creek', 'rocky-river-stream', 'iwagumi-stone-garden', 'reef-rock-art', 'reef-skyline', 'stone-wood-sculpture', 'rocky-desert-canyon']);
+/** The most hardscape weight (lb per gallon of tank) an archetype's level may have. */
+export const lbBudget = (a: Archetype, d: Density) => Math.min(LB_CAP, (HEAVY.has(a.id) ? HEAVY_LB : LIGHT_LB) * LB_STEP[d]);
+const rockLb = (S: TankSetup) => S.items.filter(it => isHard(it) && (it.kind === 'stone' || it.kind === 'cave')).reduce((t, it) => t + pieceKg(it), 0) * 2.2046;
+function fitWeight(a: Archetype, d: Density | [Density, Density], S: TankSetup): void {
+  const gal = S.tank.L * S.tank.H * S.tank.D / 3.785e6 * 0.93, max = (Array.isArray(d) ? (lbBudget(a, d[0]) * 0.65 + lbBudget(a, d[1]) * 0.35) : lbBudget(a, d)) * gal;
+  const rocks = S.items.filter(it => isHard(it) && it.kind !== 'wood'), top = rocks.filter(it => it.lift <= 1).sort((x, y) => reach(y) - reach(x))[0];
+  const scale = (set: Item[], f: number) => { for (const it of set) { it.size *= f; it.lift *= f; } };
+  // the biggest stone is the level's feature and the step to the next level: shrink the rest first (down to 40 % of their size), then everything
+  for (let k = 0; k < 6 && rockLb(S) > max; k++) {
+    const others = rocks.filter(it => it !== top), wTop = top ? pieceKg(top) * 2.2046 : 0, wOther = rockLb(S) - wTop;
+    if (others.length && wOther > 0 && k < 3) scale(others, Math.max(0.4, Math.pow(Math.max(0.05, (max - wTop) / wOther), 1 / 3)));
+    else scale(rocks, Math.pow(max / rockLb(S), 1 / 3) * 0.995);
+  }
+}
 /** The most a piece may grow from one level to the next (its longest side, as a share of the biggest piece the lower levels have). */
 export const PIECE_GROWTH = 1.25;
 /** With no hardscape below, the biggest piece a level may add, as a share of the tank height (a first accent, not a wall). */
@@ -356,6 +381,7 @@ function evenScale(a: Archetype, s: Record<Density, TankSetup>, mix = true): Rec
     });
     capTo(); if (mix) { mixSizes(a, d, S, capOf(0)); capTo(); }
     relSizes(a, d, S);
+    fitWeight(a, d, S);
     // a still-too-big step in covered share (a rock group where there was one stone): drop the biggest new pieces, and anything stacked on them, until it is gradual
     const share = (T: TankSetup) => coverOf({ ...T, items: T.items.filter(isHard) }), prev = d === 'full' ? s.balanced : d === 'balanced' ? s.open : undefined;
     if (prev && d !== 'open') {
@@ -433,6 +459,10 @@ function drawMid(base: RecipeBase, i: 1 | 3): TankSetup {
       if (k === 0) mixSizes(a, 'mid', S, cap, { B: Math.min(cap, want), tiers });
     });
     relSizes(a, lo, S);
+    fitWeight(a, [lo, hi], S);
+    // the upper level was brought down by its own weight budget: this step's biggest stone must not end up above it
+    const over = maxOf(S, 0) / Math.max(1, maxOf(H, 0));
+    if (over > 1) for (const it of S.items) if (isHard(it) && it.kind !== 'wood') { it.size /= over; it.lift /= over; }
     const n0 = L.items.filter(isHard).length;
     while (hardShare(S) > hardShare(H) && S.items.filter(isHard).length > n0) {
       const big = S.items.filter(it => isHard(it) && it.lift <= 1).sort((x, y) => reach(y) - reach(x))[0]; if (!big) break;

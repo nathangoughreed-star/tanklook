@@ -1,0 +1,45 @@
+RK1 moved numbers: rock (stones + caves) at Balanced, before -> after. $ = hardscape setup line of the demand engine (mode of its range, default profile; includes wood).
+Budget (lb per gallon of tank, Balanced): rock-pile looks 2.0, all others 1.4; Open x0.55, Full x1.4; cap 3.0.
+
+archetype	tank	lb before	lb after	$ before	$ after
+african-cichlid-rockscape	20 gal long	204	40	$824	$161
+african-cichlid-rockscape	40 gal breeder	338	79	$1357	$322
+african-cichlid-rockscape	60 gal breeder	676	110	$2709	$442
+basking-scrubland	20 gal long	95	28	$285	$96
+basking-scrubland	40 gal breeder	156	55	$459	$186
+basking-scrubland	60 gal breeder	259	77	$743	$242
+blue-glow-reef	20 gal long	30	28	$193	$180
+blue-glow-reef	40 gal breeder	56	55	$362	$360
+brackish-rocky-coast	20 gal long	206	40	$830	$162
+brackish-rocky-coast	40 gal breeder	303	79	$1221	$323
+brackish-rocky-coast	60 gal breeder	388	110	$1169	$443
+clownfish-anemone	40 gal breeder	33	53	$212	$342
+goldfish-palace	20 gal long	101	28	$353	$102
+goldfish-palace	40 gal breeder	200	55	$694	$202
+goldfish-palace	60 gal breeder	180	77	$636	$278
+iwagumi-stone-garden	20 gal long	4	37	$18	$74
+lps-coral-garden	20 gal long	32	28	$207	$180
+lps-coral-garden	40 gal breeder	62	55	$402	$360
+mixed-reef	20 gal long	20	28	$132	$180
+mixed-reef	40 gal breeder	107	55	$695	$360
+mixed-reef	60 gal breeder	126	77	$817	$500
+reef-arches	20 gal long	40	28	$257	$180
+reef-arches	40 gal breeder	74	55	$479	$360
+reef-arches	60 gal breeder	84	77	$548	$500
+reef-islands	20 gal long	40	28	$258	$180
+reef-islands	40 gal breeder	74	55	$481	$360
+reef-islands	60 gal breeder	93	77	$607	$500
+rocky-desert-canyon	20 gal long	56	39	$192	$147
+rocky-desert-canyon	40 gal breeder	91	64	$304	$234
+rocky-desert-canyon	60 gal breeder	151	106	$487	$369
+rocky-river-stream	20 gal long	70	40	$175	$96
+rocky-river-stream	40 gal breeder	115	79	$289	$194
+rocky-river-stream	60 gal breeder	293	110	$760	$261
+snake-hideaway	20 gal long	10	17	$106	$125
+soft-coral-garden	20 gal long	35	27	$226	$177
+soft-coral-garden	40 gal breeder	65	55	$422	$360
+sps-reef	20 gal long	52	28	$336	$180
+sps-reef	40 gal breeder	96	55	$625	$360
+sps-reef	60 gal breeder	112	77	$728	$500
+
+39 of 132 (archetype x tank) rows moved; the rest were already under budget.
