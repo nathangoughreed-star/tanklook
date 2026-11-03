@@ -60,6 +60,12 @@ describe('every generated setup comes with a lid', () => {
     expect(handOff(bareSetup(), gen, { brief: none }).scene.lid).toBe('open');
     expect(handOff(cur, gen, { brief: none }).scene.lid).toBe('open');
   });
+  it('an open-top look (lane OG1) is handed off open: no lid is added to it, on either path', () => {
+    const gen = recipeScene('african-cichlid-rockscape', 'balanced', M60, [{ species: 'yellowlab', n: 3 }])!; gen.lid = 'open';
+    expect(handOff(bareSetup(), gen, { openTop: true }).scene.lid).toBe('open');
+    const cur = bareSetup(); cur.product = { model: 'g60b' } as never;
+    expect(handOff(cur, gen, { openTop: true }).scene.lid).toBe('open');
+  });
   it('a lid already there is never replaced', () => { const S = tank(['neon'], 'hood'); expect(withDefaultLid(S).lid).toBe('hood'); });
 });
 

@@ -151,10 +151,12 @@ export function handOff(current: TankSetup, generated: TankSetup, opts: {
    *  snapshot verbatim, confirm before replacing a design, and be one undo step; add it as another `mode` here, the callers need not change. */
   mode?: 'look';
   accept?: readonly string[]; brief?: Brief;
+  /** the look is an open-top one (lane OG1, scene/openTop.ts): it is drawn and stocked without a lid on purpose, so none is added (lane LB1) */
+  openTop?: boolean;
 } = {}): HandOff {
   const accept = new Set(opts.accept ?? []), suggested = generated.fish.filter(f => !accept.has(f.species));
   const gen = structuredClone(generated); gen.fish = gen.fish.filter(f => accept.has(f.species));
-  if (!hasDesign(current, opts.brief)) return { scene: withDefaultLid(gen, opts.brief), fresh: true, kept: [], changed: [suggested.length ? `The look's own animals (${[...new Set(suggested.map(f => nameOf(f.species)))].join(', ')}) are suggestions, not part of your stocking.` : ''].filter(Boolean) };
+  if (!hasDesign(current, opts.brief)) return { scene: opts.openTop ? gen : withDefaultLid(gen, opts.brief), fresh: true, kept: [], changed: [suggested.length ? `The look's own animals (${[...new Set(suggested.map(f => nameOf(f.species)))].join(', ')}) are suggestions, not part of your stocking.` : ''].filter(Boolean) };
   const out = structuredClone(current), kept: string[] = [], changed: string[] = [];
   if (out.fish.length) kept.push(`Animals: ${[...new Set(out.fish.map(f => f.species))].map(s => plural(out.fish.filter(f => f.species === s).length, nameOf(s))).join(', ')}`);
   if (!sameTank(out.tank, gen.tank)) { const rep = adaptToTank(out, gen.tank, { thin: false }); changed.push(...rep.lines); out.product = gen.product ?? out.product; }
@@ -164,7 +166,7 @@ export function handOff(current: TankSetup, generated: TankSetup, opts: {
   // the background on the back glass is part of the look (lane LB1): the picture the person chose from shows it, so the editor must open with it. A background they picked themselves is theirs.
   if (lookOwnsBackground(out, opts.brief)) { out.render = { ...out.render, bg: gen.render.bg, bgSides: [...gen.render.bgSides] }; if (gen.render.bgColor) out.render.bgColor = gen.render.bgColor; else delete out.render.bgColor; }
   // a generated setup comes with a lid unless the person chose none (lane LB1)
-  withDefaultLid(out, opts.brief);
+  if (!opts.openTop) withDefaultLid(out, opts.brief);
   if (kept.length < 2) kept.push('Gear, lid, stand and limits');
   let next = Math.max(0, ...out.fish.map(f => f.id)) + 1;
   const had = new Set(out.fish.map(f => f.species));
