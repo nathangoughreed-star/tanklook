@@ -6,6 +6,7 @@ import { STAND_PANEL } from '../scene/standspace';
 import { GRAIN_ORDER, LECA, SUBSTRATES, blendTile, blendZone, grain3D } from '../art/placeholder';
 import { litterMeshes } from './scatter';
 import { patchHighlight, patchMeshes, patchSel } from './brushmesh';
+import { applyGrainUV, woodTexture, type Grain } from './woodGrain';
 import { glassGrains, grainLook, grainMeshes, grainPatchy, grainTop } from './grains';
 import { snailAspect } from '../art/snails';
 import { fishTL, leafUp, needsWater, speciesOf, type Species } from '../data/species';
@@ -434,10 +435,12 @@ export const STAND_FINISHES: Record<TankSetup['stand']['finish'], { label: strin
 };
 
 /** Box faces in BoxGeometry order (+x, -x, +y, -y, +z, -z), shaded so it reads as 3D; lit as a room surface. */
-function shadedBox(w: number, h: number, d: number, color: number) {
-  const c = new THREE.Color(color), k = [0.78, 0.78, 1.08, 0.5, 0.95, 0.7];
-  const mats = k.map(f => basic(c.clone().multiplyScalar(f)));
-  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mats); m.userData.room = true;
+function shadedBox(w: number, h: number, d: number, color: number, grain?: Grain) {
+  const tex = grain && woodTexture(grain.finish), geo = new THREE.BoxGeometry(w, h, d);
+  const c = new THREE.Color(color).multiplyScalar(tex ? 1 / tex.userData.mean : 1), k = [0.78, 0.78, 1.08, 0.5, 0.95, 0.7];
+  if (tex) applyGrainUV(geo, grain!);
+  const mats = k.map(f => basic(c.clone().multiplyScalar(f), tex ? { map: tex } : {}));
+  const m = new THREE.Mesh(geo, mats); m.userData.room = true;
   return ink(m, color);
 }
 
@@ -466,43 +469,45 @@ function ink(m: THREE.Mesh, color: number) {
  * A solid over a convex footprint ring, y0..y1, shaded per face like shadedBox (top bright, front lighter than the
  * back, ends between) so it reads as 3D; lit as a room surface.
  */
-function shadedPrism(ring: P[], y0: number, y1: number, color: number) {
-  return shadedSolid(prismGeometry(ring, y0, y1), color);
+function shadedPrism(ring: P[], y0: number, y1: number, color: number, grain?: Grain) {
+  return shadedSolid(prismGeometry(ring, y0, y1), color, grain);
 }
 
 /** Any solid's geometry shaded per face as shadedPrism does; lit as a room surface. */
-function shadedSolid(geo: THREE.BufferGeometry, color: number) {
-  const n = geo.attributes.normal, c = new THREE.Color(color), cols: number[] = [];
+function shadedSolid(geo: THREE.BufferGeometry, color: number, grain?: Grain) {
+  const tex = grain && woodTexture(grain.finish), n = geo.attributes.normal, c = new THREE.Color(color).multiplyScalar(tex ? 1 / tex.userData.mean : 1), cols: number[] = [];
+  if (tex) applyGrainUV(geo, grain!);
   for (let i = 0; i < n.count; i++) {
     const ny = n.getY(i), nz = n.getZ(i), k = ny > 0.5 ? 1.08 : ny < -0.5 ? 0.5 : 0.78 + nz * (nz > 0 ? 0.17 : 0.08);
     cols.push(c.r * k, c.g * k, c.b * k);
   }
   geo.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3)); geo.clearGroups();
-  const m = new THREE.Mesh(geo, basic(0xffffff, { vertexColors: true })); m.userData.room = true;
+  const m = new THREE.Mesh(geo, basic(0xffffff, tex ? { vertexColors: true, map: tex } : { vertexColors: true })); m.userData.room = true;
   return ink(m, color);
 }
 
 /** Stand under the tank, from the floor up to the tank's underside: a cabinet with the outer glass's footprint, an open frame, a table, or a cabinet sized like the table. */
 function addStand(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (!S.stand.show) return;
-  const t = glassThickness(T, S.render.glass), top = tankUnderside(T, S.render), h = S.stand.height, fin = STAND_FINISHES[S.stand.finish];
+  const t = glassThickness(T, S.render.glass), top = tankUnderside(T, S.render), h = S.stand.height, fin = STAND_FINISHES[S.stand.finish], wf = S.stand.finish;
   if (S.stand.style === 'frame') { addFrameStand(sc, T, t, top, h, fin.color); return; }
-  if (S.stand.style === 'table') { addTableStand(sc, S, T, top, h, fin.color); return; }
+  if (S.stand.style === 'table') { addTableStand(sc, S, T, top, h, fin.color, wf); return; }
   // a peninsula is open on both long sides, so its cabinet has doors on the back too (Nathan 2026-10-08)
   const dirs: P[] = penEnd(S) ? [[0, -1], [0, 1]] : [[0, -1]];
   const custom = S.stand.style === 'custom', ring = custom ? tableRing(T, S.stand.table) : offsetRing(T, t); // custom: the table's top and placement, built as a cabinet
   const runs = custom ? dirs.flatMap(d => edgeRuns(ring, d)) : dirs.flatMap(d => facingRuns(T, t, d));
-  if (tankView.standOpen) { addOpenCabinet(sc, ring, dirs, runs, top, h, fin.color); return; }
-  sc.add(shadedPrism(ring, top - h, top, fin.color));
-  addDoors(sc, runs, top, h, fin.color);
+  if (tankView.standOpen) { addOpenCabinet(sc, ring, dirs, runs, top, h, fin.color, wf); return; }
+  sc.add(shadedPrism(ring, top - h, top, fin.color, { finish: wf, seed: 1 }));
+  addDoors(sc, runs, top, h, fin.color, wf);
 }
 
 /** The cabinet with its doors open (lane SF, Nathan 2026-10-26: "have the doors open on click to reveal beneath"): a top, a
  *  floor on the kick plate, the side and back panels, and each door swung out on its hinge (a curved door is left off). */
-function addOpenCabinet(sc: THREE.Scene, ring: P[], dirs: P[], runs: P[][], top: number, h: number, color: number) {
+function addOpenCabinet(sc: THREE.Scene, ring: P[], dirs: P[], runs: P[][], top: number, h: number, color: number, wf: Grain['finish']) {
   const kick = Math.min(70, h * 0.12), y0 = top - h + kick, panel = STAND_PANEL;
-  sc.add(shadedPrism(ring, top - h, y0, color), shadedPrism(ring, top - panel, top, color));
-  for (const r of runsWhere(ring, nrm => !dirs.some(d => nrm[0] * d[0] + nrm[1] * d[1] > 0.5))) sc.add(shadedSolid(wallGeometry(proud(r, -panel), r, y0, top - panel), color));
+  sc.add(shadedPrism(ring, top - h, y0, color, { finish: wf, seed: 2 }), shadedPrism(ring, top - panel, top, color, { finish: wf, seed: 3 }));
+  let ri = 0, di = 0;
+  for (const r of runsWhere(ring, nrm => !dirs.some(d => nrm[0] * d[0] + nrm[1] * d[1] > 0.5))) sc.add(shadedSolid(wallGeometry(proud(r, -panel), r, y0, top - panel), color, { finish: wf, seed: 10 + ri++ }));
   const inset = Math.min(30, h * 0.08), dy0 = y0, dy1 = top - inset, swing = 100 * Math.PI / 180;
   for (const r of runs) {
     if (r.length !== 2) continue;
@@ -511,7 +516,7 @@ function addOpenCabinet(sc: THREE.Scene, ring: P[], dirs: P[], runs: P[][], top:
       // the door from its hinge: along the run (k = +1 from the left end, -1 from the right), turned `swing` outward
       const hx = r[0][0] + e[0] * hs, hd = r[0][1] + e[1] * hs, c = Math.cos(swing), s = Math.sin(swing);
       const dir: P = [k * e[0] * c + n[0] * s, k * e[1] * c + n[1] * s], mid: P = [hx + dir[0] * w / 2 + n[0] * DOOR_T / 2, hd + dir[1] * w / 2 + n[1] * DOOR_T / 2];
-      const door = shadedBox(w, dy1 - dy0, DOOR_T, color);
+      const door = shadedBox(w, dy1 - dy0, DOOR_T, color, { finish: wf, vertical: true, seed: 40 + di++ });
       door.position.set(mid[0], (dy0 + dy1) / 2, -mid[1]); door.rotation.y = Math.atan2(dir[1], dir[0]); sc.add(door);
     }
   }
@@ -550,15 +555,15 @@ function edgeRuns(ring: P[], dir: P): P[][] {
  * standing proud of the carcass above a kick plate, split in the middle, each with a bar handle beside the split; a seam
  * line round each panel's front keeps the doors readable straight on, where the panel face and the carcass shade alike.
  */
-function addDoors(sc: THREE.Scene, runs: P[][], top: number, h: number, color: number) {
+function addDoors(sc: THREE.Scene, runs: P[][], top: number, h: number, color: number, wf: Grain['finish']) {
   const inset = Math.min(30, h * 0.08), y0 = top - h + Math.min(70, h * 0.12), y1 = top - inset, gap = 1.5;
-  const seam = color === STAND_FINISHES.white.color ? 0x9a9890 : 0x111214, pts: number[] = [];
+  const seam = color === STAND_FINISHES.white.color ? 0x9a9890 : 0x111214, pts: number[] = []; let di = 0;
   const hh = Math.min(140, (y1 - y0) * 0.25), hy1 = y1 - Math.min(60, (y1 - y0) * 0.1), hy0 = hy1 - hh;
   for (const r of runs) {
     const len = runLength(r); if (len < 2 * inset + 40) continue;
     for (const [s0, s1, hs] of [[inset, len / 2 - gap, len / 2 - 45], [len / 2 + gap, len - inset, len / 2 + 45]]) {
       const back = subRun(r, s0, s1), face = proud(back, DOOR_T), line = proud(back, DOOR_T + 0.6);
-      sc.add(shadedSolid(wallGeometry(back, face, y0, y1), color));
+      sc.add(shadedSolid(wallGeometry(back, face, y0, y1), color, { finish: wf, vertical: true, seed: 20 + di++ }));
       for (const y of [y0, y1]) for (let i = 0; i < line.length - 1; i++) pts.push(...at(line[i], y), ...at(line[i + 1], y));
       for (const p of [line[0], line[line.length - 1]]) pts.push(...at(p, y1), ...at(p, y0));
       if (hs - 6 < s0 || hs + 6 > s1) continue;
@@ -585,18 +590,18 @@ function proud(r: P[], d: number): P[] {
  * Table stand: a top (rectangular or round) the tank sits on anywhere, an apron just under it set in from the edge,
  * and four square legs (round: at the diagonals) on that apron's corners.
  */
-function addTableStand(sc: THREE.Scene, S: TankSetup, T: Tank, top: number, h: number, color: number) {
+function addTableStand(sc: THREE.Scene, S: TankSetup, T: Tank, top: number, h: number, color: number, wf: Grain['finish']) {
   const tb = S.stand.table, topT = Math.min(TABLE_TOP, h / 4), apronH = Math.min(90, h / 6), leg = Math.min(60, h / 8);
   const inset = Math.min(50, tb.L / 8, tb.D / 8), y0 = top - h;
-  sc.add(shadedPrism(tableRing(T, tb), top - topT, top, color));
+  sc.add(shadedPrism(tableRing(T, tb), top - topT, top, color, { finish: wf, seed: 60 }));
   const [cx, cd] = tableCentre(T, tb), r = tb.L / 2 - inset;
   const apron = tableRing(T, tb).map(([x, d]) => [cx + (x - cx) * (1 - inset / (tb.L / 2)), cd + (d - cd) * (1 - inset / (tb.D / 2))] as P);
-  sc.add(shadedPrism(apron, top - topT - apronH, top - topT, color));
+  sc.add(shadedPrism(apron, top - topT - apronH, top - topT, color, { finish: wf, seed: 61 }));
   const legs: P[] = tb.shape === 'round'
     ? [1, 3, 5, 7].map(k => [cx + (r - leg * 0.75) * Math.cos(k * Math.PI / 4), cd + (r - leg * 0.75) * Math.sin(k * Math.PI / 4)] as P)
     : [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([sx, sd]) => [cx + sx * (tb.L / 2 - inset - leg / 2), cd + sd * (tb.D / 2 - inset - leg / 2)] as P);
   const lh = h - topT;
-  for (const [x, d] of legs) { const b = shadedBox(leg, lh, leg, color); b.position.set(x, y0 + lh / 2, -d); sc.add(b); }
+  for (const [li, [x, d]] of legs.entries()) { const b = shadedBox(leg, lh, leg, color, { finish: wf, vertical: true, seed: 70 + li }); b.position.set(x, y0 + lh / 2, -d); sc.add(b); }
 }
 
 /** Steel tube size for the open frame stand (mm): 1.5" square tube, the common size for welded aquarium stands. */
