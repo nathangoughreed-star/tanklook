@@ -17,7 +17,7 @@ import { TABLE_TOP, cornerWalls, wallGap, tableCentre, tableOn, tableRing, wallP
 import { groundHeight, pieSegs, poolHandles, poolWet, terrainDisc, terrainPoints, type PoolPart } from '../scene/terrain';
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
 import { getImage } from '../scene/images';
-import { LU, addBeams, addFixture, addHoodLamps, applyLighting, waterVolumeMaterial } from './lighting';
+import { LU, addBeams, addFixture, addHoodLamps, applyLighting, setWaterVolumeMode, waterVolumeMaterial } from './lighting';
 import { addAlgae } from './algae';
 import { buildGear, gearKey, solidBoxes } from './gear3d';
 import { itemDeps, itemMesh, leafProbe, solidProbe, underProbe } from './items';
@@ -419,7 +419,8 @@ function addWater(sc: THREE.Scene, S: TankSetup, T: Tank) {
     const n = 24, prof = Array.from({ length: n + 1 }, (_, i) => new THREE.Vector2(Math.max(0.5, bowlRadius(T, y * i / n)), y * i / n));
     vol = new THREE.LatheGeometry([new THREE.Vector2(0, 0), ...prof, new THREE.Vector2(0, y)], 48).translate(T.L / 2, 0, -T.D / 2);
   } else vol = arch ? archSolid(T, y) : prismGeometry(footprint(T).ring, 0, y);
-  const m = new THREE.Mesh(vol, waterVolumeMaterial()); m.userData.nolight = true; m.renderOrder = 3; sc.add(m);
+  const vm = waterVolumeMaterial(), m = new THREE.Mesh(vol, vm); m.userData.nolight = true; m.renderOrder = 3; sc.add(m);
+  m.onBeforeRender = r => setWaterVolumeMode(vm, r.xr.isPresenting);
   // at opacity 0 it still draws in the tank's first frame (uWater.w = 0, so alpha is exactly 0: no pixel changes), so
   // its program links with the rest of the build, not on the first opacity step; then it hides (patchLook shows it)
   m.userData.waterVol = S.water.opacity > 0 ? 'on' : 'off';

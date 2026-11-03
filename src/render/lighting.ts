@@ -7,6 +7,7 @@
 // with the room light off, the tank is the only light in the room (Nathan, 2026-10-08).
 import * as THREE from 'three';
 import { ALGAE_GLSL, ALGAE_STEP, AU, setAlgaeUniforms } from './algae';
+import { WATER_FILTER_GLSL, waterHue } from './waterTint';
 import { clamp } from '../scene/physics';
 import type { ConditionSettings, LightSettings, Tank, WaterSettings } from '../scene/types';
 import { waterK, waterY } from '../scene/physics';
@@ -67,7 +68,7 @@ export const LU = {
   uRef: { value: REF }, uLCol: { value: new THREE.Color(1, 1, 1) },
   uRoomK: { value: 1 }, uSpill: { value: new THREE.Color(1, 1, 1) }, uSpillR: { value: 500 },
   uTankMin: { value: new THREE.Vector3() }, uTankMax: { value: new THREE.Vector3() }, uTankRound: { value: 0 },
-  uWater: { value: new THREE.Vector4() }, uClip: { value: Array.from({ length: AQ_CLIP }, () => new THREE.Vector3()) }, uClipN: { value: 0 }, uWCol: { value: new THREE.Color() }, uPop: { value: 0 },
+  uWater: { value: new THREE.Vector4() }, uClip: { value: Array.from({ length: AQ_CLIP }, () => new THREE.Vector3()) }, uClipN: { value: 0 }, uWCol: { value: new THREE.Color() }, uWTint: { value: new THREE.Vector4(1, 1, 1, 0) }, uPop: { value: 0 },
   // light map (beam overlay): on, weight per emitter, the beam's concentration (see aqIrr)
   uMapOn: { value: 0 }, uMapW: { value: 1 }, uMapGain: { value: 1 },
   // light output (lane K; watts set): the map in real units, a port of scene/lightout.ts bandsAt. uLoA: phi x 1e6 /
@@ -96,6 +97,7 @@ export function setWaterUniforms(T: Tank, w: WaterSettings, pop = 0, cond?: Cond
   LU.uPop.value = pop;
   LU.uWater.value.set(T.L, waterY(T, w.level), T.D, w.on ? waterK(w.opacity) : 0);
   LU.uWCol.value.set(w.color);
+  const c = LU.uWCol.value; LU.uWTint.value.set(...waterHue([c.r, c.g, c.b]));
   setAlgaeUniforms(cond, !!w.salt); // the tank's condition (lane AL), shared by every lit material
   // any tank but a box: the water is the box cut by the footprint's sides (half-planes in plan), else the box corners
   // outside curved or angled glass tint whatever is seen through them (the cabinet below). Was the bow's circle only
@@ -124,30 +126,32 @@ void aqBow(vec3 o, vec3 dv, inout float a, inout float b) {
   }
 }`;
 /**
- * The empty water's own colour (audit #18): drawn on the far faces of the water volume, as much of the water colour as
- * the sightline crosses (same slab test and `waterK` as the tint on objects). It draws only where nothing is behind it
- * (fragment depth pinned to the far plane, depth test "less"), so a fish, the background or the room wall, which are
- * tinted by their own shader, are not tinted twice; what it colours is the empty page seen through the water.
+ * The empty water's own colour (audit #18; lane WT1): drawn on the far faces of the water volume, the same filter as on
+ * objects (`aqWaterFilter`, one colour whatever the depth) multiplied onto what is behind. It draws only where nothing
+ * is behind it (fragment depth pinned to the far plane, depth test "less"), so a fish, the background or the room wall,
+ * which are filtered by their own shader, are not filtered twice; what it colours is the empty page seen through the
+ * water. In AR there is no page to multiply (the camera feed is composited by alpha), so there it is the old translucent
+ * colour (`setWaterVolumeMode`).
  */
 export function waterVolumeMaterial() {
   return new THREE.ShaderMaterial({
-    uniforms: { uWater: LU.uWater, uClip: LU.uClip, uClipN: LU.uClipN, uWCol: LU.uWCol, uPopV: LU.uPop },
+    uniforms: { uWater: LU.uWater, uClip: LU.uClip, uClipN: LU.uClipN, uWCol: LU.uWCol, uWTint: LU.uWTint, uPopV: LU.uPop, uXr: { value: 0 } },
     vertexShader: 'varying vec3 vP; void main() { vec4 w = modelMatrix * vec4(position, 1.0); vP = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }',
-    fragmentShader: `uniform vec4 uWater; uniform vec3 uWCol; varying vec3 vP;
-${BOW_GLSL}
+    fragmentShader: `uniform vec4 uWater, uWTint; uniform vec3 uWCol; uniform float uXr; varying vec3 vP;
+${WATER_FILTER_GLSL}
 void main() {
-  vec3 o = cameraPosition, dv = vP - o;
-  dv = mix(dv, vec3(1e-3), step(abs(dv), vec3(1e-3)));
-  vec3 t0 = (vec3(0.0, 0.0, -uWater.z) - o) / dv, t1 = (vec3(uWater.x, uWater.y, 0.0) - o) / dv;
-  vec3 tn = min(t0, t1), tf = max(t0, t1);
-  float a = max(max(tn.x, tn.y), max(tn.z, 0.0)), b = min(min(tf.x, tf.y), min(tf.z, 1.0));
-  aqBow(o, dv, a, b);
-  float f = 1.0 - exp(-uWater.w * max(b - a, 0.0) * length(vP - o));
-  gl_FragColor = vec4(uWCol * 0.85, f);
+  vec3 f = aqWaterFilter();
+  gl_FragColor = uXr > 0.5 ? vec4(uWCol * 0.85, 1.0 - dot(f, vec3(0.2126, 0.7152, 0.0722))) : vec4(f, 1.0);
   gl_FragDepth = 0.9999999;
 }`,
     transparent: true, depthWrite: false, depthFunc: THREE.LessDepth, side: THREE.BackSide,
+    blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.ZeroFactor, blendDst: THREE.SrcColorFactor, blendSrcAlpha: THREE.ZeroFactor, blendDstAlpha: THREE.OneFactor,
   });
+}
+/** Multiply onto the page on screen; plain alpha in AR (called each frame from the volume's onBeforeRender, no recompile). */
+export function setWaterVolumeMode(m: THREE.ShaderMaterial, xr: boolean) {
+  m.uniforms.uXr.value = xr ? 1 : 0;
+  m.blending = xr ? THREE.NormalBlending : THREE.CustomBlending;
 }
 
 /**
@@ -216,9 +220,10 @@ const AQ_VERT = 'varying vec3 vAqP; varying vec3 vAqN;';
 const AQ_FRAG = `
 uniform vec4 uEm[${AQ_MAX}]; uniform int uEmN; uniform float uMode, uAmb, uBright, uNorm, uBeamM, uRef, uCard, uSub, uFish, uPane; uniform vec3 uLCol;
 float aqSpec = 0.0;
-uniform float uRoomMat, uRoomK, uSpillR, uTankRound, uAlgH; uniform vec3 uSpill, uTankMin, uTankMax; uniform vec4 uWater; uniform vec3 uWCol; uniform float uPop, uFishCard;
+uniform float uRoomMat, uRoomK, uSpillR, uTankRound, uAlgH; uniform vec3 uSpill, uTankMin, uTankMax; uniform vec4 uWater, uWTint; uniform vec3 uWCol; uniform float uPop, uFishCard;
 varying vec3 vAqP; varying vec3 vAqN;
 ${BOW_GLSL}
+${WATER_FILTER_GLSL}
 float aqHash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float aqNoise(vec2 p) {
   vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
@@ -408,8 +413,9 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
       '  outgoingLight *= 1.0 - 0.55 * uPop * smoothstep(0.55, 0.95, 1.0 - abs(dot(normalize(vAqN), aqV)));\n' +
       '  outgoingLight = min(outgoingLight, vec3(1.0));\n' +
       '} else if (aqM > 1.0) outgoingLight /= aqM;\n' +
-      // water colour: blend toward the lit water colour by how much water the sightline crosses
-      'if (uWater.w > 0.0) { float aqF = (1.0 - exp(-uWater.w * aqWaterPath())) * (1.0 - 0.6 * uPop * max(uFish, uFishCard)); outgoingLight = mix(outgoingLight, uWCol * min(dot(aqLt, vec3(0.2126, 0.7152, 0.0722)), 1.0), aqF); }\n' +
+      // water colour (lane WT1): one filter colour for whatever sits behind water, however deep (no depth haze), only on
+      // sightlines that cross the water at all; fish ease off it as they stand out (render.pop)
+      'if (uWater.w > 0.0) { float aqF = smoothstep(0.0, 0.5, aqWaterPath()) * (1.0 - 0.6 * uPop * max(uFish, uFishCard)); outgoingLight *= mix(vec3(1.0), aqWaterFilter(), aqF); }\n' +
       // light map on the substrate (beam overlay on): false colour by level, a dark contour line at each doubling (valued by ui/lightContours), the
       // grain kept faintly so the relief still reads; replaces the lit colour and the water haze
       'if (uMapOn > 0.5 && uSub > 0.5) { float aqI = max(aqIrr(), 1e-6), aqT = log2(aqI / uMapDiv);\n' +

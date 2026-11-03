@@ -660,7 +660,7 @@ function plantMaterial(T: Tank) {
   // above the water (an emersed stem or sword leaf, lane GR2) there is no water haze: it fades out over the first few
   // mm, so leaves lying at the surface keep theirs
   const post = (sh: THREE.WebGLProgramParametersWithUniforms) => {
-    sh.fragmentShader = sh.fragmentShader.replace('float aqF = (1.0 - exp(-uWater.w * aqWaterPath()))', '$& * (1.0 - smoothstep(uWater.y + 6.0, uWater.y + 14.0, vAqP.y))');
+    sh.fragmentShader = sh.fragmentShader.replace('float aqF = smoothstep(0.0, 0.5, aqWaterPath())', '$& * (1.0 - smoothstep(uWater.y + 6.0, uWater.y + 14.0, vAqP.y))');
     growShader(sh); // (after the lighting's vAqP: the haze and the light need the grown position)
   };
   Object.assign(m.userData, { cached: true, keep: true, plantClip: true, pre: patch, post });
