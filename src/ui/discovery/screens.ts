@@ -20,7 +20,7 @@ import { fitIn, type AnimalCount } from '../../scene/tankfit';
 import type { SpaceLimit } from '../../scene/types';
 import {
   ANY_WORLD, CARD_COLOUR, DENSITIES, DENSITY_CARD, STEP_ASK, WORLD_REASK, addLike, alternativeOf, animalsFirstSteps, archetypeChoices, depsLine, envChoices, familyChoices,
-  firstIn, knownOf, lookFirstSteps, nextIn, pickAlternative, prevIn, recipeOf, sceneFor, setPick, settle, waterChoices, type Known, type Picks, type Route, type VStep,
+  firstIn, knownOf, landing, lookFirstSteps, nextIn, pickAlternative, prevIn, recipeOf, sceneFor, setPick, settle, stepReady, waterChoices, type Known, type Picks, type Route, type VStep,
 } from './logic';
 
 export interface DiscoveryHost {
@@ -233,6 +233,7 @@ export function mountDiscovery(store: Store, host: DiscoveryHost, root: HTMLElem
 
   function draw() {
     const p = picks();
+    const lp = landing(route, ownsWorld, at, p, known); if (lp !== 'done') at = lp;   // a step whose earlier steps are unanswered (Density with no look) is never shown
     drawCrumbs(p);
     ask.textContent = at === 'environment' && p.worldOpen ? WORLD_REASK : STEP_ASK[at];
     const lines: string[] = [];
@@ -267,8 +268,8 @@ export function mountDiscovery(store: Store, host: DiscoveryHost, root: HTMLElem
     drawPanel(); drawTankLine(tc); if (sliderOn) paintStops(); drawShots(p, tc);
     back.hidden = !prevIn(route, ownsWorld, at, p, known) && !opts.allowBack;
     skip.hidden = at !== 'animals';
-    const has = at === 'environment' ? !!p.environment : at === 'water' ? !!p.waterType : at === 'family' ? !!p.familyId : at === 'archetype' ? !!p.archetypeId : at === 'animals' ? true : sliderOn || !!p.density;
-    next.hidden = !has; next.textContent = at === 'animals' ? 'Continue to Make It Your Own' : 'Next';
+    const has = stepReady(at, p, known, sliderOn);   // this step's pick is valid for the route, world, water and family now
+    next.hidden = !has; next.disabled = !has; next.textContent = at === 'animals' ? 'Continue to Make It Your Own' : 'Next';
   }
   function drawPanel() {
     const a = soonId && at === 'archetype' ? archetype(soonId) : undefined;
@@ -279,7 +280,10 @@ export function mountDiscovery(store: Store, host: DiscoveryHost, root: HTMLElem
 <p class="vd-acts">${alt ? `<button type="button" class="primary" data-vd="alt">${esc(alt.name)}: closest we can build today</button> ` : ''}<button type="button" data-vd="explore">Keep exploring</button></p>`;
   }
 
-  const go = (s: VStep | 'done') => { soonId = undefined; if (s === 'done') finish(); else { at = s; draw(); } };
+  const go = (s: VStep | 'done') => {
+    soonId = undefined; const t = landing(route, ownsWorld, s, picks(), known);   // never past a step still waiting for its pick
+    if (t === 'done') finish(); else { at = t; draw(); }
+  };
   function choose(id: string) {
     const p = picks();
     if (at === 'archetype' && archetype(id)?.support === 'coming-soon') {
@@ -350,7 +354,11 @@ export function mountDiscovery(store: Store, host: DiscoveryHost, root: HTMLElem
     const p = picks();
     switch (t.dataset.vd) {
       case 'back': { const s = prevIn(route, ownsWorld, at, p, known); if (s) go(s); else opts.onExit?.('back'); break; }
-      case 'next': if (at === 'density' && sliderOn) save(setPick(p, 'density', String(stopNow), known)); go(nextIn(route, ownsWorld, at, p, known)); break;
+      case 'next': {
+        if (!stepReady(at, p, known, sliderOn)) break;   // hidden or not, Next does nothing without a valid pick here
+        if (at === 'density' && sliderOn) save(setPick(p, 'density', String(stopNow), known));
+        go(nextIn(route, ownsWorld, at, p, known)); break;
+      }
       case 'skipanimals': setChosen([]); finish(); break;
       case 'alt': { const a = soonId ? archetype(soonId) : undefined, alt = a && alternativeOf(a); if (alt) { save(pickAlternative(p, alt)); go('density'); } break; }
       case 'explore': soonId = undefined; draw(); break;

@@ -166,17 +166,39 @@ export function settle(p: Picks, k: Known): { picks: Picks; auto: VStep[] } {
     if (s === 'density') break;
     if (!stepsOf(n).includes(s)) continue;   // read per step: an environment answered here can bring the water step back
     const ids = choiceIds(s, n, k);
-    if (valueAt(n, s) != null && ids.includes(String(valueAt(n, s)))) { if (ids.length === 1) auto.push(s); continue; }
+    if (valueAt(n, s) != null && ids.includes(String(valueAt(n, s)))) { if (ids.length === 1 && stepReady(s, n, k)) auto.push(s); continue; }   // a coming-soon look left in the picks is never answered for the person
     if (ids.length !== 1 || (s === 'archetype' && archetype(ids[0])?.support === 'coming-soon')) break;
     n = setPick(n, s, ids[0], k); auto.push(s);
   }
   return { picks: n, auto };
 }
 
+/** Whether `step` holds a pick that is valid for the current world, water and family (lane DF1): the value is one the step offers now, so a pick left over from an
+ *  earlier visit, another family or another roster does not count, and a coming-soon look is never a pick (it is only a saved like). Density needs a valid look
+ *  under it; `slider` says the density slider is on screen (it always holds a stop, so no separate density pick is needed). Animals is optional: always ready. */
+export function stepReady(step: VStep, p: Picks, k: Known, slider = false): boolean {
+  if (step === 'animals') return true;
+  if (step === 'density') return stepReady('archetype', p, k) && (slider || !!p.density);
+  const v = valueAt(p, step);
+  if (v == null || !choiceIds(step, p, k).includes(String(v))) return false;
+  return step !== 'archetype' || archetype(String(v))?.support !== 'coming-soon';
+}
+/** Where a move to `target` really lands: `target` when every step before it in the route is settled (answered, or answered for the person), else the first one that
+ *  is not, so Density can never open without a look (a Next that was hidden or clicked anyway, a jump, a stale step). 'done' needs every step before Animals settled. */
+export function landing(route: Route, ownsWorld: boolean, target: VStep | 'done', p: Picks, k: Known): VStep | 'done' {
+  const { picks, auto } = settle(p, k), steps = routeSteps(route, picks, ownsWorld), end = target === 'done' ? steps.length : steps.indexOf(target);
+  for (const [i, s] of steps.entries()) {
+    if (i >= end) break;
+    if (s === 'animals' || auto.includes(s) || stepReady(s, picks, k, true)) continue;
+    return s;
+  }
+  return target;
+}
+
 /** The first step still waiting for the person ('done' when everything is picked). */
 export function firstOpen(p: Picks, k: Known): VStep | 'done' {
   const { picks, auto } = settle(p, k);
-  for (const s of stepsOf(picks)) if (s !== 'animals' && !auto.includes(s) && (valueAt(picks, s) == null || !choiceIds(s, picks, k).includes(String(valueAt(picks, s))))) return s;
+  for (const s of stepsOf(picks)) if (s !== 'animals' && !auto.includes(s) && !stepReady(s, picks, k)) return s;
   return 'done';
 }
 /** The step after this one, skipping the ones answered for the person. */
@@ -268,6 +290,6 @@ export function prevIn(route: Route, ownsWorld: boolean, step: VStep, p: Picks, 
 }
 export function firstIn(route: Route, ownsWorld: boolean, p: Picks, k: Known): VStep | 'done' {
   const { picks, auto } = settle(p, k);
-  for (const s of routeSteps(route, picks, ownsWorld)) if (s !== 'animals' && !auto.includes(s) && (valueAt(picks, s) == null || !choiceIds(s, picks, k).includes(String(valueAt(picks, s))))) return s;
+  for (const s of routeSteps(route, picks, ownsWorld)) if (s !== 'animals' && !auto.includes(s) && !stepReady(s, picks, k)) return s;
   return 'done';
 }
