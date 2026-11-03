@@ -11,7 +11,8 @@
 //   reevaluate(input)            one call for the UI: the adapted scene, what was kept, what changed, the conflicts and warnings
 import { getSpecies } from '../data/species';
 import { withDefaultLid } from '../data/lidNeed';
-import { defaultSetup } from './defaults';
+import { bareSetup, defaultSetup } from './defaults';
+import { keepUserEnvironment } from './defaultEnvironment';
 import { getItem, type Brief, type Stocked, valueOf, visionOf } from './brief';
 import { itemDims } from './items';
 import { rescaleTank, volume } from './physics';
@@ -160,8 +161,8 @@ export function lookUnchanged(S: TankSetup, b: Brief, pick: { archetypeId?: stri
 }
 
 // ---------------------------------------------------------------------------------------------------------------- the Guided hand-off as an update
-/** The fields a look owns: its pieces, painted patches, ground, background and composition. Everything else (tank, gear, lid, stand, animals, the brief, the camera) belongs to the project. */
-const LOOK_FIELDS = ['items', 'patches', 'substrate', 'terrain', 'layout', 'backdrop', 'wall', 'grow', 'condition'] as const satisfies readonly (keyof TankSetup)[];
+/** The fields a look owns: its pieces, painted patches, ground, background and composition. Everything else (tank, gear, lid, stand, the room wall / person / ambient light, animals, the brief, the camera) belongs to the project. */
+const LOOK_FIELDS = ['items', 'patches', 'substrate', 'terrain', 'layout', 'backdrop', 'grow', 'condition'] as const satisfies readonly (keyof TankSetup)[];
 /** Whether the scene's back-glass background is the look's to replace: a bare tank's (none), the factory default with no look picked yet, or exactly what the previous look drew. A background
  *  the person picked in the editor (another colour, a picture) never is, and uploaded pictures are never touched. */
 export function lookOwnsBackground(S: TankSetup, b?: Brief): boolean {
@@ -201,6 +202,7 @@ export function handOff(current: TankSetup, generated: TankSetup, opts: {
   const gen = structuredClone(generated); gen.fish = gen.fish.filter(f => accept.has(f.species));
   if (!hasDesign(current, opts.brief)) {
     // a generated setup always has a light and what its plants / corals need beyond it (lane LN1): the generator's own light is its to replace when too weak
+    keepUserEnvironment(gen, current, bareSetup());   // gen already carries Nathan's default environment (lane ED1); what the person changed in the scene they had stays theirs
     const nd = applySetupNeeds(opts.openTop ? gen : withDefaultLid(gen, opts.brief), { brief: opts.brief, generated: true, lowTech: opts.lowTech });
     return { scene: nd.scene, fresh: true, kept: [], warnings: [], needs: nd.lines, changed: [...nd.lines.map(l => l.text), suggested.length ? `The look's own animals (${[...new Set(suggested.map(f => nameOf(f.species)))].join(', ')}) are suggestions, not part of your stocking.` : ''].filter(Boolean) };
   }

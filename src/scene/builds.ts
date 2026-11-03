@@ -19,6 +19,7 @@ import { gearTotalUsd } from '../data/gearDeals';
 import { mean3 } from '../demand/range';
 import { kitTech } from '../demand/tech';
 import { bareSetup } from './defaults';
+import { withDefaultEnvironment } from './defaultEnvironment';
 import { volume } from './physics';
 import { countsAgainstWater, stockingOf } from './stocking';
 import { filterFor, filterUnits, heaterUnits, heatLoss, applyPreset, PRESETS, ROOM_C, hasLand, rowsFor, sumpName, sumpOf, sumpOffered, techOf, tempFit, withChoice } from './tech';
@@ -85,7 +86,7 @@ const needsHeater = (animals: AnimalCount[], salt: boolean) => salt || wetAnimal
 
 /** The bare tank with the animals in it, the base preset's gear and a basic LED light; heater and filter are the build's to choose. */
 function baseSetup(tank: TankModel, animals: AnimalCount[]): TankSetup {
-  const S = bareSetup(), salt = needsOf(animals).salt;
+  const S = withDefaultEnvironment(bareSetup()), salt = needsOf(animals).salt;   // generated: Nathan's environment (lane ED1)
   S.tank = tankFromModel(tank);
   S.water.on = true; S.water.level = WATER_LEVEL; S.water.salt = salt;
   if (isMixed(animals)) setPool(S, animals); // a paludarium: the pool is what the land leaves (tankfit)

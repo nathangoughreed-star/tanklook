@@ -7,6 +7,7 @@ import { AIR } from '../data/climate';
 import { getSpecies } from '../data/species';
 import { TANK_MODELS, tankFromModel, type TankModel } from '../data/tanks';
 import { bareSetup } from './defaults';
+import { withDefaultEnvironment } from './defaultEnvironment';
 import techData from '../data/tech.json';
 import { techOf } from './tech';
 import type { DryGear, Fish, TankSetup } from './types';
@@ -101,7 +102,7 @@ export const terrariumStandK = (T: TankSetup['tank']) => Math.min(2.2, Math.max(
 /** The bare terrarium with the animals in it and a build's gear: water off, a mesh top, hinged front doors, no lamp of its own (the
  *  basking and UVB lights are the build's gear; a planted scape adds its light in the scape step). */
 export function drySetup(m: TankModel, animals: Count[], build: DryBuild): TankSetup {
-  const S = bareSetup();
+  const S = withDefaultEnvironment(bareSetup());   // generated: Nathan's environment (lane ED1)
   S.tank = tankFromModel(m);
   S.water.on = false; S.water.salt = false;
   S.lid = 'mesh'; S.doors = 'hinged';
