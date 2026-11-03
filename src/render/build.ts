@@ -399,6 +399,31 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
 }
 
 /**
+ * The rippled shimmer on the underside of the water: seen from below at a low angle the surface turns into a mirror
+ * (total internal reflection) and bright ripple lines run along it. Bright lines where a few crossing waves cancel, as
+ * sharp as the angle is low, weaker from above. Still (the viewer draws on change, not every frame), so it is free.
+ */
+function surfaceShimmer(m: THREE.MeshBasicMaterial) {
+  m.onBeforeCompile = sh => {
+    sh.vertexShader = 'varying vec3 vSurfW;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n  vSurfW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+    sh.fragmentShader = 'varying vec3 vSurfW;\n' + sh.fragmentShader.replace('#include <opaque_fragment>', `#include <opaque_fragment>
+  {
+    vec2 p = vSurfW.xz * vec2(0.3, 1.3); // mm; squeezed along the tank, so the lines stretch along it
+    float h = sin(p.x * 0.022 + p.y * 0.060 + 1.4 * sin(p.y * 0.031))
+            + sin(p.x * 0.035 - p.y * 0.083 + 2.0)
+            + sin(p.x * 0.057 + p.y * 0.121 + 0.7 * sin(p.x * 0.019))
+            + sin(p.x * 0.011 + p.y * 0.157 + 4.1);
+    float line = pow(clamp(1.0 - abs(h) * 0.6, 0.0, 1.0), 7.0);
+    vec3 v = normalize(cameraPosition - vSurfW);
+    float low = 1.0 - abs(v.y), f = low * low * low, below = v.y < 0.0 ? 1.0 : 0.3;
+    float s = clamp((line * (0.35 + 0.9 * f) + f * 0.2) * below, 0.0, 1.0);
+    gl_FragColor = vec4(mix(gl_FragColor.rgb, vec3(0.88, 0.96, 1.0), s), max(gl_FragColor.a, s * 0.85));
+  }`);
+  };
+  m.customProgramCacheKey = () => 'water-shimmer';
+}
+
+/**
  * The water surface (seen from above or when orbiting; edge-on straight on) and a faint meniscus line where it meets
  * the glass. The colour of the water itself is a tint in the lighting shader (see aqWaterPath).
  */
@@ -409,6 +434,7 @@ function addWater(sc: THREE.Scene, S: TankSetup, T: Tank) {
   const arch = archBulge(T) > 0, ring = levelRing(T, y); // an arch's surface reaches out to its front glass at that height
   const surf = new THREE.Mesh(flatGeometry(bowl ? circleRing(T, r) : ring, y), basic(look.color, { transparent: true, opacity: look.opacity, depthWrite: false, side: THREE.DoubleSide }));
   (surf.material as THREE.Material).userData.waterSurf = true; // recoloured in place (patchLook)
+  surfaceShimmer(surf.material as THREE.MeshBasicMaterial);
   surf.renderOrder = 4; surf.userData.nolight = true; sc.add(surf);
   const line = lines(ringLines(bowl ? circleRing(T, r - 0.6) : arch ? ring.map(p => [p[0] + (p[0] < T.L / 2 ? 0.6 : -0.6), p[1] + (p[1] < T.D / 2 ? 0.6 : -0.6)] as P) : offsetRing(T, -0.6), y), 0xe8f6fa, 0.45);
   line.renderOrder = 4; sc.add(line);
