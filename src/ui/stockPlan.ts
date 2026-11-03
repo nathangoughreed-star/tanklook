@@ -5,9 +5,9 @@
 import { rng } from '../art/paint';
 import { CARE } from '../data/care';
 import { getSpecies, searchSpecies } from '../data/species';
-import { editBrief, getBrief, lockAnimals, lockedStock } from './setupBrief';
+import { editBrief, getBrief, lockRoster } from './setupBrief';
 import { adaptForEdit } from './briefFeasibility';
-import { hasDesign } from '../scene/reeval';
+import { hasDesign, reconcileFish, stageFish } from '../scene/reeval';
 import { applyAlternative, type Infeasible } from '../demand/infeasible';
 import { suggestFromBrief } from '../demand/suggest';
 import { minOf, valueOf } from '../scene/brief';
@@ -18,7 +18,7 @@ import { emptyScene } from '../scene/defaults';
 import { placeNew, shuffleFish } from '../scene/scatter';
 import { summaryHtml, summaryOf } from './stockSummary';
 import type { Store } from '../scene/store';
-import type { Fish, TankSetup } from '../scene/types';
+import type { TankSetup } from '../scene/types';
 import { IDEAL_MAX } from '../scene/stocking';
 import { GAUGE_TIP, gaugeColor, gaugeStyle } from './gauge';
 import type { Viewer } from '../render/viewer';
@@ -28,7 +28,7 @@ import { attachBuildPick } from './buildPick';
 import { attachStockGallery } from './stockGallery';
 import { pickRowHtml } from './stockRows';
 import { onSpaceFork, type SpaceFork } from './fullnessTile';
-import { spaceBand, animalsInTank, animalsOf, bump, sexFish, writePairs, FAIL_WORD, type Pairing, forkOptions, planFor, rankTankmates, tempLinesOf, startPick, tankLabel, totalOf, type Pk, type Plan, type RoomOption } from './stockPlanLogic';
+import { spaceBand, animalsInTank, animalsOf, bump, pickOfStock, picksFromTank, stockedOf, FAIL_WORD, type Pairing, forkOptions, planFor, rankTankmates, tempLinesOf, startPick, tankLabel, totalOf, type Pk, type Plan, type RoomOption } from './stockPlanLogic';
 import { allLand, isMixed, setPool, sizeTxt } from '../scene/tankfit';
 import { applyRosterFix, rosterTotals, rosterWarnings, type RosterFixOp } from './stockPlanLogic';
 import { budgetGap, laterLine, preyLater, preyLaterLine } from './stockPlanLogic';
@@ -110,27 +110,16 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
         T.camera = { ...T.camera, zoom: 0.55, el: 20 }; // looking down a little so the bottom dwellers show on the bare floor // the whole tank in view, beside the panel
       }
       T.water.salt = picks.some(p => getSpecies(p.id)?.salt);
-      let next = Math.max(0, ...T.fish.map(f => f.id)) + 1;
-      const keep: Fish[] = [], added = new Set<number>();
-      for (const p of picks) {
-        const sp = getSpecies(p.id); if (!sp) continue;
-        const have = T.fish.filter(f => f.species === p.id).slice(0, totalOf(p));
-        while (have.length < totalOf(p)) { const f: Fish = { id: next++, species: p.id, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0 }; have.push(f); added.add(f.id); }
-        sexFish(have, p); // males, then females, then unsexed: drawn sex and tracked sex
-        keep.push(...have);
-      }
-      T.fish = keep;
+      const { added } = reconcileFish(T, picks);   // counts, sexes and pairings match the picks; whoever stays keeps their place (GS7: the same step Animals First's hand-off uses)
       if (kept?.tank) { T.tank = { ...kept.tank }; if (kept.product) T.product = kept.product; } // an owned tank stays as it is (never swapped for a catalogue size)
       // lane GV4: the basic light GV2 prices is drawn: a catalogue light for the tank's length (owned lights stay)
       if (!design && !T.light.owned && (!T.light.product || T.light.product === needLight)) {
         if (needLight) { T.light = { ...emptyScene().tanks[0].light }; needLight = ''; }
         const g = withNeedGear(T); if (g !== T) { T.light = g.light; needLight = g.light.product ?? ''; }
       }
-      writePairs(T, picks); // saved with the tank for these two animals: survives Save, share links and the build pick
       const r = rng(1 + Math.floor(Math.random() * 1e6));
       if (rebuild) shuffleFish(T, r, undefined, 100); else if (added.size) placeNew(T, r, added);
-      // S228: a young pick's animals at the size picked (after the shuffle, which draws adults about their length); females at the same share
-      for (const p of picks) { const sp = getSpecies(p.id); if (sp && p.tl) for (const f of T.fish) if (f.species === p.id) f.tl = Math.round((f.sex === 'f' && sp.female ? sp.female.tl : sp.tl) * p.tl / sp.tl); }
+      stageFish(T, picks);   // S228: a young pick's animals at the size picked (after the shuffle, which draws adults about their length)
     }, { coalesce: 'stockplan' });
   };
 
@@ -272,7 +261,7 @@ ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}${budgetBlock()}
   };
 
   // what is picked here fills the brief's Animals group, locked: the animal is what the person came for (lane U3)
-  const toBrief = () => editBrief(b => lockAnimals(b, picks.map(p => ({ species: p.id, name: getSpecies(p.id)?.name ?? p.id, n: totalOf(p) }))));
+  const toBrief = () => editBrief(b => lockRoster(b, picks.map(stockedOf)));   // GS7: with the sex / pair split, so a revisit shows what was chosen
   // an owned tank (from Guided) is the tank chosen: the catalogue size nearest its volume that the picks are judged in
   const adoptOwned = () => {
     if (chosen || !kept?.tank || !picks.length) return;
@@ -286,7 +275,7 @@ ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}${budgetBlock()}
     const alt = (e.target as HTMLElement).closest<HTMLElement>('[data-alt]'), a = alt && cf.inf?.alternatives[+(alt.dataset.alt ?? -1)];
     if (a && a.edit) { // one path chosen: write its edit into the brief (locks kept; animals change only when that path says so), then follow the brief's animals
       const edit = a.edit; editBrief(b => applyAlternative(b, edit)); cf = { key: '' };
-      const stock = lockedStock(getBrief()); picks = stock.map(x => ({ ...startPick(x.species), n: x.n })); chosen = undefined; shown = ''; change(true); return;
+      picks = (valueOf(getBrief(), 'animals.stock') ?? []).filter(x => getSpecies(x.species)).map(pickOfStock); chosen = undefined; shown = ''; change(true); return;
     }
     const nd = (e.target as HTMLElement).closest<HTMLElement>('[data-need]'); if (nd) { applyNeed(+(nd.dataset.need ?? -1)); return; }
     const fx = (e.target as HTMLElement).closest<HTMLElement>('[data-fix]');
@@ -320,8 +309,7 @@ ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}${budgetBlock()}
     if (hasDesign(store.tank, getBrief())) {
       const prev = store.tank, b = getBrief(), stock = valueOf(b, 'animals.stock') ?? [];
       design = true; kept = undefined; needLight = ''; undoFix = undefined; mates = false; q = ''; shown = '';
-      const seed = stock.length ? stock.map(x => ({ species: x.species, n: x.count })) : [...new Set(prev.fish.map(f => f.species))].map(sp => ({ species: sp, n: prev.fish.filter(f => f.species === sp).length }));
-      picks = seed.filter(x => getSpecies(x.species)).map(x => ({ ...startPick(x.species), n: x.n }));
+      picks = (stock.length ? stock.map(pickOfStock) : picksFromTank(prev)).filter(p => getSpecies(p.id));   // GS7: the brief's split (sexes, pairs, stage), else read back from the scene's animals
       const m = prev.product?.model ? getTankModel(prev.product.model) : undefined;
       if (m) { chosen = m.id; const plan = planFor(picks, chosen); if (plan.tank) shown = `${plan.tank.id}${isMixed(animalsOf(picks)) ? ':' + animalsOf(picks).map(a => `${a.species}${a.n}`).join(',') : ''}`; else chosen = undefined; }
       else { chosen = undefined; kept = { tank: structuredClone(prev.tank), ...(prev.product ? { product: prev.product } : {}) }; }   // a custom size stays as it is

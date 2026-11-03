@@ -15,6 +15,7 @@ import { volume } from '../scene/physics';
 import { spaceFit, tankExtent } from '../scene/space';
 import { buildSpan, fitIn, lenTxt, tempVerdict, stepUps, tankFor, tankLabel, tankOptions, zoneOf, type AnimalCount, type BuildSpan, type TankFit } from '../scene/tankfit';
 import { countsAgainstWater } from '../scene/stocking';
+import type { Stocked } from '../scene/brief';
 import { minDataOf } from '../scene/tankMin';
 import { pairingIn, setPairing } from '../scene/pairs';
 import type { Fish, Pairing, SpaceLimit, Tank, TankSetup, Units } from '../scene/types';
@@ -43,6 +44,15 @@ export function sexFish(have: Fish[], p: Pk): void {
     if (sp?.female) { if (female) f.sex = 'f'; else delete f.sex; }
     if (sexed) { if (unsexed) delete f.gender; else f.gender = female ? 'f' : 'm'; }
   });
+}
+/** A pick as the brief keeps it (lane GS7): the total, and the split a revisit needs (females, unsexed, the pairing of exactly two, the stage picked). */
+export function stockedOf(p: Pk): Stocked {
+  return { species: p.id, count: totalOf(p), ...(p.f ? { f: p.f } : {}), ...(p.u ? { u: p.u } : {}), ...(asksPairing(p) && p.pair && p.pair !== 'unknown' ? { pair: p.pair } : {}), ...(p.tl ? { tl: p.tl } : {}) };
+}
+/** The pick a brief entry stands for; an entry without a split (an older brief, a generator's) is all males, as before. */
+export function pickOfStock(s: Stocked): Pk {
+  const f = isSexed(s.species) ? s.f ?? 0 : 0, u = isSexed(s.species) ? s.u ?? 0 : 0;
+  return { id: s.species, n: Math.max(0, s.count - f - u), ...(f ? { f } : {}), ...(u ? { u } : {}), ...(s.pair && s.count === 2 ? { pair: s.pair } : {}), ...(s.tl ? { tl: s.tl } : {}) };
 }
 /** The picks a tank holds, read back from its animals (the editor's view of the stocking screen's inputs): species kept by sex count
  *  males, females and unsexed from the tracked sex alone (absent = unsexed); pair species carry the tank's pairing.

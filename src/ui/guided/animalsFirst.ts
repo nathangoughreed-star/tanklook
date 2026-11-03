@@ -14,7 +14,7 @@ import { pickRowHtml } from '../stockRows';
 import { applyRosterFix, animalsOf, bump, planFor, rosterWarnings, startPick, tempLinesOf, totalOf, type Pairing, type Pk, type RosterFixOp } from '../stockPlanLogic';
 import type { AnimalsEntry } from './shell';
 import {
-  applyFix, inWorld, issuesOf, ownedCheck, picksOf, recommendEnclosure, setEnclosure, sizeOptions, waterLine, withRoster,
+  applyFix, inWorld, issuesOf, ownedCheck, picksOf, picksOfBrief, recommendEnclosure, setEnclosure, sizeOptions, waterLine, withRoster,
   type EnclosureRec,
 } from './animalsLogic';
 
@@ -25,7 +25,7 @@ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 export const animalsFirst: AnimalsEntry = c => {
   const root = c.root, units = c.store.scene.units, plain = (m: TankModel) => tankLabel(m, units).replace(/^About /, '');
-  let picks: Pk[] = picksOf(c.roster()), q = '', cat: Category | 'all' = 'all', everything = false, step: 'roster' | 'enclosure' = 'roster';
+  let picks: Pk[] = (() => { const had = picksOfBrief(getBrief()); return had.length ? had : picksOf(c.roster()); })(), q = '', cat: Category | 'all' = 'all', everything = false, step: 'roster' | 'enclosure' = 'roster';
   let undo: { picks: Pk[]; label: string } | undefined, rec: EnclosureRec | 'working' | undefined, recKey = '', sizes = false, alive = true, focusSearch = false;
 
   const write = () => editBrief(b => withRoster(b, picks));   // the roster is the project's: every change lands in the one state, never in a scene
@@ -133,7 +133,7 @@ ${!req ? `<p><button type="button" class="spLink" data-act="sizes">${sizes ? 'Hi
         const is = issuesOf(getBrief()), f = is[+(t.dataset.i ?? -1)]?.fixes[+(t.dataset.j ?? -1)]; if (!f) break;
         const before = JSON.stringify(valueOf(getBrief(), 'animals.stock'));
         editBrief(b => applyFix(b, f.patch));
-        if (JSON.stringify(valueOf(getBrief(), 'animals.stock')) !== before) { undo = { picks, label: f.label }; picks = picksOf((valueOf(getBrief(), 'animals.stock') ?? []).map(s => ({ species: s.species, n: s.count }))); }
+        if (JSON.stringify(valueOf(getBrief(), 'animals.stock')) !== before) { undo = { picks, label: f.label }; picks = picksOfBrief(getBrief()); }
         rec = undefined; draw(); break;
       }
       case 'undofix': if (undo) { picks = undo.picks; undo = undefined; change(); } break;

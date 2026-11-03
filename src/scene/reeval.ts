@@ -12,7 +12,7 @@
 import { getSpecies } from '../data/species';
 import { withDefaultLid } from '../data/lidNeed';
 import { defaultSetup } from './defaults';
-import { type Brief, valueOf, visionOf } from './brief';
+import { getItem, type Brief, type Stocked, valueOf, visionOf } from './brief';
 import { itemDims } from './items';
 import { rescaleTank, volume } from './physics';
 import { archetype } from './archetypes';
@@ -22,7 +22,10 @@ import { footprint, normTank } from './shape';
 import { isOver, plural, stockingOf } from './stocking';
 import { conflictsOf, reevalInput, type Conflict, type ReevalInput } from './project';
 import type { AnimalCount } from './tankfit';
-import type { Item, Tank, TankSetup } from './types';
+import { placeNew } from './scatter';
+import { rng } from '../art/paint';
+import { pickOfStock, sexFish, totalOf, writePairs, type Pk } from '../ui/stockPlanLogic';
+import type { Fish, Item, Tank, TankSetup } from './types';
 
 const sameTank = (a: Tank, b: Tank) => a.L === b.L && a.D === b.D && a.H === b.H && (a.shape ?? 'rect') === (b.shape ?? 'rect');
 const isPlant = (it: Item) => it.kind === 'plant' || it.kind === 'artificial';
@@ -111,6 +114,36 @@ export function stockingChange(before: TankSetup, after: TankSetup): StockChange
   return { animals, was: pct(b.loadPercent), now: pct(a.loadPercent), over, ...(warning ? { warning } : {}) };
 }
 
+// ---------------------------------------------------------------------------------------------------------------- the roster, reconciled (lane GS7)
+/** Make the scene's animals match the roster, per species: the first `total` animals already there stay (same ids, positions, names), missing ones are added (unplaced, ids returned),
+ *  extra ones leave, a species no longer on the roster leaves, and the sexes and pairings are written from the picks (males, then females, then unsexed). Mutates `T.fish` / `T.pairs`. */
+export function reconcileFish(T: Pick<TankSetup, 'fish' | 'pairs'>, picks: readonly Pk[]): { added: Set<number>; removed: Set<string> } {
+  let next = Math.max(0, ...T.fish.map(f => f.id)) + 1;
+  const keep: Fish[] = [], added = new Set<number>(), on = new Set(picks.filter(p => getSpecies(p.id) && totalOf(p) > 0).map(p => p.id));
+  for (const p of picks) {
+    if (!getSpecies(p.id)) continue;
+    const have = T.fish.filter(f => f.species === p.id).slice(0, totalOf(p));
+    while (have.length < totalOf(p)) { const f: Fish = { id: next++, species: p.id, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0 }; have.push(f); added.add(f.id); }
+    sexFish(have, p);
+    keep.push(...have);
+  }
+  const removed = new Set(T.fish.filter(f => !on.has(f.species)).map(f => f.species));
+  T.fish = keep;
+  writePairs(T, picks as Pk[]);
+  return { added, removed };
+}
+/** The animals of a young pick at the size picked (S228), females at the same share. Call after the animals are placed. */
+export function stageFish(T: Pick<TankSetup, 'fish'>, picks: readonly Pk[]): void {
+  for (const p of picks) { const sp = getSpecies(p.id); if (sp && p.tl) for (const f of T.fish) if (f.species === p.id) f.tl = Math.round((f.sex === 'f' && sp.female ? sp.female.tl : sp.tl) * p.tl / sp.tl); }
+}
+/** The roster of the brief reconciled into a scene in place: counts and sexes match exactly, the new animals are placed among their mates, nobody who stays moves. */
+export function reconcileRoster(T: TankSetup, stock: readonly Stocked[]): { added: number; removed: number; species: string[] } {
+  const picks = stock.map(pickOfStock), was = T.fish.length, { added } = reconcileFish(T, picks);
+  if (added.size) placeNew(T, rng(7919 + added.size), added);
+  stageFish(T, picks);
+  return { added: added.size, removed: Math.max(0, was + added.size - T.fish.length), species: [...new Set(T.fish.map(f => f.species))] };
+}
+
 // ---------------------------------------------------------------------------------------------------------------- is there anything to keep?
 /** Whether the scene holds something a guided step must not delete: pieces, painted patches, animals, a catalogue tank, or a look the brief names. A pristine scene has nothing to lose. */
 export function hasDesign(S: TankSetup, b?: Brief): boolean {
@@ -141,6 +174,8 @@ export interface HandOff {
   /** true when nothing existed to keep and the generated scene was taken whole (minus the look's own animals) */
   fresh: boolean;
   kept: string[]; changed: string[];
+  /** a welfare / stocking warning the change raised (lane GS7): shown, never a reason to block the hand-off */
+  warnings: string[];
 }
 /** The hand-off from a guided look to the editor, as an UPDATE of the scene that is there. With nothing to keep the generated scene is taken whole; with a design in place only
  *  the look's fields come from the generated scene (the tank, its gear and the roster stay), and a different tank adapts the roster instead of regenerating it. The generated
@@ -153,12 +188,16 @@ export function handOff(current: TankSetup, generated: TankSetup, opts: {
   accept?: readonly string[]; brief?: Brief;
   /** the look is an open-top one (lane OG1, scene/openTop.ts): it is drawn and stocked without a lid on purpose, so none is added (lane LB1) */
   openTop?: boolean;
+  /** the roster the scene's animals must match exactly (counts, sexes, pairings; lane GS7). Default: the brief's LOCKED roster, when `accept` names every one of its species (the Animals
+   *  First hand-off passes the roster's species; a Look First hand-off does not, so its editor roster is only added to). */
+  roster?: readonly Stocked[];
 } = {}): HandOff {
   const accept = new Set(opts.accept ?? []), suggested = generated.fish.filter(f => !accept.has(f.species));
   const gen = structuredClone(generated); gen.fish = gen.fish.filter(f => accept.has(f.species));
-  if (!hasDesign(current, opts.brief)) return { scene: opts.openTop ? gen : withDefaultLid(gen, opts.brief), fresh: true, kept: [], changed: [suggested.length ? `The look's own animals (${[...new Set(suggested.map(f => nameOf(f.species)))].join(', ')}) are suggestions, not part of your stocking.` : ''].filter(Boolean) };
-  const out = structuredClone(current), kept: string[] = [], changed: string[] = [];
-  if (out.fish.length) kept.push(`Animals: ${[...new Set(out.fish.map(f => f.species))].map(s => plural(out.fish.filter(f => f.species === s).length, nameOf(s))).join(', ')}`);
+  if (!hasDesign(current, opts.brief)) return { scene: opts.openTop ? gen : withDefaultLid(gen, opts.brief), fresh: true, kept: [], warnings: [], changed: [suggested.length ? `The look's own animals (${[...new Set(suggested.map(f => nameOf(f.species)))].join(', ')}) are suggestions, not part of your stocking.` : ''].filter(Boolean) };
+  const out = structuredClone(current), kept: string[] = [], changed: string[] = [], stock = opts.roster ?? lockedRosterFor(opts.brief, accept), warnings: string[] = [];
+  const animalsKept = () => `Animals: ${[...new Set(out.fish.map(f => f.species))].map(s => plural(out.fish.filter(f => f.species === s).length, nameOf(s))).join(', ')}`;
+  if (out.fish.length && !stock?.length) kept.push(animalsKept());
   if (!sameTank(out.tank, gen.tank)) { const rep = adaptToTank(out, gen.tank, { thin: false }); changed.push(...rep.lines); out.product = gen.product ?? out.product; }
   else kept.push(`Tank: ${galOf(out.tank)} gal`);
   for (const k of LOOK_FIELDS) (out as unknown as Record<string, unknown>)[k] = structuredClone(gen[k]);
@@ -171,7 +210,23 @@ export function handOff(current: TankSetup, generated: TankSetup, opts: {
   let next = Math.max(0, ...out.fish.map(f => f.id)) + 1;
   const had = new Set(out.fish.map(f => f.species));
   for (const f of gen.fish) if (!had.has(f.species)) out.fish.push({ ...f, id: next++ });   // animals picked in the guided step join the roster
-  return { scene: out, fresh: false, kept, changed };
+  // the roster the person set (Animals First, GS7): the scene's animals match it exactly, whoever stays keeps their place
+  if (stock?.length) {
+    const was = countsOf(current.fish), r = reconcileRoster(out, stock), now = countsOf(out.fish);
+    const diff = [...new Set([...was.keys(), ...now.keys()])].map(sp => ({ sp, d: (now.get(sp) ?? 0) - (was.get(sp) ?? 0) })).filter(x => x.d);
+    if (out.fish.length) kept.push(animalsKept());
+    if (diff.length) changed.push(`Animals matched to your roster: ${diff.map(x => `${x.d > 0 ? '+' : '-'}${Math.abs(x.d)} ${nameOf(x.sp)}`).join(', ')}.`);
+    if (r.added || r.removed) { const w = stockingChange(current, out).warning; if (w) { warnings.push(w); changed.push(w); } }
+  }
+  return { scene: out, fresh: false, kept, changed, warnings };
+}
+
+const countsOf = (fish: readonly Fish[]) => { const m = new Map<string, number>(); for (const f of fish) m.set(f.species, (m.get(f.species) ?? 0) + 1); return m; };
+/** The brief's locked roster, when `accept` names every species on it (the person's own roster travels with the hand-off); else none. */
+function lockedRosterFor(b: Brief | undefined, accept: ReadonlySet<string>): Stocked[] | undefined {
+  const it = b && getItem(b, 'animals.stock');
+  if (!it || it.off || it.status !== 'locked' || !it.value.length || !it.value.every(x => accept.has(x.species))) return undefined;
+  return it.value;
 }
 
 /** The look's own focal animals, for the Suitable Animals step to OFFER: derived (nothing is stored), minus what is already in the roster. */

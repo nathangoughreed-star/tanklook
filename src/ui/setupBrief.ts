@@ -8,7 +8,7 @@ import { TANK_MODELS } from '../data/tanks';
 import { PICK_CARE, OWNED, type OwnedMap, type Tag } from '../demand/suggest';
 import {
   ADAPTS, DESIRES, GROUPS, clearItem, dialogOf, emptyBrief, getItem, hasState, isEmpty, lock, setDialog, setFlex, setItem, setRange, setBound, rangeOf, rangeText, targetOf, unlock, valueOf,
-  type Adapt, type Brief, type Desire, type GroupId, type ItemId, type LimitId, type NumLimitId, type Range, type Status, type TapWater, type WaterSrc,
+  type Adapt, type Brief, type Desire, type Stocked, type GroupId, type ItemId, type LimitId, type NumLimitId, type Range, type Status, type TapWater, type WaterSrc,
 } from '../scene/brief';
 import { lookLabel, LOOK_TILES, type LookStyle } from '../scene/looks';
 import type { Store } from '../scene/store';
@@ -89,6 +89,11 @@ export function summarise(b: Brief): GroupView[] {
 export function lockedStock(b: Brief): { species: string; n: number }[] {
   const it = getItem(b, 'animals.stock');
   return it && !it.off && it.status === 'locked' ? it.value.map(a => ({ species: a.species, n: a.count })) : [];
+}
+/** The locked roster with its sex / pair / stage split (lane GS7), as the brief keeps it. */
+export function lockedRoster(b: Brief): Stocked[] {
+  const it = getItem(b, 'animals.stock');
+  return it && !it.off && it.status === 'locked' ? it.value.map(a => ({ ...a })) : [];
 }
 export const budgetOf = (b: Brief) => valueOf(b, 'constraints.budget');
 export const monthlyOf = (b: Brief) => valueOf(b, 'constraints.monthly');
@@ -185,8 +190,15 @@ export const removeItem = (b: Brief, id: ItemId) => clearItem(b, id);
 export const toggleLock = (b: Brief, id: ItemId): Brief => getItem(b, id)?.status === 'locked' ? unlock(b, id) : lock(b, id);
 /** The animals the person chose (stocking builder): locked. Replaces the earlier animals; none clears the item. */
 export function lockAnimals(b: Brief, animals: { species: string; name?: string; n: number }[]): Brief {
-  const list = animals.filter(a => a.n > 0).map(a => ({ species: a.species, count: a.n }));
+  const had = new Map((getItem(b, 'animals.stock')?.value ?? []).map(a => [a.species, a] as const));
+  // a caller that knows counts only keeps the split of a species whose count did not change (GS7)
+  const list = animals.filter(a => a.n > 0).map((a): Stocked => { const h = had.get(a.species); return h && h.count === a.n ? { ...h } : { species: a.species, count: a.n }; });
   return list.length ? setItem(b, 'animals.stock', list, 'locked') : clearItem(b, 'animals.stock');
+}
+/** The roster as the stocking pickers hold it (lane GS7): locked, each species with its split (females, unsexed, pairing, stage) so a revisit shows what was chosen. Empty clears the item. */
+export function lockRoster(b: Brief, roster: Stocked[]): Brief {
+  const list = roster.filter(a => a.count > 0);
+  return list.length ? setItem(b, 'animals.stock', list.map(a => ({ ...a })), 'locked') : clearItem(b, 'animals.stock');
 }
 /** The look chosen in the look picker. Locked unless told otherwise: it is what the person came for. */
 export const setLook = (b: Brief, style: LookStyle | undefined, status: Status = 'locked'): Brief => style ? setItem(b, 'appearance.look', style, status) : clearItem(b, 'appearance.look');

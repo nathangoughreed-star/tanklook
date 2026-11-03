@@ -33,7 +33,20 @@ export const GROUPS: readonly { id: GroupId; label: string }[] = [
 /** A larger tank, more planted, ... : free-form wishes with no number (lane U6 edits these). */
 export type Wish = 'larger-tank' | 'more-planted' | 'less-maintenance' | 'cheaper';
 export const WISHES: readonly Wish[] = ['larger-tank', 'more-planted', 'less-maintenance', 'cheaper'];
-export interface Stocked { species: string; count: number }
+/** One species of the roster. `count` is the total. Optional split, kept so a revisit shows what the person chose (lane GS7): `f` females and `u` unsexed (the rest of a sexed species are males),
+ *  `pair` the pairing status of exactly two animals of a pair species, `tl` the length picked for young animals, mm. An old (v5) brief has none of them and loads unchanged. */
+export interface Stocked { species: string; count: number; f?: number; u?: number; pair?: 'established' | 'unconfirmed' | 'unknown'; tl?: number }
+const PAIRS = ['established', 'unconfirmed', 'unknown'] as const;
+function stockedOf(x: unknown): Stocked | undefined {
+  const a = x as Stocked | null;
+  if (!a || typeof a.species !== 'string' || !num(a.count, 1, 1e4)) return undefined;
+  const count = Math.round(a.count), out: Stocked = { species: a.species, count };
+  const f = num(a.f, 1, count) ? Math.round(a.f!) : 0, u = num(a.u, 1, count) ? Math.round(a.u!) : 0;
+  if (f + u <= count) { if (f) out.f = f; if (u) out.u = u; }
+  if (PAIRS.includes(a.pair as never) && a.pair !== 'unknown' && count === 2) out.pair = a.pair;
+  if (num(a.tl, 1, 1e4)) out.tl = Math.round(a.tl!);
+  return out;
+}
 
 /** Every item id and its value type. The prefix is its group. */
 export interface Values {
@@ -280,7 +293,7 @@ const VALIDATE: { [K in ItemId]: (v: unknown) => Values[K] | undefined } = {
   'animals.kinds': v => { const a = strs(v, KINDS); return a?.length ? a : undefined; },
   'animals.groups': v => { const a = strs(v, DRY); return a?.length ? a : undefined; },
   'animals.stock': v => { if (!Array.isArray(v)) return undefined;
-    const a = v.filter((x): x is Stocked => !!x && typeof x.species === 'string' && num(x.count, 1, 1e4)).map(x => ({ species: x.species, count: Math.round(x.count) })); return a.length ? a : undefined; },
+    const a = v.map(stockedOf).filter((x): x is Stocked => !!x); return a.length ? a : undefined; },
   'appearance.look': v => typeof v === 'string' && v !== 'none' && v.length < 40 ? v as Values['appearance.look'] : undefined,
   'appearance.plantMode': v => MODES.includes(v as PlantMode) ? v as PlantMode : undefined,
   'equipment.tank': modelOf,

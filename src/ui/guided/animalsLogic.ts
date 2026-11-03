@@ -11,9 +11,9 @@ import { spaceFit } from '../../scene/space';
 import { fitIn, tankFor, tankLabel, type AnimalCount, type TankFit } from '../../scene/tankfit';
 import { tankFromModel } from '../../data/tanks';
 import { loadProfile } from '../demandPanel';
-import { lockAnimals, lockedStock, spaceOf } from '../setupBrief';
+import { lockedRoster, lockedStock, lockRoster, spaceOf } from '../setupBrief';
 import { ownedTankOf } from './logic';
-import { FAIL_WORD, animalsOf, planFor, startPick, totalOf, type Pk } from '../stockPlanLogic';
+import { FAIL_WORD, animalsOf, pickOfStock, planFor, startPick, stockedOf, type Pk } from '../stockPlanLogic';
 
 // ---------------------------------------------------------------------------------------------------------------- 1. the roster
 /** Whether an animal belongs in the world the person chose (an aquarium lists swimmers and snails, a terrarium land and amphibious animals, a paludarium and "Open" everything).
@@ -25,7 +25,9 @@ export function inWorld(sp: Species, env: Env | undefined): boolean {
 /** The roster the shell holds (counts) as picks, one per species, at the counts given (never below 1). */
 export const picksOf = (roster: readonly AnimalCount[]): Pk[] => roster.filter(r => getSpecies(r.species) && r.n > 0).map(r => ({ ...startPick(r.species), n: r.n }));
 /** The roster written to the brief, locked: the animals are what the person came for (the same write the old panel does). */
-export const withRoster = (b: Brief, picks: readonly Pk[]): Brief => lockAnimals(b, picks.map(p => ({ species: p.id, name: getSpecies(p.id)?.name ?? p.id, n: totalOf(p) })));
+export const withRoster = (b: Brief, picks: readonly Pk[]): Brief => lockRoster(b, picks.map(stockedOf));   // with the sex / pair / stage split (GS7), so a revisit shows what was chosen
+/** The picks the brief holds, split and all (GS7): what the roster picker opens with when the roster was set before. Empty when the brief has none locked. */
+export const picksOfBrief = (b: Brief): Pk[] => lockedRoster(b).filter(s => getSpecies(s.species)).map(pickOfStock);
 /** The roster in the brief, as counts. */
 export const rosterOfBrief = (b: Brief): AnimalCount[] => lockedStock(b).map(a => ({ species: a.species, n: a.n }));
 /** "Saltwater, because the clownfish need it: not asked again." Empty when the animals do not fix the water (a land roster, a mixed one) or the person already answered it. */
