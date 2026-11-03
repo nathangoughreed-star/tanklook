@@ -7,8 +7,8 @@ import { getSpecies } from '../../data/species';
 import { tankFromModel, type TankModel } from '../../data/tanks';
 import { rosterTiers } from '../../demand/tiers';
 import { volume } from '../../scene/physics';
-import { fitIn, lenTxt, type AnimalCount } from '../../scene/tankfit';
-import { minDataOf } from '../../scene/tankMin';
+import { fitIn, lenTxt, speciesVerdictIn, type AnimalCount } from '../../scene/tankfit';
+import { minDataOf, type Fmt, type MinData, type MinRow } from '../../scene/tankMin';
 import { fmtC } from '../../scene/temprange';
 import {
   FAIL_WORD, notesOf, overWarn, rosterWarnings, spaceBand, tempLinesOf,
@@ -110,6 +110,31 @@ export interface SpeciesLive {
 }
 const BAND_TONE: Record<string, Tone> = { avoid: 'bad', ok: 'note', good: 'ok', great: 'ok' };
 
+/** A measure in the viewer's units; `d` decimals so a need and a have that round to the same whole number still read as two numbers (DA2). */
+const fmtIn = (us: boolean, d: number): Fmt => ({
+  len: mm => us ? `${+(mm / 25.4).toFixed(d)} in` : `${+(mm / 10).toFixed(d)} cm`,
+  area: cm2 => us ? `${Math.round(cm2 / 6.4516)} sq in` : `${Math.round(cm2)} cm2`,
+  vol: l => `${+(l / 3.785).toFixed(d)} gal`,
+});
+/** The decimals at which the limiting measure's need and have differ on the page (0, else 1, else 2). */
+const decimalsFor = (m: { need: number; have: number; limiting: string }, us: boolean): number => {
+  const f = (d: number) => { const x = fmtIn(us, d), g = m.limiting === 'length' || m.limiting === 'width' || m.limiting === 'height' ? x.len : m.limiting === 'floor area' ? x.area : x.vol!; return g(m.need) !== g(m.have); };
+  return f(0) ? 0 : f(1) ? 1 : 2;
+};
+/** The tank-size lines of one species. Its verdict is the gate's (speciesVerdictIn: tankMin's red lines with the 10 % slack, `fails` from the tank-fit engine); this only says it in words:
+ *  'bad' exactly when the gate fails, a note "just under, within the 10 % allowance" when the tank is under the line but inside the slack. */
+function sizeLines(row: MinRow, fails: readonly string[], md: MinData | undefined, u: 'in' | 'cm'): Line[] {
+  const us = u === 'in', short = fails.includes('minimum') || fails.includes('length'), m = row.measure, under = row.assessed && row.pct > 100, d = decimalsFor(m, us), F = fmtIn(us, d);
+  const head = md?.red ? `Tank at least ${lenTxt(md.red.L, u)} long${md.vol?.gal ? `, about ${Math.round(md.vol.gal)} gal` : ''}${md.green && md.green.L > md.red.L ? `; ${lenTxt(md.green.L, u)} recommended` : ''}`
+    : md?.vol ? `Tank of about ${Math.round(md.vol.gal)} gal or more` : '';
+  const val = (n: number) => m.limiting === 'length' || m.limiting === 'width' || m.limiting === 'height' ? F.len(n) : m.limiting === 'floor area' ? F.area(n) : F.vol!(n);
+  const nums = `${m.limiting}: wants about ${val(m.need)}, this tank has ${val(m.have)}`;
+  const tail = short ? (m.limiting === 'length' ? `This one is ${F.len(m.have)}: too short` : `Too small for it, ${nums}`)
+    : under ? (m.limiting === 'length' ? `This one is ${F.len(m.have)}: just under, within the 10 % allowance` : `Just under, within the 10 % allowance, ${nums}`) : '';
+  if (!head && !tail) return [];
+  return [{ text: `${head || 'Tank size'}${tail ? `${head ? '. ' : ': '}${tail}` : ''}`, tone: short ? 'bad' : 'note' }];
+}
+
 /** Each chosen animal: its count, the group it is kept in, and its requirements in this tank (temperature, tank size in gallons and inches, group and sex mix, depth / flow, diet and
  *  other special needs), each flagged when this tank or this count does not meet it. */
 export function speciesLive(chosen: readonly AnimalCount[], tank: TankModel, us = true): SpeciesLive[] {
@@ -121,11 +146,10 @@ export function speciesLive(chosen: readonly AnimalCount[], tank: TankModel, us 
     if (nt.ratio) lines.push({ text: nt.ratio, tone: /Your mix/.test(nt.ratio) ? 'warn' : 'note' });
     if (nt.pairing && nt.pairing.status !== 'established') lines.push({ text: nt.pairing.line, tone: 'note' });
     if (care?.temp) lines.push({ text: `Water ${fmtC(care.temp, us)}`, tone: 'note' });
-    if (md?.red) {
-      const need = md.red.L, short = t.L < need - 1, gal = md.vol && md.vol.gal ? `, about ${Math.round(md.vol.gal)} gal` : '';
-      lines.push({ text: `Tank at least ${lenTxt(need, u)} long${gal}${md.green && md.green.L > need ? `; ${lenTxt(md.green.L, u)} recommended` : ''}${short ? `. This one is ${lenTxt(t.L, u)}: too short` : ''}`, tone: short ? 'bad' : 'note' });
-    } else if (md?.vol) lines.push({ text: `Tank of about ${Math.round(md.vol.gal)} gal or more`, tone: tank.ratedGal < md.vol.gal ? 'bad' : 'note' });
-    const hab = nt.habitat.filter(h => !/^(Tank at least|Recommended:)/.test(h)); if (hab.length) lines.push({ text: hab.join(' · '), tone: 'note' });
+    const v = speciesVerdictIn(c, tank), size = v ? sizeLines(v.row, v.fails, md, u) : [];
+    lines.push(...size);
+    const hab = nt.habitat.filter(h => !/^(Tank at least|Recommended:)/.test(h)); if (hab.length) lines.push({ text: hab.join(' · '), tone: v?.fails.includes('depth') ? 'bad' : 'note' });
+    if (v?.fails.includes('depth')) lines.push({ text: `This tank's water is ${lenTxt(v.row.depthMm, u)} deep: deeper than it tolerates`, tone: 'bad' });
     for (const n of nt.needs) lines.push({ text: n.text, tone: n.severity === 'S3' ? 'warn' : 'note' });
     return { id: c.species, name: sp?.name ?? c.species, n: c.n, belowGroup: min > 1 && c.n < min && !care?.solo, min, canStepDown: c.n > 1, lines };
   });

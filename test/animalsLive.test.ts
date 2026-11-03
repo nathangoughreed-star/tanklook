@@ -155,3 +155,33 @@ describe('keys and hand-off', () => {
     expect(dropAnimal(addAnimal(NATHAN, PUFFER), 'peapuffer')).toEqual(NATHAN);
   });
 });
+
+// Lane DA2 (2026-11-03): the per-species size line calls the gate's own verdict, across every species x every catalogue tank.
+describe('the card size line agrees with the gate', async () => {
+  const { SPECIES } = await import('../src/data/species');
+  const { fitIn } = await import('../src/scene/tankfit');
+  const { minDataOf } = await import('../src/scene/tankMin');
+  const { tankFromModel } = await import('../src/data/tanks');
+  const sizeLine = (id: string, m: (typeof TANK_MODELS)[number]) => speciesLive([{ species: id, n: 1 }], m, true)[0].lines.find(l => /^Tank (at least|of about|size)/.test(l.text));
+  it('is bad exactly when the gate fails size, and never reads equal-against-equal while flagged', () => {
+    let pairs = 0, wrong = 0, oldWrong = 0; const worst: string[] = [];
+    for (const sp of SPECIES) for (const m of TANK_MODELS) {
+      const fit = fitIn([{ species: sp.id, n: 1 }], m); if (!fit) continue;
+      const gate = fit.fails.includes('minimum') || fit.fails.includes('length'), line = sizeLine(sp.id, m); pairs++;
+      // the card line before DA2: red length with a 1 mm tolerance
+      const md = minDataOf(sp.id), oldBad = md?.red ? tankFromModel(m).L < md.red.L - 1 : md?.vol ? m.ratedGal < md.vol.gal : false;
+      if (oldBad !== gate) { oldWrong++; if (worst.length < 5) worst.push(`${sp.id} in ${m.name}: old ${oldBad ? 'bad' : 'ok'}, gate ${gate ? 'fails' : 'passes'}`); }
+      if (gate && line?.tone !== 'bad') { wrong++; continue; }
+      if (!gate && line?.tone === 'bad') { wrong++; continue; }
+      if (gate && line) { const nums = [...line.text.matchAll(/(\d+(?:\.\d+)?) (in|gal|sq in)\b/g)].map(x => x[0]); const tail = line.text.split(/\. |: /).slice(1).join(' '); expect(tail).not.toMatch(/at least (\S+ \S+) .*this one is \1\b/); void nums; }
+    }
+    console.log(`DA2 sweep: ${pairs} species x tank pairs, card disagreed with the gate in ${oldWrong} before the fix; ${wrong} now. Examples: ${worst.join(' | ')}`);
+    expect(wrong).toBe(0);
+  }, 600_000);
+  it('says the 24 in line for a 20 gal high tank as inside the allowance, with two different numbers', () => {
+    const g = TANK_MODELS.find(m => /20 gal high/.test(m.name) && !m.terrarium)!, l = speciesLive([{ species: 'pandacory', n: 6 }], g, true)[0].lines.find(x => /^Tank at least/.test(x.text))!;
+    console.log('DA2 card:', l.tone, l.text);
+    expect(l.tone).toBe('note');
+    expect(l.text).toMatch(/ust under, within the 10 % allowance, floor area: wants about 292 sq in, this tank has 289 sq in/);
+  });
+});

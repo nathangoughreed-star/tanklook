@@ -15,7 +15,7 @@ import { bareSetup } from './defaults';
 import { volume } from './physics';
 import { countsAgainstWater, isOver, stockingOf } from './stocking';
 import { MIN_SLACK_PCT } from './animalfit';
-import { geometryOf, minDataOf, speciesMinimum, tankMinimum } from './tankMin';
+import { geometryOf, minDataOf, speciesMinimum, tankMinimum, type MinRow } from './tankMin';
 import { floorFor, HERP, SQFT_MM2 } from '../data/herpstock';
 import { dryNeedsOf, dryRowsFor, type DryBuild } from './drygear';
 import { footprint } from './shape';
@@ -286,6 +286,17 @@ export function fitIn(animals: AnimalCount[], tank: TankModel | string): TankFit
   const m = typeof tank === 'string' ? getTankModel(tank) : tank;
   if (!m || !candidatesFor(animals).length) return undefined;
   return fitOfTank(candidateOf(m), animals, needsOf(animals));
+}
+
+/** DA2 (2026-11-03, small shared helper): ONE species alone in a given tank, as the gate sees it: its tankMin row (the limiting measure with its need and have) and the engine's own `fails`.
+ *  The Animals step's per-species card reads its verdict from here, never from a comparison of its own. Undefined where fitIn is (nothing to judge). */
+export function speciesVerdictIn(a: AnimalCount, tank: TankModel | string): { row: MinRow; fails: Fit['fails'] } | undefined {
+  const one: AnimalCount[] = [{ species: a.species, n: 1, ...(a.tl ? { tl: a.tl } : {}) }], sp = getSpecies(a.species), m = typeof tank === 'string' ? getTankModel(tank) : tank;
+  const fit = fitIn(one, tank);
+  if (!fit || !sp || !m) return undefined;
+  const c = candidateOf(m), S = allLand(one) ? Object.assign(bareSetup(), { tank: c.T }) : setupFor(c, one, 'balanced');
+  if (allLand(one)) S.water.on = false;
+  return { row: speciesMinimum(sp, geometryOf(S), a.tl), fails: fit.fails };
 }
 
 export interface StepUp {
