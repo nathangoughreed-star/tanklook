@@ -10,7 +10,8 @@ import { clampGround, groundHeight, radialTerrain, type Ground } from './terrain
 import type { CompId, Item, ItemKind, LayerDens, LayoutId, Tank, TankSetup } from './types';
 
 /** `salt`: offered in a saltwater tank only (live rock, corals). */
-export interface Variant { kind: ItemKind; label: string; hint: string; size: number; min: number; max: number; salt?: true; fake?: Fake }
+export interface Variant { kind: ItemKind; label: string; hint: string; size: number; min: number; max: number; salt?: true; fake?: Fake;
+  /** limestone: dissolves, so it raises pH and hardness (right for rift lakes and brackish water, wrong for soft or blackwater tanks; lane BL1) */ hardens?: true }
 /** Artificial plants (lane P4, 2026-10-20): the material (silk: soft fabric leaves that drape; plastic: stiff, glossy,
  *  moulded) and the form. They never grow, need no light, CO2 or fertiliser and take up no nitrate: a decoration bought once. */
 export interface Fake { mat: 'silk' | 'plastic'; form: 'stem' | 'rosette' | 'mat' }
@@ -21,6 +22,8 @@ export const LIBRARY: Record<string, Variant> = {
   river: { kind: 'stone', label: 'River stone', hint: 'Smooth, rounded, brown-grey.', size: 110, min: 15, max: 600 },
   seiryu: { kind: 'stone', label: 'Seiryu', hint: 'Upright blue-grey crag with pale veins.', size: 130, min: 20, max: 600 },
   dragon: { kind: 'stone', label: 'Dragon stone', hint: 'Clay-brown, pitted with holes.', size: 140, min: 20, max: 600 },
+  holey: { kind: 'stone', label: 'Texas holey limestone', hint: 'Pale cream limestone, pitted and riddled with holes; buffers pH and hardness up (rift lakes, not soft water).', size: 140, min: 20, max: 600, hardens: true },
+  lace: { kind: 'stone', label: 'Lace rock', hint: 'Dark grey-brown, rough and lacy with fine holes; a limestone, so it buffers pH and hardness up.', size: 130, min: 20, max: 600, hardens: true },
   lava: { kind: 'stone', label: 'Lava rock', hint: 'Dark red-brown, rough and porous.', size: 90, min: 15, max: 500 },
   slate: { kind: 'stone', label: 'Slate', hint: 'Flat layered slab; stack them into ledges.', size: 150, min: 30, max: 600 },
   ledge: { kind: 'stone', label: 'Rock ledge', hint: 'A thick flat slab with a level top: lift it and set it against the glass or the 3D wall as a shelf.', size: 200, min: 60, max: 600 },
@@ -175,7 +178,7 @@ export interface Limb { pts: V3[]; r0: number; r1: number; tone: number }
 /** Stone length, height and width (mm) for its variant and seed. */
 export function stoneDims(variant: string, seed: number, size: number): V3 {
   const r = rng(seed * 31 + 7);
-  const [h0, h1, w0, w1] = ({ river: [0.45, 0.65, 0.7, 0.85], seiryu: [0.9, 1.4, 0.55, 0.75], dragon: [0.55, 0.9, 0.6, 0.8], lava: [0.5, 0.8, 0.65, 0.85], slate: [0.12, 0.24, 0.5, 0.8], ledge: [0.12, 0.5, 0.55, 0.72], liverock: [0.5, 0.75, 0.6, 0.85] } as Record<string, number[]>)[variant] ?? [0.6, 0.6, 0.7, 0.7];
+  const [h0, h1, w0, w1] = ({ river: [0.45, 0.65, 0.7, 0.85], seiryu: [0.9, 1.4, 0.55, 0.75], dragon: [0.55, 0.9, 0.6, 0.8], holey: [0.55, 0.95, 0.6, 0.85], lace: [0.5, 0.85, 0.55, 0.8], lava: [0.5, 0.8, 0.65, 0.85], slate: [0.12, 0.24, 0.5, 0.8], ledge: [0.12, 0.5, 0.55, 0.72], liverock: [0.5, 0.75, 0.6, 0.85] } as Record<string, number[]>)[variant] ?? [0.6, 0.6, 0.7, 0.7];
   return [size, size * (h0 + r() * (h1 - h0)), size * (w0 + r() * (w1 - w0))];
 }
 

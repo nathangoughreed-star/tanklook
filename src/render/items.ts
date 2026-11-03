@@ -56,8 +56,8 @@ export function clean(g: THREE.BufferGeometry, indexed: boolean) {
 // Every solid carries aGrit = (noise coordinates in mm, kind); the shader (GRIT) draws the fine detail per pixel from it:
 // grain, pits and cracks on stone, grain, splits and knots on wood. Kinds: 1 river, 2 seiryu / arch, 3 dragon, 4 lava,
 // 5 slate, 6 bark (coordinates = along the limb, angle around, radius), 7 terracotta, 8 coconut, 9 end grain, 10 plain wood,
-// 11 hard coral (corallite dots), 12 soft coral tissue (polyp fuzz); the reef pieces (render/coral3d.ts) set their own.
-const GRIT_KIND: Record<string, number> = { river: 1, seiryu: 2, dragon: 3, lava: 4, slate: 5, ledge: 2, tube: 7, coconut: 8, arch: 2, dish: 7, stonedish: 2 };
+// 11 hard coral (corallite dots), 12 soft coral tissue (polyp fuzz), 13 holey limestone, 14 lace rock; the reef pieces (render/coral3d.ts) set their own.
+const GRIT_KIND: Record<string, number> = { river: 1, seiryu: 2, dragon: 3, holey: 13, lace: 14, lava: 4, slate: 5, ledge: 2, tube: 7, coconut: 8, arch: 2, dish: 7, stonedish: 2 };
 const gritOffset = (seed: number) => [0.6180339, 0.4142135, 0.7320508].map((k, i) => ((seed * k + i * 0.37) % 1) * 400);
 /** aGrit from the vertex positions (shifted per seed so no two pieces share a pattern); left alone if already set. */
 export function grit(g: THREE.BufferGeometry, kind: number, seed: number) {
@@ -73,6 +73,8 @@ const STONE: Record<string, string[]> = {
   river: ['#8a8378', '#9a9184', '#6e6a64', '#a89f90', '#7c7466', '#5f5c58'],
   seiryu: ['#6f7377', '#7d8084', '#62666b'],
   dragon: ['#8b6b4a', '#7d6248', '#94785a'],
+  holey: ['#d3cab4', '#c6bda6', '#dcd3be'], // pale cream limestone
+  lace: ['#5e5a54', '#6b665e', '#524f4a'], // dark grey-brown
   lava: ['#5a2f28', '#4a2b26', '#63362b'],
   slate: ['#4c5058', '#55534f', '#4a4d52'],
   ledge: ['#7e7262', '#8a7d6a', '#736a5e'], // weathered sandstone
@@ -88,6 +90,8 @@ function stoneShape(variant: string, seed: number, size: number) {
     v.fromBufferAttribute(p, i);
     let k = 1 + (variant === 'river' ? 0.06 : 0.2) * nz(v.clone().multiplyScalar(angular ? 1.7 : 1.1));
     if (variant === 'dragon') k -= 0.2 * Math.max(0, fine(v.clone().multiplyScalar(5)) - 0.12); // pits and holes
+    if (variant === 'holey') k -= 0.4 * Math.max(0, fine(v.clone().multiplyScalar(3.6)) - 0.02) + 0.12 * Math.max(0, fine(v.clone().multiplyScalar(8)) - 0.2); // big pits and through-holes
+    if (variant === 'lace') k -= 0.22 * Math.max(0, fine(v.clone().multiplyScalar(7)) - 0.05) + 0.1 * Math.max(0, fine(v.clone().multiplyScalar(13)) - 0.15); // fine lacy holes
     if (variant === 'lava') k += 0.08 * fine(v.clone().multiplyScalar(9)) - 0.1 * Math.max(0, nz(v.clone().multiplyScalar(14)) - 0.2);
     dent[i] = k;
     v.multiplyScalar(k);
@@ -100,7 +104,7 @@ function stoneShape(variant: string, seed: number, size: number) {
   const mot = waves(r, 5), vein = waves(r, 3);
   return paint(g, (q, i) => {
     let k = 1 + 0.16 * mot(q.clone().multiplyScalar(0.06));
-    if (variant === 'dragon' || variant === 'lava') k *= 0.55 + 0.45 * Math.min(1, Math.max(0, (dent[i] - 0.8) / 0.25)); // dark crevices
+    if (variant === 'dragon' || variant === 'lava' || variant === 'holey' || variant === 'lace') { const lo = variant === 'holey' ? 0.4 : 0.55; k *= lo + (1 - lo) * Math.min(1, Math.max(0, (dent[i] - 0.8) / 0.25)); } // dark crevices
     const c = shade(base, k);
     if (crag && Math.abs(Math.sin(q.y * 0.11 + 4 * vein(q.clone().multiplyScalar(0.02)))) < 0.06) c.lerp(C('#d9dcd8'), 0.55); // calcite veins
     return c;
@@ -446,8 +450,8 @@ float gritK() {
   int t = int(vGrit.w + 0.5); vec3 p = vGrit.xyz; float px = length(fwidth(p)), k = 1.0; vec3 q = gR * p;
   // stones 1-5 share ONE gStone call (roughness and cracks picked first): the D3D compiler inlines each call site, and
   // five copies of its crack search made this program take 10-22 s to link on a first visit (lane E1 / EF1)
-  if (t >= 1 && t <= 5) {
-    float rough = t == 1 ? 0.25 : t == 2 ? 0.6 : t == 3 ? 1.1 : t == 4 ? 1.4 : 0.4, cracks = t == 1 ? 0.3 : t == 2 ? 1.0 : t == 3 ? 0.6 : t == 4 ? 0.35 : 0.5;
+  if ((t >= 1 && t <= 5) || t == 13 || t == 14) {
+    float rough = t == 1 ? 0.25 : t == 2 ? 0.6 : t == 3 ? 1.1 : t == 4 ? 1.4 : t == 13 ? 1.3 : t == 14 ? 1.6 : 0.4, cracks = t == 1 ? 0.3 : t == 2 ? 1.0 : t == 3 ? 0.6 : t == 4 ? 0.35 : t == 13 ? 0.15 : t == 14 ? 0.2 : 0.5;
     k = gStone(q, px, rough, cracks);
     if (t == 5) {  // slate: fissures along the layers over the fine grain
       float e = abs(gN(vec3(p.x * 0.02, p.y * 0.35, p.z * 0.02)) * 2.0 - 1.0), m = smoothstep(0.4, 0.6, gN(p * 0.03 + 4.0));

@@ -11,6 +11,7 @@ import type { TankSetup } from '../scene/types';
 import { showPriceNotice } from './priceNotice';
 import { DEAL_NOTE, NOT_SPONSORED, dealGuesses, dealShip, type Deal } from '../data/deals';
 import { renderDealMatch } from './dealMatch';
+import { renderTierBox } from './tierBox';
 import { bundleShip, pinPlantBundle, pinnedPlantBundle, plantBundleOffers, plantBundleOpt, unpinPlantBundle } from '../demand/plantBundles';
 import { GEAR_SLOT_NAME, gearOffers, gearParts, pinGear, pinnedGear, unpinGear } from '../demand/gearDeals';
 import { GEAR_DEALS, gearPctOff, gearShip } from '../data/gearDeals';
@@ -187,6 +188,7 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
     renderGearDeals(el);
     renderPlantBundles(el);
     renderDealMatch(el, store, P, recompute);
+    renderTierBox(el, store, Pe(), recompute);
   }
 
   /** Gear on sale at specialist stores that fits this build's light, filter, heater, skimmer or CO2 (lane GD, data:

@@ -875,6 +875,20 @@
    "unit": "each; Fluker's medium $6-8, ceramic Zoo Med ~$18",
    "url": "https://shop.premierpetsupply.com/products/westland/Flukers-Critter-Caver-Half-Log-for-Reptiles-2"
   },
+  "hard:holey": {
+   "lo": 1.25,
+   "mode": 3.1,
+   "hi": 3.5,
+   "unit": "per lb; shipped kits $3.13-3.33/lb (40 lb $125, 120 lb $399.95), local Texas pickup ~$1-1.5/lb (old forum posts); checked 2026-11-03",
+   "url": "https://reach.dog/shop/holey-rock-llc/products/120-medium-texas-holey-rock"
+  },
+  "hard:lace": {
+   "lo": 2,
+   "mode": 3,
+   "hi": 4.6,
+   "unit": "per lb; lace rock 5 lb bag $22.99 (~$4.60/lb), forum reports ~$3/lb; lo/mode judgement; checked 2026-11-03",
+   "url": "https://aquaticmotiv.com/products/lace-rock"
+  },
   "hard:lava": {
    "lo": 1.3,
    "mode": 3,

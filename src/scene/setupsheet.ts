@@ -23,9 +23,11 @@ export const SPARE = 1.1;
 const TERRA = new Set(['soil', 'tsand', 'clay', 'bark', 'layered']);
 export const isTerraSub = (type: string) => TERRA.has(type);
 
-/** Rough weight model for hardscape: bounding box x fill x density (kg per litre). Approximate and labelled so. */
+/** Rough weight model for hardscape: bounding box x fill x density (kg per litre). Approximate and labelled so.
+ *  Holey / lace limestone: solid limestone is 2.3-2.7 kg/L (published range for limestone; no boxed-product weight check), and a
+ *  holey rock is a fraction hole, so the fill is under dragon stone's 0.5 (BL1, 2026-11-03). */
 const FILL: Record<string, [fill: number, kgL: number]> = {
-  slate: [0.8, 2.7], ledge: [0.8, 2.7], lava: [0.55, 1.6], dragon: [0.5, 2.2], liverock: [0.45, 1.8],
+  slate: [0.8, 2.7], ledge: [0.8, 2.7], lava: [0.55, 1.6], dragon: [0.5, 2.2], holey: [0.45, 2.5], lace: [0.4, 2.4], liverock: [0.45, 1.8],
   branch: [0.15, 0.8], manzanita: [0.1, 0.8], spider: [0.12, 0.8], climb: [0.08, 0.8], mopani: [0.5, 1.0],
   corkflat: [0.25, 0.2], corktube: [0.25, 0.2], coconut: [0.3, 0.5], tube: [0.3, 1.8], arch: [0.35, 2.7], halflog: [0.35, 0.6],
 };
