@@ -1,0 +1,8 @@
+Moved numbers, lane OG1 (Overflowing Garden archetype + lucky bamboo plant), 2026-11-03
+New buildable archetype: overgrown-garden (supported, fw-gardens). New plant type: bamboo (land band, no light / CO2 need).
+
+test/rosters.test.ts: buildable archetypes 44 -> 45; candidate (archetype x tank size) rows 130 -> 133 (3 sizes for the new freshwater look).
+Explore pool (src/explore/pool.ts) and Discovery Underwater Gardens family: one more look offered (Overflowing Garden); nothing else in their numbers moves.
+Plant library: +1 plant (bamboo, 'Lucky bamboo'); test/growth.test.ts OLD list (species compared against the pre-growth generator) excludes it like the other later plants.
+Price: plant:bamboo $5.50 / $6.61 / $9 (12 in bare-root stalk, Home Depot 10-pack $66.07 -> $6.61 each; low and high are estimates).
+Unchanged: every existing archetype's scene, roster and welfare; the density stops of the other looks (the open-top tweak applies to overgrown-garden only).

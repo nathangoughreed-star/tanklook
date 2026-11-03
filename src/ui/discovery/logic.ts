@@ -9,6 +9,7 @@
 import { ARCHETYPES, ENVIRONMENTS, WATERS, archetype, archetypesOf, family, familiesOf, type Archetype, type Card, type Density, type Env, type Family, type Water } from '../../scene/archetypes';
 import type { Vision, VisionRecipe } from '../../scene/brief';
 import { getSpecies } from '../../data/species';
+import { isOpenTop, needsLid } from '../../scene/openTop';
 import { CHEM } from '../../data/waterchem';
 import { CARE } from '../../data/care';
 import { getTankModel, type TankModel } from '../../data/tanks';
@@ -88,6 +89,7 @@ export function fits(a: Archetype, k: Known): boolean {
   if (chem) for (const n of k.needs) if (!chem.includes(n)) return false;
   if (k.temp && a.tags.temp && a.tags.temp !== 'any' && a.tags.temp !== k.temp) return false;
   if (k.gallons && a.tags.minGallons && a.tags.minGallons > k.gallons) return false;
+  if (isOpenTop(a) && k.roster.some(id => { const sp = getSpecies(id); return !!sp && needsLid(sp); })) return false; // an open-top look never holds an animal that needs a lid (lane OG1)
   return true;
 }
 

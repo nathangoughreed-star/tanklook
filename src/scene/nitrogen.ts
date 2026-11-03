@@ -103,7 +103,7 @@ export const FERT_N: Record<string, number> = { none: 0, roottabs: 0, aio: 1.1, 
 /** Plant variant -> growth class and fresh weight g (floaters: cover in m2); guesses at the item's default size. */
 const PLANTS: Record<string, [PlantClass, number]> = {
   fern: ['slow', 40], anubias: ['slow', 25], crypt: ['slow', 25], buce: ['slow', 8], balansae: ['slow', 40], moss: ['slow', 15], lotus: ['slow', 40], sagittaria: ['slow', 20],
-  sword: ['medium', 80], ozelot: ['medium', 60], grass: ['medium', 40], hairgrass: ['medium', 10], carpet: ['medium', 20], pothos: ['medium', 60], creeper: ['medium', 40],
+  sword: ['medium', 80], ozelot: ['medium', 60], grass: ['medium', 40], hairgrass: ['medium', 10], carpet: ['medium', 20], pothos: ['medium', 60], bamboo: ['medium', 40], creeper: ['medium', 40],
   stem: ['fast', 40], stemred: ['fast', 40], rotala: ['fast', 40], ludwigia: ['fast', 40], hornwort: ['fast', 50], anacharis: ['fast', 50],
   redroot: ['float', 0.015], salvinia: ['float', 0.015], frogbit: ['float', 0.015], lettuce: ['float', 0.02],
 };

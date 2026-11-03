@@ -477,6 +477,7 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
         const tc = P.top && t > P.top.from ? P.top.cols[Math.floor(q() * P.top.cols.length)] : null;
         const rise = lerp(f.rise[0], f.rise[1], up ** 0.5) * (0.85 + q() * 0.3), cols = tc ?? D.pick(), br = D.bright();
         const tag: LeafTag = emTag({ ...fullBy(T(t) - e, e + 0.1, by), on: { pc, par: t * SEG } });
+        if (t < (P.leafFrom ?? 0)) continue; // a bare cane below its tuft (bamboo)
         for (const o of whorl) leaf(into, f, P.stalk, at(t), rot + o, L, rise, D.twist(), cols, br, q, bend(0.4), tag);
         // the emersed pair: held up stiffly along the stem (no sway: bend() would take draws from the plant's own stream)
         if (E) {

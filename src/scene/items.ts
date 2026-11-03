@@ -76,6 +76,7 @@ export const LIBRARY: Record<string, Variant> = {
   sansevieria: { kind: 'plant', label: 'Snake plant', hint: 'Terrarium: stiff upright sword leaves, banded dark green with yellow rims. Very tough; tolerates dim light and dry soil.', size: 220, min: 50, max: 520 },
   agave: { kind: 'plant', label: 'Agave', hint: 'Terrarium: a tight rosette of thick blue-grey spears. Slow; full sun, very little water.', size: 130, min: 40, max: 320 },
   columnar: { kind: 'plant', label: 'Columnar cactus', hint: 'Terrarium: a tall ribbed blue-green column with pale spines. Very slow; full sun, almost no water. Size = height.', size: 220, min: 60, max: 520 },
+  bamboo: { kind: 'plant', label: 'Lucky bamboo', hint: 'Riparium / open top: bare green canes standing in the water with a tuft of long leaves at the top. Roots and the lower canes stay wet; it grows up out of the tank. Size = cane height.', size: 350, min: 100, max: 1200 },
   hornwort: { kind: 'plant', label: 'Hornwort', hint: 'Bushy stems of whorled needle leaves; fast, trails along the surface.', size: 300, min: 60, max: 900 },
   anacharis: { kind: 'plant', label: 'Anacharis', hint: 'Long stems densely set with whorls of small bright leaves; fast.', size: 300, min: 60, max: 900 },
   // artificial plants (lane P4, 2026-10-20): size = height (a moss mat: width)

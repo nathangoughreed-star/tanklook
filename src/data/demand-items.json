@@ -1204,6 +1204,13 @@
    "unit": "one potted plant; only Green variant priced in USD",
    "url": "https://www.aquariumplants.com/product/ozelot-green-potted/?rating=2"
   },
+  "plant:bamboo": {
+   "lo": 5.5,
+   "mode": 6.61,
+   "hi": 9,
+   "unit": "12 inch bare-root lucky bamboo stalk; 10-pack per-plant ($66.07 / 10)",
+   "url": "https://www.homedepot.com/p/12-in-Lucky-Indoor-Bamboo-Live-Plants-Ships-Bare-Root-of-Curly-Stalks-Feng-Shui-Zen-Garden-Houseplants-10-Pack-LuckyIndoorBambooCurly12x10/328401720"
+  },
   "plant:pothos": {
    "lo": 7,
    "mode": 9.4,

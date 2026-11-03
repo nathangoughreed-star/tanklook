@@ -5,7 +5,7 @@ export type PlantType = 'stem' | 'stemred' | 'grass' | 'sword' | 'fern' | 'anubi
   | 'pothos' | 'bromeliad' | 'tropfern' | 'fittonia' | 'sphagnum' | 'creeper'
   | 'hairgrass' | 'hornwort' | 'anacharis'
   | 'echeveria' | 'haworthia' | 'jade' | 'aloe' | 'burrotail' | 'barrel'
-  | 'sansevieria' | 'agave' | 'columnar';
+  | 'sansevieria' | 'agave' | 'columnar' | 'bamboo';
 
 /** Height / width per plant type (sizes and footprints; the ratio of the old 2D cards). */
 export const PLANT_ASPECT: Record<PlantType, number> = { stem: 3.2, stemred: 3.2, grass: 3.6, sword: 1.1, fern: 1.3, anubias: 0.8, carpet: 0.32, crypt: 1,
@@ -14,7 +14,7 @@ export const PLANT_ASPECT: Record<PlantType, number> = { stem: 3.2, stemred: 3.2
   pothos: 1.3, bromeliad: 0.6, tropfern: 1, fittonia: 0.5, sphagnum: 0.35, creeper: 1.2,
   hairgrass: 0.4, hornwort: 3, anacharis: 3.2,
   echeveria: 0.55, haworthia: 0.7, jade: 1.1, aloe: 1.1, burrotail: 0.5, barrel: 1,
-  sansevieria: 1.6, agave: 0.8, columnar: 2.4 };
+  sansevieria: 1.6, agave: 0.8, columnar: 2.4, bamboo: 3.2 };
 /** Plants that grow as a low patch (size = patch width, height = CARPET_H) rather than upright (size = height). */
 export const isCarpet = (v: string) => v === 'carpet';
 /** Plants that float at the water line (size = patch width; roots hang below; not drawn in a dry tank). */
@@ -95,6 +95,8 @@ export interface Plant3D {
   nodes?: number;
   /** Stem plants: the leaf colours from this far up the stem (0..1), e.g. the red tops. */
   top?: { cols: [string, string][]; from: number };
+  /** Stem plants: no leaves below this share of the stem's length (lane OG1: bamboo canes are bare, the leaves tuft at the top; absent = leaves all the way down). */
+  leafFrom?: number;
   /** Crowns (rosette): several plants in one clump (vallisneria runners). */
   crowns?: [number, number];
   /** Floating plants: rosettes per 1000 mm² of patch, leaves per rosette, roots per rosette and root length (mm). */
@@ -331,6 +333,11 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
   columnar: { land: true, grow: { speed: 'slow', overflow: 'none', len: [60, 420], more: 1.5, prop: true }, cap: 1.2, sway: 0, form: 'rosette', n: [10, 12], crowns: [1, 1], spread: 0.02, stalk: '#3a6a4a', leaf: {
     len: [1, 1], wid: 0.17, prof: [0.4, 0.4], rise: [0.12, 0.22], arch: -0.2, twist: 0, fold: 0.1, thick: 0.9, wave: [0, 0], pet: 0,
     cols: [['#3a6a56', '#58907a'], ['#3e705a', '#5c9480']], under: '#3a6a56', tip: ['#e8dcb0', 0.06], seg: [12, 5] } },
+  // Lucky bamboo (Dracaena sanderiana; the "bamboo" of ripariums and open-top tanks, lane OG1): bare, jointed, bright green canes standing in the water,
+  // a tuft of long narrow arching leaves at the top. Roots and the lower canes stay wet; it grows up out of the tank. Size = cane height
+  bamboo: { land: true, grow: { speed: 'medium', overflow: 'none', len: [120, 1200], more: 2, shoots: 0.3 }, sway: 0, form: 'stem', n: [3, 6], nodes: 9, lean: 0.5, stemK: 0.013, leafFrom: 0.62, whorl: 4, spread: 0.1, stalk: '#7fae3c', leaf: {
+    len: [0.3, 0.42], wid: 0.11, prof: [0.7, 0.8], rise: [0.35, 1.15], arch: 0.5, twist: 0.15, fold: 0.18, thick: 0.5, wave: [0.01, 2], pet: 0,
+    cols: [['#2f7a2c', '#58a845'], ['#37832f', '#62b04a'], ['#2b7228', '#4e9c3e']], under: '#4f9a3c', rib: '#9acb62', seg: [10, 4] } },
   // ---------- Aquatic follow-ons (lane T2, roadmap section 6; Monte Carlo stays the existing carpet: Nathan 2026-10-14) ----------
   // Dwarf hairgrass (Eleocharis acicularis): dense tufts of needle-fine bright green blades on runners, a fine lawn
   hairgrass: { grow: { speed: 'medium', overflow: 'spread', len: [25, 140], more: 10 }, sway: 0.35, form: 'rosette', n: [320, 420], lawn: 2400, crowns: [9, 14], spread: 0.9, stalk: '#4a7a30', leaf: {

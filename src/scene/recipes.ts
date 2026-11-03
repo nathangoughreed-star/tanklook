@@ -8,6 +8,9 @@
 // without a mapped look stay coming-soon (no recipe).
 import { emptyBuild, buildsFor, type Build } from './builds';
 import { itemDims, layerOf, makeItem, STYLES } from './items';
+import { isOpenTop } from './openTop';
+import { waterY } from './physics';
+
 import { getSpecies } from '../data/species';
 import { groupMinimum } from './groupMin';
 import { scapeSetup, type PlantMode } from './scapes';
@@ -61,9 +64,13 @@ interface Tweak {
   /** Bare and clean presets (lane BC1, 2026-11-02), existing options only: the floor ('bare' = no substrate, bare glass; a type or a custom blend
    *  = plain sand), flat (no hills), the stones kept per level (their sizes as shares of the biggest: one feature rock and pebbles), hides added
    *  per level (stone arches), plants cut to these variants (the few big swords of a showcase). */
+  /** Open-top garden (lane OG1): no lid, the water line lowered, and the stem / sword plants grown past it (`overgrow`); `dens` carries the amount per level. */
+  openTop?: boolean;
   ground?: 'bare' | { type: SubstrateType; custom?: SubstrateBlend }; flat?: boolean; rocks?: Record<Density, number[]>; wood?: Record<Density, number>; caves?: Record<Density, number>; plantsOnly?: string[];
 }
 const TWEAKS: Record<string, Tweak> = {
+  // Overflowing Garden: the jungle look with an open top; the plant stop sets how far the emersed growth clears the water, the hardscape stays a few roots
+  'overgrown-garden': { openTop: true, seed: 1, dens: t([0.3, 0.3], [1, 1.2], [1.6, 3]) },
   // reef siblings (one 'reef' look): the shape of the rock is the archetype
   'reef-arches': { comp: 'v' }, 'reef-islands': { comp: 'u' },   'mixed-reef': { comp: 'scattered', seed: 2 }, 'blue-glow-reef': { comp: 'mound', seed: 3 },
   // driftwood siblings
@@ -117,6 +124,7 @@ const FAMILY_BG: Record<string, { bg: Background; color?: string }> = {
 };
 /** Per-archetype exceptions to its family's background. */
 const ARCH_BG: Record<string, { bg: Background; color?: string }> = {
+  'overgrown-garden': { bg: 'custom', color: '#30233a' }, // greens, red stems and a pale rim of leaves against dark plum, the colour opposite them
   'blackwater-creek': { bg: 'blue' },      // amber water, brown leaves and wood against deep blue (black would swallow them)
   'african-cichlid-rockscape': { bg: 'black' }, // blue and yellow cichlids against black
   'betta-retreat': { bg: 'black' },        // a blue or red betta must not vanish into blue
@@ -131,6 +139,7 @@ export const recipeBg = (a: Archetype): { bg: Background; color?: string } => AR
 export function withBg(a: Archetype, S: TankSetup): TankSetup {
   const { bg, color } = recipeBg(a);
   S.render = { ...S.render, bg, bgSides: ['back'] }; if (color) S.render.bgColor = color; else delete S.render.bgColor;
+  if (TWEAKS[a.id]?.openTop) overgrow(S); // every path that dresses a scene for an archetype (the pictures and Make It Your Own) gets the open top
   return S;
 }
 
@@ -221,6 +230,42 @@ function finish(a: Archetype, d: Density, S: TankSetup): TankSetup {
   if (a.recipe.looks[0] === 'none' && d === 'open') S.items = [];
   clean(a, d, S);
   return withBg(a, S);
+}
+
+/** Plants that grow up out of the water (art/plants.ts overflow 'emerge') and so can be grown past the rim of an open tank. */
+const EMERGE: ReadonlySet<string> = new Set(['stem', 'stemred', 'ludwigia', 'sword', 'ozelot', 'bamboo']);
+/** The water line of an open-top garden, as a share of a full tank: a little lower, so the glass shows the plants clearing it. */
+export const GARDEN_LEVEL = 0.88;
+/** Plants the open-top recipe adds carry a seed in this range, so a second pass over a scene knows they are there. */
+const SPROUT_SEED = 1_900_000_000, SPROUTS = 100;
+/** How far past the water line the tallest stems reach at the sparsest (0.3) and densest (3) plant stop, as shares of the water depth. */
+const CLEAR: [number, number] = [1.25, 2.1];
+/** What grows under the water of the garden (Nathan 2026-11-03: a tank plus houseplants, not a jungle): tidy low and mid plants, floaters at the surface and the stems that will break it. The jungle look's tall straps (vallisneria, balansae) are left out. */
+const UNDER = new Set(['crypt', 'anubias', 'buce', 'fern', 'moss', 'sword', 'ozelot', 'sagittaria', 'carpet', 'stem', 'stemred', 'ludwigia', 'frogbit', 'salvinia', 'redroot', 'lettuce']);
+/** Open top (lane OG1): no lid at any level, the water line lowered, and every stem / sword / bamboo cane grown so it clears the water by an amount that rises with the plant density stop.
+ *  The growth is solved per plant from its own height (itemDims), so it holds in any tank; a plant's own random draw varies the reach so the tops are not level. */
+function overgrow(S: TankSetup): void {
+  S.lid = 'open';
+  S.water.level = Math.min(S.water.level, GARDEN_LEVEL);
+  const T = S.tank, depth = waterY(T, S.water.level), p = Math.max(0, Math.min(1, ((S.layout.dens?.plant ?? 1) - 0.3) / (3 - 0.3)));
+  S.items = S.items.filter(it => it.kind !== 'plant' || UNDER.has(it.variant) || it.seed >= SPROUT_SEED);
+  // the stems the garden is for: the jungle look's own are few, so a row of emersed stems, lucky bamboo canes (the plant ripariums are known for) and the odd sword stands along the back and the ends, more of them at denser stops (once: they carry a seed in the SPROUT_SEED range)
+  if (!S.items.some(it => it.kind === 'plant' && it.seed >= SPROUT_SEED && it.seed < SPROUT_SEED + SPROUTS)) {
+    const n = Math.min(SPROUTS, Math.round((2 + 8 * p) * Math.min(1.6, Math.max(0.7, T.L / 600)))), kinds = ['bamboo', 'ludwigia', 'stemred', 'stem', 'ludwigia', 'bamboo', 'ozelot', 'stem'];
+    for (let i = 0; i < n; i++) {
+      const u = (i * 0.618034) % 1, edge = i % 3 === 2, x = edge ? T.L * (i % 2 ? 0.06 + 0.06 * u : 0.94 - 0.06 * u) : T.L * (0.1 + 0.8 * u), d = T.D * (edge ? 0.2 + 0.5 * u : 0.14 + 0.2 * ((i * 0.37) % 1));
+      S.items.push(makeItem(T, kinds[i % kinds.length], 1 + Math.max(0, ...S.items.map(x => x.id)), SPROUT_SEED + i, x, d));
+    }
+  }
+  // houseplant vines at the ends of the back glass, climbing out over the rim (pothos: the riparium's favourite)
+  if (!S.items.some(it => it.variant === 'pothos')) for (let i = 0, n = 1 + Math.round(2 * p); i < n; i++) S.items.push(makeItem(T, 'pothos', 1 + Math.max(0, ...S.items.map(x => x.id)), SPROUT_SEED + 50 + i, T.L * (i % 2 ? 0.95 : 0.05), T.D * 0.1, { size: T.H * 1.4 }));
+  for (const it of S.items) {
+    if (it.kind !== 'plant' || !EMERGE.has(it.variant)) continue;
+    const want = depth * (CLEAR[0] + (CLEAR[1] - CLEAR[0]) * p) * (0.8 + 0.4 * (((it.seed * 2654435761) >>> 0) % 1000) / 1000) * (it.variant === 'bamboo' ? 1.2 : 1); // lucky bamboo canes stand tallest
+    let lo = 0.05, hi = 1;
+    for (let k = 0; k < 14; k++) { const m = (lo + hi) / 2; (itemDims({ ...it, growth: m })[1] < want ? lo = m : hi = m); }
+    it.growth = Math.round(hi * 1000) / 1000;
+  }
 }
 
 function draw(a: Archetype, b: Build, seed: number, d: Density): TankSetup {
@@ -344,6 +389,7 @@ export function recipeBase(a: Archetype | string, tank: TankModel, animals?: Ani
   if (!arch || arch.support === 'coming-soon' || !recipeLook(arch)) return undefined;
   const roster = animals ?? focalAnimals(arch, tank);
   const build = roster.length ? buildsFor(roster, tank, now)[2] : emptyBuild(tank, now);
+  if (isOpenTop(arch)) build.setup.lid = 'open';
   const own = TWEAKS[arch.id]?.seed ?? 1, seeds = [own, ...SEEDS.filter(s => s !== own)];
   // the size spread comes first; a composition where it leaves the levels no fuller than each other (a tank with almost no stone) keeps the plain caps instead
   const trio = (seed: number, mix: boolean) => evenScale(arch, { open: draw(arch, build, seed, 'open'), balanced: draw(arch, build, seed, 'balanced'), full: draw(arch, build, seed, 'full') }, mix);
