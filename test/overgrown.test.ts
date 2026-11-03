@@ -29,7 +29,7 @@ const TANKS = ['20 gal long', '40 gal breeder', '75 gal'].map(tank);
 const ESCAPE_ARTISTS = ['hatchet', 'cpo', 'cajundwarf', 'rswcrayfish', 'redclaw', 'thaicrab', 'firetoad', 'firenewt', 'adf', 'axolotl', 'betta', 'danio', 'kuhli'];
 
 /** the houseplants of the rim planters, and the emersed stems that stand in the water */
-const HOUSE = new Set(['peacelily', 'anthurium', 'calathea', 'palm', 'bamboo', 'pothos', 'philodendron']);
+const HOUSE = new Set(['peacelily', 'anthurium', 'calathea', 'catpalm', 'bamboo', 'pothos', 'philodendron']);
 const EMERSED = new Set(['stem', 'stemred', 'ludwigia']);
 
 describe('the archetype', () => {
@@ -132,7 +132,7 @@ describe('the scene', () => {
 });
 
 describe('the new parts', () => {
-  const PLANTS = ['peacelily', 'anthurium', 'calathea', 'palm', 'philodendron', 'bamboo'];
+  const PLANTS = ['peacelily', 'anthurium', 'calathea', 'catpalm', 'philodendron', 'bamboo'];
   it('each houseplant is in the library, drawn in 3D, a land plant that needs no light or CO2, and priced from a retailer', () => {
     for (const v of PLANTS) {
       expect(LIBRARY[v]?.kind, v).toBe('plant'); expect(PLANT3D[v as never], v).toBeTruthy();

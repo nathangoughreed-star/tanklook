@@ -1253,12 +1253,12 @@
    "unit": "one 4 inch potted Calathea orbifolia; $12.99-$27.26 across retailers",
    "url": "https://reach.dog/shop/the-plant-farm/products/calathea-orbifolia-4-plant"
   },
-  "plant:palm": {
-   "lo": 6.99,
-   "mode": 10.79,
-   "hi": 16.99,
-   "unit": "one 4 inch potted parlour palm; $10.79 each in a 4-pack, $16.99 single",
-   "url": "https://www.homedepot.com/p/Parlor-Palm-Chamaedorea-Elegans-Plant-in-4-in-Grower-Pot-4-PALM-PARLOR/317501662"
+  "plant:catpalm": {
+   "lo": 32.3,
+   "mode": 32.3,
+   "hi": 99.6,
+   "unit": "one cat palm in a 10 inch pot, 24-34 in tall ($32.30 Home Depot; $99.60 Red Crocus, sold out); no 4 inch listing found, so a rim planter takes a division of it: the low is the one real listing, the high a specialist's",
+   "url": "https://www.homedepot.com/p/United-Nursery-Cat-Palm-Plant-24-in-to-34-in-Tall-in-10-in-White-Decor-Pot-74547/316396181"
   },
   "plant:philodendron": {
    "lo": 9.99,

@@ -6,7 +6,7 @@ export type PlantType = 'stem' | 'stemred' | 'grass' | 'sword' | 'fern' | 'anubi
   | 'hairgrass' | 'hornwort' | 'anacharis'
   | 'echeveria' | 'haworthia' | 'jade' | 'aloe' | 'burrotail' | 'barrel'
   | 'sansevieria' | 'agave' | 'columnar' | 'bamboo'
-  | 'peacelily' | 'anthurium' | 'calathea' | 'palm' | 'philodendron';
+  | 'peacelily' | 'anthurium' | 'calathea' | 'catpalm' | 'philodendron';
 
 /** Height / width per plant type (sizes and footprints; the ratio of the old 2D cards). */
 export const PLANT_ASPECT: Record<PlantType, number> = { stem: 3.2, stemred: 3.2, grass: 3.6, sword: 1.1, fern: 1.3, anubias: 0.8, carpet: 0.32, crypt: 1,
@@ -16,7 +16,7 @@ export const PLANT_ASPECT: Record<PlantType, number> = { stem: 3.2, stemred: 3.2
   hairgrass: 0.4, hornwort: 3, anacharis: 3.2,
   echeveria: 0.55, haworthia: 0.7, jade: 1.1, aloe: 1.1, burrotail: 0.5, barrel: 1,
   sansevieria: 1.6, agave: 0.8, columnar: 2.4, bamboo: 3.2,
-  peacelily: 1, anthurium: 0.9, calathea: 0.85, palm: 1.2, philodendron: 1.3 };
+  peacelily: 1, anthurium: 0.9, calathea: 0.85, catpalm: 1.2, philodendron: 1.3 };
 /** Plants that grow as a low patch (size = patch width, height = CARPET_H) rather than upright (size = height). */
 export const isCarpet = (v: string) => v === 'carpet';
 /** Plants that float at the water line (size = patch width; roots hang below; not drawn in a dry tank). */
@@ -356,8 +356,8 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
     len: [0.5, 0.75], wid: 0.7, prof: [0.8, 0.5], rise: [0.18, 0.95], arch: 0.3, twist: 0.1, fold: 0.1, wave: [0.03, 3], pet: 0.28,
     cols: [['#34803e', '#5eb862'], ['#38883f', '#66c068'], ['#2e7a38', '#54ac58']], under: '#7a4a6a', rib: '#d2e6b4',
     veins: { col: '#bcdca0', n: 9, w: 0.1 }, seg: [12, 9] } },
-  // Parlour palm (Chamaedorea): slender arching fronds of narrow leaflets on bare green stalks, several from one clump
-  palm: { land: true, grow: { speed: 'slow', overflow: 'none', len: [100, 900], more: 3 }, cap: 1.5, sway: 0, form: 'rosette', n: [9, 13], crowns: [2, 4], spread: 0.16, stalk: '#5a8a3a', leaf: {
+  // Cat palm (Chamaedorea cataractarum, a stream-bank palm of Mexico that stands in wet ground: the palm of the Amazonas riparium article): arching fronds of narrow leaflets on bare green stalks, several from one clump
+  catpalm: { land: true, grow: { speed: 'slow', overflow: 'none', len: [100, 900], more: 3 }, cap: 1.5, sway: 0, form: 'rosette', n: [9, 13], crowns: [2, 4], spread: 0.16, stalk: '#5a8a3a', leaf: {
     len: [0.7, 1], wid: 0.012, prof: [1, 0.3], rise: [0.05, 0.55], arch: 0.65, twist: 0.2, fold: 0, wave: [0, 0], pet: 0.4,
     cols: [['#2e6a2a', '#4e9440']], under: '#548a3e', seg: [24, 3],
     pinnae: { n: [24, 30], ang: 0.95, prof: [0.55, 0.45], leaf: {

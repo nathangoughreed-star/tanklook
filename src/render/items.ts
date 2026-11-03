@@ -317,7 +317,7 @@ function dishShape(variant: string, seed: number, s: number) {
   parts.forEach((g, i) => grit(g, stone && i < 3 ? 2 : 0, seed));
   return mergeGeometries(parts)!;
 }
-/** A rim planter (lane OG2): a box that sits on the glass edge of an open-top tank, soil in the top for the houseplants it carries,
+/** A rim planter (lane OG2): a box that sits on the glass edge of an open-top tank, hydroton in the top for the houseplant it carries,
  *  and the roots hanging from its bottom down into the water. Width = s, height 0.4 s, depth 0.45 s; the roots run on below y = 0
  *  (0.35 .. 1 s long, so they reach the water from any rim). The box is black, white or terracotta by its seed. */
 function planterShape(seed: number, s: number) {
@@ -327,7 +327,7 @@ function planterShape(seed: number, s: number) {
   const parts: THREE.BufferGeometry[] = [];
   parts.push(paint(clean(box(w * 0.96, h * 0.9, d * 0.96, 0), true), q => shade(body[0].clone().lerp(body[1], Math.max(0, q.y / h)), 1 + 0.03 * nz(q.clone().multiplyScalar(0.05)))));
   parts.push(paint(clean(box(w, h * 0.16, d, h * 0.84), true), () => shade(body[1], 0.96)));
-  parts.push(paint(clean(box(w - 2 * wall, h * 0.05, d - 2 * wall, h * 0.97), true), q => C('#3b2a1e').lerp(C('#5a4230'), 0.5 + 0.5 * nz(q.clone().multiplyScalar(0.18))))); // the soil, a little proud of the rim
+  parts.push(paint(clean(box(w - 2 * wall, h * 0.05, d - 2 * wall, h * 0.97), true), q => C('#9a5632').lerp(C('#bf7a46'), 0.5 + 0.5 * nz(q.clone().multiplyScalar(0.3))))); // hydroton (clay pebbles, never soil: it would foul the water), a little proud of the rim
   const N = Math.round(18 + 22 * Math.min(1, s / 260));
   for (let i = 0; i < N; i++) {
     const x = (r() - 0.5) * w * 0.8, z = (r() - 0.5) * d * 0.8, len = s * (0.35 + 0.65 * r()), ph = r() * 6.28, sw = 0.05 + 0.1 * r();

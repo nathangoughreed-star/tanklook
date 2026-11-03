@@ -243,7 +243,7 @@ const SPROUT_SEED = 1_900_000_000, SPROUTS = 100;
 /** What grows under the water of the garden (Nathan 2026-11-03, with a collage of tanks with houseplants on the rim: a calm aquascape underneath, not a jungle): a few low and mid plants, a carpet, floaters at the surface. No tall straps, no stems (the few emersed ones are added by `overgrow`). */
 const UNDER = new Set(['crypt', 'anubias', 'buce', 'fern', 'moss', 'sagittaria', 'carpet', 'frogbit', 'salvinia', 'redroot', 'lettuce']);
 /** The houseplants of the rim planters, in the order the planters take them (height as a share of the tank's height at the sparsest stop; the denser stops grow them up to 1.4 times that). */
-const HOUSEPLANTS: [string, number][] = [['peacelily', 0.65], ['anthurium', 0.55], ['palm', 0.62], ['calathea', 0.5], ['bamboo', 0.8]];
+const HOUSEPLANTS: [string, number][] = [['peacelily', 0.65], ['anthurium', 0.55], ['catpalm', 0.62], ['calathea', 0.5], ['bamboo', 0.8]];
 /** The open-top garden's own pieces (planters, houseplants, emersed stems) carry a seed in the SPROUT_SEED range. */
 export const isGardenPiece = (it: Item) => it.seed >= SPROUT_SEED && it.seed < SPROUT_SEED + SPROUTS;
 /** Open top (lanes OG1, OG2): no lid at any level, the water line lowered, and houseplants growing out of planters on the rim with their roots hanging into the water,
