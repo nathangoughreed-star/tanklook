@@ -7,6 +7,7 @@ import { archetype, family, type Archetype, type Card, type Family } from '../..
 import { getSpecies } from '../../data/species';
 import { getItem, minOf, rangeOf, setItem, setVision, valueOf, visionOf, type Vision } from '../../scene/brief';
 import { handOff, lookUnchanged } from '../../scene/reeval';
+import { LOW_TECH_STYLES } from '../../scene/setupNeeds';
 import { isOpenTop } from '../../scene/openTop';
 import { buildsFor } from '../../scene/builds';
 import { recordTaste, recordWish } from '../../demand/taste';
@@ -391,11 +392,11 @@ ${chosen.length ? '<p class="da-sec">Tankmates that suit what you have, best fir
     }
     const same = lookUnchanged(store.tank, b0, { archetypeId: a.id, density: p.density, densityStop: stop }, tc?.model.id);
     // Animals First (lane GS5): the roster the shell passed is the person's own stocking, so those animals go into the scene with the look (a roster only in the brief is not in the scene yet)
-    const ho = same ? undefined : handOff(store.tank, T, { accept: [...accepted.map(c => c.species), ...(opts.roster ?? []).map(r => r.species)], brief: b0, openTop: isOpenTop(a) });
+    const ho = same ? undefined : handOff(store.tank, T, { accept: [...accepted.map(c => c.species), ...(opts.roster ?? []).map(r => r.species)], brief: b0, openTop: isOpenTop(a), lowTech: LOW_TECH_STYLES.has(a.id) });
     if (ho) store.update(s => { Object.assign(s.tanks[s.active], structuredClone(ho.scene)); }, { coalesce: 'discovery' });
     editBrief(() => keep); store.seal();
     setChosen([]);
-    host.status(`${a.name}, ${STOP_NAME[stop].toLowerCase()}, opened in the editor. ${same ? 'It was already your look: nothing was changed.' : ho && !ho.fresh ? 'Your tank, gear and animals were kept; only the look changed.' : 'Make it your own: change anything;'} Undo steps back.${a.support === 'partial' && a.deps.length ? ' ' + depsLine(a) : ''}`);
+    host.status(`${a.name}, ${STOP_NAME[stop].toLowerCase()}, opened in the editor. ${same ? 'It was already your look: nothing was changed.' : ho && !ho.fresh ? 'Your tank, gear and animals were kept; only the look changed.' : 'Make it your own: change anything;'} Undo steps back.${a.support === 'partial' && a.deps.length ? ' ' + depsLine(a) : ''}${ho?.needs.length ? ' ' + ho.needs.map(n => n.text).join(' ') : ''}`);
     opts.onExit?.('editor');
   }
 

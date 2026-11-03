@@ -94,7 +94,8 @@ describe('invariant 3: changing archetype keeps the tank, the selected animals a
   });
   it('the scene: the new look replaces the pieces only, the roster and tank stay', () => {
     const { b, S } = journey(), gen = recipeScene(other.id, 'full', M40, NEON)!, ho = handOff(S, gen, { brief: b });
-    expect(roster(ho.scene)).toEqual(roster(S)); expect(ho.scene.tank).toEqual(S.tank); expect(ho.scene.items).toEqual(gen.items);
+    expect(roster(ho.scene)).toEqual(roster(S)); expect(ho.scene.tank).toEqual(S.tank); // a low-tech / tight-budget swap (lane LN1) changes a CO2 plant's variant, never its place
+    const place = (S: TankSetup) => S.items.map(({ variant: _v, size: _s, ...rest }) => rest); expect(place(ho.scene)).toEqual(place(gen));
   });
 });
 

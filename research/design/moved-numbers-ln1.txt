@@ -1,0 +1,32 @@
+LN1 moved numbers: generated setup, Balanced, hand-off into a tank with a design in place (g20h; g60b for reefs).
+archetype | before set-up / mo | after set-up / mo | added
+
+dutch-garden: $900 / $16 -> $935 / $21 | light, co2, ferts
+iwagumi-stone-garden: $516 / $11 -> $566 / $16 | light, co2, ferts
+blackwater-creek: $545 / $12 -> $561 / $12 | light
+stone-wood-sculpture: $306 / $10 -> $322 / $11 | light
+silk-plant-natural: $473 / $10 -> $488 / $11 | light
+big-fish-showcase: $281 / $10 -> $297 / $11 | light
+planted-community: $676 / $13 -> $711 / $19 | light, co2, ferts
+overgrown-jungle: $871 / $15 -> $887 / $15 | light
+overgrown-garden: $634 / $13 -> $647 / $13 | swap, light
+mossy-wood-ferns: $390 / $11 -> $405 / $11 | light
+driftwood-nature: $860 / $15 -> $910 / $20 | light, co2, ferts
+underwater-forest: $723 / $12 -> $772 / $17 | light, co2, ferts
+african-cichlid-rockscape: $526 / $10 -> $542 / $11 | light
+rocky-river-stream: $423 / $10 -> $439 / $11 | light
+white-sand-stone: $288 / $10 -> $303 / $11 | light
+discus-showcase: $347 / $10 -> $363 / $11 | light
+goldfish-palace: $436 / $10 -> $452 / $11 | light
+betta-retreat: $494 / $11 -> $514 / $12 | swap, light
+axolotl-den: $297 / $10 -> $313 / $11 | light
+lps-coral-garden: $2239 / $80 -> $2985 / $93 | light, dosing
+reef-arches: $2296 / $82 -> $3042 / $94 | light, dosing
+blue-glow-reef: $1878 / $65 -> $2624 / $77 | light, dosing
+soft-coral-garden: $2259 / $81 -> $2296 / $86 | light, dosing
+sps-reef: $2235 / $79 -> $2981 / $91 | light, dosing
+mixed-reef: $2241 / $79 -> $2987 / $91 | light, dosing
+clownfish-anemone: $1796 / $65 -> $1833 / $70 | light, dosing
+reef-islands: $2294 / $82 -> $3040 / $94 | light, dosing
+reef-rock-art: $1453 / $65 -> $2198 / $77 | light, dosing
+reef-skyline: $1893 / $87 -> $2639 / $99 | light, dosing

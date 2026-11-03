@@ -23,6 +23,7 @@ import { isOver, plural, stockingOf } from './stocking';
 import { conflictsOf, reevalInput, type Conflict, type ReevalInput } from './project';
 import type { AnimalCount } from './tankfit';
 import { placeNew } from './scatter';
+import { applySetupNeeds, type NeedLine } from './setupNeeds';
 import { rng } from '../art/paint';
 import { pickOfStock, sexFish, totalOf, writePairs, type Pk } from '../ui/stockPlanLogic';
 import type { Fish, Item, Tank, TankSetup } from './types';
@@ -176,6 +177,8 @@ export interface HandOff {
   kept: string[]; changed: string[];
   /** a welfare / stocking warning the change raised (lane GS7): shown, never a reason to block the hand-off */
   warnings: string[];
+  /** what the scene's plants / corals needed that was added (light, ferts, CO2, dosing), swapped or flagged, with the price of each (lane LN1; scene/setupNeeds.ts) */
+  needs: NeedLine[];
 }
 /** The hand-off from a guided look to the editor, as an UPDATE of the scene that is there. With nothing to keep the generated scene is taken whole; with a design in place only
  *  the look's fields come from the generated scene (the tank, its gear and the roster stay), and a different tank adapts the roster instead of regenerating it. The generated
@@ -188,13 +191,19 @@ export function handOff(current: TankSetup, generated: TankSetup, opts: {
   accept?: readonly string[]; brief?: Brief;
   /** the look is an open-top one (lane OG1, scene/openTop.ts): it is drawn and stocked without a lid on purpose, so none is added (lane LB1) */
   openTop?: boolean;
+  /** the look is a low-tech one (scene/setupNeeds.ts LOW_TECH_STYLES): its plants get no CO2 (lane LN1) */
+  lowTech?: boolean;
   /** the roster the scene's animals must match exactly (counts, sexes, pairings; lane GS7). Default: the brief's LOCKED roster, when `accept` names every one of its species (the Animals
    *  First hand-off passes the roster's species; a Look First hand-off does not, so its editor roster is only added to). */
   roster?: readonly Stocked[];
 } = {}): HandOff {
   const accept = new Set(opts.accept ?? []), suggested = generated.fish.filter(f => !accept.has(f.species));
   const gen = structuredClone(generated); gen.fish = gen.fish.filter(f => accept.has(f.species));
-  if (!hasDesign(current, opts.brief)) return { scene: opts.openTop ? gen : withDefaultLid(gen, opts.brief), fresh: true, kept: [], warnings: [], changed: [suggested.length ? `The look's own animals (${[...new Set(suggested.map(f => nameOf(f.species)))].join(', ')}) are suggestions, not part of your stocking.` : ''].filter(Boolean) };
+  if (!hasDesign(current, opts.brief)) {
+    // a generated setup always has a light and what its plants / corals need beyond it (lane LN1): the generator's own light is its to replace when too weak
+    const nd = applySetupNeeds(opts.openTop ? gen : withDefaultLid(gen, opts.brief), { brief: opts.brief, generated: true, lowTech: opts.lowTech });
+    return { scene: nd.scene, fresh: true, kept: [], warnings: [], needs: nd.lines, changed: [...nd.lines.map(l => l.text), suggested.length ? `The look's own animals (${[...new Set(suggested.map(f => nameOf(f.species)))].join(', ')}) are suggestions, not part of your stocking.` : ''].filter(Boolean) };
+  }
   const out = structuredClone(current), kept: string[] = [], changed: string[] = [], stock = opts.roster ?? lockedRosterFor(opts.brief, accept), warnings: string[] = [];
   const animalsKept = () => `Animals: ${[...new Set(out.fish.map(f => f.species))].map(s => plural(out.fish.filter(f => f.species === s).length, nameOf(s))).join(', ')}`;
   if (out.fish.length && !stock?.length) kept.push(animalsKept());
@@ -218,7 +227,11 @@ export function handOff(current: TankSetup, generated: TankSetup, opts: {
     if (diff.length) changed.push(`Animals matched to your roster: ${diff.map(x => `${x.d > 0 ? '+' : '-'}${Math.abs(x.d)} ${nameOf(x.sp)}`).join(', ')}.`);
     if (r.added || r.removed) { const w = stockingChange(current, out).warning; if (w) { warnings.push(w); changed.push(w); } }
   }
-  return { scene: out, fresh: false, kept, changed, warnings };
+  // the new look's plants / corals need a light and care the scene may not have (lane LN1): a design with no light gets one, a light the person owns or set is kept and flagged when too weak
+  const nd = applySetupNeeds(out, { brief: opts.brief, lowTech: opts.lowTech });
+  Object.assign(out, nd.scene);
+  changed.push(...nd.lines.map(l => l.text));
+  return { scene: out, fresh: false, kept, changed, warnings, needs: nd.lines };
 }
 
 const countsOf = (fish: readonly Fish[]) => { const m = new Map<string, number>(); for (const f of fish) m.set(f.species, (m.get(f.species) ?? 0) + 1); return m; };
