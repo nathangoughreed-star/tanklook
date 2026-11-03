@@ -12,6 +12,7 @@ import type { DryGroup, Kind, OwnedKey, OwnedMap, Tag, Wants } from '../demand/s
 import type { Cap, Constraints, Effort } from './constraints';
 import type { PlantMode } from './scapes';
 import { parseTaste, type Taste } from '../demand/taste';
+import { parseAspects, type Aspects } from '../explore/aspects';
 import type { Background, LayoutId, SpaceLimit } from './types';
 /** The background ids a saved recipe may name (types.ts Background). */
 const BG_IDS: readonly string[] = ['black', 'blue', 'lightblue', 'gradient', 'abyss', 'sky', 'grey', 'white', 'green', 'sand', 'reefscene', 'riverscene', 'plantscene', 'rockscene', 'frosted', 'custom', 'none'];
@@ -66,6 +67,7 @@ export interface Values {
   'preferences.desired': Desire[];       // what the person wants from the tank
   'preferences.adapt': Adapt;            // how willing they are to change the plan
   'preferences.taste': Taste;            // what look-picker picks / rejections taught the ranking (lane NG5, demand/taste.ts)
+  'preferences.aspects': Aspects;        // what Explore's Like / Pass / Save / tags taught the ranking, per ASPECT (brief v5, lane OX4, explore/aspects.ts); ranking only, never a constraint
   'preferences.future': Ambition[];      // future ambitions saved for later (the slot is empty until lane NG4 fills it)
 }
 export type WaterSrc = 'tap' | 'well' | 'ro';
@@ -95,7 +97,7 @@ export type ItemId = keyof Values;
 export const ITEM_IDS: readonly ItemId[] = ['animals.kinds', 'animals.groups', 'animals.stock', 'appearance.look', 'appearance.plantMode', 'equipment.tank',
   'equipment.needStand', 'constraints.budget', 'constraints.monthly', 'constraints.careMin', 'constraints.setupHours', 'constraints.maxSpace', 'constraints.spaceGate', 'constraints.existingTank',
   'constraints.owned', 'constraints.tankGal', 'constraints.taxPct', 'constraints.phased', 'preferences.tags', 'preferences.wishes', 'preferences.effort', 'preferences.experience', 'preferences.hightech', 'preferences.lowtech',
-  'constraints.roomTempC', 'constraints.tapWater', 'preferences.desired', 'preferences.adapt', 'preferences.future', 'preferences.taste'];
+  'constraints.roomTempC', 'constraints.tapWater', 'preferences.desired', 'preferences.adapt', 'preferences.future', 'preferences.taste', 'preferences.aspects'];
 /** Items that are ranges (lower and upper bound): money, time, space, tank size. */
 export const LIMIT_IDS = ['constraints.budget', 'constraints.monthly', 'constraints.careMin', 'constraints.setupHours', 'constraints.maxSpace', 'constraints.tankGal'] as const satisfies readonly ItemId[];
 export type LimitId = typeof LIMIT_IDS[number];
@@ -107,7 +109,8 @@ export type ItemOf<K extends ItemId> = K extends LimitId ? LimitItem<Values[K]> 
 
 // v3 (GV8): every limit is a range; `target` is retired (a narrow band does its job). v1 / v2 saves load with `value` as the upper bound, and an old `target` is dropped.
 // v4 (GS2, Guided Setup Rev 03): the optional `project` block (below). v1-v3 saves have none and read with the meaning they always had (scene/project.ts); no SCENE bump.
-export const BRIEF_VERSION = 4;
+// v5 (OX4, Explore Complete Setups): the preference item `preferences.aspects` and the route 'explore'. Both are additive: a v1-v4 save has neither and reads with the meaning it always had.
+export const BRIEF_VERSION = 5;
 export interface Brief { v: number; items: { [K in ItemId]?: ItemOf<K> }; dialog?: Dialog; vision?: Vision; /** Guided Setup Rev 03 (lane GS2): what the items cannot say; absent in every older save, which reads with the same meaning (scene/project.ts) */ project?: ProjectExtras }
 
 // ---- the project's extra answers (Guided Setup Rev 03, lane GS2, 2026-11-02; research/design/guided-setup-rev03.md section 5) ----
@@ -116,8 +119,8 @@ export interface Brief { v: number; items: { [K in ItemId]?: ItemOf<K> }; dialog
 export type World = 'aquarium' | 'terrarium' | 'paludarium' | 'any';
 export const WORLDS: readonly World[] = ['aquarium', 'terrarium', 'paludarium', 'any'];
 /** Which decision comes first. NOT a mode: switching it keeps everything. */
-export type Route = 'animals' | 'look';
-export const ROUTES: readonly Route[] = ['animals', 'look'];
+export type Route = 'animals' | 'look' | 'explore';
+export const ROUTES: readonly Route[] = ['animals', 'look', 'explore'];
 /** Required = a fixed requirement when designing; Available = counts toward savings, alternatives may be recommended. Ownership alone never makes it Required. */
 export type Use = 'required' | 'available';
 export const USES: readonly Use[] = ['required', 'available'];
@@ -306,6 +309,7 @@ const VALIDATE: { [K in ItemId]: (v: unknown) => Values[K] | undefined } = {
   'preferences.desired': v => { const a = strs(v, DESIRES); return a?.length ? a : undefined; },
   'preferences.adapt': v => ADAPTS.includes(v as Adapt) ? v as Adapt : undefined,
   'preferences.taste': parseTaste,
+  'preferences.aspects': parseAspects,
   'preferences.future': v => { if (!Array.isArray(v)) return undefined;
     const a = v.filter((x): x is Ambition => !!x && typeof x.text === 'string' && x.text.trim().length > 0).slice(0, 20)
       .map(x => ({ text: x.text.trim().slice(0, 300), ...(typeof x.from === 'string' && x.from ? { from: x.from.slice(0, 120) } : {}) })); return a.length ? a : undefined; },

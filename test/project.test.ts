@@ -358,7 +358,7 @@ describe('storage: old saves load unchanged, new answers travel with the project
     expect(back).toEqual(old);
     expect(back.project).toBeUndefined();
     expect(worldOf(back)).toBe('aquarium'); expect(waterOf(back)).toEqual({ value: 'freshwater', by: 'asked' });
-    expect(back.v).toBe(4);
+    expect(back.v).toBe(BRIEF_VERSION);
   });
   it('project answers round-trip through parseBrief and the scene file', () => {
     let b = setEquipment(setEquipment(emptyBrief(), 'tank', { dimsIn: { L: 30, D: 12, H: 12 }, use: 'required' }), 'filter', { use: 'available' });
@@ -454,12 +454,12 @@ describe('Rev 03 read model for the UI lanes (GS4-GS6)', () => {
     expect(reevalInput(b, setWater(b, 'saltwater')).fields).toEqual(['water']);
     expect(reevalInput(b, applyChange(b, { vision: { familyId: 'fw-wild' } }).state).fields).toEqual(['family']);
   });
-  it('brief v4: v1-v3 saves parse as v4 with the same meaning and no project; v4 round-trips', () => {
-    expect(BRIEF_VERSION).toBe(4);
+  it('brief v5: v1-v3 saves parse as the current version with the same meaning and no project; v5 round-trips', () => {
+    expect(BRIEF_VERSION).toBe(5);
     for (const v of [1, 2, 3]) {
       const raw = { v, items: { 'constraints.budget': { value: 250, status: 'hard' }, 'constraints.existingTank': { value: { model: 'g40b' }, status: 'locked' } }, vision: { environment: 'aquarium', secondaryLikes: [] } };
       const b = parseBrief(raw)!;
-      expect(b.v).toBe(4); expect(b.project).toBeUndefined();
+      expect(b.v).toBe(5); expect(b.project).toBeUndefined();
       expect(constraintOf(b, 'startup')).toMatchObject({ kind: 'hard', value: 250 });
       expect(equipmentOf(b).items[0]).toMatchObject({ key: 'tank', use: 'required' });
       expect(worldOf(b)).toBe('aquarium');

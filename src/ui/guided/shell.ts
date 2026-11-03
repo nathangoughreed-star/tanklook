@@ -103,6 +103,7 @@ export function attachGuided(store: Store, host: DiscoveryHost, o: GuidedOpts = 
     return [...m].map(([species, n]) => ({ species, n }));
   };
   function showRoute(r: Route) {
+    if (r === 'explore') { showStep('start'); return; }   // Explore has its own start step (exploresOf, stage X3), not a discovery route
     clear(); route = r; at = 'start';
     if (r === 'animals' && !rosterNow().length) { showAnimals(); return; }
     mountRoute(r);
@@ -113,7 +114,7 @@ export function attachGuided(store: Store, host: DiscoveryHost, o: GuidedOpts = 
     part = entry({ store, host, root: pane(), roster: rosterNow, done: () => showRoute('animals'), back: () => showStep('start'),
       park: () => { dlg.close(); const keep = getBrief(); host.stocking(); parked = keep; if (getBrief() !== keep) editBrief(() => keep); dock.hidden = false; } });
   }
-  function mountRoute(r: Route) {
+  function mountRoute(r: Exclude<Route, 'explore'>) {
     const b = getBrief(), env = envOf(b), roster = r === 'animals' ? rosterNow() : undefined;
     // Animals First: the enclosure the person confirmed (a tank picked in the design) is the one the pictures use, unless their own tank is Required
     const pick = r === 'animals' ? pickedTank(b) : undefined, own = pick ? undefined : ownedTankOf(b);
