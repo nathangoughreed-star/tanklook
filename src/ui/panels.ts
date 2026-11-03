@@ -4,7 +4,8 @@ import { FOCUS_SECS, type FocusSec } from '../render/menuFocus';
 import { attachDemandPanel, loadProfile } from './demandPanel';
 import { fitToLimits, hasLimits } from '../demand/fit';
 import { attachTechMenu } from './techMenu';
-import { SUMP_MODELS, sumpFromModel, tempEvidence } from '../scene/tech';
+import { SUMP_MODELS, sumpFromModel, tempEvidence, heatLoss } from '../scene/tech';
+import { defaultLid, lidFreeProsCons, openTopProblem, setLidFree } from '../data/lidNeed';
 import { standMisfit } from '../scene/standspace';
 import { renderFeaturedDeals } from './featuredDeals';
 import { attachWelcome } from './welcome';
@@ -550,7 +551,7 @@ Cancel, then change the name, to keep both.`)) return;
   for (const [id, d] of [['doorNone', 'none'], ['doorHinged', 'hinged'], ['doorSliding', 'sliding']] as const) $(id).onclick = () => store.edit(s => { if (d === 'none') delete s.doors; else s.doors = d; });
   const BG_BTNS = [['bgBack', 'back'], ['bgLeft', 'left'], ['bgRight', 'right'], ['bgFront', 'front']] as const;
   // a hood has no room for a metal halide pendant (too hot): it becomes LED pucks
-  for (const [id, lid] of LIDS) $(id).onclick = () => gate('lid') && store.edit(s => { unhold(s, 'lid'); s.lid = lid; if (lid === 'hood' && fixtureOf(s.light) === 'pendant') { s.light.tech = 'led-white'; fitK(s.light); fitFixture(s.light, s.tank, true); } });
+  for (const [id, lid] of LIDS) $(id).onclick = () => gate('lid') && (editBrief(b => setLidFree(b, lid === 'open')), store.edit(s => { unhold(s, 'lid'); s.lid = lid; if (lid === 'hood' && fixtureOf(s.light) === 'pendant') { s.light.tech = 'led-white'; fitK(s.light); fitFixture(s.light, s.tank, true); } }));
   $<HTMLSelectElement>('bgSel').innerHTML = Object.entries(BACKGROUNDS).map(([k, b]) => `<option value="${k}">${esc(b.label)}</option>`).join('');
   $('bgColor').oninput = e => store.edit(s => { s.render.bgColor = (e.target as HTMLInputElement).value; }, { coalesce: 'bgColor' });
   $<HTMLSelectElement>('bgSel').onchange = e => store.edit(s => { s.render.bg = (e.target as HTMLSelectElement).value as TankSetup['render']['bg']; });
@@ -1969,6 +1970,15 @@ Cancel, then change the name, to keep both.`)) return;
     { // an integrated kit keeps its own lid (scene/integrated.ts)
       const lk = locksOf(store.tank);
       for (const [id, d] of LIDS) ($(id) as HTMLButtonElement).disabled = !!lk?.lid || (d === 'hood' && !flatEnds(A));
+      // going without a lid (lane LB1): the pros and cons for THIS tank, and the animals that need one named, the moment the open top is on
+      { const el = $('lidFree'), open = s.lid === 'open' && !lk?.lid;
+        el.hidden = !open;
+        if (open) {
+          const pc = lidFreeProsCons(s, l => heatLoss({ ...s, lid: l }).lossW), warn = openTopProblem(s);
+          el.innerHTML = `${warn ? `<div class="lidwarn"><b>Problem:</b> ${esc(warn.text)}. <a href="#" id="lidAdd">Add a ${defaultLid(s) === 'mesh' ? 'mesh' : 'glass'} top</a></div>` : ''}<b>No lid: what you get</b><ul>${pc.pros.map(x => `<li>${esc(x)}</li>`).join('')}</ul><b>What it costs</b><ul>${pc.cons.map(x => `<li>${esc(x)}</li>`).join('')}</ul>`;
+          el.querySelector<HTMLAnchorElement>('#lidAdd')?.addEventListener('click', e => { e.preventDefault(); $(defaultLid(s) === 'mesh' ? 'lidMesh' : 'lidGlass').click(); });
+        }
+      }
       $('lidLock').hidden = !lk?.lid; $('lidLock').innerHTML = lk?.lid ? esc(lockNote(store.tank, 'lid')) + unholdBtn('lid') : '';
       // a product only sold rimless keeps its rim off (Nathan 2026-10-26: "those imagitarium rimless tanks arent available rimmed")
       ($('rimY') as HTMLButtonElement).disabled = !!lk?.rim && !s.render.rim; ($('rimN') as HTMLButtonElement).disabled = !!lk?.rim && s.render.rim;

@@ -4,6 +4,7 @@
 // carries its set-up $, expected $ a month and minutes a week (the demand model's means: one number each, no range) with the live
 // tank, gear and bundle deals that apply. Pure functions; src/ui/buildPick.ts draws them. It READS tankfit, stocking and the demand
 // model; it changes none of them. Plants, CO2 and the scape are the next step (lane P6b): the builds here are animals and gear only.
+import { withDefaultLid } from '../data/lidNeed';
 import { getSpecies } from '../data/species';
 import { tankSaleFor, tankFromModel, type TankModel } from '../data/tanks';
 import { dealAsKit, type Deal } from '../data/deals';
@@ -90,6 +91,7 @@ function baseSetup(tank: TankModel, animals: AnimalCount[]): TankSetup {
   if (isMixed(animals)) setPool(S, animals); // a paludarium: the pool is what the land leaves (tankfit)
   let id = 1;
   S.fish = animals.flatMap(a => Array.from({ length: Math.max(0, a.n) }, (): Fish => ({ id: id++, species: a.species, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0, ...(a.tl ? { tl: a.tl } : {}) })));
+  withDefaultLid(S); // a generated setup comes with a lid (lane LB1); the person's choice of none is applied at the hand-off, which knows the brief
   const preset = BASE_PRESET[salt ? 'salt' : 'fresh'];
   if (PRESETS.some(p => p.id === preset)) S.tech = applyPreset(S, preset);
   S.light = { ...S.light, type: 'led', tech: 'led-white', count: 1, watts: undefined };

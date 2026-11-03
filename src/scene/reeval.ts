@@ -10,6 +10,8 @@
 //   suggestedAnimals(b, tank)    the look's own focal animals as SUGGESTIONS (never silently the roster)
 //   reevaluate(input)            one call for the UI: the adapted scene, what was kept, what changed, the conflicts and warnings
 import { getSpecies } from '../data/species';
+import { withDefaultLid } from '../data/lidNeed';
+import { defaultSetup } from './defaults';
 import { type Brief, valueOf, visionOf } from './brief';
 import { itemDims } from './items';
 import { rescaleTank, volume } from './physics';
@@ -126,6 +128,14 @@ export function lookUnchanged(S: TankSetup, b: Brief, pick: { archetypeId?: stri
 // ---------------------------------------------------------------------------------------------------------------- the Guided hand-off as an update
 /** The fields a look owns: its pieces, painted patches, ground, background and composition. Everything else (tank, gear, lid, stand, animals, the brief, the camera) belongs to the project. */
 const LOOK_FIELDS = ['items', 'patches', 'substrate', 'terrain', 'layout', 'backdrop', 'wall', 'grow', 'condition'] as const satisfies readonly (keyof TankSetup)[];
+/** Whether the scene's back-glass background is the look's to replace: a bare tank's (none), the factory default with no look picked yet, or exactly what the previous look drew. A background
+ *  the person picked in the editor (another colour, a picture) never is, and uploaded pictures are never touched. */
+export function lookOwnsBackground(S: TankSetup, b?: Brief): boolean {
+  if (S.render.bgImages.length) return false;
+  const prev = b ? visionOf(b).renderRecipe : undefined, r = S.render;
+  if (prev?.bg) return r.bg === prev.bg && (r.bg !== 'custom' || r.bgColor === prev.bgColor);
+  return r.bg === 'none' || (r.bg === defaultSetup().render.bg && r.bgSides.length === 1 && r.bgSides[0] === 'back');
+}
 export interface HandOff {
   scene: TankSetup;
   /** true when nothing existed to keep and the generated scene was taken whole (minus the look's own animals) */
@@ -144,13 +154,17 @@ export function handOff(current: TankSetup, generated: TankSetup, opts: {
 } = {}): HandOff {
   const accept = new Set(opts.accept ?? []), suggested = generated.fish.filter(f => !accept.has(f.species));
   const gen = structuredClone(generated); gen.fish = gen.fish.filter(f => accept.has(f.species));
-  if (!hasDesign(current, opts.brief)) return { scene: gen, fresh: true, kept: [], changed: [suggested.length ? `The look's own animals (${[...new Set(suggested.map(f => nameOf(f.species)))].join(', ')}) are suggestions, not part of your stocking.` : ''].filter(Boolean) };
+  if (!hasDesign(current, opts.brief)) return { scene: withDefaultLid(gen, opts.brief), fresh: true, kept: [], changed: [suggested.length ? `The look's own animals (${[...new Set(suggested.map(f => nameOf(f.species)))].join(', ')}) are suggestions, not part of your stocking.` : ''].filter(Boolean) };
   const out = structuredClone(current), kept: string[] = [], changed: string[] = [];
   if (out.fish.length) kept.push(`Animals: ${[...new Set(out.fish.map(f => f.species))].map(s => plural(out.fish.filter(f => f.species === s).length, nameOf(s))).join(', ')}`);
   if (!sameTank(out.tank, gen.tank)) { const rep = adaptToTank(out, gen.tank, { thin: false }); changed.push(...rep.lines); out.product = gen.product ?? out.product; }
   else kept.push(`Tank: ${galOf(out.tank)} gal`);
   for (const k of LOOK_FIELDS) (out as unknown as Record<string, unknown>)[k] = structuredClone(gen[k]);
   changed.push('The look (hardscape, plants, ground, background) was replaced by the one you picked.');
+  // the background on the back glass is part of the look (lane LB1): the picture the person chose from shows it, so the editor must open with it. A background they picked themselves is theirs.
+  if (lookOwnsBackground(out, opts.brief)) { out.render = { ...out.render, bg: gen.render.bg, bgSides: [...gen.render.bgSides] }; if (gen.render.bgColor) out.render.bgColor = gen.render.bgColor; else delete out.render.bgColor; }
+  // a generated setup comes with a lid unless the person chose none (lane LB1)
+  withDefaultLid(out, opts.brief);
   if (kept.length < 2) kept.push('Gear, lid, stand and limits');
   let next = Math.max(0, ...out.fish.map(f => f.id)) + 1;
   const had = new Set(out.fish.map(f => f.species));

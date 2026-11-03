@@ -1,0 +1,19 @@
+Moved numbers, lane LB1 (2026-11-03): every generated setup now carries a lid (glass on a wet tank, mesh on a dry or land-side one), so its startup price includes one.
+Startup price of the build as generated, with its lid (demand model, default profile). The lid's own share is not isolated here: the same build priced open needs a bigger heater, which offsets most of a lid's cost, and a kit's lid comes inside the kit price. Before this lane every row was open-topped; the figures before are not recorded here (run buildsFor with lid forced open to regenerate them):
+
+60 gal breeder yellowlab x5 cheapest: lid glass, startup $603 (parts)
+60 gal breeder yellowlab x5 leastWork: lid glass, startup $731 (parts)
+60 gal breeder yellowlab x5 balanced: lid glass, startup $626 (parts)
+20 gal long neon x10 cheapest: lid glass, startup $403 (parts)
+20 gal long neon x10 leastWork: lid glass, startup $508 (parts)
+20 gal long neon x10 balanced: lid glass, startup $414 (parts)
+40 gal breeder goldfish x2 cheapest: lid glass, startup $558 (parts)
+40 gal breeder goldfish x2 leastWork: lid glass, startup $686 (parts)
+40 gal breeder goldfish x2 balanced: lid glass, startup $581 (parts)
+29 gal betta x1 cheapest: lid hood, startup $363 (kit Tetra Complete Aquarium Kit with LED 29 gal)
+29 gal betta x1 leastWork: lid glass, startup $516 (parts)
+29 gal betta x1 balanced: lid hood, startup $363 (kit Tetra Complete Aquarium Kit with LED 29 gal)
+75 gal oscar x1 cheapest: lid glass, startup $757 (kit Marineland High Definition LED Ensemble 75 gal)
+75 gal oscar x1 leastWork: lid glass, startup $1160 (parts)
+75 gal oscar x1 balanced: lid glass, startup $791 (kit Marineland High Definition LED Ensemble 75 gal)
+Other moves: cheapest goldfish x2 under a $200 ceiling: $419 (separate parts) -> $430 (a starter kit that includes the lid); with a kit cheapest, the 'I already have...' alternative is not offered (a kit is one bundle). Look-first empty tanks (emptyBuild) also gain the lid. No oracle or test number outside test/infeasible.test.ts moved.

@@ -5,6 +5,7 @@
 // "Not enough information" only where a requirement truly cannot be assessed (care needs the tool cannot check, temperature with no range).
 import { CARE } from '../data/care';
 import { needsOf } from '../data/careNeeds';
+import { openTopProblem } from '../data/lidNeed';
 import { grazerLevel, grazerShort } from '../data/grazers';
 import { getSpecies, type Species } from '../data/species';
 import { whysAnimal } from '../scene/animalfit';
@@ -136,7 +137,9 @@ export function stockSummary(S: TankSetup, r: Stocking, mins: MinWarn[], units: 
   else if (sh.state === 'unknown') add('environment', 'unknown', 'No recorded temperature range for some of these animals');
   airChecks(land, add, us);
   for (const t of coverAdvice(S)) add('environment', 'caution', t.replace(/\.$/, ''), 'it also limits fighting: see Behavior');
-  for (const s of sp) for (const n of needsOf(s.id)) if (n.status === 'unchecked') add('environment', 'unknown', `${s.name}: ${n.text} (the tool cannot check this)`);
+  // the lid IS checked (lane LB1, data/lidNeed.ts): an open top with an animal that needs one is a Problem, named; the old "Lid:" lines are no longer "cannot check"
+  const openTop = openTopProblem(S); if (openTop) add('environment', 'problem', openTop.text);
+  for (const s of sp) for (const n of needsOf(s.id)) if (n.status === 'unchecked' && !n.text.startsWith('Lid')) add('environment', 'unknown', `${s.name}: ${n.text} (the tool cannot check this)`);
   const litres = volume(S.tank).litres;
   for (const s of sp) {
     const g = grazerShort(s.id, count.get(s.id)!, litres);

@@ -40,9 +40,13 @@ describe('infeasible requests explain themselves', () => {
       welfareOk(r);
       if (a.kind !== 'change-animals' && a.kind !== 'save-ambition') for (const p of r.proposals) expect(p.build.animals).toEqual(gold); // save-ambition carries the explicit smaller-project swap (lane NG4) // a locked animal is never swapped to hit a number
     }
-    const o = by(inf.alternatives, 'use-owned')[0]; // what you own comes off the cost: it fits the same $200
-    for (const p of again(applyAlternative(b0, o.edit!)).proposals) expect(p.totals.startupUsd).toBeLessThanOrEqual(200);
-    expect(o.resultUsd).toBeLessThanOrEqual(200);
+    // what you own comes off the cost: it fits the same $200. Since lane LB1 (every generated setup carries a lid) the cheapest goldfish build is a starter kit ($430, it was $419 as
+    // separate parts), and a kit is one priced bundle, not parts you could already own: then there is nothing to offer here, and none is offered.
+    const o = by(inf.alternatives, 'use-owned')[0];
+    if (o) {
+      for (const p of again(applyAlternative(b0, o.edit!)).proposals) expect(p.totals.startupUsd).toBeLessThanOrEqual(200);
+      expect(o.resultUsd).toBeLessThanOrEqual(200);
+    } else expect(inf.cheapest!.lines[0].label).toMatch(/kit/i);
   }, 300000);
 
   it('a different species is only an option: the locked animals change only when that alternative is clicked', () => {

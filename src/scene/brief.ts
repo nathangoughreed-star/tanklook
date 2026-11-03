@@ -140,6 +140,8 @@ export interface ProjectExtras {
   use?: Partial<Record<EquipKey, Use>>;
   /** an owned tank measured by hand rather than picked from the catalogue (`constraints.existingTank` carries the catalogue pick) */
   tankDims?: DimsIn;
+  /** the person insisted on no lid (lane LB1): every generated setup comes with one unless this is set; withdrawing it brings the lid back */
+  lidFree?: true;
 }
 /** The project's extra answers (never undefined). */
 export const projectExtras = (b: Brief): ProjectExtras => b.project ?? {};
@@ -363,6 +365,7 @@ export function parseProject(raw: unknown): ProjectExtras | undefined {
   if (WATER_IDS.includes(r.water as Water)) p.water = r.water as Water;
   if (ROUTES.includes(r.route as Route)) p.route = r.route as Route;
   if (r.scratch === true) p.scratch = true;
+  if (r.lidFree === true) p.lidFree = true;
   const sk = strs(r.skipped, SKIP_STEPS); if (sk?.length) p.skipped = sk;
   if (r.use && typeof r.use === 'object') {
     const u: ProjectExtras['use'] = {};
