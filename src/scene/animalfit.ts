@@ -75,8 +75,8 @@ export function whysAnimal(sp: Species, litres: number, expertise: Expertise, pr
       if (c.temper >= 1 && oc.slow || c.nip && oc.slow) bad('would harass its long fins');
       if (oc.temper >= 1 && c.slow || oc.nip && c.slow) bad("it would harass this one's long fins");
       // lane CP (2026-10-22): gourami feelers draw nippers only; an aggressive nipper (tiger barb, pea puffer) blocks, a mild one is a concern
-      if (c.nip && oc.feelers) bad('would nip its feelers', c.temper < 2 || undefined);
-      if (oc.nip && c.feelers) bad("it would nip this one's feelers", oc.temper < 2 || undefined);
+      if (c.nip && oc.feelers) bad('could nip its feelers', c.temper < 2 || undefined);
+      if (oc.nip && c.feelers) bad("it could nip this one's feelers", oc.temper < 2 || undefined);
       if (c.temper === 2 && oc.temper === 0) bad('too aggressive for it');
       if (oc.temper === 2 && c.temper === 0) bad('it is too aggressive for this one');
       // a species-tank animal (pea puffer) beside any other fish; invertebrates are the prey rule's

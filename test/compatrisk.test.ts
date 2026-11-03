@@ -24,7 +24,7 @@ describe('compatibility risks', () => {
     const r = compatRisks(audit(AUDIT))!;
     expect(r.level).toBe('high');
     const t = r.items.join('\n');
-    expect(t).toMatch(/Pea puffer with Dwarf gourami: would nip its feelers/);
+    expect(t).toMatch(/Pea puffer with Dwarf gourami: could nip its feelers/);
     expect(t).toMatch(/Pea puffer with Kribensis: best kept in a species-only tank/);
     expect(t).toMatch(/Kribensis breeding pair defends much of this floor \(420 sq in\)/);
     expect(t).not.toMatch(/Dwarf gourami with Pea puffer/); // each pair said once, from the side that acts
