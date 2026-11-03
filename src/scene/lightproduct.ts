@@ -17,8 +17,11 @@ export const MOUNT_H: Record<LightMount, number> = { bar: 25, 'rim-legs': 60, go
  *  budget bar's driver may sit under them, which no reading we found settles. */
 export const BAR_CHECK = { n: 9, lowPct: 42, highPct: 42 };
 
-/** How many boxes of a hanging fixture the tank's length takes: its published coverage, else one. */
-export const hangingUnits = (T: Pick<Tank, 'L'>, p: Pick<LightProduct, 'coverageMm'>) => (p.coverageMm ? Math.max(1, Math.ceil(T.L / p.coverageMm)) : 1);
+/** The length one hanging box lights when its maker publishes none (lane LN2, Nathan 2026-11-03: a single 13 in box was drawn over a 71 in reef): 24 in, the coverage published for every
+ *  40-165 W reef fixture in the catalogue (NiCrew HyperReef 100, ViparSpectra V165, Kessil A160 / AI Prime 16 HD: all 610 mm). An ESTIMATE for the rest; the light check still says whether it carries. */
+export const DEFAULT_COVERAGE_MM = 610;
+/** How many boxes of a hanging fixture the tank's length takes: its published coverage, else DEFAULT_COVERAGE_MM. */
+export const hangingUnits = (T: Pick<Tank, 'L'>, p: Pick<LightProduct, 'coverageMm'>) => Math.max(1, Math.ceil(T.L / (p.coverageMm ?? DEFAULT_COVERAGE_MM)));
 
 /** Put `p` on the light (undefined: back to the generic fixture, everything else kept). */
 export function applyLightProduct(l: LightSettings, T: Tank, p: LightProduct | undefined) {
@@ -44,7 +47,7 @@ export const productOn = (l: Pick<LightSettings, 'product'>) => lightProduct(l.p
 /** What the numbers rest on, for the picker: watts published or estimated, PAR published or estimated from the watts. */
 export function lightProductNote(p: LightProduct): string {
   const w = p.est?.includes('watts') ? `${p.watts} W (estimated: not published)` : `${p.watts} W`;
-  const cover = p.mount === 'hanging' ? (p.coverageMm ? ` One covers about ${Math.round(p.coverageMm / 25.4)} in of tank length.` : ' Coverage not published: one fixture is placed, and the light check says whether it carries the tank.') : '';
+  const cover = p.mount === 'hanging' ? (p.coverageMm ? ` One covers about ${Math.round(p.coverageMm / 25.4)} in of tank length.` : ` Coverage not published: about ${Math.round(DEFAULT_COVERAGE_MM / 25.4)} in per box is assumed (the published figure of the 40-165 W reef fixtures), and the light check says whether it carries the tank.`) : '';
   const par = p.par ? `PAR ${p.par} (published)` : `PAR not published: estimated from the ${p.watts} W by the light model (LED, about ±${Math.round(TECHS[p.tech].unc * 100)} %)`;
   // the one outside check there is (test/lightfollowups.test.ts): the model against published bar readings
   return `${w}. ${par}.${cover}${p.par || (p.mount !== 'bar' && p.mount !== 'rim-legs') ? '' : ` Assumption, not a measurement: the model reads ${BAR_CHECK.lowPct === BAR_CHECK.highPct ? BAR_CHECK.lowPct : `${BAR_CHECK.lowPct}-${BAR_CHECK.highPct}`} % below ${BAR_CHECK.n} published bar readings (mid-priced brands, in air); a budget bar's driver may fall short of those.`}`;
