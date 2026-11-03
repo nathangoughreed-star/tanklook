@@ -11,6 +11,8 @@ import { NEEDS as PLANT_NEEDS } from '../src/scene/lightneeds';
 import { priceRow } from '../src/demand/prices';
 import { groundHeight } from '../src/scene/terrain';
 import { rimHeadroom, rimmed } from '../src/render/items';
+import { isGardenPiece } from '../src/scene/openTop';
+import { handEdits, regenerate } from '../src/scene/starter';
 import { itemDims } from '../src/scene/items';
 import { waterY } from '../src/scene/physics';
 import { isOpenTop, needsLid } from '../src/scene/openTop';
@@ -151,6 +153,28 @@ describe('the new parts', () => {
   it('the philodendron vines run out toward the viewer and none climb', () => {
     expect(PLANT3D.philodendron!.vine!.out).toBeCloseTo(Math.PI / 2, 5);
     expect(PLANT3D.philodendron!.vine!.climb).toBe(0);
+  });
+});
+
+describe('the editor sliders', () => {
+  const base = recipeBase(A, tank('40 gal breeder'))!;
+  const mine = (S: TankSetup) => S.items.filter(isGardenPiece).map(it => `${it.variant}@${Math.round(it.x)},${Math.round(it.depth)},${Math.round(it.lift)}`).sort().join('|');
+  for (const layer of ['plant', 'hard'] as const) {
+    it(`the ${layer} density slider redraws its own layer and leaves the rim planters and houseplants where they are`, () => {
+      const S = stopScene(base, 4), before = mine(S);
+      expect(before).toContain('planter');
+      S.layout.dens = { ...(S.layout.dens ?? { hard: 2, plant: 1, animal: 0 }), [layer]: 1.1 };
+      regenerate(S, layer, 0);
+      expect(mine(S)).toBe(before);
+      expect(new Set(S.items.map(it => it.id)).size, 'ids stay unique').toBe(S.items.length);
+    });
+  }
+  it('a new layout or Shuffle (all) clears them, and they do not count as hand edits', () => {
+    const S = stopScene(base, 4);
+    const bare = structuredClone(S); bare.items = bare.items.filter(it => !isGardenPiece(it));
+    expect(handEdits(S, 'plant')).toEqual(handEdits(bare, 'plant')); // (the recipe's own thinning of the underwater plants still reads as a change, as for any recipe: only the garden's pieces are not counted)
+    regenerate(S, 'all', 0);
+    expect(S.items.some(isGardenPiece)).toBe(false);
   });
 });
 

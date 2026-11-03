@@ -14,6 +14,7 @@ import { groundEdited } from './scapeground';
 import { placeNew, randomPose, randomSize } from './scatter';
 import { HERP, SQFT_MM2, floorFor, type HerpRule } from '../data/herpstock';
 import { footprint } from './shape';
+import { isGardenPiece } from './openTop';
 import type { Fish, Item, LayoutId, Tank, TankSetup } from './types';
 
 /** Share of the tank's bioload cap each animal stop fills (None .. Full). Full stays under the cap. Since lane SR (2026-10-26) this is the
@@ -180,8 +181,11 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
  * animal stop is above None (at None the user's own animals stay). `firstFishId`: the store's next free animal id.
  */
 export function regenerate(s: TankSetup, what: Layer | 'all', firstFishId: number) {
+  // an open-top garden's rim planters and houseplants (lane OG2) are not the starter's: they stay through a layer's redraw (a new layout or Shuffle, 'all', clears them)
+  const garden = what === 'all' || what === 'animal' ? [] : s.items.filter(isGardenPiece);
   if (what === 'plant') s.items = starterItems(s, s.items.filter(it => layerOf(it) === 'hard'));
   else if (what !== 'animal') s.items = starterItems(s);
+  if (garden.length) { let id = s.items.reduce((m, it) => Math.max(m, it.id), 0); for (const it of garden) s.items.push({ ...it, id: ++id }); }
   if (what === 'animal' || (what === 'all' && (s.layout.dens ?? DEFAULT_DENS).animal > 0)) s.fish = starterAnimals(s, firstFishId);
 }
 
@@ -208,7 +212,7 @@ const speciesCount = (fish: Fish[]) => fish.map(f => f.species + (f.sex ?? '')).
 export function handEdits(s: TankSetup, what: Layer | 'all' | 'none', ground = false): ('substrate' | 'hardscape' | 'plants' | 'animals')[] {
   const out: ('substrate' | 'hardscape' | 'plants' | 'animals')[] = [], dens = s.layout.dens ?? DEFAULT_DENS;
   if (ground && groundEdited(s)) out.push('substrate'); // the quick setup redraws the ground too
-  const hardNow = s.items.filter(it => layerOf(it) === 'hard'), plantNow = s.items.filter(it => layerOf(it) === 'plant');
+  const hardNow = s.items.filter(it => layerOf(it) === 'hard'), plantNow = s.items.filter(it => layerOf(it) === 'plant' && !isGardenPiece(it)); // (an open-top garden's own pieces are not hand edits)
   if (what === 'hard' || what === 'all') {
     if (!sameItems(hardNow, starterItems(s).filter(it => layerOf(it) === 'hard'))) out.push('hardscape');
   }

@@ -5,6 +5,13 @@ import type { Archetype } from './archetypes';
 import type { Species } from '../data/species';
 import { lidNeedOf } from '../data/lidNeed';
 
+import type { Item } from './types';
+
+/** The open-top garden's own pieces (rim planters, the houseplants on them, the emersed stems; lane OG2) carry a seed in this range, so a second dressing of a scene
+ *  knows they are there and the editor's density sliders (scene/starter.ts regenerate) leave them in place. */
+export const GARDEN_SEED = 1_900_000_000, GARDEN_SEEDS = 100;
+export const isGardenPiece = (it: Pick<Item, 'seed'>) => it.seed >= GARDEN_SEED && it.seed < GARDEN_SEED + GARDEN_SEEDS;
+
 /** The archetypes drawn and stocked without a lid. */
 export const OPEN_TOP: ReadonlySet<string> = new Set(['overgrown-garden']);
 export const isOpenTop = (a: Archetype | string): boolean => OPEN_TOP.has(typeof a === 'string' ? a : a.id);

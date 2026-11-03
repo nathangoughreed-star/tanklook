@@ -8,7 +8,7 @@
 // without a mapped look stay coming-soon (no recipe).
 import { emptyBuild, buildsFor, type Build } from './builds';
 import { itemDims, layerOf, makeItem, STYLES } from './items';
-import { isOpenTop } from './openTop';
+import { GARDEN_SEED as SPROUT_SEED, isGardenPiece, isOpenTop } from './openTop';
 import { waterY } from './physics';
 import { groundHeight } from './terrain';
 
@@ -238,14 +238,10 @@ function finish(a: Archetype, d: Density, S: TankSetup): TankSetup {
 const EMERGE: ReadonlySet<string> = new Set(['stem', 'stemred', 'ludwigia']);
 /** The water line of an open-top garden, as a share of a full tank: a touch lower, so the roots hanging from the rim planters are seen going into the water (lower costs the animals swimming room: the roster plan is made at a full tank). */
 export const GARDEN_LEVEL = 0.96;
-/** Plants the open-top recipe adds carry a seed in this range, so a second pass over a scene knows they are there. */
-const SPROUT_SEED = 1_900_000_000, SPROUTS = 100;
 /** What grows under the water of the garden (Nathan 2026-11-03, with a collage of tanks with houseplants on the rim: a calm aquascape underneath, not a jungle): a few low and mid plants, a carpet, floaters at the surface. No tall straps, no stems (the few emersed ones are added by `overgrow`). */
 const UNDER = new Set(['crypt', 'anubias', 'buce', 'fern', 'moss', 'sagittaria', 'carpet', 'frogbit', 'salvinia', 'redroot', 'lettuce']);
 /** The houseplants of the rim planters, in the order the planters take them (height as a share of the tank's height at the sparsest stop; the denser stops grow them up to 1.4 times that). */
 const HOUSEPLANTS: [string, number][] = [['peacelily', 0.65], ['anthurium', 0.55], ['catpalm', 0.62], ['calathea', 0.5], ['bamboo', 0.8]];
-/** The open-top garden's own pieces (planters, houseplants, emersed stems) carry a seed in the SPROUT_SEED range. */
-export const isGardenPiece = (it: Item) => it.seed >= SPROUT_SEED && it.seed < SPROUT_SEED + SPROUTS;
 /** Open top (lanes OG1, OG2): no lid at any level, the water line lowered, and houseplants growing out of planters on the rim with their roots hanging into the water,
  *  as in Nathan's reference: the aquascape under the water stays calm and hardscape-forward; the plant density stop (0.4 .. 1.4) sets only how much grows above the rim
  *  (`p` 0..1): one planter with a peace lily, then planters along the back with palms and anthuriums, then a canopy with vines pouring over the front and down the sides. */

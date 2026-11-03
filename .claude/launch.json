@@ -598,19 +598,6 @@
         "--strictPort"
       ],
       "port": 5979
-    },
-    {
-      "name": "og2",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "6107",
-        "--strictPort"
-      ],
-      "port": 6107
     }
   ]
 }
