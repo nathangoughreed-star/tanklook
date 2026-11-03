@@ -7,6 +7,7 @@ import { archetype, family, type Archetype, type Card, type Family } from '../..
 import { getSpecies } from '../../data/species';
 import { getItem, minOf, rangeOf, setItem, setVision, valueOf, visionOf, type Vision } from '../../scene/brief';
 import { handOff, lookUnchanged } from '../../scene/reeval';
+import { isOpenTop } from '../../scene/openTop';
 import { buildsFor } from '../../scene/builds';
 import { recordTaste, recordWish } from '../../demand/taste';
 import { budgetOf, editBrief, getBrief, lockedStock, setLook, spaceOf } from '../setupBrief';
@@ -390,7 +391,7 @@ ${chosen.length ? '<p class="da-sec">Tankmates that suit what you have, best fir
     }
     const same = lookUnchanged(store.tank, b0, { archetypeId: a.id, density: p.density, densityStop: stop }, tc?.model.id);
     // Animals First (lane GS5): the roster the shell passed is the person's own stocking, so those animals go into the scene with the look (a roster only in the brief is not in the scene yet)
-    const ho = same ? undefined : handOff(store.tank, T, { accept: [...accepted.map(c => c.species), ...(opts.roster ?? []).map(r => r.species)], brief: b0 });
+    const ho = same ? undefined : handOff(store.tank, T, { accept: [...accepted.map(c => c.species), ...(opts.roster ?? []).map(r => r.species)], brief: b0, openTop: isOpenTop(a) });
     if (ho) store.update(s => { Object.assign(s.tanks[s.active], structuredClone(ho.scene)); }, { coalesce: 'discovery' });
     editBrief(() => keep); store.seal();
     setChosen([]);
