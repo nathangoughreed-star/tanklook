@@ -20,7 +20,7 @@ import {
   optionCost, optionDef, presetsFor, pumpFor, REEF_FLOW_X, reefFeedOf, rowsFor, setFeed, singleFilter, stockCapacity, techOf, tempEvidence, unitCosts, walstadGaps, withChoice,
   withUnits, withoutUnit, keepSet, ownKeep, reefChecks, rowProduct, sumpDefault, sumpFromModel, sumpLitres, sumpName, sumpOf, SUMP_FILL, sumpDrainDown, sumpTooSmall, type FilterUnit, type SumpSize, type HeaterUnit, type OptionCost, type TechSetup,
 } from '../scene/tech';
-import { FILTER_PRODUCTS, HEATER_PRODUCTS, reefOptionProducts, filtersNear, genericHeaterW, heatersNear, lightProduct, lightsFor, productName, pumpRatedFor, pumpsFor, type FilterProduct, type HeaterProduct, type LightProduct, type PumpProduct, type ReefProduct } from '../data/gearCatalog';
+import { FILTER_PRODUCTS, HEATER_PRODUCTS, reefOptionProducts, genericHeaterW, lightProduct, lightsFor, productName, pumpRatedFor, pumpsFor, type FilterProduct, type HeaterProduct, type LightProduct, type PumpProduct, type ReefProduct } from '../data/gearCatalog';
 import { applyLightProduct, lightProductNote, productOn } from '../scene/lightproduct';
 import { TECHS, fixtureOf, lightOutCached, wattsOf } from '../scene/lightout';
 import { integratedKit, lockNote, locksOf } from '../scene/integrated';
@@ -29,6 +29,7 @@ import { FILTER_MODELS, type FilterKind } from '../demand/gear';
 import { gearCard, defaultTab, flowText, galText, lenText, wattText, type GearCardSpec, type GearSwapRow, type GearSlider, type GearStat, type GearTab } from './gearCard';
 import { GEAR_LIMITS } from '../scene/gearSpec';
 import { genericPanel, genericSet } from './genericGearCard';
+import { asLibraryGroups, lightGroups, ratedGroups, type GearGroup } from './gearGroups';
 import { volume } from '../scene/physics';
 import type { TankSetup } from '../scene/types';
 import { getSpecies } from '../data/species';
@@ -169,6 +170,14 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     + (c ? `<div class="tuc">${range(c, kit ? mean(c.setup) : 0)}${kit ? '<span class="tkit" title="Came with the bundle the tank was started from: its price is in the bundle\'s">in the bundle</span>' : ''}</div>` : '') + body + '</div>';
   const prodBtn = (act: string, label: string, priceUsd?: number, tip = '') => `<button type="button" data-act="${esc(act)}"${tip ? ` title="${esc(tip)}"` : ''}>${esc(label)}${priceUsd ? `<span class="tpp">$${Math.round(priceUsd)}</span>` : ''}</button>`;
   const heaterBtn = (h: HeaterProduct) => prodBtn(`addh|${h.id}`, productName(h), h.priceUsd, `${h.watts} W · ${h.lengthMm} mm long`);
+  const heaterOrder = (a: HeaterProduct, b: HeaterProduct) => a.watts - b.watts || productName(a).localeCompare(productName(b));
+  const filterOrder = (a: FilterProduct, b: FilterProduct) => (a.gph ?? 0) - (b.gph ?? 0) || productName(a).localeCompare(productName(b));
+  /** The add pickers' product buttons, a labelled row per rated range: the ranges that hold this tank open, the rest folded away (none hidden). */
+  const pickGroups = <T,>(groups: GearGroup<T>[], btn: (p: T) => string, noun: string): string => {
+    const rows = (gs: GearGroup<T>[]) => gs.map(g => `<div class="hint">${esc(g.label)}</div><div class="tstep">${g.items.map(btn).join('')}</div>`).join('');
+    const on = groups.filter(g => g.fits), off = groups.filter(g => !g.fits), n = off.reduce((a, g) => a + g.items.length, 0);
+    return rows(on) + (off.length ? `<details><summary>${on.length ? `${n} more ${noun}, rated for other tank sizes` : `All ${n} ${noun}`}</summary>${rows(off)}</details>` : '');
+  };
   const filterBtn = (p: FilterProduct) => prodBtn(`addf|${p.kind}|${p.id}`, `${productName(p)}${p.gph ? ` · ${p.gph} gph` : ''}`, p.priceUsd, `${p.galMin ?? '?'}-${p.galMax ?? '?'} gal`);
 
   /** A pump product picker (lane GP) for a gear part (airpump, powerhead, wavemaker): generic by default; a chosen product's price, watts and
@@ -199,7 +208,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
   const swapsOf = (row: 'heater' | 'filter', i: number): GearSwapRow[] | undefined => tabs.get(`${row}|${i}`) !== 'library' ? undefined
     : gearSwapsFor(store.tank, P(), row, i, { kit: pinnedKit(store.tank, store.scene.active, P()) }, 4).map(w => ({ id: w.toId, name: w.name, change: swapText(w), welfare: w.welfare }));
   const heaterSpec = (i: number, watts: number, productId?: string): GearCardSpec => {
-    const key = `heater|${i}`, prod = HEATER_PRODUCTS.find(p => p.id === productId), near = heatersNear(watts), nearIds = new Set(near.map(p => p.id));
+    const key = `heater|${i}`, prod = HEATER_PRODUCTS.find(p => p.id === productId);
     const opt = (p: HeaterProduct) => ({ id: p.id, label: `${productName(p)} · ${p.watts} W${p.priceUsd ? ` · ${usd(p.priceUsd)}` : ''}` });
     const lim = GEAR_LIMITS.heater!.watts!;
     const stats: GearStat[] = prod ? [
@@ -212,14 +221,13 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
       key, type: 'heater', tab: defaultTab(!!prod, tabs.get(key)), product: !!prod, ...ownOf(key),
       sliders: [{ stat: 'watts', label: 'Power', min: lim[0], max: lim[1], step: 5, value: watts, show: wattText(watts), unit: ' W', typed: { min: 5, max: 2000 }, tip: 'The heater makes up the heat the tank loses; its length follows its watts' }],
       genericNote: 'A generic heater: its length follows its watts. The check above says whether it holds the tank on a cold night.',
-      library: { groups: [{ label: 'Near the size this tank needs', options: near.map(opt) }, { label: 'Other heaters', options: HEATER_PRODUCTS.filter(p => !nearIds.has(p.id)).sort((a, b) => a.watts - b.watts || productName(a).localeCompare(productName(b))).map(opt) }], current: prod?.id, stats, notes: prod ? pop(prod.popularity) : [], link: prod?.url, swaps: swapsOf('heater', i) },
+      library: { groups: asLibraryGroups(ratedGroups(HEATER_PRODUCTS, volume(store.tank.tank).gallons, heaterOrder), opt), current: prod?.id, stats, notes: prod ? pop(prod.popularity) : [], link: prod?.url, swaps: swapsOf('heater', i) },
     };
   };
   const filterModels = (kind: FilterKind) => FILTER_MODELS.filter(m => m.kind === kind).sort((a, b) => a.gph - b.gph);
   const filterSpec = (S: TankSetup, i: number, u: FilterUnit): GearCardSpec => {
     const key = `filter|${i}`, kind = optionDef('filter', u.kind)?.kind, prod = FILTER_PRODUCTS.find(p => p.id === u.product && p.kind === u.kind), gal = volume(S.tank).gallons;
     const pool = kind ? filterModels(kind) : [], f = kind ? filterFor(S, kind, u.model, u.product) : undefined, idx = f ? Math.max(0, pool.findIndex(m => m.id === f.model.id)) : 0;
-    const near = filtersNear(u.kind, gal), nearIds = new Set(near.map(p => p.id));
     const opt = (p: FilterProduct) => ({ id: p.id, label: `${productName(p)}${p.gph ? ` · ${flowText(p.gph, us())}` : ''}${p.priceUsd ? ` · ${usd(p.priceUsd)}` : ''}` });
     const labels = pool.map(m => flowText(m.gph, us()));
     const sliders: GearSlider[] = pool.length > 1 ? [{ stat: 'model', label: 'Flow', min: 0, max: pool.length - 1, step: 1, value: idx, show: labels[idx], labels, tip: 'Generic filters come in set sizes: slide to the next size up or down' }] : [];
@@ -232,7 +240,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     return {
       key, type: 'filter', tab: defaultTab(!!prod, tabs.get(key)), product: !!prod, ...ownOf(key), sliders,
       genericNote: pool.length > 1 ? undefined : 'One generic size for this kind.',
-      library: { groups: [{ label: 'Rated near this tank', options: near.map(opt) }, { label: `Other ${KIND_NAME[u.kind] ?? u.kind}s`, options: FILTER_PRODUCTS.filter(p => p.kind === u.kind && !nearIds.has(p.id)).sort((a, b) => (a.gph ?? 0) - (b.gph ?? 0)).map(opt) }], current: prod?.id, stats, notes: prod ? pop(prod.popularity) : [], link: prod?.url, swaps: swapsOf('filter', i) },
+      library: { groups: asLibraryGroups(ratedGroups(FILTER_PRODUCTS.filter(p => p.kind === u.kind), gal, filterOrder), opt), current: prod?.id, stats, notes: prod ? pop(prod.popularity) : [], link: prod?.url, swaps: swapsOf('filter', i) },
     };
   };
   /** The light's card: Library = the catalogued lights that fit the length (the select that was here), Generic = its watts. */
@@ -250,7 +258,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     return {
       key, type: 'light', tab: defaultTab(!!cur, tabs.get(key)), product: !!cur, ...ownOf(key), sliders,
       genericNote: sliders.length ? 'A generic light: more fixture controls (type, lamp, height, beam) are below.' : 'The power of this fixture is set by its lamps: see the controls below.',
-      library: { groups: [{ label: 'Fits this tank length', options: list.map(p => ({ id: p.id, label: `${productName(p)} · ${p.watts} W${p.est?.includes('watts') ? ' (est.)' : ''}${p.priceUsd ? ` · ${usd(p.priceUsd)}` : ''}` })) }], current: cur?.id, stats, notes: [...extra, ...(cur ? pop(cur.popularity) : [])], link: cur?.url },
+      library: { groups: asLibraryGroups(lightGroups(list), p => ({ id: p.id, label: `${productName(p)} · ${p.watts} W${p.est?.includes('watts') ? ' (est.)' : ''}${p.priceUsd ? ` · ${usd(p.priceUsd)}` : ''}` })), current: cur?.id, stats, notes: [...extra, ...(cur ? pop(cur.popularity) : [])], link: cur?.url },
     };
   };
   /** After a unit of `row` is removed, its later cards' tabs move up one (the owned marks travel with the units). */
@@ -278,11 +286,9 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
       html += `<span class="tchips">${out.join('')}</span>`;
     }
     if (adding?.row !== 'heater') return html + `<button type="button" class="tadd" data-act="adding|heater">+ Add ${h.n ? 'another' : 'a'} heater</button>`;
-    const more = Math.max(h.needW - h.totalW, 0), g = nextHeaterW(S, t), near = heatersNear(g);
-    const rest = HEATER_PRODUCTS.filter(x => !near.includes(x)).sort((a, b) => a.watts - b.watts || productName(a).localeCompare(productName(b)));
+    const more = Math.max(h.needW - h.totalW, 0), g = nextHeaterW(S, t), groups = ratedGroups(HEATER_PRODUCTS, volume(S.tank).gallons, heaterOrder);
     html += `<div class="tpick"><div class="hint">${!h.n ? `The tank needs about ${Math.round(h.needW)} W.` : more > 0.5 ? `About ${Math.round(more)} W more for a cold night.` : 'These cover a cold night: another one is a backup.'}</div>`;
-    html += `<div class="tstep">${prodBtn('addh|', `Generic ${g} W`, undefined, 'A generic heater: set its watts once added')}${near.map(heaterBtn).join('')}</div>`;
-    if (rest.length) html += `<details><summary>All ${rest.length} other heaters</summary><div class="tstep">${rest.map(heaterBtn).join('')}</div></details>`;
+    html += `<div class="tstep">${prodBtn('addh|', `Generic ${g} W`, undefined, 'A generic heater: set its watts once added')}</div>${pickGroups(groups, heaterBtn, 'heaters')}`;
     return html + '<button type="button" class="tcancel" data-act="adding">Cancel</button></div>';
   };
 
@@ -310,11 +316,10 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
       }
       return html + '<button type="button" class="tcancel" data-act="adding">Cancel</button></div>';
     }
-    const k = adding.kind, gal = volume(S.tank).gallons, near = filtersNear(k, gal), rest = FILTER_PRODUCTS.filter(p => p.kind === k && !near.includes(p)).sort((a, b) => (a.gph ?? 0) - (b.gph ?? 0));
+    const k = adding.kind, gal = volume(S.tank).gallons, groups = ratedGroups(FILTER_PRODUCTS.filter(p => p.kind === k), gal, filterOrder);
     const gen = filterFor(S, optionDef('filter', k)!.kind as FilterKind);
     html += `<div class="hint">${esc(optionDef('filter', k)?.label ?? k)}: generic, or one we have modelled</div>`;
-    html += `<div class="tstep">${prodBtn(`addf|${k}|`, `Generic · ${gen.model.gph} gph${gen.n > 1 ? ` × ${gen.n}` : ''}`, undefined, 'Sized for this tank; step it smaller or larger once added')}${near.map(filterBtn).join('')}</div>`;
-    if (rest.length) html += `<details><summary>All ${rest.length} other ${KIND_NAME[k]}s</summary><div class="tstep">${rest.map(filterBtn).join('')}</div></details>`;
+    html += `<div class="tstep">${prodBtn(`addf|${k}|`, `Generic · ${gen.model.gph} gph${gen.n > 1 ? ` × ${gen.n}` : ''}`, undefined, 'Sized for this tank; step it smaller or larger once added')}</div>${pickGroups(groups, filterBtn, `${KIND_NAME[k]}s`)}`;
     return html + '<button type="button" class="tcancel" data-act="adding|filter">Back</button></div>';
   };
 

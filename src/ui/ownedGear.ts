@@ -2,7 +2,8 @@
 // every ticked item is answered: tick what you have; ticking Tank opens the tank menu, and Light, Heater and Filter open their
 // own pick list (the exact product, or "Not sure, use a generic one"). Each answer is applied to the tank as it is made, so the
 // tank behind the sheet is the one being described. Done stays off until each ticked item has an answer.
-import { filtersNear, genericHeaterW, heatersNear, lightProduct, lightsFor, productName } from '../data/gearCatalog';
+import { FILTER_PRODUCTS, HEATER_PRODUCTS, genericHeaterW, lightProduct, lightsFor, productName } from '../data/gearCatalog';
+import { lightGroups, ratedGroups, type GearGroup } from './gearGroups';
 import { applyLightProduct } from '../scene/lightproduct';
 import { feedFor, filterUnits, heaterUnits, heatLoss, keepSet, techOf, withUnits } from '../scene/tech';
 import { volume } from '../scene/physics';
@@ -131,8 +132,9 @@ export function mountOwnedSheet(store: Store, o: OwnedHost, root: HTMLElement, o
   let draft: { L: string; D: string; H: string } | undefined;   // what is typed in the three boxes, kept while one is still empty
   const apply = () => { store.edit(S => applyOwned(S, st), { coalesce: 'owned' }); editBrief(b => syncEquipment(b, st)); opts.onChange?.(); };
   const tankPicked = (n: string) => { st.tank = n; const S = store.tank; st.model = S.product?.model; st.dims = S.product?.model ? undefined : dimsOfTank(S); apply(); draw(); };
-  const sel = (id: string, cur: string | undefined, first: string, list: [string, string][]) =>
-    `<select id="${id}" aria-label="${esc(first)}"><option value=""${cur === undefined ? ' selected' : ''} disabled>${esc(first)}</option><option value="${GENERIC}"${cur === GENERIC ? ' selected' : ''}>Not sure: use a generic one</option>${list.map(([v, l]) => `<option value="${esc(v)}"${cur === v ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
+  /** One product select: the "pick" and "generic" options, then the products in `<optgroup>`s (lane GG1: rated range for heaters and filters, tank length for lights). */
+  const sel = <T extends { id: string }>(id: string, cur: string | undefined, first: string, groups: GearGroup<T>[], label: (p: T) => string) =>
+    `<select id="${id}" aria-label="${esc(first)}"><option value=""${cur === undefined ? ' selected' : ''} disabled>${esc(first)}</option><option value="${GENERIC}"${cur === GENERIC ? ' selected' : ''}>Not sure: use a generic one</option>${groups.filter(g => g.items.length).map(g => `<optgroup label="${esc(g.label)}">${g.items.map(p => `<option value="${esc(p.id)}"${cur === p.id ? ' selected' : ''}>${esc(label(p))}</option>`).join('')}</optgroup>`).join('')}</select>`;
   const tankRow = (): string => {
     if (!opts.compactTank) return `<button type="button" data-own="tank">${st.tank ? 'Change tank…' : 'Choose your tank…'}</button> <b>${st.tank ? esc(st.tank) : '<i>not chosen yet</i>'}</b>`;
     const list = ownedTankList(!!opts.land), d = draft ?? (st.dims ? { L: String(st.dims.L), D: String(st.dims.D), H: String(st.dims.H) } : undefined), v = (n?: string) => n ?? '';
@@ -144,16 +146,14 @@ export function mountOwnedSheet(store: Store, o: OwnedHost, root: HTMLElement, o
     const S = store.tank;
     if (id === 'tank') return tankRow();
     if (id === 'light') {
-      const fits = lightsFor(S.tank.L);
-      return sel('ownLight', st.light, 'Pick your light…', fits.map(p => [p.id, `${productName(p)} · ${p.watts} W${usd(p.priceUsd)}`]));
+      return sel('ownLight', st.light, 'Pick your light…', lightGroups(lightsFor(S.tank.L)), p => `${productName(p)} · ${p.watts} W${usd(p.priceUsd)}`);
     }
     if (id === 'heater') {
-      const w = heatLoss(S, techOf(S)).needW;
-      return sel('ownHeater', st.heater, 'Pick your heater…', heatersNear(w, 12).map(h => [h.id, `${productName(h)} · ${h.watts} W${usd(h.priceUsd)}`]));
+      return sel('ownHeater', st.heater, 'Pick your heater…', ratedGroups(HEATER_PRODUCTS, volume(S.tank).gallons, (a, b) => a.watts - b.watts || productName(a).localeCompare(productName(b))), h => `${productName(h)} · ${h.watts} W${usd(h.priceUsd)}`);
     }
     const gal = volume(S.tank).gallons;
     const kinds = `<select id="ownFilterKind" aria-label="Filter type"><option value=""${st.filterKind ? '' : ' selected'} disabled>What kind of filter?</option>${FILTER_KINDS.map(([v, l]) => `<option value="${v}"${st.filterKind === v ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
-    return kinds + (st.filterKind ? ' ' + sel('ownFilter', st.filter, 'Pick your filter…', filtersNear(st.filterKind, gal, 12).map(f => [f.id, `${productName(f)}${f.gph ? ` · ${f.gph} gph` : ''}${usd(f.priceUsd)}`])) : '');
+    return kinds + (st.filterKind ? ' ' + sel('ownFilter', st.filter, 'Pick your filter…', ratedGroups(FILTER_PRODUCTS.filter(f => f.kind === st.filterKind), gal, (a, b) => (a.gph ?? 0) - (b.gph ?? 0) || productName(a).localeCompare(productName(b))), f => `${productName(f)}${f.gph ? ` · ${f.gph} gph` : ''}${usd(f.priceUsd)}`) : '');
   };
   /** Required / Available for one ticked item: Available (default) counts toward savings but alternatives may be suggested; Required is built around. */
   const useBox = (id: OwnedItem | 'stand', label: string): string => {
