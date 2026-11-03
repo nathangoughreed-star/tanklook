@@ -317,8 +317,31 @@ function dishShape(variant: string, seed: number, s: number) {
   parts.forEach((g, i) => grit(g, stone && i < 3 ? 2 : 0, seed));
   return mergeGeometries(parts)!;
 }
+/** A rim planter (lane OG2): a box that sits on the glass edge of an open-top tank, soil in the top for the houseplants it carries,
+ *  and the roots hanging from its bottom down into the water. Width = s, height 0.4 s, depth 0.45 s; the roots run on below y = 0
+ *  (0.35 .. 1 s long, so they reach the water from any rim). The box is black, white or terracotta by its seed. */
+function planterShape(seed: number, s: number) {
+  const r = rng(seed * 13 + 5), [w, h, d] = [s, 0.4 * s, 0.45 * s], wall = Math.max(2, 0.04 * s), nz = waves(r, 5);
+  const body = [['#26292c', '#33373a'], ['#dedbd2', '#ece9e0'], ['#b3633a', '#c6764a']][seed % 3].map(C);
+  const box = (bw: number, bh: number, bd: number, y: number) => new THREE.BoxGeometry(bw, bh, bd).translate(0, y + bh / 2, 0);
+  const parts: THREE.BufferGeometry[] = [];
+  parts.push(paint(clean(box(w * 0.96, h * 0.9, d * 0.96, 0), true), q => shade(body[0].clone().lerp(body[1], Math.max(0, q.y / h)), 1 + 0.03 * nz(q.clone().multiplyScalar(0.05)))));
+  parts.push(paint(clean(box(w, h * 0.16, d, h * 0.84), true), () => shade(body[1], 0.96)));
+  parts.push(paint(clean(box(w - 2 * wall, h * 0.05, d - 2 * wall, h * 0.97), true), q => C('#3b2a1e').lerp(C('#5a4230'), 0.5 + 0.5 * nz(q.clone().multiplyScalar(0.18))))); // the soil, a little proud of the rim
+  const N = Math.round(18 + 22 * Math.min(1, s / 260));
+  for (let i = 0; i < N; i++) {
+    const x = (r() - 0.5) * w * 0.8, z = (r() - 0.5) * d * 0.8, len = s * (0.35 + 0.65 * r()), ph = r() * 6.28, sw = 0.05 + 0.1 * r();
+    const pts = Array.from({ length: 6 }, (_, k) => V(x + Math.sin(ph + k * 1.1) * sw * len * k / 5, 2 - len * k / 5, z + Math.cos(ph * 1.3 + k * 0.9) * sw * len * k / 5));
+    const g = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 10, Math.max(0.5, 0.0075 * s) * (0.7 + 0.6 * r()), 4, false);
+    const c = C('#e6dcc2').lerp(C('#c4b38c'), r() * 0.7);
+    parts.push(paint(clean(g, true), q => shade(c, 1 - 0.25 * Math.min(1, -q.y / s))));
+  }
+  parts.forEach(g => grit(g, 0, seed));
+  return mergeGeometries(parts)!;
+}
 function caveShape(variant: string, seed: number, size: number) {
   if (variant === 'dish' || variant === 'stonedish') return dishShape(variant, seed, size);
+  if (variant === 'planter') return planterShape(seed, size);
   const r = rng(seed * 7 + 11), s = size;
   if (variant === 'tube') {
     const rad = 0.21 * s, outer = C('#b0603a'), inner = C('#6a3a24'), nz = waves(r, 4);
@@ -480,6 +503,18 @@ float gritK() {
  * below the opening (its walls flare past the floor disc). Needs the renderer's localClippingEnabled.
  */
 const glassMats = new Map<string, THREE.MeshBasicMaterial>();
+/** A plant whose base is up at the rim (on a planter, lane OG2): above the glass, so the glass does not cut it and no lid or water level shapes it. `y` = its base above the floor. */
+export const rimmed = (T: Tank, y: number) => y >= T.H - 30;
+/** How far the houseplants on rim planters stand above the tank's top, mm (0 = none): the framing counts it, so the camera shows the whole garden (vines hang down, so they do not count). */
+export function rimHeadroom(S: TankSetup): number {
+  const T = S.tank; let top = 0;
+  for (const it of S.items) {
+    if (!(it.kind === 'plant' && !isVine(it.variant)) || it.lift <= 0) continue;
+    const y = groundHeight(S, T, it.x, it.depth) + it.lift;
+    if (rimmed(T, y)) top = Math.max(top, y + itemDims(it)[1] - T.H);
+  }
+  return Math.min(top, T.H);
+}
 const glassKey = (T: Tank) => `${shapeOf(T)}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}|${T.frontBulge}`;
 /** The clipping planes and the bowl's sphere cut (a shader patch adding vGlassW) for one tank outline; `vary` alone
  *  declares what the cut needs without cutting (the cap's count passes). */
@@ -653,14 +688,15 @@ function capPasses(m: THREE.Mesh, T: Tank, id: number) {
 /** 3D plants are cut off at the glass the same way (a leaf arching past a pane stops at it), one material per outline;
  *  its shader shows each plant at its own growth (plant3d growShader, lane GR4). */
 const plantMats = new Map<string, THREE.MeshBasicMaterial>();
-function plantMaterial(T: Tank) {
-  const k = glassKey(T);
+function plantMaterial(T: Tank, free = false) {
+  const k = glassKey(T) + (free ? '|rim' : '');
   let m = plantMats.get(k);
   if (m) return m;
   const { planes, patch } = glassClip(T);
-  m = new THREE.MeshBasicMaterial({ vertexColors: true, clippingPlanes: planes });
+  // above the rim (lane OG2) only the floor plane stays: leaves and vines spill past the glass and hang down its outside
+  m = new THREE.MeshBasicMaterial({ vertexColors: true, clippingPlanes: free ? planes.slice(0, 1) : planes });
   m.onBeforeCompile = sh => { patch(sh); growShader(sh); };
-  m.customProgramCacheKey = () => 'plant-clip';
+  m.customProgramCacheKey = () => free ? 'plant-rim' : 'plant-clip';
   // above the water (an emersed stem or sword leaf, lane GR2) there is no water haze: it fades out over the first few
   // mm, so leaves lying at the surface keep theirs
   const post = (sh: THREE.WebGLProgramParametersWithUniforms) => {
@@ -833,7 +869,9 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
   // stops at the lid (the old layouts' rule), to whole mm: a capped plant dragged up or down reuses its build until the
   // room under the lid changes by a mm (lane E2 #10: it rebuilt on every move)
   // (a vine's size is its length, not a height: it runs along the lid instead, lane T2)
-  const cap = (s: number) => carpet || float || vine ? s : Math.min(s, Math.floor(T.H - y - 15));
+  // (a plant standing on a rim planter, lane OG2, is above the glass: no lid over it, no glass to be cut by or to curve along, no water to lie over at)
+  const free = !carpet && !float && rimmed(T, y);
+  const cap = (s: number) => carpet || float || vine || free ? s : Math.min(s, Math.floor(T.H - y - 15));
   const h = cap(it.size);
   if (h < 15) return null;
   const c = Math.cos(it.yaw * D2R), s = Math.sin(it.yaw * D2R);
@@ -869,7 +907,7 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
   const sw = `3d${plant3d.sway ? 's' : ''}${more ? '+' : ''}${plant3d.emerse ? '' : 'n'}|`, kf = sw + (carpet ? `${type}|${it.seed}|${it.size}` : k);
   const args = [type, it.seed, h, { spread: it.spread, stems: it.stems, dens: it.dens, clip: clip.length ? clip : undefined, drop: drop || undefined, limbs: limbs.length ? limbs : undefined }, g0, more, it.size] as const;
   let bend: { F: number; C?: number; water: boolean; walls: number[]; ks: string } | undefined;
-  if (!carpet && !float) {
+  if (!carpet && !float && !free) {
     // longer than the water above it: lies over at the surface (`F` over its base, to 2 mm, so a drag reuses it). A
     // plant with no growth of its own keeps the old allowance (tips up to the lid in a full tank, as they always
     // were) and only lies over when it would poke out further than that
@@ -899,7 +937,7 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
   // a clump on sloping ground (sitting on it, not on a piece): each crown on the ground under it (clumpOnGround)
   const off = !carpet && !float && it.lift <= 2
     ? (lx: number, lz: number) => groundHeight(S, T, it.x + lx * c + lz * s, it.depth + lx * s - lz * c) - ground : undefined;
-  return { type, carpet, float, gr, h, k, at, off, kf, ks: sw + k, args, bend };
+  return { type, carpet, float, free, gr, h, k, at, off, kf, ks: sw + k, args, bend };
 }
 
 // ---------- Idle prebuild (lane GR4) ----------
@@ -1072,7 +1110,7 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
     // expected outcome (lane OC): a plant that will struggle here looks it: paler, and stems leggy and thin, the rest smaller
     const st = S.light.outcomes ? struggleBucket(S, it) / 5 : 0;
     if (st > 0 && g.attributes.color) g = withColors(g, strugglingColors(g.attributes.color, st, REDS.has(it.variant)));
-    m = new THREE.Mesh(g, plantMaterial(T));
+    m = new THREE.Mesh(g, plantMaterial(T, P.free));
     if (st > 0 && !isFloat(it.variant)) { const leggy = LEGGY.has(it.variant); m.scale.set(1 - (leggy ? 0.15 : 0.1) * st, 1 + (leggy ? 0.2 : -0.2) * st, 1 - (leggy ? 0.15 : 0.1) * st); }
     if (g.userData.cpu) m.raycast = plantRaycast;
     m.userData.plant = true;

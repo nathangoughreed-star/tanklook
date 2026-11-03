@@ -36,6 +36,7 @@ export const LIBRARY: Record<string, Variant> = {
   corkflat: { kind: 'wood', label: 'Cork bark flat', hint: 'A curved slab of cork bark: lay it over as a shelter, or stand it up as a panel to climb. Size = length.', size: 300, min: 80, max: 900 },
   corktube: { kind: 'wood', label: 'Cork tube', hint: 'A hollow cork round: lay it down as a hide, or stand it up as a climbing volume. Size = length.', size: 250, min: 60, max: 800 },
   arch: { kind: 'cave', label: 'Stone arch', hint: 'A rock arch to swim through.', size: 170, min: 50, max: 600 },
+  planter: { kind: 'cave', label: 'Rim planter', hint: 'Open-top tanks: a box that sits on the glass edge with soil for houseplants (peace lily, pothos, palm) and its roots hanging down into the water. Size = width; raise it to the rim.', size: 170, min: 80, max: 400 },
   tube: { kind: 'cave', label: 'Clay tube', hint: 'A terracotta spawning tube (plecos, cichlids).', size: 130, min: 40, max: 400 },
   coconut: { kind: 'cave', label: 'Coconut cave', hint: 'Half a coconut shell with a doorway.', size: 110, min: 50, max: 250 },
   halflog: { kind: 'cave', label: 'Half-log hide', hint: 'Half a hollow log, bark outside, open at both ends: a hide for frogs, geckos and other small animals.', size: 200, min: 60, max: 500 },
@@ -79,6 +80,11 @@ export const LIBRARY: Record<string, Variant> = {
   sansevieria: { kind: 'plant', label: 'Snake plant', hint: 'Terrarium: stiff upright sword leaves, banded dark green with yellow rims. Very tough; tolerates dim light and dry soil.', size: 220, min: 50, max: 520 },
   agave: { kind: 'plant', label: 'Agave', hint: 'Terrarium: a tight rosette of thick blue-grey spears. Slow; full sun, very little water.', size: 130, min: 40, max: 320 },
   columnar: { kind: 'plant', label: 'Columnar cactus', hint: 'Terrarium: a tall ribbed blue-green column with pale spines. Very slow; full sun, almost no water. Size = height.', size: 220, min: 60, max: 520 },
+  peacelily: { kind: 'plant', label: 'Peace lily', hint: 'Houseplant for a rim planter: a clump of glossy dark leaves on long arching stalks. Roots in the water, leaves in the air; takes up nitrate. Size = height.', size: 300, min: 80, max: 700 },
+  anthurium: { kind: 'plant', label: 'Anthurium', hint: 'Houseplant for a rim planter: glossy heart-shaped leaves on upright stalks. Roots in the water, leaves in the air. Size = height.', size: 260, min: 70, max: 520 },
+  calathea: { kind: 'plant', label: 'Calathea', hint: 'Houseplant for a rim planter: broad rounded leaves striped pale green, purple underneath. Roots in the water, leaves in the air. Size = height.', size: 240, min: 60, max: 460 },
+  palm: { kind: 'plant', label: 'Parlour palm', hint: 'Houseplant for a rim planter: slender arching fronds on bare green stalks. Roots in the water, fronds in the air. Size = height.', size: 380, min: 100, max: 900 },
+  philodendron: { kind: 'plant', label: 'Heartleaf philodendron', hint: 'Houseplant for a rim planter: long soft vines of glossy heart leaves that run out over the glass and hang down its sides. Roots in the water. Size = vine length.', size: 450, min: 80, max: 1800 },
   bamboo: { kind: 'plant', label: 'Lucky bamboo', hint: 'Riparium / open top: bare green canes standing in the water with a tuft of long leaves at the top. Roots and the lower canes stay wet; it grows up out of the tank. Size = cane height.', size: 350, min: 100, max: 1200 },
   hornwort: { kind: 'plant', label: 'Hornwort', hint: 'Bushy stems of whorled needle leaves; fast, trails along the surface.', size: 300, min: 60, max: 900 },
   anacharis: { kind: 'plant', label: 'Anacharis', hint: 'Long stems densely set with whorls of small bright leaves; fast.', size: 300, min: 60, max: 900 },
@@ -320,6 +326,7 @@ export function itemDims(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size' | '
   if (it.kind === 'coral') return [s, s * ({ acropora: 0.6, montipora: 0.45, mushroom: 0.4, leather: 0.6, acrofine: 0.55, zoanthid: 0.3, hammer: 0.4, torch: 0.55, anemone: 0.4, montiplate: 0.35, seafan: 0.8, macroalgae: 0.55 } as Record<string, number>)[it.variant], s];
   if (it.kind === 'cave' && it.variant in SHELLS) return shellDims(it.variant, s);
   if (it.kind === 'cave' && (it.variant === 'dish' || it.variant === 'stonedish')) return [s, 0.2 * s, s];
+  if (it.kind === 'cave' && it.variant === 'planter') return [s, 0.4 * s, 0.45 * s];
   if (it.kind === 'cave') return it.variant === 'arch' ? [s, 0.5 * s, 0.45 * s] : it.variant === 'tube' ? [s, 0.42 * s, 0.42 * s] : [s, 0.5 * s, s];
   if (it.variant in SHELLS) return shellDims(it.variant, s);
   if (it.variant === 'climb') { const b = limbBox(woodLimbs(it.variant, it.seed, s)); return [b[0], b[1], b[2]]; }
@@ -420,7 +427,7 @@ export function hardscape(S: TankSetup, pieces = S.items, perchK = 1, leaves = f
     // broad leaves (anubias, swords, ferns...) as somewhere to sit, when asked: a spot on the crown's spread at about half
     // its height; the renderer finds the leaf there (none: the animal lands on the ground under it)
     if (leaves && it.kind === 'plant' && it.variant in LEAFY) { parts.push(leafPart(S, it)); continue; }
-    if (it.kind === 'plant' || it.kind === 'coral' || it.kind === 'artificial') continue; // no grazing on live coral (Nathan 2026-10-14)
+    if (it.kind === 'plant' || it.kind === 'coral' || it.kind === 'artificial' || it.variant === 'planter') continue; // no grazing on live coral (Nathan 2026-10-14); a rim planter is up on the glass
     if (it.kind === 'wood' && isLimbWood(it.variant)) {
       for (const l of woodLimbs(it.variant, it.seed, it.size)) {
         const len = l.pts.slice(1).reduce((a, p, i) => a + Math.hypot(p[0] - l.pts[i][0], p[1] - l.pts[i][1], p[2] - l.pts[i][2]), 0);
@@ -610,7 +617,8 @@ export const DEFAULT_DENS: LayerDens = { hard: 2, plant: 2, animal: 0 };
 /** The layers a starter set is drawn in, each from its own random stream: hardscape first, plants and corals placed
  *  round it, then animals (scene/starter.ts). */
 export type Layer = 'hard' | 'plant' | 'animal';
-export const layerOf = (it: Pick<Item, 'kind'>): Layer => it.kind === 'plant' || it.kind === 'coral' || it.kind === 'artificial' ? 'plant' : 'hard';
+/** A rim planter (lane OG2) belongs to the plant layer: it goes and comes with the houseplants it carries, and the hardscape's resizing never reaches it. */
+export const layerOf = (it: Pick<Item, 'kind'> & { variant?: string }): Layer => it.kind === 'plant' || it.kind === 'coral' || it.kind === 'artificial' || it.variant === 'planter' ? 'plant' : 'hard';
 
 /**
  * What each starter style allows (lane SD). `hard` / `plant`: the density at Sparse and at Packed; Medium is 1, the set

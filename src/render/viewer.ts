@@ -17,7 +17,7 @@ import { wattsOf } from '../scene/lightout';
 import { placeShells } from './lightShells';
 import { onPictureLoad, setMaxAnisotropy } from './textures';
 import { OUTLINE } from './fish3d';
-import { capping } from './items';
+import { capping, rimHeadroom } from './items';
 import { PERSON_BODY, PERSON_HEAD } from '../art/placeholder';
 import { inFocus, type FocusSec } from './menuFocus';
 /** How far the rest of the view fades toward the room while a menu focuses it (the painted-patch fade is 0.68). */
@@ -613,7 +613,7 @@ export class Viewer {
       for (const o of vp.overhead ?? []) o.visible = !this.hideOverhead || vp.cam.position.y < o.userData.overhead;
     }
     // framing counts the tank and a hood on it, never the lights above: a fixture shows only once zoomed out enough (Nathan 2026-10-09)
-    const headroom = (S: TankSetup) => (S.lid === 'hood' ? HOOD_H + 6 : 0);
+    const headroom = (S: TankSetup) => (S.lid === 'hood' ? HOOD_H + 6 : rimHeadroom(S)); // (houseplants on rim planters, lane OG2)
     const bottom = (S: TankSetup) => (S.stand.show ? floorY(S.tank, S.render, S.stand) : 0);
     // a table wider than the tank; the scale person never counts, so a tall person beside a small tank no longer
     // shrinks it in the default view, and shows only once zoomed out enough, like the lights (Nathan 2026-10-09)

@@ -10,6 +10,7 @@ import { emptyBuild, buildsFor, type Build } from './builds';
 import { itemDims, layerOf, makeItem, STYLES } from './items';
 import { isOpenTop } from './openTop';
 import { waterY } from './physics';
+import { groundHeight } from './terrain';
 
 import { getSpecies } from '../data/species';
 import { groupMinimum } from './groupMin';
@@ -70,8 +71,8 @@ interface Tweak {
   ground?: 'bare' | { type: SubstrateType; custom?: SubstrateBlend }; flat?: boolean; rocks?: Record<Density, number[]>; wood?: Record<Density, number>; caves?: Record<Density, number>; plantsOnly?: string[];
 }
 const TWEAKS: Record<string, Tweak> = {
-  // Overflowing Garden: the jungle look with an open top; the plant stop sets how far the emersed growth clears the water, the hardscape stays a few roots
-  'overgrown-garden': { openTop: true, seed: 1, dens: t([0.3, 0.3], [1, 1.2], [1.6, 3]) },
+  // Overflowing Garden: a calm hardscape-forward nature aquascape under an open top; the plant stop sets only how many rim planters and houseplants grow above it (lane OG2)
+  'overgrown-garden': { openTop: true, seed: 1, dens: t([1.6, 0.4], [2, 0.9], [2.2, 1.4]) },
   // reef siblings (one 'reef' look): the shape of the rock is the archetype
   'reef-arches': { comp: 'v' }, 'reef-islands': { comp: 'u' },   'mixed-reef': { comp: 'scattered', seed: 2 }, 'blue-glow-reef': { comp: 'mound', seed: 3 },
   // driftwood siblings
@@ -183,7 +184,7 @@ export function focalAnimals(a: Archetype, tank: TankModel): AnimalCount[] {
 }
 
 /** Hides and climbing: caves (half-logs, burrows) and wood (branches, cork) a terrarium's open level must keep. */
-export const shelterCount = (S: TankSetup) => S.items.filter(it => it.kind === 'cave' || it.kind === 'wood').length;
+export const shelterCount = (S: TankSetup) => S.items.filter(it => (it.kind === 'cave' && it.variant !== 'planter') || it.kind === 'wood').length;
 
 /** One archetype in one tank, ready for its three densities: the build (tank, gear, animals) every level shares, and the
  *  composition seed the trio is drawn with. */
@@ -234,37 +235,68 @@ function finish(a: Archetype, d: Density, S: TankSetup): TankSetup {
 }
 
 /** Plants that grow up out of the water (art/plants.ts overflow 'emerge') and so can be grown past the rim of an open tank. */
-const EMERGE: ReadonlySet<string> = new Set(['stem', 'stemred', 'ludwigia', 'sword', 'ozelot', 'bamboo']);
-/** The water line of an open-top garden, as a share of a full tank: a little lower, so the glass shows the plants clearing it. */
-export const GARDEN_LEVEL = 0.88;
+const EMERGE: ReadonlySet<string> = new Set(['stem', 'stemred', 'ludwigia']);
+/** The water line of an open-top garden, as a share of a full tank: a touch lower, so the roots hanging from the rim planters are seen going into the water (lower costs the animals swimming room: the roster plan is made at a full tank). */
+export const GARDEN_LEVEL = 0.96;
 /** Plants the open-top recipe adds carry a seed in this range, so a second pass over a scene knows they are there. */
 const SPROUT_SEED = 1_900_000_000, SPROUTS = 100;
-/** How far past the water line the tallest stems reach at the sparsest (0.3) and densest (3) plant stop, as shares of the water depth. */
-const CLEAR: [number, number] = [1.25, 2.1];
-/** What grows under the water of the garden (Nathan 2026-11-03: a tank plus houseplants, not a jungle): tidy low and mid plants, floaters at the surface and the stems that will break it. The jungle look's tall straps (vallisneria, balansae) are left out. */
-const UNDER = new Set(['crypt', 'anubias', 'buce', 'fern', 'moss', 'sword', 'ozelot', 'sagittaria', 'carpet', 'stem', 'stemred', 'ludwigia', 'frogbit', 'salvinia', 'redroot', 'lettuce']);
-/** Open top (lane OG1): no lid at any level, the water line lowered, and every stem / sword / bamboo cane grown so it clears the water by an amount that rises with the plant density stop.
- *  The growth is solved per plant from its own height (itemDims), so it holds in any tank; a plant's own random draw varies the reach so the tops are not level. */
+/** What grows under the water of the garden (Nathan 2026-11-03, with a collage of tanks with houseplants on the rim: a calm aquascape underneath, not a jungle): a few low and mid plants, a carpet, floaters at the surface. No tall straps, no stems (the few emersed ones are added by `overgrow`). */
+const UNDER = new Set(['crypt', 'anubias', 'buce', 'fern', 'moss', 'sagittaria', 'carpet', 'frogbit', 'salvinia', 'redroot', 'lettuce']);
+/** The houseplants of the rim planters, in the order the planters take them (height as a share of the tank's height at the sparsest stop; the denser stops grow them up to 1.4 times that). */
+const HOUSEPLANTS: [string, number][] = [['peacelily', 0.65], ['anthurium', 0.55], ['palm', 0.62], ['calathea', 0.5], ['bamboo', 0.8]];
+/** The open-top garden's own pieces (planters, houseplants, emersed stems) carry a seed in the SPROUT_SEED range. */
+export const isGardenPiece = (it: Item) => it.seed >= SPROUT_SEED && it.seed < SPROUT_SEED + SPROUTS;
+/** Open top (lanes OG1, OG2): no lid at any level, the water line lowered, and houseplants growing out of planters on the rim with their roots hanging into the water,
+ *  as in Nathan's reference: the aquascape under the water stays calm and hardscape-forward; the plant density stop (0.4 .. 1.4) sets only how much grows above the rim
+ *  (`p` 0..1): one planter with a peace lily, then planters along the back with palms and anthuriums, then a canopy with vines pouring over the front and down the sides. */
 function overgrow(S: TankSetup): void {
   S.lid = 'open';
   S.water.level = Math.min(S.water.level, GARDEN_LEVEL);
-  const T = S.tank, depth = waterY(T, S.water.level), p = Math.max(0, Math.min(1, ((S.layout.dens?.plant ?? 1) - 0.3) / (3 - 0.3)));
-  S.items = S.items.filter(it => it.kind !== 'plant' || UNDER.has(it.variant) || it.seed >= SPROUT_SEED);
-  // the stems the garden is for: the jungle look's own are few, so a row of emersed stems, lucky bamboo canes (the plant ripariums are known for) and the odd sword stands along the back and the ends, more of them at denser stops (once: they carry a seed in the SPROUT_SEED range)
-  if (!S.items.some(it => it.kind === 'plant' && it.seed >= SPROUT_SEED && it.seed < SPROUT_SEED + SPROUTS)) {
-    const n = Math.min(SPROUTS, Math.round((2 + 8 * p) * Math.min(1.6, Math.max(0.7, T.L / 600)))), kinds = ['bamboo', 'ludwigia', 'stemred', 'stem', 'ludwigia', 'bamboo', 'ozelot', 'stem'];
-    for (let i = 0; i < n; i++) {
-      const u = (i * 0.618034) % 1, edge = i % 3 === 2, x = edge ? T.L * (i % 2 ? 0.06 + 0.06 * u : 0.94 - 0.06 * u) : T.L * (0.1 + 0.8 * u), d = T.D * (edge ? 0.2 + 0.5 * u : 0.14 + 0.2 * ((i * 0.37) % 1));
-      S.items.push(makeItem(T, kinds[i % kinds.length], 1 + Math.max(0, ...S.items.map(x => x.id)), SPROUT_SEED + i, x, d));
-    }
+  const T = S.tank, depth = waterY(T, S.water.level), p = Math.max(0, Math.min(1, ((S.layout.dens?.plant ?? 0.9) - 0.4) / 1.0));
+  S.items = S.items.filter(it => it.kind !== 'plant' || UNDER.has(it.variant) || isGardenPiece(it));
+  if (S.items.some(isGardenPiece)) return;
+  const id = () => 1 + Math.max(0, ...S.items.map(x => x.id));
+  // the planters: wide enough to read from across the room, as many as the tank's length and the stop allow
+  const w = Math.max(110, Math.min(230, T.L * 0.17)), pd = w * 0.45, rim = T.H - 8, fit = Math.max(1, Math.floor(T.L * 0.88 / (w * 1.08)));
+  const nBack = Math.min(fit, Math.max(1, Math.round((1 + 3.5 * p) * Math.max(0.7, Math.min(1.4, T.L / 800))))), nFront = p < 0.2 ? 0 : p < 0.6 ? 1 : 2, nEnd = p < 0.8 ? 0 : 2;
+  const pseed = (i: number) => SPROUT_SEED + 3 * i + 2 + (i % 4 === 3 ? 1 : 0); // black (seed % 3 = 0), every fourth white
+  let k = 0, ps = 40;
+  const plant = (variant: string, x: number, d: number, size: number, lift: number, extra: Partial<Item> = {}) => {
+    const it = makeItem(T, variant, id(), SPROUT_SEED + ps++, x, d, { lift, ...extra }); it.size = Math.round(size); // (a vine is longer than the footprint's cap: set after)
+    S.items.push(it); return it;
+  };
+  const planter = (x: number, d: number, yaw = 0) => {
+    const it = makeItem(T, 'planter', id(), pseed(k++), x, d, { size: w, yaw }), ground = groundHeight(S, T, it.x, it.depth);
+    it.lift = Math.round(rim - ground); S.items.push(it);
+    return { x: it.x, d: it.depth, top: it.lift + 0.4 * w * 1.02 + 4 };
+  };
+  const grow = 1 + 0.4 * p, jit = (i: number) => 0.9 + 0.2 * ((i * 0.618034) % 1);
+  for (let i = 0; i < nBack; i++) {
+    const x = nBack === 1 ? T.L * 0.74 : T.L * (0.16 + 0.68 * i / (nBack - 1)), at = planter(x, T.D - pd / 2 - 5);
+    const [main, hk] = HOUSEPLANTS[(i + (nBack === 1 ? 0 : 1)) % HOUSEPLANTS.length];
+    plant(main, at.x, at.d, T.H * hk * grow * jit(i), at.top);
+    // a second, smaller plant beside it once the stop is past the sparsest
+    if (p >= 0.25 || nBack === 1) { const [m2, h2] = HOUSEPLANTS[(i + 2) % HOUSEPLANTS.length]; plant(m2, at.x + w * (i % 2 ? -0.28 : 0.28), at.d - pd * 0.1, T.H * h2 * 0.8 * grow * jit(i + 1), at.top); }
+    // vines from the back planters trail over the back rim and down the outside of the glass
+    if (p >= 0.5 && i % 2 === 0) plant(i % 4 ? 'philodendron' : 'pothos', at.x, at.d, T.H * (0.45 + 0.3 * p), at.top, { yaw: 180 });
   }
-  // houseplant vines at the ends of the back glass, climbing out over the rim (pothos: the riparium's favourite)
-  if (!S.items.some(it => it.variant === 'pothos')) for (let i = 0, n = 1 + Math.round(2 * p); i < n; i++) S.items.push(makeItem(T, 'pothos', 1 + Math.max(0, ...S.items.map(x => x.id)), SPROUT_SEED + 50 + i, T.L * (i % 2 ? 0.95 : 0.05), T.D * 0.1, { size: T.H * 1.4 }));
+  // the vines that hang over the front: a planter at each front corner (the sparsest stop has one small planter and a pothos over the front)
+  const tail = (i: number, n: number) => T.H * (0.5 + 0.35 * p) * jit(i + n);
+  if (!nFront) { const at = planter(T.L * 0.3, pd / 2 + 5); plant('pothos', at.x, at.d, T.H * 0.4, at.top); }
+  else [0.14, 0.86].slice(0, nFront).forEach((fx, i) => { const at = planter(T.L * fx, pd / 2 + 5); plant(i ? 'philodendron' : 'pothos', at.x, at.d, tail(i, 1), at.top); plant('calathea', at.x + w * 0.1, at.d + pd * 0.2, T.H * 0.28 * grow, at.top); });
+  // ends of the tank: a planter on each side rim, its vine hanging down the side glass (the yaw turns the vine's out-heading to the side)
+  for (let i = 0; i < nEnd; i++) { const left = i === 0, at = planter(left ? pd / 2 + 5 : T.L - pd / 2 - 5, T.D * 0.6, left ? 90 : -90); plant(left ? 'pothos' : 'philodendron', at.x, at.d, tail(i, 5), at.top, { yaw: left ? -90 : 90 }); }
+  // a few emersed stems standing in the water, breaking the surface at the denser stops (the reference tanks have a handful)
+  const stems = Math.round(4 * p) + (p >= 0.25 ? 1 : 0);
+  for (let i = 0; i < stems; i++) {
+    const u = (i * 0.618034 + 0.2) % 1;
+    S.items.push(makeItem(T, ['ludwigia', 'stemred', 'stem', 'ludwigia'][i % 4], id(), SPROUT_SEED + 80 + i, T.L * (0.2 + 0.6 * u), T.D * (0.55 + 0.25 * ((i * 0.37) % 1))));
+  }
   for (const it of S.items) {
     if (it.kind !== 'plant' || !EMERGE.has(it.variant)) continue;
-    const want = depth * (CLEAR[0] + (CLEAR[1] - CLEAR[0]) * p) * (0.8 + 0.4 * (((it.seed * 2654435761) >>> 0) % 1000) / 1000) * (it.variant === 'bamboo' ? 1.2 : 1); // lucky bamboo canes stand tallest
+    const want = depth * (1.1 + 0.4 * p) * (0.8 + 0.4 * (((it.seed * 2654435761) >>> 0) % 1000) / 1000);
     let lo = 0.05, hi = 1;
-    for (let k = 0; k < 14; k++) { const m = (lo + hi) / 2; (itemDims({ ...it, growth: m })[1] < want ? lo = m : hi = m); }
+    for (let q = 0; q < 14; q++) { const m = (lo + hi) / 2; (itemDims({ ...it, growth: m })[1] < want ? lo = m : hi = m); }
     it.growth = Math.round(hi * 1000) / 1000;
   }
 }

@@ -1,10 +1,16 @@
-// Lane OG1 (2026-11-03): the Overflowing Garden archetype: an open-top planted aquarium whose plants grow up and out of the tank on purpose.
+// Lanes OG1, OG2 (2026-11-03): the Overflowing Garden: a calm aquascape under an open top, houseplants in rim planters with their roots in the water, vines over the rim.
 // No lid in the scene or the gear, plants clearing the water more at denser stops, and no animal that needs a lid in its lists or roster.
 import { describe, expect, it } from 'vitest';
 import { SPECIES, getSpecies } from '../src/data/species';
 import { TANK_MODELS, type TankModel } from '../src/data/tanks';
 import { ARCHETYPES, FAMILIES, archetype, archetypesOf } from '../src/scene/archetypes';
-import { GARDEN_LEVEL, STOPS, minTank, recipeBase, stopScene } from '../src/scene/recipes';
+import { GARDEN_LEVEL, STOPS, minTank, recipeBase, shelterCount, stopScene, withBg } from '../src/scene/recipes';
+import { LIBRARY } from '../src/scene/items';
+import { PLANT3D } from '../src/art/plants';
+import { NEEDS as PLANT_NEEDS } from '../src/scene/lightneeds';
+import { priceRow } from '../src/demand/prices';
+import { groundHeight } from '../src/scene/terrain';
+import { rimHeadroom, rimmed } from '../src/render/items';
 import { itemDims } from '../src/scene/items';
 import { waterY } from '../src/scene/physics';
 import { isOpenTop, needsLid } from '../src/scene/openTop';
@@ -22,13 +28,9 @@ const TANKS = ['20 gal long', '40 gal breeder', '75 gal'].map(tank);
 /** the animals Nathan named (jumpers, crayfish, crabs, frogs) plus other known escape artists in the species data: every one needs a lid */
 const ESCAPE_ARTISTS = ['hatchet', 'cpo', 'cajundwarf', 'rswcrayfish', 'redclaw', 'thaicrab', 'firetoad', 'firenewt', 'adf', 'axolotl', 'betta', 'danio', 'kuhli'];
 
-/** how far (mm) the tallest plant reaches past the water line in a scene, how many plants do, and the total of their reach */
-function overRim(S: TankSetup) {
-  const water = waterY(S.tank, S.water.level);
-  const reach = S.items.filter(it => it.kind === 'plant').map(it => itemDims(it)[1] - water);
-  return { max: Math.max(0, ...reach), n: reach.filter(r => r > 20).length, sum: reach.filter(r => r > 0).reduce((a, b) => a + b, 0) };
-}
-
+/** the houseplants of the rim planters, and the emersed stems that stand in the water */
+const HOUSE = new Set(['peacelily', 'anthurium', 'calathea', 'palm', 'bamboo', 'pothos', 'philodendron']);
+const EMERSED = new Set(['stem', 'stemred', 'ludwigia']);
 
 describe('the archetype', () => {
   it('is a supported freshwater aquarium look in the Underwater Gardens family, with its own id', () => {
@@ -65,29 +67,91 @@ describe('the scene', () => {
         expect(base.build.setup.lid).toBe('open');
         expect(base.build.gear.some(g => /lid/i.test(g)), base.build.gear.join(' | ')).toBe(false);
       });
-      it('stands lucky bamboo canes above the water line at every stop, taller than the water is deep', () => {
+      const rimOf = (S: TankSetup) => S.tank.H - 30;
+      const base0 = (S: TankSetup, it: TankSetup['items'][number]) => groundHeight(S, S.tank, it.x, it.depth) + it.lift;
+      it('puts a rim planter at every stop, its box on the glass edge and its roots reaching down to the water', () => {
         for (let s = 0; s < STOPS; s++) {
-          const S = stopScene(base, s), water = waterY(S.tank, S.water.level), cane = S.items.filter(it => it.variant === 'bamboo');
-          expect(cane.length, `stop ${s}`).toBeGreaterThan(0);
-          expect(Math.max(...cane.map(it => itemDims(it)[1])), `stop ${s}`).toBeGreaterThan(water);
+          const S = stopScene(base, s), pots = S.items.filter(it => it.variant === 'planter'), water = waterY(S.tank, S.water.level);
+          expect(pots.length, `stop ${s}`).toBeGreaterThan(0);
+          for (const pt of pots) {
+            expect(base0(S, pt), `stop ${s}`).toBeGreaterThan(rimOf(S)); expect(base0(S, pt)).toBeLessThanOrEqual(S.tank.H);
+            expect(base0(S, pt) - water, 'the longest roots reach the water').toBeLessThan(pt.size * 0.8);
+          }
         }
       });
-      it('is a tank plus houseplants by default, not a jungle: Balanced has no vallisneria or strap-leaf wall, a modest plant count, and pothos on the glass', () => {
-        const S = stopScene(base, 2), plants = S.items.filter(it => it.kind === 'plant');
-        expect(plants.some(it => it.variant === 'grass' || it.variant === 'balansae')).toBe(false);
-        expect(plants.some(it => it.variant === 'pothos')).toBe(true);
-        expect(plants.length, `${plants.length} plants`).toBeLessThan(120);
-        expect(stopScene(base, 4).items.filter(it => it.kind === 'plant').length).toBeGreaterThan(plants.length * 1.5);
+      it('keeps every houseplant in a planter (nothing rooted in the gravel but the calm underwater planting) and grows more of them at denser stops', () => {
+        const count = (S: TankSetup) => S.items.filter(it => it.kind === 'plant' && HOUSE.has(it.variant)).length;
+        const n = Array.from({ length: STOPS }, (_, s) => count(stopScene(base, s)));
+        expect(n[0], JSON.stringify(n)).toBeGreaterThan(0); expect(n[0]).toBeLessThanOrEqual(4);
+        for (let s = 1; s < STOPS; s++) expect(n[s], JSON.stringify(n)).toBeGreaterThanOrEqual(n[s - 1]);
+        expect(n[4], JSON.stringify(n)).toBeGreaterThan(n[0] * 2);
+        for (let s = 0; s < STOPS; s++) {
+          const S = stopScene(base, s), pots = S.items.filter(it => it.variant === 'planter');
+          for (const hp of S.items.filter(it => it.kind === 'plant' && HOUSE.has(it.variant))) {
+            expect(base0(S, hp), `stop ${s} ${hp.variant}`).toBeGreaterThan(rimOf(S));
+            expect(pots.some(pt => Math.abs(pt.x - hp.x) <= pt.size * 0.6 && Math.abs(pt.depth - hp.depth) <= pt.size * 0.45 && hp.lift > pt.lift), `stop ${s} ${hp.variant} stands on a planter`).toBe(true);
+          }
+        }
       });
-      it('has more plant growing out of the water at each denser stop', () => {
-        const r = Array.from({ length: STOPS }, (_, s) => overRim(stopScene(base, s)));
-        expect(r[0].max, JSON.stringify(r)).toBeGreaterThan(0); // even the sparsest stop has stems reaching past the surface
-        for (let s = 1; s < STOPS; s++) expect(r[s].sum, `stop ${s}: ${JSON.stringify(r)}`).toBeGreaterThan(r[s - 1].sum);
-        expect(r[4].n, JSON.stringify(r)).toBeGreaterThan(r[0].n);
-        expect(r[4].max).toBeGreaterThan(r[0].max * 1.5);
+      it('is a calm aquascape under the water at every stop: hardscape, no strap-leaf wall, no sword, few plants', () => {
+        for (let s = 0; s < STOPS; s++) {
+          const S = stopScene(base, s), low = S.items.filter(it => it.kind === 'plant' && !HOUSE.has(it.variant) && it.lift <= 1);
+          expect(S.items.filter(it => it.kind === 'stone' || it.kind === 'wood').length, `stop ${s}`).toBeGreaterThan(1);
+          expect(low.some(it => ['grass', 'balansae', 'sword', 'ozelot'].includes(it.variant)), `stop ${s}`).toBe(false);
+          expect(low.length, `stop ${s} has ${low.length} plants under the rim`).toBeLessThan(45);
+        }
+      });
+      it('lets vines spill over the rim: a pothos at the sparsest stop, philodendron and more vines at the denser ones, each started on a planter', () => {
+        const vines = (s: number) => stopScene(base, s).items.filter(it => it.variant === 'pothos' || it.variant === 'philodendron');
+        expect(vines(0).length).toBeGreaterThan(0);
+        expect(vines(4).length).toBeGreaterThan(vines(0).length);
+        expect(vines(4).some(it => it.variant === 'philodendron')).toBe(true);
+        expect(vines(4).some(it => Math.abs(it.yaw) === 90), 'vines run off the ends of the tank').toBe(true);
+        const S4 = stopScene(base, 4);
+        for (const v of vines(4)) expect(base0(S4, v)).toBeGreaterThan(rimOf(S4));
+      });
+      it('has a few emersed stems breaking the surface at the denser stops, and none at the sparsest', () => {
+        const stems = (s: number) => stopScene(base, s).items.filter(it => EMERSED.has(it.variant) && it.growth != null);
+        expect(stems(0).length).toBe(0);
+        expect(stems(4).length).toBeGreaterThan(2);
+        const S = stopScene(base, 4), water = waterY(S.tank, S.water.level);
+        expect(Math.max(...stems(4).map(it => itemDims(it)[1]))).toBeGreaterThan(water);
+      });
+      it('does not count the planters as hides, and a second dressing leaves the pieces as they are', () => {
+        const S = stopScene(base, 3);
+        expect(shelterCount(S)).toBe(S.items.filter(it => it.kind === 'wood' || (it.kind === 'cave' && it.variant !== 'planter')).length);
+        const again = withBg(A, structuredClone(S));
+        expect(again.items.length).toBe(S.items.length);
+      });
+      it('is framed with its houseplants (the camera counts what stands above the tank)', () => {
+        expect(rimHeadroom(stopScene(base, 4))).toBeGreaterThan(stopScene(base, 4).tank.H * 0.2);
+        expect(rimHeadroom(stopScene(base, 4))).toBeGreaterThan(rimHeadroom(stopScene(base, 0)));
       });
     });
   }
+});
+
+describe('the new parts', () => {
+  const PLANTS = ['peacelily', 'anthurium', 'calathea', 'palm', 'philodendron', 'bamboo'];
+  it('each houseplant is in the library, drawn in 3D, a land plant that needs no light or CO2, and priced from a retailer', () => {
+    for (const v of PLANTS) {
+      expect(LIBRARY[v]?.kind, v).toBe('plant'); expect(PLANT3D[v as never], v).toBeTruthy();
+      expect(PLANT_NEEDS[v], v).toEqual({ band: 'land' });
+      const row = priceRow(`plant:${v}`); expect(row, v).toBeTruthy(); expect(row.url, v).toMatch(/^https:\/\//); expect(row.lo).toBeLessThan(row.hi);
+    }
+  });
+  it('the rim planter is a priced hardscape piece that sizes by its width', () => {
+    expect(LIBRARY.planter?.kind).toBe('cave'); expect(priceRow('hard:planter')?.url).toMatch(/^https:\/\//);
+    expect(itemDims({ kind: 'cave', variant: 'planter', seed: 1, size: 100 } as never)[0]).toBe(100);
+  });
+  it('a plant is at the rim only when its base is up at the glass top: such a plant is drawn free of the glass', () => {
+    const T = { H: 400 } as never;
+    expect(rimmed(T, 380)).toBe(true); expect(rimmed(T, 100)).toBe(false);
+  });
+  it('the philodendron vines run out toward the viewer and none climb', () => {
+    expect(PLANT3D.philodendron!.vine!.out).toBeCloseTo(Math.PI / 2, 5);
+    expect(PLANT3D.philodendron!.vine!.climb).toBe(0);
+  });
 });
 
 describe('its animals', () => {

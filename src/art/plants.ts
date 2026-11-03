@@ -5,7 +5,8 @@ export type PlantType = 'stem' | 'stemred' | 'grass' | 'sword' | 'fern' | 'anubi
   | 'pothos' | 'bromeliad' | 'tropfern' | 'fittonia' | 'sphagnum' | 'creeper'
   | 'hairgrass' | 'hornwort' | 'anacharis'
   | 'echeveria' | 'haworthia' | 'jade' | 'aloe' | 'burrotail' | 'barrel'
-  | 'sansevieria' | 'agave' | 'columnar' | 'bamboo';
+  | 'sansevieria' | 'agave' | 'columnar' | 'bamboo'
+  | 'peacelily' | 'anthurium' | 'calathea' | 'palm' | 'philodendron';
 
 /** Height / width per plant type (sizes and footprints; the ratio of the old 2D cards). */
 export const PLANT_ASPECT: Record<PlantType, number> = { stem: 3.2, stemred: 3.2, grass: 3.6, sword: 1.1, fern: 1.3, anubias: 0.8, carpet: 0.32, crypt: 1,
@@ -14,7 +15,8 @@ export const PLANT_ASPECT: Record<PlantType, number> = { stem: 3.2, stemred: 3.2
   pothos: 1.3, bromeliad: 0.6, tropfern: 1, fittonia: 0.5, sphagnum: 0.35, creeper: 1.2,
   hairgrass: 0.4, hornwort: 3, anacharis: 3.2,
   echeveria: 0.55, haworthia: 0.7, jade: 1.1, aloe: 1.1, burrotail: 0.5, barrel: 1,
-  sansevieria: 1.6, agave: 0.8, columnar: 2.4, bamboo: 3.2 };
+  sansevieria: 1.6, agave: 0.8, columnar: 2.4, bamboo: 3.2,
+  peacelily: 1, anthurium: 0.9, calathea: 0.85, palm: 1.2, philodendron: 1.3 };
 /** Plants that grow as a low patch (size = patch width, height = CARPET_H) rather than upright (size = height). */
 export const isCarpet = (v: string) => v === 'carpet';
 /** Plants that float at the water line (size = patch width; roots hang below; not drawn in a dry tank). */
@@ -111,7 +113,9 @@ export interface Plant3D {
   vine?: { climb: number; node: number; back: number; fan: number; thick: number; wander: number; branch?: number;
     /** With wood in reach (lane T2, T3's anchors): share of the vines that run along it, and mm per turn round a limb
      *  (0 / absent = along its top). */
-    follow?: number; wrap?: number };
+    follow?: number; wrap?: number;
+    /** Trailers set on a lifted plant run out toward this heading (rad in the plant's own frame; PI / 2 = toward the viewer, yaw turns it) before they hang, and farther (lane OG2: a rim planter's vines drape over the glass). */
+    out?: number };
   /** Stem plants: leaves per node, set round the stem (absent = a pair; lane T2: hornwort, anacharis). */
   whorl?: number;
   /** Stem plants: stem radius as a fraction of the height (absent = 0.006; lane CP: a jade plant's thick trunk). */
@@ -338,6 +342,32 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
   bamboo: { land: true, grow: { speed: 'medium', overflow: 'none', len: [120, 1200], more: 2, shoots: 0.3 }, sway: 0, form: 'stem', n: [3, 6], nodes: 9, lean: 0.5, stemK: 0.013, leafFrom: 0.62, whorl: 4, spread: 0.1, stalk: '#7fae3c', leaf: {
     len: [0.3, 0.42], wid: 0.11, prof: [0.7, 0.8], rise: [0.35, 1.15], arch: 0.5, twist: 0.15, fold: 0.18, thick: 0.5, wave: [0.01, 2], pet: 0,
     cols: [['#2f7a2c', '#58a845'], ['#37832f', '#62b04a'], ['#2b7228', '#4e9c3e']], under: '#4f9a3c', rib: '#9acb62', seg: [10, 4] } },
+  // ---------- Houseplants of the rim planter (lane OG2, 2026-11-03: Nathan's reference, a calm aquascape with houseplants growing out of the top) ----------
+  // Peace lily (Spathiphyllum): a clump of glossy dark lance leaves on long stalks, arching out. Size = height
+  peacelily: { land: true, grow: { speed: 'medium', overflow: 'none', len: [80, 700], more: 3, prop: true }, cap: 1.5, sway: 0, form: 'rosette', n: [9, 13], crowns: [1, 2], spread: 0.2, stalk: '#3a6a34', leaf: {
+    len: [0.62, 0.95], wid: 0.3, prof: [0.85, 0.6], rise: [0.04, 0.6], arch: 0.38, twist: 0.12, fold: -0.06, wave: [0.025, 3], pet: 0.42,
+    cols: [['#1e5a28', '#3a8a42'], ['#22622e', '#42944a'], ['#1a5224', '#348038']], under: '#4a8048', rib: '#8cba80', seg: [14, 6] } },
+  // Anthurium: glossy heart-shaped leaves on upright stalks, dark green with pale veins
+  anthurium: { land: true, grow: { speed: 'slow', overflow: 'none', len: [70, 520], more: 3, prop: true }, cap: 1.4, sway: 0, form: 'rosette', n: [7, 10], crowns: [1, 2], spread: 0.18, stalk: '#46663a', leaf: {
+    len: [0.5, 0.78], wid: 0.66, prof: [0.5, 0.5], rise: [0.06, 0.65], arch: 0.28, twist: 0.1, fold: 0.04, wave: [0.02, 3], pet: 0.5,
+    cols: [['#24602e', '#46a04a'], ['#286a34', '#4eaa52'], ['#205a2a', '#3e9644']], under: '#58904e', rib: '#a8d48a', seg: [12, 8] } },
+  // Calathea (prayer plant, orbifolia type): broad rounded leaves, pale green stripes down the dark blade, purple underneath
+  calathea: { land: true, grow: { speed: 'slow', overflow: 'none', len: [60, 460], more: 3, prop: true }, cap: 1.4, sway: 0, form: 'rosette', n: [8, 12], crowns: [1, 2], spread: 0.2, stalk: '#5a6a3a', leaf: {
+    len: [0.5, 0.75], wid: 0.7, prof: [0.8, 0.5], rise: [0.18, 0.95], arch: 0.3, twist: 0.1, fold: 0.1, wave: [0.03, 3], pet: 0.28,
+    cols: [['#34803e', '#5eb862'], ['#38883f', '#66c068'], ['#2e7a38', '#54ac58']], under: '#7a4a6a', rib: '#d2e6b4',
+    veins: { col: '#bcdca0', n: 9, w: 0.1 }, seg: [12, 9] } },
+  // Parlour palm (Chamaedorea): slender arching fronds of narrow leaflets on bare green stalks, several from one clump
+  palm: { land: true, grow: { speed: 'slow', overflow: 'none', len: [100, 900], more: 3 }, cap: 1.5, sway: 0, form: 'rosette', n: [9, 13], crowns: [2, 4], spread: 0.16, stalk: '#5a8a3a', leaf: {
+    len: [0.7, 1], wid: 0.012, prof: [1, 0.3], rise: [0.05, 0.55], arch: 0.65, twist: 0.2, fold: 0, wave: [0, 0], pet: 0.4,
+    cols: [['#2e6a2a', '#4e9440']], under: '#548a3e', seg: [24, 3],
+    pinnae: { n: [24, 30], ang: 0.95, prof: [0.55, 0.45], leaf: {
+      len: [0.1, 0.12], wid: 0.17, prof: [0.7, 0.6], rise: [0, 0], arch: 0.15, twist: 0, fold: 0.2, wave: [0, 0], pet: 0,
+      cols: [['#2c6a28', '#52983e'], ['#307228', '#58a042'], ['#286024', '#488c38']], under: '#5a9040', seg: [3, 3] } } } },
+  // Heartleaf philodendron: long soft vines of glossy dark heart leaves; set on a rim planter its vines run out and hang over the edge (vine.out)
+  philodendron: { land: true, grow: { speed: 'fast', overflow: 'trail', len: [80, 1800], more: 2.5 }, sway: 0, form: 'vine', n: [4, 6], spread: 0.15, stalk: '#4e5e2e',
+    vine: { climb: 0, node: 34, back: 0.35, fan: 0.7, thick: 1.5, wander: 0.3, branch: 1, out: Math.PI / 2 }, leaf: {
+    len: [44, 80], wid: 0.88, prof: [0.4, 0.45], rise: [0.9, 1.35], arch: 0.5, twist: 0.2, fold: 0.1, wave: [0.015, 2], pet: 0.3,
+    cols: [['#1f5a28', '#3a9444'], ['#236630', '#42a04c'], ['#1c5224', '#348a3c']], under: '#58884a', rib: '#86b870', seg: [10, 8] } },
   // ---------- Aquatic follow-ons (lane T2, roadmap section 6; Monte Carlo stays the existing carpet: Nathan 2026-10-14) ----------
   // Dwarf hairgrass (Eleocharis acicularis): dense tufts of needle-fine bright green blades on runners, a fine lawn
   hairgrass: { grow: { speed: 'medium', overflow: 'spread', len: [25, 140], more: 10 }, sway: 0.35, form: 'rosette', n: [320, 420], lawn: 2400, crowns: [9, 14], spread: 0.9, stalk: '#4a7a30', leaf: {

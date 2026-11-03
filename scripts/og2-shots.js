@@ -1,5 +1,5 @@
-// Dev server only (lane OG1): the Overflowing Garden at a tank size and a density stop, with its suggested roster. Console:
-// `const s = await import('/scripts/og1-shots.js'); await s.shot('40 gal breeder', 2)`. Pictures land in shots/og1_<tank>_stop<n>.png.
+// Dev server only (lanes OG1, OG2): the Overflowing Garden at a tank size and a density stop, with its suggested roster. Console:
+// `const s = await import('/scripts/og2-shots.js'); await s.shot('40 gal breeder', 2)`. Pictures land in shots/og2_<tank>_stop<n>.png.
 const wait = ms => new Promise(r => setTimeout(r, ms));
 export async function shot(tankName, stop, cam = {}) {
   const R = await import('/src/scene/recipes.ts'), A = await import('/src/scene/archetypes.ts'), T = await import('/src/data/tanks.ts'), N = await import('/src/ui/discovery/animals.ts');
@@ -10,7 +10,7 @@ export async function shot(tankName, stop, cam = {}) {
   store.cam(c => { c.az = cam.az ?? 18; c.el = cam.el ?? 10; c.zoom = cam.zoom ?? 0.95; });
   store.select(null);
   await wait(cam.wait ?? 4000); await viewer.buildNow?.(); await wait(1500);
-  const blob = await viewer.exportPNG(1), name = `og1_${tankName.replace(/\W+/g, '_')}_stop${stop}`;
+  const blob = await viewer.exportPNG(1), name = `og2_${tankName.replace(/\W+/g, '_')}_stop${stop}`;
   await fetch('/__shot?name=' + name, { method: 'POST', body: blob });
   return { name, animals: plan.roster.map(r => `${r.n} ${r.species}`).join(', '), level: S.water.level, lid: S.lid };
 }

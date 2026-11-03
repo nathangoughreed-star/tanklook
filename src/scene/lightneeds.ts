@@ -93,6 +93,7 @@ export const NEEDS: Record<string, PlantNeed | CoralNeed | LandNeed> = {
   // land plants (terrarium)
   pothos: { band: 'land' }, bromeliad: { band: 'land' }, tropfern: { band: 'land' },
   fittonia: { band: 'land' }, sphagnum: { band: 'land' }, creeper: { band: 'land' }, bamboo: { band: 'land' },
+  peacelily: { band: 'land' }, anthurium: { band: 'land' }, calathea: { band: 'land' }, palm: { band: 'land' }, philodendron: { band: 'land' },
   // succulents (lane CP): the PG tiers' high light, low care, no CO2 (they grow above water: the PAR is read at the plant)
   echeveria: P('high', 'none', 'none', { par: [50, 400], note: 'succulent' }),
   haworthia: P('high', 'none', 'none', { par: [30, 400], note: 'succulent' }), // shades a little: low end of the band

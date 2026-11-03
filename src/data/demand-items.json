@@ -812,6 +812,13 @@
    "unit": "each; budget ATC eBay/Amazon $15-20, Milwaukee MA887 digital $169.99",
    "url": "https://fishtanksdirect.com/milwaukee-ma887-digital-seawater-sg-refractometer-mil00887/"
   },
+  "hard:planter": {
+   "lo": 5,
+   "mode": 8,
+   "hi": 15,
+   "unit": "one hang-on rim planter cup / box; GreenAqua EUR 6.72, general aquarium plant-holder listings $5.69-$29.07 (judgement for the mode)",
+   "url": "https://greenaqua.hu/en/greenworks-hanging-plantholder.html"
+  },
   "hard:arch": {
    "lo": 4,
    "mode": 11,
@@ -1224,6 +1231,41 @@
    "hi": 9,
    "unit": "12 inch bare-root lucky bamboo stalk; 10-pack per-plant ($66.07 / 10)",
    "url": "https://www.homedepot.com/p/12-in-Lucky-Indoor-Bamboo-Live-Plants-Ships-Bare-Root-of-Curly-Stalks-Feng-Shui-Zen-Garden-Houseplants-10-Pack-LuckyIndoorBambooCurly12x10/328401720"
+  },
+  "plant:peacelily": {
+   "lo": 10.99,
+   "mode": 12.49,
+   "hi": 29.99,
+   "unit": "one 4 inch potted peace lily; $12.49 each in a 3-pack, $23.97-$29.99 single",
+   "url": "https://www.homedepot.com/p/national-PLANT-NETWORK-4-in-Spathiphyllum-Sweet-Chico-Peace-Lily-Plant-in-Grower-Container-3-Pack-HD2363/335608291"
+  },
+  "plant:anthurium": {
+   "lo": 15.72,
+   "mode": 24.99,
+   "hi": 39.99,
+   "unit": "one 4 inch potted red anthurium; $24.99 single, $15.72 each in a 3-pack",
+   "url": "https://www.homedepot.com/p/Red-Anthurium-Plant-in-4-in-Grower-Pot-4-ANTHURIUM-RED/317502140"
+  },
+  "plant:calathea": {
+   "lo": 12.99,
+   "mode": 15,
+   "hi": 27.26,
+   "unit": "one 4 inch potted Calathea orbifolia; $12.99-$27.26 across retailers",
+   "url": "https://reach.dog/shop/the-plant-farm/products/calathea-orbifolia-4-plant"
+  },
+  "plant:palm": {
+   "lo": 6.99,
+   "mode": 10.79,
+   "hi": 16.99,
+   "unit": "one 4 inch potted parlour palm; $10.79 each in a 4-pack, $16.99 single",
+   "url": "https://www.homedepot.com/p/Parlor-Palm-Chamaedorea-Elegans-Plant-in-4-in-Grower-Pot-4-PALM-PARLOR/317501662"
+  },
+  "plant:philodendron": {
+   "lo": 9.99,
+   "mode": 13.23,
+   "hi": 18,
+   "unit": "one 4 inch potted heartleaf philodendron; $13.23 each in a 3-pack, $9.99-$18 single",
+   "url": "https://www.homedepot.com/p/national-PLANT-NETWORK-4-in-Philodendron-Brasil-Plant-in-Grower-Container-3-Pack-HD2344/336079040"
   },
   "plant:pothos": {
    "lo": 7,

@@ -72,7 +72,7 @@ export function coverAdvice(S: TankSetup): string[] {
   if (!S.water.on) return [];
   const litres = volume(S.tank).litres, out: string[] = [];
   const plants = S.items.filter(i => i.kind === 'plant' || i.kind === 'artificial').length + (S.patches ?? []).filter(p => p.brush.startsWith('plant:')).length * PATCH_PLANTS;
-  const caves = S.items.filter(i => i.kind === 'cave' && i.variant !== 'dish' && i.variant !== 'stonedish').length;
+  const caves = S.items.filter(i => i.kind === 'cave' && i.variant !== 'dish' && i.variant !== 'stonedish' && i.variant !== 'planter').length;
   for (const id of new Set(S.fish.map(f => f.species))) {
     const need = CARE[id]?.cover, name = getSpecies(id)?.name;
     if (!need || !name) continue;

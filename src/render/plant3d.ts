@@ -597,8 +597,8 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
       // the path, every ~8 mm: heading (yaw in the ground plane) and elevation, walked from the crown
       const step = Math.max(4, Math.min(12, L1 / 120)), m = Math.max(4, Math.ceil(L1 / step)), pts: THREE.Vector3[] = [b.clone()];
       const fan = o.fan ?? (q() - 0.5) * 2 * Vn.fan, ramp = o.fan == null ? 120 : 1, ph = q() * 6.28, ph2 = q() * 6.28, wv = Vn.wander * (0.6 + 0.8 * q());
-      let yaw = o.yaw ?? q() * 6.28, el = climbs ? 1.45 : o.yaw != null ? 0.25 : 0.75 + q() * 0.5, lying = o.yaw != null && b.y <= -drop + 3, hung = false, off = o.yaw != null ? 1e9 : 0;
-      const reachOut = 30 + q() * 50; // (lifted: how far out it runs before it hangs over the edge)
+      let yaw = o.yaw ?? (Vn.out != null && drop > 2 ? Vn.out + (q() - 0.5) * 2 * Vn.fan : q() * 6.28), el = climbs ? 1.45 : o.yaw != null ? 0.25 : 0.75 + q() * 0.5, lying = o.yaw != null && b.y <= -drop + 3, hung = false, off = o.yaw != null ? 1e9 : 0;
+      const reachOut = Vn.out != null && drop > 2 ? 30 + q() * 25 : 30 + q() * 50; // (lifted: how far out it runs before it hangs over the edge; a rim vine runs out over the glass)
       // along the wood (lane T2, T3's anchors): its route first, then on from the end as a trailer, hanging down to the ground
       const way = o.route ?? null;
       if (way) { off = 1e9; const t = way[way.length - 1].clone().sub(way[Math.max(0, way.length - 2)]); yaw = Math.atan2(t.z, t.x); el = 0; }

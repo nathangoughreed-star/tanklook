@@ -1,0 +1,14 @@
+Moved numbers, lane OG2 (Overflowing Garden redone: rim planters and houseplants over a calm aquascape), 2026-11-03
+
+Archetype overgrown-garden: look 'jungle' -> 'nature'; plant-stop trio (hard / plant) 0.3,0.3 / 1,1.2 / 1.6,3 -> 1.6,0.4 / 2,0.9 / 2.2,1.4; water line 0.88 -> 0.96 of a full tank (0.88 left a 20 gal high roster at 90 % of the swimming room: Explore blocked it).
+New parts: cave variant 'planter' (Rim planter, plant layer, no hide / shelter / perch), plants peacelily, anthurium, calathea, palm, philodendron (land band, no light / CO2 need).
+Plant library: +5 plants; test/growth.test.ts OLD list excludes them. layerOf() now puts the planter in the plant layer.
+Prices (all from retailer listings, 4 in pots; low / mode / high USD):
+  plant:peacelily    10.99 / 12.49 / 29.99   (Home Depot 3-pack $37.48; singles $23.97-$29.99)
+  plant:anthurium    15.72 / 24.99 / 39.99   (Home Depot single $24.99; 3-pack $15.72 each)
+  plant:calathea     12.99 / 15 / 27.26      (orbifolia, 4 retailers)
+  plant:palm          6.99 / 10.79 / 16.99   (parlour palm, Home Depot 4-pack $10.79 each, single $16.99)
+  plant:philodendron  9.99 / 13.23 / 18      (heartleaf / Brasil, Home Depot 3-pack $13.23 each)
+  hard:planter        5 / 8 / 15             (hang-on rim planter; GreenAqua EUR 6.72, general plant-holder listings $5.69-$29.07: the mode is a judgement)
+Camera framing: viewer headroom now counts houseplants standing on rim planters (rimHeadroom), so an open-top garden is framed whole.
+Unchanged: every other archetype's scene, roster and welfare; the buildable-archetype and rows counts of test/rosters.test.ts (OG1's 45 / 133).
