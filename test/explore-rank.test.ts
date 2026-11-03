@@ -1,6 +1,5 @@
 // Explore, stage X2 (lane OX4): the preference profile and Stage B ranking (reconcile 8.4 criteria 7, 8, 9; spec sections 5, 7). Pure: no WebGL, no pictures.
 // The batches are assembled from a controlled pool of entries (one planted freshwater look per family, reefs, terrariums, paludariums), so the policy is tested on counts, never on pixels.
-import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { aspectScore, aspectsOf, clearAspects, eventOf, featuresOf, interpretationOf, labelOf, parseAspects, react, recordAspect, tagOf, tell, tellAspect, TAGS, TAG_IDS, undoAspect, undoAspectsOf, undoLast,
   weightsOf, type AspectSubject, type Aspects, type AspectTag, type Reaction } from '../src/explore/aspects';
@@ -10,6 +9,10 @@ import { gateCandidate } from '../src/explore/gate';
 import { ASPECT_CAP, ASPECT_EVENTS, BATCH_SIZE, BATCH_SIZE_SOFTWARE_GL, EXPLORE_SHARE, TOLD_WEIGHT, WORLD_FLOOR } from '../src/explore/constants';
 import { BRIEF_VERSION, ITEM_IDS, ROUTES, briefToWants, emptyBrief, parseBrief, serializeBrief, setItem, setRange, type Brief } from '../src/scene/brief';
 import { applyChange, routeOf, setConstraint, setRoute } from '../src/scene/project';
+
+// @ts-expect-error node only (no node types in this project)
+const fs = await import('node:fs');
+const readFileSync = (f: string, enc: 'utf8') => fs.readFileSync(new URL(`../${f}`, import.meta.url), enc);
 
 // ---------------------------------------------------------------------------------------------------------------- a controlled pool
 let n = 0;
@@ -223,7 +226,7 @@ describe('preferences decide priority, constraints decide eligibility (criterion
   });
   it('a constraint change leaves preferences.aspects byte-identical', () => {
     const b = withAspects(), before = JSON.stringify(b.items['preferences.aspects']);
-    for (const next of [setConstraint(b, 'startup', 150), setRange(b, 'constraints.budget', { max: 120 }), setItem(b, 'constraints.careMin', 30, 'hard'), applyChange(b, { constraints: [{ id: 'startup', value: 80 }, { id: 'monthly', skip: true }] }).state, setConstraint(setConstraint(b, 'startup', 90), 'startup', 500)]) {
+    for (const next of [setConstraint(b, 'startup', 150), setRange(b, 'constraints.budget', { max: 120 }), setItem(b, 'constraints.careMin', 30, 'hard'), applyChange(b, { constraints: [{ id: 'startup', value: 80 }, { id: 'ongoing', skip: true }] }).state, setConstraint(setConstraint(b, 'startup', 90), 'startup', 500)]) {
       expect(JSON.stringify(next.items['preferences.aspects'])).toBe(before);
     }
   });
