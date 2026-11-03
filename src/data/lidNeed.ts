@@ -39,6 +39,7 @@ const REQUIRED: Record<string, SpeciesLid> = {
   treefrog: req('tree frogs climb to the top and out through any opening'),
   firetoad: req('fire-bellied toads climb and escape through gaps'),
   firenewt: req('newts walk out of an open top'),
+  axolotl: req('axolotls can leap or climb out when startled and are lost on a dry floor'),
 };
 for (const id of ['cpo', 'cajundwarf', 'rswcrayfish', 'redclaw', 'thaicrab']) {
   const n = (NEEDS[id] ?? []).find(x => x.text.startsWith('Lid'));
