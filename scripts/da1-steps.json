@@ -1,0 +1,105 @@
+[
+ [
+  "click",
+  "Start guided"
+ ],
+ [
+  "click",
+  "Aquarium"
+ ],
+ [
+  "click",
+  "Skip for now"
+ ],
+ [
+  "click",
+  "Skip for now"
+ ],
+ [
+  "click",
+  "Look First"
+ ],
+ [
+  "click",
+  "Freshwater"
+ ],
+ [
+  "click",
+  "Wild Habitats"
+ ],
+ [
+  "wait",
+  1500
+ ],
+ [
+  "pick",
+  "select[data-vd=tank]",
+  "60 gal breeder"
+ ],
+ [
+  "click",
+  "African Cichlid Rockscape",
+  3500
+ ],
+ [
+  "click",
+  "Next",
+  3000
+ ],
+ [
+  "eval",
+  "document.querySelector('.vd-ask').textContent"
+ ],
+ [
+  "eval",
+  "document.querySelector('.vd-ask').textContent + ' | ' + document.querySelector('.vd-tank')?.textContent"
+ ],
+ [
+  "eval",
+  "document.querySelector('[data-add=\"labeo\"]').click(), 1"
+ ],
+ [
+  "wait",
+  300
+ ],
+ [
+  "eval",
+  "document.querySelector('[data-add=\"yellowlab\"]').click(), 1"
+ ],
+ [
+  "wait",
+  3500
+ ],
+ [
+  "shot",
+  "1-mbuna-yellowlabs"
+ ],
+ [
+  "eval",
+  "document.querySelector('[data-add=\"peapuffer\"]')?.click() ?? 'no puffer button'"
+ ],
+ [
+  "wait",
+  3500
+ ],
+ [
+  "shot",
+  "2-plus-pea-puffer"
+ ],
+ [
+  "eval",
+  "(() => { for (let i = 0; i < 22; i++) { document.querySelector('[data-da=inc][data-id=labeo]').click(); } for (let i = 0; i < 22; i++) { document.querySelector('[data-da=inc][data-id=yellowlab]').click(); } return document.querySelector('.da-live').innerText.slice(0, 600); })()"
+ ],
+ [
+  "wait",
+  3500
+ ],
+ [
+  "shot",
+  "3-overstocked"
+ ],
+ [
+  "eval",
+  "document.querySelector('.da-live').innerText.slice(0, 1500)"
+ ]
+]

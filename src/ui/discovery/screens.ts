@@ -14,9 +14,13 @@ import { getTankModel, type TankModel } from '../../data/tanks';
 import type { Store } from '../../scene/store';
 import type { TankSetup } from '../../scene/types';
 import { STOP_OF, recipeDensAt } from '../../scene/recipes';
-import { Previews, rosterOf, sceneWithAnimals, tankChoice, tankOptions, type TankChoice } from './tiles';
+import { Previews, TILE_VIEW, rosterOf, sceneWithAnimals, tankChoice, tankOptions, type TankChoice } from './tiles';
 import { addAnimal, dropAnimal, stockingSuggestion, suitableAnimals } from './animals';
-import { fitIn, type AnimalCount } from '../../scene/tankfit';
+import { type AnimalCount } from '../../scene/tankfit';
+import { applyFixToChosen, deltaOf, meterOf, moneyOf, rosterKeyOf, rosterLive, speciesLive, stepCount, usdWord, type Delta } from './animalsLive';
+import { consequence } from '../briefFeasibility';
+import { loadProfile } from '../demandPanel';
+import { gaugeStyle } from '../gauge';
 import type { SpaceLimit } from '../../scene/types';
 import {
   ANY_WORLD, CARD_COLOUR, DENSITIES, DENSITY_CARD, STEP_ASK, WORLD_REASK, addLike, alternativeOf, animalsFirstSteps, archetypeChoices, depsLine, envChoices, familyChoices,
@@ -218,20 +222,86 @@ export function mountDiscovery(store: Store, host: DiscoveryHost, root: HTMLElem
   const suitOf = (a: Archetype, tankModel: TankChoice['model']) => { const k = keyOf(a, tankModel.id, chosen); if (!suitMemo.has(k)) suitMemo.set(k, suitableAnimals(a, tankModel, chosen)); return suitMemo.get(k)!; };
   const setOf = (a: Archetype, tankModel: TankChoice['model']) => { const k = keyOf(a, tankModel.id, []); if (!setMemo.has(k)) setMemo.set(k, stockingSuggestion(a, tankModel)); return setMemo.get(k)!; };
   const nameOf = (c: AnimalCount) => `${c.n} ${getSpecies(c.species)?.name ?? c.species}`;   // "6 Cardinal tetra": no plural to get wrong
+  // ---- lane DA1 (2026-11-03): what the roster does to the tank, live. Counts, the stocking meter, cost and welfare are read straight away (./animalsLive.ts, pure); the picture and the
+  // project total wait ~700 ms after the last change, one at a time, cached by (look, tank, roster, density stop), and never touch the project's scene (the host `shot` draws a copy). ----
+  const us = () => store.scene.units === 'in';
+  let lastChange: { what: string; delta: Delta } | undefined, undoFix: { chosen: AnimalCount[]; tank?: string; label: string } | undefined;
+  const shots = new Map<string, string>(), projects = new Map<string, { text: string; over: boolean } | undefined>(), liveScenes = new Map<string, TankSetup | undefined>();
+  let shownUrl: string | undefined, shownFor = '', shotTimer: ReturnType<typeof setTimeout> | undefined, pending = false, shotOk = true, firstShot = true, liveCtx: { a: Archetype; tc: TankChoice; p: Picks } | undefined;
+  const stopOf = (p: Picks) => p.densityStop ?? (p.density ? STOP_OF[p.density] : 2);
+  const liveKey = (a: Archetype, tc: TankChoice, p: Picks) => `${a.id}|${tc.model.id}|${rosterKeyOf(chosen)}|${stopOf(p)}`;
+  const rosterLimits = () => { const b = getBrief(); return { maxUsd: valueOf(b, 'constraints.budget'), minUsd: minOf(b, 'constraints.budget') }; };
+  const canChangeTank = (tc: TankChoice) => tc.source === 'suggested' || tc.source === 'picked';
+  const rosterNow = (tc: TankChoice) => rosterLive(chosen, tc.model, { limits: rosterLimits(), us: us(), canChangeTank: canChangeTank(tc) });
+  /** A change to the roster: remembers what it did to the money (the "last change" line) and redraws. */
+  const commit = (next: AnimalCount[], what: string, keepUndo = false) => {
+    const tc = tankOf(picks()), before = tc ? moneyOf(chosen, tc.model) : undefined;
+    setChosen(next); if (!keepUndo) undoFix = undefined;
+    lastChange = tc ? { what, delta: deltaOf(before, moneyOf(chosen, tc.model)) } : undefined;
+    draw();
+  };
+  const picHtml = (): string => !host.shot ? '' : `<div class="da-pic${pending && shownUrl ? ' da-stale' : ''}">${shownUrl ? `<img class="da-img" src="${shownUrl}" alt="Your tank with the animals you added">` : `<span class="da-ph">${shotOk ? 'Drawing your tank…' : 'The picture cannot be drawn on this device: the meter shows how full the tank is.'}</span>`}<span class="da-picnote">${pending && shownUrl ? 'Updating the picture…' : ''}</span></div>`;
+  const deltaWord = (d: Delta) => `${usdWord(d.setupUsd, true)} set-up, ${usdWord(d.monthlyUsd, true)} a month${d.minPerWeek ? `, ${d.minPerWeek > 0 ? '+' : '-'}${Math.abs(d.minPerWeek)} min a week` : ''}`;
+  /** The live side panel: the picture, the stocking meter, the money and the roster-level welfare lines. */
+  const liveInner = (a: Archetype, tc: TankChoice, p: Picks): string => {
+    const m = meterOf(chosen, tc.model), money = moneyOf(chosen, tc.model), proj = projects.get(liveKey(a, tc, p)), rl = rosterNow(tc);
+    const meter = `<div class="da-meter da-${m.band}"><div class="da-mrow"><b>How full the tank is</b><span class="da-pct">${chosen.length ? Math.round(m.pct) + ' %' : ''}</span></div><span class="gauge da-gauge" style="${gaugeStyle(m.pct)}" role="img" aria-label="Stocking: ${Math.round(m.pct)} percent of what the tank holds"><i></i></span><span class="da-word">${esc(m.word)}</span></div>`;
+    const cost = money ? `<div class="da-cost"><div class="da-row"><span class="da-k">Set-up</span><b>${usdWord(money.setupUsd)}</b><span class="da-sub">${usdWord(money.minSetupUsd)} at the cheapest that keeps them well</span></div>
+<div class="da-row"><span class="da-k">Monthly</span><b>${usdWord(money.monthlyUsd)}</b></div>
+<div class="da-row"><span class="da-k">Care</span><b>${money.minPerWeek} min a week</b></div>
+<div class="da-row da-add"><span class="da-k">The animals add</span><span>${usdWord(money.addSetupUsd, true)} set-up, ${usdWord(money.addMonthlyUsd, true)} a month${money.addMinPerWeek ? `, +${money.addMinPerWeek} min a week` : ''}</span></div>
+${lastChange ? `<div class="da-row da-last"><span class="da-k">Last change</span><span>${esc(lastChange.what)}: ${esc(deltaWord(lastChange.delta))}</span></div>` : ''}
+<div class="da-row da-proj${proj?.over ? ' da-over' : ''}"><span class="da-k">Your project</span><span>${proj ? esc(proj.text) : pending ? 'Working it out…' : '—'}</span></div></div>` : '<p class="da-empty">Add an animal to see what it costs and how much room it takes.</p>';
+    const temp = rl.temp ? `<p class="da-temp da-${rl.temp.tone}">Water temperature: ${esc(rl.temp.text)}</p>` : '';
+    const warns = rl.lines.length ? `<ul class="da-warns">${rl.lines.map((w, i) => `<li class="${w.welfare ? 'da-red' : 'da-amber'}"><span>${esc(w.text)}${w.welfare ? ' <em>Not a valid tradeoff.</em>' : ''}</span>${w.fix ? `<button type="button" data-da="fix" data-i="${i}">${esc(w.fix.label)}</button>` : ''}</li>`).join('')}</ul>` : chosen.length ? '<p class="da-fine">No welfare problems so far.</p>' : '';
+    return `${picHtml()}${meter}${cost}${temp}${warns}${undoFix ? `<button type="button" class="linkbtn" data-da="undo">Undo: ${esc(undoFix.label)}</button>` : ''}`;
+  };
+  const paintLive = () => { const el = tiles.querySelector('.da-live'); if (el && liveCtx) el.innerHTML = liveInner(liveCtx.a, liveCtx.tc, liveCtx.p); };
+  /** Show the cached picture / project total for this roster, or queue them behind the debounce (the first draw of the step is nearly immediate). One timer, so one render at a time. */
+  function settleLive(a: Archetype, tc: TankChoice, p: Picks) {
+    clearTimeout(shotTimer); liveCtx = { a, tc, p };
+    const key = liveKey(a, tc, p), look = `${a.id}|${tc.model.id}`, stop = stopOf(p);
+    if (look !== shownFor) { shownUrl = undefined; shownFor = look; }
+    if (projects.has(key) && (shots.has(key) || !host.shot)) { shownUrl = shots.get(key) || shownUrl; pending = false; return; }
+    pending = true;
+    shotTimer = setTimeout(() => {
+      if (!live || at !== 'animals') return;
+      let T = liveScenes.get(key);
+      if (!liveScenes.has(key)) { T = sceneWithAnimals(previews, a, tc.model, chosen, stop); if (liveScenes.size >= 12) liveScenes.delete(liveScenes.keys().next().value!); liveScenes.set(key, T); }
+      let url = shots.get(key);
+      if (url === undefined && host.shot && T) { try { url = host.shot({ ...T, camera: { ...T.camera, ...TILE_VIEW } }); } catch { url = ''; } if (shots.size >= 24) shots.delete(shots.keys().next().value!); shots.set(key, url); }
+      let proj: { text: string; over: boolean } | undefined;
+      if (T) { try { const c = consequence(T, getBrief(), loadProfile(), store.scene.units); proj = { text: `${c.totals}.${c.line ? ' ' + c.line : ''}`, over: c.over }; } catch { proj = undefined; } }
+      projects.set(key, proj);
+      pending = false; shotOk = url !== ''; if (url) shownUrl = url;
+      paintLive();
+    }, firstShot ? 80 : 700);
+    firstShot = false;
+  }
+  /** One added animal: its count stepper, Remove, and what it needs in this tank. */
+  const addedCard = (c: AnimalCount, sl: ReturnType<typeof speciesLive>[number]) => {
+    const worst = sl.lines.some(l => l.tone === 'bad') ? ' da-bad' : sl.belowGroup || sl.lines.some(l => l.tone === 'warn') ? ' da-warn' : '';
+    return `<div class="da-card${worst}"><div class="da-head"><b>${esc(sl.name)}</b><span class="da-step"><button type="button" data-da="dec" data-id="${esc(c.species)}" aria-label="One fewer ${esc(sl.name)}"${sl.canStepDown ? '' : ' disabled'}>−</button><b class="da-n" aria-live="polite">${c.n}</b><button type="button" data-da="inc" data-id="${esc(c.species)}" aria-label="One more ${esc(sl.name)}">+</button></span><button type="button" data-drop="${esc(c.species)}">Remove</button></div>
+<ul class="da-lines">${sl.lines.map(l => `<li class="da-${l.tone}">${esc(l.text)}</li>`).join('')}</ul></div>`;
+  };
   const animalsHtml = (p: Picks, tc: TankChoice | undefined): string => {
     const a = p.archetypeId ? archetype(p.archetypeId) : undefined, hand = handAnimals();
     if (!a || !tc) return '<p class="hint">Pick a look first.</p>';
     if (hand) return `<p class="vd-added">The animals you chose come with you: ${esc(hand.map(nameOf).join(', '))}. Change them any time in the editor.</p>`;
-    const res = suitOf(a, tc.model), card = (id: string, name: string, line: string, on: boolean) =>
-      `<div class="vd-acard${on ? ' on' : ''}"><span class="vd-atxt"><b>${esc(name)}</b><span class="vd-aline">${esc(line)}</span></span><button type="button" ${on ? `data-drop="${esc(id)}">Remove` : `data-add="${esc(id)}">Add`}</button></div>`;
-    const added = chosen.map(c => card(c.species, nameOf(c), 'Added', true)).join(''), set = chosen.length ? [] : setOf(a, tc.model);
-    return (added ? `<div class="vd-alist">${added}</div>` : '')
-      + (set.length ? `<div class="vd-set"><span><b>A ready stocking suggestion:</b> ${esc(set.map(nameOf).join(', '))}</span><button type="button" data-vd="addset">Add this set</button></div>` : '')
-      + (res.list.length ? `<div class="vd-alist">${res.list.map(s => card(s.sp.id, s.sp.name, (s.ofLook ? 'Suits this look. ' : '') + s.line, false)).join('')}</div>` : res.note ? `<p class="hint">${esc(res.note)}</p>` : chosen.length ? '<p class="hint">Nothing else suits with these.</p>' : '<p class="hint">Nothing in our list suits this look in this enclosure yet.</p>')
+    const res = suitOf(a, tc.model), card = (id: string, name: string, line: string) =>
+      `<div class="vd-acard"><span class="vd-atxt"><b>${esc(name)}</b><span class="vd-aline">${esc(line)}</span></span><button type="button" data-add="${esc(id)}">Add</button></div>`;
+    const sl = speciesLive(chosen, tc.model, us()), set = chosen.length ? [] : setOf(a, tc.model);
+    settleLive(a, tc, p);
+    const list = chosen.length ? `<div class="da-list">${chosen.map((c, i) => addedCard(c, sl[i])).join('')}</div>` : '';
+    const more = (res.list.length ? `<div class="vd-alist">${res.list.map(s => card(s.sp.id, s.sp.name, (s.ofLook ? 'Suits this look. ' : '') + s.line)).join('')}</div>` : res.note ? `<p class="hint">${esc(res.note)}</p>` : chosen.length ? '<p class="hint">Nothing else suits with these.</p>' : '<p class="hint">Nothing in our list suits this look in this enclosure yet.</p>')
       + (res.tooBig ? `<p class="hint">${res.tooBig} more suit the look but need a bigger enclosure than this one.</p>` : '');
+    return `<div class="da-wrap"><div class="da-main">${list}
+${set.length ? `<div class="vd-set"><span><b>A ready stocking suggestion:</b> ${esc(set.map(nameOf).join(', '))}</span><button type="button" data-vd="addset">Add this set</button></div>` : ''}
+${chosen.length ? '<p class="da-sec">Tankmates that suit what you have, best first</p>' : ''}${more}</div><aside class="da-live" aria-label="What your animals do to the tank, live">${liveInner(a, tc, p)}</aside></div>`;
   };
 
   function draw() {
+    clearTimeout(shotTimer);
     const p = picks();
     const lp = landing(route, ownsWorld, at, p, known); if (lp !== 'done') at = lp;   // a step whose earlier steps are unanswered (Density with no look) is never shown
     drawCrumbs(p);
@@ -332,8 +402,26 @@ export function mountDiscovery(store: Store, host: DiscoveryHost, root: HTMLElem
   root.addEventListener('load', e => { const t = e.target; if (t instanceof HTMLImageElement && t.classList.contains('vd-img')) t.classList.add('ok'); }, true);
   tankLine.addEventListener('change', e => {
     const t = e.target as HTMLSelectElement;
-    if (t.dataset.vd === 'tank') { tankPick = t.value; opts.onTankPick?.(t.value); const m = getTankModel(t.value); if (chosen.length && !(m && !fitIn(chosen, m)?.fails.length)) setChosen([]); draw(); }   // animals that no longer fit the changed tank are dropped
+    if (t.dataset.vd === 'tank') { tankPick = t.value; opts.onTankPick?.(t.value); undoFix = undefined; lastChange = undefined; draw(); }   // the animals stay (nothing is removed for the person): the live panel flags what the new tank does not suit
   });
+  /** The live panel's buttons: a count step, a welfare fix (applied only because the person pressed it, with Undo), Undo. */
+  function live_(t: HTMLElement) {
+    const tc = tankOf(picks()), id = t.dataset.id ?? '';
+    if (!tc) return;
+    if (t.dataset.da === 'inc' || t.dataset.da === 'dec') {
+      const c = chosen.find(x => x.species === id), nx = c && stepCount(c, t.dataset.da === 'inc' ? 1 : -1);
+      if (c && nx && nx !== c) commit(chosen.map(x => x === c ? nx : x), `${t.dataset.da === 'inc' ? 'One more' : 'One fewer'} ${getSpecies(id)?.name ?? id}`);
+    } else if (t.dataset.da === 'fix') {
+      const f = rosterNow(tc).lines[+(t.dataset.i ?? -1)]?.fix; if (!f) return;
+      const before = { chosen: [...chosen], ...(tankPick ? { tank: tankPick } : {}), label: f.label.split(':')[0] };
+      if (f.op.op === 'tank') { undoFix = before; tankPick = f.op.tank; opts.onTankPick?.(f.op.tank); lastChange = undefined; draw(); }
+      else { commit(applyFixToChosen(chosen, f.op), f.label.split(':')[0], true); undoFix = before; draw(); }
+    } else if (t.dataset.da === 'undo' && undoFix) {
+      const u = undoFix; undoFix = undefined; lastChange = undefined;
+      if (u.tank !== tankPick) { tankPick = u.tank; if (u.tank) opts.onTankPick?.(u.tank); }
+      setChosen(u.chosen); draw();
+    }
+  }
   const moveTo = (n: number, commit: boolean) => {
     stopNow = Math.max(0, Math.min(4, Math.round(n))); const rg = tiles.querySelector<HTMLInputElement>('.vd-range'); if (rg) rg.value = String(stopNow);
     // the stop on show draws first when it is not ready yet
@@ -344,12 +432,13 @@ export function mountDiscovery(store: Store, host: DiscoveryHost, root: HTMLElem
   tiles.addEventListener('change', e => { const t = e.target as HTMLInputElement; if (t.classList.contains('vd-range')) moveTo(Number(t.value), true); });
   root.addEventListener('click', e => {
     const end = (e.target as HTMLElement).closest<HTMLElement>('[data-stop]'); if (end) { moveTo(Number(end.dataset.stop), true); return; }
-    const t = (e.target as HTMLElement).closest<HTMLElement>('[data-pick],[data-vd],[data-add],[data-drop]'); if (!t) return;
+    const t = (e.target as HTMLElement).closest<HTMLElement>('[data-pick],[data-vd],[data-add],[data-drop],[data-da]'); if (!t) return;
     if (t.dataset.pick) { choose(t.dataset.pick); return; }
+    if (t.dataset.da) { live_(t); return; }
     if (t.dataset.add || t.dataset.drop) {
       const a = picks().archetypeId ? archetype(picks().archetypeId!) : undefined, tc = tankOf(picks()), s = a && tc && suitOf(a, tc.model).list.find(x => x.sp.id === t.dataset.add);
-      if (t.dataset.drop) setChosen(dropAnimal(chosen, t.dataset.drop)); else if (s) setChosen(addAnimal(chosen, s.add));
-      draw(); return;
+      if (t.dataset.drop) commit(dropAnimal(chosen, t.dataset.drop), `Removed ${getSpecies(t.dataset.drop)?.name ?? t.dataset.drop}`); else if (s) commit(addAnimal(chosen, s.add), `Added ${nameOf(s.add)}`);
+      return;
     }
     const p = picks();
     switch (t.dataset.vd) {
@@ -362,12 +451,12 @@ export function mountDiscovery(store: Store, host: DiscoveryHost, root: HTMLElem
       case 'skipanimals': setChosen([]); finish(); break;
       case 'alt': { const a = soonId ? archetype(soonId) : undefined, alt = a && alternativeOf(a); if (alt) { save(pickAlternative(p, alt)); go('density'); } break; }
       case 'explore': soonId = undefined; draw(); break;
-      case 'addset': { const a = p.archetypeId ? archetype(p.archetypeId) : undefined, tc = tankOf(p); if (a && tc) setChosen(setOf(a, tc.model).reduce(addAnimal, chosen)); draw(); break; }
+      case 'addset': { const a = p.archetypeId ? archetype(p.archetypeId) : undefined, tc = tankOf(p); if (a && tc) commit(setOf(a, tc.model).reduce(addAnimal, chosen), 'Added the ready set'); break; }
     }
   });
   /** Settle what the shell passed (the world, the animals, the tank), then show the first step still waiting (a roster usually starts at Family; a finished path shows Density). */
   function restart() {
-    live = true; soonId = undefined; known = knownNow();
+    live = true; soonId = undefined; known = knownNow(); lastChange = undefined; undoFix = undefined; firstShot = true;
     if (opts.world === 'open') worldOpen = true;   // the shell deferred the world: asked here unless it already was
     else if (opts.world) { const p0 = settle(picksOf(vision()), known).picks; if (p0.environment !== opts.world) save(setPick(p0, 'environment', opts.world, known)); }
     const p = picks(), s = firstIn(route, ownsWorld, p, known);
@@ -380,7 +469,7 @@ export function mountDiscovery(store: Store, host: DiscoveryHost, root: HTMLElem
     const first = firstIn(route, ownsWorld, p, known), ok = steps.includes(step) && (steps.indexOf(step) <= steps.indexOf(at) || first === 'done' || steps.indexOf(step) <= steps.indexOf(first as VStep));
     if (ok) go(step); return ok;
   }
-  return { destroy() { live = false; token++; root.replaceChildren(); }, restart, goTo, stop() { live = false; token++; } };
+  return { destroy() { live = false; token++; clearTimeout(shotTimer); root.replaceChildren(); }, restart, goTo, stop() { live = false; token++; clearTimeout(shotTimer); } };
 }
 
 /** The old Guided dialog: its own head, rail and links around the mountable discovery. Kept as a thin wrapper so main keeps working until the new
