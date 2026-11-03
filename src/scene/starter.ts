@@ -4,7 +4,7 @@
 import { IDEAL_MAX, floorPerAnimal, litresPerAnimal, stockingOf } from './stocking';
 import { rng } from '../art/paint';
 import { getSpecies, type Species } from '../data/species';
-import { DEFAULT_DENS, EPIPHYTES, STYLES, STYLE_KIND, clampItem, isLandStyle, isSwampy, layerOf, perch, starterItems, type Layer } from './items';
+import { DEFAULT_DENS, EPIPHYTES, STYLES, STYLE_KIND, clampItem, isLandStyle, isSwampy, layerOf, perch, seatHook, starterItems, type Layer } from './items';
 import { CARE } from '../data/care';
 import { fightsOverCount, mostFor, mostMalesFor } from '../data/groups';
 import { volume } from './physics';
@@ -238,8 +238,10 @@ export function shuffleHard(s: TankSetup, seed: number) {
   s.items = [...hard, ...plants];
   const r = rng(seed * 31 + 7);
   for (const it of plants) {
+    if (it.kind === 'coral') continue; // seated below, on whatever rock now stands under it
     const at = EPIPHYTES.has(it.variant) ? perch(s, it.x, it.depth, r, hard) : null;
     if (!at && it.lift <= 0) continue;
     Object.assign(it, at ?? { lift: 0 }); clampItem(it, s.tank, s);
   }
+  seatHook.corals?.(s); // the corals follow the new rock, or drop to the sand where theirs is gone (CF1)
 }

@@ -7,7 +7,7 @@
 // numbers: the scene is the look's starter set through scapes.ts `scapeSetup`, as Create a look draws it. Archetypes
 // without a mapped look stay coming-soon (no recipe).
 import { emptyBuild, buildsFor, type Build } from './builds';
-import { itemDims, layerOf, makeItem, STYLES } from './items';
+import { itemDims, layerOf, makeItem, seatHook, STYLES } from './items';
 import { GARDEN_SEED as SPROUT_SEED, isGardenPiece, isOpenTop } from './openTop';
 import { waterY } from './physics';
 import { groundHeight } from './terrain';
@@ -226,6 +226,8 @@ function clean(a: Archetype, d: Density, S: TankSetup): void {
   }
 }
 /** What every level and step gets after its starter set is drawn: the archetype's own cuts, then its background. */
+/** Every raised coral back on the rock under it (CF1): the size caps, the weight budget and the step drawing all resize the rock a coral was planned on. */
+const reseat = (S: TankSetup) => { seatHook.corals?.(S); return S; };
 function finish(a: Archetype, d: Density, S: TankSetup): TankSetup {
   const tw = TWEAKS[a.id] ?? {};
   if (tw.noPlants) S.items = S.items.filter(it => it.kind !== 'plant' && it.kind !== 'artificial');
@@ -419,6 +421,7 @@ function evenScale(a: Archetype, s: Record<Density, TankSetup>, mix = true): Rec
         S.items = S.items.filter(it => it !== big && !(isHard(it) && it.lift > 1 && Math.abs(it.x - big.x) < reach(big) && Math.abs(it.depth - big.depth) < reach(big)));
       }
     }
+    reseat(S);
     kinds.forEach((of, k) => { below[k] = Math.max(below[k], ...S.items.filter(it => isHard(it) && of(it)).map(reach), 0); });
   }
   return s;
@@ -496,7 +499,7 @@ function drawMid(base: RecipeBase, i: 1 | 3): TankSetup {
       const big = S.items.filter(it => isHard(it) && it.lift <= 1).sort((x, y) => reach(y) - reach(x))[0]; if (!big) break;
       S.items = S.items.filter(it => it !== big && !(isHard(it) && it.lift > 1 && Math.abs(it.x - big.x) < reach(big) && Math.abs(it.depth - big.depth) < reach(big)));
     }
-    return S;
+    return reseat(S);
   };
   // the first position whose total cover sits strictly between its neighbours'; else the one nearest to between them
   const off = (S: TankSetup) => Math.max(0, cl - coverOf(S), coverOf(S) - ch) + (coverOf(S) === cl || coverOf(S) === ch ? 1e-6 : 0);
@@ -512,7 +515,7 @@ function drawMid(base: RecipeBase, i: 1 | 3): TankSetup {
   const plants = S.items.filter(it => !isHard(it)).sort((x, y) => area(y) - area(x));
   while (coverOf(S) > target && plants.length) S.items = S.items.filter(it => it !== plants.shift());
   for (let k = 0; k < 8 && coverOf(S) > target; k++) for (const it of S.items) if (isHard(it)) { it.size *= 0.85; it.lift *= 0.85; }
-  return coverOf(S) > cl && coverOf(S) < ch ? S : best!;
+  return reseat(coverOf(S) > cl && coverOf(S) < ch ? S : best!);
 }
 /** The layer stops of any slider stop 0..4: the named levels' own, the steps between half way. */
 export function recipeDensAt(a: Archetype, stop: number): Stops {
