@@ -170,7 +170,7 @@ describe('Required and Available equipment (criterion 4)', () => {
     for (const c of other) { expect(c.tankSource).toBe('new'); expect(c.eval.tankCreditUsd).toBe(0); }
   });
   it('an Available tank that cannot hold a look is not a failure of that look (a better tank is offered); a Required one that cannot withholds it', () => {
-    const small = tank(10), a = pool({ constraints: {}, availTank: small }, ['mossy-wood-ferns'], 2), r = pool({ constraints: {}, ownTank: small }, ['mossy-wood-ferns']);
+    const small = tank(10), a = pool({ constraints: {}, availTank: small }, ['goldfish-palace'], 2), r = pool({ constraints: {}, ownTank: small }, ['goldfish-palace']);   // RC1: a 10 gal now holds a mossy-wood-ferns roster that passes welfare, so the look that cannot be held here is the goldfish palace
     expect(a.candidates.length).toBeGreaterThan(0);
     expect(r.eligible).toEqual([]);
     expect(r.withheld.length).toBeGreaterThan(0);

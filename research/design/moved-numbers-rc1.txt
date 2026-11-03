@@ -1,0 +1,98 @@
+Lane RC1 (2026-11-03): suggested rosters (stockingSuggestion) before and after. BEFORE = the old stockingSuggestion with the spike's welfare ladder (3 kinds, then fewer while the strict rule words a Problem or Caution);
+AFTER = rosterPlan (built through the generator gates, no cutting afterwards). 44 buildable archetypes x their spike tank sizes (130 pairs). Discovery tiles show the AFTER roster; their rosters moved, no price or tank figure of the engine did.
+Moved: 93 of 130 (archetype, tank) pairs; brackish stays withheld (Q3).
+
+archetype | gal | BEFORE (kinds) | AFTER (kinds) | why short
+iwagumi-stone-garden | 10 | 8 ember (1) | 8 ember + 6 pygmycory + 1 dwarfgourami (3) | 
+iwagumi-stone-garden | 29 | 8 ember (1) | 8 ember + 6 oto + 6 pandacory (3) | 
+iwagumi-stone-garden | 55 | 8 ember (1) | 8 ember + 6 oto + 3 sae (3) | 
+blackwater-creek | 20 | 8 cardinal + 6 pandacory (2) | 8 cardinal + 6 pandacory + 6 pygmycory (3) | 
+blackwater-creek | 40 | 8 cardinal + 6 pandacory + 6 hatchet (3) | 8 cardinal + 2 bolivianram + 6 hatchet (3) | 
+blackwater-creek | 90 | 8 cardinal + 6 pandacory + 6 hatchet (3) | 8 cardinal + 2 bolivianram + 6 hatchet (3) | 
+stone-wood-sculpture | 10 | 8 ember (1) | 8 ember + 1 betta + 6 pygmycory (3) | 
+stone-wood-sculpture | 29 | 8 cardinal (1) | 8 cardinal + 1 betta + 6 amano (3) | 
+stone-wood-sculpture | 55 | 8 cardinal (1) | 8 cardinal + 1 betta + 6 amano (3) | 
+silk-plant-natural | 5 | 1 honeygourami (1) | 1 betta + 1 nerite + 2 adf (3) | 
+silk-plant-natural | 29 | 8 neon + 1 honeygourami + 6 pandacory (3) | 8 neon + 1 betta + 6 oto (3) | 
+silk-plant-natural | 55 | 8 neon + 1 honeygourami + 6 pandacory (3) | 8 neon + 1 betta + 6 oto (3) | 
+big-fish-showcase | 300 | 1 oscar (1) | 1 oscar + 3 sae + 2 goldfish (3) | 
+planted-community | 20 | 8 neon + 1 honeygourami + 6 pandacory (3) | 8 neon + 1 betta + 6 pandacory (3) | 
+planted-community | 40 | 8 neon + 1 honeygourami + 6 pandacory (3) | 8 neon + 1 betta + 6 pandacory (3) | 
+planted-community | 90 | 8 neon + 1 honeygourami + 6 pandacory (3) | 8 neon + 1 betta + 6 pandacory (3) | 
+overgrown-jungle | 20 | 8 cardinal + 6 pandacory + 1 honeygourami (3) | 8 cardinal + 1 honeygourami + 5 kuhli (3) | 
+overgrown-jungle | 40 | 8 cardinal + 6 hatchet + 6 pandacory (3) | 1 angel + 1 honeygourami + 5 kuhli (3) | 
+overgrown-jungle | 90 | 8 cardinal + 6 hatchet + 6 pandacory (3) | 1 angel + 1 honeygourami + 5 kuhli (3) | 
+mossy-wood-ferns | 10 | 1 honeygourami + 8 exclamation (2) | 1 honeygourami + 1 nerite + 2 adf (3) | 
+mossy-wood-ferns | 29 | 8 cardinal + 1 honeygourami + 6 pandacory (3) | 8 cardinal + 1 nerite + 1 honeygourami (3) | 
+mossy-wood-ferns | 55 | 8 cardinal + 1 honeygourami + 6 pandacory (3) | 8 cardinal + 1 nerite + 1 honeygourami (3) | 
+driftwood-nature | 20 | 8 cardinal (1) | 8 cardinal + 1 nerite + 1 honeygourami (3) | 
+driftwood-nature | 40 | 8 cardinal (1) | 8 cardinal + 1 nerite + 1 honeygourami (3) | 
+driftwood-nature | 90 | 8 cardinal (1) | 8 cardinal + 1 nerite + 1 honeygourami (3) | 
+underwater-forest | 20 | 8 ember (1) | 8 ember + 6 oto + 6 pandacory (3) | 
+underwater-forest | 40 | 8 ember (1) | 8 ember + 6 oto + 6 pandacory (3) | 
+underwater-forest | 90 | 8 ember (1) | 8 ember + 6 oto + 6 pandacory (3) | 
+african-cichlid-rockscape | 55 | none (0) | 5 labeo (1) | Blue-nosed mbuna is the only kind here: Blue-nosed mbuna: Kept 1 male to 4 females: One male to several females; sexing juveniles is hard, so start with 8+ and rehome extra males. Your mix is short on females.
+african-cichlid-rockscape | 120 | none (0) | 5 labeo (1) | Blue-nosed mbuna is the only kind here: Blue-nosed mbuna: Kept 1 male to 4 females: One male to several females; sexing juveniles is hard, so start with 8+ and rehome extra males. Your mix is short on females.
+african-cichlid-rockscape | 240 | none (0) | 5 labeo (1) | Blue-nosed mbuna is the only kind here: Blue-nosed mbuna: Kept 1 male to 4 females: One male to several females; sexing juveniles is hard, so start with 8+ and rehome extra males. Your mix is short on females.
+rocky-river-stream | 30 | 8 danio + 3 hillstream + 6 oto (3) | 3 hillstream + 8 danio + 1 nerite (3) | 
+rocky-river-stream | 60 | 8 danio + 3 hillstream + 6 oto (3) | 3 hillstream + 8 danio + 1 nerite (3) | 
+rocky-river-stream | 120 | 8 danio + 3 hillstream + 6 oto (3) | 3 hillstream + 8 danio + 1 nerite (3) | 
+white-sand-stone | 10 | none (0) | 8 danio (1) | Zebra danio is the only kind here: 100% of the swimming room: nearly full.
+discus-showcase | 75 | 8 cardinal + 6 hatchet + 6 pandacory (3) | 4 discus + 1 gbr + 8 cardinal (3) | 
+discus-showcase | 150 | 8 cardinal + 6 hatchet + 6 pandacory (3) | 4 discus + 1 gbr + 8 cardinal (3) | 
+discus-showcase | 300 | 8 cardinal + 6 hatchet + 6 pandacory (3) | 4 discus + 1 gbr + 8 cardinal (3) | 
+goldfish-palace | 30 | 2 goldfish (1) | 2 goldfish + 4 bronzecory + 1 nerite (3) | 
+betta-retreat | 5 | 1 honeygourami (1) | 1 betta + 1 nerite + 2 adf (3) | 
+betta-retreat | 29 | 8 cardinal + 1 honeygourami + 6 pandacory (3) | 1 betta + 8 cardinal + 1 nerite (3) | 
+betta-retreat | 55 | 8 cardinal + 1 honeygourami + 6 pandacory (3) | 1 betta + 8 cardinal + 1 nerite (3) | 
+axolotl-den | 20 | 8 danio + 1 nerite + 6 pandacory (3) | 1 axolotl (1) | Axolotl is the only kind here: Zebra danio: it would eat this one (Axolotl).
+axolotl-den | 40 | 8 danio + 4 bronzecory + 1 nerite (3) | 1 axolotl (1) | Axolotl is the only kind here: Zebra danio: it would eat this one (Axolotl).
+axolotl-den | 90 | 8 danio + 4 bronzecory + 1 nerite (3) | 1 axolotl (1) | Axolotl is the only kind here: Zebra danio: it would eat this one (Axolotl).
+lps-coral-garden | 30 | 1 royalgramma + 1 firefish + 6 chromis (3) | 2 ocellaris + 1 royalgramma + 1 turbo (3) | 
+lps-coral-garden | 60 | 1 royalgramma + 1 firefish + 6 chromis (3) | 2 ocellaris + 6 chromis + 1 royalgramma (3) | 
+lps-coral-garden | 120 | 1 royalgramma + 1 firefish + 6 chromis (3) | 2 ocellaris + 6 chromis + 1 royalgramma (3) | 
+reef-arches | 40 | 1 royalgramma + 1 firefish + 6 chromis (3) | 2 ocellaris + 1 royalgramma + 6 chromis (3) | 
+reef-arches | 90 | 1 royalgramma + 1 firefish + 6 chromis (3) | 2 ocellaris + 1 royalgramma + 6 chromis (3) | 
+reef-arches | 180 | 1 royalgramma + 1 firefish + 6 chromis (3) | 2 ocellaris + 1 royalgramma + 6 chromis (3) | 
+blue-glow-reef | 30 | 1 royalgramma + 1 firefish + 6 chromis (3) | 2 ocellaris + 1 watchman + 1 turbo (3) | 
+blue-glow-reef | 60 | 1 royalgramma + 1 firefish + 6 chromis (3) | 2 ocellaris + 1 yellowtang + 6 chromis (3) | 
+blue-glow-reef | 120 | 1 royalgramma + 1 firefish + 6 chromis (3) | 2 ocellaris + 1 yellowtang + 6 chromis (3) | 
+soft-coral-garden | 20 | 2 banggai + 1 cleanershrimp + 2 ocellaris (3) | 2 ocellaris + 1 turbo + 2 banggai (3) | 
+soft-coral-garden | 40 | 1 royalgramma + 1 firefish + 6 chromis (3) | 2 ocellaris + 6 chromis + 1 turbo (3) | 
+soft-coral-garden | 90 | 1 royalgramma + 1 firefish + 6 chromis (3) | 2 ocellaris + 6 chromis + 1 turbo (3) | 
+sps-reef | 90 | 1 royalgramma + 1 firefish + 6 chromis (3) | 1 royalgramma + 1 yellowtang + 1 firefish (3) | 
+sps-reef | 180 | 1 royalgramma + 1 firefish + 6 chromis (3) | 1 royalgramma + 1 yellowtang + 1 firefish (3) | 
+mixed-reef | 40 | 1 royalgramma + 1 firefish + 6 chromis (3) | 2 ocellaris + 1 watchman + 1 turbo (3) | 
+mixed-reef | 90 | 1 royalgramma + 1 firefish + 6 chromis (3) | 2 ocellaris + 1 watchman + 6 chromis (3) | 
+mixed-reef | 180 | 1 royalgramma + 1 firefish + 6 chromis (3) | 2 ocellaris + 1 watchman + 6 chromis (3) | 
+clownfish-anemone | 40 | 1 royalgramma + 1 firefish + 1 turbo (3) | 2 ocellaris + 1 cleanershrimp + 6 chromis (3) | 
+clownfish-anemone | 90 | 1 royalgramma + 1 firefish + 1 turbo (3) | 2 ocellaris + 1 cleanershrimp + 6 chromis (3) | 
+reef-islands | 40 | 1 royalgramma + 1 firefish + 6 chromis (3) | 2 ocellaris + 6 chromis + 1 royalgramma (3) | 
+reef-islands | 90 | 1 royalgramma + 1 firefish + 6 chromis (3) | 2 ocellaris + 6 chromis + 1 royalgramma (3) | 
+reef-islands | 180 | 1 royalgramma + 1 firefish + 6 chromis (3) | 2 ocellaris + 6 chromis + 1 royalgramma (3) | 
+reef-rock-art | 30 | 1 royalgramma + 1 firefish + 6 chromis (3) | 2 ocellaris + 1 cleanershrimp + 1 firefish (3) | 
+reef-rock-art | 60 | 1 royalgramma + 1 firefish + 6 chromis (3) | 2 ocellaris + 1 cleanershrimp + 6 chromis (3) | 
+reef-rock-art | 120 | 1 royalgramma + 1 firefish + 6 chromis (3) | 2 ocellaris + 1 cleanershrimp + 6 chromis (3) | 
+reef-skyline | 40 | 1 royalgramma + 1 firefish + 6 chromis (3) | 2 ocellaris + 1 watchman + 1 turbo (3) | 
+reef-skyline | 90 | 1 royalgramma + 1 firefish + 6 chromis (3) | 2 ocellaris + 1 yellowtang + 1 watchman (3) | 
+reef-skyline | 180 | 1 royalgramma + 1 firefish + 6 chromis (3) | 2 ocellaris + 1 yellowtang + 1 watchman (3) | 
+dart-frog-rainforest | 25 | 1 chileanrose (1) | 1 dartfrog (1) | Dyeing dart frog is the only kind here: White's tree frog: would eat it (Dyeing dart frog).
+dart-frog-rainforest | 120 | 1 treefrog + 1 curlyhair (2) | 2 dartfrog (1) | Dyeing dart frog is the only kind here: White's tree frog: would eat it (Dyeing dart frog).
+rocky-desert-canyon | 25 | 1 chileanrose (1) | none (0) | Nothing of this look's world suits this tank: Leopard gecko would not fit alongside in this tank.
+rainforest-canopy | 90 | 4 brownanole (1) | 1 leopardgecko (1) | Leopard gecko is the only kind here: Ball python: would eat it (Leopard gecko).
+rainforest-canopy | 120 | 1 crestedgecko + 4 brownanole (2) | 1 crestedgecko + 4 brownanole + 1 crestedharlequin (3) | 
+tarantula-burrow | 11 | 1 chileanrose (1) | 1 redknee (1) | Mexican red knee tarantula is the only kind here.
+tarantula-burrow | 25 | 1 chileanrose (1) | 1 redknee (1) | Mexican red knee tarantula is the only kind here.
+tarantula-burrow | 51 | 1 chacogoldenknee + 4 brownanole (2) | 1 chacogoldenknee (1) | Chaco golden knee tarantula is the only kind here.
+rainforest-waterfall | 30 | 8 ember (1) | 2 dartfrog + 8 ember + 6 pygmycory (3) | 
+rainforest-waterfall | 60 | 8 ember (1) | 2 dartfrog + 8 ember + 6 pygmycory (3) | 
+rainforest-waterfall | 120 | 1 treefrog + 8 ember (2) | 2 dartfrog + 8 ember + 6 pygmycory (3) | 
+riverbank-shore | 40 | 8 ember (1) | 2 dartfrog + 1 ramshorn + 1 honeygourami (3) | 
+riverbank-shore | 90 | 1 treefrog + 2 firetoad + 8 ember (3) | 2 dartfrog + 1 ramshorn + 1 honeygourami (3) | 
+riverbank-shore | 180 | 1 treefrog + 8 ember (2) | 2 dartfrog + 1 ramshorn + 1 honeygourami (3) | 
+cypress-swamp | 30 | 2 firenewt + 2 dartfrog (2) | 2 dartfrog + 2 firenewt + 1 ramshorn (3) | 
+cypress-swamp | 60 | none (0) | 2 dartfrog + 2 firenewt + 8 neon (3) | 
+cypress-swamp | 120 | 1 treefrog + 2 firenewt + 2 firetoad (3) | 2 dartfrog + 2 firenewt + 8 danio (3) | 
+cascade-wall | 20 | 8 ember (1) | 1 dartfrog + 8 chili + 10 asellus (3) | 
+cascade-wall | 40 | 8 ember (1) | 2 dartfrog + 8 chili + 6 hatchet (3) | 
+cascade-wall | 90 | 1 treefrog + 2 firetoad + 8 ember (3) | 2 dartfrog + 8 chili + 6 hatchet (3) | 

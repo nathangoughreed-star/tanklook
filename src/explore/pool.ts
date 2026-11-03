@@ -13,7 +13,7 @@ import { evaluateCandidate, ownTankWhy, suggestSetups, type ConceptEval, type In
 import { explainInfeasible } from '../demand/infeasible';
 import type { UserProfile } from '../demand/types';
 import type { TankSetup, Units } from '../scene/types';
-import { stockingSuggestion } from '../ui/discovery/animals';
+import { rosterPlan } from '../ui/discovery/animals';
 import { estimateOf, type Estimate } from './estimate';
 import { gateCandidate, type GateId, type GateVerdict, type Reason } from './gate';
 import { SIZE_MULTIPLES } from './constants';
@@ -26,6 +26,8 @@ export interface Candidate {
   archetype: VdArchetype;
   tank: TankModel;
   roster: AnimalCount[];
+  /** how the roster was made (lane RC1): through the generator's own gates, one kind at a time under the strict welfare rule; `why` says why it holds fewer than 2 kinds */
+  rosterSource?: { source: 'generator-gates'; kinds: number; why?: string };
   /** the build the scene stands on (`buildsFor(roster, tank)[2]`, the balanced build Look First hands over) */
   build: Build;
   /** the recipe's Balanced scene with this roster: what Make This Mine installs. A copy is safe to mutate. */
@@ -102,8 +104,8 @@ export function explorePool(w: Wants, P: UserProfile, units: Units, now: number,
     if (!tanks.length) { turn(a, undefined, [{ gate: w.ownTank ? 'equipment' : 'size', severity: 'blocked', text: w.ownTank ? 'Your Required tank is too small for this look.' : 'No catalogue tank suits this look inside your size and space limits.' }]); continue; }
     for (const { tank, avail } of tanks) {
       tried++;
-      const roster = stockingSuggestion(a, tank);
-      if (!roster.length) { turn(a, tank, [{ gate: 'welfare', severity: 'blocked', text: 'No animals suit this look in this tank, and a complete setup needs animals.' }]); continue; }
+      const plan = rosterPlan(a, tank), roster = plan.roster;
+      if (!roster.length) { turn(a, tank, [{ gate: 'welfare', severity: 'blocked', text: `${plan.why ?? 'No animals suit this look in this tank'}${/[.!]$/.test(plan.why ?? '') ? ' ' : '. '}A complete setup needs animals.` }]); continue; }
       if (avail && ownTankWhy(roster, w, w.constraints.space?.on === false ? undefined : w.space)) continue;   // the Available tank is one more option, never a failure
       const key = candidateKey(a, tank, roster); if (seen.has(key)) continue; seen.add(key);
       const holds = !fitIn(roster, tank)?.fails.length, owned = !!w.ownTank || w.availTank?.id === tank.id, bare = balancedBuild(roster, tank, now, owned);
@@ -117,7 +119,7 @@ export function explorePool(w: Wants, P: UserProfile, units: Units, now: number,
       const made = sceneOf(a, tank, roster, now); if (!made) { turn(a, tank, [{ gate: 'welfare', severity: 'blocked', text: 'This look cannot be drawn in this tank.' }]); continue; }
       const mine = owned ? balancedBuild(roster, tank, now, true) : made.build, full = run(mine, made.scene);
       if (full.verdict.verdict === 'blocked') { turn(a, tank, full.verdict.reasons); continue; }
-      candidates.push({ key, identity: id, archetype: a, tank, roster, build: mine, scene: full.ev.scene, eval: full.ev, estimate: full.est, verdict: full.verdict, ...(full.ev.tankSource ? { tankSource: full.ev.tankSource } : {}), ...(full.ev.tankNote ? { tankNote: full.ev.tankNote } : {}) });
+      candidates.push({ key, identity: id, archetype: a, tank, roster, rosterSource: { source: plan.source, kinds: plan.kinds, ...(plan.why ? { why: plan.why } : {}) }, build: mine, scene: full.ev.scene, eval: full.ev, estimate: full.est, verdict: full.verdict, ...(full.ev.tankSource ? { tankSource: full.ev.tankSource } : {}), ...(full.ev.tankNote ? { tankNote: full.ev.tankNote } : {}) });
     }
   }
   const eligible = candidates.filter(c => c.verdict.verdict === 'eligible'), provisional = candidates.filter(c => c.verdict.verdict === 'provisional');
