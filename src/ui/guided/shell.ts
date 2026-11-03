@@ -7,6 +7,7 @@ import { clearItem, getItem, setItem, type Brief, type Route } from '../../scene
 import { applyChange, envOf, routeOf, worldOf } from '../../scene/project';
 import type { Store } from '../../scene/store';
 import type { AnimalCount } from '../../scene/tankfit';
+import { mountExplore } from '../explore/explore';
 import { mountDiscovery, type CrumbState, type DiscoveryHost, type Mounted } from '../discovery/screens';
 import type { VStep } from '../discovery/logic';
 import { editBrief, getBrief, lockedStock, setBrief } from '../setupBrief';
@@ -48,7 +49,7 @@ export const placeholderAnimals: AnimalsEntry = c => {
 /** What the Explore entry gets (lane OX mounts here): the branch step of "Open to anything", after Limits. `back()` returns to Limits, `pickWorld()` to World. */
 export interface ExploreEntryCtx { store: Store; host: DiscoveryHost; root: HTMLElement; back(): void; pickWorld(): void; close(): void }
 export type ExploreEntry = (c: ExploreEntryCtx) => { destroy(): void };
-/** Explore Complete Setups until lane OX: a stub screen. */
+/** The stub Explore screen (lane OX5 replaced it as the default with `mountExplore`, src/ui/explore/explore.ts; kept for hosts that pass their own entry). */
 export const placeholderExplore: ExploreEntry = c => {
   c.root.innerHTML = `<h3 class="vd-ask">Explore complete setups</h3>
 <p class="hint">Coming next: batches of complete, stocked setups to like, pass or save, and then make one yours.</p>
@@ -68,7 +69,7 @@ export function attachGuided(store: Store, host: DiscoveryHost, o: GuidedOpts = 
   dock.innerHTML = '<button type="button" class="primary" data-vd="resume">Next: pick the look for these animals</button><button type="button" class="linkbtn" data-vd="hide" aria-label="Hide">✕</button>';
   document.body.append(dock);
   const rail = dlg.querySelector<HTMLElement>('.gs-crumbs')!, body = dlg.querySelector<HTMLElement>('.gs-body')!;
-  const entry = o.animalsEntry ?? animalsFirst, explore = o.exploreEntry ?? placeholderExplore;
+  const entry = o.animalsEntry ?? animalsFirst, explore = o.exploreEntry ?? mountExplore;
 
   let parked: Brief | undefined;   // the project as it was when the side panel opened (that panel starts a new scene and brief until lane GS6 / GS5 change it)
   let mounted: Mounted | undefined, part: { destroy(): void } | undefined, at: OnboardStep = 'world', route: Route | undefined;
@@ -89,7 +90,7 @@ export function attachGuided(store: Store, host: DiscoveryHost, o: GuidedOpts = 
       case 'world': part = mountWorldStep(root, { host, next: advance, leave: () => dlg.close() }); break;
       case 'equipment': part = mountEquipmentStep(root, { store, status: host.status, next: advance, back }); break;
       case 'limits': part = mountLimitsStep(root, { next: advance, back }); break;
-      case 'start': part = exploresOf(getBrief()) ? explore({ store, host, root, back, pickWorld: () => showStep('world'), close: () => dlg.close() }) : mountStartStep(root, { pick: r => r === 'animals' ? showAnimals() : showRoute(r), back }); break;
+      case 'start': part = exploresOf(getBrief()) ? explore({ store, host, root, back, pickWorld: () => showStep('world'), close: () => dlg.close() }) : mountStartStep(root, { pick: r => r === 'animals' ? showAnimals() : r === 'look' ? showRoute('look') : showStep('start'), back }); break;
     }
     (root.querySelector('button') as HTMLElement | null)?.focus();
   }
@@ -102,8 +103,7 @@ export function attachGuided(store: Store, host: DiscoveryHost, o: GuidedOpts = 
     if (!m.size) for (const f of store.tank.fish) m.set(f.species, (m.get(f.species) ?? 0) + 1);
     return [...m].map(([species, n]) => ({ species, n }));
   };
-  function showRoute(r: Route) {
-    if (r === 'explore') { showStep('start'); return; }   // Explore has its own start step (exploresOf, stage X3), not a discovery route
+  function showRoute(r: Exclude<Route, 'explore'>) {
     clear(); route = r; at = 'start';
     if (r === 'animals' && !rosterNow().length) { showAnimals(); return; }
     mountRoute(r);
@@ -151,7 +151,7 @@ export function attachGuided(store: Store, host: DiscoveryHost, o: GuidedOpts = 
   function show(ask?: OnboardStep) {
     dock.hidden = true; if (!dlg.open) dlg.showModal();
     const p = placeOf(getBrief(), ask);
-    if ('at' in p) showStep(p.at); else showRoute(p.route);
+    if ('at' in p) showStep(p.at); else if (p.route === 'explore') showStep('start'); else showRoute(p.route);   // Explore is the start step of World = any, not a discovery route
   }
   return { show, close: () => dlg.close(), dialog: dlg, routeOf: () => routeOf(getBrief()) };
 }

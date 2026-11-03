@@ -130,7 +130,7 @@ export function explorePool(w: Wants, P: UserProfile, units: Units, now: number,
 }
 
 /** Nothing eligible: the limiting gate (the one that turned away the most looks, ties by order), what it says, and the controlled edits that could change it. Never a fabricated candidate. */
-function noResultOf(w: Wants, P: UserProfile, units: Units, now: number, withheld: Withheld[], provisional: Candidate[], explain: boolean): NoResult {
+export function noResultOf(w: Wants, P: UserProfile, units: Units, now: number, withheld: Withheld[], provisional: Candidate[], explain: boolean): NoResult {
   const tally = new Map<GateId, number>();
   for (const x of withheld) for (const g of new Set(x.reasons.filter(r => r.severity === 'blocked').map(r => r.gate))) tally.set(g, (tally.get(g) ?? 0) + 1);
   const order: GateId[] = ['equipment', 'budget', 'monthly', 'care', 'setup', 'space', 'size', 'lower', 'world', 'welfare'];
