@@ -165,7 +165,7 @@ const FW: Raw[] = [
     contrast: { sibling: 'discus-showcase', how: 'Bare and rugged for a heavy-bodied fish; the discus showcase is warm, soft and lightly planted.' },
     recipe: { looks: ['none'], notes: 'The bare tank; the fish (oscar, flowerhorn, arowana) is chosen and checked later.' },
     density: ['Bare floor, nothing else', 'Thin sand and one heavy rock', 'Sand, two large rocks and a root, all secured'],
-    deps: ['plain background', 'bare bottom'], tags: { chem: ['soft', 'hard'], temp: 'tropical', minGallons: 75 } },
+    deps: ['plain background', 'bare bottom'], tags: { chem: ['soft', 'hard'], temp: 'tropical', minGallons: 90 } },
   // milestone 2
   // Underwater Gardens
   { id: 'planted-community', support: 'supported', name: 'Planted Community', tagline: 'The classic: fish, plants, happy everybody. Plants want trimming.', env: 'aquarium', water: 'freshwater', familyId: 'fw-gardens',

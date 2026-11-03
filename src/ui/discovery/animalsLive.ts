@@ -108,7 +108,6 @@ export interface SpeciesLive {
   canStepDown: boolean;
   lines: Line[];
 }
-const BAND_TONE: Record<string, Tone> = { avoid: 'bad', ok: 'note', good: 'ok', great: 'ok' };
 
 /** A measure in the viewer's units; `d` decimals so a need and a have that round to the same whole number still read as two numbers (DA2). */
 const fmtIn = (us: boolean, d: number): Fmt => ({
@@ -141,7 +140,7 @@ export function speciesLive(chosen: readonly AnimalCount[], tank: TankModel, us 
   const picks = picksOfChosen(chosen), t = tankFromModel(tank), litres = volume(t).litres, u = us ? 'in' : 'cm';
   return chosen.map((c, i) => {
     const p = picks[i], sp = getSpecies(c.species), care = CARE[c.species], nt = notesOf(p, u), md = minDataOf(c.species), lines: Line[] = [], min = groupMin(c.species);
-    if (nt.line) lines.push({ text: nt.line, tone: BAND_TONE[nt.band] ?? 'note' });
+    if (nt.line) lines.push({ text: nt.line, tone: nt.tone });
     const over = overWarn(p, litres, t.L); if (over) lines.push({ text: over, tone: 'warn' });
     if (nt.ratio) lines.push({ text: nt.ratio, tone: /Your mix/.test(nt.ratio) ? 'warn' : 'note' });
     if (nt.pairing && nt.pairing.status !== 'established') lines.push({ text: nt.pairing.line, tone: 'note' });

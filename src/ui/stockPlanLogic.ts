@@ -3,7 +3,7 @@
 import { IDEAL_MAX } from '../scene/stocking';
 import { CARE, EXPERTISE_NAME } from '../data/care';
 import { rosterTiers, type CostTiers } from '../demand/tiers';
-import { bandMessage, bandOf, fightsOverCount, malesWarning, mostFor, mostMalesFor, PAIR_FORMERS, pairRule, type GroupBand } from '../data/groups';
+import { bandMessage, bandOf, groupTone, fightsOverCount, malesWarning, mostFor, mostMalesFor, PAIR_FORMERS, pairRule, type GroupBand, type GroupTone } from '../data/groups';
 import { needLine, needsOf, type NeedSeverity } from '../data/careNeeds';
 import { getSpecies, SPECIES, type Species } from '../data/species';
 import { TANK_MODELS, tankFromModel, type TankModel } from '../data/tanks';
@@ -118,7 +118,7 @@ export function overWarn(p: Pk, litres?: number, lengthMm?: number): string | un
 /** The band message for the total count, plus the sex-ratio line for sexed species. `needs`: the species' essential care conditions
  *  (data/careNeeds.ts), evaluated apart from the count, so they show whatever band the group lands in. `pairing`: for two of a pair
  *  species, the status and its line (two animals, even 1 male + 1 female, are never assumed to be a pair). */
-export interface PickNotes { band: GroupBand; line: string; ratio?: string; habitat: string[]; needs: { severity: NeedSeverity; text: string }[]; pairing?: { status: Pairing; line: string } }
+export interface PickNotes { band: GroupBand; /** how loudly the group line speaks (groupTone) */ tone: GroupTone; line: string; ratio?: string; habitat: string[]; needs: { severity: NeedSeverity; text: string }[]; pairing?: { status: Pairing; line: string } }
 export function notesOf(p: Pk, u: Units = 'cm'): PickNotes {
   const c = CARE[p.id], n = totalOf(p);
   // labelled as the GROUP-SIZE assessment (rules-spec section 6): it judges the count only, never the tank (groupLineIn adds that)
@@ -140,7 +140,8 @@ export function notesOf(p: Pk, u: Units = 'cm'): PickNotes {
       : p.n + f < 2 ? '' // one sexed animal is a single, not a mix: nothing to judge (a lone male pleco is fine)
       : p.n > 0 && f / p.n < rf / rm * 0.75 ? 'Your mix is short on females' : f > 1 && p.n === 0 ? 'Your mix has no males' : '';
     const unk = u > 0 ? `. ${u} unsexed: the mix can only be checked once they are sexed${u === n ? '' : ' (judged on the sexed ones meanwhile)'}` : '';
-    ratio = `Kept ${want}${r.note ? `: ${r.note}` : ''}${off && n - u > 0 ? `. ${off}` : ''}${unk}`;
+    // a ratio that is only about breeding is a tip: no verdict on the mix (DA3)
+    ratio = r.breedingOnly ? `Tip: ${r.note ?? 'a mix of the sexes'} (about ${want})` : `Kept ${want}${r.note ? `: ${r.note}` : ''}${off && n - u > 0 ? `. ${off}` : ''}${unk}`;
   }
   const habitat: string[] = [];
   const md = minDataOf(p.id), adv = md?.depth?.maxWaterDepthMm; // the limit (GroupCare maxDepthMm) first, a sourced advisory maximum beside it (ADF, Nathan 2026-10-22)
@@ -152,7 +153,7 @@ export function notesOf(p: Pk, u: Units = 'cm'): PickNotes {
   if (md?.red) habitat.push(`Tank at least ${lenTxt(md.red.L, u)} long${md.red.mark === 'derived (est)' ? ' (estimated from a gallon figure)' : ''}`);
   if (md?.green) habitat.push(`Recommended: ${lenTxt(md.green.L, u)} long (${md.green.site})`);
   const needs = needsOf(p.id).map(x => ({ severity: x.severity, text: needLine(x) }));
-  return { band, line, ...(ratio ? { ratio } : {}), habitat, needs, ...(pairing ? { pairing } : {}) };
+  return { band, tone: band === bandOf(c, n) ? groupTone(c, n) : 'note', line, ...(ratio ? { ratio } : {}), habitat, needs, ...(pairing ? { pairing } : {}) };
 }
 
 const PAIR_LINE: Record<Pairing, string> = {

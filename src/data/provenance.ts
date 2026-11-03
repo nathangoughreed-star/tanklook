@@ -58,7 +58,7 @@ const REEF_SRC = ['par-chart-nathan', 'reef-par-charts', 'brs-par'];
 const MASS = bm.species as Record<string, { src: string }>;
 /** research/groups-sources.md: one url per species for the group data (lane P1); `(est)` = judgement, not quoted from the page. */
 const GROUP_ROWS = [...groupsMd.matchAll(/^- \*\*(\w+)\*\*[^:]*: (https?:\S+?)(?: \((est)\))?\.?(?=\s|$)/gm)].map(m => ({ id: m[1], url: m[2], est: !!m[3] }));
-const GROUP_FIELDS = '{bands,max,sexed,maxDepthMm,minLengthMm,minWidthMm,minAreaCm2}.**';
+const GROUP_FIELDS = '{bands,max,sexed,harmBelow,maxDepthMm,minLengthMm,minWidthMm,minAreaCm2}.**';
 
 const TANKMIN = (tankminJson as { species: Record<string, Record<string, { mark?: string } | string>> }).species;
 export const RULES: Record<string, Rule[]> = {

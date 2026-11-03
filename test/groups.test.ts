@@ -53,7 +53,7 @@ describe('group data (lane P1, 2026-10-20)', () => {
     expect(recommendedMin(undefined, 6)).toBe(6);
     expect(recommendedMin(undefined)).toBe(1);
     expect(recommendedMin({ bands: { ok: 3, good: 5, great: 8 } }, 6)).toBe(3);
-    expect(bandMessage({ bands: { ok: 3, good: 5, great: 8 } }, 2)).toMatch(/at least 3/);
+    expect(bandMessage({ bands: { ok: 3, good: 5, great: 8 } }, 2)).toMatch(/at least 3|little under: 3 or more/);
     expect(bandMessage({ bands: { ok: 3, good: 5, great: 8 }, msg: { good: 'own line' } }, 6)).toBe('own line');
   });
   it('a max is a fighting limit only, never room (lane CW, Nathan 2026-10-22)', () => {
