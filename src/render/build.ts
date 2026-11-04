@@ -400,6 +400,31 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
 }
 
 /**
+ * The rippled shimmer on the underside of the water: seen from below at a low angle the surface turns into a mirror
+ * (total internal reflection) and bright ripple lines run along it. Bright lines where a few crossing waves cancel, as
+ * sharp as the angle is low, weaker from above. Still (the viewer draws on change, not every frame), so it is free.
+ */
+function surfaceShimmer(m: THREE.MeshBasicMaterial) {
+  m.onBeforeCompile = sh => {
+    sh.vertexShader = 'varying vec3 vSurfW;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n  vSurfW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+    sh.fragmentShader = 'varying vec3 vSurfW;\n' + sh.fragmentShader.replace('#include <opaque_fragment>', `#include <opaque_fragment>
+  {
+    vec2 p = vSurfW.xz * vec2(0.3, 1.3); // mm; squeezed along the tank, so the lines stretch along it
+    float h = sin(p.x * 0.022 + p.y * 0.060 + 1.4 * sin(p.y * 0.031))
+            + sin(p.x * 0.035 - p.y * 0.083 + 2.0)
+            + sin(p.x * 0.057 + p.y * 0.121 + 0.7 * sin(p.x * 0.019))
+            + sin(p.x * 0.011 + p.y * 0.157 + 4.1);
+    float line = pow(clamp(1.0 - abs(h) * 0.6, 0.0, 1.0), 7.0);
+    vec3 v = normalize(cameraPosition - vSurfW);
+    float low = 1.0 - abs(v.y), f = low * low * low, below = v.y < 0.0 ? 1.0 : 0.3;
+    float s = clamp((line * (0.35 + 0.9 * f) + f * 0.2) * below, 0.0, 1.0);
+    gl_FragColor = vec4(mix(gl_FragColor.rgb, vec3(0.88, 0.96, 1.0), s), max(gl_FragColor.a, s * 0.85));
+  }`);
+  };
+  m.customProgramCacheKey = () => 'water-shimmer';
+}
+
+/**
  * The water surface (seen from above or when orbiting; edge-on straight on) and a faint meniscus line where it meets
  * the glass. The colour of the water itself is a tint in the lighting shader (see aqWaterPath).
  */
@@ -410,6 +435,7 @@ function addWater(sc: THREE.Scene, S: TankSetup, T: Tank) {
   const arch = archBulge(T) > 0, ring = levelRing(T, y); // an arch's surface reaches out to its front glass at that height
   const surf = new THREE.Mesh(flatGeometry(bowl ? circleRing(T, r) : ring, y), basic(look.color, { transparent: true, opacity: look.opacity, depthWrite: false, side: THREE.DoubleSide }));
   (surf.material as THREE.Material).userData.waterSurf = true; // recoloured in place (patchLook)
+  surfaceShimmer(surf.material as THREE.MeshBasicMaterial);
   surf.renderOrder = 4; surf.userData.nolight = true; sc.add(surf);
   const line = lines(ringLines(bowl ? circleRing(T, r - 0.6) : arch ? ring.map(p => [p[0] + (p[0] < T.L / 2 ? 0.6 : -0.6), p[1] + (p[1] < T.D / 2 ? 0.6 : -0.6)] as P) : offsetRing(T, -0.6), y), 0xe8f6fa, 0.45);
   line.renderOrder = 4; sc.add(line);
@@ -958,13 +984,27 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   // top surface as a 16x16 grid (bilinear surfaces curve along diagonals) clipped to the outline, and a skirt round the
   // outline; UVs from physical mm so grain size is constant
   type V3 = [number, number, number];
-  const top: number[][] = [], side: number[][] = [], N = swamp ? 72 : 16, wy = waterY(T, S.water.level);
+  // surface roughness (2026-11-03): lumps and ripples on the ground's skin only, a few mm, up to ~15 mm in heaped spots, at 100 %; pieces and grains still stand on
+  // the smooth ground. A finer grid (about 14 mm cells) so the ripples show; the light map's plain floor stays plain.
+  const ra = (S.render.beams && S.light.type !== 'flat' ? 0 : (S.substrate.rough ?? 0)) / 100;
+  // irregular, not a repeating wave: seeded value noise, domain-warped, three scales (about 130, 50 and 20 mm), a ridged octave for
+  // sharper crests, and a slow noise that swells and calms the amplitude so some stretches are flat and others heaped
+  const sd = (S.layout.seed ?? 1) * 17.31, hs = (a: number, b: number) => { const t = Math.sin(a * 127.1 + b * 311.7 + sd) * 43758.5453; return t - Math.floor(t); };
+  const vn = (x: number, z: number) => { const ix = Math.floor(x), iz = Math.floor(z), fx = x - ix, fz = z - iz, u = fx * fx * (3 - 2 * fx), w = fz * fz * (3 - 2 * fz);
+    return (hs(ix, iz) * (1 - u) + hs(ix + 1, iz) * u) * (1 - w) + (hs(ix, iz + 1) * (1 - u) + hs(ix + 1, iz + 1) * u) * w; };
+  const bump = (x: number, z: number) => {
+    const wx = x + 40 * (vn(x / 90 + 5, z / 90) - 0.5), wz = z + 40 * (vn(x / 90, z / 90 + 9) - 0.5); // warp: no straight rows
+    const lump = vn(wx / 130, wz / 130) - 0.5, mid = vn(wx / 50 + 3, wz / 50 + 7) - 0.5, ridge = 0.5 - Math.abs(vn(wx / 22 + 11, wz / 22 + 2) - 0.5) * 2;
+    const swell = 0.25 + 1.5 * vn(x / 260 + 20, z / 260 + 4);
+    return 48 * ra * swell * (0.5 * lump + 0.4 * mid + 0.25 * (ridge - 0.25));
+  };
+  const top: number[][] = [], side: number[][] = [], N = swamp ? 72 : ra > 0 ? clamp(Math.round(Math.max(T.L, T.D) / 14), 16, 120) : 16, wy = waterY(T, S.water.level);
   // a bowl flares above its floor: the ground spreads out from the centre to meet the glass at its own height
   const bowl = shapeOf(T) === 'bowl', rb = bowl ? bowlDims(T).rb : 0;
   // never flush with the bottom glass (a terrain point dragged to 0 z-fought with it into stripes, audit #14)
   const archB = archBulge(T), onFront = (p: P) => archB > 0 && p[1] < archB + 1e-6;
   // an arch's front glass leans out above the floor: the ground's front edge reaches it at its own height
-  const G = (p: P): V3 => { const y = Math.max(0.6, h(p[0], p[1])); return onFront(p) ? [p[0], y, -(frontAt(T, y) + 0.4)] : flare(T, p[0], p[1], y, rb); };
+  const G = (p: P): V3 => { const y = Math.max(0.6, h(p[0], p[1]) + (ra ? bump(p[0], p[1]) : 0)); return onFront(p) ? [p[0], y, -(frontAt(T, y) + 0.4)] : flare(T, p[0], p[1], y, rb); };
   const P3 = (i: number, j: number): V3 => G([L * i / N, D * j / N]);
   // cheap slope shading: brightness from the ground's tilt toward a light above, front and left, per grid vertex and
   // blended across each cell (one flat shade per cell showed the 16x16 grid as sharp-edged squares on gentle slopes);

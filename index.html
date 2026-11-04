@@ -248,6 +248,10 @@
   <div class="row"><label for="poolBank">Bank</label><input id="poolBank" type="range" min="5" max="100" step="1"><output id="oPoolBank"></output></div>
   </div>
   <div class="hint" id="terHint">Custom terrain turns the floor into a grid of points you can push down or pull up, with a smooth surface through them. It starts from the current floor.</div>
+  <div id="subRough">
+  <div class="row"><label for="subRoughness">Roughness</label><input id="subRoughness" type="range" min="0" max="100" step="5"><output id="oSubRoughness"></output></div>
+  <div class="hint">Lumps and ripples in the surface, like sand raked or settled around the rocks. Looks only: the corner depths and custom terrain stay as set.</div>
+  </div>
   <div id="subLitter">
   <div class="field"><span class="flabel">Leaf litter</span><select id="litLeaf" aria-label="Leaf litter kind"></select><button id="litShuffle" title="The same leaves, fallen in new places">Shuffle</button></div>
   <div class="row"><label for="litDens">Density</label><input id="litDens" type="range" min="0" max="100" step="5"><output id="oLitDens"></output></div>

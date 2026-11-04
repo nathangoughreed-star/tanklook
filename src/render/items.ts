@@ -57,7 +57,7 @@ export function clean(g: THREE.BufferGeometry, indexed: boolean) {
 // grain, pits and cracks on stone, grain, splits and knots on wood. Kinds: 1 river, 2 seiryu / arch, 3 dragon, 4 lava,
 // 5 slate, 6 bark (coordinates = along the limb, angle around, radius), 7 terracotta, 8 coconut, 9 end grain, 10 plain wood,
 // 11 hard coral (corallite dots), 12 soft coral tissue (polyp fuzz), 13 holey limestone, 14 lace rock; the reef pieces (render/coral3d.ts) set their own.
-const GRIT_KIND: Record<string, number> = { river: 1, seiryu: 2, dragon: 3, holey: 13, lace: 14, lava: 4, slate: 5, ledge: 2, tube: 7, coconut: 8, arch: 2, dish: 7, stonedish: 2 };
+const GRIT_KIND: Record<string, number> = { river: 1, seiryu: 2, dragon: 3, holey: 13, lace: 14, lava: 4, shale: 5, slate: 5, ledge: 2, tube: 7, coconut: 8, arch: 2, dish: 7, stonedish: 2 };
 const gritOffset = (seed: number) => [0.6180339, 0.4142135, 0.7320508].map((k, i) => ((seed * k + i * 0.37) % 1) * 400);
 /** aGrit from the vertex positions (shifted per seed so no two pieces share a pattern); left alone if already set. */
 export function grit(g: THREE.BufferGeometry, kind: number, seed: number) {
@@ -77,6 +77,7 @@ const STONE: Record<string, string[]> = {
   lace: ['#5e5a54', '#6b665e', '#524f4a'], // dark grey-brown
   lava: ['#5a2f28', '#4a2b26', '#63362b'],
   slate: ['#4c5058', '#55534f', '#4a4d52'],
+  shale: ['#34383f', '#3c3c45', '#30343b'], // dark blue-grey; the iron stain is painted over it
   ledge: ['#7e7262', '#8a7d6a', '#736a5e'], // weathered sandstone
 };
 function stoneShape(variant: string, seed: number, size: number) {
@@ -85,10 +86,14 @@ function stoneShape(variant: string, seed: number, size: number) {
   const angular = variant !== 'river', crag = variant === 'seiryu';
   let g: THREE.BufferGeometry = new THREE.IcosahedronGeometry(1, crag ? 3 : 4);
   const nz = waves(r), fine = waves(r, 8), p = g.attributes.position, v = new THREE.Vector3(), cut = -0.55;
-  const top = crag ? 1.25 : 1, hk = h / (top - cut), dent = new Float32Array(p.count);
+  // iron-stained shale: a lump cut by a handful of random planes, so it breaks into flat fractured faces (the planes lean up
+  // and out, a few steep, for sloped tops and sheer sides); the cuts shave its reach, so the top and the width are stretched back
+  const shale = variant === 'shale', cuts = shale ? Array.from({ length: 14 }, () => ({ n: V(r() - 0.5, r() * 0.9 - 0.1, r() - 0.5).normalize(), d: 0.42 + 0.3 * r() })) : [];
+  const top = crag ? 1.25 : shale ? 0.72 : 1, hk = h / (top - cut), dent = new Float32Array(p.count);
   for (let i = 0; i < p.count; i++) {
     v.fromBufferAttribute(p, i);
-    let k = 1 + (variant === 'river' ? 0.06 : 0.2) * nz(v.clone().multiplyScalar(angular ? 1.7 : 1.1));
+    let k = 1 + (variant === 'river' ? 0.06 : shale ? 0.03 : 0.2) * nz(v.clone().multiplyScalar(angular ? 1.7 : 1.1));
+    if (shale) { v.multiplyScalar(k * 1.3); for (const c of cuts) { const t = v.dot(c.n); if (t > c.d) v.multiplyScalar(c.d / t); } v.x *= 1.5; v.z *= 1.5; k = 1; }
     if (variant === 'dragon') k -= 0.2 * Math.max(0, fine(v.clone().multiplyScalar(5)) - 0.12); // pits and holes
     if (variant === 'holey') k -= 0.4 * Math.max(0, fine(v.clone().multiplyScalar(3.6)) - 0.02) + 0.12 * Math.max(0, fine(v.clone().multiplyScalar(8)) - 0.2); // big pits and through-holes
     if (variant === 'lace') k -= 0.22 * Math.max(0, fine(v.clone().multiplyScalar(7)) - 0.05) + 0.1 * Math.max(0, fine(v.clone().multiplyScalar(13)) - 0.15); // fine lacy holes
@@ -101,9 +106,13 @@ function stoneShape(variant: string, seed: number, size: number) {
   if (crag) g.rotateZ((r() - 0.5) * 0.3);
   if (!angular) { g.deleteAttribute('normal'); g.deleteAttribute('uv'); g = mergeVertices(g); } // smooth normals; others keep flat facets
   g.computeVertexNormals();
-  const mot = waves(r, 5), vein = waves(r, 3);
+  const mot = waves(r, 5), vein = waves(r, 3), ox = waves(r, 4), hue = waves(r, 3);
   return paint(g, (q, i) => {
     let k = 1 + 0.16 * mot(q.clone().multiplyScalar(0.06));
+    if (shale) { // flat faces: each takes one tone from its own normal, so a face is a single clean colour; a few are stained dull gold-rust
+      const nm = g.attributes.normal, f = new THREE.Vector3(nm.getX(i), nm.getY(i), nm.getZ(i)).multiplyScalar(2.2), tone = 1 + 0.22 * ox(f), st = Math.min(1, Math.max(0, (hue(f.clone().multiplyScalar(1.7)) - 0.14) / 0.12));
+      return shade(base, tone).lerp(C('#7e6636').lerp(C('#664630'), Math.min(1, Math.max(0, 0.5 + 2 * ox(f)))), 0.42 * st);
+    }
     if (variant === 'dragon' || variant === 'lava' || variant === 'holey' || variant === 'lace') { const lo = variant === 'holey' ? 0.4 : 0.55; k *= lo + (1 - lo) * Math.min(1, Math.max(0, (dent[i] - 0.8) / 0.25)); } // dark crevices
     const c = shade(base, k);
     if (crag && Math.abs(Math.sin(q.y * 0.11 + 4 * vein(q.clone().multiplyScalar(0.02)))) < 0.06) c.lerp(C('#d9dcd8'), 0.55); // calcite veins
