@@ -49,7 +49,7 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(P)); } catch { /* ignore */ } };
   const OPEN_KEY = 'tanklook.demandOpen';
   let shown = (() => { try { const v = localStorage.getItem(OPEN_KEY); if (v !== null) return v === '1'; } catch { /* ignore */ } return window.innerWidth > 900; })();
-  mount.innerHTML = `<div class="dm"><button type="button" class="dmtog" aria-expanded="true" title="Show or hide what this tank costs and asks of you; it updates as you edit"><span class="dmhead">What this tank asks of you</span><span class="dmsum"></span><span class="dmcaret" aria-hidden="true">▾</span></button>
+  mount.innerHTML = `<div class="dm"><button type="button" class="dmtog" aria-expanded="true" title="Show or hide what this tank costs and asks of you; it updates as you edit"><span class="dmhead">What this tank asks of you</span><span class="dmsum"></span><span class="dmflag" hidden></span><span class="dmcaret" aria-hidden="true">▾</span></button>
     <div class="dmbody"><div class="dmmode"></div><div class="dmbars"></div><div class="dmlid" hidden></div><div class="dmdeals" style="font-size:11px;opacity:.85"></div><div class="dmdrill" hidden></div>
     <details class="dmset dmguard"><summary>Guardrails</summary><div class="dmlimits"></div></details>
     <div class="dmcomp" role="status"></div><div class="dmsol" hidden></div>
@@ -123,8 +123,7 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
     if (open) fillDrill(open);
   }
 
-  /** The compliance line (C2): amber under the Guardrails controls and a small header chip. It never interrupts an edit; welfare (stocking) is separate. */
-  const chip = document.getElementById('guardChip') as HTMLButtonElement | null;
+  /** The compliance line (C2): amber under the Guardrails controls and a flag beside the price in the cost panel's header. It never interrupts an edit; welfare (stocking) is separate. */
   function renderCompliance() {
     const S = store.tank, rhy = D ? rhythmOf(D, S) : undefined, c = compliance(S, D?.totals, Pe().limits, store.scene.units, rhy), el = q('.dmcomp');
     let welfare = '';
@@ -136,11 +135,10 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
       + (c.overall === 'over' ? `<button type="button" class="dmfind" title="Try a few changes on a copy of this tank and check each against all your guardrails and the animals' needs">Find solutions</button>` : '');
     el.querySelector('.dmfind')?.addEventListener('click', () => { const S2 = store.tank; sol = findSolutions(S2, Pe(), { demand: { kit: pinnedKit(S2, store.scene.active, P), parts: gearParts(S2) }, units: store.scene.units, previous: store.previousTank }); renderSolutions(); });
     renderSolutions();
-    if (chip) {
-      chip.hidden = c.overall === 'off'; chip.className = 'guardchip ' + cls;
-      chip.textContent = c.overall === 'within' ? 'Within guardrails' : c.overall === 'over' ? `${c.over} over` : 'Guardrails: unknown';
-      chip.title = c.line + (welfare ? ' ' + welfare : '') + ' Click to open the Guardrails.';
-    }
+    // the header chip moved here (UI1, Nathan 2026-11-04): beside the price, in the cost panel's always-visible header
+    const flag = q('.dmflag'); flag.hidden = c.overall === 'off'; flag.className = 'dmflag ' + cls;
+    flag.textContent = c.overall === 'within' ? 'Within guardrails' : c.overall === 'over' ? `${c.over} over guardrails` : 'Guardrails: unknown';
+    flag.title = c.line + (welfare ? ' ' + welfare : '');
   }
   /** The Find solutions card (C3): fully compliant options first, those that need a limit raised apart; every enabled limit shown per option. */
   function renderSolutions() {
@@ -167,7 +165,6 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
       store.edit(t => { t.fish = structuredClone(o.scene.fish); t.items = structuredClone(o.scene.items); t.tank = structuredClone(o.scene.tank); if (o.scene.tech) t.tech = structuredClone(o.scene.tech); else delete t.tech; if (o.scene.product) t.product = o.scene.product; else delete t.product; });
     }));
   }
-  chip?.addEventListener('click', () => { setShown(true); (q('.dmguard') as HTMLDetailsElement).open = true; q('.dmguard').scrollIntoView({ block: 'nearest' }); });
   function renderLid() {
     const el = q('.dmlid');
     el.hidden = !lid;

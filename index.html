@@ -17,9 +17,8 @@
   <header class="top">
     <div>
       <h1>TankLook</h1>
-      <div class="sub">Vivarium visualizer · true-to-scale · beta</div>
+      <div class="sub">Vivarium visualizer · beta</div>
     </div>
-    <button id="guardChip" class="guardchip" type="button" hidden></button>
     <span class="seg units" role="group" aria-label="Units"><button id="uIn" title="Inches, gallons, °F, pounds everywhere">US</button><button id="uCm" title="Centimetres, litres, °C, kilograms everywhere">Metric</button></span>
   </header>
 
@@ -29,10 +28,6 @@
     <button id="saveScene" title="Save this tank in this browser, with a picture (Open… lists them)">Save</button>
     <button id="downloadScene" title="Download this tank as a file, or copy a link that opens it">Download</button>
     <input id="fileIn" type="file" accept=".json,.tank" hidden>
-  </div>
-  <div class="toolbar">
-    <button id="multiBtn" class="sidetog" aria-pressed="false" title="Multi-select: tap animals and pieces to add them to the selection or take them out; drag on empty water to draw a box round some. On a computer: Shift-click and Shift-drag.">☐ Multi</button>
-    <button id="brushBtn" class="sidetog" aria-pressed="false" title="Scatter brush: paint leaf litter, pebbles, moss, twigs or a carpet of plants onto the ground or a piece; Erase takes them off again.">🖌 Brush</button>
   </div>
   <dialog id="dlDlg" class="libdlg">
     <form method="dialog" class="libhead"><h2>Download or share</h2><button value="close" aria-label="Close">✕</button></form>
@@ -118,7 +113,6 @@
   <div id="busy" class="busy" role="status" aria-live="polite" hidden><div class="busybox"><span class="spin" aria-hidden="true"></span><span id="busyText">Opening…</span></div></div>
   <div class="namerow"><input id="sceneName" type="text" maxlength="80" aria-label="Scene name"><span id="saveState" class="hint"></span></div>
   <div id="status" class="status" role="status" hidden></div>
-  <div id="editing" class="editing" hidden></div>
   <div id="sandboxBar" class="sandbox-bar" role="region" aria-label="Sandbox checks" hidden></div>
 
   <details class="help" id="help"><summary>How to use</summary>
@@ -220,6 +214,7 @@
   <div class="hint">Sets the substrate, hardscape and plants together. Then reshape the ground under Substrate and move, add or remove any piece under Hardscape and Plants; or skip this and build the tank there by hand.</div>
   </details>
   <details class="sec" data-sec="substrate"><summary><h2>Substrate</h2></summary>
+  <div class="btns"><button class="sidetog brushTog" aria-pressed="false" title="Scatter brush: paint leaf litter, pebbles, moss, twigs or a carpet of plants onto the ground or a piece; Erase takes them off again.">🖌 Scatter brush</button></div>
   <div class="field"><select id="subType" aria-label="Substrate type"></select></div>
   <div id="subCustom" hidden>
   <div class="field"><span class="flabel">Grain</span><select id="subG1" aria-label="Grain size"></select><input id="subC1" type="color" aria-label="Grain colour" title="Grain colour"></div>
@@ -258,6 +253,7 @@
   </div>
   </details>
   <details class="sec" data-sec="hardscape"><summary><h2>Hardscape</h2></summary>
+  <div class="btns"><button class="sidetog multiTog" aria-pressed="false" title="Multi-select: tap animals and pieces to add them to the selection or take them out; drag on empty water to draw a box round some. On a computer: Shift-click and Shift-drag.">☐ Multi-select</button></div>
   <div class="lib" id="libHard"></div>
   <div class="btns"><span class="hint" id="itemCountHard"></span><span class="grow"></span><button id="itemsClearHard">Remove all</button></div>
   <div id="itemEdit">
@@ -285,6 +281,7 @@
   </div>
   </details>
   <details class="sec" data-sec="plants"><summary><h2 id="plantsTitle">Plants</h2></summary>
+  <div class="btns"><button class="sidetog brushTog" aria-pressed="false" title="Scatter brush: paint leaf litter, pebbles, moss, twigs or a carpet of plants onto the ground or a piece; Erase takes them off again.">🖌 Scatter brush</button></div>
   <div class="field"><label><input type="checkbox" id="gatePlants" title="Sinks the plants (corals) that do not suit this tank's light and care to the bottom of the list, grayed, each with its reason. Advice only: you can still add any of them"> Show only tank-appropriate plants</label></div>
   <div class="hint" id="gatePlantsHint" hidden></div>
   <div class="lib" id="libPlant"></div>
@@ -297,6 +294,7 @@
   <div class="btns" id="growAsk" hidden><span class="hint">Keep these changes?</span><span class="grow"></span><button id="growKeep">Keep</button><button id="growUndo">Undo</button></div>
   </details>
   <details class="sec" data-sec="fish"><summary><h2>Animals</h2></summary>
+  <div class="btns"><button class="sidetog multiTog" aria-pressed="false" title="Multi-select: tap animals and pieces to add them to the selection or take them out; drag on empty water to draw a box round some. On a computer: Shift-click and Shift-drag.">☐ Multi-select</button></div>
   <div id="spKinds" class="seg kinds" role="group" aria-label="Kind of setup"></div>
   <div id="spCats" class="cats" role="tablist" aria-label="Animal groups"></div>
   <input id="spSearch" type="search" placeholder="Search species (common or scientific name)" aria-label="Search species">

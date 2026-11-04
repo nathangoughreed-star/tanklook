@@ -10,7 +10,7 @@ import type { Viewer } from '../render/viewer';
 
 export function attachGroupBar(store: Store, viewer: Viewer, status: (msg: string, bad?: boolean) => void) {
   const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
-  const bar = $('groupBar'), copyBox = $('gbCopyBox'), multi = $('multiBtn');
+  const bar = $('groupBar'), copyBox = $('gbCopyBox'), multis = [...document.querySelectorAll<HTMLButtonElement>('.multiTog')];
   let copiesOpen = false;
 
   const noun = (g: Group) => {
@@ -19,14 +19,14 @@ export function attachGroupBar(store: Store, viewer: Viewer, status: (msg: strin
   };
   const show = () => {
     const g = store.group, n = groupSize(g);
-    multi.classList.toggle('on', store.multi); multi.setAttribute('aria-pressed', String(store.multi));
+    for (const m of multis) { m.classList.toggle('on', store.multi); m.setAttribute('aria-pressed', String(store.multi)); }
     bar.hidden = n < 2 && !(copiesOpen && n === 1) && !g.patches?.length;
     $('gbCount').textContent = noun(g) || 'Nothing selected';
     copyBox.hidden = !copiesOpen || bar.hidden; $('gbCopies').setAttribute('aria-expanded', String(!copyBox.hidden));
   };
   store.subscribe(show); show();
 
-  multi.onclick = () => store.setMulti(!store.multi);
+  for (const m of multis) m.onclick = () => store.setMulti(!store.multi);
   const slider = (id: string, out: string, fmt: (v: number) => string) => {
     const el = $<HTMLInputElement>(id), o = $(out), upd = () => { o.textContent = fmt(+el.value); };
     el.oninput = upd; upd(); return el;

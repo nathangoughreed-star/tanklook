@@ -60,6 +60,12 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
+### UI1: side-panel header cleanup (2026-11-04, Nathan)
+- Removed from the header: the "over" guard chip (`#guardChip`; its info already lives in the cost panel's Guardrails line, and now also as a `.dmflag` beside the price in that panel's always-visible header, `demandPanel.ts`), and "true-to-scale" from the subtitle.
+- Multi-select and Scatter brush are class-based buttons (`.multiTog` in Hardscape and Animals, `.brushTog` in Substrate and Plants); `group.ts` / `brush.ts` bind every one with that class, aria-pressed and `on` kept in sync; `#brushBar` unchanged. The ids `multiBtn` / `brushBtn` are gone (no test or script used them). Empty toolbar row deleted.
+- The "Editing Tank X only" note left the side panel (`#editing` removed): it is now a line inside the edited view's tab on the split view (`.edNote`, panels.ts tab renderer), shown only while exactly one tank is being edited. The "Editing both tanks" text is gone (both tabs ticked says it already).
+- Open question for Nathan: the circled "New tank" name field (`#sceneName`) was left as is.
+
 ## CF1: no floating corals (2026-11-03; branch cf1-floating-corals; Coordinator 19)
 - Cause (measured: 84 of 105 reef scenes, 8 reef archetypes x 20 / 55 / 120 gal x 5 density stops, had a coral 0.3-7.2 in above any rock or sand; stops 3 / 4 worst): the layout seats each raised coral on its rock once (`seatHook.corals`), but recipes.ts then resizes the rocks (`evenScale` caps, `mixSizes`, `relSizes`, `fitWeight` weight budget, `drawMid` step scaling, dropped pieces) and the corals kept their old lifts. Shuffle (`shuffleHard`) and editor edits never re-seated them either.
 - Fix: recipes.ts `reseat` after each resize pass (evenScale per level, both exits of `drawMid`); `shuffleHard` seats corals on the new rock (a coral whose rock is gone drops to sand, no longer to lift 0 first); items.ts `keepCoralsSeated(t)` called from Store.update's normaliser: when the hardscape's poses or the ground changed since the store last saw that tank, every raised coral re-seats (follows its rock, drops where the rock is gone; a loaded tank is only noted).

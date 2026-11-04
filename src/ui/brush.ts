@@ -9,7 +9,7 @@ import type { BrushId, LeafKind } from '../scene/types';
 
 export function attachBrushBar(store: Store) {
   const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
-  const bar = $('brushBar'), btn = $('brushBtn'), kind = $<HTMLSelectElement>('brKind'), leaf = $<HTMLSelectElement>('brLeaf');
+  const bar = $('brushBar'), btns = [...document.querySelectorAll<HTMLButtonElement>('.brushTog')], kind = $<HTMLSelectElement>('brKind'), leaf = $<HTMLSelectElement>('brLeaf');
   const single = $('brSingle'), size = $<HTMLInputElement>('brSize'), dens = $<HTMLInputElement>('brDens'), paint = $('brPaint'), erase = $('brErase');
   const opt = (b: { id: string; label: string }) => `<option value="${b.id}">${b.label}</option>`;
   kind.innerHTML = BRUSHES.map(opt).join('') + `<optgroup label="Plants">${plantBrushes().map(opt).join('')}</optgroup>`;
@@ -31,7 +31,7 @@ export function attachBrushBar(store: Store) {
     if (store.brush.target != null && !store.tank.patches?.some(p => p.id === store.brush.target)) { store.brush.target = null; store.brush.on = false; }
     const B = store.brush, def = brushDef(B.id), tgt = B.target != null;
     kind.hidden = tgt;
-    bar.hidden = !B.on || tgt; btn.classList.toggle('on', B.on); btn.setAttribute('aria-pressed', String(B.on));
+    bar.hidden = !B.on || tgt; for (const b of btns) { b.classList.toggle('on', B.on); b.setAttribute('aria-pressed', String(B.on)); }
     kind.value = B.id; leaf.value = B.leaf; leaf.hidden = tgt || B.id !== 'leaf';
     size.min = String(def.radius[0]); size.max = String(def.radius[1]); size.value = String(B.size); dens.value = String(B.density);
     $('oBrSize').textContent = `${B.size} mm`; $('oBrDens').textContent = `${B.density}%`;
@@ -41,7 +41,7 @@ export function attachBrushBar(store: Store) {
     size.parentElement!.hidden = !!B.single && !B.erase; dens.parentElement!.hidden = B.erase || tgt || !!B.single;
   };
   store.subscribe(show); show();
-  btn.onclick = () => store.setBrush({ on: !store.brush.on, target: null });
+  for (const b of btns) b.onclick = () => store.setBrush({ on: !store.brush.on, target: null });
   const edit = (id: 'gpDens' | 'gpGrow' | 'gpWidth', fn: (p: NonNullable<ReturnType<typeof sel>>, v: number) => void) => {
     const el = $<HTMLInputElement>(id); el.oninput = () => { const P = sel(); if (!P) return; store.edit(t => { const q = t.patches?.find(v => v.id === P.id); if (q) fn(q, +el.value); }, { coalesce: 'patch-' + id }); };
   };

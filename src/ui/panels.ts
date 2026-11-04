@@ -1990,10 +1990,7 @@ Cancel, then change the name, to keep both.`)) return;
     }
     for (const id of ['wallLeft', 'wallRight']) ($(id) as HTMLButtonElement).disabled = !flatEnds(A);
     // which tank the panel edits (split view)
-    const tg = store.targets;
-    $('editing').hidden = !store.split;
-    $('editing').textContent = tg.length > 1 ? 'Editing both tanks: changes here apply to Tank A and Tank B.'
-      : `Editing Tank ${'AB'[tg[0]]} only: tick “Edit” on the other view to change both.`;
+    // the "editing one tank only" note lives on the split view itself (UI1, Nathan 2026-11-04), in the edited view's tab
     const vol = volume(A);
     // footprint: the outer glass outline, i.e. what stands on the stand
     // labelled "outside the glass" with its outer size, so it does not read as a wrong product of the interior size
@@ -2352,7 +2349,7 @@ Cancel, then change the name, to keep both.`)) return;
         // no labels) and Save, Delete flowing together, wrapping only when the view is too narrow.
         // The second row stays folded until the tab is hovered (Nathan 2026-10-09); the ▾ hint carries the count.
         const hint = `<span class="more" aria-hidden="true">${diff.length ? `${diff.length} diff${diff.length === 1 ? '' : 's'} ` : ''}▾</span>`;
-        el.innerHTML = `<div class="hd"><b class="tabkey" title="Tank ${vp.key}">${vp.key}</b>${aqChip(vp.S, vp.key, i)}${hint}${box}</div>` + `<div class="diffs">${diff.map((d, k) => `<span>${esc(d[i])}<button class="match" data-match="${i},${k}" title="Copy Tank ${active[1 - i].key}’s value into Tank ${vp.key}" aria-label="Copy from Tank ${active[1 - i].key}: ${esc(d[i])}">⇄ ${active[1 - i].key}</button></span>`).join('')}` +
+        el.innerHTML = `<div class="hd"><b class="tabkey" title="Tank ${vp.key}">${vp.key}</b>${aqChip(vp.S, vp.key, i)}${hint}${box}</div>` + (only ? `<div class="edNote">Editing Tank ${vp.key} only: tick “Edit” on the other view to change both.</div>` : '') + `<div class="diffs">${diff.map((d, k) => `<span>${esc(d[i])}<button class="match" data-match="${i},${k}" title="Copy Tank ${active[1 - i].key}’s value into Tank ${vp.key}" aria-label="Copy from Tank ${active[1 - i].key}: ${esc(d[i])}">⇄ ${active[1 - i].key}</button></span>`).join('')}` +
           `<div class="acts"><button class="close" data-save="${i}" title="Download Tank ${vp.key} on its own as a single-tank file">Download</button>` +
           `<button class="close" data-delete="${i}" title="Delete Tank ${vp.key} and end the split view (Ctrl+Z brings it back)">Delete</button></div></div>`;
       }
