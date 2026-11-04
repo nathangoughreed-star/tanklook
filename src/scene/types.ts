@@ -201,6 +201,9 @@ export interface SubstrateSettings {
   type: SubstrateType;
   custom: SubstrateBlend; // used when type is 'custom'
   litter?: Litter; // leaf litter on the ground (lane T1, 2026-10-16); absent = none
+  /** Surface roughness 0-100 % (2026-11-03, no version bump): lumps and ripples drawn on the ground's skin only, a few mm, heaped up to ~15 mm in places. It
+   *  never touches the terrain or the corner depths (pieces still stand on the smooth ground). Absent = smooth. */
+  rough?: number;
   fl: number; fr: number; bl: number; br: number; // depth at each corner, mm
 }
 

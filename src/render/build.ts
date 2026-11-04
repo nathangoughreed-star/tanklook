@@ -979,13 +979,27 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   // top surface as a 16x16 grid (bilinear surfaces curve along diagonals) clipped to the outline, and a skirt round the
   // outline; UVs from physical mm so grain size is constant
   type V3 = [number, number, number];
-  const top: number[][] = [], side: number[][] = [], N = swamp ? 72 : 16, wy = waterY(T, S.water.level);
+  // surface roughness (2026-11-03): lumps and ripples on the ground's skin only, a few mm, up to ~15 mm in heaped spots, at 100 %; pieces and grains still stand on
+  // the smooth ground. A finer grid (about 14 mm cells) so the ripples show; the light map's plain floor stays plain.
+  const ra = (S.render.beams && S.light.type !== 'flat' ? 0 : (S.substrate.rough ?? 0)) / 100;
+  // irregular, not a repeating wave: seeded value noise, domain-warped, three scales (about 130, 50 and 20 mm), a ridged octave for
+  // sharper crests, and a slow noise that swells and calms the amplitude so some stretches are flat and others heaped
+  const sd = (S.layout.seed ?? 1) * 17.31, hs = (a: number, b: number) => { const t = Math.sin(a * 127.1 + b * 311.7 + sd) * 43758.5453; return t - Math.floor(t); };
+  const vn = (x: number, z: number) => { const ix = Math.floor(x), iz = Math.floor(z), fx = x - ix, fz = z - iz, u = fx * fx * (3 - 2 * fx), w = fz * fz * (3 - 2 * fz);
+    return (hs(ix, iz) * (1 - u) + hs(ix + 1, iz) * u) * (1 - w) + (hs(ix, iz + 1) * (1 - u) + hs(ix + 1, iz + 1) * u) * w; };
+  const bump = (x: number, z: number) => {
+    const wx = x + 40 * (vn(x / 90 + 5, z / 90) - 0.5), wz = z + 40 * (vn(x / 90, z / 90 + 9) - 0.5); // warp: no straight rows
+    const lump = vn(wx / 130, wz / 130) - 0.5, mid = vn(wx / 50 + 3, wz / 50 + 7) - 0.5, ridge = 0.5 - Math.abs(vn(wx / 22 + 11, wz / 22 + 2) - 0.5) * 2;
+    const swell = 0.25 + 1.5 * vn(x / 260 + 20, z / 260 + 4);
+    return 48 * ra * swell * (0.5 * lump + 0.4 * mid + 0.25 * (ridge - 0.25));
+  };
+  const top: number[][] = [], side: number[][] = [], N = swamp ? 72 : ra > 0 ? clamp(Math.round(Math.max(T.L, T.D) / 14), 16, 120) : 16, wy = waterY(T, S.water.level);
   // a bowl flares above its floor: the ground spreads out from the centre to meet the glass at its own height
   const bowl = shapeOf(T) === 'bowl', rb = bowl ? bowlDims(T).rb : 0;
   // never flush with the bottom glass (a terrain point dragged to 0 z-fought with it into stripes, audit #14)
   const archB = archBulge(T), onFront = (p: P) => archB > 0 && p[1] < archB + 1e-6;
   // an arch's front glass leans out above the floor: the ground's front edge reaches it at its own height
-  const G = (p: P): V3 => { const y = Math.max(0.6, h(p[0], p[1])); return onFront(p) ? [p[0], y, -(frontAt(T, y) + 0.4)] : flare(T, p[0], p[1], y, rb); };
+  const G = (p: P): V3 => { const y = Math.max(0.6, h(p[0], p[1]) + (ra ? bump(p[0], p[1]) : 0)); return onFront(p) ? [p[0], y, -(frontAt(T, y) + 0.4)] : flare(T, p[0], p[1], y, rb); };
   const P3 = (i: number, j: number): V3 => G([L * i / N, D * j / N]);
   // cheap slope shading: brightness from the ground's tilt toward a light above, front and left, per grid vertex and
   // blended across each cell (one flat shade per cell showed the 16x16 grid as sharp-edged squares on gentle slopes);

@@ -277,6 +277,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       // leaf litter (lane T1, 2026-10-16, no version bump): absent stays absent
       ...(s.litter && typeof s.litter === 'object' ? { litter: (() => { const l = s.litter as Record<string, unknown>; return {
         leaf: pick(l.leaf, ['mixed', 'oak', 'magnolia', 'catappa'] as const, 'mixed'), density: Math.round(num(l.density, 50, 0, 100)), seed: Math.round(num(l.seed, 1, 1, 1e6)) }; })() } : {}),
+      ...(num(s.rough, 0, 0, 100) > 0 ? { rough: Math.round(num(s.rough, 0, 0, 100)) } : {}), // surface roughness (2026-11-03): absent stays absent
       custom: (() => { // added 2026-10-13 (no version bump); older files: the default blend
         const c = (s.custom && typeof s.custom === 'object' ? s.custom : {}) as Record<string, unknown>, dc = d.substrate.custom;
         const hex = (v: unknown, f: string) => typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v) ? v.toLowerCase() : f;
