@@ -916,7 +916,8 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
   const sw = `3d${plant3d.sway ? 's' : ''}${more ? '+' : ''}${plant3d.emerse ? '' : 'n'}|`, kf = sw + (carpet ? `${type}|${it.seed}|${it.size}` : k);
   const args = [type, it.seed, h, { spread: it.spread, stems: it.stems, dens: it.dens, clip: clip.length ? clip : undefined, drop: drop || undefined, limbs: limbs.length ? limbs : undefined }, g0, more, it.size] as const;
   let bend: { F: number; C?: number; water: boolean; walls: number[]; ks: string } | undefined;
-  if (!carpet && !float && !free) {
+  const aboveWater = S.water.on && y >= waterY(T, S.water.level) - 2 && PLANT3D[type]?.land; // (a land plant standing above the water, on a rock or wood: nothing to lie over at, lane OG3)
+  if (!carpet && !float && !free && !aboveWater) {
     // longer than the water above it: lies over at the surface (`F` over its base, to 2 mm, so a drag reuses it). A
     // plant with no growth of its own keeps the old allowance (tips up to the lid in a full tank, as they always
     // were) and only lies over when it would poke out further than that

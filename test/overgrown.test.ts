@@ -31,7 +31,7 @@ const TANKS = ['20 gal long', '40 gal breeder', '75 gal'].map(tank);
 const ESCAPE_ARTISTS = ['hatchet', 'cpo', 'cajundwarf', 'rswcrayfish', 'redclaw', 'thaicrab', 'firetoad', 'firenewt', 'adf', 'axolotl', 'betta', 'danio', 'kuhli'];
 
 /** the houseplants of the rim planters, and the emersed stems that stand in the water */
-const HOUSE = new Set(['peacelily', 'anthurium', 'calathea', 'catpalm', 'bamboo', 'pothos', 'philodendron']);
+const HOUSE = new Set(['peacelily', 'anthurium', 'calathea', 'catpalm', 'monstera', 'begonia', 'bamboo', 'pothos', 'philodendron']);
 const EMERSED = new Set(['stem', 'stemred', 'ludwigia']);
 
 describe('the archetype', () => {
@@ -81,17 +81,18 @@ describe('the scene', () => {
           }
         }
       });
-      it('keeps every houseplant in a planter (nothing rooted in the gravel but the calm underwater planting) and grows more of them at denser stops', () => {
+      it('keeps every houseplant in a planter or on a rock island or the wood (nothing rooted in the gravel but the calm underwater planting) and grows more of them at denser stops', () => {
         const count = (S: TankSetup) => S.items.filter(it => it.kind === 'plant' && HOUSE.has(it.variant)).length;
         const n = Array.from({ length: STOPS }, (_, s) => count(stopScene(base, s)));
         expect(n[0], JSON.stringify(n)).toBeGreaterThan(0); expect(n[0]).toBeLessThanOrEqual(4);
         for (let s = 1; s < STOPS; s++) expect(n[s], JSON.stringify(n)).toBeGreaterThanOrEqual(n[s - 1]);
         expect(n[4], JSON.stringify(n)).toBeGreaterThan(n[0] * 2);
         for (let s = 0; s < STOPS; s++) {
-          const S = stopScene(base, s), pots = S.items.filter(it => it.variant === 'planter');
+          const S = stopScene(base, s), pots = S.items.filter(it => it.variant === 'planter' || it.variant === 'ledge'), wood = S.items.filter(it => it.kind === 'wood' && isGardenPiece(it));
           for (const hp of S.items.filter(it => it.kind === 'plant' && HOUSE.has(it.variant))) {
+            if (wood.some(w => Math.abs(w.x - hp.x) < 60 && Math.abs(w.depth - hp.depth) < 60)) continue; // tied on the wood just above the waterline
             expect(base0(S, hp), `stop ${s} ${hp.variant}`).toBeGreaterThan(rimOf(S));
-            expect(pots.some(pt => Math.abs(pt.x - hp.x) <= pt.size * 0.6 && Math.abs(pt.depth - hp.depth) <= pt.size * 0.45 && hp.lift > pt.lift), `stop ${s} ${hp.variant} stands on a planter`).toBe(true);
+            expect(pots.some(pt => Math.abs(pt.x - hp.x) <= pt.size * 0.6 && Math.abs(pt.depth - hp.depth) <= pt.size * 0.45 && hp.lift > pt.lift), `stop ${s} ${hp.variant} stands on a planter or a rock ledge`).toBe(true);
           }
         }
       });
@@ -103,6 +104,23 @@ describe('the scene', () => {
           expect(low.length, `stop ${s} has ${low.length} plants under the rim`).toBeLessThan(45);
         }
       });
+      it('perches plants on rock and wood too: a rock island (a tower and a ledge reaching the rim, plants on it) from the second stop, a second at the top stop, and a wood through the surface from the middle stop, none resized by the stop drawing', () => {
+        const ledges = (s: number) => stopScene(base, s).items.filter(it => it.variant === 'ledge' && isGardenPiece(it)), woods = (s: number) => stopScene(base, s).items.filter(it => it.kind === 'wood' && isGardenPiece(it));
+        expect(ledges(0).length).toBe(0); expect(ledges(1).length).toBe(1); expect(ledges(2).length).toBe(1); expect(ledges(4).length).toBe(2);
+        expect(woods(1).length).toBe(0); expect(woods(2).length).toBe(1);
+        for (const s of [1, 2, 3, 4]) {
+          const S = stopScene(base, s);
+          for (const l of ledges(s)) {
+            const [, lh] = itemDims(l), top = groundHeight(S, S.tank, l.x, l.depth) + l.lift - 0.08 * lh + lh;
+            expect(Math.abs(top - (S.tank.H - 6)), `stop ${s} ledge top ${Math.round(top)} of ${S.tank.H}`).toBeLessThan(12);
+            const tower = S.items.find(it => it.variant === 'seiryu' && isGardenPiece(it) && Math.abs(it.x - l.x) < 1 && Math.abs(it.depth - l.depth) < 1)!;
+            expect(tower, 'the tower under the ledge').toBeTruthy();
+            expect(Math.abs(groundHeight(S, S.tank, tower.x, tower.depth) + 0.92 * itemDims(tower)[1] - (groundHeight(S, S.tank, l.x, l.depth) + l.lift)), 'the ledge sits on the tower').toBeLessThan(3);
+            expect(S.items.some(it => it.kind === 'plant' && Math.abs(it.x - l.x) <= l.size && it.lift > l.lift), 'plants on the ledge').toBe(true);
+          }
+          const w = woods(s)[0]; if (w) expect(groundHeight(S, S.tank, w.x, w.depth) + itemDims(w)[1], `stop ${s} wood`).toBeGreaterThan(waterY(S.tank, S.water.level));
+        }
+      });
       it('lets vines spill over the rim: a pothos at the sparsest stop, philodendron and more vines at the denser ones, each started on a planter', () => {
         const vines = (s: number) => stopScene(base, s).items.filter(it => it.variant === 'pothos' || it.variant === 'philodendron');
         expect(vines(0).length).toBeGreaterThan(0);
@@ -110,7 +128,7 @@ describe('the scene', () => {
         expect(vines(4).some(it => it.variant === 'philodendron')).toBe(true);
         expect(vines(4).some(it => Math.abs(it.yaw) === 90), 'vines run off the ends of the tank').toBe(true);
         const S4 = stopScene(base, 4);
-        for (const v of vines(4)) expect(base0(S4, v)).toBeGreaterThan(rimOf(S4));
+        for (const v of vines(4)) if (!S4.items.some(w => w.kind === 'wood' && isGardenPiece(w) && Math.abs(w.x - v.x) < 60 && Math.abs(w.depth - v.depth) < 60)) expect(base0(S4, v)).toBeGreaterThan(rimOf(S4)); // (the pothos tied on the wood sits just above the waterline)
       });
       it('has a few emersed stems breaking the surface at the denser stops, and none at the sparsest', () => {
         const stems = (s: number) => stopScene(base, s).items.filter(it => EMERSED.has(it.variant) && it.growth != null);
@@ -134,7 +152,7 @@ describe('the scene', () => {
 });
 
 describe('the new parts', () => {
-  const PLANTS = ['peacelily', 'anthurium', 'calathea', 'catpalm', 'philodendron', 'bamboo'];
+  const PLANTS = ['peacelily', 'anthurium', 'calathea', 'catpalm', 'monstera', 'begonia', 'philodendron', 'bamboo'];
   it('each houseplant is in the library, drawn in 3D, a land plant that needs no light or CO2, and priced from a retailer', () => {
     for (const v of PLANTS) {
       expect(LIBRARY[v]?.kind, v).toBe('plant'); expect(PLANT3D[v as never], v).toBeTruthy();

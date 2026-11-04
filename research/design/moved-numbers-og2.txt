@@ -12,3 +12,8 @@ Prices (all from retailer listings, 4 in pots; low / mode / high USD):
   hard:planter        5 / 8 / 15             (hang-on rim planter; GreenAqua EUR 6.72, general plant-holder listings $5.69-$29.07: the mode is a judgement)
 Camera framing: viewer headroom now counts houseplants standing on rim planters (rimHeadroom), so an open-top garden is framed whole.
 Unchanged: every other archetype's scene, roster and welfare; the buildable-archetype and rows counts of test/rosters.test.ts (OG1's 45 / 133).
+
+OG3 (2026-11-04): +2 plants, monstera and begonia (land band; test/growth.test.ts OLD list excludes them). Prices (4 in pots, low / mode / high USD):
+  plant:monstera  13.2 / 14.99 / 30.99   (Canopy Plant Co $14.99, wholesale $13.20, marketplace $27-$31)
+  plant:begonia   7.99 / 16.99 / 39.62   (Home Depot 4-pack $7.99 each, Zamzow's $16.99, Home Depot single $39.62)
+Overflowing Garden scenes: stop 1 up gain a rock island (seiryu + ledge + plants, priced as stones), stop 2 up a manzanita and a pothos; the topmost stops a second island. Unchanged: every other archetype.

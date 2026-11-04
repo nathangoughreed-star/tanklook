@@ -243,7 +243,7 @@ export const GARDEN_LEVEL = 0.96;
 /** What grows under the water of the garden (Nathan 2026-11-03, with a collage of tanks with houseplants on the rim: a calm aquascape underneath, not a jungle): a few low and mid plants, a carpet, floaters at the surface. No tall straps, no stems (the few emersed ones are added by `overgrow`). */
 const UNDER = new Set(['crypt', 'anubias', 'buce', 'fern', 'moss', 'sagittaria', 'carpet', 'frogbit', 'salvinia', 'redroot', 'lettuce']);
 /** The houseplants of the rim planters, in the order the planters take them (height as a share of the tank's height at the sparsest stop; the denser stops grow them up to 1.4 times that). */
-const HOUSEPLANTS: [string, number][] = [['peacelily', 0.65], ['anthurium', 0.55], ['catpalm', 0.62], ['calathea', 0.5], ['bamboo', 0.8]];
+const HOUSEPLANTS: [string, number][] = [['peacelily', 0.65], ['anthurium', 0.55], ['catpalm', 0.62], ['monstera', 0.55], ['calathea', 0.5], ['begonia', 0.4], ['bamboo', 0.8]];
 /** Open top (lanes OG1, OG2): no lid at any level, the water line lowered, and houseplants growing out of planters on the rim with their roots hanging into the water,
  *  as in Nathan's reference: the aquascape under the water stays calm and hardscape-forward; the plant density stop (0.4 .. 1.4) sets only how much grows above the rim
  *  (`p` 0..1): one planter with a peace lily, then planters along the back with palms and anthuriums, then a canopy with vines pouring over the front and down the sides. */
@@ -284,6 +284,26 @@ function overgrow(S: TankSetup): void {
   else [0.14, 0.86].slice(0, nFront).forEach((fx, i) => { const at = planter(T.L * fx, pd / 2 + 5); plant(i ? 'philodendron' : 'pothos', at.x, at.d, tail(i, 1), at.top); plant('calathea', at.x + w * 0.1, at.d + pd * 0.2, T.H * 0.28 * grow, at.top); });
   // ends of the tank: a planter on each side rim, its vine hanging down the side glass (the yaw turns the vine's out-heading to the side)
   for (let i = 0; i < nEnd; i++) { const left = i === 0, at = planter(left ? pd / 2 + 5 : T.L - pd / 2 - 5, T.D * 0.6, left ? 90 : -90); plant(left ? 'pothos' : 'philodendron', at.x, at.d, tail(i, 5), at.top, { yaw: left ? -90 : 90 }); }
+  // perches (Nathan 2026-11-04: "both": plants on rock and wood as well as in planters, as in his reference where wood and rock break the surface): a rock island, a seiryu tower
+  // with a flat ledge on top that reaches the rim, houseplants on the ledge with a vine hanging over its edge; and a branching manzanita rising through the surface with a vine tied on at the waterline
+  const solve = (variant: string, seed: number, height: number) => height / itemDims({ kind: variant === 'manzanita' ? 'wood' : 'stone', variant, seed, size: 1 })[1]; // the size whose height is `height`
+  const island = (x: number, d: number, onTop: [string, number][], vine: string) => {
+    const g = groundHeight(S, T, x, d), top = T.H - 6, seed = SPROUT_SEED + ps++;
+    let sl = w * 0.9, lh = itemDims({ kind: 'stone', variant: 'ledge', seed: seed + 1, size: sl })[1], baseH = (top - g - 0.92 * lh) / 0.92, size = solve('seiryu', seed, baseH);
+    if (size * 0.6 > sl) { sl = size * 0.7; lh = itemDims({ kind: 'stone', variant: 'ledge', seed: seed + 1, size: sl })[1]; baseH = (top - g - 0.92 * lh) / 0.92; size = solve('seiryu', seed, baseH); }
+    const base = makeItem(T, 'seiryu', id(), seed, x, d); base.size = Math.round(size); S.items.push(base);
+    const cap = makeItem(T, 'ledge', id(), seed + 1, x, d, { size: sl }); cap.size = Math.round(sl); cap.lift = Math.round(0.92 * baseH); S.items.push(cap);
+    const seat = cap.lift + 0.92 * lh + 4;
+    onTop.forEach(([v, h], i) => plant(v, x + (i - (onTop.length - 1) / 2) * sl * 0.3, d - sl * 0.05 * i, T.H * h * grow, seat));
+    plant(vine, x, d + sl * 0.1, T.H * (0.4 + 0.3 * p), seat);
+  };
+  if (p >= 0.25) island(T.L * 0.3, T.D * 0.5, [['anthurium', 0.4], ['begonia', 0.3]], 'philodendron');
+  if (p >= 0.75) island(T.L * 0.68, T.D * 0.55, [['monstera', 0.4]], 'pothos');
+  if (p >= 0.5) { // the wood: a manzanita through the surface, a pothos tied on just above the waterline, its vines running up the twigs
+    const x = T.L * 0.5, d = T.D * 0.45, g = groundHeight(S, T, x, d), seed = SPROUT_SEED + ps++;
+    const wood = makeItem(T, 'manzanita', id(), seed, x, d); wood.size = Math.round(solve('manzanita', seed, 0.95 * T.H - g)); S.items.push(wood);
+    plant('pothos', x + 20, d + 12, T.H * 0.9, Math.round(depth - g + 12));
+  }
   // a few emersed stems standing in the water, breaking the surface at the denser stops (the reference tanks have a handful)
   const stems = Math.round(4 * p) + (p >= 0.25 ? 1 : 0);
   for (let i = 0; i < stems; i++) {
@@ -317,7 +337,7 @@ function progresses(a: Archetype, s: Record<Density, TankSetup>, margin: number)
 export const COVER_STEP = 0.3;
 /** The largest side of a hardscape piece, mm. */
 const reach = (it: Item) => Math.max(...itemDims(it));
-export const isHard = (it: Item) => layerOf(it) === 'hard';
+export const isHard = (it: Item) => layerOf(it) === 'hard' && !isGardenPiece(it); // (the garden's own rock island and wood are placed to reach the rim: no resizing)
 /**
  * Rock weight budget (lane RK1, Nathan 2026-11-03: eleven dragon stones in a 60 gal breeder came to ~450 lb and $1,797 of a $1,000 set-up).
  * Real rockwork runs about 1-2.5 lb per gallon of tank (glass, stand and floor load, and a rock pile is bought by the pound). Per family:
@@ -349,7 +369,7 @@ const FIRST_PIECE = 0.3;
 /** A preset's listed rock sizes (`Tweak.rocks`) against the biggest stone as it now stands (the caps may have brought it down); what rests on a shrunk stone is lowered with it. */
 function relSizes(a: Archetype, d: Density, S: TankSetup): void {
   const rel = TWEAKS[a.id]?.rocks?.[d]; if (!rel) return;
-  const free = S.items.filter(it => it.kind === 'stone' && it.lift <= 1).sort((x, y) => reach(y) - reach(x)); if (!free.length) return;
+  const free = S.items.filter(it => it.kind === 'stone' && it.lift <= 1 && !isGardenPiece(it)).sort((x, y) => reach(y) - reach(x)); if (!free.length) return;
   const top = reach(free[0]), factor = new Map<Item, number>();
   free.forEach((it, i) => { const f = Math.min(1, top * (rel[i] ?? 1) / reach(it)); factor.set(it, f); it.size *= f; });
   for (const it of S.items) {
@@ -375,7 +395,7 @@ export const MIX_MIN = 4;
  * the cover step. Stones stacked on another go with the one beneath.
  */
 function mixSizes(a: Archetype, d: Density | 'mid', S: TankSetup, cap: number, o: { B?: number; tiers?: [number, number, number] } = {}) {
-  const free = S.items.filter(it => it.kind === 'stone' && it.lift <= 1).sort((x, y) => reach(y) - reach(x));
+  const free = S.items.filter(it => it.kind === 'stone' && it.lift <= 1 && !isGardenPiece(it)).sort((x, y) => reach(y) - reach(x));
   if (free.length < MIX_MIN || TWEAKS[a.id]?.rocks) return; // a preset that lists its own rock sizes keeps them
   const lean = leanOf(a), n = free.length, B = o.B ?? (d === 'open' ? reach(free[0]) : Math.min(cap, reach(free[0]) * PIECE_GROWTH)); // a fuller level may bring its biggest stone up to the growth limit
   let [pl, pm, ps] = o.tiers ?? TIERS[d as Density];
@@ -388,7 +408,7 @@ function mixSizes(a: Archetype, d: Density | 'mid', S: TankSetup, cap: number, o
     factor.set(it, f); it.size *= f;
   });
   for (const it of S.items) {
-    if (it.lift <= 1 || layerOf(it) !== 'hard') continue;
+    if (it.lift <= 1 || layerOf(it) !== 'hard' || isGardenPiece(it)) continue;
     const base = free.reduce((b, c) => Math.hypot(c.x - it.x, c.depth - it.depth) < Math.hypot(b.x - it.x, b.depth - it.depth) ? c : b), f = factor.get(base) ?? 1;
     it.size *= f; it.lift *= f;
   }

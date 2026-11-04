@@ -6,7 +6,7 @@ export type PlantType = 'stem' | 'stemred' | 'grass' | 'sword' | 'fern' | 'anubi
   | 'hairgrass' | 'hornwort' | 'anacharis'
   | 'echeveria' | 'haworthia' | 'jade' | 'aloe' | 'burrotail' | 'barrel'
   | 'sansevieria' | 'agave' | 'columnar' | 'bamboo'
-  | 'peacelily' | 'anthurium' | 'calathea' | 'catpalm' | 'philodendron';
+  | 'peacelily' | 'anthurium' | 'calathea' | 'catpalm' | 'philodendron' | 'monstera' | 'begonia';
 
 /** Height / width per plant type (sizes and footprints; the ratio of the old 2D cards). */
 export const PLANT_ASPECT: Record<PlantType, number> = { stem: 3.2, stemred: 3.2, grass: 3.6, sword: 1.1, fern: 1.3, anubias: 0.8, carpet: 0.32, crypt: 1,
@@ -16,7 +16,7 @@ export const PLANT_ASPECT: Record<PlantType, number> = { stem: 3.2, stemred: 3.2
   hairgrass: 0.4, hornwort: 3, anacharis: 3.2,
   echeveria: 0.55, haworthia: 0.7, jade: 1.1, aloe: 1.1, burrotail: 0.5, barrel: 1,
   sansevieria: 1.6, agave: 0.8, columnar: 2.4, bamboo: 3.2,
-  peacelily: 1, anthurium: 0.9, calathea: 0.85, catpalm: 1.2, philodendron: 1.3 };
+  peacelily: 1, anthurium: 0.9, calathea: 0.85, catpalm: 1.2, philodendron: 1.3, monstera: 1, begonia: 1.1 };
 /** Plants that grow as a low patch (size = patch width, height = CARPET_H) rather than upright (size = height). */
 export const isCarpet = (v: string) => v === 'carpet';
 /** Plants that float at the water line (size = patch width; roots hang below; not drawn in a dry tank). */
@@ -363,6 +363,14 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
     pinnae: { n: [24, 30], ang: 0.95, prof: [0.55, 0.45], leaf: {
       len: [0.1, 0.12], wid: 0.17, prof: [0.7, 0.6], rise: [0, 0], arch: 0.15, twist: 0, fold: 0.2, wave: [0, 0], pet: 0,
       cols: [['#2c6a28', '#52983e'], ['#307228', '#58a042'], ['#286024', '#488c38']], under: '#5a9040', seg: [3, 3] } } } },
+  // Monstera (Monstera deliciosa): big glossy heart leaves on long stalks; the dark side veins stand for the splits of a grown leaf (a leaf shape cannot be cut yet)
+  monstera: { land: true, grow: { speed: 'medium', overflow: 'none', len: [100, 800], more: 3 }, cap: 1.4, sway: 0, form: 'rosette', n: [6, 9], crowns: [1, 2], spread: 0.2, stalk: '#3e6a34', leaf: {
+    len: [0.5, 0.78], wid: 0.95, prof: [0.55, 0.5], rise: [0.08, 0.75], arch: 0.35, twist: 0.15, fold: 0.05, wave: [0.03, 3], pet: 0.5,
+    cols: [['#1f5a28', '#3a8c42'], ['#24622e', '#42984a'], ['#1c5224', '#348438']], under: '#4a8048', rib: '#86bc7a', veins: { col: '#0e2c16', n: 7, w: 0.13 }, seg: [14, 10] } },
+  // Polka-dot begonia (Begonia maculata): olive, pointed, wing-shaped leaves with white spots, wine-red underneath, on cane-like stalks
+  begonia: { land: true, grow: { speed: 'medium', overflow: 'none', len: [60, 600], more: 3 }, cap: 1.4, sway: 0, form: 'rosette', n: [10, 14], crowns: [1, 2], spread: 0.25, stalk: '#7a3a40', leaf: {
+    len: [0.42, 0.62], wid: 0.38, prof: [0.7, 0.55], rise: [0.2, 1.0], arch: 0.35, twist: 0.2, fold: 0.06, wave: [0.02, 3], pet: 0.18,
+    cols: [['#3c6a34', '#68a050'], ['#40703a', '#70a856'], ['#386430', '#5e9448']], under: '#8a2a3e', rib: '#a8c890', spots: { col: '#eef2e4', n: [16, 26], r: 0.028 }, seg: [10, 6] } },
   // Heartleaf philodendron: long soft vines of glossy dark heart leaves; set on a rim planter its vines run out and hang over the edge (vine.out)
   philodendron: { land: true, grow: { speed: 'fast', overflow: 'trail', len: [80, 1800], more: 2.5 }, sway: 0, form: 'vine', n: [4, 6], spread: 0.15, stalk: '#4e5e2e',
     vine: { climb: 0, node: 34, back: 0.35, fan: 0.7, thick: 1.5, wander: 0.3, branch: 1, out: Math.PI / 2 }, leaf: {

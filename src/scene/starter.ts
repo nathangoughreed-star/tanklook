@@ -182,7 +182,7 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
  */
 export function regenerate(s: TankSetup, what: Layer | 'all', firstFishId: number) {
   // an open-top garden's rim planters and houseplants (lane OG2) are not the starter's: they stay through a layer's redraw (a new layout or Shuffle, 'all', clears them)
-  const garden = what === 'all' || what === 'animal' ? [] : s.items.filter(isGardenPiece);
+  const garden = what === 'all' || what === 'animal' ? [] : s.items.filter(it => isGardenPiece(it) && (what !== 'plant' || layerOf(it) !== 'hard')); // (the plant redraw already keeps the hardscape, the garden's rock and wood with it)
   if (what === 'plant') s.items = starterItems(s, s.items.filter(it => layerOf(it) === 'hard'));
   else if (what !== 'animal') s.items = starterItems(s);
   if (garden.length) { let id = s.items.reduce((m, it) => Math.max(m, it.id), 0); for (const it of garden) s.items.push({ ...it, id: ++id }); }

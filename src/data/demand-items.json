@@ -1267,6 +1267,20 @@
    "unit": "one 4 inch potted heartleaf philodendron; $13.23 each in a 3-pack, $9.99-$18 single",
    "url": "https://www.homedepot.com/p/national-PLANT-NETWORK-4-in-Philodendron-Brasil-Plant-in-Grower-Container-3-Pack-HD2344/336079040"
   },
+  "plant:monstera": {
+   "lo": 13.2,
+   "mode": 14.99,
+   "hi": 30.99,
+   "unit": "one 4 inch potted Monstera deliciosa; $13.20 wholesale, $14.99-$18 retail, $27-$31 marketplace",
+   "url": "https://reach.dog/shop/canopy-plant-co/products/4-monstera-deliciosa"
+  },
+  "plant:begonia": {
+   "lo": 7.99,
+   "mode": 16.99,
+   "hi": 39.62,
+   "unit": "one 4 inch potted polka-dot begonia; $7.99 each in a 4-pack, $15-$19.99 growers, $27.52-$39.62 single",
+   "url": "https://zamzows.com/products/begonia-maculata-4-in"
+  },
   "plant:pothos": {
    "lo": 7,
    "mode": 9.4,
