@@ -48,7 +48,7 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
   const Pe = (): UserProfile => ({ ...P, limits: effectiveLimits(store.tank, P.limits) });
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(P)); } catch { /* ignore */ } };
   const OPEN_KEY = 'tanklook.demandOpen';
-  let shown = (() => { try { const v = localStorage.getItem(OPEN_KEY); if (v !== null) return v === '1'; } catch { /* ignore */ } return window.innerWidth > 900; })();
+  let shown = (() => { try { const v = localStorage.getItem(OPEN_KEY); if (v !== null) return v === '1'; } catch { /* ignore */ } return false; })(); /* minimized until opened (UI3) */
   mount.innerHTML = `<div class="dm"><button type="button" class="dmtog" aria-expanded="true" title="Show or hide what this tank costs and asks of you; it updates as you edit"><span class="dmhead">What this tank asks of you</span><span class="dmsum"></span><span class="dmflag" hidden></span><span class="dmcaret" aria-hidden="true">▾</span></button>
     <div class="dmbody"><div class="dmmode"></div><div class="dmbars"></div><div class="dmlid" hidden></div><div class="dmdeals" style="font-size:11px;opacity:.85"></div><div class="dmdrill" hidden></div>
     <details class="dmset dmguard"><summary>Guardrails</summary><div class="dmlimits"></div></details>
@@ -115,7 +115,7 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
     const S = store.tank, nA = S.fish.length, nP = S.items.filter(i => i.kind === 'plant' || i.kind === 'coral').length;
     q('.dmmode').textContent = nA ? `With ${nA} animal${nA > 1 ? 's' : ''}${B ? `; without them: ${usd(B.totals.setupUsd)} to set up, ${usd(B.totals.upkeepUsdMo)} a month` : ''}`
       : nP ? 'Plants only: what it costs to keep this planted tank running. Add animals and watch it climb.' : 'Empty tank: the gear and upkeep before anything lives in it.';
-    q('.dmsum').textContent = `${usd(D.totals.setupUsd)} · ${usd(D.totals.upkeepUsdMo)}/mo · ${Math.round(D.totals.minPerWeek)} min/wk · difficulty ${D.totals.risk.toFixed(1)}`;
+    q('.dmsum').innerHTML = `${esc(usd(D.totals.setupUsd))}<span class="dmrest"> · ${esc(usd(D.totals.upkeepUsdMo))}/mo · ${Math.round(D.totals.minPerWeek)} min/wk · difficulty ${D.totals.risk.toFixed(1)}</span>`;
     renderCompliance();
     renderLid();
     renderDeals();

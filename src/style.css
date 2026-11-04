@@ -245,10 +245,17 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 @media (max-width: 760px) { #groupBar { top: auto; bottom: 34px; left: 8px; max-width: calc(100% - 16px); max-height: calc(100% - 100px); overflow: auto } #groupBar .gbRow { gap: 4px } #groupBar #gbCount { flex: 1 0 100% } } /* over the cabinet, clear of the tank and the panel tab */
 .viewtools .sidetog:disabled { opacity: .55; cursor: default }
 #sideClose { font-size: 16px; line-height: 1; padding: 3px 8px }
-#sideOpen, #sideTab { display: none }
+#sideOpen, #sideClose { display: none } /* the panel's one control is the arrow tab (UI3, Nathan 2026-11-04), as on the phone */
 #app.collapsed #side { display: none }
-#app.collapsed #sideOpen { display: block }
-#app.collapsed #sideClose { display: none }
+@media (min-width: 761px) {
+  #sideTab { display: flex; align-items: center; justify-content: center; position: absolute; top: 50%; left: 0; transform: translateY(-50%); z-index: 3;
+    width: 24px; height: 56px; min-height: 0; padding: 0; border: 1px solid var(--line); border-left: 0; border-radius: 0 8px 8px 0;
+    background: var(--panel); color: var(--ink); font-size: 16px; line-height: 1; cursor: pointer; box-shadow: 2px 0 4px rgba(0, 0, 0, .12) }
+  #sideTab::before { content: ''; position: absolute; inset: -8px -12px -8px 0 }
+  #sideTab span { display: inline-block; transform: rotate(90deg) }
+  #app.collapsed #sideTab span { transform: rotate(-90deg) }
+}
+@media (max-width: 760px) { #sideTab { display: none } }
 .lab { position: absolute; top: 8px; display: flex; align-items: center; gap: 8px; font-size: 12px; background: rgba(0, 0, 0, .55); color: #fff; padding: 3px 7px; border-radius: 4px; pointer-events: none; white-space: nowrap; flex-wrap: wrap; justify-content: flex-end; row-gap: 4px } /* wraps inside its max-width on a narrow view (audit #2) */
 .lab button { pointer-events: auto }
 .lab:not(.tab) > span:first-child { white-space: normal; text-align: right } /* the size line itself wraps too */
@@ -465,7 +472,8 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .dmfloat.closed { width: auto }
 .dm { padding: 8px; border: 1px solid var(--line); border-radius: 6px; background: color-mix(in srgb, var(--panel) 92%, transparent); box-shadow: 0 2px 10px rgba(0,0,0,.18) }
 .dmtog { display: flex; align-items: baseline; gap: 8px; width: 100%; padding: 0; border: 0; background: none; color: var(--ink); font: inherit; text-align: left; cursor: pointer }
-.dmtog[aria-expanded=true] .dmsum { display: none }
+.dmtog { flex-wrap: wrap }
+.dmfloat.closed .dmrest, .dmfloat.closed .dmflag { display: none } /* minimized: the one-time price only (UI3) */
 .dmfloat.closed .dmhead { display: none }
 .dmsum { font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap }
 .dmcaret { margin-left: auto; color: var(--muted); transition: transform .15s }
@@ -826,22 +834,22 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .startkind button.on, .kinds button.on { background: var(--accent); border-color: var(--accent); color: #fff }
 
 /* ---- the setup brief bar (lane U3): one slim bar over the view in every entry point; panels start below it ---- */
-#view { --bb-h: 38px }
+#view { --bb-h: 0px } /* the brief lives in the side panel now (UI3), so nothing is pushed down */
 .sp { top: calc(10px + var(--bb-h)) }
-.bb { position: absolute; z-index: 6; top: 6px; left: 10px; right: 10px; display: flex; flex-wrap: nowrap; gap: 4px; align-items: stretch; font-size: 12px; color: var(--ink) }
+.bb { display: flex; flex-direction: column; gap: 4px; align-items: stretch; font-size: 12px; color: var(--ink); padding-bottom: 6px }
 .bb button { font: inherit; font-size: 12px; border: 1px solid var(--line); border-radius: 6px; background: color-mix(in srgb, var(--panel) 94%, transparent); color: var(--ink); cursor: pointer; padding: 3px 8px }
 .bb button:hover { background: color-mix(in srgb, var(--ink) 8%, var(--panel)) }
 .bb .bbHead { display: flex; gap: 6px; align-items: center; white-space: nowrap }
 .bb .bbNone { font-weight: 400; opacity: .65 }
 .bb .bbBadge { background: #2a9bb0; color: #fff; border-radius: 9px; padding: 0 7px; font-size: 11px }
-.bb .bbChip { display: flex; gap: 5px; align-items: baseline; min-width: 0; flex: 1 1 0; text-align: left; overflow: hidden }
+.bb .bbChip { display: flex; gap: 5px; align-items: baseline; min-width: 0; text-align: left; overflow: hidden }
 .bb .bbChip i { font-style: normal; font-weight: 600; flex: none }
 .bb .bbChip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
 .bb .bbChip.open { border-style: dashed; opacity: .7 }
 .bb .bbChip.set { border-color: #2a9bb0 }
 .bb .bbChip.locked i::after { content: ' \1F512'; font-size: 10px }
 .bb.empty .bbChip { opacity: .55 }
-.bbCard { position: absolute; top: 100%; left: 0; width: min(640px, 100%); margin-top: 4px; box-sizing: border-box; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); box-shadow: 0 2px 10px rgba(0, 0, 0, .3); max-height: calc(100vh - 120px); overflow-y: auto; display: flex; flex-direction: column; gap: 8px }
+.bbCard { position: static; width: auto; margin-top: 4px; box-sizing: border-box; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); box-shadow: 0 2px 10px rgba(0, 0, 0, .3); max-height: calc(100vh - 120px); overflow-y: auto; display: flex; flex-direction: column; gap: 8px }
 .bbRow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center }
 .bbRow > b { min-width: 120px }
 .bbOpen { opacity: .6 }
@@ -860,7 +868,6 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .bbCons.over span { color: #c0392b }
 .bbFoot { display: flex; flex-wrap: wrap; gap: 8px; align-items: center }
 .bb .primary { background: #2a9bb0; border-color: #2a9bb0; color: #fff; font-weight: 600; padding: 5px 12px }
-@media (max-width: 700px) { .bb .bbChip span { display: none } .bb .bbChip { flex: none } }
 .viewtools { top: calc(10px + var(--bb-h)) }
 .dmfloat { top: calc(10px + var(--bb-h)); max-height: calc(100% - 20px - var(--bb-h)) }
 #groupBar, #brushBar { top: calc(48px + var(--bb-h)) }
@@ -1216,3 +1223,5 @@ button.start-mode-card span.hint { font-size: 12px }
 .da-warns li.da-red { border-color: #e05a5a; background: rgba(224, 90, 90, .14) } .da-warns li.da-amber { border-color: #e0a45a; background: rgba(224, 164, 90, .14) }
 .da-warns em { font-style: normal; font-weight: 600; color: var(--bad) } .da-warns button { align-self: flex-start; font-size: 12px }
 @media (max-width: 820px) { .da-wrap { grid-template-columns: minmax(0, 1fr) } .da-live { position: static } }
+.bb .bbHead { display: none }
+#view:has(.lab.tab) .dmfloat { top: calc(10px + 92px) } /* split view: below the tab and its Edit note, which the cost panel used to cover (UI3) */

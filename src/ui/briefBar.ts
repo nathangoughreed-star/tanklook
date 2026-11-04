@@ -8,21 +8,20 @@ import { onBuildPicked } from './buildPick';
 import { loadProfile } from './demandPanel';
 import {
   answer, answeredOf, directionOf, recordAnswer, setDirection, budgetOf, careTimeOf, editBrief, rangeOf, setLimitBound, getBrief, isEmpty, lockedStock, nextQuestions, onBrief, removeItem, setBudget, setCareTime, setSpace, setTank, spaceOf, summarise, toggleLock,
-  emptyBrief, setBrief, type Direction, type GroupView, type ItemId, type QId, type Question,
+  emptyBrief, setBrief, type Direction, type ItemId, type QId, type Question,
 } from './setupBrief';
 import { applyRetainedFix, consequence, evaluateAnimals, feasibilityNow, onReeval, retainedHtml, type ReevalNote } from './briefFeasibility';
 import { pinnedKit } from '../demand/pinned';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const MM_IN = 25.4;
-const SHORT: Record<string, string> = { animals: 'Animals', appearance: 'Look', equipment: 'Tank', constraints: 'Limits', preferences: 'Preferences' };
 
 export function attachBriefBar(store: Store, host: { suggest(): void; /** the "What you already have" panel */ owned(): void; /** the "Your limits" panel */ limits(): void; /** the printable report */ report(): void }) {
-  const view = document.getElementById('view')!;
+  const host_ = document.getElementById('briefHost')!; // the Setup brief section of the side panel (UI3)
   const bar = document.createElement('div');
   bar.className = 'bb'; bar.setAttribute('role', 'region'); bar.setAttribute('aria-label', 'Setup brief');
-  view.append(bar);
-  let openCard = false;
+  host_.append(bar);
+  let openCard = true; // the card is the section's content now (UI3)
   // lane GS6: what the last tank change did to the design (adapted, never replaced), shown until dismissed; and what was asked for but cannot work now, with its fixes
   let note: ReevalNote | undefined;
   onReeval(n => { note = n; openCard = true; draw(); });
@@ -33,10 +32,6 @@ export function attachBriefBar(store: Store, host: { suggest(): void; /** the "W
   // a build picked in the three-builds screen is a tank choice
   onBuildPicked(e => editBrief(b => setTank(b, { id: e.build.tank.id })));
 
-  const chip = (g: GroupView) => {
-    const locked = g.rows.some(r => r.status === 'locked' && !r.off);
-    return `<button type="button" class="bbChip ${g.open ? 'open' : 'set'}${locked ? ' locked' : ''}" data-g="${g.id}" title="${esc(g.label)}: ${esc(g.text)}"><i>${esc(SHORT[g.id])}</i><span>${esc(g.text)}</span></button>`;
-  };
   const input = (id: string, label: string, v: string, unit: string, step = 1) =>
     `<label class="bbIn"><span>${label}</span><input id="${id}" type="number" min="0" step="${step}" inputmode="decimal" value="${esc(v)}" placeholder="no bound">${unit ? `<em>${unit}</em>` : ''}</label>`;
   const askCard = (q: Question) => `<div class="bbAsk" data-q="${q.id}"><b>${esc(q.text)}</b> <span class="spNote">${esc(q.why)}</span><div class="bbOpts">${q.options.map(o => `<button type="button" data-ans="${o.id}">${esc(o.label)}</button>`).join('')}<button type="button" class="spLink" data-skip="${q.id}">Not sure</button></div></div>`;
@@ -51,7 +46,7 @@ export function attachBriefBar(store: Store, host: { suggest(): void; /** the "W
       if (ev?.gal !== undefined) { ctx.animalTankGal = ev.gal; next = nextQuestions(b, ctx); }
     }
     const nq = next.questions.length;
-    bar.innerHTML = `<button type="button" class="bbHead" data-act="toggle" aria-expanded="${openCard}"><b>Setup brief</b>${isEmpty(b) ? '<span class="bbNone">nothing set: optional</span>' : ''}${nq ? `<span class="bbBadge">${nq} to ask</span>` : ''}</button>${rows.map(chip).join('')}<button type="button" class="bbChip bbPanel" data-act="owned" title="Tick the tank, light, heater, filter and stand you already own"><span>What you already have</span></button><button type="button" class="bbChip bbPanel" data-act="limits" title="Money, time, space, room and water: all optional"><span>Your limits</span></button><button type="button" class="bbChip bbPanel" data-act="report" title="The printable report for this setup"><span>Report</span></button>`;
+    bar.innerHTML = `<button type="button" class="bbHead" data-act="toggle" aria-expanded="${openCard}"><b>Setup brief</b>${isEmpty(b) ? '<span class="bbNone">nothing set: optional</span>' : ''}${nq ? `<span class="bbBadge">${nq} to ask</span>` : ''}</button><button type="button" class="bbChip bbPanel" data-act="owned" title="Tick the tank, light, heater, filter and stand you already own"><span>What you already have</span></button><button type="button" class="bbChip bbPanel" data-act="limits" title="Money, time, space, room and water: all optional"><span>Your limits</span></button><button type="button" class="bbChip bbPanel" data-act="report" title="The printable report for this setup"><span>Report</span></button>`;
     bar.classList.toggle('empty', isEmpty(b));
     if (!openCard) return;
     let cons = '';
