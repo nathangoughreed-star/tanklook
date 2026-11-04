@@ -698,7 +698,7 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .sgGrid { list-style: none; margin: 0; padding: 0 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 12px }
 .sgTile { width: 100%; height: 100%; display: flex; flex-direction: column; gap: 2px; text-align: left; padding: 8px; font: inherit; border-radius: 10px; border: 1px solid #36505f; background: #1d3140; color: inherit; cursor: pointer }
 .sgTile:hover { border-color: #2a9bb0; background: #23394a }
-.sgImg { position: relative; display: block; aspect-ratio: 8 / 5; border-radius: 6px; background: linear-gradient(#cfe3ee, #a9c9da); overflow: hidden; margin-bottom: 4px }
+.sgImg { position: relative; display: block; aspect-ratio: 3 / 2; border-radius: 6px; background: linear-gradient(#cfe3ee, #a9c9da); overflow: hidden; margin-bottom: 4px }
 .sgImg img { width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity .3s } .sgImg img.ready { opacity: 1 }
 .sgImg[data-ruler]::before { content: ''; position: absolute; left: 8px; bottom: 8px; width: var(--ruler); height: 5px; border: 1.5px solid #17303d; border-top: 0; opacity: .75; pointer-events: none }
 .sgImg[data-ruler]::after { content: attr(data-ruler); position: absolute; left: 8px; bottom: 15px; font-size: 10px; font-weight: 600; color: #17303d; opacity: .8; pointer-events: none }
@@ -913,7 +913,16 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .start-mode-card h3 { margin: 0; font-size: 17px }
 .start-mode-card p { margin: 0; font-size: 13px }
 .start-mode-card .primary { align-self: flex-start; margin-top: auto }
-.start-mode-links { margin-top: 2px }
+.mode-pic { position: relative; aspect-ratio: 3 / 2; border-radius: 8px; overflow: hidden; background: repeating-linear-gradient(135deg, #8881 0 12px, #8882 12px 24px), var(--panel) }
+.mode-pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover }
+.mode-pic img:not(.ok) { visibility: hidden } /* no broken-image icon while a missing art file 404s */
+.mode-kind-h { margin: 4px 0 0; font-size: 15px }
+.kinds4 { grid-template-columns: 1fr 1fr 1fr 1fr }
+button.start-mode-card { text-align: left; color: inherit; font: inherit; background: var(--panel); cursor: pointer }
+button.start-mode-card:hover, button.start-mode-card:focus-visible { border-color: var(--accent) }
+button.start-mode-card b { font-size: 15px }
+button.start-mode-card span.hint { font-size: 12px }
+@media (max-width: 760px) { .kinds4 { grid-template-columns: 1fr 1fr } }
 @media (max-width: 600px) { .start-mode { grid-template-columns: 1fr } }
 .sandbox-bar { border: 1px solid var(--line, #8886); border-radius: 8px; padding: 6px 8px; margin: 6px 0; font-size: 12px }
 .sandbox-bar .sb-head { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline }

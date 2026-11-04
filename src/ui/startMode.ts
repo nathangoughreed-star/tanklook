@@ -1,5 +1,5 @@
 // New tank: Guided or Sandbox (lane NG1, Nathan 2026-10-29). Two equal cards. Guided enters the Welcome workspace (ui/welcome.ts);
-// deals, starters and saved tanks are links under it. Sandbox is an empty tank of the chosen kind with the checks shown as flags that
+// Sandbox (UI2 2026-11-04: Start sandbox opens a second screen of four kind cards) is an empty tank of the chosen kind with the checks shown as flags that
 // never block; an animal-welfare problem is always red and says it is not a valid tradeoff. A Guardrails list shows the brief items
 // switched off (`off`) and turns them back on; one button switches Sandbox to Guided and keeps the tank. The pure part is testable.
 import type { Store } from '../scene/store';
@@ -57,18 +57,20 @@ export interface StartModeHost {
   /** The demand profile for the cost flags (lazy: the demand panel loads after start-up). */ profile?(): Parameters<typeof demandOf>[1] | undefined;
 }
 
-export function attachStartMode(store: Store, host: StartModeHost, initialKind: SetupKind = 'freshwater') {
+export function attachStartMode(store: Store, host: StartModeHost) {
   const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
   const dlg = $<HTMLDialogElement>('modeDlg'), guard = $<HTMLDialogElement>('guardDlg'), bar = $('sandboxBar');
-  let kind = initialKind;
-  const kindBox = $('modeKind');
-  kindBox.replaceChildren(kindBox.firstElementChild!, ...SETUP_KINDS.map(([k, label, tip]) => {
-    const b = document.createElement('button'); b.type = 'button'; b.dataset.kind = k; b.textContent = label; b.title = tip;
-    b.onclick = () => { kind = k; paintKind(); };
+  const main = $('modeMain'), kinds = $('modeKinds'), kindList = $('modeKindList');
+  const base = import.meta.env.BASE_URL;
+  /** A picture slot shows a neutral placeholder; public/art/<data-art>.webp (1536 x 1024) fills it when it exists, a missing file just leaves the placeholder. */
+  const fillPics = (root: HTMLElement) => { for (const p of root.querySelectorAll<HTMLElement>('.mode-pic[data-art]:not(:has(img))')) { const i = document.createElement('img'); i.alt = ''; i.decoding = 'async'; i.onload = () => i.classList.add('ok'); i.onerror = () => i.remove(); i.src = `${base}art/${p.dataset.art}.webp`; p.append(i); } };
+  kindList.replaceChildren(...SETUP_KINDS.map(([k, label, tip]) => {
+    const b = document.createElement('button'); b.type = 'button'; b.dataset.kind = k; b.className = 'start-mode-card';
+    b.innerHTML = `<div class="mode-pic" data-art="start/${k}"></div><b>${label}</b><span class="hint">${esc(tip)}</span>`;
+    b.onclick = async () => { if (await host.sandbox(k)) { setMode('sandbox'); dlg.close(); drawBar(); } };
     return b;
   }));
-  const paintKind = () => { for (const x of kindBox.querySelectorAll<HTMLButtonElement>('button')) { const on = x.dataset.kind === kind; x.classList.toggle('on', on); x.setAttribute('aria-pressed', String(on)); } };
-  paintKind();
+  const screen = (kindsOn: boolean) => { main.hidden = kindsOn; kinds.hidden = !kindsOn; $('modeTitle').textContent = 'New tank'; fillPics(dlg); (kindsOn ? kindList.querySelector<HTMLElement>('button') : $('modeGuided'))?.focus(); };
 
   const drawBar = () => {
     if (getMode() !== 'sandbox') { bar.hidden = true; return; }
@@ -99,14 +101,9 @@ export function attachStartMode(store: Store, host: StartModeHost, initialKind: 
     const id = (t.dataset.on ?? t.dataset.off) as ItemId, off = t.dataset.off !== undefined;
     editBrief(b => setOff(b, id, off)); drawGuard();
   });
-  dlg.addEventListener('click', e => {
-    const t = (e.target as HTMLElement).closest<HTMLElement>('[data-browse]'); if (!t) return;
-    const w = t.dataset.browse!; dlg.close(); setMode('guided'); drawBar();
-    host.browse(w === 'new' ? 'new' : 'open', w === 'starters' ? 'starters' : w === 'open' ? 'open' : undefined);
-  });
-  $('modeOwned').onclick = async () => { if (await host.guidedNew('equipment')) { setMode('guided'); dlg.close(); drawBar(); } };   // Guided Setup Rev 03: "something I have now" opens Guided at Equipment
   $('modeGuided').onclick = async () => { if (await host.guidedNew()) { setMode('guided'); dlg.close(); drawBar(); } };
-  $('modeSandbox').onclick = async () => { if (await host.sandbox(kind)) { setMode('sandbox'); dlg.close(); drawBar(); } };
+  $('modeSandbox').onclick = () => screen(true);
+  $('modeBack').onclick = () => screen(false);
   store.subscribe(drawBar); onBrief(drawBar); drawBar();
-  return { show() { paintKind(); if (!dlg.open) dlg.showModal(); $('modeGuided').focus(); }, drawBar };
+  return { show() { if (!dlg.open) dlg.showModal(); screen(false); }, drawBar };
 }
