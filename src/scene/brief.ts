@@ -155,6 +155,8 @@ export interface ProjectExtras {
   tankDims?: DimsIn;
   /** the person insisted on no lid (lane LB1): every generated setup comes with one unless this is set; withdrawing it brings the lid back */
   lidFree?: true;
+  /** the guide (ui/coach, lane GW1): where the walk through the menus stopped, so it resumes; absent = not started or finished */
+  coach?: { at: string; skipped?: string[] };
 }
 /** The project's extra answers (never undefined). */
 export const projectExtras = (b: Brief): ProjectExtras => b.project ?? {};
@@ -379,6 +381,8 @@ export function parseProject(raw: unknown): ProjectExtras | undefined {
   if (ROUTES.includes(r.route as Route)) p.route = r.route as Route;
   if (r.scratch === true) p.scratch = true;
   if (r.lidFree === true) p.lidFree = true;
+  const co = r.coach as Record<string, unknown> | undefined;
+  if (co && typeof co === 'object' && idOk(co.at)) { const sk2 = Array.isArray(co.skipped) ? co.skipped.filter(idOk).slice(0, 40) : []; p.coach = sk2.length ? { at: co.at, skipped: sk2 } : { at: co.at }; }
   const sk = strs(r.skipped, SKIP_STEPS); if (sk?.length) p.skipped = sk;
   if (r.use && typeof r.use === 'object') {
     const u: ProjectExtras['use'] = {};

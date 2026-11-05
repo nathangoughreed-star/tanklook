@@ -317,6 +317,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     browse: (menu, tab) => showChooser(menu, tab, welcomeFirst),
     profile: () => { try { return loadProfile(); } catch { return undefined; } },
   });
+  void import('./coach/dom').then(m => m.attachCoach(store, { limits: openLimits, tank: () => $('presetA').click() })); // lane GW1: the guide that walks the real menus (ui/coach)
   void import('./suggest').then(m => { suggestPanel = m.attachSuggest(store, viewer, status); }); // lane C8: Suggest a setup
   void import('./infeasibleCard').then(m => m.attachCompare(store, status)); // lane GV7: compromise slots fill as they show; Use this / Compare (split view, money and care first on the tabs)
   void import('./briefBar').then(m => { m.attachBriefBar(store, { suggest: () => suggestPanel?.open(), owned: openOwned, limits: openLimits, report: () => void import('./report').then(m => m.openReport()) }); }); // lane U3: the setup brief bar, shown in every entry point

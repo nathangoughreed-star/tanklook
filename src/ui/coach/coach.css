@@ -1,0 +1,30 @@
+/* The guide (lane GW1): a small card at the bottom of the 3D view and a soft ring round the control it is about. Colours come from the page's own variables, so it follows light / dark. */
+.coachCard { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 6; width: min(380px, calc(100% - 24px)); padding: 10px 12px 12px; border-radius: 10px;
+  background: var(--panel); color: var(--ink); border: 1px solid var(--accent); box-shadow: 0 6px 22px rgba(0, 0, 0, .28) }
+.coachCard.inDlg { position: fixed; bottom: 14px; z-index: 50 } /* inside an open dialog (its page is inert): fixed to the screen, over the dialog's own content */
+.coachHead { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--muted) }
+.coachN { font-weight: 600; letter-spacing: .02em; text-transform: uppercase }
+.coachTick { color: var(--ok); font-weight: 700 }
+.coachX { margin-left: auto; border: 0; background: none; color: var(--muted); font: inherit; font-size: 14px; line-height: 1; padding: 2px 6px; cursor: pointer; border-radius: 4px }
+.coachX:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 12%, transparent) }
+.coachT { margin: 4px 0 2px; font-size: 15px }
+.coachWhy { margin: 0 0 8px; font-size: 12.5px; line-height: 1.4; color: var(--ink) }
+.coachBtns { display: flex; gap: 6px; justify-content: flex-end }
+.coachBtns button { font: inherit; padding: 4px 12px; border-radius: 6px; border: 1px solid var(--line); background: var(--chip); color: var(--ink); cursor: pointer }
+.coachBtns button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600 }
+.coachBtns button:disabled { opacity: .45; cursor: default }
+.coachCard.done { border-color: var(--ok) }
+@media (min-width: 1100px) { .coachCard.inDlg { left: auto; right: 16px; transform: none } } /* wide: beside the dialog, not over it */
+/* the spotlight: a fixed box over the panel (or the screen, for a control outside it) that clips the dimming shadow of the ring to that box; clicks go straight through */
+.coachScrim { position: fixed; z-index: 20; overflow: hidden; pointer-events: none }
+.coachScrim[hidden] { display: none }
+.coachRing { position: absolute; border: 2px solid var(--accent); border-radius: 7px; transition: left .15s, top .15s, width .15s, height .15s }
+.coachScrim.dim .coachRing { box-shadow: 0 0 0 9999px rgba(12, 16, 24, .34) }
+/* phone: the panel is the bottom half, so the card docks at the foot of the view, just above the panel's arrow tab, small enough to leave the tank visible */
+@media (max-width: 760px) {
+  .coachCard { bottom: 30px; width: calc(100% - 16px); padding: 7px 10px 8px }
+  .coachT { font-size: 14px; margin: 2px 0 1px }
+  .coachWhy { font-size: 12px; margin-bottom: 6px; line-height: 1.3 }
+  .coachBtns button { padding: 6px 12px }
+}
+@media (prefers-reduced-motion: reduce) { .coachRing { transition: none } }
