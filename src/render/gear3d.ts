@@ -9,6 +9,7 @@ import { filterState, heatLoss, techOf, techParts, type GearPlace } from '../sce
 import { filterProduct, genericHeaterW, pumpProduct } from '../data/gearCatalog';
 import { backdropDepth, clamp } from '../scene/physics';
 import type { Tank, TankSetup } from '../scene/types';
+import { tankView } from './tankView';
 import { GearSpot, GearPick, GearSide, Bucket, Kit, GearWall, Frame, frame, Spot } from './gear/common';
 import { heater } from './gear/heater';
 import { hob, sponge, internal, canister } from './gear/filter';
@@ -36,7 +37,7 @@ export const gearView = { on: true };
 /** The tank's gear as picks: from lane TM's techParts (scene/tech.ts), which also fills a file without `tech` with the
  *  inferred gear (a HOB up to 60 gal, else a canister; a heater; salt: skimmer; CO2 when the plants are fed CO2). */
 export function gearPicks(S: TankSetup): GearPick[] {
-  if (!gearView.on || (!S.tech && !DRAW_INFERRED)) return [];
+  if (!gearView.on || tankView.empty || (!S.tech && !DRAW_INFERRED)) return [];
   const out: GearPick[] = [], parts = techParts(S), sump = parts.some(p => p.gear === 'sump');
   for (const p of parts) {
     const place = spotOf(S, p.place), pick = (id: string) => out.push({ id, row: p.row, ...(p.n > 1 ? { n: p.n } : {}), ...(p.product && p.gear !== 'airpump' ? { product: p.product } : {}), ...(place ? { place } : {}) });

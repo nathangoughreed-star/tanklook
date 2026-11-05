@@ -105,5 +105,5 @@ export function attachStartMode(store: Store, host: StartModeHost) {
   $('modeSandbox').onclick = () => screen(true);
   $('modeBack').onclick = () => screen(false);
   store.subscribe(drawBar); onBrief(drawBar); drawBar();
-  return { show() { if (!dlg.open) dlg.showModal(); screen(false); }, drawBar };
+  return { show() { if (!dlg.open) dlg.showModal(); screen(false); }, /** the kind cards (the picker's way back, lane ST1) */ showKinds() { if (!dlg.open) dlg.showModal(); screen(true); }, drawBar };
 }

@@ -539,8 +539,12 @@ export class Viewer {
    * Unchanged: only the fish and items whose own data or selection changed are rebuilt (patchTank). Colour
    * temperature, brightness and room light reach the picture through uniforms set every draw (audit #51).
    */
+  /** A view-only stand-in for the edited tank (lane ST1: the tank picker draws each size live without touching the scene); null = draw the scene. */
+  private preview: TankSetup | null = null;
+  setPreview(S: TankSetup | null) { this.preview = S; this.rebuild(); }
+  private setupOf(i: number): TankSetup | undefined { return this.preview && i === this.store.scene.active ? this.preview : this.store.scene.tanks[i]; }
   private viewKey(i: number) {
-    const S = this.store.scene.tanks[i]; if (!S) return '';
+    const S = this.setupOf(i); if (!S) return '';
     return JSON.stringify([envKey(S), this.store.scene.units, this.store.isEditing(i), this.terrainEdit]);
   }
 
@@ -548,7 +552,7 @@ export class Viewer {
     const sc = this.store.scene;
     this.lastBuild = [];
     for (const vp of this.vps) {
-      const S = sc.tanks[vp.i], old = this.built[vp.i];
+      const S = this.setupOf(vp.i), old = this.built[vp.i];
       if (!S) { disposeScene(vp.scene); vp.scene = undefined; this.built[vp.i] = { env: '', look: '' }; continue; }
       const on = this.store.isEditing(vp.i); // selection outline and terrain dots only in the tanks being edited
       const env = this.viewKey(vp.i), look = lookKey(S), units = { ...S, units: sc.units };

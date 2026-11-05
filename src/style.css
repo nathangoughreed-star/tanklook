@@ -340,6 +340,40 @@ footer { margin-top: 18px }
   #sideTab span { display: inline-block; transform: rotate(90deg) }
   #app.collapsed #sideTab span { transform: rotate(-90deg) }
 }
+/* the docked tank picker (lane ST1): takes the side panel's place beside the live view while it is open */
+.tankdock { width: 380px; flex: none; display: flex; flex-direction: column; min-height: 0; background: var(--panel); border-right: 1px solid var(--line); padding: 10px 14px 12px }
+.tankdock { overflow: hidden } .tankdock[hidden], #tdPick[hidden], #tdPut[hidden] { display: none }
+#tdPick, #tdPut { display: flex; flex-direction: column; flex: 1 1 0; min-height: 0 }
+#app.docking #side, #app.docking #sideTab, #app.docking .viewtools #sideClose, #app.docking .viewtools #sideOpen { display: none }
+#app.docking #demandPanel { display: none } /* the cost panel prices the scene, not the size being previewed */
+.td-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px }
+.td-head h2 { margin: 0; font-size: 16px; flex: 1 }
+.td-x { padding: 2px 8px } .td-head [hidden] { display: none }
+.td-detail { min-height: 52px; margin-bottom: 6px }
+.td-detail p { margin: 0 }
+.td-name b { font-size: 15px }
+.td-line { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 2px; font-variant-numeric: tabular-nums }
+.td-bar { margin-bottom: 6px } .td-bar input { width: 100% }
+.td-list { flex: 1 1 0; min-height: 120px; overflow-y: auto; border: 1px solid var(--line); border-radius: 6px; outline-offset: 1px }
+.td-list h3 { margin: 0; padding: 4px 8px; font-size: 12px; position: sticky; top: 0; background: var(--panel); border-bottom: 1px solid var(--line); z-index: 1 }
+.td-opt { display: grid; grid-template-columns: 1fr auto; gap: 0 10px; padding: 5px 8px; cursor: pointer; border-bottom: 1px solid color-mix(in srgb, var(--line) 50%, transparent); font-variant-numeric: tabular-nums }
+.td-opt .d, .td-opt .r { font-size: 12px; color: var(--muted) } .td-opt .p { text-align: right } .td-opt .r { text-align: right }
+.td-opt.var { padding-left: 20px; font-size: 12px } .td-opt.var .n { color: var(--muted) }
+.td-opt:hover { background: var(--chip) }
+.td-opt[aria-selected="true"] { background: var(--accent); color: #fff } .td-opt[aria-selected="true"] .d, .td-opt[aria-selected="true"] .r, .td-opt[aria-selected="true"] .n { color: #e6efff }
+.td-foot { margin-top: 8px; display: flex; flex-direction: column; gap: 4px } .td-foot .primary { align-self: flex-start; padding: 6px 14px }
+.td-card { display: flex; gap: 8px; align-items: flex-start; padding: 8px; margin: 6px 0; border: 1px solid var(--line); border-radius: 6px; cursor: pointer }
+.td-card.on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent) }
+.td-card > span { display: flex; flex-direction: column }
+.td-more { margin: 0 0 8px 6px; padding-left: 10px; border-left: 2px solid var(--accent) }
+.td-more .field { margin: 4px 0 } .td-more input[type=number] { width: 80px }
+#tdPut { overflow-y: auto }
+@media (max-width: 760px) {
+  .tankdock { width: 100%; height: 50%; border-right: 0; border-top: 1px solid var(--line); padding: 8px 12px 10px }
+  .td-detail { min-height: 38px }
+  .td-foot .hint { display: none }
+}
+@media (orientation: landscape) and (max-height: 500px) { .tankdock { width: 300px; height: 100% } }
 .row output.typein { cursor: text; border-radius: 3px; padding: 1px 3px }
 .row output.typein:hover, .row output.typein:focus-visible { background: var(--chip); outline: 1px solid var(--line) }
 .row .typeinBox { width: 100%; padding: 1px 4px; text-align: right; font-variant-numeric: tabular-nums }

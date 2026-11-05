@@ -1435,7 +1435,7 @@ const solidIn = (o: THREE.Object3D) => { let s = false; o.traverse(c => { s ||= 
 
 export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: Sel, edit?: TerrainEdit, selItem: Sel = null): BuiltTank {
   const sc = new THREE.Scene();
-  const ghost = tankView.ghost; // path 1 before a tank is chosen: the animals only, in an invisible box
+  const ghost = tankView.ghost || tankView.empty; // path 1 before a tank is chosen: the animals only, in an invisible box
   if (!ghost) { addTank(sc, S, T); addWater(sc, S, T); if (S.water.on) addAlgae(sc, T, waterY(T, S.water.level), LU); tagFrom(sc, 0, () => PART.glass); }
   let n0 = sc.children.length; if (!ghost) addSubstrate(sc, S, T); tagFrom(sc, n0, () => PART.ground);
   n0 = sc.children.length; if (!ghost) addBackdrop(sc, S.backdrop, T, S.render.rim, S.render.bgSides); tagFrom(sc, n0, o => solidIn(o) ? PART.hardscape : PART.glass);

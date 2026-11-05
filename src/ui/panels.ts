@@ -11,6 +11,9 @@ import { renderFeaturedDeals } from './featuredDeals';
 import { attachWelcome } from './welcome';
 import { bindBriefStore, editBrief, getBrief, setTank as briefTank } from './setupBrief';
 import { attachStartMode, setMode } from './startMode';
+import { attachTankDock, type TankDock } from './tankDock';
+import { sandboxRoomScene } from '../scene/sandboxRoom';
+import { putOnFloor, putOnMyFurniture, putOnStand, placementOf, minTop, type Placement } from '../scene/placement';
 import { atStake, confirmNew } from './newTank';
 import { startDeals, visibleTabs, pickTab, sortDeals, DEFAULT_SORT, type DealSort, type StartTab, type StartMenu } from './startEntries';
 import { DEALS_AS_OF, DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
@@ -155,12 +158,21 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('newScene').onclick = () => { welcomeFirst = false; startMode.show(); }; // New: Guided or Sandbox (ui/startMode.ts)
   $('openScene').onclick = () => showChooser('open', 'open', false);
   /** An empty tank and an empty brief (lane NW1). Warns first when the current tank has something to lose and is not saved: Save / Start new / Cancel (false = cancelled). Undo brings it back. */
-  const newEmptyTank = async (newKind: SetupKind = 'freshwater') => { // the Sandbox card's Tank type (lane S252): applied to the empty tank it starts
+  const newEmptyTank = async (newKind: SetupKind = 'freshwater', room = false) => { // the Sandbox card's Tank type (lane S252): applied to the empty tank it starts
     const id = libId();
     if (atStake(G(), id ? libText(id) : null) && !await confirmNew(() => { $('saveScene').click(); const now = libId(); return !!now && JSON.stringify(G()) === libText(now); })) return false;
-    const s = emptyScene(); s.name = 'New tank'; applyKind(s.tanks[0], newKind); // the water type is settled when the tank is made
-    s.tanks[0].camera = { ...S().camera }; s.units = G().units;
+    // room (lane ST1): the Sandbox starts as an empty room with the person (the default environment, its own camera); the tank picker puts the tank in
+    const s = room ? sandboxRoomScene(newKind) : emptyScene(); s.name = 'New tank'; if (!room) { applyKind(s.tanks[0], newKind); s.tanks[0].camera = { ...S().camera }; } // the water type is settled when the tank is made
+    s.units = G().units;
     store.replace(s); setLibId(null); status('New tank. Undo brings the previous one back.');
+    return true;
+  };
+  /** The Sandbox's empty room: replace the scene (after the replace warning unless this is the first launch), then the picker opens beside it. */
+  let tankDock: TankDock | undefined, roomPending = false; // roomPending: the empty room is up and no tank is chosen yet (a tank is required, Nathan 2026-11-05)
+  const sandboxRoom = async (kind: SetupKind) => {
+    if (welcomeFirst) { welcomeFirst = false; const s = sandboxRoomScene(kind); s.units = G().units; store.replace(s); setLibId(null); }
+    else if (!await newEmptyTank(kind, true)) return false;
+    roomPending = true; tankDock?.open('start');
     return true;
   };
   $('openFile').onclick = () => { startDlg.close(); $('fileIn').click(); };
@@ -300,9 +312,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // lane R9: the owned-gear sheet (Guided, "Starting from something I have now"); its Tank row borrows the tank picker and reports when it closes
   let ownedSheet: { open(at?: string): void } | undefined;
   const pickTank = (done: (name: string) => void) => {
-    const dlg = $<HTMLDialogElement>('tankDlg'), before = JSON.stringify([store.tank.tank, store.tank.product]), brief0 = getBrief(); // lane GV9: a pick of the tank already shown writes the brief, and counts
-    dlg.addEventListener('close', () => { if (JSON.stringify([store.tank.tank, store.tank.product]) !== before || getBrief() !== brief0) done(`${Math.round(volume(store.tank.tank).gallons)} gal tank`); }, { once: true });
-    $('presetA').click();
+    const before = JSON.stringify([store.tank.tank, store.tank.product]), brief0 = getBrief(); // lane GV9: a pick of the tank already shown writes the brief, and counts
+    tankDock!.open('change', () => { if (JSON.stringify([store.tank.tank, store.tank.product]) !== before || getBrief() !== brief0) done(`${Math.round(volume(store.tank.tank).gallons)} gal tank`); });
   };
   // lane NG1: New and first launch offer Guided (the Welcome workspace) or Sandbox (an empty tank, checks as flags)
   // lane VD5: Make It Your Own panels (brief bar): owned gear + stand, and limits (the old Guided steps 3-4); "owned" is also the start menu's link
@@ -314,7 +325,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   const startMode = attachStartMode(store, {
     guided: () => welcome.show(),
     guidedNew: async at => { if (welcomeFirst) welcomeFirst = false; else if (!await newEmptyTank()) return false; welcome.show(at); return true; },
-    sandbox: kind => { if (welcomeFirst) { welcomeFirst = false; store.edit(s => applyKind(s, kind)); return true; } return newEmptyTank(kind); },
+    sandbox: sandboxRoom,
     owned: () => openOwned(),
     browse: (menu, tab) => showChooser(menu, tab, welcomeFirst),
     profile: () => { try { return loadProfile(); } catch { return undefined; } },
@@ -449,7 +460,11 @@ Cancel, then change the name, to keep both.`)) return;
     };
     let sumpDone: ((m: TankModel) => void) | null = null;
     dlg.addEventListener('close', () => { sumpDone = null; $('tankDlgTitle').textContent = 'Tank sizes'; });
-    const apply = (m: TankModel, v?: TankVariant) => { if (sumpDone) { sumpDone(m); dlg.close(); return; } editBrief(b => briefTank(b, { id: m.id, label: m.name })); v ??= soleProduct(m); const mm = v ? modelOfVariant(m, v) : m; setTank(() => tankFromModel(mm), undefined, mm.glassMm, standFor(m, v)); pinPreset(store.scene.active, store.tank, saleOf(m, v)); dlg.close(); };
+    // a library pick, whichever picker made it (the docked one, ui/tankDock.ts, or this modal for a sump)
+    const applyPick = (m: TankModel, v?: TankVariant) => { editBrief(b => briefTank(b, { id: m.id, label: m.name })); v ??= soleProduct(m); const mm = v ? modelOfVariant(m, v) : m; setTank(() => tankFromModel(mm), undefined, mm.glassMm, standFor(m, v)); pinPreset(store.scene.active, store.tank, saleOf(m, v)); };
+    tankDock = attachTankDock(store, viewer, { apply: (m, v) => { roomPending = false; applyPick(m, v); }, back: () => startMode.showKinds(), abandoned: () => { roomPending = false; } });
+    $<HTMLDialogElement>('modeDlg').addEventListener('close', () => { if (roomPending && !tankDock!.isOpen) tankDock!.open('start'); }); // a tank is required: closing the kind screen without a kind returns to the picker
+    const apply = (m: TankModel, v?: TankVariant) => { if (sumpDone) { sumpDone(m); dlg.close(); return; } applyPick(m, v); dlg.close(); };
     const draw = () => {
       const needle = q.value.trim().toLowerCase();
       const hit = (m: TankModel) => !needle || [m.name, m.shape, ...(m.tags ?? []), ...(m.variants ?? []).flatMap(v => [v.brand, v.line ?? ''])].join(' ').toLowerCase().includes(needle);
@@ -484,7 +499,7 @@ Cancel, then change the name, to keep both.`)) return;
       if (!list.firstChild) list.innerHTML = '<p class="hint">No tank matches that search.</p>';
     };
     q.oninput = draw; terra.onchange = draw;
-    $('presetA').onclick = () => { sumpDone = null; draw(); dlg.showModal(); q.focus(); };
+    $('presetA').onclick = () => tankDock!.open('change');
     openSumpPicker = done => { sumpDone = done; $('tankDlgTitle').textContent = 'Sump size'; q.value = ''; draw(); dlg.showModal(); q.focus(); };
   }
   /** The product gate (scene/integrated.ts): a change to what an edited tank's product holds asks first, saying what it breaks;
@@ -653,6 +668,11 @@ Cancel, then change the name, to keep both.`)) return;
   // ---------- Room: stand + wall ----------
   $<HTMLSelectElement>('standFinish').innerHTML = Object.entries(STAND_FINISHES).map(([k, f]) => `<option value="${k}">${esc(f.label)}</option>`).join('');
   // a tank or bundle without a stand asks instead of adding one (Nathan 2026-10-19)
+  // lane ST1: what the tank stands on, the same three choices the New-tank picker asks (scene/placement.ts writes the fields; floor = no stand, own furniture = the table style)
+  $('placeSeg').onclick = e => {
+    const p = (e.target as HTMLElement).closest<HTMLElement>('[data-place]')?.dataset.place as Placement | undefined; if (!p) return;
+    store.edit(s => { if (p === 'floor') putOnFloor(s); else if (p === 'stand') putOnStand(s); else putOnMyFurniture(s); });
+  };
   $('standAdd').onclick = () => store.edit(s => { s.stand.show = true; s.stand.need = 'added'; });
   $('standNone').onclick = () => store.edit(s => { s.stand.show = false; s.stand.need = 'none'; });
   $('standOn').onchange = e => store.edit(s => { s.stand.show = (e.target as HTMLInputElement).checked; s.stand.need = s.stand.show ? 'added' : 'none'; });
@@ -2020,7 +2040,12 @@ Cancel, then change the name, to keep both.`)) return;
     const t = glassThickness(A, s.render.glass);
     $('glassHint').textContent = (s.render.glass === 'auto' ? 'Auto: ' : 'Glass: ') + t + ' mm (' + fmtLen(t, u, 2) + ')';
 
-    $('standNone').textContent = s.water.on ? "I don't need a stand" : "I'll use my own furniture"; $('standOn').checked = s.stand.show; $('standAsk').hidden = !standAsked(s.stand); setVal('standFinish', s.stand.finish); setVal('standStyle', s.stand.style); setVal('standH', s.stand.height);
+    const place = placementOf(s);
+    for (const b of document.querySelectorAll<HTMLElement>('#placeSeg [data-place]')) b.classList.toggle('on', b.dataset.place === place);
+    $('standStyleRow').style.display = place === 'stand' ? '' : 'none'; $('standFinRow').style.display = $('standHRow').style.display = place === 'floor' ? 'none' : '';
+    $('standHLab').textContent = place === 'furniture' ? 'Furniture height' : 'Stand height';
+    $('placeHint').textContent = place === 'floor' ? 'Straight on the floor. No stand is counted in the budget.' : place === 'furniture' ? `Your own table, dresser or counter: no stand is counted in the budget. This tank needs a top at least ${(() => { const m = minTop(s, s.stand.table.shape), k = (mm: number) => fmtLen(mm, u, 1); return s.stand.table.shape === 'round' ? `${k(m.L)} across` : `${k(m.L)} × ${k(m.D)}`; })()}.` : '';
+    $('standNone').textContent = "I don't need a stand"; $('standOn').checked = s.stand.show; $('standAsk').hidden = !standAsked(s.stand); setVal('standFinish', s.stand.finish); setVal('standStyle', s.stand.style); setVal('standH', s.stand.height);
     setOut('oStandH', fmt(s.stand.height));
     const tb = s.stand.table, tr = tableRange(s);
     $('tableRows').style.display = tableOn(s) ? '' : 'none';

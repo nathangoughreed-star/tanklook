@@ -178,10 +178,12 @@
   <div class="hint" id="glassHint"></div>
   </details>
   <details class="sec" data-sec="room"><summary><h2>Room</h2></summary>
-  <div class="field"><label class="flabel"><input type="checkbox" id="standOn"> Stand</label><select id="standStyle" aria-label="Stand type"><option value="cabinet">Cabinet</option><option value="frame">Open metal frame</option><option value="custom">Cabinet, custom size</option><option value="table">Table</option></select></div>
+  <div class="field" id="placeRow"><span class="flabel">Tank sits on</span><span class="seg" id="placeSeg" role="group" aria-label="What the tank stands on"><button type="button" data-place="floor">Floor</button><button type="button" data-place="stand">Stand</button><button type="button" data-place="furniture" title="A table, dresser or counter you already have: its height and the size of its top">My own furniture</button></span></div>
+  <div class="hint" id="placeHint"></div>
+  <div class="field" id="standStyleRow"><span class="flabel">Stand</span><input type="checkbox" id="standOn" hidden><select id="standStyle" aria-label="Stand type"><option value="cabinet">Cabinet</option><option value="frame">Open metal frame</option><option value="custom">Cabinet, custom size</option><option value="table">Table</option></select></div>
   <div id="standAsk" class="hint standask" hidden>No stand on this tank yet. The budget counts a typical stand until you choose. <button type="button" id="standAdd">Add a stand</button> <button type="button" id="standNone">I don't need a stand</button></div>
-  <div class="field"><label class="flabel" for="standFinish">Finish</label><select id="standFinish"></select></div>
-  <div class="row"><label for="standH">Stand height</label><input id="standH" type="range" step="5"><output id="oStandH"></output></div>
+  <div class="field" id="standFinRow"><label class="flabel" for="standFinish">Finish</label><select id="standFinish"></select></div>
+  <div class="row" id="standHRow"><label for="standH" id="standHLab">Stand height</label><input id="standH" type="range" step="5"><output id="oStandH"></output></div>
   <div id="tableRows">
   <div class="field"><span class="flabel" id="tableTopLab">Table top</span><span class="seg"><button id="tableRect">Rectangular</button><button id="tableRound">Round</button></span></div>
   <div class="row"><label for="tableL" id="tableLLab">Table length</label><input id="tableL" type="range" step="10"><output id="oTableL"></output></div>
@@ -426,6 +428,20 @@
 
   <details><summary>Scene data (JSON)</summary><div class="btns"><button id="jsonCopy">Copy</button><span class="hint">Lengths in mm; "units" is only how the panel shows them.</span></div><pre id="json"></pre></details>
   <footer class="hint">Illustrated placeholder art. Sizes are typical adult total length in aquaria (snails: crawling length).</footer>
+</aside>
+<aside id="tankDock" class="tankdock" hidden aria-label="Choose a tank">
+  <header class="td-head"><button type="button" id="tdBack" class="linkbtn" hidden>‹ Back</button><h2 id="tdTitle">Choose a tank</h2><button type="button" id="tdClose" class="td-x" aria-label="Close" title="Leave the tank as it is" hidden>✕</button></header>
+  <div id="tdPick">
+    <div id="tdDetail" class="td-detail" aria-live="polite"></div>
+    <div class="td-bar"><input id="tdQ" type="search" placeholder="Search size, brand or shape (e.g. 75, Petco, bowfront)" aria-label="Search tanks"></div>
+    <div id="tdList" class="td-list" role="listbox" tabindex="0" aria-label="Tank sizes"></div>
+    <div class="td-foot"><button type="button" id="tdChoose" class="primary" disabled>Choose this tank</button><span class="hint">Sizes are outer dimensions as sold. Prices are typical new US prices and move often.</span></div>
+  </div>
+  <div id="tdPut" hidden>
+    <p class="hint">Where does it stand? It starts on the floor; the room changes as you choose.</p>
+    <div id="tdPutBody"></div>
+    <div class="td-foot"><button type="button" id="tdDone" class="primary">Done</button></div>
+  </div>
 </aside>
 <main id="view">
   <div class="viewtools">
