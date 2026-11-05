@@ -1,0 +1,13 @@
+# Lane ST1: Sandbox starts in an empty room; live tank picker; floor / stand / own furniture
+
+Follow `prompts/lane-common-c20.md` first.
+
+Nathan (2026-11-05): "when you start from scratch in sandbox, start with nothing in the room, with the person. Then let the user choose a tank to start with, show them a live render of the size as they flip through different options. Start with it just on the floor, but ask if they want to use a stand or existing furniture to place it on. When they are selecting the tank, give them a rough range of finished tank price based on the size."
+
+Build:
+1. Sandbox kind card -> the room with Nathan's default environment (`scene/defaultEnvironment.ts`, research/design/env-default-new-tank.json: person, back wall, low room light, camera) and NO tank, NO stand. Reuse / extend `tankView.ghost` or add a proper "no tank yet" view state; make `addStand` and `personSpot` work without a tank (the person stands in the room; the camera frames the spot where the tank will go). Do not break Guided / generated setups or saved files (a saved scene always has a tank).
+2. Tank picker docked BESIDE the live view (not a modal covering it): grouped by band like `#tankDlg` (`panels.ts:426-485`, `tankChoices`), filtered to the chosen kind. Moving through rows (click, arrow keys) redraws that tank live, full size, ON THE FLOOR next to the person. Each row: size (gal, L x D x H in), tank price, and the finished range "$lo-$hi" from lane FR1's `finishedRange(modelId, kind)` in `src/demand/finishedRange.ts` (signature `(modelId: string, kind: 'freshwater'|'saltwater'|'terrarium'|'vivarium') => {lo:number, hi:number, basis?:string} | null`; add a stub returning null if FR1 has not landed, hide the range when null). Choose commits via `applyTankPick`. The same docked picker replaces the Tank section's Presets modal.
+3. After Choose: "Put it on": Floor (keep) / A stand (cabinet or frame; black / white / oak) / My own furniture (height in, top width x depth in; new `stand.furniture` field on `TankSetup.stand`, drawn as a plain table / dresser block; warn if the tank overhangs the top). Floor is a real option: `stand.show=false`, tank on the floor, `stand.need='none'` so the budget counts no stand. The Room section gets the same three choices (it is their one home; the prompt writes the same fields).
+4. Tests: empty-room state renders without a tank; picker preview does not change the saved scene until Choose; floor / stand / furniture write the right fields; old saves load unchanged.
+
+Screenshots: empty room; picker mid-flip at 2-3 sizes; floor vs stand vs furniture; 375 px mobile.
