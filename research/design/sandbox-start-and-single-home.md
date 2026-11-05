@@ -43,7 +43,7 @@ Rule: a shortcut may OPEN the home; it may not hold its own copy of the control.
 
 ## The flows after this work
 
-Sandbox: New Tank -> Sandbox -> kind -> empty room with person (Nathan's environment) -> tank picker docked beside the live view (arrow keys / list flip redraws the tank on the floor, each row shows size, price, finished range "$X-$Y") -> Choose -> "Put it on: floor (keep) / a stand / my own furniture (height, top width x depth)" -> editor.
+Sandbox: New Tank -> Sandbox -> kind -> empty room with person (Nathan's environment) -> tank picker docked beside the live view (arrow keys / list flip redraws the tank on the floor, each row shows size, price, finished range "$X-$Y") -> Choose -> "Put it on: floor (keep) / a stand / my own furniture (existing `table` style: height, top L x D)" -> editor. No way out of the empty room without a tank (Back to kind is fine).
 
 Guided: the same editor with a coach card. Each step opens the real side-panel section (or dialog), highlights the control, says what to decide and why, waits for a change or Skip, then Next. Order: Kind -> Tank (live picker + ranges) -> Placement -> My Equipment -> Your limits -> Look or Animals -> review (cost panel + Problems). Explore stays as the "Open to anything" branch until GW2 decides.
 
@@ -51,9 +51,9 @@ Guided: the same editor with a coach card. Each step opens the real side-panel s
 
 Phase 1, in parallel (files mostly disjoint; overlaps named):
 
-- ST1 Sandbox empty room + live tank picker + placement. Owns: `startMode.ts` sandbox path, `panels.ts newEmptyTank` and the `#tankDlg` picker (or its replacement), `tankPick.ts`, `render/build.ts` ghost / stand / person placement, `scene/defaults.ts`, Room section stand/furniture UI, new `stand.furniture` dims. Consumes FR1's `finishedRange` (stub until it lands).
+- ST1 Sandbox empty room + live tank picker + placement. Owns: `startMode.ts` sandbox path, `panels.ts newEmptyTank` and the `#tankDlg` picker (or its replacement), `tankPick.ts`, `render/build.ts` ghost / stand / person placement, `scene/defaults.ts`, Room section stand/furniture UI (own furniture = the existing `table` style, no new field). Consumes FR1's `finishedRange` (stub until it lands).
 - FR1 Finished-price range by size. Owns new `src/demand/finishedRange.ts` + precomputed table + tests. No UI except a tiny export ST1 calls. Pure, sourced from existing priced rows.
-- EQ1 My Equipment menu. Owns `ownedGear.ts`, `briefBar.ts` owned button, `suggest.ts` owned field, `techMenu.ts` "I own one", a toolbar entry + one side-panel entry. Reads ST1's furniture field only through `TankSetup.stand` (does not add stand UI).
+- EQ1 My Equipment menu. Owns `ownedGear.ts`, `briefBar.ts` owned button, `suggest.ts` owned field, `techMenu.ts` "I own one", a toolbar entry + one side-panel entry. Reads owned stand / furniture only through `TankSetup.stand` (table style = own furniture) (does not add stand UI).
 - GW1 Coach engine (guide that walks the real menus). Owns new `src/ui/coach/*`: open a section / dialog by id, highlight a control, card with why / Skip / Back / Next, wait for a store change; a step list in data. Ships behind a "Guide me" toggle in the editor with a short demo path (Kind -> Tank -> Limits) using today's controls. Does NOT remove duplicates.
 
 Phase 2 (queued until ST1 + EQ1 + GW1 land and Nathan confirms the table above):
