@@ -59,9 +59,9 @@ Phase 1, in parallel (files mostly disjoint; overlaps named):
 Phase 2 (queued until ST1 + EQ1 + GW1 land and Nathan confirms the table above):
 - GW2 Single-home cleanup + Guided = coach. Remove / redirect each duplicate per the table, switch the Guided entry to the coach path, retire `guided/*` screens that duplicate a home, decide Visual Discovery / Explore placement. Probably split into GW2a (duplicate removal) and GW2b (guided switch) by files.
 
-## Open questions for Nathan
+## Nathan's answers (2026-11-05)
 
-1. Does the table of single homes match what you want (especially Look: Visual Discovery folded into Quick Setup)?
-2. Picker: can the user leave the empty room without picking a tank (e.g. "Skip, I'll decide later" -> 20 gal placeholder), or is a tank required?
-3. "Own furniture": ask only height, or height + top size (so the tool can warn when the tank overhangs)?
-4. Price range: per kind (a reef 40 gal range is not a freshwater 40 gal range). Default yes.
+1. Single-home table: "sounds good" (confirmed as written, incl. Visual Discovery folded into Quick Setup and the shortcut rule). GW2 may proceed once phase 1 lands.
+2. A tank is REQUIRED: no skipping out of the empty room without choosing one.
+3. Own furniture asks height AND top size. It is already built: the stand style `table` (`TableSettings {shape rect|round, L, D, x, z}` in `scene/types.ts`, `scene/table.ts`) plus `stand.height`. "My own furniture" = the table style with the user's measurements; no new field. Add the overhang warning if the table code does not already keep the tank on the top.
+4. Range per kind: yes; that is why Sandbox picks the kind before the tank.
