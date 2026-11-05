@@ -175,9 +175,9 @@ function tradeoffsOf(S: TankSetup, B: TankSetup, d: Deal, same: boolean, breaks:
 }
 
 /**
- * Every deal for this build as a swap, best saving first, nothing hidden: a deal with worse gear is listed with what it
- * gives up, and a kit with another tank is listed with the tank-size change (Nathan 2026-10-27). `sameTank` swaps can be
- * shown as Tank B; the others are a link only. Deals within ~40 % of the tank's gallons are considered.
+ * Every same-tank deal for this build as a swap, best saving first: a deal with worse gear is listed with what it gives up.
+ * A kit whose tank differs (sameTank: same shape, each side within 10 % or 1.5 in, so another brand's rimmed 10 gal counts)
+ * is not offered at all (Nathan 2026-11-05). Deals within ~40 % of the tank's gallons are candidates before that test.
  */
 export function dealSwaps(S: TankSetup, P: UserProfile, opts: DemandOpts & { units?: Units } = {}, deals?: Deal[]): DealSwap[] {
   if (!S.water.on) return [];
@@ -185,10 +185,9 @@ export function dealSwaps(S: TankSetup, P: UserProfile, opts: DemandOpts & { uni
   const out: DealSwap[] = [];
   for (const deal of dealsFor(gal, S.stand.show || standAsked(S.stand), opts.now, gal * 0.4, deals)) {
     if (pin?.id === deal.id) continue;
-    const same = sameTank(S.tank, deal), DT = same ? undefined : dealTank(deal);
-    if (!same && !DT) continue; // a tank we cannot draw or size: not offered
-    let B = withDealGear(S, deal);
-    if (DT) B = { ...B, tank: { ...DT } };
+    const same = sameTank(S.tank, deal);
+    if (!same) continue; // a kit that changes the tank is not offered at all (Nathan 2026-11-05)
+    const B = withDealGear(S, deal);
     const after = demandOf(B, P, { ...opts, kit: dealAsKit(deal) });
     const { changes, breaks } = compare(S, B, deal, units, now, after);
     out.push({ deal, setup: B, sameTank: same, currentUsd: now.totals.setupUsd, withDealUsd: after.totals.setupUsd, savingUsd: now.totals.setupUsd - after.totals.setupUsd, changes, tradeoffs: tradeoffsOf(S, B, deal, same, breaks), guesses: dealGuesses(deal), shipText: dealShip(deal).text });

@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { SCENES } from '../src/examples/scenes';
 import { defaultProfile } from '../src/demand';
-import { dealSwaps, sameTank } from '../src/demand/dealmatch';
+import { dealSwaps, dealTank, sameTank } from '../src/demand/dealmatch';
 import { demandOf } from '../src/demand/engine';
 import { PLANT_BUNDLES, bundleTotalUsd, pinPlantBundle, plantBundleOffers, plantBundleOpt, type PlantBundle } from '../src/demand/plantBundles';
 import { DEALS, dealShip, dealTotalUsd, dealAsKit } from '../src/data/deals';
 import { shipping } from '../src/data/shipping';
+import { volume } from '../src/scene/physics';
 import { parseScene } from '../src/scene/validate';
 import type { TankSetup } from '../src/scene/types';
 
@@ -31,8 +32,8 @@ describe('shipping', () => {
 });
 
 describe('swap menu', () => {
-  it('lists kits with a saving, spells out a tank change, and only same-tank swaps get Tank B', () => {
-    let any = 0, changed = 0;
+  it('lists only same-tank kits with a saving (no tank-size change is ever offered)', () => {
+    let any = 0;
     for (const id of Object.keys(SCENES)) {
       const S = tankOf(id);
       for (const w of dealSwaps(S, P, { now: NOW })) {
@@ -40,11 +41,34 @@ describe('swap menu', () => {
         expect(w.savingUsd).toBeGreaterThan(1);
         expect(w.sameTank).toBe(sameTank(S.tank, w.deal));
         expect(w.shipText.length).toBeGreaterThan(0);
-        if (!w.sameTank) { changed++; expect(w.tradeoffs.join(' ')).toMatch(/tank size/); }
+        expect(w.sameTank).toBe(true); expect(w.tradeoffs.join(' ')).not.toMatch(/tank size/);
       }
     }
     expect(any).toBeGreaterThan(0);
-    console.log(`swaps: ${any} across the examples, ${changed} with another tank`);
+    console.log(`swaps: ${any} across the examples`);
+  });
+});
+
+describe('swap menu: same tank only (DM2, 2026-11-05)', () => {
+  const tank = (d: typeof DEALS[number]) => dealTank(d)!;
+  it('offers another brand kit of the same tank, never one that changes the tank, in short text', () => {
+    const kits = DEALS.filter(d => dealTank(d) && d.includes.length > 2);
+    expect(kits.length).toBeGreaterThan(1);
+    let crossBrand = 0;
+    for (const d of kits) {
+      const S = tankOf('blackwater'); S.tank = { ...tank(d) };
+      const ws = dealSwaps(S, P, { now: NOW });
+      for (const w of ws) { expect(sameTank(S.tank, w.deal)).toBe(true); expect(w.tradeoffs.join(' ')).not.toMatch(/tank size/); }
+      if (ws.some(w => w.deal.retailer !== d.retailer)) crossBrand++;
+      // a kit of another size or shape is never in the list
+      for (const o of kits) if (!sameTank(S.tank, o)) expect(ws.some(w => w.deal.id === o.id)).toBe(false);
+    }
+    console.log(`cross-brand same-tank swaps seen for ${crossBrand} of ${kits.length} kits`);
+  });
+  it('a 15 gal tank is not offered a 10 gal kit', () => {
+    const k10 = DEALS.find(d => dealTank(d) && Math.round(volume(dealTank(d)!).gallons) <= 11)!;
+    const S = tankOf('blackwater'); S.tank = { ...S.tank, L: 610, D: 305, H: 305 };
+    expect(dealSwaps(S, P, { now: NOW }).some(w => w.deal.id === k10.id)).toBe(false);
   });
 });
 

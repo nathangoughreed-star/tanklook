@@ -2,7 +2,7 @@
 // money; "Show it as Tank B" splits with the bundle's gear swapped in and B priced as the deal; on B, "Make this my tank" closes A
 // (Ctrl+Z brings it back). Never a popup; a dismissed match stays dismissed for that scene (by name, in this browser).
 import { MIN_SAVING_USD, dealSwaps, withDealGear } from '../demand/dealmatch';
-import { DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
+import { DEAL_NOTE } from '../data/deals';
 import { demandOf } from '../demand/engine';
 import { pinTank, pinnedDeal, pinnedKit } from '../demand/pinned';
 import type { UserProfile } from '../demand/types';
@@ -35,14 +35,14 @@ export function renderDealMatch(el: HTMLElement, store: Store, P: UserProfile, c
   } else {
     const gone = dismissed()[sc.name] ?? [], swaps = dealSwaps(store.tank, P, { units: sc.units }).filter(w => !gone.includes(w.deal.id) && w.savingUsd > MIN_SAVING_USD).slice(0, 3);
     if (!swaps.length) return;
-    box.innerHTML = `<div><b>Swap for a kit or sale</b> (shipping included; ${esc(DEAL_NOTE)}):</div>` + swaps.map((w, i) => {
-      const d = w.deal;
-      return `<div class="dmswap" data-i="${i}">&bull; <a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.retailer + ' ' + d.name)}</a> ${usd(d.price.usd)}${d.price.regularUsd ? ` (was ${usd(d.price.regularUsd)})` : ''}, ${esc(w.shipText)}: <b>saves about ${usd(w.savingUsd)}</b>${d.est ? ' (estimate)' : ''}${d.saleEnds ? `, sale ends ${esc(d.saleEnds)}` : ''}; ${esc(d.asOf)}`
-        + `<br>You would change: ${w.changes.length ? w.changes.map(esc).join('; ') : 'nothing else'}.`
-        + `<br>${w.tradeoffs.length ? `<span style="color:var(--warn)">What you give up: ${w.tradeoffs.map(esc).join('; ')}.</span>` : 'Gives up nothing we can find.'}`
-        + (w.guesses.length ? `<br><i>Guessed: ${esc(w.guesses.join('; '))}</i>` : '')
-        + `<br>${w.sameTank ? '<button type="button" class="dmshowb">Show it as Tank B</button> ' : ''}<a href="#" class="dmnot">Not now</a></div>`;
-    }).join('') + `<div style="opacity:.7">${esc(NOT_SPONSORED)}.</div>`;
+    const tip = (w: (typeof swaps)[number]) => w.guesses.length ? ` title="${esc('Estimated: ' + w.guesses.join('; '))}"` : '';
+    box.innerHTML = `<div><b>Swap for a kit or sale</b></div>` + swaps.map((w, i) => {
+      const d = w.deal, note = w.changes.length ? w.changes.map(c => c.split(':')[0].replace(/ added$/, '')).filter((c, k, a) => a.indexOf(c) === k).join(', ').toLowerCase() : '';
+      return `<div class="dmswap" data-i="${i}">&bull; <a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.retailer + ' ' + d.name)}</a>: ${usd(d.price.usd)}${d.price.regularUsd ? ` (was ${usd(d.price.regularUsd)})` : ''}, ${esc(w.shipText)}, <b>saves about ${usd(w.savingUsd)}</b>${d.est || w.guesses.length ? `<span class="hint"${tip(w)}> (estimated)</span>` : ''}${d.saleEnds ? `, ends ${esc(d.saleEnds)}` : ''}`
+        + (note ? `; changes ${esc(note)}` : '')
+        + (w.tradeoffs.length ? ` <span style="color:var(--warn)">(worse: ${w.tradeoffs.map(esc).join('; ')})</span>` : '')
+        + ` <button type="button" class="dmshowb">Show as Tank B</button> <a href="#" class="dmnot">Not now</a></div>`;
+    }).join('') + `<div style="opacity:.7">Prices ${esc(DEAL_NOTE)}. Links are plain, no affiliate codes.</div>`;
     box.querySelectorAll<HTMLElement>('.dmswap').forEach(row => {
       const w = swaps[+row.dataset.i!];
       const show = row.querySelector<HTMLButtonElement>('.dmshowb');

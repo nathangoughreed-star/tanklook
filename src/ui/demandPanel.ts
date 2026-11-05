@@ -14,7 +14,7 @@ import { renderDealMatch } from './dealMatch';
 import { renderTierBox } from './tierBox';
 import { bundleShip, pinPlantBundle, pinnedPlantBundle, plantBundleOffers, plantBundleOpt, unpinPlantBundle } from '../demand/plantBundles';
 import { GEAR_SLOT_NAME, gearOffers, gearParts, pinGear, pinnedGear, unpinGear } from '../demand/gearDeals';
-import { GEAR_DEALS, gearPctOff, gearShip } from '../data/gearDeals';
+import { GEAR_DEALS, gearShip } from '../data/gearDeals';
 import { compliance, constraintsFromLimits, effectiveLimits, parseConstraints, rememberLastUsed, type Cap, type Constraints } from '../scene/constraints';
 import { summaryOf } from './stockSummary';
 import { findSolutions, type Option, type Solutions } from '../demand/makefit';
@@ -197,8 +197,8 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
     const box = document.createElement('div');
     box.className = 'dmgear';
     box.innerHTML = pinned.map(d => `<div>Your ${GEAR_SLOT_NAME[d.slot]}: ${link(d)} at ${esc(d.store)}, ${usd(d.price.usd)} on sale (was ${usd(d.price.regularUsd)}), ${esc(gearShip(d).text)}; ${esc(d.asOf)}. <a href="#" data-unpin="${d.slot}">Price a typical one instead</a></div>`).join('')
-      + offers.map(d => `<div>On sale for your ${GEAR_SLOT_NAME[d.slot]}: ${link(d)} at ${esc(d.store)}, ${usd(d.price.usd)} (was ${usd(d.price.regularUsd)}, ${gearPctOff(d)} % off), ${esc(gearShip(d).text)}; ${esc(d.asOf)}. <a href="#" data-pin="${esc(d.id)}">Price my ${GEAR_SLOT_NAME[d.slot]} as this</a></div>`).join('')
-      + `<div style="opacity:.7">Gear prices ${esc(DEAL_NOTE)}. ${esc(NOT_SPONSORED)}.</div>`;
+      + offers.map(d => `<div>On sale, your ${GEAR_SLOT_NAME[d.slot]}: ${link(d)} at ${esc(d.store)}, ${usd(d.price.usd)} (was ${usd(d.price.regularUsd)}), ${esc(gearShip(d).text)}. <a href="#" data-pin="${esc(d.id)}">Price it</a></div>`).join('')
+      + `<div style="opacity:.7">Prices ${esc(DEAL_NOTE)}. Links are plain, no affiliate codes.</div>`;
     box.querySelectorAll<HTMLAnchorElement>('[data-pin]').forEach(a => a.addEventListener('click', e => {
       e.preventDefault(); const d = GEAR_DEALS.find(x => x.id === a.dataset.pin); if (d) { pinGear(store.tank, d); recompute(); }
     }));
