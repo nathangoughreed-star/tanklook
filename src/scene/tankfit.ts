@@ -126,7 +126,7 @@ export function withDryGear(S: TankSetup, animals: AnimalCount[], build: DryBuil
 }
 
 /** The bare tank with the animals in it and the build's gear: what stockingOf and the demand model are asked about. */
-function setupFor(c: Candidate, animals: AnimalCount[], build: BuildKind): TankSetup {
+function setupFor(c: Candidate, animals: AnimalCount[], build: BuildKind, preset0?: string): TankSetup {
   const S = bareSetup(), salt = needsOf(animals).salt;
   S.tank = c.T;
   S.water.on = true; S.water.level = WATER_LEVEL; S.water.salt = salt;
@@ -136,12 +136,13 @@ function setupFor(c: Candidate, animals: AnimalCount[], build: BuildKind): TankS
   // a young pick (S228 `tl`) at that length, its females at the same share of theirs
   S.fish = animals.flatMap(a => { const sp = getSpecies(a.species), fem = sp?.female; return Array.from({ length: Math.max(0, a.n) }, (_, i): Fish => ({ id: id++, species: a.species, x: 0, y: 0, depth: 0, yaw: 0, pitch: 0, roll: 0, bend: 0,
     ...(fem && i < (a.f ?? 0) ? { sex: 'f' as const, tl: a.tl && sp ? Math.round(fem.tl * a.tl / sp.tl) : fem.tl } : a.tl ? { tl: a.tl } : {}) })); });
-  const preset = BASE_PRESET[salt ? 'salt' : 'fresh'];
+  const preset = preset0 ?? BASE_PRESET[salt ? 'salt' : 'fresh'];
   if (PRESETS.some(p => p.id === preset)) S.tech = applyPreset(S, preset);
   S.light = { ...S.light, type: 'led', tech: 'led-white', count: 1, watts: undefined };
   if (!needsHeater(animals, salt)) S.tech = withChoice(S, 'heater', 'none');
-  if (isMixed(animals)) return withDryGear(applyFilter(S, build), animals, build === 'balanced' ? 'balanced' : 'cheapest');
-  return applyFilter(S, build);
+  const filtered = preset0 ? S : applyFilter(S, build); // a named preset (lane FR1) keeps its own filter: a sump stays a sump
+  if (isMixed(animals)) return withDryGear(filtered, animals, build === 'balanced' ? 'balanced' : 'cheapest');
+  return filtered;
 }
 /** The build's filter: the cheapest that keeps filtration at its target (see setupFor). */
 function applyFilter(S: TankSetup, build: BuildKind): TankSetup {
@@ -342,6 +343,8 @@ export interface BuildSpan {
   /** minutes a week (means), cheapest build to balanced build */
   minPerWeek: { cheapest: number; balanced: number };
 }
+/** Lane FR1: the build's own setup (gear sized to the tank and the animals, `preset` instead of the bare-minimum Tech preset when given) */
+export const gearedSetup = (tank: TankModel, animals: AnimalCount[], build: BuildKind, preset?: string): TankSetup => setupFor(candidateOf(tank), animals, build, preset);
 /** Lane GV4: the full totals (set-up, monthly, minutes a week) of one build of these animals in this tank. */
 export function buildTotals(animals: AnimalCount[], tank: TankModel, build: BuildKind = 'balanced') { return demand(candidateOf(tank), animals, build); }
 /** What this stocking in this tank costs to set up and how much work it is, from the cheapest build to the balanced one. */

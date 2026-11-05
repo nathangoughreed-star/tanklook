@@ -15,7 +15,7 @@ import { groundVolume, isTerraSub, pieceKg } from './setupsheet';
 import { filterUnits, heatLoss, heaterUnits, techOf, withUnits } from './tech';
 import { filtersNear, filterProduct, heatersNear, genericHeaterW, listedPrice, productName } from '../data/gearCatalog';
 import { volume } from './physics';
-import { demandOf } from '../demand/engine';
+import { demandOf, type DemandOpts } from '../demand/engine';
 import { mean3 } from '../demand/range';
 import { defaultProfile, type UserProfile } from '../demand/types';
 import type { Item, SubstrateBlend, TankSetup } from './types';
@@ -29,7 +29,7 @@ export type Match = 'close' | 'nearest';
 export interface Swap { group: SwapGroup; from: string; to: string; n: number; match: Match; text: string }
 export interface TierLine { key: string; label: string; usd: number; note?: string }
 export interface TierResult { tier: Tier; scene: TankSetup; swaps: Swap[]; setupUsd: number; lines: TierLine[] }
-export interface TierOpts { archetypeId?: string; P?: UserProfile; now?: number }
+export interface TierOpts { archetypeId?: string; P?: UserProfile; now?: number; /** extra demand-engine options (lane FR1: the catalogue's tank price) */ demand?: DemandOpts; /** swap groups to leave alone (lane FR1: a semi-professional range keeps the gear it was built with, not the dearest rated product) */ skip?: SwapGroup[] }
 
 const usd0 = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
 const nameOf = (v: string) => LIBRARY[v]?.label ?? v;
@@ -103,7 +103,7 @@ const groundAdjust = (S: TankSetup) => (GROUND_USD_PER_L[groundKind(S)] - GROUND
 // ---------------------------------------------------------------------------------------------------------------- price
 const NOW = Date.UTC(2026, 10, 3);
 function priced(S: TankSetup, o: TierOpts) {
-  const D = demandOf(S, o.P ?? defaultProfile(), { now: o.now ?? NOW });
+  const D = demandOf(S, o.P ?? defaultProfile(), { now: o.now ?? NOW, ...o.demand });
   const raw = D.items.filter(c => c.setup).map(c => ({ key: c.key, label: c.label, usd: mean3(c.setup!) })), sum = raw.reduce((t, c) => t + c.usd, 0);
   const k = sum > 0 ? D.totals.setupUsd / sum : 1, adj = groundAdjust(S);
   const lines: TierLine[] = raw.map(c => ({ key: c.key, label: c.label, usd: c.usd * k }));
@@ -175,8 +175,8 @@ function steps(tier: Exclude<Tier, 'designed'>, o: TierOpts): Step[] {
         S.substrate = { ...S.substrate, type: 'custom', custom: blend(SOIL) }; w.push({ group: 'ground', from: 'plain ground', to: 'aquasoil', n: 1, match: 'close', text: 'Nutrient-rich soil under the plants; it softens the water slightly.' });
       }
     },
-    (S, w) => gearSwap(S, tier, 'filter', w),
-    (S, w) => gearSwap(S, tier, 'heater', w),
+    (S, w) => { if (!o.skip?.includes('gear')) gearSwap(S, tier, 'filter', w); },
+    (S, w) => { if (!o.skip?.includes('gear')) gearSwap(S, tier, 'heater', w); },
   ];
 }
 

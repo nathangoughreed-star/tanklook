@@ -60,6 +60,23 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
+### FR1: finished-tank price range by size and kind (2026-11-05; Coordinator 20; lane FR1)
+`finishedRange(modelId, kind) -> {lo, hi, basis} | null` in `src/demand/finishedRange.ts` (reads the committed table `src/data/finishedRange.json`, so it is instant for every picker row). `expectedFinished(range, spent, share)` is the "current spend vs expected spend" helper (Nathan: the horizons narrow as you go): spent is a floor under both ends and `share` (0..1 of decisions made) pulls them together; the caller supplies share (UI lane).
+- lo = tank + cheapest adequate gear (`setupFor` cheapest build: freshwater lowtech preset, salt FOWLR, dry cheapest) + sparse cheap decor + a light stock (starter animal stop 1), BL1 Budget swaps. Salt lo is fish-only (no corals). hi = designed style at hardscape stop 2 / plants 3 / animals 3, freshwater `hightech` preset (canister, pressurized CO2, EI), salt `lps` preset (sump, skimmer, two heaters, wave flow, auto top-off, dosing), BL1 Luxury MATERIAL swaps only (new `TierOpts.skip: ['gear']` keeps the preset's gear: the Luxury "dearest rated product" put a $684 FX6 on a 10 gal). Terrarium tries styles until one stocks an animal in that size (arid / rainforest / frogs / jumper). Stand and furniture are NOT in either end (the picker asks next).
+- Tank price = the engine's own list rule `tankRowPrice(gal)`, never a sale and never the catalogue median (a premium maker at 120 / 180 gal made bigger sizes price lower). Dry enclosures keep `terrariumPrice`. Every other dollar is a demand-engine row; no invented prices. Kinds offered: freshwater / saltwater for any glass tank, vivarium for plain rectangles 12 in or taller, terrarium for the 14 dry presets; any other pair returns null.
+- Rebuild: `GEN_FINISHED=1 npx vitest run test/finishedRange.test.ts` (about 45 s) after a price sweep or an engine change; the test samples every 12th row against a fresh build, so a stale table fails on main.
+- Edits outside the new files: `tankfit.ts` exports `gearedSetup` (+ optional preset that keeps its own filter), `materialTiers.ts` `TierOpts.demand` / `skip`.
+- Table (lo - hi, whole dollars, rounded $10 under $500 / $50 above). Terrarium sizes are the nearest dry presets (12x12x12 = 7.5 gal, 12x18x12 = 11, 24x12x24 = 30, 36x18x18 = 50, 48x18x24 = 90).
+
+| Kind | 10 gal | 20 gal | 40 gal | 75 gal | 125 gal |
+|---|---|---|---|---|---|
+| Freshwater | 230-1,200 | 330-1,800 | 550-2,650 | 1,000-3,600 | 1,400-4,850 |
+| Saltwater | 950-2,450 | 1,200-3,050 | 1,450-3,400 | 2,200-4,350 | 2,750-5,050 |
+| Vivarium | - | 500-750 | 750-1,150 | 1,250-1,850 | 1,750-2,450 |
+| Terrarium (7.5 / 11 / 30 / 50 / 90 gal) | 290-800 | 310-850 | 500-1,200 | 550-1,350 | 1,000-2,100 |
+
+- Known limits to tell Nathan: a size can price under the one before it where its FLOOR is smaller (g37 vs g30b breeder, g65 vs g60b, tall cubes): decor, plants and stock follow floor area. The reef hi end ($4,350 at 75 gal) is modest for a "semi-professional" reef because corals and live rock are priced by the engine's rows; if Nathan wants it higher the lever is the reef hi style (spsreef) or coral stop. Salt lo still carries the engine's reef-LED light row and an RO/DI unit (FOWLR preset).
+
 ### DM2: swap menu, same tank only, short text (2026-11-05, Nathan)
 Nathan: the "Swap for a kit or sale" block was way too wordy; only suggest when the tank does not change, but a rimmed 10 gal from another brand is fine. Done: `dealSwaps` (src/demand/dealmatch.ts) now skips every deal where `sameTank` is false (same shape, each side within 10 % or 1.5 in, unchanged tolerance), so a 15 gal never sees a 10 gal kit and no "different tank, link" entry exists. `src/ui/dealMatch.ts`: one line per swap ("Retailer Name: $45 (was $90), shipping, saves about $51 (estimated, tooltip has the guesses); changes light, filter"), a short "(worse: ...)" clause only when gear is worse, buttons "Show as Tank B" / "Not now", ONE footer ("Prices as of ...; Links are plain, no affiliate codes."). Dropped "You would change" numbers, "What you give up" block, "Guessed" paragraph. Heater/gear "On sale, your X: link at store, $ (was $), shipping." with "Price it", same footer (src/ui/demandPanel.ts). No cost numbers moved. Not shortened (own code, not touched): plant-pack lines and the pinned-bundle line in demandPanel.ts, "Guessed:" on featured deals. Tests: test/shipping.test.ts (same-tank only, cross-brand, 15 gal not offered a 10 gal kit). No live screenshot was taken (machine load, split-view app state): check the panel in the browser.
 
