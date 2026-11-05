@@ -19,6 +19,9 @@ import { IN } from '../scene/physics';
 import { customTankModel, ownedTankList, parseDims, tankLabel } from './guided/logic';
 import { editBrief, getBrief, ownedKeys, setNeedStand } from './setupBrief';
 import { LIMITS } from '../scene/validate';
+import { demandOf } from '../demand/engine';
+import { mean3 } from '../demand/range';
+import { defaultProfile, type UserProfile } from '../demand/types';
 import { fitTable, TABLE_MAX } from '../scene/table';
 import type { EquipKey } from '../scene/brief';
 import type { OwnedKey } from '../demand/suggest';
@@ -164,7 +167,11 @@ export function applyFurniture(S: TankSetup, p: FurniturePatch): { grew: boolean
   fitTable(S);
   return { grew: (askL !== undefined && tb.L > askL) || (askD !== undefined && tb.D > askD) };
 }
-export interface OwnedHost { pickTank: (done: (name: string) => void) => void; status: (m: string, bad?: boolean) => void }
+/** The tank's own set-up gear and furniture still to BUY (the demand rows with a set-up price: anything owned is already $0 there), for the menu's second area. */
+export function toBuy(S: TankSetup, P: UserProfile): { key: string; label: string; usd: number }[] {
+  return demandOf(S, P).items.filter(i => i.setup && (i.group === 'gear' || i.group === 'tank') && mean3(i.setup) >= 0.5).map(i => ({ key: i.key, label: i.label, usd: Math.round(mean3(i.setup!)) }));
+}
+export interface OwnedHost { /** the person's profile for the prices in the buy list (the panel's own); absent = defaults */ profile?: () => UserProfile | undefined; pickTank: (done: (name: string) => void) => void; status: (m: string, bad?: boolean) => void }
 /** The tank on screen as the outer-ish inches the project state keeps for a tank with no catalogue model. */
 const dimsOfTank = (S: TankSetup): DimsIn => ({ L: Math.round(S.tank.L / IN * 10) / 10, D: Math.round(S.tank.D / IN * 10) / 10, H: Math.round(S.tank.H / IN * 10) / 10 });
 export interface OwnedSheetOpts {
@@ -233,9 +240,22 @@ export function mountOwnedSheet(store: Store, o: OwnedHost, root: HTMLElement, o
   };
   const moreUse = (k: OwnedKey): Use => equipmentOf(getBrief()).items.find(i => i.key === k)?.use ?? DEFAULT_OWNED_USE;
   const moreRow = (k: OwnedKey): string => {
-    const def = OWNED.find(o => o.id === k)!, pick = (valueOf(getBrief(), 'constraints.owned') ?? {})[k], on = pick !== undefined;
-    const sel = on && def.products ? `<select class="ownMorePick" data-k="${k}" aria-label="Which ${esc(def.label.toLowerCase())}"><option value="${PICK_CARE}"${pick === PICK_CARE ? ' selected' : ''}>I have one, any will do</option><option value="${PICK_UNKNOWN}"${pick === PICK_UNKNOWN ? ' selected' : ''}>Not sure</option><optgroup label="From the catalogue">${def.products().map(p => `<option value="${esc(p.id)}"${pick === p.id ? ' selected' : ''}>${esc(p.label)}</option>`).join('')}</optgroup></select> ` : '';
-    return `<div class="ownrow" data-row="${k}"><label class="chk"><input type="checkbox" data-more="${k}"${on ? ' checked' : ''}> <b>${esc(def.label)}</b></label>${on ? `<div class="ownpick">${sel}${useBox(k, def.label)}</div>` : ''}</div>`;
+    const def = OWNED.find(o => o.id === k)!, pick = (valueOf(getBrief(), 'constraints.owned') ?? {})[k];
+    const sel = def.products ? `<select class="ownMorePick" data-k="${k}" aria-label="Which ${esc(def.label.toLowerCase())}"><option value="${PICK_CARE}"${pick === PICK_CARE ? ' selected' : ''}>I have one, any will do</option><option value="${PICK_UNKNOWN}"${pick === PICK_UNKNOWN ? ' selected' : ''}>Not sure</option><optgroup label="From the catalogue">${def.products().map(p => `<option value="${esc(p.id)}"${pick === p.id ? ' selected' : ''}>${esc(p.label)}</option>`).join('')}</optgroup></select> ` : '';
+    return `<div class="ownrow" data-row="${k}"><label class="chk"><input type="checkbox" data-more="${k}" checked aria-label="Remove ${esc(def.label)}"> <b>${esc(def.label)}</b></label><div class="ownpick">${sel}${useBox(k, def.label)}</div></div>`;
+  };
+  /** Add one thing to "what I have": the same writes the old tick boxes made. */
+  const addItem = (id: string) => {
+    if (id === 'tank' || id === 'light' || id === 'heater' || id === 'filter') { st.on.add(id); if (id === 'tank' && !st.tank && !opts.compactTank) { draw(); o.pickTank(tankPicked); return; } }
+    else if (id === 'stand') editBrief(b => ownedKeys(b).includes('stand') ? b : setEquipment(b, 'stand', { use: useOf(st, 'stand'), pick: PICK_CARE }));
+    else editBrief(b => (valueOf(b, 'constraints.owned') ?? {})[id as OwnedKey] !== undefined ? b : setEquipment(b, id as OwnedKey, { pick: PICK_CARE }));
+    opts.onChange?.(); draw();
+  };
+  const buyHtml = (): string => {
+    let rows: { key: string; label: string; usd: number }[] = [];
+    try { rows = toBuy(store.tank, o.profile?.() ?? defaultProfile()); } catch { /* nothing priced yet */ }
+    const total = rows.reduce((t, r) => t + r.usd, 0);
+    return rows.length ? `<ul class="ownbuy">${rows.map(r => `<li><span>${esc(r.label)}</span><b>$${r.usd}</b></li>`).join('')}</ul><p class="hint">About <b>$${total}</b> for this gear and furniture, before animals, plants and tax. Anything you own and use (the area above) is $0.</p>` : '<p class="hint">Nothing left to buy for the gear and furniture.</p>';
   };
   const focusId = opts.focus;
   const lightFocus = () => {
@@ -245,26 +265,28 @@ export function mountOwnedSheet(store: Store, o: OwnedHost, root: HTMLElement, o
   };
   const draw = () => {
     const missing = ownedMissing(st), name = (id: OwnedItem) => OWNED_ITEMS.find(x => x.id === id)!.label.toLowerCase();
-    const b = getBrief(), haveStand = ownedKeys(b).includes('stand'), need = valueOf(b, 'equipment.needStand');
+    const b = getBrief(), haveStand = ownedKeys(b).includes('stand'), need = valueOf(b, 'equipment.needStand'), owned = valueOf(b, 'constraints.owned') ?? {};
     const yn = (v: boolean | undefined, l: string) => `<button type="button" class="${need === v ? 'on' : ''}" data-stand="${v === undefined ? 'unsure' : v}" aria-pressed="${need === v}">${l}</button>`;
     const paidFor = (id: OwnedItem) => id === 'light' || id === 'heater' || id === 'filter' ? paidBox(id) : '';
+    const coreRow = (x: typeof OWNED_ITEMS[number]) => `<div class="ownrow" data-row="${x.id}"><label class="chk"><input type="checkbox" data-item="${x.id}" checked aria-label="Remove ${x.label}"> <b>${x.label}</b> <span class="hint">${x.hint}</span></label><div class="ownpick">${picker(x.id)} ${useBox(x.id, x.label)} ${paidFor(x.id)}</div></div>`;
+    const standRow = `<div class="ownrow" data-row="stand"><label class="chk"><input type="checkbox" data-stand-have checked aria-label="Remove stand or furniture"> <b>${STAND_ITEM.label} or furniture</b> <span class="hint">${STAND_ITEM.hint}</span></label><div class="ownpick">${useBox('stand', STAND_ITEM.label)}</div>${furnBlock()}</div>`;
+    const moreIds = MORE_GROUPS.flatMap(g => g.ids), labelOf = (id: string) => id === 'stand' ? 'Stand or furniture' : OWNED_ITEMS.find(x => x.id === id)?.label ?? OWNED.find(x => x.id === id)?.label ?? id;
+    const have = [...OWNED_ITEMS.filter(x => st.on.has(x.id)).map(coreRow), ...(haveStand ? [standRow] : []), ...moreIds.filter(k => owned[k] !== undefined).map(moreRow)];
+    const absent = MY_EQUIPMENT_IDS.filter(id => id === 'stand' ? !haveStand : (OWNED_ITEMS.some(x => x.id === id) ? !st.on.has(id as OwnedItem) : owned[id as OwnedKey] === undefined));
     root.innerHTML = `${opts.title ? '<form method="dialog" class="libhead"><h2 id="ownTitle">My equipment</h2><button value="close" aria-label="Close">✕</button></form>' : ''}
-      <p class="hint">This is the one place to say what you already have, and you can open it any time. Tick each thing you own; each one opens its list so you can pick the exact product, or pick the generic one if you do not know. Anything you leave unticked is something you still need to buy. A ticked thing is <b>Available</b> (we count it toward your savings, and may suggest something else) until you tap <b>Required</b>.</p>
-      <div class="ownlist">${OWNED_ITEMS.map(x => `<div class="ownrow" data-row="${x.id}"><label class="chk"><input type="checkbox" data-item="${x.id}"${st.on.has(x.id) ? ' checked' : ''}> <b>${x.label}</b> <span class="hint">${x.hint}</span></label>${st.on.has(x.id) ? `<div class="ownpick">${picker(x.id)} ${useBox(x.id, x.label)} ${paidFor(x.id)}</div>` : ''}</div>`).join('')}
-      <div class="ownrow" data-row="stand"><label class="chk"><input type="checkbox" data-stand-have${haveStand ? ' checked' : ''}> <b>${STAND_ITEM.label} or furniture</b> <span class="hint">${STAND_ITEM.hint}</span></label>${haveStand ? `<div class="ownpick">${useBox('stand', STAND_ITEM.label)}</div>${furnBlock()}` : ''}</div></div>
-      ${haveStand ? '' : `<div class="ownstand" role="group" aria-label="Do you need a stand?"><b>Do you need a stand?</b> <span class="wgChips">${yn(true, 'Yes')}${yn(false, 'No, it sits on furniture I have')}${yn(undefined, 'Not sure')}</span></div>`}
-      ${MORE_GROUPS.map(g => `<h3 class="ownh">${g.label}</h3><div class="ownlist">${g.ids.map(moreRow).join('')}</div>`).join('')}
+      <section class="ownarea" aria-label="What I have and will use"><h3 class="ownh">What I have and will use</h3>
+      <p class="hint">Gear you already own and want in this setup. Pick the exact product, or the generic one if you do not know. It is <b>Available</b> (counted at $0, but we may suggest something else) until you tap <b>Required</b>.</p>
+      <div class="ownlist">${have.length ? have.join('') : '<p class="hint">Nothing yet. Add what you own below.</p>'}</div>
+      ${absent.length ? `<div class="ownadd" role="group" aria-label="Add something I have"><span class="hint">Add something I have:</span> ${absent.map(id => `<button type="button" class="ownchip" data-add="${id}">+ ${esc(labelOf(id))}</button>`).join('')}</div>` : ''}</section>
+      <section class="ownarea ownnew" aria-label="What I will buy new"><h3 class="ownh">What I will buy new</h3>
+      ${buyHtml()}
+      ${haveStand ? '' : `<div class="ownstand" role="group" aria-label="Do you need a stand?"><b>Do you need a stand?</b> <span class="wgChips">${yn(true, 'Yes')}${yn(false, 'No, it sits on furniture I have')}${yn(undefined, 'Not sure')}</span></div>`}</section>
       ${opts.done ? `<div class="btns"><button type="button" id="ownDone" class="primary"${missing.length ? ' disabled' : ''}>Done</button>
       <span class="hint">${missing.length ? `Still to choose: ${missing.map(name).join(', ')}.` : 'Everything is saved as you go.'}</span></div>`
       : missing.length ? `<p class="hint">Still to choose: ${missing.map(name).join(', ')}. You can go on; anything unanswered is priced as still to buy.</p>` : ''}`;
     lightFocus();
   };
-  if (opts.focus && opts.tick) {
-    const f = opts.focus;
-    if (f === 'tank' || f === 'light' || f === 'heater' || f === 'filter') st.on.add(f);
-    else if (f === 'stand') editBrief(b => ownedKeys(b).includes('stand') ? b : setEquipment(b, 'stand', { use: useOf(st, 'stand'), pick: PICK_CARE }));
-    else if (OWNED.some(o => o.id === f)) editBrief(b => (valueOf(b, 'constraints.owned') ?? {})[f as OwnedKey] !== undefined ? b : setEquipment(b, f as OwnedKey, { pick: PICK_CARE }));
-  }
+  if (opts.focus && opts.tick) addItem(opts.focus);
   root.addEventListener('change', e => {
     const el = e.target as HTMLInputElement | HTMLSelectElement;
     if (el instanceof HTMLInputElement && el.hasAttribute('data-stand-have')) { editBrief(b => el.checked ? setEquipment(b, 'stand', { use: useOf(st, 'stand'), pick: PICK_CARE }) : removeEquipment(b, 'stand')); opts.onChange?.(); draw(); return; }
@@ -307,6 +329,8 @@ export function mountOwnedSheet(store: Store, o: OwnedHost, root: HTMLElement, o
   root.addEventListener('click', e => {
     const t = e.target as HTMLElement, sb = t.closest<HTMLElement>('[data-stand]');
     if (sb) { const v = sb.dataset.stand; editBrief(b => setNeedStand(b, v === 'unsure' ? undefined : v === 'true')); draw(); return; }
+    const addb = t.closest<HTMLElement>('[data-add]');
+    if (addb) { addItem(addb.dataset.add!); return; }
     const fb = t.closest<HTMLElement>('[data-furn]'), fs = t.closest<HTMLElement>('[data-furnshape]');
     if (fb || fs) {
       furnNote = '';

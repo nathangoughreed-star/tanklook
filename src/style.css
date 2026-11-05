@@ -970,6 +970,12 @@ button.start-mode-card span.hint { font-size: 12px }
 .ownrow { border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px }
 .ownrow.ownfocus { border-color: #2a9bb0; box-shadow: 0 0 0 2px #2a9bb055 }
 .ownh { margin: 10px 0 0; font-size: 13px }
+.ownarea { border-top: 1px solid var(--line); margin-top: 10px; padding-top: 2px }
+.ownarea:first-of-type { border-top: 0; margin-top: 0 }
+.ownadd { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 8px }
+.ownchip { padding: 4px 10px; font-size: 12.5px }
+.ownbuy { list-style: none; margin: 6px 0; padding: 0; display: flex; flex-direction: column; gap: 3px }
+.ownbuy li { display: flex; justify-content: space-between; gap: 10px; font-size: 13px }
 .ownfurn { margin: 6px 0 2px 22px; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center }
 .ownfurn .wgChips button.on { background: #2a9bb0; border-color: #2a9bb0; color: #fff }
 .ownfurn input[type=number], .gc-paid input { width: 64px }

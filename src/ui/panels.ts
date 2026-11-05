@@ -307,7 +307,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // lane NG1: New and first launch offer Guided (the Welcome workspace) or Sandbox (an empty tank, checks as flags)
   // lane VD5: Make It Your Own panels (brief bar): owned gear + stand, and limits (the old Guided steps 3-4); "owned" is also the start menu's link
   // lane EQ1: THE My equipment menu; every other screen (toolbar, left panel, brief bar, Tech, Suggest) only opens it, at an item when it has one
-  const openOwned = (at?: string) => void import('./ownedGear').then(m => { (ownedSheet ??= m.attachOwnedGear(store, { status, pickTank })).open(at); });
+  const openOwned = (at?: string) => void import('./ownedGear').then(m => { (ownedSheet ??= m.attachOwnedGear(store, { status, pickTank, profile: () => demand?.profile() })).open(at); });
   void import('./myEquipment').then(m => m.attachMyEquipment(store, openOwned));
   let limitsPanel: { open(): void } | undefined;
   const openLimits = () => void import('./limitsPanel').then(m => { (limitsPanel ??= m.attachLimitsPanel()).open(); });

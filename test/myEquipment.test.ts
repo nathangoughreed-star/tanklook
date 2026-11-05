@@ -2,7 +2,7 @@
 // in the cost panel), each shortcut opens the right item, and old saves load and re-apply unchanged. The menu's DOM is not under test (node environment);
 // its state, its writes and the shortcut keys are.
 import { describe, expect, it } from 'vitest';
-import { GENERIC, MORE_GROUPS, MY_EQUIPMENT_IDS, OWNED_ITEMS, applyFurniture, applyOwned, emptyOwned, equipmentSummary, ownedNames, ownedStateOf, syncEquipment } from '../src/ui/ownedGear';
+import { GENERIC, MORE_GROUPS, MY_EQUIPMENT_IDS, OWNED_ITEMS, applyFurniture, applyOwned, toBuy, emptyOwned, equipmentSummary, ownedNames, ownedStateOf, syncEquipment } from '../src/ui/ownedGear';
 import { gearCard, ownItemOf, type GearCardSpec } from '../src/ui/gearCard';
 import { emptyBrief } from '../src/ui/setupBrief';
 import { PICK_CARE, OWNED } from '../src/demand/suggest';
@@ -61,6 +61,18 @@ describe('My equipment: one write path', () => {
   it('the menu lists every item the plan named, and each shortcut item is one of them', () => {
     expect(MY_EQUIPMENT_IDS).toEqual(expect.arrayContaining(['tank', 'stand', 'light', 'heater', 'filter', 'skimmer', 'flow', 'lid', 'testkit', 'dryheat']));
     expect(OWNED_ITEMS.map(i => i.id)).toEqual(['tank', 'light', 'heater', 'filter']);
+  });
+});
+
+describe('My equipment: what I have is kept apart from what I will buy', () => {
+  it('the buy list drops an item once it is owned, and the total falls with it', () => {
+    const S = planted(), before = toBuy(S, P), sum = (r: { usd: number }[]) => r.reduce((t, x) => t + x.usd, 0);
+    expect(before.some(r => r.key === 'heater') || before.some(r => r.key === 'light')).toBe(true);
+    const st = emptyOwned(); st.on.add('light'); st.light = GENERIC; applyOwned(S, st);
+    const after = toBuy(S, P);
+    expect(after.some(r => r.key === 'light')).toBe(false);
+    expect(sum(after)).toBeLessThan(sum(before));
+    expect(after.every(r => r.usd > 0)).toBe(true);
   });
 });
 

@@ -30,8 +30,8 @@ try {
   console.log('focus row', await ev(`document.querySelector('.owndlg .ownfocus')?.dataset.row`), 'heater ticked', await ev(`!!document.querySelector('.owndlg [data-item="heater"]:checked')`));
   await shot('2-tech-shortcut-opens-heater');
   console.log(await fire('.owndlg #ownHeater', 'generic'), await fire('.owndlg [data-paid="heater"]', '22'));
-  console.log(await fire('.owndlg [data-item="light"]', 'check'), await fire('.owndlg #ownLight', 'generic'));
-  console.log(await fire('.owndlg [data-more="testkit"]', 'check'), await fire('.owndlg [data-stand-have]', 'check'));
+  console.log(await click('.owndlg [data-add="light"]'), await fire('.owndlg #ownLight', 'generic'));
+  console.log(await click('.owndlg [data-add="testkit"]'), await click('.owndlg [data-add="stand"]'));
   console.log(await click('.owndlg [data-furn="table"]')); await sleep(300);
   console.log(await fire('.owndlg #ownFL', '48'), await fire('.owndlg #ownFH', '30'));
   await ev(`document.querySelector('.owndlg').scrollTo(0,0)`); await sleep(500);
