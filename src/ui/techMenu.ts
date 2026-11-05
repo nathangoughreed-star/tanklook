@@ -26,7 +26,7 @@ import { TECHS, fixtureOf, lightOutCached, wattsOf } from '../scene/lightout';
 import { integratedKit, lockNote, locksOf } from '../scene/integrated';
 import { unholdBtn } from './tankPick';
 import { FILTER_MODELS, type FilterKind } from '../demand/gear';
-import { gearCard, defaultTab, flowText, galText, lenText, wattText, type GearCardSpec, type GearSwapRow, type GearSlider, type GearStat, type GearTab } from './gearCard';
+import { gearCard, defaultTab, ownItemOf, flowText, galText, lenText, wattText, type GearCardSpec, type GearSwapRow, type GearSlider, type GearStat, type GearTab } from './gearCard';
 import { GEAR_LIMITS } from '../scene/gearSpec';
 import { genericPanel, genericSet } from './genericGearCard';
 import { asLibraryGroups, lightGroups, ratedGroups, type GearGroup } from './gearGroups';
@@ -47,7 +47,7 @@ type UnitRow = 'heater' | 'filter';
 
 interface Totals { setup: number; upkeep: number; minutes: number; risk: number }
 
-export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: () => UserProfile | undefined; /** lane SU: opens the tank-size picker for the sump */ pickSump?: (done: (m: TankModel) => void) => void }) {
+export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: () => UserProfile | undefined; /** lane SU: opens the tank-size picker for the sump */ pickSump?: (done: (m: TankModel) => void) => void; /** lane EQ1: opens the My equipment menu at an item ('heater', 'filter', 'light') */ openEquipment?: (item: string) => void }) {
   let open: string | null = null, base: Totals | null = null, baseKey = '';
   /** the Add picker open under Heating / Filtration (for filters: the type picked, then generic or a product) */
   let adding: { row: UnitRow; kind?: string } | null = null;
@@ -58,13 +58,6 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     const [row, n] = key.split('|'), S = store.tank;
     const u: { owned?: boolean; paidUsd?: number } | undefined = row === 'light' ? S.light : row === 'heater' ? heatLoss(S, techOf(S)).units[+n] : filterUnits(techOf(S))[+n];
     return { owned: !!u?.owned, ...(u?.owned && u.paidUsd !== undefined ? { paidUsd: u.paidUsd } : {}) };
-  };
-  /** Mark the piece at `key` owned (or not), with what was paid (empty / absent = not recorded): saved with the scene, so it undoes and shares. */
-  const setOwn = (key: string, on: boolean, paid?: number) => {
-    const [row, n] = key.split('|'), i = +n, mark = <T extends { owned?: boolean; paidUsd?: number }>(u: T): T => { const { owned: _o, paidUsd: _p, ...rest } = u; return { ...rest, ...(on ? { owned: true, ...(paid !== undefined ? { paidUsd: paid } : {}) } : {}) } as T; };
-    if (row === 'light') { lightKey = ''; store.edit(s => { s.light = mark(s.light); }); }
-    else if (row === 'heater') edit(s => { const t = techOf(s); return withUnits(t, 'heater', heatersNow(s, t).map((u, k) => k === i ? mark(u) : u)); });
-    else if (row === 'filter') edit(s => { const t = techOf(s); return withUnits(t, 'filter', filterUnits(t).map((u, k) => k === i ? mark(u) : u)); });
   };
   const P = () => o.profile() ?? defaultProfile();
   const kwhUsd = () => P().kwhUsd ?? (FACTORS.kwhUsd.lo + FACTORS.kwhUsd.mode + FACTORS.kwhUsd.hi) / 3;
@@ -491,6 +484,8 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     if (el.closest('.thead') && row) { open = open === row ? null : row; adding = null; render(); return; }
     const gt = el.closest<HTMLElement>('[data-gc-tab]')?.dataset.gcTab;
     if (gt) { const cut = gt.lastIndexOf('|'); tabs.set(gt.slice(0, cut), gt.slice(cut + 1) as GearTab); render(); lightKey = ''; renderLight(); return; }
+    const ownOpen = el.closest<HTMLElement>('[data-gc-own-open]')?.dataset.gcOwnOpen;
+    if (ownOpen) { o.openEquipment?.(ownItemOf(ownOpen)); return; }
     const swap = el.closest<HTMLElement>('[data-gc-swap]')?.dataset.gcSwap;
     if (swap) { const cut = swap.lastIndexOf('|'); pickProduct(swap.slice(0, cut), swap.slice(cut + 1)); return; }
     const tune = el.closest<HTMLElement>('[data-gc-tune]')?.dataset.gcTune;
@@ -520,8 +515,6 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
   /** A gear card control changed (heater, filter or light): true when it was one. */
   const gearChange = (el: HTMLInputElement): boolean => {
     if (el.dataset.gcPick !== undefined) { if (el.value) pickProduct(el.dataset.gcPick, el.value); return true; } // a library product; empty = no change
-    if (el.dataset.gcOwn !== undefined) { setOwn(el.dataset.gcOwn, el.checked); return true; }
-    if (el.dataset.gcPaid !== undefined) { const v = parseFloat(el.value.replace(/[$,]/g, '')); setOwn(el.dataset.gcPaid, true, el.value.trim() !== '' && isFinite(v) && v >= 0 ? Math.min(100000, Math.round(v * 100) / 100) : undefined); return true; }
     if (el.dataset.gc !== undefined) { // a slider or number box (generic stats)
       const [row, n] = el.dataset.gc.split('|'), i = +n, v = +el.value, stat = el.dataset.gcStat;
       if (el.value === '' || !isFinite(v)) return true;
@@ -623,8 +616,9 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
   lightMount?.addEventListener('change', e => { gearChange(e.target as HTMLInputElement); });
   lightMount?.addEventListener('input', slideLabel);
   lightMount?.addEventListener('click', e => {
-    const el = e.target as HTMLElement, gt = el.closest<HTMLElement>('[data-gc-tab]')?.dataset.gcTab, tune = el.closest<HTMLElement>('[data-gc-tune]')?.dataset.gcTune;
-    if (gt) { const cut = gt.lastIndexOf('|'); tabs.set(gt.slice(0, cut), gt.slice(cut + 1) as GearTab); lightKey = ''; renderLight(); }
+    const el = e.target as HTMLElement, gt = el.closest<HTMLElement>('[data-gc-tab]')?.dataset.gcTab, tune = el.closest<HTMLElement>('[data-gc-tune]')?.dataset.gcTune, ownOpen = el.closest<HTMLElement>('[data-gc-own-open]')?.dataset.gcOwnOpen;
+    if (ownOpen) o.openEquipment?.(ownItemOf(ownOpen));
+    else if (gt) { const cut = gt.lastIndexOf('|'); tabs.set(gt.slice(0, cut), gt.slice(cut + 1) as GearTab); lightKey = ''; renderLight(); }
     else if (tune) tuneAsGeneric(tune);
   });
   render(); renderLight();

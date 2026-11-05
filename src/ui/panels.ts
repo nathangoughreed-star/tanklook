@@ -298,7 +298,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     browse: menu => showChooser(menu, menu === 'open' ? 'starters' : undefined, welcomeFirst),
   });
   // lane R9: the owned-gear sheet (Guided, "Starting from something I have now"); its Tank row borrows the tank picker and reports when it closes
-  let ownedSheet: { open(): void } | undefined;
+  let ownedSheet: { open(at?: string): void } | undefined;
   const pickTank = (done: (name: string) => void) => {
     const dlg = $<HTMLDialogElement>('tankDlg'), before = JSON.stringify([store.tank.tank, store.tank.product]), brief0 = getBrief(); // lane GV9: a pick of the tank already shown writes the brief, and counts
     dlg.addEventListener('close', () => { if (JSON.stringify([store.tank.tank, store.tank.product]) !== before || getBrief() !== brief0) done(`${Math.round(volume(store.tank.tank).gallons)} gal tank`); }, { once: true });
@@ -306,21 +306,23 @@ export function attachPanels(store: Store, viewer: Viewer) {
   };
   // lane NG1: New and first launch offer Guided (the Welcome workspace) or Sandbox (an empty tank, checks as flags)
   // lane VD5: Make It Your Own panels (brief bar): owned gear + stand, and limits (the old Guided steps 3-4); "owned" is also the start menu's link
-  const openOwned = () => void import('./ownedGear').then(m => { (ownedSheet ??= m.attachOwnedGear(store, { status, pickTank })).open(); });
+  // lane EQ1: THE My equipment menu; every other screen (toolbar, left panel, brief bar, Tech, Suggest) only opens it, at an item when it has one
+  const openOwned = (at?: string) => void import('./ownedGear').then(m => { (ownedSheet ??= m.attachOwnedGear(store, { status, pickTank })).open(at); });
+  void import('./myEquipment').then(m => m.attachMyEquipment(store, openOwned));
   let limitsPanel: { open(): void } | undefined;
   const openLimits = () => void import('./limitsPanel').then(m => { (limitsPanel ??= m.attachLimitsPanel()).open(); });
   const startMode = attachStartMode(store, {
     guided: () => welcome.show(),
     guidedNew: async at => { if (welcomeFirst) welcomeFirst = false; else if (!await newEmptyTank()) return false; welcome.show(at); return true; },
     sandbox: kind => { if (welcomeFirst) { welcomeFirst = false; store.edit(s => applyKind(s, kind)); return true; } return newEmptyTank(kind); },
-    owned: openOwned,
+    owned: () => openOwned(),
     browse: (menu, tab) => showChooser(menu, tab, welcomeFirst),
     profile: () => { try { return loadProfile(); } catch { return undefined; } },
   });
   void import('./coach/dom').then(m => m.attachCoach(store, { limits: openLimits, tank: () => $('presetA').click() })); // lane GW1: the guide that walks the real menus (ui/coach)
-  void import('./suggest').then(m => { suggestPanel = m.attachSuggest(store, viewer, status); }); // lane C8: Suggest a setup
+  void import('./suggest').then(m => { suggestPanel = m.attachSuggest(store, viewer, status, openOwned); }); // lane C8: Suggest a setup
   void import('./infeasibleCard').then(m => m.attachCompare(store, status)); // lane GV7: compromise slots fill as they show; Use this / Compare (split view, money and care first on the tabs)
-  void import('./briefBar').then(m => { m.attachBriefBar(store, { suggest: () => suggestPanel?.open(), owned: openOwned, limits: openLimits, report: () => void import('./report').then(m => m.openReport()) }); }); // lane U3: the setup brief bar, shown in every entry point
+  void import('./briefBar').then(m => { m.attachBriefBar(store, { suggest: () => suggestPanel?.open(), owned: () => openOwned(), limits: openLimits, report: () => void import('./report').then(m => m.openReport()) }); }); // lane U3: the setup brief bar, shown in every entry point
   $('suggestBtn').onclick = () => { if (startDlg.open) startDlg.close(); suggestPanel?.open(); };
   $('startWelcome').onclick = () => { startDlg.close(); startMode.show(); };
   const showStart = () => { welcomeFirst = true; startMode.show(); };
@@ -2425,7 +2427,7 @@ Cancel, then change the name, to keep both.`)) return;
   addEventListener('pagehide', () => { if (saveTimer) { clearTimeout(saveTimer); store.saveLocal(); } });
 
   demand = attachDemandPanel(store, $('demandPanel')); // lane KK: the three demand readouts at the top of Quick Setup
-  attachTechMenu(store, $('techMenu'), { profile: () => demand?.profile(), pickSump: done => openSumpPicker?.(done) }); // lane TM: the Tech section (Lighting inside it)
+  attachTechMenu(store, $('techMenu'), { profile: () => demand?.profile(), pickSump: done => openSumpPicker?.(done), openEquipment: openOwned }); // lane TM: the Tech section (Lighting inside it)
   renderResults();
   sync();
   return { status, showStart, openShared };

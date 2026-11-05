@@ -47,10 +47,12 @@ describe('gear card', () => {
     expect(h).not.toContain('gc-stats');
     expect(h).not.toContain('Tune as generic');
   });
-  it('I own one: a checkbox, session UI only', () => {
-    expect(gearCard(spec({ tab: 'own' }))).toContain('data-gc-own="heater|0"');
-    const h = gearCard(spec({ tab: 'own', owned: true }));
-    expect(h).toContain(' checked');
+  it('I own one: a shortcut that opens My equipment at this item, no copy of the control (lane EQ1)', () => {
+    const off = gearCard(spec({ tab: 'own' }));
+    expect(off).toContain('data-gc-own-open="heater|0"');
+    expect(off).not.toContain('data-gc-own="'); expect(off).not.toContain('data-gc-paid'); expect(off).not.toContain('type="checkbox"');
+    const h = gearCard(spec({ tab: 'own', owned: true, paidUsd: 14 }));
+    expect(h).toContain('Marked as owned (paid $14)'); expect(h).toContain('Edit in My equipment');
     expect(h).toContain('I own one ✓');
   });
   it('escapes names', () => { expect(gearCard(spec({ tab: 'library', library: { groups: [{ label: '<b>', options: [{ id: 'x', label: 'A "q" <i>' }] }], stats: [], notes: [] } }))).not.toContain('<i>'); });

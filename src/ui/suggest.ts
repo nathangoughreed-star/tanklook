@@ -7,7 +7,8 @@ import { getSpecies } from '../data/species';
 import { demandOf } from '../demand/engine';
 import { pinTank } from '../demand/pinned';
 import { rhythmOf } from '../demand/rhythm';
-import { narrowTaste, suggestSetups, type Option, DRY_GROUPS, KINDS, OWNED, PICK_CARE, PICK_UNKNOWN, asksDryGroups, type OwnedMap, type DryGroup, type Kind, TAGS, FAMILY_LABEL, type Proposal, type Suggestions, type Tag } from '../demand/suggest';
+import { equipmentSummary } from './ownedGear';
+import { narrowTaste, suggestSetups, type Option, DRY_GROUPS, KINDS, asksDryGroups, type OwnedMap, type DryGroup, type Kind, TAGS, FAMILY_LABEL, type Proposal, type Suggestions, type Tag } from '../demand/suggest';
 import { CYCLE_NOTE } from '../scene/plan';
 import { TIER_LABEL } from '../scene/finish';
 import { LAYERS, LAYER_BLURB, LAYER_LABEL, type CostLine } from '../demand/costlines';
@@ -67,7 +68,7 @@ export function makeItMine(store: Store, p: Proposal) {
   return T;
 }
 
-export function attachSuggest(store: Store, viewer: Viewer, status: (m: string, bad?: boolean) => void) {
+export function attachSuggest(store: Store, viewer: Viewer, status: (m: string, bad?: boolean) => void, openEquipment?: (item?: string) => void) {
   const view = document.getElementById('view')!;
   const el = document.createElement('aside');
   el.className = 'sp bp sg'; el.hidden = true; el.setAttribute('aria-label', 'Suggest a setup');
@@ -98,13 +99,13 @@ export function attachSuggest(store: Store, viewer: Viewer, status: (m: string, 
     if (bc.monthlyUsd !== undefined) f.monthly = String(bc.monthlyUsd);
     if (bc.minutesPerWeek !== undefined) f.time = String(bc.minutesPerWeek);
     if (bc.space) { f.spaceOn = true; f.w = String(Math.round(bc.space.w / k * 10) / 10); f.d = String(Math.round(bc.space.d / k * 10) / 10); }
-    const bo = valueOf(getBrief(), 'constraints.owned'); if (bo) f.owned = { ...bo };
+    f.owned = { ...(valueOf(getBrief(), 'constraints.owned') ?? {}) }; // owned gear is read from the brief, set only in My equipment (lane EQ1)
     tags = new Set(); res = undefined; pics = []; note = ''; strip = undefined;
   };
   const readFields = () => {
     const g = (id: string) => el.querySelector<HTMLInputElement>(`#sg${id}`);
     f = { startup: g('Startup')?.value ?? '', monthly: g('Monthly')?.value ?? '', time: g('Time')?.value ?? '', spaceOn: !!g('SpaceOn')?.checked, w: g('W')?.value ?? '', d: g('D')?.value ?? '', needStand: g('NeedStand')?.checked ?? true,
-      owned: Object.fromEntries([...el.querySelectorAll<HTMLInputElement>('.sgOwn:checked')].map(x => [x.value, el.querySelector<HTMLSelectElement>(`.sgOwnPick[data-k="${x.value}"]`)?.value ?? PICK_CARE])) as OwnedMap,
+      owned: { ...(valueOf(getBrief(), 'constraints.owned') ?? {}) },
       kinds: [...el.querySelectorAll<HTMLInputElement>('.sgKind:checked')].map(x => x.value as Kind), groups: [...el.querySelectorAll<HTMLInputElement>('.sgGroup:checked')].map(x => x.value as DryGroup) };
   };
 
@@ -159,7 +160,7 @@ ${p.unknown.length ? `<div class="spNote">Not enough information: ${esc(p.unknow
   const stripHtml = () => strip ? `<div class="sgChange" id="sgChange" role="status"><b>What changed:</b> ${esc(strip.text)}${strip.lines.map(l => ` <span class="spNote">${esc(l)}.</span>`).join('')}</div>` : '';
 
   const draw = () => {
-    const scroll = el.scrollTop, k = lenU(), nOwned = Object.keys(f.owned).length;
+    const scroll = el.scrollTop, k = lenU();
     let out = '';
     if (res) {
       if (res.proposals.length) out = `<p class="spNote">${esc(res.off ? 'No guardrail is on, so these are ranked by what you picked below, not checked against a limit.' : 'Each one passes every guardrail you switched on and the animals\' care checks. Prices are expected costs; minutes are estimates.')}</p>
@@ -180,8 +181,7 @@ ${lockedStock(getBrief()).length ? `<div class="spNote sgLocked">Locked animals:
 <label class="sgRow"><span>Care time (min a week)</span><input id="sgTime" type="number" min="0" step="5" inputmode="decimal" value="${esc(f.time)}" placeholder="no limit"></label>
 <div class="sgRow"><label><input id="sgSpaceOn" type="checkbox" ${f.spaceOn ? 'checked' : ''}> Space (${k})</label><span class="sgSp"><input id="sgW" type="number" min="0" aria-label="Width" value="${esc(f.w)}" placeholder="wide"> x <input id="sgD" type="number" min="0" aria-label="Depth" value="${esc(f.d)}" placeholder="deep"></span></div>
 <label class="sgRow"><span><input id="sgNeedStand" type="checkbox" ${f.needStand ? 'checked' : ''}> I'll need a stand</span></label>
-<details class="sgOwned"${nOwned ? ' open' : ''}><summary>Equipment I already have${nOwned ? ` (${nOwned})` : ''}</summary><div class="sgOwnList">${OWNED.map(o => { const on = o.id in f.owned, pick = f.owned[o.id] ?? PICK_CARE;
-  return `<div class="sgOwnRow"><label><input class="sgOwn" type="checkbox" value="${o.id}" ${on ? 'checked' : ''}${o.id === 'stand' && !f.needStand ? ' disabled' : ''}> ${o.label}</label>${on ? `<select class="sgOwnPick" data-k="${o.id}" aria-label="Which ${esc(o.label.toLowerCase())}"><option value="${PICK_CARE}"${pick === PICK_CARE ? ' selected' : ''}>I don't care</option><option value="${PICK_UNKNOWN}"${pick === PICK_UNKNOWN ? ' selected' : ''}>I don't know</option>${o.products ? `<optgroup label="From the catalogue">${o.products().map(p => `<option value="${p.id}"${pick === p.id ? ' selected' : ''}>${esc(p.label)}</option>`).join('')}</optgroup>` : ''}</select>` : ''}</div>`; }).join('')}</div><div class="spNote">Pick the real one and it is credited at its real size (too small and we say so and price a new one). "I don't care": $0, the setup's own is assumed to suit it. "I don't know": priced as bought, with a note to check yours.</div></details>
+<div class="sgOwned" id="sgOwnedLine"><b>Equipment I already have</b> <span class="spNote">${esc(equipmentSummary(getBrief(), store.tank))}</span> <button type="button" class="spLink" data-act="equip">Edit my equipment</button></div>
 <label class="sgRow"><span><input id="sgHigh" type="checkbox" ${valueOf(getBrief(), 'preferences.hightech') ? 'checked' : ''}> High-tech planted tank (CO2, strong light)</span></label>
 <label class="sgRow"><span><input id="sgPhased" type="checkbox" ${valueOf(getBrief(), 'constraints.phased') ? 'checked' : ''}> Buy in phases (animals later, after the tank has cycled)</span></label>
 <div class="sgTags" role="group" aria-label="What appeals to you">${TAGS.map(t => `<button type="button" class="sgTag${tags.has(t.id) ? ' on' : ''}" data-tag="${t.id}" aria-pressed="${tags.has(t.id)}">${t.label}</button>`).join('')}</div>
@@ -204,7 +204,7 @@ ${lockedStock(getBrief()).length ? `<div class="spNote sgLocked">Locked animals:
     // what was filled in here goes back into the brief, so every entry point shows it
     editBrief(b => { const c = w.constraints; let n = setMonthly(setBudget(b, c.startupUsd?.on ? c.startupUsd.value : undefined), c.monthlyUsd?.on ? c.monthlyUsd.value : undefined); n = setCareTime(n, c.minutesPerWeek?.on ? c.minutesPerWeek.value : undefined); return w.space ? setSpace(n, w.space, units()) : n; });
     const hi = !!el.querySelector<HTMLInputElement>('#sgHigh')?.checked, ph = !!el.querySelector<HTMLInputElement>('#sgPhased')?.checked;
-    editBrief(b => { let n = hi ? setItem(b, 'preferences.hightech', true, 'hard') : clearItem(b, 'preferences.hightech'); n = ph ? setItem(n, 'constraints.phased', true, 'hard') : clearItem(n, 'constraints.phased'); return Object.keys(w.owned).length ? setItem(n, 'constraints.owned', { ...w.owned }, 'hard') : clearItem(n, 'constraints.owned'); });
+    editBrief(b => { let n = hi ? setItem(b, 'preferences.hightech', true, 'hard') : clearItem(b, 'preferences.hightech'); n = ph ? setItem(n, 'constraints.phased', true, 'hard') : clearItem(n, 'constraints.phased'); return n; }); // the owned gear is the My equipment menu's to write (lane EQ1)
     if (!w.kinds.length) { note = 'Tick at least one kind of setup.'; res = undefined; draw(); return; }
     if (w.spaceMissing) { note = 'Enter the width and depth of your space, or untick Space.'; res = undefined; draw(); return; }
     const before = res, asked = inputsOf(wantsAsked(w), getBrief());
@@ -266,9 +266,9 @@ ${lockedStock(getBrief()).length ? `<div class="spNote sgLocked">Locked animals:
     if (ch?.dataset.drop) { editBrief(b => dropWish(b, ch.dataset.drop as Wish)); readFields(); go(); return; }
     const t = (e.target as HTMLElement).closest<HTMLElement>('[data-act],[data-tag]'); if (!t) return;
     if (t.dataset.tag) { readFields(); const id = t.dataset.tag as Tag; tags.has(id) ? tags.delete(id) : tags.add(id); draw(); return; }
-    switch (t.dataset.act) { case 'close': close(); break; case 'go': go(); break; case 'pick': pick(+(t.dataset.i ?? -1)); break; case 'plan': { const q = shownNow()[+(t.dataset.i ?? -1)]; if (q) openBuildPlan(q, loadProfile()); break; } }
+    switch (t.dataset.act) { case 'equip': openEquipment?.(); break; case 'close': close(); break; case 'go': go(); break; case 'pick': pick(+(t.dataset.i ?? -1)); break; case 'plan': { const q = shownNow()[+(t.dataset.i ?? -1)]; if (q) openBuildPlan(q, loadProfile()); break; } }
   };
-  el.onchange = e => { if ((e.target as HTMLElement).id === 'sgNeedStand' || (e.target as HTMLElement).classList.contains('sgKind') || (e.target as HTMLElement).classList.contains('sgOwn')) { readFields(); draw(); } };
+  el.onchange = e => { if ((e.target as HTMLElement).id === 'sgNeedStand' || (e.target as HTMLElement).classList.contains('sgKind')) { readFields(); draw(); } };
   el.onkeydown = e => { if (e.key === 'Enter' && (e.target as HTMLElement).tagName === 'INPUT') go(); };
 
   /** Live loop (lane NG3): a brief edit made elsewhere (bar, welcome, tank) or a box edited here re-runs Suggest ~400 ms later, locks and direction kept

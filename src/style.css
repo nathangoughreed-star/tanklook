@@ -968,6 +968,13 @@ button.start-mode-card span.hint { font-size: 12px }
 .owndlg { width: min(560px, calc(100vw - 32px)) }
 .ownlist { display: flex; flex-direction: column; gap: 8px; margin: 8px 0 }
 .ownrow { border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px }
+.ownrow.ownfocus { border-color: #2a9bb0; box-shadow: 0 0 0 2px #2a9bb055 }
+.ownh { margin: 10px 0 0; font-size: 13px }
+.ownfurn { margin: 6px 0 2px 22px; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center }
+.ownfurn .wgChips button.on { background: #2a9bb0; border-color: #2a9bb0; color: #fff }
+.ownfurn input[type=number], .gc-paid input { width: 64px }
+.ownwarn { flex-basis: 100%; color: #b36b00 }
+.owndlg { max-height: calc(100vh - 32px); overflow-y: auto }
 .ownrow .chk { display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap }
 .ownpick { margin: 6px 0 2px 22px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap }
 .ownpick select { max-width: 100% }

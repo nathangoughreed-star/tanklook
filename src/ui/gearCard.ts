@@ -2,7 +2,7 @@
 // row, with three tabs: Generic (sliders for the type's stat block, within gearSpec limits), Library (real products, specs LOCKED,
 // "Tune as generic..." copies them into the generic) and I own one (UI only for now). Pure string rendering, no DOM and no store:
 // techMenu.ts builds a GearCardSpec per unit and handles the data-gc-* events. Units follow the scene's (US: gph, in, W; metric: L/h, cm).
-// "I own one" (lane GM6) is saved on the unit (owned / paidUsd) and shows as a $0 "you have" cost line.
+// "I own one" (lane GM6) is saved on the unit (owned / paidUsd) and shows as a $0 "you have" cost line; since lane EQ1 the tab is a shortcut that opens My equipment at this item.
 import { GEAR_LIMITS, type GearType } from '../scene/gearSpec';
 
 /** One swap on the Library tab (lane GM6): the product, its stat / price / power change and why it still passes the welfare check. */
@@ -84,10 +84,14 @@ function libraryPane(c: GearCardSpec): string {
   return h + tuneBtn(c.key);
 }
 
+/** The My equipment item a gear card key opens ('heater|0' -> 'heater', 'filter|1' -> 'filter', 'light|0' -> 'light'). */
+export const ownItemOf = (key: string): string => key.split('|')[0];
+
 function ownPane(c: GearCardSpec): string {
-  return `<label class="gc-own"><input type="checkbox" data-gc-own="${esc(c.key)}"${c.owned ? ' checked' : ''}> I already have this one</label>`
-    + (c.owned ? `<label class="gc-paid">What I paid (optional) $<input type="number" min="0" step="1" inputmode="decimal" data-gc-paid="${esc(c.key)}" value="${c.paidUsd ?? ''}" placeholder="not recorded"></label>` : '')
-    + `<div class="hint">${c.owned ? 'Marked as owned: it shows $0 "you have" in the costs and under "Already have" in the plan. Its power use and welfare effect count either way.' : 'Tick it if this is gear you already own: it stays in the plan at $0, and its running cost and welfare effect still count.'}</div>`;
+  // lane EQ1: ownership has ONE home (the My equipment menu); this tab only shows the state and opens it at this item
+  return `<div class="gc-own">${c.owned ? `Marked as owned${c.paidUsd !== undefined ? ` (paid $${Math.round(c.paidUsd)})` : ''}.` : 'Not marked as owned.'}</div>`
+    + `<button type="button" class="gc-ownopen" data-gc-own-open="${esc(c.key)}">${c.owned ? 'Edit in My equipment…' : 'I own one: open My equipment…'}</button>`
+    + `<div class="hint">${c.owned ? 'It shows $0 "you have" in the costs and under "Already have" in the plan. Its power use and welfare effect count either way.' : 'If this is gear you already own, say so in My equipment: it stays in the plan at $0, and its running cost and welfare effect still count.'}</div>`;
 }
 
 /** The card's tab strip and the active tab's pane (the wrapper, name and cost line belong to the caller). */

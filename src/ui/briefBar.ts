@@ -16,7 +16,7 @@ import { pinnedKit } from '../demand/pinned';
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const MM_IN = 25.4;
 
-export function attachBriefBar(store: Store, host: { suggest(): void; /** the "What you already have" panel */ owned(): void; /** the "Your limits" panel */ limits(): void; /** the printable report */ report(): void }) {
+export function attachBriefBar(store: Store, host: { suggest(): void; /** opens the My equipment menu */ owned(): void; /** the "Your limits" panel */ limits(): void; /** the printable report */ report(): void }) {
   const host_ = document.getElementById('briefHost')!; // the Setup brief section of the side panel (UI3)
   const bar = document.createElement('div');
   bar.className = 'bb'; bar.setAttribute('role', 'region'); bar.setAttribute('aria-label', 'Setup brief');
@@ -46,7 +46,7 @@ export function attachBriefBar(store: Store, host: { suggest(): void; /** the "W
       if (ev?.gal !== undefined) { ctx.animalTankGal = ev.gal; next = nextQuestions(b, ctx); }
     }
     const nq = next.questions.length;
-    bar.innerHTML = `<button type="button" class="bbHead" data-act="toggle" aria-expanded="${openCard}"><b>Setup brief</b>${isEmpty(b) ? '<span class="bbNone">nothing set: optional</span>' : ''}${nq ? `<span class="bbBadge">${nq} to ask</span>` : ''}</button><button type="button" class="bbChip bbPanel" data-act="owned" title="Tick the tank, light, heater, filter and stand you already own"><span>What you already have</span></button><button type="button" class="bbChip bbPanel" data-act="limits" title="Money, time, space, room and water: all optional"><span>Your limits</span></button><button type="button" class="bbChip bbPanel" data-act="report" title="The printable report for this setup"><span>Report</span></button>`;
+    bar.innerHTML = `<button type="button" class="bbHead" data-act="toggle" aria-expanded="${openCard}"><b>Setup brief</b>${isEmpty(b) ? '<span class="bbNone">nothing set: optional</span>' : ''}${nq ? `<span class="bbBadge">${nq} to ask</span>` : ''}</button><button type="button" class="bbChip bbPanel" data-act="owned" title="Open My equipment: the tank, stand or furniture, light, heater, filter and the rest you already own"><span>My equipment</span></button><button type="button" class="bbChip bbPanel" data-act="limits" title="Money, time, space, room and water: all optional"><span>Your limits</span></button><button type="button" class="bbChip bbPanel" data-act="report" title="The printable report for this setup"><span>Report</span></button>`;
     bar.classList.toggle('empty', isEmpty(b));
     if (!openCard) return;
     let cons = '';
