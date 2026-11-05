@@ -59,7 +59,7 @@ describe('the docked picker rows', () => {
     expect(new Set(fresh.flatMap(g => g.opts).map(o => o.key)).size).toBe(fresh.flatMap(g => g.opts).length);
     expect(offers(TANK_MODELS.find(m => m.terrarium)!, 'freshwater')).toBe(false);
   });
-  it('searches, shows FR1's range on model rows and none when it is not known', () => {
+  it('searches, shows the finished range on model rows and none when it is not known', () => {
     const hit = dockGroups('freshwater', '75').flatMap(g => g.opts);
     expect(hit.length).toBeGreaterThan(0);
     expect(dockGroups('freshwater', 'zzzz-no-such-tank')).toEqual([]);
