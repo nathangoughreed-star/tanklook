@@ -11964,8 +11964,8 @@
    "ratedGal": 4.6,
    "shape": "rect",
    "outer": {
-    "L": 199.9,
-    "H": 760,
+    "L": 760,
+    "H": 199.9,
     "D": 149.9
    },
    "glassMm": 10,
@@ -11976,18 +11976,18 @@
     "D",
     "H"
    ],
-   "note": "Lifegard Aquatics Lifegard Bookshelf Aquarium 6 Gallon 5mm, 7.87 x 5.9 x 29.92 in (Amazon listing, 2026-10-26). Library preload only, not an engine pick (Nathan 2026-10-26).",
+   "note": "Lifegard Aquatics Lifegard Bookshelf Aquarium 6 Gallon 5mm, 7.87 x 5.9 x 29.92 in (Amazon listing, 2026-10-26). Amazon lists 7.87 x 5.9 x 29.92 in; a bookshelf tank is long and low, so L 29.92 x D 5.9 x H 7.87 in (dimension swap fixed 2026-11-06, Nathan). Library preload only, not an engine pick (Nathan 2026-10-26).",
    "variants": [
     {
      "brand": "Lifegard Aquatics",
      "line": "Bookshelf Aquarium 6 Gallon 5mm",
-     "L_in": 7.87,
+     "L_in": 29.92,
      "D_in": 5.9,
-     "H_in": 29.92,
+     "H_in": 7.87,
      "price_usd": 79.15,
      "price_kind": "street",
      "retailer": "Amazon",
-     "price_note": "Amazon $79.15; page read 2026-10-26; SKU B09SQF651S; dims: Amazon \"Product Dimensions\" (may be box/packaging; not verified as tank-only); dims 7.87x5.9x29.92 look odd for a bookshelf tank; verify; Amazon listing in stock unless noted; includes inferred from kit title; Amazon dims often box",
+     "price_note": "Amazon $79.15; page read 2026-10-26; SKU B09SQF651S; dims: Amazon \"Product Dimensions\" (may be box/packaging; not verified as tank-only); read as L 29.92 x D 5.9 x H 7.87 (bookshelf, long and low); Amazon listing in stock unless noted; includes inferred from kit title; Amazon dims often box",
      "url": "https://www.amazon.com/dp/B09SQF651S",
      "checked": "2026-11-02",
      "confidence": "low",
