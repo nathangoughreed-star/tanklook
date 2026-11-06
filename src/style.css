@@ -358,7 +358,7 @@ footer { margin-top: 18px }
 .td-list h3 { margin: 0; padding: 4px 8px; font-size: 12px; position: sticky; top: 0; background: var(--panel); border-bottom: 1px solid var(--line); z-index: 1 }
 .td-opt { display: grid; grid-template-columns: 1fr auto; gap: 0 10px; padding: 5px 8px; cursor: pointer; border-bottom: 1px solid color-mix(in srgb, var(--line) 50%, transparent); font-variant-numeric: tabular-nums }
 .td-opt .d, .td-opt .r { font-size: 12px; color: var(--muted) } .td-opt .p { text-align: right } .td-opt .r { text-align: right }
-.td-opt.var { padding-left: 20px; font-size: 12px } .td-opt.var .n { color: var(--muted) }
+.td-opt { padding-left: 24px } .td-opt.var { padding-left: 36px; font-size: 12px } .td-opt.var .n { color: var(--muted) }
 .td-opt:hover { background: var(--chip) }
 .td-opt[aria-selected="true"] { background: var(--accent); color: #fff } .td-opt[aria-selected="true"] .d, .td-opt[aria-selected="true"] .r, .td-opt[aria-selected="true"] .n { color: #e6efff }
 .td-foot { margin-top: 8px; display: flex; flex-direction: column; gap: 4px } .td-foot .primary { align-self: flex-start; padding: 6px 14px }
@@ -1272,3 +1272,10 @@ button.start-mode-card span.hint { font-size: 12px }
 @media (max-width: 820px) { .da-wrap { grid-template-columns: minmax(0, 1fr) } .da-live { position: static } }
 .bb .bbHead { display: none }
 #view:has(.lab.tab) .dmfloat { top: calc(10px + 92px) } /* split view: below the tab and its Edit note, which the cost panel used to cover (UI3) */
+/* the picker's groups and collapsed size bands (lane ST2) */
+.td-group { display: flex; flex-direction: column; gap: 0 }
+.td-group .hint { font-weight: 400; font-size: 11px }
+.td-band { display: grid; grid-template-columns: 14px 1fr auto auto; gap: 0 8px; align-items: baseline; width: 100%; text-align: left; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: var(--chip); padding: 6px 8px; font-variant-numeric: tabular-nums }
+.td-band .bn { font-weight: 600 } .td-band .bc, .td-band .bp { font-size: 12px; color: var(--muted) }
+.td-band[aria-expanded="true"] { background: var(--panel) }
+@media (max-width: 760px) { .td-band { grid-template-columns: 14px 1fr auto } .td-band .bc { display: none } }

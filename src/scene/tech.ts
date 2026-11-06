@@ -907,3 +907,12 @@ export function reefChecks(S: TankSetup, t: TechSetup = techOf(S)): ReefCheck[] 
   if ((rowProduct(t, 'co2') as { kind?: string } | undefined)?.kind === 'regulator') add('co2', 'note', 'Regulator only: the CO2 cylinder and its refills are extra.');
   return out;
 }
+
+/** A tank with no gear at all (lane ST2, Nathan 2026-11-06: "no equipment coming with the tank" for a blank tank): every row that has a 'none' option is set to it, so the
+ *  inferred defaults (filter, heater, conditioner...) neither draw nor cost anything. `keep` names rows to leave as inferred (what a kit includes). The Problems list and
+ *  the cost panel still say what is missing (an unset filter reads 'unset', not 'filterless'). */
+export function bareTech(S: TankSetup, keep: readonly string[] = []): TechSetup {
+  const inf = inferTech(S).rows, rows: Record<string, string> = { ...inf };
+  for (const r of rowsFor(S)) if (!keep.includes(r.id) && r.options.some(o => o.id === 'none')) rows[r.id] = 'none';
+  return { rows };
+}

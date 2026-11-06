@@ -7,13 +7,13 @@
 import type { Viewer } from '../render/viewer';
 import { tankView } from '../render/tankView';
 import { STAND_FINISHES } from '../render/build';
-import { saleLive, type TankModel, type TankVariant } from '../data/tanks';
+import { getTankModel, saleLive, variantByKey, type TankModel, type TankVariant } from '../data/tanks';
 import { fromUnit, toUnit } from '../scene/physics';
 import { PLACEMENTS, minTop, placementOf, putOnFloor, putOnFurniture, putOnMyFurniture, putOnStand, type Placement } from '../scene/placement';
 import { tankKind, type SetupKind } from '../scene/pickerKind';
 import type { Store } from '../scene/store';
 import type { Scene, StandFinish } from '../scene/types';
-import { dockGroups, emptyRoomView, previewSetup, rangeText, roomZoom, type DockOpt } from './tankDockLogic';
+import { dockGroups, emptyRoomView, isBundle, optKey, previewSetup, rangeText, roomZoom, startGear, type DockBand, type DockOpt } from './tankDockLogic';
 
 export interface DockHost {
   /** Choose a size / product: the same edit the old modal made (brief, size, product, stand, pinned price). */
@@ -32,16 +32,23 @@ export function attachTankDock(store: Store, viewer: Viewer, host: DockHost) {
   const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
   const app = $('app'), dock = $('tankDock'), list = $('tdList'), q = $<HTMLInputElement>('tdQ'), detail = $('tdDetail'), choose = $<HTMLButtonElement>('tdChoose');
   const pick = $('tdPick'), put = $('tdPut'), back = $<HTMLButtonElement>('tdBack'), closeBtn = $<HTMLButtonElement>('tdClose');
-  let mode: DockMode = 'change', kind: SetupKind = 'freshwater', opts: DockOpt[] = [], sel = -1, onClose: (() => void) | undefined, step: 'pick' | 'put' = 'pick', isOpen = false;
+  let mode: DockMode = 'change', kind: SetupKind = 'freshwater', opts: DockOpt[] = [], sel = -1, cur: DockOpt | undefined, openBands = new Set<string>(), autoZoom: number | undefined, userZoomed = false, onClose: (() => void) | undefined, step: 'pick' | 'put' = 'pick', isOpen = false;
   const units = (): Scene['units'] => store.scene.units;
 
   // ---------- the view ----------
-  const emptyNow = () => isOpen && mode === 'start' && step === 'pick' && sel < 0;
+  const emptyNow = () => isOpen && mode === 'start' && step === 'pick' && !cur;
   const show = (on: boolean) => { isOpen = on; dock.hidden = !on; app.classList.toggle('docking', on); app.classList.toggle('dockempty', emptyNow()); viewer.invalidate(); };
+  /** Start mode: open the lens with the tank so the person stays in the picture (the scene's camera, so the person can still orbit and zoom; a zoom they set themselves is left alone). */
+  const frameRoom = (T: { L: number; H: number }) => {
+    if (mode !== 'start' || userZoomed) return;
+    const z = roomZoom(T), now = store.tank.camera.zoom;
+    if (autoZoom !== undefined && Math.abs(now - autoZoom) > 1e-6) { userZoomed = true; return; }
+    autoZoom = z; if (Math.abs(now - z) > 1e-6) store.update(s => { s.tanks[s.active].camera = { ...s.tanks[s.active].camera, zoom: z }; }, { kind: 'view', history: false });
+  };
   const setPreview = () => {
-    const o = opts[sel];
-    if (!o) { tankView.empty = mode === 'start'; viewer.setPreview(mode === 'start' ? emptyRoomView(store.tank) : null); return; }
-    tankView.empty = false; viewer.setPreview(previewSetup(store.tank, o, mode === 'start'));
+    if (!cur) { tankView.empty = mode === 'start'; if (mode === 'start') frameRoom(store.tank.tank); viewer.setPreview(mode === 'start' ? emptyRoomView(store.tank) : null); return; }
+    const p = previewSetup(store.tank, cur, mode === 'start');
+    tankView.empty = false; frameRoom(p.tank); viewer.setPreview(p);
   };
   const clearPreview = () => { tankView.empty = false; viewer.setPreview(null); };
 
@@ -50,43 +57,51 @@ export function attachTankDock(store: Store, viewer: Viewer, host: DockHost) {
     const sale = o.v && saleLive(o.v);
     const price = o.usd == null ? '<span class="hint">price n/a</span>' : o.typical ? `~${usd(o.usd)}` : `${usd(o.usd)}${sale ? ' <i>sale</i>' : ''}`;
     const r = o.typical ? rangeText(o.range) : '';
-    return `<div class="td-opt${o.typical ? ' gen' : ' var'}" role="option" id="tdo${i}" data-i="${i}" aria-selected="${i === sel}" tabindex="-1">` +
+    return `<div class="td-opt${o.typical ? ' gen' : ' var'}" role="option" id="tdo${i}" data-i="${i}" aria-selected="${o.key === cur?.key}" tabindex="-1">` +
       `<span class="n">${o.typical ? `<b>${esc(o.name)}</b>` : esc(o.name)}</span><span class="d">${o.dims} in</span><span class="p">${price}</span>${r ? `<span class="r" title="A rough finished tank: lightly stocked with cheap decor at the low end, a semi-professional setup at the high end">finished ${r}</span>` : ''}</div>`;
   };
   const drawDetail = () => {
-    const o = opts[sel]; choose.disabled = !o;
-    if (!o) { detail.innerHTML = mode === 'start' ? '<p class="hint">The room is empty. Pick a size and it appears on the floor next to the person (5 ft 9 in). Arrow keys flip through the sizes.</p>' : '<p class="hint">Pick a size to see it in the room. Arrow keys flip through the sizes.</p>'; return; }
+    const o = cur; choose.disabled = !o;
+    if (!o) { detail.innerHTML = mode === 'start' ? '<p class="hint">The room is empty. Open a size group and pick a tank: it appears on the floor next to the person (5 ft 9 in). Arrow keys flip through the open sizes; drag to look around.</p>' : '<p class="hint">Open a size group and pick a tank to see it in the room. Arrow keys flip through the open sizes; drag to look around.</p>'; return; }
     const r = rangeText(o.range);
     detail.innerHTML = `<div class="td-name"><b>${esc(o.v ? o.name : o.m.name)}</b> <span class="hint">${o.dims} in outer</span></div>` +
-      `<div class="td-line">${o.usd != null ? `<span>Tank ${o.typical ? 'about ' : ''}<b>${usd(o.usd)}</b></span>` : ''}${r ? `<span title="${esc(o.range?.basis ?? '')}">Finished tank about <b>${r}</b></span>` : ''}</div>`;
+      `<div class="td-line">${o.usd != null ? `<span>${o.v && isBundle(o.v) ? 'Kit' : 'Tank'} ${o.typical ? 'about ' : ''}<b>${usd(o.usd)}</b></span>` : ''}${r ? `<span title="${esc(o.range?.basis ?? '')}">Finished tank about <b>${r}</b></span>` : ''}</div>`;
   };
+  const bandHead = (b: DockBand, open: boolean) => `<button type="button" class="td-band" data-band="${b.id}" aria-expanded="${open}"><span class="chev" aria-hidden="true">${open ? '▾' : '▸'}</span><span class="bn">${esc(b.title)}</span><span class="bc">${b.n} ${b.n === 1 ? 'choice' : 'choices'}</span>${b.lo != null ? `<span class="bp">${b.lo === b.hi ? usd(b.lo) : `${usd(b.lo)} - ${usd(b.hi!)}`}</span>` : ''}</button>`;
   const drawList = () => {
-    const prev = opts[sel]?.key, groups = dockGroups(kind, q.value);
-    opts = groups.flatMap(g => g.opts); sel = prev ? opts.findIndex(o => o.key === prev) : -1;
+    const keep = list.scrollTop, groups = dockGroups(kind, q.value), searching = !!q.value.trim(), isOpenBand = (id: string) => searching || openBands.has(id);
+    opts = groups.flatMap(g => g.bands.filter(b => isOpenBand(b.id)).flatMap(b => b.opts)); sel = cur ? opts.findIndex(o => o.key === cur!.key) : -1;
     let i = 0;
-    list.innerHTML = groups.map(g => `<h3>${esc(g.title)}</h3>` + g.opts.map(o => rowHtml(o, i++)).join('')).join('') || '<p class="hint">No tank matches that search.</p>';
-    drawDetail();
+    list.innerHTML = groups.map(g => `<h3 class="td-group">${esc(g.title)} <span class="hint">${esc(g.hint)}</span></h3>` + g.bands.map(b => { const o = isOpenBand(b.id); return bandHead(b, o) + (o ? b.opts.map(x => rowHtml(x, i++)).join('') : ''); }).join('')).join('') || '<p class="hint">No tank matches that search.</p>';
+    list.scrollTop = keep; drawDetail();
   };
   const markSel = () => {
     for (const el of list.querySelectorAll<HTMLElement>('.td-opt')) el.setAttribute('aria-selected', String(+el.dataset.i! === sel));
     const el = sel >= 0 ? document.getElementById(`tdo${sel}`) : null; el?.scrollIntoView({ block: 'nearest' }); list.setAttribute('aria-activedescendant', el?.id ?? '');
   };
-  const select = (i: number) => { if (i < 0 || i >= opts.length) return; sel = i; markSel(); drawDetail(); setPreview(); app.classList.toggle('dockempty', emptyNow()); };
+  const select = (i: number) => { if (i < 0 || i >= opts.length) return; sel = i; cur = opts[i]; markSel(); drawDetail(); setPreview(); app.classList.toggle('dockempty', emptyNow()); };
+  const toggleBand = (id: string) => { if (openBands.has(id)) openBands.delete(id); else openBands.add(id); drawList(); };
   const doChoose = () => {
-    const o = opts[sel]; if (!o) return;
+    const o = cur; if (!o) return;
     clearPreview();
     host.apply(o.m, o.v);
-    if (mode === 'start') { store.edit(s => { if (!s.stand.show) putOnFloor(s); s.camera = { ...s.camera, zoom: roomZoom(s.tank) }; }); toStep('put'); } else close(); // start: the view stays as wide as the picker's, person included
+    if (mode === 'start') { store.edit(s => { const g = startGear(s, o); if (g) s.tech = g; if (!s.stand.show) putOnFloor(s); if (!userZoomed) s.camera = { ...s.camera, zoom: roomZoom(s.tank) }; }); toStep('put'); } else close(); // start: the view stays as wide as the picker's, person included
   };
-  list.onclick = e => { const el = (e.target as HTMLElement).closest<HTMLElement>('.td-opt'); if (el) { select(+el.dataset.i!); list.focus({ preventScroll: true }); } };
+  list.onclick = e => {
+    const t = e.target as HTMLElement, b = t.closest<HTMLElement>('.td-band'), el = t.closest<HTMLElement>('.td-opt');
+    if (b) { toggleBand(b.dataset.band!); list.focus({ preventScroll: true }); } else if (el) { select(+el.dataset.i!); list.focus({ preventScroll: true }); }
+  };
   list.ondblclick = e => { if ((e.target as HTMLElement).closest('.td-opt')) doChoose(); };
+  /** The first size to land on when nothing is open: open the first band of the first group (a bare tank). */
+  const openFirst = () => { const g = dockGroups(kind, q.value)[0]; if (g?.bands[0]) { openBands.add(g.bands[0].id); drawList(); } };
+  const step1 = (dir: 1 | -1) => { if (!opts.length) openFirst(); if (opts.length) select(sel < 0 ? (dir > 0 ? 0 : opts.length - 1) : Math.max(0, Math.min(opts.length - 1, sel + dir))); };
   list.onkeydown = e => {
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); select(sel < 0 ? 0 : Math.max(0, Math.min(opts.length - 1, sel + (e.key === 'ArrowDown' ? 1 : -1)))); }
-    else if (e.key === 'Home' || e.key === 'End') { e.preventDefault(); select(e.key === 'Home' ? 0 : opts.length - 1); }
-    else if (e.key === 'Enter' && sel >= 0) { e.preventDefault(); doChoose(); }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); step1(e.key === 'ArrowDown' ? 1 : -1); }
+    else if (e.key === 'Home' || e.key === 'End') { e.preventDefault(); if (opts.length) select(e.key === 'Home' ? 0 : opts.length - 1); }
+    else if (e.key === 'Enter' && cur) { e.preventDefault(); doChoose(); }
   };
-  q.oninput = () => { drawList(); setPreview(); app.classList.toggle('dockempty', emptyNow()); };
-  q.onkeydown = e => { if (e.key === 'ArrowDown') { e.preventDefault(); select(sel < 0 ? 0 : sel + 1); list.focus({ preventScroll: true }); } };
+  q.oninput = () => { drawList(); app.classList.toggle('dockempty', emptyNow()); };
+  q.onkeydown = e => { if (e.key === 'ArrowDown') { e.preventDefault(); step1(1); list.focus({ preventScroll: true }); } };
   choose.onclick = doChoose;
 
   // ---------- step 2: what it stands on ----------
@@ -154,9 +169,16 @@ export function attachTankDock(store: Store, viewer: Viewer, host: DockHost) {
   return {
     /** Open the picker: 'start' = the empty Sandbox room (no way out without a tank), 'change' = swap the tank in the editor. */
     open(m: DockMode, done?: () => void) {
-      mode = m; onClose = done; kind = tankKind(store.tank); q.value = ''; sel = -1;
-      tankView.empty = m === 'start'; viewer.setPreview(m === 'start' ? emptyRoomView(store.tank) : null);
-      drawList(); toStep('pick'); show(true); setTimeout(() => q.focus({ preventScroll: true }), 150); // after a modal dialog behind it has closed
+      mode = m; onClose = done; kind = tankKind(store.tank); q.value = ''; sel = -1; cur = undefined; openBands = new Set(); autoZoom = undefined; userZoomed = false;
+      // reopened from the Tank section: the band of the tank in use is open and that tank highlighted (the preview already is it)
+      if (m === 'change') {
+        const pr = store.tank.product, mod = pr && getTankModel(pr.model), v = mod && pr.key ? variantByKey(mod, pr.key) : undefined;
+        const key = mod ? optKey(mod, v) : undefined;
+        for (const g of dockGroups(kind)) for (const bd of g.bands) { const o = bd.opts.find(x => x.key === key); if (o) { openBands.add(bd.id); cur = o; } }
+      }
+      tankView.empty = m === 'start'; if (m === 'start') { viewer.resetPan(); frameRoom(store.tank.tank); } // a new room starts centred, not where the last tank was panned to viewer.setPreview(m === 'start' ? emptyRoomView(store.tank) : null);
+      drawList(); toStep('pick'); show(true); if (cur) setTimeout(() => document.querySelector('.td-opt[aria-selected="true"]')?.scrollIntoView({ block: 'center' }), 0);
+      setTimeout(() => q.focus({ preventScroll: true }), 150); // after a modal dialog behind it has closed
     },
     close,
     get isOpen() { return isOpen; },

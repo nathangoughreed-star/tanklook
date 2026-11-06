@@ -11,7 +11,9 @@ import { PLACEMENTS, minTop, placementOf, putOnFloor, putOnFurniture, putOnMyFur
 import { sandboxRoomScene } from '../src/scene/sandboxRoom';
 import { fitTable } from '../src/scene/table';
 import { parseScene } from '../src/scene/validate';
-import { dockGroups, offers, previewSetup, rangeText } from '../src/ui/tankDockLogic';
+import { gearPicks } from '../src/render/gear3d';
+import { techParts } from '../src/scene/tech';
+import { dockGroups, isBundle, modelIsBundle, offers, previewSetup, rangeText, startGear } from '../src/ui/tankDockLogic';
 
 const noop: any = new Proxy(function () {}, { get: (_t, k) => k === 'data' ? new Uint8ClampedArray(4 * 512 * 512) : k === Symbol.toPrimitive ? () => 0 : noop, apply: () => noop, set: () => true });
 const canvas = () => ({ width: 1, height: 1, style: {}, getContext: () => noop, toDataURL: () => '', addEventListener() {} });
@@ -20,6 +22,7 @@ const canvas = () => ({ width: 1, height: 1, style: {}, getContext: () => noop, 
 
 afterEach(() => { tankView.empty = false; tankView.ghost = false; });
 
+const all = (g: ReturnType<typeof dockGroups>) => g.flatMap(x => x.bands.flatMap(b => b.opts));
 const names = (sc: { children: { name: string }[] }) => sc.children.map(c => c.name);
 
 describe('the empty room', () => {
@@ -49,31 +52,87 @@ describe('the empty room', () => {
 describe('the docked picker rows', () => {
   it('filters by kind and groups by band, smallest first, each row with its size', () => {
     const fresh = dockGroups('freshwater'), terr = dockGroups('terrarium'), viv = dockGroups('vivarium');
-    const ids = (g: ReturnType<typeof dockGroups>) => g.flatMap(x => x.opts).map(o => o.m);
+    const ids = (g: ReturnType<typeof dockGroups>) => g.flatMap(x => x.bands.flatMap(b => b.opts)).map(o => o.m);
     expect(ids(fresh).every(m => !m.terrarium)).toBe(true);
     expect(ids(terr).every(m => m.terrarium)).toBe(true);
     expect(ids(terr).length).toBeGreaterThan(0);
     expect(ids(viv).length).toBe(ids(fresh).length + ids(terr).length);
-    for (const g of fresh) { const gal = g.opts.filter(o => o.typical).map(o => o.gal); expect(gal).toEqual([...gal].sort((a, b) => a - b)); }
-    for (const o of fresh.flatMap(g => g.opts)) { expect(o.dims).toMatch(/^\d/); expect(o.key).toBeTruthy(); }
-    expect(new Set(fresh.flatMap(g => g.opts).map(o => o.key)).size).toBe(fresh.flatMap(g => g.opts).length);
+    for (const g of fresh) for (const b of g.bands) { const gal = b.opts.filter(o => o.typical).map(o => o.gal); expect(gal).toEqual([...gal].sort((a, b) => a - b)); }
+    for (const o of all(fresh)) { expect(o.dims).toMatch(/^\d/); expect(o.key).toBeTruthy(); }
+    expect(new Set(all(fresh).map(o => o.key)).size).toBe(all(fresh).length);
     expect(offers(TANK_MODELS.find(m => m.terrarium)!, 'freshwater')).toBe(false);
   });
   it('searches, shows the finished range on model rows and none when it is not known', () => {
-    const hit = dockGroups('freshwater', '75').flatMap(g => g.opts);
+    const hit = all(dockGroups('freshwater', '75'));
     expect(hit.length).toBeGreaterThan(0);
     expect(dockGroups('freshwater', 'zzzz-no-such-tank')).toEqual([]);
-    const withRange = dockGroups('freshwater').flatMap(g => g.opts).filter(o => o.typical && o.range);
+    const withRange = all(dockGroups('freshwater')).filter(o => o.typical && o.range);
     expect(withRange.length).toBeGreaterThan(10); expect(withRange.every(o => o.range!.hi > o.range!.lo)).toBe(true); // FR1's table feeds the rows
     expect(rangeText(null)).toBe('');
     expect(rangeText({ lo: 850, hi: 3100 })).toBe('$850 - $3,100');
   });
 });
 
+describe('tank only vs kits and bundles (ST2)', () => {
+  const fresh = dockGroups('freshwater'), tank = fresh.find(g => g.id === 'tank')!, kit = fresh.find(g => g.id === 'kit')!;
+  it('has two groups, each in size bands in order, each band counting its choices and its price range', () => {
+    expect(fresh.map(g => g.id)).toEqual(['tank', 'kit']);
+    for (const g of fresh) {
+      const order = g.bands.map(b => ['nano', 'small', 'mid', 'large', 'monster'].indexOf(b.band)); expect(order).toEqual([...order].sort((a, b) => a - b));
+      for (const b of g.bands) { expect(b.n).toBe(b.opts.length); expect(b.n).toBeGreaterThan(0); if (b.lo != null) expect(b.hi!).toBeGreaterThanOrEqual(b.lo); expect(b.id).toBe(`${g.id}:${b.band}`); }
+    }
+  });
+  it('the rule: sold with gear = kit; the SpongeBob starter kit and the Vehipa kit are bundles, a plain Aqueon glass tank is not', () => {
+    const k = all([kit]), t = all([tank]);
+    expect(k.some(o => /SpongeBob/i.test(o.m.name))).toBe(true);
+    expect(t.some(o => /SpongeBob/i.test(o.m.name))).toBe(false);
+    expect(k.some(o => o.v && /Vehipa/i.test(o.v.brand + (o.v.line ?? '')))).toBe(true);
+    expect(t.filter(o => o.v).every(o => !isBundle(o.v!))).toBe(true);
+    expect(t.every(o => !modelIsBundle(o.m))).toBe(true);
+    expect(isBundle({ brand: 'X', line: 'Plain rectangle', L_in: 1, D_in: 1, H_in: 1 })).toBe(false);
+    expect(isBundle({ brand: 'X', line: 'Plain', L_in: 1, D_in: 1, H_in: 1, includes: { filter: true } })).toBe(true);
+    expect(isBundle({ brand: 'X', line: 'Plain', L_in: 1, D_in: 1, H_in: 1, price_kind: 'kit' })).toBe(true);
+    expect(isBundle({ brand: 'X', line: 'LED Starter Kit', L_in: 1, D_in: 1, H_in: 1 })).toBe(true);
+    // every generic size is a bare tank unless its own name is a kit
+    expect(t.filter(o => o.typical).length).toBeGreaterThan(40);
+  });
+  it('nothing is listed twice and nothing is lost', () => {
+    const keys = [...all([tank]), ...all([kit])].map(o => o.key); expect(new Set(keys).size).toBe(keys.length);
+  });
+});
+
+describe('a bare tank brings no equipment (ST2)', () => {
+  const opts = all(dockGroups('freshwater')), room = () => sandboxRoomScene('freshwater').tanks[0];
+  const bareOpt = opts.find(o => o.typical && !modelIsBundle(o.m) && o.m.ratedGal >= 20 && o.m.ratedGal <= 60)!;
+  it('the empty room itself holds no gear: flat (no) light, open top, no tech list', () => {
+    const S = room(); expect(S.light.type).toBe('flat'); expect(S.lid).toBe('open'); expect(S.tech).toBeUndefined();
+  });
+  it('the preview of a tank-only pick draws and lists no gear, and Choose gives the same', () => {
+    const S = room(), p = previewSetup(S, bareOpt, true);
+    expect(gearPicks(p)).toEqual([]); expect(techParts(p)).toEqual([]);
+    expect(demandOf(p, defaultProfile()).items.some(c => c.key === 'heater')).toBe(false);
+    expect(p.light.type).toBe('flat'); expect(p.lid).not.toBe('hood');
+    // without the Sandbox flag (changing a tank in the editor) the scene's own gear logic is left alone
+    expect(gearPicks(previewSetup(S, bareOpt)).length).toBeGreaterThan(0);
+    // Choose: the same gear
+    const q = structuredClone(p); delete q.tech; q.tech = startGear(q, bareOpt)!; expect(gearPicks(q)).toEqual([]);
+  });
+  it('a kit brings only what it includes: a filter that comes with it stays, the heater it lacks does not', () => {
+    const kit = opts.find(o => o.v && isBundle(o.v) && !o.v.kit && o.v.includes?.filter && !o.v.includes.heater && o.m.ratedGal >= 20)!;
+    expect(kit).toBeTruthy();
+    const p = previewSetup(room(), kit, true), parts = techParts(p).map(x => x.gear);
+    expect(parts.some(g => /filter|hob|canister|sponge/.test(g)) || gearPicks(p).length > 0).toBe(true);
+    expect(parts).not.toContain('heater');
+    // a kit whose contents are not recorded keeps the defaults it always had
+    const unknown = opts.find(o => o.v && isBundle(o.v) && !o.v.kit && !o.v.includes);
+    if (unknown) expect(startGear(room(), unknown)).toBeUndefined();
+  });
+});
+
 describe('the live preview', () => {
   it('draws the highlighted size on a copy; the saved scene does not change until Choose', () => {
     const s = sandboxRoomScene('freshwater'), base = s.tanks[0], before = JSON.stringify(s);
-    const o = dockGroups('freshwater').flatMap(g => g.opts).find(x => x.typical && x.m.ratedGal >= 50)!;
+    const o = all(dockGroups('freshwater')).find(x => x.typical && x.m.ratedGal >= 50)!;
     const p = previewSetup(base, o);
     expect(JSON.stringify(s)).toBe(before);
     expect(p).not.toBe(base);
@@ -81,7 +140,7 @@ describe('the live preview', () => {
     expect(Math.abs(p.tank.L - want.L)).toBeLessThan(1); expect(Math.abs(p.tank.H - want.H)).toBeLessThan(1);
     expect(p.person.show).toBe(true);   // the room stays
     // flipping through sizes gives different tanks
-    const q = previewSetup(base, dockGroups('freshwater').flatMap(g => g.opts).find(x => x.typical && x.m.ratedGal <= 5)!);
+    const q = previewSetup(base, all(dockGroups('freshwater')).find(x => x.typical && x.m.ratedGal <= 5)!);
     expect(q.tank.L).toBeLessThan(p.tank.L);
     expect(JSON.stringify(s)).toBe(before);
   });

@@ -542,7 +542,8 @@ export class Viewer {
   /** A view-only stand-in for the edited tank (lane ST1: the tank picker draws each size live without touching the scene); null = draw the scene. */
   private preview: TankSetup | null = null;
   setPreview(S: TankSetup | null) { this.preview = S; this.rebuild(); }
-  private setupOf(i: number): TankSetup | undefined { return this.preview && i === this.store.scene.active ? this.preview : this.store.scene.tanks[i]; }
+  /** The preview takes the SCENE's camera, so orbit, zoom and the lens all keep working while a size is being previewed (they write the scene's camera; a frozen copy of it was why the picker could not orbit, lane ST2). */
+  private setupOf(i: number): TankSetup | undefined { const S = this.store.scene.tanks[i]; return this.preview && S && i === this.store.scene.active ? { ...this.preview, camera: S.camera } : S; }
   private viewKey(i: number) {
     const S = this.setupOf(i); if (!S) return '';
     return JSON.stringify([envKey(S), this.store.scene.units, this.store.isEditing(i), this.terrainEdit]);
