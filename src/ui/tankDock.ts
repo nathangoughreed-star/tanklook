@@ -164,7 +164,7 @@ export function attachTankDock(store: Store, viewer: Viewer, host: DockHost) {
   $('tdDone').onclick = () => close();
   closeBtn.onclick = () => close();
   back.onclick = () => { clearPreview(); show(false); const f = onClose; onClose = undefined; host.back?.(); f?.(); };
-  store.subscribe(k => { if (k === 'load' && isOpen) { clearPreview(); show(false); host.abandoned?.(); const f = onClose; onClose = undefined; f?.(); } });
+  store.subscribe(k => { if (k === 'scene' && isOpen && mode === 'start') setPreview(); /* the room-light slider moved (UI4) */ if (k === 'load' && isOpen) { clearPreview(); show(false); host.abandoned?.(); const f = onClose; onClose = undefined; f?.(); } });
   dock.addEventListener('keydown', e => { if (e.key === 'Escape' && mode === 'change' && isOpen) { e.preventDefault(); close(); } });
   return {
     /** Open the picker: 'start' = the empty Sandbox room (no way out without a tank), 'change' = swap the tank in the editor. */

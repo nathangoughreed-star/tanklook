@@ -1279,3 +1279,11 @@ button.start-mode-card span.hint { font-size: 12px }
 .td-band .bn { font-weight: 600 } .td-band .bc, .td-band .bp { font-size: 12px; color: var(--muted) }
 .td-band[aria-expanded="true"] { background: var(--panel) }
 @media (max-width: 760px) { .td-band { grid-template-columns: 14px 1fr auto } .td-band .bc { display: none } }
+
+/* The room light (UI4): one small sun + slider chip beside Undo / Redo on the viewing screen. */
+.roomchip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--ink); box-shadow: 0 1px 4px rgba(0, 0, 0, .25) }
+.roomchip .roomico { font-size: 15px; line-height: 1 }
+.roomchip input[type=range] { width: 84px; margin: 0; padding: 0 }
+.roomchip .roomauto { font: inherit; font-size: 12px; cursor: pointer; border: 0; background: none; color: var(--accent); padding: 0 }
+.roomchip .roomauto[hidden] { display: none }
+@media (max-width: 560px) { .roomchip input[type=range] { width: 64px } }

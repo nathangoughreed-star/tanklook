@@ -1,5 +1,6 @@
 // The docked tank picker's pure part (lane ST1, Nathan 2026-11-05): which sizes a kind of setup offers, grouped by band like the old modal; what each row says
 // (size, tank price, finished-tank range); and the view-only setup a highlighted row draws. Free of the DOM so test/tankdock.test.ts can check it.
+import { roomOf } from '../scene/roomlight';
 import { finishedRange, type FinishedRange } from '../demand/finishedRange';
 import { tankRowPrice } from '../demand/prices';
 import { BANDS, TANK_MODELS, dimsInches, modelOfVariant, namedModel, soleProduct, tankFromModel, variantName, variantUsd, type TankBand, type TankModel, type TankVariant } from '../data/tanks';
@@ -89,10 +90,10 @@ export function rangeText(r: FinishedRange | null): string {
 /** The room view while flipping through sizes in the empty Sandbox room: the lens opens up with the tank so the person (and so the scale) stays on screen at about the same size
  *  whatever the tank (a 4 ft tank gets the default environment's 0.34; the lens never goes below the camera's own 0.1). */
 export const roomZoom = (T: { L: number; H: number }) => Math.min(0.6, Math.max(0.1, Math.max(T.L, T.H * 1.6) * 0.34 / 1219));
-/** The empty room itself: lit enough to see the wall, floor and person (no tank light to do it), framed on the spot. A copy; the scene keeps Nathan's low room light. */
+/** The empty room itself, framed on the spot, lit by the room-light slider (UI4: high while the tank has no light, so the wall, floor and person read; the person's own value if they moved it). A copy. */
 export function emptyRoomView(base: TankSetup): TankSetup {
   const p = structuredClone(base);
-  p.light.room = Math.max(p.light.room, 0.45);
+  p.light.room = roomOf(p.light); delete p.light.roomAuto;
   return p;
 }
 

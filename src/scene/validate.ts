@@ -45,7 +45,7 @@ export const LIMITS = {
   cone: [15, 120] as const,        // degrees, full beam angle
   bright: [0.2, 16] as const,       // above 2.5 only as Exposure (watts set; was 2.5 before 2026-10-15)
   kelvin: [2700, 20000] as const,
-  room: [0, 0.8] as const,
+  room: [0, 0.8] as const /* the slider stops at 0.3, where the renderer is already full; older files may hold more */,
   lampH: [20, 900] as const,
   watts: [0, 2000] as const,
   par: [0, 2500] as const,
@@ -249,6 +249,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       // added 2026-10-09 (no version bump); older files: the old filled grid and 52° beam
       pattern: pick(l.pattern, ['grid', 'tri', 'fit'] as const, 'grid'), spacing: Math.round(num(l.spacing, 0, ...LIMITS.spacing)), cone: Math.round(num(l.cone, 52, ...LIMITS.cone)),
       bright: num(l.bright, 1, ...LIMITS.bright), kelvin: num(l.kelvin, 6500, ...LIMITS.kelvin), room: num(l.room, 0.15, ...LIMITS.room),
+      ...(l.roomAuto === true ? { roomAuto: true } : {}), // added 2026-11-06 (UI4, no version bump): kept only when present, so older files load with the room light they stored
       height: num(l.height, 50, ...LIMITS.lampH), // added 2026-10-08; older files: the old fixed 50 mm
       // light output (added 2026-10-14, no version bump): kept only when present, so older files load unchanged
       ...(l.watts != null ? { watts: Math.round(num(l.watts, 0, ...LIMITS.watts) * 10) / 10 } : {}),

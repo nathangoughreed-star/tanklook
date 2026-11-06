@@ -5,9 +5,10 @@
 // Not applied to: a plain New tank (emptyScene / bareSetup, NW1: starts clean), saved projects (loaded as they were), or a design already in place (GS6: the person's
 // own environment is theirs and survives re-evaluation; `wall` is therefore no longer one of the look's fields).
 import type { TankSetup } from './types';
+import { ROOM_LOW } from './roomlight';
 
 export interface DefaultEnvironment {
-  /** ambient room light, 0-1 (the factory default is 0.15) */
+  /** ambient room light once the tank has a light (UI4: with none the room follows the tank and is high; scene/roomlight.ts) */
   room: number;
   wall: TankSetup['wall'];
   person: TankSetup['person'];
@@ -19,7 +20,7 @@ export interface DefaultEnvironment {
 }
 
 export const DEFAULT_ENVIRONMENT: DefaultEnvironment = {
-  room: 0.05,
+  room: ROOM_LOW,
   wall: { show: true, side: 'back', color: '#d8d2c6' },
   person: { show: true, height: 1750, side: 'left' },   // 5 ft 9 in
   standFinish: 'oak',
@@ -29,7 +30,7 @@ export const DEFAULT_ENVIRONMENT: DefaultEnvironment = {
 
 /** Put the default environment on a generated scene (mutates and returns it). */
 export function withDefaultEnvironment<T extends TankSetup>(S: T, env: DefaultEnvironment = DEFAULT_ENVIRONMENT): T {
-  S.light = { ...S.light, room: env.room };
+  S.light = { ...S.light, room: env.room, roomAuto: true }; // follows the tank (roomlight.ts): low with a light, high without
   S.wall = { ...env.wall };
   S.person = { ...env.person };
   S.stand = { ...S.stand, finish: env.standFinish };
@@ -41,7 +42,7 @@ export function withDefaultEnvironment<T extends TankSetup>(S: T, env: DefaultEn
 /** The fields of `S` that differ from the default environment (empty = it carries it). */
 export function environmentGaps(S: TankSetup, env: DefaultEnvironment = DEFAULT_ENVIRONMENT): string[] {
   const out: string[] = [], eq = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
-  if (S.light.room !== env.room) out.push('light.room');
+  if (S.light.room !== env.room || !S.light.roomAuto) out.push('light.room');
   if (!eq(S.wall, env.wall)) out.push('wall');
   if (!eq(S.person, env.person)) out.push('person');
   if (S.stand.finish !== env.standFinish) out.push('stand.finish');
@@ -54,7 +55,8 @@ export function environmentGaps(S: TankSetup, env: DefaultEnvironment = DEFAULT_
  *  back from `current` onto `gen` (mutates `gen`). `factory` is what an untouched New tank has. */
 export function keepUserEnvironment<T extends TankSetup>(gen: T, current: TankSetup, factory: TankSetup): T {
   const ch = (a: unknown, b: unknown) => JSON.stringify(a) !== JSON.stringify(b);
-  if (ch(current.light.room, factory.light.room)) gen.light = { ...gen.light, room: current.light.room };
+  // the room light the person set by hand (the slider drops `roomAuto`) is theirs; untouched, it keeps following the tank
+  if (!current.light.roomAuto || ch(current.light.room, factory.light.room)) { gen.light = { ...gen.light, room: current.light.room }; delete gen.light.roomAuto; }
   if (ch(current.wall, factory.wall)) gen.wall = { ...current.wall };
   if (ch(current.person, factory.person)) gen.person = { ...current.person };
   if (ch(current.stand.finish, factory.stand.finish)) gen.stand = { ...gen.stand, finish: current.stand.finish };

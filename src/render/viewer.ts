@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { fishTL, speciesOf } from '../data/species';
 import { D2R, clamp, depthRatio, floorY, tankUnderside } from '../scene/physics';
 import { eyeDist, lensZoom } from '../scene/orbit';
+import { roomOf } from '../scene/roomlight';
 import { tableOn, tableRing } from '../scene/table';
 import { footprint } from '../scene/shape';
 import type { Store } from '../scene/store';
@@ -686,7 +687,7 @@ export class Viewer {
       const person = vp.scene?.getObjectByName('person');
       if (person) this.placePerson(vp, person, headroom(S), bottom(S));
       r.setViewport(vp.x, vp.y, vp.w, vp.h); r.setScissor(vp.x, vp.y, vp.w, vp.h);
-      r.setClearColor(new THREE.Color(0xd9dde2).multiplyScalar(0.06 + 0.94 * roomLevel(S.light.room))); r.clear(); // the space beyond the room dims with the room light
+      r.setClearColor(new THREE.Color(0xd9dde2).multiplyScalar(0.06 + 0.94 * roomLevel(roomOf(S.light)))); r.clear(); // the space beyond the room dims with the room light
       setLightUniforms(vp.T, S.light, S.lid, S.render.beams, S); setWaterUniforms(vp.T, S.water, S.render.pop, S.condition);
       placeSlice(vp.scene!, vp.T, { ...S, tank: vp.T }, wattsOf({ ...S, tank: vp.T }) > 0); placeShells(vp.scene!, vp.T, S); OUTLINE.uPop.value = S.render.pop; OUTLINE.uVpH.value = vp.h; // placeSlice: the Light map layer at a set height
       // keep the cleared alpha (1): alpha-to-coverage fins would otherwise leave a translucent canvas, through which

@@ -10,6 +10,7 @@ import { shapeOf } from '../scene/shape';
 import { setWaterLevel } from '../scene/water';
 import type { TankSetup, Units } from '../scene/types';
 import { productLabel } from '../scene/integrated';
+import { roomOf } from '../scene/roomlight';
 
 /** Make tank `to` match tank `from` in one setting. */
 export type Match = (to: TankSetup, from: TankSetup) => void;
@@ -180,7 +181,7 @@ export function tankDiff(a: TankSetup, b: TankSetup, u: Units): DiffItem[] {
   }
   add(a.light.bright, b.light.bright, v => `${a.light.watts && b.light.watts ? 'Exposure' : 'Brightness'} ×${v.toFixed(2)}`, ['light.bright']);
   add(a.light.kelvin, b.light.kelvin, k => `${k} K`, ['light.kelvin']);
-  add(a.light.room, b.light.room, v => `Room light ${v.toFixed(2)}`, ['light.room']);
+  add(roomOf(a.light), roomOf(b.light), v => `Room light ${v.toFixed(2)}`, ['light.room']);
 
   // viewpoint (differs only while the cameras are unlocked)
   add(a.camera.dist, b.camera.dist, d => `Eye ${(d / 1000).toFixed(2)} m away`, ['camera.dist']);

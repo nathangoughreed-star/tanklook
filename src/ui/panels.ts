@@ -13,6 +13,7 @@ import { bindBriefStore, editBrief, getBrief, setTank as briefTank } from './set
 import { attachStartMode, setMode } from './startMode';
 import { attachTankDock, type TankDock } from './tankDock';
 import { sandboxRoomScene } from '../scene/sandboxRoom';
+import { roomOf, setRoomAuto, setRoomByHand } from '../scene/roomlight';
 import { putOnFloor, putOnMyFurniture, putOnStand, placementOf, minTop, type Placement } from '../scene/placement';
 import { atStake, confirmNew } from './newTank';
 import { startDeals, visibleTabs, pickTab, sortDeals, DEFAULT_SORT, type DealSort, type StartTab, type StartMenu } from './startEntries';
@@ -153,6 +154,12 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('undo').onclick = () => store.undo();
   const recenter = $('recenter'); recenter.onclick = () => viewer.resetPan();
   viewer.onPan(() => { recenter.hidden = !viewer.panned; });
+  // The room light's one home (UI4): the sun slider on the viewing screen. It shows what is drawn (roomOf: high with no tank light, low with one, until the person moves it).
+  const vRoom = $<HTMLInputElement>('vRoom'), vRoomAuto = $('vRoomAuto');
+  vRoom.oninput = () => store.edit(s => { setRoomByHand(s.light, +vRoom.value); }, { coalesce: 'vRoom' });
+  vRoomAuto.onclick = () => store.edit(s => { setRoomAuto(s.light); });
+  const syncRoom = () => { const l = S().light; vRoom.value = String(roomOf(l)); vRoomAuto.hidden = !!l.roomAuto; };
+  store.subscribe(syncRoom); syncRoom();
   $('redo').onclick = () => store.redo();
   // New and Open… are two separate menus of the start chooser (below): New = scratch + deals, Open… = starter + saved tanks
   $('newScene').onclick = () => { welcomeFirst = false; startMode.show(); }; // New: Guided or Sandbox (ui/startMode.ts)
@@ -1180,7 +1187,7 @@ Cancel, then change the name, to keep both.`)) return;
   }
 
   // ---------- Lighting ----------
-  const lKeys = { lCount: 'count', lRows: 'rows', lSp: 'spacing', lCone: 'cone', lH: 'height', lBright: 'bright', lK: 'kelvin', lRoom: 'room', lW: 'watts', lPar: 'par', lPos: 'pos' } as const;
+  const lKeys = { lCount: 'count', lRows: 'rows', lSp: 'spacing', lCone: 'cone', lH: 'height', lBright: 'bright', lK: 'kelvin', lW: 'watts', lPar: 'par', lPos: 'pos' } as const;
   // spacing below a bulb's width (tubes: 20 mm) snaps to 0 = auto (fill the tank)
   // while the power is set the Brightness slider is Exposure, in stops (bright = 2^v)
   const expo = () => wattsOf(S()) > 0;
@@ -1769,7 +1776,7 @@ Cancel, then change the name, to keep both.`)) return;
     return v == null ? null : neg.test(t) ? -Math.abs(v) : v;
   } });
   const lens = ['bowMin', 'bowlFloor', 'bowlTop', 'standH', 'tableL', 'tableD', 'subBL', 'subBR', 'subFL', 'subFR', 'lH', 'cDist', 'iSize', 'iSpread', 'iLift', 'personH', 'wallGap', 'ceilH'];
-  const nums = { pieDeg: 0, bgArc: 0, iYaw: 0, iPitch: 0, iTilt: 0, iStems: 0, iDens: 0, iGrowth: 0, lCount: 0, lRows: 0, lCone: 0, lK: 0, lRoom: 2, lPar: 0, cAz: 0, cEl: 0, cZoom: 2, terCols: 0, addSize: 0 };
+  const nums = { pieDeg: 0, bgArc: 0, iYaw: 0, iPitch: 0, iTilt: 0, iStems: 0, iDens: 0, iGrowth: 0, lCount: 0, lRows: 0, lCone: 0, lK: 0, lPar: 0, cAz: 0, cEl: 0, cZoom: 2, terCols: 0, addSize: 0 };
   attachTypeIns({
     ...Object.fromEntries(lens.map(id => [id, len])),
     ...Object.fromEntries(Object.entries(nums).map(([id, d]) => [id, num(d)])),
@@ -2189,7 +2196,7 @@ Cancel, then change the name, to keep both.`)) return;
     for (const [id, k] of Object.entries(lKeys)) setVal(id, l[k] ?? 0);
     // spots: the slider sets the longest row; say the total when the rows make it more (Nathan 2026-10-12: "3" showed 5)
     const total = l.type === 'spot' ? emitters(s.tank, l).length : l.count;
-    setOut('oCount', total > l.count ? `${l.count} · ${total} total` : String(l.count)); setOut('oRows', String(l.rows)); setOut('oBright', '×' + l.bright.toFixed(2)); setOut('oK', l.kelvin + ' K'); setOut('oRoom', l.room.toFixed(2));
+    setOut('oCount', total > l.count ? `${l.count} · ${total} total` : String(l.count)); setOut('oRows', String(l.rows)); setOut('oBright', '×' + l.bright.toFixed(2)); setOut('oK', l.kelvin + ' K');
     $('lCountRow').style.display = l.type === 'spot' || l.type === 'tube' ? '' : 'none';
     $('lCountLab').textContent = l.type === 'tube' ? 'Tubes' : 'Bulbs';
     for (const id of ['lRowsRow', 'lPatRow', 'lSpRow', 'lConeRow']) $(id).style.display = l.type === 'spot' ? '' : 'none';

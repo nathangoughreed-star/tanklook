@@ -375,7 +375,6 @@
   <div class="row"><label for="lBright" id="lBrightLab">Brightness</label><input id="lBright" type="range" min="0.2" max="2.5" step="0.05"><output id="oBright"></output></div>
   <div class="row"><label for="lK">Colour temp</label><span class="kwrap"><input id="lK" type="range" min="2700" max="20000" step="100"><span id="lKBand" class="kband"></span></span><output id="oK"></output></div>
   <div id="lKNote" class="hint" hidden></div>
-  <div class="row"><label for="lRoom" title="Light from the room around the tank (ambient): 0 = a dark room, only the tank lights">Room light (ambient)</label><input id="lRoom" type="range" min="0" max="0.8" step="0.01"><output id="oRoom"></output></div>
   <div class="btns"><button id="lTop" title="Look straight down on the tank, to watch the light map while you change the lights">Look from above</button><button id="lFront" title="Back to straight on">Straight on</button></div>
   <label><input type="checkbox" id="lBeams"> Light map: beams, and the light on the substrate (hides plants, hardscape and fish)</label>
   <div id="lMapKey" class="hint"><div id="lMapBanner" role="button" tabindex="0" aria-expanded="false" aria-controls="lParInline" title="Click for the PAR guide: what plants (or corals) need at each level" style="cursor:pointer"><div style="height:10px;border-radius:2px;margin:4px 0 2px;background:linear-gradient(90deg,#0d0d40 0%,#1a40d9 14.3%,#00b3e6 28.6%,#26cc40 42.9%,#f2e61a 57.1%,#ff8c0d 71.4%,#e61a1a 85.7%,#ffe6e6 100%)"></div>
@@ -452,6 +451,7 @@
     <button id="moment" class="sidetog" title="Another moment: every animal in a new spot, as if the tank were photographed a little later. The plants and scape stay as they are." disabled>◷ Another moment</button>
     <button id="arView" class="sidetog" title="See this tank at real size in your room (phone camera)" hidden>◱ AR</button>
     <button id="recenter" class="sidetog" title="Re-centre the panned view (Home, or double middle-click)" hidden>⌖ Re-centre</button>
+    <span id="roomChip" class="roomchip" title="Room light: how bright the room around the tank is. Starts high until the tank has a light, then low so the tank's light carries the look. Move it to set your own."><span class="roomico" aria-hidden="true">☀</span><input id="vRoom" type="range" min="0" max="0.3" step="0.01" aria-label="Room light"><button id="vRoomAuto" type="button" class="roomauto" title="Let the room light follow the tank again (high with no light, low with one)" hidden>Auto</button></span>
     <span id="build" class="buildtag"></span>
   </div>
   <div id="demandPanel" class="dmfloat"></div>

@@ -146,7 +146,10 @@ export interface LightSettings {
   cone: number;
   bright: number;
   kelvin: number;
+  /** The room light the person set (0-0.3). Read through scene/roomlight.ts `roomOf`: while `roomAuto` is set the room light follows the tank instead (high with no light, low with one). */
   room: number;
+  /** Added 2026-11-06 (UI4, no version bump): the person has not moved the room-light slider, so it follows the tank. Absent = `room` is the value (every older file). */
+  roomAuto?: boolean;
   /** Fixture height above the top of the tank (mm). Higher = dimmer, more even, more spill into the room. Ignored with a hood. */
   height: number;
   /** How the fixture is held (added 2026-10-15, Nathan): 'legs' = on legs standing on the tank rim, 'hang' = cables from

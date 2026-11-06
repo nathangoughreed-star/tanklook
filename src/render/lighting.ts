@@ -16,6 +16,7 @@ import { bowlDims, bowlRadius, clampIn, footprint, insideBy, shapeOf } from '../
 import { SHADE_MAX } from '../scene/shade';
 import { lightProduct } from '../data/gearCatalog';
 import { addProductLight } from './light3d';
+import { roomOf } from '../scene/roomlight';
 import { AQ_MAX, LAMP_Y, LUXW, barZ, beamExp, emitters, ledBarDepth, lampHeight, mountOf, lightEnvCached, lightOutCached, renderBright, fixtureOf, techOf, tubeLayout, tubeOf, type Emitter, type LightEnv, type LightScene } from '../scene/lightout';
 // the fixture geometry lives with the light-output model now (lane K); re-exported so importers stay as they were
 export { AQ_MAX, LAMP_Y, emitters, fitSpots, lampHeight, type Emitter } from '../scene/lightout';
@@ -177,21 +178,21 @@ function warmSoon(S: LightScene) {
 export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams = false, S?: LightScene) {
   // no fixture (Nathan 2026-10-15): mode 2, the tank is lit by the room light alone (a dark room = a dark tank); mode 0
   // (the flat reference key) is only for the fish preview and the review sheet
-  const on = l.type !== 'flat'; LU.uMode.value = on ? 1 : 2; if (!on) LU.uAmb.value = roomLevel(l.room);
+  const on = l.type !== 'flat'; LU.uMode.value = on ? 1 : 2; if (!on) LU.uAmb.value = roomLevel(roomOf(l));
   const lo = on && S ? lightOutCached({ ...S, tank: T }) : null, bright = lo ? renderBright(lo, l.bright) : clamp(l.bright, 0.2, 2.5);
   if (on && S && !lo) warmSoon({ ...S, tank: T });
   // light map: a spot bulb or a tube counts as one light; an LED bar's emitters share the output of four bulbs
   LU.uMapOn.value = on && beams ? 1 : 0;
   if (on) { LU.uMapGain.value = beamGain(l); LU.uMapW.value = l.type === 'led' ? 4 / Math.max(emitters(T, l).length, 1) : 1; }
   const hgt = lampHeight(l, lid), up = on ? hgt : 0;
-  LU.uRoomK.value = roomLevel(l.room); LU.uSpillR.value = spillReach(T) + up * 0.5;
+  LU.uRoomK.value = roomLevel(roomOf(l)); LU.uSpillR.value = spillReach(T) + up * 0.5;
   // spill leaves the tank box, extended up to the fixture: a raised light also lights the room over the rim
   LU.uTankMin.value.set(0, 0, -T.D); LU.uTankMax.value.set(T.L, T.H + up, 0);
   // round, polygon and bowl tanks spill from an ellipse inscribed in that box, not the box itself (no square pool of light)
   LU.uTankRound.value = ['round', 'poly', 'bowl'].includes(shapeOf(T)) ? 1 : 0;
   // the spill shows most in a dark room (in a lit room the eye adapts and it barely registers); a raised fixture
   // throws more of its light past the tank (up to ~1.8x at 450 mm and above)
-  const spill = 0.9 * (1 - 0.75 * roomLevel(l.room)) * (1 + 0.8 * clamp((up - LAMP_Y) / 400, 0, 1));
+  const spill = 0.9 * (1 - 0.75 * roomLevel(roomOf(l))) * (1 + 0.8 * clamp((up - LAMP_Y) / 400, 0, 1));
   if (on) LU.uSpill.value.setRGB(...kelvinRGB(l.kelvin)).multiplyScalar(spill * bright); else LU.uSpill.value.setRGB(0, 0, 0); // no fixture: no light leaves the tank
   if (!on) return;
   const E = emitters(T, l, hgt), m = beamExp(l), gain = beamGain(l), ref: LightSettings = { ...l, spacing: 0, cone: 52 };
