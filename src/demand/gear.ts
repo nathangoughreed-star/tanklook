@@ -3,7 +3,8 @@
 import data from '../data/gear-models.json';
 
 export type FilterKind = 'hob' | 'canister' | 'sponge' | 'internal';
-export interface FilterModel { id: string; kind: FilterKind; label: string; gph: number; galMin: number; galMax: number; watts: number; priceKey: string; aliases: string[] }
+export interface FilterModel { id: string; kind: FilterKind; label: string; gph: number; galMin: number; galMax: number; watts: number; priceKey: string; aliases: string[];
+  /** a model for a tank of 1-5 gal (lane FL2): picked only when the tank is that small, never as a class's default for an unknown size */ nano?: boolean }
 export interface HeaterModel { id: string; label: string; watts: number; galMin: number; galMax: number; priceKey: string }
 export const FILTER_MODELS = data.filters as FilterModel[];
 export const HEATER_MODELS = data.heaters as HeaterModel[];
@@ -41,7 +42,8 @@ export function matchFilter(spec: FilterSpec, models: FilterModel[] = FILTER_MOD
     const fit = pool.find(m => spec.gal! >= m.galMin && spec.gal! <= m.galMax);
     if (fit) return { model: fit, how: 'size' };
   }
-  return spec.kind || pool.length ? { model: [...pool].sort((a, b) => a.gph - b.gph)[0], how: 'class' } : undefined;
+  const std = pool.filter(m => !m.nano);
+  return spec.kind || pool.length ? { model: [...(std.length ? std : pool)].sort((a, b) => a.gph - b.gph)[0], how: 'class' } : undefined;
 }
 
 /** The generic filter a tank of `gal` gallons would normally get (the engine's default when no product is known):

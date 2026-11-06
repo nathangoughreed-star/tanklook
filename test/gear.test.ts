@@ -20,7 +20,7 @@ describe('generic gear models', () => {
     expect(matchFilter({ name: 'Marineland Penguin 250B' })!.model.id).toBe('hob-l');
     expect(matchFilter({ kind: 'hob', rating: 'QuietFlow 10 LED PRO' })!.model.id).toBe('hob-s');
     expect(matchFilter({ kind: 'hob', rating: '3-stage rear, 132 gph pump' })!.model.id).toBe('hob-s');
-    expect(matchFilter({ kind: 'hob', rating: '3-stage rear, 53 gph pump' })!.model.id).toBe('hob-s');
+    expect(matchFilter({ kind: 'hob', rating: '3-stage rear, 53 gph pump' })!.model.id).toBe('hob-xs');
     expect(matchFilter({ kind: 'canister', gph: 450 })!.model.id).toBe('canister-l');
     expect(matchFilter({ kind: 'sponge' })!.model.kind).toBe('sponge');
     expect(matchFilter({ kind: 'hob', gal: 55 })!.how).toBe('size');

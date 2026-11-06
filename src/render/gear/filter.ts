@@ -2,25 +2,36 @@
 import * as THREE from 'three';
 import { type FilterModel } from '../../demand/gear';
 import { type FilterProduct } from '../../data/gearCatalog';
-import { clamp } from '../../scene/physics';
+import { backdropDepth, clamp } from '../../scene/physics';
 import { Bucket, V, hash, C, flowScale, hexOr, partOf, Frame, Spot, lerp, sucker, overRim } from './common';
 import { airPump, bubbles } from './pump';
 
+/** Clear room kept between a hang-on-back body and the end of the wall it hangs on, mm. */
+const HOB_MARGIN = 10;
+
 export function hob(f: Frame, m: FilterModel, sp: Spot, pr?: FilterProduct) {
-  const { kit, t } = f, s = pr?.gph ? Math.cbrt(pr.gph / 100) : flowScale(m, 100), W = pr?.bodyMm.w ?? 150 * s, D = pr?.bodyMm.d ?? 105 * s, Hb = pr?.bodyMm.h ?? 170 * s, yTop = f.H + 28;
+  const { kit, t } = f, s = pr?.gph ? Math.cbrt(pr.gph / 100) : flowScale(m, 100), yTop = f.H + 28;
+  // the body fits the glass it hangs on (lane FL2, 2026-11-06): never wider than the wall less a margin each end, and its motor never lower than the floor
+  const M = HOB_MARGIN, W = Math.min(pr?.bodyMm.w ?? 150 * s, Math.max(60, f.len - 2 * M)), D = pr?.bodyMm.d ?? 105 * s, Hb = Math.max(60, Math.min(pr?.bodyMm.h ?? 170 * s, yTop - 40 - f.floor));
   // a real product (lane TG step 3): its own colours part by part; an intake shorter than the tank leaves the strainer up in the water
   const L = pr?.colors, body = partOf(L?.body, C.charcoal, 'room'), lid = partOf(L?.lid, C.grey, 'room'), motor = hexOr(L?.motor?.hex, C.black);
   const lip = partOf(L?.outlet ?? (L?.body?.translucent ? undefined : L?.body), C.charcoal), inC = partOf(L?.intake, C.grey), stC = partOf(L?.strainer ?? L?.intake, C.grey);
-  const it = 8 * Math.sqrt(s), stY = Math.max(f.ground(sp.u, 26) + 45, pr?.intakeMm ? f.H + 16 - pr.intakeMm : -Infinity); // intake tube radius; the strainer's foot clears the ground
-  const uI = f.slot(sp.fixed ? sp.u - W / 2 + 12 : sp.u + 12, 30, stY, f.wy, 0, 50, sp.fixed), u = uI - 12 + W / 2; // only the intake takes wall room: the body is outside
+  // intake tube radius; the strainer (sh tall) stands clear of the ground and its top stays under the water line, so a short tank gets a short intake
+  const it = 8 * Math.sqrt(s), sh = 70 * Math.sqrt(s), g0 = f.ground(sp.u, 26) + 8, stY = Math.max(g0, Math.min(Math.max(g0 + 37, pr?.intakeMm ? f.H + 16 - pr.intakeMm : -Infinity), f.wy - sh - 30));
+  const uS = f.slot(sp.fixed ? sp.u - W / 2 + 12 : sp.u + 12, 30, stY, f.wy, 0, 50, sp.fixed); // only the intake takes wall room: the body is outside
+  // the whole body stays over the glass: it never starts past either end of the wall, and the intake (12 mm in from its edge) moves with it
+  const u = clamp(uS - 12 + W / 2, M + W / 2, f.len - M - W / 2), uI = u - W / 2 + 12;
+  if (uI !== uS) f.taken.push([uI - 15, uI + 15]);
+  // on a curved back (round, hex, pie) the box stands back of the farthest point of the glass under it, so no corner reaches into the water
+  const qOf = (v: number) => f.P(v, 0, 0).dot(f.inward), q0 = qOf(u), bF = Math.min(...[u - W / 2, u - W / 4, u, u + W / 4, u + W / 2].map(qOf)) - q0 - t - 6;
   // the body behind the back glass, its lid and the motor housing
-  const bc = f.P(u, yTop - Hb / 2, -t - 6 - D / 2);
+  const bc = f.P(u, yTop - Hb / 2, bF - D / 2);
   f.box(body.bk, bc, W, Hb, D, body.c, 10, body.base);
-  if (body.bk === 'clear') f.box('room', f.P(u, yTop - Hb * 0.55, -t - 6 - D / 2), W * 0.8, Hb * 0.7, D * 0.7, hexOr(L?.sponge, 0x3a3f44), 4); // the media seen through a tinted body
-  f.box(lid.bk, f.P(u, yTop + 4, -t - 6 - D / 2), W, 8, D, lid.c, 6, lid.base);
-  f.box('room', f.P(u - W * 0.22, yTop - Hb - 18, -t - 4 - D * 0.35), 46 * s, 36, 46 * s, motor, 8); // motor under the box
-  if (L?.accent && !/wheel|window/i.test(L.accent.where)) f.box('room', f.P(u - W * 0.3, yTop + 8.5, -t - 6 - D * 0.25), W * 0.22, 2, D * 0.18, hexOr(L.accent.hex, C.grey), 1); // a coloured latch / tab on top (Seachem blue)
-  if (L?.accent && /wheel/i.test(L.accent.where)) kit.rod('room', f.P(u + W * 0.3, yTop - Hb * 0.35, -t - 6 - D), f.P(u + W * 0.3, yTop - Hb * 0.35, -t - 6 - D - 6), Hb * 0.3, hexOr(L.accent.hex, C.grey), { seg: 28 }); // a Bio-Wheel at the back
+  if (body.bk === 'clear') f.box('room', f.P(u, yTop - Hb * 0.55, bF - D / 2), W * 0.8, Hb * 0.7, D * 0.7, hexOr(L?.sponge, 0x3a3f44), 4); // the media seen through a tinted body
+  f.box(lid.bk, f.P(u, yTop + 4, bF - D / 2), W, 8, D, lid.c, 6, lid.base);
+  f.box('room', f.P(u - W * 0.22, yTop - Hb - 18, bF + 2 - D * 0.35), 46 * s, 36, 46 * s, motor, 8); // motor under the box
+  if (L?.accent && !/wheel|window/i.test(L.accent.where)) f.box('room', f.P(u - W * 0.3, yTop + 8.5, bF - D * 0.25), W * 0.22, 2, D * 0.18, hexOr(L.accent.hex, C.grey), 1); // a coloured latch / tab on top (Seachem blue)
+  if (L?.accent && /wheel/i.test(L.accent.where)) kit.rod('room', f.P(u + W * 0.3, yTop - Hb * 0.35, bF - D), f.P(u + W * 0.3, yTop - Hb * 0.35, bF - D - 6), Hb * 0.3, hexOr(L.accent.hex, C.grey), { seg: 28 }); // a Bio-Wheel at the back
   // hanger over the glass and the spillway lip into the tank, with the sheet of water falling off it
   f.box(lip.bk, f.P(u + W * 0.08, f.H + 14, (24 - t) / 2), W * 0.8, 6, 24 + t + 8, lip.c, 2, lip.base);
   const lipB = 30 * s, lipY = f.H + 10, uL = u + W * 0.08;
@@ -31,17 +42,19 @@ export function hob(f: Frame, m: FilterModel, sp: Spot, pr?: FilterProduct) {
   sg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); sg.computeVertexNormals();
   kit.put('clear', sg, C.water, undefined, 0.2);
   // the flow's ripples on the surface where the sheet lands
+  // (kept inside the glass: the rings shrink to the room the tank has either side of the lip and in front of it)
+  const rk = Math.min(1, (Math.min(uL, f.len - uL) - 8) / (W * 0.9), (f.T.D - backdropDepth(f.S.backdrop, f.T) - lipB - 20) / (W * 0.4));
   for (const [k, w] of [[1, 0.9], [1.7, 0.7], [2.5, 0.5]]) {
-    const ring = new THREE.RingGeometry(W * 0.36 * k, W * 0.36 * k + 1.6, 40, 1, 0, Math.PI);
+    const rr = W * 0.36 * k * Math.max(0.1, rk), ring = new THREE.RingGeometry(rr, rr + 1.6, 40, 1, 0, Math.PI);
     ring.rotateX(-Math.PI / 2); ring.scale(1, 1, 0.45); ring.rotateY(f.wall === 'left' ? -Math.PI / 2 : f.wall === 'right' ? Math.PI / 2 : 0);
     const c = f.P(uL, f.wy + 0.6, lipB + 10);
     kit.put('clear', ring, C.water, new THREE.Matrix4().makeTranslation(c.x, c.y, c.z), 0.18 * w);
   }
   // intake: a smoky tube from the box over the glass and down, its slotted strainer at the foot
   const ib = 22;
-  kit.tube(inC.bk, [f.P(uI, yTop - 30, -t - 30), f.P(uI, f.H + 16, -t - 12), f.P(uI, f.H + 16, ib * 0.5), f.P(uI, f.H - 8, ib), f.P(uI, stY + 90, ib)], it, inC.c, inC.bk === 'clear' ? inC.base : 0, 12);
-  kit.rod(inC.bk, f.P(uI, stY + 90, ib), f.P(uI, stY + 70, ib), it, inC.c, { r2: it + 3, base: inC.base });
-  strainer(f, f.P(uI, stY, ib), 70 * Math.sqrt(s), it + 4, stC);
+  kit.tube(inC.bk, [f.P(uI, yTop - 30, bF - 24), f.P(uI, f.H + 16, bF - 6), f.P(uI, f.H + 16, ib * 0.5), f.P(uI, f.H - 8, ib), f.P(uI, stY + sh + 20, ib)], it, inC.c, inC.bk === 'clear' ? inC.base : 0, 12);
+  kit.rod(inC.bk, f.P(uI, stY + sh + 20, ib), f.P(uI, stY + sh, ib), it, inC.c, { r2: it + 3, base: inC.base });
+  strainer(f, f.P(uI, stY, ib), sh, it + 4, stC);
   f.kit.rod('wet', f.P(uI, stY - 2, ib), f.P(uI, stY, ib), it + 4, C.black, { seg: 16 });
   void D;
 }
@@ -59,9 +72,11 @@ export function strainer(f: Frame, p: THREE.Vector3, h: number, r: number, col: 
 }
 
 export function sponge(f: Frame, m: FilterModel, sp: Spot, pr?: FilterProduct) {
-  const { kit } = f, s = flowScale(m, 40), r = pr ? pr.bodyMm.w / 2 : 34 * s, h = pr?.bodyMm.h ?? 110 * s, b = Math.max(r + 8, sp.b ?? 0);
+  const { kit } = f, s = flowScale(m, 40), r = pr ? pr.bodyMm.w / 2 : 34 * s, b = clamp(Math.max(r + 8, sp.b ?? 0), r + 8, Math.max(r + 8, f.T.D - backdropDepth(f.S.backdrop, f.T) - r - 8));
+  // a generic sponge's lift tube ends under the water line, so its height fits the water a short tank holds (lane FL2, 2026-11-06)
+  const h = pr?.bodyMm.h ?? Math.max(40, Math.min(110 * s, f.wy - f.ground(sp.u, b) - 62));
   const L = pr?.colors, baseC = hexOr(L?.accent && /base/i.test(L.accent.where) ? L.accent.hex : L?.body?.hex, C.charcoal), capC = hexOr(L?.lid?.hex ?? L?.body?.hex, C.grey), tubeC = partOf(L?.intake ?? L?.outlet, C.grey);
-  const u = f.slot(sp.fixed ? sp.u : sp.u + r, 2 * r + 8, 0, h + 40, 0, 2 * r + 12, sp.fixed), g = f.ground(u, b) - 6;
+  const u = clamp(f.slot(sp.fixed ? sp.u : sp.u + r, 2 * r + 8, 0, h + 40, 0, 2 * r + 12, sp.fixed), r + 8, Math.max(r + 8, f.len - r - 8)), g = f.ground(u, b) - 6;
   const sP = pr?.spongeParts;
   if (sP) {
     // a measured product, part by part from the bottom up (base disc, neck, fluted sponge, collar, a lift tube at its own
@@ -106,9 +121,11 @@ export function sponge(f: Frame, m: FilterModel, sp: Spot, pr?: FilterProduct) {
 }
 
 export function internal(f: Frame, m: FilterModel, sp: Spot, pr?: FilterProduct) {
-  const { kit } = f, s = flowScale(m, 80), w = pr?.bodyMm.w ?? 62 * s, d = pr?.bodyMm.d ?? 50 * s, h = pr?.bodyMm.h ?? 150 * s, b = d / 2 + 9;
+  const { kit } = f, s = flowScale(m, 80), w = pr?.bodyMm.w ?? 62 * s, d = pr?.bodyMm.d ?? 50 * s, b = Math.min(d / 2 + 9, Math.max(d / 2 + 2, f.T.D - backdropDepth(f.S.backdrop, f.T) - d / 2 - 6));
+  // the body stands on the floor under the water line (never through the base of a short tank): its height fits the water, head included (lane FL2, 2026-11-06)
+  const h = Math.max(50, Math.min(pr?.bodyMm.h ?? 150 * s, f.wy - 22 - f.ground(sp.u, b) - 6));
   const L = pr?.colors, body = partOf(L?.body, C.charcoal), head = partOf(L?.motor ?? L?.lid, C.black), noz = hexOr(L?.outlet?.hex ?? L?.motor?.hex, C.black);
-  const yT = lerp(Math.min(f.ground(sp.u, b) + h + 10, f.wy - 22), f.wy - 22, sp.y ?? 1), yB = yT - h, u = f.slot(sp.fixed ? sp.u : sp.u + w / 2, w + 6, yB, yT, 0, d + 12, sp.fixed);
+  const yT = lerp(Math.min(f.ground(sp.u, b) + h + 10, f.wy - 22), f.wy - 22, sp.y ?? 1), yB = yT - h, u = clamp(f.slot(sp.fixed ? sp.u : sp.u + w / 2, w + 6, yB, yT, 0, d + 12, sp.fixed), w / 2 + 8, Math.max(w / 2 + 8, f.len - w / 2 - 8));
   f.box(body.bk, f.P(u, yB + h / 2, b), w, h, d, body.c, 6, body.base);
   if (body.bk === 'clear') f.box('wet', f.P(u, yB + h * 0.45, b), w * 0.8, h * 0.6, d * 0.75, hexOr(L?.sponge, C.sponge), 4); // the sponge seen through
   // intake slots round the bottom third, the head with its outlet nozzle, two suction cups
@@ -121,7 +138,7 @@ export function internal(f: Frame, m: FilterModel, sp: Spot, pr?: FilterProduct)
 }
 
 export function canister(f: Frame, m: FilterModel, sp: Spot, prod?: FilterProduct) {
-  const { kit, t } = f, s = flowScale(m, 265), pr = 7.5, gap = clamp(f.T.L * 0.18, 110, 320);
+  const { kit, t } = f, s = flowScale(m, 265), pr = 7.5, gap = Math.min(clamp(f.T.L * 0.18, 110, 320), Math.max(60, f.len - 100)); // both pipes stay inside the glass on a short tank
   // a real product (lane TG step 3): its own pipe, hose and body colours (Fluval / Eheim pipes are opaque plastic, not glass)
   const L = prod?.colors, pipeL = L?.intake ?? L?.outlet, pipe = pipeL ? partOf(pipeL, C.grey) : { c: C.glass, bk: 'clear' as Bucket, base: 0.13 };
   const hoseC = hexOr(L?.hose, C.hose), bodyC = hexOr(L?.body?.hex, C.charcoal), headC = hexOr(L?.lid?.hex ?? L?.motor?.hex, C.grey), acc = (re: RegExp) => (L?.accent && re.test(L.accent.where) ? L.accent.hex : undefined);
@@ -147,7 +164,7 @@ export function canister(f: Frame, m: FilterModel, sp: Spot, prod?: FilterProduc
     kit.tube('room', [p.clone().add(V(0, -40, 0)), f.P(uu, (standY + p.y) / 2, outB - 6), f.P(uu, standY + 30, outB - 10), f.P(uu, standY - 30, outB - 10 + (f.S.stand.show ? 60 : -20))], 10, hoseC, 0, 10);
   }
   if (f.S.stand.show) {
-    const r = prod ? prod.bodyMm.w / 2 : 95 * s, ch = prod?.bodyMm.h ?? 380 * s, cu = clamp(f.T.L * 0.25, r + 20, f.T.L - r - 20), cb = f.T.D * 0.45;
+    const r = prod ? prod.bodyMm.w / 2 : 95 * s, ch = prod?.bodyMm.h ?? 380 * s, cu = f.T.L >= 2 * r + 40 ? clamp(f.T.L * 0.25, r + 20, f.T.L - r - 20) : f.T.L / 2, cb = f.T.D * 0.45;
     const c0 = f.P(cu, f.floor, cb);
     kit.rod('room', c0, c0.clone().add(V(0, ch * 0.78, 0)), r, bodyC, { seg: 32 });
     if (L?.foot) kit.rod('room', c0, c0.clone().add(V(0, ch * 0.06, 0)), r * 1.04, hexOr(L.foot.hex, bodyC), { seg: 32 }); // a foot ring in its own colour (Fluval 07)

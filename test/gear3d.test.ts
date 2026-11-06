@@ -54,6 +54,6 @@ describe('gear3d', () => {
   });
 
   it('has a review model for every class', () => {
-    expect(GEAR_LOOKS.length).toBe(21);
+    expect(GEAR_LOOKS.length).toBe(23);
   });
 });

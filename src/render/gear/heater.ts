@@ -17,17 +17,20 @@ export function heater(f: Frame, watts: number, sp: Spot, product?: string) {
   // a real product at its own size (overall length = cap + tube + foot), else the generic tube for the rating; the cap is
   // 44 mm (36 grip + 8 dial) and the foot 24 mm past the tube, both shrunk on a short heater (a 105 mm mini is not mostly cap)
   const hp = heaterProduct(product), cl = hp ? Math.min(44, Math.round(hp.lengthMm * 0.22)) : 44, fl = cl * 24 / 44, fe = hp?.colors?.foot ? fl : 0;
-  const { kit } = f, len = hp ? Math.max(40, hp.lengthMm - cl - fe) : heaterLength(watts), r = hp ? hp.diaMm / 2 : watts >= 500 ? 14 : 11, b = r + 9, u0 = sp.u;
+  const { kit } = f, r = hp ? hp.diaMm / 2 : watts >= 500 ? 14 : 11, b = r + 9, u0 = sp.u;
   // a heater stands about 10 mm off the gravel with its cap just under the surface (fully submersible)
   const g0 = Math.max(f.ground(u0, b), 0) + 10, room = f.wy - 5 - g0;
+  // a generic tube that cannot lie in the water the tank holds (its height and its wall both too short for it, a 1 gal cube) is cut to the diagonal that fits (lane FL2, 2026-11-06)
+  const room2 = Math.max(0, f.len - 52 - 2 * r - 6), len = hp ? Math.max(40, hp.lengthMm - cl - fe) : Math.max(60, Math.min(heaterLength(watts), Math.hypot(room, room2) - cl));
   // vertical when it fits under the water line, else lying flat low along the glass (Nathan 2026-10-19: tilted heaters
   // are rare); turned only when the owner turns it (Shift + wheel), and then never so upright that it leaves the water
   const fits = len + cl <= room, need = fits ? 0 : Math.acos(clamp(room / (len + cl), 0, 1));
-  const tilt = sp.lean != null ? Math.max(need, Math.abs(sp.lean) * Math.PI / 180) : fits ? 0 : Math.PI / 2, sgn = (sp.lean ?? 1) < 0 ? -1 : 1, span = (len + cl) * Math.sin(tilt); // along the glass, cap included
-  const u = f.slot(sp.fixed ? u0 : u0 + span / 2, 2 * r + 6 + span, g0, f.wy, 0, 2 * r + 12, sp.fixed);
+  const flat = len + cl <= room2 ? Math.PI / 2 : Math.asin(clamp(room2 / (len + cl), 0, 1)); // lying flat, or as flat as the wall allows
+  const tilt = sp.lean != null ? Math.max(need, Math.abs(sp.lean) * Math.PI / 180) : fits ? 0 : flat, sgn = (sp.lean ?? 1) < 0 ? -1 : 1, span = (len + cl) * Math.sin(tilt); // along the glass, cap included
+  const wH = 2 * r + 6 + span, u = clamp(f.slot(sp.fixed ? u0 : u0 + span / 2, wH, g0, f.wy, 0, 2 * r + 12, sp.fixed), wH / 2 + 8, Math.max(wH / 2 + 8, f.len - wH / 2 - 8)); // never through an end glass
   // the cap's top: at most 15 mm under the water line, at least the heater's height off the ground (the owner's height
   // share between; default: high when upright, low when lying flat)
-  const ext = Math.max((len + cl) * Math.cos(tilt), 2 * r + 4), capY = lerp(Math.min(g0 + ext, f.wy - 5), f.wy - 5, sp.y ?? (tilt > 1.2 ? 0 : 1));
+  const ext = Math.max((len + cl) * Math.cos(tilt) + 2 * r * Math.sin(tilt), 2 * r + 4), capY = lerp(Math.min(g0 + ext, f.wy - 5), f.wy - 5, sp.y ?? (tilt > 1.2 ? 0 : 1));
   const topY = capY - cl * Math.cos(tilt) - r * Math.sin(tilt), dir = f.along.clone().multiplyScalar(-sgn * Math.sin(tilt)).add(V(0, Math.cos(tilt), 0)); // the cap toward the corner
   const top = f.P(u - sgn * (span / 2 - cl * Math.sin(tilt)), topY, b), bot = top.clone().addScaledVector(dir, -len);
   const q = new THREE.Quaternion().setFromUnitVectors(UP, dir);

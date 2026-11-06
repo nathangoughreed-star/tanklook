@@ -466,7 +466,9 @@ export function filterFor(S: TankSetup, kind: FilterKind, override?: string, pro
     const n = Math.min(4, Math.max(1, Math.ceil(gal / (fp.galMax ?? model.galMax)))), gph = (fp.gph ?? model.gph) * n;
     return { model, n, gph, turnover: gph / Math.max(gal, 0.1), product: fp };
   }
-  const model = pool.find(m => m.id === override) ?? pool.find(m => gal >= m.galMin && gal <= m.galMax) ?? (gal < pool[0].galMin ? pool[0] : pool[pool.length - 1]);
+  // no model rated for the volume: the one whose range is nearest it (lane FL2, 2026-11-06: a tank under the smallest range used to get that range's model, a 1 gal tank the 5-30 gal HOB)
+  const off = (m: FilterModel) => gal < m.galMin ? Math.log(m.galMin / Math.max(gal, 0.1)) : gal > m.galMax ? Math.log(gal / m.galMax) : 0;
+  const model = pool.find(m => m.id === override) ?? pool.find(m => gal >= m.galMin && gal <= m.galMax) ?? [...pool].sort((a, b) => off(a) - off(b) || b.gph - a.gph)[0];
   const n = Math.min(4, Math.max(1, Math.ceil(gal / model.galMax)));
   const gph = model.gph * n;
   return { model, n, gph, turnover: gph / Math.max(gal, 0.1) };
