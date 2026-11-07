@@ -15,8 +15,8 @@ const withZoom = (zoom: number) => {
 };
 
 describe('zoom out further', () => {
-  it('the limit is 0.1 to 12', () => {
-    expect(LIMITS.zoom).toEqual([0.1, 12]);
+  it('the limit is 0.05 to 12', () => {
+    expect(LIMITS.zoom).toEqual([0.05, 12]);
   });
 
   it('loads zooms in the old range unchanged, keeps the new ones, clamps below the minimum; no version bump', () => {
@@ -27,7 +27,7 @@ describe('zoom out further', () => {
       // round trip: save the loaded scene and load it again
       expect(parseScene(JSON.parse(JSON.stringify(scene))).scene.tanks[0].camera.zoom).toBe(z);
     }
-    expect(parseScene(withZoom(0.05)).scene.tanks[0].camera.zoom).toBe(0.1);
+    expect(parseScene(withZoom(0.02)).scene.tanks[0].camera.zoom).toBe(0.05);
   });
 
   it('at and above 0.5 the eye stays at the Eye distance; below it the eye steps back and the lens holds', () => {

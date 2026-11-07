@@ -13,7 +13,7 @@ import { fitTable } from '../src/scene/table';
 import { parseScene } from '../src/scene/validate';
 import { gearPicks } from '../src/render/gear3d';
 import { techParts } from '../src/scene/tech';
-import { dockGroups, isBundle, modelIsBundle, offers, previewSetup, rangeText, startGear } from '../src/ui/tankDockLogic';
+import { dockGroups, isBundle, modelIsBundle, offers, previewSetup, rangeText, roomZoom, startGear } from '../src/ui/tankDockLogic';
 
 const noop: any = new Proxy(function () {}, { get: (_t, k) => k === 'data' ? new Uint8ClampedArray(4 * 512 * 512) : k === Symbol.toPrimitive ? () => 0 : noop, apply: () => noop, set: () => true });
 const canvas = () => ({ width: 1, height: 1, style: {}, getContext: () => noop, toDataURL: () => '', addEventListener() {} });
@@ -116,6 +116,18 @@ describe('a bare tank brings no equipment (ST2)', () => {
     expect(gearPicks(previewSetup(S, bareOpt)).length).toBeGreaterThan(0);
     // Choose: the same gear
     const q = structuredClone(p); delete q.tech; q.tech = startGear(q, bareOpt)!; expect(gearPicks(q)).toEqual([]);
+  });
+  it('ST3: the cost panel of a bare tank prices the tank (and the room kit), no filter and no dechlorinator, until gear is added', () => {
+    const p = previewSetup(room(), bareOpt, true), keys = demandOf(p, defaultProfile()).items.filter(c => c.setup).map(c => c.key);
+    expect(keys).toContain('tank'); expect(keys).not.toContain('filter'); expect(keys).not.toContain('startconditioner');
+    // adding a filter brings its line back
+    const q = structuredClone(p); q.tech = { ...q.tech!, rows: { ...q.tech!.rows, filter: 'hob' } };
+    expect(demandOf(q, defaultProfile()).items.some(c => c.key === 'filter' && c.setup)).toBe(true);
+  });
+  it('ST3: the Sandbox room lens fits the 6 ft person at the smallest tanks (no clamp to the old 0.1 floor)', () => {
+    const smallest = Math.min(...TANK_MODELS.filter(m => m.ratedGal <= 3).map(m => roomZoom(tankFromModel(m))), 0.34);
+    expect(smallest).toBeGreaterThanOrEqual(0.05); expect(smallest).toBeLessThan(0.1);
+    for (const m of TANK_MODELS) { const T = tankFromModel(m), z = roomZoom(T), span = Math.max(T.L, T.H * 1.6), want = span * 0.34 / 1219; if (span >= 1000 && want <= 0.6) expect(z).toBeCloseTo(want, 6); expect(z).toBeLessThanOrEqual(Math.max(0.05, want) + 1e-9); }
   });
   it('a kit brings only what it includes: a filter that comes with it stays, the heater it lacks does not', () => {
     const kit = opts.find(o => o.v && isBundle(o.v) && !o.v.kit && o.v.includes?.filter && !o.v.includes.heater && o.m.ratedGal >= 20)!;

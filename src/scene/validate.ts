@@ -38,7 +38,7 @@ export const LIMITS = {
   bgScale: [10, 200] as const,    // a tiled background picture's height, % of the tank height      // degrees of a round tank's shell the background covers
   az: [-180, 180] as const,
   el: [-20, 85] as const,
-  zoom: [0.1, 12] as const, // below 0.5 the eye steps back (scene/orbit.ts eyeDist); was 0.5 before 2026-10-14, 0.25 before 2026-10-15; older readers clamp
+  zoom: [0.05, 12] as const, // 0.05 since 2026-11-07 (lane ST3: a 2 gal tank in the Sandbox room needs 0.085); below 0.5 the eye steps back (scene/orbit.ts eyeDist); was 0.5 before 2026-10-14, 0.25 before 2026-10-15; older readers clamp
   count: [1, 12] as const,                   // above 6 only reachable with the optimised spot pattern
   rows: [1, 4] as const,
   spacing: [0, 1500] as const,     // mm, 0 = auto

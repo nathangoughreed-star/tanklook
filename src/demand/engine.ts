@@ -130,7 +130,9 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   }
   // a tank started from its animals (path 1) has no filter or heater until the owner adds one (Nathan 2026-10-26: not in the price either)
   const bare = !!S.stockFirst && !opts.kit;
-  const noFilter = bare && !filterNeeded(S), noHeater = bare && !heaterNeeded(S).length; // lane GV2: only the gear a species needs
+  // a bare tank pick (tech.ts bareTech, lane ST3) set the filter and conditioner rows to 'none': nothing is priced for them until the owner adds gear
+  const bareRows = !!S.tech && !opts.kit && S.tech.rows.filter === 'none' && !S.tech.filters?.length;
+  const noFilter = (bare && !filterNeeded(S)) || bareRows, noHeater = bare && !heaterNeeded(S).length; // lane GV2: only the gear a species needs
   if (wet) {
     if (!noFilter) {
       const fm = (opts.kit?.filter && matchFilter({ ...opts.kit.filter, gal })?.model) || defaultFilter(gal);
@@ -224,7 +226,7 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
     if (needsKit && rowPrice('gear:test-kit')) add('testkit', 'Water test kit (ammonia, nitrite, nitrate, pH)', 'gear', { setup: price(rowPrice('gear:test-kit')!) });
     // lane U5: the rest of a COMPLETE set-up: the maintenance tools and first consumables every wet tank needs on day one (a salt tank mixes with RO water and needs a refractometer, not dechlorinator)
     if (salt) { if (rowPrice('gear:refractometer')) add('refractometer', 'Refractometer (salinity)', 'gear', { setup: price(rowPrice('gear:refractometer')!) }); }
-    else if (rowPrice('gear:start-conditioner')) add('startconditioner', 'Dechlorinator (first bottle)', 'gear', { setup: price(rowPrice('gear:start-conditioner')!) });
+    else if (rowPrice('gear:start-conditioner') && !(bareRows && S.tech!.rows.conditioner === 'none')) add('startconditioner', 'Dechlorinator (first bottle)', 'gear', { setup: price(rowPrice('gear:start-conditioner')!) });
     if (rowPrice('gear:siphon')) add('siphon', 'Siphon / gravel vacuum', 'gear', { setup: price(rowPrice('gear:siphon')!) });
     if (rowPrice('gear:bucket')) add('bucket', 'Bucket (aquarium only)', 'gear', { setup: price(rowPrice('gear:bucket')!) });
     if (rowPrice('gear:net')) add('net', 'Fish net', 'gear', { setup: price(rowPrice('gear:net')!) });

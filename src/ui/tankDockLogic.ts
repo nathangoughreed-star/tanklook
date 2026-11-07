@@ -90,8 +90,14 @@ export function rangeText(r: FinishedRange | null): string {
 }
 
 /** The room view while flipping through sizes in the empty Sandbox room: the lens opens up with the tank so the person (and so the scale) stays on screen at about the same size
- *  whatever the tank (a 4 ft tank gets the default environment's 0.34; the lens never goes below the camera's own 0.1). */
-export const roomZoom = (T: { L: number; H: number }) => Math.min(0.6, Math.max(0.1, Math.max(T.L, T.H * 1.6) * 0.34 / 1219));
+ *  whatever the tank (a 4 ft tank gets the default environment's 0.34; the lens never goes below the camera's own 0.05, 2026-11-07: it was 0.1 and cut the person's head off at 2 gal). */
+export const roomZoom = (T: { L: number; H: number }) => {
+  const span = Math.max(T.L, T.H * 1.6);
+  // lane ST3: the view centres on the tank, which sits low on the floor, so the figure's head reaches above the frame on the small tanks (2 gal: 6 ft up, 5 in tank);
+  // 0.6 of the size-matched zoom at the smallest, easing to 1 by a 3.3 ft span (the 4 ft tank is the default environment's own 0.34, unchanged)
+  const headroom = Math.min(1, 0.6 + 0.4 * Math.max(0, span - 300) / 700);
+  return Math.min(0.6, Math.max(0.05, span * 0.34 / 1219 * headroom));
+};
 /** The empty room itself, framed on the spot, lit by the room-light slider (UI4: high while the tank has no light, so the wall, floor and person read; the person's own value if they moved it). A copy. */
 export function emptyRoomView(base: TankSetup): TankSetup {
   const p = structuredClone(base);
