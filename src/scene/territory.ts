@@ -6,6 +6,7 @@ import { getSpecies } from '../data/species';
 import { youngLengths } from '../data/growth';
 import { volume } from './physics';
 import { countsAgainstWater, plural } from './stocking';
+import { soldBySex } from '../data/soldSex';
 import { pairingIn } from './pairs';
 import { whysAnimal } from './animalfit';
 import { floorOf } from './tankMin';
@@ -14,7 +15,7 @@ import type { TankSetup } from './types';
 
 export function crowdWarnings(S: TankSetup): string[] {
   const n = new Map<string, number>(), males = new Map<string, number>();
-  for (const f of S.fish) { const sp = getSpecies(f.species); if (sp && countsAgainstWater(sp)) { n.set(sp.id, (n.get(sp.id) ?? 0) + 1); if (f.gender ? f.gender === 'm' : f.sex !== 'f') males.set(sp.id, (males.get(sp.id) ?? 0) + 1); } }
+  for (const f of S.fish) { const sp = getSpecies(f.species); if (sp && countsAgainstWater(sp)) { n.set(sp.id, (n.get(sp.id) ?? 0) + 1); if (f.gender ? f.gender === 'm' : f.sex !== 'f' && soldBySex(sp.id)) males.set(sp.id, (males.get(sp.id) ?? 0) + 1); } }
   const litres = volume(S.tank).litres, out: string[] = [];
   for (const [id, k] of n) {
     const c = CARE[id], mx = mostFor(c, litres, S.tank.L) ?? (c?.solo ? 1 : undefined), name = getSpecies(id)!.name;
@@ -24,12 +25,12 @@ export function crowdWarnings(S: TankSetup): string[] {
     if (pr && pr !== 'established' && c?.msg?.unpaired) { out.push(`${plural(k, name)}: ${c.msg.unpaired}${pr === 'unknown' ? ' (pairing not set: select one to mark them a pair)' : ''}.`); continue; }
     if (c?.beyond && mx && k > mx) { out.push(`${plural(k, name)}: ${c.beyond}.`); continue; }
     if (!mx || k <= mx || !fightsOverCount(c)) {
-      const mm = mostMalesFor(c, litres), m = males.get(id) ?? 0; // the scene knows each fish's sex (absent = male)
+      const mm = mostMalesFor(c, litres), m = males.get(id) ?? 0; // the scene knows each fish's sex (absent = male, except for a species sold unsexed: only a sex the owner set counts, DA4)
       if (mm !== undefined && m > mm) out.push(malesWarning(name, m, mm, true, c!.males!.each));
       continue;
     }
     out.push(mx === 1 ? `${name} is best kept one to a tank: expect fighting.`
-      : `${plural(k, name)}: more than about ${mx} in a tank this size may fight${c?.territory?.note ? ` (${c.territory.note})` : c?.sexed ? ` (keep ${c.sexed.ratio[0]} male to ${c.sexed.ratio[1]} females)` : ''}.`);
+      : `${plural(k, name)}: more than about ${mx} in a tank this size may fight${c?.territory?.note ? ` (${c.territory.note})`   : c?.sexed && soldBySex(id) ? ` (keep ${c.sexed.ratio[0]} male to ${c.sexed.ratio[1]} females)` : ''}.`);
   }
   return out;
 }

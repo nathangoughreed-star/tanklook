@@ -85,8 +85,11 @@ describe('territory caps', () => {
   });
   it('celestial pearl danio males: one in a 5.5 gal, one more per 2 gal (S216b 2026-10-26, Seriously Fish 18 x 12 in, Aquarium Co-Op 10 gal)', () => {
     expect([5.5, 7.5, 10, 20].map(g => mostMalesFor(CARE.cpd, L(g)))).toEqual([1, 2, 3, 8]);
-    const nano = comboTank({ name: '', tank: [16, 8, 10], stock: [['cpd', 9]] }); // a 5.5 gal, all drawn as males
+    const nano = comboTank({ name: '', tank: [16, 8, 10], stock: [['cpd', 9]] }); // a 5.5 gal
+    expect(crowdWarnings(nano)).toEqual([]); // CPD are sold unsexed: with no sex set by the owner there is no male count to judge (DA4, 2026-11-06)
+    nano.fish.forEach(x => { x.gender = 'm'; }); // all nine set as males by the owner
     expect(crowdWarnings(nano).join()).toMatch(/Celestial pearl danio males fight: a tank this size takes one male.*you have 9/);
+    nano.fish.forEach(x => { delete x.gender; });
     nano.fish.forEach((x, i) => { if (i) x.sex = 'f'; });
     expect(crowdWarnings(nano)).toEqual([]); // 1 male and 8 females
   });

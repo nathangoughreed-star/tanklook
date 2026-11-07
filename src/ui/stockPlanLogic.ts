@@ -4,6 +4,7 @@ import { IDEAL_MAX } from '../scene/stocking';
 import { CARE, EXPERTISE_NAME } from '../data/care';
 import { rosterTiers, type CostTiers } from '../demand/tiers';
 import { bandMessage, bandOf, groupTone, fightsOverCount, malesWarning, mostFor, mostMalesFor, PAIR_FORMERS, pairRule, type GroupBand, type GroupTone } from '../data/groups';
+import { soldBySex } from '../data/soldSex';
 import { needLine, needsOf, type NeedSeverity } from '../data/careNeeds';
 import { getSpecies, SPECIES, type Species } from '../data/species';
 import { TANK_MODELS, tankFromModel, type TankModel } from '../data/tanks';
@@ -25,6 +26,8 @@ export type { Pairing };
  *  females in `f` and unsexed animals in `u`; the rest just `n`. `pair` = the pairing status (only asked where pairRule holds). */
 export interface Pk { id: string; n: number; f?: number; u?: number; pair?: Pairing; /** S228: the animals' current length, mm (the stage picked); absent = adult */ tl?: number }
 export const isSexed = (id: string) => !!CARE[id]?.sexed;
+/** Sex-mix advice and verdicts apply only where the species is commonly sold by sex (DA4, data/soldSex.ts); species with no sex rule are unaffected. */
+export const ratioAdvised = (id: string) => soldBySex(id);
 /** The Space band a percent shows in, on the ROUNDED percent the screen prints (S214 2026-10-26: the bar coloured on the rounded
  *  value while the "past ideal" label read the raw one, so 74.6-74.99 % showed an amber "75 %" bar with no label). */
 export const spaceBand = (pct: number): 'ok' | 'near' | 'over' => Math.round(pct) > 100 ? 'over' : Math.round(pct) >= IDEAL_MAX ? 'near' : 'ok';
@@ -110,9 +113,10 @@ export function overWarn(p: Pk, litres?: number, lengthMm?: number): string | un
   if (!mx || n <= mx || !fightsOverCount(c)) {
     // males past their own limit (lane CW): a sexed species counts its males; an unsexed one may be all males (shops sell mostly males)
     const mm = mostMalesFor(c, litres), males = c?.sexed ? p.n : n - (p.f ?? 0);
-    return mm !== undefined && males > mm ? malesWarning(name, males, mm, !!c?.sexed || (p.f ?? 0) > 0, c!.males!.each) : undefined;
+    // a species sold unsexed has no mix to judge (DA4): "you have 12 males" would only be the default reading of an unsexed bag
+    return mm !== undefined && males > mm && ratioAdvised(p.id) ? malesWarning(name, males, mm, !!c?.sexed || (p.f ?? 0) > 0, c!.males!.each) : undefined;
   }
-  return mx === 1 ? `${name} is best kept one to a tank: expect fighting. The tank shown is sized for all of them` : c?.territory && litres ? `More than about ${mx} ${name} in a tank this size may fight${c.territory.note ? `: ${c.territory.note}` : c.sexed ? `; keep ${c.sexed.ratio[0]} male to ${c.sexed.ratio[1]} females` : ''}` : `More than ${mx} ${name} in one tank may fight`;
+  return mx === 1 ? `${name} is best kept one to a tank: expect fighting. The tank shown is sized for all of them` : c?.territory && litres ? `More than about ${mx} ${name} in a tank this size may fight${c.territory.note ? `: ${c.territory.note}` : c.sexed && ratioAdvised(p.id) ? `; keep ${c.sexed.ratio[0]} male to ${c.sexed.ratio[1]} females` : ''}` : `More than ${mx} ${name} in one tank may fight`;
 }
 
 /** The band message for the total count, plus the sex-ratio line for sexed species. `needs`: the species' essential care conditions
@@ -140,8 +144,10 @@ export function notesOf(p: Pk, u: Units = 'cm'): PickNotes {
       : p.n + f < 2 ? '' // one sexed animal is a single, not a mix: nothing to judge (a lone male pleco is fine)
       : p.n > 0 && f / p.n < rf / rm * 0.75 ? 'Your mix is short on females' : f > 1 && p.n === 0 ? 'Your mix has no males' : '';
     const unk = u > 0 ? `. ${u} unsexed: the mix can only be checked once they are sexed${u === n ? '' : ' (judged on the sexed ones meanwhile)'}` : '';
+    // a species usually sold unsexed has no mix the owner could have chosen: at most a grey tip, never a verdict (DA4)
+    if (!soldBySex(p.id) && !r.breedingOnly) ratio = `Tip: usually sold unsexed; if you can sex them, aim for about ${want}`;
     // a ratio that is only about breeding is a tip: no verdict on the mix (DA3)
-    ratio = r.breedingOnly ? `Tip: ${r.note ?? 'a mix of the sexes'} (about ${want})` : `Kept ${want}${r.note ? `: ${r.note}` : ''}${off && n - u > 0 ? `. ${off}` : ''}${unk}`;
+    else ratio = r.breedingOnly ? `Tip: ${r.note ?? 'a mix of the sexes'} (about ${want})` : `Kept ${want}${r.note ? `: ${r.note}` : ''}${off && n - u > 0 ? `. ${off}` : ''}${unk}`;
   }
   const habitat: string[] = [];
   const md = minDataOf(p.id), adv = md?.depth?.maxWaterDepthMm; // the limit (GroupCare maxDepthMm) first, a sourced advisory maximum beside it (ADF, Nathan 2026-10-22)
