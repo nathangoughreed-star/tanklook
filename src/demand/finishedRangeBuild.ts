@@ -28,9 +28,9 @@ const SPEC: Record<FinishedKind, Spec> = {
   },
   saltwater: {
     lo: { style: 'reef', dens: { hard: 0, plant: 0, animal: 1 }, noCorals: true, build: 'cheapest', tier: 'budget', ground: true },
-    hi: { style: 'reef', dens: { hard: 2, plant: 3, animal: 3 }, preset: 'lps', build: 'balanced', tier: 'luxury', ground: true },
+    hi: { style: 'spsreef', dens: { hard: 2, plant: 4, animal: 3 }, preset: 'sps', build: 'balanced', tier: 'luxury', ground: true },
     loText: 'tank, hang-on filter and skimmer, one heater, one powerhead, RO unit, sand and a little live rock, a pair of hardy fish (fish-only, no corals)',
-    hiText: 'tank, sump with skimmer, two heaters, wave flow, auto top-off, dosing, reef LED, rock work and a coral garden, a fuller fish list',
+    hiText: 'tank, sump with skimmer, two heaters, wave flow, auto top-off, dosing, SPS-grade reef LED, tall rock work and a full coral garden of SPS and LPS, a fuller fish list',
   },
   terrarium: {
     lo: { style: 'arid', tryStyles: ['arid', 'rainforest', 'frogs', 'jumper'], dens: { hard: 0, plant: 0, animal: 1 }, build: 'cheapest', tier: 'budget', ground: true },

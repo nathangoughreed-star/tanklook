@@ -47,7 +47,7 @@ describe('finished price range (lane FR1)', () => {
     // decor, plants and the stock follow the FLOOR a tank gives them (a 38 gal 30 x 12 in has less floor than a 32 gal 36 x 18 in breeder),
     // so a bigger-water size with a smaller footprint (g37, g65, the tall cubes and terrariums) may price under the one before it
     // within 6 % is noise from which animals the starter picks at that size; the rest need a reason here
-    const EXCEPT: Record<string, string> = { 'freshwater|g3c|lo': 'the 2.5 and the 3 gal both get the nano HOB (lane FL2); the cube rounds to $130, the 2.5 gal to $140, a $10 step of the table', 'terrarium|t36x18x18|lo': 'the 36 x 18 x 18 stocks one leopard gecko (arid style); the 18 x 24 x 18 only takes a tree frog group' };
+    const EXCEPT: Record<string, string> = { 'saltwater|g3c|hi': 'SPS reef (FR2): the 2.5 gal and the 3 gal cube both hold a few corals; the cube stocks one fewer piece, $200 under the 2.5 gal', 'freshwater|g3c|lo': 'the 2.5 and the 3 gal both get the nano HOB (lane FL2); the cube rounds to $130, the 2.5 gal to $140, a $10 step of the table', 'terrarium|t36x18x18|lo': 'the 36 x 18 x 18 stocks one leopard gecko (arid style); the 18 x 24 x 18 only takes a tree frog group' };
     const bad: string[] = [];
     for (const k of FINISHED_KINDS) {
       const std = TANK_MODELS.filter(m => kindFits(m, k) && !m.id.startsWith('n_') && (m.shape ?? 'rect') === 'rect').sort((a, b) => modelGallons(a) - modelGallons(b));

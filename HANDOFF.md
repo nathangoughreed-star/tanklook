@@ -60,6 +60,10 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
+## FR2: reef high end raised (2026-11-07; Coordinator 21; NOT pushed)
+`finishedRangeBuild.ts` saltwater `hi`: style `reef` -> `spsreef`, Tech preset `lps` -> `sps`, plant (coral) stop 3 -> 4; basis text updated. `src/data/finishedRange.json` regenerated (`GEN_FINISHED=1`). Reef highs before -> after: 20 gal (g20l) $3,050 -> $3,700; 40 gal (g40b) $3,400 -> $4,200; 75 gal $4,350 -> $5,300; 120 gal $4,700 -> $6,050; 180 gal $5,700 -> $7,600; 300 gal $7,250 -> $9,500. Lows unchanged. Monotonic with size kept; one new EXCEPT (saltwater g3c hi, $200 under g2_5) in test/finishedRange.test.ts. Cost panel not wired (FR1 note stands).
+
+
 ### UI4: room light is one slider on the viewing screen (2026-11-06, Nathan; Coordinator 20)
 Nathan: "lets move the ambient light to a slider on the main viewing screen. Default it to high until a light is added to the tank."
 - Home: a sun + slider chip in the viewing-screen toolbar beside Undo / Redo (`#roomChip` / `#vRoom` / `#vRoomAuto` in `index.html`, wired in `panels.ts` next to `recenter`, styled `.roomchip` in `style.css`). The Lighting section's old "Room light (ambient)" row (`#lRoom`) is removed (one home). Slider 0-0.3: the renderer's `roomLevel` is already full at 0.3, so the old 0.3-0.8 half of the range did nothing. A small "Auto" button appears once the person has moved it.
