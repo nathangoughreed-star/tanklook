@@ -26,12 +26,18 @@ export interface CoachStep {
 }
 
 /** the Your-limits answers: every brief item under `constraints.` */
-const limitItems = (c: CoachCtx) => Object.entries(c.brief.items).filter(([k]) => k.startsWith('constraints.')).sort(([a], [b]) => a.localeCompare(b));
+const limitItems = (c: CoachCtx) => Object.entries(c.brief.items).filter(([k]) => k.startsWith('constraints.') && k !== 'constraints.owned' && k !== 'constraints.existingTank').sort(([a], [b]) => a.localeCompare(b));
 
-/** The demo path on today's controls: Kind -> Tank size -> Your limits -> Look. */
-export const DEMO_STEPS: readonly CoachStep[] = [
+/** What "Your limits" answers write: the brief's `constraints.*` items plus Experience (the care level). */
+const careOf = (c: CoachCtx) => c.brief.items['preferences.experience'];
+/** What My equipment writes: the owned map and owned tank in the brief, and the stand the furniture step sets. */
+const gearOf = (c: CoachCtx) => [c.brief.items['constraints.owned'], c.brief.items['constraints.existingTank'], c.tank.stand];
+
+/** The whole guided path (lane GW2, 2026-11-07): every step opens the ONE home of its setting (single-home table, research/design/sandbox-start-and-single-home.md).
+ *  Kind -> Tank -> Placement -> My equipment -> Your limits -> Look -> Animals -> Review. Every step can be skipped; nothing is required but the tank the person already has. */
+export const GUIDE_STEPS: readonly CoachStep[] = [
   {
-    id: 'kind', target: { section: 'fish', control: '#spKinds' }, title: 'What kind of setup?',
+    id: 'kind', target: { section: 'tank', control: '#spKinds' }, title: 'What kind of setup?',
     why: 'Freshwater, saltwater, terrarium or vivarium decides which animals and plants the lists offer, and what the gear costs.',
     done: { changes: c => [c.tank.layout.kind, c.tank.water] }, skippable: true,
   },
@@ -41,13 +47,36 @@ export const DEMO_STEPS: readonly CoachStep[] = [
     done: { changes: c => [c.tank.tank, c.tank.product] }, skippable: true,
   },
   {
+    id: 'place', target: { section: 'room', control: '#placeRow' }, title: 'What does it sit on?',
+    why: 'The floor, a stand or a table you already own. A stand adds cost and changes how high the tank is in the room.',
+    done: { changes: c => [c.tank.stand] }, skippable: true,
+  },
+  {
+    id: 'equipment', target: { dialog: 'equipment' }, title: 'What do you already have?',
+    why: 'Tick the tank, stand, light, heater or filter you own. Owned gear counts as $0 in the budget and is used before anything new is suggested.',
+    done: { changes: gearOf }, skippable: true,
+  },
+  {
     id: 'limits', target: { dialog: 'limits' }, title: 'Your limits',
     why: 'Money, time, space and experience are all optional. A plan that goes over one shows a warning with a fix; it never stops you.',
-    done: { changes: limitItems }, skippable: true,
+    done: { changes: c => [limitItems(c), careOf(c)] }, skippable: true,
   },
   {
     id: 'look', target: { section: 'quick', control: '#layout' }, title: 'Choose a look',
-    why: 'The style fills the tank with a matching set of substrate, hardscape and plants. Shuffle draws another one; you can change any piece afterwards.',
+    why: 'The style fills the tank with a matching set of substrate, hardscape and plants. Browse looks shows pictures to choose from; Shuffle draws another one.',
     done: { changes: c => c.tank.layout.id }, skippable: true,
   },
+  {
+    id: 'animals', target: { section: 'fish', control: '#spSearch' }, title: 'Pick the animals',
+    why: 'Search the list and add species. Each one shows whether it suits this tank, its water and the others already in it.',
+    done: { changes: c => c.tank.fish.map(f => f.species) }, skippable: true,
+  },
+  {
+    id: 'review', target: { section: 'brief' }, title: 'Check the whole plan',
+    why: 'The setup brief and the cost panel show what this tank costs and where it goes over a limit. Change any setting from its own section at any time.',
+    skippable: false,
+  },
 ];
+
+/** The short demo path GW1 shipped: Kind -> Tank size -> Your limits -> Look (the same steps, picked from the full path). */
+export const DEMO_STEPS: readonly CoachStep[] = GUIDE_STEPS.filter(s => ['kind', 'size', 'limits', 'look'].includes(s.id));

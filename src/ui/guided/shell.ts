@@ -4,7 +4,7 @@
 // route's own steps after it (Water hidden when resolved). Back works across the seam. Every answer is written to the one project state (scene/project.ts); the
 // shell never replaces the scene: only discovery's own exit to the editor does, and an onboarding step never deletes what is on screen.
 import { clearItem, getItem, setItem, type Brief, type Route } from '../../scene/brief';
-import { applyChange, envOf, routeOf, worldOf } from '../../scene/project';
+import { applyChange, envOf, routeOf, setWorld, worldOf } from '../../scene/project';
 import type { Store } from '../../scene/store';
 import type { AnimalCount } from '../../scene/tankfit';
 import { mountExplore } from '../explore/explore';
@@ -153,5 +153,9 @@ export function attachGuided(store: Store, host: DiscoveryHost, o: GuidedOpts = 
     const p = placeOf(getBrief(), ask);
     if ('at' in p) showStep(p.at); else if (p.route === 'explore') showStep('start'); else showRoute(p.route);   // Explore is the start step of World = any, not a discovery route
   }
-  return { show, close: () => dlg.close(), dialog: dlg, routeOf: () => routeOf(getBrief()) };
+  /** Quick Setup's "Browse looks" (lane GW2): straight into Look First (Visual Discovery), skipping the onboarding steps whose homes are the side panel now. */
+  function browseLooks() { dock.hidden = true; if (!dlg.open) dlg.showModal(); showRoute('look'); }
+  /** Quick Setup's "Explore complete setups" (lane GW2): World = Open to anything, straight into Explore (the Guided path is the coach now). */
+  function exploreSetups() { dock.hidden = true; editBrief(b => setWorld(b, 'any')); if (!dlg.open) dlg.showModal(); showStep('start'); }
+  return { show, browseLooks, exploreSetups, close: () => dlg.close(), dialog: dlg, routeOf: () => routeOf(getBrief()) };
 }

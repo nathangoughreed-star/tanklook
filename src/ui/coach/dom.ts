@@ -4,7 +4,7 @@ import './coach.css';
 import type { Store } from '../../scene/store';
 import { emptyBrief, hasState, projectExtras, setProjectExtras } from '../../scene/brief';
 import { createCoach, type CoachCard, type CoachHost, type CoachOpened, type CoachProgress } from './runner';
-import { DEMO_STEPS, type CoachCtx, type CoachStep, type CoachTarget } from './steps';
+import { GUIDE_STEPS, type CoachCtx, type CoachStep, type CoachTarget } from './steps';
 
 /** What the page lets the coach open: dialog names used by `CoachTarget.dialog`. Each returns once the dialog is (about to be) open. */
 export interface CoachDialogs { [name: string]: () => void | Promise<void> }
@@ -14,7 +14,7 @@ const wait = (ms: number) => new Promise<void>(r => setTimeout(r, ms));
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const visible = (el: Element) => el.getClientRects().length > 0;
 
-export function attachCoach(store: Store, dialogs: CoachDialogs, steps: readonly CoachStep[] = DEMO_STEPS) {
+export function attachCoach(store: Store, dialogs: CoachDialogs, steps: readonly CoachStep[] = GUIDE_STEPS) {
   const btn = $<HTMLButtonElement>('guideBtn');
   let cardEl: HTMLElement | undefined, scrim: HTMLElement | undefined, ring: HTMLElement | undefined, spot: Element | null = null, openDlg: HTMLDialogElement | null = null;
   let shown: CoachCard | undefined;
@@ -133,5 +133,12 @@ export function attachCoach(store: Store, dialogs: CoachDialogs, steps: readonly
   // the card belongs to the tank it started on: a new / opened tank ends the walk (its own progress, if any, waits in that tank's brief)
   store.subscribe(kind => { if (kind === 'load' && coach.state.running) coach.stop(); if (!coach.state.running) btn.textContent = label(); });
   addEventListener('keydown', e => { if (e.key === 'Escape' && coach.state.running && !document.querySelector('dialog[open]')) coach.stop(); });
-  return coach;
+  return Object.assign(coach, {
+    /** Open the guide from outside (Guided in the New dialog): at the first step (`fresh`), at a named step, or where it was left. A running guide is left alone. */
+    async begin(at?: string, fresh = false) {
+      if (coach.state.running) return;
+      if (at) host.save({ at });
+      await coach.start(fresh && !at); btn.textContent = coach.state.running ? 'Close guide' : label();
+    },
+  });
 }

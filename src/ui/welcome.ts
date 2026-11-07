@@ -19,5 +19,10 @@ export function attachWelcome(store: Store, host: WelcomeHost) {
   let guided: ReturnType<typeof attachGuided> | undefined;
   const dh: DiscoveryHost = { status: host.status, stocking: host.stocking, sandbox: host.sandbox, browse: host.browse, shot: host.shot };
   /** Open Guided at the first onboarding step still waiting (a fresh tank starts at World); `at` opens a given step ("Starting from something I have now" = Equipment). */
-  return { show(at?: OnboardStep) { (guided ??= attachGuided(store, dh)).show(at); } };
+  return {
+    show(at?: OnboardStep) { (guided ??= attachGuided(store, dh)).show(at); },
+    /** lane GW2: Quick Setup's "Browse looks" = Visual Discovery's Look First route, opened from the Quick Setup section. */
+    exploreSetups() { (guided ??= attachGuided(store, dh)).exploreSetups(); },
+    browseLooks() { (guided ??= attachGuided(store, dh)).browseLooks(); },
+  };
 }

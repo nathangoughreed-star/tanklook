@@ -7,7 +7,7 @@ import type { Store } from '../scene/store';
 import { onBuildPicked } from './buildPick';
 import { loadProfile } from './demandPanel';
 import {
-  answer, answeredOf, directionOf, recordAnswer, setDirection, budgetOf, careTimeOf, editBrief, rangeOf, setLimitBound, getBrief, isEmpty, lockedStock, nextQuestions, onBrief, removeItem, setBudget, setCareTime, setSpace, setTank, spaceOf, summarise, toggleLock,
+  answer, answeredOf, directionOf, recordAnswer, setDirection, budgetOf, careTimeOf, editBrief, rangeOf, getBrief, isEmpty, lockedStock, nextQuestions, onBrief, removeItem, setTank, spaceOf, summarise, toggleLock,
   emptyBrief, setBrief, type Direction, type ItemId, type QId, type Question,
 } from './setupBrief';
 import { applyRetainedFix, consequence, evaluateAnimals, feasibilityNow, onReeval, retainedHtml, type ReevalNote } from './briefFeasibility';
@@ -32,8 +32,6 @@ export function attachBriefBar(store: Store, host: { suggest(): void; /** opens 
   // a build picked in the three-builds screen is a tank choice
   onBuildPicked(e => editBrief(b => setTank(b, { id: e.build.tank.id })));
 
-  const input = (id: string, label: string, v: string, unit: string, step = 1) =>
-    `<label class="bbIn"><span>${label}</span><input id="${id}" type="number" min="0" step="${step}" inputmode="decimal" value="${esc(v)}" placeholder="no bound">${unit ? `<em>${unit}</em>` : ''}</label>`;
   const askCard = (q: Question) => `<div class="bbAsk" data-q="${q.id}"><b>${esc(q.text)}</b> <span class="spNote">${esc(q.why)}</span><div class="bbOpts">${q.options.map(o => `<button type="button" data-ans="${o.id}">${esc(o.label)}</button>`).join('')}<button type="button" class="spLink" data-skip="${q.id}">Not sure</button></div></div>`;
 
   let keep: ReturnType<typeof feasibilityNow> | undefined;
@@ -56,9 +54,12 @@ export function attachBriefBar(store: Store, host: { suggest(): void; /** opens 
     const noteBox = note ? `<div class="bbEval${note.warning ? ' bad' : ''}" role="status"><b>Your design was adapted, not replaced:</b> ${note.lines.map(esc).join(' ')}${note.warning ? ` <b>${esc(note.warning)}</b>` : ''} <button type="button" class="spLink" data-act="dismissnote">Dismiss</button></div>` : '';
     keep = feasibilityNow(b, store.tank);
     const keepBox = retainedHtml(keep, esc);
+    const rng = (r: { min?: number; max?: number }, f: (n: number) => string) => r.min !== undefined && r.max !== undefined ? `${f(r.min)} to ${f(r.max)}` : r.max !== undefined ? `up to ${f(r.max)}` : r.min !== undefined ? `at least ${f(r.min)}` : '';
+    const lim = [['Set-up', rng({ min: rb.min, max: cap }, n => '$' + n)], ['Time', rng({ min: rt.min, max: t }, n => n + ' min a week')], ['Space', sp ? `${r1(sp.w)} x ${r1(sp.d)} ${units()}` : '']].filter(x => x[1]);
+    const limitsLine = `<span class="bbLimLine">${lim.length ? lim.map(([l, v]) => `<b>${l}</b> ${esc(v)}`).join(' · ') : 'No limits set: optional.'}</span> `;
     const evalBox = next.action === 'evaluate' && ev?.text ? `<div class="bbEval ${ev.fits === false ? 'bad' : ''}" role="status"><b>Checked before proposing:</b> ${esc(ev.text)}</div>` : '';
     bar.insertAdjacentHTML('beforeend', `<div class="bbCard">${noteBox}${keepBox}${evalBox}${next.questions[0] ? askCard(next.questions[0]) : ''}
-<div class="bbLimits">${input('bbBudgetMin', 'At least', rb.min === undefined ? '' : String(rb.min), '$ set-up', 10)}${input('bbBudget', 'At most', cap === undefined ? '' : String(cap), '$ set-up', 10)}${input('bbTimeMin', 'Time, at least', rt.min === undefined ? '' : String(rt.min), 'min a week', 5)}${input('bbTime', 'at most', t === undefined ? '' : String(t), 'min a week', 5)}<span class="bbIn"><span>Space</span><input id="bbW" type="number" min="0" aria-label="Width" placeholder="wide" value="${sp ? r1(sp.w) : ''}"> x <input id="bbD" type="number" min="0" aria-label="Depth" placeholder="deep" value="${sp ? r1(sp.d) : ''}"><em>${units()}</em></span></div>
+<div class="bbLimits">${limitsLine}<button type="button" class="spLink" data-act="limits" title="Money, time, space and care level are set in Your limits (one home); this line only shows them">Edit in Your limits</button></div>
 ${items}${cons}
 <div class="bbFoot"><button type="button" class="primary" data-act="fill">Fill in what I left open</button><button type="button" class="spLink" data-act="clear">Clear the brief</button><button type="button" disabled title="Coming: shopping list, set-up steps, cycling and stocking order">Build plan</button><span class="spNote">Locked items stay as they are. Welfare checks always apply; they are not a setting.</span></div></div>`);
   };
@@ -81,17 +82,6 @@ ${items}${cons}
     if (t.dataset.g || t.dataset.act === 'toggle') { openCard = t.dataset.act === 'toggle' ? !openCard : true; draw(); return; }
     if (t.dataset.act === 'clear') { setBrief(emptyBrief()); return; }
     if (t.dataset.act === 'fill') { openCard = false; draw(); host.suggest(); }
-  };
-  bar.onchange = e => {
-    const el = e.target as HTMLInputElement, v = el.value.trim() === '' ? undefined : parseFloat(el.value);
-    if (el.id === 'bbBudget') editBrief(b => setBudget(b, v));
-    else if (el.id === 'bbBudgetMin') editBrief(b => setLimitBound(b, 'constraints.budget', 'min', v));
-    else if (el.id === 'bbTime') editBrief(b => setCareTime(b, v));
-    else if (el.id === 'bbTimeMin') editBrief(b => setLimitBound(b, 'constraints.careMin', 'min', v));
-    else if (el.id === 'bbW' || el.id === 'bbD') {
-      const w = parseFloat((bar.querySelector('#bbW') as HTMLInputElement).value), d = parseFloat((bar.querySelector('#bbD') as HTMLInputElement).value);
-      editBrief(b => Number.isFinite(w) && Number.isFinite(d) && w > 0 && d > 0 ? setSpace(b, { w: Math.round(w * k()), d: Math.round(d * k()) }, units()) : setSpace(b, undefined));
-    }
   };
   bar.onkeydown = e => { if (e.key === 'Enter' && (e.target as HTMLElement).tagName === 'INPUT') (e.target as HTMLInputElement).blur(); };
   onBrief(() => draw());

@@ -9,7 +9,7 @@ import { defaultLid, lidFreeProsCons, openTopProblem, setLidFree } from '../data
 import { standMisfit } from '../scene/standspace';
 import { renderFeaturedDeals } from './featuredDeals';
 import { attachWelcome } from './welcome';
-import { bindBriefStore, editBrief, getBrief, setTank as briefTank } from './setupBrief';
+import { bindBriefStore, editBrief, experienceOf, getBrief, onBrief as onBriefEdit, setTank as briefTank } from './setupBrief';
 import { attachStartMode, setMode } from './startMode';
 import { attachTankDock, type TankDock } from './tankDock';
 import { sandboxRoomScene } from '../scene/sandboxRoom';
@@ -303,6 +303,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // The Welcome screen (lane C4) is the front door: first launch shows it; New / Open… still open the chooser above.
   // At first launch the tank on screen is already a fresh one, so Sandbox just closes the Welcome screen.
   bindBriefStore(store); // lane U3: the setup brief lives in the active tank (TankSetup.brief)
+  // lane GW2: Your limits (Experience) is the one home of the care level; the scene's gate level follows it (beginner 1, some experience 2, experienced 3), no undo step
+  onBriefEdit(b => { const x = experienceOf(b); if (x !== undefined && store.tank.layout.expertise !== x + 1) store.update(s => { s.tanks[s.active].layout.expertise = (x + 1) as 1 | 2 | 3; }, { history: false }); });
   let welcomeFirst = false;
   let suggestPanel: { open(): void } | undefined;
   const welcome = attachWelcome(store, { // lane VD5: Guided = Visual Discovery (ui/discovery/)
@@ -316,6 +318,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
     sandbox: async () => { const ok = welcomeFirst ? (welcomeFirst = false, true) : await newEmptyTank(); if (ok) { setMode('sandbox'); startMode.drawBar(); } return ok; },
     browse: menu => showChooser(menu, menu === 'open' ? 'starters' : undefined, welcomeFirst),
   });
+  $('browseLooks').onclick = () => welcome.browseLooks();
+  $('exploreSetups').onclick = () => welcome.exploreSetups(); // lane GW2: Visual Discovery lives in Quick Setup
   // lane R9: the owned-gear sheet (Guided, "Starting from something I have now"); its Tank row borrows the tank picker and reports when it closes
   let ownedSheet: { open(at?: string): void } | undefined;
   const pickTank = (done: (name: string) => void) => {
@@ -331,14 +335,17 @@ export function attachPanels(store: Store, viewer: Viewer) {
   let limitsPanel: { open(): void } | undefined;
   const openLimits = () => void import('./limitsPanel').then(m => { (limitsPanel ??= m.attachLimitsPanel()).open(); });
   const startMode = attachStartMode(store, {
-    guided: () => welcome.show(),
-    guidedNew: async at => { if (welcomeFirst) welcomeFirst = false; else if (!await newEmptyTank()) return false; welcome.show(at); return true; },
+    guided: () => startGuide(),
+    guidedNew: async at => { if (welcomeFirst) welcomeFirst = false; else if (!await newEmptyTank()) return false; startGuide(at, true); return true; },
     sandbox: sandboxRoom,
     owned: () => openOwned(),
     browse: (menu, tab) => showChooser(menu, tab, welcomeFirst),
     profile: () => { try { return loadProfile(); } catch { return undefined; } },
   });
-  void import('./coach/dom').then(m => m.attachCoach(store, { limits: openLimits, tank: () => $('presetA').click() })); // lane GW1: the guide that walks the real menus (ui/coach)
+  // lane GW1: the guide that walks the real menus (ui/coach); lane GW2: Guided = this coach (the old dialog steps live on as Quick Setup's Browse looks / Explore)
+  let guide: { begin(at?: string, fresh?: boolean): Promise<void> } | undefined;
+  const guideReady = import('./coach/dom').then(m => { guide = m.attachCoach(store, { limits: openLimits, equipment: () => openOwned() }); });
+  async function startGuide(at?: 'equipment', fresh = false) { await guideReady; await guide?.begin(at, fresh); }
   void import('./suggest').then(m => { suggestPanel = m.attachSuggest(store, viewer, status, openOwned); }); // lane C8: Suggest a setup
   void import('./infeasibleCard').then(m => m.attachCompare(store, status)); // lane GV7: compromise slots fill as they show; Use this / Compare (split view, money and care first on the tabs)
   void import('./briefBar').then(m => { m.attachBriefBar(store, { suggest: () => suggestPanel?.open(), owned: () => openOwned(), limits: openLimits, report: () => void import('./report').then(m => m.openReport()) }); }); // lane U3: the setup brief bar, shown in every entry point
@@ -797,7 +804,7 @@ Cancel, then change the name, to keep both.`)) return;
   function animalGate(s: TankSetup): ((sp: Species) => (AnimalWhy & { more: string[]; block: boolean }) | null) | null {
     const stock = !!s.layout.gateStock, on = stock && !!s.layout.gateAnimals, ex = (s.layout.expertise ?? 1) as 1 | 2 | 3, hint = $('gateAnimalsHint');
     $<HTMLInputElement>('gateStock').checked = stock; $('gateBox').hidden = !stock;
-    $<HTMLInputElement>('gateAnimals').checked = !!s.layout.gateAnimals; setVal('expertise', ex);
+    $<HTMLInputElement>('gateAnimals').checked = !!s.layout.gateAnimals;
     $('oExpertise').textContent = EXPERTISE_NAME[ex]; $('expertiseHint').textContent = CARE_LEVEL[ex];
     hint.hidden = !on; hint.textContent = on ? 'Grayed in the list: does not suit this tank, the care level or the animals already in it. They can still be added.' : '';
     if (!on) return null;
@@ -1138,13 +1145,6 @@ Cancel, then change the name, to keep both.`)) return;
   }, { coalesce: id });
 
   // ---------- Water ----------
-  $('wOn').onchange = e => {
-    const on = (e.target as HTMLInputElement).checked;
-    store.edit(s => { s.water.on = on; });
-    const n = S().fish.filter(f => { const sp = getSpecies(f.species); return sp && needsWater(sp); }).length;
-    if (!on && n) status(`${n} fish hidden while the tank is dry. Turn Water back on to see them.`);
-    renderResults();
-  };
   $('wLevel').oninput = e => store.edit(s => setWaterLevel(s, +(e.target as HTMLInputElement).value), { coalesce: 'wLevel' });
   $('wOpac').oninput = e => store.edit(s => { s.water.opacity = +(e.target as HTMLInputElement).value; }, { coalesce: 'wOpac' });
   // condition (lane AL): uniforms only, so it is live while dragging
@@ -1161,23 +1161,8 @@ Cancel, then change the name, to keep both.`)) return;
   $('wReef').onclick = () => waterPreset('#2f86d0', 0.22);
   $('wOcean').onclick = () => waterPreset('#1f5fb0', 0.4);
 
-  // ---------- Freshwater / saltwater (2026-10-13) ----------
-  // Switching is one undo step; animals that do not fit the new water stay until "Remove" is pressed (also undoable).
-  const setSalt = (salt: boolean) => {
-    if (!!S().water.salt === salt) return;
-    store.edit(s => {
-      if (salt) s.water.salt = true; else delete s.water.salt;
-      // the reef starter is salt only: back in fresh water its pieces stay, but Start from no longer claims it (final check item 6)
-      if (STYLE_KIND[s.layout.id] === (salt ? 'fresh' : 'salt')) s.layout = { ...s.layout, id: 'none' };
-      // the other type's clear water becomes this type's clear water; any other colour is the user's and stays
-      const [c, o] = salt ? FRESH_CLEAR : SALT_CLEAR;
-      if (s.water.color === c && s.water.opacity === o) [s.water.color, s.water.opacity] = salt ? SALT_CLEAR : FRESH_CLEAR;
-    });
-    const n = misfits(S()).length;
-    status(`${salt ? 'Saltwater' : 'Freshwater'} tank: the Animals list shows ${salt ? 'marine' : 'freshwater'} species.${n ? ` ${n} animal${n > 1 ? 's' : ''} here ${n > 1 ? 'do' : 'does'} not fit: they are marked in the stocking list (Animals).` : ''}`);
-  };
-  $('wFresh').onclick = () => setSalt(false);
-  $('wSalt').onclick = () => setSalt(true);
+  // lane GW2: freshwater / saltwater / terrarium is the Kind control in the Tank section (one home); Water only shows it
+  $('wKindOpen').onclick = () => { openSec('tank'); $('spKinds').scrollIntoView({ block: 'center' }); };
   $('wMisfitDel').onclick = () => removeMisfits();
   $('lMapSub').onclick = () => { openSec('substrate'); $('subType').focus(); };
   function removeMisfits() {
@@ -1527,9 +1512,8 @@ Cancel, then change the name, to keep both.`)) return;
     const on = (e.target as HTMLInputElement).checked;
     restock(() => { $<HTMLInputElement>('gateStock').checked = !!S().layout.gateStock; }, s => { if (on) { s.layout.gateStock = true; s.layout.expertise ??= 1; } else delete s.layout.gateStock; }, on ? 'Stocking now keeps to animals that suit the care level.' : 'Care gates off: stocking is free again.');
   };
-  const exEl = $<HTMLInputElement>('expertise');
-  exEl.oninput = () => { const v = +exEl.value as 1 | 2 | 3; $('oExpertise').textContent = EXPERTISE_NAME[v]; $('expertiseHint').textContent = CARE_LEVEL[v]; };
-  exEl.onchange = () => { const v = +exEl.value as 1 | 2 | 3; restock(() => setVal('expertise', S().layout.expertise ?? 1), s => { s.layout.expertise = v; }, `Care level ${EXPERTISE_NAME[v].toLowerCase()}.`); };
+  // lane GW2: the care level is the Experience answer in Your limits (one home); Quick Setup shows it and opens the dialog
+  $('expertiseOpen').onclick = () => openLimits();
 
   // ---------- Aquascape items: library, selection ----------
   // stones, wood and caves under Hardscape; plants and corals under Plants (Nathan 2026-10-14)
@@ -2165,10 +2149,8 @@ Cancel, then change the name, to keep both.`)) return;
     for (const id of ['subBL', 'subBR', 'subFL', 'subFR', 'subLevel', 'subFB', 'subLR', 'subCorner']) ($(id) as HTMLInputElement).disabled = (te.on && !te.pools?.length) || !sub.show;
 
     const wa = s.water;
-    $('wOn').checked = wa.on;
-    for (const id of ['cond', 'wLevel', 'wOpac', 'wColor', 'wClear', 'wTannin', 'wGreen', 'wReef', 'wOcean', 'wFresh', 'wSalt']) ($(id) as HTMLInputElement).disabled = !wa.on;
-    $('wTypeOff').hidden = wa.on; // says why Type is greyed (audit #37)
-    $('wFresh').classList.toggle('on', !wa.salt); $('wSalt').classList.toggle('on', !!wa.salt);
+    $('wKindLine').textContent = SETUP_KINDS.find(x => x[0] === tankKind(s))![1];
+    for (const id of ['cond', 'wLevel', 'wOpac', 'wColor', 'wClear', 'wTannin', 'wGreen', 'wReef', 'wOcean']) ($(id) as HTMLInputElement).disabled = !wa.on;
     for (const id of ['wTannin', 'wGreen']) $(id).style.display = wa.salt ? 'none' : '';
     for (const id of ['wReef', 'wOcean']) $(id).style.display = wa.salt ? '' : 'none';
     document.querySelectorAll<HTMLElement>('.lib [data-salt]').forEach(e => e.style.display = isSalt(s) ? '' : 'none');

@@ -139,6 +139,7 @@
   <details class="sec" data-sec="equipment"><summary><h2>My equipment</h2></summary><div id="equipHost"></div></details>
 
   <details class="sec" data-sec="tank"><summary><h2>Tank</h2></summary>
+  <div class="field"><span class="flabel">Kind</span><div id="spKinds" class="seg kinds" role="group" aria-label="Kind of setup"></div></div>
   <div class="btns">
     <button id="presetA" aria-haspopup="dialog">Presets…</button>
   </div>
@@ -204,6 +205,7 @@
   </details>
   <details class="sec" data-sec="quick"><summary><h2>Quick Setup</h2></summary>
   <div class="field"><label class="flabel" for="layout">Style</label><select id="layout"></select></div>
+  <div class="field"><button id="browseLooks" type="button" title="Pictures of looks to browse (family, archetype, density), then the tank is built in that look">Browse looks…</button> <button id="exploreSetups" type="button" title="Not sure what you want? Batches of complete setups to like or pass">Explore complete setups…</button></div>
   <div class="field"><button id="layoutShuffle" class="primary" title="Draws a new tank: only the ticked parts below change, the rest stay as they are. Ctrl+Z brings the old one back">Shuffle</button></div>
   <div class="field shuffleKeep" title="Shuffle redraws only the ticked parts; untick a part to lock it as it is while you keep shuffling the rest"><span class="flabel">Shuffle</span><label><input type="checkbox" id="shufType" checked> Substrate type</label> <label><input type="checkbox" id="shufShape" checked> Substrate shape</label> <label><input type="checkbox" id="shufHard" checked> Hardscape</label> <label><input type="checkbox" id="shufPlant" checked> Plants</label> <label><input type="checkbox" id="shufAnimal" checked> Animals</label></div>
   <div class="hint" id="layoutHint"></div>
@@ -218,7 +220,7 @@
   <datalist id="animalTicks"><option value="0"></option><option value="1"></option><option value="2"></option><option value="3"></option><option value="4"></option><option value="5"></option><option value="6"></option></datalist>
   <div class="field"><label><input type="checkbox" id="gateStock" title="Stock and shuffle only animals that suit the level below, this tank's size and each other"> Stock by care gates</label></div>
   <div id="gateBox" hidden>
-  <div class="row dens"><label for="expertise" title="How much care and effort the keeper can give. Animals needing more are left out of the stocking and grayed in the list">Care level</label><input id="expertise" type="range" min="1" max="3" step="1"><output id="oExpertise"></output></div>
+  <div class="field"><span class="flabel" title="How much care and effort the keeper can give. Set in Your limits (Experience); animals needing more are left out of the stocking and grayed in the list">Care level</span><output id="oExpertise"></output> <button id="expertiseOpen" type="button" class="spLink">Change in Your limits</button></div>
   <div class="hint" id="expertiseHint"></div>
   <div class="field"><label><input type="checkbox" id="gateAnimals" title="Sinks the animals that do not suit this tank (care level, size, the animals already in it) to the bottom of the Animals list, grayed, each with its reason. Advice only: you can still add any of them"> Gray out unsuitable animals in the list</label></div>
   </div>
@@ -308,7 +310,6 @@
   </details>
   <details class="sec" data-sec="fish"><summary><h2>Animals</h2></summary>
   <div class="btns"><button class="sidetog multiTog" aria-pressed="false" title="Multi-select: tap animals and pieces to add them to the selection or take them out; drag on empty water to draw a box round some. On a computer: Shift-click and Shift-drag.">☐ Multi-select</button></div>
-  <div id="spKinds" class="seg kinds" role="group" aria-label="Kind of setup"></div>
   <div id="spCats" class="cats" role="tablist" aria-label="Animal groups"></div>
   <input id="spSearch" type="search" placeholder="Search species (common or scientific name)" aria-label="Search species">
   <div id="spResults" class="results" role="listbox" aria-label="Species"></div>
@@ -336,8 +337,7 @@
   </div>
   </details>
   <details class="sec" data-sec="water"><summary><h2>Water</h2></summary>
-  <div class="field"><label class="flabel"><input type="checkbox" id="wOn"> Water</label><span class="hint">Off = a dry terrarium (reptiles, amphibians, insects); fish are hidden, not deleted.</span></div>
-  <div class="field"><span class="flabel">Type</span><span class="seg"><button id="wFresh" title="Freshwater tank: the Animals list shows freshwater species">Freshwater</button><button id="wSalt" title="Saltwater (marine) tank: the Animals list shows marine species">Saltwater</button></span><span class="hint" id="wTypeOff">Turn Water on to choose</span></div>
+  <div class="field"><span class="flabel">Kind</span><span class="hint" id="wKindLine"></span><button id="wKindOpen" title="Freshwater, saltwater, terrarium or vivarium is chosen in the Tank section">Change in Tank</button></div>
   <div class="field" id="wMisfitRow"><span class="hint" id="wMisfit"></span><button id="wMisfitDel" title="Remove the animals that do not live in this water (Ctrl+Z brings them back)">Remove</button></div>
   <div class="row"><label for="wLevel">Level</label><input id="wLevel" type="range" min="0.1" max="1" step="0.01"><output id="oLevel"></output></div>
   <div class="row"><label for="wOpac">Tint</label><input id="wOpac" type="range" min="0" max="0.95" step="0.01"><output id="oOpac"></output></div>
