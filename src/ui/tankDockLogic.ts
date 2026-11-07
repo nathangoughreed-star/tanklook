@@ -8,6 +8,8 @@ import { adaptToTank } from '../scene/reeval';
 import { bareTech, type TechSetup } from '../scene/tech';
 import type { SetupKind } from '../scene/pickerKind';
 import { applyTankPick } from './tankPick';
+import { fitFixture } from '../scene/lightout';
+import { shapeOf } from '../scene/shape';
 import type { TankSetup } from '../scene/types';
 
 /** One thing the picker can choose: a generic size, or one maker's product at that size. */
@@ -106,7 +108,18 @@ export function startGear(S: TankSetup, o: DockOpt): TechSetup | undefined {
   if (!bundle) return bareTech(S);
   const v = o.v ?? soleProduct(o.m);
   if (!v || v.kit || !v.includes) return undefined;
-  return bareTech(S, [...(v.includes.filter ? ['filter'] : []), ...(v.includes.heater ? ['heater'] : [])]);
+  const inc = v.includes, x = inc.extras ?? [];
+  // everything the listing says is in the box stays: the filter (a sump counts), heater, and the reef rows the flags cannot name (skimmer, ato)
+  return bareTech(S, [...(inc.filter || x.includes('sump') ? ['filter'] : []), ...(inc.heater ? ['heater'] : []), ...(x.includes('skimmer') ? ['skimmer'] : []), ...(x.includes('ato') ? ['ato'] : [])]);
+}
+
+/** The light a bundle comes with (the BUG fix, Nathan 2026-11-07: an "LED Aquarium Kit" drew as a plain tank): the empty room starts with no light and an open top, and nothing
+ *  else puts a listing's light back. A bundle whose listing says `light` gets an LED bar; with no lid recorded, a flat-ended tank gets the hood the light sits in (any other shape a glass lid). */
+export function startLight(S: TankSetup, o: DockOpt): void {
+  const bundle = o.v ? isBundle(o.v) : modelIsBundle(o.m), v = o.v ?? soleProduct(o.m);
+  if (!bundle || !v?.includes?.light || v.kit) return;
+  if (S.light.type === 'flat') { S.light = { ...S.light, type: 'led', tech: 'led-white', count: 1, watts: undefined }; fitFixture(S.light, S.tank, true); }
+  if (S.lid === 'open' && !v.includes.lid) S.lid = ['rect', 'bow', 'arch'].includes(shapeOf(S.tank)) ? 'hood' : 'glass';
 }
 
 export function previewSetup(base: TankSetup, o: DockOpt, start = false): TankSetup {
@@ -114,6 +127,14 @@ export function previewSetup(base: TankSetup, o: DockOpt, start = false): TankSe
   applyTankPick(p, o.m, v);
   p.render.glass = mm.glassMm;
   if (p.fish.length || p.items.length) adaptToTank(p, T, { thin: false }); else p.tank = T;
-  if (start) { const g = startGear(p, o); if (g) p.tech = g; } // the Sandbox's first tank: the preview carries the gear Choose will give it
+  if (start) { const g = startGear(p, o); if (g) p.tech = g; startLight(p, o); } // the Sandbox's first tank: the preview carries the gear Choose will give it
   return p;
+}
+
+/** "Comes with: stand, sump, skimmer, pump, auto top-off" from a bundle's listing, '' for a bare tank or an unrecorded box (so the price gap between two kits explains itself). */
+export function includesText(v: TankVariant | undefined): string {
+  if (!v || !isBundle(v) || !v.includes) return '';
+  const i = v.includes, x = i.extras ?? [], lid = i.lid && i.lid !== 'none' ? (i.lid === 'hood' ? 'hood' : 'lid') : '';
+  const parts = [i.stand && 'stand', x.includes('sump') && 'sump', i.filter && !x.includes('sump') && 'filter', x.includes('skimmer') && 'skimmer', x.includes('pump') && 'pump', x.includes('ato') && 'auto top-off', i.heater && 'heater', i.light && 'light', lid].filter(Boolean);
+  return parts.length ? `Comes with: ${parts.join(', ')}` : '';
 }

@@ -42,7 +42,7 @@ export interface TankVariant {
   confidence?: 'high' | 'medium' | 'low';
 }
 
-export interface Includes { lid?: LidType | 'none'; light?: boolean; filter?: boolean; heater?: boolean; stand?: boolean }
+export interface Includes { lid?: LidType | 'none'; light?: boolean; filter?: boolean; heater?: boolean; stand?: boolean; /** other gear in the box the flags above cannot name (skimmer, pump, ato, sump): shown in the picker and kept by a Sandbox start */ extras?: ('skimmer' | 'pump' | 'ato' | 'sump')[] }
 
 export interface TankModel {
   id: string;

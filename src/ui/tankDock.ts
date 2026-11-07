@@ -13,7 +13,7 @@ import { PLACEMENTS, minTop, placementOf, putOnFloor, putOnFurniture, putOnMyFur
 import { tankKind, type SetupKind } from '../scene/pickerKind';
 import type { Store } from '../scene/store';
 import type { Scene, StandFinish } from '../scene/types';
-import { dockGroups, emptyRoomView, isBundle, optKey, previewSetup, rangeText, roomZoom, startGear, type DockBand, type DockOpt } from './tankDockLogic';
+import { dockGroups, emptyRoomView, isBundle, optKey, previewSetup, rangeText, roomZoom, startGear, startLight, includesText, type DockBand, type DockOpt } from './tankDockLogic';
 
 export interface DockHost {
   /** Choose a size / product: the same edit the old modal made (brief, size, product, stand, pinned price). */
@@ -65,7 +65,7 @@ export function attachTankDock(store: Store, viewer: Viewer, host: DockHost) {
     if (!o) { detail.innerHTML = mode === 'start' ? '<p class="hint">The room is empty. Open a size group and pick a tank: it appears on the floor next to the person (5 ft 9 in). Arrow keys flip through the open sizes; drag to look around.</p>' : '<p class="hint">Open a size group and pick a tank to see it in the room. Arrow keys flip through the open sizes; drag to look around.</p>'; return; }
     const r = rangeText(o.range);
     detail.innerHTML = `<div class="td-name"><b>${esc(o.v ? o.name : o.m.name)}</b> <span class="hint">${o.dims} in outer</span></div>` +
-      `<div class="td-line">${o.usd != null ? `<span>${o.v && isBundle(o.v) ? 'Kit' : 'Tank'} ${o.typical ? 'about ' : ''}<b>${usd(o.usd)}</b></span>` : ''}${r ? `<span title="${esc(o.range?.basis ?? '')}">Finished tank about <b>${r}</b></span>` : ''}</div>`;
+      `<div class="td-line">${o.usd != null ? `<span>${o.v && isBundle(o.v) ? 'Kit' : 'Tank'} ${o.typical ? 'about ' : ''}<b>${usd(o.usd)}</b></span>` : ''}${r ? `<span title="${esc(o.range?.basis ?? '')}">Finished tank about <b>${r}</b></span>` : ''}</div>` + (includesText(o.v) ? `<div class="td-line hint">${esc(includesText(o.v))}</div>` : '');
   };
   const bandHead = (b: DockBand, open: boolean) => `<button type="button" class="td-band" data-band="${b.id}" aria-expanded="${open}"><span class="chev" aria-hidden="true">${open ? '▾' : '▸'}</span><span class="bn">${esc(b.title)}</span><span class="bc">${b.n} ${b.n === 1 ? 'choice' : 'choices'}</span>${b.lo != null ? `<span class="bp">${b.lo === b.hi ? usd(b.lo) : `${usd(b.lo)} - ${usd(b.hi!)}`}</span>` : ''}</button>`;
   const drawList = () => {
@@ -85,7 +85,7 @@ export function attachTankDock(store: Store, viewer: Viewer, host: DockHost) {
     const o = cur; if (!o) return;
     clearPreview();
     host.apply(o.m, o.v);
-    if (mode === 'start') { store.edit(s => { const g = startGear(s, o); if (g) s.tech = g; if (!s.stand.show) putOnFloor(s); if (!userZoomed) s.camera = { ...s.camera, zoom: roomZoom(s.tank) }; }); toStep('put'); } else close(); // start: the view stays as wide as the picker's, person included
+    if (mode === 'start') { store.edit(s => { const g = startGear(s, o); if (g) s.tech = g; startLight(s, o); if (!s.stand.show) putOnFloor(s); if (!userZoomed) s.camera = { ...s.camera, zoom: roomZoom(s.tank) }; }); toStep('put'); } else close(); // start: the view stays as wide as the picker's, person included
   };
   list.onclick = e => {
     const t = e.target as HTMLElement, b = t.closest<HTMLElement>('.td-band'), el = t.closest<HTMLElement>('.td-opt');
