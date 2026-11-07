@@ -85,7 +85,7 @@ describe('owned gear sheet', () => {
     S.brief = recordOwnedTank(setItem(emptyBrief(), 'equipment.tank', { model: 'g20l' }, 'preference'), S);
     expect(valueOf(S.brief, 'constraints.existingTank')).toEqual({ model: 'g20h' });
     expect(valueOf(S.brief, 'equipment.tank')).toBeUndefined(); // the owned tank replaces a picked one
-    expect(briefToWants(S.brief).ownTank?.id).toBe('g20h');
+    expect(briefToWants(S.brief).availTank?.id).toBe('g20h');   // owned gear has one state, available (lane EQ1, 2026-11-07): credited at $0, other tanks may still be suggested
     const r = reportOf(sc, 0, defaultProfile(), Date.parse('2026-10-30'));
     expect(r.have.find(h => /^tank/i.test(h.label))?.usd).toBe(0);
     expect(r.buyFirst.some(l => /^tank/i.test(l.label))).toBe(false);

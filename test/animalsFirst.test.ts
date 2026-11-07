@@ -8,7 +8,7 @@ import { emptyBrief, getItem, setVision, valueOf, visionOf, type Brief } from '.
 import { buildsFor } from '../src/scene/builds';
 import { emptyScene } from '../src/scene/defaults';
 import { handOff } from '../src/scene/reeval';
-import { enclosureOf, equipmentOf, needsWaterQuestion, projectOf, routeOf, setWorld, unresolved, waterOf } from '../src/scene/project';
+import { enclosureOf, equipmentOf, needsWaterQuestion, projectOf, routeOf, setOwnedUse, setWorld, unresolved, waterOf } from '../src/scene/project';
 import { archetypeChoices, familyChoices, knownOf } from '../src/ui/discovery/logic';
 import { emptyOwned, syncEquipment } from '../src/ui/ownedGear';
 import { applyLimit, chooseRoute, chooseWorld, ownedTankOf } from '../src/ui/guided/logic';
@@ -20,7 +20,8 @@ import { planFor } from '../src/ui/stockPlanLogic';
 // @ts-expect-error node only (no node types in this project)
 const fs = await import('node:fs');
 const fresh = (): Brief => emptyBrief();
-const owned = (b: Brief, use: 'required' | 'available', model: string): Brief => { const s = emptyOwned(); s.on.add('tank'); s.model = model; s.tank = model; s.use = { tank: use }; return syncEquipment(b, s); };
+/** Nothing writes Required any more (lane EQ1, 2026-11-07); a flag an older save stored is still read, so the legacy cases set it by hand. */
+const owned = (b: Brief, use: 'required' | 'available', model: string): Brief => { const s = emptyOwned(); s.on.add('tank'); s.model = model; s.tank = model; const r = syncEquipment(b, s); return use === 'required' ? setOwnedUse(r, 'tank', 'required') : r; };
 const roster = (b: Brief) => rosterOfBrief(b).map(r => `${r.species}${r.n}`).join(',');
 const COMMUNITY = [{ species: 'neon', n: 10 }, { species: 'pandacory', n: 6 }];
 const withAnimals = (b: Brief, list: { species: string; n: number }[]) => withRoster(b, picksOf(list));

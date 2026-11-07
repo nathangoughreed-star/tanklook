@@ -16,6 +16,8 @@ import { equipmentOf, removeEquipment, setEquipment, setOwnedUse } from '../src/
 import { briefToWants, valueOf } from '../src/scene/brief';
 import { HEATER_PRODUCTS } from '../src/data/gearCatalog';
 import { tableOn } from '../src/scene/table';
+import { ownedFit } from '../src/scene/ownedFit';
+import { equipUseOf } from '../src/scene/brief';
 import { IN } from '../src/scene/physics';
 import type { TankSetup } from '../src/scene/types';
 
@@ -50,8 +52,6 @@ describe('My equipment: one write path', () => {
     b = setEquipment(b, 'flow', { pick: 'unknown' });
     expect(valueOf(b, 'constraints.owned')).toEqual({ testkit: PICK_CARE, flow: 'unknown' });
     expect(equipmentOf(b).items.map(i => [i.key, i.use])).toEqual([['testkit', 'available'], ['flow', 'available']]);   // owning never makes it Required
-    b = setOwnedUse(b, 'testkit', 'required');
-    expect(briefToWants(b).requiredOwned).toEqual(['testkit']);
     expect(ownedNames(b)).toEqual(['Powerhead / wavemaker', 'Water test kit']);
     expect(equipmentSummary(b)).toBe('You have: Powerhead / wavemaker, Water test kit.');
     b = removeEquipment(removeEquipment(b, 'testkit'), 'flow');
@@ -140,5 +140,51 @@ describe('My equipment: own furniture is the existing table style', () => {
     const S = planted();
     applyFurniture(S, { shape: 'round', L: 60 * IN });
     expect(S.stand.table.shape).toBe('round'); expect(S.stand.table.D).toBe(S.stand.table.L);
+  });
+});
+
+describe('My equipment: one state, available (Nathan 2026-11-07)', () => {
+  it('nothing writes Required: the menu has no flag, a new item is available, and an edit in the menu rewrites a flag an old save stored', () => {
+    let b = setEquipment(emptyBrief(), 'tank', { model: 'g40b' });
+    b = setEquipment(b, 'heater', { pick: PICK_CARE });
+    expect(equipmentOf(b).items.map(i => i.use)).toEqual(['available', 'available']);
+    expect(ownedStateOf(b)).not.toHaveProperty('use');
+    expect(briefToWants(b).ownTank).toBeUndefined(); expect(briefToWants(b).availTank?.id).toBe('g40b');
+    const old = setOwnedUse(b, 'tank', 'required');   // what an older save carried: still read as it was ...
+    expect(equipUseOf(old, 'tank')).toBe('required');
+    const st = ownedStateOf(old);
+    expect(equipUseOf(syncEquipment(old, st), 'tank')).toBe('available');   // ... until the owner next edits My equipment
+  });
+});
+
+describe('My equipment: warns when owned gear no longer suits', () => {
+  const ownHeater = (S: TankSetup, w: number): TankSetup => ({ ...S, tech: withUnits(applyPreset(S, 'midplanted'), 'heater', [{ w, owned: true }]) });
+  it('says nothing with nothing owned, or when the owned gear still suits', () => {
+    expect(ownedFit(planted(), emptyBrief())).toEqual([]);
+    const S = ownHeater(planted(), 300);
+    expect(ownedFit(S, setEquipment(emptyBrief(), 'heater', { pick: PICK_CARE })).filter(n => n.item === 'heater')).toEqual([]);
+  });
+  it('a heater that is too small, or that the design dropped, is a note', () => {
+    const b = setEquipment(emptyBrief(), 'heater', { pick: PICK_CARE });
+    expect(ownedFit(ownHeater(planted(), 5), b).map(n => n.id)).toContain('heater:small');
+    expect(ownedFit(planted(), b).map(n => n.id)).toContain('heater:unused');   // the scene holds no owned heater
+  });
+  it('a light the design dropped, and a filter too small for the stock, are notes', () => {
+    const S = planted();
+    expect(ownedFit(S, setEquipment(emptyBrief(), 'light', { pick: PICK_CARE })).map(n => n.id)).toContain('light:unused');
+    expect(ownedFit({ ...S, light: { ...S.light, owned: true } }, setEquipment(emptyBrief(), 'light', { pick: PICK_CARE })).map(n => n.id)).not.toContain('light:unused');
+    expect(ownedFit(S, setEquipment(emptyBrief(), 'filter', { pick: PICK_CARE })).map(n => n.id)).toContain('filter:unused');
+  });
+  it('an owned tank the design no longer uses is a note; the same tank is not', () => {
+    const S = planted(), inch = (mm: number) => Math.round(mm / IN * 10) / 10;
+    const same = setEquipment(emptyBrief(), 'tank', { dimsIn: { L: inch(S.tank.L), D: inch(S.tank.D), H: inch(S.tank.H) } });
+    expect(ownedFit(S, same).map(n => n.id)).not.toContain('tank:unused');
+    const other = setEquipment(emptyBrief(), 'tank', { dimsIn: { L: 12, D: 12, H: 12 } });
+    expect(ownedFit(S, other).map(n => n.id)).toContain('tank:unused');
+  });
+  it('note ids carry no numbers, so an edit does not make the same warning new', () => {
+    const b = setEquipment(emptyBrief(), 'heater', { pick: PICK_CARE });
+    const a = ownedFit(ownHeater(planted(), 5), b), c = ownedFit(ownHeater(planted(), 8), b);
+    expect(a.map(n => n.id)).toEqual(c.map(n => n.id));
   });
 });

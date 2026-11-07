@@ -166,7 +166,10 @@ export function setProjectExtras(b: Brief, p: ProjectExtras): Brief {
   return clean ? { ...rest, project: clean } : rest;
 }
 /** Required or Available for one owned thing. Old saves: the existing tank was the only tank offered (Required); owned gear was credited but replaceable (Available). */
-export const equipUseOf = (b: Brief, key: EquipKey): Use => b.project?.use?.[key] ?? (key === 'tank' ? 'required' : 'available');
+/** Owned gear has ONE state (Nathan 2026-11-07, lane EQ1): it is available. The tool uses it whenever it suits (owned = $0, so it is always the cheapest) and warns when the
+ *  design outgrows it. Nothing writes Required any more (the menu has no toggle, and a menu edit rewrites the flag as available); only a flag an OLDER save stored is still read,
+ *  so it loads as it was until the owner next edits My equipment. The tank no longer defaults to Required. */
+export const equipUseOf = (b: Brief, key: EquipKey): Use => b.project?.use?.[key] ?? 'available';
 
 export const emptyBrief = (): Brief => ({ v: BRIEF_VERSION, items: {} });
 export const groupOf = (id: ItemId): GroupId => id.split('.')[0] as GroupId;

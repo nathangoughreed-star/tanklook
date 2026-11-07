@@ -20,7 +20,7 @@ export function mountEquipmentStep(root: HTMLElement, o: EquipmentStepOpts) {
   };
   const showSheet = () => {
     root.innerHTML = `<h3 class="vd-ask">What do you already have?</h3>
-<p class="hint">It stays flexible unless you tap Required: owning something never locks it into the design.</p>
+<p class="hint">Owning something never locks it into the design: we use it where it suits and warn you when it no longer does.</p>
 <div class="gs-sheet"></div>
 <p class="vd-nav"><button type="button" data-gs="choice">Back</button> <button type="button" class="primary" data-gs="next">Continue</button> <span class="hint gs-eqhint"></span></p>`;
     const box = root.querySelector<HTMLElement>('.gs-sheet')!, cont = root.querySelector<HTMLButtonElement>('[data-gs="next"]')!, hint = root.querySelector<HTMLElement>('.gs-eqhint')!;

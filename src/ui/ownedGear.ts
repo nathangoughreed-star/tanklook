@@ -11,8 +11,8 @@ import { feedFor, filterUnits, heaterUnits, heatLoss, keepSet, techOf, withUnits
 import { volume } from '../scene/physics';
 import type { Store } from '../scene/store';
 import type { TankSetup } from '../scene/types';
-import { clearItem, setItem, valueOf, type Brief, type DimsIn, type Use } from '../scene/brief';
-import { DEFAULT_OWNED_USE, equipmentOf, removeEquipment, setEquipment, setOwnedUse, galOfDims } from '../scene/project';
+import { clearItem, setItem, valueOf, type Brief, type DimsIn } from '../scene/brief';
+import { equipmentOf, removeEquipment, setEquipment, galOfDims } from '../scene/project';
 import { OWNED, PICK_CARE, PICK_UNKNOWN } from '../demand/suggest';
 import { getTankModel } from '../data/tanks';
 import { IN } from '../scene/physics';
@@ -23,7 +23,7 @@ import { demandOf } from '../demand/engine';
 import { mean3 } from '../demand/range';
 import { defaultProfile, type UserProfile } from '../demand/types';
 import { fitTable, TABLE_MAX } from '../scene/table';
-import type { EquipKey } from '../scene/brief';
+
 import type { OwnedKey } from '../demand/suggest';
 
 export type OwnedItem = 'tank' | 'light' | 'heater' | 'filter';
@@ -43,15 +43,11 @@ export interface OwnedState {
   light?: string; heater?: string; filter?: string;
   /** the filter's type (tech.json filter option id), asked before its product */
   filterKind?: string;
-  /** Guided Setup Rev 03 (lane GS4): Required ("I want to use this") or Available ("I'm flexible") per ticked item, the stand included; absent = Available.
-   *  Owning something never makes it Required. */
-  use?: Partial<Record<OwnedItem | 'stand', Use>>;
   /** what the person paid, per item (shown on the cost line, never priced); a key present with no value = cleared */
   paid?: Partial<Record<'light' | 'heater' | 'filter', number | undefined>>;
   /** the tank as a catalogue model, or as the outer inches the person measured (the compact tank row; the picker dialog fills both from the tank it left on screen) */
   model?: string; dims?: DimsIn;
 }
-export const useOf = (s: OwnedState, id: OwnedItem | 'stand'): Use => s.use?.[id] ?? DEFAULT_OWNED_USE;
 const answered = (s: OwnedState, id: OwnedItem): boolean => id === 'filter' ? !!s.filterKind && s.filter !== undefined : id === 'tank' ? !!(s.model || s.dims) || s.tank !== undefined : s[id] !== undefined;
 export const emptyOwned = (): OwnedState => ({ on: new Set() });
 /** What is still unanswered, in the order the sheet lists it ("" none): drives the Done button and its hint. */
@@ -97,8 +93,8 @@ export function applyOwned(S: TankSetup, s: OwnedState) {
 
 /** The owned tank in the brief (lane GV9): `constraints.existingTank`, the item an existing tank is recorded with everywhere else (Suggest, the report,
  *  the animal screen), locked: the library model, or {} for a custom size. It replaces a picked tank. No tank = cleared. */
-export const recordOwnedTank = (b: Brief, S: Pick<TankSetup, 'product'> | undefined, use: Use = 'required'): Brief =>
-  S ? setItem(clearItem(b, 'equipment.tank'), 'constraints.existingTank', S.product ? { model: S.product.model } : {}, use === 'required' ? 'locked' : 'preference') : clearItem(b, 'constraints.existingTank');
+export const recordOwnedTank = (b: Brief, S: Pick<TankSetup, 'product'> | undefined): Brief =>
+  S ? setItem(clearItem(b, 'equipment.tank'), 'constraints.existingTank', S.product ? { model: S.product.model } : {}, 'preference') : clearItem(b, 'constraints.existingTank');
 
 /** Write what the sheet holds into the one project state (scene/project.ts): each ticked and answered item is owned equipment with its own Required / Available
  *  flag (default Available); an unticked or unanswered one is not recorded (and one the sheet recorded before is taken out). The stand is the brief's own item and
@@ -108,19 +104,17 @@ export function syncEquipment(b: Brief, s: OwnedState): Brief {
   for (const { id } of OWNED_ITEMS) {
     const have = equipmentOf(out).items.some(i => i.key === id);
     if (!s.on.has(id) || !answered(s, id)) { if (have) out = removeEquipment(out, id); continue; }
-    const use = useOf(s, id);
-    if (id === 'tank') out = setEquipment(out, 'tank', { use, ...(s.model ? { model: s.model } : s.dims ? { dimsIn: s.dims } : {}) });
-    else out = setEquipment(out, id, { use, pick: s[id] === GENERIC ? PICK_CARE : s[id] });
+    if (id === 'tank') out = setEquipment(out, 'tank', { ...(s.model ? { model: s.model } : s.dims ? { dimsIn: s.dims } : {}) });
+    else out = setEquipment(out, id, { pick: s[id] === GENERIC ? PICK_CARE : s[id] });
   }
   return out;
 }
 /** The sheet's state as the brief and the tank already hold it, so reopening the step (Back, or a revisit from the editor) shows what was said. */
 export function ownedStateOf(b: Brief, S?: TankSetup): OwnedState {
-  const st = emptyOwned(), use: NonNullable<OwnedState['use']> = {};
+  const st = emptyOwned();
   for (const i of equipmentOf(b).items) {
-    if (i.key === 'tank') { st.on.add('tank'); use.tank = i.use; if (i.model) st.model = i.model; else if (i.dimsIn) st.dims = i.dimsIn; const m = i.model ? getTankModel(i.model) : undefined; st.tank = m ? tankLabel(m) : i.dimsIn ? customTankModel(i.dimsIn).name : 'your tank'; }
-    else if (i.key === 'light' || i.key === 'heater' || i.key === 'filter') { st.on.add(i.key); use[i.key] = i.use; st[i.key] = i.product ?? GENERIC; }
-    else if (i.key === 'stand') use.stand = i.use;
+    if (i.key === 'tank') { st.on.add('tank'); if (i.model) st.model = i.model; else if (i.dimsIn) st.dims = i.dimsIn; const m = i.model ? getTankModel(i.model) : undefined; st.tank = m ? tankLabel(m) : i.dimsIn ? customTankModel(i.dimsIn).name : 'your tank'; }
+    else if (i.key === 'light' || i.key === 'heater' || i.key === 'filter') { st.on.add(i.key); st[i.key] = i.product ?? GENERIC; }
   }
   // gear marked owned on the scene by an older save or the old Tech checkbox, which the brief never heard of, still shows ticked here (one home reads both)
   if (S) {
@@ -135,7 +129,6 @@ export function ownedStateOf(b: Brief, S?: TankSetup): OwnedState {
     if (Object.keys(paid).length) st.paid = paid;
   }
   if (st.on.has('filter') && !st.filterKind) st.filterKind = (S && filterUnits(techOf(S)).find(u => u.owned)?.kind) || undefined;
-  st.use = use;
   return st;
 }
 /** The things the person has, as one line for the shortcuts (Suggest, the left-panel entry): "Tank, heater, filter, test kit". No copy of the controls, just the facts. */
@@ -220,11 +213,6 @@ export function mountOwnedSheet(store: Store, o: OwnedHost, root: HTMLElement, o
     const kinds = `<select id="ownFilterKind" aria-label="Filter type"><option value=""${st.filterKind ? '' : ' selected'} disabled>What kind of filter?</option>${FILTER_KINDS.map(([v, l]) => `<option value="${v}"${st.filterKind === v ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
     return kinds + (st.filterKind ? ' ' + sel('ownFilter', st.filter, 'Pick your filter…', ratedGroups(FILTER_PRODUCTS.filter(f => f.kind === st.filterKind), gal, (a, b) => (a.gph ?? 0) - (b.gph ?? 0) || productName(a).localeCompare(productName(b))), f => `${productName(f)}${f.gph ? ` · ${f.gph} gph` : ''}${usd(f.priceUsd)}`) : '');
   };
-  /** Required / Available for one ticked item: Available (default) counts toward savings but alternatives may be suggested; Required is built around. */
-  const useBox = (id: EquipKey, label: string): string => {
-    const cur = id === 'stand' || id === 'tank' || id === 'light' || id === 'heater' || id === 'filter' ? useOf(st, id) : moreUse(id as OwnedKey), btn = (u: Use, text: string, tip: string) => `<button type="button" class="${cur === u ? 'on' : ''}" data-use="${u}" data-for="${id}" aria-pressed="${cur === u}" title="${esc(tip)}">${text}</button>`;
-    return `<span class="gs-use" role="group" aria-label="${esc(label)}: how you want to use it">${btn('available', 'Available', 'Counts toward your savings, but we may suggest something else')}${btn('required', 'Required: I want to use this', 'The design is built around it')}</span>`;
-  };
   /** What it cost them (optional, shown on the cost line, never priced): light, heater and filter. */
   const paidBox = (id: 'light' | 'heater' | 'filter'): string => `<label class="gc-paid">Paid (optional) $<input type="number" min="0" step="1" inputmode="decimal" data-paid="${id}" value="${st.paid?.[id] ?? ''}" placeholder="not recorded" aria-label="What you paid for the ${id}"></label>`;
   // ---- the stand row: the tank sits on a stand or cabinet, or on the person's own furniture (the existing `table` style: top L x D and the height to the tank bottom)
@@ -238,16 +226,15 @@ export function mountOwnedSheet(store: Store, o: OwnedHost, root: HTMLElement, o
       + (table ? ` <span class="wgChips">${btn(tb.shape === 'rect', 'data-furnshape="rect"', 'Rectangle')}${btn(tb.shape === 'round', 'data-furnshape="round"', 'Round')}</span><span class="gs-dims">top ${dim('ownFL', tb.L, tb.shape === 'round' ? 'Diameter' : 'Length')}${tb.shape === 'round' ? '' : ` x ${dim('ownFD', tb.D, 'Front to back')}`} ${uname()}, floor to the tank bottom ${dim('ownFH', sd.height, 'Height')} ${uname()}</span>` : '')
       + (furnNote ? `<div class="hint ownwarn" role="status">${esc(furnNote)}</div>` : '') + '</div>';
   };
-  const moreUse = (k: OwnedKey): Use => equipmentOf(getBrief()).items.find(i => i.key === k)?.use ?? DEFAULT_OWNED_USE;
   const moreRow = (k: OwnedKey): string => {
     const def = OWNED.find(o => o.id === k)!, pick = (valueOf(getBrief(), 'constraints.owned') ?? {})[k];
     const sel = def.products ? `<select class="ownMorePick" data-k="${k}" aria-label="Which ${esc(def.label.toLowerCase())}"><option value="${PICK_CARE}"${pick === PICK_CARE ? ' selected' : ''}>I have one, any will do</option><option value="${PICK_UNKNOWN}"${pick === PICK_UNKNOWN ? ' selected' : ''}>Not sure</option><optgroup label="From the catalogue">${def.products().map(p => `<option value="${esc(p.id)}"${pick === p.id ? ' selected' : ''}>${esc(p.label)}</option>`).join('')}</optgroup></select> ` : '';
-    return `<div class="ownrow" data-row="${k}"><label class="chk"><input type="checkbox" data-more="${k}" checked aria-label="Remove ${esc(def.label)}"> <b>${esc(def.label)}</b></label><div class="ownpick">${sel}${useBox(k, def.label)}</div></div>`;
+    return `<div class="ownrow" data-row="${k}"><label class="chk"><input type="checkbox" data-more="${k}" checked aria-label="Remove ${esc(def.label)}"> <b>${esc(def.label)}</b></label><div class="ownpick">${sel}</div></div>`;
   };
   /** Add one thing to "what I have": the same writes the old tick boxes made. */
   const addItem = (id: string) => {
     if (id === 'tank' || id === 'light' || id === 'heater' || id === 'filter') { st.on.add(id); if (id === 'tank' && !st.tank && !opts.compactTank) { draw(); o.pickTank(tankPicked); return; } }
-    else if (id === 'stand') editBrief(b => ownedKeys(b).includes('stand') ? b : setEquipment(b, 'stand', { use: useOf(st, 'stand'), pick: PICK_CARE }));
+    else if (id === 'stand') editBrief(b => ownedKeys(b).includes('stand') ? b : setEquipment(b, 'stand', { pick: PICK_CARE }));
     else editBrief(b => (valueOf(b, 'constraints.owned') ?? {})[id as OwnedKey] !== undefined ? b : setEquipment(b, id as OwnedKey, { pick: PICK_CARE }));
     opts.onChange?.(); draw();
   };
@@ -268,14 +255,14 @@ export function mountOwnedSheet(store: Store, o: OwnedHost, root: HTMLElement, o
     const b = getBrief(), haveStand = ownedKeys(b).includes('stand'), need = valueOf(b, 'equipment.needStand'), owned = valueOf(b, 'constraints.owned') ?? {};
     const yn = (v: boolean | undefined, l: string) => `<button type="button" class="${need === v ? 'on' : ''}" data-stand="${v === undefined ? 'unsure' : v}" aria-pressed="${need === v}">${l}</button>`;
     const paidFor = (id: OwnedItem) => id === 'light' || id === 'heater' || id === 'filter' ? paidBox(id) : '';
-    const coreRow = (x: typeof OWNED_ITEMS[number]) => `<div class="ownrow" data-row="${x.id}"><label class="chk"><input type="checkbox" data-item="${x.id}" checked aria-label="Remove ${x.label}"> <b>${x.label}</b> <span class="hint">${x.hint}</span></label><div class="ownpick">${picker(x.id)} ${useBox(x.id, x.label)} ${paidFor(x.id)}</div></div>`;
-    const standRow = `<div class="ownrow" data-row="stand"><label class="chk"><input type="checkbox" data-stand-have checked aria-label="Remove stand or furniture"> <b>${STAND_ITEM.label} or furniture</b> <span class="hint">${STAND_ITEM.hint}</span></label><div class="ownpick">${useBox('stand', STAND_ITEM.label)}</div>${furnBlock()}</div>`;
+    const coreRow = (x: typeof OWNED_ITEMS[number]) => `<div class="ownrow" data-row="${x.id}"><label class="chk"><input type="checkbox" data-item="${x.id}" checked aria-label="Remove ${x.label}"> <b>${x.label}</b> <span class="hint">${x.hint}</span></label><div class="ownpick">${picker(x.id)} ${paidFor(x.id)}</div></div>`;
+    const standRow = `<div class="ownrow" data-row="stand"><label class="chk"><input type="checkbox" data-stand-have checked aria-label="Remove stand or furniture"> <b>${STAND_ITEM.label} or furniture</b> <span class="hint">${STAND_ITEM.hint}</span></label>${furnBlock()}</div>`;
     const moreIds = MORE_GROUPS.flatMap(g => g.ids), labelOf = (id: string) => id === 'stand' ? 'Stand or furniture' : OWNED_ITEMS.find(x => x.id === id)?.label ?? OWNED.find(x => x.id === id)?.label ?? id;
     const have = [...OWNED_ITEMS.filter(x => st.on.has(x.id)).map(coreRow), ...(haveStand ? [standRow] : []), ...moreIds.filter(k => owned[k] !== undefined).map(moreRow)];
     const absent = MY_EQUIPMENT_IDS.filter(id => id === 'stand' ? !haveStand : (OWNED_ITEMS.some(x => x.id === id) ? !st.on.has(id as OwnedItem) : owned[id as OwnedKey] === undefined));
     root.innerHTML = `${opts.title ? '<form method="dialog" class="libhead"><h2 id="ownTitle">My equipment</h2><button value="close" aria-label="Close">✕</button></form>' : ''}
       <section class="ownarea" aria-label="What I have and will use"><h3 class="ownh">What I have and will use</h3>
-      <p class="hint">Gear you already own and want in this setup. Pick the exact product, or the generic one if you do not know. It is <b>Available</b> (counted at $0, but we may suggest something else) until you tap <b>Required</b>.</p>
+      <p class="hint">Gear you already own. Pick the exact product, or the generic one if you do not know. It is used wherever it suits (it costs $0), and you get a warning if the design outgrows it.</p>
       <div class="ownlist">${have.length ? have.join('') : '<p class="hint">Nothing yet. Add what you own below.</p>'}</div>
       ${absent.length ? `<div class="ownadd" role="group" aria-label="Add something I have"><span class="hint">Add something I have:</span> ${absent.map(id => `<button type="button" class="ownchip" data-add="${id}">+ ${esc(labelOf(id))}</button>`).join('')}</div>` : ''}</section>
       <section class="ownarea ownnew" aria-label="What I will buy new"><h3 class="ownh">What I will buy new</h3>
@@ -289,11 +276,11 @@ export function mountOwnedSheet(store: Store, o: OwnedHost, root: HTMLElement, o
   if (opts.focus && opts.tick) addItem(opts.focus);
   root.addEventListener('change', e => {
     const el = e.target as HTMLInputElement | HTMLSelectElement;
-    if (el instanceof HTMLInputElement && el.hasAttribute('data-stand-have')) { editBrief(b => el.checked ? setEquipment(b, 'stand', { use: useOf(st, 'stand'), pick: PICK_CARE }) : removeEquipment(b, 'stand')); opts.onChange?.(); draw(); return; }
+    if (el instanceof HTMLInputElement && el.hasAttribute('data-stand-have')) { editBrief(b => el.checked ? setEquipment(b, 'stand', { pick: PICK_CARE }) : removeEquipment(b, 'stand')); opts.onChange?.(); draw(); return; }
     if (el instanceof HTMLInputElement && el.dataset.more) {
-      const k = el.dataset.more as OwnedKey; editBrief(b => el.checked ? setEquipment(b, k, { use: moreUse(k), pick: PICK_CARE }) : removeEquipment(b, k)); opts.onChange?.(); draw(); return;
+      const k = el.dataset.more as OwnedKey; editBrief(b => el.checked ? setEquipment(b, k, { pick: PICK_CARE }) : removeEquipment(b, k)); opts.onChange?.(); draw(); return;
     }
-    if (el instanceof HTMLSelectElement && el.classList.contains('ownMorePick')) { const k = el.dataset.k as OwnedKey; editBrief(b => setEquipment(b, k, { use: moreUse(k), pick: el.value })); opts.onChange?.(); draw(); return; }
+    if (el instanceof HTMLSelectElement && el.classList.contains('ownMorePick')) { const k = el.dataset.k as OwnedKey; editBrief(b => setEquipment(b, k, { pick: el.value })); opts.onChange?.(); draw(); return; }
     if (el instanceof HTMLInputElement && el.dataset.paid) {
       const id = el.dataset.paid as 'light' | 'heater' | 'filter', v = parseFloat(el.value.replace(/[$,]/g, ''));
       st.paid = { ...st.paid, [id]: el.value.trim() !== '' && isFinite(v) && v >= 0 ? Math.min(100000, Math.round(v * 100) / 100) : undefined };
@@ -335,13 +322,6 @@ export function mountOwnedSheet(store: Store, o: OwnedHost, root: HTMLElement, o
     if (fb || fs) {
       furnNote = '';
       store.edit(S => { applyFurniture(S, fb ? { mode: fb.dataset.furn as 'stand' | 'table' } : { shape: fs!.dataset.furnshape as 'rect' | 'round' }); });
-      draw(); return;
-    }
-    const ub = t.closest<HTMLElement>('[data-use]');
-    if (ub) {
-      const id = ub.dataset.for as EquipKey, u = ub.dataset.use as Use;
-      if (id === 'tank' || id === 'light' || id === 'heater' || id === 'filter') { st.use = { ...st.use, [id]: u }; apply(); }
-      else { if (id === 'stand') st.use = { ...st.use, stand: u }; editBrief(b => setOwnedUse(b, id, u)); opts.onChange?.(); }
       draw(); return;
     }
     if (t.closest('[data-own="tank"]')) o.pickTank(tankPicked);

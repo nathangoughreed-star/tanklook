@@ -2,8 +2,8 @@
 // are checked in the browser (shots/gs4/), what they WRITE is checked here.
 import { describe, expect, it } from 'vitest';
 import { briefToWants, emptyBrief, getItem, projectExtras, valueOf, visionOf, setVision, type Brief } from '../src/scene/brief';
-import { constraintOf, constraintsOf, equipmentOf, onboardingOf, projectOf, setEquipment, setScratch, worldOf, routeOf, CONSTRAINT_IDS, DEFAULT_LIMIT_KINDS } from '../src/scene/project';
-import { GENERIC, emptyOwned, ownedStateOf, syncEquipment, useOf } from '../src/ui/ownedGear';
+import { constraintOf, constraintsOf, equipmentOf, onboardingOf, projectOf, setEquipment, setOwnedUse, setScratch, worldOf, routeOf, CONSTRAINT_IDS, DEFAULT_LIMIT_KINDS } from '../src/scene/project';
+import { GENERIC, emptyOwned, ownedStateOf, syncEquipment } from '../src/ui/ownedGear';
 import { lockAnimals } from '../src/ui/setupBrief';
 import {
   LIMIT_FIELDS, ONBOARD_STEPS, START_CARDS, WORLD_CARDS, applyKind, applyLimit, chooseRoute, chooseWorld, customTankModel, exploresOf, kindOfLimit, nextOnboard,
@@ -12,7 +12,9 @@ import {
 import { getTankModel } from '../src/data/tanks';
 
 const fresh = (): Brief => emptyBrief();
-const ticked = (use: 'required' | 'available' | undefined, model = 'g40b') => { const s = emptyOwned(); s.on.add('tank'); s.model = model; s.tank = model; if (use) s.use = { tank: use }; return s; };
+const tickedState = (model = 'g40b') => { const s = emptyOwned(); s.on.add('tank'); s.model = model; s.tank = model; return s; };
+/** Nothing writes Required any more (lane EQ1, 2026-11-07); a flag an older save stored is still read, so the legacy cases set it by hand. */
+const sync = (b: Brief, use?: 'required' | 'available', model = 'g40b'): Brief => { const r = syncEquipment(b, tickedState(model)); return use === 'required' ? setOwnedUse(r, 'tank', 'required') : r; };
 
 describe('the breadcrumb and where Guided opens', () => {
   it('shows the four onboarding steps with the current one marked, and walks them in order', () => {
@@ -66,14 +68,14 @@ describe('Equipment: Required / Available, scratch, skip', () => {
     expect(onboardingOf(skipEquipment(fresh())).equipment).toBe('skipped'); expect(onboardingOf(setScratch(fresh())).equipment).toBe('done');
   });
   it('a ticked item is Available unless one tap makes it Required (the default is Available)', () => {
-    expect(useOf(emptyOwned(), 'tank')).toBe('available');
-    const a = syncEquipment(fresh(), ticked(undefined));
+    
+    const a = sync(fresh());
     expect(equipmentOf(a).items).toMatchObject([{ key: 'tank', use: 'available', model: 'g40b' }]);
-    const r = syncEquipment(fresh(), ticked('required'));
+    const r = sync(fresh(), 'required');
     expect(equipmentOf(r).items[0].use).toBe('required');
   });
   it('Required tank = locked and the generator builds around it; an Available tank is NOT locked and is not demanded of the generator', () => {
-    const req = syncEquipment(fresh(), ticked('required')), av = syncEquipment(fresh(), ticked('available'));
+    const req = sync(fresh(), 'required'), av = sync(fresh(), 'available');
     expect(getItem(req, 'constraints.existingTank')?.status).toBe('locked');
     expect(briefToWants(req).ownTank?.id).toBe('g40b');
     expect(getItem(av, 'constraints.existingTank')?.status).not.toBe('locked');
@@ -81,11 +83,11 @@ describe('Equipment: Required / Available, scratch, skip', () => {
     expect(valueOf(av, 'constraints.existingTank')).toEqual({ model: 'g40b' });   // still known: the pictures and the savings use it
   });
   it('gear is recorded with its own flag, generic as "I do not care", an exact product as the product; unticking takes it out', () => {
-    const s = emptyOwned(); s.on.add('heater'); s.on.add('light'); s.heater = GENERIC; s.light = 'x-light'; s.use = { light: 'required' };
+    const s = emptyOwned(); s.on.add('heater'); s.on.add('light'); s.heater = GENERIC; s.light = 'x-light';
     const b = syncEquipment(fresh(), s);
     const it = (k: string) => equipmentOf(b).items.find(i => i.key === k)!;
     expect(it('heater')).toMatchObject({ use: 'available', pick: 'care', kind: 'gear' });
-    expect(it('light')).toMatchObject({ use: 'required', pick: 'x-light', product: 'x-light' });
+    expect(it('light')).toMatchObject({ use: 'available', pick: 'x-light', product: 'x-light' });
     s.on.delete('heater');
     expect(equipmentOf(syncEquipment(b, s)).items.map(i => i.key)).toEqual(['light']);
     // ticked but not answered yet: nothing is recorded
@@ -93,24 +95,24 @@ describe('Equipment: Required / Available, scratch, skip', () => {
     expect(equipmentOf(syncEquipment(fresh(), t)).items).toEqual([]);
   });
   it('the sheet starts from what the project already says (Back, or a revisit shows the answers)', () => {
-    let b = syncEquipment(fresh(), ticked('required'));
+    let b = sync(fresh(), 'required');
     b = setEquipment(b, 'heater', { use: 'available', pick: 'care' });
     const s = ownedStateOf(b);
     expect([...s.on].sort()).toEqual(['heater', 'tank']);
-    expect(s.model).toBe('g40b'); expect(s.use).toMatchObject({ tank: 'required', heater: 'available' }); expect(s.heater).toBe(GENERIC);
+    expect(s.model).toBe('g40b'); expect(s.heater).toBe(GENERIC);
   });
   it('a tank given as typed dimensions is a stand-in model the pictures can use, with its gallons', () => {
     expect(parseDims('48', '13', '21')).toEqual({ L: 48, D: 13, H: 21 });
     expect(parseDims('48', '', '21')).toBeUndefined(); expect(parseDims('2', '13', '21')).toBeUndefined(); expect(parseDims('abc', '13', '21')).toBeUndefined();
-    const s = emptyOwned(); s.on.add('tank'); s.dims = { L: 48, D: 13, H: 21 }; s.use = { tank: 'required' };
+    const s = emptyOwned(); s.on.add('tank'); s.dims = { L: 48, D: 13, H: 21 };
     const b = syncEquipment(fresh(), s), t = ownedTankOf(b)!;
-    expect(t.custom).toBe(true); expect(t.use).toBe('required'); expect(t.model.ratedGal).toBeCloseTo(customTankModel({ L: 48, D: 13, H: 21 }).ratedGal);
+    expect(t.custom).toBe(true); expect(t.use).toBe('available'); expect(t.model.ratedGal).toBeCloseTo(customTankModel({ L: 48, D: 13, H: 21 }).ratedGal);
     expect(t.model.outer.L).toBeCloseTo(48 * 25.4);
-    expect(projectOf(b).enclosure).toMatchObject({ source: 'owned-required', dimsIn: { L: 48, D: 13, H: 21 } });
+    expect(projectOf(b).enclosure).toMatchObject({ source: 'owned-available', dimsIn: { L: 48, D: 13, H: 21 } });
   });
   it('a catalogue tank is the owned tank for the pictures, with its use; no tank = undefined', () => {
     expect(ownedTankOf(fresh())).toBeUndefined();
-    expect(ownedTankOf(syncEquipment(fresh(), ticked('available')))).toMatchObject({ custom: false, use: 'available', model: { id: 'g40b' } });
+    expect(ownedTankOf(sync(fresh(), 'available'))).toMatchObject({ custom: false, use: 'available', model: { id: 'g40b' } });
     expect(ownedTankList(false).some(m => m.id === 'g40b')).toBe(true);
     expect(ownedTankList(true).every(m => m.terrarium)).toBe(true);
     expect(getTankModel('g40b')?.name).toMatch(/40 gal breeder/);
@@ -162,7 +164,7 @@ describe('Starting Point and the route handoff', () => {
   });
   it('choosing a route keeps every answer so far; switching the route keeps them too', () => {
     let b = chooseWorld(fresh(), 'aquarium');
-    b = syncEquipment(b, ticked('required')); b = applyLimit(b, 'care', 45); b = applyLimit(b, 'startup', 600);
+    b = sync(b, 'required'); b = applyLimit(b, 'care', 45); b = applyLimit(b, 'startup', 600);
     const look = chooseRoute(b, 'look');
     expect(routeOf(look)).toBe('look');
     for (const bb of [look, chooseRoute(look, 'animals')]) {

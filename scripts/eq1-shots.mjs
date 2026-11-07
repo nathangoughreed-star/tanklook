@@ -52,4 +52,8 @@ try {
   await sleep(800);
   console.log('cost lines', await ev(`JSON.stringify(document.querySelector('#demandPanel').innerText.split(String.fromCharCode(10)).filter(l => /you have|paid/.test(l)).slice(0, 8))`));
   await shot('7-cost-panel');
+  // the warning popup: the tank doubles in length and the owned heater (sized for the old tank) is now too small
+  await ev(`window.__gb.store.edit(S => { S.tank.L *= 2; S.tank.D *= 1.5; })`); await sleep(2500);
+  console.log('popup', await ev(`(()=>{const e=document.querySelector('.eqwarn'); return e && !e.hidden ? e.innerText : 'hidden'})()`));
+  await shot('8-warning-popup');
 } finally { ws.close(); ch.kill(); }

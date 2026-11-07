@@ -327,6 +327,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // lane EQ1: THE My equipment menu; every other screen (toolbar, left panel, brief bar, Tech, Suggest) only opens it, at an item when it has one
   const openOwned = (at?: string) => void import('./ownedGear').then(m => { (ownedSheet ??= m.attachOwnedGear(store, { status, pickTank, profile: () => demand?.profile() })).open(at); });
   void import('./myEquipment').then(m => m.attachMyEquipment(store, openOwned));
+  void import('./equipmentWarn').then(m => m.attachEquipmentWarn(store, openOwned)); // lane EQ1: warns when owned gear no longer suits the design
   let limitsPanel: { open(): void } | undefined;
   const openLimits = () => void import('./limitsPanel').then(m => { (limitsPanel ??= m.attachLimitsPanel()).open(); });
   const startMode = attachStartMode(store, {

@@ -104,11 +104,11 @@ describe('equipment: required vs available, scratch vs not answered', () => {
     expect(b.project?.use?.skimmer).toBeUndefined();
     expect(equipmentOf(removeEquipment(b, 'light')).status).toBe('unanswered');
   });
-  it('old saves: an existing tank with no project reads Required (it was the only tank offered), owned gear Available', () => {
+  it('old saves: an existing tank with no project reads Available like every owned item (lane EQ1, 2026-11-07: there is one state)', () => {
     const old = setItem(setItem(emptyBrief(), 'constraints.existingTank', { model: 'g40b' }, 'locked'), 'constraints.owned', { filter: 'care' }, 'preference');
     expect(old.project).toBeUndefined();
-    expect(equipmentOf(old).items.map(i => [i.key, i.use])).toEqual([['tank', 'required'], ['filter', 'available']]);
-    expect(briefToWants(old).ownTank?.id).toBe('g40b');
+    expect(equipmentOf(old).items.map(i => [i.key, i.use])).toEqual([['tank', 'available'], ['filter', 'available']]);
+    expect(briefToWants(old).availTank?.id).toBe('g40b');
   });
   it('an Available tank is credited but not forced on the generator', () => {
     const b = setEquipment(emptyBrief(), 'tank', { model: 'g40b', use: 'available' });
@@ -454,14 +454,14 @@ describe('Rev 03 read model for the UI lanes (GS4-GS6)', () => {
     expect(reevalInput(b, setWater(b, 'saltwater')).fields).toEqual(['water']);
     expect(reevalInput(b, applyChange(b, { vision: { familyId: 'fw-wild' } }).state).fields).toEqual(['family']);
   });
-  it('brief v5: v1-v3 saves parse as the current version with the same meaning and no project; v5 round-trips', () => {
+  it('brief v5: v1-v3 saves parse as the current version with the same meaning (the owned tank now reads Available, lane EQ1) and no project; v5 round-trips', () => {
     expect(BRIEF_VERSION).toBe(5);
     for (const v of [1, 2, 3]) {
       const raw = { v, items: { 'constraints.budget': { value: 250, status: 'hard' }, 'constraints.existingTank': { value: { model: 'g40b' }, status: 'locked' } }, vision: { environment: 'aquarium', secondaryLikes: [] } };
       const b = parseBrief(raw)!;
       expect(b.v).toBe(5); expect(b.project).toBeUndefined();
       expect(constraintOf(b, 'startup')).toMatchObject({ kind: 'hard', value: 250 });
-      expect(equipmentOf(b).items[0]).toMatchObject({ key: 'tank', use: 'required' });
+      expect(equipmentOf(b).items[0]).toMatchObject({ key: 'tank', use: 'available' });
       expect(worldOf(b)).toBe('aquarium');
     }
     const b = markSkipped(setScratch(setRoute(setWorld(emptyBrief(), 'paludarium'), 'animals')), 'limits');
