@@ -60,5 +60,5 @@ if (!webglAvailable()) {
     void ui.openShared(h); return true;
   };
   addEventListener('hashchange', openLink); // a link pasted into a tab that already has the app open
-  if (!openLink()) { if (restored) ui.status('Welcome back: your last tank was restored from this browser.'); else ui.showStart(); }
+  if (!openLink()) { ui.showStart(!!restored); } // SL1: the start screen on every visit (Nathan 2026-11-09); a restored tank is under Open Existing
 }

@@ -167,8 +167,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
   store.subscribe(syncRoom); syncRoom();
   $('redo').onclick = () => store.redo();
   // New and Open… are two separate menus of the start chooser (below): New = scratch + deals, Open… = starter + saved tanks
-  $('newScene').onclick = () => { welcomeFirst = false; startMode.open(stepForMenu('new')); }; // SL1: the one start screen, at its New Setup step (closable: a project is open)
-  $('openScene').onclick = () => { welcomeFirst = false; startMode.open(stepForMenu('open')); };
+  $('newScene').onclick = () => { welcomeFirst = false; lastTank = false; startMode.open(stepForMenu('new')); }; // SL1: the one start screen, at its New Setup step (closable: a project is open)
+  $('openScene').onclick = () => { welcomeFirst = false; lastTank = false; startMode.open(stepForMenu('open')); };
   /** An empty tank and an empty brief (lane NW1). Warns first when the current tank has something to lose and is not saved: Save / Start new / Cancel (false = cancelled). Undo brings it back. */
   const newEmptyTank = async (newKind: SetupKind = 'freshwater', room = false) => { // the Sandbox card's Tank type (lane S252): applied to the empty tank it starts
     // room (lane ST1): the Sandbox starts as an empty room with the person (the default environment, its own camera); the tank picker puts the tank in
@@ -236,12 +236,13 @@ export function attachPanels(store: Store, viewer: Viewer) {
   const when = (t: number) => new Date(t).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
   function renderLib() {
     const list = listLib(), box = $<HTMLDivElement>('libList');
-    box.innerHTML = list.length ? list.map(e =>
+    const last = lastTank && startMode.isOpen() ? `<div class="libcard"><button class="libopen" data-last="1" title="Keep working on the tank you had open last time"><span class="nothumb">Last time</span><b>Continue your last tank</b><span class="hint">${esc(G().name || 'Untitled')}</span></button></div>` : '';
+    box.innerHTML = last + (list.length ? list.map(e =>
       `<div class="libcard"><button class="libopen" data-lib="${esc(e.id)}" title="Open “${esc(e.name)}”">` +
       (e.thumb ? `<img src="${esc(e.thumb)}" alt="" loading="lazy">` : '<span class="nothumb">No picture</span>') + `<b>${esc(e.name)}</b>` +
       `<span class="hint">${esc(when(e.saved))}${e.tanks > 1 ? ' · 2 tanks' : ''}</span></button>` +
       `<button class="libdel" data-libdel="${esc(e.id)}" title="Delete “${esc(e.name)}” from this browser" aria-label="Delete ${esc(e.name)}">×</button></div>`).join('')
-      : `<p class="hint" data-empty="${libraryState(list.length)}">${EMPTY_LIBRARY}</p>`;
+      : last ? '' : `<p class="hint" data-empty="${libraryState(list.length)}">${EMPTY_LIBRARY}</p>`);
   }
   // Examples (lane F): bundled scenes, opened like a file (a new, unsaved tank; Undo brings the previous one back)
   // The scene files are a lazy chunk (lane EF3): fetched once the list's pictures are in (on a slow line they would
@@ -359,10 +360,14 @@ export function attachPanels(store: Store, viewer: Viewer) {
   void import('./suggest').then(m => { suggestPanel = m.attachSuggest(store, viewer, status, openOwned); }); // lane C8: Suggest a setup
   void import('./infeasibleCard').then(m => m.attachCompare(store, status)); // lane GV7: compromise slots fill as they show; Use this / Compare (split view, money and care first on the tabs)
   void import('./briefBar').then(m => { m.attachBriefBar(store, { suggest: () => suggestPanel?.open(), owned: () => openOwned(), limits: openLimits, report: () => void import('./report').then(m => m.openReport()) }); }); // lane U3: the setup brief bar, shown in every entry point
-  const showStart = () => { welcomeFirst = true; startMode.open('home', true); }; // SL1: first load: the three choices, mandatory
+  /** SL1: every load opens the three choices, mandatory (Nathan 2026-11-09: "Every visit"). A restored tank (autosave) is real work, so the choices
+   *  then go through the ask-first path (welcomeFirst false) and Open Existing offers "Continue your last tank" at the top. */
+  let lastTank = false;
+  const showStart = (restored = false) => { welcomeFirst = !restored; lastTank = restored; startMode.open('home', true); };
   void import('./stockPlan').then(m => m.attachStockPlan(store, viewer, status, $('startAnimal'))); // lane P5: the stocking screen (path 1) and the fork card; loaded after start-up (it pulls in the tank-fit engine, whose imports must not run before starter.ts's)
   $('libList').onclick = async e => {
     const t = e.target as HTMLElement, del = t.closest<HTMLButtonElement>('[data-libdel]'), op = t.closest<HTMLButtonElement>('[data-lib]');
+    if (t.closest('[data-last]')) { lastTank = false; startMode.done(); return; } // SL1: keep the restored tank
     if (del) {
       const id = del.dataset.libdel!, ent = listLib().find(x => x.id === id);
       if (!ent || !confirm(`Delete “${ent.name}” from this browser? This can’t be undone.`)) return;
