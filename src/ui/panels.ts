@@ -10,12 +10,14 @@ import { standMisfit } from '../scene/standspace';
 import { renderFeaturedDeals } from './featuredDeals';
 import { attachWelcome } from './welcome';
 import { bindBriefStore, editBrief, experienceOf, getBrief, onBrief as onBriefEdit, setTank as briefTank } from './setupBrief';
-import { attachStartMode, setMode } from './startMode';
+import { attachStartMode } from './startMode';
+import { openDiscovery } from './discover/entry';
 import { attachTankDock, type TankDock } from './tankDock';
 import { sandboxRoomScene } from '../scene/sandboxRoom';
 import { roomOf, setRoomAuto, setRoomByHand } from '../scene/roomlight';
 import { putOnFloor, putOnMyFurniture, putOnStand, placementOf, minTop, type Placement } from '../scene/placement';
-import { atStake, confirmNew } from './newTank';
+import { confirmNew } from './newTank';
+import { startProject, confirmStart, setProjectAsker, regenerateKeepingLocks, hasLocks } from './projectStart';
 import { startDeals, visibleTabs, pickTab, sortDeals, DEFAULT_SORT, type DealSort, type StartTab, type StartMenu } from './startEntries';
 import { DEALS_AS_OF, DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
 import { LEVELS, onPerf, perf, setAuto, setLevel } from '../render/perf';
@@ -46,7 +48,7 @@ import { pinPreset } from '../demand/pinned';
 import { applyTankPick, unholdBtn } from './tankPick';
 import { breakNote, CUSTOM_LABEL, includesNote, locksOf, lockNote, mayChange, productLabel, releaseProduct, type Held } from '../scene/integrated';
 import { COMPS, DEFAULT_DENS, STYLE_GROUPS, STYLE_KIND, isLandStyle, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
-import { handEdits, randomStyle, regenerate, shuffleHard } from '../scene/starter';
+import { handEdits, randomStyle, shuffleHard } from '../scene/starter';
 import { styleGround } from '../scene/scapeground';
 import { growthOf, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
 import { clumpAuto } from '../render/plant3d';
@@ -166,14 +168,16 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('openScene').onclick = () => showChooser('open', 'open', false);
   /** An empty tank and an empty brief (lane NW1). Warns first when the current tank has something to lose and is not saved: Save / Start new / Cancel (false = cancelled). Undo brings it back. */
   const newEmptyTank = async (newKind: SetupKind = 'freshwater', room = false) => { // the Sandbox card's Tank type (lane S252): applied to the empty tank it starts
-    const id = libId();
-    if (atStake(G(), id ? libText(id) : null) && !await confirmNew(() => { $('saveScene').click(); const now = libId(); return !!now && JSON.stringify(G()) === libText(now); })) return false;
     // room (lane ST1): the Sandbox starts as an empty room with the person (the default environment, its own camera); the tank picker puts the tank in
     const s = room ? sandboxRoomScene(newKind) : emptyScene(); s.name = 'New tank'; if (!room) { applyKind(s.tanks[0], newKind); s.tanks[0].camera = { ...S().camera }; } // the water type is settled when the tank is made
     s.units = G().units;
-    store.replace(s); setLibId(null); status('New tank. Undo brings the previous one back.');
+    if (!await startProject(store, s, savedText())) return false; // DX5: asks first (Save copy / Replace / Cancel) when the project holds unsaved work or locks
+    setLibId(null); status('New project. Undo brings the previous one back.');
     return true;
   };
+  /** The stored text of the saved tank this project came from (null when unsaved): a project saved as it stands has nothing to lose. */
+  const savedText = () => { const id = libId(); return id ? libText(id) : null; };
+  setProjectAsker(() => confirmNew(() => { $('saveScene').click(); const now = libId(); return !!now && JSON.stringify(G()) === libText(now); }));
   /** The Sandbox's empty room: replace the scene (after the replace warning unless this is the first launch), then the picker opens beside it. */
   let tankDock: TankDock | undefined, roomPending = false; // roomPending: the empty room is up and no tank is chosen yet (a tank is required, Nathan 2026-11-05)
   const sandboxRoom = async (kind: SetupKind) => {
@@ -204,6 +208,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
       status(e instanceof SceneError ? e.message : 'Could not open that file.', true); return;
     }
     const { scene, warnings } = parsed;
+    if (!await confirmStart(G(), savedText())) return; // DX5: Open file starts a different project: ask first when this one holds unsaved work or locks
     whileOpening(scene.name, () => {
       try { store.replace(scene); } catch { status('Could not open that file.', true); return false; }
       // an opened file goes straight into the saved list (Nathan 2026-10-14); the same file opened again reuses its entry
@@ -251,6 +256,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     try { text = (await exampleScenes())[x.id]; } catch {
       status('Could not load the examples (no connection?). Try again in a moment.', true); return;
     }
+    if (!await confirmStart(G(), savedText())) return; // DX5: a different project: ask first
     whileOpening(x.name, () => {
       try {
         const { scene } = parseScene(text);
@@ -269,7 +275,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   const startDlg = $<HTMLDialogElement>('startDlg');
   const dealSort = { ...DEFAULT_SORT }; // each deal tab keeps its own order
   $('startEx').onclick = e => openExample(e, startDlg);
-  const openDeal = (name: string, scene: Scene) => { startDlg.close(); store.replace(scene); setLibId(null); status(`Opened the deal "${name}". Customise it; the demand panel prices the bundle. Undo brings the previous tank back.`); };
+  const openDeal = async (name: string, scene: Scene) => { startDlg.close(); if (!await startProject(store, scene, savedText())) return; setLibId(null); status(`Opened the deal "${name}". Customise it; the demand panel prices the bundle. Undo brings the previous tank back.`); };
   const setTab = (tab: StartTab) => {
     for (const b of startDlg.querySelectorAll<HTMLElement>('[data-tab]')) { const on = b.dataset.tab === tab; b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1; }
     for (const p of startDlg.querySelectorAll<HTMLElement>('[data-pane]')) p.hidden = p.dataset.pane !== tab;
@@ -310,12 +316,9 @@ export function attachPanels(store: Store, viewer: Viewer) {
   const welcome = attachWelcome(store, { // lane VD5: Guided = Visual Discovery (ui/discovery/)
     status,
     stocking: () => $('startAnimal').click(),
-    // lane VD6: a personalized discovery picture = the scene shown in the viewer for one draw, then the tank put back (no undo step, the brief kept)
-    shot: T => {
-      const orig = structuredClone(store.tank), put = (S: TankSetup) => store.update(s => { Object.assign(s.tanks[s.active], structuredClone(S), { brief: orig.brief }); }, { history: false });
-      try { put(T); return viewer.thumbnail(480); } finally { put(orig); }
-    },
-    sandbox: async () => { const ok = welcomeFirst ? (welcomeFirst = false, true) : await newEmptyTank(); if (ok) { setMode('sandbox'); startMode.drawBar(); } return ok; },
+    // lane VD6: a personalized discovery picture. DX5: drawn from a COPY (the viewer's preview), so the project is never touched, not even for one frame; the brief is not part of a picture
+    shot: T => { try { viewer.setPreview(structuredClone(T), true); return viewer.thumbnail(480); } finally { viewer.setPreview(null); } },
+    sandbox: async () => (welcomeFirst ? (welcomeFirst = false, true) : await newEmptyTank()),
     browse: menu => showChooser(menu, menu === 'open' ? 'starters' : undefined, welcomeFirst),
   });
   $('browseLooks').onclick = () => welcome.browseLooks();
@@ -336,17 +339,16 @@ export function attachPanels(store: Store, viewer: Viewer) {
   let limitsPanel: { open(): void } | undefined;
   const openLimits = () => void import('./limitsPanel').then(m => { (limitsPanel ??= m.attachLimitsPanel()).open(); });
   const startMode = attachStartMode(store, {
-    guided: () => startGuide(),
-    guidedNew: async at => { if (welcomeFirst) welcomeFirst = false; else if (!await newEmptyTank()) return false; startGuide(at, true); return true; },
-    sandbox: sandboxRoom,
+    // DX5: entry shortcuts into the one project (none is a mode); each goes through the same new-project warning
+    exploring: async () => { const ok = welcomeFirst ? (welcomeFirst = false, true) : await newEmptyTank(); if (ok) openDiscovery({ from: 'start-exploring' }); return ok; },
+    ideas: sandboxRoom,
+    existing: async () => { const ok = welcomeFirst ? (welcomeFirst = false, true) : await newEmptyTank(); if (ok) openOwned(); return ok; },
     owned: () => openOwned(),
     browse: (menu, tab) => showChooser(menu, tab, welcomeFirst),
     profile: () => { try { return loadProfile(); } catch { return undefined; } },
   });
   // lane GW1: the guide that walks the real menus (ui/coach); lane GW2: Guided = this coach (the old dialog steps live on as Quick Setup's Browse looks / Explore)
-  let guide: { begin(at?: string, fresh?: boolean): Promise<void> } | undefined;
-  const guideReady = import('./coach/dom').then(m => { guide = m.attachCoach(store, { limits: openLimits, equipment: () => openOwned() }); });
-  async function startGuide(at?: 'equipment', fresh = false) { await guideReady; await guide?.begin(at, fresh); }
+  void import('./coach/dom').then(m => { m.attachCoach(store, { limits: openLimits, equipment: () => openOwned(), discover: () => openDiscovery({ from: 'coach' }) }); }); // DX5: the guide is Discovery's optional questioner; finishing it hands over to Discovery
   void import('./suggest').then(m => { suggestPanel = m.attachSuggest(store, viewer, status, openOwned); }); // lane C8: Suggest a setup
   void import('./infeasibleCard').then(m => m.attachCompare(store, status)); // lane GV7: compromise slots fill as they show; Use this / Compare (split view, money and care first on the tabs)
   void import('./briefBar').then(m => { m.attachBriefBar(store, { suggest: () => suggestPanel?.open(), owned: () => openOwned(), limits: openLimits, report: () => void import('./report').then(m => m.openReport()) }); }); // lane U3: the setup brief bar, shown in every entry point
@@ -354,7 +356,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('startWelcome').onclick = () => { startDlg.close(); startMode.show(); };
   const showStart = () => { welcomeFirst = true; startMode.show(); };
   void import('./stockPlan').then(m => m.attachStockPlan(store, viewer, status, $('startAnimal'))); // lane P5: the stocking screen (path 1) and the fork card; loaded after start-up (it pulls in the tank-fit engine, whose imports must not run before starter.ts's)
-  $('libList').onclick = e => {
+  $('libList').onclick = async e => {
     const t = e.target as HTMLElement, del = t.closest<HTMLButtonElement>('[data-libdel]'), op = t.closest<HTMLButtonElement>('[data-lib]');
     if (del) {
       const id = del.dataset.libdel!, ent = listLib().find(x => x.id === id);
@@ -365,6 +367,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     if (!op) return;
     const id = op.dataset.lib!;
     startDlg.close();
+    if (!await confirmStart(G(), savedText())) return; // DX5: opening a saved tank is a different project: ask first
     whileOpening(listLib().find(x => x.id === id)?.name ?? 'tank', () => {
       try {
         const { scene, warnings } = loadFromLib(id);
@@ -431,6 +434,7 @@ Cancel, then change the name, to keep both.`)) return;
       status(e instanceof SceneError ? e.message : 'Could not open that share link.', true); return;
     }
     const { scene, warnings } = parsed;
+    if (!await confirmStart(G(), savedText())) return; // DX5: a link is a different project: ask first
     whileOpening(scene.name, () => {
       try { store.replace(scene); } catch { status('Could not open that share link.', true); return false; }
       setLibId(null);
@@ -1338,7 +1342,7 @@ Cancel, then change the name, to keep both.`)) return;
   // a starter set replaces every piece (undoable), and the animals when its animal stop is above None; the pieces are
   // then ordinary items
   let fishId0 = 1;
-  const replaced = (s: TankSetup) => regenerate(s, 'all', fishId0);
+  const replaced = (s: TankSetup) => regenerateKeepingLocks(s, 'all', fishId0); // DX5: locked pieces, animals and properties come back
   const dropGoneFish = () => { if (store.selId != null && !S().fish.some(f => f.id === store.selId)) store.select(null); };
   /** A redraw is complete (Nathan 2026-10-15): when it would throw away pieces or animals placed, moved or removed by
    *  hand, a warning asks first. Resolves true to go ahead; on "Keep my scape" `revert` puts the control back. */
@@ -1347,7 +1351,7 @@ Cancel, then change the name, to keep both.`)) return;
     const lost = handEdits(S(), what, ground);
     if (!lost.length) { done(true); return; }
     const list = lost.length === 1 ? lost[0] : `${lost.slice(0, -1).join(', ')} and ${lost[lost.length - 1]}`;
-    $('scapeWarnText').textContent = `${what === 'all' ? 'A new starter set' : 'Redrawing this layer'} starts the ${list} again from scratch. Everything you placed, moved or removed there by hand will be gone.`;
+    $('scapeWarnText').textContent = `${what === 'all' ? 'A new starter set' : 'Redrawing this layer'} starts the ${list} again from scratch. Everything you placed, moved or removed there by hand will be gone.${hasLocks(G()) ? ' Pieces, animals and settings you locked are kept.' : ''}`;
     // answered by the buttons (Esc = keep) rather than the dialog's close event, which a background tab may hold back
     const answer = (ok: boolean) => { warnDlg.oncancel = $('scapeKeep').onclick = $('scapeReplace').onclick = null; warnDlg.close(); if (!ok) revert(); done(ok); };
     $('scapeKeep').onclick = () => answer(false); $('scapeReplace').onclick = () => answer(true);
@@ -1390,7 +1394,7 @@ Cancel, then change the name, to keep both.`)) return;
     const to = (e.target as HTMLSelectElement).value as CompId;
     if (!await okToReplace('hard', () => setVal('layoutComp', S().layout.comp ?? 'any'), true)) return;
     store.selectItem(null);
-    store.edit(s => { if (to === 'any') delete s.layout.comp; else s.layout.comp = to; styleGround(s); regenerate(s, 'hard', 0); });
+    store.edit(s => { if (to === 'any') delete s.layout.comp; else s.layout.comp = to; styleGround(s); regenerateKeepingLocks(s, 'hard', 0); });
     status(`Composition: ${COMPS[to].label}. Ctrl+Z brings the previous pieces back.`);
   };
   // Plant care (2026-10-16): light, CO2 + fertiliser and the effort they ask are one setting, since they move together in a
@@ -1415,7 +1419,7 @@ Cancel, then change the name, to keep both.`)) return;
   const refit = async (revert: () => void, edit: (s: TankSetup) => void, msg: string) => {
     if (!await okToReplace('plant', revert)) return;
     store.selectItem(null); fishId0 = store.nextId();
-    store.edit(s => { edit(s); regenerate(s, 'plant', fishId0); });
+    store.edit(s => { edit(s); regenerateKeepingLocks(s, 'plant', fishId0); });
     const fitNote = fitLimits();
     status(msg + fitNote + ' Ctrl+Z brings the previous plants back.');
   };
@@ -1463,14 +1467,14 @@ Cancel, then change the name, to keep both.`)) return;
       if (t) L.tSeed = seed; else L.tSeed ??= L.gSeed ?? old;
       if (h) {
         if (g) { delete L.gSeed; delete L.gFoc; } else { L.gSeed ??= old; L.gFoc ??= old; }
-        if (p) { L.seed = seed; delete L.plantSeed; if (t || g) styleGround(s, gm); regenerate(s, 'hard', 0); }
+        if (p) { L.seed = seed; delete L.plantSeed; if (t || g) styleGround(s, gm); regenerateKeepingLocks(s, 'hard', 0); }
         else { shuffleHard(s, seed); if (t || g) styleGround(s, gm); }
       } else {
         if (g) L.gSeed = seed;
         if (t || g) styleGround(s, gm);
-        if (p) { L.plantSeed = seed; regenerate(s, 'plant', 0); }
+        if (p) { L.plantSeed = seed; regenerateKeepingLocks(s, 'plant', 0); }
       }
-      if (a) { L.animalSeed = seed; if ((L.dens ?? DEFAULT_DENS).animal > 0) regenerate(s, 'animal', fishId0); }
+      if (a) { L.animalSeed = seed; if ((L.dens ?? DEFAULT_DENS).animal > 0) regenerateKeepingLocks(s, 'animal', fishId0); }
     });
     dropGoneFish();
     const fitNote = fitLimits();
@@ -1490,7 +1494,7 @@ Cancel, then change the name, to keep both.`)) return;
       if (!await okToReplace(k, showDens)) return;
       if (k !== 'animal') store.selectItem(null);
       fishId0 = store.nextId();
-      store.edit(s => { s.layout.dens = { ...(s.layout.dens ?? DEFAULT_DENS), [k]: v }; regenerate(s, k, fishId0); });
+      store.edit(s => { s.layout.dens = { ...(s.layout.dens ?? DEFAULT_DENS), [k]: v }; regenerateKeepingLocks(s, k, fishId0); });
       dropGoneFish();
       status(k === 'plant' ? `Plants redrawn (density ${stopName(k, v)}); the hardscape stayed put. Ctrl+Z brings the previous ones back.`
         : k === 'hard' ? `Hardscape redrawn (density ${stopName(k, v)}), with plants round it. Ctrl+Z brings the previous pieces back.`
@@ -1505,7 +1509,7 @@ Cancel, then change the name, to keep both.`)) return;
     const stocked = (S().layout.dens ?? DEFAULT_DENS).animal > 0;
     if (stocked && !await okToReplace('animal', revert)) return;
     fishId0 = store.nextId();
-    store.edit(s => { edit(s); if ((s.layout.dens ?? DEFAULT_DENS).animal > 0) regenerate(s, 'animal', fishId0); });
+    store.edit(s => { edit(s); if ((s.layout.dens ?? DEFAULT_DENS).animal > 0) regenerateKeepingLocks(s, 'animal', fishId0); });
     dropGoneFish();
     status(stocked ? `${msg} Ctrl+Z brings the previous animals back.` : msg);
   };

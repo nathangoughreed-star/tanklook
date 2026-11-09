@@ -4,6 +4,7 @@
 // Lane GV7: the "keep the look" path also carries a compound compromise (compromise.ts: drop / shrink a group, a smaller tank, a plainer tier, low-tech plants, all verified) and the
 // other style with the roster kept; "Compare" opens the two side by side in the split view, with the broken limit and the money / care differences first on the tabs (diff.ts).
 // The search takes a second or two, so the card holds a slot that is filled once it is on screen (`attachCompare`, hooked from panels.ts;).
+import { confirmStart, hasLocks } from './projectStart';
 import type { Alternative, ConflictPath, Infeasible, LookCtx } from '../demand/infeasible';
 import type { Anchor, CompromiseResult, LimitKey } from '../demand/compromise';
 import type { Proposal } from '../demand/suggest';
@@ -97,6 +98,7 @@ export async function openCompare(store: Store, r: CompromiseResult): Promise<st
   const c = r.compromises[0], o = r.other; if (!c || !o) return undefined;
   const lead = LEAD[leadOf(r) ?? 'startup'], C = c.proposal.scene.constraints, usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
   const bound = lead === 'startup' ? C?.startupUsd?.value : lead === 'monthly' ? C?.monthlyUsd?.value : lead === 'care' ? C?.minutesPerWeek?.value : undefined;
+  if (hasLocks(store.scene) && !await confirmStart(store.scene)) return undefined; // DX5: Compare puts versions in the tank's place: with locks held, ask first (Undo steps back)
   const base = store.tank, A = await tankFor(c.proposal, base), B = await tankFor(o.proposal, base);
   if (store.split) store.closeTank(1);
   store.update(s => { s.tanks[0] = A; s.active = 0; }); store.seal();
@@ -124,7 +126,7 @@ export function attachCompare(store: Store, status: (m: string, bad?: boolean) =
       const c = k === 'o' ? undefined : r.compromises[+k], p = c ? c.proposal : r.other?.proposal, style = c ? r.style : r.other?.style; if (!p || !style) return;
       shut(use);
       void import('./suggest').then(({ makeItMine }) => {
-        makeItMine(store, p); // the same open as Suggest's "I like this one": brief, limits and a starter kit's price kept
+        if ('refused' in makeItMine(store, p)) { status('This would change something you locked. Unlock it, or start a new project instead.', true); return; } // the same open as Suggest's "I like this one": brief, limits and a starter kit's price kept
         const a = p.build.animals.filter(x => x.n > 0);
         editBrief(b => { // the look, the animals and the tank in the brief follow the design taken
           let n = setLook(b, style); if (a.length) n = lockAnimals(n, a.map(x => ({ species: x.species, n: x.n })));

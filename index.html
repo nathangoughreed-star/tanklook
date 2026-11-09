@@ -45,10 +45,10 @@
     <div class="btns"><span class="grow"></span><button id="scapeKeep" autofocus>Keep my scape</button><button id="scapeReplace" class="danger">Replace it</button></div>
   </dialog>
   <dialog id="newDlg" class="libdlg warndlg" aria-labelledby="newDlgTitle" aria-describedby="newDlgText">
-    <div class="warnhead"><span class="warnicon" aria-hidden="true">⚠</span><h2 id="newDlgTitle">Start a new tank?</h2></div>
-    <p id="newDlgText">Starting new replaces your current tank. It will be lost unless you save it first.</p>
-    <p class="hint">Save keeps it in this browser (Open… brings it back).</p>
-    <div class="btns"><button id="newCancel" autofocus>Cancel</button><span class="grow"></span><button id="newSave">Save</button><button id="newGo" class="danger">Start new</button></div>
+    <div class="warnhead"><span class="warnicon" aria-hidden="true">⚠</span><h2 id="newDlgTitle">Start a new project?</h2></div>
+    <p id="newDlgText">Your current project has unsaved work or locks you set. Starting a new one replaces it, locks included; it will be lost unless you save a copy first.</p>
+    <p class="hint">Save copy keeps it in this browser (Open… brings it back). Undo also brings it back right after.</p>
+    <div class="btns"><button id="newCancel" autofocus>Cancel</button><span class="grow"></span><button id="newSave">Save copy</button><button id="newGo" class="danger">Replace</button></div>
   </dialog>
   <dialog id="tankDlg" class="libdlg tankdlg" aria-labelledby="tankDlgTitle">
     <form method="dialog" class="libhead"><h2 id="tankDlgTitle">Tank sizes</h2><button value="close" aria-label="Close">✕</button></form>
@@ -59,23 +59,30 @@
   <dialog id="modeDlg" class="libdlg startdlg modedlg" aria-labelledby="modeTitle">
     <form method="dialog" class="libhead"><h2 id="modeTitle">New tank</h2><button value="close" aria-label="Close">✕</button></form>
     <div id="modeMain">
+    <p class="hint modeNote">One project, however you begin: these are shortcuts, not modes. Everything stays editable and you can use Discover at any time.</p>
     <div class="start-mode">
-      <section class="start-mode-card" aria-labelledby="modeGuidedH">
+      <section class="start-mode-card" aria-labelledby="modeExploringH">
         <div class="mode-pic" data-art="start/guided"></div>
-        <h3 id="modeGuidedH">Guided</h3>
-        <p>Tell us what you know and we'll propose a complete, healthy setup that fits, with the tradeoffs shown.</p>
-        <button type="button" class="primary" id="modeGuided">Start guided</button>
+        <h3 id="modeExploringH">Just exploring</h3>
+        <p>Start empty and let Discover show you complete, healthy setups that fit, with the tradeoffs shown.</p>
+        <button type="button" class="primary" id="modeExploring">Start exploring</button>
       </section>
-      <section class="start-mode-card" aria-labelledby="modeSandboxH">
+      <section class="start-mode-card" aria-labelledby="modeIdeasH">
         <div class="mode-pic" data-art="start/sandbox"></div>
-        <h3 id="modeSandboxH">Sandbox</h3>
-        <p>Start with an empty tank and build it your way. We'll flag anything that could hurt your animals.</p>
-        <button type="button" class="primary" id="modeSandbox">Start sandbox</button>
+        <h3 id="modeIdeasH">I have some ideas</h3>
+        <p>Start with an empty tank and add the animals, size or look you already know. Lock them, then Discover builds around them.</p>
+        <button type="button" class="primary" id="modeIdeas">Start with my ideas</button>
+      </section>
+      <section class="start-mode-card" aria-labelledby="modeExistingH">
+        <div class="mode-pic" data-art="start/existing"></div>
+        <h3 id="modeExistingH">I have an existing setup</h3>
+        <p>Start from your tank and the equipment you own, then add animals or plants and check that it all works.</p>
+        <button type="button" class="primary" id="modeExisting">Start from my setup</button>
       </section>
     </div>
     </div>
     <div id="modeKinds" hidden>
-      <h3 class="mode-kind-h">Sandbox: what kind of tank?</h3>
+      <h3 class="mode-kind-h">What kind of tank?</h3>
       <div id="modeKindList" class="start-mode kinds4" role="group" aria-label="Kind of tank"></div>
       <p><button type="button" class="linkbtn" id="modeBack">Back</button></p>
     </div>

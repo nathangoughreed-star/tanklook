@@ -1,6 +1,7 @@
 // Budget / As designed / Luxury in the demand panel (lane BL1, Nathan 2026-11-03): the same design built with cheaper or dearer real materials and gear, side by side.
 // "Compare" opens GV7's split view (Tank A and B, the price differences first on the tabs) in ONE undo step; "Use A / Use B" brings the chosen version back
 // as one tank through GS6's hand-off rules (the tank, animals and the rest of the design stay; the look and the gear change), also one undo step.
+import { adoptTank } from './projectStart';
 import { handOff } from '../scene/reeval';
 import { priceDiff, rockLine, tierOf, TIER_LABEL, type Tier, type TierResult } from '../scene/materialTiers';
 import { setCompare, sigOf } from './diff';
@@ -35,9 +36,14 @@ function useVersion(store: Store, o: Open, i: 0 | 1): string[] {
   const v = o.res[i], ho = handOff(o.orig, v.scene, { accept: o.orig.fish.map(f => f.species), brief: o.orig.brief });
   const out = ho.scene;
   if (v.scene.tech) out.tech = structuredClone(v.scene.tech); else delete out.tech;
+  // DX5: the compare only showed two versions of the project; the project's own tank comes back first, then the kept version joins it as a PROPOSAL (one undo step, locks respected)
+  const m = store.mark;
   store.editOn = [true, false];
-  store.update(s => { s.tanks = [out]; s.active = 0; });
+  store.update(s => { s.tanks = [structuredClone(o.orig)]; s.active = 0; });
   store.seal(); setCompare(); open = undefined;
+  const r = adoptTank(store, out, `${TIER_LABEL[v.tier]} version`);
+  store.squash(m);
+  if (!r.ok) return [r.message];
   return [`Kept the ${TIER_LABEL[v.tier]} version, ${usd(v.setupUsd)} to set up.`, ...v.swaps.map(w => `${w.n} x ${w.from} -> ${w.to}`), ...ho.warnings];
 }
 

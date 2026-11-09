@@ -15,6 +15,7 @@ import { aspectsOf } from '../../explore/aspects';
 import { batchSizeOf, isSoftwareRenderer, type Batch } from '../../explore/rank';
 import type { AspectTag } from '../../explore/aspects';
 import { editBrief, getBrief } from '../setupBrief';
+import { adoptTank } from '../projectStart';
 import { loadProfile } from '../demandPanel';
 import { TILE_VIEW } from '../discovery/tiles';
 import { cardHtml, type TagPanel } from './card';
@@ -25,7 +26,7 @@ import { Explorer, PROVISIONAL_SHOWN, fewerWhy, limitsLine, type PoolEntry } fro
 import { favouritesOf, stripHtml } from './strip';
 
 export interface ExploreHooks {
-  /** Make This Mine on a candidate (stage X4 installs it in the editor). The default only says it is not built yet. */
+  /** Make This Mine on a candidate (DX5: the default installs it as a proposal). */
   makeMine?(c: StoredCandidate): void;
   /** the saved-candidate store (default: the browser's) */
   db?: ExploreStore;
@@ -184,7 +185,13 @@ export function mountExplore(c: ExploreEntryCtx, hooks: ExploreHooks = {}): { de
 
   // ---------------------------------------------------------------------------------------------------------------- clicks
   const apply = (b = getBrief()) => { editBrief(() => b); };
-  const makeMine = hooks.makeMine ?? (st => host.status(`Make This Mine will open "${st.identity.name}" exactly as drawn in the editor. That step is not built yet; your project is unchanged.`));
+  // DX5: Make This Mine installs the candidate as a PROPOSAL (applyProposal: one undo step, locks respected, nothing locked), never a replacement of the project
+  const makeMine = hooks.makeMine ?? ((st: StoredCandidate) => {
+    const T = structuredClone(st.snapshot), brief = c.store.tank.brief;
+    if (brief) T.brief = structuredClone(brief); else delete T.brief;
+    const r = adoptTank(c.store, T, `Make This Mine: ${st.identity.name}`, { name: st.identity.name });
+    host.status(r.ok ? `"${st.identity.name}" is now in your project, as one step: Undo brings the previous tank back. Nothing was locked.` : r.message, !r.ok);
+  });
   root.addEventListener('click', e => {
     const t = e.target as HTMLElement;
     const ed = t.closest<HTMLElement>('[data-ex-edit]');

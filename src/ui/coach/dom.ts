@@ -124,6 +124,7 @@ export function attachCoach(store: Store, dialogs: CoachDialogs, steps: readonly
       store.update(s => { const T = s.tanks[s.active]; if (hasState(nb)) T.brief = nb; else delete T.brief; }, { kind: 'view', history: false });   // progress is not an edit: no undo step, no rebuild
     },
     warn: m => console.warn(m),
+    done: () => { void dialogs.discover?.(); },
   };
   const coach = createCoach(steps, host);
 

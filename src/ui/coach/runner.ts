@@ -26,6 +26,8 @@ export interface CoachHost {
   load(): CoachProgress | undefined;
   save(p: CoachProgress | undefined): void;
   warn(msg: string): void;
+  /** DX5: the walk reached its end (not Esc): hand over to Discovery, which the answers just written to the project now feed. */
+  done?(): void;
 }
 
 export interface CoachOptions {
@@ -53,10 +55,12 @@ export function createCoach(steps: readonly CoachStep[], host: CoachHost, opt: C
   const detach = () => { unsub?.(); unsub = undefined; };
 
   /** Show step `i`, moving by `dir` past any step whose target is not on the page. */
-  async function goto(i: number, dir: 1 | -1) {
+  async function goto(i: number, dir: 1 | -1, exact = false) {
     const mine = ++gen; clearTimer(); detach();
     while (i >= 0 && i < steps.length) {
-      const step = steps[i], opened = await host.open(step.target);
+      const step = steps[i];
+      if (!exact && step.known?.(host.read())) { i += dir; continue; }   // DX5: the project already answers it: never asked twice
+      const opened = await host.open(step.target);
       if (mine !== gen) return;                                   // a newer move (Next pressed twice, stop) took over while the target opened
       if (!opened) { host.warn(`coach: step "${step.id}" skipped, its target is not on the page`); i += dir; continue; }
       idx = i; host.save({ at: step.id, ...(skipped.length ? { skipped: [...skipped] } : {}) });
@@ -67,8 +71,8 @@ export function createCoach(steps: readonly CoachStep[], host: CoachHost, opt: C
       unsub = host.subscribe(onChange);
       return;
     }
-    if (i >= steps.length) finish();
-    else if (idx >= 0) await goto(idx, 1);                        // stepping Back past the first showable step: stay on the one before
+    if (i >= steps.length) { finish(); host.done?.(); }
+    else if (idx >= 0) await goto(idx, 1, true);                        // stepping Back past the first showable step: stay on the one before
     else void end(false);
   }
   function onChange() {
@@ -97,7 +101,7 @@ export function createCoach(steps: readonly CoachStep[], host: CoachHost, opt: C
       if (!steps.length) return;
       const saved = fresh ? undefined : host.load(), at = saved ? steps.findIndex(s => s.id === saved.at) : -1;
       skipped = at >= 0 ? (saved?.skipped ?? []).filter(id => steps.some(s => s.id === id)) : []; running = true;
-      await goto(at < 0 ? 0 : at, 1);
+      await goto(at < 0 ? 0 : at, 1, at >= 0);
     },
     /** Esc / the close button: the card goes, the place is kept so Guide me can resume. */
     stop() { end(true); },

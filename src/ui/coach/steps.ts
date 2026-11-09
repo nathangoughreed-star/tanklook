@@ -21,9 +21,20 @@ export interface CoachStep {
   why: string;
   /** absent = an information step: Next is always available */
   done?: CoachDone;
+  /** DX5: the project already answers this step (a kind, a chosen or locked tank, limits, locked animals): the walk passes it by without asking. */
+  known?: (c: CoachCtx) => boolean;
   /** shows Skip while the step is not done; a step that is not skippable offers Next only once done */
   skippable: boolean;
 }
+
+/** What the project already answers, so the questioner never asks it again (DX5). */
+export const answered = {
+  kind: (c: CoachCtx) => !!c.brief.items['animals.kinds'] || !!c.brief.items['animals.stock'] || c.tank.fish.length > 0 || !!c.tank.items.length,
+  tank: (c: CoachCtx) => !!c.brief.items['constraints.existingTank'] || !!c.brief.items['equipment.tank'] || !!c.tank.product || !!c.tank.locks?.objects.some(o => o.target === 'tank'),
+  equipment: (c: CoachCtx) => !!c.brief.items['constraints.owned'],
+  limits: (c: CoachCtx) => Object.keys(c.brief.items).some(k => (k.startsWith('constraints.') && k !== 'constraints.owned' && k !== 'constraints.existingTank') || k === 'preferences.experience'),
+  animals: (c: CoachCtx) => !!c.tank.locks?.roster.length || c.brief.items['animals.stock']?.status === 'locked',
+};
 
 /** the Your-limits answers: every brief item under `constraints.` */
 const limitItems = (c: CoachCtx) => Object.entries(c.brief.items).filter(([k]) => k.startsWith('constraints.') && k !== 'constraints.owned' && k !== 'constraints.existingTank').sort(([a], [b]) => a.localeCompare(b));
@@ -37,12 +48,12 @@ const gearOf = (c: CoachCtx) => [c.brief.items['constraints.owned'], c.brief.ite
  *  Kind -> Tank -> Placement -> My equipment -> Your limits -> Look -> Animals -> Review. Every step can be skipped; nothing is required but the tank the person already has. */
 export const GUIDE_STEPS: readonly CoachStep[] = [
   {
-    id: 'kind', target: { section: 'tank', control: '#spKinds' }, title: 'What kind of setup?',
+    id: 'kind', known: answered.kind, target: { section: 'tank', control: '#spKinds' }, title: 'What kind of setup?',
     why: 'Freshwater, saltwater, terrarium or vivarium decides which animals and plants the lists offer, and what the gear costs.',
     done: { changes: c => [c.tank.layout.kind, c.tank.water] }, skippable: true,
   },
   {
-    id: 'size', target: { section: 'tank', control: '#presetA' }, title: 'Pick a tank size',
+    id: 'size', known: answered.tank, target: { section: 'tank', control: '#presetA' }, title: 'Pick a tank size',
     why: 'Press Presets… and choose a tank. Everything else (stocking, light, filter, price) is worked out for its size.',
     done: { changes: c => [c.tank.tank, c.tank.product] }, skippable: true,
   },
@@ -52,12 +63,12 @@ export const GUIDE_STEPS: readonly CoachStep[] = [
     done: { changes: c => [c.tank.stand] }, skippable: true,
   },
   {
-    id: 'equipment', target: { dialog: 'equipment' }, title: 'What do you already have?',
+    id: 'equipment', known: answered.equipment, target: { dialog: 'equipment' }, title: 'What do you already have?',
     why: 'Tick the tank, stand, light, heater or filter you own. Owned gear counts as $0 in the budget and is used before anything new is suggested.',
     done: { changes: gearOf }, skippable: true,
   },
   {
-    id: 'limits', target: { dialog: 'limits' }, title: 'Your limits',
+    id: 'limits', known: answered.limits, target: { dialog: 'limits' }, title: 'Your limits',
     why: 'Money, time, space and experience are all optional. A plan that goes over one shows a warning with a fix; it never stops you.',
     done: { changes: c => [limitItems(c), careOf(c)] }, skippable: true,
   },
@@ -67,7 +78,7 @@ export const GUIDE_STEPS: readonly CoachStep[] = [
     done: { changes: c => c.tank.layout.id }, skippable: true,
   },
   {
-    id: 'animals', target: { section: 'fish', control: '#spSearch' }, title: 'Pick the animals',
+    id: 'animals', known: answered.animals, target: { section: 'fish', control: '#spSearch' }, title: 'Pick the animals',
     why: 'Search the list and add species. Each one shows whether it suits this tank, its water and the others already in it.',
     done: { changes: c => c.tank.fish.map(f => f.species) }, skippable: true,
   },

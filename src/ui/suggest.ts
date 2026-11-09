@@ -13,6 +13,7 @@ import { CYCLE_NOTE } from '../scene/plan';
 import { TIER_LABEL } from '../scene/finish';
 import { LAYERS, LAYER_BLURB, LAYER_LABEL, type CostLine } from '../demand/costlines';
 import { compliance, lastUsed, rememberLastUsed, type Constraints } from '../scene/constraints';
+import type { TankSetup } from '../scene/types';
 import type { Store } from '../scene/store';
 import { tankLabel } from '../scene/tankfit';
 import type { Viewer } from '../render/viewer';
@@ -20,7 +21,8 @@ import type { SpaceLimit, Units } from '../scene/types';
 import { loadProfile } from './demandPanel';
 import { minWarnings } from './stockSummary';
 import { tankMinimum } from '../scene/tankMin';
-import { placedSetup, putTank, sceneForBuild } from './buildPick';
+import { placedSetup, sceneForBuild } from './buildPick';
+import { adoptTank } from './projectStart';
 import { constraintsOf, editBrief, emptyBrief, getBrief, lockedStock, onBrief, setBudget, setCareTime, setMonthly, setSpace, setTank } from './setupBrief';
 import { recordTaste, tasteOf, tasteWhy } from '../demand/taste';
 import { briefToWants, clearItem, setItem, targetOf, valueOf } from '../scene/brief';
@@ -53,9 +55,8 @@ export function wantsFrom(f: Fields, units: Units): { constraints: Constraints; 
 }
 
 /** "I like this one" -> make it mine (lane GV6): the option replaces the open project as one undoable step, named after it, with the brief, the limits, the stand choice and the space kept. */
-export function makeItMine(store: Store, p: Proposal) {
+export function makeItMine(store: Store, p: Proposal): TankSetup | { refused: string } {
   const next = sceneForBuild(p.build, store.scene.units);
-  next.name = p.archetype.title;
   const T = next.tanks[next.active];
   if (store.tank.brief) T.brief = structuredClone(store.tank.brief); // the brief stays with the project (lane U3)
   // lane GV10: the chosen tank fills the brief's Tank row (a tank the person owns stays theirs); in the same step, so Undo brings the old row back
@@ -64,8 +65,10 @@ export function makeItMine(store: Store, p: Proposal) {
   T.constraints = p.scene.constraints; T.stand = { ...T.stand, show: p.scene.stand.show }; if (p.scene.layout.space) T.layout = { ...T.layout, space: p.scene.layout.space };
   if (p.build.bundle) pinTank(T, p.build.bundle); // lane GV9: the kit price rides on the tank (saved, reloaded, read by the brief bar)
   rememberLastUsed(p.scene.constraints);
-  store.replace(next); store.seal();
-  return T;
+  // DX5: the option joins the project as a PROPOSAL (one undo step with the new name, locks respected, nothing locked), not a replacement scene
+  const r = adoptTank(store, T, p.archetype.title, { name: p.archetype.title });
+  if (!r.ok) return { refused: r.message };
+  return store.tank;
 }
 
 export function attachSuggest(store: Store, viewer: Viewer, status: (m: string, bad?: boolean) => void, openEquipment?: (item?: string) => void) {
@@ -192,9 +195,9 @@ ${lockedStock(getBrief()).length ? `<div class="spNote sgLocked">Locked animals:
 
   /** One picture per proposal: show it in the main viewer, take the picture, then roll the editor back to the tank the person had. */
   const shoot = (list: Proposal[]) => {
-    const was = el.hidden, m = store.mark; el.hidden = true;
-    pics = list.map(p => { store.update(s => { putTank(s.tanks[s.active], placedSetup(p.build)); }, { coalesce: 'suggest' }); return viewer.thumbnail(720); });
-    store.rollback(m); el.hidden = was;
+    const was = el.hidden; el.hidden = true;
+    pics = list.map(p => { viewer.setPreview(placedSetup(p.build), true); return viewer.thumbnail(720); }); // DX5: from a copy, the project never moves
+    viewer.setPreview(null); el.hidden = was;
   };
 
   const go = (live = false) => {
@@ -247,7 +250,9 @@ ${lockedStock(getBrief()).length ? `<div class="spNote sgLocked">Locked animals:
   const pick = (i: number) => {
     const opts = shownNow(), p = opts[i]; if (!p) return;
     teach(opts, i);
-    const T = makeItMine(store, p); close();
+    const T = makeItMine(store, p);
+    if ('refused' in T) { status(T.refused, true); return; }
+    close();
     const c = compliance(T, { setupUsd: p.totals.startupUsd, upkeepUsdMo: p.totals.monthlyUsd, minPerWeek: p.totals.minPerWeek }, loadProfile().limits, units());
     status(`${p.archetype.title} is yours to edit: ${usd(p.totals.startupUsd)} set-up, ${usd(p.totals.monthlyUsd)} a month. ${c.line}. Add or remove anything; Undo steps back.`);
   };

@@ -271,8 +271,7 @@ describe('what the screen may and may not write (source guards)', () => {
     expect(screen).toContain("setRoute(b, 'explore')");
     expect(screen).toContain('batchSizeOf(softwareGl())');
   });
-  it('Make This Mine is a hook (stage X4), not an install', () => {
+  it('Make This Mine installs as a proposal (DX5): adoptTank, never a replace', () => {
     const screen = read('src/ui/explore/explore.ts');
-    expect(screen).toContain('makeMine?(c: StoredCandidate): void'); expect(screen).toContain('That step is not built yet; your project is unchanged');
-  });
+    expect(screen).toContain('makeMine?(c: StoredCandidate): void'); expect(screen).toContain('adoptTank(c.store');  });
 });

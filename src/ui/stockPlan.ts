@@ -2,6 +2,7 @@
 // animal, set how many (graded band messages, male / female counts for species kept by sex), say whether other animals go in with them
 // (ranked by compatibility), and watch the bare tank in the viewer step up through catalogue sizes. The fork card answers the fullness
 // tile's "Make room or swap..." button. Logic lives in stockPlanLogic.ts (pure, tested); this file draws it and writes the scene.
+import { hasLocks } from './projectStart';
 import { rng } from '../art/paint';
 import { CARE } from '../data/care';
 import { getSpecies, searchSpecies } from '../data/species';
@@ -306,7 +307,7 @@ ${picks.length ? `<div class="spHd">The tank</div>${tankBlock()}${budgetBlock()}
   // ---------- opening ----------
   const open = () => {
     // a scene that holds a design is never replaced: the screen opens over it
-    if (hasDesign(store.tank, getBrief())) {
+    if (hasDesign(store.tank, getBrief()) || hasLocks(store.scene)) { // DX5: a project with locks is never replaced either: the screen opens over it
       const prev = store.tank, b = getBrief(), stock = valueOf(b, 'animals.stock') ?? [];
       design = true; kept = undefined; needLight = ''; undoFix = undefined; mates = false; q = ''; shown = '';
       picks = (stock.length ? stock.map(pickOfStock) : picksFromTank(prev)).filter(p => getSpecies(p.id));   // GS7: the brief's split (sexes, pairs, stage), else read back from the scene's animals

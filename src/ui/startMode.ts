@@ -1,4 +1,6 @@
-// New tank: Guided or Sandbox (lane NG1, Nathan 2026-10-29). Two equal cards. Guided enters the Welcome workspace (ui/welcome.ts);
+// DX5 (2026-11-09): ONE project. New tank offers three ENTRY SHORTCUTS into the same project, not modes: Just exploring (empty project, opens Discovery with every tab),
+// I have some ideas (empty room, you add and lock what you know, then Discover), I have an existing setup (My equipment + Tank first). No mode is stored any more; the
+// old Sandbox flags bar is retired (the Checks strip, lane DX1, is the one verdict). History: New tank: Guided or Sandbox (lane NG1, Nathan 2026-10-29). Two equal cards. Guided enters the Welcome workspace (ui/welcome.ts);
 // Sandbox (UI2 2026-11-04: Start sandbox opens a second screen of four kind cards) is an empty tank of the chosen kind with the checks shown as flags that
 // never block; an animal-welfare problem is always red and says it is not a valid tradeoff. A Guardrails list shows the brief items
 // switched off (`off`) and turns them back on; one button switches Sandbox to Guided and keeps the tank. The pure part is testable.
@@ -10,10 +12,11 @@ import { demandOf } from '../demand';
 import { setOff, against } from '../scene/brief';
 import { summaryOf, LEVEL_WORD, type StockSummary } from './stockSummary';
 
-export type Mode = 'guided' | 'sandbox';
-const KEY = 'tanklook.mode';
-export const getMode = (): Mode | undefined => { try { const m = localStorage.getItem(KEY); return m === 'guided' || m === 'sandbox' ? m : undefined; } catch { return undefined; } };
-export const setMode = (m: Mode) => { try { localStorage.setItem(KEY, m); } catch { /* private mode: the mode lasts this page only */ } };
+/** The three ways to begin (entry shortcuts, not modes). */
+export type StartEntry = 'exploring' | 'ideas' | 'existing';
+export const START_ENTRIES: readonly { id: StartEntry; label: string }[] = [
+  { id: 'exploring', label: 'Just exploring' }, { id: 'ideas', label: 'I have some ideas' }, { id: 'existing', label: 'I have an existing setup' },
+];
 
 export const NOT_VALID_TRADEOFF = 'not a valid tradeoff';
 
@@ -49,14 +52,16 @@ export function sandboxFlags(sm: StockSummary): Flag[] {
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
 export interface StartModeHost {
-  /** Enter the Welcome workspace (Guided). */ guided(): void;
-  /** Guided from New (lane NW1): a clean tank and brief (after the replace warning), then Guided Setup at World (or at the step asked for: Equipment); false when cancelled. */ guidedNew(at?: 'equipment'): boolean | Promise<boolean>;
-  /** An empty tank of the kind (false when the person cancelled the replace warning). */ sandbox(kind: SetupKind): boolean | Promise<boolean>;
+  /** "Just exploring": an empty project (after the new-project warning), then Discovery with every tab ticked; false when cancelled. */ exploring(): boolean | Promise<boolean>;
+  /** "I have some ideas": an empty room of the kind (after the warning); the person adds and locks what they know, then Discovers. false when cancelled. */ ideas(kind: SetupKind): boolean | Promise<boolean>;
+  /** "I have an existing setup": an empty project (after the warning), then My equipment with the Tank row first. false when cancelled. */ existing(): boolean | Promise<boolean>;
   /** The owned-gear sheet (ui/ownedGear.ts): tick the tank, light, heater and filter you already have. */ owned(): void;
   /** The deals / starters / saved-tank lists. */ browse(menu: 'new' | 'open', tab?: 'starters' | 'open'): void;
   /** The demand profile for the cost flags (lazy: the demand panel loads after start-up). */ profile?(): Parameters<typeof demandOf>[1] | undefined;
 }
 
+/** The retired Sandbox flags bar (kept for its tests; nothing switches it on). */
+const SANDBOX_BAR = false as boolean;
 export function attachStartMode(store: Store, host: StartModeHost) {
   const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
   const dlg = $<HTMLDialogElement>('modeDlg'), guard = $<HTMLDialogElement>('guardDlg'), bar = $('sandboxBar');
@@ -67,13 +72,13 @@ export function attachStartMode(store: Store, host: StartModeHost) {
   kindList.replaceChildren(...SETUP_KINDS.map(([k, label, tip]) => {
     const b = document.createElement('button'); b.type = 'button'; b.dataset.kind = k; b.className = 'start-mode-card';
     b.innerHTML = `<div class="mode-pic" data-art="start/${k}"></div><b>${label}</b><span class="hint">${esc(tip)}</span>`;
-    b.onclick = async () => { if (await host.sandbox(k)) { setMode('sandbox'); dlg.close(); drawBar(); } };
+    b.onclick = async () => { if (await host.ideas(k)) dlg.close(); };
     return b;
   }));
-  const screen = (kindsOn: boolean) => { main.hidden = kindsOn; kinds.hidden = !kindsOn; $('modeTitle').textContent = 'New tank'; fillPics(dlg); (kindsOn ? kindList.querySelector<HTMLElement>('button') : $('modeGuided'))?.focus(); };
+  const screen = (kindsOn: boolean) => { main.hidden = kindsOn; kinds.hidden = !kindsOn; $('modeTitle').textContent = 'New tank'; fillPics(dlg); (kindsOn ? kindList.querySelector<HTMLElement>('button') : $('modeExploring'))?.focus(); };
 
   const drawBar = () => {
-    if (getMode() !== 'sandbox') { bar.hidden = true; return; }
+    if (!SANDBOX_BAR) { bar.hidden = true; return; } // DX5: retired, there is no Sandbox mode any more
     let flags: Flag[] = [];
     try { flags = sandboxFlags(summaryOf(store.tank, (store.scene.units ?? 'in') === 'in' ? 'in' : 'cm')); } catch { /* an empty tank has nothing to flag */ }
     try { const P = host.profile?.(); if (P) { const t = demandOf(store.tank, P).totals; flags.push(...costFlags(getBrief(), t.setupUsd, t.upkeepUsdMo)); } } catch { /* no price yet */ }
@@ -94,15 +99,16 @@ export function attachStartMode(store: Store, host: StartModeHost) {
     const o = (e.target as HTMLElement).closest<HTMLElement>('[data-off]');
     if (o) { editBrief(b => setOff(b, o.dataset.off as ItemId, true)); return; }
     const t = (e.target as HTMLElement).closest<HTMLElement>('[data-sb]'); if (!t) return;
-    if (t.dataset.sb === 'guard') { drawGuard(); guard.showModal(); } else { setMode('guided'); drawBar(); host.guided(); }
+    if (t.dataset.sb === 'guard') { drawGuard(); guard.showModal(); } else { drawBar(); }
   };
   guard.addEventListener('click', e => {
     const t = (e.target as HTMLElement).closest<HTMLElement>('[data-on],[data-off]'); if (!t) return;
     const id = (t.dataset.on ?? t.dataset.off) as ItemId, off = t.dataset.off !== undefined;
     editBrief(b => setOff(b, id, off)); drawGuard();
   });
-  $('modeGuided').onclick = async () => { if (await host.guidedNew()) { setMode('guided'); dlg.close(); drawBar(); } };
-  $('modeSandbox').onclick = () => screen(true);
+  $('modeExploring').onclick = async () => { if (await host.exploring()) dlg.close(); };
+  $('modeIdeas').onclick = () => screen(true);
+  $('modeExisting').onclick = async () => { if (await host.existing()) dlg.close(); };
   $('modeBack').onclick = () => screen(false);
   store.subscribe(drawBar); onBrief(drawBar); drawBar();
   return { show() { if (!dlg.open) dlg.showModal(); screen(false); }, /** the kind cards (the picker's way back, lane ST1) */ showKinds() { if (!dlg.open) dlg.showModal(); screen(true); }, drawBar };

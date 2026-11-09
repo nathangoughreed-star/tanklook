@@ -52,9 +52,9 @@ describe('the guided path is the coach', () => {
     const src = readFileSync('src/ui/panels.ts', 'utf8');
     for (const d of ['limits', 'equipment']) expect(src).toMatch(new RegExp(`attachCoach\\(store, \\{[^}]*${d}:`));
   });
-  it('New tank > Guided starts the coach, not the old dialog', () => {
+  it('the coach is the questioner of Discovery (DX5): Guide me walks it, finishing hands over to Discovery, no old dialog', () => {
     const src = readFileSync('src/ui/panels.ts', 'utf8');
-    expect(src).toContain('guided: () => startGuide()'); expect(src).toContain('startGuide(at, true)'); expect(src).not.toContain('welcome.show(');
+    expect(src).toContain("discover: () => openDiscovery({ from: 'coach' })"); expect(src).not.toContain('welcome.show(');
   });
   it('the equipment step reacts to owned gear, the limits step does not', () => {
     const ctx = (items: object): CoachCtx => ({ scene: {} as never, tank: { stand: undefined } as never, brief: { v: 1, items } as never });

@@ -6,7 +6,8 @@ import { rng } from '../art/paint';
 import { dealShip } from '../data/deals';
 import { gearShip } from '../data/gearDeals';
 import { getSpecies } from '../data/species';
-import { pinDeal } from '../demand/pinned';
+import { pinTank } from '../demand/pinned';
+import { adoptTank } from './projectStart';
 import { emptyScene } from '../scene/defaults';
 import { shuffleFish } from '../scene/scatter';
 import { carryAnimals } from '../scene/carry';
@@ -60,17 +61,15 @@ export function attachBuildPick(store: Store, viewer: Viewer, status: (m: string
   // the stocking screen's animals as they were when this screen opened: the previews (show) copy each build's fresh fish over the live
   // tank, so by the pick the live tank no longer holds the owner's sexes and pairings (2026-10-22, found in the app)
   let source: Pick<TankSetup, 'fish' | 'pairs'> | undefined;
-  const close = () => { el.hidden = true; side(false); source = undefined; }; // a snapshot belongs to one opening: Back, then Continue, takes a fresh one
+  const close = () => { el.hidden = true; side(false); source = undefined; viewer.setPreview(null); }; // a snapshot belongs to one opening: Back, then Continue, takes a fresh one
 
-  /** Show build `i` live in the viewer. */
-  const show = (i: number) => {
-    const T = placedSetup(builds[i]);
-    store.update(s => { putTank(s.tanks[s.active], T); }, { coalesce: 'buildpick' });
-  };
+  /** Show build `i` in the viewer from a COPY (DX5: the project is never written by a preview). */
+  const show = (i: number) => viewer.setPreview(placedSetup(builds[i]), true);
   /** One picture per build, taken with the main viewer while the panel is hidden. */
   const shoot = () => {
     const was = el.hidden; el.hidden = true;
     pics = builds.map((_, i) => { show(i); return viewer.thumbnail(720); });
+    viewer.setPreview(null);
     el.hidden = was;
   };
 
@@ -104,11 +103,14 @@ ${meetsNeeds(b) ? '' : '<div class="spWarn">No filter on the list carries these 
 
   const pick = (i: number) => {
     const b = builds[i];
-    if (b.bundle) pinDeal(b.bundle); // before the load that follows promotes it: the demand panel prices the bundle in place of its parts
     const next = sceneForBuild(b, store.scene.units);
-    carryAnimals(source ?? store.tank, next.tanks[next.active]); // sexes and pairings set on the stocking screen, onto the build's new fish (2026-10-22)
-    store.replace(next);
-    close(); store.seal();
+    const T = next.tanks[next.active];
+    carryAnimals(source ?? store.tank, T); // sexes and pairings set on the stocking screen, onto the build's new fish (2026-10-22)
+    if (b.bundle) pinTank(T, b.bundle); // the kit price rides on the tank (lane GV9): the demand panel prices the bundle in place of its parts
+    // DX5: the build joins the project as a PROPOSAL (one undo step, locks respected), not a replacement scene
+    const r = adoptTank(store, T, `${b.label} build: ${tankLabel(b.tank, store.scene.units)}`);
+    if (!r.ok) { status(r.message, true); return; }
+    close();
     status(`${b.label} build opened in the editor: ${tankLabel(b.tank, store.scene.units)}, ${usd(b.setupUsd)} set-up. The look is yours to change; Undo steps back.`);
     for (const fn of [...listeners]) fn({ build: b, animals });
   };
@@ -127,7 +129,7 @@ ${meetsNeeds(b) ? '' : '<div class="spWarn">No filter on the list carries these 
   const open = (a: AnimalCount[], tank: Parameters<typeof buildsFor>[1], onBack?: () => void) => {
     source = structuredClone({ fish: store.tank.fish, pairs: store.tank.pairs }); // before the previews overwrite them
     animals = a; back = onBack; builds = distinctBuilds(buildsFor(a, tank)); // lane RF: the same gear is one choice, whatever the price
-    side(true); pics = []; shoot(); show(1);
+    side(true); pics = []; shoot(); show(1); // the picture behind the panel is a preview too
     el.hidden = false; draw();
   };
   return { open, close };

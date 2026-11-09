@@ -7,10 +7,11 @@ import { getSpecies } from '../data/species';
 import { needsOf, tankLabel } from '../scene/tankfit';
 import { PLANT_MODES, scapeOptions, type PlantMode, type ScapeOption } from '../scene/scapes';
 import { isLandStyle } from '../scene/items';
+import { adoptTank } from './projectStart';
 import type { Store } from '../scene/store';
 import type { Viewer } from '../render/viewer';
 import type { TankSetup } from '../scene/types';
-import { onBuildPicked, placedSetup, type BuildPicked } from './buildPick';
+import { onBuildPicked, type BuildPicked } from './buildPick';
 import { attachPlanSheet } from './planSheet';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
@@ -32,17 +33,16 @@ export function attachScapePick(store: Store, viewer: Viewer, status: (m: string
     else if (!hide && stepped && app) { app.classList.remove('collapsed'); stepped = false; viewer.invalidate(); }
   };
 
-  let picked: BuildPicked | undefined, bare: TankSetup | undefined, mode: PlantMode = 'live', opts: ScapeOption[] = [], pics: string[] = [];
+  let picked: BuildPicked | undefined, mode: PlantMode = 'live', opts: ScapeOption[] = [], pics: string[] = [];
   const asks = () => { const n = needsOf(picked!.animals), land = picked!.animals.every(a => getSpecies(a.species)?.habitat === 'land'); return !n.salt && !land; };
   const close = () => { el.hidden = true; side(false); };
-  const put = (T: TankSetup) => store.update(s => { Object.assign(s.tanks[s.active], structuredClone(T)); }, { coalesce: 'scapepick' });
   const framed = (T: TankSetup): TankSetup => ({ ...T, camera: { ...T.camera, ...VIEW } });
 
   /** One picture per option, taken with the main viewer while the panel is hidden; the editor shows the first when done. */
   const shoot = () => {
     const was = el.hidden; el.hidden = true;
-    pics = opts.map(o => { put(framed(o.setup)); return viewer.thumbnail(720); });
-    el.hidden = was;
+    pics = opts.map(o => { viewer.setPreview(structuredClone(framed(o.setup)), true); return viewer.thumbnail(720); }); // DX5: drawn from a copy; the project is not written
+    viewer.setPreview(null); el.hidden = was;
   };
 
   const ask = () => {
@@ -78,7 +78,7 @@ ${o.lightNote ? `<div class="spWarn">${esc(o.lightNote)}</div>` : ''}
     // the pictures wait for the side panel's collapse to give the view its width, else the first set comes out blank (a timer, not a frame: a hidden tab runs no frames)
     setTimeout(() => {
       if (me !== token || el.hidden) return;
-      shoot(); if (bare) put(bare); draw();
+      shoot(); draw();
     }, 150);
   };
 
@@ -86,14 +86,15 @@ ${o.lightNote ? `<div class="spWarn">${esc(o.lightNote)}</div>` : ''}
   el.onclick = e => {
     const t = (e.target as HTMLElement).closest<HTMLElement>('[data-act]'); if (!t || !picked) return;
     switch (t.dataset.act) {
-      case 'close': token++; if (bare) put(bare); close(); chip.hidden = false; break;
+      case 'close': token++; close(); chip.hidden = false; break;
       case 'mode': mode = t.dataset.mode as PlantMode; choose(); break;
       case 'plants': token++; ask(); break;
-      case 'scratch': token++; if (bare) put(bare); done('The plain editor: the tank and gear you picked, no scape yet. Your plan is under "Your plan".'); break;
+      case 'scratch': token++; done('The plain editor: the tank and gear you picked, no scape yet. Your plan is under "Your plan".'); break;
       case 'pick': {
         token++;
         const o = opts[+(t.dataset.i ?? 0)];
-        put(framed(o.setup));
+        const r = adoptTank(store, { ...store.tank, ...structuredClone(framed(o.setup)) }, `${o.label} scape`); // DX5: a proposal (one undo step, locks respected), not a write over the tank
+        if (!r.ok) { status(r.message, true); token++; break; }
         done(`${o.label} opened in the editor${isLandStyle(o.style) ? '' : ' with your animals'}. It is yours to change; Undo steps back. "Your plan" shows what to buy.`);
         break;
       }
@@ -103,7 +104,6 @@ ${o.lightNote ? `<div class="spWarn">${esc(o.lightNote)}</div>` : ''}
 
   onBuildPicked(e => {
     picked = e; mode = 'live';
-    bare = placedSetup(e.build);
     chip.hidden = true;
     if (asks()) ask(); else choose();
   });
