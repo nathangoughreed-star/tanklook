@@ -1290,7 +1290,9 @@ button.start-mode-card span.hint { font-size: 12px }
 
 .eqwarn { position: fixed; right: 16px; bottom: 64px; z-index: 40; width: min(320px, calc(100vw - 32px)); background: var(--panel); color: var(--ink); border: 1px solid #b36b00; border-radius: 8px; padding: 10px 12px; box-shadow: 0 6px 24px #0008; font-size: 13px }
 .eqwarn ul { margin: 6px 0 8px; padding-left: 18px } .eqwarn .btns { display: flex; gap: 8px }
-/* lane DX1: the read-only Checks strip */
-.checks { position: fixed; left: 16px; bottom: 16px; z-index: 30; width: min(360px, calc(100vw - 32px)); max-height: 40vh; overflow: auto; background: var(--panel); color: var(--ink); border: 1px solid #555; border-radius: 8px; padding: 8px 12px; font-size: 12px; box-shadow: 0 4px 16px #0006 }
-.checks ul { margin: 4px 0 6px; padding-left: 16px } .checks i { opacity: .75 }
+/* lane DX1: the read-only Checks strip. Desktop: bottom of the view between the eye-view widget (left) and the water note / EQ1 popup (right), clear of the side panel,
+   undo / redo / room light (top) and the cost panel (top right). Phone: a one-line pill at the bottom-left, under EQ1's popup (bottom 64), opening upward on tap. */
+.checks { position: fixed; left: 580px; bottom: 16px; z-index: 30; width: min(480px, calc(100vw - 580px - 340px)); max-height: 40vh; overflow: auto; background: var(--panel); color: var(--ink); border: 1px solid #555; border-radius: 8px; padding: 6px 12px; font-size: 12px; box-shadow: 0 4px 16px #0006 }
+.checks summary { cursor: pointer; font-weight: 600 } .checks ul { margin: 4px 0 6px; padding-left: 16px } .checks i { opacity: .75 }
 .checks .ck-gates { border-left: 3px solid #c0392b; padding-left: 8px } .checks .ck-hard { border-left: 3px solid #b36b00; padding-left: 8px; margin-top: 4px }
+@media (max-width: 900px) { .checks { left: 8px; bottom: 8px; width: auto; max-width: calc(100vw - 16px) } }
