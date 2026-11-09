@@ -6,6 +6,7 @@
 //   keepLocks         the "Keep this" toggles, written into the project's locks
 //   rangeText         a Range3 as dollars
 import { TABS, type Tab } from '../../scene/scope';
+import { discoverTabs } from '../../scene/discoverScope';
 import { checkProposal, previewProposal, type Proposal, type ApplyResult } from '../../scene/proposal';
 import { lockObject, unlockObject, lockRoster, unlockRoster, locksOf, isLocked } from '../../scene/locks';
 import { SUBSTRATE_KEYS } from '../../scene/locks';
@@ -19,7 +20,7 @@ import type { Store } from '../../scene/store';
 
 export const TAB_LABEL: Record<Tab, string> = { tank: 'Tank', animals: 'Animals', plants: 'Plants', hardscape: 'Hardscape', substrate: 'Substrate' };
 /** The left-panel section each tab (and each verdict issue tab) opens. */
-export const SECTION_OF: Record<string, string> = { tank: 'tank', animals: 'fish', plants: 'plants', hardscape: 'hardscape', substrate: 'substrate', equipment: 'equipment', brief: 'brief', tech: 'tech', water: 'water', room: 'room' };
+export const SECTION_OF: Record<string, string> = { tank: 'tank', animals: 'fish', plants: 'plants', hardscape: 'hardscape', substrate: 'substrate', equipment: 'equipment', brief: 'brief', tech: 'equipment', water: 'fish', room: 'tank', quick: 'tank' };
 export const OBJECTIVES: { id: Objective; label: string; hint: string }[] = [
   { id: 'explore', label: 'Explore', hint: 'Show me different directions' },
   { id: 'complete', label: 'Complete my tank', hint: 'Only fill in what is missing; nothing existing is removed' },
@@ -39,7 +40,8 @@ export function rangeText(r: Range3, unit = '', step = 10): string {
 export function defaultScope(tank: TankSetup, ctx?: Tab): Tab[] {
   if (ctx) return [ctx];
   const L = locksOf(tank), allLocked = (t: Tab) => (t === 'substrate' && L.objects.some(o => o.target === 'substrate')) || (t === 'tank' && L.objects.some(o => o.target === 'tank' && !o.props?.length));
-  return TABS.filter(t => !allLocked(t));
+  const on = discoverTabs(tank);   // DX7: the menu switches are the scope
+  return TABS.filter(t => on.includes(t) && !allLocked(t));
 }
 
 /** One-line summary of what is kept: "Locked: 2 pieces, 3 species, the substrate". */

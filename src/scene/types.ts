@@ -435,6 +435,8 @@ export interface TankSetup {
   brief?: import('./brief').Brief;
   /** Persistent "Keep this" locks (DX0, scene v10): what a Discovery run may not change; scene/locks.ts. Absent = nothing locked. */
   locks?: Locks;
+  /** The menus whose "Discovery can change this" switch is ON (DX7, 2026-11-09, no version bump; scene/discoverScope.ts). Absent = all five on (the default). */
+  discoverOn?: ('tank' | 'animals' | 'plants' | 'hardscape' | 'substrate')[];
 }
 
 /** How firmly a species is held in the roster: `exact` = exactly n, `atLeast` = n or more, `speciesOnly` = the species stays (any count above 0). */

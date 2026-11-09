@@ -1314,3 +1314,23 @@ button.start-mode-card span.hint { font-size: 12px }
 .dxkeepbox { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 6px; margin: 4px 0 8px } .dxkeepbox .dxkeeps { flex: 1 1 100%; font-size: 12px } .dxkeepbox.kept summary { color: #3a9d5d; font-weight: 600 }
 .dxkeepbox .dxk { display: flex; align-items: center; gap: 6px; padding: 1px 0 } .dxkeepbox .dxk.kept { border-left: 3px solid #3a9d5d; padding-left: 6px; font-weight: 600 } .dxkeepbox .dxk select { margin-left: auto }
 @media (max-width: 900px) { .dxp { width: 100vw; border-left: 0 } }
+
+/* DX7: seven menus. The Discovery switch sits in the header of the five creative menus; the view controls are one popover on the view. */
+.sec > summary { flex-wrap: wrap }
+.dxsw { order: 3; flex-basis: 100%; display: flex; align-items: center; gap: 8px; margin: 0 0 6px; padding: 0; border: 0; background: none; color: var(--muted); font: inherit; font-size: 12px; cursor: pointer; text-align: left }
+.dxsw .dxtrack { position: relative; width: 28px; height: 16px; flex: none; border-radius: 8px; background: var(--line); transition: background .12s }
+.dxsw .dxtrack::after { content: ''; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: #fff; transition: transform .12s }
+.dxsw[aria-checked="true"] .dxtrack { background: #2e7d6b }
+.dxsw[aria-checked="true"] .dxtrack::after { transform: translateX(12px) }
+.dxsw[aria-checked="true"] { color: var(--ink) }
+.dxsw:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.dxp .dxtabs .dxsw { order: 0; flex-basis: auto; margin: 0 }
+.dxp .dxonly { margin: 0 0 6px }
+.dxp .dxq { margin: 8px 0; border-top: 1px dashed #666 } .dxp .dxq > summary { cursor: pointer; padding: 6px 0; font-weight: 600 }
+.cnnonew { display: block; margin: 8px 0 }
+.viewpop { position: absolute; top: 44px; left: 8px; z-index: 30; width: min(360px, calc(100% - 16px)); max-height: calc(100% - 120px); overflow: auto; box-sizing: border-box; padding: 6px 12px 10px; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 6px 24px #0006 }
+.viewpop[hidden] { display: none }
+.viewpop .vpsec { border-top: 1px solid var(--line); padding-top: 4px } .viewpop .vpsec:first-child { border-top: 0 }
+.viewpop .vpsec h3 { margin: 6px 0 4px; font-size: 13px }
+.viewpop label { display: block; margin: 4px 0 }
+.dxp .flabel { width: auto }

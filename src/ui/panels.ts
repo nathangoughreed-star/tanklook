@@ -1,6 +1,8 @@
 // Sidebar wiring. Inputs write through store.update(); one sync() pulls every control back from the scene,
 // so undo/redo, file open and pointer drags all refresh the panels the same way.
 import { FOCUS_SECS, type FocusSec } from '../render/menuFocus';
+import { projectExtras } from '../scene/brief';
+import { setNoNewEquipment } from '../scene/project';
 import { attachDemandPanel, loadProfile } from './demandPanel';
 import { fitToLimits, hasLimits } from '../demand/fit';
 import { attachTechMenu } from './techMenu';
@@ -322,7 +324,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     browse: menu => showChooser(menu, menu === 'open' ? 'starters' : undefined, welcomeFirst),
   });
   $('browseLooks').onclick = () => welcome.browseLooks();
-  $('exploreSetups').onclick = () => welcome.exploreSetups(); // lane GW2: Visual Discovery lives in Quick Setup
+  $('exploreSetups').onclick = () => welcome.exploreSetups(); // lane GW2 / DX7: Browse looks and Explore complete setups are options inside Discover (Quick setup)
   // lane R9: the owned-gear sheet (Guided, "Starting from something I have now"); its Tank row borrows the tank picker and reports when it closes
   let ownedSheet: { open(at?: string): void } | undefined;
   const pickTank = (done: (name: string) => void) => {
@@ -335,10 +337,14 @@ export function attachPanels(store: Store, viewer: Viewer) {
   const openOwned = (at?: string) => void import('./ownedGear').then(m => { (ownedSheet ??= m.attachOwnedGear(store, { status, pickTank, profile: () => demand?.profile() })).open(at); });
   void import('./myEquipment').then(m => m.attachMyEquipment(store, openOwned));
   void import('./equipmentWarn').then(m => m.attachEquipmentWarn(store, openOwned)); // lane EQ1: warns when owned gear no longer suits the design
-  void Promise.all([import('./discover/panel'), import('./discover/keep'), import('./discover/entry')]).then(([m, k, e]) => { const ui = m.attachDiscoverPanel(store, viewer, { status, opts: () => { const d = demand?.state(); return { ...(d ? { totals: d.demand.totals } : {}), limits: demand?.profile().limits }; } }); k.attachKeep(store, t => ui.open(t)); e.registerDiscovery(o => ui.open(o.scope)); }); // lane DX4: Discovery screen + Keep this locks
+  void Promise.all([import('./discover/panel'), import('./discover/keep'), import('./discover/entry')]).then(([m, k, e]) => { const ui = m.attachDiscoverPanel(store, viewer, { status, opts: () => { const d = demand?.state(); return { ...(d ? { totals: d.demand.totals } : {}), limits: demand?.profile().limits }; } }); k.attachKeep(store, t => ui.open(t)); e.registerDiscovery(o => ui.open(o.scope, o.from === 'quick')); }); // lane DX4: Discovery screen + Keep this locks
   void import('./checksStrip').then(m => m.attachChecksStrip(store, () => { const d = demand?.state(); return { ...(d ? { totals: d.demand.totals } : {}), limits: demand?.profile().limits }; })); // lane DX1: read-only Checks strip (the one verdict)
-  let limitsPanel: { open(): void } | undefined;
-  const openLimits = () => void import('./limitsPanel').then(m => { (limitsPanel ??= m.attachLimitsPanel()).open(); });
+  // DX7: Your limits is inline in the Constraints menu now; every door ("Edit in Your limits", the coach, the experience link) opens that menu
+  const openLimits = () => { openSec('brief'); $('limitsHost').scrollIntoView?.({ block: 'start' }); };
+  void import('./limitsPanel').then(m => m.attachLimitsPanel($('limitsHost'), () => openSec('brief')));
+  { const cn = $('cnNoNew') as HTMLInputElement, cnSync = (b = getBrief()) => { cn.checked = !!projectExtras(b).noNewEquipment; };   // the same brief value as My equipment's box
+    cn.onchange = () => editBrief(b => setNoNewEquipment(b, cn.checked)); onBriefEdit(b => cnSync(b)); cnSync(); }
+  void import('./discover/switches').then(m => m.attachMenuSwitches(store)); // DX7: "Discovery can change this" in the five creative menu headers
   const startMode = attachStartMode(store, {
     // DX5: entry shortcuts into the one project (none is a mode); each goes through the same new-project warning
     exploring: async () => { const ok = welcomeFirst ? (welcomeFirst = false, true) : await newEmptyTank(); if (ok) openDiscovery({ from: 'start-exploring' }); return ok; },
@@ -349,7 +355,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     profile: () => { try { return loadProfile(); } catch { return undefined; } },
   });
   // lane GW1: the guide that walks the real menus (ui/coach); lane GW2: Guided = this coach (the old dialog steps live on as Quick Setup's Browse looks / Explore)
-  void import('./coach/dom').then(m => { m.attachCoach(store, { limits: openLimits, equipment: () => openOwned(), discover: () => openDiscovery({ from: 'coach' }) }); }); // DX5: the guide is Discovery's optional questioner; finishing it hands over to Discovery
+  void import('./coach/dom').then(m => { m.attachCoach(store, { limits: openLimits, equipment: () => openOwned(), discover: () => openDiscovery({ from: 'coach' }), quick: () => openDiscovery({ from: 'quick' }) }); }); // DX5: the guide is Discovery's optional questioner; finishing it hands over to Discovery
   void import('./suggest').then(m => { suggestPanel = m.attachSuggest(store, viewer, status, openOwned); }); // lane C8: Suggest a setup
   void import('./infeasibleCard').then(m => m.attachCompare(store, status)); // lane GV7: compromise slots fill as they show; Use this / Compare (split view, money and care first on the tabs)
   void import('./briefBar').then(m => { m.attachBriefBar(store, { suggest: () => suggestPanel?.open(), owned: () => openOwned(), limits: openLimits, report: () => void import('./report').then(m => m.openReport()) }); }); // lane U3: the setup brief bar, shown in every entry point
@@ -1309,6 +1315,12 @@ Cancel, then change the name, to keep both.`)) return;
   const sideHidden = () => $('app').classList.contains('collapsed');
   $('sideClose').onclick = () => { showSide(false); if (store.split) store.clearEditing(); };
   $('sideOpen').onclick = () => { showSide(true); if (store.split && !store.targets.length) store.setEditing(G().active, true); };
+  // DX7: Viewer, Compare and Display & export are not menus: one compact "View" popover on the view (every control keeps its id)
+  { const pop = $('viewPop'), btn = $('viewBtn');
+    const set = (on: boolean) => { pop.hidden = !on; btn.setAttribute('aria-expanded', String(on)); btn.classList.toggle('on', on); };
+    btn.onclick = () => set(pop.hidden === true);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !pop.hidden) { set(false); btn.focus(); } });
+    document.addEventListener('pointerdown', e => { if (!pop.hidden && !pop.contains(e.target as Node) && !btn.contains(e.target as Node)) set(false); }); }
   $('sideTab').onclick = () => $(sideHidden() ? 'sideOpen' : 'sideClose').click(); // the phone's arrow tab (style.css)
   const keepRule = () => { // after split / undo / load
     if (!store.split) return;
@@ -1326,7 +1338,7 @@ Cancel, then change the name, to keep both.`)) return;
     if (d.open) { for (const o of secs) if (o !== d && o.open) o.open = false; if (scape) d.append($('itemEdit')); }
     else if (scape && store.selectedItem && scapeSec(store.selectedItem.kind) === d.dataset.sec) store.selectItem(null);
     else if (d.dataset.sec === 'fish' && store.selId != null) store.select(null);
-    const f = secs.find(x => x.open)?.dataset.sec as FocusSec | undefined; viewer.menuFocus = f && FOCUS_SECS.includes(f) ? f : null; viewer.invalidate(); // menu focus (lane TG)
+    const f0 = secs.find(x => x.open)?.dataset.sec, f = (f0 === 'equipment' ? 'tech' : f0) as FocusSec | undefined; viewer.menuFocus = f && FOCUS_SECS.includes(f) ? f : null; viewer.invalidate(); // menu focus (lane TG)
   });
   // the picker (lane SS2): Bare tank, then Freshwater / biotopes / Marine / Terrarium groups; the marine styles show in a
   // saltwater tank only and the freshwater biotopes in a freshwater one (refreshed with the water type, below)

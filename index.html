@@ -141,10 +141,6 @@
     </ul>
   </details>
 
-  <details class="sec" data-sec="brief"><summary><h2>Setup brief</h2></summary><div id="briefHost"></div></details>
-
-  <details class="sec" data-sec="equipment"><summary><h2>My equipment</h2></summary><div id="equipHost"></div></details>
-
   <details class="sec" data-sec="tank"><summary><h2>Tank</h2></summary>
   <div class="field"><span class="flabel">Kind</span><div id="spKinds" class="seg kinds" role="group" aria-label="Kind of setup"></div></div>
   <div class="btns">
@@ -152,6 +148,32 @@
   </div>
   <div class="prodline" id="prodLine" title="A ready-made tank is one sold as it is: its rim, size and built-in gear stay unless you change them after a warning. A custom tank can be anything."></div>
   <div class="hint" id="prodIncl" hidden></div>
+  <div class="subhead">Sits on</div>
+  <div class="field" id="placeRow"><span class="flabel">Tank sits on</span><span class="seg" id="placeSeg" role="group" aria-label="What the tank stands on"><button type="button" data-place="floor">Floor</button><button type="button" data-place="stand">Stand</button><button type="button" data-place="furniture" title="A table, dresser or counter you already have: its height and the size of its top">My own furniture</button></span></div>
+  <div class="hint" id="placeHint"></div>
+  <div class="field" id="standStyleRow"><span class="flabel">Stand</span><input type="checkbox" id="standOn" hidden><select id="standStyle" aria-label="Stand type"><option value="cabinet">Cabinet</option><option value="frame">Open metal frame</option><option value="custom">Cabinet, custom size</option><option value="table">Table</option></select></div>
+  <div id="standAsk" class="hint standask" hidden>No stand on this tank yet. The budget counts a typical stand until you choose. <button type="button" id="standAdd">Add a stand</button> <button type="button" id="standNone">I don't need a stand</button></div>
+  <div class="field" id="standFinRow"><label class="flabel" for="standFinish">Finish</label><select id="standFinish"></select></div>
+  <div class="row" id="standHRow"><label for="standH" id="standHLab">Stand height</label><input id="standH" type="range" step="5"><output id="oStandH"></output></div>
+  <div id="tableRows">
+  <div class="field"><span class="flabel" id="tableTopLab">Table top</span><span class="seg"><button id="tableRect">Rectangular</button><button id="tableRound">Round</button></span></div>
+  <div class="row"><label for="tableL" id="tableLLab">Table length</label><input id="tableL" type="range" step="10"><output id="oTableL"></output></div>
+  <div class="row" id="tableDRow"><label for="tableD" id="tableDLab">Table depth</label><input id="tableD" type="range" step="10"><output id="oTableD"></output></div>
+  <div class="row"><label for="tableX">Tank left / right</label><input id="tableX" type="range" step="5"><output id="oTableX"></output></div>
+  <div class="row"><label for="tableZ">Tank front / back</label><input id="tableZ" type="range" step="5"><output id="oTableZ"></output></div>
+  <div class="field"><span class="flabel">Place tank</span><span class="seg"><button id="tableCentre">Centre</button><button id="tableBack">At the back</button><button id="tableFront">At the front</button></span></div>
+  </div>
+  <details class="tsub" data-sub="room"><summary><h3>Room around the tank</h3></summary>
+  <div class="field"><label class="flabel"><input type="checkbox" id="wallOn"> Wall</label>
+    <span class="seg"><button id="wallBack">Behind</button><button id="wallLeft" title="Peninsula: left end against the wall">Left end</button><button id="wallRight" title="Peninsula: right end against the wall">Right end</button><button id="wallCorner" title="Two walls meeting behind the tank: a corner tank's point goes into the corner">Corner</button></span>
+    <input id="wallColor" type="color" aria-label="Wall colour" title="Wall colour"></div>
+  <div class="row"><label for="wallGap" title="Gap between the tank (or its table) and the wall, for any wall placement">Distance to wall</label><input id="wallGap" type="range" min="0" step="5"><output id="oWallGap"></output></div>
+  <div class="row"><label for="ceilH" title="Floor to ceiling: the room wall's height, and how far a raised light's cables run up">Ceiling height</label><input id="ceilH" type="range" step="1"><output id="oCeilH"></output></div>
+  <div class="field"><label class="flabel"><input type="checkbox" id="personOn"> Person</label>
+    <span class="seg"><button id="personLeft">Left</button><button id="personRight">Right</button></span></div>
+  <div class="row"><label for="personH">Person height</label><input id="personH" type="range" step="10"><output id="oPersonH"></output></div>
+  <div class="hint">Cabinet and frame stands match the tank's footprint; a custom-size cabinet or a table can be bigger, with the tank anywhere on it, and the wall and person keep clear of its edge. <i>Peninsula</i> puts the tank's end against the wall; the background moves to that end and the long back glass is clear.</div>
+  </details>
   <div class="field"><label class="flabel" for="shapeSel">Shape</label><select id="shapeSel"></select></div>
   <div class="field" id="sidesRow"><span class="flabel">Sides</span><span class="seg"><button id="sides3" title="Triangle">3</button><button id="sides5" title="Pentagon">5</button><button id="sides6" title="Hexagon">6</button></span></div>
   <div class="dims">
@@ -184,56 +206,6 @@
   <div class="field"><label class="flabel" for="glassSel">Glass</label><select id="glassSel"></select></div>
   <div class="field"><label class="flabel" for="glassType">Glass type</label><select id="glassType"><option value="standard">Standard</option><option value="lowiron">Low-iron (ultra clear)</option></select></div>
   <div class="hint" id="glassHint"></div>
-  </details>
-  <details class="sec" data-sec="room"><summary><h2>Room</h2></summary>
-  <div class="field" id="placeRow"><span class="flabel">Tank sits on</span><span class="seg" id="placeSeg" role="group" aria-label="What the tank stands on"><button type="button" data-place="floor">Floor</button><button type="button" data-place="stand">Stand</button><button type="button" data-place="furniture" title="A table, dresser or counter you already have: its height and the size of its top">My own furniture</button></span></div>
-  <div class="hint" id="placeHint"></div>
-  <div class="field" id="standStyleRow"><span class="flabel">Stand</span><input type="checkbox" id="standOn" hidden><select id="standStyle" aria-label="Stand type"><option value="cabinet">Cabinet</option><option value="frame">Open metal frame</option><option value="custom">Cabinet, custom size</option><option value="table">Table</option></select></div>
-  <div id="standAsk" class="hint standask" hidden>No stand on this tank yet. The budget counts a typical stand until you choose. <button type="button" id="standAdd">Add a stand</button> <button type="button" id="standNone">I don't need a stand</button></div>
-  <div class="field" id="standFinRow"><label class="flabel" for="standFinish">Finish</label><select id="standFinish"></select></div>
-  <div class="row" id="standHRow"><label for="standH" id="standHLab">Stand height</label><input id="standH" type="range" step="5"><output id="oStandH"></output></div>
-  <div id="tableRows">
-  <div class="field"><span class="flabel" id="tableTopLab">Table top</span><span class="seg"><button id="tableRect">Rectangular</button><button id="tableRound">Round</button></span></div>
-  <div class="row"><label for="tableL" id="tableLLab">Table length</label><input id="tableL" type="range" step="10"><output id="oTableL"></output></div>
-  <div class="row" id="tableDRow"><label for="tableD" id="tableDLab">Table depth</label><input id="tableD" type="range" step="10"><output id="oTableD"></output></div>
-  <div class="row"><label for="tableX">Tank left / right</label><input id="tableX" type="range" step="5"><output id="oTableX"></output></div>
-  <div class="row"><label for="tableZ">Tank front / back</label><input id="tableZ" type="range" step="5"><output id="oTableZ"></output></div>
-  <div class="field"><span class="flabel">Place tank</span><span class="seg"><button id="tableCentre">Centre</button><button id="tableBack">At the back</button><button id="tableFront">At the front</button></span></div>
-  </div>
-  <div class="field"><label class="flabel"><input type="checkbox" id="wallOn"> Wall</label>
-    <span class="seg"><button id="wallBack">Behind</button><button id="wallLeft" title="Peninsula: left end against the wall">Left end</button><button id="wallRight" title="Peninsula: right end against the wall">Right end</button><button id="wallCorner" title="Two walls meeting behind the tank: a corner tank's point goes into the corner">Corner</button></span>
-    <input id="wallColor" type="color" aria-label="Wall colour" title="Wall colour"></div>
-  <div class="row"><label for="wallGap" title="Gap between the tank (or its table) and the wall, for any wall placement">Distance to wall</label><input id="wallGap" type="range" min="0" step="5"><output id="oWallGap"></output></div>
-  <div class="row"><label for="ceilH" title="Floor to ceiling: the room wall's height, and how far a raised light's cables run up">Ceiling height</label><input id="ceilH" type="range" step="1"><output id="oCeilH"></output></div>
-  <div class="field"><label class="flabel"><input type="checkbox" id="personOn"> Person</label>
-    <span class="seg"><button id="personLeft">Left</button><button id="personRight">Right</button></span></div>
-  <div class="row"><label for="personH">Person height</label><input id="personH" type="range" step="10"><output id="oPersonH"></output></div>
-  <div class="hint">Cabinet and frame stands match the tank's footprint; a custom-size cabinet or a table can be bigger, with the tank anywhere on it, and the wall and person keep clear of its edge. <i>Peninsula</i> puts the tank's end against the wall; the background moves to that end and the long back glass is clear.</div>
-  </details>
-  <details class="sec" data-sec="quick"><summary><h2>Quick Setup</h2></summary>
-  <div class="field"><label class="flabel" for="layout">Style</label><select id="layout"></select></div>
-  <div class="field"><button id="browseLooks" type="button" title="Pictures of looks to browse (family, archetype, density), then the tank is built in that look">Browse looks…</button> <button id="exploreSetups" type="button" title="Not sure what you want? Batches of complete setups to like or pass">Explore complete setups…</button></div>
-  <div class="field"><button id="layoutShuffle" class="primary" title="Draws a new tank: only the ticked parts below change, the rest stay as they are. Ctrl+Z brings the old one back">Shuffle</button></div>
-  <div class="field shuffleKeep" title="Shuffle redraws only the ticked parts; untick a part to lock it as it is while you keep shuffling the rest"><span class="flabel">Shuffle</span><label><input type="checkbox" id="shufType" checked> Substrate type</label> <label><input type="checkbox" id="shufShape" checked> Substrate shape</label> <label><input type="checkbox" id="shufHard" checked> Hardscape</label> <label><input type="checkbox" id="shufPlant" checked> Plants</label> <label><input type="checkbox" id="shufAnimal" checked> Animals</label></div>
-  <div class="hint" id="layoutHint"></div>
-  <div class="row dens"><label for="plantTier" title="Light, CO2 and fertiliser, and the effort they ask, as one setting: the plants (corals in a reef) are drawn from kinds that suit it">Plant care</label><input id="plantTier" type="range" min="0" max="3" step="1"><output id="oPlantTier"></output></div>
-  <div class="hint" id="plantTierHint"></div>
-  <div id="fitNote" class="hint" hidden></div>
-  <div class="field"><label class="flabel" for="layoutComp">Composition</label><select id="layoutComp" title="Where the weight of the starter set sits, in any style: Any lets Shuffle pick. Redraws the hardscape and the plants round it (Ctrl+Z brings the old ones back)"></select></div>
-  <div class="row dens"><label for="densHard" id="lDensHard" title="How much rock and wood the starter set places, from one piece to far too much. The main pieces stay where they are and more or fewer go round them; Shuffle gives a new layout. Redraws the hardscape and the plants round it when you let go (Ctrl+Z brings the old ones back)">Hardscape</label><input id="densHard" type="range" min="-1" max="6" step="any" list="densTicks"><output id="oDensHard"></output></div>
-  <div class="row dens"><label for="densPlant" id="lDensPlant" title="How full the starter set plants the tank, from one plant to far too much. Redraws only the plants (corals in a reef) when you let go; the rocks stay where they are">Plants</label><input id="densPlant" type="range" min="-1" max="6" step="any" list="densTicks"><output id="oDensPlant"></output></div>
-  <div class="subhead">Animals</div>
-  <div class="row dens"><label for="densAnimal" id="lDensAnimal" title="Stocks the tank from species that suit this style, from one animal to well past a safe bioload (past Full it is overstocked). Replaces the animals when you let go; at None your own animals stay">Stocking</label><input id="densAnimal" type="range" min="0" max="6" step="any" list="animalTicks"><output id="oDensAnimal"></output></div>
-  <datalist id="animalTicks"><option value="0"></option><option value="1"></option><option value="2"></option><option value="3"></option><option value="4"></option><option value="5"></option><option value="6"></option></datalist>
-  <div class="field"><label><input type="checkbox" id="gateStock" title="Stock and shuffle only animals that suit the level below, this tank's size and each other"> Stock by care gates</label></div>
-  <div id="gateBox" hidden>
-  <div class="field"><span class="flabel" title="How much care and effort the keeper can give. Set in Your limits (Experience); animals needing more are left out of the stocking and grayed in the list">Care level</span><output id="oExpertise"></output> <button id="expertiseOpen" type="button" class="spLink">Change in Your limits</button></div>
-  <div class="hint" id="expertiseHint"></div>
-  <div class="field"><label><input type="checkbox" id="gateAnimals" title="Sinks the animals that do not suit this tank (care level, size, the animals already in it) to the bottom of the Animals list, grayed, each with its reason. Advice only: you can still add any of them"> Gray out unsuitable animals in the list</label></div>
-  </div>
-  <div class="hint" id="gateAnimalsHint" hidden></div>
-  <datalist id="densTicks"><option value="-1"></option><option value="0"></option><option value="1"></option><option value="2"></option><option value="3"></option><option value="4"></option><option value="5"></option><option value="6"></option></datalist>
-  <div class="hint">Sets the substrate, hardscape and plants together. Then reshape the ground under Substrate and move, add or remove any piece under Hardscape and Plants; or skip this and build the tank there by hand.</div>
   </details>
   <details class="sec" data-sec="substrate"><summary><h2>Substrate</h2></summary>
   <div class="btns"><button class="sidetog brushTog" aria-pressed="false" title="Scatter brush: paint leaf litter, pebbles, moss, twigs or a carpet of plants onto the ground or a piece; Erase takes them off again.">🖌 Scatter brush</button></div>
@@ -342,8 +314,7 @@
     <div class="btns"><button id="flip">Flip (F)</button><button id="dup">Duplicate</button><button id="fCopies" title="Several copies with a little random variation: a school">Copies…</button><button id="del">Delete</button></div>
     <div class="readout" id="ro"></div>
   </div>
-  </details>
-  <details class="sec" data-sec="water"><summary><h2>Water</h2></summary>
+  <details class="tsub" data-sub="water"><summary><h3>Water</h3></summary>
   <div class="field"><span class="flabel">Kind</span><span class="hint" id="wKindLine"></span><button id="wKindOpen" title="Freshwater, saltwater, terrarium or vivarium is chosen in the Tank section">Change in Tank</button></div>
   <div class="field" id="wMisfitRow"><span class="hint" id="wMisfit"></span><button id="wMisfitDel" title="Remove the animals that do not live in this water (Ctrl+Z brings them back)">Remove</button></div>
   <div class="row"><label for="wLevel">Level</label><input id="wLevel" type="range" min="0.1" max="1" step="0.01"><output id="oLevel"></output></div>
@@ -354,7 +325,15 @@
   <div class="row" id="condRow"><label for="cond" title="How long since the tank was cleaned: algae on the glass, rocks, wood and substrate. Only changes the look.">Condition</label><input id="cond" type="range" min="0" max="100" step="1"><output id="oCond"></output></div>
   <div class="hint">Condition shows the tank weeks after a clean, or neglected: spot algae and film on the glass, brown diatoms, then green algae on the lit tops of rock and wood. Saltwater grows red cyano and bubble algae instead. Plants stay clean for now.</div>
   </details>
-  <details class="sec" data-sec="tech"><summary><h2>Tech</h2></summary>
+  </details>
+  <details class="sec" data-sec="brief"><summary><h2>Constraints</h2></summary>
+  <div id="briefHost"></div>
+  <div class="subhead">Your limits</div>
+  <div id="limitsHost"></div>
+  <label class="chk cnnonew"><input type="checkbox" id="cnNoNew"> <span>No new equipment: buy nothing beyond what I have</span></label>
+  </details>
+  <details class="sec" data-sec="equipment"><summary><h2>Equipment</h2></summary>
+  <div id="equipHost"></div>
   <div class="hint">The gear that runs the tank, Walstad to high-tech: each choice with its cost, upkeep, the time it takes and what it buys, for this tank.</div>
   <div id="techMenu"></div>
   <details class="tsub" data-sub="lighting"><summary><h3>Lighting</h3></summary>
@@ -402,35 +381,32 @@
   <div class="hint">A visual approximation: light falls off with distance and beam angle from fixtures above the water. No real optics, shadows or ripples.</div>
   </details>
   </details>
-  <details class="sec" data-sec="viewer"><summary><h2>Viewer</h2></summary>
-  <div class="row"><label for="cDist">Distance</label><input id="cDist" type="range" min="400" max="5000" step="10"><output id="oDist"></output></div>
-  <div class="row"><label for="cAz">Left / right</label><input id="cAz" type="range" min="-180" max="180" step="1"><output id="oAz"></output></div>
-  <div class="row"><label for="cEl">From above</label><input id="cEl" type="range" min="-20" max="85" step="1"><output id="oEl"></output></div>
-  <div class="row"><label for="cZoom">Zoom</label><input id="cZoom" type="range" min="0.1" max="12" step="0.05"><output id="oZoom"></output></div>
-  <div class="hint" id="camHint"></div>
-  <div class="btns"><button id="camReset">Straight on</button></div>
-  <div class="field showBoxes" title="What the view shows (PNG exports follow it). Something hidden cannot be picked or moved"><span class="flabel">Show</span>
-    <label><input type="checkbox" id="showFish" checked> Animals</label>
-    <label><input type="checkbox" id="showPlants" checked> Plants</label>
-    <label><input type="checkbox" id="showHard" checked> Hardscape</label>
-    <label title="The filter, heater, CO2 and other gear the Tech menu picks, drawn in the tank. Off for a clean picture of the scape (PNG exports follow it)"><input type="checkbox" id="gearOn" checked> Equipment</label></div>
-  </details>
-  <details class="sec" data-sec="compare"><summary><h2>Compare</h2></summary>
-  <div class="btns"><button id="split">Split tank</button></div>
-  <div class="hint" id="splitHint"></div>
-  </details>
-  <details class="sec" data-sec="display-and-export"><summary><h2>Display &amp; export</h2></summary>
-  <div class="row"><label for="edge">Fish edges</label><select id="edge" class="span2">
-    <option value="a2c">Smooth, see-through fins</option><option value="cutout">Crisp, solid fins (faster)</option></select></div>
-  <div class="row"><label for="pop" title="Lifts fish off busy backgrounds and plants: brighter, richer colour, a darker outline and less water haze on them. 0 = plain lighting.">Fish stand out</label><input id="pop" type="range" min="0" max="100" step="5"><output id="oPop"></output></div>
-  <div class="row"><label for="perf" title="Slow or jerky when you orbit and pan? Each step trades a little picture for speed. Auto steps it down by itself while you orbit, until it holds 30 fps; moving the slider locks your choice. Orbiting already softens the picture on a slow computer and sharpens it when you stop.">Performance</label><input id="perf" type="range" min="0" max="3" step="1"><output id="oPerf"></output></div>
-  <label title="Lower the Performance setting by itself while you orbit if the picture stutters"><input type="checkbox" id="perfAuto" checked> Auto <span class="hint" id="perfFps"></span></label>
-  <label><input type="checkbox" id="mapOn" checked> Viewpoint map (top view of where you stand)</label>
-  <label title="Looking down from above the light, the fixture covers the tank; this hides it from up there"><input type="checkbox" id="hideLightAbove"> Hide the light fixture when looking down from above it</label>
-  <label><input type="checkbox" id="gridOn"> Grid on back wall and floor (2″ / 5 cm)</label>
-  <div class="btns"><button id="sheetBtn" title="A printable list of what this tank needs: water, substrate bags, rock and wood, plants, animals">Setup sheet</button><button id="reportBtn" title="One printable report: rundown, a picture of the tank, what you have, the shopping list, costs, plants and corals, warnings">Report</button></div>
-  <div class="btns" id="pngRow" title="A picture of the view: 1× is its size on screen"><span class="flabel">Export PNG</span><button data-png="1">1×</button><button data-png="2">2×</button><button data-png="4">4×</button></div>
-  </details>
+  <div id="quickHome" hidden><div id="doorsBlock" class="dxdoors">
+  <div class="field"><button id="browseLooks" type="button" title="Pictures of looks to browse (family, archetype, density), then the tank is built in that look">Browse looks…</button> <button id="exploreSetups" type="button" title="Not sure what you want? Batches of complete setups to like or pass">Explore complete setups…</button></div>
+  </div><div id="quickBlock" class="dxquick">
+  <div class="field"><label class="flabel" for="layout">Style</label><select id="layout"></select></div>
+  <div class="field"><button id="layoutShuffle" class="primary" title="Draws a new tank: only the ticked parts below change, the rest stay as they are. Ctrl+Z brings the old one back">Shuffle</button></div>
+  <div class="field shuffleKeep" title="Shuffle redraws only the ticked parts; untick a part to lock it as it is while you keep shuffling the rest"><span class="flabel">Shuffle</span><label><input type="checkbox" id="shufType" checked> Substrate type</label> <label><input type="checkbox" id="shufShape" checked> Substrate shape</label> <label><input type="checkbox" id="shufHard" checked> Hardscape</label> <label><input type="checkbox" id="shufPlant" checked> Plants</label> <label><input type="checkbox" id="shufAnimal" checked> Animals</label></div>
+  <div class="hint" id="layoutHint"></div>
+  <div class="row dens"><label for="plantTier" title="Light, CO2 and fertiliser, and the effort they ask, as one setting: the plants (corals in a reef) are drawn from kinds that suit it">Plant care</label><input id="plantTier" type="range" min="0" max="3" step="1"><output id="oPlantTier"></output></div>
+  <div class="hint" id="plantTierHint"></div>
+  <div id="fitNote" class="hint" hidden></div>
+  <div class="field"><label class="flabel" for="layoutComp">Composition</label><select id="layoutComp" title="Where the weight of the starter set sits, in any style: Any lets Shuffle pick. Redraws the hardscape and the plants round it (Ctrl+Z brings the old ones back)"></select></div>
+  <div class="row dens"><label for="densHard" id="lDensHard" title="How much rock and wood the starter set places, from one piece to far too much. The main pieces stay where they are and more or fewer go round them; Shuffle gives a new layout. Redraws the hardscape and the plants round it when you let go (Ctrl+Z brings the old ones back)">Hardscape</label><input id="densHard" type="range" min="-1" max="6" step="any" list="densTicks"><output id="oDensHard"></output></div>
+  <div class="row dens"><label for="densPlant" id="lDensPlant" title="How full the starter set plants the tank, from one plant to far too much. Redraws only the plants (corals in a reef) when you let go; the rocks stay where they are">Plants</label><input id="densPlant" type="range" min="-1" max="6" step="any" list="densTicks"><output id="oDensPlant"></output></div>
+  <div class="subhead">Animals</div>
+  <div class="row dens"><label for="densAnimal" id="lDensAnimal" title="Stocks the tank from species that suit this style, from one animal to well past a safe bioload (past Full it is overstocked). Replaces the animals when you let go; at None your own animals stay">Stocking</label><input id="densAnimal" type="range" min="0" max="6" step="any" list="animalTicks"><output id="oDensAnimal"></output></div>
+  <datalist id="animalTicks"><option value="0"></option><option value="1"></option><option value="2"></option><option value="3"></option><option value="4"></option><option value="5"></option><option value="6"></option></datalist>
+  <div class="field"><label><input type="checkbox" id="gateStock" title="Stock and shuffle only animals that suit the level below, this tank's size and each other"> Stock by care gates</label></div>
+  <div id="gateBox" hidden>
+  <div class="field"><span class="flabel" title="How much care and effort the keeper can give. Set in Your limits (Experience); animals needing more are left out of the stocking and grayed in the list">Care level</span><output id="oExpertise"></output> <button id="expertiseOpen" type="button" class="spLink">Change in Your limits</button></div>
+  <div class="hint" id="expertiseHint"></div>
+  <div class="field"><label><input type="checkbox" id="gateAnimals" title="Sinks the animals that do not suit this tank (care level, size, the animals already in it) to the bottom of the Animals list, grayed, each with its reason. Advice only: you can still add any of them"> Gray out unsuitable animals in the list</label></div>
+  </div>
+  <div class="hint" id="gateAnimalsHint" hidden></div>
+  <datalist id="densTicks"><option value="-1"></option><option value="0"></option><option value="1"></option><option value="2"></option><option value="3"></option><option value="4"></option><option value="5"></option><option value="6"></option></datalist>
+  <div class="hint">Sets the substrate, hardscape and plants together. Then reshape the ground under Substrate and move, add or remove any piece under Hardscape and Plants; or skip this and build the tank there by hand.</div>
+  </div></div>
 
   <details><summary>Scene data (JSON)</summary><div class="btns"><button id="jsonCopy">Copy</button><span class="hint">Lengths in mm; "units" is only how the panel shows them.</span></div><pre id="json"></pre></details>
   <footer class="hint">Illustrated placeholder art. Sizes are typical adult total length in aquaria (snails: crawling length).</footer>
@@ -455,6 +431,7 @@
     <button id="sideOpen" class="sidetog" title="Show the panel" aria-label="Show the panel">› Edit</button>
     <button id="undo" class="sidetog" title="Undo (Ctrl+Z)">↶ Undo</button>
     <button id="redo" class="sidetog" title="Redo (Ctrl+Shift+Z)">↷ Redo</button>
+    <button id="viewBtn" class="sidetog" aria-haspopup="dialog" aria-expanded="false" aria-controls="viewPop" title="View controls: camera, what is shown, split / compare, display and export">◐ View</button>
     <button id="moment" class="sidetog" title="Another moment: every animal in a new spot, as if the tank were photographed a little later. The plants and scape stay as they are." disabled>◷ Another moment</button>
     <button id="arView" class="sidetog" title="See this tank at real size in your room (phone camera)" hidden>◱ AR</button>
     <button id="recenter" class="sidetog" title="Re-centre the panned view (Home, or double middle-click)" hidden>⌖ Re-centre</button>
@@ -514,6 +491,37 @@
     </div>
   </div>
   <button id="sideTab" title="Hide the panel" aria-label="Hide the panel" aria-expanded="true"><span>▾</span></button>
+<div id="viewPop" class="viewpop" hidden role="dialog" aria-label="View controls">
+  <div class="vpsec"><h3>View</h3>
+  <div class="row"><label for="cDist">Distance</label><input id="cDist" type="range" min="400" max="5000" step="10"><output id="oDist"></output></div>
+  <div class="row"><label for="cAz">Left / right</label><input id="cAz" type="range" min="-180" max="180" step="1"><output id="oAz"></output></div>
+  <div class="row"><label for="cEl">From above</label><input id="cEl" type="range" min="-20" max="85" step="1"><output id="oEl"></output></div>
+  <div class="row"><label for="cZoom">Zoom</label><input id="cZoom" type="range" min="0.1" max="12" step="0.05"><output id="oZoom"></output></div>
+  <div class="hint" id="camHint"></div>
+  <div class="btns"><button id="camReset">Straight on</button></div>
+  <div class="field showBoxes" title="What the view shows (PNG exports follow it). Something hidden cannot be picked or moved"><span class="flabel">Show</span>
+    <label><input type="checkbox" id="showFish" checked> Animals</label>
+    <label><input type="checkbox" id="showPlants" checked> Plants</label>
+    <label><input type="checkbox" id="showHard" checked> Hardscape</label>
+    <label title="The filter, heater, CO2 and other gear the Tech menu picks, drawn in the tank. Off for a clean picture of the scape (PNG exports follow it)"><input type="checkbox" id="gearOn" checked> Equipment</label></div>
+  </div>
+  <div class="vpsec"><h3>Compare</h3>
+  <div class="btns"><button id="split">Split tank</button></div>
+  <div class="hint" id="splitHint"></div>
+  </div>
+  <div class="vpsec"><h3>Display &amp; export</h3>
+  <div class="row"><label for="edge">Fish edges</label><select id="edge" class="span2">
+    <option value="a2c">Smooth, see-through fins</option><option value="cutout">Crisp, solid fins (faster)</option></select></div>
+  <div class="row"><label for="pop" title="Lifts fish off busy backgrounds and plants: brighter, richer colour, a darker outline and less water haze on them. 0 = plain lighting.">Fish stand out</label><input id="pop" type="range" min="0" max="100" step="5"><output id="oPop"></output></div>
+  <div class="row"><label for="perf" title="Slow or jerky when you orbit and pan? Each step trades a little picture for speed. Auto steps it down by itself while you orbit, until it holds 30 fps; moving the slider locks your choice. Orbiting already softens the picture on a slow computer and sharpens it when you stop.">Performance</label><input id="perf" type="range" min="0" max="3" step="1"><output id="oPerf"></output></div>
+  <label title="Lower the Performance setting by itself while you orbit if the picture stutters"><input type="checkbox" id="perfAuto" checked> Auto <span class="hint" id="perfFps"></span></label>
+  <label><input type="checkbox" id="mapOn" checked> Viewpoint map (top view of where you stand)</label>
+  <label title="Looking down from above the light, the fixture covers the tank; this hides it from up there"><input type="checkbox" id="hideLightAbove"> Hide the light fixture when looking down from above it</label>
+  <label><input type="checkbox" id="gridOn"> Grid on back wall and floor (2″ / 5 cm)</label>
+  <div class="btns"><button id="sheetBtn" title="A printable list of what this tank needs: water, substrate bags, rock and wood, plants, animals">Setup sheet</button><button id="reportBtn" title="One printable report: rundown, a picture of the tank, what you have, the shopping list, costs, plants and corals, warnings">Report</button></div>
+  <div class="btns" id="pngRow" title="A picture of the view: 1× is its size on screen"><span class="flabel">Export PNG</span><button data-png="1">1×</button><button data-png="2">2×</button><button data-png="4">4×</button></div>
+  </div>
+</div>
   <canvas id="c" aria-label="Tank view"></canvas>
   <div id="buildHint" role="status" hidden>Building the tank…</div>
   <div class="vmap" id="vmap0"><canvas aria-label="Viewpoint map: where the eye is relative to the tank"></canvas><button class="vmapHide" title="Hide the viewpoint map" aria-label="Hide the viewpoint map">×</button></div>

@@ -7,7 +7,10 @@ import { GUIDE_STEPS, DEMO_STEPS, type CoachCtx } from '../src/ui/coach/steps';
 const fs = await import('node:fs');
 const readFileSync = (f: string, e: 'utf8') => fs.readFileSync(f, e) as string;
 const html = readFileSync('index.html', 'utf8');
-const section = (key: string) => { const a = html.indexOf(`data-sec="${key}"`); expect(a, `section ${key}`).toBeGreaterThan(-1); const b = html.indexOf('<details class="sec"', a + 10); return html.slice(a, b < 0 ? undefined : b); };
+const section = (key: string) => {
+  // DX7: Water is a sub-group of Animals, and Quick Setup's controls ride in the Discover panel ('discover' / 'quick')
+  if (key === 'quick' || key === 'discover') return html.slice(html.indexOf('id="quickHome"'), html.indexOf('<details><summary>Scene data'));
+  if (key === 'water') { const a = html.indexOf('data-sub="water"'); expect(a).toBeGreaterThan(-1); return html.slice(a, html.indexOf('data-sec="brief"')); } const a = html.indexOf(`data-sec="${key}"`); expect(a, `section ${key}`).toBeGreaterThan(-1); const b = html.indexOf('<details class="sec"', a + 10); return html.slice(a, b < 0 ? undefined : b); };
 const count = (s: string, re: RegExp) => (s.match(re) ?? []).length;
 
 describe('one home per setting', () => {
@@ -42,7 +45,7 @@ describe('the guided path is the coach', () => {
     expect(DEMO_STEPS.map(s => s.id)).toEqual(['kind', 'size', 'limits', 'look']);
   });
   it('every step target exists on the page: a section, a control inside it, or a dialog the host opens', () => {
-    const dialogs = ['limits', 'equipment'];
+    const dialogs = ['equipment'];
     for (const s of GUIDE_STEPS) {
       const t = s.target;
       if (t.dialog) { expect(dialogs, s.id).toContain(t.dialog); continue; }
@@ -50,7 +53,7 @@ describe('the guided path is the coach', () => {
       if (t.control) { const m = /^#([\w-]+)$/.exec(t.control); expect(m, `${s.id}: simple #id selector`).toBeTruthy(); expect(body, `${s.id} control`).toContain(`id="${m![1]}"`); }
     }
     const src = readFileSync('src/ui/panels.ts', 'utf8');
-    for (const d of ['limits', 'equipment']) expect(src).toMatch(new RegExp(`attachCoach\\(store, \\{[^}]*${d}:`));
+    for (const d of ['equipment', 'quick']) expect(src).toContain(`${d}: () =>`);
   });
   it('the coach is the questioner of Discovery (DX5): Guide me walks it, finishing hands over to Discovery, no old dialog', () => {
     const src = readFileSync('src/ui/panels.ts', 'utf8');

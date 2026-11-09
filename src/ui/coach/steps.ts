@@ -6,7 +6,7 @@ import type { Scene, TankSetup } from '../../scene/types';
 /** What a step's `done` can read: the scene, the tank being edited and its brief. */
 export interface CoachCtx { scene: Scene; tank: TankSetup; brief: Brief }
 
-/** Where a step points. All three are optional and combine: a `section` (the `data-sec` of a side-panel `details`) is opened and scrolled into view; a `control` (a CSS
+/** Where a step points. (`section: 'discover'` = the Discover panel's Quick setup, opened through the host's `quick` entry.) All three are optional and combine: a `section` (the `data-sec` of a side-panel `details`) is opened and scrolled into view; a `control` (a CSS
  *  selector, looked up inside that section when one is named) is highlighted; a `dialog` (a name the host knows) is opened and the card moves into it. */
 export interface CoachTarget { section?: string; control?: string; dialog?: string }
 
@@ -58,7 +58,7 @@ export const GUIDE_STEPS: readonly CoachStep[] = [
     done: { changes: c => [c.tank.tank, c.tank.product] }, skippable: true,
   },
   {
-    id: 'place', target: { section: 'room', control: '#placeRow' }, title: 'What does it sit on?',
+    id: 'place', target: { section: 'tank', control: '#placeRow' }, title: 'What does it sit on?',
     why: 'The floor, a stand or a table you already own. A stand adds cost and changes how high the tank is in the room.',
     done: { changes: c => [c.tank.stand] }, skippable: true,
   },
@@ -68,12 +68,12 @@ export const GUIDE_STEPS: readonly CoachStep[] = [
     done: { changes: gearOf }, skippable: true,
   },
   {
-    id: 'limits', known: answered.limits, target: { dialog: 'limits' }, title: 'Your limits',
+    id: 'limits', known: answered.limits, target: { section: 'brief', control: '#limitsHost' }, title: 'Your limits',
     why: 'Money, time, space and experience are all optional. A plan that goes over one shows a warning with a fix; it never stops you.',
     done: { changes: c => [limitItems(c), careOf(c)] }, skippable: true,
   },
   {
-    id: 'look', target: { section: 'quick', control: '#layout' }, title: 'Choose a look',
+    id: 'look', target: { section: 'discover', control: '#layout' }, title: 'Choose a look',
     why: 'The style fills the tank with a matching set of substrate, hardscape and plants. Browse looks shows pictures to choose from; Shuffle draws another one.',
     done: { changes: c => c.tank.layout.id }, skippable: true,
   },

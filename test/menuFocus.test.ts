@@ -43,7 +43,7 @@ describe('menu focus: which parts of the view each menu is about', () => {
 
 describe('which menu must be open to move something', () => {
   it('gear needs Tech, animals Animals, pieces their scape menu', () => {
-    expect(pickSec('gear')).toBe('tech');
+    expect(pickSec('gear')).toBe('equipment');
     expect(pickSec('fish')).toBe('fish');
     expect(pickSec('items', 'plants')).toBe('plants');
     expect(pickSec('items', 'hardscape')).toBe('hardscape');

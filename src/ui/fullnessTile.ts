@@ -6,6 +6,7 @@
 // The tile follows the view: hidden while the Animals Show box is off, faded with the rest while another menu is in focus.
 import { compatLine, compatRisks, coverAdvice, crowdWarnings } from '../scene/territory';
 import type { Viewer } from '../render/viewer';
+import { writeSpace as writeSpaceTo } from '../scene/spaceStore';
 import { defaultSpace, spaceFit, tankExtent, SPACE_MAX, SPACE_MIN, type SpaceFit } from '../scene/space';
 import { IDEAL_MAX, isOver, plural, stockingDetail, stockingMemo, type Stocking } from '../scene/stocking';
 import { MIN_SLACK_PCT } from '../scene/animalfit';
@@ -278,14 +279,14 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
     const u = store.scene.units, mm = (n: string) => { const v = parseFloat(inp(n).value); return Number.isFinite(v) && v > 0 ? Math.min(SPACE_MAX, Math.max(SPACE_MIN, fromUnits(v, u))) : 0; };
     const w = mm('w'), d = mm('d'), h = mm('h'); if (!w || !d) return;
     const i = store.scene.active;
-    store.update(s => { s.tanks[i].layout.space = { w, d, ...(h ? { h } : {}) }; }, { coalesce: 'ftSpace' });
+    store.update(s => { writeSpaceTo(s.tanks[i], { w, d, ...(h ? { h } : {}) }); }, { coalesce: 'ftSpace' });
   };
   form.oninput = writeSpace;
   form.onsubmit = ev => { ev.preventDefault(); writeSpace(); store.seal(); closeForm(); const S = store.tank; if (S.layout.space && !spaceFit(S.tank, S.layout.space).fits) fork(); }; // a space smaller than the tank: the fork card at once
   form.onkeydown = ev => { if (ev.key === 'Escape') { ev.preventDefault(); store.seal(); closeForm(); } };
   $<HTMLButtonElement>('.ftClear').onclick = () => {
     const i = store.scene.active; store.seal();
-    store.update(s => { delete s.tanks[i].layout.space; }); closeForm();
+    store.update(s => { writeSpaceTo(s.tanks[i], undefined); }); closeForm();
   };
   bars.onchange = ev => {
     const t = ev.target as HTMLInputElement;

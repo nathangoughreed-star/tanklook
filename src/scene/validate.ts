@@ -20,6 +20,8 @@ import { prunePairs } from './pairs';
 import { parseConstraints } from './constraints';
 import { parseBrief, type Brief } from './brief';
 import { parseLocks, rosterLocksFromBrief } from './locks';
+import { parseDiscoverOn } from './discoverScope';
+import { mirrorSpace } from './spaceStore';
 import { ensureUids } from './uid';
 import { parseIntegrated, parseProduct } from './integrated';
 import { parseSpace } from './space'; // lane P3: layout.space
@@ -384,6 +386,8 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
   { const dp = parseDealPin(raw.dealPin); if (dp) (setup as TankSetup & { dealPin?: typeof dp }).dealPin = dp; } // lane GV9 2026-10-30: the bundle the tank is priced as (demand/pinned.ts), absent = none
   { const pr = parsePairs(raw.pairs, setup.fish); if (pr) setup.pairs = pr; } // 2026-10-22: pairing per pair species, absent = unknown
   { const lk = parseLocks(raw.locks); if (lk) setup.locks = lk; } // DX0 2026-11-09: persistent locks, absent = none
+  { const dv = parseDiscoverOn(raw.discoverOn); if (dv) setup.discoverOn = dv; } // DX7 2026-11-09: the Discovery switches, absent = all on
+  mirrorSpace(setup); // DX7: the brief's space and layout.space are one value
   ensureUids(setup, true); // DX0: a stable uid on every animal and item (an older file gets them here)
   keepInWater(setup); fitTable(setup);
   fitFixture(setup.light, setup.tank, false); // 2026-10-15: older lights clamped into their fixture's usual ranges

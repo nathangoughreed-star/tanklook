@@ -18,7 +18,7 @@ export function inFocus(o: THREE.Object3D, sec: FocusSec): boolean {
   return u.part === (sec === 'fish' ? PART.animals : sec === 'hardscape' ? PART.hardscape : PART.plants);
 }
 
-/** The section whose menu must be open to pick / move this: gear in Tech, animals in Animals, a piece in its scape menu. */
+/** The section whose menu must be open to pick / move this: gear in Equipment, animals in Animals, a piece in its scape menu. */
 export function pickSec(what: 'items' | 'fish' | 'gear', scape?: 'hardscape' | 'plants'): string {
-  return what === 'gear' ? 'tech' : what === 'fish' ? 'fish' : scape ?? 'hardscape';
+  return what === 'gear' ? 'equipment' : what === 'fish' ? 'fish' : scape ?? 'hardscape';
 }

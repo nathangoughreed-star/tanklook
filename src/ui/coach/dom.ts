@@ -79,6 +79,11 @@ export function attachCoach(store: Store, dialogs: CoachDialogs, steps: readonly
       return { el: dlg, dialog: dlg };
     }
     if (!t.section && !t.control) return { el: null };
+    if (t.section === 'discover') {   // DX7: Quick setup lives in the Discover panel
+      await dialogs.quick?.(); await wait(80);
+      const el = document.querySelector(t.control ?? '#dxqSlot'); if (!el || !visible(el)) return null;
+      el.scrollIntoView({ block: 'center', inline: 'nearest' }); await wait(30); return { el };
+    }
     showPanel();
     let sec: HTMLDetailsElement | null = null;
     if (t.section) {

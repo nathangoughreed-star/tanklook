@@ -285,6 +285,7 @@ export function setBrief(b: Brief) {
     const T = s.tanks[s.active];
     if (!hasState(b)) delete T.brief; else T.brief = b;
     syncCaps(T, before, b);
+    { const sp = getItem(b, 'constraints.maxSpace'); if (sp?.value) T.layout.space = { ...sp.value }; else if (getItem(before, 'constraints.maxSpace')) delete T.layout.space; } // DX7: one store for space (scene/spaceStore.ts)
   });
 }
 export const editBrief = (fn: (b: Brief) => Brief) => setBrief(fn(getBrief()));

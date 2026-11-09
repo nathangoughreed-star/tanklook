@@ -148,7 +148,7 @@ describe('Esc / close and the demo path', () => {
     expect(new Set(DEMO_STEPS.map(s => s.id)).size).toBe(DEMO_STEPS.length);
     for (const s of DEMO_STEPS) expect(s.why.split(/(?<=[.!?])\s/).length).toBeLessThanOrEqual(2);
     expect(DEMO_STEPS[1].target).toEqual({ section: 'tank', control: '#presetA' });
-    expect(DEMO_STEPS[2].target).toEqual({ dialog: 'limits' });
+    expect(DEMO_STEPS[2].target).toEqual({ section: 'brief', control: '#limitsHost' });
   });
   it('the demo predicates fire on the fields they name', async () => {
     const T = { tank: { L: 1 }, product: undefined, water: 'fresh', layout: { id: 'none', kind: undefined } };

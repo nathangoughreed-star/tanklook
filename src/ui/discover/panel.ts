@@ -3,6 +3,8 @@
 // leaves the project as it is, and reopening starts fresh. The pure decisions live in logic.ts.
 import { propose, type Discovery, type DiscoveryProposal, type Objective } from '../../scene/discover';
 import { TABS, type Tab } from '../../scene/scope';
+import { discoverTabs } from '../../scene/discoverScope';
+import { switchHtml, syncSwitches, wireSwitches } from './switches';
 import { previewProposal } from '../../scene/proposal';
 import type { VerdictOpts } from '../../scene/verdict';
 import { getBrief } from '../setupBrief';
@@ -14,7 +16,7 @@ const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;
 const VERB = { add: '+', remove: '−', change: '~' } as const;
 
 export interface DiscoverDeps { status: (msg: string, warn?: boolean) => void; opts: () => VerdictOpts }
-export interface DiscoverUI { open(scope?: Tab | Tab[]): void; close(): void }
+export interface DiscoverUI { open(scope?: Tab | Tab[], quick?: boolean): void; close(): void }
 
 /** Open a left-panel section (a relaxation button only ever opens the setting, it never changes it). */
 export function openSection(name: string) {
@@ -27,11 +29,18 @@ export function attachDiscoverPanel(store: Store, viewer: Viewer, deps: Discover
   const root = document.createElement('aside');
   root.className = 'dxp'; root.hidden = true; root.setAttribute('aria-label', 'Discovery');
   document.body.append(root);
-  let scope: Tab[] = [], objective: Objective = 'explore', focus = '', result: Discovery | undefined, runRev = -1, shooting = false, stale = false, rejected = new Set<string>(), seedShift = 0, busy = false, note = '';
+  let quickOpen = false, only: Tab[] | undefined, objective: Objective = 'explore', focus = '', result: Discovery | undefined, runRev = -1, shooting = false, stale = false, rejected = new Set<string>(), seedShift = 0, busy = false, note = '';
   const rid = { n: 0 };
+  let skipStale = false;   // set while one of OUR switches is being flipped: that changes the scope, not the design
+  // the run's tabs: the menu switches (the one home, project state), unless the panel was opened from one menu / one start flow (a run-only override)
+  const scopeNow = (): Tab[] => only ?? defaultScope(store.tank);
+  // Quick setup (Style, Shuffle, plant care, densities, stocking gates: the old menu) lives in the panel; its live controls move in and out, never copied
+  const quickEl = document.getElementById('quickBlock'), quickHome = document.getElementById('quickHome');
+  const doorsEl = document.getElementById('doorsBlock');   // Browse looks / Explore complete setups: options inside Discover (were Quick Setup's doors)
+  const closeQuick = () => { for (const el of [doorsEl, quickEl]) if (el && quickHome && el.parentElement !== quickHome) quickHome.append(el); };
 
-  const close = () => { root.hidden = true; root.innerHTML = ''; result = undefined; };
-  store.subscribe(kind => { if (root.hidden || shooting || kind === 'view' || kind === 'select') return; if (result && store.rev !== runRev && !stale) { stale = true; draw(); } });
+  const close = () => { closeQuick(); root.hidden = true; root.innerHTML = ''; result = undefined; };
+  store.subscribe(kind => { if (root.hidden || shooting || kind === 'view' || kind === 'select') return; syncSwitches(store, root); if (skipStale) return; if (result && store.rev !== runRev && !stale) { stale = true; draw(); } });
 
   const run = (family?: string) => {
     busy = true; stale = false; rejected = new Set(); note = ''; draw();
@@ -40,7 +49,7 @@ export function attachDiscoverPanel(store: Store, viewer: Viewer, deps: Discover
       if (my !== rid.n) return;
       try {
         runRev = store.rev;
-        result = propose(store, getBrief(), { scope, objective, ...(focus.trim() ? { focus: { tab: scope[0] ?? 'tank', text: focus.trim() } } : {}) }, 3, { ...deps.opts(), units: store.scene.units, seed: store.tank.layout.seed + 977 * seedShift });
+        result = propose(store, getBrief(), { scope: scopeNow(), objective, ...(focus.trim() ? { focus: { tab: scopeNow()[0] ?? 'tank', text: focus.trim() } } : {}) }, 3, { ...deps.opts(), units: store.scene.units, seed: store.tank.layout.seed + 977 * seedShift });
       } catch (e) { result = { proposals: [] }; note = 'Discovery could not run on this tank.'; console.error(e); }
       if (family && result.proposals.some(q => q.source.startsWith(family))) result = { proposals: result.proposals.filter(q => q.source.startsWith(family)) };
       busy = false; draw();
@@ -92,21 +101,34 @@ export function attachDiscoverPanel(store: Store, viewer: Viewer, deps: Discover
     const shown = (result?.proposals ?? []).map((p, i) => ({ p, i })).filter(x => !rejected.has(String(x.i)));
     root.innerHTML = `<header><h2>Discover</h2><button class="dxx" aria-label="Close Discovery" data-a="close">✕</button></header>
       <div class="dxsetup">
-        <div class="flabel">Look at</div><div class="dxtabs">${TABS.map(t => `<label><input type="checkbox" data-tab="${t}"${scope.includes(t) ? ' checked' : ''}> ${TAB_LABEL[t]}</label>`).join('')}</div>
+        <div class="flabel">Discovery can change</div><div class="dxtabs">${TABS.map(t => switchHtml(t, discoverTabs(store.tank).includes(t), TAB_LABEL[t])).join('')}</div>
+        ${only ? `<p class="hint dxonly">This run looks only at ${only.map(t => TAB_LABEL[t]).join(', ')} (opened from there). <button type="button" class="spLink" data-a="allsw">Use my switches instead</button></p>` : '<p class="hint dxonly">Same switches as the menu headers: they are saved with the project.</p>'}
         <div class="flabel">What for</div><div class="dxobj" role="group">${OBJECTIVES.map(o => `<button class="chip${o.id === objective ? ' on' : ''}" aria-pressed="${o.id === objective}" data-obj="${o.id}" title="${esc(o.hint)}">${esc(o.label)}</button>`).join('')}</div>
         <input class="dxfocus" type="text" placeholder="Anything in particular? (optional)" value="${esc(focus)}" aria-label="Focus">
-        <p class="hint dxlock">${esc(lockedSummary(store.tank))} This run only: the ticks above are not saved.</p>
-        <div class="btns"><button class="primary" data-a="run"${scope.length ? '' : ' disabled'}>${result ? 'Run again' : 'Find proposals'}</button></div>
+        <p class="hint dxlock">${esc(lockedSummary(store.tank))} </p>
+        <div id="dxdSlot"></div>
+        <div class="btns"><button class="primary" data-a="run"${scopeNow().length ? '' : ' disabled'}>${result ? 'Run again' : 'Find proposals'}</button></div>
+        <details class="dxq"${quickOpen ? ' open' : ''}><summary>Quick setup: look, shuffle, density</summary><div id="dxqSlot"></div></details>
       </div>
       ${stale ? `<div class="dxstale" role="alert">The project changed since these were made, so Apply is switched off. <button data-a="run">Refresh</button></div>` : ''}
       ${note ? `<p class="dxnone">${esc(note)}</p>` : ''}
       <div class="dxres">${busy ? '<p class="hint">Looking…</p>' : !result ? '' : shown.length ? shown.map(x => cardHtml(x.p, x.i)).join('') : result.proposals.length ? '<p class="hint">All rejected. Run again for new ones.</p>' : noSolution(result)}</div>`;
+    const slot = root.querySelector('#dxqSlot'); if (slot && quickEl) slot.append(quickEl);
+    const dslot = root.querySelector('#dxdSlot'); if (dslot && doorsEl) dslot.append(doorsEl);
     wire();
     if (result && !busy) pictures(rid.n);
   };
 
+  const afterSwitch = () => {   // a flipped switch is a new scope, not a changed design: results already shown stay applicable
+    if (only) only = undefined;
+    if (result && !stale) runRev = store.rev;
+    const run_ = root.querySelector<HTMLButtonElement>('[data-a="run"]'); if (run_) run_.disabled = !scopeNow().length;
+  };
+  root.addEventListener('click', e => { if ((e.target as HTMLElement).closest('[data-sw]')) skipStale = true; });
+  wireSwitches(store, root, () => { afterSwitch(); skipStale = false; });
   const wire = () => {
-    root.querySelectorAll<HTMLInputElement>('input[data-tab]').forEach(b => b.onchange = () => { scope = TABS.filter(t => root.querySelector<HTMLInputElement>(`input[data-tab="${t}"]`)!.checked); root.querySelector<HTMLButtonElement>('[data-a="run"]')!.disabled = !scope.length; });
+    root.querySelector<HTMLDetailsElement>('.dxq')?.addEventListener('toggle', e => { quickOpen = (e.target as HTMLDetailsElement).open; });
+    root.querySelector<HTMLButtonElement>('[data-a="allsw"]')?.addEventListener('click', () => { only = undefined; draw(); });
     root.querySelectorAll<HTMLButtonElement>('[data-obj]').forEach(b => b.onclick = () => { focus = root.querySelector<HTMLInputElement>('.dxfocus')!.value; objective = b.dataset.obj as Objective; draw(); });
     root.querySelector<HTMLInputElement>('.dxfocus')?.addEventListener('input', e => { focus = (e.target as HTMLInputElement).value; });
     root.querySelectorAll<HTMLButtonElement>('[data-open]').forEach(b => b.onclick = () => openSection(b.dataset.open!));
@@ -129,7 +151,7 @@ export function attachDiscoverPanel(store: Store, viewer: Viewer, deps: Discover
   };
 
   return {
-    open(arg) { scope = Array.isArray(arg) ? TABS.filter(t => arg.includes(t)) : defaultScope(store.tank, arg); objective = 'explore'; focus = ''; result = undefined; stale = false; busy = false; note = ''; rejected = new Set(); seedShift = 0; rid.n++; root.hidden = false; draw(); root.scrollTop = 0; },
+    open(arg, quick = false) { quickOpen = quick; only = Array.isArray(arg) ? TABS.filter(t => arg.includes(t)) : arg ? [arg] : undefined; objective = 'explore'; focus = ''; result = undefined; stale = false; busy = false; note = ''; rejected = new Set(); seedShift = 0; rid.n++; root.hidden = false; draw(); root.scrollTop = 0; },
     close,
   };
 }
