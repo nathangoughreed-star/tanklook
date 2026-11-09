@@ -20,7 +20,7 @@ const withHeater = (S: TankSetup, u: object): TankSetup => ({ ...S, tech: withUn
 
 describe('I own one', () => {
   it('an owned heater costs $0 to set up; power is unchanged', () => {
-    const S = withHeater(planted(), { product: 'topfin-50' }), O = withHeater(planted(), { product: 'topfin-50', owned: true, paidUsd: 14 });
+    const S = withHeater(planted(), { product: 'eheim-jager-300' }), O = withHeater(planted(), { product: 'eheim-jager-300', owned: true, paidUsd: 14 });
     const a = demandOf(S, P).items.find(i => i.key === 'heater')!, b = demandOf(O, P).items.find(i => i.key === 'heater')!;
     expect(a.setup!.mode).toBeGreaterThan(5); expect(b.setup).toBeUndefined();
     expect(b.kwhMo).toBeCloseTo(a.kwhMo!, 6);
@@ -33,7 +33,7 @@ describe('I own one', () => {
     if (a?.setup) { expect(b?.setup).toBeUndefined(); expect(b?.kwhMo).toBeCloseTo(a.kwhMo!, 6); }
   });
   it('lists as $0 "you have", with what was paid in the note, and in the setup sheet', () => {
-    const O = withHeater(planted(), { product: 'topfin-50', owned: true, paidUsd: 14 }), lines = ownedGearLines(O);
+    const O = withHeater(planted(), { product: 'eheim-jager-300', owned: true, paidUsd: 14 }), lines = ownedGearLines(O);
     expect(lines.map(l => [l.usd, l.note])).toContainEqual([0, 'paid $14']);
     expect(lines[0].label).toMatch(/^Heater: /);
     const sheet = buildSheet({ ...parseScene(JSON.parse(SCENES.planted)).scene, tanks: [O], active: 0 });

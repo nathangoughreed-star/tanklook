@@ -55,7 +55,7 @@ describe('need-driven gear', () => {
   });
   it('an owned heater satisfies the heater need at $0', () => {
     const S = tankOf(['neon'], 68);
-    S.tech = { ...S.tech!, rows: { heater: 'one' }, heaters: [{ product: 'topfin-50', owned: true, paidUsd: 14 }] };
+    S.tech = { ...S.tech!, rows: { heater: 'one' }, heaters: [{ product: 'eheim-jager-300', owned: true, paidUsd: 14 }] };
     const n = needsOf(S).find(x => x.kind === 'heater')!;
     expect(n.have).toBe(true); expect(n.fix).toBeUndefined();
     expect(rowOf(S, 'heater')?.setup).toBeUndefined();

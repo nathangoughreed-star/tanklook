@@ -152,6 +152,10 @@ export function setOwnedUse(b: Brief, key: EquipKey, use: Use): Brief {
   return key === 'tank' ? setStatus(out, 'constraints.existingTank', use === 'required' ? 'locked' : 'preference') : out;
 }
 export const setEquipmentUse = setOwnedUse;
+/** "No new equipment" on or off (lane DX3). */
+export function setNoNewEquipment(b: Brief, on: boolean): Brief { const { noNewEquipment: _n, ...x } = projectExtras(b); return setProjectExtras(b, on ? { ...x, noNewEquipment: true } : x); }
+/** Which owned items are Must use (obligation) and which are only available, each still owned (ownership is the owned map / existingTank, never touched here). */
+export const mustUseKeys = (b: Brief): EquipKey[] => requiredEquipment(b).map(i => i.key);
 export function removeEquipment(b: Brief, key: EquipKey): Brief {
   let out = b; const x = projectExtras(b), { [key]: _u, ...use } = x.use ?? {}, { tankDims: _t, ...rest } = x;
   if (key === 'tank') out = clearItem(out, 'constraints.existingTank');

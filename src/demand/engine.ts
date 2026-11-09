@@ -1,6 +1,7 @@
 // The demand engine (lane KK phase 1): what the current tank asks of its keeper, derived from the scene, not from new fields.
 // demandOf(setup, profile) -> per-item contributions + means + the 0-10 risk score. One expected value per bar; limits: cost.ts.
 import { isFloat } from '../art/plants';
+import { capableCredit } from '../scene/equipCredit';
 import { CARE } from '../data/care';
 import { getSpecies, type Species } from '../data/species';
 import factorsJson from '../data/factors.json';
@@ -88,6 +89,7 @@ function fold(items: Contribution[]): Contribution[] {
 export const kwhRate = (P: Pick<UserProfile, 'kwhUsd'>) => P.kwhUsd ?? mean3(FACTORS.kwhUsd);
 
 export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): Demand {
+  S = capableCredit(S); // lane DX3: owned light / heater / filter is $0 only when it meets the requirement
   if (S.stockFirst && !opts.kit) S = withNeedGear(S); // lane GV2: a tank started from its animals is priced for what they and its plants need (basic light, feed)
   const wid = ageWiden(DEFAULTS.asOf, opts.now ?? Date.now());
   const wet = S.water.on, salt = !!S.water.salt && wet, vol = volume(S.tank), gal = vol.gallons, litres = vol.litres;
@@ -126,7 +128,7 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
     // a catalogued product (Tech > Lighting) costs its own listed price (one retailer, one day: +-10 %), as heaters and filters do
     const lprod = lightProduct(S.light.product), listed = listedPrice(lprod);
     const lp = listed ? { lo: listed * 0.9, mode: listed, hi: listed * 1.1 } : rowL ? scale3(rowL, !salt && inch > 48 ? inch / 48 : !salt && inch < 24 ? Math.max(0.3, inch / 24) : 1) : scale3(pick(G.lightUsdPerW), watts * sMul.setup);
-    add('light', listed && lprod ? `Light: ${lprod.brand} ${lprod.model}` : `Light (${Math.round(watts)} W)`, 'gear', { ...(S.light.owned ? {} : { setup: price(lp) }), kwhMo: watts * G.lightHoursPerDay * 30 / 1000 }); // an owned light (lane GM6) costs no set-up: its line reads $0 "you have" (costlines.ts)
+    add('light', listed && lprod ? `Light: ${lprod.brand} ${lprod.model}` : `Light (${Math.round(watts)} W)`, 'gear', { ...(S.light.owned ? {} : { setup: price(lp) }), kwhMo: watts * G.lightHoursPerDay * 30 / 1000 }); // an owned light (lane GM6; $0 only when capable, see capableCredit above) costs no set-up: its line reads $0 "you have" (costlines.ts)
   }
   // a tank started from its animals (path 1) has no filter or heater until the owner adds one (Nathan 2026-10-26: not in the price either)
   const bare = !!S.stockFirst && !opts.kit;

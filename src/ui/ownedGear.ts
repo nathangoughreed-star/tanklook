@@ -12,7 +12,9 @@ import { volume } from '../scene/physics';
 import type { Store } from '../scene/store';
 import type { TankSetup } from '../scene/types';
 import { clearItem, setItem, valueOf, type Brief, type DimsIn } from '../scene/brief';
-import { equipmentOf, removeEquipment, setEquipment, galOfDims } from '../scene/project';
+import { equipmentOf, removeEquipment, setEquipment, setOwnedUse, setNoNewEquipment, galOfDims } from '../scene/project';
+import { equipUseOf, projectExtras } from '../scene/brief';
+import { equipPlan } from '../scene/equipPlan';
 import { OWNED, PICK_CARE, PICK_UNKNOWN } from '../demand/suggest';
 import { getTankModel } from '../data/tanks';
 import { IN } from '../scene/physics';
@@ -104,8 +106,8 @@ export function syncEquipment(b: Brief, s: OwnedState): Brief {
   for (const { id } of OWNED_ITEMS) {
     const have = equipmentOf(out).items.some(i => i.key === id);
     if (!s.on.has(id) || !answered(s, id)) { if (have) out = removeEquipment(out, id); continue; }
-    if (id === 'tank') out = setEquipment(out, 'tank', { ...(s.model ? { model: s.model } : s.dims ? { dimsIn: s.dims } : {}) });
-    else out = setEquipment(out, id, { pick: s[id] === GENERIC ? PICK_CARE : s[id] });
+    if (id === 'tank') out = setEquipment(out, 'tank', { use: equipUseOf(out, 'tank'), ...(s.model ? { model: s.model } : s.dims ? { dimsIn: s.dims } : {}) });
+    else out = setEquipment(out, id, { use: equipUseOf(out, id), pick: s[id] === GENERIC ? PICK_CARE : s[id] });
   }
   return out;
 }
@@ -226,10 +228,12 @@ export function mountOwnedSheet(store: Store, o: OwnedHost, root: HTMLElement, o
       + (table ? ` <span class="wgChips">${btn(tb.shape === 'rect', 'data-furnshape="rect"', 'Rectangle')}${btn(tb.shape === 'round', 'data-furnshape="round"', 'Round')}</span><span class="gs-dims">top ${dim('ownFL', tb.L, tb.shape === 'round' ? 'Diameter' : 'Length')}${tb.shape === 'round' ? '' : ` x ${dim('ownFD', tb.D, 'Front to back')}`} ${uname()}, floor to the tank bottom ${dim('ownFH', sd.height, 'Height')} ${uname()}</span>` : '')
       + (furnNote ? `<div class="hint ownwarn" role="status">${esc(furnNote)}</div>` : '') + '</div>';
   };
+  /** "Must use": the obligation, separate from owning it (Nathan's Discovery spec section 3). Ticking it never changes what is owned. */
+  const mustBox = (k: string): string => `<label class="chk ownmust"><input type="checkbox" data-must="${k}"${equipUseOf(getBrief(), k as OwnedKey) === 'required' ? ' checked' : ''}> <span>Must use in the design</span></label>`;
   const moreRow = (k: OwnedKey): string => {
     const def = OWNED.find(o => o.id === k)!, pick = (valueOf(getBrief(), 'constraints.owned') ?? {})[k];
     const sel = def.products ? `<select class="ownMorePick" data-k="${k}" aria-label="Which ${esc(def.label.toLowerCase())}"><option value="${PICK_CARE}"${pick === PICK_CARE ? ' selected' : ''}>I have one, any will do</option><option value="${PICK_UNKNOWN}"${pick === PICK_UNKNOWN ? ' selected' : ''}>Not sure</option><optgroup label="From the catalogue">${def.products().map(p => `<option value="${esc(p.id)}"${pick === p.id ? ' selected' : ''}>${esc(p.label)}</option>`).join('')}</optgroup></select> ` : '';
-    return `<div class="ownrow" data-row="${k}"><label class="chk"><input type="checkbox" data-more="${k}" checked aria-label="Remove ${esc(def.label)}"> <b>${esc(def.label)}</b></label><div class="ownpick">${sel}</div></div>`;
+    return `<div class="ownrow" data-row="${k}"><label class="chk"><input type="checkbox" data-more="${k}" checked aria-label="Remove ${esc(def.label)}"> <b>${esc(def.label)}</b></label><div class="ownpick">${sel}</div>${mustBox(k)}</div>`;
   };
   /** Add one thing to "what I have": the same writes the old tick boxes made. */
   const addItem = (id: string) => {
@@ -239,10 +243,15 @@ export function mountOwnedSheet(store: Store, o: OwnedHost, root: HTMLElement, o
     opts.onChange?.(); draw();
   };
   const buyHtml = (): string => {
-    let rows: { key: string; label: string; usd: number }[] = [];
-    try { rows = toBuy(store.tank, o.profile?.() ?? defaultProfile()); } catch { /* nothing priced yet */ }
-    const total = rows.reduce((t, r) => t + r.usd, 0);
-    return rows.length ? `<ul class="ownbuy">${rows.map(r => `<li><span>${esc(r.label)}</span><b>$${r.usd}</b></li>`).join('')}</ul><p class="hint">About <b>$${total}</b> for this gear and furniture, before animals, plants and tax. Anything you own and use (the area above) is $0.</p>` : '<p class="hint">Nothing left to buy for the gear and furniture.</p>';
+    let plan: ReturnType<typeof equipPlan> | undefined;
+    try { plan = equipPlan(store.tank, getBrief(), o.profile?.() ?? defaultProfile()); } catch { /* nothing priced yet */ }
+    if (!plan) return '<p class="hint">Nothing left to buy for the gear and furniture.</p>';
+    const total = plan.toBuy.reduce((t, r) => t + r.usd, 0), usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`, rng = (r: { lo: number; hi: number }) => `${usd(r.lo)} to ${usd(r.hi)}`;
+    const list = plan.toBuy.length ? `<ul class="ownbuy">${plan.toBuy.map(r => `<li${r.kind === 'supplement' ? ' class="ownsup"' : ''}><span>${esc(r.label)}</span><b>${usd(r.usd)}</b></li>`).join('')}</ul><p class="hint">About <b>${usd(total)}</b> for this gear and furniture, before animals, plants and tax. Anything you own and that suits the design is $0; owned gear that is too small is not counted.</p>` : '<p class="hint">Nothing left to buy for the gear and furniture.</p>';
+    const flags = plan.flags.map(f => `<p class="hint ownwarn" role="status">${esc(f.text)}</p>`).join('');
+    const bad = plan.infeasible ? `<p class="hint ownwarn" role="alert"><b>This design cannot work as set:</b> ${esc(plan.infeasible)}</p>` : '';
+    const noNew = `<label class="chk ownnonew"><input type="checkbox" id="ownNoNew"${projectExtras(getBrief()).noNewEquipment ? ' checked' : ''}> <span>No new equipment: buy nothing beyond what I have</span></label>`;
+    return `${bad}${list}${flags}<p class="hint">Still to buy for the whole design (animals, plants, hardscape, supplies and gear): <b>${rng(plan.remaining)}</b>. Running cost: <b>${rng(plan.monthly)} a month</b> (a range: prices and electricity vary).</p>${noNew}`;
   };
   const focusId = opts.focus;
   const lightFocus = () => {
@@ -255,17 +264,19 @@ export function mountOwnedSheet(store: Store, o: OwnedHost, root: HTMLElement, o
     const b = getBrief(), haveStand = ownedKeys(b).includes('stand'), need = valueOf(b, 'equipment.needStand'), owned = valueOf(b, 'constraints.owned') ?? {};
     const yn = (v: boolean | undefined, l: string) => `<button type="button" class="${need === v ? 'on' : ''}" data-stand="${v === undefined ? 'unsure' : v}" aria-pressed="${need === v}">${l}</button>`;
     const paidFor = (id: OwnedItem) => id === 'light' || id === 'heater' || id === 'filter' ? paidBox(id) : '';
-    const coreRow = (x: typeof OWNED_ITEMS[number]) => `<div class="ownrow" data-row="${x.id}"><label class="chk"><input type="checkbox" data-item="${x.id}" checked aria-label="Remove ${x.label}"> <b>${x.label}</b> <span class="hint">${x.hint}</span></label><div class="ownpick">${picker(x.id)} ${paidFor(x.id)}</div></div>`;
+    const coreRow = (x: typeof OWNED_ITEMS[number]) => `<div class="ownrow" data-row="${x.id}"><label class="chk"><input type="checkbox" data-item="${x.id}" checked aria-label="Remove ${x.label}"> <b>${x.label}</b> <span class="hint">${x.hint}</span></label><div class="ownpick">${picker(x.id)} ${paidFor(x.id)}</div>${mustBox(x.id)}</div>`;
     const standRow = `<div class="ownrow" data-row="stand"><label class="chk"><input type="checkbox" data-stand-have checked aria-label="Remove stand or furniture"> <b>${STAND_ITEM.label} or furniture</b> <span class="hint">${STAND_ITEM.hint}</span></label>${furnBlock()}</div>`;
     const moreIds = MORE_GROUPS.flatMap(g => g.ids), labelOf = (id: string) => id === 'stand' ? 'Stand or furniture' : OWNED_ITEMS.find(x => x.id === id)?.label ?? OWNED.find(x => x.id === id)?.label ?? id;
-    const have = [...OWNED_ITEMS.filter(x => st.on.has(x.id)).map(coreRow), ...(haveStand ? [standRow] : []), ...moreIds.filter(k => owned[k] !== undefined).map(moreRow)];
+    const ent = [...OWNED_ITEMS.filter(x => st.on.has(x.id)).map(x => ({ k: x.id as string, h: coreRow(x) })), ...(haveStand ? [{ k: 'stand', h: standRow }] : []), ...moreIds.filter(k => owned[k] !== undefined).map(k => ({ k: k as string, h: moreRow(k) }))];
+    const isMust = (k: string) => k !== 'stand' && equipUseOf(b, k as OwnedKey) === 'required', must = ent.filter(e => isMust(e.k)).map(e => e.h), avail = ent.filter(e => !isMust(e.k)).map(e => e.h);
+    const have = avail;
     const absent = MY_EQUIPMENT_IDS.filter(id => id === 'stand' ? !haveStand : (OWNED_ITEMS.some(x => x.id === id) ? !st.on.has(id as OwnedItem) : owned[id as OwnedKey] === undefined));
     root.innerHTML = `${opts.title ? '<form method="dialog" class="libhead"><h2 id="ownTitle">My equipment</h2><button value="close" aria-label="Close">✕</button></form>' : ''}
-      <section class="ownarea" aria-label="What I have and will use"><h3 class="ownh">What I have and will use</h3>
-      <p class="hint">Gear you already own. Pick the exact product, or the generic one if you do not know. It is used wherever it suits (it costs $0), and you get a warning if the design outgrows it.</p>
-      <div class="ownlist">${have.length ? have.join('') : '<p class="hint">Nothing yet. Add what you own below.</p>'}</div>
+      <section class="ownarea" aria-label="What I have"><h3 class="ownh">What I have</h3>
+      <p class="hint">Gear you already own. Pick the exact product, or the generic one if you do not know. <b>Must use</b> gear is in every design. <b>Have available</b> gear is used wherever it suits (it costs $0), and you get a warning if the design outgrows it.</p>
+      ${must.length ? `<h4 class="ownsub">Must use</h4><div class="ownlist">${must.join('')}</div>` : ''}<h4 class="ownsub">Have available</h4><div class="ownlist">${have.length ? have.join('') : '<p class="hint">Nothing yet. Add what you own below.</p>'}</div>
       ${absent.length ? `<div class="ownadd" role="group" aria-label="Add something I have"><span class="hint">Add something I have:</span> ${absent.map(id => `<button type="button" class="ownchip" data-add="${id}">+ ${esc(labelOf(id))}</button>`).join('')}</div>` : ''}</section>
-      <section class="ownarea ownnew" aria-label="What I will buy new"><h3 class="ownh">What I will buy new</h3>
+      <section class="ownarea ownnew" aria-label="What I will buy new"><h3 class="ownh">To purchase</h3>
       ${buyHtml()}
       ${haveStand ? '' : `<div class="ownstand" role="group" aria-label="Do you need a stand?"><b>Do you need a stand?</b> <span class="wgChips">${yn(true, 'Yes')}${yn(false, 'No, it sits on furniture I have')}${yn(undefined, 'Not sure')}</span></div>`}</section>
       ${opts.done ? `<div class="btns"><button type="button" id="ownDone" class="primary"${missing.length ? ' disabled' : ''}>Done</button>
@@ -276,6 +287,8 @@ export function mountOwnedSheet(store: Store, o: OwnedHost, root: HTMLElement, o
   if (opts.focus && opts.tick) addItem(opts.focus);
   root.addEventListener('change', e => {
     const el = e.target as HTMLInputElement | HTMLSelectElement;
+    if (el instanceof HTMLInputElement && el.dataset.must) { const k = el.dataset.must as OwnedKey; editBrief(b => setOwnedUse(b, k, el.checked ? 'required' : 'available')); opts.onChange?.(); draw(); return; }
+    if (el instanceof HTMLInputElement && el.id === 'ownNoNew') { editBrief(b => setNoNewEquipment(b, el.checked)); opts.onChange?.(); draw(); return; }
     if (el instanceof HTMLInputElement && el.hasAttribute('data-stand-have')) { editBrief(b => el.checked ? setEquipment(b, 'stand', { pick: PICK_CARE }) : removeEquipment(b, 'stand')); opts.onChange?.(); draw(); return; }
     if (el instanceof HTMLInputElement && el.dataset.more) {
       const k = el.dataset.more as OwnedKey; editBrief(b => el.checked ? setEquipment(b, k, { pick: PICK_CARE }) : removeEquipment(b, k)); opts.onChange?.(); draw(); return;

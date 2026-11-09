@@ -153,7 +153,7 @@ describe('My equipment: one state, available (Nathan 2026-11-07)', () => {
     const old = setOwnedUse(b, 'tank', 'required');   // what an older save carried: still read as it was ...
     expect(equipUseOf(old, 'tank')).toBe('required');
     const st = ownedStateOf(old);
-    expect(equipUseOf(syncEquipment(old, st), 'tank')).toBe('available');   // ... until the owner next edits My equipment
+    expect(equipUseOf(syncEquipment(old, st), 'tank')).toBe('required');   // ... and an edit in My equipment keeps it (lane DX3: Must use is the user's own obligation, separate from owning)
   });
 });
 
