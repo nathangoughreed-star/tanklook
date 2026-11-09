@@ -1334,3 +1334,14 @@ button.start-mode-card span.hint { font-size: 12px }
 .viewpop .vpsec h3 { margin: 6px 0 4px; font-size: 13px }
 .viewpop label { display: block; margin: 4px 0 }
 .dxp .flabel { width: auto }
+
+/* SL1: the start screen: three large plain buttons, one per row */
+.start-three { display: grid; gap: 14px; margin: 14px 0 6px }
+.start-big { font-size: 20px; font-weight: 600; padding: 22px 16px; min-height: 72px; border-radius: 10px; width: 100%; background: var(--panel); border: 2px solid var(--line); color: inherit; cursor: pointer }
+.start-big:hover, .start-big:focus-visible { border-color: var(--accent); color: var(--accent) }
+.startdlg section[hidden], .startdlg button[hidden], .startdlg .startmsg[hidden] { display: none }
+.startmsg { color: var(--bad); margin: 8px 0 0 }
+.startnav { margin: 12px 0 0 }
+.startdlg .libhead { display: flex; justify-content: space-between; align-items: center }
+.startdlg .libhead h2 { flex: 1; margin-left: 8px }
+.startdlg .libhead #startBack { white-space: nowrap }

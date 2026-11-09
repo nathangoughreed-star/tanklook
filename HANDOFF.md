@@ -70,6 +70,9 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
+## SL1: first-load start screen, three plain choices (2026-11-09; Coordinator 21; NOT pushed)
+One dialog (`#startDlg`) replaces the old mode dialog (`modeDlg`) and the New / Open chooser (`showChooser`, tab strip, swap links). Steps: home (New Setup / Starter / Example Setups / Open Existing) -> new (the three DX5 entry shortcuts, `Deals and bundles...` as a small link) -> kinds / starters / open (saved tanks + "Open a file from your computer") / deals. Pure rules in `ui/startScreenLogic.ts`; the screen is `attachStartMode` in `ui/startMode.ts`; lists are filled by `fillStep` in `panels.ts`. First load (`showStart`) is mandatory: no X, Esc cancelled, Back ends at the three choices. Toolbar New / Open open it at New Setup / Open Existing, closable. The screen closes only after `confirmStart` / `startProject` succeed (`startMode.done()`), so a cancelled replace or failed file returns to it; file errors show inline (`#startMsg`). Dropped from the old chooser: the "Suggest a setup" link, the swap link, the drag-to-look hint, the intro lines. Tests: `test/sl1.test.ts`.
+
 ## FR2: reef high end raised (2026-11-07; Coordinator 21; NOT pushed)
 `finishedRangeBuild.ts` saltwater `hi`: style `reef` -> `spsreef`, Tech preset `lps` -> `sps`, plant (coral) stop 3 -> 4; basis text updated. `src/data/finishedRange.json` regenerated (`GEN_FINISHED=1`). Reef highs before -> after: 20 gal (g20l) $3,050 -> $3,700; 40 gal (g40b) $3,400 -> $4,200; 75 gal $4,350 -> $5,300; 120 gal $4,700 -> $6,050; 180 gal $5,700 -> $7,600; 300 gal $7,250 -> $9,500. Lows unchanged. Monotonic with size kept; one new EXCEPT (saltwater g3c hi, $200 under g2_5) in test/finishedRange.test.ts. Cost panel not wired (FR1 note stands).
 

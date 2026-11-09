@@ -13,6 +13,7 @@ import { renderFeaturedDeals } from './featuredDeals';
 import { attachWelcome } from './welcome';
 import { bindBriefStore, editBrief, experienceOf, getBrief, onBrief as onBriefEdit, setTank as briefTank } from './setupBrief';
 import { attachStartMode } from './startMode';
+import { stepForMenu, libraryState, EMPTY_LIBRARY, type StartStep } from './startScreenLogic';
 import { openDiscovery } from './discover/entry';
 import { attachTankDock, type TankDock } from './tankDock';
 import { sandboxRoomScene } from '../scene/sandboxRoom';
@@ -20,7 +21,7 @@ import { roomOf, setRoomAuto, setRoomByHand } from '../scene/roomlight';
 import { putOnFloor, putOnMyFurniture, putOnStand, placementOf, minTop, type Placement } from '../scene/placement';
 import { confirmNew } from './newTank';
 import { startProject, confirmStart, setProjectAsker, regenerateKeepingLocks, hasLocks } from './projectStart';
-import { startDeals, visibleTabs, pickTab, sortDeals, DEFAULT_SORT, type DealSort, type StartTab, type StartMenu } from './startEntries';
+import { startDeals, visibleTabs, pickTab, sortDeals, DEFAULT_SORT, type DealSort, type StartTab } from './startEntries';
 import { DEALS_AS_OF, DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
 import { LEVELS, onPerf, perf, setAuto, setLevel } from '../render/perf';
 import { lifeStages } from '../data/lifestages';
@@ -166,8 +167,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
   store.subscribe(syncRoom); syncRoom();
   $('redo').onclick = () => store.redo();
   // New and Open… are two separate menus of the start chooser (below): New = scratch + deals, Open… = starter + saved tanks
-  $('newScene').onclick = () => { welcomeFirst = false; startMode.show(); }; // New: Guided or Sandbox (ui/startMode.ts)
-  $('openScene').onclick = () => showChooser('open', 'open', false);
+  $('newScene').onclick = () => { welcomeFirst = false; startMode.open(stepForMenu('new')); }; // SL1: the one start screen, at its New Setup step (closable: a project is open)
+  $('openScene').onclick = () => { welcomeFirst = false; startMode.open(stepForMenu('open')); };
   /** An empty tank and an empty brief (lane NW1). Warns first when the current tank has something to lose and is not saved: Save / Start new / Cancel (false = cancelled). Undo brings it back. */
   const newEmptyTank = async (newKind: SetupKind = 'freshwater', room = false) => { // the Sandbox card's Tank type (lane S252): applied to the empty tank it starts
     // room (lane ST1): the Sandbox starts as an empty room with the person (the default environment, its own camera); the tank picker puts the tank in
@@ -188,7 +189,9 @@ export function attachPanels(store: Store, viewer: Viewer) {
     roomPending = true; tankDock?.open('start');
     return true;
   };
-  $('openFile').onclick = () => { startDlg.close(); $('fileIn').click(); };
+  $('openFile').onclick = () => $('fileIn').click(); // SL1: the start screen stays up; it closes only when a file really opens
+  /** A message while the start screen is up (the status line sits behind the modal): shown on the screen itself, else on the status line. */
+  const say = (msg: string, bad = false) => { const m = $('startMsg'); if (document.getElementById('startDlg') && (document.getElementById('startDlg') as HTMLDialogElement).open) { m.textContent = msg; m.hidden = false; } else status(msg, bad); };
   // Opening rebuilds the tank in one blocking frame (several seconds for a full tank): show the spinner, let it paint,
   // then open; it clears on the first draw after, which is the one that built the tank.
   const busy = $('busy');
@@ -204,13 +207,14 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('fileIn').onchange = async () => {
     const input = $('fileIn'), file = input.files?.[0]; input.value = '';
     if (!file) return;
-    if (file.size > 5e6) { status('That file is too large to be a scene (over 5 MB).', true); return; }
+    if (file.size > 5e6) { say('That file is too large to be a scene (over 5 MB).', true); return; }
     let parsed: ReturnType<typeof parseScene>;
     try { parsed = parseScene(await file.text()); } catch (e) {
-      status(e instanceof SceneError ? e.message : 'Could not open that file.', true); return;
+      say(e instanceof SceneError ? e.message : 'Could not open that file.', true); return;
     }
     const { scene, warnings } = parsed;
     if (!await confirmStart(G(), savedText())) return; // DX5: Open file starts a different project: ask first when this one holds unsaved work or locks
+    startMode.done();
     whileOpening(scene.name, () => {
       try { store.replace(scene); } catch { status('Could not open that file.', true); return false; }
       // an opened file goes straight into the saved list (Nathan 2026-10-14); the same file opened again reuses its entry
@@ -237,7 +241,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
       (e.thumb ? `<img src="${esc(e.thumb)}" alt="" loading="lazy">` : '<span class="nothumb">No picture</span>') + `<b>${esc(e.name)}</b>` +
       `<span class="hint">${esc(when(e.saved))}${e.tanks > 1 ? ' · 2 tanks' : ''}</span></button>` +
       `<button class="libdel" data-libdel="${esc(e.id)}" title="Delete “${esc(e.name)}” from this browser" aria-label="Delete ${esc(e.name)}">×</button></div>`).join('')
-      : '<p class="hint">No tanks saved in this browser yet. <i>Save</i> puts the current tank here.</p>';
+      : `<p class="hint" data-empty="${libraryState(list.length)}">${EMPTY_LIBRARY}</p>`;
   }
   // Examples (lane F): bundled scenes, opened like a file (a new, unsaved tank; Undo brings the previous one back)
   // The scene files are a lazy chunk (lane EF3): fetched once the list's pictures are in (on a slow line they would
@@ -250,15 +254,15 @@ export function attachPanels(store: Store, viewer: Viewer) {
     Promise.allSettled([...box.querySelectorAll('img')].map(i => i.decode()))
       .then(exampleScenes).catch(() => { /* offline: a click tries again and says so */ });
   }
-  async function openExample(e: MouseEvent, from: HTMLDialogElement) {
+  async function openExample(e: MouseEvent) {
     const op = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-ex]'), x = op && EXAMPLES.find(q => q.id === op.dataset.ex);
     if (!x) return;
-    from.close();
     let text: string;
     try { text = (await exampleScenes())[x.id]; } catch {
-      status('Could not load the examples (no connection?). Try again in a moment.', true); return;
+      say('Could not load the examples (no connection?). Try again in a moment.', true); return;
     }
     if (!await confirmStart(G(), savedText())) return; // DX5: a different project: ask first
+    startMode.done();
     whileOpening(x.name, () => {
       try {
         const { scene } = parseScene(text);
@@ -276,37 +280,33 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // (New) when no tank was restored from this browser (Nathan 2026-10-14; Esc keeps the empty tank), and by New / Open….
   const startDlg = $<HTMLDialogElement>('startDlg');
   const dealSort = { ...DEFAULT_SORT }; // each deal tab keeps its own order
-  $('startEx').onclick = e => openExample(e, startDlg);
-  const openDeal = async (name: string, scene: Scene) => { startDlg.close(); if (!await startProject(store, scene, savedText())) return; setLibId(null); status(`Opened the deal "${name}". Customise it; the demand panel prices the bundle. Undo brings the previous tank back.`); };
+  $('startEx').onclick = e => openExample(e);
+  const openDeal = async (name: string, scene: Scene) => { if (!await startProject(store, scene, savedText())) return; startMode.done(); setLibId(null); status(`Opened the deal "${name}". Customise it; the demand panel prices the bundle. Undo brings the previous tank back.`); };
   const setTab = (tab: StartTab) => {
     for (const b of startDlg.querySelectorAll<HTMLElement>('[data-tab]')) { const on = b.dataset.tab === tab; b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1; }
     for (const p of startDlg.querySelectorAll<HTMLElement>('[data-pane]')) p.hidden = p.dataset.pane !== tab;
   };
   $('startTabs').onclick = e => { const b = (e.target as HTMLElement).closest<HTMLElement>('[data-tab]'); if (b) setTab(b.dataset.tab as StartTab); };
-  function showChooser(menu: StartMenu, tab: StartTab | undefined, first: boolean) {
-    const { sale, bundles } = startDeals(), shown = visibleTabs(menu, { sale: sale.length, bundles: bundles.length }), isNew = menu === 'new';
-    $('startTitle').textContent = isNew ? 'Deals and bundles' : 'Open a tank';
-    $('startIntro').textContent = isNew
-      ? 'Starter kits and tank-and-stand sets you can buy now: pick one, then make it yours.'
-      : 'A ready-made starter tank to look at or build on, or one you saved.';
-    $('startTabs').hidden = !shown.length;
-    const swap = $<HTMLButtonElement>('startSwap');
-    swap.textContent = isNew ? 'Open a starter or saved tank instead…' : 'Deals and bundles instead…';
-    swap.onclick = () => showChooser(isNew ? 'open' : 'new', undefined, first);
-    for (const b of startDlg.querySelectorAll<HTMLElement>('[data-tab]')) b.hidden = !shown.includes(b.dataset.tab as StartTab);
-    for (const n of startDlg.querySelectorAll('.dealasof')) n.textContent = `Prices as of ${DEALS_AS_OF}; ${DEAL_NOTE.replace(/^as of the date shown; /, '')}. ${NOT_SPONSORED}.`;
-    // each deal tab sorts on its own; the labels name the key and direction ($ saved, % saved, price, size)
-    const draw = () => { renderFeaturedDeals($('startSale'), sortDeals(sale, dealSort.sale), openDeal); renderFeaturedDeals($('startBundles'), sortDeals(bundles, dealSort.bundles), openDeal); };
-    for (const s of startDlg.querySelectorAll<HTMLSelectElement>('.dealsort')) {
-      const tab = s.closest<HTMLElement>('[data-pane]')!.dataset.pane as keyof typeof dealSort;
-      s.value = dealSort[tab]; s.onchange = () => { dealSort[tab] = s.value as DealSort; draw(); };
+  /** SL1: fills the lists of a start-screen step when it opens (the screen itself is ui/startMode.ts). */
+  function fillStep(step: StartStep) {
+    $('startMsg').hidden = true;
+    if (step === 'starters') renderExamples();
+    else if (step === 'open') renderLib();
+    else if (step === 'deals') {
+      const { sale, bundles } = startDeals(), shown = visibleTabs('new', { sale: sale.length, bundles: bundles.length });
+      $('startTabs').hidden = !shown.length;
+      for (const b of startDlg.querySelectorAll<HTMLElement>('[data-tab]')) b.hidden = !shown.includes(b.dataset.tab as StartTab);
+      for (const n of startDlg.querySelectorAll('.dealasof')) n.textContent = `Prices as of ${DEALS_AS_OF}; ${DEAL_NOTE.replace(/^as of the date shown; /, '')}. ${NOT_SPONSORED}.`;
+      // each deal tab sorts on its own; the labels name the key and direction ($ saved, % saved, price, size)
+      const draw = () => { renderFeaturedDeals($('startSale'), sortDeals(sale, dealSort.sale), openDeal); renderFeaturedDeals($('startBundles'), sortDeals(bundles, dealSort.bundles), openDeal); };
+      for (const s of startDlg.querySelectorAll<HTMLSelectElement>('.dealsort')) {
+        const tab = s.closest<HTMLElement>('[data-pane]')!.dataset.pane as keyof typeof dealSort;
+        s.value = dealSort[tab]; s.onchange = () => { dealSort[tab] = s.value as DealSort; draw(); };
+      }
+      draw();
+      const land = pickTab(undefined, shown);
+      if (land) setTab(land); else for (const p of startDlg.querySelectorAll<HTMLElement>('[data-pane]')) p.hidden = true;
     }
-    draw();
-    renderExamples(); renderLib();
-    const land = pickTab(tab, shown);
-    if (land) setTab(land); else for (const p of startDlg.querySelectorAll<HTMLElement>('[data-pane]')) p.hidden = true;
-    if (!startDlg.open) startDlg.showModal();
-    (startDlg.querySelector<HTMLElement>('[data-tab][aria-selected="true"]') ?? swap).focus();
   }
   // The Welcome screen (lane C4) is the front door: first launch shows it; New / Open… still open the chooser above.
   // At first launch the tank on screen is already a fresh one, so Sandbox just closes the Welcome screen.
@@ -321,7 +321,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     // lane VD6: a personalized discovery picture. DX5: drawn from a COPY (the viewer's preview), so the project is never touched, not even for one frame; the brief is not part of a picture
     shot: T => { try { viewer.setPreview(structuredClone(T), true); return viewer.thumbnail(480); } finally { viewer.setPreview(null); } },
     sandbox: async () => (welcomeFirst ? (welcomeFirst = false, true) : await newEmptyTank()),
-    browse: menu => showChooser(menu, menu === 'open' ? 'starters' : undefined, welcomeFirst),
+    browse: menu => startMode.open(stepForMenu(menu, menu === 'open' ? 'starters' : undefined)),
   });
   $('browseLooks').onclick = () => welcome.browseLooks();
   $('exploreSetups').onclick = () => welcome.exploreSetups(); // lane GW2 / DX7: Browse looks and Explore complete setups are options inside Discover (Quick setup)
@@ -351,7 +351,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     ideas: sandboxRoom,
     existing: async () => { const ok = welcomeFirst ? (welcomeFirst = false, true) : await newEmptyTank(); if (ok) openOwned(); return ok; },
     owned: () => openOwned(),
-    browse: (menu, tab) => showChooser(menu, tab, welcomeFirst),
+    enter: fillStep,
     profile: () => { try { return loadProfile(); } catch { return undefined; } },
   });
   // lane GW1: the guide that walks the real menus (ui/coach); lane GW2: Guided = this coach (the old dialog steps live on as Quick Setup's Browse looks / Explore)
@@ -359,9 +359,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   void import('./suggest').then(m => { suggestPanel = m.attachSuggest(store, viewer, status, openOwned); }); // lane C8: Suggest a setup
   void import('./infeasibleCard').then(m => m.attachCompare(store, status)); // lane GV7: compromise slots fill as they show; Use this / Compare (split view, money and care first on the tabs)
   void import('./briefBar').then(m => { m.attachBriefBar(store, { suggest: () => suggestPanel?.open(), owned: () => openOwned(), limits: openLimits, report: () => void import('./report').then(m => m.openReport()) }); }); // lane U3: the setup brief bar, shown in every entry point
-  $('suggestBtn').onclick = () => { if (startDlg.open) startDlg.close(); suggestPanel?.open(); };
-  $('startWelcome').onclick = () => { startDlg.close(); startMode.show(); };
-  const showStart = () => { welcomeFirst = true; startMode.show(); };
+  const showStart = () => { welcomeFirst = true; startMode.open('home', true); }; // SL1: first load: the three choices, mandatory
   void import('./stockPlan').then(m => m.attachStockPlan(store, viewer, status, $('startAnimal'))); // lane P5: the stocking screen (path 1) and the fork card; loaded after start-up (it pulls in the tank-fit engine, whose imports must not run before starter.ts's)
   $('libList').onclick = async e => {
     const t = e.target as HTMLElement, del = t.closest<HTMLButtonElement>('[data-libdel]'), op = t.closest<HTMLButtonElement>('[data-lib]');
@@ -373,8 +371,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
     }
     if (!op) return;
     const id = op.dataset.lib!;
-    startDlg.close();
     if (!await confirmStart(G(), savedText())) return; // DX5: opening a saved tank is a different project: ask first
+    startMode.done();
     whileOpening(listLib().find(x => x.id === id)?.name ?? 'tank', () => {
       try {
         const { scene, warnings } = loadFromLib(id);
@@ -490,7 +488,7 @@ Cancel, then change the name, to keep both.`)) return;
     // a library pick, whichever picker made it (the docked one, ui/tankDock.ts, or this modal for a sump)
     const applyPick = (m: TankModel, v?: TankVariant) => { editBrief(b => briefTank(b, { id: m.id, label: m.name })); v ??= soleProduct(m); const mm = v ? modelOfVariant(m, v) : m; setTank(() => tankFromModel(mm), undefined, mm.glassMm, standFor(m, v)); pinPreset(store.scene.active, store.tank, saleOf(m, v)); };
     tankDock = attachTankDock(store, viewer, { apply: (m, v) => { roomPending = false; applyPick(m, v); }, back: () => startMode.showKinds(), abandoned: () => { roomPending = false; } });
-    $<HTMLDialogElement>('modeDlg').addEventListener('close', () => { if (roomPending && !tankDock!.isOpen) tankDock!.open('start'); }); // a tank is required: closing the kind screen without a kind returns to the picker
+    $<HTMLDialogElement>('startDlg').addEventListener('close', () => { if (roomPending && !tankDock!.isOpen) tankDock!.open('start'); }); // a tank is required: closing the kind screen without a kind returns to the picker
     const apply = (m: TankModel, v?: TankVariant) => { if (sumpDone) { sumpDone(m); dlg.close(); return; } applyPick(m, v); dlg.close(); };
     const draw = () => {
       const needle = q.value.trim().toLowerCase();

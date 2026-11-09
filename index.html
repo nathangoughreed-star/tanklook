@@ -56,9 +56,22 @@
     <p class="hint">Sizes are outer dimensions as sold. Makers often shave or add an inch to the generic size, so pick the brand you will buy. Prices are typical new US prices and move often.</p>
     <div id="tankList"></div>
   </dialog>
-  <dialog id="modeDlg" class="libdlg startdlg modedlg" aria-labelledby="modeTitle">
-    <form method="dialog" class="libhead"><h2 id="modeTitle">New tank</h2><button value="close" aria-label="Close">✕</button></form>
-    <div id="modeMain">
+  <dialog id="guardDlg" class="libdlg startdlg" aria-labelledby="guardTitle">
+    <form method="dialog" class="libhead"><h2 id="guardTitle">Guardrails</h2><button value="close" aria-label="Close">✕</button></form>
+    <p class="hint">Brief items switched off in this tank. Turn one back on and the tank is checked against it again. Animal welfare checks are not on this list: they cannot be switched off.</p>
+    <div id="guardList"></div>
+  </dialog>
+  <dialog id="startDlg" class="libdlg startdlg" aria-labelledby="startTitle">
+    <div class="libhead"><button type="button" class="linkbtn" id="startBack" hidden>← Back</button><h2 id="startTitle">Welcome</h2><button type="button" id="startClose" aria-label="Close" hidden>✕</button></div>
+    <button id="startAnimal" hidden aria-hidden="true" tabindex="-1">Animal</button><!-- opener the stocking screen binds to (Guided, Animals tile) -->
+    <section data-step="home">
+      <div class="start-three">
+        <button type="button" class="start-big" id="startNew">New Setup</button>
+        <button type="button" class="start-big" id="startStarters">Starter / Example Setups</button>
+        <button type="button" class="start-big" id="startOpen">Open Existing</button>
+      </div>
+    </section>
+    <section data-step="new" hidden>
     <p class="hint modeNote">One project, however you begin: these are shortcuts, not modes. Everything stays editable and you can use Discover at any time.</p>
     <div class="start-mode">
       <section class="start-mode-card" aria-labelledby="modeExploringH">
@@ -80,27 +93,24 @@
         <button type="button" class="primary" id="modeExisting">Start from my setup</button>
       </section>
     </div>
-    </div>
-    <div id="modeKinds" hidden>
-      <h3 class="mode-kind-h">What kind of tank?</h3>
+    <p class="hint startswap"><button type="button" class="linkbtn" id="startDeals">Deals and bundles…</button></p>
+    </section>
+    <section data-step="kinds" hidden>
       <div id="modeKindList" class="start-mode kinds4" role="group" aria-label="Kind of tank"></div>
-      <p><button type="button" class="linkbtn" id="modeBack">Back</button></p>
-    </div>
-  </dialog>
-  <dialog id="guardDlg" class="libdlg startdlg" aria-labelledby="guardTitle">
-    <form method="dialog" class="libhead"><h2 id="guardTitle">Guardrails</h2><button value="close" aria-label="Close">✕</button></form>
-    <p class="hint">Brief items switched off in this tank. Turn one back on and the tank is checked against it again. Animal welfare checks are not on this list: they cannot be switched off.</p>
-    <div id="guardList"></div>
-  </dialog>
-  <dialog id="startDlg" class="libdlg startdlg" aria-labelledby="startTitle">
-    <form method="dialog" class="libhead"><h2 id="startTitle">TankLook</h2><button value="close" aria-label="Close">✕</button></form>
-    <p class="hint" id="startIntro"></p>
-    <button id="startAnimal" hidden aria-hidden="true" tabindex="-1">Animal</button><!-- opener the stocking screen binds to (Guided, Animals tile) -->
+    </section>
+    <section data-step="starters" hidden>
+      <p class="hint">Ready-made tanks to look at or start from: each opens as a new, unsaved tank.</p>
+      <div id="startEx" class="libgrid"></div>
+    </section>
+    <section data-step="open" hidden>
+      <div id="libList" class="libgrid"></div>
+      <div class="btns"><button type="button" id="openFile" class="primary">Open a file from your computer</button></div>
+      <p class="hint">Saved tanks live in this browser only: clearing site data removes them. <i>Download</i> keeps a file.</p>
+    </section>
+    <section data-step="deals" hidden>
     <div class="starttabs" role="tablist" id="startTabs">
       <button role="tab" id="tab-sale" data-tab="sale">On sale now</button>
       <button role="tab" id="tab-bundles" data-tab="bundles">Bundles</button>
-      <button role="tab" id="tab-starters" data-tab="starters">Starter tanks</button>
-      <button role="tab" id="tab-open" data-tab="open">Saved tanks</button>
     </div>
     <section class="startpane" role="tabpanel" data-pane="sale" aria-labelledby="tab-sale">
       <p class="hint">Starter kits and tank-and-stand sets on sale: pick one, then make it yours. <span class="dealasof"></span></p>
@@ -112,17 +122,8 @@
       <label class="hint dealsortl">Sort <select class="dealsort" aria-label="Sort the deals"><option value="usd">$ saved, most first</option><option value="pct">% saved, most first</option><option value="cost">Price, lowest first</option><option value="size">Size, smallest first</option></select></label>
       <div id="startBundles" class="libgrid"></div>
     </section>
-    <section class="startpane" role="tabpanel" data-pane="starters" aria-labelledby="tab-starters">
-      <p class="hint">Ready-made tanks to look at or start from: each opens as a new, unsaved tank.</p>
-      <div id="startEx" class="libgrid"></div>
     </section>
-    <section class="startpane" role="tabpanel" data-pane="open" aria-labelledby="tab-open">
-      <p class="hint">Saved in this browser only: clearing site data removes them, and Safari clears them after 7 days without a visit. <i>Download</i> keeps a file.</p>
-      <div id="libList" class="libgrid"></div>
-      <div class="btns"><button id="openFile">Open a downloaded file…</button></div>
-    </section>
-    <p class="hint startswap"><button type="button" id="startSwap" class="linkbtn"></button> · <button type="button" id="startWelcome" class="linkbtn">Back to New</button> · <button type="button" id="suggestBtn" class="linkbtn" title="Fill in what you left open in your setup brief: proposals that fit your budget, time and space">Suggest a setup</button></p>
-    <p class="hint">Drag (one finger on a phone) to look around, wheel or pinch to zoom; <i>How to use</i> at the top of the panel has the rest.</p>
+    <p id="startMsg" class="hint startmsg" role="alert" hidden></p>
   </dialog>
   <div id="busy" class="busy" role="status" aria-live="polite" hidden><div class="busybox"><span class="spin" aria-hidden="true"></span><span id="busyText">Opening…</span></div></div>
   <div class="namerow"><input id="sceneName" type="text" maxlength="80" aria-label="Scene name"><span id="saveState" class="hint"></span></div>
