@@ -164,7 +164,7 @@ export function includesNote(S: Gated): string {
   if (!inc) return "What this tank comes with isn't recorded yet: lid, light, filter and heater are free to set.";
   const k = integratedKit(S), names = { lid: 'lid', light: 'light', filter: 'filter', heater: 'heater', stand: 'stand' } as const;
   const yes: string[] = [], no: string[] = [], unknown: string[] = [], loose: string[] = [];
-  for (const key of Object.keys(names) as (keyof Includes)[]) {
+  for (const key of Object.keys(names) as (keyof typeof names)[]) {
     const v = inc[key];
     if (v === undefined) unknown.push(names[key]);
     else if (v === false || v === 'none') no.push(names[key]);
