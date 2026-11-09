@@ -1,6 +1,7 @@
 // Aquascape items (scene v9): the library of placeable rocks, wood, caves and plants, the pure shape skeletons the
 // renderer builds them from (so placement code can find a branch to tie a fern to without three.js), and the starter
 // sets that replace the old fixed layouts. All sizes physical (mm): a bigger tank gets more pieces, not bigger ones.
+import { drawnUids, itemKey } from './uid';
 import { rng } from '../art/paint';
 import { PLANT3D, PLANT_ASPECT, grownSize, growthLen, growthOf, isCarpet, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
 import { fitItems } from './plantfit';
@@ -685,6 +686,10 @@ const STONE_RATIO: Record<string, number> = { seiryu: 0.62, river: 1.1 };
  * plants-only regenerate); plants are then placed round those pieces, wherever they now stand.
  */
 export function starterItems(S: TankSetup, keepHard?: Item[]): Item[] {
+  const out = starterItemsRaw(S, keepHard);
+  return drawnUids(out, 'i', itemKey); // DX0: every drawn piece has an identity, the same for the same draw
+}
+function starterItemsRaw(S: TankSetup, keepHard?: Item[]): Item[] {
   const T = S.tank, { L, H, D } = T, id = S.layout.id, out: Item[] = keepHard ? keepHard.map(it => ({ ...it })) : [];
   if (id === 'none') return out;
   const spec = STYLES[id], DS = S.layout.dens ?? DEFAULT_DENS, sub = (x: number, d: number) => groundHeight(S, T, x, d);

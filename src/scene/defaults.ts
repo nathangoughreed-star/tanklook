@@ -1,3 +1,4 @@
+import { ensureUids } from './uid';
 import { starterItems } from './items';
 import { IN } from './physics';
 import { SCENE_VERSION, type Fish, type Scene, type TankSetup } from './types';
@@ -42,7 +43,7 @@ export function defaultSetup(): TankSetup {
     items: [],
   };
   s.items = starterItems(s);
-  return s;
+  return ensureUids(s);
 }
 
 /** A bare, empty tank (Nathan 2026-10-13): no animals, background, grid, substrate or hardscape. */
@@ -50,7 +51,7 @@ export function bareSetup(): TankSetup {
   const s = defaultSetup();
   s.fish = []; s.items = []; s.layout.id = 'none';
   s.render.bg = 'none'; s.render.grid = false; s.substrate.show = false;
-  return s;
+  return ensureUids(s);
 }
 
 // The tank presets moved to the catalog (src/data/tanks.json, lane KA 2026-10-19): see tankChoices() in data/tanks.ts.

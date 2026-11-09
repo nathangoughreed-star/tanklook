@@ -15,6 +15,7 @@ import { placeNew, randomPose, randomSize } from './scatter';
 import { HERP, SQFT_MM2, floorFor, type HerpRule } from '../data/herpstock';
 import { footprint } from './shape';
 import { isGardenPiece } from './openTop';
+import { carryUids, drawnUids } from './uid';
 import type { Fish, Item, LayoutId, Tank, TankSetup } from './types';
 
 /** Share of the tank's bioload cap each animal stop fills (None .. Full). Full stays under the cap. Since lane SR (2026-10-26) this is the
@@ -171,7 +172,7 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
   }
   const t = { ...s, fish };
   placeNew(t, r, ids);
-  return t.fish;
+  return drawnUids(t.fish, 'f', f => f.species + (f.sex ?? ''));
 }
 
 /**
@@ -181,12 +182,14 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
  * animal stop is above None (at None the user's own animals stay). `firstFishId`: the store's next free animal id.
  */
 export function regenerate(s: TankSetup, what: Layer | 'all', firstFishId: number) {
+  const before = { items: s.items, fish: s.fish }; // DX0: a redraw that draws a piece again keeps its uid
   // an open-top garden's rim planters and houseplants (lane OG2) are not the starter's: they stay through a layer's redraw (a new layout or Shuffle, 'all', clears them)
   const garden = what === 'all' || what === 'animal' ? [] : s.items.filter(it => isGardenPiece(it) && (what !== 'plant' || layerOf(it) !== 'hard')); // (the plant redraw already keeps the hardscape, the garden's rock and wood with it)
   if (what === 'plant') s.items = starterItems(s, s.items.filter(it => layerOf(it) === 'hard'));
   else if (what !== 'animal') s.items = starterItems(s);
   if (garden.length) { let id = s.items.reduce((m, it) => Math.max(m, it.id), 0); for (const it of garden) s.items.push({ ...it, id: ++id }); }
   if (what === 'animal' || (what === 'all' && (s.layout.dens ?? DEFAULT_DENS).animal > 0)) s.fish = starterAnimals(s, firstFishId);
+  carryUids(before, s);
 }
 
 /** A style drawn at random for "Any style" (Quick Setup): from the tank's own family, so a shuffle never turns a fish tank
@@ -232,6 +235,7 @@ export function handEdits(s: TankSetup, what: Layer | 'all' | 'none', ground = f
 export function shuffleHard(s: TankSetup, seed: number) {
   s.layout.plantSeed ??= s.layout.seed; s.layout.animalSeed ??= s.layout.seed;
   s.layout.seed = seed;
+  const beforeItems = s.items;
   const plants = s.items.filter(it => layerOf(it) === 'plant');
   let id = plants.reduce((m, it) => Math.max(m, it.id), 0);
   const hard = starterItems(s).filter(it => layerOf(it) === 'hard').map(it => ({ ...it, id: ++id }));
@@ -243,5 +247,6 @@ export function shuffleHard(s: TankSetup, seed: number) {
     if (!at && it.lift <= 0) continue;
     Object.assign(it, at ?? { lift: 0 }); clampItem(it, s.tank, s);
   }
+  carryUids({ items: beforeItems, fish: [] }, s); // DX0: stable uids (a hard piece drawn again keeps its own)
   seatHook.corals?.(s); // the corals follow the new rock, or drop to the sand where theirs is gone (CF1)
 }

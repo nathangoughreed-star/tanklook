@@ -51,6 +51,7 @@ describe('aquascape items (scene v9)', () => {
   it('items survive a save and load unchanged', () => {
     const sc = defaultScene();
     sc.tanks[0].items.push(makeItem(sc.tanks[0].tank, 'coconut', 999, 42, 100, 120, { yaw: 30, tilt: -5, lift: 12 }));
+    sc.tanks[0].items.forEach(it => { it.uid ??= `i${it.id}`; }); // (v10: items carry a uid)
     const back = parseScene(JSON.stringify(sc)).scene;
     expect(back.tanks[0].items).toEqual(sc.tanks[0].items);
   });

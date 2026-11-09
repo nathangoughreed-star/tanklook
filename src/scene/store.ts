@@ -9,6 +9,7 @@ import { clearTopGear } from './topgear';
 import { clampItem, keepCoralsSeated } from './items';
 import { holdIntegrated } from './integrated';
 import { prunePairs } from './pairs';
+import { ensureUids } from './uid';
 import { groupSize, type Group } from './duplicate';
 import type { BrushState } from './brush';
 import type { CameraSettings, Fish, Item, Scene, TankSetup } from './types';
@@ -58,6 +59,8 @@ export class Store {
   lastCam = 0;
   /** What the last 'load' was: a new scene (open, new, a start) or undo / redo stepping through history. */
   loadedBy: 'replace' | 'history' = 'replace';
+  /** Project revision (DX0): bumped by every design change (update of kind 'scene' / 'load', replace, undo, redo); never rewound by undo, so a proposal made against an earlier rev can never match again. Camera moves and selection do not count. A proposal is session state: it is not saved. */
+  rev = 0;
 
   constructor(scene: Scene = emptyScene()) {
     this.scene = scene;
@@ -190,9 +193,10 @@ export class Store {
       this.lastKey = opts.coalesce ?? null; this.lastTime = now;
     }
     fn(this.scene);
+    if (kind !== 'view' && kind !== 'select') this.rev++;
     // a terrain grid of another kind than its tank's (copied from the other tank, or a new shape) is resampled onto it
     const regrid = (t: TankSetup) => { const te = t.terrain; if (te.h.length && !sameGrid(te, t.tank)) t.terrain = { ...sampleTerrain(t, t.tank, te.cols), on: te.on }; };
-    if (kind === 'scene') { for (const t of this.scene.tanks) { holdIntegrated(t); prunePairs(t); regrid(t); swampGround(t); keepInWater(t); keepCoralsSeated(t); fitTable(t); clearTopGear(t); for (const it of t.items) clampItem(it, t.tank, t); } clearCams(this.scene.tanks, this.scene.camLock); }
+    if (kind === 'scene') { for (const t of this.scene.tanks) { ensureUids(t); holdIntegrated(t); prunePairs(t); regrid(t); swampGround(t); keepInWater(t); keepCoralsSeated(t); fitTable(t); clearTopGear(t); for (const it of t.items) clampItem(it, t.tank, t); } clearCams(this.scene.tanks, this.scene.camLock); }
     if (this.selId != null && !this.tank.fish.some(f => f.id === this.selId)) this.selId = null;
     if (this.selItem != null && !this.tank.items.some(it => it.id === this.selItem)) this.selItem = null;
     this.pruneExtras();
@@ -299,7 +303,7 @@ export class Store {
     if (this.selId != null && !this.tank.fish.some(f => f.id === this.selId)) this.selId = this.tank.fish.at(-1)?.id ?? null;
     if (this.selItem != null && !this.tank.items.some(it => it.id === this.selItem)) this.selItem = null;
     this.pruneExtras();
-    this.loadedBy = 'history'; this.emit('load');
+    this.rev++; this.loadedBy = 'history'; this.emit('load');
   }
 
   /** Untick every view (the panel was closed). */
@@ -318,7 +322,7 @@ export class Store {
   replace(scene: Scene) {
     this.pushUndo(); this.seal();
     this.loadDepth = this.undoStack.length;
-    this.scene = scene;
+    this.scene = scene; this.rev++; for (const t of scene.tanks) ensureUids(t);
     this.editOn = [0, 1].map(k => k === scene.active);
     this.selId = null; this.selItem = null; this.extraFish = []; this.extraItems = []; this.selPatches = [];
     this.loadedBy = 'replace'; this.emit('load');

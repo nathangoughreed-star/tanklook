@@ -4,7 +4,7 @@
 // Split tanks (scene v7): up to two fully independent setups, each with its own contents, room and camera.
 // Aquascape items (scene v9): every rock, piece of wood, cave and plant is its own placeable item.
 
-export const SCENE_VERSION = 9;
+export const SCENE_VERSION = 10; // v10 (DX0): a stable `uid` on every animal and aquascape item, and `TankSetup.locks`
 /** Pairing of a pair-forming species, where a rule depends on it (rules-spec section 4): an established pair, one not yet confirmed,
  *  or unknown (the default). Two animals, even 1 male + 1 female, are never assumed to be a pair. */
 export type Pairing = 'established' | 'unconfirmed' | 'unknown';
@@ -70,6 +70,8 @@ export interface Tank {
 
 export interface Fish {
   id: number;
+  /** Stable identity (scene v10, DX0): survives regenerate, shuffle, adapt, save / load and undo; `id` is per tank and is renumbered. Filled in by scene/uid.ts. */
+  uid?: string;
   species: string;
   x: number;
   y: number;
@@ -281,6 +283,8 @@ export type ItemKind = 'stone' | 'wood' | 'cave' | 'plant' | 'coral' | 'artifici
  */
 export interface Item {
   id: number;
+  /** Stable identity (scene v10, DX0): see Fish.uid. */
+  uid?: string;
   kind: ItemKind;
   variant: string;
   seed: number;
@@ -429,7 +433,16 @@ export interface TankSetup {
   constraints?: import('./constraints').Constraints;
   /** The setup brief (lane U1, 2026-10-28, no version bump): hard constraints, preferences and locked choices every entry point pre-fills; scene/brief.ts. Absent = none yet. */
   brief?: import('./brief').Brief;
+  /** Persistent "Keep this" locks (DX0, scene v10): what a Discovery run may not change; scene/locks.ts. Absent = nothing locked. */
+  locks?: Locks;
 }
+
+/** How firmly a species is held in the roster: `exact` = exactly n, `atLeast` = n or more, `speciesOnly` = the species stays (any count above 0). */
+export type RosterMode = 'exact' | 'atLeast' | 'speciesOnly';
+export interface RosterLock { species: string; mode: RosterMode; n: number }
+/** One object / property lock. `target`: an item or animal `uid`, 'tank' (dimensions, room, water) or 'substrate' (settings + terrain + patches, whole). `props`: the property groups held (scene/locks.ts); absent = all of them, existence included. */
+export interface ObjectLock { target: string; props?: string[] }
+export interface Locks { objects: ObjectLock[]; roster: RosterLock[] }
 
 /** `model` a data/tanks.json size id; `key` the maker's product at that size (data/tanks.ts variantKey), absent for the catalogue size
  *  with no maker; `sig` the tank as picked (scene/integrated.ts tankSig), filled in on the first edit. */

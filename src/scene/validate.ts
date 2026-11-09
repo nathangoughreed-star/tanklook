@@ -18,7 +18,9 @@ import { ownParse, parseTech } from './tech';
 import { pairRule } from '../data/groups';
 import { prunePairs } from './pairs';
 import { parseConstraints } from './constraints';
-import { parseBrief } from './brief';
+import { parseBrief, type Brief } from './brief';
+import { parseLocks, rosterLocksFromBrief } from './locks';
+import { ensureUids } from './uid';
 import { parseIntegrated, parseProduct } from './integrated';
 import { parseSpace } from './space'; // lane P3: layout.space
 
@@ -107,6 +109,14 @@ function migrate(raw: Obj, warn: (m: string) => void): Obj {
     }
     for (const k of Object.keys(raw)) delete raw[k];
     Object.assign(raw, { name, units, tanks, active: 0, camLock: true });
+  }
+  if (v < 10) {
+    // v10 (DX0): uids are filled in after parsing; the brief's locked roster rows become exact roster locks
+    for (const t of Array.isArray(raw.tanks) ? raw.tanks : []) {
+      if (!isObj(t) || isObj(t.locks)) continue;
+      const roster = rosterLocksFromBrief(isObj(t.brief) ? t.brief as unknown as Brief : undefined);
+      if (roster.length) t.locks = { objects: [], roster };
+    }
   }
   raw.version = SCENE_VERSION;
   return raw;
@@ -214,6 +224,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
     const base = getSpecies(f.species)!, sex = f.sex === 'f' && base.female ? 'f' as const : undefined, adult = fishTL({ sex }, base), tl = typeof f.tl === 'number' ? Math.round(num(f.tl, adult, adult * LIMITS.size[0], adult * LIMITS.size[1])) : adult;
     fish.push({
       id, species: f.species,
+      uid: typeof f.uid === 'string' && f.uid && f.uid.length <= 64 ? f.uid : `f${id}`, // (key order is part of the saved form: always here)
       x: num(f.x, tankA.L / 2, 0, tankA.L), y: num(f.y, tankA.H / 2, 0, tankA.H), depth: num(f.depth, tankA.D / 2, 0, tankA.D),
       yaw: num(f.yaw, 0, ...LIMITS.yaw), pitch: num(f.pitch, 0, ...LIMITS.tilt), roll: num(f.roll, 0, ...LIMITS.tilt),
       bend: num(f.bend, 0, ...LIMITS.bend),
@@ -372,6 +383,8 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
   { const br = parseBrief(raw.brief); if (br) setup.brief = br; } // lane U1 2026-10-28: the setup brief, absent = none yet
   { const dp = parseDealPin(raw.dealPin); if (dp) (setup as TankSetup & { dealPin?: typeof dp }).dealPin = dp; } // lane GV9 2026-10-30: the bundle the tank is priced as (demand/pinned.ts), absent = none
   { const pr = parsePairs(raw.pairs, setup.fish); if (pr) setup.pairs = pr; } // 2026-10-22: pairing per pair species, absent = unknown
+  { const lk = parseLocks(raw.locks); if (lk) setup.locks = lk; } // DX0 2026-11-09: persistent locks, absent = none
+  ensureUids(setup, true); // DX0: a stable uid on every animal and item (an older file gets them here)
   keepInWater(setup); fitTable(setup);
   fitFixture(setup.light, setup.tank, false); // 2026-10-15: older lights clamped into their fixture's usual ranges
   clearTopGear(setup); // lane S231 2026-10-26: a light over a dry tank clears its lid gear
@@ -390,7 +403,7 @@ function parseItems(raw: unknown[], T: Tank, warn: (m: string) => void, g: Groun
     const id = typeof o.id === 'number' && Number.isInteger(o.id) && o.id > 0 && !seen.has(o.id) ? o.id : nextId++;
     seen.add(id);
     const it: Item = {
-      id, kind: v.kind, variant: o.variant as string, seed: Math.round(clamp(fin(o.seed, 1), 1, 2e9)),
+      id, uid: typeof o.uid === 'string' && o.uid && o.uid.length <= 64 ? o.uid : `i${id}`, kind: v.kind, variant: o.variant as string, seed: Math.round(clamp(fin(o.seed, 1), 1, 2e9)),
       x: fin(o.x, T.L / 2), depth: fin(o.depth, T.D / 2), lift: fin(o.lift, 0),
       yaw: Math.round(fin(o.yaw, 0)), pitch: Math.round(fin(o.pitch, 0)), tilt: Math.round(fin(o.tilt, 0)), size: fin(o.size, v.size),
       ...(typeof o.spread === 'number' && Number.isFinite(o.spread) ? { spread: o.spread } : {}),

@@ -110,7 +110,8 @@ describe('shuffle', () => {
   it('is repeatable from a seed (the same draws in every edited tank)', () => {
     const a = stocked(), b = stocked();
     shuffleFish(a, rng(7)); shuffleFish(b, rng(7));
-    expect(a.fish).toEqual(b.fish);
+    const bare = (t: typeof a) => t.fish.map(({ uid: _u, ...f }) => f); // (uids are random identities, not part of the draw)
+    expect(bare(a)).toEqual(bare(b));
   });
   it('clownfish host in a bubble-tip anemone in a salt tank, and swim anywhere without one', () => {
     const s = defaultSetup(); s.water.salt = true; s.fish = [];

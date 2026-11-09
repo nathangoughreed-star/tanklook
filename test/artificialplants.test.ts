@@ -40,6 +40,7 @@ describe('artificial plants: save / load', () => {
   it('round-trips through a saved scene unchanged, and drops growth, propagation and Time fields', () => {
     const sc = defaultScene(), S = sc.tanks[0];
     S.items = FAKES.map((v, i) => ({ ...makeItem(S.tank, v, i + 1, 9 + i, 100 + 60 * i, 120), size: LIBRARY[v].size + 10 }));
+    S.items.forEach(it => { it.uid = `i${it.id}`; }); // (v10: items carry a uid)
     const back = parseScene(JSON.parse(JSON.stringify(sc))).scene.tanks[0].items;
     expect(back).toEqual(S.items);
     const dirty = { ...S.items[0], growth: 0.3, planted: 0.1, parent: 2, spread: 80, stems: 4, dens: 1.5 } as Item;
