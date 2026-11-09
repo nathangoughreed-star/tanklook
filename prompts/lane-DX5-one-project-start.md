@@ -1,0 +1,13 @@
+# Lane DX5: one project, no silent wipes (start flows become entry shortcuts)
+
+Follow `prompts/lane-common-c20.md` (report ONCE to Coordinator 21, `local_94b0b16c-78cc-4537-b306-4baa170900b2`; never push). Screenshots at desktop and 375 px are required before reporting.
+Read: `research/design/discovery-architecture-plan.md` (row DX5, decision 6), `research/design/discovery-architecture-handoff.md` sections 1, 5 (steps 1, 9), 6, 11 and invariant 11, `research/design/da-survey.md` section 2 (the wipe points with path:line), HANDOFF.md sections DX0, DX2, GW2.
+
+Build:
+1. Inventory every wipe point in survey section 2 (re-grep; lines moved). For each: either (a) it becomes a Proposal applied with `applyProposal` (one undo step, locks respected, never auto-locks), or (b) it is genuinely "start a different project" (Open file, share link, New tank) and asks first when the current project has unsaved work or locks ("Start a new project? Your current one ...": Save copy / Replace / Cancel). Suggest previews that temporarily mutate the live store (`suggest.ts ~196`, `panels.ts ~315`) must render from a copy instead.
+2. `regenerate('all')` and the warn dialog: respect locks (go through DX2 `propose` with all tabs checked, or skip locked uids) instead of wiping.
+3. New tank menu: entry shortcuts into the same project, not modes: "Just exploring" (empty project + opens Discovery with all tabs), "I have some ideas" (empty project, the user adds and locks what they know, then Discover), "I have an existing setup" (My equipment + Tank first). Keep Nathan's existing picture slots / art; relabel captions only where they say Guided / Sandbox.
+4. Guided coach (GW1 / GW2, `src/ui/coach/*`): becomes the optional questioner of Discovery: skips questions already answered by the project (kind, tank, limits, locked animals), and its answers write to the brief / locks, then hand to Discovery; it never builds a second project.
+5. Make This Mine (Explore, `ui/explore/explore.ts`) installs as a proposal (apply, not replace) when a project exists.
+6. Tests `test/dx5.test.ts`: every former wipe path either goes through applyProposal or asks first (spy on store.replace); locks survive regenerate; journey D (locked expert build, unlock one detail, the rest intact) and E (three sessions on one project).
+DX4 (Discovery screen) runs in parallel: it owns `src/ui/discover/*` and the Discover buttons; you own `welcome.ts`, `guided/*`, `coach/*` and the wipe-point call sites. Both touch `panels.ts` lightly: keep your edits there minimal; to open Discovery call the function DX4 exports (`openDiscovery(opts)`); if it is not on main yet, add a tiny stub in `src/ui/discover/entry.ts` with that signature and say so in your report.
