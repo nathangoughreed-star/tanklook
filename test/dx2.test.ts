@@ -11,6 +11,7 @@ import { lockObject, lockRoster } from '../src/scene/locks';
 import { checkProposal, previewProposal, type Proposal } from '../src/scene/proposal';
 import { verdictOf } from '../src/scene/verdict';
 import { propose, type DiscoveryRequest } from '../src/scene/discover';
+import { setNoNewEquipment } from '../src/scene/project';
 import { emptyBrief } from '../src/ui/setupBrief';
 import type { Fish, TankSetup } from '../src/scene/types';
 
@@ -143,5 +144,17 @@ describe('journeys', () => {
     for (const p of s2.d.proposals) expect(after(s2.s.tank, p).fish).toEqual(t.fish);
     const s3 = run(t, { scope: ['animals'], objective: 'explore' });
     for (const p of s3.d.proposals) { const x = after(s3.s.tank, p); expect(count(x, 'kuhli')).toBe(7); expect(x.items).toEqual(t.items); expect(x.substrate).toEqual(t.substrate); }
+  });
+});
+
+describe('equipment (DX3): costed, and the project rules are respected', () => {
+  it('every proposal carries a cost range and its gear lines', () => {
+    const { d } = run(project(), { scope: ['plants', 'hardscape'], objective: 'explore' });
+    expect(d.proposals.length).toBeGreaterThan(0);
+    for (const p of d.proposals) { expect(p.cost.remaining.hi).toBeGreaterThanOrEqual(p.cost.remaining.lo); expect(Array.isArray(p.cost.buy)).toBe(true); }
+  });
+  it('No new equipment: no proposal changes light / tech / the tank product, and the brief is never edited', () => {
+    const t = project(), b = setNoNewEquipment(B, true), s = storeOf(t), d = propose(s, b, { scope: ['tank', 'animals', 'plants', 'hardscape'], objective: 'explore' }, 3);
+    for (const p of d.proposals) { expect(p.gear).toEqual([]); expect(p.delta.set?.light).toBeUndefined(); expect(p.delta.set?.tech).toBeUndefined(); expect(p.delta.set?.brief).toBeUndefined(); }
   });
 });

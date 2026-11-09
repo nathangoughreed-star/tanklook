@@ -16,6 +16,9 @@ import { layerOf, DEFAULT_DENS } from './items';
 import { regenerate, shuffleHard } from './starter';
 import { adaptToTank, handOff } from './reeval';
 import { applySwap, type Swap } from '../demand/swaps';
+import { equipPlan, noNewEquipment, type BuyLine } from './equipPlan';
+import { equipmentOf } from './project';
+import type { Range3 } from '../demand/types';
 import type { Brief } from './brief';
 import type { Store } from './store';
 import type { Fish, Item, TankSetup } from './types';
@@ -41,6 +44,8 @@ export interface DiscoveryProposal extends Proposal {
   /** supporting system changed (light, tech, tank product ...), each listed: accepting the proposal is what accepts the purchase */
   gear: string[];
   verdict: Verdict;
+  /** what the design still costs to buy and run (equipPlan: owned and capable gear is $0, Must use respected), each a range; `buy` lists every gear line, so accepting the proposal is what accepts the purchase */
+  cost: { remaining: Range3; monthly: Range3; buy: BuyLine[] };
   /** the diversity axes */
   axes: { style: string; sizeClass: string; stocking: string; tech: string };
 }
@@ -190,6 +195,7 @@ export function propose(project: Store | TankSetup, brief: Brief, request: Disco
     const r = handOff(w, snap, { brief, accept: scope.includes('animals') ? snap.fish.map(f => f.species) : [] }); Object.assign(w, r.scene);
   });
 
+  let baseplan: ReturnType<typeof equipPlan> | undefined;
   const accepted: DiscoveryProposal[] = [], rejected: { why: Violation[]; issues: Issue[]; text: string }[] = [], seen = new Set<string>();
   for (const c of cands) {
     let fin = confine(orig, c.w, scope);
@@ -202,13 +208,20 @@ export function propose(project: Store | TankSetup, brief: Brief, request: Disco
     const p: Proposal = { baseRev, scope, delta, summary: '' };
     const chk = checkProposal(orig, p);
     if (!chk.ok) { rejected.push({ why: chk.violations, issues: [], text: `${c.source}: ${chk.outside.length ? `would change ${chk.outside.join(', ')}` : chk.violations.map(v => v.detail).join(' ')}` }); continue; }
+    // equipment rules: No new equipment forbids any supporting-gear change and any new purchase line; a Must-use tank is never resized (its owner cannot add to it)
+    const must = new Set(equipmentOf(brief).items.filter(i => i.use === 'required').map(i => i.key));
+    const gearChange = chk.touches.support.filter(k => k === 'light' || k === 'tech' || k === 'product' || k === 'integrated');
+    const plan = equipPlan(chk.after, brief), plan0 = baseplan ??= equipPlan(orig, brief);
+    const newBuys = plan.toBuy.filter(l => !plan0.toBuy.some(o => o.key === l.key && o.usd >= l.usd));
+    const eqWhy = plan.infeasible ? plan.infeasible : noNewEquipment(brief) && (gearChange.length || newBuys.length) ? `${c.source}: needs new equipment (${[...gearChange, ...newBuys.map(l => l.label)].join(', ')}), and the project allows none` : must.has('tank') && chk.touches.tank.includes('dimensions') ? `${c.source}: resizes the tank you marked Must use` : '';
+    if (eqWhy) { rejected.push({ why: [], issues: [{ id: 'equip:rule', tab: 'equipment', uids: [], text: eqWhy, relax: noNewEquipment(brief) && !plan.infeasible ? 'Allow new equipment for this run' : 'Mark the item Have available instead of Must use' }], text: c.source }); continue; }
     const v = verdictOf(chk.after, brief, opts), bad = [...v.gates, ...v.hard].filter(i => !baseIds.has(i.id));
     const sig = JSON.stringify(delta); if (seen.has(sig)) continue; seen.add(sig);
     if (bad.length || (request.objective === 'solve' && !v.feasible)) { rejected.push({ why: [], issues: bad.length ? bad : [...v.gates, ...v.hard], text: c.source }); continue; }
     if (request.objective === 'solve' && baseV.feasible) continue; // nothing to solve
     p.summary = describe({ source: c.source, objective: request.objective, touches: chk.touches, focus: request.focus });
     const gear = chk.touches.support.filter(k => !FROZEN.includes(k as never) && SUPPORT_NAMES[k] !== '').map(k => SUPPORT_NAMES[k] ?? k);
-    accepted.push({ ...p, source: c.source, size: sizeOf(delta), gear: [...new Set(gear)], verdict: v, axes: axesOf(chk.after) });
+    accepted.push({ ...p, source: c.source, size: sizeOf(delta), gear: [...new Set(gear)], verdict: v, cost: { remaining: plan.remaining, monthly: plan.monthly, buy: plan.toBuy }, axes: axesOf(chk.after) });
   }
 
   // rank: verdict first, then (narrow objectives) the smallest delta; pick n that differ (diversity), explore / solve prefer spread
