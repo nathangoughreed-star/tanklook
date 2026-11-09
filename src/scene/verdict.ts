@@ -6,6 +6,7 @@
 //   advisories experience, caution-level notes, growth, "your light is not used": information.
 // No generator, lock or start flow is involved: the same call judges a hand-built tank, a proposed stocking, or a discovery candidate.
 import type { Brief } from './brief';
+import { withSupplements } from './equipCredit';
 import type { TankSetup } from './types';
 import type { Limits } from '../demand/types';
 import type { CostTotals } from './constraints';
@@ -90,6 +91,8 @@ function compute(S: TankSetup, b: Brief, o: VerdictOpts): Verdict {
       ...(n.id === 'light:dim' ? { relax: 'plants that want less light, or a stronger light (CO2 and fertilizer do not add light)' } : n.id.endsWith(':small') ? { relax: `a bigger ${n.item}, or stop requiring this one` } : {}) };
     put(weak && required.has(n.item) ? gates : advisories, i);
   }
+  // lane DX3: a Must-use item that is too small while the project allows no new equipment (or a Must-use tank too small): the project's own rules, so a hard failure with the reason
+  try { const why = withSupplements(S, b).infeasible; if (why) put(hard, { id: 'equip:infeasible', tab: 'equipment', uids: [], text: why, relax: 'allow new equipment, or stop requiring that item' }); } catch { /* nothing to judge yet */ }
   if (!lightSaid) { const ln = lightFitNote(S); if (ln) put(advisories, { id: 'light:fit', tab: 'plants', uids: [], text: ln }); }
   // ---- the person's limits: a hard limit that is over blocks, a flexible one only ranks
   if (o.totals || S.constraints || o.limits) {
