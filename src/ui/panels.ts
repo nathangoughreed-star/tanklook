@@ -335,6 +335,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   const openOwned = (at?: string) => void import('./ownedGear').then(m => { (ownedSheet ??= m.attachOwnedGear(store, { status, pickTank, profile: () => demand?.profile() })).open(at); });
   void import('./myEquipment').then(m => m.attachMyEquipment(store, openOwned));
   void import('./equipmentWarn').then(m => m.attachEquipmentWarn(store, openOwned)); // lane EQ1: warns when owned gear no longer suits the design
+  void Promise.all([import('./discover/panel'), import('./discover/keep'), import('./discover/entry')]).then(([m, k, e]) => { const ui = m.attachDiscoverPanel(store, viewer, { status, opts: () => { const d = demand?.state(); return { ...(d ? { totals: d.demand.totals } : {}), limits: demand?.profile().limits }; } }); k.attachKeep(store, t => ui.open(t)); e.registerDiscovery(o => ui.open(o.scope)); }); // lane DX4: Discovery screen + Keep this locks
   void import('./checksStrip').then(m => m.attachChecksStrip(store, () => { const d = demand?.state(); return { ...(d ? { totals: d.demand.totals } : {}), limits: demand?.profile().limits }; })); // lane DX1: read-only Checks strip (the one verdict)
   let limitsPanel: { open(): void } | undefined;
   const openLimits = () => void import('./limitsPanel').then(m => { (limitsPanel ??= m.attachLimitsPanel()).open(); });

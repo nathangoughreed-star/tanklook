@@ -1296,3 +1296,21 @@ button.start-mode-card span.hint { font-size: 12px }
 .checks summary { cursor: pointer; font-weight: 600 } .checks ul { margin: 4px 0 6px; padding-left: 16px } .checks i { opacity: .75 }
 .checks .ck-gates { border-left: 3px solid #c0392b; padding-left: 8px } .checks .ck-hard { border-left: 3px solid #b36b00; padding-left: 8px; margin-top: 4px }
 @media (max-width: 900px) { .checks { left: 8px; bottom: 8px; width: auto; max-width: calc(100vw - 16px) } }
+/* lane DX4: Discovery screen, entry buttons, Keep this */
+.dxp { position: fixed; top: 0; right: 0; bottom: 0; z-index: 40; width: min(460px, 100vw); overflow: auto; background: var(--panel); color: var(--ink); border-left: 1px solid #555; padding: 10px 14px 24px; box-shadow: -4px 0 16px #0006; font-size: 13px }
+.dxp[hidden] { display: none }
+.dxp header { display: flex; align-items: center; justify-content: space-between } .dxp h2 { margin: 0 }
+.dxp .dxtabs, .dxp .dxobj { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 4px 0 8px } .dxp .dxobj { gap: 6px }
+.dxp .chip { border: 1px solid #666; border-radius: 14px; padding: 3px 10px; background: transparent; color: inherit; cursor: pointer } .dxp .chip.on { background: #2e7d6b; border-color: #2e7d6b; color: #fff }
+.dxp .dxfocus { width: 100%; box-sizing: border-box; margin: 2px 0 }
+.dxp .dxstale { background: #7a4a00; color: #fff; border-radius: 6px; padding: 6px 10px; margin: 8px 0 } .dxp .dxnone { border-left: 3px solid #b36b00; padding-left: 8px }
+.dxp .dxcard { border: 1px solid #555; border-radius: 8px; margin: 10px 0; overflow: hidden }
+.dxp .dxpic { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: #0003; object-fit: cover }
+.dxp .dxbody { padding: 8px 10px } .dxp .dxsum { margin: 0 0 2px; font-weight: 600 } .dxp .dxchar { margin: 0 0 4px; opacity: .75 }
+.dxp .dxfig { display: flex; flex-wrap: wrap; gap: 4px 14px } .dxp .dxdep { margin: 6px 0 0; font-style: italic }
+.dxp .dxdiff ul { margin: 4px 0; padding-left: 16px } .dxp .dxv { font-weight: 700 } .dxp .dxv.add { color: #3a9d5d } .dxp .dxv.remove { color: #c0392b }
+.dxp .dxbuy { list-style: none; padding-left: 0 } .dxp .dxbuy li { display: flex; justify-content: space-between }
+.dxp .dxmsg:not(:empty) { color: #e67e22; margin: 4px 0 } .dxp .dxact { flex-wrap: wrap; gap: 6px }
+.dxkeepbox { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 6px; margin: 4px 0 8px } .dxkeepbox .dxkeeps { flex: 1 1 100%; font-size: 12px } .dxkeepbox.kept summary { color: #3a9d5d; font-weight: 600 }
+.dxkeepbox .dxk { display: flex; align-items: center; gap: 6px; padding: 1px 0 } .dxkeepbox .dxk.kept { border-left: 3px solid #3a9d5d; padding-left: 6px; font-weight: 600 } .dxkeepbox .dxk select { margin-left: auto }
+@media (max-width: 900px) { .dxp { width: 100vw; border-left: 0 } }
