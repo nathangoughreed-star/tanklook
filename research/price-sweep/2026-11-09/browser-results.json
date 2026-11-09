@@ -1,0 +1,240 @@
+{
+ "results": [
+  {
+   "key": "g10|10",
+   "url": "https://www.petco.com/product/imagitarium-black-framed-glass-aquarium-10-gallon-3966935",
+   "status": "ok",
+   "price": 18,
+   "available": true,
+   "regular": 36
+  },
+  {
+   "key": "g10|11",
+   "url": "https://www.petco.com/product/imagitarium-10-gallon-open-glass-rimless-aquarium-tank",
+   "status": "ok",
+   "price": 35,
+   "available": true,
+   "regular": 70
+  },
+  {
+   "key": "g10|30",
+   "url": "https://www.petco.com/product/north-american-pet-aquatics-10-gallon-glass-aquarium-with-glass-lid",
+   "status": "ok",
+   "price": 25,
+   "available": true,
+   "regular": 50
+  },
+  {
+   "key": "g20h|19",
+   "url": "https://www.petco.com/product/north-american-pet-aquatics-20-gallon-glass-aquarium-with-glass-lid",
+   "status": "ok",
+   "price": 50,
+   "available": true,
+   "regular": 100
+  },
+  {
+   "key": "g20h|5",
+   "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-2417-w-x-1735-h-20-gallon-3946408",
+   "status": "ok",
+   "price": 147.99,
+   "available": true
+  },
+  {
+   "key": "g20h|6",
+   "url": "https://www.petco.com/product/imagitarium-black-high-framed-glass-aquarium-20-gallon-3966943",
+   "status": "ok",
+   "price": 40,
+   "available": true,
+   "regular": 80
+  },
+  {
+   "key": "g20l|4",
+   "url": "https://www.petco.com/product/imagitarium-black-long-framed-glass-aquarium-20-gallon-3966812",
+   "status": "ok",
+   "price": 40,
+   "available": true,
+   "regular": 80
+  },
+  {
+   "key": "g20l|7",
+   "url": "https://www.petco.com/product/aqueon-standard-glass-aquarium-tank-20-gallon",
+   "status": "ok",
+   "price": 34.99,
+   "available": true,
+   "regular": 69.99
+  },
+  {
+   "key": "g29|3",
+   "url": "https://www.petco.com/product/imagitarium-black-framed-glass-aquarium-29-gallon-3966708",
+   "status": "ok",
+   "price": 50,
+   "available": true,
+   "regular": 100
+  },
+  {
+   "key": "g3c|2",
+   "url": "https://www.petco.com/product/imagitarium-3-gallon-open-glass-frameless-cube-aquarium-tank",
+   "status": "ok",
+   "price": 30,
+   "available": true,
+   "regular": 60
+  },
+  {
+   "key": "g40b|2",
+   "url": "https://www.petco.com/product/imagitarium-40-gallon-breeder-open-glass-aquarium-tank",
+   "status": "ok",
+   "price": 75,
+   "available": true,
+   "regular": 150
+  },
+  {
+   "key": "g40b|4",
+   "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-3633-w-x-159-h-40-gallons-3946424",
+   "status": "ok",
+   "price": 179.99,
+   "available": true
+  },
+  {
+   "key": "g40b|6",
+   "url": "https://www.petco.com/product/aqueon-standard-glass-aquarium-tank-40-gallon",
+   "status": "ok",
+   "price": 75,
+   "available": true,
+   "regular": 149.99
+  },
+  {
+   "key": "g5|4",
+   "url": "https://www.petco.com/product/imagitarium-glass-shrimp-and-aquatic-plants-aquarium",
+   "status": "ok",
+   "price": 69.74,
+   "available": true,
+   "regular": 92.99
+  },
+  {
+   "key": "g55|1",
+   "url": "https://www.petco.com/product/imagitarium-55-gallon-open-glass-aquarium-tank",
+   "status": "ok",
+   "price": 100,
+   "available": true,
+   "regular": 200
+  },
+  {
+   "key": "g55|5",
+   "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-4775-w-x-2389-h-55-gallons-3946432",
+   "status": "ok",
+   "price": 249.99,
+   "available": true
+  },
+  {
+   "key": "g55|9",
+   "url": "https://www.petco.com/product/aqueon-standard-glass-aquarium-tank-55-gallon-5051128-1",
+   "status": "ok",
+   "price": 100,
+   "available": true,
+   "regular": 199.99
+  },
+  {
+   "key": "g60b|1",
+   "url": "https://www.petco.com/product/imagitarium-60-gallon-breeder-open-glass-aquarium-tank",
+   "status": "ok",
+   "price": 110,
+   "available": true,
+   "regular": 220
+  },
+  {
+   "key": "g6c|2",
+   "url": "https://www.petco.com/product/imagitarium-6-gallon-open-glass-frameless-cube-aquarium-tank",
+   "status": "ok",
+   "price": 40,
+   "available": true,
+   "regular": 80
+  },
+  {
+   "key": "g6c|3",
+   "url": "https://www.petco.com/product/imagitarium-frameless-freshwater-aquarium-kit",
+   "status": "ok",
+   "price": 74.99,
+   "available": true,
+   "regular": 99.99
+  },
+  {
+   "key": "g75|0",
+   "url": "https://www.petco.com/shop/en/petcostore/product/aqueon-standard-glass-aquarium-tank-75-gallon",
+   "status": "ok",
+   "price": 160,
+   "available": true,
+   "regular": 319.99
+  },
+  {
+   "key": "g75|1",
+   "url": "https://www.petco.com/shop/en/petcostore/product/imagitarium-75-gallon-open-glass-aquarium-tank",
+   "status": "ok",
+   "price": 150,
+   "available": true,
+   "regular": 300
+  },
+  {
+   "key": "g75|12",
+   "url": "https://www.petco.com/product/imagitarium-75-gallon-open-glass-aquarium-tank",
+   "status": "ok",
+   "price": 150,
+   "available": true,
+   "regular": 300
+  },
+  {
+   "key": "g75|13",
+   "url": "https://www.petco.com/product/aqueon-standard-glass-aquarium-tank-75-gallon",
+   "status": "ok",
+   "price": 160,
+   "available": true,
+   "regular": 319.99
+  },
+  {
+   "key": "n_imagitarium_cube_14|0",
+   "url": "https://www.petco.com/product/imagitarium-14-gallon-open-glass-frameless-cube-aquarium-tank",
+   "status": "ok",
+   "price": 60,
+   "available": true,
+   "regular": 120
+  },
+  {
+   "key": "n_imagitarium_cube_35|0",
+   "url": "https://www.petco.com/product/imagitarium-35-gallon-open-glass-frameless-cube-aquarium-tank",
+   "status": "ok",
+   "price": 100,
+   "available": true,
+   "regular": 200
+  },
+  {
+   "key": "n_imagitarium_shallow_13_3|0",
+   "url": "https://www.petco.com/product/imagitarium-frameless-shallow-glass-aquarium",
+   "status": "ok",
+   "price": 40,
+   "available": true,
+   "regular": 80
+  },
+  {
+   "key": "n_imagitarium_shallow_28|0",
+   "url": "https://www.petco.com/product/imagitarium-frameless-shallow-glass-aquarium",
+   "status": "ok",
+   "price": 40,
+   "available": true,
+   "regular": 80
+  },
+  {
+   "key": "n_imagitarium_shallow_6_8|0",
+   "url": "https://www.petco.com/product/imagitarium-frameless-shallow-glass-aquarium",
+   "status": "ok",
+   "price": 40,
+   "available": true,
+   "regular": 80
+  },
+  {
+   "key": "n_imagitarium_shallow_6_8|1",
+   "url": "https://www.petco.com/product/imagitarium-shallow-glass-shrimp-and-aquatic-plants-aquarium",
+   "status": "ok",
+   "price": 114.99,
+   "available": true
+  }
+ ]
+}
