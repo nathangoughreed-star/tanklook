@@ -170,7 +170,7 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 .sec > summary { list-style: none; display: flex; align-items: center; padding: 9px 0; user-select: none }
 .sec > summary::-webkit-details-marker { display: none }
 .sec > summary h2 { flex: 1; margin: 0; padding: 0; border: 0 }
-.sec > summary::after { content: 'â–¸'; color: var(--muted); font-size: 12px; transition: transform .12s }
+.sec > summary::after { content: '\25B8'; color: var(--muted); font-size: 12px; transition: transform .12s }
 .sec[open] > summary::after { transform: rotate(90deg) }
 .sec[open] { padding-bottom: 10px }
 .sec > summary:hover h2, .sec > summary:hover::after { color: var(--ink) }
@@ -280,7 +280,7 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 .lab .close { font: inherit; font-size: 11px; color: #fff; background: rgba(255, 255, 255, .14); border: 0; border-radius: 3px; padding: 2px 7px; cursor: pointer }
 .lab .edNote { margin-top: 22px; font-size: 11px; line-height: 1.3; text-align: right; max-width: 220px }
 .lab .acts { display: flex; gap: 5px }
-/* folded until hovered (or reached by keyboard): the â–¾ hint stands in for the second row */
+/* folded until hovered (or reached by keyboard): the down-arrow hint stands in for the second row */
 .lab.tab .diffs { display: none }
 .lab.tab:hover .diffs, .lab.tab:has(:focus-visible) .diffs { display: flex }
 .lab .more { font-size: 11px; color: rgba(255, 255, 255, .6) }
@@ -567,7 +567,7 @@ button.danger { background: var(--bad); color: #fff; border-color: var(--bad); f
 .tsub > summary { list-style: none; display: flex; align-items: center; padding: 8px 0; cursor: pointer; user-select: none }
 .tsub > summary::-webkit-details-marker { display: none }
 .tsub > summary h3 { flex: 1; margin: 0; font-size: 13px }
-.tsub > summary::after { content: 'â–¸'; color: var(--muted); font-size: 12px; transition: transform .12s }
+.tsub > summary::after { content: '\25B8'; color: var(--muted); font-size: 12px; transition: transform .12s }
 .tsub[open] > summary::after { transform: rotate(90deg) }
 .tpre { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin: 6px 0 }
 .tpre button { font: inherit; font-size: 12px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 4px; background: none; color: var(--ink); cursor: pointer }
