@@ -8,7 +8,7 @@ import type { Store } from '../scene/store';
 import { ITEM_IDS, type Brief, type ItemId } from '../scene/brief';
 import type { HabitatDirection } from '../scene/discoveryTypes';
 import { HABITAT_PICS } from './habitatPics';
-import { showIntro } from './introPopup';
+import { showQuickPrefs } from './quickPrefs';
 import { labelOf, getBrief, editBrief, onBrief, rangeOf } from './setupBrief';
 import { demandOf } from '../demand';
 import { setOff, against } from '../scene/brief';
@@ -71,8 +71,8 @@ export function attachStartMode(store: Store, host: StartModeHost) {
   kindList.replaceChildren(...HABITAT_CHOICES.map(({ id, label, tip }) => {
     const b = document.createElement('button'); b.type = 'button'; b.dataset.habitat = id; b.className = 'start-mode-card habitat-card';
     b.innerHTML = `<div class="mode-pic habitat-pic">${HABITAT_PICS[id]}</div><b>${esc(label)}</b><span class="hint">${esc(tip)}</span>`;
-    // the intro popup shows on every NEW project (spec 2.2); done() first so the start screen is gone behind it
-    b.onclick = async () => { if (await host.begin(id)) { done(); await showIntro(); } };
+    // the quick-preferences screen (with the intro text) shows on every NEW project (spec 2.2, AB6); done() first so the start screen is gone behind it
+    b.onclick = async () => { if (await host.begin(id)) { done(); await showQuickPrefs(); } };
     return b;
   }));
   const show = (s: StartStep) => {

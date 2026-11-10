@@ -162,6 +162,8 @@ export interface ProjectExtras {
   direction?: HabitatDirection;
   /** the guide (ui/coach, lane GW1): where the walk through the menus stopped, so it resumes; absent = not started or finished */
   coach?: { at: string; skipped?: string[] };
+  /** AB6: the quick-preference answers (scene/quickPrefs.ts writes the items and told weights they stand for); kept so the screen and the Constraints block show them back */
+  quick?: { size?: 'small' | 'medium' | 'large'; look?: string[]; plants?: 'definitely' | 'prefer' | 'prefer-not' | 'not'; avoid?: string[] };
 }
 /** The project's extra answers (never undefined). */
 export const projectExtras = (b: Brief): ProjectExtras => b.project ?? {};
@@ -392,6 +394,15 @@ export function parseProject(raw: unknown): ProjectExtras | undefined {
   if (r.lidFree === true) p.lidFree = true;
   if (r.noNewEquipment === true) p.noNewEquipment = true;
   if (DIRECTIONS.includes(r.direction as HabitatDirection)) p.direction = r.direction as HabitatDirection;
+  const q = r.quick as Record<string, unknown> | undefined;
+  if (q && typeof q === 'object') {
+    const o: NonNullable<ProjectExtras['quick']> = {};
+    if (q.size === 'small' || q.size === 'medium' || q.size === 'large') o.size = q.size;
+    if (q.plants === 'definitely' || q.plants === 'prefer' || q.plants === 'prefer-not' || q.plants === 'not') o.plants = q.plants;
+    if (Array.isArray(q.look)) { const l = [...new Set(q.look.filter(idOk))].slice(0, 8); if (l.length) o.look = l; }
+    if (Array.isArray(q.avoid)) { const l = [...new Set(q.avoid.filter(idOk))].slice(0, 12); if (l.length) o.avoid = l; }
+    if (Object.keys(o).length) p.quick = o;
+  }
   const co = r.coach as Record<string, unknown> | undefined;
   if (co && typeof co === 'object' && idOk(co.at)) { const sk2 = Array.isArray(co.skipped) ? co.skipped.filter(idOk).slice(0, 40) : []; p.coach = sk2.length ? { at: co.at, skipped: sk2 } : { at: co.at }; }
   const sk = strs(r.skipped, SKIP_STEPS); if (sk?.length) p.skipped = sk;

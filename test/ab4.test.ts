@@ -38,19 +38,17 @@ describe('AB4 habitat question', () => {
 
 describe('AB4 intro popup', () => {
   it('spec 2.2 copy, one button', () => {
-    expect(INTRO_TITLE).toBe("Let's build your habitat.");
-    expect(INTRO_BUTTON).toBe('Start Building');
-    expect(introHtml(INTRO_LINES[0])).toContain('<b>Lock anything you’re sure about.</b>');
-    expect(introHtml(INTRO_LINES[1])).toContain('hit <b>Discover</b> to explore setups built around your choices. If you’re starting from scratch, you can jump straight into Discover!');
+    expect(INTRO_TITLE).toBe('A few quick preferences (all optional)'); expect(INTRO_BUTTON).toBe('Start building'); // AB6: the popup became the quick-preferences screen
+    expect(introHtml(INTRO_LINES[0])).toContain('<b>lock what you’re sure of</b>'); expect(introHtml(INTRO_LINES[0])).toContain('<b>Discover</b>');
   });
   it('shows on New Setup and toolbar New, never on Open Existing, a starter, a deal, a file or Continue', () => {
     const doors: Record<StartDoor, boolean> = { 'new-setup': true, 'toolbar-new': true, 'open-existing': false, starter: false, deal: false, continue: false, 'open-file': false };
     for (const [d, want] of Object.entries(doors)) expect(showsIntro(d as StartDoor)).toBe(want);
   });
-  it('wiring: only the habitat tiles call showIntro; no "don’t show again"; DX5 shortcuts are gone', () => {
-    const sm = read('src/ui/startMode.ts'), pn = read('src/ui/panels.ts'), ip = read('src/ui/introPopup.ts');
-    expect(sm.match(/showIntro\(/g)?.length).toBe(1);
-    expect(pn).not.toContain('showIntro'); // starters, saved tanks, files, deals and Continue never reach it
+  it('wiring: only the habitat tiles call showQuickPrefs (AB6 replaced the popup); no "don’t show again"; DX5 shortcuts are gone', () => {
+    const sm = read('src/ui/startMode.ts'), pn = read('src/ui/panels.ts'), ip = read('src/ui/introPopup.ts') + read('src/ui/quickPrefs.ts');
+    expect(sm.match(/showQuickPrefs\(/g)?.length).toBe(1);
+    expect(pn).not.toContain('showQuickPrefs'); // starters, saved tanks, files, deals and Continue never reach it
     expect(sm + pn).not.toMatch(/modeExploring|modeIdeas|modeExisting|START_ENTRIES|showKinds/);
     expect(ip.toLowerCase()).not.toContain("don't show"); expect(ip).not.toContain('localStorage');
     expect(read('index.html')).toContain('id="startDeals"'); // Deals and bundles stays
