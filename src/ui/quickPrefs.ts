@@ -7,7 +7,8 @@ import { editBrief, getBrief, onBrief } from './setupBrief';
 import { projectExtras } from '../scene/brief';
 import type { HabitatDirection } from '../scene/discoveryTypes';
 import { SIZE_CHOICES, SIZE_LABEL, galAt, isDry, sizeAtBand, sizeAtMid, sizeText, type SizeChoice } from '../scene/sizePrefs';
-import { AVOIDS, LARGE_IN, answersOf, applyQuickPrefs, normalize, type ArchState, type AvoidId, type Limit, type QuickAnswers } from '../scene/quickPrefs';
+import { AVOIDS, LARGE_IN, answersOf, compromiseNote, applyQuickPrefs, normalize, type ArchState, type AvoidId, type Limit, type QuickAnswers } from '../scene/quickPrefs';
+import { archetypesFor, type QuickArchetype } from '../scene/quickArchetypes';
 import { INTRO_BUTTON, INTRO_LINES, INTRO_TITLE, introHtml, spotlight } from './introPopup';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
@@ -26,11 +27,28 @@ export function sizeSliderHtml(d: HabitatDirection, a: QuickAnswers): string {
     + `<div class="qp-slide${at === undefined ? ' unset' : ''}"><input type="range" class="qp-range" data-sizeat min="0" max="1000" step="1" value="${Math.round((at ?? 0.5) * 1000)}" aria-label="Size, small to large" aria-valuetext="${esc(read)}"><div class="qp-bands" aria-hidden="true">${bands}</div></div>`
     + `<div class="qp-opts">${btn('data-size="unsure"', !a.size, 'Unsure')}</div></div>`;
 }
+
+const STATE_TXT: Record<string, string> = { interested: '✓ Interested', avoid: '✕ Avoid', none: '○ Not chosen' };
+/** One image card: a button that cycles Not chosen -> Interested -> Avoid -> Not chosen. State is shown by a text label + icon + border style (never colour alone). The image is
+ *  public/art/quick/<key>.webp (QP3); until it exists (or if it fails to load) the labelled placeholder tile behind it shows. */
+export function archCardHtml(c: QuickArchetype, st: ArchState | undefined, base = ''): string {
+  const k = st ?? 'none';
+  return `<button type="button" class="qp-card ${k}" data-arch="${c.key}" aria-pressed="${st === 'interested' ? 'true' : st === 'avoid' ? 'mixed' : 'false'}" aria-label="${esc(c.label)}: ${STATE_TXT[k].slice(2)}. ${esc(c.blurb)} Press to change.">`
+    + `<span class="qp-thumb"><span class="qp-ph" aria-hidden="true">${esc(c.label.split(/[ /&]/)[0])}</span><img src="${base}art/quick/${c.key}.webp" alt="" loading="lazy" decoding="async"></span>`
+    + `<span class="qp-cn">${esc(c.label)}</span><span class="qp-cd">${esc(c.blurb)}</span><span class="qp-st">${STATE_TXT[k]}</span></button>`;
+}
+/** The "What kinds of setups appeal to you?" row for one habitat (a small mixed sample for "I don't know yet"), plus QP1's compromise note when a live-planted card is Interested with No live plants on. */
+export function archRowHtml(d: HabitatDirection, a: QuickAnswers, base = ''): string {
+  const cards = archetypesFor(d);
+  const note = compromiseNote({ prohibit: a.avoid, arch: { interested: Object.keys(a.arch).filter(k => a.arch[k] === 'interested'), avoid: Object.keys(a.arch).filter(k => a.arch[k] === 'avoid'), layouts: {}, families: {} } });
+  return `<div class="qp-row qp-arch" role="group" aria-label="What kinds of setups appeal to you?"><b>What kinds of setups appeal to you?</b><p class="hint">Choose any that catch your eye; press again for Avoid, again to clear. A look, not a commitment.${d === 'unsure' ? ' A few examples; pick a habitat for more.' : ''}</p>`
+    + `<div class="qp-cards">${cards.map(c => archCardHtml(c, a.arch[c.key], base)).join('')}</div>${note.flag ? `<p class="qp-note" role="status">${esc(note.text)}</p>` : ''}</div>`;
+}
 /** The rows' markup for one habitat and one set of answers (pure: the tests read it). Size is always visible; Practical limits and Don't want are collapsed (`open` re-opens one). */
-export function prefsHtml(d: HabitatDirection, a: QuickAnswers, open: { limits?: boolean; avoid?: boolean } = {}): string {
+export function prefsHtml(d: HabitatDirection, a: QuickAnswers, open: { limits?: boolean; avoid?: boolean } = {}, base = ''): string {
   const rows: string[] = [];
   rows.push(sizeSliderHtml(d, a));
-  // QP2 draws the archetype cards here (scene/quickArchetypes.ts `archetypesFor`, state through `press({ arch })`)
+  rows.push(archRowHtml(d, a, base));
   rows.push(`<details class="qp-more" data-x="limits"${open.limits || a.budget || a.care ? ' open' : ''}><summary>Practical limits</summary>${limitRow('budget', 'Set-up cost under', '$', a.budget)}${limitRow('care', 'Weekly upkeep under', 'min', a.care)}<p class="hint">Target = I’d prefer it; Firm maximum = never go over.</p></details>`);
   rows.push(`<details class="qp-more" data-x="avoid"${open.avoid || a.avoid.length ? ' open' : ''}><summary>Don’t want</summary><div class="qp-opts">${AVOIDS.filter(x => x.shown(d)).map(x => btn(`data-avoid="${x.id}"`, a.avoid.includes(x.id), x.label(d), x.id === 'large-animals' ? `over ${LARGE_IN} in` : '')).join('')}</div><p class="hint">Firm: designs with these are left out. </p></details>`);
   return rows.join('');
@@ -60,12 +78,13 @@ interface Form { redraw(): void }
 function mountForm(host: HTMLElement, get: () => QuickAnswers, set: (a: QuickAnswers) => void): Form {
   const redraw = () => {
     const open = { limits: host.querySelector<HTMLDetailsElement>('details[data-x=limits]')?.open, avoid: host.querySelector<HTMLDetailsElement>('details[data-x=avoid]')?.open };
-    host.innerHTML = prefsHtml(dirNow(), get(), open);
+    host.innerHTML = prefsHtml(dirNow(), get(), open, import.meta.env?.BASE_URL ?? '');
   };
   host.addEventListener('click', e => {
-    const t = (e.target as HTMLElement).closest<HTMLElement>('.qp-opt'); if (!t) return;
+    const t = (e.target as HTMLElement).closest<HTMLElement>('.qp-opt, .qp-card'); if (!t) return;
     set(press(get(), { size: t.dataset.size, arch: t.dataset.arch, avoid: t.dataset.avoid, firm: t.dataset.firm })); redraw();
   });
+  host.addEventListener('error', e => { const i = e.target as HTMLElement; if (i instanceof HTMLImageElement && i.closest('.qp-thumb')) i.remove(); }, true);   // no thumbnail yet: the labelled placeholder tile stays
   host.addEventListener('input', e => {   // the slider: the answer follows the thumb, only the readout is redrawn (a full redraw would drop the drag)
     const i = e.target as HTMLInputElement; if (!i.dataset?.sizeat) return;
     const a = slideSize(get(), +i.value); set(a);

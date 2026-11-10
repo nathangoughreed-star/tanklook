@@ -33,7 +33,7 @@ export const AVOIDS: readonly { id: AvoidId; label: (d: HabitatDirection) => str
   { id: 'co2', label: () => 'A CO2 system', shown: d => d === 'freshwater' || d === 'paludarium' || d === 'unsure' },
   { id: 'large-animals', label: d => d === 'terrarium' ? 'Large animals' : 'Large fish', shown: () => true },
   /** QP1: a HARD exclusion (not the same as Avoid on a planted card). Saltwater has no plant planting (coral and algae are the stock). */
-  { id: 'no-live-plants', label: () => 'Live plants', shown: d => d !== 'saltwater' },
+  { id: 'no-live-plants', label: () => 'No live plants', shown: d => d !== 'saltwater' },
 ];
 export const NO_LIVE_LABEL = 'No live plants';
 /** "Large" for the large-animals prohibition: adult length at or over this (150 mm = 6 in, explore/constants SIZE_LARGE_MM). */
