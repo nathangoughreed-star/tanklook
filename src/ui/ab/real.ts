@@ -16,7 +16,7 @@ import { championConflicts, lockConflicts } from './logic';
 import type { Store } from '../../scene/store';
 import type { VerdictOpts } from '../../scene/verdict';
 import type { CandidateRecord, DiscoverySession, Outcome, PairResult, ReasonKey } from '../../scene/discoveryTypes';
-import { quickPrefsOf } from '../../scene/prefsAdapter';
+import { projectExtras } from '../../scene/brief';
 import { adjustmentsOf } from '../../scene/combine';
 import { getSpecies } from '../../data/species';
 import type { AbEngine, CombineOutcome, CombineProposal, HistoryPage, ReEval } from './adapter';
@@ -26,12 +26,13 @@ const PAGE = 6;
 
 export function createRealEngine(store: Store, _opts: () => VerdictOpts = () => ({}), project: string = PROJECT): AbEngine {
   const hist = createProposalHistory(project), mem = new Map<string, CandidateRecord>();
-  let s: DiscoverySession = startSession(store.rev, discoverTabs(store.tank)), stale = false;
+  const dir = () => projectExtras(getBrief()).direction ?? 'unsure';   // the habitat picked at Start New
+  let s: DiscoverySession = startSession(store.rev, discoverTabs(store.tank), dir()), stale = false;
   const save = () => { saveSession(project, s); };
   const rec = (id: string | undefined): CandidateRecord | undefined => id ? hist.get(id) ?? mem.get(id) : undefined;
   const nothing = (c: string[], r: string[]): PairResult => ({ ok: false, conflicts: c.length ? c : ['Every candidate broke a lock or a limit.'], relaxations: r.length ? r : ['Open a tab (check its switch) or relax a lock.'] });
   const proj = () => ({ tank: store.tank, rev: store.rev });
-  const pair = (type: NextPair['type']): PairResult => nextPair(proj(), getBrief(), s, id => rec(id), { next: type, shownKeys: [...mem.values()].flatMap(r => r.key ? [r.key] : []), units: store.scene.units, ...(quickPrefsOf(getBrief()) ? { prefs: quickPrefsOf(getBrief()) } : {}) });
+  const pair = (type: NextPair['type']): PairResult => nextPair(proj(), getBrief(), s, id => rec(id), { next: type, shownKeys: [...mem.values()].flatMap(r => r.key ? [r.key] : []), units: store.scene.units });
   const sideOf = (r: CandidateRecord) => { const b = getBrief(); return { id: r.id, features: featuresFor(r.snapshot, scoreScene(r.snapshot, b, customTankWants(b, briefToWants(b)))) }; };
   const show = (a: CandidateRecord, b: CandidateRecord, type: NextPair['type']): PairResult => {
     const ids: string[] = [];
@@ -52,13 +53,13 @@ export function createRealEngine(store: Store, _opts: () => VerdictOpts = () => 
     open(scope) {
       const prev = loadSession(project);
       if (prev && prev.comparisons.length) { const r = resume(prev, store.rev); s = r.session; stale = r.needsRebase; }
-      else { s = startSession(store.rev, scope ?? discoverTabs(store.tank)); stale = false; }
+      else { s = startSession(store.rev, scope ?? discoverTabs(store.tank), dir()); stale = false; }
       if (scope) s = { ...s, scope: [...scope], status: 'active' };
       save();
     },
     isStale: () => stale,
     rebase() { const before = s.championId; s = rebaseSession(s, store.rev).session; stale = false; markChampion(before); save(); },
-    restart() { s = startSession(store.rev, s.scope); stale = false; save(); },
+    restart() { s = startSession(store.rev, s.scope, dir()); stale = false; save(); },
     next() { const c = s.current, a = rec(c?.aId), b = rec(c?.bId); return a && b ? { ok: true, a, b } : drawFor(nextNow()); },
     choose(outcome: Outcome, why?: ReasonKey[], otherGood?: ReasonKey[]) {
       const before = s.championId, a = rec(s.current?.aId), b = rec(s.current?.bId), r = recordOutcome(s, outcome, why, otherGood);

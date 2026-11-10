@@ -27,13 +27,14 @@ try {
   await ev(`window.__gb.store.edit(S => { delete S.discoverOn; S.locks = undefined; })`);
   await sleep(1500);
   };
-  const prefs = (p) => ev(`(async () => { const m = await import('/src/scene/prefsAdapter.ts'); m.holdQuickPrefs(${JSON.stringify(p)}); return 'set'; })()`);
+  const prefs = (a) => ev(`(async () => { const q = await import('/src/scene/quickPrefs.ts'), br = await import('/src/scene/brief.ts'); const S = window.__gb.store; const sb = await import('/src/ui/setupBrief.ts'); const b0 = S.tank.brief ?? sb.emptyBrief(); const b1 = q.applyQuickPrefs(br.setProjectExtras(b0, { ...br.projectExtras(b0), direction: 'freshwater' }), { ...q.emptyAnswers(), ...${JSON.stringify(a)} }); S.update(s => { s.tanks[s.active].brief = b1; }, { history: false }); return JSON.stringify(q.readQuickPrefs(S.tank.brief).prohibit); })()`);
   const summary = () => ev(`(() => { const nl = String.fromCharCode(10), flat = e => e.innerText.split(nl).join(' '); const t = [...document.querySelectorAll('.abdock .abfact')].map(flat); const sides = [...document.querySelectorAll('.abdock .abside')].map(e => flat(e.querySelector('h3')) + ' >> ' + [...e.querySelectorAll('.abbuy li')].map(flat).join(' | ')); return JSON.stringify({ facts: t, sides }); })()`);
   await setup(1280, 800, false); await sleep(800);
-  for (const [tag, p] of [['no-co2', { world: 'freshwater', sizeGal: { lo: 20, hi: 60 }, plants: 'require', avoid: ['co2'] }], ['co2-allowed', { world: 'freshwater', sizeGal: { lo: 20, hi: 60 }, plants: 'require', avoid: [] }]]) {
-    await prefs(p); log(tag + ' open', await click('#discoverBtn')); await sleep(800); if (await ev(`!!document.querySelector('.abdock [data-act="restart"]')`)) await click('.abdock [data-act="restart"]');
+  for (const [tag, p] of [['no-co2', { size: 'medium', look: ['lush'], plants: 'definitely', avoid: ['co2'] }], ['co2-allowed', { size: 'medium', look: ['lush'], plants: 'definitely', avoid: [] }]]) {
+    log(tag + ' prohibit', await prefs(p)); log(tag + ' open', await click('#discoverBtn')); await sleep(800); if (await ev(`!!document.querySelector('.abdock [data-act="restart"]')`)) await click('.abdock [data-act="restart"]');
     const t0 = Date.now(); await waitPair(); log(tag + ' first pair ms', Date.now() - t0);
     await click('.abdock [data-act="more"]'); await sleep(800);
+    log(tag + ' none?', await ev(`document.querySelector('.abdock .abnone')?.innerText.split(String.fromCharCode(10)).join(' ').slice(0, 900)`));
     log(tag + ' pair', JSON.parse(await summary()));
     await shot('demo-' + tag);
     await click('.abdock [data-act="close"]'); await sleep(600);

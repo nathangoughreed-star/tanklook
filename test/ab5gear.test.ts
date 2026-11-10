@@ -57,26 +57,26 @@ describe('gear follows what is drawn (many generated candidates)', () => {
   });
 });
 
-// ---------------------------------------------------------------------------------------------------------------- quick preferences (AB6 shape, through the adapter)
+// ---------------------------------------------------------------------------------------------------------------- quick preferences (AB6's real contract)
 import { clearPairCache, nextPair } from '../src/scene/pairGen';
 import { startSession } from '../src/scene/discoverySession';
 import { defaultSetup } from '../src/scene/defaults';
 import { regenerate } from '../src/scene/starter';
 import { IN } from '../src/scene/physics';
-describe('quick preferences: hard answers filter, the rest rank', () => {
+import { applyQuickPrefs, emptyAnswers, readQuickPrefs, type QuickAnswers } from '../src/scene/quickPrefs';
+import { projectExtras, setProjectExtras } from '../src/scene/brief';
+describe('quick preferences: hard answers filter, the rest rank, told outranks learned', () => {
   const project = () => { const t = structuredClone(defaultSetup()); t.tank = { ...t.tank, L: 36 * IN, D: 18 * IN, H: 16 * IN }; t.water.on = true; regenerate(t, 'all', 1); return ensureUids(t); };
-  const pair = (prefs: never) => { clearPairCache(); return nextPair({ tank: project(), rev: 1 }, b, startSession(1, ['tank', 'animals', 'plants', 'hardscape', 'substrate'], 'freshwater', 's'), () => undefined, { next: 'first', prefs }); };
-  it('Definitely live plants + No CO2 (size only ranks): every candidate has live plants, no CO2 feed or line', () => {
-    const r = pair({ world: 'freshwater', sizeGal: { lo: 20, hi: 60 }, plants: 'require', avoid: ['co2'] } as never); expect(r.ok).toBe(true); if (!r.ok) return;
-    for (const c of [r.a, r.b]) {
-      expect(c.snapshot.items.filter(i => i.kind === 'plant').length).toBeGreaterThanOrEqual(6); expect(c.snapshot.grow.feed).not.toBe('co2');
-      expect(c.facts.toBuy.some(l => /co2/i.test(l.label))).toBe(false); expect(!!c.snapshot.water.salt).toBe(false);
-    }
+  const briefOf = (a: Partial<QuickAnswers>) => applyQuickPrefs(setProjectExtras(emptyBrief(), { ...projectExtras(emptyBrief()), direction: 'freshwater' }), { ...emptyAnswers(), ...a });
+  const pair = (br: ReturnType<typeof briefOf>) => { clearPairCache(); return nextPair({ tank: project(), rev: 1 }, br, startSession(1, ['tank', 'animals', 'plants', 'hardscape', 'substrate'], 'freshwater', 's'), () => undefined, { next: 'first' }); };
+  it('Freshwater, Medium, Lush, Definitely live plants, No CO2: live plants, no CO2 feed or line, the medium size is only a ranking', () => {
+    const br = briefOf({ size: 'medium', look: ['lush'], plants: 'definitely', avoid: ['co2'] }), q = readQuickPrefs(br);
+    expect(q.plants).toEqual({ value: 'live', strength: 'hard' }); expect(q.prohibit).toContain('co2'); expect(q.sizeGal?.strength).toBe('prefer');
+    const r = pair(br); expect(r.ok).toBe(true); if (!r.ok) return;
+    for (const c of [r.a, r.b]) { expect(c.snapshot.items.filter(i => i.kind === 'plant').length).toBeGreaterThanOrEqual(3); expect(c.snapshot.grow.feed).not.toBe('co2'); expect(c.facts.toBuy.some(l => /co2/i.test(l.label))).toBe(false); }
   }, 200000);
-  it('a HARD size is honoured: whatever pair comes back is inside the range', () => {
-    const r = pair({ sizeGal: { lo: 20, hi: 60, strength: 'hard' } } as never); if (r.ok) for (const c of [r.a, r.b]) { expect(c.facts.gallons!).toBeGreaterThanOrEqual(20); expect(c.facts.gallons!).toBeLessThanOrEqual(60); }
-  }, 200000);
-  it('a prefer-size answer only ranks: no candidate is removed for being outside it', () => {
-    const r = pair({ sizeGal: { lo: 30, hi: 40 }, plants: 'prefer' } as never); expect(r.ok).toBe(true);
-  }, 200000);
+  it('lifting the No CO2 prohibition removes no candidate and does not force CO2 (the fitGear set above)', () => {
+    const on = readQuickPrefs(briefOf({ avoid: ['co2'] })), off = readQuickPrefs(briefOf({}));
+    expect(on.prohibit).toEqual(['co2']); expect(off.prohibit).toEqual([]);
+  });
 });

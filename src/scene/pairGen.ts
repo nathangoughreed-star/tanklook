@@ -16,7 +16,8 @@ import { briefToWants, type Brief } from './brief';
 import { ensureUids } from './uid';
 import { fitGear } from './gearFit';
 import { stockTier } from './sizeTiers';
-import type { QuickPrefs } from './prefsAdapter';
+import { passesHard, readQuickPrefs, type QuickPrefs } from './quickPrefs';
+import { volume } from './physics';
 import { breadthOf, targetDistance, visuallyDistinct, type Breadth } from './breadth';
 import { diffTouches } from './scope';
 import { dropPlants, splice, strongerLight, strugglingPlants, trimAnimals } from './combine';
@@ -155,11 +156,13 @@ function ingest(c: Ctx, scene: TankSetup, label: string, source: Pending['source
   if (eqWhy) return drop(c, eqWhy, [{ id: 'equip:rule', tab: 'equipment', uids: [], text: eqWhy, relax: noNewEquipment(brief) && !plan.infeasible ? 'Allow new equipment for this run' : 'Mark the item Have available instead of Must use' }], ['Allow new equipment, or mark the item Have available instead of Must use']);
   const v0 = verdictOf(after, brief, { units: c.units });
   if (!v0.feasible) return drop(c, label, [...v0.gates, ...v0.hard], [...v0.gates, ...v0.hard].map(i => i.relax ?? `Relax: ${i.text}`));
-  { const nPlants = after.items.filter(i => i.kind === 'plant').length, pf = c.prefs;   // live plants: artificial ones do not count
-    if (pf?.plants === 'require' && nPlants < 6) return drop(c, `${label}: has too few live plants for "definitely live plants"`, [], ['Allow designs with fewer plants']);
-    if (pf?.plants === 'avoid' && nPlants > 0) return drop(c, `${label}: has live plants, which you do not want`, [], ['Allow live plants']); }
   const sc = scoreScene(after, brief, c.w, c.P, c.now), blocked = sc.gate.reasons.filter(r => r.severity === 'blocked');
   if (blocked.length) return drop(c, `${label}: ${blocked[0].text}`, [], blocked.map(r => `Relax: ${r.text}`));
+  if (c.prefs) {   // quick preferences (AB6): only HARD answers filter a candidate
+    const live = after.items.filter(i => i.kind === 'plant').length, art = after.items.filter(i => i.kind === 'artificial').length, IN2 = 25.4 * 25.4;
+    const why = !passesHard(c.prefs, { gallons: after.water.on ? volume(after.tank).gallons : null, floorSqIn: after.tank.L * after.tank.D / IN2, heightIn: after.tank.H / 25.4, plants: live >= 3 ? (art ? 'mixed' : 'live') : 'artificial', species: [...new Set(after.fish.map(f => f.species))], co2: after.grow.feed === 'co2', setupUsd: sc.totals.setupUsd, weeklyMin: sc.totals.minPerWeek });
+    if (why) return drop(c, `${label}: breaks something you said is required or not wanted`, [], ['Relax the requirement that rules this design out']);
+  }
   const v = verdictOf(after, brief, { totals: sc.totals, units: c.units });
   if (!v.feasible) return drop(c, label, [...v.gates, ...v.hard], [...v.gates, ...v.hard].map(i => i.relax ?? `Relax: ${i.text}`));
   const facts = factsOf(after, brief, sc, ids.name);
@@ -279,11 +282,11 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
   const scope = effectiveScope(project, session);
   if (!scope.length) return { ok: false, conflicts: ['Nothing is open to change: every menu is switched off or kept for now.'], relaxations: ['Switch a menu on, or release a kept menu'] };
   const { base, notes } = baselineOf(project, session, lookup), freezeNotes = session.freezes.map(f => `Release the kept ${f.tab} tab`);
-  const pf = opts.prefs, w0 = customTankWants(brief, briefToWants(brief)), w1 = pf?.sizeGal?.strength === 'hard' ? { ...w0, tankGal: { min: pf.sizeGal.lo, max: pf.sizeGal.hi } } : w0, w = pf?.world ? { ...w1, kinds: [pf.world] } : w1, br: Breadth = breadthOf(project.tank, session, lookup, scope, type);
+  const pf = opts.prefs ?? readQuickPrefs(brief), w0 = customTankWants(brief, briefToWants(brief)), w = w0, br: Breadth = breadthOf(project.tank, session, lookup, scope, type);
   opts.breadth?.(br);
   const purpose: ProposalPurpose = type === 'fresh' ? 'fresh' : type === 'champion' ? (br.objective === 'refine' ? 'contrast' : 'challenger') : scope.length <= 2 ? 'contrast' : 'first';
   // the cache key holds EVERY input a candidate depends on: the project (its whole design, so locks, hard constraints, owned and Must-use gear, the Discovery switches), the brief, the scope and holds, the direction and the champion
-  const sig = idOf(JSON.stringify([project.rev, session.id, scope, session.freezes, session.direction, type, type === 'first' ? '' : champ?.id, opts.prefs, brief, { ...project.tank, camera: undefined, render: undefined }]));
+  const sig = idOf(JSON.stringify([project.rev, session.id, scope, session.freezes, session.direction, type, type === 'first' ? '' : champ?.id, pf, brief, { ...project.tank, camera: undefined, render: undefined }]));
   const cache = opts.cache?.sig === sig ? opts.cache : opts.cache ? Object.assign(opts.cache, newCache(sig)) : (SHARED.get(sig) ?? (() => { if (SHARED.size >= 6) SHARED.delete(SHARED.keys().next().value!); const n = newCache(sig); SHARED.set(sig, n); return n; })());
   opts.notes?.push(...notes);
   const known = new Set<string>([...(opts.shownKeys ?? []), ...(champ?.key ? [champ.key] : [])]);
@@ -294,10 +297,14 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
     return { rec: champ, entry: { id: champ.id, key: champ.key ?? keyOf(S), fp: fingerprintOf(S, sc), features: featuresFor(S, sc) }, tokens: tokensOf(S), source: 'propose', world: '', sc };
   })() : undefined;
   const scoreW = weightsOf(aspectsOf(brief)), scoreOf = (p: Pending) => type === 'fresh' ? 0 : aspectScore(scoreW, p.entry.features) + prefOf(p);   // Something Different ignores learned taste
-  const tasteW = 0.1 + 0.25 * br.confidence + (pf ? 0.4 : 0);     // a told preference ranks harder than a learned one
-  const prefOf = (p: Pending): number => { let v = 0; const g = p.rec.facts.gallons, n = p.rec.snapshot.items.filter(i => i.kind === 'plant').length;
-    if (pf?.sizeGal && g != null) v += g >= pf.sizeGal.lo && g <= pf.sizeGal.hi ? 0.5 : -0.2;
-    if (pf?.plants === 'prefer') v += n >= 6 ? 0.3 : -0.2;
+  const told = !!(pf.sizeGal || pf.floorSqIn || pf.heightIn || pf.plants || Object.keys(pf.look).length), tasteW = 0.1 + 0.25 * br.confidence + (told ? 0.4 : 0);     // a told preference ranks harder than a learned one
+  const prefOf = (p: Pending): number => {   // ranking only (a 'prefer' answer never removes a candidate); a hard answer already filtered
+    let v = 0; const S = p.rec.snapshot, g = p.rec.facts.gallons, n = S.items.filter(i => i.kind === 'plant').length, inR = (x: number, r: { lo: number; hi: number }) => x >= r.lo && x <= r.hi;
+    if (pf.sizeGal && g != null) v += inR(g, pf.sizeGal.value) ? 0.5 : -0.2;
+    if (pf.floorSqIn) v += inR(S.tank.L * S.tank.D / (25.4 * 25.4), pf.floorSqIn.value) ? 0.3 : -0.1;
+    if (pf.heightIn) v += inR(S.tank.H / 25.4, pf.heightIn.value) ? 0.3 : -0.1;
+    if (pf.plants?.strength === 'prefer') v += (pf.plants.value === 'live') === (n >= 6) ? 0.3 : -0.2;
+    if ((pf.look.lush ?? 0) > 0) v += n >= 30 ? 0.2 * pf.look.lush! : 0;
     return v; };                                                                                             // learned taste narrows the RANKING, bounded; it never removes a candidate
   const usable = () => {
     const fresh = cache.pend.filter(p => !known.has(p.rec.key ?? '') && !(champPending && type !== 'fresh' && same(p, champPending)));
@@ -313,7 +320,7 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
   };
   // generate only as much as is needed: DX2's proposals on the baseline first (cheap), then one Explore look at a time while there is time and a whole habitat may be drawn
   const gen = champBase ?? base;
-  const ctx: Ctx = { ...(pf ? { prefs: pf } : {}), ...(pf?.avoid?.includes('co2') ? { noCo2: true } : {}), orig: gen, brief, w, P, units, now, scope, baseRev: project.rev, sessionId: session.id, purpose, ...(type === 'champion' && champ ? { parentId: champ.id } : {}), cache };
+  const ctx: Ctx = { prefs: pf, ...(pf.prohibit.includes('co2') ? { noCo2: true } : {}), orig: gen, brief, w, P, units, now, scope, baseRev: project.rev, sessionId: session.id, purpose, ...(type === 'champion' && champ ? { parentId: champ.id } : {}), cache };
   const looks = habitatFree(base, scope) ? looksFor(ctx, session.direction, type, champ) : [];
   let result: { a: CandidateRecord; b: CandidateRecord; pool: number } | undefined;
   for (;;) {
