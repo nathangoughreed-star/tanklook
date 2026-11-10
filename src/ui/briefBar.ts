@@ -44,7 +44,7 @@ export function attachBriefBar(store: Store, host: { suggest(): void; /** opens 
       if (ev?.gal !== undefined) { ctx.animalTankGal = ev.gal; next = nextQuestions(b, ctx); }
     }
     const nq = next.questions.length;
-    bar.innerHTML = `<button type="button" class="bbHead" data-act="toggle" aria-expanded="${openCard}"><b>Setup brief</b>${isEmpty(b) ? '<span class="bbNone">nothing set: optional</span>' : ''}${nq ? `<span class="bbBadge">${nq} to ask</span>` : ''}</button><button type="button" class="bbChip bbPanel" data-act="owned" title="Open My equipment: the tank, stand or furniture, light, heater, filter and the rest you already own"><span>My equipment</span></button><button type="button" class="bbChip bbPanel" data-act="limits" title="Money, time, space, room and water: all optional"><span>Your limits</span></button><button type="button" class="bbChip bbPanel" data-act="report" title="The printable report for this setup"><span>Report</span></button>`;
+    bar.innerHTML = `<button type="button" class="bbHead" data-act="toggle" aria-expanded="${openCard}"><b>Setup brief</b>${isEmpty(b) ? '<span class="bbNone">nothing set: optional</span>' : ''}${nq ? `<span class="bbBadge">${nq} to ask</span>` : ''}</button><button type="button" class="bbChip bbPanel" data-act="limits" title="Money, time, space, room and water: all optional"><span>Your limits</span></button>`;
     bar.classList.toggle('empty', isEmpty(b));
     if (!openCard) return;
     let cons = '';
@@ -76,9 +76,7 @@ ${items}${cons}
     if (t.dataset.del) { editBrief(b => removeItem(b, t.dataset.del as ItemId)); return; }
     if (t.dataset.keepfix && keep) { const n = applyRetainedFix(getBrief(), keep, t.dataset.keepfix); if (n) editBrief(() => n); return; }
     if (t.dataset.act === 'dismissnote') { note = undefined; draw(); return; }
-    if (t.dataset.act === 'owned') { host.owned(); return; }
     if (t.dataset.act === 'limits') { host.limits(); return; }
-    if (t.dataset.act === 'report') { host.report(); return; }
     if (t.dataset.g || t.dataset.act === 'toggle') { openCard = t.dataset.act === 'toggle' ? !openCard : true; draw(); return; }
     if (t.dataset.act === 'clear') { setBrief(emptyBrief()); return; }
     if (t.dataset.act === 'fill') { openCard = false; draw(); host.suggest(); }

@@ -1334,6 +1334,8 @@ button.start-mode-card span.hint { font-size: 12px }
 .dxp .dxonly { margin: 0 0 6px }
 .dxp .dxq { margin: 8px 0; border-top: 1px dashed #666 } .dxp .dxq > summary { cursor: pointer; padding: 6px 0; font-weight: 600 }
 .cnnonew { display: block; margin: 8px 0 }
+.rpPick { display: grid; gap: 4px; margin: 8px 0 }
+.rpPick .chk { display: block }
 .viewpop { position: absolute; top: 44px; left: 8px; z-index: 31; width: min(360px, calc(100% - 16px)); max-height: max(140px, calc(100% - 52px - var(--reserve, 0px))); overflow: auto; box-sizing: border-box; padding: 6px 12px 10px; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 6px 24px #0006 }
 .viewpop[hidden] { display: none }
 .viewpop .vpsec { border-top: 1px solid var(--line); padding-top: 4px } .viewpop .vpsec:first-child { border-top: 0 }

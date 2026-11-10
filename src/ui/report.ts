@@ -141,18 +141,52 @@ let bound: { store: Store; shot: () => string } | undefined;
 export function attachReport(store: Store, viewer: { reportShot(w?: number): string }, button?: HTMLElement | null) {
   bound = { store, shot: () => { try { return viewer.reportShot(); } catch { return ''; } } };
   button?.addEventListener('click', () => openReport());
+  const host = document.getElementById('reportHost');
+  if (host) attachReportPicker(host);
+}
+
+/** The report's parts, in page order (the `data-rp` of each section reportHtml writes). */
+export const REPORT_PARTS: readonly { id: string; label: string }[] = [
+  { id: 'rundown', label: 'Quick rundown' }, { id: 'picture', label: 'Picture of the tank' }, { id: 'have', label: 'Equipment you have' },
+  { id: 'shopping', label: 'Shopping list' }, { id: 'costs', label: 'Expected costs' }, { id: 'living', label: 'Plants and corals' },
+  { id: 'warnings', label: 'Warnings and cautions' },
+];
+const PICK_KEY = 'tanklook.reportParts';
+const loadPick = (): Set<string> => {
+  try { const v = JSON.parse(localStorage.getItem(PICK_KEY) ?? 'null'); if (Array.isArray(v)) return new Set(v.filter(x => REPORT_PARTS.some(p => p.id === x))); } catch { /* no storage */ }
+  return new Set(REPORT_PARTS.map(p => p.id));
+};
+
+/** The side panel's Report section: tick what goes in, then generate. The choice is remembered in this browser. */
+function attachReportPicker(host: HTMLElement) {
+  const pick = loadPick();
+  host.innerHTML = `<div class="hint">Tick what to include, then generate the printable report.</div>
+<div class="rpPick">${REPORT_PARTS.map(p => `<label class="chk"><input type="checkbox" data-part="${p.id}"${pick.has(p.id) ? ' checked' : ''}> <span>${esc(p.label)}</span></label>`).join('')}</div>
+<div class="btns"><button type="button" class="spLink" data-all="1">All</button><button type="button" class="spLink" data-all="0">None</button></div>
+<div class="btns"><button type="button" id="rpGenerate" class="primary">Generate report</button></div>`;
+  const boxes = [...host.querySelectorAll<HTMLInputElement>('input[data-part]')], gen = host.querySelector<HTMLButtonElement>('#rpGenerate')!;
+  const sync = () => {
+    pick.clear(); for (const b of boxes) if (b.checked) pick.add(b.dataset.part!);
+    gen.disabled = !pick.size; gen.title = pick.size ? '' : 'Tick at least one part';
+    try { localStorage.setItem(PICK_KEY, JSON.stringify([...pick])); } catch { /* no storage */ }
+  };
+  host.addEventListener('change', sync);
+  for (const b of host.querySelectorAll<HTMLButtonElement>('[data-all]')) b.onclick = () => { for (const x of boxes) x.checked = b.dataset.all === '1'; sync(); };
+  gen.onclick = () => openReport(new Set(pick));
+  sync();
 }
 
 /** Open the report over the app (the end of Guided, the menu). */
-export function openReport() {
+export function openReport(only?: ReadonlySet<string>) {
   if (!bound) return;
-  const { store } = bound, shot = bound.shot(); // drawn before the page covers the view
+  const { store } = bound, shot = only && !only.has('picture') ? '' : bound.shot(); // drawn before the page covers the view
   const under = [...document.querySelectorAll<HTMLDialogElement>('dialog[open]')]; // Guided's dialog would sit above the page: set aside, back on Close
   for (const d of under) d.close();
   document.getElementById('sheetView')?.remove();
   const host = document.createElement('div');
   host.id = 'sheetView'; host.dataset.kind = 'report';
   host.innerHTML = `<div class="sheetBar"><b>Report</b><span class="sp"></span><button id="rpPrint" title="Print, or Save as PDF from the print dialog">Print / PDF</button><button id="rpClose">Close</button></div><div class="sheetPage rp-page" role="document">${reportHtml(reportOf(store.scene, store.scene.active, loadProfile()), shot)}</div>`;
+  if (only) for (const sec of host.querySelectorAll<HTMLElement>('.rp-sec[data-rp]')) if (!only.has(sec.dataset.rp!)) sec.remove(); // the side panel's picks
   document.body.append(host); document.body.classList.add('sheet-open');
   const close = () => { host.remove(); document.body.classList.remove('sheet-open'); document.removeEventListener('keydown', onKey); for (const d of under) if (d.isConnected && !d.open) d.showModal(); };
   const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
