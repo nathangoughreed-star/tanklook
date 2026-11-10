@@ -58,10 +58,11 @@ describe('AB0 outcomes', () => {
     expect(ab.comparison!.why).toEqual(['plants', 'look']); expect(ab.comparison!.otherGood).toEqual(['upfront']);
     expect(ab.tasteSignal).toEqual({ winner: 'A', loser: 'C', liked: ['A'], disliked: ['C'] });
   });
-  it('skip on the final keeps the pending winner; both on the final clears it, champion unchanged', () => {
+  it('skip on the final moves on (never repeats the pair); both on the final clears it too; champion unchanged', () => {
     let s = withChamp(); s = ans(show(s, 'E', 'F', 'fresh'), 'A').session;
     const sk = ans(show(s, 'E', 'A', 'final'), 'skip');
-    expect(sk.session.pendingFreshId).toBe('E'); expect(sk.next.type).toBe('final');
+    expect(sk.session.pendingFreshId).toBeUndefined(); expect(sk.next.type).not.toBe('final'); expect(sk.session.championId).toBe('A'); expect(sk.tasteSignal.liked).toEqual([]); expect(sk.tasteSignal.disliked).toEqual([]);
+    for (const t of ['first', 'champion', 'fresh'] as const) { const r = ans(show(withChamp(), 'X', 'Y', t), 'skip'); expect(r.next.keep === undefined || r.next.type !== 'final').toBe(true); }
     const both = ans(show(s, 'E', 'A', 'final'), 'both');
     expect(both.session.pendingFreshId).toBeUndefined(); expect(both.session.championId).toBe('A');
   });

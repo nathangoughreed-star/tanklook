@@ -92,10 +92,8 @@ export function record(session: DiscoverySession, outcome: Outcome, why?: Reason
   } else {
     // like both / like neither / skip: the champion never changes
     if (type === 'fresh') next = { type: 'fresh' };
-    else if (type === 'final') {
-      if (outcome === 'skip') next = { type: 'final', keep: champBefore }; // still owes the head-to-head
-      else { s.pendingFreshId = undefined; next = nextAfter(s); } // both stay in history; the pending winner is not forced
-    } else next = nextAfter(s);
+    else if (type === 'final') { s.pendingFreshId = undefined; next = nextAfter(s); } // both stay in history; the pending winner is not forced. Skip moves on too (Nathan 2026-11-09: skip never repeats the same question)
+    else next = nextAfter(s);
     if (outcome === 'neither' && type !== 'fresh') next = { ...next, broaden: true };
     if (outcome === 'neither' && type === 'fresh') next = { type: 'fresh', broaden: true };
   }
