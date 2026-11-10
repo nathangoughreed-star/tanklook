@@ -145,3 +145,16 @@ describe('AB6 wiring', () => {
     const q = read('src/ui/quickPrefs.ts'); expect(q).toContain('applyQuickPrefs'); expect(q).toContain('finish(false)');
   });
 });
+
+describe('size slider', () => {
+  it('the thumb position reads back as exactly one band, gallons interpolate inside it, and the stored answer stays the band', async () => {
+    const { slideSize, sizeSliderHtml } = await import('../src/ui/quickPrefs');
+    const { galAt, sizeAtBand } = await import('../src/scene/sizePrefs');
+    expect([0, 332, 334, 666, 667, 1000].map(v => sizeAtBand(v / 1000))).toEqual(['small', 'small', 'medium', 'medium', 'large', 'large']);
+    expect(galAt('freshwater', 0)).toBe(5); expect(galAt('freshwater', 1)).toBe(150); expect(galAt('saltwater', 0.5)).toBe(52);
+    const a = slideSize(emptyAnswers(), 500), b = applyQuickPrefs(fresh(), a);
+    expect(a.size).toBe('medium'); expect(answersOf(b).size).toBe('medium'); expect(answersOf(b).sizeAt).toBe(0.5);
+    const h = sizeSliderHtml('freshwater', a); expect(h).toContain('type="range"'); expect(h).toContain('5-19 gal'); expect(h).toContain('55-150 gal'); expect(h).toContain('about 37 gal');
+    expect(sizeSliderHtml('terrarium', a)).not.toContain('gal');
+  });
+});

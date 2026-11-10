@@ -1428,6 +1428,11 @@ body.discovering .dmfloat, body.discovering #climate, body.discovering .vmap, bo
 .qp-opt { display: inline-flex; flex-direction: column; align-items: center; gap: 1px; padding: 5px 10px; font: inherit; font-size: 13px; background: var(--chip); color: var(--ink); border: 1px solid var(--line); border-radius: 999px; cursor: pointer }
 .qp-opt small { font-size: 11px; opacity: .75 }
 .qp-opt.on { background: var(--accent); border-color: var(--accent); color: #fff }
+.qp-read { font-weight: 400; opacity: .85; margin-left: 6px }
+.qp-slide { margin: 2px 0 6px } .qp-range { width: 100%; margin: 0; accent-color: var(--accent) } .qp-slide.unset .qp-range { opacity: .55 }
+.qp-bands { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 2px }
+.qp-band { display: flex; flex-direction: column; align-items: center; text-align: center; font-size: 12px; padding: 3px 2px; border-top: 3px solid var(--line); opacity: .7 } .qp-band small { font-size: 11px; opacity: .8 }
+.qp-band.on { border-top-color: var(--accent); opacity: 1 }
 .qp-intro { margin: 8px 0; font-size: 13px }
 .qp-more { margin: 8px 0; border-top: 1px solid var(--line); padding-top: 6px } .qp-more > summary { cursor: pointer; font-size: 13px; font-weight: 600; padding: 4px 0 }
 .qp-limit { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 6px 0; font-size: 13px } .qp-num input { width: 84px } .qp-seg { display: inline-flex; gap: 4px }

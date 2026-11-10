@@ -12,7 +12,7 @@ import { aspectsOf, tell, type Aspects } from '../explore/aspects';
 import { SIZE_LARGE_MM } from '../explore/constants';
 import { getSpecies } from '../data/species';
 import type { HabitatDirection } from './discoveryTypes';
-import { dryOf, isDry, sizeOf, sizeRange, type SizeChoice } from './sizePrefs';
+import { dryOf, isDry, sizeAtBand, sizeOf, sizeRange, type SizeChoice } from './sizePrefs';
 
 export type PlantsAnswer = 'definitely' | 'prefer' | 'prefer-not' | 'not';
 export type LookChip = 'natural' | 'lush' | 'colourful' | 'minimal' | 'stylized';
@@ -20,7 +20,7 @@ export type LookChip = 'natural' | 'lush' | 'colourful' | 'minimal' | 'stylized'
 export type AvoidId = 'snails' | 'shrimp' | 'co2' | 'large-animals';
 /** A practical limit: a TARGET (preference, "I'd prefer under") or a FIRM maximum (hard, "I can't spend more than"). */
 export interface Limit { max: number; firm: boolean }
-export interface QuickAnswers { size?: SizeChoice; look: LookChip[]; plants?: PlantsAnswer; avoid: AvoidId[]; budget?: Limit; care?: Limit }
+export interface QuickAnswers { size?: SizeChoice; /** slider thumb 0..1 inside the size band (UI only: the answer everyone reads is `size`) */ sizeAt?: number; look: LookChip[]; plants?: PlantsAnswer; avoid: AvoidId[]; budget?: Limit; care?: Limit }
 export const emptyAnswers = (): QuickAnswers => ({ look: [], avoid: [] });
 
 export const LOOK_CHIPS: readonly { id: LookChip; label: string }[] = [
@@ -67,7 +67,8 @@ export function normalize(a: QuickAnswers): QuickAnswers {
   const clash = (x: LookChip, y: LookChip) => { if (look.includes(x) && look.includes(y)) look = look.filter(c => c !== (look.indexOf(x) < look.indexOf(y) ? x : y)); };
   clash('lush', 'minimal'); clash('natural', 'stylized');
   const lim = (l?: Limit) => l && Number.isFinite(l.max) && l.max > 0 ? { max: Math.round(l.max), firm: !!l.firm } : undefined, b = lim(a.budget), c = lim(a.care);
-  return { ...(a.size ? { size: a.size } : {}), look, ...(a.plants ? { plants: a.plants } : {}), avoid: [...new Set(a.avoid)], ...(b ? { budget: b } : {}), ...(c ? { care: c } : {}) };
+  const at = a.size && a.sizeAt !== undefined && sizeAtBand(a.sizeAt) === a.size ? { sizeAt: a.sizeAt } : {};
+  return { ...(a.size ? { size: a.size } : {}), ...at, look, ...(a.plants ? { plants: a.plants } : {}), avoid: [...new Set(a.avoid)], ...(b ? { budget: b } : {}), ...(c ? { care: c } : {}) };
 }
 const toldKeys = (a: QuickAnswers): Record<string, 1 | -1> => {
   const t: Record<string, 1 | -1> = {};
@@ -90,7 +91,7 @@ export function answersOf(b: Brief): QuickAnswers {
   const pm = getItem(b, 'appearance.plantMode');
   if (pm && !pm.off && pm.status === 'hard') { if (pm.value === 'live') a.plants = 'definitely'; else if (pm.value === 'artificial') a.plants = 'not'; }
   const lt = getItem(b, 'preferences.lowtech'); if (lt && !lt.off && lt.status === 'hard' && lt.value && !a.avoid.includes('co2')) a.avoid = [...a.avoid, 'co2'];
-  const s = sizeNow(b); if (s) a.size = s;
+  const s = sizeNow(b); if (s) { a.size = s; const at = q?.sizeAt; if (at !== undefined && sizeAtBand(at) === s) a.sizeAt = at; }
   const bu = limitOf(b, 'constraints.budget'); if (bu) a.budget = bu;
   const ca = limitOf(b, 'constraints.careMin'); if (ca) a.care = ca;
   return a;
@@ -123,7 +124,7 @@ export function applyQuickPrefs(b: Brief, next: QuickAnswers): Brief {
   for (const [k, v] of Object.entries(toldKeys(a))) asp = tell(asp, k, v);
   out = putAspects(out, asp);
   const { quick: _q, ...rest } = projectExtras(out), has = a.size || a.look.length || a.plants || a.avoid.length;
-  return setProjectExtras(out, has ? { ...rest, quick: { ...(a.size ? { size: a.size } : {}), ...(a.look.length ? { look: a.look } : {}), ...(a.plants ? { plants: a.plants } : {}), ...(a.avoid.length ? { avoid: a.avoid } : {}) } } : rest);
+  return setProjectExtras(out, has ? { ...rest, quick: { ...(a.size ? { size: a.size } : {}), ...(a.size && a.sizeAt !== undefined ? { sizeAt: a.sizeAt } : {}), ...(a.look.length ? { look: a.look } : {}), ...(a.plants ? { plants: a.plants } : {}), ...(a.avoid.length ? { avoid: a.avoid } : {}) } } : rest);
 }
 
 export type Strength = 'hard' | 'prefer';

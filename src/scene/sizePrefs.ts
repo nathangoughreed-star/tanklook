@@ -34,6 +34,13 @@ const aq = (d: HabitatDirection) => SIZE_GAL[d === 'saltwater' ? 'saltwater' : '
 /** Gallons for an aquarium habitat (a dry habitat has no gallon range: use `dryOf`). */
 export const sizeRange = (d: HabitatDirection, s: SizeChoice): GalRange => aq(d)[s];
 export const dryOf = (d: HabitatDirection, s: SizeChoice): DrySize | undefined => isDry(d) ? SIZE_DRY[d][s] : undefined;
+/** The size slider: the track is three equal bands (Small | Medium | Large), so the position 0..1 reads back as exactly one size, and inside a band it is a linear
+ *  position between that band's low and high end (gallons for an aquarium). The stored answer stays the band; the position is only where the thumb sits. */
+export const sizeAtBand = (at: number): SizeChoice => at < 1 / 3 ? 'small' : at < 2 / 3 ? 'medium' : 'large';
+/** The thumb position that stands for a size when none was set: the middle of its band. */
+export const sizeAtMid = (s: SizeChoice): number => (SIZE_CHOICES.indexOf(s) + 0.5) / 3;
+/** Gallons the thumb points at (aquarium habitats), rounded to a whole gallon. */
+export const galAt = (d: HabitatDirection, at: number): number => { const s = sizeAtBand(at), r = aq(d)[s], f = Math.min(1, Math.max(0, at * 3 - SIZE_CHOICES.indexOf(s))); return Math.round(r.lo + f * (r.hi - r.lo)); };
 /** "5-19 gal" (US gallons). */
 export const galText = (r: GalRange): string => `${r.lo}-${r.hi} gal`;
 /** What shows under a size choice: gallons for an aquarium, floor and height for a dry build. */
