@@ -355,8 +355,19 @@ export class Store {
   }
 
   // ---------- Persistence ----------
+  /** IV1: while Discovery is open this holds the design as it was found (Store.snapshotAll().scene). Autosave then persists THAT design, plus the requirements (locks, switches, brief, constraints) as they are now, so a reload or crash mid-Discovery never stores a preview write. */
+  persistBase: string | undefined;
+  persistText(): string {
+    if (!this.persistBase) return JSON.stringify(this.scene);
+    try {
+      const base = JSON.parse(this.persistBase) as Scene;
+      if (base.tanks.length !== this.scene.tanks.length) return this.persistBase;
+      base.tanks.forEach((t, i) => { const c = this.scene.tanks[i] as unknown as Record<string, unknown>, b = t as unknown as Record<string, unknown>; for (const k of ['locks', 'discoverOn', 'brief', 'constraints']) { if (k in c) b[k] = c[k]; else delete b[k]; } });
+      return JSON.stringify(base);
+    } catch { return this.persistBase; }
+  }
   saveLocal(storage: Storage | undefined = globalThis.localStorage) {
-    try { storage?.setItem(STORAGE_KEY, JSON.stringify(this.scene)); } catch { /* storage full or blocked: autosave is best-effort */ }
+    try { storage?.setItem(STORAGE_KEY, this.persistText()); } catch { /* storage full or blocked: autosave is best-effort */ }
   }
   static loadLocal(storage: Storage | undefined = globalThis.localStorage): Scene | null {
     try {

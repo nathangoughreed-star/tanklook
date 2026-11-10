@@ -21,6 +21,7 @@ import type { Viewer } from '../../render/viewer';
 import type { CandidateRecord, Outcome, PairResult, ReasonKey } from '../../scene/discoveryTypes';
 import type { RosterMode } from '../../scene/types';
 import type { AbEngine, CombineProposal, ReEval } from './adapter';
+import { clearPairCache } from '../../scene/pairGen';
 import { REASONS } from './logic';
 import { createMetrics, statsHtml, summarize } from './metrics';
 
@@ -45,13 +46,13 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
     return miss.length ? `Your design doesn't include the locked ${miss.map(r => `${r.mode === 'exact' ? r.n : r.mode === 'atLeast' ? `at least ${r.n}` : ''} ${getSpecies(r.species)?.name ?? r.species}`.replace(/\s+/g, ' ').trim()).join(', ')} yet.` : '';
   };
 
-  let borrowed: ReturnType<Store['snapshotAll']> | undefined;   // AB9: the working design as Discovery found it; Close without Make It Yours puts it (and its undo history) back
+  let borrowed: (ReturnType<Store['snapshotAll']> & { rev: number }) | undefined;   // AB9: the working design as Discovery found it; Close without Make It Yours puts it (and its undo history) back
   /** Keep may need to copy a piece, the lighting... into the design so a lock has something to hold: allowed while Discovery is open, undone on Close unless Make It Yours. */
   const writing = <T,>(fn: () => T): T => { const was = store.frozen; store.frozen = false; try { return fn(); } finally { store.frozen = was; } };
   const giveBack = () => {
     const snap = borrowed; borrowed = undefined; if (!snap) return;
     const roster = locksOf(store.tank).roster.map(r => ({ ...r }));   // an animal lock changes no design: it stays, like the brief and the switches
-    store.restoreAll(snap);
+    store.restoreAll(snap); store.rev = snap.rev; clearPairCache();   // IV1: the design is the one that revision denoted, so the session is not "stale" on reopen; pairs cached under the preview's revisions go
     if (roster.length) store.update(s => { for (const r of roster) lockRoster(s.tanks[s.active], r.species, r.mode, r.n); }, { history: false });
   };
   const close = (restore = true) => {
@@ -59,6 +60,7 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
     if (was) { metrics.log({ k: 'close', t: Date.now(), adopted, rounds: rounds() }); engine.pause(); }
     viewer?.showPair(null); viewer?.setReserve(0); shownKey = ''; frozenNow(false);
     if (was && restore && !adopted) giveBack(); else borrowed = undefined;
+    store.persistBase = undefined;
     root.hidden = true; root.innerHTML = ''; result = undefined; plan = undefined; detail = undefined; pending = undefined; proposal = undefined; panelOpen = false; rid++;
     if (was) { const l = lockLine(); if (l) deps.status(l); }
   };
@@ -364,7 +366,7 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
     open(scope) {
       adopted = false; engine.open(scope); metrics.log({ k: 'open', t: Date.now(), resumed: engine.session().comparisons.length > 0 }); histPage = 0; histOpen = false; detail = undefined; plan = undefined; pending = undefined; note = ''; sheets = new Set(); result = undefined; busy = false;
       proposal = undefined; panelOpen = false; shownKey = ''; if (!scope) syncScope();
-      borrowed = store.snapshotAll(); frozenNow(true); root.hidden = false; resume = engine.isStale(); draw();
+      borrowed = { ...store.snapshotAll(), rev: store.rev }; store.persistBase = borrowed.scene; frozenNow(true); root.hidden = false; resume = engine.isStale(); draw();
       if (!resume) look(() => engine.next());
     },
   };

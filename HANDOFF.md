@@ -73,6 +73,13 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
+## IV1: Discovery integration verification (2026-11-10; Coordinator 22; NOT pushed)
+- **AB9 is allow-then-restore, not prevention.** `writing()` in `src/ui/ab/screen.ts` unfreezes the store; Keep / Lock copy lighting, substrate, tank, background, pieces into the working design (undo pushes, `rev` bumps, `scene` events); Close calls `giveBack()` -> `store.restoreAll`. Autosave (`src/ui/panels.ts`) fired on those writes.
+- **Fixed (small):** `Store.persistBase` / `persistText()`: while Discovery is open autosave and `pagehide` persist the design as found plus the live requirements (locks, switches, brief, constraints). Test: `test/iv1.test.ts`. Live observers (viewer, derived panels) still see the preview write.
+- **Fixed:** Close without Make It Yours left `store.rev` bumped, so reopening ALWAYS showed "You changed the design since this session". `giveBack` now restores `store.rev` and clears the pair cache. Browser-verified (no unit test: the logic lives in the DOM screen).
+- **Open, needs Nathan:** (a) Close drops OBJECT locks (lighting, tank, substrate, background, pieces) because they are rolled back with the copies; only animal locks stay. Brief scenarios 2 and 5 expect them to persist. (b) Hardscape (pieces) locks from A and B ACCUMULATE (both cards show Locked, working design holds both piece sets) while singular attributes (background, tank, substrate, gear) replace correctly. (c) Real prevention = a separate preview state so Keep / Lock only change Discovery requirements; estimated 1-2 days, not started.
+- Screens: `research/screens/IV1/`.
+
 ## AB10: contradictory Locked badges (2026-11-10; Coordinator 22)
 - REAL defect (stale/ambiguous UI, not two stored locks): the background lock is ONE flag on the working project (locks.objects target 'backdrop', holds the working design's value). The AB7 attribute cell read isHeld(store.tank, lock) for BOTH cards, so after locking A's Rock wall, B's None cell also showed Locked. Storage never held two values; the lock chip counts one.
 - Fix: heldState() in src/scene/attrs.ts ('held' only when the candidate's value equals the locked working value; 'other' when locked to a different value; 'free'). Held = Locked/Unlock; other = open padlock with title "A different value is locked. Press to lock this one instead (it replaces the old lock)" and status "<Attr> lock replaced". Same for tank, substrate, gear. Locking B's background replaces A's (still exactly one lock entry). Hold ("Keep A's ... for now", temporary) wording unchanged; it already says nothing is locked.
