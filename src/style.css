@@ -1432,3 +1432,24 @@ body.discovering .dmfloat, body.discovering #climate, body.discovering .vmap, bo
 .qp-limit { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 6px 0; font-size: 13px } .qp-num input { width: 84px } .qp-seg { display: inline-flex; gap: 4px }
 .qp-actions { position: sticky; bottom: -12px; margin: 0 -14px -12px; padding: 8px 14px 12px; background: var(--panel); border-top: 1px solid var(--line); justify-content: flex-end }
 @media (max-width: 480px) { .qp-opt { padding: 6px 9px } }
+
+/* AB7: attribute panel: one grid, so every row's value and its three buttons (thumb up, thumb down, lock) line up in the same columns; the buttons never change size */
+.abdock .abattrs { margin: 8px 0; border: 1px solid #555; border-radius: 8px; padding: 6px 10px }
+.abdock .abattrs h4 { margin: 2px 0 6px } .abdock .abattrs h4 small { color: #999; font-weight: 400; margin-left: 6px }
+.abdock .abattr { display: grid; grid-template-columns: 104px minmax(0, 1fr) 108px minmax(0, 1fr) 108px; gap: 4px 10px; align-items: center; padding: 3px 0; border-top: 1px dashed #5557 }
+.abdock .abattr .abal { font-weight: 600 } .abdock .abattr .abal small { color: #e6a23c; font-weight: 400 }
+.abdock .abacell { display: contents }
+.abdock .abav { min-width: 0; overflow-wrap: anywhere } .abdock .abav .abk { font-size: 11px }
+.abdock .abactl { display: grid; grid-template-columns: repeat(3, 32px); gap: 6px; justify-content: end }
+.abdock .abthumb, .abdock .abalock { width: 32px; height: 28px; padding: 0; border: 1px solid #666; border-radius: 6px; background: transparent; color: inherit; cursor: pointer; line-height: 1 }
+.abdock .abthumb.on { background: #2e7d6b; border-color: #2e7d6b } .abdock .abthumb.on.dn { background: #9a4b3f; border-color: #9a4b3f }
+.abdock .abalock.on { background: #3f5f9a; border-color: #3f5f9a; color: #fff } .abdock .abalock[disabled] { opacity: .4; cursor: default }
+.abdock .ablocks { border: 1px solid #3f5f9a; border-radius: 12px; padding: 2px 10px; background: transparent; color: inherit; cursor: pointer }
+/* AB7: on a phone the expanded dock is a scrollable sheet that leaves the two views at least ~40 % of the height */
+@media (max-width: 700px) {
+  .abdock { max-height: 60% } .abdock .abpanel { max-height: none; flex: 1 1 auto; min-height: 0 }
+}
+@media (max-width: 700px) { .abdock.opened .abfacts { display: none } }   /* the per-side facts repeat inside the open panel; the sheet gets the room */
+@media (max-width: 700px) {   /* phone: label on its own line, then value + 3 buttons per side, buttons in one column */
+  .abdock .abattr { grid-template-columns: minmax(0, 1fr) 108px; gap: 2px 8px } .abdock .abattr .abal { grid-column: 1 / 3 }
+}

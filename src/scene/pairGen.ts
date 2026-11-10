@@ -12,11 +12,12 @@ import { verdictOf, type Issue } from './verdict';
 import { capableOf, equipPlan, noNewEquipment } from './equipPlan';
 import { equipmentOf, requiredEquipment } from './project';
 import { filterUnits, heaterUnits, inferTech, withUnits } from './tech';
-import { briefToWants, type Brief } from './brief';
+import { briefToWants, projectExtras, type Brief } from './brief';
 import { ensureUids } from './uid';
 import { fitGear } from './gearFit';
 import { finalCheck } from './finalCheck';
 import { meaningfulDryTiers, stockTier } from './sizeTiers';
+import { thumbBonus } from './attrs';
 import { passesHard, readQuickPrefs, type QuickPrefs } from './quickPrefs';
 import { volume } from './physics';
 import { breadthOf, targetDistance, visuallyDistinct, type Breadth } from './breadth';
@@ -323,6 +324,7 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
     if (pf.heightIn) v += inR(S.tank.H / 25.4, pf.heightIn.value) ? 0.3 : -0.1;
     if (pf.plants?.strength === 'prefer') v += (pf.plants.value === 'live') === (n >= 6) ? 0.3 : -0.2;
     if ((pf.look.lush ?? 0) > 0) v += n >= 30 ? 0.2 * pf.look.lush! : 0;
+    v += thumbBonus(projectExtras(brief).thumbs, S, p.rec.facts);   // AB7: thumbs on attribute values, a bounded nudge (soft guidance, never a filter)
     return v; };                                                                                             // learned taste narrows the RANKING, bounded; it never removes a candidate
   const usable = () => {
     const fresh = cache.pend.filter(p => !known.has(p.rec.key ?? '') && !(champPending && type !== 'fresh' && same(p, champPending)));

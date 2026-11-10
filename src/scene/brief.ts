@@ -163,6 +163,8 @@ export interface ProjectExtras {
   /** the guide (ui/coach, lane GW1): where the walk through the menus stopped, so it resumes; absent = not started or finished */
   coach?: { at: string; skipped?: string[] };
   /** AB6: the quick-preference answers (scene/quickPrefs.ts writes the items and told weights they stand for); kept so the screen and the Constraints block show them back */
+  /** AB7: soft thumbs on attribute values from the Discovery attribute panel (scene/attrs.ts). Ranking only; never a filter, a told answer or a lock. */
+  thumbs?: Record<string, { v: 1 | -1; e: string[] }>;
   quick?: { size?: 'small' | 'medium' | 'large'; look?: string[]; plants?: 'definitely' | 'prefer' | 'prefer-not' | 'not'; avoid?: string[] };
 }
 /** The project's extra answers (never undefined). */
@@ -402,6 +404,14 @@ export function parseProject(raw: unknown): ProjectExtras | undefined {
     if (Array.isArray(q.look)) { const l = [...new Set(q.look.filter(idOk))].slice(0, 8); if (l.length) o.look = l; }
     if (Array.isArray(q.avoid)) { const l = [...new Set(q.avoid.filter(idOk))].slice(0, 12); if (l.length) o.avoid = l; }
     if (Object.keys(o).length) p.quick = o;
+  }
+  if (r.thumbs && typeof r.thumbs === 'object') {   // AB7: keys look like "stocking|neon,guppy"; the panel's own attribute names are not checked here (an unknown one simply never matches)
+    const th: NonNullable<ProjectExtras['thumbs']> = {};
+    for (const [k, x] of Object.entries(r.thumbs as Record<string, unknown>).slice(0, 60)) {
+      const t = x as { v?: unknown; e?: unknown } | null;
+      if (/^[a-z]{3,12}\|/.test(k) && k.length <= 200 && t && (t.v === 1 || t.v === -1) && Array.isArray(t.e)) th[k] = { v: t.v, e: t.e.filter((q): q is string => typeof q === 'string' && q.length < 80).slice(0, 30) };
+    }
+    if (Object.keys(th).length) p.thumbs = th;
   }
   const co = r.coach as Record<string, unknown> | undefined;
   if (co && typeof co === 'object' && idOk(co.at)) { const sk2 = Array.isArray(co.skipped) ? co.skipped.filter(idOk).slice(0, 40) : []; p.coach = sk2.length ? { at: co.at, skipped: sk2 } : { at: co.at }; }

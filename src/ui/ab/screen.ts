@@ -14,7 +14,8 @@ import { headline } from '../checksStrip';
 import { layerOf, LIBRARY } from '../../scene/items';
 import { getSpecies } from '../../data/species';
 import { locksOf, rosterMet } from '../../scene/locks';
-import { ROLE_LABEL, KEEP_MODES, acceptPlan, differs, figText, isKept, keepForNowLabel, keepFromRecord, makePlan, metricsOf, roleOf, toggleReason, championConflicts, type KeepTarget, type Plan } from './logic';
+import { ATTRS, attrValues, isHeld, sameValue, thumbOf, type AttrKey, type AttrValue } from '../../scene/attrs';
+import { holdAttr, releaseAttr, ROLE_LABEL, KEEP_MODES, acceptPlan, differs, figText, isKept, keepForNowLabel, keepFromRecord, makePlan, metricsOf, roleOf, toggleReason, championConflicts, type KeepTarget, type Plan } from './logic';
 import type { Store } from '../../scene/store';
 import type { Viewer } from '../../render/viewer';
 import type { CandidateRecord, Outcome, PairResult, ReasonKey } from '../../scene/discoveryTypes';
@@ -51,7 +52,7 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
     root.hidden = true; root.innerHTML = ''; result = undefined; plan = undefined; detail = undefined; pending = undefined; proposal = undefined; panelOpen = false; rid++;
     if (was) { const l = lockLine(); if (l) deps.status(l); }
   };
-  store.subscribe(kind => { if (root.hidden || kind === 'view' || kind === 'select') return; if (kind === 'load') { close(); return; } syncScope(); });   // another project was opened: Discovery ends   // the menus' shuffle switches are the scope
+  store.subscribe(kind => { if (root.hidden || kind === 'view' || kind === 'select') return; if (kind === 'load') { close(); return; } syncScope(); if (panelOpen && !busy) draw(); });   // another project was opened: Discovery ends   // the menus' shuffle switches are the scope
 
   // ------------------------------------------------------------------------------------------------ engine plumbing
   const look = (fn: () => PairResult) => {   // paint "Looking…" first: the engine is synchronous
@@ -107,6 +108,19 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
   const bits = (r: CandidateRecord, w: 'A' | 'B') => {
     const m = metricsOf(r.facts), role = roleOf(engine.session(), r.id);
     return `<button type="button" class="abfact${side === w ? ' cur' : ''}" data-act="side" data-side="${w}" title="${esc(r.facts.title)}: show this one${'' }"><b class="abk ${role}">${w}${role === 'favourite' ? ' ★' : ''}</b> ${role === 'favourite' || role === 'challenger' ? `<span class="abrl">${ROLE_LABEL[role]}</span>` : ''}<span>New spend <b>${esc(m.spend)}</b></span><span>Upkeep <b>${esc(m.minutes)}</b></span><span>${esc(m.difficulty)}</span></button>`;
+  };
+  // AB7: every attribute of the two designs side by side, each value with thumbs (soft guidance) and a lock (the same locks as every Keep / Unlock control)
+  const attrCell = (v: AttrValue, w: 'A' | 'B', who: string) => {
+    const held = isHeld(store.tank, v.lock), t = engine.thumbs ? thumbOf(engine.thumbs(), v.key, v.elements) : 0;
+    const th = engine.setThumb ? `<button type="button" class="abthumb${t === 1 ? ' on' : ''}" data-act="thumb" data-attr="${v.key}" data-side="${w}" data-v="1" aria-pressed="${t === 1}" aria-label="Thumbs up: I like ${esc(v.label.toLowerCase())} like ${who}" title="Thumbs up: like this (a hint, never a rule)">&#128077;</button><button type="button" class="abthumb${t === -1 ? ' on dn' : ''}" data-act="thumb" data-attr="${v.key}" data-side="${w}" data-v="-1" aria-pressed="${t === -1}" aria-label="Thumbs down: not ${esc(v.label.toLowerCase())} like ${who}" title="Thumbs down: less of this (a hint, never a rule)">&#128078;</button>` : '';
+    return `<div class="abacell" data-side="${w}"><span class="abav"><b class="abk">${who}</b> ${esc(v.text)}</span><span class="abactl">${th}<button type="button" class="abalock${held ? ' on' : ''}" data-act="alock" data-attr="${v.key}" data-side="${w}" aria-pressed="${held}"${v.lock ? '' : ' disabled'} aria-label="${held ? 'Unlock' : 'Lock'} ${esc(v.label.toLowerCase())}" title="${v.lock ? (held ? 'Locked: fixed for every remaining design. Press to unlock.' : 'Lock: keep this fixed for every remaining design') : 'Nothing to lock here'}">${held ? '&#128274;' : '&#128275;'}</button></span></div>`;
+  };
+  const attrHtml = (a: CandidateRecord, b: CandidateRecord) => {
+    const va = attrValues(a.snapshot, a.facts), vb = attrValues(b.snapshot, b.facts);
+    return `<section class="abattrs" aria-label="Every attribute of the tank"><h4>Every attribute <small>Thumbs are hints for the next designs. Lock keeps it fixed from now on; unlock any time.</small></h4>${ATTRS.map((at, i) => {
+      const x = va[i], y = vb[i], same = sameValue(x, y);
+      return `<div class="abattr${same ? '' : ' differs'}" data-attr="${at.key}"><div class="abal">${at.label}${same ? '' : ' <small>differs</small>'}</div>${same ? attrCell(x, 'A', 'A + B') : attrCell(x, 'A', 'A') + attrCell(y, 'B', 'B')}</div>`;
+    }).join('')}</section>`;
   };
   const sideBlock = (r: CandidateRecord, other: CandidateRecord, w: 'A' | 'B') => `<section class="abside${side === w ? ' cur' : ''}" data-side="${w}" data-id="${esc(r.id)}">
     <h3>${w}${roleOf(engine.session(), r.id) === 'favourite' ? ' ★' : ''} ${esc(r.facts.title)} <small>${esc(r.facts.habitat)}${r.facts.gallons != null ? ` · ${r.facts.gallons} gal` : ''}</small></h3>
@@ -184,6 +198,7 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
       viewer.showPair([r.a.snapshot, r.b.snapshot], { ...(mobile ? { only: side === 'A' ? 0 : 1 } : {}), info: [role(r.a), role(r.b)] });
     }
   };
+  const lockChip = () => { const L = store.tank.locks, n = (L?.objects.length ?? 0) + (L?.roster.length ?? 0); return n ? `<button type="button" class="ablocks" data-act="more" title="Things you have locked stay fixed in every design. Open the attribute list to see or unlock them.">&#128274; ${n} locked</button>` : ''; };
   const draw = () => {
     if (root.hidden) return;
     let panel = '';
@@ -195,7 +210,7 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
     if (ok && !plan && !detail) { const g = engine.suggestion?.(); if (g && g.text !== sugNo) panel += `<p class="hint absug" role="note">${esc(g.text)} <button type="button" data-act="sug-do" data-tab="${g.tab}" data-text="${esc(g.text)}">Switch ${TAB_LABEL[g.tab]} off</button> <button type="button" data-act="sug-no" data-text="${esc(g.text)}">Not now</button></p>`; }
     if (proposal) panel += proposalHtml(proposal);
     if (ok) {
-      panel += `${reasonsHtml()}<div class="btns"><button type="button" data-act="different" title="Two new ideas away from your favourite; the winner then faces your favourite">Explore Something Different</button></div>
+      panel += `${reasonsHtml()}${attrHtml(ok.a, ok.b)}<div class="btns"><button type="button" data-act="different" title="Two new ideas away from your favourite; the winner then faces your favourite">Explore Something Different</button></div>
         <div class="abcols">${sideBlock(ok.a, ok.b, 'A')}${sideBlock(ok.b, ok.a, 'B')}</div>`;
       panel += historyHtml();
     } else if (!busy && result && !result.ok) { if (result.single) panel += sideBlock(result.single, result.single, 'A'); panel += historyHtml(); }
@@ -203,7 +218,8 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
     const open = (panelOpen || force) && !busy;
     const only = !busy && result && !result.ok ? result.single : undefined;
     const bar = ok ? `${choiceBtns()}<div class="abfacts">${bits(ok.a, 'A')}${bits(ok.b, 'B')}</div>` : only ? `<div class="abfacts">${bits(only, 'A')}</div>` : `<span class="hint abbusy" role="status">${busy ? 'Looking…' : 'Discovery'}</span>`;
-    root.innerHTML = `${open ? `<div class="abpanel" role="region" aria-label="Discovery details">${panel}</div>` : ''}<div class="abbar" role="group" aria-label="Discovery"><div class="abbarmain">${bar}</div><div class="abbarend"><button type="button" data-act="more" aria-expanded="${open}" title="Reasons, Explore Something Different, Combine, Keep, history, Make It Yours">${open ? 'Less ▾' : 'More ▴'}</button><button type="button" class="dxx" aria-label="Close Discovery" data-act="close">✕ Close</button></div></div>${plan ? planHtml(plan) : detail ? detailHtml(detail) : ''}`;
+    root.innerHTML = `${open ? `<div class="abpanel" role="region" aria-label="Discovery details">${panel}</div>` : ''}<div class="abbar" role="group" aria-label="Discovery"><div class="abbarmain">${bar}</div><div class="abbarend">${lockChip()}<button type="button" data-act="more" aria-expanded="${open}" title="Reasons, Explore Something Different, Combine, Keep, history, Make It Yours">${open ? 'Less ▾' : 'More ▴'}</button><button type="button" class="dxx" aria-label="Close Discovery" data-act="close">✕ Close</button></div></div>${plan ? planHtml(plan) : detail ? detailHtml(detail) : ''}`;
+    root.classList.toggle('opened', open);
     syncViewer(); viewer?.setReserve(root.offsetHeight); shots();
   };
 
@@ -267,6 +283,20 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
       }
       case 'combine-ok': { const p = proposal; if (!p) break; proposal = undefined; result = engine.acceptCombine!(p); side = 'A'; metrics.shown(); note = `Combined: a new design with the ${TAB_LABEL[p.tab].toLowerCase()} from the other one. Pick it to make it your favourite. Both originals are unchanged in History.`; panelOpen = false; draw(); break; }
       case 'combine-no': proposal = undefined; note = ''; draw(); break;
+      case 'thumb': {   // soft guidance: toggle, up / down exclusive; the engine remembers the value and nudges the ranking, never filters
+        const rec = recOf(el.dataset.side as 'A' | 'B'); if (!rec || !engine.setThumb) break;
+        const v = attrValues(rec.snapshot, rec.facts).find(x => x.key === el.dataset.attr) as AttrValue | undefined; if (!v) break;
+        const cur = thumbOf(engine.thumbs?.(), v.key, v.elements), want = Number(el.dataset.v) as 1 | -1;
+        engine.setThumb(rec.id, v.key as AttrKey, v.elements, cur === want ? 0 : want); metrics.log({ k: 'thumb', t: Date.now(), attr: v.key, v: cur === want ? 0 : want, n: rounds() }); draw(); break;
+      }
+      case 'alock': {   // the same lock / unlock as the Keep buttons and the menus
+        const rec = recOf(el.dataset.side as 'A' | 'B'); if (!rec) break;
+        const v = attrValues(rec.snapshot, rec.facts).find(x => x.key === el.dataset.attr); if (!v?.lock) break;
+        if (isHeld(store.tank, v.lock)) { releaseAttr(store, v.lock); note = `${v.label} unlocked: Discovery may change it again.`; deps.status(note); draw(); }
+        else { metrics.log({ k: 'keep', t: Date.now(), target: v.key, locked: true, n: rounds() }); const was = store.frozen; store.frozen = false; let r: { ok: boolean; message: string }; try { r = holdAttr(store, rec, v.lock); } finally { store.frozen = was; }   // locking a value the design does not have yet copies it in (one undo step): the one design write the dock allows besides Make It Yours
+          afterKeep(r.message); }
+        break;
+      }
       case 'more': panelOpen = !panelOpen; draw(); break;
       case 'stats-clear': metrics.clear(); draw(); break;
       case 'sug-no': sugNo = el.dataset.text ?? ''; draw(); break;

@@ -1,0 +1,95 @@
+// AB7 (2026-11-10): the ATTRIBUTE PANEL's pure model. Every attribute of a candidate tank, its value in words, the lock that holds it, and the thumbs (soft guidance).
+// ONE lock model: the DX0 locks (scene/locks.ts: 'tank', 'substrate', 'backdrop', the gear parts 'light' / 'filter' / 'heater', item uids, roster rows). Nothing here invents another.
+// THUMBS are soft: a thumb up / down on an attribute VALUE is a small, bounded ranking nudge (thumbBonus, used only by pairGen's ranking, never by a filter or a gate) and, where the
+// learner's closed vocabulary has a tag for the attribute, a tagged taste event (explore/aspects.ts). A thumb is never a "told" hard answer and never a lock.
+import { BACKDROPS } from '../render/backdrop';
+import { LIBRARY, layerOf } from './items';
+import { choiceOf, optionDef } from './tech';
+import { isLocked, locksOf, type GearLock } from './locks';
+import type { AspectTag } from '../explore/aspects';
+import type { CandidateFacts } from './discoveryTypes';
+import type { TankSetup } from './types';
+
+export type AttrKey = 'tank' | 'stocking' | 'hardscape' | 'background' | 'substrate' | 'plants' | 'lighting' | 'filtration' | 'heating' | 'stand';
+export const ATTRS: readonly { key: AttrKey; label: string }[] = [
+  { key: 'tank', label: 'Tank size' }, { key: 'stocking', label: 'Stocking' }, { key: 'hardscape', label: 'Hardscape' }, { key: 'background', label: 'Background' }, { key: 'substrate', label: 'Substrate' },
+  { key: 'plants', label: 'Plants' }, { key: 'lighting', label: 'Lighting' }, { key: 'filtration', label: 'Filtration' }, { key: 'heating', label: 'Heating' },
+  { key: 'stand', label: 'Stand color' },
+];
+
+/** What holds an attribute: one of the existing lock targets, or the set of them (every species, every piece). */
+export type AttrLock = { kind: 'tank' } | { kind: 'substrate' } | { kind: 'backdrop' } | { kind: 'gear'; part: GearLock } | { kind: 'fish'; species: string[] } | { kind: 'items'; uids: string[] };
+export interface AttrValue { key: AttrKey; label: string; /** the value in words */ text: string; /** the parts that make it up (species, variants, ...), the unit a thumb remembers */ elements: string[]; lock: AttrLock | undefined }
+
+const lib = (v: string) => LIBRARY[v]?.label ?? v;
+const uniq = (xs: string[]) => { const u = [...new Set(xs)].sort(); return u.length ? u : ['none']; };
+const countBy = (xs: string[]) => { const m = new Map<string, number>(); for (const x of xs) m.set(x, (m.get(x) ?? 0) + 1); return m; };
+const withN = (xs: string[]) => [...countBy(xs)].map(([k, n]) => `${n > 1 ? n + ' ' : ''}${lib(k)}`).join(', ');
+const optLabel = (S: TankSetup, row: 'filter' | 'heater') => { try { const o = optionDef(row, choiceOf(S, row)); return o?.label ?? 'None'; } catch { return 'Not set'; } };
+
+/** The value of every attribute of one design, in the fixed ATTRS order. A dry build has no gallons; `facts` only supplies the names the screen already shows. */
+export function attrValues(S: TankSetup, facts: CandidateFacts): AttrValue[] {
+  const items = S.items.filter(i => i.uid), plantIt = items.filter(i => layerOf(i) === 'plant'), hardIt = items.filter(i => layerOf(i) !== 'plant');
+  const sub = facts.substrate.length ? facts.substrate : ['Substrate'];
+  const out: Record<AttrKey, Omit<AttrValue, 'key' | 'label'>> = {
+    tank: { text: facts.gallons == null ? `Dry build, ${Math.round(S.tank.L / 25.4)} x ${Math.round(S.tank.D / 25.4)} x ${Math.round(S.tank.H / 25.4)} in` : `${facts.gallons} gal`, elements: [facts.gallons == null ? `dry:${Math.round(S.tank.L / 25.4)}x${Math.round(S.tank.D / 25.4)}x${Math.round(S.tank.H / 25.4)}` : `gal:${facts.gallons}`], lock: { kind: 'tank' } },
+    stocking: { text: facts.stocking.map(s => `${s.n} ${s.name}`).join(', ') || 'No animals', elements: uniq(facts.stocking.map(s => s.species)), lock: facts.stocking.length ? { kind: 'fish', species: facts.stocking.map(s => s.species) } : undefined },
+    hardscape: { text: withN(hardIt.map(i => i.variant)) || 'None', elements: uniq(hardIt.map(i => i.variant)), lock: hardIt.length ? { kind: 'items', uids: hardIt.map(i => i.uid!) } : undefined },
+    background: { text: S.backdrop.kind === 'none' ? 'None' : (BACKDROPS[S.backdrop.kind] ?? S.backdrop.kind), elements: [`backdrop:${S.backdrop.kind}`], lock: { kind: 'backdrop' } },
+    substrate: { text: sub.join(', '), elements: uniq(sub.map(x => 'sub:' + x)), lock: { kind: 'substrate' } },
+    plants: { text: withN(plantIt.map(i => i.variant)) || 'None', elements: uniq(plantIt.map(i => i.variant)), lock: plantIt.length ? { kind: 'items', uids: plantIt.map(i => i.uid!) } : undefined },
+    lighting: { text: S.light.type === 'led' || S.light.type === 'flat' || S.light.type === 'tube' || S.light.type === 'spot' ? `${S.light.count > 1 ? S.light.count + ' x ' : ''}${S.light.type} light` : 'Light', elements: [`light:${S.light.type}:${S.light.count}`], lock: { kind: 'gear', part: 'light' } },
+    filtration: { text: optLabel(S, 'filter'), elements: ['filter:' + choiceOf(S, 'filter')], lock: { kind: 'gear', part: 'filter' } },
+    stand: { text: S.stand.finish === 'oak' ? 'Oak' : S.stand.finish === 'white' ? 'White' : 'Black', elements: ['stand:' + S.stand.finish], lock: { kind: 'gear', part: 'stand' } },
+    heating: { text: optLabel(S, 'heater'), elements: ['heater:' + choiceOf(S, 'heater')], lock: { kind: 'gear', part: 'heater' } },
+  };
+  return ATTRS.map(a => ({ key: a.key, label: a.label, ...out[a.key] }));
+}
+/** Two values read the same (the panel then shows one cell instead of two). */
+export const sameValue = (a: AttrValue, b: AttrValue) => a.text === b.text && JSON.stringify(a.elements) === JSON.stringify(b.elements);
+
+/** Is the attribute held fixed in the working project right now (all of its parts)? Reads the SAME locks the lock / unlock controls write. */
+export function isHeld(tank: TankSetup, l: AttrLock | undefined): boolean {
+  if (!l) return false;
+  const L = locksOf(tank);
+  switch (l.kind) {
+    case 'tank': case 'substrate': case 'backdrop': return isLocked(tank, l.kind);
+    case 'gear': return isLocked(tank, l.part);
+    case 'fish': return [...new Set(l.species)].every(sp => L.roster.some(r => r.species === sp));
+    case 'items': return l.uids.every(u => isLocked(tank, u));
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------------- thumbs (soft guidance)
+export interface Thumb { v: 1 | -1; /** the attribute value's parts */ e: string[] }
+export type ThumbMap = Record<string, Thumb>;
+const MAX_THUMBS = 60, MAX_PARTS = 30;
+export const thumbKey = (attr: AttrKey, elements: readonly string[]) => `${attr}|${[...elements].sort().join(',')}`.slice(0, 200);
+export const thumbOf = (m: ThumbMap | undefined, attr: AttrKey, elements: readonly string[]): 0 | 1 | -1 => m?.[thumbKey(attr, elements)]?.v ?? 0;
+/** Set a thumb on one attribute VALUE: up and down are mutually exclusive (setting one replaces the other), 0 takes it back. Pure; the oldest thumbs fall off the end. */
+export function setThumb(m: ThumbMap | undefined, attr: AttrKey, elements: readonly string[], v: 1 | -1 | 0): ThumbMap {
+  const k = thumbKey(attr, elements), out: ThumbMap = { ...(m ?? {}) }; delete out[k];
+  if (v) out[k] = { v, e: [...elements].slice(0, MAX_PARTS) };
+  const keys = Object.keys(out); for (const x of keys.slice(0, Math.max(0, keys.length - MAX_THUMBS))) delete out[x];
+  return out;
+}
+/** The size of one thumb's nudge on the ranking, per attribute, at full overlap (small: a thumb is a hint, a told preference weighs 0.3 to 0.5). */
+export const THUMB_STEP = 0.12;
+/**
+ * The ranking nudge the thumbs give a design: for each thumbed value, +/- THUMB_STEP times how much of that value's parts the design has (0 to 1). Bounded, so one run of thumbs never
+ * outweighs a told preference. RANKING ONLY: this number is added to a score; nothing reads it as a filter, a gate or a constraint (tested).
+ */
+export function thumbBonus(m: ThumbMap | undefined, S: TankSetup, facts: CandidateFacts): number {
+  if (!m) return 0;
+  const vals = new Map(attrValues(S, facts).map(a => [a.key, a.elements] as const)); let v = 0;
+  for (const [k, t] of Object.entries(m)) {
+    const mine = vals.get(k.split('|')[0] as AttrKey); if (!mine || !t.e.length) continue;
+    const inter = t.e.filter(x => mine.includes(x)).length, union = new Set([...t.e, ...mine]).size;
+    v += t.v * THUMB_STEP * (union ? inter / union : 0);
+  }
+  return Math.max(-0.5, Math.min(0.5, v));
+}
+/** The learner's tags an attribute can speak for (explore/aspects.ts vocabulary). An empty list = only the ranking nudge applies (no tag exists for it, and none is invented). */
+export const ATTR_TAGS: Record<AttrKey, readonly AspectTag[]> = {
+  tank: [], stocking: ['species', 'behavior', 'size', 'number', 'visibility'], hardscape: ['layout'], background: [], substrate: [], plants: ['plants', 'natural'], lighting: [], filtration: [], heating: [], stand: [],
+};

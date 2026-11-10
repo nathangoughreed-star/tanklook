@@ -8,7 +8,8 @@ import { getBrief } from '../setupBrief';
 import { suggestNarrowing } from '../../scene/breadth';
 import { adapt as adaptPair, combine as combinePair, nextPair } from '../../scene/pairGen';
 import { featuresFor, scoreScene } from '../../scene/pairFacts';
-import { reasonTags, recordAspect, recordPair } from '../../explore/aspects';
+import { reasonTags, recordAspect, recordPair, undoAspectsOf } from '../../explore/aspects';
+import { ATTR_TAGS, setThumb as putThumb, thumbKey, type AttrKey, type ThumbMap } from '../../scene/attrs';
 import { customTankWants } from '../../demand/suggest';
 import { briefToWants } from '../../scene/brief';
 import { editBrief } from '../setupBrief';
@@ -16,7 +17,7 @@ import { championConflicts, lockConflicts } from './logic';
 import type { Store } from '../../scene/store';
 import type { VerdictOpts } from '../../scene/verdict';
 import type { CandidateRecord, DiscoverySession, Outcome, PairResult, ReasonKey } from '../../scene/discoveryTypes';
-import { projectExtras } from '../../scene/brief';
+import { projectExtras, setProjectExtras } from '../../scene/brief';
 import { adjustmentsOf } from '../../scene/combine';
 import { getSpecies } from '../../data/species';
 import type { AbEngine, CombineOutcome, CombineProposal, HistoryPage, ReEval } from './adapter';
@@ -121,6 +122,18 @@ export function createRealEngine(store: Store, _opts: () => VerdictOpts = () => 
       const on = reasonTags([p.tab]); if (d && on.length) editBrief(br => recordAspect(br, { kind: 'like', c: `${d.id}#${p.tab}`, features: sideOf(d).features, on }));
       const champ = rec(s.championId);
       return champ && champ.id !== p.record.id ? show(champ, p.record, 'champion') : show(t ?? p.record, p.record, 'first');
+    },
+    thumbs: () => (projectExtras(getBrief()).thumbs ?? {}) as ThumbMap,
+    setThumb(id, attr: AttrKey, elements, v) {
+      // soft guidance (AB7): the value is remembered for the ranking nudge, and where the learner has a tag for the attribute a tagged taste event is written (replacing the earlier one for this value, so up / down are exclusive)
+      const r = rec(id), tags = ATTR_TAGS[attr], c = `thumb:${thumbKey(attr, elements)}`.slice(0, 120);
+      editBrief(br => {
+        const x = projectExtras(br), next = putThumb(x.thumbs as ThumbMap | undefined, attr, elements, v), { thumbs: _t, ...rest } = x;
+        let out = setProjectExtras(br, Object.keys(next).length ? { ...rest, thumbs: next } : rest);
+        out = undoAspectsOf(out, c);
+        if (v && r && tags.length) out = recordAspect(out, { kind: 'tag', c, features: sideOf(r).features, ...(v > 0 ? { on: tags } : { off: tags }) });
+        return out;
+      });
     },
     suggestion() { return suggestNarrowing(store.tank, s, id => rec(id), effectiveScope(s).filter(t => discoverTabs(store.tank).includes(t))); },
     pause() { s = pauseSession(s); save(); },

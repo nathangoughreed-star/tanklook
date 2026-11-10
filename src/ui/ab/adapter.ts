@@ -2,6 +2,7 @@
 // before AB0 (session), AB1 (pairs) and AB2 (history) landed, and `real.ts` (when those merge) implements it over discoverySession / pairGen / proposalHistory.
 // All calls are synchronous (the screen paints "Looking..." first). Records are immutable: choosing, keeping, adapting never edits one.
 import type { Tab } from '../../scene/scope';
+import type { AttrKey, ThumbMap } from '../../scene/attrs';
 import type { Verdict } from '../../scene/verdict';
 import type { CandidateFacts, CandidateRecord, DiscoverySession, Outcome, PairResult, ReasonKey } from '../../scene/discoveryTypes';
 
@@ -50,6 +51,9 @@ export interface AbEngine {
   combine?(targetId: string, donorId: string, tab: Tab): CombineOutcome;
   /** the person approved a proposal: it becomes a record, the donor's tab is liked, and combined vs the favourite is the next pair */
   acceptCombine?(p: CombineProposal): PairResult;
+  /** AB7 attribute panel: the thumbs the person has given (soft guidance), and set one on an attribute value of record `id` (1 up, -1 down, 0 take back). Ranking only; optional so the stand-in engine needs none. */
+  thumbs?(): ThumbMap;
+  setThumb?(id: string, attr: AttrKey, elements: string[], v: 1 | -1 | 0): void;
   /** an optional one-line suggestion to narrow (never applied by the engine; the screen offers it and the person decides) */
   suggestion?(): { text: string; tab: Tab } | undefined;
   /** leave discovery resumable */

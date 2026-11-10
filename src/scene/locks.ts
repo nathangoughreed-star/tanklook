@@ -31,6 +31,31 @@ export const HARDSCAPE_KEYS: readonly (keyof TankSetup)[] = ['backdrop'];
 /** The substrate lock covers these keys of the TankSetup (painted patches included). */
 export const SUBSTRATE_KEYS: readonly (keyof TankSetup)[] = ['substrate', 'terrain', 'patches'];
 
+/** AB7: supporting gear a person can hold fixed from the attribute panel. Same lock model as everything else (an object lock whose target is the part's name); `light` is the whole lighting setup,
+ *  `filter` / `heater` are the tech rows of those names with their model / product / unit fields. Holding one keeps Discovery's candidates on that gear (confine) and rejects any that change it (violations). */
+export const GEAR_LOCKS = ['light', 'filter', 'heater', 'stand'] as const;
+export type GearLock = typeof GEAR_LOCKS[number];
+const TECH_PARTS: Record<'filter' | 'heater', readonly (keyof NonNullable<TankSetup['tech']>)[]> = { filter: ['filterModel', 'filterProduct', 'filterless', 'filters'], heater: ['heaterW', 'heaterProduct', 'heaters'] };
+export const isGearLock = (t: string): t is GearLock => (GEAR_LOCKS as readonly string[]).includes(t);
+/** What a gear lock holds, as plain data (compared by value). */
+export function gearPart(t: TankSetup, part: GearLock): unknown {
+  if (part === 'light') return t.light;
+  if (part === 'stand') return t.stand?.finish;   // the stand's colour only (cosmetic)
+  const tech = t.tech as unknown as Record<string, unknown> | undefined;
+  return { row: tech ? (tech.rows as Record<string, string> | undefined)?.[part] : undefined, ...Object.fromEntries(TECH_PARTS[part].map(k => [k, tech?.[k]])) };
+}
+/** Copy one gear part from `from` into `into` (in place). */
+export function copyGear(into: TankSetup, from: TankSetup, part: GearLock): void {
+  if (part === 'light') { into.light = structuredClone(from.light); return; }
+  if (part === 'stand') { into.stand = { ...into.stand, finish: from.stand.finish }; return; }
+  const src = from.tech as unknown as Record<string, unknown> | undefined;
+  if (!src && !into.tech) return;
+  const dst = (into.tech ??= structuredClone(from.tech) ?? { rows: {} }) as unknown as Record<string, unknown>, rows = (dst.rows ??= {}) as Record<string, string>;
+  const row = (src?.rows as Record<string, string> | undefined)?.[part];
+  if (row === undefined) delete rows[part]; else rows[part] = row;
+  for (const k of TECH_PARTS[part]) { const v = src?.[k]; if (v === undefined) delete dst[k]; else dst[k] = structuredClone(v); }
+}
+
 export const emptyLocks = (): Locks => ({ objects: [], roster: [] });
 export const locksOf = (t: TankSetup): Locks => t.locks ?? emptyLocks();
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
@@ -85,6 +110,8 @@ export function lockViolations(before: TankSetup, after: TankSetup, locks: Locks
   for (const o of locks.objects) {
     if (o.target === 'backdrop') {
       if (HARDSCAPE_KEYS.some(k => !same(before[k], after[k]))) out.push({ kind: 'changed', target: 'backdrop', detail: 'The 3D backdrop changed.' });
+    } else if (isGearLock(o.target)) {
+      if (!same(gearPart(before, o.target), gearPart(after, o.target))) out.push({ kind: 'changed', target: o.target, detail: `The ${o.target === 'light' ? 'lighting' : o.target === 'filter' ? 'filtration' : o.target === 'stand' ? 'stand color' : 'heating'} changed.` });
     } else if (o.target === 'substrate') {
       if (SUBSTRATE_KEYS.some(k => !same(before[k], after[k]))) out.push({ kind: 'substrate', target: 'substrate', detail: 'The substrate (settings, terrain or patches) changed.' });
     } else if (o.target === 'tank') {
