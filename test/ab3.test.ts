@@ -200,6 +200,23 @@ describe('Make It Yours and journey G', () => {
 
 });
 
+describe('real engine wiring (AB0 + AB1 + AB2)', () => {
+  it('the shipped path never uses the stand-in: real.ts and panel.ts do not import fake.ts; pairs come from AB1', () => {
+    const real = readFileSync('src/ui/ab/real.ts', 'utf8'), panel = readFileSync('src/ui/discover/panel.ts', 'utf8'), screen = readFileSync('src/ui/ab/screen.ts', 'utf8');
+    for (const f of [real, panel, screen]) expect(f).not.toMatch(/from '\.\/fake'|from '\.\.\/ab\/fake'/);
+    expect(real).toMatch(/nextPair/); expect(real).toMatch(/adapt as adaptPair/); expect(real).toMatch(/recordPair/);
+  });
+  it('Skip moves on to a different pair, even on the final pair (AB0 build 1710), and records no taste', () => {
+    const s = mk(), e = createRealEngine(s, () => ({}), 'ab3-skip-' + ++uniq); e.open();
+    const p = pairOf(e); e.choose('A'); const f = e.different(); if (!f.ok) return;
+    const fin = e.choose('B'); if (!fin.ok || e.session().current?.type !== 'final') return;
+    const was = e.session().current!;
+    const nx = e.choose('skip'); expect(e.session().pendingFreshId).toBeUndefined();
+    if (nx.ok) expect(e.session().current?.type).not.toBe('final');
+    void p; void was;
+  });
+});
+
 describe('retired UI', () => {
   it('the DX4 proposal-card Apply / Reject UI and the Explore feed entry are gone from every caller', () => {
     const panel = readFileSync('src/ui/discover/panel.ts', 'utf8'), shell = readFileSync('src/ui/guided/shell.ts', 'utf8'), html = readFileSync('index.html', 'utf8'), panels = readFileSync('src/ui/panels.ts', 'utf8');

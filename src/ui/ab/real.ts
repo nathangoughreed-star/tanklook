@@ -1,11 +1,16 @@
-// The AbEngine over the REAL session (AB0 scene/discoverySession.ts) and history (AB2 scene/proposalHistory.ts). Pairs still come from the stand-in source in fake.ts (`createDrawer`)
-// until AB1's `nextPair` / `adapt` merge: swap `draw` / `adaptRecord` below for them and nothing else changes. Nothing here writes the working project.
+// The AbEngine over the REAL session (AB0 scene/discoverySession.ts), pair generator (AB1 scene/pairGen.ts: nextPair, adapt; taste via explore/aspects.ts recordPair) and history (AB2
+// scene/proposalHistory.ts). The shipped screen never uses fake.ts (tests only). Nothing here writes the working project; a taste event writes only the brief's aspects item.
 import { discoverTabs } from '../../scene/discoverScope';
 import { TABS, type Tab } from '../../scene/scope';
 import { effectiveScope, freeze as freezeTab, loadSession, pause as pauseSession, rebase as rebaseSession, record as recordOutcome, resume, saveSession, setCurrent, setFavourite as setFav, startSession, unfreeze, type NextPair } from '../../scene/discoverySession';
 import { createProposalHistory, reEvaluate as reEval } from '../../scene/proposalHistory';
 import { getBrief } from '../setupBrief';
-import { adaptRecord, createDrawer } from './fake';
+import { adapt as adaptPair, nextPair } from '../../scene/pairGen';
+import { featuresFor, scoreScene } from '../../scene/pairFacts';
+import { recordPair } from '../../explore/aspects';
+import { customTankWants } from '../../demand/suggest';
+import { briefToWants } from '../../scene/brief';
+import { editBrief } from '../setupBrief';
 import { championConflicts, lockConflicts } from './logic';
 import type { Store } from '../../scene/store';
 import type { VerdictOpts } from '../../scene/verdict';
@@ -15,13 +20,15 @@ import type { AbEngine, HistoryPage, ReEval } from './adapter';
 const PROJECT = 'tanklook.scene';
 const PAGE = 6;
 
-export function createRealEngine(store: Store, opts: () => VerdictOpts = () => ({}), project: string = PROJECT): AbEngine {
-  const hist = createProposalHistory(project), draw = createDrawer(store, opts), mem = new Map<string, CandidateRecord>();
-  let s: DiscoverySession = startSession(store.rev, discoverTabs(store.tank)), stale = false, serial = 0;
+export function createRealEngine(store: Store, _opts: () => VerdictOpts = () => ({}), project: string = PROJECT): AbEngine {
+  const hist = createProposalHistory(project), mem = new Map<string, CandidateRecord>();
+  let s: DiscoverySession = startSession(store.rev, discoverTabs(store.tank)), stale = false;
   const save = () => { saveSession(project, s); };
   const rec = (id: string | undefined): CandidateRecord | undefined => id ? hist.get(id) ?? mem.get(id) : undefined;
   const nothing = (c: string[], r: string[]): PairResult => ({ ok: false, conflicts: c.length ? c : ['Every candidate broke a lock or a limit.'], relaxations: r.length ? r : ['Open a tab (check its switch) or relax a lock.'] });
-  const known = (key: string) => !!hist.byKey(key, s.id) || [...mem.values()].some(r => r.key === key);
+  const proj = () => ({ tank: store.tank, rev: store.rev });
+  const pair = (type: NextPair['type']): PairResult => nextPair(proj(), getBrief(), s, id => rec(id), { next: type, shownKeys: [...mem.values()].flatMap(r => r.key ? [r.key] : []), units: store.scene.units, });
+  const sideOf = (r: CandidateRecord) => { const b = getBrief(); return { id: r.id, features: featuresFor(r.snapshot, scoreScene(r.snapshot, b, customTankWants(b, briefToWants(b)))) }; };
   const show = (a: CandidateRecord, b: CandidateRecord, type: NextPair['type']): PairResult => {
     const ids: string[] = [];
     for (const r of [a, b]) { mem.set(r.id, r); const o = hist.put(r); ids.push(o.stored ? r.id : o.id); }
@@ -29,11 +36,8 @@ export function createRealEngine(store: Store, opts: () => VerdictOpts = () => (
     return { ok: true, a: rec(ids[0]) ?? a, b: rec(ids[1]) ?? b };
   };
   const drawFor = (np: NextPair): PairResult => {
-    const champ = rec(s.championId);
-    if (np.type === 'final' && champ && rec(s.pendingFreshId)) return show(champ, rec(s.pendingFreshId)!, 'final');
-    if ((np.type === 'champion' || np.type === 'final') && champ) { const g = draw(s, 1, 'challenger', known); return g.recs.length ? show(champ, g.recs[0], 'champion') : nothing(g.conflicts, g.relaxations); }
-    const g = draw(s, 2, np.type === 'fresh' ? 'fresh' : 'first', known);
-    return g.recs.length < 2 ? nothing(g.conflicts, g.relaxations) : show(g.recs[0], g.recs[1], np.type === 'fresh' ? 'fresh' : 'first');
+    const r = pair(np.type);
+    return r.ok ? show(r.a, r.b, np.type) : r;
   };
   const nextNow = (): NextPair => s.pendingFreshId && s.championId ? { type: 'final', keep: s.championId } : s.championId ? { type: 'champion', keep: s.championId } : { type: 'first' };
   const markChampion = (before: string | undefined) => { if (s.championId && s.championId !== before) hist.markChampion(s.championId); else if (!s.championId && before) hist.clearChampion(s.id); };
@@ -53,9 +57,10 @@ export function createRealEngine(store: Store, opts: () => VerdictOpts = () => (
     restart() { s = startSession(store.rev, s.scope); stale = false; save(); },
     next() { const c = s.current, a = rec(c?.aId), b = rec(c?.bId); return a && b ? { ok: true, a, b } : drawFor(nextNow()); },
     choose(outcome: Outcome, why?: ReasonKey[], otherGood?: ReasonKey[]) {
-      const before = s.championId, r = recordOutcome(s, outcome, why, otherGood);
+      const before = s.championId, a = rec(s.current?.aId), b = rec(s.current?.bId), r = recordOutcome(s, outcome, why, otherGood);
       s = r.session; markChampion(before); save();
-      // taste events (aspects.ts) are AB1's: it reads `session.comparisons` / the returned tasteSignal when it lands
+      // taste (aspects.ts): ranking only, never a lock; Skip records nothing
+      if (a && b && outcome !== 'skip') editBrief(br => recordPair(br, { outcome, a: sideOf(a), b: sideOf(b), ...(why?.length ? { why } : {}), ...(otherGood?.length ? { otherGood } : {}) }));
       return drawFor(r.next);
     },
     different() { s = { ...s, current: undefined }; return drawFor({ type: 'fresh' }); },
@@ -78,7 +83,7 @@ export function createRealEngine(store: Store, opts: () => VerdictOpts = () => (
     bringBack(id) {
       const r = rec(id), c = rec(s.championId); if (!r) return nothing([], []);
       const bad = lockConflicts(store.tank, r.snapshot); if (bad.length) return nothing(bad, ['Adapt it first (Make It Yours offers that).']);
-      if (!c) { const g = draw(s, 1, 'challenger', known); return g.recs.length ? show(r, g.recs[0], 'first') : nothing(g.conflicts, g.relaxations); }
+      if (!c) { const g = pair('first'); if (!g.ok) return g; const other = g.a.id === r.id ? g.b : g.a; return show(r, other, 'first'); }
       return show(c, r, 'champion');
     },
     setFavourite(id) {
@@ -92,9 +97,9 @@ export function createRealEngine(store: Store, opts: () => VerdictOpts = () => (
     },
     adapt(id) {
       const r = rec(id); if (!r) return { ok: false, reason: 'Not found.' };
-      const out = adaptRecord(store, r, `a${++serial}-${s.id}`, opts);
-      if (out.ok) { mem.set(out.record.id, out.record); hist.put(out.record); }
-      return out;
+      const out = adaptPair(r, proj(), getBrief(), { sessionId: s.id, scope: effectiveScope(s), units: store.scene.units });
+      if (!out.ok) return { ok: false, reason: (([...new Set(out.conflicts.map(c => c.replace(/\.+$/, '')))].join('; ') + (out.relaxations.length ? `. Smallest change: ${[...new Set(out.relaxations.map(c => c.replace(/\.+$/, '')))].join('; ')}` : '')) || 'It cannot be adapted to what you kept') + '.' };
+      mem.set(out.record.id, out.record); hist.put(out.record); return { ok: true, record: out.record };
     },
     pause() { s = pauseSession(s); save(); },
   };

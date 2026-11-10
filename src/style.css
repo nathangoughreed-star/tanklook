@@ -1401,3 +1401,17 @@ button.start-mode-card span.hint { font-size: 12px }
   .abx .abchoose { position: sticky; bottom: 40px; z-index: 4; background: var(--panel); border-top: 1px solid #555; margin: 8px 0 0; padding: 6px 0; max-height: 45vh; overflow: auto }
   .abx .abchoices button { padding: 6px 8px }
 }
+/* AB4: the habitat question (five picture tiles) and the intro popup's spotlight */
+.habitat5 { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px }
+.habitat-card { text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 6px; padding: 8px; background: var(--panel); border: 2px solid var(--line); border-radius: 10px; color: inherit; font: inherit }
+.habitat-card:hover, .habitat-card:focus-visible { border-color: var(--accent) }
+.habitat-pic svg { display: block; width: 100%; height: 100% }
+.introdlg { width: min(460px, calc(100vw - 32px)) }
+.introdlg h2 { margin-top: 0 } .introdlg p { line-height: 1.45 } .introdlg .btns { margin-top: 14px }
+@keyframes introPulse { 0%, 100% { box-shadow: 0 0 0 0 transparent } 50% { box-shadow: 0 0 0 3px var(--accent) } }
+.intro-spot { animation: introPulse 1.2s ease-in-out 4; border-radius: 6px }
+.startdlg { width: min(860px, calc(100vw - 32px)) }
+.habitat5 { grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)) }
+.abx .abcard { position: relative } .abx .abpicwait { position: absolute; left: 0; right: 0; top: 28px; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; color: #999; pointer-events: none }
+.abx .abpic[src] + .abpicwait { display: none }
+.abx .abchoose { position: sticky; bottom: 40px; z-index: 4; background: var(--panel); border-top: 1px solid #555; margin: 8px 0 0; padding: 6px 0; max-height: 45vh; overflow: auto }

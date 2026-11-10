@@ -66,7 +66,7 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
       return row(`${s.n} ${esc(s.name)}`, { kind: 'fish', species: s.species, mode: m }, {}, w, sel);
     }).join('') || '<li class="hint">No animals</li>';
     const d = differs(f, other.facts), buy = f.toBuy;
-    return `<div class="absheet">
+    return `<div class="absheet"><p class="hint">Keep locks something for good: Discovery will never change it (you can unlock it any time). To hold a whole tab only for now, use "Keep ${w}'s … for now" above.</p>
       <h4>Animals</h4><ul>${fishRows}</ul>
       <h4>Plants</h4><ul>${group('plants')}</ul>
       <h4>Hardscape</h4><ul>${group('hardscape')}</ul>
@@ -83,14 +83,14 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
   const cardHtml = (r: CandidateRecord, other: CandidateRecord, w: 'A' | 'B') => {
     const s = engine.session(), m = metricsOf(r.facts), role = roleOf(s, r.id), open = sheets.has(r.id), f = r.facts;
     return `<article class="abcard${side === w ? ' cur' : ''}" data-side="${w}" data-id="${esc(r.id)}">
-      <div class="abrole ${role}">${w} · ${ROLE_LABEL[role]}</div>
-      <img class="abpic" alt="Picture of ${esc(f.title)}" width="480" height="270"${r.thumb ? ` src="${esc(r.thumb)}"` : ''}>
+      <div class="abrole ${role}">${role === 'favourite' ? '★ ' : ''}${w} · ${ROLE_LABEL[role]}</div>
+      <img class="abpic" alt="Picture of ${esc(f.title)}" width="480" height="270"${r.thumb ? ` src="${esc(r.thumb)}"` : ''}><div class="abpicwait" role="status">Drawing the picture…</div>
       <div class="abbody">
         <h3>${esc(f.title)}</h3><p class="absub">${esc(f.habitat)}${f.gallons != null ? ` · ${f.gallons} gal` : ''}</p>
         <div class="abspend" title="What is left to buy after what you own">New spend <b>${esc(m.spend)}</b></div>
         <div class="abfig"><span>Upkeep <b>${esc(m.minutes)}</b></span><span>Difficulty <b>${esc(m.difficulty)}</b></span>${m.upkeep ? `<span>Running <b>${esc(m.upkeep)}</b></span>` : ''}<span>${esc(headline(r.verdict))}</span></div>
-        <div class="btns abact"><button type="button" data-act="sheet" data-id="${esc(r.id)}" aria-expanded="${open}">${open ? 'Hide quick sheet' : 'Quick sheet'}</button><button type="button" class="primary" data-act="miy" data-id="${esc(r.id)}" title="Install this design as your working design (nothing is locked)">Make It Yours</button></div>
-        <details class="abnow"><summary>Keep ${w}'s … for now</summary><div class="abnowbtns">${(['tank', 'animals', 'plants', 'hardscape', 'substrate'] as Tab[]).map(t => `<button type="button" data-act="keepnow" data-side="${w}" data-tab="${t}">${esc(keepForNowLabel(w, t))}</button>`).join('')}</div></details>
+        <div class="btns abact"><button type="button" data-act="sheet" data-id="${esc(r.id)}" aria-expanded="${open}">${open ? 'Hide quick sheet' : 'Quick sheet'}</button><button type="button" class="primary" data-act="miy" data-id="${esc(r.id)}" title="Use this design as your working design. You can still edit it; nothing is locked.">Make It Yours</button></div>
+        <details class="abnow"><summary>Keep ${w}'s … for now</summary><p class="hint">A temporary hold for this search only. Nothing is locked, and your design is not changed.</p><div class="abnowbtns">${(['tank', 'animals', 'plants', 'hardscape', 'substrate'] as Tab[]).map(t => `<button type="button" data-act="keepnow" data-side="${w}" data-tab="${t}">${esc(keepForNowLabel(w, t))}</button>`).join('')}</div></details>
         ${open ? sheetHtml(r, other, w) : ''}
       </div></article>`;
   };
@@ -123,7 +123,7 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
       <h4>What changes</h4><ul class="abdiff">${by.map(g => `<li><b>${TAB_LABEL[g.t]}</b> ${g.rs.map(r => `<span class="dxv ${r.verb}">${VERB[r.verb]}</span> ${esc(r.text)}`).join('; ')}</li>`).join('') || '<li>No design change.</li>'}${gear.map(g => `<li><b>Gear</b> ${esc(g.text)}</li>`).join('')}</ul>
       ${p.outside.length ? `<p class="abwarn">This reaches beyond the tabs Discovery may change: ${p.outside.map(t => TAB_LABEL[t]).join(', ')}.</p>` : ''}
       ${p.buy.length ? `<h4>To buy</h4><ul class="abbuy">${p.buy.map(l => `<li>${esc(l.label)} <span>$${Math.round(l.usd)}</span></li>`).join('')}</ul><p class="hint">Accepting this accepts these purchases (new spend ${esc(figText(p.rec.facts.newSpendUsd))}).</p>` : ''}
-      ${p.conflicts.length ? `<div class="abconf" role="alert"><b>It conflicts with what you kept:</b><ul>${p.conflicts.map(c => `<li>${esc(c)}</li>`).join('')}</ul><p>Nothing was changed. Adapt makes a new design that keeps what you kept, or leave it for now.</p></div>` : ''}
+      ${p.conflicts.length ? `<div class="abconf" role="alert"><b>It conflicts with what you kept:</b><ul>${[...new Set(p.conflicts)].map(c => `<li>${esc(c)}</li>`).join('')}</ul><p>Nothing was changed. Adapt makes a new design that keeps what you kept, or leave it for now.</p></div>` : ''}
       <div class="abmsg" role="status">${esc(note)}</div>
       <div class="btns">${p.conflicts.length ? '<button type="button" class="primary" data-act="adapt">Adapt</button><button type="button" data-act="miy-cancel">Not now</button>' : '<button type="button" class="primary" data-act="miy-accept">Make it mine</button><button type="button" data-act="miy-cancel">Not now</button>'}</div>
     </div></div>`;
@@ -150,7 +150,7 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
   };
   const historyHtml = () => {
     const h = engine.history(histPage);
-    return `<footer class="abhist"><div class="abhh"><button type="button" data-act="hist-toggle" aria-expanded="${histOpen}">History (${h.total})</button>${histOpen ? `<span class="abpg"><button type="button" data-act="hist-prev" ${h.page <= 0 ? 'disabled' : ''} aria-label="Newer">‹</button> ${h.page + 1} / ${h.pages} <button type="button" data-act="hist-next" ${h.page >= h.pages - 1 ? 'disabled' : ''} aria-label="Older">›</button></span>` : ''}</div>
+    return `<footer class="abhist"><div class="abhh"><button type="button" data-act="hist-toggle" aria-expanded="${histOpen}" title="Every design you have been shown">History (${h.total})</button>${histOpen ? '<small class="hint">Every design you have been shown. Tap one to look at it again.</small>' : ''}${histOpen ? `<span class="abpg"><button type="button" data-act="hist-prev" ${h.page <= 0 ? 'disabled' : ''} aria-label="Newer">‹</button> ${h.page + 1} / ${h.pages} <button type="button" data-act="hist-next" ${h.page >= h.pages - 1 ? 'disabled' : ''} aria-label="Older">›</button></span>` : ''}</div>
       ${histOpen ? `<div class="abstrip">${h.rows.map(x => `<button type="button" class="abth" data-act="hist-open" data-id="${esc(x.rec.id)}" title="${esc(x.rec.facts.title)}"><img alt="" width="96" height="54" data-hid="${esc(x.rec.id)}"${x.rec.thumb ? ` src="${esc(x.rec.thumb)}"` : ''}><span>${x.champion ? '★ ' : ''}${x.favourite ? '♥ ' : ''}${esc(x.rec.facts.title)}</span></button>`).join('') || '<span class="hint">Nothing yet.</span>'}</div>` : ''}</footer>`;
   };
 
@@ -162,9 +162,9 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
     else if (busy) body = '<p class="hint abbusy" role="status">Looking…</p>';
     else if (!result) body = '';
     else if (!result.ok) body = noSolution(result);
-    else body = `<p class="abbanner">${esc(bannerOf(s))}</p>${mobileStrip(result.a, result.b)}<div class="abgrid">${cardHtml(result.a, result.b, 'A')}${cardHtml(result.b, result.a, 'B')}</div>${choiceHtml()}`;
+    else body = `<p class="abbanner">${esc(bannerOf(s))}</p><p class="hint abexplain">Pick the one you would rather build. The winner becomes your favourite (★) and meets a new challenger next. Nothing is locked or changed by choosing.</p>${mobileStrip(result.a, result.b)}<div class="abgrid">${cardHtml(result.a, result.b, 'A')}${cardHtml(result.b, result.a, 'B')}</div>${choiceHtml()}`;
     root.innerHTML = `<header class="abhead"><h2>Discover</h2><button type="button" class="dxx" aria-label="Close Discovery" data-act="close">✕</button></header>
-      <div class="abtop"><div class="flabel">Discovery can change this</div>${switchesHtml()}
+      <div class="abtop"><div class="flabel">Discovery can change this</div>${switchesHtml()}<p class="hint abswhint">Switch a tab off to hold it as it is for now. That is temporary and locks nothing.</p>
         <div class="ablocked" data-drop="1" role="note"><b>Locked</b> ${esc(lockedSummary(store.tank).replace(/^Locked \(kept as it is\): /, '').replace(/\.$/, ''))}<small> · drag a row here, or use Keep, to lock it</small></div>
         <div id="abDoors"></div><details class="abq"><summary>Quick setup: look, shuffle, density</summary><div id="abQuick"></div></details></div>
       ${only ? `<p class="hint abonly">This run looks only at ${only.map(t => TAB_LABEL[t]).join(', ')} (opened from there). Flip any switch to use your own.</p>` : ''}
@@ -184,16 +184,17 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
     const next = () => {
       const t = todo.shift(); if (!t || my !== rid && !result || root.hidden) return;
       shooting = true;
-      try { t.rec.thumb ??= previewShot(store, t.rec.snapshot, () => viewer.thumbnail(480)); t.img.src = t.rec.thumb; } catch { /* no picture */ } finally { shooting = false; }
+      try { t.rec.thumb ??= previewShot(store, t.rec.snapshot, () => viewer.thumbnail(480)); t.img.src = t.rec.thumb; } catch (e) { console.warn('[ab] picture failed', e); } finally { shooting = false; }
       requestAnimationFrame(next);
     };
     requestAnimationFrame(next);
   };
 
   // ------------------------------------------------------------------------------------------------ actions
+  const plain = (xs: string[]) => { const m = new Map<string, number>(); for (const x of xs) m.set(x.replace(/\.$/, ''), (m.get(x.replace(/\.$/, '')) ?? 0) + 1); return [...m].map(([t, n]) => n > 1 ? `${t} (${n} times)` : t).join('; '); };
   const afterKeep = (msg: string) => {
     const c = engine.recheckChampion();
-    note = c.ok ? msg : `${msg} Your favourite no longer fits what you kept (${c.conflicts.join(' ')}), so it was set aside and a new pair is coming.`;
+    note = c.ok ? msg : `${msg} Your favourite does not include what you just kept (${plain(c.conflicts)}), so it was set aside. The next pair starts from your kept items.`;
     deps.status(note);
     if (c.ok) draw(); else { const n = note; look(() => engine.next()); setTimeout(() => { note = n; draw(); }, 60); }
   };
@@ -229,7 +230,7 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
       case 'adapt': {
         const r = engine.adapt(plan!.rec.id);
         if (r.ok) { plan = { ...makePlan(store, r.record, engine.session()), adaptNote: 'Adapted: a new design that keeps what you kept. The original stays in History untouched.' }; note = ''; }
-        else note = `Not adapted: ${r.reason}`;
+        else note = `Not adapted: ${plain([r.reason])}`;
         draw(); break;
       }
       case 'continue': engine.rebase(); resume = false; look(() => { const c = engine.recheckChampion(); void c; return engine.next(); }); break;
