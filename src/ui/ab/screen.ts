@@ -175,7 +175,8 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
       <div class="btns"><button type="button" class="primary" data-act="combine-ok">Approve and compare</button><button type="button" data-act="combine-no">Cancel</button></div></div>`;
   const syncViewer = () => {
     if (!viewer) return;
-    if (!result?.ok) { viewer.showPair(null); viewer.setReserve(0); return; }
+    if (result && !result.ok && result.single) { const k = 'single|' + result.single.id; if (k !== shownKey) { shownKey = k; viewer.showPair([result.single.snapshot, result.single.snapshot], { only: 0, info: ['The only design that fits', ''] }); } return; }
+    if (!result?.ok) { viewer.showPair(null); viewer.setReserve(0); shownKey = ''; return; }
     const mobile = window.innerWidth < 700, r = result, key = [r.a.id, r.b.id, mobile ? side : '', roleOf(engine.session(), r.a.id), roleOf(engine.session(), r.b.id)].join('|');
     if (key !== shownKey) {
       shownKey = key; const role = (x: CandidateRecord) => { const k = roleOf(engine.session(), x.id); return `${k === 'favourite' ? '★ ' : ''}${ROLE_LABEL[k]}`; };
@@ -196,10 +197,11 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
       panel += `${reasonsHtml()}<div class="btns"><button type="button" data-act="different" title="Two new ideas away from your favourite; the winner then faces your favourite">Explore Something Different</button></div>
         <div class="abcols">${sideBlock(ok.a, ok.b, 'A')}${sideBlock(ok.b, ok.a, 'B')}</div>`;
       panel += historyHtml();
-    } else if (!busy && result && !result.ok) panel += historyHtml();
+    } else if (!busy && result && !result.ok) { if (result.single) panel += sideBlock(result.single, result.single, 'A'); panel += historyHtml(); }
     if (DEBUG) panel += statsHtml(summarize(metrics.all()));
     const open = (panelOpen || force) && !busy;
-    const bar = ok ? `${choiceBtns()}<div class="abfacts">${bits(ok.a, 'A')}${bits(ok.b, 'B')}</div>` : `<span class="hint abbusy" role="status">${busy ? 'Looking…' : 'Discovery'}</span>`;
+    const only = !busy && result && !result.ok ? result.single : undefined;
+    const bar = ok ? `${choiceBtns()}<div class="abfacts">${bits(ok.a, 'A')}${bits(ok.b, 'B')}</div>` : only ? `<div class="abfacts">${bits(only, 'A')}</div>` : `<span class="hint abbusy" role="status">${busy ? 'Looking…' : 'Discovery'}</span>`;
     root.innerHTML = `${open ? `<div class="abpanel" role="region" aria-label="Discovery details">${panel}</div>` : ''}<div class="abbar" role="group" aria-label="Discovery"><div class="abbarmain">${bar}</div><div class="abbarend"><button type="button" data-act="more" aria-expanded="${open}" title="Reasons, Explore Something Different, Combine, Keep, history, Make It Yours">${open ? 'Less ▾' : 'More ▴'}</button><button type="button" class="dxx" aria-label="Close Discovery" data-act="close">✕ Close</button></div></div>${plan ? planHtml(plan) : detail ? detailHtml(detail) : ''}`;
     syncViewer(); viewer?.setReserve(root.offsetHeight); shots();
   };

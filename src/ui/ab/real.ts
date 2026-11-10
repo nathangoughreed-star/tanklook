@@ -42,6 +42,7 @@ export function createRealEngine(store: Store, _opts: () => VerdictOpts = () => 
   };
   const drawFor = (np: NextPair): PairResult => {
     const r = pair(np.type);
+    if (!r.ok && r.single) { mem.set(r.single.id, r.single); hist.put(r.single); }
     return r.ok ? show(r.a, r.b, np.type) : r;
   };
   const nextNow = (): NextPair => s.pendingFreshId && s.championId ? { type: 'final', keep: s.championId } : s.championId ? { type: 'champion', keep: s.championId } : { type: 'first' };

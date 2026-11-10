@@ -114,4 +114,4 @@ export interface DiscoverySession {
 /** What the generator returns: a pair, or an honest no-solution (spec 5.4). */
 export type PairResult =
   | { ok: true; a: CandidateRecord; b: CandidateRecord }
-  | { ok: false; conflicts: string[]; relaxations: string[] };
+  | { ok: false; conflicts: string[]; relaxations: string[]; /** AB5: exactly ONE design fits; it is shown on its own with the plain reason (a second is never invented) */ single?: CandidateRecord };

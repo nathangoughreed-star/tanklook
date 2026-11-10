@@ -64,7 +64,7 @@ import { defaultSetup } from '../src/scene/defaults';
 import { regenerate } from '../src/scene/starter';
 import { IN } from '../src/scene/physics';
 import { applyQuickPrefs, emptyAnswers, readQuickPrefs, type QuickAnswers } from '../src/scene/quickPrefs';
-import { projectExtras, setProjectExtras } from '../src/scene/brief';
+import { projectExtras, setProjectExtras, setRange } from '../src/scene/brief';
 describe('quick preferences: hard answers filter, the rest rank, told outranks learned', () => {
   const project = () => { const t = structuredClone(defaultSetup()); t.tank = { ...t.tank, L: 36 * IN, D: 18 * IN, H: 16 * IN }; t.water.on = true; regenerate(t, 'all', 1); return ensureUids(t); };
   const briefOf = (a: Partial<QuickAnswers>) => applyQuickPrefs(setProjectExtras(emptyBrief(), { ...projectExtras(emptyBrief()), direction: 'freshwater' }), { ...emptyAnswers(), ...a });
@@ -75,6 +75,18 @@ describe('quick preferences: hard answers filter, the rest rank, told outranks l
     const r = pair(br); expect(r.ok).toBe(true); if (!r.ok) return;
     for (const c of [r.a, r.b]) { expect(c.snapshot.items.filter(i => i.kind === 'plant').length).toBeGreaterThanOrEqual(3); expect(c.snapshot.grow.feed).not.toBe('co2'); expect(c.facts.toBuy.some(l => /co2/i.test(l.label))).toBe(false); }
   }, 200000);
+  const hardSize = (lo: number, hi: number) => pair(setRange(emptyBrief(), 'constraints.tankGal', { min: lo, max: hi }, 'hard'));
+  it('a HARD size gives an explicit outcome for zero, one and many feasible designs (never skipped, never a made-up second design)', () => {
+    const zero = hardSize(11, 14); expect(zero.ok).toBe(false); if (zero.ok) return;                       // no catalogue tank between 10.8 and 15.9 gal
+    expect(zero.single).toBeUndefined(); expect(zero.conflicts.join(' ')).toMatch(/No design fits a tank of 11-14 gal/); expect(zero.relaxations.join(' ')).toMatch(/size/i);
+    const many = hardSize(6, 7); expect(many.ok).toBe(true); if (!many.ok) return;                         // the 6 gal tank: two looks
+    expect(many.a.key).not.toBe(many.b.key); for (const c of [many.a, many.b]) { expect(c.facts.gallons!).toBeGreaterThanOrEqual(6); expect(c.facts.gallons!).toBeLessThanOrEqual(7); }
+    const br = setRange(emptyBrief(), 'constraints.tankGal', { min: 6, max: 7 }, 'hard');                    // one left: the other was already shown
+    const one = nextPair({ tank: project(), rev: 1 }, br, startSession(1, ['tank', 'animals', 'plants', 'hardscape', 'substrate'], 'freshwater', 's'), () => undefined, { next: 'first', shownKeys: [many.a.key!] });
+    expect(one.ok).toBe(false); if (one.ok) return;
+    expect(one.single?.key).toBe(many.b.key); expect(one.conflicts[0]).toMatch(/Only one design fits/); expect(one.conflicts[0]).toMatch(/no second design is made up/);
+    const wide = hardSize(20, 60); expect(wide.ok).toBe(true); if (wide.ok) for (const c of [wide.a, wide.b]) { expect(c.facts.gallons!).toBeGreaterThanOrEqual(20); expect(c.facts.gallons!).toBeLessThanOrEqual(60); }
+  }, 280000);
   it('lifting the No CO2 prohibition removes no candidate and does not force CO2 (the fitGear set above)', () => {
     const on = readQuickPrefs(briefOf({ avoid: ['co2'] })), off = readQuickPrefs(briefOf({}));
     expect(on.prohibit).toEqual(['co2']); expect(off.prohibit).toEqual([]);

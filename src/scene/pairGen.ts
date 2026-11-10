@@ -207,7 +207,8 @@ function fromLook(c: Ctx, a: Archetype, sizes = 1): void {
   try {
     const r = explorePool(c.w, c.P, c.units, c.now, { only: [a.id], sizes, explain: false, stock: stockTier }), id = identityOf(a);
     for (const cand of [...r.eligible, ...r.provisional] as PoolCandidate[]) {
-      const got = ingest(c, ensureUids(structuredClone(cand.scene)), cand.identity.name, 'explore', { familyId: id.familyId, archetypeId: a.id, name: cand.identity.name });
+      const sc0 = ensureUids(structuredClone(cand.scene)); sc0.product ??= { model: cand.tank.id };   // the catalogue tank it was drawn in, so the size gate judges that tank (a synthetic model of the same dimensions rates lower)
+      const got = ingest(c, sc0, cand.identity.name, 'explore', { familyId: id.familyId, archetypeId: a.id, name: cand.identity.name });
       if (got) { c.cache.pend.push(got); c.cache.stats.explore++; }
     }
     for (const x of r.withheld.slice(0, 3)) c.cache.rej.push({ text: `${x.name}: ${x.reasons[0]?.text ?? 'turned away'}`, issues: [], relax: [] });
@@ -338,8 +339,11 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
   result ??= choose();
   cache.stats.ms = Math.max(cache.stats.ms, performance.now() - t0);
   if (result) { const out = { ok: true as const, a: result.a, b: result.b }; return out; }
-  const few = usable().length;
-  return noSolution(cache, [...notes, ...(few === 1 ? ['Only one design fits your locks and limits, so there is nothing to compare it with.'] : few === 0 && cache.pend.length ? ['Every design that fits has already been shown.'] : [])], [...freezeNotes, ...(locksOf(base).objects.some(o => o.target === 'tank') ? ['Unlock the tank for a larger one'] : [])]);
+  const left = usable(), few = left.length, sz = w.tankGal && (w.tankGal.min !== undefined || w.tankGal.max !== undefined) ? `${w.tankGal.min ?? 0}-${w.tankGal.max ?? 'any'} gal` : '';
+  const why = few === 1 ? [`Only one design fits your locks and limits${sz ? ` (including a tank of ${sz})` : ''}, so there is nothing to compare it with. It is shown on its own; no second design is made up.`]
+    : few === 0 && cache.pend.length ? ['Every design that fits has already been shown.'] : few === 0 && sz ? [`No design fits a tank of ${sz} together with your other locks and limits.`] : [];
+  const res = noSolution(cache, [...notes, ...why], [...freezeNotes, ...(locksOf(base).objects.some(o => o.target === 'tank') ? ['Unlock the tank for a larger one'] : []), ...(sz ? ['Widen the size range'] : [])]);
+  return few === 1 && !res.ok ? { ...res, single: left[0].rec } : res;
 }
 
 /** A NEW record (purpose 'adapted', parentId = the old one) of `record` fitted to the project as it is now: the current locks and limits hold, equipment is re-derived. The old record is never touched. */
