@@ -110,6 +110,7 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
   };
   const sideBlock = (r: CandidateRecord, other: CandidateRecord, w: 'A' | 'B') => `<section class="abside${side === w ? ' cur' : ''}" data-side="${w}" data-id="${esc(r.id)}">
     <h3>${w}${roleOf(engine.session(), r.id) === 'favourite' ? ' ★' : ''} ${esc(r.facts.title)} <small>${esc(r.facts.habitat)}${r.facts.gallons != null ? ` · ${r.facts.gallons} gal` : ''}</small></h3>
+    ${(() => { const u = r.assumptions.filter(x => /not assumed|not modelled|may grow thinner|not confirmed/.test(x)); return u.length ? `<details class="abprov"><summary>Provisionally feasible: ${u.length} need${u.length > 1 ? 's' : ''} not checked</summary><ul>${u.map(x => `<li>${esc(x)}</li>`).join('')}</ul></details>` : '<p class="hint abprov">Every check the engine has is satisfied.</p>'; })()}
     <div class="btns abact"><button type="button" class="primary" data-act="miy" data-id="${esc(r.id)}" title="Use this design as your working design. You can still edit it; nothing is locked.">Make It Yours</button></div>
     <details class="abnow"><summary>Keep ${w}'s … for now</summary><p class="hint">A temporary hold for this search only. Nothing is locked, and your design is not changed.</p><div class="abnowbtns">${(['tank', 'animals', 'plants', 'hardscape', 'substrate'] as Tab[]).map(t => `<button type="button" data-act="keepnow" data-side="${w}" data-tab="${t}">${esc(keepForNowLabel(w, t))}</button>`).join('')}</div></details>
     ${sheetHtml(r, other, w)}</section>`;

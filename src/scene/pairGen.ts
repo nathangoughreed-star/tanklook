@@ -217,9 +217,9 @@ function backdropFor(a: Archetype, S: TankSetup): TankSetup['backdrop']['kind'] 
   if (/driftwood|nature|wood/.test(t)) return 'cork';
   return undefined;
 }
-function fromLook(c: Ctx, a: Archetype, sizes = 1): void {
+function fromLook(c: Ctx, a: Archetype, sizes = 1, big = false): void {
   const t0 = performance.now();
-  (sizes > 1 ? c.cache.bigDone : c.cache.looksDone).add(a.id);
+  (big ? c.cache.bigDone : c.cache.looksDone).add(a.id);
   try {
     const r = explorePool(c.w, c.P, c.units, c.now, { only: [a.id], sizes, explain: false, stock: stockTier }), id = identityOf(a);
     const dry = a.env === 'terrarium' || a.env === 'paludarium', cands0 = [...r.eligible, ...r.provisional] as PoolCandidate[], cands = dry ? meaningfulDryTiers(cands0) : cands0;   // dry sizes: by height or floor area, whichever the animals need
@@ -343,8 +343,8 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
   let result: { a: CandidateRecord; b: CandidateRecord; pool: number } | undefined;
   for (;;) {
     if (!cache.proposeDone) { fromPropose(ctx, gen, 10); cache.proposeDone = true; }
-    else if (cache.looksDone.size < looks.length) fromLook(ctx, looks.find(a => !cache.looksDone.has(a.id))!, type === 'first' ? 1 : 3);   // size is a real variable: later pairs offer each look in 2-3 sizes, each with its own stocking
-    else if (type === 'first' && cache.bigDone.size < looks.length) fromLook(ctx, looks.find(a => !cache.bigDone.has(a.id))!, 3);
+    else if (cache.looksDone.size < looks.length) fromLook(ctx, looks.find(a => !cache.looksDone.has(a.id))!, type === 'first' && !pf.sizeGal ? 1 : 3);   // with a size preference the first pair already looks across the range, not only at its smallest tank   // size is a real variable: later pairs offer each look in 2-3 sizes, each with its own stocking
+    else if (type === 'first' && cache.bigDone.size < looks.length) fromLook(ctx, looks.find(a => !cache.bigDone.has(a.id))!, 3, true);
     else if (cache.round < 3) { cache.round++; fromPropose(ctx, gen, 10); }
     else break;
     const usableN = usable().length, now2 = performance.now();
