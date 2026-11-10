@@ -1317,6 +1317,25 @@ Cancel, then change the name, to keep both.`)) return;
     btn.onclick = () => set(pop.hidden === true);
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && !pop.hidden) { set(false); btn.focus(); } });
     document.addEventListener('pointerdown', e => { if (!pop.hidden && !pop.contains(e.target as Node) && !btn.contains(e.target as Node)) set(false); }); }
+  // AB12: Discovery's pair gets ONE centred "View options" menu (the controls apply to both tanks); elsewhere they stay on the bar
+  { const pm = $('pairMenu'), pb = $('pmBtn'), body = $('pmBody'), ar = $('arView');
+    const ids = ['viewBtn', 'moment', 'recenter', 'fitBoth', 'roomChip'];
+    const set = (on: boolean) => { body.hidden = !on; pb.setAttribute('aria-expanded', String(on)); pb.classList.toggle('on', on); };
+    pb.onclick = () => set(body.hidden === true);
+    $('viewBtn').addEventListener('click', () => set(false));   // the View popup opens under the collapsed menu, not behind the open one
+    window.addEventListener('keydown', e => { if (e.key === 'Escape' && !body.hidden) { e.stopImmediatePropagation(); set(false); pb.focus(); } }, true);   // capture: Discovery's own Escape (close) must not also fire
+    document.addEventListener('pointerdown', e => { if (!body.hidden && !pm.contains(e.target as Node) && !$('viewPop').contains(e.target as Node)) set(false); });
+    (window as unknown as { __pairMenu: (on: boolean, x?: number) => void }).__pairMenu = (on, x) => {
+      const inMenu = pm.contains($('viewBtn'));
+      if (on && !inMenu) for (const id of ids) body.append($(id));
+      else if (!on && inMenu) {
+        set(false); ar.before($('viewBtn'), $('moment'));
+        let at: Element = ar; for (const id of ['recenter', 'fitBoth', 'roomChip']) { at.after($(id)); at = $(id); }
+        $('viewPop').style.left = ''; $('viewPop').style.top = '';
+      }
+      pm.hidden = !on;
+      if (on) { pm.style.left = x != null ? x + 'px' : ''; const vp = $('viewPop'); vp.style.top = '46px'; vp.style.left = Math.max(8, Math.min((x ?? 0) - 180, ($('view').clientWidth) - 368)) + 'px'; }
+    }; }
   $('sideTab').onclick = () => $(sideHidden() ? 'sideOpen' : 'sideClose').click(); // the phone's arrow tab (style.css)
   const keepRule = () => { // after split / undo / load
     if (!store.split) return;
@@ -2392,14 +2411,17 @@ Cancel, then change the name, to keep both.`)) return;
           `<button class="close" data-delete="${i}" title="Delete Tank ${vp.key} and end the split view (Ctrl+Z brings it back)">Delete</button></div></div>`;
       }
       $<HTMLButtonElement>('fitBoth').hidden = !pr || pr.only != null;
+      { const two = active.length > 1, host = viewer.host.clientWidth;
+        (window as unknown as { __pairMenu: (on: boolean, x?: number) => void }).__pairMenu(!!pr, two ? active[1].x : host / 2);
+        if (pr) for (const id of ['labA', 'labB']) { const el = $<HTMLDivElement>(id); el.style.top = 'calc(46px + var(--bb-h))'; } }
       const lock = $<HTMLButtonElement>('camLock');
       lock.hidden = active.length < 2;   // AB8: the padlock also works on Discovery's A / B pair (B then has its own camera while it is open)
       if (active.length > 1) {
         lock.style.left = (active[1].x - 4) + 'px';
-        lock.classList.toggle('on', g.camLock);
-        lock.innerHTML = padlock(g.camLock); lock.setAttribute('aria-pressed', String(g.camLock));
-        lock.setAttribute('aria-label', g.camLock ? 'Cameras locked together' : 'Cameras unlocked');
-        lock.title = g.camLock ? 'Views move together (one field of view). Click to move each view on its own.' : 'Views move separately. Click to lock them together again (Tank B snaps to Tank A’s view).';
+        lock.classList.toggle('on', g.camLock); lock.classList.add('pill');
+        lock.innerHTML = padlock(g.camLock) + `<span>${g.camLock ? 'Views linked' : 'Views independent'}</span>`; lock.setAttribute('aria-pressed', String(g.camLock));
+        lock.setAttribute('aria-label', g.camLock ? 'Views linked: orbit, pan and zoom move both tanks. Activate to let each view move on its own.' : 'Views independent: each tank orbits on its own. Activate to link them again.');
+        lock.title = g.camLock ? 'Views linked: dragging either tank turns both (orbit is not locked). Click to let each view move on its own.' : 'Views independent: each tank orbits on its own. Click to link them again (Tank B snaps to Tank A’s view).';
       }
     }
     readout();

@@ -653,6 +653,8 @@ export class Viewer {
     if (active.length === 1) Object.assign(active[0], { x: 0, y: 0, w, h });
     else { Object.assign(active[0], { x: 0, y: 0, w: hw, h }); Object.assign(active[1], { x: hw + GAP, y: 0, w: hw, h }); }
     for (const vp of active) {
+      // the pair's setups are copies made at build time; a camera move replaces the scene camera object, so re-point it every frame (AB12: orbit and zoom looked frozen)
+      if (this.pair) vp.S.camera = this.pairCamOf(vp.i) ?? sc.tanks[0].camera;
       placeCamera(vp.cam, vp.T, vp.S.camera);
       for (const o of vp.overhead ?? []) o.visible = !this.hideOverhead || vp.cam.position.y < o.userData.overhead;
     }

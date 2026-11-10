@@ -220,7 +220,7 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 .viewtools { flex-wrap: wrap; max-width: calc(100% - 20px) }
 .viewtools { position: absolute; top: 10px; left: 10px; z-index: 3; display: flex; gap: 5px }
 .viewtools .sidetog { box-shadow: 0 1px 4px rgba(0, 0, 0, .25) }
-.buildtag { align-self: center; padding: 3px 9px; border-radius: 6px; background: var(--panel); border: 1px solid var(--line); color: var(--muted); font-size: 12px; box-shadow: 0 1px 4px rgba(0, 0, 0, .25) }
+.buildtag { margin-left: 6px; padding: 0 6px; border-radius: 6px; border: 1px solid var(--line); color: var(--muted); font-size: 11px }
 .buildtag:empty { display: none }
 /* group select (lane MS): the box being dragged, the Multi button and the group bar over the view */
 .selbox { position: absolute; z-index: 4; border: 1px dashed var(--accent); background: rgb(31 111 235 / .14); pointer-events: none }
@@ -1457,3 +1457,12 @@ body.discovering .dmfloat, body.discovering #climate, body.discovering .vmap, bo
 /* AB7b: the compact strip carries Make It Yours; the attribute matrix stays closed until Details is pressed */
 .abdock .abfcell { display: flex; gap: 6px; align-items: stretch; min-width: 0 } .abdock .abfcell .abfact { flex: 1 1 auto; min-width: 0 }
 .abdock .abmiy { flex: none; padding: 2px 8px; font-size: 12px }
+
+/* AB12: while Discovery's pair is drawn, the view controls live in ONE menu centred on the divider (they apply to both tanks) */
+.pairmenu { position: absolute; top: calc(10px + var(--bb-h)); left: 50%; transform: translateX(-50%); z-index: 32; display: flex; flex-direction: column; align-items: center; gap: 6px }
+.pairmenu[hidden] { display: none }
+.pairmenu > .sidetog { box-shadow: 0 1px 4px rgba(0, 0, 0, .25) }
+.pmbody { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; max-width: min(460px, calc(100vw - 24px)); padding: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 6px 24px #0006 }
+.pmbody[hidden] { display: none }
+#camLock.pill { width: auto; height: 30px; padding: 0 11px 0 8px; border-radius: 999px; gap: 5px; grid-auto-flow: column; font-size: 12px; color: var(--ink) }
+#camLock.pill:not(.on) { color: var(--muted) }

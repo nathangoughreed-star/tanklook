@@ -32,7 +32,7 @@ const topAt = sel => ev(`(()=>{const e=document.querySelector(${JSON.stringify(s
 const camOf = i => ev(`JSON.stringify((c=>({az:c.az,el:c.el,zoom:c.zoom}))(window.__gb.store.camOf(${i})))`).then(JSON.parse);
 const drag = async (x, y, dx, dy, btn = 'left') => { const b = btn === 'left' ? 1 : 4; await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y }); await send('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: btn, buttons: b, clickCount: 1 }); for (let i = 1; i <= 8; i++) await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: x + dx * i / 8, y: y + dy * i / 8, button: btn, buttons: b }); await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: x + dx, y: y + dy, button: btn }); await sleep(350); };
 const wheel = async (x, y, d) => { await send('Input.dispatchMouseEvent', { type: 'mouseWheel', x, y, deltaX: 0, deltaY: d }); await sleep(350); };
-const popOpen = on => ev(`(()=>{const p=document.getElementById('viewPop'); if (p.hidden === ${on}) document.getElementById('viewBtn').click(); return true})()`);
+const popOpen = on => ev(`(()=>{const m=document.getElementById('pmBody'); if (${on} && m && m.hidden && !document.getElementById('pairMenu').hidden) document.getElementById('pmBtn').click(); const p=document.getElementById('viewPop'); if (p.hidden === ${on}) document.getElementById('viewBtn').click(); return true})()`);
 const differs = (a, b) => a.az !== b.az || a.el !== b.el || a.zoom !== b.zoom;
 async function check(w, h, mob, tag) {
   step = 0; console.log(`--- ${tag} (${w}x${h}) ---`);
@@ -55,7 +55,8 @@ async function check(w, h, mob, tag) {
   for (const expanded of [false, true]) {
     const dock = expanded ? 'expanded' : 'collapsed';
     if (expanded !== await exists('.abdock .abside')) await click('.abdock [data-act="more"]'); await sleep(900);
-    ok(`${dock}: View button is visible and on top`, await topAt('#viewBtn') === 'self');
+    await ev(`document.getElementById('pmBtn').click()`); await sleep(200);
+    ok(`${dock}: View button is visible and on top`, await topAt('#viewBtn') === 'self'); await ev(`document.getElementById('pmBtn').click()`); await sleep(200);
     await popOpen(true); await sleep(900);
     for (const id of ['#cDist', '#cAz', '#cEl', '#cZoom', '#camReset']) ok(`${dock}: ${id} is reachable (nothing covers it)`, await topAt(id) === 'self', await topAt(id));
     await shot(`${tag}-${dock}-viewpop`);
@@ -71,7 +72,8 @@ async function check(w, h, mob, tag) {
     ok(`${dock}: dragging the picture orbits`, differs(b0, b1), JSON.stringify([b0, b1]));
     await wheel(cx, cy, -300); ok(`${dock}: the wheel zooms`, (await camOf(0)).zoom > b1.zoom);
     await drag(cx, cy, 60, 30, 'middle'); ok(`${dock}: a middle-drag pans (Re-centre appears)`, await ev(`window.__gb.viewer.panned === true && !document.getElementById('recenter').hidden`));
-    ok(`${dock}: Re-centre is visible and on top`, await topAt('#recenter') === 'self');   // (its 220 ms ease runs on requestAnimationFrame, which headless Chrome never fires, so the result is not asserted here)
+    await ev(`document.getElementById('pmBtn').click()`); await sleep(200);
+    ok(`${dock}: Re-centre is visible and on top`, await topAt('#recenter') === 'self'); await ev(`document.getElementById('pmBtn').click()`);   // (its 220 ms ease runs on requestAnimationFrame, which headless Chrome never fires, so the result is not asserted here)
     await shot(`${tag}-${dock}-after-drag`);
   }
   if (two) {
