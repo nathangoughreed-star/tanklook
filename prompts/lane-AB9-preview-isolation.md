@@ -1,0 +1,5 @@
+# AB9: Preview isolation and the lighting toast (P0) (Coordinator 22)
+
+Follow `prompts/lane-AB-common.md` (and `prompts/lane-common-c20.md`). First `git fetch origin && git merge --ff-only origin/main`. Source: `research/design/discovery-ui-review-2026-11-10.md` (read only your section). Report once to Coordinator 22; never push. Investigate first and say whether it is a REAL defect or a confusing UI state; fix real defects with regression tests, do not hide symptoms. Build clean, ab* tests pass, HANDOFF section.
+
+Section 2 of the review. A toast during Discovery reads 'The lighting copied into your design and kept (undo steps back).' Trace the real event path. Snapshot the working design + undo depth, enter Discovery, use A/B details, keeps, locks and 5+ comparisons, Close without Make It Yours: design and design undo stack must be unchanged (Discovery prefs/requirements may persist). If a button copies lighting, it must only be a Discovery/Combine proposal until approved; fix the toast wording to say what really happened. If the working design really changes, that is a regression: fix it. Add an automated test (AC06).
