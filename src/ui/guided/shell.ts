@@ -7,7 +7,7 @@ import { clearItem, getItem, setItem, type Brief, type Route } from '../../scene
 import { applyChange, envOf, routeOf, setWorld, worldOf } from '../../scene/project';
 import type { Store } from '../../scene/store';
 import type { AnimalCount } from '../../scene/tankfit';
-import { mountExplore } from '../explore/explore';
+import { openDiscovery } from '../discover/entry';
 import { mountDiscovery, type CrumbState, type DiscoveryHost, type Mounted } from '../discovery/screens';
 import type { VStep } from '../discovery/logic';
 import { editBrief, getBrief, lockedStock, setBrief } from '../setupBrief';
@@ -58,6 +58,9 @@ export const placeholderExplore: ExploreEntry = c => {
   return { destroy() { c.root.replaceChildren(); } };
 };
 
+/** Discovery v2 (AB3): the like / pass Explore feed is retired; the guide's last step opens the A/B Discover screen. */
+export const discoverEntry: ExploreEntry = c => { c.close(); openDiscovery({ from: 'guided' }); return { destroy() { /* nothing mounted */ } }; };
+
 export interface GuidedOpts { animalsEntry?: AnimalsEntry; exploreEntry?: ExploreEntry }
 export function attachGuided(store: Store, host: DiscoveryHost, o: GuidedOpts = {}) {
   const dlg = document.createElement('dialog');
@@ -69,7 +72,7 @@ export function attachGuided(store: Store, host: DiscoveryHost, o: GuidedOpts = 
   dock.innerHTML = '<button type="button" class="primary" data-vd="resume">Next: pick the look for these animals</button><button type="button" class="linkbtn" data-vd="hide" aria-label="Hide">✕</button>';
   document.body.append(dock);
   const rail = dlg.querySelector<HTMLElement>('.gs-crumbs')!, body = dlg.querySelector<HTMLElement>('.gs-body')!;
-  const entry = o.animalsEntry ?? animalsFirst, explore = o.exploreEntry ?? mountExplore;
+  const entry = o.animalsEntry ?? animalsFirst, explore = o.exploreEntry ?? discoverEntry;
 
   let parked: Brief | undefined;   // the project as it was when the side panel opened (that panel starts a new scene and brief until lane GS6 / GS5 change it)
   let mounted: Mounted | undefined, part: { destroy(): void } | undefined, at: OnboardStep = 'world', route: Route | undefined;

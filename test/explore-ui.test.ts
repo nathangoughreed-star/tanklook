@@ -242,10 +242,10 @@ describe('acceptance 1: Open to Anything goes to Explore, not to Animals First /
     const settled = { ...b } as Brief;
     expect(placeOf(settled, 'start')).toEqual({ at: 'start' });
   });
-  it('the shell mounts the real Explore screen by default, with no route fallback for it in showRoute', () => {
+  it('the shell opens the A/B Discover screen by default (Discovery v2, AB3: the like / pass feed entry is retired), with no route fallback for it in showRoute', () => {
     const shell = read('src/ui/guided/shell.ts');
-    expect(shell).toContain("import { mountExplore } from '../explore/explore'");
-    expect(shell).toContain('explore = o.exploreEntry ?? mountExplore');
+    expect(shell).not.toContain("import { mountExplore }");
+    expect(shell).toContain('explore = o.exploreEntry ?? discoverEntry');
     expect(shell).not.toMatch(/explore = o\.exploreEntry \?\? placeholderExplore/);
     expect(shell).toContain("function showRoute(r: Exclude<Route, 'explore'>)");
     expect(shell).not.toContain("if (r === 'explore') { showStep('start'); return; }");

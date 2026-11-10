@@ -318,7 +318,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     browse: menu => startMode.open(stepForMenu(menu, menu === 'open' ? 'starters' : undefined)),
   });
   $('browseLooks').onclick = () => welcome.browseLooks();
-  $('exploreSetups').onclick = () => welcome.exploreSetups(); // lane GW2 / DX7: Browse looks and Explore complete setups are options inside Discover (Quick setup)
+  // Discovery v2 (AB3): the like / pass "Explore complete setups" door is retired; every Discover button opens the A/B screen
   // lane R9: the owned-gear sheet (Guided, "Starting from something I have now"); its Tank row borrows the tank picker and reports when it closes
   let ownedSheet: { open(at?: string): void } | undefined;
   const pickTank = (done: (name: string) => void) => {

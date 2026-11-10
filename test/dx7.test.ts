@@ -40,7 +40,7 @@ describe('seven menus', () => {
     for (const id of ['cDist', 'cAz', 'cEl', 'cZoom', 'camReset', 'showFish', 'showPlants', 'showHard', 'gearOn', 'split', 'edge', 'pop', 'perf', 'mapOn', 'gridOn', 'sheetBtn', 'reportBtn']) expect(pop, id).toContain(`id="${id}"`);
     expect(html).toContain('id="viewBtn"');
     const q = html.slice(html.indexOf('id="quickHome"'));
-    for (const id of ['browseLooks', 'exploreSetups', 'layout', 'layoutShuffle', 'plantTier', 'layoutComp', 'densHard', 'densPlant', 'densAnimal', 'gateStock']) expect(q, id).toContain(`id="${id}"`);
+    for (const id of ['browseLooks', 'layout', 'layoutShuffle', 'plantTier', 'layoutComp', 'densHard', 'densPlant', 'densAnimal', 'gateStock']) expect(q, id).toContain(`id="${id}"`);
   });
   it('no orphaned controls: every id the panel code looks up with $(...) exists in the page, once', () => {
     const src = read('src/ui/panels.ts'), ids = new Set([...src.matchAll(/\$(?:<[^>]*>)?\('([A-Za-z][\w-]*)'\)/g)].map(m => m[1]));

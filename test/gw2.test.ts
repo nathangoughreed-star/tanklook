@@ -29,7 +29,7 @@ describe('one home per setting', () => {
   });
   it('Quick Setup holds the browse-looks and explore entries (Visual Discovery lives there)', () => {
     const q = section('quick');
-    expect(q).toContain('id="browseLooks"'); expect(q).toContain('id="exploreSetups"');
+    expect(q).toContain('id="browseLooks"'); expect(q).not.toContain('id="exploreSetups"');
   });
   it('the setup brief shows limits as a line with one button into Your limits, with no inputs of its own', () => {
     const src = readFileSync('src/ui/briefBar.ts', 'utf8');

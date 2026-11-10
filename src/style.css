@@ -1357,3 +1357,47 @@ button.start-mode-card span.hint { font-size: 12px }
 .intro-spot { animation: introPulse 1.2s ease-in-out 4; border-radius: 6px }
 .startdlg { width: min(860px, calc(100vw - 32px)) }
 .habitat5 { grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)) }
+/* ---- Discovery v2 A/B screen (lane AB3) ---- */
+.abx { position: fixed; inset: 0; z-index: 40; overflow: auto; background: var(--panel); color: var(--ink); padding: 8px 16px 72px; font-size: 13px; box-sizing: border-box }
+.abx[hidden] { display: none }
+.abx .abhead { display: flex; align-items: center; justify-content: space-between } .abx h2 { margin: 4px 0 }
+.abx .abswitches { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 4px 0 8px } .abx .abswi { display: flex; flex-direction: column } .abx .abfrz { color: #e6a23c }
+.abx .abswitches .dxsw { order: 0; flex-basis: auto; margin: 0 }
+.abx .ablocked { border: 1px dashed #777; border-radius: 6px; padding: 6px 10px; margin: 6px 0 } .abx .ablocked.over { border-color: #2e7d6b; background: #2e7d6b22 } .abx .ablocked small { color: #999 }
+.abx .abq { margin: 6px 0; border-top: 1px dashed #666; padding-top: 6px }
+.abx .abbanner { margin: 6px 0; font-weight: 600 }
+.abx .abgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; max-width: 1200px }
+.abx .abcard { border: 1px solid #555; border-radius: 8px; overflow: hidden; background: #0000000d }
+.abx .abrole { padding: 4px 10px; background: #444; color: #fff; font-weight: 600 } .abx .abrole.favourite { background: #2e7d6b } .abx .abrole.challenger { background: #3a5d9c } .abx .abrole.fresh { background: #8a5a2b }
+.abx .abpic { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: #1a1f24; object-fit: cover }
+.abx .abbody { padding: 8px 10px } .abx .abbody h3 { margin: 2px 0 } .abx .absub { margin: 0 0 6px; color: #999 }
+.abx .abspend { font-size: 18px; margin: 4px 0 } .abx .abspend b { font-size: 20px }
+.abx .abfig { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 4px 0 8px } .abx .abfig b { font-weight: 600 }
+.abx .abact { margin: 6px 0 } .abx .abnow summary { cursor: pointer; margin: 6px 0 } .abx .abnowbtns { display: flex; flex-wrap: wrap; gap: 6px }
+.abx .absheet h4 { margin: 10px 0 2px } .abx .absheet ul, .abx .abbuy, .abx .abdiff { list-style: none; padding: 0; margin: 0 }
+.abx .abrow { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 2px 0; cursor: grab }
+.abx .abkeep { padding: 1px 10px } .abx .abkeep.on { background: #2e7d6b; color: #fff }
+.abx .abbuy li { display: flex; justify-content: space-between } .abx .abeq { margin: 4px 0 }
+.abx .abchoose { max-width: 1200px; margin: 12px 0 } .abx .abchoices button.on { outline: 2px solid #2e7d6b }
+.abx .abchips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 } .abx .chip { border: 1px solid #666; border-radius: 14px; padding: 3px 10px; background: transparent; color: inherit; cursor: pointer } .abx .chip.on { background: #2e7d6b; border-color: #2e7d6b; color: #fff }
+.abx .abtoggle { display: none }
+.abx .abnone { max-width: 640px; border: 1px solid #e6a23c; border-radius: 8px; padding: 6px 14px }
+.abx .abhist { position: fixed; left: 0; right: 0; bottom: 0; z-index: 41; background: var(--panel); border-top: 1px solid #555; padding: 4px 16px }
+.abx .abhh { display: flex; gap: 12px; align-items: center } .abx .abstrip { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0 6px }
+.abx .abth { display: flex; flex-direction: column; align-items: flex-start; width: 110px; flex: none; padding: 2px; font-size: 11px; background: transparent; color: inherit; border: 1px solid #555; border-radius: 4px; cursor: pointer }
+.abx .abth img { width: 100%; height: auto; aspect-ratio: 16 / 9; background: #1a1f24; object-fit: cover } .abx .abth span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.abx .abmodal { position: fixed; inset: 0; z-index: 42; background: #000a; display: flex; align-items: flex-start; justify-content: center; overflow: auto; padding: 24px 12px }
+.abx .abmbox { background: var(--panel); border: 1px solid #666; border-radius: 8px; padding: 12px 16px; width: min(640px, 100%); box-sizing: border-box }
+.abx .abmbox .abpic { max-width: 320px; margin-bottom: 8px }
+.abx .abconf, .abx .abwarn { border-left: 3px solid #e6a23c; padding: 4px 10px; margin: 8px 0 } .abx .abok { color: #4cb782 }
+.abx .abthen { border-collapse: collapse; margin: 6px 0 } .abx .abthen th, .abx .abthen td { text-align: left; padding: 2px 12px 2px 0 }
+.abx .abmsg:not(:empty), .abx .abnote { color: #e6a23c; margin: 4px 0 }
+@media (max-width: 700px) {
+  .abx { padding: 6px 12px 72px }
+  .abx .abgrid { grid-template-columns: 1fr } .abx .abcard:not(.cur) { display: none }
+  .abx .abtoggle { display: flex; gap: 6px; margin: 6px 0; position: sticky; top: 0; z-index: 3; background: var(--panel) }
+  .abx .abtoggle button { flex: 1; text-align: left; font-size: 11px; padding: 4px 6px } .abx .abtoggle button[aria-selected="true"] { outline: 2px solid #2e7d6b }
+  .abx .abspend { font-size: 16px } .abx .abmbox { padding: 10px 12px }
+  .abx .abchoose { position: sticky; bottom: 40px; z-index: 4; background: var(--panel); border-top: 1px solid #555; margin: 8px 0 0; padding: 6px 0; max-height: 45vh; overflow: auto }
+  .abx .abchoices button { padding: 6px 8px }
+}
