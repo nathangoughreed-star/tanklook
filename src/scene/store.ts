@@ -130,7 +130,9 @@ export class Store {
         const A = s.tanks[k]; if (!A) continue;
         const prev = { ...A.camera }; fn(A.camera);
         // the eye stops at the room wall (every locked tank's wall, since they share the view)
-        const ok = (c: CameraSettings) => (s.camLock ? s.tanks : [A]).every(t => eyeClear(t, c));
+        // Discovery's pair is drawn in ITS tanks' rooms, so the wall limit comes from those, never from the frozen working design (AB12: a tight working room stopped the orbit after a pixel)
+        const room = this.frozen ? this.pairTanks?.() : null;
+        const ok = (c: CameraSettings) => (room ?? (s.camLock ? s.tanks : [A])).every(t => eyeClear(t, c));
         const c = A.camera = limitOrbit(prev, A.camera, ok);
         if (s.camLock) for (const t of s.tanks) t.camera = { ...c };
       }
@@ -200,6 +202,7 @@ export class Store {
 
   /** Discovery is on (lane AB5): the working DESIGN is immutable. An ordinary design edit is refused (`onBlocked` says so); what Discovery itself keeps (locks, the Discovery switches, the brief and constraints) and the camera still change, with no undo step. */
   /** AB8: the viewer's own camera for Discovery's pair side B (padlock open); false = use the working camera. */
+  pairTanks: (() => TankSetup[] | null) | undefined;
   sideCamEdit: ((i: number, fn: (c: CameraSettings) => void) => boolean) | undefined; sideCam: ((i: number) => CameraSettings | null) | undefined;
   /** The camera view i is drawn with (Discovery's pair side B has its own while the padlock is open). */
   camOf(i: number): CameraSettings { return (this.frozen && this.sideCam?.(i)) || (this.scene.tanks[i] ?? this.scene.tanks[0]).camera; }

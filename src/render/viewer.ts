@@ -310,6 +310,7 @@ export class Viewer {
   constructor(readonly canvas: HTMLCanvasElement, readonly host: HTMLElement, readonly store: Store) {
     // a stencil buffer: hardscape cut open by the glass is capped (render/items.ts capPasses), the beam overlay drawn once
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: false, stencil: true });
+    store.pairTanks = () => (this.pair ? (this.pair.only != null ? [this.pair.S[this.pair.only]] : [...this.pair.S]) : null);
     store.sideCamEdit = (i, fn) => this.pairCamEdit(i, fn); store.sideCam = i => this.pairCamOf(i);
     capping.on = !!this.renderer.getContext().getContextAttributes()?.stencil;
     this.renderer.setPixelRatio(this.baseRatio());
