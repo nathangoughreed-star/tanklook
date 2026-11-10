@@ -2,20 +2,26 @@
 // Explore Something Different, Keep / Lock from either card (button AND drag onto the Locked bar), "Keep A's <tab> for now", the five shuffle switches (the DX7 menu switches),
 // a bottom history drawer, Make It Yours with a preview and conflicts, and a no-solution panel. It talks only to an AbEngine (adapter.ts); the decisions live in logic.ts.
 // Nothing here writes the working project except Make It Yours (applyProposal) and an explicit Keep / Lock.
+// The Discovery A/B comparison (lanes AB3, AB5). Nathan 2026-11-10: it happens in the MAIN view. The two candidates are drawn by the viewer's render-only pair layer (viewer.showPair) in the same split view the compare tool
+// uses; this file is only the bottom dock: Prefer A / Prefer B / Like both / Like neither / Skip, one facts line per side (the favourite starred) and Close, with ONE expandable panel above it (reasons, Explore Something Different,
+// Combine, Keep / Lock, "Keep A's <tab> for now", quick sheets and costs, history, Make It Yours). While it is open the working DESIGN is frozen (store.frozen): ordinary edits are refused, Close restores it exactly, and locks and
+// the Discovery switches (the menus' shuffle checkboxes) still work. It talks only to an AbEngine (adapter.ts); the decisions live in logic.ts.
 import { TABS, type Tab } from '../../scene/scope';
 import { discoverIsOn } from '../../scene/discoverScope';
-import { switchHtml, syncSwitches, toggleSwitch } from '../discover/switches';
-import { SECTION_OF, TAB_LABEL, lockedSummary, previewShot } from '../discover/logic';
+import { toggleSwitch } from '../discover/switches';
+import { SECTION_OF, TAB_LABEL } from '../discover/logic';
 import { headline } from '../checksStrip';
 import { layerOf, LIBRARY } from '../../scene/items';
 import { getSpecies } from '../../data/species';
-import { ROLE_LABEL, KEEP_MODES, acceptPlan, bannerOf, differs, figText, freezeNote, isKept, keepForNowLabel, keepFromRecord, makePlan, metricsOf, roleOf, stripText, toggleReason, championConflicts, type KeepTarget, type Plan } from './logic';
+import { locksOf, rosterMet } from '../../scene/locks';
+import { ROLE_LABEL, KEEP_MODES, acceptPlan, differs, figText, isKept, keepForNowLabel, keepFromRecord, makePlan, metricsOf, roleOf, toggleReason, championConflicts, type KeepTarget, type Plan } from './logic';
 import type { Store } from '../../scene/store';
 import type { Viewer } from '../../render/viewer';
 import type { CandidateRecord, Outcome, PairResult, ReasonKey } from '../../scene/discoveryTypes';
 import type { RosterMode } from '../../scene/types';
-import type { AbEngine, ReEval } from './adapter';
+import type { AbEngine, CombineProposal, ReEval } from './adapter';
 import { REASONS } from './logic';
+import { createMetrics, statsHtml, summarize } from './metrics';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
 const VERB = { add: '+', remove: '−', change: '~' } as const;
@@ -25,23 +31,37 @@ export interface AbUI { open(scope?: Tab[]): void; close(): void; isOpen(): bool
 
 export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine: AbEngine, deps: AbDeps): AbUI {
   const root = document.createElement('aside');
-  root.className = 'abx'; root.hidden = true; root.setAttribute('aria-label', 'Discover'); document.body.append(root);
-  let result: PairResult | undefined, busy = false, pending: { outcome: Outcome; why: ReasonKey[]; other: ReasonKey[] } | undefined, note = '', side: 'A' | 'B' = 'A', sheets = new Set<string>(), shooting = false;
-  let only: Tab[] | undefined, histOpen = false, histPage = 0, detail: string | undefined, plan: (Plan & { adaptNote?: string }) | undefined, importTab: Tab | undefined, resume = false, rid = 0;
-  const modes = new Map<string, RosterMode>();
-  const quickEl = document.getElementById('quickBlock'), quickHome = document.getElementById('quickHome'), doorsEl = document.getElementById('doorsBlock');
-  const returnBlocks = () => { for (const el of [doorsEl, quickEl]) if (el && quickHome && el.parentElement !== quickHome) quickHome.append(el); };
+  root.className = 'abdock'; root.hidden = true; root.setAttribute('aria-label', 'Discover'); (document.getElementById('view') ?? document.body).append(root);
+  let result: PairResult | undefined, busy = false, pending: { outcome: Outcome; why: ReasonKey[]; other: ReasonKey[] } | undefined, note = '', side: 'A' | 'B' = 'A', sheets = new Set<string>(), proposal: CombineProposal | undefined, panelOpen = false, shownKey = '';
+  let histOpen = false, histPage = 0, detail: string | undefined, plan: (Plan & { adaptNote?: string }) | undefined, importTab: Tab | undefined, resume = false, rid = 0;
+  const modes = new Map<string, RosterMode>(); let sugNo = '', adopted = false;
+  const metrics = createMetrics(), DEBUG = new URLSearchParams(location.search).has('debug'), rounds = () => engine.session().comparisons.length;
+  const menuNote = (() => { const el = document.createElement('div'); el.className = 'abmenunote'; el.hidden = true; el.setAttribute('role', 'status'); el.textContent = 'Discovery is on: inspecting A and B. Your design is unchanged.'; document.getElementById('side')?.prepend(el); return el; })();
+  const frozenNow = (on: boolean) => { store.frozen = on; store.onBlocked = on ? () => deps.status('Discovery is on: your design is unchanged. Make It Yours or Close to edit it.', true) : undefined; document.body.classList.toggle('discovering', on); menuNote.hidden = !on; };
+  /** Close: the working design was never touched. A lock that the design does not meet yet is said once, never inserted. */
+  const lockLine = () => {
+    const t = store.tank, miss = locksOf(t).roster.filter(r => !rosterMet(t, r));
+    return miss.length ? `Your design doesn't include the locked ${miss.map(r => `${r.mode === 'exact' ? r.n : r.mode === 'atLeast' ? `at least ${r.n}` : ''} ${getSpecies(r.species)?.name ?? r.species}`.replace(/\s+/g, ' ').trim()).join(', ')} yet.` : '';
+  };
 
-  const close = () => { returnBlocks(); if (!root.hidden) engine.pause(); root.hidden = true; root.innerHTML = ''; result = undefined; plan = undefined; detail = undefined; pending = undefined; };
-  store.subscribe(kind => { if (root.hidden || shooting || kind === 'view' || kind === 'select') return; syncSwitches(store, root); });
+  const close = () => {
+    const was = !root.hidden;
+    if (was) { metrics.log({ k: 'close', t: Date.now(), adopted, rounds: rounds() }); engine.pause(); }
+    viewer?.showPair(null); viewer?.setReserve(0); shownKey = ''; frozenNow(false);
+    root.hidden = true; root.innerHTML = ''; result = undefined; plan = undefined; detail = undefined; pending = undefined; proposal = undefined; panelOpen = false; rid++;
+    if (was) { const l = lockLine(); if (l) deps.status(l); }
+  };
+  store.subscribe(kind => { if (root.hidden || kind === 'view' || kind === 'select') return; if (kind === 'load') { close(); return; } syncScope(); });   // another project was opened: Discovery ends   // the menus' shuffle switches are the scope
 
   // ------------------------------------------------------------------------------------------------ engine plumbing
   const look = (fn: () => PairResult) => {   // paint "Looking…" first: the engine is synchronous
     busy = true; note = ''; draw(); const my = ++rid;
-    setTimeout(() => { if (my !== rid || root.hidden) return; try { result = fn(); } catch (e) { console.error(e); result = { ok: false, conflicts: ['Discovery could not run on this design.'], relaxations: [] }; } busy = false; side = 'A'; sheets = new Set(); draw(); }, 30);
+    setTimeout(() => { if (my !== rid || root.hidden) return; try { result = fn(); } catch (e) { console.error(e); result = { ok: false, conflicts: ['Discovery could not run on this design.'], relaxations: [] }; } busy = false; side = 'A'; sheets = new Set(); proposal = undefined; if (result?.ok) metrics.shown(); draw(); }, 30);
   };
   const commit = (): PairResult | undefined => {   // an A / B choice waits for its optional reasons; anything that moves on commits it
     if (!pending) return undefined; const p = pending; pending = undefined;
+    const type = engine.session().current?.type ?? 'champion', ms = metrics.elapsed();
+    metrics.log({ k: 'compare', t: Date.now(), type, outcome: p.outcome, ms, ...(p.why.length ? { why: [...p.why] } : {}), n: rounds() + 1 });
     return engine.choose(p.outcome, p.why.length ? p.why : undefined, p.other.length ? p.other : undefined);
   };
   const nextPair = (out?: Outcome) => { if (out && out !== 'A' && out !== 'B') pending = { outcome: out, why: [], other: [] }; look(() => commit() ?? engine.next()); };
@@ -83,38 +103,29 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
       ${r.assumptions.length ? `<p class="hint">${r.assumptions.map(esc).join(' ')}</p>` : ''}
     </div>`;
   };
-  const cardHtml = (r: CandidateRecord, other: CandidateRecord, w: 'A' | 'B') => {
-    const s = engine.session(), m = metricsOf(r.facts), role = roleOf(s, r.id), open = sheets.has(r.id), f = r.facts;
-    return `<article class="abcard${side === w ? ' cur' : ''}" data-side="${w}" data-id="${esc(r.id)}">
-      <div class="abrole ${role}">${role === 'favourite' ? '★ ' : ''}${w} · ${ROLE_LABEL[role]}</div>
-      <img class="abpic" alt="Picture of ${esc(f.title)}" width="480" height="270"${r.thumb ? ` src="${esc(r.thumb)}"` : ''}><div class="abpicwait" role="status">Drawing the picture…</div>
-      <div class="abbody">
-        <h3>${esc(f.title)}</h3><p class="absub">${esc(f.habitat)}${f.gallons != null ? ` · ${f.gallons} gal` : ''}</p>
-        <div class="abspend" title="What is left to buy after what you own">New spend <b>${esc(m.spend)}</b></div>
-        <div class="abfig"><span>Upkeep <b>${esc(m.minutes)}</b></span><span>Difficulty <b>${esc(m.difficulty)}</b></span>${m.upkeep ? `<span>Running <b>${esc(m.upkeep)}</b></span>` : ''}<span>${esc(headline(r.verdict))}</span></div>
-        <div class="btns abact"><button type="button" data-act="sheet" data-id="${esc(r.id)}" aria-expanded="${open}">${open ? 'Hide quick sheet' : 'Quick sheet'}</button><button type="button" class="primary" data-act="miy" data-id="${esc(r.id)}" title="Use this design as your working design. You can still edit it; nothing is locked.">Make It Yours</button></div>
-        <details class="abnow"><summary>Keep ${w}'s … for now</summary><p class="hint">A temporary hold for this search only. Nothing is locked, and your design is not changed.</p><div class="abnowbtns">${(['tank', 'animals', 'plants', 'hardscape', 'substrate'] as Tab[]).map(t => `<button type="button" data-act="keepnow" data-side="${w}" data-tab="${t}">${esc(keepForNowLabel(w, t))}</button>`).join('')}</div></details>
-        ${open ? sheetHtml(r, other, w) : ''}
-      </div></article>`;
+  // The dock (Nathan 2026-11-10): the tanks are drawn in the MAIN view by the viewer's pair layer; this is only the bottom bar (the A/B decision, one facts line per side, Close) and ONE expandable panel above it.
+  const bits = (r: CandidateRecord, w: 'A' | 'B') => {
+    const m = metricsOf(r.facts), role = roleOf(engine.session(), r.id);
+    return `<button type="button" class="abfact${side === w ? ' cur' : ''}" data-act="side" data-side="${w}" title="${esc(r.facts.title)}: show this one${'' }"><b class="abk ${role}">${w}${role === 'favourite' ? ' ★' : ''}</b> ${role === 'favourite' || role === 'challenger' ? `<span class="abrl">${ROLE_LABEL[role]}</span>` : ''}<span>New spend <b>${esc(m.spend)}</b></span><span>Upkeep <b>${esc(m.minutes)}</b></span><span>${esc(m.difficulty)}</span></button>`;
   };
-  const switchesHtml = () => {
-    const s = engine.session(), a = s.current?.aId, b = s.current?.bId;
-    return `<div class="abswitches" role="group" aria-label="Discovery can change this">${TABS.map(t => `<div class="abswi">${switchHtml(t, discoverIsOn(store.tank, t), TAB_LABEL[t])}${freezeNote(s, t, a, b) ? `<small class="abfrz">${esc(freezeNote(s, t, a, b))}</small>` : ''}</div>`).join('')}</div>`;
-  };
-  const choiceHtml = () => {
+  const sideBlock = (r: CandidateRecord, other: CandidateRecord, w: 'A' | 'B') => `<section class="abside${side === w ? ' cur' : ''}" data-side="${w}" data-id="${esc(r.id)}">
+    <h3>${w}${roleOf(engine.session(), r.id) === 'favourite' ? ' ★' : ''} ${esc(r.facts.title)} <small>${esc(r.facts.habitat)}${r.facts.gallons != null ? ` · ${r.facts.gallons} gal` : ''}</small></h3>
+    <div class="btns abact"><button type="button" class="primary" data-act="miy" data-id="${esc(r.id)}" title="Use this design as your working design. You can still edit it; nothing is locked.">Make It Yours</button></div>
+    <details class="abnow"><summary>Keep ${w}'s … for now</summary><p class="hint">A temporary hold for this search only. Nothing is locked, and your design is not changed.</p><div class="abnowbtns">${(['tank', 'animals', 'plants', 'hardscape', 'substrate'] as Tab[]).map(t => `<button type="button" data-act="keepnow" data-side="${w}" data-tab="${t}">${esc(keepForNowLabel(w, t))}</button>`).join('')}</div></details>
+    ${sheetHtml(r, other, w)}</section>`;
+  const choiceBtns = () => {
     const sel = pending?.outcome;
     const btn = (o: Outcome, label: string, cls = '') => `<button type="button" class="${cls}${sel === o ? ' on' : ''}" data-act="choose" data-o="${o}" aria-pressed="${sel === o}">${label}</button>`;
-    const reasons = pending && (pending.outcome === 'A' || pending.outcome === 'B') ? `<div class="abwhy" role="group" aria-label="Why? (optional)"><div class="flabel">Why ${pending.outcome}? <small>optional, pick any</small></div>
+    return `<div class="abchoices" role="group" aria-label="Which would you rather build?">${btn('A', 'Prefer A', 'primary')}${btn('B', 'Prefer B', 'primary')}${btn('both', 'Like both')}${btn('neither', 'Like neither')}${btn('skip', 'Skip')}</div>`;
+  };
+  const reasonsHtml = () => pending && (pending.outcome === 'A' || pending.outcome === 'B') ? `<div class="abwhy" role="group" aria-label="Why? (optional)"><div class="flabel">Why ${pending.outcome}? <small>optional, pick any</small></div>
       <div class="abchips">${REASONS.map(x => `<button type="button" class="chip${pending!.why.includes(x.key) ? ' on' : ''}" data-act="why" data-k="${x.key}" aria-pressed="${pending!.why.includes(x.key)}">${x.label}</button>`).join('')}</div>
       <details class="abother"><summary>Anything good about the other one?</summary><div class="abchips">${REASONS.map(x => `<button type="button" class="chip${pending!.other.includes(x.key) ? ' on' : ''}" data-act="other" data-k="${x.key}" aria-pressed="${pending!.other.includes(x.key)}">${x.label}</button>`).join('')}</div></details>
       <div class="btns"><button type="button" class="primary" data-act="next">Next pair</button></div></div>` : '';
-    return `<div class="abchoose"><div class="btns abchoices">${btn('A', 'Prefer A', 'primary')}${btn('B', 'Prefer B', 'primary')}${btn('both', 'Like both')}${btn('neither', 'Like neither')}${btn('skip', 'Skip')}</div>${reasons}
-      <div class="btns"><button type="button" data-act="different" title="Two new ideas away from your favourite; the winner then faces your favourite">Explore Something Different</button></div></div>`;
-  };
+
   const noSolution = (r: Extract<PairResult, { ok: false }>) => `<div class="abnone" role="status"><h3>No design fits right now</h3><p>What blocks it:</p><ul>${r.conflicts.map(c => `<li>${esc(c)}</li>`).join('')}</ul>
     <p><b>Smallest change that would help</b> (nothing is changed for you):</p><ul>${r.relaxations.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
     <div class="btns"><button type="button" class="primary" data-act="retry">Try again</button>${TABS.filter(t => !discoverIsOn(store.tank, t)).map(t => `<button type="button" data-act="enable" data-tab="${t}">Let Discovery change ${TAB_LABEL[t]}</button>`).join('')}</div></div>`;
-  const mobileStrip = (a: CandidateRecord, b: CandidateRecord) => `<div class="abtoggle" role="tablist"><button type="button" role="tab" data-act="side" data-side="A" aria-selected="${side === 'A'}"><b>A</b> ${esc(stripText(a.facts))}</button><button type="button" role="tab" data-act="side" data-side="B" aria-selected="${side === 'B'}"><b>B</b> ${esc(stripText(b.facts))}</button></div>`;
 
   const planHtml = (p: Plan & { adaptNote?: string }) => {
     const by = TABS.map(t => ({ t, rs: p.rows.filter(r => r.tab === t) })).filter(g => g.rs.length);
@@ -157,37 +168,54 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
       ${histOpen ? `<div class="abstrip">${h.rows.map(x => `<button type="button" class="abth" data-act="hist-open" data-id="${esc(x.rec.id)}" title="${esc(x.rec.facts.title)}"><img alt="" width="96" height="54" data-hid="${esc(x.rec.id)}"${x.rec.thumb ? ` src="${esc(x.rec.thumb)}"` : ''}><span>${x.champion ? '★ ' : ''}${x.favourite ? '♥ ' : ''}${esc(x.rec.facts.title)}</span></button>`).join('') || '<span class="hint">Nothing yet.</span>'}</div>` : ''}</footer>`;
   };
 
+  const proposalHtml = (p: CombineProposal) => `<div class="abprop" role="alert"><h3>Proposed combination</h3>
+      <p>${esc(TAB_LABEL[p.tab])} from ${esc(engine.record(p.donorId)?.facts.title ?? 'the other design')} in ${esc(engine.record(p.targetId)?.facts.title ?? 'your design')}.</p>
+      ${p.adjustments.length ? `<p><b>To make it fit:</b></p><ul>${p.adjustments.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '<p>No other changes are needed.</p>'}
+      ${p.spendLine ? `<p>${esc(p.spendLine)}</p>` : ''}<p class="hint">Your locks are never overridden. Nothing is shown or stored until you approve; Cancel leaves everything as it was.</p>
+      <div class="btns"><button type="button" class="primary" data-act="combine-ok">Approve and compare</button><button type="button" data-act="combine-no">Cancel</button></div></div>`;
+  const syncViewer = () => {
+    if (!viewer) return;
+    if (!result?.ok) { viewer.showPair(null); viewer.setReserve(0); return; }
+    const mobile = window.innerWidth < 700, r = result, key = [r.a.id, r.b.id, mobile ? side : '', roleOf(engine.session(), r.a.id), roleOf(engine.session(), r.b.id)].join('|');
+    if (key !== shownKey) {
+      shownKey = key; const role = (x: CandidateRecord) => { const k = roleOf(engine.session(), x.id); return `${k === 'favourite' ? '★ ' : ''}${ROLE_LABEL[k]}`; };
+      viewer.showPair([r.a.snapshot, r.b.snapshot], { ...(mobile ? { only: side === 'A' ? 0 : 1 } : {}), info: [role(r.a), role(r.b)] });
+    }
+  };
   const draw = () => {
     if (root.hidden) return;
-    const s = engine.session();
-    let body = '';
-    if (resume) body = `<div class="abnone" role="alert"><h3>You changed the design since this session</h3><p>Discovery can re-check your favourite against the design as it is now, or start over.</p><div class="btns"><button type="button" class="primary" data-act="continue">Continue (re-check)</button><button type="button" data-act="restart">New session</button></div></div>`;
-    else if (busy) body = '<p class="hint abbusy" role="status">Looking…</p>';
-    else if (!result) body = '';
-    else if (!result.ok) body = noSolution(result);
-    else body = `<p class="abbanner">${esc(bannerOf(s))}</p><p class="hint abexplain">Pick the one you would rather build. The winner becomes your favourite (★) and meets a new challenger next. Nothing is locked or changed by choosing.</p>${mobileStrip(result.a, result.b)}<div class="abgrid">${cardHtml(result.a, result.b, 'A')}${cardHtml(result.b, result.a, 'B')}</div>${choiceHtml()}`;
-    root.innerHTML = `<header class="abhead"><h2>Discover</h2><button type="button" class="dxx" aria-label="Close Discovery" data-act="close">✕</button></header>
-      <div class="abtop"><div class="flabel">Discovery can change this</div>${switchesHtml()}<p class="hint abswhint">Switch a tab off to hold it as it is for now. That is temporary and locks nothing.</p>
-        <div class="ablocked" data-drop="1" role="note"><b>Locked</b> ${esc(lockedSummary(store.tank).replace(/^Locked \(kept as it is\): /, '').replace(/\.$/, ''))}<small> · drag a row here, or use Keep, to lock it</small></div></div>
-      ${only ? `<p class="hint abonly">This run looks only at ${only.map(t => TAB_LABEL[t]).join(', ')} (opened from there). Flip any switch to use your own.</p>` : ''}
-      ${note && !plan && !detail ? `<p class="abnote" role="status">${esc(note)}</p>` : ''}
-      <div class="abmain">${body}</div>${historyHtml()}${plan ? planHtml(plan) : detail ? detailHtml(detail) : ''}`;
-    shots();
+    let panel = '';
+    const ok = !busy && !resume && result?.ok ? result : undefined;
+    const force = resume || (!busy && !!result && !result.ok) || !!proposal || !!pending;
+    if (resume) panel += `<div class="abnone" role="alert"><h3>You changed the design since this session</h3><p>Discovery can re-check your favourite against the design as it is now, or start over.</p><div class="btns"><button type="button" class="primary" data-act="continue">Continue (re-check)</button><button type="button" data-act="restart">New session</button></div></div>`;
+    else if (!busy && result && !result.ok) panel += noSolution(result);
+    if (note && !plan && !detail) panel += `<p class="abnote" role="status">${esc(note)}</p>`;
+    if (ok && !plan && !detail) { const g = engine.suggestion?.(); if (g && g.text !== sugNo) panel += `<p class="hint absug" role="note">${esc(g.text)} <button type="button" data-act="sug-do" data-tab="${g.tab}" data-text="${esc(g.text)}">Switch ${TAB_LABEL[g.tab]} off</button> <button type="button" data-act="sug-no" data-text="${esc(g.text)}">Not now</button></p>`; }
+    if (proposal) panel += proposalHtml(proposal);
+    if (ok) {
+      panel += `${reasonsHtml()}<div class="btns"><button type="button" data-act="different" title="Two new ideas away from your favourite; the winner then faces your favourite">Explore Something Different</button></div>
+        <div class="abcols">${sideBlock(ok.a, ok.b, 'A')}${sideBlock(ok.b, ok.a, 'B')}</div>`;
+      panel += historyHtml();
+    } else if (!busy && result && !result.ok) panel += historyHtml();
+    if (DEBUG) panel += statsHtml(summarize(metrics.all()));
+    const open = (panelOpen || force) && !busy;
+    const bar = ok ? `${choiceBtns()}<div class="abfacts">${bits(ok.a, 'A')}${bits(ok.b, 'B')}</div>` : `<span class="hint abbusy" role="status">${busy ? 'Looking…' : 'Discovery'}</span>`;
+    root.innerHTML = `${open ? `<div class="abpanel" role="region" aria-label="Discovery details">${panel}</div>` : ''}<div class="abbar" role="group" aria-label="Discovery"><div class="abbarmain">${bar}</div><div class="abbarend"><button type="button" data-act="more" aria-expanded="${open}" title="Reasons, Explore Something Different, Combine, Keep, history, Make It Yours">${open ? 'Less ▾' : 'More ▴'}</button><button type="button" class="dxx" aria-label="Close Discovery" data-act="close">✕ Close</button></div></div>${plan ? planHtml(plan) : detail ? detailHtml(detail) : ''}`;
+    syncViewer(); viewer?.setReserve(root.offsetHeight); shots();
   };
 
   // ------------------------------------------------------------------------------------------------ pictures (one per frame, through the store-neutral previewShot)
   const shots = () => {
     if (!viewer) return;
-    const my = rid, todo: { img: HTMLImageElement; rec: CandidateRecord }[] = [];
-    root.querySelectorAll<HTMLImageElement>('img.abpic:not([src])').forEach(img => { const rec = engine.record(img.closest<HTMLElement>('[data-id]')?.dataset.id ?? detail ?? ''); if (rec) todo.push({ img, rec }); });
+    const todo: { img: HTMLImageElement; rec: CandidateRecord }[] = [];
+    root.querySelectorAll<HTMLImageElement>('img.abpic:not([src])').forEach(img => { const rec = engine.record(detail ?? ''); if (rec) todo.push({ img, rec }); });
     root.querySelectorAll<HTMLImageElement>('img[data-hid]:not([src])').forEach(img => { const rec = engine.record(img.dataset.hid!); if (rec) todo.push({ img, rec }); });
     const next = () => {
-      const t = todo.shift(); if (!t || my !== rid && !result || root.hidden) return;
-      shooting = true;
-      try { t.rec.thumb ??= previewShot(store, t.rec.snapshot, () => viewer.thumbnail(480)); t.img.src = t.rec.thumb; } catch (e) { console.warn('[ab] picture failed', e); } finally { shooting = false; }
+      const t = todo.shift(); if (!t || root.hidden) return;
+      try { t.rec.thumb ??= viewer.pairShot(t.rec.snapshot, 480); t.img.src = t.rec.thumb; } catch (e) { console.warn('[ab] picture failed', e); }
       requestAnimationFrame(next);
     };
-    requestAnimationFrame(next);
+    if (todo.length) requestAnimationFrame(next);
   };
 
   // ------------------------------------------------------------------------------------------------ actions
@@ -200,6 +228,7 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
   };
   const doKeep = (w: 'A' | 'B' | undefined, id: string | undefined, t: KeepTarget, uids?: string[]) => {
     const rec = id ? engine.record(id) : recOf(w!); if (!rec) return;
+    metrics.log({ k: 'keep', t: Date.now(), target: t.kind, locked: true, n: rounds() });
     if (t.kind === 'item' && uids?.length) { let last = { ok: true, message: '' }; for (const u of uids) last = keepFromRecord(store, rec, { kind: 'item', uid: u }); afterKeep(uids.length > 1 ? `Kept ${uids.length} pieces.` : last.message); return; }
     const r = keepFromRecord(store, rec, t); afterKeep(r.message);
   };
@@ -218,26 +247,34 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
       case 'side': side = w!; draw(); break;
       case 'sheet': sheets.has(id!) ? sheets.delete(id!) : sheets.add(id!); draw(); break;
       case 'keep': { const t = JSON.parse(el.dataset.t!) as KeepTarget; const uids = el.dataset.uids ? JSON.parse(el.dataset.uids) as string[] : undefined; doKeep(w, undefined, t, uids); break; }
-      case 'keepnow': { const rec = recOf(w!); if (!rec) break; const tab = el.dataset.tab as Tab; toggleSwitch(store, tab, false); syncScope(); engine.freeze(tab, rec.id); note = `${TAB_LABEL[tab]}: kept from ${w} for the next candidates. Your design is not changed; turn the switch back on to release it.`; draw(); break; }
+      case 'keepnow': { const rec = recOf(w!); if (!rec) break; const tab = el.dataset.tab as Tab; metrics.log({ k: 'freeze', t: Date.now(), tab, n: rounds() }); toggleSwitch(store, tab, false); syncScope(); engine.freeze(tab, rec.id); note = `${TAB_LABEL[tab]}: kept from ${w} for the next candidates. Your design is not changed; turn the switch back on to release it.`; draw(); break; }
       case 'combine': {
         const donor = el.dataset.donor!, target = el.dataset.target!, tab = el.dataset.tab as Tab;
-        pending = undefined; busy = true; note = ''; draw(); const my = ++rid;
+        pending = undefined; busy = true; note = ''; proposal = undefined; draw(); const my = ++rid;
         setTimeout(() => {
           if (my !== rid || root.hidden) return;
           let out: ReturnType<NonNullable<AbEngine['combine']>>;
           try { out = engine.combine!(target, donor, tab); } catch (e) { console.error(e); out = { ok: false, reason: 'Combining did not work on this design.', relaxations: [] }; }
-          busy = false; sheets = new Set();
-          if (out.ok) { result = out.pair; side = 'A'; note = `Combined: a new design with the ${TAB_LABEL[tab].toLowerCase()} from the other one.${out.notes.length ? ` To make it work: ${out.notes.join('; ')}.` : ''} Pick it to make it your favourite. Both originals are unchanged in History.`; }
-          else { result = engine.next(); note = `Not combined: ${out.reason}${out.relaxations.length ? ` Smallest change that would help: ${out.relaxations.join('; ')}.` : ''}`; }
-          deps.status(note); draw();
+          busy = false; metrics.log({ k: 'combine', t: Date.now(), tab, ok: out.ok, n: rounds() }); panelOpen = true;
+          if (out.ok) proposal = out.proposal;
+          else note = `Not combined: ${out.reason}${out.relaxations.length ? ` Smallest change that would help: ${out.relaxations.join('; ')}.` : ''}`;
+          draw();
         }, 30);
         break;
       }
+      case 'combine-ok': { const p = proposal; if (!p) break; proposal = undefined; result = engine.acceptCombine!(p); side = 'A'; metrics.shown(); note = `Combined: a new design with the ${TAB_LABEL[p.tab].toLowerCase()} from the other one. Pick it to make it your favourite. Both originals are unchanged in History.`; panelOpen = false; draw(); break; }
+      case 'combine-no': proposal = undefined; note = ''; draw(); break;
+      case 'more': panelOpen = !panelOpen; draw(); break;
+      case 'stats-clear': metrics.clear(); draw(); break;
+      case 'sug-no': sugNo = el.dataset.text ?? ''; draw(); break;
+      case 'sug-do': { const tab = el.dataset.tab as Tab; toggleSwitch(store, tab, false); syncScope(); sugNo = el.dataset.text ?? ''; note = `${TAB_LABEL[tab]} is switched off for the next pairs. Switch it back on any time.`; draw(); break; }
       case 'miy': openPlan(id!); break;
       case 'miy-cancel': plan = undefined; note = ''; draw(); break;
       case 'miy-accept': {
-        const r = acceptPlan(store, plan!.rec, engine.session());
-        if (r.ok) { plan = undefined; deps.status('Made yours: it is now your working design (Undo steps back). Nothing was locked.'); close(); }
+        frozenNow(false);   // Make It Yours is the one edit that is allowed: the working design may change now
+        adopted = true; const r = acceptPlan(store, plan!.rec, engine.session());
+        if (!r.ok) { adopted = false; frozenNow(true); }
+        if (r.ok) { adopted = true; metrics.log({ k: 'miy', t: Date.now(), rounds: rounds() }); plan = undefined; deps.status('Made yours: it is now your working design (Undo steps back). Nothing was locked.'); close(); }
         else { note = r.reason === 'stale' ? 'Your project changed while this was open: look again.' : 'It conflicts with what you kept.'; plan = makePlan(store, plan!.rec, engine.session()); draw(); }
         break;
       }
@@ -252,19 +289,17 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
       case 'hist-toggle': histOpen = !histOpen; draw(); break;
       case 'hist-prev': histPage = Math.max(0, histPage - 1); draw(); break;
       case 'hist-next': histPage++; draw(); break;
-      case 'hist-open': detail = id; note = ''; importTab = undefined; draw(); break;
+      case 'hist-open': metrics.log({ k: 'history', t: Date.now(), op: 'open' }); detail = id; note = ''; importTab = undefined; draw(); break;
       case 'hist-close': detail = undefined; note = ''; importTab = undefined; draw(); break;
       case 'hist-fav': engine.favourite(id!, !isFav(id!)); draw(); break;
-      case 'hist-back': { detail = undefined; pending = undefined; look(() => engine.bringBack(id!)); break; }
-      case 'hist-setfav': { const r = engine.setFavourite(id!); if (r.ok) { detail = undefined; look(() => engine.next()); } else { note = `Not set: ${r.reason}`; draw(); } break; }
+      case 'hist-back': { metrics.log({ k: 'history', t: Date.now(), op: 'bringBack' }); detail = undefined; pending = undefined; look(() => engine.bringBack(id!)); break; }
+      case 'hist-setfav': { metrics.log({ k: 'history', t: Date.now(), op: 'setFavourite' }); const r = engine.setFavourite(id!); if (r.ok) { detail = undefined; look(() => engine.next()); } else { note = `Not set: ${r.reason}`; draw(); } break; }
       case 'import': importTab = el.dataset.tab as Tab; draw(); break;
       case 'import-no': importTab = undefined; draw(); break;
-      case 'import-yes': { const tab = importTab!; engine.freeze(tab, detail!); toggleSwitch(store, tab, false); importTab = undefined; note = `${TAB_LABEL[tab]} from this design will be used for the next candidates. Your design is not changed.`; draw(); break; }
+      case 'import-yes': { const tab = importTab!; metrics.log({ k: 'history', t: Date.now(), op: 'import' }); engine.freeze(tab, detail!); toggleSwitch(store, tab, false); importTab = undefined; note = `${TAB_LABEL[tab]} from this design will be used for the next candidates. Your design is not changed.`; draw(); break; }
     }
   };
   root.addEventListener('click', e => {
-    const sw = (e.target as HTMLElement).closest<HTMLElement>('[data-sw]');
-    if (sw) { e.preventDefault(); e.stopPropagation(); only = undefined; toggleSwitch(store, sw.dataset.sw as Tab); syncScope(); syncSwitches(store, document); draw(); return; }
     const el = (e.target as HTMLElement).closest<HTMLElement>('[data-act]'); if (!el || !root.contains(el) || el.tagName === 'SELECT') return;
     act(el.dataset.act!, el);
   });
@@ -284,9 +319,9 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
     isOpen: () => !root.hidden,
     close,
     open(scope) {
-      engine.open(scope); histPage = 0; histOpen = false; detail = undefined; plan = undefined; pending = undefined; note = ''; sheets = new Set(); result = undefined; busy = false;
-      only = scope; if (!scope) syncScope();
-      root.hidden = false; resume = engine.isStale(); draw(); root.scrollTop = 0;
+      adopted = false; engine.open(scope); metrics.log({ k: 'open', t: Date.now(), resumed: engine.session().comparisons.length > 0 }); histPage = 0; histOpen = false; detail = undefined; plan = undefined; pending = undefined; note = ''; sheets = new Set(); result = undefined; busy = false;
+      proposal = undefined; panelOpen = false; shownKey = ''; if (!scope) syncScope();
+      frozenNow(true); root.hidden = false; resume = engine.isStale(); draw();
       if (!resume) look(() => engine.next());
     },
   };

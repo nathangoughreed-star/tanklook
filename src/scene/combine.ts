@@ -59,6 +59,23 @@ export function dropPlants(S: TankSetup, uids: ReadonlySet<string>): { scene: Ta
   return out.items.length === was ? null : { scene: ensureUids(out), said: `${was - out.items.length} plant${was - out.items.length > 1 ? 's' : ''} left out that the light cannot carry` };
 }
 
+const countBy = <T,>(xs: T[], k: (x: T) => string) => { const m = new Map<string, number>(); for (const x of xs) m.set(k(x), (m.get(k(x)) ?? 0) + 1); return m; };
+type Costed = { snapshot: TankSetup; facts: { toBuy: { key?: string; label: string; usd: number }[]; newSpendUsd: { mean: number } } };
+/** Every dependent change a combination made, in plain words, so the person approves them BEFORE the design exists on screen. `tab` is the combined tab (its own change is the point, not an adjustment):
+ *  animals or plants that changed in a tab that was not combined, a stronger light, and each purchase the combined design adds or raises against the target ("+ Light (32 W) $144"). */
+export function adjustmentsOf(target: Costed, rec: Costed, tab: Tab, name: (species: string) => string): string[] {
+  const out: string[] = [], A = target.snapshot, B = rec.snapshot;
+  if (tab !== 'animals') {
+    const a = countBy(A.fish, f => f.species), b = countBy(B.fish, f => f.species);
+    for (const sp of new Set([...a.keys(), ...b.keys()])) { const d = (b.get(sp) ?? 0) - (a.get(sp) ?? 0); if (d) out.push(d < 0 ? `${-d} ${name(sp)} fewer` : `${d} ${name(sp)} more`); }
+  }
+  if (tab !== 'plants') { const d = B.items.filter(i => layerOf(i) === 'plant').length - A.items.filter(i => layerOf(i) === 'plant').length; if (d) out.push(d < 0 ? `${-d} plant${d < -1 ? 's' : ''} left out that the light cannot carry` : `${d} more plant${d > 1 ? 's' : ''}`); }
+  if (wattsOf(A) !== wattsOf(B)) out.push(`a stronger light (${Math.round(wattsOf(A))} W to ${Math.round(wattsOf(B))} W)`);
+  const had = new Map(target.facts.toBuy.map(l => [l.key ?? l.label, l.usd]));
+  for (const l of rec.facts.toBuy) { const was = had.get(l.key ?? l.label); if (was === undefined) out.push(`+ ${l.label} ($${Math.round(l.usd)})`); else if (l.usd > was + 0.5) out.push(`${l.label} costs $${Math.round(l.usd - was)} more`); }
+  return out;
+}
+
 /** The combined plants want more light than the design's own (not owned, not required) light gives: the smallest stronger light that carries them. It is a purchase the design's gear then prices. null = nothing to do or nothing sensible to do. */
 export function strongerLight(S: TankSetup): { scene: TankSetup; said: string } | null {
   if (!S.water.on || S.light.owned || S.light.product) return null;

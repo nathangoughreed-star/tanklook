@@ -2351,14 +2351,14 @@ Cancel, then change the name, to keep both.`)) return;
     return `<span class="aq${isOver(r.loadPercent) ? ' over' : ''}" title="${tip}">${esc(stockingLine(r))}</span>`;
   };
   viewer.onDrawn(() => {
-    const g = G(), active = viewer.active, split = active.length > 1;
-    const diff = split ? tankDiff(g.tanks[0], g.tanks[1], g.units) : [];
+    const g = G(), active = viewer.active, pr = viewer.pairShown, split = active.length > 1 || !!pr;   // Discovery's pair counts as a comparison
+    const diff = active.length > 1 ? tankDiff(pr ? pr.S[0] : g.tanks[0], pr ? pr.S[1] : g.tanks[1], g.units) : [];
     const hidden = $('app').classList.contains('collapsed');
-    const sig = JSON.stringify([diff, hidden, g.units, g.active, store.targets, g.camLock, active.map(v => [v.x, v.w]), active.map((v, i) => aqChip(v.S, v.key, i))]);
+    const sig = JSON.stringify([diff, hidden, g.units, g.active, store.targets, g.camLock, pr?.info, pr?.only, active.map(v => [v.x, v.w]), active.map((v, i) => aqChip(v.S, v.key, i))]);
     if (sig !== tabSig) {
       tabSig = sig;
       for (const [i, id] of [[0, 'labA'], [1, 'labB']] as const) {
-        const el = $<HTMLDivElement>(id), vp = active[i];
+        const el = $<HTMLDivElement>(id), vp = pr ? active.find(v => v.i === i) : active[i];
         // only while comparing (Nathan 2026-10-14): one tank's size, stocking and Split all live in the panel already
         el.style.display = vp && split ? '' : 'none';
         if (!vp || !split) { el.innerHTML = ''; continue; }
@@ -2369,6 +2369,11 @@ Cancel, then change the name, to keep both.`)) return;
         const below = tools > 0 && vp.w - 16 - tools < 150;
         el.style.top = below ? (vt.offsetTop + vt.offsetHeight + 6) + 'px' : '';
         el.style.right = (viewer.host.clientWidth - vp.x - vp.w + 8) + 'px'; el.style.maxWidth = (below ? vp.w - 16 : Math.max(80, vp.w - 16 - tools)) + 'px'; // clear of them
+        if (pr) {   // Discovery's pair: a plain chip with the role (favourite / challenger), never the Edit box or Delete
+          el.classList.add('tab', 'on');
+          el.innerHTML = `<div class="hd"><b class="tabkey">${vp.key}</b><span class="abchip">${esc(pr.info[i])}</span>${vp.S.water.on ? aqChip(vp.S, vp.key, i) : '<span class="aq none">Dry habitat</span>'}<span class="more" aria-hidden="true">${diff.length ? `${diff.length} diff${diff.length === 1 ? '' : 's'} ` : ''}▾</span></div>` + (diff.length ? `<div class="diffs">${diff.slice(0, 8).map(d => `<span>${esc(String(d[i] ?? ''))}</span>`).join('')}</div>` : '');
+          continue;
+        }
         const ed = store.isEditing(i);
         el.classList.add('tab'); el.classList.toggle('on', ed);
         // the "Edit" box: the panel's changes apply to every view ticked here
@@ -2384,8 +2389,8 @@ Cancel, then change the name, to keep both.`)) return;
           `<button class="close" data-delete="${i}" title="Delete Tank ${vp.key} and end the split view (Ctrl+Z brings it back)">Delete</button></div></div>`;
       }
       const lock = $<HTMLButtonElement>('camLock');
-      lock.hidden = !split;
-      if (split) {
+      lock.hidden = !split || !!pr;
+      if (split && !pr) {
         lock.style.left = (active[1].x - 4) + 'px';
         lock.classList.toggle('on', g.camLock);
         lock.innerHTML = padlock(g.camLock); lock.setAttribute('aria-pressed', String(g.camLock));

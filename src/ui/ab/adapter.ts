@@ -11,8 +11,9 @@ export interface HistoryPage { rows: HistoryRow[]; total: number; page: number; 
 export interface ReEval { verdict: Verdict; facts: CandidateFacts; conflicts: string[] }
 export type AdaptResult = { ok: true; record: CandidateRecord } | { ok: false; reason: string };
 
-/** Combine (AB5): one tab of `donor` taken into `target` as a NEW validated record, shown at once against the favourite (or as the first pair). A refusal keeps the pair on screen and says why. */
-export type CombineOutcome = { ok: true; record: CandidateRecord; notes: string[]; pair: PairResult } | { ok: false; reason: string; relaxations: string[] };
+/** Combine (AB5): one tab of `donor` taken into `target` as a PROPOSED combination. Nothing is stored or shown until the person approves it (`acceptCombine`); a refusal keeps the pair on screen and says why. */
+export interface CombineProposal { record: CandidateRecord; targetId: string; donorId: string; tab: Tab; /** every dependent change, in words, shown BEFORE the design exists on screen */ adjustments: string[]; spendLine: string }
+export type CombineOutcome = { ok: true; proposal: CombineProposal } | { ok: false; reason: string; relaxations: string[] };
 
 export interface AbEngine {
   /** the session as it stands (always one: `open` makes or resumes it) */
@@ -47,6 +48,10 @@ export interface AbEngine {
   adapt(id: string): AdaptResult;
   /** take the donor's tab into the target: a NEW record, never an edit; the originals stay as they were. Optional so the stand-in engine needs none. */
   combine?(targetId: string, donorId: string, tab: Tab): CombineOutcome;
+  /** the person approved a proposal: it becomes a record, the donor's tab is liked, and combined vs the favourite is the next pair */
+  acceptCombine?(p: CombineProposal): PairResult;
+  /** an optional one-line suggestion to narrow (never applied by the engine; the screen offers it and the person decides) */
+  suggestion?(): { text: string; tab: Tab } | undefined;
   /** leave discovery resumable */
   pause(): void;
 }

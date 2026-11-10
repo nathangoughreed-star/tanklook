@@ -518,8 +518,21 @@ export class Viewer {
   /** Apply pending store edits to the scenes now, without drawing (an AR session draws itself: render/ar.ts). */
   buildNow() { if (this.needsBuild) this.build(); }
 
-  /** The viewports on screen: one per tank. */
-  get active() { return this.vps.slice(0, this.store.scene.tanks.length); }
+  /** Discovery's pair layer (lane AB5): two candidate designs drawn INSTEAD of the scene's tanks. Render only: it never reads or writes the project (the scene's first camera is shared so orbit and zoom keep working),
+   *  nothing is saved, and `showPair(null)` brings the working tank back exactly. `only` shows one side (a phone). `roles` / `info` are what the A / B chips say. */
+  private pair: { S: [TankSetup, TankSetup]; only?: 0 | 1; info: [string, string] } | null = null;
+  showPair(S: [TankSetup, TankSetup] | null, opts: { only?: 0 | 1; info?: [string, string] } = {}) { this.pair = S && { S, ...(opts.only != null ? { only: opts.only } : {}), info: opts.info ?? ['', ''] }; this.rebuild(); }
+  get pairShown() { return this.pair; }
+  /** Pixels at the bottom of the main view that something else (Discovery's dock) covers: the tanks are drawn above them. */
+  private reserve = 0;
+  setReserve(px: number) { px = Math.max(0, Math.round(px)); if (px !== this.reserve) { this.reserve = px; this.dirty = true; } }
+  /** A small picture of one candidate design, drawn through the pair layer and then put back: the project is never touched (Discovery's history strip). */
+  pairShot(S: TankSetup, w = 160): string {
+    const was = this.pair; this.pair = { S: [S, S], only: 0, info: ['', ''] }; this.rebuild();
+    try { return this.thumbnail(w); } finally { this.pair = was; this.rebuild(); }
+  }
+  /** The viewports on screen: one per tank (or the two candidates of Discovery's pair). */
+  get active() { const p = this.pair; return p ? (p.only != null ? [this.vps[p.only]] : this.vps.slice(0, 2)) : this.vps.slice(0, this.store.scene.tanks.length); }
   /** The viewport of the tank the panel edits. */
   get current() { return this.active[this.store.scene.active] ?? this.active[0]; }
 
@@ -546,7 +559,9 @@ export class Viewer {
   /** `ownCamera` (lane DX5): draw the stand-in with ITS camera, for a picture of a candidate (Suggest, Visual Discovery); the scene is never touched. */
   setPreview(S: TankSetup | null, ownCamera = false) { this.preview = S; this.previewOwnCam = ownCamera; this.rebuild(); }
   /** The preview takes the SCENE's camera, so orbit, zoom and the lens all keep working while a size is being previewed (they write the scene's camera; a frozen copy of it was why the picker could not orbit, lane ST2). */
-  private setupOf(i: number): TankSetup | undefined { const S = this.store.scene.tanks[i]; return this.preview && S && i === this.store.scene.active ? { ...this.preview, camera: this.previewOwnCam ? this.preview.camera : S.camera } : S; }
+  private setupOf(i: number): TankSetup | undefined {
+    if (this.pair) { const P = this.pair, S = P.S[i]; return S && (P.only == null || P.only === i) ? { ...S, camera: this.store.scene.tanks[0].camera } : undefined; }
+    const S = this.store.scene.tanks[i]; return this.preview && S && i === this.store.scene.active ? { ...this.preview, camera: this.previewOwnCam ? this.preview.camera : S.camera } : S; }
   private viewKey(i: number) {
     const S = this.setupOf(i); if (!S) return '';
     return JSON.stringify([envKey(S), this.store.scene.units, this.store.isEditing(i), this.terrainEdit]);
@@ -611,7 +626,8 @@ export class Viewer {
   private dim?: { sc: THREE.Scene; m: THREE.Mesh; cam: THREE.OrthographicCamera };
   draw() {
     if (this.needsBuild) this.build();
-    const sc = this.store.scene, w = this.host.clientWidth, h = this.host.clientHeight, r = this.renderer;
+    const sc = this.store.scene, w = this.host.clientWidth, h = Math.max(60, this.host.clientHeight - this.reserve), r = this.renderer;
+    this.canvas.style.height = this.reserve ? h + 'px' : '';
     r.setSize(w, h, false);
     const active = this.active, hw = (w - GAP) / 2;
     if (active.length === 1) Object.assign(active[0], { x: 0, y: 0, w, h });
@@ -636,7 +652,7 @@ export class Viewer {
     const boxes = active.map(vp => frameStraightOn(vp.T, vp.S.camera, vp.w / vp.h, headroom(vp.S)));
     // locked (or one tank): one FOV for all, so sizes stay directly comparable; unlocked: each view frames itself
     const shared = fovFor(Math.max(...boxes.map(b => b.t)), lensZoom(active[0].S.camera));
-    const fovOf = (k: number) => (sc.camLock || active.length === 1 ? shared : fovFor(boxes[k].t, lensZoom(active[k].S.camera)));
+    const camLock = sc.camLock && !this.pair, fovOf = (k: number) => (camLock || active.length === 1 ? shared : fovFor(boxes[k].t, lensZoom(active[k].S.camera)));
     r.setScissorTest(true);
     r.setViewport(0, 0, w, h); r.setScissor(0, 0, w, h);
     r.setClearColor(new THREE.Color(getComputedStyle(this.host).getPropertyValue('--stage-gap').trim() || '#eef0f3')); r.clear();
@@ -653,7 +669,7 @@ export class Viewer {
       const x0 = Math.min(...bs.map(b => b.x0)), x1 = Math.max(...bs.map(b => b.x1)), y0 = Math.min(...bs.map(b => b.y0)), y1 = Math.max(...bs.map(b => b.y1));
       return { x0, x1, y0, y1, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 };
     };
-    const lockedWin = sc.camLock && active.length > 1 ? { tank: union(wins.map(b => b.tank)), all: union(wins.map(b => b.all)) } : null;
+    const lockedWin = camLock && active.length > 1 ? { tank: union(wins.map(b => b.tank)), all: union(wins.map(b => b.all)) } : null;
     const frame = (k: number) => {
       const vp = active[k], fov = fovOf(k);
       const hy = Math.tan(fov * D2R / 2), hx = hy * vp.w / vp.h;
@@ -841,7 +857,12 @@ export class Viewer {
   /** What the selection highlights: every animal / piece of the group (null = none). */
   private get sel() { const g = this.store.group; return { fish: g.fish.length ? new Set(g.fish) : null, items: g.items.length ? new Set(g.items) : null }; }
 
+  /** While the pair is shown nothing can be picked or edited: a hit is only the view (orbit, zoom), reported on the working camera's view 0. */
   hitTest(clientX: number, clientY: number) {
+    const h = this.hitTest0(clientX, clientY); if (!h || !this.pair) return h;
+    return { ...h, vp: Object.assign(Object.create(h.vp), { i: 0 }), fishId: null, itemId: null, dot: null, pool: null, mesh: undefined } as typeof h;
+  }
+  private hitTest0(clientX: number, clientY: number) {
     const r = this.host.getBoundingClientRect(), x = clientX - r.left, y = clientY - r.top;
     const vp = this.active.find(v => x >= v.x && x <= v.x + v.w);
     if (!vp) return null;

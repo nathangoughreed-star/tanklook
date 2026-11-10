@@ -111,6 +111,7 @@ export class Store {
   /** Move a camera (not undoable): view i's (orbit / zoom in that view), or else every edited tank's (panel sliders).
    *  While the cameras are locked, both views move together. */
   cam(fn: (c: CameraSettings) => void, i?: number) {
+    if (this.frozen) i = undefined;   // Discovery's pair is drawn with the first tank's camera
     this.lastCam = i ?? this.scene.active;
     this.update(s => {
       for (const k of s.camLock ? [i ?? s.active] : i != null ? [i] : this.targets) {
@@ -184,7 +185,18 @@ export class Store {
     }, { kind: 'view' });
   }
 
+  /** Discovery is on (lane AB5): the working DESIGN is immutable. An ordinary design edit is refused (`onBlocked` says so); what Discovery itself keeps (locks, the Discovery switches, the brief and constraints) and the camera still change, with no undo step. */
+  frozen = false; onBlocked: (() => void) | undefined;
+  /** The design of every tank, without the requirements Discovery may change (locks, switches, brief, constraints) and the viewer (camera, render). */
+  static designKey(s: Scene): string {
+    return JSON.stringify([s.tanks.map(t => { const { locks, discoverOn, brief, constraints, camera, render, ...d } = t as unknown as Record<string, unknown>; void locks; void discoverOn; void brief; void constraints; void camera; void render; return d; }), s.active]);
+  }
   update(fn: (s: Scene) => void, opts: UpdateOptions = {}) {
+    if (this.frozen && (opts.kind ?? 'scene') === 'scene') {
+      const draft = structuredClone(this.scene); fn(draft);
+      if (Store.designKey(draft) !== Store.designKey(this.scene)) { this.onBlocked?.(); return; }
+      opts = { ...opts, history: false };
+    }
     const kind = opts.kind ?? 'scene', history = opts.history ?? kind === 'scene';
     if (history) {
       const now = performance.now();
@@ -274,8 +286,8 @@ export class Store {
   }
   get canUndo() { return this.undoStack.length > 0; }
   get canRedo() { return this.redoStack.length > 0; }
-  undo() { this.step(this.undoStack, this.redoStack); }
-  redo() { this.step(this.redoStack, this.undoStack); }
+  undo() { if (this.frozen) { this.onBlocked?.(); return; } this.step(this.undoStack, this.redoStack); }
+  redo() { if (this.frozen) { this.onBlocked?.(); return; } this.step(this.redoStack, this.undoStack); }
   /** The undo depth now, for squash / rollback: a preview (the growth Time slider) that is kept or undone as a whole. */
   get mark() { return this.undoStack.length; }
   /** Every step since `mark` becomes one undo step (the preview kept). */

@@ -14,6 +14,8 @@ import { equipmentOf, requiredEquipment } from './project';
 import { filterUnits, heaterUnits, inferTech, withUnits } from './tech';
 import { briefToWants, type Brief } from './brief';
 import { ensureUids } from './uid';
+import { breadthOf, targetDistance, visuallyDistinct, type Breadth } from './breadth';
+import { diffTouches } from './scope';
 import { dropPlants, splice, strongerLight, strugglingPlants, trimAnimals } from './combine';
 import { ARCHETYPES, type Archetype } from './archetypes';
 import { explorePool, isBuildable, identityOf, type Candidate as PoolCandidate } from '../explore/pool';
@@ -39,6 +41,8 @@ export interface PairOpts {
   budgetMs?: number;
   /** receives plain lines about what happened on the way (a kept species added, a conflicting champion replaced) */
   notes?: string[];
+  /** receives the breadth the engine chose for this pair (objective, structure, learned confidence) */
+  breadth?: (b: Breadth) => void;
   /** candidate cache (default: a small shared one keyed by the situation) */
   cache?: PairCache;
 }
@@ -203,23 +207,32 @@ function fromLook(c: Ctx, a: Archetype): void {
 const dist = (a: Pending, b: Pending) => Math.max(fpDistance(a.entry.fp, b.entry.fp), contentDistance(a.tokens, b.tokens));
 const same = (a: Pending, b: Pending) => dist(a, b) < MIN_PAIR / 2;
 
-function choosePair(pool: Pending[], type: 'first' | 'fresh', champ: Pending | undefined, scoreOf: (p: Pending) => number, contrast: boolean): [Pending, Pending] | undefined {
+/** Two designs look different at a glance (world, look family or hardscape-to-plant balance); see breadth.ts. */
+const distinct = (a: Pending, b: Pending) => visuallyDistinct(a.rec.snapshot, b.rec.snapshot, a.entry.fp.familyId, b.entry.fp.familyId);
+function choosePair(pool: Pending[], type: 'first' | 'fresh', champ: Pending | undefined, scoreOf: (p: Pending) => number, contrast: boolean, strict = false): [Pending, Pending] | undefined {
   let best: [Pending, Pending] | undefined, bv = -Infinity;
   for (let i = 0; i < pool.length; i++) for (let j = i + 1; j < pool.length; j++) {
     const a = pool[i], b = pool[j], d = dist(a, b); if (d < MIN_PAIR) continue;
+    if (strict && !contrast && !distinct(a, b)) continue;                       // an exploration pair must look different at a glance: another is drawn
     // far apart, and (fresh) far from the champion; a controlled contrast would rather differ in few things than in many, so only the first-pair spread rewards size
     const away = champ ? Math.min(dist(a, champ), dist(b, champ)) : 0;
     if (type === 'fresh' && champ && away < MIN_PAIR) continue;
+    if (strict && type === 'fresh' && champ && !contrast && !distinct(a, champ) && !distinct(b, champ)) continue;
     const v = (contrast ? -Math.abs(d - 0.3) : d) + (type === 'fresh' ? away : 0) + 0.1 * Math.max(-1, Math.min(1, scoreOf(a) + scoreOf(b))) + (a.world !== b.world && !contrast ? 0.1 : 0);
     if (v > bv) { bv = v; best = [a, b]; }
   }
   return best;
 }
-/** Nearer the champion as the session goes on: broad early, a close contest later. */
-const targetFor = (comparisons: number) => comparisons < 2 ? 0.45 : comparisons < 5 ? 0.3 : 0.2;
-function chooseChallenger(pool: Pending[], champ: Pending, comparisons: number, scoreOf: (p: Pending) => number): Pending | undefined {
+/** The challenger: about `target` away from the favourite (the engine's adaptive breadth decides how far, never a round count). Refinement prefers a CONTROLLED contrast (few tabs differ); exploration, when broad, must look different at a glance (`strict`). Learned taste only adds a bounded ranking bonus. */
+function chooseChallenger(pool: Pending[], champ: Pending, target: number, scoreOf: (p: Pending) => number, refine: boolean, strict: boolean, tasteW: number): Pending | undefined {
   let best: Pending | undefined, bv = -Infinity;
-  for (const p of pool) { const d = dist(p, champ); if (d < MIN_PAIR) continue; const v = -Math.abs(d - targetFor(comparisons)) + 0.1 * Math.max(-1, Math.min(1, scoreOf(p))); if (v > bv) { bv = v; best = p; } }
+  for (const p of pool) {
+    const d = dist(p, champ); if (d < MIN_PAIR) continue;
+    if (strict && !refine && !distinct(p, champ)) continue;
+    const tabs = refine ? diffTouches(champ.rec.snapshot, p.rec.snapshot).tabs.length : 0;
+    const v = -Math.abs(d - target) - (refine ? 0.12 * Math.max(0, tabs - 1) : 0) + tasteW * Math.max(-1, Math.min(1, scoreOf(p)));
+    if (v > bv) { bv = v; best = p; }
+  }
   return best;
 }
 
@@ -257,7 +270,9 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
   const scope = effectiveScope(project, session);
   if (!scope.length) return { ok: false, conflicts: ['Nothing is open to change: every menu is switched off or kept for now.'], relaxations: ['Switch a menu on, or release a kept menu'] };
   const { base, notes } = baselineOf(project, session, lookup), freezeNotes = session.freezes.map(f => `Release the kept ${f.tab} tab`);
-  const w = customTankWants(brief, briefToWants(brief)), purpose: ProposalPurpose = type === 'fresh' ? 'fresh' : type === 'champion' ? 'challenger' : scope.length <= 2 ? 'contrast' : 'first';
+  const w = customTankWants(brief, briefToWants(brief)), br: Breadth = breadthOf(project.tank, session, lookup, scope, type);
+  opts.breadth?.(br);
+  const purpose: ProposalPurpose = type === 'fresh' ? 'fresh' : type === 'champion' ? (br.objective === 'refine' ? 'contrast' : 'challenger') : scope.length <= 2 ? 'contrast' : 'first';
   // the cache key holds EVERY input a candidate depends on: the project (its whole design, so locks, hard constraints, owned and Must-use gear, the Discovery switches), the brief, the scope and holds, the direction and the champion
   const sig = idOf(JSON.stringify([project.rev, session.id, scope, session.freezes, session.direction, type, type === 'first' ? '' : champ?.id, brief, { ...project.tank, camera: undefined, render: undefined }]));
   const cache = opts.cache?.sig === sig ? opts.cache : opts.cache ? Object.assign(opts.cache, newCache(sig)) : (SHARED.get(sig) ?? (() => { if (SHARED.size >= 6) SHARED.delete(SHARED.keys().next().value!); const n = newCache(sig); SHARED.set(sig, n); return n; })());
@@ -269,17 +284,18 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
     const S = champ.snapshot, sc = scoreScene(S, brief, w, P, now);
     return { rec: champ, entry: { id: champ.id, key: champ.key ?? keyOf(S), fp: fingerprintOf(S, sc), features: featuresFor(S, sc) }, tokens: tokensOf(S), source: 'propose', world: '', sc };
   })() : undefined;
-  const scoreW = weightsOf(aspectsOf(brief)), scoreOf = (p: Pending) => aspectScore(scoreW, p.entry.features);
+  const scoreW = weightsOf(aspectsOf(brief)), scoreOf = (p: Pending) => type === 'fresh' ? 0 : aspectScore(scoreW, p.entry.features);   // Something Different ignores learned taste
+  const tasteW = 0.1 + 0.25 * br.confidence;                                                                                             // learned taste narrows the RANKING, bounded; it never removes a candidate
   const usable = () => {
     const fresh = cache.pend.filter(p => !known.has(p.rec.key ?? '') && !(champPending && type !== 'fresh' && same(p, champPending)));
     const eligible = rankEligible(fresh.filter(p => p.sc.gate.verdict !== 'blocked').map(p => ({ ...p.entry, p })), aspectsOf(brief)).map(e => e.p);
     return eligible;
   };
   const want = type === 'champion' ? 3 : 4, soft = performance.now() + (opts.budgetMs ?? 2200), hard = performance.now() + 4 * (opts.budgetMs ?? 2200);
-  const choose = () => {
+  const choose = (strict = false) => {
     const pool = usable();
-    if (type === 'champion') { const ch = champPending && chooseChallenger(pool, champPending, session.comparisons.length, scoreOf); return ch && champ ? { a: champ, b: ch.rec, pool: pool.length } : undefined; }
-    const pr = choosePair(pool, type === 'fresh' ? 'fresh' : 'first', champPending, scoreOf, purpose === 'contrast'); if (!pr) return undefined;
+    if (type === 'champion') { const ch = champPending && chooseChallenger(pool, champPending, targetDistance(br), scoreOf, br.objective === 'refine', strict, tasteW); return ch && champ ? { a: champ, b: ch.rec, pool: pool.length } : undefined; }
+    const pr = choosePair(pool, type === 'fresh' ? 'fresh' : 'first', champPending, scoreOf, purpose === 'contrast', strict); if (!pr) return undefined;
     const [x, y] = pr[0].rec.key! <= pr[1].rec.key! ? pr : [pr[1], pr[0]]; return { a: x.rec, b: y.rec, pool: pool.length };
   };
   // generate only as much as is needed: DX2's proposals on the baseline first (cheap), then one Explore look at a time while there is time and a whole habitat may be drawn
@@ -293,7 +309,8 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
     else if (cache.round < 3) { cache.round++; fromPropose(ctx, gen, 10); }
     else break;
     const usableN = usable().length, now2 = performance.now();
-    if (usableN >= want && now2 >= 0) { result = choose(); if (result) break; }
+    // before the soft deadline an exploration pair must look different at a glance (another is drawn); after it, the best available pair is shown
+    if (usableN >= want) { result = choose(now2 < soft); if (result) break; }
     if (now2 > soft && usableN >= 2) { result = choose(); if (result) break; }
     if (now2 > hard) break;
   }

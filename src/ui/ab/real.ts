@@ -5,6 +5,7 @@ import { TABS, type Tab } from '../../scene/scope';
 import { effectiveScope, freeze as freezeTab, loadSession, pause as pauseSession, rebase as rebaseSession, record as recordOutcome, resume, saveSession, setCurrent, setFavourite as setFav, startSession, unfreeze, type NextPair } from '../../scene/discoverySession';
 import { createProposalHistory, reEvaluate as reEval } from '../../scene/proposalHistory';
 import { getBrief } from '../setupBrief';
+import { suggestNarrowing } from '../../scene/breadth';
 import { adapt as adaptPair, combine as combinePair, nextPair } from '../../scene/pairGen';
 import { featuresFor, scoreScene } from '../../scene/pairFacts';
 import { reasonTags, recordAspect, recordPair } from '../../explore/aspects';
@@ -15,7 +16,9 @@ import { championConflicts, lockConflicts } from './logic';
 import type { Store } from '../../scene/store';
 import type { VerdictOpts } from '../../scene/verdict';
 import type { CandidateRecord, DiscoverySession, Outcome, PairResult, ReasonKey } from '../../scene/discoveryTypes';
-import type { AbEngine, CombineOutcome, HistoryPage, ReEval } from './adapter';
+import { adjustmentsOf } from '../../scene/combine';
+import { getSpecies } from '../../data/species';
+import type { AbEngine, CombineOutcome, CombineProposal, HistoryPage, ReEval } from './adapter';
 
 const PROJECT = 'tanklook.scene';
 const PAGE = 6;
@@ -105,12 +108,18 @@ export function createRealEngine(store: Store, _opts: () => VerdictOpts = () => 
       const t = rec(targetId), d = rec(donorId); if (!t || !d) return { ok: false, reason: 'One of the designs is no longer there.', relaxations: [] };
       const out = combinePair(t, d, tab, proj(), getBrief(), { sessionId: s.id, units: store.scene.units });
       if (!out.ok) { const dedupe = (xs: string[]) => [...new Set(xs.map(c => c.replace(/\.+$/, '')))]; return { ok: false, reason: dedupe(out.conflicts).join('. ') + '.', relaxations: dedupe(out.relaxations) }; }
-      mem.set(out.record.id, out.record);
-      // taste: the donor's tab is LIKED (ranking only, never a lock; the substrate has no taste tags)
-      const on = reasonTags([tab]); if (on.length) editBrief(br => recordAspect(br, { kind: 'like', c: `${d.id}#${tab}`, features: sideOf(d).features, on }));
-      const champ = rec(s.championId), pair = champ && champ.id !== out.record.id ? show(champ, out.record, 'champion') : show(t, out.record, 'first');
-      return pair.ok ? { ok: true, record: out.record, notes: out.notes, pair } : { ok: false, reason: 'The combined design could not be shown.', relaxations: [] };
+      const adjustments = adjustmentsOf(t, out.record, tab, sp => getSpecies(sp)?.name ?? sp), m = (x: { mean: number }) => Math.round(x.mean);
+      const spendLine = m(out.record.facts.newSpendUsd) === m(t.facts.newSpendUsd) ? '' : `New spend $${m(t.facts.newSpendUsd)} to $${m(out.record.facts.newSpendUsd)}.`;
+      return { ok: true, proposal: { record: out.record, targetId, donorId, tab, adjustments, spendLine } };
     },
+    acceptCombine(p: CombineProposal): PairResult {
+      const t = rec(p.targetId), d = rec(p.donorId); mem.set(p.record.id, p.record);
+      // taste: the donor's tab is LIKED (ranking only, never a lock; the substrate has no taste tags)
+      const on = reasonTags([p.tab]); if (d && on.length) editBrief(br => recordAspect(br, { kind: 'like', c: `${d.id}#${p.tab}`, features: sideOf(d).features, on }));
+      const champ = rec(s.championId);
+      return champ && champ.id !== p.record.id ? show(champ, p.record, 'champion') : show(t ?? p.record, p.record, 'first');
+    },
+    suggestion() { return suggestNarrowing(store.tank, s, id => rec(id), effectiveScope(s).filter(t => discoverTabs(store.tank).includes(t))); },
     pause() { s = pauseSession(s); save(); },
   };
 }
