@@ -48,24 +48,38 @@ export function factsOf(S: TankSetup, p: Pick<DiscoveryProposal, 'cost' | 'summa
   };
 }
 
-export function createFakeEngine(store: Store, opts: () => VerdictOpts = () => ({})): AbEngine {
-  const recs = new Map<string, CandidateRecord>(), order: string[] = [], favs = new Set<string>();
-  let n = 0, serial = 0, seedShift = 0, s: DiscoverySession = fresh();
-  function fresh(scope?: Tab[]): DiscoverySession {
-    return { id: 'fake-' + ++n, baseRev: store.rev, scope: scope ?? discoverTabs(store.tank), freezes: [], direction: 'unsure', comparisons: [], status: 'active' };
-  }
-  const seen = (r: CandidateRecord) => [...recs.values()].some(x => x.key === r.key);
-  const make = (p: DiscoveryProposal, purpose: CandidateRecord['purpose']): CandidateRecord => {
+/** The pair SOURCE: k new complete candidates for a session (DX2 propose, scoped, lock-aware, frozen tabs left alone). AB1's `nextPair` replaces this; the real engine and the fake engine both use it until then. */
+export interface Drawn { recs: CandidateRecord[]; conflicts: string[]; relaxations: string[] }
+export type Draw = (s: DiscoverySession, k: number, purpose: CandidateRecord['purpose'], known: (key: string) => boolean) => Drawn;
+export function createDrawer(store: Store, opts: () => VerdictOpts = () => ({})): Draw {
+  let serial = 0, seedShift = 0;
+  const make = (s: DiscoverySession, p: DiscoveryProposal, purpose: CandidateRecord['purpose']): CandidateRecord => {
     const snap = ensureUids(previewProposal(store.tank, p));
-    return { id: `c${++serial}-${n}`, sessionId: s.id, createdAt: Date.now(), baseRev: store.rev, purpose, snapshot: snap, facts: factsOf(snap, p), verdict: p.verdict, assumptions: ['Prices and minutes are estimates.'], key: p.source + '|' + JSON.stringify(p.delta).length };
+    return { id: `c${++serial}-${s.id}`, sessionId: s.id, createdAt: Date.now(), baseRev: store.rev, purpose, snapshot: snap, facts: factsOf(snap, p), verdict: p.verdict, assumptions: ['Prices and minutes are estimates.'], key: p.source + '|' + JSON.stringify(p.delta).length };
   };
-  const gen = (k: number, purpose: CandidateRecord['purpose']): { recs: CandidateRecord[]; conflicts: string[]; relaxations: string[] } => {
+  return (s, k, purpose, known) => {
     const scope = s.scope.filter(t => !s.freezes.some(f => f.tab === t));
     const d = propose(store, getBrief(), { scope, objective: 'explore' }, k + 4, { ...opts(), units: store.scene.units, seed: store.tank.layout.seed + 977 * ++seedShift });
     const out: CandidateRecord[] = [];
-    for (const p of d.proposals) { const r = make(p, purpose); if (!seen(r) && !out.some(x => x.key === r.key)) out.push(r); if (out.length === k) break; }
+    for (const p of d.proposals) { const r = make(s, p, purpose); if (!known(r.key!) && !out.some(x => x.key === r.key)) out.push(r); if (out.length === k) break; }
     return { recs: out, conflicts: (d.noSolution?.conflicts ?? []).map(c => c.text), relaxations: d.noSolution?.relaxations ?? [] };
   };
+}
+/** An adapted copy of a record (new id, parentId set), or a refusal. */
+export function adaptRecord(store: Store, r: CandidateRecord, id: string, opts: () => VerdictOpts = () => ({})): AdaptResult {
+  const S = adaptToLocks(r.snapshot, store.tank); if (!S) return { ok: false, reason: 'It cannot be made to keep what you kept without changing it into a different design.' };
+  const { thumb: _t, ...rest } = r;
+  return { ok: true, record: { ...rest, id, createdAt: Date.now(), baseRev: store.rev, purpose: 'adapted', parentId: r.id, snapshot: S, facts: factsOf(S, undefined), verdict: verdictOf(S, getBrief(), opts()), key: (r.key ?? r.id) + '|adapted' } };
+}
+
+export function createFakeEngine(store: Store, opts: () => VerdictOpts = () => ({})): AbEngine {
+  const recs = new Map<string, CandidateRecord>(), order: string[] = [], favs = new Set<string>();
+  let n = 0, serial = 0, s: DiscoverySession = fresh();
+  const draw = createDrawer(store, opts);
+  function fresh(scope?: Tab[]): DiscoverySession {
+    return { id: 'fake-' + ++n, baseRev: store.rev, scope: scope ?? discoverTabs(store.tank), freezes: [], direction: 'unsure', comparisons: [], status: 'active' };
+  }
+    const gen = (k: number, purpose: CandidateRecord['purpose']) => draw(s, k, purpose, key => [...recs.values()].some(x => x.key === key));
   const put = (r: CandidateRecord) => { recs.set(r.id, r); order.unshift(r.id); };
   const show = (a: CandidateRecord, b: CandidateRecord, type: Comparison['type']): PairResult => {
     for (const r of [a, b]) if (!recs.has(r.id)) put(r);
@@ -141,9 +155,7 @@ export function createFakeEngine(store: Store, opts: () => VerdictOpts = () => (
     },
     adapt(id): AdaptResult {
       const r = recs.get(id); if (!r) return { ok: false, reason: 'Not found.' };
-      const S = adaptToLocks(r.snapshot, store.tank); if (!S) return { ok: false, reason: 'It cannot be made to keep what you kept without changing it into a different design.' };
-      const rec: CandidateRecord = { ...r, id: `c${++serial}-${n}`, createdAt: Date.now(), baseRev: store.rev, purpose: 'adapted', parentId: r.id, snapshot: S, facts: factsOf(S, undefined), verdict: verdictOf(S, getBrief(), opts()), key: (r.key ?? r.id) + '|adapted', thumb: undefined };
-      put(rec); return { ok: true, record: rec };
+      const out = adaptRecord(store, r, `a${++serial}-${s.id}`, opts); if (out.ok) put(out.record); return out;
     },
     pause() { s.status = 'paused'; },
   };

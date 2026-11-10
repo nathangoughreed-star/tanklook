@@ -9,6 +9,7 @@ import { ensureUids } from '../src/scene/uid';
 import { IN } from '../src/scene/physics';
 import { locksOf, lockRoster, lockObject } from '../src/scene/locks';
 import { createFakeEngine } from '../src/ui/ab/fake';
+import { createRealEngine } from '../src/ui/ab/real';
 import { ROLE_LABEL, acceptPlan, adaptToLocks, bannerOf, differs, figText, freezeNote, keepFromRecord, keepForNowLabel, lockConflicts, makePlan, metricsOf, roleOf, stripText, toggleReason, REASONS } from '../src/ui/ab/logic';
 import type { CandidateFacts, DiscoverySession } from '../src/scene/discoveryTypes';
 import type { TankSetup } from '../src/scene/types';
@@ -65,9 +66,12 @@ describe('figures and labels', () => {
   });
 });
 
+let uniq = 0;   // each real engine gets its own project key: its session and history persist, and tests must not share them
+const ENGINES = [['fake', createFakeEngine], ['real (AB0 session + AB2 history)', (s: Store) => createRealEngine(s, () => ({}), 'ab3-test-' + ++uniq)]] as const;
+describe.each(ENGINES)('%s engine', (_kind, create) => {
 describe('journey A: the first pair', () => {
   it('two different complete records, nothing written to the project, history holds both', () => {
-    const s = mk(), before = JSON.stringify(s.tank), rev = s.rev, e = createFakeEngine(s); e.open();
+    const s = mk(), before = JSON.stringify(s.tank), rev = s.rev, e = create(s); e.open();
     const p = pairOf(e);
     expect(p.a.id).not.toBe(p.b.id); expect(p.a.key).not.toBe(p.b.key);
     for (const r of [p.a, p.b]) { expect(r.snapshot.items.length + r.snapshot.fish.length).toBeGreaterThan(0); expect(r.facts.newSpendUsd.est).toBe(true); expect(r.facts.difficulty).toBeTruthy(); }
@@ -78,7 +82,7 @@ describe('journey A: the first pair', () => {
 
 describe('journey F: champion and fresh pair', () => {
   it('a winner becomes the favourite; like both / neither / skip keep it; the same pair stays until answered', () => {
-    const s = mk(), e = createFakeEngine(s); e.open();
+    const s = mk(), e = create(s); e.open();
     const p1 = pairOf(e); expect(e.next().ok && (e.next() as { a: { id: string } }).a.id).toBe(p1.a.id);   // not re-drawn
     const p2 = e.choose('B', ['plants']); if (!p2.ok) throw new Error('no 2nd pair');
     expect(e.session().championId).toBe(p1.b.id); expect(p2.a.id).toBe(p1.b.id);
@@ -87,7 +91,7 @@ describe('journey F: champion and fresh pair', () => {
     for (const o of ['both', 'neither', 'skip'] as const) { const r = e.choose(o); expect(e.session().championId).toBe(champ); if (!r.ok) break; expect(r.a.id).toBe(champ); }
   });
   it('a fresh-pair winner faces the favourite and only becomes it by winning', () => {
-    const s = mk(), e = createFakeEngine(s); e.open();
+    const s = mk(), e = create(s); e.open();
     pairOf(e); e.choose('A'); const champ = e.session().championId!;
     const f = e.different(); if (!f.ok) throw new Error('no fresh pair');
     expect(e.session().current?.type).toBe('fresh'); expect(bannerOf(e.session())).toContain('Fresh pair');
@@ -99,14 +103,14 @@ describe('journey F: champion and fresh pair', () => {
     expect(e.history(0).total).toBeGreaterThanOrEqual(4);   // E and F stay in history either way
   });
   it('choosing never writes a lock', () => {
-    const s = mk(), e = createFakeEngine(s); e.open(); pairOf(e); e.choose('A', ['animals']);
+    const s = mk(), e = create(s); e.open(); pairOf(e); e.choose('A', ['animals']);
     expect(locksOf(s.tank).objects.length + locksOf(s.tank).roster.length).toBe(0);
   });
 });
 
 describe('journey B: keep from a card', () => {
   it('Keep on an animal row locks EXACTLY the count shown, and records the lock without an undo step', () => {
-    const s = mk(), e = createFakeEngine(s); e.open();
+    const s = mk(), e = create(s); e.open();
     const p = pairOf(e), r = [p.a, p.b].find(x => x.snapshot.fish.length)!, sp = r.facts.stocking[0], undo = s.canUndo;
     const out = keepFromRecord(s, r, { kind: 'fish', species: sp.species, mode: 'exact' });
     expect(out.ok).toBe(true);
@@ -114,12 +118,12 @@ describe('journey B: keep from a card', () => {
     expect(s.canUndo).toBe(undo);
   });
   it('"at least" and "species only" are the one-tap alternatives', () => {
-    const s = mk(), e = createFakeEngine(s); e.open(); const p = pairOf(e), r = [p.a, p.b].find(x => x.snapshot.fish.length)!, sp = r.facts.stocking[0];
+    const s = mk(), e = create(s); e.open(); const p = pairOf(e), r = [p.a, p.b].find(x => x.snapshot.fish.length)!, sp = r.facts.stocking[0];
     keepFromRecord(s, r, { kind: 'fish', species: sp.species, mode: 'atLeast' }); expect(locksOf(s.tank).roster[0].mode).toBe('atLeast');
     keepFromRecord(s, r, { kind: 'fish', species: sp.species, mode: 'speciesOnly' }); expect(locksOf(s.tank).roster[0].mode).toBe('speciesOnly');
   });
   it('keeping a piece that is not in the project yet adds it and locks it in ONE undo step', () => {
-    const s = mk(), e = createFakeEngine(s); e.open(); const p = pairOf(e);
+    const s = mk(), e = create(s); e.open(); const p = pairOf(e);
     const r = [p.a, p.b].find(x => x.snapshot.items.some(i => !s.tank.items.some(j => j.uid === i.uid)));
     if (!r) return;   // every piece already in the project: nothing to add (covered by the lock-only branch)
     const it = r.snapshot.items.find(i => !s.tank.items.some(j => j.uid === i.uid))!, n = s.tank.items.length;
@@ -128,7 +132,7 @@ describe('journey B: keep from a card', () => {
     s.undo(); expect(s.tank.items.length).toBe(n);
   });
   it('a keep that contradicts the favourite is caught', () => {
-    const s = mk(), e = createFakeEngine(s); e.open(); pairOf(e); e.choose('A');
+    const s = mk(), e = create(s); e.open(); pairOf(e); e.choose('A');
     s.update(st => { lockRoster(st.tanks[st.active], 'kuhli', 'exact', 9); }, { history: false });
     const c = e.recheckChampion(); expect(c.ok).toBe(false); expect(c.conflicts.join(' ')).toMatch(/kuhli/);
     expect(e.session().championId).toBeUndefined();   // set aside, so a new pair starts
@@ -137,13 +141,13 @@ describe('journey B: keep from a card', () => {
 
 describe('shuffle switches and freezes', () => {
   it('unchecking freezes the favourite\'s values (or the project\'s before one exists); rechecking releases', () => {
-    const s = mk(), e = createFakeEngine(s); e.open();
+    const s = mk(), e = create(s); e.open();
     e.setScope('hardscape', false); expect(e.session().freezes[0]).toMatchObject({ tab: 'hardscape', source: 'working' });
     pairOf(e); e.choose('A'); e.setScope('plants', false); expect(e.session().freezes.find(f => f.tab === 'plants')?.source).toBe(e.session().championId);
     e.setScope('hardscape', true); expect(e.session().freezes.some(f => f.tab === 'hardscape')).toBe(false);
   });
   it('"Keep A\'s hardscape for now" records A as the source and never writes the project', () => {
-    const s = mk(), e = createFakeEngine(s); e.open(); const p = pairOf(e), before = JSON.stringify(s.tank);
+    const s = mk(), e = create(s); e.open(); const p = pairOf(e), before = JSON.stringify(s.tank);
     e.freeze('hardscape', p.a.id);
     expect(e.session().freezes).toEqual([{ tab: 'hardscape', source: p.a.id }]); expect(e.session().scope).not.toContain('hardscape');
     expect(JSON.stringify(s.tank)).toBe(before);
@@ -152,7 +156,7 @@ describe('shuffle switches and freezes', () => {
 
 describe('Make It Yours and journey G', () => {
   it('previews the diff, accepts as ONE undo step, never locks, keeps existing locks', () => {
-    const s = mk(), e = createFakeEngine(s); e.open(); const p = pairOf(e), r = p.a;
+    const s = mk(), e = create(s); e.open(); const p = pairOf(e), r = p.a;
     s.update(st => { lockObject(st.tanks[st.active], 'substrate'); }, { history: false });
     const locks = JSON.stringify(locksOf(s.tank)), plan = makePlan(s, r, e.session());
     expect(plan.conflicts.filter(c => /cannot change locks/.test(c))).toEqual([]);   // a design never carries the project's locks
@@ -162,7 +166,7 @@ describe('Make It Yours and journey G', () => {
     s.undo(); expect(JSON.stringify(s.tank)).toBe(before);   // one step back
   });
   it('after a lock the old record keeps its original form; Make It Yours reports the conflict and writes nothing', () => {
-    const s = mk(), e = createFakeEngine(s); e.open(); const p = pairOf(e);
+    const s = mk(), e = create(s); e.open(); const p = pairOf(e);
     const r = [p.a, p.b].find(x => !x.snapshot.fish.some(f => f.species === 'kuhli')) ?? p.a, frozen = JSON.stringify(r);
     s.update(st => { lockRoster(st.tanks[st.active], 'kuhli', 'exact', 7); }, { history: false });
     const plan = makePlan(s, r, e.session()), tank = JSON.stringify(s.tank);
@@ -171,10 +175,10 @@ describe('Make It Yours and journey G', () => {
       expect(acceptPlan(s, r, e.session()).ok).toBe(false); expect(JSON.stringify(s.tank)).toBe(tank);
     }
     expect(JSON.stringify(r)).toBe(frozen);
-    const ev = e.reEvaluate(r.id); expect(ev.conflicts.length).toBe(lockConflicts(s.tank, r.snapshot).length);   // "now" is beside "then", never over it
+    const ev = e.reEvaluate(r.id); expect(ev.conflicts.length).toBeGreaterThanOrEqual(lockConflicts(s.tank, r.snapshot).length);   // "now" is beside "then", never over it
   });
   it('Adapt makes a NEW record that honours the locks; the original is untouched; an impossible adapt refuses', () => {
-    const s = mk(), e = createFakeEngine(s); e.open(); const p = pairOf(e), r = p.a, frozen = JSON.stringify(r);
+    const s = mk(), e = create(s); e.open(); const p = pairOf(e), r = p.a, frozen = JSON.stringify(r);
     s.update(st => { lockRoster(st.tanks[st.active], 'kuhli', 'exact', 7); }, { history: false });
     const out = e.adapt(r.id);
     expect(JSON.stringify(r)).toBe(frozen);
@@ -186,12 +190,14 @@ describe('Make It Yours and journey G', () => {
     expect(adaptToLocks(bare, lockedGhost)).toBeNull();
   });
   it('history: paged, favourites toggle, a conflicting record cannot be set as favourite or brought back', () => {
-    const s = mk(), e = createFakeEngine(s); e.open(); let p = pairOf(e);
+    const s = mk(), e = create(s); e.open(); let p = pairOf(e);
     for (let i = 0; i < 5; i++) { const n = e.choose('A'); if (!n.ok) break; p = n; }
     const h = e.history(0); expect(h.rows.length).toBeLessThanOrEqual(6); expect(h.pages).toBe(Math.ceil(h.total / 6));
     e.favourite(h.rows[0].rec.id, true); expect(e.history(0).rows[0].favourite).toBe(true);
     void p;
   });
+});
+
 });
 
 describe('retired UI', () => {

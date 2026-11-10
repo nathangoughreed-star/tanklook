@@ -3,7 +3,7 @@
 import { TABS, type Tab } from '../../scene/scope';
 import { SECTION_OF } from './logic';
 import { attachAbScreen } from '../ab/screen';
-import { createFakeEngine } from '../ab/fake';
+import { createRealEngine } from '../ab/real';
 import type { VerdictOpts } from '../../scene/verdict';
 import type { Store } from '../../scene/store';
 import type { Viewer } from '../../render/viewer';
@@ -19,8 +19,8 @@ export function openSection(name: string) {
 }
 
 export function attachDiscoverPanel(store: Store, viewer: Viewer, deps: DiscoverDeps): DiscoverUI {
-  // AB0 / AB1 / AB2 swap this for the real session, pair generator and history (src/ui/ab/real.ts) as they merge
-  const engine = createFakeEngine(store, deps.opts);
+  // real session (AB0) + history (AB2); the pair source is still the stand-in in ui/ab/fake.ts until AB1's nextPair merges (swap `draw` in ui/ab/real.ts)
+  const engine = createRealEngine(store, deps.opts);
   const ui = attachAbScreen(store, viewer, engine, { status: deps.status });
   const quickEl = document.getElementById('quickBlock');
   return {
