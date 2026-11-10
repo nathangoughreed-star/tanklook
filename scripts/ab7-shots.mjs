@@ -1,11 +1,11 @@
 // AB7 attribute panel: real engine, real UI (derived from ab-journey.mjs), desktop and 375 px:
 //   New Setup > Freshwater > quick preferences (Medium, Lush, Definitely live plants, Don't want CO2) > Start building > Discover > two distinct feasible tanks > Combine a part (approve the proposal)
 //   > lock a selection > generate again > Make It Yours > manually edit the design > reopen Discover > nothing lost (edits, locks, history, session).
-// Every step is asserted; the process exits 1 on the first failed assertion after printing which. Screenshots: research/screens/AB7/journey-*. Run: URL=http://localhost:5195/ node scripts/ab-journey.mjs
+// Every step is asserted; the process exits 1 on the first failed assertion after printing which. Screenshots: research/screens/AB7b/journey-*. Run: URL=http://localhost:5195/ node scripts/ab-journey.mjs
 import { spawn } from 'node:child_process';
 import { writeFileSync, mkdirSync } from 'node:fs';
 const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe', URL = process.env.URL ?? 'http://localhost:5195/', PORT = 9381;
-mkdirSync('research/screens/AB7', { recursive: true });
+mkdirSync('research/screens/AB7b', { recursive: true });
 const ch = spawn(CHROME, ['--headless=new', `--remote-debugging-port=${PORT}`, '--window-size=1400,900', '--user-data-dir=' + (process.env.TEMP + '/abj-chrome-' + Date.now()), '--no-first-run', '--enable-unsafe-swiftshader', '--use-gl=angle', '--use-angle=swiftshader'], { stdio: 'ignore' });
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 let tabs; for (let i = 0; i < 40; i++) { try { tabs = await (await fetch(`http://127.0.0.1:${PORT}/json`)).json(); if (tabs.length) break; } catch {} await sleep(500); }
@@ -13,7 +13,7 @@ const ws = new WebSocket(tabs.find(t => t.type === 'page').webSocketDebuggerUrl)
 let id = 0; const pend = new Map(); ws.onmessage = m => { const d = JSON.parse(m.data); if (d.id && pend.has(d.id)) { pend.get(d.id)(d); pend.delete(d.id); } };
 const send = (method, params = {}) => new Promise(r => { const i = ++id; pend.set(i, r); ws.send(JSON.stringify({ id: i, method, params })); });
 const ev = async expr => { const r = await send('Runtime.evaluate', { expression: expr, awaitPromise: true, returnByValue: true }); if (r.result.exceptionDetails) throw new Error(expr.slice(0, 120) + ' => ' + (r.result.exceptionDetails.exception?.description ?? r.result.exceptionDetails.text)); return r.result.result.value; };
-const shot = async name => { const r = await send('Page.captureScreenshot', { format: 'jpeg', quality: 55 }); writeFileSync(`research/screens/AB7/${name}.jpg`, Buffer.from(r.result.data, 'base64')); };
+const shot = async name => { const r = await send('Page.captureScreenshot', { format: 'jpeg', quality: 55 }); writeFileSync(`research/screens/AB7b/${name}.jpg`, Buffer.from(r.result.data, 'base64')); };
 const click = sel => ev(`(()=>{const e=document.querySelector(${JSON.stringify(sel)}); if(!e) return false; e.click(); return true})()`);
 const exists = sel => ev(`!!document.querySelector(${JSON.stringify(sel)})`);
 const waitFor = async (sel, ms = 90000) => { const t0 = Date.now(); while (Date.now() - t0 < ms) { if (await exists(sel)) return true; await sleep(400); } return false; };
@@ -54,10 +54,17 @@ async function journey(w, h, mob, tag) {
   const probe = async label => { const o = { dock: await rect('.abdock'), viewBtn: await rect('#viewBtn'), camLock: await rect('#camLock'), tools: await rect('.viewtools'), view: await rect('#view'), panelBtn: await rect('#panelToggle') }; console.log(label, JSON.stringify(o)); return o; };
   const collapsed = await probe('collapsed');
   await shot(`${tag}-1-collapsed`);
+  ok('collapsed by default: no panel, no attribute matrix', !(await exists('.abdock .abpanel')) && !(await exists('.abdock .abattr')));
+  ok('the strip has Prefer A/B, Like both/neither, Skip, facts and Make It Yours', (await ev(`document.querySelectorAll('.abdock .abchoices button').length`)) === 5 && (await exists('.abdock .abfacts .abmiy')) && (await exists('.abdock [data-act="more"]')));
+  const key0 = await ev(designKey), locks00 = await ev(locksOf);
   await click('.abdock [data-act="more"]'); await sleep(900);
   ok('the attribute list shows all ten attributes', (await ev(`document.querySelectorAll('.abdock .abattr').length`)) === 10);
   const expanded = await probe('expanded'); await shot(`${tag}-2-expanded`);
   ok('expanded dock leaves the pair views usable (at least 38% of the view height)', expanded.view && expanded.dock && (expanded.dock.y - expanded.view.y) >= expanded.view.h * 0.38, JSON.stringify({ dockY: expanded.dock?.y, viewH: expanded.view?.h }));
+  await click('.abdock [data-act="more"]'); await sleep(700);
+  ok('closing Details removes the matrix and changes no project state', !(await exists('.abdock .abattr')) && (await ev(designKey)) === key0 && (await ev(locksOf)) === locks00);
+  await click('.abdock .abfacts .abmiy'); ok('Make It Yours is reachable from the strip', await waitFor('.abdock .abmodal', 15000)); await click('.abdock [data-act="miy-cancel"]'); await sleep(400);
+  await click('.abdock [data-act="more"]'); await sleep(700);
   // thumbs
   const prefs0 = await ev(`(async () => { const q = await import('/src/scene/quickPrefs.ts'); return JSON.stringify(q.readQuickPrefs(window.__gb.store.tank.brief)); })()`);
   await click('.abdock .abattr[data-attr="plants"] [data-act="thumb"][data-v="1"]'); await sleep(500);

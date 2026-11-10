@@ -1454,3 +1454,6 @@ body.discovering .dmfloat, body.discovering #climate, body.discovering .vmap, bo
 @media (max-width: 700px) {   /* phone: label on its own line, then value + 3 buttons per side, buttons in one column */
   .abdock .abattr { grid-template-columns: minmax(0, 1fr) 108px; gap: 2px 8px } .abdock .abattr .abal { grid-column: 1 / 3 }
 }
+/* AB7b: the compact strip carries Make It Yours; the attribute matrix stays closed until Details is pressed */
+.abdock .abfcell { display: flex; gap: 6px; align-items: stretch; min-width: 0 } .abdock .abfcell .abfact { flex: 1 1 auto; min-width: 0 }
+.abdock .abmiy { flex: none; padding: 2px 8px; font-size: 12px }
