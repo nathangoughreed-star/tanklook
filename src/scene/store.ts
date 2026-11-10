@@ -306,6 +306,12 @@ export class Store {
     const snap = this.undoStack[mark]; this.undoStack.length = mark;
     this.restore(snap);
   }
+  /** The whole editable state (scene + both history stacks), for a session that borrows the design and must give it back exactly (Discovery, AB9). */
+  snapshotAll() { return { scene: JSON.stringify(this.scene), undo: [...this.undoStack], redo: [...this.redoStack], loadDepth: this.loadDepth }; }
+  /** Put the design and its undo / redo history back exactly as `snapshotAll` saw them (the view / camera is not part of it). */
+  restoreAll(s: { scene: string; undo: string[]; redo: string[]; loadDepth: number }) {
+    this.undoStack = [...s.undo]; this.redoStack = [...s.redo]; this.loadDepth = s.loadDepth; this.restore(s.scene);
+  }
   private step(from: string[], to: string[]) {
     const snap = from.pop(); if (!snap) return;
     to.push(JSON.stringify(this.scene));

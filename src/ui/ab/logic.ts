@@ -112,14 +112,14 @@ export function keepFromRecord(store: Store, rec: CandidateRecord, t: KeepTarget
     store.seal();
     store.update(s => { const T = s.tanks[s.active]; if (!has) T.items.push({ ...structuredClone(it), id: T.items.reduce((m, o) => Math.max(m, o.id), 0) + 1 }); lockObject(T, t.uid); }, { history: !has });
     store.seal();
-    return { ok: true, message: has ? 'Kept that piece.' : 'Added that piece to your design and kept it (undo steps back).' };
+    return { ok: true, message: has ? 'Kept that piece.' : 'Kept that piece for this Discovery. It is only in your design if you choose Make It Yours.' };
   }
   if (t.kind === 'backdrop' || t.kind === 'gear') {   // AB7: the background (hardscape) and the supporting gear: copied into the working design when different, then locked like everything else
     const copy = t.kind === 'backdrop' ? HARDSCAPE_KEYS.some(k => JSON.stringify(store.tank[k]) !== JSON.stringify(S[k])) : JSON.stringify(gearOf(store.tank, t.part)) !== JSON.stringify(gearOf(S, t.part));
     store.seal();
     store.update(s => { const T = s.tanks[s.active]; if (t.kind === 'backdrop') { for (const k of HARDSCAPE_KEYS) (T as unknown as Record<string, unknown>)[k] = structuredClone(S[k]); lockObject(T, 'backdrop'); } else { copyGear(T, S, t.part); lockObject(T, t.part); } }, { history: copy });
     store.seal();
-    return { ok: true, message: `${describeKeep(t)[0].toUpperCase()}${describeKeep(t).slice(1)} ${copy ? 'copied into your design and ' : ''}kept${copy ? ' (undo steps back)' : ''}.` };
+    return { ok: true, message: `${describeKeep(t)[0].toUpperCase()}${describeKeep(t).slice(1)} kept${copy ? ' for this Discovery; your design only changes if you choose Make It Yours' : ''}.` };
   }
   const copy = t.kind === 'substrate' ? SUBSTRATE_KEYS.some(k => JSON.stringify(store.tank[k]) !== JSON.stringify(S[k])) : JSON.stringify(store.tank.tank) !== JSON.stringify(S.tank);
   store.seal();
@@ -129,7 +129,7 @@ export function keepFromRecord(store: Store, rec: CandidateRecord, t: KeepTarget
     else { T.tank = structuredClone(S.tank); lockObject(T, 'tank', ['dimensions']); }
   }, { history: copy });
   store.seal();
-  return { ok: true, message: `${t.kind === 'substrate' ? 'Substrate' : 'Tank size'} ${copy ? 'copied into your design and ' : ''}kept${copy ? ' (undo steps back)' : ''}.` };
+  return { ok: true, message: `${t.kind === 'substrate' ? 'Substrate' : 'Tank size'} kept${copy ? ' for this Discovery; your design only changes if you choose Make It Yours' : ''}.` };
 }
 export const isKept = (tank: TankSetup, t: KeepTarget): boolean =>
   t.kind === 'fish' ? locksOf(tank).roster.some(r => r.species === t.species) : t.kind === 'item' ? isLocked(tank, t.uid) : t.kind === 'gear' ? isLocked(tank, t.part) : isLocked(tank, t.kind);

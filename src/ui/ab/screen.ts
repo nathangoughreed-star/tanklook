@@ -13,7 +13,7 @@ import { SECTION_OF, TAB_LABEL } from '../discover/logic';
 import { headline } from '../checksStrip';
 import { layerOf, LIBRARY } from '../../scene/items';
 import { getSpecies } from '../../data/species';
-import { locksOf, rosterMet } from '../../scene/locks';
+import { locksOf, lockRoster, rosterMet } from '../../scene/locks';
 import { ATTRS, attrValues, heldState, sameValue, thumbOf, type AttrKey, type AttrValue } from '../../scene/attrs';
 import { holdAttr, releaseAttr, ROLE_LABEL, KEEP_MODES, acceptPlan, differs, figText, isKept, keepForNowLabel, keepFromRecord, makePlan, metricsOf, roleOf, toggleReason, championConflicts, type KeepTarget, type Plan } from './logic';
 import type { Store } from '../../scene/store';
@@ -45,14 +45,24 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
     return miss.length ? `Your design doesn't include the locked ${miss.map(r => `${r.mode === 'exact' ? r.n : r.mode === 'atLeast' ? `at least ${r.n}` : ''} ${getSpecies(r.species)?.name ?? r.species}`.replace(/\s+/g, ' ').trim()).join(', ')} yet.` : '';
   };
 
-  const close = () => {
+  let borrowed: ReturnType<Store['snapshotAll']> | undefined;   // AB9: the working design as Discovery found it; Close without Make It Yours puts it (and its undo history) back
+  /** Keep may need to copy a piece, the lighting... into the design so a lock has something to hold: allowed while Discovery is open, undone on Close unless Make It Yours. */
+  const writing = <T,>(fn: () => T): T => { const was = store.frozen; store.frozen = false; try { return fn(); } finally { store.frozen = was; } };
+  const giveBack = () => {
+    const snap = borrowed; borrowed = undefined; if (!snap) return;
+    const roster = locksOf(store.tank).roster.map(r => ({ ...r }));   // an animal lock changes no design: it stays, like the brief and the switches
+    store.restoreAll(snap);
+    if (roster.length) store.update(s => { for (const r of roster) lockRoster(s.tanks[s.active], r.species, r.mode, r.n); }, { history: false });
+  };
+  const close = (restore = true) => {
     const was = !root.hidden;
     if (was) { metrics.log({ k: 'close', t: Date.now(), adopted, rounds: rounds() }); engine.pause(); }
     viewer?.showPair(null); viewer?.setReserve(0); shownKey = ''; frozenNow(false);
+    if (was && restore && !adopted) giveBack(); else borrowed = undefined;
     root.hidden = true; root.innerHTML = ''; result = undefined; plan = undefined; detail = undefined; pending = undefined; proposal = undefined; panelOpen = false; rid++;
     if (was) { const l = lockLine(); if (l) deps.status(l); }
   };
-  store.subscribe(kind => { if (root.hidden || kind === 'view' || kind === 'select') return; if (kind === 'load') { close(); return; } syncScope(); if (panelOpen && !busy) draw(); });   // another project was opened: Discovery ends   // the menus' shuffle switches are the scope
+  store.subscribe(kind => { if (root.hidden || kind === 'view' || kind === 'select') return; if (kind === 'load') { close(false); return; } syncScope(); if (panelOpen && !busy) draw(); });   // another project was opened: Discovery ends   // the menus' shuffle switches are the scope
 
   // ------------------------------------------------------------------------------------------------ engine plumbing
   const look = (fn: () => PairResult) => {   // paint "Looking…" first: the engine is synchronous
@@ -248,8 +258,8 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
   const doKeep = (w: 'A' | 'B' | undefined, id: string | undefined, t: KeepTarget, uids?: string[]) => {
     const rec = id ? engine.record(id) : recOf(w!); if (!rec) return;
     metrics.log({ k: 'keep', t: Date.now(), target: t.kind, locked: true, n: rounds() });
-    if (t.kind === 'item' && uids?.length) { let last = { ok: true, message: '' }; for (const u of uids) last = keepFromRecord(store, rec, { kind: 'item', uid: u }); afterKeep(uids.length > 1 ? `Kept ${uids.length} pieces.` : last.message); return; }
-    const r = keepFromRecord(store, rec, t); afterKeep(r.message);
+    if (t.kind === 'item' && uids?.length) { let last = { ok: true, message: '' }; for (const u of uids) last = writing(() => keepFromRecord(store, rec, { kind: 'item', uid: u })); afterKeep(uids.length > 1 ? `Kept ${uids.length} pieces.` : last.message); return; }
+    const r = writing(() => keepFromRecord(store, rec, t)); afterKeep(r.message);
   };
   const openPlan = (id: string) => { const rec = engine.record(id); if (!rec) return; note = ''; plan = makePlan(store, rec, engine.session()); draw(); };
   const act = (a: string, el: HTMLElement) => {
@@ -293,7 +303,7 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
         const rec = recOf(el.dataset.side as 'A' | 'B'); if (!rec) break;
         const v = attrValues(rec.snapshot, rec.facts).find(x => x.key === el.dataset.attr); if (!v?.lock) break;
         if (heldState(store.tank, rec.snapshot, v.lock) === 'held') { releaseAttr(store, v.lock); note = `${v.label} unlocked: Discovery may change it again.`; deps.status(note); draw(); }
-        else { const replaced = heldState(store.tank, rec.snapshot, v.lock) === 'other'; metrics.log({ k: 'keep', t: Date.now(), target: v.key, locked: true, n: rounds() }); const was = store.frozen; store.frozen = false; let r: { ok: boolean; message: string }; try { r = holdAttr(store, rec, v.lock); } finally { store.frozen = was; }   // locking a value the design does not have yet copies it in (one undo step): the one design write the dock allows besides Make It Yours
+        else { const replaced = heldState(store.tank, rec.snapshot, v.lock) === 'other'; metrics.log({ k: 'keep', t: Date.now(), target: v.key, locked: true, n: rounds() }); const r = writing(() => holdAttr(store, rec, v.lock!));   // locking a value the design does not have yet copies it in (one undo step): the one design write the dock allows besides Make It Yours
           afterKeep(replaced ? `${v.label} lock replaced: ${r.message}` : r.message); }
         break;
       }
@@ -350,11 +360,11 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
 
   return {
     isOpen: () => !root.hidden,
-    close,
+    close: () => close(),
     open(scope) {
       adopted = false; engine.open(scope); metrics.log({ k: 'open', t: Date.now(), resumed: engine.session().comparisons.length > 0 }); histPage = 0; histOpen = false; detail = undefined; plan = undefined; pending = undefined; note = ''; sheets = new Set(); result = undefined; busy = false;
       proposal = undefined; panelOpen = false; shownKey = ''; if (!scope) syncScope();
-      frozenNow(true); root.hidden = false; resume = engine.isStale(); draw();
+      borrowed = store.snapshotAll(); frozenNow(true); root.hidden = false; resume = engine.isStale(); draw();
       if (!resume) look(() => engine.next());
     },
   };
