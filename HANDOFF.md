@@ -73,6 +73,11 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
+## AB10: contradictory Locked badges (2026-11-10; Coordinator 22)
+- REAL defect (stale/ambiguous UI, not two stored locks): the background lock is ONE flag on the working project (locks.objects target 'backdrop', holds the working design's value). The AB7 attribute cell read isHeld(store.tank, lock) for BOTH cards, so after locking A's Rock wall, B's None cell also showed Locked. Storage never held two values; the lock chip counts one.
+- Fix: heldState() in src/scene/attrs.ts ('held' only when the candidate's value equals the locked working value; 'other' when locked to a different value; 'free'). Held = Locked/Unlock; other = open padlock with title "A different value is locked. Press to lock this one instead (it replaces the old lock)" and status "<Attr> lock replaced". Same for tank, substrate, gear. Locking B's background replaces A's (still exactly one lock entry). Hold ("Keep A's ... for now", temporary) wording unchanged; it already says nothing is locked.
+- Tests: test/ab7.test.ts "AB10" (4). ab* 187 pass, build clean. No screenshots (logic fix, no layout change).
+
 ## AB7 (2026-11-10): expandable attribute panel, thumbs + lock (Coordinator 22; branch claude/clever-meitner-bd65f0; NOT pushed)
 The dock's More panel now opens with "Every attribute": tank size, stocking, hardscape, background, substrate, plants, lighting, filtration, heating, stand color (default black). A and B side by side where they differ, one merged "A + B" row where equal; per value three fixed-size buttons in aligned columns (thumb up, thumb down, lock; the lock never changes size, only colour). Pan / zoom / padlock visibility is lane AB8, untouched.
 - `scene/attrs.ts` (pure): `attrValues`, `isHeld`, thumbs (`setThumb`, `thumbBonus`, `THUMB_STEP` 0.12, bounded +-0.5), `ATTR_TAGS`.
