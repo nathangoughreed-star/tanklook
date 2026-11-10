@@ -1412,6 +1412,7 @@ body.discovering .dmfloat, body.discovering #climate, body.discovering .vmap, bo
 .abdock .abprop { border: 2px solid #e6a23c; border-radius: 8px; padding: 6px 12px; margin: 6px 0 }
 .abmenunote { margin: 6px 8px; padding: 6px 10px; border: 1px solid #e6a23c; border-radius: 6px; background: #e6a23c22; font-size: 12px }
 .lab .abchip { margin: 0 6px; font-weight: 600 }
+.lab .abdim { margin: 0 6px 0 0; font-weight: 600; opacity: .85; white-space: nowrap }
 @media (max-width: 700px) {
   .abdock { max-height: 70% } .abdock .abpanel { max-height: 40vh; padding: 6px 10px } .abdock .abcols { grid-template-columns: 1fr } .abdock .abside:not(.cur) { display: none }
   .abdock .abfacts { grid-template-columns: 1fr; flex-basis: 100% } .abdock .abbar { padding: 4px 8px; gap: 4px 8px } .abdock .abchoices button { padding: 5px 7px } .abdock .abfact { font-size: 11px; padding: 2px 6px }

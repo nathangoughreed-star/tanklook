@@ -157,6 +157,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
 
   // ---------- File: new / open / save / name / undo ----------
   $('undo').onclick = () => store.undo();
+  $('fitBoth').onclick = () => viewer.fitBoth();
   const recenter = $('recenter'); recenter.onclick = () => viewer.resetPan();
   viewer.onPan(() => { recenter.hidden = !viewer.panned; });
   // The room light's one home (UI4): the sun slider on the viewing screen. It shows what is drawn (roomOf: high with no tank light, low with one, until the person moves it).
@@ -2351,6 +2352,7 @@ Cancel, then change the name, to keep both.`)) return;
     const tip = [...r.reasons, ...stockingDetail(r)].map(esc).join('&#10;');
     return `<span class="aq${isOver(r.loadPercent) ? ' over' : ''}" title="${tip}">${esc(stockingLine(r))}</span>`;
   };
+  const pairSize = (S: TankSetup) => { const T = S.tank, n = (mm: number) => +(mm / 25.4).toFixed(1); return `${n(T.L)} × ${n(T.D)} × ${n(T.H)} in${S.water.on ? ` · ${+volume(T).gallons.toFixed(1)} gal` : ''}`; };
   viewer.onDrawn(() => {
     const g = G(), active = viewer.active, pr = viewer.pairShown, split = active.length > 1 || !!pr;   // Discovery's pair counts as a comparison
     const diff = active.length > 1 ? tankDiff(pr ? pr.S[0] : g.tanks[0], pr ? pr.S[1] : g.tanks[1], g.units) : [];
@@ -2372,7 +2374,7 @@ Cancel, then change the name, to keep both.`)) return;
         el.style.right = (viewer.host.clientWidth - vp.x - vp.w + 8) + 'px'; el.style.maxWidth = (below ? vp.w - 16 : Math.max(80, vp.w - 16 - tools)) + 'px'; // clear of them
         if (pr) {   // Discovery's pair: a plain chip with the role (favourite / challenger), never the Edit box or Delete
           el.classList.add('tab', 'on');
-          el.innerHTML = `<div class="hd"><b class="tabkey">${vp.key}</b><span class="abchip">${esc(pr.info[i])}</span>${vp.S.water.on ? aqChip(vp.S, vp.key, i) : '<span class="aq none">Dry habitat</span>'}<span class="more" aria-hidden="true">${diff.length ? `${diff.length} diff${diff.length === 1 ? '' : 's'} ` : ''}▾</span></div>` + (diff.length ? `<div class="diffs">${diff.slice(0, 8).map(d => `<span>${esc(String(d[i] ?? ''))}</span>`).join('')}</div>` : '');
+          el.innerHTML = `<div class="hd"><b class="tabkey">${vp.key}</b><span class="abchip">${esc(pr.info[i])}</span><span class="abdim" title="Length × width × height, and capacity: both tanks are drawn at one scale">${esc(pairSize(vp.S))}</span>${vp.S.water.on ? aqChip(vp.S, vp.key, i) : '<span class="aq none">Dry habitat</span>'}<span class="more" aria-hidden="true">${diff.length ? `${diff.length} diff${diff.length === 1 ? '' : 's'} ` : ''}▾</span></div>` + (diff.length ? `<div class="diffs">${diff.slice(0, 8).map(d => `<span>${esc(String(d[i] ?? ''))}</span>`).join('')}</div>` : '');
           continue;
         }
         const ed = store.isEditing(i);
@@ -2389,6 +2391,7 @@ Cancel, then change the name, to keep both.`)) return;
           `<div class="acts"><button class="close" data-save="${i}" title="Download Tank ${vp.key} on its own as a single-tank file">Download</button>` +
           `<button class="close" data-delete="${i}" title="Delete Tank ${vp.key} and end the split view (Ctrl+Z brings it back)">Delete</button></div></div>`;
       }
+      $<HTMLButtonElement>('fitBoth').hidden = !pr || pr.only != null;
       const lock = $<HTMLButtonElement>('camLock');
       lock.hidden = active.length < 2;   // AB8: the padlock also works on Discovery's A / B pair (B then has its own camera while it is open)
       if (active.length > 1) {

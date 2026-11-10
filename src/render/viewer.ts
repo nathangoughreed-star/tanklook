@@ -10,7 +10,7 @@ import type { Store } from '../scene/store';
 import type { CameraSettings, Fish, Tank, TankSetup } from '../scene/types';
 import { HOOD_H, PART, buildTank, disposeScene, envKey, lookKey, patchLook, patchTank, personSpot, type BuiltTank, type PoolGrab, type TerrainEdit } from './build';
 import { drawViewMap } from './viewmap';
-import { applyFraming, fovFor, frameBox, frameStraightOn, placeCamera, windowCentre } from './camera';
+import { applyFraming, fovFor, frameBox, frameStraightOn, pairCentre, pairEnvelope, placeCamera, windowCentre } from './camera';
 import { glowColor, placeSlice, roomLevel, setLightUniforms, setWaterUniforms } from './lighting';
 import { FROST } from './build';
 import { autoStep, levelOf, onPerf, perf, setFps } from './perf';
@@ -529,12 +529,19 @@ export class Viewer {
   /** The camera of pair side i (null when no pair is shown, or the side has none of its own). */
   pairCamOf(i: number): CameraSettings | null {
     if (!this.pair || this.pair.only != null || this.store.scene.camLock) { this.pairCamB = null; return null; }
-    return i === 1 ? (this.pairCamB ??= { ...this.store.scene.tanks[0].camera }) : null;
+    if (i !== 1) return null;
+    const A = this.store.scene.tanks[0].camera, B = (this.pairCamB ??= { ...A });
+    B.zoom = A.zoom; B.dist = A.dist;   // AB11: zoom (and eye distance) are shared, so the scale stays one; only the angle is B's own
+    return B;
   }
+  /** AB11 "Fit Both": the shared framing again (zoom 1, both views re-centred); the orbit angles stay. */
+  fitBoth() { this.store.cam(c => { c.zoom = 1; }, 0); this.resetPan(); }
   /** Move pair side i's own camera (the store's frozen path calls this); false = not a separate camera, the working one moves. */
   pairCamEdit(i: number, fn: (c: CameraSettings) => void): boolean {
     const c0 = this.pairCamOf(i), S = this.pair?.S[i]; if (!c0 || !S) return false;
-    const next = { ...c0 }; fn(next); this.pairCamB = limitOrbit(c0, next, c => eyeClear(S, c)); this.dirty = true; return true;
+    const next = { ...c0 }; fn(next); this.pairCamB = limitOrbit(c0, next, c => eyeClear(S, c)); this.dirty = true;
+    if (next.zoom !== c0.zoom || next.dist !== c0.dist) this.store.cam(c => { c.zoom = next.zoom; c.dist = next.dist; }, 0);   // AB11: zoom moves both views together
+    return true;
   }
   /** Pixels at the bottom of the main view that something else (Discovery's dock) covers: the tanks are drawn above them. */
   private reserve = 0;
@@ -665,7 +672,10 @@ export class Viewer {
     const boxes = active.map(vp => frameStraightOn(vp.T, vp.S.camera, vp.w / vp.h, headroom(vp.S)));
     // locked (or one tank): one FOV for all, so sizes stay directly comparable; unlocked: each view frames itself
     const shared = fovFor(Math.max(...boxes.map(b => b.t)), lensZoom(active[0].S.camera));
-    const camLock = sc.camLock && !this.pair, fovOf = (k: number) => (camLock || active.length === 1 ? shared : fovFor(boxes[k].t, lensZoom(active[k].S.camera)));
+    // Discovery's pair (AB11): ONE physical scale. Eye distance and zoom are shared (side B's follow A's), so one FOV from the LARGER envelope
+    // gives identical pixels per inch in both views; a 20 gal long draws smaller than a 75 gal, bottoms on one baseline (pairFrame)
+    const pe = this.pair ? pairEnvelope(this.pair.S, sc.tanks[0].camera, active[0].w / active[0].h, headroom) : null;
+    const camLock = sc.camLock && !this.pair, fovOf = (k: number) => (pe ? fovFor(pe.t, lensZoom(active[0].S.camera)) : camLock || active.length === 1 ? shared : fovFor(boxes[k].t, lensZoom(active[k].S.camera)));
     r.setScissorTest(true);
     r.setViewport(0, 0, w, h); r.setScissor(0, 0, w, h);
     r.setClearColor(new THREE.Color(getComputedStyle(this.host).getPropertyValue('--stage-gap').trim() || '#eef0f3')); r.clear();
@@ -686,6 +696,7 @@ export class Viewer {
     const frame = (k: number) => {
       const vp = active[k], fov = fovOf(k);
       const hy = Math.tan(fov * D2R / 2), hx = hy * vp.w / vp.h;
+      if (pe) { const t = wins[k].tank; return { fov, hx, hy, c: pairCentre(t, pe.ext) }; }
       // locked: the shared window while both tanks fit in it; zoomed past that, each view frames
       // its own tank, so a taller tank beside it never leaves this one cropped to the wall (Nathan 2026-10-09)
       const own = wins[k], u = lockedWin?.tank;

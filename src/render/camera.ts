@@ -68,3 +68,14 @@ export function windowCentre(all: { cx: number; cy: number }, tank: { x0: number
 
 /** One FOV for all viewports, so pixel sizes are directly comparable between tanks. */
 export const fovFor = (tan: number, zoom: number) => 2 * Math.atan(tan * 1.06 / zoom) / D2R;
+
+/**
+ * AB11: the envelope of a Discovery pair, straight on, from ONE camera (zoom and eye distance are shared): `t` = half-size in tan
+ * units that fits the LARGER tank (the FOV for both views), `ext` = the tallest tank's height in tan units (the common baseline span).
+ */
+export function pairEnvelope<S extends { tank: Tank }>(S: readonly S[], c: CameraSettings, aspect: number, headroom: (s: S) => number) {
+  const bs = S.map(s => frameStraightOn(s.tank, c, aspect, headroom(s)));
+  return { t: Math.max(...bs.map(b => b.t)), ext: Math.max(...bs.map(b => b.y1 - b.y0)) };
+}
+/** AB11: the image-window centre of one pair view: its own tank centred sideways, its bottom edge on the common baseline (the tallest tank fills the span). */
+export const pairCentre = (tank: { cx: number; y0: number }, ext: number) => ({ cx: tank.cx, cy: tank.y0 + ext / 2 });

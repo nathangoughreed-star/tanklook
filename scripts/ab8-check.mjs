@@ -86,7 +86,7 @@ async function check(w, h, mob, tag) {
     await drag(xB, cy0, -90, 25); const a1 = await camOf(0), bb1 = await camOf(1);
     ok('unlocked: dragging B turns only B', !differs(a0, a1) && differs(bb0, bb1), JSON.stringify([a0, a1, bb0, bb1]));
     await wheel(xA, cy0, -300); const a2 = await camOf(0);
-    ok('unlocked: the wheel over A zooms only A', a2.zoom > a1.zoom && (await camOf(1)).zoom === bb1.zoom);
+    ok('unlocked: the wheel over A zooms both (AB11: zoom is shared, one scale)', a2.zoom > a1.zoom && (await camOf(1)).zoom === a2.zoom);
     await shot(`${tag}-unlocked`);
     await drag(xB, cy0, 30, 5); const b2 = await camOf(1);
     await click('#camLock'); await sleep(500);
