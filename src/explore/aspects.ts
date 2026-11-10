@@ -13,6 +13,7 @@
 import { FAMILIES, ARCHETYPES, type Env, type Water } from '../scene/archetypes';
 import { clearItem, getItem, setItem, type Brief } from '../scene/brief';
 import { getSpecies } from '../data/species';
+import type { Outcome, ReasonKey } from '../scene/discoveryTypes';
 import { ASPECT_CAP, ASPECT_DECAY, ASPECT_EVENTS, ASPECT_STEP, CARE_HIGH_MIN, CARE_LOW_MIN, CONFIDENCE_K, LUSH_PLANTS, NUMBER_FEW, NUMBER_MANY, SIZE_LARGE_MM, SIZE_SMALL_MM, SMALL_TANK_GAL, SOME_PLANTS, TOLD_WEIGHT, WORLD_FLOOR } from './constants';
 
 // ---------------------------------------------------------------------------------------------------------------- the closed tag vocabulary
@@ -200,6 +201,42 @@ export const undoAspectsOf = (b: Brief, c: string): Brief => put(b, undoCandidat
 export const tellAspect = (b: Brief, key: string, v: 1 | -1 | 0): Brief => put(b, tell(aspectsOf(b), key, v));
 /** Forget everything learned. */
 export const clearAspects = (b: Brief): Brief => clearItem(b, 'preferences.aspects');
+
+// ---------------------------------------------------------------------------------------------------------------- pairwise outcomes (lane AB1, Discovery v2 plan decision 6)
+// An A/B result is evidence too, kept as the same events the profile already learns from (so every existing reader, undo and parse keeps working). Nothing here creates a lock, reads a limit or changes the working project.
+//   A / B     the chosen side: a like (the reasons' aspects only when given, else every aspect); the other side a weak pass on its own aspects (never its world or look family), or on the reasoned aspects when reasons were given.
+//   both      a like on each side.      neither   a pass on each side.      skip   no event (a skipped pair is neutral, never a dislike).
+// Reasons are optional and speak only for ASPECTS of the designs. The money and time reasons (upfront, ongoing) are LIMITS, which a preference never touches, so they teach nothing here; maintenance and difficulty teach the experience aspects.
+const REASON_TAGS: Record<ReasonKey, readonly AspectTag[]> = {
+  animals: ['species', 'behavior', 'size', 'number', 'visibility'], plants: ['plants', 'natural'], hardscape: ['layout', 'look'], substrate: [], tank: ['fresh', 'marine', 'brackish', 'land', 'landwater'],
+  look: ['look', 'colors', 'layout', 'natural'], upfront: [], ongoing: [], maintenance: ['maintenance', 'daily-care'], difficulty: ['complexity'],
+};
+export const reasonTags = (why: readonly ReasonKey[] | undefined): AspectTag[] => [...new Set((why ?? []).flatMap(r => REASON_TAGS[r] ?? []))];
+export interface PairSide { id: string; features: string[] }
+export interface PairReaction { outcome: Outcome; a: PairSide; b: PairSide; why?: ReasonKey[]; otherGood?: ReasonKey[] }
+/** The events one pairwise result records (0 to 2), oldest-first order a then b. */
+export function pairEvents(r: PairReaction): AspectEvent[] {
+  if (r.outcome === 'skip') return [];
+  const out: AspectEvent[] = [], on = reasonTags(r.why), good = reasonTags(r.otherGood);
+  const side = (s: PairSide, role: 'win' | 'lose' | 'like' | 'pass') => {
+    const ev = role === 'like' || role === 'win'
+      ? eventOf({ kind: 'like', c: s.id, features: s.features, ...(role === 'win' && on.length ? { on } : {}) })
+      : eventOf({ kind: 'pass', c: s.id, features: s.features, ...(role === 'lose' && on.length ? { off: on } : {}), ...(role === 'lose' && good.length ? { on: good } : {}) });
+    if (ev) out.push(ev);
+  };
+  if (r.outcome === 'A' || r.outcome === 'B') { const [w, l] = r.outcome === 'A' ? [r.a, r.b] : [r.b, r.a]; side(w, 'win'); side(l, 'lose'); }
+  else if (r.outcome === 'both') { side(r.a, 'like'); side(r.b, 'like'); }
+  else { side(r.a, 'pass'); side(r.b, 'pass'); }
+  return out;
+}
+/** Record a pairwise result. Skip returns the profile untouched. */
+export function reactPair(p: Aspects | undefined, r: PairReaction): Aspects | undefined {
+  const ev = pairEvents(r); if (!ev.length) return p;
+  return { ...p, events: [...(p?.events ?? []), ...ev].slice(-ASPECT_EVENTS) };
+}
+export const recordPair = (b: Brief, r: PairReaction): Brief => put(b, reactPair(aspectsOf(b), r));
+/** Take a pair's result back (both candidates' events), as undo for a changed mind. */
+export const undoPairAspects = (b: Brief, aId: string, bId: string): Brief => put(b, undoCandidate(undoCandidate(aspectsOf(b), aId), bId));
 
 /** Validate a saved / shared profile (brief.ts parseBrief): known kinds and tags only, capped, empty = dropped. */
 export function parseAspects(v: unknown): Aspects | undefined {

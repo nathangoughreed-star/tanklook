@@ -69,3 +69,9 @@ export function assembleBatch<T extends Entry>(eligible: readonly T[], aspects: 
   const interpretation = interpretationOf(aspects);
   return { picks: chosen, exploreSlots: slots, followed, ...(interpretation ? { interpretation } : {}), dropped };
 }
+
+/** Lane AB1 (Discovery v2): ORDER candidates the gate already passed by the learned aspects, best first (stable for ties). It never adds, drops or revives a candidate: what it is given is what it returns, so a preference can never make an ineligible one appear. */
+export function rankEligible<T extends Entry>(eligible: readonly T[], aspects: Aspects | undefined): T[] {
+  const w = weightsOf(aspects), sc = new Map(eligible.map(e => [e.id, w.size ? aspectScore(w, e.features) : 0]));
+  return eligible.map((e, i) => ({ e, i })).sort((a, b) => (sc.get(b.e.id) ?? 0) - (sc.get(a.e.id) ?? 0) || a.i - b.i).map(x => x.e);
+}
