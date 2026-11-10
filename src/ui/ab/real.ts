@@ -16,6 +16,7 @@ import { championConflicts, lockConflicts } from './logic';
 import type { Store } from '../../scene/store';
 import type { VerdictOpts } from '../../scene/verdict';
 import type { CandidateRecord, DiscoverySession, Outcome, PairResult, ReasonKey } from '../../scene/discoveryTypes';
+import { quickPrefsOf } from '../../scene/prefsAdapter';
 import { adjustmentsOf } from '../../scene/combine';
 import { getSpecies } from '../../data/species';
 import type { AbEngine, CombineOutcome, CombineProposal, HistoryPage, ReEval } from './adapter';
@@ -30,7 +31,7 @@ export function createRealEngine(store: Store, _opts: () => VerdictOpts = () => 
   const rec = (id: string | undefined): CandidateRecord | undefined => id ? hist.get(id) ?? mem.get(id) : undefined;
   const nothing = (c: string[], r: string[]): PairResult => ({ ok: false, conflicts: c.length ? c : ['Every candidate broke a lock or a limit.'], relaxations: r.length ? r : ['Open a tab (check its switch) or relax a lock.'] });
   const proj = () => ({ tank: store.tank, rev: store.rev });
-  const pair = (type: NextPair['type']): PairResult => nextPair(proj(), getBrief(), s, id => rec(id), { next: type, shownKeys: [...mem.values()].flatMap(r => r.key ? [r.key] : []), units: store.scene.units, });
+  const pair = (type: NextPair['type']): PairResult => nextPair(proj(), getBrief(), s, id => rec(id), { next: type, shownKeys: [...mem.values()].flatMap(r => r.key ? [r.key] : []), units: store.scene.units, ...(quickPrefsOf(getBrief()) ? { prefs: quickPrefsOf(getBrief()) } : {}) });
   const sideOf = (r: CandidateRecord) => { const b = getBrief(); return { id: r.id, features: featuresFor(r.snapshot, scoreScene(r.snapshot, b, customTankWants(b, briefToWants(b)))) }; };
   const show = (a: CandidateRecord, b: CandidateRecord, type: NextPair['type']): PairResult => {
     const ids: string[] = [];

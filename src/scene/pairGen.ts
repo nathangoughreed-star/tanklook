@@ -14,6 +14,9 @@ import { equipmentOf, requiredEquipment } from './project';
 import { filterUnits, heaterUnits, inferTech, withUnits } from './tech';
 import { briefToWants, type Brief } from './brief';
 import { ensureUids } from './uid';
+import { fitGear } from './gearFit';
+import { stockTier } from './sizeTiers';
+import type { QuickPrefs } from './prefsAdapter';
 import { breadthOf, targetDistance, visuallyDistinct, type Breadth } from './breadth';
 import { diffTouches } from './scope';
 import { dropPlants, splice, strongerLight, strugglingPlants, trimAnimals } from './combine';
@@ -43,16 +46,18 @@ export interface PairOpts {
   notes?: string[];
   /** receives the breadth the engine chose for this pair (objective, structure, learned confidence) */
   breadth?: (b: Breadth) => void;
+  /** the person's quick preferences (lane AB6 shape): only 'hard' values filter; the rest rank */
+  prefs?: QuickPrefs;
   /** candidate cache (default: a small shared one keyed by the situation) */
   cache?: PairCache;
 }
 
 interface Pending { rec: CandidateRecord; entry: Entry; tokens: string[]; source: 'propose' | 'explore'; world: string; sc: Scored }
 interface Rej { text: string; issues: Issue[]; relax: string[] }
-export interface PairCache { sig: string; pend: Pending[]; keys: Set<string>; round: number; looksDone: Set<string>; rej: Rej[]; proposeDone: boolean; stats: { propose: number; explore: number; ms: number } }
+export interface PairCache { sig: string; pend: Pending[]; keys: Set<string>; round: number; looksDone: Set<string>; bigDone: Set<string>; rej: Rej[]; proposeDone: boolean; stats: { propose: number; explore: number; ms: number } }
 const SHARED = new Map<string, PairCache>();
 export const clearPairCache = () => SHARED.clear();
-const newCache = (sig: string): PairCache => ({ sig, pend: [], keys: new Set(), round: 0, looksDone: new Set(), rej: [], proposeDone: false, stats: { propose: 0, explore: 0, ms: 0 } });
+const newCache = (sig: string): PairCache => ({ sig, pend: [], keys: new Set(), round: 0, looksDone: new Set(), bigDone: new Set(), rej: [], proposeDone: false, stats: { propose: 0, explore: 0, ms: 0 } });
 
 const MIN_PAIR = 0.12;           // two designs closer than this are the same design to the person
 const KIND_OF = (a: Archetype): Kind => a.env === 'terrarium' ? 'terrarium' : a.env === 'paludarium' ? 'vivarium' : a.water === 'saltwater' ? 'saltwater' : 'freshwater';
@@ -125,13 +130,13 @@ export function reconcileGear(orig: TankSetup, S: TankSetup, brief: Brief): Tank
   if (of.length) r.tech = keep('filter') ? withUnits(r.tech ?? structuredClone(ot!), 'filter', structuredClone(of)) : withUnits(r.tech ?? inferred(), 'filter', filterUnits(inferred()).map(u => ({ ...u, owned: false })));
   return r;
 }
-interface Ctx { orig: TankSetup; brief: Brief; w: Wants; P: UserProfile; units: Units; now: number; scope: Tab[]; baseRev: number; sessionId: string; purpose: ProposalPurpose; parentId?: string; cache: PairCache; plan0?: ReturnType<typeof equipPlan> }
+interface Ctx { noCo2?: boolean; prefs?: QuickPrefs; orig: TankSetup; brief: Brief; w: Wants; P: UserProfile; units: Units; now: number; scope: Tab[]; baseRev: number; sessionId: string; purpose: ProposalPurpose; parentId?: string; cache: PairCache; plan0?: ReturnType<typeof equipPlan> }
 const drop = (c: Ctx, text: string, issues: Issue[] = [], relax: string[] = []) => { c.cache.rej.push({ text, issues, relax }); return null; };
 
 /** Run one design through every check; null = dropped (and counted for the no-solution explanation). */
 function ingest(c: Ctx, scene: TankSetup, label: string, source: Pending['source'], ids: { familyId?: string; archetypeId?: string; name?: string } = {}): Pending | null {
   const { orig, brief } = c;
-  const conf = confine(orig, scene, c.scope), fin = conf && reconcileGear(orig, conf, brief);
+  const conf0 = confine(orig, scene, c.scope), fg = conf0 ? fitGear(conf0, { noCo2: c.noCo2 }) : undefined, conf = fg?.scene ?? null, fin = conf && reconcileGear(orig, conf, brief);
   if (!fin) return drop(c, `${label}: leaves a plant without its hardscape or a piece outside the tank`);
   const delta = deltaBetween(orig, fin), chk = checkProposal(orig, { baseRev: c.baseRev, scope: c.scope, delta, summary: '' });
   if (!chk.ok) return drop(c, `${label}: ${chk.outside.length ? `would change ${chk.outside.join(', ')}` : chk.violations.map(v => v.detail).join(' ')}`, [], chk.violations.map(v => v.kind === 'roster' ? `Lower the roster floor: ${v.detail}` : `Unlock "${v.target}": ${v.detail}`));
@@ -150,6 +155,9 @@ function ingest(c: Ctx, scene: TankSetup, label: string, source: Pending['source
   if (eqWhy) return drop(c, eqWhy, [{ id: 'equip:rule', tab: 'equipment', uids: [], text: eqWhy, relax: noNewEquipment(brief) && !plan.infeasible ? 'Allow new equipment for this run' : 'Mark the item Have available instead of Must use' }], ['Allow new equipment, or mark the item Have available instead of Must use']);
   const v0 = verdictOf(after, brief, { units: c.units });
   if (!v0.feasible) return drop(c, label, [...v0.gates, ...v0.hard], [...v0.gates, ...v0.hard].map(i => i.relax ?? `Relax: ${i.text}`));
+  { const nPlants = after.items.filter(i => i.kind === 'plant').length, pf = c.prefs;   // live plants: artificial ones do not count
+    if (pf?.plants === 'require' && nPlants < 6) return drop(c, `${label}: has too few live plants for "definitely live plants"`, [], ['Allow designs with fewer plants']);
+    if (pf?.plants === 'avoid' && nPlants > 0) return drop(c, `${label}: has live plants, which you do not want`, [], ['Allow live plants']); }
   const sc = scoreScene(after, brief, c.w, c.P, c.now), blocked = sc.gate.reasons.filter(r => r.severity === 'blocked');
   if (blocked.length) return drop(c, `${label}: ${blocked[0].text}`, [], blocked.map(r => `Relax: ${r.text}`));
   const v = verdictOf(after, brief, { totals: sc.totals, units: c.units });
@@ -158,6 +166,7 @@ function ingest(c: Ctx, scene: TankSetup, label: string, source: Pending['source
   const assumptions = [...sc.estimate.assumptions, ...sc.gate.assumptions, ...sc.gate.reasons.filter(r => r.severity === 'provisional').map(r => r.text), ...sc.plan.flags.map(f => f.text)];
   if (sc.plan.capsPlants) assumptions.push('Your light is weak for plants: it limits what can grow, and CO2 or fertilizer do not make up for it.');
   if (sc.plan.supplementUsd > 0) assumptions.push('A Must-use item is too small on its own: the design adds the gear that makes up the difference, and that is in the purchases.');
+  if (fg?.said.length) assumptions.push(`Gear matched to what is drawn: ${fg.said.join('; ')}.`);
   if (source === 'explore') assumptions.push('Drawn from a catalogue look: the layout is a suggested arrangement.');
   const rec: CandidateRecord = {
     id: `ab-${idOf(`${c.sessionId}|${c.baseRev}|${c.purpose}|${c.parentId ?? ''}|${key}`)}`, sessionId: c.sessionId, createdAt: c.now, baseRev: c.baseRev, purpose: c.purpose, ...(c.parentId ? { parentId: c.parentId } : {}),
@@ -189,11 +198,11 @@ function looksFor(c: Ctx, direction: HabitatDirection, type: Comparison['type'],
   for (let i = 0; fams.some(f => f.length > i); i++) for (const f of fams) if (f[i]) out.push(f[i]);
   return type === 'fresh' && champFam ? out.filter(a => !a.recipe.looks.includes(champFam as never)).concat(out.filter(a => a.recipe.looks.includes(champFam as never))) : out;
 }
-function fromLook(c: Ctx, a: Archetype): void {
+function fromLook(c: Ctx, a: Archetype, sizes = 1): void {
   const t0 = performance.now();
-  c.cache.looksDone.add(a.id);
+  (sizes > 1 ? c.cache.bigDone : c.cache.looksDone).add(a.id);
   try {
-    const r = explorePool(c.w, c.P, c.units, c.now, { only: [a.id], sizes: 1, explain: false }), id = identityOf(a);
+    const r = explorePool(c.w, c.P, c.units, c.now, { only: [a.id], sizes, explain: false, stock: stockTier }), id = identityOf(a);
     for (const cand of [...r.eligible, ...r.provisional] as PoolCandidate[]) {
       const got = ingest(c, ensureUids(structuredClone(cand.scene)), cand.identity.name, 'explore', { familyId: id.familyId, archetypeId: a.id, name: cand.identity.name });
       if (got) { c.cache.pend.push(got); c.cache.stats.explore++; }
@@ -209,7 +218,7 @@ const same = (a: Pending, b: Pending) => dist(a, b) < MIN_PAIR / 2;
 
 /** Two designs look different at a glance (world, look family or hardscape-to-plant balance); see breadth.ts. */
 const distinct = (a: Pending, b: Pending) => visuallyDistinct(a.rec.snapshot, b.rec.snapshot, a.entry.fp.familyId, b.entry.fp.familyId);
-function choosePair(pool: Pending[], type: 'first' | 'fresh', champ: Pending | undefined, scoreOf: (p: Pending) => number, contrast: boolean, strict = false): [Pending, Pending] | undefined {
+function choosePair(pool: Pending[], type: 'first' | 'fresh', champ: Pending | undefined, scoreOf: (p: Pending) => number, contrast: boolean, strict = false, tw = 0.1): [Pending, Pending] | undefined {
   let best: [Pending, Pending] | undefined, bv = -Infinity;
   for (let i = 0; i < pool.length; i++) for (let j = i + 1; j < pool.length; j++) {
     const a = pool[i], b = pool[j], d = dist(a, b); if (d < MIN_PAIR) continue;
@@ -218,7 +227,7 @@ function choosePair(pool: Pending[], type: 'first' | 'fresh', champ: Pending | u
     const away = champ ? Math.min(dist(a, champ), dist(b, champ)) : 0;
     if (type === 'fresh' && champ && away < MIN_PAIR) continue;
     if (strict && type === 'fresh' && champ && !contrast && !distinct(a, champ) && !distinct(b, champ)) continue;
-    const v = (contrast ? -Math.abs(d - 0.3) : d) + (type === 'fresh' ? away : 0) + 0.1 * Math.max(-1, Math.min(1, scoreOf(a) + scoreOf(b))) + (a.world !== b.world && !contrast ? 0.1 : 0);
+    const v = (contrast ? -Math.abs(d - 0.3) : d) + (type === 'fresh' ? away : 0) + tw * Math.max(-1, Math.min(1, scoreOf(a) + scoreOf(b))) + (a.world !== b.world && !contrast ? 0.1 : 0);
     if (v > bv) { bv = v; best = [a, b]; }
   }
   return best;
@@ -270,11 +279,11 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
   const scope = effectiveScope(project, session);
   if (!scope.length) return { ok: false, conflicts: ['Nothing is open to change: every menu is switched off or kept for now.'], relaxations: ['Switch a menu on, or release a kept menu'] };
   const { base, notes } = baselineOf(project, session, lookup), freezeNotes = session.freezes.map(f => `Release the kept ${f.tab} tab`);
-  const w = customTankWants(brief, briefToWants(brief)), br: Breadth = breadthOf(project.tank, session, lookup, scope, type);
+  const pf = opts.prefs, w0 = customTankWants(brief, briefToWants(brief)), w1 = pf?.sizeGal?.strength === 'hard' ? { ...w0, tankGal: { min: pf.sizeGal.lo, max: pf.sizeGal.hi } } : w0, w = pf?.world ? { ...w1, kinds: [pf.world] } : w1, br: Breadth = breadthOf(project.tank, session, lookup, scope, type);
   opts.breadth?.(br);
   const purpose: ProposalPurpose = type === 'fresh' ? 'fresh' : type === 'champion' ? (br.objective === 'refine' ? 'contrast' : 'challenger') : scope.length <= 2 ? 'contrast' : 'first';
   // the cache key holds EVERY input a candidate depends on: the project (its whole design, so locks, hard constraints, owned and Must-use gear, the Discovery switches), the brief, the scope and holds, the direction and the champion
-  const sig = idOf(JSON.stringify([project.rev, session.id, scope, session.freezes, session.direction, type, type === 'first' ? '' : champ?.id, brief, { ...project.tank, camera: undefined, render: undefined }]));
+  const sig = idOf(JSON.stringify([project.rev, session.id, scope, session.freezes, session.direction, type, type === 'first' ? '' : champ?.id, opts.prefs, brief, { ...project.tank, camera: undefined, render: undefined }]));
   const cache = opts.cache?.sig === sig ? opts.cache : opts.cache ? Object.assign(opts.cache, newCache(sig)) : (SHARED.get(sig) ?? (() => { if (SHARED.size >= 6) SHARED.delete(SHARED.keys().next().value!); const n = newCache(sig); SHARED.set(sig, n); return n; })());
   opts.notes?.push(...notes);
   const known = new Set<string>([...(opts.shownKeys ?? []), ...(champ?.key ? [champ.key] : [])]);
@@ -284,8 +293,12 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
     const S = champ.snapshot, sc = scoreScene(S, brief, w, P, now);
     return { rec: champ, entry: { id: champ.id, key: champ.key ?? keyOf(S), fp: fingerprintOf(S, sc), features: featuresFor(S, sc) }, tokens: tokensOf(S), source: 'propose', world: '', sc };
   })() : undefined;
-  const scoreW = weightsOf(aspectsOf(brief)), scoreOf = (p: Pending) => type === 'fresh' ? 0 : aspectScore(scoreW, p.entry.features);   // Something Different ignores learned taste
-  const tasteW = 0.1 + 0.25 * br.confidence;                                                                                             // learned taste narrows the RANKING, bounded; it never removes a candidate
+  const scoreW = weightsOf(aspectsOf(brief)), scoreOf = (p: Pending) => type === 'fresh' ? 0 : aspectScore(scoreW, p.entry.features) + prefOf(p);   // Something Different ignores learned taste
+  const tasteW = 0.1 + 0.25 * br.confidence + (pf ? 0.4 : 0);     // a told preference ranks harder than a learned one
+  const prefOf = (p: Pending): number => { let v = 0; const g = p.rec.facts.gallons, n = p.rec.snapshot.items.filter(i => i.kind === 'plant').length;
+    if (pf?.sizeGal && g != null) v += g >= pf.sizeGal.lo && g <= pf.sizeGal.hi ? 0.5 : -0.2;
+    if (pf?.plants === 'prefer') v += n >= 6 ? 0.3 : -0.2;
+    return v; };                                                                                             // learned taste narrows the RANKING, bounded; it never removes a candidate
   const usable = () => {
     const fresh = cache.pend.filter(p => !known.has(p.rec.key ?? '') && !(champPending && type !== 'fresh' && same(p, champPending)));
     const eligible = rankEligible(fresh.filter(p => p.sc.gate.verdict !== 'blocked').map(p => ({ ...p.entry, p })), aspectsOf(brief)).map(e => e.p);
@@ -295,17 +308,18 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
   const choose = (strict = false) => {
     const pool = usable();
     if (type === 'champion') { const ch = champPending && chooseChallenger(pool, champPending, targetDistance(br), scoreOf, br.objective === 'refine', strict, tasteW); return ch && champ ? { a: champ, b: ch.rec, pool: pool.length } : undefined; }
-    const pr = choosePair(pool, type === 'fresh' ? 'fresh' : 'first', champPending, scoreOf, purpose === 'contrast', strict); if (!pr) return undefined;
+    const pr = choosePair(pool, type === 'fresh' ? 'fresh' : 'first', champPending, scoreOf, purpose === 'contrast', strict, tasteW); if (!pr) return undefined;
     const [x, y] = pr[0].rec.key! <= pr[1].rec.key! ? pr : [pr[1], pr[0]]; return { a: x.rec, b: y.rec, pool: pool.length };
   };
   // generate only as much as is needed: DX2's proposals on the baseline first (cheap), then one Explore look at a time while there is time and a whole habitat may be drawn
   const gen = champBase ?? base;
-  const ctx: Ctx = { orig: gen, brief, w, P, units, now, scope, baseRev: project.rev, sessionId: session.id, purpose, ...(type === 'champion' && champ ? { parentId: champ.id } : {}), cache };
+  const ctx: Ctx = { ...(pf ? { prefs: pf } : {}), ...(pf?.avoid?.includes('co2') ? { noCo2: true } : {}), orig: gen, brief, w, P, units, now, scope, baseRev: project.rev, sessionId: session.id, purpose, ...(type === 'champion' && champ ? { parentId: champ.id } : {}), cache };
   const looks = habitatFree(base, scope) ? looksFor(ctx, session.direction, type, champ) : [];
   let result: { a: CandidateRecord; b: CandidateRecord; pool: number } | undefined;
   for (;;) {
     if (!cache.proposeDone) { fromPropose(ctx, gen, 10); cache.proposeDone = true; }
-    else if (cache.looksDone.size < looks.length) fromLook(ctx, looks.find(a => !cache.looksDone.has(a.id))!);
+    else if (cache.looksDone.size < looks.length) fromLook(ctx, looks.find(a => !cache.looksDone.has(a.id))!, type === 'first' ? 1 : 3);   // size is a real variable: later pairs offer each look in 2-3 sizes, each with its own stocking
+    else if (type === 'first' && cache.bigDone.size < looks.length) fromLook(ctx, looks.find(a => !cache.bigDone.has(a.id))!, 3);
     else if (cache.round < 3) { cache.round++; fromPropose(ctx, gen, 10); }
     else break;
     const usableN = usable().length, now2 = performance.now();

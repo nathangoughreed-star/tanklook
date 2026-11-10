@@ -47,7 +47,7 @@ export type ControlledEdit =
 export interface NoResult { blocker: GateId; text: string; edits: ControlledEdit[]; /** the generator's own explanation with verified one-click alternatives (mark-available / make-flexible / raise-budget ...) */ infeasible?: Infeasible }
 export interface PoolStats { looks: number; tried: number; eligible: number; provisional: number; withheld: number; byGate: Partial<Record<GateId, number>>; ms: number }
 export interface PoolResult { candidates: Candidate[]; eligible: Candidate[]; provisional: Candidate[]; withheld: Withheld[]; stats: PoolStats; noResult?: NoResult }
-export interface PoolOptions { /** only these registry looks (tests, measurements); default every buildable look */ only?: readonly string[]; /** catalogue sizes tried per look (default the smallest plus one per SIZE_MULTIPLES; the Available tank is always one more) */ sizes?: number; /** skip the generator's verified alternatives when nothing is eligible (they take a second or two) */ explain?: boolean }
+export interface PoolOptions { /** stocking per size tier (lane AB5): the roster for look `a` in `tank`, `tier` 0 = the smallest tried size; default `rosterPlan` */ stock?: (a: VdArchetype, tank: TankModel, tier: number) => ReturnType<typeof rosterPlan>; /** only these registry looks (tests, measurements); default every buildable look */ only?: readonly string[]; /** catalogue sizes tried per look (default the smallest plus one per SIZE_MULTIPLES; the Available tank is always one more) */ sizes?: number; /** skip the generator's verified alternatives when nothing is eligible (they take a second or two) */ explain?: boolean }
 
 const KIND_OF = (a: VdArchetype): Kind => a.env === 'terrarium' ? 'terrarium' : a.env === 'paludarium' ? 'vivarium' : a.water === 'saltwater' ? 'saltwater' : 'freshwater';
 export const isBuildable = (a: VdArchetype) => a.support !== 'coming-soon' && !!recipeLook(a);
@@ -102,9 +102,10 @@ export function explorePool(w: Wants, P: UserProfile, units: Units, now: number,
     if (id.water === 'brackish') { turn(a, undefined, [{ gate: 'world', severity: 'blocked', text: 'No brackish animals are in the data yet, so a brackish setup cannot be stocked honestly.' }]); continue; }
     const tanks = tanksFor(a, w, opt.sizes ?? 1 + SIZE_MULTIPLES.length);
     if (!tanks.length) { turn(a, undefined, [{ gate: w.ownTank ? 'equipment' : 'size', severity: 'blocked', text: w.ownTank ? 'Your Required tank is too small for this look.' : 'No catalogue tank suits this look inside your size and space limits.' }]); continue; }
-    for (const { tank, avail } of tanks) {
+    for (const [ti, { tank, avail }] of tanks.entries()) {
       tried++;
-      const plan = rosterPlan(a, tank), roster = plan.roster;
+      const plan = opt.stock ? opt.stock(a, tank, ti) : rosterPlan(a, tank), roster = plan.roster;   // `stock` (lane AB5): a caller's own stocking per size tier
+
       if (!roster.length) { turn(a, tank, [{ gate: 'welfare', severity: 'blocked', text: `${plan.why ?? 'No animals suit this look in this tank'}${/[.!]$/.test(plan.why ?? '') ? ' ' : '. '}A complete setup needs animals.` }]); continue; }
       if (avail && ownTankWhy(roster, w, w.constraints.space?.on === false ? undefined : w.space)) continue;   // the Available tank is one more option, never a failure
       const key = candidateKey(a, tank, roster); if (seen.has(key)) continue; seen.add(key);
