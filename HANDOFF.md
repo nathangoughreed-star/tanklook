@@ -51,12 +51,16 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 |---|---|---|---|---|
 | DX0 foundation | - | - | scene/types, store, locks, scope, proposal | DONE 2026-11-09 |
 | DX1 verdict | - | - | scene/verdict.ts, ui/checksStrip.ts | DONE 2026-11-09 |
-| DX2 discover | - | - | scene/discover.ts | DONE 2026-11-09 (uncosted until DX3) |
 | DX2 scoped discovery | - | - | NEW scene/discover.ts, generator wrappers | DONE 2026-11-09 |
-| DX4 Discovery UI | own worktree | - | NEW ui/discover/*, Discover buttons, lock toggles | proposed 2026-11-09 |
-| DX5 one project start | own worktree | - | welcome.ts, guided/*, coach/*, wipe-point call sites | proposed 2026-11-09 |
 | DX3 equipment | - | - | project.ts use, engine.ts credit, My equipment | DONE 2026-11-09 |
 | DX4 discovery UI | - | - | NEW ui/discover/* | DONE 2026-11-09 (see DX4 section) |
+| DX5 one project start / DX7 menus / SL1 start screen | - | - | | DONE 2026-11-09 |
+| **Discovery v2 (A/B)**: plan research/design/discovery-v2-plan.md, contract src/scene/discoveryTypes.ts | | | | started 2026-11-09 |
+| AB0 session | own worktree | - | NEW scene/discoverySession.ts | running |
+| AB1 pair generator | own worktree | - | NEW scene/pairGen.ts, pairFacts.ts; explore/aspects.ts, rank.ts (additive) | running |
+| AB2 history | own worktree | - | NEW scene/proposalHistory.ts | running |
+| AB3 A/B screen | own worktree | - | ui/discover/*, NEW ui/ab/*, Discover hooks in panels.ts, ui/explore entry points | running (lands last) |
+| AB4 habitat question + intro | own worktree | - | ui/startMode.ts, startScreenLogic.ts, #startDlg, panels.ts start block, NEW ui/introPopup.ts | running |
 | Queued (Nathan 2026-10-16, roadmap re-rank) | - | - | after T1-T4: starter styles batch 2 DONE 2026-10-16 (lane SS2, see archive; its gaps: no water dish, no succulents, Malawi has only yellowlab / cockatoo); multi-select / duplicate (lane MS) + scatter brush (lane SB) DONE 2026-10-16, see archive; PNG import; LAST: build.ts / panels.ts splits; clownfish host in the bubble-tip anemone DONE 2026-10-16 (see its section) | queued |
 | W Android app | `../Glass-Box-android` / `android` | 5543 (`android`, `--host` for phone tests) | landscape @media in `style.css`, view-map `narrow` in `ui/panels.ts`, new manifest / icons / SW in `public/`, their tags in `index.html`, new `android/` | Steps 1-3 DONE (layout, PWA, TWA APK works on S24+); PAUSED 2026-10-14 by Nathan before step 4 (Play material) and 5 (low-end check); files free, preview servers stopped |
 
