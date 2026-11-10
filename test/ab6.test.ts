@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { emptyBrief, getItem, rangeOf, projectExtras, parseProject, type Brief } from '../src/scene/brief';
+import { emptyBrief, getItem, setItem, rangeOf, projectExtras, parseProject, type Brief } from '../src/scene/brief';
 import { setDirection } from '../src/scene/project';
 import { aspectsOf, weightsOf, recordAspect, tellAspect } from '../src/explore/aspects';
 import { SIZE_GAL, SIZE_DRY, sizeRange, sizeOf, sizeText, SIZE_CHOICES } from '../src/scene/sizePrefs';
-import { applyQuickPrefs, readQuickPrefs, answersOf, emptyAnswers, normalize, passesHard, AVOIDS, type QuickAnswers } from '../src/scene/quickPrefs';
+import { applyQuickPrefs, readQuickPrefs, answersOf, emptyAnswers, passesHard, AVOIDS, type QuickAnswers } from '../src/scene/quickPrefs';
 import { prefsHtml, press, setLimit } from '../src/ui/quickPrefs';
 import { INTRO_LINES, INTRO_TITLE, showsIntro, type StartDoor } from '../src/ui/introPopup';
 import { getTankModel } from '../src/data/tanks';
@@ -17,17 +17,16 @@ const A = (x: Partial<QuickAnswers>): QuickAnswers => ({ ...emptyAnswers(), ...x
 describe('AB6 one strength model: hard = filters, prefer = ranks, unsure = nothing', () => {
   it('skipping / unsure writes nothing', () => {
     const b = fresh(); expect(applyQuickPrefs(b, emptyAnswers())).toEqual(b);
-    expect(readQuickPrefs(b)).toEqual({ look: {}, prohibit: [] });
-    expect(readQuickPrefs(applyQuickPrefs(applyQuickPrefs(b, A({ plants: 'prefer' })), A({ plants: undefined })))).toEqual({ look: {}, prohibit: [] });
+    const none = { look: {}, prohibit: [], arch: { interested: [], avoid: [], layouts: {}, families: {} } };
+    expect(readQuickPrefs(b)).toEqual(none);
+    expect(readQuickPrefs(applyQuickPrefs(applyQuickPrefs(b, A({ arch: { 'freshwater-jungle': 'interested' } })), A({})))).toEqual(none);
   });
-  it('plants: Definitely / Definitely not are hard items; Prefer / Prefer not are told weights only', () => {
-    const want: Record<string, ['live' | 'artificial', 'hard' | 'prefer']> = { definitely: ['live', 'hard'], prefer: ['live', 'prefer'], 'prefer-not': ['artificial', 'prefer'], not: ['artificial', 'hard'] };
-    for (const [ans, [value, strength]] of Object.entries(want)) {
-      const b = applyQuickPrefs(fresh(), A({ plants: ans as never }));
-      expect(readQuickPrefs(b).plants).toEqual({ value, strength });
-      expect(getItem(b, 'appearance.plantMode')?.status).toBe(strength === 'hard' ? 'hard' : undefined);
-    }
-    expect(aspectsOf(applyQuickPrefs(fresh(), A({ plants: 'prefer-not' })))?.told).toEqual({ 'natural:artificial': 1, 'natural:live': -1 });
+  it('plants: a hard live-plants item is hard; No live plants is a hard exclusion (prohibit + the brief item); no plants answer exists any more', () => {
+    const live = setItem(fresh(), 'appearance.plantMode', 'live', 'hard');
+    expect(readQuickPrefs(live).plants).toEqual({ value: 'live', strength: 'hard' });
+    const b = applyQuickPrefs(fresh(), A({ avoid: ['no-live-plants'] }));
+    expect(readQuickPrefs(b).prohibit).toEqual(['no-live-plants']); expect(getItem(b, 'appearance.plantMode')).toMatchObject({ value: 'artificial', status: 'hard' });
+    expect(answersOf(b).avoid).toEqual(['no-live-plants']);
   });
   it('size on an aquarium is a PREFERENCE range in gallons', () => {
     const b = applyQuickPrefs(fresh(), A({ size: 'medium' }));
@@ -51,31 +50,29 @@ describe('AB6 one strength model: hard = filters, prefer = ranks, unsure = nothi
     expect(setLimit(A({}), 'budget', 250).budget).toEqual({ max: 250, firm: false }); expect(setLimit(A({ budget: { max: 5, firm: true } }), 'budget', 0).budget).toBeUndefined();
     expect(press(A({ budget: { max: 5, firm: false } }), { firm: 'budget:1' }).budget).toEqual({ max: 5, firm: true });
   });
-  it('look chips are always preferences: told weights, no items', () => {
-    const b = applyQuickPrefs(fresh(), A({ look: ['lush', 'colourful'] }));
-    expect(aspectsOf(b)?.told).toEqual({ 'plants:lush': 1, 'colors:vivid': 1 }); expect(Object.keys(b.items).sort()).toEqual(['preferences.aspects']);
-    expect(readQuickPrefs(b).look).toEqual({ lush: 1, colourful: 1 });
-    expect(readQuickPrefs(applyQuickPrefs(fresh(), A({ look: ['minimal'] }))).look).toEqual({ lush: -1, colourful: -1, ordered: 1 });
+  it('archetype cards are always preferences: told weights, no items', () => {
+    const b = applyQuickPrefs(fresh(), A({ arch: { 'freshwater-jungle': 'interested', 'freshwater-iwagumi': 'avoid' } }));
+    expect(aspectsOf(b)?.told).toEqual({ 'layout:iwagumi-stone-garden': -1, 'layout:overgrown-jungle': 1, 'plants:lush': 1 }); expect(Object.keys(b.items).sort()).toEqual(['preferences.aspects']);
+    expect(readQuickPrefs(b).look).toEqual({ lush: 1, ordered: -1 });
   });
   it('Don\'t want offers only objective hard prohibitions (no subjective dislikes) and lists them in prohibit', () => {
-    expect(AVOIDS.map(a => a.id).sort()).toEqual(['co2', 'large-animals', 'shrimp', 'snails']);
+    expect(AVOIDS.map(a => a.id).sort()).toEqual(['co2', 'large-animals', 'no-live-plants', 'shrimp', 'snails']);
     for (const a of AVOIDS) { const b = applyQuickPrefs(fresh(), A({ avoid: [a.id] })); expect(readQuickPrefs(b).prohibit).toEqual([a.id]); expect(aspectsOf(b)).toBeUndefined(); }
     expect(getItem(applyQuickPrefs(fresh(), A({ avoid: ['co2'] })), 'preferences.lowtech')).toMatchObject({ value: true, status: 'hard' });
     expect(prefsHtml('freshwater', emptyAnswers()).split('data-x="avoid"')[1]).not.toMatch(/bright|colou?r/i);
   });
   it('a re-write retracts the earlier answers', () => {
-    let b = applyQuickPrefs(fresh(), A({ size: 'large', look: ['lush'], plants: 'definitely', avoid: ['co2'], budget: { max: 900, firm: true } }));
-    b = applyQuickPrefs(b, A({ look: ['natural'] }));
+    let b = applyQuickPrefs(fresh(), A({ size: 'large', arch: { 'freshwater-jungle': 'interested' }, avoid: ['co2', 'no-live-plants'], budget: { max: 900, firm: true } }));
+    b = applyQuickPrefs(b, A({ arch: { 'freshwater-nature-river': 'interested' } }));
     for (const id of ['appearance.plantMode', 'preferences.lowtech', 'constraints.tankGal', 'constraints.budget'] as const) expect(getItem(b, id)).toBeUndefined();
-    expect(aspectsOf(b)?.told).toEqual({ 'colors:natural': 1, 'natural:live': 1 });
+    expect(aspectsOf(b)?.told).toEqual({ 'layout:driftwood-nature': 1, 'layout:rocky-river-stream': 1 });
     expect(applyQuickPrefs(b, emptyAnswers())).toEqual(fresh());
   });
-  it('opposite look chips cannot both stay; pressing a chosen button clears it (Unsure)', () => {
-    expect(normalize(A({ look: ['lush', 'minimal'] })).look).toEqual(['minimal']); expect(press(A({ look: ['lush'] }), { look: 'minimal' }).look).toEqual(['minimal']);
-    expect(press(A({ plants: 'not' }), { plants: 'not' }).plants).toBeUndefined(); expect(press(A({ plants: 'not' }), { plants: 'unsure' }).plants).toBeUndefined();
+  it('pressing a card cycles Unselected -> Interested -> Avoid -> Unselected', () => {
+    const k = 'freshwater-jungle'; let a = press(A({}), { arch: k }); expect(a.arch[k]).toBe('interested'); a = press(a, { arch: k }); expect(a.arch[k]).toBe('avoid'); a = press(a, { arch: k }); expect(a.arch[k]).toBeUndefined();
   });
   it('answers survive save validation', () => {
-    const b = applyQuickPrefs(fresh(), A({ size: 'small', look: ['natural'], plants: 'not', avoid: ['co2'] }));
+    const b = applyQuickPrefs(fresh(), A({ size: 'small', arch: { 'freshwater-jungle': 'avoid' }, avoid: ['co2', 'no-live-plants'] }));
     expect(parseProject(projectExtras(b))?.quick).toEqual(projectExtras(b).quick); expect(parseProject({ quick: { size: 'huge', plants: 'x', look: ['A b'] } })).toBeUndefined();
   });
 });
@@ -83,15 +80,15 @@ describe('AB6 one strength model: hard = filters, prefer = ranks, unsure = nothi
 describe('AB6 do not overfit: only HARD answers filter', () => {
   const big = { gallons: 90, plants: 'artificial' as const, species: [] as string[], setupUsd: 5000, weeklyMin: 400 };
   it('a "prefer medium" project can still be offered a large tank (and every prefer answer passes anything)', () => {
-    const b = applyQuickPrefs(fresh(), A({ size: 'medium', plants: 'prefer', look: ['lush'], budget: { max: 300, firm: false }, care: { max: 30, firm: false } })), q = readQuickPrefs(b);
+    const b = applyQuickPrefs(fresh(), A({ size: 'medium', arch: { 'freshwater-jungle': 'interested' }, budget: { max: 300, firm: false }, care: { max: 30, firm: false } })), q = readQuickPrefs(b);
     expect(q.sizeGal?.strength).toBe('prefer'); expect(passesHard(q, big)).toBe(true);
     const d = readQuickPrefs(applyQuickPrefs(fresh('terrarium'), A({ size: 'small' }))); expect(passesHard(d, { floorSqIn: 1000, heightIn: 40 })).toBe(true);
   });
   it('hard answers do filter: firm maximum, required plants, prohibitions', () => {
-    const q = readQuickPrefs(applyQuickPrefs(fresh(), A({ plants: 'definitely', budget: { max: 300, firm: true }, avoid: ['co2'] })));
+    const q = readQuickPrefs(applyQuickPrefs(setItem(fresh(), 'appearance.plantMode', 'live', 'hard'), A({ budget: { max: 300, firm: true }, avoid: ['co2'] })));
     expect(passesHard(q, { setupUsd: 250, plants: 'live', co2: false })).toBe(true);
     expect(passesHard(q, { setupUsd: 350, plants: 'live' })).toBe(false); expect(passesHard(q, { plants: 'artificial' })).toBe(false); expect(passesHard(q, { co2: true, plants: 'live' })).toBe(false);
-    expect(passesHard(readQuickPrefs(applyQuickPrefs(fresh(), A({ plants: 'not' }))), { plants: 'mixed' })).toBe(false);
+    expect(passesHard(readQuickPrefs(applyQuickPrefs(fresh(), A({ avoid: ['no-live-plants'] }))), { plants: 'mixed' })).toBe(false);
     const pro = (id: 'snails' | 'shrimp' | 'large-animals', sp: string) => passesHard(readQuickPrefs(applyQuickPrefs(fresh(), A({ avoid: [id] }))), { species: [sp, 'neon'] });
     expect([pro('snails', 'nerite'), pro('shrimp', 'cherryshrimp'), pro('large-animals', 'livingstonii')]).toEqual([false, false, false]);
     expect([pro('snails', 'cherryshrimp'), pro('shrimp', 'nerite'), pro('large-animals', 'neon')]).toEqual([true, true, true]);
@@ -103,7 +100,7 @@ describe('AB6 told beats learned', () => {
     let b = emptyBrief();
     for (let i = 0; i < 5; i++) b = recordAspect(b, { kind: 'like', c: 'c' + i, features: ['colors:vivid'] });
     expect(weightsOf(aspectsOf(b)).get('colors:vivid')).toMatchObject({ source: 'learned' }); expect(weightsOf(aspectsOf(b)).get('colors:vivid')!.w).toBeGreaterThan(0);
-    b = applyQuickPrefs(b, A({ look: ['minimal'] })); b = tellAspect(b, 'colors:vivid', -1);
+    b = applyQuickPrefs(b, A({ arch: { 'freshwater-minimal': 'interested' } })); b = tellAspect(b, 'colors:vivid', -1);
     expect(weightsOf(aspectsOf(b)).get('colors:vivid')).toMatchObject({ source: 'told', w: -1 });
     expect(aspectsOf(tellAspect(b, 'colors:vivid', 0))?.told?.['colors:vivid']).toBeUndefined();
   });
@@ -121,12 +118,12 @@ describe('AB6 size differs per habitat', () => {
     expect(18 * 18).toBeGreaterThanOrEqual(SIZE_DRY.terrarium.medium.floorSqIn.lo); expect(18 * 18).toBeLessThanOrEqual(SIZE_DRY.terrarium.medium.floorSqIn.hi);
     expect(getTankModel('t18x18x18')).toBeTruthy();
   });
-  it('the screen adapts: size words with units, live plants five answers, saltwater has no plants row, practical limits and Don\'t want collapsed', () => {
-    const f = prefsHtml('freshwater', emptyAnswers()); expect(f).toContain('5-19 gal'); expect(f).toContain('Definitely not'); expect(f).toContain('Unsure'); expect(f).toContain('Prefer not');
+  it('the screen adapts: size words with units, no Look or Live plants rows, No live plants under Dont want (not saltwater), practical limits and Don\'t want collapsed', () => {
+    const f = prefsHtml('freshwater', emptyAnswers()); expect(f).toContain('5-19 gal'); expect(f).toContain('Unsure'); expect(f).not.toContain('Prefer not'); expect(f).not.toContain('aria-label="Live plants"'); expect(f).not.toContain('aria-label="Look"'); expect(f).toContain('data-avoid="no-live-plants"');
     expect(f).toMatch(/<details class="qp-more" data-x="limits">/); expect(f).toMatch(/<details class="qp-more" data-x="avoid">/);
-    const t = prefsHtml('terrarium', emptyAnswers()); expect(t).toContain('in floor'); expect(t).not.toContain('gal'); expect(t).toContain('moss'); expect(t).not.toContain('CO2');
-    expect(prefsHtml('saltwater', emptyAnswers())).not.toContain('Live plants');
-    expect(prefsHtml('freshwater', A({ size: 'small' }))).toContain('aria-pressed="true"'); expect(prefsHtml('freshwater', A({ avoid: ['snails'] }))).toMatch(/data-x="avoid" open/);
+    const t = prefsHtml('terrarium', emptyAnswers()); expect(t).toContain('in floor'); expect(t).not.toContain('gal'); expect(t).not.toContain('CO2');
+    expect(prefsHtml('saltwater', emptyAnswers())).not.toContain('no-live-plants');
+    expect(prefsHtml('freshwater', A({ avoid: ['snails'] }))).toContain('aria-pressed="true"'); expect(prefsHtml('freshwater', A({ avoid: ['snails'] }))).toMatch(/data-x="avoid" open/);
   });
 });
 

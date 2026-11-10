@@ -1,13 +1,13 @@
 // AB6 (2026-11-10): the quick-preferences form, drawn twice from ONE function: on the one optional screen after the habitat question (`showQuickPrefs`, replaces the AB4 intro
 // popup) and as the "Your preferences" block in the Constraints menu (`attachPrefsBlock`). Nothing is required: Skip and Start building both go straight to the editor, every
-// row has an "Unsure" way out (press the chosen button again). Size, Look and Live plants are visible; Practical limits and Don't want are collapsed.
+// row has an "Unsure" way out (press the chosen button again). Size (and, from QP2, the archetype cards) are visible; Practical limits and Don't want are collapsed.
 // The screen holds its answers in a DRAFT and writes them when "Start building" is pressed (Skip writes nothing); the menu block writes as you press. Both write through
 // scene/quickPrefs.ts `applyQuickPrefs`, so they are the same fields and either can change them later.
 import { editBrief, getBrief, onBrief } from './setupBrief';
 import { projectExtras } from '../scene/brief';
 import type { HabitatDirection } from '../scene/discoveryTypes';
 import { SIZE_CHOICES, SIZE_LABEL, galAt, isDry, sizeAtBand, sizeAtMid, sizeText, type SizeChoice } from '../scene/sizePrefs';
-import { AVOIDS, LARGE_IN, LOOK_CHIPS, PLANT_ANSWERS, answersOf, applyQuickPrefs, normalize, plantsLabel, plantsShown, type AvoidId, type Limit, type LookChip, type PlantsAnswer, type QuickAnswers } from '../scene/quickPrefs';
+import { AVOIDS, LARGE_IN, answersOf, applyQuickPrefs, normalize, type ArchState, type AvoidId, type Limit, type QuickAnswers } from '../scene/quickPrefs';
 import { INTRO_BUTTON, INTRO_LINES, INTRO_TITLE, introHtml, spotlight } from './introPopup';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
@@ -26,23 +26,21 @@ export function sizeSliderHtml(d: HabitatDirection, a: QuickAnswers): string {
     + `<div class="qp-slide${at === undefined ? ' unset' : ''}"><input type="range" class="qp-range" data-sizeat min="0" max="1000" step="1" value="${Math.round((at ?? 0.5) * 1000)}" aria-label="Size, small to large" aria-valuetext="${esc(read)}"><div class="qp-bands" aria-hidden="true">${bands}</div></div>`
     + `<div class="qp-opts">${btn('data-size="unsure"', !a.size, 'Unsure')}</div></div>`;
 }
-/** The rows' markup for one habitat and one set of answers (pure: the tests read it). Size, Look and Live plants are always visible; Practical limits and Don't want are collapsed (`open` re-opens one). */
+/** The rows' markup for one habitat and one set of answers (pure: the tests read it). Size is always visible; Practical limits and Don't want are collapsed (`open` re-opens one). */
 export function prefsHtml(d: HabitatDirection, a: QuickAnswers, open: { limits?: boolean; avoid?: boolean } = {}): string {
   const rows: string[] = [];
   rows.push(sizeSliderHtml(d, a));
-  rows.push(`<div class="qp-row" role="group" aria-label="Look"><b>Look <span class="hint">pick any</span></b><div class="qp-opts">${LOOK_CHIPS.map(c => btn(`data-look="${c.id}"`, a.look.includes(c.id), c.label)).join('')}</div></div>`);
-  if (plantsShown(d)) rows.push(`<div class="qp-row" role="group" aria-label="Live plants"><b>${esc(plantsLabel(d))}</b><div class="qp-opts">${PLANT_ANSWERS.map(p => btn(`data-plants="${p.id}"`, a.plants === p.id, p.label)).join('')}${btn('data-plants="unsure"', !a.plants, 'Unsure')}</div></div>`);
+  // QP2 draws the archetype cards here (scene/quickArchetypes.ts `archetypesFor`, state through `press({ arch })`)
   rows.push(`<details class="qp-more" data-x="limits"${open.limits || a.budget || a.care ? ' open' : ''}><summary>Practical limits</summary>${limitRow('budget', 'Set-up cost under', '$', a.budget)}${limitRow('care', 'Weekly upkeep under', 'min', a.care)}<p class="hint">Target = I’d prefer it; Firm maximum = never go over.</p></details>`);
-  rows.push(`<details class="qp-more" data-x="avoid"${open.avoid || a.avoid.length ? ' open' : ''}><summary>Don’t want</summary><div class="qp-opts">${AVOIDS.filter(x => x.shown(d)).map(x => btn(`data-avoid="${x.id}"`, a.avoid.includes(x.id), x.label(d), x.id === 'large-animals' ? `over ${LARGE_IN} in` : '')).join('')}</div><p class="hint">Firm: designs with these are left out. A look you dislike is better said with the Look chips.</p></details>`);
+  rows.push(`<details class="qp-more" data-x="avoid"${open.avoid || a.avoid.length ? ' open' : ''}><summary>Don’t want</summary><div class="qp-opts">${AVOIDS.filter(x => x.shown(d)).map(x => btn(`data-avoid="${x.id}"`, a.avoid.includes(x.id), x.label(d), x.id === 'large-animals' ? `over ${LARGE_IN} in` : '')).join('')}</div><p class="hint">Firm: designs with these are left out. </p></details>`);
   return rows.join('');
 }
 /** Press a button: the next answers. Pressing the chosen button again clears it (that is "Unsure"). */
-export function press(a: QuickAnswers, t: { size?: string; look?: string; plants?: string; avoid?: string; firm?: string }): QuickAnswers {
-  const n: QuickAnswers = { ...a, look: [...a.look], avoid: [...a.avoid] }, tog = <T>(xs: T[], x: T) => xs.includes(x) ? xs.filter(y => y !== x) : [...xs, x];
+export function press(a: QuickAnswers, t: { size?: string; arch?: string; avoid?: string; firm?: string }): QuickAnswers {
+  const n: QuickAnswers = { ...a, arch: { ...a.arch }, avoid: [...a.avoid] }, tog = <T>(xs: T[], x: T) => xs.includes(x) ? xs.filter(y => y !== x) : [...xs, x];
   if (t.size === 'unsure') { delete n.size; delete n.sizeAt; }
   else if (t.size) { if (a.size === t.size) { delete n.size; delete n.sizeAt; } else { n.size = t.size as SizeChoice; delete n.sizeAt; } }
-  if (t.look) n.look = tog(n.look, t.look as LookChip);
-  if (t.plants) { if (t.plants === 'unsure' || a.plants === t.plants) delete n.plants; else n.plants = t.plants as PlantsAnswer; }
+  if (t.arch) { const cur: ArchState | undefined = a.arch[t.arch], nx: ArchState | undefined = cur === undefined ? 'interested' : cur === 'interested' ? 'avoid' : undefined; if (nx) n.arch[t.arch] = nx; else delete n.arch[t.arch]; }   // unselected -> interested -> avoid -> unselected
   if (t.avoid) n.avoid = tog(n.avoid, t.avoid as AvoidId);
   if (t.firm) { const [k, v] = t.firm.split(':') as ['budget' | 'care', string], l = n[k]; if (l) n[k] = { max: l.max, firm: v === '1' }; }
   return normalize(n);
@@ -66,7 +64,7 @@ function mountForm(host: HTMLElement, get: () => QuickAnswers, set: (a: QuickAns
   };
   host.addEventListener('click', e => {
     const t = (e.target as HTMLElement).closest<HTMLElement>('.qp-opt'); if (!t) return;
-    set(press(get(), { size: t.dataset.size, look: t.dataset.look, plants: t.dataset.plants, avoid: t.dataset.avoid, firm: t.dataset.firm })); redraw();
+    set(press(get(), { size: t.dataset.size, arch: t.dataset.arch, avoid: t.dataset.avoid, firm: t.dataset.firm })); redraw();
   });
   host.addEventListener('input', e => {   // the slider: the answer follows the thumb, only the readout is redrawn (a full redraw would drop the drag)
     const i = e.target as HTMLInputElement; if (!i.dataset?.sizeat) return;

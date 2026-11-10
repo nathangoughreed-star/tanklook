@@ -165,7 +165,7 @@ export interface ProjectExtras {
   /** AB6: the quick-preference answers (scene/quickPrefs.ts writes the items and told weights they stand for); kept so the screen and the Constraints block show them back */
   /** AB7: soft thumbs on attribute values from the Discovery attribute panel (scene/attrs.ts). Ranking only; never a filter, a told answer or a lock. */
   thumbs?: Record<string, { v: 1 | -1; e: string[] }>;
-  quick?: { size?: 'small' | 'medium' | 'large'; /** where on the size slider (0..1) the person left the thumb; the band it falls in is `size` */ sizeAt?: number; look?: string[]; plants?: 'definitely' | 'prefer' | 'prefer-not' | 'not'; avoid?: string[] };
+  quick?: { size?: 'small' | 'medium' | 'large'; /** where on the size slider (0..1) the person left the thumb; the band it falls in is `size` */ sizeAt?: number; look?: string[]; plants?: 'definitely' | 'prefer' | 'prefer-not' | 'not'; /** QP1: archetype card states by catalogue key (scene/quickArchetypes.ts); `look` / `plants` are the pre-QP1 answers, kept only until the next write migrates them */ arch?: Record<string, 'interested' | 'avoid'>; avoid?: string[] };
 }
 /** The project's extra answers (never undefined). */
 export const projectExtras = (b: Brief): ProjectExtras => b.project ?? {};
@@ -403,6 +403,7 @@ export function parseProject(raw: unknown): ProjectExtras | undefined {
     if (o.size && typeof q.sizeAt === 'number' && q.sizeAt >= 0 && q.sizeAt <= 1) o.sizeAt = Math.round(q.sizeAt * 1000) / 1000;
     if (q.plants === 'definitely' || q.plants === 'prefer' || q.plants === 'prefer-not' || q.plants === 'not') o.plants = q.plants;
     if (Array.isArray(q.look)) { const l = [...new Set(q.look.filter(idOk))].slice(0, 8); if (l.length) o.look = l; }
+    if (q.arch && typeof q.arch === 'object' && !Array.isArray(q.arch)) { const a: Record<string, 'interested' | 'avoid'> = {}; for (const [k, v] of Object.entries(q.arch as Record<string, unknown>).slice(0, 40)) if (k.length < 60 && (v === 'interested' || v === 'avoid')) a[k] = v; if (Object.keys(a).length) o.arch = a; }
     if (Array.isArray(q.avoid)) { const l = [...new Set(q.avoid.filter(idOk))].slice(0, 12); if (l.length) o.avoid = l; }
     if (Object.keys(o).length) p.quick = o;
   }

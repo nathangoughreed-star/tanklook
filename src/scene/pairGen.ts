@@ -19,6 +19,8 @@ import { finalCheck } from './finalCheck';
 import { meaningfulDryTiers, stockTier } from './sizeTiers';
 import { thumbBonus } from './attrs';
 import { passesHard, readQuickPrefs, type QuickPrefs } from './quickPrefs';
+import { LIVE_ONLY_LAYOUTS } from './quickArchetypes';
+import { finSensitive, withPlantMode } from './scapes';
 import { volume } from './physics';
 import { breadthOf, targetDistance, visuallyDistinct, type Breadth } from './breadth';
 import { diffTouches } from './scope';
@@ -138,6 +140,7 @@ const drop = (c: Ctx, text: string, issues: Issue[] = [], relax: string[] = []) 
 
 /** Run one design through every check; null = dropped (and counted for the no-solution explanation). */
 function ingest(c: Ctx, scene: TankSetup, label: string, source: Pending['source'], ids: { familyId?: string; archetypeId?: string; name?: string } = {}): Pending | null {
+  if (noLive(c.prefs)) scene = noLivePlants(scene);   // QP1: the hard "No live plants" exclusion: swap every plant that has an artificial form; passesHard below drops what still holds a living plant
   const { orig, brief } = c;
   const conf0 = confine(orig, scene, c.scope), fg = conf0 ? fitGear(conf0, { noCo2: c.noCo2 }) : undefined, conf = fg?.scene ?? null, fin = conf && reconcileGear(orig, conf, brief);
   if (!fin) return drop(c, `${label}: leaves a plant without its hardscape or a piece outside the tank`);
@@ -162,7 +165,7 @@ function ingest(c: Ctx, scene: TankSetup, label: string, source: Pending['source
   if (blocked.length) return drop(c, `${label}: ${blocked[0].text}`, [], blocked.map(r => `Relax: ${r.text}`));
   if (c.prefs) {   // quick preferences (AB6): only HARD answers filter a candidate
     const live = after.items.filter(i => i.kind === 'plant').length, art = after.items.filter(i => i.kind === 'artificial').length, IN2 = 25.4 * 25.4;
-    const why = !passesHard(c.prefs, { gallons: after.water.on ? volume(after.tank).gallons : null, floorSqIn: after.tank.L * after.tank.D / IN2, heightIn: after.tank.H / 25.4, plants: live >= 3 ? (art ? 'mixed' : 'live') : 'artificial', species: [...new Set(after.fish.map(f => f.species))], co2: after.grow.feed === 'co2', setupUsd: sc.totals.setupUsd, weeklyMin: sc.totals.minPerWeek });
+    const why = !passesHard(c.prefs, { gallons: after.water.on ? volume(after.tank).gallons : null, floorSqIn: after.tank.L * after.tank.D / IN2, heightIn: after.tank.H / 25.4, plants: live >= 3 ? (art ? 'mixed' : 'live') : 'artificial', species: [...new Set(after.fish.map(f => f.species))], co2: after.grow.feed === 'co2', livePlants: live, setupUsd: sc.totals.setupUsd, weeklyMin: sc.totals.minPerWeek });
     if (why) return drop(c, `${label}: breaks something you said is required or not wanted`, [], ['Relax the requirement that rules this design out']);
   }
   const v = verdictOf(after, brief, { totals: sc.totals, units: c.units });
@@ -195,10 +198,17 @@ function fromPropose(c: Ctx, base: TankSetup, n: number): void {
   c.cache.stats.ms += performance.now() - t0;
 }
 
+const noLive = (p?: QuickPrefs) => !!p?.prohibit.includes('no-live-plants');
+/** QP1: the scene with every swappable plant artificial (floaters are dropped, land plants have no artificial form and stay: such a design then fails `passesHard`). */
+function noLivePlants(S: TankSetup): TankSetup {
+  const n = new Map<string, number>(); for (const f of S.fish) n.set(f.species, (n.get(f.species) ?? 0) + 1);
+  return withPlantMode(S, 'artificial', finSensitive([...n].map(([species, k]) => ({ species, n: k }))));
+}
 /** The Explore looks to try, in the order that spreads worlds and families apart (or stays near the champion's). */
 function looksFor(c: Ctx, direction: HabitatDirection, type: Comparison['type'], champ?: CandidateRecord): Archetype[] {
-  const kinds = c.w.kinds?.length ? c.w.kinds : undefined, want = DIRECTION_KIND[direction];
-  const all = ARCHETYPES.filter(a => isBuildable(a) && identityOf(a).water !== 'brackish' && (!kinds || kinds.includes(KIND_OF(a))));
+  const kinds = c.w.kinds?.length ? c.w.kinds : undefined, want = DIRECTION_KIND[direction], lp = c.prefs?.arch, skip = noLive(c.prefs);
+  const pref = (a: Archetype) => lp ? (lp.layouts[a.id] ?? lp.families[a.familyId] ?? 0) : 0;   // QP1: Interested cards are tried first, Avoid last; nothing is removed by it
+  const all = ARCHETYPES.filter(a => isBuildable(a) && identityOf(a).water !== 'brackish' && (!kinds || kinds.includes(KIND_OF(a))) && !(skip && LIVE_ONLY_LAYOUTS.has(a.id))).map((a, i) => ({ a, i })).sort((x, y) => pref(y.a) - pref(x.a) || x.i - y.i).map(x => x.a);
   const soft = (type === 'first' || type === 'champion') && want ? all.filter(a => KIND_OF(a) === want) : all;
   const pool = soft.length ? soft : all, champFam = champ ? champ.snapshot.layout.id : undefined;
   const byFam = new Map<string, Archetype[]>(); for (const a of pool) byFam.set(a.familyId, [...(byFam.get(a.familyId) ?? []), a]);

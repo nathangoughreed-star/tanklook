@@ -64,13 +64,13 @@ import { defaultSetup } from '../src/scene/defaults';
 import { regenerate } from '../src/scene/starter';
 import { IN } from '../src/scene/physics';
 import { applyQuickPrefs, emptyAnswers, readQuickPrefs, type QuickAnswers } from '../src/scene/quickPrefs';
-import { projectExtras, setProjectExtras, setRange } from '../src/scene/brief';
+import { projectExtras, setProjectExtras, setRange, setItem } from '../src/scene/brief';
 describe('quick preferences: hard answers filter, the rest rank, told outranks learned', () => {
   const project = () => { const t = structuredClone(defaultSetup()); t.tank = { ...t.tank, L: 36 * IN, D: 18 * IN, H: 16 * IN }; t.water.on = true; regenerate(t, 'all', 1); return ensureUids(t); };
   const briefOf = (a: Partial<QuickAnswers>) => applyQuickPrefs(setProjectExtras(emptyBrief(), { ...projectExtras(emptyBrief()), direction: 'freshwater' }), { ...emptyAnswers(), ...a });
   const pair = (br: ReturnType<typeof briefOf>) => { clearPairCache(); return nextPair({ tank: project(), rev: 1 }, br, startSession(1, ['tank', 'animals', 'plants', 'hardscape', 'substrate'], 'freshwater', 's'), () => undefined, { next: 'first' }); };
   it('Freshwater, Medium, Lush, Definitely live plants, No CO2: live plants, no CO2 feed or line, the medium size is only a ranking', () => {
-    const br = briefOf({ size: 'medium', look: ['lush'], plants: 'definitely', avoid: ['co2'] }), q = readQuickPrefs(br);
+    const br = setItem(briefOf({ size: 'medium', arch: { 'freshwater-jungle': 'interested' }, avoid: ['co2'] }), 'appearance.plantMode', 'live', 'hard'), q = readQuickPrefs(br);
     expect(q.plants).toEqual({ value: 'live', strength: 'hard' }); expect(q.prohibit).toContain('co2'); expect(q.sizeGal?.strength).toBe('prefer');
     const r = pair(br); expect(r.ok).toBe(true); if (!r.ok) return;
     for (const c of [r.a, r.b]) { expect(c.snapshot.items.filter(i => i.kind === 'plant').length).toBeGreaterThanOrEqual(3); expect(c.snapshot.grow.feed).not.toBe('co2'); expect(c.facts.toBuy.some(l => /co2/i.test(l.label))).toBe(false); }
