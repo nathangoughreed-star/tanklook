@@ -7,7 +7,7 @@ import { TABS, type Tab } from './scope';
 import { discoverTabs } from './discoverScope';
 import { confine, propose, type DiscoveryProposal } from './discover';
 import { checkProposal, deltaBetween, previewProposal } from './proposal';
-import { locksOf } from './locks';
+import { locksOf, lockViolations, rosterMet } from './locks';
 import { verdictOf, type Issue } from './verdict';
 import { equipPlan, noNewEquipment } from './equipPlan';
 import { equipmentOf } from './project';
@@ -21,7 +21,7 @@ import { distance as fpDistance, idOf, type Entry } from '../explore/candidate';
 import { rankEligible } from '../explore/rank';
 import { customTankWants, type Kind, type Wants } from '../demand/suggest';
 import { defaultProfile, type UserProfile } from '../demand/types';
-import type { TankSetup, Units } from './types';
+import type { Fish, TankSetup, Units } from './types';
 import type { CandidateRecord, DiscoverySession, HabitatDirection, PairResult, ProposalPurpose, Comparison } from './discoveryTypes';
 import { contentDistance, factsOf, featuresFor, fingerprintOf, keyOf, scoreScene, tokensOf, type Scored } from './pairFacts';
 
@@ -36,6 +36,8 @@ export interface PairOpts {
   now?: number; units?: Units; P?: UserProfile;
   /** generation budget, ms (default 2200: the first pair is due in about 3 s with the validation that follows) */
   budgetMs?: number;
+  /** receives plain lines about what happened on the way (a kept species added, a conflicting champion replaced) */
+  notes?: string[];
   /** candidate cache (default: a small shared one keyed by the situation) */
   cache?: PairCache;
 }
@@ -62,7 +64,26 @@ export function baselineOf(project: PairProject, session: DiscoverySession, look
     const c = confine(base, src.snapshot, tabs);
     if (c) base = c; else notes.push(`The kept ${tabs.join(' and ')} could not be placed in this project, so the working design's stay.`);
   }
+  seedLocked(base, session, lookup, notes);
   return { base, notes };
+}
+/** A roster lock names a species the baseline does not hold (a school locked from a losing card, say): the lock ADDS it, whatever the Animals tab says (frozen or unchecked tabs keep their OTHER animals). Count and props come from the lock, or from a history record that has the species. Writes no lock; the full welfare checks still judge the result. */
+function seedLocked(base: TankSetup, session: DiscoverySession | undefined, lookup: Lookup | undefined, notes: string[]): void {
+  const ids = new Set<string>(); if (session) { for (const x of [session.championId, session.pendingFreshId, session.current?.aId, session.current?.bId]) if (x) ids.add(x); for (const c of session.comparisons) { ids.add(c.aId); ids.add(c.bId); } }
+  for (const lk of locksOf(base).roster) {
+    if (base.fish.some(f => f.species === lk.species)) continue;
+    const src = [...ids].map(i => lookup?.(i)).find(r => r?.snapshot.fish.some(f => f.species === lk.species));
+    const have = src ? src.snapshot.fish.filter(f => f.species === lk.species) : [];
+    const n = lk.mode === 'speciesOnly' ? Math.max(have.length, lk.n, 1) : Math.max(lk.n, 1);
+    let id = Math.max(0, ...base.fish.map(f => f.id)) + 1;
+    for (let i = 0; i < n; i++) {
+      const t = have[i % Math.max(have.length, 1)], T = base.tank;
+      const f = (t ? structuredClone(t) : { species: lk.species, x: T.L * 0.3 + (i * 37) % (T.L * 0.4), y: Math.min(100, T.H / 3), depth: T.D / 2 + ((i * 23) % 60) - 30, yaw: 0, pitch: 0, roll: 0, bend: 0 }) as Fish;
+      f.id = id++; delete f.uid; base.fish.push(f);
+    }
+    notes.push(`Your kept ${lk.species} (${n}) are added to every design.`);
+  }
+  ensureUids(base);
 }
 /** Tabs a pair may vary: the session's checked tabs, minus frozen ones, minus tabs whose Discovery switch is off. */
 export const effectiveScope = (project: PairProject, session: DiscoverySession): Tab[] => {
@@ -191,28 +212,43 @@ function chooseChallenger(pool: Pending[], champ: Pending, comparisons: number, 
 }
 
 // ---------------------------------------------------------------------------------------------------------------- the entry point
-const noSolution = (c: PairCache, extra: string[] = []): PairResult => {
+const noSolution = (c: PairCache, extra: string[] = [], more: string[] = []): PairResult => {
   const conflicts = new Map<string, string>(), relax = new Set<string>();
   for (const r of c.rej) { for (const i of r.issues) conflicts.set(i.id, i.text); for (const x of r.relax) relax.add(x); }
   if (!conflicts.size) for (const r of c.rej.slice(0, 4)) conflicts.set(r.text, r.text);
-  return { ok: false, conflicts: [...extra, ...conflicts.values()].slice(0, 8), relaxations: [...relax].slice(0, 8) };
+  return { ok: false, conflicts: [...extra, ...conflicts.values()].slice(0, 8), relaxations: [...relax, ...more].slice(0, 10) };
 };
 
 /** The next pair for the session on screen: two complete, validated, comparable designs. `final` generates nothing: the fresh winner against the champion, both from history (A = champion, B = the fresh winner). */
 export function nextPair(project: PairProject, brief: Brief, session: DiscoverySession, lookup: Lookup, opts: PairOpts = {}): PairResult {
   const now = opts.now ?? Date.now(), units = opts.units ?? 'in', P = opts.P ?? defaultProfile(), t0 = performance.now();
-  const champ = session.championId ? lookup(session.championId) : undefined;
-  const type: Comparison['type'] = opts.next ?? (champ ? 'champion' : 'first');
+  let champ = session.championId ? lookup(session.championId) : undefined;
+  let type: Comparison['type'] = opts.next ?? (champ ? 'champion' : 'first');
   if (type === 'final') {
     const fresh = session.pendingFreshId ? lookup(session.pendingFreshId) : undefined;
     return champ && fresh ? { ok: true, a: champ, b: fresh } : { ok: false, conflicts: [!champ ? 'There is no favourite to compare against yet.' : 'There is no new winner waiting to face the favourite.'], relaxations: [] };
   }
+  // a champion that no longer fits the locks or the welfare checks is never shown as a valid design: the pair is drawn afresh (two valid challengers), and the caller is told why
+  if (type === 'champion' && champ) {
+    const unmet = locksOf(project.tank).roster.filter(r => !rosterMet(champ!.snapshot, r)).map(r => `${r.species}: ${r.mode === 'exact' ? `exactly ${r.n}` : r.mode === 'atLeast' ? `at least ${r.n}` : 'the species stays'} is kept, the favourite has ${champ!.snapshot.fish.filter(f => f.species === r.species).length}`);
+    const bad = [...lockViolations(project.tank, champ.snapshot).map(v => v.detail), ...unmet];
+    if (bad.length) {
+      // the favourite meets the new locks only after a NEW adapted record (the old one is never edited); when it cannot, it is replaced, never shown as valid
+      const ad = adapt(champ, project, brief, { now, units: opts.units ?? 'in', P, sessionId: session.id });
+      if (ad.ok) { opts.notes?.push(`Your favourite was adapted to your kept items: ${bad.slice(0, 3).join('; ')}.`); champ = ad.record; }
+      else { opts.notes?.push(`Your favourite no longer fits: ${bad.slice(0, 3).join('; ')}. New designs are drawn instead.`); champ = undefined; type = 'first'; }
+    } else {
+      const v = verdictOf(champ.snapshot, brief, { units: opts.units ?? 'in' });
+      if (!v.feasible) { opts.notes?.push(`Your favourite no longer fits: ${[...v.gates, ...v.hard].slice(0, 3).map(i => i.text).join('; ')}. New designs are drawn instead.`); champ = undefined; type = 'first'; }
+    }
+  }
   const scope = effectiveScope(project, session);
   if (!scope.length) return { ok: false, conflicts: ['Nothing is open to change: every menu is switched off or kept for now.'], relaxations: ['Switch a menu on, or release a kept menu'] };
-  const { base, notes } = baselineOf(project, session, lookup);
+  const { base, notes } = baselineOf(project, session, lookup), freezeNotes = session.freezes.map(f => `Release the kept ${f.tab} tab`);
   const w = customTankWants(brief, briefToWants(brief)), purpose: ProposalPurpose = type === 'fresh' ? 'fresh' : type === 'champion' ? 'challenger' : scope.length <= 2 ? 'contrast' : 'first';
   const sig = idOf(JSON.stringify([project.rev, session.id, scope, session.freezes, session.direction, type, type === 'first' ? '' : champ?.id, brief]));
   const cache = opts.cache?.sig === sig ? opts.cache : opts.cache ? Object.assign(opts.cache, newCache(sig)) : (SHARED.get(sig) ?? (() => { if (SHARED.size >= 6) SHARED.delete(SHARED.keys().next().value!); const n = newCache(sig); SHARED.set(sig, n); return n; })());
+  opts.notes?.push(...notes);
   const known = new Set<string>([...(opts.shownKeys ?? []), ...(champ?.key ? [champ.key] : [])]);
   // the champion as a design in the CURRENT project's terms: challengers are variations around it (nearer it as the session goes on)
   const champBase = type === 'champion' && champ ? confine(base, champ.snapshot, scope) : null;
@@ -252,13 +288,14 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
   cache.stats.ms = Math.max(cache.stats.ms, performance.now() - t0);
   if (result) { const out = { ok: true as const, a: result.a, b: result.b }; return out; }
   const few = usable().length;
-  return noSolution(cache, [...notes, ...(few === 1 ? ['Only one design fits your locks and limits, so there is nothing to compare it with.'] : few === 0 && cache.pend.length ? ['Every design that fits has already been shown.'] : [])]);
+  return noSolution(cache, [...notes, ...(few === 1 ? ['Only one design fits your locks and limits, so there is nothing to compare it with.'] : few === 0 && cache.pend.length ? ['Every design that fits has already been shown.'] : [])], [...freezeNotes, ...(locksOf(base).objects.some(o => o.target === 'tank') ? ['Unlock the tank for a larger one'] : [])]);
 }
 
 /** A NEW record (purpose 'adapted', parentId = the old one) of `record` fitted to the project as it is now: the current locks and limits hold, equipment is re-derived. The old record is never touched. */
 export type AdaptResult = { ok: true; record: CandidateRecord; notes: string[] } | { ok: false; conflicts: string[]; relaxations: string[] };
 export function adapt(record: CandidateRecord, project: PairProject, brief: Brief, opts: { now?: number; units?: Units; P?: UserProfile; sessionId?: string; scope?: Tab[] } = {}): AdaptResult {
   const now = opts.now ?? Date.now(), units = opts.units ?? 'in', P = opts.P ?? defaultProfile(), base = ensureUids(structuredClone(project.tank));
+  seedLocked(base, undefined, undefined, []);
   const scope = opts.scope ?? discoverTabs(project.tank), cache = newCache('adapt'), w = customTankWants(brief, briefToWants(brief));
   const ctx: Ctx = { orig: base, brief, w, P, units, now, scope, baseRev: project.rev, sessionId: opts.sessionId ?? record.sessionId, purpose: 'adapted', parentId: record.id, cache };
   const got = ingest(ctx, ensureUids(structuredClone(record.snapshot)), record.facts.title, 'propose', { name: record.facts.title });

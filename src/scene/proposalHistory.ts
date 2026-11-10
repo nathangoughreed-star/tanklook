@@ -6,7 +6,7 @@
 import type { Brief } from './brief';
 import type { Tab } from './scope';
 import { diffTouches, outOfScope } from './scope';
-import { lockViolations, type Violation } from './locks';
+import { lockViolations, rosterMet, type Violation } from './locks';
 import { verdictOf } from './verdict';
 import { equipPlan, type BuyLine } from './equipPlan';
 import type { TankSetup } from './types';
@@ -184,7 +184,8 @@ export interface ReEvalOpts {
 export function reEvaluate(record: CandidateRecord, project: TankSetup, brief: Brief, opts: ReEvalOpts = {}): ReEvaluation {
   const S = record.snapshot;
   const verdict = verdictOf(S, brief), plan = equipPlan(S, brief);
-  const lockConflicts = lockViolations(project, S, project.locks);
+  // a kept roster the design does not hold is a conflict too (lockViolations is relative: it never charges a design for a species the project itself lacks)
+  const lockConflicts = [...lockViolations(project, S, project.locks), ...(project.locks?.roster ?? []).filter(r => !rosterMet(S, r) && !lockViolations(project, S, project.locks).some(v => v.kind === 'roster' && v.target === r.species)).map((r): Violation => ({ kind: 'roster', target: r.species, detail: `${r.species}: ${r.mode === 'exact' ? `exactly ${r.n}` : r.mode === 'atLeast' ? `at least ${r.n}` : 'the species stays'} is kept, this design has ${S.fish.filter(f => f.species === r.species).length}.` }))];
   const scopeConflicts = opts.scope ? outOfScope(diffTouches(project, S), opts.scope) : [];
   const stale = opts.currentRev !== undefined && opts.currentRev !== record.baseRev;
   const conflicts: string[] = [
