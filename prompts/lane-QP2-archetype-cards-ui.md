@@ -1,0 +1,9 @@
+# QP2: Image archetype cards in Quick Preferences (Coordinator 22)
+
+Follow `prompts/lane-common-c20.md`. START ONLY after Coordinator 22 messages you that QP1 is merged (the catalogue file and the 3-state model exist on origin/main). Then `git fetch origin && git merge --ff-only origin/main`. Read `research/design/quick-prefs-archetypes-plan.md`, the spec `research/design/quick-prefs-archetypes-handoff-2026-11-10.md` (sections 3, 5, 6), and `src/ui/quickPrefs.ts`. Report to Coordinator 22; never push.
+
+## Task
+Replace the Look chips with image cards from the QP1 catalogue for the chosen habitat: 4-6 cards, each with image, short name, one-line description, three states Interested / Avoid / Unselected (default unselected; states clear without relying on colour alone, e.g. icon + text label, not tiny thumbs). Multiple interests allowed. Remove the Live plants row; add "No live plants" under Don't want (QP1 provides the model). "I don't know yet" shows no gallery or a very small mixed sample. The same fields appear in the left Preferences / Constraints block (drawn from the same function), editable during Discovery. The screen stays optional: Skip and Start building always visible, no new step. Use the QP3 images when present; until then a plain labelled placeholder tile that still works. 375 px: compare 2 cards per row against a horizontal scroller and keep the more legible. Show QP1's compromise note when a planted archetype is interested together with No live plants.
+
+## Done when
+UI tests for the three-state interaction, removal of the Live plants row, No live plants, and sync with the left block; build clean; ab* / onboarding tests; real-UI check at desktop and 375 px for spec scenarios 1, 2, 5, 7, 9, 10, 11; screenshots in `research/screens/QP2/` (~60 KB), key ones to Nathan via SendUserFile; HANDOFF section.

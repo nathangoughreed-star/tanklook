@@ -1,0 +1,9 @@
+# QP3: Archetype thumbnail images (Coordinator 22)
+
+Follow `prompts/lane-common-c20.md`. START ONLY after Coordinator 22 messages you that QP1 is merged (the archetype catalogue with planned image filenames is on origin/main). Then `git fetch origin && git merge --ff-only origin/main`. Read `research/design/quick-prefs-archetypes-plan.md`, spec sections 3 and 5 of `research/design/quick-prefs-archetypes-handoff-2026-11-10.md`, and how the start-screen art was made (`public/art/start/`, HANDOFF "SL1" and the render / shot scripts). Report to Coordinator 22; never push. Another lane (QP2) builds the cards UI and reads your files by the catalogue's filenames; do not edit `src/ui/`.
+
+## Task
+For each archetype in the catalogue (every habitat), produce one image that shows the visual archetype and is distinguishable from its siblings AT THUMBNAIL SIZE (about 160 px wide). Render them from REAL generated designs through the app's own renderer (the pair / Explore generator with that archetype's family, same framing, lighting and camera angle for the whole set), not hand-painted art; they must depict only what the app can really draw. Output webp to `public/art/quick/<habitat>-<id>.webp`, about 15-25 KB each (state the total in your report), plus a contact sheet per habitat in `research/screens/QP3/` so siblings can be compared; send the contact sheets to Nathan via SendUserFile. Commit the re-render script (`scripts/qp3-thumbs.mjs`). If an archetype cannot be rendered distinctly, say so and propose merging or dropping it (a catalogue change: tell the coordinator, do not edit the catalogue yourself). Real gear and plants in true colours; fish art must not look cartoony.
+
+## Done when
+All catalogue images exist and load; contact sheets reviewed by you for distinctness; total size within budget; HANDOFF section; build clean.
