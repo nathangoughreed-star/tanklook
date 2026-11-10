@@ -1,6 +1,6 @@
 # Common rules for Coordinator 20's lanes (ST1, FR1, EQ1, GW1, ...)
 
-- Coordinator: Coordinator 21, session `local_94b0b16c-78cc-4537-b306-4baa170900b2`. Report to it ONCE (send_message): branch + sha rebased on origin/main, build + test result, screenshots, open questions. Never push; the coordinator merges.
+- Coordinator: Coordinator 22, session `local_b0516eb8-66d2-4b12-8c5a-ac195c952bbc`. Report to it ONCE (send_message): branch + sha rebased on origin/main, build + test result, screenshots, open questions. Never push; the coordinator merges.
 - Own worktree off origin/main (`git fetch`, base on origin/main; rebase on origin/main before reporting).
 - Read first: HANDOFF.md "Start here" incl. "Machine load" (renders / screenshot sheets via `scripts/lowprio.ps1`, test suites via Bash run_in_background, kill Chrome / node / vite when done), then `research/design/sandbox-start-and-single-home.md` (the plan: "What Nathan asked", "Where things are today", your lane, and which files the other lanes own: stay out of theirs).
 - Nathan is American: gallons, inches, deg F, lb, dollars.

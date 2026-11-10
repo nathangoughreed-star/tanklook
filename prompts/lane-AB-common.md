@@ -1,6 +1,6 @@
 # Discovery v2 lanes AB0-AB4: common header (Coordinator 21, 2026-11-09)
 
-- Follow `prompts/lane-common-c20.md`. Report ONCE to Coordinator 21 (`local_94b0b16c-78cc-4537-b306-4baa170900b2`) and never push. Title your chat "ABn: Title", using the id and title from your lane file.
+- Follow `prompts/lane-common-c20.md`. Report ONCE to Coordinator 22 (`local_b0516eb8-66d2-4b12-8c5a-ac195c952bbc`) and never push. Title your chat "ABn: Title", using the id and title from your lane file.
 - Read first:
   - `research/design/discovery-v2-plan.md`: your row and the decisions.
   - `research/design/discovery-v2-handoff.md`: the spec. Read the sections your lane file names, plus section 12 (acceptance).
