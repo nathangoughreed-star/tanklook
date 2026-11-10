@@ -10,10 +10,10 @@ import { lockRoster } from '../src/scene/locks';
 import { verdictOf } from '../src/scene/verdict';
 import { emptyBrief } from '../src/ui/setupBrief';
 import { setEquipment, setOwnedUse } from '../src/scene/project';
-import { withUnits } from '../src/scene/tech';
+import { filterUnits, withUnits } from '../src/scene/tech';
 import { equipPlan } from '../src/scene/equipPlan';
 import { mean3 } from '../src/demand/range';
-import { clearPairCache, nextPair } from '../src/scene/pairGen';
+import { clearPairCache, nextPair, reconcileGear } from '../src/scene/pairGen';
 import { freeze, record, setCurrent, startSession } from '../src/scene/discoverySession';
 import { createProposalHistory, reEvaluate, type ProposalHistory } from '../src/scene/proposalHistory';
 import { aspectsOf, recordPair } from '../src/explore/aspects';
@@ -145,5 +145,37 @@ describe('(c) Skip and Like both', () => {
     expect(out.tasteSignal.liked.sort()).toEqual([r.a.id, r.b.id].sort()); expect(out.session.championId).toBeUndefined();
     const b2 = recordPair(B0, { outcome: 'both', a: { id: r.a.id, features: ['plants:lush', 'species:ember'] }, b: { id: r.b.id, features: ['plants:none', 'species:cherry'] } });
     const ev = aspectsOf(b2)!.events; expect(ev.map(e => e.c).sort()).toEqual([r.a.id, r.b.id].sort()); expect(ev.every(e => e.k === 'like' && (e.pos?.length ?? 0) > 0)).toBe(true);
+  }, 120000);
+});
+
+describe('(b2) Have-available gear is optional: reused only when capable for THAT design', () => {
+  it('a small owned filter is absent from the crowded design (a filter is bought) and reused at $0 in the small one', () => {
+    const t = project(), o: TankSetup = { ...t, tech: withUnits(t.tech ?? ({ rows: {} } as never), 'filter', [{ kind: 'sponge', owned: true }]) };
+    const b = setEquipment(B0, 'filter', { pick: 'care' }), gf = (n: number) => fishOf('goldfish', n, 700);
+    const X = reconcileGear(o, { ...o, fish: gf(12) }, b), Y = reconcileGear(o, { ...o, fish: gf(3) }, b);
+    expect(filterUnits(X.tech!).some(u => u.owned)).toBe(false);
+    expect(equipPlan(X, b).toBuy.some(l => l.key === 'filter' && l.usd > 0)).toBe(true);
+    expect(filterUnits(Y.tech!).some(u => u.owned && u.kind === 'sponge')).toBe(true);
+    expect(equipPlan(Y, b).toBuy.some(l => l.key === 'filter')).toBe(false);
+  });
+  it('Must-use gear is forced in even when too small (equipPlan then adds a supplement)', () => {
+    const t = project(), o: TankSetup = { ...t, tech: withUnits(t.tech ?? ({ rows: {} } as never), 'filter', [{ kind: 'sponge', owned: true }]) };
+    const b = setOwnedUse(setEquipment(B0, 'filter', { pick: 'care' }), 'filter', 'required');
+    expect(filterUnits(reconcileGear(o, { ...o, fish: fishOf('goldfish', 12, 700) }, b).tech!).some(u => u.owned)).toBe(true);
+  });
+});
+
+describe('a challenger lock RECONCILES with a hold', () => {
+  it('A holds 6 pygmy cories (Animals held on A); an exact 8 from B gives 8 in every candidate, not 14; the other animals stay', () => {
+    const t = project(), { A, s } = setup(t);
+    const A6: CandidateRecord = { ...structuredClone(A), id: 'A6', key: 'A6-key', snapshot: { ...structuredClone(A.snapshot), fish: [...fishOf('pygmycory', 6, 600), ...fishOf('ember', 4, 650)] } };
+    ensureUids(A6.snapshot); H.put(A6);
+    const t2 = structuredClone(t); lockRoster(t2, 'pygmycory', 'exact', 8);
+    const s2 = freeze({ ...s, championId: A6.id }, 'animals'), notes: string[] = [];
+    expect(s2.freezes[0]).toEqual({ tab: 'animals', source: A6.id });
+    const r = nextPair({ tank: t2, rev: 2 }, B0, s2, look, { next: 'champion', notes });
+    if (r.ok) for (const c of [r.a, r.b]) { expect(cories(c)).toBe(8); expect(c.snapshot.fish.filter(f => f.species === 'ember').length).toBe(4); expect(verdictOf(c.snapshot, B0).feasible).toBe(true); }
+    else { expect(r.conflicts.length).toBeGreaterThan(0); expect(r.relaxations.length).toBeGreaterThan(0); }
+    expect(r.ok).toBe(true); expect(notes.some(n => /replace the 6/.test(n))).toBe(true);
   }, 120000);
 });

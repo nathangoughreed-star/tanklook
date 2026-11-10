@@ -22,6 +22,7 @@ import { getTankModel, modelGallons, type TankModel } from '../data/tanks';
 import { getSpecies } from '../data/species';
 import { layerOf } from './items';
 import { volume } from './physics';
+import { filterUnits, heaterUnits } from './tech';
 import type { Figure as FactFigure, CandidateFacts } from './discoveryTypes';
 import type { Env } from './archetypes';
 
@@ -93,6 +94,9 @@ const kindsOf = (S: TankSetup, plant: boolean): string[] => {
   return [...m].sort((a, b) => b[1] - a[1]).map(([k, n]) => n > 1 ? `${k} x${n}` : k);
 };
 
+/** Is this owned item actually IN the design (Have-available gear the design left out is a purchase, not a reuse)? */
+const inDesign = (S: TankSetup, key: string): boolean => key === 'light' ? !!S.light.owned : key === 'heater' ? !!S.tech && heaterUnits(S.tech).some(u => u.owned) : key === 'filter' ? !!S.tech && filterUnits(S.tech).some(u => u.owned) : true;
+
 /** Everything a card shows, from one scored design. `title` overrides the derived one (an Explore look has its own name). */
 export function factsOf(S: TankSetup, brief: Brief, sc: Scored, name?: string): CandidateFacts {
   const eq = equipmentOf(brief).items, flagged = new Set(sc.plan.flags.map(f => f.item as string));
@@ -101,7 +105,7 @@ export function factsOf(S: TankSetup, brief: Brief, sc: Scored, name?: string): 
     title: name ?? title(S), habitat: habitatOf(S), gallons: gal,
     newSpendUsd: fig(sc.estimate.startupUsd), monthlyUsd: fig(sc.estimate.monthlyUsd), weeklyMin: fig(sc.estimate.minPerWeek),
     difficulty: sc.estimate.difficulty.level, toBuy: sc.plan.toBuy.map(l => ({ ...l })),
-    reused: eq.filter(i => i.use !== 'required' && !flagged.has(i.key)).map(i => i.key), mustUse: eq.filter(i => i.use === 'required').map(i => i.key),
+    reused: eq.filter(i => i.use !== 'required' && !flagged.has(i.key) && inDesign(S, i.key)).map(i => i.key), mustUse: eq.filter(i => i.use === 'required').map(i => i.key),
     stocking: rosterOf(S).map(r => ({ species: r.species, name: getSpecies(r.species)?.name ?? r.species, n: r.n })),
     plants: kindsOf(S, true), hardscape: kindsOf(S, false), substrate: S.substrate.show ? [S.substrate.type] : [],
   };

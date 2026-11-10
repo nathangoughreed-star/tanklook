@@ -9,9 +9,9 @@ import { confine, propose, type DiscoveryProposal } from './discover';
 import { checkProposal, deltaBetween, previewProposal } from './proposal';
 import { locksOf, lockViolations, rosterMet } from './locks';
 import { verdictOf, type Issue } from './verdict';
-import { equipPlan, noNewEquipment } from './equipPlan';
-import { equipmentOf } from './project';
-import { filterUnits, heaterUnits, withUnits } from './tech';
+import { capableOf, equipPlan, noNewEquipment } from './equipPlan';
+import { equipmentOf, requiredEquipment } from './project';
+import { filterUnits, heaterUnits, inferTech, withUnits } from './tech';
 import { briefToWants, type Brief } from './brief';
 import { ensureUids } from './uid';
 import { ARCHETYPES, type Archetype } from './archetypes';
@@ -67,21 +67,26 @@ export function baselineOf(project: PairProject, session: DiscoverySession, look
   seedLocked(base, session, lookup, notes);
   return { base, notes };
 }
-/** A roster lock names a species the baseline does not hold (a school locked from a losing card, say): the lock ADDS it, whatever the Animals tab says (frozen or unchecked tabs keep their OTHER animals). Count and props come from the lock, or from a history record that has the species. Writes no lock; the full welfare checks still judge the result. */
+/** A roster lock RECONCILES with what the baseline holds (Coordinator 21): the species' count becomes what the lock says (exact n; at least n; the species stays), replacing the held count, never adding to it (a hold of 6 plus an exact 8 is 8, not 14).
+ *  Missing animals come from a history record that has the species, else the lock's own count. Other held animals are untouched; welfare is judged later, and a conflict is reported, never silently resolved. Writes no lock. */
 function seedLocked(base: TankSetup, session: DiscoverySession | undefined, lookup: Lookup | undefined, notes: string[]): void {
   const ids = new Set<string>(); if (session) { for (const x of [session.championId, session.pendingFreshId, session.current?.aId, session.current?.bId]) if (x) ids.add(x); for (const c of session.comparisons) { ids.add(c.aId); ids.add(c.bId); } }
   for (const lk of locksOf(base).roster) {
-    if (base.fish.some(f => f.species === lk.species)) continue;
-    const src = [...ids].map(i => lookup?.(i)).find(r => r?.snapshot.fish.some(f => f.species === lk.species));
-    const have = src ? src.snapshot.fish.filter(f => f.species === lk.species) : [];
-    const n = lk.mode === 'speciesOnly' ? Math.max(have.length, lk.n, 1) : Math.max(lk.n, 1);
+    const held = base.fish.filter(f => f.species === lk.species), c = held.length;
+    const want = lk.mode === 'exact' ? lk.n : lk.mode === 'atLeast' ? Math.max(c, lk.n) : Math.max(c, 1);
+    if (want === c) continue;
+    if (want < c) {
+      const drop = new Set(held.slice(want).map(f => f.id)); base.fish = base.fish.filter(f => !drop.has(f.id));
+      notes.push(`Your kept ${lk.species} (exactly ${want}) replace the ${c} the held animals had.`); continue;
+    }
+    const src = [...ids].map(i => lookup?.(i)).find(r => r?.snapshot.fish.some(f => f.species === lk.species)), have = held.length ? held : src ? src.snapshot.fish.filter(f => f.species === lk.species) : [];
     let id = Math.max(0, ...base.fish.map(f => f.id)) + 1;
-    for (let i = 0; i < n; i++) {
+    for (let i = c; i < want; i++) {
       const t = have[i % Math.max(have.length, 1)], T = base.tank;
       const f = (t ? structuredClone(t) : { species: lk.species, x: T.L * 0.3 + (i * 37) % (T.L * 0.4), y: Math.min(100, T.H / 3), depth: T.D / 2 + ((i * 23) % 60) - 30, yaw: 0, pitch: 0, roll: 0, bend: 0 }) as Fish;
-      f.id = id++; delete f.uid; base.fish.push(f);
+      f.id = id++; delete f.uid; if (t) { f.x += (i * 13) % 40 - 20; } base.fish.push(f);
     }
-    notes.push(`Your kept ${lk.species} (${n}) are added to every design.`);
+    notes.push(c ? `Your kept ${lk.species} (${want}) replace the ${c} the held animals had.` : `Your kept ${lk.species} (${want}) are added to every design.`);
   }
   ensureUids(base);
 }
@@ -98,15 +103,21 @@ function habitatFree(base: TankSetup, scope: readonly Tab[]): boolean {
 }
 
 // ---------------------------------------------------------------------------------------------------------------- one candidate
-/** Gear the person OWNS stays theirs whatever design is drawn: a catalogue look or an older record brings its own light, heater and filter, so the owned ones of the working project replace them (equipPlan then credits them only when capable). */
-function carryOwned(orig: TankSetup, scene: TankSetup): TankSetup {
-  const r = structuredClone(scene);
-  if (orig.light.owned) r.light = structuredClone(orig.light);
-  if (orig.tech) {
-    const h = heaterUnits(orig.tech).filter(u => u.owned), f = filterUnits(orig.tech).filter(u => u.owned);
-    if (h.length) r.tech = withUnits(r.tech ?? structuredClone(orig.tech), 'heater', structuredClone(h));
-    if (f.length) r.tech = withUnits(r.tech ?? structuredClone(orig.tech), 'filter', structuredClone(f));
-  }
+/** Owned gear and a design (Coordinator 21): MUST-USE gear is always in the design (equipPlan adds a supplement when it is too small, or calls it infeasible under "No new equipment"). HAVE-AVAILABLE gear is optional: it goes into a design only when it is
+ *  capable for THAT design (then it is $0, the cheaper choice); otherwise it is left out and the design's own gear is derived (a purchase), never forced in. Pure; `S` is the finished design, `orig` the working project that owns the gear. */
+export function reconcileGear(orig: TankSetup, S: TankSetup, brief: Brief): TankSetup {
+  const must = new Set(requiredEquipment(brief).map(i => String(i.key))), r = structuredClone(S), ot = orig.tech;
+  const oh = ot ? heaterUnits(ot).filter(u => u.owned) : [], of = ot ? filterUnits(ot).filter(u => u.owned) : [], ol = !!orig.light.owned;
+  if (!oh.length && !of.length && !ol) return r;
+  const trial = structuredClone(r);
+  if (ol) trial.light = structuredClone(orig.light);
+  if (oh.length) trial.tech = withUnits(trial.tech ?? structuredClone(ot!), 'heater', structuredClone(oh));
+  if (of.length) trial.tech = withUnits(trial.tech ?? structuredClone(ot!), 'filter', structuredClone(of));
+  const cap = capableOf(trial), inferred = () => inferTech(r);
+  const keep = (item: 'light' | 'heater' | 'filter') => must.has(item) || cap[item] !== false;
+  if (ol) { if (keep('light')) r.light = structuredClone(orig.light); else r.light = { ...r.light, owned: false } as never; }
+  if (oh.length) r.tech = keep('heater') ? withUnits(r.tech ?? structuredClone(ot!), 'heater', structuredClone(oh)) : withUnits(r.tech ?? inferred(), 'heater', heaterUnits(inferred()).map(u => ({ ...u, owned: false })));
+  if (of.length) r.tech = keep('filter') ? withUnits(r.tech ?? structuredClone(ot!), 'filter', structuredClone(of)) : withUnits(r.tech ?? inferred(), 'filter', filterUnits(inferred()).map(u => ({ ...u, owned: false })));
   return r;
 }
 interface Ctx { orig: TankSetup; brief: Brief; w: Wants; P: UserProfile; units: Units; now: number; scope: Tab[]; baseRev: number; sessionId: string; purpose: ProposalPurpose; parentId?: string; cache: PairCache; plan0?: ReturnType<typeof equipPlan> }
@@ -115,7 +126,7 @@ const drop = (c: Ctx, text: string, issues: Issue[] = [], relax: string[] = []) 
 /** Run one design through every check; null = dropped (and counted for the no-solution explanation). */
 function ingest(c: Ctx, scene: TankSetup, label: string, source: Pending['source'], ids: { familyId?: string; archetypeId?: string; name?: string } = {}): Pending | null {
   const { orig, brief } = c;
-  const fin = confine(orig, carryOwned(orig, scene), c.scope);
+  const conf = confine(orig, scene, c.scope), fin = conf && reconcileGear(orig, conf, brief);
   if (!fin) return drop(c, `${label}: leaves a plant without its hardscape or a piece outside the tank`);
   const delta = deltaBetween(orig, fin), chk = checkProposal(orig, { baseRev: c.baseRev, scope: c.scope, delta, summary: '' });
   if (!chk.ok) return drop(c, `${label}: ${chk.outside.length ? `would change ${chk.outside.join(', ')}` : chk.violations.map(v => v.detail).join(' ')}`, [], chk.violations.map(v => v.kind === 'roster' ? `Lower the roster floor: ${v.detail}` : `Unlock "${v.target}": ${v.detail}`));
@@ -246,7 +257,8 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
   if (!scope.length) return { ok: false, conflicts: ['Nothing is open to change: every menu is switched off or kept for now.'], relaxations: ['Switch a menu on, or release a kept menu'] };
   const { base, notes } = baselineOf(project, session, lookup), freezeNotes = session.freezes.map(f => `Release the kept ${f.tab} tab`);
   const w = customTankWants(brief, briefToWants(brief)), purpose: ProposalPurpose = type === 'fresh' ? 'fresh' : type === 'champion' ? 'challenger' : scope.length <= 2 ? 'contrast' : 'first';
-  const sig = idOf(JSON.stringify([project.rev, session.id, scope, session.freezes, session.direction, type, type === 'first' ? '' : champ?.id, brief]));
+  // the cache key holds EVERY input a candidate depends on: the project (its whole design, so locks, hard constraints, owned and Must-use gear, the Discovery switches), the brief, the scope and holds, the direction and the champion
+  const sig = idOf(JSON.stringify([project.rev, session.id, scope, session.freezes, session.direction, type, type === 'first' ? '' : champ?.id, brief, { ...project.tank, camera: undefined, render: undefined }]));
   const cache = opts.cache?.sig === sig ? opts.cache : opts.cache ? Object.assign(opts.cache, newCache(sig)) : (SHARED.get(sig) ?? (() => { if (SHARED.size >= 6) SHARED.delete(SHARED.keys().next().value!); const n = newCache(sig); SHARED.set(sig, n); return n; })());
   opts.notes?.push(...notes);
   const known = new Set<string>([...(opts.shownKeys ?? []), ...(champ?.key ? [champ.key] : [])]);

@@ -228,3 +228,21 @@ describe('pairwise outcomes in aspects.ts', () => {
     expect(rankEligible(es, asp).map(e => e.id)).toEqual(['y', 'x']); expect(rankEligible(es, undefined).map(e => e.id)).toEqual(['x', 'y']);
   });
 });
+
+describe('the candidate cache never serves a stale pair', () => {
+  it('a lock, a Must-use item, a hold or the scope changing at the SAME revision gives a fresh, valid pair', () => {
+    const t = project(), r1 = pair(t); if (!r1.ok) throw new Error('no pair');
+    shown.length = 0;
+    lockRoster(t, 'pygmycory', 'exact', 8);                                    // same rev, same session: only the locks moved
+    const r2 = pair(t); if (!r2.ok) throw new Error('no pair after lock');
+    for (const c of [r2.a, r2.b]) expect(c.snapshot.fish.filter(f => f.species === 'pygmycory').length).toBe(8);
+    const b = setOwnedUse(setEquipment(B, 'heater', { pick: 'care' }), 'heater', 'required');
+    const t3 = { ...t, tech: withUnits(t.tech ?? ({ rows: {} } as never), 'heater', [{ w: 400, owned: true }]) } as TankSetup;
+    shown.length = 0; const r3 = pair(t3, session(), b); if (!r3.ok) throw new Error('no pair after gear');
+    for (const c of [r3.a, r3.b]) expect(c.facts.mustUse).toContain('heater');
+    shown.length = 0; const r4 = pair(t3, session({ scope: ['plants'] }), b); if (!r4.ok) throw new Error('no pair after scope');
+    for (const c of [r4.a, r4.b]) expect(c.snapshot.tank).toEqual(t3.tank);
+    const k = (x: typeof r2) => x.ok ? [x.a.key, x.b.key].join() : '';
+    expect(k(r2)).not.toBe(k(r1));
+  }, 120000);
+});
