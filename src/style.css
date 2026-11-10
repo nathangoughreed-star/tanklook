@@ -74,10 +74,16 @@ button.on, button.primary { background: var(--accent); color: #fff; border-color
 .showBoxes { display: grid; grid-template-columns: 86px auto auto; gap: 4px 10px }
 .showBoxes .flabel { grid-row: span 2 }
 .showBoxes label { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap }
-.toolbar { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; margin: 4px 0 6px }
+.toolbar { display: flex; flex-direction: column; gap: 5px; margin: 4px 0 8px }
+.tbgroup { display: grid; gap: 5px }
+.tbgroup button { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 6px; padding-right: 6px }
+.tb-get { grid-template-columns: 1fr 1.7fr 1fr }
+.tb-keep { grid-template-columns: 1fr 1.2fr 1.5fr }
+.tb-help { grid-template-columns: 1fr 1fr }   /* Guide me + Discover (added by discover/keep.ts): the two "get ideas" doors */
+.tb-help button { border-style: dashed }
 .namerow { display: flex; gap: 8px; align-items: center }
 .namerow input { flex: 1 }
-.namerow .hint { white-space: nowrap }
+.namerow .hint { white-space: nowrap; font-size: 11px }
 /* a toast pinned to the bottom of the panel, so it shows however far the panel is scrolled (final check item 1) */
 .status { position: fixed; z-index: 20; left: 14px; bottom: 14px; width: 322px; box-sizing: border-box; padding: 8px 10px; border-radius: 6px; background: var(--chip); border: 1px solid var(--line); box-shadow: 0 3px 12px rgb(0 0 0 / .35); font-size: 12.5px }
 .status.bad { border-color: var(--bad); border-left-width: 4px }

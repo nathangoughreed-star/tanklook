@@ -2483,7 +2483,7 @@ Cancel, then change the name, to keep both.`)) return;
     clearTimeout(saveTimer);
     saveTimer = window.setTimeout(() => {
       store.saveLocal(); saveUI();
-      $('saveState').textContent = 'Autosaved';
+      $('saveState').textContent = '✓ Autosaved';
     }, 400);
   });
 
