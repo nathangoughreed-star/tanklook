@@ -41,3 +41,22 @@ export function stockTier(a: Archetype, tank: TankModel, tier: number): RosterPl
   memo.set(k, plan); return { ...plan, roster: plan.roster.map(r => ({ ...r })) };
 }
 export const clearSizeTiers = () => { memo.clear(); OK.clear(); };
+
+// ---------------------------------------------------------------------------------------------------------------- dry habitats: size is footprint OR height, by what the animals need
+import { getSpecies, clingsTo } from '../data/species';
+/** Climbers (frogs, geckos, spiders: land animals that use the glass) need HEIGHT; ground animals need FLOOR AREA. Mixed rosters count as height when most of them climb. */
+export function dryNeed(roster: readonly AnimalCount[]): 'height' | 'floor' {
+  let climb = 0, all = 0;
+  for (const r of roster) { const sp = getSpecies(r.species); if (!sp) continue; all += r.n; if (sp.habitat !== 'water' && clingsTo(sp, 'glass')) climb += r.n; }
+  return all && climb * 2 >= all ? 'height' : 'floor';
+}
+/** Of the sizes tried for ONE dry look (smallest first), keep those whose needed dimension (height for climbers, floor area for ground animals) is at least 15 % more than the last kept: a larger tank that adds only the dimension
+ *  the animals do not use is not a real step up. Pure; the input needs `tank` (the model), `roster`. */
+export function meaningfulDryTiers<T extends { tank: { outer: { L: number; D: number; H: number }; ratedGal: number }; roster: AnimalCount[] }>(cands: T[]): T[] {
+  const out: T[] = []; let last = 0;
+  for (const c of [...cands].sort((a, b) => a.tank.ratedGal - b.tank.ratedGal)) {
+    const dim = dryNeed(c.roster) === 'height' ? c.tank.outer.H : c.tank.outer.L * c.tank.outer.D;
+    if (!out.length || dim >= last * 1.15) { out.push(c); last = dim; }
+  }
+  return out;
+}

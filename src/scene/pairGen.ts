@@ -15,7 +15,8 @@ import { filterUnits, heaterUnits, inferTech, withUnits } from './tech';
 import { briefToWants, type Brief } from './brief';
 import { ensureUids } from './uid';
 import { fitGear } from './gearFit';
-import { stockTier } from './sizeTiers';
+import { finalCheck } from './finalCheck';
+import { meaningfulDryTiers, stockTier } from './sizeTiers';
 import { passesHard, readQuickPrefs, type QuickPrefs } from './quickPrefs';
 import { volume } from './physics';
 import { breadthOf, targetDistance, visuallyDistinct, type Breadth } from './breadth';
@@ -165,10 +166,13 @@ function ingest(c: Ctx, scene: TankSetup, label: string, source: Pending['source
   }
   const v = verdictOf(after, brief, { totals: sc.totals, units: c.units });
   if (!v.feasible) return drop(c, label, [...v.gates, ...v.hard], [...v.gates, ...v.hard].map(i => i.relax ?? `Relax: ${i.text}`));
+  const fin2 = finalCheck(after, c.w); if (fin2.blocked) return drop(c, `${label}: ${fin2.blocked}`, [], ['Use a larger tank or fewer animals']);
   const facts = factsOf(after, brief, sc, ids.name);
   const assumptions = [...sc.estimate.assumptions, ...sc.gate.assumptions, ...sc.gate.reasons.filter(r => r.severity === 'provisional').map(r => r.text), ...sc.plan.flags.map(f => f.text)];
   if (sc.plan.capsPlants) assumptions.push('Your light is weak for plants: it limits what can grow, and CO2 or fertilizer do not make up for it.');
   if (sc.plan.supplementUsd > 0) assumptions.push('A Must-use item is too small on its own: the design adds the gear that makes up the difference, and that is in the purchases.');
+  if (after.backdrop && after.backdrop.kind !== 'none') assumptions.push('The 3D background price is a rule-of-thumb estimate: no retailer listing prices it.');
+  assumptions.push(...fin2.unknowns);
   if (fg?.said.length) assumptions.push(`Gear matched to what is drawn: ${fg.said.join('; ')}.`);
   if (source === 'explore') assumptions.push('Drawn from a catalogue look: the layout is a suggested arrangement.');
   const rec: CandidateRecord = {
@@ -201,13 +205,26 @@ function looksFor(c: Ctx, direction: HabitatDirection, type: Comparison['type'],
   for (let i = 0; fams.some(f => f.length > i); i++) for (const f of fams) if (f[i]) out.push(f[i]);
   return type === 'fresh' && champFam ? out.filter(a => !a.recipe.looks.includes(champFam as never)).concat(out.filter(a => a.recipe.looks.includes(champFam as never))) : out;
 }
+/** The relief backdrop a look suits (nature, jungle, rock and reef styles, terrarium and paludarium walls), or none: the flat family background stays the default for everything else. */
+function backdropFor(a: Archetype, S: TankSetup): TankSetup['backdrop']['kind'] | undefined {
+  const t = `${a.id} ${a.name}`.toLowerCase();
+  if (a.env === 'terrarium' || a.env === 'paludarium') return /jungle|canopy|frog|vine|forest/.test(t) ? 'jungle' : 'cork';
+  if (S.water.salt) return /reef|coral/.test(t) ? 'reef' : undefined;
+  if (/iwagumi|stone|rock|cichlid|gallery/.test(t)) return 'rock';
+  if (/river|stream/.test(t)) return 'river';
+  if (/jungle|forest|overgrown/.test(t)) return 'jungle';
+  if (/moss/.test(t)) return 'moss';
+  if (/driftwood|nature|wood/.test(t)) return 'cork';
+  return undefined;
+}
 function fromLook(c: Ctx, a: Archetype, sizes = 1): void {
   const t0 = performance.now();
   (sizes > 1 ? c.cache.bigDone : c.cache.looksDone).add(a.id);
   try {
     const r = explorePool(c.w, c.P, c.units, c.now, { only: [a.id], sizes, explain: false, stock: stockTier }), id = identityOf(a);
-    for (const cand of [...r.eligible, ...r.provisional] as PoolCandidate[]) {
-      const sc0 = ensureUids(structuredClone(cand.scene)); sc0.product ??= { model: cand.tank.id };   // the catalogue tank it was drawn in, so the size gate judges that tank (a synthetic model of the same dimensions rates lower)
+    const dry = a.env === 'terrarium' || a.env === 'paludarium', cands0 = [...r.eligible, ...r.provisional] as PoolCandidate[], cands = dry ? meaningfulDryTiers(cands0) : cands0;   // dry sizes: by height or floor area, whichever the animals need
+    for (const cand of cands) {
+      const sc0 = ensureUids(structuredClone(cand.scene)); sc0.product ??= { model: cand.tank.id }; const bk = backdropFor(a, sc0); if (bk && sc0.backdrop.kind === 'none') sc0.backdrop = { kind: bk, depth: 50, seed: 1 };   // the catalogue tank it was drawn in, so the size gate judges that tank (a synthetic model of the same dimensions rates lower)
       const got = ingest(c, sc0, cand.identity.name, 'explore', { familyId: id.familyId, archetypeId: a.id, name: cand.identity.name });
       if (got) { c.cache.pend.push(got); c.cache.stats.explore++; }
     }

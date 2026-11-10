@@ -23,9 +23,11 @@ export const FISH_PROPS: Record<string, readonly string[]> = {
 /** The tank target's groups, each a set of TankSetup keys. */
 export const TANK_PROPS: Record<string, readonly (keyof TankSetup)[]> = {
   dimensions: ['tank'],
-  room: ['stand', 'wall', 'person', 'backdrop', 'lid', 'doors'],
+  room: ['stand', 'wall', 'person', 'lid', 'doors'],   // the room around the tank. The 3D BACKDROP is a physical wall INSIDE the habitat: it is Hardscape (HARDSCAPE_KEYS), not room
   water: ['water'],
 };
+/** The hardscape tab's non-item state (lane AB5): the relief backdrop (foam rock wall, cork, moss, jungle ...) is built into the habitat, so it moves, locks and prices with the hardscape. A lock on it has the target 'backdrop'. */
+export const HARDSCAPE_KEYS: readonly (keyof TankSetup)[] = ['backdrop'];
 /** The substrate lock covers these keys of the TankSetup (painted patches included). */
 export const SUBSTRATE_KEYS: readonly (keyof TankSetup)[] = ['substrate', 'terrain', 'patches'];
 
@@ -81,7 +83,9 @@ export function lockViolations(before: TankSetup, after: TankSetup, locks: Locks
   const pool = (t: TankSetup): Map<string, Item | Fish>[] => [new Map(t.items.filter(i => i.uid).map(i => [i.uid!, i])), new Map(t.fish.filter(f => f.uid).map(f => [f.uid!, f]))];
   const tables = [ITEM_PROPS, FISH_PROPS], B = pool(before), A = pool(after);
   for (const o of locks.objects) {
-    if (o.target === 'substrate') {
+    if (o.target === 'backdrop') {
+      if (HARDSCAPE_KEYS.some(k => !same(before[k], after[k]))) out.push({ kind: 'changed', target: 'backdrop', detail: 'The 3D backdrop changed.' });
+    } else if (o.target === 'substrate') {
       if (SUBSTRATE_KEYS.some(k => !same(before[k], after[k]))) out.push({ kind: 'substrate', target: 'substrate', detail: 'The substrate (settings, terrain or patches) changed.' });
     } else if (o.target === 'tank') {
       const held = o.props?.length ? o.props : Object.keys(TANK_PROPS), hit = held.filter(g => (TANK_PROPS[g] ?? []).some(k => !same(before[k], after[k])));

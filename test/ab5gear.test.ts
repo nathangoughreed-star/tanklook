@@ -46,12 +46,12 @@ describe('gear follows what is drawn (many generated candidates)', () => {
     expect(lowTech).toBeGreaterThan(0);                                                    // lifting the prohibition does not force high-tech
     expect(narrow.filter(s => s.items.some(i => layerOf(i) === 'plant')).length).toBeGreaterThan(0);
   });
-  it('size is a design variable: a larger size of a look has more animals or more kinds, and more plants and hardscape (never just more water)', () => {
+  it('size is a design variable: a larger size is a different design (composition, group sizes, cover or hardscape), never just more water; no count is required to rise', () => {
     let checked = 0;
     for (const a of looks) {
       const mine = pool.filter(x => x.id === a.id).sort((p, q) => p.gal - q.gal); if (mine.length < 2) continue;
-      const small = mine[0], big = mine[mine.length - 1], cnt = (S: TankSetup) => S.fish.length, kinds = (S: TankSetup) => new Set(S.fish.map(f => f.species)).size, cover = (S: TankSetup) => S.items.length;
-      expect(cnt(big.S) > cnt(small.S) || kinds(big.S) > kinds(small.S) || cover(big.S) > cover(small.S), `${a.id}: ${small.gal} vs ${big.gal} gal`).toBe(true); checked++;
+      const small = mine[0], big = mine[mine.length - 1], sig = (S: TankSetup) => JSON.stringify([[...new Set(S.fish.map(f => f.species))].sort(), S.fish.length, S.items.length, S.items.filter(i => layerOf(i) !== 'plant').length]);
+      expect(sig(big.S), `${a.id}: ${small.gal} vs ${big.gal} gal`).not.toBe(sig(small.S)); checked++;
     }
     expect(checked).toBeGreaterThan(3);
   });
@@ -90,5 +90,55 @@ describe('quick preferences: hard answers filter, the rest rank, told outranks l
   it('lifting the No CO2 prohibition removes no candidate and does not force CO2 (the fitGear set above)', () => {
     const on = readQuickPrefs(briefOf({ avoid: ['co2'] })), off = readQuickPrefs(briefOf({}));
     expect(on.prohibit).toEqual(['co2']); expect(off.prohibit).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------------------------------------------- backdrop semantics, dry tiers, the final check
+import { diffTouches } from '../src/scene/scope';
+import { HARDSCAPE_KEYS, TANK_PROPS, lockViolations } from '../src/scene/locks';
+import { confine } from '../src/scene/discover';
+import { backdropUsd } from '../src/scene/pairFacts';
+import { dryNeed, meaningfulDryTiers } from '../src/scene/sizeTiers';
+import { finalCheck } from '../src/scene/finalCheck';
+describe('the 3D backdrop is hardscape', () => {
+  const base = () => { const t = structuredClone(defaultSetup()); t.tank = { ...t.tank, L: 36 * IN, D: 18 * IN, H: 16 * IN }; t.water.on = true; return ensureUids(t); };
+  it('moves with the Hardscape tab, not the Tank tab, and is not room support', () => {
+    const a = base(), c = structuredClone(a); c.backdrop = { kind: 'rock', depth: 50, seed: 3 };
+    const t = diffTouches(a, c); expect(t.tabs).toEqual(['hardscape']); expect(t.support).not.toContain('backdrop'); expect(t.tank).toEqual([]);
+    expect(HARDSCAPE_KEYS).toContain('backdrop'); expect(TANK_PROPS.room).not.toContain('backdrop');
+    // the room around the tank is still the Tank tab
+    const w = structuredClone(a); w.wall = { ...w.wall, show: !w.wall.show }; expect(diffTouches(a, w).tabs).toEqual(['tank']);
+  });
+  it('is held by the hardscape scope and by a backdrop lock', () => {
+    const a = base(), c = structuredClone(a); c.backdrop = { kind: 'cork', depth: 50, seed: 1 };
+    expect(confine(a, c, ['plants', 'animals'])!.backdrop.kind).toBe(a.backdrop.kind);                 // Hardscape off: the backdrop stays
+    expect(confine(a, c, ['hardscape'])!.backdrop.kind).toBe('cork');
+    const L = structuredClone(a); L.locks = { objects: [{ target: 'backdrop' }], roster: [] };
+    expect(confine(L, c, ['hardscape'])!.backdrop.kind).toBe(a.backdrop.kind);                       // locked: held even with Hardscape on
+    expect(lockViolations(L, c).some(v => v.target === 'backdrop')).toBe(true);
+  });
+  it('is a priced purchase, marked as an estimate', () => {
+    const S = base(); S.backdrop = { kind: 'rock', depth: 50, seed: 1 }; const sc = scoreScene(S, b, w, P, Date.now()), f = factsOf(S, b, sc), f0 = factsOf({ ...S, backdrop: { kind: 'none', depth: 50, seed: 1 } }, b, sc);
+    const line = f.toBuy.find(l => l.key === 'backdrop'); expect(line?.label).toMatch(/estimate/); expect(line!.usd).toBe(backdropUsd(S)); expect(f.newSpendUsd.mean - f0.newSpendUsd.mean).toBe(line!.usd); expect(f0.toBuy.some(l => l.key === 'backdrop')).toBe(false);
+  });
+});
+describe('dry habitats are sized by what the animals need', () => {
+  const tank = (L: number, D: number, H: number, g: number) => ({ outer: { L: L * 25.4, D: D * 25.4, H: H * 25.4 }, ratedGal: g });
+  it('climbers need height, ground animals need floor area', () => {
+    expect(dryNeed([{ species: 'treefrog', n: 2 } as never])).toBe('height'); expect(dryNeed([{ species: 'leopardgecko', n: 1 } as never])).toBe('floor');
+  });
+  it('a larger size that only adds the dimension the animals do not use is not a tier', () => {
+    const arboreal = [{ species: 'treefrog', n: 2 } as never], tall = [{ tank: tank(18, 18, 18, 25), roster: arboreal }, { tank: tank(36, 18, 18, 50), roster: arboreal }, { tank: tank(18, 18, 36, 50), roster: arboreal }];
+    const kept = meaningfulDryTiers(tall); expect(kept.map(c => c.tank.outer.H / 25.4)).toEqual([18, 36]);      // the wider tank adds no height: dropped
+    const ground = [{ species: 'leopardgecko', n: 1 } as never], wide = [{ tank: tank(18, 18, 18, 25), roster: ground }, { tank: tank(18, 18, 36, 50), roster: ground }, { tank: tank(36, 18, 18, 50), roster: ground }];
+    expect(meaningfulDryTiers(wide).map(c => c.tank.outer.L / 25.4)).toEqual([18, 36]);                      // the taller tank adds no floor: dropped
+  });
+});
+describe('the final whole-candidate check', () => {
+  it('says what a dry habitat does not model, and blocks animals that do not fit', () => {
+    const dry = structuredClone(defaultSetup()); dry.water.on = false; dry.fish = []; const f = finalCheck(ensureUids(dry), w);
+    expect(f.blocked).toBeUndefined(); expect(f.unknowns.join(' ')).toMatch(/Ventilation is not modelled/);
+    const wet = structuredClone(defaultSetup()); wet.water.on = true; wet.tank = { ...wet.tank, L: 12 * IN, D: 8 * IN, H: 8 * IN }; wet.fish = Array.from({ length: 12 }, (_, i) => ({ id: i + 1, species: 'oscar', x: 50 + i, y: 50, depth: 50, yaw: 0, pitch: 0, roll: 0, bend: 0 } as never));
+    expect(finalCheck(ensureUids(wet), w).blocked).toMatch(/do not fit/);
   });
 });

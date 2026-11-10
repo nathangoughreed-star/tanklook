@@ -8,7 +8,7 @@
 // (belt and braces) -> verdictOf. A proposal never changes the brief's limits and never adds a lock; equipment / light / tech may change only as the
 // supporting system a candidate needs, and every such change is listed in `gear` (accepting the proposal is what accepts the purchase).
 import { diffTouches, TABS, type Tab } from './scope';
-import { ITEM_PROPS, FISH_PROPS, TANK_PROPS, SUBSTRATE_KEYS, locksOf, type Violation } from './locks';
+import { ITEM_PROPS, FISH_PROPS, TANK_PROPS, SUBSTRATE_KEYS, HARDSCAPE_KEYS, locksOf, type Violation } from './locks';
 import { checkProposal, deltaBetween, type Proposal } from './proposal';
 import { verdictOf, type Issue, type Verdict, type VerdictOpts } from './verdict';
 import { ensureUids } from './uid';
@@ -80,6 +80,7 @@ export function confine(orig: TankSetup, w: TankSetup, scope: readonly Tab[]): T
   const on = (t: Tab) => scope.includes(t), r = structuredClone(w), L = locksOf(orig);
   for (const k of FROZEN) { const v = orig[k]; if (v === undefined) delete r[k]; else (r as unknown as Record<string, unknown>)[k] = structuredClone(v); }
   if (!on('tank')) for (const k of Object.values(TANK_PROPS).flat()) { const v = orig[k]; if (v === undefined) delete r[k]; else (r as unknown as Record<string, unknown>)[k] = structuredClone(v); }
+  if (!on('hardscape') || L.objects.some(o => o.target === 'backdrop')) for (const k of HARDSCAPE_KEYS) { const v = orig[k]; if (v === undefined) delete r[k]; else (r as unknown as Record<string, unknown>)[k] = structuredClone(v); }   // the backdrop is hardscape: it follows the tab and its lock
   if (!on('substrate')) for (const k of SUBSTRATE_KEYS) { const v = orig[k]; if (v === undefined) delete r[k]; else (r as unknown as Record<string, unknown>)[k] = structuredClone(v); }
   // items: the checked layers from the candidate, the rest from the original; a candidate id that collides with a kept one is renumbered (parents follow)
   const keep = orig.items.filter(it => !on(tabOfItem(it))), mine = r.items.filter(it => on(tabOfItem(it)));
@@ -91,7 +92,7 @@ export function confine(orig: TankSetup, w: TankSetup, scope: readonly Tab[]): T
   if (!on('animals')) { r.fish = structuredClone(orig.fish); if (orig.pairs) r.pairs = structuredClone(orig.pairs); else delete r.pairs; }
   // locks: held objects come back (whole, or just the held property groups); a roster floor is met from the original animals
   for (const o of L.objects) {
-    if (o.target === 'tank' || o.target === 'substrate') continue; // handled by the tab restores above and by checkProposal
+    if (o.target === 'tank' || o.target === 'substrate' || o.target === 'backdrop') continue; // handled by the tab restores above and by checkProposal
     for (const [list, table, from] of [[r.items, ITEM_PROPS, orig.items], [r.fish, FISH_PROPS, orig.fish]] as [(Item | Fish)[], Record<string, readonly string[]>, (Item | Fish)[]][]) {
       const was = from.find(x => key(x) === o.target); if (!was) continue;
       const now = list.find(x => key(x) === o.target);

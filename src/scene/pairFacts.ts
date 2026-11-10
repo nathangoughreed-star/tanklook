@@ -105,14 +105,20 @@ function withCo2(S: TankSetup, lines: CandidateFacts['toBuy']): CandidateFacts['
   return [...lines, { key: 'co2', label: 'CO2 system (regulator, cylinder, diffuser)', usd: Math.round(p?.mode ?? 90), kind: 'design' }];
 }
 
+/** The 3D relief backdrop is a physical part of the habitat (hardscape): a purchase, priced by the back-wall area at a rule of thumb (no listing exists), and said to be an estimate. */
+export const backdropUsd = (S: TankSetup): number => Math.max(45, Math.min(400, Math.round(S.tank.L * S.tank.H / (25.4 * 25.4) * 0.18)));
+const BACKDROP_LABEL: Record<string, string> = { rock: 'rock wall', river: 'river-stone wall', reef: 'reef wall', cork: 'cork bark wall', moss: 'mossy wall', jungle: 'jungle wall' };
+
 /** Everything a card shows, from one scored design. `title` overrides the derived one (an Explore look has its own name). */
 export function factsOf(S: TankSetup, brief: Brief, sc: Scored, name?: string): CandidateFacts {
   const eq = equipmentOf(brief).items, flagged = new Set(sc.plan.flags.map(f => f.item as string));
   const gal = S.water.on ? r0(volume(S.tank).gallons, 1) : null;
+  const bd = S.backdrop && S.backdrop.kind !== 'none' ? backdropUsd(S) : 0, spend = fig(sc.estimate.startupUsd);
+  if (bd) { spend.lo += bd; spend.mean += bd; spend.hi += bd; }
   return {
     title: name ?? title(S), habitat: habitatOf(S), gallons: gal,
-    newSpendUsd: fig(sc.estimate.startupUsd), monthlyUsd: fig(sc.estimate.monthlyUsd), weeklyMin: fig(sc.estimate.minPerWeek),
-    difficulty: sc.estimate.difficulty.level, toBuy: withCo2(S, sc.plan.toBuy.map(l => ({ ...l }))),
+    newSpendUsd: spend, monthlyUsd: fig(sc.estimate.monthlyUsd), weeklyMin: fig(sc.estimate.minPerWeek),
+    difficulty: sc.estimate.difficulty.level, toBuy: [...withCo2(S, sc.plan.toBuy.map(l => ({ ...l }))), ...(bd ? [{ key: 'backdrop', label: `3D background: ${BACKDROP_LABEL[S.backdrop.kind] ?? S.backdrop.kind} (estimate)`, usd: bd, kind: 'design' as const }] : [])],
     reused: eq.filter(i => i.use !== 'required' && !flagged.has(i.key) && inDesign(S, i.key)).map(i => i.key), mustUse: eq.filter(i => i.use === 'required').map(i => i.key),
     stocking: rosterOf(S).map(r => ({ species: r.species, name: getSpecies(r.species)?.name ?? r.species, n: r.n })),
     plants: kindsOf(S, true), hardscape: kindsOf(S, false), substrate: S.substrate.show ? [S.substrate.type] : [],

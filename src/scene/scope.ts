@@ -3,7 +3,7 @@
 // Pure: describes what may change (editableFields) and what a change did (diffTouches). Equipment is not a tab (plan decision 2): light, tech,
 // layout seeds, brief and the rest are "support" state, free in a proposal (it is previewed and accepted whole) but never view state.
 import { layerOf } from './items';
-import { FISH_PROPS, ITEM_PROPS, SUBSTRATE_KEYS, TANK_PROPS, changedGroups, locksOf } from './locks';
+import { FISH_PROPS, HARDSCAPE_KEYS, ITEM_PROPS, SUBSTRATE_KEYS, TANK_PROPS, changedGroups, locksOf } from './locks';
 import type { Fish, Item, Locks, TankSetup } from './types';
 
 export type Tab = 'tank' | 'animals' | 'plants' | 'hardscape' | 'substrate';
@@ -47,10 +47,11 @@ export function diffTouches(before: TankSetup, after: TankSetup): Touches {
   if (tank.length) tabs.add('tank');
   const substrate = SUBSTRATE_KEYS.some(k => !same(before[k], after[k]));
   if (substrate) tabs.add('substrate');
+  if (HARDSCAPE_KEYS.some(k => !same(before[k], after[k]))) tabs.add('hardscape');   // the 3D backdrop is hardscape
   if (!same(before.pairs, after.pairs)) tabs.add('animals');
   const keys = new Set([...Object.keys(before), ...Object.keys(after)]) as Set<keyof TankSetup & string>, support: string[] = [];
   for (const k of keys) {
-    if (VIEW_KEYS.has(k) || LIST_KEYS.has(k) || TANK_KEYS.has(k) || (SUBSTRATE_KEYS as readonly string[]).includes(k) || k === 'pairs') continue;
+    if (VIEW_KEYS.has(k) || LIST_KEYS.has(k) || TANK_KEYS.has(k) || (SUBSTRATE_KEYS as readonly string[]).includes(k) || (HARDSCAPE_KEYS as readonly string[]).includes(k) || k === 'pairs') continue;
     if (!same(before[k], after[k])) support.push(k);
   }
   return { tabs: TABS.filter(t => tabs.has(t)), items, fish, tank, substrate, support };
