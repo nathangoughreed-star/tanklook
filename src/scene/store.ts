@@ -111,7 +111,10 @@ export class Store {
   /** Move a camera (not undoable): view i's (orbit / zoom in that view), or else every edited tank's (panel sliders).
    *  While the cameras are locked, both views move together. */
   cam(fn: (c: CameraSettings) => void, i?: number) {
-    if (this.frozen) i = undefined;   // Discovery's pair is drawn with the first tank's camera
+    if (this.frozen) {   // Discovery's pair is drawn with the first tank's camera, unless the padlock is open (side B then has its own, kept by the viewer)
+      if (i != null && this.sideCamEdit?.(i, fn)) { this.lastCam = i; this.emit('view'); return; }
+      i = undefined;
+    }
     this.lastCam = i ?? this.scene.active;
     this.update(s => {
       for (const k of s.camLock ? [i ?? s.active] : i != null ? [i] : this.targets) {
@@ -177,15 +180,20 @@ export class Store {
   /** Lock / unlock the two cameras. Re-locking snaps the other view to the camera of the view moved last (audit #21;
    *  was always the original tank's, Nathan 2026-10-08), so the view you were working in keeps its angle. */
   setCamLock(on: boolean) {
+    const side = on && this.frozen ? this.sideCam?.(this.lastCam) : null;   // read before the lock closes (the viewer drops side B's camera then)
     this.update(s => {
       s.camLock = on; if (!on) return;
-      const c = { ...(s.tanks[this.lastCam] ?? s.tanks[0]).camera };
+      const c = { ...(side || (s.tanks[this.lastCam] ?? s.tanks[0]).camera) };
       for (const t of s.tanks) t.camera = { ...c };
       clearCams(s.tanks, true);
     }, { kind: 'view' });
   }
 
   /** Discovery is on (lane AB5): the working DESIGN is immutable. An ordinary design edit is refused (`onBlocked` says so); what Discovery itself keeps (locks, the Discovery switches, the brief and constraints) and the camera still change, with no undo step. */
+  /** AB8: the viewer's own camera for Discovery's pair side B (padlock open); false = use the working camera. */
+  sideCamEdit: ((i: number, fn: (c: CameraSettings) => void) => boolean) | undefined; sideCam: ((i: number) => CameraSettings | null) | undefined;
+  /** The camera view i is drawn with (Discovery's pair side B has its own while the padlock is open). */
+  camOf(i: number): CameraSettings { return (this.frozen && this.sideCam?.(i)) || (this.scene.tanks[i] ?? this.scene.tanks[0]).camera; }
   frozen = false; onBlocked: (() => void) | undefined;
   /** The design of every tank, without the requirements Discovery may change (locks, switches, brief, constraints) and the viewer (camera, render). */
   static designKey(s: Scene): string {

@@ -86,7 +86,7 @@ export function supportLift(vp: Viewport, S: TankSetup, x: number, depth: number
  *  tank (one being edited), the ground or the solid piece there (minus `skip`), and the lift above the ground that
  *  rests it on that piece. Null = not over a tank's floor. */
 export function placeAt(viewer: Viewer, store: Store, clientX: number, clientY: number, skip = new Set<number>()) {
-  const hit = viewer.hitTest(clientX, clientY); if (!hit || !store.isEditing(hit.vp.i)) return null;
+  const hit = viewer.hitTest(clientX, clientY); if (!hit || viewer.pairShown || !store.isEditing(hit.vp.i)) return null;
   const S = store.scene.tanks[hit.vp.i], p = surfaceHit(hit.vp, S, hit.ray, skip); if (!p) return null;
   const x = p.x, depth = -p.z;
   return { vi: hit.vp.i, x, depth, lift: supportLift(hit.vp, S, x, depth, skip) };
@@ -193,14 +193,14 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
         try { canvas.setPointerCapture(e.pointerId); } catch { /* not all pointers can be captured */ }
         if (orbit) { const o = orbit; store.cam(c => { c.az = o.az; c.el = o.el; }, o.i); orbit = null; viewer.unpinOrbit(); } // undo the first finger's turn
         const f = fingers(), i = hit0.vp.i;
-        pinch = { i, d0: Math.max(10, Math.hypot(f[0].x - f[1].x, f[0].y - f[1].y)), z0: store.scene.tanks[i].camera.zoom, mid: midOf(f) };
+        pinch = { i, d0: Math.max(10, Math.hypot(f[0].x - f[1].x, f[0].y - f[1].y)), z0: store.camOf(i).zoom, mid: midOf(f) };
         return;
       }
       touches.set(e.pointerId, { x: e.clientX, y: e.clientY }); first = e.pointerId;
     }
     patchPick = null;
     let hit = viewer.hitTest(e.clientX, e.clientY); if (!hit) return;
-    const vi = hit.vp.i, editable = store.isEditing(vi);
+    const vi = hit.vp.i, editable = !viewer.pairShown && store.isEditing(vi);
     if (editable && vi !== store.scene.active) {  // show that tank in the panel first (rebuilds: the selection moves there)
       store.setActive(vi); viewer.draw();
       hit = viewer.hitTest(e.clientX, e.clientY); if (!hit) return;
@@ -267,7 +267,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       return;
     }
     if (!editable || hit.fishId == null || !hit.mesh || !(canPick('fish') || (store.groupCount > 1 && store.inGroup('fish', hit.fishId)))) {
-      const c = store.scene.tanks[vi].camera; orbit = { i: vi, x: e.clientX, y: e.clientY, az: c.az, el: c.el };
+      const c = store.camOf(vi); orbit = { i: vi, x: e.clientX, y: e.clientY, az: c.az, el: c.el };
       viewer.pinOrbit(e.clientX, e.clientY); return; // turn about what is under the pointer
     }
     if (store.groupCount > 1 && store.inGroup('fish', hit.fishId)) store.lead('fish', hit.fishId); else store.select(hit.fishId);
@@ -290,7 +290,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       const p = pinch, f = fingers(), mid = midOf(f);
       const z = +clamp(p.z0 * Math.hypot(f[0].x - f[1].x, f[0].y - f[1].y) / p.d0, ...LIMITS.zoom).toFixed(2);
       viewer.zoomAt(p.i, mid.x, mid.y, p.mid.x, p.mid.y); p.mid = mid;
-      if (z !== store.scene.tanks[p.i].camera.zoom) store.cam(c => { c.zoom = z; }, p.i); else viewer.draw();
+      if (z !== store.camOf(p.i).zoom) store.cam(c => { c.zoom = z; }, p.i); else viewer.draw();
       return;
     }
     if (e.pointerType === 'touch' && first != null && e.pointerId !== first) return;
@@ -434,7 +434,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
     if (!e.shiftKey) {
       const hit = viewer.hitTest(e.clientX, e.clientY);
       // zoom the view under the pointer, toward the point under it
-      const i = hit?.vp.i ?? store.scene.active, c0 = store.scene.tanks[i]?.camera.zoom;
+      const i = hit?.vp.i ?? store.scene.active, c0 = store.camOf(i)?.zoom;
       const z = c0 == null ? null : +clamp(c0 * (e.deltaY > 0 ? 1 / 1.1 : 1.1), ...LIMITS.zoom).toFixed(2);
       if (z == null || z === c0) return;
       if (hit) viewer.zoomAt(i, e.clientX, e.clientY);

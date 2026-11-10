@@ -2390,8 +2390,8 @@ Cancel, then change the name, to keep both.`)) return;
           `<button class="close" data-delete="${i}" title="Delete Tank ${vp.key} and end the split view (Ctrl+Z brings it back)">Delete</button></div></div>`;
       }
       const lock = $<HTMLButtonElement>('camLock');
-      lock.hidden = !split || !!pr;
-      if (split && !pr) {
+      lock.hidden = active.length < 2;   // AB8: the padlock also works on Discovery's A / B pair (B then has its own camera while it is open)
+      if (active.length > 1) {
         lock.style.left = (active[1].x - 4) + 'px';
         lock.classList.toggle('on', g.camLock);
         lock.innerHTML = padlock(g.camLock); lock.setAttribute('aria-pressed', String(g.camLock));

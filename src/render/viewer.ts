@@ -2,12 +2,12 @@
 import * as THREE from 'three';
 import { fishTL, speciesOf } from '../data/species';
 import { D2R, clamp, depthRatio, floorY, tankUnderside } from '../scene/physics';
-import { eyeDist, lensZoom } from '../scene/orbit';
+import { eyeClear, eyeDist, lensZoom, limitOrbit } from '../scene/orbit';
 import { roomOf } from '../scene/roomlight';
 import { tableOn, tableRing } from '../scene/table';
 import { footprint } from '../scene/shape';
 import type { Store } from '../scene/store';
-import type { Fish, Tank, TankSetup } from '../scene/types';
+import type { CameraSettings, Fish, Tank, TankSetup } from '../scene/types';
 import { HOOD_H, PART, buildTank, disposeScene, envKey, lookKey, patchLook, patchTank, personSpot, type BuiltTank, type PoolGrab, type TerrainEdit } from './build';
 import { drawViewMap } from './viewmap';
 import { applyFraming, fovFor, frameBox, frameStraightOn, placeCamera, windowCentre } from './camera';
@@ -310,6 +310,7 @@ export class Viewer {
   constructor(readonly canvas: HTMLCanvasElement, readonly host: HTMLElement, readonly store: Store) {
     // a stencil buffer: hardscape cut open by the glass is capped (render/items.ts capPasses), the beam overlay drawn once
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: false, stencil: true });
+    store.sideCamEdit = (i, fn) => this.pairCamEdit(i, fn); store.sideCam = i => this.pairCamOf(i);
     capping.on = !!this.renderer.getContext().getContextAttributes()?.stencil;
     this.renderer.setPixelRatio(this.baseRatio());
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -523,6 +524,18 @@ export class Viewer {
   private pair: { S: [TankSetup, TankSetup]; only?: 0 | 1; info: [string, string] } | null = null;
   showPair(S: [TankSetup, TankSetup] | null, opts: { only?: 0 | 1; info?: [string, string] } = {}) { this.pair = S && { S, ...(opts.only != null ? { only: opts.only } : {}), info: opts.info ?? ['', ''] }; this.rebuild(); }
   get pairShown() { return this.pair; }
+  /** AB8: with the padlock OPEN, pair side B turns, zooms and pans on its own camera (kept here, never in the project); locked, both sides share the working camera. */
+  private pairCamB: CameraSettings | null = null;
+  /** The camera of pair side i (null when no pair is shown, or the side has none of its own). */
+  pairCamOf(i: number): CameraSettings | null {
+    if (!this.pair || this.pair.only != null || this.store.scene.camLock) { this.pairCamB = null; return null; }
+    return i === 1 ? (this.pairCamB ??= { ...this.store.scene.tanks[0].camera }) : null;
+  }
+  /** Move pair side i's own camera (the store's frozen path calls this); false = not a separate camera, the working one moves. */
+  pairCamEdit(i: number, fn: (c: CameraSettings) => void): boolean {
+    const c0 = this.pairCamOf(i), S = this.pair?.S[i]; if (!c0 || !S) return false;
+    const next = { ...c0 }; fn(next); this.pairCamB = limitOrbit(c0, next, c => eyeClear(S, c)); this.dirty = true; return true;
+  }
   /** Pixels at the bottom of the main view that something else (Discovery's dock) covers: the tanks are drawn above them. */
   private reserve = 0;
   setReserve(px: number) { px = Math.max(0, Math.round(px)); if (px !== this.reserve) { this.reserve = px; this.dirty = true; } }
@@ -560,7 +573,7 @@ export class Viewer {
   setPreview(S: TankSetup | null, ownCamera = false) { this.preview = S; this.previewOwnCam = ownCamera; this.rebuild(); }
   /** The preview takes the SCENE's camera, so orbit, zoom and the lens all keep working while a size is being previewed (they write the scene's camera; a frozen copy of it was why the picker could not orbit, lane ST2). */
   private setupOf(i: number): TankSetup | undefined {
-    if (this.pair) { const P = this.pair, S = P.S[i]; return S && (P.only == null || P.only === i) ? { ...S, camera: this.store.scene.tanks[0].camera } : undefined; }
+    if (this.pair) { const P = this.pair, S = P.S[i]; return S && (P.only == null || P.only === i) ? { ...S, camera: this.pairCamOf(i) ?? this.store.scene.tanks[0].camera } : undefined; }
     const S = this.store.scene.tanks[i]; return this.preview && S && i === this.store.scene.active ? { ...this.preview, camera: this.previewOwnCam ? this.preview.camera : S.camera } : S; }
   private viewKey(i: number) {
     const S = this.setupOf(i); if (!S) return '';
@@ -627,7 +640,7 @@ export class Viewer {
   draw() {
     if (this.needsBuild) this.build();
     const sc = this.store.scene, w = this.host.clientWidth, h = Math.max(60, this.host.clientHeight - this.reserve), r = this.renderer;
-    this.canvas.style.height = this.reserve ? h + 'px' : '';
+    this.canvas.style.height = this.reserve ? h + 'px' : ''; this.host.style.setProperty('--reserve', this.reserve + 'px');
     r.setSize(w, h, false);
     const active = this.active, hw = (w - GAP) / 2;
     if (active.length === 1) Object.assign(active[0], { x: 0, y: 0, w, h });
@@ -857,10 +870,10 @@ export class Viewer {
   /** What the selection highlights: every animal / piece of the group (null = none). */
   private get sel() { const g = this.store.group; return { fish: g.fish.length ? new Set(g.fish) : null, items: g.items.length ? new Set(g.items) : null }; }
 
-  /** While the pair is shown nothing can be picked or edited: a hit is only the view (orbit, zoom), reported on the working camera's view 0. */
+  /** While the pair is shown nothing can be picked or edited: a hit is only the view (orbit, zoom, pan), reported on its own side (AB8: the padlock decides whether B has its own camera). */
   hitTest(clientX: number, clientY: number) {
     const h = this.hitTest0(clientX, clientY); if (!h || !this.pair) return h;
-    return { ...h, vp: Object.assign(Object.create(h.vp), { i: 0 }), fishId: null, itemId: null, dot: null, pool: null, mesh: undefined } as typeof h;
+    return { ...h, fishId: null, itemId: null, dot: null, pool: null, mesh: undefined } as typeof h;
   }
   private hitTest0(clientX: number, clientY: number) {
     const r = this.host.getBoundingClientRect(), x = clientX - r.left, y = clientY - r.top;

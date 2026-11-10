@@ -294,7 +294,7 @@ details.sec { margin: 0; border-top: 1px solid var(--line) }
 .lab .match:hover { color: #fff; background: rgba(255, 255, 255, .22) }
 .lab .close:hover { background: rgba(255, 255, 255, .28) }
 #camLock[hidden] { display: none }
-#camLock { position: absolute; top: 50%; transform: translate(-50%, -50%); z-index: 2; width: 30px; height: 30px; padding: 0; border-radius: 50%; border: 1px solid var(--line); background: var(--panel); font-size: 14px; line-height: 1; cursor: pointer; box-shadow: 0 1px 4px rgba(0, 0, 0, .3) }
+#camLock { position: absolute; top: calc((100% - var(--reserve, 0px)) / 2); transform: translate(-50%, -50%); z-index: 2; width: 30px; height: 30px; padding: 0; border-radius: 50%; border: 1px solid var(--line); background: var(--panel); font-size: 14px; line-height: 1; cursor: pointer; box-shadow: 0 1px 4px rgba(0, 0, 0, .3) }
 #camLock { display: grid; place-items: center; color: var(--accent) }
 #camLock:not(.on) { color: var(--muted) }
 #camLock svg { display: block }
@@ -1328,7 +1328,7 @@ button.start-mode-card span.hint { font-size: 12px }
 .dxp .dxonly { margin: 0 0 6px }
 .dxp .dxq { margin: 8px 0; border-top: 1px dashed #666 } .dxp .dxq > summary { cursor: pointer; padding: 6px 0; font-weight: 600 }
 .cnnonew { display: block; margin: 8px 0 }
-.viewpop { position: absolute; top: 44px; left: 8px; z-index: 30; width: min(360px, calc(100% - 16px)); max-height: calc(100% - 120px); overflow: auto; box-sizing: border-box; padding: 6px 12px 10px; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 6px 24px #0006 }
+.viewpop { position: absolute; top: 44px; left: 8px; z-index: 31; width: min(360px, calc(100% - 16px)); max-height: max(140px, calc(100% - 52px - var(--reserve, 0px))); overflow: auto; box-sizing: border-box; padding: 6px 12px 10px; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 6px 24px #0006 }
 .viewpop[hidden] { display: none }
 .viewpop .vpsec { border-top: 1px solid var(--line); padding-top: 4px } .viewpop .vpsec:first-child { border-top: 0 }
 .viewpop .vpsec h3 { margin: 6px 0 4px; font-size: 13px }
