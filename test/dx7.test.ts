@@ -21,12 +21,12 @@ const fs = await import('node:fs');
 const read = (f: string) => fs.readFileSync(f, 'utf8') as string;
 const html = read('index.html');
 
-describe('seven menus', () => {
+describe('seven menus plus Report', () => {
   const secs = [...html.matchAll(/<details class="sec" data-sec="([^"]+)"><summary><h2[^>]*>([^<]+)<\/h2>/g)].map(m => [m[1], m[2]]);
   it('the side panel has exactly these menus, in this order', () => {
-    expect(secs.map(s => s[1])).toEqual(['Tank', 'Substrate', 'Hardscape', 'Plants', 'Animals', 'Constraints', 'Equipment']);
-    expect(secs.map(s => s[0])).toEqual(['tank', 'substrate', 'hardscape', 'plants', 'fish', 'brief', 'equipment']);
-    expect(html.match(/<details class="sec"/g)!.length).toBe(7);
+    expect(secs.map(s => s[1])).toEqual(['Tank', 'Substrate', 'Hardscape', 'Plants', 'Animals', 'Constraints and preferences', 'Equipment', 'Report']);
+    expect(secs.map(s => s[0])).toEqual(['tank', 'substrate', 'hardscape', 'plants', 'fish', 'brief', 'equipment', 'report']);
+    expect(html.match(/<details class="sec"/g)!.length).toBe(8);
   });
   const sec = (key: string) => { const a = html.indexOf(`data-sec="${key}"`), n = html.indexOf('<details class="sec"', a + 10), e = html.indexOf('id="quickHome"'); return html.slice(a, n > 0 && n < e ? n : e); };
   it('what used to be other menus lives in one of them (Room, Water, Tech, My equipment, the brief)', () => {
