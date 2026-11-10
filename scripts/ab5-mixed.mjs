@@ -40,7 +40,7 @@ try {
     })()`));
     log(tag + ' kinds', kinds);
     for (const k of kinds.filter(k => k !== 'fresh')) {
-      await ev(`(() => { const m = window.__mix; window.__gb.viewer.showPair([m.fresh, m['${k}']], { info: ['★ Favourite', 'Challenger'], ${mob ? "only: 0" : ""} }); })()`); await sleep(2500);
+      await ev(`document.body.classList.add('discovering')`); await ev(`(() => { const m = window.__mix; window.__gb.viewer.showPair([m.fresh, m['${k}']], { info: ['★ Favourite', 'Challenger'], ${mob ? "only: 1" : ""} }); })()`); await sleep(2500);
       log(tag + ' ' + k, await ev(`[...document.querySelectorAll('#labA, #labB')].map(e=>e.innerText.replace(/\s+/g,' ').slice(0,90)).join(' || ')`));
       await shot(`${tag}-mixed-fresh-vs-${k}`);
     }
