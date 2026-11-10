@@ -443,7 +443,9 @@ export interface TankSetup {
 export type RosterMode = 'exact' | 'atLeast' | 'speciesOnly';
 export interface RosterLock { species: string; mode: RosterMode; n: number }
 /** One object / property lock. `target`: an item or animal `uid`, 'tank' (dimensions, room, water) or 'substrate' (settings + terrain + patches, whole). `props`: the property groups held (scene/locks.ts); absent = all of them, existence included. */
-export interface ObjectLock { target: string; props?: string[] }
+export interface ObjectLock { target: string; props?: string[]; /** PS1: the value this lock holds when the working design does not have it (a lock made in Discovery from a candidate card). Discovery reads the working design with these laid over it (locks.ts effectiveTank); Make It Yours makes them real. Absent = the lock holds whatever the working design has. */ held?: HeldValue }
+/** What a Discovery lock holds: a patch of TankSetup keys (tank / substrate+terrain+patches / backdrop / light / tech / stand) or one whole piece. */
+export interface HeldValue { patch?: Record<string, unknown>; item?: Item }
 export interface Locks { objects: ObjectLock[]; roster: RosterLock[] }
 
 /** `model` a data/tanks.json size id; `key` the maker's product at that size (data/tanks.ts variantKey), absent for the catalogue size

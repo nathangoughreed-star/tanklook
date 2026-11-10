@@ -1,4 +1,5 @@
 // Holds the scene, the selection and undo/redo history. Every mutation goes through update().
+import { effectiveTank } from './locks';
 import { emptyScene } from './defaults';
 import { parseScene } from './validate';
 import { clearCams, eyeClear, limitOrbit } from './orbit';
@@ -73,6 +74,14 @@ export class Store {
 
   /** The tank the panel shows (one of the tanks being edited, when any is). The selection always refers to a fish in this tank. */
   get tank(): TankSetup { return this.scene.tanks[this.scene.active] ?? this.scene.tanks[0]; }
+  /** PS1: the design as Discovery sees it (the working design with its Discovery-held lock values laid over it). Never written back; the same object as `tank` when nothing is held. */
+  get effTank(): TankSetup {
+    const t = this.tank, held = t.locks?.objects.some(o => o.held); if (!held) return t;
+    const key = this.rev + '|' + this.scene.active + '|' + JSON.stringify(t.locks);
+    if (!this.effMemo || this.effMemo.key !== key || this.effMemo.src !== t) this.effMemo = { key, src: t, out: effectiveTank(t) };
+    return this.effMemo.out;
+  }
+  private effMemo: { key: string; src: TankSetup; out: TankSetup } | undefined;
   get split() { return this.scene.tanks.length > 1; }
   get selected(): Fish | undefined { return this.tank.fish.find(f => f.id === this.selId); }
   get selectedItem(): Item | undefined { return this.tank.items.find(it => it.id === this.selItem); }
@@ -200,10 +209,11 @@ export class Store {
     return JSON.stringify([s.tanks.map(t => { const { locks, discoverOn, brief, constraints, camera, render, ...d } = t as unknown as Record<string, unknown>; void locks; void discoverOn; void brief; void constraints; void camera; void render; return d; }), s.active]);
   }
   update(fn: (s: Scene) => void, opts: UpdateOptions = {}) {
+    let reqOnly = false;   // PS1: a requirement change (a lock, a switch, the brief) while Discovery is open: the design, its undo history and its revision stay exactly as they were
     if (this.frozen && (opts.kind ?? 'scene') === 'scene') {
       const draft = structuredClone(this.scene); fn(draft);
       if (Store.designKey(draft) !== Store.designKey(this.scene)) { this.onBlocked?.(); return; }
-      opts = { ...opts, history: false };
+      opts = { ...opts, history: false }; reqOnly = true;
     }
     const kind = opts.kind ?? 'scene', history = opts.history ?? kind === 'scene';
     if (history) {
@@ -213,7 +223,7 @@ export class Store {
       this.lastKey = opts.coalesce ?? null; this.lastTime = now;
     }
     fn(this.scene);
-    if (kind !== 'view' && kind !== 'select') this.rev++;
+    if (kind !== 'view' && kind !== 'select' && !reqOnly) this.rev++;
     // a terrain grid of another kind than its tank's (copied from the other tank, or a new shape) is resampled onto it
     const regrid = (t: TankSetup) => { const te = t.terrain; if (te.h.length && !sameGrid(te, t.tank)) t.terrain = { ...sampleTerrain(t, t.tank, te.cols), on: te.on }; };
     if (kind === 'scene') { for (const t of this.scene.tanks) { ensureUids(t); holdIntegrated(t); prunePairs(t); regrid(t); swampGround(t); keepInWater(t); keepCoralsSeated(t); fitTable(t); clearTopGear(t); for (const it of t.items) clampItem(it, t.tank, t); } clearCams(this.scene.tanks, this.scene.camLock); }

@@ -8,8 +8,8 @@
 //   makePlan / acceptPlan  Make It Yours: preview diff, conflicts, then applyProposal (one undo step, never locks)
 //   adaptToLocks           a design that honours the current locks, or a refusal (the record it came from is never touched)
 import { TABS, type Tab } from '../../scene/scope';
-import { SUBSTRATE_KEYS, HARDSCAPE_KEYS, copyGear, lockObject, lockRoster, unlockObject, unlockRoster, lockViolations, locksOf, isLocked, gearPart, type GearLock } from '../../scene/locks';
-import type { AttrLock } from '../../scene/attrs';
+import { SUBSTRATE_KEYS, HARDSCAPE_KEYS, lockObject, lockRoster, unlockObject, unlockRoster, lockViolations, locksOf, isLocked, gearPart, type GearLock } from '../../scene/locks';
+import { foreignPieces, type AttrLock } from '../../scene/attrs';
 import { applyProposal, checkProposal, deltaBetween, type Proposal } from '../../scene/proposal';
 import { ensureUids, newUid } from '../../scene/uid';
 import { getSpecies } from '../../data/species';
@@ -106,30 +106,30 @@ export function keepFromRecord(store: Store, rec: CandidateRecord, t: KeepTarget
     store.update(s => { lockRoster(s.tanks[s.active], t.species, t.mode, n); }, { history: false });
     return { ok: true, message: `Kept ${describeKeep(t, n)}. Discovery will not change it; your own edits stay free.` };
   }
+  // PS1: nothing below writes the working design. A lock holds ONE value; when the working design does not have it yet, the lock carries it (HeldValue) until Make It Yours.
+  const E = store.effTank, W = store.tank, differs = (ks: readonly (keyof TankSetup)[]) => ks.some(k => JSON.stringify(W[k]) !== JSON.stringify(S[k]));
+  const pick = (ks: readonly (keyof TankSetup)[]) => Object.fromEntries(ks.map(k => [k, structuredClone(S[k])]));
+  void E;
   if (t.kind === 'item') {
     const it = S.items.find(i => i.uid === t.uid); if (!it) return { ok: false, message: 'That piece is not in this design.' };
-    const has = store.tank.items.some(i => i.uid === t.uid);
-    store.seal();
-    store.update(s => { const T = s.tanks[s.active]; if (!has) T.items.push({ ...structuredClone(it), id: T.items.reduce((m, o) => Math.max(m, o.id), 0) + 1 }); lockObject(T, t.uid); }, { history: !has });
-    store.seal();
-    return { ok: true, message: has ? 'Kept that piece.' : 'Kept that piece for this Discovery. It is only in your design if you choose Make It Yours.' };
+    const has = W.items.some(i => i.uid === t.uid);
+    store.update(s => { lockObject(s.tanks[s.active], t.uid, undefined, has ? undefined : { item: structuredClone(it) }); }, { history: false });
+    return { ok: true, message: has ? 'Kept that piece.' : 'Kept that piece for Discovery. It is only in your design if you choose Make It Yours.' };
   }
-  if (t.kind === 'backdrop' || t.kind === 'gear') {   // AB7: the background (hardscape) and the supporting gear: copied into the working design when different, then locked like everything else
-    const copy = t.kind === 'backdrop' ? HARDSCAPE_KEYS.some(k => JSON.stringify(store.tank[k]) !== JSON.stringify(S[k])) : JSON.stringify(gearOf(store.tank, t.part)) !== JSON.stringify(gearOf(S, t.part));
-    store.seal();
-    store.update(s => { const T = s.tanks[s.active]; if (t.kind === 'backdrop') { for (const k of HARDSCAPE_KEYS) (T as unknown as Record<string, unknown>)[k] = structuredClone(S[k]); lockObject(T, 'backdrop'); } else { copyGear(T, S, t.part); lockObject(T, t.part); } }, { history: copy });
-    store.seal();
-    return { ok: true, message: `${describeKeep(t)[0].toUpperCase()}${describeKeep(t).slice(1)} kept${copy ? ' for this Discovery; your design only changes if you choose Make It Yours' : ''}.` };
+  if (t.kind === 'backdrop' || t.kind === 'gear') {
+    const keys: readonly (keyof TankSetup)[] = t.kind === 'backdrop' ? HARDSCAPE_KEYS : t.part === 'light' ? ['light'] : t.part === 'stand' ? ['stand'] : ['tech'];
+    const copy = t.kind === 'backdrop' ? differs(HARDSCAPE_KEYS) : JSON.stringify(gearOf(W, t.part)) !== JSON.stringify(gearOf(S, t.part));
+    const target = t.kind === 'backdrop' ? 'backdrop' : t.part;
+    store.update(s => { lockObject(s.tanks[s.active], target, undefined, copy ? { patch: pick(keys) } : undefined); }, { history: false });
+    return { ok: true, message: `${describeKeep(t)[0].toUpperCase()}${describeKeep(t).slice(1)} kept${copy ? ' for Discovery; your design only changes if you choose Make It Yours' : ''}.` };
   }
-  const copy = t.kind === 'substrate' ? SUBSTRATE_KEYS.some(k => JSON.stringify(store.tank[k]) !== JSON.stringify(S[k])) : JSON.stringify(store.tank.tank) !== JSON.stringify(S.tank);
-  store.seal();
+  const copy = t.kind === 'substrate' ? differs(SUBSTRATE_KEYS) : differs(['tank']);
   store.update(s => {
     const T = s.tanks[s.active];
-    if (t.kind === 'substrate') { for (const k of SUBSTRATE_KEYS) (T as unknown as Record<string, unknown>)[k] = structuredClone(S[k]); lockObject(T, 'substrate'); }
-    else { T.tank = structuredClone(S.tank); lockObject(T, 'tank', ['dimensions']); }
-  }, { history: copy });
-  store.seal();
-  return { ok: true, message: `${t.kind === 'substrate' ? 'Substrate' : 'Tank size'} kept${copy ? ' for this Discovery; your design only changes if you choose Make It Yours' : ''}.` };
+    if (t.kind === 'substrate') lockObject(T, 'substrate', undefined, copy ? { patch: pick(SUBSTRATE_KEYS) } : undefined);
+    else lockObject(T, 'tank', ['dimensions'], copy ? { patch: pick(['tank']) } : undefined);
+  }, { history: false });
+  return { ok: true, message: `${t.kind === 'substrate' ? 'Substrate' : 'Tank size'} kept${copy ? ' for Discovery; your design only changes if you choose Make It Yours' : ''}.` };
 }
 export const isKept = (tank: TankSetup, t: KeepTarget): boolean =>
   t.kind === 'fish' ? locksOf(tank).roster.some(r => r.species === t.species) : t.kind === 'item' ? isLocked(tank, t.uid) : t.kind === 'gear' ? isLocked(tank, t.part) : isLocked(tank, t.kind);
@@ -144,16 +144,18 @@ export function holdAttr(store: Store, rec: CandidateRecord, l: AttrLock): { ok:
     store.update(s => { for (const sp of new Set(l.species)) lockRoster(s.tanks[s.active], sp, 'exact', S.fish.filter(f => f.species === sp).length || 1); }, { history: false });
     return { ok: true, message: 'Kept the stocking exactly as shown. Discovery will not change it; your own edits stay free.' };
   }
-  const missing = l.uids.filter(u => !store.tank.items.some(i => i.uid === u));
-  store.seal();
   store.update(s => {
     const T = s.tanks[s.active];
-    for (const u of missing) { const it = S.items.find(i => i.uid === u); if (it) T.items.push({ ...structuredClone(it), id: T.items.reduce((m, o) => Math.max(m, o.id), 0) + 1 }); }
-    for (const u of l.uids) if (T.items.some(i => i.uid === u)) lockObject(T, u);
-  }, { history: missing.length > 0 });
-  store.seal();
-  return { ok: true, message: missing.length ? 'Added those pieces to your design and kept them (undo steps back).' : 'Kept those pieces.' };
+    for (const u of foreignPieces(store.effTank, S, l.uids)) unlockObject(T, u);   // a lock holds ONE hardscape (or plant set): the earlier one is replaced, never added to
+    const missing = l.uids.filter(u => !T.items.some(i => i.uid === u));
+    for (const u of l.uids) { const it = S.items.find(i => i.uid === u); if (it) lockObject(T, u, undefined, missing.includes(u) ? { item: structuredClone(it) } : undefined); }
+  }, { history: false });
+  const added = l.uids.some(u => !store.tank.items.some(i => i.uid === u));
+  return { ok: true, message: added ? 'Kept those pieces for Discovery. They are only in your design if you choose Make It Yours.' : 'Kept those pieces.' };
 }
+/** The locked pieces that `uids` would replace (see foreignPieces), and the replacing itself (unlock only: no design change, no undo step). */
+export const foreignOf = (store: Store, rec: CandidateRecord, uids: readonly string[]) => foreignPieces(store.effTank, rec.snapshot, uids);
+export function releasePieces(store: Store, uids: readonly string[]): void { store.update(s => { for (const u of uids) unlockObject(s.tanks[s.active], u); }, { history: false }); }
 /** Unlock a whole attribute: the same unlock the other lock controls do (no design change, no undo step). */
 export function releaseAttr(store: Store, l: AttrLock): void {
   store.update(s => {
@@ -210,7 +212,7 @@ export function makePlan(store: Store, rec: CandidateRecord, s: DiscoverySession
   // a design never carries the project's own settings: locks, the brief, constraints, camera and render stay as they are
   if (delta.set) { for (const k of ['locks', 'brief', 'constraints', 'camera', 'render', 'discoverOn'] as const) delete (delta.set as Record<string, unknown>)[k]; if (!Object.keys(delta.set).length) delete delta.set; }
   const proposal: Proposal = { baseRev: store.rev, scope: [...TABS], delta, summary: rec.facts.title };
-  const chk = checkProposal(store.tank, proposal);
+  const chk = checkProposal(store.tank, proposal, store.effTank);
   const gear = delta.set ? Object.keys(delta.set).filter(k => !['tank', 'substrate', 'terrain', 'patches'].includes(k)) : [];
   const rows = diffRows(store.tank, { ...proposal, gear: [] } as unknown as DiscoveryProposal);
   return {

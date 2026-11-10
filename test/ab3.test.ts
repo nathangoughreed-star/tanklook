@@ -122,14 +122,13 @@ describe('journey B: keep from a card', () => {
     keepFromRecord(s, r, { kind: 'fish', species: sp.species, mode: 'atLeast' }); expect(locksOf(s.tank).roster[0].mode).toBe('atLeast');
     keepFromRecord(s, r, { kind: 'fish', species: sp.species, mode: 'speciesOnly' }); expect(locksOf(s.tank).roster[0].mode).toBe('speciesOnly');
   });
-  it('keeping a piece that is not in the project yet adds it and locks it in ONE undo step', () => {
+  it('keeping a piece that is not in the project yet locks it WITHOUT writing the design (PS1: the lock carries the piece)', () => {
     const s = mk(), e = create(s); e.open(); const p = pairOf(e);
     const r = [p.a, p.b].find(x => x.snapshot.items.some(i => !s.tank.items.some(j => j.uid === i.uid)));
     if (!r) return;   // every piece already in the project: nothing to add (covered by the lock-only branch)
     const it = r.snapshot.items.find(i => !s.tank.items.some(j => j.uid === i.uid))!, n = s.tank.items.length;
     expect(keepFromRecord(s, r, { kind: 'item', uid: it.uid! }).ok).toBe(true);
-    expect(s.tank.items.length).toBe(n + 1); expect(locksOf(s.tank).objects.some(o => o.target === it.uid)).toBe(true);
-    s.undo(); expect(s.tank.items.length).toBe(n);
+    expect(s.tank.items.length).toBe(n); expect(s.effTank.items.length).toBe(n + 1); expect(locksOf(s.tank).objects.some(o => o.target === it.uid && o.held?.item)).toBe(true);
   });
   it('a keep that contradicts the favourite is caught', () => {
     const s = mk(), e = create(s); e.open(); pairOf(e); e.choose('A');

@@ -28,11 +28,11 @@ const PAGE = 6;
 export function createRealEngine(store: Store, _opts: () => VerdictOpts = () => ({}), project: string = PROJECT): AbEngine {
   const hist = createProposalHistory(project), mem = new Map<string, CandidateRecord>();
   const dir = () => projectExtras(getBrief()).direction ?? 'unsure';   // the habitat picked at Start New
-  let s: DiscoverySession = startSession(store.rev, discoverTabs(store.tank), dir()), stale = false;
+  let s: DiscoverySession = startSession(store.rev, discoverTabs(store.effTank), dir()), stale = false;
   const save = () => { saveSession(project, s); };
   const rec = (id: string | undefined): CandidateRecord | undefined => id ? hist.get(id) ?? mem.get(id) : undefined;
   const nothing = (c: string[], r: string[]): PairResult => ({ ok: false, conflicts: c.length ? c : ['Every candidate broke a lock or a limit.'], relaxations: r.length ? r : ['Open a tab (check its switch) or relax a lock.'] });
-  const proj = () => ({ tank: store.tank, rev: store.rev });
+  const proj = () => ({ tank: store.effTank, rev: store.rev });
   const pair = (type: NextPair['type']): PairResult => nextPair(proj(), getBrief(), s, id => rec(id), { next: type, shownKeys: [...mem.values()].flatMap(r => r.key ? [r.key] : []), units: store.scene.units });
   const sideOf = (r: CandidateRecord) => { const b = getBrief(); return { id: r.id, features: featuresFor(r.snapshot, scoreScene(r.snapshot, b, customTankWants(b, briefToWants(b)))) }; };
   const show = (a: CandidateRecord, b: CandidateRecord, type: NextPair['type']): PairResult => {
@@ -55,7 +55,7 @@ export function createRealEngine(store: Store, _opts: () => VerdictOpts = () => 
     open(scope) {
       const prev = loadSession(project);
       if (prev && prev.comparisons.length) { const r = resume(prev, store.rev); s = r.session; stale = r.needsRebase; }
-      else { s = startSession(store.rev, scope ?? discoverTabs(store.tank), dir()); stale = false; }
+      else { s = startSession(store.rev, scope ?? discoverTabs(store.effTank), dir()); stale = false; }
       if (scope) s = { ...s, scope: [...scope], status: 'active' };
       save();
     },
@@ -77,7 +77,7 @@ export function createRealEngine(store: Store, _opts: () => VerdictOpts = () => 
     },
     freeze(tab, source) { s = freezeTab({ ...s, scope: s.scope.filter(t => t !== tab) }, tab, source); save(); },
     recheckChampion() {
-      const c = rec(s.championId), conflicts = championConflicts(store.tank, c);
+      const c = rec(s.championId), conflicts = championConflicts(store.effTank, c);
       if (conflicts.length && c) { const before = s.championId; s = { ...s, championId: undefined, pendingFreshId: undefined, current: undefined }; markChampion(before); save(); }
       return { ok: !conflicts.length, conflicts };
     },
@@ -89,17 +89,17 @@ export function createRealEngine(store: Store, _opts: () => VerdictOpts = () => 
     favourite(id, on) { hist.favourite(id, on); },
     bringBack(id) {
       const r = rec(id), c = rec(s.championId); if (!r) return nothing([], []);
-      const bad = lockConflicts(store.tank, r.snapshot); if (bad.length) return nothing(bad, ['Adapt it first (Make It Yours offers that).']);
+      const bad = lockConflicts(store.effTank, r.snapshot); if (bad.length) return nothing(bad, ['Adapt it first (Make It Yours offers that).']);
       if (!c) { const g = pair('first'); if (!g.ok) return g; const other = g.a.id === r.id ? g.b : g.a; return show(r, other, 'first'); }
       return show(c, r, 'champion');
     },
     setFavourite(id) {
       const r = rec(id); if (!r) return { ok: false, reason: 'Not found.' };
-      const bad = lockConflicts(store.tank, r.snapshot); if (bad.length) return { ok: false, reason: `It breaks what you kept: ${bad.join(' ')}` };
+      const bad = lockConflicts(store.effTank, r.snapshot); if (bad.length) return { ok: false, reason: `It breaks what you kept: ${bad.join(' ')}` };
       const before = s.championId; s = setFav(s, id).session; markChampion(before); save(); return { ok: true };
     },
     reEvaluate(id): ReEval {
-      const r = rec(id)!, e = reEval(r, store.tank, getBrief(), { scope: effectiveScope(s), currentRev: store.rev });
+      const r = rec(id)!, e = reEval(r, store.effTank, getBrief(), { scope: effectiveScope(s), currentRev: store.rev });
       return { verdict: e.now.verdict, facts: { ...r.facts, newSpendUsd: e.now.newSpendUsd, toBuy: e.now.toBuy, mustUse: e.now.mustUse }, conflicts: e.conflicts };
     },
     adapt(id) {
@@ -135,7 +135,7 @@ export function createRealEngine(store: Store, _opts: () => VerdictOpts = () => 
         return out;
       });
     },
-    suggestion() { return suggestNarrowing(store.tank, s, id => rec(id), effectiveScope(s).filter(t => discoverTabs(store.tank).includes(t))); },
+    suggestion() { return suggestNarrowing(store.effTank, s, id => rec(id), effectiveScope(s).filter(t => discoverTabs(store.effTank).includes(t))); },
     pause() { s = pauseSession(s); save(); },
   };
 }

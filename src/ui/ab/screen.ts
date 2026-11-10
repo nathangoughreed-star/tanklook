@@ -13,15 +13,14 @@ import { SECTION_OF, TAB_LABEL } from '../discover/logic';
 import { headline } from '../checksStrip';
 import { layerOf, LIBRARY } from '../../scene/items';
 import { getSpecies } from '../../data/species';
-import { locksOf, lockRoster, rosterMet } from '../../scene/locks';
-import { ATTRS, attrValues, heldState, sameValue, thumbOf, type AttrKey, type AttrValue } from '../../scene/attrs';
-import { holdAttr, releaseAttr, ROLE_LABEL, KEEP_MODES, acceptPlan, differs, figText, isKept, keepForNowLabel, keepFromRecord, makePlan, metricsOf, roleOf, toggleReason, championConflicts, type KeepTarget, type Plan } from './logic';
+import { locksOf, rosterMet } from '../../scene/locks';
+import { ATTRS, attrValues, heldState, sameValue, thumbOf, type AttrKey, type AttrLock, type AttrValue } from '../../scene/attrs';
+import { foreignOf, releasePieces, holdAttr, releaseAttr, ROLE_LABEL, KEEP_MODES, acceptPlan, differs, figText, isKept, keepForNowLabel, keepFromRecord, makePlan, metricsOf, roleOf, toggleReason, championConflicts, type KeepTarget, type Plan } from './logic';
 import type { Store } from '../../scene/store';
 import type { Viewer } from '../../render/viewer';
 import type { CandidateRecord, Outcome, PairResult, ReasonKey } from '../../scene/discoveryTypes';
 import type { RosterMode } from '../../scene/types';
 import type { AbEngine, CombineProposal, ReEval } from './adapter';
-import { clearPairCache } from '../../scene/pairGen';
 import { REASONS } from './logic';
 import { createMetrics, statsHtml, summarize } from './metrics';
 
@@ -46,25 +45,19 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
     return miss.length ? `Your design doesn't include the locked ${miss.map(r => `${r.mode === 'exact' ? r.n : r.mode === 'atLeast' ? `at least ${r.n}` : ''} ${getSpecies(r.species)?.name ?? r.species}`.replace(/\s+/g, ' ').trim()).join(', ')} yet.` : '';
   };
 
-  let borrowed: (ReturnType<Store['snapshotAll']> & { rev: number }) | undefined;   // AB9: the working design as Discovery found it; Close without Make It Yours puts it (and its undo history) back
-  /** Keep may need to copy a piece, the lighting... into the design so a lock has something to hold: allowed while Discovery is open, undone on Close unless Make It Yours. */
-  const writing = <T,>(fn: () => T): T => { const was = store.frozen; store.frozen = false; try { return fn(); } finally { store.frozen = was; } };
-  const giveBack = () => {
-    const snap = borrowed; borrowed = undefined; if (!snap) return;
-    const roster = locksOf(store.tank).roster.map(r => ({ ...r }));   // an animal lock changes no design: it stays, like the brief and the switches
-    store.restoreAll(snap); store.rev = snap.rev; clearPairCache();   // IV1: the design is the one that revision denoted, so the session is not "stale" on reopen; pairs cached under the preview's revisions go
-    if (roster.length) store.update(s => { for (const r of roster) lockRoster(s.tanks[s.active], r.species, r.mode, r.n); }, { history: false });
-  };
-  const close = (restore = true) => {
+  // PS1: Discovery never writes the working design. Keep / Lock only change requirements (locks carry the value they hold); Make It Yours is the one commit. Close has nothing to give back.
+  /** A lock that would replace a different one waits here for Replace / Cancel. */
+  let confirmLock: { title: string; text: string; run: () => void } | undefined;
+  const close = () => {
     const was = !root.hidden;
     if (was) { metrics.log({ k: 'close', t: Date.now(), adopted, rounds: rounds() }); engine.pause(); }
     viewer?.showPair(null); viewer?.setReserve(0); shownKey = ''; frozenNow(false);
-    if (was && restore && !adopted) giveBack(); else borrowed = undefined;
+    confirmLock = undefined;
     store.persistBase = undefined;
     root.hidden = true; root.innerHTML = ''; result = undefined; plan = undefined; detail = undefined; pending = undefined; proposal = undefined; panelOpen = false; rid++;
     if (was) { const l = lockLine(); if (l) deps.status(l); }
   };
-  store.subscribe(kind => { if (root.hidden || kind === 'view' || kind === 'select') return; if (kind === 'load') { close(false); return; } syncScope(); if (panelOpen && !busy) draw(); });   // another project was opened: Discovery ends   // the menus' shuffle switches are the scope
+  store.subscribe(kind => { if (root.hidden || kind === 'view' || kind === 'select') return; if (kind === 'load') { close(); return; } syncScope(); if (panelOpen && !busy) draw(); });   // another project was opened: Discovery ends   // the menus' shuffle switches are the scope
 
   // ------------------------------------------------------------------------------------------------ engine plumbing
   const look = (fn: () => PairResult) => {   // paint "Looking…" first: the engine is synchronous
@@ -84,7 +77,7 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
 
   // ------------------------------------------------------------------------------------------------ markup
   const sheetHtml = (r: CandidateRecord, other: CandidateRecord, w: 'A' | 'B') => {
-    const f = r.facts, S = r.snapshot, tank = store.tank;
+    const f = r.facts, S = r.snapshot, tank = store.effTank;
     const group = (tab: 'plants' | 'hardscape') => {
       const by = new Map<string, string[]>(); for (const it of S.items) if ((layerOf(it) === 'plant') === (tab === 'plants') && it.uid) (by.get(it.variant) ?? by.set(it.variant, []).get(it.variant)!).push(it.uid);
       return [...by].map(([v, uids]) => row(`${uids.length > 1 ? uids.length + ' ' : ''}${esc(LIBRARY[v]?.label ?? v)}`, { kind: 'item', uid: uids[0] }, { uids }, w)).join('') || '<li class="hint">None</li>';
@@ -123,7 +116,7 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
   };
   // AB7: every attribute of the two designs side by side, each value with thumbs (soft guidance) and a lock (the same locks as every Keep / Unlock control)
   const attrCell = (v: AttrValue, w: 'A' | 'B', who: string, rec: CandidateRecord) => {
-    const hs = heldState(store.tank, rec.snapshot, v.lock), held = hs === 'held', other = hs === 'other', t = engine.thumbs ? thumbOf(engine.thumbs(), v.key, v.elements) : 0;
+    const hs = heldState(store.effTank, rec.snapshot, v.lock), held = hs === 'held', other = hs === 'other', t = engine.thumbs ? thumbOf(engine.thumbs(), v.key, v.elements) : 0;
     const th = engine.setThumb ? `<button type="button" class="abthumb${t === 1 ? ' on' : ''}" data-act="thumb" data-attr="${v.key}" data-side="${w}" data-v="1" aria-pressed="${t === 1}" aria-label="Thumbs up: I like ${esc(v.label.toLowerCase())} like ${who}" title="Thumbs up: like this (a hint, never a rule)">&#128077;</button><button type="button" class="abthumb${t === -1 ? ' on dn' : ''}" data-act="thumb" data-attr="${v.key}" data-side="${w}" data-v="-1" aria-pressed="${t === -1}" aria-label="Thumbs down: not ${esc(v.label.toLowerCase())} like ${who}" title="Thumbs down: less of this (a hint, never a rule)">&#128078;</button>` : '';
     return `<div class="abacell" data-side="${w}"><span class="abav"><b class="abk">${who}</b> ${esc(v.text)}</span><span class="abactl">${th}<button type="button" class="abalock${held ? ' on' : ''}" data-act="alock" data-attr="${v.key}" data-side="${w}" aria-pressed="${held}"${v.lock ? '' : ' disabled'} aria-label="${held ? 'Unlock' : other ? 'Replace the lock with' : 'Lock'} ${esc(v.label.toLowerCase())}${other ? ` as ${who} has it` : ''}" title="${v.lock ? (held ? 'Locked: fixed for every remaining design. Press to unlock.' : other ? 'A different value is locked. Press to lock this one instead (it replaces the old lock).' : 'Lock: keep this fixed for every remaining design') : 'Nothing to lock here'}">${held ? '&#128274;' : '&#128275;'}</button></span></div>`;
   };
@@ -215,9 +208,10 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
     if (root.hidden) return;
     let panel = '';
     const ok = !busy && !resume && result?.ok ? result : undefined;
-    const force = resume || (!busy && !!result && !result.ok) || !!proposal || !!pending;
+    const force = resume || (!busy && !!result && !result.ok) || !!proposal || !!pending || !!confirmLock;
     if (resume) panel += `<div class="abnone" role="alert"><h3>You changed the design since this session</h3><p>Discovery can re-check your favourite against the design as it is now, or start over.</p><div class="btns"><button type="button" class="primary" data-act="continue">Continue (re-check)</button><button type="button" data-act="restart">New session</button></div></div>`;
     else if (!busy && result && !result.ok) panel += noSolution(result);
+    if (confirmLock) panel += `<div class="abnone" role="alertdialog" aria-label="${esc(confirmLock.title)}"><h3>${esc(confirmLock.title)}</h3><p>${esc(confirmLock.text)}</p><div class="btns"><button type="button" class="primary" data-act="lock-replace">Replace</button><button type="button" data-act="lock-cancel">Cancel</button></div></div>`;
     if (note && !plan && !detail) panel += `<p class="abnote" role="status">${esc(note)}</p>`;
     if (ok && !plan && !detail) { const g = engine.suggestion?.(); if (g && g.text !== sugNo) panel += `<p class="hint absug" role="note">${esc(g.text)} <button type="button" data-act="sug-do" data-tab="${g.tab}" data-text="${esc(g.text)}">Switch ${TAB_LABEL[g.tab]} off</button> <button type="button" data-act="sug-no" data-text="${esc(g.text)}">Not now</button></p>`; }
     if (proposal) panel += proposalHtml(proposal);
@@ -257,11 +251,18 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
     deps.status(note);
     if (c.ok) draw(); else { const n = note; look(() => engine.next()); setTimeout(() => { note = n; draw(); }, 60); }
   };
+  const heldWord = (t: KeepTarget) => t.kind === 'item' ? 'pieces' : t.kind === 'gear' ? (t.part === 'light' ? 'lighting' : t.part === 'filter' ? 'filtration' : t.part === 'heater' ? 'heating' : 'stand color') : t.kind === 'backdrop' ? 'background' : t.kind === 'substrate' ? 'substrate' : 'tank size';
+  const askReplace = (what: string, run: () => void) => { note = ''; confirmLock = { title: `Replace your locked ${what}?`, text: `A lock holds one value. This replaces your locked ${what} with the one you chose now. Unlocking later stays one click.`, run }; panelOpen = true; draw(); };
   const doKeep = (w: 'A' | 'B' | undefined, id: string | undefined, t: KeepTarget, uids?: string[]) => {
     const rec = id ? engine.record(id) : recOf(w!); if (!rec) return;
-    metrics.log({ k: 'keep', t: Date.now(), target: t.kind, locked: true, n: rounds() });
-    if (t.kind === 'item' && uids?.length) { let last = { ok: true, message: '' }; for (const u of uids) last = writing(() => keepFromRecord(store, rec, { kind: 'item', uid: u })); afterKeep(uids.length > 1 ? `Kept ${uids.length} pieces.` : last.message); return; }
-    const r = writing(() => keepFromRecord(store, rec, t)); afterKeep(r.message);
+    const go = () => {
+      metrics.log({ k: 'keep', t: Date.now(), target: t.kind, locked: true, n: rounds() });
+      if (t.kind === 'item' && uids?.length) { let last = { ok: true, message: '' }; for (const u of uids) last = keepFromRecord(store, rec, { kind: 'item', uid: u }); afterKeep(uids.length > 1 ? `Kept ${uids.length} pieces.` : last.message); return; }
+      afterKeep(keepFromRecord(store, rec, t).message);
+    };
+    if (t.kind === 'item') { const old = foreignOf(store, rec, uids?.length ? uids : [t.uid]); if (old.length) { askReplace(layerOf(store.effTank.items.find(i => i.uid === old[0]) ?? rec.snapshot.items[0]) === 'plant' ? 'plants' : 'hardscape', () => { releasePieces(store, old); go(); }); return; } }
+    else if (t.kind !== 'fish' && isKept(store.effTank, t) && heldState(store.effTank, rec.snapshot, t.kind === 'gear' ? { kind: 'gear', part: t.part } : { kind: t.kind } as AttrLock) === 'other') { askReplace(heldWord(t), go); return; }
+    go();
   };
   const openPlan = (id: string) => { const rec = engine.record(id); if (!rec) return; note = ''; plan = makePlan(store, rec, engine.session()); draw(); };
   const act = (a: string, el: HTMLElement) => {
@@ -305,10 +306,15 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
         const rec = recOf(el.dataset.side as 'A' | 'B'); if (!rec) break;
         const v = attrValues(rec.snapshot, rec.facts).find(x => x.key === el.dataset.attr); if (!v?.lock) break;
         if (heldState(store.tank, rec.snapshot, v.lock) === 'held') { releaseAttr(store, v.lock); note = `${v.label} unlocked: Discovery may change it again.`; deps.status(note); draw(); }
-        else { const replaced = heldState(store.tank, rec.snapshot, v.lock) === 'other'; metrics.log({ k: 'keep', t: Date.now(), target: v.key, locked: true, n: rounds() }); const r = writing(() => holdAttr(store, rec, v.lock!));   // locking a value the design does not have yet copies it in (one undo step): the one design write the dock allows besides Make It Yours
-          afterKeep(replaced ? `${v.label} lock replaced: ${r.message}` : r.message); }
+        else {
+          const go = () => { metrics.log({ k: 'keep', t: Date.now(), target: v.key, locked: true, n: rounds() }); const r = holdAttr(store, rec, v.lock!); afterKeep(r.message); };
+          if (heldState(store.effTank, rec.snapshot, v.lock) === 'other') { const lk = v.lock; const old = lk.kind === 'items' ? foreignOf(store, rec, lk.uids) : []; askReplace(v.label.toLowerCase(), () => { if (old.length) releasePieces(store, old); go(); }); }
+          else go();
+        }
         break;
       }
+      case 'lock-replace': { const c = confirmLock; confirmLock = undefined; c?.run(); if (!c) draw(); break; }
+      case 'lock-cancel': confirmLock = undefined; note = 'Nothing changed: your lock stays as it was.'; draw(); break;
       case 'more': panelOpen = !panelOpen; draw(); break;
       case 'stats-clear': metrics.clear(); draw(); break;
       case 'sug-no': sugNo = el.dataset.text ?? ''; draw(); break;
@@ -366,7 +372,7 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
     open(scope) {
       adopted = false; engine.open(scope); metrics.log({ k: 'open', t: Date.now(), resumed: engine.session().comparisons.length > 0 }); histPage = 0; histOpen = false; detail = undefined; plan = undefined; pending = undefined; note = ''; sheets = new Set(); result = undefined; busy = false;
       proposal = undefined; panelOpen = false; shownKey = ''; if (!scope) syncScope();
-      borrowed = { ...store.snapshotAll(), rev: store.rev }; store.persistBase = borrowed.scene; frozenNow(true); root.hidden = false; resume = engine.isStale(); draw();
+      confirmLock = undefined; store.persistBase = store.snapshotAll().scene; frozenNow(true); root.hidden = false; resume = engine.isStale(); draw();
       if (!resume) look(() => engine.next());
     },
   };

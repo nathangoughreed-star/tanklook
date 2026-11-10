@@ -54,12 +54,12 @@ export type Draw = (s: DiscoverySession, k: number, purpose: CandidateRecord['pu
 export function createDrawer(store: Store, opts: () => VerdictOpts = () => ({})): Draw {
   let serial = 0, seedShift = 0;
   const make = (s: DiscoverySession, p: DiscoveryProposal, purpose: CandidateRecord['purpose']): CandidateRecord => {
-    const snap = ensureUids(previewProposal(store.tank, p));
+    const snap = ensureUids(previewProposal(store.effTank, p));
     return { id: `c${++serial}-${s.id}`, sessionId: s.id, createdAt: Date.now(), baseRev: store.rev, purpose, snapshot: snap, facts: factsOf(snap, p), verdict: p.verdict, assumptions: ['Prices and minutes are estimates.'], key: p.source + '|' + JSON.stringify(p.delta).length };
   };
   return (s, k, purpose, known) => {
     const scope = s.scope.filter(t => !s.freezes.some(f => f.tab === t));
-    const d = propose(store, getBrief(), { scope, objective: 'explore' }, k + 4, { ...opts(), units: store.scene.units, seed: store.tank.layout.seed + 977 * ++seedShift });
+    const d = propose(store, getBrief(), { scope, objective: 'explore' }, k + 4, { ...opts(), units: store.scene.units, seed: store.effTank.layout.seed + 977 * ++seedShift });
     const out: CandidateRecord[] = [];
     for (const p of d.proposals) { const r = make(s, p, purpose); if (!known(r.key!) && !out.some(x => x.key === r.key)) out.push(r); if (out.length === k) break; }
     return { recs: out, conflicts: (d.noSolution?.conflicts ?? []).map(c => c.text), relaxations: d.noSolution?.relaxations ?? [] };
@@ -67,7 +67,7 @@ export function createDrawer(store: Store, opts: () => VerdictOpts = () => ({}))
 }
 /** An adapted copy of a record (new id, parentId set), or a refusal. */
 export function adaptRecord(store: Store, r: CandidateRecord, id: string, opts: () => VerdictOpts = () => ({})): AdaptResult {
-  const S = adaptToLocks(r.snapshot, store.tank); if (!S) return { ok: false, reason: 'It cannot be made to keep what you kept without changing it into a different design.' };
+  const S = adaptToLocks(r.snapshot, store.effTank); if (!S) return { ok: false, reason: 'It cannot be made to keep what you kept without changing it into a different design.' };
   const { thumb: _t, ...rest } = r;
   return { ok: true, record: { ...rest, id, createdAt: Date.now(), baseRev: store.rev, purpose: 'adapted', parentId: r.id, snapshot: S, facts: factsOf(S, undefined), verdict: verdictOf(S, getBrief(), opts()), key: (r.key ?? r.id) + '|adapted' } };
 }
@@ -77,7 +77,7 @@ export function createFakeEngine(store: Store, opts: () => VerdictOpts = () => (
   let n = 0, serial = 0, s: DiscoverySession = fresh();
   const draw = createDrawer(store, opts);
   function fresh(scope?: Tab[]): DiscoverySession {
-    return { id: 'fake-' + ++n, baseRev: store.rev, scope: scope ?? discoverTabs(store.tank), freezes: [], direction: 'unsure', comparisons: [], status: 'active' };
+    return { id: 'fake-' + ++n, baseRev: store.rev, scope: scope ?? discoverTabs(store.effTank), freezes: [], direction: 'unsure', comparisons: [], status: 'active' };
   }
     const gen = (k: number, purpose: CandidateRecord['purpose']) => draw(s, k, purpose, key => [...recs.values()].some(x => x.key === key));
   const put = (r: CandidateRecord) => { recs.set(r.id, r); order.unshift(r.id); };
@@ -129,7 +129,7 @@ export function createFakeEngine(store: Store, opts: () => VerdictOpts = () => (
     },
     freeze(tab, source) { s.scope = s.scope.filter(t => t !== tab); s.freezes = s.freezes.filter(f => f.tab !== tab); s.freezes.push({ tab, source, ...(source === 'working' ? { rev: store.rev } : {}) }); },
     recheckChampion() {
-      const c = champ(), conflicts = championConflicts(store.tank, c);
+      const c = champ(), conflicts = championConflicts(store.effTank, c);
       if (conflicts.length && c) { s.championId = undefined; s.pendingFreshId = undefined; s.current = undefined; }
       return { ok: !conflicts.length, conflicts };
     },
@@ -140,18 +140,18 @@ export function createFakeEngine(store: Store, opts: () => VerdictOpts = () => (
     favourite(id, on) { if (on) favs.add(id); else favs.delete(id); },
     bringBack(id) {
       const r = recs.get(id), c = champ(); if (!r) return nothing([], []);
-      if (lockConflicts(store.tank, r.snapshot).length) return nothing(lockConflicts(store.tank, r.snapshot), ['Adapt it first (Make It Yours offers that).']);
+      if (lockConflicts(store.effTank, r.snapshot).length) return nothing(lockConflicts(store.effTank, r.snapshot), ['Adapt it first (Make It Yours offers that).']);
       if (!c) { const g = gen(1, 'challenger'); if (!g.recs.length) return nothing(g.conflicts, g.relaxations); return show(r, g.recs[0], 'first'); }
       return show(c, r, 'champion');
     },
     setFavourite(id) {
       const r = recs.get(id); if (!r) return { ok: false, reason: 'Not found.' };
-      const bad = lockConflicts(store.tank, r.snapshot); if (bad.length) return { ok: false, reason: `It breaks what you kept: ${bad.join(' ')}` };
+      const bad = lockConflicts(store.effTank, r.snapshot); if (bad.length) return { ok: false, reason: `It breaks what you kept: ${bad.join(' ')}` };
       s.championId = id; s.pendingFreshId = undefined; s.current = undefined; return { ok: true };
     },
     reEvaluate(id): ReEval {
       const r = recs.get(id)!, v = verdictOf(r.snapshot, getBrief(), opts());
-      return { verdict: v, facts: factsOf(r.snapshot, undefined), conflicts: lockConflicts(store.tank, r.snapshot) };
+      return { verdict: v, facts: factsOf(r.snapshot, undefined), conflicts: lockConflicts(store.effTank, r.snapshot) };
     },
     adapt(id): AdaptResult {
       const r = recs.get(id); if (!r) return { ok: false, reason: 'Not found.' };

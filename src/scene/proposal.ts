@@ -5,7 +5,7 @@
 //                              (1) or a locked uid / property / roster floor (2, 3); otherwise ONE undo step. It never adds a lock (4).
 //   deltaBetween(before, after) a whole generated tank in, the delta out: how a generator's result becomes a Proposal (DX2)
 import { diffTouches, outOfScope, type Tab, type Touches } from './scope';
-import { lockViolations, type Violation } from './locks';
+import { dropHeld, lockViolations, type Violation } from './locks';
 import { ensureUids } from './uid';
 import type { Fish, Item, TankSetup } from './types';
 import type { Store } from './store';
@@ -52,9 +52,9 @@ export function previewProposal(tank: TankSetup, p: Proposal): TankSetup {
 export interface Check { ok: boolean; after: TankSetup; touches: Touches; /** tabs touched outside the scope */ outside: Tab[]; violations: Violation[] }
 
 /** Would applying `p` to `tank` stay inside its scope and keep every lock? Pure. A delta that edits `locks` is itself refused: a proposal never adds (or drops) a lock. */
-export function checkProposal(tank: TankSetup, p: Proposal): Check {
+export function checkProposal(tank: TankSetup, p: Proposal, lockBase?: TankSetup): Check {
   const base = ensureUids(structuredClone(tank)), after = previewProposal(base, p), touches = diffTouches(base, after);
-  const violations = lockViolations(base, after, base.locks);
+  const violations = lockViolations(lockBase ? ensureUids(structuredClone(lockBase)) : base, after, base.locks);   // PS1: the locks are checked against the design with Discovery-held values laid over it
   if (!same(base.locks, after.locks)) violations.push({ kind: 'locks', target: 'locks', detail: 'A proposal cannot change locks.' });
   const outside = outOfScope(touches, p.scope);
   return { ok: !outside.length && !violations.length, after, touches, outside, violations };
@@ -68,11 +68,11 @@ export type ApplyResult =
 /** Apply `p` to the store's active tank as ONE undo step, after the revision, scope and lock checks. Nothing changes when it refuses. Locks are never added. */
 export function applyProposal(store: Store, p: Proposal): ApplyResult {
   if (p.baseRev !== store.rev) return { ok: false, reason: 'stale', baseRev: p.baseRev, currentRev: store.rev };
-  const c = checkProposal(store.tank, p);
+  const c = checkProposal(store.tank, p, store.effTank);
   if (!c.ok) return { ok: false, reason: c.violations.length ? 'locks' : 'scope', outside: c.outside, violations: c.violations };
   store.seal();
   const i = store.scene.active;
-  store.update(s => { s.tanks[i] = c.after; });
+  store.update(s => { dropHeld(c.after); s.tanks[i] = c.after; });   // PS1: the held values are real now; the locks stay
   store.seal();
   return { ok: true, touches: c.touches };
 }

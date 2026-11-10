@@ -92,7 +92,7 @@ describe('locks: the one lock model, held across generations', () => {
   });
   it('a locked stocking and a locked tank hold in the next pair', () => {
     const s = mk(); holdAttr(s, A, val('stocking').lock!); holdAttr(s, A, val('tank').lock!);
-    const T = structuredClone(s.tank); clearPairCache(); const r = pair(T);
+    const T = structuredClone(s.effTank); clearPairCache(); const r = pair(T);
     for (const c of [r.a, r.b]) { for (const sp of A.facts.stocking) expect(c.snapshot.fish.filter(f => f.species === sp.species)).toHaveLength(sp.n); expect(c.facts.gallons).toBe(A.facts.gallons); }
   });
   it('a background lock is a normal lock on the saved design', () => {
@@ -121,29 +121,29 @@ describe('AB10: a persistent lock names ONE value (no contradictory Locked badge
   const bg = (r: CandidateRecord) => attrValues(r.snapshot, r.facts).find(x => x.key === 'background')!.lock!;
   it('locking A background: A reads held, B (a different background) reads other, never held', () => {
     const { a, b } = twoDifferent(); const s = mk();
-    expect(heldState(s.tank, a.snapshot, bg(a))).toBe('free');
+    expect(heldState(s.effTank, a.snapshot, bg(a))).toBe('free');
     holdAttr(s, a, bg(a));
-    expect(heldState(s.tank, a.snapshot, bg(a))).toBe('held');
-    expect(heldState(s.tank, b.snapshot, bg(b))).toBe('other');
+    expect(heldState(s.effTank, a.snapshot, bg(a))).toBe('held');
+    expect(heldState(s.effTank, b.snapshot, bg(b))).toBe('other');
   });
   it('locking B afterwards REPLACES the lock: exactly one lock entry, now B held and A other', () => {
     const { a, b } = twoDifferent(); const s = mk();
     holdAttr(s, a, bg(a)); holdAttr(s, b, bg(b));
     expect(locksOf(s.tank).objects.filter(o => o.target === 'backdrop')).toHaveLength(1);
     expect(s.tank.backdrop.kind).toBe('none');
-    expect(heldState(s.tank, b.snapshot, bg(b))).toBe('held');
-    expect(heldState(s.tank, a.snapshot, bg(a))).toBe('other');
+    expect(heldState(s.effTank, b.snapshot, bg(b))).toBe('held');
+    expect(heldState(s.effTank, a.snapshot, bg(a))).toBe('other');
   });
   it('the same value on both sides is held on both (one value, no contradiction); unlock frees both', () => {
     const { a } = twoDifferent(); const s = mk(); holdAttr(s, a, bg(a));
     const twin = structuredClone(a);
-    expect(heldState(s.tank, twin.snapshot, bg(twin))).toBe('held');
-    releaseAttr(s, bg(a)); expect(heldState(s.tank, twin.snapshot, bg(twin))).toBe('free');
+    expect(heldState(s.effTank, twin.snapshot, bg(twin))).toBe('held');
+    releaseAttr(s, bg(a)); expect(heldState(s.effTank, twin.snapshot, bg(twin))).toBe('free');
   });
   it('the lock survives a regenerated pair and a close / reopen (it lives on the working project, not on a card)', () => {
     const { a } = twoDifferent(); const s = mk(); holdAttr(s, a, bg(a));
-    const saved = JSON.parse(JSON.stringify(s.tank.locks)); clearPairCache(); const p2 = pair(s.tank);
+    const saved = JSON.parse(JSON.stringify(s.tank.locks)); clearPairCache(); const p2 = pair(s.effTank);
     expect(locksOf(s.tank)).toEqual(saved);
-    for (const r of [p2.a, p2.b]) expect(heldState(s.tank, r.snapshot, bg(r))).toBe(r.snapshot.backdrop.kind === 'rock' ? 'held' : 'other');
+    for (const r of [p2.a, p2.b]) expect(heldState(s.effTank, r.snapshot, bg(r))).toBe(r.snapshot.backdrop.kind === 'rock' ? 'held' : 'other');
   });
 });

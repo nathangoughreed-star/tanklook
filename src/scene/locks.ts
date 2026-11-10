@@ -3,7 +3,7 @@
 //   object lock   { target: uid | 'tank' | 'substrate', props? }   props = the property groups held; absent = all of them (the object may not be removed either)
 //   roster lock   { species, mode: exact | atLeast | speciesOnly, n } held against the animal rows (count only; sexes are not part of it)
 //   substrate     one whole lock: settings + terrain grid + painted patches
-import type { Fish, Item, Locks, ObjectLock, RosterLock, RosterMode, TankSetup } from './types';
+import type { Fish, HeldValue, Item, Locks, ObjectLock, RosterLock, RosterMode, TankSetup } from './types';
 import type { Brief } from './brief';
 
 /** Property groups per kind of object: the fields each one covers (id and uid are identity, never a property). */
@@ -75,11 +75,27 @@ export function changedGroups(table: Record<string, readonly string[]>, a: objec
 // ------------------------------------------------------------------------------------------------ editing locks (pure, in place)
 const upsert = <T>(list: T[], at: (x: T) => boolean, v: T) => { const i = list.findIndex(at); if (i >= 0) list[i] = v; else list.push(v); };
 /** Lock an object / the tank / the substrate (replaces an earlier lock on the same target). */
-export function lockObject(t: TankSetup, target: string, props?: string[]): Locks {
+export function lockObject(t: TankSetup, target: string, props?: string[], held?: HeldValue): Locks {
   const L = t.locks ??= emptyLocks();
-  upsert(L.objects, o => o.target === target, props?.length ? { target, props: [...props] } : { target });
+  upsert(L.objects, o => o.target === target, { target, ...(props?.length ? { props: [...props] } : {}), ...(held ? { held: structuredClone(held) } : {}) });
   return L;
 }
+/** PS1: the design as Discovery sees it: the working design with every held lock value laid over it (a piece added, the tank / substrate / backdrop / gear set). The SAME object when nothing is held; the working design is never changed. */
+export function effectiveTank(t: TankSetup): TankSetup {
+  const hs = t.locks?.objects.filter(o => o.held);
+  if (!hs?.length) return t;
+  const out = structuredClone(t), rec = out as unknown as Record<string, unknown>;
+  for (const o of hs) {
+    const h = o.held!;
+    if (h.item) { if (!out.items.some(i => i.uid === o.target)) out.items.push({ ...structuredClone(h.item), id: out.items.reduce((m, i) => Math.max(m, i.id), 0) + 1 }); continue; }
+    if (!h.patch) continue;
+    if (isGearLock(o.target)) copyGear(out, structuredClone(h.patch) as unknown as TankSetup, o.target);
+    else for (const [k, v] of Object.entries(h.patch)) rec[k] = structuredClone(v);
+  }
+  return out;
+}
+/** Make It Yours made the held values real: the locks stay, the held copies go. */
+export function dropHeld(t: TankSetup): void { for (const o of t.locks?.objects ?? []) delete o.held; }
 export function unlockObject(t: TankSetup, target: string): Locks {
   const L = t.locks ??= emptyLocks(); L.objects = L.objects.filter(o => o.target !== target); return L;
 }
@@ -145,7 +161,8 @@ export function parseLocks(raw: unknown): Locks | undefined {
   for (const o of Array.isArray(r.objects) ? r.objects.slice(0, 2000) : []) {
     const t = (o as ObjectLock | null)?.target; if (typeof t !== 'string' || !t || seenO.has(t)) continue; seenO.add(t);
     const props = Array.isArray((o as ObjectLock).props) ? (o as ObjectLock).props!.filter((p): p is string => typeof p === 'string').slice(0, 12) : [];
-    objects.push(props.length ? { target: t, props } : { target: t });
+    const h = (o as ObjectLock).held, held = h && typeof h === 'object' && (h.item && typeof h.item === 'object' || h.patch && typeof h.patch === 'object') && JSON.stringify(h).length < 400000 ? { held: h } : {};
+    objects.push({ target: t, ...(props.length ? { props } : {}), ...held });
   }
   for (const x of Array.isArray(r.roster) ? r.roster.slice(0, 200) : []) {
     const q = x as RosterLock | null; if (!q || typeof q.species !== 'string' || seenR.has(q.species) || !MODES.includes(q.mode)) continue; seenR.add(q.species);

@@ -101,6 +101,7 @@ export const ATTR_TAGS: Record<AttrKey, readonly AspectTag[]> = {
  */
 export type HeldState = 'held' | 'other' | 'free';
 export function heldState(tank: TankSetup, cand: TankSetup, l: AttrLock | undefined): HeldState {
+  if (l?.kind === 'items' && foreignPieces(tank, cand, l.uids).length) return 'other';
   if (!isHeld(tank, l)) return 'free';
   if (!l) return 'free';
   const same = (ks: readonly (keyof TankSetup)[]) => ks.every(k => JSON.stringify(tank[k]) === JSON.stringify(cand[k]));
@@ -109,6 +110,16 @@ export function heldState(tank: TankSetup, cand: TankSetup, l: AttrLock | undefi
     case 'substrate': return same(SUBSTRATE_KEYS) ? 'held' : 'other';
     case 'backdrop': return same(HARDSCAPE_KEYS) ? 'held' : 'other';
     case 'gear': return JSON.stringify(gearPart(tank, l.part)) === JSON.stringify(gearPart(cand, l.part)) ? 'held' : 'other';
+    case 'items': {   // PS1: a lock holds ONE set of pieces (hardscape, or plants): pieces locked from another design make this 'other' (locking replaces them, after a warning)
+      if (foreignPieces(tank, cand, l.uids).length) return 'other';
+      return 'held';
+    }
     default: return 'held';
   }
+}
+/** PS1: locked pieces of the same kind (plants / hardscape) as `uids` that are not in `cand`: they belong to another design (or the working one), so locking `uids` would replace them. */
+export function foreignPieces(tank: TankSetup, cand: TankSetup, uids: readonly string[]): string[] {
+  const cls = (i: { variant: string }) => layerOf(i as never) === 'plant', first = cand.items.find(i => i.uid && uids.includes(i.uid)); if (!first) return [];
+  const mine = cls(first), inCand = new Set(cand.items.map(i => i.uid));
+  return tank.items.filter(i => i.uid && cls(i) === mine && isLocked(tank, i.uid) && !inCand.has(i.uid)).map(i => i.uid!);
 }
