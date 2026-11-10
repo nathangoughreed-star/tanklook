@@ -5,9 +5,9 @@ import { TABS, type Tab } from '../../scene/scope';
 import { effectiveScope, freeze as freezeTab, loadSession, pause as pauseSession, rebase as rebaseSession, record as recordOutcome, resume, saveSession, setCurrent, setFavourite as setFav, startSession, unfreeze, type NextPair } from '../../scene/discoverySession';
 import { createProposalHistory, reEvaluate as reEval } from '../../scene/proposalHistory';
 import { getBrief } from '../setupBrief';
-import { adapt as adaptPair, nextPair } from '../../scene/pairGen';
+import { adapt as adaptPair, combine as combinePair, nextPair } from '../../scene/pairGen';
 import { featuresFor, scoreScene } from '../../scene/pairFacts';
-import { recordPair } from '../../explore/aspects';
+import { reasonTags, recordAspect, recordPair } from '../../explore/aspects';
 import { customTankWants } from '../../demand/suggest';
 import { briefToWants } from '../../scene/brief';
 import { editBrief } from '../setupBrief';
@@ -15,7 +15,7 @@ import { championConflicts, lockConflicts } from './logic';
 import type { Store } from '../../scene/store';
 import type { VerdictOpts } from '../../scene/verdict';
 import type { CandidateRecord, DiscoverySession, Outcome, PairResult, ReasonKey } from '../../scene/discoveryTypes';
-import type { AbEngine, HistoryPage, ReEval } from './adapter';
+import type { AbEngine, CombineOutcome, HistoryPage, ReEval } from './adapter';
 
 const PROJECT = 'tanklook.scene';
 const PAGE = 6;
@@ -100,6 +100,16 @@ export function createRealEngine(store: Store, _opts: () => VerdictOpts = () => 
       const out = adaptPair(r, proj(), getBrief(), { sessionId: s.id, scope: effectiveScope(s), units: store.scene.units });
       if (!out.ok) return { ok: false, reason: (([...new Set(out.conflicts.map(c => c.replace(/\.+$/, '')))].join('; ') + (out.relaxations.length ? `. Smallest change: ${[...new Set(out.relaxations.map(c => c.replace(/\.+$/, '')))].join('; ')}` : '')) || 'It cannot be adapted to what you kept') + '.' };
       mem.set(out.record.id, out.record); hist.put(out.record); return { ok: true, record: out.record };
+    },
+    combine(targetId, donorId, tab): CombineOutcome {
+      const t = rec(targetId), d = rec(donorId); if (!t || !d) return { ok: false, reason: 'One of the designs is no longer there.', relaxations: [] };
+      const out = combinePair(t, d, tab, proj(), getBrief(), { sessionId: s.id, units: store.scene.units });
+      if (!out.ok) { const dedupe = (xs: string[]) => [...new Set(xs.map(c => c.replace(/\.+$/, '')))]; return { ok: false, reason: dedupe(out.conflicts).join('. ') + '.', relaxations: dedupe(out.relaxations) }; }
+      mem.set(out.record.id, out.record);
+      // taste: the donor's tab is LIKED (ranking only, never a lock; the substrate has no taste tags)
+      const on = reasonTags([tab]); if (on.length) editBrief(br => recordAspect(br, { kind: 'like', c: `${d.id}#${tab}`, features: sideOf(d).features, on }));
+      const champ = rec(s.championId), pair = champ && champ.id !== out.record.id ? show(champ, out.record, 'champion') : show(t, out.record, 'first');
+      return pair.ok ? { ok: true, record: out.record, notes: out.notes, pair } : { ok: false, reason: 'The combined design could not be shown.', relaxations: [] };
     },
     pause() { s = pauseSession(s); save(); },
   };

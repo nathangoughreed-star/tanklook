@@ -14,6 +14,7 @@ import { equipmentOf, requiredEquipment } from './project';
 import { filterUnits, heaterUnits, inferTech, withUnits } from './tech';
 import { briefToWants, type Brief } from './brief';
 import { ensureUids } from './uid';
+import { dropPlants, splice, strongerLight, strugglingPlants, trimAnimals } from './combine';
 import { ARCHETYPES, type Archetype } from './archetypes';
 import { explorePool, isBuildable, identityOf, type Candidate as PoolCandidate } from '../explore/pool';
 import { aspectScore, aspectsOf, weightsOf } from '../explore/aspects';
@@ -316,4 +317,48 @@ export function adapt(record: CandidateRecord, project: PairProject, brief: Brie
   if (was !== now2) notes.push('The animals changed to honour what you kept.');
   if (got.rec.key !== record.key) notes.push('The design was adjusted to fit your current locks and limits.');
   return { ok: true, record: got.rec, notes };
+}
+
+// ---------------------------------------------------------------------------------------------------------------- Combine (lane AB5)
+export type CombineResult = { ok: true; record: CandidateRecord; notes: string[] } | { ok: false; conflicts: string[]; relaxations: string[] };
+const TAB_WORD: Record<Tab, string> = { tank: 'tank', animals: 'animals', plants: 'plants', hardscape: 'hardscape', substrate: 'substrate' };
+/** A NEW record (purpose 'adapted', parentId = `target`) that is `target` with `donor`'s `tab` in it. The same road as every candidate (locks, the welfare and Explore gates, equipPlan, facts), then, when the parts do not work together,
+ *  the SMALLEST repair inside the combined tab only (fewer animals; plants the light cannot carry left out), said plainly; or an honest refusal with the reason. Neither original is touched; the project is never written; no lock is added.
+ *  A tab the person switched off is never combined (`opts.scope` = the tabs Discovery may change; default the project's switches). */
+export function combine(target: CandidateRecord, donor: CandidateRecord, tab: Tab, project: PairProject, brief: Brief, opts: { now?: number; units?: Units; P?: UserProfile; sessionId?: string; scope?: Tab[] } = {}): CombineResult {
+  const now = opts.now ?? Date.now(), units = opts.units ?? 'in', P = opts.P ?? defaultProfile(), word = TAB_WORD[tab];
+  const refuse = (c: string[], r: string[] = []): CombineResult => ({ ok: false, conflicts: c, relaxations: r });
+  if (target.id === donor.id) return refuse(['Both are the same design.']);
+  if (!(opts.scope ?? discoverTabs(project.tank)).includes(tab)) return refuse([`The ${word} tab is switched off for Discovery, so it is not combined.`], [`Switch the ${word} tab on`]);
+  const base = ensureUids(structuredClone(project.tank)); seedLocked(base, undefined, undefined, []);
+  const t0 = ensureUids(structuredClone(target.snapshot)); if (project.tank.locks) t0.locks = structuredClone(project.tank.locks); else delete t0.locks;
+  const sp = splice(t0, donor.snapshot, tab);
+  if (!sp) return refuse([`${donor.facts.title}'s ${word} cannot be placed in ${target.facts.title} (a piece would end up outside the tank).`]);
+  const w = customTankWants(brief, briefToWants(brief)), sessionId = opts.sessionId ?? target.sessionId, name = `${target.facts.title} + new ${word}`;
+  const fixed = new Set(locksOf(base).roster.map(r => r.species)), first: { rej: Rej[] }[] = [], steps: string[] = [];
+  const attempt = (scene: TankSetup): Pending | null => {
+    const cache = newCache('combine'), ctx: Ctx = { orig: base, brief, w, P, units, now, scope: [...TABS], baseRev: project.rev, sessionId, purpose: 'adapted', parentId: target.id, cache };
+    const got = ingest(ctx, ensureUids(structuredClone(scene)), name, 'propose', { name }); first.push(cache); return got;
+  };
+  const done = (got: Pending): CombineResult => {
+    if (got.rec.key === target.key) return refuse([`${donor.facts.title}'s ${word} is the same as the ${word} already in ${target.facts.title}, so nothing would change.`]);
+    const rec: CandidateRecord = { ...got.rec, assumptions: [`Combined: ${donor.facts.title}'s ${word} in ${target.facts.title}.`, ...steps.map(s => `Adjusted to fit: ${s}.`), ...got.rec.assumptions] };
+    return { ok: true, record: rec, notes: steps };
+  };
+  let scene = sp;
+  // the combined plants may want more light than this design has: a stronger light (a purchase the gear then prices) is the first, smallest answer
+  if (tab === 'plants' || tab === 'tank') { const L = strongerLight(scene); if (L) { scene = L.scene; steps.push(L.said); } }
+  let got = attempt(scene);
+  // a Must-use light too weak for the combined plants caps them (CO2 never makes up for light): the plants it cannot carry are left out rather than shown struggling. A light that is only owned, not required, is priced as new gear by equipPlan instead.
+  if (got && got.sc.plan.capsPlants) { const sad = new Set(strugglingPlants(got.rec.snapshot)), d = sad.size ? dropPlants(got.rec.snapshot, sad) : null; if (d) { const g2 = attempt(d.scene); if (g2) { got = g2; scene = d.scene; steps.push(d.said); } } }
+  if (got) return done(got);
+  // the animals (or the room they now share) do not fit: the smallest trim of the animals that were combined in
+  if (tab === 'animals' || tab === 'tank') for (let i = 0; i < 12; i++) {
+    const tr = trimAnimals(scene, i, fixed); if (!tr) break;
+    const g = attempt(tr.scene); if (g) { steps.push(tr.said); return done(g); }
+  }
+  const why = new Map<string, string>(), relax = new Set<string>();
+  for (const c of first.slice(0, 1)) for (const r of c.rej) { for (const i of r.issues) why.set(i.id, i.text); for (const x of r.relax) relax.add(x); if (!r.issues.length) why.set(r.text, r.text); }
+  const smallest = tab === 'animals' ? ['Take fewer of those animals, or use a bigger tank'] : tab === 'plants' ? ['Use plants that suit this light, or a stronger light'] : tab === 'tank' ? ['Keep this tank and take only the animals or plants'] : [];
+  return refuse([`${donor.facts.title}'s ${word} does not work in ${target.facts.title}.`, ...[...why.values()].slice(0, 5)], [...new Set([...relax, ...smallest])].slice(0, 6));
 }

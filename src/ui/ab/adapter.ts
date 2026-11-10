@@ -11,6 +11,9 @@ export interface HistoryPage { rows: HistoryRow[]; total: number; page: number; 
 export interface ReEval { verdict: Verdict; facts: CandidateFacts; conflicts: string[] }
 export type AdaptResult = { ok: true; record: CandidateRecord } | { ok: false; reason: string };
 
+/** Combine (AB5): one tab of `donor` taken into `target` as a NEW validated record, shown at once against the favourite (or as the first pair). A refusal keeps the pair on screen and says why. */
+export type CombineOutcome = { ok: true; record: CandidateRecord; notes: string[]; pair: PairResult } | { ok: false; reason: string; relaxations: string[] };
+
 export interface AbEngine {
   /** the session as it stands (always one: `open` makes or resumes it) */
   session(): DiscoverySession;
@@ -42,6 +45,8 @@ export interface AbEngine {
   reEvaluate(id: string): ReEval;
   /** a NEW record that honours the current locks (spec 5.4), or a refusal */
   adapt(id: string): AdaptResult;
+  /** take the donor's tab into the target: a NEW record, never an edit; the originals stay as they were. Optional so the stand-in engine needs none. */
+  combine?(targetId: string, donorId: string, tab: Tab): CombineOutcome;
   /** leave discovery resumable */
   pause(): void;
 }

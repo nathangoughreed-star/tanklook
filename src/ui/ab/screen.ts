@@ -65,8 +65,11 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
       const sel = `<select class="abmode" data-act="mode" data-sp="${esc(s.species)}" aria-label="How to keep ${esc(s.name)}">${KEEP_MODES.map(k => `<option value="${k.mode}"${k.mode === m ? ' selected' : ''} title="${k.hint}">${k.label}</option>`).join('')}</select>`;
       return row(`${s.n} ${esc(s.name)}`, { kind: 'fish', species: s.species, mode: m }, {}, w, sel);
     }).join('') || '<li class="hint">No animals</li>';
-    const d = differs(f, other.facts), buy = f.toBuy;
+    const d = differs(f, other.facts), buy = f.toBuy, otherRole = roleOf(engine.session(), other.id);
+    const into = otherRole === 'favourite' ? 'your favourite' : engine.session().championId ? 'the challenger' : `${w === 'A' ? 'B' : 'A'}`;
+    const combineHtml = engine.combine ? `<h4>Combine</h4><p class="hint">Take one part of this design into ${into}. That makes a new design to compare; nothing is changed or locked.</p><div class="abnowbtns abcomb">${TABS.map(t => `<button type="button" data-act="combine" data-donor="${esc(r.id)}" data-target="${esc(other.id)}" data-tab="${t}" title="Use these ${TAB_LABEL[t].toLowerCase()} in ${into}"${discoverIsOn(tank, t) ? '' : ' disabled'}>Use these ${TAB_LABEL[t].toLowerCase()} in ${into}</button>`).join('')}</div>` : '';
     return `<div class="absheet"><p class="hint">Keep locks something for good: Discovery will never change it (you can unlock it any time). To hold a whole tab only for now, use "Keep ${w}'s … for now" above.</p>
+      ${combineHtml}
       <h4>Animals</h4><ul>${fishRows}</ul>
       <h4>Plants</h4><ul>${group('plants')}</ul>
       <h4>Hardscape</h4><ul>${group('hardscape')}</ul>
@@ -216,6 +219,20 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
       case 'sheet': sheets.has(id!) ? sheets.delete(id!) : sheets.add(id!); draw(); break;
       case 'keep': { const t = JSON.parse(el.dataset.t!) as KeepTarget; const uids = el.dataset.uids ? JSON.parse(el.dataset.uids) as string[] : undefined; doKeep(w, undefined, t, uids); break; }
       case 'keepnow': { const rec = recOf(w!); if (!rec) break; const tab = el.dataset.tab as Tab; toggleSwitch(store, tab, false); syncScope(); engine.freeze(tab, rec.id); note = `${TAB_LABEL[tab]}: kept from ${w} for the next candidates. Your design is not changed; turn the switch back on to release it.`; draw(); break; }
+      case 'combine': {
+        const donor = el.dataset.donor!, target = el.dataset.target!, tab = el.dataset.tab as Tab;
+        pending = undefined; busy = true; note = ''; draw(); const my = ++rid;
+        setTimeout(() => {
+          if (my !== rid || root.hidden) return;
+          let out: ReturnType<NonNullable<AbEngine['combine']>>;
+          try { out = engine.combine!(target, donor, tab); } catch (e) { console.error(e); out = { ok: false, reason: 'Combining did not work on this design.', relaxations: [] }; }
+          busy = false; sheets = new Set();
+          if (out.ok) { result = out.pair; side = 'A'; note = `Combined: a new design with the ${TAB_LABEL[tab].toLowerCase()} from the other one.${out.notes.length ? ` To make it work: ${out.notes.join('; ')}.` : ''} Pick it to make it your favourite. Both originals are unchanged in History.`; }
+          else { result = engine.next(); note = `Not combined: ${out.reason}${out.relaxations.length ? ` Smallest change that would help: ${out.relaxations.join('; ')}.` : ''}`; }
+          deps.status(note); draw();
+        }, 30);
+        break;
+      }
       case 'miy': openPlan(id!); break;
       case 'miy-cancel': plan = undefined; note = ''; draw(); break;
       case 'miy-accept': {

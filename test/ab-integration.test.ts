@@ -13,7 +13,7 @@ import { setEquipment, setOwnedUse } from '../src/scene/project';
 import { filterUnits, withUnits } from '../src/scene/tech';
 import { equipPlan } from '../src/scene/equipPlan';
 import { mean3 } from '../src/demand/range';
-import { clearPairCache, nextPair, reconcileGear } from '../src/scene/pairGen';
+import { clearPairCache, combine, nextPair, reconcileGear } from '../src/scene/pairGen';
 import { freeze, record, setCurrent, startSession } from '../src/scene/discoverySession';
 import { createProposalHistory, reEvaluate, type ProposalHistory } from '../src/scene/proposalHistory';
 import { aspectsOf, recordPair } from '../src/explore/aspects';
@@ -177,5 +177,19 @@ describe('a challenger lock RECONCILES with a hold', () => {
     if (r.ok) for (const c of [r.a, r.b]) { expect(cories(c)).toBe(8); expect(c.snapshot.fish.filter(f => f.species === 'ember').length).toBe(4); expect(verdictOf(c.snapshot, B0).feasible).toBe(true); }
     else { expect(r.conflicts.length).toBeGreaterThan(0); expect(r.relaxations.length).toBeGreaterThan(0); }
     expect(r.ok).toBe(true); expect(notes.some(n => /replace the 6/.test(n))).toBe(true);
+  }, 120000);
+});
+
+describe('Combine through history and the session (AB5)', () => {
+  it("combine A's plants into B: a new record in history, favourite vs combined is a champion pair, originals and locks untouched", () => {
+    const t = project(), { A, B, s } = setup(t), locks0 = JSON.stringify(t.locks), a0 = JSON.stringify(H.get(A.id)), b0 = JSON.stringify(H.get(B.id));
+    const o = combine(A, B, 'plants', { tank: t, rev: 1 }, B0); expect(o.ok).toBe(true); if (!o.ok) return;
+    H.put(o.record);
+    const s2 = setCurrent(s, A.id, o.record.id, 'champion');
+    expect(s2.current).toEqual({ aId: A.id, bId: o.record.id, type: 'champion' });
+    expect(H.get(o.record.id)?.parentId).toBe(A.id); expect(JSON.stringify(H.get(A.id))).toBe(a0); expect(JSON.stringify(H.get(B.id))).toBe(b0);
+    expect(JSON.stringify(t.locks)).toBe(locks0); expect(snapAll().includes(o.record.id)).toBe(true);
+    // picking the combined design makes it the favourite
+    const r = record(s2, 'B'); expect(r.session.championId).toBe(o.record.id);
   }, 120000);
 });
