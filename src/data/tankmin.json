@@ -1141,6 +1141,10 @@
     "site": "Fishkeeping World",
     "url": "https://www.fishkeepingworld.com/siamese-algae-eater/"
    },
+   "groupVol": [
+    {"from": 2, "gal": 40, "mark": "sourced", "site": "Fishkeeping World", "url": "https://www.fishkeepingworld.com/siamese-algae-eater/"},
+    {"from": 5, "gal": 75, "mark": "sourced (est)", "site": "FS1 audit 2026-11-10 (hobby guides: 55+ gal for a group of 3-5, 50 gal minimum for 6+; adults 6 in, constant swimmers, rank-fight below 6, so 75)", "url": "research/audit/FS1-siamese-algae-eater.md"}
+   ],
    "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
   },
   "hillstream": {

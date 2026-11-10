@@ -25,7 +25,9 @@ export interface MinLine { L: number; W?: number; areaCm2?: number; mark: Mark; 
 export interface HeightLine { H: number; mark: Mark; site: string; url: string; states: string }
 /** Decision 4 depth notes (no page states a required minimum water depth for any species, MX7). */
 export interface DepthNote { recommendedTankHeightMm?: number; advisoryTankHeightMm?: number; maxWaterDepthMm?: number; mark?: string; note: string }
-export interface MinData { red?: MinLine; green?: MinLine; /** the green line when this species' one animal is alone in the water (betta, Nathan 2026-11-02: a lone betta in a 12 in cube reads green) */ greenAlone?: MinLine; hRed?: HeightLine; hGreen?: HeightLine; depth?: DepthNote; vol?: { gal: number; mark: string; site: string; url: string }; why: string }
+export interface MinData { red?: MinLine; green?: MinLine; /** the green line when this species' one animal is alone in the water (betta, Nathan 2026-11-02: a lone betta in a 12 in cube reads green) */ greenAlone?: MinLine; hRed?: HeightLine; hGreen?: HeightLine; depth?: DepthNote; vol?: { gal: number; mark: string; site: string; url: string };
+  /** FS1 (2026-11-10): a gallon floor that grows with the COUNT of this species in the water (aggression within the group, not room: the stocking percent is blind to it). Highest step whose `from` <= n applies; a gate like volGate. */
+  groupVol?: { from: number; gal: number; mark: string; site: string; url: string }[]; why: string }
 const lines = (TM as unknown as { species: Record<string, MinData> }).species;
 /** The decided lines of one species; undefined = none (aquatic invertebrates and the regal jumper: never fail on size). */
 export const minDataOf = (id: string): MinData | undefined => lines[id];
@@ -211,6 +213,12 @@ export function tankMinimum(S: TankSetup): TankMinimum {
     const have = by.get(sp.id);
     if (have) { have.n++; continue; }
     by.set(sp.id, speciesMinimum(sp, g, young[sp.id], alone));
+  }
+  for (const row of by.values()) {
+    const step = (minDataOf(row.id)?.groupVol ?? []).filter(x => row.n >= x.from).pop();
+    if (!step) continue;
+    const need = step.gal * GAL_L, have = g.tankLitres ?? g.litres, pct = 100 * (have > 0 ? need / have : Infinity);
+    if (pct > row.measure.pct) { row.measure = { ...row.measure, pct, limiting: 'water', need, have, mark: 'advisory', site: step.site, states: `${step.gal} gal for ${step.from}+` } as Measured; row.pct = pct; row.limiting = 'water'; row.reason = reasonIn(row); }
   }
   const rows = [...by.values()].sort((a, b) => b.pct - a.pct);
   const depthMm = depthOf(g), maxDepthMm = Math.min(Infinity, ...rows.map(r => r.maxDepthMm));

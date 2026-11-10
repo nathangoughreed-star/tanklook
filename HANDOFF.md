@@ -581,3 +581,6 @@ New Setup (and toolbar New) asks ONE question with five picture tiles (`ui/habit
 
 ## AB3 pass 2 (2026-11-10)
 Shipped screen runs on the real engine: ui/ab/real.ts over AB0 session, AB1 nextPair/adapt, AB2 history; recordPair after each non-Skip choice. fake.ts is tests only. Skip always moves on. First-pair "0 pictures" was a ~11 s software-GL first render (placeholder added), not a bug. Screens: research/screens/ab3/ (desktop + 375 px). Open: AB1 has no `broaden` option (Like neither flag unused); "gone" history lines not shown; lock wording still technical in places.
+
+## FS1: Siamese algae eater audit (2026-11-10, Coordinator 22)
+REAL defect: 5-6 SAE passed in 42-50 gal (stocking % blind to kin aggression; tankmin was per species, never per count). Added `MinData.groupVol` (count-scaled gallon gate) in `tankMinimum`; sae = 2+: 40 gal, 5+: 75 gal (est). Audit: `research/audit/FS1-siamese-algae-eater.md`. Tests: `test/fs1.test.ts`. Convention: a species whose welfare depends on count gets `groupVol` in tankmin.json (mark est when sources disagree), not a lower displayed percent.
