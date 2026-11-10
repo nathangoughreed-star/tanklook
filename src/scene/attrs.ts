@@ -5,7 +5,7 @@
 import { BACKDROPS } from '../render/backdrop';
 import { LIBRARY, layerOf } from './items';
 import { choiceOf, optionDef } from './tech';
-import { isLocked, locksOf, type GearLock } from './locks';
+import { gearPart, HARDSCAPE_KEYS, isLocked, locksOf, SUBSTRATE_KEYS, type GearLock } from './locks';
 import type { AspectTag } from '../explore/aspects';
 import type { CandidateFacts } from './discoveryTypes';
 import type { TankSetup } from './types';
@@ -93,3 +93,22 @@ export function thumbBonus(m: ThumbMap | undefined, S: TankSetup, facts: Candida
 export const ATTR_TAGS: Record<AttrKey, readonly AspectTag[]> = {
   tank: [], stocking: ['species', 'behavior', 'size', 'number', 'visibility'], hardscape: ['layout'], background: [], substrate: [], plants: ['plants', 'natural'], lighting: [], filtration: [], heating: [], stand: [],
 };
+
+/**
+ * AB10: is THIS candidate's value the one that is locked? 'held' = the lock is on and it names this very value; 'other' = the attribute is locked but to a DIFFERENT value
+ * (the other card's, or the working design's): a persistent lock names exactly one value, so the cell must not read "Locked" (it offers to replace the lock); 'free' = not locked.
+ * Whole-attribute locks of the singular parts (tank, substrate, background, gear) hold the working design's value, so compare it with the candidate's. Pieces and animals are named by uid / species already.
+ */
+export type HeldState = 'held' | 'other' | 'free';
+export function heldState(tank: TankSetup, cand: TankSetup, l: AttrLock | undefined): HeldState {
+  if (!isHeld(tank, l)) return 'free';
+  if (!l) return 'free';
+  const same = (ks: readonly (keyof TankSetup)[]) => ks.every(k => JSON.stringify(tank[k]) === JSON.stringify(cand[k]));
+  switch (l.kind) {
+    case 'tank': return JSON.stringify(tank.tank) === JSON.stringify(cand.tank) ? 'held' : 'other';
+    case 'substrate': return same(SUBSTRATE_KEYS) ? 'held' : 'other';
+    case 'backdrop': return same(HARDSCAPE_KEYS) ? 'held' : 'other';
+    case 'gear': return JSON.stringify(gearPart(tank, l.part)) === JSON.stringify(gearPart(cand, l.part)) ? 'held' : 'other';
+    default: return 'held';
+  }
+}

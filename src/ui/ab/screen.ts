@@ -14,7 +14,7 @@ import { headline } from '../checksStrip';
 import { layerOf, LIBRARY } from '../../scene/items';
 import { getSpecies } from '../../data/species';
 import { locksOf, rosterMet } from '../../scene/locks';
-import { ATTRS, attrValues, isHeld, sameValue, thumbOf, type AttrKey, type AttrValue } from '../../scene/attrs';
+import { ATTRS, attrValues, heldState, sameValue, thumbOf, type AttrKey, type AttrValue } from '../../scene/attrs';
 import { holdAttr, releaseAttr, ROLE_LABEL, KEEP_MODES, acceptPlan, differs, figText, isKept, keepForNowLabel, keepFromRecord, makePlan, metricsOf, roleOf, toggleReason, championConflicts, type KeepTarget, type Plan } from './logic';
 import type { Store } from '../../scene/store';
 import type { Viewer } from '../../render/viewer';
@@ -110,16 +110,16 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
     return `<button type="button" class="abfact${side === w ? ' cur' : ''}" data-act="side" data-side="${w}" title="${esc(r.facts.title)}: show this one${'' }"><b class="abk ${role}">${w}${role === 'favourite' ? ' ★' : ''}</b> ${role === 'favourite' || role === 'challenger' ? `<span class="abrl">${ROLE_LABEL[role]}</span>` : ''}<span>New spend <b>${esc(m.spend)}</b></span><span>Upkeep <b>${esc(m.minutes)}</b></span><span>${esc(m.difficulty)}</span></button>`;
   };
   // AB7: every attribute of the two designs side by side, each value with thumbs (soft guidance) and a lock (the same locks as every Keep / Unlock control)
-  const attrCell = (v: AttrValue, w: 'A' | 'B', who: string) => {
-    const held = isHeld(store.tank, v.lock), t = engine.thumbs ? thumbOf(engine.thumbs(), v.key, v.elements) : 0;
+  const attrCell = (v: AttrValue, w: 'A' | 'B', who: string, rec: CandidateRecord) => {
+    const hs = heldState(store.tank, rec.snapshot, v.lock), held = hs === 'held', other = hs === 'other', t = engine.thumbs ? thumbOf(engine.thumbs(), v.key, v.elements) : 0;
     const th = engine.setThumb ? `<button type="button" class="abthumb${t === 1 ? ' on' : ''}" data-act="thumb" data-attr="${v.key}" data-side="${w}" data-v="1" aria-pressed="${t === 1}" aria-label="Thumbs up: I like ${esc(v.label.toLowerCase())} like ${who}" title="Thumbs up: like this (a hint, never a rule)">&#128077;</button><button type="button" class="abthumb${t === -1 ? ' on dn' : ''}" data-act="thumb" data-attr="${v.key}" data-side="${w}" data-v="-1" aria-pressed="${t === -1}" aria-label="Thumbs down: not ${esc(v.label.toLowerCase())} like ${who}" title="Thumbs down: less of this (a hint, never a rule)">&#128078;</button>` : '';
-    return `<div class="abacell" data-side="${w}"><span class="abav"><b class="abk">${who}</b> ${esc(v.text)}</span><span class="abactl">${th}<button type="button" class="abalock${held ? ' on' : ''}" data-act="alock" data-attr="${v.key}" data-side="${w}" aria-pressed="${held}"${v.lock ? '' : ' disabled'} aria-label="${held ? 'Unlock' : 'Lock'} ${esc(v.label.toLowerCase())}" title="${v.lock ? (held ? 'Locked: fixed for every remaining design. Press to unlock.' : 'Lock: keep this fixed for every remaining design') : 'Nothing to lock here'}">${held ? '&#128274;' : '&#128275;'}</button></span></div>`;
+    return `<div class="abacell" data-side="${w}"><span class="abav"><b class="abk">${who}</b> ${esc(v.text)}</span><span class="abactl">${th}<button type="button" class="abalock${held ? ' on' : ''}" data-act="alock" data-attr="${v.key}" data-side="${w}" aria-pressed="${held}"${v.lock ? '' : ' disabled'} aria-label="${held ? 'Unlock' : other ? 'Replace the lock with' : 'Lock'} ${esc(v.label.toLowerCase())}${other ? ` as ${who} has it` : ''}" title="${v.lock ? (held ? 'Locked: fixed for every remaining design. Press to unlock.' : other ? 'A different value is locked. Press to lock this one instead (it replaces the old lock).' : 'Lock: keep this fixed for every remaining design') : 'Nothing to lock here'}">${held ? '&#128274;' : '&#128275;'}</button></span></div>`;
   };
   const attrHtml = (a: CandidateRecord, b: CandidateRecord) => {
     const va = attrValues(a.snapshot, a.facts), vb = attrValues(b.snapshot, b.facts);
     return `<section class="abattrs" aria-label="Every attribute of the tank"><h4>Every attribute <small>Thumbs are hints for the next designs. Lock keeps it fixed from now on; unlock any time.</small></h4>${ATTRS.map((at, i) => {
       const x = va[i], y = vb[i], same = sameValue(x, y);
-      return `<div class="abattr${same ? '' : ' differs'}" data-attr="${at.key}"><div class="abal">${at.label}${same ? '' : ' <small>differs</small>'}</div>${same ? attrCell(x, 'A', 'A + B') : attrCell(x, 'A', 'A') + attrCell(y, 'B', 'B')}</div>`;
+      return `<div class="abattr${same ? '' : ' differs'}" data-attr="${at.key}"><div class="abal">${at.label}${same ? '' : ' <small>differs</small>'}</div>${same ? attrCell(x, 'A', 'A + B', a) : attrCell(x, 'A', 'A', a) + attrCell(y, 'B', 'B', b)}</div>`;
     }).join('')}</section>`;
   };
   const sideBlock = (r: CandidateRecord, other: CandidateRecord, w: 'A' | 'B') => `<section class="abside${side === w ? ' cur' : ''}" data-side="${w}" data-id="${esc(r.id)}">
@@ -292,9 +292,9 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
       case 'alock': {   // the same lock / unlock as the Keep buttons and the menus
         const rec = recOf(el.dataset.side as 'A' | 'B'); if (!rec) break;
         const v = attrValues(rec.snapshot, rec.facts).find(x => x.key === el.dataset.attr); if (!v?.lock) break;
-        if (isHeld(store.tank, v.lock)) { releaseAttr(store, v.lock); note = `${v.label} unlocked: Discovery may change it again.`; deps.status(note); draw(); }
-        else { metrics.log({ k: 'keep', t: Date.now(), target: v.key, locked: true, n: rounds() }); const was = store.frozen; store.frozen = false; let r: { ok: boolean; message: string }; try { r = holdAttr(store, rec, v.lock); } finally { store.frozen = was; }   // locking a value the design does not have yet copies it in (one undo step): the one design write the dock allows besides Make It Yours
-          afterKeep(r.message); }
+        if (heldState(store.tank, rec.snapshot, v.lock) === 'held') { releaseAttr(store, v.lock); note = `${v.label} unlocked: Discovery may change it again.`; deps.status(note); draw(); }
+        else { const replaced = heldState(store.tank, rec.snapshot, v.lock) === 'other'; metrics.log({ k: 'keep', t: Date.now(), target: v.key, locked: true, n: rounds() }); const was = store.frozen; store.frozen = false; let r: { ok: boolean; message: string }; try { r = holdAttr(store, rec, v.lock); } finally { store.frozen = was; }   // locking a value the design does not have yet copies it in (one undo step): the one design write the dock allows besides Make It Yours
+          afterKeep(replaced ? `${v.label} lock replaced: ${r.message}` : r.message); }
         break;
       }
       case 'more': panelOpen = !panelOpen; draw(); break;
