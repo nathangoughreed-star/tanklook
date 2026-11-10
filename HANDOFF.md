@@ -599,3 +599,5 @@ Shipped screen runs on the real engine: ui/ab/real.ts over AB0 session, AB1 next
 
 ## FS1: Siamese algae eater audit (2026-11-10, Coordinator 22)
 REAL defect: 5-6 SAE passed in 42-50 gal (stocking % blind to kin aggression; tankmin was per species, never per count). Added `MinData.groupVol` (count-scaled gallon gate) in `tankMinimum`; sae = 2+: 40 gal, 5+: 75 gal (est). Audit: `research/audit/FS1-siamese-algae-eater.md`. Tests: `test/fs1.test.ts`. Convention: a species whose welfare depends on count gets `groupVol` in tankmin.json (mark est when sources disagree), not a lower displayed percent.
+
+FS1 follow-up (2026-11-10): sae 5+ step (75 gal) is PROVISIONAL; `groupVol` steps may also state a tank length `L` (sae 5+: 900 mm), the further-short of volume/length applies. Open checks listed in the audit doc.

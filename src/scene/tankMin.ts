@@ -27,7 +27,7 @@ export interface HeightLine { H: number; mark: Mark; site: string; url: string; 
 export interface DepthNote { recommendedTankHeightMm?: number; advisoryTankHeightMm?: number; maxWaterDepthMm?: number; mark?: string; note: string }
 export interface MinData { red?: MinLine; green?: MinLine; /** the green line when this species' one animal is alone in the water (betta, Nathan 2026-11-02: a lone betta in a 12 in cube reads green) */ greenAlone?: MinLine; hRed?: HeightLine; hGreen?: HeightLine; depth?: DepthNote; vol?: { gal: number; mark: string; site: string; url: string };
   /** FS1 (2026-11-10): a gallon floor that grows with the COUNT of this species in the water (aggression within the group, not room: the stocking percent is blind to it). Highest step whose `from` <= n applies; a gate like volGate. */
-  groupVol?: { from: number; gal: number; mark: string; site: string; url: string }[]; why: string }
+  groupVol?: { from: number; provisional?: boolean; gal: number; /** optional swim-run floor, mm of tank length (same step) */ L?: number; mark: string; site: string; url: string }[]; why: string }
 const lines = (TM as unknown as { species: Record<string, MinData> }).species;
 /** The decided lines of one species; undefined = none (aquatic invertebrates and the regal jumper: never fail on size). */
 export const minDataOf = (id: string): MinData | undefined => lines[id];
@@ -217,8 +217,13 @@ export function tankMinimum(S: TankSetup): TankMinimum {
   for (const row of by.values()) {
     const step = (minDataOf(row.id)?.groupVol ?? []).filter(x => row.n >= x.from).pop();
     if (!step) continue;
-    const need = step.gal * GAL_L, have = g.tankLitres ?? g.litres, pct = 100 * (have > 0 ? need / have : Infinity);
-    if (pct > row.measure.pct) { row.measure = { ...row.measure, pct, limiting: 'water', need, have, mark: 'advisory', site: step.site, states: `${step.gal} gal for ${step.from}+` } as Measured; row.pct = pct; row.limiting = 'water'; row.reason = reasonIn(row); }
+    // PROVISIONAL (FS1 follow-up, 2026-11-10): the 5+ step (75 gal, 900 mm) is our estimate where hobby guides disagree, and volume alone does not
+    // establish suitability for an active swimmer, so a step may also state a tank LENGTH (the swim run). Whichever line is further short applies.
+    const need = step.gal * GAL_L, have = g.tankLitres ?? g.litres, vp = 100 * (have > 0 ? need / have : Infinity), lp = step.L ? 100 * step.L / Math.max(1, g.lengthMm) : 0;
+    const byLen = lp > vp, pct = byLen ? lp : vp;
+    if (pct <= row.pct) continue;
+    row.measure = { ...row.measure, pct, limiting: byLen ? 'length' : 'water', need: byLen ? step.L! : need, have: byLen ? g.lengthMm : have, mark: 'advisory', site: step.site, states: byLen ? `${Math.round(step.L! / 25.4)} in long for ${step.from}+` : `${step.gal} gal for ${step.from}+` } as Measured;
+    row.pct = pct; row.limiting = byLen ? 'length' : 'water'; if (byLen) row.minLengthMm = Math.max(row.minLengthMm, step.L!); row.reason = reasonIn(row);
   }
   const rows = [...by.values()].sort((a, b) => b.pct - a.pct);
   const depthMm = depthOf(g), maxDepthMm = Math.min(Infinity, ...rows.map(r => r.maxDepthMm));

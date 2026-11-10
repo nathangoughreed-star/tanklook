@@ -63,3 +63,16 @@ describe('FS1 generator never offers an under-sized SAE group', () => {
     }
   });
 });
+
+describe('FS1 follow-up: swim-run gate (provisional)', () => {
+  it('6 SAE in a tall short ~75 gal tank fail on LENGTH, not volume', () => {
+    const t = mk([30, 24, 24], fishOf('sae', 6, 300));   // ~75 gal cube-ish, 30 in run
+    expect(gal(t)).toBeGreaterThan(65);
+    const row = tankMinimum(t).rows.find(r => r.id === 'sae')!;
+    expect(row.limiting).toBe('length');
+    expect(gated(t)).toBe(true);
+  });
+  it('the 5+ step is flagged provisional in the data', () => {
+    expect((minDataOf('sae')!.groupVol as any[]).find(s => s.from === 5).provisional).toBe(true);
+  });
+});

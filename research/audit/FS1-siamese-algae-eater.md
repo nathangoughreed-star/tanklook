@@ -35,3 +35,8 @@ Verdict: **REAL model defect** (not a confusing UI state). Reproduced on a hand-
 - Same class of gap (count never scales a floor) may apply to other kin-aggressive schoolers; not audited here.
 
 Tests: `test/fs1.test.ts` (6).
+
+## Follow-up (2026-11-10): the 75 gal step is PROVISIONAL, and what else to check
+Volume alone does not establish that a tank suits an active, 6 in, constantly swimming fish. The 5+ step (75 gal) is our estimate, flagged `provisional` in tankmin.json and in a code comment in `tankMinimum`.
+Now gated: **tank length / swim run**. Steps carry an optional `L`: 2+ = 765 mm (the existing red line), 5+ = 900 mm (Guidarium's 90 cm, in the data already). Whichever of volume or length is further short applies, so a tall short 75 gal (30 in run) fails on length. Test: `test/fs1.test.ts`.
+Still to check (not done, per scope): adult size by individual (young fish are scaled by `scaleMin`, group floors are not); group behaviour by sex/age mix (hierarchy fighting is count-driven, not size-driven); width/floor area for a bottom-oriented fish; cover to break sight lines (territory warning is advisory only); whether lookalike Crossocheilus sold as SAE (*langei*, *atrilimes*) have different needs; a sourced oblongus page (Seriously Fish has none).
