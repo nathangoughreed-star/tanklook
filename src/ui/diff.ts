@@ -71,7 +71,7 @@ export function tankDiff(a: TankSetup, b: TankSetup, u: Units): DiffItem[] {
   };
   const named = (name: string) => (_: unknown, side: 'A' | 'B') => `${name} ${side}`;
 
-  add(a.tank, b.tank, T => fmtSize(T, u), (to, from) => rescaleTank(to, from.tank));
+  add(a.tank, b.tank, (T, side) => fmtSize(T, u, (side === 'A' ? a : b).water.on), (to, from) => rescaleTank(to, from.tank));
   // the product each tank is (2026-10-26): matching takes the other's size, product and what the product holds
   add(productLabel(a), productLabel(b), l => l, (to, from) => {
     rescaleTank(to, from.tank); to.render.rim = from.render.rim;

@@ -167,8 +167,9 @@ export const toUnit = (mm: number, u: Units) => +(mm / unitMM(u)).toFixed(2);
 export const fromUnit = (v: number, u: Units) => v * unitMM(u);
 
 /** Dimensions, then capacity and interior floor area: `24 × 12 × 12″, 15 gallons, 288 in² floor` (the panel's footprint is outside the glass). */
-export function fmtSize(T: Tank, u: Units) {
+export function fmtSize(T: Tank, u: Units, wet = true) {
   const v = volume(T), a = footprint(T).area, dims = fmtDims(T, u).replace(' (L×H×D)', '');
+  if (!wet) return u === 'in' ? `${dims}, ${Math.round(a / (IN * IN)).toLocaleString()} in² floor` : `${dims}, ${Math.round(a / 100).toLocaleString()} cm² floor`;   // a dry habitat holds no water: floor area only
   return u === 'in' ? `${dims}, ${+v.gallons.toFixed(1)} gallons, ${Math.round(a / (IN * IN)).toLocaleString()} in² floor`
     : `${dims}, ${Math.round(v.litres)} L, ${Math.round(a / 100).toLocaleString()} cm² floor`;
 }

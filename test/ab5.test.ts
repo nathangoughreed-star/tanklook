@@ -263,3 +263,15 @@ describe('Discovery in the main view: the working design is never written', () =
     if (o.ok) expect(o.record.snapshot.fish.filter(f => f.species === 'ember').length).toBe(6); else expect(o.conflicts.length).toBeGreaterThan(0);
   }, 120000);
 });
+
+// ---------------------------------------------------------------------------------------------------------------- cleanup: a dry candidate in the pair has no water-only readout
+import { tankDiff } from '../src/ui/diff';
+import { fmtSize } from '../src/scene/physics';
+describe('a dry habitat in the pair shows no water-only readout', () => {
+  it('the size line has floor area and no gallons / litres, and the A / B differences never mention water volume for the dry side', () => {
+    const wet = project(), dry = structuredClone(wet); dry.water.on = false; dry.tank = { ...dry.tank, L: 18 * IN, D: 18 * IN, H: 18 * IN };
+    for (const u of ['in', 'cm'] as const) { const t = fmtSize(dry.tank, u, false); expect(t).toMatch(/floor/); expect(t).not.toMatch(/gallon| L,/); expect(fmtSize(wet.tank, u, true)).toMatch(/gallon| L,/); }
+    const rows = tankDiff(wet, dry, 'in'), dryText = rows.map(r => String(r[1])).join(' | '), wetText = rows.map(r => String(r[0])).join(' | ');
+    expect(dryText).not.toMatch(/gallon/); expect(wetText).toMatch(/gallon/); expect(dryText).toMatch(/Dry/);
+  });
+});

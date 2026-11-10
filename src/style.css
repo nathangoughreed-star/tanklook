@@ -1394,6 +1394,8 @@ button.start-mode-card span.hint { font-size: 12px }
 .abdock .abpic[src] + .abpicwait { display: none }
 .abdock .abchoose { position: sticky; bottom: 40px; z-index: 4; background: var(--panel); border-top: 1px solid #555; margin: 8px 0 0; padding: 6px 0; max-height: 45vh; overflow: auto }
 
+/* Discovery is on (AB5 cleanup): the working design's own readouts, price chip, climate box, camera-position maps and Undo / Redo are hidden; every readout that stays follows the candidate in its own view */
+body.discovering .dmfloat, body.discovering #climate, body.discovering .vmap, body.discovering #mapShow, body.discovering #undo, body.discovering #redo { display: none !important }
 /* ---- Discovery dock (lane AB5, Nathan 2026-11-10): the A/B decision lives in a bar across the bottom of the MAIN view; the tanks above it are drawn by the viewer's pair layer ---- */
 .abdock { position: absolute; left: 0; right: 0; bottom: 0; z-index: 30; background: var(--panel); color: var(--ink); border-top: 1px solid #555; font-size: 13px; box-sizing: border-box; display: flex; flex-direction: column; max-height: 62%; }
 .abdock[hidden] { display: none }
