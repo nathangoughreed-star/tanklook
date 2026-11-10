@@ -12,6 +12,7 @@
 //   unresolved(b)              remaining decisions (by route) and open conflicts, one list
 //   applyChange(b, patch)      change anything upstream; every downstream pick is KEPT and the conflicts it causes are listed, never silently dropped
 // A skipped constraint is UNKNOWN: absent in the view, never 0 and never Infinity. Experience is advisory only (it informs guidance, it never blocks a pick).
+import type { HabitatDirection } from './discoveryTypes';
 import { getSpecies } from '../data/species';
 import { getTankModel, variantUsd, type TankModel } from '../data/tanks';
 import { archetype, family, type Density, type Env, type Water } from './archetypes';
@@ -153,6 +154,8 @@ export function setOwnedUse(b: Brief, key: EquipKey, use: Use): Brief {
 }
 export const setEquipmentUse = setOwnedUse;
 /** "No new equipment" on or off (lane DX3). */
+/** AB4: record (or clear) the soft habitat direction; it never locks anything. */
+export function setDirection(b: Brief, d: HabitatDirection | undefined): Brief { const { direction: _d, ...x } = projectExtras(b); return setProjectExtras(b, d ? { ...x, direction: d } : x); }
 export function setNoNewEquipment(b: Brief, on: boolean): Brief { const { noNewEquipment: _n, ...x } = projectExtras(b); return setProjectExtras(b, on ? { ...x, noNewEquipment: true } : x); }
 /** Which owned items are Must use (obligation) and which are only available, each still owned (ownership is the owned map / existingTank, never touched here). */
 export const mustUseKeys = (b: Brief): EquipKey[] => requiredEquipment(b).map(i => i.key);

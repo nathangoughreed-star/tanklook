@@ -7,6 +7,7 @@
 // Animal welfare is NOT a status: it stays the stocking gates (stocking.ts / stockSummary.ts), a feasibility check no item can switch off.
 // Storage: `TankSetup.brief` (types.ts), validated by `parseBrief` in scene/validate.ts, so it saves / loads / undoes with the project.
 // An item with `off: true` is switched off but keeps its value (the Guardrails "on" toggle); it counts as not specified.
+import type { HabitatDirection } from './discoveryTypes';
 import { getTankModel } from '../data/tanks';
 import type { DryGroup, Kind, OwnedKey, OwnedMap, Tag, Wants } from '../demand/suggest';
 import type { Cap, Constraints, Effort } from './constraints';
@@ -157,6 +158,8 @@ export interface ProjectExtras {
   lidFree?: true;
   /** "No new equipment" (lane DX3): nothing may be bought beyond what is owned; a must-use item that falls short then makes the design infeasible */
   noNewEquipment?: true;
+  /** AB4: the broad habitat answered at Start New (spec 2.1). A SOFT preference, not a lock; absent on projects started elsewhere */
+  direction?: HabitatDirection;
   /** the guide (ui/coach, lane GW1): where the walk through the menus stopped, so it resumes; absent = not started or finished */
   coach?: { at: string; skipped?: string[] };
 }
@@ -372,6 +375,7 @@ export function parseBrief(raw: unknown): Brief | undefined {
   return hasState(out) ? out : undefined;
 }
 
+const DIRECTIONS: readonly HabitatDirection[] = ['freshwater', 'saltwater', 'terrarium', 'paludarium', 'unsure'];
 const ENV_IDS: readonly Env[] = ['aquarium', 'terrarium', 'paludarium'], WATER_IDS: readonly Water[] = ['freshwater', 'saltwater', 'brackish'];
 const DENSITY_IDS: readonly Density[] = ['open', 'balanced', 'full'];
 const idOk = (v: unknown): v is string => typeof v === 'string' && /^[a-z0-9-]{1,40}$/.test(v);
@@ -387,6 +391,7 @@ export function parseProject(raw: unknown): ProjectExtras | undefined {
   if (r.scratch === true) p.scratch = true;
   if (r.lidFree === true) p.lidFree = true;
   if (r.noNewEquipment === true) p.noNewEquipment = true;
+  if (DIRECTIONS.includes(r.direction as HabitatDirection)) p.direction = r.direction as HabitatDirection;
   const co = r.coach as Record<string, unknown> | undefined;
   if (co && typeof co === 'object' && idOk(co.at)) { const sk2 = Array.isArray(co.skipped) ? co.skipped.filter(idOk).slice(0, 40) : []; p.coach = sk2.length ? { at: co.at, skipped: sk2 } : { at: co.at }; }
   const sk = strs(r.skipped, SKIP_STEPS); if (sk?.length) p.skipped = sk;

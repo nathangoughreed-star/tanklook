@@ -13,7 +13,6 @@ import { propose } from '../src/scene/discover';
 import { emptyBrief } from '../src/ui/setupBrief';
 import { adoptTank, confirmStart, hasLocks, needsAsk, regenerateKeepingLocks, setProjectAsker, startProject } from '../src/ui/projectStart';
 import { makeItMine } from '../src/ui/suggest';
-import { START_ENTRIES } from '../src/ui/startMode';
 import { createCoach, type CoachHost, type CoachCard } from '../src/ui/coach/runner';
 import { GUIDE_STEPS, answered, type CoachCtx, type CoachStep } from '../src/ui/coach/steps';
 import { suggestSetups } from '../src/demand/suggest';
@@ -189,10 +188,10 @@ describe("the coach is Discovery's optional questioner", () => {
 });
 
 describe('the New tank menu', () => {
-  it('has three entry shortcuts and no Guided / Sandbox mode', () => {
-    expect(START_ENTRIES.map(e => e.label)).toEqual(['Just exploring', 'I have some ideas', 'I have an existing setup']);
+  it('AB4: the DX5 shortcuts are retired; one habitat question stands in', () => {
     const html = readFileSync('index.html', 'utf8');
-    for (const id of ['modeExploring', 'modeIdeas', 'modeExisting']) expect(html).toContain(`id="${id}"`);
+    for (const id of ['modeExploring', 'modeIdeas', 'modeExisting', 'modeKindList']) expect(html).not.toContain(`id="${id}"`);
+    expect(html).toContain('id="habitatList"');
     expect(html).not.toMatch(/id="modeGuided"|id="modeSandbox"/);
   });
 });

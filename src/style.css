@@ -1345,3 +1345,15 @@ button.start-mode-card span.hint { font-size: 12px }
 .startdlg .libhead { display: flex; justify-content: space-between; align-items: center }
 .startdlg .libhead h2 { flex: 1; margin-left: 8px }
 .startdlg .libhead #startBack { white-space: nowrap }
+
+/* AB4: the habitat question (five picture tiles) and the intro popup's spotlight */
+.habitat5 { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px }
+.habitat-card { text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 6px; padding: 8px; background: var(--panel); border: 2px solid var(--line); border-radius: 10px; color: inherit; font: inherit }
+.habitat-card:hover, .habitat-card:focus-visible { border-color: var(--accent) }
+.habitat-pic svg { display: block; width: 100%; height: 100% }
+.introdlg { width: min(460px, calc(100vw - 32px)) }
+.introdlg h2 { margin-top: 0 } .introdlg p { line-height: 1.45 } .introdlg .btns { margin-top: 14px }
+@keyframes introPulse { 0%, 100% { box-shadow: 0 0 0 0 transparent } 50% { box-shadow: 0 0 0 3px var(--accent) } }
+.intro-spot { animation: introPulse 1.2s ease-in-out 4; border-radius: 6px }
+.startdlg { width: min(860px, calc(100vw - 32px)) }
+.habitat5 { grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)) }

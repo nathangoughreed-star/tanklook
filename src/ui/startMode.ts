@@ -6,18 +6,14 @@
 // switched off (`off`) and turns them back on; one button switches Sandbox to Guided and keeps the tank. The pure part is testable.
 import type { Store } from '../scene/store';
 import { ITEM_IDS, type Brief, type ItemId } from '../scene/brief';
-import { SETUP_KINDS, type SetupKind } from '../scene/pickerKind';
+import type { HabitatDirection } from '../scene/discoveryTypes';
+import { HABITAT_PICS } from './habitatPics';
+import { showIntro } from './introPopup';
 import { labelOf, getBrief, editBrief, onBrief, rangeOf } from './setupBrief';
 import { demandOf } from '../demand';
 import { setOff, against } from '../scene/brief';
-import { STEP_TITLE, canClose, backOf, routeChoice, type StartStep, type StartChoice } from './startScreenLogic';
+import { STEP_TITLE, HABITAT_CHOICES, canClose, backOf, routeChoice, type StartStep, type StartChoice } from './startScreenLogic';
 import { summaryOf, LEVEL_WORD, type StockSummary } from './stockSummary';
-
-/** The three ways to begin (entry shortcuts, not modes). */
-export type StartEntry = 'exploring' | 'ideas' | 'existing';
-export const START_ENTRIES: readonly { id: StartEntry; label: string }[] = [
-  { id: 'exploring', label: 'Just exploring' }, { id: 'ideas', label: 'I have some ideas' }, { id: 'existing', label: 'I have an existing setup' },
-];
 
 export const NOT_VALID_TRADEOFF = 'not a valid tradeoff';
 
@@ -53,9 +49,7 @@ export function sandboxFlags(sm: StockSummary): Flag[] {
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
 export interface StartModeHost {
-  /** "Just exploring": an empty project (after the new-project warning), then Discovery with every tab ticked; false when cancelled. */ exploring(): boolean | Promise<boolean>;
-  /** "I have some ideas": an empty room of the kind (after the warning); the person adds and locks what they know, then Discovers. false when cancelled. */ ideas(kind: SetupKind): boolean | Promise<boolean>;
-  /** "I have an existing setup": an empty project (after the warning), then My equipment with the Tank row first. false when cancelled. */ existing(): boolean | Promise<boolean>;
+  /** AB4: an empty project of the answered habitat (after the new-project warning), the direction stored as a soft preference; false when cancelled. */ begin(direction: HabitatDirection): boolean | Promise<boolean>;
   /** The owned-gear sheet (ui/ownedGear.ts): tick the tank, light, heater and filter you already have. */ owned(): void;
   /** Fill a step's lists when it opens (starters gallery, saved tanks, deals); the screen itself only shows and hides the steps. */ enter?(step: StartStep): void;
   /** The demand profile for the cost flags (lazy: the demand panel loads after start-up). */ profile?(): Parameters<typeof demandOf>[1] | undefined;
@@ -66,7 +60,7 @@ const SANDBOX_BAR = false as boolean;
 export function attachStartMode(store: Store, host: StartModeHost) {
   const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
   const dlg = $<HTMLDialogElement>('startDlg'), guard = $<HTMLDialogElement>('guardDlg'), bar = $('sandboxBar');
-  const kindList = $('modeKindList'), closeBtn = $<HTMLButtonElement>('startClose'), backBtn = $<HTMLButtonElement>('startBack');
+  const kindList = $('habitatList'), closeBtn = $<HTMLButtonElement>('startClose'), backBtn = $<HTMLButtonElement>('startBack');
   const base = import.meta.env.BASE_URL;
   /** SL1: true from first load until a project is started; then the screen can be closed (the toolbar New / Open open it again). */
   let first = false, step: StartStep = 'home';
@@ -74,10 +68,11 @@ export function attachStartMode(store: Store, host: StartModeHost) {
   const fillPics = (root: HTMLElement) => { for (const p of root.querySelectorAll<HTMLElement>('.mode-pic[data-art]:not(:has(img))')) { const i = document.createElement('img'); i.alt = ''; i.decoding = 'async'; i.onload = () => i.classList.add('ok'); i.onerror = () => i.remove(); i.src = `${base}art/${p.dataset.art}.webp`; p.append(i); } };
   /** The project started (or a tank opened): the screen closes and stays closable from now on. */
   const done = () => { first = false; if (dlg.open) dlg.close(); };
-  kindList.replaceChildren(...SETUP_KINDS.map(([k, label, tip]) => {
-    const b = document.createElement('button'); b.type = 'button'; b.dataset.kind = k; b.className = 'start-mode-card';
-    b.innerHTML = `<div class="mode-pic" data-art="start/${k}"></div><b>${label}</b><span class="hint">${esc(tip)}</span>`;
-    b.onclick = async () => { if (await host.ideas(k)) done(); };
+  kindList.replaceChildren(...HABITAT_CHOICES.map(({ id, label, tip }) => {
+    const b = document.createElement('button'); b.type = 'button'; b.dataset.habitat = id; b.className = 'start-mode-card habitat-card';
+    b.innerHTML = `<div class="mode-pic habitat-pic">${HABITAT_PICS[id]}</div><b>${esc(label)}</b><span class="hint">${esc(tip)}</span>`;
+    // the intro popup shows on every NEW project (spec 2.2); done() first so the start screen is gone behind it
+    b.onclick = async () => { if (await host.begin(id)) { done(); await showIntro(); } };
     return b;
   }));
   const show = (s: StartStep) => {
@@ -125,9 +120,6 @@ export function attachStartMode(store: Store, host: StartModeHost) {
     const id = (t.dataset.on ?? t.dataset.off) as ItemId, off = t.dataset.off !== undefined;
     editBrief(b => setOff(b, id, off)); drawGuard();
   });
-  $('modeExploring').onclick = async () => { if (await host.exploring()) done(); };
-  $('modeIdeas').onclick = () => show('kinds');
-  $('modeExisting').onclick = async () => { if (await host.existing()) done(); };
   store.subscribe(drawBar); onBrief(drawBar); drawBar();
-  return { open, done, showKinds: () => open('kinds'), isOpen: () => dlg.open, drawBar };
+  return { open, done, isOpen: () => dlg.open, drawBar };
 }

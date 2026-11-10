@@ -2,7 +2,7 @@
 // so undo/redo, file open and pointer drags all refresh the panels the same way.
 import { FOCUS_SECS, type FocusSec } from '../render/menuFocus';
 import { projectExtras } from '../scene/brief';
-import { setNoNewEquipment } from '../scene/project';
+import { setNoNewEquipment, setDirection } from '../scene/project';
 import { attachDemandPanel, loadProfile } from './demandPanel';
 import { fitToLimits, hasLimits } from '../demand/fit';
 import { attachTechMenu } from './techMenu';
@@ -13,7 +13,7 @@ import { renderFeaturedDeals } from './featuredDeals';
 import { attachWelcome } from './welcome';
 import { bindBriefStore, editBrief, experienceOf, getBrief, onBrief as onBriefEdit, setTank as briefTank } from './setupBrief';
 import { attachStartMode } from './startMode';
-import { stepForMenu, libraryState, EMPTY_LIBRARY, type StartStep } from './startScreenLogic';
+import { stepForMenu, kindOfDirection, libraryState, EMPTY_LIBRARY, type StartStep } from './startScreenLogic';
 import { openDiscovery } from './discover/entry';
 import { attachTankDock, type TankDock } from './tankDock';
 import { sandboxRoomScene } from '../scene/sandboxRoom';
@@ -181,14 +181,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   /** The stored text of the saved tank this project came from (null when unsaved): a project saved as it stands has nothing to lose. */
   const savedText = () => { const id = libId(); return id ? libText(id) : null; };
   setProjectAsker(() => confirmNew(() => { $('saveScene').click(); const now = libId(); return !!now && JSON.stringify(G()) === libText(now); }));
-  /** The Sandbox's empty room: replace the scene (after the replace warning unless this is the first launch), then the picker opens beside it. */
   let tankDock: TankDock | undefined, roomPending = false; // roomPending: the empty room is up and no tank is chosen yet (a tank is required, Nathan 2026-11-05)
-  const sandboxRoom = async (kind: SetupKind) => {
-    if (welcomeFirst) { welcomeFirst = false; const s = sandboxRoomScene(kind); s.units = G().units; store.replace(s); setLibId(null); }
-    else if (!await newEmptyTank(kind, true)) return false;
-    roomPending = true; tankDock?.open('start');
-    return true;
-  };
   $('openFile').onclick = () => $('fileIn').click(); // SL1: the start screen stays up; it closes only when a file really opens
   /** A message while the start screen is up (the status line sits behind the modal): shown on the screen itself, else on the status line. */
   const say = (msg: string, bad = false) => { const m = $('startMsg'); if (document.getElementById('startDlg') && (document.getElementById('startDlg') as HTMLDialogElement).open) { m.textContent = msg; m.hidden = false; } else status(msg, bad); };
@@ -347,10 +340,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
     cn.onchange = () => editBrief(b => setNoNewEquipment(b, cn.checked)); onBriefEdit(b => cnSync(b)); cnSync(); }
   void import('./discover/switches').then(m => m.attachMenuSwitches(store)); // DX7: "Discovery can change this" in the five creative menu headers
   const startMode = attachStartMode(store, {
-    // DX5: entry shortcuts into the one project (none is a mode); each goes through the same new-project warning
-    exploring: async () => { const ok = welcomeFirst ? (welcomeFirst = false, true) : await newEmptyTank(); if (ok) openDiscovery({ from: 'start-exploring' }); return ok; },
-    ideas: sandboxRoom,
-    existing: async () => { const ok = welcomeFirst ? (welcomeFirst = false, true) : await newEmptyTank(); if (ok) openOwned(); return ok; },
+    // AB4: ONE habitat question starts an empty project of that kind; the answer is a soft direction in the brief, never a lock
+    begin: async d => { const ok = welcomeFirst ? (welcomeFirst = false, true) : await newEmptyTank(kindOfDirection(d)); if (ok) editBrief(b => setDirection(b, d)); return ok; },
     owned: () => openOwned(),
     enter: fillStep,
     profile: () => { try { return loadProfile(); } catch { return undefined; } },
@@ -492,7 +483,7 @@ Cancel, then change the name, to keep both.`)) return;
     dlg.addEventListener('close', () => { sumpDone = null; $('tankDlgTitle').textContent = 'Tank sizes'; });
     // a library pick, whichever picker made it (the docked one, ui/tankDock.ts, or this modal for a sump)
     const applyPick = (m: TankModel, v?: TankVariant) => { editBrief(b => briefTank(b, { id: m.id, label: m.name })); v ??= soleProduct(m); const mm = v ? modelOfVariant(m, v) : m; setTank(() => tankFromModel(mm), undefined, mm.glassMm, standFor(m, v)); pinPreset(store.scene.active, store.tank, saleOf(m, v)); };
-    tankDock = attachTankDock(store, viewer, { apply: (m, v) => { roomPending = false; applyPick(m, v); }, back: () => startMode.showKinds(), abandoned: () => { roomPending = false; } });
+    tankDock = attachTankDock(store, viewer, { apply: (m, v) => { roomPending = false; applyPick(m, v); }, back: () => startMode.open('new'), abandoned: () => { roomPending = false; } });
     $<HTMLDialogElement>('startDlg').addEventListener('close', () => { if (roomPending && !tankDock!.isOpen) tankDock!.open('start'); }); // a tank is required: closing the kind screen without a kind returns to the picker
     const apply = (m: TankModel, v?: TankVariant) => { if (sumpDone) { sumpDone(m); dlg.close(); return; } applyPick(m, v); dlg.close(); };
     const draw = () => {
