@@ -38,11 +38,11 @@ describe('one home per setting', () => {
 });
 
 describe('the guided path is the coach', () => {
-  it('runs Kind -> Tank -> Placement -> My equipment -> Your limits -> Look -> Animals -> Review, with unique ids', () => {
-    expect(GUIDE_STEPS.map(s => s.id)).toEqual(['kind', 'size', 'place', 'equipment', 'limits', 'look', 'animals', 'review']);
+  it('runs Kind -> Tank -> Placement -> My equipment -> Your limits -> Animals -> Review, with unique ids', () => {
+    expect(GUIDE_STEPS.map(s => s.id)).toEqual(['kind', 'size', 'place', 'equipment', 'limits', 'animals', 'review']);
     expect(new Set(GUIDE_STEPS.map(s => s.id)).size).toBe(GUIDE_STEPS.length);
     for (const s of GUIDE_STEPS) expect(s.why.split(/(?<=[.!?])\s/).length).toBeLessThanOrEqual(2);
-    expect(DEMO_STEPS.map(s => s.id)).toEqual(['kind', 'size', 'limits', 'look']);
+    expect(DEMO_STEPS.map(s => s.id)).toEqual(['kind', 'size', 'limits']);
   });
   it('every step target exists on the page: a section, a control inside it, or a dialog the host opens', () => {
     const dialogs = ['equipment'];

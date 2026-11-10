@@ -165,13 +165,10 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
     else body = `<p class="abbanner">${esc(bannerOf(s))}</p><p class="hint abexplain">Pick the one you would rather build. The winner becomes your favourite (★) and meets a new challenger next. Nothing is locked or changed by choosing.</p>${mobileStrip(result.a, result.b)}<div class="abgrid">${cardHtml(result.a, result.b, 'A')}${cardHtml(result.b, result.a, 'B')}</div>${choiceHtml()}`;
     root.innerHTML = `<header class="abhead"><h2>Discover</h2><button type="button" class="dxx" aria-label="Close Discovery" data-act="close">✕</button></header>
       <div class="abtop"><div class="flabel">Discovery can change this</div>${switchesHtml()}<p class="hint abswhint">Switch a tab off to hold it as it is for now. That is temporary and locks nothing.</p>
-        <div class="ablocked" data-drop="1" role="note"><b>Locked</b> ${esc(lockedSummary(store.tank).replace(/^Locked \(kept as it is\): /, '').replace(/\.$/, ''))}<small> · drag a row here, or use Keep, to lock it</small></div>
-        <div id="abDoors"></div><details class="abq"><summary>Quick setup: look, shuffle, density</summary><div id="abQuick"></div></details></div>
+        <div class="ablocked" data-drop="1" role="note"><b>Locked</b> ${esc(lockedSummary(store.tank).replace(/^Locked \(kept as it is\): /, '').replace(/\.$/, ''))}<small> · drag a row here, or use Keep, to lock it</small></div></div>
       ${only ? `<p class="hint abonly">This run looks only at ${only.map(t => TAB_LABEL[t]).join(', ')} (opened from there). Flip any switch to use your own.</p>` : ''}
       ${note && !plan && !detail ? `<p class="abnote" role="status">${esc(note)}</p>` : ''}
       <div class="abmain">${body}</div>${historyHtml()}${plan ? planHtml(plan) : detail ? detailHtml(detail) : ''}`;
-    const q = root.querySelector('#abQuick'); if (q && quickEl) q.append(quickEl);
-    const d = root.querySelector('#abDoors'); if (d && doorsEl) d.append(doorsEl);
     shots();
   };
 

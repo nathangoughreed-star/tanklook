@@ -73,11 +73,6 @@ export const GUIDE_STEPS: readonly CoachStep[] = [
     done: { changes: c => [limitItems(c), careOf(c)] }, skippable: true,
   },
   {
-    id: 'look', target: { section: 'discover', control: '#layout' }, title: 'Choose a look',
-    why: 'The style fills the tank with a matching set of substrate, hardscape and plants. Browse looks shows pictures to choose from; Shuffle draws another one.',
-    done: { changes: c => c.tank.layout.id }, skippable: true,
-  },
-  {
     id: 'animals', known: answered.animals, target: { section: 'fish', control: '#spSearch' }, title: 'Pick the animals',
     why: 'Search the list and add species. Each one shows whether it suits this tank, its water and the others already in it.',
     done: { changes: c => c.tank.fish.map(f => f.species) }, skippable: true,
@@ -90,4 +85,5 @@ export const GUIDE_STEPS: readonly CoachStep[] = [
 ];
 
 /** The short demo path GW1 shipped: Kind -> Tank size -> Your limits -> Look (the same steps, picked from the full path). */
-export const DEMO_STEPS: readonly CoachStep[] = GUIDE_STEPS.filter(s => ['kind', 'size', 'limits', 'look'].includes(s.id));
+// Nathan 2026-11-10: Browse looks / Quick setup removed from Discover, so the Look step went with them
+export const DEMO_STEPS: readonly CoachStep[] = GUIDE_STEPS.filter(s => ['kind', 'size', 'limits'].includes(s.id));

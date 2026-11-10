@@ -143,8 +143,8 @@ describe('Esc / close and the demo path', () => {
     await r.poke(w => { w.size = 99; });
     expect(r.log.cards.length).toBe(n); expect(r.coach.state.running).toBe(false); expect(r.log.hidden).toBe(1);
   });
-  it('the demo path is Kind -> Tank size -> Your limits -> Look, with unique ids and a why of at most two sentences', () => {
-    expect(DEMO_STEPS.map(s => s.id)).toEqual(['kind', 'size', 'limits', 'look']);
+  it('the demo path is Kind -> Tank size -> Your limits, with unique ids and a why of at most two sentences', () => {
+    expect(DEMO_STEPS.map(s => s.id)).toEqual(['kind', 'size', 'limits']);
     expect(new Set(DEMO_STEPS.map(s => s.id)).size).toBe(DEMO_STEPS.length);
     for (const s of DEMO_STEPS) expect(s.why.split(/(?<=[.!?])\s/).length).toBeLessThanOrEqual(2);
     expect(DEMO_STEPS[1].target).toEqual({ section: 'tank', control: '#presetA' });
@@ -156,6 +156,5 @@ describe('Esc / close and the demo path', () => {
     const snap = (id: string, c: CoachCtx) => { const d = DEMO_STEPS.find(s => s.id === id)!.done as { changes: (c: CoachCtx) => unknown }; return JSON.stringify(d.changes(c)); };
     const before = ctx({}), after = ctx({ 'constraints.budget': { value: 500 } });
     expect(snap('limits', before)).not.toBe(snap('limits', after));
-    expect(snap('look', before)).toBe(snap('look', after));
   });
 });
