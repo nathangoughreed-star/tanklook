@@ -1437,11 +1437,11 @@ body.discovering .dmfloat, body.discovering #climate, body.discovering .vmap, bo
 /* AB7: attribute panel: one grid, so every row's value and its three buttons (thumb up, thumb down, lock) line up in the same columns; the buttons never change size */
 .abdock .abattrs { margin: 8px 0; border: 1px solid #555; border-radius: 8px; padding: 6px 10px }
 .abdock .abattrs h4 { margin: 2px 0 6px } .abdock .abattrs h4 small { color: #999; font-weight: 400; margin-left: 6px }
-.abdock .abattr { display: grid; grid-template-columns: 104px minmax(0, 1fr) 108px minmax(0, 1fr) 108px; gap: 4px 10px; align-items: center; padding: 3px 0; border-top: 1px dashed #5557 }
-.abdock .abattr .abal { font-weight: 600 } .abdock .abattr .abal small { color: #e6a23c; font-weight: 400 }
-.abdock .abacell { display: contents }
+.abdock .abattr { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 4px 12px; align-items: center; padding: 3px 0; border-top: 1px dashed #5557 }
+.abdock .abattr .abal { font-weight: 600; grid-column: 1 / -1 } .abdock .abattr .abal small { color: #e6a23c; font-weight: 400 }
+.abdock .abacell { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; min-width: 0 }
 .abdock .abav { min-width: 0; overflow-wrap: anywhere } .abdock .abav .abk { font-size: 11px }
-.abdock .abactl { display: grid; grid-template-columns: repeat(3, 32px); gap: 6px; justify-content: end }
+.abdock .abactl { flex: none }
 .abdock .abthumb, .abdock .abalock { width: 32px; height: 28px; padding: 0; border: 1px solid #666; border-radius: 6px; background: transparent; color: inherit; cursor: pointer; line-height: 1 }
 .abdock .abthumb.on { background: #2e7d6b; border-color: #2e7d6b } .abdock .abthumb.on.dn { background: #9a4b3f; border-color: #9a4b3f }
 .abdock .abalock.on { background: #3f5f9a; border-color: #3f5f9a; color: #fff } .abdock .abalock[disabled] { opacity: .4; cursor: default }
@@ -1452,8 +1452,14 @@ body.discovering .dmfloat, body.discovering #climate, body.discovering .vmap, bo
 }
 @media (max-width: 700px) { .abdock.opened .abfacts { display: none } }   /* the per-side facts repeat inside the open panel; the sheet gets the room */
 @media (max-width: 700px) {   /* phone: label on its own line, then value + 3 buttons per side, buttons in one column */
-  .abdock .abattr { grid-template-columns: minmax(0, 1fr) 108px; gap: 2px 8px } .abdock .abattr .abal { grid-column: 1 / 3 }
+  .abdock .abattr { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 4px 8px } .abdock .abattr .abrel, .abdock .abattr .abtry, .abdock .abattr .abrelnote { grid-column: 1 / 3 } .abdock .abattr .abrel { order: 5; justify-self: stretch } .abdock .abattr .abrel button { flex: 1 } .abdock .abattr .abrelnote { order: 6 } .abdock .abattr .abtry { order: 7 }
 }
+/* AB13: the A / No opinion / B segmented choice, the Try buttons, the folded identical rows */
+.abdock .abrel { display: inline-flex; border: 1px solid #666; border-radius: 8px; overflow: hidden; justify-self: center }
+.abdock .abrel button { border: 0; border-radius: 0; background: transparent; color: inherit; padding: 4px 10px; min-height: 28px; cursor: pointer; font-size: 12px }
+.abdock .abrel button + button { border-left: 1px solid #666 } .abdock .abrel button.on { background: #3f5f9a; color: #fff }
+.abdock .abrelnote { grid-column: 1 / -1; margin: 0; font-size: 12px; color: #9ecbbd } .abdock .abtry { grid-column: 1 / -1; display: flex; gap: 6px; flex-wrap: wrap } .abdock .abtry button { font-size: 12px; padding: 2px 8px }
+.abdock .absame summary { cursor: pointer; color: #999; margin-top: 6px } .abdock .absame .abattr { grid-template-columns: minmax(0, 1fr) }
 /* AB7b: the compact strip carries Make It Yours; the attribute matrix stays closed until Details is pressed */
 .abdock .abfcell { display: flex; gap: 6px; align-items: stretch; min-width: 0 } .abdock .abfcell .abfact { flex: 1 1 auto; min-width: 0 }
 .abdock .abmiy { flex: none; padding: 2px 8px; font-size: 12px }

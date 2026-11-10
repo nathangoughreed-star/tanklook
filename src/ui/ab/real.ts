@@ -63,11 +63,13 @@ export function createRealEngine(store: Store, _opts: () => VerdictOpts = () => 
     rebase() { const before = s.championId; s = rebaseSession(s, store.rev).session; stale = false; markChampion(before); save(); },
     restart() { s = startSession(store.rev, s.scope, dir()); stale = false; save(); },
     next() { const c = s.current, a = rec(c?.aId), b = rec(c?.bId); return a && b ? { ok: true, a, b } : drawFor(nextNow()); },
-    choose(outcome: Outcome, why?: ReasonKey[], otherGood?: ReasonKey[]) {
+    choose(outcome: Outcome, why?: ReasonKey[], otherGood?: ReasonKey[], rel?: { attr: AttrKey; elements: string[]; side: 'A' | 'B' }[]) {
       const before = s.championId, a = rec(s.current?.aId), b = rec(s.current?.bId), r = recordOutcome(s, outcome, why, otherGood);
       s = r.session; markChampion(before); save();
       // taste (aspects.ts): ranking only, never a lock; Skip records nothing
       if (a && b && outcome !== 'skip') editBrief(br => recordPair(br, { outcome, a: sideOf(a), b: sideOf(b), ...(why?.length ? { why } : {}), ...(otherGood?.length ? { otherGood } : {}) }));
+      // AB13: the optional A / B attribute picks land at the SAME boundary as the overall vote (never for Skip), as soft +1 evidence on the preferred value only
+      if (a && b && outcome !== 'skip' && rel?.length) for (const x of rel) this.setThumb!((x.side === 'A' ? a : b).id, x.attr, x.elements, 1);
       return drawFor(r.next);
     },
     different() { s = { ...s, current: undefined }; return drawFor({ type: 'fresh' }); },

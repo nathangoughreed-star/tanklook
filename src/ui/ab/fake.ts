@@ -108,7 +108,7 @@ export function createFakeEngine(store: Store, opts: () => VerdictOpts = () => (
     rebase() { s.baseRev = store.rev; s.current = undefined; },
     restart() { const scope = s.scope; s = fresh(scope); },
     next() { const c = s.current; const a = c && recs.get(c.aId), b = c && recs.get(c.bId); return a && b ? { ok: true, a, b } : nextFor(); },
-    choose(outcome: Outcome, why?: ReasonKey[], otherGood?: ReasonKey[]) {
+    choose(outcome: Outcome, why?: ReasonKey[], otherGood?: ReasonKey[], _rel?: unknown) {
       const cur = s.current; if (!cur) return nextFor();
       const a = recs.get(cur.aId)!, b = recs.get(cur.bId)!, winner = outcome === 'A' ? a : outcome === 'B' ? b : undefined, before = s.championId;
       const cmp: Comparison = { id: `cmp${s.comparisons.length + 1}`, aId: a.id, bId: b.id, type: cur.type, outcome, ...(why?.length ? { why } : {}), ...(otherGood?.length ? { otherGood } : {}), ...(before ? { championBefore: before } : {}), at: Date.now() };

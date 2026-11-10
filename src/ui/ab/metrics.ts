@@ -12,6 +12,7 @@ export type MetricEvent =
   | { k: 'keep'; t: number; target: string; locked: boolean; n: number }
   | { k: 'freeze'; t: number; tab: string; n: number }
   | { k: 'thumb'; t: number; attr: string; v: 1 | -1 | 0; n: number }
+  | { k: 'rel'; t: number; n: number; attrs: string[] }
   | { k: 'history'; t: number; op: 'open' | 'bringBack' | 'setFavourite' | 'import' }
   | { k: 'miy'; t: number; rounds: number }
   | { k: 'close'; t: number; adopted: boolean; rounds: number };

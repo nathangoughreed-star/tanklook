@@ -89,6 +89,21 @@ export function thumbBonus(m: ThumbMap | undefined, S: TankSetup, facts: Candida
   }
   return Math.max(-0.5, Math.min(0.5, v));
 }
+// ---------------------------------------------------------------------------------------------------------------- AB13: A / No opinion / B (replaces the thumbs matrix)
+/** One optional comparison row the person staged before the overall vote: which side's VALUE of the attribute appeals more. Absent = no opinion (never dislike, never equal). */
+export type RelSide = 'A' | 'B';
+export type RelPicks = Partial<Record<AttrKey, RelSide>>;
+/** The attributes worth a comparison row: those whose value differs between the two designs (same text AND same parts = no row). */
+export function differingAttrs(a: readonly AttrValue[], b: readonly AttrValue[]): AttrKey[] { return a.filter((x, i) => b[i] && !sameValue(x, b[i])).map(x => x.key); }
+/** Staged picks -> what the engine records at the vote: the PREFERRED side's value only (a soft +1 evidence on that value). The other side's value gets nothing: no dislike, no ban, no lock. Picks for attributes that do not differ are dropped. */
+export function relEvidence(p: RelPicks | undefined, a: readonly AttrValue[], b: readonly AttrValue[]): { attr: AttrKey; elements: string[]; side: RelSide }[] {
+  if (!p) return []; const diff = new Set(differingAttrs(a, b)), out: { attr: AttrKey; elements: string[]; side: RelSide }[] = [];
+  for (const k of ATTRS.map(x => x.key)) { const s = p[k]; if (!s || !diff.has(k)) continue; const v = (s === 'A' ? a : b).find(x => x.key === k); if (v) out.push({ attr: k, elements: v.elements, side: s }); }
+  return out;
+}
+/** The attributes the Combine path can carry from one design to the other (the five tabs). Others get no "Try ... in ..." button. */
+export const COMBINE_ATTR_TAB: Partial<Record<AttrKey, 'tank' | 'animals' | 'plants' | 'hardscape' | 'substrate'>> = { tank: 'tank', stocking: 'animals', plants: 'plants', hardscape: 'hardscape', substrate: 'substrate' };
+
 /** The learner's tags an attribute can speak for (explore/aspects.ts vocabulary). An empty list = only the ranking nudge applies (no tag exists for it, and none is invented). */
 export const ATTR_TAGS: Record<AttrKey, readonly AspectTag[]> = {
   tank: [], stocking: ['species', 'behavior', 'size', 'number', 'visibility'], hardscape: ['layout'], background: [], substrate: [], plants: ['plants', 'natural'], lighting: [], filtration: [], heating: [], stand: [],

@@ -14,7 +14,7 @@ import { headline } from '../checksStrip';
 import { layerOf, LIBRARY } from '../../scene/items';
 import { getSpecies } from '../../data/species';
 import { locksOf, rosterMet } from '../../scene/locks';
-import { ATTRS, attrValues, heldState, sameValue, thumbOf, type AttrKey, type AttrLock, type AttrValue } from '../../scene/attrs';
+import { ATTRS, COMBINE_ATTR_TAB, attrValues, differingAttrs, heldState, relEvidence, type AttrKey, type AttrLock, type AttrValue, type RelPicks } from '../../scene/attrs';
 import { foreignOf, releasePieces, holdAttr, releaseAttr, ROLE_LABEL, KEEP_MODES, acceptPlan, differs, figText, isKept, keepForNowLabel, keepFromRecord, makePlan, metricsOf, roleOf, toggleReason, championConflicts, type KeepTarget, type Plan } from './logic';
 import type { Store } from '../../scene/store';
 import type { Viewer } from '../../render/viewer';
@@ -33,7 +33,7 @@ export interface AbUI { open(scope?: Tab[]): void; close(): void; isOpen(): bool
 export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine: AbEngine, deps: AbDeps): AbUI {
   const root = document.createElement('aside');
   root.className = 'abdock'; root.hidden = true; root.setAttribute('aria-label', 'Discover'); (document.getElementById('view') ?? document.body).append(root);
-  let result: PairResult | undefined, busy = false, pending: { outcome: Outcome; why: ReasonKey[]; other: ReasonKey[] } | undefined, note = '', side: 'A' | 'B' = 'A', sheets = new Set<string>(), proposal: CombineProposal | undefined, panelOpen = false, shownKey = '';
+  let result: PairResult | undefined, busy = false, pending: { outcome: Outcome; why: ReasonKey[]; other: ReasonKey[] } | undefined, note = '', side: 'A' | 'B' = 'A', sheets = new Set<string>(), proposal: CombineProposal | undefined, panelOpen = false, shownKey = '', rel: RelPicks = {};
   let histOpen = false, histPage = 0, detail: string | undefined, plan: (Plan & { adaptNote?: string }) | undefined, importTab: Tab | undefined, resume = false, rid = 0;
   const modes = new Map<string, RosterMode>(); let sugNo = '', adopted = false;
   const metrics = createMetrics(), DEBUG = new URLSearchParams(location.search).has('debug'), rounds = () => engine.session().comparisons.length;
@@ -54,7 +54,7 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
     viewer?.showPair(null); viewer?.setReserve(0); shownKey = ''; frozenNow(false);
     confirmLock = undefined;
     store.persistBase = undefined;
-    root.hidden = true; root.innerHTML = ''; result = undefined; plan = undefined; detail = undefined; pending = undefined; proposal = undefined; panelOpen = false; rid++;
+    root.hidden = true; root.innerHTML = ''; rel = {}; result = undefined; plan = undefined; detail = undefined; pending = undefined; proposal = undefined; panelOpen = false; rid++;
     if (was) { const l = lockLine(); if (l) deps.status(l); }
   };
   store.subscribe(kind => { if (root.hidden || kind === 'view' || kind === 'select') return; if (kind === 'load') { close(); return; } syncScope(); if (panelOpen && !busy) draw(); });   // another project was opened: Discovery ends   // the menus' shuffle switches are the scope
@@ -62,13 +62,17 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
   // ------------------------------------------------------------------------------------------------ engine plumbing
   const look = (fn: () => PairResult) => {   // paint "Looking…" first: the engine is synchronous
     busy = true; note = ''; draw(); const my = ++rid;
-    setTimeout(() => { if (my !== rid || root.hidden) return; try { result = fn(); } catch (e) { console.error(e); result = { ok: false, conflicts: ['Discovery could not run on this design.'], relaxations: [] }; } busy = false; side = 'A'; sheets = new Set(); proposal = undefined; if (result?.ok) metrics.shown(); draw(); }, 30);
+    setTimeout(() => { if (my !== rid || root.hidden) return; try { result = fn(); } catch (e) { console.error(e); result = { ok: false, conflicts: ['Discovery could not run on this design.'], relaxations: [] }; } busy = false; side = 'A'; rel = {}; sheets = new Set(); proposal = undefined; if (result?.ok) metrics.shown(); draw(); }, 30);
   };
   const commit = (): PairResult | undefined => {   // an A / B choice waits for its optional reasons; anything that moves on commits it
     if (!pending) return undefined; const p = pending; pending = undefined;
     const type = engine.session().current?.type ?? 'champion', ms = metrics.elapsed();
     metrics.log({ k: 'compare', t: Date.now(), type, outcome: p.outcome, ms, ...(p.why.length ? { why: [...p.why] } : {}), n: rounds() + 1 });
-    return engine.choose(p.outcome, p.why.length ? p.why : undefined, p.other.length ? p.other : undefined);
+    // AB13: the staged A / B attribute picks go with the overall vote, never with Skip; the staging is dropped either way
+    const picks = p.outcome === 'skip' ? [] : (() => { const a = recOf('A'), b = recOf('B'); return a && b ? relEvidence(rel, attrValues(a.snapshot, a.facts), attrValues(b.snapshot, b.facts)) : []; })();
+    rel = {};
+    if (picks.length) metrics.log({ k: 'rel', t: Date.now(), n: picks.length, attrs: picks.map(x => `${x.attr}:${x.side}`) });
+    return engine.choose(p.outcome, p.why.length ? p.why : undefined, p.other.length ? p.other : undefined, picks.length ? picks : undefined);
   };
   const nextPair = (out?: Outcome) => { if (out && out !== 'A' && out !== 'B') pending = { outcome: out, why: [], other: [] }; look(() => commit() ?? engine.next()); };
   const syncScope = () => { const s = engine.session(); for (const t of TABS) { const on = discoverIsOn(store.tank, t); if (on !== s.scope.includes(t)) engine.setScope(t, on); } };
@@ -114,18 +118,29 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
     const m = metricsOf(r.facts), role = roleOf(engine.session(), r.id);
     return `<div class="abfcell"><button type="button" class="abfact${side === w ? ' cur' : ''}" data-act="side" data-side="${w}" title="${esc(r.facts.title)}: show this one${'' }"><b class="abk ${role}">${w}${role === 'favourite' ? ' ★' : ''}</b> ${role === 'favourite' || role === 'challenger' ? `<span class="abrl">${ROLE_LABEL[role]}</span>` : ''}<span>New spend <b>${esc(m.spend)}</b></span><span>Upkeep <b>${esc(m.minutes)}</b></span><span>${esc(m.difficulty)}</span></button><button type="button" class="abmiy" data-act="miy" data-id="${esc(r.id)}" title="Use ${w} as your working design. You can still edit it; nothing is locked.">Make ${w} mine</button></div>`;
   };
-  // AB7: every attribute of the two designs side by side, each value with thumbs (soft guidance) and a lock (the same locks as every Keep / Unlock control)
-  const attrCell = (v: AttrValue, w: 'A' | 'B', who: string, rec: CandidateRecord) => {
-    const hs = heldState(store.effTank, rec.snapshot, v.lock), held = hs === 'held', other = hs === 'other', t = engine.thumbs ? thumbOf(engine.thumbs(), v.key, v.elements) : 0;
-    const th = engine.setThumb ? `<button type="button" class="abthumb${t === 1 ? ' on' : ''}" data-act="thumb" data-attr="${v.key}" data-side="${w}" data-v="1" aria-pressed="${t === 1}" aria-label="Thumbs up: I like ${esc(v.label.toLowerCase())} like ${who}" title="Thumbs up: like this (a hint, never a rule)">&#128077;</button><button type="button" class="abthumb${t === -1 ? ' on dn' : ''}" data-act="thumb" data-attr="${v.key}" data-side="${w}" data-v="-1" aria-pressed="${t === -1}" aria-label="Thumbs down: not ${esc(v.label.toLowerCase())} like ${who}" title="Thumbs down: less of this (a hint, never a rule)">&#128078;</button>` : '';
-    return `<div class="abacell" data-side="${w}"><span class="abav"><b class="abk">${who}</b> ${esc(v.text)}</span><span class="abactl">${th}<button type="button" class="abalock${held ? ' on' : ''}" data-act="alock" data-attr="${v.key}" data-side="${w}" aria-pressed="${held}"${v.lock ? '' : ' disabled'} aria-label="${held ? 'Unlock' : other ? 'Replace the lock with' : 'Lock'} ${esc(v.label.toLowerCase())}${other ? ` as ${who} has it` : ''}" title="${v.lock ? (held ? 'Locked: fixed for every remaining design. Press to unlock.' : other ? 'A different value is locked. Press to lock this one instead (it replaces the old lock).' : 'Lock: keep this fixed for every remaining design') : 'Nothing to lock here'}">${held ? '&#128274;' : '&#128275;'}</button></span></div>`;
+  // AB13: every attribute of the two designs. Differing ones get ONE optional A / No opinion / B choice (staged, recorded with the overall vote), a lock per side (unchanged) and, where Combine can carry it, "Try B's plants in A".
+  const lockBtn = (v: AttrValue, w: 'A' | 'B', who: string, rec: CandidateRecord) => {
+    const hs = heldState(store.effTank, rec.snapshot, v.lock), held = hs === 'held', other = hs === 'other';
+    return `<button type="button" class="abalock${held ? ' on' : ''}" data-act="alock" data-attr="${v.key}" data-side="${w}" aria-pressed="${held}"${v.lock ? '' : ' disabled'} aria-label="${held ? 'Unlock' : other ? 'Replace the lock with' : 'Lock'} ${esc(v.label.toLowerCase())}${other ? ` as ${who} has it` : ''}" title="${v.lock ? (held ? 'Locked: fixed for every remaining design. Press to unlock.' : other ? 'A different value is locked. Press to lock this one instead (it replaces the old lock).' : 'Lock: keep this fixed for every remaining design') : 'Nothing to lock here'}">${held ? '&#128274;' : '&#128275;'}</button>`;
+  };
+  const attrCell = (v: AttrValue, w: 'A' | 'B', who: string, rec: CandidateRecord) => `<div class="abacell" data-side="${w}"><span class="abav"><b class="abk">${who}</b> ${esc(v.text)}</span><span class="abactl">${lockBtn(v, w, who, rec)}</span></div>`;
+  const relSeg = (k: AttrKey, label: string) => {
+    const cur = rel[k], b = (s: 'A' | 'B' | '', t: string) => `<button type="button" class="${(cur ?? '') === s ? 'on' : ''}" data-act="rel" data-attr="${k}" data-v="${s}" aria-pressed="${(cur ?? '') === s}" title="${s ? `${label}: prefer ${s} (optional, a hint only; recorded when you vote)` : `${label}: no opinion`}">${t}</button>`;
+    return `<div class="abrel" role="group" aria-label="${esc(label)}: which do you prefer?">${b('A', 'A')}${b('', 'No opinion')}${b('B', 'B')}</div>`;
+  };
+  const tryBtns = (k: AttrKey, label: string, a: CandidateRecord, b: CandidateRecord) => {
+    const tab = COMBINE_ATTR_TAB[k]; if (!engine.combine || !tab) return '';
+    const on = discoverIsOn(store.effTank, tab), w = label.toLowerCase();
+    return `<div class="abtry"><button type="button" data-act="combine" data-donor="${esc(b.id)}" data-target="${esc(a.id)}" data-tab="${tab}"${on ? '' : ' disabled'} title="Make a new design: A with B's ${esc(w)}. You approve it first; nothing is locked.">Try B's ${esc(w)} in A</button><button type="button" data-act="combine" data-donor="${esc(a.id)}" data-target="${esc(b.id)}" data-tab="${tab}"${on ? '' : ' disabled'} title="Make a new design: B with A's ${esc(w)}. You approve it first; nothing is locked.">Try A's ${esc(w)} in B</button></div>`;
   };
   const attrHtml = (a: CandidateRecord, b: CandidateRecord) => {
-    const va = attrValues(a.snapshot, a.facts), vb = attrValues(b.snapshot, b.facts);
-    return `<section class="abattrs" aria-label="Every attribute of the tank"><h4>Every attribute <small>Thumbs are hints for the next designs. Lock keeps it fixed from now on; unlock any time.</small></h4>${ATTRS.map((at, i) => {
-      const x = va[i], y = vb[i], same = sameValue(x, y);
-      return `<div class="abattr${same ? '' : ' differs'}" data-attr="${at.key}"><div class="abal">${at.label}${same ? '' : ' <small>differs</small>'}</div>${same ? attrCell(x, 'A', 'A + B', a) : attrCell(x, 'A', 'A', a) + attrCell(y, 'B', 'B', b)}</div>`;
-    }).join('')}</section>`;
+    const va = attrValues(a.snapshot, a.facts), vb = attrValues(b.snapshot, b.facts), diff = new Set(differingAttrs(va, vb));
+    const rows = ATTRS.filter(at => diff.has(at.key)).map(at => {
+      const i = ATTRS.findIndex(x => x.key === at.key), x = va[i], y = vb[i], n = (rel[at.key] ? `<p class="abrelnote" role="status">${at.label}: prefer ${rel[at.key]}.</p>` : '');
+      return `<div class="abattr differs" data-attr="${at.key}"><div class="abal">${at.label}</div>${attrCell(x, 'A', 'A', a)}${relSeg(at.key, at.label)}${attrCell(y, 'B', 'B', b)}${n}${tryBtns(at.key, at.label, a, b)}</div>`;
+    }).join('');
+    const same = ATTRS.filter(at => !diff.has(at.key)).map(at => { const i = ATTRS.findIndex(x => x.key === at.key); return `<div class="abattr" data-attr="${at.key}"><div class="abal">${at.label}</div>${attrCell(va[i], 'A', 'A + B', a)}</div>`; }).join('');
+    return `<section class="abattrs" aria-label="What differs between A and B"><h4>What stood out? <small>Optional: pick the side you prefer for any part (a hint for the next designs, recorded when you vote; Skip records nothing). Lock keeps a part fixed from now on. "Try" makes a new design for you to approve.</small></h4>${rows || '<p class="hint">A and B are the same in every part that can be compared.</p>'}${same ? `<details class="absame"><summary>Same in both (${ATTRS.length - diff.size})</summary>${same}</details>` : ''}</section>`;
   };
   const sideBlock = (r: CandidateRecord, other: CandidateRecord, w: 'A' | 'B') => `<section class="abside${side === w ? ' cur' : ''}" data-side="${w}" data-id="${esc(r.id)}">
     <h3>${w}${roleOf(engine.session(), r.id) === 'favourite' ? ' ★' : ''} ${esc(r.facts.title)} <small>${esc(r.facts.habitat)}${r.facts.gallons != null ? ` · ${r.facts.gallons} gal` : ''}</small></h3>
@@ -294,13 +309,10 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
         }, 30);
         break;
       }
-      case 'combine-ok': { const p = proposal; if (!p) break; proposal = undefined; result = engine.acceptCombine!(p); side = 'A'; metrics.shown(); note = `Combined: a new design with the ${TAB_LABEL[p.tab].toLowerCase()} from the other one. Pick it to make it your favourite. Both originals are unchanged in History.`; panelOpen = false; draw(); break; }
+      case 'combine-ok': { const p = proposal; if (!p) break; proposal = undefined; result = engine.acceptCombine!(p); side = 'A'; rel = {}; metrics.shown(); note = `Combined: a new design with the ${TAB_LABEL[p.tab].toLowerCase()} from the other one. Pick it to make it your favourite. Both originals are unchanged in History.`; panelOpen = false; draw(); break; }
       case 'combine-no': proposal = undefined; note = ''; draw(); break;
-      case 'thumb': {   // soft guidance: toggle, up / down exclusive; the engine remembers the value and nudges the ranking, never filters
-        const rec = recOf(el.dataset.side as 'A' | 'B'); if (!rec || !engine.setThumb) break;
-        const v = attrValues(rec.snapshot, rec.facts).find(x => x.key === el.dataset.attr) as AttrValue | undefined; if (!v) break;
-        const cur = thumbOf(engine.thumbs?.(), v.key, v.elements), want = Number(el.dataset.v) as 1 | -1;
-        engine.setThumb(rec.id, v.key as AttrKey, v.elements, cur === want ? 0 : want); metrics.log({ k: 'thumb', t: Date.now(), attr: v.key, v: cur === want ? 0 : want, n: rounds() }); draw(); break;
+      case 'rel': {   // staged only: nothing reaches the engine until the overall vote
+        const k = el.dataset.attr as AttrKey, v = el.dataset.v as 'A' | 'B' | ''; if (v) rel = { ...rel, [k]: v }; else { const { [k]: _x, ...rest } = rel; rel = rest; } draw(); break;
       }
       case 'alock': {   // the same lock / unlock as the Keep buttons and the menus
         const rec = recOf(el.dataset.side as 'A' | 'B'); if (!rec) break;
@@ -370,7 +382,7 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
     isOpen: () => !root.hidden,
     close: () => close(),
     open(scope) {
-      adopted = false; engine.open(scope); metrics.log({ k: 'open', t: Date.now(), resumed: engine.session().comparisons.length > 0 }); histPage = 0; histOpen = false; detail = undefined; plan = undefined; pending = undefined; note = ''; sheets = new Set(); result = undefined; busy = false;
+      rel = {}; adopted = false; engine.open(scope); metrics.log({ k: 'open', t: Date.now(), resumed: engine.session().comparisons.length > 0 }); histPage = 0; histOpen = false; detail = undefined; plan = undefined; pending = undefined; note = ''; sheets = new Set(); result = undefined; busy = false;
       proposal = undefined; panelOpen = false; shownKey = ''; if (!scope) syncScope();
       confirmLock = undefined; store.persistBase = store.snapshotAll().scene; frozenNow(true); root.hidden = false; resume = engine.isStale(); draw();
       if (!resume) look(() => engine.next());

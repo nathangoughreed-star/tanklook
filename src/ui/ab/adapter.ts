@@ -29,7 +29,8 @@ export interface AbEngine {
   /** the pair on screen, or a new one when none is */
   next(): PairResult;
   /** record the choice and return the next pair */
-  choose(outcome: Outcome, why?: ReasonKey[], otherGood?: ReasonKey[]): PairResult;
+  /** `rel`: AB13 optional per-attribute A / B picks, recorded at this same moment (soft evidence on the preferred value only); never recorded for Skip. */
+  choose(outcome: Outcome, why?: ReasonKey[], otherGood?: ReasonKey[], rel?: { attr: AttrKey; elements: string[]; side: 'A' | 'B' }[]): PairResult;
   /** Explore Something Different */
   different(): PairResult;
   /** a shuffle switch: on = Discovery may change the tab, off = freeze it at the champion's (or the project's) values */
