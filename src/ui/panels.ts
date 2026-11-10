@@ -168,8 +168,9 @@ export function attachPanels(store: Store, viewer: Viewer) {
   store.subscribe(syncRoom); syncRoom();
   $('redo').onclick = () => store.redo();
   // New and Open… are two separate menus of the start chooser (below): New = scratch + deals, Open… = starter + saved tanks
-  $('newScene').onclick = () => { welcomeFirst = false; lastTank = false; startMode.open(stepForMenu('new')); }; // SL1: the one start screen, at its New Setup step (closable: a project is open)
-  $('openScene').onclick = () => { welcomeFirst = false; lastTank = false; startMode.open(stepForMenu('open')); };
+  $('newScene').onclick = () => { welcomeFirst = false; startMode.open(stepForMenu('new')); }; // SL1: the one start screen, at its New Setup step (closable: a project is open)
+  $('openScene').onclick = () => { welcomeFirst = false; startMode.open(stepForMenu('open')); };
+  $('startScene').onclick = () => { welcomeFirst = false; startMode.open(stepForMenu('open', 'starters')); }; // SL2: the left menu's own Starter / Example button
   /** An empty tank and an empty brief (lane NW1). Warns first when the current tank has something to lose and is not saved: Save / Start new / Cancel (false = cancelled). Undo brings it back. */
   const newEmptyTank = async (newKind: SetupKind = 'freshwater', room = false) => { // the Sandbox card's Tank type (lane S252): applied to the empty tank it starts
     // room (lane ST1): the Sandbox starts as an empty room with the person (the default environment, its own camera); the tank picker puts the tank in
@@ -230,13 +231,12 @@ export function attachPanels(store: Store, viewer: Viewer) {
   const when = (t: number) => new Date(t).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
   function renderLib() {
     const list = listLib(), box = $<HTMLDivElement>('libList');
-    const last = lastTank && startMode.isOpen() ? `<div class="libcard"><button class="libopen" data-last="1" title="Keep working on the tank you had open last time"><span class="nothumb">Last time</span><b>Continue your last tank</b><span class="hint">${esc(G().name || 'Untitled')}</span></button></div>` : '';
-    box.innerHTML = last + (list.length ? list.map(e =>
+    box.innerHTML = (list.length ? list.map(e =>
       `<div class="libcard"><button class="libopen" data-lib="${esc(e.id)}" title="Open “${esc(e.name)}”">` +
       (e.thumb ? `<img src="${esc(e.thumb)}" alt="" loading="lazy">` : '<span class="nothumb">No picture</span>') + `<b>${esc(e.name)}</b>` +
       `<span class="hint">${esc(when(e.saved))}${e.tanks > 1 ? ' · 2 tanks' : ''}</span></button>` +
       `<button class="libdel" data-libdel="${esc(e.id)}" title="Delete “${esc(e.name)}” from this browser" aria-label="Delete ${esc(e.name)}">×</button></div>`).join('')
-      : last ? '' : `<p class="hint" data-empty="${libraryState(list.length)}">${EMPTY_LIBRARY}</p>`);
+      : `<p class="hint" data-empty="${libraryState(list.length)}">${EMPTY_LIBRARY}</p>`);
   }
   // Examples (lane F): bundled scenes, opened like a file (a new, unsaved tank; Undo brings the previous one back)
   // The scene files are a lazy chunk (lane EF3): fetched once the list's pictures are in (on a slow line they would
@@ -353,14 +353,19 @@ export function attachPanels(store: Store, viewer: Viewer) {
   void import('./suggest').then(m => { suggestPanel = m.attachSuggest(store, viewer, status, openOwned); }); // lane C8: Suggest a setup
   void import('./infeasibleCard').then(m => m.attachCompare(store, status)); // lane GV7: compromise slots fill as they show; Use this / Compare (split view, money and care first on the tabs)
   void import('./briefBar').then(m => { m.attachBriefBar(store, { suggest: () => suggestPanel?.open(), owned: () => openOwned(), limits: openLimits, report: () => void import('./report').then(m => m.openReport()) }); }); // lane U3: the setup brief bar, shown in every entry point
-  /** SL1: every load opens the three choices, mandatory (Nathan 2026-11-09: "Every visit"). A restored tank (autosave) is real work, so the choices
-   *  then go through the ask-first path (welcomeFirst false) and Open Existing offers "Continue your last tank" at the top. */
-  let lastTank = false;
-  const showStart = (restored = false) => { welcomeFirst = !restored; lastTank = restored; startMode.open('home', true); };
+  /** SL2: the start screen is for a first visit (or an unreadable save, with `msg`); it is mandatory there and the empty project needs no replace warning. */
+  const showStart = (msg?: string) => { welcomeFirst = true; startMode.open('home', true); if (msg) { const m = $('startMsg'); m.textContent = msg; m.hidden = false; } };
+  /** SL2: a return visit. The design and cameras are the autosaved scene (already loaded); the open section and a Discovery in progress come back from `tanklook.ui`. */
+  const resume = () => {
+    try {
+      const u = JSON.parse(localStorage.getItem('tanklook.ui') ?? '{}') as { sec?: string; disc?: boolean };
+      if (u.sec) openSec(u.sec);
+      if (u.disc) openDiscovery({ from: 'resume' });
+    } catch { /* storage blocked: the panel starts closed */ }
+  };
   void import('./stockPlan').then(m => m.attachStockPlan(store, viewer, status, $('startAnimal'))); // lane P5: the stocking screen (path 1) and the fork card; loaded after start-up (it pulls in the tank-fit engine, whose imports must not run before starter.ts's)
   $('libList').onclick = async e => {
     const t = e.target as HTMLElement, del = t.closest<HTMLButtonElement>('[data-libdel]'), op = t.closest<HTMLButtonElement>('[data-lib]');
-    if (t.closest('[data-last]')) { lastTank = false; startMode.done(); return; } // SL1: keep the restored tank
     if (del) {
       const id = del.dataset.libdel!, ent = listLib().find(x => x.id === id);
       if (!ent || !confirm(`Delete “${ent.name}” from this browser? This can’t be undone.`)) return;
@@ -1294,7 +1299,7 @@ Cancel, then change the name, to keep both.`)) return;
   // "How to use" stays closed: the start menu names the main gestures and points to it (audit #4 / #8, 2026-10-14)
   // panel sections start collapsed on every load (Nathan 2026-10-09); whether the panel is hidden is a per-viewer preference
   const secs = [...document.querySelectorAll<HTMLDetailsElement>('details.sec')];
-  const saveUI = () => { try { localStorage.setItem('tanklook.ui', JSON.stringify({ hidden: $('app').classList.contains('collapsed') })); } catch { /* ignore */ } };
+  const saveUI = () => { try { localStorage.setItem('tanklook.ui', JSON.stringify({ hidden: $('app').classList.contains('collapsed'), sec: secs.find(x => x.open)?.dataset.sec, disc: !!store.persistBase })); } catch { /* ignore */ } }; // SL2: sec + disc are what a return visit reopens
   try {
     const ui = JSON.parse(localStorage.getItem('tanklook.ui') ?? '{}') as { hidden?: boolean };
     $('app').classList.toggle('collapsed', !!ui.hidden);
@@ -1349,6 +1354,7 @@ Cancel, then change the name, to keep both.`)) return;
   // moved only while their menu (Hardscape, Plants, Animals) is open (pointer.ts), so closing it drops that selection too.
   // The piece editor (#itemEdit) moves into whichever of Hardscape / Plants is open.
   for (const d of secs) d.addEventListener('toggle', () => {
+    queueMicrotask(saveUI);
     const scape = d.dataset.sec === 'hardscape' || d.dataset.sec === 'plants';
     if (d.open) { for (const o of secs) if (o !== d && o.open) o.open = false; if (scape) d.append($('itemEdit')); }
     else if (scape && store.selectedItem && scapeSec(store.selectedItem.kind) === d.dataset.sec) store.selectItem(null);
@@ -2476,19 +2482,19 @@ Cancel, then change the name, to keep both.`)) return;
     if (kind === 'select') return;
     clearTimeout(saveTimer);
     saveTimer = window.setTimeout(() => {
-      store.saveLocal();
+      store.saveLocal(); saveUI();
       $('saveState').textContent = 'Autosaved';
     }, 400);
   });
 
   // flush a pending autosave when the tab closes or reloads
-  addEventListener('pagehide', () => { if (saveTimer) { clearTimeout(saveTimer); store.saveLocal(); } });
+  addEventListener('pagehide', () => { if (saveTimer) { clearTimeout(saveTimer); store.saveLocal(); } saveUI(); });
 
   demand = attachDemandPanel(store, $('demandPanel')); // lane KK: the three demand readouts at the top of Quick Setup
   attachTechMenu(store, $('techMenu'), { profile: () => demand?.profile(), pickSump: done => openSumpPicker?.(done), openEquipment: openOwned }); // lane TM: the Tech section (Lighting inside it)
   renderResults();
   sync();
-  return { status, showStart, openShared };
+  return { status, showStart, resume, openShared };
 }
 
 /** Padlock icon: closed shackle (views move together) or swung open (each view on its own). */

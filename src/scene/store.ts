@@ -382,6 +382,13 @@ export class Store {
   saveLocal(storage: Storage | undefined = globalThis.localStorage) {
     try { storage?.setItem(STORAGE_KEY, this.persistText()); } catch { /* storage full or blocked: autosave is best-effort */ }
   }
+  /** SL2: like loadLocal, but tells a missing save (first visit) from a corrupt or incompatible one (error = the reason, shown on the start screen). */
+  static loadLocalChecked(storage: Storage | undefined = globalThis.localStorage): { scene: Scene | null; error?: string } {
+    let txt: string | null = null;
+    try { txt = storage?.getItem(STORAGE_KEY) ?? null; } catch { return { scene: null }; }
+    if (!txt) return { scene: null };
+    try { return { scene: parseScene(txt).scene }; } catch (e) { return { scene: null, error: e instanceof Error ? e.message : 'unreadable' }; }
+  }
   static loadLocal(storage: Storage | undefined = globalThis.localStorage): Scene | null {
     try {
       const txt = storage?.getItem(STORAGE_KEY);

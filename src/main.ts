@@ -31,7 +31,7 @@ const view = document.getElementById('view')!;
 if (!webglAvailable()) {
   view.innerHTML = '<p class="nojs">Your browser or device has WebGL turned off, so the tank can\'t be drawn. Try a current Chrome, Edge, Firefox or Safari.</p>';
 } else {
-  const restored = Store.loadLocal();
+  const { scene: restored, error: saveError } = Store.loadLocalChecked(); // SL2: a corrupt save is told apart from no save
   const store = new Store(restored ?? undefined);
   const viewer = new Viewer(document.getElementById('c') as HTMLCanvasElement, view, store);
   // pieces move only while their menu (Hardscape, or Plants for plants and corals) is open, animals only while Animals is,
@@ -60,5 +60,7 @@ if (!webglAvailable()) {
     void ui.openShared(h); return true;
   };
   addEventListener('hashchange', openLink); // a link pasted into a tab that already has the app open
-  if (!openLink()) { ui.showStart(!!restored); } // SL1: the start screen on every visit (Nathan 2026-11-09); a restored tank is under Open Existing
+  // SL2 (Nathan 2026-11-10, replaces SL1's "every visit"): a return visit reopens where the last session stopped (design, camera, open section, Discovery);
+  // only a first visit, or a save that cannot be read (with a message), shows the start screen
+  if (!openLink()) { if (restored) ui.resume(); else ui.showStart(saveError ? `Your last saved tank could not be opened (${saveError}). Start a new one, or open a saved tank or file.` : undefined); }
 }
