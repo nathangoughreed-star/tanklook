@@ -116,6 +116,8 @@ export interface RosterPlan {
   focal?: string;
   /** why the roster is shorter than 2 kinds (or empty): the generator's own reason, never left unexplained */
   why?: string;
+  /** DQ5: the stocking approach this roster follows (set by sizeTiers `stockTier`): compact, school, community, mixed-zone or open */
+  philosophy?: 'compact' | 'school' | 'community' | 'mixed-zone' | 'open';
 }
 const WELFARE_P = defaultProfile(), plans = new Map<string, RosterPlan>(), WELFARE = new Map<string, string | undefined>();
 const rosterKey = (r: readonly AnimalCount[]) => r.map(x => `${x.species}${x.n}`).sort().join(',');

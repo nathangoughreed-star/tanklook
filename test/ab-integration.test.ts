@@ -126,7 +126,9 @@ describe('(b) equipment stays derived', () => {
     const t = own(project(), 5), b = setEquipment(B0, 'heater', { pick: 'care' });
     const { s } = setup(t, b), r = nextPair({ tank: t, rev: 1 }, b, s, look, { next: 'champion' });
     if (!r.ok) throw new Error('no pair');
-    for (const c of [r.a, r.b]) { expect(c.facts.reused).not.toContain('heater'); expect(c.facts.toBuy.some(l => l.key === 'heater')).toBe(true); }
+    // DQ5: a size-tier roster can be a cool-water one that needs no heater, so "a purchase is added" holds for the candidates that need heat (at least one), and the too-small heater is credited in none
+    for (const c of [r.a, r.b]) expect(c.facts.reused).not.toContain('heater');
+    expect([r.a, r.b].some(c => c.facts.toBuy.some(l => l.key === 'heater'))).toBe(true);
   }, 120000);
 });
 
