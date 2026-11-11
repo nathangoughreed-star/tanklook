@@ -26,11 +26,11 @@ function sound(roster: AnimalCount[], tank: TankModel): boolean {
 const GROWTH: number[][] = [[1], [2, 1.5], [3, 2.5, 2, 1.5]];
 const KINDS = [2, 3, 4];
 const memo = new Map<string, RosterPlan>();
-export function stockTier(a: Archetype, tank: TankModel, tier: number): RosterPlan {
-  const t = Math.max(0, Math.min(2, tier)), k = `${a.id}|${tank.id}|${t}`, hit = memo.get(k);
+export function stockTier(a: Archetype, tank: TankModel, tier: number, exclude?: ReadonlySet<string>): RosterPlan {
+  const t = Math.max(0, Math.min(2, tier)), k = `${a.id}|${tank.id}|${t}${exclude?.size ? `|x${[...exclude].sort().join(',')}` : ''}`, hit = memo.get(k);
   if (hit) return { ...hit, roster: hit.roster.map(r => ({ ...r })) };
-  let plan = rosterPlan(a, tank, KINDS[t]);
-  if (!plan.roster.length && t > 0) plan = rosterPlan(a, tank);                                   // a look that cannot add kinds keeps the base roster
+  let plan = rosterPlan(a, tank, KINDS[t], exclude);
+  if (!plan.roster.length && t > 0) plan = rosterPlan(a, tank, 3, exclude);                       // a look that cannot add kinds keeps the base roster
   if (plan.roster.length && t > 0) {
     for (const m of GROWTH[t]) {
       const grown = plan.roster.map(r => ({ ...r, n: Math.max(r.n, Math.round(r.n * m)) }));

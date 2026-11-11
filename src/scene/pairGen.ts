@@ -24,6 +24,8 @@ import { LIVE_ONLY_LAYOUTS } from './quickArchetypes';
 import { finSensitive, withPlantMode } from './scapes';
 import { volume } from './physics';
 import { breadthOf, targetDistance, visuallyDistinct, type Breadth } from './breadth';
+import { SPECIES } from '../data/species';
+import { SIZE_LARGE_MM } from '../explore/constants';
 import { diffTouches } from './scope';
 import { dropPlants, splice, strongerLight, strugglingPlants, trimAnimals } from './combine';
 import { ARCHETYPES, type Archetype } from './archetypes';
@@ -58,7 +60,31 @@ export interface PairOpts {
   cache?: PairCache;
   /** DQ1 `?debug`: receives the per-candidate score breakdown of the pool the pair was chosen from, best first */
   scores?: (rows: ScoredRow[]) => void;
+  /** DQ2: receives the search's quality and latency numbers (diversity, yield, rejection reasons, stop reason, strategy) */
+  metrics?: (m: PoolMetrics) => void;
 }
+/** DQ2 instrumentation: what the bounded search did and how diverse its pool was. */
+export interface PoolMetrics {
+  type: Comparison['type']; ms: number;
+  /** why generation stopped: 'coverage' (enough distinct families and sizes), 'soft' / 'hard' (a deadline, with the coverage reached), 'exhausted' (no more sources) */
+  stop: 'coverage' | 'soft' | 'hard' | 'exhausted';
+  /** designs run through every check, designs that passed, pass rate */
+  tried: number; generated: number; yield: number;
+  /** usable (unseen, not blocked), then after near-duplicates and per-family caps are pruned */
+  usable: number; pooled: number; pruned: number;
+  families: number; sizeClasses: string[]; worlds: number; stockPatterns: string[];
+  looksTried: number; proposals: number; explores: number;
+  /** distance of the chosen pair (or challenger and favourite) and whether the two look different at a glance */
+  pairDistance?: number; pairDistinct?: boolean;
+  /** champion pairs: the challenger strategy used (improve / alternate / out-of-family) */
+  strategy?: Strategy;
+  rejections: Record<string, number>;
+  /** species ruled out BEFORE any roster was built (hard no-snails / no-shrimp / no-large-animals) */
+  excludedSpecies: number;
+  /** proposals skipped before any check because they held a prohibited animal */
+  preExcluded: number;
+}
+export type Strategy = 'improve' | 'alternate' | 'out-of-family';
 /** One candidate's score under the one policy (scorePolicy.ts), for the debug view. */
 export interface ScoredRow { id: string; title: string; chosen: boolean; breakdown: ScoreBreakdown }
 
@@ -72,10 +98,10 @@ export function liveWants(brief: Brief): Wants {
 
 interface Pending { rec: CandidateRecord; entry: Entry; tokens: string[]; source: 'propose' | 'explore'; world: string; sc: Scored }
 interface Rej { text: string; issues: Issue[]; relax: string[] }
-export interface PairCache { sig: string; pend: Pending[]; keys: Set<string>; round: number; looksDone: Set<string>; bigDone: Set<string>; rej: Rej[]; proposeDone: boolean; stats: { propose: number; explore: number; ms: number } }
+export interface PairCache { sig: string; pend: Pending[]; keys: Set<string>; round: number; looksDone: Set<string>; bigDone: Set<string>; rej: Rej[]; proposeDone: boolean; stats: { propose: number; explore: number; ms: number; tried: number; pre: number } }
 const SHARED = new Map<string, PairCache>();
 export const clearPairCache = () => SHARED.clear();
-const newCache = (sig: string): PairCache => ({ sig, pend: [], keys: new Set(), round: 0, looksDone: new Set(), bigDone: new Set(), rej: [], proposeDone: false, stats: { propose: 0, explore: 0, ms: 0 } });
+const newCache = (sig: string): PairCache => ({ sig, pend: [], keys: new Set(), round: 0, looksDone: new Set(), bigDone: new Set(), rej: [], proposeDone: false, stats: { propose: 0, explore: 0, ms: 0, tried: 0, pre: 0 } });
 
 /** DQ1: position (0-based) of the best-ranked Avoid look in the try order: inside the first generated designs, so the early stop cannot starve it */
 export const AVOID_SLOT = 2;
@@ -150,11 +176,12 @@ export function reconcileGear(orig: TankSetup, S: TankSetup, brief: Brief): Tank
   if (of.length) r.tech = keep('filter') ? withUnits(r.tech ?? structuredClone(ot!), 'filter', structuredClone(of)) : withUnits(r.tech ?? inferred(), 'filter', filterUnits(inferred()).map(u => ({ ...u, owned: false })));
   return r;
 }
-interface Ctx { noCo2?: boolean; prefs?: QuickPrefs; orig: TankSetup; brief: Brief; w: Wants; P: UserProfile; units: Units; now: number; scope: Tab[]; baseRev: number; sessionId: string; purpose: ProposalPurpose; parentId?: string; cache: PairCache; plan0?: ReturnType<typeof equipPlan> }
+interface Ctx { exclude?: ReadonlySet<string>; noCo2?: boolean; prefs?: QuickPrefs; orig: TankSetup; brief: Brief; w: Wants; P: UserProfile; units: Units; now: number; scope: Tab[]; baseRev: number; sessionId: string; purpose: ProposalPurpose; parentId?: string; cache: PairCache; plan0?: ReturnType<typeof equipPlan> }
 const drop = (c: Ctx, text: string, issues: Issue[] = [], relax: string[] = []) => { c.cache.rej.push({ text, issues, relax }); return null; };
 
 /** Run one design through every check; null = dropped (and counted for the no-solution explanation). */
 function ingest(c: Ctx, scene: TankSetup, label: string, source: Pending['source'], ids: { familyId?: string; archetypeId?: string; name?: string } = {}): Pending | null {
+  c.cache.stats.tried++;
   if (noLive(c.prefs)) scene = noLivePlants(scene);   // QP1: the hard "No live plants" exclusion: swap every plant that has an artificial form; passesHard below drops what still holds a living plant
   const { orig, brief } = c;
   const conf0 = confine(orig, scene, c.scope), fg = conf0 ? fitGear(conf0, { noCo2: c.noCo2 }) : undefined, conf = fg?.scene ?? null, fin = conf && reconcileGear(orig, conf, brief);
@@ -207,12 +234,23 @@ function ingest(c: Ctx, scene: TankSetup, label: string, source: Pending['source
 function fromPropose(c: Ctx, base: TankSetup, n: number): void {
   const t0 = performance.now(), round = c.cache.round;
   const d = propose(base, c.brief, { scope: c.scope, objective: 'explore' }, n, { variants: 3, seed: base.layout.seed + 7919 * round });
-  for (const p of d.proposals) { const s = previewProposal(base, p as DiscoveryProposal); const got = ingest(c, s, (p as DiscoveryProposal).source, 'propose'); if (got) { c.cache.pend.push(got); c.cache.stats.propose++; } }
+  for (const p of d.proposals) { const s = previewProposal(base, p as DiscoveryProposal); if (c.exclude?.size && s.fish.some(f => c.exclude!.has(f.species))) { c.cache.stats.pre++; continue; }   // DQ2 (I3): a variation holding a prohibited animal is skipped before the full check, never run through it
+      const got = ingest(c, s, (p as DiscoveryProposal).source, 'propose'); if (got) { c.cache.pend.push(got); c.cache.stats.propose++; } }
   if (d.noSolution) for (const i of d.noSolution.conflicts) c.cache.rej.push({ text: i.text, issues: [i], relax: i.relax ? [i.relax] : [] });
   if (d.noSolution) c.cache.rej.push({ text: 'no proposal passed', issues: [], relax: d.noSolution.relaxations });
   c.cache.stats.ms += performance.now() - t0;
 }
 
+/** DQ2 (I3): the species a HARD prohibition rules out, known before any roster is built (no snails, no shrimp, no large animals). Final validation (`passesHard`) is unchanged and still authoritative. */
+export function excludedSpecies(p?: QuickPrefs): Set<string> {
+  const out = new Set<string>(); if (!p?.prohibit.length) return out;
+  for (const sp of SPECIES) {
+    if (p.prohibit.includes('snails') && sp.kind === 'snail') out.add(sp.id);
+    if (p.prohibit.includes('shrimp') && /shrimp/i.test(sp.name)) out.add(sp.id);
+    if (p.prohibit.includes('large-animals') && sp.kind !== 'snail' && sp.tl >= SIZE_LARGE_MM) out.add(sp.id);
+  }
+  return out;
+}
 const noLive = (p?: QuickPrefs) => !!p?.prohibit.includes('no-live-plants');
 /** QP1: the scene with every swappable plant artificial (floaters are dropped, land plants have no artificial form and stay: such a design then fails `passesHard`). */
 function noLivePlants(S: TankSetup): TankSetup {
@@ -233,6 +271,13 @@ export function lookOrder(c: Pick<Ctx, 'w' | 'prefs'>, direction: HabitatDirecti
   const byFam = new Map<string, Archetype[]>(); for (const a of pool) byFam.set(a.familyId, [...(byFam.get(a.familyId) ?? []), a]);
   const fams = [...byFam.values()], out: Archetype[] = [];
   for (let i = 0; fams.some(f => f.length > i); i++) for (const f of fams) if (f[i]) out.push(f[i]);
+  // DQ2: a person who is truly unsure of the habitat sees the worlds spread too (freshwater, saltwater, ...), not whichever family comes first; a chosen habitat is never mixed with others here
+  if (!want && !kinds && type !== 'champion') {
+    const byKind = new Map<Kind, Archetype[]>(); for (const a of out) byKind.set(KIND_OF(a), [...(byKind.get(KIND_OF(a)) ?? []), a]);
+    const lanes = [...byKind.values()], mixed: Archetype[] = [];
+    for (let i = 0; lanes.some(l => l.length > i); i++) for (const l of lanes) if (l[i]) mixed.push(l[i]);
+    out.splice(0, out.length, ...mixed);
+  }
   return type === 'fresh' && champFam ? out.filter(a => !a.recipe.looks.includes(champFam as never)).concat(out.filter(a => a.recipe.looks.includes(champFam as never))) : out;
 }
 /** The relief backdrop a look suits (nature, jungle, rock and reef styles, terrarium and paludarium walls), or none: the flat family background stays the default for everything else. */
@@ -251,7 +296,7 @@ function fromLook(c: Ctx, a: Archetype, sizes = 1, big = false): void {
   const t0 = performance.now();
   (big ? c.cache.bigDone : c.cache.looksDone).add(a.id);
   try {
-    const r = explorePool(c.w, c.P, c.units, c.now, { only: [a.id], sizes, explain: false, stock: stockTier }), id = identityOf(a);
+    const r = explorePool(c.w, c.P, c.units, c.now, { only: [a.id], sizes, explain: false, stock: (arch, tank, tier) => stockTier(arch, tank, tier, c.exclude) }), id = identityOf(a);
     const dry = a.env === 'terrarium' || a.env === 'paludarium', cands0 = [...r.eligible, ...r.provisional] as PoolCandidate[], cands = dry ? meaningfulDryTiers(cands0) : cands0;   // dry sizes: by height or floor area, whichever the animals need
     for (const cand of cands) {
       const sc0 = ensureUids(structuredClone(cand.scene)); sc0.product ??= { model: cand.tank.id }; const bk = backdropFor(a, sc0); if (bk && sc0.backdrop.kind === 'none') sc0.backdrop = { kind: bk, depth: 50, seed: 1 };   // the catalogue tank it was drawn in, so the size gate judges that tank (a synthetic model of the same dimensions rates lower)
@@ -262,6 +307,41 @@ function fromLook(c: Ctx, a: Archetype, sizes = 1, big = false): void {
   } catch { /* a look that cannot be drawn for this project yields nothing */ }
   c.cache.stats.ms += performance.now() - t0;
 }
+
+// ---------------------------------------------------------------------------------------------------------------- the stratified pool (DQ2)
+/** Size class by rated gallons: the physical step a person sees (a desktop tank, a standard, a large, a showpiece). */
+export const sizeClassOf = (gal: number | null | undefined): string => gal == null ? '?' : gal < 15 ? 'XS' : gal < 35 ? 'S' : gal < 70 ? 'M' : gal < 150 ? 'L' : 'XL';
+/** Stocking pattern: one species (a school or a showpiece), a few kinds, or a mixed community; from the finished design. */
+export const stockPatternOf = (S: TankSetup): string => { const k = new Set(S.fish.map(f => f.species)).size; return k <= 1 ? 'single' : k <= 3 ? 'few' : 'mixed'; };
+const stratumOf = (p: Pending) => `${p.entry.fp.familyId}|${sizeClassOf(p.rec.facts.gallons)}|${stockPatternOf(p.rec.snapshot)}|${p.world}`;
+const FAMILY_CAP = 2, PROPOSE_CAP = 2;   // per pool: a look gives at most two sizes / stockings, the current project's own variations at most two
+/** Prune the pool to a representative set: highest score first; a design is dropped when it is a near-duplicate of one already kept (same stratum and either closer than MIN_PAIR or not visibly different), or when its family / the
+ *  current-project source already holds its cap. What is left never contains ten variants of one design. Pure. */
+export function diversify<T extends Pending>(items: readonly T[], scoreOf: (p: T) => number, dis: (a: T, b: T) => boolean): { kept: T[]; pruned: number } {
+  const order = [...items].sort((a, b) => scoreOf(b) - scoreOf(a)), kept: T[] = [], fam = new Map<string, number>(); let proposed = 0;
+  for (const p of order) {
+    const f = p.entry.fp.familyId;
+    if (p.source === 'propose' ? proposed >= PROPOSE_CAP : (fam.get(f) ?? 0) >= FAMILY_CAP) continue;
+    if (kept.some(k => dist(k, p) < MIN_PAIR || (stratumOf(k) === stratumOf(p) && !dis(k, p)))) continue;
+    kept.push(p); if (p.source === 'propose') proposed++; else fam.set(f, (fam.get(f) ?? 0) + 1);
+  }
+  return { kept, pruned: items.length - kept.length };
+}
+/** How much of the feasible space the pool covers: distinct families, size classes, worlds, stocking patterns. */
+const coverageOf = (pool: readonly Pending[]) => ({
+  fams: new Set(pool.map(p => p.entry.fp.familyId)).size, sizes: [...new Set(pool.map(p => sizeClassOf(p.rec.facts.gallons)))],
+  worlds: new Set(pool.map(p => p.world)).size, stock: [...new Set(pool.map(p => stockPatternOf(p.rec.snapshot)))],
+});
+const FAMS_WANTED = 4, SIZES_WANTED = 2;   // the first pair is drawn from a pool covering this many looks and sizes, time allowing (measured: DQ2 HANDOFF)
+const REJECT_CLASSES: [string, RegExp][] = [['lock-or-scope', /would change|breaks the kept|lock/i], ['equipment', /equipment|Must use|resizes the tank/i], ['hardscape-or-fit', /hardscape|outside the tank/i], ['requirement', /required or not wanted/i],
+  ['final-check', /larger tank or fewer|adult|outgrow/i], ['limit-or-gate', /budget|limit|cost|care|time|size|space/i]];
+export const rejectClass = (r: Rej): string => r.issues.length && !REJECT_CLASSES.some(([, re]) => re.test(r.text)) ? 'welfare-or-physical' : REJECT_CLASSES.find(([, re]) => re.test(r.text))?.[0] ?? 'welfare-or-physical';
+/** Challenger strategy for a champion pair: refinement mostly improves or tries a controlled alternate; exploration leans to out-of-family; out-of-family is always occasional. Deterministic by the round. */
+export const strategySchedule = (refine: boolean, round: number): Strategy[] => {
+  const sched: Strategy[][] = refine ? [['improve', 'alternate', 'out-of-family'], ['alternate', 'improve', 'out-of-family'], ['improve', 'alternate', 'out-of-family'], ['out-of-family', 'improve', 'alternate']]
+    : [['alternate', 'out-of-family', 'improve'], ['out-of-family', 'alternate', 'improve'], ['improve', 'alternate', 'out-of-family'], ['out-of-family', 'alternate', 'improve']];
+  return sched[round % 4];
+};
 
 // ---------------------------------------------------------------------------------------------------------------- choosing
 const dist = (a: Pending, b: Pending) => Math.max(fpDistance(a.entry.fp, b.entry.fp), contentDistance(a.tokens, b.tokens));
@@ -354,34 +434,62 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
     const eligible = rankEligible(fresh.filter(p => p.sc.gate.verdict !== 'blocked').map(p => ({ ...p.entry, p })), aspectsOf(brief)).map(e => e.p);
     return eligible;
   };
-  const want = type === 'champion' ? 3 : 4, soft = performance.now() + (opts.budgetMs ?? 2200), hard = performance.now() + 4 * (opts.budgetMs ?? 2200);
+  const first = type !== 'champion', refine = br.objective === 'refine', soft = performance.now() + (opts.budgetMs ?? 2200), hard = performance.now() + 4 * (opts.budgetMs ?? 2200);
+  let pruned = 0, strategy: Strategy | undefined;
+  // DQ2: the pool a first / fresh pair is drawn from is STRATIFIED: near-duplicates and per-family / current-project caps are pruned, so ten variations of the project cannot fill it
+  const pooled = () => { const u = usable(); if (!first) return u; const d = diversify(u, scoreOf, distinct); pruned = d.pruned; return d.kept; };
+  // the three challenger strategies, by what a candidate is relative to the favourite: another family altogether (out-of-family), a better-ranked variation (improve), or a controlled alternate
+  const buckets = (pool: Pending[]): Record<Strategy, Pending[]> => {
+    const cp = champPending!, cs = scoreOf(cp), fam = (p: Pending) => distinct(p, cp) && p.rec.snapshot.layout.id !== cp.rec.snapshot.layout.id;
+    return { 'out-of-family': pool.filter(fam), improve: pool.filter(p => !fam(p) && scoreOf(p) > cs), alternate: pool.filter(p => !fam(p) && scoreOf(p) <= cs) };
+  };
+  const schedule = strategySchedule(refine, session.comparisons.length);
+  const challenger = (pool: Pending[], strict: boolean) => {
+    if (!champPending) return undefined;
+    const bk = buckets(pool);
+    for (const st of schedule) {
+      const ch = bk[st].length ? chooseChallenger(bk[st], champPending, targetDistance(br), scoreOf, refine, strict, tasteW) : undefined;
+      if (ch) { strategy = st; return ch; }
+    }
+    return undefined;
+  };
   const choose = (strict = false) => {
-    const pool = usable();
-    if (type === 'champion') { const ch = champPending && chooseChallenger(pool, champPending, targetDistance(br), scoreOf, br.objective === 'refine', strict, tasteW); return ch && champ ? { a: champ, b: ch.rec, pool: pool.length } : undefined; }
+    const pool = pooled();
+    if (type === 'champion') { const ch = challenger(pool, strict); return ch && champ ? { a: champ, b: ch.rec, pool: pool.length } : undefined; }
     const pr = choosePair(pool, type === 'fresh' ? 'fresh' : 'first', champPending, scoreOf, purpose === 'contrast', strict, tasteW); if (!pr) return undefined;
     const [x, y] = pr[0].rec.key! <= pr[1].rec.key! ? pr : [pr[1], pr[0]]; return { a: x.rec, b: y.rec, pool: pool.length };
   };
-  // generate only as much as is needed: DX2's proposals on the baseline first (cheap), then one Explore look at a time while there is time and a whole habitat may be drawn
+  // generate only as much as is needed: DX2's proposals on the baseline first (cheap, and few: they are variations of one design), then one Explore look at a time (families spread by `lookOrder`) while there is time and a whole habitat may be drawn
   const gen = champBase ?? base;
-  const ctx: Ctx = { prefs: pf, ...(pf.prohibit.includes('co2') ? { noCo2: true } : {}), orig: gen, brief, w, P, units, now, scope, baseRev: project.rev, sessionId: session.id, purpose, ...(type === 'champion' && champ ? { parentId: champ.id } : {}), cache };
+  const excl = excludedSpecies(pf), ctx: Ctx = { prefs: pf, ...(excl.size ? { exclude: excl } : {}), ...(pf.prohibit.includes('co2') ? { noCo2: true } : {}), orig: gen, brief, w, P, units, now, scope, baseRev: project.rev, sessionId: session.id, purpose, ...(type === 'champion' && champ ? { parentId: champ.id } : {}), cache };
   const looks = habitatFree(base, scope) ? lookOrder(ctx, session.direction, type, champ) : [];
-  let result: { a: CandidateRecord; b: CandidateRecord; pool: number } | undefined;
+  let result: { a: CandidateRecord; b: CandidateRecord; pool: number } | undefined, stop: PoolMetrics['stop'] = 'exhausted';
   for (;;) {
-    if (!cache.proposeDone) { fromPropose(ctx, gen, 10); cache.proposeDone = true; }
+    if (!cache.proposeDone) { fromPropose(ctx, gen, first && looks.length ? 4 : 10); cache.proposeDone = true; }
     else if (cache.looksDone.size < looks.length) fromLook(ctx, looks.find(a => !cache.looksDone.has(a.id))!, type === 'first' && !pf.sizeGal ? 1 : 3);   // with a size preference the first pair already looks across the range, not only at its smallest tank   // size is a real variable: later pairs offer each look in 2-3 sizes, each with its own stocking
     else if (type === 'first' && cache.bigDone.size < looks.length) fromLook(ctx, looks.find(a => !cache.bigDone.has(a.id))!, 3, true);
     else if (cache.round < 3) { cache.round++; fromPropose(ctx, gen, 10); }
     else break;
-    const usableN = usable().length, now2 = performance.now();
-    // before the soft deadline an exploration pair must look different at a glance (another is drawn); after it, the best available pair is shown
-    if (usableN >= want) { result = choose(now2 < soft); if (result) break; }
-    if (now2 > soft && usableN >= 2) { result = choose(); if (result) break; }
-    if (now2 > hard) break;
+    const pool = pooled(), cov = coverageOf(pool), t = performance.now();
+    // DQ2: no first-four-found. A first / fresh pair waits for coverage (families and sizes); after the soft deadline it takes a visibly different pair from what covers at least 3 looks, then 2; a near-identical pair is never taken for being late
+    const covered = first ? (looks.length ? cov.fams >= FAMS_WANTED && (cov.sizes.length >= SIZES_WANTED || t > soft / 2) : pool.length >= 4) : pool.length >= 3 && (!looks.length || !champPending || schedule[0] !== 'out-of-family' || buckets(pool)['out-of-family'].length > 0);
+    const late = first ? (t > soft && cov.fams >= 3) || (t > soft * 2 && cov.fams >= 2) : t > soft && pool.length >= 2;
+    if (pool.length >= 2 || (!first && pool.length >= 1)) {
+      if (covered || late) { result = choose(true); if (result) { stop = covered ? 'coverage' : t > hard ? 'hard' : 'soft'; break; } }
+    }
+    if (t > hard) { stop = 'hard'; break; }
   }
-  result ??= choose();
+  if (!result) { result = choose(true); if (!result) { result = choose(); if (result && first && purpose !== 'contrast' && !visuallyDistinct(result.a.snapshot, result.b.snapshot)) opts.notes?.push('Only similar designs fit your limits and locks, so these two are close; widen a limit or release a lock for more variety.'); } }
   cache.stats.ms = Math.max(cache.stats.ms, performance.now() - t0);
+  if (opts.metrics) {
+    const pool = pooled(), cov = coverageOf(pool), rej: Record<string, number> = {}; for (const r of cache.rej) { const k = rejectClass(r); rej[k] = (rej[k] ?? 0) + 1; }
+    const chosen = result ? [result.a, result.b].map(r => cache.pend.find(p => p.rec.id === r.id) ?? (champPending?.rec.id === r.id ? champPending : undefined)) : [];
+    opts.metrics({ type, ms: Math.round(performance.now() - t0), stop, tried: cache.stats.tried, generated: cache.pend.length, yield: cache.stats.tried ? +(cache.pend.length / cache.stats.tried).toFixed(2) : 0, usable: usable().length, pooled: pool.length, pruned,
+      families: cov.fams, sizeClasses: cov.sizes, worlds: cov.worlds, stockPatterns: cov.stock, looksTried: cache.looksDone.size, proposals: cache.stats.propose, explores: cache.stats.explore,
+      ...(chosen.length === 2 && chosen[0] && chosen[1] ? { pairDistance: +dist(chosen[0], chosen[1]).toFixed(3), pairDistinct: distinct(chosen[0], chosen[1]) } : {}), ...(strategy ? { strategy } : {}), rejections: rej, excludedSpecies: excl.size, preExcluded: cache.stats.pre });
+  }
   if (result) {
-    if (opts.scores) { const ids = new Set([result.a.id, result.b.id]); opts.scores(usable().map(p => ({ id: p.rec.id, title: p.rec.facts.title, chosen: ids.has(p.rec.id), breakdown: breakdownOf(p) })).sort((x, y) => y.breakdown.total - x.breakdown.total)); }
+    if (opts.scores) { const ids = new Set([result.a.id, result.b.id]); opts.scores(pooled().map(p => ({ id: p.rec.id, title: p.rec.facts.title, chosen: ids.has(p.rec.id), breakdown: breakdownOf(p) })).sort((x, y) => y.breakdown.total - x.breakdown.total)); }
     return { ok: true as const, a: result.a, b: result.b };
   }
   const left = usable(), few = left.length, sz = w.tankGal && (w.tankGal.min !== undefined || w.tankGal.max !== undefined) ? `${w.tankGal.min ?? 0}-${w.tankGal.max ?? 'any'} gal` : '';

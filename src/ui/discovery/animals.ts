@@ -133,25 +133,26 @@ function welfareProblem(roster: AnimalCount[], tank: TankModel): string | undefi
 /** The roster this look would be stocked with in this tank, built through the generator's own gates (lane RC1): the headliner first (kept whenever it fits the tank), then up to
  *  `kinds` - 1 animals of the look's own world that suit it and each other, at different levels where they can, each at its smallest recommended group, every step judged by the strict
  *  welfare rule on the whole set as built (a set is never cut to fewer kinds after the fact). Deterministic for (archetype, tank). */
-export function rosterPlan(a: Archetype, tank: TankModel, kinds = 3): RosterPlan {
-  const ck = `${a.id}|${tank.id}|${kinds}`;
+export function rosterPlan(a: Archetype, tank: TankModel, kinds = 3, exclude?: ReadonlySet<string>): RosterPlan {
+  const ck = `${a.id}|${tank.id}|${kinds}${exclude?.size ? `|x${[...exclude].sort().join(',')}` : ''}`;
   let plan = plans.get(ck);
-  if (!plan) { plan = buildPlan(a, tank, kinds); if (plans.size >= 600) plans.delete(plans.keys().next().value!); plans.set(ck, plan); }
+  if (!plan) { plan = buildPlan(a, tank, kinds, exclude); if (plans.size >= 600) plans.delete(plans.keys().next().value!); plans.set(ck, plan); }
   return { ...plan, roster: plan.roster.map(r => ({ ...r })) };
 }
 /** Forget the remembered plans (tests: a plan must come out the same when made afresh). */
 export const clearRosterPlans = () => { plans.clear(); };
-function buildPlan(a: Archetype, tank: TankModel, kinds: number): RosterPlan {
+/** DQ2: `exclude` = species ids a HARD prohibition rules out (no snails, shrimp, large animals): they are never considered, so no roster is built only to be thrown away at the final check. */
+function buildPlan(a: Archetype, tank: TankModel, kinds: number, exclude?: ReadonlySet<string>): RosterPlan {
   const none = (why: string): RosterPlan => ({ roster: [], kinds: 0, source: 'generator-gates', why });
   if (a.water === 'brackish') return none('No brackish animals are in the data yet.');
-  const head = focalAnimals(a, tank).map(c => { const full = animalsOf([startPick(c.species)])[0], ok = fitIn([full], tank); return ok && !ok.fails.length ? full : c; }), pool = lookPool(a, tank);
+  const head = focalAnimals(a, tank).filter(c => !exclude?.has(c.species)).map(c => { const full = animalsOf([startPick(c.species)])[0], ok = fitIn([full], tank); return ok && !ok.fails.length ? full : c; }), pool = lookPool(a, tank);
   const focal = head;
   // an archetype named for one animal (an oscar showcase, a goldfish palace) is not stocked with others when that animal does not fit: it needs a bigger enclosure
   if (!focal.length) { const named = namedHeadliner(a); if (named) return none(`${named} is what this look is for, and it needs a bigger enclosure than this.`); }
   const kindsOf = new Set<string>([...pool, ...focal.map(c => c.species)].flatMap(id => SPECIES.find(s => s.id === id)?.cat ?? []));
   // the look's own animals first (their order shuffled per archetype by a fixed hash, so looks that share a pool do not all share a roster), then the easiest of the world
   const ranked = SPECIES.flatMap(sp => {
-    if (!CARE[sp.id] || !worldHas(a, sp, kindsOf) || !suits(a, sp)) return [];
+    if (exclude?.has(sp.id) || !CARE[sp.id] || !worldHas(a, sp, kindsOf) || !suits(a, sp)) return [];
     const at = pool.indexOf(sp.id), c = CARE[sp.id], j = jitter(`${a.id}|${sp.id}`);
     return [{ sp, rank: at >= 0 ? (focal.some(f => f.species === sp.id) ? -100 : at / 2 + j * Math.max(6, pool.length) - 50) : c.care * 10 + c.temper * 6 + (invert(sp) ? 15 : 0) + j * 8 }];
   }).sort((x, y) => x.rank - y.rank || x.sp.name.localeCompare(y.sp.name)).map(o => o.sp);
