@@ -6,7 +6,7 @@ import { effectiveScope, freeze as freezeTab, loadSession, pause as pauseSession
 import { createProposalHistory, reEvaluate as reEval } from '../../scene/proposalHistory';
 import { getBrief } from '../setupBrief';
 import { suggestNarrowing } from '../../scene/breadth';
-import { adapt as adaptPair, combine as combinePair, nextPair } from '../../scene/pairGen';
+import { adapt as adaptPair, combine as combinePair, nextPair, type ScoredRow } from '../../scene/pairGen';
 import { featuresFor, scoreScene } from '../../scene/pairFacts';
 import { reasonTags, recordAspect, recordPair, undoAspectsOf } from '../../explore/aspects';
 import { ATTR_TAGS, setThumb as putThumb, thumbKey, type AttrKey, type ThumbMap } from '../../scene/attrs';
@@ -17,7 +17,7 @@ import { championConflicts, lockConflicts } from './logic';
 import type { Store } from '../../scene/store';
 import type { VerdictOpts } from '../../scene/verdict';
 import type { CandidateRecord, DiscoverySession, Outcome, PairResult, ReasonKey } from '../../scene/discoveryTypes';
-import { projectExtras, setProjectExtras } from '../../scene/brief';
+import { projectExtras, setProjectExtras, type Brief } from '../../scene/brief';
 import { adjustmentsOf } from '../../scene/combine';
 import { getSpecies } from '../../data/species';
 import type { AbEngine, CombineOutcome, CombineProposal, HistoryPage, ReEval } from './adapter';
@@ -33,7 +33,8 @@ export function createRealEngine(store: Store, _opts: () => VerdictOpts = () => 
   const rec = (id: string | undefined): CandidateRecord | undefined => id ? hist.get(id) ?? mem.get(id) : undefined;
   const nothing = (c: string[], r: string[]): PairResult => ({ ok: false, conflicts: c.length ? c : ['Every candidate broke a lock or a limit.'], relaxations: r.length ? r : ['Open a tab (check its switch) or relax a lock.'] });
   const proj = () => ({ tank: store.effTank, rev: store.rev });
-  const pair = (type: NextPair['type']): PairResult => nextPair(proj(), getBrief(), s, id => rec(id), { next: type, shownKeys: [...mem.values()].flatMap(r => r.key ? [r.key] : []), units: store.scene.units });
+  let scores: ScoredRow[] = [];
+  const pair = (type: NextPair['type']): PairResult => nextPair(proj(), getBrief(), s, id => rec(id), { scores: rows => { scores = rows; }, next: type, shownKeys: [...mem.values()].flatMap(r => r.key ? [r.key] : []), units: store.scene.units });
   const sideOf = (r: CandidateRecord) => { const b = getBrief(); return { id: r.id, features: featuresFor(r.snapshot, scoreScene(r.snapshot, b, customTankWants(b, briefToWants(b)))) }; };
   const show = (a: CandidateRecord, b: CandidateRecord, type: NextPair['type']): PairResult => {
     const ids: string[] = [];
@@ -49,8 +50,15 @@ export function createRealEngine(store: Store, _opts: () => VerdictOpts = () => 
   const nextNow = (): NextPair => s.pendingFreshId && s.championId ? { type: 'final', keep: s.championId } : s.championId ? { type: 'champion', keep: s.championId } : { type: 'first' };
   const markChampion = (before: string | undefined) => { if (s.championId && s.championId !== before) hist.markChampion(s.championId); else if (!s.championId && before) hist.clearChampion(s.id); };
 
+  const writeThumb = (br: Brief, attr: AttrKey, elements: string[], v: 1 | -1 | 0): Brief => {
+    const x = projectExtras(br), next = putThumb(x.thumbs as ThumbMap | undefined, attr, elements, v), { thumbs: _t, ...rest } = x;
+    return setProjectExtras(br, Object.keys(next).length ? { ...rest, thumbs: next } : rest);
+  };
+  /** An AB13 attribute pick: the preferred value's thumb entry, and nothing else (DQ1 P4). Any older tagged event for the same value is taken back so a repeated pick never stacks. */
+  const putPick = (_id: string, attr: AttrKey, elements: string[]) => editBrief(br => undoAspectsOf(writeThumb(br, attr, elements, 1), `thumb:${thumbKey(attr, elements)}`.slice(0, 120)));
   return {
     session: () => s,
+    lastScores: () => scores,
     record: id => rec(id),
     open(scope) {
       const prev = loadSession(project);
@@ -69,7 +77,7 @@ export function createRealEngine(store: Store, _opts: () => VerdictOpts = () => 
       // taste (aspects.ts): ranking only, never a lock; Skip records nothing
       if (a && b && outcome !== 'skip') editBrief(br => recordPair(br, { outcome, a: sideOf(a), b: sideOf(b), ...(why?.length ? { why } : {}), ...(otherGood?.length ? { otherGood } : {}) }));
       // AB13: the optional A / B attribute picks land at the SAME boundary as the overall vote (never for Skip), as soft +1 evidence on the preferred value only
-      if (a && b && outcome !== 'skip' && rel?.length) for (const x of rel) this.setThumb!((x.side === 'A' ? a : b).id, x.attr, x.elements, 1);
+      if (a && b && outcome !== 'skip' && rel?.length) for (const x of rel) putPick((x.side === 'A' ? a : b).id, x.attr, x.elements);   // DQ1 (P4): exactly ONE learning event per pick: the thumb entry (scored once, by thumbBonus); no second tagged aspect event
       return drawFor(r.next);
     },
     different() { s = { ...s, current: undefined }; return drawFor({ type: 'fresh' }); },
@@ -130,8 +138,7 @@ export function createRealEngine(store: Store, _opts: () => VerdictOpts = () => 
       // soft guidance (AB7): the value is remembered for the ranking nudge, and where the learner has a tag for the attribute a tagged taste event is written (replacing the earlier one for this value, so up / down are exclusive)
       const r = rec(id), tags = ATTR_TAGS[attr], c = `thumb:${thumbKey(attr, elements)}`.slice(0, 120);
       editBrief(br => {
-        const x = projectExtras(br), next = putThumb(x.thumbs as ThumbMap | undefined, attr, elements, v), { thumbs: _t, ...rest } = x;
-        let out = setProjectExtras(br, Object.keys(next).length ? { ...rest, thumbs: next } : rest);
+        let out = writeThumb(br, attr, elements, v);
         out = undoAspectsOf(out, c);
         if (v && r && tags.length) out = recordAspect(out, { kind: 'tag', c, features: sideOf(r).features, ...(v > 0 ? { on: tags } : { off: tags }) });
         return out;

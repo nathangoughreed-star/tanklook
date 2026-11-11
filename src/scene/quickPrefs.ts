@@ -159,6 +159,8 @@ export interface QuickPrefs {
   arch: { interested: string[]; avoid: string[]; layouts: Record<string, 1 | -1>; families: Record<string, 1 | -1> };
   /** HARD prohibitions (ids of AVOIDS): 'snails' | 'shrimp' | 'co2' | 'large-animals' (adult length at or over 6 in) | 'no-live-plants' (no candidate may hold a living plant) */
   prohibit: AvoidId[];
+  /** DQ1: "You told us" keys the person set by hand: aspects.told minus what the cards and legacy answers wrote (those are scored once, as layouts / families / look axes / plants) and minus `natural:*` (= `plants`). Ranking only. */
+  told?: Record<string, 1 | -1>;
 }
 const archPrefs = (arch: Readonly<Record<string, ArchState>>): QuickPrefs['arch'] => {
   const out: QuickPrefs['arch'] = { interested: [], avoid: [], layouts: {}, families: {} };
@@ -185,6 +187,8 @@ export function readQuickPrefs(b: Brief): QuickPrefs {
   else if (a.avoid.includes('no-live-plants')) { /* the exclusion is in prohibit; nothing softer to add */ }
   else if (told['natural:live'] === 1) out.plants = { value: 'live', strength: 'prefer' };
   else if (told['natural:live'] === -1 || told['natural:artificial'] === 1) out.plants = { value: 'artificial', strength: 'prefer' };
+  const own = new Set([...Object.keys(toldKeys(a)), ...Object.keys(legacyOf(b) ? legacyTold(legacyOf(b)!) : {})]), hand = Object.entries(told).filter(([k]) => !own.has(k) && !k.startsWith('natural:'));
+  if (hand.length) out.told = Object.fromEntries(hand) as Record<string, 1 | -1>;
   if (a.budget) out.budgetUsd = { value: a.budget.max, strength: a.budget.firm ? 'hard' : 'prefer' };
   if (a.care) out.careMinPerWeek = { value: a.care.max, strength: a.care.firm ? 'hard' : 'prefer' };
   return out;

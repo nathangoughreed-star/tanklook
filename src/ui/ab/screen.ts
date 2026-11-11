@@ -36,6 +36,13 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
   let result: PairResult | undefined, busy = false, pending: { outcome: Outcome; why: ReasonKey[]; other: ReasonKey[] } | undefined, note = '', side: 'A' | 'B' = 'A', sheets = new Set<string>(), proposal: CombineProposal | undefined, panelOpen = false, shownKey = '', rel: RelPicks = {};
   let histOpen = false, histPage = 0, detail: string | undefined, plan: (Plan & { adaptNote?: string }) | undefined, importTab: Tab | undefined, resume = false, rid = 0;
   const modes = new Map<string, RosterMode>(); let sugNo = '', adopted = false;
+  /** DQ1 `?debug`: why each candidate in the pool ranked where it did (scorePolicy.ts): stated terms, learned terms (capped), and the descriptors read from the design itself. */
+  const scoresHtml = (): string => {
+    const rows = engine.lastScores?.() ?? []; if (!rows.length) return '';
+    const e = (x: string) => x.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!)), f = (n: number) => (n >= 0 ? '+' : '') + n.toFixed(2);
+    return `<section class="abstats" aria-label="Score breakdown"><h3>Score breakdown <small>(stated + learned, learned capped)</small></h3>${rows.slice(0, 8).map(r => { const b = r.breakdown;
+      return `<p><b>${r.chosen ? '&#9658; ' : ''}${e(r.title)}</b> total ${f(b.total)} = stated ${f(b.stated)} + learned ${f(b.learned)} (cap ${b.cap}). Design reads: natural ${f(b.axes.natural)}, lush ${f(b.axes.lush)}, colourful ${f(b.axes.colourful)}, ordered ${f(b.axes.ordered)}, rock(+)/wood(-) ${f(b.axes.rockWood)}, planting ${b.axes.plantMode}.<br>${b.terms.map(t => `${e(t.name)} ${f(t.v)}`).join('; ') || 'no terms'}</p>`; }).join('')}</section>`;
+  };
   const metrics = createMetrics(), DEBUG = new URLSearchParams(location.search).has('debug'), rounds = () => engine.session().comparisons.length;
   const menuNote = (() => { const el = document.createElement('div'); el.className = 'abmenunote'; el.hidden = true; el.setAttribute('role', 'status'); el.textContent = 'Discovery is on: inspecting A and B. Your design is unchanged.'; document.getElementById('side')?.prepend(el); return el; })();
   const frozenNow = (on: boolean) => { store.frozen = on; store.onBlocked = on ? () => deps.status('Discovery is on: your design is unchanged. Make It Yours or Close to edit it.', true) : undefined; document.body.classList.toggle('discovering', on); menuNote.hidden = !on; };
@@ -235,7 +242,7 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
         <div class="abcols">${sideBlock(ok.a, ok.b, 'A')}${sideBlock(ok.b, ok.a, 'B')}</div>`;
       panel += historyHtml();
     } else if (!busy && result && !result.ok) { if (result.single) panel += sideBlock(result.single, result.single, 'A'); panel += historyHtml(); }
-    if (DEBUG) panel += statsHtml(summarize(metrics.all()));
+    if (DEBUG) panel += scoresHtml() + statsHtml(summarize(metrics.all()));
     const open = (panelOpen || force) && !busy;
     const only = !busy && result && !result.ok ? result.single : undefined;
     const bar = ok ? `${choiceBtns()}<div class="abfacts">${bits(ok.a, 'A')}${bits(ok.b, 'B')}</div>` : only ? `<div class="abfacts">${bits(only, 'A')}</div>` : `<span class="hint abbusy" role="status">${busy ? 'Looking…' : 'Discovery'}</span>`;

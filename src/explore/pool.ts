@@ -67,7 +67,9 @@ function tanksFor(a: VdArchetype, w: Wants, sizes: number): { tank: TankModel; a
   const all = catalogueSizes(a.env === 'terrarium').map(c => c.m).filter(ok), out: { tank: TankModel; avail?: true }[] = [];
   if (all.length) {
     const first = all[0], near = (target: number) => all.reduce((b, m) => Math.abs(m.ratedGal - target) < Math.abs(b.ratedGal - target) ? m : b, first);
-    for (const m of [first, ...SIZE_MULTIPLES.map(k => near(first.ratedGal * k))].slice(0, sizes)) if (!out.some(o => o.tank.id === m.id)) out.push({ tank: m });
+    // DQ1: a PREFERRED size range puts the smallest catalogue tank inside it first; the usual ladder follows, so a size outside the range can still be offered (the range ranks, it never filters)
+    const pg = w.tankGalPrefer, inPref = pg ? all.find(m => (pg.min === undefined || m.ratedGal >= pg.min) && (pg.max === undefined || m.ratedGal <= pg.max)) : undefined;
+    for (const m of [...(inPref ? [inPref] : []), first, ...SIZE_MULTIPLES.map(k => near(first.ratedGal * k))].slice(0, sizes)) if (!out.some(o => o.tank.id === m.id)) out.push({ tank: m });
   }
   if (w.availTank && ok(w.availTank) && !out.some(o => o.tank.id === w.availTank!.id)) out.push({ tank: w.availTank, avail: true });
   return out;

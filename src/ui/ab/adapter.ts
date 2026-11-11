@@ -1,3 +1,4 @@
+import type { ScoredRow } from '../../scene/pairGen';
 // The A/B screen's seam (lane AB3). The screen talks ONLY to this interface; `fake.ts` implements it from the working project (DX2 propose) so the UI could be built
 // before AB0 (session), AB1 (pairs) and AB2 (history) landed, and `real.ts` (when those merge) implements it over discoverySession / pairGen / proposalHistory.
 // All calls are synchronous (the screen paints "Looking..." first). Records are immutable: choosing, keeping, adapting never edits one.
@@ -54,6 +55,8 @@ export interface AbEngine {
   acceptCombine?(p: CombineProposal): PairResult;
   /** AB7 attribute panel: the thumbs the person has given (soft guidance), and set one on an attribute value of record `id` (1 up, -1 down, 0 take back). Ranking only; optional so the stand-in engine needs none. */
   thumbs?(): ThumbMap;
+  /** DQ1 `?debug`: the score breakdown (scorePolicy.ts) of the candidates the last pair was chosen from; optional so the stand-in engine needs none */
+  lastScores?(): ScoredRow[];
   setThumb?(id: string, attr: AttrKey, elements: string[], v: 1 | -1 | 0): void;
   /** an optional one-line suggestion to narrow (never applied by the engine; the screen offers it and the person decides) */
   suggestion?(): { text: string; tab: Tab } | undefined;

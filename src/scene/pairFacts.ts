@@ -25,6 +25,7 @@ import { volume } from './physics';
 import { filterUnits, heaterUnits } from './tech';
 import type { Figure as FactFigure, CandidateFacts } from './discoveryTypes';
 import type { Env } from './archetypes';
+import { designAxes, isVivid, plantClassOf } from './designAxes';
 
 const IN = 25.4, r0 = (n: number, d = 0) => Math.round(n * 10 ** d) / 10 ** d;
 const rng = (mean: number, lo: number, hi: number, d = 0): Range => ({ lo: r0(Math.max(0, Math.min(lo, mean)), d), mean: r0(mean, d), hi: r0(Math.max(hi, mean), d) });
@@ -141,8 +142,8 @@ const jaccard = (a: readonly string[], b: readonly string[]) => { const A = new 
 export const contentDistance = (a: readonly string[], b: readonly string[]): number => 1 - jaccard(a, b);
 
 export function subjectOf(S: TankSetup, sc: Scored, ids: { familyId?: string; archetypeId?: string } = {}): AspectSubject {
-  const w = worldOf(S), plants = S.items.filter(i => layerOf(i) === 'plant').length;
-  return { world: w.env, water: w.water, familyId: ids.familyId ?? 'custom', archetypeId: ids.archetypeId ?? S.layout.id, roster: rosterOf(S), plantMode: 'live', plants, vivid: false, minPerWeek: sc.estimate.minPerWeek.mean, gal: sc.estimate.gal, difficulty: sc.estimate.difficulty.level };
+  const w = worldOf(S), plants = S.items.filter(i => layerOf(i) === 'plant').length, ax = designAxes(S);   // DQ1: read from the design, never constant
+  return { world: w.env, water: w.water, familyId: ids.familyId ?? 'custom', archetypeId: ids.archetypeId ?? S.layout.id, roster: rosterOf(S), plantMode: ax.plantMode, plantClass: plantClassOf(ax), plants, vivid: isVivid(ax), minPerWeek: sc.estimate.minPerWeek.mean, gal: sc.estimate.gal, difficulty: sc.estimate.difficulty.level };
 }
 export function fingerprintOf(S: TankSetup, sc: Scored, ids: { familyId?: string; archetypeId?: string } = {}): Fingerprint {
   const w = worldOf(S);

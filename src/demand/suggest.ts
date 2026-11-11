@@ -188,6 +188,8 @@ export interface Wants {
   mins?: { startupUsd?: number; monthlyUsd?: number; minPerWeek?: number; setupHours?: number };
   /** tank size range in rated gallons (lane GV8): no tank outside it is offered (an existing tank is never resized) */
   tankGal?: { min?: number; max?: number };
+  /** DQ1: a PREFERRED size range (the limit is not firm): never filters; `explore/pool.ts` tries a catalogue size inside it as well as the usual ladder */
+  tankGalPrefer?: { min?: number; max?: number };
   /** the high-tech approach is a requirement (lane U4): only finishes with CO2 and a stronger light (the standard and lush tiers) are offered, so the look is not traded for a cheaper approach silently */
   hightech?: boolean;
   /** the planted look without CO2 (lane U5): the low-tech lush finish (dense live plants chosen for the light the tank has, liquid ferts only) is offered, then the basic and starter finishes */

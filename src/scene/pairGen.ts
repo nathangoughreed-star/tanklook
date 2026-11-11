@@ -12,12 +12,13 @@ import { verdictOf, type Issue } from './verdict';
 import { capableOf, equipPlan, noNewEquipment } from './equipPlan';
 import { equipmentOf, requiredEquipment } from './project';
 import { filterUnits, heaterUnits, inferTech, withUnits } from './tech';
-import { briefToWants, projectExtras, type Brief } from './brief';
+import { briefToWants, getItem, projectExtras, type Brief } from './brief';
 import { ensureUids } from './uid';
 import { fitGear } from './gearFit';
 import { finalCheck } from './finalCheck';
 import { meaningfulDryTiers, stockTier } from './sizeTiers';
-import { thumbBonus } from './attrs';
+import { scoreBreakdown, hasStated, type ScoreBreakdown } from './scorePolicy';
+import type { ThumbMap } from './attrs';
 import { passesHard, readQuickPrefs, type QuickPrefs } from './quickPrefs';
 import { LIVE_ONLY_LAYOUTS } from './quickArchetypes';
 import { finSensitive, withPlantMode } from './scapes';
@@ -27,7 +28,7 @@ import { diffTouches } from './scope';
 import { dropPlants, splice, strongerLight, strugglingPlants, trimAnimals } from './combine';
 import { ARCHETYPES, type Archetype } from './archetypes';
 import { explorePool, isBuildable, identityOf, type Candidate as PoolCandidate } from '../explore/pool';
-import { aspectScore, aspectsOf, weightsOf } from '../explore/aspects';
+import { aspectsOf, weightsOf } from '../explore/aspects';
 import { distance as fpDistance, idOf, type Entry } from '../explore/candidate';
 import { rankEligible } from '../explore/rank';
 import { customTankWants, type Kind, type Wants } from '../demand/suggest';
@@ -55,6 +56,18 @@ export interface PairOpts {
   prefs?: QuickPrefs;
   /** candidate cache (default: a small shared one keyed by the situation) */
   cache?: PairCache;
+  /** DQ1 `?debug`: receives the per-candidate score breakdown of the pool the pair was chosen from, best first */
+  scores?: (rows: ScoredRow[]) => void;
+}
+/** One candidate's score under the one policy (scorePolicy.ts), for the debug view. */
+export interface ScoredRow { id: string; title: string; chosen: boolean; breakdown: ScoreBreakdown }
+
+/** The search rules of the live path. A size RANGE is a firm bound only when its limit item is marked hard; a preferred range ranks (and widens which catalogue sizes are tried) but never filters. Cost, care and monthly were already soft via `flexLimits`. */
+export function liveWants(brief: Brief): Wants {
+  const w = customTankWants(brief, briefToWants(brief)), it = getItem(brief, 'constraints.tankGal');
+  if (!w.tankGal || (it && !it.off && it.status === 'hard')) return w;
+  const { tankGal, ...rest } = w;
+  return { ...rest, tankGalPrefer: tankGal };
 }
 
 interface Pending { rec: CandidateRecord; entry: Entry; tokens: string[]; source: 'propose' | 'explore'; world: string; sc: Scored }
@@ -64,6 +77,8 @@ const SHARED = new Map<string, PairCache>();
 export const clearPairCache = () => SHARED.clear();
 const newCache = (sig: string): PairCache => ({ sig, pend: [], keys: new Set(), round: 0, looksDone: new Set(), bigDone: new Set(), rej: [], proposeDone: false, stats: { propose: 0, explore: 0, ms: 0 } });
 
+/** DQ1: position (0-based) of the best-ranked Avoid look in the try order: inside the first generated designs, so the early stop cannot starve it */
+export const AVOID_SLOT = 2;
 const MIN_PAIR = 0.12;           // two designs closer than this are the same design to the person
 const KIND_OF = (a: Archetype): Kind => a.env === 'terrarium' ? 'terrarium' : a.env === 'paludarium' ? 'vivarium' : a.water === 'saltwater' ? 'saltwater' : 'freshwater';
 const DIRECTION_KIND: Partial<Record<HabitatDirection, Kind>> = { freshwater: 'freshwater', saltwater: 'saltwater', terrarium: 'terrarium', paludarium: 'vivarium' };
@@ -205,10 +220,14 @@ function noLivePlants(S: TankSetup): TankSetup {
   return withPlantMode(S, 'artificial', finSensitive([...n].map(([species, k]) => ({ species, n: k }))));
 }
 /** The Explore looks to try, in the order that spreads worlds and families apart (or stays near the champion's). */
-function looksFor(c: Ctx, direction: HabitatDirection, type: Comparison['type'], champ?: CandidateRecord): Archetype[] {
+export function lookOrder(c: Pick<Ctx, 'w' | 'prefs'>, direction: HabitatDirection, type: Comparison['type'], champ?: CandidateRecord): Archetype[] {
   const kinds = c.w.kinds?.length ? c.w.kinds : undefined, want = DIRECTION_KIND[direction], lp = c.prefs?.arch, skip = noLive(c.prefs);
-  const pref = (a: Archetype) => lp ? (lp.layouts[a.id] ?? lp.families[a.familyId] ?? 0) : 0;   // QP1: Interested cards are tried first, Avoid last; nothing is removed by it
-  const all = ARCHETYPES.filter(a => isBuildable(a) && identityOf(a).water !== 'brackish' && (!kinds || kinds.includes(KIND_OF(a))) && !(skip && LIVE_ONLY_LAYOUTS.has(a.id))).map((a, i) => ({ a, i })).sort((x, y) => pref(y.a) - pref(x.a) || x.i - y.i).map(x => x.a);
+  // DQ1 (P2): Interested cards are tried first. Avoid is a LOWER PRIORITY, never a removal: it is demoted, but it keeps a reserved early slot (AVOID_SLOT) so the early stop cannot starve it, and the ranking (scorePolicy.ts) then places it lower.
+  // Explore Something Different ignores the cards' order altogether: every family is equally reachable.
+  const pref = (a: Archetype) => lp && type !== 'fresh' ? (lp.layouts[a.id] ?? lp.families[a.familyId] ?? 0) : 0;
+  const cat = ARCHETYPES.filter(a => isBuildable(a) && identityOf(a).water !== 'brackish' && (!kinds || kinds.includes(KIND_OF(a))) && !(skip && LIVE_ONLY_LAYOUTS.has(a.id))).map((a, i) => ({ a, i }));
+  const ranked = cat.sort((x, y) => Math.max(pref(y.a), -0.5) - Math.max(pref(x.a), -0.5) || x.i - y.i).map(x => x.a), avoided = ranked.filter(a => pref(a) < 0), kept = ranked.filter(a => pref(a) >= 0);
+  const all = avoided.length ? [...kept.slice(0, AVOID_SLOT), avoided[0], ...kept.slice(AVOID_SLOT), ...avoided.slice(1)] : ranked;
   const soft = (type === 'first' || type === 'champion') && want ? all.filter(a => KIND_OF(a) === want) : all;
   const pool = soft.length ? soft : all, champFam = champ ? champ.snapshot.layout.id : undefined;
   const byFam = new Map<string, Archetype[]>(); for (const a of pool) byFam.set(a.familyId, [...(byFam.get(a.familyId) ?? []), a]);
@@ -311,7 +330,7 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
   const scope = effectiveScope(project, session);
   if (!scope.length) return { ok: false, conflicts: ['Nothing is open to change: every menu is switched off or kept for now.'], relaxations: ['Switch a menu on, or release a kept menu'] };
   const { base, notes } = baselineOf(project, session, lookup), freezeNotes = session.freezes.map(f => `Release the kept ${f.tab} tab`);
-  const pf = opts.prefs ?? readQuickPrefs(brief), w0 = customTankWants(brief, briefToWants(brief)), w = w0, br: Breadth = breadthOf(project.tank, session, lookup, scope, type);
+  const pf = opts.prefs ?? readQuickPrefs(brief), w = liveWants(brief), br: Breadth = breadthOf(project.tank, session, lookup, scope, type);
   opts.breadth?.(br);
   const purpose: ProposalPurpose = type === 'fresh' ? 'fresh' : type === 'champion' ? (br.objective === 'refine' ? 'contrast' : 'challenger') : scope.length <= 2 ? 'contrast' : 'first';
   // the cache key holds EVERY input a candidate depends on: the project (its whole design, so locks, hard constraints, owned and Must-use gear, the Discovery switches), the brief, the scope and holds, the direction and the champion
@@ -325,17 +344,11 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
     const S = champ.snapshot, sc = scoreScene(S, brief, w, P, now);
     return { rec: champ, entry: { id: champ.id, key: champ.key ?? keyOf(S), fp: fingerprintOf(S, sc), features: featuresFor(S, sc) }, tokens: tokensOf(S), source: 'propose', world: '', sc };
   })() : undefined;
-  const scoreW = weightsOf(aspectsOf(brief)), scoreOf = (p: Pending) => type === 'fresh' ? 0 : aspectScore(scoreW, p.entry.features) + prefOf(p);   // Something Different ignores learned taste
-  const told = !!(pf.sizeGal || pf.floorSqIn || pf.heightIn || pf.plants || Object.keys(pf.look).length), tasteW = 0.1 + 0.25 * br.confidence + (told ? 0.4 : 0);     // a told preference ranks harder than a learned one
-  const prefOf = (p: Pending): number => {   // ranking only (a 'prefer' answer never removes a candidate); a hard answer already filtered
-    let v = 0; const S = p.rec.snapshot, g = p.rec.facts.gallons, n = S.items.filter(i => i.kind === 'plant').length, inR = (x: number, r: { lo: number; hi: number }) => x >= r.lo && x <= r.hi;
-    if (pf.sizeGal && g != null) v += inR(g, pf.sizeGal.value) ? 0.5 : -0.2;
-    if (pf.floorSqIn) v += inR(S.tank.L * S.tank.D / (25.4 * 25.4), pf.floorSqIn.value) ? 0.3 : -0.1;
-    if (pf.heightIn) v += inR(S.tank.H / 25.4, pf.heightIn.value) ? 0.3 : -0.1;
-    if (pf.plants?.strength === 'prefer') v += (pf.plants.value === 'live') === (n >= 6) ? 0.3 : -0.2;
-    if ((pf.look.lush ?? 0) > 0) v += n >= 30 ? 0.2 * pf.look.lush! : 0;
-    v += thumbBonus(projectExtras(brief).thumbs, S, p.rec.facts);   // AB7: thumbs on attribute values, a bounded nudge (soft guidance, never a filter)
-    return v; };                                                                                             // learned taste narrows the RANKING, bounded; it never removes a candidate
+  // DQ1: ONE scoring policy (scorePolicy.ts): stated preferences (cards, ranges, targets, look axes) outrank learned ones; nothing here filters
+  const scoreW = weightsOf(aspectsOf(brief)), thumbs = projectExtras(brief).thumbs as ThumbMap | undefined;
+  const breakdownOf = (p: Pending): ScoreBreakdown => scoreBreakdown({ pf, S: p.rec.snapshot, facts: p.rec.facts, features: p.entry.features, archetypeId: p.entry.fp.archetypeId, familyId: p.entry.fp.familyId, totals: p.sc.totals, weights: scoreW, thumbs });
+  const scoreOf = (p: Pending) => type === 'fresh' ? 0 : breakdownOf(p).total;   // Something Different ignores taste, stated and learned: it is a broad look
+  const told = hasStated(pf), tasteW = 0.1 + 0.25 * br.confidence + (told ? 0.4 : 0);     // a told preference ranks harder than a learned one
   const usable = () => {
     const fresh = cache.pend.filter(p => !known.has(p.rec.key ?? '') && !(champPending && type !== 'fresh' && same(p, champPending)));
     const eligible = rankEligible(fresh.filter(p => p.sc.gate.verdict !== 'blocked').map(p => ({ ...p.entry, p })), aspectsOf(brief)).map(e => e.p);
@@ -351,7 +364,7 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
   // generate only as much as is needed: DX2's proposals on the baseline first (cheap), then one Explore look at a time while there is time and a whole habitat may be drawn
   const gen = champBase ?? base;
   const ctx: Ctx = { prefs: pf, ...(pf.prohibit.includes('co2') ? { noCo2: true } : {}), orig: gen, brief, w, P, units, now, scope, baseRev: project.rev, sessionId: session.id, purpose, ...(type === 'champion' && champ ? { parentId: champ.id } : {}), cache };
-  const looks = habitatFree(base, scope) ? looksFor(ctx, session.direction, type, champ) : [];
+  const looks = habitatFree(base, scope) ? lookOrder(ctx, session.direction, type, champ) : [];
   let result: { a: CandidateRecord; b: CandidateRecord; pool: number } | undefined;
   for (;;) {
     if (!cache.proposeDone) { fromPropose(ctx, gen, 10); cache.proposeDone = true; }
@@ -367,7 +380,10 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
   }
   result ??= choose();
   cache.stats.ms = Math.max(cache.stats.ms, performance.now() - t0);
-  if (result) { const out = { ok: true as const, a: result.a, b: result.b }; return out; }
+  if (result) {
+    if (opts.scores) { const ids = new Set([result.a.id, result.b.id]); opts.scores(usable().map(p => ({ id: p.rec.id, title: p.rec.facts.title, chosen: ids.has(p.rec.id), breakdown: breakdownOf(p) })).sort((x, y) => y.breakdown.total - x.breakdown.total)); }
+    return { ok: true as const, a: result.a, b: result.b };
+  }
   const left = usable(), few = left.length, sz = w.tankGal && (w.tankGal.min !== undefined || w.tankGal.max !== undefined) ? `${w.tankGal.min ?? 0}-${w.tankGal.max ?? 'any'} gal` : '';
   const why = few === 1 ? [`Only one design fits your locks and limits${sz ? ` (including a tank of ${sz})` : ''}, so there is nothing to compare it with. It is shown on its own; no second design is made up.`]
     : few === 0 && cache.pend.length ? ['Every design that fits has already been shown.'] : few === 0 && sz ? [`No design fits a tank of ${sz} together with your other locks and limits.`] : [];
@@ -380,7 +396,7 @@ export type AdaptResult = { ok: true; record: CandidateRecord; notes: string[] }
 export function adapt(record: CandidateRecord, project: PairProject, brief: Brief, opts: { now?: number; units?: Units; P?: UserProfile; sessionId?: string; scope?: Tab[] } = {}): AdaptResult {
   const now = opts.now ?? Date.now(), units = opts.units ?? 'in', P = opts.P ?? defaultProfile(), base = ensureUids(structuredClone(project.tank));
   seedLocked(base, undefined, undefined, []);
-  const scope = opts.scope ?? discoverTabs(project.tank), cache = newCache('adapt'), w = customTankWants(brief, briefToWants(brief));
+  const scope = opts.scope ?? discoverTabs(project.tank), cache = newCache('adapt'), w = liveWants(brief);
   const ctx: Ctx = { orig: base, brief, w, P, units, now, scope, baseRev: project.rev, sessionId: opts.sessionId ?? record.sessionId, purpose: 'adapted', parentId: record.id, cache };
   const got = ingest(ctx, ensureUids(structuredClone(record.snapshot)), record.facts.title, 'propose', { name: record.facts.title });
   if (!got) return noSolution(cache) as AdaptResult;
@@ -405,7 +421,7 @@ export function combine(target: CandidateRecord, donor: CandidateRecord, tab: Ta
   const t0 = ensureUids(structuredClone(target.snapshot)); if (project.tank.locks) t0.locks = structuredClone(project.tank.locks); else delete t0.locks;
   const sp = splice(t0, donor.snapshot, tab);
   if (!sp) return refuse([`${donor.facts.title}'s ${word} cannot be placed in ${target.facts.title} (a piece would end up outside the tank).`]);
-  const w = customTankWants(brief, briefToWants(brief)), sessionId = opts.sessionId ?? target.sessionId, name = `${target.facts.title} + new ${word}`;
+  const w = liveWants(brief), sessionId = opts.sessionId ?? target.sessionId, name = `${target.facts.title} + new ${word}`;
   const fixed = new Set(locksOf(base).roster.map(r => r.species)), first: { rej: Rej[] }[] = [], steps: string[] = [];
   const attempt = (scene: TankSetup): Pending | null => {
     const cache = newCache('combine'), ctx: Ctx = { orig: base, brief, w, P, units, now, scope: [...TABS], baseRev: project.rev, sessionId, purpose: 'adapted', parentId: target.id, cache };

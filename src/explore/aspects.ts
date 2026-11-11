@@ -43,7 +43,8 @@ const isWorldKey = (k: string) => k.startsWith('world:'), isLookKey = (k: string
 /** What a candidate is, in the terms the vocabulary speaks. Built from a candidate by candidate.ts `subjectOf`; every field is a fact about the setup, never a limit. */
 export interface AspectSubject {
   world: Env; water: Water | 'none'; familyId: string; archetypeId: string; roster: { species: string; n: number }[];
-  plantMode?: 'live' | 'artificial' | 'mixed'; /** plant pieces in the scene */ plants: number; vivid: boolean;
+  plantMode?: 'live' | 'artificial' | 'mixed' | 'none'; /** plant pieces in the scene */ plants: number; vivid: boolean;
+  /** DQ1: plant density class read from the design (scene/designAxes.ts); absent = from the piece count (the Explore grid's older reading) */ plantClass?: 'none' | 'some' | 'lush';
   /** care minutes a week (mean), tank gallons and the difficulty rating, for the ownership aspects */
   minPerWeek: number; gal: number; difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
 }
@@ -59,7 +60,7 @@ function behaviorOf(id: string): string {
 /** Every aspect of a subject as a feature key, in a fixed order. */
 export function featuresOf(s: AspectSubject): string[] {
   const out: string[] = [`world:${worldOf(s)}`, `look:${s.familyId}`, `layout:${s.archetypeId}`, `natural:${s.plantMode ?? 'live'}`, `colors:${s.vivid ? 'vivid' : 'natural'}`,
-    `plants:${s.plants < SOME_PLANTS ? 'none' : s.plants >= LUSH_PLANTS ? 'lush' : 'some'}`];
+    `plants:${s.plantClass ?? (s.plants < SOME_PLANTS ? 'none' : s.plants >= LUSH_PLANTS ? 'lush' : 'some')}`];
   const sp = s.roster.map(r => getSpecies(r.species)).filter((x): x is NonNullable<typeof x> => !!x), total = s.roster.reduce((t, r) => t + r.n, 0);
   for (const r of [...s.roster].sort((a, b) => a.species.localeCompare(b.species))) out.push(`species:${r.species}`);
   for (const b of [...new Set(s.roster.map(r => behaviorOf(r.species)))].sort()) out.push(`behavior:${b}`);
