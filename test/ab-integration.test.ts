@@ -118,7 +118,8 @@ describe('(b) equipment stays derived', () => {
     for (const c of [r.a, r.b]) {
       expect(c.facts.mustUse).toContain('light'); expect(c.snapshot.light.owned).toBe(true);
       expect(c.facts.toBuy.some(l => l.key === 'heater')).toBe(false); expect(c.facts.reused).toContain('heater');
-      const plan = equipPlan(c.snapshot, b); expect(Math.abs(c.facts.newSpendUsd.mean - Math.round(mean3(plan.remaining)))).toBeLessThanOrEqual(1);
+      const plan = equipPlan(c.snapshot, b), backdrop = c.facts.toBuy.find(l => l.key === 'backdrop')?.usd ?? 0;   // DQ2: a catalogue look can bring a 3D backdrop, a priced line equipPlan does not know
+      expect(Math.abs(c.facts.newSpendUsd.mean - backdrop - Math.round(mean3(plan.remaining)))).toBeLessThanOrEqual(1);
     }
   }, 120000);
   it('an owned heater too small to work is flagged, not credited, and a purchase is added', () => {

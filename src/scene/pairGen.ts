@@ -276,6 +276,9 @@ export function lookOrder(c: Pick<Ctx, 'w' | 'prefs'>, direction: HabitatDirecti
     const byKind = new Map<Kind, Archetype[]>(); for (const a of out) byKind.set(KIND_OF(a), [...(byKind.get(KIND_OF(a)) ?? []), a]);
     const lanes = [...byKind.values()], mixed: Archetype[] = [];
     for (let i = 0; lanes.some(l => l.length > i); i++) for (const l of lanes) if (l[i]) mixed.push(l[i]);
+    // the cheap freshwater looks lead (a reef or a terrarium look costs about twice as much to draw), then the other worlds join: the first pool still holds a second world inside its time budget
+    const fw = mixed.filter(a => KIND_OF(a) === 'freshwater'), rest = mixed.filter(a => KIND_OF(a) !== 'freshwater');
+    mixed.splice(0, mixed.length, ...fw.slice(0, 3), ...rest.slice(0, 1), ...fw.slice(3, 4), ...mixed.filter(a => !fw.slice(0, 4).includes(a) && a !== rest[0]));
     out.splice(0, out.length, ...mixed);
   }
   return type === 'fresh' && champFam ? out.filter(a => !a.recipe.looks.includes(champFam as never)).concat(out.filter(a => a.recipe.looks.includes(champFam as never))) : out;
@@ -437,7 +440,8 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
   const first = type !== 'champion', refine = br.objective === 'refine', soft = performance.now() + (opts.budgetMs ?? 2200), hard = performance.now() + 4 * (opts.budgetMs ?? 2200);
   let pruned = 0, strategy: Strategy | undefined;
   // DQ2: the pool a first / fresh pair is drawn from is STRATIFIED: near-duplicates and per-family / current-project caps are pruned, so ten variations of the project cannot fill it
-  const pooled = () => { const u = usable(); if (!first) return u; const d = diversify(u, scoreOf, distinct); pruned = d.pruned; return d.kept; };
+  const strat = first && purpose !== 'contrast' && habitatFree(base, scope);   // a controlled contrast (few tabs open) is MEANT to be near its siblings; a design with the habitat locked has only variations to draw from
+  const pooled = () => { const u = usable(); if (!strat) return u; const d = diversify(u, scoreOf, distinct); pruned = d.pruned; return d.kept; };
   // the three challenger strategies, by what a candidate is relative to the favourite: another family altogether (out-of-family), a better-ranked variation (improve), or a controlled alternate
   const buckets = (pool: Pending[]): Record<Strategy, Pending[]> => {
     const cp = champPending!, cs = scoreOf(cp), fam = (p: Pending) => distinct(p, cp) && p.rec.snapshot.layout.id !== cp.rec.snapshot.layout.id;
@@ -472,7 +476,7 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
     else break;
     const pool = pooled(), cov = coverageOf(pool), t = performance.now();
     // DQ2: no first-four-found. A first / fresh pair waits for coverage (families and sizes); after the soft deadline it takes a visibly different pair from what covers at least 3 looks, then 2; a near-identical pair is never taken for being late
-    const covered = first ? (looks.length ? cov.fams >= FAMS_WANTED && (cov.sizes.length >= SIZES_WANTED || t > soft / 2) : pool.length >= 4) : pool.length >= 3 && (!looks.length || !champPending || schedule[0] !== 'out-of-family' || buckets(pool)['out-of-family'].length > 0);
+    const covered = first ? (strat && looks.length ? cov.fams >= FAMS_WANTED && (cov.sizes.length >= SIZES_WANTED || t > soft / 2) : pool.length >= 4) : pool.length >= 3 && (!looks.length || !champPending || schedule[0] !== 'out-of-family' || buckets(pool)['out-of-family'].length > 0);
     const late = first ? (t > soft && cov.fams >= 3) || (t > soft * 2 && cov.fams >= 2) : t > soft && pool.length >= 2;
     if (pool.length >= 2 || (!first && pool.length >= 1)) {
       if (covered || late) { result = choose(true); if (result) { stop = covered ? 'coverage' : t > hard ? 'hard' : 'soft'; break; } }

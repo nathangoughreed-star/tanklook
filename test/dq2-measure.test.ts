@@ -1,3 +1,4 @@
+// @ts-nocheck (node globals: a measurement script, not part of the build)
 // DQ2 scenario 24: first-pair cold / warm timings and pool quality, printed (not asserted). Run: DQ2_MEASURE=1 npx vitest run test/dq2-measure.test.ts
 import { it } from 'vitest';
 import { defaultSetup } from '../src/scene/defaults';
