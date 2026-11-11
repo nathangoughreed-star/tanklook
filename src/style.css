@@ -1323,13 +1323,14 @@ button.start-mode-card span.hint { font-size: 12px }
 
 /* DX7: seven menus. The Discovery switch sits in the header of the five creative menus; the view controls are one popover on the view. */
 .sec > summary { flex-wrap: wrap }
-.dxsw { order: 3; flex-basis: 100%; display: flex; align-items: center; gap: 8px; margin: 0 0 6px; padding: 0; border: 0; background: none; color: var(--muted); font: inherit; font-size: 12px; cursor: pointer; text-align: left }
-.dxsw .dxtrack { position: relative; width: 28px; height: 16px; flex: none; border-radius: 8px; background: var(--line); transition: background .12s }
+.dxsw { order: 3; flex-basis: 100%; display: none; align-items: center; gap: 8px; margin: 0 0 6px; color: var(--muted); font-size: 12px; cursor: default; text-align: left }
+body.discovering .dxsw { display: flex }   /* DS1: the switches exist only while Discovery is open; hidden, not unmounted, so state stays */
+.dxsw .dxtrack { position: relative; width: 28px; height: 16px; flex: none; padding: 0; border: 0; border-radius: 8px; background: var(--line); transition: background .12s; cursor: pointer }
 .dxsw .dxtrack::after { content: ''; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: #fff; transition: transform .12s }
-.dxsw[aria-checked="true"] .dxtrack { background: #2e7d6b }
-.dxsw[aria-checked="true"] .dxtrack::after { transform: translateX(12px) }
-.dxsw[aria-checked="true"] { color: var(--ink) }
-.dxsw:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.dxsw .dxtrack[aria-checked="true"] { background: #2e7d6b }
+.dxsw .dxtrack[aria-checked="true"]::after { transform: translateX(12px) }
+.dxsw:has(.dxtrack[aria-checked="true"]) { color: var(--ink) }
+.dxsw .dxtrack:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
 .dxp .dxtabs .dxsw { order: 0; flex-basis: auto; margin: 0 }
 .dxp .dxonly { margin: 0 0 6px }
 .dxp .dxq { margin: 8px 0; border-top: 1px dashed #666 } .dxp .dxq > summary { cursor: pointer; padding: 6px 0; font-weight: 600 }

@@ -729,3 +729,8 @@ FS1 follow-up (2026-11-10): sae 5+ step (75 gal) is PROVISIONAL; `groupVol` step
 - `scorePolicy.ts` `rangeFit(x, {lo,hi})`: 1 inside, log-Gaussian outside (sigma = ln(hi/lo)/2, floor ln 1.25; open ends never penalise). The size / floor / height terms = `sizeOut + fit * (sizeIn - sizeOut)`, so the span is still +0.5 .. -0.2. 20-40 gal: 55 gal 0.66, 80 gal 0.14, 10 gal 0.14. `?debug` size term shows the gallons and the fit.
 - Firm: `QuickAnswers.sizeFirm` (stored `quick.sizeFirm`). Aquatic: writes `constraints.tankGal` status hard (the DQ1 firm path, `liveWants`); dry: floor and height strength 'hard'. Size row has Preference | Firm buttons (`data-sizefirm`), same function for the screen and left block. Hand-set hard tankGal reads back as Firm.
 - Tests: `test/sz1.test.ts`. Screens: `research/screens/SZ1/`.
+
+### DS1 (2026-11-11): Discovery switches only in Discover, only the track toggles
+- `switchHtml` (src/ui/discover/switches.ts) is now a row `.dxsw` (plain-text `.dxlabel`) holding ONE control: the `.dxtrack` button (`role="switch"`, `aria-checked`, `data-sw`, aria-label). Label clicks are swallowed in `wireSwitches` (no toggle, menu does not open/close).
+- Visibility: `.dxsw { display: none }`, `body.discovering .dxsw { display: flex }` (class set by ab/screen.ts `frozenNow`). Hidden, not unmounted; saved values unchanged. The Discover panel/coach steps do not render these switches (they use `toggleSwitch` only), nothing else to align.
+- Tests: test/dx7.test.ts "DS1". Screens: research/screens/DS1/ (desktop open/closed, 375 px open).

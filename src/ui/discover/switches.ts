@@ -10,9 +10,9 @@ export const MENU_OF: Record<Tab, string> = { tank: 'tank', substrate: 'substrat
 export const SWITCH_TEXT = 'Discovery can change this';
 const NAME: Record<Tab, string> = { tank: 'Tank', substrate: 'Substrate', hardscape: 'Hardscape', plants: 'Plants', animals: 'Animals' };
 
-/** One switch as HTML (a button with role=switch: a button inside a summary does not toggle the menu). `text` defaults to the long label. */
+/** One switch as HTML: a row (`.dxsw`, shown only while Discovery is open, see style.css) with the track as the ONLY control (a button with role=switch: a button inside a summary does not toggle the menu) and plain, non-clickable label text. `text` defaults to the long label. */
 export const switchHtml = (tab: Tab, on: boolean, text = SWITCH_TEXT): string =>
-  `<button type="button" class="dxsw" role="switch" data-sw="${tab}" aria-checked="${on}" aria-label="${SWITCH_TEXT}: ${NAME[tab]}"><span class="dxtrack" aria-hidden="true"></span><span>${text}</span></button>`;
+  `<span class="dxsw"><button type="button" class="dxtrack" role="switch" data-sw="${tab}" aria-checked="${on}" aria-label="${SWITCH_TEXT}: ${NAME[tab]}"></button><span class="dxlabel">${text}</span></span>`;
 
 /** Flip one switch in the project (not an undo step: it is a setting, like a lock). */
 export function toggleSwitch(store: Store, tab: Tab, on?: boolean): void {
@@ -29,6 +29,7 @@ export function syncSwitches(store: Store, root: ParentNode = document): void {
 /** Click handling for switches inside `root` (delegated: the panel redraws its markup). A click never opens or closes the menu it sits in. */
 export function wireSwitches(store: Store, root: HTMLElement, after?: () => void): void {
   root.addEventListener('click', e => {
+    if ((e.target as HTMLElement).closest('.dxsw') && !(e.target as HTMLElement).closest('[data-sw]')) { e.preventDefault(); e.stopPropagation(); return; }   // label text: inert, and does not open or close the menu
     const b = (e.target as HTMLElement).closest<HTMLElement>('[data-sw]'); if (!b || !root.contains(b)) return;
     e.preventDefault(); e.stopPropagation(); toggleSwitch(store, b.dataset.sw as Tab); syncSwitches(store, document); after?.();
   });

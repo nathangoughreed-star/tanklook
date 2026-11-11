@@ -13,7 +13,7 @@ import { TABS, diffTouches } from '../src/scene/scope';
 import { getItem } from '../src/scene/brief';
 import { mirrorSpace, writeSpace } from '../src/scene/spaceStore';
 import { parseScene } from '../src/scene/validate';
-import { switchHtml, toggleSwitch } from '../src/ui/discover/switches';
+import { switchHtml, toggleSwitch, wireSwitches } from '../src/ui/discover/switches';
 import type { TankSetup } from '../src/scene/types';
 
 // @ts-expect-error node only (no node types in this project)
@@ -55,6 +55,33 @@ describe('seven menus plus Report', () => {
     expect(html).not.toContain('Discovery can change this');   // added by attachMenuSwitches, one per tab
     expect(switchHtml('plants', true)).toContain('Discovery can change this');
     expect(switchHtml('plants', true)).toContain('aria-checked="true"');
+  });
+});
+
+describe('DS1: switches show only in Discovery, and only the track toggles', () => {
+  const css = read('src/style.css');
+  it('the row is hidden unless body.discovering; the label is plain text, the track is the only role=switch', () => {
+    expect(css).toMatch(/\.dxsw \{[^}]*display: none/); expect(css).toMatch(/body\.discovering \.dxsw \{ display: flex/);
+    const h = switchHtml('tank', false);
+    expect((h.match(/role="switch"/g) ?? []).length).toBe(1);
+    expect(h).toMatch(/<button[^>]*class="dxtrack"[^>]*role="switch"[^>]*aria-checked="false"[^>]*><\/button>/);
+    expect(h).toContain('<span class="dxlabel">Discovery can change this</span>');
+    expect(h).not.toMatch(/<button[^>]*>[^<]*<span class="dxlabel"/);   // the label is not inside the button
+  });
+  it('a label click does nothing (and is swallowed); a track click flips the switch', () => {
+    const s = mk(); let handler: (e: unknown) => void = () => {};
+    const root = { addEventListener: (_: string, f: (e: unknown) => void) => { handler = f; }, contains: () => true } as unknown as HTMLElement;
+    const doc = globalThis as { document?: unknown }, prev = doc.document;
+    doc.document = { querySelectorAll: () => [] };
+    try {
+      wireSwitches(s, root);
+      const track = { dataset: { sw: 'plants' }, closest: (q: string) => (q === '[data-sw]' ? track : q === '.dxsw' ? {} : null) };
+      const label = { closest: (q: string) => (q === '.dxsw' ? {} : null) };
+      const ev = (t: unknown) => { const e = { target: t, stopped: false, prevented: false, stopPropagation() { e.stopped = true; }, preventDefault() { e.prevented = true; } }; return e; };
+      const e1 = ev(label); handler(e1); expect(discoverIsOn(s.tank, 'plants')).toBe(true); expect(e1.stopped && e1.prevented).toBe(true);
+      handler(ev(track)); expect(discoverIsOn(s.tank, 'plants')).toBe(false);
+      handler(ev(track)); expect(discoverIsOn(s.tank, 'plants')).toBe(true);
+    } finally { doc.document = prev; }
   });
 });
 
