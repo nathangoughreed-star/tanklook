@@ -12,7 +12,7 @@ import { aspectsOf, tell, type Aspects } from '../explore/aspects';
 import { SIZE_LARGE_MM } from '../explore/constants';
 import { getSpecies } from '../data/species';
 import type { HabitatDirection } from './discoveryTypes';
-import { dryOf, isDry, sizeAtBand, sizeOf, sizeRange, type SizeChoice } from './sizePrefs';
+import { dryOf, isDry, sizeAtBand, sizeOf, sizeRange, type GalRange, type SizeChoice } from './sizePrefs';
 import { archetypeByKey, archetypesFor, QUICK_ARCHETYPES, type ArchAxes, type QuickArchetype } from './quickArchetypes';
 
 /** PRE-QP1 answers (the Look chips and the Live plants question). Not asked any more; `answersOf` migrates what an older save holds (see `migrateLegacy`). */
@@ -23,7 +23,7 @@ export type ArchState = 'interested' | 'avoid';
 export type AvoidId = 'snails' | 'shrimp' | 'co2' | 'large-animals' | 'no-live-plants';
 /** A practical limit: a TARGET (preference, "I'd prefer under") or a FIRM maximum (hard, "I can't spend more than"). */
 export interface Limit { max: number; firm: boolean }
-export interface QuickAnswers { size?: SizeChoice; /** slider thumb 0..1 inside the size band (UI only: the answer everyone reads is `size`) */ sizeAt?: number; /** SZ1: Firm toggle on Size: the range is a hard filter */ sizeFirm?: boolean; /** archetype cards: catalogue key (scene/quickArchetypes.ts) to state; a card not listed is Unselected */ arch: Record<string, ArchState>; avoid: AvoidId[]; budget?: Limit; care?: Limit }
+export interface QuickAnswers { size?: SizeChoice; /** aquariums: the min-max gallon range from the two-thumb number line (GR-RANGE); written to constraints.tankGal. Wins over `size` when both are set */ gal?: GalRange; /** slider thumb 0..1 inside the size band (UI only: the answer everyone reads is `size`) */ sizeAt?: number; /** SZ1: Firm toggle on Size: the range is a hard filter */ sizeFirm?: boolean; /** archetype cards: catalogue key (scene/quickArchetypes.ts) to state; a card not listed is Unselected */ arch: Record<string, ArchState>; avoid: AvoidId[]; budget?: Limit; care?: Limit }
 export const emptyAnswers = (): QuickAnswers => ({ arch: {}, avoid: [] });
 
 const DRY = isDry;
@@ -76,7 +76,8 @@ export function normalize(a: QuickAnswers): QuickAnswers {
   for (const [k, v] of Object.entries(a.arch ?? {})) if (archetypeByKey(k) && (v === 'interested' || v === 'avoid')) arch[k] = v;
   const lim = (l?: Limit) => l && Number.isFinite(l.max) && l.max > 0 ? { max: Math.round(l.max), firm: !!l.firm } : undefined, b = lim(a.budget), c = lim(a.care);
   const at = a.size && a.sizeAt !== undefined && sizeAtBand(a.sizeAt) === a.size ? { sizeAt: a.sizeAt } : {};
-  return { ...(a.size ? { size: a.size } : {}), ...at, ...(a.size && a.sizeFirm ? { sizeFirm: true } : {}), arch, avoid: [...new Set(a.avoid)].filter(x => AVOIDS.some(v => v.id === x)), ...(b ? { budget: b } : {}), ...(c ? { care: c } : {}) };
+  const g = a.gal && Number.isFinite(a.gal.lo) && Number.isFinite(a.gal.hi) && a.gal.lo > 0 ? { gal: { lo: Math.round(Math.min(a.gal.lo, a.gal.hi)), hi: Math.round(Math.max(a.gal.lo, a.gal.hi)) } } : {};
+  return { ...(a.size ? { size: a.size } : {}), ...at, ...g, ...((a.size || g.gal) && a.sizeFirm ? { sizeFirm: true } : {}), arch, avoid: [...new Set(a.avoid)].filter(x => AVOIDS.some(v => v.id === x)), ...(b ? { budget: b } : {}), ...(c ? { care: c } : {}) };
 }
 /** The cards as "You told us" keys: Avoid writes -1 first, Interested +1 after, so where two cards share a key the positive wins. All from the closed vocabulary (explore/aspects.ts). */
 const toldKeys = (a: QuickAnswers): Record<string, 1 | -1> => {
@@ -105,6 +106,7 @@ export function answersOf(b: Brief): QuickAnswers {
   const pm = getItem(b, 'appearance.plantMode');
   if (pm && !pm.off && pm.status === 'hard' && pm.value === 'artificial' && !a.avoid.includes('no-live-plants')) a.avoid = [...a.avoid, 'no-live-plants'];
   const lt = getItem(b, 'preferences.lowtech'); if (lt && !lt.off && lt.status === 'hard' && lt.value && !a.avoid.includes('co2')) a.avoid = [...a.avoid, 'co2'];
+  if (!isDry(d)) { const r = rangeOf(b, 'constraints.tankGal'), it = getItem(b, 'constraints.tankGal'); if (it && !it.off && r.min !== undefined && r.max !== undefined) { a.gal = { lo: r.min, hi: r.max }; if (it.status === 'hard') a.sizeFirm = true; } }
   const s = sizeNow(b); if (s) { a.size = s; const at = q?.sizeAt; if (at !== undefined && sizeAtBand(at) === s) a.sizeAt = at; if (q?.sizeFirm || (!isDry(d) && getItem(b, 'constraints.tankGal')?.status === 'hard')) a.sizeFirm = true; }
   const bu = limitOf(b, 'constraints.budget'); if (bu) a.budget = bu;
   const ca = limitOf(b, 'constraints.careMin'); if (ca) a.care = ca;
@@ -116,7 +118,7 @@ export const migrationNote = (b: Brief): string | undefined => { const lg = lega
 /** Take back exactly what an earlier set of answers wrote (never an item the person has since changed by hand). */
 function retract(b: Brief, was: QuickAnswers): Brief {
   let out = b;
-  if (was.size && !isDry(dirOf(out)) && sizeNow(out) === was.size && ['preference', ...(was.sizeFirm ? ['hard'] : [])].includes(getItem(out, 'constraints.tankGal')?.status ?? '')) out = clearItem(out, 'constraints.tankGal');
+  if ((was.size || was.gal) && !isDry(dirOf(out)) && ['preference', ...(was.sizeFirm ? ['hard'] : [])].includes(getItem(out, 'constraints.tankGal')?.status ?? '')) out = clearItem(out, 'constraints.tankGal');
   const pm = getItem(out, 'appearance.plantMode');
   if (pm?.status === 'hard' && pm.value === 'artificial' && was.avoid.includes('no-live-plants')) out = clearItem(out, 'appearance.plantMode');
   const lt = getItem(out, 'preferences.lowtech'); if (was.avoid.includes('co2') && lt?.status === 'hard') out = clearItem(out, 'preferences.lowtech');
@@ -131,7 +133,7 @@ const putAspects = (b: Brief, a: Aspects | undefined): Brief => a ? setItem(b, '
 export function applyQuickPrefs(b: Brief, next: QuickAnswers): Brief {
   const was = answersOf(b), a = normalize(next), d = dirOf(b);
   let out = retract(b, was);
-  if (a.size && !isDry(d)) { const r = sizeRange(d, a.size); out = setRange(out, 'constraints.tankGal', { min: r.lo, max: r.hi }, a.sizeFirm ? 'hard' : 'preference'); }
+  if ((a.gal || a.size) && !isDry(d)) { const r = a.gal ?? sizeRange(d, a.size!); out = setRange(out, 'constraints.tankGal', { min: r.lo, max: r.hi }, a.sizeFirm ? 'hard' : 'preference'); }
   if (a.avoid.includes('no-live-plants')) out = setItem(out, 'appearance.plantMode', 'artificial', 'hard');
   if (a.avoid.includes('co2')) out = setItem(out, 'preferences.lowtech', true, 'hard');
   for (const [k, id] of [['budget', 'constraints.budget'], ['care', 'constraints.careMin']] as const) { const l = a[k]; if (l) out = setStatus(setBound(out, id, 'max', l.max), id, l.firm ? 'hard' : 'preference'); }

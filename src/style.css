@@ -1441,6 +1441,24 @@ body.discovering .dmfloat, body.discovering #climate, body.discovering .vmap, bo
 .qp-bands { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 2px }
 .qp-band { display: flex; flex-direction: column; align-items: center; text-align: center; font-size: 12px; padding: 3px 2px; border-top: 3px solid var(--line); opacity: .7 } .qp-band small { font-size: 11px; opacity: .8 }
 .qp-band.on { border-top-color: var(--accent); opacity: 1 }
+/* GR-RANGE: the aquarium gallon line. The axis rows are inset by half a thumb (8px) so tick, fill and band positions line up with the thumb centres. */
+.qp-gal .qp-axis { position: relative; margin: 0 8px }
+.qp-gal .qp-axis:first-child { height: 26px }
+.qp-gal .qp-track { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; border-radius: 2px; background: var(--line) }
+.qp-gal .qp-fill { position: absolute; bottom: 0; height: 4px; border-radius: 2px; background: var(--accent) }
+.qp-gal.unset .qp-fill { opacity: .35 }
+.qp-tick { position: absolute; bottom: 6px; transform: translateX(-50%); font-size: 10px; line-height: 1; color: var(--muted); padding-bottom: 5px }
+.qp-tick::after { content: ""; position: absolute; left: 50%; bottom: 0; width: 1px; height: 5px; background: var(--muted); opacity: .7 }
+.qp-dual { position: relative; height: 20px; margin-top: -12px }
+.qp-dual .qp-range { position: absolute; left: 0; top: 0; width: 100%; height: 20px; margin: 0; background: none; pointer-events: none; -webkit-appearance: none; appearance: none }
+.qp-dual .qp-range::-webkit-slider-runnable-track { background: none; height: 20px }
+.qp-dual .qp-range::-moz-range-track { background: none }
+.qp-dual .qp-range::-webkit-slider-thumb { -webkit-appearance: none; pointer-events: auto; width: 16px; height: 16px; margin-top: 2px; border-radius: 50%; background: var(--accent); border: 2px solid var(--panel); box-shadow: 0 0 0 1px var(--accent); cursor: grab; box-sizing: border-box }
+.qp-dual .qp-range::-moz-range-thumb { pointer-events: auto; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); border: 2px solid var(--panel); box-shadow: 0 0 0 1px var(--accent); cursor: grab }
+.qp-dual .qp-range:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px var(--accent) }
+.qp-gal.unset .qp-dual .qp-range { opacity: .55 }
+.qp-gbands { height: 38px; margin-top: 2px }
+.qp-gbands .qp-band { position: absolute; top: 0; box-sizing: border-box; border-left: 1px solid var(--panel); border-right: 1px solid var(--panel) }
 .qp-intro { margin: 8px 0; font-size: 13px }
 .qp-more { margin: 8px 0; border-top: 1px solid var(--line); padding-top: 6px } .qp-more > summary { cursor: pointer; font-size: 13px; font-weight: 600; padding: 4px 0 }
 .qp-limit { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 6px 0; font-size: 13px } .qp-num input { width: 84px } .qp-seg { display: inline-flex; gap: 4px }

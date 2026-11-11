@@ -41,6 +41,27 @@ export const sizeAtBand = (at: number): SizeChoice => at < 1 / 3 ? 'small' : at 
 export const sizeAtMid = (s: SizeChoice): number => (SIZE_CHOICES.indexOf(s) + 0.5) / 3;
 /** Gallons the thumb points at (aquarium habitats), rounded to a whole gallon. */
 export const galAt = (d: HabitatDirection, at: number): number => { const s = sizeAtBand(at), r = aq(d)[s], f = Math.min(1, Math.max(0, at * 3 - SIZE_CHOICES.indexOf(s))); return Math.round(r.lo + f * (r.hi - r.lo)); };
+/** GR-RANGE (2026-11-10, Nathan): aquariums answer size as a MIN-MAX GALLON RANGE on one continuous number line (two thumbs), with the three bands drawn under it.
+ *  The line runs from the smallest Small to the largest Large and is LOGARITHMIC: on a linear 5-150 gal line Small would be the left 10 %; on a log line the three
+ *  bands are close to equal (freshwater 39 / 30 / 31 %). Positions are 0..1; gallons snap to 1 gal under 30, 5 gal under 100, 10 gal above. */
+export const galSpan = (d: HabitatDirection): GalRange => { const g = aq(d); return { lo: g.small.lo, hi: g.large.hi }; };
+const c01 = (x: number) => Math.min(1, Math.max(0, x));
+export const galToPos = (d: HabitatDirection, gal: number): number => { const s = galSpan(d); return c01(Math.log(gal / s.lo) / Math.log(s.hi / s.lo)); };
+const snapGal = (g: number) => g < 30 ? Math.round(g) : g < 100 ? Math.round(g / 5) * 5 : Math.round(g / 10) * 10;
+export const posToGal = (d: HabitatDirection, p: number): number => { const s = galSpan(d); return Math.min(s.hi, Math.max(s.lo, snapGal(s.lo * Math.pow(s.hi / s.lo, c01(p))))); };
+/** The graduations: round tank sizes inside the line. */
+export const galTicks = (d: HabitatDirection): number[] => { const s = galSpan(d); return [5, 10, 15, 20, 30, 40, 55, 75, 100, 150, 200].filter(g => g >= s.lo && g <= s.hi); };
+/** Where each band sits on the line (0..1): edges halfway between one band's top and the next band's bottom. */
+export const bandSpans = (d: HabitatDirection): Record<SizeChoice, { from: number; to: number }> => {
+  const g = aq(d), mid = (a: number, b: number) => galToPos(d, (a + b) / 2);
+  return { small: { from: 0, to: mid(g.small.hi, g.medium.lo) }, medium: { from: mid(g.small.hi, g.medium.lo), to: mid(g.medium.hi, g.large.lo) }, large: { from: mid(g.medium.hi, g.large.lo), to: 1 } };
+};
+/** The bands a gallon range touches, in order. */
+export const bandsIn = (d: HabitatDirection, r: GalRange): SizeChoice[] => SIZE_CHOICES.filter(s => { const x = aq(d)[s]; return x.lo <= r.hi && r.lo <= x.hi; });
+/** The readout: "20-54 gal · Medium", "15-40 gal · Small to Medium". */
+export const galRangeText = (d: HabitatDirection, r: GalRange): string => {
+  const b = bandsIn(d, r); return `${r.lo === r.hi ? `${r.lo} gal` : galText(r)}${b.length ? ` · ${SIZE_LABEL[b[0]]}${b.length > 1 ? ` to ${SIZE_LABEL[b[b.length - 1]]}` : ''}` : ''}`;
+};
 /** "5-19 gal" (US gallons). */
 export const galText = (r: GalRange): string => `${r.lo}-${r.hi} gal`;
 /** What shows under a size choice: gallons for an aquarium, floor and height for a dry build. */

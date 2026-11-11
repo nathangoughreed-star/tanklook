@@ -151,7 +151,34 @@ describe('size slider', () => {
     expect(galAt('freshwater', 0)).toBe(5); expect(galAt('freshwater', 1)).toBe(150); expect(galAt('saltwater', 0.5)).toBe(52);
     const a = slideSize(emptyAnswers(), 500), b = applyQuickPrefs(fresh(), a);
     expect(a.size).toBe('medium'); expect(answersOf(b).size).toBe('medium'); expect(answersOf(b).sizeAt).toBe(0.5);
-    const h = sizeSliderHtml('freshwater', a); expect(h).toContain('type="range"'); expect(h).toContain('5-19 gal'); expect(h).toContain('55-150 gal'); expect(h).toContain('about 37 gal');
-    expect(sizeSliderHtml('terrarium', a)).not.toContain('gal');
+    const h = sizeSliderHtml('terrarium', a); expect(h).toContain('type="range"'); expect(h).toContain('data-sizeat'); expect(h).not.toContain('gal');
+  });
+});
+
+describe('GR-RANGE gallon range (aquariums)', () => {
+  it('the line is log-scaled from the smallest Small to the largest Large, graduated, with the three bands under it', async () => {
+    const { galSpan, galToPos, posToGal, galTicks, bandSpans, galRangeText } = await import('../src/scene/sizePrefs');
+    const { sizeSliderHtml } = await import('../src/ui/quickPrefs');
+    expect(galSpan('freshwater')).toEqual({ lo: 5, hi: 150 }); expect(galSpan('saltwater')).toEqual({ lo: 10, hi: 200 });
+    expect(posToGal('freshwater', 0)).toBe(5); expect(posToGal('freshwater', 1)).toBe(150); expect(posToGal('freshwater', galToPos('freshwater', 40))).toBe(40);
+    expect(galTicks('freshwater')).toEqual([5, 10, 15, 20, 30, 40, 55, 75, 100, 150]);
+    const s = bandSpans('freshwater'); for (const k of SIZE_CHOICES) expect(s[k].to - s[k].from).toBeGreaterThan(0.25);   // log scale: no band crushed
+    expect(galRangeText('freshwater', { lo: 20, hi: 54 })).toBe('20-54 gal · Medium'); expect(galRangeText('freshwater', { lo: 15, hi: 40 })).toBe('15-40 gal · Small to Medium');
+    const h = sizeSliderHtml('freshwater', emptyAnswers());
+    expect(h.match(/data-gal="(lo|hi)"/g)).toHaveLength(2); expect(h).toContain('Not set'); expect(h).toContain('5-19 gal'); expect(h).toContain('55-150 gal'); expect(h).toContain('>100<');
+  });
+  it('two thumbs write a min-max preference range, read back, keep a firm range firm, and Unsure clears it', async () => {
+    const { slideGal } = await import('../src/ui/quickPrefs');
+    const { galToPos } = await import('../src/scene/sizePrefs');
+    const at = (g: number) => Math.round(galToPos('freshwater', g) * 400);
+    const a = slideGal('freshwater', emptyAnswers(), at(40), at(15)), b = applyQuickPrefs(fresh(), a);   // crossed thumbs: the smaller is the minimum
+    expect(a.gal).toEqual({ lo: 15, hi: 40 }); expect(a.size).toBeUndefined();
+    expect(rangeOf(b, 'constraints.tankGal')).toEqual({ min: 15, max: 40 }); expect(getItem(b, 'constraints.tankGal')!.status).toBe('preference');
+    expect(answersOf(b).gal).toEqual({ lo: 15, hi: 40 }); expect(readQuickPrefs(b).sizeGal).toEqual({ value: { lo: 15, hi: 40 }, strength: 'prefer' });
+    expect(answersOf(applyQuickPrefs(b, A({ size: 'large' }))).gal).toEqual({ lo: 55, hi: 150 });
+    expect(getItem(applyQuickPrefs(b, press(answersOf(b), { size: 'unsure' })), 'constraints.tankGal')).toBeUndefined();
+    const { setStatus } = await import('../src/scene/brief');
+    const firm = setStatus(b, 'constraints.tankGal', 'hard'), moved = applyQuickPrefs(firm, slideGal('freshwater', answersOf(firm), at(20), at(30)));
+    expect(getItem(moved, 'constraints.tankGal')!.status).toBe('hard'); expect(rangeOf(moved, 'constraints.tankGal')).toEqual({ min: 20, max: 30 });
   });
 });
