@@ -199,7 +199,8 @@ describe('scenario 5: a few votes never outweigh a clear stated preference', () 
 });
 
 // DQ3: the real example ("A overall, B's plants") dumped for the screenshot script. Run: DQ3_DUMP=research/screens/DQ3 npx vitest run test/dq3.test.ts -t dump
-import { writeFileSync, mkdirSync } from 'node:fs';
+// @ts-expect-error node only (no node types in this project)
+const { writeFileSync, mkdirSync } = await import('node:fs');
 const DUMP = (globalThis as { process?: { env: Record<string, string | undefined> } }).process?.env.DQ3_DUMP;
 it.skipIf(!DUMP)('dump the A-overall-B-plants example', () => {
   const { e } = engine(), r = first(e), va = attrValues(r.a.snapshot, r.a.facts), vb = attrValues(r.b.snapshot, r.b.facts);
