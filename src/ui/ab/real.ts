@@ -3,6 +3,7 @@
 import { discoverTabs } from '../../scene/discoverScope';
 import { TABS, type Tab } from '../../scene/scope';
 import { effectiveScope, freeze as freezeTab, loadSession, pause as pauseSession, rebase as rebaseSession, record as recordOutcome, resume, saveSession, setCurrent, setFavourite as setFav, startSession, unfreeze, type NextPair } from '../../scene/discoverySession';
+import { markTargetUsed, recordLean, withTargets } from '../../scene/learning';
 import { createProposalHistory, reEvaluate as reEval } from '../../scene/proposalHistory';
 import { getBrief } from '../setupBrief';
 import { suggestNarrowing } from '../../scene/breadth';
@@ -34,16 +35,18 @@ export function createRealEngine(store: Store, _opts: () => VerdictOpts = () => 
   const nothing = (c: string[], r: string[]): PairResult => ({ ok: false, conflicts: c.length ? c : ['Every candidate broke a lock or a limit.'], relaxations: r.length ? r : ['Open a tab (check its switch) or relax a lock.'] });
   const proj = () => ({ tank: store.effTank, rev: store.rev });
   let scores: ScoredRow[] = [];
-  const pair = (type: NextPair['type']): PairResult => nextPair(proj(), getBrief(), s, id => rec(id), { scores: rows => { scores = rows; }, next: type, shownKeys: [...mem.values()].flatMap(r => r.key ? [r.key] : []), units: store.scene.units });
+  const pair = (type: NextPair['type'], broaden?: boolean): PairResult => nextPair(proj(), getBrief(), s, id => rec(id), { scores: rows => { scores = rows; }, next: type, ...(broaden ? { broaden } : {}), shownKeys: [...mem.values()].flatMap(r => r.key ? [r.key] : []), units: store.scene.units });
   const sideOf = (r: CandidateRecord) => { const b = getBrief(); return { id: r.id, features: featuresFor(r.snapshot, scoreScene(r.snapshot, b, customTankWants(b, briefToWants(b)))) }; };
   const show = (a: CandidateRecord, b: CandidateRecord, type: NextPair['type']): PairResult => {
     const ids: string[] = [];
     for (const r of [a, b]) { mem.set(r.id, r); const o = hist.put(r); ids.push(o.stored ? r.id : o.id); }
-    s = setCurrent(s, ids[0], ids[1], type); save();
+    s = setCurrent(s, ids[0], ids[1], type);
+    const tid = (rec(ids[1]) ?? b).intent?.targetId; if (tid) s = markTargetUsed(s, tid);   // DQ3: a component preference is answered once (tested or explained), never repeated
+    save();
     return { ok: true, a: rec(ids[0]) ?? a, b: rec(ids[1]) ?? b };
   };
   const drawFor = (np: NextPair): PairResult => {
-    const r = pair(np.type);
+    const r = pair(np.type, np.broaden);
     if (!r.ok && r.single) { mem.set(r.single.id, r.single); hist.put(r.single); }
     return r.ok ? show(r.a, r.b, np.type) : r;
   };
@@ -73,9 +76,12 @@ export function createRealEngine(store: Store, _opts: () => VerdictOpts = () => 
     next() { const c = s.current, a = rec(c?.aId), b = rec(c?.bId); return a && b ? { ok: true, a, b } : drawFor(nextNow()); },
     choose(outcome: Outcome, why?: ReasonKey[], otherGood?: ReasonKey[], rel?: { attr: AttrKey; elements: string[]; side: 'A' | 'B' }[]) {
       const before = s.championId, a = rec(s.current?.aId), b = rec(s.current?.bId), r = recordOutcome(s, outcome, why, otherGood);
-      s = r.session; markChampion(before); save();
+      s = withTargets(r.session, outcome, a, b, rel); markChampion(before); save();   // DQ3: "A overall, B's plants" leaves a soft component preference for the next challenger
       // taste (aspects.ts): ranking only, never a lock; Skip records nothing
-      if (a && b && outcome !== 'skip') editBrief(br => recordPair(br, { outcome, a: sideOf(a), b: sideOf(b), ...(why?.length ? { why } : {}), ...(otherGood?.length ? { otherGood } : {}) }));
+      if (a && b && outcome !== 'skip') editBrief(br => {
+        const out = recordPair(br, { outcome, a: sideOf(a), b: sideOf(b), ...(why?.length ? { why } : {}), ...(otherGood?.length ? { otherGood } : {}) });
+        return outcome === 'A' ? recordLean(out, a, b, why) : outcome === 'B' ? recordLean(out, b, a, why) : out;   // DQ3: cost reasons teach the practical lean only
+      });
       // AB13: the optional A / B attribute picks land at the SAME boundary as the overall vote (never for Skip), as soft +1 evidence on the preferred value only
       if (a && b && outcome !== 'skip' && rel?.length) for (const x of rel) putPick((x.side === 'A' ? a : b).id, x.attr, x.elements);   // DQ1 (P4): exactly ONE learning event per pick: the thumb entry (scored once, by thumbBonus); no second tagged aspect event
       return drawFor(r.next);

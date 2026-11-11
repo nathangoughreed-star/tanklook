@@ -165,6 +165,8 @@ export interface ProjectExtras {
   /** AB6: the quick-preference answers (scene/quickPrefs.ts writes the items and told weights they stand for); kept so the screen and the Constraints block show them back */
   /** AB7: soft thumbs on attribute values from the Discovery attribute panel (scene/attrs.ts). Ranking only; never a filter, a told answer or a lock. */
   thumbs?: Record<string, { v: 1 | -1; e: string[] }>;
+  /** DQ3: practical lean from "why" reasons (Upfront / Ongoing cost): n = times the cheaper design won on that reason (capped), ref = the pair's mean figure (USD) the lean is measured from. Ranking only. */
+  lean?: { upfront?: { n: number; ref: number }; ongoing?: { n: number; ref: number } };
   quick?: { size?: 'small' | 'medium' | 'large'; /** where on the size slider (0..1) the person left the thumb; the band it falls in is `size` */ sizeAt?: number; look?: string[]; plants?: 'definitely' | 'prefer' | 'prefer-not' | 'not'; /** QP1: archetype card states by catalogue key (scene/quickArchetypes.ts); `look` / `plants` are the pre-QP1 answers, kept only until the next write migrates them */ arch?: Record<string, 'interested' | 'avoid'>; avoid?: string[] };
 }
 /** The project's extra answers (never undefined). */
@@ -414,6 +416,11 @@ export function parseProject(raw: unknown): ProjectExtras | undefined {
       if (/^[a-z]{3,12}\|/.test(k) && k.length <= 200 && t && (t.v === 1 || t.v === -1) && Array.isArray(t.e)) th[k] = { v: t.v, e: t.e.filter((q): q is string => typeof q === 'string' && q.length < 80).slice(0, 30) };
     }
     if (Object.keys(th).length) p.thumbs = th;
+  }
+  if (r.lean && typeof r.lean === 'object') {
+    const l: NonNullable<ProjectExtras['lean']> = {};
+    for (const k of ['upfront', 'ongoing'] as const) { const x = (r.lean as Record<string, { n?: unknown; ref?: unknown } | undefined>)[k]; if (x && typeof x.n === 'number' && typeof x.ref === 'number' && x.n > 0 && x.ref > 0) l[k] = { n: Math.min(3, Math.round(x.n)), ref: Math.round(x.ref) }; }
+    if (Object.keys(l).length) p.lean = l;
   }
   const co = r.coach as Record<string, unknown> | undefined;
   if (co && typeof co === 'object' && idOk(co.at)) { const sk2 = Array.isArray(co.skipped) ? co.skipped.filter(idOk).slice(0, 40) : []; p.coach = sk2.length ? { at: co.at, skipped: sk2 } : { at: co.at }; }

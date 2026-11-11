@@ -36,7 +36,9 @@ import { rankEligible } from '../explore/rank';
 import { customTankWants, type Kind, type Wants } from '../demand/suggest';
 import { defaultProfile, type UserProfile } from '../demand/types';
 import type { Fish, TankSetup, Units } from './types';
-import type { CandidateRecord, DiscoverySession, HabitatDirection, PairResult, ProposalPurpose, Comparison } from './discoveryTypes';
+import type { CandidateRecord, DiscoverySession, HabitatDirection, PairResult, ProposalIntent, ProposalPurpose, Comparison } from './discoveryTypes';
+import { pendingTarget } from './learning';
+import { leanOf } from './learning';
 import { contentDistance, factsOf, featuresFor, fingerprintOf, keyOf, scoreScene, tokensOf, type Scored } from './pairFacts';
 
 /** The working project: its tank (design, brief, locks) and the store revision it was read at. */
@@ -62,6 +64,8 @@ export interface PairOpts {
   scores?: (rows: ScoredRow[]) => void;
   /** DQ2: receives the search's quality and latency numbers (diversity, yield, rejection reasons, stop reason, strategy) */
   metrics?: (m: PoolMetrics) => void;
+  /** DQ3: Like neither was the last answer: draw the next challenger from further away and lean less on taste (the session's `NextPair.broaden`) */
+  broaden?: boolean;
 }
 /** DQ2 instrumentation: what the bounded search did and how diverse its pool was. */
 export interface PoolMetrics {
@@ -84,7 +88,8 @@ export interface PoolMetrics {
   /** proposals skipped before any check because they held a prohibited animal */
   preExcluded: number;
 }
-export type Strategy = 'improve' | 'alternate' | 'out-of-family';
+export type Strategy = 'improve' | 'alternate' | 'out-of-family' | 'targeted';
+type Bucket = Exclude<Strategy, 'targeted'>;
 /** One candidate's score under the one policy (scorePolicy.ts), for the debug view. */
 export interface ScoredRow { id: string; title: string; chosen: boolean; breakdown: ScoreBreakdown }
 
@@ -340,8 +345,8 @@ const REJECT_CLASSES: [string, RegExp][] = [['lock-or-scope', /would change|brea
   ['final-check', /larger tank or fewer|adult|outgrow/i], ['limit-or-gate', /budget|limit|cost|care|time|size|space/i]];
 export const rejectClass = (r: Rej): string => r.issues.length && !REJECT_CLASSES.some(([, re]) => re.test(r.text)) ? 'welfare-or-physical' : REJECT_CLASSES.find(([, re]) => re.test(r.text))?.[0] ?? 'welfare-or-physical';
 /** Challenger strategy for a champion pair: refinement mostly improves or tries a controlled alternate; exploration leans to out-of-family; out-of-family is always occasional. Deterministic by the round. */
-export const strategySchedule = (refine: boolean, round: number): Strategy[] => {
-  const sched: Strategy[][] = refine ? [['improve', 'alternate', 'out-of-family'], ['alternate', 'improve', 'out-of-family'], ['improve', 'alternate', 'out-of-family'], ['out-of-family', 'improve', 'alternate']]
+export const strategySchedule = (refine: boolean, round: number): Bucket[] => {
+  const sched: Bucket[][] = refine ? [['improve', 'alternate', 'out-of-family'], ['alternate', 'improve', 'out-of-family'], ['improve', 'alternate', 'out-of-family'], ['out-of-family', 'improve', 'alternate']]
     : [['alternate', 'out-of-family', 'improve'], ['out-of-family', 'alternate', 'improve'], ['improve', 'alternate', 'out-of-family'], ['out-of-family', 'alternate', 'improve']];
   return sched[round % 4];
 };
@@ -429,9 +434,9 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
   })() : undefined;
   // DQ1: ONE scoring policy (scorePolicy.ts): stated preferences (cards, ranges, targets, look axes) outrank learned ones; nothing here filters
   const scoreW = weightsOf(aspectsOf(brief)), thumbs = projectExtras(brief).thumbs as ThumbMap | undefined;
-  const breakdownOf = (p: Pending): ScoreBreakdown => scoreBreakdown({ pf, S: p.rec.snapshot, facts: p.rec.facts, features: p.entry.features, archetypeId: p.entry.fp.archetypeId, familyId: p.entry.fp.familyId, totals: p.sc.totals, weights: scoreW, thumbs });
+  const breakdownOf = (p: Pending): ScoreBreakdown => scoreBreakdown({ pf, S: p.rec.snapshot, facts: p.rec.facts, features: p.entry.features, archetypeId: p.entry.fp.archetypeId, familyId: p.entry.fp.familyId, totals: p.sc.totals, weights: scoreW, thumbs, lean: leanOf(brief) });
   const scoreOf = (p: Pending) => type === 'fresh' ? 0 : breakdownOf(p).total;   // Something Different ignores taste, stated and learned: it is a broad look
-  const told = hasStated(pf), tasteW = 0.1 + 0.25 * br.confidence + (told ? 0.4 : 0);     // a told preference ranks harder than a learned one
+  const told = hasStated(pf), tasteW = (0.1 + 0.25 * br.confidence + (told ? 0.4 : 0)) * (opts.broaden ? 0.5 : 1), tdist = Math.min(0.9, targetDistance(br) + (opts.broaden ? 0.25 : 0));     // a told preference ranks harder than a learned one
   const usable = () => {
     const fresh = cache.pend.filter(p => !known.has(p.rec.key ?? '') && !(champPending && type !== 'fresh' && same(p, champPending)));
     const eligible = rankEligible(fresh.filter(p => p.sc.gate.verdict !== 'blocked').map(p => ({ ...p.entry, p })), aspectsOf(brief)).map(e => e.p);
@@ -443,16 +448,16 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
   const strat = first && purpose !== 'contrast' && habitatFree(base, scope);   // a controlled contrast (few tabs open) is MEANT to be near its siblings; a design with the habitat locked has only variations to draw from
   const pooled = () => { const u = usable(); if (!strat) return u; const d = diversify(u, scoreOf, distinct); pruned = d.pruned; return d.kept; };
   // the three challenger strategies, by what a candidate is relative to the favourite: another family altogether (out-of-family), a better-ranked variation (improve), or a controlled alternate
-  const buckets = (pool: Pending[]): Record<Strategy, Pending[]> => {
+  const buckets = (pool: Pending[]): Record<Bucket, Pending[]> => {
     const cp = champPending!, cs = scoreOf(cp), fam = (p: Pending) => distinct(p, cp) && p.rec.snapshot.layout.id !== cp.rec.snapshot.layout.id;
     return { 'out-of-family': pool.filter(fam), improve: pool.filter(p => !fam(p) && scoreOf(p) > cs), alternate: pool.filter(p => !fam(p) && scoreOf(p) <= cs) };
   };
-  const schedule = strategySchedule(refine, session.comparisons.length);
+  const schedule = opts.broaden ? (['out-of-family', 'alternate', 'improve'] as Bucket[]) : strategySchedule(refine, session.comparisons.length);
   const challenger = (pool: Pending[], strict: boolean) => {
     if (!champPending) return undefined;
     const bk = buckets(pool);
     for (const st of schedule) {
-      const ch = bk[st].length ? chooseChallenger(bk[st], champPending, targetDistance(br), scoreOf, refine, strict, tasteW) : undefined;
+      const ch = bk[st].length ? chooseChallenger(bk[st], champPending, tdist, scoreOf, refine, strict, tasteW) : undefined;
       if (ch) { strategy = st; return ch; }
     }
     return undefined;
@@ -464,6 +469,22 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
     const [x, y] = pr[0].rec.key! <= pr[1].rec.key! ? pr : [pr[1], pr[0]]; return { a: x.rec, b: y.rec, pool: pool.length };
   };
   // generate only as much as is needed: DX2's proposals on the baseline first (cheap, and few: they are variations of one design), then one Explore look at a time (families spread by `lookOrder`) while there is time and a whole habitat may be drawn
+  // DQ3 (spec 6.3, strategy 1): an explicit, recent component preference ("A overall, but B's plants") is answered FIRST by a targeted challenger: the favourite with only that tab taken from the other design,
+  // everything else recomputed by the usual road (locks, scope, welfare, equipment, cost). Infeasible: the reason is said on the ordinary challenger that follows; nothing is ever forced.
+  let missed: ProposalIntent | undefined;
+  const tg = type === 'champion' && champ && !opts.broaden ? pendingTarget(session, champ.id) : undefined, donor = tg ? lookup(tg.donorId) : undefined;
+  if (tg && !donor) missed = { text: `The design whose ${TAB_WORD[tg.tab]} you preferred is no longer available, so that could not be tested.`, targetId: tg.id, infeasible: true };
+  if (tg && donor && champ) {
+    const out = combine(champ, donor, tg.tab, project, brief, { now, units: opts.units ?? 'in', P, sessionId: session.id, scope });
+    const word = TAB_WORD[tg.tab], plain = (xs: string[]) => [...new Set(xs.map(x => x.replace(/\.+$/, '')))].slice(0, 2).join('; ');
+    if (out.ok && out.record.key && !known.has(out.record.key)) {
+      const text = `Testing ${tg.donorSide}-inspired ${tg.tab === 'plants' ? 'planting' : word} in your favourite; ${out.notes.length ? `${plain(out.notes)}; ` : ''}equipment and cost recalculated.`;
+      const rec: CandidateRecord = { ...out.record, purpose: 'challenger', intent: { text, targetId: tg.id, tab: tg.tab, donorId: donor.id } };
+      opts.metrics?.({ type, ms: Math.round(performance.now() - t0), stop: 'coverage', tried: 1, generated: 1, yield: 1, usable: 1, pooled: 1, pruned: 0, families: 1, sizeClasses: [], worlds: 1, stockPatterns: [], looksTried: 0, proposals: 0, explores: 0, strategy: 'targeted', rejections: {}, excludedSpecies: 0, preExcluded: 0 });
+      return { ok: true, a: champ, b: rec };
+    }
+    missed = { text: out.ok ? `The other design's ${word} would give the same design as your favourite, so nothing new to test.` : `Could not test the other design's ${word} in your favourite: ${plain(out.conflicts) || 'it does not fit'}.${out.relaxations.length ? ` ${plain(out.relaxations)}.` : ''}`, targetId: tg.id, tab: tg.tab, donorId: donor.id, infeasible: true };
+  }
   const gen = champBase ?? base;
   const excl = excludedSpecies(pf), ctx: Ctx = { prefs: pf, ...(excl.size ? { exclude: excl } : {}), ...(pf.prohibit.includes('co2') ? { noCo2: true } : {}), orig: gen, brief, w, P, units, now, scope, baseRev: project.rev, sessionId: session.id, purpose, ...(type === 'champion' && champ ? { parentId: champ.id } : {}), cache };
   const looks = habitatFree(base, scope) ? lookOrder(ctx, session.direction, type, champ) : [];
@@ -494,7 +515,7 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
   }
   if (result) {
     if (opts.scores) { const ids = new Set([result.a.id, result.b.id]); opts.scores(pooled().map(p => ({ id: p.rec.id, title: p.rec.facts.title, chosen: ids.has(p.rec.id), breakdown: breakdownOf(p) })).sort((x, y) => y.breakdown.total - x.breakdown.total)); }
-    return { ok: true as const, a: result.a, b: result.b };
+    return { ok: true as const, a: result.a, b: missed && type === 'champion' ? { ...result.b, intent: { ...missed, text: `${missed.text} Showing a different challenger instead.` } } : result.b };
   }
   const left = usable(), few = left.length, sz = w.tankGal && (w.tankGal.min !== undefined || w.tankGal.max !== undefined) ? `${w.tankGal.min ?? 0}-${w.tankGal.max ?? 'any'} gal` : '';
   const why = few === 1 ? [`Only one design fits your locks and limits${sz ? ` (including a tank of ${sz})` : ''}, so there is nothing to compare it with. It is shown on its own; no second design is made up.`]

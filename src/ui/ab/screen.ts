@@ -245,7 +245,8 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
     if (DEBUG) panel += scoresHtml() + statsHtml(summarize(metrics.all()));
     const open = (panelOpen || force) && !busy;
     const only = !busy && result && !result.ok ? result.single : undefined;
-    const bar = ok ? `${choiceBtns()}<div class="abfacts">${bits(ok.a, 'A')}${bits(ok.b, 'B')}</div>` : only ? `<div class="abfacts">${bits(only, 'A')}</div>` : `<span class="hint abbusy" role="status">${busy ? 'Looking…' : 'Discovery'}</span>`;
+    const intent = ok ? [ok.a, ok.b].find(r => r.intent)?.intent : undefined;   // DQ3: one visible line saying what a targeted challenger tests (or why a requested test could not be built)
+    const bar = ok ? `${intent ? `<p class="hint abintent" role="status"${intent.infeasible ? '' : ' data-targeted="1"'}>${esc(intent.text)}</p>` : ''}${choiceBtns()}<div class="abfacts">${bits(ok.a, 'A')}${bits(ok.b, 'B')}</div>` : only ? `<div class="abfacts">${bits(only, 'A')}</div>` : `<span class="hint abbusy" role="status">${busy ? 'Looking…' : 'Discovery'}</span>`;
     root.innerHTML = `${open ? `<div class="abpanel" role="region" aria-label="Discovery details">${panel}</div>` : ''}<div class="abbar" role="group" aria-label="Discovery"><div class="abbarmain">${bar}</div><div class="abbarend">${lockChip()}<button type="button" data-act="more" aria-expanded="${open}" title="Every attribute (thumbs and locks), reasons, Explore Something Different, Combine, Keep, history">${open ? 'Less ▾' : 'Details ▴'}</button><button type="button" class="dxx" aria-label="Close Discovery" data-act="close">✕ Close</button></div></div>${plan ? planHtml(plan) : detail ? detailHtml(detail) : ''}`;
     root.classList.toggle('opened', open);
     syncViewer(); viewer?.setReserve(root.offsetHeight); shots();

@@ -10,6 +10,7 @@ import type { QuickPrefs } from './quickPrefs';
 import { thumbBonus, type ThumbMap } from './attrs';
 import { designAxes, type DesignAxes } from './designAxes';
 import type { Weight } from '../explore/aspects';
+import { leanBonus, type Lean } from './learning';
 
 /** The size of every stated nudge. Documented so a change is a decision, not a drift. */
 export const STATED = { sizeIn: 0.5, sizeOut: -0.2, floorIn: 0.3, floorOut: -0.1, heightIn: 0.3, heightOut: -0.1, plantsFit: 0.3, plantsMiss: -0.2, axis: 0.3, layout: 0.6, family: 0.4, told: 0.4, overTarget: 0.3 } as const;
@@ -19,7 +20,7 @@ export interface ScoreTerm { name: string; v: number; group: 'stated' | 'learned
 export interface ScoreBreakdown { total: number; stated: number; learned: number; /** the learned sum before the cap */ learnedRaw: number; cap: number; terms: ScoreTerm[]; axes: Pick<DesignAxes, 'natural' | 'lush' | 'colourful' | 'ordered' | 'rockWood' | 'plantMode'> }
 export interface ScoreInput {
   pf: QuickPrefs; S: TankSetup; facts: Pick<CandidateFacts, 'gallons'> & Partial<CandidateFacts>; features: readonly string[]; archetypeId: string; familyId: string;
-  totals: { setupUsd: number; minPerWeek: number }; weights: Map<string, Weight>; thumbs?: ThumbMap;
+  totals: { setupUsd: number; minPerWeek: number }; weights: Map<string, Weight>; thumbs?: ThumbMap; /** DQ3: the practical lean from cost reasons */ lean?: Lean;
 }
 const inR = (x: number, r: { lo: number; hi: number }) => x >= r.lo && x <= r.hi;
 const AXES = ['natural', 'lush', 'colourful', 'ordered'] as const;
@@ -48,8 +49,9 @@ export function scoreBreakdown(i: ScoreInput): ScoreBreakdown {
   // ---- learned: aspect weights from events (never the told ones), plus attribute-pick thumbs; capped
   let learnedRaw = 0; for (const k of features) { const w = i.weights.get(k); if (w && w.source === 'learned') learnedRaw += w.w; }
   const thumbs = thumbBonus(i.thumbs, S, facts as CandidateFacts); learnedRaw += thumbs;
+  const lean = leanBonus(i.lean, i.totals.setupUsd, facts.monthlyUsd?.mean); learnedRaw += lean.v;
   const cap = hasStated(pf) ? LEARNED_CAP_WITH_STATED : LEARNED_CAP, learned = Math.max(-cap, Math.min(cap, learnedRaw));
-  add('learned', learned, 'learned', `votes ${(learnedRaw - thumbs).toFixed(2)} + attribute picks ${thumbs.toFixed(2)}, capped at ${cap}`);
+  add('learned', learned, 'learned', `votes ${(learnedRaw - thumbs - lean.v).toFixed(2)} + attribute picks ${thumbs.toFixed(2)} + cost lean ${lean.v.toFixed(2)}${lean.why ? ` (${lean.why})` : ''}, capped at ${cap}`);
   const stated = terms.filter(t => t.group === 'stated').reduce((t, x) => t + x.v, 0);
   return { total: stated + learned, stated, learned, learnedRaw, cap, terms, axes: { natural: ax.natural, lush: ax.lush, colourful: ax.colourful, ordered: ax.ordered, rockWood: ax.rockWood, plantMode: ax.plantMode } };
 }

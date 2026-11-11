@@ -63,7 +63,13 @@ export interface CandidateRecord {
   thumb?: string;
   /** Explore's candidate identity key (src/explore/candidate.ts), for dedupe */
   key?: string;
+  /** DQ3: why this design was generated, when it tests a hypothesis (a targeted challenger); shown as one line on the screen */
+  intent?: ProposalIntent;
 }
+/** DQ3: the visible purpose of a targeted challenger. `targetId` = the component preference it answers; `tab` / `donorId` = what was tried; `infeasible` = the test could not be built (the text says why). */
+export interface ProposalIntent { text: string; targetId?: string; tab?: Tab; donorId?: string; infeasible?: boolean }
+/** DQ3: an explicit, recent component preference ("A overall, but B's plants"): a SOFT hint for the next challenger, never a lock or a copy. `baseId` = the design preferred overall, `donorId` = the one whose `tab` was preferred. */
+export interface ComponentPref { id: string; tab: Tab; attr: string; baseId: string; donorId: string; donorSide: 'A' | 'B'; /** comparisons count when it was given */ at: number; used?: true }
 
 export type Outcome = 'A' | 'B' | 'both' | 'neither' | 'skip';
 
@@ -108,6 +114,8 @@ export interface DiscoverySession {
   /** the pair on screen */
   current?: { aId: string; bId: string; type: Comparison['type'] };
   comparisons: Comparison[];
+  /** DQ3: component preferences waiting for a targeted challenger (newest last) */
+  targets?: ComponentPref[];
   status: 'active' | 'paused';
 }
 

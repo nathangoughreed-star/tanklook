@@ -218,7 +218,7 @@ describe('pairwise outcomes in aspects.ts', () => {
   it('reasons speak only for aspects; money reasons teach nothing (a limit is never a preference)', () => {
     const ev = pairEvents({ outcome: 'A', a: A, b: Bb, why: ['plants', 'upfront'] });
     expect(ev[0].att).toBe(true); expect(ev[0].pos!.every(k => ['plants', 'natural'].includes(tagOf(k)!))).toBe(true);
-    expect(pairEvents({ outcome: 'A', a: A, b: Bb, why: ['upfront', 'ongoing'] })[0].pos).toEqual(A.features);
+    expect(pairEvents({ outcome: 'A', a: A, b: Bb, why: ['upfront', 'ongoing'] })).toEqual([]);   // DQ3: a money reason is no evidence about the parts (it teaches the cost lean only: scene/learning.ts)
   });
   it('feedback ranks, never locks: the brief gains an aspects item only, and a ranked list never adds or drops a candidate', () => {
     const b2 = recordPair(B, { outcome: 'A', a: A, b: Bb, why: ['plants'] }), asp = aspectsOf(b2);

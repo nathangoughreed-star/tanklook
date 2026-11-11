@@ -215,19 +215,22 @@ const REASON_TAGS: Record<ReasonKey, readonly AspectTag[]> = {
 export const reasonTags = (why: readonly ReasonKey[] | undefined): AspectTag[] => [...new Set((why ?? []).flatMap(r => REASON_TAGS[r] ?? []))];
 export interface PairSide { id: string; features: string[] }
 export interface PairReaction { outcome: Outcome; a: PairSide; b: PairSide; why?: ReasonKey[]; otherGood?: ReasonKey[] }
-/** The events one pairwise result records (0 to 2), oldest-first order a then b. */
+/** The events one pairwise result records (0 to 2), oldest-first order a then b.
+ *  DQ3 (spec 6.1): an A / B win is RELATIVE whole-design evidence, not a verdict on every part.
+ *   - no reasons: the winner is liked and the loser passed only on what the two designs DO NOT share (a shared feature is no evidence); the loser's world and look family stay untouched.
+ *   - aspect reasons (plants, hardscape ...): the reasoned aspects only (winner on, loser off), as before.
+ *   - only practical reasons (Upfront / Ongoing cost, or a reason with no aspect tag): NO aspect event at all: "A won for the price" says nothing about B's plants. Cost is learned separately (`leanOf`, scene/learning.ts). */
 export function pairEvents(r: PairReaction): AspectEvent[] {
   if (r.outcome === 'skip') return [];
-  const out: AspectEvent[] = [], on = reasonTags(r.why), good = reasonTags(r.otherGood);
-  const side = (s: PairSide, role: 'win' | 'lose' | 'like' | 'pass') => {
-    const ev = role === 'like' || role === 'win'
-      ? eventOf({ kind: 'like', c: s.id, features: s.features, ...(role === 'win' && on.length ? { on } : {}) })
-      : eventOf({ kind: 'pass', c: s.id, features: s.features, ...(role === 'lose' && on.length ? { off: on } : {}), ...(role === 'lose' && good.length ? { on: good } : {}) });
-    if (ev) out.push(ev);
-  };
-  if (r.outcome === 'A' || r.outcome === 'B') { const [w, l] = r.outcome === 'A' ? [r.a, r.b] : [r.b, r.a]; side(w, 'win'); side(l, 'lose'); }
-  else if (r.outcome === 'both') { side(r.a, 'like'); side(r.b, 'like'); }
-  else { side(r.a, 'pass'); side(r.b, 'pass'); }
+  const out: AspectEvent[] = [], on = reasonTags(r.why), good = reasonTags(r.otherGood), reasoned = !!r.why?.length;
+  const push = (ev: AspectEvent | undefined) => { if (ev) out.push(ev); };
+  if (r.outcome === 'A' || r.outcome === 'B') {
+    const [w, l] = r.outcome === 'A' ? [r.a, r.b] : [r.b, r.a], lf = new Set(l.features), wf = new Set(w.features);
+    if (on.length) push(eventOf({ kind: 'like', c: w.id, features: w.features, on }));
+    else if (!reasoned) { const d = w.features.filter(k => !lf.has(k)); if (d.length) push(eventOf({ kind: 'like', c: w.id, features: d })); }
+    if (on.length || good.length) push(eventOf({ kind: 'pass', c: l.id, features: l.features, ...(on.length ? { off: on } : {}), ...(good.length ? { on: good } : {}) }));
+    else if (!reasoned) { const d = l.features.filter(k => !wf.has(k)); if (d.length) push(eventOf({ kind: 'pass', c: l.id, features: d })); }
+  } else for (const s of [r.a, r.b]) push(eventOf({ kind: r.outcome === 'both' ? 'like' : 'pass', c: s.id, features: s.features }));
   return out;
 }
 /** Record a pairwise result. Skip returns the profile untouched. */
