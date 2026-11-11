@@ -234,7 +234,6 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
       + row('floor', 'Floor', st.floor, st.topFloor, 'floor', 'Most of the floor:', 'Floor the bottom dwellers use: 15 sq in per inch of fish (research/habitat-model.md). A taller tank adds no floor.', 'No bottom dwellers: the floor is free.');
     bars.innerHTML = `<div class="ftWhy ftSize">${esc(tankSizeLine(S, r, u))}</div>` + (r.contributors.length ? summaryHtml(sm, esc) : '') + (st.compat ? `<div class="ftWarn ft-${st.compat.level} ftCompat">${esc(st.compat.text)}</div>` : '') + spaceRows
       + (st.filter === 'unset' ? `<div class="ftWarn ft-near ftNeedFilter"><b>No filter chosen.</b> A filter sized for this tank is strongly recommended: it circulates and aerates the water, catches debris and holds the bacteria that clear ammonia. Pick one in Tech › Filtration.${box(false)}</div>` : '')
-      + (st.filter === 'filterless' ? `<div class="ftWhy">${box(true)}: it needs dense plants, a light stock and some water movement.</div>` : '')
       + (st.topMin.length ? row('min', 'Tank minimum', st.min, st.topMin, 'minimum', 'Smallest tank they want, whatever the count:', Number.isFinite(st.min.pct) ? `Their minimum tank is ${Math.round(st.min.pct)}% of this one: green past every Recommended size, yellow between the minimum and Recommended, red below the minimum.` : '') : '')
       + st.mins.map(w => `<div class="ftWarn ft-${w.level}">${esc(w.text)}</div>`).join('')
       + crowd.map(t => `<div class="ftWarn ft-near ftCrowd">${esc(t)}</div>`).join('')

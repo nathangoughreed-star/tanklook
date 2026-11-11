@@ -289,7 +289,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
   const filterBody = (S: TankSetup, t: TechSetup, cur: string, c: OptionCost, rowDef: { options: { id: string; label: string }[] }): string => {
     const us = filterUnits(t), costs = unitCosts(S, 'filter', { tech: t, kwhUsd: kwhUsd() }), kit = inBundle(S, t, 'filter');
     let html = '<div class="tunits">';
-    if (!us.length) html += card('None (Walstad)', undefined, false, '', `<span class="tchips">${chips(S, 'filter', 'none', c)}</span>`);
+    if (!us.length) html += card(t.filterless ? 'No filter (Walstad style): needs dense plants, a light stock and some water movement' : 'None (Walstad)', undefined, false, '', `<span class="tchips">${chips(S, 'filter', 'none', c)}</span>`);
     us.forEach((u, i) => {
       
       const turn = costs[i].turnover;
@@ -418,6 +418,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
       if (r.qol && !rows.some(x => x.qol && x.id !== r.id && rows.indexOf(x) < rows.indexOf(r))) html += '<div class="hint" style="margin-top:.6em"><b>Quality of life</b>: gear that takes chores off your hands, for a price.</div>';
       const cur = t.rows[r.id] ?? 'none', def = optionDef(r.id, cur), c = optionCost(S, r.id, cur, { tech: t, kwhUsd: kwhUsd() });
       let name = def?.label ?? cur;
+      if (r.id === 'filter' && cur === 'none' && t.filterless) name = 'No filter (Walstad style)';
       // heaters and filters: the units by name (Nathan 2026-10-20: "Top Fin Submersible Heater 50 W" readily seen)
       if (r.id === 'heater' && cur !== 'none') name = heatLoss(S, t).units.map(u => u.product ? productName(u.product) : `Generic heater ${u.watts} W`).join(' + ');
       if (r.id === 'filter' && cur !== 'none') name = filterUnits(t).map(u => filterLabel(S, u)).join(' + ');
