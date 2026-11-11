@@ -23,7 +23,7 @@ export type ArchState = 'interested' | 'avoid';
 export type AvoidId = 'snails' | 'shrimp' | 'co2' | 'large-animals' | 'no-live-plants';
 /** A practical limit: a TARGET (preference, "I'd prefer under") or a FIRM maximum (hard, "I can't spend more than"). */
 export interface Limit { max: number; firm: boolean }
-export interface QuickAnswers { size?: SizeChoice; /** slider thumb 0..1 inside the size band (UI only: the answer everyone reads is `size`) */ sizeAt?: number; /** archetype cards: catalogue key (scene/quickArchetypes.ts) to state; a card not listed is Unselected */ arch: Record<string, ArchState>; avoid: AvoidId[]; budget?: Limit; care?: Limit }
+export interface QuickAnswers { size?: SizeChoice; /** slider thumb 0..1 inside the size band (UI only: the answer everyone reads is `size`) */ sizeAt?: number; /** SZ1: Firm toggle on Size: the range is a hard filter */ sizeFirm?: boolean; /** archetype cards: catalogue key (scene/quickArchetypes.ts) to state; a card not listed is Unselected */ arch: Record<string, ArchState>; avoid: AvoidId[]; budget?: Limit; care?: Limit }
 export const emptyAnswers = (): QuickAnswers => ({ arch: {}, avoid: [] });
 
 const DRY = isDry;
@@ -76,7 +76,7 @@ export function normalize(a: QuickAnswers): QuickAnswers {
   for (const [k, v] of Object.entries(a.arch ?? {})) if (archetypeByKey(k) && (v === 'interested' || v === 'avoid')) arch[k] = v;
   const lim = (l?: Limit) => l && Number.isFinite(l.max) && l.max > 0 ? { max: Math.round(l.max), firm: !!l.firm } : undefined, b = lim(a.budget), c = lim(a.care);
   const at = a.size && a.sizeAt !== undefined && sizeAtBand(a.sizeAt) === a.size ? { sizeAt: a.sizeAt } : {};
-  return { ...(a.size ? { size: a.size } : {}), ...at, arch, avoid: [...new Set(a.avoid)].filter(x => AVOIDS.some(v => v.id === x)), ...(b ? { budget: b } : {}), ...(c ? { care: c } : {}) };
+  return { ...(a.size ? { size: a.size } : {}), ...at, ...(a.size && a.sizeFirm ? { sizeFirm: true } : {}), arch, avoid: [...new Set(a.avoid)].filter(x => AVOIDS.some(v => v.id === x)), ...(b ? { budget: b } : {}), ...(c ? { care: c } : {}) };
 }
 /** The cards as "You told us" keys: Avoid writes -1 first, Interested +1 after, so where two cards share a key the positive wins. All from the closed vocabulary (explore/aspects.ts). */
 const toldKeys = (a: QuickAnswers): Record<string, 1 | -1> => {
@@ -105,7 +105,7 @@ export function answersOf(b: Brief): QuickAnswers {
   const pm = getItem(b, 'appearance.plantMode');
   if (pm && !pm.off && pm.status === 'hard' && pm.value === 'artificial' && !a.avoid.includes('no-live-plants')) a.avoid = [...a.avoid, 'no-live-plants'];
   const lt = getItem(b, 'preferences.lowtech'); if (lt && !lt.off && lt.status === 'hard' && lt.value && !a.avoid.includes('co2')) a.avoid = [...a.avoid, 'co2'];
-  const s = sizeNow(b); if (s) { a.size = s; const at = q?.sizeAt; if (at !== undefined && sizeAtBand(at) === s) a.sizeAt = at; }
+  const s = sizeNow(b); if (s) { a.size = s; const at = q?.sizeAt; if (at !== undefined && sizeAtBand(at) === s) a.sizeAt = at; if (q?.sizeFirm || (!isDry(d) && getItem(b, 'constraints.tankGal')?.status === 'hard')) a.sizeFirm = true; }
   const bu = limitOf(b, 'constraints.budget'); if (bu) a.budget = bu;
   const ca = limitOf(b, 'constraints.careMin'); if (ca) a.care = ca;
   return a;
@@ -116,7 +116,7 @@ export const migrationNote = (b: Brief): string | undefined => { const lg = lega
 /** Take back exactly what an earlier set of answers wrote (never an item the person has since changed by hand). */
 function retract(b: Brief, was: QuickAnswers): Brief {
   let out = b;
-  if (was.size && !isDry(dirOf(out)) && sizeNow(out) === was.size && getItem(out, 'constraints.tankGal')?.status === 'preference') out = clearItem(out, 'constraints.tankGal');
+  if (was.size && !isDry(dirOf(out)) && sizeNow(out) === was.size && ['preference', ...(was.sizeFirm ? ['hard'] : [])].includes(getItem(out, 'constraints.tankGal')?.status ?? '')) out = clearItem(out, 'constraints.tankGal');
   const pm = getItem(out, 'appearance.plantMode');
   if (pm?.status === 'hard' && pm.value === 'artificial' && was.avoid.includes('no-live-plants')) out = clearItem(out, 'appearance.plantMode');
   const lt = getItem(out, 'preferences.lowtech'); if (was.avoid.includes('co2') && lt?.status === 'hard') out = clearItem(out, 'preferences.lowtech');
@@ -131,7 +131,7 @@ const putAspects = (b: Brief, a: Aspects | undefined): Brief => a ? setItem(b, '
 export function applyQuickPrefs(b: Brief, next: QuickAnswers): Brief {
   const was = answersOf(b), a = normalize(next), d = dirOf(b);
   let out = retract(b, was);
-  if (a.size && !isDry(d)) { const r = sizeRange(d, a.size); out = setRange(out, 'constraints.tankGal', { min: r.lo, max: r.hi }, 'preference'); }
+  if (a.size && !isDry(d)) { const r = sizeRange(d, a.size); out = setRange(out, 'constraints.tankGal', { min: r.lo, max: r.hi }, a.sizeFirm ? 'hard' : 'preference'); }
   if (a.avoid.includes('no-live-plants')) out = setItem(out, 'appearance.plantMode', 'artificial', 'hard');
   if (a.avoid.includes('co2')) out = setItem(out, 'preferences.lowtech', true, 'hard');
   for (const [k, id] of [['budget', 'constraints.budget'], ['care', 'constraints.careMin']] as const) { const l = a[k]; if (l) out = setStatus(setBound(out, id, 'max', l.max), id, l.firm ? 'hard' : 'preference'); }
@@ -139,7 +139,7 @@ export function applyQuickPrefs(b: Brief, next: QuickAnswers): Brief {
   for (const [k, v] of Object.entries(toldKeys(a))) asp = tell(asp, k, v);
   out = putAspects(out, asp);
   const { quick: _q, ...rest } = projectExtras(out), has = a.size || Object.keys(a.arch).length || a.avoid.length;
-  return setProjectExtras(out, has ? { ...rest, quick: { ...(a.size ? { size: a.size } : {}), ...(a.size && a.sizeAt !== undefined ? { sizeAt: a.sizeAt } : {}), ...(Object.keys(a.arch).length ? { arch: a.arch } : {}), ...(a.avoid.length ? { avoid: a.avoid } : {}) } } : rest);
+  return setProjectExtras(out, has ? { ...rest, quick: { ...(a.size ? { size: a.size } : {}), ...(a.size && a.sizeAt !== undefined ? { sizeAt: a.sizeAt } : {}), ...(a.size && a.sizeFirm ? { sizeFirm: true } : {}), ...(Object.keys(a.arch).length ? { arch: a.arch } : {}), ...(a.avoid.length ? { avoid: a.avoid } : {}) } } : rest);
 }
 
 export type Strength = 'hard' | 'prefer';
@@ -176,8 +176,8 @@ const archPrefs = (arch: Readonly<Record<string, ArchState>>): QuickPrefs['arch'
 export function readQuickPrefs(b: Brief): QuickPrefs {
   const a = answersOf(b), d = dirOf(b), out: QuickPrefs = { look: axesOf(a.arch), arch: archPrefs(a.arch), prohibit: [...a.avoid] };
   if (a.size) {
-    if (isDry(d)) { const x = dryOf(d, a.size)!; out.floorSqIn = { value: { ...x.floorSqIn }, strength: 'prefer' }; out.heightIn = { value: { ...x.heightIn }, strength: 'prefer' }; }
-    else { const r = rangeOf(b, 'constraints.tankGal'); out.sizeGal = { value: { lo: r.min ?? 0, hi: r.max ?? Number.POSITIVE_INFINITY }, strength: getItem(b, 'constraints.tankGal')?.status === 'hard' ? 'hard' : 'prefer' }; }
+    if (isDry(d)) { const x = dryOf(d, a.size)!; const st: Strength = a.sizeFirm ? 'hard' : 'prefer'; out.floorSqIn = { value: { ...x.floorSqIn }, strength: st }; out.heightIn = { value: { ...x.heightIn }, strength: st }; }
+    else { const r = rangeOf(b, 'constraints.tankGal'); out.sizeGal = { value: { lo: r.min ?? 0, hi: r.max ?? Number.POSITIVE_INFINITY }, strength: a.sizeFirm || getItem(b, 'constraints.tankGal')?.status === 'hard' ? 'hard' : 'prefer' }; }
   } else if (!isDry(d)) {
     const r = rangeOf(b, 'constraints.tankGal'); if (r.min !== undefined || r.max !== undefined) out.sizeGal = { value: { lo: r.min ?? 0, hi: r.max ?? Number.POSITIVE_INFINITY }, strength: getItem(b, 'constraints.tankGal')?.status === 'hard' ? 'hard' : 'prefer' };
   }

@@ -25,7 +25,9 @@ export function sizeSliderHtml(d: HabitatDirection, a: QuickAnswers): string {
   const bands = SIZE_CHOICES.map(s => `<span class="qp-band${a.size === s ? ' on' : ''}"><b>${SIZE_LABEL[s]}</b><small>${esc(sizeText(d, s))}</small></span>`).join('');
   return `<div class="qp-row" role="group" aria-label="Size"><b>Size <span class="qp-read" aria-live="polite">${esc(read)}</span></b>`
     + `<div class="qp-slide${at === undefined ? ' unset' : ''}"><input type="range" class="qp-range" data-sizeat min="0" max="1000" step="1" value="${Math.round((at ?? 0.5) * 1000)}" aria-label="Size, small to large" aria-valuetext="${esc(read)}"><div class="qp-bands" aria-hidden="true">${bands}</div></div>`
-    + `<div class="qp-opts">${btn('data-size="unsure"', !a.size, 'Unsure')}</div></div>`;
+    + `<div class="qp-opts">${btn('data-size="unsure"', !a.size, 'Unsure')}</div>`
+    + `<div class="qp-limit"><span class="qp-seg" role="group" aria-label="Size: preference or firm range">${btn('data-sizefirm="0"', !!a.size && !a.sizeFirm, 'Preference')}${btn('data-sizefirm="1"', !!a.size && !!a.sizeFirm, 'Firm')}</span></div>`
+    + `<p class="hint">Preference = bigger or smaller tanks rank lower the further they are from this range; Firm = never outside it.</p></div>`;
 }
 
 const STATE_TXT: Record<string, string> = { interested: '✓ Interested', avoid: '✕ Avoid', none: '○ Not chosen' };
@@ -54,12 +56,13 @@ export function prefsHtml(d: HabitatDirection, a: QuickAnswers, open: { limits?:
   return rows.join('');
 }
 /** Press a button: the next answers. Pressing the chosen button again clears it (that is "Unsure"). */
-export function press(a: QuickAnswers, t: { size?: string; arch?: string; avoid?: string; firm?: string }): QuickAnswers {
+export function press(a: QuickAnswers, t: { size?: string; arch?: string; avoid?: string; firm?: string; sizefirm?: string }): QuickAnswers {
   const n: QuickAnswers = { ...a, arch: { ...a.arch }, avoid: [...a.avoid] }, tog = <T>(xs: T[], x: T) => xs.includes(x) ? xs.filter(y => y !== x) : [...xs, x];
   if (t.size === 'unsure') { delete n.size; delete n.sizeAt; }
   else if (t.size) { if (a.size === t.size) { delete n.size; delete n.sizeAt; } else { n.size = t.size as SizeChoice; delete n.sizeAt; } }
   if (t.arch) { const cur: ArchState | undefined = a.arch[t.arch], nx: ArchState | undefined = cur === undefined ? 'interested' : cur === 'interested' ? 'avoid' : undefined; if (nx) n.arch[t.arch] = nx; else delete n.arch[t.arch]; }   // unselected -> interested -> avoid -> unselected
   if (t.avoid) n.avoid = tog(n.avoid, t.avoid as AvoidId);
+  if (t.sizefirm && n.size) n.sizeFirm = t.sizefirm === '1';
   if (t.firm) { const [k, v] = t.firm.split(':') as ['budget' | 'care', string], l = n[k]; if (l) n[k] = { max: l.max, firm: v === '1' }; }
   return normalize(n);
 }
@@ -82,7 +85,7 @@ function mountForm(host: HTMLElement, get: () => QuickAnswers, set: (a: QuickAns
   };
   host.addEventListener('click', e => {
     const t = (e.target as HTMLElement).closest<HTMLElement>('.qp-opt, .qp-card'); if (!t) return;
-    set(press(get(), { size: t.dataset.size, arch: t.dataset.arch, avoid: t.dataset.avoid, firm: t.dataset.firm })); redraw();
+    set(press(get(), { size: t.dataset.size, arch: t.dataset.arch, avoid: t.dataset.avoid, firm: t.dataset.firm, sizefirm: t.dataset.sizefirm })); redraw();
   });
   host.addEventListener('error', e => { const i = e.target as HTMLElement; if (i instanceof HTMLImageElement && i.closest('.qp-thumb')) i.remove(); }, true);   // no thumbnail yet: the labelled placeholder tile stays
   host.addEventListener('input', e => {   // the slider: the answer follows the thumb, only the readout is redrawn (a full redraw would drop the drag)

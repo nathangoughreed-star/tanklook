@@ -22,7 +22,18 @@ export interface ScoreInput {
   pf: QuickPrefs; S: TankSetup; facts: Pick<CandidateFacts, 'gallons'> & Partial<CandidateFacts>; features: readonly string[]; archetypeId: string; familyId: string;
   totals: { setupUsd: number; minPerWeek: number }; weights: Map<string, Weight>; thumbs?: ThumbMap; /** DQ3: the practical lean from cost reasons */ lean?: Lean;
 }
-const inR = (x: number, r: { lo: number; hi: number }) => x >= r.lo && x <= r.hi;
+/** SZ1: a range preference as a smooth fit, 0..1. Flat 1 inside [lo, hi]; outside, a Gaussian on a LOG scale: z = ln(g/hi)/sigma above, ln(lo/g)/sigma below, fit = exp(-z^2/2).
+ *  sigma = ln(hi/lo)/2 (the edges of a range are +-1 SD in log space), floored at ln(1.25) so a narrow range is not a cliff. 20-40 gal: 55 gal 0.66, 80 gal 0.14, 10 gal 0.14.
+ *  An open end (hi infinite, lo 0) never penalises that side. */
+export const SIZE_SIGMA_FLOOR = Math.log(1.25);
+export function rangeFit(x: number, r: { lo: number; hi: number }): number {
+  if (!(x > 0)) return 0;
+  const sigma = Math.max(SIZE_SIGMA_FLOOR, Number.isFinite(r.hi) && r.lo > 0 ? Math.log(r.hi / r.lo) / 2 : SIZE_SIGMA_FLOOR);
+  const z = x > r.hi ? Math.log(x / r.hi) / sigma : x < r.lo ? Math.log(r.lo / x) / sigma : 0;
+  return Math.exp(-z * z / 2);
+}
+/** the stated term for a range: fit 1 gives `inV`, fit 0 gives `outV`, linear between (so the span in..out is today's span) */
+const fitV = (fit: number, inV: number, outV: number) => outV + fit * (inV - outV);
 const AXES = ['natural', 'lush', 'colourful', 'ordered'] as const;
 
 /** Does the person's own word (not a vote) speak about this candidate at all? Drives the learned cap. */
@@ -33,9 +44,9 @@ export function scoreBreakdown(i: ScoreInput): ScoreBreakdown {
   const { pf, S, facts, features } = i, terms: ScoreTerm[] = [], add = (name: string, v: number, group: ScoreTerm['group'], why?: string) => { if (v) terms.push({ name, v, group, ...(why ? { why } : {}) }); };
   const ax = designAxes(S), g = facts.gallons, plants = S.items.filter(x => x.kind === 'plant').length;
   // ---- stated: ranges (a preferred range, never a bound)
-  if (pf.sizeGal && g != null) add('size', inR(g, pf.sizeGal.value) ? STATED.sizeIn : STATED.sizeOut, 'stated', `${g} gal vs preferred ${pf.sizeGal.value.lo}-${pf.sizeGal.value.hi}`);
-  if (pf.floorSqIn) add('floor', inR(S.tank.L * S.tank.D / (25.4 * 25.4), pf.floorSqIn.value) ? STATED.floorIn : STATED.floorOut, 'stated');
-  if (pf.heightIn) add('height', inR(S.tank.H / 25.4, pf.heightIn.value) ? STATED.heightIn : STATED.heightOut, 'stated');
+  if (pf.sizeGal && g != null) { const f = rangeFit(g, pf.sizeGal.value); add('size', fitV(f, STATED.sizeIn, STATED.sizeOut), 'stated', `${g} gal vs preferred ${pf.sizeGal.value.lo}-${pf.sizeGal.value.hi}: fit ${f.toFixed(2)}`); }
+  if (pf.floorSqIn) { const v = S.tank.L * S.tank.D / (25.4 * 25.4), f = rangeFit(v, pf.floorSqIn.value); add('floor', fitV(f, STATED.floorIn, STATED.floorOut), 'stated', `${Math.round(v)} sq in: fit ${f.toFixed(2)}`); }
+  if (pf.heightIn) { const v = S.tank.H / 25.4, f = rangeFit(v, pf.heightIn.value); add('height', fitV(f, STATED.heightIn, STATED.heightOut), 'stated', `${v.toFixed(1)} in: fit ${f.toFixed(2)}`); }
   if (pf.plants?.strength === 'prefer') add('plants', (pf.plants.value === 'live') === (plants >= 6) ? STATED.plantsFit : STATED.plantsMiss, 'stated');
   // ---- stated: a cost or care TARGET ranks the candidates over it lower in proportion to how far over (a firm maximum already filtered)
   const over = (t: number, x: number) => t > 0 && x > t ? Math.min(1, x / t - 1) : 0;

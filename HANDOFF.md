@@ -724,3 +724,8 @@ FS1 follow-up (2026-11-10): sae 5+ step (75 gal) is PROVISIONAL; `groupVol` step
 - Images: `public/art/quick/<key>.webp` (QP3). Until present or on load error the labelled placeholder tile stays (error listener removes the `<img>`). Nothing to switch when QP3 lands.
 - 375 px: 2 cards per row (description hidden) beat a scroller; Skip / Start building stay sticky. Screens in `research/screens/QP2/`. Tests: `test/qp2.test.ts`.
 - Not done: spec scenario 12 end-to-end through Discover with real thumbnails (needs QP3 images).
+
+## SZ1: smooth size preference + Firm toggle (2026-11-11; Coordinator 22; NOT pushed)
+- `scorePolicy.ts` `rangeFit(x, {lo,hi})`: 1 inside, log-Gaussian outside (sigma = ln(hi/lo)/2, floor ln 1.25; open ends never penalise). The size / floor / height terms = `sizeOut + fit * (sizeIn - sizeOut)`, so the span is still +0.5 .. -0.2. 20-40 gal: 55 gal 0.66, 80 gal 0.14, 10 gal 0.14. `?debug` size term shows the gallons and the fit.
+- Firm: `QuickAnswers.sizeFirm` (stored `quick.sizeFirm`). Aquatic: writes `constraints.tankGal` status hard (the DQ1 firm path, `liveWants`); dry: floor and height strength 'hard'. Size row has Preference | Firm buttons (`data-sizefirm`), same function for the screen and left block. Hand-set hard tankGal reads back as Firm.
+- Tests: `test/sz1.test.ts`. Screens: `research/screens/SZ1/`.
