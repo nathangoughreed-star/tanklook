@@ -201,6 +201,8 @@ export const undoAspect = (b: Brief): Brief => put(b, undoLast(aspectsOf(b)));
 export const undoAspectsOf = (b: Brief, c: string): Brief => put(b, undoCandidate(aspectsOf(b), c));
 export const tellAspect = (b: Brief, key: string, v: 1 | -1 | 0): Brief => put(b, tell(aspectsOf(b), key, v));
 /** Forget everything learned. */
+/** DQ4: forget what A / B voting and attribute picks taught; the "You told us" keys (cards, limits set by hand, the Constraints block) stay. Returns how many learned events were dropped through `dropped`. */
+export const clearLearnedAspects = (b: Brief): Brief => { const a = aspectsOf(b); return a ? put(b, { ...a, events: [] }) : b; };
 export const clearAspects = (b: Brief): Brief => clearItem(b, 'preferences.aspects');
 
 // ---------------------------------------------------------------------------------------------------------------- pairwise outcomes (lane AB1, Discovery v2 plan decision 6)

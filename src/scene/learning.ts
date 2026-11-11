@@ -6,6 +6,7 @@
 //   challenger). It is not a lock, not a copy and not a second taste event. Lock and Combine are project actions and teach nothing here.
 import { COMBINE_ATTR_TAB as ATTR_TAB, type AttrKey } from './attrs';
 import type { CandidateRecord, ComponentPref, DiscoverySession, Outcome, ReasonKey } from './discoveryTypes';
+import { clearLearnedAspects } from '../explore/aspects';
 import { projectExtras, setProjectExtras, type Brief, type ProjectExtras } from './brief';
 
 /** A component pick can be tested on the five Combine tabs (attrs.ts COMBINE_ATTR_TAB); gear attributes (light, filter, heater, stand, background) have no tab: a pick on them is a thumb only. */
@@ -37,6 +38,13 @@ export const markTargetUsed = (session: DiscoverySession, id: string): Discovery
 
 // ---------------------------------------------------------------------------------------------------------------- practical lean (cost reasons)
 export type Lean = NonNullable<ProjectExtras['lean']>;
+/** DQ4 "Reset learned taste": the learned parts of the brief only (A / B aspect events, attribute thumbs, the cost lean). Stated preferences (cards, told keys, limits, locks) and the project are untouched. */
+export function resetLearnedBrief(b: Brief): Brief {
+  const x = projectExtras(b), { thumbs: _t, lean: _l, ...rest } = x;
+  return setProjectExtras(clearLearnedAspects(b), rest);
+}
+/** ... and the session's learned side: pending component preferences. Comparisons, champion, locks, scope and history stay. */
+export const resetLearnedSession = (s: DiscoverySession): DiscoverySession => { const { targets: _t, ...rest } = s; return rest as DiscoverySession; };
 export const leanOf = (b: Brief): Lean => projectExtras(b).lean ?? {};
 const LEAN_STEP = 0.1, LEAN_MIN_GAP = 0.05;
 /** "Upfront cost" / "Ongoing cost" given as the reason a design won: when the winner really is the cheaper one (by at least 5 %), lean toward cheaper on that dimension; otherwise nothing (the reason is ambiguous). */

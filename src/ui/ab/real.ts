@@ -3,11 +3,11 @@
 import { discoverTabs } from '../../scene/discoverScope';
 import { TABS, type Tab } from '../../scene/scope';
 import { effectiveScope, freeze as freezeTab, loadSession, pause as pauseSession, rebase as rebaseSession, record as recordOutcome, resume, saveSession, setCurrent, setFavourite as setFav, startSession, unfreeze, type NextPair } from '../../scene/discoverySession';
-import { markTargetUsed, recordLean, withTargets } from '../../scene/learning';
+import { markTargetUsed, recordLean, resetLearnedBrief, resetLearnedSession, withTargets } from '../../scene/learning';
 import { createProposalHistory, reEvaluate as reEval } from '../../scene/proposalHistory';
 import { getBrief } from '../setupBrief';
 import { suggestNarrowing } from '../../scene/breadth';
-import { adapt as adaptPair, combine as combinePair, nextPair, type ScoredRow } from '../../scene/pairGen';
+import { adapt as adaptPair, combine as combinePair, nextPair, type PoolMetrics, type ScoredRow } from '../../scene/pairGen';
 import { featuresFor, scoreScene } from '../../scene/pairFacts';
 import { reasonTags, recordAspect, recordPair, undoAspectsOf } from '../../explore/aspects';
 import { ATTR_TAGS, setThumb as putThumb, thumbKey, type AttrKey, type ThumbMap } from '../../scene/attrs';
@@ -34,8 +34,10 @@ export function createRealEngine(store: Store, _opts: () => VerdictOpts = () => 
   const rec = (id: string | undefined): CandidateRecord | undefined => id ? hist.get(id) ?? mem.get(id) : undefined;
   const nothing = (c: string[], r: string[]): PairResult => ({ ok: false, conflicts: c.length ? c : ['Every candidate broke a lock or a limit.'], relaxations: r.length ? r : ['Open a tab (check its switch) or relax a lock.'] });
   const proj = () => ({ tank: store.effTank, rev: store.rev });
-  let scores: ScoredRow[] = [];
-  const pair = (type: NextPair['type'], broaden?: boolean): PairResult => nextPair(proj(), getBrief(), s, id => rec(id), { scores: rows => { scores = rows; }, next: type, ...(broaden ? { broaden } : {}), shownKeys: [...mem.values()].flatMap(r => r.key ? [r.key] : []), units: store.scene.units });
+  let scores: ScoredRow[] = [], pool: PoolMetrics | undefined;
+  /** DQ4: designs already shown in THIS session: the ones in memory AND every stored / gone history line of the session, so a reload (empty memory) never repeats them straight away. History can still reopen them (bringBack). */
+  const seenKeys = (): string[] => { const ks = new Set<string>(); for (const r of mem.values()) if (r.key) ks.add(r.key); for (const l of hist.page(s.id, 0, 100000).items) if (l.key) ks.add(l.key); return [...ks]; };
+  const pair = (type: NextPair['type'], broaden?: boolean): PairResult => nextPair(proj(), getBrief(), s, id => rec(id), { scores: rows => { scores = rows; }, metrics: m => { pool = m; }, next: type, ...(broaden ? { broaden } : {}), shownKeys: seenKeys(), units: store.scene.units });
   const sideOf = (r: CandidateRecord) => { const b = getBrief(); return { id: r.id, features: featuresFor(r.snapshot, scoreScene(r.snapshot, b, customTankWants(b, briefToWants(b)))) }; };
   const show = (a: CandidateRecord, b: CandidateRecord, type: NextPair['type']): PairResult => {
     const ids: string[] = [];
@@ -62,6 +64,8 @@ export function createRealEngine(store: Store, _opts: () => VerdictOpts = () => 
   return {
     session: () => s,
     lastScores: () => scores,
+    lastPool: () => pool,
+    resetLearning() { editBrief(resetLearnedBrief); s = resetLearnedSession(s); save(); },   // DQ4: the next pair reranks the cached designs (the cache key leaves taste out)
     record: id => rec(id),
     open(scope) {
       const prev = loadSession(project);

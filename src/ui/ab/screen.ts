@@ -238,7 +238,7 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
     if (ok && !plan && !detail) { const g = engine.suggestion?.(); if (g && g.text !== sugNo) panel += `<p class="hint absug" role="note">${esc(g.text)} <button type="button" data-act="sug-do" data-tab="${g.tab}" data-text="${esc(g.text)}">Switch ${TAB_LABEL[g.tab]} off</button> <button type="button" data-act="sug-no" data-text="${esc(g.text)}">Not now</button></p>`; }
     if (proposal) panel += proposalHtml(proposal);
     if (ok) {
-      panel += `${reasonsHtml()}${attrHtml(ok.a, ok.b)}<div class="btns"><button type="button" data-act="different" title="Two new ideas away from your favourite; the winner then faces your favourite">Explore Something Different</button></div>
+      panel += `${reasonsHtml()}${attrHtml(ok.a, ok.b)}<div class="btns"><button type="button" data-act="different" title="Two new ideas away from your favourite; the winner then faces your favourite">Explore Something Different</button>${engine.resetLearning ? `<button type="button" data-act="reset-learning" title="Forget what your A / B choices taught. Your stated preferences, locks, history and design stay.">Reset learned taste</button>` : ''}</div>
         <div class="abcols">${sideBlock(ok.a, ok.b, 'A')}${sideBlock(ok.b, ok.a, 'B')}</div>`;
       panel += historyHtml();
     } else if (!busy && result && !result.ok) { if (result.single) panel += sideBlock(result.single, result.single, 'A'); panel += historyHtml(); }
@@ -357,6 +357,7 @@ export function attachAbScreen(store: Store, viewer: Viewer | undefined, engine:
       }
       case 'continue': engine.rebase(); resume = false; look(() => { const c = engine.recheckChampion(); void c; return engine.next(); }); break;
       case 'restart': engine.restart(); resume = false; syncScope(); look(() => engine.next()); break;
+      case 'reset-learning': engine.resetLearning?.(); note = 'Learned taste cleared. Your stated preferences, locks, history and saved design are unchanged.'; draw(); break;
       case 'hist-toggle': histOpen = !histOpen; draw(); break;
       case 'hist-prev': histPage = Math.max(0, histPage - 1); draw(); break;
       case 'hist-next': histPage++; draw(); break;

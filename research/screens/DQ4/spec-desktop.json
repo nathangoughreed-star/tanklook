@@ -1,0 +1,773 @@
+[
+ {
+  "label": "first pair",
+  "aId": "ab-0r84lswbi7cp",
+  "bId": "ab-0osk71bc9spz",
+  "a": {
+   "id": "ab-0r84lswbi7cp",
+   "title": "Overgrown Jungle",
+   "gal": 42.5,
+   "newSpend": 1683,
+   "monthly": 49,
+   "weeklyMin": 66,
+   "stocking": [
+    "2 Angelfish",
+    "2 Honey gourami",
+    "10 Kuhli loach"
+   ],
+   "plants": [
+    "plant (balansae) x24",
+    "plant (grass) x21",
+    "plant (stem) x13",
+    "plant (crypt) x12",
+    "plant (fern) x9",
+    "plant (sword) x5",
+    "plant (moss) x4",
+    "plant (sagittaria) x4",
+    "plant (frogbit) x2",
+    "plant (salvinia) x2"
+   ],
+   "hardscape": [
+    "wood (spider) x2",
+    "stone (lava) x2",
+    "wood (branch)"
+   ],
+   "substrate": [
+    "custom"
+   ],
+   "toBuy": [
+    "Tank (42 gal; on sale at Petco $75, was $150)",
+    "Stand",
+    "Lid (glass)",
+    "Substrate",
+    "Light (36 W)",
+    "Water test kit (ammonia, nitrite, nitrate, pH)",
+    "Dechlorinator (first bottle)",
+    "Siphon / gravel vacuum",
+    "Bucket (aquarium only)",
+    "Fish net",
+    "Thermometer",
+    "Filtration: Hang-on-back filter",
+    "Heating: One heater",
+    "3D background: jungle wall (estimate)"
+   ],
+   "co2": false,
+   "purpose": "first",
+   "intent": null,
+   "key": "1evfcjkxlu2d"
+  },
+  "b": {
+   "id": "ab-0osk71bc9spz",
+   "title": "Blackwater Creek",
+   "gal": 20.7,
+   "newSpend": 788,
+   "monthly": 23,
+   "weeklyMin": 39,
+   "stocking": [
+    "8 Cardinal tetra",
+    "6 Panda corydoras"
+   ],
+   "plants": [
+    "plant (anubias) x5",
+    "plant (fern) x5",
+    "plant (ozelot) x2",
+    "plant (frogbit) x2",
+    "plant (crypt)",
+    "plant (redroot)"
+   ],
+   "hardscape": [
+    "wood (spider) x2",
+    "wood (branch) x2"
+   ],
+   "substrate": [
+    "custom"
+   ],
+   "toBuy": [
+    "Tank (21 gal; on sale at Petco $40, was $80)",
+    "Stand",
+    "Lid (hood)",
+    "Substrate",
+    "Light (8 W)",
+    "Water test kit (ammonia, nitrite, nitrate, pH)",
+    "Dechlorinator (first bottle)",
+    "Siphon / gravel vacuum",
+    "Bucket (aquarium only)",
+    "Fish net",
+    "Thermometer",
+    "Filtration: Hang-on-back filter",
+    "Heating: One heater"
+   ],
+   "co2": false,
+   "purpose": "first",
+   "intent": null,
+   "key": "1r2e2ze1tota"
+  }
+ },
+ {
+  "label": "targeted challenger",
+  "aId": "ab-0r84lswbi7cp",
+  "bId": "ab-0cyaoru1uidt",
+  "a": {
+   "id": "ab-0r84lswbi7cp",
+   "title": "Overgrown Jungle",
+   "gal": 42.5,
+   "newSpend": 1683,
+   "monthly": 49,
+   "weeklyMin": 66,
+   "stocking": [
+    "2 Angelfish",
+    "2 Honey gourami",
+    "10 Kuhli loach"
+   ],
+   "plants": [
+    "plant (balansae) x24",
+    "plant (grass) x21",
+    "plant (stem) x13",
+    "plant (crypt) x12",
+    "plant (fern) x9",
+    "plant (sword) x5",
+    "plant (moss) x4",
+    "plant (sagittaria) x4",
+    "plant (frogbit) x2",
+    "plant (salvinia) x2"
+   ],
+   "hardscape": [
+    "wood (spider) x2",
+    "stone (lava) x2",
+    "wood (branch)"
+   ],
+   "substrate": [
+    "custom"
+   ],
+   "toBuy": [
+    "Tank (42 gal; on sale at Petco $75, was $150)",
+    "Stand",
+    "Lid (glass)",
+    "Substrate",
+    "Light (36 W)",
+    "Water test kit (ammonia, nitrite, nitrate, pH)",
+    "Dechlorinator (first bottle)",
+    "Siphon / gravel vacuum",
+    "Bucket (aquarium only)",
+    "Fish net",
+    "Thermometer",
+    "Filtration: Hang-on-back filter",
+    "Heating: One heater",
+    "3D background: jungle wall (estimate)"
+   ],
+   "co2": false,
+   "purpose": "first",
+   "intent": null,
+   "key": "1evfcjkxlu2d"
+  },
+  "b": {
+   "id": "ab-0cyaoru1uidt",
+   "title": "Overgrown Jungle + new plants",
+   "gal": 42.5,
+   "newSpend": 1094,
+   "monthly": 44,
+   "weeklyMin": 48,
+   "stocking": [
+    "2 Angelfish",
+    "2 Honey gourami",
+    "10 Kuhli loach"
+   ],
+   "plants": [
+    "plant (anubias) x5",
+    "plant (fern) x5",
+    "plant (ozelot) x2",
+    "plant (frogbit) x2",
+    "plant (crypt)",
+    "plant (redroot)"
+   ],
+   "hardscape": [
+    "wood (spider) x2",
+    "stone (lava) x2",
+    "wood (branch)"
+   ],
+   "substrate": [
+    "custom"
+   ],
+   "toBuy": [
+    "Tank (42 gal; on sale at Petco $75, was $150)",
+    "Stand",
+    "Lid (glass)",
+    "Substrate",
+    "Light (36 W)",
+    "Water test kit (ammonia, nitrite, nitrate, pH)",
+    "Dechlorinator (first bottle)",
+    "Siphon / gravel vacuum",
+    "Bucket (aquarium only)",
+    "Fish net",
+    "Thermometer",
+    "Filtration: Hang-on-back filter",
+    "Heating: One heater",
+    "3D background: jungle wall (estimate)"
+   ],
+   "co2": false,
+   "purpose": "challenger",
+   "intent": {
+    "text": "Testing B-inspired planting in your favourite; equipment and cost recalculated.",
+    "targetId": "tp-1-plants",
+    "tab": "plants",
+    "donorId": "ab-0osk71bc9spz"
+   },
+   "key": "0kiutzj10he0"
+  }
+ },
+ {
+  "label": "generate again 1",
+  "aId": "ab-0r84lswbi7cp",
+  "bId": "ab-1rneqet1hg16",
+  "a": {
+   "id": "ab-0r84lswbi7cp",
+   "title": "Overgrown Jungle",
+   "gal": 42.5,
+   "newSpend": 1683,
+   "monthly": 49,
+   "weeklyMin": 66,
+   "stocking": [
+    "2 Angelfish",
+    "2 Honey gourami",
+    "10 Kuhli loach"
+   ],
+   "plants": [
+    "plant (balansae) x24",
+    "plant (grass) x21",
+    "plant (stem) x13",
+    "plant (crypt) x12",
+    "plant (fern) x9",
+    "plant (sword) x5",
+    "plant (moss) x4",
+    "plant (sagittaria) x4",
+    "plant (frogbit) x2",
+    "plant (salvinia) x2"
+   ],
+   "hardscape": [
+    "wood (spider) x2",
+    "stone (lava) x2",
+    "wood (branch)"
+   ],
+   "substrate": [
+    "custom"
+   ],
+   "toBuy": [
+    "Tank (42 gal; on sale at Petco $75, was $150)",
+    "Stand",
+    "Lid (glass)",
+    "Substrate",
+    "Light (36 W)",
+    "Water test kit (ammonia, nitrite, nitrate, pH)",
+    "Dechlorinator (first bottle)",
+    "Siphon / gravel vacuum",
+    "Bucket (aquarium only)",
+    "Fish net",
+    "Thermometer",
+    "Filtration: Hang-on-back filter",
+    "Heating: One heater",
+    "3D background: jungle wall (estimate)"
+   ],
+   "co2": false,
+   "purpose": "first",
+   "intent": null,
+   "key": "1evfcjkxlu2d"
+  },
+  "b": {
+   "id": "ab-1rneqet1hg16",
+   "title": "Freshwater tank: Kuhli loach",
+   "gal": 42.5,
+   "newSpend": 1711,
+   "monthly": 50,
+   "weeklyMin": 68,
+   "stocking": [
+    "2 Angelfish",
+    "2 Honey gourami",
+    "10 Kuhli loach"
+   ],
+   "plants": [
+    "plant (grass) x31",
+    "plant (balansae) x28",
+    "plant (fern) x12",
+    "plant (crypt) x12",
+    "plant (anubias) x4",
+    "plant (sword) x3",
+    "plant (sagittaria) x3",
+    "plant (ozelot) x2",
+    "plant (frogbit) x2",
+    "plant (salvinia) x2"
+   ],
+   "hardscape": [
+    "wood (spider) x2",
+    "stone (lava) x2",
+    "wood (branch)"
+   ],
+   "substrate": [
+    "custom"
+   ],
+   "toBuy": [
+    "Tank (42 gal; on sale at Petco $75, was $150)",
+    "Stand",
+    "Lid (glass)",
+    "Substrate",
+    "Light (36 W)",
+    "Water test kit (ammonia, nitrite, nitrate, pH)",
+    "Dechlorinator (first bottle)",
+    "Siphon / gravel vacuum",
+    "Bucket (aquarium only)",
+    "Fish net",
+    "Thermometer",
+    "Filtration: Hang-on-back filter",
+    "Heating: One heater",
+    "3D background: jungle wall (estimate)"
+   ],
+   "co2": false,
+   "purpose": "contrast",
+   "intent": null,
+   "key": "1470mgimnkmu"
+  }
+ },
+ {
+  "label": "explore something different",
+  "aId": "ab-0r84lswbi7cp",
+  "bId": "ab-1rneqet1hg16",
+  "a": {
+   "id": "ab-0r84lswbi7cp",
+   "title": "Overgrown Jungle",
+   "gal": 42.5,
+   "newSpend": 1683,
+   "monthly": 49,
+   "weeklyMin": 66,
+   "stocking": [
+    "2 Angelfish",
+    "2 Honey gourami",
+    "10 Kuhli loach"
+   ],
+   "plants": [
+    "plant (balansae) x24",
+    "plant (grass) x21",
+    "plant (stem) x13",
+    "plant (crypt) x12",
+    "plant (fern) x9",
+    "plant (sword) x5",
+    "plant (moss) x4",
+    "plant (sagittaria) x4",
+    "plant (frogbit) x2",
+    "plant (salvinia) x2"
+   ],
+   "hardscape": [
+    "wood (spider) x2",
+    "stone (lava) x2",
+    "wood (branch)"
+   ],
+   "substrate": [
+    "custom"
+   ],
+   "toBuy": [
+    "Tank (42 gal; on sale at Petco $75, was $150)",
+    "Stand",
+    "Lid (glass)",
+    "Substrate",
+    "Light (36 W)",
+    "Water test kit (ammonia, nitrite, nitrate, pH)",
+    "Dechlorinator (first bottle)",
+    "Siphon / gravel vacuum",
+    "Bucket (aquarium only)",
+    "Fish net",
+    "Thermometer",
+    "Filtration: Hang-on-back filter",
+    "Heating: One heater",
+    "3D background: jungle wall (estimate)"
+   ],
+   "co2": false,
+   "purpose": "first",
+   "intent": null,
+   "key": "1evfcjkxlu2d"
+  },
+  "b": {
+   "id": "ab-1rneqet1hg16",
+   "title": "Freshwater tank: Kuhli loach",
+   "gal": 42.5,
+   "newSpend": 1711,
+   "monthly": 50,
+   "weeklyMin": 68,
+   "stocking": [
+    "2 Angelfish",
+    "2 Honey gourami",
+    "10 Kuhli loach"
+   ],
+   "plants": [
+    "plant (grass) x31",
+    "plant (balansae) x28",
+    "plant (fern) x12",
+    "plant (crypt) x12",
+    "plant (anubias) x4",
+    "plant (sword) x3",
+    "plant (sagittaria) x3",
+    "plant (ozelot) x2",
+    "plant (frogbit) x2",
+    "plant (salvinia) x2"
+   ],
+   "hardscape": [
+    "wood (spider) x2",
+    "stone (lava) x2",
+    "wood (branch)"
+   ],
+   "substrate": [
+    "custom"
+   ],
+   "toBuy": [
+    "Tank (42 gal; on sale at Petco $75, was $150)",
+    "Stand",
+    "Lid (glass)",
+    "Substrate",
+    "Light (36 W)",
+    "Water test kit (ammonia, nitrite, nitrate, pH)",
+    "Dechlorinator (first bottle)",
+    "Siphon / gravel vacuum",
+    "Bucket (aquarium only)",
+    "Fish net",
+    "Thermometer",
+    "Filtration: Hang-on-back filter",
+    "Heating: One heater",
+    "3D background: jungle wall (estimate)"
+   ],
+   "co2": false,
+   "purpose": "contrast",
+   "intent": null,
+   "key": "1470mgimnkmu"
+  }
+ },
+ {
+  "label": "after CO2 removed 1",
+  "aId": "ab-0r84lswbi7cp",
+  "bId": "ab-1rneqet1hg16",
+  "a": {
+   "id": "ab-0r84lswbi7cp",
+   "title": "Overgrown Jungle",
+   "gal": 42.5,
+   "newSpend": 1683,
+   "monthly": 49,
+   "weeklyMin": 66,
+   "stocking": [
+    "2 Angelfish",
+    "2 Honey gourami",
+    "10 Kuhli loach"
+   ],
+   "plants": [
+    "plant (balansae) x24",
+    "plant (grass) x21",
+    "plant (stem) x13",
+    "plant (crypt) x12",
+    "plant (fern) x9",
+    "plant (sword) x5",
+    "plant (moss) x4",
+    "plant (sagittaria) x4",
+    "plant (frogbit) x2",
+    "plant (salvinia) x2"
+   ],
+   "hardscape": [
+    "wood (spider) x2",
+    "stone (lava) x2",
+    "wood (branch)"
+   ],
+   "substrate": [
+    "custom"
+   ],
+   "toBuy": [
+    "Tank (42 gal; on sale at Petco $75, was $150)",
+    "Stand",
+    "Lid (glass)",
+    "Substrate",
+    "Light (36 W)",
+    "Water test kit (ammonia, nitrite, nitrate, pH)",
+    "Dechlorinator (first bottle)",
+    "Siphon / gravel vacuum",
+    "Bucket (aquarium only)",
+    "Fish net",
+    "Thermometer",
+    "Filtration: Hang-on-back filter",
+    "Heating: One heater",
+    "3D background: jungle wall (estimate)"
+   ],
+   "co2": false,
+   "purpose": "first",
+   "intent": null,
+   "key": "1evfcjkxlu2d"
+  },
+  "b": {
+   "id": "ab-1rneqet1hg16",
+   "title": "Freshwater tank: Kuhli loach",
+   "gal": 42.5,
+   "newSpend": 1711,
+   "monthly": 50,
+   "weeklyMin": 68,
+   "stocking": [
+    "2 Angelfish",
+    "2 Honey gourami",
+    "10 Kuhli loach"
+   ],
+   "plants": [
+    "plant (grass) x31",
+    "plant (balansae) x28",
+    "plant (fern) x12",
+    "plant (crypt) x12",
+    "plant (anubias) x4",
+    "plant (sword) x3",
+    "plant (sagittaria) x3",
+    "plant (ozelot) x2",
+    "plant (frogbit) x2",
+    "plant (salvinia) x2"
+   ],
+   "hardscape": [
+    "wood (spider) x2",
+    "stone (lava) x2",
+    "wood (branch)"
+   ],
+   "substrate": [
+    "custom"
+   ],
+   "toBuy": [
+    "Tank (42 gal; on sale at Petco $75, was $150)",
+    "Stand",
+    "Lid (glass)",
+    "Substrate",
+    "Light (36 W)",
+    "Water test kit (ammonia, nitrite, nitrate, pH)",
+    "Dechlorinator (first bottle)",
+    "Siphon / gravel vacuum",
+    "Bucket (aquarium only)",
+    "Fish net",
+    "Thermometer",
+    "Filtration: Hang-on-back filter",
+    "Heating: One heater",
+    "3D background: jungle wall (estimate)"
+   ],
+   "co2": false,
+   "purpose": "contrast",
+   "intent": null,
+   "key": "1470mgimnkmu"
+  }
+ },
+ {
+  "label": "after CO2 removed 2",
+  "aId": "ab-0r84lswbi7cp",
+  "bId": "ab-1rneqet1hg16",
+  "a": {
+   "id": "ab-0r84lswbi7cp",
+   "title": "Overgrown Jungle",
+   "gal": 42.5,
+   "newSpend": 1683,
+   "monthly": 49,
+   "weeklyMin": 66,
+   "stocking": [
+    "2 Angelfish",
+    "2 Honey gourami",
+    "10 Kuhli loach"
+   ],
+   "plants": [
+    "plant (balansae) x24",
+    "plant (grass) x21",
+    "plant (stem) x13",
+    "plant (crypt) x12",
+    "plant (fern) x9",
+    "plant (sword) x5",
+    "plant (moss) x4",
+    "plant (sagittaria) x4",
+    "plant (frogbit) x2",
+    "plant (salvinia) x2"
+   ],
+   "hardscape": [
+    "wood (spider) x2",
+    "stone (lava) x2",
+    "wood (branch)"
+   ],
+   "substrate": [
+    "custom"
+   ],
+   "toBuy": [
+    "Tank (42 gal; on sale at Petco $75, was $150)",
+    "Stand",
+    "Lid (glass)",
+    "Substrate",
+    "Light (36 W)",
+    "Water test kit (ammonia, nitrite, nitrate, pH)",
+    "Dechlorinator (first bottle)",
+    "Siphon / gravel vacuum",
+    "Bucket (aquarium only)",
+    "Fish net",
+    "Thermometer",
+    "Filtration: Hang-on-back filter",
+    "Heating: One heater",
+    "3D background: jungle wall (estimate)"
+   ],
+   "co2": false,
+   "purpose": "first",
+   "intent": null,
+   "key": "1evfcjkxlu2d"
+  },
+  "b": {
+   "id": "ab-1rneqet1hg16",
+   "title": "Freshwater tank: Kuhli loach",
+   "gal": 42.5,
+   "newSpend": 1711,
+   "monthly": 50,
+   "weeklyMin": 68,
+   "stocking": [
+    "2 Angelfish",
+    "2 Honey gourami",
+    "10 Kuhli loach"
+   ],
+   "plants": [
+    "plant (grass) x31",
+    "plant (balansae) x28",
+    "plant (fern) x12",
+    "plant (crypt) x12",
+    "plant (anubias) x4",
+    "plant (sword) x3",
+    "plant (sagittaria) x3",
+    "plant (ozelot) x2",
+    "plant (frogbit) x2",
+    "plant (salvinia) x2"
+   ],
+   "hardscape": [
+    "wood (spider) x2",
+    "stone (lava) x2",
+    "wood (branch)"
+   ],
+   "substrate": [
+    "custom"
+   ],
+   "toBuy": [
+    "Tank (42 gal; on sale at Petco $75, was $150)",
+    "Stand",
+    "Lid (glass)",
+    "Substrate",
+    "Light (36 W)",
+    "Water test kit (ammonia, nitrite, nitrate, pH)",
+    "Dechlorinator (first bottle)",
+    "Siphon / gravel vacuum",
+    "Bucket (aquarium only)",
+    "Fish net",
+    "Thermometer",
+    "Filtration: Hang-on-back filter",
+    "Heating: One heater",
+    "3D background: jungle wall (estimate)"
+   ],
+   "co2": false,
+   "purpose": "contrast",
+   "intent": null,
+   "key": "1470mgimnkmu"
+  }
+ },
+ {
+  "label": "after CO2 removed 3",
+  "aId": "ab-0r84lswbi7cp",
+  "bId": "ab-1rneqet1hg16",
+  "a": {
+   "id": "ab-0r84lswbi7cp",
+   "title": "Overgrown Jungle",
+   "gal": 42.5,
+   "newSpend": 1683,
+   "monthly": 49,
+   "weeklyMin": 66,
+   "stocking": [
+    "2 Angelfish",
+    "2 Honey gourami",
+    "10 Kuhli loach"
+   ],
+   "plants": [
+    "plant (balansae) x24",
+    "plant (grass) x21",
+    "plant (stem) x13",
+    "plant (crypt) x12",
+    "plant (fern) x9",
+    "plant (sword) x5",
+    "plant (moss) x4",
+    "plant (sagittaria) x4",
+    "plant (frogbit) x2",
+    "plant (salvinia) x2"
+   ],
+   "hardscape": [
+    "wood (spider) x2",
+    "stone (lava) x2",
+    "wood (branch)"
+   ],
+   "substrate": [
+    "custom"
+   ],
+   "toBuy": [
+    "Tank (42 gal; on sale at Petco $75, was $150)",
+    "Stand",
+    "Lid (glass)",
+    "Substrate",
+    "Light (36 W)",
+    "Water test kit (ammonia, nitrite, nitrate, pH)",
+    "Dechlorinator (first bottle)",
+    "Siphon / gravel vacuum",
+    "Bucket (aquarium only)",
+    "Fish net",
+    "Thermometer",
+    "Filtration: Hang-on-back filter",
+    "Heating: One heater",
+    "3D background: jungle wall (estimate)"
+   ],
+   "co2": false,
+   "purpose": "first",
+   "intent": null,
+   "key": "1evfcjkxlu2d"
+  },
+  "b": {
+   "id": "ab-1rneqet1hg16",
+   "title": "Freshwater tank: Kuhli loach",
+   "gal": 42.5,
+   "newSpend": 1711,
+   "monthly": 50,
+   "weeklyMin": 68,
+   "stocking": [
+    "2 Angelfish",
+    "2 Honey gourami",
+    "10 Kuhli loach"
+   ],
+   "plants": [
+    "plant (grass) x31",
+    "plant (balansae) x28",
+    "plant (fern) x12",
+    "plant (crypt) x12",
+    "plant (anubias) x4",
+    "plant (sword) x3",
+    "plant (sagittaria) x3",
+    "plant (ozelot) x2",
+    "plant (frogbit) x2",
+    "plant (salvinia) x2"
+   ],
+   "hardscape": [
+    "wood (spider) x2",
+    "stone (lava) x2",
+    "wood (branch)"
+   ],
+   "substrate": [
+    "custom"
+   ],
+   "toBuy": [
+    "Tank (42 gal; on sale at Petco $75, was $150)",
+    "Stand",
+    "Lid (glass)",
+    "Substrate",
+    "Light (36 W)",
+    "Water test kit (ammonia, nitrite, nitrate, pH)",
+    "Dechlorinator (first bottle)",
+    "Siphon / gravel vacuum",
+    "Bucket (aquarium only)",
+    "Fish net",
+    "Thermometer",
+    "Filtration: Hang-on-back filter",
+    "Heating: One heater",
+    "3D background: jungle wall (estimate)"
+   ],
+   "co2": false,
+   "purpose": "contrast",
+   "intent": null,
+   "key": "1470mgimnkmu"
+  }
+ }
+]

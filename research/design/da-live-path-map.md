@@ -43,3 +43,6 @@ Inactive/legacy: the Explore grid UI (`ui/explore/*`), `demand/taste.ts`, `ui/di
 - `pairGen.liveWants` softens `tankGal` unless the limit item is `hard` (nextPair, adapt, combine); `explore/pool.ts` takes `Wants.tankGalPrefer` to include a preferred-range tank.
 - `looksFor`: Avoid looks keep a reserved slot (never starved); no preference ordering for Explore Something Different.
 - `real.ts` `setThumb`: an attribute pick writes ONE thing (the thumb entry).
+
+## 7. What DQ4 changed
+- Cache key = feasibility context only (`feasibilityBrief`, `feasibilityPrefs`; the brief is stripped out of the tank part because it rides in `project.tank.brief`); taste = `rankingSig`, applied by reranking cached designs (metrics `cache`). `engine.resetLearning()` clears learned events / thumbs / lean / targets only. `real.ts seenKeys()` adds the session's history lines to the shown keys. Demo: `scripts/dq4-demo.mjs`.

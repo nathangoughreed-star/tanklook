@@ -86,7 +86,7 @@ function mountForm(host: HTMLElement, get: () => QuickAnswers, set: (a: QuickAns
   });
   host.addEventListener('error', e => { const i = e.target as HTMLElement; if (i instanceof HTMLImageElement && i.closest('.qp-thumb')) i.remove(); }, true);   // no thumbnail yet: the labelled placeholder tile stays
   host.addEventListener('input', e => {   // the slider: the answer follows the thumb, only the readout is redrawn (a full redraw would drop the drag)
-    const i = e.target as HTMLInputElement; if (!i.dataset?.sizeat) return;
+    const i = e.target as HTMLInputElement; if (!i.dataset || !('sizeat' in i.dataset)) return;   // DQ4: `data-sizeat` has an EMPTY value, so testing its truthiness ignored every slider move
     const a = slideSize(get(), +i.value); set(a);
     const row = i.closest('.qp-row')!, fresh = document.createElement('div'); fresh.innerHTML = sizeSliderHtml(dirNow(), a);
     row.querySelector('.qp-read')!.textContent = fresh.querySelector('.qp-read')!.textContent; i.setAttribute('aria-valuetext', fresh.querySelector('.qp-read')!.textContent!);
@@ -94,7 +94,7 @@ function mountForm(host: HTMLElement, get: () => QuickAnswers, set: (a: QuickAns
     row.querySelector('[data-size=unsure]')?.classList.remove('on'); row.querySelector('[data-size=unsure]')?.setAttribute('aria-pressed', 'false');
   });
   host.addEventListener('change', e => {
-    const i = e.target as HTMLInputElement; if (i.dataset?.sizeat) { redraw(); return; } if (!i.dataset?.limit) return;
+    const i = e.target as HTMLInputElement; if (i.dataset && 'sizeat' in i.dataset) { redraw(); return; } if (!i.dataset?.limit) return;
     set(setLimit(get(), i.dataset.limit as 'budget' | 'care', parseFloat(i.value))); redraw();
   });
   redraw(); return { redraw };

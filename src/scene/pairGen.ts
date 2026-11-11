@@ -87,6 +87,8 @@ export interface PoolMetrics {
   excludedSpecies: number;
   /** proposals skipped before any check because they held a prohibited animal */
   preExcluded: number;
+  /** DQ4: where the candidate pool came from: 'new' (built for this feasibility context), 'reused' (same context, same taste), 'reranked' (same context, taste changed: the designs were kept and only reordered) */
+  cache?: 'new' | 'reused' | 'reranked'; reusedDesigns?: number;
 }
 export type Strategy = 'improve' | 'alternate' | 'out-of-family' | 'targeted';
 type Bucket = Exclude<Strategy, 'targeted'>;
@@ -103,8 +105,19 @@ export function liveWants(brief: Brief): Wants {
 
 interface Pending { rec: CandidateRecord; entry: Entry; tokens: string[]; source: 'propose' | 'explore'; world: string; sc: Scored }
 interface Rej { text: string; issues: Issue[]; relax: string[] }
-export interface PairCache { sig: string; pend: Pending[]; keys: Set<string>; round: number; looksDone: Set<string>; bigDone: Set<string>; rej: Rej[]; proposeDone: boolean; stats: { propose: number; explore: number; ms: number; tried: number; pre: number } }
+export interface PairCache { sig: string; rankSig?: string; pend: Pending[]; keys: Set<string>; round: number; looksDone: Set<string>; bigDone: Set<string>; rej: Rej[]; proposeDone: boolean; stats: { propose: number; explore: number; ms: number; tried: number; pre: number } }
 const SHARED = new Map<string, PairCache>();
+/** DQ4: the part of a QuickPrefs that decides which designs are POSSIBLE (sizes drawn, hard prohibitions, firm limits); the rest (cards, look axes, told weights, soft targets) only ranks */
+const SOFT_PF = new Set(['arch', 'look', 'told']);
+export const feasibilityPrefs = (pf: QuickPrefs): unknown => Object.fromEntries(Object.entries(pf).filter(([k, v]) => !SOFT_PF.has(k) && !((k === 'plants' || k === 'budgetUsd' || k === 'careMinPerWeek') && (v as { strength?: string })?.strength !== 'hard')));
+/** DQ4: the brief WITHOUT taste: learned and told aspects, thumbs, the cost lean and the card answers (all ranking-only). Locks, limits (firm or soft), owned gear and every other item stay in it. */
+export function feasibilityBrief(brief: Brief): unknown {
+  const { 'preferences.aspects': _a, ...items } = brief.items as Record<string, unknown>;
+  const { thumbs: _t, lean: _l, quick: _q, ...extras } = projectExtras(brief) as Record<string, unknown>;
+  return { ...brief, items, project: extras };
+}
+/** DQ4: the ranking context: everything that changes only the ORDER of designs that already exist. */
+export const rankingSig = (brief: Brief, pf: QuickPrefs): string => idOf(JSON.stringify([getItem(brief, 'preferences.aspects'), projectExtras(brief).thumbs, projectExtras(brief).lean, projectExtras(brief).quick, pf.arch, pf.look, pf.told, pf.plants, pf.budgetUsd, pf.careMinPerWeek]));
 export const clearPairCache = () => SHARED.clear();
 const newCache = (sig: string): PairCache => ({ sig, pend: [], keys: new Set(), round: 0, looksDone: new Set(), bigDone: new Set(), rej: [], proposeDone: false, stats: { propose: 0, explore: 0, ms: 0, tried: 0, pre: 0 } });
 
@@ -422,8 +435,10 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
   opts.breadth?.(br);
   const purpose: ProposalPurpose = type === 'fresh' ? 'fresh' : type === 'champion' ? (br.objective === 'refine' ? 'contrast' : 'challenger') : scope.length <= 2 ? 'contrast' : 'first';
   // the cache key holds EVERY input a candidate depends on: the project (its whole design, so locks, hard constraints, owned and Must-use gear, the Discovery switches), the brief, the scope and holds, the direction and the champion
-  const sig = idOf(JSON.stringify([project.rev, session.id, scope, session.freezes, session.direction, type, type === 'first' ? '' : champ?.id, pf, brief, { ...project.tank, camera: undefined, render: undefined }]));
+  const sig = idOf(JSON.stringify([project.rev, session.id, scope, session.freezes, session.direction, type, type === 'first' ? '' : champ?.id, feasibilityPrefs(pf), feasibilityBrief(brief), { ...project.tank, camera: undefined, render: undefined, brief: undefined }]));
   const cache = opts.cache?.sig === sig ? opts.cache : opts.cache ? Object.assign(opts.cache, newCache(sig)) : (SHARED.get(sig) ?? (() => { if (SHARED.size >= 6) SHARED.delete(SHARED.keys().next().value!); const n = newCache(sig); SHARED.set(sig, n); return n; })());
+  const rsig = rankingSig(brief, pf), cacheState: 'new' | 'reused' | 'reranked' = cache.pend.length || cache.proposeDone ? (cache.rankSig === rsig ? 'reused' : 'reranked') : 'new', reusedDesigns = cache.pend.length;
+  cache.rankSig = rsig;
   opts.notes?.push(...notes);
   const known = new Set<string>([...(opts.shownKeys ?? []), ...(champ?.key ? [champ.key] : [])]);
   // the champion as a design in the CURRENT project's terms: challengers are variations around it (nearer it as the session goes on)
@@ -511,7 +526,7 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
     const chosen = result ? [result.a, result.b].map(r => cache.pend.find(p => p.rec.id === r.id) ?? (champPending?.rec.id === r.id ? champPending : undefined)) : [];
     opts.metrics({ type, ms: Math.round(performance.now() - t0), stop, tried: cache.stats.tried, generated: cache.pend.length, yield: cache.stats.tried ? +(cache.pend.length / cache.stats.tried).toFixed(2) : 0, usable: usable().length, pooled: pool.length, pruned,
       families: cov.fams, sizeClasses: cov.sizes, worlds: cov.worlds, stockPatterns: cov.stock, looksTried: cache.looksDone.size, proposals: cache.stats.propose, explores: cache.stats.explore,
-      ...(chosen.length === 2 && chosen[0] && chosen[1] ? { pairDistance: +dist(chosen[0], chosen[1]).toFixed(3), pairDistinct: distinct(chosen[0], chosen[1]) } : {}), ...(strategy ? { strategy } : {}), rejections: rej, excludedSpecies: excl.size, preExcluded: cache.stats.pre });
+      ...(chosen.length === 2 && chosen[0] && chosen[1] ? { pairDistance: +dist(chosen[0], chosen[1]).toFixed(3), pairDistinct: distinct(chosen[0], chosen[1]) } : {}), ...(strategy ? { strategy } : {}), rejections: rej, excludedSpecies: excl.size, preExcluded: cache.stats.pre, cache: cacheState, reusedDesigns });
   }
   if (result) {
     if (opts.scores) { const ids = new Set([result.a.id, result.b.id]); opts.scores(pooled().map(p => ({ id: p.rec.id, title: p.rec.facts.title, chosen: ids.has(p.rec.id), breakdown: breakdownOf(p) })).sort((x, y) => y.breakdown.total - x.breakdown.total)); }
