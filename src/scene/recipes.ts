@@ -126,13 +126,27 @@ const FAMILY_BG: Record<string, { bg: Background; color?: string }> = {
 };
 /** Per-archetype exceptions to its family's background. */
 const ARCH_BG: Record<string, { bg: Background; color?: string }> = {
-  'overgrown-garden': { bg: 'custom', color: '#30233a' }, // greens, red stems and a pale rim of leaves against dark plum, the colour opposite them
-  'blackwater-creek': { bg: 'blue' },      // amber water, brown leaves and wood against deep blue (black would swallow them)
+  // QP4 (2026-11-10): one background per quick-preference style, so the style cards (and the Explore candidates for their layouts) read as different places.
+  'driftwood-nature': { bg: 'riverscene' }, 'rocky-river-stream': { bg: 'riverscene' }, // Nature / River: a stream-bank photo
+  'overgrown-jungle': { bg: 'custom', color: '#12301d' }, 'overgrown-garden': { bg: 'custom', color: '#12301d' }, // Jungle: deep foliage green (never the green / plant-scene presets: the family test keeps those out)
+  'iwagumi-stone-garden': { bg: 'grey' },   // Iwagumi: a plain neutral grey wall behind the stones and lawn
+  'blackwater-creek': { bg: 'custom', color: '#2a1a0f' }, // Blackwater: tea-dark warm brown, the water's own colour
+  'white-sand-stone': { bg: 'white' }, 'stone-wood-sculpture': { bg: 'white' }, // Clean & minimal: plain white
+  'mixed-reef': { bg: 'reefscene' }, 'lps-coral-garden': { bg: 'reefscene' }, // classic mixed reef: a reef photo
+  'sps-reef': { bg: 'blue' },              // SPS: deep blue, the showpiece colours against open water
+  'soft-coral-garden': { bg: 'sand' },    // soft corals: warm natural sand wall, gentle colours
+  'reef-rock-art': { bg: 'abyss' }, 'reef-skyline': { bg: 'abyss' }, 'reef-arches': { bg: 'abyss' }, 'reef-islands': { bg: 'abyss' }, // rock sculpture: blue-to-black fade, a gallery wall
+  'blue-glow-reef': { bg: 'custom', color: '#1a1033' }, // blue glow: deep violet-black, the fluorescence stands out
+  'dutch-garden': { bg: 'black' }, 'planted-community': { bg: 'black' }, // Dutch: black, the stems' colours do the work
+  'clownfish-anemone': { bg: 'lightblue' }, // clownfish nano: bright open water
+  'dart-frog-rainforest': { bg: 'custom', color: '#16301f' }, 'rainforest-canopy': { bg: 'custom', color: '#16301f' }, // frog jungle / canopy: dark leaf green
+  'rocky-desert-canyon': { bg: 'sand' }, 'basking-scrubland': { bg: 'sand' }, // desert: warm sand
+  'snake-hideaway': { bg: 'custom', color: '#26262c' }, 'tarantula-burrow': { bg: 'custom', color: '#26262c' }, 'jumping-spider-loft': { bg: 'custom', color: '#26262c' }, // animal hideaway: dark neutral
+  'rainforest-waterfall': { bg: 'rockscene' }, 'cascade-wall': { bg: 'rockscene' }, // waterfall: a rock-face photo
+  'riverbank-shore': { bg: 'sky' },        // sandy riverbank: open sky
+  'cypress-swamp': { bg: 'custom', color: '#1d2a1c' }, // cypress swamp: murky green-brown
   'african-cichlid-rockscape': { bg: 'black' }, // blue and yellow cichlids against black
   'betta-retreat': { bg: 'black' },        // a blue or red betta must not vanish into blue
-  // bare and clean (BC1): one plain solid colour behind, never a scene, chosen against the sand and the stone
-  'white-sand-stone': { bg: 'custom', color: '#26303a' }, // white sand and a pale or dark stone against a solid slate
-  'stone-wood-sculpture': { bg: 'custom', color: '#1d2a36' }, // tan wood and grey stone against a solid deep slate
   'big-fish-showcase': { bg: 'custom', color: '#1d2b3a' },   // an orange or dark oscar against a solid dark blue-slate
 };
 /** The background an archetype's recipe draws on (a family default; never none, so a render always has one). */

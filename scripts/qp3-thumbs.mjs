@@ -3,7 +3,7 @@
 // For each QUICK_ARCHETYPES entry (src/scene/quickArchetypes.ts): the card's first layout, built exactly like an Explore card (ui/discovery/tiles.ts Previews: the recipe scene at the
 // balanced density stop, the stocking suggestion for its roster, TILE_VIEW camera/lighting, same tank rule as the Explore pool), drawn by viewer.thumbnail, then cropped 3:2, scaled to 320 px
 // wide and written as webp (quality searched down until the file is under BUDGET bytes) to public/art/quick/<habitat>-<id>.webp. Also one contact sheet per habitat in
-// research/screens/QP3/ (labelled, shown at 160 px wide = the card size, next to the file size) so siblings can be compared.
+// research/screens/QP4/ (labelled, shown at 160 px wide = the card size, next to the file size) so siblings can be compared.
 import { spawn } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -12,7 +12,7 @@ import { join } from 'node:path';
 const argv = process.argv.slice(2);
 const opt = (k, d) => { const e = argv.find(x => x.startsWith(k + '=')); return e ? e.slice(k.length + 1) : d; };
 const PORT = +opt('port', 5641), GL = opt('gl', 'd3d11'), ONLY = opt('only')?.split(','), W = +opt('w', 320), BUDGET = +opt('budget', 24000), SETTLE = +opt('settle', 3000);
-mkdirSync('public/art/quick', { recursive: true }); mkdirSync('research/screens/QP3', { recursive: true });
+mkdirSync('public/art/quick', { recursive: true }); mkdirSync('research/screens/QP4', { recursive: true });
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const { createServer } = await import('vite');
 const dev = await createServer({ root: process.cwd(), server: { port: PORT, strictPort: true }, logLevel: 'error' });
@@ -48,7 +48,7 @@ const PAGE = `(async () => {
   for (const hab of [...new Set(done.map(d => d.q.habitat))]) {
     const items = done.filter(d => d.q.habitat === hab), cols = Math.min(3, items.length), rows = Math.ceil(items.length / cols), cw = W + 16, ch = H + 46;
     const c = document.createElement('canvas'); c.width = cols * cw + 16; c.height = rows * ch + 44; const g = c.getContext('2d'); g.fillStyle = '#10161c'; g.fillRect(0, 0, c.width, c.height);
-    g.fillStyle = '#fff'; g.font = 'bold 18px sans-serif'; g.fillText('QP3 ' + hab + ' - one image per archetype (320 px; cards show them at 160 px)', 16, 26);
+    g.fillStyle = '#fff'; g.font = 'bold 18px sans-serif'; g.fillText('QP4 ' + hab + ' - one image per archetype (320 px; cards show them at 160 px)', 16, 26);
     items.forEach((d, i) => { const x = 16 + (i % cols) * cw, y = 44 + Math.floor(i / cols) * ch; g.drawImage(d.c, x, y, W, H);
       g.fillStyle = '#fff'; g.font = '14px sans-serif'; g.fillText(d.q.label, x, y + H + 18); g.fillStyle = '#9ab'; g.font = '12px sans-serif'; g.fillText(d.q.key + '  ' + (d.blob.size / 1024).toFixed(1) + ' KB  [' + d.layout + ']', x, y + H + 34);
       // the real card size, bottom-right of each cell, so thumbnail-distinctness can be judged
@@ -89,7 +89,7 @@ try {
     writeFileSync(`public/art/quick/${r.key}.webp`, Buffer.from(r.webp, 'base64')); total += r.bytes;
     console.log(`${r.key.padEnd(30)} ${(r.bytes / 1024).toFixed(1).padStart(5)} KB q${r.quality}  ${r.layout} / ${r.tank} / ${r.animals} animals`);
   }
-  for (const [h, b] of Object.entries(out.sheets)) writeFileSync(`research/screens/QP3/${h}.png`, Buffer.from(b, 'base64'));
+  for (const [h, b] of Object.entries(out.sheets)) writeFileSync(`research/screens/QP4/${h}.png`, Buffer.from(b, 'base64'));
   console.log(`total ${(total / 1024).toFixed(0)} KB for ${out.res.filter(r => !r.error).length} images`);
 } catch (e) { console.error(e); code = 1; }
 finally { proc.kill(); await dev.close(); process.exit(code); }
