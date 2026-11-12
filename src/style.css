@@ -1555,3 +1555,9 @@ details.gfx { margin: 4px 0 } details.gfx > summary { cursor: pointer; font-weig
 .dq9-panel { position: fixed; left: 50%; top: 80px; transform: translateX(-50%); z-index: 60; width: min(460px, calc(100vw - 24px)); max-height: 70vh; overflow: auto; background: var(--panel); color: var(--ink); border: 1px solid #555; border-radius: 8px; padding: 10px 14px; font-size: 13px; box-shadow: 0 6px 24px #0008 }
 .dq9-panel ul { margin: 6px 0; padding-left: 18px } .dq9-panel i { opacity: .75 } .dq9-panel button { margin: 4px 6px 0 0 } .dq9-note { opacity: .85 }
 .checks .ck-info { margin: 2px 0 4px; font-style: italic; opacity: .85 }
+/* DQ12: breadth presets, tank-kept line, "N designs fit", conflict card */
+.dq12-presets { display: flex; gap: 4px } .dq12-presets button { flex: 1 } .dq10 .dq12-presets button.on { background: var(--accent); color: #fff; border-color: var(--accent) }
+.dq12-tank, .dq12-rules, .dq12-fit, .dq12-kept, .dq12-lead { margin: 0; color: var(--muted) } .dq12-tank button { padding: 2px 8px !important }
+.dq12-fit { font-weight: 600; color: var(--ink) }
+.dq12-card .dq12-why { margin: 4px 0 } .dq12-fixes { display: flex; flex-direction: column; gap: 4px; align-items: stretch } .dq12-fixes button { text-align: left }
+.dq12-said { display: flex; flex-direction: column }
