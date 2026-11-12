@@ -145,7 +145,8 @@ export function attachCompare(store: Store, status: (m: string, bad?: boolean) =
 // a relaxation with no edit behind it is said, not offered. Pure HTML of the generator's own text; ui/discover/inline.ts mounts it and wires `data-a="relax"`.
 export interface ConflictCardIn { title?: string; conflicts: readonly string[]; kept?: string; relaxations: readonly { label: string; act?: string }[] }
 export const conflictCardHtml = (c: ConflictCardIn): string => {
-  const why = c.conflicts.length ? `<ul class="dq12-why">${c.conflicts.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : '';
+  const plain = [...new Set(c.conflicts.map(t => t.replace(/^[a-z ]+ #\d+: /i, '')))];   // "plants #1: X" and "plants #2: X" say the same thing once
+  const why = plain.length ? `<ul class="dq12-why">${plain.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : '';
   const keep = c.kept ? `<p class="dq12-kept">You kept: ${esc(c.kept)}.</p>` : '';
   const btn = c.relaxations.filter(r => r.act), said = c.relaxations.filter(r => !r.act);
   const fix = btn.length ? `<p class="dq12-lead">Smallest changes that could help. Each button changes one thing, then Discover looks again; nothing changes until you press one.</p><div class="dq12-fixes">${c.relaxations.map((r, i) => r.act ? `<button type="button" data-a="relax" data-i="${i}">${esc(r.label)}</button>` : '').join('')}</div>` : '';
