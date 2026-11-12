@@ -58,9 +58,18 @@ export const bandSpans = (d: HabitatDirection): Record<SizeChoice, { from: numbe
 };
 /** The bands a gallon range touches, in order. */
 export const bandsIn = (d: HabitatDirection, r: GalRange): SizeChoice[] => SIZE_CHOICES.filter(s => { const x = aq(d)[s]; return x.lo <= r.hi && r.lo <= x.hi; });
-/** The readout: "20-54 gal · Medium", "15-40 gal · Small to Medium". */
+/** Nathan 2026-11-12: the line's ends are OPEN. The bottom stop means "this size and under", the top stop "this size and up" (freshwater: 5 gal and under, 150 gal+). */
+export const openLo = (d: HabitatDirection, g: number): boolean => g <= galSpan(d).lo;
+export const openHi = (d: HabitatDirection, g: number): boolean => g >= galSpan(d).hi;
+/** A graduation's label: "≤5" at the bottom stop, "150+" at the top one, the plain number between. */
+export const galTickText = (d: HabitatDirection, g: number): string => openLo(d, g) ? `≤${g}` : openHi(d, g) ? `${g}+` : `${g}`;
+/** The readout, gallons only (no Small / Medium / Large words): "15-40 gal", "Up to 40 gal", "55+ gal", "Any size". */
 export const galRangeText = (d: HabitatDirection, r: GalRange): string => {
-  const b = bandsIn(d, r); return `${r.lo === r.hi ? `${r.lo} gal` : galText(r)}${b.length ? ` · ${SIZE_LABEL[b[0]]}${b.length > 1 ? ` to ${SIZE_LABEL[b[b.length - 1]]}` : ''}` : ''}`;
+  const a = openLo(d, r.lo), b = openHi(d, r.hi);
+  if (a && b) return 'Any size';
+  if (a) return r.hi <= galSpan(d).lo ? `${r.hi} gal or under` : `Up to ${r.hi} gal`;
+  if (b) return `${r.lo}+ gal`;
+  return r.lo === r.hi ? `${r.lo} gal` : galText(r);
 };
 /** "5-19 gal" (US gallons). */
 export const galText = (r: GalRange): string => `${r.lo}-${r.hi} gal`;

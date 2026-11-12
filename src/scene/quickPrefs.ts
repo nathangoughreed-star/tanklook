@@ -12,7 +12,7 @@ import { aspectsOf, tell, type Aspects } from '../explore/aspects';
 import { SIZE_LARGE_MM } from '../explore/constants';
 import { getSpecies } from '../data/species';
 import type { HabitatDirection } from './discoveryTypes';
-import { dryOf, isDry, sizeAtBand, sizeOf, sizeRange, type GalRange, type SizeChoice } from './sizePrefs';
+import { dryOf, galSpan, isDry, openHi, openLo, sizeAtBand, sizeOf, sizeRange, type GalRange, type SizeChoice } from './sizePrefs';
 import { archetypeByKey, archetypesFor, QUICK_ARCHETYPES, type ArchAxes, type QuickArchetype } from './quickArchetypes';
 
 /** PRE-QP1 answers (the Look chips and the Live plants question). Not asked any more; `answersOf` migrates what an older save holds (see `migrateLegacy`). */
@@ -106,7 +106,7 @@ export function answersOf(b: Brief): QuickAnswers {
   const pm = getItem(b, 'appearance.plantMode');
   if (pm && !pm.off && pm.status === 'hard' && pm.value === 'artificial' && !a.avoid.includes('no-live-plants')) a.avoid = [...a.avoid, 'no-live-plants'];
   const lt = getItem(b, 'preferences.lowtech'); if (lt && !lt.off && lt.status === 'hard' && lt.value && !a.avoid.includes('co2')) a.avoid = [...a.avoid, 'co2'];
-  if (!isDry(d)) { const r = rangeOf(b, 'constraints.tankGal'), it = getItem(b, 'constraints.tankGal'); if (it && !it.off && r.min !== undefined && r.max !== undefined) { a.gal = { lo: r.min, hi: r.max }; if (it.status === 'hard') a.sizeFirm = true; } }
+  if (!isDry(d)) { const r = rangeOf(b, 'constraints.tankGal'), it = getItem(b, 'constraints.tankGal'); if (it && !it.off && (r.min !== undefined || r.max !== undefined)) { const sp = galSpan(d); a.gal = { lo: r.min ?? sp.lo, hi: r.max ?? sp.hi }; if (it.status === 'hard') a.sizeFirm = true; } }
   const s = sizeNow(b); if (s) { a.size = s; const at = q?.sizeAt; if (at !== undefined && sizeAtBand(at) === s) a.sizeAt = at; if (q?.sizeFirm || (!isDry(d) && getItem(b, 'constraints.tankGal')?.status === 'hard')) a.sizeFirm = true; }
   const bu = limitOf(b, 'constraints.budget'); if (bu) a.budget = bu;
   const ca = limitOf(b, 'constraints.careMin'); if (ca) a.care = ca;
@@ -133,7 +133,8 @@ const putAspects = (b: Brief, a: Aspects | undefined): Brief => a ? setItem(b, '
 export function applyQuickPrefs(b: Brief, next: QuickAnswers): Brief {
   const was = answersOf(b), a = normalize(next), d = dirOf(b);
   let out = retract(b, was);
-  if ((a.gal || a.size) && !isDry(d)) { const r = a.gal ?? sizeRange(d, a.size!); out = setRange(out, 'constraints.tankGal', { min: r.lo, max: r.hi }, a.sizeFirm ? 'hard' : 'preference'); }
+  if (a.gal && !isDry(d)) out = setRange(out, 'constraints.tankGal', { min: openLo(d, a.gal.lo) ? undefined : a.gal.lo, max: openHi(d, a.gal.hi) ? undefined : a.gal.hi }, a.sizeFirm ? 'hard' : 'preference');   // an end at the line's stop is open (no bound); both open = no limit
+  else if (a.size && !isDry(d)) { const r = sizeRange(d, a.size); out = setRange(out, 'constraints.tankGal', { min: r.lo, max: r.hi }, a.sizeFirm ? 'hard' : 'preference'); }
   if (a.avoid.includes('no-live-plants')) out = setItem(out, 'appearance.plantMode', 'artificial', 'hard');
   if (a.avoid.includes('co2')) out = setItem(out, 'preferences.lowtech', true, 'hard');
   for (const [k, id] of [['budget', 'constraints.budget'], ['care', 'constraints.careMin']] as const) { const l = a[k]; if (l) out = setStatus(setBound(out, id, 'max', l.max), id, l.firm ? 'hard' : 'preference'); }

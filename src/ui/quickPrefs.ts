@@ -6,7 +6,7 @@
 import { editBrief, getBrief, onBrief } from './setupBrief';
 import { projectExtras } from '../scene/brief';
 import type { HabitatDirection } from '../scene/discoveryTypes';
-import { SIZE_CHOICES, SIZE_LABEL, bandSpans, bandsIn, galAt, galRangeText, galSpan, galTicks, galToPos, isDry, posToGal, sizeAtBand, sizeAtMid, sizeRange, sizeText, type GalRange, type SizeChoice } from '../scene/sizePrefs';
+import { SIZE_CHOICES, SIZE_LABEL, galAt, galTickText, galRangeText, galSpan, galTicks, galToPos, isDry, posToGal, sizeAtBand, sizeAtMid, sizeRange, sizeText, type GalRange, type SizeChoice } from '../scene/sizePrefs';
 import { AVOIDS, LARGE_IN, answersOf, compromiseNote, applyQuickPrefs, normalize, type ArchState, type AvoidId, type Limit, type QuickAnswers } from '../scene/quickPrefs';
 import { archetypesFor, type QuickArchetype } from '../scene/quickArchetypes';
 import { INTRO_BUTTON, INTRO_LINES, INTRO_TITLE, introHtml, spotlight } from './introPopup';
@@ -60,24 +60,21 @@ const GAL_STEPS = 400;   // thumb positions along the line (gallons snap, so thi
 const pct = (p: number) => `${(p * 100).toFixed(2)}%`;
 /** The range an aquarium answer stands for (the two thumbs), or undefined when size is not set. */
 export const galOf = (d: HabitatDirection, a: QuickAnswers): GalRange | undefined => a.gal ?? (a.size ? sizeRange(d, a.size) : undefined);
-/** GR-RANGE: the aquarium Size row. ONE continuous gallon number line (log scale, graduated in round tank sizes) with TWO thumbs, min and max; the Small / Medium / Large
- *  bands are drawn under it with their gallons, and the bands the range touches light up. "Unsure" clears it. Unset shows the whole line, dimmed. */
+/** GR-RANGE: the aquarium Size row. ONE continuous gallon number line (log scale, graduated in round tank sizes) with TWO thumbs, min and max. Nathan 2026-11-12: no
+ *  Small / Medium / Large bands or labels, no Unsure / Preference / Firm buttons: the range is always FIRM, and its ends are open (bottom stop = "5 gal and under",
+ *  top stop = "150 gal+"), so both thumbs at the stops is no limit at all. Unset shows the whole line, dimmed. */
 function galRangeHtml(d: HabitatDirection, a: QuickAnswers): string {
-  const r = galOf(d, a), sp = galSpan(d), cur = r ?? sp, lo = galToPos(d, cur.lo), hi = galToPos(d, cur.hi), on = r ? bandsIn(d, r) : [], bs = bandSpans(d);
+  const r = galOf(d, a), sp = galSpan(d), cur = r ?? sp, lo = galToPos(d, cur.lo), hi = galToPos(d, cur.hi);
   const read = r ? galRangeText(d, r) : 'Not set';
-  const ticks = galTicks(d).map(g => `<span class="qp-tick" style="left:${pct(galToPos(d, g))}">${g}</span>`).join('');
-  const bands = SIZE_CHOICES.map(s => `<span class="qp-band${on.includes(s) ? ' on' : ''}" style="left:${pct(bs[s].from)};width:${pct(bs[s].to - bs[s].from)}"><b>${SIZE_LABEL[s]}</b><small>${esc(sizeText(d, s))}</small></span>`).join('');
-  const thumb = (k: 'lo' | 'hi', p: number, g: number) => `<input type="range" class="qp-range" data-gal="${k}" min="0" max="${GAL_STEPS}" step="1" value="${Math.round(p * GAL_STEPS)}" aria-label="${k === 'lo' ? 'Smallest' : 'Largest'} tank you would like, gallons" aria-valuetext="${g} gal">`;
+  const ticks = galTicks(d).map(g => `<span class="qp-tick" style="left:${pct(galToPos(d, g))}">${galTickText(d, g)}</span>`).join('');
+  const thumb = (k: 'lo' | 'hi', p: number, g: number) => `<input type="range" class="qp-range" data-gal="${k}" min="0" max="${GAL_STEPS}" step="1" value="${Math.round(p * GAL_STEPS)}" aria-label="${k === 'lo' ? 'Smallest' : 'Largest'} tank you would like, gallons" aria-valuetext="${galTickText(d, g)} gal">`;
   return `<div class="qp-row" role="group" aria-label="Size"><b>Size <span class="qp-read" aria-live="polite">${esc(read)}</span></b>`
     + `<div class="qp-slide qp-gal${r ? '' : ' unset'}"><div class="qp-axis" aria-hidden="true"><span class="qp-track"></span><span class="qp-fill" style="left:${pct(lo)};width:${pct(hi - lo)}"></span>${ticks}</div>`
-    + `<div class="qp-dual">${thumb('lo', lo, cur.lo)}${thumb('hi', hi, cur.hi)}</div><div class="qp-axis qp-gbands" aria-hidden="true">${bands}</div></div>`
-    + `<div class="qp-opts">${btn('data-size="unsure"', !r, 'Unsure')}</div>`
-    + `<div class="qp-limit"><span class="qp-seg" role="group" aria-label="Size: preference or firm range">${btn('data-sizefirm="0"', !!r && !a.sizeFirm, 'Preference')}${btn('data-sizefirm="1"', !!r && !!a.sizeFirm, 'Firm')}</span></div>`
-    + `<p class="hint">Preference = bigger or smaller tanks rank lower the further they are from this range; Firm = never outside it.</p></div>`;
+    + `<div class="qp-dual">${thumb('lo', lo, cur.lo)}${thumb('hi', hi, cur.hi)}</div></div></div>`;
 }
-/** Move a thumb of the gallon line: `lo` / `hi` are 0..GAL_STEPS positions (either order: the smaller is the minimum). */
+/** Move a thumb of the gallon line: `lo` / `hi` are 0..GAL_STEPS positions (either order: the smaller is the minimum). The range is always firm. */
 export function slideGal(d: HabitatDirection, a: QuickAnswers, lo: number, hi: number): QuickAnswers {
-  const [x, y] = lo <= hi ? [lo, hi] : [hi, lo], n = { ...a, gal: { lo: posToGal(d, x / GAL_STEPS), hi: posToGal(d, y / GAL_STEPS) } }; delete n.size; delete n.sizeAt; return normalize(n);
+  const [x, y] = lo <= hi ? [lo, hi] : [hi, lo], n = { ...a, gal: { lo: posToGal(d, x / GAL_STEPS), hi: posToGal(d, y / GAL_STEPS) }, sizeFirm: true }; delete n.size; delete n.sizeAt; return normalize(n);
 }
 /** Press a button: the next answers. Pressing the chosen button again clears it (that is "Unsure"). */
 export function press(a: QuickAnswers, t: { size?: string; arch?: string; avoid?: string; firm?: string; sizefirm?: string }): QuickAnswers {
@@ -118,12 +115,10 @@ function mountForm(host: HTMLElement, get: () => QuickAnswers, set: (a: QuickAns
       const row = i.closest('.qp-row')!, lo = row.querySelector<HTMLInputElement>('[data-gal=lo]')!, hi = row.querySelector<HTMLInputElement>('[data-gal=hi]')!;
       if (+lo.value > +hi.value) { if (i === lo) lo.value = hi.value; else hi.value = lo.value; }
       const d = dirNow(), a = slideGal(d, get(), +lo.value, +hi.value), r = a.gal!; set(a);
-      lo.setAttribute('aria-valuetext', `${r.lo} gal`); hi.setAttribute('aria-valuetext', `${r.hi} gal`);
+      lo.setAttribute('aria-valuetext', `${galTickText(d, r.lo)} gal`); hi.setAttribute('aria-valuetext', `${galTickText(d, r.hi)} gal`);
       row.querySelector('.qp-read')!.textContent = galRangeText(d, r);
       const f = row.querySelector<HTMLElement>('.qp-fill')!, p0 = +lo.value / GAL_STEPS, p1 = +hi.value / GAL_STEPS; f.style.left = pct(p0); f.style.width = pct(p1 - p0);
-      const on = bandsIn(d, r); row.querySelectorAll('.qp-band').forEach((b, k) => b.classList.toggle('on', on.includes(SIZE_CHOICES[k])));
       row.querySelector('.qp-slide')!.classList.remove('unset');
-      row.querySelector('[data-size=unsure]')?.classList.remove('on'); row.querySelector('[data-size=unsure]')?.setAttribute('aria-pressed', 'false');
       return;
     }
     if (!i.dataset || !('sizeat' in i.dataset)) return;   // DQ4: `data-sizeat` has an EMPTY value, so testing its truthiness ignored every slider move

@@ -119,7 +119,7 @@ describe('AB6 size differs per habitat', () => {
     expect(getTankModel('t18x18x18')).toBeTruthy();
   });
   it('the screen adapts: size words with units, no Look or Live plants rows, No live plants under Dont want (not saltwater), practical limits and Don\'t want collapsed', () => {
-    const f = prefsHtml('freshwater', emptyAnswers()); expect(f).toContain('5-19 gal'); expect(f).toContain('Unsure'); expect(f).not.toContain('Prefer not'); expect(f).not.toContain('aria-label="Live plants"'); expect(f).not.toContain('aria-label="Look"'); expect(f).toContain('data-avoid="no-live-plants"');
+    const f = prefsHtml('freshwater', emptyAnswers()); expect(f).toContain('>≤5<'); expect(f).toContain('>150+<'); expect(f).not.toContain('Prefer not'); expect(f).not.toContain('aria-label="Live plants"'); expect(f).not.toContain('aria-label="Look"'); expect(f).toContain('data-avoid="no-live-plants"');
     expect(f).toMatch(/<details class="qp-more" data-x="limits">/); expect(f).toMatch(/<details class="qp-more" data-x="avoid">/);
     const t = prefsHtml('terrarium', emptyAnswers()); expect(t).toContain('in floor'); expect(t).not.toContain('gal'); expect(t).not.toContain('CO2');
     expect(prefsHtml('saltwater', emptyAnswers())).not.toContain('no-live-plants');
@@ -163,18 +163,24 @@ describe('GR-RANGE gallon range (aquariums)', () => {
     expect(posToGal('freshwater', 0)).toBe(5); expect(posToGal('freshwater', 1)).toBe(150); expect(posToGal('freshwater', galToPos('freshwater', 40))).toBe(40);
     expect(galTicks('freshwater')).toEqual([5, 10, 15, 20, 30, 40, 55, 75, 100, 150]);
     const s = bandSpans('freshwater'); for (const k of SIZE_CHOICES) expect(s[k].to - s[k].from).toBeGreaterThan(0.25);   // log scale: no band crushed
-    expect(galRangeText('freshwater', { lo: 20, hi: 54 })).toBe('20-54 gal · Medium'); expect(galRangeText('freshwater', { lo: 15, hi: 40 })).toBe('15-40 gal · Small to Medium');
+    expect(galRangeText('freshwater', { lo: 20, hi: 54 })).toBe('20-54 gal'); expect(galRangeText('freshwater', { lo: 5, hi: 40 })).toBe('Up to 40 gal');
+    expect(galRangeText('freshwater', { lo: 55, hi: 150 })).toBe('55+ gal'); expect(galRangeText('freshwater', { lo: 5, hi: 150 })).toBe('Any size'); expect(galRangeText('freshwater', { lo: 5, hi: 5 })).toBe('5 gal or under');
     const h = sizeSliderHtml('freshwater', emptyAnswers());
-    expect(h.match(/data-gal="(lo|hi)"/g)).toHaveLength(2); expect(h).toContain('Not set'); expect(h).toContain('5-19 gal'); expect(h).toContain('55-150 gal'); expect(h).toContain('>100<');
+    expect(h.match(/data-gal="(lo|hi)"/g)).toHaveLength(2); expect(h).toContain('Not set'); expect(h).toContain('>≤5<'); expect(h).toContain('>150+<'); expect(h).toContain('>100<');
+    expect(h).not.toContain('qp-band'); expect(h).not.toContain('data-sizefirm'); expect(h).not.toContain('data-size="unsure"');   // Nathan 2026-11-12: no bands, no buttons
   });
-  it('two thumbs write a min-max preference range, read back, keep a firm range firm, and Unsure clears it', async () => {
+  it('two thumbs write a FIRM min-max range, read back, open at the stops, and Unsure clears it', async () => {
     const { slideGal } = await import('../src/ui/quickPrefs');
     const { galToPos } = await import('../src/scene/sizePrefs');
     const at = (g: number) => Math.round(galToPos('freshwater', g) * 400);
     const a = slideGal('freshwater', emptyAnswers(), at(40), at(15)), b = applyQuickPrefs(fresh(), a);   // crossed thumbs: the smaller is the minimum
     expect(a.gal).toEqual({ lo: 15, hi: 40 }); expect(a.size).toBeUndefined();
-    expect(rangeOf(b, 'constraints.tankGal')).toEqual({ min: 15, max: 40 }); expect(getItem(b, 'constraints.tankGal')!.status).toBe('preference');
-    expect(answersOf(b).gal).toEqual({ lo: 15, hi: 40 }); expect(readQuickPrefs(b).sizeGal).toEqual({ value: { lo: 15, hi: 40 }, strength: 'prefer' });
+    expect(rangeOf(b, 'constraints.tankGal')).toEqual({ min: 15, max: 40 }); expect(getItem(b, 'constraints.tankGal')!.status).toBe('hard');
+    expect(answersOf(b).gal).toEqual({ lo: 15, hi: 40 }); expect(readQuickPrefs(b).sizeGal).toEqual({ value: { lo: 15, hi: 40 }, strength: 'hard' });
+    const up = applyQuickPrefs(fresh(), slideGal('freshwater', emptyAnswers(), 0, at(40))), down = applyQuickPrefs(fresh(), slideGal('freshwater', emptyAnswers(), at(55), 400));
+    expect(rangeOf(up, 'constraints.tankGal')).toEqual({ max: 40 }); expect(answersOf(up).gal).toEqual({ lo: 5, hi: 40 });   // bottom stop = 5 gal and under: no minimum
+    expect(rangeOf(down, 'constraints.tankGal')).toEqual({ min: 55 }); expect(answersOf(down).gal).toEqual({ lo: 55, hi: 150 });   // top stop = 150 gal+: no maximum
+    expect(getItem(applyQuickPrefs(fresh(), slideGal('freshwater', emptyAnswers(), 0, 400)), 'constraints.tankGal')).toBeUndefined();   // both stops: any size
     expect(answersOf(applyQuickPrefs(b, A({ size: 'large' }))).gal).toEqual({ lo: 55, hi: 150 });
     expect(getItem(applyQuickPrefs(b, press(answersOf(b), { size: 'unsure' })), 'constraints.tankGal')).toBeUndefined();
     const { setStatus } = await import('../src/scene/brief');

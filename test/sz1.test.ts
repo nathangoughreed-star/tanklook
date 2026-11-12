@@ -62,11 +62,12 @@ describe('live nextPair', () => {
 
 describe('Firm toggle on the Size row', () => {
   const fresh = () => setDirection(emptyBrief(), 'freshwater');
-  it('the row has Preference / Firm buttons, Firm on only after it is pressed, and pressing does nothing without a size', () => {
+  it('dry habitats: the row has Preference / Firm buttons (the aquarium gallon line is always firm, no buttons), Firm on only after it is pressed, nothing without a size', () => {
     const a = { ...emptyAnswers(), size: 'medium' as const };
-    expect(prefsHtml('freshwater', a)).toMatch(/data-sizefirm="0"[^>]*aria-pressed="true"/);
+    expect(prefsHtml('freshwater', a)).not.toContain('data-sizefirm');
+    expect(prefsHtml('terrarium', a)).toMatch(/data-sizefirm="0"[^>]*aria-pressed="true"/);
     const f = press(a, { sizefirm: '1' }); expect(f.sizeFirm).toBe(true);
-    expect(prefsHtml('freshwater', f)).toMatch(/data-sizefirm="1"[^>]*aria-pressed="true"/);
+    expect(prefsHtml('terrarium', f)).toMatch(/data-sizefirm="1"[^>]*aria-pressed="true"/);
     expect(press(emptyAnswers(), { sizefirm: '1' }).sizeFirm).toBeUndefined();
     expect(press(f, { size: 'unsure' }).sizeFirm).toBeUndefined();
   });
