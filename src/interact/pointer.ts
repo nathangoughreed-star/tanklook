@@ -296,6 +296,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       return;
     }
     if (e.pointerType === 'touch' && first != null && e.pointerId !== first) return;
+    if (!e.buttons && e.pointerType === 'mouse') canvas.style.cursor = viewer.handleAt(e.clientX, e.clientY) && viewer.standAt(e.clientX, e.clientY) ? 'pointer' : ''; // over a door's handle box
     if (pan) { viewer.setPan(pan.i, e.clientX - pan.x, e.clientY - pan.y); return; }
     if (stroke) { brushAt(e.clientX, e.clientY); return; }
     if (pdrag) {
@@ -419,7 +420,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
     // a click on an animal, piece, gear, the light, stand or lid opens its menu at its options (Nathan 2026-11-11)
     if (orbit && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) {
       const hit = focus ? viewer.hitTest(e.clientX, e.clientY) : null, t = hit && store.isEditing(hit.vp.i) ? clickTarget(viewer, store, hit) : null;
-      if (viewer.standAt(e.clientX, e.clientY) && (!t || t.kind === 'stand')) { tankView.standOpen = !tankView.standOpen; viewer.rebuild(); if (t) focus!(t); }
+      if (viewer.handleAt(e.clientX, e.clientY) && viewer.standAt(e.clientX, e.clientY) && (!t || t.kind === 'stand')) { tankView.standOpen = !tankView.standOpen; viewer.rebuild(); } // only from the handle box (CB1); the stand's options open on any other click
       else if (t) focus!(t);
       else if (patchPick != null) store.selectPatch(patchPick); else store.select(null);
     }

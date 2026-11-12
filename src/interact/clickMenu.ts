@@ -71,7 +71,7 @@ export function clickTarget(viewer: Viewer, store: Store, hit: Hit): ClickTarget
 }
 
 type ScapeOf = (k: ItemKind) => 'hardscape' | 'plants';
-const secOf = (t: ClickTarget, scape: ScapeOf) => t.kind === 'fish' ? 'fish' : t.kind === 'item' ? scape(t.item) : t.kind === 'stand' ? 'room' : t.kind === 'lid' ? 'tank' : 'tech';
+export const secOf = (t: ClickTarget, scape: ScapeOf) => t.kind === 'fish' ? 'fish' : t.kind === 'item' ? scape(t.item) : t.kind === 'stand' || t.kind === 'lid' ? 'tank' : 'equipment';
 
 /** Open the side panel at the target's options: its section, the row inside, scrolled to the top of the panel.
  *  `scape` = panels.ts scapeSec (passed in: panels imports the pointer module). */

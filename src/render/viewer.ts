@@ -1,6 +1,7 @@
 // Owns the WebGL renderer and the one or two viewports (one per tank setup; two after a split). Render-on-demand.
 import { FX, onFx, tickFx } from './fx';
 import * as THREE from 'three';
+import { rayHitsDoorBox } from '../interact/doorBox';
 import { fishTL, speciesOf } from '../data/species';
 import { D2R, clamp, depthRatio, floorY, tankUnderside } from '../scene/physics';
 import { eyeClear, eyeDist, lensZoom, limitOrbit } from '../scene/orbit';
@@ -968,6 +969,13 @@ export class Viewer {
     // anywhere in its box: with the doors open the ray may pass between the panels to the sump inside
     const box = new THREE.Box3(); for (const o of sc.children) if (o.userData.stand) box.expandByObject(o);
     return !box.isEmpty() && this.ray.ray.intersectsBox(box);
+  }
+
+  /** The pointer is inside a box around a cabinet door's handle (or on an open door): the only place a click works the doors. */
+  handleAt(clientX: number, clientY: number): boolean {
+    const hit = this.hitTest(clientX, clientY), S = hit?.vp.S, sc = hit?.vp.scene as THREE.Scene | undefined;
+    if (!hit || !S || !sc || !S.stand.show) return false;
+    return rayHitsDoorBox(sc, hit.ray);
   }
 
   private static CORE = 0.65; // share of the on-screen box (each way) that picks the piece

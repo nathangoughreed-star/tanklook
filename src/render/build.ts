@@ -549,7 +549,7 @@ function addOpenCabinet(sc: THREE.Scene, ring: P[], dirs: P[], runs: P[][], top:
       const hx = r[0][0] + e[0] * hs, hd = r[0][1] + e[1] * hs, c = Math.cos(swing), s = Math.sin(swing);
       const dir: P = [k * e[0] * c + n[0] * s, k * e[1] * c + n[1] * s], mid: P = [hx + dir[0] * w / 2 + n[0] * DOOR_T / 2, hd + dir[1] * w / 2 + n[1] * DOOR_T / 2];
       const door = shadedBox(w, dy1 - dy0, DOOR_T, color, { finish: wf, vertical: true, seed: 40 + di++ });
-      door.position.set(mid[0], (dy0 + dy1) / 2, -mid[1]); door.rotation.y = Math.atan2(dir[1], dir[0]); sc.add(door);
+      door.position.set(mid[0], (dy0 + dy1) / 2, -mid[1]); door.rotation.y = Math.atan2(dir[1], dir[0]); door.userData.openDoor = true; sc.add(door);
     }
   }
 }
@@ -600,7 +600,7 @@ function addDoors(sc: THREE.Scene, runs: P[][], top: number, h: number, color: n
       for (const p of [line[0], line[line.length - 1]]) pts.push(...at(p, y1), ...at(p, y0));
       if (hs - 6 < s0 || hs + 6 > s1) continue;
       const hb = proud(subRun(r, hs - 6, hs + 6), DOOR_T);
-      sc.add(shadedSolid(wallGeometry(hb, proud(hb, 22), hy0, hy1), HANDLE));
+      const hd = shadedSolid(wallGeometry(hb, proud(hb, 22), hy0, hy1), HANDLE); hd.userData.handle = true; sc.add(hd); // click box: interact/doorBox.ts
     }
   }
   sc.add(lines(pts, seam, 0.8));
