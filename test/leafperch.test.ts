@@ -1,5 +1,6 @@
 // Animals that sit on broad plant leaves (anchors kind 'leaf'): the probe finds a leaf top over a crypt's crown, rest()
 // puts a leaf-sitter on it (and never a species that cannot), and Shuffle perches some dwarf frogs on plants and hardscape.
+import './pinfx'; // fx embed (VF-C2) sinks the rock: the probe points here are fixed
 import { describe, expect, it } from 'vitest';
 import { rng } from '../src/art/paint';
 import * as THREE from 'three';
