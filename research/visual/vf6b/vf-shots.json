@@ -1,0 +1,44 @@
+{
+ "commit": "a290bb7a",
+ "build": 1831,
+ "dirty": true,
+ "when": "2026-11-12T17:55:59.835Z",
+ "size": [
+  1050,
+  850
+ ],
+ "fx": [
+  "tonemap:aces,contact,ground,variety,caustics,embed",
+  "tonemap:aces,contact,ground,variety,caustics,embed,depth,waterline"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "planted4": {
+   "shots": [
+    "planted4-front-tonemap-aces-contact-ground-variety-caustics-embed.png",
+    "planted4-line-tonemap-aces-contact-ground-variety-caustics-embed.png",
+    "planted4-front-tonemap-aces-contact-ground-variety-caustics-embed-depth-waterline.png",
+    "planted4-line-tonemap-aces-contact-ground-variety-caustics-embed-depth-waterline.png"
+   ],
+   "ab": {}
+  },
+  "nano": {
+   "shots": [
+    "nano-front-tonemap-aces-contact-ground-variety-caustics-embed.png",
+    "nano-line-tonemap-aces-contact-ground-variety-caustics-embed.png",
+    "nano-front-tonemap-aces-contact-ground-variety-caustics-embed-depth-waterline.png",
+    "nano-line-tonemap-aces-contact-ground-variety-caustics-embed-depth-waterline.png"
+   ],
+   "ab": {}
+  },
+  "reef": {
+   "shots": [
+    "reef-front-tonemap-aces-contact-ground-variety-caustics-embed.png",
+    "reef-line-tonemap-aces-contact-ground-variety-caustics-embed.png",
+    "reef-front-tonemap-aces-contact-ground-variety-caustics-embed-depth-waterline.png",
+    "reef-line-tonemap-aces-contact-ground-variety-caustics-embed-depth-waterline.png"
+   ],
+   "ab": {}
+  }
+ }
+}
