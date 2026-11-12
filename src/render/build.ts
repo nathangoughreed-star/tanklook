@@ -1444,8 +1444,10 @@ export function buildTank(S: TankSetup & { units: Units }, T: Tank, selId: Sel, 
   addWall(sc, S, T); addPerson(sc, S, T); addFloor(sc, S, T);
   const b: BuiltTank = { scene: sc, fishMeshes: [], meshById: new Map(), dotMeshes: [], itemMeshes: [], fishParts: [], itemParts: [], contentAt: sc.children.length };
   addContents(b, S, T, selId, selItem);
-  if (!ghost) { addLid(sc, S, T); addFrontDoors(sc, S, T); }
-  if (!ghost && S.lid !== 'hood') addFixture(sc, T, S.light, floorY(T, S.render, S.stand) + ceilingH(S.wall), waterY(T, S.water.level)); // ceiling: the wall's room height // with a hood the fixture is inside it; its light still applies
+  n0 = sc.children.length; if (!ghost) { addLid(sc, S, T); addFrontDoors(sc, S, T); }
+  for (const o of sc.children.slice(n0)) o.userData.lidPart = true; // a click on the lid / doors opens their Tank rows (interact/clickMenu.ts)
+  n0 = sc.children.length; if (!ghost && S.lid !== 'hood') addFixture(sc, T, S.light, floorY(T, S.render, S.stand) + ceilingH(S.wall), waterY(T, S.water.level)); // ceiling: the wall's room height // with a hood the fixture is inside it; its light still applies
+  for (const o of sc.children.slice(n0)) o.userData.fixture = true; // a click on the light opens Tech > Lighting
   if (!ghost && S.render.beams) addBeams(sc, T, S.light, S.lid);
   b.dotMeshes = edit && S.terrain.on ? addTerrainDots(sc, S, T, edit) : [];
   applyLighting(sc);

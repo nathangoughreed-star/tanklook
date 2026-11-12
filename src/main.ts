@@ -1,5 +1,6 @@
 import './style.css';
 import { attachPointer } from './interact/pointer';
+import { openMenuFor } from './interact/clickMenu';
 import { Viewer } from './render/viewer';
 import { pickSec } from './render/menuFocus';
 import { Store } from './scene/store';
@@ -38,7 +39,8 @@ if (!webglAvailable()) {
   // gear only while Tech is (lane TG, 2026-10-20),
   // and the panel showing
   attachPointer(viewer, store, (what, kind) => !!document.querySelector<HTMLDetailsElement>(`details.sec[data-sec="${pickSec(what, kind && scapeSec(kind))}"]`)?.open
-    && !document.getElementById('app')!.classList.contains('collapsed'));
+    && !document.getElementById('app')!.classList.contains('collapsed'),
+    t => openMenuFor(t, store, scapeSec)); // a click on a thing opens its menu at its options (clickMenu.ts)
   const ui = attachPanels(store, viewer);
   attachGroupBar(store, viewer, ui.status);
   attachBrushBar(store);
