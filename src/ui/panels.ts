@@ -84,7 +84,7 @@ import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, aqWaitS, fetchAqHealth, fetchSt
 import { BOWL_DEFAULT, BOWL_MAX, BOWL_MIN, PIE_DEFAULT, POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
 import { TABLE_MAX, tableOn, tableRange, wallGap } from '../scene/table';
 import type { BgFit, BgSide, CompId, Fish, Pairing, GrowFeed, GrowMode, Item, ItemKind, LayoutId, LightTech, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
-import { standAsked } from '../scene/types';
+import { standAsked, roughOf } from '../scene/types';
 import { pairRule } from '../data/groups';
 import { pairingIn, setPairing } from '../scene/pairs';
 import { FEED_NAMES, beginGrow, endGrow, setGrowTime, setPlantGrowth, timeChanges } from '../scene/growtime';
@@ -1133,7 +1133,7 @@ Cancel, then change the name, to keep both.`)) return;
     });
     if (bare && viewer.terrainEdit.on) { viewer.terrainEdit.on = false; viewer.rebuild(); }
   };
-  $('subRoughness').oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; if (v > 0) s.substrate.rough = v; else delete s.substrate.rough; }, { coalesce: 'subRoughness' });
+  $('subRoughness').oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; s.substrate.rough = v; }, { coalesce: 'subRoughness' });
   const SUBK = { subFL: 'fl', subFR: 'fr', subBL: 'bl', subBR: 'br' } as const;
   for (const [id, k] of Object.entries(SUBK)) $(id).oninput = e => store.edit(s => { s.substrate[k] = +(e.target as HTMLInputElement).value; }, { coalesce: id });
   const subSet = (fl: number, fr: number, bl: number, br: number) => store.edit(s => {
@@ -2237,7 +2237,7 @@ Cancel, then change the name, to keep both.`)) return;
     $('terHint').textContent = !te.on ? 'Custom terrain turns the floor into a grid of points you can push down or pull up, with a smooth surface through them. It starts from the current floor.'
       : editing ? `Drag a dot up or down${pools.length ? '; drag a square to move or size the pool (blue: width and length, green: bank)' : ''}. Drag empty space to orbit; look from above to reach the back points.` : te.pools?.length ? 'The corner sliders set the floor of the pools.' : 'Corner sliders are off while custom terrain is on.';
     $('subDepth').hidden = !sub.show; $('subBare').hidden = sub.show; // no depth to set on a bare bottom (audit #40)
-    $('subRough').hidden = !sub.show; setVal('subRoughness', sub.rough ?? 0); setOut('oSubRoughness', sub.rough ? `${sub.rough} %` : 'Smooth');
+    $('subRough').hidden = !sub.show; setVal('subRoughness', roughOf(sub)); setOut('oSubRoughness', roughOf(sub) ? `${roughOf(sub)} %` : 'Smooth');
     const lit = sub.litter; $('subLitter').hidden = !sub.show;
     setVal('litLeaf', lit?.leaf ?? 'mixed'); setVal('litDens', lit?.density ?? 0); setOut('oLitDens', lit?.density ? `${lit.density} %` : 'None');
     // with pools the corner depths are the pools' floor, so they stay editable (swamp land as terrain, 2026-10-16)

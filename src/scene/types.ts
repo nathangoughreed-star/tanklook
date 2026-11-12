@@ -4,6 +4,9 @@
 // Split tanks (scene v7): up to two fully independent setups, each with its own contents, room and camera.
 // Aquascape items (scene v9): every rock, piece of wood, cave and plant is its own placeable item.
 
+/** Substrate roughness when `Substrate.rough` is absent (SR1, 2026-11-12): every tank is 50 % rough; an explicit 0 is smooth. */
+export const ROUGH_DEFAULT = 50;
+export const roughOf = (s: { rough?: number }): number => s.rough ?? ROUGH_DEFAULT;
 export const SCENE_VERSION = 10; // v10 (DX0): a stable `uid` on every animal and aquascape item, and `TankSetup.locks`
 /** Pairing of a pair-forming species, where a rule depends on it (rules-spec section 4): an established pair, one not yet confirmed,
  *  or unknown (the default). Two animals, even 1 male + 1 female, are never assumed to be a pair. */
@@ -207,7 +210,7 @@ export interface SubstrateSettings {
   custom: SubstrateBlend; // used when type is 'custom'
   litter?: Litter; // leaf litter on the ground (lane T1, 2026-10-16); absent = none
   /** Surface roughness 0-100 % (2026-11-03, no version bump): lumps and ripples drawn on the ground's skin only, a few mm, heaped up to ~15 mm in places. It
-   *  never touches the terrain or the corner depths (pieces still stand on the smooth ground). Absent = smooth. */
+   *  never touches the terrain or the corner depths (pieces still stand on the smooth ground). Absent = ROUGH_DEFAULT (50); 0 = smooth. */
   rough?: number;
   fl: number; fr: number; bl: number; br: number; // depth at each corner, mm
 }

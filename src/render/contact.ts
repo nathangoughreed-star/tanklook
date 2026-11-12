@@ -20,6 +20,7 @@ import { SUBSTRATES, shadesOf } from '../art/placeholder';
 import { itemDims } from '../scene/items';
 import { footprint } from '../scene/shape';
 import type { Item, Tank, TankSetup } from '../scene/types';
+import { roughOf } from '../scene/types';
 import { FX } from './fx';
 import { grainKinds, grainLooks, type GrainLook } from './grains';
 import { scatter, type GroundAt } from './scatter';
@@ -102,7 +103,7 @@ const lin = (a: number) => (a <= 0.04045 ? a / 12.92 : ((a + 0.055) / 1.055) ** 
  */
 export function contactObjects(S: TankSetup, T: Tank, items: { it: Item; m: THREE.Mesh }[], ground: GroundAt, skin?: GroundSkin): THREE.Object3D[] {
   if (!FX.contact && !FX.ground && !FX.embed && !FX.mix) return [];
-  const gsig = (FX.embed ? 'e' : '') + JSON.stringify([T, S.terrain, S.substrate.rough, S.substrate.show, S.layout.seed]), groundY = (x: number, d: number) => ground(x, d)[1];
+  const gsig = (FX.embed ? 'e' : '') + JSON.stringify([T, S.terrain, roughOf(S.substrate), S.substrate.show, S.layout.seed]), groundY = (x: number, d: number) => ground(x, d)[1];
   const list: Blob[] = [];
   for (const { it, m } of items) {
     const k = JSON.stringify(it) + gsig;

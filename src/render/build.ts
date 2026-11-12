@@ -20,6 +20,7 @@ import { alongRun, archBulge, backgroundRuns, bowlDims, bowlRadius, chord, circl
 import { TABLE_TOP, cornerWalls, wallGap, tableCentre, tableOn, tableRing, wallPlane } from '../scene/table';
 import { groundHeight, pieSegs, poolHandles, poolWet, terrainDisc, terrainPoints, type PoolPart } from '../scene/terrain';
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
+import { roughOf } from '../scene/types';
 import { getImage } from '../scene/images';
 import { LU, addBeams, addFixture, addHoodLamps, applyLighting, glassFx, setWaterVolumeMode, waterVolumeMaterial } from './lighting';
 import { addAlgae } from './algae';
@@ -995,7 +996,7 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   type V3 = [number, number, number];
   // surface roughness (2026-11-03): lumps and ripples on the ground's skin only, a few mm, up to ~15 mm in heaped spots, at 100 %; pieces and grains still stand on
   // the smooth ground. A finer grid (about 14 mm cells) so the ripples show; the light map's plain floor stays plain.
-  const ra = (S.render.beams && S.light.type !== 'flat' ? 0 : (S.substrate.rough ?? 0)) / 100;
+  const ra = (S.render.beams && S.light.type !== 'flat' ? 0 : roughOf(S.substrate)) / 100;
   // irregular, not a repeating wave: seeded value noise, domain-warped, three scales (about 130, 50 and 20 mm), a ridged octave for
   // sharper crests, and a slow noise that swells and calms the amplitude so some stretches are flat and others heaped
   const sd = (S.layout.seed ?? 1) * 17.31, hs = (a: number, b: number) => { const t = Math.sin(a * 127.1 + b * 311.7 + sd) * 43758.5453; return t - Math.floor(t); };
