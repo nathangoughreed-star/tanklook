@@ -23,24 +23,35 @@
   </header>
 
   <div class="toolbar">
-    <div class="tbgroup tb-get" role="group" aria-label="Get a tank">
+    <div class="tbgroup tb-main" role="group" aria-label="Tank file and ideas">
       <button id="newScene" title="Start a new, empty tank">New</button>
-      <button id="startScene" title="Ready-made starter and example tanks to look at or start from">Starter / Example</button>
-      <button id="openScene" title="Open a tank saved in this browser, or a downloaded file">Open…</button>
-    </div>
-    <div class="tbgroup tb-keep" role="group" aria-label="Keep this tank">
-      <button id="saveScene" title="Save this tank in this browser, with a picture (Open… lists them)">Save</button>
-      <button id="downloadScene" title="Download this tank as a file, or copy a link that opens it">Download</button>
-      <button id="myEquip" title="What you already own: tank, stand or furniture, light, heater, filter and the rest. Open it any time.">My equipment</button>
+      <button id="openScene" title="Open a saved tank or a ready-made starter tank">Open…</button>
+      <button id="saveScene" title="Save this tank in this browser, or Save as… under a new name, as a file, or as a link">Save</button>
     </div>
     <div class="tbgroup tb-help" role="group" aria-label="Help and ideas">
       <button id="guideBtn" title="A guide that walks you through the menus, step by step">Guide me</button>
     </div>
     <input id="fileIn" type="file" accept=".json,.tank" hidden>
   </div>
-  <dialog id="dlDlg" class="libdlg">
-    <form method="dialog" class="libhead"><h2>Download or share</h2><button value="close" aria-label="Close">✕</button></form>
+  <dialog id="openDlg" class="libdlg">
+    <form method="dialog" class="libhead"><h2>Open…</h2><button value="close" aria-label="Close">✕</button></form>
     <div class="startbtns startpaths">
+      <button id="openSaved" class="startpath"><b>A saved tank</b><span>One saved in this browser, or a downloaded file</span></button>
+      <button id="openStarter" class="startpath"><b>A starter tank</b><span>Ready-made starter and example tanks to look at or start from</span></button>
+    </div>
+  </dialog>
+  <dialog id="saveDlg" class="libdlg">
+    <form method="dialog" class="libhead"><h2>Save</h2><button value="close" aria-label="Close">✕</button></form>
+    <div class="startbtns startpaths">
+      <button id="saveHere" class="startpath"><b>Save</b><span>Keep this tank in this browser, with a picture (Open… lists it)</span></button>
+      <button id="saveAs" class="startpath"><b>Save as…</b><span>Under a new name, as a downloadable file, or as a share link</span></button>
+    </div>
+  </dialog>
+  <dialog id="dlDlg" class="libdlg">
+    <form method="dialog" class="libhead"><h2>Save as…</h2><button value="close" aria-label="Close">✕</button></form>
+    <div class="startbtns startpaths">
+      <label class="flabel" for="saveAsName">Name</label><input id="saveAsName" type="text" maxlength="80">
+      <button id="saveAsBrowser" class="startpath"><b>Save in this browser under this name</b><span>A new entry; the tank it came from stays as it is</span></button>
       <button id="dlFile" class="startpath"><b>Download a file</b><span>A .json file to back up or send; Open… reads it back, pictures included</span></button>
       <button id="shareScene" class="startpath"><b>Copy share link</b><span>A link that opens this exact tank for whoever you send it to (no file, no account)</span></button>
     </div>

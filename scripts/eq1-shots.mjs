@@ -17,7 +17,7 @@ const fire = (sel, val, type = 'change') => ev(`(()=>{const e=document.querySele
 const view = async (w, h, mobile) => send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile });
 try {
   await send('Page.enable'); await view(1400, 900, false); await send('Page.navigate', { url: URL });
-  for (let i = 0; i < 90; i++) { if (await ev(`!!window.__gb && !!document.getElementById('myEquip')`).catch(() => false)) break; await sleep(1000); }
+  for (let i = 0; i < 90; i++) { if (await ev(`!!window.__gb && !!document.getElementById('equipOpen')`).catch(() => false)) break; await sleep(1000); }
   await sleep(2500);
   await ev(`document.querySelectorAll('dialog[open]').forEach(d=>d.close())`); await sleep(300);
   // a Tech shortcut: open the Tech section, the heater row, its "I own one" tab, then the button

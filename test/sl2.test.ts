@@ -23,13 +23,18 @@ describe('SL2 resume where the last session left off', () => {
     const m = read('src/main.ts');
     expect(m).toContain('loadLocalChecked'); expect(m).toMatch(/if \(restored\) ui\.resume\(\)/); expect(m).toMatch(/showStart\(saveError/);
   });
-  it('left menu: New, Starter / Example and Open buttons; no "Continue your last tank"', () => {
+  it('header (HM1): New, Open…, Save (+ Discover); Open asks saved or starter; Save offers Save / Save as…; no My equipment, Starter or Download buttons', () => {
     const h = read('index.html'), p = read('src/ui/panels.ts');
-    for (const id of ['newScene', 'startScene', 'openScene']) expect(h).toContain(`id="${id}"`);
-    expect(h.indexOf('id="newScene"')).toBeLessThan(h.indexOf('id="startScene"')); expect(h.indexOf('id="startScene"')).toBeLessThan(h.indexOf('id="openScene"'));
+    for (const id of ['newScene', 'openScene', 'saveScene', 'openSaved', 'openStarter', 'saveHere', 'saveAs', 'dlFile', 'shareScene']) expect(h).toContain(`id="${id}"`);
+    for (const id of ['startScene', 'downloadScene', 'myEquip']) expect(h).not.toContain(`id="${id}"`);
+    expect(h.indexOf('id="newScene"')).toBeLessThan(h.indexOf('id="openScene"')); expect(h.indexOf('id="openScene"')).toBeLessThan(h.indexOf('id="saveScene"'));
+    expect(read('src/ui/discover/keep.ts')).toContain("'.tb-main'");
     expect(p).not.toContain('Continue your last tank');
-    expect(p).toMatch(/\$\('startScene'\)\.onclick = .*stepForMenu\('open', 'starters'\)/);
+    expect(p).toMatch(/\$\('openStarter'\)\.onclick = .*stepForMenu\('open', 'starters'\)/);
+    expect(p).toMatch(/\$\('openSaved'\)\.onclick = .*stepForMenu\('open'\)/);
     expect(p).toMatch(/\$\('newScene'\)\.onclick = .*stepForMenu\('new'\)/);
+    expect(p).toMatch(/\$\('saveHere'\)\.onclick = .*doSave\(\)/);
+    expect(read('src/ui/myEquipment.ts')).toContain('Open My equipment…');
   });
   it('open section and a Discovery in progress are saved for the next visit', () => {
     const p = read('src/ui/panels.ts');

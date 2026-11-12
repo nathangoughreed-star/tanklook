@@ -73,6 +73,14 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
+## HM1: header toolbar cut to New / Open… / Save / Discover (2026-11-11; Coordinator 22; NOT pushed)
+Nathan: "only new, open (saved tank or starter tank), save (save or save as), discover. Remove my equipment."
+- Header is one `.tb-main` grid of four (New, Open…, Save, Discover; Discover is appended there by discover/keep.ts) plus Guide me alone on its own row (kept until Nathan decides). Works at 375 px.
+- **Open…** opens `#openDlg`: "A saved tank" (start screen, Open Existing tab) or "A starter tank" (Starter / Example tab). The Starter / Example button is gone (SL2's `stepForMenu('open','starters')` call now sits on `#openStarter`).
+- **Save** opens `#saveDlg`: "Save" (`doSave`, the old Save: into this browser with a picture) or "Save as…". **Save as…** opens `#dlDlg` (formerly Download or share): a Name field, "Save in this browser under this name" (a new name makes a new entry), "Download a file" (the old Download; also takes the new name), "Copy share link". So Download and share are folded into Save as…; no function lost. "Autosaved" indicator untouched. New-project guard's "Save copy" calls `doSave()` directly.
+- **My equipment** button removed; still reachable from the Equipment section ("Open My equipment…", `#equipOpen`). eq1/dx3 shot scripts now click `#equipOpen`.
+- Tests: sl2 "header (HM1)" replaces the left-menu test. Build clean; sl/ab/dx suites pass. Pictures: research/screens/HM1/ (desktop + 375), script scripts/hm1-shots.mjs.
+- Not changed: in-text hints still say "Download" in a few places (split-tank hint, welcome copy); the per-tank tab Download stays.
 ## VF-A: shader effects, plan VF (2026-11-11; branch vf-a-shader, worktree ../Glass-Box-vf-a, port 6021; Coordinator 20)
 Plan prompts/plan-VF-visual-fidelity.md, brief prompts/lane-VF-A-shader.md. Owns render/lighting.ts, waterTint.ts, viewer.ts renderer settings, items.ts glassMats, render/fx.ts, render/caustics.ts, scripts/vf-shots.mjs, research/visual/.
 - VF0 (done): reference tanks research/visual/vf0/scenes (planted4, nano, reef; camera / light / seeds locked), scripts/vf-shots.mjs (front + substrate + rock close-ups per fx set, alternating-frame GPU / CPU / p95 / calls; `--perf`, `--cold <dist>`), baseline pictures and numbers in research/visual/vf0/README.md. Use `--dir`, not `--out`, through lowprio.ps1 (PowerShell takes -out). The VF0 production build for cold A/B is ../Glass-Box-vf-a-dist-vf0.

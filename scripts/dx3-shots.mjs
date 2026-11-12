@@ -17,17 +17,17 @@ const fire = (sel, val, type = 'change') => ev(`(()=>{const e=document.querySele
 const view = async (w, h, mobile) => send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile });
 try {
   await send('Page.enable'); await send('Runtime.enable'); ws.addEventListener('message', m => { const d = JSON.parse(m.data); if (d.method === 'Runtime.exceptionThrown') console.log('PAGE ERROR', JSON.stringify(d.params.exceptionDetails).slice(0, 200)); }); await view(1400, 900, false); await send('Page.navigate', { url: URL });
-  for (let i = 0; i < 90; i++) { if (await ev(`!!window.__gb && !!document.getElementById('myEquip')`).catch(() => false)) break; await sleep(1000); }
+  for (let i = 0; i < 90; i++) { if (await ev(`!!window.__gb && !!document.getElementById('equipOpen')`).catch(() => false)) break; await sleep(1000); }
   await sleep(2500);
   await ev(`document.querySelectorAll('dialog[open]').forEach(d=>d.close())`); await sleep(300);
-  await ev(`document.querySelectorAll('dialog[open]').forEach(d=>d.close())`); await sleep(300); for (let i = 0; i < 30 && !(await ev(`!!document.querySelector('.owndlg[open]')`)); i++) { await click('#myEquip'); await sleep(1500); } console.log('dlg', await ev(`!!document.querySelector('.owndlg[open]')`));
+  await ev(`document.querySelectorAll('dialog[open]').forEach(d=>d.close())`); await sleep(300); for (let i = 0; i < 30 && !(await ev(`!!document.querySelector('.owndlg[open]')`)); i++) { await click('#equipOpen'); await sleep(1500); } console.log('dlg', await ev(`!!document.querySelector('.owndlg[open]')`));
   console.log(await click('.owndlg [data-add="heater"]'), await fire('.owndlg #ownHeater', 'generic'));
   console.log(await click('.owndlg [data-add="filter"]'), await fire('.owndlg #ownFilter', 'generic'));
   console.log(await click('.owndlg [data-add="light"]'), await fire('.owndlg #ownLight', 'generic'));
   console.log(await click('.owndlg [data-must="heater"]'));
   await ev(`document.querySelector('.owndlg').close()`); await sleep(300);
   await ev(`window.__gb.store.edit(S => { S.tank.L *= 2; S.tank.D *= 1.5; })`); await sleep(1500);
-  await ev(`document.querySelectorAll('dialog[open]').forEach(d=>d.close())`); await sleep(300); console.log(await click('#myEquip')); await sleep(1500); console.log('dlg', await ev(`!!document.querySelector('.owndlg')`));
+  await ev(`document.querySelectorAll('dialog[open]').forEach(d=>d.close())`); await sleep(300); console.log(await click('#equipOpen')); await sleep(1500); console.log('dlg', await ev(`!!document.querySelector('.owndlg')`));
   await shot('1-three-groups-desktop');
   console.log(await click('.owndlg #ownNoNew')); await sleep(500);
   await ev(`document.querySelector('.owndlg').scrollTo(0,9999)`); await sleep(300);

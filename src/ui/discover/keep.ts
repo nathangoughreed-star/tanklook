@@ -34,7 +34,7 @@ export function attachKeep(store: Store, open: (tab?: Tab) => void) {
   const bar = document.querySelector('.toolbar');
   if (bar && !bar.querySelector('#discoverBtn')) {
     const b = document.createElement('button'); b.id = 'discoverBtn'; b.textContent = 'Discover'; b.title = 'Ask for proposals for the tabs you choose, without touching what you have locked';
-    b.onclick = () => open(); const g = bar.querySelector('#guideBtn'); if (g) g.before(b); else bar.append(b);
+    b.onclick = () => open(); (bar.querySelector('.tb-main') ?? bar).append(b);
   }
   const hosts = new Map<Tab, HTMLElement>(), sigs = new Map<Tab, string>();
   for (const tab of Object.keys(SEC) as Tab[]) {

@@ -169,8 +169,11 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('redo').onclick = () => store.redo();
   // New and Open… are two separate menus of the start chooser (below): New = scratch + deals, Open… = starter + saved tanks
   $('newScene').onclick = () => { welcomeFirst = false; startMode.open(stepForMenu('new')); }; // SL1: the one start screen, at its New Setup step (closable: a project is open)
-  $('openScene').onclick = () => { welcomeFirst = false; startMode.open(stepForMenu('open')); };
-  $('startScene').onclick = () => { welcomeFirst = false; startMode.open(stepForMenu('open', 'starters')); }; // SL2: the left menu's own Starter / Example button
+  // HM1: Open… asks first: a saved tank (the Open Existing tab) or a starter tank (the Starter / Example tab)
+  const openDlg = $<HTMLDialogElement>('openDlg');
+  $('openScene').onclick = () => openDlg.showModal();
+  $('openSaved').onclick = () => { openDlg.close(); welcomeFirst = false; startMode.open(stepForMenu('open')); };
+  $('openStarter').onclick = () => { openDlg.close(); welcomeFirst = false; startMode.open(stepForMenu('open', 'starters')); };
   /** An empty tank and an empty brief (lane NW1). Warns first when the current tank has something to lose and is not saved: Save / Start new / Cancel (false = cancelled). Undo brings it back. */
   const newEmptyTank = async (newKind: SetupKind = 'freshwater', room = false) => { // the Sandbox card's Tank type (lane S252): applied to the empty tank it starts
     // room (lane ST1): the Sandbox starts as an empty room with the person (the default environment, its own camera); the tank picker puts the tank in
@@ -182,7 +185,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   };
   /** The stored text of the saved tank this project came from (null when unsaved): a project saved as it stands has nothing to lose. */
   const savedText = () => { const id = libId(); return id ? libText(id) : null; };
-  setProjectAsker(() => confirmNew(() => { $('saveScene').click(); const now = libId(); return !!now && JSON.stringify(G()) === libText(now); }));
+  setProjectAsker(() => confirmNew(() => { doSave(); const now = libId(); return !!now && JSON.stringify(G()) === libText(now); }));
   let tankDock: TankDock | undefined, roomPending = false; // roomPending: the empty room is up and no tank is chosen yet (a tank is required, Nathan 2026-11-05)
   $('openFile').onclick = () => $('fileIn').click(); // SL1: the start screen stays up; it closes only when a file really opens
   /** A message while the start screen is up (the status line sits behind the modal): shown on the screen itself, else on the status line. */
@@ -389,7 +392,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   };
   // Save: into this browser under the scene's name. Same name as the tank it came from: updated in place; same name
   // as a different saved tank: ask before replacing it; a new name: a new entry (the old one is kept).
-  $('saveScene').onclick = () => {
+  const doSave = () => {
     const g = G(), list = listLib(), cur = libId(), same = list.find(x => x.name === g.name);
     if (same && same.id !== cur && !confirm(`A different tank called “${g.name}” is already saved in this browser (${when(same.saved)}). Replace it?
 
@@ -398,16 +401,30 @@ Cancel, then change the name, to keep both.`)) return;
       let thumb = ''; try { thumb = viewer.thumbnail(); } catch { /* no picture: still save the tank */ }
       const e = saveToLib(g, thumb, same?.id);
       setLibId(e.id);
-      status(`Saved “${e.name}” in this browser (${list.length + (same ? 0 : 1)} saved). Download keeps a file you can back up or share.`);
+      status(`Saved “${e.name}” in this browser (${list.length + (same ? 0 : 1)} saved). Save as… keeps a file you can back up or share.`);
     } catch (err) {
       status((err as Error).message, true);
     }
   };
   const saveFile = (scene: Scene) => download(new Blob([JSON.stringify(withImages(scene), null, 1)], { type: 'application/json' }), `${slug(scene.name)}.json`);
   // the whole scene: with split tanks, one file holding both (opens split again)
-  const dlDlg = $<HTMLDialogElement>('dlDlg');
-  $('downloadScene').onclick = () => dlDlg.showModal();
-  $('dlFile').onclick = () => { dlDlg.close(); saveFile(G()); };
+  const dlDlg = $<HTMLDialogElement>('dlDlg'), saveDlg = $<HTMLDialogElement>('saveDlg');
+  // HM1: Save offers Save (into this browser) and Save as… (new name / the downloadable file / share link: what Download did)
+  $('saveScene').onclick = () => saveDlg.showModal();
+  $('saveHere').onclick = () => { saveDlg.close(); doSave(); };
+  $('saveAs').onclick = () => { saveDlg.close(); $<HTMLInputElement>('saveAsName').value = G().name; dlDlg.showModal(); };
+  $('saveAsBrowser').onclick = () => {
+    const v = $<HTMLInputElement>('saveAsName').value.trim().slice(0, 80);
+    dlDlg.close();
+    if (v && v !== G().name) { $<HTMLInputElement>('sceneName').value = v; $('sceneName').onchange!(new Event('change')); setLibId(null); } // a new name is a new entry
+    doSave();
+  };
+  $('dlFile').onclick = () => {
+    dlDlg.close();
+    const v = $<HTMLInputElement>('saveAsName').value.trim().slice(0, 80);
+    if (v && v !== G().name) { $<HTMLInputElement>('sceneName').value = v; $('sceneName').onchange!(new Event('change')); }
+    saveFile(G());
+  };
   // Share link (lane N, R12): the scene deflated into the URL hash, no server. The single-file build (file://) links to
   // the live site, since a file path means nothing on another computer.
   $('shareScene').onclick = async () => {
