@@ -403,8 +403,11 @@ const AQ_MAP = `#ifdef USE_MAP
  * ACES toe (Nathan 2026-11-12, ACES picked, "crushing some of the darker details" on the cabinets): below mid grey the
  * result eases back toward the untoned value, keeping a third of ACES's darkening at black (linear 0.02 reads 0.13 sRGB
  * instead of ACES's 0.07; today's 0.15).
+ * Room surfaces (wall, floor, stand: uRoomMat) stay out of the curve and keep the hue-keeping normalise: the tank's
+ * light on the wall is brighter than 1, and ACES compressed and desaturated it to flat grey, losing the warm spill
+ * Nathan asked for on 2026-10-08 (2026-11-12).
  */
-const AQ_TONE = 'if (uFxTone > 0.5 && !(uMapOn > 0.5 && uSub > 0.5)) { vec3 aqC = gl_FragColor.rgb;\n' +
+const AQ_TONE = 'if (uFxTone > 0.5 && uRoomMat < 0.5 && !(uMapOn > 0.5 && uSub > 0.5)) { vec3 aqC = gl_FragColor.rgb;\n' +
   '  if (uFxTone < 1.5) gl_FragColor.rgb = aqAgx(aqC * 0.808);\n' +
   '  else gl_FragColor.rgb = mix(min(aqC, vec3(1.0)), aqAces(aqC * 0.877), 0.35 + 0.65 * smoothstep(0.0, 0.18, dot(aqC, vec3(0.2126, 0.7152, 0.0722)))); }\n';
 // three's AgX and ACES (tonemapping_pars_fragment), which three compiles in only when renderer.toneMapping is set
@@ -448,7 +451,7 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
       '  outgoingLight *= 1.0 - 0.55 * uPop * smoothstep(0.55, 0.95, 1.0 - abs(dot(normalize(vAqN), aqV)));\n' +
       '  outgoingLight = min(outgoingLight, vec3(1.0));\n' +
       // tone mapping on (render/fx.ts): light above 1 is kept for the curve (AQ_TONE) instead of clipped here
-      '} else if (aqM > 1.0 && uFxTone < 0.5) outgoingLight /= aqM;\n' +
+      '} else if (aqM > 1.0 && (uFxTone < 0.5 || uRoomMat > 0.5)) outgoingLight /= aqM;\n' +
       // water colour (lane WT1): one filter colour for whatever sits behind water, however deep (no depth haze), only on
       // sightlines that cross the water at all; fish ease off it as they stand out (render.pop)
       'if (uWater.w > 0.0) { float aqF = smoothstep(0.0, 0.5, aqWaterPath()) * (1.0 - 0.6 * uPop * max(uFish, uFishCard)); outgoingLight = outgoingLight * mix(vec3(1.0), aqWaterFilter(), aqF) + aqWaterVeil() * (aqF * min(dot(aqLt, vec3(0.2126, 0.7152, 0.0722)), 1.0)); }\n' +

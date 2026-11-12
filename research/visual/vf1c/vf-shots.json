@@ -1,0 +1,104 @@
+{
+ "commit": "50ab7b10",
+ "build": 1794,
+ "dirty": true,
+ "when": "2026-11-12T12:56:10.923Z",
+ "size": [
+  1050,
+  850
+ ],
+ "fx": [
+  "none",
+  "tonemap:aces"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "planted4": {
+   "shots": [
+    "planted4-front-none.png",
+    "planted4-front-tonemap-aces.png"
+   ],
+   "ab": {
+    "tonemap:aces": {
+     "A": {
+      "gpuMs": 16.27,
+      "gpuP95": 23.63,
+      "cpuMs": 7.7,
+      "cpuP95": 9.1,
+      "calls": 406,
+      "triangles": 739294
+     },
+     "B": {
+      "gpuMs": 16.44,
+      "gpuP95": 23.51,
+      "cpuMs": 8,
+      "cpuP95": 8.6,
+      "calls": 406,
+      "triangles": 739294
+     },
+     "gpuDelta": 0.15,
+     "gpuDeltaP95": 6.05,
+     "timer": true
+    }
+   }
+  },
+  "nano": {
+   "shots": [
+    "nano-front-none.png",
+    "nano-front-tonemap-aces.png"
+   ],
+   "ab": {
+    "tonemap:aces": {
+     "A": {
+      "gpuMs": 11.91,
+      "gpuP95": 13.21,
+      "cpuMs": 3,
+      "cpuP95": 5.5,
+      "calls": 231,
+      "triangles": 472706
+     },
+     "B": {
+      "gpuMs": 12.29,
+      "gpuP95": 13.52,
+      "cpuMs": 3.9,
+      "cpuP95": 5.7,
+      "calls": 231,
+      "triangles": 472706
+     },
+     "gpuDelta": 0.36,
+     "gpuDeltaP95": 0.66,
+     "timer": true
+    }
+   }
+  },
+  "reef": {
+   "shots": [
+    "reef-front-none.png",
+    "reef-front-tonemap-aces.png"
+   ],
+   "ab": {
+    "tonemap:aces": {
+     "A": {
+      "gpuMs": 13.61,
+      "gpuP95": 19.81,
+      "cpuMs": 4.9,
+      "cpuP95": 7.1,
+      "calls": 351,
+      "triangles": 348294
+     },
+     "B": {
+      "gpuMs": 13.13,
+      "gpuP95": 20.22,
+      "cpuMs": 4.9,
+      "cpuP95": 6.7,
+      "calls": 351,
+      "triangles": 348294
+     },
+     "gpuDelta": 0.33,
+     "gpuDeltaP95": 3.46,
+     "timer": true
+    }
+   }
+  }
+ }
+}

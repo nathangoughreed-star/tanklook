@@ -1,0 +1,283 @@
+{
+ "at": "2026-11-12T12:57:05.787Z",
+ "size": "1050x850",
+ "dirs": [
+  "before",
+  "after"
+ ],
+ "runs": [
+  {
+   "round": 0,
+   "view": "research/visual/vf0/scenes/planted4.json",
+   "build": "before",
+   "firstFrame": 7407,
+   "settled": 10530,
+   "glMs": 589,
+   "programs": 38,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 102,
+     "at": 7718,
+     "stack": "renderer.renderBufferDirect (assets/main-D5L03kv4.js:2:60866)",
+     "len": 30117,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "research/visual/vf0/scenes/planted4.json",
+   "build": "after",
+   "firstFrame": 4418,
+   "settled": 7231,
+   "glMs": 453,
+   "programs": 38,
+   "slow": []
+  },
+  {
+   "round": 0,
+   "view": "research/visual/vf0/scenes/nano.json",
+   "build": "before",
+   "firstFrame": 3333,
+   "settled": 5417,
+   "glMs": 285,
+   "programs": 33,
+   "slow": []
+  },
+  {
+   "round": 0,
+   "view": "research/visual/vf0/scenes/nano.json",
+   "build": "after",
+   "firstFrame": 3122,
+   "settled": 5665,
+   "glMs": 343,
+   "programs": 33,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 136,
+     "at": 753,
+     "stack": "renderer.renderBufferDirect (assets/main-CcWwLFT2.js:2:64868)",
+     "len": 125,
+     "marks": []
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "research/visual/vf0/scenes/reef.json",
+   "build": "before",
+   "firstFrame": 4392,
+   "settled": 6563,
+   "glMs": 340,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 127,
+     "at": 6401,
+     "stack": "renderer.renderBufferDirect (assets/main-D5L03kv4.js:2:60866)",
+     "len": 29608,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "research/visual/vf0/scenes/reef.json",
+   "build": "after",
+   "firstFrame": 3779,
+   "settled": 6253,
+   "glMs": 427,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 148,
+     "at": 6070,
+     "stack": "renderer.renderBufferDirect (assets/main-CcWwLFT2.js:2:64868)",
+     "len": 31004,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "research/visual/vf0/scenes/planted4.json",
+   "build": "after",
+   "firstFrame": 4431,
+   "settled": 6338,
+   "glMs": 361,
+   "programs": 38,
+   "slow": []
+  },
+  {
+   "round": 1,
+   "view": "research/visual/vf0/scenes/planted4.json",
+   "build": "before",
+   "firstFrame": 4598,
+   "settled": 6207,
+   "glMs": 338,
+   "programs": 38,
+   "slow": []
+  },
+  {
+   "round": 1,
+   "view": "research/visual/vf0/scenes/nano.json",
+   "build": "after",
+   "firstFrame": 3577,
+   "settled": 3577,
+   "glMs": 236,
+   "programs": 33,
+   "slow": []
+  },
+  {
+   "round": 1,
+   "view": "research/visual/vf0/scenes/nano.json",
+   "build": "before",
+   "firstFrame": 3099,
+   "settled": 3099,
+   "glMs": 262,
+   "programs": 33,
+   "slow": []
+  },
+  {
+   "round": 1,
+   "view": "research/visual/vf0/scenes/reef.json",
+   "build": "after",
+   "firstFrame": 3751,
+   "settled": 6209,
+   "glMs": 347,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 124,
+     "at": 6055,
+     "stack": "renderer.renderBufferDirect (assets/main-CcWwLFT2.js:2:64868)",
+     "len": 31004,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "research/visual/vf0/scenes/reef.json",
+   "build": "before",
+   "firstFrame": 5409,
+   "settled": 9073,
+   "glMs": 550,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 204,
+     "at": 8815,
+     "stack": "renderer.renderBufferDirect (assets/main-D5L03kv4.js:2:60866)",
+     "len": 29608,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "research/visual/vf0/scenes/planted4.json",
+   "build": "before",
+   "firstFrame": 4903,
+   "settled": 7078,
+   "glMs": 435,
+   "programs": 38,
+   "slow": []
+  },
+  {
+   "round": 2,
+   "view": "research/visual/vf0/scenes/planted4.json",
+   "build": "after",
+   "firstFrame": 4877,
+   "settled": 7270,
+   "glMs": 467,
+   "programs": 38,
+   "slow": []
+  },
+  {
+   "round": 2,
+   "view": "research/visual/vf0/scenes/nano.json",
+   "build": "before",
+   "firstFrame": 3164,
+   "settled": 4995,
+   "glMs": 263,
+   "programs": 33,
+   "slow": []
+  },
+  {
+   "round": 2,
+   "view": "research/visual/vf0/scenes/nano.json",
+   "build": "after",
+   "firstFrame": 3284,
+   "settled": 5380,
+   "glMs": 258,
+   "programs": 33,
+   "slow": []
+  },
+  {
+   "round": 2,
+   "view": "research/visual/vf0/scenes/reef.json",
+   "build": "before",
+   "firstFrame": 4797,
+   "settled": 7132,
+   "glMs": 372,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 145,
+     "at": 6951,
+     "stack": "renderer.renderBufferDirect (assets/main-D5L03kv4.js:2:60866)",
+     "len": 29608,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "research/visual/vf0/scenes/reef.json",
+   "build": "after",
+   "firstFrame": 4743,
+   "settled": 6913,
+   "glMs": 427,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 191,
+     "at": 6669,
+     "stack": "renderer.renderBufferDirect (assets/main-CcWwLFT2.js:2:64868)",
+     "len": 31004,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  }
+ ]
+}
