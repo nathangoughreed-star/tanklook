@@ -38,9 +38,9 @@ export const markTargetUsed = (session: DiscoverySession, id: string): Discovery
 
 // ---------------------------------------------------------------------------------------------------------------- practical lean (cost reasons)
 export type Lean = NonNullable<ProjectExtras['lean']>;
-/** DQ4 "Reset learned taste": the learned parts of the brief only (A / B aspect events, attribute thumbs, the cost lean). Stated preferences (cards, told keys, limits, locks) and the project are untouched. */
+/** DQ4 "Reset learned taste": the learned parts of the brief only (A / B aspect events, Like / Dislike feedback and legacy thumbs, the cost lean). Stated preferences (cards, told keys, limits, locks) and the project are untouched. */
 export function resetLearnedBrief(b: Brief): Brief {
-  const x = projectExtras(b), { thumbs: _t, lean: _l, ...rest } = x;
+  const x = projectExtras(b), { thumbs: _t, feedback: _f, lean: _l, ...rest } = x;
   return setProjectExtras(clearLearnedAspects(b), rest);
 }
 /** ... and the session's learned side: pending component preferences. Comparisons, champion, locks, scope and history stay. */

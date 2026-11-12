@@ -9,6 +9,7 @@ import { gearPart, HARDSCAPE_KEYS, isLocked, locksOf, SUBSTRATE_KEYS, type GearL
 import type { AspectTag } from '../explore/aspects';
 import type { CandidateFacts } from './discoveryTypes';
 import type { TankSetup } from './types';
+import { MAX_FEEDBACK, type Feedback } from './brief';
 
 export type AttrKey = 'tank' | 'stocking' | 'hardscape' | 'background' | 'substrate' | 'plants' | 'lighting' | 'filtration' | 'heating' | 'stand';
 export const ATTRS: readonly { key: AttrKey; label: string }[] = [
@@ -88,6 +89,45 @@ export function thumbBonus(m: ThumbMap | undefined, S: TankSetup, facts: Candida
     v += t.v * THUMB_STEP * (union ? inter / union : 0);
   }
   return Math.max(-0.5, Math.min(0.5, v));
+}
+// ---------------------------------------------------------------------------------------------------------------- DQ8: Like / Dislike feedback (the thumbs' successor)
+/** Identity of one feedback entry: the same level, category, target and parts replace each other (like and dislike are exclusive; 0 takes it back). */
+export const feedbackKey = (f: Pick<Feedback, 'level' | 'cat' | 'target' | 'elements'>) => `${f.level}|${f.cat ?? ''}|${f.target ?? ''}|${[...(f.elements ?? [])].sort().join(',')}`.slice(0, 260);
+/** Put one entry (v 1 / -1) or take it back (v 0). Pure. `at` is one past the newest, so the newest wins; the oldest fall off past MAX_FEEDBACK (FIFO). */
+export function setFeedback(list: readonly Feedback[] | undefined, e: Omit<Feedback, 'at' | 'v'> & { v: 1 | -1 | 0 }): Feedback[] {
+  const k = feedbackKey(e), rest = (list ?? []).filter(x => feedbackKey(x) !== k);
+  if (!e.v) return rest;
+  const at = rest.reduce((m, x) => Math.max(m, x.at), 0) + 1;
+  return [...rest, { ...e, v: e.v, ...(e.elements ? { elements: e.elements.slice(0, MAX_PARTS) } : {}), at }].slice(-MAX_FEEDBACK);
+}
+/** The attribute-level entries as the old thumb map (the Discovery screen and its adapter still speak ThumbMap). */
+export function thumbMapOf(list: readonly Feedback[] | undefined): ThumbMap {
+  const m: ThumbMap = {};
+  for (const f of list ?? []) if (f.level === 'attr' && f.cat && f.elements) m[thumbKey(f.cat as AttrKey, f.elements)] = { v: f.v, e: f.elements };
+  return m;
+}
+/** AB13 pick / AB7 thumb on one attribute VALUE, written as a feedback entry. */
+export const setAttrFeedback = (list: readonly Feedback[] | undefined, attr: AttrKey, elements: readonly string[], v: 1 | -1 | 0): Feedback[] => setFeedback(list, { level: 'attr', cat: attr, elements: [...elements], v });
+/** DQ8 (D5): direct feedback has its OWN cap, separate from the A/B-learned one. */
+export const FEEDBACK_CAP = 0.8, FEEDBACK_STEP = { attr: THUMB_STEP, category: THUMB_STEP, item: 0.25, design: 0.25 } as const;
+export interface FeedbackScore { total: number; raw: number; why: string[] }
+/**
+ * The ranking nudge direct feedback gives a design, capped at +-FEEDBACK_CAP. RANKING ONLY (nothing filters on it). Each entry scores by how much of its parts the design has:
+ *   attr / category: overlap with that attribute's value (as the old thumbs). item: the share of its parts present anywhere in the design. design: overlap with the design's feature keys.
+ * A Dislike therefore only lowers designs that contain THAT element; a category or a layout is never banned.
+ */
+export function feedbackScore(list: readonly Feedback[] | undefined, S: TankSetup, facts: CandidateFacts, features: readonly string[] = []): FeedbackScore {
+  if (!list?.length) return { total: 0, raw: 0, why: [] };
+  const vals = attrValues(S, facts), byKey = new Map(vals.map(a => [a.key as string, a.elements] as const)), all = new Set<string>([...vals.flatMap(a => a.elements), ...features]);
+  let raw = 0; const why: string[] = [];
+  for (const f of list) {
+    const parts = f.elements ?? []; if (!parts.length) continue; let share = 0;
+    if (f.level === 'attr' || f.level === 'category') { const mine = f.cat ? byKey.get(f.cat) : undefined; if (!mine) continue; const u = new Set([...parts, ...mine]).size; share = u ? parts.filter(x => mine.includes(x)).length / u : 0; }
+    else if (f.level === 'item') share = parts.filter(x => all.has(x)).length / parts.length;
+    else { const u = new Set([...parts, ...features]).size; share = u ? parts.filter(x => features.includes(x)).length / u : 0; }
+    const d = f.v * FEEDBACK_STEP[f.level] * share; if (d) { raw += d; why.push(`${f.v > 0 ? '+' : '-'}${f.level}${f.cat ? ':' + f.cat : ''} ${parts.slice(0, 2).join('/')}`); }
+  }
+  return { total: Math.max(-FEEDBACK_CAP, Math.min(FEEDBACK_CAP, raw)), raw, why };
 }
 // ---------------------------------------------------------------------------------------------------------------- AB13: A / No opinion / B (replaces the thumbs matrix)
 /** One optional comparison row the person staged before the overall vote: which side's VALUE of the attribute appeals more. Absent = no opinion (never dislike, never equal). */

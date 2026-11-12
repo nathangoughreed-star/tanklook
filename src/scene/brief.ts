@@ -163,12 +163,17 @@ export interface ProjectExtras {
   /** the guide (ui/coach, lane GW1): where the walk through the menus stopped, so it resumes; absent = not started or finished */
   coach?: { at: string; skipped?: string[] };
   /** AB6: the quick-preference answers (scene/quickPrefs.ts writes the items and told weights they stand for); kept so the screen and the Constraints block show them back */
-  /** AB7: soft thumbs on attribute values from the Discovery attribute panel (scene/attrs.ts). Ranking only; never a filter, a told answer or a lock. */
+  /** DQ8: soft Like / Dislike feedback (scene/attrs.ts feedback helpers). Ranking only; never a filter, a told answer or a lock. Keep (hard) stays `locks`. Per project, saved with the tank and in share links. */
+  feedback?: Feedback[];
+  /** LEGACY (AB7 thumbs): INPUT only. parseProject migrates each entry into a `level:'attr'` Feedback entry; nothing writes or returns this field any more. */
   thumbs?: Record<string, { v: 1 | -1; e: string[] }>;
   /** DQ3: practical lean from "why" reasons (Upfront / Ongoing cost): n = times the cheaper design won on that reason (capped), ref = the pair's mean figure (USD) the lean is measured from. Ranking only. */
   lean?: { upfront?: { n: number; ref: number }; ongoing?: { n: number; ref: number } };
   quick?: { size?: 'small' | 'medium' | 'large'; /** where on the size slider (0..1) the person left the thumb; the band it falls in is `size` */ sizeAt?: number; /** SZ1: the size range is a firm filter (Firm toggle), not a soft preference */ sizeFirm?: boolean; look?: string[]; plants?: 'definitely' | 'prefer' | 'prefer-not' | 'not'; /** QP1: archetype card states by catalogue key (scene/quickArchetypes.ts); `look` / `plants` are the pre-QP1 answers, kept only until the next write migrates them */ arch?: Record<string, 'interested' | 'avoid'>; avoid?: string[] };
 }
+/** DQ8: one Like / Dislike. v: 1 like, -1 dislike (taking one back deletes the entry). `elements` are the value's parts (variants, species, 'layout:<id>', feature keys for a whole design). `at` orders entries: newest wins, oldest fall off (FIFO). */
+export interface Feedback { v: 1 | -1; level: 'design' | 'category' | 'item' | 'attr'; cat?: string; target?: string; attr?: 'identity' | 'count' | 'placement' | 'material' | 'size' | 'style'; elements?: string[]; at: number }
+export const MAX_FEEDBACK = 60;
 /** The project's extra answers (never undefined). */
 export const projectExtras = (b: Brief): ProjectExtras => b.project ?? {};
 /** Replace the extras; an empty one is removed. */
@@ -410,13 +415,29 @@ export function parseProject(raw: unknown): ProjectExtras | undefined {
     if (Array.isArray(q.avoid)) { const l = [...new Set(q.avoid.filter(idOk))].slice(0, 12); if (l.length) o.avoid = l; }
     if (Object.keys(o).length) p.quick = o;
   }
-  if (r.thumbs && typeof r.thumbs === 'object') {   // AB7: keys look like "stocking|neon,guppy"; the panel's own attribute names are not checked here (an unknown one simply never matches)
-    const th: NonNullable<ProjectExtras['thumbs']> = {};
+  const fb: Feedback[] = [];   // DQ8: the saved list, then the legacy AB7 thumbs migrated in (older than anything saved, so they fall off first)
+  const parts = (e: unknown) => Array.isArray(e) ? e.filter((q): q is string => typeof q === 'string' && q.length < 80).slice(0, 30) : [];
+  if (r.thumbs && typeof r.thumbs === 'object') {   // keys look like "stocking|neon,guppy"
+    let n = 0;
     for (const [k, x] of Object.entries(r.thumbs as Record<string, unknown>).slice(0, 60)) {
       const t = x as { v?: unknown; e?: unknown } | null;
-      if (/^[a-z]{3,12}\|/.test(k) && k.length <= 200 && t && (t.v === 1 || t.v === -1) && Array.isArray(t.e)) th[k] = { v: t.v, e: t.e.filter((q): q is string => typeof q === 'string' && q.length < 80).slice(0, 30) };
+      if (/^[a-z]{3,12}\|/.test(k) && k.length <= 200 && t && (t.v === 1 || t.v === -1) && Array.isArray(t.e)) fb.push({ v: t.v, level: 'attr', cat: k.split('|')[0], elements: parts(t.e), at: -1000 + n++ });
     }
-    if (Object.keys(th).length) p.thumbs = th;
+  }
+  if (Array.isArray(r.feedback)) for (const x of r.feedback.slice(0, 200)) {
+    const f = x as Record<string, unknown> | null;
+    if (!f || typeof f !== 'object' || (f.v !== 1 && f.v !== -1) || !['design', 'category', 'item', 'attr'].includes(f.level as string) || typeof f.at !== 'number' || !Number.isFinite(f.at)) continue;
+    const e: Feedback = { v: f.v, level: f.level as Feedback['level'], at: Math.round(f.at) };
+    if (typeof f.cat === 'string' && /^[a-z]{3,12}$/.test(f.cat)) e.cat = f.cat;
+    if (typeof f.target === 'string' && f.target.length < 80) e.target = f.target;
+    if (['identity', 'count', 'placement', 'material', 'size', 'style'].includes(f.attr as string)) e.attr = f.attr as Feedback['attr'];
+    const el = parts(f.elements); if (el.length) e.elements = el;
+    fb.push(e);
+  }
+  if (fb.length) {   // one entry per (level, cat, target, parts): the newest wins; then the FIFO bound
+    const key = (f: Feedback) => `${f.level}|${f.cat ?? ''}|${f.target ?? ''}|${[...(f.elements ?? [])].sort().join(',')}`, m = new Map<string, Feedback>();
+    for (const f of [...fb].sort((x, y) => x.at - y.at)) { m.delete(key(f)); m.set(key(f), f); }
+    p.feedback = [...m.values()].slice(-MAX_FEEDBACK);
   }
   if (r.lean && typeof r.lean === 'object') {
     const l: NonNullable<ProjectExtras['lean']> = {};

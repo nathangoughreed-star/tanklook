@@ -74,6 +74,14 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
+## DQ8: Like / Dislike feedback model (2026-11-12; Coordinator 23; branch claude/dq8-feedback-model-4c4e43)
+- `brief.project.feedback: Feedback[]` (type + `MAX_FEEDBACK` 60, FIFO by `at`, in `scene/brief.ts`; validated in `parseProject`, which is where project extras are validated; `validate.ts` has no project code). Legacy `thumbs` are INPUT only: each becomes a `level:'attr'` entry on read (older `at`), nothing writes `thumbs` any more. Old saves / share links load unchanged.
+- API for DQ11 (`scene/attrs.ts`): `setFeedback(list, {level, cat?, target?, attr?, elements?, v: 1|-1|0})` (0 = take back; like / dislike replace each other; same level+cat+target+parts = same entry), `setAttrFeedback(list, cat, elements, v)`, `thumbMapOf(list)`, `feedbackScore(list, S, facts, features)`. Write with `setProjectExtras(b, {...projectExtras(b), feedback: next})`.
+- Scoring (D5): `scorePolicy.scoreBreakdown` takes `feedback`; new term `feedback` (group `'feedback'`, `FEEDBACK_CAP` 0.8) separate from the learned cap; `breakdown.feedback`, shown in `?debug` terms. Ranking only: attr / category = overlap with that attribute's value; item = share of its parts present; design = overlap with feature keys. A Dislike only lowers designs containing THAT element.
+- AB13 picks / AB7 thumbs write Like `attr` entries (`ui/ab/real.ts`); `engine.thumbs()` is a view of them. One behaviour difference: attr entries now score in the feedback term (cap 0.8) instead of inside the learned cap (0.4 / 0.8), so a brief WITH picks can rank slightly differently; a brief without feedback ranks identically (tested).
+- `resetLearning()` clears `feedback` and legacy `thumbs`; locks and stated kept. `pairGen.ts` got a 4-line edit (reads `feedback` instead of `thumbs` in `feasibilityBrief`, `rankingSig`, `breakdownOf`): DQ7 should rebase over it.
+- Tests: `test/dq8.test.ts` (migration, cap, ranking only, no category ban, reset, unchanged brief); ab7 / dq1 updated to read `feedback`.
+
 ## DQ6: Discover redesign evaluation, Keep / Like / Dislike plan (2026-11-12; Coordinator 23; pushed)
 - Nathan proposed replacing the A/B Discovery with iterative generation inside the editor (Keep this / Like / Dislike; Discover at any time; Guided vs Sandbox as the two manual modes): `research/design/discover-redesign-proposal-2026-11-12.md`.
 - DQ6 evaluated it against the code: `research/design/discover-redesign-evaluation-2026-11-12.md`. The old lock-aware delta engine (`scene/discover.ts propose`, `scene/locks.ts`) already does keep-and-regenerate as one undo step, so the work is mostly removing the A/B layer.

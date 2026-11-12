@@ -1,13 +1,14 @@
 // DQ1 (spec section 4.3): ONE SCORING POLICY for the live A/B ranking. Pure; `pairGen.scoreOf` calls `scoreBreakdown`, and `?debug` prints the terms.
 //   STATED  what the person said (size / floor / height range, plants, a cost or care TARGET, the look cards: archetype and the four look axes, a hand-set "You told us" key). Each term is a bounded nudge; a stated
 //           preference only ranks (a firm bound filtered the candidate before it got here).
-//   LEARNED what the A/B choices taught (aspect weights from events, attribute picks as thumbs). Weaker: the learned total is CAPPED at LEARNED_CAP, and at the lower LEARNED_CAP_WITH_STATED when anything is stated,
+//   LEARNED what the A/B choices taught (aspect weights from events, cost lean); DIRECT FEEDBACK (Like / Dislike, A/B attribute picks) is a separate term capped at FEEDBACK_CAP (0.8). Weaker: the learned total is CAPPED at LEARNED_CAP, and at the lower LEARNED_CAP_WITH_STATED when anything is stated,
 //           so a few votes never outweigh a clear stated preference (spec scenario 5). A told weight is never counted as learned.
 // The cards write both `told` keys and QuickPrefs fields; each card effect is scored ONCE: the layout/family terms and the four look axes below. The told keys the cards derive (see readQuickPrefs `told`) are left out.
 import type { TankSetup } from './types';
 import type { CandidateFacts } from './discoveryTypes';
 import type { QuickPrefs } from './quickPrefs';
-import { thumbBonus, type ThumbMap } from './attrs';
+import { feedbackScore, FEEDBACK_CAP } from './attrs';
+import type { Feedback } from './brief';
 import { designAxes, type DesignAxes } from './designAxes';
 import type { Weight } from '../explore/aspects';
 import { leanBonus, type Lean } from './learning';
@@ -16,11 +17,11 @@ import { leanBonus, type Lean } from './learning';
 export const STATED = { sizeIn: 0.5, sizeOut: -0.2, floorIn: 0.3, floorOut: -0.1, heightIn: 0.3, heightOut: -0.1, plantsFit: 0.3, plantsMiss: -0.2, axis: 0.3, layout: 0.6, family: 0.4, told: 0.4, overTarget: 0.3 } as const;
 export const LEARNED_CAP = 0.8, LEARNED_CAP_WITH_STATED = 0.4;
 
-export interface ScoreTerm { name: string; v: number; group: 'stated' | 'learned'; why?: string }
-export interface ScoreBreakdown { total: number; stated: number; learned: number; /** the learned sum before the cap */ learnedRaw: number; cap: number; terms: ScoreTerm[]; axes: Pick<DesignAxes, 'natural' | 'lush' | 'colourful' | 'ordered' | 'rockWood' | 'plantMode'> }
+export interface ScoreTerm { name: string; v: number; group: 'stated' | 'learned' | 'feedback'; why?: string }
+export interface ScoreBreakdown { total: number; stated: number; learned: number; /** DQ8: direct Like / Dislike, capped at FEEDBACK_CAP on its own */ feedback: number; /** the learned sum before the cap */ learnedRaw: number; cap: number; terms: ScoreTerm[]; axes: Pick<DesignAxes, 'natural' | 'lush' | 'colourful' | 'ordered' | 'rockWood' | 'plantMode'> }
 export interface ScoreInput {
   pf: QuickPrefs; S: TankSetup; facts: Pick<CandidateFacts, 'gallons'> & Partial<CandidateFacts>; features: readonly string[]; archetypeId: string; familyId: string;
-  totals: { setupUsd: number; minPerWeek: number }; weights: Map<string, Weight>; thumbs?: ThumbMap; /** DQ3: the practical lean from cost reasons */ lean?: Lean;
+  totals: { setupUsd: number; minPerWeek: number }; weights: Map<string, Weight>; feedback?: readonly Feedback[]; /** DQ3: the practical lean from cost reasons */ lean?: Lean;
 }
 /** SZ1: a range preference as a smooth fit, 0..1. Flat 1 inside [lo, hi]; outside, a Gaussian on a LOG scale: z = ln(g/hi)/sigma above, ln(lo/g)/sigma below, fit = exp(-z^2/2).
  *  sigma = ln(hi/lo)/2 (the edges of a range are +-1 SD in log space), floored at ln(1.25) so a narrow range is not a cliff. 20-40 gal: 55 gal 0.66, 80 gal 0.14, 10 gal 0.14.
@@ -59,10 +60,11 @@ export function scoreBreakdown(i: ScoreInput): ScoreBreakdown {
   for (const [k, v] of Object.entries(pf.told ?? {})) if (features.includes(k)) add(`told ${k}`, v * STATED.told, 'stated');
   // ---- learned: aspect weights from events (never the told ones), plus attribute-pick thumbs; capped
   let learnedRaw = 0; for (const k of features) { const w = i.weights.get(k); if (w && w.source === 'learned') learnedRaw += w.w; }
-  const thumbs = thumbBonus(i.thumbs, S, facts as CandidateFacts); learnedRaw += thumbs;
   const lean = leanBonus(i.lean, i.totals.setupUsd, facts.monthlyUsd?.mean); learnedRaw += lean.v;
   const cap = hasStated(pf) ? LEARNED_CAP_WITH_STATED : LEARNED_CAP, learned = Math.max(-cap, Math.min(cap, learnedRaw));
-  add('learned', learned, 'learned', `votes ${(learnedRaw - thumbs - lean.v).toFixed(2)} + attribute picks ${thumbs.toFixed(2)} + cost lean ${lean.v.toFixed(2)}${lean.why ? ` (${lean.why})` : ''}, capped at ${cap}`);
+  add('learned', learned, 'learned', `votes ${(learnedRaw - lean.v).toFixed(2)} + cost lean ${lean.v.toFixed(2)}${lean.why ? ` (${lean.why})` : ''}, capped at ${cap}`);
+  // ---- DQ8 direct feedback (Like / Dislike, incl. A/B attribute picks): its own cap; ranks only
+  const fb = feedbackScore(i.feedback, S, facts as CandidateFacts, features); add('feedback', fb.total, 'feedback', `${fb.why.join(', ')}; raw ${fb.raw.toFixed(2)}, capped at ${FEEDBACK_CAP}`);
   const stated = terms.filter(t => t.group === 'stated').reduce((t, x) => t + x.v, 0);
-  return { total: stated + learned, stated, learned, learnedRaw, cap, terms, axes: { natural: ax.natural, lush: ax.lush, colourful: ax.colourful, ordered: ax.ordered, rockWood: ax.rockWood, plantMode: ax.plantMode } };
+  return { total: stated + learned + fb.total, stated, learned, feedback: fb.total, learnedRaw, cap, terms, axes: { natural: ax.natural, lush: ax.lush, colourful: ax.colourful, ordered: ax.ordered, rockWood: ax.rockWood, plantMode: ax.plantMode } };
 }

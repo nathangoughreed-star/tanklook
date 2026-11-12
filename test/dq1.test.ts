@@ -168,7 +168,7 @@ describe('P4 and scenario 16: one learning event per attribute pick; a blank row
     const s = mkStore(), e = createRealEngine(s, () => ({}), 'dq1-' + Math.random()); s.frozen = true; e.open(['plants', 'hardscape', 'animals']);
     const r = e.next(); if (!r.ok) throw new Error('no pair');
     const va = attrValues(r.a.snapshot, r.a.facts), vb = attrValues(r.b.snapshot, r.b.facts);
-    const tags = () => (aspectsOf(getBrief())?.events ?? []).filter(x => x.k === 'tag').length, thumbs = () => Object.keys(projectExtras(getBrief()).thumbs ?? {}).length;
+    const tags = () => (aspectsOf(getBrief())?.events ?? []).filter(x => x.k === 'tag').length, thumbs = () => (projectExtras(getBrief()).feedback ?? []).length;
     const t0 = tags();
     const next = e.choose('A', undefined, undefined, relEvidence({}, va, vb)); expect(thumbs()).toBe(0); expect(tags()).toBe(t0);   // no opinion: nothing
     const r2 = next.ok ? next : r, va2 = attrValues(r2.a.snapshot, r2.a.facts), vb2 = attrValues(r2.b.snapshot, r2.b.facts), d2 = differingAttrs(va2, vb2);

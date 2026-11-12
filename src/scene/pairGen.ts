@@ -18,7 +18,6 @@ import { fitGear } from './gearFit';
 import { finalCheck } from './finalCheck';
 import { meaningfulDryTiers, stockTier } from './sizeTiers';
 import { scoreBreakdown, hasStated, type ScoreBreakdown } from './scorePolicy';
-import type { ThumbMap } from './attrs';
 import { passesHard, readQuickPrefs, type QuickPrefs } from './quickPrefs';
 import { LIVE_ONLY_LAYOUTS } from './quickArchetypes';
 import { finSensitive, withPlantMode } from './scapes';
@@ -113,11 +112,11 @@ export const feasibilityPrefs = (pf: QuickPrefs): unknown => Object.fromEntries(
 /** DQ4: the brief WITHOUT taste: learned and told aspects, thumbs, the cost lean and the card answers (all ranking-only). Locks, limits (firm or soft), owned gear and every other item stay in it. */
 export function feasibilityBrief(brief: Brief): unknown {
   const { 'preferences.aspects': _a, ...items } = brief.items as Record<string, unknown>;
-  const { thumbs: _t, lean: _l, quick: _q, ...extras } = projectExtras(brief) as Record<string, unknown>;
+  const { thumbs: _t, feedback: _fb, lean: _l, quick: _q, ...extras } = projectExtras(brief) as Record<string, unknown>;
   return { ...brief, items, project: extras };
 }
 /** DQ4: the ranking context: everything that changes only the ORDER of designs that already exist. */
-export const rankingSig = (brief: Brief, pf: QuickPrefs): string => idOf(JSON.stringify([getItem(brief, 'preferences.aspects'), projectExtras(brief).thumbs, projectExtras(brief).lean, projectExtras(brief).quick, pf.arch, pf.look, pf.told, pf.plants, pf.budgetUsd, pf.careMinPerWeek]));
+export const rankingSig = (brief: Brief, pf: QuickPrefs): string => idOf(JSON.stringify([getItem(brief, 'preferences.aspects'), projectExtras(brief).feedback, projectExtras(brief).lean, projectExtras(brief).quick, pf.arch, pf.look, pf.told, pf.plants, pf.budgetUsd, pf.careMinPerWeek]));
 export const clearPairCache = () => SHARED.clear();
 const newCache = (sig: string): PairCache => ({ sig, pend: [], keys: new Set(), round: 0, looksDone: new Set(), bigDone: new Set(), rej: [], proposeDone: false, stats: { propose: 0, explore: 0, ms: 0, tried: 0, pre: 0 } });
 
@@ -448,8 +447,8 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
     return { rec: champ, entry: { id: champ.id, key: champ.key ?? keyOf(S), fp: fingerprintOf(S, sc), features: featuresFor(S, sc) }, tokens: tokensOf(S), source: 'propose', world: '', sc };
   })() : undefined;
   // DQ1: ONE scoring policy (scorePolicy.ts): stated preferences (cards, ranges, targets, look axes) outrank learned ones; nothing here filters
-  const scoreW = weightsOf(aspectsOf(brief)), thumbs = projectExtras(brief).thumbs as ThumbMap | undefined;
-  const breakdownOf = (p: Pending): ScoreBreakdown => scoreBreakdown({ pf, S: p.rec.snapshot, facts: p.rec.facts, features: p.entry.features, archetypeId: p.entry.fp.archetypeId, familyId: p.entry.fp.familyId, totals: p.sc.totals, weights: scoreW, thumbs, lean: leanOf(brief) });
+  const scoreW = weightsOf(aspectsOf(brief)), feedback = projectExtras(brief).feedback;
+  const breakdownOf = (p: Pending): ScoreBreakdown => scoreBreakdown({ pf, S: p.rec.snapshot, facts: p.rec.facts, features: p.entry.features, archetypeId: p.entry.fp.archetypeId, familyId: p.entry.fp.familyId, totals: p.sc.totals, weights: scoreW, feedback, lean: leanOf(brief) });
   const scoreOf = (p: Pending) => type === 'fresh' ? 0 : breakdownOf(p).total;   // Something Different ignores taste, stated and learned: it is a broad look
   const told = hasStated(pf), tasteW = (0.1 + 0.25 * br.confidence + (told ? 0.4 : 0)) * (opts.broaden ? 0.5 : 1), tdist = Math.min(0.9, targetDistance(br) + (opts.broaden ? 0.25 : 0));     // a told preference ranks harder than a learned one
   const usable = () => {

@@ -12,7 +12,7 @@ import { clearPairCache, nextPair } from '../src/scene/pairGen';
 import { startSession } from '../src/scene/discoverySession';
 import { gearPart, locksOf, lockViolations } from '../src/scene/locks';
 import { readQuickPrefs } from '../src/scene/quickPrefs';
-import { ATTRS, attrValues, heldState, isHeld, sameValue, setThumb, thumbBonus, thumbOf, type ThumbMap } from '../src/scene/attrs';
+import { ATTRS, attrValues, heldState, isHeld, sameValue, setThumb, thumbBonus, thumbMapOf, thumbOf, type ThumbMap } from '../src/scene/attrs';
 import { holdAttr, releaseAttr } from '../src/ui/ab/logic';
 import type { CandidateRecord } from '../src/scene/discoveryTypes';
 import type { Fish, TankSetup } from '../src/scene/types';
@@ -59,15 +59,15 @@ describe('thumbs are soft guidance', () => {
   });
   it('never filters: a thumbs-down on EVERY value of a design still yields pairs, and adds no hard preference or lock', () => {
     let m: ThumbMap | undefined; for (const x of attrValues(A.snapshot, A.facts)) m = setThumb(m, x.key, x.elements, -1);
-    const b = setProjectExtras(B0, { ...projectExtras(B0), thumbs: m });
+    const b = setProjectExtras(B0, { ...projectExtras(B0), thumbs: m });   // legacy input: migrated into feedback on read
     clearPairCache(); const r = pair(project(), b);
     expect(r.ok).toBe(true); expect(readQuickPrefs(b)).toEqual(readQuickPrefs(B0));
     expect(project().locks).toBeUndefined();
   });
   it('survive the brief round trip (validated on load)', () => {
     const b = setProjectExtras(B0, { thumbs: setThumb(undefined, 'plants', ['x'], 1) });
-    expect(projectExtras(b).thumbs).toEqual({ 'plants|x': { v: 1, e: ['x'] } });
-    expect(projectExtras(setProjectExtras(B0, { thumbs: { 'bad key': { v: 2, e: [] } } as never })).thumbs).toBeUndefined();
+    expect(projectExtras(b).thumbs).toBeUndefined(); expect(thumbMapOf(projectExtras(b).feedback)).toEqual({ 'plants|x': { v: 1, e: ['x'] } });
+    expect(projectExtras(setProjectExtras(B0, { thumbs: { 'bad key': { v: 2, e: [] } } as never })).feedback).toBeUndefined();
   });
 });
 

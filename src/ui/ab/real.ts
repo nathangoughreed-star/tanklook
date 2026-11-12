@@ -10,7 +10,7 @@ import { suggestNarrowing } from '../../scene/breadth';
 import { adapt as adaptPair, combine as combinePair, nextPair, type PoolMetrics, type ScoredRow } from '../../scene/pairGen';
 import { featuresFor, scoreScene } from '../../scene/pairFacts';
 import { reasonTags, recordAspect, recordPair, undoAspectsOf } from '../../explore/aspects';
-import { ATTR_TAGS, setThumb as putThumb, thumbKey, type AttrKey, type ThumbMap } from '../../scene/attrs';
+import { ATTR_TAGS, setAttrFeedback, thumbMapOf, thumbKey, type AttrKey, type ThumbMap } from '../../scene/attrs';
 import { customTankWants } from '../../demand/suggest';
 import { briefToWants } from '../../scene/brief';
 import { editBrief } from '../setupBrief';
@@ -56,8 +56,8 @@ export function createRealEngine(store: Store, _opts: () => VerdictOpts = () => 
   const markChampion = (before: string | undefined) => { if (s.championId && s.championId !== before) hist.markChampion(s.championId); else if (!s.championId && before) hist.clearChampion(s.id); };
 
   const writeThumb = (br: Brief, attr: AttrKey, elements: string[], v: 1 | -1 | 0): Brief => {
-    const x = projectExtras(br), next = putThumb(x.thumbs as ThumbMap | undefined, attr, elements, v), { thumbs: _t, ...rest } = x;
-    return setProjectExtras(br, Object.keys(next).length ? { ...rest, thumbs: next } : rest);
+    const x = projectExtras(br), next = setAttrFeedback(x.feedback, attr, elements, v), { feedback: _f, ...rest } = x;
+    return setProjectExtras(br, next.length ? { ...rest, feedback: next } : rest);
   };
   /** An AB13 attribute pick: the preferred value's thumb entry, and nothing else (DQ1 P4). Any older tagged event for the same value is taken back so a repeated pick never stacks. */
   const putPick = (_id: string, attr: AttrKey, elements: string[]) => editBrief(br => undoAspectsOf(writeThumb(br, attr, elements, 1), `thumb:${thumbKey(attr, elements)}`.slice(0, 120)));
@@ -143,7 +143,7 @@ export function createRealEngine(store: Store, _opts: () => VerdictOpts = () => 
       const champ = rec(s.championId);
       return champ && champ.id !== p.record.id ? show(champ, p.record, 'champion') : show(t ?? p.record, p.record, 'first');
     },
-    thumbs: () => (projectExtras(getBrief()).thumbs ?? {}) as ThumbMap,
+    thumbs: (): ThumbMap => thumbMapOf(projectExtras(getBrief()).feedback),
     setThumb(id, attr: AttrKey, elements, v) {
       // soft guidance (AB7): the value is remembered for the ranking nudge, and where the learner has a tag for the attribute a tagged taste event is written (replacing the earlier one for this value, so up / down are exclusive)
       const r = rec(id), tags = ATTR_TAGS[attr], c = `thumb:${thumbKey(attr, elements)}`.slice(0, 120);
