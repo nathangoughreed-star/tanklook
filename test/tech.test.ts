@@ -147,13 +147,13 @@ describe('tech menu model (lane TM step 1)', () => {
 });
 
 describe('demand rows from the tech (lane TM step 3)', () => {
-  const NOW = Date.parse('2026-11-02');
+  const NOW = Date.parse('2026-11-09');
   const D = (S: TankSetup) => demandOf(S, defaultProfile(), { now: NOW });
   it('a file without tech keeps its demand numbers (locked 2026-10-19; minutes and upkeep re-blessed 2026-10-21, lane MW: water change from the nitrogen budget, feeding, glass, plant bunches; lane CB: combined sources moved adult sizes and minimums)', () => {
     // reef re-blessed 2026-10-22 (lane SN: turbo snail mass from Turbo cornutus, upkeep +$2 a year, minutes +0.8); reef and paludarium risk re-blessed 2026-10-22 (temp-tiers: a shared temperature range of 2 °C or less is a narrow margin, not a compatibility flag)
     // 2026-10-27: arid and python re-blessed (their basking lamp and UVB count: +$132 / +$172 with python's mesh lid, +$10.81/mo); terrarium risk 4.294 (no dome for tree frogs, so no raised light)
     // Paludarium, terrarium, rainforest and arid re-blessed 2026-10-26 (starter tanks pass their animal checks: one gecko each, three toads with white clouds, a 30 in corner tank for three tree frogs)
-    const LOCK: Record<string, number[]> = { planted: [1263.837,52.454,55.66,8.045], iwagumi: [1386.021,35.886,53.943,6.068], betta: [179.347,9.335,33.949,4.984], paludarium: [1215.761,41.353,55.999,5.614], terrarium: [1893.597,35.079,17.43,3.077], reef: [3583.584,178.55,89.573,6.451], rainforest: [1092.093,26.087,30.904,1.73], arid: [1194.815,24.756,13.569,2.842], python: [1464.247,25.456,21.769,1.813], blackwater: [1206.933,49.024,44.674,5.226], clownnano: [1630.442,96.601,74.453,6.326] };;
+    const LOCK: Record<string, number[]> = { planted: [1264.231,52.457,55.66,8.045], iwagumi: [1385.822,35.881,53.943,6.068], betta: [179.436,9.336,33.949,4.984], paludarium: [1216.018,41.353,55.999,5.614], terrarium: [1894.124,35.081,17.43,3.077], reef: [3585.17,178.591,89.573,6.451], rainforest: [1092.346,26.088,30.904,1.73], arid: [1195.167,24.756,13.569,2.842], python: [1464.707,25.459,21.769,1.813], blackwater: [1207.123,49.022,44.674,5.226], clownnano: [1631.47,96.623,74.453,6.326] };;
     for (const [id, want] of Object.entries(LOCK)) {
       const t = D(tankOf(id)).totals;
       expect([t.setupUsd, t.upkeepUsdMo, t.minPerWeek, t.risk].map(v => Math.round(v * 1000) / 1000), id).toEqual(want);
