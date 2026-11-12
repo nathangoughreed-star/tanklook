@@ -1595,7 +1595,7 @@ details.gfx { margin: 4px 0 } details.gfx > summary { cursor: pointer; font-weig
   #app.collapsed #sideTab::before { inset: 0 }
   #app.collapsed .viewtools { left: 46px; max-width: calc(100% - 56px) }
 }
-@media (min-width: 761px), (orientation: landscape) { #app.collapsed #sideTab { top: calc(10px + var(--bb-h)) } }
+@media (min-width: 761px), (orientation: landscape) { #app.collapsed #sideTab { top: 10px } } /* --bb-h lives on #view; #sideTab is outside it, so the var made this rule invalid and the arrow stayed mid-edge */
 #mapShow.open { bottom: 166px; background: var(--accent, #4aa3ff); color: #fff }   /* HM2: toggle; open, it sits just above the map */
 @media (max-width: 700px) { #mapShow.open { bottom: 136px } }
 .hm2-recentre { margin-bottom: 6px }
