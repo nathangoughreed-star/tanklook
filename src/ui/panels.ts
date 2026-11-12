@@ -431,13 +431,13 @@ Cancel, then change the name, to keep both.`)) return;
     const made = shareUrl(G(), location.protocol === 'file:' ? 'https://tanklook.com/' : location.href);
     const copied = copyText(made); // started inside the click: Safari allows the clipboard only there
     let url: string;
-    try { url = await made; } catch { status('This browser cannot make share links (it is too old). Download sends a file instead.', true); return; }
+    try { url = await made; } catch { status('This browser cannot make share links (it is too old). Save as… can download a file instead.', true); return; }
     if (!await copied) { prompt('Copy this link:', url); return; }
     const n = url.length.toLocaleString();
     status((url.length > LONG_LINK
-      ? `Copied a share link (${n} characters). It is long: some apps (Discord, texts) cut links past about 2,000 characters, so paste it into a shortener like tinyurl.com, or use Download.`
+      ? `Copied a share link (${n} characters). It is long: some apps (Discord, texts) cut links past about 2,000 characters, so paste it into a shortener like tinyurl.com, or use Save as… to download a file.`
       : `Copied a share link (${n} characters). Whoever opens it gets this tank as a new, unsaved copy.`)
-      + (sceneImageIds(G()).length ? ' Background pictures are too big for a link, so it goes without them; Download keeps them in the file.' : ''));
+      + (sceneImageIds(G()).length ? ' Background pictures are too big for a link, so it goes without them; Save as… keeps them in the file.' : ''));
   };
   async function copyText(text: Promise<string>) {
     try { // the clipboard item takes the text as a promise, so the gesture is not used up while the link is compressed
@@ -647,7 +647,7 @@ Cancel, then change the name, to keep both.`)) return;
     const side = (['back', 'left', 'right', 'front'] as BgSide[]).find(k => !used.has(k));
     store.edit(s => { s.render.bgImages.push({ img: id, fit: 'fill', sides: side ? [side] : [], scale: 50 }); });
     status((side ? `Picture added on the ${side}. Click sides to move it, or to run it round a corner.` : 'Picture added; every side has a picture already, so pick its sides.')
-      + (stored ? '' : ' This browser’s storage is full, so the picture is kept for this visit only; Download keeps it in the file.'), !stored);
+      + (stored ? '' : ' This browser’s storage is full, so the picture is kept for this visit only; Save as… keeps it in the file.'), !stored);
   };
   const editPic = (id: string, fn: (b: TankSetup['render']['bgImages'][number], s: TankSetup) => void, coalesce?: string) =>
     store.edit(s => { const b = s.render.bgImages.find(x => x.img === id); if (b) fn(b, s); }, coalesce ? { coalesce } : {});
