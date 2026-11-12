@@ -20,7 +20,7 @@ import { TABLE_TOP, cornerWalls, wallGap, tableCentre, tableOn, tableRing, wallP
 import { groundHeight, pieSegs, poolHandles, poolWet, terrainDisc, terrainPoints, type PoolPart } from '../scene/terrain';
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
 import { getImage } from '../scene/images';
-import { LU, addBeams, addFixture, addHoodLamps, applyLighting, setWaterVolumeMode, waterVolumeMaterial } from './lighting';
+import { LU, addBeams, addFixture, addHoodLamps, applyLighting, glassFx, setWaterVolumeMode, waterVolumeMaterial } from './lighting';
 import { addAlgae } from './algae';
 import { buildGear, gearKey, solidBoxes } from './gear3d';
 import { itemDeps, itemMesh, leafProbe, solidProbe, underProbe } from './items';
@@ -327,7 +327,7 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
     sc.add(new THREE.Mesh(g.geometry(), mat(len / (H + t))));
   }
   // glass sits OUTSIDE the interior outline; large faces nearly clear, thin edge faces tinted so thickness shows
-  const faceM = basic(0xbfe0ee, { transparent: true, opacity: 0.06, depthWrite: false });
+  const faceM = glassFx(basic(0xbfe0ee, { transparent: true, opacity: 0.06, depthWrite: false })); // water line + front reflection (VF6, fx waterline)
   const lowIron = R.glassType === 'lowiron';
   const edgeM = lowIron
     ? basic(0xa9d3da, { transparent: true, opacity: 0.75, depthWrite: false })

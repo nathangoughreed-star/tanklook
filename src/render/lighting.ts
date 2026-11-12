@@ -172,6 +172,40 @@ void main() {
     blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.ZeroFactor, blendDst: THREE.SrcColorFactor, blendSrcAlpha: THREE.ZeroFactor, blendDstAlpha: THREE.OneFactor,
   });
 }
+/**
+ * The glass panes' own look (plan VF6, fx waterline; build.ts addGlass's pane faces, which are unlit): a thin bright line
+ * where the water meets the glass, with a faint meniscus band just under it (the water climbs the pane a few mm), and on
+ * the front pane a faint diagonal reflection that drifts a little as the camera moves and grows toward grazing views.
+ * Uniforms only (uFxLine, the shared water box): switching it never recompiles; one program for every pane.
+ */
+export const LINE_MM = 0.9, MENISCUS_MM = 4, PANE_REFL = 0.035;
+export function glassFx(m: THREE.MeshBasicMaterial) {
+  m.onBeforeCompile = sh => {
+    Object.assign(sh.uniforms, { uFxLine: FXU.uFxLine, uWater: LU.uWater, uCausK: LU.uCausK, uTankMax: LU.uTankMax });
+    sh.vertexShader = 'varying vec3 vGfP;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n  vGfP = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+    sh.fragmentShader = 'varying vec3 vGfP; uniform float uFxLine; uniform vec4 uWater, uCausK; uniform vec3 uTankMax;\n' + sh.fragmentShader.replace('#include <opaque_fragment>', `#include <opaque_fragment>
+  if (uFxLine > 0.5) {
+    vec3 n = normalize(cross(dFdx(vGfP), dFdy(vGfP))), v = normalize(cameraPosition - vGfP);
+    float a = 0.0, rf = 0.0;
+    if (uCausK.z > 0.5) { // the water line: never thinner than about a pixel, so it does not flicker in a far view
+      float dy = vGfP.y - uWater.y, w = max(${LINE_MM.toFixed(2)}, 0.7 * fwidth(vGfP.y));
+      a = 0.5 * exp(-dy * dy / (w * w)) + (dy < 0.0 ? 0.1 * (1.0 - smoothstep(0.0, ${MENISCUS_MM.toFixed(1)}, -dy)) : 0.0);
+    }
+    float front = smoothstep(0.75, 0.95, abs(n.z)) * step(-0.5 * uWater.z, vGfP.z);
+    if (front > 0.0) { // the room's reflection on the front pane: two soft diagonal streaks, plus Fresnel toward grazing
+      float u = vGfP.x / max(uWater.x, 1.0) + 0.55 * vGfP.y / max(uTankMax.y, 1.0) - 0.15 * cameraPosition.x / max(uWater.x, 1.0);
+      float r = 0.7 * exp(-pow((u - 0.55) / 0.16, 2.0)) + 0.5 * exp(-pow((u - 0.86) / 0.05, 2.0));
+      rf = front * (${PANE_REFL.toFixed(3)} * r + 0.05 * pow(1.0 - abs(dot(n, v)), 4.0));
+    }
+    float t = min(a + rf, 0.9); vec3 c = (vec3(0.9, 0.96, 1.0) * a + vec3(1.0, 0.985, 0.96) * rf) / max(a + rf, 1e-4);
+    float A = t + gl_FragColor.a * (1.0 - t);
+    gl_FragColor = vec4((c * t + gl_FragColor.rgb * gl_FragColor.a * (1.0 - t)) / max(A, 1e-4), A);
+  }`);
+  };
+  m.customProgramCacheKey = () => 'glass-fx';
+  return m;
+}
+
 /** Multiply onto the page on screen; plain alpha in AR (called each frame from the volume's onBeforeRender, no recompile). */
 export function setWaterVolumeMode(m: THREE.ShaderMaterial, xr: boolean) {
   m.uniforms.uXr.value = xr ? 1 : 0;
@@ -246,7 +280,7 @@ const AQ_VERT = 'varying vec3 vAqP; varying vec3 vAqN;';
 const AQ_FRAG = `
 uniform vec4 uEm[${AQ_MAX}]; uniform int uEmN; uniform float uMode, uAmb, uBright, uNorm, uBeamM, uRef, uCard, uSub, uFish, uPane; uniform vec3 uLCol;
 float aqSpec = 0.0;
-uniform float uFxTone, uFxCaus, uFxTime; uniform sampler2D uCausTex; uniform vec4 uCausK; uniform float uCausOff;
+uniform float uFxTone, uFxCaus, uFxTime, uFxDepth, uFxLine; uniform sampler2D uCausTex; uniform vec4 uCausK; uniform float uCausOff;
 uniform float uRoomMat, uRoomK, uSpillR, uTankRound, uAlgH; uniform vec3 uSpill, uTankMin, uTankMax; uniform vec4 uWater, uWTint; uniform vec3 uWCol; uniform float uPop, uFishCard;
 varying vec3 vAqP; varying vec3 vAqN;
 ${BOW_GLSL}
@@ -482,6 +516,9 @@ function CAUS() {
   return causU;
 }
 
+/** Depth shift (plan VF6): at most this share toward the grey / water hue at the far glass, and how much of that is hue (the rest desaturation). */
+export const DEPTH_MAX = 0.15, DEPTH_HUE = 0.5;
+
 function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithUniforms) {
   this.userData.pre?.(shader); // the material's own patch (hardscape: glass clip and grit) still applies under the lighting
   Object.assign(shader.uniforms, LU, AU, FXU, CAUS(), { uAlgH: { value: this.userData.solid ? 1 : 0 }, uCard: { value: this.userData.card ? 1 : 0 }, uSub: { value: this.userData.sub ? 1 : 0 }, uFish: { value: this.userData.fish ? 1 : 0 }, uPane: { value: this.userData.pane ? 1 : 0 }, uRoomMat: { value: this.userData.room ? 1 : 0 }, uFishCard: { value: this.userData.fishCard ? 1 : 0 } });
@@ -510,7 +547,12 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
       '} else if (aqM > 1.0 && (uFxTone < 0.5 || uRoomMat > 0.5)) outgoingLight /= aqM;\n' +
       // water colour (lane WT1): one filter colour for whatever sits behind water, however deep (no depth haze), only on
       // sightlines that cross the water at all; fish ease off it as they stand out (render.pop)
-      'if (uWater.w > 0.0) { float aqF = smoothstep(0.0, 0.5, aqWaterPath()) * (1.0 - 0.6 * uPop * max(uFish, uFishCard)); outgoingLight = outgoingLight * mix(vec3(1.0), aqWaterFilter(), aqF) + aqWaterVeil() * (aqF * min(dot(aqLt, vec3(0.2126, 0.7152, 0.0722)), 1.0)); }\n' +
+      'float aqWP = uWater.w > 0.0 || (uFxDepth > 0.5 && uCausK.z > 0.5) ? aqWaterPath() : 0.0, aqPk = 1.0 - 0.6 * uPop * max(uFish, uFishCard);\n' +
+      // depth (plan VF6, fx depth): the farther the sightline runs through water, the less saturated and the nearer the
+      // water's hue, up to DEPTH_MAX at the tank's depth; luminance kept (no haze, no brightness loss: Nathan rejected a fog)
+      'if (aqWP > 0.0 && uFxDepth > 0.5 && uCausK.z > 0.5) { float aqY = dot(outgoingLight, vec3(0.2126, 0.7152, 0.0722));\n' +
+      `  outgoingLight = mix(outgoingLight, aqY * mix(vec3(1.0), uWTint.rgb / max(dot(uWTint.rgb, vec3(0.2126, 0.7152, 0.0722)), 0.05), ${DEPTH_HUE.toFixed(2)}), ${DEPTH_MAX.toFixed(3)} * aqPk * smoothstep(0.0, 1.0, aqWP / max(uWater.z, 1.0))); }\n` +
+      'if (uWater.w > 0.0) { float aqF = smoothstep(0.0, 0.5, aqWP) * aqPk; outgoingLight = outgoingLight * mix(vec3(1.0), aqWaterFilter(), aqF) + aqWaterVeil() * (aqF * min(dot(aqLt, vec3(0.2126, 0.7152, 0.0722)), 1.0)); }\n' +
       // light map on the substrate (beam overlay on): false colour by level, a dark contour line at each doubling (valued by ui/lightContours), the
       // grain kept faintly so the relief still reads; replaces the lit colour and the water haze
       'if (uMapOn > 0.5 && uSub > 0.5) { float aqI = max(aqIrr(), 1e-6), aqT = log2(aqI / uMapDiv);\n' +

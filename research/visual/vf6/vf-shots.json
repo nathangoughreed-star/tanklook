@@ -1,0 +1,262 @@
+{
+ "commit": "4c064fbc",
+ "build": 1809,
+ "dirty": true,
+ "when": "2026-11-12T14:59:06.200Z",
+ "size": [
+  1050,
+  850
+ ],
+ "fx": [
+  "-depth,-waterline",
+  "depth",
+  "waterline",
+  "depth,waterline"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "planted4": {
+   "shots": [
+    "planted4-front-depth-waterline.png",
+    "planted4-rock-depth-waterline.png",
+    "planted4-line-depth-waterline.png",
+    "planted4-front-depth.png",
+    "planted4-rock-depth.png",
+    "planted4-line-depth.png",
+    "planted4-front-waterline.png",
+    "planted4-rock-waterline.png",
+    "planted4-line-waterline.png",
+    "planted4-front-depth-waterline.png",
+    "planted4-rock-depth-waterline.png",
+    "planted4-line-depth-waterline.png"
+   ],
+   "ab": {
+    "depth": {
+     "A": {
+      "gpuMs": 3.93,
+      "gpuP95": 4.2,
+      "cpuMs": 2.3,
+      "cpuP95": 2.8,
+      "calls": 406,
+      "triangles": 756754
+     },
+     "B": {
+      "gpuMs": 4.12,
+      "gpuP95": 4.44,
+      "cpuMs": 2.4,
+      "cpuP95": 2.8,
+      "calls": 406,
+      "triangles": 756754
+     },
+     "gpuDelta": 0.13,
+     "gpuDeltaP95": 0.67,
+     "timer": true
+    },
+    "waterline": {
+     "A": {
+      "gpuMs": 4.51,
+      "gpuP95": 5.15,
+      "cpuMs": 2.3,
+      "cpuP95": 2.8,
+      "calls": 406,
+      "triangles": 756754
+     },
+     "B": {
+      "gpuMs": 4.52,
+      "gpuP95": 4.94,
+      "cpuMs": 2.3,
+      "cpuP95": 3,
+      "calls": 406,
+      "triangles": 756754
+     },
+     "gpuDelta": 0.02,
+     "gpuDeltaP95": 0.57,
+     "timer": true
+    },
+    "depth,waterline": {
+     "A": {
+      "gpuMs": 3.99,
+      "gpuP95": 5,
+      "cpuMs": 2,
+      "cpuP95": 2.5,
+      "calls": 406,
+      "triangles": 756754
+     },
+     "B": {
+      "gpuMs": 4.15,
+      "gpuP95": 4.93,
+      "cpuMs": 2,
+      "cpuP95": 2.4,
+      "calls": 406,
+      "triangles": 756754
+     },
+     "gpuDelta": 0.07,
+     "gpuDeltaP95": 0.46,
+     "timer": true
+    }
+   }
+  },
+  "nano": {
+   "shots": [
+    "nano-front-depth-waterline.png",
+    "nano-rock-depth-waterline.png",
+    "nano-line-depth-waterline.png",
+    "nano-front-depth.png",
+    "nano-rock-depth.png",
+    "nano-line-depth.png",
+    "nano-front-waterline.png",
+    "nano-rock-waterline.png",
+    "nano-line-waterline.png",
+    "nano-front-depth-waterline.png",
+    "nano-rock-depth-waterline.png",
+    "nano-line-depth-waterline.png"
+   ],
+   "ab": {
+    "depth": {
+     "A": {
+      "gpuMs": 5.04,
+      "gpuP95": 5.36,
+      "cpuMs": 1.7,
+      "cpuP95": 2.2,
+      "calls": 231,
+      "triangles": 486726
+     },
+     "B": {
+      "gpuMs": 5.16,
+      "gpuP95": 5.36,
+      "cpuMs": 1.7,
+      "cpuP95": 2.3,
+      "calls": 231,
+      "triangles": 486726
+     },
+     "gpuDelta": 0.13,
+     "gpuDeltaP95": 0.33,
+     "timer": true
+    },
+    "waterline": {
+     "A": {
+      "gpuMs": 5.04,
+      "gpuP95": 5.08,
+      "cpuMs": 1.5,
+      "cpuP95": 1.7,
+      "calls": 231,
+      "triangles": 486726
+     },
+     "B": {
+      "gpuMs": 5.04,
+      "gpuP95": 5.07,
+      "cpuMs": 1.4,
+      "cpuP95": 1.8,
+      "calls": 231,
+      "triangles": 486726
+     },
+     "gpuDelta": 0,
+     "gpuDeltaP95": 0.05,
+     "timer": true
+    },
+    "depth,waterline": {
+     "A": {
+      "gpuMs": 5.04,
+      "gpuP95": 5.08,
+      "cpuMs": 1.5,
+      "cpuP95": 1.8,
+      "calls": 231,
+      "triangles": 486726
+     },
+     "B": {
+      "gpuMs": 5.16,
+      "gpuP95": 5.82,
+      "cpuMs": 1.5,
+      "cpuP95": 1.8,
+      "calls": 231,
+      "triangles": 486726
+     },
+     "gpuDelta": 0.13,
+     "gpuDeltaP95": 0.77,
+     "timer": true
+    }
+   }
+  },
+  "reef": {
+   "shots": [
+    "reef-front-depth-waterline.png",
+    "reef-rock-depth-waterline.png",
+    "reef-line-depth-waterline.png",
+    "reef-front-depth.png",
+    "reef-rock-depth.png",
+    "reef-line-depth.png",
+    "reef-front-waterline.png",
+    "reef-rock-waterline.png",
+    "reef-line-waterline.png",
+    "reef-front-depth-waterline.png",
+    "reef-rock-depth-waterline.png",
+    "reef-line-depth-waterline.png"
+   ],
+   "ab": {
+    "depth": {
+     "A": {
+      "gpuMs": 4.67,
+      "gpuP95": 6.04,
+      "cpuMs": 2.7,
+      "cpuP95": 3.2,
+      "calls": 351,
+      "triangles": 348294
+     },
+     "B": {
+      "gpuMs": 4.73,
+      "gpuP95": 6.09,
+      "cpuMs": 2.7,
+      "cpuP95": 3.2,
+      "calls": 351,
+      "triangles": 348294
+     },
+     "gpuDelta": 0.01,
+     "gpuDeltaP95": 0.73,
+     "timer": true
+    },
+    "waterline": {
+     "A": {
+      "gpuMs": 4.96,
+      "gpuP95": 6.12,
+      "cpuMs": 2.6,
+      "cpuP95": 3.3,
+      "calls": 351,
+      "triangles": 348294
+     },
+     "B": {
+      "gpuMs": 4.98,
+      "gpuP95": 5.82,
+      "cpuMs": 2.6,
+      "cpuP95": 3.2,
+      "calls": 351,
+      "triangles": 348294
+     },
+     "gpuDelta": -0.04,
+     "gpuDeltaP95": 0.77,
+     "timer": true
+    },
+    "depth,waterline": {
+     "A": {
+      "gpuMs": 5.28,
+      "gpuP95": 6.08,
+      "cpuMs": 2.3,
+      "cpuP95": 2.9,
+      "calls": 351,
+      "triangles": 348294
+     },
+     "B": {
+      "gpuMs": 5.29,
+      "gpuP95": 6.12,
+      "cpuMs": 2.3,
+      "cpuP95": 2.8,
+      "calls": 351,
+      "triangles": 348294
+     },
+     "gpuDelta": 0.04,
+     "gpuDeltaP95": 0.2,
+     "timer": true
+    }
+   }
+  }
+ }
+}

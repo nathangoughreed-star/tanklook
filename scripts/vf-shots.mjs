@@ -31,7 +31,7 @@ const OUT = opt('dir', 'research/visual/vf0'), PAIRS = +opt('pairs', 40);
 const [W, H] = opt('size', '1050x850').split('x').map(Number);
 const T0 = Date.now(), log = (...a) => console.log(`[${((Date.now() - T0) / 1000).toFixed(0).padStart(4)} s]`, ...a);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-const tag = fx => fx.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '') || 'none';
+const tag = fx => fx.replace(/(^|[,;])-/g, '$1no-').replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '') || 'none';
 mkdirSync(OUT, { recursive: true });
 
 // ---------- browser over the DevTools protocol (as perf-baseline.mjs) ----------
@@ -69,6 +69,7 @@ const KIT = () => {
   // close-up's (the second fx set's front view came out zoomed in; lanes VF-B and VF-C, 2026-11-12)
   const front0 = structuredClone(st().scene.tanks[0].camera);
   const pans = {}; // the close-ups' pan, found once per view and reused for every fx set (the first set's centring came out apart)
+  const WL_GAP = 25; // scene/physics WATERLINE_GAP (the 'line' close-up)
   const ext = gl().getExtension('EXT_disjoint_timer_query_webgl2');
   const raf = () => new Promise(r => requestAnimationFrame(() => r()));
   const q = (a, p) => { const s = a.filter(x => x != null && isFinite(x)).sort((x, y) => x - y); return s.length ? +s[Math.min(s.length - 1, Math.floor(p * s.length))].toFixed(2) : null; };
@@ -101,15 +102,16 @@ const KIT = () => {
     async setFx(spec) { __fx.set(fxOf(spec)); await this.settle(300); },
     /** The canvas after a few draws (preserveDrawingBuffer is off: read in the same task as the draw). */
     async shot() { for (let i = 0; i < 3; i++) { v().draw(); await raf(); } v().draw(); return v().renderer.domElement.toDataURL('image/png'); },
-    /** Camera: 'front' (as saved), 'ground' (front centre of the substrate), 'rock' (the largest stone or wood). */
+    /** Camera: 'front' (as saved), 'ground' (front centre of the substrate), 'rock' (the largest stone or wood), 'line' (the water line on the front glass). */
     async view(kind) {
       const S = st().scene.tanks[0], T = S.tank;
-      st().cam(c => { if (kind === 'front') Object.assign(c, front0); else c.zoom = kind === 'ground' ? 3.2 : 2.6; }, 0);
+      st().cam(c => { if (kind === 'front') Object.assign(c, front0); else c.zoom = kind === 'ground' ? 3.2 : kind === 'line' ? 4 : 2.6; }, 0);
       v().setPan(0, 0, 0); v().draw(); await raf();
       if (kind === 'front') return;
       // ('plant:<variant>', lane VF-B: the front-most plant of that variant, its middle)
       const pv = kind.startsWith('plant:') && kind.slice(6), hs = pv ? S.items.filter(i => i.kind === 'plant' && i.variant === pv).sort((a, b) => a.depth - b.depth)[0] : S.items.filter(i => i.kind === 'stone' || i.kind === 'wood').sort((a, b) => b.size - a.size)[0];
-      const P = kind === 'ground' || !hs ? [T.L / 2, (S.substrate.fl + S.substrate.bl) / 2 + T.H * 0.18, -T.D * 0.3] : [hs.x, hs.size * (pv ? 0.45 : 0.25), -hs.depth];
+      // 'line' (VF6): the water line on the front glass, a third of the way along
+      const P = kind === 'line' ? [T.L * 0.3, S.water.level * (T.H - WL_GAP), 0] : kind === 'ground' || !hs ? [T.L / 2, (S.substrate.fl + S.substrate.bl) / 2 + T.H * 0.18, -T.D * 0.3] : [hs.x, hs.size * (pv ? 0.45 : 0.25), -hs.depth];
       const vp = v().active[0];
       if (pans[kind]) { v().setPan(0, ...pans[kind]); v().draw(); await raf(); return; }
       for (let k = 0; k < 4; k++) { // pan until P is in the middle of the picture
