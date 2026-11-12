@@ -28,6 +28,10 @@ export interface ScatterSpec {
   liftK?: [number, number]; pileK?: number; cell?: number; palette?: THREE.Color[];
   /** Brush patches (lane SB): the floor-plan points to use, in order, instead of random ones over the whole floor (count / clump ignored). */
   at?: [number, number][];
+  /** Leaves (2026-11-12): rest along the long axis on what is under them (pitched onto the pile up to ~17 deg, the
+   *  lowest line that clears it), and mark the pile along the whole strip they cover, not just a disc at the middle:
+   *  litter used to sit on the highest copy anywhere under its middle and stacked into a thick, flat slab. */
+  drape?: boolean;
 }
 
 /** Signed distance (mm) to the tank's outline, positive inside: shape.ts `insideBy` with the outline fetched once. */
@@ -46,6 +50,8 @@ export function scatter(T: Tank, ground: GroundAt, spec: ScatterSpec): THREE.Ins
   const n = new THREE.Vector3(), b = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0), q = new THREE.Quaternion(), qy = new THREE.Quaternion(), qt = new THREE.Quaternion();
   const ax = new THREE.Vector3(), pos = new THREE.Vector3(), scl = new THREE.Vector3(), mx = new THREE.Matrix4(), col = new THREE.Color(), e = 4;
   const PROBES = [[-1, 0], [1, 0], [0, -0.5], [0, 0.5]];
+  const DS = [-0.9, -0.6, -0.3, 0, 0.3, 0.6, 0.9], dp = new Float32Array(DS.length), zAx = new THREE.Vector3(0, 0, 1);
+  const SLOPES = [0, -0.08, 0.08, -0.16, 0.16, -0.24, 0.24, -0.3, 0.3]; // flat first: ties stay flat
   const inBy = insideIn(T); // shape.ts insideBy without its outline lookup per call (that was most of the time)
   let placed = 0;
   // the pile: a height grid over the floor (padded past the glass by the widest copy's half reach)
@@ -79,10 +85,23 @@ export function scatter(T: Tank, ground: GroundAt, spec: ScatterSpec): THREE.Ins
     if (out || over > reach * 0.25 || under > reach * 0.25) continue; // `out`: would poke through the glass
     q.setFromUnitVectors(up, n); qy.setFromAxisAngle(up, a); ax.set(Math.cos(tiltA), 0, Math.sin(tiltA)); qt.setFromAxisAngle(ax, tilt * spec.tilt);
     q.multiply(qt).multiply(qy);
-    let top = 0; cells(x, d, reach * 0.5, k => { top = Math.max(top, pile[k]); });
     const lk = spec.liftK ? (spec.liftK[0] + lift01 * (spec.liftK[1] - spec.liftK[0])) * size : 0;
-    const h = lift + lk + under + top, inc = spec.pile + (spec.pileK ?? 0) * size;
-    if (inc) cells(x, d, reach * 0.5, k => { pile[k] = top + inc; });
+    const inc = spec.pile + (spec.pileK ?? 0) * size;
+    let top = 0;
+    if (spec.drape) {
+      // the pile along the leaf's midline, then the lowest straight line over it within the pitch limit
+      const sw = Math.max(PC * 0.6, reach * 0.25), sx = (s: number) => x + cx * s * reach, sd = (s: number) => d - cz * s * reach;
+      for (let i = 0; i < DS.length; i++) { let m = 0; cells(sx(DS[i]), sd(DS[i]), sw, k => { m = Math.max(m, pile[k]); }); dp[i] = m; }
+      let best = Infinity, slope = 0;
+      for (const sl of SLOPES) { let c = 0; for (let i = 0; i < DS.length; i++) c = Math.max(c, dp[i] - sl * DS[i] * reach); if (c < best - 1e-6) { best = c; slope = sl; } }
+      top = best;
+      if (slope) q.multiply(qt.setFromAxisAngle(zAx, Math.atan(slope))); // +x end up by slope per mm
+      if (inc) for (const s of DS) { const hs = top + slope * s * reach + inc; cells(sx(s), sd(s), sw, k => { pile[k] = Math.max(pile[k], hs); }); }
+    } else {
+      cells(x, d, reach * 0.5, k => { top = Math.max(top, pile[k]); });
+      if (inc) cells(x, d, reach * 0.5, k => { pile[k] = top + inc; });
+    }
+    const h = lift + lk + under + top;
     // grains never mirrored: a mirrored copy is inside out in an InstancedMesh (its winding flips, the culling does not),
     // and big pebbles showed as hollow rings
     pos.set(g[0] + n.x * h, g[1] + n.y * h, g[2] + n.z * h); scl.set(size, size, mirror && !spec.palette ? -size : size);
@@ -248,6 +267,6 @@ export function litterCount(l: Litter, area: number) {
 export function litterMeshes(S: TankSetup, T: Tank, ground: GroundAt, area = footprint(T).area): THREE.InstancedMesh[] {
   const l = S.substrate.litter; if (!l?.density) return [];
   const wy = S.water.on ? waterY(T, S.water.level) : -Infinity;
-  return scatter(T, ground, { seed: l.seed, count: litterCount(l, area), kinds: leafKinds(l.leaf), lift: [0.5, 1.5], pile: 2.5, tilt: 0.12, slope: 0.55, clump: 0.7,
+  return scatter(T, ground, { seed: l.seed, count: litterCount(l, area), kinds: leafKinds(l.leaf), lift: [0.3, 0.9], pile: 1.2, tilt: 0.08, slope: 0.55, clump: 0.7, drape: true,
     shade: y => (y < wy ? 0.55 : 1) });
 }

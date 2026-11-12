@@ -99,7 +99,7 @@ function kindsFor(brush: Exclude<LiteBrushId, 'leaf'>): ScatterKind[] {
 
 /** Per brush: sink into the ground (mm lift range), pile (stack on neighbours, mm), tilt off the ground (radians). */
 const FEEL: Record<LiteBrushId, { lift: [number, number]; pile: number; tilt: number; liftK?: [number, number] }> = {
-  leaf: { lift: [0.5, 1.5], pile: 2.5, tilt: 0.12 },
+  leaf: { lift: [0.3, 0.9], pile: 1.2, tilt: 0.08 },
   pebble: { lift: [0, 0], pile: 0, tilt: 0.5, liftK: [-0.2, 0.0] },
   gravel: { lift: [0, 0], pile: 0, tilt: 0.5, liftK: [-0.2, 0.0] },
   moss: { lift: [0, 0], pile: 0.6, tilt: 0.05, liftK: [-0.12, -0.04] },
@@ -143,7 +143,7 @@ export function patchMeshes(S: TankSetup, T: Tank, ground: GroundAt, p: Patch): 
   const kinds = b === 'leaf' ? leafKinds(p.leaf ?? 'mixed') : kindsFor(b);
   const pal = b === 'leaf' ? undefined : PALETTE[b].map(c => c.clone().multiplyScalar(DIM[b]));
   return scatter(T, ground, {
-    seed: p.seed, count: at.length, at, kinds, lift: f.lift, liftK: f.liftK, pile: f.pile, tilt: f.tilt, slope: b === 'leaf' ? 0.55 : 0.4, clump: 0,
+    seed: p.seed, count: at.length, at, kinds, lift: f.lift, liftK: f.liftK, pile: f.pile, tilt: f.tilt, slope: b === 'leaf' ? 0.55 : 0.4, clump: 0, drape: b === 'leaf',
     ...(pal ? { palette: pal } : {}),
     shade: y => (y < wy ? (b === 'leaf' ? 0.55 : 0.9) : 1),
   });
