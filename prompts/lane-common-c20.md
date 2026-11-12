@@ -1,4 +1,4 @@
-# Common rules for Coordinator 20's lanes (ST1, FR1, EQ1, GW1, ...)
+# Common lane rules (current coordinator: Coordinator 22, local_b0516eb8-66d2-4b12-8c5a-ac195c952bbc; report to the CURRENT coordinator, never an earlier one)
 
 - Coordinator: Coordinator 22, session `local_b0516eb8-66d2-4b12-8c5a-ac195c952bbc`. Report to it ONCE (send_message): branch + sha rebased on origin/main, build + test result, screenshots, open questions. Never push; the coordinator merges.
 - Own worktree off origin/main (`git fetch`, base on origin/main; rebase on origin/main before reporting).
