@@ -518,7 +518,7 @@ function CAUS() {
 
 /** Depth shift (plan VF6): at most this share toward the grey / water hue at the far glass, how much of that is hue (the rest desaturation),
  *  and the share of the tank's depth before it starts (Nathan 2026-11-12: 15 % from the front glass washed the whole tank out; back half only). */
-export const DEPTH_MAX = 0.08, DEPTH_HUE = 0.5, DEPTH_FROM = 0.5;
+export const DEPTH_MAX = 0.08, DEPTH_HUE = 0.5, DEPTH_FROM = 0.5, DEPTH_SAT = 0.08; // DEPTH_SAT: saturation lift on all underwater colour, so the depth reads as distance, not a duller tank
 
 function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithUniforms) {
   this.userData.pre?.(shader); // the material's own patch (hardscape: glass clip and grit) still applies under the lighting
@@ -552,6 +552,8 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
       // depth (plan VF6, fx depth): the farther the sightline runs through water, the less saturated and the nearer the
       // water's hue, up to DEPTH_MAX at the tank's depth; luminance kept (no haze, no brightness loss: Nathan rejected a fog)
       'if (aqWP > 0.0 && uFxDepth > 0.5 && uCausK.z > 0.5) { float aqY = dot(outgoingLight, vec3(0.2126, 0.7152, 0.0722));\n' +
+      // and everything seen through the water a little richer first (Nathan 2026-11-12: keep the depth, boost saturation)
+      `  outgoingLight = max(mix(vec3(aqY), outgoingLight, ${(1+DEPTH_SAT).toFixed(2)}), 0.0);\n` +
       `  outgoingLight = mix(outgoingLight, aqY * mix(vec3(1.0), uWTint.rgb / max(dot(uWTint.rgb, vec3(0.2126, 0.7152, 0.0722)), 0.05), ${DEPTH_HUE.toFixed(2)}), ${DEPTH_MAX.toFixed(3)} * aqPk * smoothstep(${DEPTH_FROM.toFixed(2)}, 1.0, aqWP / max(uWater.z, 1.0))); }\n` +
       'if (uWater.w > 0.0) { float aqF = smoothstep(0.0, 0.5, aqWP) * aqPk; outgoingLight = outgoingLight * mix(vec3(1.0), aqWaterFilter(), aqF) + aqWaterVeil() * (aqF * min(dot(aqLt, vec3(0.2126, 0.7152, 0.0722)), 1.0)); }\n' +
       // light map on the substrate (beam overlay on): false colour by level, a dark contour line at each doubling (valued by ui/lightContours), the
