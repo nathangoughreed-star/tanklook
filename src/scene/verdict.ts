@@ -18,6 +18,7 @@ import { herpCheck, type StockIssue } from './herpcheck';
 import { growthCheck } from './growcheck';
 import { ownedFit } from './ownedFit';
 import { lightFitNote } from './lightcheck';
+import { substrateCheck } from './substrateCheck';
 import { getSpecies } from '../data/species';
 import { volume } from './physics';
 import { cabinetGear } from './cabinetGear';
@@ -81,6 +82,12 @@ function compute(S: TankSetup, b: Brief, o: VerdictOpts): Verdict {
     else if (c.kind === 'enclosure-vs-space') put(hard, i);   // the person's room limit, not the animals' welfare
     else put(gates, i);
   }
+  // ---- lane SD1: substrate depth for the plants, the anaerobic depth, and the bottom dwellers' substrate (a 'needs' / sharp mismatch is a welfare Caution; Guided Discover drops it, scene/rules.ts)
+  try {
+    for (const n of substrateCheck(S)) put(advisories, { id: n.id, tab: n.level === 'plant' ? 'plants' : n.level === 'deep' ? 'substrate' : 'animals',
+      uids: n.level === 'needs' || n.level === 'prefers' ? fishUids(S, f => n.who.includes(f.species)) : [], text: n.text,
+      ...(n.level === 'deep' ? { relax: 'a shallower bed, a coarser grain, rooted plants or trumpet snails' } : {}) });
+  } catch { /* an unfinished scene has nothing to judge */ }
   // ---- owned gear against the design: a Required item that is too weak is a gate (CO2 and ferts do not add light); an owned-but-optional one is advice
   const required = new Set(requiredEquipment(b).map(i => i.key as string));
   let lightSaid = false;

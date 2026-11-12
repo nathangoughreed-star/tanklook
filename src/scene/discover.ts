@@ -20,7 +20,7 @@ import { equipPlan, noNewEquipment, type BuyLine } from './equipPlan';
 import { equipmentOf } from './project';
 import type { Range3 } from '../demand/types';
 import type { Brief, Rules } from './brief';
-import { blockingIssues } from './rules';
+import { blockingIssues, isNeedsIssue } from './rules';
 import type { Store } from './store';
 import type { Fish, Item, TankSetup } from './types';
 
@@ -161,7 +161,7 @@ const axesOf = (t: TankSetup): DiscoveryProposal['axes'] => {
 };
 const distance = (a: DiscoveryProposal, b: DiscoveryProposal) => (Object.keys(a.axes) as (keyof DiscoveryProposal['axes'])[]).filter(k => a.axes[k] !== b.axes[k]).length + +(a.source !== b.source);
 const score = (v: Verdict) => v.targets.length * 10 + v.advisories.length;
-const idsOf = (v: Verdict) => new Set([...v.gates, ...v.hard].map(i => i.id));
+const idsOf = (v: Verdict) => new Set([...v.gates, ...v.hard, ...v.advisories.filter(isNeedsIssue)].map(i => i.id));
 
 function describe(p: { source: string; objective: Objective; touches: ReturnType<typeof diffTouches>; focus?: Focus }): string {
   const t = p.touches, bits: string[] = [];

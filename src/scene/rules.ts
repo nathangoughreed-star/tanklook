@@ -13,7 +13,9 @@ export interface DiscoverGates {
 /** Which of a candidate's verdict lists make it unacceptable. Guided: welfare + limits (today's behaviour). Sandbox: welfare only. */
 export const discoverGates = (rules: Rules): DiscoverGates => ({ welfare: true, limits: rules === 'guided' });
 /** The issues of a verdict that block a Discover candidate under these rules (the ones `discover.ts` / `candidates.ts` filter on). */
-export const blockingIssues = (v: Verdict, rules: Rules): Issue[] => { const g = discoverGates(rules); return [...(g.welfare ? v.gates : []), ...(g.limits ? v.hard : [])]; };
+/** SD1: a bottom dweller on a substrate it cannot live on is a welfare Caution (an advisory) that Guided Discover still drops. */
+export const isNeedsIssue = (i: Issue): boolean => i.id.startsWith('substrate:needs:');
+export const blockingIssues = (v: Verdict, rules: Rules): Issue[] => { const g = discoverGates(rules); return [...(g.welfare ? v.gates : []), ...(g.limits ? v.hard : []), ...(rules === 'guided' ? v.advisories.filter(isNeedsIssue) : [])]; };
 
 /** What the Checks strip says about itself: Sandbox shows the same checks, as information only. */
 export const checksNote = (rules: Rules): string => rules === 'sandbox' ? 'Sandbox: these checks are information only. Nothing is blocked.' : '';
