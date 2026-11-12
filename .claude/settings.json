@@ -12,6 +12,18 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py",
+            "args": ["-3.12", "C:/Users/nreed/Glass Box/scripts/commit_check.py"],
+            "timeout": 30
+          }
+        ]
+      }
     ]
   }
 }
