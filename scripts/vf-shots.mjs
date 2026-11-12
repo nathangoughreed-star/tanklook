@@ -88,6 +88,7 @@ const KIT = () => {
     return { cpu, qq, calls: calls - c0, tris: info.render.triangles };
   };
   const fxOf = spec => __fx.parse(spec, __fx.parse('none'));
+  const zoom0 = st().scene.tanks[0].camera.zoom; // the saved view's zoom (close-ups change the live one)
   return {
     async settle(ms = 1500) {
       for (let i = 0; i < 600 && (v().reveal || v().needsBuild); i++) await raf();
@@ -99,7 +100,7 @@ const KIT = () => {
     /** Camera: 'front' (as saved), 'ground' (front centre of the substrate), 'rock' (the largest stone or wood). */
     async view(kind) {
       const S = st().scene.tanks[0], T = S.tank;
-      st().cam(c => { c.zoom = kind === 'front' ? Z0 : kind === 'ground' ? 3.2 : 2.6; }, 0);
+      st().cam(c => { c.zoom = kind === 'front' ? zoom0 : kind === 'ground' ? 3.2 : 2.6; }, 0);
       v().setPan(0, 0, 0); v().draw(); await raf();
       if (kind === 'front') return;
       // ('plant:<variant>', lane VF-B: the front-most plant of that variant, its middle)

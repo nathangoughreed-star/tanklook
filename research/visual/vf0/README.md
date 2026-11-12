@@ -17,6 +17,11 @@ Camera locked in each file (`dist 3000, az -8, el 8, zoom 1`), light preset and 
 `<tank>-<view>-<fx>.png`, view = front, ground (substrate close-up), rock (largest stone or wood), 1050 x 850, fx none.
 
 ## Numbers (build 1784 + fx.ts, Intel Arc Pro, D3D11, 1050 x 850)
+**Correction (2026-11-12):** the table below was measured while the camera was still at the last close-up's zoom (a
+vf-shots bug, fixed: `zoom0`), so it undercounts. The FRONT view, fx none, measured with VF1 (research/visual/vf1b,
+A side): GPU median planted4 14.0 ms, nano 9.1 ms, reef 7.2 ms; draw calls 406 / 231 / 351 (perf-baseline.json agrees
+on planted4: 406 calls). Compare later stages with those.
+
 From `vf-shots.json` (alternating frames, after the progressive reveal has finished):
 
 | tank | GPU ms median | GPU p95 | CPU ms median | CPU p95 | draw calls | triangles |

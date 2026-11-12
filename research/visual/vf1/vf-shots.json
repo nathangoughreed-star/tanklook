@@ -1,0 +1,60 @@
+{
+ "commit": "afdfacfa",
+ "build": 1788,
+ "dirty": true,
+ "when": "2026-11-12T01:40:51.035Z",
+ "size": [
+  1050,
+  850
+ ],
+ "fx": [
+  "none",
+  "tonemap:agx",
+  "tonemap:aces"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "planted4": {
+   "shots": [
+    "planted4-front-none.png",
+    "planted4-ground-none.png",
+    "planted4-rock-none.png",
+    "planted4-front-tonemap-agx.png",
+    "planted4-ground-tonemap-agx.png",
+    "planted4-rock-tonemap-agx.png",
+    "planted4-front-tonemap-aces.png",
+    "planted4-ground-tonemap-aces.png",
+    "planted4-rock-tonemap-aces.png"
+   ],
+   "ab": {}
+  },
+  "nano": {
+   "shots": [
+    "nano-front-none.png",
+    "nano-ground-none.png",
+    "nano-rock-none.png",
+    "nano-front-tonemap-agx.png",
+    "nano-ground-tonemap-agx.png",
+    "nano-rock-tonemap-agx.png",
+    "nano-front-tonemap-aces.png",
+    "nano-ground-tonemap-aces.png",
+    "nano-rock-tonemap-aces.png"
+   ],
+   "ab": {}
+  },
+  "reef": {
+   "shots": [
+    "reef-front-none.png",
+    "reef-ground-none.png",
+    "reef-rock-none.png",
+    "reef-front-tonemap-agx.png",
+    "reef-ground-tonemap-agx.png",
+    "reef-rock-tonemap-agx.png",
+    "reef-front-tonemap-aces.png",
+    "reef-ground-tonemap-aces.png",
+    "reef-rock-tonemap-aces.png"
+   ],
+   "ab": {}
+  }
+ }
+}

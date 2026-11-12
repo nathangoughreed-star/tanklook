@@ -224,6 +224,7 @@ const AQ_VERT = 'varying vec3 vAqP; varying vec3 vAqN;';
 const AQ_FRAG = `
 uniform vec4 uEm[${AQ_MAX}]; uniform int uEmN; uniform float uMode, uAmb, uBright, uNorm, uBeamM, uRef, uCard, uSub, uFish, uPane; uniform vec3 uLCol;
 float aqSpec = 0.0;
+uniform float uFxTone;
 uniform float uRoomMat, uRoomK, uSpillR, uTankRound, uAlgH; uniform vec3 uSpill, uTankMin, uTankMax; uniform vec4 uWater, uWTint; uniform vec3 uWCol; uniform float uPop, uFishCard;
 varying vec3 vAqP; varying vec3 vAqN;
 ${BOW_GLSL}
@@ -394,13 +395,43 @@ const AQ_MAP = `#ifdef USE_MAP
   diffuseColor *= aqTex;
 #endif`;
 
+/**
+ * Tone mapping (plan VF1; render/fx.ts `tonemap`): 1 = AgX, 2 = ACES, three's own curves (tonemapping_pars_fragment is in
+ * every built-in program; three uploads toneMappingExposure = 1). The exposure keeps mid grey (0.18) where it was, so
+ * shadows and mid tones keep their brightness and only highlights roll off instead of clipping. A uniform, not a
+ * define: switching it never links another program. Not on the light map's false colours.
+ * ACES toe (Nathan 2026-11-12, ACES picked, "crushing some of the darker details" on the cabinets): below mid grey the
+ * result eases back toward the untoned value, keeping a third of ACES's darkening at black (linear 0.02 reads 0.13 sRGB
+ * instead of ACES's 0.07; today's 0.15).
+ */
+const AQ_TONE = 'if (uFxTone > 0.5 && !(uMapOn > 0.5 && uSub > 0.5)) { vec3 aqC = gl_FragColor.rgb;\n' +
+  '  if (uFxTone < 1.5) gl_FragColor.rgb = aqAgx(aqC * 0.808);\n' +
+  '  else gl_FragColor.rgb = mix(min(aqC, vec3(1.0)), aqAces(aqC * 0.877), 0.35 + 0.65 * smoothstep(0.0, 0.18, dot(aqC, vec3(0.2126, 0.7152, 0.0722)))); }\n';
+// three's AgX and ACES (tonemapping_pars_fragment), which three compiles in only when renderer.toneMapping is set
+const AQ_TONE_GLSL = `
+vec3 aqAgx(vec3 c) {
+  c = mat3(0.6274, 0.0691, 0.0164, 0.3293, 0.9195, 0.0880, 0.0433, 0.0113, 0.8956) * c;
+  c = mat3(0.856627, 0.137319, 0.111898, 0.095121, 0.761242, 0.076799, 0.048252, 0.101439, 0.811302) * c;
+  c = clamp((log2(max(c, 1e-10)) + 12.47393) / 16.5, 0.0, 1.0);
+  vec3 x2 = c * c, x4 = x2 * x2;
+  c = 15.5 * x4 * x2 - 40.14 * x4 * c + 31.96 * x4 - 6.868 * x2 * c + 0.4298 * x2 + 0.1191 * c - 0.00232;
+  c = mat3(1.127101, -0.141330, -0.141330, -0.110607, 1.157824, -0.110607, -0.016494, -0.016494, 1.251936) * c;
+  c = pow(max(c, 0.0), vec3(2.2));
+  return clamp(mat3(1.6605, -0.1246, -0.0182, -0.5876, 1.1329, -0.1006, -0.0728, -0.0083, 1.1187) * c, 0.0, 1.0);
+}
+vec3 aqAces(vec3 c) {
+  c = mat3(0.59719, 0.07600, 0.02840, 0.35458, 0.90834, 0.13383, 0.04823, 0.01566, 0.83777) * (c / 0.6);
+  c = (c * (c + 0.0245786) - 0.000090537) / (c * (0.983729 * c + 0.4329510) + 0.238081);
+  return clamp(mat3(1.60475, -0.10208, -0.00327, -0.53108, 1.10813, -0.07276, -0.07367, -0.00605, 1.07602) * c, 0.0, 1.0);
+}`;
+
 function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithUniforms) {
   this.userData.pre?.(shader); // the material's own patch (hardscape: glass clip and grit) still applies under the lighting
   Object.assign(shader.uniforms, LU, AU, FXU, { uAlgH: { value: this.userData.solid ? 1 : 0 }, uCard: { value: this.userData.card ? 1 : 0 }, uSub: { value: this.userData.sub ? 1 : 0 }, uFish: { value: this.userData.fish ? 1 : 0 }, uPane: { value: this.userData.pane ? 1 : 0 }, uRoomMat: { value: this.userData.room ? 1 : 0 }, uFishCard: { value: this.userData.fishCard ? 1 : 0 } });
   shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\n' + AQ_VERT)
     // an instanced mesh (leaf litter, render/scatter.ts) places each copy by its instance matrix too
     .replace('#include <begin_vertex>', '#include <begin_vertex>\n#ifdef USE_INSTANCING\nvAqP = (modelMatrix * instanceMatrix * vec4(transformed, 1.0)).xyz; vAqN = normalize(mat3(modelMatrix) * mat3(instanceMatrix) * normal);\n#else\nvAqP = (modelMatrix * vec4(transformed, 1.0)).xyz; vAqN = normalize(mat3(modelMatrix) * normal);\n#endif');
-  shader.fragmentShader = shader.fragmentShader.replace('#include <common>', '#include <common>\n' + AQ_FRAG)
+  shader.fragmentShader = shader.fragmentShader.replace('#include <common>', '#include <common>\n' + AQ_FRAG + AQ_TONE_GLSL)
     .replace('#include <opaque_fragment>', 'vec3 aqLt = aqLight(); outgoingLight *= aqLt;\n' + ALGAE_STEP +
       'if (uCard > 0.5) { float aqL = dot(outgoingLight, vec3(0.2126, 0.7152, 0.0722)); outgoingLight = max(mix(vec3(aqL), outgoingLight, 1.35 + 0.35 * uPop * uFishCard), 0.0) * (1.0 + 0.2 * uPop * uFishCard); }\n' +
       'float aqM = max(max(outgoingLight.r, outgoingLight.g), outgoingLight.b);\n' +
@@ -416,7 +447,8 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
       // fish stand out (render.pop): the outline darkens where the body turns edge-on, so it reads against sand or leaves
       '  outgoingLight *= 1.0 - 0.55 * uPop * smoothstep(0.55, 0.95, 1.0 - abs(dot(normalize(vAqN), aqV)));\n' +
       '  outgoingLight = min(outgoingLight, vec3(1.0));\n' +
-      '} else if (aqM > 1.0) outgoingLight /= aqM;\n' +
+      // tone mapping on (render/fx.ts): light above 1 is kept for the curve (AQ_TONE) instead of clipped here
+      '} else if (aqM > 1.0 && uFxTone < 0.5) outgoingLight /= aqM;\n' +
       // water colour (lane WT1): one filter colour for whatever sits behind water, however deep (no depth haze), only on
       // sightlines that cross the water at all; fish ease off it as they stand out (render.pop)
       'if (uWater.w > 0.0) { float aqF = smoothstep(0.0, 0.5, aqWaterPath()) * (1.0 - 0.6 * uPop * max(uFish, uFishCard)); outgoingLight = outgoingLight * mix(vec3(1.0), aqWaterFilter(), aqF) + aqWaterVeil() * (aqF * min(dot(aqLt, vec3(0.2126, 0.7152, 0.0722)), 1.0)); }\n' +
@@ -429,7 +461,8 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
       '  outgoingLight = aqRamp(aqT) * (0.75 + 0.45 * aqG) * (aqT < 0.0 ? 0.35 : 1.0);\n' +
       '  outgoingLight *= 1.0 - 0.7 * (1.0 - smoothstep(0.6 * aqW, 1.6 * aqW, abs(fract(aqC + 0.5) - 0.5))) * (uMapStep > 0.0 ? step(0.5, aqC) : step(0.0, aqT)); }\n' +
       '#include <opaque_fragment>')
-    .replace('#include <map_fragment>', AQ_MAP);
+    .replace('#include <map_fragment>', AQ_MAP)
+    .replace('#include <colorspace_fragment>', AQ_TONE + '#include <colorspace_fragment>');
   this.userData.post?.(shader); // the material's patch of the lit shader (custom substrate: its grains blended by a mask)
   // frosted film (build `bgMaterial`): with no scene lights, outgoingLight is only the light let through (transmission);
   // keep it aside, light the film's own white share like any surface, then add the transmitted light back unlit

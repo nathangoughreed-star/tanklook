@@ -1,0 +1,116 @@
+{
+ "commit": "afdfacfa",
+ "build": 1788,
+ "dirty": true,
+ "when": "2026-11-12T12:30:06.878Z",
+ "size": [
+  1050,
+  850
+ ],
+ "fx": [
+  "none",
+  "tonemap:aces"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "planted4": {
+   "shots": [
+    "planted4-front-none.png",
+    "planted4-ground-none.png",
+    "planted4-rock-none.png",
+    "planted4-front-tonemap-aces.png",
+    "planted4-ground-tonemap-aces.png",
+    "planted4-rock-tonemap-aces.png"
+   ],
+   "ab": {
+    "tonemap:aces": {
+     "A": {
+      "gpuMs": 14,
+      "gpuP95": 16.45,
+      "cpuMs": 3.7,
+      "cpuP95": 5.4,
+      "calls": 406,
+      "triangles": 739294
+     },
+     "B": {
+      "gpuMs": 14.22,
+      "gpuP95": 16.41,
+      "cpuMs": 3.7,
+      "cpuP95": 7,
+      "calls": 406,
+      "triangles": 739294
+     },
+     "gpuDelta": 0.19,
+     "gpuDeltaP95": 1.64,
+     "timer": true
+    }
+   }
+  },
+  "nano": {
+   "shots": [
+    "nano-front-none.png",
+    "nano-ground-none.png",
+    "nano-rock-none.png",
+    "nano-front-tonemap-aces.png",
+    "nano-ground-tonemap-aces.png",
+    "nano-rock-tonemap-aces.png"
+   ],
+   "ab": {
+    "tonemap:aces": {
+     "A": {
+      "gpuMs": 9.13,
+      "gpuP95": 10.15,
+      "cpuMs": 1.9,
+      "cpuP95": 2.8,
+      "calls": 231,
+      "triangles": 472706
+     },
+     "B": {
+      "gpuMs": 9.83,
+      "gpuP95": 9.94,
+      "cpuMs": 2.4,
+      "cpuP95": 4.4,
+      "calls": 231,
+      "triangles": 472706
+     },
+     "gpuDelta": 0.36,
+     "gpuDeltaP95": 1.07,
+     "timer": true
+    }
+   }
+  },
+  "reef": {
+   "shots": [
+    "reef-front-none.png",
+    "reef-ground-none.png",
+    "reef-rock-none.png",
+    "reef-front-tonemap-aces.png",
+    "reef-ground-tonemap-aces.png",
+    "reef-rock-tonemap-aces.png"
+   ],
+   "ab": {
+    "tonemap:aces": {
+     "A": {
+      "gpuMs": 7.18,
+      "gpuP95": 9.58,
+      "cpuMs": 2.9,
+      "cpuP95": 3.9,
+      "calls": 351,
+      "triangles": 348294
+     },
+     "B": {
+      "gpuMs": 7.26,
+      "gpuP95": 8.87,
+      "cpuMs": 3,
+      "cpuP95": 4.7,
+      "calls": 351,
+      "triangles": 348294
+     },
+     "gpuDelta": 0.12,
+     "gpuDeltaP95": 1.47,
+     "timer": true
+    }
+   }
+  }
+ }
+}
