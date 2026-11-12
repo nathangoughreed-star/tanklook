@@ -1,0 +1,26 @@
+{
+ "commit": "f39975bd",
+ "build": 1829,
+ "dirty": false,
+ "when": "2026-11-12T17:42:14.220Z",
+ "size": [
+  1050,
+  850
+ ],
+ "fx": [
+  "none",
+  "embed"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "glass-edge": {
+   "shots": [
+    "glass-edge-front-none.png",
+    "glass-edge-ground-none.png",
+    "glass-edge-front-embed.png",
+    "glass-edge-ground-embed.png"
+   ],
+   "ab": {}
+  }
+ }
+}

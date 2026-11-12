@@ -111,7 +111,10 @@ export function contactObjects(S: TankSetup, T: Tank, items: { it: Item; m: THRE
     if (b) list.push(b);
   }
   const out: THREE.Object3D[] = [];
-  if (FX.contact && list.length) out.push(blobMesh(list, ground));
+  // VF-C2: the berm stands up to 9 mm above the ground, so the blob (drawn on the ground) was hidden under it and the berm stayed
+  // lighter than the shaded sand round it (a pale cloud round every rock, Nathan 2026-11-12): over a painted berm the blob follows its surface
+  const berms = FX.embed && skin && skin.color === 0xffffff ? list.filter(b => b.grains && b.berm) : [];
+  if (FX.contact && list.length) out.push(blobMesh(list, berms.length ? onBerm(berms, ground) : ground));
   if (FX.ground) out.push(...footGrains(S, T, list.filter(b => b.grains), ground));
   if (FX.mix) out.push(...coarseFeet(S, T, list.filter(b => b.grains && b.fx), ground));
   if (FX.embed && skin) out.push(...bermObjects(S, T, list.filter(b => b.grains && b.berm), ground, skin));
@@ -290,13 +293,9 @@ function spillGrains(S: TankSetup, T: Tank, list: Blob[], ground: GroundAt, scal
       at.push([b.x + lx * b.ux - ld * b.ud, b.d + lx * b.ud + ld * b.ux]);
     }
   }
-  const bermY = (x: number, d: number): [number, number, number] => {
-    const g = ground(x, d); let h = 0;
-    for (const b of list) { const l = bermAt(b, x, d); if (l.rho < BERM_OUT) h = Math.max(h, l.h * scale); }
-    return [g[0], g[1] + h, g[2]];
-  };
+  const bermY = onBerm(list, ground, scale);
   const ms = scatter(T, bermY, { seed: 9, count: at.length, at, kinds: grainKinds(look).slice(0, 2), lift: [0, 0], pile: 0, tilt: 0.5, slope: 0.3, clump: 0, liftK: [-0.2, 0.05], pileK: 0.15, cell: 3,
-    palette: look.colors.map(c => new THREE.Color(c).multiplyScalar(dense ? 0.62 : 0.8)) });
+    palette: look.colors.map(c => new THREE.Color(c).multiplyScalar(dense ? 0.62 : 0.68)) });
   for (const m of ms) { m.userData.grains = true; m.userData.contact = true; m.raycast = () => {}; }
   return ms;
 }
@@ -326,4 +325,13 @@ function coarseFeet(S: TankSetup, T: Tank, list: Blob[], ground: GroundAt): THRE
     palette: look.colors.map(c => new THREE.Color(c).multiplyScalar(0.8)), vary: true });
   for (const m of ms) { m.userData.grains = true; m.userData.contact = true; m.raycast = () => {}; }
   return ms;
+}
+
+/** The ground with the berms' height added (the surface the berm meshes are drawn on). */
+function onBerm(list: Blob[], ground: GroundAt, scale = 1): GroundAt {
+  return (x, d) => {
+    const g = ground(x, d); let h = 0;
+    for (const b of list) { const l = bermAt(b, x, d); if (l.rho < BERM_OUT) h = Math.max(h, l.h * scale); }
+    return [g[0], g[1] + h, g[2]];
+  };
 }

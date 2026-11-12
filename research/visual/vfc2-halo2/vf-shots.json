@@ -1,0 +1,26 @@
+{
+ "commit": "46eb9e36",
+ "build": 1830,
+ "dirty": false,
+ "when": "2026-11-12T17:55:05.547Z",
+ "size": [
+  1050,
+  850
+ ],
+ "fx": [
+  "aces,caustics,contact,ground,variety",
+  "aces,caustics,contact,ground,variety,embed"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "iwagumi": {
+   "shots": [
+    "iwagumi-front-aces-caustics-contact-ground-variety.png",
+    "iwagumi-rock-aces-caustics-contact-ground-variety.png",
+    "iwagumi-front-aces-caustics-contact-ground-variety-embed.png",
+    "iwagumi-rock-aces-caustics-contact-ground-variety-embed.png"
+   ],
+   "ab": {}
+  }
+ }
+}
