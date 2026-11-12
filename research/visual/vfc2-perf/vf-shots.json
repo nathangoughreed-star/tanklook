@@ -1,0 +1,161 @@
+{
+ "commit": "40df81d3",
+ "build": 1823,
+ "dirty": false,
+ "when": "2026-11-12T16:41:05.550Z",
+ "size": [
+  1050,
+  850
+ ],
+ "fx": [
+  "none",
+  "embed"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "planted4": {
+   "shots": [],
+   "ab": {
+    "embed": {
+     "A": {
+      "gpuMs": 20.67,
+      "gpuP95": 22.48,
+      "cpuMs": 5.9,
+      "cpuP95": 8.6,
+      "calls": 406,
+      "triangles": 739294
+     },
+     "B": {
+      "gpuMs": 21.09,
+      "gpuP95": 23.05,
+      "cpuMs": 6,
+      "cpuP95": 8.6,
+      "calls": 409,
+      "triangles": 745550
+     },
+     "gpuDelta": 0.42,
+     "gpuDeltaP95": 2.35,
+     "timer": true
+    }
+   },
+   "rebuild": {
+    "rebuildOn": 155.3,
+    "rebuildOff": 136.6,
+    "rebuildOnMax": 163.4,
+    "rebuildOffMax": 165.7,
+    "firstDrawOn": 5.3,
+    "firstDrawOff": 5.8,
+    "firstDrawOnMax": 6.4,
+    "rounds": 8
+   }
+  },
+  "nano": {
+   "shots": [],
+   "ab": {
+    "embed": {
+     "A": {
+      "gpuMs": 9.15,
+      "gpuP95": 9.53,
+      "cpuMs": 4.2,
+      "cpuP95": 5.5,
+      "calls": 231,
+      "triangles": 472706
+     },
+     "B": {
+      "gpuMs": 9.17,
+      "gpuP95": 9.29,
+      "cpuMs": 3.7,
+      "cpuP95": 5.4,
+      "calls": 233,
+      "triangles": 473686
+     },
+     "gpuDelta": 0.01,
+     "gpuDeltaP95": 0.09,
+     "timer": true
+    }
+   },
+   "rebuild": {
+    "rebuildOn": 92.6,
+    "rebuildOff": 85.2,
+    "rebuildOnMax": 110.5,
+    "rebuildOffMax": 111.6,
+    "firstDrawOn": 2.7,
+    "firstDrawOff": 2.6,
+    "firstDrawOnMax": 3.1,
+    "rounds": 8
+   }
+  },
+  "reef": {
+   "shots": [],
+   "ab": {
+    "embed": {
+     "A": {
+      "gpuMs": 18.16,
+      "gpuP95": 19.28,
+      "cpuMs": 3.5,
+      "cpuP95": 6.4,
+      "calls": 351,
+      "triangles": 348294
+     },
+     "B": {
+      "gpuMs": 18.25,
+      "gpuP95": 19.15,
+      "cpuMs": 3.7,
+      "cpuP95": 6.5,
+      "calls": 354,
+      "triangles": 371942
+     },
+     "gpuDelta": 0.12,
+     "gpuDeltaP95": 1.28,
+     "timer": true
+    }
+   },
+   "rebuild": {
+    "rebuildOn": 109.9,
+    "rebuildOff": 90.4,
+    "rebuildOnMax": 123.7,
+    "rebuildOffMax": 92.5,
+    "firstDrawOn": 3.1,
+    "firstDrawOff": 3.1,
+    "firstDrawOnMax": 5.1,
+    "rounds": 8
+   }
+  },
+  "reef-busy": {
+   "shots": [],
+   "ab": {
+    "embed": {
+     "A": {
+      "gpuMs": 13.6,
+      "gpuP95": 13.96,
+      "cpuMs": 3.8,
+      "cpuP95": 5.1,
+      "calls": 409,
+      "triangles": 463122
+     },
+     "B": {
+      "gpuMs": 13.75,
+      "gpuP95": 14.03,
+      "cpuMs": 4.1,
+      "cpuP95": 5.4,
+      "calls": 412,
+      "triangles": 530946
+     },
+     "gpuDelta": 0.14,
+     "gpuDeltaP95": 0.38,
+     "timer": true
+    }
+   },
+   "rebuild": {
+    "rebuildOn": 275.6,
+    "rebuildOff": 143.7,
+    "rebuildOnMax": 288.5,
+    "rebuildOffMax": 182.3,
+    "firstDrawOn": 2.9,
+    "firstDrawOff": 2.7,
+    "firstDrawOnMax": 5.1,
+    "rounds": 8
+   }
+  }
+ }
+}
