@@ -4,8 +4,10 @@ import { PLANT3D, growthLen, growthOf, grownSize, type PlantType } from '../src/
 import { defaultScene } from '../src/scene/defaults';
 import { clampItem, itemDims, makeItem } from '../src/scene/items';
 import { parseScene } from '../src/scene/validate';
-import { bendPlant, plantGeometry, revealPlant } from '../src/render/plant3d';
+import { bendPlant, plant3d, plantGeometry, revealPlant } from '../src/render/plant3d';
 import { plantGeometry as plantBefore } from './fixtures/plant3d_before_growth';
+// (lane VF-B: this lock is on the plant's own draws; the variety switch, on by default, is held by test/plantvariety)
+plant3d.variety = false;
 
 // Plant growth (lane GR1, 2026-10-15)
 const TYPES = Object.keys(PLANT3D) as PlantType[];

@@ -9,6 +9,7 @@
 // against the first one with ALTERNATING frames (memory perf-ab-alternate-frames: sequential blocks lie on this machine).
 //
 // Options: --fx "none;all"   --scenes planted4,nano,reef (names in the scenes dir, or .json paths)   --dir research/visual/vf0 (not --out: lowprio.ps1 would take it)
+//          --views front,ground,rock,plant:grass (plant:<variant> = a close-up of the front-most one; lane VF-B)
 //          --size 1050x850   --pairs 40   --no-shots   --no-numbers   --sheet (one side-by-side PNG per tank and view)
 //          --perf   also run scripts/perf-baseline.mjs on the tanks (steady draw, programs, first frame) into <out>/perf-baseline.json
 //          --cold <dist dir>   also run scripts/cold-ab.mjs: cold first frame (program link) of <dist dir> (before) vs a fresh `npm run build` (after)
@@ -63,6 +64,8 @@ async function launch() {
 // ---------- in-page kit ----------
 const KIT = () => {
   const v = () => __gb.viewer, st = () => __gb.store, gl = () => v().renderer.getContext();
+  // the saved zoom, taken before any close-up (S.camera is the live camera: a close-up changes it; lane VF-B)
+  const Z0 = __gb.store.scene.tanks[0].camera.zoom;
   const ext = gl().getExtension('EXT_disjoint_timer_query_webgl2');
   const raf = () => new Promise(r => requestAnimationFrame(() => r()));
   const q = (a, p) => { const s = a.filter(x => x != null && isFinite(x)).sort((x, y) => x - y); return s.length ? +s[Math.min(s.length - 1, Math.floor(p * s.length))].toFixed(2) : null; };
@@ -96,11 +99,12 @@ const KIT = () => {
     /** Camera: 'front' (as saved), 'ground' (front centre of the substrate), 'rock' (the largest stone or wood). */
     async view(kind) {
       const S = st().scene.tanks[0], T = S.tank;
-      st().cam(c => { c.zoom = kind === 'front' ? S.camera.zoom : kind === 'ground' ? 3.2 : 2.6; }, 0);
+      st().cam(c => { c.zoom = kind === 'front' ? Z0 : kind === 'ground' ? 3.2 : 2.6; }, 0);
       v().setPan(0, 0, 0); v().draw(); await raf();
       if (kind === 'front') return;
-      const hs = S.items.filter(i => i.kind === 'stone' || i.kind === 'wood').sort((a, b) => b.size - a.size)[0];
-      const P = kind === 'ground' || !hs ? [T.L / 2, (S.substrate.fl + S.substrate.bl) / 2 + T.H * 0.18, -T.D * 0.3] : [hs.x, hs.size * 0.25, -hs.depth];
+      // ('plant:<variant>', lane VF-B: the front-most plant of that variant, its middle)
+      const pv = kind.startsWith('plant:') && kind.slice(6), hs = pv ? S.items.filter(i => i.kind === 'plant' && i.variant === pv).sort((a, b) => a.depth - b.depth)[0] : S.items.filter(i => i.kind === 'stone' || i.kind === 'wood').sort((a, b) => b.size - a.size)[0];
+      const P = kind === 'ground' || !hs ? [T.L / 2, (S.substrate.fl + S.substrate.bl) / 2 + T.H * 0.18, -T.D * 0.3] : [hs.x, hs.size * (pv ? 0.45 : 0.25), -hs.depth];
       const vp = v().active[0];
       for (let k = 0; k < 4; k++) { // pan until P is in the middle of the picture
         v().draw(); const p = new vp.cam.position.constructor(...P).project(vp.cam);
@@ -165,15 +169,15 @@ try {
       const grid = {};
       for (const fx of FXSETS) {
         await br.ev(`__vf.setFx(${JSON.stringify(fx)})`);
-        for (const view of ['front', 'ground', 'rock']) {
+        for (const view of opt('views', 'front,ground,rock').split(',')) {
           await br.ev(`__vf.view(${JSON.stringify(view)})`);
-          const url = await br.ev('__vf.shot()'), f = `${name}-${view}-${tag(fx)}.png`;
+          const url = await br.ev('__vf.shot()'), f = `${name}-${view.replace(':', '-')}-${tag(fx)}.png`;
           save(f, url); row.shots.push(f); (grid[view] ??= []).push(url);
         }
       }
       await br.ev('__vf.view("front")');
       if (flag('sheet') && FXSETS.length > 1) for (const [view, urls] of Object.entries(grid)) {
-        save(`sheet-${name}-${view}.png`, await br.ev(`__vf.sheet(${JSON.stringify(urls)}, ${JSON.stringify(FXSETS)}, ${JSON.stringify(`${name} ${view} (build ${build} ${commit})`)})`, 600_000));
+        save(`sheet-${name}-${view.replace(":", "-")}.png`, await br.ev(`__vf.sheet(${JSON.stringify(urls)}, ${JSON.stringify(FXSETS)}, ${JSON.stringify(`${name} ${view} (build ${build} ${commit})`)})`, 600_000));
       }
     }
     if (!flag('no-numbers')) {

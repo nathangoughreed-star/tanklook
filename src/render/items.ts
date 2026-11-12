@@ -913,7 +913,7 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
     return { x: dx * c + dd * s, y: groundHeight(S, T, x, d) - ground, z: dx * s - dd * c, w: Math.min(CARPET_W, 2 * groundInsideBy(S, T, x, d)) };
   };
   // (what grows past g0 is only built once the plant has a growth of its own: a starter set costs what it did)
-  const sw = `3d${plant3d.sway ? 's' : ''}${more ? '+' : ''}${plant3d.emerse ? '' : 'n'}|`, kf = sw + (carpet ? `${type}|${it.seed}|${it.size}` : k);
+  const sw = `3d${plant3d.sway ? 's' : ''}${more ? '+' : ''}${plant3d.emerse ? '' : 'n'}${plant3d.variety ? 'v' : ''}|`, kf = sw + (carpet ? `${type}|${it.seed}|${it.size}` : k);
   const args = [type, it.seed, h, { spread: it.spread, stems: it.stems, dens: it.dens, clip: clip.length ? clip : undefined, drop: drop || undefined, limbs: limbs.length ? limbs : undefined }, g0, more, it.size] as const;
   let bend: { F: number; C?: number; water: boolean; walls: number[]; ks: string } | undefined;
   const aboveWater = S.water.on && y >= waterY(T, S.water.level) - 2 && PLANT3D[type]?.land; // (a land plant standing above the water, on a rock or wood: nothing to lie over at, lane OG3)

@@ -11,6 +11,9 @@ import { shuffleFish } from '../src/scene/scatter';
 import { parseScene } from '../src/scene/validate';
 import type { TankSetup } from '../src/scene/types';
 import BASE from './fixtures/anchor-baseline.json';
+import { plant3d } from '../src/render/plant3d';
+// (lane VF-B: the baseline was recorded on plants without variety; anchors, not plant looks, are what this holds)
+plant3d.variety = false;
 
 // the build paints textures on canvases: a do-nothing 2D context is enough for positions
 const noop: any = new Proxy(function () {}, { get: (_t, k) => k === 'data' ? new Uint8ClampedArray(4 * 512 * 512) : k === Symbol.toPrimitive ? () => 0 : noop, apply: () => noop, set: () => true });

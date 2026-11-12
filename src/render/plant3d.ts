@@ -23,11 +23,44 @@ import { PLANT_ASPECT, PLANT3D, growthLen, growthOf, type Leaf3D, type PlantType
 import { CARPET_H, MAX_STEMS } from '../scene/items';
 import { taperTube } from './fish3d';
 import { leafAlgaeShader } from './algae';
+import { FX, onFx } from './fx';
 
 /** Switches for review sheets: sway (off = every leaf rigid), emerse (off = no emersed
  *  twins: emerging plants lie over at the surface as in GR1), gpu (off = revealPlant on the CPU every growth step, as
- *  before lane GR4: the A/B timings). */
-export const plant3d = { sway: true, emerse: true, gpu: true };
+ *  before lane GR4: the A/B timings), variety (lane VF-B: the `variety` fx switch, render/fx.ts; kept here so the
+ *  worker gets it with the other switches). */
+export const plant3d = { sway: true, emerse: true, gpu: true, variety: FX.variety };
+onFx(fx => { plant3d.variety = fx.variety; });
+
+// Variety (lane VF-B, plan VF stage VF2, 2026-11-11): with the `variety` switch on, each plant and leaf differs a little
+// more from its neighbours, from random streams of its own (the plant's existing draws are untouched, so with the switch
+// off every plant is built exactly as before). Per plant: its top up to 7 % above or below its size (the size stays
+// the planting's average; never above a plant capped under the lid), a brightness / warmth / saturation cast. Per crown of a rosette clump: its own height and a lean of its own (outward
+// from the clump, plus a random turn), and the crowns drawn in on one side (asymmetry, only ever inward, so the
+// footprint and the glass clip hold). Per leaf: a little length, heading and colour jitter. Build time only.
+/** One plant's variety draws (null = the switch is off). */
+interface Var { rv: R; hy: number; kb: number; warm: number; sat: number }
+function varietyOf(seed: number): Var | null {
+  if (!plant3d.variety) return null;
+  const rv = rng(seed * 5153 + 61);
+  return { rv, hy: 0.93 + rv() * 0.14, kb: 0.9 + rv() * 0.16, warm: (rv() - 0.5) * 0.12, sat: rv() * 0.14 };
+}
+/** Per-leaf colour jitter for a Sheets: each leaf (one grid call) its own brightness, warmth and a little grey. */
+function leafJit(q: R) {
+  return (col: number[], from: number) => {
+    const b = 0.88 + q() * 0.22, w = (q() - 0.5) * 0.1, s = q() * 0.12, m = [b * (1 + w), b * (1 + w / 2), b * (1 - w)];
+    for (let i = from; i < col.length; i += 3) {
+      const y = 0.3 * col[i] + 0.59 * col[i + 1] + 0.11 * col[i + 2];
+      for (let k = 0; k < 3; k++) col[i + k] = (col[i + k] + (y - col[i + k]) * s) * m[k];
+    }
+  };
+}
+/** The plant's own cast (after tint): grey it a little toward its luminance by `sat`. */
+function greyed(g: THREE.BufferGeometry, s: number) {
+  if (s <= 0) return;
+  const c = g.attributes.color;
+  for (let i = 0; i < c.count; i++) { const r = c.getX(i), gg = c.getY(i), b = c.getZ(i), y = 0.3 * r + 0.59 * gg + 0.11 * b; c.setXYZ(i, r + (y - r) * s, gg + (y - gg) * s, b + (y - b) * s); }
+}
 
 type R = () => number;
 const MAX_LEAFLETS = 3000;
@@ -68,9 +101,16 @@ const fullBy = (a: number, w: number, by: number) => { a = Math.min(a, by - 0.00
 class Sheets {
   pos: number[] = []; col: number[] = []; idx: number[] = [];
   anc: number[] = []; gr: number[] = []; pc: number[] = []; par: number[] = []; apar: number[] = []; em: number[] = [];
+  /** Variety (lane VF-B): each grid's colours from vertex `from` on jittered as one leaf. */
+  jit?: (col: number[], from: number) => void;
   constructor(public pieces: number[][]) {}
   /** A grid of rows x cols points (row-major), with the base colour per point; front = as given, back = reversed. */
   grid(p: THREE.Vector3[], c: THREE.Color[], rows: number, cols: number, back: THREE.Color[] | undefined, tg: Tag[], pb?: THREE.Vector3[]) {
+    const c0 = this.col.length;
+    this.sides(p, c, rows, cols, back, tg, pb);
+    this.jit?.(this.col, c0);
+  }
+  private sides(p: THREE.Vector3[], c: THREE.Color[], rows: number, cols: number, back: THREE.Color[] | undefined, tg: Tag[], pb?: THREE.Vector3[]) {
     for (const side of back ? [0, 1] : [0]) {
       const o = this.pos.length / 3;
       (side && pb ? pb : p).forEach((v, i) => {
@@ -365,6 +405,11 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
   // the plant's own part, its scale and its pieces stay exactly as they were)
   const E = more && plant3d.emerse && Gr.overflow === 'emerge' && P.emersed ? P.emersed : null, rq = rng(seed * 3571 + 41), es = new Sheets(pieces), twins: number[][] = [], padPieces: number[] = [];
   const fe: Leaf3D = E ? { ...f, ...E, len: f.len.map(v => v * (E.k ?? 1)) as [number, number] } : f, Q = draws(rq, fe);
+  // variety (lane VF-B): its own streams (plant / crowns / leaves: Vy.rv; leaf colours: one per set of sheets; the leaves
+  // grown on past g0: rvx), so the plant's own part looks the same whatever grows on
+  const Vy = varietyOf(seed), rvx = rng(seed * 5153 + 65);
+  if (Vy) { out.jit = leafJit(rng(seed * 5153 + 62)); ex.jit = leafJit(rng(seed * 5153 + 63)); es.jit = leafJit(rng(seed * 5153 + 64)); }
+  const cast = (g: THREE.BufferGeometry) => { tint(g, kTint * (Vy?.kb ?? 1), warm + (Vy?.warm ?? 0)); if (Vy) greyed(g, Vy.sat); };
   const emTag = <T extends LeafTag>(t: T): T => (E ? { ...t, em: SUB } : t);
   // the water's give: one current direction for the whole plant (mostly along the tank, as a filter's flow runs), each
   // leaf leaning into it by its own amount, longer leaves more (own random stream: the leaf layout stays as it was)
@@ -404,7 +449,7 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
       }
       const g = out.geometry();
       shade(g, CARPET_H, 1e9);
-      tint(g, kTint, warm);
+      cast(g);
       Object.assign(g.userData, { anchors: Float32Array.from(anchors), owner: Uint32Array.from(owner) });
       return done(g);
     }
@@ -434,7 +479,7 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
       }
       const leaves = out.geometry();
       shade(leaves, 2, 1e9);
-      tint(leaves, kTint, warm);
+      cast(leaves);
       return done(mergeGeometries([leaves, ...extra.map(e => { e.computeVertexNormals(); return e; })])!);
     }
     for (let i = 0; i < n; i++) {
@@ -450,7 +495,7 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
     }
     const leaves = out.geometry();
     shade(leaves, 2, 1e9);
-    tint(leaves, kTint, warm);
+    cast(leaves);
     return done(mergeGeometries([leaves, ...extra.map(e => { e.computeVertexNormals(); return e; }), ...exTubes.map(e => { e.computeVertexNormals(); return e; })])!);
   }
   if (P.form === 'stem') {
@@ -744,15 +789,37 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
       twins.push([pieces.length, pc]);
       leaf(es, ff, P.stalk, base, yaw, L * (E!.k ?? 1), lerp(ff.rise[0], ff.rise[1], outer) * (0.85 + rq() * 0.3), Q.twist(), Q.pick(), Q.bright(), rq, STIFF, { ...tag, em: EMERSED });
     };
+    // variety (lane VF-B): the crowns drawn in on one side (only ever inward), each its own height and lean
+    const crownV = Vy && !rz ? (() => {
+      const q = Vy.rv, th = q() * 6.28, a = 0.15 + 0.25 * q();
+      if (crowns > 1) for (const c of centres) if (c.lengthSq() > 1e-6) c.multiplyScalar(1 - a * Math.max(0, Math.cos(Math.atan2(c.z, c.x) - th)));
+      const cv = centres.map(c => {
+        const out = c.lengthSq() > 1e-6 ? Math.atan2(c.z, c.x) : q() * 6.28, d = out + (q() - 0.5) * 1.2, lk = (0.1 + 0.25 * q()) * Math.min(1, P.sway * 2);
+        return { hk: crowns > 1 ? 0.7 + 0.3 * q() : 1, lx: Math.cos(d) * lk, lz: Math.sin(d) * lk };
+      });
+      // the tallest crown keeps the plant's height (else the scale to its size would blow the whole plant up, wider too)
+      const top = Math.max(...cv.map(v => v.hk));
+      for (const v of cv) v.hk /= top;
+      return cv;
+    })() : null;
+    /** A leaf's variety: its length times `k`, heading turned by `dy`, and its bend with its crown's lean added. */
+    const leafV = (q: R, ci: number) => {
+      const C = crownV?.[ci];
+      return { k: (C?.hk ?? 1) * (1 + (q() - 0.5) * 0.24), dy: (q() - 0.5) * 0.3, lean: (b: Bend, s: number): Bend => (C ? { ...b, cx: b.cx * b.k + C.lx * s, cz: b.cz * b.k + C.lz * s, k: 1 } : b) };
+    };
     for (let i = 0; i < n; i++) {
       const t = i / Math.max(1, n - 1), outer = rz ? r() : 1 - t;
       let base: THREE.Vector3, yaw: number;
       if (rz) { base = onRhizome(r); yaw = r() * 6.28; }
       else { base = centres[i % crowns].clone().add(V((r() - 0.5) * h * 0.02, 0, (r() - 0.5) * h * 0.02)); yaw = i * 2.39996 + r() * 0.5; }
-      const L = h * between(r, f.len) * (rz ? 1 : 0.75 + 0.25 * outer), rise = lerp(f.rise[0], f.rise[1], outer) * (0.85 + r() * 0.3);
+      let L = h * between(r, f.len) * (rz ? 1 : 0.75 + 0.25 * outer);
+      const rise = lerp(f.rise[0], f.rise[1], outer) * (0.85 + r() * 0.3);
       // below g0 the leaves thin out (the outer, older ones last) and every one is smaller, all full by g0
       const a0 = own(i, n), tag = emTag({ ...fullBy(a0, Infinity, g0), ext }), pc = pieces.length;
-      leaf(out, f, P.stalk, base, yaw, L, rise, twist(), pick(), bright(), r, bend(L / h), tag);
+      const lv = Vy ? leafV(Vy.rv, i % crowns) : null;
+      if (lv) { L *= lv.k; yaw += lv.dy; }
+      const b0 = bend(L / h);
+      leaf(out, f, P.stalk, base, yaw, L, rise, twist(), pick(), bright(), r, lv ? lv.lean(b0, L / h) : b0, tag);
       if (E) later.push(() => twin(base, yaw, L, outer, tag, pc, fe));
     }
     // more leaves above g0, longer the later they come; a clump also puts out new crowns on runners, further out. A
@@ -779,15 +846,18 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
     for (let j = 0; j < more; j++) {
       const a0 = extraAt(j, n), k0 = longer(a0 + 0.1), k = P.lawn ? Math.min(1.1, Math.sqrt(k0)) : spreads ? Math.sqrt(k0) : k0, outer = re();
       // (a lawn, lane PP: the new blades go round the crowns in turn, so each new crown fills out instead of a few getting all)
-      const here = [...centres, ...newCrowns.filter(c => c.a <= a0).map(c => c.c)], u = re(), c = here[P.lawn ? j % here.length : Math.floor(u * here.length)];
-      const base = rz ? onRhizome(re) : c.clone().add(V((re() - 0.5) * h * 0.02, 0, (re() - 0.5) * h * 0.02)), yaw = re() * 6.28;
-      const L = h * between(re, f.len) * (rz ? 1 : 0.75 + 0.25 * outer) * k, rise = lerp(f.rise[0], f.rise[1], outer) * (0.85 + re() * 0.3);
+      const here = [...centres, ...newCrowns.filter(c => c.a <= a0).map(c => c.c)], u = re(), ci = P.lawn ? j % here.length : Math.floor(u * here.length), c = here[ci];
+      const base = rz ? onRhizome(re) : c.clone().add(V((re() - 0.5) * h * 0.02, 0, (re() - 0.5) * h * 0.02));
+      let yaw = re() * 6.28, L = h * between(re, f.len) * (rz ? 1 : 0.75 + 0.25 * outer) * k;
+      const rise = lerp(f.rise[0], f.rise[1], outer) * (0.85 + re() * 0.3), lv = Vy ? leafV(rvx, ci) : null;
+      if (lv) { L *= lv.k; yaw += lv.dy; }
       // a longer leaf gets more rows (smooth where it lies over) and its ripples keep their spacing
       // (and a broad leaf widens less than it lengthens: width with the square root of the length; a strap keeps its width;
       // a land rosette that keeps its proportions, lane T2, widens as much)
       const fk: Leaf3D = k > 1.05 ? { ...f, wid: Gr.prop ? f.wid : ext ? f.wid / k : f.wid / Math.sqrt(k), seg: [Math.round(f.seg[0] * Math.min(3, k)), f.seg[1]], wave: [f.wave[0] / Math.sqrt(k), f.wave[1] * k] } : f;
       const tag = emTag({ ...fullBy(a0, ext ? 0.15 : 0.1, 1), ext }), pc = pieces.length;
-      leaf(ex, fk, P.stalk, base, yaw, L, rise, X.twist(), X.pick(), X.bright(), re, bend(Math.min(1.5, L / h)), tag);
+      const b0 = bend(Math.min(1.5, L / h));
+      leaf(ex, fk, P.stalk, base, yaw, L, rise, X.twist(), X.pick(), X.bright(), re, lv ? lv.lean(b0, Math.min(1.5, L / h)) : b0, tag);
       if (E) later.push(() => twin(base, yaw, L, outer, tag, pc, k > 1.05 ? { ...fe, seg: [Math.round(fe.seg[0] * Math.min(3, k)), fe.seg[1]] } : fe));
     }
     // the emersed twins, after every leaf of the plant (so its pieces keep their numbers)
@@ -802,9 +872,12 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
   const kx = clump.spread || vn ? 1 : Math.max(0.75, Math.min(1, Wc * 0.6 / Math.max(1, reach))); // a clump's own spread is kept
   const exLeaves = ex.pos.length ? ex.geometry() : null, emLeaves = es.pos.length ? es.geometry() : null;
   const sheets = [leaves, ...(exLeaves ? [exLeaves] : []), ...(emLeaves ? [emLeaves] : [])], all = [...parts, ...sheets.slice(1), ...exTubes];
-  for (const g of all) scalePart(g, k * kx, k, k * kx);
-  for (const p of pieces) for (let i = 0; i < p.length; i += 3) { p[i] *= k * kx; p[i + 1] *= k; p[i + 2] *= k * kx; }
-  for (const g of sheets) { shade(g, h, Wc / 2); tint(g, kTint, warm); }
+  // (variety: the top up to 7 % either side of its size, so a planting keeps its size on average; never over a plant
+  // capped under the lid, h < size)
+  const ky = k * (vn || !Vy ? 1 : h < size - 0.5 ? Math.min(1, Vy.hy) : Vy.hy);
+  for (const g of all) scalePart(g, k * kx, ky, k * kx);
+  for (const p of pieces) for (let i = 0; i < p.length; i += 3) { p[i] *= k * kx; p[i + 1] *= ky; p[i + 2] *= k * kx; }
+  for (const g of sheets) { shade(g, h, Wc / 2); cast(g); }
   // lily pads (lane GR2), built in mm after the scaling: each on a long stalk from the crown, leaning out (later ones
   // further), the pad flat across its top. bendPlant stretches or shortens the stalk to lay the pad on the water
   if (P.pads) {
@@ -822,7 +895,7 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
       leaf(ps, D.leaf, D.stalk, base, yaw, L, Math.PI / 2, 0, Dp.pick(), Dp.bright(), rp, STIFF, { ...fullBy(a + 0.05, 0.06, 1), on: { pc, par: SEG }, em: PAD, anc: top.clone() });
     }
     const pads = ps.geometry();
-    shade(pads, 2, 1e9); tint(pads, kTint, warm);
+    shade(pads, 2, 1e9); cast(pads);
     all.push(pads);
   }
   return done(mergeGeometries(all)!);

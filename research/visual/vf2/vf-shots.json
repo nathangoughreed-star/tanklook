@@ -1,0 +1,50 @@
+{
+ "commit": "6e128a41",
+ "build": 1790,
+ "dirty": true,
+ "when": "2026-11-12T03:13:40.762Z",
+ "size": [
+  1050,
+  850
+ ],
+ "fx": [
+  "none",
+  "variety"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "planted4": {
+   "shots": [
+    "planted4-front-none.png",
+    "planted4-plant-grass-none.png",
+    "planted4-plant-sword-none.png",
+    "planted4-front-variety.png",
+    "planted4-plant-grass-variety.png",
+    "planted4-plant-sword-variety.png"
+   ],
+   "ab": {}
+  },
+  "nano": {
+   "shots": [
+    "nano-front-none.png",
+    "nano-plant-grass-none.png",
+    "nano-plant-sword-none.png",
+    "nano-front-variety.png",
+    "nano-plant-grass-variety.png",
+    "nano-plant-sword-variety.png"
+   ],
+   "ab": {}
+  },
+  "reef": {
+   "shots": [
+    "reef-front-none.png",
+    "reef-plant-grass-none.png",
+    "reef-plant-sword-none.png",
+    "reef-front-variety.png",
+    "reef-plant-grass-variety.png",
+    "reef-plant-sword-variety.png"
+   ],
+   "ab": {}
+  }
+ }
+}
