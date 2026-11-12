@@ -1,4 +1,5 @@
 // Owns the WebGL renderer and the one or two viewports (one per tank setup; two after a split). Render-on-demand.
+import { onFx } from './fx';
 import * as THREE from 'three';
 import { fishTL, speciesOf } from '../data/species';
 import { D2R, clamp, depthRatio, floorY, tankUnderside } from '../scene/physics';
@@ -335,6 +336,8 @@ export class Viewer {
     let shownLevel = perf.level;
     onPerf(() => { if (perf.level !== shownLevel) { shownLevel = perf.level; this.applyLevel(); } });
     store.subscribe(kind => { if (kind !== 'view') this.needsBuild = true; if (kind === 'load') this.revealNext = true; this.dirty = true; });
+    // visual-fidelity switches (render/fx.ts): shader ones are uniforms (a redraw), build-time ones (contact, variety) rebuild
+    onFx((_, ch) => { if (ch.some(k => k === 'contact' || k === 'variety')) this.rebuild(); else this.invalidate(); });
     new ResizeObserver(() => { this.dirty = true; }).observe(host);
     matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { this.dirty = true; });
     onPictureLoad(() => { this.dirty = true; }); // a background picture finished decoding into its texture

@@ -1,0 +1,147 @@
+{
+ "at": "2026-11-12T00:46:29.532Z",
+ "size": "1050x850",
+ "dirs": [
+  "vf0"
+ ],
+ "runs": [
+  {
+   "round": 0,
+   "view": "research/visual/vf0/scenes/planted4.json",
+   "build": "vf0",
+   "firstFrame": 3781,
+   "settled": 6801,
+   "glMs": 435,
+   "programs": 38,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 102,
+     "at": 4061,
+     "stack": "renderer.renderBufferDirect (assets/main-D5L03kv4.js:2:60866)",
+     "len": 30117,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 0,
+   "view": "research/visual/vf0/scenes/nano.json",
+   "build": "vf0",
+   "firstFrame": 3397,
+   "settled": 3397,
+   "glMs": 252,
+   "programs": 33,
+   "slow": []
+  },
+  {
+   "round": 0,
+   "view": "research/visual/vf0/scenes/reef.json",
+   "build": "vf0",
+   "firstFrame": 3763,
+   "settled": 6233,
+   "glMs": 331,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 123,
+     "at": 6080,
+     "stack": "renderer.renderBufferDirect (assets/main-D5L03kv4.js:2:60866)",
+     "len": 29608,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 1,
+   "view": "research/visual/vf0/scenes/planted4.json",
+   "build": "vf0",
+   "firstFrame": 3667,
+   "settled": 6663,
+   "glMs": 384,
+   "programs": 38,
+   "slow": []
+  },
+  {
+   "round": 1,
+   "view": "research/visual/vf0/scenes/nano.json",
+   "build": "vf0",
+   "firstFrame": 3200,
+   "settled": 4905,
+   "glMs": 296,
+   "programs": 33,
+   "slow": []
+  },
+  {
+   "round": 1,
+   "view": "research/visual/vf0/scenes/reef.json",
+   "build": "vf0",
+   "firstFrame": 3988,
+   "settled": 6243,
+   "glMs": 352,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 141,
+     "at": 6064,
+     "stack": "renderer.renderBufferDirect (assets/main-D5L03kv4.js:2:60866)",
+     "len": 29608,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "view": "research/visual/vf0/scenes/planted4.json",
+   "build": "vf0",
+   "firstFrame": 4449,
+   "settled": 5822,
+   "glMs": 335,
+   "programs": 38,
+   "slow": []
+  },
+  {
+   "round": 2,
+   "view": "research/visual/vf0/scenes/nano.json",
+   "build": "vf0",
+   "firstFrame": 3144,
+   "settled": 3144,
+   "glMs": 233,
+   "programs": 33,
+   "slow": []
+  },
+  {
+   "round": 2,
+   "view": "research/visual/vf0/scenes/reef.json",
+   "build": "vf0",
+   "firstFrame": 3554,
+   "settled": 5639,
+   "glMs": 308,
+   "programs": 35,
+   "slow": [
+    {
+     "call": "getProgramInfoLog",
+     "ms": 116,
+     "at": 5494,
+     "stack": "renderer.renderBufferDirect (assets/main-D5L03kv4.js:2:60866)",
+     "len": 29608,
+     "marks": [
+      "aqLight",
+      "transmission"
+     ]
+    }
+   ]
+  }
+ ]
+}

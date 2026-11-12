@@ -1,0 +1,341 @@
+{
+ "commit": "55410d69195a4a49e8f902d4cd97b246030d874a",
+ "build": 1784,
+ "dirty": true,
+ "when": "2026-11-12T00:46:05.419Z",
+ "browser": "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
+ "load": {
+  "before": {
+   "at": "2026-11-12T00:46:03.414Z",
+   "cpuBusyPct": 17,
+   "node": 5,
+   "msedge": 5,
+   "chrome": 21,
+   "claude": 25,
+   "devPorts": [],
+   "underLoad": false
+  },
+  "after": {
+   "at": "2026-11-12T00:46:29.407Z",
+   "cpuBusyPct": 22,
+   "node": 7,
+   "msedge": 5,
+   "chrome": 24,
+   "claude": 26,
+   "devPorts": [
+    5393
+   ],
+   "underLoad": false
+  }
+ },
+ "sizes": {
+  "desktop": {
+   "research/visual/vf0/scenes/planted4.json": {
+    "firstDrawMs": 1904,
+    "firstFrameMs": 1950,
+    "shaderMs": 279,
+    "programs": 37,
+    "domContentLoadedMs": 882,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      700,
+      850
+     ],
+     "pixelRatio": 1
+    },
+    "memory": {
+     "geometries": 90,
+     "textures": 8,
+     "programs": 38
+    },
+    "heapMB": 36.8,
+    "steady": {
+     "gpu": 12.59,
+     "gpuMin": 8.65,
+     "cpu": 4.35,
+     "calls": 406,
+     "triangles": 739294,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 150.4,
+     "wall": 152.9,
+     "gpu": 102.39,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 43,
+      "triangles": 335328
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 18,
+      "triangles": 86
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 10,
+      "triangles": 0
+     },
+     "ShaderMaterial (transparent)": {
+      "meshes": 3,
+      "triangles": 3026
+     },
+     "sub+post": {
+      "meshes": 3,
+      "triangles": 750
+     },
+     "room": {
+      "meshes": 14,
+      "triangles": 6854
+     },
+     "LineBasicMaterial": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 32,
+      "triangles": 53184
+     },
+     "solid": {
+      "meshes": 3,
+      "triangles": 4824
+     },
+     "plantClip+card+post": {
+      "meshes": 36,
+      "triangles": 110216
+     },
+     "fishCard+card": {
+      "meshes": 76,
+      "triangles": 1088
+     },
+     "fish+plain": {
+      "meshes": 24,
+      "triangles": 53088
+     },
+     "fish": {
+      "meshes": 52,
+      "triangles": 42432
+     },
+     "fish (transparent)": {
+      "meshes": 60,
+      "triangles": 118336
+     },
+     "glow": {
+      "meshes": 1,
+      "triangles": 8160
+     }
+    }
+   },
+   "research/visual/vf0/scenes/nano.json": {
+    "firstDrawMs": 1028,
+    "firstFrameMs": 1137,
+    "shaderMs": 109,
+    "programs": 32,
+    "domContentLoadedMs": 536,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      700,
+      850
+     ],
+     "pixelRatio": 1
+    },
+    "memory": {
+     "geometries": 152,
+     "textures": 12,
+     "programs": 33
+    },
+    "heapMB": 34.3,
+    "steady": {
+     "gpu": 6.2,
+     "gpuMin": 5.96,
+     "cpu": 2.95,
+     "calls": 231,
+     "triangles": 472706,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 88,
+     "wall": 90.6,
+     "gpu": 72.27,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 41,
+      "triangles": 265172
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 10,
+      "triangles": 70
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 10,
+      "triangles": 0
+     },
+     "ShaderMaterial (transparent)": {
+      "meshes": 3,
+      "triangles": 746
+     },
+     "sub": {
+      "meshes": 3,
+      "triangles": 674
+     },
+     "room": {
+      "meshes": 14,
+      "triangles": 2254
+     },
+     "LineBasicMaterial": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 20,
+      "triangles": 26640
+     },
+     "solid": {
+      "meshes": 1,
+      "triangles": 3412
+     },
+     "plantClip+card+post": {
+      "meshes": 17,
+      "triangles": 120024
+     },
+     "fishCard+card": {
+      "meshes": 36,
+      "triangles": 480
+     },
+     "fish+plain": {
+      "meshes": 12,
+      "triangles": 26544
+     },
+     "fish": {
+      "meshes": 24,
+      "triangles": 21120
+     },
+     "fish (transparent)": {
+      "meshes": 12,
+      "triangles": 2688
+     },
+     "glow": {
+      "meshes": 1,
+      "triangles": 2880
+     }
+    }
+   },
+   "research/visual/vf0/scenes/reef.json": {
+    "firstDrawMs": 1912,
+    "firstFrameMs": 1944,
+    "shaderMs": 67,
+    "programs": 35,
+    "domContentLoadedMs": 504,
+    "gpu": {
+     "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "timerQuery": true,
+     "buffer": [
+      700,
+      850
+     ],
+     "pixelRatio": 1
+    },
+    "memory": {
+     "geometries": 115,
+     "textures": 2,
+     "programs": 35
+    },
+    "heapMB": 34.7,
+    "steady": {
+     "gpu": 2.43,
+     "gpuMin": 2.14,
+     "cpu": 3.05,
+     "calls": 206,
+     "triangles": 29668,
+     "samples": 40
+    },
+    "rebuild": {
+     "cpu": 104.2,
+     "wall": 105.9,
+     "gpu": 60.54,
+     "build": "full"
+    },
+    "buckets": {
+     "MeshBasicMaterial": {
+      "meshes": 65,
+      "triangles": 15234
+     },
+     "MeshBasicMaterial (transparent)": {
+      "meshes": 13,
+      "triangles": 479
+     },
+     "LineBasicMaterial (transparent)": {
+      "meshes": 10,
+      "triangles": 0
+     },
+     "ShaderMaterial (transparent)": {
+      "meshes": 5,
+      "triangles": 3831
+     },
+     "sub": {
+      "meshes": 3,
+      "triangles": 799
+     },
+     "room": {
+      "meshes": 14,
+      "triangles": 8062
+     },
+     "LineBasicMaterial": {
+      "meshes": 8,
+      "triangles": 0
+     },
+     "ShaderMaterial": {
+      "meshes": 14,
+      "triangles": 20960
+     },
+     "solid": {
+      "meshes": 35,
+      "triangles": 159028
+     },
+     "fishCard+card": {
+      "meshes": 16,
+      "triangles": 232
+     },
+     "fish+plain": {
+      "meshes": 5,
+      "triangles": 11060
+     },
+     "fish": {
+      "meshes": 74,
+      "triangles": 126848
+     },
+     "fish (transparent)": {
+      "meshes": 1,
+      "triangles": 480
+     },
+     "card": {
+      "meshes": 5,
+      "triangles": 130
+     },
+     "glow": {
+      "meshes": 6,
+      "triangles": 768
+     }
+    }
+   }
+  }
+ },
+ "breakdown": {},
+ "prod": null,
+ "gpu": {
+  "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "timerQuery": true,
+  "buffer": [
+   700,
+   850
+  ],
+  "pixelRatio": 1
+ },
+ "seconds": 28
+}

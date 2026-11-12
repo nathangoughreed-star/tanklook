@@ -1,0 +1,106 @@
+{
+ "commit": "55410d69",
+ "build": 1784,
+ "dirty": true,
+ "when": "2026-11-12T00:45:29.107Z",
+ "size": [
+  1050,
+  850
+ ],
+ "fx": [
+  "none"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "planted4": {
+   "shots": [
+    "planted4-front-none.png",
+    "planted4-ground-none.png",
+    "planted4-rock-none.png"
+   ],
+   "ab": {
+    "none": {
+     "A": {
+      "gpuMs": 10.81,
+      "gpuP95": 12.65,
+      "cpuMs": 3.3,
+      "cpuP95": 6.4,
+      "calls": 272,
+      "triangles": 635280
+     },
+     "B": {
+      "gpuMs": 10.66,
+      "gpuP95": 12.95,
+      "cpuMs": 3.4,
+      "cpuP95": 5.6,
+      "calls": 272,
+      "triangles": 635280
+     },
+     "gpuDelta": -0.05,
+     "gpuDeltaP95": 0.53,
+     "timer": true
+    }
+   }
+  },
+  "nano": {
+   "shots": [
+    "nano-front-none.png",
+    "nano-ground-none.png",
+    "nano-rock-none.png"
+   ],
+   "ab": {
+    "none": {
+     "A": {
+      "gpuMs": 7.59,
+      "gpuP95": 8.16,
+      "cpuMs": 2.2,
+      "cpuP95": 4.3,
+      "calls": 163,
+      "triangles": 437474
+     },
+     "B": {
+      "gpuMs": 7.54,
+      "gpuP95": 7.94,
+      "cpuMs": 2.1,
+      "cpuP95": 3.6,
+      "calls": 163,
+      "triangles": 437474
+     },
+     "gpuDelta": -0.04,
+     "gpuDeltaP95": 0.36,
+     "timer": true
+    }
+   }
+  },
+  "reef": {
+   "shots": [
+    "reef-front-none.png",
+    "reef-ground-none.png",
+    "reef-rock-none.png"
+   ],
+   "ab": {
+    "none": {
+     "A": {
+      "gpuMs": 9.6,
+      "gpuP95": 11.62,
+      "cpuMs": 2.7,
+      "cpuP95": 4.7,
+      "calls": 233,
+      "triangles": 236746
+     },
+     "B": {
+      "gpuMs": 9.62,
+      "gpuP95": 11.45,
+      "cpuMs": 2.7,
+      "cpuP95": 3.7,
+      "calls": 233,
+      "triangles": 236746
+     },
+     "gpuDelta": -0.02,
+     "gpuDeltaP95": 0.52,
+     "timer": true
+    }
+   }
+  }
+ }
+}

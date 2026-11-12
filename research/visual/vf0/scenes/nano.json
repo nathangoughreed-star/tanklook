@@ -1,0 +1,475 @@
+{
+ "version": 9,
+ "name": "VF0 rimless nano",
+ "units": "in",
+ "tanks": [
+  {
+   "tank": {
+    "L": 450,
+    "H": 300,
+    "D": 300
+   },
+   "camera": {
+    "dist": 3000,
+    "az": -8,
+    "el": 8,
+    "zoom": 1
+   },
+   "render": {
+    "edge": "a2c",
+    "grid": false,
+    "rim": false,
+    "edges": true,
+    "beams": false,
+    "pop": 0.15,
+    "bg": "black",
+    "glass": "auto",
+    "bgSides": [
+     "back"
+    ],
+    "bgArc": 145,
+    "glassType": "lowiron"
+   },
+   "light": {
+    "type": "led",
+    "count": 1,
+    "rows": 1,
+    "pattern": "grid",
+    "spacing": 0,
+    "cone": 52,
+    "bright": 1,
+    "kelvin": 7000,
+    "room": 0.15,
+    "height": 50
+   },
+   "substrate": {
+    "show": true,
+    "type": "gravel",
+    "custom": {
+     "grain": "sand",
+     "color": "#cbb894",
+     "grain2": "none",
+     "color2": "#6f6556",
+     "share": 30,
+     "mix": 0.5
+    },
+    "fl": 25.4,
+    "fr": 25.4,
+    "bl": 63.5,
+    "br": 63.5
+   },
+   "layout": {
+    "id": "vf0-nano",
+    "seed": 202
+   },
+   "water": {
+    "on": true,
+    "level": 1,
+    "opacity": 0,
+    "color": "#7fb8a8"
+   },
+   "terrain": {
+    "on": false,
+    "cols": 7,
+    "rows": 0,
+    "h": []
+   },
+   "lid": "open",
+   "stand": {
+    "show": true,
+    "height": 762,
+    "finish": "black",
+    "style": "cabinet",
+    "table": {
+     "shape": "rect",
+     "L": 600,
+     "D": 400,
+     "x": 0,
+     "z": 0
+    }
+   },
+   "person": {
+    "show": false,
+    "height": 1750,
+    "side": "left"
+   },
+   "wall": {
+    "show": true,
+    "side": "back",
+    "color": "#d8d2c6"
+   },
+   "fish": [
+    {
+     "id": 1,
+     "species": "neon",
+     "x": 280.87879987302415,
+     "y": 205.00041846420248,
+     "depth": 120.34214100683765,
+     "yaw": 16,
+     "pitch": 0,
+     "roll": 0,
+     "bend": 0.05
+    },
+    {
+     "id": 2,
+     "species": "neon",
+     "x": 347.2321328564536,
+     "y": 157.15172247746955,
+     "depth": 174.6184861925169,
+     "yaw": 4,
+     "pitch": 0,
+     "roll": 0,
+     "bend": -0.11
+    },
+    {
+     "id": 3,
+     "species": "neon",
+     "x": 84.67987467641153,
+     "y": 91.86277464501782,
+     "depth": 127.04406797047969,
+     "yaw": 16,
+     "pitch": 0,
+     "roll": 0,
+     "bend": -0.02
+    },
+    {
+     "id": 4,
+     "species": "neon",
+     "x": 302.9415510989873,
+     "y": 106.3256514308173,
+     "depth": 149.97891795029602,
+     "yaw": -13,
+     "pitch": 0,
+     "roll": 0,
+     "bend": 0.02
+    },
+    {
+     "id": 5,
+     "species": "neon",
+     "x": 116.89333279187774,
+     "y": 91.53899331279365,
+     "depth": 84.24277693605124,
+     "yaw": 16,
+     "pitch": 0,
+     "roll": 0,
+     "bend": 0.11
+    },
+    {
+     "id": 6,
+     "species": "neon",
+     "x": 95.05541999888365,
+     "y": 136.04389519061675,
+     "depth": 130.06058692348685,
+     "yaw": 8,
+     "pitch": 0,
+     "roll": 0,
+     "bend": 0.05
+    },
+    {
+     "id": 7,
+     "species": "neon",
+     "x": 317.18539772368035,
+     "y": 114.72501791614192,
+     "depth": 145.12318740987013,
+     "yaw": -23,
+     "pitch": 0,
+     "roll": 0,
+     "bend": 0.13
+    },
+    {
+     "id": 8,
+     "species": "neon",
+     "x": 147.5432603669495,
+     "y": 141.29596844279234,
+     "depth": 111.53642287695105,
+     "yaw": 16,
+     "pitch": 0,
+     "roll": 0,
+     "bend": -0.08
+    },
+    {
+     "id": 9,
+     "species": "neon",
+     "x": 277.3000662720428,
+     "y": 146.4859628150286,
+     "depth": 165.5386986279367,
+     "yaw": -21,
+     "pitch": 0,
+     "roll": 0,
+     "bend": -0.08
+    },
+    {
+     "id": 10,
+     "species": "neon",
+     "x": 215.4770278953469,
+     "y": 184.7117008872379,
+     "depth": 87.42296794869257,
+     "yaw": -12,
+     "pitch": 0,
+     "roll": 0,
+     "bend": -0.14
+    },
+    {
+     "id": 11,
+     "species": "neon",
+     "x": 199.15748066792872,
+     "y": 202.94433837539466,
+     "depth": 172.05757086687169,
+     "yaw": 7,
+     "pitch": 0,
+     "roll": 0,
+     "bend": 0.04
+    },
+    {
+     "id": 12,
+     "species": "neon",
+     "x": 376.5606842821882,
+     "y": 161.41150967082578,
+     "depth": 171.2861050388116,
+     "yaw": 0,
+     "pitch": 0,
+     "roll": 0,
+     "bend": 0.02
+    }
+   ],
+   "items": [
+    {
+     "id": 1,
+     "kind": "wood",
+     "variant": "spider",
+     "seed": 820211597,
+     "x": 170,
+     "depth": 170,
+     "lift": 0,
+     "yaw": 25,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 260
+    },
+    {
+     "id": 2,
+     "kind": "plant",
+     "variant": "stemred",
+     "seed": 726601449,
+     "x": 363.16492017380904,
+     "depth": 222.75504641119622,
+     "lift": 0,
+     "yaw": 10,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 213.86612082807963
+    },
+    {
+     "id": 3,
+     "kind": "plant",
+     "variant": "stemred",
+     "seed": 38738783,
+     "x": 415.08573061962807,
+     "depth": 224.21976711908735,
+     "lift": 0,
+     "yaw": 27,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 259.56124016337407
+    },
+    {
+     "id": 4,
+     "kind": "plant",
+     "variant": "stemred",
+     "seed": 810299766,
+     "x": 312.15875768846655,
+     "depth": 208.99517625228526,
+     "lift": 0,
+     "yaw": 26,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 244.08287571957476
+    },
+    {
+     "id": 5,
+     "kind": "plant",
+     "variant": "stemred",
+     "seed": 457107134,
+     "x": 290.7570491657721,
+     "depth": 222.18153734611235,
+     "lift": 0,
+     "yaw": 19,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 233.32662753007332
+    },
+    {
+     "id": 6,
+     "kind": "plant",
+     "variant": "stemred",
+     "seed": 560863912,
+     "x": 379.2624815884195,
+     "depth": 256.25358146902585,
+     "lift": 0,
+     "yaw": -9,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 245.9865034563256
+    },
+    {
+     "id": 7,
+     "kind": "plant",
+     "variant": "stemred",
+     "seed": 528612705,
+     "x": 380.45370370667547,
+     "depth": 225.7547232339261,
+     "lift": 0,
+     "yaw": -6,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 261.17478020727
+    },
+    {
+     "id": 8,
+     "kind": "plant",
+     "variant": "stemred",
+     "seed": 672966718,
+     "x": 414.87298136459003,
+     "depth": 264.4053285706307,
+     "lift": 0,
+     "yaw": -28,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 212.40596958133582
+    },
+    {
+     "id": 9,
+     "kind": "plant",
+     "variant": "stem",
+     "seed": 982457219,
+     "x": 34.25565780547784,
+     "depth": 218.2497537941744,
+     "lift": 0,
+     "yaw": -15,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 210.60765529259655
+    },
+    {
+     "id": 10,
+     "kind": "plant",
+     "variant": "stem",
+     "seed": 849318015,
+     "x": 43.72538960996125,
+     "depth": 208.92467380684099,
+     "lift": 0,
+     "yaw": -15,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 213.23869154866932
+    },
+    {
+     "id": 11,
+     "kind": "plant",
+     "variant": "stem",
+     "seed": 376566998,
+     "x": 77.92938648291928,
+     "depth": 216.6453035292838,
+     "lift": 0,
+     "yaw": -16,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 253.70589821789315
+    },
+    {
+     "id": 12,
+     "kind": "plant",
+     "variant": "stem",
+     "seed": 822384363,
+     "x": 62.860462606892945,
+     "depth": 223.549746204752,
+     "lift": 0,
+     "yaw": -9,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 227.59977340589177
+    },
+    {
+     "id": 13,
+     "kind": "plant",
+     "variant": "carpet",
+     "seed": 851050740,
+     "x": 391.52176155767285,
+     "depth": 101.5196830376295,
+     "lift": 0,
+     "yaw": 9,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 62.26538646140632
+    },
+    {
+     "id": 14,
+     "kind": "plant",
+     "variant": "carpet",
+     "seed": 439552452,
+     "x": 193.12065718460136,
+     "depth": 100.99812124540009,
+     "lift": 0,
+     "yaw": -20,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 56.92374040923275
+    },
+    {
+     "id": 15,
+     "kind": "plant",
+     "variant": "carpet",
+     "seed": 119272730,
+     "x": 141.80628038152355,
+     "depth": 110.27581891352925,
+     "lift": 0,
+     "yaw": -15,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 67.73123895304198
+    },
+    {
+     "id": 16,
+     "kind": "plant",
+     "variant": "carpet",
+     "seed": 541577056,
+     "x": 259.66814257418184,
+     "depth": 41.210537601058846,
+     "lift": 0,
+     "yaw": 9,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 69.1416203477848
+    },
+    {
+     "id": 17,
+     "kind": "plant",
+     "variant": "carpet",
+     "seed": 791902084,
+     "x": 253.8641710063584,
+     "depth": 65.53101307453869,
+     "lift": 0,
+     "yaw": -19,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 55.75833915452143
+    },
+    {
+     "id": 18,
+     "kind": "plant",
+     "variant": "anubias",
+     "seed": 270416144,
+     "x": 180,
+     "depth": 160,
+     "lift": 70,
+     "yaw": 36,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 50
+    }
+   ]
+  }
+ ],
+ "active": 0,
+ "camLock": true
+}

@@ -8,6 +8,7 @@
 import * as THREE from 'three';
 import { ALGAE_GLSL, ALGAE_STEP, AU, setAlgaeUniforms } from './algae';
 import { WATER_FILTER_GLSL, waterHue } from './waterTint';
+import { FXU } from './fx';
 import { clamp } from '../scene/physics';
 import type { ConditionSettings, LightSettings, Tank, WaterSettings } from '../scene/types';
 import { waterK, waterY } from '../scene/physics';
@@ -395,7 +396,7 @@ const AQ_MAP = `#ifdef USE_MAP
 
 function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithUniforms) {
   this.userData.pre?.(shader); // the material's own patch (hardscape: glass clip and grit) still applies under the lighting
-  Object.assign(shader.uniforms, LU, AU, { uAlgH: { value: this.userData.solid ? 1 : 0 }, uCard: { value: this.userData.card ? 1 : 0 }, uSub: { value: this.userData.sub ? 1 : 0 }, uFish: { value: this.userData.fish ? 1 : 0 }, uPane: { value: this.userData.pane ? 1 : 0 }, uRoomMat: { value: this.userData.room ? 1 : 0 }, uFishCard: { value: this.userData.fishCard ? 1 : 0 } });
+  Object.assign(shader.uniforms, LU, AU, FXU, { uAlgH: { value: this.userData.solid ? 1 : 0 }, uCard: { value: this.userData.card ? 1 : 0 }, uSub: { value: this.userData.sub ? 1 : 0 }, uFish: { value: this.userData.fish ? 1 : 0 }, uPane: { value: this.userData.pane ? 1 : 0 }, uRoomMat: { value: this.userData.room ? 1 : 0 }, uFishCard: { value: this.userData.fishCard ? 1 : 0 } });
   shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\n' + AQ_VERT)
     // an instanced mesh (leaf litter, render/scatter.ts) places each copy by its instance matrix too
     .replace('#include <begin_vertex>', '#include <begin_vertex>\n#ifdef USE_INSTANCING\nvAqP = (modelMatrix * instanceMatrix * vec4(transformed, 1.0)).xyz; vAqN = normalize(mat3(modelMatrix) * mat3(instanceMatrix) * normal);\n#else\nvAqP = (modelMatrix * vec4(transformed, 1.0)).xyz; vAqN = normalize(mat3(modelMatrix) * normal);\n#endif');
