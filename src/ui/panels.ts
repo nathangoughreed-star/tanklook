@@ -1,7 +1,7 @@
 // Sidebar wiring. Inputs write through store.update(); one sync() pulls every control back from the scene,
 // so undo/redo, file open and pointer drags all refresh the panels the same way.
 import { FOCUS_SECS, type FocusSec } from '../render/menuFocus';
-import { projectExtras } from '../scene/brief';
+import { projectExtras, rulesOf } from '../scene/brief';
 import { setNoNewEquipment, setDirection } from '../scene/project';
 import { attachDemandPanel, loadProfile } from './demandPanel';
 import { fitToLimits, hasLimits } from '../demand/fit';
@@ -38,7 +38,7 @@ import { MAP_DIV, MAP_STEP, emitters, mapStepOf } from '../render/lighting';
 import { darkOf, darkStats } from '../render/lightShells';
 import { gateOf, hasCorals, whysAnimal, type AnimalWhy } from '../scene/animalfit';
 import { minFit } from '../scene/tankMin';
-import { startCount, strictReader } from './pickerStrict';
+import { startCount, pickerReader } from './pickerStrict';
 import { OK_FIT, ROLES, SETUP_KINDS, applyKind, fitFrom, groupPicker, offeredIn, roleOf, rolesFor, tankKind, type Fit, type Role, type SetupKind } from '../scene/pickerKind';
 import { CARE, EXPERTISE_NAME } from '../data/care';
 import { CARE_NAME, FIT_PAR, fitCaption, whyNot, type FitLight } from '../scene/plantfit';
@@ -339,6 +339,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   void import('./myEquipment').then(m => m.attachMyEquipment(store, openOwned));
   void import('./equipmentWarn').then(m => m.attachEquipmentWarn(store, openOwned)); // lane EQ1: warns when owned gear no longer suits the design
   void Promise.all([import('./discover/panel'), import('./discover/keep'), import('./discover/entry')]).then(([m, k, e]) => { const ui = m.attachDiscoverPanel(store, viewer, { status, opts: () => { const d = demand?.state(); return { ...(d ? { totals: d.demand.totals } : {}), limits: demand?.profile().limits }; } }); k.attachKeep(store, t => ui.open(t)); e.registerDiscovery(o => ui.open(o.scope, o.from === 'quick')); }); // lane DX4: Discovery screen + Keep this locks
+  void import('./rulesSwitch').then(m => m.attachRulesSwitch(store, () => { const d = demand?.state(); return { ...(d ? { totals: d.demand.totals } : {}), limits: demand?.profile().limits }; })); // DQ9: Guided / Sandbox toggle
   void import('./checksStrip').then(m => m.attachChecksStrip(store, () => { const d = demand?.state(); return { ...(d ? { totals: d.demand.totals } : {}), limits: demand?.profile().limits }; })); // lane DX1: read-only Checks strip (the one verdict)
   // DX7: Your limits is inline in the Constraints menu now; every door ("Edit in Your limits", the coach, the experience link) opens that menu
   const openLimits = () => { openSec('brief'); $('limitsHost').scrollIntoView?.({ block: 'start' }); };
@@ -783,7 +784,7 @@ Cancel, then change the name, to keep both.`)) return;
    *  Suggest rule (pickerStrict.ts: would the stocking summary word a new Caution / Problem with it added?), worked out a slice at a time after the
    *  first paint, kept per stock signature (the picker opens often), and replaces the cheap one as it arrives. */
   let fitKey = '', fitMemo = new Map<string, Fit>(), exact = new Map<string, Fit>(), exactRead: ((sp: Species) => Fit) | undefined, gen = 0, refining = -1;
-  const stockKey = (s: TankSetup) => JSON.stringify([s.tank, s.water, s.tech, s.fish.map(f => [f.species, f.sex, f.gender, f.tl]), s.items.map(it => [it.kind, it.variant]), s.layout.gateStock, s.layout.gateAnimals, s.layout.expertise, s.constraints, s.stand, s.lid, store.scene.units]);
+  const stockKey = (s: TankSetup) => JSON.stringify([s.tank, s.water, s.tech, s.fish.map(f => [f.species, f.sex, f.gender, f.tl]), s.items.map(it => [it.kind, it.variant]), s.layout.gateStock, s.layout.gateAnimals, s.layout.expertise, s.constraints, s.stand, s.lid, store.scene.units, rulesOf(getBrief())]);
   function fitsFor(s: TankSetup): (sp: Species) => Fit {
     const gated = !!s.layout.gateStock && !!s.layout.gateAnimals, ex = (s.layout.expertise ?? 1) as 1 | 2 | 3, present = [...new Set(s.fish.map(f => f.species))].sort();
     const key = stockKey(s);
@@ -791,8 +792,9 @@ Cancel, then change the name, to keep both.`)) return;
       fitKey = key; fitMemo = new Map(); exact = new Map(); gen++; refining = -1;
       const litres = volume(s.tank).litres, have = present.map(getSpecies).filter((x): x is Species => !!x);
       const env = { corals: hasCorals(s.items), water: s.tech ? tempEvidence(s, undefined, store.scene.units === 'in') : undefined, fit: minFit(s) };
-      for (const sp of SPECIES) fitMemo.set(sp.id, fitFrom(whysAnimal(sp, litres, ex, have, env), gated));
-      exactRead = strictReader(s, store.scene.units, sp => fitMemo.get(sp.id) ?? OK_FIT);
+      const sandbox = rulesOf(getBrief()) === 'sandbox';   // DQ9: Sandbox grays nothing
+      for (const sp of SPECIES) fitMemo.set(sp.id, sandbox ? OK_FIT : fitFrom(whysAnimal(sp, litres, ex, have, env), gated));
+      exactRead = pickerReader(rulesOf(getBrief()), s, store.scene.units, sp => fitMemo.get(sp.id) ?? OK_FIT);
     }
     return sp => exact.get(sp.id) ?? fitMemo.get(sp.id) ?? OK_FIT;
   }
@@ -925,6 +927,7 @@ Cancel, then change the name, to keep both.`)) return;
     const adult = base.female ? `Adult ♂ ${fmt(base.tl)}, ♀ ${fmt(base.female.tl)}` : `Adult ${fmt(sp.tl)}`;
     $('spPreviewInfo').textContent = [adult, speciesTag(sp), sp.note].filter(Boolean).join(' · ');
   }
+  { let r0 = rulesOf(getBrief()); onBriefEdit(b => { const r = rulesOf(b); if (r !== r0) { r0 = r; renderResults(); } }); }   // DQ9: the picker follows the rule set
   search.onkeydown = e => { if (e.key === 'Enter') { const sp = groupPicker(findSpecies(search.value, role), tankKind(S()), fitsFor(S()))[0]?.rows[0].sp; if (sp) { pickId = sp.id; addOne(sp); renderResults(); } } };
 
   /** Size for newly added fish: % of adult length (100 = adult, stored as no override). */

@@ -1550,3 +1550,8 @@ details.gfx { margin: 4px 0 } details.gfx > summary { cursor: pointer; font-weig
 .dq10-back { margin-top: 6px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px; align-items: center }
 .dq10-said { color: var(--muted); display: block; margin: 2px 0 }
 .dq10-nofit { border-top: 1px solid var(--line); padding-top: 6px }
+/* DQ9: Guided / Sandbox toggle (header) and the switch-to-Guided panel */
+.dq9-rules { margin-right: 8px } .dq9-rules button.on { background: var(--accent, #2b6cb0); color: #fff }
+.dq9-panel { position: fixed; left: 50%; top: 80px; transform: translateX(-50%); z-index: 60; width: min(460px, calc(100vw - 24px)); max-height: 70vh; overflow: auto; background: var(--panel); color: var(--ink); border: 1px solid #555; border-radius: 8px; padding: 10px 14px; font-size: 13px; box-shadow: 0 6px 24px #0008 }
+.dq9-panel ul { margin: 6px 0; padding-left: 18px } .dq9-panel i { opacity: .75 } .dq9-panel button { margin: 4px 6px 0 0 } .dq9-note { opacity: .85 }
+.checks .ck-info { margin: 2px 0 4px; font-style: italic; opacity: .85 }

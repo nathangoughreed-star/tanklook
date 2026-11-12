@@ -5,6 +5,7 @@
 import { getSpecies, type Species } from '../data/species';
 import type { Fish, TankSetup, Units } from '../scene/types';
 import { OK_FIT, type Fit } from '../scene/pickerKind';
+import type { Rules } from '../scene/brief';
 import { summaryOf, type StockSummary } from './stockSummary';
 
 /** How many of a species the picker's Add puts in (a pair, a school of six, else one). */
@@ -44,3 +45,6 @@ export function strictReader(S: TankSetup, units: Units, cheap: (sp: Species) =>
     return fit;
   };
 }
+
+/** DQ9: the picker's reader for the project's rule set. Guided = `strictReader` (gray what would add a Caution / Problem); Sandbox = nothing is gray, anything may be added. */
+export const pickerReader = (rules: Rules, S: TankSetup, units: Units, cheap: (sp: Species) => Fit): ((sp: Species) => Fit) => rules === 'sandbox' ? () => OK_FIT : strictReader(S, units, cheap);

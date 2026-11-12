@@ -146,7 +146,13 @@ export type OnboardingStep = 'world' | 'equipment' | 'limits' | 'start';
 export const ONBOARDING_STEPS: readonly OnboardingStep[] = ['world', 'equipment', 'limits', 'start'];
 export type SkipStep = OnboardingStep;
 export const SKIP_STEPS: readonly SkipStep[] = ONBOARDING_STEPS;
+/** DQ9: which rule set the manual picker, the Checks strip wording and Discover's candidate gates follow. Guided = the default (grays a species that would add a Caution / Problem);
+ *  Sandbox = anything may be added by hand and the checks are information only. Saved only when `sandbox` (absent = guided), so an old save and a guided one stay byte-identical. */
+export type Rules = 'guided' | 'sandbox';
+export const RULES: readonly Rules[] = ['guided', 'sandbox'];
 export interface ProjectExtras {
+  /** DQ9: Guided / Sandbox (see `Rules`); absent = guided */
+  rules?: Rules;
   world?: World; water?: Water; route?: Route;
   /** "Starting from scratch": an answer of its own, distinct from the step never being answered */
   scratch?: true; skipped?: SkipStep[];
@@ -176,6 +182,14 @@ export interface Feedback { v: 1 | -1; level: 'design' | 'category' | 'item' | '
 export const MAX_FEEDBACK = 60;
 /** The project's extra answers (never undefined). */
 export const projectExtras = (b: Brief): ProjectExtras => b.project ?? {};
+/** DQ9: the rule set of this project; every save without the field is guided. */
+export const rulesOf = (b: Brief): Rules => b.project?.rules === 'sandbox' ? 'sandbox' : 'guided';
+/** DQ9: switch the rule set. Guided removes the field (the default), so nothing else in the brief changes. */
+export function setRules(b: Brief, r: Rules): Brief {
+  if (rulesOf(b) === r) return b;
+  const { rules: _r, ...rest } = projectExtras(b);
+  return setProjectExtras(b, r === 'sandbox' ? { ...rest, rules: 'sandbox' } : rest);
+}
 /** Replace the extras; an empty one is removed. */
 export function setProjectExtras(b: Brief, p: ProjectExtras): Brief {
   const { project: _p, ...rest } = b, clean = parseProject(p);
@@ -400,6 +414,7 @@ export function parseProject(raw: unknown): ProjectExtras | undefined {
   if (WATER_IDS.includes(r.water as Water)) p.water = r.water as Water;
   if (ROUTES.includes(r.route as Route)) p.route = r.route as Route;
   if (r.scratch === true) p.scratch = true;
+  if (r.rules === 'sandbox') p.rules = 'sandbox';   // DQ9: 'guided' / anything else is the default and is not stored
   if (r.lidFree === true) p.lidFree = true;
   if (r.noNewEquipment === true) p.noNewEquipment = true;
   if (DIRECTIONS.includes(r.direction as HabitatDirection)) p.direction = r.direction as HabitatDirection;
