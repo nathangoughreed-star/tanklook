@@ -883,7 +883,7 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 
 /* ---- the setup brief bar (lane U3): one slim bar over the view in every entry point; panels start below it ---- */
 #view { --bb-h: 0px } /* the brief lives in the side panel now (UI3), so nothing is pushed down */
-.sp { top: calc(10px + var(--bb-h)) }
+.sp { top: calc(10px + var(--bb-h, 0px)) } /* CV1: fallback, .sp is also built outside #view (print sheets, guided list) */
 .bb { display: flex; flex-direction: column; gap: 4px; align-items: stretch; font-size: 12px; color: var(--ink); padding-bottom: 6px }
 .bb button { font: inherit; font-size: 12px; border: 1px solid var(--line); border-radius: 6px; background: color-mix(in srgb, var(--panel) 94%, transparent); color: var(--ink); cursor: pointer; padding: 3px 8px }
 .bb button:hover { background: color-mix(in srgb, var(--ink) 8%, var(--panel)) }
@@ -919,7 +919,7 @@ li.ftc-problem { color: #ff8a7a } li.ftc-caution { color: #f0b24a } li.ftc-unkno
 .viewtools { top: calc(10px + var(--bb-h)) }
 .dmfloat { top: calc(10px + var(--bb-h)); max-height: calc(100% - 20px - var(--bb-h)) }
 #groupBar, #brushBar { top: calc(48px + var(--bb-h)) }
-.ft { top: calc(44px + var(--bb-h)); max-height: calc(100% - 230px - var(--bb-h)) }
+.ft { top: calc(44px + var(--bb-h, 0px)); max-height: calc(100% - 230px - var(--bb-h, 0px)) }
 .lab { top: calc(8px + var(--bb-h)) }
 /* the Welcome screen as one page: starting points left, limits for every setup right (Nathan's mock-up 2026-10-28) */
 .welcomedlg { width: min(980px, 96vw) }
