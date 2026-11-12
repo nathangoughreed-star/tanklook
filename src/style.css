@@ -21,7 +21,7 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); 
 /* viewpoint map, one per view at its bottom-left corner; Ã— hides them, "âŒ– Map" brings them back */
 .vmap { position: absolute; left: 10px; bottom: 10px; width: 190px; height: 150px; border-radius: 6px; background: color-mix(in srgb, var(--panel) 88%, transparent); border: 1px solid var(--line) }
 .vmap canvas { display: block; width: 100%; height: 100%; pointer-events: none }
-.vmap.off, #mapShow.off { display: none }
+.vmap.off { display: none }
 .vmapHide { position: absolute; top: 3px; right: 3px; font: inherit; font-size: 12px; line-height: 1; padding: 2px 5px; border: 0; border-radius: 3px; background: none; color: var(--muted); cursor: pointer }
 .vmapHide:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 12%, transparent) }
 #mapShow { position: absolute; left: 10px; bottom: 10px; z-index: 2; font-size: 12px; box-shadow: 0 1px 4px rgba(0, 0, 0, .25) }
@@ -1412,7 +1412,7 @@ body.discovering .dxsw { display: flex }   /* DS1: the switches exist only while
 .abdock .abchoose { position: sticky; bottom: 40px; z-index: 4; background: var(--panel); border-top: 1px solid #555; margin: 8px 0 0; padding: 6px 0; max-height: 45vh; overflow: auto }
 
 /* Discovery is on (AB5 cleanup): the working design's own readouts, price chip, climate box, camera-position maps and Undo / Redo are hidden; every readout that stays follows the candidate in its own view */
-body.discovering .dmfloat, body.discovering #climate, body.discovering .vmap, body.discovering #mapShow, body.discovering #undo, body.discovering #redo { display: none !important }
+body.discovering .dmfloat, body.discovering #climate, body.discovering .vmap, body.discovering #mapShow, body.discovering #hm2Bar, body.discovering .hm2-collapsed-only { display: none !important }
 /* ---- Discovery dock (lane AB5, Nathan 2026-11-10): the A/B decision lives in a bar across the bottom of the MAIN view; the tanks above it are drawn by the viewer's pair layer ---- */
 .abdock { position: absolute; left: 0; right: 0; bottom: 0; z-index: 30; background: var(--panel); color: var(--ink); border-top: 1px solid #555; font-size: 13px; box-sizing: border-box; display: flex; flex-direction: column; max-height: 62%; }
 .abdock[hidden] { display: none }
@@ -1596,3 +1596,6 @@ details.gfx { margin: 4px 0 } details.gfx > summary { cursor: pointer; font-weig
   #app.collapsed .viewtools { left: 46px; max-width: calc(100% - 56px) }
 }
 @media (min-width: 761px), (orientation: landscape) { #app.collapsed #sideTab { top: calc(10px + var(--bb-h)) } }
+#mapShow.open { bottom: 166px; background: var(--accent, #4aa3ff); color: #fff }   /* HM2: toggle; open, it sits just above the map */
+@media (max-width: 700px) { #mapShow.open { bottom: 136px } }
+.hm2-recentre { margin-bottom: 6px }

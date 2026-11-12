@@ -437,7 +437,6 @@
     <button id="viewBtn" class="sidetog" aria-haspopup="dialog" aria-expanded="false" aria-controls="viewPop" title="View controls: camera, what is shown, split / compare, display and export">◐ View</button>
     <button id="moment" class="sidetog" title="Another moment: every animal in a new spot, as if the tank were photographed a little later. The plants and scape stay as they are." disabled>◷ Another moment</button>
     <button id="arView" class="sidetog" title="See this tank at real size in your room (phone camera)" hidden>◱ AR</button>
-    <button id="recenter" class="sidetog" title="Re-centre the panned view (Home, or double middle-click)" hidden>⌖ Re-centre</button>
     <button id="fitBoth" class="sidetog" title="Fit Both: bring both tanks back to the shared framing, at one scale (zoom 1, re-centred)" hidden>⤢ Fit Both</button>
   </div>
   <div id="pairMenu" class="pairmenu" hidden><button id="pmBtn" type="button" class="sidetog" aria-haspopup="true" aria-expanded="false" aria-controls="pmBody" title="View options for both tanks: view, another moment, re-centre, fit both, room light">⚙ View options ▾</button><div id="pmBody" class="pmbody" role="group" aria-label="View options (both tanks)" hidden></div></div>
@@ -496,6 +495,7 @@
   <button id="sideTab" title="Hide the panel" aria-label="Hide the panel" aria-expanded="true"><span>▾</span></button>
 <div id="viewPop" class="viewpop" hidden role="dialog" aria-label="View controls">
   <div class="vpsec"><h3>View</h3>
+  <div class="btns hm2-recentre"><button id="recenter" class="" title="Re-centre the panned view (Home, or double middle-click)">⌖ Re-centre</button></div>
   <div class="row"><label for="cDist">Distance</label><input id="cDist" type="range" min="400" max="5000" step="10"><output id="oDist"></output></div>
   <div class="row"><label for="cAz">Left / right</label><input id="cAz" type="range" min="-180" max="180" step="1"><output id="oAz"></output></div>
   <div class="row"><label for="cEl">From above</label><input id="cEl" type="range" min="-20" max="85" step="1"><output id="oEl"></output></div>
@@ -538,7 +538,7 @@
   <div id="buildHint" role="status" hidden>Building the tank…</div>
   <div class="vmap" id="vmap0"><canvas aria-label="Viewpoint map: where the eye is relative to the tank"></canvas><button class="vmapHide" title="Hide the viewpoint map" aria-label="Hide the viewpoint map">×</button></div>
   <div class="vmap" id="vmap1"><canvas aria-label="Viewpoint map for Tank B"></canvas><button class="vmapHide" title="Hide the viewpoint map" aria-label="Hide the viewpoint map">×</button></div>
-  <button id="mapShow" class="sidetog" title="Show the viewpoint map (top view of where you stand)">⌖ Map</button>
+  <button id="mapShow" class="sidetog" title="Show or hide the viewpoint map (top view of where you stand)" aria-pressed="true">⌖ Map</button>
   <div class="lab" id="labA"></div><div class="lab" id="labB"></div>
   <button id="camLock" hidden></button>
   <noscript><p class="nojs">This app needs JavaScript and WebGL.</p></noscript>

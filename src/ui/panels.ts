@@ -161,8 +161,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // ---------- File: new / open / save / name / undo ----------
   for (const id of ['undo', 'undo2']) $(id).onclick = () => store.undo();   // HM2: Undo / Redo live atop the left panel; the view bar copies show only while it is collapsed
   $('fitBoth').onclick = () => viewer.fitBoth();
-  const recenter = $('recenter'); recenter.onclick = () => viewer.resetPan();
-  viewer.onPan(() => { recenter.hidden = !viewer.panned; });
+  const recenter = $<HTMLButtonElement>('recenter'); recenter.onclick = () => viewer.resetPan();
+  viewer.onPan(() => { recenter.disabled = !viewer.panned; }); recenter.disabled = true;   // HM2: first control in the View menu; enabled once panned
   // The room light's one home (UI4): the sun slider on the viewing screen. It shows what is drawn (roomOf: high with no tank light, low with one, until the person moves it).
   const vRoom = $<HTMLInputElement>('vRoom'), vRoomAuto = $('vRoomAuto');
   vRoom.oninput = () => store.edit(s => { setRoomByHand(s.light, +vRoom.value); }, { coalesce: 'vRoom' });
@@ -1327,7 +1327,7 @@ Cancel, then change the name, to keep both.`)) return;
     window.setInterval(() => { if (!document.hidden && ($('gfx') as HTMLDetailsElement).open) showCaus(); }, 1000); }
   // viewpoint map: a per-viewer display preference (browser storage), not scene data
   // the map's own × and "⌖ Map" button do the same as the checkbox; the viewer places and shows one map per view
-  const mapCb = $('mapOn'), applyMap = () => { $('mapShow').classList.toggle('off', mapCb.checked); viewer.invalidate(); };
+  const mapCb = $('mapOn'), applyMap = () => { $('mapShow').classList.toggle('open', mapCb.checked); $('mapShow').setAttribute('aria-pressed', String(mapCb.checked)); viewer.invalidate(); };   // HM2: ⌖ Map is a toggle (the checkbox stays in sync)
   // no choice made yet: shown, except on a phone, where it would cover a third of the view (audit #32). Read once at
   // load, upright or sideways (lane W): turning the phone does not flip the viewer's map on or off.
   const narrow = matchMedia('(max-width: 760px), (orientation: landscape) and (max-height: 500px)').matches;
@@ -1336,7 +1336,7 @@ Cancel, then change the name, to keep both.`)) return;
   const setMap = (on: boolean) => { mapCb.checked = on; try { localStorage.setItem('tanklook.viewmap', on ? 'on' : 'off'); } catch { /* ignore */ } applyMap(); };
   mapCb.onchange = () => setMap(mapCb.checked);
   for (const b of document.querySelectorAll<HTMLButtonElement>('.vmapHide')) b.onclick = () => setMap(false);
-  $('mapShow').onclick = () => setMap(true);
+  $('mapShow').onclick = () => setMap(!mapCb.checked);
   // hide the fixture from above it: a per-viewer display preference too; off unless chosen, so the light always shows (Nathan 2026-10-14)
   const hideCb = $('hideLightAbove'), setHide = (on: boolean) => { hideCb.checked = viewer.hideOverhead = on; viewer.invalidate(); };
   try { setHide(localStorage.getItem('tanklook.hidelight') === 'on'); } catch { setHide(false); }
@@ -1378,7 +1378,7 @@ Cancel, then change the name, to keep both.`)) return;
     document.addEventListener('pointerdown', e => { if (!pop.hidden && !pop.contains(e.target as Node) && !btn.contains(e.target as Node)) set(false); }); }
   // AB12: Discovery's pair gets ONE centred "View options" menu (the controls apply to both tanks); elsewhere they stay on the bar
   { const pm = $('pairMenu'), pb = $('pmBtn'), body = $('pmBody'), ar = $('arView');
-    const ids = ['viewBtn', 'moment', 'recenter', 'fitBoth'];
+    const ids = ['viewBtn', 'moment', 'fitBoth'];
     const set = (on: boolean) => { body.hidden = !on; pb.setAttribute('aria-expanded', String(on)); pb.classList.toggle('on', on); };
     pb.onclick = () => set(body.hidden === true);
     $('viewBtn').addEventListener('click', () => set(false));   // the View popup opens under the collapsed menu, not behind the open one
@@ -1389,7 +1389,7 @@ Cancel, then change the name, to keep both.`)) return;
       if (on && !inMenu) for (const id of ids) body.append($(id));
       else if (!on && inMenu) {
         set(false); ar.before($('viewBtn'), $('moment'));
-        let at: Element = ar; for (const id of ['recenter', 'fitBoth']) { at.after($(id)); at = $(id); }
+        let at: Element = ar; for (const id of ['fitBoth']) { at.after($(id)); at = $(id); }
         $('viewPop').style.left = ''; $('viewPop').style.top = '';
       }
       pm.hidden = !on;
