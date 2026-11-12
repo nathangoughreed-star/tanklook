@@ -102,3 +102,9 @@ describe('in the verdict and Discover', () => {
     expect(v.advisories.some(i => i.id.startsWith('substrate'))).toBe(false);
   });
 });
+
+describe('sampling reaches the corners', () => {
+  it('a bed that is 6.5 in only at the back corners is still flagged (gravel limit 6 in)', () => {
+    expect(ids(tank('gravel', 1, 1, 6.5, 6.5))).toEqual(['substrate:deep']);
+  });
+});

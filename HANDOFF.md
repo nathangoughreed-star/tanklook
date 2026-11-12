@@ -73,6 +73,14 @@ models on /review.html (and its drawImage error), TG leftovers (heater product p
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
+## SD1: substrate depth + bottom-dweller substrate (2026-11-12; lane SD1; branch claude/sd1-substrate-depth-1b6eeb; Coordinator 23)
+- Research: `research/substrate-depth-2026-11-12.md` (cited, evidence-graded; no controlled studies exist for planting depth, cory barbels or aquarium H2S: all numbers are hobby consensus).
+- Data: `src/data/substrateTraits.ts` = SUBSTRATE_TRAITS (type -> grain + sharp; only coral is sharp), DEEP_MM (anaerobic advisory depth by grain: soil 3 in, sand 4, gravel 6, pebble 8), PLANT_DEPTH (min / rec by plant variant), DWELLER (kuhli, 3 corys, pygmy cory, clown loach, watchman: needs / prefers / minDepth / sharp).
+- Checks: `src/scene/substrateCheck.ts`, hooked into `verdict.ts` as ADVISORIES (ids `substrate:plant:*`, `substrate:deep`, `substrate:needs:{grain,depth,sharp}:*`, `substrate:prefers:*`). Plants use the ground height where they stand (corners + terrain); the deep check samples a 5 x 5 grid edge to edge.
+- Discover: `rules.ts` `isNeedsIssue` / `blockingIssues`: in Guided a `substrate:needs:*` advisory blocks a candidate (welfare Caution that Discover still drops); Sandbox and `prefers` only inform. `discover.ts` idsOf counts them so a base design that already has one does not block everything.
+- Side effect: test/dq7 golden keys a[0] and b[0] re-captured (new advisories change the first pair; cause inferred, not traced). Roughness (SR1) and render/ untouched.
+- Not done / follow-ups: axolotl gravel impaction and pea puffer, bristlenose (no rule, not researched); species not in the catalogue yet (Geophagus, garden eels, jawfish, stingrays) have data in the doc only; Discover does not yet RANK on `prefers`. Shot: shots/sd1-checks.jpg (strip text rendered from the real checksHtml, not the live app).
+
 ## HM2: view toolbar tidy (2026-11-12; lane HM2; Coordinator 23)
 - Room-light slider + Auto moved from the view toolbar into the View popover (same ids / storage); removed from the paired-tank "View options" menu (its View button reaches it).
 - Undo / Redo: sticky bar `#hm2Bar` atop `#side` (ids `undo`/`redo`); `undo2`/`redo2` on the view bar show only while `#app.collapsed`. Both pairs wired in panels.ts (`sync` sets disabled).

@@ -27,11 +27,11 @@ export function bedOf(S: TankSetup): { grain: Grain; sharp: boolean; name: strin
   return SUBSTRATE_TRAITS[sub.type];
 }
 
-/** Bed depth over the floor: the mean and the deepest of a 5 x 5 sample of the ground (mm). */
+/** Bed depth over the floor: the mean and the deepest of a 5 x 5 sample of the ground, edge to edge (mm). */
 export function bedDepths(S: TankSetup): { mean: number; max: number } {
   const T = S.tank, g = { substrate: S.substrate, layout: S.layout, terrain: S.terrain };
   let sum = 0, max = 0, n = 0;
-  for (let i = 0; i < 5; i++) for (let j = 0; j < 5; j++) { const h = groundHeight(g, T, T.L * (i + 0.5) / 5, T.D * (j + 0.5) / 5); sum += h; max = Math.max(max, h); n++; }
+  for (let i = 0; i < 5; i++) for (let j = 0; j < 5; j++) { const h = groundHeight(g, T, T.L * i / 4, T.D * j / 4); sum += h; max = Math.max(max, h); n++; }
   return { mean: sum / n, max };
 }
 

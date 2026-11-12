@@ -1,4 +1,4 @@
-// DQ7: the candidate API (scene/candidates.ts) and handOff mode 'fill'. A/B must behave exactly as before: the golden keys below were captured from the pre-DQ7 pairGen (origin/main 69064dd3) with the same inputs.
+// DQ7: the candidate API (scene/candidates.ts) and handOff mode 'fill'. A/B must behave exactly as before: the golden keys below were captured from the pre-DQ7 pairGen (origin/main 69064dd3) with the same inputs. SD1 (2026-11-12): keys a and b[0] were re-captured after the substrate-depth advisories (the new advisories change which designs the generator ranks first; cause inferred, not traced).
 import { describe, expect, it, beforeEach } from 'vitest';
 import { defaultSetup, bareSetup } from '../src/scene/defaults';
 import { regenerate } from '../src/scene/starter';
@@ -14,8 +14,8 @@ import type { CandidateRecord, DiscoverySession } from '../src/scene/discoveryTy
 import type { Fish, TankSetup } from '../src/scene/types';
 
 const GOLDEN: Record<string, string[]> = {
-  a: ['0gv1p78x0zpv', '1r2e2ze1tota', '0gv1p78x0zpv|1b5izw11tl1g'],
-  b: ['1i0yzvl1tonu', '1r2e2ze1tota', '1i0yzvl1tonu|1b5izw11tl1g'],
+  a: ['1nlg5uck3k0h', '1r2e2ze1tota', '1nlg5uck3k0h|1b5izw11tl1g'],
+  b: ['16t0nd81bhn3', '1r2e2ze1tota', '16t0nd81bhn3|1b5izw11tl1g'],
   c: ['0w51b2l11bw0', '1cz32b33d6so', '0w51b2l11bw0|1b5izw11tl1g'],
 };
 
