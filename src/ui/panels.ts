@@ -2168,7 +2168,7 @@ Cancel, then change the name, to keep both.`)) return;
       for (const [key, n] of counts) {
         const [id, fem] = key.split('~'), sp = getSpecies(id); if (!sp) continue;
         const sex: Sex | undefined = fem ? 'f' : undefined, who = esc(rowName(sp, sex));
-        const row = document.createElement('div'), off = !fitsWater(sp, s); row.className = off ? 'sr misfit' : 'sr';
+        const row = document.createElement('div'), off = !fitsWater(sp, s); row.className = off ? 'sr misfit' : 'sr'; row.dataset.sp = key;
         // an animal that does not live in this tank's water is marked in its row (audit #12)
         row.innerHTML = `<span class="nm" title="${esc(sp.sci)}${off ? ` · does not live in ${isSalt(s) ? 'saltwater' : 'freshwater'}` : ''}">${off ? '<b class="tag bad">✕ wrong water</b> ' : ''}${who}</span><button class="dn" title="One fewer (the last one takes ${who} off the list)" aria-label="One fewer">−</button><input type="number" min="0" max="${LIMITS.maxFish}" value="${n}" aria-label="How many ${who}"><button class="up" title="One more" aria-label="One more">+</button>`;
         row.querySelector<HTMLElement>('.nm')!.onclick = () => { pickId = id; previewSex = sex; preview.hidden = false; renderResults(); };

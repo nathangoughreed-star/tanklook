@@ -7,6 +7,7 @@ import { conflictCardHtml } from '../infeasibleCard';
 import { PRESETS, PRESET_INFO, type Preset } from '../../scene/breadth';
 import { discoverTabs } from '../../scene/discoverScope';
 import { getBrief } from '../setupBrief';
+import { designElements, mountBar } from './keep';
 import type { Tab } from '../../scene/scope';
 import type { Store } from '../../scene/store';
 import type { Viewer } from '../../render/viewer';
@@ -38,7 +39,7 @@ export function attachInline(store: Store, viewer: Viewer, deps: { status: (msg:
         + `<ul>${cur.rows.map(r => `<li>${VERB[r.verb]} ${r.tab === 'gear' ? '' : esc(TAB_LABEL[r.tab as Tab].toLowerCase()) + ': '}${esc(r.text)}</li>`).join('') || '<li>No change</li>'}</ul>`
         + `<p class="dq12-fit" role="status">${cur.fit === 1 ? 'Only this one fits' : `${cur.fit} designs fit`}</p>`
         + `<div class="dq10-row"><button type="button" class="primary" data-a="apply"${cur.stale ? ' disabled' : ''}>Apply</button><button type="button" data-a="regen">Regenerate</button></div>`
-        + (ctl.back().length ? `<div class="dq10-back">Earlier: ${ctl.back().map((p, i) => `<button type="button" data-a="back" data-i="${i}"${p.stale ? ' disabled' : ''}>${esc(p.title)}</button>`).join(' ')}</div>` : '') + '</div>';
+        + (cur.stale ? "" : "<div class=\"dq11-card\"></div>") + (ctl.back().length ? `<div class="dq10-back">Earlier: ${ctl.back().map((p, i) => `<button type="button" data-a="back" data-i="${i}"${p.stale ? ' disabled' : ''}>${esc(p.title)}</button>`).join(' ')}</div>` : '') + '</div>';
     } else if (fail) {
       body = fail.exhausted ? `<div class="dq10-nofit dq12-card" role="status"><b>That was every design</b><p class="dq12-kept">${esc(fail.conflicts[0] ?? '')}</p></div>`
         : fail.nothingMissing ? `<div class="dq10-nofit" role="status"><b>Nothing to fill</b><ul>${fail.conflicts.map(c => `<li>${esc(c)}</li>`).join('')}</ul></div>`
@@ -54,6 +55,8 @@ export function attachInline(store: Store, viewer: Viewer, deps: { status: (msg:
       + `<div class="dq10-row"><button type="button" class="primary" data-a="finish"${busy ? ' disabled' : ''} title="New designs for everything you have not kept, in the checked menus">Finish my setup</button>`
       + `<span class="dq10-fill"><button type="button" data-a="fill"${busy || !gaps.length ? ' disabled' : ''} title="Fill a section that has nothing in it; nothing present is changed">Fill this section</button>${tabSel}</span></div>`
       + presets + tankLine + rules + (note ? `<p class="dq10-note">${esc(note)}</p>` : '') + body + '</div>';
+    const hostEl = root.querySelector<HTMLElement>('.dq11-card');   // DQ11: Keep / Like / Dislike for the whole previewed design
+    if (hostEl && cur) mountBar(hostEl, store, { level: 'design', elements: designElements(cur.after) });
   };
 
   const go = (fn: () => RunResult | undefined) => {
