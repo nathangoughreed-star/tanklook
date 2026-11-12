@@ -26,6 +26,7 @@ import type { Viewer, Viewport } from '../render/viewer';
 import { LIMITS } from '../scene/validate';
 import { groupSize, moveGroup, settleFish, turnGroup, type Group } from '../scene/duplicate';
 import { gearGrab, gearLean, gearMove, type GearDrag } from './gearDrag';
+import { clickTarget, type ClickTarget } from './clickMenu';
 import { MAX_PATCHES, addArea, placeSingle, erasable, erasePatches, extendPath, newPatch, patchAt } from '../scene/brush';
 
 type DragMode = 'front' | 'top' | 'side' | 'glass';
@@ -112,8 +113,9 @@ function boxPickIn(viewer: Viewer, store: Store, vp: Viewport, x0: number, y0: n
 }
 
 /** `canPick`: whether aquascape pieces (of this kind) / animals can be picked and dragged now (only while their menu,
- *  Hardscape / Plants / Animals, is open); otherwise a press on one orbits like empty space. */
-export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'items' | 'fish' | 'gear', kind?: ItemKind) => boolean = () => true) {
+ *  Hardscape / Plants / Animals, is open); otherwise a press on one orbits like empty space. `focus`: a plain click on
+ *  an animal, piece, gear, the light, stand or lid opens its menu at its options (clickMenu.ts). */
+export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'items' | 'fish' | 'gear', kind?: ItemKind) => boolean = () => true, focus?: (t: ClickTarget) => void) {
   const canvas = viewer.canvas;
   const boxPick = (vp: Viewport, x0: number, y0: number, x1: number, y1: number) => boxPickIn(viewer, store, vp, x0, y0, x1, y1);
   // dragging an aquascape item: `grab` = the grabbed point relative to the piece's base, kept under the pointer while
@@ -405,7 +407,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       first = null;
     }
     if (pan) { pan = null; canvas.classList.remove('panning'); return; }
-    if (gear) { if (gear.moved) store.seal(); gear = null; canvas.classList.remove('dragging'); return; }
+    if (gear) { if (gear.moved) store.seal(); else if (e.type === 'pointerup' && focus) { const h = viewer.hitTest(e.clientX, e.clientY); const t = h && clickTarget(viewer, store, h); if (t) focus(t); } /* what is drawn there wins: the grab boxes are loose (clickMenu.ts) */ gear = null; canvas.classList.remove('dragging'); return; }
     if (stroke || pdrag) { stroke = null; pdrag = null; store.seal(); canvas.classList.remove('dragging'); return; }
     if (box) {
       const b = box; box = null; boxEl.hidden = true;
@@ -414,7 +416,17 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
     }
     // a plain click on empty space (no orbit drag) clears the selection, so nothing is highlighted
     // a click on a cabinet stand opens or closes its doors (lane SF, Nathan 2026-10-26: "have the doors open on click to reveal beneath")
-    if (orbit && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) { if (viewer.standAt(e.clientX, e.clientY)) { tankView.standOpen = !tankView.standOpen; viewer.rebuild(); } else if (patchPick != null) store.selectPatch(patchPick); else store.select(null); }
+    // a click on an animal, piece, gear, the light, stand or lid opens its menu at its options (Nathan 2026-11-11)
+    if (orbit && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) {
+      const hit = focus ? viewer.hitTest(e.clientX, e.clientY) : null, t = hit && store.isEditing(hit.vp.i) ? clickTarget(viewer, store, hit) : null;
+      if (viewer.standAt(e.clientX, e.clientY) && (!t || t.kind === 'stand')) { tankView.standOpen = !tankView.standOpen; viewer.rebuild(); if (t) focus!(t); }
+      else if (t) focus!(t);
+      else if (patchPick != null) store.selectPatch(patchPick); else store.select(null);
+    }
+    else if (e.type === 'pointerup' && store.groupCount <= 1) { // a click (no drag) on a piece / animal whose menu is open: show its editor
+      if (move && !move.moved) focus?.({ kind: 'item', id: move.id, item: store.scene.tanks[move.vp.i].items.find(q => q.id === move!.id)?.kind ?? 'stone' });
+      else if (drag && !drag.moved && store.selId != null) focus?.({ kind: 'fish', id: store.selId });
+    }
     if (drag?.moved || orbit || lift?.moved || move?.moved || pool?.moved) store.seal();
     if (lift) { viewer.terrainEdit.hot = null; viewer.rebuild(); }
     if (pool) { viewer.terrainEdit.poolHot = null; viewer.rebuild(); }
