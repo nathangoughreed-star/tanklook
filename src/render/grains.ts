@@ -209,8 +209,7 @@ function paneGrains(S: TankSetup, T: Tank, groundY: (x: number, d: number) => nu
 interface GrainSnap { geo: THREE.BufferGeometry; mat: THREE.Material | THREE.Material[]; m: Float32Array; c: Float32Array | null; nolight: boolean; order: number }
 const grainCache = new Map<string, GrainSnap[]>();
 function cachedGrains(tag: string, S: TankSetup, T: Tank, make: () => THREE.InstancedMesh[]): THREE.InstancedMesh[] {
-  const key = tag + JSON.stringify([{ ...S.substrate, litter: null }, S.terrain, S.layout.id, S.layout.seed, S.backdrop, S.render?.bgSides, T, S.water.on, S.water.level,
-    FX.ground && [hardSpots(S)]]); // VF3: the flecks gather near the hardscape
+  const key = tag + JSON.stringify([{ ...S.substrate, litter: null }, S.terrain, S.layout.id, S.layout.seed, S.backdrop, S.render?.bgSides, T, S.water.on, S.water.level]);
   let snap = grainCache.get(key);
   if (snap) { grainCache.delete(key); grainCache.set(key, snap); } // most recent last
   else {
@@ -237,11 +236,6 @@ function valueNoise(seed: number) {
     return (hs(ix, iz) * (1 - u) + hs(ix + 1, iz) * u) * (1 - w) + (hs(ix, iz + 1) * (1 - u) + hs(ix + 1, iz + 1) * u) * w;
   };
 }
-/** Where the hardscape stands on the floor plan: [x, depth, radius mm] per stone, wood or cave near the ground. */
-export function hardSpots(S: TankSetup): [number, number, number][] {
-  return S.items.filter(it => (it.kind === 'stone' || it.kind === 'wood' || it.kind === 'cave') && it.lift < 30)
-    .map(it => [Math.round(it.x), Math.round(it.depth), Math.round(it.size * (it.kind === 'wood' ? 0.3 : 0.4))]);
-}
 /**
  * The ground's broad colour patches: a factor per colour channel at floor-plan point (x, depth), from low-frequency
  * world-space noise (patches about 6-10 in across, a finer 3 in octave on top): a few % lighter or darker and a touch
@@ -259,16 +253,16 @@ export function groundTint(S: TankSetup): ((x: number, d: number) => [number, nu
 }
 /**
  * How strongly the blend's 3D flecks gather at (x, depth), mean about 1: knots about 1-2 in across inside drifts about
- * 5 in across, raised near stones and wood and on slopes, nearly empty between knots.
+ * 5 in across, raised on slopes, nearly empty between knots. Nothing here depends on the items (Nathan 2026-11-12):
+ * the ground is not rebuilt when a piece is dragged (render/build.ts patchTank), so a gathering near the hardscape stayed
+ * where the piece had been. The extra grains at a piece's foot are in the contact part (render/contact.ts), which is.
  */
 function clumpField(S: TankSetup, ground: GroundAt) {
-  const big = valueNoise((S.layout.seed ?? 1) + 101), knot = valueNoise((S.layout.seed ?? 1) + 113), spots = hardSpots(S);
+  const big = valueNoise((S.layout.seed ?? 1) + 101), knot = valueNoise((S.layout.seed ?? 1) + 113);
   return (x: number, d: number) => {
     const drift = big(x / 130, d / 130), k = knot(x / 38 + 3, d / 38 + 7);
-    let near = 0;
-    for (const [hx, hd, hr] of spots) { const q = Math.hypot(x - hx, d - hd) / (hr + 40); if (q < 2.5) near = Math.max(near, Math.exp(-q * q * 0.8)); }
     const e = 6, gx = ground(x + e, d)[1] - ground(x - e, d)[1], gd = ground(x, d + e)[1] - ground(x, d - e)[1], slope = Math.min(1, Math.hypot(gx, gd) / (2 * e) * 2);
-    const v = 3 * Math.max(0, drift - 0.3) * 2.2 * Math.max(0, k - 0.2) * 2.4 + 1.4 * near + 0.6 * slope;
+    const v = 3 * Math.max(0, drift - 0.3) * 2.2 * Math.max(0, k - 0.2) * 2.4 + 0.6 * slope;
     return Math.min(2.6, v);
   };
 }

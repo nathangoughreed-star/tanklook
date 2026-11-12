@@ -14,8 +14,8 @@
 export type FxKey = 'caustics' | 'depth' | 'contact' | 'ground' | 'tonemap' | 'variety' | 'waterline';
 export interface Fx { caustics: boolean; depth: boolean; contact: boolean; ground: boolean; tonemap: 0 | 1 | 2; variety: boolean; waterline: boolean }
 
-/** What ships (each switches on once Nathan has seen it and said yes; variety on: Nathan 2026-11-11, lane VF-B; tonemap ACES: Nathan 2026-11-12, lane VF-A). */
-export const FX_DEFAULT: Readonly<Fx> = { caustics: false, depth: false, contact: false, ground: false, tonemap: 2, variety: true, waterline: false };
+/** What ships (each switches on once Nathan has seen it and said yes; variety on: Nathan 2026-11-11, lane VF-B; tonemap ACES: Nathan 2026-11-12, lane VF-A; contact and ground: Nathan 2026-11-12, lane VF-C). */
+export const FX_DEFAULT: Readonly<Fx> = { caustics: false, depth: false, contact: true, ground: true, tonemap: 2, variety: true, waterline: false };
 
 const TONE: Record<string, 0 | 1 | 2> = { none: 0, off: 0, agx: 1, aces: 2 };
 

@@ -64,8 +64,10 @@ async function launch() {
 // ---------- in-page kit ----------
 const KIT = () => {
   const v = () => __gb.viewer, st = () => __gb.store, gl = () => v().renderer.getContext();
-  // the saved zoom, taken before any close-up (S.camera is the live camera: a close-up changes it; lane VF-B)
-  const Z0 = __gb.store.scene.tanks[0].camera.zoom;
+  // the saved front camera, read once: store.cam() writes into the scene's camera, so after a close-up S.camera.zoom is the
+  // close-up's (the second fx set's front view came out zoomed in; lanes VF-B and VF-C, 2026-11-12)
+  const front0 = structuredClone(st().scene.tanks[0].camera);
+  const pans = {}; // the close-ups' pan, found once per view and reused for every fx set (the first set's centring came out apart)
   const ext = gl().getExtension('EXT_disjoint_timer_query_webgl2');
   const raf = () => new Promise(r => requestAnimationFrame(() => r()));
   const q = (a, p) => { const s = a.filter(x => x != null && isFinite(x)).sort((x, y) => x - y); return s.length ? +s[Math.min(s.length - 1, Math.floor(p * s.length))].toFixed(2) : null; };
@@ -100,18 +102,20 @@ const KIT = () => {
     /** Camera: 'front' (as saved), 'ground' (front centre of the substrate), 'rock' (the largest stone or wood). */
     async view(kind) {
       const S = st().scene.tanks[0], T = S.tank;
-      st().cam(c => { c.zoom = kind === 'front' ? zoom0 : kind === 'ground' ? 3.2 : 2.6; }, 0);
+      st().cam(c => { if (kind === 'front') Object.assign(c, front0); else c.zoom = kind === 'ground' ? 3.2 : 2.6; }, 0);
       v().setPan(0, 0, 0); v().draw(); await raf();
       if (kind === 'front') return;
       // ('plant:<variant>', lane VF-B: the front-most plant of that variant, its middle)
       const pv = kind.startsWith('plant:') && kind.slice(6), hs = pv ? S.items.filter(i => i.kind === 'plant' && i.variant === pv).sort((a, b) => a.depth - b.depth)[0] : S.items.filter(i => i.kind === 'stone' || i.kind === 'wood').sort((a, b) => b.size - a.size)[0];
       const P = kind === 'ground' || !hs ? [T.L / 2, (S.substrate.fl + S.substrate.bl) / 2 + T.H * 0.18, -T.D * 0.3] : [hs.x, hs.size * (pv ? 0.45 : 0.25), -hs.depth];
       const vp = v().active[0];
+      if (pans[kind]) { v().setPan(0, ...pans[kind]); v().draw(); await raf(); return; }
       for (let k = 0; k < 4; k++) { // pan until P is in the middle of the picture
         v().draw(); const p = new vp.cam.position.constructor(...P).project(vp.cam);
         const sx = (p.x + 1) / 2 * vp.w, sy = (1 - p.y) / 2 * vp.h, pan = v().pans[0];
         v().setPan(0, pan.x + (vp.w / 2 - sx), pan.y + (vp.h / 2 - sy));
       }
+      pans[kind] = [v().pans[0].x, v().pans[0].y];
       v().draw(); await raf();
     },
     /** fx set B against set A on alternating frames: GPU ms median / p95, CPU ms median / p95, calls, triangles. */

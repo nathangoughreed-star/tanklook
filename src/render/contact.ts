@@ -9,7 +9,7 @@
 //   floor plan (mean and covariance: an ellipse), so a branch resting on one end gets a shadow at that end only.
 // - a dragged piece: the part is rebuilt (its key changes), but each blob is cached by its item's data, so only the
 //   moved piece's blob is worked out again; the rest is a re-merge of a few thousand vertices.
-// - (fx `ground`, VF3) a sparse few coarse grains round each hardscape piece's foot on fine grounds (sand, mud, soil):
+// - (fx `ground`, VF3) a sparse few coarse grains round each hardscape piece's foot on fine freshwater grounds (sand, mud, soil):
 //   two instanced meshes through render/scatter.ts.
 // - `baseShade`: the lowest part of a stone or piece of wood a little darker in its baked vertex colour (recesses
 //   by height above the piece's base, render/items.ts bakedShape). Concavity was not tried: the meshes are too coarse in
@@ -49,11 +49,19 @@ function blobOf(it: Item, m: THREE.Mesh, groundY: (x: number, d: number) => numb
   // hardscape: its vertices near the ground
   const pos = m.geometry.attributes.position, step = Math.max(1, Math.floor(pos.count / 1500)), v = new THREE.Vector3();
   const band = 12 + 0.05 * it.size, pts: number[] = [];
+  let lo = Infinity, hi = -Infinity;
   for (let i = 0; i < pos.count; i += step) {
     v.fromBufferAttribute(pos, i).applyMatrix4(m.matrixWorld);
-    if (v.y - groundY(v.x, -v.z) < band) pts.push(v.x, -v.z);
+    const h = v.y - groundY(v.x, -v.z); lo = Math.min(lo, h); hi = Math.max(hi, h);
+    if (h < band) pts.push(v.x, -v.z);
   }
   if (pts.length < 6) return null;
+  // Nathan 2026-11-12: a 31 mm pebble at the reef's front got a shadow three times its width at full rock darkness and
+  // looked afloat. The shadow now goes by how the piece meets the ground: the pad and the darkness by its height above
+  // the ground (a low pebble occludes little; every piece 60 mm or taller is as before), and a piece whose lowest point
+  // is above the ground fades out by the gap (it is not resting there).
+  const tall = Math.max(1, hi - Math.min(lo, 0)), gap = Math.max(0, lo), touch = Math.max(0, 1 - gap / (5 + 0.3 * tall));
+  if (touch <= 0) return null;
   let mx = 0, md = 0; const n = pts.length / 2;
   for (let i = 0; i < pts.length; i += 2) { mx += pts[i]; md += pts[i + 1]; }
   mx /= n; md /= n;
@@ -62,9 +70,9 @@ function blobOf(it: Item, m: THREE.Mesh, groundY: (x: number, d: number) => numb
   sxx /= n; sdd /= n; sxd /= n;
   // principal axes of the covariance
   const tr = (sxx + sdd) / 2, det = Math.sqrt(Math.max(0, ((sxx - sdd) / 2) ** 2 + sxd * sxd)), l1 = tr + det, l2 = Math.max(0, tr - det);
-  const ang = 0.5 * Math.atan2(2 * sxd, sxx - sdd), pad = 10 + 0.04 * it.size;
+  const ang = 0.5 * Math.atan2(2 * sxd, sxx - sdd), pad = Math.min(10 + 0.04 * it.size, 0.25 * tall);
   const rx = Math.min(it.size * 0.75, 1.9 * Math.sqrt(l1) + pad), rd = Math.min(it.size * 0.75, 1.9 * Math.sqrt(l2) + pad);
-  return { x: mx, d: md, ux: Math.cos(ang), ud: Math.sin(ang), rx, rd: Math.max(rd, pad * 1.4), dark: it.kind === 'wood' ? 0.5 : 0.55, grains: true };
+  return { x: mx, d: md, ux: Math.cos(ang), ud: Math.sin(ang), rx, rd: Math.max(rd, pad * 1.4), dark: (it.kind === 'wood' ? 0.5 : 0.55) * Math.min(1, Math.max(0.35, tall / 60)) * touch, grains: true };
 }
 
 /** Linear value whose sRGB encoding is `a` (the material's output is encoded; the blend factor should be `a`). */
@@ -129,9 +137,11 @@ function footLook(S: TankSetup): GrainLook | null {
     const t = SUBSTRATES[sub.type]; if (t.kind === 'bark') return null;
     base = t.shades[1] ?? t.base;
   }
-  const r = rng(71), marine = sub.type === 'aragonite' || sub.type === 'coral';
-  // a little darker and greyer than the bed (the coarse fraction), crushed shell pale for marine sand
-  const colors = [...shadesOf(base, 6, r, 1.5).map(c => '#' + new THREE.Color(c).multiplyScalar(marine ? 0.8 : 0.7).getHexString()), ...(marine ? ['#e8ddd0', '#cfc6b8'] : ['#6d655c', '#8a8178'])];
+  // none on marine sand (Nathan 2026-11-12: the pale crushed-shell grains round the reef rock read as white sprinkles)
+  if (sub.type === 'aragonite' || sub.type === 'coral') return null;
+  const r = rng(71);
+  // a little darker and greyer than the bed (the coarse fraction)
+  const colors = [...shadesOf(base, 6, r, 1.5).map(c => '#' + new THREE.Color(c).multiplyScalar(0.7).getHexString()), '#6d655c', '#8a8178'];
   return { shape: 'stone', size: [3, 8], round: 0.7, colors, speckle: true, wet: false };
 }
 

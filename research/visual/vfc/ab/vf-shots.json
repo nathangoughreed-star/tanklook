@@ -1,14 +1,14 @@
 {
- "commit": "6e128a41",
- "build": 1790,
+ "commit": "76434166",
+ "build": 1791,
  "dirty": true,
- "when": "2026-11-12T01:49:34.869Z",
+ "when": "2026-11-12T12:55:08.052Z",
  "size": [
   1050,
   850
  ],
  "fx": [
-  "none",
+  "contact,ground",
   "contact,ground"
  ],
  "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
@@ -18,23 +18,23 @@
    "ab": {
     "contact,ground": {
      "A": {
-      "gpuMs": 12.28,
-      "gpuP95": 13.07,
-      "cpuMs": 2.9,
-      "cpuP95": 4.1,
+      "gpuMs": 28.99,
+      "gpuP95": 30.29,
+      "cpuMs": 7,
+      "cpuP95": 9.1,
       "calls": 406,
-      "triangles": 860494
+      "triangles": 756754
      },
      "B": {
-      "gpuMs": 12.29,
-      "gpuP95": 13.45,
-      "cpuMs": 2.8,
-      "cpuP95": 3.4,
+      "gpuMs": 29.39,
+      "gpuP95": 30.62,
+      "cpuMs": 6.8,
+      "cpuP95": 8.8,
       "calls": 409,
-      "triangles": 871094
+      "triangles": 767354
      },
-     "gpuDelta": 0.06,
-     "gpuDeltaP95": 0.52,
+     "gpuDelta": 0.17,
+     "gpuDeltaP95": 1.69,
      "timer": true
     }
    }
@@ -44,23 +44,23 @@
    "ab": {
     "contact,ground": {
      "A": {
-      "gpuMs": 6.08,
-      "gpuP95": 6.5,
-      "cpuMs": 2.3,
-      "cpuP95": 3.4,
+      "gpuMs": 10.59,
+      "gpuP95": 11.89,
+      "cpuMs": 2.9,
+      "cpuP95": 4.9,
       "calls": 231,
       "triangles": 486726
      },
      "B": {
-      "gpuMs": 6.12,
-      "gpuP95": 6.44,
-      "cpuMs": 2.4,
-      "cpuP95": 3.2,
+      "gpuMs": 10.58,
+      "gpuP95": 12.65,
+      "cpuMs": 3,
+      "cpuP95": 4.8,
       "calls": 232,
       "triangles": 490126
      },
-     "gpuDelta": 0.04,
-     "gpuDeltaP95": 0.32,
+     "gpuDelta": 0,
+     "gpuDeltaP95": 0.77,
      "timer": true
     }
    }
@@ -70,23 +70,23 @@
    "ab": {
     "contact,ground": {
      "A": {
-      "gpuMs": 10.47,
-      "gpuP95": 11.95,
-      "cpuMs": 2.9,
-      "cpuP95": 3.7,
+      "gpuMs": 20.82,
+      "gpuP95": 21.1,
+      "cpuMs": 4.2,
+      "cpuP95": 7.1,
       "calls": 351,
       "triangles": 348294
      },
      "B": {
-      "gpuMs": 10.43,
-      "gpuP95": 11.96,
-      "cpuMs": 3,
-      "cpuP95": 3.7,
-      "calls": 354,
-      "triangles": 367114
+      "gpuMs": 20.8,
+      "gpuP95": 21.2,
+      "cpuMs": 3.9,
+      "cpuP95": 6.6,
+      "calls": 352,
+      "triangles": 352094
      },
-     "gpuDelta": 0.01,
-     "gpuDeltaP95": 0.33,
+     "gpuDelta": 0.02,
+     "gpuDeltaP95": 1.11,
      "timer": true
     }
    }

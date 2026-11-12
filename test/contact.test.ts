@@ -5,7 +5,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import * as THREE from 'three';
 import { buildTank, patchTank } from '../src/render/build';
-import { setFx } from '../src/render/fx';
+import { FX_DEFAULT, setFx } from '../src/render/fx';
 import { parseScene } from '../src/scene/validate';
 import type { TankSetup } from '../src/scene/types';
 import planted4 from '../research/visual/vf0/scenes/planted4.json';
@@ -26,10 +26,11 @@ const sig = (sc: THREE.Scene) => sc.children.map(o => o.type + ((o as THREE.Mesh
 /** The ground mesh's vertex colours (the first mesh with userData.sub on its material and a colour attribute). */
 const groundCols = (sc: THREE.Scene) => { let c: number[] = []; sc.traverse(o => { const m = o as THREE.Mesh; if (!c.length && (m.material as THREE.Material)?.userData?.sub && m.geometry.attributes.color) c = Array.from(m.geometry.attributes.color.array as Float32Array); }); return c; };
 
-afterEach(() => setFx({ contact: false, ground: false }));
+afterEach(() => setFx({ contact: FX_DEFAULT.contact, ground: FX_DEFAULT.ground }));
 
 describe('VF-C ground and contact', () => {
   it('switches off: no contact objects, and the scene is the same as before', () => {
+    setFx({ contact: false, ground: false }); // (both on by default since 2026-11-12)
     const S = load('planted4');
     const a = build(S);
     expect(contacts(a.scene)).toHaveLength(0);
@@ -75,5 +76,37 @@ describe('VF-C ground and contact', () => {
     const c1 = mid(b.scene);
     expect(contacts(b.scene).filter(o => !(o as THREE.InstancedMesh).isInstancedMesh)).toHaveLength(1); // the old one was replaced
     expect(c1.x - c0.x).toBeGreaterThan(50); expect(c1.x - c0.x).toBeLessThan(70); // moved with it
+  });
+
+  it('the foot grains follow a dragged piece and go with a removed one; the ground itself does not depend on the items', () => {
+    setFx({ contact: true, ground: true });
+    const S = structuredClone(load('planted4'));
+    S.items = S.items.filter(i => i.kind === 'wood').slice(0, 1);
+    const units = { ...S, units: 'in' } as TankSetup & { units: 'in' }, b = build(S);
+    const grains = (sc: THREE.Scene) => contacts(sc).filter(o => (o as THREE.InstancedMesh).isInstancedMesh) as THREE.InstancedMesh[];
+    const meanX = (sc: THREE.Scene) => { let x = 0, n = 0; const m4 = new THREE.Matrix4(); for (const g of grains(sc)) for (let i = 0; i < g.count; i++) { g.getMatrixAt(i, m4); x += m4.elements[12]; n++; } return x / n; };
+    expect(grains(b.scene).length).toBeGreaterThan(0);
+    const x0 = meanX(b.scene), g0 = groundCols(b.scene);
+    S.items[0].x += 60; patchTank(b, units, S.tank, null);
+    expect(meanX(b.scene) - x0).toBeGreaterThan(50); expect(meanX(b.scene) - x0).toBeLessThan(70);
+    // a full rebuild with the piece moved: the same ground (colours and its own grains), so a drag leaves nothing behind
+    const moved = build(S);
+    expect(groundCols(moved.scene)).toEqual(g0);
+    const own = (sc: THREE.Scene) => { const o: number[] = []; sc.traverse(x => { const m = x as THREE.InstancedMesh; if (m.isInstancedMesh && m.userData.grains && !m.userData.contact) o.push(...Array.from(m.instanceMatrix.array as Float32Array).slice(0, 64)); }); return o; };
+    expect(own(moved.scene)).toEqual(own(b.scene));
+    units.items = []; patchTank(b, units, S.tank, null); // (units is a shallow copy of S: set its list)
+    expect(contacts(b.scene)).toHaveLength(0);
+  });
+
+  it('a small low pebble gets a small faint shadow; no coarse grains on marine sand', () => {
+    setFx({ contact: true, ground: true });
+    const S = structuredClone(load('reef'));
+    S.items = S.items.filter(i => i.id === 31); // 31 mm across, 15 mm tall, at the front
+    const b = build(S), m = blob(b.scene)!, g = m.geometry; g.computeBoundingBox();
+    const box = g.boundingBox!.getSize(new THREE.Vector3());
+    expect(Math.max(box.x, box.z)).toBeLessThan(70); // the grid (the fade's full reach): was 87 mm (3.4 in) for this 31 mm pebble
+    const col = g.attributes.color.array as Float32Array;
+    expect(Math.max(...col)).toBeLessThan(0.08); // linear; the big rocks reach about 0.25
+    expect(contacts(b.scene).filter(o => (o as THREE.InstancedMesh).isInstancedMesh)).toHaveLength(0);
   });
 });
