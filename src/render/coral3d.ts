@@ -75,12 +75,16 @@ function rockGeo(r: R, l: number, h: number, w: number) {
   // smooth across the small triangles, sharp across the broken faces' edges and pit rims (Nathan 2026-10-14: angular
   // yes, but the triangles read too large and geometric with every one flat)
   toCreasedNormals(g, ROCK_CREASE);
-  const base = C(['#b8a687', '#ad9c80', '#c2b294'][Math.floor(r() * 3)]), cor = [C('#8e4d86'), C('#c4698f'), C('#a65a9c')][Math.floor(r() * 3)];
-  const patch = waves(r, 5), patch2 = waves(r, 4), algae = C('#6f6b45');
+  // VF7 (reef tune): base darker and greyer, coralline deeper and richer and over more of the rock, recesses darker,
+  // so the rock no longer reads near-white under a bright reef light and ACES (was #b8a687 / #ad9c80 / #c2b294 cream,
+  // #8e4d86 / #c4698f / #a65a9c crust capped at 75 %, holes down to 30 %). Colours only: the r() draws are unchanged.
+  const base = C(['#7f725d', '#766a57', '#887a63'][Math.floor(r() * 3)]), cor = [C('#6e2f6c'), C('#9c3f73'), C('#7e3584')][Math.floor(r() * 3)];
+  const patch = waves(r, 5), patch2 = waves(r, 4), algae = C('#5f5b3a');
   paint(g, (q, i) => {
-    const c = base.clone().multiplyScalar(0.3 + 0.7 * Math.min(1, Math.max(0, (dent.getX(i) - 0.25) / 0.7))); // dark holes
+    const d = Math.min(1, Math.max(0, (dent.getX(i) - 0.25) / 0.7));
+    const c = base.clone().multiplyScalar(0.16 + 0.84 * d * d * (3 - 2 * d)); // dark holes and recesses
     const a = patch(q.clone().multiplyScalar(0.035)), b = patch2(q.clone().multiplyScalar(0.08));
-    c.lerp(cor, Math.min(0.75, Math.max(0, (a - 0.05) * 1.8 + 0.3 * b)));        // coralline crust
+    c.lerp(cor.clone().multiplyScalar(0.55 + 0.45 * d), Math.min(0.85, Math.max(0, (a + 0.05) * 1.8 + 0.3 * b))); // coralline crust, darker in the recesses
     if (q.y > h * 0.4) c.lerp(algae, Math.min(0.35, Math.max(0, b * 1.4 - 0.25))); // a little turf algae on top
     return c;
   });

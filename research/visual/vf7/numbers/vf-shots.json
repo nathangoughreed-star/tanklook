@@ -1,0 +1,95 @@
+{
+ "commit": "a7db05c0",
+ "build": 1847,
+ "dirty": true,
+ "when": "2026-11-12T18:56:22.265Z",
+ "size": [
+  1050,
+  850
+ ],
+ "fx": [
+  "none",
+  "default"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "planted4": {
+   "shots": [],
+   "ab": {
+    "default": {
+     "A": {
+      "gpuMs": 7.92,
+      "gpuP95": 10.16,
+      "cpuMs": 3.4,
+      "cpuP95": 5,
+      "calls": 409,
+      "triangles": 745550
+     },
+     "B": {
+      "gpuMs": 7.84,
+      "gpuP95": 10.1,
+      "cpuMs": 3.4,
+      "cpuP95": 4.7,
+      "calls": 409,
+      "triangles": 745550
+     },
+     "gpuDelta": 0.01,
+     "gpuDeltaP95": 0.61,
+     "timer": true
+    }
+   }
+  },
+  "nano": {
+   "shots": [],
+   "ab": {
+    "default": {
+     "A": {
+      "gpuMs": 4.95,
+      "gpuP95": 5.34,
+      "cpuMs": 2.8,
+      "cpuP95": 3.8,
+      "calls": 233,
+      "triangles": 473686
+     },
+     "B": {
+      "gpuMs": 4.97,
+      "gpuP95": 5.62,
+      "cpuMs": 2.7,
+      "cpuP95": 3.7,
+      "calls": 233,
+      "triangles": 473686
+     },
+     "gpuDelta": 0.01,
+     "gpuDeltaP95": 0.69,
+     "timer": true
+    }
+   }
+  },
+  "reef": {
+   "shots": [],
+   "ab": {
+    "default": {
+     "A": {
+      "gpuMs": 4.75,
+      "gpuP95": 9.9,
+      "cpuMs": 3.6,
+      "cpuP95": 5,
+      "calls": 354,
+      "triangles": 371942
+     },
+     "B": {
+      "gpuMs": 4.82,
+      "gpuP95": 10.23,
+      "cpuMs": 3.7,
+      "cpuP95": 4.8,
+      "calls": 354,
+      "triangles": 371942
+     },
+     "gpuDelta": 0.14,
+     "gpuDeltaP95": 1.24,
+     "timer": true
+    }
+   }
+  }
+ }
+}

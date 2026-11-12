@@ -63,6 +63,18 @@ export function kelvinRGB(K: number): [number, number, number] {
   return [r / lum, g / lum, b / lum];
 }
 
+/**
+ * The light's colour in the tank (VF7): the colour temperature's RGB, and over salt water a cool light (10 000 K and up)
+ * is taken for a reef fixture with actinic (420-460 nm) channels, so it gets a blue cast a black body does not give:
+ * none at 10 000 K, full at 20 000 K. Luminance kept (kelvinRGB is per unit luminance), so no brightness change.
+ */
+export function lightRGB(K: number, salt: boolean): [number, number, number] {
+  const c = kelvinRGB(K), a = salt ? clamp((K - 10000) / 10000, 0, 1) : 0;
+  if (!a) return c;
+  const t = [c[0] * (1 - 0.3 * a), c[1] * (1 - 0.1 * a), c[2] * (1 + 0.55 * a)], lum = 0.2126 * t[0] + 0.7152 * t[1] + 0.0722 * t[2];
+  return [t[0] / lum, t[1] / lum, t[2] / lum];
+}
+
 /** Most half-planes the water is clipped to (a round tank's ring has 64). */
 const AQ_CLIP = 72;
 /** Shared uniforms; set per viewport before each render because Tank A and Tank B have different fixtures. */
@@ -249,7 +261,7 @@ export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams 
   // the spill shows most in a dark room (in a lit room the eye adapts and it barely registers); a raised fixture
   // throws more of its light past the tank (up to ~1.8x at 450 mm and above)
   const spill = 0.9 * (1 - 0.75 * roomLevel(roomOf(l))) * (1 + 0.8 * clamp((up - LAMP_Y) / 400, 0, 1));
-  if (on) LU.uSpill.value.setRGB(...kelvinRGB(l.kelvin)).multiplyScalar(spill * bright); else LU.uSpill.value.setRGB(0, 0, 0); // no fixture: no light leaves the tank
+  if (on) LU.uSpill.value.setRGB(...lightRGB(l.kelvin, !!S?.water.salt)).multiplyScalar(spill * bright); else LU.uSpill.value.setRGB(0, 0, 0); // no fixture: no light leaves the tank
   if (!on) return;
   const E = emitters(T, l, hgt), m = beamExp(l), gain = beamGain(l), ref: LightSettings = { ...l, spacing: 0, cone: 52 };
   E.forEach((e, i) => LU.uEm.value[i].set(...e)); LU.uEmN.value = E.length;
@@ -259,7 +271,7 @@ export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams 
   const R = emitters(T, ref, LAMP_Y), rm = beamExp(ref); let avg = 0, k = 0;
   for (let i = 1; i <= 5; i++) for (let j = 1; j <= 5; j++) { avg += lightSum(R, [T.L * i / 6, T.H * 0.5, -T.D * j / 6], rm); k++; }
   LU.uNorm.value = gain * k / Math.max(avg, 1e-6); LU.uBeamM.value = m;
-  LU.uAmb.value = l.room; LU.uBright.value = bright; LU.uLCol.value.setRGB(...kelvinRGB(l.kelvin));
+  LU.uAmb.value = l.room; LU.uBright.value = bright; LU.uLCol.value.setRGB(...lightRGB(l.kelvin, !!S?.water.salt));
   const env = lo ? lightEnvCached({ ...S!, tank: T }) : null;
   LU.uLoOn.value = env ? 1 : 0; LU.uMapDiv.value = env ? MAP_DIV[l.mapUnit ?? 'par'] : MAP_DIV.rel;
   LU.uMapStep.value = env ? mapStepOf(l, l.mapUnit ?? 'par') : 0;
