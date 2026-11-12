@@ -159,7 +159,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   }
 
   // ---------- File: new / open / save / name / undo ----------
-  $('undo').onclick = () => store.undo();
+  for (const id of ['undo', 'undo2']) $(id).onclick = () => store.undo();   // HM2: Undo / Redo live atop the left panel; the view bar copies show only while it is collapsed
   $('fitBoth').onclick = () => viewer.fitBoth();
   const recenter = $('recenter'); recenter.onclick = () => viewer.resetPan();
   viewer.onPan(() => { recenter.hidden = !viewer.panned; });
@@ -169,7 +169,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
   vRoomAuto.onclick = () => store.edit(s => { setRoomAuto(s.light); });
   const syncRoom = () => { const l = S().light; vRoom.value = String(roomOf(l)); vRoomAuto.hidden = !!l.roomAuto; };
   store.subscribe(syncRoom); syncRoom();
-  $('redo').onclick = () => store.redo();
+  for (const id of ['redo', 'redo2']) $(id).onclick = () => store.redo();
+  $('saveIcon').onclick = () => $('saveScene').click();   // HM2: the same Save as the header's
   // New and Open… are two separate menus of the start chooser (below): New = scratch + deals, Open… = starter + saved tanks
   $('newScene').onclick = () => { welcomeFirst = false; startMode.open(stepForMenu('new')); }; // SL1: the one start screen, at its New Setup step (closable: a project is open)
   // HM1: Open… asks first: a saved tank (the Open Existing tab) or a starter tank (the Starter / Example tab)
@@ -1078,6 +1079,7 @@ Cancel, then change the name, to keep both.`)) return;
   addEventListener('keydown', e => {
     const t = e.target as HTMLElement, typing = (t.tagName === 'INPUT' && (t as HTMLInputElement).type !== 'range' && (t as HTMLInputElement).type !== 'checkbox') || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT';
     const mod = e.ctrlKey || e.metaKey;
+    if (mod && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 's') { e.preventDefault(); $('saveScene').click(); return; }   // HM2: Ctrl+S = the header Save
     if (mod && e.key.toLowerCase() === 'z' && !typing) { e.preventDefault(); if (e.shiftKey) store.redo(); else store.undo(); return; }
     if (mod && e.key.toLowerCase() === 'y' && !typing) { e.preventDefault(); store.redo(); return; }
     if (mod && e.key.toLowerCase() === 'd' && !typing) { e.preventDefault(); if (store.selectedItem) itemDup(); else dup(); return; }
@@ -1376,7 +1378,7 @@ Cancel, then change the name, to keep both.`)) return;
     document.addEventListener('pointerdown', e => { if (!pop.hidden && !pop.contains(e.target as Node) && !btn.contains(e.target as Node)) set(false); }); }
   // AB12: Discovery's pair gets ONE centred "View options" menu (the controls apply to both tanks); elsewhere they stay on the bar
   { const pm = $('pairMenu'), pb = $('pmBtn'), body = $('pmBody'), ar = $('arView');
-    const ids = ['viewBtn', 'moment', 'recenter', 'fitBoth', 'roomChip'];
+    const ids = ['viewBtn', 'moment', 'recenter', 'fitBoth'];
     const set = (on: boolean) => { body.hidden = !on; pb.setAttribute('aria-expanded', String(on)); pb.classList.toggle('on', on); };
     pb.onclick = () => set(body.hidden === true);
     $('viewBtn').addEventListener('click', () => set(false));   // the View popup opens under the collapsed menu, not behind the open one
@@ -1387,7 +1389,7 @@ Cancel, then change the name, to keep both.`)) return;
       if (on && !inMenu) for (const id of ids) body.append($(id));
       else if (!on && inMenu) {
         set(false); ar.before($('viewBtn'), $('moment'));
-        let at: Element = ar; for (const id of ['recenter', 'fitBoth', 'roomChip']) { at.after($(id)); at = $(id); }
+        let at: Element = ar; for (const id of ['recenter', 'fitBoth']) { at.after($(id)); at = $(id); }
         $('viewPop').style.left = ''; $('viewPop').style.top = '';
       }
       pm.hidden = !on;
@@ -2024,7 +2026,8 @@ Cancel, then change the name, to keep both.`)) return;
   }
   function sync(full = true) {
     const s = S(), A = s.tank, u = G().units;
-    $<HTMLButtonElement>('undo').disabled = !store.canUndo; $<HTMLButtonElement>('redo').disabled = !store.canRedo;
+    for (const id of ['undo', 'undo2']) $<HTMLButtonElement>(id).disabled = !store.canUndo;
+    for (const id of ['redo', 'redo2']) $<HTMLButtonElement>(id).disabled = !store.canRedo;
     $<HTMLButtonElement>('moment').disabled = !s.fish.length;
     const cl = $('climate'), rows = climateOf(s);
     cl.hidden = !rows.length;

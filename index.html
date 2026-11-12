@@ -14,6 +14,7 @@
 <body>
 <div id="app">
 <aside id="side">
+  <div id="hm2Bar" class="hm2-bar" role="group" aria-label="Undo and redo"><button id="undo" class="hm2-ur" title="Undo (Ctrl+Z)">↶ Undo</button><button id="redo" class="hm2-ur" title="Redo (Ctrl+Shift+Z)">↷ Redo</button></div>
   <header class="top">
     <div>
       <h1>TankLook</h1>
@@ -430,14 +431,14 @@
   <div class="viewtools">
     <button id="sideClose" class="sidetog" title="Hide the panel (full-screen view)" aria-label="Hide the panel">‹ Hide</button>
     <button id="sideOpen" class="sidetog" title="Show the panel" aria-label="Show the panel">› Edit</button>
-    <button id="undo" class="sidetog" title="Undo (Ctrl+Z)">↶ Undo</button>
-    <button id="redo" class="sidetog" title="Redo (Ctrl+Shift+Z)">↷ Redo</button>
+    <button id="undo2" class="sidetog hm2-collapsed-only" title="Undo (Ctrl+Z)">↶ Undo</button>
+    <button id="redo2" class="sidetog hm2-collapsed-only" title="Redo (Ctrl+Shift+Z)">↷ Redo</button>
+    <button id="saveIcon" class="sidetog hm2-save" title="Save (Ctrl+S)" aria-label="Save">💾</button>
     <button id="viewBtn" class="sidetog" aria-haspopup="dialog" aria-expanded="false" aria-controls="viewPop" title="View controls: camera, what is shown, split / compare, display and export">◐ View</button>
     <button id="moment" class="sidetog" title="Another moment: every animal in a new spot, as if the tank were photographed a little later. The plants and scape stay as they are." disabled>◷ Another moment</button>
     <button id="arView" class="sidetog" title="See this tank at real size in your room (phone camera)" hidden>◱ AR</button>
     <button id="recenter" class="sidetog" title="Re-centre the panned view (Home, or double middle-click)" hidden>⌖ Re-centre</button>
     <button id="fitBoth" class="sidetog" title="Fit Both: bring both tanks back to the shared framing, at one scale (zoom 1, re-centred)" hidden>⤢ Fit Both</button>
-    <span id="roomChip" class="roomchip" title="Room light: how bright the room around the tank is. Starts high until the tank has a light, then low so the tank's light carries the look. Move it to set your own."><span class="roomico" aria-hidden="true">☀</span><input id="vRoom" type="range" min="0" max="0.3" step="0.01" aria-label="Room light"><button id="vRoomAuto" type="button" class="roomauto" title="Let the room light follow the tank again (high with no light, low with one)" hidden>Auto</button></span>
   </div>
   <div id="pairMenu" class="pairmenu" hidden><button id="pmBtn" type="button" class="sidetog" aria-haspopup="true" aria-expanded="false" aria-controls="pmBody" title="View options for both tanks: view, another moment, re-centre, fit both, room light">⚙ View options ▾</button><div id="pmBody" class="pmbody" role="group" aria-label="View options (both tanks)" hidden></div></div>
   <div id="demandPanel" class="dmfloat"></div>
@@ -500,6 +501,7 @@
   <div class="row"><label for="cEl">From above</label><input id="cEl" type="range" min="-20" max="85" step="1"><output id="oEl"></output></div>
   <div class="row"><label for="cZoom">Zoom</label><input id="cZoom" type="range" min="0.1" max="12" step="0.05"><output id="oZoom"></output></div>
   <div class="hint" id="camHint"></div>
+  <span id="roomChip" class="roomchip" title="Room light: how bright the room around the tank is. Starts high until the tank has a light, then low so the tank's light carries the look. Move it to set your own."><span class="roomico" aria-hidden="true">☀</span><input id="vRoom" type="range" min="0" max="0.3" step="0.01" aria-label="Room light"><button id="vRoomAuto" type="button" class="roomauto" title="Let the room light follow the tank again (high with no light, low with one)" hidden>Auto</button></span>
   <div class="btns"><button id="camReset">Straight on</button></div>
   <div class="field showBoxes" title="What the view shows (PNG exports follow it). Something hidden cannot be picked or moved"><span class="flabel">Show</span>
     <label><input type="checkbox" id="showFish" checked> Animals</label>

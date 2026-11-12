@@ -1578,3 +1578,21 @@ details.gfx { margin: 4px 0 } details.gfx > summary { cursor: pointer; font-weig
 .dq11-toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(8px); background: #232a33; color: #fff; padding: 7px 14px; border-radius: 8px; font-size: 13px; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 50 }
 .dq11-toast.show { opacity: 1; transform: translateX(-50%) }
 .dq10 .dq11-bar button:not(.dq10-pill):not(.dq10-x) { padding: 2px 7px; border-radius: 999px; font-size: 12px }
+
+
+/* HM2: Undo / Redo sticky atop the left panel; copies on the view bar only while the panel is collapsed; Save icon on the view */
+.hm2-bar { position: sticky; top: -10px; z-index: 5; display: flex; gap: 6px; margin: -10px -14px 8px; padding: 8px 14px; background: var(--panel); border-bottom: 1px solid var(--line) }
+.hm2-ur { font: inherit; cursor: pointer; border: 1px solid var(--line); background: var(--chip); color: var(--ink); border-radius: 6px; padding: 3px 12px }
+.hm2-ur:disabled { opacity: .5; cursor: default }
+.viewtools .hm2-collapsed-only { display: none }
+#app.collapsed .viewtools .hm2-collapsed-only { display: inline-block }
+.viewtools .hm2-save { padding: 3px 8px; line-height: 1.2 }
+.viewpop .roomchip { margin: 6px 0; box-shadow: none }
+@media (max-width: 560px) { .hm2-bar { margin: -10px -16px 8px; padding: 8px 16px; top: -10px } }
+/* HM2 (Nathan): collapsed, the expand arrow joins the view toolbar group at its start instead of floating halfway down the edge */
+@media (min-width: 761px), (orientation: landscape) {
+  #app.collapsed #sideTab { top: 10px; left: 10px; transform: none; width: 30px; height: 30px; border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 1px 4px rgba(0, 0, 0, .25) }
+  #app.collapsed #sideTab::before { inset: 0 }
+  #app.collapsed .viewtools { left: 46px; max-width: calc(100% - 56px) }
+}
+@media (min-width: 761px), (orientation: landscape) { #app.collapsed #sideTab { top: calc(10px + var(--bb-h)) } }

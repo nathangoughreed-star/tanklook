@@ -73,6 +73,14 @@ models on /review.html (and its drawImage error), TG leftovers (heater product p
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
+## HM2: view toolbar tidy (2026-11-12; lane HM2; Coordinator 23)
+- Room-light slider + Auto moved from the view toolbar into the View popover (same ids / storage); removed from the paired-tank "View options" menu (its View button reaches it).
+- Undo / Redo: sticky bar `#hm2Bar` atop `#side` (ids `undo`/`redo`); `undo2`/`redo2` on the view bar show only while `#app.collapsed`. Both pairs wired in panels.ts (`sync` sets disabled).
+- Save: `#saveIcon` (floppy, "Save (Ctrl+S)") clicks the header Save; Ctrl+S now also does. No saved/unsaved dot: the header's "Autosaved" text is unchanged.
+- Collapsed expand arrow (`#sideTab`, desktop + landscape) sits at the start of the view toolbar group; the open-panel grip is unchanged. Phone portrait arrow unchanged.
+- Fullness tile retitled "Habitat check" (recommendation; Nathan's pick pending: one string in src/ui/fullnessTile.ts, plus two tooltips).
+- Test: test/hm2.test.ts (static structure + wiring). CSS block `.hm2-*` at end of src/style.css.
+
 ## LP1: resizable left panel (2026-11-12; branch claude/lp1-resizable-panel-b61679; Coordinator 23)
 
 - Panel width is one CSS variable `--side-w` on `#app` (default `min(700px, 50vw)`); `#side` and `.status` use it. Desktop only (grip hidden at 760 px and under).

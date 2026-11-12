@@ -166,7 +166,7 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
   const host = document.getElementById('view')!, tools = host.querySelector('.viewtools'); // top-left, under the view's buttons (the demand panel holds the top right)
   const el = document.createElement('section');
   el.className = 'ft'; el.hidden = true; el.setAttribute('aria-label', 'How full the tank is');
-  el.innerHTML = `<button class="ftHead" type="button" aria-expanded="true" title="Minimize the fullness tile"><span class="ftTitle">Fullness</span><span class="ftPill"></span><span class="ftChev" aria-hidden="true">▾</span></button>
+  el.innerHTML = `<button class="ftHead" type="button" aria-expanded="true" title="Minimize the habitat check"><span class="ftTitle">Habitat check</span><span class="ftPill"></span><span class="ftChev" aria-hidden="true">▾</span></button>
 <div class="ftBody"><div class="ftBars"></div><details class="ftN ftCounts"><summary>What counts</summary><ul class="ftCountsBody"></ul></details>
 <details class="ftN"><summary>Where the ammonia goes, per day</summary><div class="ftNCtl">
 <label>Feeding <select class="ftFeed" title="How heavily the animals are fed: sets the waste they make"><option value="light">Light (0.5 % of body weight a day)</option><option value="normal">Normal (1 %)</option><option value="heavy">Heavy (2 %)</option></select></label>
@@ -195,7 +195,7 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
   let min = matchMedia('(max-width: 700px)').matches; // a phone's view is short: minimized until opened once
   try { const v = localStorage.getItem(MIN_KEY); if (v) min = v === '1'; } catch { /* storage blocked */ }
   const setMin = (m: boolean, save = true) => {
-    min = m; el.classList.toggle('min', m); head.setAttribute('aria-expanded', String(!m)); head.title = m ? 'Show the fullness tile' : 'Minimize the fullness tile';
+    min = m; el.classList.toggle('min', m); head.setAttribute('aria-expanded', String(!m)); head.title = m ? 'Show the habitat check' : 'Minimize the habitat check';
     if (save) try { localStorage.setItem(MIN_KEY, m ? '1' : '0'); } catch { /* ignore */ }
   };
   setMin(min, false);
