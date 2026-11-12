@@ -52,12 +52,10 @@ describe('the guided path is the coach', () => {
       const body = t.section ? section(t.section) : html;
       if (t.control) { const m = /^#([\w-]+)$/.exec(t.control); expect(m, `${s.id}: simple #id selector`).toBeTruthy(); expect(body, `${s.id} control`).toContain(`id="${m![1]}"`); }
     }
-    const src = readFileSync('src/ui/panels.ts', 'utf8');
-    for (const d of ['equipment', 'quick']) expect(src).toContain(`${d}: () =>`);
   });
-  it('the coach is the questioner of Discovery (DX5): Guide me walks it, finishing hands over to Discovery, no old dialog', () => {
+  it('HM1: the coach is dormant (no Guide me button, no lazy load from panels); no old welcome dialog', () => {
     const src = readFileSync('src/ui/panels.ts', 'utf8');
-    expect(src).toContain("discover: () => openDiscovery({ from: 'coach' })"); expect(src).not.toContain('welcome.show(');
+    expect(src).not.toContain("import('./coach/dom')"); expect(html).not.toContain('id="guideBtn"'); expect(src).not.toContain('welcome.show(');
   });
   it('the equipment step reacts to owned gear, the limits step does not', () => {
     const ctx = (items: object): CoachCtx => ({ scene: {} as never, tank: { stand: undefined } as never, brief: { v: 1, items } as never });

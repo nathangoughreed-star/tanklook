@@ -75,7 +75,8 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## HM1: header toolbar cut to New / Open… / Save / Discover (2026-11-11; Coordinator 22; NOT pushed)
 Nathan: "only new, open (saved tank or starter tank), save (save or save as), discover. Remove my equipment."
-- Header is one `.tb-main` grid of four (New, Open…, Save, Discover; Discover is appended there by discover/keep.ts) plus Guide me alone on its own row (kept until Nathan decides). Works at 375 px.
+- Header is one `.tb-main` grid of four (New, Open…, Save, Discover; Discover is appended there by discover/keep.ts) exactly four buttons, nothing else. Works at 375 px.
+- **Guide me removed too** (Nathan, via Coordinator 22): button, `.tb-help` and the lazy `attachCoach` hook in panels.ts are deleted. The coach engine in `src/ui/coach/` stays but is DORMANT (no entry point; `attachCoach` needs `#guideBtn`, so re-adding it means a new door).
 - **Open…** opens `#openDlg`: "A saved tank" (start screen, Open Existing tab) or "A starter tank" (Starter / Example tab). The Starter / Example button is gone (SL2's `stepForMenu('open','starters')` call now sits on `#openStarter`).
 - **Save** opens `#saveDlg`: "Save" (`doSave`, the old Save: into this browser with a picture) or "Save as…". **Save as…** opens `#dlDlg` (formerly Download or share): a Name field, "Save in this browser under this name" (a new name makes a new entry), "Download a file" (the old Download; also takes the new name), "Copy share link". So Download and share are folded into Save as…; no function lost. "Autosaved" indicator untouched. New-project guard's "Save copy" calls `doSave()` directly.
 - **My equipment** button removed; still reachable from the Equipment section ("Open My equipment…", `#equipOpen`). eq1/dx3 shot scripts now click `#equipOpen`.

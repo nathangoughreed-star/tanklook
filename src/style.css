@@ -78,8 +78,6 @@ button.on, button.primary { background: var(--accent); color: #fff; border-color
 .tbgroup { display: grid; gap: 5px }
 .tbgroup button { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 6px; padding-right: 6px }
 .tb-main { grid-template-columns: repeat(4, 1fr) }   /* New, Open…, Save, Discover (discover/keep.ts appends Discover here) */
-.tb-help { grid-template-columns: 1fr }   /* Guide me: stays for now */
-.tb-help button { border-style: dashed }
 .namerow { display: flex; gap: 8px; align-items: center }
 .namerow input { flex: 1 }
 .namerow .hint { white-space: nowrap; font-size: 11px }

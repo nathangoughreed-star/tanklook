@@ -26,7 +26,7 @@ describe('SL2 resume where the last session left off', () => {
   it('header (HM1): New, Open…, Save (+ Discover); Open asks saved or starter; Save offers Save / Save as…; no My equipment, Starter or Download buttons', () => {
     const h = read('index.html'), p = read('src/ui/panels.ts');
     for (const id of ['newScene', 'openScene', 'saveScene', 'openSaved', 'openStarter', 'saveHere', 'saveAs', 'dlFile', 'shareScene']) expect(h).toContain(`id="${id}"`);
-    for (const id of ['startScene', 'downloadScene', 'myEquip']) expect(h).not.toContain(`id="${id}"`);
+    for (const id of ['startScene', 'downloadScene', 'myEquip', 'guideBtn']) expect(h).not.toContain(`id="${id}"`);
     expect(h.indexOf('id="newScene"')).toBeLessThan(h.indexOf('id="openScene"')); expect(h.indexOf('id="openScene"')).toBeLessThan(h.indexOf('id="saveScene"'));
     expect(read('src/ui/discover/keep.ts')).toContain("'.tb-main'");
     expect(p).not.toContain('Continue your last tank');

@@ -351,8 +351,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     enter: fillStep,
     profile: () => { try { return loadProfile(); } catch { return undefined; } },
   });
-  // lane GW1: the guide that walks the real menus (ui/coach); lane GW2: Guided = this coach (the old dialog steps live on as Quick Setup's Browse looks / Explore)
-  void import('./coach/dom').then(m => { m.attachCoach(store, { limits: openLimits, equipment: () => openOwned(), discover: () => openDiscovery({ from: 'coach' }), quick: () => openDiscovery({ from: 'quick' }) }); }); // DX5: the guide is Discovery's optional questioner; finishing it hands over to Discovery
+  // HM1 (Nathan 2026-11-11): the guide (ui/coach) has no entry point any more: no Guide me button, no lazy load. The engine files stay, dormant.
   void import('./suggest').then(m => { suggestPanel = m.attachSuggest(store, viewer, status, openOwned); }); // lane C8: Suggest a setup
   void import('./infeasibleCard').then(m => m.attachCompare(store, status)); // lane GV7: compromise slots fill as they show; Use this / Compare (split view, money and care first on the tabs)
   void import('./briefBar').then(m => { m.attachBriefBar(store, { suggest: () => suggestPanel?.open(), owned: () => openOwned(), limits: openLimits, report: () => void import('./report').then(m => m.openReport()) }); }); // lane U3: the setup brief bar, shown in every entry point
