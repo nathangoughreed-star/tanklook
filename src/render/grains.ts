@@ -9,6 +9,7 @@ import { GRAIN_LOOK, GRAIN_ORDER, SUBSTRATES, blendWeights, blendZone, grain3D, 
 import { waterY } from '../scene/physics';
 import { footprint } from '../scene/shape';
 import type { Grain, Tank, TankSetup } from '../scene/types';
+import { FX } from './fx';
 import { insideIn, scatter, type GroundAt, type ScatterKind } from './scatter';
 
 /** How a ground's grains look in 3D: chips (bark) or stones, diameter range (mm), roundness 0-1, colours, flecked,
@@ -126,7 +127,7 @@ function glassGeo(g: THREE.BufferGeometry) {
   b.userData.keep = true; glassGeos.set(g, b); return b;
 }
 const glassMat = (m: THREE.MeshBasicMaterial) => { let g = glassMats.get(m); if (!g) { g = m.clone(); g.userData.keep = true; g.userData.pane = true; delete g.userData.aq; /* clone() copies userData but not onBeforeCompile: a copied aq flag leaves it unlit */ glassMats.set(m, g); } return g; };
-function grainKinds(g: GrainLook): ScatterKind[] {
+export function grainKinds(g: GrainLook): ScatterKind[] {
   // small grains (gravel, under 8 mm): 20 triangles each, not 80 (18k stones in a 20-gal made it 2-3 ms)
   const geos = g.shape === 'chip' ? chipGeos() : stoneGeos(g.round, g.speckle, (g.size[0] + g.size[1]) / 2 < 8 ? 0 : 1);
   let mat = grainMat.get(g.shape);
@@ -142,8 +143,11 @@ function topGrains(S: TankSetup, T: Tank, ground: GroundAt, g: GrainLook, layer:
   // a blend's layer: points over the floor kept by its share there (a few spare for the ones scatter turns down)
   let at: [number, number][] | undefined;
   if (g.at) {
-    const r = rng(23 + layer), n = Math.round(count * 1.15 * T.L * T.D / area); at = [];
-    for (let i = 0; i < n && at.length < count; i++) { const x = r() * T.L, d = r() * T.D; if (r() < g.at(x, d)) at.push([x, d]); }
+    // VF3 (fx ground): thinned by a clumping field, so the stones gather in dense knots with sparse fringes (not an even
+    // pepper), more near hardscape and on slopes; the same number of tries, so about as many stones in all
+    const cl = FX.ground ? clumpField(S, ground) : null, K = cl ? 1.7 : 1;
+    const r = rng(23 + layer), n = Math.round(count * 1.15 * K * T.L * T.D / area); at = [];
+    for (let i = 0; i < n && at.length < count; i++) { const x = r() * T.L, d = r() * T.D; if (r() < g.at(x, d) * (cl ? cl(x, d) / K : 1)) at.push([x, d]); }
   }
   const out = scatter(T, ground, {
     seed: 11 + layer, count, at, kinds: grainKinds(g), lift: [0, 0], pile: 0, tilt: chip ? 0.35 : 0.5,
@@ -167,7 +171,7 @@ function paneGrains(S: TankSetup, T: Tank, groundY: (x: number, d: number) => nu
   for (const e of footprint(T).edges) {
     const yaw = Math.atan2(-(e.b[1] - e.a[1]), e.b[0] - e.a[0]); // world angle of the pane (z = -depth)
     const avg = (groundY(e.a[0], e.a[1]) + groundY(e.b[0], e.b[1]) + groundY((e.a[0] + e.b[0]) / 2, (e.a[1] + e.b[1]) / 2)) / 3;
-    const n = Math.min(20000, Math.round(1.3 * e.len * avg / (mean * mean * (chip ? 0.35 : 0.6))));
+    const n = Math.min(20000, Math.round((FX.ground ? 1.5 : 1.3) * e.len * avg / (mean * mean * (chip ? 0.35 : 0.6))));
     for (let i = 0; i < n; i++) {
       const t = r(), size = g.size[0] + r() * (g.size[1] - g.size[0]), ki = Math.floor(r() * kinds.length), c = pal[Math.floor(r() * pal.length)];
       const yy = r(), a = (r() - 0.5) * 0.6, tl = r() - 0.5, k = 0.85 + r() * 0.3;
@@ -178,11 +182,12 @@ function paneGrains(S: TankSetup, T: Tank, groundY: (x: number, d: number) => nu
       const inset = size * (chip ? 0.2 : 0.36) + 0.4, x = px - e.n[0] * inset, d = pd - e.n[1] * inset;
       if (inBy(x, d) < inset - 0.5) continue; // a corner: the other pane is too near
       if (g.at && r() >= g.at(px, pd)) continue; // a blend: only on this grain's patches
-      const y = Math.min(top - under, size * 0.15 + yy * top);
+      // VF3 (fx ground): packed tighter toward the floor and darker there, as gravel pressed against glass looks
+      const y = Math.min(top - under, size * 0.15 + (FX.ground ? yy ** 1.6 : yy) * top);
       qa.setFromAxisAngle(up, yaw + a); ax.set(1, 0, 0).applyQuaternion(qa);
       q.setFromAxisAngle(ax, chip ? Math.PI / 2 * (0.6 + 0.8 * Math.abs(tl)) * Math.sign(tl || 1) : tl * 0.6).multiply(qa);
       per[ki].push(new THREE.Matrix4().compose(new THREE.Vector3(x, y, -d), q, new THREE.Vector3(size, size, size)));
-      tint[ki].push(c.clone().multiplyScalar(k * 1.3 * (y < wy ? 0.55 : 1)));
+      tint[ki].push(c.clone().multiplyScalar(k * 1.3 * (y < wy ? 0.55 : 1) * (FX.ground ? 0.7 + 0.3 * Math.min(1, y / (top || 1)) : 1)));
     }
   }
   return kinds.flatMap((K, i) => {
@@ -204,7 +209,8 @@ function paneGrains(S: TankSetup, T: Tank, groundY: (x: number, d: number) => nu
 interface GrainSnap { geo: THREE.BufferGeometry; mat: THREE.Material | THREE.Material[]; m: Float32Array; c: Float32Array | null; nolight: boolean; order: number }
 const grainCache = new Map<string, GrainSnap[]>();
 function cachedGrains(tag: string, S: TankSetup, T: Tank, make: () => THREE.InstancedMesh[]): THREE.InstancedMesh[] {
-  const key = tag + JSON.stringify([{ ...S.substrate, litter: null }, S.terrain, S.layout.id, S.layout.seed, S.backdrop, S.render?.bgSides, T, S.water.on, S.water.level]);
+  const key = tag + JSON.stringify([{ ...S.substrate, litter: null }, S.terrain, S.layout.id, S.layout.seed, S.backdrop, S.render?.bgSides, T, S.water.on, S.water.level,
+    FX.ground && [hardSpots(S)]]); // VF3: the flecks gather near the hardscape
   let snap = grainCache.get(key);
   if (snap) { grainCache.delete(key); grainCache.set(key, snap); } // most recent last
   else {
@@ -219,4 +225,50 @@ function cachedGrains(tag: string, S: TankSetup, T: Tank, make: () => THREE.Inst
     m.computeBoundingSphere(); m.userData.scatter = true; m.userData.grains = true; m.renderOrder = g.order; if (g.nolight) m.userData.nolight = true;
     return m;
   });
+}
+
+// ---------- VF3: substrate variation (lane VF-C, 2026-11-11; fx `ground`) ----------
+
+/** Seeded smooth value noise, 0..1, at unit cell size. */
+function valueNoise(seed: number) {
+  const sd = seed * 12.9898, hs = (a: number, b: number) => { const t = Math.sin(a * 127.1 + b * 311.7 + sd) * 43758.5453; return t - Math.floor(t); };
+  return (x: number, z: number) => {
+    const ix = Math.floor(x), iz = Math.floor(z), fx = x - ix, fz = z - iz, u = fx * fx * (3 - 2 * fx), w = fz * fz * (3 - 2 * fz);
+    return (hs(ix, iz) * (1 - u) + hs(ix + 1, iz) * u) * (1 - w) + (hs(ix, iz + 1) * (1 - u) + hs(ix + 1, iz + 1) * u) * w;
+  };
+}
+/** Where the hardscape stands on the floor plan: [x, depth, radius mm] per stone, wood or cave near the ground. */
+export function hardSpots(S: TankSetup): [number, number, number][] {
+  return S.items.filter(it => (it.kind === 'stone' || it.kind === 'wood' || it.kind === 'cave') && it.lift < 30)
+    .map(it => [Math.round(it.x), Math.round(it.depth), Math.round(it.size * (it.kind === 'wood' ? 0.3 : 0.4))]);
+}
+/**
+ * The ground's broad colour patches: a factor per colour channel at floor-plan point (x, depth), from low-frequency
+ * world-space noise (patches about 6-10 in across, a finer 3 in octave on top): a few % lighter or darker and a touch
+ * warmer or cooler, so a plain sand bed is not one flat colour. Null while fx `ground` is off. Build time only (the
+ * ground's vertex colours, render/build.ts addSubstrate).
+ */
+export function groundTint(S: TankSetup): ((x: number, d: number) => [number, number, number]) | null {
+  if (!FX.ground) return null;
+  const a = valueNoise((S.layout.seed ?? 1) + 31), b = valueNoise((S.layout.seed ?? 1) + 57), c = valueNoise((S.layout.seed ?? 1) + 83);
+  return (x, d) => {
+    const lum = 0.65 * (a(x / 220, d / 220) - 0.5) + 0.35 * (b(x / 75 + 4, d / 75 + 9) - 0.5), warm = c(x / 300 + 2, d / 300 + 5) - 0.5;
+    const k = 1 + 0.26 * lum; // about +-9 %
+    return [k * (1 + 0.05 * warm), k, k * (1 - 0.07 * warm)];
+  };
+}
+/**
+ * How strongly the blend's 3D flecks gather at (x, depth), mean about 1: knots about 1-2 in across inside drifts about
+ * 5 in across, raised near stones and wood and on slopes, nearly empty between knots.
+ */
+function clumpField(S: TankSetup, ground: GroundAt) {
+  const big = valueNoise((S.layout.seed ?? 1) + 101), knot = valueNoise((S.layout.seed ?? 1) + 113), spots = hardSpots(S);
+  return (x: number, d: number) => {
+    const drift = big(x / 130, d / 130), k = knot(x / 38 + 3, d / 38 + 7);
+    let near = 0;
+    for (const [hx, hd, hr] of spots) { const q = Math.hypot(x - hx, d - hd) / (hr + 40); if (q < 2.5) near = Math.max(near, Math.exp(-q * q * 0.8)); }
+    const e = 6, gx = ground(x + e, d)[1] - ground(x - e, d)[1], gd = ground(x, d + e)[1] - ground(x, d - e)[1], slope = Math.min(1, Math.hypot(gx, gd) / (2 * e) * 2);
+    const v = 3 * Math.max(0, drift - 0.3) * 2.2 * Math.max(0, k - 0.2) * 2.4 + 1.4 * near + 0.6 * slope;
+    return Math.min(2.6, v);
+  };
 }

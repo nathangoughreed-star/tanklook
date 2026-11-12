@@ -1,0 +1,60 @@
+{
+ "commit": "6e128a41",
+ "build": 1790,
+ "dirty": true,
+ "when": "2026-11-12T01:48:58.801Z",
+ "size": [
+  1050,
+  850
+ ],
+ "fx": [
+  "none",
+  "ground",
+  "contact,ground"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "planted4": {
+   "shots": [
+    "planted4-front-none.png",
+    "planted4-ground-none.png",
+    "planted4-rock-none.png",
+    "planted4-front-ground.png",
+    "planted4-ground-ground.png",
+    "planted4-rock-ground.png",
+    "planted4-front-contact-ground.png",
+    "planted4-ground-contact-ground.png",
+    "planted4-rock-contact-ground.png"
+   ],
+   "ab": {}
+  },
+  "nano": {
+   "shots": [
+    "nano-front-none.png",
+    "nano-ground-none.png",
+    "nano-rock-none.png",
+    "nano-front-ground.png",
+    "nano-ground-ground.png",
+    "nano-rock-ground.png",
+    "nano-front-contact-ground.png",
+    "nano-ground-contact-ground.png",
+    "nano-rock-contact-ground.png"
+   ],
+   "ab": {}
+  },
+  "reef": {
+   "shots": [
+    "reef-front-none.png",
+    "reef-ground-none.png",
+    "reef-rock-none.png",
+    "reef-front-ground.png",
+    "reef-ground-ground.png",
+    "reef-rock-ground.png",
+    "reef-front-contact-ground.png",
+    "reef-ground-contact-ground.png",
+    "reef-rock-contact-ground.png"
+   ],
+   "ab": {}
+  }
+ }
+}

@@ -4,10 +4,11 @@ import * as THREE from 'three';
 import { tankView } from './tankView';
 import { STAND_PANEL } from '../scene/standspace';
 import { GRAIN_ORDER, LECA, SUBSTRATES, blendTile, blendZone, grain3D } from '../art/placeholder';
-import { litterMeshes } from './scatter';
+import { litterMeshes, type GroundAt } from './scatter';
 import { patchHighlight, patchMeshes, patchSel } from './brushmesh';
 import { applyGrainUV, woodTexture, type Grain } from './woodGrain';
-import { glassGrains, grainLook, grainMeshes, grainPatchy, grainTop } from './grains';
+import { contactKey, contactObjects } from './contact';
+import { glassGrains, grainLook, grainMeshes, grainPatchy, grainTop, groundTint } from './grains';
 import { snailAspect } from '../art/snails';
 import { fishTL, leafUp, needsWater, speciesOf, type Species } from '../data/species';
 import { PERCHES, anchors, limbPaths, type Anchor, type Anchors, type V3 } from '../scene/anchors';
@@ -1019,7 +1020,9 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   const WET = [0.47, 0.44, 0.41]; // wet ground: darker, a little richer (blue drops most)
   const vcol: number[][] = [];
   // colour, normal and sheen of the ground at a point q with the surface tilt `a` (along x) and `b` (along depth)
-  const shadeAt = (q: V3, a: THREE.Vector3, b: THREE.Vector3): number[] => {
+  const tint = S.render.beams && S.light.type !== 'flat' ? null : groundTint(S); // VF3 broad colour patches (render/grains.ts)
+  const shadeAt = (q: V3, a: THREE.Vector3, b: THREE.Vector3): number[] => { const c = shade0(q, a, b); if (tint) { const t = tint(q[0], -q[2]); c[0] *= t[0]; c[1] *= t[1]; c[2] *= t[2]; } return c; };
+  const shade0 = (q: V3, a: THREE.Vector3, b: THREE.Vector3): number[] => {
     const n = new THREE.Vector3().crossVectors(a, b).normalize(); if (n.y < 0) n.negate();
     const k = clamp(0.55 + 0.6 * n.dot(light), 0, 1.15) / 1.15;
     if (terra) { const w = wetAt(q[1]); return [...WET.map(c => k * (1 - w * (1 - c))), n.x, n.y, n.z, sheenAt(q[1])]; }
@@ -1133,7 +1136,7 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
           const dn = tops[i] - pts[i][1], mk0 = ends[i]; sideMk.push((mk0[0] - e.n[0] * dn) / tile, (mk0[1] - e.n[1] * dn) / tile);
           // the skirt starts at the top surface's own colour at the rim (a flat darker shade left a visible line where they
           // meet) and darkens toward the floor
-          const c = rim[ends[i] === p ? 0 : 1], f = 1 - SKIRT_DARK * (1 - clamp(pts[i][1] / (tops[i] || 1), 0, 1));
+          const c = rim[ends[i] === p ? 0 : 1], f = 1 - (tint ? 0.55 : SKIRT_DARK) * (1 - clamp(pts[i][1] / (tops[i] || 1), 0, 1)) ** (tint ? 0.8 : 1);
           sideCol.push(c[0] * f, c[1] * f, c[2] * f);
         }
       }
@@ -1163,6 +1166,7 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   const fr = footprint(T).ring, under: number[][] = [], lay = sub.type === 'layered' && banded, ut = lay ? lecaTile : tile;
   for (let i = 1; i < fr.length - 1; i++) for (const p of [fr[0], fr[i], fr[i + 1]]) under.push([p[0], 0.3, -p[1]], [p[0] / ut, p[1] / ut]);
   mk(under, lay ? 0x8c8c8c : 0x9a9a9a, undefined, undefined, undefined, lay ? lecaTexture() : undefined);
+  sc.userData.groundAt = (x: number, d: number) => G([x, d]); // the drawn ground, for the contact shadows (render/contact.ts)
   if (gl) for (const o of [...grainMeshes(S, T, (x, d) => G([x, d])), ...(bowl ? [] : glassGrains(S, T, (x, d) => G([x, d])[1]))]) sc.add(o);
   const gt = grainTop(gl); // litter lies on the grains
   if (sub.litter?.density) for (const o of litterMeshes(S, T, (x, d) => { const p = G([x, d]); p[1] += gt; return p; })) sc.add(o);
@@ -1499,6 +1503,9 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
   { const key = outlineKey(S, T); b.itemParts.push(take(key) ?? part(key, spaceOutline(S, T), [])); } // the owner's space, dashed (lane P3)
   // the plant meshes, for animals that sit on leaves (anchors `leaf`); an animal on a plant is rebuilt when any plant changes
   const leaves = b.itemMeshes.filter(m => m.userData.plant); for (const m of leaves) m.updateMatrixWorld(true);
+  // contact shadows and the grains at the hardscape's foot (plan VF4, render/contact.ts; fx contact / ground)
+  if (!bare) { const key = contactKey(S.items), gnd = (sc.userData.groundAt as GroundAt | undefined) ?? ((x: number, d: number): [number, number, number] => [x, groundHeight(S, T, x, d), -d]);
+    b.itemParts.push(take(key) ?? part(key, contactObjects(S, T, S.items.flatMap((it, i) => { const m = b.itemParts[i]?.meshes[0]; return m ? [{ it, m }] : []; }), gnd), [])); }
   const hardKey = hard.join('|'), leafKey = leaves.map(m => m.uuid + m.geometry.uuid).join('|');
   // glass climbers sit on the 3D wall where it covers the pane
   const wallKey = JSON.stringify([S.backdrop, S.render.rim, S.render.bgSides]);

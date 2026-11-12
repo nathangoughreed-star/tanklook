@@ -2,6 +2,8 @@
 // light baked in, like the hood and substrate); plants are real 3D from their `PLANT3D` entry (render/plant3d.ts).
 // Each item is ONE mesh, so picking and the selection box are simple. Shapes are cached by (variant, seed, size) and the
 // baked colours by turn as well: the scene rebuilds on every drag step.
+import { baseShade } from './contact';
+import { FX } from './fx';
 import * as THREE from 'three';
 import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../art/paint';
@@ -765,7 +767,7 @@ const itemEuler = (it: Item) => new THREE.Euler(it.pitch * D2R, it.yaw * D2R, it
  * piece tipped on its side or rolled over rests on the ground instead of sinking into it).
  */
 function bakedShape(it: Item) {
-  const k = `${it.variant}|${it.seed}|${it.size}|${it.yaw}|${it.pitch}|${it.tilt}`;
+  const k = `${it.variant}|${it.seed}|${it.size}|${it.yaw}|${it.pitch}|${it.tilt}|${FX.contact}`;
   let g = baked.get(k);
   if (g) return g;
   const src = solidShape(it), q = new THREE.Quaternion().setFromEuler(itemEuler(it)).invert();
@@ -778,6 +780,7 @@ function bakedShape(it: Item) {
     bake[i] = k2;
     out[i * 3] = a.getX(i) * k2; out[i * 3 + 1] = a.getY(i) * k2; out[i * 3 + 2] = a.getZ(i) * k2;
   }
+  if (FX.contact && it.kind !== 'coral') baseShade(g.attributes.position, out, U); // VF4: darker where it meets the ground (render/contact.ts)
   g.setAttribute('color', new THREE.BufferAttribute(out, 3));
   g.setAttribute('aBake', new THREE.BufferAttribute(bake, 1)); // the baked light's factor per vertex (the glass cap relights: capPasses)
   g.computeBoundingBox(); g.computeBoundingSphere();
