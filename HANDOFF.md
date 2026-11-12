@@ -74,6 +74,12 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
+## DQ6: Discover redesign evaluation, Keep / Like / Dislike plan (2026-11-12; Coordinator 23; pushed)
+- Nathan proposed replacing the A/B Discovery with iterative generation inside the editor (Keep this / Like / Dislike; Discover at any time; Guided vs Sandbox as the two manual modes): `research/design/discover-redesign-proposal-2026-11-12.md`.
+- DQ6 evaluated it against the code: `research/design/discover-redesign-evaluation-2026-11-12.md`. The old lock-aware delta engine (`scene/discover.ts propose`, `scene/locks.ts`) already does keep-and-regenerate as one undo step, so the work is mostly removing the A/B layer.
+- **Nathan accepted all of D1-D11 and the DQ7-DQ13 plan (2026-11-12).** Key points: A/B stays until the new loop is live, then its button is hidden; Keep = existing locks (item + count by default, Pin position optional); Like / Dislike = `brief.project.feedback`, per project, ranking only; Sandbox Discover stays welfare-safe; `brief.project.rules` guided / sandbox, default guided.
+- Wave 1 started: DQ7 (candidate API) and DQ8 (feedback model).
+
 ## VF-C: substrate patterning and contact shadows, plan VF stages VF3 + VF4 (2026-11-11; branch vf-c-ground, worktree ../Glass-Box-vf-c, port 6023; NOT pushed)
 - **2026-11-12, Nathan approved both after four fixes; both now ON by default** (`FX_DEFAULT` in fx.ts: the same line VF-A changes for ACES, merge by hand). Fixes: (1) a small low pebble (reef stone 31, 1.2 in, 0.6 in tall) had a shadow 3.4 in across at full darkness and looked afloat: a hardscape blob's pad and darkness now go by the piece's height above the ground (pieces 60 mm / 2.4 in or taller unchanged) and fade by any gap under it; (2) no coarse foot grains on marine sand (white sprinkles); (3) scripts/vf-shots.mjs (and vfc-ab.mjs): `store.cam()` writes into the scene camera, so after a close-up every later "front" shot was zoomed in: the front camera is now read once and restored, close-up pans found once per view; (4) the ground is not rebuilt on a drag (patchTank), so the fleck gathering near hardscape (`hardSpots`, now deleted) stayed where a piece had been: the clump field is noise + slope only; foot grains live in the contact part and move / go with the piece (tests). PDF: research/visual/vfc/vfc-before-after.pdf.
 - Two build-time switches: `?fx=ground` (VF3) and `?fx=contact` (VF4). Added the `ground` key to render/fx.ts and to viewer.ts's rebuild list (one-line hooks in VF-A's files).

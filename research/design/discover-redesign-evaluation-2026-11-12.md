@@ -2,6 +2,8 @@
 
 Answers section 16 of `discover-redesign-proposal-2026-11-12.md`. Tags follow the proposal: **[User]** = Nathan's direction, **[Assistant]** = the other AI's suggestion, not approved. Paths are under `src/`. No code changed. Things I read but did not run are marked *(read, not run)*.
 
+**ACCEPTED (Nathan 2026-11-12):** all eleven recommended answers D1-D11 in section 7, and the migration plan in section 8 (DQ7-DQ13, waves {DQ7, DQ8}, {DQ9, DQ10}, {DQ11, DQ12}, DQ13). These are now decisions, not suggestions.
+
 ## 0. Headline
 The proposal is closer to the code than it looks. Underneath the A/B screen sits an older, **delta-based, lock-aware, scope-aware engine** (`scene/discover.ts` `propose`, DX2) plus a persistent lock model (`scene/locks.ts`, DX0/PS1) that already does "keep these, regenerate the rest, apply as ONE undo step". The A/B loop (`pairGen.ts`, `discoverySession.ts`, `ui/ab/*`) is a pair-chooser layered on top. Going back to iterative generation is mostly **un-layering**, not rewriting. The real work is three things:
 1. The Discover screen **freezes the editor** (`Store.frozen`), so it cannot be "usable at any point inside the editor".
