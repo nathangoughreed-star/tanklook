@@ -17,8 +17,8 @@
 export type FxKey = 'caustics' | 'depth' | 'contact' | 'ground' | 'tonemap' | 'variety' | 'waterline' | 'embed' | 'mix' | 'sand';
 export interface Fx { caustics: boolean; depth: boolean; contact: boolean; ground: boolean; tonemap: 0 | 1 | 2; variety: boolean; waterline: boolean; embed: boolean; mix: boolean; sand: boolean }
 
-/** What ships (each switches on once Nathan has seen it and said yes; variety on: Nathan 2026-11-11, lane VF-B; tonemap ACES and caustics (animated): Nathan 2026-11-12, lane VF-A; contact and ground: Nathan 2026-11-12, lane VF-C). */
-export const FX_DEFAULT: Readonly<Fx> = { caustics: true, depth: false, contact: true, ground: true, tonemap: 2, variety: true, waterline: false, embed: false, mix: false, sand: false };
+/** What ships (each switches on once Nathan has seen it and said yes; variety on: Nathan 2026-11-11, lane VF-B; tonemap ACES and caustics (animated): Nathan 2026-11-12, lane VF-A; contact and ground: Nathan 2026-11-12, lane VF-C; embed: Nathan 2026-11-12 blind test, lane VF-C2). */
+export const FX_DEFAULT: Readonly<Fx> = { caustics: true, depth: false, contact: true, ground: true, tonemap: 2, variety: true, waterline: false, embed: true, mix: false, sand: false };
 
 const TONE: Record<string, 0 | 1 | 2> = { none: 0, off: 0, agx: 1, aces: 2 };
 
@@ -27,7 +27,7 @@ export function parseFx(q: string | null | undefined, base: Fx = { ...FX_DEFAULT
   const fx = { ...base };
   if (!q) return fx;
   for (const raw of q.split(',').map(s => s.trim().toLowerCase()).filter(Boolean)) {
-    if (raw === 'none') { Object.assign(fx, { caustics: false, depth: false, contact: false, ground: false, tonemap: 0, variety: false, waterline: false, embed: false, mix: false, sand: false }); continue; }
+    if (raw === 'none') { Object.assign(fx, { caustics: false, depth: false, contact: false, ground: false, tonemap: 0, variety: false, waterline: false, embed: true, mix: false, sand: false }); continue; }
     if (raw === 'all') { Object.assign(fx, { caustics: true, depth: true, contact: true, ground: true, tonemap: fx.tonemap || 1, variety: true, waterline: true, embed: true, mix: true, sand: true }); continue; }
     const off = raw.startsWith('-'), [k, v] = raw.replace(/^[-+]/, '').split(/[:=]/);
     if (k === 'tonemap') fx.tonemap = off ? 0 : v != null ? TONE[v] ?? 1 : 1;

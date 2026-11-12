@@ -1,0 +1,35 @@
+{
+ "commit": "d4b98f71",
+ "build": 1816,
+ "dirty": true,
+ "when": "2026-11-12T16:11:53.238Z",
+ "size": [
+  1050,
+  850
+ ],
+ "fx": [
+  "none",
+  "embed"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "nano": {
+   "shots": [
+    "nano-ground-none.png",
+    "nano-rock-none.png",
+    "nano-ground-embed.png",
+    "nano-rock-embed.png"
+   ],
+   "ab": {}
+  },
+  "reef": {
+   "shots": [
+    "reef-ground-none.png",
+    "reef-rock-none.png",
+    "reef-ground-embed.png",
+    "reef-rock-embed.png"
+   ],
+   "ab": {}
+  }
+ }
+}

@@ -2,7 +2,7 @@
 // - an old save (the VF0 reference tanks) loads with the same layout whichever switches are on (render only)
 // - the switches off give the old scene: no contact objects, the same object list and ground colours as before
 // - the contact blob follows a dragged rock (patchTank rebuilds the contact part; the blob's middle moves with it)
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import * as THREE from 'three';
 import { buildTank, patchTank } from '../src/render/build';
 import { FX_DEFAULT, setFx } from '../src/render/fx';
@@ -26,7 +26,8 @@ const sig = (sc: THREE.Scene) => sc.children.map(o => o.type + ((o as THREE.Mesh
 /** The ground mesh's vertex colours (the first mesh with userData.sub on its material and a colour attribute). */
 const groundCols = (sc: THREE.Scene) => { let c: number[] = []; sc.traverse(o => { const m = o as THREE.Mesh; if (!c.length && (m.material as THREE.Material)?.userData?.sub && m.geometry.attributes.color) c = Array.from(m.geometry.attributes.color.array as Float32Array); }); return c; };
 
-afterEach(() => setFx({ contact: FX_DEFAULT.contact, ground: FX_DEFAULT.ground }));
+beforeEach(() => setFx({ embed: false })); // (embed, VF-C2, has its own tests below; on by default since 2026-11-12)
+afterEach(() => setFx({ contact: FX_DEFAULT.contact, ground: FX_DEFAULT.ground, embed: FX_DEFAULT.embed }));
 
 describe('VF-C ground and contact', () => {
   it('switches off: no contact objects, and the scene is the same as before', () => {
@@ -108,5 +109,16 @@ describe('VF-C ground and contact', () => {
     const col = g.attributes.color.array as Float32Array;
     expect(Math.max(...col)).toBeLessThan(0.08); // linear; the big rocks reach about 0.25
     expect(contacts(b.scene).filter(o => (o as THREE.InstancedMesh).isInstancedMesh)).toHaveLength(0);
+  });
+});
+
+describe('VF-C2 embed', () => {
+  it('sinks a stone deeper only while the switch is on, and never a stacked piece or a plant', async () => {
+    const { embedSink } = await import('../src/render/contact');
+    const stone = { id: 3, kind: 'stone', variant: 'granite', seed: 5, size: 220, lift: 0 } as never, stacked = { id: 4, kind: 'stone', variant: 'granite', seed: 5, size: 220, lift: 60 } as never, plant = { id: 5, kind: 'plant', variant: 'sword', seed: 1, size: 200, lift: 0 } as never;
+    setFx({ embed: false }); expect(embedSink(stone)).toBe(0);
+    setFx({ embed: true });
+    const s = embedSink(stone); expect(s).toBeGreaterThanOrEqual(3); expect(s).toBeLessThanOrEqual(35);
+    expect(embedSink(stacked)).toBe(0); expect(embedSink(plant)).toBe(0);
   });
 });

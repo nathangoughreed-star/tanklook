@@ -222,6 +222,9 @@ function bermAt(b: Blob, x: number, d: number) {
  */
 function bermObjects(S: TankSetup, T: Tank, list: Blob[], ground: GroundAt, skin: GroundSkin): THREE.Object3D[] {
   if (!list.length) return [];
+  // over 3D grains (gravel) a painted berm hides real stones under a flat dark smear (Nathan's blind test 2026-11-12: nano wood base):
+  // the berm there is only its spilled grains, denser and a little damp-toned
+  if (skin.color !== 0xffffff) return spillGrains(S, T, list, ground, 0.8, true);
   const NA = 28, NR = 7, nv = (NR + 1) * NA, pos = new Float32Array(list.length * nv * 3), col = new Float32Array(list.length * nv * 3), uv = new Float32Array(list.length * nv * 2), idx: number[] = [];
   const scale = skin.color === 0xffffff ? 1 : 0.5; // over 3D grains the berm is lower: the spilled grains make up the rest
   list.forEach((b, bi) => {
@@ -253,7 +256,7 @@ function bermObjects(S: TankSetup, T: Tank, list: Blob[], ground: GroundAt, skin
 }
 
 /** Grains of the bed's own kind lying on each berm (a few per piece, sized like the bed's grains: a 3D ground's own stones, a fine bed's 2-4.5 mm). */
-function spillGrains(S: TankSetup, T: Tank, list: Blob[], ground: GroundAt, scale: number): THREE.InstancedMesh[] {
+function spillGrains(S: TankSetup, T: Tank, list: Blob[], ground: GroundAt, scale: number, dense = false): THREE.InstancedMesh[] {
   const sub = S.substrate; if (!sub.show) return [];
   let look: GrainLook | null = grainLooks(sub)[0] ?? null;
   if (!look) {
@@ -263,7 +266,7 @@ function spillGrains(S: TankSetup, T: Tank, list: Blob[], ground: GroundAt, scal
   }
   const r = rng(151 + (S.layout.seed ?? 1)), at: [number, number][] = [];
   for (const b of list) {
-    const per = Math.min(90, Math.round((b.fx! + b.fd!) * 0.45));
+    const per = Math.min(dense ? 160 : 90, Math.round((b.fx! + b.fd!) * (dense ? 0.9 : 0.45)));
     for (let i = 0; i < per; i++) {
       const a = r() * Math.PI * 2, t = 0.8 + 0.85 * r() * r(), w = wobble(b.u ?? 0, a), lx = Math.cos(a) * t * w * b.fx!, ld = Math.sin(a) * t * w * b.fd!;
       at.push([b.x + lx * b.ux - ld * b.ud, b.d + lx * b.ud + ld * b.ux]);
@@ -275,7 +278,7 @@ function spillGrains(S: TankSetup, T: Tank, list: Blob[], ground: GroundAt, scal
     return [g[0], g[1] + h, g[2]];
   };
   const ms = scatter(T, bermY, { seed: 9, count: at.length, at, kinds: grainKinds(look).slice(0, 2), lift: [0, 0], pile: 0, tilt: 0.5, slope: 0.3, clump: 0, liftK: [-0.2, 0.05], pileK: 0.15, cell: 3,
-    palette: look.colors.map(c => new THREE.Color(c).multiplyScalar(0.8)) });
+    palette: look.colors.map(c => new THREE.Color(c).multiplyScalar(dense ? 0.62 : 0.8)) });
   for (const m of ms) { m.userData.grains = true; m.userData.contact = true; m.raycast = () => {}; }
   return ms;
 }

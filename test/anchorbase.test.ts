@@ -2,6 +2,7 @@
 // animal of the examples (and Shuffled stockings of them, with and without a 3D wall) to the place and turn it had
 // before that move, within 1 mm. Animals perching on a thin branch or a ledge (new) are left out.
 // Re-record (only on purpose): RECORD=1 npx vitest run test/anchorbase.test.ts
+import './pinfx';
 import { describe, expect, it } from 'vitest';
 import * as THREE from 'three';
 import { rng } from '../src/art/paint';
