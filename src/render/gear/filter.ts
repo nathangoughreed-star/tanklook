@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { type FilterModel } from '../../demand/gear';
 import { type FilterProduct } from '../../data/gearCatalog';
 import { backdropDepth, clamp } from '../../scene/physics';
+import { standInside } from '../../scene/standspace';
 import { Bucket, V, hash, C, flowScale, hexOr, partOf, Frame, Spot, lerp, sucker, overRim } from './common';
 import { airPump, bubbles } from './pump';
 
@@ -157,21 +158,34 @@ export function canister(f: Frame, m: FilterModel, sp: Spot, prod?: FilterProduc
   const out = [f.P(uO, hoseY, outB), f.P(uO, f.H + 10, outB + 2), f.P(uO, f.H + 26, (ib - t) / 2), f.P(uO, f.H + 6, ib), f.P(uO, oy + 30, ib), f.P(uO, oy + 4, ib + 8), f.P(uO, oy, ib + 30)];
   kit.tube(pipe.bk, out, pr, pipe.c, pipe.bk === 'clear' ? pipe.base : 0, 14);
   kit.lathe(pipe.bk, [[pr, 0], [pr + 1, 6], [pr + 5, 14], [pr + 13, 20], [pr + 15, 21]], f.P(uO, oy, ib + 29), V(0, 0, 1), pipe.c, pipe.base + 0.02, 28);
-  // hoses down the back, into the stand and the canister in it
-  const standY = f.S.stand.show ? f.top : f.floor;
-  for (const [uu, p] of [[uI, intake[0]], [uO, out[0]]] as [number, THREE.Vector3][]) {
+  // hoses down the back and the canister: in a cabinet, in through grommeted holes in its back panel (lane CB1, Nathan 2026-11-12:
+  // "have lines enter the cabinet through the back"); a canister too tall for the cabinet stands beside it on the floor
+  const standY = f.S.stand.show ? f.top : f.floor, st = f.S.stand, cab = st.show && (st.style === 'cabinet' || st.style === 'custom');
+  const r = prod ? prod.bodyMm.w / 2 : 95 * s, ch = prod?.bodyMm.h ?? 380 * s, room = standInside(f.S);
+  const beside = st.show && !!room && (ch + 60 > room.H || 2 * r + 20 > room.L); // does not fit: on the floor next to the stand (the Checks strip says so)
+  const cu = f.T.L >= 2 * r + 40 ? clamp(f.T.L * 0.25, r + 20, f.T.L - r - 20) : f.T.L / 2, cb = f.T.D * 0.45;
+  const c0 = beside ? V(f.side === 'left' ? -f.t - r - 90 : f.T.L + f.t + r + 90, f.floor, -f.T.D * 0.3) : f.P(cu, f.floor, cb);
+  const valve = (k: number) => c0.clone().add(V(k * 12, ch + 40, 0));
+  const bo = -(backdropDepth(f.S.backdrop, f.T) + t), hy = f.top - 120; // the back panel's outer face, off the glass; the holes' height
+  for (const [uu, p, k] of [[uI, intake[0], -1], [uO, out[0], 1]] as [number, THREE.Vector3, number][]) {
     kit.rod('room', p, p.clone().add(V(0, -40, 0)), pr + 4, C.charcoal, { seg: 12 }); // the hose clamp / connector
-    kit.tube('room', [p.clone().add(V(0, -40, 0)), f.P(uu, (standY + p.y) / 2, outB - 6), f.P(uu, standY + 30, outB - 10), f.P(uu, standY - 30, outB - 10 + (f.S.stand.show ? 60 : -20))], 10, hoseC, 0, 10);
+    const s0 = p.clone().add(V(0, -40, 0)), v = valve(k);
+    if (cab && !beside) {
+      const o = f.P(uu, hy, bo - 14), inside = f.P(uu, hy, bo + 55);
+      kit.rod('room', f.P(uu, hy, bo - 2), f.P(uu, hy, bo + 20), 17, C.black, { seg: 20 }); // the grommet in the panel's hole
+      kit.tube('room', [s0, f.P(uu, (hy + s0.y) / 2, bo - 14), f.P(uu, hy + 40, bo - 14), o, inside, V(v.x, hy - 40, inside.z + 20), V(v.x, v.y + 50, c0.z), v], 10, hoseC, 0, 10);
+    } else if (beside) {
+      const low = f.P(uu, f.floor + 30, bo - 14 - k * 10);
+      kit.tube('room', [s0, f.P(uu, (standY + s0.y) / 2, bo - 14), low, V(v.x, f.floor + 30, low.z), V(v.x, f.floor + 80, c0.z), v], 10, hoseC, 0, 10);
+    } else kit.tube('room', [s0, f.P(uu, (standY + p.y) / 2, outB - 6), f.P(uu, standY + 30, outB - 10), f.P(uu, standY - 30, outB - 10 + (st.show ? 60 : -20))], 10, hoseC, 0, 10);
   }
-  if (f.S.stand.show) {
-    const r = prod ? prod.bodyMm.w / 2 : 95 * s, ch = prod?.bodyMm.h ?? 380 * s, cu = f.T.L >= 2 * r + 40 ? clamp(f.T.L * 0.25, r + 20, f.T.L - r - 20) : f.T.L / 2, cb = f.T.D * 0.45;
-    const c0 = f.P(cu, f.floor, cb);
+  if (st.show) {
     kit.rod('room', c0, c0.clone().add(V(0, ch * 0.78, 0)), r, bodyC, { seg: 32 });
     if (L?.foot) kit.rod('room', c0, c0.clone().add(V(0, ch * 0.06, 0)), r * 1.04, hexOr(L.foot.hex, bodyC), { seg: 32 }); // a foot ring in its own colour (Fluval 07)
     kit.rod('room', c0.clone().add(V(0, ch * 0.78, 0)), c0.clone().add(V(0, ch, 0)), r * 0.96, headC, { seg: 32, r2: r * 0.8 });
     for (const k of [-1, 1]) kit.box('room', c0.clone().add(V(k * r * 0.95, ch * 0.8, 0)), 16, 34, 30, clipC, 4); // the clips
     kit.rod('room', c0.clone().add(V(0, ch, 0)), c0.clone().add(V(0, ch + 45, 0)), 18, valveC, { seg: 16 }); // valve block
-    for (const k of [-1, 1]) kit.tube('room', [c0.clone().add(V(k * 12, ch + 40, 0)), c0.clone().add(V(k * 20, ch + 120, -cb * 0.4)), f.P(k < 0 ? uI : uO, f.top - 40, -40)], 10, hoseC, 0, 10);
+    if (!cab && !beside) for (const k of [-1, 1]) kit.tube('room', [c0.clone().add(V(k * 12, ch + 40, 0)), c0.clone().add(V(k * 20, ch + 120, -cb * 0.4)), f.P(k < 0 ? uI : uO, f.top - 40, -40)], 10, hoseC, 0, 10);
   }
 }
 

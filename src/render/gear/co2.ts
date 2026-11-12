@@ -1,6 +1,6 @@
 // CO2 regulator, cylinder and drop checker. (render/gear3d.ts split per type, lane GM1, 2026-10-29: moved as is, no behaviour change).
 import * as THREE from 'three';
-import { clamp } from '../../scene/physics';
+import { backdropDepth, clamp } from '../../scene/physics';
 import { GearPick, V, along, hash, C, DROP_COLOURS, Frame, Spot, lerp, sucker, line, overRim } from './common';
 
 export function co2(f: Frame, sp: Spot, level: GearPick['co2']) {
@@ -37,9 +37,16 @@ export function co2(f: Frame, sp: Spot, level: GearPick['co2']) {
     kit.put('glow', new THREE.CircleGeometry(19, 24), C.gauge, new THREE.Matrix4().makeTranslation(gp.x, gp.y, gp.z + 6.2));
   }
   kit.box('room', rg.clone().add(V(0, 0, 38)), 34, 34, 40, C.black, 5); // solenoid
-  // down the back of the tank, then (in a stand) in under its top to the regulator
-  const b0 = bc.clone().add(V(0, -60, 0)), low = V(b0.x, f.top - 60, b0.z - 10);
-  line(f, [b0, b0.clone().add(V(0, -40, -6)), V(b0.x, f.top + 30, b0.z - 10), low, V(rg.x, f.top - 80, low.z + 40), rg.clone().add(V(0, 40, 30))], 0xc9d6d8);
+  // down the back of the tank, then (in a cabinet) in through a grommeted hole in its back panel to the regulator (lane CB1)
+  const b0 = bc.clone().add(V(0, -60, 0)), st = f.S.stand, cab = st.show && (st.style === 'cabinet' || st.style === 'custom');
+  if (cab) {
+    const bo = -(backdropDepth(f.S.backdrop, f.T) + f.t), hy = f.top - 250, ox = b0.x, o = V(ox, hy, f.P(0, 0, bo - 10).z), inn = V(ox, hy, f.P(0, 0, bo + 50).z);
+    kit.rod('room', V(ox, hy, f.P(0, 0, bo - 2).z), V(ox, hy, f.P(0, 0, bo + 20).z), 12, C.black, { seg: 16 }); // the grommet in the panel's hole
+    line(f, [b0, b0.clone().add(V(0, -40, -6)), V(ox, f.top + 30, o.z), V(ox, hy + 40, o.z), o, inn, V(rg.x, hy - 30, inn.z + 25), rg.clone().add(V(0, 40, 30))], 0xc9d6d8);
+  } else {
+    const low = V(b0.x, f.top - 60, b0.z - 10);
+    line(f, [b0, b0.clone().add(V(0, -40, -6)), V(b0.x, f.top + 30, b0.z - 10), low, V(rg.x, f.top - 80, low.z + 40), rg.clone().add(V(0, 40, 30))], 0xc9d6d8);
+  }
   // drop checker on the far end of the back glass, half way up: its reservoir green / blue / yellow
   const ud = f.T.L - 60, yd = f.wy * 0.62, pd = f.P(ud, yd, 22);
   kit.lathe('clear', [[0, 30], [8, 29], [13, 22], [15, 10], [15, 0], [14, -1]], pd, V(0, 1, 0), C.glass, 0.1, 24);

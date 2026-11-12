@@ -861,4 +861,5 @@ FS1 follow-up (2026-11-10): sae 5+ step (75 gal) is PROVISIONAL; `groupVol` step
 
 ## CB1: stand clicks + cabinet gear (2026-11-12)
 - Part 1 shipped: `secOf` in `clickMenu.ts` sent the stand to section "room" and light / gear to "tech", neither of which exists (real: tank, equipment), so nothing opened. Fixed. Doors now toggle only from a box 1.5 in around each handle (`interact/doorBox.ts`, handles tagged `userData.handle`, swung doors `userData.openDoor`; `Viewer.handleAt`); pointer cursor over it. Backdrop / floor / wall are not click targets (click clears selection). Tests: `test/cb1click.test.ts`.
-- Parts 2 (gear inside cabinet) and 3 (glass lid clips): not started.
+- Part 2: canister, CO2 cylinder and sump were already drawn inside the stand. Now, in a cabinet, the canister hoses and the CO2 line run down behind the tank and in through grommeted holes in the back panel (filter.ts, co2.ts), not over the top; a canister too tall / wide for the cabinet stands beside it on the floor (Checks strip flag NOT done). Open-frame / table: unchanged. One-door-open view not done (the doors are one toggle). No overlap solver for sump + canister + CO2 together.
+- Part 3 (glass lid clips): not started.
