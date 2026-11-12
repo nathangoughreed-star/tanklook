@@ -30,7 +30,12 @@ export const isLand = (v: string) => !!PLANT3D[v as PlantType]?.land;
 /** Plants whose size is the width of a patch, not a height. */
 export const isPatch = (v: string) => isCarpet(v) || isFloat(v);
 
-const GREENS: [string, string][] = [['#2f5e2a', '#5f9a48'], ['#36682e', '#6aa64e'], ['#2a5428', '#558c40'], ['#3d6e30', '#78b05a']];
+// Greens (lane VF-B, VF2 item 2, judged under ACES): real aquarium greens, deeper and a touch olive, one palette per
+// species instead of one shared lime. Grass (vallisneria / sagittaria type) the most olive; stems a yellow-olive with
+// paler new growth; a carpet the freshest green; a sword stays a clear mid green with a pale midrib.
+const GRASS_GREENS: [string, string][] = [['#364c24', '#5e7c40'], ['#3a5226', '#668446'], ['#30482a', '#56763e'], ['#3e5024', '#6a8042']];
+const STEM_GREENS: [string, string][] = [['#2c4622', '#526c34'], ['#304c24', '#58723a'], ['#2a4222', '#4c6630']];
+const CARPET_GREENS: [string, string][] = [['#2e5a26', '#5e9444'], ['#34622a', '#66a04a'], ['#2a5226', '#568a40']];
 
 // ---------- 3D plants (render/plant3d.ts) ----------
 /** One kind of leaf: a curved sheet along a centreline that rises at `rise` from the vertical and bends `arch` more by the tip. */
@@ -163,29 +168,28 @@ export interface Grow {
   prop?: boolean;
 }
 
-const LEAF_GREENS: [string, string][] = GREENS;
 export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
   fern: { grow: { speed: 'slow', overflow: 'none', len: [60, 300], more: 4 }, sway: 0.3, form: 'rhizome', n: [13, 18], spread: 0.6, stalk: '#5a4a32', leaf: {
     len: [0.7, 1], wid: 0.1, prof: [0.8, 0.8], rise: [0.08, 0.6], arch: 0.4, twist: 0.5, fold: -0.25, wave: [0.1, 4], pet: 0.06,
     cols: [['#244a22', '#3e7038'], ['#2a5226', '#4a7e40']], under: '#355a30', rib: '#7aa060', tip: ['#3c7034', 0.3], seg: [10, 5] } },
   sword: { grow: { speed: 'medium', overflow: 'emerge', len: [90, 600], more: 4 }, sway: 0.3, form: 'rosette', n: [16, 24], spread: 0.05, stalk: '#3a6a2c', leaf: {
     len: [0.75, 1], wid: 0.15, prof: [0.75, 0.8], rise: [0.05, 0.75], arch: 0.4, twist: 0.5, fold: -0.15, wave: [0.03, 3], pet: 0.3,
-    cols: [['#3d7a2e', '#6aa64e'], ['#468a34', '#7ab85a'], ['#36702a', '#62a048']], under: '#5a8a48', rib: '#b0d098', seg: [10, 5] },
+    cols: [['#2e5c26', '#5a8c44'], ['#346428', '#62944a'], ['#2a5424', '#52843e']], under: '#527a42', rib: '#a0bc88', seg: [10, 5] },
     // emersed: broad oval blades held up on long stiff stalks, a deeper green
     emersed: { k: 0.95, stiff: 230, land: 70, wid: 0.22, prof: [0.6, 0.6], pet: 0.55, twist: 0.15, fold: -0.08, wave: [0.01, 2],
       cols: [['#2c5c22', '#4a8236'], ['#32662a', '#528c3c'], ['#2a5420', '#467a32']], under: '#4a6e3a', rib: '#8ab470' } },
   carpet: { grow: { speed: 'medium', overflow: 'spread', len: [50, 450], more: 1 }, sway: 0.1, form: 'carpet', n: [60, 70], spread: 1, stalk: '#3f6a2e', leaf: {
     len: [5, 7.5], wid: 0.75, prof: [0.9, 0.5], rise: [0.9, 1.5], arch: 0.1, twist: 0.3, fold: 0.2, wave: [0, 0], pet: 0,
-    cols: LEAF_GREENS, under: '#5e8a48', seg: [2, 3] } },
+    cols: CARPET_GREENS, under: '#567e42', seg: [2, 3] } },
   anubias: { grow: { speed: 'slow', overflow: 'none', len: [40, 180], more: 4 }, sway: 0.08, form: 'rhizome', n: [10, 14], spread: 0.4, stalk: '#2e5226', leaf: {
     len: [0.6, 0.95], wid: 0.4, prof: [0.7, 0.55], rise: [0.1, 0.6], arch: 0.25, twist: 0.3, fold: 0.15, wave: [0.02, 2], pet: 0.25,
     cols: [['#1e3e1c', '#3a6a32'], ['#22441e', '#40723a']], under: '#3e6236', rib: '#5a8a4a', seg: [8, 5] } },
   grass: { grow: { speed: 'fast', overflow: 'trail', len: [120, 900], more: 6 }, sway: 1, form: 'rosette', n: [16, 24], crowns: [3, 5], spread: 0.5, stalk: '#3f6a2e', leaf: {
     len: [0.6, 1], wid: 0.035, prof: [1, 0.12], rise: [0.02, 0.3], arch: 0.5, twist: 1.5, fold: 0, wave: [0, 0], pet: 0,
-    cols: LEAF_GREENS, under: '#5e8a48', seg: [12, 3] } },
-  stem: { grow: { speed: 'fast', overflow: 'emerge', len: [70, 900], more: 4, shoots: 1 }, sway: 0.65, form: 'stem', n: [5, 7], nodes: 22, spread: 0.5, stalk: '#3f6a2e', top: { cols: [['#4a8a34', '#80b85a']], from: 0.8 }, leaf: {
+    cols: GRASS_GREENS, under: '#56703e', seg: [12, 3] } },
+  stem: { grow: { speed: 'fast', overflow: 'emerge', len: [70, 900], more: 4, shoots: 1 }, sway: 0.65, form: 'stem', n: [5, 7], nodes: 22, spread: 0.5, stalk: '#3f6a2e', top: { cols: [['#42682c', '#6a8c46']], from: 0.8 }, leaf: {
     len: [0.11, 0.14], wid: 0.3, prof: [0.8, 0.6], rise: [0.5, 1.2], arch: 0.3, twist: 0.3, fold: -0.1, wave: [0, 0], pet: 0,
-    cols: LEAF_GREENS, under: '#5e8a48', seg: [4, 3] },
+    cols: STEM_GREENS, under: '#506a3c', seg: [4, 3] },
     // emersed: shorter, rounder, held up along the stem, a darker glossy green
     emersed: { k: 0.8, stiff: 140, land: 35, wid: 0.5, prof: [0.9, 0.55], rise: [0.35, 0.8], arch: 0.12, twist: 0.1, fold: 0.12,
       cols: [['#2a5622', '#467c34'], ['#2e5c24', '#4c8438']], under: '#4a6a3e' } },

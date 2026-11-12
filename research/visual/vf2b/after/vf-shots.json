@@ -1,0 +1,50 @@
+{
+ "commit": "db033fae",
+ "build": 1799,
+ "dirty": true,
+ "when": "2026-11-12T13:48:07.414Z",
+ "size": [
+  1050,
+  850
+ ],
+ "fx": [
+  "contact,ground,tonemap:aces,variety",
+  "contact,ground,variety"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "planted4": {
+   "shots": [
+    "planted4-front-contact-ground-tonemap-aces-variety.png",
+    "planted4-plant-grass-contact-ground-tonemap-aces-variety.png",
+    "planted4-plant-sword-contact-ground-tonemap-aces-variety.png",
+    "planted4-front-contact-ground-variety.png",
+    "planted4-plant-grass-contact-ground-variety.png",
+    "planted4-plant-sword-contact-ground-variety.png"
+   ],
+   "ab": {}
+  },
+  "nano": {
+   "shots": [
+    "nano-front-contact-ground-tonemap-aces-variety.png",
+    "nano-plant-grass-contact-ground-tonemap-aces-variety.png",
+    "nano-plant-sword-contact-ground-tonemap-aces-variety.png",
+    "nano-front-contact-ground-variety.png",
+    "nano-plant-grass-contact-ground-variety.png",
+    "nano-plant-sword-contact-ground-variety.png"
+   ],
+   "ab": {}
+  },
+  "reef": {
+   "shots": [
+    "reef-front-contact-ground-tonemap-aces-variety.png",
+    "reef-plant-grass-contact-ground-tonemap-aces-variety.png",
+    "reef-plant-sword-contact-ground-tonemap-aces-variety.png",
+    "reef-front-contact-ground-variety.png",
+    "reef-plant-grass-contact-ground-variety.png",
+    "reef-plant-sword-contact-ground-variety.png"
+   ],
+   "ab": {}
+  }
+ }
+}
