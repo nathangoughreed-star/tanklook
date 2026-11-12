@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { techOf } from '../../scene/tech';
 import { backdropDepth, glassThickness, tankUnderside, floorY, clamp, HOOD_H, RIM_DROP, RIM_H } from '../../scene/physics';
 import { chord } from '../../scene/shape';
+import { clipLid, LID_CLIP_DROP } from '../lidClips';
 import type { Tank, TankSetup } from '../../scene/types';
 import { UP, V, Kit, C } from './common';
 
@@ -15,7 +16,7 @@ export function lidTop(S: TankSetup, T: Tank): { open: boolean; y: (d: number) =
   const rim = S.render.rim;
   if (S.lid === 'open') return { open: true, y: () => T.H + (rim ? RIM_DROP : 0) };
   if (S.lid === 'hood') { const base = rim ? T.H + RIM_DROP : T.H, hf = 22, hb = HOOD_H - 3; return { open: false, y: d => base + hf + (hb - hf) * (1 - (1 - clamp(d / T.D, 0, 1)) ** 2) }; }
-  const y = rim ? T.H - RIM_H + RIM_DROP + 10 : T.H + 4; // the panels' top face
+  const y = rim ? T.H - RIM_H + RIM_DROP + 10 : clipLid(S, T) ? T.H - LID_CLIP_DROP : T.H + 4; // the panels' top face (a clipped glass lid sits just below the rim)
   return { open: false, y: () => y };
 }
 /** Where a piece hx by hd mm (half sizes along x and depth) stands on the top near (x, d): held inside the footprint on

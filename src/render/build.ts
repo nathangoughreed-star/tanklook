@@ -3,6 +3,7 @@
 import * as THREE from 'three';
 import { tankView } from './tankView';
 import { STAND_PANEL } from '../scene/standspace';
+import { addLidClips, clipLid, LID_CLIP_DROP, LID_SHORT, LID_T } from './lidClips';
 import { GRAIN_ORDER, LECA, SUBSTRATES, blendTile, blendZone, grain3D } from '../art/placeholder';
 import { litterMeshes, type GroundAt } from './scatter';
 import { patchHighlight, patchMeshes, patchSel } from './brushmesh';
@@ -800,8 +801,9 @@ function addLid(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (S.lid === 'open') return;
   const { L, H, D } = T, t = glassThickness(T, S.render.glass), rim = S.render.rim;
   if (S.lid === 'hood') { addHood(sc, S, T); return; }
+  const clips = clipLid(S, T); // a rimless tank's glass lid: 1/4 in short of the opening, on acrylic clips (lidClips.ts)
   // glass top: two panels split along the length, resting on the inner rim lip (rimmed) or on the panes (rimless)
-  const pt = 4, y = rim ? H - RIM_H + RIM_DROP + 6 + pt / 2 : H + pt / 2, gap = 3, inset = rim ? 2 : -t;
+  const pt = LID_T, y = rim ? H - RIM_H + RIM_DROP + 6 + pt / 2 : clips ? H - LID_CLIP_DROP - pt / 2 : H + pt / 2, gap = 3, inset = rim ? 2 : clips ? LID_SHORT : -t;
   const lowIron = S.render.glassType === 'lowiron';
   const mesh = S.lid === 'mesh';
   const faceM = mesh ? meshMaterial() : basic(0xbfe0ee, { transparent: true, opacity: 0.1, depthWrite: false });
@@ -816,6 +818,7 @@ function addLid(sc: THREE.Scene, S: TankSetup, T: Tank) {
     if (edges) { const e = new THREE.LineSegments(new THREE.EdgesGeometry(geo), lineM); e.position.copy(g.position); e.renderOrder = 8; sc.add(e); }
   }
   const hinge = shadedBox(L - 2 * inset, pt + 2, 12, 0x2b2e33); hinge.position.set(L / 2, y, -D * 0.38); sc.add(hinge); // back strip | front flap
+  if (clips) addLidClips(sc, S, T, basic(0xd6eaf0, { transparent: true, opacity: 0.5, depthWrite: false }), edges ? lineM : null);
 }
 
 /** A convex ring clipped to the box x0..x1, d0..d1 (footprint coordinates); [] if nothing is left. */
