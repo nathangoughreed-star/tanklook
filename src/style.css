@@ -1599,3 +1599,12 @@ details.gfx { margin: 4px 0 } details.gfx > summary { cursor: pointer; font-weig
 #mapShow.open { bottom: 166px; background: var(--accent, #4aa3ff); color: #fff }   /* HM2: toggle; open, it sits just above the map */
 @media (max-width: 700px) { #mapShow.open { bottom: 136px } }
 .hm2-recentre { margin-bottom: 6px }
+
+/* DQ13: Compare 2-3 inside the Discover card */
+.dq13-open { align-self: flex-start }
+.dq13-cmp { display: flex; gap: 8px; overflow-x: auto }
+.dq13-col { flex: 1 1 0; min-width: 110px; border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; gap: 4px }
+.dq13-col.now { border-color: var(--accent) }
+.dq13-col ul { margin: 0; padding-left: 14px; font-size: 11.5px }
+.dq13-on { font-size: 11px; opacity: .7 }
+.dq10:has(.dq13-cmp) { max-width: min(640px, calc(100% - 24px)) }

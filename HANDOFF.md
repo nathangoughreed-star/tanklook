@@ -55,7 +55,7 @@ first); dev servers are swept when a lane reports done and on "check" (no hourly
 | DX3 equipment | - | - | project.ts use, engine.ts credit, My equipment | DONE 2026-11-09 |
 | DX4 discovery UI | - | - | NEW ui/discover/* | DONE 2026-11-09 (see DX4 section) |
 | DX5 one project start / DX7 menus / SL1 start screen | - | - | | DONE 2026-11-09 |
-| **Discovery v2 (A/B)**: plan research/design/discovery-v2-plan.md, spec discovery-v2-handoff.md, contract src/scene/discoveryTypes.ts | | | | ALL DONE, live build 1730 (2026-11-10); DOGFOODING by Nathan |
+| **Discovery v2 (A/B)**: RETIRED as the entry by DQ13 (2026-11-12): the header Discover opens the in-editor card; A/B only with `?ab=1`. Plan research/design/discovery-v2-plan.md, spec discovery-v2-handoff.md, contract src/scene/discoveryTypes.ts | | | | ALL DONE, live build 1730 (2026-11-10); DOGFOODING by Nathan |
 | AB0 session / AB1 pairs / AB2 history / AB3 screen (superseded by AB5's main-view dock) / AB4 habitat question | - | - | scene/discoverySession.ts, pairGen.ts, pairFacts.ts, proposalHistory.ts, ui/ab/*, startMode.ts | DONE |
 | AB5 combine + main-view Discovery + breadth + metrics + size tiers + gear-follows-depiction + journey | - | - | scene/combine.ts, pairGen.ts, ui/ab/*, viewer pair layer, store.frozen | DONE (see AB5 section) |
 | C22 batch (2026-11-10..12): AB7-AB13, PS1, IV1, SL2, QP1-QP4, SZ1, GR-RANGE, DQ1-DQ5 (discovery algorithm), DS1, HM1, PS2, VF0-VF5 effects | - | - | see each section; summary in prompts/coordinator-23.md | DONE, live build 1807 |
@@ -106,6 +106,12 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 - Preview card "N kept, M open": verified live in the browser (3 kept -> 106 kept when Keep was pressed on the Plants header with the card open). The earlier "0 kept" came from a shot taken before the redraw.
 - Known: design-level Like uses the preview's variants + species as `elements`; the generator scores design entries against its own feature keys (`featuresFor`), so a design Like may rank little until DQ12 / DQ8 map them; item and category entries score as documented. Tank / Substrate headers only have the old Keep checkbox (no Like / Dislike: nothing to key them on). Group rows (several pieces of one variant) apply Keep / Like to all of that variant.
 - Tests `test/dq11.test.ts` (9): default props, Pin position, category / design keep, kept count, item / category / design Like and take-back, Keep + Like together and `attr`, feedback is not a design edit. `scripts/dq11-shots.mjs` (needs the dev server; `URL=...`) drives the real UI and asserts; shots in `research/screens/DQ11/`.
+
+## DQ13: retire the A/B Discover entry (2026-11-12; lane DQ13)
+- `ui/discover/entry.ts`: `openDiscovery()` (every old door: header button, per-section Discover buttons via `attachKeep`, Guided `discoverEntry`) now opens the in-editor card (`openInlineDiscover(tab?)`, replayed if the card has not loaded; a single-tab scope preselects "Fill this section"). Only `?ab=1` (`abEnabled()`) still reaches the A/B screen (`registerDiscovery` -> `attachDiscoverPanel`, unchanged). `ui/ab/*`, `discoverySession`, `pairGen` and their tests are untouched.
+- Resume (SL2): `from: 'resume'` opens nothing without `?ab=1` (editor + the card's Discover pill); a saved `disc` flag is harmless.
+- Compare 2-3 (`ui/discover/inline.ts`, `comparePick`): the button shows when the back list has a non-stale design; the preview beside 1-2 earlier ones as plain text thumbnails (no A/B renderer); "Preview this one" = `ctl.showBack(i)` + a design-level Like (DQ8 `pressFor`, skipped if already Liked). Writes no design; no voting.
+- Tests `test/dq13.test.ts`. Help text in index.html did not mention A/B (no change).
 
 ## DQ10: Discover inside the editor (2026-11-12; lane DQ10; no freeze, A/B untouched)
 - `ui/discover/inline.ts` (card over `#view`, pill "Discover" bottom right; `registerInline` / `openInlineDiscover` in entry.ts; mounted from panels.ts next to the DX7 switches) + the pure controller `createInline(store, {brief, show})` in `ui/discover/logic.ts` (no DOM, tested).

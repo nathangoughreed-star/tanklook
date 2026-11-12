@@ -7,7 +7,7 @@ import { conflictCardHtml } from '../infeasibleCard';
 import { PRESETS, PRESET_INFO, type Preset } from '../../scene/breadth';
 import { discoverTabs } from '../../scene/discoverScope';
 import { getBrief } from '../setupBrief';
-import { designElements, mountBar } from './keep';
+import { designElements, feedbackEntry, mountBar, pressFor } from './keep';
 import type { Tab } from '../../scene/scope';
 import type { Store } from '../../scene/store';
 import type { Viewer } from '../../render/viewer';
@@ -15,6 +15,13 @@ import type { Viewer } from '../../render/viewer';
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const VERB = { add: 'Adds', remove: 'Removes', change: 'Changes' } as const;
 
+/** DQ13 Compare: make back-list entry `i` the shown preview (nothing is written to the design) and record a Like on it (DQ8 entry) unless it already has one. No voting, nothing else is learned. */
+export function comparePick(store: Store, ctl: InlineController, i: number): boolean {
+  if (!ctl.showBack(i)) return false;
+  const cur = ctl.current();
+  if (cur) { const sc = { level: 'design', elements: designElements(cur.after) } as const; if (feedbackEntry(store.tank.brief?.project?.feedback, store.tank, sc)?.v !== 1) pressFor(store, sc, 1); }
+  return true;
+}
 export interface InlineUI { open(): void; close(): void; ctl: InlineController }
 export function attachInline(store: Store, viewer: Viewer, deps: { status: (msg: string, warn?: boolean) => void }): InlineUI {
   const host = document.getElementById('view') ?? document.body;
@@ -22,7 +29,7 @@ export function attachInline(store: Store, viewer: Viewer, deps: { status: (msg:
   root.className = 'dq10'; root.setAttribute('aria-label', 'Discover in the editor');
   host.appendChild(root);
   const ctl = createInline(store, { brief: getBrief, show: t => viewer.setPreview(t ? structuredClone(t) : null, false) });
-  let openCard = false, busy = false, note = '', fail: Extract<RunResult, { ok: false }> | undefined, fillTab: Tab | '' = '';
+  let openCard = false, comparing = false, busy = false, note = '', fail: Extract<RunResult, { ok: false }> | undefined, fillTab: Tab | '' = '';
 
   const draw = () => {
     root.hidden = store.frozen;   // the A/B screen holds the store: Discover in the editor waits
@@ -32,14 +39,19 @@ export function attachInline(store: Store, viewer: Viewer, deps: { status: (msg:
     if (!fillTab || !gaps.includes(fillTab)) fillTab = gaps[0] ?? '';
     const tabSel = `<select data-a="tab" aria-label="Section to fill"${gaps.length ? '' : ' disabled'}>${gaps.length ? gaps.map(t => `<option value="${t}"${t === fillTab ? ' selected' : ''}>${TAB_LABEL[t]}</option>`).join('') : '<option>Nothing missing</option>'}</select>`;
     let body = '';
-    if (busy) body = '<p class="dq10-note" role="status">Looking for designs that fit&hellip;</p>';
+    const alts = ctl.back().map((p, i) => ({ p, i })).filter(x => !x.p.stale).slice(0, 2);
+    if (comparing && cur && alts.length && !busy) {   // DQ13: the preview beside 1-2 earlier ones; pick one to keep previewing
+      const thumb = (p: typeof cur, i: number) => `<div class="dq13-col${i < 0 ? ' now' : ''}"><b>${esc(p.title)}</b><ul>${p.rows.map(r => `<li>${VERB[r.verb]} ${r.tab === 'gear' ? '' : esc(TAB_LABEL[r.tab as Tab].toLowerCase()) + ': '}${esc(r.text)}</li>`).join('') || '<li>No change</li>'}</ul>`
+        + (i < 0 ? '<span class="dq13-on">Previewing now</span>' : `<button type="button" data-a="pick" data-i="${i}">Preview this one</button>`) + '</div>';
+      body = `<div class="dq13-cmp" role="group" aria-label="Compare designs">${thumb(cur, -1)}${alts.map(x => thumb(x.p, x.i)).join('')}</div><button type="button" data-a="uncompare">Back to the preview</button>`;
+    } else if (busy) body = '<p class="dq10-note" role="status">Looking for designs that fit&hellip;</p>';
     else if (cur) {
       body = `<div class="dq10-prev${cur.stale ? ' stale' : ''}"><b>${esc(cur.title)}</b>`
         + (cur.stale ? '<p class="dq10-warn" role="alert">Your design changed, so this preview is out of date. Regenerate to see one for the design as it is now.</p>' : '')
         + `<ul>${cur.rows.map(r => `<li>${VERB[r.verb]} ${r.tab === 'gear' ? '' : esc(TAB_LABEL[r.tab as Tab].toLowerCase()) + ': '}${esc(r.text)}</li>`).join('') || '<li>No change</li>'}</ul>`
         + `<p class="dq12-fit" role="status">${cur.fit === 1 ? 'Only this one fits' : `${cur.fit} designs fit`}</p>`
         + `<div class="dq10-row"><button type="button" class="primary" data-a="apply"${cur.stale ? ' disabled' : ''}>Apply</button><button type="button" data-a="regen">Regenerate</button></div>`
-        + (cur.stale ? "" : "<div class=\"dq11-card\"></div>") + (ctl.back().length ? `<div class="dq10-back">Earlier: ${ctl.back().map((p, i) => `<button type="button" data-a="back" data-i="${i}"${p.stale ? ' disabled' : ''}>${esc(p.title)}</button>`).join(' ')}</div>` : '') + '</div>';
+        + (cur.stale ? "" : "<div class=\"dq11-card\"></div>") + (alts.length ? `<button type="button" class="dq13-open" data-a="compare" title="See this preview beside earlier ones">Compare ${alts.length + 1}</button>` : '') + (ctl.back().length ? `<div class="dq10-back">Earlier: ${ctl.back().map((p, i) => `<button type="button" data-a="back" data-i="${i}"${p.stale ? ' disabled' : ''}>${esc(p.title)}</button>`).join(' ')}</div>` : '') + '</div>';
     } else if (fail) {
       body = fail.exhausted ? `<div class="dq10-nofit dq12-card" role="status"><b>That was every design</b><p class="dq12-kept">${esc(fail.conflicts[0] ?? '')}</p></div>`
         : fail.nothingMissing ? `<div class="dq10-nofit" role="status"><b>Nothing to fill</b><ul>${fail.conflicts.map(c => `<li>${esc(c)}</li>`).join('')}</ul></div>`
@@ -72,12 +84,15 @@ export function attachInline(store: Store, viewer: Viewer, deps: { status: (msg:
     const el = (e.target as HTMLElement).closest<HTMLElement>('[data-a]'); if (!el || (el as HTMLButtonElement).disabled) return;
     switch (el.dataset.a) {
       case 'open': openCard = true; draw(); break;
-      case 'close': openCard = false; ctl.close(); fail = undefined; note = ''; draw(); break;
+      case 'close': openCard = false; comparing = false; ctl.close(); fail = undefined; note = ''; draw(); break;
       case 'preset': ctl.setPreset(el.dataset.p as Preset); draw(); break;
       case 'unlock': ctl.unlockTank(); draw(); break;
       case 'keeptank': ctl.keepTank(); draw(); break;
       case 'finish': go(() => ctl.run('finish')); break;
       case 'fill': go(() => ctl.run('fill', fillTab || undefined)); break;
+      case 'compare': comparing = true; draw(); break;
+      case 'uncompare': comparing = false; draw(); break;
+      case 'pick': { const ok = comparePick(store, ctl, Number(el.dataset.i)); note = ok ? 'Showing that design. Apply it, or pick another.' : 'That design no longer matches yours.'; comparing = false; draw(); break; }
       case 'regen': go(() => ctl.regenerate()); break;
       case 'back': { const ok = ctl.showBack(Number(el.dataset.i)); note = ok ? '' : 'That design no longer matches yours.'; draw(); break; }
       case 'relax': { const r = fail?.relaxations[Number(el.dataset.i)]; if (r) go(() => ctl.relax(r)); break; }
@@ -92,6 +107,6 @@ export function attachInline(store: Store, viewer: Viewer, deps: { status: (msg:
   root.addEventListener('change', e => { const el = e.target as HTMLSelectElement; if (el.dataset.a === 'tab') fillTab = el.value as Tab; });
   store.subscribe(() => { ctl.onChange(); if (!busy) draw(); });
   draw();
-  registerInline(() => { openCard = true; draw(); });
+  registerInline(tab => { openCard = true; if (tab && gapTabs(store.effTank).includes(tab)) fillTab = tab; draw(); });
   return { open: () => { openCard = true; draw(); }, close: () => { openCard = false; ctl.close(); draw(); }, ctl };
 }
