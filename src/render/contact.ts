@@ -18,6 +18,7 @@ import * as THREE from 'three';
 import { rng } from '../art/paint';
 import { SUBSTRATES, shadesOf } from '../art/placeholder';
 import { itemDims } from '../scene/items';
+import { footprint } from '../scene/shape';
 import type { Item, Tank, TankSetup } from '../scene/types';
 import { FX } from './fx';
 import { grainKinds, grainLooks, type GrainLook } from './grains';
@@ -203,6 +204,23 @@ export const contactKey = (items: Item[]) => 'contact' + JSON.stringify([FX.cont
 /** What the ground mesh is drawn with (render/build.ts addSubstrate): the berm round a piece uses the same skin. */
 export interface GroundSkin { map: THREE.Texture; color: number; tile: number; colAt: (x: number, d: number) => number[]; terra: boolean }
 
+/**
+ * A floor-plan point pulled inside the tank's outline (at least `gap` mm from every pane): the berm ring of a piece
+ * standing at the glass otherwise reaches out through it (Nathan 2026-11-12, a slab out of the right pane). Works on any
+ * outline (rect, bow-front, corner, round: footprint's edges, each with its inward normal).
+ */
+export function clampInside(T: Tank, gap = 0.6) {
+  const E = footprint(T).edges;
+  return (x: number, d: number): [number, number] => {
+    for (let pass = 0; pass < 3; pass++) { // a corner needs two edges, a second pass settles the first's push
+      let moved = false;
+      for (const e of E) { const din = -((x - e.a[0]) * e.n[0] + (d - e.a[1]) * e.n[1]); if (din < gap) { x += e.n[0] * (din - gap); d += e.n[1] * (din - gap); moved = true; } }
+      if (!moved) break;
+    }
+    return [x, d];
+  };
+}
+
 const smooth = (a: number, b: number, x: number) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 const BERM_OUT = 1.75; // the berm ends at this many footprints out
 /** The berm's wobble round the piece: about 0.82..1.18 by angle, from the piece's draw. */
@@ -226,12 +244,12 @@ function bermObjects(S: TankSetup, T: Tank, list: Blob[], ground: GroundAt, skin
   // the berm there is only its spilled grains, denser and a little damp-toned
   if (skin.color !== 0xffffff) return spillGrains(S, T, list, ground, 0.8, true);
   const NA = 28, NR = 7, nv = (NR + 1) * NA, pos = new Float32Array(list.length * nv * 3), col = new Float32Array(list.length * nv * 3), uv = new Float32Array(list.length * nv * 2), idx: number[] = [];
-  const scale = skin.color === 0xffffff ? 1 : 0.5; // over 3D grains the berm is lower: the spilled grains make up the rest
+  const keep = clampInside(T), scale = skin.color === 0xffffff ? 1 : 0.5; // over 3D grains the berm is lower: the spilled grains make up the rest
   list.forEach((b, bi) => {
     const o = bi * nv, H = b.berm! * scale;
     for (let r = 0; r <= NR; r++) for (let k = 0; k < NA; k++) {
       const a = k / NA * Math.PI * 2, w = wobble(b.u ?? 0, a), t = 0.7 + (BERM_OUT - 0.7) * r / NR, rho = t * w;
-      const lx = Math.cos(a) * rho * b.fx!, ld = Math.sin(a) * rho * b.fd!, x = b.x + lx * b.ux - ld * b.ud, d = b.d + lx * b.ud + ld * b.ux;
+      const lx = Math.cos(a) * rho * b.fx!, ld = Math.sin(a) * rho * b.fd!, [x, d] = keep(b.x + lx * b.ux - ld * b.ud, b.d + lx * b.ud + ld * b.ux);
       const g = ground(x, d), h = t <= 1 ? H : H * smooth(0, 1, 1 - (t - 1) / (BERM_OUT - 1)), i = o + r * NA + k, p = i * 3, c = skin.colAt(x, d);
       // the damp ring: darker and a touch cooler against the piece, back to the bed's colour about 1.5 footprints out
       const wet = 0.55 + 0.45 * smooth(0.9, 1.55, t);

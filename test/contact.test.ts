@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import { buildTank, patchTank } from '../src/render/build';
 import { FX_DEFAULT, setFx } from '../src/render/fx';
 import { parseScene } from '../src/scene/validate';
+import { insideBy } from '../src/scene/shape';
 import type { TankSetup } from '../src/scene/types';
 import planted4 from '../research/visual/vf0/scenes/planted4.json';
 import nano from '../research/visual/vf0/scenes/nano.json';
@@ -120,5 +121,39 @@ describe('VF-C2 embed', () => {
     setFx({ embed: true });
     const s = embedSink(stone); expect(s).toBeGreaterThanOrEqual(3); expect(s).toBeLessThanOrEqual(35);
     expect(embedSink(stacked)).toBe(0); expect(embedSink(plant)).toBe(0);
+  });
+});
+
+describe('VF-C2 embed: berm and spill stay inside the glass (Nathan 2026-11-12: a slab stuck out through the right pane)', () => {
+  const rock = () => structuredClone(load('reef').items.find(i => i.kind === 'stone')!);
+  const inside = (T: TankSetup['tank'], x: number, d: number) => insideBy(T, x, d);
+  for (const [name, shape] of [['planted4', undefined], ['reef', undefined], ['planted4', 'round']] as const) {
+    it(`${name}${shape ? ' as ' + shape : ''}: pieces at every pane, no berm vertex or spilled grain outside`, () => {
+      setFx({ embed: true, contact: true, ground: true });
+      const S = structuredClone(load(name)); if (shape) { S.tank.shape = shape; S.tank.D = S.tank.L = 500; }
+      const { L, D } = S.tank, r0 = rock();
+      S.items = [[30, D / 2], [L - 30, D / 2], [L / 2, 30], [L / 2, D - 30], [30, 30]].map(([x, d], i) => ({ ...structuredClone(r0), id: 900 + i, x, depth: d, lift: 0, size: 160 }));
+      const b = build(S); let berms = 0;
+      b.scene.traverse(o => {
+        if (!o.userData.contact) return;
+        const m = o as THREE.Mesh;
+        if ((m as THREE.InstancedMesh).isInstancedMesh) {
+          const im = m as THREE.InstancedMesh, mx = new THREE.Matrix4(), p = new THREE.Vector3();
+          for (let i = 0; i < im.count; i++) { im.getMatrixAt(i, mx); p.setFromMatrixPosition(mx); expect(inside(S.tank, p.x, -p.z)).toBeGreaterThan(-0.5); }
+        } else if ((m.material as THREE.Material).userData.sub) { // the berm
+          berms++; const pos = m.geometry.attributes.position;
+          for (let i = 0; i < pos.count; i++) expect(inside(S.tank, pos.getX(i), -pos.getZ(i))).toBeGreaterThan(-0.05);
+        }
+      });
+      expect(berms).toBeGreaterThan(0);
+    });
+  }
+  it('clampInside pulls a point out of the glass and leaves an inside one alone', async () => {
+    const { clampInside } = await import('../src/render/contact');
+    for (const n of ['planted4', 'reef']) {
+      const T = load(n).tank, c = clampInside(T);
+      for (const [x, d] of [[-50, 20], [T.L + 40, T.D / 2], [T.L / 2, -30], [T.L / 2, T.D + 30], [-10, -10]]) { const [a, bb] = c(x, d); expect(insideBy(T, a, bb)).toBeGreaterThan(-0.01); }
+      const [x, d] = c(T.L / 2, T.D / 2); expect([x, d]).toEqual([T.L / 2, T.D / 2]);
+    }
   });
 });
