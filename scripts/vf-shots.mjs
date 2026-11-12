@@ -11,6 +11,7 @@
 // Options: --fx "none;all"   --scenes planted4,nano,reef (names in the scenes dir, or .json paths)   --dir research/visual/vf0 (not --out: lowprio.ps1 would take it)
 //          --views front,ground,rock,plant:grass (plant:<variant> = a close-up of the front-most one; lane VF-B)
 //          --size 1050x850   --pairs 40   --no-shots   --no-numbers   --sheet (one side-by-side PNG per tank and view)
+//          --rest 20 [--throttle 4]   tank left alone / orbiting / idle for 20 s per fx set, normal CPU and 4x slower (caustic safeguards)
 //          --perf   also run scripts/perf-baseline.mjs on the tanks (steady draw, programs, first frame) into <out>/perf-baseline.json
 //          --cold <dist dir>   also run scripts/cold-ab.mjs: cold first frame (program link) of <dist dir> (before) vs a fresh `npm run build` (after)
 // Headless Edge / Chrome on the hardware GPU (--use-angle=d3d11), as perf-baseline.mjs.
@@ -134,6 +135,31 @@ const KIT = () => {
       const sum = (x, c, t) => ({ gpuMs: q(x.gpu, 0.5), gpuP95: q(x.gpu, 0.95), cpuMs: q(x.cpu, 0.5), cpuP95: q(x.cpu, 0.95), calls: c, triangles: t });
       return { A: sum(r.A, cA, tA), B: sum(r.B, cB, tB), gpuDelta: q(r.d, 0.5), gpuDeltaP95: q(r.d, 0.95), timer: !!ext };
     },
+    /**
+     * The tank left alone (or orbiting) for `secs` with fx `spec`, the caustic clock running (not frozen): draws per second,
+     * CPU busy (% of one core, the draw calls only), GPU busy (% of the GPU, timer query per draw), the loop's frame gap
+     * median / p95 (ms), and what the caustic motion ended up doing (viewer.causState: moving / still and why).
+     * `idle`: pretend the last input was a minute ago (the idle pause).
+     */
+    async rest(spec, secs, orbit, idle) {
+      __fx.time(null); __fx.set(fxOf(spec)); v().causReset(); v().noteInput();
+      await this.settle(300);
+      const V = v(), orig = V.draw; let n = 0, cpu = 0; const qs = [];
+      V.draw = function () { const g = gl(); let qq = null; if (ext) { qq = g.createQuery(); g.beginQuery(ext.TIME_ELAPSED_EXT, qq); } const t = performance.now(); orig.call(V); cpu += performance.now() - t; if (qq) { g.endQuery(ext.TIME_ELAPSED_EXT); qs.push(qq); } n++; };
+      if (idle) V.lastInput = performance.now() - 61_000;
+      const gaps = [], az0 = st().scene.tanks[0].camera.az, t0 = performance.now(); let last = t0;
+      try {
+        while (performance.now() - t0 < secs * 1000) {
+          await raf(); const now = performance.now(); gaps.push(now - last); last = now;
+          if (orbit) { st().cam(c => { c.az = az0 + 25 * Math.sin((now - t0) / 1000); }, 0); V.noteInput(); }
+        }
+      } finally { delete V.draw; }
+      const el = (performance.now() - t0) / 1000;
+      let gpu = 0, ok = 0; for (const qq of qs) { const ms = await resolve(qq); if (ms != null) { gpu += ms; ok++; } }
+      if (orbit) { st().cam(c => { c.az = az0; }, 0); await this.settle(200); }
+      __fx.time(7.3);
+      return { drawsPerS: +(n / el).toFixed(1), cpuBusyPct: +(cpu / el / 10).toFixed(1), gpuBusyPct: ok ? +((gpu / ok) * n / el / 10).toFixed(1) : null, gpuMsPerDraw: ok ? +(gpu / ok).toFixed(2) : null, gapMed: q(gaps, 0.5), gapP95: q(gaps, 0.95), caustics: V.causState() };
+    },
     gpu() { const g = gl(), d = g.getExtension('WEBGL_debug_renderer_info'); return d ? g.getParameter(d.UNMASKED_RENDERER_WEBGL) : g.getParameter(g.RENDERER); },
     /** Side-by-side sheet of data URLs with labels (drawn in the page: no image library needed). */
     async sheet(urls, labels, title) {
@@ -165,6 +191,9 @@ try {
     await br.s('Page.navigate', { url: BASE });
     for (let i = 0; i < 300 && !(await br.ev('document.readyState === "complete"').catch(() => false)); i++) await sleep(100);
     await br.ev(`localStorage.setItem('tanklook.scene', ${JSON.stringify(readFileSync(file, 'utf8'))}); 1`);
+    // Performance setting back to Full quality, held (auto off): an automatic step-down in one tank's throttled orbit would
+    // otherwise carry into the next tank (it is saved in the browser) and stop the caustics there
+    await br.ev(`localStorage.setItem('tanklook.perf', '{"level":0,"auto":false}'); 1`);
     await br.s('Page.navigate', { url: BASE });
     for (let i = 0; i < 1200 && !(await br.ev('!!(window.__gb && window.__fx && __gb.viewer)').catch(() => false)); i++) await sleep(100);
     await br.ev(`window.__vf = (${KIT})(); 1`);
@@ -185,6 +214,20 @@ try {
       if (flag('sheet') && FXSETS.length > 1) for (const [view, urls] of Object.entries(grid)) {
         save(`sheet-${name}-${view.replace(":", "-")}.png`, await br.ev(`__vf.sheet(${JSON.stringify(urls)}, ${JSON.stringify(FXSETS)}, ${JSON.stringify(`${name} ${view} (build ${build} ${commit})`)})`, 600_000));
       }
+    }
+    if (opt('rest', '')) { // --rest SECS [--throttle N]: at rest, orbiting, idle; each fx set; normal CPU and N x slower
+      const secs = +opt('rest', '20'), rates = [1, +opt('throttle', '4')].filter((x, i, a) => a.indexOf(x) === i);
+      await br.ev('__vf.view("front")');
+      row.rest = [];
+      for (const rate of rates) {
+        await br.s('Emulation.setCPUThrottlingRate', { rate });
+        for (const fx of FXSETS) for (const mode of ['rest', 'orbit', 'idle']) {
+          const r = await br.ev(`__vf.rest(${JSON.stringify(fx)}, ${secs}, ${mode === 'orbit'}, ${mode === 'idle'})`, 900_000);
+          row.rest.push({ rate, fx, mode, ...r });
+          log(`  cpu x${rate} ${fx} ${mode}: ${r.drawsPerS} draws/s, CPU ${r.cpuBusyPct} %, GPU ${r.gpuBusyPct} % (${r.gpuMsPerDraw} ms/draw), frame gap ${r.gapMed} / p95 ${r.gapP95} ms; caustics ${r.caustics.why} @${r.caustics.rate}/s (cpu ${r.caustics.cpuMs}, gap ${r.caustics.gapMs})`);
+        }
+      }
+      await br.s('Emulation.setCPUThrottlingRate', { rate: 1 });
     }
     if (!flag('no-numbers')) {
       await br.ev('__vf.view("front")');

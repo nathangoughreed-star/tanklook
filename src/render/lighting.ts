@@ -15,7 +15,8 @@ import type { ConditionSettings, LightSettings, Tank, WaterSettings } from '../s
 import { waterK, waterY } from '../scene/physics';
 import { bowlDims, bowlRadius, clampIn, footprint, insideBy, shapeOf } from '../scene/shape';
 
-import { SHADE_MAX } from '../scene/shade';
+import { SHADE_MAX, shadesOf, type Shade } from '../scene/shade';
+import { FX } from './fx';
 import { lightProduct } from '../data/gearCatalog';
 import { addProductLight } from './light3d';
 import { roomOf } from '../scene/roomlight';
@@ -80,7 +81,7 @@ export const LU = {
   // what is shown (PAR 1,1,1; lux LUXW); uMapDiv: the level at the bottom of the ramp (relative 1/16, PAR 2.5, lux 125);
   // uMapStep: contour lines every this much in the shown unit (light.mapStep / mapStepLux), 0 = a line at each doubling
   // scape shading (scene/shade.ts): uShA = x, z, radius, light passed; uShT = top; uShN columns
-  uShA: { value: Array.from({ length: SHADE_MAX }, () => new THREE.Vector4()) }, uShT: { value: new Array<number>(SHADE_MAX).fill(0) }, uShN: { value: 0 },
+  uShA: { value: Array.from({ length: SHADE_MAX }, () => new THREE.Vector4()) }, uShT: { value: new Array<number>(SHADE_MAX).fill(0) }, uShN: { value: 0 }, uShC: { value: 0 },
   uLoOn: { value: 0 }, uLoA: { value: new THREE.Vector4() }, uLoWall: { value: new THREE.Vector2() },
   uLoK: { value: new THREE.Vector3() }, uLoSplit: { value: new THREE.Vector3() }, uLoOut: { value: new THREE.Vector3(1, 1, 1) },
   uMapDiv: { value: 1 / 16 }, uMapStep: { value: 0 }, uLoM: { value: 1 }, uLoInd: { value: new THREE.Vector3() },
@@ -91,7 +92,18 @@ export const LU = {
  * Caustics per fixture type (plan VF5): a spot is a near point source, so the focused net is sharp and strong; an LED bar
  * is a row of points, the nets overlap and smear; a tube is a line, which smears it most. [strength, mip bias]
  */
-const CAUS_BY_TYPE: Record<string, [number, number]> = { spot: [0.85, 0], led: [0.55, 1.0], tube: [0.4, 1.8] };
+const CAUS_BY_TYPE: Record<string, [number, number]> = { spot: [0.6, 0.5], led: [0.3, 1.6], tube: [0.15, 2.2] };
+/**
+ * The scape's shadow columns for the caustics (scene/shade.ts, the Light map's "account for the aquascape"): the net
+ * fades under rock, wood and plant canopies whether or not the Light map is set up. Cached per setup object (the store
+ * makes a new one on every change), so a caustic step does not rebuild them.
+ */
+const causShade = new WeakMap<object, Shade[]>();
+function causShadesOf(S: LightScene, T: Tank): Shade[] {
+  let sh = causShade.get(S);
+  if (!sh) { sh = shadesOf({ ...S, tank: T }, S.water.on ? waterY(T, S.water.level) : Infinity); causShade.set(S, sh); }
+  return sh;
+}
 /**
  * Light map contour spacing when not set, and the slider's range (Nathan 2026-10-14: PAR 5-100 by 5; default 10 since 2026-10-15). Lux
  * scaled to match at 50 lux per µmol (white LED is about 67 in air, less under water): 250-5000 by 250, default 500.
@@ -218,8 +230,9 @@ export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams 
   LU.uLoOn.value = env ? 1 : 0; LU.uMapDiv.value = env ? MAP_DIV[l.mapUnit ?? 'par'] : MAP_DIV.rel;
   LU.uMapStep.value = env ? mapStepOf(l, l.mapUnit ?? 'par') : 0;
   if (env) setLoUniforms(env, lo!.scale, l.mapUnit ?? 'par');
-  const sh = env?.shade ?? [];
-  LU.uShN.value = sh.length; sh.forEach((s, i) => { LU.uShA.value[i].set(s[0], s[1], s[2], s[3]); LU.uShT.value[i] = s[4]; });
+  // the light map's columns (only when it counts the scape); else, with caustics on, the same columns for the caustics alone
+  const sh = env?.shade ?? (FX.caustics && S ? causShadesOf(S, T) : []);
+  LU.uShN.value = env?.shade ? sh.length : 0; LU.uShC.value = FX.caustics ? sh.length : 0; sh.forEach((s, i) => { LU.uShA.value[i].set(s[0], s[1], s[2], s[3]); LU.uShT.value[i] = s[4]; });
 }
 function setLoUniforms(env: LightEnv, scale: number, unit: 'par' | 'lux') {
   LU.uLoA.value.set(env.phi * 1e6 / env.norm, Number.isFinite(env.ys) ? env.ys : -1e6, env.trans * scale, env.walls ? env.walls.w : 0);
@@ -330,10 +343,11 @@ float aqSrc(vec3 p, vec3 n, vec3 ep, float h, float w) {
   return e0 * dot(uLoSplit * uLoOut, a);
 }
 // scape shading (scene/shade.ts shadeAt): the share of direct light left after the shadow columns above p
-float aqShade(vec3 p) {
+uniform int uShC;
+float aqShade(vec3 p, int nn) {
   float f = 1.0;
   for (int i = 0; i < ${SHADE_MAX}; i++) {
-    if (i >= uShN) break;
+    if (i >= nn) break;
     if (p.y >= uShT[i]) continue;
     vec4 s = uShA[i];
     f *= 1.0 - (1.0 - s.w) * (1.0 - smoothstep(s.z * 0.6, s.z, length(p.xz - s.xy)));
@@ -358,7 +372,7 @@ float aqIrrAbs(vec3 p, vec3 n) {
       if (g > 0.0) sum += aqSrc(p, n, im, e.w, uLoA.w * g);
     }
   }
-  if (uShN > 0) sum *= aqShade(p); // direct light only
+  if (uShN > 0) sum *= aqShade(p, uShN); // direct light only
   // bounced light (lightout bounce): under water, or everywhere in a dry tank
   if (p.y < ys || ys < -1e5) sum += dot(uLoInd, uLoOut);
   return sum;
@@ -392,12 +406,17 @@ float aqCaus(vec3 n) {
   float dep = uWater.y - vAqP.y;
   if (uFxCaus < 0.5 || uCausK.z < 0.5 || uCausK.x <= 0.0 || dep <= 0.0 || uRoomMat > 0.5 || uPane > 0.5) return 0.0;
   if (vAqP.x < 0.0 || vAqP.x > uWater.x || vAqP.z > 0.0 || vAqP.z < -uWater.z) return 0.0;
-  float up = uCard > 0.5 ? 0.25 : max(n.y, 0.0);
+  float up = uCard > 0.5 ? 0.2 : max(n.y, 0.0); up *= up; // steep faces fall off fast
   if (up <= 0.0) return 0.0;
   vec2 p = vAqP.xz / (1.0 + dep / 900.0); float bias = uCausK.y + dep / 400.0;
-  float a = texture2D(uCausTex, p / 125.0 + uFxTime * vec2(0.040, 0.025), bias).r;
-  float b = texture2D(uCausTex, mat2(0.8, 0.6, -0.6, 0.8) * p / 155.0 + uFxTime * vec2(-0.030, 0.036), bias).r;
+  float a = texture2D(uCausTex, p / 165.0 + uFxTime * vec2(0.030, 0.019), bias).r;
+  float b = texture2D(uCausTex, mat2(0.8, 0.6, -0.6, 0.8) * p / 205.0 + uFxTime * vec2(-0.023, 0.027), bias).r;
   float k = uCausK.x * up * smoothstep(5.0, 60.0, dep) * (1.0 - 0.5 * smoothstep(100.0, 700.0, dep));
+  // uneven across the floor: broad, slowly drifting patches where the surface focuses more or less (not one even overlay)
+  k *= 0.35 + 0.65 * smoothstep(0.2, 0.8, aqNoise(vAqP.xz / 260.0 + uFxTime * vec2(0.012, -0.008)));
+  // on the substrate, fades in the shadow of rock, wood and plant canopies (not on the pieces themselves: a rock's own top
+  // lies inside its own column)
+  if (uSub > 0.5 && uShC > 0) k *= aqShade(vAqP, uShC);
   float r = min(a, b) / uCausK.w - 1.0;
   return k * (min(r > 0.0 ? r : ${CAUS_DARK.toFixed(3)} * r, 3.0) - uCausOff);
 }

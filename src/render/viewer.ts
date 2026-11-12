@@ -170,8 +170,14 @@ function restoreRange(this: THREE.Object3D, _r: THREE.WebGLRenderer, _s: THREE.S
   g.drawRange.count = this.userData.range; delete this.userData.range;
 }
 
-/** Caustic steps per second: slow drift, so 20 reads as smooth and costs a third of a 60 Hz loop. */
-const CAUS_FPS = 20;
+/**
+ * Caustic steps per second: slow drift, so 20 reads as smooth and costs a third of a 60 Hz loop. Safeguards (Nathan
+ * 2026-11-12, "are we sure this isn't going to lag"): the motion runs only at the Full quality performance level, stops
+ * after CAUS_IDLE_MS with no input (the next pointer move or key starts it again), and backs off on a slow machine: when
+ * a caustic step costs more than CAUS_SLOW_MS (its draw's CPU time, or the loop's frame gap past one 60 Hz frame, which
+ * is where a busy GPU shows), the rate halves, then the pattern holds still. Still = the same caustics, no redraws.
+ */
+const CAUS_FPS = 20, CAUS_IDLE_MS = 60_000, CAUS_SLOW_MS = 10;
 const GOV_MIN = 0.5, GOV_MOTION_MS = 100, GOV_REST = 150, GOV_PROBE = 600; // lowest scale, a gap that still counts as motion, rest before the sharp frame, fast frames before a step up
 export class Viewer {
   readonly renderer: THREE.WebGLRenderer;
@@ -336,10 +342,11 @@ export class Viewer {
     const S = store.scene;
     this.vps = (['A', 'B'] as const).map((key, i) => ({ i, key, cam: new THREE.PerspectiveCamera(40, 1, 10, 40000), S: S.tanks[0], T: S.tanks[0].tank, x: 0, y: 0, w: 1, h: 1 }));
     let shownLevel = perf.level;
-    onPerf(() => { if (perf.level !== shownLevel) { shownLevel = perf.level; this.applyLevel(); } });
+    onPerf(() => { if (perf.level !== shownLevel) { shownLevel = perf.level; this.applyLevel(); this.causReset(); } });
     store.subscribe(kind => { if (kind !== 'view') this.needsBuild = true; if (kind === 'load') this.revealNext = true; this.dirty = true; });
     // visual-fidelity switches (render/fx.ts): shader ones are uniforms (a redraw), build-time ones (contact, variety) rebuild
-    onFx((_, ch) => { if (ch.some(k => k === 'contact' || k === 'ground' || k === 'variety')) this.rebuild(); else this.invalidate(); });
+    onFx((_, ch) => { if (ch.includes('caustics')) this.causReset(); if (ch.some(k => k === 'contact' || k === 'ground' || k === 'variety')) this.rebuild(); else this.invalidate(); });
+    for (const ev of ['pointermove', 'pointerdown', 'wheel', 'keydown'] as const) window.addEventListener(ev, () => this.noteInput(), { passive: true });
     new ResizeObserver(() => { this.dirty = true; }).observe(host);
     matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { this.dirty = true; });
     onPictureLoad(() => { this.dirty = true; }); // a background picture finished decoding into its texture
@@ -350,27 +357,47 @@ export class Viewer {
         const builtNow = this.dirty && this.needsBuild;
         if (builtNow) this.buildAndLink();
         if (this.reveal) this.revealTick(performance.now());
+        this.causGap(t);
         const caus = this.causticsDue();
         if (this.dirty && !this.reveal?.wait) { this.dirty = false; this.drawGoverned(builtNow); }
-        else if (caus) this.draw(); // the caustics' next step: not camera motion, so the governor and the rest timer ignore it
+        else if (caus) { const t0 = performance.now(); this.draw(); this.causCpu = 0.8 * this.causCpu + 0.2 * (performance.now() - t0); } // the caustics' next step: not camera motion, so the governor and the rest timer ignore it
         else { this.govRest(); if (this.variantDue && !this.reveal && !this.needsBuild && performance.now() - this.lastDrawAt > 400) this.precompileVariant(); }
       }
     });
   }
 
-  private causAt = 0;
+  private causAt = 0; private causT = 0; private causRate = CAUS_FPS; private causCpu = 0; private causGapMs = 0; private causLoopAt = 0; private causSteps = 0;
+  private lastInput = performance.now();
+  /** The loop's frame gap past one 60 Hz frame, averaged, while the caustics animate (a GPU that cannot keep up delays the loop). */
+  private causGap(t: number) {
+    const gap = this.causLoopAt ? t - this.causLoopAt : 0; this.causLoopAt = t;
+    if (this.causRate > 0 && gap > 0 && gap < 1000) this.causGapMs = 0.9 * this.causGapMs + 0.1 * Math.max(0, gap - 1000 / 60);
+  }
+  /** What the caustic motion is doing (dev: the A/B scripts read it). */
+  causState() {
+    const why = !FX.caustics ? 'off' : perf.level > 0 ? 'still: performance level' : this.causRate === 0 ? 'still: slow machine' : performance.now() - this.lastInput > CAUS_IDLE_MS ? 'still: idle' : 'moving';
+    return { why, rate: this.causRate, cpuMs: +this.causCpu.toFixed(2), gapMs: +this.causGapMs.toFixed(2) };
+  }
+  /** Something the person did (pointer, wheel, key): the caustics may move again. */
+  noteInput() { this.lastInput = performance.now(); }
+  /** Back-off restarts (from 20 steps a second) when the performance level or the caustics switch changes. */
+  private causReset() { this.causRate = CAUS_FPS; this.causCpu = this.causGapMs = 0; this.causSteps = 0; }
   /**
    * Caustics (plan VF5, render/fx.ts) move: while they are on and a shown tank has water and a fixture, the clock steps
-   * CAUS_FPS times a second and each step redraws. Off (or a dry tank, or no fixture): the app draws only on change, as
-   * before. Not during the reveal.
+   * causRate times a second and each step redraws. Off (or a dry tank, or no fixture): the app draws only on change, as
+   * before. Not during the reveal. The safeguards (CAUS_FPS) hold the pattern still; its clock only runs while it moves,
+   * so it picks up where it stopped instead of jumping.
    */
   private causticsDue() {
-    if (!FX.caustics || this.reveal) return false;
+    if (!FX.caustics || this.reveal || perf.level > 0 || this.causRate === 0) return false;
     const now = performance.now();
-    if (now - this.causAt < 1000 / CAUS_FPS) return false;
+    if (now - this.lastInput > CAUS_IDLE_MS) { this.causAt = 0; return false; }
+    if (now - this.causAt < 1000 / this.causRate) return false;
     if (!this.vps.some(vp => vp.scene && vp.S.water.on && vp.S.light.type !== 'flat')) return false;
-    this.causAt = now;
-    return tickFx(now);
+    // back-off, judged every 20 steps once the averages have settled
+    if (++this.causSteps % 20 === 0 && Math.max(this.causCpu, this.causGapMs) > CAUS_SLOW_MS) { this.causRate = this.causRate >= CAUS_FPS ? CAUS_FPS / 2 : 0; this.causCpu = this.causGapMs = 0; }
+    this.causT += this.causAt ? Math.min(now - this.causAt, 200) : 0; this.causAt = now;
+    return tickFx(this.causT);
   }
   /** Build now; after a full build, start linking every program it needs before the draw uses them (startLinks). The
    *  first load and an opened file or example are then shown part by part as their programs are ready (reveal). */
