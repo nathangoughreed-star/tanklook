@@ -28,6 +28,10 @@ export interface ScatterSpec {
   liftK?: [number, number]; pileK?: number; cell?: number; palette?: THREE.Color[];
   /** Brush patches (lane SB): the floor-plan points to use, in order, instead of random ones over the whole floor (count / clump ignored). */
   at?: [number, number][];
+  /** VF-C2 (fx mix): size sorting, 0 = fine .. 1 = coarse at a floor-plan point: a copy's size is drawn from the lower 60 % of its range where 0, the upper 60 % where 1. */
+  sortAt?: (x: number, d: number) => number;
+  /** VF-C2 (fx mix): per-grain variation: wider brightness, a warm / cool shift, greyer or richer grains, a few glinting or dark ones. Draws nothing new. */
+  vary?: boolean;
 }
 
 /** Signed distance (mm) to the tank's outline, positive inside: shape.ts `insideBy` with the outline fetched once. */
@@ -60,7 +64,7 @@ export function scatter(T: Tank, ground: GroundAt, spec: ScatterSpec): THREE.Ins
     const keep = r(), lift01 = r(), lift = spec.lift[0] + lift01 * (spec.lift[1] - spec.lift[0]), shade = r(), hue = r(), pal = spec.palette ? r() : 0; // pal only for grains: litter layouts unchanged
     if (keep > 1 - spec.clump + spec.clump * clamp((field(x, d) - 0.25) / 0.5, 0, 1)) continue;
     let ki = 0; for (let acc = spec.kinds[0].weight; acc < pick && ki < spec.kinds.length - 1;) acc += spec.kinds[++ki].weight;
-    const K = spec.kinds[ki], size = K.size[0] + u * (K.size[1] - K.size[0]), reach = size * K.reach;
+    const K = spec.kinds[ki], su = spec.sortAt ? u * 0.6 + 0.4 * spec.sortAt(x, d) : u, size = K.size[0] + su * (K.size[1] - K.size[0]), reach = size * K.reach;
     if (inBy(x, d) < reach * 0.25) continue; // near the glass: its ends and sides are checked below
     const g = ground(x, d), gx0 = ground(x - e, d), gx1 = ground(x + e, d), gd0 = ground(x, d - e), gd1 = ground(x, d + e);
     n.set(gx1[0] - gx0[0], gx1[1] - gx0[1], gx1[2] - gx0[2]).cross(b.set(gd0[0] - gd1[0], gd0[1] - gd1[1], gd0[2] - gd1[2])).normalize();
@@ -88,7 +92,14 @@ export function scatter(T: Tank, ground: GroundAt, spec: ScatterSpec): THREE.Ins
     pos.set(g[0] + n.x * h, g[1] + n.y * h, g[2] + n.z * h); scl.set(size, size, mirror && !spec.palette ? -size : size);
     const pm = per[ki]; for (const v of mx.compose(pos, q, scl).elements) pm.push(v);
     const k = spec.shade?.(pos.y) ?? 1;
-    if (spec.palette) col.copy(spec.palette[Math.floor(pal * spec.palette.length)]).multiplyScalar(0.85 + shade * 0.3);
+    if (spec.palette && spec.vary) {
+      // per grain: brightness +-22 %, warm or cool, grey or rich, and now and then a glinting (pale, polished) or a dark, wet-looking one
+      const q = (shade * 7.31 + hue * 3.7) % 1, c0 = spec.palette[Math.floor(pal * spec.palette.length)];
+      let m = 0.78 + shade * 0.44; const warm = (hue - 0.5) * 0.16, grey = q < 0.3 ? 0.35 * (1 - q / 0.3) : 0;
+      if (q > 0.95) m *= 1.38; else if (q < 0.04) m *= 0.6;
+      const lum = (c0.r + c0.g + c0.b) / 3, gl = q > 0.95 ? 0.4 : grey;
+      col.setRGB((c0.r + (lum - c0.r) * gl) * m * (1 + warm), (c0.g + (lum - c0.g) * gl) * m, (c0.b + (lum - c0.b) * gl) * m * (1 - warm));
+    } else if (spec.palette) col.copy(spec.palette[Math.floor(pal * spec.palette.length)]).multiplyScalar(0.85 + shade * 0.3);
     else col.setRGB(0.82 + shade * 0.3, 0.82 + shade * 0.3 - (hue - 0.5) * 0.06, 0.82 + shade * 0.3 - (hue - 0.5) * 0.12);
     tint[ki].push(col.r * k, col.g * k, col.b * k);
     placed++;

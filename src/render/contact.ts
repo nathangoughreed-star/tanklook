@@ -17,12 +17,14 @@
 import * as THREE from 'three';
 import { rng } from '../art/paint';
 import { SUBSTRATES, shadesOf } from '../art/placeholder';
+import { itemDims } from '../scene/items';
 import type { Item, Tank, TankSetup } from '../scene/types';
 import { FX } from './fx';
 import { grainKinds, grainLooks, type GrainLook } from './grains';
 import { scatter, type GroundAt } from './scatter';
 
-interface Blob { x: number; d: number; ux: number; ud: number; rx: number; rd: number; dark: number; grains: boolean }
+/** fx, fd, berm, u: VF-C2 (fx embed): the piece's own footprint semi-axes, the berm's height (mm) and a per-piece random 0..1. */
+interface Blob { x: number; d: number; ux: number; ud: number; rx: number; rd: number; dark: number; grains: boolean; fx?: number; fd?: number; berm?: number; u?: number }
 
 const GRID = 11; // vertices per side of a blob's grid
 const blobs = new Map<string, Blob | null>();
@@ -33,6 +35,20 @@ function contactMat() {
     blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.ZeroFactor, blendDst: THREE.OneMinusSrcColorFactor, toneMapped: false });
   mat.userData.keep = true;
   return mat;
+}
+
+/** A per-piece random 0..1 from its seed and id (stable while the piece is dragged or resized). */
+const pieceU = (it: Item) => { const t = Math.sin((it.seed || 1) * 12.9898 + it.id * 78.233) * 43758.5453; return t - Math.floor(t); };
+
+/**
+ * VF-C2 (fx embed): how much deeper than the base rest a hardscape piece is set into the bed, mm, on top of
+ * scene/items.ts itemSink: a stone 5-15 % of its height (3-35 mm), a cave 3-8 %, wood 4-12 % (2-12 mm), by a per-piece
+ * draw. A piece stacked on another (lift above 2 mm) stays where it is. Render only: the scene's data does not move.
+ */
+export function embedSink(it: Item): number {
+  if (!FX.embed || it.lift > 2 || !(it.kind === 'stone' || it.kind === 'wood' || it.kind === 'cave')) return 0;
+  const h = itemDims(it)[1], u = pieceU(it);
+  return it.kind === 'stone' ? Math.min(35, Math.max(3, h * (0.05 + 0.1 * u))) : it.kind === 'cave' ? Math.min(25, Math.max(2, h * (0.03 + 0.05 * u))) : Math.min(12, Math.max(2, h * (0.04 + 0.08 * u)));
 }
 
 const hardKind = (it: Item) => it.kind === 'stone' || it.kind === 'wood' || it.kind === 'cave';
@@ -72,7 +88,8 @@ function blobOf(it: Item, m: THREE.Mesh, groundY: (x: number, d: number) => numb
   const tr = (sxx + sdd) / 2, det = Math.sqrt(Math.max(0, ((sxx - sdd) / 2) ** 2 + sxd * sxd)), l1 = tr + det, l2 = Math.max(0, tr - det);
   const ang = 0.5 * Math.atan2(2 * sxd, sxx - sdd), pad = Math.min(10 + 0.04 * it.size, 0.25 * tall);
   const rx = Math.min(it.size * 0.75, 1.9 * Math.sqrt(l1) + pad), rd = Math.min(it.size * 0.75, 1.9 * Math.sqrt(l2) + pad);
-  return { x: mx, d: md, ux: Math.cos(ang), ud: Math.sin(ang), rx, rd: Math.max(rd, pad * 1.4), dark: (it.kind === 'wood' ? 0.5 : 0.55) * Math.min(1, Math.max(0.35, tall / 60)) * touch, grains: true };
+  return { x: mx, d: md, ux: Math.cos(ang), ud: Math.sin(ang), rx, rd: Math.max(rd, pad * 1.4), dark: (it.kind === 'wood' ? 0.5 : 0.55) * Math.min(1, Math.max(0.35, tall / 60)) * touch, grains: true,
+    fx: 2 * Math.sqrt(l1), fd: Math.max(2 * Math.sqrt(l2), pad), berm: Math.min(9, Math.max(2, 0.045 * tall)) * (0.7 + 0.6 * pieceU(it)) * touch, u: pieceU(it) };
 }
 
 /** Linear value whose sRGB encoding is `a` (the material's output is encoded; the blend factor should be `a`). */
@@ -82,9 +99,9 @@ const lin = (a: number) => (a <= 0.04045 ? a / 12.92 : ((a + 0.055) / 1.055) ** 
  * The contact objects for the built items: the blob mesh (fx contact) and the coarse grains by the hardscape (fx ground,
  * fine grounds only). `ground` = the ground surface the substrate was drawn with (render/build.ts addSubstrate).
  */
-export function contactObjects(S: TankSetup, T: Tank, items: { it: Item; m: THREE.Mesh }[], ground: GroundAt): THREE.Object3D[] {
-  if (!FX.contact && !FX.ground) return [];
-  const gsig = JSON.stringify([T, S.terrain, S.substrate.rough, S.substrate.show, S.layout.seed]), groundY = (x: number, d: number) => ground(x, d)[1];
+export function contactObjects(S: TankSetup, T: Tank, items: { it: Item; m: THREE.Mesh }[], ground: GroundAt, skin?: GroundSkin): THREE.Object3D[] {
+  if (!FX.contact && !FX.ground && !FX.embed && !FX.mix) return [];
+  const gsig = (FX.embed ? 'e' : '') + JSON.stringify([T, S.terrain, S.substrate.rough, S.substrate.show, S.layout.seed]), groundY = (x: number, d: number) => ground(x, d)[1];
   const list: Blob[] = [];
   for (const { it, m } of items) {
     const k = JSON.stringify(it) + gsig;
@@ -95,6 +112,8 @@ export function contactObjects(S: TankSetup, T: Tank, items: { it: Item; m: THRE
   const out: THREE.Object3D[] = [];
   if (FX.contact && list.length) out.push(blobMesh(list, ground));
   if (FX.ground) out.push(...footGrains(S, T, list.filter(b => b.grains), ground));
+  if (FX.mix) out.push(...coarseFeet(S, T, list.filter(b => b.grains && b.fx), ground));
+  if (FX.embed && skin) out.push(...bermObjects(S, T, list.filter(b => b.grains && b.berm), ground, skin));
   return out;
 }
 
@@ -177,4 +196,113 @@ export function baseShade(pos: THREE.BufferAttribute | THREE.InterleavedBufferAt
     col[i * 3] *= k; col[i * 3 + 1] *= k; col[i * 3 + 2] *= k;
   }
 }
-export const contactKey = (items: Item[]) => 'contact' + JSON.stringify([FX.contact, FX.ground, items.filter(it => hardKind(it) || it.kind === 'plant' || it.kind === 'artificial')]);
+export const contactKey = (items: Item[]) => 'contact' + JSON.stringify([FX.contact, FX.ground, FX.embed, FX.mix, items.filter(it => hardKind(it) || it.kind === 'plant' || it.kind === 'artificial')]);
+
+// ---------- VF-C2: embedding (fx `embed`) ----------
+
+/** What the ground mesh is drawn with (render/build.ts addSubstrate): the berm round a piece uses the same skin. */
+export interface GroundSkin { map: THREE.Texture; color: number; tile: number; colAt: (x: number, d: number) => number[]; terra: boolean }
+
+const smooth = (a: number, b: number, x: number) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+const BERM_OUT = 1.75; // the berm ends at this many footprints out
+/** The berm's wobble round the piece: about 0.82..1.18 by angle, from the piece's draw. */
+const wobble = (u: number, a: number) => 1 + 0.11 * Math.sin(a * 2 + u * 40) + 0.07 * Math.sin(a * 3 + u * 90 + 1) + 0.04 * Math.sin(a * 5 + u * 17);
+/** How far out (in footprints) a floor-plan point is from a piece, and the berm's height there, mm: a plateau against the piece, falling away. */
+function bermAt(b: Blob, x: number, d: number) {
+  const lx = (x - b.x) * b.ux + (d - b.d) * b.ud, ld = -(x - b.x) * b.ud + (d - b.d) * b.ux;
+  const rho = Math.hypot(lx / b.fx!, ld / b.fd!), r = rho / wobble(b.u ?? 0, Math.atan2(ld, lx));
+  return { rho: r, h: r <= 1 ? b.berm! : b.berm! * smooth(0, 1, 1 - (r - 1) / (BERM_OUT - 1)) };
+}
+
+/**
+ * Round each hardscape piece's base: a small berm of substrate (a mound in the bed's own skin and colour, draped on the
+ * ground, highest against the piece and falling to nothing about 1.75 footprints out, its outline wobbling), a darker
+ * damp ring where it meets the piece, and grains of the bed spilled over its slope (instanced, through scatter). Each
+ * piece is built from its own blob, which is cached per item (a drag recomputes only the moved piece).
+ */
+function bermObjects(S: TankSetup, T: Tank, list: Blob[], ground: GroundAt, skin: GroundSkin): THREE.Object3D[] {
+  if (!list.length) return [];
+  const NA = 28, NR = 7, nv = (NR + 1) * NA, pos = new Float32Array(list.length * nv * 3), col = new Float32Array(list.length * nv * 3), uv = new Float32Array(list.length * nv * 2), idx: number[] = [];
+  const scale = skin.color === 0xffffff ? 1 : 0.5; // over 3D grains the berm is lower: the spilled grains make up the rest
+  list.forEach((b, bi) => {
+    const o = bi * nv, H = b.berm! * scale;
+    for (let r = 0; r <= NR; r++) for (let k = 0; k < NA; k++) {
+      const a = k / NA * Math.PI * 2, w = wobble(b.u ?? 0, a), t = 0.7 + (BERM_OUT - 0.7) * r / NR, rho = t * w;
+      const lx = Math.cos(a) * rho * b.fx!, ld = Math.sin(a) * rho * b.fd!, x = b.x + lx * b.ux - ld * b.ud, d = b.d + lx * b.ud + ld * b.ux;
+      const g = ground(x, d), h = t <= 1 ? H : H * smooth(0, 1, 1 - (t - 1) / (BERM_OUT - 1)), i = o + r * NA + k, p = i * 3, c = skin.colAt(x, d);
+      // the damp ring: darker and a touch cooler against the piece, back to the bed's colour about 1.5 footprints out
+      const wet = 0.55 + 0.45 * smooth(0.9, 1.55, t);
+      pos[p] = g[0]; pos[p + 1] = g[1] + h + (r === NR ? 0 : 0.15); pos[p + 2] = g[2];
+      col[p] = c[0] * wet * 0.96; col[p + 1] = c[1] * wet; col[p + 2] = c[2] * wet * 1.04;
+      uv[i * 2] = g[0] / skin.tile; uv[i * 2 + 1] = -g[2] / skin.tile;
+    }
+    for (let r = 0; r < NR; r++) for (let k = 0; k < NA; k++) {
+      const a = o + r * NA + k, a1 = o + r * NA + (k + 1) % NA, c = a + NA, c1 = a1 + NA;
+      idx.push(a, c, a1, a1, c, c1);
+    }
+  });
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3)); g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  g.setIndex(idx); g.computeVertexNormals();
+  const n = g.attributes.normal; for (let i = 0; i < n.count; i++) if (n.getY(i) < 0) n.setXYZ(i, -n.getX(i), -n.getY(i), -n.getZ(i));
+  g.computeBoundingSphere();
+  const m = new THREE.MeshBasicMaterial({ map: skin.map, color: skin.color, vertexColors: true, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
+  m.userData.sub = true;
+  const mesh = new THREE.Mesh(g, m); mesh.userData.contact = true; mesh.raycast = () => {}; mesh.frustumCulled = false;
+  return [mesh, ...spillGrains(S, T, list, ground, scale)];
+}
+
+/** Grains of the bed's own kind lying on each berm (a few per piece, sized like the bed's grains: a 3D ground's own stones, a fine bed's 2-4.5 mm). */
+function spillGrains(S: TankSetup, T: Tank, list: Blob[], ground: GroundAt, scale: number): THREE.InstancedMesh[] {
+  const sub = S.substrate; if (!sub.show) return [];
+  let look: GrainLook | null = grainLooks(sub)[0] ?? null;
+  if (!look) {
+    let base: string;
+    if (sub.type === 'custom') base = sub.custom.color; else { const t = SUBSTRATES[sub.type]; if (t.kind === 'bark') return []; base = t.shades[1] ?? t.base; }
+    look = { shape: 'stone', size: [2, 4.5], round: 0.7, colors: shadesOf(base, 8, rng(73), 1.5), speckle: false, wet: false };
+  }
+  const r = rng(151 + (S.layout.seed ?? 1)), at: [number, number][] = [];
+  for (const b of list) {
+    const per = Math.min(90, Math.round((b.fx! + b.fd!) * 0.45));
+    for (let i = 0; i < per; i++) {
+      const a = r() * Math.PI * 2, t = 0.8 + 0.85 * r() * r(), w = wobble(b.u ?? 0, a), lx = Math.cos(a) * t * w * b.fx!, ld = Math.sin(a) * t * w * b.fd!;
+      at.push([b.x + lx * b.ux - ld * b.ud, b.d + lx * b.ud + ld * b.ux]);
+    }
+  }
+  const bermY = (x: number, d: number): [number, number, number] => {
+    const g = ground(x, d); let h = 0;
+    for (const b of list) { const l = bermAt(b, x, d); if (l.rho < BERM_OUT) h = Math.max(h, l.h * scale); }
+    return [g[0], g[1] + h, g[2]];
+  };
+  const ms = scatter(T, bermY, { seed: 9, count: at.length, at, kinds: grainKinds(look).slice(0, 2), lift: [0, 0], pile: 0, tilt: 0.5, slope: 0.3, clump: 0, liftK: [-0.2, 0.05], pileK: 0.15, cell: 3,
+    palette: look.colors.map(c => new THREE.Color(c).multiplyScalar(0.8)) });
+  for (const m of ms) { m.userData.grains = true; m.userData.contact = true; m.raycast = () => {}; }
+  return ms;
+}
+
+// ---------- VF-C2: coarse grains at the feet of pieces (fx `mix`, size sorting) ----------
+
+/** A few coarser grains of the bed's own colours round each piece's foot (the big ones settle there): a 3D ground's own stones 1-1.35 times its largest, a fine bed's 3-7 mm. Marine sand too (in the bed's colours, not darker). */
+function coarseFeet(S: TankSetup, T: Tank, list: Blob[], ground: GroundAt): THREE.InstancedMesh[] {
+  const sub = S.substrate; if (!sub.show || !list.length) return [];
+  const g3 = grainLooks(sub)[0];
+  let look: GrainLook;
+  if (g3) look = g3.shape === 'chip' ? g3 : { ...g3, size: [g3.size[1], g3.size[1] * 1.35] };
+  else {
+    let base: string;
+    if (sub.type === 'custom') base = sub.custom.color; else { const t = SUBSTRATES[sub.type]; if (t.kind === 'bark') return []; base = t.shades[1] ?? t.base; }
+    look = { shape: 'stone', size: [3, 7], round: 0.7, colors: shadesOf(base, 8, rng(79), 1.5), speckle: true, wet: false };
+  }
+  const r = rng(171 + (S.layout.seed ?? 1)), at: [number, number][] = [];
+  for (const b of list) {
+    const per = Math.min(36, Math.round((b.fx! + b.fd!) * 0.2));
+    for (let i = 0; i < per; i++) {
+      const a = r() * Math.PI * 2, t = 0.9 + 0.55 * r(), lx = Math.cos(a) * t * b.fx!, ld = Math.sin(a) * t * b.fd!;
+      at.push([b.x + lx * b.ux - ld * b.ud, b.d + lx * b.ud + ld * b.ux]);
+    }
+  }
+  const ms = scatter(T, ground, { seed: 13, count: at.length, at, kinds: grainKinds(look).slice(0, 2), lift: [0, 0], pile: 0, tilt: 0.5, slope: 0.35, clump: 0, liftK: [-0.25, -0.05], pileK: 0.15, cell: 3,
+    palette: look.colors.map(c => new THREE.Color(c).multiplyScalar(0.8)), vary: true });
+  for (const m of ms) { m.userData.grains = true; m.userData.contact = true; m.raycast = () => {}; }
+  return ms;
+}

@@ -1,0 +1,80 @@
+{
+ "commit": "c667e23e",
+ "build": 1813,
+ "dirty": true,
+ "when": "2026-11-12T15:42:39.223Z",
+ "size": [
+  1050,
+  850
+ ],
+ "fx": [
+  "none",
+  "embed",
+  "mix",
+  "sand",
+  "embed,mix,sand"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "planted4": {
+   "shots": [
+    "planted4-front-none.png",
+    "planted4-ground-none.png",
+    "planted4-rock-none.png",
+    "planted4-front-embed.png",
+    "planted4-ground-embed.png",
+    "planted4-rock-embed.png",
+    "planted4-front-mix.png",
+    "planted4-ground-mix.png",
+    "planted4-rock-mix.png",
+    "planted4-front-sand.png",
+    "planted4-ground-sand.png",
+    "planted4-rock-sand.png",
+    "planted4-front-embed-mix-sand.png",
+    "planted4-ground-embed-mix-sand.png",
+    "planted4-rock-embed-mix-sand.png"
+   ],
+   "ab": {}
+  },
+  "nano": {
+   "shots": [
+    "nano-front-none.png",
+    "nano-ground-none.png",
+    "nano-rock-none.png",
+    "nano-front-embed.png",
+    "nano-ground-embed.png",
+    "nano-rock-embed.png",
+    "nano-front-mix.png",
+    "nano-ground-mix.png",
+    "nano-rock-mix.png",
+    "nano-front-sand.png",
+    "nano-ground-sand.png",
+    "nano-rock-sand.png",
+    "nano-front-embed-mix-sand.png",
+    "nano-ground-embed-mix-sand.png",
+    "nano-rock-embed-mix-sand.png"
+   ],
+   "ab": {}
+  },
+  "reef": {
+   "shots": [
+    "reef-front-none.png",
+    "reef-ground-none.png",
+    "reef-rock-none.png",
+    "reef-front-embed.png",
+    "reef-ground-embed.png",
+    "reef-rock-embed.png",
+    "reef-front-mix.png",
+    "reef-ground-mix.png",
+    "reef-rock-mix.png",
+    "reef-front-sand.png",
+    "reef-ground-sand.png",
+    "reef-rock-sand.png",
+    "reef-front-embed-mix-sand.png",
+    "reef-ground-embed-mix-sand.png",
+    "reef-rock-embed-mix-sand.png"
+   ],
+   "ab": {}
+  }
+ }
+}

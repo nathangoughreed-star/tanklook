@@ -6,16 +6,19 @@
 //   ground    substrate colour patches, clustered flecks, coarse grains by the hardscape (render/grains.ts, lane VF-C)
 //   tonemap   0 = none (the clamp the app always had), 1 = AgX, 2 = ACES (aqPatch, every lit material)
 //   variety   per-plant / per-leaf variation (render/plant3d.ts, lane VF-B)
+//   embed     hardscape sunk into the bed, a berm and spilled grains round its base, a wet ring (render/contact.ts, lane VF-C2)
+//   mix       mixed grain sizes sorted by hollow / foot, per-grain colour variation (render/grains.ts, scatter.ts, lane VF-C2)
+//   sand      a fine detail layer in the painted-only sand tiles (render/textures.ts, lane VF-C2)
 //   waterline the bright band and meniscus at the water surface, and the front pane's reflection (lighting.ts, items.ts)
 // Set from the page address: `?fx=caustics,depth,tonemap` (on), `?fx=tonemap:aces`, `?fx=-caustics` (off), `?fx=none`.
 // Shader effects read uniforms (FXU, shared by every lit program): switching them never recompiles. Build-time effects
 // (contact, ground, variety) are read when the scene is built; a change calls the listeners (the viewer rebuilds).
 // Dev server: `window.__fx` (get / set) for the A/B scripts (scripts/vf-shots.mjs).
-export type FxKey = 'caustics' | 'depth' | 'contact' | 'ground' | 'tonemap' | 'variety' | 'waterline';
-export interface Fx { caustics: boolean; depth: boolean; contact: boolean; ground: boolean; tonemap: 0 | 1 | 2; variety: boolean; waterline: boolean }
+export type FxKey = 'caustics' | 'depth' | 'contact' | 'ground' | 'tonemap' | 'variety' | 'waterline' | 'embed' | 'mix' | 'sand';
+export interface Fx { caustics: boolean; depth: boolean; contact: boolean; ground: boolean; tonemap: 0 | 1 | 2; variety: boolean; waterline: boolean; embed: boolean; mix: boolean; sand: boolean }
 
 /** What ships (each switches on once Nathan has seen it and said yes; variety on: Nathan 2026-11-11, lane VF-B; tonemap ACES and caustics (animated): Nathan 2026-11-12, lane VF-A; contact and ground: Nathan 2026-11-12, lane VF-C). */
-export const FX_DEFAULT: Readonly<Fx> = { caustics: true, depth: false, contact: true, ground: true, tonemap: 2, variety: true, waterline: false };
+export const FX_DEFAULT: Readonly<Fx> = { caustics: true, depth: false, contact: true, ground: true, tonemap: 2, variety: true, waterline: false, embed: false, mix: false, sand: false };
 
 const TONE: Record<string, 0 | 1 | 2> = { none: 0, off: 0, agx: 1, aces: 2 };
 
@@ -24,8 +27,8 @@ export function parseFx(q: string | null | undefined, base: Fx = { ...FX_DEFAULT
   const fx = { ...base };
   if (!q) return fx;
   for (const raw of q.split(',').map(s => s.trim().toLowerCase()).filter(Boolean)) {
-    if (raw === 'none') { Object.assign(fx, { caustics: false, depth: false, contact: false, ground: false, tonemap: 0, variety: false, waterline: false }); continue; }
-    if (raw === 'all') { Object.assign(fx, { caustics: true, depth: true, contact: true, ground: true, tonemap: fx.tonemap || 1, variety: true, waterline: true }); continue; }
+    if (raw === 'none') { Object.assign(fx, { caustics: false, depth: false, contact: false, ground: false, tonemap: 0, variety: false, waterline: false, embed: false, mix: false, sand: false }); continue; }
+    if (raw === 'all') { Object.assign(fx, { caustics: true, depth: true, contact: true, ground: true, tonemap: fx.tonemap || 1, variety: true, waterline: true, embed: true, mix: true, sand: true }); continue; }
     const off = raw.startsWith('-'), [k, v] = raw.replace(/^[-+]/, '').split(/[:=]/);
     if (k === 'tonemap') fx.tonemap = off ? 0 : v != null ? TONE[v] ?? 1 : 1;
     else if (k === 'agx' || k === 'aces') fx.tonemap = off ? 0 : TONE[k];

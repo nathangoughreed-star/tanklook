@@ -1,0 +1,101 @@
+{
+ "1": {
+  "tank": "planted4",
+  "view": "front",
+  "letters": {
+   "A": "mix",
+   "B": "none",
+   "C": "sand",
+   "D": "embed-mix-sand",
+   "E": "embed"
+  }
+ },
+ "2": {
+  "tank": "planted4",
+  "view": "ground",
+  "letters": {
+   "A": "mix",
+   "B": "embed",
+   "C": "sand",
+   "D": "none",
+   "E": "embed-mix-sand"
+  }
+ },
+ "3": {
+  "tank": "planted4",
+  "view": "rock",
+  "letters": {
+   "A": "embed-mix-sand",
+   "B": "none",
+   "C": "sand",
+   "D": "embed",
+   "E": "mix"
+  }
+ },
+ "4": {
+  "tank": "nano",
+  "view": "front",
+  "letters": {
+   "A": "none",
+   "B": "mix",
+   "C": "embed-mix-sand",
+   "D": "sand",
+   "E": "embed"
+  }
+ },
+ "5": {
+  "tank": "nano",
+  "view": "ground",
+  "letters": {
+   "A": "embed",
+   "B": "sand",
+   "C": "embed-mix-sand",
+   "D": "mix",
+   "E": "none"
+  }
+ },
+ "6": {
+  "tank": "nano",
+  "view": "rock",
+  "letters": {
+   "A": "embed",
+   "B": "embed-mix-sand",
+   "C": "sand",
+   "D": "mix",
+   "E": "none"
+  }
+ },
+ "7": {
+  "tank": "reef",
+  "view": "front",
+  "letters": {
+   "A": "sand",
+   "B": "embed",
+   "C": "embed-mix-sand",
+   "D": "mix",
+   "E": "none"
+  }
+ },
+ "8": {
+  "tank": "reef",
+  "view": "ground",
+  "letters": {
+   "A": "embed",
+   "B": "embed-mix-sand",
+   "C": "none",
+   "D": "mix",
+   "E": "sand"
+  }
+ },
+ "9": {
+  "tank": "reef",
+  "view": "rock",
+  "letters": {
+   "A": "embed-mix-sand",
+   "B": "embed",
+   "C": "none",
+   "D": "mix",
+   "E": "sand"
+  }
+ }
+}

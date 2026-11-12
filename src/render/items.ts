@@ -2,7 +2,7 @@
 // light baked in, like the hood and substrate); plants are real 3D from their `PLANT3D` entry (render/plant3d.ts).
 // Each item is ONE mesh, so picking and the selection box are simple. Shapes are cached by (variant, seed, size) and the
 // baked colours by turn as well: the scene rebuilds on every drag step.
-import { baseShade } from './contact';
+import { baseShade, embedSink } from './contact';
 import { FX } from './fx';
 import * as THREE from 'three';
 import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
@@ -1093,7 +1093,7 @@ const noBend = (ks: string) => { if (unbent.size > 4000) unbent.clear(); unbent.
 
 /** One placed item as a mesh in tank space (userData.item = its id, userData.plant for plants). Null = no room for it. */
 export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
-  const ground = groundHeight(S, T, it.x, it.depth), y = ground + it.lift - itemSink(it);
+  const ground = groundHeight(S, T, it.x, it.depth), y = ground + it.lift - itemSink(it) - embedSink(it); // embedSink: VF-C2, fx embed
   // hardscape lies along the ground's contour (settleOn): turned by the slope under it, raised only by its own turn's rise
   const st = it.kind === 'plant' ? null : settleOn(S, T, it), at = st && (st.pitch !== it.pitch || st.tilt !== it.tilt) ? { ...it, pitch: st.pitch, tilt: st.tilt } : it;
   let m: THREE.Mesh;

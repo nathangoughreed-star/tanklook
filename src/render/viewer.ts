@@ -345,7 +345,7 @@ export class Viewer {
     onPerf(() => { if (perf.level !== shownLevel) { shownLevel = perf.level; this.applyLevel(); this.causReset(); } });
     store.subscribe(kind => { if (kind !== 'view') this.needsBuild = true; if (kind === 'load') this.revealNext = true; this.dirty = true; });
     // visual-fidelity switches (render/fx.ts): shader ones are uniforms (a redraw), build-time ones (contact, variety) rebuild
-    onFx((_, ch) => { if (ch.includes('caustics')) this.causReset(); if (ch.some(k => k === 'contact' || k === 'ground' || k === 'variety')) this.rebuild(); else this.invalidate(); });
+    onFx((_, ch) => { if (ch.includes('caustics')) this.causReset(); if (ch.some(k => k === 'contact' || k === 'ground' || k === 'variety' || k === 'embed' || k === 'mix' || k === 'sand')) this.rebuild(); else this.invalidate(); });
     for (const ev of ['pointermove', 'pointerdown', 'wheel', 'keydown'] as const) window.addEventListener(ev, () => this.noteInput(), { passive: true });
     new ResizeObserver(() => { this.dirty = true; }).observe(host);
     matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { this.dirty = true; });

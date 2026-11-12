@@ -154,6 +154,7 @@ function topGrains(S: TankSetup, T: Tank, ground: GroundAt, g: GrainLook, layer:
     slope: 0.35, clump: 0, liftK: chip ? [-0.05, 0.05] : [-0.18, 0], pileK: chip ? 0.12 : 0.18, cell: Math.max(1, mean / 3),
     // stones a shade under their tile colours: lit from above, their tops came out near white
     palette: g.colors.map(c => new THREE.Color(c).multiplyScalar(chip ? 1 : 0.8)), shade: y => (y < wy ? 0.55 : 1),
+    ...(FX.mix && !chip ? { sortAt: sortField(S, ground, layer), vary: true } : FX.mix ? { vary: true } : {}), // VF-C2
   });
   // drawn before the ground (renderOrder): the depth test then skips the ground's shading under them (fill was the cost)
   for (const m of out) { m.userData.grains = true; m.renderOrder = -1; }
@@ -209,7 +210,7 @@ function paneGrains(S: TankSetup, T: Tank, groundY: (x: number, d: number) => nu
 interface GrainSnap { geo: THREE.BufferGeometry; mat: THREE.Material | THREE.Material[]; m: Float32Array; c: Float32Array | null; nolight: boolean; order: number }
 const grainCache = new Map<string, GrainSnap[]>();
 function cachedGrains(tag: string, S: TankSetup, T: Tank, make: () => THREE.InstancedMesh[]): THREE.InstancedMesh[] {
-  const key = tag + JSON.stringify([{ ...S.substrate, litter: null }, S.terrain, S.layout.id, S.layout.seed, S.backdrop, S.render?.bgSides, T, S.water.on, S.water.level]);
+  const key = tag + (FX.mix ? 'm' : '') + (FX.ground ? 'g' : '') + JSON.stringify([{ ...S.substrate, litter: null }, S.terrain, S.layout.id, S.layout.seed, S.backdrop, S.render?.bgSides, T, S.water.on, S.water.level]);
   let snap = grainCache.get(key);
   if (snap) { grainCache.delete(key); grainCache.set(key, snap); } // most recent last
   else {
@@ -264,5 +265,23 @@ function clumpField(S: TankSetup, ground: GroundAt) {
     const e = 6, gx = ground(x + e, d)[1] - ground(x - e, d)[1], gd = ground(x, d + e)[1] - ground(x, d - e)[1], slope = Math.min(1, Math.hypot(gx, gd) / (2 * e) * 2);
     const v = 3 * Math.max(0, drift - 0.3) * 2.2 * Math.max(0, k - 0.2) * 2.4 + 0.6 * slope;
     return Math.min(2.6, v);
+  };
+}
+
+// ---------- VF-C2: size sorting (fx `mix`) ----------
+
+/**
+ * Where a ground's coarse grains lie (0 = fine .. 1 = coarse), for scatter's `sortAt`: coarse in the hollows (the ground
+ * lower than its surroundings 45 mm out, where grains roll and settle) and in broad patches, fine on the humps and in
+ * the open flats. Depends on the ground and the seed only (not on the items: the ground is not rebuilt on a drag). The
+ * coarse grains by a piece's foot are in render/contact.ts.
+ */
+function sortField(S: TankSetup, ground: GroundAt, layer: number) {
+  const n = valueNoise((S.layout.seed ?? 1) + 131 + layer * 7), R = 45;
+  return (x: number, d: number) => {
+    const h = ground(x, d)[1];
+    const mean = (ground(x - R, d)[1] + ground(x + R, d)[1] + ground(x, d - R)[1] + ground(x, d + R)[1]) / 4;
+    const hollow = Math.max(-1, Math.min(1, (mean - h) / 7));
+    return Math.max(0, Math.min(1, 0.3 + 1.1 * (n(x / 110, d / 110) - 0.5) + 0.45 * hollow));
   };
 }

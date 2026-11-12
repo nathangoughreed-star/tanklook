@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { LECA, drawBlendTile, drawFishCard, drawLook, drawPerson, drawSubstrate, substrateMask, type PresetSubstrate } from '../art/placeholder';
 import { drawPairedFin, type PairedFin } from '../art/fishgen';
 import { drawScene, type BgScene } from '../art/bgscenes';
+import { FX } from './fx';
+import { SUBSTRATES } from '../art/placeholder';
+import { rng } from '../art/paint';
 import { FIN_A, FIN_A2C, style } from '../art/paint';
 import type { Species } from '../data/species';
 import type { BgFit, EdgeMode, SubstrateBlend } from '../scene/types';
@@ -42,11 +45,50 @@ export const pairedFinTexture = (art: string, f: PairedFin, box: { u0: number; v
     style.finA = FIN_A;
     return finish(c);
   });
-export const substrateTexture = (type: PresetSubstrate) => cached('sub:' + type, () => {
+export const substrateTexture = (type: PresetSubstrate) => cached('sub:' + type + (FX.sand && SUBSTRATES[type].kind === 'sand' ? ':d' : ''), () => {
   const c = document.createElement('canvas'); c.width = c.height = 512;
   drawSubstrate(c.getContext('2d')!, 512, type);
+  if (FX.sand && SUBSTRATES[type].kind === 'sand') sandDetail(c.getContext('2d')!, 512, type); // VF-C2
   return finish(c, true);
 });
+/**
+ * VF-C2 (fx sand): the painted-only sands (white, black, aragonite, crushed coral, terrarium) are blobs of three or four
+ * shades; up close that is one flat colour. Over the base tile, per pixel-scale: single grains (a dot a pixel or two,
+ * light and dark, in the bed's shades), a few mineral specks (dark heavy grains in pale sands, pale ones in dark), soft
+ * ripple streaks (slightly lighter and darker, drifting), and for the crushed coral the odd shell fragment. Tiles seamlessly
+ * (everything is stamped at 3 x 3 offsets).
+ */
+function sandDetail(x: CanvasRenderingContext2D, W: number, type: PresetSubstrate) {
+  const t = SUBSTRATES[type], r = rng(23), dark = (hexLum(t.base) < 90);
+  const at = (f: (dx: number, dy: number) => void) => { for (const dx of [-W, 0, W]) for (const dy of [-W, 0, W]) f(dx, dy); };
+  // broad ripples: long, thin, faint streaks along one drift direction, tilted a little by position
+  for (let i = 0; i < 46; i++) {
+    const px = r() * W, py = r() * W, len = 60 + r() * 150, th = 1.5 + r() * 3.5, tilt = (r() - 0.5) * 0.25, light = r() < 0.5;
+    x.strokeStyle = light ? 'rgba(255,248,232,0.07)' : 'rgba(30,22,12,0.08)'; x.lineWidth = th; x.lineCap = 'round';
+    at((dx, dy) => { x.beginPath(); x.moveTo(px + dx, py + dy); x.lineTo(px + dx + len, py + dy + len * tilt); x.stroke(); });
+  }
+  // single grains in the bed's shades, light and dark of them
+  const n = Math.round(W * W / 9);
+  for (let i = 0; i < n; i++) {
+    const px = r() * W, py = r() * W, sh = t.shades[Math.floor(r() * t.shades.length)], k = 0.78 + r() * 0.45, rad = 0.5 + r() * 0.9;
+    const [R, G, B] = hexRgbL(sh); x.fillStyle = `rgba(${Math.min(255, R * k) | 0},${Math.min(255, G * k) | 0},${Math.min(255, B * k) | 0},${0.35 + r() * 0.4})`;
+    at((dx, dy) => { x.beginPath(); x.ellipse(px + dx, py + dy, rad, rad * (0.65 + r() * 0.35), r() * 3, 0, 7); x.fill(); });
+  }
+  // mineral specks and, in the coral, fragments of shell
+  const specks = Math.round(W * W / 420);
+  for (let i = 0; i < specks; i++) {
+    const px = r() * W, py = r() * W, rad = 0.6 + r() * 1.1;
+    x.fillStyle = dark ? `rgba(225,215,200,${0.3 + r() * 0.3})` : `rgba(40,32,26,${0.28 + r() * 0.35})`;
+    at((dx, dy) => { x.beginPath(); x.arc(px + dx, py + dy, rad, 0, 7); x.fill(); });
+  }
+  if (type === 'coral') for (let i = 0; i < 60; i++) {
+    const px = r() * W, py = r() * W, a = r() * 3, l = 3 + r() * 5, th = 1.2 + r() * 1.6;
+    x.strokeStyle = r() < 0.5 ? 'rgba(250,246,236,0.7)' : 'rgba(205,192,168,0.65)'; x.lineWidth = th; x.lineCap = 'round';
+    at((dx, dy) => { x.beginPath(); x.moveTo(px + dx, py + dy); x.lineTo(px + dx + Math.cos(a) * l, py + dy + Math.sin(a) * l); x.stroke(); });
+  }
+}
+const hexRgbL = (h: string) => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const hexLum = (h: string) => { const [r, g, b] = hexRgbL(h); return (r + g + b) / 3; };
 /** The clay-ball drainage layer of 'layered' ground (its cross-section at the glass). */
 export const lecaTexture = () => cached('sub:leca', () => {
   const c = document.createElement('canvas'); c.width = c.height = 512;

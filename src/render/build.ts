@@ -8,6 +8,7 @@ import { litterMeshes, type GroundAt } from './scatter';
 import { patchHighlight, patchMeshes, patchSel } from './brushmesh';
 import { applyGrainUV, woodTexture, type Grain } from './woodGrain';
 import { contactKey, contactObjects } from './contact';
+import { FX } from './fx';
 import { glassGrains, grainLook, grainMeshes, grainPatchy, grainTop, groundTint } from './grains';
 import { snailAspect } from '../art/snails';
 import { fishTL, leafUp, needsWater, speciesOf, type Species } from '../data/species';
@@ -1167,6 +1168,8 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   for (let i = 1; i < fr.length - 1; i++) for (const p of [fr[0], fr[i], fr[i + 1]]) under.push([p[0], 0.3, -p[1]], [p[0] / ut, p[1] / ut]);
   mk(under, lay ? 0x8c8c8c : 0x9a9a9a, undefined, undefined, undefined, lay ? lecaTexture() : undefined);
   sc.userData.groundAt = (x: number, d: number) => G([x, d]); // the drawn ground, for the contact shadows (render/contact.ts)
+  // VF-C2 (fx embed): what the berm round a piece needs to look like the ground (render/contact.ts bermMesh)
+  if (FX.embed && sub.show) sc.userData.groundSkin = { map: sub.type === 'custom' ? blendTexture(sub.custom, sub.custom.grain2 !== 'none' ? 'm' : 'a') : substrateTexture(sub.type), color: gd ? 0x6e6e6e : 0xffffff, tile, colAt: (x: number, d: number) => exactAt([x, d]).slice(0, 3), terra };
   if (gl) for (const o of [...grainMeshes(S, T, (x, d) => G([x, d])), ...(bowl ? [] : glassGrains(S, T, (x, d) => G([x, d])[1]))]) sc.add(o);
   const gt = grainTop(gl); // litter lies on the grains
   if (sub.litter?.density) for (const o of litterMeshes(S, T, (x, d) => { const p = G([x, d]); p[1] += gt; return p; })) sc.add(o);
@@ -1486,7 +1489,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
   const bare = S.render.beams && S.light.type !== 'flat';
   const hard: string[] = []; // the solid pieces' data: an animal on the hardscape is rebuilt when any of them changes
   b.itemParts = (bare ? [] : S.items).map(it => {
-    const data = JSON.stringify(it), key = 'i' + data + itemDeps(S, it) + (isSel(selItem, it.id) ? '*' : ''); // (a vine: + the wood it runs along)
+    const data = JSON.stringify(it), key = 'i' + data + itemDeps(S, it) + (FX.embed ? 'e' : '') + (isSel(selItem, it.id) ? '*' : ''); // (a vine: + the wood it runs along)
     const m = take(key) ?? (() => {
       const m = itemMesh(S, T, it); if (!m) return part(key, [], []);
       if (isSel(selItem, it.id)) m.add(boxOutline(m.geometry));
@@ -1505,7 +1508,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
   const leaves = b.itemMeshes.filter(m => m.userData.plant); for (const m of leaves) m.updateMatrixWorld(true);
   // contact shadows and the grains at the hardscape's foot (plan VF4, render/contact.ts; fx contact / ground)
   if (!bare) { const key = contactKey(S.items), gnd = (sc.userData.groundAt as GroundAt | undefined) ?? ((x: number, d: number): [number, number, number] => [x, groundHeight(S, T, x, d), -d]);
-    b.itemParts.push(take(key) ?? part(key, contactObjects(S, T, S.items.flatMap((it, i) => { const m = b.itemParts[i]?.meshes[0]; return m ? [{ it, m }] : []; }), gnd), [])); }
+    b.itemParts.push(take(key) ?? part(key, contactObjects(S, T, S.items.flatMap((it, i) => { const m = b.itemParts[i]?.meshes[0]; return m ? [{ it, m }] : []; }), gnd, sc.userData.groundSkin), [])); }
   const hardKey = hard.join('|'), leafKey = leaves.map(m => m.uuid + m.geometry.uuid).join('|');
   // glass climbers sit on the 3D wall where it covers the pane
   const wallKey = JSON.stringify([S.backdrop, S.render.rim, S.render.bgSides]);
