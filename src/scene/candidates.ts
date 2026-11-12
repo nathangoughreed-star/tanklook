@@ -12,7 +12,6 @@ import { locksOf } from './locks';
 import { ensureUids } from './uid';
 import { projectExtras, type Brief } from './brief';
 import { scoreBreakdown, type ScoreBreakdown } from './scorePolicy';
-import type { ThumbMap } from './attrs';
 import { readQuickPrefs, type QuickPrefs } from './quickPrefs';
 import { aspectsOf, weightsOf } from '../explore/aspects';
 import { idOf } from '../explore/candidate';
@@ -136,8 +135,8 @@ export function nextCandidates(project: PairProject, brief: Brief, req: Candidat
   // a whole new habitat only when the Tank tab is open; otherwise (the tank stays) the look is drawn for the tank that is there
   const looks = looksOn && breadth > 0 && (free || tankFixed || scope.some(t => t !== 'tank')) ? lookOrder(ctx, 'unsure', 'first').slice(0, Math.max(1, Math.round(1 + breadth * (LOOKS_MAX - 1)))) : [];
   const known = new Set<string>(opts.shownKeys ?? []);
-  const scoreW = weightsOf(aspectsOf(brief)), thumbs = projectExtras(brief).thumbs as ThumbMap | undefined;
-  const breakdownOf = (p: Pending): ScoreBreakdown => scoreBreakdown({ pf, S: p.rec.snapshot, facts: p.rec.facts, features: p.entry.features, archetypeId: p.entry.fp.archetypeId, familyId: p.entry.fp.familyId, totals: p.sc.totals, weights: scoreW, thumbs, lean: leanOf(brief) });
+  const scoreW = weightsOf(aspectsOf(brief)), feedback = projectExtras(brief).feedback;
+  const breakdownOf = (p: Pending): ScoreBreakdown => scoreBreakdown({ pf, S: p.rec.snapshot, facts: p.rec.facts, features: p.entry.features, archetypeId: p.entry.fp.archetypeId, familyId: p.entry.fp.familyId, totals: p.sc.totals, weights: scoreW, feedback, lean: leanOf(brief) });
   const scoreOf = (p: Pending) => breakdownOf(p).total;
   const usable = () => rankEligible(cache.pend.filter(p => !known.has(p.rec.key ?? '') && p.sc.gate.verdict !== 'blocked' && (objective !== 'complete' || !gapsOf(p.rec.snapshot, scope).length)).map(p => ({ ...p.entry, p })), aspectsOf(brief)).map(e => e.p);
   let pruned = 0;
