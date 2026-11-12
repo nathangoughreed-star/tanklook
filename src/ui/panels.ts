@@ -346,6 +346,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   void import('./limitsPanel').then(m => m.attachLimitsPanel($('limitsHost'), () => openSec('brief')));
   { const cn = $('cnNoNew') as HTMLInputElement, cnSync = (b = getBrief()) => { cn.checked = !!projectExtras(b).noNewEquipment; };   // the same brief value as My equipment's box
     cn.onchange = () => editBrief(b => setNoNewEquipment(b, cn.checked)); onBriefEdit(b => cnSync(b)); cnSync(); }
+  void import('./discover/inline').then(m => m.attachInline(store, viewer, { status })); // DQ10: Discover inside the editor (preview, Finish my setup, Fill this section, Apply)
   void import('./discover/switches').then(m => m.attachMenuSwitches(store)); // DX7: "Discovery can change this" in the five creative menu headers
   const startMode = attachStartMode(store, {
     // AB4: ONE habitat question starts an empty project of that kind; the answer is a soft direction in the brief, never a lock

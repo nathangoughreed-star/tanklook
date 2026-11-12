@@ -9,3 +9,8 @@ let opener: Opener | undefined, pending: DiscoveryOpen | undefined;
 export function openDiscovery(opts: DiscoveryOpen = {}): void { if (opener) opener(opts); else pending = opts; }
 /** The panel registers itself here (panels.ts); a call made before it loaded is replayed. */
 export function registerDiscovery(fn: Opener): void { opener = fn; if (pending) { const p = pending; pending = undefined; fn(p); } }
+
+// DQ10: Discover inside the editor (ui/discover/inline.ts) registers its opener here; the A/B door above is unchanged.
+let inlineOpener: (() => void) | undefined;
+export const openInlineDiscover = (): void => inlineOpener?.();
+export function registerInline(fn: () => void): void { inlineOpener = fn; }

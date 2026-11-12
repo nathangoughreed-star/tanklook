@@ -163,3 +163,121 @@ export function setFishKeep(store: Store, species: string, mode: FishKeep) {
   }, { history: false });
 }
 export const keptItem = (tank: TankSetup, it: Item) => !!it.uid && isLocked(tank, it.uid);
+
+// ---------------------------------------------------------------------------------------------------------------- DQ10: Discover inside the editor (the preview controller; no DOM)
+// A preview is a candidate shown THROUGH the live viewer (the caller's `show`), never written to the design and never freezing the store.
+//   run('finish' | 'fill' | 'regen')   generate; the result replaces the preview and the one it replaced goes to the back list (D8)
+//   apply()                            applyProposal, ONE undo step; a stale preview is refused, nothing changes
+//   onChange()                         call on every store change: a preview whose revision no longer matches is marked stale and its picture is dropped
+//   relax(r)                           one "smallest change" from a no-fit result, applied alone, then the same request is re-run (D9)
+import { nextCandidates, finishSetup, gapsOf, type CandidateResult, type CandidateOpts } from '../../scene/candidates';
+import { applyProposal, deltaBetween } from '../../scene/proposal';
+import { setDiscoverTab } from '../../scene/discoverScope';
+import { newCache, type PairCache } from '../../scene/pairGen';
+import type { Brief } from '../../scene/brief';
+import type { CandidateRecord } from '../../scene/discoveryTypes';
+
+/** DQ9 TODO: the Guided / Sandbox rules switch (brief.project.rules) decides the gate set here. Until DQ9 lands every Discover run uses the Guided gates (D7: Sandbox generation stays welfare-defensible too). */
+export const discoverGates = (): 'guided' | 'sandbox' => 'guided';
+
+export type InlineKind = 'finish' | 'fill' | 'regen';
+export interface Preview {
+  id: number; kind: InlineKind; tab?: Tab; rec: CandidateRecord; baseRev: number; proposal: Proposal; rows: DiffRow[]; after: TankSetup; title: string; stale: boolean;
+}
+/** A smallest-change button from a no-fit result: `label` is the generator's text, `act` the edit it stands for (undefined: said, not applied). */
+export interface Relax { label: string; act?: 'unlockTank' | 'switchOn' | 'alternatives'; tab?: Tab }
+export type RunResult =
+  | { ok: true; preview: Preview }
+  | { ok: false; conflicts: string[]; relaxations: Relax[]; nothingMissing?: boolean; needsChange?: boolean };
+
+export interface Counts { kept: number; open: number }
+/** "3 kept, 12 open": pieces and animals Discover may not / may change, within the checked tabs (D2). The tank and the substrate count as one each. */
+export function openCounts(tank: TankSetup): Counts {
+  const on = new Set(discoverTabs(tank)), L = locksOf(tank);
+  let kept = 0, open = 0;
+  for (const it of tank.items) { const tab: Tab = layerOf(it) === 'plant' ? 'plants' : 'hardscape'; if (it.uid && isLocked(tank, it.uid)) kept++; else if (on.has(tab)) open++; }
+  for (const f of tank.fish) { if ((f.uid && isLocked(tank, f.uid)) || L.roster.some(r => r.species === f.species)) kept++; else if (on.has('animals')) open++; }
+  for (const t of ['substrate', 'tank'] as const) { if (L.objects.some(o => o.target === t)) kept++; else if (on.has(t)) open++; }
+  return { kept, open };
+}
+export const countText = (c: Counts) => `${c.kept} kept, ${c.open} open`;
+
+/** The tabs of the checked ones that have nothing in them (what "Fill this section" can fill). */
+export const gapTabs = (tank: TankSetup): Tab[] => (['hardscape', 'plants', 'animals', 'substrate'] as const).filter(t => gapsOf(tank, [t]).length);
+
+export function relaxOf(text: string, tank: TankSetup): Relax {
+  const off = TABS.find(t => !discoverTabs(tank).includes(t));
+  if (/unlock the tank/i.test(text)) return { label: text, act: 'unlockTank' };
+  if (/switch a menu on/i.test(text) && off) return { label: `Switch ${TAB_LABEL[off]} on for Discover`, act: 'switchOn', tab: off };
+  if (/show alternatives/i.test(text)) return { label: text, act: 'alternatives' };
+  return { label: text };
+}
+
+export interface InlineDeps { brief: () => Brief; show: (tank: TankSetup | null) => void; opts?: CandidateOpts; backMax?: number }
+export type InlineApply = ApplyResult | { ok: false; reason: 'none' | 'stale' };
+export interface InlineController {
+  current(): Preview | undefined; back(): Preview[]; counts(): Counts;
+  run(kind: InlineKind, tab?: Tab): RunResult;
+  regenerate(): RunResult | undefined;
+  showBack(i: number): boolean;
+  apply(): InlineApply;
+  relax(r: Relax): RunResult | undefined;
+  onChange(): void;
+  close(): void;
+}
+
+export function createInline(store: Store, d: InlineDeps): InlineController {
+  let cur: Preview | undefined, last: { kind: InlineKind; tab?: Tab } | undefined, seq = 0;
+  const cache: PairCache = newCache(''), back: Preview[] = [], seen = new Set<string>(), backMax = d.backMax ?? 4;
+  const toPreview = (kind: InlineKind, tab: Tab | undefined, rec: CandidateRecord, baseRev: number): Preview => {
+    const tank = store.tank, delta = deltaBetween(tank, rec.snapshot);
+    // a design never carries the project's own settings: locks, brief, constraints, camera and render stay as they are
+    if (delta.set) { for (const k of ['locks', 'brief', 'constraints', 'camera', 'render', 'discoverOn']) delete (delta.set as Record<string, unknown>)[k]; if (!Object.keys(delta.set).length) delete delta.set; }
+    const proposal: Proposal = { baseRev, scope: [...TABS], delta, summary: rec.facts.title };
+    const after = previewProposal(tank, proposal), gear = delta.set ? Object.keys(delta.set).filter(k => !['tank', 'substrate', 'terrain', 'patches'].includes(k)) : [];
+    const rows = diffRows(tank, { ...proposal, gear: [] } as unknown as DiscoveryProposal);
+    return { id: ++seq, kind, ...(tab ? { tab } : {}), rec, baseRev, proposal, rows: gear.length ? [...rows, { tab: 'gear', verb: 'change', text: 'Equipment and settings that go with it' }] : rows, after, title: rec.facts.title, stale: false };
+  };
+  const fail = (r: Extract<CandidateResult, { ok: false }>): RunResult => ({ ok: false, conflicts: r.conflicts, relaxations: r.relaxations.map(t => relaxOf(t, store.tank)), ...(r.nothingMissing ? { nothingMissing: true } : {}), ...(r.needsChange ? { needsChange: true } : {}) });
+  const put = (p: Preview) => { if (cur) { back.unshift(cur); back.length = Math.min(back.length, backMax); } cur = p; if (p.rec.key) seen.add(p.rec.key); d.show(p.after); };
+
+  const ctl: InlineController = {
+    current: () => cur, back: () => back, counts: () => openCounts(store.effTank),
+    run(kind, tab) {
+      discoverGates();
+      if (store.frozen) return { ok: false, conflicts: ['The A/B comparison is open: close it first.'], relaxations: [] };
+      const project = { tank: store.effTank, rev: store.rev }, opts: CandidateOpts = { units: store.scene.units, ...(d.opts ?? {}), shownKeys: [...seen], cache };
+      const t = kind === 'fill' ? tab ?? gapTabs(project.tank)[0] : undefined;
+      if (kind === 'fill' && !t) return { ok: false, conflicts: ['Nothing is missing in the open menus: there is no gap to fill.'], relaxations: [], nothingMissing: true };
+      last = { kind, ...(t ? { tab: t } : {}) };
+      const r = t ? finishSetup(project, d.brief(), { scope: [t], n: 1 }, opts) : nextCandidates(project, d.brief(), { objective: 'explore', n: 1 }, opts);
+      if (!r.ok) return fail(r);
+      const p = toPreview(kind, t, r.candidates[0], project.rev);
+      put(p); return { ok: true, preview: p };
+    },
+    regenerate() { return last ? ctl.run(last.kind === 'fill' ? 'fill' : 'regen', last.tab) : undefined; },
+    showBack(i) {
+      const p = back[i]; if (!p || p.stale || p.baseRev !== store.rev) return false;
+      back.splice(i, 1); if (cur) back.unshift(cur); cur = p; d.show(p.after); return true;
+    },
+    apply() {
+      if (!cur) return { ok: false, reason: 'none' };
+      if (cur.stale || cur.baseRev !== store.rev) { cur.stale = true; d.show(null); return { ok: false, reason: 'stale' }; }
+      const r = applyProposal(store, cur.proposal);
+      if (r.ok) { d.show(null); back.length = 0; cur = undefined; seen.clear(); }
+      return r;
+    },
+    relax(r) {
+      if (r.act === 'unlockTank') store.update(s => { unlockObject(s.tanks[s.active], 'tank'); }, { history: false });
+      else if (r.act === 'switchOn' && r.tab) store.update(s => { setDiscoverTab(s.tanks[s.active], r.tab!, true); }, { history: false });
+      else if (r.act !== 'alternatives') return undefined;
+      return last ? ctl.run(r.act === 'alternatives' ? 'regen' : last.kind, last.tab) : undefined;
+    },
+    onChange() {
+      if (cur && !cur.stale && cur.baseRev !== store.rev) { cur.stale = true; d.show(null); }
+      for (const p of back) if (p.baseRev !== store.rev) p.stale = true;
+    },
+    close() { d.show(null); cur = undefined; back.length = 0; seen.clear(); },
+  };
+  return ctl;
+}

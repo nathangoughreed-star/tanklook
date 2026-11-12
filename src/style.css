@@ -1529,3 +1529,24 @@ details.gfx { margin: 4px 0 } details.gfx > summary { cursor: pointer; font-weig
 .gfxrow { display: flex; align-items: center; gap: 6px }
 .gfxrow select { margin-left: auto }
 .gfxrow .hint { margin-left: 2px }
+
+/* DQ10: Discover inside the editor */
+.dq10 { position: absolute; right: 12px; bottom: 12px; z-index: 6; max-width: min(340px, calc(100% - 24px)); font-size: 12.5px }
+.dq10[hidden] { display: none }
+.dq10-pill { background: var(--accent); color: #fff; border: 0; border-radius: 999px; padding: 7px 16px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.25) }
+.dq10-card { background: color-mix(in srgb, var(--panel) 94%, transparent); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; box-shadow: 0 4px 16px rgba(0,0,0,.25); display: flex; flex-direction: column; gap: 8px; max-height: 70vh; overflow-y: auto }
+.dq10-head { display: flex; align-items: center; gap: 8px }
+.dq10-count { color: var(--muted); flex: 1 }
+.dq10-x { border: 0; background: none; font-size: 18px; line-height: 1; cursor: pointer; color: var(--muted) }
+.dq10-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center }
+.dq10-fill { display: inline-flex; gap: 4px }
+.dq10 button:not(.dq10-pill):not(.dq10-x) { border: 1px solid var(--line); background: var(--chip); color: var(--ink); border-radius: 6px; padding: 5px 10px; cursor: pointer }
+.dq10 button.primary:not(.x):not(.y), .dq10 button.primary[data-a] { background: var(--accent); color: #fff; border-color: var(--accent) }
+.dq10 button:disabled { opacity: .5; cursor: default }
+.dq10-note { margin: 0; color: var(--muted) }
+.dq10-warn { margin: 4px 0; color: var(--warn) }
+.dq10-prev ul, .dq10-nofit ul { margin: 4px 0 8px; padding-left: 18px }
+.dq10-prev.stale { opacity: .8 }
+.dq10-back { margin-top: 6px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px; align-items: center }
+.dq10-said { color: var(--muted); display: block; margin: 2px 0 }
+.dq10-nofit { border-top: 1px solid var(--line); padding-top: 6px }
