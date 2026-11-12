@@ -90,3 +90,20 @@ export function suggestNarrowing(tank: TankSetup, session: DiscoverySession, loo
   const label = labelOf(`world:${leaning.world}`);
   return { text: `You've picked ${label} ${leaning.picks} times. Switch Tank off to focus on the inside?`, tab: 'tank' };
 }
+
+// ---------------------------------------------------------------------------------------------------------------- DQ12: Discover's three presets (D3)
+// One `breadth` number (0..1) is what the generator reads (nextCandidates: how many looks are tried; 0 = variations of the scene only); the person sees three words, no slider.
+export type Preset = 'explore' | 'remix' | 'refine';
+export const PRESETS: readonly Preset[] = ['explore', 'remix', 'refine'];
+export const PRESET_INFO: Record<Preset, { label: string; hint: string; breadth: number; objective: Objective }> = {
+  explore: { label: 'Explore', hint: 'Very different directions', breadth: 1, objective: 'explore' },
+  remix: { label: 'Remix', hint: 'New looks that keep your pieces', breadth: 0.4, objective: 'explore' },
+  refine: { label: 'Refine', hint: 'Small changes to what you have', breadth: 0, objective: 'refine' },
+};
+/** The preset a `breadth` number stands for (the nearest one). */
+export const presetOfBreadth = (b: number): Preset => b >= 0.7 ? 'explore' : b >= 0.2 ? 'remix' : 'refine';
+/** The STARTING preset: the more of the design is kept, the narrower (half or more kept: Refine; a quarter: Remix; little or nothing: Explore). The person's pick then sticks. */
+export function inferPreset(kept: number, open: number): Preset {
+  const total = kept + open, share = total ? kept / total : 0;
+  return share >= 0.5 ? 'refine' : share >= 0.25 ? 'remix' : 'explore';
+}

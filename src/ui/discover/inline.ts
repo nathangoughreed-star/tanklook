@@ -3,6 +3,9 @@
 // marks it stale and drops its picture (never applied); "no design fits" shows the conflicts and the smallest changes, one button each, applied one at a time (D9). The A/B screen is untouched.
 import { TAB_LABEL, countText, createInline, gapTabs, type InlineController, type RunResult } from './logic';
 import { registerInline } from './entry';
+import { conflictCardHtml } from '../infeasibleCard';
+import { PRESETS, PRESET_INFO, type Preset } from '../../scene/breadth';
+import { discoverTabs } from '../../scene/discoverScope';
 import { getBrief } from '../setupBrief';
 import type { Tab } from '../../scene/scope';
 import type { Store } from '../../scene/store';
@@ -33,16 +36,24 @@ export function attachInline(store: Store, viewer: Viewer, deps: { status: (msg:
       body = `<div class="dq10-prev${cur.stale ? ' stale' : ''}"><b>${esc(cur.title)}</b>`
         + (cur.stale ? '<p class="dq10-warn" role="alert">Your design changed, so this preview is out of date. Regenerate to see one for the design as it is now.</p>' : '')
         + `<ul>${cur.rows.map(r => `<li>${VERB[r.verb]} ${r.tab === 'gear' ? '' : esc(TAB_LABEL[r.tab as Tab].toLowerCase()) + ': '}${esc(r.text)}</li>`).join('') || '<li>No change</li>'}</ul>`
+        + `<p class="dq12-fit" role="status">${cur.fit === 1 ? 'Only this one fits' : `${cur.fit} designs fit`}</p>`
         + `<div class="dq10-row"><button type="button" class="primary" data-a="apply"${cur.stale ? ' disabled' : ''}>Apply</button><button type="button" data-a="regen">Regenerate</button></div>`
         + (ctl.back().length ? `<div class="dq10-back">Earlier: ${ctl.back().map((p, i) => `<button type="button" data-a="back" data-i="${i}"${p.stale ? ' disabled' : ''}>${esc(p.title)}</button>`).join(' ')}</div>` : '') + '</div>';
     } else if (fail) {
-      body = `<div class="dq10-nofit" role="alert"><b>${fail.nothingMissing ? 'Nothing to fill' : 'No design fits'}</b><ul>${fail.conflicts.map(c => `<li>${esc(c)}</li>`).join('')}</ul>`
-        + (fail.relaxations.length ? `<p>Smallest change that would help (nothing changes until you press one):</p>${fail.relaxations.map((r, i) => r.act ? `<button type="button" data-a="relax" data-i="${i}">${esc(r.label)}</button>` : `<span class="dq10-said">${esc(r.label)}</span>`).join(' ')}` : '') + '</div>';
+      body = fail.exhausted ? `<div class="dq10-nofit dq12-card" role="status"><b>That was every design</b><p class="dq12-kept">${esc(fail.conflicts[0] ?? '')}</p></div>`
+        : fail.nothingMissing ? `<div class="dq10-nofit" role="status"><b>Nothing to fill</b><ul>${fail.conflicts.map(c => `<li>${esc(c)}</li>`).join('')}</ul></div>`
+        : conflictCardHtml({ conflicts: fail.conflicts, relaxations: fail.relaxations, ...(fail.kept ? { kept: fail.kept } : {}) });
     }
+    const pre = ctl.preset(), tankOn = discoverTabs(store.effTank).includes('tank'), kept = ctl.tankKept(), g = ctl.gates();
+    const presets = `<div class="dq12-presets" role="group" aria-label="How different the designs are">${PRESETS.map(p => `<button type="button" class="${p === pre ? 'on' : ''}" data-a="preset" data-p="${p}" aria-pressed="${p === pre}" title="${esc(PRESET_INFO[p].hint)}">${PRESET_INFO[p].label}</button>`).join('')}</div>`;
+    const tankLine = !tankOn ? '<p class="dq12-tank">Tank: not part of Discover (switched off).</p>' : kept
+      ? '<p class="dq12-tank">Tank: kept. <button type="button" data-a="unlock" title="Let Discover pick a different tank">Unlock to let Discover change it</button></p>'
+      : '<p class="dq12-tank">Tank: Discover may change it. <button type="button" data-a="keeptank">Keep the tank</button></p>';
+    const rules = g.rules === 'sandbox' ? '<p class="dq12-rules">Sandbox: your budget and care limits are ignored. Animal welfare still applies.</p>' : '';
     root.innerHTML = `<div class="dq10-card"><div class="dq10-head"><b>Discover</b><span class="dq10-count" title="Kept pieces are never changed">${esc(counts)}</span><button type="button" class="dq10-x" data-a="close" aria-label="Close Discover">&times;</button></div>`
       + `<div class="dq10-row"><button type="button" class="primary" data-a="finish"${busy ? ' disabled' : ''} title="New designs for everything you have not kept, in the checked menus">Finish my setup</button>`
       + `<span class="dq10-fill"><button type="button" data-a="fill"${busy || !gaps.length ? ' disabled' : ''} title="Fill a section that has nothing in it; nothing present is changed">Fill this section</button>${tabSel}</span></div>`
-      + (note ? `<p class="dq10-note">${esc(note)}</p>` : '') + body + '</div>';
+      + presets + tankLine + rules + (note ? `<p class="dq10-note">${esc(note)}</p>` : '') + body + '</div>';
   };
 
   const go = (fn: () => RunResult | undefined) => {
@@ -59,6 +70,9 @@ export function attachInline(store: Store, viewer: Viewer, deps: { status: (msg:
     switch (el.dataset.a) {
       case 'open': openCard = true; draw(); break;
       case 'close': openCard = false; ctl.close(); fail = undefined; note = ''; draw(); break;
+      case 'preset': ctl.setPreset(el.dataset.p as Preset); draw(); break;
+      case 'unlock': ctl.unlockTank(); draw(); break;
+      case 'keeptank': ctl.keepTank(); draw(); break;
       case 'finish': go(() => ctl.run('finish')); break;
       case 'fill': go(() => ctl.run('fill', fillTab || undefined)); break;
       case 'regen': go(() => ctl.regenerate()); break;

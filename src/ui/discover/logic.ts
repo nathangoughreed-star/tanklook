@@ -177,27 +177,33 @@ import { newCache, type PairCache } from '../../scene/pairGen';
 import type { Brief } from '../../scene/brief';
 import type { CandidateRecord } from '../../scene/discoveryTypes';
 
-/** DQ9 TODO: the Guided / Sandbox rules switch (brief.project.rules) decides the gate set here. Until DQ9 lands every Discover run uses the Guided gates (D7: Sandbox generation stays welfare-defensible too). */
-export const discoverGates = (): 'guided' | 'sandbox' => 'guided';
+import { discoverGates, type DiscoverGates } from '../../scene/rules';
+import { rulesOf, type Rules } from '../../scene/brief';
+import { PRESET_INFO, inferPreset, type Preset } from '../../scene/breadth';
+import { volume } from '../../scene/physics';
+import type { PoolMetrics } from '../../scene/pairGen';
+export { discoverGates };   // DQ12: the real DQ9 gate set (scene/rules.ts); the generator reads it through the brief's rules (candidates.ts -> pairGen.ingest / discover.propose)
 
 export type InlineKind = 'finish' | 'fill' | 'regen';
 export interface Preview {
+  /** DQ12: how many designs fit (this one, the ones already shown and the ones still to come); a lower bound, the search is time-boxed */
+  fit: number;
   id: number; kind: InlineKind; tab?: Tab; rec: CandidateRecord; baseRev: number; proposal: Proposal; rows: DiffRow[]; after: TankSetup; title: string; stale: boolean;
 }
 /** A smallest-change button from a no-fit result: `label` is the generator's text, `act` the edit it stands for (undefined: said, not applied). */
-export interface Relax { label: string; act?: 'unlockTank' | 'switchOn' | 'alternatives'; tab?: Tab }
+export interface Relax { label: string; act?: 'unlockTank' | 'switchOn' | 'alternatives' | 'release'; tab?: Tab; /** 'release': the kept animal (uid) or species row it stops keeping */ target?: string; species?: string }
 export type RunResult =
   | { ok: true; preview: Preview }
-  | { ok: false; conflicts: string[]; relaxations: Relax[]; nothingMissing?: boolean; needsChange?: boolean };
+  | { ok: false; conflicts: string[]; relaxations: Relax[]; nothingMissing?: boolean; needsChange?: boolean; /** DQ12: every design that fits was already shown (not a conflict) */ exhausted?: boolean; /** DQ12: what is kept, in words ("the tank (20 gal), 1 Oscar") */ kept?: string };
 
 export interface Counts { kept: number; open: number }
 /** "3 kept, 12 open": pieces and animals Discover may not / may change, within the checked tabs (D2). The tank and the substrate count as one each. */
-export function openCounts(tank: TankSetup): Counts {
+export function openCounts(tank: TankSetup, tankFree = true): Counts {
   const on = new Set(discoverTabs(tank)), L = locksOf(tank);
   let kept = 0, open = 0;
   for (const it of tank.items) { const tab: Tab = layerOf(it) === 'plant' ? 'plants' : 'hardscape'; if (it.uid && isLocked(tank, it.uid)) kept++; else if (on.has(tab)) open++; }
   for (const f of tank.fish) { if ((f.uid && isLocked(tank, f.uid)) || L.roster.some(r => r.species === f.species)) kept++; else if (on.has('animals')) open++; }
-  for (const t of ['substrate', 'tank'] as const) { if (L.objects.some(o => o.target === t)) kept++; else if (on.has(t)) open++; }
+  for (const t of ['substrate', 'tank'] as const) { if (L.objects.some(o => o.target === t) || (t === 'tank' && !tankFree && on.has(t))) kept++; else if (on.has(t)) open++; }
   return { kept, open };
 }
 export const countText = (c: Counts) => `${c.kept} kept, ${c.open} open`;
@@ -213,10 +219,32 @@ export function relaxOf(text: string, tank: TankSetup): Relax {
   return { label: text };
 }
 
+/** "the tank (20 gal), 1 Oscar, the substrate": what the person kept, for the conflict card (the tank counts as kept unless it was unlocked). */
+export function keptWords(tank: TankSetup, tankKept: boolean): string {
+  const L = locksOf(tank), bits: string[] = [];
+  if (tankKept) bits.push(`the tank (${Math.round(volume(tank.tank).gallons)} gal)`);
+  const names = [...tank.fish.filter(f => f.uid && isLocked(tank, f.uid) && !L.roster.some(r => r.species === f.species)).map(fishName), ...L.roster.map(r => `${r.n} ${getSpecies(r.species)?.name ?? r.species}`)];
+  if (names.length) bits.push(tally(names));
+  const pieces = tank.items.filter(i => i.uid && isLocked(tank, i.uid)).length; if (pieces) bits.push(`${pieces} piece${pieces === 1 ? '' : 's'}`);
+  if (L.objects.some(o => o.target === 'substrate')) bits.push('the substrate');
+  return bits.join(', ');
+}
+/** One "stop keeping" button per kept animal / species row (at most 4): the next smallest thing to give up after the tank. */
+export function releasable(tank: TankSetup): Relax[] {
+  const L = locksOf(tank), out: Relax[] = [];
+  for (const r of L.roster) out.push({ label: `Stop keeping the ${getSpecies(r.species)?.name ?? r.species}`, act: 'release', species: r.species });
+  for (const f of tank.fish) if (f.uid && isLocked(tank, f.uid) && !L.roster.some(r => r.species === f.species)) out.push({ label: `Stop keeping the ${fishName(f)}`, act: 'release', target: f.uid });
+  return out.slice(0, 4);
+}
+
 export interface InlineDeps { brief: () => Brief; show: (tank: TankSetup | null) => void; opts?: CandidateOpts; backMax?: number }
 export type InlineApply = ApplyResult | { ok: false; reason: 'none' | 'stale' };
 export interface InlineController {
   current(): Preview | undefined; back(): Preview[]; counts(): Counts;
+  /** DQ12: the tank is kept unless unlocked (Nathan 2026-11-12); `unlockTank` also releases a tank lock */
+  tankKept(): boolean; unlockTank(): void; keepTank(): void;
+  /** DQ12: the breadth preset (the starting one is inferred from what is kept; a pick sticks for the session) and the rule set the run follows */
+  preset(): Preset; setPreset(p: Preset): void; picked(): boolean; gates(): DiscoverGates & { rules: Rules };
   run(kind: InlineKind, tab?: Tab): RunResult;
   regenerate(): RunResult | undefined;
   showBack(i: number): boolean;
@@ -227,32 +255,50 @@ export interface InlineController {
 }
 
 export function createInline(store: Store, d: InlineDeps): InlineController {
+  let tankFree = false, pick: Preset | undefined;
   let cur: Preview | undefined, last: { kind: InlineKind; tab?: Tab } | undefined, seq = 0;
   const cache: PairCache = newCache(''), back: Preview[] = [], seen = new Set<string>(), backMax = d.backMax ?? 4;
-  const toPreview = (kind: InlineKind, tab: Tab | undefined, rec: CandidateRecord, baseRev: number): Preview => {
+  const toPreview = (kind: InlineKind, tab: Tab | undefined, rec: CandidateRecord, baseRev: number, fit: number): Preview => {
     const tank = store.tank, delta = deltaBetween(tank, rec.snapshot);
     // a design never carries the project's own settings: locks, brief, constraints, camera and render stay as they are
     if (delta.set) { for (const k of ['locks', 'brief', 'constraints', 'camera', 'render', 'discoverOn']) delete (delta.set as Record<string, unknown>)[k]; if (!Object.keys(delta.set).length) delete delta.set; }
     const proposal: Proposal = { baseRev, scope: [...TABS], delta, summary: rec.facts.title };
     const after = previewProposal(tank, proposal), gear = delta.set ? Object.keys(delta.set).filter(k => !['tank', 'substrate', 'terrain', 'patches'].includes(k)) : [];
     const rows = diffRows(tank, { ...proposal, gear: [] } as unknown as DiscoveryProposal);
-    return { id: ++seq, kind, ...(tab ? { tab } : {}), rec, baseRev, proposal, rows: gear.length ? [...rows, { tab: 'gear', verb: 'change', text: 'Equipment and settings that go with it' }] : rows, after, title: rec.facts.title, stale: false };
+    return { fit, id: ++seq, kind, ...(tab ? { tab } : {}), rec, baseRev, proposal, rows: gear.length ? [...rows, { tab: 'gear', verb: 'change', text: 'Equipment and settings that go with it' }] : rows, after, title: rec.facts.title, stale: false };
   };
-  const fail = (r: Extract<CandidateResult, { ok: false }>): RunResult => ({ ok: false, conflicts: r.conflicts, relaxations: r.relaxations.map(t => relaxOf(t, store.tank)), ...(r.nothingMissing ? { nothingMissing: true } : {}), ...(r.needsChange ? { needsChange: true } : {}) });
+  const tankKept = () => !tankFree || locksOf(store.effTank).objects.some(o => o.target === 'tank');
+  const counts = () => openCounts(store.effTank, !tankKept());
+  const presetNow = (): Preset => pick ?? inferPreset(counts().kept, counts().open);
+  const fail = (r: Extract<CandidateResult, { ok: false }>): RunResult => {
+    const tank = store.effTank, rel = r.relaxations.map(t => relaxOf(t, tank)), k = keptWords(tank, tankKept());
+    // D9: every kept thing that stands in the way is its own button (applied alone, then the request re-runs), never a bundle
+    if (!r.nothingMissing && discoverTabs(tank).includes('tank') && tankKept() && !rel.some(x => x.act === 'unlockTank')) rel.push({ label: 'Let Discover change the tank (it is kept now)', act: 'unlockTank' });
+    if (!r.nothingMissing) rel.push(...releasable(tank));
+    return { ok: false, conflicts: r.conflicts, relaxations: rel, ...(k ? { kept: k } : {}), ...(r.nothingMissing ? { nothingMissing: true } : {}), ...(r.needsChange ? { needsChange: true } : {}) };
+  };
   const put = (p: Preview) => { if (cur) { back.unshift(cur); back.length = Math.min(back.length, backMax); } cur = p; if (p.rec.key) seen.add(p.rec.key); d.show(p.after); };
 
   const ctl: InlineController = {
-    current: () => cur, back: () => back, counts: () => openCounts(store.effTank),
+    current: () => cur, back: () => back, counts,
+    tankKept, unlockTank() { tankFree = true; store.update(s => { unlockObject(s.tanks[s.active], 'tank'); }, { history: false }); }, keepTank() { tankFree = false; },
+    preset: presetNow, setPreset(p) { pick = p; }, picked: () => !!pick, gates: () => ({ ...discoverGates(rulesOf(d.brief())), rules: rulesOf(d.brief()) }),
     run(kind, tab) {
-      discoverGates();
       if (store.frozen) return { ok: false, conflicts: ['The A/B comparison is open: close it first.'], relaxations: [] };
       const project = { tank: store.effTank, rev: store.rev }, opts: CandidateOpts = { units: store.scene.units, ...(d.opts ?? {}), shownKeys: [...seen], cache };
       const t = kind === 'fill' ? tab ?? gapTabs(project.tank)[0] : undefined;
       if (kind === 'fill' && !t) return { ok: false, conflicts: ['Nothing is missing in the open menus: there is no gap to fill.'], relaxations: [], nothingMissing: true };
       last = { kind, ...(t ? { tab: t } : {}) };
-      const r = t ? finishSetup(project, d.brief(), { scope: [t], n: 1 }, opts) : nextCandidates(project, d.brief(), { objective: 'explore', n: 1 }, opts);
+      let pooled = 0; const ask = (o: CandidateOpts) => t ? finishSetup(project, d.brief(), { scope: [t], n: 1 }, o)
+        : nextCandidates(project, d.brief(), { objective: PRESET_INFO[presetNow()].objective, breadth: PRESET_INFO[presetNow()].breadth, tankFixed: tankKept(), n: 1 }, o);
+      let r = ask({ ...opts, metrics: m => { pooled = (m as PoolMetrics).pooled; } });
+      if (!r.ok && seen.size) {   // nothing NEW: either every design that fits has been shown, or nothing fits at all
+        const all = ask({ ...opts, shownKeys: [] });
+        if (all.ok) return { ok: false, conflicts: [`Only ${seen.size === 1 ? 'that one design fits' : `${seen.size} designs fit`}, and you have seen ${seen.size === 1 ? 'it' : 'them all'}. Try another preset, or change what is kept.`], relaxations: [], exhausted: true };
+        r = all;
+      }
       if (!r.ok) return fail(r);
-      const p = toPreview(kind, t, r.candidates[0], project.rev);
+      const p = toPreview(kind, t, r.candidates[0], project.rev, pooled + seen.size);
       put(p); return { ok: true, preview: p };
     },
     regenerate() { return last ? ctl.run(last.kind === 'fill' ? 'fill' : 'regen', last.tab) : undefined; },
@@ -268,7 +314,8 @@ export function createInline(store: Store, d: InlineDeps): InlineController {
       return r;
     },
     relax(r) {
-      if (r.act === 'unlockTank') store.update(s => { unlockObject(s.tanks[s.active], 'tank'); }, { history: false });
+      if (r.act === 'unlockTank') ctl.unlockTank();
+      else if (r.act === 'release') store.update(s => { const t = s.tanks[s.active]; if (r.target) unlockObject(t, r.target); if (r.species) unlockRoster(t, r.species); }, { history: false });
       else if (r.act === 'switchOn' && r.tab) store.update(s => { setDiscoverTab(s.tanks[s.active], r.tab!, true); }, { history: false });
       else if (r.act !== 'alternatives') return undefined;
       return last ? ctl.run(r.act === 'alternatives' ? 'regen' : last.kind, last.tab) : undefined;

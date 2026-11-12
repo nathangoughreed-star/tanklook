@@ -9,11 +9,12 @@ import { confine, propose, type DiscoveryProposal, type Objective, type Focus } 
 import { gatherPool } from './candidates';
 import { checkProposal, deltaBetween, previewProposal } from './proposal';
 import { locksOf, lockViolations, rosterMet } from './locks';
-import { verdictOf, type Issue } from './verdict';
+import { verdictOf, type Issue, type Verdict } from './verdict';
+import { blockingIssues } from './rules';
 import { capableOf, equipPlan, noNewEquipment } from './equipPlan';
 import { equipmentOf, requiredEquipment } from './project';
 import { filterUnits, heaterUnits, inferTech, withUnits } from './tech';
-import { briefToWants, getItem, projectExtras, type Brief } from './brief';
+import { briefToWants, getItem, projectExtras, type Brief, type Rules } from './brief';
 import { ensureUids } from './uid';
 import { fitGear } from './gearFit';
 import { finalCheck } from './finalCheck';
@@ -194,8 +195,11 @@ export function reconcileGear(orig: TankSetup, S: TankSetup, brief: Brief): Tank
   if (of.length) r.tech = keep('filter') ? withUnits(r.tech ?? structuredClone(ot!), 'filter', structuredClone(of)) : withUnits(r.tech ?? inferred(), 'filter', filterUnits(inferred()).map(u => ({ ...u, owned: false })));
   return r;
 }
-export interface Ctx { objective?: Objective; focus?: Focus; /** DQ7: 'complete' fills gaps: a design that removes or changes anything not added is dropped (reason 'needs-change') */ additive?: boolean; exclude?: ReadonlySet<string>; noCo2?: boolean; prefs?: QuickPrefs; orig: TankSetup; brief: Brief; w: Wants; P: UserProfile; units: Units; now: number; scope: Tab[]; baseRev: number; sessionId: string; purpose: ProposalPurpose; parentId?: string; cache: PairCache; plan0?: ReturnType<typeof equipPlan> }
+export interface Ctx { /** DQ12: Discover's rule set (candidates.ts only; the A/B road leaves it unset and keeps every gate and limit) */ rules?: Rules; objective?: Objective; focus?: Focus; /** DQ7: 'complete' fills gaps: a design that removes or changes anything not added is dropped (reason 'needs-change') */ additive?: boolean; exclude?: ReadonlySet<string>; noCo2?: boolean; prefs?: QuickPrefs; orig: TankSetup; brief: Brief; w: Wants; P: UserProfile; units: Units; now: number; scope: Tab[]; baseRev: number; sessionId: string; purpose: ProposalPurpose; parentId?: string; cache: PairCache; plan0?: ReturnType<typeof equipPlan> }
 export const drop = (c: Ctx, text: string, issues: Issue[] = [], relax: string[] = []) => { c.cache.rej.push({ text, issues, relax }); return null; };
+
+/** The issues of a verdict that make a candidate unacceptable under this road's rules (no `rules`: gates and limits, as ever). */
+const blockers = (c: Ctx, v: Verdict): Issue[] => c.rules ? blockingIssues(v, c.rules) : [...v.gates, ...v.hard];
 
 /** Run one design through every check; null = dropped (and counted for the no-solution explanation). */
 export function ingest(c: Ctx, scene: TankSetup, label: string, source: Pending['source'], ids: { familyId?: string; archetypeId?: string; name?: string } = {}): Pending | null {
@@ -221,7 +225,7 @@ export function ingest(c: Ctx, scene: TankSetup, label: string, source: Pending[
   const eqWhy = plan.infeasible ? plan.infeasible : noNewEquipment(brief) && (gearChange.length || newBuys.length) ? `${label}: needs new equipment (${[...gearChange, ...newBuys.map(l => l.label)].join(', ')}), and the project allows none` : must.has('tank') && chk.touches.tank.includes('dimensions') ? `${label}: resizes the tank you marked Must use` : '';
   if (eqWhy) return drop(c, eqWhy, [{ id: 'equip:rule', tab: 'equipment', uids: [], text: eqWhy, relax: noNewEquipment(brief) && !plan.infeasible ? 'Allow new equipment for this run' : 'Mark the item Have available instead of Must use' }], ['Allow new equipment, or mark the item Have available instead of Must use']);
   const v0 = verdictOf(after, brief, { units: c.units });
-  if (!v0.feasible) return drop(c, label, [...v0.gates, ...v0.hard], [...v0.gates, ...v0.hard].map(i => i.relax ?? `Relax: ${i.text}`));
+  const bad0 = blockers(c, v0); if (bad0.length) return drop(c, label, bad0, bad0.map(i => i.relax ?? `Relax: ${i.text}`));
   const sc = scoreScene(after, brief, c.w, c.P, c.now), blocked = sc.gate.reasons.filter(r => r.severity === 'blocked');
   if (blocked.length) return drop(c, `${label}: ${blocked[0].text}`, [], blocked.map(r => `Relax: ${r.text}`));
   if (c.prefs) {   // quick preferences (AB6): only HARD answers filter a candidate
@@ -230,7 +234,7 @@ export function ingest(c: Ctx, scene: TankSetup, label: string, source: Pending[
     if (why) return drop(c, `${label}: breaks something you said is required or not wanted`, [], ['Relax the requirement that rules this design out']);
   }
   const v = verdictOf(after, brief, { totals: sc.totals, units: c.units });
-  if (!v.feasible) return drop(c, label, [...v.gates, ...v.hard], [...v.gates, ...v.hard].map(i => i.relax ?? `Relax: ${i.text}`));
+  const bad1 = blockers(c, v); if (bad1.length) return drop(c, label, bad1, bad1.map(i => i.relax ?? `Relax: ${i.text}`));
   const fin2 = finalCheck(after, c.w); if (fin2.blocked) return drop(c, `${label}: ${fin2.blocked}`, [], ['Use a larger tank or fewer animals']);
   const facts = factsOf(after, brief, sc, ids.name);
   const assumptions = [...sc.estimate.assumptions, ...sc.gate.assumptions, ...sc.gate.reasons.filter(r => r.severity === 'provisional').map(r => r.text), ...sc.plan.flags.map(f => f.text)];
@@ -252,7 +256,7 @@ export function ingest(c: Ctx, scene: TankSetup, label: string, source: Pending[
 // ---------------------------------------------------------------------------------------------------------------- sources
 export function fromPropose(c: Ctx, base: TankSetup, n: number): void {
   const t0 = performance.now(), round = c.cache.round;
-  const d = propose(base, c.brief, { scope: c.scope, objective: c.objective ?? 'explore', ...(c.focus ? { focus: c.focus } : {}) }, n, { variants: 3, seed: base.layout.seed + 7919 * round });
+  const d = propose(base, c.brief, { scope: c.scope, objective: c.objective ?? 'explore', ...(c.focus ? { focus: c.focus } : {}) }, n, { variants: 3, seed: base.layout.seed + 7919 * round, ...(c.rules ? { rules: c.rules } : {}) });
   for (const p of d.proposals) { const s = previewProposal(base, p as DiscoveryProposal); if (c.exclude?.size && s.fish.some(f => c.exclude!.has(f.species))) { c.cache.stats.pre++; continue; }   // DQ2 (I3): a variation holding a prohibited animal is skipped before the full check, never run through it
       const got = ingest(c, s, (p as DiscoveryProposal).source, 'propose'); if (got) { c.cache.pend.push(got); c.cache.stats.propose++; } }
   if (d.noSolution) for (const i of d.noSolution.conflicts) c.cache.rej.push({ text: i.text, issues: [i], relax: i.relax ? [i.relax] : [] });

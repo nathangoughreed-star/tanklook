@@ -10,7 +10,7 @@ import type { Objective, Focus } from './discover';
 import { handOff, adaptScene } from './reeval';
 import { locksOf } from './locks';
 import { ensureUids } from './uid';
-import { projectExtras, type Brief } from './brief';
+import { projectExtras, rulesOf, type Brief } from './brief';
 import { scoreBreakdown, type ScoreBreakdown } from './scorePolicy';
 import { readQuickPrefs, type QuickPrefs } from './quickPrefs';
 import { aspectsOf, weightsOf } from '../explore/aspects';
@@ -127,9 +127,9 @@ export function nextCandidates(project: PairProject, brief: Brief, req: Candidat
   if (objective === 'complete' && !gaps.length && open.length) return { ok: false, conflicts: ['Nothing is missing in the open menus: there is no gap to fill.'], relaxations: ['Show alternatives to change what is there'], scope, gaps, nothingMissing: true };
   if (!open.length) return { ok: false, conflicts: ['Nothing is open to change: every menu is switched off or kept.'], relaxations: ['Switch a menu on, or release a kept menu'], scope, gaps };
   const pf = opts.prefs ?? readQuickPrefs(brief), w = liveWants(brief), excl = excludedSpecies(pf);
-  const sig = idOf(JSON.stringify([project.rev, scope, objective, req.focus, breadth, feasibilityPrefs(pf), feasibilityBrief(brief), { ...project.tank, camera: undefined, render: undefined, brief: undefined }]));
+  const sig = idOf(JSON.stringify([rulesOf(brief), project.rev, scope, objective, req.focus, breadth, feasibilityPrefs(pf), feasibilityBrief(brief), { ...project.tank, camera: undefined, render: undefined, brief: undefined }]));
   const cache = opts.cache?.sig === sig ? opts.cache : opts.cache ? Object.assign(opts.cache, newCache(sig)) : newCache(sig);
-  const ctx: Ctx = { objective, ...(req.focus ? { focus: req.focus } : {}), additive: objective === 'complete', prefs: pf, ...(excl.size ? { exclude: excl } : {}), ...(pf.prohibit.includes('co2') ? { noCo2: true } : {}),
+  const ctx: Ctx = { rules: rulesOf(brief), objective, ...(req.focus ? { focus: req.focus } : {}), additive: objective === 'complete', prefs: pf, ...(excl.size ? { exclude: excl } : {}), ...(pf.prohibit.includes('co2') ? { noCo2: true } : {}),
     orig: base, brief, w, P, units, now, scope, baseRev: project.rev, sessionId: opts.sessionId ?? 'candidates', purpose: 'first', cache };
   const free = habitatFree(base, scope), looksOn = objective === 'explore' || objective === 'complete' || (objective === 'refine' && !req.focus);
   // a whole new habitat only when the Tank tab is open; otherwise (the tank stays) the look is drawn for the tank that is there

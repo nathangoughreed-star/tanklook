@@ -19,7 +19,8 @@ import { applySwap, type Swap } from '../demand/swaps';
 import { equipPlan, noNewEquipment, type BuyLine } from './equipPlan';
 import { equipmentOf } from './project';
 import type { Range3 } from '../demand/types';
-import type { Brief } from './brief';
+import type { Brief, Rules } from './brief';
+import { blockingIssues } from './rules';
 import type { Store } from './store';
 import type { Fish, Item, TankSetup } from './types';
 
@@ -28,6 +29,8 @@ export type Region = 'back-left' | 'back' | 'back-right' | 'left' | 'center' | '
 export interface Focus { tab: Tab; uids?: string[]; region?: Region; text?: string }
 export interface DiscoveryRequest { scope: Tab[]; objective: Objective; focus?: Focus }
 export interface DiscoveryOpts extends VerdictOpts {
+  /** DQ12: the Guided / Sandbox rule set (scene/rules.ts blockingIssues). Absent = every gate and limit blocks (today's behaviour). */
+  rules?: Rules;
   /** whole generated scenes from Explore (src/explore) to hand off as looks */
   explore?: TankSetup[];
   /** demand-engine swaps (src/demand/swaps.ts) to offer as candidates */
@@ -218,7 +221,7 @@ export function propose(project: Store | TankSetup, brief: Brief, request: Disco
     const newBuys = plan.toBuy.filter(l => !plan0.toBuy.some(o => o.key === l.key && o.usd >= l.usd));
     const eqWhy = plan.infeasible ? plan.infeasible : noNewEquipment(brief) && (gearChange.length || newBuys.length) ? `${c.source}: needs new equipment (${[...gearChange, ...newBuys.map(l => l.label)].join(', ')}), and the project allows none` : must.has('tank') && chk.touches.tank.includes('dimensions') ? `${c.source}: resizes the tank you marked Must use` : '';
     if (eqWhy) { rejected.push({ why: [], issues: [{ id: 'equip:rule', tab: 'equipment', uids: [], text: eqWhy, relax: noNewEquipment(brief) && !plan.infeasible ? 'Allow new equipment for this run' : 'Mark the item Have available instead of Must use' }], text: c.source }); continue; }
-    const v = verdictOf(chk.after, brief, opts), bad = [...v.gates, ...v.hard].filter(i => !baseIds.has(i.id));
+    const v = verdictOf(chk.after, brief, opts), bad = (opts.rules ? blockingIssues(v, opts.rules) : [...v.gates, ...v.hard]).filter(i => !baseIds.has(i.id));
     const sig = JSON.stringify(delta); if (seen.has(sig)) continue; seen.add(sig);
     if (bad.length || (request.objective === 'solve' && !v.feasible)) { rejected.push({ why: [], issues: bad.length ? bad : [...v.gates, ...v.hard], text: c.source }); continue; }
     if (request.objective === 'solve' && baseV.feasible) continue; // nothing to solve
