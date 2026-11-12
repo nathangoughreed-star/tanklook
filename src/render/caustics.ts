@@ -39,6 +39,8 @@ function makePattern() {
 
 /** The share of the cells' darkening kept (lines brighten fully): full-depth dark cells read as dirt on pale sand. */
 export const CAUS_DARK = 0.35;
+/** The brightest a caustic line gets, x the mean (2026-11-12 review: was 3, the open sand's centre still drew the eye). */
+export const CAUS_PEAK = 2.5;
 /**
  * The distribution of min(X, Y), X and Y drawn independently from the pattern (the two samples' scales differ, so they
  * decorrelate): its mean m, and the mean of the shader's response h(c) = c / m - 1 above m, CAUS_DARK x that below,
@@ -50,7 +52,7 @@ function stats(data: Uint8Array) {
   let above = n;
   for (let t = 0; t < 256; t++) { const a = above / n; above -= h[t]; pm[t] = a * a - (above / n) ** 2; }
   let m = 0; for (let t = 0; t < 256; t++) m += pm[t] * t / 255;
-  let off = 0; for (let t = 0; t < 256; t++) { const r = t / 255 / m - 1; off += pm[t] * (r > 0 ? r : CAUS_DARK * r); }
+  let off = 0; for (let t = 0; t < 256; t++) { const r = t / 255 / m - 1; off += pm[t] * Math.min(r > 0 ? r : CAUS_DARK * r, CAUS_PEAK); }
   return { m, off };
 }
 

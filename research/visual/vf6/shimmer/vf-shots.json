@@ -1,0 +1,25 @@
+{
+ "commit": "f93349ca",
+ "build": 1812,
+ "dirty": true,
+ "when": "2026-11-12T17:08:26.724Z",
+ "size": [
+  1050,
+  850
+ ],
+ "fx": [
+  "tonemap:aces,contact,ground,variety,caustics"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "planted4": {
+   "shots": [
+    "planted4-under-tonemap-aces-contact-ground-variety-caustics-t7.3.png",
+    "planted4-under-tonemap-aces-contact-ground-variety-caustics-t7.8.png",
+    "planted4-under-tonemap-aces-contact-ground-variety-caustics-t8.3.png",
+    "planted4-under-tonemap-aces-contact-ground-variety-caustics-t8.8.png"
+   ],
+   "ab": {}
+  }
+ }
+}

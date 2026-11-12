@@ -10,6 +10,7 @@
 //
 // Options: --fx "none;all"   --scenes planted4,nano,reef (names in the scenes dir, or .json paths)   --dir research/visual/vf0 (not --out: lowprio.ps1 would take it)
 //          --views front,ground,rock,plant:grass (plant:<variant> = a close-up of the front-most one; lane VF-B)
+//          --times 7.3,7.8,8.3   shoot each view at these caustic-clock times (a strip of the motion)
 //          --size 1050x850   --pairs 40   --no-shots   --no-numbers   --sheet (one side-by-side PNG per tank and view)
 //          --rest 20 [--throttle 4]   tank left alone / orbiting / idle for 20 s per fx set, normal CPU and 4x slower (caustic safeguards)
 //          --perf   also run scripts/perf-baseline.mjs on the tanks (steady draw, programs, first frame) into <out>/perf-baseline.json
@@ -27,6 +28,7 @@ const flag = k => argv.includes('--' + k);
 const SCENE_DIR = 'research/visual/vf0/scenes';
 const SCENES = opt('scenes', 'planted4,nano,reef').split(',').map(s => (s.endsWith('.json') ? s : `${SCENE_DIR}/${s}.json`));
 const FXSETS = opt('fx', 'none').split(';').map(s => s.trim()).filter(Boolean);
+const TIMES = opt('times', '') ? opt('times', '').split(',').map(Number) : [null];
 const OUT = opt('dir', 'research/visual/vf0'), PAIRS = +opt('pairs', 40);
 const [W, H] = opt('size', '1050x850').split('x').map(Number);
 const T0 = Date.now(), log = (...a) => console.log(`[${((Date.now() - T0) / 1000).toFixed(0).padStart(4)} s]`, ...a);
@@ -102,16 +104,16 @@ const KIT = () => {
     async setFx(spec) { __fx.set(fxOf(spec)); await this.settle(300); },
     /** The canvas after a few draws (preserveDrawingBuffer is off: read in the same task as the draw). */
     async shot() { for (let i = 0; i < 3; i++) { v().draw(); await raf(); } v().draw(); return v().renderer.domElement.toDataURL('image/png'); },
-    /** Camera: 'front' (as saved), 'ground' (front centre of the substrate), 'rock' (the largest stone or wood), 'line' (the water line on the front glass). */
+    /** Camera: 'front' (as saved), 'ground' (front centre of the substrate), 'rock' (the largest stone or wood), 'line' (the water line on the front glass), 'under' (the water's underside, looking up from below it). */
     async view(kind) {
       const S = st().scene.tanks[0], T = S.tank;
-      st().cam(c => { if (kind === 'front') Object.assign(c, front0); else c.zoom = kind === 'ground' ? 3.2 : kind === 'line' ? 4 : 2.6; }, 0);
+      st().cam(c => { if (kind === 'front') Object.assign(c, front0); else if (kind === 'under') Object.assign(c, front0, { el: -28, zoom: 2.6 }); else c.zoom = kind === 'ground' ? 3.2 : kind === 'line' ? 4 : 2.6; }, 0);
       v().setPan(0, 0, 0); v().draw(); await raf();
       if (kind === 'front') return;
       // ('plant:<variant>', lane VF-B: the front-most plant of that variant, its middle)
       const pv = kind.startsWith('plant:') && kind.slice(6), hs = pv ? S.items.filter(i => i.kind === 'plant' && i.variant === pv).sort((a, b) => a.depth - b.depth)[0] : S.items.filter(i => i.kind === 'stone' || i.kind === 'wood').sort((a, b) => b.size - a.size)[0];
       // 'line' (VF6): the water line on the front glass, a third of the way along
-      const P = kind === 'line' ? [T.L * 0.3, S.water.level * (T.H - WL_GAP), 0] : kind === 'ground' || !hs ? [T.L / 2, (S.substrate.fl + S.substrate.bl) / 2 + T.H * 0.18, -T.D * 0.3] : [hs.x, hs.size * (pv ? 0.45 : 0.25), -hs.depth];
+      const P = kind === 'under' ? [T.L / 2, S.water.level * (T.H - WL_GAP), -T.D / 2] : kind === 'line' ? [T.L * 0.3, S.water.level * (T.H - WL_GAP), 0] : kind === 'ground' || !hs ? [T.L / 2, (S.substrate.fl + S.substrate.bl) / 2 + T.H * 0.18, -T.D * 0.3] : [hs.x, hs.size * (pv ? 0.45 : 0.25), -hs.depth];
       const vp = v().active[0];
       if (pans[kind]) { v().setPan(0, ...pans[kind]); v().draw(); await raf(); return; }
       for (let k = 0; k < 4; k++) { // pan until P is in the middle of the picture
@@ -203,18 +205,22 @@ try {
     result.gpu ??= await br.ev('__vf.gpu()');
     const row = result.scenes[name] = { shots: [], ab: {} };
     if (!flag('no-shots')) {
-      const grid = {};
+      const grid = {}, labels = {};
       for (const fx of FXSETS) {
         await br.ev(`__vf.setFx(${JSON.stringify(fx)})`);
         for (const view of opt('views', 'front,ground,rock').split(',')) {
           await br.ev(`__vf.view(${JSON.stringify(view)})`);
-          const url = await br.ev('__vf.shot()'), f = `${name}-${view.replace(':', '-')}-${tag(fx)}.png`;
-          save(f, url); row.shots.push(f); (grid[view] ??= []).push(url);
+          for (const t of TIMES) { // --times: the caustic clock frozen at each (a strip of the motion); else the fixed 7.3 s
+            if (t != null) await br.ev(`__fx.time(${t})`);
+            const url = await br.ev('__vf.shot()'), f = `${name}-${view.replace(':', '-')}-${tag(fx)}${t != null ? `-t${t}` : ''}.png`;
+            save(f, url); row.shots.push(f); (grid[view] ??= []).push(url); (labels[view] ??= []).push(t != null ? `${fx} @ ${t} s` : fx);
+          }
+          if (TIMES[0] != null) await br.ev('__fx.time(7.3)');
         }
       }
       await br.ev('__vf.view("front")');
-      if (flag('sheet') && FXSETS.length > 1) for (const [view, urls] of Object.entries(grid)) {
-        save(`sheet-${name}-${view.replace(":", "-")}.png`, await br.ev(`__vf.sheet(${JSON.stringify(urls)}, ${JSON.stringify(FXSETS)}, ${JSON.stringify(`${name} ${view} (build ${build} ${commit})`)})`, 600_000));
+      if (flag('sheet') && (FXSETS.length > 1 || TIMES.length > 1)) for (const [view, urls] of Object.entries(grid)) {
+        save(`sheet-${name}-${view.replace(":", "-")}.png`, await br.ev(`__vf.sheet(${JSON.stringify(urls)}, ${JSON.stringify(labels[view])}, ${JSON.stringify(`${name} ${view} (build ${build} ${commit})`)})`, 600_000));
       }
     }
     if (opt('rest', '')) { // --rest SECS [--throttle N]: at rest, orbiting, idle; each fx set; normal CPU and N x slower

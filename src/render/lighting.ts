@@ -9,7 +9,7 @@ import * as THREE from 'three';
 import { ALGAE_GLSL, ALGAE_STEP, AU, setAlgaeUniforms } from './algae';
 import { WATER_FILTER_GLSL, waterHue } from './waterTint';
 import { FXU } from './fx';
-import { CAUS_DARK, CAUS_MEAN, CAUS_OFF, causticTexture } from './caustics';
+import { CAUS_DARK, CAUS_MEAN, CAUS_PEAK, CAUS_OFF, causticTexture } from './caustics';
 import { clamp } from '../scene/physics';
 import type { ConditionSettings, LightSettings, Tank, WaterSettings } from '../scene/types';
 import { waterK, waterY } from '../scene/physics';
@@ -92,7 +92,7 @@ export const LU = {
  * Caustics per fixture type (plan VF5): a spot is a near point source, so the focused net is sharp and strong; an LED bar
  * is a row of points, the nets overlap and smear; a tube is a line, which smears it most. [strength, mip bias]
  */
-const CAUS_BY_TYPE: Record<string, [number, number]> = { spot: [0.6, 0.5], led: [0.3, 1.6], tube: [0.15, 2.2] };
+const CAUS_BY_TYPE: Record<string, [number, number]> = { spot: [0.5, 0.5], led: [0.25, 1.6], tube: [0.15, 2.2] };
 /**
  * The scape's shadow columns for the caustics (scene/shade.ts, the Light map's "account for the aquascape"): the net
  * fades under rock, wood and plant canopies whether or not the Light map is set up. Cached per setup object (the store
@@ -452,7 +452,7 @@ float aqCaus(vec3 n) {
   // lies inside its own column)
   if (uSub > 0.5 && uShC > 0) k *= aqShade(vAqP, uShC);
   float r = min(a, b) / uCausK.w - 1.0;
-  return k * (min(r > 0.0 ? r : ${CAUS_DARK.toFixed(3)} * r, 3.0) - uCausOff);
+  return k * (min(r > 0.0 ? r : ${CAUS_DARK.toFixed(3)} * r, ${CAUS_PEAK.toFixed(1)}) - uCausOff);
 }
 ${ALGAE_GLSL}`;
 // substrate anti-tiling: two copies of the texture (rotated + rescaled) blended by low-frequency noise, plus soft light/dark patches

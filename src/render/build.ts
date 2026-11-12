@@ -22,6 +22,7 @@ import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
 import { getImage } from '../scene/images';
 import { LU, addBeams, addFixture, addHoodLamps, applyLighting, glassFx, setWaterVolumeMode, waterVolumeMaterial } from './lighting';
 import { addAlgae } from './algae';
+import { FXU } from './fx';
 import { buildGear, gearKey, solidBoxes } from './gear3d';
 import { itemDeps, itemMesh, leafProbe, solidProbe, underProbe } from './items';
 import { rootsKey, rootsMesh } from './roots';
@@ -404,18 +405,21 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
 /**
  * The rippled shimmer on the underside of the water: seen from below at a low angle the surface turns into a mirror
  * (total internal reflection) and bright ripple lines run along it. Bright lines where a few crossing waves cancel, as
- * sharp as the angle is low, weaker from above. Still (the viewer draws on change, not every frame), so it is free.
+ * sharp as the angle is low, weaker from above. The ripples drift on the caustic clock (FXU.uFxTime, Nathan 2026-11-12):
+ * they move only while the caustics move (the viewer advances it only then) and are still otherwise.
  */
 function surfaceShimmer(m: THREE.MeshBasicMaterial) {
   m.onBeforeCompile = sh => {
+    sh.uniforms.uFxTime = FXU.uFxTime;
     sh.vertexShader = 'varying vec3 vSurfW;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n  vSurfW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
-    sh.fragmentShader = 'varying vec3 vSurfW;\n' + sh.fragmentShader.replace('#include <opaque_fragment>', `#include <opaque_fragment>
+    sh.fragmentShader = 'varying vec3 vSurfW;\nuniform float uFxTime;\n' + sh.fragmentShader.replace('#include <opaque_fragment>', `#include <opaque_fragment>
   {
     vec2 p = vSurfW.xz * vec2(0.3, 1.3); // mm; squeezed along the tank, so the lines stretch along it
-    float h = sin(p.x * 0.022 + p.y * 0.060 + 1.4 * sin(p.y * 0.031))
-            + sin(p.x * 0.035 - p.y * 0.083 + 2.0)
-            + sin(p.x * 0.057 + p.y * 0.121 + 0.7 * sin(p.x * 0.019))
-            + sin(p.x * 0.011 + p.y * 0.157 + 4.1);
+    float t = uFxTime;
+    float h = sin(p.x * 0.022 + p.y * 0.060 + 1.4 * sin(p.y * 0.031 + 0.21 * t) + 0.30 * t)
+            + sin(p.x * 0.035 - p.y * 0.083 + 2.0 - 0.38 * t)
+            + sin(p.x * 0.057 + p.y * 0.121 + 0.7 * sin(p.x * 0.019 - 0.17 * t) + 0.46 * t)
+            + sin(p.x * 0.011 + p.y * 0.157 + 4.1 - 0.27 * t);
     float line = pow(clamp(1.0 - abs(h) * 0.6, 0.0, 1.0), 7.0);
     vec3 v = normalize(cameraPosition - vSurfW);
     float low = 1.0 - abs(v.y), f = low * low * low, below = v.y < 0.0 ? 1.0 : 0.3;

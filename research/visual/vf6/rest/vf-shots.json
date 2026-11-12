@@ -1,0 +1,713 @@
+{
+ "commit": "f93349ca",
+ "build": 1812,
+ "dirty": true,
+ "when": "2026-11-12T15:19:42.293Z",
+ "size": [
+  1050,
+  850
+ ],
+ "fx": [
+  "tonemap:aces,contact,ground,variety,caustics",
+  "tonemap:aces,contact,ground,variety,caustics,depth,waterline"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "planted4": {
+   "shots": [],
+   "ab": {
+    "tonemap:aces,contact,ground,variety,caustics,depth,waterline": {
+     "A": {
+      "gpuMs": 13.92,
+      "gpuP95": 19.54,
+      "cpuMs": 8.6,
+      "cpuP95": 14.1,
+      "calls": 409,
+      "triangles": 767354
+     },
+     "B": {
+      "gpuMs": 14.04,
+      "gpuP95": 17.45,
+      "cpuMs": 8.6,
+      "cpuP95": 12.6,
+      "calls": 409,
+      "triangles": 767354
+     },
+     "gpuDelta": 0.01,
+     "gpuDeltaP95": 1.76,
+     "timer": true
+    }
+   },
+   "rest": [
+    {
+     "rate": 1,
+     "fx": "tonemap:aces,contact,ground,variety,caustics",
+     "mode": "rest",
+     "drawsPerS": 18,
+     "cpuBusyPct": 6.6,
+     "gpuBusyPct": 19.4,
+     "gpuMsPerDraw": 10.77,
+     "gapMed": 16.7,
+     "gapP95": 21.1,
+     "caustics": {
+      "why": "moving",
+      "rate": 20,
+      "cpuMs": 3.88,
+      "gapMs": 0.04
+     }
+    },
+    {
+     "rate": 1,
+     "fx": "tonemap:aces,contact,ground,variety,caustics",
+     "mode": "orbit",
+     "drawsPerS": 60,
+     "cpuBusyPct": 19.3,
+     "gpuBusyPct": 57,
+     "gpuMsPerDraw": 9.51,
+     "gapMed": 16.7,
+     "gapP95": 17.6,
+     "caustics": {
+      "why": "moving",
+      "rate": 20,
+      "cpuMs": 3.44,
+      "gapMs": 0.03
+     }
+    },
+    {
+     "rate": 1,
+     "fx": "tonemap:aces,contact,ground,variety,caustics",
+     "mode": "idle",
+     "drawsPerS": 0,
+     "cpuBusyPct": 0,
+     "gpuBusyPct": null,
+     "gpuMsPerDraw": null,
+     "gapMed": 16.7,
+     "gapP95": 16.8,
+     "caustics": {
+      "why": "still: idle",
+      "rate": 20,
+      "cpuMs": 2.74,
+      "gapMs": 0.02
+     }
+    },
+    {
+     "rate": 1,
+     "fx": "tonemap:aces,contact,ground,variety,caustics,depth,waterline",
+     "mode": "rest",
+     "drawsPerS": 17.8,
+     "cpuBusyPct": 7.3,
+     "gpuBusyPct": 19.3,
+     "gpuMsPerDraw": 10.85,
+     "gapMed": 16.7,
+     "gapP95": 21.5,
+     "caustics": {
+      "why": "moving",
+      "rate": 20,
+      "cpuMs": 3.6,
+      "gapMs": 0.04
+     }
+    },
+    {
+     "rate": 1,
+     "fx": "tonemap:aces,contact,ground,variety,caustics,depth,waterline",
+     "mode": "orbit",
+     "drawsPerS": 59.9,
+     "cpuBusyPct": 25.8,
+     "gpuBusyPct": 62,
+     "gpuMsPerDraw": 10.35,
+     "gapMed": 16.6,
+     "gapP95": 19.5,
+     "caustics": {
+      "why": "moving",
+      "rate": 20,
+      "cpuMs": 3.78,
+      "gapMs": 0.03
+     }
+    },
+    {
+     "rate": 1,
+     "fx": "tonemap:aces,contact,ground,variety,caustics,depth,waterline",
+     "mode": "idle",
+     "drawsPerS": 0,
+     "cpuBusyPct": 0,
+     "gpuBusyPct": null,
+     "gpuMsPerDraw": null,
+     "gapMed": 16.7,
+     "gapP95": 16.8,
+     "caustics": {
+      "why": "still: idle",
+      "rate": 20,
+      "cpuMs": 3.31,
+      "gapMs": 0.02
+     }
+    },
+    {
+     "rate": 4,
+     "fx": "tonemap:aces,contact,ground,variety,caustics",
+     "mode": "rest",
+     "drawsPerS": 2,
+     "cpuBusyPct": 14.9,
+     "gpuBusyPct": 9.9,
+     "gpuMsPerDraw": 49.69,
+     "gapMed": 16.7,
+     "gapP95": 27.8,
+     "caustics": {
+      "why": "still: slow machine",
+      "rate": 0,
+      "cpuMs": 24.84,
+      "gapMs": 0
+     }
+    },
+    {
+     "rate": 4,
+     "fx": "tonemap:aces,contact,ground,variety,caustics",
+     "mode": "orbit",
+     "drawsPerS": 8.8,
+     "cpuBusyPct": 73.8,
+     "gpuBusyPct": 64.2,
+     "gpuMsPerDraw": 72.99,
+     "gapMed": 118.5,
+     "gapP95": 174.9,
+     "caustics": {
+      "why": "still: slow machine",
+      "rate": 0,
+      "cpuMs": 0,
+      "gapMs": 0
+     }
+    },
+    {
+     "rate": 4,
+     "fx": "tonemap:aces,contact,ground,variety,caustics",
+     "mode": "idle",
+     "drawsPerS": 0.1,
+     "cpuBusyPct": 0.2,
+     "gpuBusyPct": 0.2,
+     "gpuMsPerDraw": 24.36,
+     "gapMed": 16.7,
+     "gapP95": 18.3,
+     "caustics": {
+      "why": "still: idle",
+      "rate": 20,
+      "cpuMs": 72.04,
+      "gapMs": 5.04
+     }
+    },
+    {
+     "rate": 4,
+     "fx": "tonemap:aces,contact,ground,variety,caustics,depth,waterline",
+     "mode": "rest",
+     "drawsPerS": 2.2,
+     "cpuBusyPct": 19.7,
+     "gpuBusyPct": 14.4,
+     "gpuMsPerDraw": 65.33,
+     "gapMed": 16.7,
+     "gapP95": 27.2,
+     "caustics": {
+      "why": "still: slow machine",
+      "rate": 0,
+      "cpuMs": 22.34,
+      "gapMs": 0
+     }
+    },
+    {
+     "rate": 4,
+     "fx": "tonemap:aces,contact,ground,variety,caustics,depth,waterline",
+     "mode": "orbit",
+     "drawsPerS": 8.1,
+     "cpuBusyPct": 73.3,
+     "gpuBusyPct": 64.8,
+     "gpuMsPerDraw": 80.06,
+     "gapMed": 129,
+     "gapP95": 180.6,
+     "caustics": {
+      "why": "still: slow machine",
+      "rate": 0,
+      "cpuMs": 0,
+      "gapMs": 0
+     }
+    },
+    {
+     "rate": 4,
+     "fx": "tonemap:aces,contact,ground,variety,caustics,depth,waterline",
+     "mode": "idle",
+     "drawsPerS": 0,
+     "cpuBusyPct": 0,
+     "gpuBusyPct": null,
+     "gpuMsPerDraw": null,
+     "gapMed": 16.7,
+     "gapP95": 25.3,
+     "caustics": {
+      "why": "still: idle",
+      "rate": 20,
+      "cpuMs": 92.84,
+      "gapMs": 0.02
+     }
+    }
+   ]
+  },
+  "nano": {
+   "shots": [],
+   "ab": {
+    "tonemap:aces,contact,ground,variety,caustics,depth,waterline": {
+     "A": {
+      "gpuMs": 7.68,
+      "gpuP95": 9.46,
+      "cpuMs": 5.1,
+      "cpuP95": 5.9,
+      "calls": 232,
+      "triangles": 490126
+     },
+     "B": {
+      "gpuMs": 7.84,
+      "gpuP95": 9.31,
+      "cpuMs": 5,
+      "cpuP95": 5.6,
+      "calls": 232,
+      "triangles": 490126
+     },
+     "gpuDelta": 0.18,
+     "gpuDeltaP95": 1.69,
+     "timer": true
+    }
+   },
+   "rest": [
+    {
+     "rate": 1,
+     "fx": "tonemap:aces,contact,ground,variety,caustics",
+     "mode": "rest",
+     "drawsPerS": 18,
+     "cpuBusyPct": 11,
+     "gpuBusyPct": 22.7,
+     "gpuMsPerDraw": 12.65,
+     "gapMed": 16.7,
+     "gapP95": 23,
+     "caustics": {
+      "why": "moving",
+      "rate": 20,
+      "cpuMs": 5.93,
+      "gapMs": 0.03
+     }
+    },
+    {
+     "rate": 1,
+     "fx": "tonemap:aces,contact,ground,variety,caustics",
+     "mode": "orbit",
+     "drawsPerS": 59.9,
+     "cpuBusyPct": 38,
+     "gpuBusyPct": 81.1,
+     "gpuMsPerDraw": 13.53,
+     "gapMed": 16.7,
+     "gapP95": 17.7,
+     "caustics": {
+      "why": "moving",
+      "rate": 20,
+      "cpuMs": 5.32,
+      "gapMs": 0.31
+     }
+    },
+    {
+     "rate": 1,
+     "fx": "tonemap:aces,contact,ground,variety,caustics",
+     "mode": "idle",
+     "drawsPerS": 0,
+     "cpuBusyPct": 0,
+     "gpuBusyPct": null,
+     "gpuMsPerDraw": null,
+     "gapMed": 16.7,
+     "gapP95": 16.8,
+     "caustics": {
+      "why": "still: idle",
+      "rate": 20,
+      "cpuMs": 4.7,
+      "gapMs": 0.03
+     }
+    },
+    {
+     "rate": 1,
+     "fx": "tonemap:aces,contact,ground,variety,caustics,depth,waterline",
+     "mode": "rest",
+     "drawsPerS": 17.4,
+     "cpuBusyPct": 9.9,
+     "gpuBusyPct": 22.3,
+     "gpuMsPerDraw": 12.8,
+     "gapMed": 16.7,
+     "gapP95": 23.1,
+     "caustics": {
+      "why": "moving",
+      "rate": 20,
+      "cpuMs": 5.66,
+      "gapMs": 0.03
+     }
+    },
+    {
+     "rate": 1,
+     "fx": "tonemap:aces,contact,ground,variety,caustics,depth,waterline",
+     "mode": "orbit",
+     "drawsPerS": 59.9,
+     "cpuBusyPct": 36,
+     "gpuBusyPct": 75.3,
+     "gpuMsPerDraw": 12.58,
+     "gapMed": 16.7,
+     "gapP95": 17.4,
+     "caustics": {
+      "why": "moving",
+      "rate": 20,
+      "cpuMs": 5.22,
+      "gapMs": 0.04
+     }
+    },
+    {
+     "rate": 1,
+     "fx": "tonemap:aces,contact,ground,variety,caustics,depth,waterline",
+     "mode": "idle",
+     "drawsPerS": 0,
+     "cpuBusyPct": 0,
+     "gpuBusyPct": null,
+     "gpuMsPerDraw": null,
+     "gapMed": 16.7,
+     "gapP95": 16.8,
+     "caustics": {
+      "why": "still: idle",
+      "rate": 20,
+      "cpuMs": 4.17,
+      "gapMs": 0.03
+     }
+    },
+    {
+     "rate": 4,
+     "fx": "tonemap:aces,contact,ground,variety,caustics",
+     "mode": "rest",
+     "drawsPerS": 2.1,
+     "cpuBusyPct": 12.5,
+     "gpuBusyPct": 6.5,
+     "gpuMsPerDraw": 30.64,
+     "gapMed": 16.7,
+     "gapP95": 41.5,
+     "caustics": {
+      "why": "still: slow machine",
+      "rate": 0,
+      "cpuMs": 12.58,
+      "gapMs": 0
+     }
+    },
+    {
+     "rate": 4,
+     "fx": "tonemap:aces,contact,ground,variety,caustics",
+     "mode": "orbit",
+     "drawsPerS": 12.3,
+     "cpuBusyPct": 67.7,
+     "gpuBusyPct": 50.3,
+     "gpuMsPerDraw": 40.97,
+     "gapMed": 81.3,
+     "gapP95": 141.3,
+     "caustics": {
+      "why": "still: slow machine",
+      "rate": 0,
+      "cpuMs": 0,
+      "gapMs": 0
+     }
+    },
+    {
+     "rate": 4,
+     "fx": "tonemap:aces,contact,ground,variety,caustics",
+     "mode": "idle",
+     "drawsPerS": 0,
+     "cpuBusyPct": 0,
+     "gpuBusyPct": null,
+     "gpuMsPerDraw": null,
+     "gapMed": 16.7,
+     "gapP95": 20.1,
+     "caustics": {
+      "why": "still: idle",
+      "rate": 20,
+      "cpuMs": 43.6,
+      "gapMs": 0.03
+     }
+    },
+    {
+     "rate": 4,
+     "fx": "tonemap:aces,contact,ground,variety,caustics,depth,waterline",
+     "mode": "rest",
+     "drawsPerS": 2.1,
+     "cpuBusyPct": 11.6,
+     "gpuBusyPct": 5.7,
+     "gpuMsPerDraw": 27.67,
+     "gapMed": 16.7,
+     "gapP95": 56.9,
+     "caustics": {
+      "why": "still: slow machine",
+      "rate": 0,
+      "cpuMs": 11.16,
+      "gapMs": 0
+     }
+    },
+    {
+     "rate": 4,
+     "fx": "tonemap:aces,contact,ground,variety,caustics,depth,waterline",
+     "mode": "orbit",
+     "drawsPerS": 14.8,
+     "cpuBusyPct": 68.7,
+     "gpuBusyPct": 50,
+     "gpuMsPerDraw": 33.73,
+     "gapMed": 77.4,
+     "gapP95": 114.1,
+     "caustics": {
+      "why": "still: slow machine",
+      "rate": 0,
+      "cpuMs": 0,
+      "gapMs": 0
+     }
+    },
+    {
+     "rate": 4,
+     "fx": "tonemap:aces,contact,ground,variety,caustics,depth,waterline",
+     "mode": "idle",
+     "drawsPerS": 0,
+     "cpuBusyPct": 0,
+     "gpuBusyPct": null,
+     "gpuMsPerDraw": null,
+     "gapMed": 16.7,
+     "gapP95": 27.3,
+     "caustics": {
+      "why": "still: idle",
+      "rate": 20,
+      "cpuMs": 36.13,
+      "gapMs": 0.33
+     }
+    }
+   ]
+  },
+  "reef": {
+   "shots": [],
+   "ab": {
+    "tonemap:aces,contact,ground,variety,caustics,depth,waterline": {
+     "A": {
+      "gpuMs": 12.08,
+      "gpuP95": 13.21,
+      "cpuMs": 8.7,
+      "cpuP95": 13,
+      "calls": 352,
+      "triangles": 352094
+     },
+     "B": {
+      "gpuMs": 12.1,
+      "gpuP95": 13.14,
+      "cpuMs": 8.9,
+      "cpuP95": 14.4,
+      "calls": 352,
+      "triangles": 352094
+     },
+     "gpuDelta": 0.07,
+     "gpuDeltaP95": 1.12,
+     "timer": true
+    }
+   },
+   "rest": [
+    {
+     "rate": 1,
+     "fx": "tonemap:aces,contact,ground,variety,caustics",
+     "mode": "rest",
+     "drawsPerS": 18,
+     "cpuBusyPct": 16.4,
+     "gpuBusyPct": 49.2,
+     "gpuMsPerDraw": 27.24,
+     "gapMed": 16.7,
+     "gapP95": 26.1,
+     "caustics": {
+      "why": "moving",
+      "rate": 20,
+      "cpuMs": 10.04,
+      "gapMs": 0.02
+     }
+    },
+    {
+     "rate": 1,
+     "fx": "tonemap:aces,contact,ground,variety,caustics",
+     "mode": "orbit",
+     "drawsPerS": 57.3,
+     "cpuBusyPct": 52.1,
+     "gpuBusyPct": 92.4,
+     "gpuMsPerDraw": 16.14,
+     "gapMed": 16.8,
+     "gapP95": 24.9,
+     "caustics": {
+      "why": "moving",
+      "rate": 20,
+      "cpuMs": 8.33,
+      "gapMs": 0.17
+     }
+    },
+    {
+     "rate": 1,
+     "fx": "tonemap:aces,contact,ground,variety,caustics",
+     "mode": "idle",
+     "drawsPerS": 0,
+     "cpuBusyPct": 0,
+     "gpuBusyPct": null,
+     "gpuMsPerDraw": null,
+     "gapMed": 16.7,
+     "gapP95": 16.8,
+     "caustics": {
+      "why": "still: idle",
+      "rate": 20,
+      "cpuMs": 6.54,
+      "gapMs": 0.03
+     }
+    },
+    {
+     "rate": 1,
+     "fx": "tonemap:aces,contact,ground,variety,caustics,depth,waterline",
+     "mode": "rest",
+     "drawsPerS": 18,
+     "cpuBusyPct": 15.9,
+     "gpuBusyPct": 46,
+     "gpuMsPerDraw": 25.58,
+     "gapMed": 16.7,
+     "gapP95": 26,
+     "caustics": {
+      "why": "moving",
+      "rate": 20,
+      "cpuMs": 8.38,
+      "gapMs": 0.03
+     }
+    },
+    {
+     "rate": 1,
+     "fx": "tonemap:aces,contact,ground,variety,caustics,depth,waterline",
+     "mode": "orbit",
+     "drawsPerS": 56.4,
+     "cpuBusyPct": 52.6,
+     "gpuBusyPct": 92.7,
+     "gpuMsPerDraw": 16.45,
+     "gapMed": 16.8,
+     "gapP95": 26.1,
+     "caustics": {
+      "why": "moving",
+      "rate": 20,
+      "cpuMs": 8.47,
+      "gapMs": 0.78
+     }
+    },
+    {
+     "rate": 1,
+     "fx": "tonemap:aces,contact,ground,variety,caustics,depth,waterline",
+     "mode": "idle",
+     "drawsPerS": 0,
+     "cpuBusyPct": 0,
+     "gpuBusyPct": null,
+     "gpuMsPerDraw": null,
+     "gapMed": 16.7,
+     "gapP95": 16.8,
+     "caustics": {
+      "why": "still: idle",
+      "rate": 20,
+      "cpuMs": 6.33,
+      "gapMs": 1.46
+     }
+    },
+    {
+     "rate": 4,
+     "fx": "tonemap:aces,contact,ground,variety,caustics",
+     "mode": "rest",
+     "drawsPerS": 2.2,
+     "cpuBusyPct": 18.2,
+     "gpuBusyPct": 8.9,
+     "gpuMsPerDraw": 40.63,
+     "gapMed": 16.7,
+     "gapP95": 118.2,
+     "caustics": {
+      "why": "still: slow machine",
+      "rate": 0,
+      "cpuMs": 76.14,
+      "gapMs": 0
+     }
+    },
+    {
+     "rate": 4,
+     "fx": "tonemap:aces,contact,ground,variety,caustics",
+     "mode": "orbit",
+     "drawsPerS": 9.3,
+     "cpuBusyPct": 68.8,
+     "gpuBusyPct": 57.4,
+     "gpuMsPerDraw": 61.79,
+     "gapMed": 92.6,
+     "gapP95": 280.9,
+     "caustics": {
+      "why": "still: slow machine",
+      "rate": 0,
+      "cpuMs": 0,
+      "gapMs": 0
+     }
+    },
+    {
+     "rate": 4,
+     "fx": "tonemap:aces,contact,ground,variety,caustics",
+     "mode": "idle",
+     "drawsPerS": 0.1,
+     "cpuBusyPct": 0.5,
+     "gpuBusyPct": 0.3,
+     "gpuMsPerDraw": 41.98,
+     "gapMed": 16.7,
+     "gapP95": 37.8,
+     "caustics": {
+      "why": "still: idle",
+      "rate": 20,
+      "cpuMs": 84.7,
+      "gapMs": 0.04
+     }
+    },
+    {
+     "rate": 4,
+     "fx": "tonemap:aces,contact,ground,variety,caustics,depth,waterline",
+     "mode": "rest",
+     "drawsPerS": 2.3,
+     "cpuBusyPct": 21.3,
+     "gpuBusyPct": 10.5,
+     "gpuMsPerDraw": 45.18,
+     "gapMed": 16.7,
+     "gapP95": 41.2,
+     "caustics": {
+      "why": "still: slow machine",
+      "rate": 0,
+      "cpuMs": 19.92,
+      "gapMs": 0
+     }
+    },
+    {
+     "rate": 4,
+     "fx": "tonemap:aces,contact,ground,variety,caustics,depth,waterline",
+     "mode": "orbit",
+     "drawsPerS": 11.8,
+     "cpuBusyPct": 67.7,
+     "gpuBusyPct": 51.4,
+     "gpuMsPerDraw": 43.63,
+     "gapMed": 17.2,
+     "gapP95": 346.4,
+     "caustics": {
+      "why": "still: slow machine",
+      "rate": 0,
+      "cpuMs": 0,
+      "gapMs": 0
+     }
+    },
+    {
+     "rate": 4,
+     "fx": "tonemap:aces,contact,ground,variety,caustics,depth,waterline",
+     "mode": "idle",
+     "drawsPerS": 0.1,
+     "cpuBusyPct": 0.8,
+     "gpuBusyPct": 0.5,
+     "gpuMsPerDraw": 80.45,
+     "gapMed": 16.7,
+     "gapP95": 18.3,
+     "caustics": {
+      "why": "still: idle",
+      "rate": 20,
+      "cpuMs": 77.08,
+      "gapMs": 0.02
+     }
+    }
+   ]
+  }
+ }
+}

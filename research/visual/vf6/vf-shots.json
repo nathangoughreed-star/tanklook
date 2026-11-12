@@ -1,259 +1,119 @@
 {
- "commit": "4c064fbc",
- "build": 1809,
+ "commit": "f93349ca",
+ "build": 1812,
  "dirty": true,
- "when": "2026-11-12T14:59:06.200Z",
+ "when": "2026-11-12T15:19:02.372Z",
  "size": [
   1050,
   850
  ],
  "fx": [
-  "-depth,-waterline",
-  "depth",
-  "waterline",
-  "depth,waterline"
+  "tonemap:aces,contact,ground,variety,caustics",
+  "tonemap:aces,contact,ground,variety,caustics,depth,waterline"
  ],
  "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
  "scenes": {
   "planted4": {
    "shots": [
-    "planted4-front-depth-waterline.png",
-    "planted4-rock-depth-waterline.png",
-    "planted4-line-depth-waterline.png",
-    "planted4-front-depth.png",
-    "planted4-rock-depth.png",
-    "planted4-line-depth.png",
-    "planted4-front-waterline.png",
-    "planted4-rock-waterline.png",
-    "planted4-line-waterline.png",
-    "planted4-front-depth-waterline.png",
-    "planted4-rock-depth-waterline.png",
-    "planted4-line-depth-waterline.png"
+    "planted4-front-tonemap-aces-contact-ground-variety-caustics.png",
+    "planted4-ground-tonemap-aces-contact-ground-variety-caustics.png",
+    "planted4-rock-tonemap-aces-contact-ground-variety-caustics.png",
+    "planted4-line-tonemap-aces-contact-ground-variety-caustics.png",
+    "planted4-front-tonemap-aces-contact-ground-variety-caustics-depth-waterline.png",
+    "planted4-ground-tonemap-aces-contact-ground-variety-caustics-depth-waterline.png",
+    "planted4-rock-tonemap-aces-contact-ground-variety-caustics-depth-waterline.png",
+    "planted4-line-tonemap-aces-contact-ground-variety-caustics-depth-waterline.png"
    ],
    "ab": {
-    "depth": {
+    "tonemap:aces,contact,ground,variety,caustics,depth,waterline": {
      "A": {
-      "gpuMs": 3.93,
-      "gpuP95": 4.2,
-      "cpuMs": 2.3,
-      "cpuP95": 2.8,
-      "calls": 406,
-      "triangles": 756754
+      "gpuMs": 4.74,
+      "gpuP95": 5.3,
+      "cpuMs": 2.7,
+      "cpuP95": 3.8,
+      "calls": 409,
+      "triangles": 767354
      },
      "B": {
-      "gpuMs": 4.12,
-      "gpuP95": 4.44,
-      "cpuMs": 2.4,
-      "cpuP95": 2.8,
-      "calls": 406,
-      "triangles": 756754
+      "gpuMs": 4.92,
+      "gpuP95": 5.39,
+      "cpuMs": 2.7,
+      "cpuP95": 3.6,
+      "calls": 409,
+      "triangles": 767354
      },
-     "gpuDelta": 0.13,
-     "gpuDeltaP95": 0.67,
-     "timer": true
-    },
-    "waterline": {
-     "A": {
-      "gpuMs": 4.51,
-      "gpuP95": 5.15,
-      "cpuMs": 2.3,
-      "cpuP95": 2.8,
-      "calls": 406,
-      "triangles": 756754
-     },
-     "B": {
-      "gpuMs": 4.52,
-      "gpuP95": 4.94,
-      "cpuMs": 2.3,
-      "cpuP95": 3,
-      "calls": 406,
-      "triangles": 756754
-     },
-     "gpuDelta": 0.02,
-     "gpuDeltaP95": 0.57,
-     "timer": true
-    },
-    "depth,waterline": {
-     "A": {
-      "gpuMs": 3.99,
-      "gpuP95": 5,
-      "cpuMs": 2,
-      "cpuP95": 2.5,
-      "calls": 406,
-      "triangles": 756754
-     },
-     "B": {
-      "gpuMs": 4.15,
-      "gpuP95": 4.93,
-      "cpuMs": 2,
-      "cpuP95": 2.4,
-      "calls": 406,
-      "triangles": 756754
-     },
-     "gpuDelta": 0.07,
-     "gpuDeltaP95": 0.46,
+     "gpuDelta": 0.15,
+     "gpuDeltaP95": 0.49,
      "timer": true
     }
    }
   },
   "nano": {
    "shots": [
-    "nano-front-depth-waterline.png",
-    "nano-rock-depth-waterline.png",
-    "nano-line-depth-waterline.png",
-    "nano-front-depth.png",
-    "nano-rock-depth.png",
-    "nano-line-depth.png",
-    "nano-front-waterline.png",
-    "nano-rock-waterline.png",
-    "nano-line-waterline.png",
-    "nano-front-depth-waterline.png",
-    "nano-rock-depth-waterline.png",
-    "nano-line-depth-waterline.png"
+    "nano-front-tonemap-aces-contact-ground-variety-caustics.png",
+    "nano-ground-tonemap-aces-contact-ground-variety-caustics.png",
+    "nano-rock-tonemap-aces-contact-ground-variety-caustics.png",
+    "nano-line-tonemap-aces-contact-ground-variety-caustics.png",
+    "nano-front-tonemap-aces-contact-ground-variety-caustics-depth-waterline.png",
+    "nano-ground-tonemap-aces-contact-ground-variety-caustics-depth-waterline.png",
+    "nano-rock-tonemap-aces-contact-ground-variety-caustics-depth-waterline.png",
+    "nano-line-tonemap-aces-contact-ground-variety-caustics-depth-waterline.png"
    ],
    "ab": {
-    "depth": {
+    "tonemap:aces,contact,ground,variety,caustics,depth,waterline": {
      "A": {
-      "gpuMs": 5.04,
-      "gpuP95": 5.36,
-      "cpuMs": 1.7,
-      "cpuP95": 2.2,
-      "calls": 231,
-      "triangles": 486726
+      "gpuMs": 6.69,
+      "gpuP95": 8.57,
+      "cpuMs": 1.8,
+      "cpuP95": 3.7,
+      "calls": 232,
+      "triangles": 490126
      },
      "B": {
-      "gpuMs": 5.16,
-      "gpuP95": 5.36,
-      "cpuMs": 1.7,
-      "cpuP95": 2.3,
-      "calls": 231,
-      "triangles": 486726
+      "gpuMs": 6.84,
+      "gpuP95": 8.82,
+      "cpuMs": 1.8,
+      "cpuP95": 2.9,
+      "calls": 232,
+      "triangles": 490126
      },
      "gpuDelta": 0.13,
-     "gpuDeltaP95": 0.33,
-     "timer": true
-    },
-    "waterline": {
-     "A": {
-      "gpuMs": 5.04,
-      "gpuP95": 5.08,
-      "cpuMs": 1.5,
-      "cpuP95": 1.7,
-      "calls": 231,
-      "triangles": 486726
-     },
-     "B": {
-      "gpuMs": 5.04,
-      "gpuP95": 5.07,
-      "cpuMs": 1.4,
-      "cpuP95": 1.8,
-      "calls": 231,
-      "triangles": 486726
-     },
-     "gpuDelta": 0,
-     "gpuDeltaP95": 0.05,
-     "timer": true
-    },
-    "depth,waterline": {
-     "A": {
-      "gpuMs": 5.04,
-      "gpuP95": 5.08,
-      "cpuMs": 1.5,
-      "cpuP95": 1.8,
-      "calls": 231,
-      "triangles": 486726
-     },
-     "B": {
-      "gpuMs": 5.16,
-      "gpuP95": 5.82,
-      "cpuMs": 1.5,
-      "cpuP95": 1.8,
-      "calls": 231,
-      "triangles": 486726
-     },
-     "gpuDelta": 0.13,
-     "gpuDeltaP95": 0.77,
+     "gpuDeltaP95": 0.91,
      "timer": true
     }
    }
   },
   "reef": {
    "shots": [
-    "reef-front-depth-waterline.png",
-    "reef-rock-depth-waterline.png",
-    "reef-line-depth-waterline.png",
-    "reef-front-depth.png",
-    "reef-rock-depth.png",
-    "reef-line-depth.png",
-    "reef-front-waterline.png",
-    "reef-rock-waterline.png",
-    "reef-line-waterline.png",
-    "reef-front-depth-waterline.png",
-    "reef-rock-depth-waterline.png",
-    "reef-line-depth-waterline.png"
+    "reef-front-tonemap-aces-contact-ground-variety-caustics.png",
+    "reef-ground-tonemap-aces-contact-ground-variety-caustics.png",
+    "reef-rock-tonemap-aces-contact-ground-variety-caustics.png",
+    "reef-line-tonemap-aces-contact-ground-variety-caustics.png",
+    "reef-front-tonemap-aces-contact-ground-variety-caustics-depth-waterline.png",
+    "reef-ground-tonemap-aces-contact-ground-variety-caustics-depth-waterline.png",
+    "reef-rock-tonemap-aces-contact-ground-variety-caustics-depth-waterline.png",
+    "reef-line-tonemap-aces-contact-ground-variety-caustics-depth-waterline.png"
    ],
    "ab": {
-    "depth": {
+    "tonemap:aces,contact,ground,variety,caustics,depth,waterline": {
      "A": {
-      "gpuMs": 4.67,
-      "gpuP95": 6.04,
-      "cpuMs": 2.7,
-      "cpuP95": 3.2,
-      "calls": 351,
-      "triangles": 348294
+      "gpuMs": 5.05,
+      "gpuP95": 5.7,
+      "cpuMs": 2.8,
+      "cpuP95": 4.2,
+      "calls": 352,
+      "triangles": 352094
      },
      "B": {
-      "gpuMs": 4.73,
-      "gpuP95": 6.09,
-      "cpuMs": 2.7,
-      "cpuP95": 3.2,
-      "calls": 351,
-      "triangles": 348294
-     },
-     "gpuDelta": 0.01,
-     "gpuDeltaP95": 0.73,
-     "timer": true
-    },
-    "waterline": {
-     "A": {
-      "gpuMs": 4.96,
-      "gpuP95": 6.12,
-      "cpuMs": 2.6,
-      "cpuP95": 3.3,
-      "calls": 351,
-      "triangles": 348294
-     },
-     "B": {
-      "gpuMs": 4.98,
-      "gpuP95": 5.82,
-      "cpuMs": 2.6,
-      "cpuP95": 3.2,
-      "calls": 351,
-      "triangles": 348294
-     },
-     "gpuDelta": -0.04,
-     "gpuDeltaP95": 0.77,
-     "timer": true
-    },
-    "depth,waterline": {
-     "A": {
-      "gpuMs": 5.28,
-      "gpuP95": 6.08,
-      "cpuMs": 2.3,
-      "cpuP95": 2.9,
-      "calls": 351,
-      "triangles": 348294
-     },
-     "B": {
-      "gpuMs": 5.29,
-      "gpuP95": 6.12,
-      "cpuMs": 2.3,
-      "cpuP95": 2.8,
-      "calls": 351,
-      "triangles": 348294
+      "gpuMs": 5.12,
+      "gpuP95": 5.85,
+      "cpuMs": 2.8,
+      "cpuP95": 3.4,
+      "calls": 352,
+      "triangles": 352094
      },
      "gpuDelta": 0.04,
-     "gpuDeltaP95": 0.2,
+     "gpuDeltaP95": 0.41,
      "timer": true
     }
    }
