@@ -513,8 +513,16 @@
   <div class="row"><label for="edge">Fish edges</label><select id="edge" class="span2">
     <option value="a2c">Smooth, see-through fins</option><option value="cutout">Crisp, solid fins (faster)</option></select></div>
   <div class="row"><label for="pop" title="Lifts fish off busy backgrounds and plants: brighter, richer colour, a darker outline and less water haze on them. 0 = plain lighting.">Fish stand out</label><input id="pop" type="range" min="0" max="100" step="5"><output id="oPop"></output></div>
+  <details class="gfx" id="gfx"><summary>Graphics settings</summary>
   <div class="row"><label for="perf" title="Slow or jerky when you orbit and pan? Each step trades a little picture for speed. Auto steps it down by itself while you orbit, until it holds 30 fps; moving the slider locks your choice. Orbiting already softens the picture on a slow computer and sharpens it when you stop.">Performance</label><input id="perf" type="range" min="0" max="3" step="1"><output id="oPerf"></output></div>
   <label title="Lower the Performance setting by itself while you orbit if the picture stutters"><input type="checkbox" id="perfAuto" checked> Auto <span class="hint" id="perfFps"></span></label>
+  <div class="hint" id="gfxReason"></div>
+  <div class="btns"><button id="gfxFull" title="Level 0 with Auto on again">Back to Full quality</button></div>
+  <div class="gfxsub">Effects (this browser only)</div>
+  <div id="gfxFx"></div>
+  <div class="hint" id="gfxCaus" role="status"></div>
+  <div class="btns"><button id="gfxRetry" hidden title="Clears the slow-machine back-off and lets the caustics try moving again">Try again</button><button id="gfxDefaults" title="Every effect back to what ships">Restore defaults</button></div>
+  </details>
   <label><input type="checkbox" id="mapOn" checked> Viewpoint map (top view of where you stand)</label>
   <label title="Looking down from above the light, the fixture covers the tank; this hides it from up there"><input type="checkbox" id="hideLightAbove"> Hide the light fixture when looking down from above it</label>
   <label><input type="checkbox" id="gridOn"> Grid on back wall and floor (2″ / 5 cm)</label>

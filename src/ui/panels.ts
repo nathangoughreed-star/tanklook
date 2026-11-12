@@ -23,7 +23,9 @@ import { confirmNew } from './newTank';
 import { startProject, confirmStart, setProjectAsker, regenerateKeepingLocks, hasLocks } from './projectStart';
 import { startDeals, visibleTabs, pickTab, sortDeals, DEFAULT_SORT, type DealSort, type StartTab } from './startEntries';
 import { DEALS_AS_OF, DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
-import { LEVELS, onPerf, perf, setAuto, setLevel } from '../render/perf';
+import { LEVELS, backToFull, onPerf, perf, setAuto, setLevel } from '../render/perf';
+import { FX, FX_DEFAULT, onFx } from '../render/fx';
+import { FX_KEYS, TONE_NAMES, causticStatus, chooseFx, fxLabel, FX_LABELS, levelReason, lockedByUrl, restoreFxDefaults } from '../render/fxPrefs';
 import { lifeStages } from '../data/lifestages';
 import { rng } from '../art/paint';
 import { GRAIN_LOOK, SUBSTRATES, drawFishCard } from '../art/placeholder';
@@ -1287,6 +1289,35 @@ Cancel, then change the name, to keep both.`)) return;
     const show = () => { (sl as HTMLInputElement).value = String(perf.level); au.checked = perf.auto; $('oPerf').textContent = LEVELS[perf.level].name;
       $('perfFps').textContent = perf.fps == null ? '' : `${Math.round(perf.fps)} fps while moving`; };
     sl.oninput = () => setLevel(+(sl as HTMLInputElement).value); au.onchange = () => setAuto(au.checked); onPerf(show); show(); }
+  // Graphics settings (lane GS1): why the level is where it is, one switch per effect (render/fx.ts FX, labels in fxPrefs.ts), live caustic status
+  { const reason = $('gfxReason'), host = $('gfxFx'), caus = $('gfxCaus'), retry = $('gfxRetry') as HTMLButtonElement;
+    const rows = new Map<string, HTMLInputElement | HTMLSelectElement>();
+    for (const k of FX_KEYS) {
+      const L = FX_LABELS[k], row = document.createElement('label'); row.title = L?.help ?? ''; row.className = 'gfxrow';
+      const name = document.createElement('span'); name.textContent = fxLabel(k);
+      const tag = document.createElement('span'); tag.className = 'hint'; tag.dataset.tag = k;
+      let inp: HTMLInputElement | HTMLSelectElement;
+      if (typeof FX_DEFAULT[k] === 'number') {
+        const sel = document.createElement('select'); TONE_NAMES.forEach((n, i) => sel.add(new Option(n, String(i)))); sel.onchange = () => chooseFx({ [k]: +sel.value } as never); inp = sel; row.append(name, sel, tag);
+      } else {
+        const cb = document.createElement('input'); cb.type = 'checkbox'; cb.onchange = () => chooseFx({ [k]: cb.checked } as never); inp = cb; row.append(cb, name, tag);
+      }
+      rows.set(k, inp); host.append(row);
+    }
+    const showFx = () => {
+      const lock = new Set<string>(lockedByUrl());
+      for (const k of FX_KEYS) {
+        const inp = rows.get(k)!, v = (FX as unknown as Record<string, unknown>)[k], d = (FX_DEFAULT as unknown as Record<string, unknown>)[k];
+        if (inp instanceof HTMLInputElement) inp.checked = !!v; else inp.value = String(v);
+        inp.disabled = lock.has(k);
+        host.querySelector<HTMLElement>(`[data-tag="${k}"]`)!.textContent = lock.has(k) ? '(set by the page address)' : v === d ? '(default)' : `(default: ${typeof d === 'boolean' ? (d ? 'on' : 'off') : TONE_NAMES[d as number]})`;
+      }
+    };
+    const showCaus = () => { const s = causticStatus(viewer.causState().why); caus.textContent = s.text; retry.hidden = !s.retry; };
+    const showLevel = () => { reason.textContent = levelReason(perf, LEVELS.map(l => l.name)); ($('gfxFull') as HTMLButtonElement).hidden = perf.level === 0 && perf.auto; showCaus(); };
+    $('gfxFull').onclick = () => backToFull(); retry.onclick = () => { viewer.causRetry(); showCaus(); }; $('gfxDefaults').onclick = () => { restoreFxDefaults(); showFx(); };
+    onPerf(showLevel); onFx(() => { showFx(); showCaus(); }); showFx(); showLevel();
+    window.setInterval(() => { if (!document.hidden && ($('gfx') as HTMLDetailsElement).open) showCaus(); }, 1000); }
   // viewpoint map: a per-viewer display preference (browser storage), not scene data
   // the map's own × and "⌖ Map" button do the same as the checkbox; the viewer places and shows one map per view
   const mapCb = $('mapOn'), applyMap = () => { $('mapShow').classList.toggle('off', mapCb.checked); viewer.invalidate(); };

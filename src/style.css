@@ -1513,3 +1513,10 @@ body.discovering .dmfloat, body.discovering #climate, body.discovering .vmap, bo
 #camLock.pill { width: auto; height: 30px; padding: 0 11px 0 8px; border-radius: 999px; gap: 5px; grid-auto-flow: column; font-size: 12px; color: var(--ink) }
 #camLock.pill:not(.on) { color: var(--muted) }
 .abdock .abintent { flex: 1 1 100%; margin: 0 0 2px; font-size: 12px; font-weight: 600 }  /* DQ3: the targeted challenger purpose line */
+
+/* Graphics settings (lane GS1): the Performance rows plus one switch per effect */
+details.gfx { margin: 4px 0 } details.gfx > summary { cursor: pointer; font-weight: 600 }
+.gfxsub { margin: 8px 0 2px; font-size: 11.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em }
+.gfxrow { display: flex; align-items: center; gap: 6px }
+.gfxrow select { margin-left: auto }
+.gfxrow .hint { margin-left: 2px }

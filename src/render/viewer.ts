@@ -370,6 +370,7 @@ export class Viewer {
   private lastInput = performance.now();
   /** The loop's frame gap past one 60 Hz frame, averaged, while the caustics animate (a GPU that cannot keep up delays the loop). */
   private causGap(t: number) {
+    if (this.reveal || this.needsBuild) { this.causGapMs = 0; this.causSteps = 0; this.causLoopAt = t; return; } // load / build stalls are not the caustics' cost (GS1): they must not trip the slow-machine back-off
     const gap = this.causLoopAt ? t - this.causLoopAt : 0; this.causLoopAt = t;
     if (this.causRate > 0 && gap > 0 && gap < 1000) this.causGapMs = 0.9 * this.causGapMs + 0.1 * Math.max(0, gap - 1000 / 60);
   }
@@ -378,6 +379,8 @@ export class Viewer {
     const why = !FX.caustics ? 'off' : perf.level > 0 ? 'still: performance level' : this.causRate === 0 ? 'still: slow machine' : performance.now() - this.lastInput > CAUS_IDLE_MS ? 'still: idle' : 'moving';
     return { why, rate: this.causRate, cpuMs: +this.causCpu.toFixed(2), gapMs: +this.causGapMs.toFixed(2) };
   }
+  /** "Try again" (Graphics settings): clears the slow-machine back-off. */
+  causRetry() { this.causReset(); }
   /** Something the person did (pointer, wheel, key): the caustics may move again. */
   noteInput() { this.lastInput = performance.now(); }
   /** Back-off restarts (from 20 steps a second) when the performance level or the caustics switch changes. */

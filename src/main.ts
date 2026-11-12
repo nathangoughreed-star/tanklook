@@ -2,6 +2,7 @@ import './style.css';
 import { attachPointer } from './interact/pointer';
 import { openMenuFor } from './interact/clickMenu';
 import { Viewer } from './render/viewer';
+import { applySavedFx } from './render/fxPrefs';
 import { pickSec } from './render/menuFocus';
 import { Store } from './scene/store';
 import { attachPanels, scapeSec } from './ui/panels';
@@ -33,6 +34,7 @@ if (!webglAvailable()) {
   view.innerHTML = '<p class="nojs">Your browser or device has WebGL turned off, so the tank can\'t be drawn. Try a current Chrome, Edge, Firefox or Safari.</p>';
 } else {
   const { scene: restored, error: saveError } = Store.loadLocalChecked(); // SL2: a corrupt save is told apart from no save
+  applySavedFx(); // the viewer's saved Graphics settings (render/fxPrefs.ts), before anything is built
   const store = new Store(restored ?? undefined);
   const viewer = new Viewer(document.getElementById('c') as HTMLCanvasElement, view, store);
   // pieces move only while their menu (Hardscape, or Plants for plants and corals) is open, animals only while Animals is,
