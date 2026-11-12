@@ -1,0 +1,12 @@
+import {connect} from './au1-lib.mjs';
+const c=await connect(); const L=(...a)=>console.log(...a); const sl=ms=>new Promise(r=>setTimeout(r,ms));
+await c.size(1500,900); await c.load();
+await c.click('#viewBtn'); await sl(500);
+L('vRoomAuto hidden before',await c.ev(`document.getElementById('vRoomAuto').hidden`));
+await c.ev(`const s=document.getElementById('vRoom');s.value=0.2;s.dispatchEvent(new Event('input',{bubbles:true}));s.dispatchEvent(new Event('change',{bubbles:true}))`); await sl(500);
+L('vRoomAuto hidden after move',await c.ev(`document.getElementById('vRoomAuto').hidden`));
+await c.shot('10-light-slider-auto-in-view-menu',{x:700,y:250,width:380,height:90});
+await c.ev(`document.getElementById('gfx').open=true;document.getElementById('viewPop').scrollTop=250`); await sl(700);
+L('gfx text',(await c.ev(`document.getElementById('gfx').innerText`)).slice(0,1200));
+await c.shot('11-graphics-settings-menu');
+c.close();
