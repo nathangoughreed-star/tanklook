@@ -9,6 +9,7 @@ import * as THREE from 'three';
 import { ALGAE_GLSL, ALGAE_STEP, AU, setAlgaeUniforms } from './algae';
 import { WATER_FILTER_GLSL, waterHue } from './waterTint';
 import { FXU } from './fx';
+import { CAUS_DARK, CAUS_MEAN, CAUS_OFF, causticTexture } from './caustics';
 import { clamp } from '../scene/physics';
 import type { ConditionSettings, LightSettings, Tank, WaterSettings } from '../scene/types';
 import { waterK, waterY } from '../scene/physics';
@@ -83,7 +84,14 @@ export const LU = {
   uLoOn: { value: 0 }, uLoA: { value: new THREE.Vector4() }, uLoWall: { value: new THREE.Vector2() },
   uLoK: { value: new THREE.Vector3() }, uLoSplit: { value: new THREE.Vector3() }, uLoOut: { value: new THREE.Vector3(1, 1, 1) },
   uMapDiv: { value: 1 / 16 }, uMapStep: { value: 0 }, uLoM: { value: 1 }, uLoInd: { value: new THREE.Vector3() },
+  // caustics (plan VF5, render/caustics.ts): strength and mip blur by fixture type (setLightUniforms), water on (setWaterUniforms), the pattern's mean
+  uCausK: { value: new THREE.Vector4(0, 0, 0, 0.2) }, uCausOff: { value: 0 },
 };
+/**
+ * Caustics per fixture type (plan VF5): a spot is a near point source, so the focused net is sharp and strong; an LED bar
+ * is a row of points, the nets overlap and smear; a tube is a line, which smears it most. [strength, mip bias]
+ */
+const CAUS_BY_TYPE: Record<string, [number, number]> = { spot: [0.85, 0], led: [0.55, 1.0], tube: [0.4, 1.8] };
 /**
  * Light map contour spacing when not set, and the slider's range (Nathan 2026-10-14: PAR 5-100 by 5; default 10 since 2026-10-15). Lux
  * scaled to match at 50 lux per µmol (white LED is about 67 in air, less under water): 250-5000 by 250, default 500.
@@ -96,7 +104,7 @@ export const mapStepOf = (l: LightSettings, unit: 'rel' | 'par' | 'lux') =>
 export const MAP_DIV = { rel: 1 / 16, par: 2.5, lux: 125 } as const;
 /** Water box (L, surface y, D) and tint per mm, and how far fish stand out (render.pop); set per viewport like the light. */
 export function setWaterUniforms(T: Tank, w: WaterSettings, pop = 0, cond?: ConditionSettings) {
-  LU.uPop.value = pop;
+  LU.uPop.value = pop; LU.uCausK.value.z = w.on ? 1 : 0; // a dry tank (terrarium) has no caustics
   LU.uWater.value.set(T.L, waterY(T, w.level), T.D, w.on ? waterK(w.opacity) : 0);
   LU.uWCol.value.set(w.color);
   const c = LU.uWCol.value; LU.uWTint.value.set(...waterHue([c.r, c.g, c.b]));
@@ -180,6 +188,7 @@ export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams 
   // no fixture (Nathan 2026-10-15): mode 2, the tank is lit by the room light alone (a dark room = a dark tank); mode 0
   // (the flat reference key) is only for the fish preview and the review sheet
   const on = l.type !== 'flat'; LU.uMode.value = on ? 1 : 2; if (!on) LU.uAmb.value = roomLevel(roomOf(l));
+  const ck = (on && CAUS_BY_TYPE[l.type]) || [0, 0]; LU.uCausK.value.x = ck[0]; LU.uCausK.value.y = ck[1];
   const lo = on && S ? lightOutCached({ ...S, tank: T }) : null, bright = lo ? renderBright(lo, l.bright) : clamp(l.bright, 0.2, 2.5);
   if (on && S && !lo) warmSoon({ ...S, tank: T });
   // light map: a spot bulb or a tube counts as one light; an LED bar's emitters share the output of four bulbs
@@ -224,7 +233,7 @@ const AQ_VERT = 'varying vec3 vAqP; varying vec3 vAqN;';
 const AQ_FRAG = `
 uniform vec4 uEm[${AQ_MAX}]; uniform int uEmN; uniform float uMode, uAmb, uBright, uNorm, uBeamM, uRef, uCard, uSub, uFish, uPane; uniform vec3 uLCol;
 float aqSpec = 0.0;
-uniform float uFxTone;
+uniform float uFxTone, uFxCaus, uFxTime; uniform sampler2D uCausTex; uniform vec4 uCausK; uniform float uCausOff;
 uniform float uRoomMat, uRoomK, uSpillR, uTankRound, uAlgH; uniform vec3 uSpill, uTankMin, uTankMax; uniform vec4 uWater, uWTint; uniform vec3 uWCol; uniform float uPop, uFishCard;
 varying vec3 vAqP; varying vec3 vAqN;
 ${BOW_GLSL}
@@ -373,6 +382,25 @@ vec3 aqRamp(float t) {  // t = log2(level) + 4, 0..7 -> navy, blue, cyan, green,
   t = clamp(t, 0.0, 7.0); int k = int(min(floor(t), 6.0));
   return mix(c[k], c[k + 1], t - float(k));
 }
+// caustics (plan VF5): the light focused by the rippled surface, on what faces up under the water. Returns the change to
+// the fixture's light here, a fraction: positive on the net's lines, a little negative in its cells (CAUS_DARK: full-depth
+// dark cells read as dirt on pale sand), 0 on average (uCausK.w, uCausOff), so the tank's brightness does not change. Two samples of the tileable net at different scales,
+// drifting apart, combined by min(): the net changes shape as it moves. Deeper down the net is a little larger, softer
+// (mip bias) and weaker; it has not formed yet in the top few cm. Cards take a weak share (they face no way in
+// particular); room surfaces, the grains seen through the glass, and anything outside the water box take none.
+float aqCaus(vec3 n) {
+  float dep = uWater.y - vAqP.y;
+  if (uFxCaus < 0.5 || uCausK.z < 0.5 || uCausK.x <= 0.0 || dep <= 0.0 || uRoomMat > 0.5 || uPane > 0.5) return 0.0;
+  if (vAqP.x < 0.0 || vAqP.x > uWater.x || vAqP.z > 0.0 || vAqP.z < -uWater.z) return 0.0;
+  float up = uCard > 0.5 ? 0.25 : max(n.y, 0.0);
+  if (up <= 0.0) return 0.0;
+  vec2 p = vAqP.xz / (1.0 + dep / 900.0); float bias = uCausK.y + dep / 400.0;
+  float a = texture2D(uCausTex, p / 125.0 + uFxTime * vec2(0.040, 0.025), bias).r;
+  float b = texture2D(uCausTex, mat2(0.8, 0.6, -0.6, 0.8) * p / 155.0 + uFxTime * vec2(-0.030, 0.036), bias).r;
+  float k = uCausK.x * up * smoothstep(5.0, 60.0, dep) * (1.0 - 0.5 * smoothstep(100.0, 700.0, dep));
+  float r = min(a, b) / uCausK.w - 1.0;
+  return k * (min(r > 0.0 ? r : ${CAUS_DARK.toFixed(3)} * r, 3.0) - uCausOff);
+}
 ${ALGAE_GLSL}`;
 // substrate anti-tiling: two copies of the texture (rotated + rescaled) blended by low-frequency noise, plus soft light/dark patches
 const AQ_MAP = `#ifdef USE_MAP
@@ -428,14 +456,23 @@ vec3 aqAces(vec3 c) {
   return clamp(mat3(1.60475, -0.10208, -0.00327, -0.53108, 1.10813, -0.07276, -0.07367, -0.00605, 1.07602) * c, 0.0, 1.0);
 }`;
 
+/** The caustic pattern's uniform (made on first use; the pattern's mean goes to uCausK.w). */
+let causU: { uCausTex: { value: THREE.Texture } } | null = null;
+function CAUS() {
+  if (!causU) { causU = { uCausTex: { value: causticTexture() } }; LU.uCausK.value.w = CAUS_MEAN; LU.uCausOff.value = CAUS_OFF; }
+  return causU;
+}
+
 function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithUniforms) {
   this.userData.pre?.(shader); // the material's own patch (hardscape: glass clip and grit) still applies under the lighting
-  Object.assign(shader.uniforms, LU, AU, FXU, { uAlgH: { value: this.userData.solid ? 1 : 0 }, uCard: { value: this.userData.card ? 1 : 0 }, uSub: { value: this.userData.sub ? 1 : 0 }, uFish: { value: this.userData.fish ? 1 : 0 }, uPane: { value: this.userData.pane ? 1 : 0 }, uRoomMat: { value: this.userData.room ? 1 : 0 }, uFishCard: { value: this.userData.fishCard ? 1 : 0 } });
+  Object.assign(shader.uniforms, LU, AU, FXU, CAUS(), { uAlgH: { value: this.userData.solid ? 1 : 0 }, uCard: { value: this.userData.card ? 1 : 0 }, uSub: { value: this.userData.sub ? 1 : 0 }, uFish: { value: this.userData.fish ? 1 : 0 }, uPane: { value: this.userData.pane ? 1 : 0 }, uRoomMat: { value: this.userData.room ? 1 : 0 }, uFishCard: { value: this.userData.fishCard ? 1 : 0 } });
   shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\n' + AQ_VERT)
     // an instanced mesh (leaf litter, render/scatter.ts) places each copy by its instance matrix too
     .replace('#include <begin_vertex>', '#include <begin_vertex>\n#ifdef USE_INSTANCING\nvAqP = (modelMatrix * instanceMatrix * vec4(transformed, 1.0)).xyz; vAqN = normalize(mat3(modelMatrix) * mat3(instanceMatrix) * normal);\n#else\nvAqP = (modelMatrix * vec4(transformed, 1.0)).xyz; vAqN = normalize(mat3(modelMatrix) * normal);\n#endif');
   shader.fragmentShader = shader.fragmentShader.replace('#include <common>', '#include <common>\n' + AQ_FRAG + AQ_TONE_GLSL)
-    .replace('#include <opaque_fragment>', 'vec3 aqLt = aqLight(); outgoingLight *= aqLt;\n' + ALGAE_STEP +
+    .replace('#include <opaque_fragment>', 'vec3 aqLt = aqLight();\n' +
+      // caustics (plan VF5): the fixture's share of the light, redistributed into the focused net
+      'aqLt += max(aqLt - vec3(uAmb), 0.0) * aqCaus(normalize(vAqN)); outgoingLight *= aqLt;\n' + ALGAE_STEP +
       'if (uCard > 0.5) { float aqL = dot(outgoingLight, vec3(0.2126, 0.7152, 0.0722)); outgoingLight = max(mix(vec3(aqL), outgoingLight, 1.35 + 0.35 * uPop * uFishCard), 0.0) * (1.0 + 0.2 * uPop * uFishCard); }\n' +
       'float aqM = max(max(outgoingLight.r, outgoingLight.g), outgoingLight.b);\n' +
       // 3D fish body: the card's saturation, then a shoulder instead of the hard clamp (which flattens the form shading

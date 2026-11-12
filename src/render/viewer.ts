@@ -1,5 +1,5 @@
 // Owns the WebGL renderer and the one or two viewports (one per tank setup; two after a split). Render-on-demand.
-import { onFx } from './fx';
+import { FX, onFx, tickFx } from './fx';
 import * as THREE from 'three';
 import { fishTL, speciesOf } from '../data/species';
 import { D2R, clamp, depthRatio, floorY, tankUnderside } from '../scene/physics';
@@ -170,6 +170,8 @@ function restoreRange(this: THREE.Object3D, _r: THREE.WebGLRenderer, _s: THREE.S
   g.drawRange.count = this.userData.range; delete this.userData.range;
 }
 
+/** Caustic steps per second: slow drift, so 20 reads as smooth and costs a third of a 60 Hz loop. */
+const CAUS_FPS = 20;
 const GOV_MIN = 0.5, GOV_MOTION_MS = 100, GOV_REST = 150, GOV_PROBE = 600; // lowest scale, a gap that still counts as motion, rest before the sharp frame, fast frames before a step up
 export class Viewer {
   readonly renderer: THREE.WebGLRenderer;
@@ -348,12 +350,28 @@ export class Viewer {
         const builtNow = this.dirty && this.needsBuild;
         if (builtNow) this.buildAndLink();
         if (this.reveal) this.revealTick(performance.now());
+        const caus = this.causticsDue();
         if (this.dirty && !this.reveal?.wait) { this.dirty = false; this.drawGoverned(builtNow); }
+        else if (caus) this.draw(); // the caustics' next step: not camera motion, so the governor and the rest timer ignore it
         else { this.govRest(); if (this.variantDue && !this.reveal && !this.needsBuild && performance.now() - this.lastDrawAt > 400) this.precompileVariant(); }
       }
     });
   }
 
+  private causAt = 0;
+  /**
+   * Caustics (plan VF5, render/fx.ts) move: while they are on and a shown tank has water and a fixture, the clock steps
+   * CAUS_FPS times a second and each step redraws. Off (or a dry tank, or no fixture): the app draws only on change, as
+   * before. Not during the reveal.
+   */
+  private causticsDue() {
+    if (!FX.caustics || this.reveal) return false;
+    const now = performance.now();
+    if (now - this.causAt < 1000 / CAUS_FPS) return false;
+    if (!this.vps.some(vp => vp.scene && vp.S.water.on && vp.S.light.type !== 'flat')) return false;
+    this.causAt = now;
+    return tickFx(now);
+  }
   /** Build now; after a full build, start linking every program it needs before the draw uses them (startLinks). The
    *  first load and an opened file or example are then shown part by part as their programs are ready (reveal). */
   private buildAndLink() {

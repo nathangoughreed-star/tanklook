@@ -45,7 +45,17 @@ export const FXU = {
   uFxCaus: { value: FX.caustics ? 1 : 0 },
   uFxDepth: { value: FX.depth ? 1 : 0 },
   uFxLine: { value: FX.waterline ? 1 : 0 },
+  /** Caustic clock, seconds (render/viewer.ts advances it while caustics are on; `freezeFx` holds it for the A/B scripts). */
+  uFxTime: { value: 0 },
 };
+/** A fixed caustic time (s) for repeatable pictures and A/B frames, or null to let it run. */
+export const fxClock = { frozen: null as number | null };
+/** Advance the caustic clock to `ms` (performance.now) unless frozen; true when the value changed. */
+export function tickFx(ms: number) {
+  const t = fxClock.frozen ?? ms / 1000;
+  if (t === FXU.uFxTime.value) return false;
+  FXU.uFxTime.value = t; return true;
+}
 const syncU = () => { FXU.uFxTone.value = FX.tonemap; FXU.uFxCaus.value = FX.caustics ? 1 : 0; FXU.uFxDepth.value = FX.depth ? 1 : 0; FXU.uFxLine.value = FX.waterline ? 1 : 0; };
 
 const listeners = new Set<(fx: Fx, changed: FxKey[]) => void>();
@@ -59,4 +69,4 @@ export function setFx(patch: Partial<Fx>) {
   for (const f of listeners) f(FX, changed);
 }
 
-if (import.meta.env?.DEV && typeof window !== 'undefined') (window as unknown as { __fx: unknown }).__fx = { get: () => ({ ...FX }), set: setFx, parse: parseFx };
+if (import.meta.env?.DEV && typeof window !== 'undefined') (window as unknown as { __fx: unknown }).__fx = { get: () => ({ ...FX }), set: setFx, parse: parseFx, time: (t: number | null) => { fxClock.frozen = t; if (t != null) FXU.uFxTime.value = t; for (const f of listeners) f(FX, []); } };

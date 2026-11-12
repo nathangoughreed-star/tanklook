@@ -1,0 +1,95 @@
+{
+ "commit": "5f650a4e",
+ "build": 1795,
+ "dirty": true,
+ "when": "2026-11-12T13:10:56.723Z",
+ "size": [
+  1050,
+  850
+ ],
+ "fx": [
+  "tonemap:aces",
+  "tonemap:aces,caustics"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "planted4": {
+   "shots": [],
+   "ab": {
+    "tonemap:aces,caustics": {
+     "A": {
+      "gpuMs": 9.11,
+      "gpuP95": 13.17,
+      "cpuMs": 12.6,
+      "cpuP95": 17.7,
+      "calls": 406,
+      "triangles": 739294
+     },
+     "B": {
+      "gpuMs": 9.15,
+      "gpuP95": 12.64,
+      "cpuMs": 12.6,
+      "cpuP95": 24.5,
+      "calls": 406,
+      "triangles": 739294
+     },
+     "gpuDelta": 0.12,
+     "gpuDeltaP95": 2.96,
+     "timer": true
+    }
+   }
+  },
+  "nano": {
+   "shots": [],
+   "ab": {
+    "tonemap:aces,caustics": {
+     "A": {
+      "gpuMs": 6.43,
+      "gpuP95": 13.51,
+      "cpuMs": 6.6,
+      "cpuP95": 16.6,
+      "calls": 231,
+      "triangles": 472706
+     },
+     "B": {
+      "gpuMs": 6.41,
+      "gpuP95": 10.71,
+      "cpuMs": 6.2,
+      "cpuP95": 13.6,
+      "calls": 231,
+      "triangles": 472706
+     },
+     "gpuDelta": 0.16,
+     "gpuDeltaP95": 3.85,
+     "timer": true
+    }
+   }
+  },
+  "reef": {
+   "shots": [],
+   "ab": {
+    "tonemap:aces,caustics": {
+     "A": {
+      "gpuMs": 11.57,
+      "gpuP95": 19.45,
+      "cpuMs": 8.2,
+      "cpuP95": 12.3,
+      "calls": 351,
+      "triangles": 348294
+     },
+     "B": {
+      "gpuMs": 11.96,
+      "gpuP95": 19.69,
+      "cpuMs": 8.2,
+      "cpuP95": 15,
+      "calls": 351,
+      "triangles": 348294
+     },
+     "gpuDelta": 0.14,
+     "gpuDeltaP95": 1.93,
+     "timer": true
+    }
+   }
+  }
+ }
+}

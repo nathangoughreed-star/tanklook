@@ -91,6 +91,7 @@ const KIT = () => {
   };
   const fxOf = spec => __fx.parse(spec, __fx.parse('none'));
   const zoom0 = st().scene.tanks[0].camera.zoom; // the saved view's zoom (close-ups change the live one)
+  __fx.time?.(7.3); // caustics (VF5) frozen at one moment: every picture and A/B frame shows the same pattern
   return {
     async settle(ms = 1500) {
       for (let i = 0; i < 600 && (v().reveal || v().needsBuild); i++) await raf();
