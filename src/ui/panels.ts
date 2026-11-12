@@ -95,6 +95,7 @@ import { EXAMPLES, exampleScenes } from '../examples';
 import { LONG_LINK, readShare, shareUrl } from '../scene/share';
 import { getImage, putImage, readPicture, sceneImageIds, sidesTouch, withImages } from '../scene/images';
 import { setParGuideSalt } from './parGuide';
+import { initSideResize } from './sideWidth';
 
 const $ = <T extends HTMLElement = HTMLInputElement>(id: string) => document.getElementById(id) as T;
 /** ?debug in the URL shows calibration readouts (apparent-size maths) in the fish readout. */
@@ -1388,6 +1389,7 @@ Cancel, then change the name, to keep both.`)) return;
       pm.hidden = !on;
       if (on) { pm.style.left = x != null ? x + 'px' : ''; const vp = $('viewPop'); vp.style.top = '46px'; vp.style.left = Math.max(8, Math.min((x ?? 0) - 180, ($('view').clientWidth) - 368)) + 'px'; }
     }; }
+  initSideResize($('app'), $('sideGrip'), on => { if (on) $('sideOpen').click(); else $('sideClose').click(); }); // LP1: drag the panel's right edge; double-click resets
   $('sideTab').onclick = () => $(sideHidden() ? 'sideOpen' : 'sideClose').click(); // the phone's arrow tab (style.css)
   const keepRule = () => { // after split / undo / load
     if (!store.split) return;

@@ -73,6 +73,14 @@ models on /review.html (and its drawImage error), TG leftovers (heater product p
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
+## LP1: resizable left panel (2026-11-12; branch claude/lp1-resizable-panel-b61679; Coordinator 23)
+
+- Panel width is one CSS variable `--side-w` on `#app` (default `min(700px, 50vw)`); `#side` and `.status` use it. Desktop only (grip hidden at 760 px and under).
+- `#sideGrip` (index.html, between `#side` and `#view`) is the drag handle: `col-resize`, drag = live width in [280 px, 80 % of window]; drag more than 40 px under 280 collapses (via the existing `sideClose`/`sideOpen`, so split-view hooks in `showSide` still run); drag from the collapsed edge reopens; double-click resets to the default. The existing arrow `#sideTab` is the click collapse / expand and returns to the last dragged width.
+- Logic and wiring in `src/ui/sideWidth.ts` (clamp, storage key `tanklook.sideW`, per viewer, never scene data); `initSideResize` is called next to the `sideTab` handler in panels.ts. The 3D view re-fits live through the viewer's existing ResizeObserver.
+- Tests `test/lp1-sidewidth.test.ts`; screenshots `shots/lp1/` (default 700, wide 980, narrow 333, collapsed).
+- Full vitest: 5 failures, all suggest-engine timing tests (ab1, dq2, gv8limits, suggest, taste) that ran 7-190 s on an overloaded machine; none touch the panel.
+
 
 ## DQ8: Like / Dislike feedback model (2026-11-12; Coordinator 23; branch claude/dq8-feedback-model-4c4e43)
 - `brief.project.feedback: Feedback[]` (type + `MAX_FEEDBACK` 60, FIFO by `at`, in `scene/brief.ts`; validated in `parseProject`, which is where project extras are validated; `validate.ts` has no project code). Legacy `thumbs` are INPUT only: each becomes a `level:'attr'` entry on read (older `at`), nothing writes `thumbs` any more. Old saves / share links load unchanged.
