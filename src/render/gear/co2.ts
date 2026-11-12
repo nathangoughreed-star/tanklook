@@ -1,6 +1,7 @@
 // CO2 regulator, cylinder and drop checker. (render/gear3d.ts split per type, lane GM1, 2026-10-29: moved as is, no behaviour change).
 import * as THREE from 'three';
 import { backdropDepth, clamp } from '../../scene/physics';
+import { cabinetGear } from '../../scene/cabinetGear';
 import { GearPick, V, along, hash, C, DROP_COLOURS, Frame, Spot, lerp, sucker, line, overRim } from './common';
 
 export function co2(f: Frame, sp: Spot, level: GearPick['co2']) {
@@ -24,8 +25,9 @@ export function co2(f: Frame, sp: Spot, level: GearPick['co2']) {
   kit.rod('clear', bc.clone().add(V(0, -60, 0)), bc.clone(), 10, C.glass, { base: 0.1, seg: 18 });
   kit.rod('clear', bc.clone().add(V(0, -58, 0)), bc.clone().add(V(0, -22, 0)), 8.5, 0xcfe8ee, { base: 0.35, seg: 18 });
   kit.rod('room', bc, bc.clone().add(V(0, 6, 0)), 10.5, C.black, { seg: 18 });
-  const cyl = f.S.stand.show ? V(f.P(clamp(f.T.L * 0.7, 80, f.T.L - 80), 0, 0).x, f.floor, -f.T.D * 0.5) : V(f.side === 'left' ? -f.t - 110 : f.T.L + f.t + 110, f.floor, -f.T.D + 100);
-  const ch = Math.min(430, (f.S.stand.show ? f.top - f.floor : 600) - 140);
+  const cg = cabinetGear(f.S), inStand = f.S.stand.show && !cg?.co2Beside; // a cabinet's gear row decides the place (scene/cabinetGear.ts)
+  const cyl = inStand ? V(cg?.co2X ?? f.P(clamp(f.T.L * 0.7, 80, f.T.L - 80), 0, 0).x, f.floor, -f.T.D * 0.5) : V(f.side === 'left' ? -f.t - 110 : f.T.L + f.t + 110, f.floor, -f.T.D + 100);
+  const ch = Math.min(430, (inStand ? f.top - f.floor : 600) - 140);
   kit.rod('room', cyl, cyl.clone().add(V(0, ch - 60, 0)), 68, C.black, { seg: 28 });
   kit.rod('room', cyl.clone().add(V(0, ch - 60, 0)), cyl.clone().add(V(0, ch, 0)), 68, C.black, { seg: 28, r2: 20 });
   const rg = cyl.clone().add(V(0, ch + 30, 0));
@@ -38,7 +40,7 @@ export function co2(f: Frame, sp: Spot, level: GearPick['co2']) {
   }
   kit.box('room', rg.clone().add(V(0, 0, 38)), 34, 34, 40, C.black, 5); // solenoid
   // down the back of the tank, then (in a cabinet) in through a grommeted hole in its back panel to the regulator (lane CB1)
-  const b0 = bc.clone().add(V(0, -60, 0)), st = f.S.stand, cab = st.show && (st.style === 'cabinet' || st.style === 'custom');
+  const b0 = bc.clone().add(V(0, -60, 0)), st = f.S.stand, cab = inStand && (st.style === 'cabinet' || st.style === 'custom');
   if (cab) {
     const bo = -(backdropDepth(f.S.backdrop, f.T) + f.t), hy = f.top - 250, ox = b0.x, o = V(ox, hy, f.P(0, 0, bo - 10).z), inn = V(ox, hy, f.P(0, 0, bo + 50).z);
     kit.rod('room', V(ox, hy, f.P(0, 0, bo - 2).z), V(ox, hy, f.P(0, 0, bo + 20).z), 12, C.black, { seg: 16 }); // the grommet in the panel's hole

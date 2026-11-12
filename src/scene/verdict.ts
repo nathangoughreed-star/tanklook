@@ -20,6 +20,7 @@ import { ownedFit } from './ownedFit';
 import { lightFitNote } from './lightcheck';
 import { getSpecies } from '../data/species';
 import { volume } from './physics';
+import { cabinetGear } from './cabinetGear';
 
 export type VerdictTab = 'tank' | 'animals' | 'plants' | 'hardscape' | 'substrate' | 'equipment';
 export interface Issue {
@@ -94,6 +95,8 @@ function compute(S: TankSetup, b: Brief, o: VerdictOpts): Verdict {
   // lane DX3: a Must-use item that is too small while the project allows no new equipment (or a Must-use tank too small): the project's own rules, so a hard failure with the reason
   try { const why = withSupplements(S, b).infeasible; if (why) put(hard, { id: 'equip:infeasible', tab: 'equipment', uids: [], text: why, relax: 'allow new equipment, or stop requiring that item' }); } catch { /* nothing to judge yet */ }
   if (!lightSaid) { const ln = lightFitNote(S); if (ln) put(advisories, { id: 'light:fit', tab: 'plants', uids: [], text: ln }); }
+  // ---- gear that does not fit inside the cabinet stands beside it (lane CB1)
+  try { for (const n of cabinetGear(S)?.notes ?? []) put(advisories, { id: `stand:gear:${n.includes('CO2') ? 'co2' : 'canister'}`, tab: 'tank', uids: [], text: n, relax: 'a taller or wider stand, or a smaller filter' }); } catch { /* nothing to judge yet */ }
   // ---- the person's limits: a hard limit that is over blocks, a flexible one only ranks
   if (o.totals || S.constraints || o.limits) {
     const lim = o.limits ?? {}, L = effectiveLimits(S, lim), cmp = compliance(S, o.totals, lim, o.units ?? 'cm');

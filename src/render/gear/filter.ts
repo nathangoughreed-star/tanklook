@@ -4,6 +4,7 @@ import { type FilterModel } from '../../demand/gear';
 import { type FilterProduct } from '../../data/gearCatalog';
 import { backdropDepth, clamp } from '../../scene/physics';
 import { standInside } from '../../scene/standspace';
+import { cabinetGear } from '../../scene/cabinetGear';
 import { Bucket, V, hash, C, flowScale, hexOr, partOf, Frame, Spot, lerp, sucker, overRim } from './common';
 import { airPump, bubbles } from './pump';
 
@@ -162,9 +163,9 @@ export function canister(f: Frame, m: FilterModel, sp: Spot, prod?: FilterProduc
   // "have lines enter the cabinet through the back"); a canister too tall for the cabinet stands beside it on the floor
   const standY = f.S.stand.show ? f.top : f.floor, st = f.S.stand, cab = st.show && (st.style === 'cabinet' || st.style === 'custom');
   const r = prod ? prod.bodyMm.w / 2 : 95 * s, ch = prod?.bodyMm.h ?? 380 * s, room = standInside(f.S);
-  const beside = st.show && !!room && (ch + 60 > room.H || 2 * r + 20 > room.L); // does not fit: on the floor next to the stand (the Checks strip says so)
+  const cg = cabinetGear(f.S), beside = cg ? cg.canisterBeside : st.show && !!room && (ch + 60 > room.H || 2 * r + 20 > room.L); // does not fit (with the rest of the gear): on the floor next to the stand (the Checks strip says so)
   const cu = f.T.L >= 2 * r + 40 ? clamp(f.T.L * 0.25, r + 20, f.T.L - r - 20) : f.T.L / 2, cb = f.T.D * 0.45;
-  const c0 = beside ? V(f.side === 'left' ? -f.t - r - 90 : f.T.L + f.t + r + 90, f.floor, -f.T.D * 0.3) : f.P(cu, f.floor, cb);
+  const c0 = beside ? V(f.side === 'left' ? -f.t - r - 90 : f.T.L + f.t + r + 90, f.floor, -f.T.D * 0.3) : cg?.canisterX != null ? V(cg.canisterX, f.floor, f.P(cu, f.floor, cb).z) : f.P(cu, f.floor, cb); // cabinet: the gear row's place (scene/cabinetGear.ts)
   const valve = (k: number) => c0.clone().add(V(k * 12, ch + 40, 0));
   const bo = -(backdropDepth(f.S.backdrop, f.T) + t), hy = f.top - 120; // the back panel's outer face, off the glass; the holes' height
   for (const [uu, p, k] of [[uI, intake[0], -1], [uO, out[0], 1]] as [number, THREE.Vector3, number][]) {

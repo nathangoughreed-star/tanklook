@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { type FilterModel } from '../../demand/gear';
 import { SUMP_FILL, sumpDefault, sumpOf, techOf } from '../../scene/tech';
 import { fitsInStand } from '../../scene/standspace';
+import { cabinetGear } from '../../scene/cabinetGear';
 import { reefProduct } from '../../data/gearCatalog';
 import { clamp } from '../../scene/physics';
 import { GearPick, V, along, C, Frame, Spot, lerp, sucker, overRim, hexOf } from './common';
@@ -14,7 +15,7 @@ export function sump(f: Frame, sp: Spot) {
   const z = sumpOf(f.S, true) ?? sumpDefault(f.S), stand = f.S.stand.show, fits = fitsInStand(f.S, z);
   const cabinet = stand && (f.S.stand.style === 'cabinet' || f.S.stand.style === 'custom'), h = f.S.stand.height;
   const base = f.floor + (cabinet ? Math.min(70, h * 0.12) : 0) + 2;
-  const cx = stand ? T.L / 2 : f.side === 'left' ? -t - 80 - z.L / 2 : T.L + t + 80 + z.L / 2, cz = stand ? -T.D / 2 : -(T.D - z.D / 2);
+  const cx = stand ? cabinetGear(f.S)?.sumpX ?? T.L / 2 : f.side === 'left' ? -t - 80 - z.L / 2 : T.L + t + 80 + z.L / 2, cz = stand ? -T.D / 2 : -(T.D - z.D / 2);
   const show = !stand || fits, x0 = cx - z.L / 2, drainX = x0 + z.L * 0.1, pumpX = x0 + z.L * 0.84, top = base + z.H;
   // overflow box hung on the back glass (inside box with a comb, a U-tube over the rim to the outside box), drain down
   const w = 130, d = 70, oh = 150, yT = f.H - 6, u = f.slot(sp.fixed ? sp.u : sp.u + w / 2, w + 8, yT - oh, yT, 0, d + 8, sp.fixed);
