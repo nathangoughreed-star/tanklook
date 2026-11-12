@@ -5,7 +5,8 @@
 // Equipment is never shuffled: it is derived from each design by equipPlan. Candidates are cached per (project rev, session, scope, freezes, direction, pair type) so later challengers cost almost nothing.
 import { TABS, type Tab } from './scope';
 import { discoverTabs } from './discoverScope';
-import { confine, propose, type DiscoveryProposal } from './discover';
+import { confine, propose, type DiscoveryProposal, type Objective, type Focus } from './discover';
+import { gatherPool } from './candidates';
 import { checkProposal, deltaBetween, previewProposal } from './proposal';
 import { locksOf, lockViolations, rosterMet } from './locks';
 import { verdictOf, type Issue } from './verdict';
@@ -102,10 +103,10 @@ export function liveWants(brief: Brief): Wants {
   return { ...rest, tankGalPrefer: tankGal };
 }
 
-interface Pending { rec: CandidateRecord; entry: Entry; tokens: string[]; source: 'propose' | 'explore'; world: string; sc: Scored }
-interface Rej { text: string; issues: Issue[]; relax: string[] }
+export interface Pending { rec: CandidateRecord; entry: Entry; tokens: string[]; source: 'propose' | 'explore'; world: string; sc: Scored }
+export interface Rej { text: string; issues: Issue[]; relax: string[] }
 export interface PairCache { sig: string; rankSig?: string; pend: Pending[]; keys: Set<string>; round: number; looksDone: Set<string>; bigDone: Set<string>; rej: Rej[]; proposeDone: boolean; stats: { propose: number; explore: number; ms: number; tried: number; pre: number } }
-const SHARED = new Map<string, PairCache>();
+export const SHARED = new Map<string, PairCache>();
 /** DQ4: the part of a QuickPrefs that decides which designs are POSSIBLE (sizes drawn, hard prohibitions, firm limits); the rest (cards, look axes, told weights, soft targets) only ranks */
 const SOFT_PF = new Set(['arch', 'look', 'told']);
 export const feasibilityPrefs = (pf: QuickPrefs): unknown => Object.fromEntries(Object.entries(pf).filter(([k, v]) => !SOFT_PF.has(k) && !((k === 'plants' || k === 'budgetUsd' || k === 'careMinPerWeek') && (v as { strength?: string })?.strength !== 'hard')));
@@ -118,7 +119,7 @@ export function feasibilityBrief(brief: Brief): unknown {
 /** DQ4: the ranking context: everything that changes only the ORDER of designs that already exist. */
 export const rankingSig = (brief: Brief, pf: QuickPrefs): string => idOf(JSON.stringify([getItem(brief, 'preferences.aspects'), projectExtras(brief).feedback, projectExtras(brief).lean, projectExtras(brief).quick, pf.arch, pf.look, pf.told, pf.plants, pf.budgetUsd, pf.careMinPerWeek]));
 export const clearPairCache = () => SHARED.clear();
-const newCache = (sig: string): PairCache => ({ sig, pend: [], keys: new Set(), round: 0, looksDone: new Set(), bigDone: new Set(), rej: [], proposeDone: false, stats: { propose: 0, explore: 0, ms: 0, tried: 0, pre: 0 } });
+export const newCache = (sig: string): PairCache => ({ sig, pend: [], keys: new Set(), round: 0, looksDone: new Set(), bigDone: new Set(), rej: [], proposeDone: false, stats: { propose: 0, explore: 0, ms: 0, tried: 0, pre: 0 } });
 
 /** DQ1: position (0-based) of the best-ranked Avoid look in the try order: inside the first generated designs, so the early stop cannot starve it */
 export const AVOID_SLOT = 2;
@@ -142,7 +143,7 @@ export function baselineOf(project: PairProject, session: DiscoverySession, look
 }
 /** A roster lock RECONCILES with what the baseline holds (Coordinator 21): the species' count becomes what the lock says (exact n; at least n; the species stays), replacing the held count, never adding to it (a hold of 6 plus an exact 8 is 8, not 14).
  *  Missing animals come from a history record that has the species, else the lock's own count. Other held animals are untouched; welfare is judged later, and a conflict is reported, never silently resolved. Writes no lock. */
-function seedLocked(base: TankSetup, session: DiscoverySession | undefined, lookup: Lookup | undefined, notes: string[]): void {
+export function seedLocked(base: TankSetup, session: DiscoverySession | undefined, lookup: Lookup | undefined, notes: string[]): void {
   const ids = new Set<string>(); if (session) { for (const x of [session.championId, session.pendingFreshId, session.current?.aId, session.current?.bId]) if (x) ids.add(x); for (const c of session.comparisons) { ids.add(c.aId); ids.add(c.bId); } }
   for (const lk of locksOf(base).roster) {
     const held = base.fish.filter(f => f.species === lk.species), c = held.length;
@@ -169,7 +170,7 @@ export const effectiveScope = (project: PairProject, session: DiscoverySession):
   return TABS.filter(t => session.scope.includes(t) && !frozen.has(t) && on.has(t));
 };
 /** May a whole new habitat be drawn? The Tank tab is in scope and neither the tank dimensions nor the water are locked. */
-function habitatFree(base: TankSetup, scope: readonly Tab[]): boolean {
+export function habitatFree(base: TankSetup, scope: readonly Tab[]): boolean {
   if (!scope.includes('tank')) return false;
   const lk = locksOf(base).objects.find(o => o.target === 'tank');
   return !lk || (!!lk.props?.length && !lk.props.includes('dimensions') && !lk.props.includes('water'));
@@ -193,11 +194,11 @@ export function reconcileGear(orig: TankSetup, S: TankSetup, brief: Brief): Tank
   if (of.length) r.tech = keep('filter') ? withUnits(r.tech ?? structuredClone(ot!), 'filter', structuredClone(of)) : withUnits(r.tech ?? inferred(), 'filter', filterUnits(inferred()).map(u => ({ ...u, owned: false })));
   return r;
 }
-interface Ctx { exclude?: ReadonlySet<string>; noCo2?: boolean; prefs?: QuickPrefs; orig: TankSetup; brief: Brief; w: Wants; P: UserProfile; units: Units; now: number; scope: Tab[]; baseRev: number; sessionId: string; purpose: ProposalPurpose; parentId?: string; cache: PairCache; plan0?: ReturnType<typeof equipPlan> }
-const drop = (c: Ctx, text: string, issues: Issue[] = [], relax: string[] = []) => { c.cache.rej.push({ text, issues, relax }); return null; };
+export interface Ctx { objective?: Objective; focus?: Focus; /** DQ7: 'complete' fills gaps: a design that removes or changes anything not added is dropped (reason 'needs-change') */ additive?: boolean; exclude?: ReadonlySet<string>; noCo2?: boolean; prefs?: QuickPrefs; orig: TankSetup; brief: Brief; w: Wants; P: UserProfile; units: Units; now: number; scope: Tab[]; baseRev: number; sessionId: string; purpose: ProposalPurpose; parentId?: string; cache: PairCache; plan0?: ReturnType<typeof equipPlan> }
+export const drop = (c: Ctx, text: string, issues: Issue[] = [], relax: string[] = []) => { c.cache.rej.push({ text, issues, relax }); return null; };
 
 /** Run one design through every check; null = dropped (and counted for the no-solution explanation). */
-function ingest(c: Ctx, scene: TankSetup, label: string, source: Pending['source'], ids: { familyId?: string; archetypeId?: string; name?: string } = {}): Pending | null {
+export function ingest(c: Ctx, scene: TankSetup, label: string, source: Pending['source'], ids: { familyId?: string; archetypeId?: string; name?: string } = {}): Pending | null {
   c.cache.stats.tried++;
   if (noLive(c.prefs)) scene = noLivePlants(scene);   // QP1: the hard "No live plants" exclusion: swap every plant that has an artificial form; passesHard below drops what still holds a living plant
   const { orig, brief } = c;
@@ -205,6 +206,7 @@ function ingest(c: Ctx, scene: TankSetup, label: string, source: Pending['source
   if (!fin) return drop(c, `${label}: leaves a plant without its hardscape or a piece outside the tank`);
   const delta = deltaBetween(orig, fin), chk = checkProposal(orig, { baseRev: c.baseRev, scope: c.scope, delta, summary: '' });
   if (!chk.ok) return drop(c, `${label}: ${chk.outside.length ? `would change ${chk.outside.join(', ')}` : chk.violations.map(v => v.detail).join(' ')}`, [], chk.violations.map(v => v.kind === 'roster' ? `Lower the roster floor: ${v.detail}` : `Unlock "${v.target}": ${v.detail}`));
+  if (c.additive && (delta.items?.remove?.length || delta.items?.change?.length || delta.fish?.remove?.length || delta.fish?.change?.length || delta.set?.tank)) return drop(c, `${label}: needs to change something that is already there (not kept, but not an empty gap either)`, [], ['Show alternatives instead of filling only the gaps']);
   const after = chk.after, key = keyOf(after);
   // a roster lock holds on the finished design even for a species the baseline did not have (confine only restores animals the baseline holds)
   for (const lk of locksOf(orig).roster) {
@@ -248,9 +250,9 @@ function ingest(c: Ctx, scene: TankSetup, label: string, source: Pending['source
 }
 
 // ---------------------------------------------------------------------------------------------------------------- sources
-function fromPropose(c: Ctx, base: TankSetup, n: number): void {
+export function fromPropose(c: Ctx, base: TankSetup, n: number): void {
   const t0 = performance.now(), round = c.cache.round;
-  const d = propose(base, c.brief, { scope: c.scope, objective: 'explore' }, n, { variants: 3, seed: base.layout.seed + 7919 * round });
+  const d = propose(base, c.brief, { scope: c.scope, objective: c.objective ?? 'explore', ...(c.focus ? { focus: c.focus } : {}) }, n, { variants: 3, seed: base.layout.seed + 7919 * round });
   for (const p of d.proposals) { const s = previewProposal(base, p as DiscoveryProposal); if (c.exclude?.size && s.fish.some(f => c.exclude!.has(f.species))) { c.cache.stats.pre++; continue; }   // DQ2 (I3): a variation holding a prohibited animal is skipped before the full check, never run through it
       const got = ingest(c, s, (p as DiscoveryProposal).source, 'propose'); if (got) { c.cache.pend.push(got); c.cache.stats.propose++; } }
   if (d.noSolution) for (const i of d.noSolution.conflicts) c.cache.rej.push({ text: i.text, issues: [i], relax: i.relax ? [i.relax] : [] });
@@ -312,7 +314,7 @@ function backdropFor(a: Archetype, S: TankSetup): TankSetup['backdrop']['kind'] 
   if (/driftwood|nature|wood/.test(t)) return 'cork';
   return undefined;
 }
-function fromLook(c: Ctx, a: Archetype, sizes = 1, big = false): void {
+export function fromLook(c: Ctx, a: Archetype, sizes = 1, big = false): void {
   const t0 = performance.now();
   (big ? c.cache.bigDone : c.cache.looksDone).add(a.id);
   try {
@@ -348,11 +350,11 @@ export function diversify<T extends Pending>(items: readonly T[], scoreOf: (p: T
   return { kept, pruned: items.length - kept.length };
 }
 /** How much of the feasible space the pool covers: distinct families, size classes, worlds, stocking patterns. */
-const coverageOf = (pool: readonly Pending[]) => ({
+export const coverageOf = (pool: readonly Pending[]) => ({
   fams: new Set(pool.map(p => p.entry.fp.familyId)).size, sizes: [...new Set(pool.map(p => sizeClassOf(p.rec.facts.gallons)))],
   worlds: new Set(pool.map(p => p.world)).size, stock: [...new Set(pool.map(p => stockPatternOf(p.rec.snapshot)))],
 });
-const FAMS_WANTED = 4, SIZES_WANTED = 2;   // the first pair is drawn from a pool covering this many looks and sizes, time allowing (measured: DQ2 HANDOFF)
+export const FAMS_WANTED = 4, SIZES_WANTED = 2;   // the first pair is drawn from a pool covering this many looks and sizes, time allowing (measured: DQ2 HANDOFF)
 const REJECT_CLASSES: [string, RegExp][] = [['lock-or-scope', /would change|breaks the kept|lock/i], ['equipment', /equipment|Must use|resizes the tank/i], ['hardscape-or-fit', /hardscape|outside the tank/i], ['requirement', /required or not wanted/i],
   ['final-check', /larger tank or fewer|adult|outgrow/i], ['limit-or-gate', /budget|limit|cost|care|time|size|space/i]];
 export const rejectClass = (r: Rej): string => r.issues.length && !REJECT_CLASSES.some(([, re]) => re.test(r.text)) ? 'welfare-or-physical' : REJECT_CLASSES.find(([, re]) => re.test(r.text))?.[0] ?? 'welfare-or-physical';
@@ -364,11 +366,11 @@ export const strategySchedule = (refine: boolean, round: number): Bucket[] => {
 };
 
 // ---------------------------------------------------------------------------------------------------------------- choosing
-const dist = (a: Pending, b: Pending) => Math.max(fpDistance(a.entry.fp, b.entry.fp), contentDistance(a.tokens, b.tokens));
+export const dist = (a: Pending, b: Pending) => Math.max(fpDistance(a.entry.fp, b.entry.fp), contentDistance(a.tokens, b.tokens));
 const same = (a: Pending, b: Pending) => dist(a, b) < MIN_PAIR / 2;
 
 /** Two designs look different at a glance (world, look family or hardscape-to-plant balance); see breadth.ts. */
-const distinct = (a: Pending, b: Pending) => visuallyDistinct(a.rec.snapshot, b.rec.snapshot, a.entry.fp.familyId, b.entry.fp.familyId);
+export const distinct = (a: Pending, b: Pending) => visuallyDistinct(a.rec.snapshot, b.rec.snapshot, a.entry.fp.familyId, b.entry.fp.familyId);
 function choosePair(pool: Pending[], type: 'first' | 'fresh', champ: Pending | undefined, scoreOf: (p: Pending) => number, contrast: boolean, strict = false, tw = 0.1): [Pending, Pending] | undefined {
   let best: [Pending, Pending] | undefined, bv = -Infinity;
   for (let i = 0; i < pool.length; i++) for (let j = i + 1; j < pool.length; j++) {
@@ -397,7 +399,7 @@ function chooseChallenger(pool: Pending[], champ: Pending, target: number, score
 }
 
 // ---------------------------------------------------------------------------------------------------------------- the entry point
-const noSolution = (c: PairCache, extra: string[] = [], more: string[] = []): PairResult => {
+export const noSolution = (c: PairCache, extra: string[] = [], more: string[] = []): PairResult => {
   const conflicts = new Map<string, string>(), relax = new Set<string>();
   for (const r of c.rej) { for (const i of r.issues) conflicts.set(i.id, i.text); for (const x of r.relax) relax.add(x); }
   if (!conflicts.size) for (const r of c.rej.slice(0, 4)) conflicts.set(r.text, r.text);
@@ -502,22 +504,17 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
   const gen = champBase ?? base;
   const excl = excludedSpecies(pf), ctx: Ctx = { prefs: pf, ...(excl.size ? { exclude: excl } : {}), ...(pf.prohibit.includes('co2') ? { noCo2: true } : {}), orig: gen, brief, w, P, units, now, scope, baseRev: project.rev, sessionId: session.id, purpose, ...(type === 'champion' && champ ? { parentId: champ.id } : {}), cache };
   const looks = habitatFree(base, scope) ? lookOrder(ctx, session.direction, type, champ) : [];
-  let result: { a: CandidateRecord; b: CandidateRecord; pool: number } | undefined, stop: PoolMetrics['stop'] = 'exhausted';
-  for (;;) {
-    if (!cache.proposeDone) { fromPropose(ctx, gen, first && looks.length ? 4 : 10); cache.proposeDone = true; }
-    else if (cache.looksDone.size < looks.length) fromLook(ctx, looks.find(a => !cache.looksDone.has(a.id))!, type === 'first' && !pf.sizeGal ? 1 : 3);   // with a size preference the first pair already looks across the range, not only at its smallest tank   // size is a real variable: later pairs offer each look in 2-3 sizes, each with its own stocking
-    else if (type === 'first' && cache.bigDone.size < looks.length) fromLook(ctx, looks.find(a => !cache.bigDone.has(a.id))!, 3, true);
-    else if (cache.round < 3) { cache.round++; fromPropose(ctx, gen, 10); }
-    else break;
-    const pool = pooled(), cov = coverageOf(pool), t = performance.now();
+  let result: { a: CandidateRecord; b: CandidateRecord; pool: number } | undefined;
+  const stop = gatherPool({ ctx, cache, gen, looks, first, sizesAtFirst: type === 'first' && !pf.sizeGal, bigPass: type === 'first', poolOf: pooled, hard, decide: (pool, t) => {
+    const cov = coverageOf(pool);
     // DQ2: no first-four-found. A first / fresh pair waits for coverage (families and sizes); after the soft deadline it takes a visibly different pair from what covers at least 3 looks, then 2; a near-identical pair is never taken for being late
     const covered = first ? (strat && looks.length ? cov.fams >= FAMS_WANTED && (cov.sizes.length >= SIZES_WANTED || t > soft / 2) : pool.length >= 4) : pool.length >= 3 && (!looks.length || !champPending || schedule[0] !== 'out-of-family' || buckets(pool)['out-of-family'].length > 0);
     const late = first ? (t > soft && cov.fams >= 3) || (t > soft * 2 && cov.fams >= 2) : t > soft && pool.length >= 2;
     if (pool.length >= 2 || (!first && pool.length >= 1)) {
-      if (covered || late) { result = choose(true); if (result) { stop = covered ? 'coverage' : t > hard ? 'hard' : 'soft'; break; } }
+      if (covered || late) { result = choose(true); if (result) return covered ? 'coverage' : t > hard ? 'hard' : 'soft'; }
     }
-    if (t > hard) { stop = 'hard'; break; }
-  }
+    return undefined;
+  } });
   if (!result) { result = choose(true); if (!result) { result = choose(); if (result && first && purpose !== 'contrast' && !visuallyDistinct(result.a.snapshot, result.b.snapshot)) opts.notes?.push('Only similar designs fit your limits and locks, so these two are close; widen a limit or release a lock for more variety.'); } }
   cache.stats.ms = Math.max(cache.stats.ms, performance.now() - t0);
   if (opts.metrics) {

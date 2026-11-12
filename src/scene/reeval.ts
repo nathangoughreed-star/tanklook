@@ -188,7 +188,9 @@ export interface HandOff {
 export function handOff(current: TankSetup, generated: TankSetup, opts: {
   /** 'look' (the only mode today): keep tank, gear and roster, swap the look. Reserved: a future 'install' mode (a whole candidate from Explore Complete Setups, "Make This Mine") would take the
    *  snapshot verbatim, confirm before replacing a design, and be one undo step; add it as another `mode` here, the callers need not change. */
-  mode?: 'look';
+  mode?: 'look' | 'fill';
+  /** DQ7, mode 'fill': which categories may be filled (default all), and a region predicate (x, depth in mm; a Discover Region cell): a category is a gap when NOTHING of it is already in that region. */
+  fill?: { only?: readonly FillCategory[]; within?: (x: number, depth: number) => boolean };
   accept?: readonly string[]; brief?: Brief;
   /** the look is an open-top one (lane OG1, scene/openTop.ts): it is drawn and stocked without a lid on purpose, so none is added (lane LB1) */
   openTop?: boolean;
@@ -198,6 +200,7 @@ export function handOff(current: TankSetup, generated: TankSetup, opts: {
    *  First hand-off passes the roster's species; a Look First hand-off does not, so its editor roster is only added to). */
   roster?: readonly Stocked[];
 } = {}): HandOff {
+  if (opts.mode === 'fill') return fillGaps(current, generated, opts);
   const accept = new Set(opts.accept ?? []), suggested = generated.fish.filter(f => !accept.has(f.species));
   const gen = structuredClone(generated); gen.fish = gen.fish.filter(f => accept.has(f.species));
   if (!hasDesign(current, opts.brief)) {
@@ -234,6 +237,52 @@ export function handOff(current: TankSetup, generated: TankSetup, opts: {
   Object.assign(out, nd.scene);
   changed.push(...nd.lines.map(l => l.text));
   return { scene: out, fresh: false, kept, changed, warnings, needs: nd.lines };
+}
+
+export type FillCategory = 'hardscape' | 'plants' | 'animals' | 'substrate' | 'backdrop';
+const FILL_ALL: readonly FillCategory[] = ['hardscape', 'plants', 'animals', 'substrate', 'backdrop'];
+/** DQ7 `handOff` mode 'fill': the current scene KEEPS everything it has (tank, gear, every piece, plant, animal, substrate, background: nothing is moved, resized or removed, hand-added or not) and receives from the generated scene ONLY the categories
+ *  it lacks (or, with `fill.within`, lacks in that region). The generated scene is first adapted to the current tank (adaptToTank: the look is made for this tank, the tank never changes). Hardscape that would sit on a kept piece is left out;
+ *  a plant whose hardscape was not added is left out. Animals are added only from `accept` (suggestions otherwise), and only when there are none. Pure; `current` is not mutated. */
+function fillGaps(current: TankSetup, generated: TankSetup, opts: { accept?: readonly string[]; brief?: Brief; lowTech?: boolean; fill?: { only?: readonly FillCategory[]; within?: (x: number, depth: number) => boolean } }): HandOff {
+  const out = structuredClone(current), gen = structuredClone(generated), only = new Set(opts.fill?.only ?? FILL_ALL), within = opts.fill?.within ?? (() => true), accept = new Set(opts.accept ?? []);
+  if (!sameTank(out.tank, gen.tank)) adaptToTank(gen, out.tank, { thin: false });
+  const kept: string[] = [], changed: string[] = [], remap = new Map<number, number>();
+  let next = Math.max(0, ...out.items.map(i => i.id), ...gen.items.map(i => i.id)) + 1, added = 0;
+  const lacks = (pred: (it: Item) => boolean) => !out.items.some(it => pred(it) && within(it.x, it.depth));
+  if (only.has('hardscape') && lacks(it => !isPlant(it))) {
+    const have = out.items.filter(it => !isPlant(it)); let n = 0;
+    for (const g of gen.items) {
+      if (isPlant(g) || !within(g.x, g.depth) || g.parent !== undefined) continue;
+      const w = itemDims(g)[0];
+      if (have.some(h => Math.hypot(h.x - g.x, h.depth - g.depth) < 0.4 * (w + itemDims(h)[0]))) continue;   // a kept piece is an obstacle
+      const c = structuredClone(g); delete c.uid; c.id = next++; remap.set(g.id, c.id); out.items.push(c); have.push(c); n++;
+    }
+    if (n) { added += n; changed.push(`Added ${plural(n, 'hardscape piece')}: there was none${opts.fill?.within ? ' in that area' : ''}.`); }
+  } else if (out.items.some(it => !isPlant(it))) kept.push(`${plural(out.items.filter(it => !isPlant(it)).length, 'hardscape piece')} (unchanged)`);
+  if (only.has('plants') && lacks(isPlant)) {
+    let n = 0;
+    for (const g of gen.items) {
+      if (!isPlant(g) || !within(g.x, g.depth)) continue;
+      const c = structuredClone(g); delete c.uid;
+      if (c.parent !== undefined) { const p = remap.get(c.parent); if (p === undefined) continue; c.parent = p; }   // it rides on a piece that was not added
+      c.id = next++; out.items.push(c); n++;
+    }
+    if (n) { added += n; changed.push(`Added ${plural(n, 'plant')}: there were none${opts.fill?.within ? ' in that area' : ''}.`); if (!opts.fill?.within) out.grow = structuredClone(gen.grow); }
+  } else if (out.items.some(isPlant)) kept.push(`${plural(out.items.filter(isPlant).length, 'plant')} (unchanged)`);
+  if (only.has('animals') && !out.fish.length) {
+    let id = Math.max(0, ...gen.fish.map(f => f.id)) + 1, n = 0;
+    for (const f of gen.fish) if (accept.has(f.species) && within(f.x, f.depth)) { const c = structuredClone(f); delete c.uid; c.id = id++; out.fish.push(c); n++; }
+    if (n) { added += n; changed.push(`Added ${plural(n, 'animal')}: there were none.`); }
+  } else if (out.fish.length) kept.push(`Animals: ${[...countsOf(out.fish)].map(([sp, n]) => plural(n, nameOf(sp))).join(', ')} (unchanged)`);
+  if (only.has('substrate') && !out.substrate.show && gen.substrate.show) { out.substrate = structuredClone(gen.substrate); out.terrain = structuredClone(gen.terrain); added++; changed.push('Added a substrate: there was none.'); }
+  if (only.has('backdrop') && out.backdrop.kind === 'none' && gen.backdrop.kind !== 'none') { out.backdrop = structuredClone(gen.backdrop); added++; changed.push('Added a 3D background: there was none.'); }
+  if (added && out.layout.id === 'none') out.layout = structuredClone(gen.layout);
+  kept.push('Tank, gear, lid, stand and limits');
+  if (!added) return { scene: out, fresh: false, kept, changed, warnings: [], needs: [] };
+  const nd = applySetupNeeds(out, { brief: opts.brief, lowTech: opts.lowTech });
+  Object.assign(out, nd.scene); changed.push(...nd.lines.map(l => l.text));
+  return { scene: out, fresh: false, kept, changed, warnings: [], needs: nd.lines };
 }
 
 const countsOf = (fish: readonly Fish[]) => { const m = new Map<string, number>(); for (const f of fish) m.set(f.species, (m.get(f.species) ?? 0) + 1); return m; };
