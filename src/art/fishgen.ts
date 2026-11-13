@@ -537,11 +537,11 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { at: 0.53, len: 0.06, h: 0.08, rake: 0.3, lead: 0.6, tip: 'point', trail: 0.045, drop: 0.2 }, anal: { at: 0.45, len: 0.1, h: 0.055, rake: 0.05, lead: 0.85, tip: 'point', trail: 0.03, drop: 0.35 }, pelvic: { u: 0.56, len: 0.05 },
     marks: [{ k: 'band', u0: 0.22, u1: 0.85, v0: -0.012, v1: 0.012, c: '#2a1a18', a: 0.7, f: 0.01 }, { k: 'blob', u: 0.24, v: 0, ru: 0.03, rv: 0.025, c: '#1a1212', a: 0.8 }],
     eye: { r: 0.03, iris: ['#d07050', '#4a1a12'] } },
-  danio: { shimmer: 0.5, shimmerRgb: '255,235,170', gillLine: 0.25, finFade: 0.3, gape: 0.032, gapeDrop: 0.012, barbels: 0.018, thick: 0.5, depth: 0.19, pedU: 0.18, ped: 0.032, peak: 0.55, snout: 0.4, mouth: -0.025, shade: ['#6e7462', '#cdc6a2', '#ece6cc'], tail: { type: 'fork', h: 0.12, a: 0.7 }, fin: N,
+  danio: { shimmer: 0.5, shimmerRgb: '255,235,170', gillLine: 0.25, finFade: 0.3, gape: 0.032, gapeDrop: 0.012, barbels: 0.018, thick: 0.5, depth: 0.19, pedU: 0.18, ped: 0.032, peak: 0.55, snout: 0.4, mouth: -0.025, shade: ['#5a5e3c', '#c2b57c', '#e4dfc4'], tail: { type: 'fork', h: 0.12, a: 0.7 }, fin: N,
     dorsal: { at: 0.5, len: 0.11, h: 0.07, rake: 0.3, lead: 0.7, drop: 0.5, trail: 0.02 }, anal: { at: 0.49, len: 0.2, h: 0.065, rake: 0.2, lead: 0.75, drop: 0.45, trail: 0.02 }, pelvic: { u: 0.58, len: 0.05 },
-    marks: [...[-0.035, 0.005, 0.045].map(v => ({ k: 'band' as const, u0: 0.2, u1: 0.9, v0: v - 0.011, v1: v + 0.011, c: '#e2c466', a: 0.55, f: 0.008 })), // gold between the stripes
-      ...[-0.055, -0.015, 0.025, 0.065].map(v => ({ k: 'band' as const, u0: 0.2, u1: 0.9, v0: v - 0.012, v1: v + 0.012, c: '#2b4f8c', a: 0.9, f: 0.008 }))],
-    finMarks: [-0.03, 0, 0.03].map(v => ({ k: 'band' as const, u0: 0.0, u1: 0.25, v0: v - 0.007, v1: v + 0.007, c: '#2b4f8c', a: 0.8, f: 0.004 })),
+    marks: [...[-0.038, 0.002, 0.042].map(v => ({ k: 'band' as const, u0: 0.2, u1: 0.9, v0: v - 0.012, v1: v + 0.012, c: '#cdbb80', a: 0.75, f: 0.006 })), // silver-gold between the stripes
+      ...[-0.058, -0.018, 0.022, 0.062].map(v => ({ k: 'band' as const, u0: 0.17, u1: 0.93, v0: v - 0.0155, v1: v + 0.0155, c: '#1a2a58', a: 0.97, f: 0.005 }))], // bold blue-black stripes, gill to tail base
+    finMarks: [-0.045, -0.015, 0.015, 0.045].map(v => ({ k: 'band' as const, u0: 0.0, u1: 0.3, v0: v - 0.009, v1: v + 0.009, c: '#1a2a58', a: 0.9, f: 0.004 })),
     eye: { r: 0.026, iris: ['#c9c2a6', '#4e4a3c'] } },
   cherrybarb: { gape: 0.025, gapeDrop: 0.006, thick: 0.4, depth: 0.26, pedU: 0.2, ped: 0.04, peak: 0.6, snout: 0.5, shade: ['#8a3a2a', '#c4473a', '#d97a62'], tail: { type: 'fork', h: 0.15, tint: '#c25a48' }, fin: '#c96b58',
     dorsal: { at: 0.61, len: 0.12, h: 0.12, rake: 0.2, lead: 0.6, tip: 'point', trail: 0.05, drop: 0.25 }, anal: { at: 0.44, len: 0.11, h: 0.075, rake: 0.2, lead: 0.7, tip: 'point', trail: 0.035, drop: 0.3 }, pelvic: { u: 0.58, len: 0.07, w: 1.2 },
