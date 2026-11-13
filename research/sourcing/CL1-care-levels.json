@@ -1,7 +1,7 @@
 {
  "lane": "CL1",
  "date": "2026-11-13",
- "status": "pilot: 10 of 83 aquarium-scope species; care.ts untouched",
+ "status": "83 aquarium-scope species researched; verifier pass pending; care.ts untouched",
  "species": [
   {
    "id": "betta",
@@ -284,6 +284,2129 @@
    "proposed": 1,
    "confidence": "medium",
    "reason": "Only 2 pages opened; hardiness points to 1, the moderate reading is about tank size and temperament, not loss rate. Keep 1."
+  },
+  {
+   "id": "cardinal",
+   "name": "Cardinal tetra",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/cardinal-tetra",
+     "label": "Intermediate",
+     "verdict": "2",
+     "why": "sensitive to water changes; needs soft acidic water; neon tetra disease"
+    },
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/paracheirodon-axelrodi",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "flexible water, but wild-caught fish are less tolerant of deteriorating water"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/cardinal-tetra/",
+     "label": null,
+     "verdict": "1-2",
+     "why": "'pretty easy' but needs stable soft water, some prior experience; first-timers advised to try another species"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "medium",
+   "reason": "Split 2/1/in-between; captive-bred stock is forgiving, wild-caught and unstable water are the risk. Keep 1, note wild-caught caveat."
+  },
+  {
+   "id": "ember",
+   "name": "Ember tetra",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/ember-tetra/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy, tolerant water, no species-specific disease"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/ember-tetra",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy, not disease-prone; sensitive to sudden lighting/temp/pH change; needs planted 10 gal"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "high",
+   "reason": "Two sources both Easy, none disagree."
+  },
+  {
+   "id": "dwarfpencil",
+   "name": "Dwarf pencilfish",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/nannostomus-marginatus",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "needs well-established tank and stable water; group; careful tankmates"
+    },
+    {
+     "site": "Aquariadise",
+     "url": "https://aquariadise.com/pencilfish/",
+     "label": "Intermediate - Advanced",
+     "verdict": "2-3",
+     "why": "mostly wild-caught, pH 4-6, tiny mouth needs tiny foods, only peaceful tankmates"
+    },
+    {
+     "site": "Guidarium",
+     "url": "https://guidarium.com/fishes/dwarf-pencilfish",
+     "label": null,
+     "verdict": "2",
+     "why": "'specialist needs': soft acidic water, planted low-flow tank, shy, jumper"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "high",
+   "reason": "All three place it at moderate or above; none say beginner."
+  },
+  {
+   "id": "rummynose",
+   "name": "Rummy-nose tetra",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Fish Tank World",
+     "url": "https://www.fishtankworld.com/rummy-nose-tetra-care",
+     "label": "Intermediate",
+     "verdict": "2",
+     "why": "more sensitive than neons; mature cycled tank needed; stress disease; poor transport"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/rummy-nose-tetra/",
+     "label": null,
+     "verdict": "2",
+     "why": "'can be a little tricky'; very sensitive to water changes"
+    },
+    {
+     "site": "Build Your Aquarium",
+     "url": "https://www.buildyouraquarium.com/rummy-nose-tetra/",
+     "label": null,
+     "verdict": "2",
+     "why": "needs long mature aquarium, stable water, group of 10"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "medium",
+   "reason": "Only one page gives a label (Intermediate); other two stress stable water and a mature tank, which fits level 2."
+  },
+  {
+   "id": "harlequin",
+   "name": "Harlequin rasbora",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/harlequin-rasbora",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy, adapts to most conditions; keep school of 8-10"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/harlequin-rasbora/",
+     "label": null,
+     "verdict": "1",
+     "why": "'quite easy no matter how much experience'; very hardy, rarely sick"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "high",
+   "reason": "Two sources, both easy."
+  },
+  {
+   "id": "chili",
+   "name": "Chili rasbora",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/boraras-brigittae",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "needs well-established tank and stable water"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/chili-rasbora",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "tiny so any water change can be fatal; soft acidic water; fine food"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/chili-rasbora/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "no species-specific disease, but 'strict care requirements' for stable soft acidic water"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "high",
+   "reason": "Two Moderate; the Easy page still lists strict water needs."
+  },
+  {
+   "id": "danio",
+   "name": "Zebra danio",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/danio-rerio",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "flexible water, peaceful, group"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/zebra-danio",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "eats anything, tolerant of water, breeds readily"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/zebra-danio/",
+     "label": null,
+     "verdict": "1",
+     "why": "'a piece of cake'; wide water tolerance"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "high",
+   "reason": "All three easy."
+  },
+  {
+   "id": "whitecloud",
+   "name": "White cloud mountain minnow",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/tanichthys-albonubes",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "flexible water, needs cool water, group"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/white-cloud-mountain-minnow",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy, rarely sick, good first fish"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/white-cloud-mountain-minnow/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy, low maintenance; needs cool 57-72 F water"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "high",
+   "reason": "All three Easy; only caveat is cool water."
+  },
+  {
+   "id": "cpd",
+   "name": "Celestial pearl danio",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/danio-margaritatus",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "medium tank, pH must stay steady, group"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/celestial-pearl-danio",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "new arrivals shy and hard to feed; needs live/frozen small foods; fin rot and ich if outcompeted"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/celestial-pearl-danio/",
+     "label": null,
+     "verdict": "1",
+     "why": "'isn't difficult', relatively hardy; sensitive to poor water quality"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "medium",
+   "reason": "Two easy, one moderate; the moderate rating is about feeding shy new arrivals."
+  },
+  {
+   "id": "hatchet",
+   "name": "Marbled hatchetfish",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Tropical Fish Hobbyist",
+     "url": "https://www.tfhmagazine.com/articles/freshwater/carnegiella-strigata",
+     "label": "intermediate or advanced aquarists",
+     "verdict": "2-3",
+     "why": "less hardy, prone to ich, nearly all wild-caught, skittish"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/hatchetfish",
+     "label": "Difficult",
+     "verdict": "3",
+     "why": "sensitive to ammonia and pH shifts, stress/ich, soft acidic water, jumper"
+    },
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/carnegiella-strigata",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "score from flexible water and peaceful; diet and hardiness unscored; jumper, group of 10+"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "medium",
+   "reason": "Two sources say intermediate to difficult on stated reasons (wild-caught, ich, water sensitivity); SF Easy rating leaves hardiness unscored."
+  },
+  {
+   "id": "cherrybarb",
+   "name": "Cherry barb",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/puntius-titteya",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "flexible water, peaceful, group"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/cherry-barb",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy, no species-specific disease; keep water stable"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/cherry-barb/",
+     "label": null,
+     "verdict": "1",
+     "why": "'beginner-friendly', durable, wide water tolerance"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "high",
+   "reason": "All three easy."
+  },
+  {
+   "id": "tigerbarb",
+   "name": "Tiger barb",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/puntigrus-tetrazona",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "flexible water, group; territorial"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/tiger-barb",
+     "label": "Easy to moderate",
+     "verdict": "1",
+     "why": "low maintenance but fin-nipping, needs group of 5-12, ich if water poor"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/tiger-barb/",
+     "label": null,
+     "verdict": "1",
+     "why": "beginner-friendly; semi-aggressive, jumper, prone to ich"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "high",
+   "reason": "All three at easy; difficulty is tankmate aggression, not husbandry."
+  },
+  {
+   "id": "boesemani",
+   "name": "Boeseman's rainbowfish",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/melanotaenia-boesemani",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "large tank, steady pH, warm steady temperature, group"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/boesemani-rainbowfish/",
+     "label": "Intermediate",
+     "verdict": "2",
+     "why": "long 50-75 gal tank, group of 6+, stable water, varied diet"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "high",
+   "reason": "Two sources both moderate/intermediate (Fishkeeping World page not found)."
+  },
+  {
+   "id": "platy",
+   "name": "Platy",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/xiphophorus-maculatus",
+     "label": "Beginner",
+     "verdict": "1",
+     "why": "flexible water but needs moderately hard, pH above neutral; inbred stock less hardy"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/platy-fish",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy, wide water tolerance, flexible diet"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/platy-fish/",
+     "label": null,
+     "verdict": "1",
+     "why": "'very beginner-friendly', lax care"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "high",
+   "reason": "All three easy."
+  },
+  {
+   "id": "molly",
+   "name": "Black molly",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/molly-fish",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy, adaptable, peaceful"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/molly-fish/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy, simple setup; stable water and water changes needed"
+    },
+    {
+     "site": "Tropical Freshwater Fish",
+     "url": "https://tropicalfreshwaterfish.com/species/Poecilia_sphenops.html",
+     "label": "difficulty 2 (standard), 4 (black morph)",
+     "verdict": "2",
+     "why": "black morph less hardy, needs warmer 77-84 F, well-kept water, short-lived"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "medium",
+   "reason": "Two Easy; the black-morph caveat from the third is real but not enough to move it."
+  },
+  {
+   "id": "swordtail",
+   "name": "Swordtail",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/xiphophorus-hellerii",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "needs a large tank and steady pH; group"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/swordtail-fish",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy, tolerates wide water range, forgiving"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/swordtail/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "adaptable, hardier than egg-layers, simple setup"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "medium",
+   "reason": "Two Easy, one Moderate (tank size and pH); husbandry is forgiving, size is the catch."
+  },
+  {
+   "id": "dwarfgourami",
+   "name": "Dwarf gourami",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/trichogaster-lalius",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "flexible water, medium tank, best as pair"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/dwarf-gourami",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy, but DGD/iridovirus has no cure; weekly water changes"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/dwarf-gourami/",
+     "label": "Medium",
+     "verdict": "2",
+     "why": "shy, easily stressed, susceptible to poor water quality"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "medium",
+   "reason": "Two Easy, one Medium; the real risk is incurable DGD in trade stock, not routine care."
+  },
+  {
+   "id": "honeygourami",
+   "name": "Honey gourami",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/trichogaster-chuna",
+     "label": "Beginner",
+     "verdict": "1",
+     "why": "flexible water, peaceful, good for newcomers"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/honey-gourami",
+     "label": "Beginner",
+     "verdict": "1",
+     "why": "hardy, forgiving; shy so needs plants and peaceful tankmates"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/honey-gourami/",
+     "label": "Quite easy",
+     "verdict": "1",
+     "why": "tolerant of wide conditions, peaceful"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "high",
+   "reason": "All three easy."
+  },
+  {
+   "id": "gourami",
+   "name": "Pearl gourami",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/trichopodus-leerii",
+     "label": "Beginner",
+     "verdict": "1",
+     "why": "hardy, flexible water; needs large tank"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/pearl-gourami",
+     "label": "Medium",
+     "verdict": "2",
+     "why": "sometimes demanding; 30 gal planted; fin rot from nipping tankmates"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/pearl-gourami/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy, mellow; poor water causes fin rot"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "medium",
+   "reason": "Two easy, one medium (large tank, fin damage)."
+  },
+  {
+   "id": "gbr",
+   "name": "German blue ram",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/mikrogeophagus-ramirezi",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "needs well-established tank, stable warm water"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/german-blue-ram",
+     "label": "Intermediate",
+     "verdict": "2",
+     "why": "sensitive to water fluctuations, fish TB, advised against for beginners"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/german-blue-ram/",
+     "label": "Medium difficult",
+     "verdict": "2",
+     "why": "sensitive to poor water, fish TB, fussy feeding while settling"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "high",
+   "reason": "All three moderate."
+  },
+  {
+   "id": "bolivianram",
+   "name": "Bolivian ram",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/mikrogeophagus-altispinosus",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "needs well-established tank and steady temperature"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/bolivian-ram",
+     "label": "Beginner",
+     "verdict": "1",
+     "why": "quite hardy, not fussy; sensitive to nitrates, ich"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/bolivian-ram/",
+     "label": "medium difficult",
+     "verdict": "2",
+     "why": "strict parameters, nitrate sensitive, ich if stressed"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "medium",
+   "reason": "Two moderate, one beginner; nitrate sensitivity argues for keeping 2."
+  },
+  {
+   "id": "kribensis",
+   "name": "Kribensis",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/pelvicachromis-pulcher",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy, farmed so water flexible; 'one of the best choices for newcomers'"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/kribensis-cichlid/",
+     "label": null,
+     "verdict": "1",
+     "why": "'very easy to care for'; hardy, disease-resistant, varied diet"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "high",
+   "reason": "Two sources both easy (Fishkeeping World page not found)."
+  },
+  {
+   "id": "cockatoo",
+   "name": "Cockatoo dwarf cichlid",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/apistogramma-cacatuoides",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "needs steady acidic water; medium tank"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/cockatoo-cichlid",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "stable pH 6-7 and 79-84 F, quarantine, shy around active tankmates; 'intermediate to advanced'"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "high",
+   "reason": "Two sources both moderate (Aquarium Source page not found)."
+  },
+  {
+   "id": "yellowlab",
+   "name": "Yellow lab cichlid",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/labidochromis-caeruleus",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "large tank, steady pH and temperature; peaceful for a mbuna"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/yellow-lab-cichlid",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "simple feeding; conclusion hedges toward experienced keepers"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/yellow-lab-cichlid/",
+     "label": "Difficult",
+     "verdict": "3",
+     "why": "aggression, 30-50 gal, hard alkaline water, Malawi bloat; body text says 'moderately challenging'"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "medium",
+   "reason": "Two Easy, one Difficult (label contradicts its own body text); keep 1."
+  },
+  {
+   "id": "peacock",
+   "name": "Peacock cichlid",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/aulonocara-stuartgranti",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "needs well-established tank and stable water"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/peacock-cichlid",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy; but 55 gal minimum, hard alkaline water, aggression in cramped tanks"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/peacock-cichlid/",
+     "label": "Medium difficult",
+     "verdict": "2",
+     "why": "needs consistent clean water, Malawi bloat from overfeeding, 55-60 gal"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "medium",
+   "reason": "Two moderate, one easy that still lists heavy requirements."
+  },
+  {
+   "id": "demasoni",
+   "name": "Demasoni cichlid",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/pseudotropheus-demasoni",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "one of the most aggressive and territorial mbuna; not recommended for the beginner"
+    },
+    {
+     "site": "Fishkeeper",
+     "url": "https://www.fishkeeper.co.uk/fish/freshwater/cichlids/demasoni",
+     "label": null,
+     "verdict": "2",
+     "why": "extremely belligerent; needs a well thought out set-up, crowded tank, added last"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "medium",
+   "reason": "Two sources agree on moderate-or-higher, aggression is the difficulty; third page (LiveAquaria) would not open."
+  },
+  {
+   "id": "kadango",
+   "name": "Kadango cichlid",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/copadichromis-borleyi",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "very large tank, steady pH and temperature"
+    },
+    {
+     "site": "Fishkeeper",
+     "url": "https://www.fishkeeper.co.uk/fish/freshwater/cichlids/red-fin-kadango",
+     "label": null,
+     "verdict": "2",
+     "why": "hard alkaline water essential, 5 ft tank, careful watching when spawning; diet not fussy, fairly peaceful"
+    },
+    {
+     "site": "ThatPetPlace",
+     "url": "https://www.thatpetplace.com/Copadichromis-borleyi-kandango-red-fin-256301",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "retail spec only, no reasons given"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "medium",
+   "reason": "Two moderate, one bare retail Easy; the difficulty is tank size and water, not fragility."
+  },
+  {
+   "id": "syno",
+   "name": "Malawi synodontis",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/synodontis-njassae",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "large tank, steady pH; most other measures unknown"
+    },
+    {
+     "site": "Aquarium Source (genus guide)",
+     "url": "https://www.aquariumsource.com/synodontis-catfish/",
+     "label": null,
+     "verdict": "1",
+     "why": "Synodontis care not particularly difficult, surprisingly hardy; sensitive to copper meds, stress-prone"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "medium",
+   "reason": "Split between moderate and easy-hardy; hardy fish but large tank and Malawi water; keep current."
+  },
+  {
+   "id": "labeo",
+   "name": "Blue-nosed mbuna",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/labeotropheus-trewavasae",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "large tank, steady temperature, territorial, one male with several females; not recommended for the beginner"
+    },
+    {
+     "site": "Fishkeeper",
+     "url": "https://www.fishkeeper.co.uk/fish/freshwater/cichlids/trewavasae",
+     "label": null,
+     "verdict": "2",
+     "why": "hard alkaline water essential; territorial males; vegetarian diet (bloat risk)"
+    },
+    {
+     "site": "Tropical Freshwater Fish",
+     "url": "https://tropicalfreshwaterfish.com/species/Labeotropheus_trewavasae.html",
+     "label": "Difficulty of care: 5 (scale undefined)",
+     "verdict": "2",
+     "why": "hardy mbuna that does well in an mbuna community"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "high",
+   "reason": "Moderate with water-hardness and aggression/diet demands; no source disagrees."
+  },
+  {
+   "id": "auratus",
+   "name": "Golden mbuna",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/melanochromis-auratus",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "large tank, steady temperature, territorial; not recommended for the beginner"
+    },
+    {
+     "site": "TFH Magazine",
+     "url": "https://www.tfhmagazine.com/articles/freshwater/melanochromis-auratus",
+     "label": null,
+     "verdict": "2",
+     "why": "not a species for the novice; very difficult to manage aggression; 55 gal minimum"
+    },
+    {
+     "site": "Tropical Freshwater Fish",
+     "url": "https://tropicalfreshwaterfish.com/species/Melanochromis_auratus.html",
+     "label": "Difficulty of care: 5 (scale undefined)",
+     "verdict": "2",
+     "why": "hardy but highly aggressive; caves and dissimilar tankmates"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "high",
+   "reason": "Hardy but aggression makes it non-beginner; sources agree."
+  },
+  {
+   "id": "livingstonii",
+   "name": "Livingstone's cichlid",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/nimbochromis-livingstonii",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "large tank, steady temperature, eats smaller fish"
+    },
+    {
+     "site": "Aquarium Domain",
+     "url": "https://aquariumdomain.com/SpeciesProfiles/AfricanCichlids/LivingstonsCichlid.shtml",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "label unexplained; page itself lists 75 gal minimum, semi-aggressive, no small tankmates"
+    },
+    {
+     "site": "Fish Laboratory",
+     "url": "https://www.fishlaboratory.com/?p=1965",
+     "label": null,
+     "verdict": "1-2",
+     "why": "fairly easy even for a beginner, but needs 70-125 gal, alkaline water, predator diet, aggressive tankmate selection"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "medium",
+   "reason": "Hardy but large predator needing big tank; labels split easy/moderate and reasons point to 2."
+  },
+  {
+   "id": "afra",
+   "name": "Cynotilapia afra",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://www.seriouslyfish.com/species/cynotilapia-afra",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "large tank, steady pH and temperature, territorial"
+    },
+    {
+     "site": "Fishkeeper (red-top afra)",
+     "url": "https://www.fishkeeper.co.uk/fish/freshwater/cichlids/red-top-afra",
+     "label": null,
+     "verdict": "2",
+     "why": "hard alkaline water essential, 4 ft tank, crowded, bloat risk from protein"
+    },
+    {
+     "site": "Practical Fishkeeping (mbuna guide, genus level)",
+     "url": "https://www.practicalfishkeeping.co.uk/features/the-mbuna-keepers-survival-guide/",
+     "label": null,
+     "verdict": "1",
+     "why": "mbuna hardy and easy to keep but highly territorial; overstock 20+"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "medium",
+   "reason": "Hardy but needs hard water, big tank and aggression management; third source is genus-level."
+  },
+  {
+   "id": "oscar",
+   "name": "Oscar",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/astronotus-ocellatus",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "very large tank, pair, careful tankmates"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/oscar-fish/",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "large tank, stable water, aggression with tankmates"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/oscar-fish/",
+     "label": null,
+     "verdict": "2",
+     "why": "recommend some aquarist experience; aggression, 55+ gal, water testing, hole in the head"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "high",
+   "reason": "All three say moderate / experience advised."
+  },
+  {
+   "id": "goldfish",
+   "name": "Fancy goldfish",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Aquarium Co-Op",
+     "url": "https://www.aquariumcoop.com/blogs/aquarium/goldfish-care-guide",
+     "label": null,
+     "verdict": "1",
+     "why": "fairly hardy, moderately easy; trouble from bowls, size, waste, overfeeding"
+    },
+    {
+     "site": "Fish Tank World",
+     "url": "https://www.fishtankworld.com/goldfish-beginners",
+     "label": null,
+     "verdict": "2",
+     "why": "harder than reputation: space, heavy bioload, weekly water changes; most die in bowls in 1-3 years"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "low",
+   "reason": "Split; hardy to disease and water but needs big filtered tank; third source (Hepper) blocked; keep current."
+  },
+  {
+   "id": "comet",
+   "name": "Comet goldfish",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/comet-goldfish/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "does require more work than people think: 40-75 gal, heavy waste, ich/fin rot"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/comet-goldfish",
+     "label": "Easy/medium",
+     "verdict": "1",
+     "why": "hardy, not demanding, but large tank (50 gal min) so not suited to beginners"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "medium",
+   "reason": "Both labels easy to easy/medium; difficulty is size and filtration, not fragility."
+  },
+  {
+   "id": "bronzecory",
+   "name": "Bronze corydoras",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/corydoras-aeneus",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "medium tank, flexible water, peaceful, needs a group"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://fishkeepingworld.com/cory-catfish/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy and peaceful (genus-level page)"
+    },
+    {
+     "site": "Fishkeeper",
+     "url": "https://www.fishkeeper.co.uk/fish/freshwater/catfish/bronze-cory",
+     "label": null,
+     "verdict": "1",
+     "why": "adapts to wide range of conditions; soft sand, group of 5+"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "high",
+   "reason": "All agree easy; only sand and group size are conditions."
+  },
+  {
+   "id": "sterbai",
+   "name": "Sterba's corydoras",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/corydoras-sterbai",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "medium tank, flexible water, steady temperature, peaceful, group"
+    },
+    {
+     "site": "Fishkeeper",
+     "url": "https://www.fishkeeper.co.uk/fish/freshwater/catfish/sterbas-cory-",
+     "label": null,
+     "verdict": "1",
+     "why": "soft sand to protect barbels, group of 5+, planted hiding places"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "medium",
+   "reason": "Two sources, both easy; LiveAquaria page returned 429 so not counted."
+  },
+  {
+   "id": "pandacory",
+   "name": "Panda corydoras",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/corydoras-panda",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy, peaceful, steady temperature, group"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://fishkeepingworld.com/panda-cories/",
+     "label": "Very easy",
+     "verdict": "1",
+     "why": "tolerates flexible conditions, peaceful; needs soft substrate and clean water"
+    },
+    {
+     "site": "Fishkeeper",
+     "url": "https://www.fishkeeper.co.uk/fish/freshwater/catfish/panda-cory",
+     "label": null,
+     "verdict": "1",
+     "why": "soft sand, 5+, good filtration and regular water changes; captive-raised tolerate a range"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "high",
+   "reason": "Three agree on easy."
+  },
+  {
+   "id": "pygmycory",
+   "name": "Pygmy corydoras",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/corydoras-pygmaeus",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "steady pH and temperature, needs group; peaceful"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://fishkeepingworld.com/pygmy-cory/",
+     "label": "Beginner",
+     "verdict": "1",
+     "why": "peaceful, easy to feed, 10 gal; prone to red blotch if water slips"
+    },
+    {
+     "site": "Fishkeeper",
+     "url": "https://www.fishkeeper.co.uk/fish/freshwater/catfish/pygmy-cory",
+     "label": null,
+     "verdict": "1-2",
+     "why": "very sensitive to nitrate, group of 10+, tiny peaceful tankmates only"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "medium",
+   "reason": "Split (SF Moderate vs FKW Beginner); nitrate sensitivity and soft water stability are the catch, borderline 1/2; keep current."
+  },
+  {
+   "id": "bristlenose",
+   "name": "Bristlenose pleco",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/bristlenose-pleco/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy, rarely sick, needs 30 gal and strong filter"
+    },
+    {
+     "site": "Chewy education",
+     "url": "https://www.chewy.com/education/fish/general/bristlenose-pleco-care-guide",
+     "label": null,
+     "verdict": "1",
+     "why": "generally beginner-friendly; tolerates wide water range, needs cycled tank and wood"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/bristlenose-pleco/",
+     "label": "Difficult (Quick Facts box)",
+     "verdict": "1",
+     "why": "label contradicts its own text, which calls care relatively easy; young fish sensitive to pH swings, need supplemental feeding"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "high",
+   "reason": "Stated reasons all easy; the one Difficult label is contradicted by that page's text."
+  },
+  {
+   "id": "clownloach",
+   "name": "Clown loach",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/chromobotia-macracanthus",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "very large tank, group, needs well-established tank"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/clown-loach/",
+     "label": "Intermediate",
+     "verdict": "2",
+     "why": "scaleless, extremely ich-prone, nitrate sensitive, 75 gal"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/clown-loach/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "adaptable, not fussy; but prone to ich, medication-sensitive, huge tank"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "high",
+   "reason": "Two moderate with disease and space reasons; one easy label with same caveats."
+  },
+  {
+   "id": "peapuffer",
+   "name": "Pea puffer",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/carinotetraodon-travancoricus",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "needs well-established tank and stable water; snails to wear teeth; nips fins"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/pea-puffer/",
+     "label": "Intermediate",
+     "verdict": "2",
+     "why": "territorial/fin-nipping, species tank, wild-caught may refuse food, ich-prone"
+    },
+    {
+     "site": "Aquarium Co-Op",
+     "url": "https://www.aquariumcoop.com/blogs/aquarium/pea-puffer",
+     "label": "Intermediate",
+     "verdict": "2",
+     "why": "frozen/live food only, territorial, messy"
+    },
+    {
+     "site": "Fishkeeper",
+     "url": "https://www.fishkeeper.co.uk/fish/freshwater/miscellaneous/pygmy-puffer",
+     "label": null,
+     "verdict": "2",
+     "why": "specialist community, excellent water quality, live/frozen food, snails"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "high",
+   "reason": "Four sources agree on intermediate."
+  },
+  {
+   "id": "greenneon",
+   "name": "Green neon tetra",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/paracheirodon-simulans",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "needs well-established tank, stable acidic water, group"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/green-neon-tetra/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "simple needs, hardy, omnivore; still soft acidic water pH 5-6.5, sensitive to change"
+    },
+    {
+     "site": "Aquarium Co-Op",
+     "url": "https://www.aquariumcoop.com/blogs/aquarium/green-neon-tetra",
+     "label": null,
+     "verdict": "1",
+     "why": "fairly hardy, kept at pH 7-8; breeding is the hard part"
+    },
+    {
+     "site": "Fishkeeper",
+     "url": "https://www.fishkeeper.co.uk/fish/freshwater/characins/green-neon-tetra-false-neon-tetra-",
+     "label": null,
+     "verdict": "2",
+     "why": "soft acidic pH 5.5-6.5, peat; only breeding labelled Difficult"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "medium",
+   "reason": "Split moderate vs easy; hardy once settled but wild-caught and wants stable soft water and an established tank; keep current."
+  },
+  {
+   "id": "merah",
+   "name": "Strawberry rasbora",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/boraras-merah",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "needs well-established tank and stable water, soft acidic, group"
+    },
+    {
+     "site": "Tropical Fish Hobbyist (Boraras genus)",
+     "url": "https://www.tfhmagazine.com/articles/freshwater/the-genus-boraras-miniature-jewels-full-article",
+     "label": "Easy (genus-level wording)",
+     "verdict": "1",
+     "why": "hardy, adaptable once acclimated; wild-caught need soft acidic water at first"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "low",
+   "reason": "Two sources split and TFH is genus-level; keep current."
+  },
+  {
+   "id": "exclamation",
+   "name": "Exclamation point rasbora",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/boraras-urophthalmoides",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "needs well-established tank and stable water, soft acidic, group"
+    },
+    {
+     "site": "Tropical Fish Hobbyist (Boraras genus)",
+     "url": "https://www.tfhmagazine.com/articles/freshwater/the-genus-boraras-miniature-jewels-full-article",
+     "label": "Easy (genus-level wording)",
+     "verdict": "1",
+     "why": "hardy, adaptable once acclimated"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "low",
+   "reason": "Two sources split and TFH is genus-level; keep current."
+  },
+  {
+   "id": "dwarfrasbora",
+   "name": "Dwarf spotted rasbora",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://seriouslyfish.com/species/boraras-maculatus",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "needs well-established tank and stable water, soft acidic, group"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://fishkeepingworld.com/dwarf-rasbora/",
+     "label": "Intermediate",
+     "verdict": "2",
+     "why": "slight water fluctuations can kill, group of 8+, stress diseases, timid"
+    },
+    {
+     "site": "Tropical Fish Hobbyist",
+     "url": "https://www.tfhmagazine.com/articles/freshwater/boraras-maculatus",
+     "label": null,
+     "verdict": "1",
+     "why": "calls it a hardy fish; only concern is tiny size (tankmates, food)"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "high",
+   "reason": "Two label moderate/intermediate with water-stability reasons; one says hardy."
+  },
+  {
+   "id": "cpo",
+   "name": "Orange dwarf crayfish CPO",
+   "current": 1,
+   "sources": [
+    {
+     "site": "The Shrimp Farm",
+     "url": "https://www.theshrimpfarm.com/dwarf-orange-crayfish-cpo.html",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "peaceful-ish, plant safe, breeds easily; needs hiding places for molts"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://fishkeepingworld.com/mexican-dwarf-crayfish",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "cycled tank needed, soft after molt, copper meds deadly"
+    },
+    {
+     "site": "Aquarium Breeder",
+     "url": "https://aquariumbreeder.com/?p=3811",
+     "label": "Easy-medium",
+     "verdict": "1",
+     "why": "robust; sensitive to ammonia/nitrate, territorial, escape risk"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "medium",
+   "reason": "Two easy-ish, one moderate; same caveats everywhere (cycled tank, molt shelter, no copper); keep current."
+  },
+  {
+   "id": "cajundwarf",
+   "name": "Cajun dwarf crayfish",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Aquarium Source (dwarf crayfish genus guide)",
+     "url": "https://www.aquariumsource.com/dwarf-crayfish/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy, adaptable; needs stable low-ammonia water, molt hides; not species-specific"
+    },
+    {
+     "site": "Aquarium Breeder (dwarf Mexican crayfish, Cambarellus)",
+     "url": "https://aquariumbreeder.com/?p=3811",
+     "label": "Easy-medium",
+     "verdict": "1",
+     "why": "robust; nitrate/ammonia sensitive, aggressive to own kind; Cambarellus-level, not Cajun-specific"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "low",
+   "reason": "No Cajun-specific page opened; genus-level sources both say easy to easy-medium."
+  },
+  {
+   "id": "rswcrayfish",
+   "name": "Red swamp crayfish",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Aquarium Breeder",
+     "url": "https://aquariumbreeder.com/?p=4677",
+     "label": "Keeping: Easy",
+     "verdict": "1",
+     "why": "extremely tolerant of poor water; but very aggressive, 20 gal min, plant destroyer, escape artist"
+    },
+    {
+     "site": "Guidarium",
+     "url": "https://guidarium.com/fishes/red-swamp-crayfish",
+     "label": null,
+     "verdict": "2",
+     "why": "aggression 9/10, destroys plants, high waste, eats tankmates, escape artist, needs carefully planned setup"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "low",
+   "reason": "Husbandry is easy but aggression, size and escapes make it a one-species tank; two sources split; keep current."
+  },
+  {
+   "id": "redclaw",
+   "name": "Redclaw crayfish",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Fishkeeper",
+     "url": "https://www.fishkeeper.co.uk/fish/freshwater/miscellaneous/red-clawed-crayfish",
+     "label": null,
+     "verdict": "2",
+     "why": "non-community, escape artist, eats plants/fish, fights in cramped tanks, needs pH 7.2-8.2 and heavy filtration"
+    },
+    {
+     "site": "The Shrimp Farm",
+     "url": "https://www.theshrimpfarm.com/posts/5-aquarium-crayfish/",
+     "label": null,
+     "verdict": "1",
+     "why": "says 'caring for a redclaw is pretty easy'; needs 30-40 gal, hides, eats plants"
+    },
+    {
+     "site": "Ornamental Fish International",
+     "url": "https://ornamentalfish.org/what-we-do/advice-information/care-sheets/caresheets-tropical-freshwater-invertebrates/how-to-look-after-crayfish-and-freshwater-crabs/",
+     "label": null,
+     "verdict": "2",
+     "why": "keep alone in dedicated cycled tank, copper-sensitive, weekly 25% changes; no label, undemanding chemistry"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "low",
+   "reason": "No source gives a label; hardy and chemistry-tolerant but needs a dedicated, large, escape-proof species tank, so keep 2 (evidence leans 1-2)."
+  },
+  {
+   "id": "thaicrab",
+   "name": "Thai micro crab",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/thai-micro-crab",
+     "label": "Medium",
+     "verdict": "2",
+     "why": "defenseless, needs fully cycled mature tank, risky acclimation, fragile when molting"
+    },
+    {
+     "site": "The Shrimp Farm",
+     "url": "https://www.theshrimpfarm.com/posts/thai-micro-crab-care/",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "fragile, sensitive to water quality, wait 3 months after cycling, unknown breeding diet"
+    },
+    {
+     "site": "Furry Critter Network",
+     "url": "https://www.furrycritter.com/pages/descriptions/fish/thai_micro_crab.htm",
+     "label": "Intermediate to Advanced (stars: 2/5)",
+     "verdict": "2",
+     "why": "extreme sensitivity to water fluctuations, tiny and hard to monitor, hardy once established"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "high",
+   "reason": "Three independent sources: moderate; mature stable tank needed."
+  },
+  {
+   "id": "asellus",
+   "name": "Aquatic isopod",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Pond Informer",
+     "url": "https://pondinformer.com/aquatic-sow-bugs-asellidae",
+     "label": null,
+     "verdict": "1",
+     "why": "tolerant of organic pollution and temperature swings, eats any detritus; dislikes low pH"
+    },
+    {
+     "site": "Aquazolla",
+     "url": "https://aquazolla.com/en/blogs/news/laselle-un-filtre-mais-en-beaucoup-plus-intelligent?page=3",
+     "label": null,
+     "verdict": "1",
+     "why": "slightly insensitive to parameters, wide temp range; main risk low oxygen; needs shelters"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "medium",
+   "reason": "Two sources, no labels, both describe a hardy detritivore; other candidate pages blocked (403/429)."
+  },
+  {
+   "id": "cherryshrimp",
+   "name": "Cherry shrimp",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Aquariadise",
+     "url": "https://www.aquariadise.com/caresheet-cherry-shrimp/",
+     "label": null,
+     "verdict": "1",
+     "why": "'relatively easy'; needs cycled tank, sponge filter, no copper"
+    },
+    {
+     "site": "Guidarium",
+     "url": "https://guidarium.com/articles/shrimp-keeping-for-beginners",
+     "label": null,
+     "verdict": "1",
+     "why": "calls Neocaridina the hardiest shrimp, tolerates tap water; sensitive to ammonia, copper"
+    },
+    {
+     "site": "Furry Critter Network",
+     "url": "https://www.furrycritter.com/pages/descriptions/fish/cherry_shrimp.htm",
+     "label": "Beginner",
+     "verdict": "1",
+     "why": "wide tolerance; copper and low GH/GH 6-12 are the usual failure points"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "high",
+   "reason": "All three: beginner shrimp; cycling and copper are the only caveats."
+  },
+  {
+   "id": "amano",
+   "name": "Amano shrimp",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Shrimp Science",
+     "url": "https://www.shrimpscience.com/species/amano-shrimp/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "incredibly hardy, wide parameter range"
+    },
+    {
+     "site": "The Shrimp Farm",
+     "url": "https://www.theshrimpfarm.com/posts/amano-shrimp-care-sheet/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "beginner-proof, stability matters; breeding very difficult (care label excludes breeding)"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/amano-shrimp/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy, low care; avoid copper"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "high",
+   "reason": "Three Easy labels."
+  },
+  {
+   "id": "nerite",
+   "name": "Nerite snail",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/nerite-snail/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "'pretty hard to mess up'; needs stable water, sandy substrate"
+    },
+    {
+     "site": "Build Your Aquarium",
+     "url": "https://www.buildyouraquarium.com/nerite-snails/",
+     "label": null,
+     "verdict": "2",
+     "why": "no label; wants fishless-cycled tank and confirmed food supply, can starve in spotless new tanks"
+    },
+    {
+     "site": "Chewy",
+     "url": "https://www.chewy.com/education/fish/general/nerite-snail-care-guide",
+     "label": "Beginner-friendly",
+     "verdict": "1",
+     "why": "hardy; escape, copper sensitivity, slow acclimation"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "medium",
+   "reason": "Two Easy/beginner labels; the dissent is explained (starvation in algae-poor new tanks)."
+  },
+  {
+   "id": "mystery",
+   "name": "Mystery snail",
+   "current": 1,
+   "sources": [
+    {
+     "site": "The Shrimp Farm",
+     "url": "https://www.theshrimpfarm.com/posts/mystery-snail-care/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "forgiving, needs calcium, cycled tank, 10 gal"
+    },
+    {
+     "site": "Aquariadise",
+     "url": "https://aquariadise.com/mystery-snails/",
+     "label": null,
+     "verdict": "1",
+     "why": "'easy and straightforward', hardy; sudden water changes, copper, calcium"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/mystery-snail",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "tolerates range of conditions, recommended for beginners"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "high",
+   "reason": "Three sources, all easy."
+  },
+  {
+   "id": "ramshorn",
+   "name": "Ramshorn snail",
+   "current": 1,
+   "sources": [
+    {
+     "site": "The Shrimp Farm",
+     "url": "https://www.theshrimpfarm.com/posts/ramshorn-snail-care/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "resilient, handles dirty water; mind calcium and overfeeding"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/ramshorn-snail",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy, no special needs, no extra feeding"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/ramshorn-snail/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "super easy, low maintenance; can carry parasites, avoid copper"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "high",
+   "reason": "Three Easy labels."
+  },
+  {
+   "id": "trumpet",
+   "name": "Malaysian trumpet snail",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Aquariadise",
+     "url": "https://aquariadise.com/caresheet-malaysian-trumpet-snails/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "not picky, grazes detritus, self-sustaining"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/malaysian-trumpet-snails",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "very hardy, wide tolerance, minimal equipment"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "high",
+   "reason": "Two sources agree, none disagree (third page redirected/rate-limited)."
+  },
+  {
+   "id": "ocellaris",
+   "name": "Ocellaris clownfish",
+   "current": 1,
+   "sources": [
+    {
+     "site": "LiveAquaria",
+     "url": "https://www.liveaquaria.com/article/126/?aid=126",
+     "label": "beginner-friendly (article wording)",
+     "verdict": "1",
+     "why": "hardy, accepts most foods; saltwater setup itself is demanding"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/clownfish",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy, simple diet; ich possible, anemones harder"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/ocellaris-clownfish/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "very hardy; needs stable water, lid, quarantine for ich"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "high",
+   "reason": "Three agree."
+  },
+  {
+   "id": "royalgramma",
+   "name": "Royal gramma",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/royal-gramma",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy, disease resistant, not picky; 30 gal, caves, lid"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/royal-gramma-basslet/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy, 'not very challenging'; stable water, hiding spots"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "high",
+   "reason": "Two agree, none disagree (LiveAquaria URL 404)."
+  },
+  {
+   "id": "yellowtang",
+   "name": "Yellow tang",
+   "current": 1,
+   "sources": [
+    {
+     "site": "TFH Magazine",
+     "url": "https://www.tfhmagazine.com/articles/saltwater/zebrasoma-flavescens",
+     "label": null,
+     "verdict": "2",
+     "why": "no label; prone to Cryptocaryon and HLLE, needs very high oxygen, 50+ gal, macroalgae diet"
+    },
+    {
+     "site": "Saltwater Aquarium Blog",
+     "url": "https://www.saltwateraquariumblog.com/yellow-tang-care-guide/",
+     "label": "Easy (appropriate for all levels)",
+     "verdict": "1",
+     "why": "no special chemistry; 90+ gal, ich-prone, arrives stressed, needs quarantine"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "low",
+   "reason": "Real split (hardy vs ich/HLLE prone); keep 1 pending a third source. Main burdens are tank size and quarantine."
+  },
+  {
+   "id": "bluetang",
+   "name": "Blue tang",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Fishkeeper",
+     "url": "https://www.fishkeeper.co.uk/fish/marine/tangs/regal-tang-hippo-tang-",
+     "label": "Advanced (page: 'not recommended for beginners')",
+     "verdict": "3",
+     "why": "6 ft+ mature system, whitespot-prone, HLLE if underfed"
+    },
+    {
+     "site": "TFH Magazine",
+     "url": "https://www.tfhmagazine.com/articles/saltwater/paracanthurus-hepatus",
+     "label": null,
+     "verdict": "2",
+     "why": "no label; very susceptible to Cryptocaryon and HLLE, strict water quality and diet, large tank"
+    },
+    {
+     "site": "Practical Fishkeeping",
+     "url": "https://www.practicalfishkeeping.co.uk/features/housing-dory-regal-tang-care/",
+     "label": "Advanced (article verdict)",
+     "verdict": "3",
+     "why": "1000+ L, whitespot common, can't treat in reef, one per tank"
+    }
+   ],
+   "proposed": 3,
+   "confidence": "medium",
+   "reason": "Two label Advanced, third reads moderate; tank size plus whitespot make it high loss for non-specialists."
+  },
+  {
+   "id": "firefish",
+   "name": "Firefish goby",
+   "current": 1,
+   "sources": [
+    {
+     "site": "TFH Magazine",
+     "url": "https://www.tfhmagazine.com/articles/saltwater/nemateleotris-magnifica",
+     "label": "'not difficult' (no formal scale)",
+     "verdict": "1",
+     "why": "needs stable water, tight lid (jumper), several small meaty meals"
+    },
+    {
+     "site": "Saltwater Aquarium Blog",
+     "url": "https://www.saltwateraquariumblog.com/saltwater-firefish-goby-quick-facts-care-guide-diet-and-more/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy, peaceful; jumper, hiding spots, 29 gal"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "medium",
+   "reason": "Two sources agree; jumping is the main loss cause."
+  },
+  {
+   "id": "banggai",
+   "name": "Banggai cardinalfish",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Saltwater Aquarium Blog",
+     "url": "https://www.saltwateraquariumblog.com/banggai-cardinalfish-care-guide/",
+     "label": "beginner-friendly (care); pairing/breeding hard",
+     "verdict": "1",
+     "why": "peaceful, 10 gal; pairing same-sex aggression, picky about dry food"
+    },
+    {
+     "site": "Bulk Reef Supply",
+     "url": "https://bulkreefsupply.com/content/post/how-to-care-for-cardinalfish",
+     "label": "Easy (family-level guide)",
+     "verdict": "1",
+     "why": "peaceful, hardy; sensitive to rapid water changes"
+    },
+    {
+     "site": "Furry Critter Network",
+     "url": "https://www.furrycritter.com/pages/descriptions/fish/banggai_cardinalfish.htm",
+     "label": "Beginner",
+     "verdict": "1",
+     "why": "hardy, easy feeding; captive-bred very robust"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "high",
+   "reason": "Three agree."
+  },
+  {
+   "id": "sixline",
+   "name": "Six-line wrasse",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Fantasea Aquariums",
+     "url": "https://fantaseaaquariums.com/fishes-care/six-line-wrasse-care/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy; can bully tankmates, add last, jumper"
+    },
+    {
+     "site": "Marinewise",
+     "url": "https://marinewise.com.au/fish-species/sixline-wrasse/",
+     "label": "Easy to moderate",
+     "verdict": "1",
+     "why": "hardy but aggressive to peaceful tankmates; 30 gal"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "medium",
+   "reason": "Hardy; difficulty is compatibility, not husbandry (Mandarin Garden URL 404)."
+  },
+  {
+   "id": "chromis",
+   "name": "Blue-green chromis",
+   "current": 1,
+   "sources": [
+    {
+     "site": "TFH Magazine",
+     "url": "https://www.tfhmagazine.com/articles/saltwater/chromis-viridis",
+     "label": "Easy (extremely hardy)",
+     "verdict": "1",
+     "why": "peaceful, reef-safe; frequent small meals"
+    },
+    {
+     "site": "Fantasea Aquariums",
+     "url": "https://fantaseaaquariums.com/fishes-care/blue-green-chromis-care/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "'best for beginners'; school of 6-8 needs 75+ gal, shipping stress"
+    },
+    {
+     "site": "Aquatic Community",
+     "url": "https://www.aquaticcommunity.com/marinefish/Chromis-viridis.php",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "very hardy; school of 6+ in 55+ gal, bullying in small groups"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "high",
+   "reason": "Three Easy labels."
+  },
+  {
+   "id": "coralbeauty",
+   "name": "Coral beauty angelfish",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Top Shelf Aquatics",
+     "url": "https://topshelfaquatics.com/pages/saltwater-fish/coral-beauty-angel",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "70+ gal, semi-aggressive, reef-safe only with caution (nips corals/clams), stable parameters"
+    },
+    {
+     "site": "All Pond Solutions",
+     "url": "https://www.allpondsolutions.co.uk/blogs/fishkeeping-advice/fish-files-coral-beauty-angelfish",
+     "label": "Beginner to intermediate",
+     "verdict": "1-2",
+     "why": "hardy, but 250+ L, aggressive to tankmates, needs live rock and varied diet"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "medium",
+   "reason": "Both sources sit above beginner (reef nipping, big tank, territoriality); Reefs.com page blocked."
+  },
+  {
+   "id": "watchman",
+   "name": "Yellow watchman goby",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Bulk Reef Supply",
+     "url": "https://www.bulkreefsupply.com/content/post/how-to-care-for-watchman-gobies",
+     "label": "Moderate (page verdict)",
+     "verdict": "2",
+     "why": "tight parameters, skimmer, ich/velvet-prone, aggression to own kind"
+    },
+    {
+     "site": "Top Shelf Aquatics",
+     "url": "https://topshelfaquatics.com/pages/saltwater-fish/yellow-watchman-goby",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "peaceful, takes meaty foods; mature tank, burrow, confirm it actually eats"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "low",
+   "reason": "Real split between two sources; keep 1 (hardy, easy feeder) pending a third."
+  },
+  {
+   "id": "cleanershrimp",
+   "name": "Skunk cleaner shrimp",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Top Shelf Aquatics",
+     "url": "https://topshelfaquatics.com/pages/saltwater-invertebrates/skunk-cleaner-shrimp",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "simple diet; stable parameters (failed molts), no copper, slow drip acclimation"
+    },
+    {
+     "site": "Reef Builders",
+     "url": "https://reefbuilders.com/2016/12/22/invertebrate-spotlight-the-skunk-cleaner-shrimp",
+     "label": "'beginner invertebrate' (article)",
+     "verdict": "1",
+     "why": "easy, scavenger; 20+ gal, avoid wrasses/triggers/hawkfish"
+    },
+    {
+     "site": "Fish Tank Advisor",
+     "url": "https://fishtankadvisor.com/cleaner-shrimp/",
+     "label": null,
+     "verdict": "2",
+     "why": "no label, generic cleaner-shrimp guide: pristine water, no copper, poor acclimation common cause of death"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "medium",
+   "reason": "Two say easy; third is generic and stresses acclimation and copper, which the others also mention."
+  },
+  {
+   "id": "turbo",
+   "name": "Mexican turbo snail",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Top Shelf Aquatics",
+     "url": "https://topshelfaquatics.com/pages/saltwater-invertebrates/mexican-turbo-snail",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy grazer; stable water, secure frags"
+    },
+    {
+     "site": "Frags2Fishes",
+     "url": "https://frags2fishes.com/species-spotlight/species-spotlight-mexican-turbo-snail/",
+     "label": "Easy to moderate (my reading, no formal label)",
+     "verdict": "1",
+     "why": "30+ gal, needs algae, sensitive to sudden chemistry change, slow acclimation"
+    },
+    {
+     "site": "Fish Tank Advisor",
+     "url": "https://fishtankadvisor.com/turbo-snail/",
+     "label": "Easy to moderate (my reading, no formal label)",
+     "verdict": "1",
+     "why": "beginner-friendly; delayed death after poor acclimation, needs steady algae"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "medium",
+   "reason": "Easy with a slow-acclimation caveat; two pages lean easy-to-moderate."
+  },
+  {
+   "id": "hermit",
+   "name": "Blue-leg hermit crab",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Top Shelf Aquatics",
+     "url": "https://topshelfaquatics.com/pages/saltwater-invertebrates/blue-leg-hermit-crab",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "established reef tank, slow acclimation, spare shells"
+    },
+    {
+     "site": "TFH Magazine",
+     "url": "https://www.tfhmagazine.com/articles/saltwater/clibanarius-tricolor",
+     "label": "Intermediate",
+     "verdict": "2",
+     "why": "strict calcium/alk/pH, no copper, fussy about shells, molting"
+    },
+    {
+     "site": "Reef Builders",
+     "url": "https://reefbuilders.com/2015/11/30/4-crabby-caveats-to-keeping-clibanarius-tricolor",
+     "label": null,
+     "verdict": "1-2",
+     "why": "no label; manageable but not hands-off: may eat snails, irritate corals, limit numbers"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "medium",
+   "reason": "Hardy, but the dissent is about reef behavior and shell fights rather than survival; keep 1."
+  },
+  {
+   "id": "adf",
+   "name": "African dwarf frog",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Aquariadise",
+     "url": "https://aquariadise.com/caresheet-african-dwarf-frog-hymenochirus-genus/",
+     "label": null,
+     "verdict": "2",
+     "why": "no formal label (read as moderate): 15 gal, poor feeders need target feeding, low flow, sand"
+    },
+    {
+     "site": "Build Your Aquarium",
+     "url": "https://buildyouraquarium.com/african-dwarf-frog",
+     "label": "Moderate (intermediate)",
+     "verdict": "2",
+     "why": "cycled escape-proof tank, deliberate feeding, tankmates steal food"
+    },
+    {
+     "site": "Modest Fish",
+     "url": "https://modestfish.com/african-dwarf-frog-care/",
+     "label": "Medium",
+     "verdict": "2",
+     "why": "ammonia/nitrite sensitive, heater, feeding training, defenseless"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "high",
+   "reason": "Three sources, all moderate."
+  },
+  {
+   "id": "axolotl",
+   "name": "Axolotl",
+   "current": 2,
+   "sources": [
+    {
+     "site": "TFH Magazine",
+     "url": "https://www.tfhmagazine.com/articles/freshwater/axolotl-care-training-feeding-and-more",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "water must stay at or below 72 F (chiller), otherwise 'surprisingly easy'"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/axolotl/",
+     "label": "Medium-difficult",
+     "verdict": "2",
+     "why": "cool 60-64 F water, permeable skin sensitive to swings, weekly changes, live alone"
+    },
+    {
+     "site": "Modest Fish",
+     "url": "https://modestfish.com/axolotl-care/",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "0 ppm ammonia/nitrite, 60-68 F, cooling in warm climates, stress illness"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "high",
+   "reason": "Three sources, all moderate; cool stable water is the hurdle."
   }
  ]
 }
