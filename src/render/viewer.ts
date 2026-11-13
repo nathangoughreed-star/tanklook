@@ -15,7 +15,7 @@ import { drawViewMap } from './viewmap';
 import { applyFraming, fovFor, frameBox, frameStraightOn, pairCentre, pairEnvelope, placeCamera, windowCentre } from './camera';
 import { glowColor, placeSlice, roomLevel, setLightUniforms, setWaterUniforms } from './lighting';
 import { FROST } from './build';
-import { autoStep, levelOf, onPerf, perf, setFps } from './perf';
+import { autoStep, levelOf, onPerf, perf, setFps, AUTO_QUALITY } from './perf';
 import { wattsOf } from '../scene/lightout';
 import { placeShells } from './lightShells';
 import { onPictureLoad, setMaxAnisotropy } from './textures';
@@ -179,6 +179,8 @@ function restoreRange(this: THREE.Object3D, _r: THREE.WebGLRenderer, _s: THREE.S
  * a caustic step costs more than CAUS_SLOW_MS (its draw's CPU time, or the loop's frame gap past one 60 Hz frame, which
  * is where a busy GPU shows), the rate halves, then the pattern holds still. Still = the same caustics, no redraws.
  */
+/** Plant sway amplitude (1 = the first sway, 30b0943a). Nathan 2026-11-13: "more subtle, like half the amplitude". */
+const PLANT_SWAY_AMP = 0.5;
 const CAUS_FPS = 20, CAUS_IDLE_MS = 60_000, CAUS_SLOW_MS = 10;
 const SWAY_KEY = 'tanklook.sway';
 /** Sway on unless turned off here before, or the system asks for reduced motion. */
@@ -437,7 +439,7 @@ export class Viewer {
     if (now - this.causAt < 1000 / this.causRate) return false;
     if (!this.vps.some(vp => vp.scene && vp.S.water.on && vp.S.light.type !== 'flat')) return false;
     // back-off, judged every 20 steps once the averages have settled
-    if (++this.causSteps % 20 === 0 && Math.max(this.causCpu, this.causGapMs) > CAUS_SLOW_MS) { this.causRate = this.causRate >= CAUS_FPS ? CAUS_FPS / 2 : 0; this.causCpu = this.causGapMs = 0; }
+    if (AUTO_QUALITY && ++this.causSteps % 20 === 0 && Math.max(this.causCpu, this.causGapMs) > CAUS_SLOW_MS) { this.causRate = this.causRate >= CAUS_FPS ? CAUS_FPS / 2 : 0; this.causCpu = this.causGapMs = 0; }
     this.causT += this.causAt ? Math.min(now - this.causAt, 200) : 0; this.causAt = now;
     return tickFx(this.causT);
   }
@@ -738,7 +740,7 @@ export class Viewer {
   private dim?: { sc: THREE.Scene; m: THREE.Mesh; cam: THREE.OrthographicCamera };
   draw() {
     if (this.needsBuild) this.build();
-    SWAY.uSway.value.set(this.swayT / 1000, this.sway && !this.exporting ? 1 : 0);
+    SWAY.uSway.value.set(this.swayT / 1000, this.sway && !this.exporting ? PLANT_SWAY_AMP : 0);
     const sc = this.store.scene, w = this.host.clientWidth, h = Math.max(60, this.host.clientHeight - this.reserve), r = this.renderer;
     this.canvas.style.height = this.reserve ? h + 'px' : ''; this.host.style.setProperty('--reserve', this.reserve + 'px');
     r.setSize(w, h, false);

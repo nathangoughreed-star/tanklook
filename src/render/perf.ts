@@ -10,6 +10,9 @@ export const LEVELS: PerfLevel[] = [
   { name: 'Lightest: 35% resolution', frostPlain: true, ratio: 0.35 },
 ];
 export const MAX_LEVEL = LEVELS.length - 1;
+/** Automatic quality changes (the step-down below and the caustics back-off in viewer.ts). Off for now (Nathan 2026-11-13:
+ *  "annoying right now because it keeps turning off"); the code stays. Set true to bring them back. */
+export const AUTO_QUALITY = false;
 const KEY = 'tanklook.perf';
 
 export const perf = { level: 0, auto: true, fps: null as number | null,
@@ -24,6 +27,8 @@ const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ level: per
 try {
   const v = JSON.parse(localStorage.getItem(KEY) ?? 'null') as { level?: number; auto?: boolean; lowered?: typeof perf.lowered } | null;
   if (v) { perf.lowered = v.lowered && typeof v.lowered.at === 'number' ? v.lowered : null; perf.level = Math.max(0, Math.min(MAX_LEVEL, Math.round(+(v.level ?? 0)))); perf.auto = v.auto !== false; }
+  // a level the app lowered by itself goes back where it was while automatic changes are off (a level the person chose stays)
+  if (!AUTO_QUALITY && perf.lowered) { perf.level = Math.max(0, Math.min(MAX_LEVEL, perf.lowered.from)); perf.lowered = null; }
 } catch { /* no saved setting */ }
 
 /** The person moved the slider: that level, locked (auto off). */
@@ -32,7 +37,7 @@ export function setLevel(n: number) {
 }
 export function setAuto(on: boolean) { perf.auto = on; save(); emit(); }
 /** The viewer could not hold 30 fps at the lowest motion-time resolution: one level down, auto stays on. */
-export function autoStep() { if (!perf.auto || perf.level >= MAX_LEVEL) return false; perf.lowered = { from: perf.lowered?.from ?? perf.level, at: Date.now(), fps: perf.fps }; perf.level++; save(); emit(); return true; }
+export function autoStep() { if (!AUTO_QUALITY || !perf.auto || perf.level >= MAX_LEVEL) return false; perf.lowered = { from: perf.lowered?.from ?? perf.level, at: Date.now(), fps: perf.fps }; perf.level++; save(); emit(); return true; }
 /** "Back to Full quality" (Graphics settings): level 0 with Auto on again. */
 export function backToFull() { perf.level = 0; perf.auto = true; perf.lowered = null; save(); emit(); }
 /** Frames per second while the camera moves (the viewer calls this a few times a second). */

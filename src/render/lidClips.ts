@@ -1,7 +1,7 @@
 // Glass lid clips (lane CB1, Nathan 2026-11-12: "include these clips when the user has a glass lid installed ... make the lid
 // itself a little undersized ... and add the clips so the lid lays on them rather than the tank sides"). A rimless rectangular
-// tank's glass lid does not lie on the panes: clear acrylic clips hook over the top edge (a corner clip on each corner, one or
-// two straight clips along each long side) and each has a small ledge just inside the pane, a few mm below the rim, that the
+// tank's glass lid does not lie on the panes: clear acrylic clips hook over the top edge (a corner clip on each corner, one
+// straight clip along each long side up to 48 in, two beyond) and each has a small ledge just inside the pane, a few mm below the rim, that the
 // lid (1/4 in short of the inside of the top on every side) rests on.
 import * as THREE from 'three';
 import { glassThickness } from '../scene/physics';
@@ -10,7 +10,10 @@ import type { Tank, TankSetup } from '../scene/types';
 
 export const LID_CLIP_DROP = 3;   // mm: the lid's top face sits this far below the pane tops
 export const LID_SHORT = 6.35;    // mm: 1/4 in, the lid's clearance to the inside of the top
-export const LID_T = 4;           // mm: lid panel thickness
+export const LID_T = 4;
+/** Above this length (mm) a long side gets two straight clips, at or below it one in the middle (Nathan 2026-11-13: one up to
+ *  48 in; real kits are corner clips plus a centre support, and longer lids usually come in two pieces). */
+export const MID_CLIPS_2 = 1220;           // mm: lid panel thickness
 const LEG = 32, CW = 22, LEDGE = 14, PLATE = 2.2, SEAT = LID_CLIP_DROP + LID_T; // corner leg / straight clip length, ledge reach inside the pane, plate thickness, depth of the ledge's top face
 
 /** Does this tank's glass lid sit on clips (a glass lid on a rimless rectangular tank)? */
@@ -40,7 +43,7 @@ export function lidClipBoxes(S: TankSetup, T: Tank): Box6[] {
     hook('x', iz, oz, ix, ix + ex * LEG);        // the leg on the front / back pane
     hook('z', ix, ow, iz, iz + ez * LEG);        // the leg on the side pane
   }
-  for (const x of L > 800 ? [L / 3, 2 * L / 3] : [L / 2]) { hook('x', 0, 1, x - CW / 2, x + CW / 2); hook('x', -D, -1, x - CW / 2, x + CW / 2); }
+  for (const x of L > MID_CLIPS_2 ? [L / 3, 2 * L / 3] : [L / 2]) { hook('x', 0, 1, x - CW / 2, x + CW / 2); hook('x', -D, -1, x - CW / 2, x + CW / 2); }
   return out;
 }
 
