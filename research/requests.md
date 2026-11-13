@@ -28,6 +28,7 @@ Rules:
 | R22 | 11-13 | Plant sway half the amplitude | Coordinator 24 (one constant, PLANT_SWAY_AMP 0.5 in render/viewer.ts) | - | pending push | - | Nathan's look on live (motion can't be shot) |
 | R23 | 11-13 | Lid clips: one middle clip per long side up to 48 in (was two above 31.5 in) | Coordinator 24 (MID_CLIPS_2 = 1220 mm, render/lidClips.ts) | - | pending push | - | live shot of a 36-48 in rimless tank with a glass lid |
 | R24 | 11-13 | Turn off automatic quality changes (keep the code) | Coordinator 24 (AUTO_QUALITY = false, render/perf.ts; caustics back-off off; a self-lowered saved level is restored; Auto checkbox hidden) | - | pending push | - | Nathan: quality and moving caustics stay on |
+| R25 | 11-13 | Suction-cup gear sticks only to glass (moves off a 3D background to a side pane); drop checker away from the CO2 diffuser | GM8 | - | - | - | brief prompts/lane-GM8-suction-mounts.md; picture research/screens/GM8/nathan-before.webp |
 
 ## Closed (seen on live)
 
