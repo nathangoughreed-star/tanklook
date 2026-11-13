@@ -130,7 +130,7 @@ Rule (Nathan 2026-11-05, kept): **a shortcut may open the home; it may not hold 
 | Set-up budget | quick prefs, Your limits, cost Guardrails, Suggest (4) | Constraints > Money and time | Cost drawer (limit line on the bar), Suggest, Print |
 | Upkeep $ / month, time / week | same 4 | Constraints > Money and time | Cost drawer |
 | Space (W x D x H) | Your limits, Habitat "Set my space", cost panel, Suggest (4) | Constraints > Space | Habitat drawer, tank picker (filters by it), Suggest |
-| Experience | cost panel + 4 "Your situation" selects, Your limits, hidden Care level (3) | Constraints > Experience (one answer; the 4 detail questions under "more detail") | Cost drawer (difficulty), Animals filter |
+| Experience | **two settings that can disagree:** (a) brief `preferences.experience` 0-2 (Your limits; drives `layout.expertise` animal graying, starter / Another moment stocking via `whyAnimal`, Suggest ranking and `experienceNote`); (b) profile `UserProfile.skill` per area, fundamentals / fish / planted / salt (+ terrarium), 0-2 (cost panel Your situation; drives the difficulty bar `skillMul`, `whyAnimal` warnings `demand/engine.ts:201`, monthly losses `engine.ts:269`); plus hidden Care level | Constraints > Experience. **Model: per-area levels** (fundamentals, fish, planted, salt; terrarium hidden in aquarium scope), each New to it / Some / Experienced (0-2, the scale both use today). The panel shows ONE answer that sets every area; "More detail" opens the per-area rows (then the one answer reads "Mixed"). It is about the person, so it is stored once per browser and applies to every setup (not inside a scene or share link). **Every consumer reads the area that fits:** an animal's checks use its area (fish / salt) blended with fundamentals the way `skillMul` already does; plants use planted; Suggest ranks each candidate by its area; `layout.expertise` and `experienceNote` read the same | Cost drawer (difficulty), Animals list (graying), Suggest notes |
 | Room temperature | Equipment `#tRoom`, Your limits; **stored twice** (`tech.roomC`, brief) | Constraints > Your home | Equipment heater row ("room 70 deg F, edit"), Water drawer. Engine: store once in the brief, migrate old saves (step P5) |
 | Water source, hardness, pH | cost panel, Your limits | Constraints > Your home | Water drawer |
 | Electricity $/kWh | cost panel | Constraints > Your home | Cost drawer |
@@ -197,7 +197,7 @@ One expand / collapse glyph (`▸` / `▾`) everywhere; one icon set (24 px stro
 
 The new shell lives beside the old one behind `?ui=2` (own `index2.html` entry, own `src/ui2/`, own stylesheet built from the tokens). Both use the same `Store`, `Viewer` and engine. Old shell untouched until the flip.
 
-**P. Pull logic out first (no visible change; each with tests, each a lane; P8 and P9 added 11-13 for the own / buy / lock model and custom tanks):**
+**P. Pull logic out first (no visible change; each with tests, each a lane; P8-P10 added 11-13 for the own / buy / lock model, custom tanks and one experience model):**
 
 | Step | Out of | Into | Size |
 |---|---|---|---|
@@ -207,7 +207,8 @@ The new shell lives beside the old one behind `?ui=2` (own `index2.html` entry, 
 | P4 Gear choice application and conversions | `techMenu.ts` | `scene/techEdit.ts`; one `units.ts` for every `toF` / `fromUnits` / `fmtHeight` | L |
 | P8 Gear model: per category an owned list (in the brief), the item in use, and a "use for sure" lock per item; Discover / Suggest / generator read the lock (must use) and the owned list (preferred, $0). Folds `ownedGear.ts` `applyOwned` / `syncEquipment` and the owned flags on scene gear into it; old saves migrate | `ownedGear.ts`, `scene/tech`, Discover locks | `scene/gearOwn.ts` | M |
 | P9 Custom tank library: a custom-tank spec (shape, L / H / D, shape dims, glass, rim, name) saved per browser across setups (LS `tanklook.customTanks`, like the scene library); a setup holds its own copy plus the library id and version. Library edit: setups keep their copy and show "Updated in my tanks: use the new version?". Library delete: setups keep their copy ("Save to my tanks again"). Share link / file carry the copy. Product tanks become read-only (P1's rules apply only in the maker). **Migration:** a saved scene whose dimensions differ from its product, or that has no product, gets an auto-named custom tank on load (e.g. "Custom 36 x 18 x 16 in (from Aqueon 40 breeder)"), added to the library and referenced | `panels.ts` `setTank` / `shapeDims`, `tankPick.ts`, `scene/` tank | `scene/customTank.ts` | M |
-| P5 One home per limit in the data: profile from LS `tanklook.demand` into the brief; room temp stored once; migrate old saves | `demandPanel.ts`, `scene/tech.ts`, brief | `scene/brief.ts` | M |
+| P5 One home per limit in the data: profile from LS `tanklook.demand` into the brief (except experience, which stays per browser: P10); room temp stored once; migrate old saves | `demandPanel.ts`, `scene/tech.ts`, brief | `scene/brief.ts` | M |
+| P10 One experience model: delete brief `preferences.experience` and `layout.expertise` as stored values; every consumer (`whyAnimal` gating, starter / Another moment stocking, Suggest ranking, `experienceNote`, `skillMul`, losses) takes the per-area `skill` from one `experienceOf(area)` read. **Migration:** a saved profile with any non-zero `skill` keeps it (it is the more detailed answer); otherwise a scene's `preferences.experience` sets every area to its value, once, on load; old share links still read `preferences.experience` as a fallback for one release | `scene/brief.ts`, `scene/layout`, `demand/engine.ts`, `demand/suggest.ts`, `demandPanel.ts` | `demand/experience.ts` | M |
 | P6 Habitat helpers (`bar`, `topBy`, `tileState`, ...) | `fullnessTile.ts` | `ui/logic/habitat.ts` | S |
 | P7 File ops (library, open example / shared, save / save as) | `panels.ts` 168-494 | `ui/logic/files.ts` | M |
 
@@ -221,7 +222,7 @@ The old shell is switched to call these as they land, so both shells share one c
 | 2 | Start, open, save, share, resume | M | P7 |
 | 3 | Tank section + docked picker (Commercial / Custom) + Custom tank maker + Room | L | P1, P9 |
 | 4 | Animals + Water look + Selection drawer | L | P2 |
-| 5 | Constraints, Preferences, Suggest | M | P5 |
+| 5 | Constraints, Preferences, Suggest | M | P5, P10 |
 | 6 | Equipment (category sub-menus, I own / Buy, lock) + Lighting + light map | L | P4, P8 |
 | 7 | Scape + Plants + brush / group bars | L | P3 |
 | 8 | View, Settings (units, rules, graphics), Print | M | - |
@@ -251,9 +252,10 @@ The old shell is switched to call these as they land, so both shells share one c
 | 7 | Add a DOM test environment (happy-dom) for the new shell, or keep node-only tests + screenshot proof per step? | Node-only + screenshots (keeps test runs light on this machine). |
 | 8 | Compare: one "Editing A / B / Both" switch in the panel instead of an Edit tick per tab (shot 03)? | Yes. |
 | 9 | Viewpoint map off by default (a switch in View)? | Yes. |
-| 10 | Order: engine pulls P1-P7 first, then shell steps 1-12 (P1-P9); freeze old-shell UI requests from approval (§8)? | Yes. |
+| 10 | Order: engine pulls P1-P7 first, then shell steps 1-12 (P1-P10); freeze old-shell UI requests from approval (§8)? | Yes. |
 | 11 | R7, the Habitat check name: keep "Habitat check" in the new check bar? | Keep; the drawer title can carry the longer "Habitat check: is it good for the animals?". |
 | 12 | Own / buy / lock (Nathan 11-13, shot 05): "I own" and "Buy" groups per category, an independent "Use this one for sure" lock, no My gear tab, "No new equipment" in Constraints. Confirm the shot matches what you meant? | Yes (already his call; the shot is the check). |
 | 13 | Tanks (Nathan 11-13, shots 01, 06, 07): commercial tanks fixed, custom tanks from a maker saved across setups; a setup keeps its own copy when the library tank is edited or deleted; old scenes with hand-edited product dims become auto-named custom tanks? | Yes to all. |
+| 14 | Experience (Nathan asked what it affects): today two settings (brief 0-2: animal graying, starter stocking, Suggest; profile per area: difficulty bar, animal warnings, monthly losses) that can disagree. Merge into **per-area levels** set by one answer in Constraints ("More detail" for per-area), stored per browser, read by every consumer? | Yes: per-area keeps the real difference between keeping fish, plants and saltwater; one answer keeps it a single click for most people. |
 
 Lane note: HANDOFF.md not edited (brief: commit only this lane's files); the coordinator adds the dated line.
