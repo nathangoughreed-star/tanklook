@@ -1,7 +1,7 @@
 {
  "lane": "CL1",
  "date": "2026-11-13",
- "status": "83 aquarium-scope species researched; verifier pass pending; care.ts untouched",
+ "status": "83 aquarium-scope species researched and verifier-checked (14); care.ts untouched; awaiting Nathan",
  "species": [
   {
    "id": "betta",
@@ -32,7 +32,8 @@
    ],
    "proposed": 2,
    "confidence": "medium",
-   "reason": "Labels split 2/1/1, but both beginner-leaning sources make success conditional on heater, cycled 5+ gal tank and maintenance, which fits level 2 (a beginner often loses it in a bowl); keep 2."
+   "reason": "Labels split 2/1/1, but both beginner-leaning sources make success conditional on heater, cycled 5+ gal tank and maintenance, which fits level 2 (a beginner often loses it in a bowl); keep 2.",
+   "final": 2
   },
   {
    "id": "oto",
@@ -56,7 +57,8 @@
    ],
    "proposed": 2,
    "confidence": "medium",
-   "reason": "Two independent sources agree on established tank plus diet/import losses; web search also showed other guides split Easy vs Moderate (not opened). Seriously Fish oto URL returned 404."
+   "reason": "Two independent sources agree on established tank plus diet/import losses; web search also showed other guides split Easy vs Moderate (not opened). Seriously Fish oto URL returned 404.",
+   "final": 2
   },
   {
    "id": "kuhli",
@@ -87,7 +89,8 @@
    ],
    "proposed": 1,
    "confidence": "high",
-   "reason": "All three label Easy; Fishkeeping World caveat (scaleless, disease-prone) noted but does not change the level."
+   "reason": "All three label Easy; Fishkeeping World caveat (scaleless, disease-prone) noted but does not change the level.",
+   "final": 1
   },
   {
    "id": "sae",
@@ -118,7 +121,8 @@
    ],
    "proposed": 1,
    "confidence": "medium",
-   "reason": "Two sources read Easy (hardy; size/tank and aggression are the demands); Seriously Fish Moderate is a genus-level page, so split is explainable; keep 1."
+   "reason": "Two sources read Easy (hardy; size/tank and aggression are the demands); Seriously Fish Moderate is a genus-level page, so split is explainable; keep 1.",
+   "final": 1
   },
   {
    "id": "hillstream",
@@ -149,7 +153,8 @@
    ],
    "proposed": 2,
    "confidence": "medium",
-   "reason": "Labels split (Moderate vs Easy) but every page's stated reasons are flow, oxygen and stable water, which fits intermediate."
+   "reason": "Labels split (Moderate vs Easy) but every page's stated reasons are flow, oxygen and stable water, which fits intermediate.",
+   "final": 2
   },
   {
    "id": "neon",
@@ -173,7 +178,8 @@
    ],
    "proposed": 1,
    "confidence": "medium",
-   "reason": "Two independent pages say beginner-friendly; only caveat is disease/quarantine."
+   "reason": "Two independent pages say beginner-friendly; only caveat is disease/quarantine.",
+   "final": 1
   },
   {
    "id": "discus",
@@ -204,7 +210,30 @@
    ],
    "proposed": 3,
    "confidence": "medium",
-   "reason": "Two pages read expert-level; LiveAquaria softens it for captive-bred stock, so split is explainable by wild vs captive-bred."
+   "reason": "Two pages read expert-level; LiveAquaria softens it for captive-bred stock, so split is explainable by wild vs captive-bred.",
+   "verify": {
+    "verdict": "confirmed",
+    "final": 3,
+    "confidence": "medium",
+    "reason": "New sources lean 3 (one labels it Challenging); Co-Op is softer for captive-bred stock, same split as before.",
+    "newSources": [
+     {
+      "site": "Aquarium Source",
+      "url": "https://www.aquariumsource.com/discus-fish/",
+      "label": "High / Challenging",
+      "verdict": "3",
+      "why": "sensitive to water quality, soft acidic warm water, stress/disease, 55-75 gal group; 'not beginner-easy but beginner-doable'"
+     },
+     {
+      "site": "Aquarium Co-Op",
+      "url": "https://www.aquariumcoop.com/blogs/aquarium/discus-care-guide",
+      "label": null,
+      "verdict": "2-3",
+      "why": "'notorious for being extremely difficult' but manageable with low-maintenance methods; 85F heat, 75 gal, group, small-mouth feeding"
+     }
+    ]
+   },
+   "final": 3
   },
   {
    "id": "guppy",
@@ -228,7 +257,8 @@
    ],
    "proposed": 1,
    "confidence": "medium",
-   "reason": "Both pages call it hardy and beginner-friendly; Tankarium has no formal label, so only two weak-to-moderate sources."
+   "reason": "Both pages call it hardy and beginner-friendly; Tankarium has no formal label, so only two weak-to-moderate sources.",
+   "final": 1
   },
   {
    "id": "mandarin",
@@ -259,7 +289,8 @@
    ],
    "proposed": 3,
    "confidence": "medium",
-   "reason": "Split is explained: wild-caught specialist diet is the killer; captive-bred eases it, but 2 of 3 sources still call it hard/not for beginners, so keep 3."
+   "reason": "Split is explained: wild-caught specialist diet is the killer; captive-bred eases it, but 2 of 3 sources still call it hard/not for beginners, so keep 3.",
+   "final": 3
   },
   {
    "id": "angel",
@@ -283,7 +314,8 @@
    ],
    "proposed": 1,
    "confidence": "medium",
-   "reason": "Only 2 pages opened; hardiness points to 1, the moderate reading is about tank size and temperament, not loss rate. Keep 1."
+   "reason": "Only 2 pages opened; hardiness points to 1, the moderate reading is about tank size and temperament, not loss rate. Keep 1.",
+   "final": 1
   },
   {
    "id": "cardinal",
@@ -314,7 +346,8 @@
    ],
    "proposed": 1,
    "confidence": "medium",
-   "reason": "Split 2/1/in-between; captive-bred stock is forgiving, wild-caught and unstable water are the risk. Keep 1, note wild-caught caveat."
+   "reason": "Split 2/1/in-between; captive-bred stock is forgiving, wild-caught and unstable water are the risk. Keep 1, note wild-caught caveat.",
+   "final": 1
   },
   {
    "id": "ember",
@@ -338,7 +371,8 @@
    ],
    "proposed": 1,
    "confidence": "high",
-   "reason": "Two sources both Easy, none disagree."
+   "reason": "Two sources both Easy, none disagree.",
+   "final": 1
   },
   {
    "id": "dwarfpencil",
@@ -369,7 +403,8 @@
    ],
    "proposed": 2,
    "confidence": "high",
-   "reason": "All three place it at moderate or above; none say beginner."
+   "reason": "All three place it at moderate or above; none say beginner.",
+   "final": 2
   },
   {
    "id": "rummynose",
@@ -400,7 +435,15 @@
    ],
    "proposed": 2,
    "confidence": "medium",
-   "reason": "Only one page gives a label (Intermediate); other two stress stable water and a mature tank, which fits level 2."
+   "reason": "Only one page gives a label (Intermediate); other two stress stable water and a mature tank, which fits level 2.",
+   "verify": {
+    "verdict": "inconclusive",
+    "final": 2,
+    "confidence": "low",
+    "reason": "Opened none usable (Animal-World redirects, Aquifarm 403). Search snippets only (unopened): Tankflare/Fantasea/Build Your Aquarium say easy, Animal-World/Fishtankworld intermediate, Aquifarm 'demands stability', Aquarium Breeder says brilliant rummynose is quite difficult. Genuine split 1 vs 2; keep 2 on stability/mature-tank reasons.",
+    "newSources": []
+   },
+   "final": 2
   },
   {
    "id": "harlequin",
@@ -424,7 +467,8 @@
    ],
    "proposed": 1,
    "confidence": "high",
-   "reason": "Two sources, both easy."
+   "reason": "Two sources, both easy.",
+   "final": 1
   },
   {
    "id": "chili",
@@ -455,7 +499,8 @@
    ],
    "proposed": 2,
    "confidence": "high",
-   "reason": "Two Moderate; the Easy page still lists strict water needs."
+   "reason": "Two Moderate; the Easy page still lists strict water needs.",
+   "final": 2
   },
   {
    "id": "danio",
@@ -486,7 +531,8 @@
    ],
    "proposed": 1,
    "confidence": "high",
-   "reason": "All three easy."
+   "reason": "All three easy.",
+   "final": 1
   },
   {
    "id": "whitecloud",
@@ -517,7 +563,8 @@
    ],
    "proposed": 1,
    "confidence": "high",
-   "reason": "All three Easy; only caveat is cool water."
+   "reason": "All three Easy; only caveat is cool water.",
+   "final": 1
   },
   {
    "id": "cpd",
@@ -548,7 +595,8 @@
    ],
    "proposed": 1,
    "confidence": "medium",
-   "reason": "Two easy, one moderate; the moderate rating is about feeding shy new arrivals."
+   "reason": "Two easy, one moderate; the moderate rating is about feeding shy new arrivals.",
+   "final": 1
   },
   {
    "id": "hatchet",
@@ -579,7 +627,30 @@
    ],
    "proposed": 2,
    "confidence": "medium",
-   "reason": "Two sources say intermediate to difficult on stated reasons (wild-caught, ich, water sensitivity); SF Easy rating leaves hardiness unscored."
+   "reason": "Two sources say intermediate to difficult on stated reasons (wild-caught, ich, water sensitivity); SF Easy rating leaves hardiness unscored.",
+   "verify": {
+    "verdict": "confirmed",
+    "final": 2,
+    "confidence": "medium",
+    "reason": "Neither page gives a label; both stated reasons (wild-caught, parasites, ich, mature tank) fit level 2, none support 1.",
+    "newSources": [
+     {
+      "site": "Aquarium Co-Op",
+      "url": "https://www.aquariumcoop.com/blogs/aquarium/hatchetfish",
+      "label": null,
+      "verdict": "2",
+      "why": "mostly wild-caught, underfed/weak immune system, ich-prone, internal parasites needing dewormer, surface feeders, group of 6-12, jumper"
+     },
+     {
+      "site": "Build Your Aquarium",
+      "url": "https://buildyouraquarium.com/hatchetfish",
+      "label": null,
+      "verdict": "2",
+      "why": "mature cycled aquarium essential, covered tank, surface feeding, group of 6+"
+     }
+    ]
+   },
+   "final": 2
   },
   {
    "id": "cherrybarb",
@@ -610,7 +681,8 @@
    ],
    "proposed": 1,
    "confidence": "high",
-   "reason": "All three easy."
+   "reason": "All three easy.",
+   "final": 1
   },
   {
    "id": "tigerbarb",
@@ -641,7 +713,8 @@
    ],
    "proposed": 1,
    "confidence": "high",
-   "reason": "All three at easy; difficulty is tankmate aggression, not husbandry."
+   "reason": "All three at easy; difficulty is tankmate aggression, not husbandry.",
+   "final": 1
   },
   {
    "id": "boesemani",
@@ -665,7 +738,8 @@
    ],
    "proposed": 2,
    "confidence": "high",
-   "reason": "Two sources both moderate/intermediate (Fishkeeping World page not found)."
+   "reason": "Two sources both moderate/intermediate (Fishkeeping World page not found).",
+   "final": 2
   },
   {
    "id": "platy",
@@ -696,7 +770,8 @@
    ],
    "proposed": 1,
    "confidence": "high",
-   "reason": "All three easy."
+   "reason": "All three easy.",
+   "final": 1
   },
   {
    "id": "molly",
@@ -727,7 +802,8 @@
    ],
    "proposed": 1,
    "confidence": "medium",
-   "reason": "Two Easy; the black-morph caveat from the third is real but not enough to move it."
+   "reason": "Two Easy; the black-morph caveat from the third is real but not enough to move it.",
+   "final": 1
   },
   {
    "id": "swordtail",
@@ -758,7 +834,23 @@
    ],
    "proposed": 1,
    "confidence": "medium",
-   "reason": "Two Easy, one Moderate (tank size and pH); husbandry is forgiving, size is the catch."
+   "reason": "Two Easy, one Moderate (tank size and pH); husbandry is forgiving, size is the catch.",
+   "verify": {
+    "verdict": "confirmed",
+    "final": 1,
+    "confidence": "low",
+    "reason": "Only one new page opened (Petco/Tankflare/Co-Op failed); its stated reasons are forgiving. Search snippet (unopened) said Petco lists Beginner.",
+    "newSources": [
+     {
+      "site": "Aquarium Source",
+      "url": "https://www.aquariumsource.com/swordtail/",
+      "label": null,
+      "verdict": "1",
+      "why": "15 gal minimum, wide pH 7.0-8.4 and temp 65-82F, easy livebearer; watch ich; males territorial (4 females per male); jumper"
+     }
+    ]
+   },
+   "final": 1
   },
   {
    "id": "dwarfgourami",
@@ -789,7 +881,8 @@
    ],
    "proposed": 1,
    "confidence": "medium",
-   "reason": "Two Easy, one Medium; the real risk is incurable DGD in trade stock, not routine care."
+   "reason": "Two Easy, one Medium; the real risk is incurable DGD in trade stock, not routine care.",
+   "final": 1
   },
   {
    "id": "honeygourami",
@@ -820,7 +913,8 @@
    ],
    "proposed": 1,
    "confidence": "high",
-   "reason": "All three easy."
+   "reason": "All three easy.",
+   "final": 1
   },
   {
    "id": "gourami",
@@ -851,7 +945,8 @@
    ],
    "proposed": 1,
    "confidence": "medium",
-   "reason": "Two easy, one medium (large tank, fin damage)."
+   "reason": "Two easy, one medium (large tank, fin damage).",
+   "final": 1
   },
   {
    "id": "gbr",
@@ -882,7 +977,8 @@
    ],
    "proposed": 2,
    "confidence": "high",
-   "reason": "All three moderate."
+   "reason": "All three moderate.",
+   "final": 2
   },
   {
    "id": "bolivianram",
@@ -913,7 +1009,8 @@
    ],
    "proposed": 2,
    "confidence": "medium",
-   "reason": "Two moderate, one beginner; nitrate sensitivity argues for keeping 2."
+   "reason": "Two moderate, one beginner; nitrate sensitivity argues for keeping 2.",
+   "final": 2
   },
   {
    "id": "kribensis",
@@ -937,7 +1034,8 @@
    ],
    "proposed": 1,
    "confidence": "high",
-   "reason": "Two sources both easy (Fishkeeping World page not found)."
+   "reason": "Two sources both easy (Fishkeeping World page not found).",
+   "final": 1
   },
   {
    "id": "cockatoo",
@@ -961,7 +1059,8 @@
    ],
    "proposed": 2,
    "confidence": "high",
-   "reason": "Two sources both moderate (Aquarium Source page not found)."
+   "reason": "Two sources both moderate (Aquarium Source page not found).",
+   "final": 2
   },
   {
    "id": "yellowlab",
@@ -992,7 +1091,8 @@
    ],
    "proposed": 1,
    "confidence": "medium",
-   "reason": "Two Easy, one Difficult (label contradicts its own body text); keep 1."
+   "reason": "Two Easy, one Difficult (label contradicts its own body text); keep 1.",
+   "final": 1
   },
   {
    "id": "peacock",
@@ -1023,7 +1123,8 @@
    ],
    "proposed": 2,
    "confidence": "medium",
-   "reason": "Two moderate, one easy that still lists heavy requirements."
+   "reason": "Two moderate, one easy that still lists heavy requirements.",
+   "final": 2
   },
   {
    "id": "demasoni",
@@ -1047,7 +1148,8 @@
    ],
    "proposed": 2,
    "confidence": "medium",
-   "reason": "Two sources agree on moderate-or-higher, aggression is the difficulty; third page (LiveAquaria) would not open."
+   "reason": "Two sources agree on moderate-or-higher, aggression is the difficulty; third page (LiveAquaria) would not open.",
+   "final": 2
   },
   {
    "id": "kadango",
@@ -1078,7 +1180,8 @@
    ],
    "proposed": 2,
    "confidence": "medium",
-   "reason": "Two moderate, one bare retail Easy; the difficulty is tank size and water, not fragility."
+   "reason": "Two moderate, one bare retail Easy; the difficulty is tank size and water, not fragility.",
+   "final": 2
   },
   {
    "id": "syno",
@@ -1102,7 +1205,8 @@
    ],
    "proposed": 2,
    "confidence": "medium",
-   "reason": "Split between moderate and easy-hardy; hardy fish but large tank and Malawi water; keep current."
+   "reason": "Split between moderate and easy-hardy; hardy fish but large tank and Malawi water; keep current.",
+   "final": 2
   },
   {
    "id": "labeo",
@@ -1133,7 +1237,8 @@
    ],
    "proposed": 2,
    "confidence": "high",
-   "reason": "Moderate with water-hardness and aggression/diet demands; no source disagrees."
+   "reason": "Moderate with water-hardness and aggression/diet demands; no source disagrees.",
+   "final": 2
   },
   {
    "id": "auratus",
@@ -1164,7 +1269,8 @@
    ],
    "proposed": 2,
    "confidence": "high",
-   "reason": "Hardy but aggression makes it non-beginner; sources agree."
+   "reason": "Hardy but aggression makes it non-beginner; sources agree.",
+   "final": 2
   },
   {
    "id": "livingstonii",
@@ -1195,7 +1301,8 @@
    ],
    "proposed": 2,
    "confidence": "medium",
-   "reason": "Hardy but large predator needing big tank; labels split easy/moderate and reasons point to 2."
+   "reason": "Hardy but large predator needing big tank; labels split easy/moderate and reasons point to 2.",
+   "final": 2
   },
   {
    "id": "afra",
@@ -1226,7 +1333,8 @@
    ],
    "proposed": 2,
    "confidence": "medium",
-   "reason": "Hardy but needs hard water, big tank and aggression management; third source is genus-level."
+   "reason": "Hardy but needs hard water, big tank and aggression management; third source is genus-level.",
+   "final": 2
   },
   {
    "id": "oscar",
@@ -1257,7 +1365,8 @@
    ],
    "proposed": 2,
    "confidence": "high",
-   "reason": "All three say moderate / experience advised."
+   "reason": "All three say moderate / experience advised.",
+   "final": 2
   },
   {
    "id": "goldfish",
@@ -1281,7 +1390,23 @@
    ],
    "proposed": 1,
    "confidence": "low",
-   "reason": "Split; hardy to disease and water but needs big filtered tank; third source (Hepper) blocked; keep current."
+   "reason": "Split; hardy to disease and water but needs big filtered tank; third source (Hepper) blocked; keep current.",
+   "verify": {
+    "verdict": "confirmed",
+    "final": 1,
+    "confidence": "low",
+    "reason": "Hepper 403. One new source says Beginner-friendly; waste/space is the catch, not hardiness.",
+    "newSources": [
+     {
+      "site": "Bulk Reef Supply (freshwater)",
+      "url": "https://fresh.bulkreefsupply.com/content/post/a-beginners-guide-to-goldfish-care",
+      "label": "Beginner-friendly",
+      "verdict": "1",
+      "why": "no heater needed, simple diet; but strong filtration, weekly 10-25% changes, 20 gal juvenile minimum"
+     }
+    ]
+   },
+   "final": 1
   },
   {
    "id": "comet",
@@ -1305,7 +1430,8 @@
    ],
    "proposed": 1,
    "confidence": "medium",
-   "reason": "Both labels easy to easy/medium; difficulty is size and filtration, not fragility."
+   "reason": "Both labels easy to easy/medium; difficulty is size and filtration, not fragility.",
+   "final": 1
   },
   {
    "id": "bronzecory",
@@ -1336,7 +1462,8 @@
    ],
    "proposed": 1,
    "confidence": "high",
-   "reason": "All agree easy; only sand and group size are conditions."
+   "reason": "All agree easy; only sand and group size are conditions.",
+   "final": 1
   },
   {
    "id": "sterbai",
@@ -1360,7 +1487,8 @@
    ],
    "proposed": 1,
    "confidence": "medium",
-   "reason": "Two sources, both easy; LiveAquaria page returned 429 so not counted."
+   "reason": "Two sources, both easy; LiveAquaria page returned 429 so not counted.",
+   "final": 1
   },
   {
    "id": "pandacory",
@@ -1391,7 +1519,8 @@
    ],
    "proposed": 1,
    "confidence": "high",
-   "reason": "Three agree on easy."
+   "reason": "Three agree on easy.",
+   "final": 1
   },
   {
    "id": "pygmycory",
@@ -1422,7 +1551,8 @@
    ],
    "proposed": 1,
    "confidence": "medium",
-   "reason": "Split (SF Moderate vs FKW Beginner); nitrate sensitivity and soft water stability are the catch, borderline 1/2; keep current."
+   "reason": "Split (SF Moderate vs FKW Beginner); nitrate sensitivity and soft water stability are the catch, borderline 1/2; keep current.",
+   "final": 1
   },
   {
    "id": "bristlenose",
@@ -1453,7 +1583,8 @@
    ],
    "proposed": 1,
    "confidence": "high",
-   "reason": "Stated reasons all easy; the one Difficult label is contradicted by that page's text."
+   "reason": "Stated reasons all easy; the one Difficult label is contradicted by that page's text.",
+   "final": 1
   },
   {
    "id": "clownloach",
@@ -1484,7 +1615,8 @@
    ],
    "proposed": 2,
    "confidence": "high",
-   "reason": "Two moderate with disease and space reasons; one easy label with same caveats."
+   "reason": "Two moderate with disease and space reasons; one easy label with same caveats.",
+   "final": 2
   },
   {
    "id": "peapuffer",
@@ -1522,7 +1654,8 @@
    ],
    "proposed": 2,
    "confidence": "high",
-   "reason": "Four sources agree on intermediate."
+   "reason": "Four sources agree on intermediate.",
+   "final": 2
   },
   {
    "id": "greenneon",
@@ -1560,7 +1693,8 @@
    ],
    "proposed": 2,
    "confidence": "medium",
-   "reason": "Split moderate vs easy; hardy once settled but wild-caught and wants stable soft water and an established tank; keep current."
+   "reason": "Split moderate vs easy; hardy once settled but wild-caught and wants stable soft water and an established tank; keep current.",
+   "final": 2
   },
   {
    "id": "merah",
@@ -1584,7 +1718,37 @@
    ],
    "proposed": 2,
    "confidence": "low",
-   "reason": "Two sources split and TFH is genus-level; keep current."
+   "reason": "Two sources split and TFH is genus-level; keep current.",
+   "verify": {
+    "verdict": "inconclusive",
+    "final": 2,
+    "confidence": "low",
+    "reason": "New sources split Easy vs Moderate; stated reasons (stability, tiny food, groups) fit 2.",
+    "newSources": [
+     {
+      "site": "The Shrimp Farm",
+      "url": "https://www.theshrimpfarm.com/posts/phoenix-rasbora-care/",
+      "label": "Easy",
+      "verdict": "1",
+      "why": "merah-specific; needs heater, stable temp, pH 4-7, weekly changes, 10+ group, no swings"
+     },
+     {
+      "site": "Tankarium (B. brigittae, genus-level)",
+      "url": "https://www.tankarium.com/chili-rasbora/",
+      "label": "Moderate",
+      "verdict": "2",
+      "why": "sensitive to water fluctuations, unsuitable for beginners, tiny foods, group of 8-10"
+     },
+     {
+      "site": "Aquariadise (B. brigittae, genus-level)",
+      "url": "https://aquariadise.com/chili-rasbora/",
+      "label": "Easy to Moderate (inferred)",
+      "verdict": "1-2",
+      "why": "forgiving but sensitive to ammonia/nitrite and temperature swings, slow to settle"
+     }
+    ]
+   },
+   "final": 2
   },
   {
    "id": "exclamation",
@@ -1608,7 +1772,30 @@
    ],
    "proposed": 2,
    "confidence": "low",
-   "reason": "Two sources split and TFH is genus-level; keep current."
+   "reason": "Two sources split and TFH is genus-level; keep current.",
+   "verify": {
+    "verdict": "inconclusive",
+    "final": 2,
+    "confidence": "low",
+    "reason": "No urophthalmoides page opened (search snippets only: retailers say Easy, AquaLibs Moderate); genus-level pages lean 2.",
+    "newSources": [
+     {
+      "site": "Tankarium (B. brigittae, genus-level)",
+      "url": "https://www.tankarium.com/chili-rasbora/",
+      "label": "Moderate",
+      "verdict": "2",
+      "why": "water-parameter sensitivity, small groups shy"
+     },
+     {
+      "site": "Aquariadise (B. brigittae, genus-level)",
+      "url": "https://aquariadise.com/chili-rasbora/",
+      "label": "Easy to Moderate (inferred)",
+      "verdict": "1-2",
+      "why": "ammonia/nitrite and temperature sensitivity, tiny food"
+     }
+    ]
+   },
+   "final": 2
   },
   {
    "id": "dwarfrasbora",
@@ -1639,7 +1826,8 @@
    ],
    "proposed": 2,
    "confidence": "high",
-   "reason": "Two label moderate/intermediate with water-stability reasons; one says hardy."
+   "reason": "Two label moderate/intermediate with water-stability reasons; one says hardy.",
+   "final": 2
   },
   {
    "id": "cpo",
@@ -1670,7 +1858,8 @@
    ],
    "proposed": 1,
    "confidence": "medium",
-   "reason": "Two easy-ish, one moderate; same caveats everywhere (cycled tank, molt shelter, no copper); keep current."
+   "reason": "Two easy-ish, one moderate; same caveats everywhere (cycled tank, molt shelter, no copper); keep current.",
+   "final": 1
   },
   {
    "id": "cajundwarf",
@@ -1694,7 +1883,30 @@
    ],
    "proposed": 1,
    "confidence": "low",
-   "reason": "No Cajun-specific page opened; genus-level sources both say easy to easy-medium."
+   "reason": "No Cajun-specific page opened; genus-level sources both say easy to easy-medium.",
+   "verify": {
+    "verdict": "confirmed",
+    "final": 1,
+    "confidence": "medium",
+    "reason": "Both new genus-level sources say easiest/beginner-friendly.",
+    "newSources": [
+     {
+      "site": "Fish Tank Advisor (Mexican dwarf crayfish, genus-level)",
+      "url": "https://fishtankadvisor.com/?p=10620",
+      "label": null,
+      "verdict": "1",
+      "why": "suitable for beginner and experienced; hardy, calm, easy to feed, tolerant of water"
+     },
+     {
+      "site": "Aquariadise (dwarf crayfish, not Cajun)",
+      "url": "https://aquariadise.com/pet-crayfish-7-freshwater-aquarium-crayfish/",
+      "label": null,
+      "verdict": "1",
+      "why": "dwarf crays easiest of the group: small, peaceful, room temp; need cycled filtered tank and hides"
+     }
+    ]
+   },
+   "final": 1
   },
   {
    "id": "rswcrayfish",
@@ -1718,7 +1930,30 @@
    ],
    "proposed": 2,
    "confidence": "low",
-   "reason": "Husbandry is easy but aggression, size and escapes make it a one-species tank; two sources split; keep current."
+   "reason": "Husbandry is easy but aggression, size and escapes make it a one-species tank; two sources split; keep current.",
+   "verify": {
+    "verdict": "inconclusive",
+    "final": 2,
+    "confidence": "low",
+    "reason": "Hardiness favours 1, tank size and aggression favour 2; keep 2.",
+    "newSources": [
+     {
+      "site": "Aquatic Arts (neon red crayfish guide)",
+      "url": "https://aquaticarts.com/pages/neon-red-crayfish-care-guide",
+      "label": null,
+      "verdict": "1",
+      "why": "calls crayfish among toughest freshwater inhabitants; 30+ gal and hides for molting"
+     },
+     {
+      "site": "Aquariadise",
+      "url": "https://aquariadise.com/pet-crayfish-7-freshwater-aquarium-crayfish/",
+      "label": null,
+      "verdict": "2",
+      "why": "moderate (inferred): 31 in tank minimum, cannibalistic, numbers must match tank"
+     }
+    ]
+   },
+   "final": 2
   },
   {
    "id": "redclaw",
@@ -1749,7 +1984,30 @@
    ],
    "proposed": 2,
    "confidence": "low",
-   "reason": "No source gives a label; hardy and chemistry-tolerant but needs a dedicated, large, escape-proof species tank, so keep 2 (evidence leans 1-2)."
+   "reason": "No source gives a label; hardy and chemistry-tolerant but needs a dedicated, large, escape-proof species tank, so keep 2 (evidence leans 1-2).",
+   "verify": {
+    "verdict": "inconclusive",
+    "final": 2,
+    "confidence": "low",
+    "reason": "Split between easy husbandry and large species-only tank; keep 2.",
+    "newSources": [
+     {
+      "site": "FishProfiles",
+      "url": "https://fishprofiles.com/profiles/crustaceans/Cherax_quadricarinatus/",
+      "label": null,
+      "verdict": "1",
+      "why": "'generally very easy to keep'; needs spacious, filtered, aerated tank with shelter"
+     },
+     {
+      "site": "Aquariadise",
+      "url": "https://aquariadise.com/pet-crayfish-7-freshwater-aquarium-crayfish/",
+      "label": "most demanding of crays (inferred)",
+      "verdict": "2",
+      "why": "grows to 8 in, needs 40 in tank, heater, hunts fish, destroys plants, no tankmates"
+     }
+    ]
+   },
+   "final": 2
   },
   {
    "id": "thaicrab",
@@ -1780,7 +2038,8 @@
    ],
    "proposed": 2,
    "confidence": "high",
-   "reason": "Three independent sources: moderate; mature stable tank needed."
+   "reason": "Three independent sources: moderate; mature stable tank needed.",
+   "final": 2
   },
   {
    "id": "asellus",
@@ -1804,7 +2063,8 @@
    ],
    "proposed": 1,
    "confidence": "medium",
-   "reason": "Two sources, no labels, both describe a hardy detritivore; other candidate pages blocked (403/429)."
+   "reason": "Two sources, no labels, both describe a hardy detritivore; other candidate pages blocked (403/429).",
+   "final": 1
   },
   {
    "id": "cherryshrimp",
@@ -1835,7 +2095,8 @@
    ],
    "proposed": 1,
    "confidence": "high",
-   "reason": "All three: beginner shrimp; cycling and copper are the only caveats."
+   "reason": "All three: beginner shrimp; cycling and copper are the only caveats.",
+   "final": 1
   },
   {
    "id": "amano",
@@ -1866,7 +2127,8 @@
    ],
    "proposed": 1,
    "confidence": "high",
-   "reason": "Three Easy labels."
+   "reason": "Three Easy labels.",
+   "final": 1
   },
   {
    "id": "nerite",
@@ -1897,7 +2159,8 @@
    ],
    "proposed": 1,
    "confidence": "medium",
-   "reason": "Two Easy/beginner labels; the dissent is explained (starvation in algae-poor new tanks)."
+   "reason": "Two Easy/beginner labels; the dissent is explained (starvation in algae-poor new tanks).",
+   "final": 1
   },
   {
    "id": "mystery",
@@ -1928,7 +2191,8 @@
    ],
    "proposed": 1,
    "confidence": "high",
-   "reason": "Three sources, all easy."
+   "reason": "Three sources, all easy.",
+   "final": 1
   },
   {
    "id": "ramshorn",
@@ -1959,7 +2223,8 @@
    ],
    "proposed": 1,
    "confidence": "high",
-   "reason": "Three Easy labels."
+   "reason": "Three Easy labels.",
+   "final": 1
   },
   {
    "id": "trumpet",
@@ -1983,7 +2248,8 @@
    ],
    "proposed": 1,
    "confidence": "high",
-   "reason": "Two sources agree, none disagree (third page redirected/rate-limited)."
+   "reason": "Two sources agree, none disagree (third page redirected/rate-limited).",
+   "final": 1
   },
   {
    "id": "ocellaris",
@@ -2014,7 +2280,8 @@
    ],
    "proposed": 1,
    "confidence": "high",
-   "reason": "Three agree."
+   "reason": "Three agree.",
+   "final": 1
   },
   {
    "id": "royalgramma",
@@ -2038,7 +2305,8 @@
    ],
    "proposed": 1,
    "confidence": "high",
-   "reason": "Two agree, none disagree (LiveAquaria URL 404)."
+   "reason": "Two agree, none disagree (LiveAquaria URL 404).",
+   "final": 1
   },
   {
    "id": "yellowtang",
@@ -2062,7 +2330,23 @@
    ],
    "proposed": 1,
    "confidence": "low",
-   "reason": "Real split (hardy vs ich/HLLE prone); keep 1 pending a third source. Main burdens are tank size and quarantine."
+   "reason": "Real split (hardy vs ich/HLLE prone); keep 1 pending a third source. Main burdens are tank size and quarantine.",
+   "verify": {
+    "verdict": "confirmed",
+    "final": 1,
+    "confidence": "low",
+    "reason": "One new source says Easy with disease caveat; LiveAquaria page rate-limited (429), search snippet only said Easy.",
+    "newSources": [
+     {
+      "site": "Fish Tank Advisor",
+      "url": "https://fishtankadvisor.com/yellow-tang/",
+      "label": "Easy",
+      "verdict": "1",
+      "why": "pretty hardy; 100 gal min; susceptible to ich/velvet so quarantine; HLLE not mentioned"
+     }
+    ]
+   },
+   "final": 1
   },
   {
    "id": "bluetang",
@@ -2093,7 +2377,31 @@
    ],
    "proposed": 3,
    "confidence": "medium",
-   "reason": "Two label Advanced, third reads moderate; tank size plus whitespot make it high loss for non-specialists."
+   "reason": "Two label Advanced, third reads moderate; tank size plus whitespot make it high loss for non-specialists.",
+   "verify": {
+    "verdict": "contradicted",
+    "final": 2,
+    "confidence": "medium",
+    "reason": "New sources label it Moderate and stress size/ich management rather than high loss; a 3 rests on two Advanced labels. Keep 2 unless Nathan weights wild-caught loss rate.",
+    "newSources": [
+     {
+      "site": "Saltwater Aquarium Blog",
+      "url": "https://www.saltwateraquariumblog.com/blue-hippo-tang-care-guide/",
+      "label": "Moderate",
+      "verdict": "2",
+      "why": "100-180 gal, 'often too much for novice aquarists' but 'isn't that hard' with homework; ich, HLLE, 2-week quarantine"
+     },
+     {
+      "site": "Build Your Aquarium",
+      "url": "https://buildyouraquarium.com/blue-tang",
+      "label": null,
+      "verdict": "2-3",
+      "why": "large permanent tank (180 gal), cycled stable water, varied diet, quarantine, tank-mate planning; no label"
+     }
+    ],
+    "note": "verifier text says keep 2; its proposed field read 3 by mistake, corrected by CL1"
+   },
+   "final": 2
   },
   {
    "id": "firefish",
@@ -2117,7 +2425,8 @@
    ],
    "proposed": 1,
    "confidence": "medium",
-   "reason": "Two sources agree; jumping is the main loss cause."
+   "reason": "Two sources agree; jumping is the main loss cause.",
+   "final": 1
   },
   {
    "id": "banggai",
@@ -2148,7 +2457,8 @@
    ],
    "proposed": 1,
    "confidence": "high",
-   "reason": "Three agree."
+   "reason": "Three agree.",
+   "final": 1
   },
   {
    "id": "sixline",
@@ -2172,7 +2482,8 @@
    ],
    "proposed": 1,
    "confidence": "medium",
-   "reason": "Hardy; difficulty is compatibility, not husbandry (Mandarin Garden URL 404)."
+   "reason": "Hardy; difficulty is compatibility, not husbandry (Mandarin Garden URL 404).",
+   "final": 1
   },
   {
    "id": "chromis",
@@ -2203,7 +2514,8 @@
    ],
    "proposed": 1,
    "confidence": "high",
-   "reason": "Three Easy labels."
+   "reason": "Three Easy labels.",
+   "final": 1
   },
   {
    "id": "coralbeauty",
@@ -2227,7 +2539,30 @@
    ],
    "proposed": 2,
    "confidence": "medium",
-   "reason": "Both sources sit above beginner (reef nipping, big tank, territoriality); Reefs.com page blocked."
+   "reason": "Both sources sit above beginner (reef nipping, big tank, territoriality); Reefs.com page blocked.",
+   "verify": {
+    "verdict": "confirmed",
+    "final": 2,
+    "confidence": "medium",
+    "reason": "Hardy but marine-only, 70 gal, nips corals, quarantine needed; some sites say easy, so the split is real but level 2 fits stated reasons.",
+    "newSources": [
+     {
+      "site": "Pod Your Reef",
+      "url": "https://podyourreef.com/blogs/marine-ornamental-fish-profiles/coral-beauty-angelfish-care-guide-tank-compatibility-feeding-and-reef-suitability",
+      "label": "moderately easy; intermediate hobbyists and attentive beginners",
+      "verdict": "2",
+      "why": "ich/velvet risk, varied diet, territorial, coral/clam nipping, regular testing"
+     },
+     {
+      "site": "Build Your Aquarium",
+      "url": "https://www.buildyouraquarium.com/coral-beauty-angelfish/",
+      "label": null,
+      "verdict": "1-2",
+      "why": "70 gal reference, stable water, nipping, territorial; 'relatively hardy'; search snippet called it one of the easiest dwarf angels"
+     }
+    ]
+   },
+   "final": 2
   },
   {
    "id": "watchman",
@@ -2251,7 +2586,23 @@
    ],
    "proposed": 1,
    "confidence": "low",
-   "reason": "Real split between two sources; keep 1 (hardy, easy feeder) pending a third."
+   "reason": "Real split between two sources; keep 1 (hardy, easy feeder) pending a third.",
+   "verify": {
+    "verdict": "confirmed",
+    "final": 1,
+    "confidence": "low",
+    "reason": "One new source says excellent beginner fish; LiveAquaria page rate-limited, snippet said Easy.",
+    "newSources": [
+     {
+      "site": "light.fish",
+      "url": "https://light.fish/blog/yellow-watchman-goby",
+      "label": "Beginner-friendly (page wording)",
+      "verdict": "1",
+      "why": "undemanding but picky eater needing target feeding; ich/velvet susceptible, 3-4 week quarantine; 30 gal, lid, stable water"
+     }
+    ]
+   },
+   "final": 1
   },
   {
    "id": "cleanershrimp",
@@ -2282,7 +2633,8 @@
    ],
    "proposed": 1,
    "confidence": "medium",
-   "reason": "Two say easy; third is generic and stresses acclimation and copper, which the others also mention."
+   "reason": "Two say easy; third is generic and stresses acclimation and copper, which the others also mention.",
+   "final": 1
   },
   {
    "id": "turbo",
@@ -2313,7 +2665,8 @@
    ],
    "proposed": 1,
    "confidence": "medium",
-   "reason": "Easy with a slow-acclimation caveat; two pages lean easy-to-moderate."
+   "reason": "Easy with a slow-acclimation caveat; two pages lean easy-to-moderate.",
+   "final": 1
   },
   {
    "id": "hermit",
@@ -2344,7 +2697,8 @@
    ],
    "proposed": 1,
    "confidence": "medium",
-   "reason": "Hardy, but the dissent is about reef behavior and shell fights rather than survival; keep 1."
+   "reason": "Hardy, but the dissent is about reef behavior and shell fights rather than survival; keep 1.",
+   "final": 1
   },
   {
    "id": "adf",
@@ -2375,7 +2729,8 @@
    ],
    "proposed": 2,
    "confidence": "high",
-   "reason": "Three sources, all moderate."
+   "reason": "Three sources, all moderate.",
+   "final": 2
   },
   {
    "id": "axolotl",
@@ -2406,7 +2761,8 @@
    ],
    "proposed": 2,
    "confidence": "high",
-   "reason": "Three sources, all moderate; cool stable water is the hurdle."
+   "reason": "Three sources, all moderate; cool stable water is the hurdle.",
+   "final": 2
   }
  ]
 }
