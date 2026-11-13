@@ -8,6 +8,7 @@ import { Store } from './scene/store';
 import { attachPanels, scapeSec } from './ui/panels';
 import { attachGroupBar } from './ui/group';
 import { attachFullnessTile } from './ui/fullnessTile';
+import { attachSideOverlays, splitSides } from './ui/sideOverlays';
 import { attachBrushBar } from './ui/brush';
 import { attachParGuide } from './ui/parGuide';
 import { attachLightHover } from './ui/lightHover';
@@ -46,7 +47,8 @@ if (!webglAvailable()) {
   const ui = attachPanels(store, viewer);
   attachGroupBar(store, viewer, ui.status);
   attachBrushBar(store);
-  attachFullnessTile(viewer, store); // fullness tile + Set my space (lane P3)
+  attachFullnessTile(viewer, store, { gate: () => !splitSides(store, viewer) }); // fullness tile + Set my space (lane P3); in split view each side has its own (lane SV1)
+  attachSideOverlays(viewer, store);
   attachParGuide(() => store.tank.water.on && !!store.tank.water.salt);
   attachLightHover(viewer, store); // Light map hover readout (lane K)
   attachLightContours(viewer); // Light map contour labels

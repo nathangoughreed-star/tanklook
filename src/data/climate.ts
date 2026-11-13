@@ -216,3 +216,10 @@ export function climateChart(r: Climate, us?: boolean) {
   if ([...r.bands, ...r.rhBands].some(b => b.est)) h += '<div class="clSum">* Tolerable band is thin: few sources, partly judgement.</div>';
   return h;
 }
+
+/** The Water / Air chip's markup for a tank (the collapsed lines, and with `open` each one's chart); '' when there is nothing to say. Shared by the main chip and each side's copy in split view (SV1). */
+export function climateHtml(S: Parameters<typeof climateOf>[0], open: boolean, us: boolean): string {
+  const rows = climateOf(S);
+  return rows.map(r => `<div><b>${r.label}</b>${climateText(r, us)}${r.note ? `<span class="hint">${r.note}</span>` : ''}</div>${open ? climateChart(r, us) : ''}`).join('')
+    + (rows.some(r => r.bands.length) ? `<div class="clCue">${open ? '▾ Hide' : '▸ Where this comes from'}</div>` : '');
+}

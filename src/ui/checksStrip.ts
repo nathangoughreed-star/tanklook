@@ -23,14 +23,17 @@ export function checksHtml(v: Verdict, rules: Rules = 'guided'): string {
 export const headline = (v: Verdict, rules: Rules = 'guided'): string => rules === 'sandbox' && v.gates.length + v.hard.length ? `Sandbox · ${v.gates.length + v.hard.length} note${v.gates.length + v.hard.length === 1 ? '' : 's'}, information only` : [v.gates.length && `${v.gates.length} welfare / physical`, v.hard.length && `${v.hard.length} over your limits`].filter(Boolean).join(' · ') || 'Checks: notes only';
 
 /** @param opts the cost totals / limits when the cost panel has them (budget and time checks need them; welfare and room do not). */
-export function attachChecksStrip(store: Store, opts: () => VerdictOpts = () => ({})) {
-  const box = document.createElement('div');
-  box.className = 'checks'; box.setAttribute('role', 'status'); box.hidden = true;
-  (document.getElementById('view') ?? document.body).append(box);
+/** SV1: `host` puts a copy inside one side of a split view (its `store` is a sideStore); `gate` says whether this copy is in use now. */
+export interface ChecksHost { host?: HTMLElement; gate?: () => boolean }
+export function attachChecksStrip(store: Store, opts: () => VerdictOpts = () => ({}), where: ChecksHost = {}) {
+  const box = document.createElement('div'), gate = where.gate ?? (() => true);
+  box.className = where.host ? 'checks sv' : 'checks'; box.setAttribute('role', 'status'); box.hidden = true;
+  (where.host ?? document.getElementById('view') ?? document.body).append(box);
   let open = false;   // FX1: a one-line pill everywhere (it covered the panel, Compare cards and door handles when open); a tap opens it upward
   let timer: ReturnType<typeof setTimeout> | undefined;
   const run = () => {
     timer = undefined;
+    if (!gate()) { box.hidden = true; return; }
     let html = '', head = '';
     try { const v = verdictOf(store.tank, getBrief(), { units: store.scene.units, ...opts() }); html = checksHtml(v, rulesOf(getBrief())); head = headline(v, rulesOf(getBrief())); } catch { /* an unfinished scene has nothing to judge */ }
     box.innerHTML = html ? `<details class="ck-all"${open ? ' open' : ''}><summary>${esc(head)}</summary>${html}</details>` : ''; box.hidden = !html;

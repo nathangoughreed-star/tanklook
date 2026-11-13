@@ -1608,3 +1608,27 @@ details.gfx { margin: 4px 0 } details.gfx > summary { cursor: pointer; font-weig
 .dq13-col ul { margin: 0; padding-left: 14px; font-size: 11.5px }
 .dq13-on { font-size: 11px; opacity: .7 }
 .dq10:has(.dq13-cmp) { max-width: min(640px, calc(100% - 24px)) }
+
+/* SV1: split view, each side has its own Habitat check, cost pill, Checks pill and Water chip (ui/sideOverlays.ts); the single copies step aside */
+#view.sv-split > .ft:not(.sv), #view.sv-split > .dmfloat:not(.sv), #view.sv-split > .checks:not(.sv), #view.sv-split .encl #climate { display: none !important }
+.sideov { position: absolute; z-index: 3; pointer-events: none; container-type: size }
+.sideov[hidden] { display: none }
+.sideov > * { pointer-events: auto }
+.sideov > .ft.sv { top: calc(var(--sv-top, 10px) + var(--bb-h, 0px)); left: 10px; max-width: calc(100% - 20px); max-height: calc(100% - var(--sv-top, 10px) - 190px) }
+#view .sideov > .dmfloat.sv { top: var(--sv-dm, 102px); right: 10px; width: min(310px, calc(100% - 20px)); max-height: calc(100% - var(--sv-dm, 102px) - 120px); z-index: 4 }
+#view .sideov > .dmfloat.sv.closed { width: auto }
+/* bottom column, against each side's right edge: the Map card holds each side's bottom-left; side B's bottom-right holds the Discover pill / card, so its column sits above that (--sv-lift) */
+.svBot { position: absolute; right: 10px; bottom: calc(10px + var(--sv-lift, 0px)); display: flex; flex-direction: column; align-items: flex-end; gap: 6px; pointer-events: none; z-index: 4; max-width: calc(100% - 210px) }
+.svBot > * { pointer-events: auto }
+.svBot .checks.sv { position: static; max-width: 100%; max-height: 32vh }
+.svBot .climate.sv { max-width: 100%; max-height: 40vh; overflow-y: auto }
+.svBot .climate.sv.open { width: min(330px, calc(100cqw - 210px)) }
+@container (max-width: 520px) {
+  .svBot { bottom: calc(204px + var(--sv-lift, 0px)); max-width: calc(100% - 20px) } /* narrow (a phone, or the panel open): the column rides above the open Map card and its toggle */
+  .svBot .climate.sv.open { width: min(330px, calc(100cqw - 20px)) }
+}
+@container (max-width: 360px) {   /* a phone, or the panel wide open: the cost pill stacks under the Habitat check, and folds away while that is open (it would cover it) */
+  #view .sideov > .dmfloat.sv { top: calc(var(--sv-dm, 102px) + 50px); right: auto; left: 10px }
+  .sideov:has(.ft.sv:not(.min)) > .dmfloat.sv { display: none }
+}
+body.discovering .sideov { display: none !important }
