@@ -1,0 +1,173 @@
+{
+ "havePrev": true,
+ "results": [
+  {
+   "state": "0-no-discover",
+   "g": "wheel",
+   "ok": true,
+   "moved": true,
+   "sceneMoved": true,
+   "hit": "CANVAS."
+  },
+  {
+   "state": "0-no-discover",
+   "g": "orbit",
+   "ok": true,
+   "moved": true,
+   "sceneMoved": true,
+   "hit": "CANVAS."
+  },
+  {
+   "state": "0-no-discover",
+   "g": "pan",
+   "ok": true,
+   "moved": true,
+   "sceneMoved": true,
+   "hit": "CANVAS."
+  },
+  {
+   "state": "1-card-open-no-preview",
+   "g": "wheel",
+   "ok": true,
+   "moved": true,
+   "sceneMoved": true,
+   "hit": "CANVAS."
+  },
+  {
+   "state": "1-card-open-no-preview",
+   "g": "orbit",
+   "ok": true,
+   "moved": true,
+   "sceneMoved": true,
+   "hit": "CANVAS."
+  },
+  {
+   "state": "1-card-open-no-preview",
+   "g": "pan",
+   "ok": true,
+   "moved": true,
+   "sceneMoved": true,
+   "hit": "CANVAS."
+  },
+  {
+   "state": "2-preview-showing",
+   "g": "wheel",
+   "ok": true,
+   "moved": true,
+   "sceneMoved": true,
+   "hit": "CANVAS."
+  },
+  {
+   "state": "2-preview-showing",
+   "g": "orbit",
+   "ok": true,
+   "moved": true,
+   "sceneMoved": true,
+   "hit": "CANVAS."
+  },
+  {
+   "state": "2-preview-showing",
+   "g": "pan",
+   "ok": true,
+   "moved": true,
+   "sceneMoved": true,
+   "hit": "CANVAS."
+  },
+  {
+   "state": "3-after-regenerate",
+   "g": "wheel",
+   "ok": true,
+   "moved": true,
+   "sceneMoved": true,
+   "hit": "CANVAS."
+  },
+  {
+   "state": "3-after-regenerate",
+   "g": "orbit",
+   "ok": true,
+   "moved": true,
+   "sceneMoved": true,
+   "hit": "CANVAS."
+  },
+  {
+   "state": "3-after-regenerate",
+   "g": "pan",
+   "ok": true,
+   "moved": true,
+   "sceneMoved": true,
+   "hit": "CANVAS."
+  },
+  {
+   "state": "4-compare-open",
+   "g": "wheel",
+   "ok": true,
+   "moved": true,
+   "sceneMoved": true,
+   "hit": "CANVAS."
+  },
+  {
+   "state": "4-compare-open",
+   "g": "orbit",
+   "ok": true,
+   "moved": true,
+   "sceneMoved": true,
+   "hit": "CANVAS."
+  },
+  {
+   "state": "4-compare-open",
+   "g": "pan",
+   "ok": true,
+   "moved": true,
+   "sceneMoved": true,
+   "hit": "CANVAS."
+  },
+  {
+   "state": "5-after-apply",
+   "g": "wheel",
+   "ok": true,
+   "moved": true,
+   "sceneMoved": true,
+   "hit": "CANVAS."
+  },
+  {
+   "state": "5-after-apply",
+   "g": "orbit",
+   "ok": true,
+   "moved": true,
+   "sceneMoved": true,
+   "hit": "CANVAS."
+  },
+  {
+   "state": "5-after-apply",
+   "g": "pan",
+   "ok": true,
+   "moved": true,
+   "sceneMoved": true,
+   "hit": "CANVAS."
+  },
+  {
+   "state": "6-card-closed",
+   "g": "wheel",
+   "ok": true,
+   "moved": true,
+   "sceneMoved": true,
+   "hit": "CANVAS."
+  },
+  {
+   "state": "6-card-closed",
+   "g": "orbit",
+   "ok": true,
+   "moved": true,
+   "sceneMoved": true,
+   "hit": "CANVAS."
+  },
+  {
+   "state": "6-card-closed",
+   "g": "pan",
+   "ok": true,
+   "moved": true,
+   "sceneMoved": true,
+   "hit": "CANVAS."
+  }
+ ]
+}
