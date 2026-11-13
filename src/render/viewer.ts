@@ -748,6 +748,8 @@ export class Viewer {
     for (const vp of active) {
       // the pair's setups are copies made at build time; a camera move replaces the scene camera object, so re-point it every frame (AB12: orbit and zoom looked frozen)
       if (this.pair) vp.S.camera = this.pairCamOf(vp.i) ?? sc.tanks[0].camera;
+      // same for a preview of the active tank (BG1: Discover's preview drew a stale copy, so orbit and zoom did nothing while pan worked)
+      else if (this.preview && !this.previewOwnCam && vp.i === sc.active && sc.tanks[vp.i]) vp.S.camera = sc.tanks[vp.i].camera;
       placeCamera(vp.cam, vp.T, vp.S.camera);
       for (const o of vp.overhead ?? []) o.visible = !this.hideOverhead || vp.cam.position.y < o.userData.overhead;
     }
