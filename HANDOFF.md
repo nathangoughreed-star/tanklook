@@ -73,6 +73,13 @@ models on /review.html (and its drawImage error), TG leftovers (heater product p
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
+## FX1: audit fixes (2026-11-12; lane FX1; Coordinator 23)
+- A: `.dq10` (Discover pill / card) bottom = `--encl-h + 20px`; `--encl-h` is set on `#view` by a ResizeObserver on `.encl` (discover/inline.ts). B: `.checks` is appended to `#view` (absolute, left 216px, clear of the Map card), closed pill by default on every width (open state is the person's, via the summary). Phone: pill sits above the Water chip, bottom-left.
+- `FX_LABELS` has plain words for embed / mix / sand; test/gfx-prefs.test.ts fails when a `FX_DEFAULT` key has no label.
+- Verification shots in `research/screens/FX1/` (scripts: `scripts/fx1-a.mjs` layout, `scripts/fx1-b.mjs 3|11|12|cab|9|27|7`; dev server 5199 + Chrome 9411). Table: `research/audit-2026-11-12.md` FX1 column.
+- NOT VERIFIED: hoses through the back panel (#31): the room wall hides the back of the stand from behind. Open: Habitat tile / Map card float over the tank when the panel is collapsed (audit C).
+- Pitfall: when scripting the Checks strip, opening `details` by `.open=true` is undone by the next re-render; click the `summary`.
+
 ## CV1: CSS custom-property check (2026-11-12; lane CV1; Coordinator 23)
 - test/cssvars.test.ts parses every shipped stylesheet (postcss via vite; no jsdom here, so it carries a small HTML parser + selector matcher) and fails on any var(--x) with no fallback where --x is (a) never defined (CSS, inline style, TS setProperty/style strings) or (b) not set on an ancestor-or-self of an element the rule matches in the static DOM (index.html / review.html / species-data.html). Rules for runtime-built UI that match nothing static must name the definer in the selector or have a reasoned RUNTIME entry. Messages give file:line, the declaration, where the property is defined and why it is dropped. Ancestors with an #id ignore state classes (#app.collapsed). Also checks var() written in src/**/*.ts.
 - Real hits fixed: .sp (style.css:886) and .ft (:922) used var(--bb-h) with no fallback; .sp is also built outside #view (print-sheet bars, guided list), so both now use var(--bb-h, 0px). Harmless today (those copies are unpositioned) but no longer fragile. Allowlisted with reasons: --cl-n/--cl-v (.clN/.clV rows inside .clAx), --lift/--tx/--tilt (.sgScene inline style), --ruler (set on .sgImg).

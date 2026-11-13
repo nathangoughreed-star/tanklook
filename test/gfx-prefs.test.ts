@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { FX, FX_DEFAULT, setFx } from '../src/render/fx';
-import { causticStatus, levelReason, readPrefs, restoreFxDefaults, chooseFx, urlKeys, writePrefs } from '../src/render/fxPrefs';
+import { FX_LABELS, causticStatus, levelReason, readPrefs, restoreFxDefaults, chooseFx, urlKeys, writePrefs } from '../src/render/fxPrefs';
 
 const mem = () => { const m = new Map<string, string>(); return { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => void m.set(k, v), removeItem: (k: string) => void m.delete(k) }; };
 
@@ -45,5 +45,16 @@ describe('status wording', () => {
     expect(levelReason({ level: 1, auto: true, lowered: { from: 0, at: Date.UTC(2026, 10, 12, 15, 0), fps: 22 } }, names)).toMatch(/Auto lowered this from Full quality on .* because frames missed 30 fps \(22 fps\)/);
     expect(levelReason({ level: 0, auto: true, lowered: null }, names)).toMatch(/^Full quality/);
     expect(levelReason({ level: 1, auto: false, lowered: null }, names)).toMatch(/You chose/);
+  });
+});
+
+describe('fx labels', () => {
+  it('every FX_DEFAULT key has a plain-words label and help (no raw switch names)', () => {
+    for (const k of Object.keys(FX_DEFAULT)) {
+      const l = FX_LABELS[k];
+      expect(l, k).toBeTruthy();
+      expect(l!.label, k).not.toBe(k);
+      expect(l!.help.length, k).toBeGreaterThan(10);
+    }
   });
 });

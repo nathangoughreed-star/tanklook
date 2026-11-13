@@ -28,6 +28,9 @@ export function attachInline(store: Store, viewer: Viewer, deps: { status: (msg:
   const root = document.createElement('div');
   root.className = 'dq10'; root.setAttribute('aria-label', 'Discover in the editor');
   host.appendChild(root);
+  // FX1: the Water / climate chips (.encl) own the bottom-right corner; the pill rides above them whatever their height
+  const encl = host.querySelector<HTMLElement>('.encl');
+  if (encl && typeof ResizeObserver === 'function') new ResizeObserver(() => host.style.setProperty('--encl-h', encl.offsetHeight + 'px')).observe(encl);
   const ctl = createInline(store, { brief: getBrief, show: t => viewer.setPreview(t ? structuredClone(t) : null, false) });
   let openCard = false, comparing = false, busy = false, note = '', fail: Extract<RunResult, { ok: false }> | undefined, fillTab: Tab | '' = '';
 

@@ -26,10 +26,8 @@ export const headline = (v: Verdict, rules: Rules = 'guided'): string => rules =
 export function attachChecksStrip(store: Store, opts: () => VerdictOpts = () => ({})) {
   const box = document.createElement('div');
   box.className = 'checks'; box.setAttribute('role', 'status'); box.hidden = true;
-  document.body.append(box);
-  const narrow = typeof matchMedia === 'function' ? matchMedia('(max-width: 900px)') : undefined;
-  let open = !narrow?.matches;   // open on a desktop, a one-line pill on a phone
-  narrow?.addEventListener('change', () => { open = !narrow.matches; run(); });
+  (document.getElementById('view') ?? document.body).append(box);
+  let open = false;   // FX1: a one-line pill everywhere (it covered the panel, Compare cards and door handles when open); a tap opens it upward
   let timer: ReturnType<typeof setTimeout> | undefined;
   const run = () => {
     timer = undefined;
