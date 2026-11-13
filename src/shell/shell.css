@@ -116,11 +116,12 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .card.pick { cursor: pointer; grid-template-columns: 52px minmax(0, 1fr) auto; }
 .card.pick .pbody { min-width: 0; display: grid; gap: 2px; }
 .card.pick .pills { display: flex; gap: var(--s1); margin-top: 2px; }
-.card.pick .range { color: var(--text-3); font-size: var(--fs-sm); white-space: nowrap; }
+.card.pick .range { color: var(--text-3); }
+.card.pick .t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .lockbtn.on { color: var(--accent); }
 .newct { justify-self: start; }
 .pickfoot { padding: var(--s3) var(--s4); border-top: 1px solid var(--line); }
-.btn.wide { width: 100%; justify-content: center; overflow: hidden; text-overflow: ellipsis; }
+.btn.wide { width: 100%; display: block; text-align: center; overflow: hidden; text-overflow: ellipsis; }
 
 .maker { position: fixed; inset: 0; z-index: var(--z-dialog); display: grid; background: var(--bg-app);
   grid-template-columns: 400px minmax(0, 1fr); grid-template-rows: var(--header-h) minmax(0, 1fr); grid-template-areas: "head head" "form view"; }
@@ -130,7 +131,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .mview { grid-area: view; position: relative; overflow: hidden; min-width: 0; min-height: 0; }
 .mview .ov.glass { padding: 4px var(--s2); font-size: var(--fs-sm); color: var(--text-2); }
 .mview .ov b { color: var(--text); }
-.dim-h { left: 18%; top: 48%; } .dim-l { left: 50%; bottom: 96px; transform: translateX(-50%); } .dim-d { right: 9%; bottom: 200px; } .dim-b { left: 50%; top: 22%; transform: translateX(-50%); }
+.mview .ov.dims { top: var(--s3); left: var(--s3); display: flex; gap: var(--s3); flex-wrap: wrap; padding: 6px var(--s3); }
 .mfacts { bottom: var(--s4); left: 50%; transform: translateX(-50%); display: flex; gap: var(--s2); flex-wrap: wrap; justify-content: center; max-width: calc(100% - 32px); }
 .fchip { padding: 6px var(--s3); font-size: var(--fs-sm); color: var(--text-2); white-space: nowrap; }
 .mbanner { top: var(--s3); left: 50%; transform: translateX(-50%); padding: var(--s2) var(--s3) !important; display: flex; gap: var(--s2); align-items: center; }
@@ -146,5 +147,5 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 @media (max-width: 899px) {
   .maker { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 38% minmax(0, 1fr); grid-template-areas: "head" "view" "form"; }
   .mhead { flex-wrap: wrap; padding: var(--s2); height: auto; } .mhead .msub { display: none; }
-  .mform { border-right: 0; } .dim-h, .dim-d, .dim-b { display: none; } .dim-l { bottom: 56px; }
+  .mform { border-right: 0; }
 }

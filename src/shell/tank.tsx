@@ -101,7 +101,7 @@ function SitsOn({ store, S, u, open, onToggle }: { store: Store; S: TankSetup; u
   const min = p === 'furniture' ? minTop(S, tb.shape) : null;
   return (
     <Group title="Sits on" sum={sitsOnSummary(S, u)} open={open} onToggle={onToggle}>
-      <Seg label="Sits on" value={p} opts={[['floor', 'Floor'], ['stand', 'Stand'], ['furniture', 'My own furniture']]} onPick={place} />
+      <Seg label="Sits on" value={(S.stand.need === 'ask' && !S.stand.show ? '' : p) as Placement} opts={[['floor', 'Floor'], ['stand', 'Stand'], ['furniture', 'My own furniture']]} onPick={place} />
       {S.stand.need === 'ask' && !S.stand.show ? <div class="hint">Not chosen yet: the budget counts a typical stand until you pick.</div> : null}
       {p === 'stand' ? <>
         <div class="row"><span class="lbl">Style</span>
@@ -217,11 +217,11 @@ export function TankPicker({ store, preview, onClose, onMaker, libN }: { store: 
   const row = (r: PickRow) => (
     <div class={`card media pick${r.key === sel ? ' sel' : ''}${r.inUse ? ' inuse' : ''}`} role="option" aria-selected={r.key === sel} data-key={r.key} onClick={() => pick(r)} onDblClick={() => choose(r)}>
       <span class="thumb tthumb"><Icon name="tank" /></span>
-      <span class="pbody"><div class="t">{r.name}</div><div class="m">{r.meta}{r.price && !r.opt ? '' : r.price ? ` · ${r.price}` : ''}</div>
+      <span class="pbody"><div class="t">{r.name}</div><div class="m">{r.meta}{r.price ? ` · ${r.price}` : ''}</div>
+        {r.range ? <div class="m range" title="A rough finished tank at this size: lightly stocked with cheap decor at the low end, semi-professional at the high end">finished {r.range}</div> : null}
         {r.inUse || r.owned ? <div class="pills">{r.inUse ? <Pill tone="accent">In use</Pill> : null}{r.owned ? <Pill tone="ok">Owned</Pill> : null}</div> : null}</span>
       <span class="acts">
-        {r.range ? <span class="range" title="A rough finished tank at this size, lightly stocked at the low end, semi-professional at the high end">{r.range}</span> : null}
-        {r.custom ? <><span class="range">{r.price ?? ''}</span><button type="button" class="btn sm ghost" onClick={e => { e.stopPropagation(); onMaker({ how: 'lib', id: r.custom!.id }); }}>Edit</button></> : null}
+        {r.custom ? <><button type="button" class="btn sm ghost" onClick={e => { e.stopPropagation(); onMaker({ how: 'lib', id: r.custom!.id }); }}>Edit</button></> : null}
         <button type="button" class={`btn icon sm ghost lockbtn${r.locked ? ' on' : ''}`} aria-pressed={r.locked} disabled={!r.inUse}
           title={r.inUse ? (r.locked ? 'Used for sure: Discover and Suggest keep this tank. Click to release.' : 'Use this one for sure') : 'Choose this tank first, then lock it'}
           onClick={e => { e.stopPropagation(); store.edit(s => { s.locks = isLocked(s, 'tank') ? unlockObject(s, 'tank') : lockObject(s, 'tank'); }); }}><Icon name="lock" /></button>
