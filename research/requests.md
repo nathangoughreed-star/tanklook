@@ -15,9 +15,8 @@ Rules:
 
 | # | Asked (date) | Nathan's ask (short) | Chat | Branch / sha | Merged (build) = expected live by | Live check | Next step |
 |---|---|---|---|---|---|---|---|
-| R1 | 11-12 | Habitat check tile starts minimized on every load | Coordinator 23 | 7744a362 | 1870 | not yet; live 1872 should have it | C24: shot on a stocked tank |
-| R2 | 11-12 | Hard angular dark shadow patches on sand (images/7.png) | VF-C2 | claude/confident-sutherland-a9c8ce 6a19630e | batch after 1872 | - | live shot after deploy |
-| R3 | 11-12 | Leaf litter standing up and hovering (images/8.webp) | VF-C2 | same | batch after 1872 | - | live shot after deploy |
+| R2 | 11-12 | Hard angular dark shadow patches on sand (images/7.png) | VF-C2 | claude/confident-sutherland-a9c8ce 6a19630e | 1879 | **FAIL on Nathan's tank** (11-13, images/3.png: pale/dark angular patches still on the sand, seen from above) | back to VF-C2 (11-13): top-down repro, bisect by effect |
+| R3 | 11-12 | Leaf litter standing up and hovering (images/8.webp) | VF-C2 | same | 1879 | **FAIL on Nathan's tank** (11-13, images/3.png: leaves on the right stand steep / hang) | back to VF-C2 (11-13) |
 | R4 | 11-12 | HOB filter box clips through 3D backdrops (images/9.png) | CB1 | claude/cb1-cabinet-d26901 777b7745 | batch after 1872 | - | live shot; side-wall backdrops not covered |
 | R5 | 11-12 | Discover: can pan but not zoom or orbit | BG1 | claude/bg1-discover-orbit-480dad 3376ea85 | batch after 1872 | - | live shot; zoom only partly reproduced, ask Nathan how he zooms (wheel / pinch) if it still fails |
 | R6 | 11-12 | Split view: each side its own Habitat check, cost pill, Water chip | SV1 | claude/sv1-split-overlays-18cc33 1b8e5d1e | batch after 1872 | - | live shot; phone (390 px) split is crowded, follow-up |
@@ -31,4 +30,5 @@ Rules:
 
 | # | Ask | Live build | Screenshot |
 |---|---|---|---|
+| R1 | Habitat check tile starts minimized on every load | 1879 | C24 scratchpad live-R3-litter-low.png (stocked tank: tile shown as the minimized pill) |
 | C1 | FX1: Discover pill above the Water chip; Checks a compact closed pill; plain Graphics settings labels | 1869 | Coordinator 24 scratchpad live-deskT.png / live-phoneT.png (2026-11-12); labels read from the live bundle |
