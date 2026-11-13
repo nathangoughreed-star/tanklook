@@ -105,18 +105,23 @@ function shipShape(seed: number, size: number) {
   }
   // stern castle with its windows, and a lower forecastle
   const cx0 = X(0), cL = 0.2 * L, cH = 0.1 * L, cb = deckY(0.1), cw = half(0.1) * 1.8;
-  P.add(boxAt(cL, cH, cw, cx0 + cL / 2, cb + cH / 2, 0, 12, 12), WOOD, (p) => {
+  // taper: the sides lean in toward the top, the top edge slopes down toward the bow, the corners are rounded off
+  const taper = (g: THREE.BufferGeometry, x0: number, lenX: number, yb: number, hh: number, lean: number, slope: number) => {
+    const p = g.attributes.position;
+    for (let i = 0; i < p.count; i++) { const t = (p.getY(i) - yb) / hh, f = (p.getX(i) - x0) / lenX; p.setZ(i, p.getZ(i) * (1 - lean * t * (0.6 + 0.8 * f))); p.setY(i, p.getY(i) - hh * slope * t * f * f); p.setX(i, p.getX(i) - lenX * 0.06 * t * f); }
+    g.computeVertexNormals(); return g;
+  };
+  P.add(taper(boxAt(cL, cH, cw, cx0 + cL / 2, cb + cH / 2, 0, 12, 12), cx0, cL, cb, cH, 0.16, 0.45), WOOD, (p) => {
     const t = (p.y - cb) / cH, c = mix('#6b5538', '#4a3a28', 0.5 + 0.5 * nz(p.clone().multiplyScalar(0.1)));
     c.lerp(C('#3c4a2c'), 0.1); return Math.abs(((t * 6) % 1 + 1) % 1) < 0.08 ? c.multiplyScalar(0.6) : c;
   });
-  P.add(boxAt(cL * 1.06, 0.012 * L, cw * 1.04, cx0 + cL / 2, cb + cH + 0.006 * L, 0), WOOD, () => C('#5c4a33'));
-  for (let k = -1; k <= 1; k++) { // stern windows: dark glass in a brass-green frame
+    for (let k = -1; k <= 1; k++) { // stern windows: dark glass in a brass-green frame
     const wz = k * cw * 0.28, wy = cb + cH * 0.55;
     P.add(boxAt(0.006 * L, cH * 0.46, cw * 0.19, cx0 - 0.003 * L, wy, wz), SMOOTH, () => C('#171a18'));
     P.add(boxAt(0.009 * L, cH * 0.56, cw * 0.23, cx0 - 0.001 * L, wy, wz), SMOOTH, p => mix('#4f5a3f', '#6a6a44', 0.5 + 0.5 * nz(p.clone().multiplyScalar(0.3))));
   }
   const fx = X(0.82), fL = 0.1 * L, fH = 0.045 * L;
-  P.add(boxAt(fL, fH, half(0.82) * 1.7, fx, deckY(0.82) + fH / 2, 0, 6, 6), WOOD, p => mix('#6b5538', '#52402c', 0.5 + 0.5 * nz(p.clone().multiplyScalar(0.12))));
+  P.add(taper(boxAt(fL, fH, half(0.82) * 1.7, fx, deckY(0.82) + fH / 2, 0, 8, 8), fx - fL / 2, fL, deckY(0.82), fH, 0.3, 0.5), WOOD, p => mix('#6b5538', '#52402c', 0.5 + 0.5 * nz(p.clone().multiplyScalar(0.12))));
   // gun ports with the muzzle of a cannon in each, both sides
   const portU = [0.3, 0.38, 0.46, 0.54, 0.62], pa = 1.12;
   for (const sg of [-1, 1]) for (const u of portU) {
@@ -138,15 +143,23 @@ function shipShape(seed: number, size: number) {
     for (let s = 0; s < m.sails; s++) {
       const wd = (s === 0 ? 0.3 : 0.23) * L * (m.u < 0.3 ? 0.8 : 1), hd = (s === 0 ? 0.2 : 0.15) * L * (m.u < 0.3 ? 0.85 : 1), yB = yTop - hd;
       P.add(rod(V(x, yTop, -wd * 0.54), V(x, yTop, wd * 0.54), 0.0045 * L, 0.0035 * L, 6), WOOD, wood);
-      const rr = rng(seed * 31 + Math.round(m.u * 100) + s), nzs = waves(rr, 5), nzh = waves(rr, 4);
-      const sail = grid(26, 18, (u, v) => V(x + 0.012 * L + (0.06 * wd * Math.sin(Math.PI * u) * Math.sin(Math.PI * (0.1 + 0.8 * v)) + 0.02 * wd * nzs(V(u * 6, v * 4, 0))) * (0.6 + 0.4 * v),
-        yB + hd * v + 0.01 * L * Math.sin(u * 9 + s), (u - 0.5) * wd * (0.82 + 0.18 * (1 - v))),
-        (i, j) => { const rag = Math.floor((0.5 + 0.5 * nzs(V(i * 0.7, 3, 9))) * 4.2); return j < rag || nzh(V(i * 0.55, j * 0.55, s)) > 0.62 && j > 1 && j < 17; });
+      const rr = rng(seed * 31 + Math.round(m.u * 100) + s), nzs = waves(rr, 5);
+      // tattered canvas: a fine grid whose foot is cut into streamers of different lengths, a few narrow vertical tears and
+      // frayed side edges; each sail is turned a little about its mast and billows, so none is edge-on from every side
+      const NU = 48, NV = 40, ang = (rr() - 0.5) * 1.0, ca = Math.cos(ang), sa = Math.sin(ang);
+      const hash = (k: number) => { const q = Math.sin(k * 127.1 + seed * 31.7 + s * 11.3) * 43758.5453; return q - Math.floor(q); };
+      const foot = Array.from({ length: NU }, (_, i) => Math.floor(Math.pow(hash(i >> 1), 1.6) * 0.34 * NV + 0.25 * NV * 0.15 * (0.5 + 0.5 * nzs(V(i * 0.4, 1, 2)))));
+      const slits = Array.from({ length: 3 }, (_, k) => ({ i: 6 + Math.floor(hash(k + 5) * (NU - 12)), j0: Math.floor(NV * (0.35 + 0.3 * hash(k + 9))), n: 6 + Math.floor(hash(k + 13) * 12) }));
+      const sail = grid(NU, NV, (u, v) => {
+        const bil = 0.11 * wd * Math.sin(Math.PI * u) * Math.sin(Math.PI * (0.08 + 0.84 * v)) + 0.025 * wd * nzs(V(u * 6, v * 4, 0));
+        const dx = (bil * (0.6 + 0.4 * v) + 0.012 * L) , dz = (u - 0.5) * wd * (0.82 + 0.18 * (1 - v));
+        return V(x + dx * ca - dz * sa, yB + hd * v + 0.008 * L * Math.sin(u * 9 + s), dx * sa + dz * ca);
+      }, (i, j) => j < foot[i] || (i < 1 || i > NU - 2) && hash(i * 7 + j) < 0.35 + 0.4 * (1 - j / NV) || slits.some(t => i === t.i + (j - t.j0 > t.n / 2 ? 0 : 0) && j >= t.j0 && j < t.j0 + t.n));
       P.add(faceAway(sail, V(-1000 * L, 0, 0)), SMOOTH, (p, i) => {
-        const iu = Math.floor(i / 19), v = (p.y - yB) / hd;
+        const iu = Math.floor(i / 41), v = (p.y - yB) / hd;
         const c = mix('#dccfb0', '#b9ac8b', 0.5 + 0.5 * nzs(p.clone().multiplyScalar(0.07)));
         c.lerp(C('#82795a'), 0.5 * sm(0.5, 0, v)).lerp(C('#4a5a38'), 0.12 * sm(0.4, 0, v)); // grime and algae toward the foot
-        return c.multiplyScalar(iu % 5 === 0 ? 0.86 : 1);
+        return c.multiplyScalar(iu % 6 === 0 ? 0.88 : 1);
       });
       yTop = yB - 0.01 * L;
     }
@@ -218,10 +231,10 @@ function chestShape(seed: number, size: number) {
   // rivets along the front bands
   for (const bx of [-0.34 * s, 0.34 * s]) for (let k = 0; k < 5; k++) P.add(new THREE.SphereGeometry(0.0085 * s, 6, 5).translate(bx, h * (0.1 + 0.2 * k), d / 2 + 0.01 * s), SMOOTH, () => C('#4a4c50'));
   // brass lock plate on the front, with its keyhole
-  P.add(boxAt(0.11 * s, 0.14 * s, 0.012 * s, 0, h * 0.8, d / 2 + 0.004 * s), SMOOTH, p => mix('#a98a3c', '#c2a24c', 0.5 + 0.5 * nz(p.clone().multiplyScalar(0.6))));
+  P.add(boxAt(0.11 * s, 0.14 * s, 0.012 * s, 0, h * 0.8, d / 2 + 0.004 * s), SMOOTH, p => mix('#7c6430', '#94793a', 0.5 + 0.5 * nz(p.clone().multiplyScalar(0.6))));
   P.add(boxAt(0.012 * s, 0.03 * s, 0.004 * s, 0, h * 0.8, d / 2 + 0.011 * s), SMOOTH, () => C('#14110d'));
   // the heap of coins in the open body, and a few spilled in front
-  const gold = () => mix('#b8922a', '#e0bc54', r()).multiplyScalar(0.88 + 0.2 * r());
+  const gold = () => mix('#564520', '#7a6532', r()).multiplyScalar(0.8 + 0.2 * r());
   const rc = 0.032 * s, coin = (x: number, y: number, z: number, tiltX: number, tiltZ: number, spin: number) => {
     const g = new THREE.CylinderGeometry(rc, rc, 0.006 * s, 12).rotateY(spin).rotateX(tiltX).rotateZ(tiltZ).translate(x, y, z);
     const c = gold(); P.add(g, SMOOTH, p => c.clone().multiplyScalar(0.94 + 0.1 * Math.sin(p.x * 2 + p.z)));
