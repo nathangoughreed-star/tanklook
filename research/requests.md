@@ -27,12 +27,12 @@ Rules:
 | R14 | 11-13 | Discover button off the viewer; only in the left menu | HM3 | - | - | - | lane started |
 | R15 | 11-13 | Split view: shared controls (View, Another moment) in one cluster top-middle between the views | HM3 | - | - | - | lane started |
 | R16 | 11-13 | Split view: a "Notes" section per side with that tank's warnings | HM3 | - | - | - | lane started |
-| R17 | 11-13 | Split tab ("A  Stocking 58% ▾"): should highlight the differences between the two tanks | - | - | - | - | asked Nathan: today it only shows "N diffs" when the setups differ, the list on hover |
 
 ## Closed (seen on live)
 
 | # | Ask | Live build | Screenshot |
 |---|---|---|---|
+| R17 | Split tab differences: no change, Nathan 11-13 "Hover is fine" (the tab shows "N diffs", the list on hover) | - | - |
 | R5 | Discover: orbit works while a preview shows (zoom: Nathan's case only partly reproduced; reopen if he still can't zoom) | 1880 | BG1 live-2-preview-showing-wheel/orbit.png: Map 90° left -> 144° left with the Dutch Garden preview up (11-13) |
 | R6 | Split view: each side its own Habitat check, cost pill, Water chip | 1879 | Nathan's own live screenshot images/4.webp (11-13) |
 | R4 | HOB filter box no longer clips through a 3D backdrop (Nathan's tank, rock) | 1879 | C24 scratchpad sw-R4-hob-rock.png (11-13) |
