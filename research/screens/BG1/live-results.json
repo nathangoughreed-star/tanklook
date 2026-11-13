@@ -1,0 +1,88 @@
+{
+ "build": "build 1880",
+ "pill": true,
+ "prev": true,
+ "out": [
+  {
+   "state": "0-no-discover",
+   "g": "wheel",
+   "ok": true,
+   "eyeChanged": false,
+   "eye0": "",
+   "eye1": "",
+   "pixelsChanged": true
+  },
+  {
+   "state": "0-no-discover",
+   "g": "orbit",
+   "ok": true,
+   "eyeChanged": false,
+   "eye0": "",
+   "eye1": "",
+   "pixelsChanged": true
+  },
+  {
+   "state": "0-no-discover",
+   "g": "pan",
+   "ok": true,
+   "eyeChanged": false,
+   "eye0": "",
+   "eye1": "",
+   "pixelsChanged": true
+  },
+  {
+   "state": "1-card-open",
+   "g": "wheel",
+   "ok": true,
+   "eyeChanged": false,
+   "eye0": "",
+   "eye1": "",
+   "pixelsChanged": true
+  },
+  {
+   "state": "1-card-open",
+   "g": "orbit",
+   "ok": true,
+   "eyeChanged": false,
+   "eye0": "",
+   "eye1": "",
+   "pixelsChanged": true
+  },
+  {
+   "state": "1-card-open",
+   "g": "pan",
+   "ok": true,
+   "eyeChanged": false,
+   "eye0": "",
+   "eye1": "",
+   "pixelsChanged": true
+  },
+  {
+   "state": "2-preview-showing",
+   "g": "wheel",
+   "ok": true,
+   "eyeChanged": false,
+   "eye0": "",
+   "eye1": "",
+   "pixelsChanged": true
+  },
+  {
+   "state": "2-preview-showing",
+   "g": "orbit",
+   "ok": true,
+   "eyeChanged": false,
+   "eye0": "",
+   "eye1": "",
+   "pixelsChanged": true
+  },
+  {
+   "state": "2-preview-showing",
+   "g": "pan",
+   "ok": true,
+   "eyeChanged": false,
+   "eye0": "",
+   "eye1": "",
+   "pixelsChanged": true
+  }
+ ]
+}
