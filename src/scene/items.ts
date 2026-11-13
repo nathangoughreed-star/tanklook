@@ -16,7 +16,9 @@ export interface Variant { kind: ItemKind; label: string; hint: string; size: nu
   /** limestone: dissolves, so it raises pH and hardness (right for rift lakes and brackish water, wrong for soft or blackwater tanks; lane BL1) */ hardens?: true }
 /** Artificial plants (lane P4, 2026-10-20): the material (silk: soft fabric leaves that drape; plastic: stiff, glossy,
  *  moulded) and the form. They never grow, need no light, CO2 or fertiliser and take up no nitrate: a decoration bought once. */
-export interface Fake { mat: 'silk' | 'plastic'; form: 'stem' | 'rosette' | 'mat' }
+export type FakeTint = 'pink' | 'purple' | 'red' | 'blue' | 'orange';
+/** `tint` (lane DS3): a dyed colour instead of the greens, as sold (pink, purple, red, blue, orange silk and plastic plants). */
+export interface Fake { mat: 'silk' | 'plastic'; form: 'stem' | 'rosette' | 'mat'; tint?: FakeTint }
 /** An artificial plant's width per height (a mat: its height per width). */
 export const FAKE_ASPECT: Record<Fake['form'], number> = { stem: 0.5, rosette: 0.95, mat: 0.2 };
 export const isFake = (it: Pick<Item, 'kind'>) => it.kind === 'artificial';
@@ -46,6 +48,7 @@ export const LIBRARY: Record<string, Variant> = {
   dish: { kind: 'cave', label: 'Water dish (ceramic)', hint: 'A shallow glazed bowl holding clear water: a drinking and soaking dish for reptiles, amphibians and small mammals. Size = width.', size: 120, min: 40, max: 400 },
   stonedish: { kind: 'cave', label: 'Water dish (stone)', hint: 'A shallow bowl of grey stone holding clear water: a drinking dish or a feeding bowl. Size = width.', size: 120, min: 40, max: 400 },
   shipwreck: { kind: 'ornament', label: 'Sunken sailing ship', hint: 'A three-masted wooden ship settled on the bottom, canvas in tatters. Size = hull length: typical products are 6 in (small), 10 in (medium) and 15 in (large).', size: 254, min: 100, max: 900 },
+  castle: { kind: 'ornament', label: 'Resin castle', hint: 'A moulded resin castle: corner towers with battlements and cone roofs, a keep, and a gate arch fish swim through. Size = width: typical products are 6 in (small), 10 in (medium) and 14 in (large).', size: 254, min: 100, max: 700 },
   treasurechest: { kind: 'ornament', label: 'Treasure chest', hint: 'An oak sea chest with iron bands, lid open on a heap of gold coins. Size = width.', size: 110, min: 50, max: 300 },
   fern: { kind: 'plant', label: 'Java fern', hint: 'Grows on wood and rock.', size: 150, min: 30, max: 450 },
   anubias: { kind: 'plant', label: 'Anubias', hint: 'Grows on wood and rock.', size: 90, min: 25, max: 300 },
@@ -101,6 +104,11 @@ export const LIBRARY: Record<string, Variant> = {
   silksword: { kind: 'artificial', label: 'Silk sword plant', hint: 'Artificial: a rosette of long fabric sword leaves that arch over, on a weighted base. Never grows, needs no light.', size: 200, min: 80, max: 600, fake: { mat: 'silk', form: 'rosette' } },
   plasticsword: { kind: 'artificial', label: 'Plastic sword plant', hint: 'Artificial: a stiff rosette of glossy moulded sword leaves, on a weighted base. Never grows, needs no light.', size: 200, min: 80, max: 600, fake: { mat: 'plastic', form: 'rosette' } },
   silkmoss: { kind: 'artificial', label: 'Silk moss mat', hint: 'Artificial: a flat mat tufted with soft fabric moss. Lay it on the ground or raise it onto wood or rock. Size = width.', size: 180, min: 40, max: 300, fake: { mat: 'silk', form: 'mat' } },
+  // tinted artificial plants (lane DS3, 2026-11-13): real product colours
+  silkstempink: { kind: 'artificial', label: 'Pink silk plant', hint: 'Artificial: soft fabric leaves in pink up wired stems, on a weighted base. A colourful decoration; never grows, needs no light; safe for long-finned fish.', size: 200, min: 80, max: 600, fake: { mat: 'silk', form: 'stem', tint: 'pink' } },
+  silkstemred: { kind: 'artificial', label: 'Red silk plant', hint: 'Artificial: soft fabric leaves in red up wired stems, on a weighted base. A colourful decoration; never grows, needs no light; safe for long-finned fish.', size: 200, min: 80, max: 600, fake: { mat: 'silk', form: 'stem', tint: 'red' } },
+  plasticswordpurple: { kind: 'artificial', label: 'Purple plastic sword plant', hint: 'Artificial: a stiff rosette of glossy purple moulded sword leaves, on a weighted base. Never grows, needs no light.', size: 200, min: 80, max: 600, fake: { mat: 'plastic', form: 'rosette', tint: 'purple' } },
+  plasticstemblue: { kind: 'artificial', label: 'Blue plastic plant', hint: 'Artificial: stiff moulded stems in whorls of glossy blue leaves, on a weighted base. Never grows, needs no light; hard edges can tear long fins.', size: 200, min: 80, max: 600, fake: { mat: 'plastic', form: 'stem', tint: 'blue' } },
   plasticmoss: { kind: 'artificial', label: 'Plastic moss mat', hint: 'Artificial: a flat mat bristling with short stiff plastic blades. Lay it on the ground or raise it onto wood or rock. Size = width.', size: 180, min: 40, max: 300, fake: { mat: 'plastic', form: 'mat' } },
   // corals (2026-10-14): size = width
   acropora: { kind: 'coral', label: 'Branching coral', hint: 'An Acropora-style colony of branches with pale tips. Size = width.', size: 160, min: 40, max: 500, salt: true },
@@ -331,7 +339,7 @@ export function spreadMax(T: Tank, x?: number, depth?: number) {
 }
 
 /** Bounding box of each ornament per unit size (x length, y height, z depth), measured from the built shape (test/ds2-ornament.test.ts keeps it honest). */
-export const ORNAMENT_ASPECT: Record<string, [number, number, number]> = { shipwreck: [1.11, 0.745, 0.4], treasurechest: [1.02, 0.9, 1] };
+export const ORNAMENT_ASPECT: Record<string, [number, number, number]> = { shipwreck: [1.11, 0.745, 0.4], treasurechest: [1.02, 0.9, 1], castle: [1.04, 0.95, 0.7] };
 export function itemDims(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size' | 'spread' | 'growth'>): V3 {
   const s = it.kind === 'plant' ? grownSize(it.variant as PlantType, it.size, it.growth) : it.size; // a plant at its growth
   if (it.kind === 'stone') return stoneDims(it.variant, it.seed, s);

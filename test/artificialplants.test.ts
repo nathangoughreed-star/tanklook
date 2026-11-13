@@ -22,8 +22,8 @@ const tank = (variants: string[] = FAKES): TankSetup => {
 };
 
 describe('artificial plants: data', () => {
-  it('six variants, silk and plastic, in each form, all of kind artificial', () => {
-    expect(FAKES.sort()).toEqual(['plasticmoss', 'plasticstem', 'plasticsword', 'silkmoss', 'silkstem', 'silksword']);
+  it('six green variants plus the DS3 tinted ones, silk and plastic, in each form, all of kind artificial', () => {
+    expect(FAKES.sort()).toEqual(['plasticmoss', 'plasticstem', 'plasticstemblue', 'plasticsword', 'plasticswordpurple', 'silkmoss', 'silkstem', 'silkstempink', 'silkstemred', 'silksword']);
     for (const v of FAKES) {
       const f = LIBRARY[v].fake!;
       expect(v.startsWith(f.mat), v).toBe(true);
