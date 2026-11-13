@@ -4,6 +4,7 @@
 // every ticked item is answered: tick what you have; ticking Tank opens the tank menu, and Light, Heater and Filter open their
 // own pick list (the exact product, or "Not sure, use a generic one"). Each answer is applied to the tank as it is made, so the
 // tank behind the sheet is the one being described. Done stays off until each ticked item has an answer.
+import { aquariumOnly } from '../scope';
 import { FILTER_PRODUCTS, HEATER_PRODUCTS, genericHeaterW, lightProduct, lightsFor, productName } from '../data/gearCatalog';
 import { lightGroups, ratedGroups, type GearGroup } from './gearGroups';
 import { applyLightProduct } from '../scene/lightproduct';
@@ -270,7 +271,7 @@ export function mountOwnedSheet(store: Store, o: OwnedHost, root: HTMLElement, o
     const ent = [...OWNED_ITEMS.filter(x => st.on.has(x.id)).map(x => ({ k: x.id as string, h: coreRow(x) })), ...(haveStand ? [{ k: 'stand', h: standRow }] : []), ...moreIds.filter(k => owned[k] !== undefined).map(k => ({ k: k as string, h: moreRow(k) }))];
     const isMust = (k: string) => k !== 'stand' && equipUseOf(b, k as OwnedKey) === 'required', must = ent.filter(e => isMust(e.k)).map(e => e.h), avail = ent.filter(e => !isMust(e.k)).map(e => e.h);
     const have = avail;
-    const absent = MY_EQUIPMENT_IDS.filter(id => id === 'stand' ? !haveStand : (OWNED_ITEMS.some(x => x.id === id) ? !st.on.has(id as OwnedItem) : owned[id as OwnedKey] === undefined));
+    const absent = MY_EQUIPMENT_IDS.filter(id => !(aquariumOnly() && id === 'dryheat')).filter(id => id === 'stand' ? !haveStand : (OWNED_ITEMS.some(x => x.id === id) ? !st.on.has(id as OwnedItem) : owned[id as OwnedKey] === undefined));
     root.innerHTML = `${opts.title ? '<form method="dialog" class="libhead"><h2 id="ownTitle">My equipment</h2><button value="close" aria-label="Close">✕</button></form>' : ''}
       <section class="ownarea" aria-label="What I have"><h3 class="ownh">What I have</h3>
       <p class="hint">Gear you already own. Pick the exact product, or the generic one if you do not know. <b>Must use</b> gear is in every design. <b>Have available</b> gear is used wherever it suits (it costs $0), and you get a warning if the design outgrows it.</p>

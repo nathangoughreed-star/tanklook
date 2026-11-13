@@ -12,6 +12,7 @@
 // or auto-water-changer time savings: the build's own gear and the engine's own totals decide), costs and minutes are estimates, and when nothing
 // qualifies the answer is exactly NO_SUGGESTION, never "impossible", with the closest misses (what limit to raise) listed apart, never as fits.
 // Deterministic: fixed archetype order, scores, ties by id. Only the guardrails are filters; appeal tags only rank.
+import { kindInScope } from '../scope';
 import data from '../data/archetypes.json';
 import { getSpecies } from '../data/species';
 import { bandOf, getTankModel, modelOfVariant, tankFromModel } from '../data/tanks';
@@ -663,7 +664,7 @@ function poolOf(w: Wants, P0: UserProfile, units: Units, now: number): PoolRun {
   const pool: Proposal[] = [], misses: Miss[] = [];
   const stats = { pool: 0, rejectedWelfare: 0, rejectedConstraint: 0 };
   const locked = w.animals?.some(a => a.n > 0) ? lockedArchetype(w.animals) : undefined, isLocked = !!w.animals?.some(a => a.n > 0);
-  const wantKinds = w.kinds?.length ? w.kinds : KINDS.map(k => k.id), groups = w.groups?.length ? w.groups : DRY_GROUPS.map(g => g.id);
+  const wantKinds = (w.kinds?.length ? w.kinds : KINDS.map(k => k.id)).filter(kindInScope), groups = w.groups?.length ? w.groups : DRY_GROUPS.map(g => g.id);
   const wanted = isLocked ? (locked ? [locked] : []) : ARCHETYPES.filter(a => wantKinds.includes(a.kind) && (!a.group || groups.includes(a.group)));
   const cap = C.startupUsd?.on ? C.startupUsd.value : undefined, ownedMap = w.owned ?? {};
   const { attempt, finalize, st } = conceptMaker(w, P0, units, now);

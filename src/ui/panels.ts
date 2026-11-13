@@ -1,5 +1,6 @@
 // Sidebar wiring. Inputs write through store.update(); one sync() pulls every control back from the scene,
 // so undo/redo, file open and pointer drags all refresh the panels the same way.
+import { aquariumOnly, kindInScope, PAUSED_NOTE, scopeSpecies } from '../scope';
 import { FOCUS_SECS, type FocusSec } from '../render/menuFocus';
 import { projectExtras, rulesOf } from '../scene/brief';
 import { setNoNewEquipment, setDirection } from '../scene/project';
@@ -40,7 +41,7 @@ import { darkOf, darkStats } from '../render/lightShells';
 import { gateOf, hasCorals, whysAnimal, type AnimalWhy } from '../scene/animalfit';
 import { minFit } from '../scene/tankMin';
 import { startCount, pickerReader } from './pickerStrict';
-import { OK_FIT, ROLES, SETUP_KINDS, applyKind, fitFrom, groupPicker, offeredIn, roleOf, rolesFor, tankKind, type Fit, type Role, type SetupKind } from '../scene/pickerKind';
+import { OK_FIT, ROLES, SETUP_KINDS, setupKinds, applyKind, fitFrom, groupPicker, offeredIn, roleOf, rolesFor, tankKind, type Fit, type Role, type SetupKind } from '../scene/pickerKind';
 import { CARE, EXPERTISE_NAME } from '../data/care';
 import { CARE_NAME, FIT_PAR, fitCaption, whyNot, type FitLight } from '../scene/plantfit';
 import { itemLights, tankSummary } from '../scene/lightcheck';
@@ -53,7 +54,7 @@ import { BANDS, TANK_MODELS, dimsInches, modelOfVariant, soleProduct, saleLive, 
 import { pinPreset } from '../demand/pinned';
 import { applyTankPick, unholdBtn } from './tankPick';
 import { breakNote, CUSTOM_LABEL, includesNote, locksOf, lockNote, mayChange, productLabel, releaseProduct, type Held } from '../scene/integrated';
-import { COMPS, DEFAULT_DENS, STYLE_GROUPS, STYLE_KIND, isLandStyle, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
+import { COMPS, DEFAULT_DENS, styleGroups, variantInScope, STYLE_KIND, isLandStyle, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
 import { handEdits, randomStyle, shuffleHard } from '../scene/starter';
 import { styleGround } from '../scene/scapeground';
 import { growthOf, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
@@ -92,7 +93,7 @@ import { FEED_NAMES, beginGrow, endGrow, setGrowTime, setPlantGrowth, timeChange
 import { syncBroods } from '../scene/propagate';
 import { GLASS_CHOICES, LIMITS, SceneError, parseScene } from '../scene/validate';
 import { deleteFromLib, libText, listLib, loadFromLib, saveToLib } from '../scene/library';
-import { EXAMPLES, exampleScenes } from '../examples';
+import { EXAMPLES, examplesInScope, exampleScenes } from '../examples';
 import { LONG_LINK, readShare, shareUrl } from '../scene/share';
 import { getImage, putImage, readPicture, sceneImageIds, sidesTouch, withImages } from '../scene/images';
 import { setParGuideSalt } from './parGuide';
@@ -158,6 +159,11 @@ export function attachPanels(store: Store, viewer: Viewer) {
     el.textContent = msg; el.hidden = false; el.classList.toggle('bad', bad);
     clearTimeout(statusTimer); statusTimer = window.setTimeout(() => { el.hidden = true; }, bad ? 9000 : 4000);
   }
+
+  // AQ1: a saved or shared terrarium / paludarium still opens as saved; in aquarium scope it says so (src/scope.ts)
+  const noteOutOfScope = () => { if (aquariumOnly() && !kindInScope(tankKind(store.tank))) { status(PAUSED_NOTE); clearTimeout(statusTimer); statusTimer = window.setTimeout(() => { $('status').hidden = true; }, 9000); } };
+  store.subscribe(k => { if (k === 'load') noteOutOfScope(); });
+  setTimeout(noteOutOfScope, 600);   // the scene restored at start-up
 
   // ---------- File: new / open / save / name / undo ----------
   for (const id of ['undo']) $(id).onclick = () => store.undo();   // HM2: Undo / Redo live atop the left panel; the view bar copies show only while it is collapsed
@@ -250,7 +256,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // otherwise share it with them), so it has arrived before a click; a click before that waits for it
   function renderExamples(id = 'startEx') {
     const box = $<HTMLDivElement>(id);
-    if (!box.childElementCount) box.innerHTML = EXAMPLES.map(x =>
+    if (!box.childElementCount) box.innerHTML = examplesInScope().map(x =>
       `<div class="libcard"><button class="libopen" data-ex="${esc(x.id)}" title="${esc(x.hint)}">` +
       `<img src="${esc(x.thumb)}" alt=""><b>${esc(x.name)}</b><span class="hint">${esc(x.hint)}</span></button></div>`).join('');
     Promise.allSettled([...box.querySelectorAll('img')].map(i => i.decode()))
@@ -829,7 +835,7 @@ Cancel, then change the name, to keep both.`)) return;
     const n = misfits(S()).length;
     status(`${SETUP_KINDS.find(x => x[0] === k)![1]}: the Animals list shows what suits it.${n ? ` ${n} animal${n > 1 ? 's' : ''} here ${n > 1 ? 'do' : 'does'} not fit the water: they are marked in the stocking list.` : ''}`);
   };
-  kinds.replaceChildren(...SETUP_KINDS.map(([k, label, tip]) => { const b = document.createElement('button'); b.dataset.kind = k; b.textContent = label; b.title = tip; b.onclick = () => setKind(k); return b; }));
+  kinds.replaceChildren(...setupKinds().map(([k, label, tip]) => { const b = document.createElement('button'); b.dataset.kind = k; b.textContent = label; b.title = tip; b.onclick = () => setKind(k); return b; }));
   /** What each care level asks of the keeper: rough, typical aquarium / vivarium practice, not a rule. */
   const CARE_LEVEL: Record<1 | 2 | 3, string> = {
     1: 'Hardy, forgiving animals that take small mistakes: a basic filter or a simple setup, a weekly water change of about a quarter, and 15 to 30 minutes of care a week.',
@@ -857,7 +863,7 @@ Cancel, then change the name, to keep both.`)) return;
     for (const b of kinds.children as HTMLCollectionOf<HTMLButtonElement>) { const on = b.dataset.kind === kind; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); }
     // chips: All, then one per role group this kind of setup has (a group with nothing here is not shown, not shown as 0)
     const counts = new Map<Role, number>();
-    for (const sp of SPECIES) if (offeredIn(sp, kind)) counts.set(roleOf(sp), (counts.get(roleOf(sp)) ?? 0) + 1);
+    for (const sp of scopeSpecies(SPECIES)) if (offeredIn(sp, kind)) counts.set(roleOf(sp), (counts.get(roleOf(sp)) ?? 0) + 1);
     const chips = [[undefined, 'All', [...counts.values()].reduce((a, n) => a + n, 0)] as const, ...rolesFor(kind).filter(r => counts.has(r)).map(r => [r, ROLES.find(x => x[0] === r)![1], counts.get(r)!] as const)];
     if (role && !counts.has(role)) role = undefined;
     cats.replaceChildren(...chips.map(([k, label, n]) => {
@@ -1103,7 +1109,7 @@ Cancel, then change the name, to keep both.`)) return;
   // aquarium grounds, then the terrestrial ones (lane T1), each kind under its own heading
   const subOpts = (terra: boolean) => Object.entries(SUBSTRATES).filter(([, t]) => !!t.terra === terra).map(([k, t]) => `<option value="${k}">${esc(t.label)}</option>`).join('');
   $<HTMLSelectElement>('subType').innerHTML = '<option value="bare">Bare bottom (no substrate)</option>' +
-    `<optgroup label="Aquarium">${subOpts(false)}</optgroup><optgroup label="Terrarium">${subOpts(true)}</optgroup>` +
+    `<optgroup label="Aquarium">${subOpts(false)}</optgroup>${aquariumOnly() ? '' : `<optgroup label="Terrarium">${subOpts(true)}</optgroup>`}` +
     '<option value="custom">Custom grain and colour</option>';
   // leaf litter (lane T1): a leaf look, a density (0 = none) and a Shuffle for where the leaves fall
   $<HTMLSelectElement>('litLeaf').innerHTML = [['mixed', 'Mixed leaves'], ['oak', 'Oak'], ['magnolia', 'Magnolia'], ['catappa', 'Indian almond (catappa)']]
@@ -1427,7 +1433,7 @@ Cancel, then change the name, to keep both.`)) return;
     $('layoutHint').textContent = anyStyle ? `Any style: each Shuffle draws a new style too${s.layout.id === 'none' ? '' : ` (now ${LAYOUTS[s.layout.id].label})`}.` : s.layout.id === 'none' && s.items.length ? 'A starter set replaces every piece; or add, move and remove pieces yourself.' : LAYOUTS[s.layout.id].hint;
     ($('layoutShuffle') as HTMLButtonElement).disabled = s.layout.id === 'none' && !anyStyle;
   };
-  $<HTMLSelectElement>('layout').innerHTML = '<option value="any" title="Every Shuffle draws a new style as well. Pick a style to keep the shuffles to it">Any style (random)</option>' + styleOpt('none') + STYLE_GROUPS.map(g => `<optgroup label="${g.label}">${g.ids.map(styleOpt).join('')}</optgroup>`).join('');
+  $<HTMLSelectElement>('layout').innerHTML = '<option value="any" title="Every Shuffle draws a new style as well. Pick a style to keep the shuffles to it">Any style (random)</option>' + styleOpt('none') + styleGroups().map(g => `<optgroup label="${g.label}">${g.ids.map(styleOpt).join('')}</optgroup>`).join('');
   $<HTMLSelectElement>('layoutComp').innerHTML = Object.entries(COMPS).map(([k, c]) => `<option value="${k}" title="${esc(c.hint)}">${esc(c.label)}</option>`).join('');
   // a starter set replaces every piece (undoable), and the animals when its animal stop is above None; the pieces are
   // then ordinary items
@@ -1614,7 +1620,7 @@ Cancel, then change the name, to keep both.`)) return;
   // stones, wood and caves under Hardscape; plants and corals under Plants (Nathan 2026-10-14)
   // live rock and corals (data-salt) show in a saltwater tank only: render() toggles them
   const libHtml = (sec: ScapeSec) => (Object.keys(KINDS) as ItemKind[]).filter(k => scapeSec(k) === sec).map(k => `<div class="libRow"${k === 'coral' ? ' data-salt' : ''}><span class="flabel">${KINDS[k]}</span><div class="chips">${
-    Object.entries(LIBRARY).filter(([, v]) => v.kind === k).map(([id, v]) => `<button data-lib="${id}"${v.salt ? ' data-salt' : ''} title="Add: ${esc(v.hint)}">${esc(v.label)}</button>`).join('')}</div></div>`).join('');
+    Object.entries(LIBRARY).filter(([id, v]) => v.kind === k && variantInScope(id)).map(([id, v]) => `<button data-lib="${id}"${v.salt ? ' data-salt' : ''} title="Add: ${esc(v.hint)}">${esc(v.label)}</button>`).join('')}</div></div>`).join('');
   $('libHard').innerHTML = libHtml('hardscape'); $('libPlant').innerHTML = libHtml('plants');
   /** "Show only tank-appropriate plants" (lane AD, 2026-10-16): the plants (corals in a reef) that do not suit the tank's light and
    *  care sink below their row, grayed, each with its reason. Needs a light level (Plants fit, or the fixture's Power set) and a
@@ -2034,7 +2040,7 @@ Cancel, then change the name, to keep both.`)) return;
     cl.hidden = !rows.length;
     cl.classList.toggle('open', climateOpen);
     cl.innerHTML = climateHtml(s, climateOpen, store.scene.units === 'in');
-    const st = $('stocking'), issues = [...herpCheck(s), ...growthCheck(s)]; // S228: young fish get a growth line too
+    const st = $('stocking'), issues = [...(aquariumOnly() ? [] : herpCheck(s)), ...growthCheck(s)]; // S228: young fish get a growth line too
     st.hidden = !issues.length;
     { const nw = issues.filter(i => i.level === 'warn').length, nn = issues.length - nw;
       const head = [nw && `${nw} warning${nw > 1 ? 's' : ''}`, nn && `${nn} note${nn > 1 ? 's' : ''}`].filter(Boolean).join(', ');

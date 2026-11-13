@@ -24,13 +24,17 @@ export const EMPTY_LIBRARY = 'No saved tanks yet in this browser';
 export const libraryState = (n: number): 'empty' | 'list' => n > 0 ? 'list' : 'empty';
 
 /** AB4 (Discovery v2 spec 2.1): the one habitat question. A paludarium is the app's `vivarium` kind; "I don't know yet" starts the default (freshwater) empty project. */
+import { aquariumOnly, kindInScope } from '../scope';
 import type { HabitatDirection } from '../scene/discoveryTypes';
 import type { SetupKind } from '../scene/pickerKind';
-export const HABITAT_CHOICES: readonly { id: HabitatDirection; label: string; tip: string }[] = [
+export const ALL_HABITAT_CHOICES: readonly { id: HabitatDirection; label: string; tip: string }[] = [
   { id: 'freshwater', label: 'Freshwater aquarium', tip: 'Fish, shrimp, snails and plants in fresh water' },
   { id: 'saltwater', label: 'Saltwater aquarium', tip: 'A marine fish tank or reef' },
   { id: 'terrarium', label: 'Terrarium', tip: 'A dry or humid land enclosure' },
   { id: 'paludarium', label: 'Paludarium', tip: 'Water and land together' },
   { id: 'unsure', label: 'I don’t know yet', tip: 'Start empty; Discover can show every kind' },
 ];
+/** The choices offered in this scope (src/scope.ts): the aquariums only, and no "I don't know yet" that would show other kinds. */
+export const habitatChoices = (): readonly { id: HabitatDirection; label: string; tip: string }[] => aquariumOnly() ? ALL_HABITAT_CHOICES.filter(c => kindInScope(kindOfDirection(c.id)) && c.id !== 'unsure') : ALL_HABITAT_CHOICES;
+export const HABITAT_CHOICES = ALL_HABITAT_CHOICES;
 export const kindOfDirection = (d: HabitatDirection): SetupKind => d === 'paludarium' ? 'vivarium' : d === 'unsure' ? 'freshwater' : d;

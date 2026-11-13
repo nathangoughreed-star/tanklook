@@ -3,11 +3,12 @@
 // search. Each picture is a still of the same 3D model the tank draws, baked ahead of time into public/gallery/<look>.webp so the page
 // loads pictures, not 3D (live renders took ~20 s for all 84); an animal with no baked file is drawn live once and kept. Picking a tile hands
 // the id to the stocking screen, which then shows the bare tank sized for it.
+import { scopeSpecies, speciesInScope } from '../scope';
 import { CARE } from '../data/care';
 import { HERP, herpGroup } from '../data/herpstock';
 import { TANK_MODELS } from '../data/tanks';
 import type { Units } from '../scene/types';
-import { CATEGORIES, SPECIES, searchSpecies, speciesTag, type Category, type Species } from '../data/species';
+import { categoriesInScope, SPECIES, searchSpecies, speciesTag, type Category, type Species } from '../data/species';
 import { drawFishCard } from '../art/placeholder';
 import { SpeciesPreview } from '../render/preview3d';
 
@@ -138,10 +139,10 @@ export function attachStockGallery(view: HTMLElement, pick: (id: string) => void
       ];
       return runs.filter(([, , r]) => r.length).map(([h, note, r]) => `<h3>${h}</h3>${note ? `<p class="sgRunNote">${note}</p>` : ''}<ul class="sgGrid">${r.map(m => tile(m.sp, m)).join('')}</ul>`).join('');
     }
-    const found = q.trim() ? searchSpecies(q) : SPECIES;
+    const found = q.trim() ? searchSpecies(q) : scopeSpecies(SPECIES);
     const rows = found.filter(s => !s.id.includes('~') && (!cat || s.cat === cat));
     if (!rows.length) return '<p class="sgNone">No animal by that name.</p>';
-    const groups = CATEGORIES.filter(([k]) => !cat || k === cat).map(([k, label]) => [label, rows.filter(s => s.cat === k)] as const).filter(([, r]) => r.length);
+    const groups = categoriesInScope().filter(([k]) => !cat || k === cat).map(([k, label]) => [label, rows.filter(s => s.cat === k)] as const).filter(([, r]) => r.length);
     return groups.map(([label, r]) => `<h3>${label}</h3><ul class="sgGrid">${r.map(x => tile(x)).join('')}</ul>`).join('');
   };
 
@@ -151,7 +152,7 @@ export function attachStockGallery(view: HTMLElement, pick: (id: string) => void
 
   const build = () => {
     built = true;
-    const hero = HERO.map(id => SPECIES.find(s => s.id === id)).filter((s): s is Species => !!s);
+    const hero = HERO.map(id => SPECIES.find(s => s.id === id)).filter((s): s is Species => !!s && speciesInScope(s));
     el.innerHTML = `<div class="sgHero" aria-hidden="true">${hero.map((s, i) => {
       const r = seeded(i * 97 + 13), [top, bot] = SCENE_BG[s.cat] ?? SCENE_BG['fw-fish'], wide = r() < 0.28, tall = !wide && r() < 0.2;
       const turn = (r() < 0.5 ? -1 : 1) * 1, tilt = Math.round((r() - 0.5) * (s.cat === 'fw-fish' || s.cat === 'sw-fish' ? 22 : 8));
@@ -160,7 +161,7 @@ export function attachStockGallery(view: HTMLElement, pick: (id: string) => void
     }).join('')}</div>
 <div class="sgIntro"><h1>Which animal do you have in mind?</h1><p>Look around, then pick one. The tank it needs, what it costs and how much care it takes show up next. Your first pick can be joined by others later.</p></div>
 <div class="sgMateHd"><h1>What goes in with them?</h1><p>These suit the animals you picked, best fits first. Tap one to add it at the smallest group it is kept in; add as many as you like.</p></div>
-<div class="sgChips" role="group" aria-label="Kinds of animal"><button type="button" data-cat="" class="on">Everything</button>${CATEGORIES.map(([k, l]) => `<button type="button" data-cat="${k}">${l}</button>`).join('')}</div>
+<div class="sgChips" role="group" aria-label="Kinds of animal"><button type="button" data-cat="" class="on">Everything</button>${categoriesInScope().map(([k, l]) => `<button type="button" data-cat="${k}">${l}</button>`).join('')}</div>
 <div class="sgList">${list()}</div>`;
     fillImages(el.querySelector('.sgHero')!, BIG);
     fillImages(el.querySelector('.sgList')!, TILE);

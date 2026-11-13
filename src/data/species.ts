@@ -1,4 +1,5 @@
 import { artMeta } from '../art/fishgen';
+import { scopeSpecies, speciesInScope } from '../scope';
 import { herpMeta } from '../art/herps';
 import { snailAspect, snailRest } from '../art/snails';
 import type { Surface } from '../scene/types';
@@ -97,8 +98,10 @@ export const needsWater = (sp: Species) => sp.habitat === 'water';
 export const speciesTag = (sp: Species) => sp.kind === 'snail' ? 'snail' : sp.zone === 'bottom' ? 'bottom' : sp.habitat === 'land' ? 'land' : sp.habitat === 'both' ? 'amphibious' : '';
 
 /** Case- and accent-insensitive search over common and scientific names; prefix matches rank first. */
+/** The Animals categories offered in this scope. */
+export const categoriesInScope = () => CATEGORIES.filter(([k]) => speciesInScope({ cat: k }));
 export function searchSpecies(q: string, cat?: Category): Species[] {
-  const pool = cat ? SPECIES.filter(s => s.cat === cat) : SPECIES;
+  const pool = scopeSpecies(cat ? SPECIES.filter(s => s.cat === cat) : SPECIES);   // AQ1: aquarium scope hides herps (src/scope.ts)
   const norm = (s: string) => s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
   const terms = norm(q).split(/\s+/).filter(Boolean);
   if (!terms.length) return [...pool].sort((a, b) => a.name.localeCompare(b.name));

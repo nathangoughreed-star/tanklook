@@ -10,6 +10,7 @@
 //   Terrarium   only 4 cards: woodland / botanical / climb layouts are coming-soon, so none is shown (spec asks 4-6; 4 is the real count).
 //   Paludarium  only 3 cards (4 buildable layouts exist: waterfall x2, riverbank, swamp); a 4th would be a card with nothing behind it.
 //   Unsure      a small mixed sample (UNSURE_SAMPLE), not the union of the habitats.
+import { kindInScope } from '../scope';
 import type { HabitatDirection } from './discoveryTypes';
 
 export type ArchHabitat = Exclude<HabitatDirection, 'unsure'>;
@@ -67,6 +68,6 @@ export const QUICK_ARCHETYPES: readonly QuickArchetype[] = [
 /** The cards shown for a habitat. 'unsure' gets a SMALL mixed sample (never the union of every habitat). */
 export const UNSURE_SAMPLE: readonly string[] = ['freshwater-nature-river', 'freshwater-jungle', 'saltwater-mixed-reef', 'terrarium-frog-jungle'];
 export const archetypeByKey = (key: string): QuickArchetype | undefined => QUICK_ARCHETYPES.find(a => a.key === key);
-export const archetypesFor = (d: HabitatDirection): QuickArchetype[] => d === 'unsure' ? UNSURE_SAMPLE.map(k => archetypeByKey(k)!) : QUICK_ARCHETYPES.filter(a => a.habitat === d);
+export const archetypesFor = (d: HabitatDirection): QuickArchetype[] => (d === 'unsure' ? UNSURE_SAMPLE.map(k => archetypeByKey(k)!) : QUICK_ARCHETYPES.filter(a => a.habitat === d)).filter(a => kindInScope(a.habitat === 'paludarium' ? 'vivarium' : a.habitat));   // AQ1: no terrarium / paludarium cards in aquarium scope
 /** Explore layouts whose look IS live planting: not generated while "No live plants" is on (they are never faked with artificial plants). */
 export const LIVE_ONLY_LAYOUTS: ReadonlySet<string> = new Set([...QUICK_ARCHETYPES.filter(a => a.needsLive).flatMap(a => a.layouts), 'underwater-forest', 'mossy-wood-ferns']);

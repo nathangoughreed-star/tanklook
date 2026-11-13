@@ -1,6 +1,7 @@
 // Guided Setup Rev 03, the shared onboarding shell (lane GS4, 2026-11-02): the pure part. World -> Equipment -> Limits -> Starting Point, then the route's own
 // steps (discovery/). No DOM here: every step module (worldStep / equipmentStep / limitsStep / startStep) draws, this decides, and test/guidedShell.test.ts checks
 // it. Everything is written to the ONE project state (scene/project.ts setters over the brief); a skipped step is UNKNOWN (never 0), and no step ever deletes the scene.
+import { worldInScope } from '../../scope';
 import { ENVIRONMENTS, family, archetype, type Card, type Env } from '../../scene/archetypes';
 import { ANY_CARD, ANY_WORLD, CARD_COLOUR } from '../discovery/logic';
 import {
@@ -49,6 +50,8 @@ export function placeOf(b: Brief, ask?: OnboardStep): Place {
 // ---------------------------------------------------------------------------------------------------------------- 1. World
 /** The four World cards: Aquarium, Terrarium, Paludarium, Open to anything. Water is not asked here (it belongs to Look First, or the animals answer it). */
 export const WORLD_CARDS: readonly Card[] = [...ENVIRONMENTS, { ...ANY_CARD, tagline: 'Not sure yet? We will show you complete setups to react to.' }];
+/** The cards offered in this scope (src/scope.ts): aquarium only while only aquariums are in scope. */
+export const worldCards = (): readonly Card[] => WORLD_CARDS.filter(c => worldInScope(c.id));
 export const WORLD_IDS: readonly World[] = ['aquarium', 'terrarium', 'paludarium', 'any'];
 export const worldColour = (id: string): string => CARD_COLOUR[id] ?? '#5f7f6a';
 /** Answer the world. The same answer again changes nothing; a different one keeps every pick that still belongs in it and drops only the picks that cannot stand

@@ -1,0 +1,22 @@
+Built bundle (dist/assets/*.js, aquarium scope default) hits of terrarium|paludarium|vivarium|reptile|gecko|herp, by chunk:
+236  lighting-CfB8sJW-.js
+192  main-B2kLoMZh.js
+131  pinned-DN4g27vE.js
+73  suggest-CV_9oYtr.js
+53  space-Dr13i5hr.js
+28  logic-C87AmqE6.js
+9  stockPlan-Ddv_3j83.js
+8  scenes-DUzgm3RS.js
+5  suggest-DYPADFUg.js
+5  scapes-CmqAAbz5.js
+5  equipPlan-CbQIxCpN.js
+3  demandPanel-BLFxY5Yz.js
+2  review-yMRBWqno.js
+2  plantWorker-Bhf0eIjv.js
+2  compromise-C-qj5x5S.js
+1  scatter-CO_1t4KO.js
+1  rules-Dr0cObV-.js
+1  looks-DyAKaoaJ.js
+1  buildPick-7BhLGp82.js
+
+Why they remain: the feature code and data are kept on purpose (Nathan 2026-11-13). Every hit is a string in the species / archetype / gear / care data, a hidden-option label, or a code path gated by src/scope.ts; none is reachable on screen in aquarium scope. The on-screen proof is scan.json (a live DOM scan of each screen: zero hits besides 'Amazon frogbit' and 'Spider wood', plant names).

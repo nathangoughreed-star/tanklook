@@ -3,8 +3,9 @@
 // never ghosts or boxes the tank, and never offers the P6 "ways to build it" exit. The roster is written to the project state (the brief, locked) as it changes; the enclosure
 // is written when it is confirmed; then `done()` hands the shell the animals to render in Family -> Archetype -> Density -> Make It Your Own (GS6's hand-off keeps both).
 // Conflicts are explained with viable adjustments the person applies; no animal is dropped and no incompatible group is called fine (GS6 invariant 5).
+import { scopeSpecies } from '../../scope';
 import { CARE } from '../../data/care';
-import { CATEGORIES, SPECIES, getSpecies, searchSpecies, type Category, type Species } from '../../data/species';
+import { categoriesInScope, SPECIES, getSpecies, searchSpecies, type Category, type Species } from '../../data/species';
 import { minOf, valueOf } from '../../scene/brief';
 import { envOf } from '../../scene/project';
 import type { TankModel } from '../../data/tanks';
@@ -31,10 +32,10 @@ export const animalsFirst: AnimalsEntry = c => {
   const write = () => editBrief(b => withRoster(b, picks));   // the roster is the project's: every change lands in the one state, never in a scene
   const env = () => envOf(getBrief());
   const pool = (): Species[] => {
-    const e = env(), list = (q.trim() ? searchSpecies(q, cat === 'all' ? undefined : cat) : SPECIES.filter(s => cat === 'all' || s.cat === cat)).filter(s => !picks.some(p => p.id === s.id));
+    const e = env(), list = (q.trim() ? searchSpecies(q, cat === 'all' ? undefined : cat) : scopeSpecies(SPECIES).filter(s => cat === 'all' || s.cat === cat)).filter(s => !picks.some(p => p.id === s.id));
     return everything ? list : list.filter(s => inWorld(s, e));
   };
-  const catsHere = () => CATEGORIES.filter(([id]) => everything || SPECIES.some(s => s.cat === id && inWorld(s, env())));
+  const catsHere = () => categoriesInScope().filter(([id]) => everything || SPECIES.some(s => s.cat === id && inWorld(s, env())));
 
   // ---------- 1. the roster ----------
   const results = () => {

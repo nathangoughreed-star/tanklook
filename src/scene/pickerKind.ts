@@ -1,6 +1,7 @@
 // The species picker's gate and groups (lane S252, 2026-10-27). Pure: which animals a tank offers (by its kind of setup), the role
 // group each belongs to, and the order inside a group (best fit for THIS tank first). The fit itself is animalfit.ts's whysAnimal,
 // the engine the stocking screen uses; nothing here scores a species on its own.
+import { aquariumOnly, kindInScope } from '../scope';
 import { CARE } from '../data/care';
 import { GRAZE } from '../data/grazers';
 import type { Species } from '../data/species';
@@ -10,12 +11,17 @@ import type { TankSetup } from './types';
 
 /** The Suggest vocabulary: what kind of setup this is. */
 export type SetupKind = 'freshwater' | 'saltwater' | 'terrarium' | 'vivarium';
-export const SETUP_KINDS: [SetupKind, string, string][] = [
+export const ALL_SETUP_KINDS: [SetupKind, string, string][] = [
   ['freshwater', 'Freshwater', 'A freshwater aquarium: fish, shrimp and snails, and aquatic frogs'],
   ['saltwater', 'Saltwater', 'A marine tank or reef'],
   ['terrarium', 'Terrarium', 'A dry enclosure for reptiles, frogs and land invertebrates'],
   ['vivarium', 'Vivarium', 'Water and land together (a paludarium): the freshwater and land animals both'],
 ];
+
+/** The kinds offered in this scope (src/scope.ts): freshwater and saltwater only while only aquariums are in scope. */
+export const setupKinds = (): [SetupKind, string, string][] => ALL_SETUP_KINDS.filter(k => kindInScope(k[0])).map(k => aquariumOnly() && k[0] === 'freshwater' ? [k[0], k[1], 'A freshwater aquarium: fish, shrimp and snails'] : k);
+/** All four kinds, so a saved terrarium still gets its name (reports, the Kind line). */
+export const SETUP_KINDS = ALL_SETUP_KINDS;
 
 /** The kind of setup: the owner's choice while it agrees with the water, else read from it (no water = terrarium, a swamp or
  *  paludarium style = vivarium, salt on = saltwater). The water type is therefore always settled, never found out in the list. */

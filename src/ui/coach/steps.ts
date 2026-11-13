@@ -1,5 +1,6 @@
 // The coach's step list as DATA (lane GW1, 2026-11-05). A step names WHERE to look (a side-panel section, a control inside it, or a dialog), what to decide and why, and
 // when it is done. The runner (runner.ts) and the DOM host (dom.ts) know nothing about the individual steps, so the single-home cleanup (lane GW2) rewrites DEMO_STEPS only.
+import { aquariumOnly } from '../../scope';
 import type { Brief } from '../../scene/brief';
 import type { Scene, TankSetup } from '../../scene/types';
 
@@ -49,7 +50,7 @@ const gearOf = (c: CoachCtx) => [c.brief.items['constraints.owned'], c.brief.ite
 export const GUIDE_STEPS: readonly CoachStep[] = [
   {
     id: 'kind', known: answered.kind, target: { section: 'tank', control: '#spKinds' }, title: 'What kind of setup?',
-    why: 'Freshwater, saltwater, terrarium or vivarium decides which animals and plants the lists offer, and what the gear costs.',
+    why: aquariumOnly() ? 'Freshwater or saltwater decides which animals and plants the lists offer, and what the gear costs.' : 'Freshwater, saltwater, terrarium or vivarium decides which animals and plants the lists offer, and what the gear costs.',
     done: { changes: c => [c.tank.layout.kind, c.tank.water] }, skippable: true,
   },
   {

@@ -1,6 +1,7 @@
 // Create a look (lane C7, spec research/design/start-flow.md section (e)): style first, animals second. Pure logic for ui/lookPick.ts: the
 // style tiles, the size chips each style offers, the empty-stocking tank, and the animals that suit a chosen style (allowedStyles inverted,
 // ranked by pool membership as rankStyles does). Everything priced and placed by the existing scape / build engines; no numbers of its own.
+import { scopeSpecies } from '../scope';
 import { SPECIES } from '../data/species';
 import { emptyBuild, buildsFor, type Build } from './builds';
 import { groupMinimum } from './groupMin';
@@ -42,7 +43,7 @@ export interface LookAnimal { id: string; name: string; n: number; inPool: boole
 export function animalsFor(style: LookStyle, tank: TankModel, max = 12): LookAnimal[] {
   const pool = new Set(STYLES[style].animals);
   const out: LookAnimal[] = [];
-  for (const sp of SPECIES) {
+  for (const sp of scopeSpecies(SPECIES)) {
     if (!allowedStyles([{ species: sp.id, n: 1 }]).includes(style)) continue;
     const n = groupMinimum(sp)?.n ?? 1;
     const fit = fitIn([{ species: sp.id, n }], tank);
