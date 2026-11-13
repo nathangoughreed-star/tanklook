@@ -103,3 +103,38 @@ describe('GS1 eurobrace optimizer', () => {
     expect(s.panes.front.thickness!).toBeLessThan(o.options[0].solution.panes.front.thickness!);
   });
 });
+
+describe('GS1 silicone joints', () => {
+  it('edge reactions: a long plate held top and bottom behaves like a vertical strip (bottom gamma b^2/3, top gamma b^2/6)', () => {
+    const b = 500, g = 1e-5;
+    const r = plate({ a: 10 * b, b, t: 10, load: { kind: 'hydro', gamma: g, h: b }, top: { kind: 'edge', EI: 1e17 }, terms: 61 });
+    expect(r.edge.bottom / (g * b * b / 3)).toBeCloseTo(1, 1);
+    expect(r.edge.top / (g * b * b / 6)).toBeCloseTo(1, 1);
+    const free = plate({ a: 10 * b, b, t: 10, load: { kind: 'hydro', gamma: g, h: b }, top: { kind: 'edge', EI: 0 }, terms: 61 });
+    expect(free.edge.top).toBe(0);
+  });
+  it('cross tie stress = tie force / lap area; wall joints use the wall thickness as bond', () => {
+    const s = solveGlass(tank(48, 18, 21), { mode: 'perPane', ...fast, brace: { width: 2 * IN_MM, thickness: 6.35, cross: 1 } });
+    const tie = s.joints.find(j => j.joint === 'cross tie')!;
+    expect(tie.load).toBeCloseTo(s.brace!.tieForce);
+    expect(tie.bond).toBeCloseTo((2 * IN_MM) ** 2);
+    expect(tie.stress).toBeCloseTo(tie.load / tie.bond);
+    expect(tie.required).toBeCloseTo(tie.load / tie.allowable);
+    const wb = s.joints.find(j => j.joint === 'wall to bottom')!;
+    expect([s.panes.front.thickness, s.panes.left.thickness]).toContain(wb.bond);
+    expect(s.joints.map(j => j.joint).sort()).toEqual(['brace to wall', 'corner', 'cross tie', 'wall to bottom']);
+  });
+  it('a longer lap lowers the tie stress; a stricter design stress flags the joint', () => {
+    const base = { mode: 'perPane' as const, ...fast, brace: { width: 2 * IN_MM, thickness: 6.35, cross: 1 } };
+    const a = solveGlass(tank(48, 18, 21), base), b = solveGlass(tank(48, 18, 21), { ...base, silicone: { crossLap: 4 * IN_MM } });
+    const st = (s: typeof a) => s.joints.find(j => j.joint === 'cross tie')!.stress;
+    expect(st(b)).toBeCloseTo(st(a) / 2);
+    const strict = solveGlass(tank(48, 18, 21), { ...base, silicone: { designStress: 0.0069 } });
+    expect(strict.braceJointsOk).toBe(false);
+    expect(strict.jointsOk).toBe(false);
+  });
+  it('the optimizer only returns brace layouts whose brace joints pass', () => {
+    const o = optimizeBrace(tank(48, 18, 21), { mode: 'perPane', ...fast, silicone: { designStress: 10 * 0.0068948 } });
+    for (const x of o.options.slice(1)) expect(x.solution.braceJointsOk).toBe(true);
+  });
+});
