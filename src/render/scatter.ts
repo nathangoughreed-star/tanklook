@@ -41,6 +41,9 @@ export interface ScatterSpec {
    *  ripple as a slope); `maxLift` = the most (mm) it is raised to clear the ground under its ends (a flexible leaf dips
    *  into a hump instead of hovering over it). */
   flat?: number; maxLift?: number;
+  /** Leaf piles (Nathan 2026-11-13: leaves rose 40-50 deg off a pile): `maxPitch` = the steepest a leaf may pitch onto the copies under it
+   *  (slope, rise per run; 0.09 is 5 deg), `maxPile` = the most (mm) the pile may lift a copy: stacking is a few small lifts, not tilt. */
+  maxPitch?: number; maxPile?: number;
 }
 
 /** Signed distance (mm) to the tank's outline, positive inside: shape.ts `insideBy` with the outline fetched once. */
@@ -104,8 +107,8 @@ export function scatter(T: Tank, ground: GroundAt, spec: ScatterSpec): THREE.Ins
       const sw = Math.max(PC * 0.6, reach * 0.25), sx = (s: number) => x + cx * s * reach, sd = (s: number) => d - cz * s * reach;
       for (let i = 0; i < DS.length; i++) { let m = 0; cells(sx(DS[i]), sd(DS[i]), sw, k => { m = Math.max(m, pile[k]); }); dp[i] = m; }
       let best = Infinity, slope = 0;
-      for (const sl of SLOPES) { let c = 0; for (let i = 0; i < DS.length; i++) c = Math.max(c, dp[i] - sl * DS[i] * reach); if (c < best - 1e-6) { best = c; slope = sl; } }
-      top = best;
+      for (const sl of SLOPES) { if (spec.maxPitch != null && Math.abs(sl) > spec.maxPitch) continue; let c = 0; for (let i = 0; i < DS.length; i++) c = Math.max(c, dp[i] - sl * DS[i] * reach); if (c < best - 1e-6) { best = c; slope = sl; } }
+      top = spec.maxPile != null && best > spec.maxPile ? spec.maxPile + lift01 * 1.5 : best; // capped: a little jitter keeps overlapping leaves apart
       if (slope) q.multiply(qt.setFromAxisAngle(zAx, Math.atan(slope))); // +x end up by slope per mm
       if (inc) for (const s of DS) { const hs = top + slope * s * reach + inc; cells(sx(s), sd(s), sw, k => { pile[k] = Math.max(pile[k], hs); }); }
     } else {
@@ -285,6 +288,6 @@ export function litterCount(l: Litter, area: number) {
 export function litterMeshes(S: TankSetup, T: Tank, ground: GroundAt, area = footprint(T).area): THREE.InstancedMesh[] {
   const l = S.substrate.litter; if (!l?.density) return [];
   const wy = S.water.on ? waterY(T, S.water.level) : -Infinity;
-  return scatter(T, ground, { seed: l.seed, count: litterCount(l, area), kinds: leafKinds(l.leaf), lift: [0.3, 0.9], pile: 1.2, tilt: 0.08, slope: 0.55, clump: 0.7, drape: true, flat: 0.17, maxLift: 3, // 10 deg, 3 mm: litter lies on the bed
+  return scatter(T, ground, { seed: l.seed, count: litterCount(l, area), kinds: leafKinds(l.leaf), lift: [0.3, 0.9], pile: 1.2, tilt: 0.03, slope: 0.55, clump: 0.7, drape: true, flat: 0.09, maxLift: 3, maxPitch: 0.09, maxPile: 5, // 5 deg each, 3 mm, a 5 mm pile: litter lies on the bed
     shade: y => (y < wy ? 0.55 : 1) });
 }
