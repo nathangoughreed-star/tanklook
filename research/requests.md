@@ -15,6 +15,8 @@ Rules:
 | # | Question | Asked | Recommendation |
 |---|---|---|---|
 | W10 | CL1 care-level changes: discus 2->3, hatchet 1->2, coral beauty 1->2 (medium, verified); swordtail 2->1, rummynose 1->2 (low) | 11-13 | apply the 3 verified, hold the 2 low |
+| W11 | UI2 decision 15: should A/B ("This or that" in Discover) feed the best-fit search? | 11-13 | keep manual for now, use picks as a preference signal later |
+| W12 | UI2 decision 16: add keeper difficulty for plants and a difficulty table per gear kind, so the experience gate covers them | 11-13 | yes |
 Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 / R11 closed; CL1 full run; and decisions 3, 6-12 and 13 (tanks + custom tank maker APPROVED 11-13 "So is the tank picker and custom tank maker"); R18 / R22 good on live; earlier decision 13 notes: (collapsed groups, maker as own window with empty tank, price override) -> UI2.
 
 ## Open
