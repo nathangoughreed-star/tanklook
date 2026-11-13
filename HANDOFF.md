@@ -919,3 +919,8 @@ Nathan: every tank defaults to 50 % roughness. `ROUGH_DEFAULT = 50` and `roughOf
 - R15: in split view (`splitSides`) panels.ts moves `#camLock` into `.viewtools` and centres that cluster over the divider (inline `left`, `#view.sv-split .viewtools` CSS). Tank tabs and each side's top cards start below it. Single view keeps the top-left toolbar.
 - R16: the Checks pill is labelled "Notes: ..." (`notesLabel`); each side's copy has `always: true`, so it shows "Notes: none" when clean.
 - Check: `scripts/hm3-shots.mjs` (1500/1920/1280/390, split, panel open / collapsed); shots in `research/screens/HM3/`. Known: phone with the panel OPEN leaves a 420 px view strip, where Habitat / cost / Water / Notes crowd each other (already so before HM3); overlap not asserted there.
+
+## VF8: water light moves twice as fast (2026-11-13; lane VF8; Coordinator 24; request R18)
+- `WATER_MOTION_SPEED = 2` in `src/render/fx.ts`, applied in `tickFx` to the running clock only. One clock (`uFxTime`) drives both the substrate caustic scroll (lighting.ts, incl. the `aqNoise` modulation) and the VF6 surface shimmer (build.ts), so both double. A frozen clock (`fxClock.frozen`, `__fx.time`) is used as given; `CAUS_FPS` 20, the CPU back-off and reduced-motion handling are untouched. No setting (Nathan: just double).
+- Smoothness: fastest caustic term 0.030 tex/s x 2 = 0.06 tex/s = 0.003 tex per 20 Hz step, about 0.5 mm of floor (tile 165 mm): no strobing.
+- Shots (planted4 ground, fx all, clock 7.3 / 8.3 / 9.3 s = old speed 1 s apart, then new speed 1 s apart) in `research/screens/VF8/`.

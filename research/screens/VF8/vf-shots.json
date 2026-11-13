@@ -1,0 +1,24 @@
+{
+ "commit": "d64c36cd",
+ "build": 1892,
+ "dirty": true,
+ "when": "2026-11-13T13:25:11.145Z",
+ "size": [
+  1050,
+  850
+ ],
+ "fx": [
+  "all"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "planted4": {
+   "shots": [
+    "planted4-ground-all-t7.3.png",
+    "planted4-ground-all-t8.3.png",
+    "planted4-ground-all-t9.3.png"
+   ],
+   "ab": {}
+  }
+ }
+}
