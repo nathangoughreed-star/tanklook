@@ -58,6 +58,7 @@ export const ROLES: [Role, string, string][] = [
   ['herp', 'Reptiles & amphibians', 'Geckos, snakes, frogs, newts and salamanders'],
   ['arthropod', 'Arthropods', 'Spiders and tarantulas'],
 ];
+if (aquariumOnly()) { const h = ROLES.find(r => r[0] === 'herp')!; h[1] = 'Aquatic amphibians'; h[2] = 'Fully aquatic frogs and salamanders'; }   // AQ1: only the fully aquatic ones (dwarf frog, axolotl) are in scope
 /** Grazers by diet: the species the grazer table (data/grazers.ts) knows plus the fish and shrimp keepers buy for algae. Not derivable from the data otherwise. */
 const ALGAE_EATERS = new Set([...Object.keys(GRAZE), 'oto', 'bristlenose', 'sae', 'cherryshrimp', 'amano', 'nerite', 'turbo']);
 /** Which role group a species is listed under, derived from its category, swim zone, group size and appeal tags. */

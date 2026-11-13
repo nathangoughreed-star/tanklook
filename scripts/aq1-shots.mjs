@@ -42,6 +42,9 @@ async function run(tag, url) {
   // 6 Animals
   await section('fish'); await shot('08-animals');
   results[`${tag}-animalChips`] = await ev(`[...document.querySelectorAll('details.sec[data-sec="fish"] .chips button, details.sec[data-sec="fish"] [data-role]')].map(b => b.textContent).slice(0, 40)`);
+  // 6b the dwarf frog stays: search the Animals list for it
+  await ev(`(() => { const i = document.querySelector('details.sec[data-sec="fish"] input[type="search"]'); i.value = 'dwarf'; i.dispatchEvent(new Event('input', { bubbles: true })); i.scrollIntoView(); return true })()`); await shot('08b-animals-dwarf-frog');
+  results[`${tag}-dwarfRows`] = await ev(`[...document.querySelectorAll('details.sec[data-sec="fish"] [data-sp], details.sec[data-sec="fish"] .sprow')].map(e => e.textContent.slice(0, 40)).slice(0, 5)`);
   // 7 Equipment
   await ev(`document.getElementById('equipOpen')?.click(); true`); await sleep(1000); await shot('09-equipment'); await closeAll();
   // 7b the other panels, scanned only (constraints / brief, report) and the tank size dialog
