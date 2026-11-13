@@ -69,6 +69,12 @@ export interface PlateResult {
   beamMoment: number;
   /** Tie forces (N, positive = pulls the edge inward). */
   ties: number[];
+  /**
+   * Peak edge reactions (N/mm, Kirchhoff edge shear): what each silicone joint has to carry per unit length.
+   * bottom: along the bottom edge; side: along a vertical edge; top: plate edge shear along the top, carried by the brace strip's bond.
+   * The concentrated Kirchhoff corner forces are not included.
+   */
+  edge: { bottom: number; side: number; top: number };
 }
 
 interface Seg { y0: number; len: number; c0: number; c1: number } // q = c0 + c1 * u, u = y - y0
@@ -181,7 +187,7 @@ function evalY(S: LevySol, m: number, y: number, B: Float64Array, out: number[])
   const g = S.segs[s], u = Math.min(Math.max(y - g.y0, 0), g.len), al = m * Math.PI / S.a;
   basis(al, u, g.len, B);
   const c = S.coef[m - 1], k = S.km[m - 1] / (S.Dp * al ** 4);
-  for (let d = 0; d < 3; d++) {
+  for (let d = 0; d < 4; d++) {
     let v = 0;
     for (let j = 0; j < 4; j++) v += c[4 * s + j] * B[4 * d + j];
     out[d] = v;
@@ -220,7 +226,7 @@ export function plate(p: PlateInput): PlateResult {
     S = combine(S, unit, R);
   }
   // evaluate moments on a grid (plus the top edge and the water line)
-  const B = new Float64Array(16), o = [0, 0, 0];
+  const B = new Float64Array(16), o = [0, 0, 0, 0];
   const ys: number[] = [];
   for (let j = 0; j < ny; j++) ys.push(p.b * j / (ny - 1));
   if (p.load.kind === 'hydro' && p.load.h > 0 && p.load.h < p.b) ys.push(p.load.h);
@@ -229,7 +235,7 @@ export function plate(p: PlateInput): PlateResult {
   for (const ti of ties) xs.push(ti.x);
   let sigma = 0, wMax = 0, at = { x: 0, y: 0 }, beam = 0;
   const EI = p.top.kind === 'edge' ? p.top.EI : 0;
-  const Y = ys.map(y => { const rows: number[][] = []; for (let m = 1; m <= terms; m++) { evalY(S, m, y, B, o); rows.push([o[0], o[1], o[2]]); } return rows; });
+  const Y = ys.map(y => { const rows: number[][] = []; for (let m = 1; m <= terms; m++) { evalY(S, m, y, B, o); rows.push([o[0], o[1], o[2], o[3]]); } return rows; });
   for (const x of xs) {
     const sn: number[] = [], cs: number[] = [];
     for (let m = 1; m <= terms; m++) { const al = m * Math.PI / p.a; sn.push(Math.sin(al * x)); cs.push(Math.cos(al * x)); }
@@ -247,7 +253,25 @@ export function plate(p: PlateInput): PlateResult {
       if (EI && j === ny - 1) beam = Math.max(beam, Math.abs(EI * wxx));
     });
   }
-  return { sigma, w: wMax, at, beamMoment: beam, ties: R.map(f => -f) };
+  // edge reactions: V_y = -D (w_yyy + (2 - nu) w_xxy) on the bottom, V_x = -D (w_xxx + (2 - nu) w_xyy) on x = 0,
+  // and the same plate edge shear along the top: what the brace strip's bond to the wall carries (the tie loads act on the strip)
+  let vBot = 0, vSide = 0, vTop = 0;
+  for (const x of xs) {
+    let vb = 0, vt = 0;
+    for (let m = 1; m <= terms; m++) {
+      const al = m * Math.PI / p.a, sn = Math.sin(al * x), [, y1, , y3] = Y[0][m - 1];
+      vb += (y3 - (2 - nu) * al * al * y1) * sn;
+      const T = Y[ny - 1][m - 1]; vt += (T[3] - (2 - nu) * al * al * T[1]) * sn;
+    }
+    vBot = Math.max(vBot, Math.abs(Dp * vb));
+    if (EI) vTop = Math.max(vTop, Math.abs(Dp * vt));
+  }
+  ys.forEach((_, j) => {
+    let v = 0;
+    for (let m = 1; m <= terms; m++) { const al = m * Math.PI / p.a, [y0, , y2] = Y[j][m - 1]; v += -(al ** 3) * y0 + (2 - nu) * al * y2; }
+    vSide = Math.max(vSide, Math.abs(Dp * v));
+  });
+  return { sigma, w: wMax, at, beamMoment: beam, ties: R.map(f => -f), edge: { bottom: vBot, side: vSide, top: vTop } };
 }
 
 // ---------------------------------------------------------------- tank solve
@@ -288,6 +312,39 @@ export interface GlassOpts {
   terms?: number; grid?: [number, number];
   /** Also find the smallest continuous thickness per pane (default true; the optimizer turns it off for speed). */
   continuous?: boolean;
+  silicone?: SiliconeOpts;
+}
+
+/**
+ * Silicone joints. Each joint's stress = load / bond area (or line load / bond width), against one design stress.
+ * Default 0.138 MPa (20 psi): the ASTM C1401 design stress for structural silicone under short-term (wind) load.
+ * C1401 asks for about 1 psi under permanent load; water is permanent, but real tanks run their bottom joints at
+ * 5-20 psi for years, so 20 psi is the default and the value is a setting.
+ */
+export interface SiliconeOpts {
+  /** Design stress (MPa). */
+  designStress?: number;
+  /** Lap length of each cross-brace end on the perimeter strip (mm); default the perimeter strip width. */
+  crossLap?: number;
+  /** Bond width of the perimeter strip to the wall (mm); default the strip thickness (strip edge bonded to the wall's inside face). */
+  braceBond?: number;
+}
+
+export const SILICONE_DESIGN = 20 * 0.0068948; // 20 psi in MPa
+
+export type JointId = 'cross tie' | 'brace to wall' | 'wall to bottom' | 'corner';
+export interface JointCheck {
+  joint: JointId;
+  /** Load: N for the cross tie (each end), N/mm for line joints. */
+  load: number;
+  /** Bond: mm^2 for the cross tie, mm for line joints. */
+  bond: number;
+  /** Bond the design stress needs (same unit as bond). */
+  required: number;
+  stress: number; allowable: number;
+  /** stress / allowable; over 1 fails. */
+  utilization: number;
+  ok: boolean;
 }
 
 export interface PaneResult {
@@ -310,6 +367,12 @@ export interface GlassSolution {
   panes: Record<PaneId, PaneResult>;
   mode: 'uniform' | 'perPane';
   brace: BraceResult | null;
+  /** Silicone joints at the chosen thicknesses (empty if a pane is over stock). */
+  joints: JointCheck[];
+  /** Brace joints (cross tie, brace to wall) all pass: the optimizer requires this. */
+  braceJointsOk: boolean;
+  /** Every joint passes. */
+  jointsOk: boolean;
   /** Glass weight (lb) and volume index (sum of area x thickness, in^3). */
   weightLb: number; volumeIn3: number;
   ok: boolean;
@@ -409,18 +472,37 @@ export function solveGlass(spec: GlassTankSpec, opts: GlassOpts = {}): GlassSolu
   const panes: Record<PaneId, PaneResult> = { front, back: { ...front, pane: 'back' }, left, right: { ...left, pane: 'right' }, bottom };
 
   let brace: BraceResult | null = null;
+  const tl = long.t ?? r.stock[r.stock.length - 1], te = end.t ?? r.stock[r.stock.length - 1];
+  const L = long.res ?? wallAt('long', spec, tl, r), En = end.res ?? wallAt('end', spec, te, r);
+  const joints: JointCheck[] = [];
+  const sil = opts.silicone ?? {}, allow = sil.designStress ?? SILICONE_DESIGN;
+  const joint = (id: JointId, load: number, bond: number): JointCheck => {
+    const stress = load / bond;
+    return { joint: id, load, bond, required: load / allow, stress, allowable: allow, utilization: stress / allow, ok: stress <= allow };
+  };
+  if (long.t != null && end.t != null) {
+    // walls stand on the bottom pane: the bottom-edge reaction goes through a bond as wide as the wall
+    joints.push(L.edge.bottom / tl >= En.edge.bottom / te ? joint('wall to bottom', L.edge.bottom, tl) : joint('wall to bottom', En.edge.bottom, te));
+    // vertical corner: both panes' edge reactions through the thinner pane's edge (conservative)
+    joints.push(joint('corner', Math.hypot(L.edge.side, En.edge.side), Math.min(tl, te)));
+  }
   if (r.brace) {
-    const br = r.brace, tl = long.t ?? r.stock[r.stock.length - 1], te = end.t ?? r.stock[r.stock.length - 1];
-    const L = wallAt('long', spec, tl, r), En = wallAt('end', spec, te, r);
+    const br = r.brace;
     const M = Math.max(L.beamMoment, En.beamMoment), sigma = 6 * M / (br.thickness * br.width ** 2);
     const tie = Math.max(0, ...L.ties);
     brace = { width: br.width, thickness: br.thickness, cross: br.cross ?? 0, sigma, sf: sigma > 0 ? r.mor / sigma : Infinity, tieForce: tie, ok: sigma * r.sf <= r.mor };
     if (!brace.ok) notes.push(`Brace strip is over-stressed (SF ${brace.sf.toFixed(1)}): make it wider or thicker.`);
     if (tie > 0) notes.push(`Each cross brace carries ${(tie / 4.448).toFixed(0)} lbf of tension through its silicone joints.`);
+    const bw = sil.braceBond ?? br.thickness;
+    joints.push(joint('brace to wall', Math.max(L.edge.top, En.edge.top), bw));
+    if ((br.cross ?? 0) > 0) joints.push(joint('cross tie', tie, (br.crossWidth ?? br.width) * (sil.crossLap ?? br.width)));
   }
+  for (const j of joints) if (!j.ok) notes.push(`Silicone at the ${j.joint} joint is over its design stress (${(j.utilization * 100).toFixed(0)} %): ${j.joint === 'cross tie' ? 'lengthen the lap or widen the brace' : 'widen the bond'}.`);
+  const braceJointsOk = joints.filter(j => j.joint === 'cross tie' || j.joint === 'brace to wall').every(j => j.ok);
+  const jointsOk = joints.every(j => j.ok);
   const { weightLb, volumeIn3 } = glassWeight(spec, panes, r.brace);
   const ok = PANES.every(p => panes[p].thickness != null) && (brace?.ok ?? true);
-  return { panes, mode: r.mode, brace, weightLb, volumeIn3, ok, notes };
+  return { panes, mode: r.mode, brace, joints, braceJointsOk, jointsOk, weightLb, volumeIn3, ok, notes };
 }
 
 /** Glass weight (lb) and volume (in^3) of the five panes plus brace strips. */
@@ -482,7 +564,7 @@ export function optimizeBrace(spec: GlassTankSpec, opts: OptimizeOpts = {}): { o
         const brace: BraceSpec = { width: w, thickness: tb, cross };
         tried++;
         const s = solveGlass(spec, { ...opts, brace, continuous: false });
-        if (!s.ok) continue;
+        if (!s.ok || !s.braceJointsOk) continue;
         const o = row(cross ? `Perimeter ${fmtIn(w)} + ${cross} cross` : `Perimeter ${fmtIn(w)}`, brace, s);
         if (cross) { if (better(o, bestCross)) bestCross = o; } else if (better(o, bestPerim)) bestPerim = o;
         // a thicker strip is stiffer and may let the walls drop a step, so keep trying until the walls stop changing

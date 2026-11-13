@@ -48,7 +48,7 @@ thickness as the largest side"; it also has to survive point loads from rock, a 
 **Brace strip check.** The brace strip is a horizontal glass beam (depth = strip width `w_b`, thickness `t_b`,
 `I = t_b w_b^3 / 12`), simply supported at the corners, loaded by the wall's top-edge reaction. Its stress
 `6 M / (t_b w_b^2)` must meet the same safety factor. Rotational restraint from the brace is ignored (conservative).
-Cross braces are treated as rigid ties; the tie force (lbf) is reported so the silicone joint can be checked.
+Cross braces are treated as rigid ties; the tie forces are checked against the silicone (section 5a).
 
 **Glass.** Annealed float (low-iron the same).
 - Modulus of rupture **19.3 MPa (2800 psi)**: the value behind the hobby calculators (Stillwell / Hiscocks article,
@@ -148,11 +148,46 @@ Example, 75 gal 48 x 18 x 21 in, SF 3.8, per pane:
 6 ft tanks (125, 180): no perimeter-only brace within 2-4 in width passes; the strip spans 72 in corner to corner and
 is itself over-stressed. One or two cross braces fix that (it is why 6 ft tanks get center braces).
 
+## 5a. Silicone joints (added 2026-11-13 at Nathan's request)
+
+The glass is rarely what fails at a brace; the bond is. Every joint is checked as **load / bond <= design stress**:
+
+| Joint | Load (from the plate solution) | Bond assumed (settable) |
+|---|---|---|
+| Cross tie | tie force at each end, N (lbf) | cross-brace width x lap on the perimeter strip (default lap = strip width), sq in |
+| Brace to wall | peak plate edge shear along the top, N/mm (lb/in) | strip thickness (strip edge bonded to the wall's inside face) |
+| Wall to bottom | peak edge shear along the wall's bottom edge | wall thickness (walls stand on the bottom pane) |
+| Corner | vector sum of both panes' peak vertical-edge shears | thinner of the two panes |
+
+Loads are the Kirchhoff edge shears `V = -D (w_nnn + (2 - nu) w_ntt)` from the same Levy solution. With cross braces,
+the tie force acts on the brace strip, so the strip-to-wall bond carries the plate's edge shear, which the strip spreads
+along its length. Check: a long plate held top and bottom gives bottom gamma b^2/3 and top gamma b^2/6 within 1 %,
+the vertical-strip answer (test). Kirchhoff corner forces are left out, and the corner peak sits near the bottom
+corner, where the series converges slowly (about +4 % from 61 to 121 terms). Treat the corner value as an estimate.
+
+**Design stress, default 20 psi (0.138 MPa), settable.** ASTM C1401 uses 20 psi for structural silicone under
+short-term (wind) load and about 1 psi under permanent load. Water is a permanent load, so strictly 1 psi applies, but
+real tanks show what aquarium practice accepts. At its standard glass, the joints of a framed 55 / 75 / 180 come out
+at 14-18 psi on the bottom joint and 18-22 psi peak at the corners, and they last for years. The 1 psi value would fail
+every tank ever built. This is a judgment call for the user / engineer, which is why it is a setting.
+
+Results (SF 3.8, per pane, 20 psi):
+- 75 gal, 2 in perimeter + 1 cross, 1/4 in strip: tie 64 lbf on a 2 x 2 in lap = 16 psi; strip-to-wall 4.0 lb/in on
+  1/4 in = 16 psi; wall to bottom 17 psi; corner 21 psi (just over: flagged).
+- 125 gal, 2.5 in + 2 cross: tie 59 lbf on 6.3 sq in = 9 psi; strip-to-wall 16 psi.
+- 48 x 24 x 36 tall, 2.5 in + 2 cross, 1/2 in strip: tie 99 lbf = 16 psi; strip-to-wall 19 psi; wall to bottom 22 psi
+  and corner 30 psi on 1/2 in walls (both flagged: the tall build needs a wider bond than the wall edge, e.g. thicker
+  walls than the glass alone needs, or a fillet bead counted as bond).
+
+The optimizer rejects any brace whose **brace joints** (cross tie, strip to wall) fail. Wall-to-bottom and corner
+results are reported (`joints`, `jointsOk`, notes), but they do not change the glass, because the brace does not change
+them much. With a 6 ft tank and a thin strip, the strip-to-wall bond, not the glass, is what limits the brace.
+
 ## 6. Assumptions and limits
 Simple supports at every joint (real silicone joints are a little stiffer: conservative); linear elastic small
 deflection; static water load only (no seismic, impact, sloshing, point loads, or heat); annealed glass; rectangular
 tanks only (bow, corner, cylinder not covered); the brace's own twisting restraint ignored; cross braces rigid;
-silicone itself not designed (tie force reported).
+silicone checked as average stress on the bond (section 5a), not peel, creep or bead geometry.
 
 ## 7. Hook-up
 - The custom tank maker calls `solveGlass(spec, opts)` and `optimizeBrace(spec, opts)`.
