@@ -160,7 +160,7 @@ let forkFn: ForkFn | null = null;
 export function onSpaceFork(fn: ForkFn) { forkFn = fn; return () => { if (forkFn === fn) forkFn = null; }; }
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
-const MIN_KEY = 'tanklook.ftMin', N_KEY = 'tanklook.ftN', C_KEY = 'tanklook.ftCounts';
+const N_KEY = 'tanklook.ftN', C_KEY = 'tanklook.ftCounts';
 
 export function attachFullnessTile(viewer: Viewer, store: Store) {
   const host = document.getElementById('view')!, tools = host.querySelector('.viewtools'); // top-left, under the view's buttons (the demand panel holds the top right)
@@ -192,13 +192,11 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
   nEl.ontoggle = () => { try { localStorage.setItem(N_KEY, nEl.open ? '1' : '0'); } catch { /* ignore */ } };
   const form = $<HTMLFormElement>('.ftForm'), inp = (n: string) => form.elements.namedItem(n) as HTMLInputElement;
 
-  let min = matchMedia('(max-width: 700px)').matches; // a phone's view is short: minimized until opened once
-  try { const v = localStorage.getItem(MIN_KEY); if (v) min = v === '1'; } catch { /* storage blocked */ }
-  const setMin = (m: boolean, save = true) => {
+  let min = true; // Nathan 2026-11-12: starts minimized on every load (expanded it covers much of the tank); a click opens it for this visit
+  const setMin = (m: boolean) => {
     min = m; el.classList.toggle('min', m); head.setAttribute('aria-expanded', String(!m)); head.title = m ? 'Show the habitat check' : 'Minimize the habitat check';
-    if (save) try { localStorage.setItem(MIN_KEY, m ? '1' : '0'); } catch { /* ignore */ }
   };
-  setMin(min, false);
+  setMin(min);
   head.onclick = () => setMin(!min);
 
   // Load bars (water, floor; Nathan 2026-10-26): the whole-scale gauge (ui/gauge.ts, style.css .gauge), shared with the stocking
