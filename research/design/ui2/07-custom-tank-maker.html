@@ -1,46 +1,61 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>UI2 mockup: custom tank maker</title>
+<html lang="en"><head><meta charset="utf-8"><title>UI2 mockup: custom tank maker (own workspace)</title>
 <link rel="stylesheet" href="tokens.css">
 <style>
-  .app { display: grid; height: 100vh; grid-template-columns: var(--rail-w) 420px 1fr; grid-template-rows: var(--header-h) 1fr; grid-template-areas: "head head view" "rail panel view"; }
-  .app > header { grid-area: head; } .app > .rail { grid-area: rail; } .app > .panel { grid-area: panel; } .app > .viewer { grid-area: view; }
-  .foot { display: flex; gap: var(--s2); padding: var(--s3) var(--s4); border-top: 1px solid var(--line); }
+  .ws { display: grid; height: 100vh; grid-template-columns: 400px 1fr; grid-template-rows: var(--header-h) 1fr; grid-template-areas: "bar bar" "panel view"; }
+  .wsbar { grid-area: bar; display: flex; align-items: center; gap: var(--s3); padding: 0 var(--s4); background: var(--bg-panel); border-bottom: 1px solid var(--line); }
+  .wsbar h1 { font-size: var(--fs-lg); margin: 0; }
+  .ws > .panel { grid-area: panel; }
+  .stage { grid-area: view; position: relative; background: #d9dce1 url(empty-bow-tank.jpg) center / 92% auto no-repeat; }
+  .dim { position: absolute; background: #1b2029; color: #fff; font: 600 13px/1 var(--font); padding: 5px 8px; border-radius: 4px; box-shadow: var(--shadow); white-space: nowrap; }
+  .dim small { color: var(--text-2); font-weight: 400; margin-left: 4px; }
+  .stats { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); display: flex; gap: var(--s2); }
+  .stats .check { background: var(--glass); }
+  .price .row { grid-template-columns: 1fr auto; }
 </style></head>
 <body>
 <script src="icons.js"></script><script src="shell.js"></script>
-<div class="app" id="app"></div>
+<div class="ws" id="app"></div>
 <script>
 const sl = (l, v, p) => `<div class="row"><span class="lbl">${l}</span><input class="slider" type="range" value="${p}"><span class="val">${v}</span></div>`;
-document.getElementById('app').innerHTML = apphead() + rail('tank', {animals: '!'}) + `
+document.getElementById('app').innerHTML = `
+<div class="wsbar"><h1>Custom tank maker</h1><span class="hint">Your setup "Planted community" is not touched until you save</span><span style="flex:1"></span>
+  <button class="btn ghost">${I('eye')} Preview in my setup</button><button class="btn">Cancel</button><button class="btn">Save to my tanks</button><button class="btn primary">Save and use in this setup</button></div>
 <section class="panel">
-  <div class="sec-head"><button class="btn icon ghost sm" title="Back">&#9664;</button><h2>New custom tank</h2><span class="hint">started blank</span></div>
   <div class="sec-body">
-    <div class="row"><span class="lbl">Name</span><input class="input" value="Living-room bow 60" style="width:100%"><span></span></div>
+    <div class="row"><span class="lbl">Name</span><input class="input" value="Living-room bow 75" style="width:100%"><span></span></div>
     <div class="group open"><div class="gh">Shape</div><div class="gb">
       <div class="seg full"><button>Box</button><button class="on">Bow</button><button>Corner</button><button>Cube</button><button>More &#9662;</button></div>
     </div></div>
-    <div class="group open"><div class="gh">Size <span class="sum">62 gal &middot; about 690 lb filled</span></div><div class="gb">
-      ${sl('Length', '48 in', 58)}${sl('Depth', '18 in', 40)}${sl('Height', '24 in', 55)}${sl('Bow depth', '3 in', 30)}
+    <div class="group open"><div class="gh">Size <span class="sum">75 gal</span></div><div class="gb">
+      ${sl('Length', '48 in', 58)}${sl('Depth', '16 in', 36)}${sl('Height', '24 in', 55)}${sl('Bow depth', '3 in', 30)}
     </div></div>
-    <div class="group open"><div class="gh">Glass and rim</div><div class="gb">
-      <div class="row"><span class="lbl">Glass</span><div class="seg"><button>Float</button><button class="on">Low-iron</button></div><span></span></div>
+    <div class="group open"><div class="gh">Glass and rim <span class="sum">float &middot; rimmed</span></div><div class="gb">
+      <div class="row"><span class="lbl">Glass</span><div class="seg"><button class="on">Float</button><button>Low-iron</button></div><span></span></div>
       ${sl('Thickness', '3/8 in', 60)}
-      <div class="row"><span class="lbl">Rim</span><div class="seg"><button>Rimmed</button><button class="on">Rimless</button></div><span></span></div>
-      <div class="hint">48 x 24 in rimless needs at least 3/8 in glass.</div>
+      <div class="row"><span class="lbl">Rim</span><div class="seg"><button class="on">Rimmed</button><button>Rimless</button></div><span></span></div>
     </div></div>
-    <div class="card" style="grid-template-columns:1fr auto;align-items:center"><div><div class="t">Build cost estimate</div><div class="m">custom glass, low-iron, rimless</div></div><span class="big" style="font-size:var(--fs-lg)">$780</span></div>
-    <label class="row" style="grid-template-columns:auto 1fr"><span class="toggle on"></span><span>I own this tank</span></label>
+    <div class="group open price"><div class="gh">Price</div><div class="gb">
+      <div class="row"><span>Our estimate</span><span class="val">$380</span></div>
+      <div class="hint">How we got this: the typical price of a stock 75 gal tank. Not counted yet: bow front, glass thickness, low-iron, rimless.</div>
+      <label class="row" style="grid-template-columns:auto 1fr auto"><span class="toggle on"></span><span>Use my own price</span><span><input class="input num" value="520"><span class="unit">$</span></span></label>
+      <div class="hint">e.g. a glass shop quote or your DIY cost. Used everywhere (cost bar, shopping list, Print), marked "your figure".</div>
+    </div></div>
+    <label class="row" style="grid-template-columns:auto 1fr"><span class="toggle"></span><span>I own this tank</span></label>
   </div>
-  <div class="foot"><button class="btn primary" style="flex:1">Save to my tanks and use it</button><button class="btn">Cancel</button></div>
 </section>
-<main class="viewer">
-  <div class="ov" style="top:12px;left:50%;transform:translateX(-50%)">${toolbar()}</div>
-  <div class="ov" style="bottom:14px;left:50%;transform:translateX(-50%)">${checkbar({full: 1})}</div>
+<main class="stage">
+  <div class="dim" style="left:560px;top:700px">48 in <small>length</small></div>
+  <div class="dim" style="left:140px;top:450px">24 in <small>height</small></div>
+  <div class="dim" style="left:960px;top:610px">16 in <small>depth at centre</small></div>
+  <div class="dim" style="left:530px;top:322px">3 in <small>bow</small></div>
+  <div class="stats"><div class="check"><b>75 gal</b> <span style="color:var(--text-2)">gross &middot; about 68 gal of water</span></div><div class="check"><b>about 750 lb</b> <span style="color:var(--text-2)">filled</span></div><div class="check"><b>48 &times; 16 in</b> <span style="color:var(--text-2)">footprint</span></div></div>
 </main>`;
 </script>
 <div style="position:absolute;inset:0;pointer-events:none">
-  <div class="note" data-n="1" style="top:60px;left:492px;max-width:260px">&#9664; The one place a tank's shape and size are set. Started blank or from a commercial tank ("Make a custom tank from this")</div>
-  <div class="note" data-n="2" style="top:250px;left:492px;max-width:250px">&#9664; The tank in the view redraws as you drag (mockup shows a still)</div>
-  <div class="note" data-n="3" style="bottom:110px;left:492px;max-width:260px">&#9664; Saved to "my tanks" in this browser, kept across setups; each setup keeps its own copy</div>
+  <div class="note" data-n="1" style="top:58px;left:420px;max-width:300px">Its own workspace: an empty tank on a plain floor, just the geometry. The setup is untouched; Cancel leaves everything as it was</div>
+  <div class="note" data-n="2" style="top:58px;right:16px;max-width:280px">Optional: "Preview in my setup" shows it in your room for a moment, then comes back here (recommended)</div>
+  <div class="note" data-n="3" style="top:760px;left:420px;max-width:260px">&#9664; Estimate with a one-line "how", and your own price that wins everywhere</div>
+  <div class="note" data-n="4" style="bottom:66px;right:16px;max-width:240px">Real render from the app (empty bow tank); numbers are mockup figures</div>
 </div>
 </body></html>

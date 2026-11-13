@@ -22,19 +22,10 @@ document.getElementById('app').innerHTML = apphead() + rail('tank', {animals: '!
   <div class="sec-head"><button class="btn icon ghost sm" title="Back to Tank">&#9664;</button><h2>Choose a tank</h2><span class="hint">arrow keys flip, the tank redraws</span></div>
   <div class="sec-body">
     <div class="input" style="display:flex;align-items:center;gap:6px;color:var(--text-3)">${I('search')} Search tanks</div>
-    <div class="group open"><div class="gh">Custom tanks <span class="n">2</span><span class="sum">yours, kept across setups</span></div><div class="gb">
-      ${tk('Living-room bow 60', 'Bow front &middot; 48 &times; 18 &times; 24 in &middot; 62 gal &middot; rimless', {pills: '<span class="pill ok">Owned</span>', right: '<button class="btn sm ghost">Edit</button>'})}
-      ${tk('Shelf cube', 'Cube &middot; 12 &times; 12 &times; 12 in &middot; 7.5 gal &middot; rimless', {right: '<button class="btn sm ghost">Edit</button>'})}
-      <button class="btn sm" style="justify-self:start">${I('plus')} New custom tank</button>
-    </div></div>
-    <div class="group open"><div class="gh">Commercial tanks <span class="n">118</span><span class="sum">fixed size and build</span></div><div class="gb">
-      <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="chip">Under 20 gal</span><span class="chip on">20-40</span><span class="chip">40-75</span><span class="chip">75+</span><span class="chip on">Fits my space</span></div>
-      ${tk('Aqueon 29 gal', '30 &times; 12 &times; 18 in &middot; rimmed &middot; $99', {right: '<span class="hint">$450-1,400</span>'})}
-      ${tk('Aqueon 40 gal breeder', '36 &times; 18 &times; 16 in &middot; rimmed &middot; $139', {sel: 1, pills: '<span class="pill accent">In use</span>', right: '<span class="hint">$600-1,900</span>'})}
-      ${tk('Waterbox Clear 35.2', '31.5 &times; 15.7 &times; 15.7 in &middot; rimless &middot; $330', {right: '<span class="hint">$800-2,300</span>'})}
-      ${tk('UNS 90U', '35.4 &times; 17.7 &times; 17.7 in &middot; rimless &middot; $380', {right: '<span class="hint">$850-2,400</span>'})}
-    </div></div>
-    <button class="btn primary" style="justify-self:stretch">Choose Aqueon 40 gal breeder</button>
+    <div class="group"><div class="gh">Custom tanks <span class="n">2</span><span class="sum">Living-room bow 60, Shelf cube</span></div></div>
+    <div class="group"><div class="gh">Commercial tanks <span class="n">118</span><span class="sum">fixed size and build &middot; in use: Aqueon 40 breeder</span></div></div>
+    <button class="btn" style="justify-self:start">${I('plus')} New custom tank</button>
+    <div class="hint">Open a group to browse; the tank you flip to redraws in the room.</div>
   </div>
 </section>
 <main class="viewer">
@@ -43,8 +34,8 @@ document.getElementById('app').innerHTML = apphead() + rail('tank', {animals: '!
 </main>`;
 </script>
 <div style="position:absolute;inset:0;pointer-events:none">
-  <div class="note" data-n="1" style="top:110px;left:492px;max-width:250px">&#9664; Custom tanks: made in the custom tank maker, named, kept across setups</div>
-  <div class="note" data-n="2" style="top:330px;left:492px;max-width:250px">&#9664; Commercial tanks: off the shelf; size and build cannot be edited. Grey range = finished-tank price (Nathan 11-05; mockup numbers)</div>
-  <div class="note" data-n="3" style="top:200px;left:492px;max-width:250px">&#9664; Owned pill and "for sure" lock work as in Equipment</div>
+  <div class="note" data-n="1" style="top:118px;left:492px;max-width:260px">&#9664; Both groups start closed (Nathan 11-13); the line shows what is inside</div>
+  <div class="note" data-n="2" style="top:170px;left:492px;max-width:260px">&#9664; Commercial: fixed size and build. Open state: 06b-tank-picker-open.png</div>
+  <div class="note" data-n="3" style="top:222px;left:492px;max-width:260px">&#9664; Opens the custom tank maker as its own workspace (shot 07)</div>
 </div>
 </body></html>
