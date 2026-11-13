@@ -179,6 +179,8 @@ function restoreRange(this: THREE.Object3D, _r: THREE.WebGLRenderer, _s: THREE.S
  * a caustic step costs more than CAUS_SLOW_MS (its draw's CPU time, or the loop's frame gap past one 60 Hz frame, which
  * is where a busy GPU shows), the rate halves, then the pattern holds still. Still = the same caustics, no redraws.
  */
+/** Plant sway amplitude (1 = the first sway, 30b0943a). Nathan 2026-11-13: "more subtle, like half the amplitude". */
+const PLANT_SWAY_AMP = 0.5;
 const CAUS_FPS = 20, CAUS_IDLE_MS = 60_000, CAUS_SLOW_MS = 10;
 const SWAY_KEY = 'tanklook.sway';
 /** Sway on unless turned off here before, or the system asks for reduced motion. */
@@ -738,7 +740,7 @@ export class Viewer {
   private dim?: { sc: THREE.Scene; m: THREE.Mesh; cam: THREE.OrthographicCamera };
   draw() {
     if (this.needsBuild) this.build();
-    SWAY.uSway.value.set(this.swayT / 1000, this.sway && !this.exporting ? 1 : 0);
+    SWAY.uSway.value.set(this.swayT / 1000, this.sway && !this.exporting ? PLANT_SWAY_AMP : 0);
     const sc = this.store.scene, w = this.host.clientWidth, h = Math.max(60, this.host.clientHeight - this.reserve), r = this.renderer;
     this.canvas.style.height = this.reserve ? h + 'px' : ''; this.host.style.setProperty('--reserve', this.reserve + 'px');
     r.setSize(w, h, false);
