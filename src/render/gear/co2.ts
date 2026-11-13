@@ -1,8 +1,8 @@
 // CO2 regulator, cylinder and drop checker. (render/gear3d.ts split per type, lane GM1, 2026-10-29: moved as is, no behaviour change).
 import * as THREE from 'three';
-import { backdropDepth, clamp } from '../../scene/physics';
+import { clamp } from '../../scene/physics';
 import { cabinetGear } from '../../scene/cabinetGear';
-import { GearPick, V, along, hash, C, DROP_COLOURS, Frame, Spot, lerp, sucker, line, overRim } from './common';
+import { GearPick, V, along, hash, C, DROP_COLOURS, Frame, Spot, lerp, sucker, line, overRim, behind } from './common';
 
 export function co2(f: Frame, sp: Spot, level: GearPick['co2']) {
   const { kit, t } = f, b = 26, g0 = f.ground(sp.u, b);
@@ -42,8 +42,8 @@ export function co2(f: Frame, sp: Spot, level: GearPick['co2']) {
   // down the back of the tank, then (in a cabinet) in through a grommeted hole in its back panel to the regulator (lane CB1)
   const b0 = bc.clone().add(V(0, -60, 0)), st = f.S.stand, cab = inStand && (st.style === 'cabinet' || st.style === 'custom');
   if (cab) {
-    const bo = -(backdropDepth(f.S.backdrop, f.T) + f.t), hy = f.top - 250, ox = b0.x, o = V(ox, hy, f.P(0, 0, bo - 10).z), inn = V(ox, hy, f.P(0, 0, bo + 50).z);
-    kit.rod('room', V(ox, hy, f.P(0, 0, bo - 2).z), V(ox, hy, f.P(0, 0, bo + 20).z), 12, C.black, { seg: 16 }); // the grommet in the panel's hole
+    const hy = f.top - 250, ox = b0.x, zOf = (a: number) => behind(f, 0, 0, a).z, o = V(ox, hy, zOf(-10)), inn = V(ox, hy, zOf(50));
+    kit.rod('room', V(ox, hy, zOf(-2)), V(ox, hy, zOf(20)), 12, C.black, { seg: 16 }); // the grommet in the panel's hole
     line(f, [b0, b0.clone().add(V(0, -40, -6)), V(ox, f.top + 30, o.z), V(ox, hy + 40, o.z), o, inn, V(rg.x, hy - 30, inn.z + 25), rg.clone().add(V(0, 40, 30))], 0xc9d6d8);
   } else {
     const low = V(b0.x, f.top - 60, b0.z - 10);

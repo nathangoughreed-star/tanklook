@@ -167,7 +167,8 @@ export function frame(S: TankSetup, T: Tank, kit: Kit, side: GearSide, solids: T
   if (wall === 'back') {
     const ix = side === 'left' ? 1 : -1, xOf = (u: number) => side === 'left' ? u : T.L - u;
     const backD = (x: number) => (chord(T, 0, clamp(x, 1, T.L - 1))?.[1] ?? T.D) - bd;
-    P = (u, y, b) => { const x = xOf(u); return V(x, y, -(backD(x) - b)); };
+    // b < 0 is outside the glass: with a 3D backdrop (b = 0 is its front face) that is behind the backdrop AND the glass, so it moves back by the backdrop's depth (lane CB1: a HOB's body cut a hole in the rock)
+    P = (u, y, b) => { const x = xOf(u); return V(x, y, -(backD(x) - (b < 0 ? b - bd : b))); };
     ground = (u, b) => { const x = xOf(u); return groundHeight(S, T, x, backD(x) - b); };
     along = V(ix, 0, 0); inward = V(0, 0, 1); len = T.L;
   } else {
@@ -210,6 +211,9 @@ export function sucker(f: Frame, u: number, y: number, reach: number, look: 'cle
   else kit.lathe('clear', [[0, 0], [9, 0], [8.5, 1.5], [5, 4], [2.2, 6], [0, 6.5]], f.P(u, y, 0.2), f.inward, C.cup, look === 'frosted' ? 0.55 : 0.32, 20);
   kit.rod('wet', f.P(u, y, 6), f.P(u, y, reach), 1.8, look === 'black' ? C.black : C.cup);
 }
+
+/** The point at u, height y, `a` mm in from the back glass's OUTER face (a < 0: outside the glass; a > 0: through it, into a cabinet), behind any 3D backdrop. */
+export const behind = (f: Frame, u: number, y: number, a: number) => f.P(u, y, 0).addScaledVector(f.inward, -backdropDepth(f.S.backdrop, f.T) - f.t + a);
 
 /** Thin clear airline (or CO2 line) along the points. */
 export const line = (f: Frame, pts: THREE.Vector3[], color = C.airline) => f.kit.tube('clear', pts, 2.4, color, 0.18, 8);
