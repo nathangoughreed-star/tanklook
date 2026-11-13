@@ -16,7 +16,7 @@ const SCAN = `(()=>{const re=/(terrarium|paludarium|vivarium|reptile|gecko|herp|
 const results = {};
 async function run(tag, url) {
   await send('Emulation.setDeviceMetricsOverride', { width: 1400, height: 900, deviceScaleFactor: 1, mobile: false });
-  await send('Page.navigate', { url });
+  await send('Page.navigate', { url }); await sleep(2000); await ev(`localStorage.clear(); true`).catch(() => {}); await send('Page.navigate', { url });   // a clean save: the before run's autosaved terrarium must not leak into the after run
   for (let i = 0; i < 120; i++) { if (await ev(`!!window.__gb`).catch(() => false)) break; await sleep(1000); }
   await sleep(2500);
   const closeAll = () => ev(`document.querySelectorAll('dialog[open]').forEach(d => d.close()); true`);
@@ -43,7 +43,7 @@ async function run(tag, url) {
   await section('fish'); await shot('08-animals');
   results[`${tag}-animalChips`] = await ev(`[...document.querySelectorAll('details.sec[data-sec="fish"] .chips button, details.sec[data-sec="fish"] [data-role]')].map(b => b.textContent).slice(0, 40)`);
   // 6b the dwarf frog stays: search the Animals list for it
-  await ev(`(() => { const i = document.querySelector('details.sec[data-sec="fish"] input[type="search"]'); i.value = 'dwarf'; i.dispatchEvent(new Event('input', { bubbles: true })); i.scrollIntoView(); return true })()`); await shot('08b-animals-dwarf-frog');
+  await ev(`(() => { const i = document.querySelector('details.sec[data-sec="fish"] input[type="search"]'); i.value = 'dwarf frog'; i.dispatchEvent(new Event('input', { bubbles: true })); i.scrollIntoView(); return true })()`); await shot('08b-animals-dwarf-frog');
   results[`${tag}-dwarfRows`] = await ev(`[...document.querySelectorAll('details.sec[data-sec="fish"] [data-sp], details.sec[data-sec="fish"] .sprow')].map(e => e.textContent.slice(0, 40)).slice(0, 5)`);
   // 7 Equipment
   await ev(`document.getElementById('equipOpen')?.click(); true`); await sleep(1000); await shot('09-equipment'); await closeAll();
