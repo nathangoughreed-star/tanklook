@@ -1,0 +1,21 @@
+{
+ "facts": {
+  "title": "TankLook (new UI preview)",
+  "oldIds": [],
+  "checks": [
+   "Habitat Caution",
+   "$1,265 · $52/mo · 56 min/wk",
+   "75 °F fits",
+   "Notes 3"
+  ],
+  "canvas": [
+   1536,
+   852
+  ]
+ },
+ "oldFacts": {
+  "ui2": false,
+  "app": true
+ },
+ "errors": []
+}

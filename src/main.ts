@@ -35,6 +35,8 @@ if (import.meta.env.PROD && 'serviceWorker' in navigator) addEventListener('load
 const view = document.getElementById('view')!;
 if (!webglAvailable()) {
   view.innerHTML = '<p class="nojs">Your browser or device has WebGL turned off, so the tank can\'t be drawn. Try a current Chrome, Edge, Firefox or Safari.</p>';
+} else if (new URLSearchParams(location.search).get('ui') === '2') {
+  void import('./shell/boot').then(m => m.bootShell()); // UI2 (lane S1, 2026-11-13): the new shell, its own lazy chunk; without ?ui=2 nothing below changes
 } else {
   const { scene: restored, error: saveError } = Store.loadLocalChecked(); // SL2: a corrupt save is told apart from no save
   applySavedFx(); // the viewer's saved Graphics settings (render/fxPrefs.ts), before anything is built

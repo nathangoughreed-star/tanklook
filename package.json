@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "meshoptimizer": "1.2.0",
+    "preact": "10.29.8",
     "three": "^0.170.0"
   },
   "devDependencies": {
