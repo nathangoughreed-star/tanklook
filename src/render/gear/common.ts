@@ -49,6 +49,8 @@ export const V = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z)
 export class Kit {
   parts: Record<Bucket, THREE.BufferGeometry[]> = { wet: [], room: [], clear: [], glow: [] };
   /** Every suction cup: the wall it sits on and its point on that glass's inner face (lane GM8: the cups must be on glass). */
+  /** Each heater's axis (unit vector, cap end up), for the no-diagonal test (lane GM8b). */
+  heaterAxes: THREE.Vector3[] = [];
   cups: { wall: GearWall; p: THREE.Vector3 }[] = [];
   /** Add `geo` (consumed) in colour `color` (clear parts: `base` = face-on opacity), moved by `m`. */
   put(b: Bucket, geo: THREE.BufferGeometry, color: number, m?: THREE.Matrix4, base = 0.06, shade = 0) {

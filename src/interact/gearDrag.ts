@@ -73,7 +73,7 @@ export function placeFor(S: TankSetup, ray: THREE.Ray, mount: GearMount, prev?: 
   if (mount === 'glass') {
     const g = groundHeight(S, T, clamp(out.x, 1, T.L - 1), clamp(-out.z, 1, T.D - 1)), wy = waterY(T, S.water.level);
     place.y = clamp((out.y - g) / Math.max(1, wy - g), 0, 1);
-    if (lean != null) place.lean = lean;
+    if (lean != null) place.lean = Math.abs(lean) >= 45 ? Math.sign(lean) * 90 : 0; // upright or flat, never diagonal (GM8b)
   }
   return place;
 }
@@ -93,9 +93,9 @@ export function withPlace(t: TankSetup, row: string, p: GearPlace) {
   return { ...tech, place: { ...tech.place, [row]: p } };
 }
 
-/** Shift + wheel over a heater turns it 15 degrees a notch (-90..90, 90 = lying flat; never so upright it leaves the water).
+/** Shift + wheel over a heater flips it between upright and lying flat (never diagonal).
  *  Returns true when it took the wheel. */
-export function gearLean(viewer: Viewer, store: Store, clientX: number, clientY: number, dir: number) {
+export function gearLean(viewer: Viewer, store: Store, clientX: number, clientY: number, _dir: number) {
   const hit = viewer.hitTest(clientX, clientY); if (!hit || viewer.pairShown) return false;
   const g = gearGrab(hit); if (!g || g.row.split('.')[0] !== 'heater') return false;
   const S = store.scene.tanks[g.vi], prev = S.tech?.place?.[g.row];
@@ -104,7 +104,7 @@ export function gearLean(viewer: Viewer, store: Store, clientX: number, clientY:
   const c = piece.box.getCenter(new THREE.Vector3()), from = prev ?? placeFor(S, new THREE.Ray(new THREE.Vector3(c.x, c.y, 5000), new THREE.Vector3(0, 0, -1)), 'glass');
   if (!from) return false;
   // from what is drawn: upright, or flat when it did not fit
-  const now = from.lean ?? (piece.box.getSize(new THREE.Vector3()).y < 60 ? 90 : 0), lean = clamp(now + dir * 15, -90, 90);
+  const now = from.lean ?? (piece.box.getSize(new THREE.Vector3()).y < 60 ? 90 : 0), lean = Math.abs(now) >= 45 ? 0 : 90; // Shift + wheel toggles upright / flat (GM8b: no diagonals)
   store.editTank(g.vi, t => { t.tech = withPlace(t, g.row, { ...from, lean }); }, { coalesce: 'gear-lean' });
   return true;
 }
