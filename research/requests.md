@@ -29,6 +29,7 @@ Rules:
 | R23 | 11-13 | Lid clips: one middle clip per long side up to 48 in (was two above 31.5 in) | Coordinator 24 (MID_CLIPS_2 = 1220 mm, render/lidClips.ts) | - | pending push | - | live shot of a 36-48 in rimless tank with a glass lid |
 | R24 | 11-13 | Turn off automatic quality changes (keep the code) | Coordinator 24 (AUTO_QUALITY = false, render/perf.ts; caustics back-off off; a self-lowered saved level is restored; Auto checkbox hidden) | - | pending push | - | Nathan: quality and moving caustics stay on |
 | R25 | 11-13 | Suction-cup gear sticks only to glass (moves off a 3D background to a side pane); drop checker away from the CO2 diffuser | GM8 | - | - | - | brief prompts/lane-GM8-suction-mounts.md; picture research/screens/GM8/nathan-before.webp |
+| R26 | 11-13 | Split the left menu's "Constraints and preferences" into two sections: Preferences and Constraints | CP1 | - | - | - | brief prompts/lane-CP1-split-constraints-prefs.md |
 
 ## Closed (seen on live)
 
