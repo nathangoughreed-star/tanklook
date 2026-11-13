@@ -74,6 +74,9 @@ models on /review.html (and its drawImage error), TG leftovers (heater product p
 Gotcha: the dev server reads the build number at start-up; restart it after merging main and before pressing Record.
 
 ## Lane sections (current)
+
+## DS1: visual styles audit (2026-11-13; lane DS1; request R20; Coordinator 24; branch claude/charming-moser-0fbf65)
+Research only, no app code. `research/design/ds1-styles-audit.md` answers section 20 items 1-7. Finding: artificial plants, coloured gravel and the fw-playful family already exist; the gap is an `ornament` item kind plus the coming-soon archetypes (castle, themed scene, fluorescent). Pirate slice = one new kind, `themed-scene` flipped to partial, one `Tweak` field, price rows. Ends with 10 decisions for Nathan.
 ## AQ1: aquarium-only scope switch (2026-11-13; lane AQ1; request R19; Coordinator 24; branch claude/beautiful-taussig-e916b1)
 Nathan: the live site shows aquariums only for now; the terrarium / paludarium / herp code stays. **One switch: `src/scope.ts`** (`DEFAULT_SCOPE = 'aquarium'`; `?scope=all` in the URL shows everything for checking). **To turn everything back on:** set `DEFAULT_SCOPE` to `'all'` (one line). Vitest runs in `'all'` (scope.ts reads `import.meta.env.MODE === 'test'`), so every existing test is unchanged; `test/aq1scope.test.ts` calls `setScope('aquarium')` itself. No code, data or test deleted; engine defaults unchanged.
 **Stays:** freshwater, saltwater / reef, ripariums (peace lily, monstera, rim planter, lucky bamboo...). **Hidden:** terrarium, paludarium, swamp, "Open to anything"; reptiles, amphibians (incl. aquatic frogs: `cat` amphibian), land inverts; land / succulent plants and herp furniture; dry substrates; herp "Animal checks" lines (young-fish growth lines stay); terrarium starter examples; terrarium quick cards and Discover looks.
