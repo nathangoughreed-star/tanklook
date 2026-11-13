@@ -1,0 +1,23 @@
+{
+ "commit": "01660162",
+ "build": 1996,
+ "dirty": true,
+ "when": "2026-11-13T23:05:08.440Z",
+ "size": [
+  1050,
+  850
+ ],
+ "fx": [
+  "none"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "scene2": {
+   "shots": [
+    "scene2-at-745-10-210-7-0-8-none.png",
+    "scene2-at-745-10-210-7-45-12-none.png"
+   ],
+   "ab": {}
+  }
+ }
+}
