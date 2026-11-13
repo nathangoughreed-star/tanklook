@@ -53,7 +53,7 @@
  },
  "iwagumi-stone-garden/balanced": {
   "n": 48,
-  "h": 3365800277,
+  "h": 2039408198,
   "sub": "custom",
   "ax": [
    1,
@@ -66,7 +66,7 @@
  },
  "iwagumi-stone-garden/full": {
   "n": 90,
-  "h": 3083560973,
+  "h": 3360002012,
   "sub": "custom",
   "ax": [
    1,
@@ -131,7 +131,7 @@
  },
  "stone-wood-sculpture/balanced": {
   "n": 3,
-  "h": 1728757049,
+  "h": 857652465,
   "sub": "custom",
   "ax": [
    1,
@@ -144,7 +144,7 @@
  },
  "stone-wood-sculpture/full": {
   "n": 5,
-  "h": 2359963836,
+  "h": 1237329824,
   "sub": "custom",
   "ax": [
    1,
@@ -183,7 +183,7 @@
  },
  "silk-plant-natural/full": {
   "n": 45,
-  "h": 3826042468,
+  "h": 4265977030,
   "sub": "custom",
   "ax": [
    -0.7,
@@ -209,7 +209,7 @@
  },
  "big-fish-showcase/balanced": {
   "n": 1,
-  "h": 3875473800,
+  "h": 3823146974,
   "sub": "custom",
   "ax": [
    1,
@@ -222,7 +222,7 @@
  },
  "big-fish-showcase/full": {
   "n": 2,
-  "h": 2017015214,
+  "h": 438845550,
   "sub": "custom",
   "ax": [
    1,
@@ -261,7 +261,7 @@
  },
  "planted-community/full": {
   "n": 140,
-  "h": 1608603963,
+  "h": 3217627417,
   "sub": "custom",
   "ax": [
    1,
@@ -287,7 +287,7 @@
  },
  "overgrown-jungle/balanced": {
   "n": 101,
-  "h": 3371209088,
+  "h": 1146455475,
   "sub": "custom",
   "ax": [
    1,
@@ -300,7 +300,7 @@
  },
  "overgrown-jungle/full": {
   "n": 216,
-  "h": 1623254403,
+  "h": 2494617288,
   "sub": "custom",
   "ax": [
    1,
@@ -313,7 +313,7 @@
  },
  "overgrown-garden/open": {
   "n": 35,
-  "h": 2680576227,
+  "h": 823998494,
   "sub": "custom",
   "ax": [
    1,
@@ -326,7 +326,7 @@
  },
  "overgrown-garden/balanced": {
   "n": 65,
-  "h": 341122967,
+  "h": 430889937,
   "sub": "custom",
   "ax": [
    1,
@@ -339,7 +339,7 @@
  },
  "overgrown-garden/full": {
   "n": 94,
-  "h": 2961244940,
+  "h": 1312153038,
   "sub": "custom",
   "ax": [
    1,
@@ -365,7 +365,7 @@
  },
  "mossy-wood-ferns/balanced": {
   "n": 18,
-  "h": 3070641544,
+  "h": 3617672475,
   "sub": "pea",
   "ax": [
    1,
@@ -378,7 +378,7 @@
  },
  "mossy-wood-ferns/full": {
   "n": 121,
-  "h": 31187268,
+  "h": 806344722,
   "sub": "pea",
   "ax": [
    1,
@@ -391,7 +391,7 @@
  },
  "driftwood-nature/open": {
   "n": 56,
-  "h": 1211615175,
+  "h": 2060040272,
   "sub": "custom",
   "ax": [
    1,
@@ -404,7 +404,7 @@
  },
  "driftwood-nature/balanced": {
   "n": 118,
-  "h": 404408655,
+  "h": 1211426913,
   "sub": "custom",
   "ax": [
    1,
@@ -417,7 +417,7 @@
  },
  "driftwood-nature/full": {
   "n": 223,
-  "h": 3054571317,
+  "h": 3920511656,
   "sub": "custom",
   "ax": [
    1,
@@ -443,7 +443,7 @@
  },
  "underwater-forest/balanced": {
   "n": 101,
-  "h": 3263332959,
+  "h": 3896957219,
   "sub": "custom",
   "ax": [
    1,
@@ -456,7 +456,7 @@
  },
  "underwater-forest/full": {
   "n": 194,
-  "h": 1537793717,
+  "h": 3893187112,
   "sub": "custom",
   "ax": [
    1,
@@ -469,7 +469,7 @@
  },
  "african-cichlid-rockscape/open": {
   "n": 18,
-  "h": 1502722080,
+  "h": 2327398035,
   "sub": "custom",
   "ax": [
    1,
@@ -482,7 +482,7 @@
  },
  "african-cichlid-rockscape/balanced": {
   "n": 37,
-  "h": 3774301709,
+  "h": 1169788712,
   "sub": "custom",
   "ax": [
    1,
@@ -495,7 +495,7 @@
  },
  "african-cichlid-rockscape/full": {
   "n": 44,
-  "h": 2580200844,
+  "h": 2357551734,
   "sub": "custom",
   "ax": [
    1,
@@ -508,7 +508,7 @@
  },
  "rocky-river-stream/open": {
   "n": 24,
-  "h": 78746780,
+  "h": 4067785523,
   "sub": "gravel",
   "ax": [
    1,
@@ -521,7 +521,7 @@
  },
  "rocky-river-stream/balanced": {
   "n": 45,
-  "h": 3878345676,
+  "h": 1731447808,
   "sub": "gravel",
   "ax": [
    1,
@@ -534,7 +534,7 @@
  },
  "rocky-river-stream/full": {
   "n": 67,
-  "h": 4180263512,
+  "h": 2938575356,
   "sub": "gravel",
   "ax": [
    1,
@@ -560,7 +560,7 @@
  },
  "white-sand-stone/balanced": {
   "n": 3,
-  "h": 4248437292,
+  "h": 3685496365,
   "sub": "white",
   "ax": [
    1,
@@ -573,7 +573,7 @@
  },
  "white-sand-stone/full": {
   "n": 6,
-  "h": 2267595464,
+  "h": 3347880991,
   "sub": "white",
   "ax": [
    1,
@@ -625,7 +625,7 @@
  },
  "goldfish-palace/open": {
   "n": 25,
-  "h": 3699493715,
+  "h": 3896183284,
   "sub": "pea",
   "ax": [
    1,
@@ -638,7 +638,7 @@
  },
  "goldfish-palace/balanced": {
   "n": 59,
-  "h": 1465515150,
+  "h": 804725421,
   "sub": "pea",
   "ax": [
    1,
@@ -651,7 +651,7 @@
  },
  "goldfish-palace/full": {
   "n": 91,
-  "h": 2445540138,
+  "h": 1773383719,
   "sub": "pea",
   "ax": [
    1,
@@ -677,7 +677,7 @@
  },
  "betta-retreat/balanced": {
   "n": 45,
-  "h": 1330450974,
+  "h": 1482472268,
   "sub": "white",
   "ax": [
    1,
@@ -690,7 +690,7 @@
  },
  "betta-retreat/full": {
   "n": 138,
-  "h": 3331894128,
+  "h": 608864078,
   "sub": "white",
   "ax": [
    1,
@@ -716,7 +716,7 @@
  },
  "axolotl-den/balanced": {
   "n": 3,
-  "h": 1818821524,
+  "h": 2614185889,
   "sub": "custom",
   "ax": [
    1,
@@ -729,7 +729,7 @@
  },
  "axolotl-den/full": {
   "n": 5,
-  "h": 1384075282,
+  "h": 1604985328,
   "sub": "custom",
   "ax": [
    1,
@@ -742,7 +742,7 @@
  },
  "lps-coral-garden/open": {
   "n": 20,
-  "h": 1922083761,
+  "h": 1500889959,
   "sub": "aragonite",
   "ax": [
    1,
@@ -755,7 +755,7 @@
  },
  "lps-coral-garden/balanced": {
   "n": 34,
-  "h": 2062821533,
+  "h": 1739358975,
   "sub": "aragonite",
   "ax": [
    1,
@@ -768,7 +768,7 @@
  },
  "lps-coral-garden/full": {
   "n": 49,
-  "h": 3229363615,
+  "h": 2592603052,
   "sub": "aragonite",
   "ax": [
    1,
@@ -781,7 +781,7 @@
  },
  "reef-arches/open": {
   "n": 21,
-  "h": 90308300,
+  "h": 1605207015,
   "sub": "aragonite",
   "ax": [
    1,
@@ -794,7 +794,7 @@
  },
  "reef-arches/balanced": {
   "n": 32,
-  "h": 3020168899,
+  "h": 1325438225,
   "sub": "aragonite",
   "ax": [
    1,
@@ -807,7 +807,7 @@
  },
  "reef-arches/full": {
   "n": 47,
-  "h": 1577228120,
+  "h": 2096014945,
   "sub": "aragonite",
   "ax": [
    1,
@@ -820,7 +820,7 @@
  },
  "blue-glow-reef/open": {
   "n": 13,
-  "h": 3906579156,
+  "h": 4113686405,
   "sub": "aragonite",
   "ax": [
    1,
@@ -833,7 +833,7 @@
  },
  "blue-glow-reef/balanced": {
   "n": 22,
-  "h": 2140555451,
+  "h": 835312051,
   "sub": "aragonite",
   "ax": [
    1,
@@ -846,7 +846,7 @@
  },
  "blue-glow-reef/full": {
   "n": 33,
-  "h": 978249197,
+  "h": 3134498863,
   "sub": "aragonite",
   "ax": [
    1,
@@ -859,7 +859,7 @@
  },
  "soft-coral-garden/open": {
   "n": 29,
-  "h": 275155693,
+  "h": 324122571,
   "sub": "aragonite",
   "ax": [
    1,
@@ -872,7 +872,7 @@
  },
  "soft-coral-garden/balanced": {
   "n": 39,
-  "h": 3478252492,
+  "h": 2525206946,
   "sub": "aragonite",
   "ax": [
    1,
@@ -885,7 +885,7 @@
  },
  "soft-coral-garden/full": {
   "n": 53,
-  "h": 643909562,
+  "h": 3501561990,
   "sub": "aragonite",
   "ax": [
    1,
@@ -898,7 +898,7 @@
  },
  "sps-reef/open": {
   "n": 25,
-  "h": 2371669706,
+  "h": 2667731365,
   "sub": "aragonite",
   "ax": [
    1,
@@ -911,7 +911,7 @@
  },
  "sps-reef/balanced": {
   "n": 36,
-  "h": 1218945635,
+  "h": 2185337346,
   "sub": "aragonite",
   "ax": [
    1,
@@ -924,7 +924,7 @@
  },
  "sps-reef/full": {
   "n": 50,
-  "h": 3740296820,
+  "h": 2178020914,
   "sub": "aragonite",
   "ax": [
    1,
@@ -937,7 +937,7 @@
  },
  "mixed-reef/open": {
   "n": 25,
-  "h": 1214678252,
+  "h": 821619353,
   "sub": "aragonite",
   "ax": [
    1,
@@ -950,7 +950,7 @@
  },
  "mixed-reef/balanced": {
   "n": 32,
-  "h": 1057944044,
+  "h": 2949914989,
   "sub": "aragonite",
   "ax": [
    1,
@@ -963,7 +963,7 @@
  },
  "mixed-reef/full": {
   "n": 42,
-  "h": 4031848191,
+  "h": 3710883988,
   "sub": "aragonite",
   "ax": [
    1,
@@ -976,7 +976,7 @@
  },
  "clownfish-anemone/open": {
   "n": 15,
-  "h": 2042003699,
+  "h": 2548860554,
   "sub": "aragonite",
   "ax": [
    1,
@@ -989,7 +989,7 @@
  },
  "clownfish-anemone/balanced": {
   "n": 23,
-  "h": 3768673112,
+  "h": 3387356119,
   "sub": "aragonite",
   "ax": [
    1,
@@ -1002,7 +1002,7 @@
  },
  "clownfish-anemone/full": {
   "n": 31,
-  "h": 69428768,
+  "h": 795908299,
   "sub": "aragonite",
   "ax": [
    1,
@@ -1015,7 +1015,7 @@
  },
  "reef-islands/open": {
   "n": 21,
-  "h": 2584060791,
+  "h": 2256931615,
   "sub": "aragonite",
   "ax": [
    1,
@@ -1028,7 +1028,7 @@
  },
  "reef-islands/balanced": {
   "n": 34,
-  "h": 2659737199,
+  "h": 2192511150,
   "sub": "aragonite",
   "ax": [
    1,
@@ -1041,7 +1041,7 @@
  },
  "reef-islands/full": {
   "n": 50,
-  "h": 3243979049,
+  "h": 1634106024,
   "sub": "aragonite",
   "ax": [
    1,
@@ -1054,7 +1054,7 @@
  },
  "reef-rock-art/open": {
   "n": 5,
-  "h": 2930235698,
+  "h": 3027462738,
   "sub": "aragonite",
   "ax": [
    1,
@@ -1067,7 +1067,7 @@
  },
  "reef-rock-art/balanced": {
   "n": 10,
-  "h": 3317020250,
+  "h": 1246067466,
   "sub": "aragonite",
   "ax": [
    1,
@@ -1080,7 +1080,7 @@
  },
  "reef-rock-art/full": {
   "n": 18,
-  "h": 2886888098,
+  "h": 3123562450,
   "sub": "aragonite",
   "ax": [
    1,
@@ -1093,7 +1093,7 @@
  },
  "reef-skyline/open": {
   "n": 7,
-  "h": 1933871603,
+  "h": 1466004771,
   "sub": "aragonite",
   "ax": [
    1,
@@ -1106,7 +1106,7 @@
  },
  "reef-skyline/balanced": {
   "n": 13,
-  "h": 1237640701,
+  "h": 1563480301,
   "sub": "aragonite",
   "ax": [
    1,
@@ -1119,7 +1119,7 @@
  },
  "reef-skyline/full": {
   "n": 22,
-  "h": 3115840285,
+  "h": 9591806,
   "sub": "aragonite",
   "ax": [
    1,
@@ -1145,7 +1145,7 @@
  },
  "mudskipper-mudflat/balanced": {
   "n": 67,
-  "h": 2342559186,
+  "h": 2440476231,
   "sub": "custom",
   "ax": [
    1,
@@ -1158,7 +1158,7 @@
  },
  "mudskipper-mudflat/full": {
   "n": 99,
-  "h": 2341362358,
+  "h": 2647624489,
   "sub": "custom",
   "ax": [
    1,
@@ -1171,7 +1171,7 @@
  },
  "brackish-rocky-coast/open": {
   "n": 18,
-  "h": 1361507663,
+  "h": 2429499493,
   "sub": "custom",
   "ax": [
    1,
@@ -1184,7 +1184,7 @@
  },
  "brackish-rocky-coast/balanced": {
   "n": 37,
-  "h": 389833001,
+  "h": 3228145681,
   "sub": "custom",
   "ax": [
    1,
@@ -1197,7 +1197,7 @@
  },
  "brackish-rocky-coast/full": {
   "n": 44,
-  "h": 3850164142,
+  "h": 3405745824,
   "sub": "custom",
   "ax": [
    1,
@@ -1223,7 +1223,7 @@
  },
  "puffer-den/balanced": {
   "n": 24,
-  "h": 553941585,
+  "h": 4003516735,
   "sub": "custom",
   "ax": [
    1,
@@ -1236,7 +1236,7 @@
  },
  "puffer-den/full": {
   "n": 119,
-  "h": 2464844128,
+  "h": 3164080375,
   "sub": "custom",
   "ax": [
    1,
@@ -1249,7 +1249,7 @@
  },
  "brackish-planted/open": {
   "n": 24,
-  "h": 502290586,
+  "h": 417220588,
   "sub": "custom",
   "ax": [
    1,
@@ -1262,7 +1262,7 @@
  },
  "brackish-planted/balanced": {
   "n": 60,
-  "h": 3477563931,
+  "h": 1990609093,
   "sub": "custom",
   "ax": [
    1,
@@ -1275,7 +1275,7 @@
  },
  "brackish-planted/full": {
   "n": 144,
-  "h": 582750366,
+  "h": 1151318025,
   "sub": "custom",
   "ax": [
    1,
@@ -1301,7 +1301,7 @@
  },
  "fiddler-crab-beach/balanced": {
   "n": 67,
-  "h": 3550322993,
+  "h": 578641243,
   "sub": "custom",
   "ax": [
    1,
@@ -1314,7 +1314,7 @@
  },
  "fiddler-crab-beach/full": {
   "n": 99,
-  "h": 9967068,
+  "h": 113331786,
   "sub": "custom",
   "ax": [
    1,
@@ -1353,7 +1353,7 @@
  },
  "dart-frog-rainforest/full": {
   "n": 84,
-  "h": 1104887725,
+  "h": 569452291,
   "sub": "layered",
   "ax": [
    1,
@@ -1366,7 +1366,7 @@
  },
  "rocky-desert-canyon/open": {
   "n": 14,
-  "h": 2646648343,
+  "h": 1059460111,
   "sub": "clay",
   "ax": [
    1,
@@ -1379,7 +1379,7 @@
  },
  "rocky-desert-canyon/balanced": {
   "n": 18,
-  "h": 1309760274,
+  "h": 474810515,
   "sub": "clay",
   "ax": [
    1,
@@ -1392,7 +1392,7 @@
  },
  "rocky-desert-canyon/full": {
   "n": 29,
-  "h": 153329084,
+  "h": 1198076333,
   "sub": "clay",
   "ax": [
    1,
@@ -1431,7 +1431,7 @@
  },
  "snake-hideaway/full": {
   "n": 25,
-  "h": 2185658546,
+  "h": 2147442502,
   "sub": "bark",
   "ax": [
    1,
@@ -1470,7 +1470,7 @@
  },
  "rainforest-canopy/full": {
   "n": 73,
-  "h": 4248922706,
+  "h": 3229018017,
   "sub": "soil",
   "ax": [
    1,
@@ -1483,7 +1483,7 @@
  },
  "basking-scrubland/open": {
   "n": 14,
-  "h": 559878397,
+  "h": 890846271,
   "sub": "clay",
   "ax": [
    1,
@@ -1496,7 +1496,7 @@
  },
  "basking-scrubland/balanced": {
   "n": 18,
-  "h": 578487044,
+  "h": 1873015053,
   "sub": "clay",
   "ax": [
    1,
@@ -1509,7 +1509,7 @@
  },
  "basking-scrubland/full": {
   "n": 29,
-  "h": 935167840,
+  "h": 3995081005,
   "sub": "clay",
   "ax": [
    1,
@@ -1548,7 +1548,7 @@
  },
  "tarantula-burrow/full": {
   "n": 30,
-  "h": 578692848,
+  "h": 4185593075,
   "sub": "tsand",
   "ax": [
    1,
@@ -1587,7 +1587,7 @@
  },
  "jumping-spider-loft/full": {
   "n": 88,
-  "h": 257669300,
+  "h": 4149019636,
   "sub": "layered",
   "ax": [
    1,
@@ -1626,7 +1626,7 @@
  },
  "rainforest-waterfall/full": {
   "n": 116,
-  "h": 3667504462,
+  "h": 3802493482,
   "sub": "layered",
   "ax": [
    1,
@@ -1665,7 +1665,7 @@
  },
  "riverbank-shore/full": {
   "n": 117,
-  "h": 892511412,
+  "h": 2911550046,
   "sub": "layered",
   "ax": [
    1,
@@ -1691,7 +1691,7 @@
  },
  "cypress-swamp/balanced": {
   "n": 67,
-  "h": 3725262220,
+  "h": 1263422945,
   "sub": "custom",
   "ax": [
    1,
@@ -1704,7 +1704,7 @@
  },
  "cypress-swamp/full": {
   "n": 99,
-  "h": 4103500209,
+  "h": 2165206597,
   "sub": "custom",
   "ax": [
    1,
@@ -1743,7 +1743,7 @@
  },
  "cascade-wall/full": {
   "n": 121,
-  "h": 2605634609,
+  "h": 717516102,
   "sub": "layered",
   "ax": [
    1,
