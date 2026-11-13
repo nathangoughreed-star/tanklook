@@ -1,5 +1,6 @@
 // A new scene built from a bundle deal (lane KD): catalog tank, stand on, the kit's light and lid when the deal names a kit.
 import { getTankModel, modelOfVariant, tankFromModel } from '../data/tanks';
+import { hoodExists } from '../data/hoods';
 import { kitById } from '../data/kits';
 import { DEALS, dealAsKit, type Deal } from '../data/deals';
 import { kitTech } from './tech';
@@ -20,7 +21,7 @@ export function sceneFromDeal(d: Deal): Scene | undefined {
   // a bundle without a stand does not get one added: the user adds one or says they don't need one (the budget counts one meanwhile)
   const hasStand = d.includes.includes('stand');
   S.stand = { ...S.stand, show: hasStand, need: hasStand ? undefined : 'ask', style: d.look?.style ?? 'cabinet', finish: d.look?.finish ?? 'black' };
-  S.lid = d.includes.includes('lid') ? d.look?.lid ?? 'hood' : 'open';
+  S.lid = d.includes.includes('lid') ? d.look?.lid ?? (hoodExists(S.tank) ? 'hood' : 'glass') : 'open';
   const k = d.kit ? kitById(d.kit) : undefined;
   if (k) { S = applyKitLight(S, k as never); S.lid = k.lid; }
   else if (d.includes.includes('light')) { // a bundled LED (listings rarely give watts: the budget-tier default for this tank size stands in, flagged 'guess')

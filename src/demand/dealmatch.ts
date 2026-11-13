@@ -5,6 +5,7 @@
 // carry over unchanged. A deal whose gear does worse for this build (a plant loses its light, the filter or heater is smaller,
 // the risk goes up) is kept out of the offer, with what it breaks.
 import { dealAsKit, dealGuesses, dealShip, dealsFor, type Deal } from '../data/deals';
+import { hoodExists } from '../data/hoods';
 import { productName } from '../data/gearCatalog';
 import { getTankModel, modelOfVariant, tankFromModel } from '../data/tanks';
 import { applyKitLight } from '../scene/kitlight';
@@ -70,7 +71,7 @@ export function withDealGear(S: TankSetup, d: Deal): TankSetup {
   let B = structuredClone(S);
   const has = (p: string) => d.includes.includes(p as never);
   if (has('stand')) B.stand = { ...B.stand, show: true, need: B.stand.need === 'ask' ? 'added' : B.stand.need, style: d.look?.style ?? B.stand.style, finish: d.look?.finish ?? B.stand.finish };
-  if (has('lid')) B.lid = d.look?.lid ?? 'hood';
+  if (has('lid')) B.lid = d.look?.lid ?? (hoodExists(B.tank) ? 'hood' : 'glass');
   if (has('light')) { // as sceneFromDeal: the listing's LED, the budget default for its size when it gives no watts (flagged a guess)
     const L = d.look?.light;
     B = applyKitLight(B, { light: { type: 'led', tech: 'led-white', count: 1, watts: L?.watts ?? null, par: L?.par, spec: L?.par ? 'published' : L?.watts ? 'listing' : 'guess' }, lid: B.lid, tier: 'budget', tankRatedGal: d.gal });

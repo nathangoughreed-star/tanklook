@@ -1,5 +1,6 @@
 // The docked tank picker's pure part (lane ST1, Nathan 2026-11-05): which sizes a kind of setup offers, grouped by band like the old modal; what each row says
 // (size, tank price, finished-tank range); and the view-only setup a highlighted row draws. Free of the DOM so test/tankdock.test.ts can check it.
+import { hoodExists } from '../data/hoods';
 import { roomOf } from '../scene/roomlight';
 import { finishedRange, type FinishedRange } from '../demand/finishedRange';
 import { tankRowPrice } from '../demand/prices';
@@ -9,7 +10,7 @@ import { bareTech, type TechSetup } from '../scene/tech';
 import type { SetupKind } from '../scene/pickerKind';
 import { applyTankPick } from './tankPick';
 import { fitFixture } from '../scene/lightout';
-import { shapeOf } from '../scene/shape';
+
 import type { TankSetup } from '../scene/types';
 
 /** One thing the picker can choose: a generic size, or one maker's product at that size. */
@@ -125,7 +126,7 @@ export function startLight(S: TankSetup, o: DockOpt): void {
   const bundle = o.v ? isBundle(o.v) : modelIsBundle(o.m), v = o.v ?? soleProduct(o.m);
   if (!bundle || !v?.includes?.light || v.kit) return;
   if (S.light.type === 'flat') { S.light = { ...S.light, type: 'led', tech: 'led-white', count: 1, watts: undefined }; fitFixture(S.light, S.tank, true); }
-  if (S.lid === 'open' && !v.includes.lid) S.lid = ['rect', 'bow', 'arch'].includes(shapeOf(S.tank)) ? 'hood' : 'glass';
+  if (S.lid === 'open' && !v.includes.lid) S.lid = hoodExists(S.tank) ? 'hood' : 'glass';
 }
 
 export function previewSetup(base: TankSetup, o: DockOpt, start = false): TankSetup {

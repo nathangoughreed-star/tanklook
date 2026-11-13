@@ -403,6 +403,8 @@ export interface TankSetup {
   terrain: TerrainSettings;
   water: WaterSettings;
   lid: LidType;
+  /** HD1 (2026-11-13, no version bump): the hood product picked (data/gear/hoods.json id). Absent = the cheapest hood sold for the tank. */
+  hoodProduct?: string;
   doors?: DoorType;
   stand: StandSettings;
   wall: WallSettings;

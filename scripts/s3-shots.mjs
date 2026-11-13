@@ -83,6 +83,10 @@ await click('.picker .sec-head .btn', '');
 for (const g of ['Sits on', 'Lid and top', 'Background', 'Room']) await ev(`(() => { const e = [...document.querySelectorAll('.group .gh')].find(b => b.textContent.startsWith(${JSON.stringify(g)})); if (e && e.getAttribute('aria-expanded') !== 'true') e.click(); return true })()`);
 await click('.group .gh', 'Tank model');
 await shot('13-tank-section-all-groups', 2000);
+await click('.tankcard .btn', 'Change'); await sleep(500); await click('.picker .btn', 'New custom tank');
+await shot('18-maker-new-custom-tank-box-rimless', 5000);                                // Nathan 11-13: a new custom tank starts as a rimless box; Bow under More
+facts.newDefault = await ev(`({ shape: document.querySelector('.mform .seg button.on')?.textContent, rim: [...document.querySelectorAll('.mform .seg button.on')].map(b => b.textContent) })`);
+await click('.mhead .btn', 'Cancel');
 facts.oldIds = await ev(`['app','side','view','c'].filter(i => document.getElementById(i))`);
 
 // ---------- phone 390 x 844

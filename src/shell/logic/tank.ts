@@ -42,10 +42,11 @@ export function glassText(mm: number, u: Units): string {
   return n === 16 ? '1 in' : `${n / d}/${16 / d} in`;
 }
 
-/** The shape words of the new shell (mockup 07: Box / Bow / Corner / Round, the rest under More). */
+/** The shape words of the new shell. Box / Corner / Round up front; Bow and the rarer shapes under More (Nathan 2026-11-13: few people
+ *  build a bowfront, but old saves and owned tanks still need it, so it stays one click away). */
 export const SHAPE_WORD: Record<TankShape, string> = { rect: 'Box', bow: 'Bow', pie: 'Corner', round: 'Round', poly: 'Polygon', bowl: 'Bowl', arch: 'Curved front' };
-export const SHAPE_MAIN: TankShape[] = ['rect', 'bow', 'pie', 'round'];
-export const SHAPE_MORE: TankShape[] = ['poly', 'bowl', 'arch'];
+export const SHAPE_MAIN: TankShape[] = ['rect', 'pie', 'round'];
+export const SHAPE_MORE: TankShape[] = ['bow', 'poly', 'bowl', 'arch'];
 export const shapeLong = (s: TankShape) => SHAPES[s];
 
 // ---------------------------------------------------------------- Tank model card
@@ -264,8 +265,10 @@ export function startSpec(S: TankSetup, how: 'edit' | 'copy' | 'new', lib: reado
     const id = S.customTank?.id, e = id ? lib.find(x => x.id === id) : undefined;
     return e && !newerVersion(S, lib) ? { spec: specOfEntry(e), libId: e.id } : { spec: base, ...(e ? { libId: e.id } : {}) };
   }
-  const from = how === 'copy' ? productName(S) : '';
-  return { spec: { ...base, name: from ? `${autoName(S.tank)} (from ${from})` : autoName(S.tank), owned: false, priceUsd: undefined } };
+  if (how === 'copy') return { spec: { ...base, name: `${autoName(S.tank)} (from ${productName(S)})`, owned: false, priceUsd: undefined } };
+  // a new custom tank starts as what people usually have built: a glass box, rimless, at the setup's length / depth / height (Nathan 2026-11-13)
+  const tank: Tank = { L: S.tank.L, D: S.tank.D, H: S.tank.H };
+  return { spec: { name: autoName(tank), tank, glass: 'auto', glassType: base.glassType, rim: false } };
 }
 export const specOfEntry = (e: CustomTank): CustomTankSpec => { const { id: _i, version: _v, updated: _u, ...s } = e; return structuredClone(s); };
 

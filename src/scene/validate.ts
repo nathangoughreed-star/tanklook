@@ -346,6 +346,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       return h.length ? { on: bool(te.on, false), cols, rows, h, ...(radial ? { radial } : {}), ...(arc ? { arc } : {}), pools } : { on: false, cols, rows: 0, h: [], pools };
     })(),
     lid: pick(raw.lid, ['open', 'glass', 'hood', 'mesh'] as const, d.lid),
+    ...(typeof raw.hoodProduct === 'string' && raw.lid === 'hood' ? { hoodProduct: raw.hoodProduct } : {}),
     ...(raw.doors === 'hinged' || raw.doors === 'sliding' ? { doors: raw.doors } : {}),
     stand: { // no `show` = a file older than stands: off (new tanks start with one on, audit #29)
       show: bool(st.show, false), height: num(st.height, d.stand.height, ...LIMITS.stand),
