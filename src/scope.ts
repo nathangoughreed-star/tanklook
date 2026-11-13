@@ -25,9 +25,10 @@ export const PAUSED_NOTE = 'Terrariums are paused for now; this tank is shown as
 
 /** Animal categories (data/species.ts) that belong to an aquarium. */
 const AQUARIUM_CATS: ReadonlySet<string> = new Set(['fw-fish', 'fw-invert', 'sw-fish', 'sw-invert']);
-export const speciesInScope = (sp: { cat: string }): boolean => !aquariumOnly() || AQUARIUM_CATS.has(sp.cat);
+/** Fully aquatic amphibians (African dwarf frog, axolotl: habitat 'water') are aquarium animals and stay; every other amphibian, reptile and land invertebrate is hidden. */
+export const speciesInScope = (sp: { cat: string; habitat?: string }): boolean => !aquariumOnly() || AQUARIUM_CATS.has(sp.cat) || (sp.cat === 'amphibian' && sp.habitat === 'water');
 /** Filter a species list to the scope (a no-op in 'all'). */
-export const scopeSpecies = <T extends { cat: string }>(l: readonly T[]): T[] => aquariumOnly() ? l.filter(speciesInScope) : [...l];
+export const scopeSpecies = <T extends { cat: string; habitat?: string }>(l: readonly T[]): T[] => aquariumOnly() ? l.filter(speciesInScope) : [...l];
 
 /** World ids (brief.ts World) offered in this scope. */
 export const worldInScope = (w: string): boolean => !aquariumOnly() || w === 'aquarium';

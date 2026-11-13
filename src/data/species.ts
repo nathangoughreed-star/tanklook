@@ -99,7 +99,7 @@ export const speciesTag = (sp: Species) => sp.kind === 'snail' ? 'snail' : sp.zo
 
 /** Case- and accent-insensitive search over common and scientific names; prefix matches rank first. */
 /** The Animals categories offered in this scope. */
-export const categoriesInScope = () => CATEGORIES.filter(([k]) => speciesInScope({ cat: k }));
+export const categoriesInScope = () => CATEGORIES.filter(([k]) => speciesInScope({ cat: k, habitat: 'water' }));
 export function searchSpecies(q: string, cat?: Category): Species[] {
   const pool = scopeSpecies(cat ? SPECIES.filter(s => s.cat === cat) : SPECIES);   // AQ1: aquarium scope hides herps (src/scope.ts)
   const norm = (s: string) => s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();

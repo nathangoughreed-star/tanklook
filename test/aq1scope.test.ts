@@ -28,10 +28,12 @@ afterEach(() => setScope('all'));
 describe('aquarium scope', () => {
   it('is the mode under test here, and vitest otherwise runs in all', () => { expect(aquariumOnly()).toBe(true); setScope('all'); expect(scope()).toBe('all'); });
   it('no reptile, amphibian or land invertebrate reaches the species lists or search', () => {
-    expect(scopeSpecies(SPECIES).some(s => HERP_CATS.has(s.cat))).toBe(false);
+    expect(scopeSpecies(SPECIES).filter(s => HERP_CATS.has(s.cat)).map(s => s.id).sort()).toEqual(['adf', 'axolotl']);   // fully aquatic amphibians stay (Nathan 2026-11-13)
+    expect(scopeSpecies(SPECIES).every(s => !HERP_CATS.has(s.cat) || s.habitat === 'water')).toBe(true);
+    expect(searchSpecies('dwarf frog').map(s => s.id)).toContain('adf');
     expect(scopeSpecies(SPECIES).length).toBeGreaterThan(40);
-    expect(categoriesInScope().map(c => c[0])).toEqual(['fw-fish', 'fw-invert', 'sw-fish', 'sw-invert']);
-    for (const q of ['gecko', 'frog', 'python', 'tarantula', 'newt']) expect(searchSpecies(q).some(s => HERP_CATS.has(s.cat)), q).toBe(false);
+    expect(categoriesInScope().map(c => c[0])).toEqual(['fw-fish', 'fw-invert', 'sw-fish', 'sw-invert', 'amphibian']);
+    for (const q of ['gecko', 'frog', 'python', 'tarantula', 'newt']) expect(searchSpecies(q).some(s => HERP_CATS.has(s.cat) && s.habitat !== 'water'), q).toBe(false);
   });
   it('the world, habitat and kind choices are the aquariums only', () => {
     expect(worldCards().map(c => c.id)).toEqual(['aquarium']);
