@@ -36,6 +36,11 @@ export interface ScatterSpec {
    *  lowest line that clears it), and mark the pile along the whole strip they cover, not just a disc at the middle:
    *  litter used to sit on the highest copy anywhere under its middle and stacked into a thick, flat slab. */
   drape?: boolean;
+  /** Leaf litter on rippled ground (SR1's 50 % roughness; Nathan 2026-11-12: leaves stood 20-45 deg and floated): `flat` = the
+   *  steepest the ground may tilt a copy, radians (its normal is taken over its own reach, not over 4 mm, which reads every
+   *  ripple as a slope); `maxLift` = the most (mm) it is raised to clear the ground under its ends (a flexible leaf dips
+   *  into a hump instead of hovering over it). */
+  flat?: number; maxLift?: number;
 }
 
 /** Signed distance (mm) to the tank's outline, positive inside: shape.ts `insideBy` with the outline fetched once. */
@@ -72,10 +77,12 @@ export function scatter(T: Tank, ground: GroundAt, spec: ScatterSpec): THREE.Ins
     let ki = 0; for (let acc = spec.kinds[0].weight; acc < pick && ki < spec.kinds.length - 1;) acc += spec.kinds[++ki].weight;
     const K = spec.kinds[ki], su = spec.sortAt ? u * 0.6 + 0.4 * spec.sortAt(x, d) : u, size = K.size[0] + su * (K.size[1] - K.size[0]), reach = size * K.reach;
     if (inBy(x, d) < reach * 0.25) continue; // near the glass: its ends and sides are checked below
-    const g = ground(x, d), gx0 = ground(x - e, d), gx1 = ground(x + e, d), gd0 = ground(x, d - e), gd1 = ground(x, d + e);
+    const ee = spec.flat ? Math.max(e, reach * 0.8) : e;
+    const g = ground(x, d), gx0 = ground(x - ee, d), gx1 = ground(x + ee, d), gd0 = ground(x, d - ee), gd1 = ground(x, d + ee);
     n.set(gx1[0] - gx0[0], gx1[1] - gx0[1], gx1[2] - gx0[2]).cross(b.set(gd0[0] - gd1[0], gd0[1] - gd1[1], gd0[2] - gd1[2])).normalize();
     if (n.y < 0) n.negate();
     if (n.y < spec.slope) continue; // too steep to stay put
+    if (spec.flat) { const hz = Math.hypot(n.x, n.z), mx = Math.sin(spec.flat); if (hz > mx) { n.x *= mx / hz; n.z *= mx / hz; n.y = Math.cos(spec.flat); } }
     // its two ends clear the ground (a long leaf over a hump would dip into it): lift by the worst shortfall
     const cx = Math.cos(a), cz = -Math.sin(a); let under = 0, over = 0, out = false;
     // both ends and both sides (half as far: the long axis is the reach)
@@ -105,7 +112,7 @@ export function scatter(T: Tank, ground: GroundAt, spec: ScatterSpec): THREE.Ins
       cells(x, d, reach * 0.5, k => { top = Math.max(top, pile[k]); });
       if (inc) cells(x, d, reach * 0.5, k => { pile[k] = top + inc; });
     }
-    const h = lift + lk + under + top;
+    const h = lift + lk + (spec.maxLift != null ? Math.min(under, spec.maxLift) : under) + top;
     // grains never mirrored: a mirrored copy is inside out in an InstancedMesh (its winding flips, the culling does not),
     // and big pebbles showed as hollow rings
     pos.set(g[0] + n.x * h, g[1] + n.y * h, g[2] + n.z * h); scl.set(size, size, mirror && !spec.palette ? -size : size);
@@ -278,6 +285,6 @@ export function litterCount(l: Litter, area: number) {
 export function litterMeshes(S: TankSetup, T: Tank, ground: GroundAt, area = footprint(T).area): THREE.InstancedMesh[] {
   const l = S.substrate.litter; if (!l?.density) return [];
   const wy = S.water.on ? waterY(T, S.water.level) : -Infinity;
-  return scatter(T, ground, { seed: l.seed, count: litterCount(l, area), kinds: leafKinds(l.leaf), lift: [0.3, 0.9], pile: 1.2, tilt: 0.08, slope: 0.55, clump: 0.7, drape: true,
+  return scatter(T, ground, { seed: l.seed, count: litterCount(l, area), kinds: leafKinds(l.leaf), lift: [0.3, 0.9], pile: 1.2, tilt: 0.08, slope: 0.55, clump: 0.7, drape: true, flat: 0.17, maxLift: 3, // 10 deg, 3 mm: litter lies on the bed
     shade: y => (y < wy ? 0.55 : 1) });
 }
