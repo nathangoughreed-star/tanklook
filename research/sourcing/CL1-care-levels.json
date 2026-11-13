@@ -1,0 +1,289 @@
+{
+ "lane": "CL1",
+ "date": "2026-11-13",
+ "status": "pilot: 10 of 83 aquarium-scope species; care.ts untouched",
+ "species": [
+  {
+   "id": "betta",
+   "name": "Betta splendens",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://www.seriouslyfish.com/species/betta-splendens/",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "territorial, needs own tank, careful tankmates, obesity-prone; water flexible"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/betta-fish-care/",
+     "label": null,
+     "verdict": "1",
+     "why": "no label; says first-timers can succeed with preparation (5 gal, heater, filter, cycling); notes narrow temp range and fin rot/ich"
+    },
+    {
+     "site": "Aquarium Co-Op",
+     "url": "https://aquariumcoop.com/blogs/aquarium/betta-fish-care",
+     "label": null,
+     "verdict": "1",
+     "why": "titled best beginner pet fish but not called easy; needs heater and 5-10+ gal; illness mostly from poor maintenance"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "medium",
+   "reason": "Labels split 2/1/1, but both beginner-leaning sources make success conditional on heater, cycled 5+ gal tank and maintenance, which fits level 2 (a beginner often loses it in a bowl); keep 2."
+  },
+  {
+   "id": "oto",
+   "name": "Otocinclus affinis / vittatus",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Aquarium Co-Op",
+     "url": "https://aquariumcoop.com/blogs/aquarium/otocinclus-catfish",
+     "label": null,
+     "verdict": "2",
+     "why": "starvation not disease; wild-caught, fasted 3-6 weeks before sale; needs mature tank with biofilm/algae"
+    },
+    {
+     "site": "Fish Tank Setups",
+     "url": "https://fishtanksetups.com/otocinclus-catfish-care/",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "simple husbandry but needs mature biofilm tank and high import mortality"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "medium",
+   "reason": "Two independent sources agree on established tank plus diet/import losses; web search also showed other guides split Easy vs Moderate (not opened). Seriously Fish oto URL returned 404."
+  },
+  {
+   "id": "kuhli",
+   "name": "Pangio kuhlii",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://www.seriouslyfish.com/species/pangio-kuhlii/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "flexible water, compatible; needs a group and a lid (jumps)"
+    },
+    {
+     "site": "Aquarium Co-Op",
+     "url": "https://aquariumcoop.com/blogs/aquarium/kuhli-loach",
+     "label": "Beginner (Easy)",
+     "verdict": "1",
+     "why": "hardy, wide pH/GH, peaceful; group of 3-6, hiding spots, target-feed (nocturnal)"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/kuhli-loach/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "label Easy but text says scaleless, prone to skin disease, needs stable water, not best for hardy low-maintenance beginners"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "high",
+   "reason": "All three label Easy; Fishkeeping World caveat (scaleless, disease-prone) noted but does not change the level."
+  },
+  {
+   "id": "sae",
+   "name": "Siamese algae eater (Crossocheilus oblongus)",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/siamese-algae-eater/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "peaceful, hardy, eats most foods; 20+ gal, heater, lid"
+    },
+    {
+     "site": "Aquarium Co-Op",
+     "url": "https://aquariumcoop.com/blogs/aquarium/siamese-algae-eater",
+     "label": null,
+     "verdict": "1",
+     "why": "no label; hardy across 68-80F, pH 6-8; needs 50-55 gal, semi-aggressive to own kind, adults stop eating algae"
+    },
+    {
+     "site": "Seriously Fish",
+     "url": "https://www.seriouslyfish.com/species/crossocheilus-oblongus/",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "URL is the genus page covering seven Crossocheilus species, all Moderate; no stated reason, hints at groups of 6+ and large tanks; not specific to C. oblongus"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "medium",
+   "reason": "Two sources read Easy (hardy; size/tank and aggression are the demands); Seriously Fish Moderate is a genus-level page, so split is explainable; keep 1."
+  },
+  {
+   "id": "hillstream",
+   "name": "Hillstream loach (Sewellia / Beaufortia)",
+   "current": 2,
+   "sources": [
+    {
+     "site": "Seriously Fish",
+     "url": "https://www.seriouslyfish.com/species/sewellia-lineolata/",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "needs a well-established tank and stable water; clean, fast, oxygenated flow, 68-75 F"
+    },
+    {
+     "site": "Tankarium",
+     "url": "https://www.tankarium.com/hillstream-loach/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "called hardy, but also fussy about water conditions (clean, oxygenated, strong flow)"
+    },
+    {
+     "site": "Aquatic Arts",
+     "url": "https://aquaticarts.com/pages/reticulated-hillstream-loach-care-guide",
+     "label": null,
+     "verdict": "2",
+     "why": "relatively easy only while parameters stay stable; needs high oxygen, cool water, frequent large water changes"
+    }
+   ],
+   "proposed": 2,
+   "confidence": "medium",
+   "reason": "Labels split (Moderate vs Easy) but every page's stated reasons are flow, oxygen and stable water, which fits intermediate."
+  },
+  {
+   "id": "neon",
+   "name": "Neon tetra",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/neon-tetra",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "hardy, low care needs, tolerates a range of water"
+    },
+    {
+     "site": "Tankarium",
+     "url": "https://www.tankarium.com/neon-tetra/",
+     "label": null,
+     "verdict": "1",
+     "why": "peaceful, ideal for a beginner community tank; quarantine for neon tetra disease"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "medium",
+   "reason": "Two independent pages say beginner-friendly; only caveat is disease/quarantine."
+  },
+  {
+   "id": "discus",
+   "name": "Discus (Symphysodon)",
+   "current": 2,
+   "sources": [
+    {
+     "site": "LiveAquaria",
+     "url": "https://www.liveaquaria.com/blogs/species-spotlight/discus-species-profile-and-basic-care-guide",
+     "label": null,
+     "verdict": "2",
+     "why": "best for devoted or experienced keepers; needs attention to water quality, pH, hardness, diet; easier now with captive-raised fish"
+    },
+    {
+     "site": "Fishkeeper",
+     "url": "https://www.fishkeeper.co.uk/fish/freshwater/cichlids/discus",
+     "label": "Specialist community (compatibility field)",
+     "verdict": "3",
+     "why": "soft acidic water, RO suggested, very sensitive to metals/organics, large tank, group care"
+    },
+    {
+     "site": "Tropical Freshwater Fish (Heckel discus)",
+     "url": "https://tropicalfreshwaterfish.com/species/Symphysodon_discus.html",
+     "label": "Difficulty of care: 9",
+     "verdict": "3",
+     "why": "sensitive to water changes and pollutants, disease-prone; keeping one alive a year counts as success (wild-type Heckel)"
+    }
+   ],
+   "proposed": 3,
+   "confidence": "medium",
+   "reason": "Two pages read expert-level; LiveAquaria softens it for captive-bred stock, so split is explainable by wild vs captive-bred."
+  },
+  {
+   "id": "guppy",
+   "name": "Guppy (Poecilia reticulata)",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/guppies",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "peaceful, adaptable, hardier than most fish, still needs consistent conditions"
+    },
+    {
+     "site": "Tankarium",
+     "url": "https://www.tankarium.com/guppy/",
+     "label": null,
+     "verdict": "1",
+     "why": "described as hardy and surprisingly easy if needs are met (teaser text only, no formal rating)"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "medium",
+   "reason": "Both pages call it hardy and beginner-friendly; Tankarium has no formal label, so only two weak-to-moderate sources."
+  },
+  {
+   "id": "mandarin",
+   "name": "mandarin dragonet",
+   "current": 3,
+   "sources": [
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/mandarin-fish",
+     "label": "Intermediate",
+     "verdict": "3",
+     "why": "label says Intermediate but text says demanding and not for beginners: specific diet, live copepods, wean onto prepared food 'extremely difficult', needs 30+ gal with 75 lb live rock"
+    },
+    {
+     "site": "Seascape Studio fish guide",
+     "url": "https://seascapestudio.net/reference/fish.php?id=65",
+     "label": "Difficult",
+     "verdict": "3",
+     "why": "slow, live-food feeder hard to acclimate; only for long-established tank with copepod population"
+    },
+    {
+     "site": "Bulk Reef Supply",
+     "url": "https://www.bulkreefsupply.com/content/post/how-to-care-for-mandarin-dragonets",
+     "label": null,
+     "verdict": "2",
+     "why": "once expert-only, now 'relatively easy' with captive-bred fish trained to frozen food; wild-caught still starve without live copepods"
+    }
+   ],
+   "proposed": 3,
+   "confidence": "medium",
+   "reason": "Split is explained: wild-caught specialist diet is the killer; captive-bred eases it, but 2 of 3 sources still call it hard/not for beginners, so keep 3."
+  },
+  {
+   "id": "angel",
+   "name": "freshwater angelfish",
+   "current": 1,
+   "sources": [
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/angelfish/",
+     "label": "Easy (common varieties: silver, zebra, platinum, marble); Moderate for altum, koi, albino",
+     "verdict": "1",
+     "why": "hardy, beginner-friendly common strains; moderate only for rarer varieties"
+    },
+    {
+     "site": "Aquariadise",
+     "url": "https://www.aquariadise.com/angelfish-care-info/",
+     "label": null,
+     "verdict": "2",
+     "why": "no explicit label; tank-raised are hardy and not picky, but need large tank (80 gal for group), regular maintenance, aggression/eats small fish"
+    }
+   ],
+   "proposed": 1,
+   "confidence": "medium",
+   "reason": "Only 2 pages opened; hardiness points to 1, the moderate reading is about tank size and temperament, not loss rate. Keep 1."
+  }
+ ]
+}
