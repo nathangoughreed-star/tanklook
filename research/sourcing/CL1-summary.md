@@ -1,7 +1,7 @@
 # CL1 care-level audit: for Nathan to approve (2026-11-13)
 
 Scope: all 83 aquarium-scope species in `src/data/care.ts` CARE (land / herp species hidden by `src/scope.ts` skipped).
-Data: `research/sourcing/CL1-care-levels.json` (each source with URL, label, reason; `final` = the level I propose; `verify` = second look on changes and low-confidence rows).
+Data: `research/sourcing/cl1/CL1-care-levels.json` (in a subfolder because provenance.ts globs research/sourcing/*.json and expects batch files) (each source with URL, label, reason; `final` = the level I propose; `verify` = second look on changes and low-confidence rows).
 **care.ts is NOT changed.** Provenance rows only after you approve.
 
 77 of 83 keep their level. Sources are few: 26 species have fewer than 3 opened pages (Seriously Fish, Aquarium Co-Op, Petco and LiveAquaria often failed to open), so "medium" is the usual confidence.
