@@ -27,7 +27,7 @@ Rules:
 | R14 | 11-13 | Discover button off the viewer; only in the left menu | HM3 | - | - | - | lane started |
 | R15 | 11-13 | Split view: shared controls (View, Another moment) in one cluster top-middle between the views | HM3 | - | - | - | lane started |
 | R16 | 11-13 | Split view: a "Notes" section per side with that tank's warnings | HM3 | - | - | - | lane started |
-| R18 | 11-13 | Rolling water shadows (caustics) and surface ripples about twice as fast; maybe a setting | VF8 | - | - | - | lane started; setting question to Nathan |
+| R18 | 11-13 | Rolling water shadows (caustics) and surface ripples about twice as fast; maybe a setting | VF8 | - | - | - | lane started; no setting (Nathan 11-13: "Just double it") |
 
 ## Closed (seen on live)
 
