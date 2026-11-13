@@ -30,7 +30,7 @@ function project(): TankSetup {
 const mkStore = () => { const s = new Store({ ...defaultScene(), tanks: [project()] }); s.update(() => {}, { history: false }); bindBriefStore(s); return s; };
 const design = (s: Store) => Store.designKey(s.scene);
 beforeEach(() => { clearPairCache(); editBrief(() => emptyBrief()); });
-const idx = (k: string) => ['tank', 'stocking', 'hardscape', 'background', 'substrate', 'plants', 'lighting', 'filtration', 'heating', 'stand'].indexOf(k);
+const idx = (k: string) => ['tank', 'stocking', 'hardscape', 'decor', 'background', 'substrate', 'plants', 'lighting', 'filtration', 'heating', 'stand'].indexOf(k);
 const engine = () => { const s = mkStore(), e = createRealEngine(s, () => ({}), 'dq3-' + Math.random()); s.frozen = true; e.open(['animals', 'plants', 'hardscape', 'substrate']); return { s, e }; };
 const first = (e: ReturnType<typeof createRealEngine>) => { const r = e.next(); if (!r.ok) throw new Error('no pair'); return r; };
 const plantsOf = (r: CandidateRecord) => [...r.facts.plants].sort().join(',');
