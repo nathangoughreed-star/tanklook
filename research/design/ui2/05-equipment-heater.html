@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>UI2 mockup: Equipment > Heater, own / buy / lock</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  .app { display: grid; height: 100vh; grid-template-columns: var(--rail-w) 420px 1fr; grid-template-rows: var(--header-h) 1fr; grid-template-areas: "head head view" "rail panel view"; }
+  .app > header { grid-area: head; } .app > .rail { grid-area: rail; } .app > .panel { grid-area: panel; } .app > .viewer { grid-area: view; }
+  .cats { display: flex; gap: 6px; flex-wrap: wrap; }
+  .gear { display: grid; grid-template-columns: 44px minmax(0,1fr) auto; gap: var(--s2) var(--s3); align-items: center; padding: var(--s2) var(--s3); }
+  .gear .thumb { width: 44px; height: 36px; display: grid; place-items: center; color: #3a4150; }
+  .gear .acts { display: flex; gap: 4px; align-items: center; }
+  .lockbtn { height: var(--ctl-h-sm); padding: 0 var(--s2); border-radius: var(--r-pill); border: 1px solid var(--line); background: transparent; color: var(--text-3); display: inline-flex; align-items: center; gap: 4px; font-size: var(--fs-sm); }
+  .lockbtn .i { width: 14px; height: 14px; }
+  .lockbtn.on { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  .gh .n { color: var(--text-3); font-weight: 400; }
+</style></head>
+<body>
+<script src="icons.js"></script><script src="shell.js"></script>
+<div class="app" id="app"></div>
+<script>
+const lock = on => `<button class="lockbtn ${on ? 'on' : ''}" title="Use this one for sure">${I('lock')}${on ? 'For sure' : ''}</button>`;
+const g = (name, meta, o = {}) => `<div class="card gear ${o.inUse ? 'sel' : ''}">
+  <div class="thumb">${I('gear')}</div>
+  <div><div class="t">${name}</div><div class="m">${meta}</div>
+    <div style="display:flex;gap:4px;margin-top:4px">${o.owned ? '<span class="pill ok">Owned &middot; $0</span>' : ''}${o.inUse ? '<span class="pill accent">In use</span>' : ''}${o.warn ? `<span class="pill warn">${o.warn}</span>` : ''}</div></div>
+  <div class="acts">${o.inUse ? '' : '<button class="btn sm">Use</button>'}${lock(o.lock)}</div></div>`;
+document.getElementById('app').innerHTML = apphead() + rail('gear', {animals: '!'}) + `
+<section class="panel">
+  <div class="sec-head"><h2>Equipment</h2><select class="select" style="height:26px"><option>Mid planted</option></select><button class="btn sm ghost">${I('ideas')} Ideas</button></div>
+  <div class="sec-body">
+    <div class="cats"><span class="chip">Filter</span><span class="chip on">Heater</span><span class="chip">Light</span><span class="chip">CO2</span><span class="chip">Air</span><span class="chip">Ferts</span><span class="chip">More &#9662;</span></div>
+    <div class="hint">40 gal at 75 &deg;F, room 70 &deg;F (<span class="link">Constraints</span>): needs about 100 W.</div>
+    <div class="group open"><div class="gh">I own <span class="n">2</span><span class="sum">$0, the planner prefers these when they fit</span></div><div class="gb">
+      ${g('Eheim Jager 100 W', 'adjustable &middot; 11 in', {owned: 1, inUse: 1, lock: 1})}
+      ${g('Aqueon Pro 50 W', 'preset 78 &deg;F &middot; 9 in', {owned: 1, warn: 'too small for 40 gal'})}
+      <button class="btn sm ghost" style="justify-self:start">${I('plus')} Add one I own</button>
+    </div></div>
+    <div class="group open"><div class="gh">Buy <span class="n">14</span><span class="sum">fits 40 gal &middot; price &middot; power</span></div><div class="gb">
+      ${g('Fluval M 100 W', '$38 &middot; ~$1.20/mo power')}
+      ${g('Cobalt Neo-Therm 100 W', '$45 &middot; flat, shatterproof')}
+      ${g('Hygger titanium 100 W', '$26 &middot; external controller')}
+      <button class="btn sm ghost" style="justify-self:start">Show all 14</button>
+    </div></div>
+  </div>
+</section>
+<main class="viewer">
+  <div class="ov" style="top:12px;left:50%;transform:translateX(-50%)">${toolbar()}</div>
+  <div class="ov" style="bottom:14px;left:50%;transform:translateX(-50%)">${checkbar({full: 1})}</div>
+</main>`;
+</script>
+<div style="position:absolute;inset:0;pointer-events:none">
+  <div class="note" data-n="1" style="top:100px;left:492px;max-width:240px">&#9664; One sub-menu per category (Tank and Stand work the same way in the Tank section)</div>
+  <div class="note" data-n="2" style="top:200px;left:492px;max-width:240px">&#9664; I own: what you have ($0). Owning does not mean the plan uses it</div>
+  <div class="note" data-n="3" style="top:290px;left:492px;max-width:240px">&#9664; "For sure" lock, on any item, owned or not: Discover / Suggest must use it. Separate from "In use"</div>
+  <div class="note" data-n="4" style="top:470px;left:492px;max-width:240px">&#9664; Buy: catalogue products. Hidden when Constraints "No new equipment" is on</div>
+</div>
+</body></html>
