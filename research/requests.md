@@ -43,6 +43,7 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R31 | 11-13 | Sharp shadow lines through rocks in his 20g Long (moves with orbit) | VF9 | 14a793c1 | merged | - | scene research/visual/vf0/scenes/nathan-20g-long-2026-11-13.json; cause: contact-blob polygon offset slope term poked through sunk rocks; flat bias now; LIVE 1994 checked 11-13 (research/screens/live1994) |
 | R32 | 11-13 | Hoods are real products with their built-in light: one price, light type and wattage known, only offered where a product fits; custom tanks get glass lids | HD1 | - | - | - | brief prompts/lane-HD1-hood-products.md; picture research/screens/HD1/nathan-before.webp ; HD1 d81a4f59 HELD: breaks infeasible, pinnedKit, recipes goldfish-palace, suggest saltwater tests -> back to HD1 |
 | R33 | 11-13 | Bottom dwellers rest below the embed berm (substrate mound around rocks) | BD2 | - | - | - | brief prompts/lane-BD2-bottom-dwellers-berm.md ; BD2 49dcadcf merged (fish rise 6-8.5 mm onto the berm; plants not shot) |
+| R34 | 11-13 | Second style: colorful decorative recipe (castle, tinted artificial plants, colored gravel, bubbler); Discover first pool includes a decorative family. DS1 P3 style cards go into new shell step 5 (Preferences) | DS3 | - | - | - | brief prompts/lane-DS3-decorative-recipe.md; stop 1 = look sheet for Nathan |
 ## Closed (seen on live)
 
 | # | Ask | Live build | Screenshot |
