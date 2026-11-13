@@ -13,6 +13,7 @@ Design only, no app code. Built from `research/design/ui1-inventory.md` (UI1, bu
 | `research/screens/UI2/05-equipment-heater.png` | Equipment > Heater: **I own** and **Buy** groups, one item locked "Use this one for sure" (Nathan 11-13) |
 | `research/screens/UI2/06-tank-picker.png` | Tank > Choose a tank: **Custom tanks** and **Commercial tanks** groups, both closed at first (Nathan 11-13); `06b-tank-picker-open.png` = the same with both open |
 | `research/screens/UI2/07-custom-tank-maker.png` | Custom tank maker as **its own workspace**: an empty tank on a plain floor (real render), dimension labels, gallons and filled weight, price estimate with "how" and your own price; the setup is untouched until Save |
+| `research/screens/UI2/08-print-shopping-list.png` | Print section: four presets (Shopping list selected), part ticks, Print / .txt / .csv, live paper preview with the **Already owned** group at $0 (decision 5) |
 
 ## 1. Who and what for
 
@@ -32,7 +33,7 @@ Ideas (Discover, Suggest) are not a job of their own: they are a faster way to d
 
 ## 2. Screen map
 
-**Summary.** One editor screen, always the same shape: **header** (name, Undo / Redo / Save, file menu) over a **rail** of section icons; one **panel** showing one section at a time; the **viewer** with one shared control cluster at the top middle and one **check bar** at the bottom (Habitat, Cost, Water, Notes); clicking a check opens a **drawer** on the right that pushes the view aside instead of covering the tank. Plus one Start screen, a few dialogs and one Print screen. Today's 8-9 menu sections + ~60 overlays become 9 sections, 4 drawers, 1 Start screen, 4 dialogs, 1 Print screen. Of UI1's 56 rows: 27 KEEP (most moved), 20 MERGE, 4 HIDE, 5 CUT.
+**Summary.** One editor screen, always the same shape: **header** (name, Undo / Redo / Save, file menu) over a **rail** of section icons; one **panel** showing one section at a time; the **viewer** with one shared control cluster at the top middle and one **check bar** at the bottom (Habitat, Cost, Water, Notes); clicking a check opens a **drawer** on the right that pushes the view aside instead of covering the tank. Plus one Start screen, a few dialogs and one Print screen. Today's 8-9 menu sections + ~60 overlays become 9 sections, 4 drawers, 1 Start screen, 4 dialogs, 1 Print screen. Of UI1's 56 rows: 27 KEEP (most moved), 20 MERGE, 5 HIDE, 4 CUT.
 
 ### 2a. The new screens
 
@@ -115,12 +116,12 @@ Ideas (Discover, Suggest) are not a job of their own: they are a faster way to d
 | 50 | Phone layout | KEEP | redesigned (§6) |
 | 51 | Guided setup (dormant) | HIDE | decision 4: becomes a "Get started" checklist in the panel that opens the real sections |
 | 52 | Explore Complete Setups (dormant) | HIDE | decision 4: merge into Discover "Whole tank" |
-| 53 | A/B Discover (`?ab=1`) | CUT | decision 4: Compare covers it |
+| 53 | A/B Discover (`?ab=1`) | HIDE | stays behind `?ab=1`; Nathan 11-13 keeps the decision open (not dropped yet) |
 | 54 | Coach / Guide me (dormant) | CUT | decision 4: the checklist replaces it |
 | 55 | Animal-first stocking (dormant) | HIDE | decision 4: Start > "From an animal I want" |
 | 56 | Sandbox flags bar | CUT | flag already off; rules switch is in Settings |
 
-Count: KEEP 27, MERGE 20, HIDE 4, CUT 5 = 56. The three dormant HIDE rows (51, 52, 55) get a door only if Nathan says yes (decision 4).
+Count: KEEP 27, MERGE 20, HIDE 5, CUT 4 = 56. The three dormant HIDE rows (51, 52, 55) get a door only if Nathan says yes (decision 4).
 
 ## 3. One home per setting
 
@@ -155,7 +156,7 @@ Rule (Nathan 2026-11-05, kept): **a shortcut may open the home; it may not hold 
 | Guided setup (World / Equipment / Limits / Starting point) | 755 | **MERGE** into a "Get started" checklist at the top of the panel for a new tank: 5 ticks (tank, scape, plants, animals, gear), each opens the real section | Nathan 11-05: "Guided setup becomes the tool walking you through the EXISTING menus"; a wizard is a second home for every setting |
 | Visual Discovery (browse looks grid) | 513 | **MERGE** into Preferences > Browse looks | already agreed 11-05 (folded into Quick Setup's browse view) |
 | Explore Complete Setups | 623 | **MERGE** into Discover > "Whole tank" | same job as Discover's "Finish my setup" with a gallery view |
-| A/B Discover screen (`?ab=1`) | 1,123 | **DROP** (delete at the flip) | Compare (split) does two tanks side by side with the real editor |
+| A/B Discover screen (`?ab=1`) | 1,123 | **OPEN** (Nathan 11-13: not dropped yet); stays behind `?ab=1`, untouched by the new shell until he decides | recommendation was drop: Compare (split) does two tanks side by side with the real editor |
 | Coach / Guide me | 353 | **DROP** | the checklist does its job without a second voice |
 | Animal-first stocking ("An animal I want") | 386 + 5 files | **CARRY** as Start > "From an animal I want" and Animals > "Plan around this animal" | a real way people start a tank; logic is pure and tested (`stockPlanLogic`, 25 tests) |
 | Quick Setup block (Style, Shuffle, densities, care gates) | in `panels.ts` | **DROP** the block; parts move (row 35) | each part has a better home |
@@ -243,21 +244,21 @@ The old shell is switched to call these as they land, so both shells share one c
 
 ## 9. Decisions for Nathan
 
-| # | Decision | Recommendation |
-|---|---|---|
-| 1 | The user and the 5 jobs in §1: right? | Yes as written; correct the user line if you see it differently. |
-| 2 | Layout: rail + one section at a time + check bar at the bottom + right drawer that pushes the view (shots 01, 04)? | Yes. |
-| 3 | The single homes in §3, incl. room temperature stored once and the cost panel's Guardrails / Your situation fields moving to Constraints? | Yes. |
-| 4 | Dormant features: Guided -> checklist (merge), Visual Discovery -> Preferences (merge), Explore -> Discover (merge), A/B screen (drop), Coach (drop), Animal-first (carry, Start door)? | Yes to all six. |
-| 5 | Four printable pages become one Print section with four presets? | Yes. |
-| 6 | Build the new shell with a small UI library (Preact, about 4 KB) instead of hand-wired DOM? It replaces the 420-line `sync()` with components that redraw from the Store. | Yes, Preact; vanilla TS is the fallback if you prefer no new dependency. |
-| 7 | Add a DOM test environment (happy-dom) for the new shell, or keep node-only tests + screenshot proof per step? | Node-only + screenshots (keeps test runs light on this machine). |
-| 8 | Compare: one "Editing A / B / Both" switch in the panel instead of an Edit tick per tab (shot 03)? | Yes. |
-| 9 | Viewpoint map off by default (a switch in View)? | Yes. |
-| 10 | Order: engine pulls P1-P7 first, then shell steps 1-12 (P1-P10); freeze old-shell UI requests from approval (§8)? | Yes. |
-| 11 | R7, the Habitat check name: keep "Habitat check" in the new check bar? | Keep; the drawer title can carry the longer "Habitat check: is it good for the animals?". |
-| 12 | Own / buy / lock (Nathan 11-13, shot 05): "I own" and "Buy" groups per category, an independent "Use this one for sure" lock, no My gear tab, "No new equipment" in Constraints. Confirm the shot matches what you meant? | Yes (already his call; the shot is the check). |
-| 13 | Tanks (Nathan 11-13, shots 01, 06, 07): commercial tanks fixed; picker groups start closed; custom tanks from a maker that opens as **its own workspace** with an empty tank (setup untouched until Save; Cancel leaves everything as it was), with "Preview in my setup" as an optional step; custom tank price = estimate with a "how" line, or your own price used everywhere; library saved across setups, each setup keeps its own copy; old scenes with hand-edited product dims become auto-named custom tanks? | Yes to all, including Preview in my setup (the empty-tank view cannot show whether it suits the room). |
-| 14 | Experience (Nathan asked what it affects): today two settings (brief 0-2: animal graying, starter stocking, Suggest; profile per area: difficulty bar, animal warnings, monthly losses) that can disagree. Merge into **per-area levels** set by one answer in Constraints ("More detail" for per-area), stored per browser, read by every consumer? | Yes: per-area keeps the real difference between keeping fish, plants and saltwater; one answer keeps it a single click for most people. |
+| # | Decision | Recommendation | Status |
+|---|---|---|---|
+| 1 | The user and the 5 jobs in §1: right? | Yes as written; correct the user line if you see it differently. | **OPEN**: Nathan wants to investigate further (11-13) |
+| 2 | Layout: rail + one section at a time + check bar at the bottom + right drawer that pushes the view (shots 01, 04)? | Yes. | APPROVED 11-13 |
+| 3 | The single homes in §3, incl. room temperature stored once and the cost panel's Guardrails / Your situation fields moving to Constraints? | Yes. | APPROVED 11-13 |
+| 4 | Dormant features: Guided -> checklist (merge), Visual Discovery -> Preferences (merge), Explore -> Discover (merge), A/B screen (drop), Coach (drop), Animal-first (carry, Start door)? | Yes to all six. | APPROVED 11-13 except the A/B screen: Guided -> checklist, Visual Discovery -> Preferences, Explore -> Discover, drop Coach, keep Animal-first; **A/B taste screen stays OPEN** (not dropped yet) |
+| 5 | Four printable pages become one Print section with four presets? | Yes. | **OPEN**: Nathan wants to see it first; mockup shot 08 (`research/screens/UI2/08-print-shopping-list.png`) |
+| 6 | Build the new shell with a small UI library (Preact, about 4 KB) instead of hand-wired DOM? It replaces the 420-line `sync()` with components that redraw from the Store. | Yes, Preact; vanilla TS is the fallback if you prefer no new dependency. | APPROVED 11-13 |
+| 7 | Add a DOM test environment (happy-dom) for the new shell, or keep node-only tests + screenshot proof per step? | Node-only + screenshots (keeps test runs light on this machine). | APPROVED 11-13 |
+| 8 | Compare: one "Editing A / B / Both" switch in the panel instead of an Edit tick per tab (shot 03)? | Yes. | APPROVED 11-13 |
+| 9 | Viewpoint map off by default (a switch in View)? | Yes. | APPROVED 11-13 |
+| 10 | Order: engine pulls P1-P10 first, then shell steps 1-12 (P1-P10); freeze old-shell UI requests from approval (§8)? | Yes. | APPROVED 11-13 |
+| 11 | R7, the Habitat check name: keep "Habitat check" in the new check bar? | Keep; the drawer title can carry the longer "Habitat check: is it good for the animals?". | APPROVED 11-13 |
+| 12 | Own / buy / lock (Nathan 11-13, shot 05): "I own" and "Buy" groups per category, an independent "Use this one for sure" lock, no My gear tab, "No new equipment" in Constraints. Confirm the shot matches what you meant? | Yes (already his call; the shot is the check). | APPROVED 11-13 |
+| 13 | Tanks (Nathan 11-13, shots 01, 06, 07): commercial tanks fixed; picker groups start closed; custom tanks from a maker that opens as **its own workspace** with an empty tank (setup untouched until Save; Cancel leaves everything as it was), with "Preview in my setup" as an optional step; custom tank price = estimate with a "how" line, or your own price used everywhere; library saved across setups, each setup keeps its own copy; old scenes with hand-edited product dims become auto-named custom tanks? | Yes to all, including Preview in my setup (the empty-tank view cannot show whether it suits the room). | APPROVED 11-13 |
+| 14 | Experience (Nathan asked what it affects): today two settings (brief 0-2: animal graying, starter stocking, Suggest; profile per area: difficulty bar, animal warnings, monthly losses) that can disagree. Merge into **per-area levels** set by one answer in Constraints ("More detail" for per-area), stored per browser, read by every consumer? | Yes: per-area keeps the real difference between keeping fish, plants and saltwater; one answer keeps it a single click for most people. | APPROVED 11-13 |
 
 Lane note: HANDOFF.md not edited (brief: commit only this lane's files); the coordinator adds the dated line.
