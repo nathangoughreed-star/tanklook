@@ -1788,6 +1788,8 @@ Cancel, then change the name, to keep both.`)) return;
   $('iYaw').oninput = e => editItem(it => { it.yaw = +(e.target as HTMLInputElement).value; }, 'iYaw');
   $('iPitch').oninput = e => editItem(it => { it.pitch = +(e.target as HTMLInputElement).value; }, 'iPitch');
   $('iTilt').oninput = e => editItem(it => { it.tilt = +(e.target as HTMLInputElement).value; }, 'iTilt');
+  $('iX').oninput = e => editItem(it => { it.x = +(e.target as HTMLInputElement).value; }, 'iX');
+  $('iDepth').oninput = e => editItem(it => { it.depth = +(e.target as HTMLInputElement).value; }, 'iDepth');
   $('iLift').oninput = e => editItem(it => { it.lift = +(e.target as HTMLInputElement).value; }, 'iLift');
   $('iReshape').onclick = () => { const seed = 1 + Math.floor(Math.random() * 1e9); editItem(it => { it.seed = seed; }); };
   $('iDrop').onclick = () => editItem(it => { it.lift = 0; });
@@ -1862,7 +1864,7 @@ Cancel, then change the name, to keep both.`)) return;
     const v = parseLen(t.replace(/\b(left|right|forward|front|back)\b/gi, '').trim(), G().units);
     return v == null ? null : neg.test(t) ? -Math.abs(v) : v;
   } });
-  const lens = ['bowMin', 'bowlFloor', 'bowlTop', 'standH', 'tableL', 'tableD', 'subBL', 'subBR', 'subFL', 'subFR', 'lH', 'cDist', 'iSize', 'iSpread', 'iLift', 'personH', 'wallGap', 'ceilH'];
+  const lens = ['bowMin', 'bowlFloor', 'bowlTop', 'standH', 'tableL', 'tableD', 'subBL', 'subBR', 'subFL', 'subFR', 'lH', 'cDist', 'iSize', 'iSpread', 'iLift', 'iX', 'iDepth', 'personH', 'wallGap', 'ceilH'];
   const nums = { pieDeg: 0, bgArc: 0, iYaw: 0, iPitch: 0, iTilt: 0, iStems: 0, iDens: 0, iGrowth: 0, lCount: 0, lRows: 0, lCone: 0, lK: 0, lPar: 0, cAz: 0, cEl: 0, cZoom: 2, terCols: 0, addSize: 0 };
   attachTypeIns({
     ...Object.fromEntries(lens.map(id => [id, len])),
@@ -2421,6 +2423,9 @@ Cancel, then change the name, to keep both.`)) return;
       if (clump) { const n = it.stems ?? clumpAuto(it.variant as PlantType, it.seed, it.size).stems; setVal('iStems', n); setOut('oIStems', n + (it.stems == null ? ' auto' : '')); }
       if (float) { const d = it.dens ?? 1; setVal('iDens', Math.round(d * 100)); setOut('oIDens', Math.round(d * 100) + '%' + (it.dens == null ? ' auto' : '')); }
       setVal('iYaw', it.yaw); setOut('oIYaw', it.yaw + '°'); setVal('iPitch', it.pitch); setOut('oIPitch', it.pitch + '°'); setVal('iTilt', it.tilt); setOut('oITilt', it.tilt + '°');
+      show('#itemBox .orn', it.kind === 'ornament');
+      $('iX').min = '0'; $('iX').max = String(Math.round(A.L)); setVal('iX', Math.round(it.x)); setOut('oIX', fmt(it.x));
+      $('iDepth').min = '0'; $('iDepth').max = String(Math.round(A.D)); setVal('iDepth', Math.round(it.depth)); setOut('oIDepth', fmt(it.depth));
       $('iLift').min = String(-Math.round(A.H * LIFT_SINK)); $('iLift').max = String(Math.round(A.H)); setVal('iLift', Math.round(it.lift));
       setOut('oILift', Math.abs(it.lift) < 1 ? 'On the ground' : it.lift < 0 ? fmt(-it.lift) + ' in' : fmt(it.lift));
     }
