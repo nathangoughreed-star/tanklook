@@ -53,7 +53,7 @@ import { emptyScene } from '../scene/defaults';
 import { BANDS, TANK_MODELS, dimsInches, modelOfVariant, soleProduct, saleLive, tankFromModel, tankSaleFor, variantUsd, type TankModel, type TankVariant } from '../data/tanks';
 import { pinPreset } from '../demand/pinned';
 import { applyTankPick, unholdBtn } from './tankPick';
-import { breakNote, CUSTOM_LABEL, includesNote, locksOf, lockNote, mayChange, productLabel, releaseProduct, type Held } from '../scene/integrated';
+import { CUSTOM_LABEL, includesNote, locksOf, lockNote, mayChange, productLabel, type Held } from '../scene/integrated';
 import { COMPS, DEFAULT_DENS, styleGroups, variantInScope, STYLE_KIND, isLandStyle, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
 import { handEdits, randomStyle, shuffleHard } from '../scene/starter';
 import { styleGround } from '../scene/scapeground';
@@ -62,17 +62,16 @@ import { clumpAuto } from '../render/plant3d';
 import { canPrebuild, plantWarm, prebuildHooks, prebuildPlants } from '../render/items';
 import { placeAt, type PlaceAt } from '../interact/pointer';
 import { adaptForEdit } from './briefFeasibility';
+import { FRESH_CLEAR, SALT_CLEAR, applySetupKind, applyTankEdit, doorLocked, editTable as tableEdit, fitK, inchStep, lidLocked, reshape, setDoors, setGlass, setLid, setRim, shapeMemory, sideFromInput, sideWallLocked, tableLength, tableRound, unhold } from '../scene/tankEdit';
 import { tankDiff } from './diff';
 import { attachTypeIns, parseLen, plainNum, tidy, type TypeIn } from './typein';
 import {
-  CEILING_MAX, CEILING_MIN, IN, backdropDepth, ceilingH, clamp, clampFish, fmtLen, fromUnit, glassThickness, toUnit, volume, WALL_GAP_MAX, waterY,
+  CEILING_MAX, CEILING_MIN, IN, backdropDepth, ceilingH, clamp, clampFish, fmtLen, glassThickness, toUnit, volume, WALL_GAP_MAX, waterY,
 } from '../scene/physics';
 import type { Store } from '../scene/store';
-import { NEW_POOL, SWAMP_LEVEL, groundHeight, nearestLand, sameGrid, sampleTerrain } from '../scene/terrain';
+import { NEW_POOL, SWAMP_LEVEL, groundHeight, nearestLand, sampleTerrain } from '../scene/terrain';
 
 /** Arrow keys move the selected piece: [axis, direction] (depth grows toward the back). */
-/** A tank side's arrow step in inches: half inches under 18", whole inches from there (going down from 18: half). */
-const inchStep = (v: number, dir: number) => (dir > 0 ? v < 18 : v <= 18) ? 0.5 : 1;
 const ARROWS: Record<string, [string, number]> = { ArrowLeft: ['x', -1], ArrowRight: ['x', 1], ArrowUp: ['d', 1], ArrowDown: ['d', -1], PageUp: ['y', 1], PageDown: ['y', -1] };
 import { climateHtml, climateOf } from '../data/climate';
 import { growthCheck } from '../scene/growcheck';
@@ -561,7 +560,6 @@ Cancel, then change the name, to keep both.`)) return;
   /** The product gate (scene/integrated.ts): a change to what an edited tank's product holds asks first, saying what it breaks;
    *  yes releases the product in the same edit (one undo step brings both back), no changes nothing. */
   const gate = (what: Held) => mayChange(store.targets.map(i => store.scene.tanks[i]), what, m => confirm(m));
-  const unhold = (s: TankSetup, what: Held) => { if (breakNote(s, what)) releaseProduct(s); };
   document.addEventListener('click', e => {
     const what = (e.target as HTMLElement).closest<HTMLElement>('[data-unhold]')?.dataset.unhold as Held | undefined;
     if (!what || !gate(what)) return;
@@ -571,30 +569,13 @@ Cancel, then change the name, to keep both.`)) return;
    *  (`also`) sets the product; any other size or shape asks first when the tank is a maker's product. */
   function setTank(next: (T: Tank) => Tank, coalesce?: string, glass?: number, also?: (s: TankSetup) => void) {
     if (!also && !gate('size')) { sync(); return; }
-    store.edit(s => {
-      if (also) also(s); else unhold(s, 'size');
-      const T = next(s.tank);
-      if (glass != null) s.render.glass = glass;
-      adaptForEdit(s, T, coalesce === undefined); // lane GS6: rescaleTank (fish and pieces keep their relative spot; the shape's rules, e.g. round D = L) plus scaled hardscape, thinned plants and a named stocking warning; never a regenerated scene
-      // round tanks and bowls shape their terrain on rings, a pie slice on arcs, any other on a rectangular grid: resample into the new kind
-      const te = s.terrain;
-      if (te.h.length && !sameGrid(te, s.tank)) s.terrain = { ...sampleTerrain(s, s.tank, te.cols), on: te.on };
-      const max = T.H * 0.5;
-      for (const k of ['fl', 'fr', 'bl', 'br'] as const) s.substrate[k] = Math.min(s.substrate[k], max);
-      // hood and peninsula ends exist for rectangles and bowfronts only (Nathan 2026-10-08)
-      if (!flatEnds(s.tank)) { if (s.lid === 'hood') s.lid = 'glass'; if (s.wall.side === 'left' || s.wall.side === 'right') s.wall.side = 'back'; }
-    }, { coalesce });
+    store.edit(s => applyTankEdit(s, next, { glass, also, thin: coalesce === undefined, adapt: adaptForEdit }), { coalesce }); // scene/tankEdit.ts
   }
-  const flatEnds = (T: Tank) => ['rect', 'bow', 'arch'].includes(shapeOf(T));
   $<HTMLSelectElement>('shapeSel').innerHTML = Object.entries(SHAPES).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join('');
   // each shape keeps its own length / depth for this visit: a round or pie tank derives one from the other, so going
   // back to a rectangle brings its own size back (audit #5); a bowl derives its height too
-  const shapeDims = new Map<TankShape, Pick<Tank, 'L' | 'H' | 'D'>>();
-  $<HTMLSelectElement>('shapeSel').onchange = e => {
-    const shape = (e.target as HTMLSelectElement).value as TankShape, T0 = S().tank, from = T0.shape ?? 'rect', back = shapeDims.get(shape);
-    shapeDims.set(from, { L: T0.L, H: T0.H, D: T0.D });
-    setTank(T => ({ ...T, ...(back ? { L: back.L, D: back.D, ...(from === 'bowl' ? { H: back.H } : {}) } : {}), shape, sides: T.sides ?? 6, bowMin: T.bowMin ?? T.D * 0.7, bowlFloor: T.bowlFloor ?? T.L * BOWL_DEFAULT, bowlTop: T.bowlTop ?? T.L * BOWL_DEFAULT, pieDeg: T.pieDeg ?? PIE_DEFAULT }));
-  };
+  const shapeDims = shapeMemory();
+  $<HTMLSelectElement>('shapeSel').onchange = e => setTank(reshape(shapeDims, S().tank, (e.target as HTMLSelectElement).value as TankShape));
   for (const n of POLY_SIDES) $('sides' + n).onclick = () => setTank(T => ({ ...T, shape: 'poly', sides: n }));
   $('bowMin').oninput = e => setTank(T => ({ ...T, bowMin: +(e.target as HTMLInputElement).value }), 'bowMin');
   $('pieDeg').oninput = e => setTank(T => ({ ...T, pieDeg: +(e.target as HTMLInputElement).value }), 'pieDeg');
@@ -602,11 +583,11 @@ Cancel, then change the name, to keep both.`)) return;
   for (const k of ['L', 'H', 'D'] as const) {
     const el = $('a' + k);
     el.onchange = () => {
-      const v = +el.value; if (!Number.isFinite(v) || v <= 0) { status(`Type a size above 0.`, true); sync(); return; }
-      const mm = fromUnit(v, G().units), ok = clamp(mm, LIMITS.tankMin, LIMITS.tankMax);
+      const side = sideFromInput(+el.value, G().units); if (!side) { status(`Type a size above 0.`, true); sync(); return; }
+      const ok = side.mm;
       setTank(T => ({ ...T, [k]: ok }));
       // a value out of range is not taken silently (audit #28)
-      if (ok !== mm) status(`Each side is ${fmt(LIMITS.tankMin)} to ${fmt(LIMITS.tankMax)}: set to ${fmt(ok)}.`, true);
+      if (side.clamped) status(`Each side is ${fmt(LIMITS.tankMin)} to ${fmt(LIMITS.tankMax)}: set to ${fmt(ok)}.`, true);
     };
     // the arrows step half inches under 18" and whole inches from there (Nathan 2026-10-21); the step is set just before
     // the browser applies it, from the direction, so 18 goes down to 17.5 and up to 19
@@ -617,15 +598,15 @@ Cancel, then change the name, to keep both.`)) return;
   }
   const setUnits = (u: Scene['units']) => store.update(s => { s.units = u; });
   $('uIn').onclick = () => setUnits('in'); $('uCm').onclick = () => setUnits('cm');
-  $('rimY').onclick = () => { if (gate('rim')) store.edit(s => { unhold(s, 'rim'); s.render.rim = true; }); };
-  $('rimN').onclick = () => { if (gate('rim')) store.edit(s => { unhold(s, 'rim'); s.render.rim = false; }); };
+  $('rimY').onclick = () => { if (gate('rim')) store.edit(s => setRim(s, true)); };
+  $('rimN').onclick = () => { if (gate('rim')) store.edit(s => setRim(s, false)); };
   $('edgesY').onclick = () => store.edit(s => { s.render.edges = true; });
   $('edgesN').onclick = () => store.edit(s => { s.render.edges = false; });
   const LIDS = [['lidOpen', 'open'], ['lidGlass', 'glass'], ['lidMesh', 'mesh'], ['lidHood', 'hood']] as const;
-  for (const [id, d] of [['doorNone', 'none'], ['doorHinged', 'hinged'], ['doorSliding', 'sliding']] as const) $(id).onclick = () => store.edit(s => { if (d === 'none') delete s.doors; else s.doors = d; });
+  for (const [id, d] of [['doorNone', 'none'], ['doorHinged', 'hinged'], ['doorSliding', 'sliding']] as const) $(id).onclick = () => store.edit(s => setDoors(s, d));
   const BG_BTNS = [['bgBack', 'back'], ['bgLeft', 'left'], ['bgRight', 'right'], ['bgFront', 'front']] as const;
   // a hood has no room for a metal halide pendant (too hot): it becomes LED pucks
-  for (const [id, lid] of LIDS) $(id).onclick = () => gate('lid') && (editBrief(b => setLidFree(b, lid === 'open')), store.edit(s => { unhold(s, 'lid'); s.lid = lid; if (lid === 'hood' && fixtureOf(s.light) === 'pendant') { s.light.tech = 'led-white'; fitK(s.light); fitFixture(s.light, s.tank, true); } }));
+  for (const [id, lid] of LIDS) $(id).onclick = () => gate('lid') && (editBrief(b => setLidFree(b, lid === 'open')), store.edit(s => setLid(s, lid)));
   $<HTMLSelectElement>('bgSel').innerHTML = Object.entries(BACKGROUNDS).map(([k, b]) => `<option value="${k}">${esc(b.label)}</option>`).join('');
   $('bgColor').oninput = e => store.edit(s => { s.render.bgColor = (e.target as HTMLInputElement).value; }, { coalesce: 'bgColor' });
   $<HTMLSelectElement>('bgSel').onchange = e => store.edit(s => { s.render.bg = (e.target as HTMLSelectElement).value as TankSetup['render']['bg']; });
@@ -718,7 +699,7 @@ Cancel, then change the name, to keep both.`)) return;
     const o = new Option(`${g} mm`, String(g)), after = [...sel.options].find(x => x.value !== 'auto' && +x.value > g);
     sel.insertBefore(o, after ?? null);
   };
-  $<HTMLSelectElement>('glassSel').onchange = e => store.edit(s => { const v = (e.target as HTMLSelectElement).value; s.render.glass = v === 'auto' ? 'auto' : +v; });
+  $<HTMLSelectElement>('glassSel').onchange = e => store.edit(s => setGlass(s, (e.target as HTMLSelectElement).value));
   $<HTMLSelectElement>('glassType').onchange = e => store.edit(s => { s.render.glassType = (e.target as HTMLSelectElement).value as TankSetup['render']['glassType']; });
 
   // ---------- Room: stand + wall ----------
@@ -737,11 +718,11 @@ Cancel, then change the name, to keep both.`)) return;
   $('standH').min = String(LIMITS.stand[0]); $('standH').max = String(LIMITS.stand[1]);
   $('standH').oninput = e => store.edit(s => { s.stand.height = +(e.target as HTMLInputElement).value; s.stand.show = true; s.stand.need = 'added'; }, { coalesce: 'standH' });
   // table stand: top shape and size, and where the tank sits on it (store.update -> fitTable keeps it on the top)
-  const editTable = (fn: (tb: TableSettings, s: TankSetup) => void, coalesce?: string) => store.edit(s => { fn(s.stand.table, s); if (s.stand.style !== 'custom') s.stand.style = 'table'; s.stand.show = true; s.stand.need = 'added'; }, coalesce ? { coalesce } : {});
+  const editTable = (fn: (tb: TableSettings, s: TankSetup) => void, coalesce?: string) => store.edit(s => tableEdit(s, fn), coalesce ? { coalesce } : {});
   $('tableRect').onclick = () => editTable(tb => { tb.shape = 'rect'; });
-  $('tableRound').onclick = () => editTable(tb => { tb.shape = 'round'; tb.L = tb.D = Math.max(tb.L, tb.D); });
+  $('tableRound').onclick = () => editTable(tableRound);
   for (const id of ['tableL', 'tableD', 'tableX', 'tableZ']) { $(id).min = String(-TABLE_MAX); $(id).max = String(TABLE_MAX); }
-  $('tableL').oninput = e => editTable(tb => { tb.L = +(e.target as HTMLInputElement).value; if (tb.shape === 'round') tb.D = tb.L; }, 'tableL');
+  $('tableL').oninput = e => editTable(tb => tableLength(tb, +(e.target as HTMLInputElement).value), 'tableL');
   $('tableD').oninput = e => editTable(tb => { tb.D = +(e.target as HTMLInputElement).value; }, 'tableD');
   $('tableX').oninput = e => editTable(tb => { tb.x = +(e.target as HTMLInputElement).value; }, 'tableX');
   $('tableZ').oninput = e => editTable(tb => { tb.z = +(e.target as HTMLInputElement).value; }, 'tableZ');
@@ -771,7 +752,6 @@ Cancel, then change the name, to keep both.`)) return;
   // ---------- Species search & adding animals ----------
   /** Clear water for each type (2026-10-13): marine clear is bluer than the fresh default. */
   const BLACKWATER: [string, number] = ['#6b3d14', 0.42]; // blackwater's tea tint (lane SS2)
-  const FRESH_CLEAR: [string, number] = ['#7fb8a8', 0], SALT_CLEAR: [string, number] = ['#8ec9ec', 0];
   /** A saltwater tank: salt set and water on (a dry tank lists the freshwater and land animals). */
   const isSalt = (s: TankSetup) => s.water.on && !!s.water.salt;
   /** Does this species belong in this tank? Species without `salt` are freshwater (or land). */
@@ -822,16 +802,7 @@ Cancel, then change the name, to keep both.`)) return;
   }
   const setKind = (k: SetupKind) => {
     if (tankKind(S()) === k) return;
-    store.edit(s => {
-      const was = !!s.water.salt;
-      applyKind(s, k);
-      // the other type's clear water becomes this type's (as setSalt does); the reef starter is salt only
-      if (was !== (k === 'saltwater') && k !== 'terrarium') {
-        const [c, o] = k === 'saltwater' ? FRESH_CLEAR : SALT_CLEAR;
-        if (s.water.color === c && s.water.opacity === o) [s.water.color, s.water.opacity] = k === 'saltwater' ? SALT_CLEAR : FRESH_CLEAR;
-        if (STYLE_KIND[s.layout.id] === (k === 'saltwater' ? 'fresh' : 'salt')) s.layout = { ...s.layout, id: 'none' };
-      }
-    });
+    store.edit(s => applySetupKind(s, k)); // scene/tankEdit.ts: the other type's clear water and layout style follow
     const n = misfits(S()).length;
     status(`${SETUP_KINDS.find(x => x[0] === k)![1]}: the Animals list shows what suits it.${n ? ` ${n} animal${n > 1 ? 's' : ''} here ${n > 1 ? 'do' : 'does'} not fit the water: they are marked in the stocking list.` : ''}`);
   };
@@ -1224,7 +1195,6 @@ Cancel, then change the name, to keep both.`)) return;
   for (const [id, k] of Object.entries(lKeys)) $(id).oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; s.light[k] = k === 'spacing' && v < (s.light.type === 'tube' ? 20 : 80) ? 0 : k === 'bright' && wattsOf(s) > 0 ? +(2 ** v).toFixed(3) : v; }, { coalesce: id });
   // up to 12 bulbs when placed to fit the tank (no rows to multiply them), 6 otherwise
   /** A colour outside the lamp's usual range moves to its usual one (on a lamp or fixture change only; the slider goes past). */
-  const fitK = (l: TankSetup['light']) => { const [a, b, d] = TECHS[techOf(l)].k; if (l.kelvin < a || l.kelvin > b) l.kelvin = d; };
   const countMax = (l: TankSetup['light']) => FIX_SPEC[fixtureOf(l)]?.maxCount ?? (l.type === 'spot' && l.pattern === 'fit' ? 12 : 6);
   const capCount = (l: TankSetup['light']) => { l.count = Math.min(l.count, countMax(l)); };
   $('lPosOpt').onclick = () => store.edit(s => { const b = bestPos(s.tank, s.light); if (b != null) s.light.pos = b; });
@@ -2089,7 +2059,7 @@ Cancel, then change the name, to keep both.`)) return;
     $('shapeHint').style.display = sh === 'rect' ? 'none' : '';
     { // an integrated kit keeps its own lid (scene/integrated.ts)
       const lk = locksOf(store.tank);
-      for (const [id, d] of LIDS) ($(id) as HTMLButtonElement).disabled = !!lk?.lid || (d === 'hood' && !flatEnds(A));
+      for (const [id, d] of LIDS) ($(id) as HTMLButtonElement).disabled = lidLocked(A, !!lk?.lid, d);
       // going without a lid (lane LB1): the pros and cons for THIS tank, and the animals that need one named, the moment the open top is on
       { const el = $('lidFree'), open = s.lid === 'open' && !lk?.lid;
         el.hidden = !open;
@@ -2107,7 +2077,7 @@ Cancel, then change the name, to keep both.`)) return;
       const pl = productLabel(store.tank); $('prodLine').textContent = pl; $('prodLine').classList.toggle('custom', pl === CUSTOM_LABEL);
       const inc = includesNote(store.tank); $('prodIncl').hidden = !inc; $('prodIncl').textContent = inc;
     }
-    for (const id of ['wallLeft', 'wallRight']) ($(id) as HTMLButtonElement).disabled = !flatEnds(A);
+    for (const id of ['wallLeft', 'wallRight']) ($(id) as HTMLButtonElement).disabled = sideWallLocked(A);
     // which tank the panel edits (split view)
     // the "editing one tank only" note lives on the split view itself (UI1, Nathan 2026-11-04), in the edited view's tab
     const vol = volume(A);
@@ -2122,7 +2092,7 @@ Cancel, then change the name, to keep both.`)) return;
     $('rimY').classList.toggle('on', s.render.rim); $('rimN').classList.toggle('on', !s.render.rim);
     $('edgesY').classList.toggle('on', s.render.edges); $('edgesN').classList.toggle('on', !s.render.edges);
     for (const [id, lid] of LIDS) $(id).classList.toggle('on', s.lid === lid);
-    for (const [id, d] of [['doorNone', 'none'], ['doorHinged', 'hinged'], ['doorSliding', 'sliding']] as const) { $(id).classList.toggle('on', (s.doors ?? 'none') === d); ($(id) as HTMLButtonElement).disabled = d !== 'none' && (shapeOf(s.tank) !== 'rect' || !!locksOf(s)?.doors); }
+    for (const [id, d] of [['doorNone', 'none'], ['doorHinged', 'hinged'], ['doorSliding', 'sliding']] as const) { $(id).classList.toggle('on', (s.doors ?? 'none') === d); ($(id) as HTMLButtonElement).disabled = doorLocked(s, d, !!locksOf(s)?.doors); }
     { const dl = locksOf(s)?.doors; $('doorLock').hidden = !dl; $('doorLock').innerHTML = dl ? esc(lockNote(s, 'doors')) + unholdBtn('doors') : ''; }
     setVal('bgSel', s.render.bg); setVal('bgColor', s.render.bgColor ?? '#2f4a36'); $('bgColor').style.display = s.render.bg === 'custom' ? '' : 'none';
     for (const [id, side] of BG_BTNS) { const on = s.render.bgSides.includes(side); $(id).classList.toggle('on', on); $(id).setAttribute('aria-pressed', String(on)); }
