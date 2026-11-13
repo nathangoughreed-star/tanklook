@@ -1016,6 +1016,16 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   // an arch's front glass leans out above the floor: the ground's front edge reaches it at its own height
   const G = (p: P): V3 => { const y = Math.max(0.6, h(p[0], p[1]) + (ra ? bump(p[0], p[1]) : 0)); return onFront(p) ? [p[0], y, -(frontAt(T, y) + 0.4)] : flare(T, p[0], p[1], y, rb); };
   const P3 = (i: number, j: number): V3 => G([L * i / N, D * j / N]);
+  // VF-C2: the height of the DRAWN top surface at (x, depth): the grid's own triangles (each cell a fan from its first corner), not
+  // the exact ground G. Things draped on the ground (contact blobs, berms, leaf litter) follow this, or the 14 mm mesh over
+  // ripples as fine as 22 mm stands through them (pale shards and dark polygons on the sand, Nathan 2026-11-13)
+  const gridY = new Float32Array((N + 1) * (N + 1)); for (let i = 0; i <= N; i++) for (let j = 0; j <= N; j++) gridY[i * (N + 1) + j] = P3(i, j)[1];
+  const surfY = (x: number, d: number) => {
+    const fx = clamp(x / L * N, 0, N), fz = clamp(d / D * N, 0, N), i = Math.min(N - 1, Math.floor(fx)), j = Math.min(N - 1, Math.floor(fz)), u = fx - i, w = fz - j;
+    const y0 = gridY[i * (N + 1) + j], y1 = gridY[(i + 1) * (N + 1) + j], y2 = gridY[(i + 1) * (N + 1) + j + 1], y3 = gridY[i * (N + 1) + j + 1];
+    return u >= w ? y0 + (y1 - y0) * u + (y2 - y1) * w : y0 + (y2 - y3) * u + (y3 - y0) * w;
+  };
+  const SURF = (x: number, d: number): V3 => { const g = G([x, d]); return [g[0], surfY(x, d), g[2]]; };
   // cheap slope shading: brightness from the ground's tilt toward a light above, front and left, per grid vertex and
   // blended across each cell (one flat shade per cell showed the 16x16 grid as sharp-edged squares on gentle slopes);
   // the lit shader's normal likewise per grid vertex and blended (computeVertexNormals on these unshared triangles gave
@@ -1176,11 +1186,12 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   for (let i = 1; i < fr.length - 1; i++) for (const p of [fr[0], fr[i], fr[i + 1]]) under.push([p[0], 0.3, -p[1]], [p[0] / ut, p[1] / ut]);
   mk(under, lay ? 0x8c8c8c : 0x9a9a9a, undefined, undefined, undefined, lay ? lecaTexture() : undefined);
   sc.userData.groundAt = (x: number, d: number) => G([x, d]); // the drawn ground, for the contact shadows (render/contact.ts)
+  sc.userData.groundSurface = SURF; // the same on the mesh's own triangles (draped things: render/contact.ts)
   // VF-C2 (fx embed): what the berm round a piece needs to look like the ground (render/contact.ts bermMesh)
   if (FX.embed && sub.show) sc.userData.groundSkin = { map: sub.type === 'custom' ? blendTexture(sub.custom, sub.custom.grain2 !== 'none' ? 'm' : 'a') : substrateTexture(sub.type), color: gd ? 0x6e6e6e : 0xffffff, tile, colAt: (x: number, d: number) => exactAt([x, d]).slice(0, 3), terra };
   if (gl) for (const o of [...grainMeshes(S, T, (x, d) => G([x, d])), ...(bowl ? [] : glassGrains(S, T, (x, d) => G([x, d])[1]))]) sc.add(o);
   const gt = grainTop(gl); // litter lies on the grains
-  if (sub.litter?.density) for (const o of litterMeshes(S, T, (x, d) => { const p = G([x, d]); p[1] += gt; return p; })) sc.add(o);
+  if (sub.litter?.density) for (const o of litterMeshes(S, T, (x, d) => { const p = SURF(x, d); p[1] += gt; return p; })) sc.add(o);
 }
 
 /**
@@ -1516,7 +1527,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
   const leaves = b.itemMeshes.filter(m => m.userData.plant); for (const m of leaves) m.updateMatrixWorld(true);
   // contact shadows and the grains at the hardscape's foot (plan VF4, render/contact.ts; fx contact / ground)
   if (!bare) { const key = contactKey(S.items), gnd = (sc.userData.groundAt as GroundAt | undefined) ?? ((x: number, d: number): [number, number, number] => [x, groundHeight(S, T, x, d), -d]);
-    b.itemParts.push(take(key) ?? part(key, contactObjects(S, T, S.items.flatMap((it, i) => { const m = b.itemParts[i]?.meshes[0]; return m ? [{ it, m }] : []; }), gnd, sc.userData.groundSkin), [])); }
+    b.itemParts.push(take(key) ?? part(key, contactObjects(S, T, S.items.flatMap((it, i) => { const m = b.itemParts[i]?.meshes[0]; return m ? [{ it, m }] : []; }), gnd, sc.userData.groundSkin, sc.userData.groundSurface), [])); }
   const hardKey = hard.join('|'), leafKey = leaves.map(m => m.uuid + m.geometry.uuid).join('|');
   // glass climbers sit on the 3D wall where it covers the pane
   const wallKey = JSON.stringify([S.backdrop, S.render.rim, S.render.bgSides]);

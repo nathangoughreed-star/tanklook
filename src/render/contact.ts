@@ -101,7 +101,7 @@ const lin = (a: number) => (a <= 0.04045 ? a / 12.92 : ((a + 0.055) / 1.055) ** 
  * The contact objects for the built items: the blob mesh (fx contact) and the coarse grains by the hardscape (fx ground,
  * fine grounds only). `ground` = the ground surface the substrate was drawn with (render/build.ts addSubstrate).
  */
-export function contactObjects(S: TankSetup, T: Tank, items: { it: Item; m: THREE.Mesh }[], ground: GroundAt, skin?: GroundSkin): THREE.Object3D[] {
+export function contactObjects(S: TankSetup, T: Tank, items: { it: Item; m: THREE.Mesh }[], ground: GroundAt, skin?: GroundSkin, surface?: GroundAt): THREE.Object3D[] {
   if (!FX.contact && !FX.ground && !FX.embed && !FX.mix) return [];
   const gsig = (FX.embed ? 'e' : '') + JSON.stringify([T, S.terrain, roughOf(S.substrate), S.substrate.show, S.layout.seed]), groundY = (x: number, d: number) => ground(x, d)[1];
   const list: Blob[] = [];
@@ -114,11 +114,12 @@ export function contactObjects(S: TankSetup, T: Tank, items: { it: Item; m: THRE
   const out: THREE.Object3D[] = [];
   // VF-C2: the berm stands up to 9 mm above the ground, so the blob (drawn on the ground) was hidden under it and the berm stayed
   // lighter than the shaded sand round it (a pale cloud round every rock, Nathan 2026-11-12): over a painted berm the blob follows its surface
+  const drape = surface ?? ground; // blobs and berms lie on the drawn mesh's own triangles (render/build.ts SURF)
   const berms = FX.embed && skin && skin.color === 0xffffff ? list.filter(b => b.grains && b.berm) : [];
-  if (FX.contact && list.length) out.push(blobMesh(list, berms.length ? onBerm(berms, ground) : ground, roughOf(S.substrate)));
+  if (FX.contact && list.length) out.push(blobMesh(list, berms.length ? onBerm(berms, drape) : drape, surface ? 0.4 * roughOf(S.substrate) : roughOf(S.substrate)));
   if (FX.ground) out.push(...footGrains(S, T, list.filter(b => b.grains), ground));
   if (FX.mix) out.push(...coarseFeet(S, T, list.filter(b => b.grains && b.fx), ground));
-  if (FX.embed && skin) out.push(...bermObjects(S, T, list.filter(b => b.grains && b.berm), ground, skin));
+  if (FX.embed && skin) out.push(...bermObjects(S, T, list.filter(b => b.grains && b.berm), drape, skin));
   return out;
 }
 
