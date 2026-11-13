@@ -30,9 +30,10 @@ document.getElementById('app').innerHTML = apphead() + rail('limits', {animals: 
       <div class="row"><span class="lbl">Width &times; depth</span><div style="display:flex;gap:6px;align-items:center"><input class="input num" value="48"><span class="unit">in</span> &times; <input class="input num" value="20"><span class="unit">in</span></div><span></span></div>
       <div class="row"><span class="lbl">Height to top</span><div><input class="input num" value="60"><span class="unit">in</span></div><span></span></div>
     </div></div>
-    <div class="group open"><div class="gh">Experience <span class="sum">Some</span></div><div class="gb">
-      <div class="seg full"><button>New to it</button><button class="on">Some</button><button>Experienced</button></div>
-      <div class="hint">One answer sets basics, fish, plants and saltwater. <span class="link">More detail</span> sets each area. Kept for you across setups.</div>
+    <div class="group open"><div class="gh">Experience <span class="sum">off &middot; nothing gated</span></div><div class="gb">
+      <div class="lim" style="grid-template-columns:34px 1fr"><span class="toggle"></span><span>Limit to my experience <span class="hint">optional</span></span></div>
+      <div class="seg full" style="opacity:.4"><button>New to it</button><button class="on">Some</button><button>Experienced</button></div>
+      <div class="hint">On: animals, plants and gear above your level are greyed with a reason, and Discover / Suggest leave them out. <span class="link">More detail</span> sets fish, plants, saltwater and basics apart.</div>
     </div></div>
     <div class="group open"><div class="gh">Your home <span class="sum">facts, not limits</span></div><div class="gb">
       <div class="row"><span class="lbl">Room temp</span><input class="slider" type="range" value="50"><span class="val">70 &deg;F</span></div>
