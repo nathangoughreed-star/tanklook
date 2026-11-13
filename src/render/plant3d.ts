@@ -1024,16 +1024,41 @@ export function revealPlant(src: THREE.BufferGeometry, g: number) {
 // (a leaf's base, or two points on its midrib or stem), so it draws nothing, as revealPlant drops it (test/gpureveal).
 // What runs on the CPU (picking, the selection box, the USDZ export) gets revealPlant's geometry from the view's `cpu()`.
 
+// ---------- Sway in the flow (2026-11-12) ----------
+// Plants move with the current, in the vertex shader after the reveal: the whole plant leans back and forth along the
+// flow and a little across it (more toward the top: (y / height)^2, the top lagging the base), and each leaf flutters
+// about its anchor (more toward its tip). Per mesh `aSway` = (flexibility: the plant's PLANT3D sway, the water depth over
+// its base: nothing above the surface moves, 0 = no water; its height). `uSway` = (time s, strength: 0 = the still pose,
+// which is what picking, the selection box and exports see). The motion averages to zero about the still pose. Vertices
+// that share a place and an anchor move alike, so a hidden triangle (corners at its anchors) stays collapsed.
+/** The shared sway uniform (every plant material): x time in seconds, y strength (0 = still). The viewer sets it per frame. */
+export const SWAY = { uSway: { value: new THREE.Vector2(0, 0) } };
+const SWAY_VERT = `if (uSway.y > 0.0 && aSway.x > 0.0 && aSway.y > 0.0) {
+  float swH = max(aSway.z, 20.0), swK = min(max(transformed.y, 0.0) / swH, 1.2);
+  float swA = aSway.x * uSway.y * (1.0 - smoothstep(aSway.y - 12.0, aSway.y, transformed.y));
+  float swT = uSway.x, swP = dot(modelMatrix[3].xz, vec2(0.011, 0.017));
+  float swL = 0.65 * sin(swT * 0.85 + swP - swK * 1.2) + 0.35 * sin(swT * 1.9 + 1.7 * swP - swK * 2.0);
+  float swC = sin(swT * 1.25 + 2.3 * swP - swK);
+  vec3 swF = vec3(0.96, 0.0, 0.28), swS = vec3(-0.28, 0.0, 0.96);
+  vec3 swW = (swF * swL + swS * (0.35 * swC)) * (0.055 * swH * swK * swK);
+  float swD = min(length(transformed - aAnc), 60.0), swQ = dot(aAnc, vec3(0.13, 0.071, 0.097));
+  swW += (swF * sin(swT * 2.7 + swQ - swD * 0.06) + vec3(0.0, 0.6, 0.0) * sin(swT * 2.1 + swQ * 1.3)) * (0.06 * swD);
+  vec3 swX = modelMatrix[0].xyz;
+  transformed += transpose(mat3(modelMatrix)) * (swW * swA) / max(dot(swX, swX), 1e-6);
+}`;
+
 /** Vertex shader: after begin_vertex (and after the lighting's vAqP, which needs the grown position). */
-export const GROW_DECL = 'attribute vec3 aAnc; attribute vec4 aGrow; attribute float aGrowth;';
+export const GROW_DECL = 'attribute vec3 aAnc; attribute vec4 aGrow; attribute float aGrowth; attribute vec3 aSway; uniform vec2 uSway;';
 export const GROW_VERT = `{
   float aqS = aGrow.y > 0.0 ? (aGrowth - aGrow.x) / aGrow.y : (aGrowth >= aGrow.x ? 1.0 : -1.0);
   if (aGrow.z > 0.5 && aGrow.z < 2.5 && ((aGrow.z < 1.5) == (aGrowth >= aGrow.w))) aqS = -1.0;
   if (aqS < 1.0) transformed = aAnc + (transformed - aAnc) * max(aqS, 0.0);
-}`;
+}
+${SWAY_VERT}`;
 /** Patch a plant material's shader to reveal at each mesh's growth (call after the lighting patch, which also edits
  *  begin_vertex). A geometry without the tags (no growth data) draws as it is: missing attributes read as 0. */
 export function growShader(sh: THREE.WebGLProgramParametersWithUniforms) {
+  Object.assign(sh.uniforms, SWAY);
   sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\n' + GROW_DECL)
     .replace('#include <begin_vertex>', '#include <begin_vertex>\n' + GROW_VERT);
   leafAlgaeShader(sh); // algae on the leaves (lane LA): the Condition slider, a uniform

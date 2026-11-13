@@ -1,5 +1,5 @@
 // Owns the WebGL renderer and the one or two viewports (one per tank setup; two after a split). Render-on-demand.
-import { FX, onFx, tickFx } from './fx';
+import { FX, fxClock, onFx, tickFx } from './fx';
 import * as THREE from 'three';
 import { rayHitsDoorBox } from '../interact/doorBox';
 import { fishTL, speciesOf } from '../data/species';
@@ -20,6 +20,7 @@ import { wattsOf } from '../scene/lightout';
 import { placeShells } from './lightShells';
 import { onPictureLoad, setMaxAnisotropy } from './textures';
 import { OUTLINE } from './fish3d';
+import { SWAY } from './plant3d';
 import { capping, rimHeadroom } from './items';
 import { PERSON_BODY, PERSON_HEAD } from '../art/placeholder';
 import { inFocus, type FocusSec } from './menuFocus';
@@ -179,6 +180,12 @@ function restoreRange(this: THREE.Object3D, _r: THREE.WebGLRenderer, _s: THREE.S
  * is where a busy GPU shows), the rate halves, then the pattern holds still. Still = the same caustics, no redraws.
  */
 const CAUS_FPS = 20, CAUS_IDLE_MS = 60_000, CAUS_SLOW_MS = 10;
+const SWAY_KEY = 'tanklook.sway';
+/** Sway on unless turned off here before, or the system asks for reduced motion. */
+function loadSway() {
+  try { const v = localStorage.getItem(SWAY_KEY); if (v != null) return v === '1'; } catch { /* private mode */ }
+  return !matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
 const GOV_MIN = 0.5, GOV_MOTION_MS = 100, GOV_REST = 150, GOV_PROBE = 600; // lowest scale, a gap that still counts as motion, rest before the sharp frame, fast frames before a step up
 export class Viewer {
   readonly renderer: THREE.WebGLRenderer;
@@ -248,6 +255,36 @@ export class Viewer {
     if (!this.vps.some(vp => vp.frost?.length)) return;
     const was = this.frostPlain;
     this.setFrostPlain(!was); this.startLinks(); this.setFrostPlain(was);
+  }
+  /**
+   * Plants sway in the flow (plant3d SWAY_VERT, 2026-11-12): while it is on and a tank has a plant that sways, the view is
+   * redrawn on its own between edits, at most every 33 ms and never more than a third of the time (3x what a frame took,
+   * up to 200 ms apart on a slow machine). These frames skip the governor and the per-frame panels. The caustics'
+   * safeguards hold it still too (Full quality only, CAUS_IDLE_MS with no input, the A/B scripts' frozen clock); its
+   * clock runs only while it moves, so it picks up where it stopped. Off: the still pose.
+   */
+  sway = loadSway();
+  setSway(on: boolean) { this.sway = on; try { localStorage.setItem(SWAY_KEY, on ? '1' : '0'); } catch { /* private mode */ } this.dirty = true; }
+  private swayScan = true;
+  private swayAny = false;
+  private swayAt = 0;
+  private swayT = 0;
+  private swayCost = 8;
+  private swayFrame = false;
+  private swayDue() {
+    if (!this.sway || this.reveal || this.needsBuild || perf.level > 0 || fxClock.frozen != null) { this.swayAt = 0; return false; }
+    const now = performance.now();
+    if (now - this.lastInput > CAUS_IDLE_MS) { this.swayAt = 0; return false; }
+    if (this.swayScan) { this.swayScan = false; this.swayAny = this.vps.some(vp => { let f = false; vp.scene?.traverse(o => { if (o.userData.sway) f = true; }); return f; }); }
+    if (!this.swayAny || now - this.swayAt < Math.min(200, Math.max(33, 3 * this.swayCost))) return false;
+    this.swayT += this.swayAt ? Math.min(now - this.swayAt, 200) : 0; this.swayAt = now;
+    return true;
+  }
+  private drawSway() {
+    const t0 = performance.now();
+    this.swayFrame = true;
+    try { this.draw(); } finally { this.swayFrame = false; }
+    this.swayCost = 0.8 * this.swayCost + 0.2 * (performance.now() - t0);
   }
   private govStep(scale: number) { this.govScale = scale; this.govSlow = this.govFast = 0; this.govGap = 0; this.govSkip = 6; this.dirty = true; }
   /** Nothing drawn for GOV_REST ms: the camera has stopped, so give the full picture back. */
@@ -362,6 +399,7 @@ export class Viewer {
         const caus = this.causticsDue();
         if (this.dirty && !this.reveal?.wait) { this.dirty = false; this.drawGoverned(builtNow); }
         else if (caus) { const t0 = performance.now(); this.draw(); this.causCpu = 0.8 * this.causCpu + 0.2 * (performance.now() - t0); } // the caustics' next step: not camera motion, so the governor and the rest timer ignore it
+        else if (this.swayDue()) this.drawSway(); // plants sway (not camera motion either: no governor, no rest timer)
         else { this.govRest(); if (this.variantDue && !this.reveal && !this.needsBuild && performance.now() - this.lastDrawAt > 400) this.precompileVariant(); }
       }
     });
@@ -641,6 +679,7 @@ export class Viewer {
   }
 
   private build() {
+    this.swayScan = true;
     const sc = this.store.scene;
     this.lastBuild = [];
     for (const vp of this.vps) {
@@ -699,6 +738,7 @@ export class Viewer {
   private dim?: { sc: THREE.Scene; m: THREE.Mesh; cam: THREE.OrthographicCamera };
   draw() {
     if (this.needsBuild) this.build();
+    SWAY.uSway.value.set(this.swayT / 1000, this.sway && !this.exporting ? 1 : 0);
     const sc = this.store.scene, w = this.host.clientWidth, h = Math.max(60, this.host.clientHeight - this.reserve), r = this.renderer;
     this.canvas.style.height = this.reserve ? h + 'px' : ''; this.host.style.setProperty('--reserve', this.reserve + 'px');
     r.setSize(w, h, false);
@@ -815,6 +855,7 @@ export class Viewer {
     }
     r.setScissorTest(false);
     if (this.reveal) this.keepFrame();
+    if (this.swayFrame) return; // only the plants moved: the maps and the panels that follow each frame stay as they are
     // one viewpoint map per view, at its bottom-left corner, drawn from that view's own camera, tank and person
     const mapOn = (document.getElementById('mapOn') as HTMLInputElement | null)?.checked ?? true;
     for (const k of [0, 1]) {
