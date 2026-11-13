@@ -2,7 +2,7 @@
 const I = (n, cls = 'i') => `<svg class="${cls}"><use href="#i-${n}"/></svg>`;
 const RAIL = [
   ['tank', 'Tank'], ['scape', 'Scape'], ['plants', 'Plants'], ['animals', 'Animals'], ['gear', 'Equipment'],
-  '-', ['owned', 'My gear'], ['prefs', 'Preferences'], ['limits', 'Constraints'], '-', ['ideas', 'Discover'], ['print', 'Print'],
+  '-', ['prefs', 'Preferences'], ['limits', 'Constraints'], '-', ['ideas', 'Discover'], ['print', 'Print'],
 ];
 function rail(active, badges = {}) {
   return `<nav class="rail">${RAIL.map(r => r === '-' ? '<div style="height:1px;background:var(--line);margin:6px 10px"></div>' :

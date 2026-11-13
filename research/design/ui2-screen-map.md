@@ -10,6 +10,7 @@ Design only, no app code. Built from `research/design/ui1-inventory.md` (UI1, bu
 | `research/screens/UI2/02-editor-phone.png` | Same at 390 x 844: tank on top, check strip, Animals as a bottom sheet, tab bar |
 | `research/screens/UI2/03-split-desktop.png` | Compare: two tanks, one shared control cluster over the seam, "Editing A / B / Both" in the panel, each tank its own check bar |
 | `research/screens/UI2/04-constraints-and-cost.png` | Constraints section open (the one home of every limit) with the Cost and time drawer open on the right |
+| `research/screens/UI2/05-equipment-heater.png` | Equipment > Heater: **I own** and **Buy** groups, one item locked "Use this one for sure" (Nathan 11-13) |
 
 ## 1. Who and what for
 
@@ -29,7 +30,7 @@ Ideas (Discover, Suggest) are not a job of their own: they are a faster way to d
 
 ## 2. Screen map
 
-**Summary.** One editor screen, always the same shape: **header** (name, Undo / Redo / Save, file menu) over a **rail** of section icons; one **panel** showing one section at a time; the **viewer** with one shared control cluster at the top middle and one **check bar** at the bottom (Habitat, Cost, Water, Notes); clicking a check opens a **drawer** on the right that pushes the view aside instead of covering the tank. Plus one Start screen, a few dialogs and one Print screen. Today's 8-9 menu sections + ~60 overlays become 10 sections, 4 drawers, 1 Start screen, 4 dialogs, 1 Print screen. Of UI1's 56 rows: 28 KEEP (most moved), 19 MERGE, 4 HIDE, 5 CUT.
+**Summary.** One editor screen, always the same shape: **header** (name, Undo / Redo / Save, file menu) over a **rail** of section icons; one **panel** showing one section at a time; the **viewer** with one shared control cluster at the top middle and one **check bar** at the bottom (Habitat, Cost, Water, Notes); clicking a check opens a **drawer** on the right that pushes the view aside instead of covering the tank. Plus one Start screen, a few dialogs and one Print screen. Today's 8-9 menu sections + ~60 overlays become 9 sections, 4 drawers, 1 Start screen, 4 dialogs, 1 Print screen. Of UI1's 56 rows: 27 KEEP (most moved), 20 MERGE, 4 HIDE, 5 CUT.
 
 ### 2a. The new screens
 
@@ -38,23 +39,22 @@ Ideas (Discover, Suggest) are not a job of their own: they are a faster way to d
 | **Start** | J1 | first visit; header ... > New | four doors: Blank tank (kind, then the tank picker in your room), Starters and kits (starters, deals and bundles as tabs), Open saved, From an animal I want |
 | **Editor** | all | after Start; resume | header + rail + panel + viewer + check bar + drawer |
 | Header | J5 | always (top of the panel column) | TankLook, project name (click to rename), saved dot, Undo, Redo, Save, `...` = New / Open / Save as / Share link / Download |
-| Rail | J2 | always, also when the panel is folded | Tank, Scape, Plants, Animals, Equipment / My gear, Preferences, Constraints / Discover, Print / Settings (bottom) |
-| Section **Tank** | J2 | rail | Tank model (picker opens docked in the panel, live in the room), shape and size, Sits on (floor / stand / my own furniture), Top and rim, Glass, Background, **Room** (wall, ceiling, person) |
+| Rail | J2 | always, also when the panel is folded | Tank, Scape, Plants, Animals, Equipment / Preferences, Constraints / Discover, Print / Settings (bottom): 9 sections + Settings |
+| Section **Tank** | J2 | rail | Tank model and Stand (each with **I own** / **Buy** groups and the "Use this one for sure" lock, as in Equipment; the Buy picker opens docked in the panel, live in the room), shape and size, Sits on (floor / stand / my own furniture), Top and rim, Glass, Background, **Room** (wall, ceiling, person) |
 | Section **Scape** | J2 | rail | Substrate (type, blend, brush), Terrain (slopes, corners), Hardscape and Decor library, placed pieces |
 | Section **Plants** | J2 | rail | library (grayed by light), placed plants, growth over time |
 | Section **Animals** | J2 | rail | search, filters ("Fits this tank" on by default in Guided), stocking list with counts, Water look (level, tint) |
-| Section **Equipment** | J2 | rail | preset ladder (Walstad ... high-tech), one row per gear kind (filter, heater, light, CO2, ...), Lighting details, Light map / PAR |
-| Section **My gear** | J2/J3 | rail; "I own one" on any gear row opens it at that item | what you already own (tank, stand, light, heater, ...), "No new equipment" |
+| Section **Equipment** | J2 | rail | preset ladder (Walstad ... high-tech) at the top; then one **sub-menu per category** (Filter, Heater, Light, CO2, Air, UV, ... ; saltwater adds its own). Each category: the item in use now, then two groups, **I own** (your items, add your own, $0) and **Buy** (catalogue products), and on every item an independent **Use this one for sure** lock. Light also holds Lighting details, Light map / PAR |
 | Section **Preferences** | J1/J2 | rail | looks you like (cards, browse looks), don't-want list (R26 split) |
-| Section **Constraints** | J3 | rail; every "limit" line elsewhere links here | Money and time, Space, Experience, Your home (room temp, water, electricity), If it does not all fit, "Fill in what I left open" (Suggest) |
+| Section **Constraints** | J3 | rail; every "limit" line elsewhere links here | Money and time (incl. **No new equipment**: a spending limit), Space, Experience, Your home (room temp, water, electricity), If it does not all fit, "Fill in what I left open" (Suggest) |
 | Section **Discover** | J1/J2 | rail; "Ideas for ..." button in each section header opens it scoped to that section | Finish my setup / fill this section / remix; preview in the viewer; Apply / Keep |
-| Section **Print** | J5 | rail | one page builder with presets: Shopping list, Setup sheet, Full report, Build plan; tick parts; Print / .txt / .csv |
+| Section **Print** | J5 | rail | one page builder with presets: Shopping list, Setup sheet, Full report, Build plan; tick parts; Print / .txt / .csv. The shopping list has an **Already owned** group ($0) apart from what to buy |
 | **Settings** | - | rail bottom | US / Metric, Rules (Guided / Sandbox), Graphics, Help, Scene data (JSON) |
 | Viewer cluster | J2/J4 | always, top middle | View (camera, show, viewpoint map, export PNG), Another moment, Compare / Views linked / End compare |
 | Check bar | J3 | always, bottom of each view | Habitat (verdict pill), Cost ($ set-up, $/mo, min/wk), Water (deg F, fits), Notes (count) |
 | Drawers | J3 | click a check; click an item in the tank | **Habitat check**, **Cost and time**, **Water**, **Notes**, **Selection** (selected animal / piece: numbers, sex, copies, delete). One open at a time. |
 | Dialogs | J1/J5 | as needed | Save as / Share, Replace this project?, Guardrail-off list (inside Constraints, not a dialog), Sump size (inside Equipment) |
-| Toasts | J2 | after an edit | price notice (edit lost a sale price, Undo), owned gear no longer fits (link to My gear) |
+| Toasts | J2 | after an edit | price notice (edit lost a sale price, Undo), owned gear no longer fits (link to that Equipment category) |
 
 ### 2b. Where each of today's surfaces goes (every UI1 row)
 
@@ -74,7 +74,7 @@ Ideas (Discover, Suggest) are not a job of their own: they are a faster way to d
 | 12 | Tank sizes / Sump size modal | MERGE | Sump: a row in Equipment; tank: picker #13 |
 | 13 | Choose a tank (docked picker) | KEEP | Tank section, docked in the panel, live preview |
 | 14 | Guardrails dialog (checks off) | MERGE | Constraints: each limit has its own on / off switch |
-| 15 | My equipment dialog | KEEP | becomes the **My gear** section (Nathan 11-05: "a totally separate existing-equipment menu") |
+| 15 | My equipment dialog | MERGE | into the **I own** group of each Equipment category (and Tank / Stand in the Tank section); "No new equipment" moves to Constraints. Nathan 11-13 replaced the 11-05 "separate menu" with this |
 | 16 | Setup sheet | MERGE | Print > Setup sheet preset |
 | 17 | Report | MERGE | Print > Full report preset |
 | 18 | Plan sheet / Build plan sheet | MERGE | Print > Build plan preset |
@@ -90,7 +90,7 @@ Ideas (Discover, Suggest) are not a job of their own: they are a faster way to d
 | 28 | Animals | KEEP | Animals section; selected-animal box moves to the Selection drawer |
 | 29 | Water (under Animals) | KEEP | Animals > Water look; water numbers live in the Water drawer |
 | 30 | Constraints and preferences | KEEP | two sections, Preferences and Constraints (R26) |
-| 31 | Equipment | KEEP | Equipment section; "Open My equipment" becomes the My gear rail door |
+| 31 | Equipment | KEEP | Equipment section with a sub-menu per category; each category's "I own one" tab becomes its **I own** group |
 | 32 | Lighting | MERGE | Equipment > Light row and its details; second "Total Power" control CUT (same field shown twice) |
 | 33 | Report section | MERGE | Print section |
 | 34 | Discover / Keep in section headers | MERGE | one "Ideas for ..." button per section header; Keep / lock stays on the item |
@@ -117,7 +117,7 @@ Ideas (Discover, Suggest) are not a job of their own: they are a faster way to d
 | 55 | Animal-first stocking (dormant) | HIDE | decision 4: Start > "From an animal I want" |
 | 56 | Sandbox flags bar | CUT | flag already off; rules switch is in Settings |
 
-Count: KEEP 28, MERGE 19, HIDE 4, CUT 5 = 56. The three dormant HIDE rows (51, 52, 55) get a door only if Nathan says yes (decision 4).
+Count: KEEP 27, MERGE 20, HIDE 4, CUT 5 = 56. The three dormant HIDE rows (51, 52, 55) get a door only if Nathan says yes (decision 4).
 
 ## 3. One home per setting
 
@@ -134,7 +134,9 @@ Rule (Nathan 2026-11-05, kept): **a shortcut may open the home; it may not hold 
 | Electricity $/kWh | cost panel | Constraints > Your home | Cost drawer |
 | Limit on / off (guardrails) | cost Guardrails, `#guardDlg` | Constraints: a switch on each limit | Cost drawer shows "not checked" |
 | Kind (fresh / salt) | New cards, Tank buttons, Suggest radios, Water link (4) | Start (first step) and Tank section (same field; Start is the first visit to it) | Water drawer, Animals filter |
-| Owned gear | 7 doors | My gear section | Equipment rows: "Owned" pill; "I own one" opens My gear at that item. "No new equipment" lives only in My gear |
+| Owned gear | 7 doors | the **I own** group of each category (Equipment; Tank / Stand in Tank) | Print "Already owned" group; Cost drawer counts it $0. Owning does not mean the plan uses it |
+| Use this one for sure (lock) | Discover Keep / lock, owned flags (mixed) | one lock per item, on the item's row, owned or not | the row shows it (lock icon); Discover / Suggest / the generator must use a locked item; an owned unlocked item is a free option they prefer when it fits |
+| No new equipment | Constraints `#cnNoNew`, My equipment `#ownNoNew` (2) | Constraints > Money and time | Equipment shows a note on the Buy groups while it is on |
 | Light power | two sliders 8 rows apart | Equipment > Light | - |
 | Look / style direction | quick prefs (2), hidden Style select | Preferences | Discover uses it; the scene's own materials stay hand edits in their sections (a different thing: what is built, not what you like) |
 | Tank size | picker, L / H / D, Suggest space, Set my space | Tank section (picker + size rows) | header name, Print |
@@ -186,13 +188,13 @@ One expand / collapse glyph (`▸` / `▾`) everywhere; one icon set (24 px stro
 
 **Tablet (700-1099 px):** rail + viewer; the panel opens over the viewer's left side as a sheet; drawer opens over the right.
 
-**Phone (< 700 px):** header (icons only), viewer on top (about 35 % height), a check strip under it (scrolls sideways), the open section as a bottom sheet (drag between half and full), tab bar: Tank, Scape, Plants, Animals, More (More = Equipment, My gear, Preferences, Constraints, Discover, Print, Settings). Drawers open as full sheets. Compare on phone: stacked A over B, one tank's check strip at a time.
+**Phone (< 700 px):** header (icons only), viewer on top (about 35 % height), a check strip under it (scrolls sideways), the open section as a bottom sheet (drag between half and full), tab bar: Tank, Scape, Plants, Animals, More (More = Equipment, Preferences, Constraints, Discover, Print, Settings). Drawers open as full sheets. Compare on phone: stacked A over B, one tank's check strip at a time.
 
 ## 7. Migration order
 
 The new shell lives beside the old one behind `?ui=2` (own `index2.html` entry, own `src/ui2/`, own stylesheet built from the tokens). Both use the same `Store`, `Viewer` and engine. Old shell untouched until the flip.
 
-**P. Pull logic out first (no visible change; each with tests, each a lane):**
+**P. Pull logic out first (no visible change; each with tests, each a lane; P8 added 11-13 for the own / buy / lock model):**
 
 | Step | Out of | Into | Size |
 |---|---|---|---|
@@ -200,6 +202,7 @@ The new shell lives beside the old one behind `?ui=2` (own `index2.html` entry, 
 | P2 Stocking edits and picker fit (`setCount`, `dropSpecies`, `fitsFor` / `animalGate` / `refineFits`, `removeMisfits`, `readout`) | `panels.ts` 771-1106 | `scene/stockEdit.ts` + `ui/logic/animalPicker.ts` | L |
 | P3 Item / plant edits and plant gate | `panels.ts` 1620-1950 | `scene/itemEdit.ts`, `ui/logic/plantGate.ts` | M |
 | P4 Gear choice application and conversions | `techMenu.ts` | `scene/techEdit.ts`; one `units.ts` for every `toF` / `fromUnits` / `fmtHeight` | L |
+| P8 Gear model: per category an owned list (in the brief), the item in use, and a "use for sure" lock per item; Discover / Suggest / generator read the lock (must use) and the owned list (preferred, $0). Folds `ownedGear.ts` `applyOwned` / `syncEquipment` and the owned flags on scene gear into it; old saves migrate | `ownedGear.ts`, `scene/tech`, Discover locks | `scene/gearOwn.ts` | M |
 | P5 One home per limit in the data: profile from LS `tanklook.demand` into the brief; room temp stored once; migrate old saves | `demandPanel.ts`, `scene/tech.ts`, brief | `scene/brief.ts` | M |
 | P6 Habitat helpers (`bar`, `topBy`, `tileState`, ...) | `fullnessTile.ts` | `ui/logic/habitat.ts` | S |
 | P7 File ops (library, open example / shared, save / save as) | `panels.ts` 168-494 | `ui/logic/files.ts` | M |
@@ -214,8 +217,8 @@ The old shell is switched to call these as they land, so both shells share one c
 | 2 | Start, open, save, share, resume | M | P7 |
 | 3 | Tank section + docked picker + Room | L | P1 |
 | 4 | Animals + Water look + Selection drawer | L | P2 |
-| 5 | Constraints, Preferences, My gear, Suggest | M | P5 |
-| 6 | Equipment + Lighting + light map | L | P4 |
+| 5 | Constraints, Preferences, Suggest | M | P5 |
+| 6 | Equipment (category sub-menus, I own / Buy, lock) + Lighting + light map | L | P4, P8 |
 | 7 | Scape + Plants + brush / group bars | L | P3 |
 | 8 | View, Settings (units, rules, graphics), Print | M | - |
 | 9 | Compare (split) | L | `sideStore` as is |
@@ -244,7 +247,8 @@ The old shell is switched to call these as they land, so both shells share one c
 | 7 | Add a DOM test environment (happy-dom) for the new shell, or keep node-only tests + screenshot proof per step? | Node-only + screenshots (keeps test runs light on this machine). |
 | 8 | Compare: one "Editing A / B / Both" switch in the panel instead of an Edit tick per tab (shot 03)? | Yes. |
 | 9 | Viewpoint map off by default (a switch in View)? | Yes. |
-| 10 | Order: engine pulls P1-P7 first, then shell steps 1-12; freeze old-shell UI requests from approval (§8)? | Yes. |
+| 10 | Order: engine pulls P1-P7 first, then shell steps 1-12 (P1-P8); freeze old-shell UI requests from approval (§8)? | Yes. |
 | 11 | R7, the Habitat check name: keep "Habitat check" in the new check bar? | Keep; the drawer title can carry the longer "Habitat check: is it good for the animals?". |
+| 12 | Own / buy / lock (Nathan 11-13, shot 05): "I own" and "Buy" groups per category, an independent "Use this one for sure" lock, no My gear tab, "No new equipment" in Constraints. Confirm the shot matches what you meant? | Yes (already his call; the shot is the check). |
 
 Lane note: HANDOFF.md not edited (brief: commit only this lane's files); the coordinator adds the dated line.
