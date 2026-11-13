@@ -29,6 +29,9 @@ Grep HANDOFF.md / HANDOFF-archive.md by section heading; never read them whole. 
    - Check: `curl` the Actions runs API (`repos/<origin>/actions/runs?per_page=3`), and read the live build with the one-liner in HANDOFF "Deploy health".
 4. **The audit:** `research/audit-2026-11-12.md` lists all of today's requests with status and screenshots (AU1), plus FX1's follow-up column. Use it as the checklist. CV1 added `test/cssvars.test.ts`, which fails if a `var(--x)` without a fallback is undefined.
 
+## Rules added by Coordinator 24 (Nathan 2026-11-12)
+See HANDOFF "NO LOST WORK, NO SLOW PC": no local full vitest (build + lane tests, GitHub is the gate), lanes back up their branch to GitHub, `research/requests.md` closes only on a live screenshot, `scripts/unmerged.sh` at every check, one push per finished deploy. Step 5 below is replaced by `npm run build` only.
+
 ## Merge job (unchanged)
 1. Fetch the branch with `+`: `git fetch -q "/c/Users/nreed/Glass Box" +<branch>:refs/remotes/lane/<x>`.
 2. Cherry-pick `$(git cherry HEAD lane/<x> | grep '^+' | cut -c3-)`.
