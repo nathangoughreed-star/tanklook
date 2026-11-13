@@ -2,8 +2,10 @@
 
 Started 2026-11-12 by Coordinator 24 (Nathan: "my concern is forgotten or lost work I already instructed a chat to fix").
 
+Workflow (Nathan 2026-11-13): every new fix or feature goes through the coordinator. The coordinator adds the row here FIRST, then starts the lane (its own worktree, its own branch, backed up to GitHub). Each row carries an "Expected by" point (the build or event after which it SHOULD be live). The coordinator sweeps the list whenever one of those points passes, i.e. on: a lane report, a deploy landing after a push, every "check", and the start of each coordinator turn from Nathan. Sweep = `bash scripts/unmerged.sh`, then each open row whose point has passed is shot on tanklook.com; unfixed rows go back to their lane or a new one. No timers or polling (global rule): the sweep rides on those events.
+
 Rules:
-- Every instruction Nathan gives any chat gets one row here, in the coordinator's next turn.
+- Every instruction Nathan gives the coordinator gets a row BEFORE a lane starts. Instructions he gives other chats directly (hand-started) get a row at the next "check".
 - A row closes ONLY when the coordinator has looked at it on tanklook.com: the live build number plus a screenshot file. Then move it to "Closed". "Merged" is not closed.
 - Fill each column as the work moves: chat, then branch / sha (lanes push their branch to GitHub after every commit), then merged build, then live check.
 - At every "check": run `bash scripts/unmerged.sh`, then walk this table top to bottom.
@@ -11,7 +13,7 @@ Rules:
 
 ## Open
 
-| # | Asked (date) | Nathan's ask (short) | Chat | Branch / sha | Merged (build) | Live check | Next step |
+| # | Asked (date) | Nathan's ask (short) | Chat | Branch / sha | Merged (build) = expected live by | Live check | Next step |
 |---|---|---|---|---|---|---|---|
 | R1 | 11-12 | Habitat check tile starts minimized on every load | Coordinator 23 | 7744a362 | 1870 | not yet; live 1872 should have it | C24: shot on a stocked tank |
 | R2 | 11-12 | Hard angular dark shadow patches on sand (images/7.png) | VF-C2 | claude/confident-sutherland-a9c8ce 6a19630e | batch after 1872 | - | live shot after deploy |
