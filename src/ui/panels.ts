@@ -349,9 +349,9 @@ export function attachPanels(store: Store, viewer: Viewer) {
   void import('./rulesSwitch').then(m => m.attachRulesSwitch(store, () => { const d = demand?.state(); return { ...(d ? { totals: d.demand.totals } : {}), limits: demand?.profile().limits }; })); // DQ9: Guided / Sandbox toggle
   void import('./checksStrip').then(m => m.attachChecksStrip(store, () => { const d = demand?.state(); return { ...(d ? { totals: d.demand.totals } : {}), limits: demand?.profile().limits }; })); // lane DX1: read-only Checks strip (the one verdict)
   // DX7: Your limits is inline in the Constraints menu now; every door ("Edit in Your limits", the coach, the experience link) opens that menu
-  const openLimits = () => { openSec('brief'); $('limitsHost').scrollIntoView?.({ block: 'start' }); };
+  const openLimits = () => { openSec('limits'); $('limitsHost').scrollIntoView?.({ block: 'start' }); };
   void import('./quickPrefs').then(m => m.attachPrefsBlock($('prefsHost'))); // AB6: the same quick preferences as the start screen, editable any time
-  void import('./limitsPanel').then(m => m.attachLimitsPanel($('limitsHost'), () => openSec('brief')));
+  void import('./limitsPanel').then(m => m.attachLimitsPanel($('limitsHost'), () => openSec('limits')));
   { const cn = $('cnNoNew') as HTMLInputElement, cnSync = (b = getBrief()) => { cn.checked = !!projectExtras(b).noNewEquipment; };   // the same brief value as My equipment's box
     cn.onchange = () => editBrief(b => setNoNewEquipment(b, cn.checked)); onBriefEdit(b => cnSync(b)); cnSync(); }
   void import('./discover/inline').then(m => m.attachInline(store, viewer, { status })); // DQ10: Discover inside the editor (preview, Finish my setup, Fill this section, Apply)
