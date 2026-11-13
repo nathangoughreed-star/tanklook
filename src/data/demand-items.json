@@ -868,6 +868,20 @@
    "unit": "one 8 in blue plastic plant on a weighted base (lane DS3; priced as the green plastic plant, lo/hi judged)",
    "url": "https://www.petsmart.com/fish/decor-gravel-and-substrate/artificial-plants/top-fin-artificial-multi-landscape-aquarium-plant---8-5255351.html"
   },
+  "hard:silkswordorange": {
+   "lo": 6,
+   "mode": 10,
+   "hi": 14,
+   "unit": "one orange silk sword plant on a weighted base (lane DS3; priced as the green silk sword, lo/hi judged)",
+   "url": "https://www.liveaquaria.com/products/marina-naturals-green-indigo-waffle-leaf-silk-plant"
+  },
+  "hard:plasticstemred": {
+   "lo": 5,
+   "mode": 9,
+   "hi": 12,
+   "unit": "one 8 in red plastic plant on a weighted base (lane DS3; priced as the green plastic plant, lo/hi judged)",
+   "url": "https://www.petsmart.com/fish/decor-gravel-and-substrate/artificial-plants/top-fin-artificial-multi-landscape-aquarium-plant---8-5255351.html"
+  },
   "hard:treasurechest": {
    "lo": 8,
    "mode": 16,

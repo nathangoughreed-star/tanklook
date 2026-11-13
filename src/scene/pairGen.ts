@@ -301,7 +301,9 @@ export function lookOrder(c: Pick<Ctx, 'w' | 'prefs'>, direction: HabitatDirecti
     for (let i = 0; lanes.some(l => l.length > i); i++) for (const l of lanes) if (l[i]) mixed.push(l[i]);
     // the cheap freshwater looks lead (a reef or a terrarium look costs about twice as much to draw), then the other worlds join: the first pool still holds a second world inside its time budget
     const fw = mixed.filter(a => KIND_OF(a) === 'freshwater'), rest = mixed.filter(a => KIND_OF(a) !== 'freshwater');
-    mixed.splice(0, mixed.length, ...fw.slice(0, 3), ...rest.slice(0, 1), ...fw.slice(3, 4), ...mixed.filter(a => !fw.slice(0, 4).includes(a) && a !== rest[0]));
+    // a broad first pool holds a decorative / themed family too (lane DS3, DS1 test G): with no liked card steering the order, the third freshwater look is the castle (or the pirate scene)
+    const deco = lp ? undefined : fw.find(a => a.id === 'castle-coloured-gravel') ?? fw.find(a => a.id === 'themed-scene'), fwFirst = deco ? [...fw.filter(a => a !== deco).slice(0, 2), deco] : fw.slice(0, 3);
+    mixed.splice(0, mixed.length, ...fwFirst, ...rest.slice(0, 1), ...fw.filter(a => !fwFirst.includes(a)).slice(0, 1), ...mixed.filter(a => !fwFirst.includes(a) && a !== rest[0] && a !== fw.filter(b => !fwFirst.includes(b))[0]));
     out.splice(0, out.length, ...mixed);
   }
   return type === 'fresh' && champFam ? out.filter(a => !a.recipe.looks.includes(champFam as never)).concat(out.filter(a => a.recipe.looks.includes(champFam as never))) : out;
