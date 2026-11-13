@@ -45,6 +45,8 @@ export const LIBRARY: Record<string, Variant> = {
   halflog: { kind: 'cave', label: 'Half-log hide', hint: 'Half a hollow log, bark outside, open at both ends: a hide for frogs, geckos and other small animals.', size: 200, min: 60, max: 500 },
   dish: { kind: 'cave', label: 'Water dish (ceramic)', hint: 'A shallow glazed bowl holding clear water: a drinking and soaking dish for reptiles, amphibians and small mammals. Size = width.', size: 120, min: 40, max: 400 },
   stonedish: { kind: 'cave', label: 'Water dish (stone)', hint: 'A shallow bowl of grey stone holding clear water: a drinking dish or a feeding bowl. Size = width.', size: 120, min: 40, max: 400 },
+  shipwreck: { kind: 'ornament', label: 'Sunken sailing ship', hint: 'A three-masted wooden ship settled on the bottom, canvas in tatters. Size = length.', size: 320, min: 120, max: 900 },
+  treasurechest: { kind: 'ornament', label: 'Treasure chest', hint: 'An oak sea chest with iron bands, lid open on a heap of gold coins. Size = width.', size: 110, min: 50, max: 300 },
   fern: { kind: 'plant', label: 'Java fern', hint: 'Grows on wood and rock.', size: 150, min: 30, max: 450 },
   anubias: { kind: 'plant', label: 'Anubias', hint: 'Grows on wood and rock.', size: 90, min: 25, max: 300 },
   sword: { kind: 'plant', label: 'Amazon sword', hint: 'A big rosette.', size: 250, min: 50, max: 600 },
@@ -115,7 +117,7 @@ export const LIBRARY: Record<string, Variant> = {
   seafan: { kind: 'coral', label: 'Sea fan', hint: 'A gorgonian: a fine fan of branches in one upright plane. Size = width.', size: 180, min: 50, max: 500, salt: true },
   macroalgae: { kind: 'coral', label: 'Macroalgae', hint: 'Marine algae for a planted reef: feather or grape caulerpa, or red ogo (by seed). Size = width.', size: 160, min: 40, max: 450, salt: true },
 };
-export const KINDS: Record<ItemKind, string> = { stone: 'Stones', wood: 'Wood', cave: 'Caves', plant: 'Plants', coral: 'Corals', artificial: 'Artificial plants' };
+export const KINDS: Record<ItemKind, string> = { stone: 'Stones', wood: 'Wood', cave: 'Caves', plant: 'Plants', coral: 'Corals', artificial: 'Artificial plants', ornament: 'Decor' };
 export const MAX_ITEMS = 600;
 /** A floater's density range (times the species' own rosettes per area). */
 export const DENS = [0.1, 3] as const;
@@ -328,6 +330,8 @@ export function spreadMax(T: Tank, x?: number, depth?: number) {
   return Math.ceil(2 * m + 2);
 }
 
+/** Bounding box of each ornament per unit size (x length, y height, z depth), measured from the built shape (test/ds2-ornament.test.ts keeps it honest). */
+export const ORNAMENT_ASPECT: Record<string, [number, number, number]> = { shipwreck: [1.11, 0.745, 0.4], treasurechest: [1.02, 0.9, 1] };
 export function itemDims(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size' | 'spread' | 'growth'>): V3 {
   const s = it.kind === 'plant' ? grownSize(it.variant as PlantType, it.size, it.growth) : it.size; // a plant at its growth
   if (it.kind === 'stone') return stoneDims(it.variant, it.seed, s);
@@ -337,6 +341,7 @@ export function itemDims(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size' | '
   if (it.kind === 'plant') return isCarpet(it.variant) ? [s, CARPET_H, s] : isFloat(it.variant) ? ((w: number) => [w, s * PLANT_ASPECT[it.variant as PlantType], w])(it.spread ? floatWidth(it) : s) : ((w: number) => [w, s, w])(it.spread ? Math.max(it.spread, sw / PLANT_ASPECT[it.variant as PlantType]) : sw / PLANT_ASPECT[it.variant as PlantType]) as [number, number, number];
   if (it.kind === 'artificial') { const f = LIBRARY[it.variant]?.fake?.form ?? 'stem', k = FAKE_ASPECT[f]; return f === 'mat' ? [s, s * k, s * 0.85] : [s * k, s, s * k]; }
   if (it.kind === 'coral') return [s, s * ({ acropora: 0.6, montipora: 0.45, mushroom: 0.4, leather: 0.6, acrofine: 0.55, zoanthid: 0.3, hammer: 0.4, torch: 0.55, anemone: 0.4, montiplate: 0.35, seafan: 0.8, macroalgae: 0.55 } as Record<string, number>)[it.variant], s];
+  if (it.kind === 'ornament') { const a = ORNAMENT_ASPECT[it.variant] ?? [1, 0.6, 0.6]; return [s * a[0], s * a[1], s * a[2]]; }
   if (it.kind === 'cave' && it.variant in SHELLS) return shellDims(it.variant, s);
   if (it.kind === 'cave' && (it.variant === 'dish' || it.variant === 'stonedish')) return [s, 0.2 * s, s];
   if (it.kind === 'cave' && it.variant === 'planter') return [s, 0.4 * s, 0.45 * s];
