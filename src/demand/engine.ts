@@ -104,12 +104,15 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   const G = DEFAULTS.gear;
 
   // ---- tank, stand, lid, substrate, gear
-  const tank = opts.tankPrice?.(S, gal) ?? (wet ? undefined : terrariumPrice(S.tank)), band = G.tank.find(b => gal <= b.maxGal) ?? G.tank[G.tank.length - 1];
+  const own = S.customTank?.priceUsd; // P9: a custom tank's own figure (quote / DIY cost) beats every estimate and sale
+  const tank = own ?? opts.tankPrice?.(S, gal) ?? (wet ? undefined : terrariumPrice(S.tank)), band = G.tank.find(b => gal <= b.maxGal) ?? G.tank[G.tank.length - 1];
   const catTank = tankRowPrice(gal);
   const tankTypical = tank !== undefined ? r3(tank)! : catTank ?? scale3(pick(band.perGal), gal);
   // a bare tank of this size on sale right now (read from a retailer page) is what buying the parts would cost
   const tSale = tank === undefined && wet ? tankSaleFor(gal, S.tank.shape ?? 'rect', opts.now ?? Date.now(), undefined, undefined, S.tank) : undefined;
   if (tSale && tSale.usd < tankTypical.mode) add('tank', `Tank (${Math.round(gal)} gal; on sale at ${tSale.retailer} $${Math.round(tSale.usd)}, was $${Math.round(tSale.regularUsd)}${tSale.saleEnds ? ', ends ' + tSale.saleEnds : ''})`, 'tank', { setup: price({ lo: tSale.usd * 0.97, mode: tSale.usd, hi: Math.min(tankTypical.mode, tSale.usd * 1.15) }) });
+  else if (own !== undefined) add('tank', `Tank (${Math.round(gal)} gal; your figure)`, 'tank', { setup: r3(own)! }); // P9: the user's own price, exact (not widened by price age)
+  else if (own !== undefined) add('tank', `Tank (${Math.round(gal)} gal; your figure)`, 'tank', { setup: r3(own)! }); // exact, not widened by price age
   else add('tank', `Tank (${Math.round(gal)} gal)`, 'tank', { setup: price(tankTypical) });
   const stand = interp('gear:stand-', [20, 55], gal);
   // only a stand the owner added counts (Nathan 2026-10-26: an undecided stand is not in the price)

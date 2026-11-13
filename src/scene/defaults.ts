@@ -19,7 +19,7 @@ export function defaultSetup(): TankSetup {
   const fish = (species: string, x: number, y: number, depth: number): Fish =>
     ({ id: id++, species, x, y, depth, yaw: 0, pitch: 0, roll: 0, bend: 0 });
   const s: TankSetup = {
-    tank: A,
+    tank: A, customTank: { name: 'Custom 24 x 12 x 12 in' }, // P9: the default tank is a custom size (what load-time migration would name it)
     camera: { dist: 3000, az: 0, el: 0, zoom: 1 },
     render: { edge: 'a2c', grid: true, rim: true, edges: true, beams: false, pop: 0.15, bg: 'blue', bgSides: ['back'], bgArc: 145, bgImages: [], glass: 'auto', glassType: 'standard' },
     light: { type: 'flat', count: 2, rows: 1, pattern: 'grid', spacing: 0, cone: 52, bright: 1, kelvin: 6500, room: 0.15, roomAuto: true, height: 50 },

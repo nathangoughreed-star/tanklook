@@ -432,6 +432,9 @@ export interface TankSetup {
   /** The library pick this tank is (2026-10-26, Nathan: "clearly distinguish if the tank being worked on is a real commercially
    *  available tank or a custom size"; no version bump). Absent = a custom size. scene/integrated.ts holds what the product fixes. */
   product?: TankProduct;
+  /** P9 (2026-11-13, no version bump): this setup's tank is a custom tank. The tank, glass and rim in this setup ARE its own copy; this holds the
+   *  name, the library entry it came from (`id`, `version`; absent = never in the library, e.g. a migrated old save), the user's own price and the owned flag. scene/customTanks.ts. */
+  customTank?: CustomTankRef;
   /** Guardrails (lane C1, 2026-10-27, no version bump): this tank's limits on startup $, monthly $, minutes a week and space; scene/constraints.ts. Absent = none set, the browser profile's limits apply. */
   constraints?: import('./constraints').Constraints;
   /** The setup brief (lane U1, 2026-10-28, no version bump): hard constraints, preferences and locked choices every entry point pre-fills; scene/brief.ts. Absent = none yet. */
@@ -453,6 +456,7 @@ export interface Locks { objects: ObjectLock[]; roster: RosterLock[] }
 
 /** `model` a data/tanks.json size id; `key` the maker's product at that size (data/tanks.ts variantKey), absent for the catalogue size
  *  with no maker; `sig` the tank as picked (scene/integrated.ts tankSig), filled in on the first edit. */
+export interface CustomTankRef { name: string; id?: string; version?: number; /** the user's own figure for this tank, USD (quote or DIY cost); beats the engine estimate */ priceUsd?: number; owned?: boolean }
 export interface TankProduct { model: string; key?: string; sig?: string }
 
 /** `kit` is an id in data/kits.json; the rest is what holding it needs: `sig` the tank it was applied to (any other size or shape
