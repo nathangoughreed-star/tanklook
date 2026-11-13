@@ -1,0 +1,742 @@
+{
+ "lane": "CL1",
+ "date": "2026-11-13",
+ "status": "all 28 gear kinds, first pass, unverified",
+ "items": [
+  {
+   "id": "hob",
+   "name": "hang-on-back filter",
+   "kind": "gear",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Buce Plant",
+     "url": "https://buceplant.com/blogs/aquascaping-guides-and-tips/beginners-guide-to-aquarium-filters-and-types-of-filtration",
+     "label": "the perfect filter for beginners",
+     "verdict": "1",
+     "why": "easy to clean, low maintenance, fits all tank sizes"
+    },
+    {
+     "site": "Aqueon",
+     "url": "https://aqueon.com/articles/hang-on-back-canister-filter",
+     "label": null,
+     "verdict": "1",
+     "why": "suits beginners; simple cartridge rinse; holds less media than canister"
+    },
+    {
+     "site": "LiveAquaria",
+     "url": "https://www.liveaquaria.com/article/15/?aid=15",
+     "label": "very easy to use",
+     "verdict": "1",
+     "why": "basic setup, replaceable cartridges keep upkeep simple"
+    }
+   ],
+   "confidence": "high",
+   "reason": "Three sources call it the beginner default; only limit is media capacity."
+  },
+  {
+   "id": "canister",
+   "name": "canister filter",
+   "kind": "gear",
+   "level": 2,
+   "sources": [
+    {
+     "site": "Buce Plant",
+     "url": "https://buceplant.com/blogs/aquascaping-guides-and-tips/beginners-guide-to-aquarium-filters-and-types-of-filtration",
+     "label": null,
+     "verdict": "2",
+     "why": "higher maintenance than HOB or sponge; for tanks over 30 gal; costs more"
+    },
+    {
+     "site": "Aquarium Co-Op",
+     "url": "https://www.aquariumcoop.com/blogs/aquarium/how-to-clean-aquarium-filter",
+     "label": null,
+     "verdict": "2",
+     "why": "hardest to clean: disconnecting tubing without flooding; media out of sight"
+    },
+    {
+     "site": "LiveAquaria",
+     "url": "https://www.liveaquaria.com/article/15/?aid=15",
+     "label": "Intermediate setup",
+     "verdict": "2",
+     "why": "more effort to set up and maintain than power filters; large or heavily stocked tanks"
+    }
+   ],
+   "confidence": "high",
+   "reason": "All three say more plumbing and upkeep than HOB; workable with some experience."
+  },
+  {
+   "id": "internal",
+   "name": "internal filter",
+   "kind": "gear",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Practical Fishkeeping",
+     "url": "https://www.practicalfishkeeping.co.uk/features/choosing-an-aquarium-filter/",
+     "label": null,
+     "verdict": "1",
+     "why": "cheap, easy to install and maintain; small lightly stocked tanks only; little media; rinse sponge every couple of weeks"
+    }
+   ],
+   "confidence": "low",
+   "reason": "Only one page I opened covered internals; others seen in search results (Co-Op forum) not opened."
+  },
+  {
+   "id": "sponge",
+   "name": "air-driven sponge filter",
+   "kind": "gear",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Aquarium Co-Op",
+     "url": "https://www.aquariumcoop.com/blogs/aquarium/sponge-filters-the-easiest-fish-tank-filter-ever",
+     "label": null,
+     "verdict": "1",
+     "why": "few mechanical parts; needs pump, tubing, check valve; monthly squeeze clean"
+    },
+    {
+     "site": "Aquarium Co-Op",
+     "url": "https://www.aquariumcoop.com/blogs/aquarium/how-to-clean-aquarium-filter",
+     "label": null,
+     "verdict": "1",
+     "why": "easiest to clean of the filter types; bag and squeeze"
+    },
+    {
+     "site": "Buce Plant",
+     "url": "https://buceplant.com/blogs/aquascaping-guides-and-tips/beginners-guide-to-aquarium-filters-and-types-of-filtration",
+     "label": null,
+     "verdict": "1",
+     "why": "simplest filter on the market; weak circulation in large tanks, looks"
+    }
+   ],
+   "confidence": "high",
+   "reason": "All agree it is the simplest filter; two of the three pages are the same site (Co-Op)."
+  },
+  {
+   "id": "heater",
+   "name": "aquarium heater (submersible / thermostat)",
+   "kind": "gear",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Aquarium Co-Op",
+     "url": "https://www.aquariumcoop.com/blogs/aquarium/how-to-choose-the-right-aquarium-heater",
+     "label": null,
+     "verdict": "1",
+     "why": "fairly simple if sized (about 5 W/gal); two small heaters for big tanks; risk: dry run, no acclimation, unproven brand"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://fishkeepingworld.com/best-aquarium-heater/",
+     "label": null,
+     "verdict": "1",
+     "why": "straightforward if sized; check with separate thermometer daily; overheat failure risk, thermal shut-off advised"
+    }
+   ],
+   "confidence": "high",
+   "reason": "Two sources agree it is easy; the real risk is a stuck-on unit, mitigated by thermometer and quality brand."
+  },
+  {
+   "id": "lightbasic",
+   "name": "basic LED light (fish-only, low-light plants)",
+   "kind": "gear",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Aquarium Co-Op",
+     "url": "https://www.aquariumcoop.com/blogs/aquarium/par-for-planted-tanks",
+     "label": "Low (10-20 PAR)",
+     "verdict": "1",
+     "why": "no CO2, minimal fertilizer, slow growth and slow algae"
+    },
+    {
+     "site": "Aquarium Co-Op",
+     "url": "https://www.aquariumcoop.com/blogs/aquarium/how-to-pick-the-best-planted-aquarium-light",
+     "label": null,
+     "verdict": "1",
+     "why": "low light is the better starting point; hardiest, beginner-friendly plants"
+    },
+    {
+     "site": "Buce Plant",
+     "url": "https://buceplant.com/blogs/aquascaping-guides-and-tips/lighting-requirements-for-a-planted-aquarium",
+     "label": null,
+     "verdict": "1",
+     "why": "start low-light, low-tech; needs less fertilizer and CO2; timer, 8 h max"
+    }
+   ],
+   "confidence": "high",
+   "reason": "All three name low light as the beginner path; two are the same site."
+  },
+  {
+   "id": "lightplanted",
+   "name": "planted-tank / high-PAR LED light",
+   "kind": "gear",
+   "level": 3,
+   "sources": [
+    {
+     "site": "Aquarium Co-Op",
+     "url": "https://www.aquariumcoop.com/blogs/aquarium/par-for-planted-tanks",
+     "label": "High (40-50+ PAR)",
+     "verdict": "3",
+     "why": "CO2 typically required, strict fertilizer schedule, algae takes over without it"
+    },
+    {
+     "site": "Aquarium Co-Op",
+     "url": "https://www.aquariumcoop.com/blogs/aquarium/how-to-balance-aquarium-lighting",
+     "label": null,
+     "verdict": "2",
+     "why": "moderate: dim to 20-40%, 6-8 h, wait about 2 weeks per change; algae feedback slow"
+    },
+    {
+     "site": "Buce Plant",
+     "url": "https://buceplant.com/blogs/aquascaping-guides-and-tips/lighting-requirements-for-a-planted-aquarium",
+     "label": null,
+     "verdict": "3",
+     "why": "must balance light, CO2 and fertilizer; PAR 200+ for high-light plants"
+    }
+   ],
+   "confidence": "medium",
+   "reason": "High PAR needs CO2 and ferts (3); the schedule-tuning page alone reads as moderate (2)."
+  },
+  {
+   "id": "lightreef",
+   "name": "reef LED (spectrum, acclimation)",
+   "kind": "gear",
+   "level": 2,
+   "sources": [
+    {
+     "site": "LiveAquaria",
+     "url": "https://www.liveaquaria.com/blogs/aquarium-lighting/acclimating-your-corals-to-led-lights",
+     "label": null,
+     "verdict": "2",
+     "why": "PAR jump bleaches corals; 3-4 week acclimation, watch closely; bleaching often noticed late"
+    },
+    {
+     "site": "Bulk Reef Supply",
+     "url": "https://www.bulkreefsupply.com/content/post/best-reef-tank-lighting-schedule",
+     "label": null,
+     "verdict": "2",
+     "why": "blue-heavy spectrum, 1-8-1 schedule, PAR targets 75-150 soft/LPS vs 200-350 SPS; too much bleaches, too little starves"
+    }
+   ],
+   "confidence": "medium",
+   "reason": "Two sources agree on moderate effort with real bleaching risk; neither rates difficulty directly."
+  },
+  {
+   "id": "co2pressurized",
+   "name": "pressurized CO2 system",
+   "kind": "gear",
+   "level": 2,
+   "sources": [
+    {
+     "site": "Buce Plant",
+     "url": "https://buceplant.com/blogs/aquascaping-guides-and-tips/planted-aquarium-co2-setup-explained",
+     "label": null,
+     "verdict": "1",
+     "why": "very simple once broken into parts; CO2 tubing, check valves against backflow to solenoid"
+    },
+    {
+     "site": "Bulk Reef Supply",
+     "url": "https://fresh.bulkreefsupply.com/content/post/how-to-setup-aquarium-co2-for-planted-aquariums-beginners-guide",
+     "label": null,
+     "verdict": "2",
+     "why": "a bit complex; needs timer, test kit, slow ramp; overdose and backflow risk, pH drop"
+    },
+    {
+     "site": "Practical Fishkeeping",
+     "url": "https://www.practicalfishkeeping.co.uk/features/carbon-in-the-planted-aquarium-gas-vs--liquid/",
+     "label": null,
+     "verdict": "2",
+     "why": "harder for beginners; overdose toxic at night; cylinder pressure; solenoid and drop checker needed"
+    }
+   ],
+   "confidence": "medium",
+   "reason": "Assembly is easy but tuning and overdose risk make it intermediate; one source reads it as simple."
+  },
+  {
+   "id": "co2diy",
+   "name": "DIY yeast CO2",
+   "kind": "gear",
+   "level": 2,
+   "sources": [
+    {
+     "site": "Aquarium Co-Op",
+     "url": "https://www.aquariumcoop.com/blogs/faqs/should-i-use-a-diy-co2-or-pressurized-co2-system",
+     "label": null,
+     "verdict": "2",
+     "why": "time-consuming to maintain; output peaks then tapers; temperature sensitive"
+    },
+    {
+     "site": "Aquariadise",
+     "url": "https://www.aquariadise.com/diy-co2/",
+     "label": null,
+     "verdict": "2",
+     "why": "cheap and easy to build but hard to regulate, runs at night, rebrew every few months, overdose risk"
+    }
+   ],
+   "confidence": "medium",
+   "reason": "Two sources agree: easy to build, hard to keep steady."
+  },
+  {
+   "id": "co2liquid",
+   "name": "liquid carbon (Excel-type) dosing",
+   "kind": "gear",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Practical Fishkeeping",
+     "url": "https://www.practicalfishkeeping.co.uk/features/carbon-in-the-planted-aquarium-gas-vs--liquid/",
+     "label": null,
+     "verdict": "1",
+     "why": "simple pump-bottle dosing; slower growth; toxic if overdosed; harms Vallisneria; suits small, low-light, easy-plant tanks"
+    }
+   ],
+   "confidence": "low",
+   "reason": "Only one page opened; Aquarium Co-Op page returned nothing on it. Plant sensitivity (Vallisneria melt) is the main catch."
+  },
+  {
+   "id": "airpump",
+   "name": "air pump with air stone",
+   "kind": "gear",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Aquarium Co-Op",
+     "url": "https://www.aquariumcoop.com/blogs/aquarium/aquarium-air-pump",
+     "label": null,
+     "verdict": "1",
+     "why": "a few basic steps; check valve direction, drip loop; diaphragm pumps get noisy"
+    },
+    {
+     "site": "Aquarium Co-Op",
+     "url": "https://www.aquariumcoop.com/blogs/aquarium/sponge-filters-the-easiest-fish-tank-filter-ever",
+     "label": null,
+     "verdict": "1",
+     "why": "pump plus tubing plus check valve is all a basic setup needs"
+    }
+   ],
+   "confidence": "medium",
+   "reason": "Both sources are one site; no source disagrees."
+  },
+  {
+   "id": "powerhead",
+   "name": "powerhead / circulation pump",
+   "kind": "gear",
+   "level": 2,
+   "sources": [
+    {
+     "site": "Bulk Reef Supply",
+     "url": "https://www.bulkreefsupply.com/content/post/what-is-the-difference-between-a-powerhead-and-a-wavemaker",
+     "label": null,
+     "verdict": "2",
+     "why": "closed-impeller powerheads give narrow jets, poor display flow; wavemakers safer"
+    },
+    {
+     "site": "Bulk Reef Supply",
+     "url": "https://bulkreefsupply.com/content/post/avoid-these-common-wavemaker-and-powerhead-mistakes",
+     "label": null,
+     "verdict": "2",
+     "why": "placement trial and error, dead spots, sand storms, monthly cleaning"
+    },
+    {
+     "site": "Practical Fishkeeping",
+     "url": "https://www.practicalfishkeeping.co.uk/features/beginners-guide-to-reef-tanks-why-water-flow-matters/",
+     "label": null,
+     "verdict": "2",
+     "why": "size for turnover, avoid aiming at rock/corals, dead spots grow cyanobacteria"
+    }
+   ],
+   "confidence": "medium",
+   "reason": "Sources describe placement and sizing judgment, not a difficulty label; electrically simple but easy to place badly."
+  },
+  {
+   "id": "wavemaker",
+   "name": "wavemaker (reef flow)",
+   "kind": "gear",
+   "level": 2,
+   "sources": [
+    {
+     "site": "Practical Fishkeeping",
+     "url": "https://www.practicalfishkeeping.co.uk/features/beginners-guide-to-reef-tanks-why-water-flow-matters/",
+     "label": null,
+     "verdict": "2",
+     "why": "turnover 20-100x by coral type; placement and gyre patterns; too much flow stops LPS expanding"
+    },
+    {
+     "site": "Bulk Reef Supply",
+     "url": "https://bulkreefsupply.com/content/post/avoid-these-common-wavemaker-and-powerhead-mistakes",
+     "label": null,
+     "verdict": "2",
+     "why": "trial and error; over-tinkering stresses corals; use feed mode; adjust as corals grow"
+    },
+    {
+     "site": "Bulk Reef Supply",
+     "url": "https://www.bulkreefsupply.com/content/post/what-is-the-difference-between-a-powerhead-and-a-wavemaker",
+     "label": null,
+     "verdict": "2",
+     "why": "controllable patterns add flexibility but cost more and need careful maintenance"
+    }
+   ],
+   "confidence": "medium",
+   "reason": "All say setup is judgment and ongoing tuning; none rate difficulty directly."
+  },
+  {
+   "id": "chillerfan",
+   "name": "cooling fan for an aquarium",
+   "kind": "gear",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Charterhouse Aquatics",
+     "url": "https://charterhouse-aquatics.com/blogs/help-guides/aquarium-chiller-vs-cooling-fan-which-is-right-for-your-aquarium",
+     "label": "tagged beginner; install 'Very Easy', maintenance 'Minimal'",
+     "verdict": "1",
+     "why": "clip-on, no plumbing; limited cooling, more evaporation so top-offs needed"
+    },
+    {
+     "site": "Bulk Reef Supply (Marine Depot blog)",
+     "url": "https://www.bulkreefsupply.com/content/post/md-2016-08-cooling-your-nano-nano-chillers-and-fans-for-small-aquariums?brs-source=mdredir",
+     "label": "easiest and cheapest option",
+     "verdict": "1",
+     "why": "mount and aim across surface; evaporation raises top-off and salinity swing risk, ATO recommended"
+    }
+   ],
+   "confidence": "high",
+   "reason": "Both call fans the easy option; only catch is higher evaporation and limited cooling."
+  },
+  {
+   "id": "chillercomp",
+   "name": "compressor aquarium chiller",
+   "kind": "gear",
+   "level": 2,
+   "sources": [
+    {
+     "site": "Bulk Reef Supply (Marine Depot blog)",
+     "url": "https://www.bulkreefsupply.com/content/post/md-how-to-choose-and-install-an-aquarium-chiller",
+     "label": null,
+     "verdict": "2",
+     "why": "sizing by temp drop and room temp, matching pump flow, ventilation, circuit load, condenser cleaning"
+    },
+    {
+     "site": "Charterhouse Aquatics",
+     "url": "https://charterhouse-aquatics.com/blogs/help-guides/how-to-choose-the-right-aquarium-chiller-or-fan-for-your-tank-size-and-setup",
+     "label": "chillers 'harder' than fans to choose and install",
+     "verdict": "2",
+     "why": "needs plumbing into filtration, floor space, airflow; undersizing struggles in heatwaves"
+    },
+    {
+     "site": "Bulk Reef Supply (nano chillers)",
+     "url": "https://www.bulkreefsupply.com/content/post/md-2016-08-cooling-your-nano-nano-chillers-and-fans-for-small-aquariums?brs-source=mdredir",
+     "label": "most effective but harder to set up",
+     "verdict": "2",
+     "why": "extra plumbing and feed pump, vent heat to cooler air, cost"
+    }
+   ],
+   "confidence": "high",
+   "reason": "Three sources agree: plumbing, sizing and ventilation need some experience, but nothing specialist."
+  },
+  {
+   "id": "skimmerhob",
+   "name": "hang-on protein skimmer",
+   "kind": "gear",
+   "level": 2,
+   "sources": [
+    {
+     "site": "Bulk Reef Supply (skimmer types and installation)",
+     "url": "https://www.bulkreefsupply.com/content/post/md-2021-03-protein-skimmer-types-installation-and-how-to-maintain-them?brs-source=mdredir",
+     "label": null,
+     "verdict": "2",
+     "why": "rim fit, clearance behind tank, re-priming after power loss, 2-4 week break-in, weekly cup, pump cleaning"
+    },
+    {
+     "site": "Fishtank Advisor",
+     "url": "https://fishtankadvisor.com/protein-skimmer-setup/",
+     "label": "HOB presented as simplest skimmer type",
+     "verdict": "1",
+     "why": "no plumbing or tank mods; siphon can break if water drops, break-in with gradual adjustments"
+    },
+    {
+     "site": "Bulk Reef Supply (tuning)",
+     "url": "https://www.bulkreefsupply.com/content/post/how-to-tune-your-protein-skimmer-like-a-pro",
+     "label": "tuning 'straightforward' but needs patience",
+     "verdict": "2",
+     "why": "1 week break-in, too much air most common fault, small adjustments (article covers internal skimmers, not HOB)"
+    }
+   ],
+   "confidence": "medium",
+   "reason": "Easiest skimmer type to install, but all skimmers need break-in, tuning and upkeep; reef-only gear."
+  },
+  {
+   "id": "skimmersump",
+   "name": "in-sump protein skimmer",
+   "kind": "gear",
+   "level": 2,
+   "sources": [
+    {
+     "site": "Bulk Reef Supply (tune a new skimmer)",
+     "url": "https://www.bulkreefsupply.com/content/post/how-to-tune-a-new-protein-skimmer-for-your-saltwater-aquarium",
+     "label": "'not plug-and-play'",
+     "verdict": "2",
+     "why": "sump water level, 5-7 day to 1 week break-in, air and foam level tuning, undersized unit"
+    },
+    {
+     "site": "Bulk Reef Supply (wet vs dry skimming)",
+     "url": "https://www.bulkreefsupply.com/content/post/md-2021-05-wet-vs-dry-skimming-a-foam-preference-which-is-better",
+     "label": "difficulty moderate (my reading)",
+     "verdict": "2",
+     "why": "matching air to waste load takes incremental changes over weeks; venturi clogs; sump level changes performance"
+    },
+    {
+     "site": "Fishtank Advisor",
+     "url": "https://fishtankadvisor.com/protein-skimmer-setup/",
+     "label": null,
+     "verdict": "2",
+     "why": "in-sump needs mounting, level kept topped off, break-in with gradual changes"
+    }
+   ],
+   "confidence": "medium",
+   "reason": "Consistent moderate tuning burden, but sources are mostly one reef retailer."
+  },
+  {
+   "id": "sump",
+   "name": "sump (plumbed overflow, return pump, baffles)",
+   "kind": "gear",
+   "level": 2,
+   "sources": [
+    {
+     "site": "Practical Fishkeeping",
+     "url": "https://www.practicalfishkeeping.co.uk/features/a-guide-to-using-an-aquarium-sump-to-filter-your-tank/",
+     "label": "'can take some getting used to', 'can look quite daunting'",
+     "verdict": "2",
+     "why": "drain-back on power loss, flood risk, ATO and emergency overflow, cabinet moisture"
+    },
+    {
+     "site": "Practical Fishkeeping (FAQ)",
+     "url": "https://www.practicalfishkeeping.co.uk/features/frequently-asked-questions-on-sumps",
+     "label": null,
+     "verdict": "2",
+     "why": "back-siphon flooding, siphon-break hole, standpipe noise, leveling weirs"
+    },
+    {
+     "site": "Fish Tanks Direct",
+     "url": "https://fishtanksdirect.com/blog/sump-systems-for-large-display-tanks-sizing-plumbing-and-failsafes/",
+     "label": "'manageable with planning, but details matter'",
+     "verdict": "2",
+     "why": "sizing for drain-back, pump cavitation, single standpipe, ATO routing, fail-safes, power-off test"
+    }
+   ],
+   "confidence": "medium",
+   "reason": "Sources agree on moderate plumbing skill with real flood risk; two are the same publisher, and none rates it beginner-safe."
+  },
+  {
+   "id": "returnpump",
+   "name": "sump return pump",
+   "kind": "gear",
+   "level": 2,
+   "sources": [
+    {
+     "site": "Bulk Reef Supply",
+     "url": "https://www.bulkreefsupply.com/content/post/how-to-size-a-return-pump",
+     "label": null,
+     "verdict": "2",
+     "why": "rated GPH is best-case; head loss from lift, bends, run; flow control; scale buildup"
+    },
+    {
+     "site": "Top Shelf Aquatics",
+     "url": "https://topshelfaquatics.com/blogs/news/how-to-choose-the-right-return-pump-for-your-aquarium",
+     "label": null,
+     "verdict": "2",
+     "why": "head pressure estimate, oversizing causes microbubbles/noise/heat, return chamber must keep pump from sucking air"
+    }
+   ],
+   "confidence": "medium",
+   "reason": "Sizing math (head loss) trips beginners; installing and running it is easy. Two sources only."
+  },
+  {
+   "id": "ato",
+   "name": "auto top-off (ATO) system",
+   "kind": "gear",
+   "level": 2,
+   "sources": [
+    {
+     "site": "Bulk Reef Supply (ATO done right)",
+     "url": "https://www.bulkreefsupply.com/content/post/reef-tank-ato-auto-top-off-done-right",
+     "label": "'biggest risk ... is going to be an overfill'",
+     "verdict": "2",
+     "why": "overfill and underfill failures, sensor fouling, needs redundant sensors, max-fill timer, alarm"
+    },
+    {
+     "site": "Bulk Reef Supply (ATO mistakes)",
+     "url": "https://www.bulkreefsupply.com/content/post/avoid-these-ato-mistakes",
+     "label": null,
+     "verdict": "2",
+     "why": "sensor placement, reservoir size, monthly sensor cleaning, siphon breaks, water quality"
+    },
+    {
+     "site": "Practical Fishkeeping",
+     "url": "https://www.practicalfishkeeping.co.uk/features/a-guide-to-using-an-aquarium-sump-to-filter-your-tank/",
+     "label": null,
+     "verdict": "2",
+     "why": "recommends ATO for sumps but advises an emergency overflow to guard against mains/RO overfill"
+    }
+   ],
+   "confidence": "medium",
+   "reason": "Simple to install, but a failure can flood or crash salinity, so safeguards and upkeep are required."
+  },
+  {
+   "id": "uvinternal",
+   "name": "UV sterilizer (internal or inline)",
+   "kind": "gear",
+   "level": 2,
+   "sources": [
+    {
+     "site": "Bulk Reef Supply (UV selection guide)",
+     "url": "https://www.bulkreefsupply.com/content/post/5-minute-saltwater-aquarium-guide-uv-sterilizer-selection",
+     "label": null,
+     "verdict": "2",
+     "why": "wattage and flow rate must match target (algae vs parasites); undersized units 'just won't work'; lamp and sleeve upkeep"
+    }
+   ],
+   "confidence": "low",
+   "reason": "One source opened (Aquarium Advice page returned 403); it points to moderate sizing and flow-tuning difficulty."
+  },
+  {
+   "id": "doser",
+   "name": "dosing pump (automatic liquid dosing)",
+   "kind": "gear",
+   "level": 2,
+   "sources": [
+    {
+     "site": "Bulk Reef Supply (dosing pump guide)",
+     "url": "https://www.bulkreefsupply.com/content/post/md-2015-01-dosing-pump-reef-aquarium",
+     "label": null,
+     "verdict": "2",
+     "why": "calibration through real tubing, programming, siphon prevention, overdose spikes parameters, one additive per head"
+    }
+   ],
+   "confidence": "low",
+   "reason": "One source opened (Aquifarm returned 403); calibration and overdose risk argue for intermediate."
+  },
+  {
+   "id": "feeder",
+   "name": "automatic fish feeder",
+   "kind": "gear",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Aquarium_fish_feeder",
+     "label": null,
+     "verdict": "1",
+     "why": "humidity clumping and jams, only one food type, fixed portions, regular cleaning"
+    },
+    {
+     "site": "Bulk Reef Supply (feeder mistakes)",
+     "url": "https://bulkreefsupply.com/content/post/top-mistakes-neptune-systems-afs-auto-fish-feeder",
+     "label": null,
+     "verdict": "1",
+     "why": "overfeeding, humidity in drum, mixing pellet sizes, placement; fixable by habit"
+    }
+   ],
+   "confidence": "medium",
+   "reason": "Simple device; the failure mode is jamming or overfeeding, so test run it before travel."
+  },
+  {
+   "id": "rodi",
+   "name": "RO/DI water filter system",
+   "kind": "gear",
+   "level": 2,
+   "sources": [
+    {
+     "site": "Bulk Reef Supply (RO/DI FAQ)",
+     "url": "https://www.bulkreefsupply.com/content/post/top-5-frequently-asked-questions-about-rodi-systems",
+     "label": null,
+     "verdict": "2",
+     "why": "stage count for chloramines, pressure below 50 PSI, TDS monitoring, resin exhaustion goes unnoticed, waste water"
+    },
+    {
+     "site": "Bulk Reef Supply (maintenance)",
+     "url": "https://www.bulkreefsupply.com/content/post/md-2020-12-how-to-maintain-your-ro-and-ro-di-system",
+     "label": "effort 'moderate' (my reading)",
+     "verdict": "2",
+     "why": "schedule depends on source water; DI resin most demanding; even 1-2 ppm leak matters in reef"
+    }
+   ],
+   "confidence": "medium",
+   "reason": "Easy install, but needs TDS meter and timely media changes to avoid contaminated water; one retailer."
+  },
+  {
+   "id": "testkit",
+   "name": "water test kits / drop checker",
+   "kind": "gear",
+   "level": 1,
+   "sources": [
+    {
+     "site": "FishLab",
+     "url": "https://fishlab.com/aquarium-test-kit/",
+     "label": "liquid kits 'simple to use but easy to get wrong' (my reading)",
+     "verdict": "1",
+     "why": "contamination, expired reagents, lighting, strips least accurate"
+    },
+    {
+     "site": "Aquarium Co-Op",
+     "url": "https://www.aquariumcoop.com/blogs/aquarium/aquarium-water-testing",
+     "label": "presented as manageable for beginners",
+     "verdict": "1",
+     "why": "test daily while cycling, track trends; CO2 test reading takes some judgment"
+    }
+   ],
+   "confidence": "high",
+   "reason": "Both treat testing as beginner-friendly; main failure is user error and reading colors."
+  },
+  {
+   "id": "thermometer",
+   "name": "aquarium thermometer / temperature controller",
+   "kind": "gear",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Charterhouse Aquatics",
+     "url": "https://charterhouse-aquatics.com/blogs/help-guides/maintaining-troubleshooting-your-aquarium-heating-cooling-equipment",
+     "label": null,
+     "verdict": "1",
+     "why": "cross-check accuracy; stuck-on heater risk; separate controller adds protection; probes need cleaning"
+    },
+    {
+     "site": "Bulk Reef Supply",
+     "url": "https://www.bulkreefsupply.com/content/post/maintaining-stable-water-temperatures-in-saltwater-aquariums",
+     "label": "no rating given",
+     "verdict": "1",
+     "why": "probe placement in good flow, monthly calibration check, backup controller, relay failures"
+    }
+   ],
+   "confidence": "medium",
+   "reason": "A plain thermometer is trivial; a controller with backup adds a little setup, so level 1 with an upper-end note."
+  },
+  {
+   "id": "lid",
+   "name": "tank lid / hood",
+   "kind": "gear",
+   "level": 1,
+   "sources": [
+    {
+     "site": "CO2Art",
+     "url": "https://www.co2art.eu/blogs/blog/pros-and-cons-of-aquarium-cover",
+     "label": null,
+     "verdict": "1",
+     "why": "stops jumpers, evaporation, dust; fit, warping, fewer plants above water; no difficulty rating"
+    },
+    {
+     "site": "Reef Builders",
+     "url": "https://reefbuilders.com/2015/05/20/the-pros-and-cons-of-using-a-marine-aquarium-cover-glass",
+     "label": null,
+     "verdict": "1",
+     "why": "traps heat, less gas exchange, light loss from salt creep, mesh enough for many fish"
+    }
+   ],
+   "confidence": "high",
+   "reason": "Neither source describes setup difficulty; the issues are fit, heat and light trade-offs, easy to manage."
+  }
+ ]
+}

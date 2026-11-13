@@ -1,0 +1,296 @@
+{
+ "lane": "CL1",
+ "date": "2026-11-13",
+ "status": "pilot: 10 of ~24 aquarium plants, first pass, unverified",
+ "items": [
+  {
+   "id": "anubias",
+   "name": "Anubias (Anubias barteri / nana)",
+   "kind": "plant",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Flowgrow",
+     "url": "https://www.flowgrow.de/db/aquaticplants/anubias-barteri-var-nana",
+     "label": "Very easy",
+     "verdict": "1",
+     "why": "tolerates very low to strong light, no CO2, slow growth"
+    },
+    {
+     "site": "Aquasabi",
+     "url": "https://www.aquasabi.de/Anubias-barteri-var-nana_1",
+     "label": "Easy (details table: very easy); light demand Low",
+     "verdict": "1",
+     "why": "no CO2 needed, low to strong light"
+    },
+    {
+     "site": "Guidarium",
+     "url": "https://guidarium.com/plants/anubias-barteri",
+     "label": "Beginner",
+     "verdict": "1",
+     "why": "low light, no CO2, low nutrient demand; keep rhizome on wood/stone"
+    }
+   ],
+   "confidence": "high",
+   "reason": "Three sources agree: very forgiving, slow, low light; only rule is do not bury the rhizome."
+  },
+  {
+   "id": "sword",
+   "name": "Amazon sword (Echinodorus)",
+   "kind": "plant",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Aquatic Motiv",
+     "url": "https://aquaticmotiv.com/pages/amazon-sword-echinodorus-amazonicus",
+     "label": "Care Level: Easy",
+     "verdict": "1",
+     "why": "heavy root feeder: needs 3 in substrate, root tabs every 1-2 months, iron; melt after planting"
+    },
+    {
+     "site": "Guidarium",
+     "url": "https://guidarium.com/plants/broadleaf-sword",
+     "label": "Beginner",
+     "verdict": "1",
+     "why": "low light listed, no CO2, high nutrient demand (root tabs), needs big space"
+    },
+    {
+     "site": "Dustin's Fish Tanks",
+     "url": "https://dustinsfishtanks.com/blogs/dustins-blog/swords-guide",
+     "label": null,
+     "verdict": "1",
+     "why": "calls swords easy; moderate light, root tabs, cichlids may damage; some hybrids need more care"
+    }
+   ],
+   "confidence": "high",
+   "reason": "All three say easy; the only demand is root feeding (tabs) and room to grow."
+  },
+  {
+   "id": "rotala",
+   "name": "Rotala (Rotala rotundifolia / red stem types)",
+   "kind": "plant",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Guidarium",
+     "url": "https://guidarium.com/plants/dwarf-rotala",
+     "label": "Beginner (base form, high maintenance); H'ra and Blood Red intermediate",
+     "verdict": "1",
+     "why": "moderate light, CO2 optional; fast growth needs trimming; red/H'ra forms need high light + CO2"
+    },
+    {
+     "site": "Bantam Earth",
+     "url": "https://bantam.earth/dwarf-rotala-rotala-rotundifolia/",
+     "label": "Beginner-friendly",
+     "verdict": "1",
+     "why": "medium-high light, no CO2 needed; red colour from high light; iron, algae on leaves"
+    }
+   ],
+   "confidence": "medium",
+   "reason": "Plain R. rotundifolia is easy; deep red or H'ra forms are level 2 (high light + CO2). Only two pages opened (Petco 403)."
+  },
+  {
+   "id": "carpet",
+   "name": "Carpet plant (dwarf baby tears / Monte Carlo style)",
+   "kind": "plant",
+   "level": 3,
+   "sources": [
+    {
+     "site": "Scale & Stem",
+     "url": "https://scaleandstem.pages.dev/plants/aquarium/hc-cuba/",
+     "label": "Advanced",
+     "verdict": "3",
+     "why": "very high light (80+ PAR) plus pressurized CO2 plus rich substrate together; missing one gives recession and algae"
+    },
+    {
+     "site": "Aqua-Fish.net",
+     "url": "https://en.aqua-fish.net/plants/hemianthus-callitrichoides",
+     "label": "Medium",
+     "verdict": "2",
+     "why": "stable water, bright light, CO2 strongly recommended; leggy without; melt on planting"
+    },
+    {
+     "site": "Gensou",
+     "url": "https://gensou.sg/how-to-grow-dwarf-baby-tears-without-co2/",
+     "label": "Moderate and slow",
+     "verdict": "2",
+     "why": "possible without CO2 but 3-4 months, needs aquasoil, dry start, trimming; algae"
+    }
+   ],
+   "confidence": "medium",
+   "reason": "Labels split 3/2/2 but all reasons need strong light + CO2 + rich substrate for HC; Monte Carlo is easier (closer to 2). Flip Aquatics 429, Petco/2Hr Aquarist 403."
+  },
+  {
+   "id": "moss",
+   "name": "Java moss",
+   "kind": "plant",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Flowgrow",
+     "url": "https://www.flowgrow.de/db/aquaticplants/taxiphyllum-barbieri",
+     "label": "Very easy",
+     "verdict": "1",
+     "why": "low to high light, no CO2; any snippet regrows (nuisance)"
+    },
+    {
+     "site": "Aquasabi",
+     "url": "https://www.aquasabi.de/Taxiphyllum-barbieri-Java-moss",
+     "label": "Easy (table: very easy)",
+     "verdict": "1",
+     "why": "low light OK, no CO2; needs trimming; spindly in low light"
+    },
+    {
+     "site": "Aquatic Motiv",
+     "url": "https://aquaticmotiv.com/pages/java-moss-taxiphyllum-barbieri",
+     "label": "Very Easy",
+     "verdict": "1",
+     "why": "algae/detritus on moss if too much light or poor flow"
+    }
+   ],
+   "confidence": "high",
+   "reason": "Three sources agree; main chore is trimming and keeping debris/algae off."
+  },
+  {
+   "id": "hairgrass",
+   "name": "Dwarf hairgrass (Eleocharis)",
+   "kind": "plant",
+   "level": 2,
+   "sources": [
+    {
+     "site": "Aquatic Motiv",
+     "url": "https://aquaticmotiv.com/pages/dwarf-hairgrass-eleocharis-parvula",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "medium-high light, CO2 strongly recommended, heavy root feeder; algae if light without CO2"
+    },
+    {
+     "site": "Gensou",
+     "url": "https://gensou.sg/?p=19503",
+     "label": "Moderate",
+     "verdict": "2",
+     "why": "medium-high light, 20-30 ppm CO2 advised, slow (3-6 months) without; trimming; algae"
+    }
+   ],
+   "confidence": "high",
+   "reason": "Two sources agree and none disagree: carpets reliably only with strong light, CO2 and rich substrate; slow without."
+  },
+  {
+   "id": "frogbit",
+   "name": "Amazon frogbit (floating)",
+   "kind": "plant",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Flowgrow",
+     "url": "https://www.flowgrow.de/db/aquaticplants/limnobium-laevigatum",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "medium to high light, CO2 not needed; dense mats shade the tank"
+    },
+    {
+     "site": "Guidarium",
+     "url": "https://guidarium.com/plants/amazon-frogbit",
+     "label": "Beginner (FAQ: sits somewhere in the middle)",
+     "verdict": "1",
+     "why": "leaves rot with surface agitation/wet leaves; fast growth needs thinning; shades others"
+    }
+   ],
+   "confidence": "medium",
+   "reason": "Easy to grow; the real work is calm surface, thinning and keeping leaves dry; Guidarium hedges toward middle."
+  },
+  {
+   "id": "crypt",
+   "name": "Cryptocoryne (wendtii / parva)",
+   "kind": "plant",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Gensou (wendtii)",
+     "url": "https://gensou.sg/cryptocoryne-wendtii-care-guide/",
+     "label": "Very easy",
+     "verdict": "1",
+     "why": "low-medium light, CO2 optional; crypt melt after changes; root tabs in gravel"
+    },
+    {
+     "site": "Dustin's Fish Tanks",
+     "url": "https://dustinsfishtanks.com/blogs/dustins-blog/become-a-cryptkeeper",
+     "label": null,
+     "verdict": "1",
+     "why": "beginner-friendly but notorious for melt; recovers"
+    },
+    {
+     "site": "Buce Plant",
+     "url": "https://buceplant.com/blogs/news/cryptocoryne-melt",
+     "label": null,
+     "verdict": "1",
+     "why": "relatively easy but sensitive to change; emersed-grown leaves melt; consistency matters"
+    },
+    {
+     "site": "Gensou (parva)",
+     "url": "https://gensou.sg/?p=20680",
+     "label": "Easy to moderate",
+     "verdict": "2",
+     "why": "needs more light (40-100 PAR), very slow, active soil or root tabs"
+    }
+   ],
+   "confidence": "high",
+   "reason": "Wendtii clearly beginner; parva is slower and fussier (borderline 2). Main risk is melt after changes, which usually recovers."
+  },
+  {
+   "id": "stemred",
+   "name": "Red stem plant (Ludwigia / Alternanthera / Rotala red)",
+   "kind": "plant",
+   "level": 2,
+   "sources": [
+    {
+     "site": "Gensou (Ludwigia)",
+     "url": "https://gensou.sg/?p=19563",
+     "label": "Easy (repens, palustris); easy to moderate (Super Red, Rubin); moderate (arcuata)",
+     "verdict": "2",
+     "why": "red needs 40+ PAR light, regular iron dosing, moderate nitrate; CO2 for the redder cultivars"
+    },
+    {
+     "site": "Flowgrow (L. repens)",
+     "url": "https://www.flowgrow.de/db/aquaticplants/ludwigia-repens",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "no CO2 needed; red colour needs 0.5 W/L plus, low nitrate, good iron"
+    },
+    {
+     "site": "Aqua-Fish.net (Alternanthera reineckii)",
+     "url": "https://en.aqua-fish.net/plants/alternanthera-reineckii",
+     "label": "Medium",
+     "verdict": "2",
+     "why": "high light essential for colour and to stop lower leaf drop; CO2 beneficial; iron/potassium"
+    }
+   ],
+   "confidence": "medium",
+   "reason": "Staying alive is easy (1) but a good red look needs bright light, iron and nitrate tuning (2); plain green-red Ludwigia repens is easier, reineckii and Super Red harder."
+  },
+  {
+   "id": "pothos",
+   "name": "Pothos (riparium / hanging on the tank)",
+   "kind": "plant",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Guidarium",
+     "url": "https://guidarium.com/plants/pothos",
+     "label": "Beginner",
+     "verdict": "1",
+     "why": "low light, no CO2; leaves must stay out of water; trim fast growth; needs room"
+    },
+    {
+     "site": "Smart Aquarium Guide",
+     "url": "https://smartaquariumguide.com/?p=1893",
+     "label": null,
+     "verdict": "1",
+     "why": "easy to grow; keep leaves above water; toxic to pets; roots overgrow and can starve other plants; submerged growth poor"
+    }
+   ],
+   "confidence": "medium",
+   "reason": "Easy as long as only roots are wet and leaves stay dry; two sources, no disagreement but both hobby/retail sites."
+  }
+ ]
+}
