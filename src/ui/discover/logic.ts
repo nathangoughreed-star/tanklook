@@ -20,7 +20,7 @@ import type { Store } from '../../scene/store';
 
 export const TAB_LABEL: Record<Tab, string> = { tank: 'Tank', animals: 'Animals', plants: 'Plants', hardscape: 'Hardscape', substrate: 'Substrate' };
 /** The left-panel section each tab (and each verdict issue tab) opens. */
-export const SECTION_OF: Record<string, string> = { tank: 'tank', animals: 'fish', plants: 'plants', hardscape: 'hardscape', substrate: 'substrate', equipment: 'equipment', brief: 'brief', tech: 'equipment', water: 'fish', room: 'tank', quick: 'tank' };
+export const SECTION_OF: Record<string, string> = { tank: 'tank', animals: 'fish', plants: 'plants', hardscape: 'hardscape', substrate: 'substrate', equipment: 'equipment', brief: 'prefs', tech: 'equipment', water: 'fish', room: 'tank', quick: 'tank' };
 export const OBJECTIVES: { id: Objective; label: string; hint: string }[] = [
   { id: 'explore', label: 'Explore', hint: 'Show me different directions' },
   { id: 'complete', label: 'Complete my tank', hint: 'Only fill in what is missing; nothing existing is removed' },

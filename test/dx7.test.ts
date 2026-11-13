@@ -24,16 +24,16 @@ const html = read('index.html');
 describe('seven menus plus Report', () => {
   const secs = [...html.matchAll(/<details class="sec" data-sec="([^"]+)"><summary><h2[^>]*>([^<]+)<\/h2>/g)].map(m => [m[1], m[2]]);
   it('the side panel has exactly these menus, in this order', () => {
-    expect(secs.map(s => s[1])).toEqual(['Tank', 'Substrate', 'Hardscape', 'Plants', 'Animals', 'Constraints and preferences', 'Equipment', 'Report']);
-    expect(secs.map(s => s[0])).toEqual(['tank', 'substrate', 'hardscape', 'plants', 'fish', 'brief', 'equipment', 'report']);
-    expect(html.match(/<details class="sec"/g)!.length).toBe(8);
+    expect(secs.map(s => s[1])).toEqual(['Tank', 'Substrate', 'Hardscape', 'Plants', 'Animals', 'Preferences', 'Constraints', 'Equipment', 'Report']);
+    expect(secs.map(s => s[0])).toEqual(['tank', 'substrate', 'hardscape', 'plants', 'fish', 'prefs', 'limits', 'equipment', 'report']);
+    expect(html.match(/<details class="sec"/g)!.length).toBe(9);
   });
   const sec = (key: string) => { const a = html.indexOf(`data-sec="${key}"`), n = html.indexOf('<details class="sec"', a + 10), e = html.indexOf('id="quickHome"'); return html.slice(a, n > 0 && n < e ? n : e); };
   it('what used to be other menus lives in one of them (Room, Water, Tech, My equipment, the brief)', () => {
     expect(sec('tank')).toContain('id="placeRow"'); expect(sec('tank')).toContain('id="spKinds"'); expect(sec('tank')).toContain('id="wallOn"'); expect(sec('tank')).toContain('id="personOn"'); expect(sec('tank')).toContain('id="ceilH"');
     expect(sec('fish')).toContain('id="wLevel"'); expect(sec('fish')).toContain('id="cond"'); expect(sec('fish')).toContain('id="spSearch"');
     expect(sec('equipment')).toContain('id="equipHost"'); expect(sec('equipment')).toContain('id="techMenu"'); expect(sec('equipment')).toContain('id="lType"');
-    expect(sec('brief')).toContain('id="briefHost"'); expect(sec('brief')).toContain('id="limitsHost"'); expect(sec('brief')).toContain('id="cnNoNew"');
+    expect(sec('prefs')).toContain('id="briefHost"'); expect(sec('prefs')).toContain('id="prefsHost"'); expect(sec('prefs')).not.toContain('id="limitsHost"'); expect(sec('limits')).toContain('id="limitsHost"'); expect(sec('limits')).toContain('id="cnNoNew"'); expect(sec('limits')).not.toContain('id="prefsHost"');
   });
   it('viewer, compare and display controls are in the View popover; Quick setup rides in the Discover panel', () => {
     const pop = html.slice(html.indexOf('id="viewPop"'), html.indexOf('<canvas id="c"'));

@@ -69,7 +69,7 @@ export const GUIDE_STEPS: readonly CoachStep[] = [
     done: { changes: gearOf }, skippable: true,
   },
   {
-    id: 'limits', known: answered.limits, target: { section: 'brief', control: '#limitsHost' }, title: 'Your limits',
+    id: 'limits', known: answered.limits, target: { section: 'limits', control: '#limitsHost' }, title: 'Your limits',
     why: 'Money, time, space and experience are all optional. A plan that goes over one shows a warning with a fix; it never stops you.',
     done: { changes: c => [limitItems(c), careOf(c)] }, skippable: true,
   },
@@ -79,7 +79,7 @@ export const GUIDE_STEPS: readonly CoachStep[] = [
     done: { changes: c => c.tank.fish.map(f => f.species) }, skippable: true,
   },
   {
-    id: 'review', target: { section: 'brief' }, title: 'Check the whole plan',
+    id: 'review', target: { section: 'prefs' }, title: 'Check the whole plan',
     why: 'The setup brief and the cost panel show what this tank costs and where it goes over a limit. Change any setting from its own section at any time.',
     skippable: false,
   },
