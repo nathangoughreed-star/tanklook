@@ -104,14 +104,7 @@ const lin = (a: number) => (a <= 0.04045 ? a / 12.92 : ((a + 0.055) / 1.055) ** 
  */
 export function contactObjects(S: TankSetup, T: Tank, items: { it: Item; m: THREE.Mesh }[], ground: GroundAt, skin?: GroundSkin, surface?: GroundAt): THREE.Object3D[] {
   if (!FX.contact && !FX.ground && !FX.embed && !FX.mix) return [];
-  const gsig = (FX.embed ? 'e' : '') + JSON.stringify([T, S.terrain, roughOf(S.substrate), S.substrate.show, S.layout.seed]), groundY = (x: number, d: number) => ground(x, d)[1];
-  const list: Blob[] = [];
-  for (const { it, m } of items) {
-    const k = JSON.stringify(it) + gsig;
-    let b = blobs.get(k);
-    if (b === undefined) { b = blobOf(it, m, groundY); blobs.set(k, b); if (blobs.size > 600) blobs.delete(blobs.keys().next().value!); }
-    if (b) list.push(b);
-  }
+  const list = blobList(S, T, items, ground);
   const out: THREE.Object3D[] = [];
   // VF-C2: the berm stands up to 9 mm above the ground, so the blob (drawn on the ground) was hidden under it and the berm stayed
   // lighter than the shaded sand round it (a pale cloud round every rock, Nathan 2026-11-12): over a painted berm the blob follows its surface
@@ -122,6 +115,40 @@ export function contactObjects(S: TankSetup, T: Tank, items: { it: Item; m: THRE
   if (FX.mix) out.push(...coarseFeet(S, T, list.filter(b => b.grains && b.fx), ground));
   if (FX.embed && skin) out.push(...bermObjects(S, T, list.filter(b => b.grains && b.berm), drape, skin));
   return out;
+}
+
+/** The blobs of the built items (cached per item, so a drag recomputes only the moved piece). */
+function blobList(S: TankSetup, T: Tank, items: { it: Item; m: THREE.Mesh }[], ground: GroundAt): Blob[] {
+  const gsig = (FX.embed ? 'e' : '') + JSON.stringify([T, S.terrain, roughOf(S.substrate), S.substrate.show, S.layout.seed]), groundY = (x: number, d: number) => ground(x, d)[1];
+  const list: Blob[] = [];
+  for (const { it, m } of items) {
+    const k = JSON.stringify(it) + gsig;
+    let b = blobs.get(k);
+    if (b === undefined) { b = blobOf(it, m, groundY); blobs.set(k, b); if (blobs.size > 600) blobs.delete(blobs.keys().next().value!); }
+    if (b) list.push(b);
+  }
+  return list;
+}
+
+/**
+ * BD2: how far the berm round the hardscape lifts the surface above the smooth ground at (x, depth), mm (0 away from every piece
+ * or with fx embed off). Animals, snails and leaf patches resting on the floor add this to the ground height, or they lay inside
+ * the mound (Nathan 2026-11-13). Built once per build from the pieces' own blobs: a lookup is a handful of distance tests.
+ * Matches what is drawn: the full berm on a painted bed, 0.8 of it where only spilled grains make the berm (3D gravel).
+ */
+export function bermRise(S: TankSetup, T: Tank, items: { it: Item; m: THREE.Mesh }[], ground: GroundAt, skin?: GroundSkin): (x: number, d: number) => number {
+  if (!FX.embed || !skin || !S.substrate.show) return () => 0;
+  const list = blobList(S, T, items, ground).filter(b => b.grains && b.berm);
+  if (!list.length) return () => 0;
+  const scale = skin.color === 0xffffff ? 1 : 0.8, reach = list.map(b => BERM_OUT * 1.2 * Math.max(b.fx!, b.fd!));
+  return (x, d) => {
+    let h = 0;
+    for (let i = 0; i < list.length; i++) {
+      const b = list[i]; if (Math.abs(x - b.x) > reach[i] || Math.abs(d - b.d) > reach[i]) continue;
+      const l = bermAt(b, x, d); if (l.rho < BERM_OUT) h = Math.max(h, l.h * scale);
+    }
+    return h;
+  };
 }
 
 /**

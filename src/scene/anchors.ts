@@ -32,6 +32,8 @@ export interface Anchor {
  *  and the map from that frame into tank axes. */
 export interface Hit { y: number; n: V3; item: number; local: V3; toTank(v: V3): V3 }
 export interface AnchorProbe {
+  /** BD2: how far the embed berm round the hardscape lifts the floor above the smooth ground at (x, depth), mm (see render/contact.ts bermRise). */
+  rise?(x: number, depth: number): number;
   /** The top of the solid pieces (no corals) under (x, depth), or null. */
   down?(x: number, depth: number): Hit | null;
   /** Where a body of length w at glass point `at` (outward normal `out`, heading `head`) lies on the 3D wall: the point
@@ -100,7 +102,7 @@ export function limbPaths(it: Item, toTank: (v: V3) => V3): { pts: V3[]; r0: num
  */
 export function anchors(S: TankSetup, T: Tank = S.tank, probe: AnchorProbe = {}) {
   const items = new Map(S.items.map(it => [it.id, it]));
-  const floor = (x: number, depth: number): Anchor => ({ kind: 'floor', p: [x, groundHeight(S, T, x, depth), depth], n: [0, 1, 0] });
+  const floor = (x: number, depth: number): Anchor => ({ kind: 'floor', p: [x, groundHeight(S, T, x, depth) + (probe.rise?.(x, depth) ?? 0), depth], n: [0, 1, 0] });
   /** What an animal at (x, depth) rests on: with `hard`, the top of the solid piece under it where that is above the
    *  ground (rock, wood and caves; never coral), else the ground; with `leaves` (the least a leaf's normal may point up, see leafUp; 0 = not on leaves) too, a plant leaf above both. */
   const rest = (x: number, depth: number, hard = true, leaves = 0): Anchor => {
