@@ -45,7 +45,7 @@ export const LIBRARY: Record<string, Variant> = {
   halflog: { kind: 'cave', label: 'Half-log hide', hint: 'Half a hollow log, bark outside, open at both ends: a hide for frogs, geckos and other small animals.', size: 200, min: 60, max: 500 },
   dish: { kind: 'cave', label: 'Water dish (ceramic)', hint: 'A shallow glazed bowl holding clear water: a drinking and soaking dish for reptiles, amphibians and small mammals. Size = width.', size: 120, min: 40, max: 400 },
   stonedish: { kind: 'cave', label: 'Water dish (stone)', hint: 'A shallow bowl of grey stone holding clear water: a drinking dish or a feeding bowl. Size = width.', size: 120, min: 40, max: 400 },
-  shipwreck: { kind: 'ornament', label: 'Sunken sailing ship', hint: 'A three-masted wooden ship settled on the bottom, canvas in tatters. Size = length.', size: 320, min: 120, max: 900 },
+  shipwreck: { kind: 'ornament', label: 'Sunken sailing ship', hint: 'A three-masted wooden ship settled on the bottom, canvas in tatters. Size = hull length: typical products are 6 in (small), 10 in (medium) and 15 in (large).', size: 254, min: 100, max: 900 },
   treasurechest: { kind: 'ornament', label: 'Treasure chest', hint: 'An oak sea chest with iron bands, lid open on a heap of gold coins. Size = width.', size: 110, min: 50, max: 300 },
   fern: { kind: 'plant', label: 'Java fern', hint: 'Grows on wood and rock.', size: 150, min: 30, max: 450 },
   anubias: { kind: 'plant', label: 'Anubias', hint: 'Grows on wood and rock.', size: 90, min: 25, max: 300 },

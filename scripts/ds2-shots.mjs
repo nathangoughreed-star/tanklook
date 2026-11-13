@@ -22,8 +22,8 @@ const setup = (chestFront) => ev(`(async () => {
     t.items = t.items.filter(i => i.kind === 'plant' && i.variant !== 'carpet' && (i.depth < 110 || i.x < 90 || i.x > T0.L - 90));
     const mk = (v, id, x, d, o) => I.makeItem(T0, v, id, 7, x, d, o, t);
     const cx = T0.L / 2;
-    if (${chestFront}) { t.items.push(mk('shipwreck', 901, cx - T0.L * 0.22, T0.D * 0.38, { size: 420, yaw: 18 }), mk('treasurechest', 902, cx + T0.L * 0.05, T0.D * 0.7, { size: 150, yaw: -12 })); }
-    else { t.items.push(mk('shipwreck', 901, cx, T0.D * 0.42, { size: 420, yaw: 18 }), mk('treasurechest', 902, cx + T0.L * 0.3, T0.D * 0.72, { size: 140, yaw: -14 })); }
+    if (${chestFront}) { t.items.push(mk('shipwreck', 901, cx - T0.L * 0.06, T0.D * 0.45, { size: 254, yaw: 18 }), mk('treasurechest', 902, cx + T0.L * 0.12, T0.D * 0.62, { size: 100, yaw: -12 })); }
+    else { t.items.push(mk('shipwreck', 901, cx - T0.L * 0.28, T0.D * 0.4, { size: 254, yaw: 18 }), mk('treasurechest', 902, cx, T0.D * 0.62, { size: 100, yaw: -14 })); }
   });
   return store.scene.tanks[0].items.map(i => i.variant).join(',') + ' ' + store.scene.tanks[0].tank.L + 'x' + store.scene.tanks[0].tank.D;
 })()`);
@@ -34,8 +34,8 @@ try {
   await sleep(2500);
   await ev(`document.querySelectorAll('dialog[open]').forEach(d => d.close())`);
   console.log(await setup(true)); await sleep(5000);
-  for (const [n, az, el, z] of [['ship-front', 0, 6, 1], ['ship-34', 38, 16, 1], ['ship-close', 22, 10, 2.3]]) { await cam(az, el, z); await sleep(2500); await shot(n); }
+  for (const [n, az, el, z] of [['ship-front', 0, 6, 1], ['ship-34', 38, 16, 1], ['ship-close', 22, 10, 3.2]]) { await cam(az, el, z); await sleep(2500); await shot(n); }
   console.log(await setup(false)); await sleep(5000);
-  for (const [n, az, el, z] of [['chest-front', 0, 6, 1], ['chest-34', -32, 18, 1.6], ['chest-close', -10, 12, 3.2]]) { await cam(az, el, z); await sleep(2500); await shot(n); }
+  for (const [n, az, el, z] of [['chest-front', 0, 6, 1], ['chest-34', -32, 18, 1.5], ['chest-close', -10, 12, 4.2]]) { await cam(az, el, z); await sleep(2500); await shot(n); }
 } catch (e) { console.log('ERR', e.message); }
 ws.close(); ch.kill();
