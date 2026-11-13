@@ -942,7 +942,7 @@ Nathan: every tank defaults to 50 % roughness. `ROUGH_DEFAULT = 50` and `roughOf
 - Shots (planted4 ground, fx all, clock 7.3 / 8.3 / 9.3 s = old speed 1 s apart, then new speed 1 s apart) in `research/screens/VF8/`.
 
 ## DS2: pirate-tank slice (2026-11-13, Nathan R21)
-- New item kind `ornament` ("Decor"): `shipwreck` (default 10 in, hint offers 6 / 10 / 15) and `treasurechest`; procedural three.js in `src/render/ornament3d.ts`. Size, yaw, pitch, roll, raise as every piece; new Left / right and Back / front sliders (decor only).
+- New item kind `ornament` ("Decor"): `shipwreck` (default 10 in, hint offers 6 / 10 / 15) and `treasurechest`; procedural three.js in `src/render/ornament3d.ts`. Size, yaw, pitch, roll, raise as every piece; new Left / right and Front / back sliders (decor only).
 - `themed-scene` is now `partial` (look `planted`, `Tweak` in `scene/recipes.ts`: natural gravel, `ornaments` per level: ship; + chest at balanced / full). Ornaments pick the spot with the least hardscape under them; ground plants under them are dropped. Printed background still missing (dep kept).
 - Prices: `hard:shipwreck` $15 / 36 / 70 (Penn-Plax medium ship, Chewy), `hard:treasurechest` $8 / 16 / 28 (Chewy). Shopping sheet and finish lines have a Decor section.
 - Feedback: ONE attribute `decor` (Like / Dislike, A/B rows), separate from `hardscape` (which now excludes ornaments); its A/B row is hidden when neither design has decor. ATTRS grew to 11 (ab7 test updated); buildable archetypes 45 -> 46 (rosters test).

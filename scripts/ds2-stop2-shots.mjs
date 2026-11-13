@@ -10,7 +10,7 @@ const ws = new WebSocket(tabs.find(t => t.type === 'page').webSocketDebuggerUrl)
 let id = 0; const pend = new Map(); ws.onmessage = m => { const d = JSON.parse(m.data); if (d.id && pend.has(d.id)) { pend.get(d.id)(d); pend.delete(d.id); } };
 const send = (method, params = {}) => new Promise(r => { const i = ++id; pend.set(i, r); ws.send(JSON.stringify({ id: i, method, params })); });
 const ev = async expr => { const r = await send('Runtime.evaluate', { expression: expr, awaitPromise: true, returnByValue: true }); if (r.result.exceptionDetails) throw new Error(JSON.stringify(r.result.exceptionDetails).slice(0, 600)); return r.result.result.value; };
-const shot = async name => { const r = await send('Page.captureScreenshot', { format: 'png' }); writeFileSync(`research/screens/DS2/stop2-raw-${name}.png`, Buffer.from(r.result.data, 'base64')); console.log('saved', name); };
+const shot = async name => { const r = await send('Page.captureScreenshot', { format: 'png' }); writeFileSync(`research/screens/DS2/stop2b-raw-${name}.png`, Buffer.from(r.result.data, 'base64')); console.log('saved', name); };
 const setup = () => ev(`(async () => {
   const R = await import('/src/scene/recipes.ts'), A = await import('/src/scene/archetypes.ts'), T = await import('/src/data/tanks.ts'), B = await import('/src/scene/brief.ts');
   const a = A.archetype('themed-scene'), m = T.TANK_MODELS.find(x => x.name === '40 gal breeder' && !x.terrarium);
@@ -26,6 +26,7 @@ try {
   await sleep(2500);
   await ev(`document.querySelectorAll('dialog[open]').forEach(d => d.close())`);
   console.log(await setup()); await sleep(6000);
-  for (const [n, az, el, z] of [['front', 0, 6, 1], ['34', 36, 16, 1], ['close', 18, 10, 2.4]]) { await cam(az, el, z); await sleep(2500); await shot(n); }
+  console.log(await ev(`(async()=>{const I=await import('/src/scene/items.ts');const S=window.__gb.store.scene.tanks[0];const o=S.items.find(i=>i.variant==='treasurechest');return JSON.stringify({o:[o.x|0,o.depth|0,I.itemDims(o).map(Math.round)],front:S.items.filter(i=>i.kind!=='ornament'&&i.depth>o.depth&&Math.abs(i.x-o.x)<250).map(i=>[i.kind,i.variant,i.x|0,i.depth|0,i.lift|0,Math.round(I.itemDims(i)[1])])})})()`));
+  for (const [n, az, el, z] of [['front', 0, 6, 1], ['34', 36, 16, 1]]) { await cam(az, el, z); await sleep(2500); await shot(n); }
 } catch (e) { console.log('ERR', e.message); }
 ws.close(); ch.kill();
