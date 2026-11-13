@@ -171,7 +171,6 @@ export function attachPanels(store: Store, viewer: Viewer) {
   const syncRoom = () => { const l = S().light; vRoom.value = String(roomOf(l)); vRoomAuto.hidden = !!l.roomAuto; };
   store.subscribe(syncRoom); syncRoom();
   for (const id of ['redo']) $(id).onclick = () => store.redo();
-  $('hm3Discover').onclick = () => openDiscovery({});   // HM3: the viewer's Discover pill is gone; this and the per-section buttons open the card
   // New and Open… are two separate menus of the start chooser (below): New = scratch + deals, Open… = starter + saved tanks
   $('newScene').onclick = () => { welcomeFirst = false; startMode.open(stepForMenu('new')); }; // SL1: the one start screen, at its New Setup step (closable: a project is open)
   // HM1: Open… asks first: a saved tank (the Open Existing tab) or a starter tank (the Starter / Example tab)
@@ -2457,7 +2456,7 @@ Cancel, then change the name, to keep both.`)) return;
         const el = $<HTMLDivElement>(id), vp = pr ? active.find(v => v.i === i) : active[i];
         // only while comparing (Nathan 2026-10-14): one tank's size, stocking and Split all live in the panel already
         el.style.display = vp && split ? '' : 'none';
-        if (!vp || !split) { el.innerHTML = ''; continue; }
+        if (!vp || !split) { el.innerHTML = ''; el.classList.remove('tab', 'on'); continue; }   // HM3: a stale .tab kept the cost pill low (#view:has(.lab.tab)) after a split ended
         // top-right corner of each view (Nathan 2026-10-08); the top-left holds the panel toggle and Undo / Redo
         // (on a phone in split view they reach past the middle into view B too: final check item 2)
         const vt = document.querySelector<HTMLElement>('.viewtools')!, tools = Math.max(0, vt.offsetLeft + vt.offsetWidth + 8 - vp.x);
