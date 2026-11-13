@@ -1477,6 +1477,7 @@ export function uploadPlant(r: THREE.WebGLRenderer, src: THREE.BufferGeometry, s
 // in tidy whorls, glossy (the renderer's artificial material adds a highlight). Base at y = 0; height = size (a mat:
 // width = size).
 
+const mixHex = (a: number, b: number, t: number) => new THREE.Color(a).lerp(new THREE.Color(b), t).getHex();
 /** One artificial plant's palette: leaf, its midrib, its tip, and the stem. */
 interface FakeTone { leaf: number; rib: number; tip: number; stem: number }
 const FAKE_TONES: Record<'silk' | 'plastic', FakeTone[]> = {
@@ -1490,6 +1491,14 @@ const FAKE_TONES: Record<'silk' | 'plastic', FakeTone[]> = {
     { leaf: 0x4aa82e, rib: 0x8ad04a, tip: 0x7cc43a, stem: 0x3a8a2a },
     { leaf: 0xb02a2a, rib: 0xd8584a, tip: 0xc8403a, stem: 0x7a2420 },
   ],
+};
+/** Dyed artificial plants (lane DS3): the colours as sold; plastic is a little more saturated than silk (applied in artificialGeometry). */
+const TINT_TONES: Record<string, FakeTone> = {
+  pink: { leaf: 0xd23c86, rib: 0xf2a6c6, tip: 0xe8639f, stem: 0x8a2a58 },
+  purple: { leaf: 0x7a38a8, rib: 0xb890da, tip: 0x9650c8, stem: 0x4a2468 },
+  red: { leaf: 0xc42a30, rib: 0xe87a68, tip: 0xd8403c, stem: 0x7a2420 },
+  blue: { leaf: 0x2a6cc8, rib: 0x86b4ea, tip: 0x4a8ae0, stem: 0x1e4a8a },
+  orange: { leaf: 0xe0771c, rib: 0xf6b46a, tip: 0xf08a30, stem: 0x9a4a14 },
 };
 const MOSS_TONES: Record<'silk' | 'plastic', FakeTone> = {
   silk: { leaf: 0x3d6a2c, rib: 0x5f8a3e, tip: 0x6a9a44, stem: 0x2a3a20 },
@@ -1590,10 +1599,12 @@ function fakeBase(r: number, h: number) {
  * An artificial plant (lane P4): `mat` silk or plastic, `form` stem (upright stems of leaf pairs or whorls), rosette
  * (sword leaves from one crown) or mat (a moss mat). Height = size; a mat: width = size. Built from the seed only.
  */
-export function artificialGeometry(mat: 'silk' | 'plastic', form: 'stem' | 'rosette' | 'mat', seed: number, size: number) {
+export function artificialGeometry(mat: 'silk' | 'plastic', form: 'stem' | 'rosette' | 'mat', seed: number, size: number, tint?: string) {
   const r = rng(seed * 7919 + 13), b = new FakeSheets(), parts: THREE.BufferGeometry[] = [];
   const silk = mat === 'silk', pick = r();
-  const tone = form === 'mat' ? MOSS_TONES[mat] : FAKE_TONES[mat][pick < 0.6 ? 0 : pick < 0.8 ? 1 : 2];
+  const dye = tint ? TINT_TONES[tint] : undefined;
+  const tone = dye ? (mat === 'silk' ? { leaf: mixHex(dye.leaf, 0x707070, 0.12), rib: dye.rib, tip: mixHex(dye.tip, 0x707070, 0.1), stem: dye.stem } : dye)
+    : form === 'mat' ? MOSS_TONES[mat] : FAKE_TONES[mat][pick < 0.6 ? 0 : pick < 0.8 ? 1 : 2];
   const H = 100; // built about 100 tall (a mat: 100 wide), scaled to size at the end
   const leafBase = { thick: silk ? 0.25 : 0.9, tone, back: silk ? 0.2 : 0.05, dark: 0.55 };
   if (form === 'stem') {

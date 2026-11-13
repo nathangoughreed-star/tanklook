@@ -833,6 +833,41 @@
    "unit": "one resin pirate or sunken ship ornament, medium, about 10 in; $14.99-$69.99",
    "url": "https://www.chewy.com/penn-plax-pirate-treasure-ship-bow/dp/881446"
   },
+  "hard:castle": {
+   "lo": 12,
+   "mode": 30,
+   "hi": 60,
+   "unit": "one resin castle ornament, medium, about 10 in; $11.99-$59.99 (lane DS3 stop 1: range judged from Chewy / Petco listings, product pinned at stop 2)",
+   "url": "https://www.chewy.com/s?query=aquarium+castle+ornament"
+  },
+  "hard:silkstempink": {
+   "lo": 6,
+   "mode": 10,
+   "hi": 14,
+   "unit": "one 8 in pink silk stem plant on a weighted base (lane DS3; priced as the green silk stem, lo/hi judged)",
+   "url": "https://www.liveaquaria.com/products/marina-naturals-green-indigo-waffle-leaf-silk-plant"
+  },
+  "hard:silkstemred": {
+   "lo": 6,
+   "mode": 10,
+   "hi": 14,
+   "unit": "one 8 in red silk stem plant on a weighted base (lane DS3; priced as the green silk stem, lo/hi judged)",
+   "url": "https://www.liveaquaria.com/products/marina-naturals-green-indigo-waffle-leaf-silk-plant"
+  },
+  "hard:plasticswordpurple": {
+   "lo": 5,
+   "mode": 9,
+   "hi": 12,
+   "unit": "one 8 in purple plastic sword plant on a weighted base (lane DS3; priced as the green plastic plant, lo/hi judged)",
+   "url": "https://www.petsmart.com/fish/decor-gravel-and-substrate/artificial-plants/top-fin-artificial-multi-landscape-aquarium-plant---8-5255351.html"
+  },
+  "hard:plasticstemblue": {
+   "lo": 5,
+   "mode": 9,
+   "hi": 12,
+   "unit": "one 8 in blue plastic plant on a weighted base (lane DS3; priced as the green plastic plant, lo/hi judged)",
+   "url": "https://www.petsmart.com/fish/decor-gravel-and-substrate/artificial-plants/top-fin-artificial-multi-landscape-aquarium-plant---8-5255351.html"
+  },
   "hard:treasurechest": {
    "lo": 8,
    "mode": 16,

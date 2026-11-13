@@ -49,6 +49,8 @@ class Parts {
   add(g: THREE.BufferGeometry, kind: number, col: (p: THREE.Vector3, i: number) => THREE.Color) {
     paint(g, col); grit(g, kind, this.seed); this.list.push(clean(g, false));
   }
+  /** A geometry that already carries its own colours and normals (non-indexed). */
+  addRaw(g: THREE.BufferGeometry, kind: number) { grit(g, kind, this.seed); this.list.push(clean(g, false)); }
   merged() { return mergeGeometries(this.list)!; }
 }
 
@@ -251,6 +253,192 @@ function chestShape(seed: number, size: number) {
   return g;
 }
 
+// ---------- The resin castle (lane DS3, 2026-11-13) ----------
+// A moulded aquarium resin castle: sandstone-coloured block walls with a gate arch fish swim through, four corner towers (two with
+// terracotta cone roofs, two battlemented), a keep with arched windows and a plank door, and a slate-roofed turret. The stone is
+// built as separate flat-coloured block and mortar cells (crisp courses, a staggered bond), lightly weathered green at the foot.
+// Width = size; the front (gate) faces +z.
+class Faces {
+  pos: number[] = []; nor: number[] = []; col: number[] = [];
+  /** One quad p00 p10 p11 p01, wound so it faces away from `inside`; `n` = optional smooth normals (already outward). */
+  quad(p: THREE.Vector3[], inside: THREE.Vector3, c: THREE.Color, n?: THREE.Vector3[]) {
+    const fn = new THREE.Vector3().crossVectors(p[1].clone().sub(p[0]), p[3].clone().sub(p[0])).normalize();
+    const ctr = p[0].clone().add(p[1]).add(p[2]).add(p[3]).multiplyScalar(0.25);
+    const flip = fn.dot(ctr.sub(inside)) < 0;
+    if (flip) fn.negate();
+    const order = flip ? [0, 2, 1, 0, 3, 2] : [0, 1, 2, 0, 2, 3];
+    for (const k of order) { this.pos.push(p[k].x, p[k].y, p[k].z); const q = n ? n[k] : fn; this.nor.push(q.x, q.y, q.z); this.col.push(c.r, c.g, c.b); }
+  }
+  geo() {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(this.pos, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(this.nor, 3)); g.setAttribute('color', new THREE.Float32BufferAttribute(this.col, 3));
+    return g;
+  }
+}
+interface BrickFace {
+  S: number; T: number; f: (s: number, t: number) => THREE.Vector3; nrm?: (s: number, t: number) => THREE.Vector3; inside: THREE.Vector3;
+  bw: number; ch: number; mw: number; mh: number; step: number; tone: (row: number, k: number, p: THREE.Vector3) => THREE.Color; mortar: THREE.Color;
+  hole?: (p: THREE.Vector3) => boolean; stag?: number;
+}
+/** A face of staggered blocks: every course a mortar strip then blocks, each block (and the mortar beside it) its own flat cell. */
+function brick(F: Faces, o: BrickFace) {
+  const piece = (s0: number, s1: number, t0: number, t1: number, c: THREE.Color) => {
+    if (s1 - s0 < 1e-6 || t1 - t0 < 1e-6) return;
+    const nu = Math.max(1, Math.ceil((s1 - s0) / o.step - 1e-6)), nv = Math.max(1, Math.ceil((t1 - t0) / o.step - 1e-6));
+    for (let i = 0; i < nu; i++) for (let j = 0; j < nv; j++) {
+      const a = s0 + (s1 - s0) * i / nu, b = s0 + (s1 - s0) * (i + 1) / nu, d = t0 + (t1 - t0) * j / nv, e = t0 + (t1 - t0) * (j + 1) / nv;
+      if (o.hole?.(o.f((a + b) / 2, (d + e) / 2))) continue;
+      const P = [[a, d], [b, d], [b, e], [a, e]];
+      F.quad(P.map(([s, t]) => o.f(s, t)), o.inside, c, o.nrm ? P.map(([s, t]) => o.nrm!(s, t)) : undefined);
+    }
+  };
+  const rows = Math.ceil(o.T / o.ch - 1e-6);
+  for (let r = 0; r < rows; r++) {
+    const t0 = r * o.ch, t1 = Math.min(o.T, (r + 1) * o.ch), off = (r % 2 ? o.bw / 2 : 0) + (o.stag ?? 0);
+    piece(0, o.S, t0, Math.min(t1, t0 + o.mh), o.mortar);
+    for (let k = 0; ; k++) {
+      const a0 = k * o.bw - off; if (a0 >= o.S) break;
+      const a = Math.max(0, a0), b = Math.min(o.S, a0 + o.bw), bodyA = Math.max(a, a0 + o.mw), tb = t0 + o.mh;
+      if (a0 >= 0) piece(a, Math.min(b, a0 + o.mw), tb, t1, o.mortar);
+      if (bodyA < b) piece(bodyA, b, tb, t1, o.tone(r, k, o.f((bodyA + b) / 2, (tb + t1) / 2)));
+    }
+  }
+}
+
+function castleShape(seed: number, size: number) {
+  const W = size, r = rng(seed * 19 + 7), nz = waves(r, 6), nz2 = waves(r, 5), P = new Parts(seed), F = new Faces();
+  const q = (p: THREE.Vector3, k: number) => p.clone().multiplyScalar(k * 254 / W);
+  const hs = (a: number, b: number) => { const v = Math.sin(a * 127.1 + b * 311.7 + seed * 17.3) * 43758.5453; return v - Math.floor(v); };
+  const STONE = 7; // fine fired-clay grain: moulded, painted resin rather than natural rock
+  const mortarC = C('#8b8068');
+  // stone: sandstone blocks of slightly different tones, dirt streaks, a green weathering at the foot
+  const stone = (row: number, k: number, p: THREE.Vector3) => {
+    const c = mix('#b5a88d', '#d3c8ac', hs(row, k));
+    c.multiplyScalar(0.95 + 0.09 * nz(q(p, 0.05)));
+    c.lerp(C('#68794e'), 0.5 * sm(0.13 * W, 0, p.y) * (0.45 + 0.55 * nz2(q(p, 0.035))));
+    c.lerp(C('#6b6a55'), 0.12 * sm(0.5, 1, nz(q(new THREE.Vector3(p.x, p.y * 0.2, p.z), 0.09)) * 0.5 + 0.5));
+    return c;
+  };
+  const plain = (a: THREE.Vector3, b: THREE.Vector3, c2: THREE.Vector3, d: THREE.Vector3, inside: THREE.Vector3, col: THREE.Color) => F.quad([a, b, c2, d], inside, col);
+  const V3 = (x: number, y: number, z: number) => new THREE.Vector3(x * W, y * W, z * W);
+  const bd = { bw: 0.075 * W, ch: 0.036 * W, mw: 0.005 * W, mh: 0.005 * W, step: 0.019 * W, tone: stone, mortar: mortarC };
+  const wt = 0.07, wh = 0.34, gx = 0.4, gz = 0.24;
+  // wall faces: planes normal to z (front / back) or x (the sides)
+  const alongX = (x0: number, x1: number, y0: number, y1: number, zf: number, inside: THREE.Vector3, hole?: (p: THREE.Vector3) => boolean, stag = 0) =>
+    brick(F, { ...bd, S: (x1 - x0) * W, T: (y1 - y0) * W, f: (s, t) => new THREE.Vector3(x0 * W + s, y0 * W + t, zf * W), inside, hole, stag });
+  const alongZ = (z0: number, z1: number, y0: number, y1: number, xf: number, inside: THREE.Vector3, stag = 0) =>
+    brick(F, { ...bd, S: (z1 - z0) * W, T: (y1 - y0) * W, f: (s, t) => new THREE.Vector3(xf * W, y0 * W + t, z0 * W + s), inside, stag });
+  // the gate: a round arch over a straight-sided opening, cut through the front wall
+  const gw = 0.1, gs = 0.15, e = 0.007 * W; // half width, springline
+  const inGate = (p: THREE.Vector3) => Math.abs(p.x) < gw * W + e && p.y < gs * W || (p.x * p.x + (p.y - gs * W) ** 2) < (gw * W + e) ** 2;
+  const cF = V3(0, wh / 2, gz), cB = V3(0, wh / 2, -gz);
+  alongX(-gx + 0.05, gx - 0.05, 0, wh, gz + wt / 2, cF, inGate); alongX(-gx + 0.05, gx - 0.05, 0, wh, gz - wt / 2, cF, inGate, 0.02 * W);
+  alongX(-gx + 0.05, gx - 0.05, 0, wh, -gz - wt / 2, cB); alongX(-gx + 0.05, gx - 0.05, 0, wh, -gz + wt / 2, cB, undefined, 0.02 * W);
+  for (const sx of [-1, 1]) {
+    const c = V3(sx * gx, wh / 2, 0);
+    alongZ(-gz + 0.05, gz - 0.05, 0, wh, sx * (gx + wt / 2), c); alongZ(-gz + 0.05, gz - 0.05, 0, wh, sx * (gx - wt / 2), c, 0.02 * W);
+  }
+  // the wall tops
+  const topC = mix('#a89c82', '#bcb097', 0.5), ins = V3(0, 0, 0);
+  for (const sz of [-1, 1]) plain(V3(-gx, wh, sz * gz - wt / 2), V3(gx, wh, sz * gz - wt / 2), V3(gx, wh, sz * gz + wt / 2), V3(-gx, wh, sz * gz + wt / 2), ins, topC);
+  for (const sx of [-1, 1]) plain(V3(sx * gx - wt / 2, wh, -gz), V3(sx * gx + wt / 2, wh, -gz), V3(sx * gx + wt / 2, wh, gz), V3(sx * gx - wt / 2, wh, gz), ins, topC);
+  // the gate tunnel: the two jambs
+  for (const sx of [-1, 1]) plain(V3(sx * gw, 0, gz - wt / 2), V3(sx * gw, 0, gz + wt / 2), V3(sx * gw, gs, gz + wt / 2), V3(sx * gw, gs, gz - wt / 2), V3(0, 0.05, gz), mix('#a99d84', '#b9ad92', 0.4));
+  // the arch ring: wedge stones standing proud of both wall faces by a hair, alternately lighter and darker, a keystone on top
+  const NW = 13, rin = gw, rout = gw + 0.042, depth = wt + 0.008;
+  for (let i = 0; i < NW; i++) {
+    const a0 = Math.PI * i / NW, a1 = Math.PI * (i + 1) / NW, sh = new THREE.Shape();
+    sh.moveTo(rin * W * Math.cos(a0), rin * W * Math.sin(a0)); sh.lineTo(rout * W * Math.cos(a0), rout * W * Math.sin(a0));
+    sh.lineTo(rout * W * Math.cos(a1), rout * W * Math.sin(a1)); sh.lineTo(rin * W * Math.cos(a1), rin * W * Math.sin(a1)); sh.closePath();
+    const g = new THREE.ExtrudeGeometry(sh, { depth: depth * W, bevelEnabled: false, steps: 1 }).translate(0, gs * W, (gz - depth / 2) * W);
+    const key = i === (NW - 1) / 2, c0 = mix('#c2b69a', '#d6cbb0', key ? 1 : (i % 2 ? 0.2 : 0.55) + 0.2 * hs(i, 3));
+    P.add(g, STONE, p => c0.clone().multiplyScalar(0.97 + 0.06 * nz(q(p, 0.07))).lerp(C('#68794e'), 0.3 * sm(0.14 * W, 0.04 * W, p.y)));
+  }
+  // battlements: merlon blocks along the wall tops
+  const merlon = (x: number, y: number, z: number, w: number, d: number, h: number, yaw = 0) => {
+    const g = new THREE.BoxGeometry(w * W, h * W, d * W).rotateY(yaw).translate(x * W, (y + h / 2) * W, z * W);
+    const c = mix('#bdb094', '#d6cbb0', hs(Math.round(x * 90), Math.round(z * 90)));
+    P.add(g, STONE, p => c.clone().multiplyScalar(0.96 + 0.08 * nz(q(p, 0.06))).multiplyScalar(p.y > (y + h) * W - 0.001 * W ? 1.06 : 1));
+  };
+  const pitch = 0.085;
+  for (const sz of [-1, 1]) for (let x = -gx + 0.15 + pitch / 2; x < gx - 0.15; x += pitch) merlon(x, wh, sz * gz, 0.052, 0.062, 0.05);
+  for (const sx of [-1, 1]) for (let z = -gz + 0.14 + pitch / 2; z < gz - 0.14; z += pitch) merlon(sx * gx, wh, z, 0.062, 0.052, 0.05);
+  // cone roofs
+  const roof = (cx: number, cz: number, R: number, y0: number, H: number, col: string, kk: number) => {
+    const T = Math.hypot(H, R), nA = 16, inside = V3(cx, y0 + H * 0.4, cz);
+    brick(F, { S: 2 * Math.PI * R * W, T: T * W, inside, bw: 2 * Math.PI * R * W / nA, ch: 0.026 * W, mw: 0.003 * W, mh: 0.003 * W, step: 0.02 * W, mortar: mix(col, '#000000', 0.45),
+      f: (s, t) => { const a = s / (R * W), k = t / (T * W); return new THREE.Vector3((cx + R * (1 - k) * Math.cos(a)) * W, (y0 + H * k) * W, (cz + R * (1 - k) * Math.sin(a)) * W); },
+      nrm: (s) => { const a = s / (R * W); return new THREE.Vector3(H * Math.cos(a), R, H * Math.sin(a)).normalize(); },
+      tone: (row, k2, p) => mix(col, '#ffffff', 0.18 * hs(row * 3 + kk, k2)).multiplyScalar(0.96 + 0.08 * nz(q(p, 0.1))) });
+    P.add(new THREE.SphereGeometry(0.011 * W, 10, 8).translate(cx * W, (y0 + H + 0.006) * W, cz * W), 0, p => mix('#8a6a2a', '#b89a4a', 0.5 + 0.5 * nz(q(p, 0.5))));
+  };
+  const towers = [{ x: -gx, z: gz, h: 0.56, cone: '#a64e36' }, { x: gx, z: gz, h: 0.5 }, { x: -gx, z: -gz, h: 0.52 }, { x: gx, z: -gz, h: 0.6, cone: '#a64e36' }];
+  const R = 0.09;
+  towers.forEach((tw, ti) => {
+    const nA = 8, c = V3(tw.x, tw.h / 2, tw.z);
+    brick(F, { ...bd, S: 2 * Math.PI * R * W, T: tw.h * W, bw: 2 * Math.PI * R * W / nA, inside: c, stag: ti * 0.013 * W,
+      f: (s, t) => { const a = s / (R * W); return new THREE.Vector3((tw.x + R * Math.cos(a)) * W, t, (tw.z + R * Math.sin(a)) * W); },
+      nrm: (s) => { const a = s / (R * W); return new THREE.Vector3(Math.cos(a), 0, Math.sin(a)); } });
+    // the corbel course under the top, a wider ring, and its underside
+    const R2 = R + 0.016, cb = 0.038;
+    brick(F, { ...bd, S: 2 * Math.PI * R2 * W, T: cb * W, ch: cb * W, bw: 2 * Math.PI * R2 * W / 10, inside: V3(tw.x, tw.h, tw.z),
+      f: (s, t) => { const a = s / (R2 * W); return new THREE.Vector3((tw.x + R2 * Math.cos(a)) * W, tw.h * W + t, (tw.z + R2 * Math.sin(a)) * W); },
+      nrm: (s) => { const a = s / (R2 * W); return new THREE.Vector3(Math.cos(a), 0, Math.sin(a)); } });
+    const ring = new THREE.RingGeometry(R * W * 0.99, R2 * W, 24).rotateX(Math.PI / 2).translate(tw.x * W, tw.h * W, tw.z * W);
+    P.add(ring, STONE, () => mix('#9a8e75', '#a89c83', 0.5));
+    if (tw.cone) roof(tw.x, tw.z, R2 + 0.012, tw.h + cb, 0.17, tw.cone, ti);
+    else {
+      P.add(new THREE.CircleGeometry(R2 * W * 0.98, 24).rotateX(-Math.PI / 2).translate(tw.x * W, (tw.h + cb) * W, tw.z * W), STONE, () => C('#6a6252'));
+      for (let k = 0; k < 8; k++) { const a = (k + 0.5) / 8 * Math.PI * 2; merlon(tw.x + (R2 - 0.012) * Math.cos(a), tw.h + cb, tw.z + (R2 - 0.012) * Math.sin(a), 0.036, 0.036, 0.045, -a); }
+    }
+    // arrow slits on the faces that look out
+    for (const [ang, y, h] of [[Math.PI / 2 * Math.sign(tw.z), 0.3, 0.075], [Math.PI / 2 * Math.sign(tw.z), 0.42, 0.06], [tw.x < 0 ? Math.PI : 0, 0.34, 0.07]] as [number, number, number][]) {
+      const sh = new THREE.Shape(); const w2 = 0.01;
+      sh.moveTo(-w2, 0); sh.lineTo(-w2, h - w2); sh.absarc(0, h - w2, w2, Math.PI, 0, true); sh.lineTo(w2, 0); sh.closePath();
+      const g = new THREE.ShapeGeometry(sh, 6).scale(W, W, 1).rotateY(Math.PI / 2 - ang).translate((tw.x + (R + 0.001) * Math.cos(ang)) * W, y * W, (tw.z + (R + 0.001) * Math.sin(ang)) * W);
+      P.add(g, 0, () => C('#17191a'));
+    }
+  });
+  // the keep: a tall square block behind the gate, battlemented, arched windows and a plank door
+  const kx = 0, kz = -0.05, kw = 0.3, kd = 0.26, kh = 0.7, kc = V3(kx, kh / 2, kz);
+  alongX(kx - kw / 2, kx + kw / 2, 0, kh, kz + kd / 2, kc, undefined, 0.03 * W); alongX(kx - kw / 2, kx + kw / 2, 0, kh, kz - kd / 2, kc);
+  for (const sx of [-1, 1]) alongZ(kz - kd / 2, kz + kd / 2, 0, kh, kx + sx * kw / 2, kc, 0.02 * W);
+  const trim = mix('#bcb097', '#cfc4a9', 0.5);
+  P.add(new THREE.BoxGeometry((kw + 0.03) * W, 0.022 * W, (kd + 0.03) * W).translate(kx * W, (kh + 0.011) * W, kz * W), STONE, p => trim.clone().multiplyScalar(0.96 + 0.08 * nz(q(p, 0.07))));
+  const ky = kh + 0.022;
+  for (let x = kx - kw / 2 + 0.025; x < kx + kw / 2; x += 0.07) for (const sz of [-1, 1]) merlon(x, ky, kz + sz * (kd / 2 + 0.005), 0.044, 0.048, 0.048);
+  for (let z = kz - kd / 2 + 0.06; z < kz + kd / 2 - 0.02; z += 0.07) for (const sx of [-1, 1]) merlon(kx + sx * (kw / 2 + 0.005), ky, z, 0.048, 0.044, 0.048);
+  const archAt = (w: number, h: number, x: number, y: number, z: number, col: (p: THREE.Vector3) => THREE.Color) => {
+    const sh = new THREE.Shape(), w2 = w / 2;
+    sh.moveTo(-w2, 0); sh.lineTo(-w2, h - w2); sh.absarc(0, h - w2, w2, Math.PI, 0, true); sh.lineTo(w2, 0); sh.closePath();
+    const g = new THREE.ShapeGeometry(sh, 8).scale(W, W, 1).translate(x * W, y * W, z * W);
+    P.add(g, 0, col);
+  };
+  const fz = kz + kd / 2 + 0.0012;
+  for (const [x, y, w, h] of [[-0.075, 0.36, 0.05, 0.095], [0.075, 0.36, 0.05, 0.095], [0, 0.52, 0.05, 0.095]]) {
+    archAt(w + 0.016, h + 0.008, x, y - 0.004, fz - 0.0004, () => mix('#a99d84', '#c4b89c', 0.5)); // lighter stone surround
+    archAt(w, h, x, y, fz, () => C('#16181a'));
+  }
+  archAt(0.118, 0.164, 0, -0.004, fz, () => mix('#a99d84', '#c4b89c', 0.5));
+  archAt(0.1, 0.15, 0, 0, fz + 0.0006, p => { const u = p.x / (0.0125 * W), pl = Math.floor(u); return mix('#4c321f', '#6e4a2c', hs(pl, 5)).multiplyScalar(u - pl < 0.08 ? 0.55 : 1); });
+  P.add(new THREE.SphereGeometry(0.007 * W, 8, 6).translate(0.028 * W, 0.07 * W, (fz + 0.004) * W), 0, () => C('#7c6430')); // door ring
+  // a turret on the keep's back left corner: slate cone roof
+  const tx = kx - kw / 2 + 0.03, tz = kz - kd / 2 + 0.03, tr = 0.052, th = 0.2, ty = kh + 0.022;
+  brick(F, { ...bd, S: 2 * Math.PI * tr * W, T: th * W, bw: 2 * Math.PI * tr * W / 7, inside: V3(tx, ty + th / 2, tz), stag: 0.01 * W,
+    f: (s, t) => { const a = s / (tr * W); return new THREE.Vector3((tx + tr * Math.cos(a)) * W, ty * W + t, (tz + tr * Math.sin(a)) * W); },
+    nrm: (s) => { const a = s / (tr * W); return new THREE.Vector3(Math.cos(a), 0, Math.sin(a)); } });
+  roof(tx, tz, tr + 0.012, ty + th, 0.13, '#4b6178', 9);
+  // a stone plinth the whole castle stands on, and the courtyard floor
+  P.add(new THREE.BoxGeometry(1.05 * W, 0.016 * W, 0.7 * W).translate(0, 0.008 * W, 0), STONE, p => mix('#7c7d68', '#9a9a84', 0.5 + 0.5 * nz(q(p, 0.06))).lerp(C('#556a42'), 0.2));
+  P.add(new THREE.BoxGeometry(0.76 * W, 0.004 * W, 0.42 * W).translate(0, 0.017 * W, 0), STONE, p => mix('#8e8670', '#a39b84', 0.5 + 0.5 * nz(q(p, 0.1))));
+
+  P.addRaw(F.geo(), STONE); // the block faces, painted per cell
+  const g = P.merged();
+  g.computeBoundingBox(); const b = g.boundingBox!;
+  g.translate(-(b.min.x + b.max.x) / 2, -b.min.y, -(b.min.z + b.max.z) / 2);
+  return g;
+}
+
 export function ornamentShape(variant: string, seed: number, size: number) {
-  return variant === 'treasurechest' ? chestShape(seed, size) : shipShape(seed, size);
+  return variant === 'treasurechest' ? chestShape(seed, size) : variant === 'castle' ? castleShape(seed, size) : shipShape(seed, size);
 }

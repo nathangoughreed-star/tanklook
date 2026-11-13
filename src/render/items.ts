@@ -8,7 +8,7 @@ import * as THREE from 'three';
 import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../art/paint';
 import { BREED, PLANT3D, growthOf, isCarpet, isFloat, isVine, type PlantType } from '../art/plants';
-import { CARPET_W, LIBRARY, SHELLS, itemDims, itemSink, seatHook, stoneDims, woodLimbs, type Limb } from '../scene/items';
+import { CARPET_W, LIBRARY, SHELLS, itemDims, itemSink, seatHook, stoneDims, woodLimbs, type Fake, type Limb } from '../scene/items';
 import { turnOut, type AnchorProbe, type V3 } from '../scene/anchors';
 import { lampHeight } from '../scene/lightout';
 import { struggleOf } from '../scene/lightcheck';
@@ -1140,8 +1140,8 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
     const g0 = growthOf(it.variant as PlantType, it.size);
     if (mat?.mode === 'mat' && it.growth != null && gr > g0) { const k = 1 + (mat.rate - 1) * (gr - g0) / (1 - g0 || 1); m.scale.set(k * m.scale.x, m.scale.y, k * m.scale.z); }
   } else if (it.kind === 'artificial') { // lane P4: a fixed look (no growth, no bending at the surface, no algae)
-    const f = LIBRARY[it.variant]?.fake ?? { mat: 'silk' as const, form: 'stem' as const }, k = `${it.variant}|${it.seed}|${Math.round(it.size)}`;
-    m = new THREE.Mesh(fakes.get(k) ?? remember(fakes, k, keepGeo(artificialGeometry(f.mat, f.form, it.seed, it.size)), 300, dispose), fakeMaterial(T, f.mat));
+    const f: Fake = LIBRARY[it.variant]?.fake ?? { mat: 'silk', form: 'stem' }, k = `${it.variant}|${it.seed}|${Math.round(it.size)}`;
+    m = new THREE.Mesh(fakes.get(k) ?? remember(fakes, k, keepGeo(artificialGeometry(f.mat, f.form, it.seed, it.size, f.tint)), 300, dispose), fakeMaterial(T, f.mat));
   } else m = new THREE.Mesh(bakedShape(at), solidMaterial(T));
   m.position.set(it.x, it.kind === 'plant' && isFloat(it.variant) ? waterY(T, S.water.level) : y + (st ? st.dy + riseOf(it) : m.geometry.userData.rise ?? 0), -it.depth);
   m.rotation.copy(itemEuler(at));
