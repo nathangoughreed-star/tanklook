@@ -1,0 +1,97 @@
+/* UI2 shell layout (lane S1, 2026-11-13; screen map §6). Tokens only (tokens.css). */
+body.ui2 { overflow: hidden; }
+.i { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.btn .i { width: 18px; height: 18px; } .btn.sm .i { width: 16px; height: 16px; }
+.btn[disabled] { cursor: default; opacity: .6; } .btn[disabled]:hover { background: var(--bg-raised); }
+.btn.ghost[disabled]:hover, .toolbar .btn[disabled]:hover { background: transparent; }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.grow { flex: 1; }
+.dim { color: var(--text-2); }
+
+/* Desktop (>= 1100 px): [rail][panel][viewer][drawer]; the header sits over rail + panel, so the viewer runs full height */
+.ui2app { display: grid; height: 100vh; height: 100dvh;
+  grid-template-columns: var(--rail-w) var(--panel-w) minmax(0, 1fr) 0;
+  grid-template-rows: var(--header-h) minmax(0, 1fr);
+  grid-template-areas: "head head view drawer" "rail panel view drawer"; }
+.ui2app.drawer-on { grid-template-columns: var(--rail-w) var(--panel-w) minmax(0, 1fr) var(--drawer-w); }
+/* the panel folded: rail + viewer; the header then spans the top (it holds Undo / Redo / Save, which must stay in reach) */
+.ui2app.panel-off { grid-template-columns: var(--rail-w) 0 minmax(0, 1fr) 0; grid-template-areas: "head head head head" "rail panel view drawer"; }
+.ui2app.panel-off.drawer-on { grid-template-columns: var(--rail-w) 0 minmax(0, 1fr) var(--drawer-w); }
+.ui2app > .apphead { grid-area: head; min-width: 0; }
+.ui2app > .rail { grid-area: rail; min-height: 0; overflow-y: auto; }
+.ui2app > .panel { grid-area: panel; z-index: var(--z-panel); }
+.ui2app > .viewer { grid-area: view; min-width: 0; min-height: 0; }
+.ui2app > .drawer { grid-area: drawer; min-width: 0; z-index: var(--z-panel); }
+
+.apphead .proj { overflow: hidden; } .apphead .pname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dot.off { background: var(--text-3); }
+.menuwrap { position: relative; }
+.pop.menu { right: 0; top: calc(var(--ctl-h) + var(--s1)); display: grid; gap: 2px; min-width: 180px; padding: var(--s1); }
+.pop.menu .btn { justify-content: flex-start; }
+.pop.menu .hint { padding: var(--s1) var(--s2); }
+
+/* rail: buttons drawn as the mockup's links */
+.rail .ritem { display: grid; justify-items: center; gap: 2px; padding: var(--s2) 0; color: var(--text-2); font-size: 10.5px; border: 0; border-left: 3px solid transparent; background: transparent; cursor: pointer; }
+.rail .ritem:hover { color: var(--text); background: var(--bg-hover); }
+.rail .ritem .ic { width: 22px; height: 22px; display: grid; place-items: center; }
+.rail .ritem.on { color: var(--text); border-left-color: var(--accent); background: var(--accent-weak); }
+.rail .rsep { height: 1px; background: var(--line); margin: 6px 10px; flex: none; }
+
+/* panel host: one section at a time; for now each is an empty placeholder with its title */
+.panel .empty { display: grid; justify-items: center; gap: var(--s2); text-align: center; color: var(--text-2); padding: var(--s5) var(--s3); }
+.panel .empty > .i { width: 36px; height: 36px; color: var(--text-3); }
+.panel .morerow { grid-template-columns: 28px 1fr auto; text-align: left; cursor: pointer; color: var(--text); }
+.group > .gh { width: 100%; border: 0; background: transparent; color: inherit; text-align: left; }
+
+/* viewer: the existing three.js view fills the area; overlays sit on glass */
+.vhost { position: absolute; inset: 0; }
+.vcanvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+.vcanvas.dragging { cursor: grabbing; } .vcanvas.panning { cursor: move; }
+.ov.cluster { top: var(--s3); left: 50%; transform: translateX(-50%); }
+.ov.checkwrap { bottom: 14px; left: 50%; transform: translateX(-50%); max-width: calc(100% - var(--s5)); }
+.checkbar { overflow-x: auto; scrollbar-width: none; }
+.check { border: 0; background: transparent; font: inherit; }
+.check .i { width: 16px; height: 16px; }
+
+/* drawer content (read-only) */
+.drawer .sec-body { gap: var(--s3); }
+.drow { display: flex; align-items: center; justify-content: space-between; gap: var(--s2); }
+.dbar, .dcat { display: grid; gap: var(--s1); }
+.dnums { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s2); }
+.dnums .big { font-size: var(--fs-lg); }
+.dlist { margin: 0; padding-left: var(--s4); color: var(--text-2); font-size: var(--fs-sm); display: grid; gap: 2px; }
+.dlist.money { list-style: none; padding: 0; }
+.dlist.money li { display: flex; justify-content: space-between; align-items: center; gap: var(--s2); }
+.dlist.money b { color: var(--text); font-variant-numeric: tabular-nums; }
+.dwarn { border-radius: var(--r-ctl); padding: var(--s2); font-size: var(--fs-sm); background: var(--bg-raised); }
+.dwarn.warn { background: var(--warn-weak); color: var(--warn); }
+.dwarn.bad { background: var(--bad-weak); color: var(--bad); }
+.dwarn.ok { background: var(--ok-weak); color: var(--ok); }
+.dro { border-top: 1px solid var(--line); padding-top: var(--s2); }
+
+/* Tablet (700-1099 px): rail + viewer; the panel opens over the viewer's left side, the drawer over its right (§6) */
+@media (max-width: 1099px) {
+  .ui2app, .ui2app.panel-on, .ui2app.drawer-on, .ui2app.panel-off, .ui2app.panel-off.drawer-on {
+    grid-template-columns: var(--rail-w) minmax(0, 1fr); grid-template-areas: "head head" "rail view"; position: relative; }
+  .ui2app > .panel { position: absolute; top: var(--header-h); bottom: 0; left: var(--rail-w); width: min(var(--panel-w), calc(100% - var(--rail-w))); box-shadow: var(--shadow); }
+  .ui2app > .drawer { position: absolute; top: var(--header-h); bottom: 0; right: 0; width: min(var(--drawer-w), 100%); box-shadow: var(--shadow); }
+}
+
+/* Phone (< 700 px): header (icons only), viewer on top, a check strip under it, the open section as a bottom sheet, tab bar (§6) */
+.ui2app.phone, .ui2app.phone.panel-on, .ui2app.phone.drawer-on, .ui2app.phone.panel-off {
+  grid-template-columns: minmax(0, 1fr); grid-template-rows: var(--header-h) minmax(0, 1fr) auto 60px;
+  grid-template-areas: "head" "view" "strip" "tabs"; }
+.ui2app.phone.panel-on { grid-template-rows: var(--header-h) 35% auto minmax(0, 1fr) 60px; grid-template-areas: "head" "view" "strip" "panel" "tabs"; }
+.ui2app.phone > .apphead { padding: 0 var(--s2); gap: var(--s1); }
+.ui2app.phone > .panel { position: static; width: auto; grid-area: panel; border-right: 0; border-radius: 14px 14px 0 0; box-shadow: 0 -6px 20px rgba(0,0,0,.4); }
+.ui2app.phone > .drawer { position: fixed; inset: var(--header-h) 0 60px 0; width: auto; z-index: var(--z-dialog); border-left: 0; }
+.ui2app.phone .checkstrip { grid-area: strip; background: var(--bg-panel); border-bottom: 1px solid var(--line); min-width: 0; }
+.ui2app.phone .checkstrip .ov.checkwrap { position: static; transform: none; max-width: none; }
+.ui2app.phone .checkstrip .checkbar { background: transparent; border: 0; box-shadow: none; backdrop-filter: none; border-radius: 0; padding: 6px var(--s2); }
+.ui2app.phone .checkstrip .check { background: var(--bg-raised); flex: none; }
+.ui2app.phone .checkstrip .vsep { display: none; }
+.ui2app.phone .ov.cluster { top: var(--s2); }
+.ui2app.phone .cluster .btn.sm { padding: 0 6px; }
+.tabbar { grid-area: tabs; display: grid; grid-template-columns: repeat(5, 1fr); background: var(--bg-panel); border-top: 1px solid var(--line); }
+.tabbar button { display: grid; justify-items: center; align-content: center; gap: 2px; font-size: 10.5px; color: var(--text-2); border: 0; background: transparent; cursor: pointer; }
+.tabbar button.on { color: var(--accent); }

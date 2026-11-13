@@ -1,0 +1,176 @@
+// UI2 shell step 1 (lane S1, 2026-11-13): header, rail, panel host, the existing viewer, the view cluster, the check bar and
+// the right drawer (screen map §2a, §5, §6). Every later shell step adds a section body or a drawer to this frame.
+import type { ComponentChildren } from 'preact';
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import type { Store } from '../scene/store';
+import type { UserProfile } from '../demand';
+import { checksModel, CHECKS, type CheckId, type ChecksModel } from './logic/checks';
+import { SECTIONS, PHONE_TABS, MORE, COMES_IN, sectionOf, railClick, escape, type SectionId } from './logic/sections';
+import { Drawer } from './drawers';
+import { Icon, Pill } from './ui';
+
+export interface AppProps {
+  store: Store;
+  /** the viewer's host (canvas inside), built once by boot.ts and moved into the view area */
+  viewHost: HTMLElement;
+  profile: () => UserProfile;
+  save: () => void;
+}
+
+/** Re-render on every store change; `slow` (the engines) only once the scene settles, as the old cost panel does. */
+function useStore(store: Store) {
+  const [, setN] = useState(0);
+  const [slowN, setSlowN] = useState(0);
+  useEffect(() => {
+    let t = 0;
+    const off = store.subscribe(kind => {
+      setN(n => n + 1);
+      if (kind === 'view' || kind === 'select') return;
+      clearTimeout(t); t = window.setTimeout(() => setSlowN(n => n + 1), 150);
+    });
+    return () => { off(); clearTimeout(t); };
+  }, [store]);
+  return slowN;
+}
+
+const PHONE = '(max-width: 699px)';
+function usePhone() {
+  const [m, setM] = useState(() => matchMedia(PHONE).matches);
+  useEffect(() => { const q = matchMedia(PHONE), f = () => setM(q.matches); q.addEventListener('change', f); return () => q.removeEventListener('change', f); }, []);
+  return m;
+}
+
+function Header({ store, save, saved, phone }: { store: Store; save: () => void; saved: boolean; phone: boolean }) {
+  const [menu, setMenu] = useState(false);
+  return (
+    <header class="apphead">
+      {phone ? null : <span class="brand">TankLook</span>}
+      <span class="proj" title={store.scene.name}><span class="pname">{phone ? '' : '· '}{store.scene.name || 'Untitled'}</span>
+        <span class={`dot${saved ? '' : ' off'}`} title={saved ? 'Saved in this browser' : 'Saving…'} /></span>
+      <span class="grow" />
+      <button type="button" class="btn icon ghost" title="Undo (Ctrl+Z)" aria-label="Undo" disabled={!store.canUndo} onClick={() => store.undo()}><Icon name="undo" /></button>
+      <button type="button" class="btn icon ghost" title="Redo (Ctrl+Y)" aria-label="Redo" disabled={!store.canRedo} onClick={() => store.redo()}><Icon name="redo" /></button>
+      <button type="button" class="btn sm" title="Save in this browser (Ctrl+S)" onClick={save}><Icon name="save" />{phone ? null : ' Save'}</button>
+      <span class="menuwrap">
+        <button type="button" class="btn icon ghost" title="New, Open, Save as, Share link, Download" aria-label="More" aria-expanded={menu} onClick={() => setMenu(!menu)}><Icon name="more" /></button>
+        {menu ? <div class="pop menu" role="menu" onClick={() => setMenu(false)}>
+          {['New', 'Open…', 'Save as…', 'Share link', 'Download'].map(t => <button type="button" class="btn ghost" role="menuitem" disabled title="Comes in shell step 2">{t}</button>)}
+          <div class="hint">These come in shell step 2.</div>
+        </div> : null}
+      </span>
+    </header>
+  );
+}
+
+function Rail({ open, onPick }: { open: SectionId | null; onPick: (id: SectionId) => void }) {
+  const btn = (id: SectionId) => { const s = sectionOf(id); return (
+    <button type="button" class={`ritem${open === id ? ' on' : ''}`} aria-pressed={open === id} title={open === id ? `Fold the ${s.title} panel` : s.title} onClick={() => onPick(id)}>
+      <span class="ic"><Icon name={s.icon} /></span>{s.title}
+    </button>
+  ); };
+  return (
+    <nav class="rail" aria-label="Sections">
+      {SECTIONS.filter(s => !s.bottom).map(s => <>{s.gap ? <div class="rsep" /> : null}{btn(s.id)}</>)}
+      <div class="sp" />
+      {SECTIONS.filter(s => s.bottom).map(s => btn(s.id))}
+    </nav>
+  );
+}
+
+function TabBar({ open, onPick }: { open: SectionId | 'more' | null; onPick: (id: SectionId | 'more') => void }) {
+  return (
+    <nav class="tabbar" aria-label="Sections">
+      {PHONE_TABS.map(id => { const s = sectionOf(id); return <button type="button" class={open === id ? 'on' : ''} onClick={() => onPick(id)}><Icon name={s.icon} />{s.title}</button>; })}
+      <button type="button" class={open === 'more' || (open && MORE.includes(open as SectionId)) ? 'on' : ''} onClick={() => onPick('more')}><Icon name="more" />More</button>
+    </nav>
+  );
+}
+
+function Panel({ id, more, onPick, onClose }: { id: SectionId | null; more: boolean; onPick: (id: SectionId) => void; onClose: () => void }) {
+  if (more) return (
+    <section class="panel" aria-label="More sections">
+      <div class="sec-head"><h2>More</h2><button type="button" class="btn icon ghost" aria-label="Close" onClick={onClose}><Icon name="x" /></button></div>
+      <div class="sec-body">{MORE.map(m => { const s = sectionOf(m); return <button type="button" class="card media morerow" onClick={() => onPick(m)}><span class="ic"><Icon name={s.icon} /></span><span class="t">{s.title}</span><Icon name="chev" /></button>; })}</div>
+    </section>
+  );
+  if (!id) return null;
+  const s = sectionOf(id);
+  return (
+    <section class="panel" aria-label={s.title}>
+      <div class="sec-head"><h2>{s.title}</h2><button type="button" class="btn icon ghost" title="Fold the panel (Esc)" aria-label="Fold the panel" onClick={onClose}><Icon name="x" /></button></div>
+      <div class="sec-body"><div class="empty"><Icon name={s.icon} /><div>{s.title} moves here in shell step {COMES_IN[id]}.</div><div class="hint">Until then the current app (without <code>?ui=2</code>) has it.</div></div></div>
+    </section>
+  );
+}
+
+function Cluster({ phone }: { phone: boolean }) {
+  const soon = 'Comes in a later shell step';
+  return (
+    <div class="ov cluster"><div class="toolbar glass">
+      <button type="button" class="btn sm" disabled title={soon}><Icon name="eye" /> View{phone ? '' : ' ▾'}</button>
+      <button type="button" class="btn sm" disabled title={soon}><Icon name="shuffle" /> {phone ? 'Moment' : 'Another moment'}</button>
+      <button type="button" class={`btn sm${phone ? ' icon' : ''}`} disabled title={phone ? `Compare: ${soon.toLowerCase()}` : soon} aria-label="Compare"><Icon name="split" />{phone ? null : ' Compare'}</button>
+    </div></div>
+  );
+}
+
+function CheckBar({ m, on, onPick }: { m: ChecksModel; on: CheckId | null; onPick: (id: CheckId) => void }) {
+  const c = (id: CheckId, body: ComponentChildren) => (
+    <button type="button" class={`check${on === id ? ' on' : ''}`} aria-pressed={on === id} title={CHECKS.find(x => x.id === id)!.title} onClick={() => onPick(id)}>{body}</button>
+  );
+  return (
+    <div class="ov checkwrap"><div class="checkbar glass" role="toolbar" aria-label="Checks">
+      {c('habitat', <>Habitat <Pill tone={m.habitat.pill.tone}>{m.habitat.pill.word}</Pill></>)}<div class="vsep" />
+      {c('cost', m.cost ? <><b>{m.cost.setup}</b><span class="dim"> · {m.cost.monthly} · {m.cost.minutes}</span></> : <span class="dim">No price yet</span>)}<div class="vsep" />
+      {c('water', <><Icon name="drop" /> {m.water.temp} <Pill tone={m.water.pill.tone}>{m.water.pill.word}</Pill></>)}<div class="vsep" />
+      {c('notes', <><Icon name="note" /> Notes <Pill tone={m.notes.tone}>{m.notes.count}</Pill></>)}
+    </div></div>
+  );
+}
+
+export function App({ store, viewHost, profile, save }: AppProps) {
+  const slow = useStore(store);
+  const phone = usePhone();
+  const [section, setSection] = useState<SectionId | null>(phone ? null : 'tank');
+  const [more, setMore] = useState(false);
+  const [drawer, setDrawer] = useState<CheckId | null>(null);
+  const [saved, setSaved] = useState(true);
+  const viewRef = useRef<HTMLElement>(null);
+  const model = useMemo(() => checksModel(store.tank, store.scene.active, store.scene.units, profile()), [slow, store]);
+
+  useEffect(() => { viewRef.current?.prepend(viewHost); }, [viewHost]);
+  // the saved dot: off from an edit until its autosave (boot.ts) lands
+  useEffect(() => store.subscribe(kind => { if (kind !== 'select') setSaved(false); }), [store]);
+  useEffect(() => { const f = () => setSaved(true); addEventListener('ui2:saved', f); return () => removeEventListener('ui2:saved', f); }, []);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const typing = (e.target as HTMLElement | null)?.closest?.('input, textarea, select');
+      if (e.key === 'Escape') { const n = escape({ drawer, section }); setDrawer(n.drawer as CheckId | null); setSection(n.section); setMore(false); return; }
+      if (typing || !(e.ctrlKey || e.metaKey)) return;
+      const k = e.key.toLowerCase();
+      if (k === 'z' && !e.shiftKey) { e.preventDefault(); store.undo(); } else if (k === 'y' || (k === 'z' && e.shiftKey)) { e.preventDefault(); store.redo(); } else if (k === 's') { e.preventDefault(); save(); }
+    };
+    addEventListener('keydown', onKey); return () => removeEventListener('keydown', onKey);
+  }, [drawer, section, store, save]);
+
+  const pick = (id: SectionId) => { setMore(false); setSection(railClick(section, id)); if (phone) setDrawer(null); };
+  const tab = (id: SectionId | 'more') => { if (id === 'more') { setSection(null); setMore(!more); setDrawer(null); } else pick(id); };
+  const check = (id: CheckId) => { setDrawer(drawer === id ? null : id); if (phone) { setSection(null); setMore(false); } };
+  const panelOpen = !!section || more;
+  const cls = ['ui2app', panelOpen ? 'panel-on' : 'panel-off', drawer ? 'drawer-on' : '', phone ? 'phone' : ''].filter(Boolean).join(' ');
+
+  return (
+    <div class={cls}>
+      <Header store={store} save={save} saved={saved} phone={phone} />
+      {phone ? null : <Rail open={section} onPick={pick} />}
+      <Panel id={section} more={more} onPick={pick} onClose={() => { setSection(null); setMore(false); }} />
+      <main class="viewer" ref={viewRef}>
+        <Cluster phone={phone} />
+        {phone ? null : <CheckBar m={model} on={drawer} onPick={check} />}
+      </main>
+      {phone ? <div class="checkstrip"><CheckBar m={model} on={drawer} onPick={check} /></div> : null}
+      {drawer ? <Drawer id={drawer} model={model} onClose={() => setDrawer(null)} /> : null}
+      {phone ? <TabBar open={more ? 'more' : section} onPick={tab} /> : null}
+    </div>
+  );
+}
