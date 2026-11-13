@@ -33,7 +33,7 @@ const blobs = new Map<string, Blob | null>();
 let mat: THREE.MeshBasicMaterial | undefined;
 function contactMat() {
   if (mat) return mat;
-  mat = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2,
+  mat = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4,
     blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.ZeroFactor, blendDst: THREE.OneMinusSrcColorFactor, toneMapped: false });
   mat.userData.keep = true;
   return mat;
@@ -115,14 +115,21 @@ export function contactObjects(S: TankSetup, T: Tank, items: { it: Item; m: THRE
   // VF-C2: the berm stands up to 9 mm above the ground, so the blob (drawn on the ground) was hidden under it and the berm stayed
   // lighter than the shaded sand round it (a pale cloud round every rock, Nathan 2026-11-12): over a painted berm the blob follows its surface
   const berms = FX.embed && skin && skin.color === 0xffffff ? list.filter(b => b.grains && b.berm) : [];
-  if (FX.contact && list.length) out.push(blobMesh(list, berms.length ? onBerm(berms, ground) : ground));
+  if (FX.contact && list.length) out.push(blobMesh(list, berms.length ? onBerm(berms, ground) : ground, roughOf(S.substrate)));
   if (FX.ground) out.push(...footGrains(S, T, list.filter(b => b.grains), ground));
   if (FX.mix) out.push(...coarseFeet(S, T, list.filter(b => b.grains && b.fx), ground));
   if (FX.embed && skin) out.push(...bermObjects(S, T, list.filter(b => b.grains && b.berm), ground, skin));
   return out;
 }
 
-function blobMesh(list: Blob[], ground: GroundAt) {
+/**
+ * `rough` = the ground's Roughness setting, 0-100 (SR1 made 50 the default, 2026-11-12): the drawn ground is a 14 mm mesh over
+ * ripples as fine as 22 mm, so between its vertices it deviates from the exact ground this blob is draped on; with a
+ * 0.8 mm lift the ridges stood through the blob as pale hard-edged shards and the blob's triangles cut it into dark
+ * polygons ("weird shadows", Nathan 2026-11-12). The lift grows with the roughness (about 2.6 mm at 50 %).
+ */
+function blobMesh(list: Blob[], ground: GroundAt, rough = 0) {
+  const lift = 0.8 + 0.035 * rough;
   const nv = GRID * GRID, pos = new Float32Array(list.length * nv * 3), col = new Float32Array(list.length * nv * 3), idx: number[] = [];
   list.forEach((b, bi) => {
     const o = bi * nv;
@@ -130,7 +137,7 @@ function blobMesh(list: Blob[], ground: GroundAt) {
       const u = (i / (GRID - 1)) * 2 - 1, w = (j / (GRID - 1)) * 2 - 1, R = 1.9; // the grid reaches well past the footprint: the fade
       const lx = u * R * b.rx, ld = w * R * b.rd, x = b.x + lx * b.ux - ld * b.ud, d = b.d + lx * b.ud + ld * b.ux;
       const g = ground(x, d), p = (o + i * GRID + j) * 3;
-      pos[p] = g[0]; pos[p + 1] = g[1] + 0.8; pos[p + 2] = g[2];
+      pos[p] = g[0]; pos[p + 1] = g[1] + lift; pos[p + 2] = g[2];
       const rho = Math.hypot(u, w) * R, f = rho >= R ? 0 : Math.exp(-rho * rho * 0.6) * (1 - (rho / R) ** 4), a = lin(b.dark * f);
       col[p] = col[p + 1] = col[p + 2] = a;
     }
