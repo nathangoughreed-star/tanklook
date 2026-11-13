@@ -28,12 +28,12 @@ import { scatter, type GroundAt } from './scatter';
 /** fx, fd, berm, u: VF-C2 (fx embed): the piece's own footprint semi-axes, the berm's height (mm) and a per-piece random 0..1. */
 interface Blob { x: number; d: number; ux: number; ud: number; rx: number; rd: number; dark: number; grains: boolean; fx?: number; fd?: number; berm?: number; u?: number }
 
-const GRID = 11; // vertices per side of a blob's grid
+const GRID = 21; // vertices per side of a blob's grid (11 cut the rippled sand mesh into dark polygons on a big blob: Nathan 2026-11-13)
 const blobs = new Map<string, Blob | null>();
 let mat: THREE.MeshBasicMaterial | undefined;
 function contactMat() {
   if (mat) return mat;
-  mat = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4,
+  mat = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -12, polygonOffsetUnits: -8,
     blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.ZeroFactor, blendDst: THREE.OneMinusSrcColorFactor, toneMapped: false });
   mat.userData.keep = true;
   return mat;

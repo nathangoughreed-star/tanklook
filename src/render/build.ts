@@ -1542,7 +1542,13 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     const gk = JSON.stringify([S.tank, S.terrain, S.substrate.type, S.substrate.custom, S.water.on && S.water.level]) + hardKey, gt = grainTop(grainLook(S.substrate));
     for (const p of S.patches) {
       const key = 'b' + JSON.stringify(p) + gk;
-      const gnd = (x: number, d: number): [number, number, number] => [x, A.rest(x, d).p[1] + gt, -d];
+      // the anchors rest on the SMOOTH ground; the drawn sand has SR1's ripples on top, so a leaf lay up to ~20 mm above a hollow or
+      // sank into a hump (Nathan 2026-11-13): on bare ground a patch rests on the drawn surface (SURF), on a solid piece as before
+      const surf = sc.userData.groundSurface as ((x: number, d: number) => number[]) | undefined;
+      const gnd = (x: number, d: number): [number, number, number] => {
+        const r = A.rest(x, d).p[1], ys = surf?.(x, d)[1];
+        return [x, (ys != null && r <= groundHeight(S, T, x, d) + 0.5 ? ys : r) + gt, -d];
+      };
       const pp = take(key) ?? part(key, patchMeshes(S, T, gnd, p), []), on = patchSel.ids.has(p.id);
       for (const o of pp.objs) o.userData.focus = on; // the viewer fades everything but these while a patch is being edited
       b.itemParts.push(pp);
