@@ -22,9 +22,18 @@ export function checksHtml(v: Verdict, rules: Rules = 'guided'): string {
 /** The one-line summary: what the collapsed strip says on a phone. */
 export const headline = (v: Verdict, rules: Rules = 'guided'): string => rules === 'sandbox' && v.gates.length + v.hard.length ? `Sandbox · ${v.gates.length + v.hard.length} note${v.gates.length + v.hard.length === 1 ? '' : 's'}, information only` : [v.gates.length && `${v.gates.length} welfare / physical`, v.hard.length && `${v.hard.length} over your limits`].filter(Boolean).join(' · ') || 'Checks: notes only';
 
+/** HM3: the pill's label: "Notes" with what is in them (the old "Checks: notes only" read as a button name). */
+export function notesLabel(v: Verdict, rules: Rules = 'guided'): string {
+  const h = headline(v, rules);
+  if (v.gates.length + v.hard.length) return 'Notes: ' + h;
+  const n = v.targets.length + v.advisories.length;
+  return n ? `Notes: ${n} advice` : 'Notes';
+}
+
 /** @param opts the cost totals / limits when the cost panel has them (budget and time checks need them; welfare and room do not). */
 /** SV1: `host` puts a copy inside one side of a split view (its `store` is a sideStore); `gate` says whether this copy is in use now. */
-export interface ChecksHost { host?: HTMLElement; gate?: () => boolean }
+/** HM3: `always` keeps the Notes pill on screen even with nothing to say (each side of a split view has its own Notes). */
+export interface ChecksHost { host?: HTMLElement; gate?: () => boolean; always?: boolean }
 export function attachChecksStrip(store: Store, opts: () => VerdictOpts = () => ({}), where: ChecksHost = {}) {
   const box = document.createElement('div'), gate = where.gate ?? (() => true);
   box.className = where.host ? 'checks sv' : 'checks'; box.setAttribute('role', 'status'); box.hidden = true;
@@ -35,8 +44,8 @@ export function attachChecksStrip(store: Store, opts: () => VerdictOpts = () => 
     timer = undefined;
     if (!gate()) { box.hidden = true; return; }
     let html = '', head = '';
-    try { const v = verdictOf(store.tank, getBrief(), { units: store.scene.units, ...opts() }); html = checksHtml(v, rulesOf(getBrief())); head = headline(v, rulesOf(getBrief())); } catch { /* an unfinished scene has nothing to judge */ }
-    box.innerHTML = html ? `<details class="ck-all"${open ? ' open' : ''}><summary>${esc(head)}</summary>${html}</details>` : ''; box.hidden = !html;
+    try { const v = verdictOf(store.tank, getBrief(), { units: store.scene.units, ...opts() }); html = checksHtml(v, rulesOf(getBrief())); head = notesLabel(v, rulesOf(getBrief())); } catch { /* an unfinished scene has nothing to judge */ }
+    box.innerHTML = html ? `<details class="ck-all"${open ? ' open' : ''}><summary>${esc(head)}</summary>${html}</details>` : where.always ? `<div class="ck-none">Notes: none</div>` : ''; box.hidden = !html && !where.always;
     box.querySelector('details')?.addEventListener('toggle', e => { open = (e.target as HTMLDetailsElement).open; });
   };
   const schedule = () => { if (!timer) timer = setTimeout(run, 400); };

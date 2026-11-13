@@ -35,9 +35,8 @@ export function attachInline(store: Store, viewer: Viewer, deps: { status: (msg:
   let openCard = false, comparing = false, busy = false, note = '', fail: Extract<RunResult, { ok: false }> | undefined, fillTab: Tab | '' = '';
 
   const draw = () => {
-    root.hidden = store.frozen;   // the A/B screen holds the store: Discover in the editor waits
-    if (root.hidden) return;
-    if (!openCard) { root.innerHTML = `<button type="button" class="dq10-pill" data-a="open" title="Generate designs here, on your tank">Discover</button>`; return; }
+    root.hidden = store.frozen || !openCard;   // the A/B screen holds the store: Discover in the editor waits. HM3: no pill on the viewer; the panel's Discover buttons open the card
+    if (root.hidden) { root.innerHTML = ''; return; }
     const cur = ctl.current(), counts = countText(ctl.counts()), gaps = gapTabs(store.effTank);
     if (!fillTab || !gaps.includes(fillTab)) fillTab = gaps[0] ?? '';
     const tabSel = `<select data-a="tab" aria-label="Section to fill"${gaps.length ? '' : ' disabled'}>${gaps.length ? gaps.map(t => `<option value="${t}"${t === fillTab ? ' selected' : ''}>${TAB_LABEL[t]}</option>`).join('') : '<option>Nothing missing</option>'}</select>`;

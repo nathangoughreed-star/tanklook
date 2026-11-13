@@ -34,7 +34,7 @@ export function attachSideOverlays(viewer: Viewer, store: Store) {
     host.append(root);
     const tile = attachFullnessTile(viewer, ss, { host: root, gate });
     const demand = attachDemandPanel(ss, dm, { side: true, gate });
-    const checks = attachChecksStrip(ss, () => { const d = demand.state(); return { ...(d ? { totals: d.demand.totals } : {}), limits: demand.profile().limits }; }, { host: bot, gate });
+    const checks = attachChecksStrip(ss, () => { const d = demand.state(); return { ...(d ? { totals: d.demand.totals } : {}), limits: demand.profile().limits }; }, { host: bot, gate, always: true });
     const chip = document.createElement('div'); chip.className = 'climate sv'; chip.hidden = true; bot.append(chip);
     const s: Side = { i, root, bot, dm, chip, chipOpen: false, chipSig: '', tile, demand, checks };
     chip.onclick = () => { s.chipOpen = !s.chipOpen; drawChip(s); };
@@ -70,7 +70,7 @@ export function attachSideOverlays(viewer: Viewer, store: Store) {
       if (nxt === sig) return;
       // under the view's buttons wherever they reach into this side (a phone: they pass the middle)
       const tb = tabs[k] && tabs[k]!.style.display !== 'none' ? Math.round(tabs[k]!.getBoundingClientRect().bottom - hb) + 8 : 10;
-      const under = Math.max(tb, vt && vt.offsetLeft + vt.offsetWidth + 8 > vp.x ? vt.offsetTop + vt.offsetHeight + 8 : 10);
+      const under = Math.max(tb, vt ? vt.offsetTop + vt.offsetHeight + 8 : 10);   // HM3: the shared cluster sits top middle, over the divider: both sides start below it
       Object.assign(s.root.style, { left: vp.x + 'px', width: vp.w + 'px', top: '0', bottom: '0' });
       s.root.style.setProperty('--sv-top', under + 'px'); s.root.style.setProperty('--sv-dm', under + 'px'); // both top cards start under the tank tab and the view's buttons
       s.root.style.setProperty('--sv-lift', (k === 1 ? lift : 0) + 'px');

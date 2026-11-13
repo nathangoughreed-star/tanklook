@@ -14,7 +14,7 @@
 <body>
 <div id="app">
 <aside id="side">
-  <div id="hm2Bar" class="hm2-bar" role="group" aria-label="Undo and redo"><button id="undo" class="hm2-ur" title="Undo (Ctrl+Z)">↶ Undo</button><button id="redo" class="hm2-ur" title="Redo (Ctrl+Shift+Z)">↷ Redo</button></div>
+  <div id="hm2Bar" class="hm2-bar" role="group" aria-label="Undo and redo"><button id="undo" class="hm2-ur" title="Undo (Ctrl+Z)">↶ Undo</button><button id="redo" class="hm2-ur" title="Redo (Ctrl+Shift+Z)">↷ Redo</button><button id="hm3Discover" class="hm2-ur" title="Discover: generate designs on your tank">✦ Discover</button></div>
   <header class="top">
     <div>
       <h1>TankLook</h1>
@@ -431,9 +431,6 @@
   <div class="viewtools">
     <button id="sideClose" class="sidetog" title="Hide the panel (full-screen view)" aria-label="Hide the panel">‹ Hide</button>
     <button id="sideOpen" class="sidetog" title="Show the panel" aria-label="Show the panel">› Edit</button>
-    <button id="undo2" class="sidetog hm2-collapsed-only" title="Undo (Ctrl+Z)">↶ Undo</button>
-    <button id="redo2" class="sidetog hm2-collapsed-only" title="Redo (Ctrl+Shift+Z)">↷ Redo</button>
-    <button id="saveIcon" class="sidetog hm2-save" title="Save (Ctrl+S)" aria-label="Save">💾</button>
     <button id="viewBtn" class="sidetog" aria-haspopup="dialog" aria-expanded="false" aria-controls="viewPop" title="View controls: camera, what is shown, split / compare, display and export">◐ View</button>
     <button id="moment" class="sidetog" title="Another moment: every animal in a new spot, as if the tank were photographed a little later. The plants and scape stay as they are." disabled>◷ Another moment</button>
     <button id="arView" class="sidetog" title="See this tank at real size in your room (phone camera)" hidden>◱ AR</button>
@@ -539,7 +536,6 @@
   <div id="buildHint" role="status" hidden>Building the tank…</div>
   <div class="vmap" id="vmap0"><canvas aria-label="Viewpoint map: where the eye is relative to the tank"></canvas><button class="vmapHide" title="Hide the viewpoint map" aria-label="Hide the viewpoint map">×</button></div>
   <div class="vmap" id="vmap1"><canvas aria-label="Viewpoint map for Tank B"></canvas><button class="vmapHide" title="Hide the viewpoint map" aria-label="Hide the viewpoint map">×</button></div>
-  <button id="mapShow" class="sidetog" title="Show or hide the viewpoint map (top view of where you stand)" aria-pressed="true">⌖ Map</button>
   <div class="lab" id="labA"></div><div class="lab" id="labB"></div>
   <button id="camLock" hidden></button>
   <noscript><p class="nojs">This app needs JavaScript and WebGL.</p></noscript>
