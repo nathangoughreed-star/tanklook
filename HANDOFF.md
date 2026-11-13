@@ -75,6 +75,9 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
+## UI1 / UI2: UI rebuild, inventory and design (2026-11-13; request R27; Coordinator 24)
+Decision (Nathan 11-13): keep the engine; design a new UI on paper; build a new shell beside the old one behind `?ui=2`; move features one at a time; then flip and delete the old UI. UI1 inventory: `research/design/ui1-inventory.md` (47 shots `research/screens/UI1/`). UI2 design: `research/design/ui2-screen-map.md`, mockups `research/design/ui2/`, PNGs `research/screens/UI2/`. Status: UI2 waits on Nathan's answers to its §9 (11 decisions). Until then no shell code; once approved, UI requests to the OLD shell pause per UI2 §8.
+
 ## DS1: visual styles audit (2026-11-13; lane DS1; request R20; Coordinator 24; branch claude/charming-moser-0fbf65)
 Research only, no app code. `research/design/ds1-styles-audit.md` answers section 20 items 1-7. Finding: artificial plants, coloured gravel and the fw-playful family already exist; the gap is an `ornament` item kind plus the coming-soon archetypes (castle, themed scene, fluorescent). Pirate slice = one new kind, `themed-scene` flipped to partial, one `Tweak` field, price rows. Ends with 10 decisions for Nathan.
 ## AQ1: aquarium-only scope switch (2026-11-13; lane AQ1; request R19; Coordinator 24; branch claude/beautiful-taussig-e916b1)
