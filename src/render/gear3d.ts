@@ -127,8 +127,13 @@ export function buildGear(S: TankSetup, T: Tank, solids: THREE.Box3[], picks = g
   const fr = (wall: GearWall) => { const k = wall; let f = frames.get(k); if (!f) frames.set(k, f = frame(S, T, kit, dflt, solids, wall)); return f; };
   const back = fr('back'), opp: GearWall = dflt === 'left' ? 'right' : 'left';
   // a placed piece on the back wall or the floor: its spot in the back frame's u (which runs from the default corner)
+  // lane GM8: suction cups only hold on glass, and a 3D backdrop covers the back glass: glass-mount gear goes to a side glass
+  const bd3 = backdropDepth(S.backdrop, T) > 0, Dbg = T.D - backdropDepth(S.backdrop, T);
   const spot = (p: GearPick, u: number) => {
-    const q = p.place; if (!q || q.wall === 'lid') return { f: back, sp: { u } as Spot };
+    const q = p.place, cup = bd3 && mountOf(p.id) === 'glass';
+    if (cup && (!q || q.wall === 'lid')) return { f: fr(dflt), sp: { u } as Spot };
+    if (cup && q && q.wall === 'back') return { f: fr(q.u < T.L / 2 ? 'left' : 'right'), sp: { u: Dbg * 0.5, fixed: true, y: q.y, lean: q.lean } as Spot };
+    if (!q || q.wall === 'lid') return { f: back, sp: { u } as Spot };
     if (q.wall === 'floor') { const x = q.u; return { f: back, sp: { u: dflt === 'left' ? x : T.L - x, fixed: true, b: T.D - backdropDepth(S.backdrop, T) - (q.d ?? 0) } }; }
     if (q.wall === 'back') return { f: back, sp: { u: dflt === 'left' ? q.u : T.L - q.u, fixed: true, y: q.y, lean: q.lean } };
     return { f: fr(q.wall), sp: { u: q.u, fixed: true, y: q.y, lean: q.lean } };
@@ -172,7 +177,7 @@ export function buildGear(S: TankSetup, T: Tank, solids: THREE.Box3[], picks = g
     if (!has('sump')) one('ato', ato);
     // CO2 under the filter's outlet, on that wall, unless the owner moved it
     const cp = get('co2');
-    if (go(cp)) { const s0 = spot(cp!, outlet.u), f = cp!.place ? s0.f : outlet.f; track(cp!, () => co2(f, s0.sp, cp!.co2)); }
+    if (go(cp)) { const s0 = spot(cp!, outlet.u), f = cp!.place || bd3 ? s0.f : outlet.f; track(cp!, () => co2(f, s0.sp, cp!.co2, fr)); }
     // powerheads on the side glass (default: the near one on the gear side, a second or the wavemaker on the other)
     const ph = get('powerhead'), wm = get('wavemaker'), Db = T.D - backdropDepth(S.backdrop, T);
     if (go(ph)) { const s0 = ph!.place ? spot(ph!, 0) : { f: fr(dflt), sp: { u: Db * 0.7, y: 0.7 } as Spot }; track(ph!, () => powerhead(s0.f, s0.sp, false, pumpProduct(ph!.product))); if ((ph!.n ?? 1) > 1) powerhead(fr(opp), { u: Db * 0.45, y: 0.55 }, false, pumpProduct(ph!.product)); }
@@ -189,7 +194,7 @@ export function buildGear(S: TankSetup, T: Tank, solids: THREE.Box3[], picks = g
   for (const p of picks) BESIDE[p.id]?.(S, T, kit);
   const out = kit.meshes();
   for (const m of out) m.visible = shown;
-  if (out[0]) out[0].userData.gearPieces = pieces;
+  if (out[0]) { out[0].userData.gearPieces = pieces; out[0].userData.cups = kit.cups; }
   live = live.filter(o => o.parent).concat(out);
   return out;
 }

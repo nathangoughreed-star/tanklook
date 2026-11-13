@@ -65,6 +65,8 @@ export function placeFor(S: TankSetup, ray: THREE.Ray, mount: GearMount, prev?: 
   if (!out) return null;
   // the floor or the front (a ray down through the water, or past the side): the nearest of the three walls it can hang on
   const dist = { back: Math.abs(out.z + Db), left: Math.abs(out.x), right: Math.abs(out.x - T.L) };
+  // suction cups hold on glass only: with a 3D backdrop covering the back, glass gear snaps to a side glass (lane GM8)
+  if (mount === 'glass' && backdropDepth(S.backdrop, T) > 0) dist.back = Infinity;
   const wall = (Object.keys(dist) as (keyof typeof dist)[]).reduce((a, b) => dist[a] <= dist[b] ? a : b);
   const at = wall === 'back' ? clamp(out.x / T.L, 0, 1) : clamp(-out.z / Db, 0, 1);
   const place: GearPlace = { wall, at };
