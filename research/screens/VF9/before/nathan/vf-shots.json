@@ -1,0 +1,26 @@
+{
+ "commit": "977beff1",
+ "build": 1981,
+ "dirty": true,
+ "when": "2026-11-13T20:17:42.023Z",
+ "size": [
+  1600,
+  900
+ ],
+ "fx": [
+  "caustics,depth,contact,ground,variety,waterline,embed,tonemap:aces"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "nathan-20g-long-2026-11-13": {
+   "shots": [
+    "nathan-20g-long-2026-11-13-front-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces.png",
+    "nathan-20g-long-2026-11-13-at-560-60-200-3.5-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces.png",
+    "nathan-20g-long-2026-11-13-at-560-60-200-3-40-12-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces.png",
+    "nathan-20g-long-2026-11-13-at-560-60-200-3--30-6-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces.png",
+    "nathan-20g-long-2026-11-13-ground-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces.png"
+   ],
+   "ab": {}
+  }
+ }
+}

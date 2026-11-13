@@ -33,7 +33,8 @@ const blobs = new Map<string, Blob | null>();
 let mat: THREE.MeshBasicMaterial | undefined;
 function contactMat() {
   if (mat) return mat;
-  mat = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -12, polygonOffsetUnits: -8,
+  mat = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: 0, polygonOffsetUnits: -60, // VF9: NO slope term (was -12 / -8): at a grazing view the slope term pulled the blob's under-the-rock triangles through the stone as thin dark contour lines (Nathan 2026-11-13); a flat bias still holds it over the ripples
+   
     blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.ZeroFactor, blendDst: THREE.OneMinusSrcColorFactor, toneMapped: false });
   mat.userData.keep = true;
   return mat;

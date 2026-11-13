@@ -1,0 +1,48 @@
+{
+ "commit": "977beff1",
+ "build": 1981,
+ "dirty": true,
+ "when": "2026-11-13T20:18:03.490Z",
+ "size": [
+  1600,
+  900
+ ],
+ "fx": [
+  "caustics,depth,contact,ground,variety,waterline,embed,tonemap:aces"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "planted4": {
+   "shots": [
+    "planted4-front-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces.png",
+    "planted4-ground-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces.png",
+    "planted4-rock-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces.png"
+   ],
+   "ab": {}
+  },
+  "iwagumi": {
+   "shots": [
+    "iwagumi-front-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces.png",
+    "iwagumi-ground-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces.png",
+    "iwagumi-rock-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces.png"
+   ],
+   "ab": {}
+  },
+  "shadow-bug": {
+   "shots": [
+    "shadow-bug-front-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces.png",
+    "shadow-bug-ground-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces.png",
+    "shadow-bug-rock-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces.png"
+   ],
+   "ab": {}
+  },
+  "vfc3-r50": {
+   "shots": [
+    "vfc3-r50-front-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces.png",
+    "vfc3-r50-ground-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces.png",
+    "vfc3-r50-rock-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces.png"
+   ],
+   "ab": {}
+  }
+ }
+}

@@ -107,13 +107,13 @@ const KIT = () => {
     /** Camera: 'front' (as saved), 'ground' (front centre of the substrate), 'rock' (the largest stone or wood), 'line' (the water line on the front glass), 'under' (the water's underside, looking up from below it). */
     async view(kind) {
       const S = st().scene.tanks[0], T = S.tank;
-      st().cam(c => { if (kind === 'front') Object.assign(c, front0); else if (kind === 'under') Object.assign(c, front0, { el: -28, zoom: 2.6 }); else c.zoom = kind === 'ground' ? 3.2 : kind === 'line' ? 4 : 2.6; }, 0);
+      st().cam(c => { if (kind === 'front') Object.assign(c, front0); else if (kind === 'under') Object.assign(c, front0, { el: -28, zoom: 2.6 }); else if (kind.startsWith('at:')) { const a = kind.slice(3).split('/').map(Number); c.zoom = a[3] ?? 3; if (a[4] != null) c.az = a[4]; if (a[5] != null) c.el = a[5]; } else c.zoom = kind === 'ground' ? 3.2 : kind === 'line' ? 4 : 2.6; }, 0);
       v().setPan(0, 0, 0); v().draw(); await raf();
       if (kind === 'front') return;
       // ('plant:<variant>', lane VF-B: the front-most plant of that variant, its middle)
       const pv = kind.startsWith('plant:') && kind.slice(6), hs = pv ? S.items.filter(i => i.kind === 'plant' && i.variant === pv).sort((a, b) => a.depth - b.depth)[0] : S.items.filter(i => i.kind === 'stone' || i.kind === 'wood').sort((a, b) => b.size - a.size)[0];
       // 'line' (VF6): the water line on the front glass, a third of the way along
-      const P = kind === 'under' ? [T.L / 2, S.water.level * (T.H - WL_GAP), -T.D / 2] : kind === 'line' ? [T.L * 0.3, S.water.level * (T.H - WL_GAP), 0] : kind === 'ground' || !hs ? [T.L / 2, (S.substrate.fl + S.substrate.bl) / 2 + T.H * 0.18, -T.D * 0.3] : [hs.x, hs.size * (pv ? 0.45 : 0.25), -hs.depth];
+      const P = kind.startsWith('at:') ? (a => [a[0], a[1], -a[2]])(kind.slice(3).split('/').map(Number)) : kind === 'under' ? [T.L / 2, S.water.level * (T.H - WL_GAP), -T.D / 2] : kind === 'line' ? [T.L * 0.3, S.water.level * (T.H - WL_GAP), 0] : kind === 'ground' || !hs ? [T.L / 2, (S.substrate.fl + S.substrate.bl) / 2 + T.H * 0.18, -T.D * 0.3] : [hs.x, hs.size * (pv ? 0.45 : 0.25), -hs.depth];
       const vp = v().active[0];
       if (pans[kind]) { v().setPan(0, ...pans[kind]); v().draw(); await raf(); return; }
       for (let k = 0; k < 4; k++) { // pan until P is in the middle of the picture
@@ -186,7 +186,7 @@ const dev = await createServer({ root: process.cwd(), server: { port: 6031, stri
 await dev.listen();
 const BASE = dev.resolvedUrls.local[0];
 const br = await launch();
-await br.s('Emulation.setDeviceMetricsOverride', { width: W, height: H, deviceScaleFactor: 1, mobile: false });
+await br.s('Emulation.setDeviceMetricsOverride', { width: W, height: H, deviceScaleFactor: +(process.env.DPR ?? 1), mobile: false });
 const result = { commit, build, dirty, when: new Date().toISOString(), size: [W, H], fx: FXSETS, gpu: null, scenes: {} };
 const save = (file, url) => writeFileSync(join(OUT, file), Buffer.from(url.split(',')[1], 'base64'));
 try {
@@ -212,7 +212,7 @@ try {
           await br.ev(`__vf.view(${JSON.stringify(view)})`);
           for (const t of TIMES) { // --times: the caustic clock frozen at each (a strip of the motion); else the fixed 7.3 s
             if (t != null) await br.ev(`__fx.time(${t})`);
-            const url = await br.ev('__vf.shot()'), f = `${name}-${view.replace(':', '-')}-${tag(fx)}${t != null ? `-t${t}` : ''}.png`;
+            const url = await br.ev('__vf.shot()'), f = `${name}-${view.replace(/[:/]/g, '-')}-${tag(fx)}${t != null ? `-t${t}` : ''}.png`;
             save(f, url); row.shots.push(f); (grid[view] ??= []).push(url); (labels[view] ??= []).push(t != null ? `${fx} @ ${t} s` : fx);
           }
           if (TIMES[0] != null) await br.ev('__fx.time(7.3)');
