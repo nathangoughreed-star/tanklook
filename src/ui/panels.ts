@@ -72,7 +72,7 @@ import { NEW_POOL, SWAMP_LEVEL, groundHeight, nearestLand, sameGrid, sampleTerra
 /** A tank side's arrow step in inches: half inches under 18", whole inches from there (going down from 18: half). */
 const inchStep = (v: number, dir: number) => (dir > 0 ? v < 18 : v <= 18) ? 0.5 : 1;
 const ARROWS: Record<string, [string, number]> = { ArrowLeft: ['x', -1], ArrowRight: ['x', 1], ArrowUp: ['d', 1], ArrowDown: ['d', -1], PageUp: ['y', 1], PageDown: ['y', -1] };
-import { climateChart, climateOf, climateText } from '../data/climate';
+import { climateHtml, climateOf } from '../data/climate';
 import { growthCheck } from '../scene/growcheck';
 import { herpCheck } from '../scene/herpcheck';
 import { HERP } from '../data/herpstock';
@@ -2034,8 +2034,7 @@ Cancel, then change the name, to keep both.`)) return;
     const cl = $('climate'), rows = climateOf(s);
     cl.hidden = !rows.length;
     cl.classList.toggle('open', climateOpen);
-    cl.innerHTML = rows.map(r => `<div><b>${r.label}</b>${climateText(r, store.scene.units === 'in')}${r.note ? `<span class="hint">${r.note}</span>` : ''}</div>${climateOpen ? climateChart(r, store.scene.units === 'in') : ''}`).join('')
-      + (rows.some(r => r.bands.length) ? `<div class="clCue">${climateOpen ? '▾ Hide' : '▸ Where this comes from'}</div>` : '');
+    cl.innerHTML = climateHtml(s, climateOpen, store.scene.units === 'in');
     const st = $('stocking'), issues = [...herpCheck(s), ...growthCheck(s)]; // S228: young fish get a growth line too
     st.hidden = !issues.length;
     { const nw = issues.filter(i => i.level === 'warn').length, nn = issues.length - nw;

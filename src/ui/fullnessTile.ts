@@ -162,10 +162,13 @@ export function onSpaceFork(fn: ForkFn) { forkFn = fn; return () => { if (forkFn
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const N_KEY = 'tanklook.ftN', C_KEY = 'tanklook.ftCounts';
 
-export function attachFullnessTile(viewer: Viewer, store: Store) {
-  const host = document.getElementById('view')!, tools = host.querySelector('.viewtools'); // top-left, under the view's buttons (the demand panel holds the top right)
+/** SV1: `host` puts the tile inside one side of a split view (its `store` is then a sideStore: that side's tank); `gate` says whether this copy is the one in use right now. */
+export interface FullnessOpts { host?: HTMLElement; gate?: () => boolean }
+export function attachFullnessTile(viewer: Viewer, store: Store, opts: FullnessOpts = {}) {
+  const gate = opts.gate ?? (() => true);
+  const host = opts.host ?? document.getElementById('view')!, tools = opts.host ? null : host.querySelector('.viewtools'); // top-left, under the view's buttons (the demand panel holds the top right)
   const el = document.createElement('section');
-  el.className = 'ft'; el.hidden = true; el.setAttribute('aria-label', 'How full the tank is');
+  el.className = opts.host ? 'ft sv' : 'ft'; el.hidden = true; el.setAttribute('aria-label', 'How full the tank is');
   el.innerHTML = `<button class="ftHead" type="button" aria-expanded="true" title="Minimize the habitat check"><span class="ftTitle">Habitat check</span><span class="ftPill"></span><span class="ftChev" aria-hidden="true">▾</span></button>
 <div class="ftBody"><div class="ftBars"></div><details class="ftN ftCounts"><summary>What counts</summary><ul class="ftCountsBody"></ul></details>
 <details class="ftN"><summary>Where the ammonia goes, per day</summary><div class="ftNCtl">
@@ -181,7 +184,7 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
   // the button row wraps on a narrow view: the tile starts below its last row
   const place = () => { const v = host.getBoundingClientRect(), t = tools?.getBoundingClientRect(); el.style.top = `${t && t.height ? Math.round(t.bottom - v.top + 8) : 10}px`; };
   if (tools) new ResizeObserver(place).observe(tools);
-  place();
+  if (!opts.host) place(); // (a side copy is placed by its container, ui/sideOverlays.ts)
   const $ = <T extends Element>(s: string) => el.querySelector(s) as T;
   const head = $<HTMLButtonElement>('.ftHead'), pill = $<HTMLElement>('.ftPill'), bars = $<HTMLElement>('.ftBars'), spaceEl = $<HTMLElement>('.ftSpace');
   const nEl = $<HTMLDetailsElement>('.ftN:not(.ftCounts)'), nBody = $<HTMLElement>('.ftNBody'), feed = $<HTMLSelectElement>('.ftFeed'), tap = $<HTMLInputElement>('.ftTap');
@@ -212,6 +215,7 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
   const fitWas = new Map<number, boolean>(); // per tank: did it fit the space after the last edit
 
   const render = () => {
+    if (!gate()) { el.hidden = true; lastSig = ''; return; } // the other copy (split view / single tank) is the one showing
     const S = store.tank, r = stockingMemo(S), u = store.scene.units, st = tileState(S, r, u);
     const animalsHidden = viewer.hidden.has('fish');
     el.hidden = !st.show || animalsHidden || tankView.ghost; // no tank chosen yet on the stocking screen: nothing to be full
@@ -260,6 +264,7 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
 
   const fork = () => {
     const S = store.tank, limit = S.layout.space; if (!limit || !forkFn) return;
+    if (opts.host) { const i = store.scene.active; store.setEditing(i, true); store.setActive(i); } // SV1: the fork card edits the tank the panel shows: make it this side's
     const f = forkFn; queueMicrotask(() => f({ setup: S, limit, fit: spaceFit(S.tank, limit), stocking: stockingMemo(S) })); // after this change's listeners
   };
   const openForm = () => {
@@ -302,7 +307,7 @@ export function attachFullnessTile(viewer: Viewer, store: Store) {
   store.subscribe(kind => {
     if (kind === 'load') { fitWas.clear(); if (editing) closeForm(); }
     const S = store.tank, i = store.scene.active, fits = S.layout.space ? spaceFit(S.tank, S.layout.space).fits : undefined;
-    if (kind === 'scene' && !editing && forkDue(fitWas.get(i), fits)) fork(); // an edit took the tank past the space
+    if (kind === 'scene' && gate() && !editing && forkDue(fitWas.get(i), fits)) fork(); // an edit took the tank past the space
     if (fits === undefined) fitWas.delete(i); else fitWas.set(i, fits);
     render();
   });

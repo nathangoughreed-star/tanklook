@@ -40,7 +40,10 @@ function load(): UserProfile {
   return d;
 }
 
-export function attachDemandPanel(store: Store, mount: HTMLElement) {
+/** SV1: `side` = a copy for one side of a split view (its `store` is a sideStore): its open / closed state is its own and is not remembered, it re-reads the shared profile before each calculation, and `gate` says whether it is in use now (nothing is calculated while it is not). */
+export interface DemandOpts { side?: boolean; gate?: () => boolean }
+export function attachDemandPanel(store: Store, mount: HTMLElement, opts: DemandOpts = {}) {
+  const gate = opts.gate ?? (() => true);
   let sol: Solutions | null = null, P = load(), D: Demand | null = null, B: Demand | null = null, lid: (LidAdvice & { usd: number }) | null = null, open: Bar | null = null, timer = 0;
   /** What the last edit moved each bar by, shown as a chip for a few seconds so a change is seen as it happens. */
   let prev: Record<Bar, number> | null = null, chips: Partial<Record<Bar, { d: number; until: number }>> = {}, chipTimer = 0;
@@ -48,7 +51,7 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
   const Pe = (): UserProfile => ({ ...P, limits: effectiveLimits(store.tank, P.limits) });
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(P)); } catch { /* ignore */ } };
   const OPEN_KEY = 'tanklook.demandOpen';
-  let shown = (() => { try { const v = localStorage.getItem(OPEN_KEY); if (v !== null) return v === '1'; } catch { /* ignore */ } return false; })(); /* minimized until opened (UI3) */
+  let shown = (() => { if (opts.side) return false; try { const v = localStorage.getItem(OPEN_KEY); if (v !== null) return v === '1'; } catch { /* ignore */ } return false; })(); /* minimized until opened (UI3) */
   mount.innerHTML = `<div class="dm"><button type="button" class="dmtog" aria-expanded="true" title="Show or hide what this tank costs and asks of you; it updates as you edit"><span class="dmhead">What this tank asks of you</span><span class="dmsum"></span><span class="dmflag" hidden></span><span class="dmcaret" aria-hidden="true">▾</span></button>
     <div class="dmbody"><div class="dmmode"></div><div class="dmbars"></div><div class="dmlid" hidden></div><div class="dmdeals" style="font-size:11px;opacity:.85"></div><div class="dmdrill" hidden></div>
     <details class="dmset dmguard"><summary>Guardrails</summary><div class="dmlimits"></div></details>
@@ -58,12 +61,14 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
   const bars = q('.dmbars'), drill = q('.dmdrill'), tog = q('.dmtog'), body = q('.dmbody');
   const setShown = (v: boolean) => {
     shown = v; body.hidden = !v; tog.setAttribute('aria-expanded', String(v)); mount.classList.toggle('closed', !v);
-    try { localStorage.setItem(OPEN_KEY, v ? '1' : '0'); } catch { /* ignore */ }
+    if (!opts.side) try { localStorage.setItem(OPEN_KEY, v ? '1' : '0'); } catch { /* ignore */ }
   };
   tog.onclick = () => setShown(!shown);
   setShown(shown);
 
   function recompute() {
+    if (!gate()) { D = null; return; }
+    if (opts.side) P = load(); // the profile is shared: the other copy may have changed it
     const S = store.tank;
     sol = null; // a result is for the scene it was found on
     const kit = pinnedKit(S, store.scene.active, P);
@@ -100,6 +105,7 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
     if (pd) warned = ps; else if (warned === ps) warned = null;
   };
   store.subscribe(kind => {
+    if (opts.side) { if (kind === 'scene' || kind === 'load') soon(); return; } // the notices below belong to the main copy: one price notice, not three
     // undo / redo keeps the starting price and says nothing: undoing the change that broke a bundle prices the bundle again
     if (kind === 'load' && store.loadedBy === 'history') checkStartPrice(true);
     else if (kind === 'load') { onSceneLoad(store.scene.active, store.tank); lost = ''; warned = null; limitsReady && limits(); }
@@ -108,7 +114,7 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
   });
 
   function render() {
-    if (!D) return;
+    if (!D || !gate()) return;
     const L = limitState(D, Pe());
     bars.innerHTML = '';
     for (const b of BARS) bars.append(row(b, L));
@@ -172,7 +178,7 @@ export function attachDemandPanel(store: Store, mount: HTMLElement) {
     const name = lid.lid === 'mesh' ? 'mesh top' : 'glass top';
     el.innerHTML = `${esc(lid.text)} <a href="#" class="dmaddlid">Add a ${name}</a>${lid.usd >= 1 ? ` (about ${usd(lid.usd)})` : ''}`;
     el.querySelector<HTMLAnchorElement>('.dmaddlid')!.addEventListener('click', e => {
-      e.preventDefault(); const want = lid?.lid; if (want) store.update(s => { s.tanks[s.active].lid = want; });
+      e.preventDefault(); const want = lid?.lid, ti = store.scene.active; if (want) store.update(s => { s.tanks[ti].lid = want; });
     });
   }
 
