@@ -947,7 +947,9 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
   // a clump on sloping ground (sitting on it, not on a piece): each crown on the ground under it (clumpOnGround)
   const off = !carpet && !float && it.lift <= 2
     ? (lx: number, lz: number) => groundHeight(S, T, it.x + lx * c + lz * s, it.depth + lx * s - lz * c) - ground : undefined;
-  return { type, carpet, float, free, gr, h, k, at, off, kf, ks: sw + k, args, bend };
+  // sway in the flow (plant3d SWAY_VERT): the water over its base; none above the rim, in a dry tank or for a floater
+  const wet = S.water.on && !free && !float ? Math.max(0, waterY(T, S.water.level) - y) : 0;
+  return { type, carpet, float, free, gr, h, k, at, off, kf, ks: sw + k, args, bend, wet };
 }
 
 // ---------- Idle prebuild (lane GR4) ----------
@@ -1121,6 +1123,11 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
     const st = S.light.outcomes ? struggleBucket(S, it) / 5 : 0;
     if (st > 0 && g.attributes.color) g = withColors(g, strugglingColors(g.attributes.color, st, REDS.has(it.variant)));
     m = new THREE.Mesh(g, plantMaterial(T, P.free));
+    if (g.userData.growth != null) { // a GPU view (one per mesh): how it sways (plant3d SWAY_VERT)
+      const flex = P.wet > 0 ? PLANT3D[P.type]?.sway ?? 0 : 0;
+      g.setAttribute('aSway', new THREE.InstancedBufferAttribute(Float32Array.of(flex, P.wet, P.h), 3));
+      if (flex > 0) m.userData.sway = true;
+    }
     if (st > 0 && !isFloat(it.variant)) { const leggy = LEGGY.has(it.variant); m.scale.set(1 - (leggy ? 0.15 : 0.1) * st, 1 + (leggy ? 0.2 : -0.2) * st, 1 - (leggy ? 0.15 : 0.1) * st); }
     if (g.userData.cpu) m.raycast = plantRaycast;
     m.userData.plant = true;
