@@ -1,7 +1,7 @@
 {
  "lane": "CL1",
  "date": "2026-11-13",
- "status": "all 28 gear kinds, first pass, unverified",
+ "status": "28 gear kinds, verifier-checked on weak rows; estimates",
  "items": [
   {
    "id": "hob",
@@ -79,8 +79,22 @@
      "why": "cheap, easy to install and maintain; small lightly stocked tanks only; little media; rinse sponge every couple of weeks"
     }
    ],
-   "confidence": "low",
-   "reason": "Only one page I opened covered internals; others seen in search results (Co-Op forum) not opened."
+   "confidence": "medium",
+   "reason": "Only one page I opened covered internals; others seen in search results (Co-Op forum) not opened.",
+   "firstPass": 1,
+   "verify": {
+    "verdict": "confirmed",
+    "reason": "Aquarium Co-Op page opened but does not cover internals (not listed).",
+    "newSources": [
+     {
+      "site": "Aquariadise",
+      "url": "https://www.aquariadise.com/aquarium-filter-101-types-of-filters",
+      "label": null,
+      "verdict": "1",
+      "why": "common in kits, cheap, works fine for small tanks if sized right; takes tank space, sponge only, can be loud"
+     }
+    ]
+   }
   },
   {
    "id": "sponge",
@@ -172,7 +186,7 @@
    "id": "lightplanted",
    "name": "planted-tank / high-PAR LED light",
    "kind": "gear",
-   "level": 3,
+   "level": 2,
    "sources": [
     {
      "site": "Aquarium Co-Op",
@@ -197,7 +211,21 @@
     }
    ],
    "confidence": "medium",
-   "reason": "High PAR needs CO2 and ferts (3); the schedule-tuning page alone reads as moderate (2)."
+   "reason": "High PAR needs CO2 and ferts (3); the schedule-tuning page alone reads as moderate (2).",
+   "firstPass": 3,
+   "verify": {
+    "verdict": "contradicted",
+    "reason": "The light fixture itself is intermediate to run; the 3 comes from the plants and CO2 it implies, which are separate items.",
+    "newSources": [
+     {
+      "site": "Aquarium Co-Op",
+      "url": "https://www.aquariumcoop.com/blogs/aquarium/planted-tank-lighting",
+      "label": null,
+      "verdict": "2",
+      "why": "pick by intensity, tank size and spread; high light often needs CO2; beginners advised to start low light with hardy plants"
+     }
+    ]
+   }
   },
   {
    "id": "lightreef",
@@ -251,8 +279,22 @@
      "why": "harder for beginners; overdose toxic at night; cylinder pressure; solenoid and drop checker needed"
     }
    ],
-   "confidence": "medium",
-   "reason": "Assembly is easy but tuning and overdose risk make it intermediate; one source reads it as simple."
+   "confidence": "high",
+   "reason": "Assembly is easy but tuning and overdose risk make it intermediate; one source reads it as simple.",
+   "firstPass": 2,
+   "verify": {
+    "verdict": "confirmed",
+    "reason": "Matches first pass and Practical Fishkeeping / BRS.",
+    "newSources": [
+     {
+      "site": "Aquarium Co-Op",
+      "url": "https://www.aquariumcoop.com/blogs/aquarium/aquarium-co2-system",
+      "label": "Moderate (as read)",
+      "verdict": "2",
+      "why": "one-time setup then adjust bubble rate; fish risk from pH drop and low oxygen; algae if out of balance; for high-tech tanks, beginners start low light"
+     }
+    ]
+   }
   },
   {
    "id": "co2diy",
@@ -282,7 +324,7 @@
    "id": "co2liquid",
    "name": "liquid carbon (Excel-type) dosing",
    "kind": "gear",
-   "level": 1,
+   "level": 2,
    "sources": [
     {
      "site": "Practical Fishkeeping",
@@ -293,7 +335,21 @@
     }
    ],
    "confidence": "low",
-   "reason": "Only one page opened; Aquarium Co-Op page returned nothing on it. Plant sensitivity (Vallisneria melt) is the main catch."
+   "reason": "Only one page opened; Aquarium Co-Op page returned nothing on it. Plant sensitivity (Vallisneria melt) is the main catch.",
+   "firstPass": 1,
+   "verify": {
+    "verdict": "contradicted",
+    "reason": "Easy to pour, but real risk (overdose, plant melt, Vallisneria) and weak benefit; Co-Op forum page 403.",
+    "newSources": [
+     {
+      "site": "aquariumscience.org",
+      "url": "https://aquariumscience.org/index.php/15-6-5-liquid-co2",
+      "label": null,
+      "verdict": "2",
+      "why": "glutaraldehyde dosing is a balancing act; toxic to fish, plants and bacteria; cited test showed no growth gain (critical source)"
+     }
+    ]
+   }
   },
   {
    "id": "airpump",
@@ -599,7 +655,21 @@
     }
    ],
    "confidence": "low",
-   "reason": "One source opened (Aquarium Advice page returned 403); it points to moderate sizing and flow-tuning difficulty."
+   "reason": "One source opened (Aquarium Advice page returned 403); it points to moderate sizing and flow-tuning difficulty.",
+   "firstPass": 2,
+   "verify": {
+    "verdict": "inconclusive",
+    "reason": "Install is easy but sizing and medication/cycling cautions give a beginner ways to fail; BRS says 2, LiveAquaria reads 1.",
+    "newSources": [
+     {
+      "site": "LiveAquaria",
+      "url": "https://www.liveaquaria.com/article/361/?aid=361",
+      "label": null,
+      "verdict": "1",
+      "why": "described as easy to install, low maintenance; but must size wattage/flow, off during cycling and copper meds, sleeve cleaned every 6 months, bulb every 9-12"
+     }
+    ]
+   }
   },
   {
    "id": "doser",
@@ -615,8 +685,22 @@
      "why": "calibration through real tubing, programming, siphon prevention, overdose spikes parameters, one additive per head"
     }
    ],
-   "confidence": "low",
-   "reason": "One source opened (Aquifarm returned 403); calibration and overdose risk argue for intermediate."
+   "confidence": "medium",
+   "reason": "One source opened (Aquifarm returned 403); calibration and overdose risk argue for intermediate.",
+   "firstPass": 2,
+   "verify": {
+    "verdict": "confirmed",
+    "reason": "Aquifarm 403.",
+    "newSources": [
+     {
+      "site": "Gensou",
+      "url": "https://gensou.sg/?p=22550",
+      "label": null,
+      "verdict": "2",
+      "why": "calibrate each channel to within 5%, recalibrate every 2-3 months, siphon and clog prevention, swings trigger algae"
+     }
+    ]
+   }
   },
   {
    "id": "feeder",
