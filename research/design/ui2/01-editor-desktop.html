@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>UI2 mockup: editor, desktop</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  .app { display: grid; height: 100vh; grid-template-columns: var(--rail-w) var(--panel-w) 1fr; grid-template-rows: var(--header-h) 1fr; grid-template-areas: "head head view" "rail panel view"; }
+  .app > header { grid-area: head; } .app > .rail { grid-area: rail; } .app > .panel { grid-area: panel; } .app > .viewer { grid-area: view; }
+</style></head>
+<body>
+<script src="icons.js"></script><script src="shell.js"></script>
+<div class="app" id="app"></div>
+<script>
+document.getElementById('app').innerHTML = apphead() + rail('tank', {animals: '!'}) + `
+<section class="panel">
+  <div class="sec-head"><h2>Tank</h2><button class="btn sm ghost">${I('ideas')} Ideas for the tank</button></div>
+  <div class="sec-body">
+    <div class="group open"><div class="gh">Tank model <span class="sum">40 gal breeder</span></div><div class="gb">
+      <div class="card media sel"><div class="thumb" style="display:grid;place-items:center;color:#3a4150">${I("tank")}</div>
+        <div><div class="t">Aqueon 40 gal breeder</div><div class="m">36 &times; 18 &times; 16 in &middot; rimmed &middot; $139</div></div>
+        <button class="btn sm">Change&hellip;</button></div>
+      <div class="row"><span class="lbl">Shape</span><div class="seg"><button class="on">Box</button><button>Bow</button><button>Corner</button><button>Other &#9662;</button></div><span></span></div>
+      <div class="row"><span class="lbl">Length &times; depth</span><div style="display:flex;gap:6px;align-items:center"><input class="input num" value="36"><span class="unit">in</span> &times; <input class="input num" value="18"><span class="unit">in</span></div><span></span></div>
+      <div class="row"><span class="lbl">Height</span><input class="slider" type="range" value="45"><span class="val">16 in</span></div>
+      <div class="hint">40 gal &middot; about 458 lb filled. Size edits leave the ready-made tank (its price goes to an estimate).</div>
+    </div></div>
+    <div class="group open"><div class="gh">Sits on <span class="sum">Cabinet stand</span></div><div class="gb">
+      <div class="seg full"><button>Floor</button><button class="on">Stand</button><button>My own furniture</button></div>
+      <div class="row"><span class="lbl">Style</span><select class="select"><option>Cabinet, black</option></select><span></span></div>
+      <div class="row"><span class="lbl">Height</span><input class="slider" type="range" value="55"><span class="val">30 in</span></div>
+    </div></div>
+    <div class="group"><div class="gh">Top and rim <span class="sum">Rimmed &middot; glass lid</span></div></div>
+    <div class="group"><div class="gh">Glass <span class="sum">Standard, 1/4 in</span></div></div>
+    <div class="group"><div class="gh">Background <span class="sum">Black, 3 sides</span></div></div>
+    <div class="group"><div class="gh">Room <span class="sum">Wall behind &middot; 8 ft ceiling &middot; you, 5 ft 10 in</span></div></div>
+  </div>
+</section>
+<main class="viewer">
+  <div class="ov" style="top:12px;left:50%;transform:translateX(-50%)">${toolbar()}</div>
+  <div class="ov" style="bottom:14px;left:50%;transform:translateX(-50%)">${checkbar({full:1})}</div>
+</main>`;
+</script>
+<div style="position:absolute;inset:0;pointer-events:none">
+  <div class="note" data-n="1" style="top:14px;left:452px;max-width:200px">&#9664; Undo / Redo / Save always at the top. &hellip; = New, Open, Save as, Share link, Download</div>
+  <div class="note" data-n="2" style="top:250px;left:452px;max-width:190px">&#9664; Rail: one door per section, always visible; the panel folds to just the rail</div>
+  <div class="note" data-n="3" style="top:120px;left:452px;max-width:190px">&#9664; One section open at a time; groups fold to a one-line summary</div>
+  <div class="note" data-n="4" style="top:64px;left:880px">Shared view controls, top middle (R15)</div>
+  <div class="note" data-n="5" style="bottom:66px;left:1010px;max-width:300px">The four checks in one bar along the bottom; each opens the right-hand drawer, which pushes the view aside instead of covering the tank</div>
+  <div class="note" data-n="6" style="top:360px;left:452px;max-width:190px">Viewpoint map: off by default, a switch in View</div>
+</div>
+</body></html>

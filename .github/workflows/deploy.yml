@@ -13,7 +13,7 @@ permissions:
 # No workflow-level concurrency: each job has its own group, and neither cancels a running job.
 # GitHub keeps at most one running and one waiting job per group; a newer waiting job replaces the
 # older waiting one. So during a burst of pushes:
-# - test: the running test finishes (pushes come every 1-4 min and a test takes ~3, so cancelling
+# - test: the running test finishes (pushes come every 1-4 min and a test took ~3 in Oct and ~15-20 by 2026-11-13, so cancelling
 #   running tests would starve deploys); the newest push waits next, intermediate ones are dropped.
 # - deploy: a running deploy always finishes; the newest tested commit waits next.
 # Runs pass test in push order, so an older commit can never deploy after a newer one, and the
@@ -22,7 +22,7 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 20 # a hung test must not hold the run
+    timeout-minutes: 45 # a hung test must not hold the run; the suite grew to ~13 min on 2 local workers (2026-11-13), CI hit 20 min every run since build 1912
     concurrency:
       group: test-${{ github.ref }}
       cancel-in-progress: false
