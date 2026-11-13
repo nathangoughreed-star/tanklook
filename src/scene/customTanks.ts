@@ -6,6 +6,7 @@ import { defaultSetup } from './defaults';
 import { parseTank, parseCustomRef } from './validate';
 import { newUid } from './uid';
 import { autoName } from './customTankName';
+import { PANES, type GlassBuild } from './glassSolver';
 import type { CustomTankRef, GlassType, Tank, TankSetup } from './types';
 
 export const CUSTOM_KEY = 'tanklook.customTanks';
@@ -21,6 +22,9 @@ export interface CustomTankSpec {
   /** the user's own price for this tank, USD; absent = the engine's estimate */
   priceUsd?: number;
   owned?: boolean;
+  /** The glass the custom tank maker's glass panel chose (GS1 solver; lane S3, 2026-11-13): per-pane thickness (mm), the brace and the
+   *  safety factor. Absent = not worked out; `glass` alone then says how thick the glass is drawn. */
+  glassBuild?: GlassBuild;
 }
 export interface CustomTank extends CustomTankSpec { id: string; version: number; updated: number }
 export interface Store { getItem(k: string): string | null; setItem(k: string, v: string): void }
@@ -41,7 +45,20 @@ export function parseSpec(raw: unknown): CustomTankSpec | undefined {
     rim: o.rim !== false,
     ...(ref.priceUsd !== undefined ? { priceUsd: ref.priceUsd } : {}),
     ...(ref.owned ? { owned: true } : {}),
+    ...(parseBuild(o.glassBuild) ? { glassBuild: parseBuild(o.glassBuild)! } : {}),
   };
+}
+
+const mmOk = (v: unknown, lo: number, hi: number): v is number => typeof v === 'number' && Number.isFinite(v) && v >= lo && v <= hi;
+/** A saved glass build, or undefined when absent or not usable (lane S3). */
+export function parseBuild(raw: unknown): GlassBuild | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const o = raw as Record<string, unknown>, p = o.panes as Record<string, unknown> | undefined;
+  if (!p || typeof p !== 'object' || !PANES.every(k => mmOk(p[k], 2, 60)) || !mmOk(o.safetyFactor, 1, 10)) return undefined;
+  const b = o.brace as Record<string, unknown> | null | undefined;
+  const brace = b && typeof b === 'object' && mmOk(b.width, 10, 400) && mmOk(b.thickness, 2, 60)
+    ? { width: b.width, thickness: b.thickness, ...(mmOk(b.cross, 0, 6) ? { cross: Math.round(b.cross) } : {}), ...(mmOk(b.crossWidth, 10, 400) ? { crossWidth: b.crossWidth } : {}) } : null;
+  return { panes: Object.fromEntries(PANES.map(k => [k, p[k] as number])) as GlassBuild['panes'], brace, safetyFactor: o.safetyFactor };
 }
 
 function parseEntry(raw: unknown): CustomTank | undefined {
@@ -79,8 +96,8 @@ export function addCustomTank(lib: readonly CustomTank[], spec: CustomTankSpec, 
   return { lib: [...lib, entry], entry };
 }
 const sameTankSpec = (a: CustomTankSpec, b: CustomTankSpec) =>
-  JSON.stringify([a.tank, a.glass, a.glassType, a.rim, a.priceUsd ?? null]) === JSON.stringify([b.tank, b.glass, b.glassType, b.rim, b.priceUsd ?? null]);
-/** Edit: the version goes up by one when the tank (size, shape, glass, rim) or the price changes; a rename or the owned flag alone does not bump it. `priceUsd: undefined` in the patch clears the own price. */
+  JSON.stringify([a.tank, a.glass, a.glassType, a.rim, a.priceUsd ?? null, a.glassBuild ?? null]) === JSON.stringify([b.tank, b.glass, b.glassType, b.rim, b.priceUsd ?? null, b.glassBuild ?? null]);
+/** Edit: the version goes up by one when the tank (size, shape, glass, rim, glass build) or the price changes; a rename or the owned flag alone does not bump it. `priceUsd: undefined` in the patch clears the own price. */
 export function editCustomTank(lib: readonly CustomTank[], id: string, patch: Partial<CustomTankSpec>, now = Date.now()): { lib: CustomTank[]; entry?: CustomTank } {
   const cur = find(lib, id);
   if (!cur) return { lib: [...lib] };

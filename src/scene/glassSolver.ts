@@ -308,6 +308,9 @@ export interface GlassOpts {
   /** 'full': bottom rests on a flat stand / mat; 'perimeter': only its edges are carried (framed tank on a trim). */
   bottomSupport?: 'full' | 'perimeter';
   brace?: BraceSpec | null;
+  /** Top edge with no brace: 'free' (rimless, the default) or 'held' (a framed / rimmed tank: the plastic trim holds the top edge, solved as
+   *  simply supported; lane S3, 2026-11-13, the custom tank maker's Rimmed / Rimless switch). A brace, when given, wins. */
+  topEdge?: 'free' | 'held';
   /** Levy terms and grid (accuracy vs speed). */
   terms?: number; grid?: [number, number];
   /** Also find the smallest continuous thickness per pane (default true; the optimizer turns it off for speed). */
@@ -379,13 +382,13 @@ export interface GlassSolution {
   notes: string[];
 }
 
-interface Resolved { sf: number; mor: number; E: number; nu: number; gamma: number; stock: number[]; mode: 'uniform' | 'perPane'; defl: number; bottom: 'full' | 'perimeter'; brace: BraceSpec | null; terms: number; grid: [number, number] }
+interface Resolved { sf: number; mor: number; E: number; nu: number; gamma: number; stock: number[]; mode: 'uniform' | 'perPane'; defl: number; bottom: 'full' | 'perimeter'; brace: BraceSpec | null; top: 'free' | 'held'; terms: number; grid: [number, number] }
 
 function resolve(o: GlassOpts): Resolved {
   return {
     sf: o.safetyFactor ?? DEFAULT_SF, mor: o.mor ?? GLASS_MOR, E: o.E ?? GLASS_E, nu: o.nu ?? GLASS_NU, gamma: o.gamma ?? GAMMA_FRESH,
     stock: [...(o.stock ?? (o.units === 'metric' ? STOCK_METRIC : STOCK_US))].sort((x, y) => x - y),
-    mode: o.mode ?? 'uniform', defl: o.deflection?.thicknessRatio ?? 1, bottom: o.bottomSupport ?? 'full', brace: o.brace ?? null,
+    mode: o.mode ?? 'uniform', defl: o.deflection?.thicknessRatio ?? 1, bottom: o.bottomSupport ?? 'full', brace: o.brace ?? null, top: o.topEdge ?? 'free',
     terms: o.terms ?? 61, grid: o.grid ?? [33, 25],
   };
 }
@@ -402,7 +405,7 @@ function crossTies(a: number, br: BraceSpec | null): TieSpec[] {
 function wallAt(kind: 'long' | 'end', spec: GlassTankSpec, t: number, r: Resolved) {
   const a = kind === 'long' ? spec.L : spec.D;
   const br = r.brace;
-  const top: TopEdge = br ? { kind: 'edge', EI: r.E * br.thickness * br.width ** 3 / 12, ties: kind === 'long' ? crossTies(a, br) : [] } : { kind: 'edge', EI: 0 };
+  const top: TopEdge = br ? { kind: 'edge', EI: r.E * br.thickness * br.width ** 3 / 12, ties: kind === 'long' ? crossTies(a, br) : [] } : r.top === 'held' ? { kind: 'ss' } : { kind: 'edge', EI: 0 };
   return plate({ a, b: spec.H, t, load: { kind: 'hydro', gamma: r.gamma, h: waterDepth(spec) }, top, E: r.E, nu: r.nu, terms: r.terms, grid: r.grid });
 }
 

@@ -17,7 +17,7 @@ import { climateOf, climateText, type Climate, type Status } from '../../data/cl
 import { verdictOf, type Issue, type Verdict } from '../../scene/verdict';
 
 /** One look for every status pill in the shell (tokens.css .pill). */
-export type Tone = 'ok' | 'warn' | 'bad' | 'neutral';
+export type Tone = 'ok' | 'warn' | 'bad' | 'neutral' | 'accent';
 export type CheckId = 'habitat' | 'cost' | 'water' | 'notes';
 export const CHECKS: { id: CheckId; title: string }[] = [
   { id: 'habitat', title: 'Habitat check' }, { id: 'cost', title: 'Cost and time' }, { id: 'water', title: 'Water' }, { id: 'notes', title: 'Notes' },
