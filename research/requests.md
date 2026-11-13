@@ -26,6 +26,8 @@ Rules:
 | R20 | 11-13 | Visual styles direction (decorative / themed / hybrid): audit + first slice, per research/design/styles-direction-2026-11-13.md section 20 | DS1 | 1eeb761e | doc only | - | Nathan 11-13: approved 1-4, 7-10; 5 = one Decor category (no per-ornament buttons); 6 rejected |
 | R21 | 11-13 | Pirate-tank first slice (ornament kind, ship + chest, themed-scene recipe); visual proof sheet first | DS2 | - | - | - | stop 1 sheet 980778cd: Nathan 11-13 "Fix my notes first" (sail tears, size S/M/L default ~10 in, duller gold, less boxy castles, sail curve); stop 1b pending |
 | R22 | 11-13 | Plant sway half the amplitude | Coordinator 24 (one constant, PLANT_SWAY_AMP 0.5 in render/viewer.ts) | - | pending push | - | Nathan's look on live (motion can't be shot) |
+| R23 | 11-13 | Lid clips: one middle clip per long side up to 48 in (was two above 31.5 in) | Coordinator 24 (MID_CLIPS_2 = 1220 mm, render/lidClips.ts) | - | pending push | - | live shot of a 36-48 in rimless tank with a glass lid |
+| R24 | 11-13 | Turn off automatic quality changes (keep the code) | Coordinator 24 (AUTO_QUALITY = false, render/perf.ts; caustics back-off off; a self-lowered saved level is restored; Auto checkbox hidden) | - | pending push | - | Nathan: quality and moving caustics stay on |
 
 ## Closed (seen on live)
 

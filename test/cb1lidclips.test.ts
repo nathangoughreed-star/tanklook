@@ -23,7 +23,7 @@ describe('glass lid clips', () => {
     expect(clipLid(setup(false, 'open'), setup(false).tank)).toBe(false);
   });
   it('4 corner hooks (2 legs each) and 1-2 straight hooks per long side, 4 boxes a hook', () => {
-    const S = setup(false), T = S.tank, n = lidClipBoxes(S, T).length / 4, straight = T.L > 800 ? 2 : 1;
+    const S = setup(false), T = S.tank, n = lidClipBoxes(S, T).length / 4, straight = T.L > 1220 ? 2 : 1; // MID_CLIPS_2 (Nathan 2026-11-13: one mid clip up to 48 in)
     expect(n).toBe(8 + 2 * straight);
   });
   it('the ledges sit a few mm below the rim and the lid rests on them', () => {

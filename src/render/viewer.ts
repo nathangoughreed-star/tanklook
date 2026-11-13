@@ -15,7 +15,7 @@ import { drawViewMap } from './viewmap';
 import { applyFraming, fovFor, frameBox, frameStraightOn, pairCentre, pairEnvelope, placeCamera, windowCentre } from './camera';
 import { glowColor, placeSlice, roomLevel, setLightUniforms, setWaterUniforms } from './lighting';
 import { FROST } from './build';
-import { autoStep, levelOf, onPerf, perf, setFps } from './perf';
+import { autoStep, levelOf, onPerf, perf, setFps, AUTO_QUALITY } from './perf';
 import { wattsOf } from '../scene/lightout';
 import { placeShells } from './lightShells';
 import { onPictureLoad, setMaxAnisotropy } from './textures';
@@ -439,7 +439,7 @@ export class Viewer {
     if (now - this.causAt < 1000 / this.causRate) return false;
     if (!this.vps.some(vp => vp.scene && vp.S.water.on && vp.S.light.type !== 'flat')) return false;
     // back-off, judged every 20 steps once the averages have settled
-    if (++this.causSteps % 20 === 0 && Math.max(this.causCpu, this.causGapMs) > CAUS_SLOW_MS) { this.causRate = this.causRate >= CAUS_FPS ? CAUS_FPS / 2 : 0; this.causCpu = this.causGapMs = 0; }
+    if (AUTO_QUALITY && ++this.causSteps % 20 === 0 && Math.max(this.causCpu, this.causGapMs) > CAUS_SLOW_MS) { this.causRate = this.causRate >= CAUS_FPS ? CAUS_FPS / 2 : 0; this.causCpu = this.causGapMs = 0; }
     this.causT += this.causAt ? Math.min(now - this.causAt, 200) : 0; this.causAt = now;
     return tickFx(this.causT);
   }

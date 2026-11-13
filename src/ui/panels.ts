@@ -25,7 +25,7 @@ import { confirmNew } from './newTank';
 import { startProject, confirmStart, setProjectAsker, regenerateKeepingLocks, hasLocks } from './projectStart';
 import { startDeals, visibleTabs, pickTab, sortDeals, DEFAULT_SORT, type DealSort, type StartTab } from './startEntries';
 import { DEALS_AS_OF, DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
-import { LEVELS, backToFull, onPerf, perf, setAuto, setLevel } from '../render/perf';
+import { AUTO_QUALITY, LEVELS, backToFull, onPerf, perf, setAuto, setLevel } from '../render/perf';
 import { FX, FX_DEFAULT, onFx } from '../render/fx';
 import { FX_KEYS, TONE_NAMES, causticStatus, chooseFx, fxLabel, FX_LABELS, levelReason, lockedByUrl, restoreFxDefaults } from '../render/fxPrefs';
 import { lifeStages } from '../data/lifestages';
@@ -1299,6 +1299,7 @@ Cancel, then change the name, to keep both.`)) return;
   $('gridOn').onchange = e => store.edit(s => { s.render.grid = (e.target as HTMLInputElement).checked; });
   // Performance: a per-viewer preference too (render/perf.ts); the readout is the frame rate while the camera moves
   { const sl = $('perf'), au = $('perfAuto');
+    if (!AUTO_QUALITY) (au.closest('label') ?? au).setAttribute('hidden', ''); // automatic changes are off for now (render/perf.ts)
     const show = () => { (sl as HTMLInputElement).value = String(perf.level); au.checked = perf.auto; $('oPerf').textContent = LEVELS[perf.level].name;
       $('perfFps').textContent = perf.fps == null ? '' : `${Math.round(perf.fps)} fps while moving`; };
     sl.oninput = () => setLevel(+(sl as HTMLInputElement).value); au.onchange = () => setAuto(au.checked); onPerf(show); show(); }
