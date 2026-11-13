@@ -239,17 +239,21 @@ function clean(a: Archetype, d: Density, S: TankSetup): void {
   if (tw.ornaments) {
     const T = S.tank, list = tw.ornaments[d], ship = Math.round(Math.max(150, Math.min(381, T.L * 0.28)));
     list.forEach((v, i) => {
-      const id = 1 + Math.max(0, ...S.items.map(x => x.id)), chest = v === 'treasurechest', yaw = chest ? -14 : 18, size = chest ? Math.round(ship * 0.4) : ship;
+      const id = 1 + Math.max(0, ...S.items.map(x => x.id)), chest = v === 'treasurechest', yaw = chest ? -14 : 18, size = chest ? Math.round(ship * 0.5) : ship;
       // the spot with the least hardscape under it (the ship leans toward the left-centre, the chest toward the right)
       let best: Item | null = null, bestHit = Infinity;
-      for (const fx of chest ? [0.66, 0.74, 0.58, 0.82] : [0.38, 0.3, 0.46, 0.54, 0.22]) for (const fd of chest ? [0.62, 0.72, 0.5] : [0.42, 0.55, 0.32]) {
+      for (const fx of chest ? [0.66, 0.74, 0.58, 0.82] : [0.38, 0.3, 0.46, 0.54, 0.22]) for (const fd of chest ? [0.45, 0.35, 0.55, 0.28] : [0.5, 0.42, 0.6, 0.34]) {
         const o = makeItem(T, v, id, 7 + i, T.L * fx, T.D * fd, { size, yaw }), [w, , dp] = itemDims(o);
         const hit = S.items.filter(it => it.kind !== 'plant' && it.kind !== 'artificial' && Math.abs(it.x - o.x) < (w + itemDims(it)[0]) / 2 && Math.abs(it.depth - o.depth) < (dp + itemDims(it)[2]) / 2).length
           + S.items.filter(it => it.kind === 'ornament' && Math.hypot(it.x - o.x, it.depth - o.depth) < (w + itemDims(it)[0]) / 2).length * 3;
-        if (hit < bestHit) { best = o; bestHit = hit; }
+        const lane = S.items.filter(it => (it.kind === 'stone' || it.kind === 'wood') && it.depth < o.depth && Math.abs(it.x - o.x) < Math.max(w, dp) / 2 + itemDims(it)[0] / 2 + 0.6 * (o.depth - it.depth) && itemDims(it)[1] > itemDims(o)[1]).length * 2; // hardscape in the front lane hides it too
+        if (hit + lane < bestHit) { best = o; bestHit = hit + lane; }
       }
       const o = best!, [w, , dp] = itemDims(o);
       S.items = S.items.filter(it => it.kind !== 'plant' || it.lift > 1 || Math.abs(it.x - o.x) > w / 2 + 15 || Math.abs(it.depth - o.depth) > dp / 2 + 15); // no plant grows through the piece
+      // the front lane stays clear: no plant taller than the piece stands between it and the front glass (depth grows toward the BACK wall, so the front lane is the smaller depths)
+      const hh = itemDims(o)[1], half = Math.max(w, dp) / 2 + 10;
+      S.items = S.items.filter(it => it.kind !== 'plant' || it.depth >= o.depth || Math.abs(it.x - o.x) > half + itemDims(it)[0] / 2 + 0.6 * (o.depth - it.depth) || itemDims(it)[1] <= hh); // (a wedge that widens toward the glass, so a 3/4 view is clear too)
       S.items.push(o);
     });
   }

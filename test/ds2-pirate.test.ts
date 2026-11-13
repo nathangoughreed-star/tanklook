@@ -6,7 +6,7 @@ import { ARCHETYPES, archetype } from '../src/scene/archetypes';
 import { recipeScene } from '../src/scene/recipes';
 import { TANK_MODELS } from '../src/data/tanks';
 import { designAxes } from '../src/scene/designAxes';
-import { LIBRARY, makeItem } from '../src/scene/items';
+import { LIBRARY, itemDims, makeItem } from '../src/scene/items';
 import { plantUptake } from '../src/scene/nitrogen';
 import { defaultScene } from '../src/scene/defaults';
 import { buildSheet } from '../src/scene/setupsheet';
@@ -39,6 +39,23 @@ describe('B: the themed pirate scene', () => {
     const P = recipeScene('planted-community', 'balanced', model, undefined, NOW)!;
     P.items.forEach((i, k) => { i.uid = 'u' + k; });
     expect(attrValues(P, facts).find(v => v.key === 'decor')!.elements).toEqual(['none']);
+  });
+});
+
+describe('every ornament is seen from the front', () => {
+  for (const tank of ['40 gal breeder', '20 gal long', '75 gal']) for (const d of ['open', 'balanced', 'full'] as const) it(`${tank}, ${d}: no plant, rock or wood taller than an ornament stands between it and the front glass`, () => {
+    const m = TANK_MODELS.find(x => x.name === tank && !x.terrarium);
+    if (!m) return;
+    for (const day of [0, 7, 19, 41]) {
+    const S = recipeScene('themed-scene', d, m, undefined, NOW + day * 864e5)!;
+    const orn = S.items.filter(i => i.kind === 'ornament');
+    expect(orn.length).toBeGreaterThan(0);
+    for (const o of orn) {
+      const [w, h] = itemDims(o);
+      const hide = S.items.filter(i => (i.kind === 'plant' || i.kind === 'stone' || i.kind === 'wood') && i.depth < o.depth && Math.abs(i.x - o.x) < w / 2 + itemDims(i)[0] / 2 && itemDims(i)[1] > h);
+      expect(hide.map(i => i.variant), `${o.variant} in ${tank} ${d}`).toEqual([]);
+    }
+    }
   });
 });
 
