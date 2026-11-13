@@ -1,0 +1,15 @@
+import { readdirSync, readFileSync, statSync } from 'node:fs'; import { join } from 'node:path';
+const sep = String.fromCharCode(92), norm = f => f.split(sep).join('/');
+const walk = d => readdirSync(d).flatMap(f => { const p = join(d, f); return statSync(p).isDirectory() ? walk(p) : p.endsWith('.ts') ? [p] : []; });
+const files = walk('src/ui').map(norm); const tests = walk('test').map(norm).map(f => [f, readFileSync(f, 'utf8')]);
+const rows = files.map(f => { const t = readFileSync(f, 'utf8'); const lines = t.split('\n').length;
+  const dom = (t.match(/document\.|\.innerHTML|createElement|querySelector|getElementById|addEventListener|\.onclick|\.onchange|\.oninput/g) || []).length;
+  const eng = [...t.matchAll(/from '(\.\.?\/)+(scene|demand|data|render|explore|interact)\/[^']+'/g)].length;
+  const store = (t.match(/store\.(edit|update|editTank|replace|setActive)\(/g) || []).length;
+  const ls = (t.match(/localStorage/g) || []).length;
+  const key = f.replace(/^src\//, '').replace(/\.ts$/, '');
+  const tcount = tests.filter(([, s]) => s.includes(`/${key}'`)).length;
+  return { f: f.replace('src/ui/', ''), lines, dom, eng, store, ls, tests: tcount }; });
+rows.sort((a, b) => b.lines - a.lines);
+console.log('file lines domOps engineImports storeWrites localStorage testsImporting');
+for (const r of rows) console.log(r.f, r.lines, r.dom, r.eng, r.store, r.ls, r.tests);
