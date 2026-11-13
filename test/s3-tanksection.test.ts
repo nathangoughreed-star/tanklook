@@ -10,7 +10,7 @@ import { getTankModel } from '../src/data/tanks';
 import { mapToTank } from '../src/scene/physics';
 import {
   modelCard, customRows, commercialRows, chooseCommercial, chooseCustom, previewRow, makerSetup, makerFacts, priceView, startSpec, glassText, dims,
-  sitsOnSummary, lidSummary, roomSummary, loadGroups, saveGroups, GROUP_DEFAULT, specChanged,
+  sitsOnSummary, lidSummary, roomSummary, loadGroups, saveGroups, GROUP_DEFAULT, specChanged, SHAPE_MAIN, SHAPE_MORE,
 } from '../src/shell/logic/tank';
 import { glassPanel, defaultChoice, DISCLAIMER } from '../src/shell/logic/tankGlass';
 import type { TankSetup } from '../src/scene/types';
@@ -120,6 +120,12 @@ describe('custom tank maker', () => {
     expect(copy.libId).toBeUndefined();
     expect(copy.spec.name).toMatch(/^Custom .* \(from .+\)$/);
     expect(copy.spec.tank).toEqual(S.tank);
+    const fresh = startSpec(S, 'new', []);
+    expect(fresh.spec).toMatchObject({ rim: false, glass: 'auto', tank: { L: S.tank.L, D: S.tank.D, H: S.tank.H } });
+    expect(fresh.spec.tank.shape).toBeUndefined(); // a box
+    const B = defaultSetup(); B.tank = { ...B.tank, shape: 'bow', bowMin: B.tank.D * 0.7 };
+    expect(startSpec(B, 'new', []).spec.tank.shape).toBeUndefined();
+    expect(SHAPE_MAIN).toEqual(['rect', 'pie', 'round']); expect(SHAPE_MORE[0]).toBe('bow');
     const { lib, entry } = addCustomTank([], spec(), 1), T = defaultSetup();
     chooseCustom(T, entry);
     expect(startSpec(T, 'edit', lib)).toMatchObject({ libId: entry.id, spec: { name: 'Den 40' } });
