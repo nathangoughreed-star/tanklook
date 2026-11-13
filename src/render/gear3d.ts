@@ -194,7 +194,7 @@ export function buildGear(S: TankSetup, T: Tank, solids: THREE.Box3[], picks = g
   for (const p of picks) BESIDE[p.id]?.(S, T, kit);
   const out = kit.meshes();
   for (const m of out) m.visible = shown;
-  if (out[0]) { out[0].userData.gearPieces = pieces; out[0].userData.cups = kit.cups; }
+  if (out[0]) { out[0].userData.gearPieces = pieces; out[0].userData.cups = kit.cups; out[0].userData.heaterAxes = kit.heaterAxes; }
   live = live.filter(o => o.parent).concat(out);
   return out;
 }

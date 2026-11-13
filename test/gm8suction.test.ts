@@ -46,3 +46,20 @@ describe('GM8 suction mounts', () => {
     }
   }
 });
+
+// Lane GM8b: heaters are vertical or horizontal, never diagonal (auto-placement, saved tilts, every pane, with and without a backdrop).
+describe('GM8b heater axes', () => {
+  const axes = (S: TankSetup, lean?: number) => {
+    const place = lean == null ? undefined : { wall: 'left' as const, at: 0.5, lean };
+    const ms = buildGear(S, S.tank, [], [{ id: 'heater-200', watts: 200, ...(place ? { place: { wall: 'left' as const, u: 100, lean } } : {}) }]);
+    return (ms[0]?.userData.heaterAxes ?? []) as THREE.Vector3[];
+  };
+  for (const [name, L, D, H] of SIZES) for (const bd of [true, false]) for (const lean of [undefined, 20, -30, 50, 80]) {
+    it(`${name}${bd ? ' with backdrop' : ''}${lean != null ? ` lean ${lean}` : ''}: axis within 1 degree of vertical or horizontal`, () => {
+      const ax = axes(tank(ex(), L, D, H, bd), lean);
+      expect(ax.length).toBe(1);
+      const a = Math.abs(Math.asin(Math.min(1, Math.abs(ax[0].y)))) * 180 / Math.PI; // 0 = horizontal, 90 = vertical
+      expect(Math.min(a, 90 - a)).toBeLessThan(1);
+    });
+  }
+});
