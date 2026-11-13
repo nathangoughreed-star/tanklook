@@ -15,18 +15,12 @@ Rules:
 
 | # | Asked (date) | Nathan's ask (short) | Chat | Branch / sha | Merged (build) = expected live by | Live check | Next step |
 |---|---|---|---|---|---|---|---|
-| R2 | 11-12 | Hard angular dark shadow patches on sand (images/7.png) | VF-C2 | claude/confident-sutherland-a9c8ce 6a19630e | 1879 | **FAIL on Nathan's tank** (11-13, images/3.png: pale/dark angular patches still on the sand, seen from above) | VF-C3 31b23ba4 in 1884 | LIVE 1884 from his camera (az -87, el 32): angular shards gone (C24 leaf-his-view.png, 11-13); close after Nathan's own look |
-| R3 | 11-12 | Leaf litter standing up and hovering (images/8.webp) | VF-C2 | same | 1879 | **FAIL on Nathan's tank** (11-13, images/3.png: leaves on the right stand steep / hang) | VF-C3 31b23ba4 in 1884 | LIVE 1884 FAIL at low angle (el 4): pile leaves still rise 40-50 deg off other leaves (C24 R3-live-1884-still-steep.png) | back to VF-C2: cap tilt for leaves resting on leaves |
 | R7 | 11-12 | Name for the Habitat check tile (alternatives: Animal wellbeing, Welfare) | - | - | - | - | waits on Nathan |
 | R8 | 11-12 | Hoses enter the cabinet through the back panel (audit #31) | CB1 | 22352e75 | yes | 11-13 wall hidden, from behind (sw-R8-behind.png): canister hoses run down OUTSIDE the back panel nearly to the floor, no visible entry hole | ask Nathan; likely back to CB |
 | R9 | 11-12 | Weird substrate bug round rock bases, in HIS tank (audit #3) | VF-C2 | 1bfbc99f, fc1412f4 | yes | PARTIAL: test scenes fine, his own tank not available | ask Nathan for the scene (Scene data JSON) or recheck his screenshot case |
 | R10 | 11-12 | Habitat tile / Map card float over the tank when the panel is collapsed (audit C, found, not asked) | - | - | - | - | ask Nathan if he wants it fixed |
 | R11 | 11-10 | Quick-preferences "Don't want" section question (Coordinator 22) | - | - | - | - | may be stale after the Discover redesign; ask Nathan |
-| R12 | 11-13 | Map button out of the viewer's lower left, into the View menu | HM3 | - | - | - | lane started |
-| R13 | 11-13 | Undo / Redo / Save off the viewer; only at the top of the left menu | HM3 | - | - | - | lane started |
-| R14 | 11-13 | Discover button off the viewer; only in the left menu | HM3 | - | - | - | lane started |
 | R15 | 11-13 | Split view: shared controls (View, Another moment) in one cluster top-middle between the views | HM3 | - | - | - | lane started |
-| R16 | 11-13 | Split view: a "Notes" section per side with that tank's warnings | HM3 | - | - | - | lane started |
 | R18 | 11-13 | Rolling water shadows (caustics) and surface ripples about twice as fast; maybe a setting | VF8 | - | - | - | lane started; no setting (Nathan 11-13: "Just double it") |
 | R19 | 11-13 | Aquarium-only live site: hide terrarium / paludarium / herp features (code kept, one switch) | AQ1 | df572949 + c0bc3102 | 1898 (queued behind the 1896 deploy) | - | live shot of New habitat + Animals; African dwarf frogs stay (Nathan 11-13), AQ1 follow-up |
 
@@ -34,6 +28,12 @@ Rules:
 
 | # | Ask | Live build | Screenshot |
 |---|---|---|---|
+| R2 | Sand shards around the wood (Nathan's tank) | 1901 | C24 leaf-1896-his.png (live 1901, his camera) |
+| R3 | Leaf litter / leaf-brush pile lies flat (Nathan's tank) | 1901 | C24 leaf-1896-low.png (live 1901, el 4 deg) + leaf-1896-his.png |
+| R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
+| R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
+| R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
+| R16 | Notes pill per tank (single view seen; split per-side seen in HM3 shots) | 1901 | C24 leaf-1896-low.png ('Notes: 1 advice') |
 | R17 | Split tab differences: no change, Nathan 11-13 "Hover is fine" (the tab shows "N diffs", the list on hover) | - | - |
 | R5 | Discover: orbit works while a preview shows (zoom: Nathan's case only partly reproduced; reopen if he still can't zoom) | 1880 | BG1 live-2-preview-showing-wheel/orbit.png: Map 90° left -> 144° left with the Dutch Garden preview up (11-13) |
 | R6 | Split view: each side its own Habitat check, cost pill, Water chip | 1879 | Nathan's own live screenshot images/4.webp (11-13) |
