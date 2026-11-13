@@ -94,7 +94,7 @@ button, input, select { font: inherit; color: inherit; }
 .card.sel { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 .card .t { font-weight: 600; } .card .m { color: var(--text-2); font-size: var(--fs-sm); }
 .card.media { grid-template-columns: 52px 1fr auto; align-items: center; gap: var(--s3); padding: var(--s2) var(--s3); }
-.thumb { width: 52px; height: 40px; border-radius: 6px; background: var(--bg-sunken) center/cover; }
+.thumb { width: 52px; height: 40px; border-radius: 6px; background: #d9dde3 center / 88% auto no-repeat; } /* generic tile: the item's catalogue picture on one neutral tile, never a crop of the tank */
 
 /* ---------- Tile (picker grids) ---------- */
 .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s2); }

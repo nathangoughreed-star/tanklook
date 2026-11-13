@@ -16,7 +16,7 @@
 <script src="icons.js"></script><script src="shell.js"></script>
 <div class="app" id="app"></div>
 <script>
-const sp = (n, m, c, x = '') => `<div class="card media"><div class="thumb" style="background-image:url(tank-render.jpg);background-size:600%;background-position:${x}"></div><div><div class="t">${n}</div><div class="m">${m}</div></div><div style="display:flex;align-items:center;gap:4px"><button class="btn icon sm">${I('minus')}</button><span class="val" style="min-width:20px;text-align:center">${c}</span><button class="btn icon sm">${I('plus')}</button></div></div>`;
+const sp = (n, m, c, x = '') => `<div class="card media"><div class="thumb" style="background-image:url(../../../public/gallery/${x}.webp)"></div><div><div class="t">${n}</div><div class="m">${m}</div></div><div style="display:flex;align-items:center;gap:4px"><button class="btn icon sm">${I('minus')}</button><span class="val" style="min-width:20px;text-align:center">${c}</span><button class="btn icon sm">${I('plus')}</button></div></div>`;
 document.getElementById('app').innerHTML = apphead() + rail('animals', {animals: '!'}) + `
 <section class="panel">
   <div class="editing"><span class="cap" style="color:var(--text-2)">Editing</span><div class="seg"><button>A</button><button class="on">B</button><button>Both</button></div><span class="hint">changes go to Tank B only</span></div>
@@ -25,12 +25,12 @@ document.getElementById('app').innerHTML = apphead() + rail('animals', {animals:
     <div style="display:flex;gap:6px"><div class="input" style="flex:1;display:flex;align-items:center;gap:6px;color:var(--text-3)">${I('search')} Search 412 species</div><button class="btn">Add&hellip;</button></div>
     <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="chip on">Fits this tank</span><span class="chip">Fish</span><span class="chip">Shrimp</span><span class="chip">Snails</span><span class="chip">Bottom</span></div>
     <div class="cap">In Tank B &middot; 40 animals</div>
-    ${sp('Neon tetra', 'school &middot; 1.2 in &middot; <span style="color:var(--ok)">fits</span>', 12, '70% 30%')}
-    ${sp('Harlequin rasbora', 'school &middot; 1.8 in &middot; <span style="color:var(--ok)">fits</span>', 8, '30% 40%')}
-    ${sp('Bronze corydoras', 'bottom &middot; 2.6 in &middot; <span style="color:var(--ok)">fits</span>', 6, '50% 70%')}
-    ${sp('Honey gourami', 'pair &middot; 2 in &middot; <span style="color:var(--warn)">tight with 2</span>', 2, '65% 15%')}
-    ${sp('Amano shrimp', 'cleanup &middot; 2 in &middot; <span style="color:var(--ok)">fits</span>', 6, '40% 80%')}
-    ${sp('Otocinclus', 'algae &middot; 1.6 in &middot; <span style="color:var(--ok)">fits</span>', 4, '20% 60%')}
+    ${sp('Neon tetra', 'school &middot; 1.2 in &middot; <span style="color:var(--ok)">fits</span>', 12, 'neon')}
+    ${sp('Harlequin rasbora', 'school &middot; 1.8 in &middot; <span style="color:var(--ok)">fits</span>', 8, 'harlequin')}
+    ${sp('Bronze corydoras', 'bottom &middot; 2.6 in &middot; <span style="color:var(--ok)">fits</span>', 6, 'bronzecory')}
+    ${sp('Honey gourami', 'pair &middot; 2 in &middot; <span style="color:var(--warn)">tight with 2</span>', 2, 'honeygourami')}
+    ${sp('Amano shrimp', 'cleanup &middot; 2 in &middot; <span style="color:var(--ok)">fits</span>', 6, 'amano')}
+    ${sp('Otocinclus', 'algae &middot; 1.6 in &middot; <span style="color:var(--ok)">fits</span>', 4, 'oto')}
     <div class="group"><div class="gh">Water <span class="sum">clear &middot; level 1 in below rim</span></div></div>
   </div>
 </section>

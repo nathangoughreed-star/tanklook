@@ -168,7 +168,7 @@ All in `research/design/ui2/tokens.css`. One style each; nothing outside the tok
 | Input, select | numbers, lists | as today, one style |
 | Pill (ok / warn / bad / accent / neutral) | read-only status | 29 pill / chip / tag / badge classes (with Chip) |
 | Chip | filters, removable tags | |
-| Card (plain, media, selected) | gear, species, library item, suggestion, build | 22 card classes |
+| Card (plain, media, selected) | gear, species, library item, suggestion, build. The picture is a **generic tile**: the item's catalogue picture (`public/gallery/*.webp` for animals; the same for plants, decor, gear) on one neutral tile, never a crop of the item in the tank (Nathan 11-13) | 22 card classes |
 | Tile | picker grids (looks, starters, tanks) | start-mode cards, qp-cards, library cards |
 | Panel, section head, group (folds to a one-line summary) | the left column | 24 panel / box / float classes |
 | Drawer | the right inspector | cost panel, habitat tile, water chip, notes, selected-animal box |
