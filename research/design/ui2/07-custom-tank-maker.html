@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>UI2 mockup: custom tank maker</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  .app { display: grid; height: 100vh; grid-template-columns: var(--rail-w) 420px 1fr; grid-template-rows: var(--header-h) 1fr; grid-template-areas: "head head view" "rail panel view"; }
+  .app > header { grid-area: head; } .app > .rail { grid-area: rail; } .app > .panel { grid-area: panel; } .app > .viewer { grid-area: view; }
+  .foot { display: flex; gap: var(--s2); padding: var(--s3) var(--s4); border-top: 1px solid var(--line); }
+</style></head>
+<body>
+<script src="icons.js"></script><script src="shell.js"></script>
+<div class="app" id="app"></div>
+<script>
+const sl = (l, v, p) => `<div class="row"><span class="lbl">${l}</span><input class="slider" type="range" value="${p}"><span class="val">${v}</span></div>`;
+document.getElementById('app').innerHTML = apphead() + rail('tank', {animals: '!'}) + `
+<section class="panel">
+  <div class="sec-head"><button class="btn icon ghost sm" title="Back">&#9664;</button><h2>New custom tank</h2><span class="hint">started blank</span></div>
+  <div class="sec-body">
+    <div class="row"><span class="lbl">Name</span><input class="input" value="Living-room bow 60" style="width:100%"><span></span></div>
+    <div class="group open"><div class="gh">Shape</div><div class="gb">
+      <div class="seg full"><button>Box</button><button class="on">Bow</button><button>Corner</button><button>Cube</button><button>More &#9662;</button></div>
+    </div></div>
+    <div class="group open"><div class="gh">Size <span class="sum">62 gal &middot; about 690 lb filled</span></div><div class="gb">
+      ${sl('Length', '48 in', 58)}${sl('Depth', '18 in', 40)}${sl('Height', '24 in', 55)}${sl('Bow depth', '3 in', 30)}
+    </div></div>
+    <div class="group open"><div class="gh">Glass and rim</div><div class="gb">
+      <div class="row"><span class="lbl">Glass</span><div class="seg"><button>Float</button><button class="on">Low-iron</button></div><span></span></div>
+      ${sl('Thickness', '3/8 in', 60)}
+      <div class="row"><span class="lbl">Rim</span><div class="seg"><button>Rimmed</button><button class="on">Rimless</button></div><span></span></div>
+      <div class="hint">48 x 24 in rimless needs at least 3/8 in glass.</div>
+    </div></div>
+    <div class="card" style="grid-template-columns:1fr auto;align-items:center"><div><div class="t">Build cost estimate</div><div class="m">custom glass, low-iron, rimless</div></div><span class="big" style="font-size:var(--fs-lg)">$780</span></div>
+    <label class="row" style="grid-template-columns:auto 1fr"><span class="toggle on"></span><span>I own this tank</span></label>
+  </div>
+  <div class="foot"><button class="btn primary" style="flex:1">Save to my tanks and use it</button><button class="btn">Cancel</button></div>
+</section>
+<main class="viewer">
+  <div class="ov" style="top:12px;left:50%;transform:translateX(-50%)">${toolbar()}</div>
+  <div class="ov" style="bottom:14px;left:50%;transform:translateX(-50%)">${checkbar({full: 1})}</div>
+</main>`;
+</script>
+<div style="position:absolute;inset:0;pointer-events:none">
+  <div class="note" data-n="1" style="top:60px;left:492px;max-width:260px">&#9664; The one place a tank's shape and size are set. Started blank or from a commercial tank ("Make a custom tank from this")</div>
+  <div class="note" data-n="2" style="top:250px;left:492px;max-width:250px">&#9664; The tank in the view redraws as you drag (mockup shows a still)</div>
+  <div class="note" data-n="3" style="bottom:110px;left:492px;max-width:260px">&#9664; Saved to "my tanks" in this browser, kept across setups; each setup keeps its own copy</div>
+</div>
+</body></html>

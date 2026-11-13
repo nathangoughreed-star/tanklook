@@ -6,11 +6,13 @@ Design only, no app code. Built from `research/design/ui1-inventory.md` (UI1, bu
 
 | Shot | What it shows |
 |---|---|
-| `research/screens/UI2/01-editor-desktop.png` | Main editor, 1600 x 900: header, rail, Tank section open, view controls top middle, check bar along the bottom |
+| `research/screens/UI2/01-editor-desktop.png` | Main editor, 1600 x 900: header, rail, Tank section open (a commercial tank: its size is read-only), view controls top middle, check bar along the bottom |
 | `research/screens/UI2/02-editor-phone.png` | Same at 390 x 844: tank on top, check strip, Animals as a bottom sheet, tab bar |
 | `research/screens/UI2/03-split-desktop.png` | Compare: two tanks, one shared control cluster over the seam, "Editing A / B / Both" in the panel, each tank its own check bar |
 | `research/screens/UI2/04-constraints-and-cost.png` | Constraints section open (the one home of every limit) with the Cost and time drawer open on the right |
 | `research/screens/UI2/05-equipment-heater.png` | Equipment > Heater: **I own** and **Buy** groups, one item locked "Use this one for sure" (Nathan 11-13) |
+| `research/screens/UI2/06-tank-picker.png` | Tank > Choose a tank: **Commercial tanks** and **Custom tanks** groups, "New custom tank" (Nathan 11-13) |
+| `research/screens/UI2/07-custom-tank-maker.png` | Custom tank maker: shape, size, glass, rim, name, Save to my tanks; the tank redraws live |
 
 ## 1. Who and what for
 
@@ -40,7 +42,7 @@ Ideas (Discover, Suggest) are not a job of their own: they are a faster way to d
 | **Editor** | all | after Start; resume | header + rail + panel + viewer + check bar + drawer |
 | Header | J5 | always (top of the panel column) | TankLook, project name (click to rename), saved dot, Undo, Redo, Save, `...` = New / Open / Save as / Share link / Download |
 | Rail | J2 | always, also when the panel is folded | Tank, Scape, Plants, Animals, Equipment / Preferences, Constraints / Discover, Print / Settings (bottom): 9 sections + Settings |
-| Section **Tank** | J2 | rail | Tank model and Stand (each with **I own** / **Buy** groups and the "Use this one for sure" lock, as in Equipment; the Buy picker opens docked in the panel, live in the room), shape and size, Sits on (floor / stand / my own furniture), Top and rim, Glass, Background, **Room** (wall, ceiling, person) |
+| Section **Tank** | J2 | rail | **Tank model**: either a **commercial tank** (catalogue product; shape, size, glass and rim fixed, shown read-only) or a **custom tank** (yours, from the custom tank maker). The picker (docked in the panel, live in the room) has two groups, Commercial tanks and Custom tanks (+ New custom tank); any tank row can carry the Owned pill and the "Use this one for sure" lock, as in Equipment. To change a product's size: "Make a custom tank from this" (a copy), never an edit of the product. **Stand** with I own / Buy groups. Then Sits on (floor / stand / my own furniture), Lid and top, Background, **Room** (wall, ceiling, person) |
 | Section **Scape** | J2 | rail | Substrate (type, blend, brush), Terrain (slopes, corners), Hardscape and Decor library, placed pieces |
 | Section **Plants** | J2 | rail | library (grayed by light), placed plants, growth over time |
 | Section **Animals** | J2 | rail | search, filters ("Fits this tank" on by default in Guided), stocking list with counts, Water look (level, tint) |
@@ -72,7 +74,7 @@ Ideas (Discover, Suggest) are not a job of their own: they are a faster way to d
 | 10 | Save as / download / share | KEEP | one dialog from `...` |
 | 11 | "This replaces your current scape" | MERGE | Discover's Apply confirm (Shuffle moves there) |
 | 12 | Tank sizes / Sump size modal | MERGE | Sump: a row in Equipment; tank: picker #13 |
-| 13 | Choose a tank (docked picker) | KEEP | Tank section, docked in the panel, live preview |
+| 13 | Choose a tank (docked picker) | KEEP | Tank section, docked in the panel, live preview; two groups, Commercial tanks / Custom tanks |
 | 14 | Guardrails dialog (checks off) | MERGE | Constraints: each limit has its own on / off switch |
 | 15 | My equipment dialog | MERGE | into the **I own** group of each Equipment category (and Tank / Stand in the Tank section); "No new equipment" moves to Constraints. Nathan 11-13 replaced the 11-05 "separate menu" with this |
 | 16 | Setup sheet | MERGE | Print > Setup sheet preset |
@@ -82,7 +84,7 @@ Ideas (Discover, Suggest) are not a job of their own: they are a faster way to d
 | 20 | Why-not card | KEEP | inside Suggest results |
 | 21 | Setup brief card | MERGE | its lines become the group summaries of Preferences and Constraints |
 | 22 | Header strip | KEEP | Header; units and Guided / Sandbox move to Settings; Discover moves to the rail; "How to use" to Settings > Help |
-| 23 | Tank section | KEEP | Tank section, groups folded to one-line summaries |
+| 23 | Tank section | KEEP | Tank section, groups folded to one-line summaries. Shape, L / H / D, bow / pie / bowl dims, glass and rim move into the **Custom tank maker** (new); for a commercial tank they are read-only |
 | 24 | Room around the tank | MERGE | Tank > Room group |
 | 25 | Substrate | MERGE | Scape section |
 | 26 | Hardscape | MERGE | Scape section (+ Decor, DS1/DS2) |
@@ -139,7 +141,8 @@ Rule (Nathan 2026-11-05, kept): **a shortcut may open the home; it may not hold 
 | No new equipment | Constraints `#cnNoNew`, My equipment `#ownNoNew` (2) | Constraints > Money and time | Equipment shows a note on the Buy groups while it is on |
 | Light power | two sliders 8 rows apart | Equipment > Light | - |
 | Look / style direction | quick prefs (2), hidden Style select | Preferences | Discover uses it; the scene's own materials stay hand edits in their sections (a different thing: what is built, not what you like) |
-| Tank size | picker, L / H / D, Suggest space, Set my space | Tank section (picker + size rows) | header name, Print |
+| Tank shape, size, glass, rim | picker, L / H / D boxes, shape buttons, glass and rim rows (today editable on any tank, products included) | **Custom tank maker** (only for custom tanks; a commercial tank's are fixed) | Tank model card (read-only spec line), header name, Print |
+| Which tank | picker, Suggest space, Set my space | Tank section > Tank model (Commercial / Custom) | Suggest (filters by Constraints > Space) |
 | Camera | View sliders, Lighting "Look from above / Straight on", double-click | View (and double-click in the tank) | - |
 | Units, rules mode, graphics | header, header, View popover | Settings | - |
 
@@ -194,7 +197,7 @@ One expand / collapse glyph (`▸` / `▾`) everywhere; one icon set (24 px stro
 
 The new shell lives beside the old one behind `?ui=2` (own `index2.html` entry, own `src/ui2/`, own stylesheet built from the tokens). Both use the same `Store`, `Viewer` and engine. Old shell untouched until the flip.
 
-**P. Pull logic out first (no visible change; each with tests, each a lane; P8 added 11-13 for the own / buy / lock model):**
+**P. Pull logic out first (no visible change; each with tests, each a lane; P8 and P9 added 11-13 for the own / buy / lock model and custom tanks):**
 
 | Step | Out of | Into | Size |
 |---|---|---|---|
@@ -203,6 +206,7 @@ The new shell lives beside the old one behind `?ui=2` (own `index2.html` entry, 
 | P3 Item / plant edits and plant gate | `panels.ts` 1620-1950 | `scene/itemEdit.ts`, `ui/logic/plantGate.ts` | M |
 | P4 Gear choice application and conversions | `techMenu.ts` | `scene/techEdit.ts`; one `units.ts` for every `toF` / `fromUnits` / `fmtHeight` | L |
 | P8 Gear model: per category an owned list (in the brief), the item in use, and a "use for sure" lock per item; Discover / Suggest / generator read the lock (must use) and the owned list (preferred, $0). Folds `ownedGear.ts` `applyOwned` / `syncEquipment` and the owned flags on scene gear into it; old saves migrate | `ownedGear.ts`, `scene/tech`, Discover locks | `scene/gearOwn.ts` | M |
+| P9 Custom tank library: a custom-tank spec (shape, L / H / D, shape dims, glass, rim, name) saved per browser across setups (LS `tanklook.customTanks`, like the scene library); a setup holds its own copy plus the library id and version. Library edit: setups keep their copy and show "Updated in my tanks: use the new version?". Library delete: setups keep their copy ("Save to my tanks again"). Share link / file carry the copy. Product tanks become read-only (P1's rules apply only in the maker). **Migration:** a saved scene whose dimensions differ from its product, or that has no product, gets an auto-named custom tank on load (e.g. "Custom 36 x 18 x 16 in (from Aqueon 40 breeder)"), added to the library and referenced | `panels.ts` `setTank` / `shapeDims`, `tankPick.ts`, `scene/` tank | `scene/customTank.ts` | M |
 | P5 One home per limit in the data: profile from LS `tanklook.demand` into the brief; room temp stored once; migrate old saves | `demandPanel.ts`, `scene/tech.ts`, brief | `scene/brief.ts` | M |
 | P6 Habitat helpers (`bar`, `topBy`, `tileState`, ...) | `fullnessTile.ts` | `ui/logic/habitat.ts` | S |
 | P7 File ops (library, open example / shared, save / save as) | `panels.ts` 168-494 | `ui/logic/files.ts` | M |
@@ -215,7 +219,7 @@ The old shell is switched to call these as they land, so both shells share one c
 |---|---|---|---|
 | 1 | Skeleton: header (Undo / Redo / Save), rail, panel host, viewer, check bar + the four drawers (read-only) | M | P6 |
 | 2 | Start, open, save, share, resume | M | P7 |
-| 3 | Tank section + docked picker + Room | L | P1 |
+| 3 | Tank section + docked picker (Commercial / Custom) + Custom tank maker + Room | L | P1, P9 |
 | 4 | Animals + Water look + Selection drawer | L | P2 |
 | 5 | Constraints, Preferences, Suggest | M | P5 |
 | 6 | Equipment (category sub-menus, I own / Buy, lock) + Lighting + light map | L | P4, P8 |
@@ -247,8 +251,9 @@ The old shell is switched to call these as they land, so both shells share one c
 | 7 | Add a DOM test environment (happy-dom) for the new shell, or keep node-only tests + screenshot proof per step? | Node-only + screenshots (keeps test runs light on this machine). |
 | 8 | Compare: one "Editing A / B / Both" switch in the panel instead of an Edit tick per tab (shot 03)? | Yes. |
 | 9 | Viewpoint map off by default (a switch in View)? | Yes. |
-| 10 | Order: engine pulls P1-P7 first, then shell steps 1-12 (P1-P8); freeze old-shell UI requests from approval (§8)? | Yes. |
+| 10 | Order: engine pulls P1-P7 first, then shell steps 1-12 (P1-P9); freeze old-shell UI requests from approval (§8)? | Yes. |
 | 11 | R7, the Habitat check name: keep "Habitat check" in the new check bar? | Keep; the drawer title can carry the longer "Habitat check: is it good for the animals?". |
 | 12 | Own / buy / lock (Nathan 11-13, shot 05): "I own" and "Buy" groups per category, an independent "Use this one for sure" lock, no My gear tab, "No new equipment" in Constraints. Confirm the shot matches what you meant? | Yes (already his call; the shot is the check). |
+| 13 | Tanks (Nathan 11-13, shots 01, 06, 07): commercial tanks fixed, custom tanks from a maker saved across setups; a setup keeps its own copy when the library tank is edited or deleted; old scenes with hand-edited product dims become auto-named custom tanks? | Yes to all. |
 
 Lane note: HANDOFF.md not edited (brief: commit only this lane's files); the coordinator adds the dated line.
