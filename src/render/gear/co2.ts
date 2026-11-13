@@ -1,11 +1,12 @@
 // CO2 regulator, cylinder and drop checker. (render/gear3d.ts split per type, lane GM1, 2026-10-29: moved as is, no behaviour change).
 import * as THREE from 'three';
-import { clamp } from '../../scene/physics';
+import { backdropDepth, clamp } from '../../scene/physics';
 import { cabinetGear } from '../../scene/cabinetGear';
-import { GearPick, V, along, hash, C, DROP_COLOURS, Frame, Spot, lerp, sucker, line, overRim, behind } from './common';
+import { GearPick, V, along, hash, C, DROP_COLOURS, Frame, GearWall, Spot, lerp, sucker, line, overRim, behind } from './common';
 
-export function co2(f: Frame, sp: Spot, level: GearPick['co2']) {
-  const { kit, t } = f, b = 26, g0 = f.ground(sp.u, b);
+/** `f` is the wall the diffuser hangs on; `fr` gives the frame of any wall (the drop checker picks its own glass, far from the diffuser; the line and cylinder run from the back frame). */
+export function co2(f: Frame, sp: Spot, level: GearPick['co2'], fr: (w: GearWall) => Frame) {
+  const { kit, t } = f, bk = fr('back'), b = 26, g0 = f.ground(sp.u, b);
   // diffuser low under the filter's outlet: a glass cup round a white ceramic disc, on a glass stem with a suction cup
   const y = lerp(g0 + 40, f.wy - 60, sp.y ?? 0.15), u = f.slot(sp.u, 40, y - 40, y + 40, 0, 50, sp.fixed);
   const c = f.P(u, y, b);
@@ -26,7 +27,7 @@ export function co2(f: Frame, sp: Spot, level: GearPick['co2']) {
   kit.rod('clear', bc.clone().add(V(0, -58, 0)), bc.clone().add(V(0, -22, 0)), 8.5, 0xcfe8ee, { base: 0.35, seg: 18 });
   kit.rod('room', bc, bc.clone().add(V(0, 6, 0)), 10.5, C.black, { seg: 18 });
   const cg = cabinetGear(f.S), inStand = f.S.stand.show && !cg?.co2Beside; // a cabinet's gear row decides the place (scene/cabinetGear.ts)
-  const cyl = inStand ? V(cg?.co2X ?? f.P(clamp(f.T.L * 0.7, 80, f.T.L - 80), 0, 0).x, f.floor, -f.T.D * 0.5) : V(f.side === 'left' ? -f.t - 110 : f.T.L + f.t + 110, f.floor, -f.T.D + 100);
+  const cyl = inStand ? V(cg?.co2X ?? bk.P(clamp(bk.T.L * 0.7, 80, bk.T.L - 80), 0, 0).x, f.floor, -f.T.D * 0.5) : V(f.side === 'left' ? -f.t - 110 : f.T.L + f.t + 110, f.floor, -f.T.D + 100);
   const ch = Math.min(430, (inStand ? f.top - f.floor : 600) - 140);
   kit.rod('room', cyl, cyl.clone().add(V(0, ch - 60, 0)), 68, C.black, { seg: 28 });
   kit.rod('room', cyl.clone().add(V(0, ch - 60, 0)), cyl.clone().add(V(0, ch, 0)), 68, C.black, { seg: 28, r2: 20 });
@@ -42,18 +43,27 @@ export function co2(f: Frame, sp: Spot, level: GearPick['co2']) {
   // down the back of the tank, then (in a cabinet) in through a grommeted hole in its back panel to the regulator (lane CB1)
   const b0 = bc.clone().add(V(0, -60, 0)), st = f.S.stand, cab = inStand && (st.style === 'cabinet' || st.style === 'custom');
   if (cab) {
-    const hy = f.top - 250, ox = b0.x, zOf = (a: number) => behind(f, 0, 0, a).z, o = V(ox, hy, zOf(-10)), inn = V(ox, hy, zOf(50));
+    const hy = f.top - 250, ox = b0.x, zOf = (a: number) => behind(bk, 0, 0, a).z, o = V(ox, hy, zOf(-10)), inn = V(ox, hy, zOf(50));
     kit.rod('room', V(ox, hy, zOf(-2)), V(ox, hy, zOf(20)), 12, C.black, { seg: 16 }); // the grommet in the panel's hole
     line(f, [b0, b0.clone().add(V(0, -40, -6)), V(ox, f.top + 30, o.z), V(ox, hy + 40, o.z), o, inn, V(rg.x, hy - 30, inn.z + 25), rg.clone().add(V(0, 40, 30))], 0xc9d6d8);
   } else {
     const low = V(b0.x, f.top - 60, b0.z - 10);
     line(f, [b0, b0.clone().add(V(0, -40, -6)), V(b0.x, f.top + 30, b0.z - 10), low, V(rg.x, f.top - 80, low.z + 40), rg.clone().add(V(0, 40, 30))], 0xc9d6d8);
   }
-  // drop checker on the far end of the back glass, half way up: its reservoir green / blue / yellow
-  const ud = f.T.L - 60, yd = f.wy * 0.62, pd = f.P(ud, yd, 22);
+  // drop checker (lane GM8): on glass, never on a 3D backdrop, as far from the diffuser as the tank allows (plan view), mid-depth to low
+  const bd3 = backdropDepth(f.S.backdrop, f.T) > 0, T = f.T, Db = T.D - backdropDepth(f.S.backdrop, T);
+  const cands: { f: Frame; u: number; d: number }[] = [];
+  for (const w of ['back', 'left', 'right'] as GearWall[]) {
+    if (w === 'back' && bd3) continue;
+    const cf = fr(w);
+    for (const u of w === 'back' ? [60, T.L - 60] : [Db * 0.5, Db * 0.25]) {
+      const p0 = cf.P(u, 0, 0); cands.push({ f: cf, u, d: Math.hypot(p0.x - c.x, p0.z - c.z) - (w === 'back' ? 0 : 0.01 * u) });
+    }
+  }
+  cands.sort((a, b) => b.d - a.d);
+  const cd = cands[0], cf = cd.f, ud = cf.slot(cd.u, 40, f.wy * 0.3, f.wy * 0.8, 0, 50), g1 = cf.ground(ud, 10), yd = g1 + (f.wy - g1 - 50) * 0.4, pd = cf.P(ud, yd, 22);
   kit.lathe('clear', [[0, 30], [8, 29], [13, 22], [15, 10], [15, 0], [14, -1]], pd, V(0, 1, 0), C.glass, 0.1, 24);
   kit.lathe('clear', [[0, 2], [13.5, 2], [13.5, 8], [10, 12], [0, 12]], pd, V(0, 1, 0), DROP_COLOURS[level ?? 'ok'], 0.62, 24);
-  kit.tube('clear', [pd.clone().add(V(0, 30, 0)), pd.clone().add(V(0, 44, -6)), f.P(ud, yd + 44, 6)], 2.5, C.glass, 0.12, 8);
-  sucker(f, ud, yd + 44, 6);
+  kit.tube('clear', [pd.clone().add(V(0, 30, 0)), pd.clone().add(V(0, 44, 0).addScaledVector(cf.inward, -6)), cf.P(ud, yd + 44, 6)], 2.5, C.glass, 0.12, 8);
+  sucker(cf, ud, yd + 44, 6);
 }
-

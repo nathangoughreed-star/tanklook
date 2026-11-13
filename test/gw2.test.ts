@@ -10,7 +10,7 @@ const html = readFileSync('index.html', 'utf8');
 const section = (key: string) => {
   // DX7: Water is a sub-group of Animals, and Quick Setup's controls ride in the Discover panel ('discover' / 'quick')
   if (key === 'quick' || key === 'discover') return html.slice(html.indexOf('id="quickHome"'), html.indexOf('<details><summary>Scene data'));
-  if (key === 'water') { const a = html.indexOf('data-sub="water"'); expect(a).toBeGreaterThan(-1); return html.slice(a, html.indexOf('data-sec="brief"')); } const a = html.indexOf(`data-sec="${key}"`); expect(a, `section ${key}`).toBeGreaterThan(-1); const b = html.indexOf('<details class="sec"', a + 10); return html.slice(a, b < 0 ? undefined : b); };
+  if (key === 'water') { const a = html.indexOf('data-sub="water"'); expect(a).toBeGreaterThan(-1); return html.slice(a, html.indexOf('data-sec="prefs"')); } const a = html.indexOf(`data-sec="${key}"`); expect(a, `section ${key}`).toBeGreaterThan(-1); const b = html.indexOf('<details class="sec"', a + 10); return html.slice(a, b < 0 ? undefined : b); };
 const count = (s: string, re: RegExp) => (s.match(re) ?? []).length;
 
 describe('one home per setting', () => {

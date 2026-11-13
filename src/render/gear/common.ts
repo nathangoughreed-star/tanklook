@@ -48,6 +48,10 @@ export const V = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z)
 /** Collects a set of gear's parts, each in its bucket, and merges each bucket into one mesh. */
 export class Kit {
   parts: Record<Bucket, THREE.BufferGeometry[]> = { wet: [], room: [], clear: [], glow: [] };
+  /** Every suction cup: the wall it sits on and its point on that glass's inner face (lane GM8: the cups must be on glass). */
+  /** Each heater's axis (unit vector, cap end up), for the no-diagonal test (lane GM8b). */
+  heaterAxes: THREE.Vector3[] = [];
+  cups: { wall: GearWall; p: THREE.Vector3 }[] = [];
   /** Add `geo` (consumed) in colour `color` (clear parts: `base` = face-on opacity), moved by `m`. */
   put(b: Bucket, geo: THREE.BufferGeometry, color: number, m?: THREE.Matrix4, base = 0.06, shade = 0) {
     let g = geo.index ? geo.toNonIndexed() : geo; if (g !== geo) geo.dispose();
@@ -207,6 +211,7 @@ export const lerp = (a: number, b: number, k: number) => a + (b - a) * clamp(k, 
 /** Suction cup on the back glass at p (a clear dome, its stem forward to the part it holds at b = reach). */
 export function sucker(f: Frame, u: number, y: number, reach: number, look: 'clear' | 'frosted' | 'black' = 'clear') {
   const { kit } = f;
+  kit.cups.push({ wall: f.wall, p: f.P(u, y, 0) });
   if (look === 'black') kit.lathe('wet', [[0, 0], [9, 0], [8.5, 1.5], [5, 4], [2.2, 6], [0, 6.5]], f.P(u, y, 0.2), f.inward, C.black, 0, 20);
   else kit.lathe('clear', [[0, 0], [9, 0], [8.5, 1.5], [5, 4], [2.2, 6], [0, 6.5]], f.P(u, y, 0.2), f.inward, C.cup, look === 'frosted' ? 0.55 : 0.32, 20);
   kit.rod('wet', f.P(u, y, 6), f.P(u, y, reach), 1.8, look === 'black' ? C.black : C.cup);

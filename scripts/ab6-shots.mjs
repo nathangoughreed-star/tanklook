@@ -47,7 +47,7 @@ try {
       log(tag + ' ' + hab + ' brief', await ev(`JSON.stringify(window.__gb.store.tank.brief.items['constraints.budget'] ?? null) + ' ' + JSON.stringify(window.__gb.store.tank.brief.project?.quick)`));
       await ev(`document.querySelectorAll('dialog[open]').forEach(d=>d.close())`);
       if (hab === 'freshwater') {
-        await ev(`document.querySelector('details.sec[data-sec="brief"]').open = true`); await ev(`document.getElementById('prefsHost').scrollIntoView()`); await sleep(500);
+        await ev(`document.querySelector('details.sec[data-sec="prefs"]').open = true`); await ev(`document.getElementById('prefsHost').scrollIntoView()`); await sleep(500);
         log(tag + ' overflowX', await ev(`document.documentElement.scrollWidth > innerWidth`));
         await shot(`${tag}-3-constraints-block`);
       }
