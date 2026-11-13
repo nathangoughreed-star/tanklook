@@ -18,6 +18,7 @@ import { SHAPES, shapeOf, volumeBetween } from '../../scene/shape';
 import { spaceFit } from '../../scene/space';
 import { tankWeight } from '../../scene/weight';
 import { adaptToTank } from '../../scene/reeval';
+import { bareTech } from '../../scene/tech';
 import type { Scene, Tank, TankSetup, TankShape } from '../../scene/types';
 
 export type Units = Scene['units'];
@@ -249,8 +250,9 @@ export function makerSetup(spec: CustomTankSpec, base?: TankSetup): TankSetup {
   S.stand = { ...S.stand, show: false, need: 'none' };
   S.wall = { ...S.wall, show: false }; S.person = { ...S.person, show: false };
   S.backdrop = { ...S.backdrop, kind: 'none' }; S.lid = 'open'; delete S.doors;
-  S.light = { ...S.light, room: 0.9, roomAuto: false };
+  S.light = { ...S.light, type: 'flat', product: undefined, room: 0.9, roomAuto: false }; // 'flat' = no fixture drawn (render/lighting.ts addFixture)
   delete S.product; delete S.integrated; delete S.locks;
+  S.tech = bareTech(S); // no filter, heater, light or other gear: every row that can be 'none' is
   return S;
 }
 

@@ -1,0 +1,35 @@
+{
+ "facts": {
+  "pickerRows": 151,
+  "commercialCard": "Imagitarium (Petco) High Open-Glass Aquarium Tank 20 gal (taller)Commercial tank · $40Change…",
+  "rimless": [
+   "Brace\tWalls (front / ends)\tGlass\nNo brace\nfully open\n\t5/8\" / 5/8\"\t100\nPerimeter 4 in\n16 in × 40 in open\n\t1/2\" / 1/2\"\t87\nPerimeter 2.5 in + 2 cross\n19 in × 12.7 in open\n\t1/2\" / 1/2\"\t84",
+   "Pane\tGlass\tSF\tSet by\nFront and back\t5/8 in\t5.4\tstrength\nEnds\t5/8 in\t12.4\tstrength\nBottom\t5/8 in\ton stand\tmatched to walls"
+  ],
+  "rimmed": [
+   "Pane\tGlass\tSF\tSet by\nFront and back\t3/8 in\t3.8\tstrength\nEnds\t3/8 in\t9.8\tstrength\nBottom\t3/8 in\ton stand\tmatched to walls"
+  ],
+  "rimmedChips": [
+   "79 gal gross · about 75 gal of water",
+   "about 790 lb filled",
+   "49 × 19 in footprint"
+  ],
+  "afterSave": {
+   "card": "Living-room 75Custom tank · your figure $520EditChange…",
+   "lib": [
+    {
+     "name": "Living-room 75",
+     "v": 1,
+     "price": 520,
+     "build": false
+    }
+   ]
+  },
+  "oldIds": [],
+  "oldShell": {
+   "ui2": false,
+   "app": true
+  }
+ },
+ "errors": []
+}

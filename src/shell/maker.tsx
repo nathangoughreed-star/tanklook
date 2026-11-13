@@ -19,7 +19,9 @@ export interface MakerInit { spec: CustomTankSpec; libId?: string }
 export type MakerEnd = 'cancel' | 'saved' | 'used';
 
 /** The maker's view: the setup's own camera, turned to show the tank's three sides (restored on close: the setup is not changed). */
-const MAKER_CAM = (c: CameraSettings, T: Tank): CameraSettings => ({ ...c, az: -28, el: 16, zoom: Math.max(0.3, Math.min(1.6, 0.95 * 1219 / Math.max(T.L, T.H * 1.8, T.D * 1.5))) });
+// zoom is a field-of-view crop at a fixed eye distance, and below 0.5 the eye also steps back (scene/orbit.ts): measured on the build, the
+// drawn size goes as span x zoom^2.15, so this frames every size about as a 24 in tank fills the view at 0.75
+const MAKER_CAM = (c: CameraSettings, T: Tank): CameraSettings => ({ ...c, az: -24, el: 14, zoom: Math.max(0.08, Math.min(2.5, 0.75 * (652 / Math.max(T.L, T.H * 1.5, T.D * 1.4)) ** (1 / 2.15))) });
 
 export function Maker({ store, init, viewHost, preview, onEnd }: { store: Store; init: MakerInit; viewHost: HTMLElement; preview: (S: TankSetup | null) => void; onEnd: (e: MakerEnd) => void }) {
   const u: Units = store.scene.units;
@@ -40,6 +42,8 @@ export function Maker({ store, init, viewHost, preview, onEnd }: { store: Store;
     return () => { preview(null); set(cam0.current); };
   }, []);
   useEffect(() => { preview(inSetup ? previewSpec(store.tank, spec) : makerSetup(spec, store.tank)); }, [spec, inSetup]);
+  // a new size is framed again once it settles (the person can still orbit and zoom in between)
+  useEffect(() => { if (inSetup) return; const t = setTimeout(() => store.update(s => { s.tanks[s.active].camera = { ...s.tanks[s.active].camera, zoom: MAKER_CAM(cam0.current, spec.tank).zoom }; }, { kind: 'view', history: false }), 400); return () => clearTimeout(t); }, [spec.tank.L, spec.tank.D, spec.tank.H]);
   // "Preview in my setup" shows it in the room for a moment, then comes back (§2a)
   useEffect(() => {
     if (!inSetup) return;
@@ -133,10 +137,7 @@ export function Maker({ store, init, viewHost, preview, onEnd }: { store: Store;
       </aside>
       <main class="mview" ref={viewRef}>
         {inSetup ? <div class="ov mbanner glass">Your setup with this tank, for a moment. <button type="button" class="btn sm" onClick={() => setInSetup(false)}>Back now</button></div> : <>
-          <div class="ov dim-h glass"><b>{facts.H}</b> height</div>
-          <div class="ov dim-l glass"><b>{facts.L}</b> length</div>
-          <div class="ov dim-d glass"><b>{facts.D}</b> {shape === 'bow' ? 'depth at centre' : 'depth'}</div>
-          {facts.bow ? <div class="ov dim-b glass"><b>{facts.bow}</b> bow</div> : null}
+          <div class="ov dims glass" aria-label="Dimensions"><span><b>{facts.L}</b> {shape === 'round' || shape === 'bowl' ? 'across' : 'length'}</span><span><b>{facts.D}</b> {shape === 'bow' ? 'depth at centre' : 'depth'}</span><span><b>{facts.H}</b> height</span>{facts.bow ? <span><b>{facts.bow}</b> bow</span> : null}</div>
         </>}
         <div class="ov mfacts">
           <span class="glass fchip"><b>{galText(facts.gross)}</b> gross · about {galText(facts.water)} of water</span>
