@@ -41,6 +41,7 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R29 | 11-13 | Zebra danios look washed out: bold dark blue stripes, silver-gold bands, striped tail | FA1 | - | - | - | brief prompts/lane-FA1-zebra-danio.md; picture research/screens/FA1/nathan-before.png; FA1 e10623de merged 979f24df (blue stripes, silver-gold bands; gallery still and anal-fin stripes not done) |
 | R30 | 11-13 | Glass solver in the custom tank maker: thickness per pane / one thickness, eurobrace effect, brace optimizer for a safety factor; silicone joint checks (Nathan asked GS1 directly) | GS1 | bff407be | merged with S1 batch | - | engine only; method research/design/gs1-glass-solver.md; UI in shell step 3 |
 | R31 | 11-13 | Sharp shadow lines through rocks in his 20g Long (moves with orbit) | VF9 | 14a793c1 | merged | - | scene research/visual/vf0/scenes/nathan-20g-long-2026-11-13.json; cause: contact-blob polygon offset slope term poked through sunk rocks; flat bias now |
+| R32 | 11-13 | Hoods are real products with their built-in light: one price, light type and wattage known, only offered where a product fits; custom tanks get glass lids | HD1 | - | - | - | brief prompts/lane-HD1-hood-products.md; picture research/screens/HD1/nathan-before.webp |
 
 ## Closed (seen on live)
 
