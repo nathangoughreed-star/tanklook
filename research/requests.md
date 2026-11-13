@@ -23,6 +23,7 @@ Rules:
 | R15 | 11-13 | Split view: shared controls (View, Another moment) in one cluster top-middle between the views | HM3 | - | - | - | lane started |
 | R18 | 11-13 | Rolling water shadows (caustics) and surface ripples about twice as fast; maybe a setting | VF8 | - | - | - | lane started; no setting (Nathan 11-13: "Just double it") |
 | R19 | 11-13 | Aquarium-only live site: hide terrarium / paludarium / herp features (code kept, one switch) | AQ1 | df572949 + c0bc3102 | 1898 (queued behind the 1896 deploy) | - | live shot of New habitat + Animals; African dwarf frogs stay (Nathan 11-13), AQ1 follow-up |
+| R20 | 11-13 | Visual styles direction (decorative / themed / hybrid): audit + first slice, per research/design/styles-direction-2026-11-13.md section 20 | DS1 | 1eeb761e | doc only | - | 10 decisions waiting on Nathan (research/design/ds1-styles-audit.md, end) |
 
 ## Closed (seen on live)
 
