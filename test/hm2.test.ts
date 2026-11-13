@@ -13,7 +13,7 @@ describe('HM2 view toolbar', () => {
     expect(side.indexOf('id="redo"')).toBeLessThan(side.indexOf('<header class="top">'));
     const tools = between('<div class="viewtools">', '<div id="pairMenu"');
     expect(tools).not.toMatch(/id="undo"|id="redo"/);
-    expect(tools).toMatch(/id="undo2"[^>]*hm2-collapsed-only/);   // reachable when the panel is collapsed
+    expect(tools).not.toMatch(/id="undo2"|id="redo2"|id="saveIcon"/);   // HM3: none of Undo / Redo / Save on the viewer, even collapsed
   });
   it('the room-light slider and Auto live in the View menu', () => {
     const pop = between('<div id="viewPop"', '</div>\n<');
@@ -21,10 +21,11 @@ describe('HM2 view toolbar', () => {
     expect(between('<div class="viewtools">', '<div id="pairMenu"')).not.toContain('roomChip');
     expect(html).toContain('id="vRoomAuto"'); void pop;
   });
-  it('the Save icon runs the header Save; Ctrl+S too; undo state drives both button pairs', () => {
-    expect(between('<div class="viewtools">', '<div id="pairMenu"')).toMatch(/id="saveIcon"[^>]*Save \(Ctrl\+S\)/);
-    expect(panels).toMatch(/\$\('saveIcon'\)\.onclick = \(\) => \$\('saveScene'\)\.click\(\)/);
-    expect(panels).toMatch(/\['undo', 'undo2'\]\)[^\n]*disabled = !store\.canUndo/);
-    expect(panels).toMatch(/\['redo', 'redo2'\]\)[^\n]*disabled = !store\.canRedo/);
+  it('HM3: no Map / Save / Discover on the viewer; undo state drives the panel pair', () => {
+    expect(html).not.toContain('id="mapShow"');
+    expect(html).toContain('id="mapOn"');   // the View menu's Map checkbox
+    expect(html).toContain('id="hm3Discover"');
+    expect(panels).toMatch(/\['undo'\]\)[^\n]*disabled = !store\.canUndo/);
+    expect(panels).toMatch(/\['redo'\]\)[^\n]*disabled = !store\.canRedo/);
   });
 });

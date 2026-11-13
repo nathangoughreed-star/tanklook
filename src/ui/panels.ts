@@ -15,6 +15,7 @@ import { bindBriefStore, editBrief, experienceOf, getBrief, onBrief as onBriefEd
 import { attachStartMode } from './startMode';
 import { stepForMenu, kindOfDirection, libraryState, EMPTY_LIBRARY, type StartStep } from './startScreenLogic';
 import { openDiscovery } from './discover/entry';
+import { splitSides } from './sideOverlays';
 import { attachTankDock, type TankDock } from './tankDock';
 import { sandboxRoomScene } from '../scene/sandboxRoom';
 import { roomOf, setRoomAuto, setRoomByHand } from '../scene/roomlight';
@@ -159,7 +160,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   }
 
   // ---------- File: new / open / save / name / undo ----------
-  for (const id of ['undo', 'undo2']) $(id).onclick = () => store.undo();   // HM2: Undo / Redo live atop the left panel; the view bar copies show only while it is collapsed
+  for (const id of ['undo']) $(id).onclick = () => store.undo();   // HM2: Undo / Redo live atop the left panel; the view bar copies show only while it is collapsed
   $('fitBoth').onclick = () => viewer.fitBoth();
   const recenter = $<HTMLButtonElement>('recenter'); recenter.onclick = () => viewer.resetPan();
   viewer.onPan(() => { recenter.disabled = !viewer.panned; }); recenter.disabled = true;   // HM2: first control in the View menu; enabled once panned
@@ -169,8 +170,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
   vRoomAuto.onclick = () => store.edit(s => { setRoomAuto(s.light); });
   const syncRoom = () => { const l = S().light; vRoom.value = String(roomOf(l)); vRoomAuto.hidden = !!l.roomAuto; };
   store.subscribe(syncRoom); syncRoom();
-  for (const id of ['redo', 'redo2']) $(id).onclick = () => store.redo();
-  $('saveIcon').onclick = () => $('saveScene').click();   // HM2: the same Save as the header's
+  for (const id of ['redo']) $(id).onclick = () => store.redo();
+  $('hm3Discover').onclick = () => openDiscovery({});   // HM3: the viewer's Discover pill is gone; this and the per-section buttons open the card
   // New and Open… are two separate menus of the start chooser (below): New = scratch + deals, Open… = starter + saved tanks
   $('newScene').onclick = () => { welcomeFirst = false; startMode.open(stepForMenu('new')); }; // SL1: the one start screen, at its New Setup step (closable: a project is open)
   // HM1: Open… asks first: a saved tank (the Open Existing tab) or a starter tank (the Starter / Example tab)
@@ -1327,7 +1328,7 @@ Cancel, then change the name, to keep both.`)) return;
     window.setInterval(() => { if (!document.hidden && ($('gfx') as HTMLDetailsElement).open) showCaus(); }, 1000); }
   // viewpoint map: a per-viewer display preference (browser storage), not scene data
   // the map's own × and "⌖ Map" button do the same as the checkbox; the viewer places and shows one map per view
-  const mapCb = $('mapOn'), applyMap = () => { $('mapShow').classList.toggle('open', mapCb.checked); $('mapShow').setAttribute('aria-pressed', String(mapCb.checked)); viewer.invalidate(); };   // HM2: ⌖ Map is a toggle (the checkbox stays in sync)
+  const mapCb = $('mapOn'), applyMap = () => { viewer.invalidate(); };   // HM2: ⌖ Map is a toggle (the checkbox stays in sync)
   // no choice made yet: shown, except on a phone, where it would cover a third of the view (audit #32). Read once at
   // load, upright or sideways (lane W): turning the phone does not flip the viewer's map on or off.
   const narrow = matchMedia('(max-width: 760px), (orientation: landscape) and (max-height: 500px)').matches;
@@ -1336,7 +1337,6 @@ Cancel, then change the name, to keep both.`)) return;
   const setMap = (on: boolean) => { mapCb.checked = on; try { localStorage.setItem('tanklook.viewmap', on ? 'on' : 'off'); } catch { /* ignore */ } applyMap(); };
   mapCb.onchange = () => setMap(mapCb.checked);
   for (const b of document.querySelectorAll<HTMLButtonElement>('.vmapHide')) b.onclick = () => setMap(false);
-  $('mapShow').onclick = () => setMap(!mapCb.checked);
   // plants swaying in the flow: a per-viewer display preference too (the viewer keeps it in browser storage)
   { const sw = $('swayOn') as HTMLInputElement; sw.checked = viewer.sway; sw.onchange = () => viewer.setSway(sw.checked); }
   // hide the fixture from above it: a per-viewer display preference too; off unless chosen, so the light always shows (Nathan 2026-10-14)
@@ -2028,8 +2028,8 @@ Cancel, then change the name, to keep both.`)) return;
   }
   function sync(full = true) {
     const s = S(), A = s.tank, u = G().units;
-    for (const id of ['undo', 'undo2']) $<HTMLButtonElement>(id).disabled = !store.canUndo;
-    for (const id of ['redo', 'redo2']) $<HTMLButtonElement>(id).disabled = !store.canRedo;
+    for (const id of ['undo']) $<HTMLButtonElement>(id).disabled = !store.canUndo;
+    for (const id of ['redo']) $<HTMLButtonElement>(id).disabled = !store.canRedo;
     $<HTMLButtonElement>('moment').disabled = !s.fish.length;
     const cl = $('climate'), rows = climateOf(s);
     cl.hidden = !rows.length;
@@ -2439,7 +2439,18 @@ Cancel, then change the name, to keep both.`)) return;
     const g = G(), active = viewer.active, pr = viewer.pairShown, split = active.length > 1 || !!pr;   // Discovery's pair counts as a comparison
     const diff = active.length > 1 ? tankDiff(pr ? pr.S[0] : g.tanks[0], pr ? pr.S[1] : g.tanks[1], g.units) : [];
     const hidden = $('app').classList.contains('collapsed');
-    const sig = JSON.stringify([diff, hidden, g.units, g.active, store.targets, g.camLock, pr?.info, pr?.only, active.map(v => [v.x, v.w]), active.map((v, i) => aqChip(v.S, v.key, i))]);
+    // HM3: in split view the controls that act on both tanks (the panel arrow, View, Another moment, the Views linked lock) are ONE cluster at the top middle, over the divider
+    const cluster = splitSides(store, viewer), vtEl = document.querySelector<HTMLElement>('.viewtools')!, lockEl = $<HTMLButtonElement>('camLock');
+    viewer.host.classList.toggle('sv-split', cluster);
+    if (cluster) {
+      const W = viewer.host.clientWidth, mid = active[1].x, half = Math.min(mid, W - mid);
+      vtEl.style.left = mid + 'px'; vtEl.style.maxWidth = Math.max(160, 2 * half - 20) + 'px';
+      if (lockEl.parentElement !== vtEl) vtEl.append(lockEl);
+    } else {
+      vtEl.style.left = ''; vtEl.style.maxWidth = '';
+      if (lockEl.parentElement === vtEl) viewer.host.append(lockEl);
+    }
+    const sig = JSON.stringify([diff, hidden, cluster, vtEl.offsetWidth, vtEl.offsetHeight, g.units, g.active, store.targets, g.camLock, pr?.info, pr?.only, active.map(v => [v.x, v.w]), active.map((v, i) => aqChip(v.S, v.key, i))]);
     if (sig !== tabSig) {
       tabSig = sig;
       for (const [i, id] of [[0, 'labA'], [1, 'labB']] as const) {
@@ -2451,7 +2462,7 @@ Cancel, then change the name, to keep both.`)) return;
         // (on a phone in split view they reach past the middle into view B too: final check item 2)
         const vt = document.querySelector<HTMLElement>('.viewtools')!, tools = Math.max(0, vt.offsetLeft + vt.offsetWidth + 8 - vp.x);
         // too narrow beside them (a phone in split view): the tab drops below them instead of under them (audit #7)
-        const below = tools > 0 && vp.w - 16 - tools < 150;
+        const below = cluster || (tools > 0 && vp.w - 16 - tools < 150);
         el.style.top = below ? (vt.offsetTop + vt.offsetHeight + 6) + 'px' : '';
         el.style.right = (viewer.host.clientWidth - vp.x - vp.w + 8) + 'px'; el.style.maxWidth = (below ? vp.w - 16 : Math.max(80, vp.w - 16 - tools)) + 'px'; // clear of them
         if (pr) {   // Discovery's pair: a plain chip with the role (favourite / challenger), never the Edit box or Delete
@@ -2480,7 +2491,7 @@ Cancel, then change the name, to keep both.`)) return;
       const lock = $<HTMLButtonElement>('camLock');
       lock.hidden = active.length < 2;   // AB8: the padlock also works on Discovery's A / B pair (B then has its own camera while it is open)
       if (active.length > 1) {
-        lock.style.left = (active[1].x - 4) + 'px';
+        lock.style.left = cluster ? '' : (active[1].x - 4) + 'px';
         lock.classList.toggle('on', g.camLock); lock.classList.add('pill');
         lock.innerHTML = padlock(g.camLock) + `<span>${g.camLock ? 'Views linked' : 'Views independent'}</span>`; lock.setAttribute('aria-pressed', String(g.camLock));
         lock.setAttribute('aria-label', g.camLock ? 'Views linked: orbit, pan and zoom move both tanks. Activate to let each view move on its own.' : 'Views independent: each tank orbits on its own. Activate to link them again.');
