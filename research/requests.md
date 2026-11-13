@@ -14,25 +14,19 @@ Rules:
 ## Waiting on Nathan (questions not yet answered; coordinator keeps this current, Nathan 2026-11-13)
 | # | Question | Asked | Recommendation |
 |---|---|---|---|
-| W1 | UI2 decision 1: the user and the 5 jobs (doc research/design/ui2-screen-map.md §1) | 11-13 | yes as written |
-| W2 | UI2 decision 2: layout (rail, one section open, check bar, right drawer); pictures sent | 11-13 | yes |
-| W3 | UI2 decision 4: hidden features; open point is the A/B taste screen (keep inside Discover or drop) | 11-13 | discuss |
-| W4 | UI2 decision 5: one Print section with presets; mock it up? | 11-13 | yes, mock it up |
-| W5 | UI2 decision 14: one Experience home, one answer + per-area detail | 11-13 | yes |
-| W6 | R8: cabinet hoses should enter through a cut-out at the top of the back panel? (picture sent) | 11-13 | yes, fix |
-| W7 | R10 / R11: close as settled by the UI rebuild? | 11-13 | close |
-| W8 | CL1 full run, 73 species, ~2M Sonnet tokens | 11-13 | yes |
-Answered: decisions 3, 6-12 and 13 (tanks + custom tank maker APPROVED 11-13 "So is the tank picker and custom tank maker"); R18 / R22 good on live; earlier decision 13 notes: (collapsed groups, maker as own window with empty tank, price override) -> UI2.
+| W1 | UI2 decision 1: the user and the 5 jobs (doc research/design/ui2-screen-map.md §1) | 11-13 | Nathan 11-13: "we will investigate further" |
+| W3 | UI2 decision 4: hidden features; open point is the A/B taste screen (keep inside Discover or drop) | 11-13 | Nathan 11-13 "yes": Guided -> checklist, Visual Discovery -> Preferences, Explore -> Discover, drop Coach, keep Animal-first; A/B taste screen still open |
+Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 / R11 closed; CL1 full run; and decisions 3, 6-12 and 13 (tanks + custom tank maker APPROVED 11-13 "So is the tank picker and custom tank maker"); R18 / R22 good on live; earlier decision 13 notes: (collapsed groups, maker as own window with empty tank, price override) -> UI2.
 
 ## Open
 
 | # | Asked (date) | Nathan's ask (short) | Chat | Branch / sha | Merged (build) = expected live by | Live check | Next step |
 |---|---|---|---|---|---|---|---|
 | R7 | 11-12 | Name for the Habitat check tile (alternatives: Animal wellbeing, Welfare) | - | - | - | - | waits on Nathan |
-| R8 | 11-12 | Hoses enter the cabinet through the back panel (audit #31) | CB1 | 22352e75 | yes | 11-13 wall hidden, from behind (sw-R8-behind.png): canister hoses run down OUTSIDE the back panel nearly to the floor, no visible entry hole | ask Nathan; likely back to CB |
+| R8 | 11-12 | Hoses enter the cabinet through the back panel (audit #31) | CB1 | 22352e75 | yes | 11-13 wall hidden, from behind (sw-R8-behind.png): canister hoses run down OUTSIDE the back panel nearly to the floor, no visible entry hole | ask Nathan; likely back to CB; Nathan 11-13: yes, fix (hoses through a cut-out at the top of the back panel) -> lane CB2 |
 | R9 | 11-12 | Weird substrate bug round rock bases, in HIS tank (audit #3) | VF-C2 | 1bfbc99f, fc1412f4 | yes | PARTIAL: test scenes fine, his own tank not available | ask Nathan for the scene (Scene data JSON) or recheck his screenshot case |
-| R10 | 11-12 | Habitat tile / Map card float over the tank when the panel is collapsed (audit C, found, not asked) | - | - | - | - | ask Nathan if he wants it fixed |
-| R11 | 11-10 | Quick-preferences "Don't want" section question (Coordinator 22) | - | - | - | - | may be stale after the Discover redesign; ask Nathan |
+| R10 | 11-12 | Habitat tile / Map card float over the tank when the panel is collapsed (audit C, found, not asked) | - | - | - | - | ask Nathan if he wants it fixed; CLOSED 11-13 by Nathan: settled by the UI rebuild (UI2) |
+| R11 | 11-10 | Quick-preferences "Don't want" section question (Coordinator 22) | - | - | - | - | may be stale after the Discover redesign; ask Nathan; CLOSED 11-13 by Nathan: settled by the UI rebuild (UI2) |
 | R15 | 11-13 | Split view: shared controls (View, Another moment) in one cluster top-middle between the views | HM3 | - | - | - | lane started; LIVE 1950 checked 11-13 (research/screens/live1950) |
 | R18 | 11-13 | Rolling water shadows (caustics) and surface ripples about twice as fast; maybe a setting | VF8 | - | - | - | lane started; no setting (Nathan 11-13: "Just double it"); LIVE 1950: Nathan 11-13 "yes its good now" |
 | R19 | 11-13 | Aquarium-only live site: hide terrarium / paludarium / herp features (code kept, one switch) | AQ1 | df572949 + c0bc3102 | 1898 (queued behind the 1896 deploy) | - | live shot of New habitat + Animals; African dwarf frogs stay (Nathan 11-13), AQ1 follow-up; LIVE 1950 checked 11-13 (research/screens/live1950) |
@@ -44,7 +38,7 @@ Answered: decisions 3, 6-12 and 13 (tanks + custom tank maker APPROVED 11-13 "So
 | R25 | 11-13 | Suction-cup gear sticks only to glass (moves off a 3D background to a side pane); drop checker away from the CO2 diffuser | GM8 | gm8-suction-mounts a53ba72f | merged fb945055 | live check pending | shots reviewed (after-rock-34, -34r); not verified: manual drag in the live UI, 3D backdrop on bow / poly tanks; brief prompts/lane-GM8-suction-mounts.md; picture research/screens/GM8/nathan-before.webp; Nathan 11-13 follow-up: heaters only vertical or horizontal, no diagonal (GM8 shot had one at ~45 deg on side glass) -> GM8b 112d87b3 merged 727726a4 (upright or flat only; saved tilts snap; Shift+wheel flips); LIVE 1950 checked 11-13 (research/screens/live1950) |
 | R26 | 11-13 | Split the left menu's "Constraints and preferences" into two sections: Preferences and Constraints | CP1 | claude/brave-swirles-657683 a54583f1 | merged 1d35e795 | live check pending | shots reviewed (research/screens/cp1); brief prompts/lane-CP1-split-constraints-prefs.md; LIVE 1950 checked 11-13 (research/screens/live1950) |
 | R27 | 11-13 | UI rebuild: keep the engine, design a new UI on paper, new shell beside the old behind a switch. Step 1 inventory (UI1, Sonnet), step 2 screen-map proposal with mockups for Nathan (UI2, Opus, starts when UI1 reports) | UI1 then UI2 | - | - | - | Nathan 11-13 "I would like you to start that, yes"; brief prompts/lane-UI1-ui-inventory.md. UI requests to the OLD shell should pause once UI2 is approved; UI1 done 626aa651 (research/design/ui1-inventory.md, 47 shots) merged; UI2 (Opus, high) started, brief prompts/lane-UI2-screen-map.md; UI2 done ce6f3c8d merged, 11 decisions sent to Nathan; card tiles follow-up b09cded1 merged (Nathan told UI2 directly: generic catalogue tile, not a tank crop); Nathan 11-13 gear model: no My gear tab; Equipment has a sub-menu per category, each with an "I own" group and a "Buy" group, plus an independent "Use this one for sure" lock on any item, owned or not -> sent to UI2; decision 12 (shot 05, Equipment > Heater) APPROVED by Nathan 11-13 "Yes, matches"; decisions 1-11 still open; Nathan 11-13 on UI2 decisions: YES 3, 6, 7, 8, 9, 10, 11 (and 12); OPEN 1 (wants the doc), 2 (wants pictures), 4 (wants a detailed discussion first), 5 (wants examples); Nathan 11-13 tank model: two groups, Commercial tanks (named products, dimensions and shape locked) and Custom tanks (user-made, named, saved across setups) with "New custom tank" -> sent to UI2; UI2 e5612bb5 (commercial / custom tanks, decision 13) and 7cc53c2c (one Experience home, decision 14) merged; Nathan 11-13 on tank picker: groups collapsed, custom maker in its own window with an empty tank, price override -> UI2; decision 13 APPROVED 11-13 |
-| R28 | 11-13 | Species care levels: audit all 108 with 2-3 cited sources each; Nathan approves changes | CL1 | - | - | - | started by Nathan from the card; pilot of 10 first with cost per species; betta = 2 is current (10-21 combine), provenance row stale |
+| R28 | 11-13 | Species care levels: audit all 108 with 2-3 cited sources each; Nathan approves changes | CL1 | - | - | - | started by Nathan from the card; pilot of 10 first with cost per species; betta = 2 is current (10-21 combine), provenance row stale; Nathan 11-13: yes to the full run |
 
 ## Closed (seen on live)
 
