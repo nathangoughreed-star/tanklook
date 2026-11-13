@@ -52,6 +52,8 @@ export class Kit {
   /** Each heater's axis (unit vector, cap end up), for the no-diagonal test (lane GM8b). */
   heaterAxes: THREE.Vector3[] = [];
   cups: { wall: GearWall; p: THREE.Vector3 }[] = [];
+  /** Each hose / cord run through a cabinet's back panel (lane CB2): its points, for the cut-out test. */
+  hoseRoutes: THREE.Vector3[][] = [];
   /** Add `geo` (consumed) in colour `color` (clear parts: `base` = face-on opacity), moved by `m`. */
   put(b: Bucket, geo: THREE.BufferGeometry, color: number, m?: THREE.Matrix4, base = 0.06, shade = 0) {
     let g = geo.index ? geo.toNonIndexed() : geo; if (g !== geo) geo.dispose();
@@ -101,7 +103,7 @@ export class Kit {
       if (!g) continue;
       const m = new THREE.Mesh(g, mats[k]);
       m.userData.gear = true;
-      if (k === 'room') m.userData.room = true;
+      if (k === 'room') { m.userData.room = true; m.userData.hoseRoutes = this.hoseRoutes; }
       if (k === 'glow' || k === 'clear') m.userData.nolight = true;
       if (k === 'clear') m.renderOrder = 3.5; // after the water volume, before the water surface and the panes
       out.push(m);
@@ -219,6 +221,14 @@ export function sucker(f: Frame, u: number, y: number, reach: number, look: 'cle
 
 /** The point at u, height y, `a` mm in from the back glass's OUTER face (a < 0: outside the glass; a > 0: through it, into a cabinet), behind any 3D backdrop. */
 export const behind = (f: Frame, u: number, y: number, a: number) => f.P(u, y, 0).addScaledVector(f.inward, -backdropDepth(f.S.backdrop, f.T) - f.t + a);
+
+/** A round cut-out in a cabinet's back panel (lane CB2, Nathan 2026-11-13 R8): a grey bezel with a dark opening, `y` its centre height, 3.5 in wide. */
+export const CUT_R = 44;
+export function backCutout(f: Frame, u: number, y: number, r = CUT_R) {
+  const a = (d: number) => behind(f, u, y, d);
+  f.kit.rod('room', a(-2), a(-0.2), r + 6, C.grey, { seg: 32 });
+  f.kit.rod('room', a(-2.5), a(-1.9), r, 0x050607, { seg: 32 });
+}
 
 /** Thin clear airline (or CO2 line) along the points. */
 export const line = (f: Frame, pts: THREE.Vector3[], color = C.airline) => f.kit.tube('clear', pts, 2.4, color, 0.18, 8);
