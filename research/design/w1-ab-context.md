@@ -51,3 +51,12 @@ Built from your own past words (dated, with file:line) so the two open UI2 quest
 - **Bring it back inside Discover** as an optional "help me find my taste" game: only if you miss it.
 
 Coordinator's recommendation: keep it hidden now and delete at the flip unless you miss it by then.
+
+## Nathan's answers (2026-11-13)
+- **User:** "the user is anyone who owns or is interested in aquariums. This is a tool to help them plan, evaluate, be inspired, or learn about aquariums. Help them design something that fits their needs, preferences, and constraints, that they like. And to explore ideas they may not have had otherwise, and to find the best tank for them."
+- **Levels:** "absolutely every experience level, but the app's user experience should adapt to that so a brand new hobbyist and an experienced person with 20 tanks still feels at home and that the tool offers them something useful."
+- **Experience:** "a possible constraint that the user can set if they choose to." A beginner who wants something hard does not filter; one who wants less chance of failure gates species by experience. "this should probably apply in some way to gear and plant species ... Plants can often times be harder to make thrive than animals."
+- **Deals:** "keep an accurate budget, do deals sweeps, suggest equipment that would provide the equivalent function for less money, and suggest starting from or converting to a bundle if it would save the user cost on their build."
+- **Build plan:** "not that important ... provide the info and experience and customizability that would be hard to replicate in an ai chatbot. How to best take care of fish does not fit that scope."
+- **Money:** "nothing yet since we have no users but its something to keep in the back pocket."
+- **A/B:** "The A/B screen itself is a very old feature and definitely should stay. Whether or not it stays as part of the automated process of finding the users tank-of-best-fit is still up in the air."
