@@ -270,9 +270,9 @@ const FW: Raw[] = [
   { id: 'themed-scene', name: 'Themed Scene', tagline: 'Every tank tells a story. Yours has pirates.', env: 'aquarium', water: 'freshwater', familyId: 'fw-playful',
     fingerprint: ['a shipwreck, ruins or treasure scene', 'natural gravel', 'a printed or scenic background', 'plants framing the story'],
     contrast: { sibling: 'castle-coloured-gravel', how: 'A scene built around a story in natural colours; the castle tank is one ornament on bright gravel.' },
-    recipe: { looks: [], notes: 'Needs ornaments and a printed background.' },
+    recipe: { looks: ['planted'], notes: 'A sunken pirate ship and a treasure chest on natural gravel, framed by live plants (DS2). A printed background is still missing.' },
     density: ['The wreck alone on gravel', 'Wreck, ruins and plants', 'A full scene: wreck, ruins, chest and plants'],
-    deps: ['ornaments', 'printed background'], alternative: 'silk-plant-natural', tags: { chem: ['soft', 'hard'], temp: 'any', minGallons: 10 } },
+    deps: ['printed background'], alternative: 'silk-plant-natural', tags: { chem: ['soft', 'hard'], temp: 'any', minGallons: 10 } },
   // Fish Showcases
   { id: 'discus-showcase', support: 'supported', name: 'Discus Showcase', tagline: 'Living dinner plates in warm water. They like it spotless.', env: 'aquarium', water: 'freshwater', familyId: 'fw-showcase',
     fingerprint: ['tall upright wood', 'a few large sword plants', 'fine sand', 'a group of discus in warm water'],

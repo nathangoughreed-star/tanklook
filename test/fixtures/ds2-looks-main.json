@@ -1,0 +1,1757 @@
+{
+ "dutch-garden/open": {
+  "n": 79,
+  "h": 2126402281,
+  "sub": "onyx",
+  "ax": [
+   0.7,
+   1,
+   1,
+   1,
+   0
+  ],
+  "mode": "live"
+ },
+ "dutch-garden/balanced": {
+  "n": 114,
+  "h": 3449431809,
+  "sub": "onyx",
+  "ax": [
+   0.7,
+   1,
+   1,
+   0.845,
+   0
+  ],
+  "mode": "live"
+ },
+ "dutch-garden/full": {
+  "n": 217,
+  "h": 2120411246,
+  "sub": "onyx",
+  "ax": [
+   0.7,
+   1,
+   1,
+   0.86,
+   0
+  ],
+  "mode": "live"
+ },
+ "iwagumi-stone-garden/open": {
+  "n": 26,
+  "h": 1351242124,
+  "sub": "custom",
+  "ax": [
+   1,
+   0.64,
+   -0.75,
+   0.842,
+   1
+  ],
+  "mode": "live"
+ },
+ "iwagumi-stone-garden/balanced": {
+  "n": 48,
+  "h": 3365800277,
+  "sub": "custom",
+  "ax": [
+   1,
+   1,
+   -0.75,
+   0.765,
+   1
+  ],
+  "mode": "live"
+ },
+ "iwagumi-stone-garden/full": {
+  "n": 90,
+  "h": 3083560973,
+  "sub": "custom",
+  "ax": [
+   1,
+   1,
+   -0.75,
+   0.644,
+   1
+  ],
+  "mode": "live"
+ },
+ "blackwater-creek/open": {
+  "n": 4,
+  "h": 3157168169,
+  "sub": "custom",
+  "ax": [
+   1,
+   -1,
+   0.917,
+   0.662,
+   -1
+  ],
+  "mode": "live"
+ },
+ "blackwater-creek/balanced": {
+  "n": 24,
+  "h": 1527343707,
+  "sub": "custom",
+  "ax": [
+   1,
+   -0.013,
+   -0.5,
+   -0.428,
+   -1
+  ],
+  "mode": "live"
+ },
+ "blackwater-creek/full": {
+  "n": 41,
+  "h": 4067637961,
+  "sub": "custom",
+  "ax": [
+   1,
+   0.275,
+   -0.516,
+   -0.255,
+   -1
+  ],
+  "mode": "live"
+ },
+ "stone-wood-sculpture/open": {
+  "n": 1,
+  "h": 3838092414,
+  "sub": "custom",
+  "ax": [
+   1,
+   -1,
+   -0.75,
+   0,
+   -1
+  ],
+  "mode": "none"
+ },
+ "stone-wood-sculpture/balanced": {
+  "n": 3,
+  "h": 1728757049,
+  "sub": "custom",
+  "ax": [
+   1,
+   -1,
+   -0.75,
+   0.894,
+   0.333
+  ],
+  "mode": "none"
+ },
+ "stone-wood-sculpture/full": {
+  "n": 5,
+  "h": 2359963836,
+  "sub": "custom",
+  "ax": [
+   1,
+   -1,
+   -0.75,
+   1,
+   0.6
+  ],
+  "mode": "none"
+ },
+ "silk-plant-natural/open": {
+  "n": 33,
+  "h": 213563795,
+  "sub": "custom",
+  "ax": [
+   -0.7,
+   0.173,
+   -0.75,
+   0.549,
+   0
+  ],
+  "mode": "artificial"
+ },
+ "silk-plant-natural/balanced": {
+  "n": 33,
+  "h": 915914705,
+  "sub": "custom",
+  "ax": [
+   -0.7,
+   0.173,
+   -0.75,
+   0.855,
+   0
+  ],
+  "mode": "artificial"
+ },
+ "silk-plant-natural/full": {
+  "n": 45,
+  "h": 3826042468,
+  "sub": "custom",
+  "ax": [
+   -0.7,
+   0.173,
+   -0.75,
+   0.568,
+   1
+  ],
+  "mode": "artificial"
+ },
+ "big-fish-showcase/open": {
+  "n": 0,
+  "h": 1947613349,
+  "sub": "custom",
+  "ax": [
+   1,
+   -1,
+   -0.75,
+   0,
+   0
+  ],
+  "mode": "none"
+ },
+ "big-fish-showcase/balanced": {
+  "n": 1,
+  "h": 3875473800,
+  "sub": "custom",
+  "ax": [
+   1,
+   -1,
+   -0.75,
+   0,
+   1
+  ],
+  "mode": "none"
+ },
+ "big-fish-showcase/full": {
+  "n": 2,
+  "h": 2017015214,
+  "sub": "custom",
+  "ax": [
+   1,
+   -1,
+   -0.75,
+   0,
+   1
+  ],
+  "mode": "none"
+ },
+ "planted-community/open": {
+  "n": 42,
+  "h": 581273817,
+  "sub": "custom",
+  "ax": [
+   1,
+   0.785,
+   -0.75,
+   0.306,
+   0
+  ],
+  "mode": "live"
+ },
+ "planted-community/balanced": {
+  "n": 77,
+  "h": 1368537314,
+  "sub": "custom",
+  "ax": [
+   1,
+   1,
+   -0.75,
+   0.442,
+   0
+  ],
+  "mode": "live"
+ },
+ "planted-community/full": {
+  "n": 140,
+  "h": 1608603963,
+  "sub": "custom",
+  "ax": [
+   1,
+   1,
+   -0.75,
+   0.022,
+   1
+  ],
+  "mode": "live"
+ },
+ "overgrown-jungle/open": {
+  "n": 71,
+  "h": 2028746999,
+  "sub": "custom",
+  "ax": [
+   1,
+   1,
+   -0.675,
+   -0.292,
+   -0.5
+  ],
+  "mode": "live"
+ },
+ "overgrown-jungle/balanced": {
+  "n": 101,
+  "h": 3371209088,
+  "sub": "custom",
+  "ax": [
+   1,
+   1,
+   -0.75,
+   -0.251,
+   -0.2
+  ],
+  "mode": "live"
+ },
+ "overgrown-jungle/full": {
+  "n": 216,
+  "h": 1623254403,
+  "sub": "custom",
+  "ax": [
+   1,
+   1,
+   -0.678,
+   -0.196,
+   -0.143
+  ],
+  "mode": "live"
+ },
+ "overgrown-garden/open": {
+  "n": 35,
+  "h": 2680576227,
+  "sub": "custom",
+  "ax": [
+   1,
+   0.487,
+   -0.75,
+   -0.224,
+   0.556
+  ],
+  "mode": "live"
+ },
+ "overgrown-garden/balanced": {
+  "n": 65,
+  "h": 341122967,
+  "sub": "custom",
+  "ax": [
+   1,
+   0.959,
+   -0.606,
+   -0.436,
+   0.538
+  ],
+  "mode": "live"
+ },
+ "overgrown-garden/full": {
+  "n": 94,
+  "h": 2961244940,
+  "sub": "custom",
+  "ax": [
+   1,
+   1,
+   -0.55,
+   -0.428,
+   0.579
+  ],
+  "mode": "live"
+ },
+ "mossy-wood-ferns/open": {
+  "n": 16,
+  "h": 4101864542,
+  "sub": "pea",
+  "ax": [
+   1,
+   -0.119,
+   -0.75,
+   0.435,
+   0.5
+  ],
+  "mode": "live"
+ },
+ "mossy-wood-ferns/balanced": {
+  "n": 18,
+  "h": 3070641544,
+  "sub": "pea",
+  "ax": [
+   1,
+   -0.499,
+   -0.75,
+   0.566,
+   0.778
+  ],
+  "mode": "live"
+ },
+ "mossy-wood-ferns/full": {
+  "n": 121,
+  "h": 31187268,
+  "sub": "pea",
+  "ax": [
+   1,
+   1,
+   -0.75,
+   0.27,
+   0.6
+  ],
+  "mode": "live"
+ },
+ "driftwood-nature/open": {
+  "n": 56,
+  "h": 1211615175,
+  "sub": "custom",
+  "ax": [
+   1,
+   0.951,
+   0.423,
+   -0.07,
+   0.429
+  ],
+  "mode": "live"
+ },
+ "driftwood-nature/balanced": {
+  "n": 118,
+  "h": 404408655,
+  "sub": "custom",
+  "ax": [
+   1,
+   1,
+   0.222,
+   -0.168,
+   0.6
+  ],
+  "mode": "live"
+ },
+ "driftwood-nature/full": {
+  "n": 223,
+  "h": 3054571317,
+  "sub": "custom",
+  "ax": [
+   1,
+   1,
+   0.111,
+   -0.396,
+   0.571
+  ],
+  "mode": "live"
+ },
+ "underwater-forest/open": {
+  "n": 46,
+  "h": 4166323559,
+  "sub": "custom",
+  "ax": [
+   1,
+   0.839,
+   -0.437,
+   -0.245,
+   -0.667
+  ],
+  "mode": "live"
+ },
+ "underwater-forest/balanced": {
+  "n": 101,
+  "h": 3263332959,
+  "sub": "custom",
+  "ax": [
+   1,
+   1,
+   -0.606,
+   -0.328,
+   -0.286
+  ],
+  "mode": "live"
+ },
+ "underwater-forest/full": {
+  "n": 194,
+  "h": 1537793717,
+  "sub": "custom",
+  "ax": [
+   1,
+   1,
+   -0.563,
+   -0.447,
+   -0.2
+  ],
+  "mode": "live"
+ },
+ "african-cichlid-rockscape/open": {
+  "n": 18,
+  "h": 1502722080,
+  "sub": "custom",
+  "ax": [
+   1,
+   -1,
+   -0.75,
+   0.585,
+   1
+  ],
+  "mode": "live"
+ },
+ "african-cichlid-rockscape/balanced": {
+  "n": 37,
+  "h": 3774301709,
+  "sub": "custom",
+  "ax": [
+   1,
+   -1,
+   -0.75,
+   0.43,
+   1
+  ],
+  "mode": "live"
+ },
+ "african-cichlid-rockscape/full": {
+  "n": 44,
+  "h": 2580200844,
+  "sub": "custom",
+  "ax": [
+   1,
+   -1,
+   -0.75,
+   0.554,
+   1
+  ],
+  "mode": "live"
+ },
+ "rocky-river-stream/open": {
+  "n": 24,
+  "h": 78746780,
+  "sub": "gravel",
+  "ax": [
+   1,
+   -1,
+   -0.75,
+   0.703,
+   1
+  ],
+  "mode": "live"
+ },
+ "rocky-river-stream/balanced": {
+  "n": 45,
+  "h": 3878345676,
+  "sub": "gravel",
+  "ax": [
+   1,
+   -0.445,
+   -0.75,
+   -0.009,
+   1
+  ],
+  "mode": "live"
+ },
+ "rocky-river-stream/full": {
+  "n": 67,
+  "h": 4180263512,
+  "sub": "gravel",
+  "ax": [
+   1,
+   -0.056,
+   -0.75,
+   -0.005,
+   1
+  ],
+  "mode": "live"
+ },
+ "white-sand-stone/open": {
+  "n": 1,
+  "h": 2747755898,
+  "sub": "white",
+  "ax": [
+   1,
+   -1,
+   -0.75,
+   0,
+   1
+  ],
+  "mode": "none"
+ },
+ "white-sand-stone/balanced": {
+  "n": 3,
+  "h": 4248437292,
+  "sub": "white",
+  "ax": [
+   1,
+   -1,
+   -0.75,
+   1,
+   1
+  ],
+  "mode": "none"
+ },
+ "white-sand-stone/full": {
+  "n": 6,
+  "h": 2267595464,
+  "sub": "white",
+  "ax": [
+   1,
+   -1,
+   -0.75,
+   1,
+   1
+  ],
+  "mode": "none"
+ },
+ "discus-showcase/open": {
+  "n": 5,
+  "h": 4024368337,
+  "sub": "custom",
+  "ax": [
+   1,
+   -1,
+   1,
+   0.785,
+   -1
+  ],
+  "mode": "live"
+ },
+ "discus-showcase/balanced": {
+  "n": 8,
+  "h": 1759545646,
+  "sub": "custom",
+  "ax": [
+   1,
+   -1,
+   0.083,
+   0.586,
+   -1
+  ],
+  "mode": "live"
+ },
+ "discus-showcase/full": {
+  "n": 8,
+  "h": 2767287231,
+  "sub": "custom",
+  "ax": [
+   1,
+   -1,
+   -0.333,
+   1,
+   -1
+  ],
+  "mode": "live"
+ },
+ "goldfish-palace/open": {
+  "n": 25,
+  "h": 3699493715,
+  "sub": "pea",
+  "ax": [
+   1,
+   -1,
+   -0.75,
+   0.717,
+   1
+  ],
+  "mode": "live"
+ },
+ "goldfish-palace/balanced": {
+  "n": 59,
+  "h": 1465515150,
+  "sub": "pea",
+  "ax": [
+   1,
+   -1,
+   -0.75,
+   0.693,
+   1
+  ],
+  "mode": "live"
+ },
+ "goldfish-palace/full": {
+  "n": 91,
+  "h": 2445540138,
+  "sub": "pea",
+  "ax": [
+   1,
+   -0.945,
+   -0.75,
+   0.499,
+   1
+  ],
+  "mode": "live"
+ },
+ "betta-retreat/open": {
+  "n": 20,
+  "h": 592765762,
+  "sub": "white",
+  "ax": [
+   1,
+   0.029,
+   -0.75,
+   0.355,
+   0.2
+  ],
+  "mode": "live"
+ },
+ "betta-retreat/balanced": {
+  "n": 45,
+  "h": 1330450974,
+  "sub": "white",
+  "ax": [
+   1,
+   0.803,
+   -0.75,
+   0.134,
+   0.556
+  ],
+  "mode": "live"
+ },
+ "betta-retreat/full": {
+  "n": 138,
+  "h": 3331894128,
+  "sub": "white",
+  "ax": [
+   1,
+   1,
+   -0.75,
+   0.142,
+   0.6
+  ],
+  "mode": "live"
+ },
+ "axolotl-den/open": {
+  "n": 1,
+  "h": 2322219561,
+  "sub": "custom",
+  "ax": [
+   1,
+   -1,
+   -0.75,
+   0,
+   0
+  ],
+  "mode": "none"
+ },
+ "axolotl-den/balanced": {
+  "n": 3,
+  "h": 1818821524,
+  "sub": "custom",
+  "ax": [
+   1,
+   -1,
+   -0.75,
+   1,
+   1
+  ],
+  "mode": "none"
+ },
+ "axolotl-den/full": {
+  "n": 5,
+  "h": 1384075282,
+  "sub": "custom",
+  "ax": [
+   1,
+   -1,
+   -0.75,
+   0.862,
+   1
+  ],
+  "mode": "none"
+ },
+ "lps-coral-garden/open": {
+  "n": 20,
+  "h": 1922083761,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   -0.849,
+   1,
+   0.587,
+   1
+  ],
+  "mode": "live"
+ },
+ "lps-coral-garden/balanced": {
+  "n": 34,
+  "h": 2062821533,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   -0.119,
+   1,
+   0.431,
+   1
+  ],
+  "mode": "live"
+ },
+ "lps-coral-garden/full": {
+  "n": 49,
+  "h": 3229363615,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   0.236,
+   1,
+   0.328,
+   1
+  ],
+  "mode": "live"
+ },
+ "reef-arches/open": {
+  "n": 21,
+  "h": 90308300,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   -0.849,
+   1,
+   0.5,
+   1
+  ],
+  "mode": "live"
+ },
+ "reef-arches/balanced": {
+  "n": 32,
+  "h": 3020168899,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   -0.188,
+   1,
+   0.351,
+   1
+  ],
+  "mode": "live"
+ },
+ "reef-arches/full": {
+  "n": 47,
+  "h": 1577228120,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   0.236,
+   1,
+   0.584,
+   1
+  ],
+  "mode": "live"
+ },
+ "blue-glow-reef/open": {
+  "n": 13,
+  "h": 3906579156,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   -1,
+   1,
+   0.768,
+   1
+  ],
+  "mode": "live"
+ },
+ "blue-glow-reef/balanced": {
+  "n": 22,
+  "h": 2140555451,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   -0.556,
+   1,
+   0.447,
+   1
+  ],
+  "mode": "live"
+ },
+ "blue-glow-reef/full": {
+  "n": 33,
+  "h": 978249197,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   -0.264,
+   1,
+   0.442,
+   1
+  ],
+  "mode": "live"
+ },
+ "soft-coral-garden/open": {
+  "n": 29,
+  "h": 275155693,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   -0.445,
+   0.679,
+   0.398,
+   1
+  ],
+  "mode": "live"
+ },
+ "soft-coral-garden/balanced": {
+  "n": 39,
+  "h": 3478252492,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   -0.056,
+   1,
+   0.284,
+   1
+  ],
+  "mode": "live"
+ },
+ "soft-coral-garden/full": {
+  "n": 53,
+  "h": 643909562,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   0.236,
+   0.639,
+   0.012,
+   1
+  ],
+  "mode": "live"
+ },
+ "sps-reef/open": {
+  "n": 25,
+  "h": 2371669706,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   -0.849,
+   1,
+   0.568,
+   1
+  ],
+  "mode": "live"
+ },
+ "sps-reef/balanced": {
+  "n": 36,
+  "h": 1218945635,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   -0.119,
+   1,
+   0.12,
+   1
+  ],
+  "mode": "live"
+ },
+ "sps-reef/full": {
+  "n": 50,
+  "h": 3740296820,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   0.195,
+   1,
+   0.452,
+   1
+  ],
+  "mode": "live"
+ },
+ "mixed-reef/open": {
+  "n": 25,
+  "h": 1214678252,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   -0.556,
+   1,
+   0.337,
+   1
+  ],
+  "mode": "live"
+ },
+ "mixed-reef/balanced": {
+  "n": 32,
+  "h": 1057944044,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   -0.188,
+   1,
+   0.391,
+   1
+  ],
+  "mode": "live"
+ },
+ "mixed-reef/full": {
+  "n": 42,
+  "h": 4031848191,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   0.105,
+   1,
+   0.276,
+   1
+  ],
+  "mode": "live"
+ },
+ "clownfish-anemone/open": {
+  "n": 15,
+  "h": 2042003699,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   -0.849,
+   1,
+   0.51,
+   1
+  ],
+  "mode": "live"
+ },
+ "clownfish-anemone/balanced": {
+  "n": 23,
+  "h": 3768673112,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   -0.349,
+   1,
+   0.284,
+   1
+  ],
+  "mode": "live"
+ },
+ "clownfish-anemone/full": {
+  "n": 31,
+  "h": 69428768,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   -0.188,
+   1,
+   0.304,
+   1
+  ],
+  "mode": "live"
+ },
+ "reef-islands/open": {
+  "n": 21,
+  "h": 2584060791,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   -0.849,
+   1,
+   0.529,
+   1
+  ],
+  "mode": "live"
+ },
+ "reef-islands/balanced": {
+  "n": 34,
+  "h": 2659737199,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   -0.119,
+   1,
+   0.333,
+   1
+  ],
+  "mode": "live"
+ },
+ "reef-islands/full": {
+  "n": 50,
+  "h": 3243979049,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   0.312,
+   1,
+   0.422,
+   1
+  ],
+  "mode": "live"
+ },
+ "reef-rock-art/open": {
+  "n": 5,
+  "h": 2930235698,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   -1,
+   1,
+   0.5,
+   1
+  ],
+  "mode": "live"
+ },
+ "reef-rock-art/balanced": {
+  "n": 10,
+  "h": 3317020250,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   -0.688,
+   1,
+   0.368,
+   1
+  ],
+  "mode": "live"
+ },
+ "reef-rock-art/full": {
+  "n": 18,
+  "h": 2886888098,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   -0.119,
+   1,
+   0.591,
+   1
+  ],
+  "mode": "live"
+ },
+ "reef-skyline/open": {
+  "n": 7,
+  "h": 1933871603,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   -0.688,
+   1,
+   0.333,
+   1
+  ],
+  "mode": "live"
+ },
+ "reef-skyline/balanced": {
+  "n": 13,
+  "h": 1237640701,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   -0.188,
+   1,
+   0.333,
+   1
+  ],
+  "mode": "live"
+ },
+ "reef-skyline/full": {
+  "n": 22,
+  "h": 3115840285,
+  "sub": "aragonite",
+  "ax": [
+   1,
+   0.151,
+   1,
+   0.216,
+   1
+  ],
+  "mode": "live"
+ },
+ "mudskipper-mudflat/open": {
+  "n": 43,
+  "h": 37939720,
+  "sub": "custom",
+  "ax": [
+   1,
+   0.673,
+   -0.75,
+   0.324,
+   1
+  ],
+  "mode": "live"
+ },
+ "mudskipper-mudflat/balanced": {
+  "n": 67,
+  "h": 2342559186,
+  "sub": "custom",
+  "ax": [
+   1,
+   0.98,
+   -0.75,
+   0.251,
+   1
+  ],
+  "mode": "live"
+ },
+ "mudskipper-mudflat/full": {
+  "n": 99,
+  "h": 2341362358,
+  "sub": "custom",
+  "ax": [
+   1,
+   1,
+   -0.75,
+   0.622,
+   1
+  ],
+  "mode": "live"
+ },
+ "brackish-rocky-coast/open": {
+  "n": 18,
+  "h": 1361507663,
+  "sub": "custom",
+  "ax": [
+   1,
+   -1,
+   -0.75,
+   0.585,
+   1
+  ],
+  "mode": "live"
+ },
+ "brackish-rocky-coast/balanced": {
+  "n": 37,
+  "h": 389833001,
+  "sub": "custom",
+  "ax": [
+   1,
+   -1,
+   -0.75,
+   0.43,
+   1
+  ],
+  "mode": "live"
+ },
+ "brackish-rocky-coast/full": {
+  "n": 44,
+  "h": 3850164142,
+  "sub": "custom",
+  "ax": [
+   1,
+   -1,
+   -0.75,
+   0.554,
+   1
+  ],
+  "mode": "live"
+ },
+ "puffer-den/open": {
+  "n": 18,
+  "h": 1937671587,
+  "sub": "custom",
+  "ax": [
+   1,
+   -0.027,
+   -0.393,
+   0.436,
+   0.5
+  ],
+  "mode": "live"
+ },
+ "puffer-den/balanced": {
+  "n": 24,
+  "h": 553941585,
+  "sub": "custom",
+  "ax": [
+   1,
+   0.105,
+   0.222,
+   0.298,
+   0.667
+  ],
+  "mode": "live"
+ },
+ "puffer-den/full": {
+  "n": 119,
+  "h": 2464844128,
+  "sub": "custom",
+  "ax": [
+   1,
+   1,
+   0.159,
+   -0.169,
+   0.556
+  ],
+  "mode": "live"
+ },
+ "brackish-planted/open": {
+  "n": 24,
+  "h": 502290586,
+  "sub": "custom",
+  "ax": [
+   1,
+   0.08,
+   -0.75,
+   0.431,
+   0.429
+  ],
+  "mode": "live"
+ },
+ "brackish-planted/balanced": {
+  "n": 60,
+  "h": 3477563931,
+  "sub": "custom",
+  "ax": [
+   1,
+   1,
+   -0.546,
+   0.147,
+   0.636
+  ],
+  "mode": "live"
+ },
+ "brackish-planted/full": {
+  "n": 144,
+  "h": 582750366,
+  "sub": "custom",
+  "ax": [
+   1,
+   1,
+   -0.036,
+   -0.021,
+   0.556
+  ],
+  "mode": "live"
+ },
+ "fiddler-crab-beach/open": {
+  "n": 43,
+  "h": 37939720,
+  "sub": "custom",
+  "ax": [
+   1,
+   0.673,
+   -0.75,
+   0.324,
+   1
+  ],
+  "mode": "live"
+ },
+ "fiddler-crab-beach/balanced": {
+  "n": 67,
+  "h": 3550322993,
+  "sub": "custom",
+  "ax": [
+   1,
+   0.98,
+   -0.75,
+   0.251,
+   1
+  ],
+  "mode": "live"
+ },
+ "fiddler-crab-beach/full": {
+  "n": 99,
+  "h": 9967068,
+  "sub": "custom",
+  "ax": [
+   1,
+   1,
+   -0.75,
+   0.622,
+   1
+  ],
+  "mode": "live"
+ },
+ "dart-frog-rainforest/open": {
+  "n": 28,
+  "h": 1295538335,
+  "sub": "layered",
+  "ax": [
+   1,
+   0.312,
+   -0.229,
+   -0.301,
+   -1
+  ],
+  "mode": "live"
+ },
+ "dart-frog-rainforest/balanced": {
+  "n": 43,
+  "h": 1037400594,
+  "sub": "layered",
+  "ax": [
+   1,
+   0.726,
+   0.019,
+   -0.422,
+   -1
+  ],
+  "mode": "live"
+ },
+ "dart-frog-rainforest/full": {
+  "n": 84,
+  "h": 1104887725,
+  "sub": "layered",
+  "ax": [
+   1,
+   1,
+   0.115,
+   -0.274,
+   -1
+  ],
+  "mode": "live"
+ },
+ "rocky-desert-canyon/open": {
+  "n": 14,
+  "h": 2646648343,
+  "sub": "clay",
+  "ax": [
+   1,
+   -0.849,
+   -0.75,
+   0.034,
+   0.75
+  ],
+  "mode": "live"
+ },
+ "rocky-desert-canyon/balanced": {
+  "n": 18,
+  "h": 1309760274,
+  "sub": "clay",
+  "ax": [
+   1,
+   -0.349,
+   -0.75,
+   -0.337,
+   0.75
+  ],
+  "mode": "live"
+ },
+ "rocky-desert-canyon/full": {
+  "n": 29,
+  "h": 153329084,
+  "sub": "clay",
+  "ax": [
+   1,
+   0.105,
+   -0.75,
+   -0.017,
+   0.833
+  ],
+  "mode": "live"
+ },
+ "snake-hideaway/open": {
+  "n": 13,
+  "h": 2347028817,
+  "sub": "bark",
+  "ax": [
+   1,
+   -0.849,
+   -0.75,
+   -0.406,
+   -0.714
+  ],
+  "mode": "live"
+ },
+ "snake-hideaway/balanced": {
+  "n": 15,
+  "h": 1503957884,
+  "sub": "bark",
+  "ax": [
+   1,
+   -0.556,
+   -0.75,
+   -0.318,
+   -0.714
+  ],
+  "mode": "live"
+ },
+ "snake-hideaway/full": {
+  "n": 25,
+  "h": 2185658546,
+  "sub": "bark",
+  "ax": [
+   1,
+   0.105,
+   0.583,
+   -0.498,
+   -0.75
+  ],
+  "mode": "live"
+ },
+ "rainforest-canopy/open": {
+  "n": 26,
+  "h": 5962457,
+  "sub": "soil",
+  "ax": [
+   1,
+   0.256,
+   0.75,
+   -0.439,
+   -1
+  ],
+  "mode": "live"
+ },
+ "rainforest-canopy/balanced": {
+  "n": 39,
+  "h": 2129237564,
+  "sub": "soil",
+  "ax": [
+   1,
+   0.64,
+   0.235,
+   -0.405,
+   -1
+  ],
+  "mode": "live"
+ },
+ "rainforest-canopy/full": {
+  "n": 73,
+  "h": 4248922706,
+  "sub": "soil",
+  "ax": [
+   1,
+   1,
+   0.462,
+   -0.519,
+   -1
+  ],
+  "mode": "live"
+ },
+ "basking-scrubland/open": {
+  "n": 14,
+  "h": 559878397,
+  "sub": "clay",
+  "ax": [
+   1,
+   -0.849,
+   -0.75,
+   0.015,
+   0.75
+  ],
+  "mode": "live"
+ },
+ "basking-scrubland/balanced": {
+  "n": 18,
+  "h": 578487044,
+  "sub": "clay",
+  "ax": [
+   1,
+   -0.349,
+   -0.75,
+   -0.096,
+   0.75
+  ],
+  "mode": "live"
+ },
+ "basking-scrubland/full": {
+  "n": 29,
+  "h": 935167840,
+  "sub": "clay",
+  "ax": [
+   1,
+   0.105,
+   -0.75,
+   -0.001,
+   0.5
+  ],
+  "mode": "live"
+ },
+ "tarantula-burrow/open": {
+  "n": 12,
+  "h": 2614968067,
+  "sub": "tsand",
+  "ax": [
+   1,
+   -0.764,
+   -0.25,
+   -0.016,
+   0.2
+  ],
+  "mode": "live"
+ },
+ "tarantula-burrow/balanced": {
+  "n": 17,
+  "h": 2249503961,
+  "sub": "tsand",
+  "ax": [
+   1,
+   -0.264,
+   -0.25,
+   -0.172,
+   0.2
+  ],
+  "mode": "live"
+ },
+ "tarantula-burrow/full": {
+  "n": 30,
+  "h": 578692848,
+  "sub": "tsand",
+  "ax": [
+   1,
+   0.151,
+   -0.333,
+   0.01,
+   0.6
+  ],
+  "mode": "live"
+ },
+ "jumping-spider-loft/open": {
+  "n": 31,
+  "h": 4186972624,
+  "sub": "layered",
+  "ax": [
+   1,
+   0.473,
+   0.546,
+   -0.607,
+   -1
+  ],
+  "mode": "live"
+ },
+ "jumping-spider-loft/balanced": {
+  "n": 44,
+  "h": 1784496981,
+  "sub": "layered",
+  "ax": [
+   1,
+   0.736,
+   0.687,
+   -0.405,
+   -1
+  ],
+  "mode": "live"
+ },
+ "jumping-spider-loft/full": {
+  "n": 88,
+  "h": 257669300,
+  "sub": "layered",
+  "ax": [
+   1,
+   1,
+   0.701,
+   -0.355,
+   -1
+  ],
+  "mode": "live"
+ },
+ "rainforest-waterfall/open": {
+  "n": 46,
+  "h": 180580531,
+  "sub": "layered",
+  "ax": [
+   1,
+   0.794,
+   0.262,
+   0.119,
+   -0.5
+  ],
+  "mode": "live"
+ },
+ "rainforest-waterfall/balanced": {
+  "n": 67,
+  "h": 3272928045,
+  "sub": "layered",
+  "ax": [
+   1,
+   1,
+   0.321,
+   0.057,
+   -0.5
+  ],
+  "mode": "live"
+ },
+ "rainforest-waterfall/full": {
+  "n": 116,
+  "h": 3667504462,
+  "sub": "layered",
+  "ax": [
+   1,
+   1,
+   0.146,
+   0.146,
+   0.2
+  ],
+  "mode": "live"
+ },
+ "riverbank-shore/open": {
+  "n": 47,
+  "h": 2720646361,
+  "sub": "layered",
+  "ax": [
+   1,
+   0.794,
+   0.262,
+   0.09,
+   -0.2
+  ],
+  "mode": "live"
+ },
+ "riverbank-shore/balanced": {
+  "n": 68,
+  "h": 127663688,
+  "sub": "layered",
+  "ax": [
+   1,
+   1,
+   0.321,
+   0.056,
+   -0.2
+  ],
+  "mode": "live"
+ },
+ "riverbank-shore/full": {
+  "n": 117,
+  "h": 892511412,
+  "sub": "layered",
+  "ax": [
+   1,
+   1,
+   0.146,
+   0.153,
+   0.273
+  ],
+  "mode": "live"
+ },
+ "cypress-swamp/open": {
+  "n": 43,
+  "h": 3335014524,
+  "sub": "custom",
+  "ax": [
+   1,
+   0.673,
+   -0.75,
+   0.324,
+   1
+  ],
+  "mode": "live"
+ },
+ "cypress-swamp/balanced": {
+  "n": 67,
+  "h": 3725262220,
+  "sub": "custom",
+  "ax": [
+   1,
+   0.98,
+   -0.75,
+   0.25,
+   1
+  ],
+  "mode": "live"
+ },
+ "cypress-swamp/full": {
+  "n": 99,
+  "h": 4103500209,
+  "sub": "custom",
+  "ax": [
+   1,
+   1,
+   -0.75,
+   0.616,
+   1
+  ],
+  "mode": "live"
+ },
+ "cascade-wall/open": {
+  "n": 36,
+  "h": 2502044743,
+  "sub": "layered",
+  "ax": [
+   1,
+   0.651,
+   -0.088,
+   0.127,
+   -1
+  ],
+  "mode": "live"
+ },
+ "cascade-wall/balanced": {
+  "n": 66,
+  "h": 3709149245,
+  "sub": "layered",
+  "ax": [
+   1,
+   1,
+   0.44,
+   0.108,
+   -0.333
+  ],
+  "mode": "live"
+ },
+ "cascade-wall/full": {
+  "n": 121,
+  "h": 2605634609,
+  "sub": "layered",
+  "ax": [
+   1,
+   1,
+   0.241,
+   0.136,
+   -0.2
+  ],
+  "mode": "live"
+ }
+}
