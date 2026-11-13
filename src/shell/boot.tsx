@@ -35,9 +35,11 @@ export function bootShell() {
   addEventListener('pagehide', () => { if (timer) save(); });
 
   const root = document.createElement('div'); root.id = 'ui2'; document.body.append(root);
-  render(<App store={store} viewHost={viewHost} profile={loadProfile} save={save} />, root);
+  let viewer: Viewer | undefined;
+  const preview = (S: Parameters<Viewer['setPreview']>[0]) => viewer?.setPreview(S);
+  render(<App store={store} viewHost={viewHost} profile={loadProfile} save={save} preview={preview} />, root);
 
-  const viewer = new Viewer(canvas, viewHost, store);
+  viewer = new Viewer(canvas, viewHost, store);
   attachPointer(viewer, store, () => false); // camera only: picking and moving things come with their sections
   if (import.meta.env.DEV) Object.assign(window, { __gb: { store, viewer } });
   document.body.dataset.ui2 = 'ready';

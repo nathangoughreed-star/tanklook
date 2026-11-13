@@ -3,6 +3,11 @@
 import type { ComponentChildren } from 'preact';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { Store } from '../scene/store';
+import type { TankSetup } from '../scene/types';
+import { loadLibrary } from '../scene/customTanks';
+import { TankSection, TankPicker, type MakerHow } from './tank';
+import { Maker, type MakerInit } from './maker';
+import { startSpec, specOfEntry } from './logic/tank';
 import type { UserProfile } from '../demand';
 import { checksModel, CHECKS, type CheckId, type ChecksModel } from './logic/checks';
 import { SECTIONS, PHONE_TABS, MORE, COMES_IN, sectionOf, railClick, escape, type SectionId } from './logic/sections';
@@ -15,6 +20,8 @@ export interface AppProps {
   viewHost: HTMLElement;
   profile: () => UserProfile;
   save: () => void;
+  /** the viewer's view-only preview (picker rows, the maker's scratch tank); null = the scene itself */
+  preview: (S: TankSetup | null) => void;
 }
 
 /** Re-render on every store change; `slow` (the engines) only once the scene settles, as the old cost panel does. */
@@ -86,7 +93,8 @@ function TabBar({ open, onPick }: { open: SectionId | 'more' | null; onPick: (id
   );
 }
 
-function Panel({ id, more, onPick, onClose }: { id: SectionId | null; more: boolean; onPick: (id: SectionId) => void; onClose: () => void }) {
+interface TankHost { store: Store; picker: boolean; setPicker: (on: boolean) => void; maker: (h: MakerHow) => void; preview: (S: TankSetup | null) => void; libN: number }
+function Panel({ id, more, onPick, onClose, tank }: { id: SectionId | null; more: boolean; onPick: (id: SectionId) => void; onClose: () => void; tank: TankHost }) {
   if (more) return (
     <section class="panel" aria-label="More sections">
       <div class="sec-head"><h2>More</h2><button type="button" class="btn icon ghost" aria-label="Close" onClick={onClose}><Icon name="x" /></button></div>
@@ -95,6 +103,13 @@ function Panel({ id, more, onPick, onClose }: { id: SectionId | null; more: bool
   );
   if (!id) return null;
   const s = sectionOf(id);
+  if (id === 'tank' && tank.picker) return <TankPicker store={tank.store} preview={tank.preview} onClose={() => tank.setPicker(false)} onMaker={tank.maker} libN={tank.libN} />;
+  if (id === 'tank') return (
+    <section class="panel" aria-label="Tank">
+      <div class="sec-head"><h2>Tank</h2><button type="button" class="btn icon ghost" title="Fold the panel (Esc)" aria-label="Fold the panel" onClick={onClose}><Icon name="x" /></button></div>
+      <div class="sec-body"><TankSection store={tank.store} onPicker={() => tank.setPicker(true)} onMaker={tank.maker} libN={tank.libN} /></div>
+    </section>
+  );
   return (
     <section class="panel" aria-label={s.title}>
       <div class="sec-head"><h2>{s.title}</h2><button type="button" class="btn icon ghost" title="Fold the panel (Esc)" aria-label="Fold the panel" onClick={onClose}><Icon name="x" /></button></div>
@@ -128,32 +143,42 @@ function CheckBar({ m, on, onPick }: { m: ChecksModel; on: CheckId | null; onPic
   );
 }
 
-export function App({ store, viewHost, profile, save }: AppProps) {
+export function App({ store, viewHost, profile, save, preview }: AppProps) {
   const slow = useStore(store);
   const phone = usePhone();
   const [section, setSection] = useState<SectionId | null>(phone ? null : 'tank');
   const [more, setMore] = useState(false);
   const [drawer, setDrawer] = useState<CheckId | null>(null);
   const [saved, setSaved] = useState(true);
+  const [picker, setPicker] = useState(false);
+  const [maker, setMaker] = useState<MakerInit | null>(null);
+  const [libN, setLibN] = useState(0);
+  const openMaker = (h: MakerHow) => {
+    const lib = loadLibrary();
+    if (h.how === 'lib') { const e = lib.find(x => x.id === h.id); if (e) setMaker({ spec: specOfEntry(e), libId: e.id }); }
+    else setMaker(startSpec(store.tank, h.how, lib));
+  };
   const viewRef = useRef<HTMLElement>(null);
   const model = useMemo(() => checksModel(store.tank, store.scene.active, store.scene.units, profile()), [slow, store]);
 
-  useEffect(() => { viewRef.current?.prepend(viewHost); }, [viewHost]);
+  useEffect(() => { if (!maker) viewRef.current?.prepend(viewHost); }, [viewHost, maker]);
   // the saved dot: off from an edit until its autosave (boot.ts) lands
   useEffect(() => store.subscribe(kind => { if (kind !== 'select') setSaved(false); }), [store]);
   useEffect(() => { const f = () => setSaved(true); addEventListener('ui2:saved', f); return () => removeEventListener('ui2:saved', f); }, []);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const typing = (e.target as HTMLElement | null)?.closest?.('input, textarea, select');
+      if (maker) return; // the maker handles its own Esc (Cancel)
+      if (e.key === 'Escape' && picker && section === 'tank') { setPicker(false); return; }
       if (e.key === 'Escape') { const n = escape({ drawer, section }); setDrawer(n.drawer as CheckId | null); setSection(n.section); setMore(false); return; }
       if (typing || !(e.ctrlKey || e.metaKey)) return;
       const k = e.key.toLowerCase();
       if (k === 'z' && !e.shiftKey) { e.preventDefault(); store.undo(); } else if (k === 'y' || (k === 'z' && e.shiftKey)) { e.preventDefault(); store.redo(); } else if (k === 's') { e.preventDefault(); save(); }
     };
     addEventListener('keydown', onKey); return () => removeEventListener('keydown', onKey);
-  }, [drawer, section, store, save]);
+  }, [drawer, section, store, save, maker, picker]);
 
-  const pick = (id: SectionId) => { setMore(false); setSection(railClick(section, id)); if (phone) setDrawer(null); };
+  const pick = (id: SectionId) => { setMore(false); setPicker(false); setSection(railClick(section, id)); if (phone) setDrawer(null); };
   const tab = (id: SectionId | 'more') => { if (id === 'more') { setSection(null); setMore(!more); setDrawer(null); } else pick(id); };
   const check = (id: CheckId) => { setDrawer(drawer === id ? null : id); if (phone) { setSection(null); setMore(false); } };
   const panelOpen = !!section || more;
@@ -163,7 +188,7 @@ export function App({ store, viewHost, profile, save }: AppProps) {
     <div class={cls}>
       <Header store={store} save={save} saved={saved} phone={phone} />
       {phone ? null : <Rail open={section} onPick={pick} />}
-      <Panel id={section} more={more} onPick={pick} onClose={() => { setSection(null); setMore(false); }} />
+      <Panel id={section} more={more} onPick={pick} onClose={() => { setSection(null); setMore(false); setPicker(false); }} tank={{ store, picker, setPicker, maker: openMaker, preview, libN }} />
       <main class="viewer" ref={viewRef}>
         <Cluster phone={phone} />
         {phone ? null : <CheckBar m={model} on={drawer} onPick={check} />}
@@ -171,6 +196,7 @@ export function App({ store, viewHost, profile, save }: AppProps) {
       {phone ? <div class="checkstrip"><CheckBar m={model} on={drawer} onPick={check} /></div> : null}
       {drawer ? <Drawer id={drawer} model={model} onClose={() => setDrawer(null)} /> : null}
       {phone ? <TabBar open={more ? 'more' : section} onPick={tab} /> : null}
+      {maker ? <Maker store={store} init={maker} viewHost={viewHost} preview={preview} onEnd={() => { setMaker(null); setLibN(n => n + 1); }} /> : null}
     </div>
   );
 }
