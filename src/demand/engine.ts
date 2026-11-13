@@ -12,6 +12,7 @@ import { itemLights } from '../scene/lightcheck';
 import { NEEDS, isCoralNeed, isLand, parRange, type PlantNeed } from '../scene/lightneeds';
 import { wattsOf } from '../scene/lightout';
 import { lightProduct, listedPrice } from '../data/gearCatalog';
+import { hoodOf, withHoodLight, NO_HOOD_NOTE } from '../data/hoods';
 import { growRate } from '../scene/growtime';
 import { LIBRARY } from '../scene/items';
 import { outcomeOf } from '../scene/plantfit';
@@ -89,6 +90,8 @@ function fold(items: Contribution[]): Contribution[] {
 export const kwhRate = (P: Pick<UserProfile, 'kwhUsd'>) => P.kwhUsd ?? mean3(FACTORS.kwhUsd);
 
 export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): Demand {
+  const hood = S.lid === 'hood' ? hoodOf(S) : undefined, hoodsLight = !!hood && !S.light.product;
+  if (hood) S = withHoodLight(S); // HD1: a hood brings its own light (type and watts) into the light model
   S = capableCredit(S); // lane DX3: owned light / heater / filter is $0 only when it meets the requirement
   if (S.stockFirst && !opts.kit) S = withNeedGear(S); // lane GV2: a tank started from its animals is priced for what they and its plants need (basic light, feed)
   const wid = ageWiden(DEFAULTS.asOf, opts.now ?? Date.now());
@@ -119,14 +122,21 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   const tStand = !wet ? rowPrice(TERRARIUM_STAND_ROW) : undefined; // a terrarium: its own reptile-stand row, by footprint (S240b)
   // a table is furniture the user already owns (Nathan 2026-10-28): only a cabinet, frame or custom stand is priced
   if (S.stand.show && S.stand.style !== 'table') add('stand', tStand ? 'Stand (terrarium)' : 'Stand', 'gear', { setup: price(tStand ? scale3(tStand, terrariumStandK(S.tank)) : stand ? scale3(stand, gal > 55 ? Math.pow(gal / 55, 0.8) : 1) : add3(pick(G.stand.base), scale3(pick(G.stand.perGal), gal))) });
-  const lidRow = S.lid === 'open' ? undefined : rowPrice(`gear:lid-${S.lid === 'glass' ? 'glass' : S.lid === 'mesh' ? 'mesh' : 'hood'}`), lidK = Math.min(2.5, Math.max(0.6, Math.sqrt(gal / 25)));
-  const lid = (G.lid as Record<string, Rangeish>)[S.lid];
-  if (lidRow) add('lid', `Lid (${S.lid})`, 'gear', { setup: price(scale3(lidRow, lidK)) });
-  else if (lid && r3(lid)!.mode > 0) add('lid', `Lid (${S.lid})`, 'gear', { setup: price(r3(lid)!) });
+  // HD1: a hood is one product with its light built in; no product for this tank = priced as the glass lid (the scene keeps its hood; the user is told)
+  const noHood = S.lid === 'hood' && !hood, lidKind = noHood ? 'glass' : S.lid;
+  if (noHood) warnings.push(NO_HOOD_NOTE);
+  const lidRow = lidKind === 'open' ? undefined : rowPrice(`gear:lid-${lidKind === 'glass' ? 'glass' : lidKind === 'mesh' ? 'mesh' : 'hood'}`), lidK = Math.min(2.5, Math.max(0.6, Math.sqrt(gal / 25)));
+  const lid = (G.lid as Record<string, Rangeish>)[lidKind];
+  if (hood) { // one line: the hood with its light; its watts are the light's power draw (no separate light row below unless a light was chosen as well)
+    const hp = hood.priceUsd;
+    add('lid', `Hood with light: ${hood.brand} ${hood.model} (${hood.light.type === 'led' ? 'LED' : hood.light.tech}, ${hood.light.watts} W)`, 'gear', { setup: price({ lo: hp * 0.9, mode: hp, hi: hp * 1.1 }), ...(hoodsLight ? { kwhMo: hood.light.watts * G.lightHoursPerDay * 30 / 1000 } : {}) });
+  }
+  else if (lidRow) add('lid', noHood ? 'Lid (glass: no hood sold for this size)' : `Lid (${S.lid})`, 'gear', { setup: price(scale3(lidRow, lidK)) });
+  else if (lid && r3(lid)!.mode > 0) add('lid', `Lid (${lidKind})`, 'gear', { setup: price(r3(lid)!) });
   const gv = S.substrate.show ? groundVolume(S, 24).litres : 0;
   if (gv > 0) add('substrate', 'Substrate', 'gear', { setup: price(scale3(pick(G.substrateUsdPerL), gv * 1.1)) });
   const watts = wattsOf(S);
-  if (watts > 0) {
+  if (watts > 0 && !(hood && hoodsLight)) {
     const inch = S.tank.L / 25.4, rowL = salt ? rowPrice('gear:led-reef-24') && scale3(rowPrice('gear:led-reef-24')!, Math.max(0.6, inch / 24)) : interp('gear:led-planted-', [24, 48], inch);
     // a catalogued product (Tech > Lighting) costs its own listed price (one retailer, one day: +-10 %), as heaters and filters do
     const lprod = lightProduct(S.light.product), listed = listedPrice(lprod);

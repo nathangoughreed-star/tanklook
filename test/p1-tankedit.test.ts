@@ -71,7 +71,8 @@ describe('P1 flat ends and the locks they drive', () => {
     const t = fresh().tank;
     expect(lidLocked({ ...t, shape: 'round' }, false, 'hood')).toBe(true);
     expect(lidLocked({ ...t, shape: 'round' }, false, 'glass')).toBe(false);
-    expect(lidLocked({ ...t, shape: 'bow' }, false, 'hood')).toBe(false);
+    expect(lidLocked({ ...t, shape: 'bow' }, false, 'hood')).toBe(true); // HD1: no hood is sold for a bow front
+    expect(lidLocked({ ...t, shape: 'rect', L: 30.5 * 25.4, D: 12.5 * 25.4 }, false, 'hood')).toBe(false); // a standard 30 x 12 in size has hoods
     for (const l of ['open', 'glass', 'mesh', 'hood'] as const) expect(lidLocked(t, true, l)).toBe(true);
   });
   it('doors: rectangles only and not when the product holds them; "none" is always open', () => {
@@ -204,7 +205,8 @@ describe('P1 lid, doors, rim, glass', () => {
     const s = fresh(); s.light.type = 'spot'; s.light.tech = 'mh';
     setLid(s, 'glass'); expect(s.light.tech).toBe('mh');
     const t = fresh(), before = structuredClone(t.light);
-    setLid(t, 'hood'); expect(t.light).toEqual(before);
+    setLid(t, 'hood'); // HD1: a hood brings its own light, type and watts, when a product fits; a tank no hood fits keeps its light
+    if (t.hoodProduct) expect(t.light.watts).toBeGreaterThan(0); else expect(t.light).toEqual(before);
   });
   it('a lid change on a kit that holds its lid releases the product', () => {
     const k = TANK_MODELS.find(m => m.variants?.some(v => v.kit))!, v = k.variants!.find(x => x.kit)!;

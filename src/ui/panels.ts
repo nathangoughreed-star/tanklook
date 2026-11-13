@@ -4,6 +4,7 @@ import { aquariumOnly, kindInScope, PAUSED_NOTE, scopeSpecies } from '../scope';
 import { FOCUS_SECS, type FocusSec } from '../render/menuFocus';
 import { projectExtras, rulesOf } from '../scene/brief';
 import { setNoNewEquipment, setDirection } from '../scene/project';
+import { hoodExists, hoodOf, hoodsFor, NO_HOOD_NOTE } from '../data/hoods';
 import { attachDemandPanel, loadProfile } from './demandPanel';
 import { fitToLimits, hasLimits } from '../demand/fit';
 import { attachTechMenu } from './techMenu';
@@ -2035,6 +2036,12 @@ export function attachPanels(store: Store, viewer: Viewer) {
     { // an integrated kit keeps its own lid (scene/integrated.ts)
       const lk = locksOf(store.tank);
       for (const [id, d] of LIDS) ($(id) as HTMLButtonElement).disabled = lidLocked(A, !!lk?.lid, d);
+      { // HD1: a hood is a real product with its light; say which, or that none is sold for this size (a saved hood is still drawn and is priced as a glass lid)
+        const el = $('lidHoodNote'), h = s.lid === 'hood' ? hoodOf(s) : undefined, n = hoodsFor(A).length;
+        el.hidden = s.lid !== 'hood' || !!lk?.lid;
+        if (!el.hidden) el.textContent = h ? `${h.brand} ${h.model}: ${h.light.type === 'led' ? 'LED' : h.light.tech}, ${h.light.watts} W built in, about $${Math.round(h.priceUsd)} with its light.${n > 1 ? ` ${n - 1} other hood${n > 2 ? 's' : ''} fit this size.` : ''}` : NO_HOOD_NOTE;
+        ($('lidHood') as HTMLButtonElement).title = hoodExists(A) ? 'A moulded hood with its LED light built in (one price)' : 'No hood is sold for this tank size: a glass top can be cut to any size';
+      }
       // going without a lid (lane LB1): the pros and cons for THIS tank, and the animals that need one named, the moment the open top is on
       { const el = $('lidFree'), open = s.lid === 'open' && !lk?.lid;
         el.hidden = !open;
