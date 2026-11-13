@@ -1000,7 +1000,6 @@ Research only, no app code changed. Deliverable `research/design/ui1-inventory.m
 - NOT done: `public/gallery/danio.webp` (bake is a manual all-animal console run; the gallery stays on the old still until someone bakes). Anal fin still pale, no stripes (recipe has no anal finMarks hook that I checked).
 - Other patterned fish (cpd, rasboras) not inspected closely; none changed.
 
-<<<<<<< HEAD
 ## 2026-11-13 Lane P9: custom tank data layer (no UI)
 - `src/scene/customTanks.ts`: spec (name, tank, glass, glassType, rim, optional `priceUsd`, `owned`), per-browser library `tanklook.customTanks`, ops add / edit / rename / duplicate / delete (pure, return the new library), version +1 on size / shape / glass / rim / price change (not on rename or owned), `useCustomTank` (setup gets its own copy + ref, releases product / kit), `newerVersion` ("Updated in my tanks: use the new version?"), `libraryLost`, `specOfSetup`.
 - `TankSetup.customTank` = `{ name, id?, version?, priceUsd?, owned? }` (types.ts; no scene version bump). The setup's tank / render glass / rim ARE its copy; share links and files carry it (validate.ts `parseCustomRef`; `parseTank` extracted and shared with the library).
@@ -1008,9 +1007,8 @@ Research only, no app code changed. Deliverable `research/design/ui1-inventory.m
 - Engine: `S.customTank.priceUsd` wins over every estimate and sale, exact (no price-age widening), row label "Tank (N gal; your figure)". The UI lane should show the "your figure" mark from that label or `S.customTank.priceUsd`.
 - Tests: `test/p9-customtanks.test.ts` (14). Not done here (UI lanes): terrain regrid after `useCustomTank`, the maker, price "how" line.
 - Proof: `research/screens/P9/migrated-after-p9.jpg` (old hand-edited 40 gal product scene, loaded from autosave on this branch). No "before" shot: a second dev server off origin/main would not start (vitest resolution); the node test asserts tank, glass and rim are identical.
-=======
+
 ## VF9: thin dark lines through rocks and wood (2026-11-13; request R31; branch claude/determined-torvalds-c83ce6)
 - Cause: the VF4 contact blobs (render/contact.ts), not shadows (the app has no shadow maps). The blob mesh drapes on the ground, which under a sunk-in (fx embed) rock lies inside the stone. Its material had polygonOffset factor -12 / units -8; the slope term grows at grazing views, so those hidden triangles were pulled forward through the stone's surface as thin sharp contour lines, view dependent (they slid with the camera). Isolated by switching fx in his scene: only `-contact` and `-embed` removed the lines; caustics, waterline, depth, ground, variety did not.
 - Fix: polygonOffsetFactor 0, units -60 (a flat bias, no slope term). VF-C3's ripple shards stay gone (checked vfc3-r50, shadow-bug, planted4, iwagumi, his tank); contact shadows look the same. A depth bias has no frame cost. Tried and dropped: fading the blob inside the piece's footprint (weakened the shadow at the foot, and the faint remainder was the offset).
 - Proof: research/screens/VF9/compare/ (before | after), his camera and az 40 / el 12 and az -30 / el 6. scripts/vf-shots.mjs got a `at:x/y/z/zoom/az/el` view and a DPR env.
->>>>>>> c891ea49 (VF9: contact blob polygon offset without slope term (thin dark lines through rocks at grazing views))
