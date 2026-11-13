@@ -22,6 +22,7 @@ import { sandboxRoomScene } from '../scene/sandboxRoom';
 import { roomOf, setRoomAuto, setRoomByHand } from '../scene/roomlight';
 import { putOnFloor, putOnMyFurniture, putOnStand, placementOf, minTop, type Placement } from '../scene/placement';
 import { confirmNew } from './newTank';
+import * as fileOps from './logic/files';
 import { startProject, confirmStart, setProjectAsker, regenerateKeepingLocks, hasLocks } from './projectStart';
 import { startDeals, visibleTabs, pickTab, sortDeals, DEFAULT_SORT, type DealSort, type StartTab } from './startEntries';
 import { DEALS_AS_OF, DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
@@ -90,11 +91,11 @@ import { pairRule } from '../data/groups';
 import { pairingIn, setPairing } from '../scene/pairs';
 import { FEED_NAMES, beginGrow, endGrow, setGrowTime, setPlantGrowth, timeChanges } from '../scene/growtime';
 import { syncBroods } from '../scene/propagate';
-import { GLASS_CHOICES, LIMITS, SceneError, parseScene } from '../scene/validate';
-import { deleteFromLib, libText, listLib, loadFromLib, saveToLib } from '../scene/library';
+import { GLASS_CHOICES, LIMITS, parseScene } from '../scene/validate';
+import { listLib } from '../scene/library';
 import { EXAMPLES, examplesInScope, exampleScenes } from '../examples';
-import { LONG_LINK, readShare, shareUrl } from '../scene/share';
-import { getImage, putImage, readPicture, sceneImageIds, sidesTouch, withImages } from '../scene/images';
+import { readShare, shareUrl } from '../scene/share';
+import { getImage, putImage, readPicture, sidesTouch } from '../scene/images';
 import { setParGuideSalt } from './parGuide';
 import { initSideResize } from './sideWidth';
 
@@ -193,8 +194,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
     return true;
   };
   /** The stored text of the saved tank this project came from (null when unsaved): a project saved as it stands has nothing to lose. */
-  const savedText = () => { const id = libId(); return id ? libText(id) : null; };
-  setProjectAsker(() => confirmNew(() => { doSave(); const now = libId(); return !!now && JSON.stringify(G()) === libText(now); }));
+  const savedText = () => fileOps.savedText();
+  setProjectAsker(() => confirmNew(() => { doSave(); return fileOps.isSavedAsIs(G()); }));
   let tankDock: TankDock | undefined, roomPending = false; // roomPending: the empty room is up and no tank is chosen yet (a tank is required, Nathan 2026-11-05)
   $('openFile').onclick = () => $('fileIn').click(); // SL1: the start screen stays up; it closes only when a file really opens
   /** A message while the start screen is up (the status line sits behind the modal): shown on the screen itself, else on the status line. */
@@ -214,33 +215,22 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('fileIn').onchange = async () => {
     const input = $('fileIn'), file = input.files?.[0]; input.value = '';
     if (!file) return;
-    if (file.size > 5e6) { say('That file is too large to be a scene (over 5 MB).', true); return; }
-    let parsed: ReturnType<typeof parseScene>;
-    try { parsed = parseScene(await file.text()); } catch (e) {
-      say(e instanceof SceneError ? e.message : 'Could not open that file.', true); return;
-    }
+    if (fileOps.tooLarge(file.size)) { say(fileOps.TOO_LARGE_MESSAGE, true); return; }
+    const parsed = fileOps.parseOpened(await file.text());
+    if (fileOps.isFail(parsed)) { say(parsed.message, true); return; }
     const { scene, warnings } = parsed;
     if (!await confirmStart(G(), savedText())) return; // DX5: Open file starts a different project: ask first when this one holds unsaved work or locks
     startMode.done();
     whileOpening(scene.name, () => {
       try { store.replace(scene); } catch { status('Could not open that file.', true); return false; }
       // an opened file goes straight into the saved list (Nathan 2026-10-14); the same file opened again reuses its entry
-      let saved = '';
-      try {
-        const txt = JSON.stringify(G()), twin = listLib().find(x => x.name === scene.name && localStorage.getItem(`tanklook.lib.${x.id}`) === txt);
-        let thumb = ''; try { thumb = viewer.thumbnail(); } catch { /* no picture: still save the tank */ }
-        setLibId(saveToLib(G(), thumb, twin?.id).id);
-        saved = ' Added to your saved tanks.';
-      } catch (err) { setLibId(null); saved = ' ' + (err as Error).message; }
-      status(`Opened "${scene.name}".${saved}` + (warnings.length ? ' ' + warnings.join(' ') : ''), warnings.length > 0);
+      const { note } = fileOps.addOpenedToLibrary(G(), () => viewer.thumbnail());
+      status(fileOps.openedFileMessage(scene.name, note, warnings), warnings.length > 0);
       return true;
     });
   };
   /** The browser-saved tank this scene came from (or was last saved as): Save updates it without asking. */
-  const LIB_CUR = 'tanklook.libCurrent';
-  const libId = () => { try { return localStorage.getItem(LIB_CUR); } catch { return null; } };
-  const setLibId = (id: string | null) => { try { if (id) localStorage.setItem(LIB_CUR, id); else localStorage.removeItem(LIB_CUR); } catch { /* ignore */ } };
-  const when = (t: number) => new Date(t).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+  const setLibId = (id: string | null) => fileOps.setLibId(id), when = fileOps.when;
   function renderLib() {
     const list = listLib(), box = $<HTMLDivElement>('libList');
     box.innerHTML = (list.length ? list.map(e =>
@@ -274,7 +264,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
       try {
         const { scene } = parseScene(text);
         store.replace(scene); setLibId(null);
-        status(`Opened the example "${scene.name}". Undo brings the previous tank back; Save keeps your own copy.`);
+        status(fileOps.exampleMessage(scene.name));
         return true;
       } catch {
         status('Could not open that example.', true); return false;
@@ -371,7 +361,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   /** SL2: a return visit. The design and cameras are the autosaved scene (already loaded); the open section and a Discovery in progress come back from `tanklook.ui`. */
   const resume = () => {
     try {
-      const u = JSON.parse(localStorage.getItem('tanklook.ui') ?? '{}') as { sec?: string; disc?: boolean };
+      const u = fileOps.resumeState();
       if (u.sec) openSec(u.sec);
       if (u.disc) openDiscovery({ from: 'resume' });
     } catch { /* storage blocked: the panel starts closed */ }
@@ -382,41 +372,32 @@ export function attachPanels(store: Store, viewer: Viewer) {
     if (del) {
       const id = del.dataset.libdel!, ent = listLib().find(x => x.id === id);
       if (!ent || !confirm(`Delete “${ent.name}” from this browser? This can’t be undone.`)) return;
-      deleteFromLib(id); if (libId() === id) setLibId(null); renderLib();
+      fileOps.deleteSaved(id); renderLib();
       return;
     }
     if (!op) return;
     const id = op.dataset.lib!;
     if (!await confirmStart(G(), savedText())) return; // DX5: opening a saved tank is a different project: ask first
     startMode.done();
-    whileOpening(listLib().find(x => x.id === id)?.name ?? 'tank', () => {
-      try {
-        const { scene, warnings } = loadFromLib(id);
-        store.replace(scene); setLibId(id);
-        status(`Opened "${scene.name}". Undo brings the previous one back.` + (warnings.length ? ' ' + warnings.join(' ') : ''), warnings.length > 0);
-        return true;
-      } catch (err) {
-        status(err instanceof SceneError ? err.message : 'Could not open that tank.', true); return false;
-      }
+    whileOpening(fileOps.savedName(id), () => {
+      const o = fileOps.openSaved(id);
+      if (!o.scene) { status(o.message, true); return false; }
+      try { store.replace(o.scene); } catch { status('Could not open that tank.', true); return false; }
+      setLibId(id);
+      status(o.message, o.bad);
+      return true;
     });
   };
   // Save: into this browser under the scene's name. Same name as the tank it came from: updated in place; same name
   // as a different saved tank: ask before replacing it; a new name: a new entry (the old one is kept).
   const doSave = () => {
-    const g = G(), list = listLib(), cur = libId(), same = list.find(x => x.name === g.name);
-    if (same && same.id !== cur && !confirm(`A different tank called “${g.name}” is already saved in this browser (${when(same.saved)}). Replace it?
-
-Cancel, then change the name, to keep both.`)) return;
-    try {
-      let thumb = ''; try { thumb = viewer.thumbnail(); } catch { /* no picture: still save the tank */ }
-      const e = saveToLib(g, thumb, same?.id);
-      setLibId(e.id);
-      status(`Saved “${e.name}” in this browser (${list.length + (same ? 0 : 1)} saved). Save as… keeps a file you can back up or share.`);
-    } catch (err) {
-      status((err as Error).message, true);
-    }
+    const g = G(), plan = fileOps.planSave(g);
+    if (plan.kind === 'replace' && !confirm(fileOps.replaceQuestion(g.name, plan.existing!.saved))) return;
+    let thumb = ''; try { thumb = viewer.thumbnail(); } catch { /* no picture: still save the tank */ }
+    const r = fileOps.saveHere(g, thumb);
+    status(r.message, !r.ok);
   };
-  const saveFile = (scene: Scene) => download(new Blob([JSON.stringify(withImages(scene), null, 1)], { type: 'application/json' }), `${slug(scene.name)}.json`);
+  const saveFile = (scene: Scene) => { const f = fileOps.sceneFile(scene); download(new Blob([f.text], { type: 'application/json' }), f.filename); };
   // the whole scene: with split tanks, one file holding both (opens split again)
   const dlDlg = $<HTMLDialogElement>('dlDlg'), saveDlg = $<HTMLDialogElement>('saveDlg');
   // HM1: Save offers Save (into this browser) and Save as… (new name / the downloadable file / share link: what Download did)
@@ -424,31 +405,27 @@ Cancel, then change the name, to keep both.`)) return;
   $('saveHere').onclick = () => { saveDlg.close(); doSave(); };
   $('saveAs').onclick = () => { saveDlg.close(); $<HTMLInputElement>('saveAsName').value = G().name; dlDlg.showModal(); };
   $('saveAsBrowser').onclick = () => {
-    const v = $<HTMLInputElement>('saveAsName').value.trim().slice(0, 80);
+    const v = fileOps.renameFor($<HTMLInputElement>('saveAsName').value, G().name);
     dlDlg.close();
-    if (v && v !== G().name) { $<HTMLInputElement>('sceneName').value = v; $('sceneName').onchange!(new Event('change')); setLibId(null); } // a new name is a new entry
+    if (v) { $<HTMLInputElement>('sceneName').value = v; $('sceneName').onchange!(new Event('change')); setLibId(null); } // a new name is a new entry
     doSave();
   };
   $('dlFile').onclick = () => {
     dlDlg.close();
-    const v = $<HTMLInputElement>('saveAsName').value.trim().slice(0, 80);
-    if (v && v !== G().name) { $<HTMLInputElement>('sceneName').value = v; $('sceneName').onchange!(new Event('change')); }
+    const v = fileOps.renameFor($<HTMLInputElement>('saveAsName').value, G().name);
+    if (v) { $<HTMLInputElement>('sceneName').value = v; $('sceneName').onchange!(new Event('change')); }
     saveFile(G());
   };
   // Share link (lane N, R12): the scene deflated into the URL hash, no server. The single-file build (file://) links to
   // the live site, since a file path means nothing on another computer.
   $('shareScene').onclick = async () => {
     dlDlg.close();
-    const made = shareUrl(G(), location.protocol === 'file:' ? 'https://tanklook.com/' : location.href);
+    const made = shareUrl(G(), fileOps.shareBase(location.protocol, location.href));
     const copied = copyText(made); // started inside the click: Safari allows the clipboard only there
     let url: string;
-    try { url = await made; } catch { status('This browser cannot make share links (it is too old). Save as… can download a file instead.', true); return; }
+    try { url = await made; } catch { status(fileOps.SHARE_UNSUPPORTED, true); return; }
     if (!await copied) { prompt('Copy this link:', url); return; }
-    const n = url.length.toLocaleString();
-    status((url.length > LONG_LINK
-      ? `Copied a share link (${n} characters). It is long: some apps (Discord, texts) cut links past about 2,000 characters, so paste it into a shortener like tinyurl.com, or use Save as… to download a file.`
-      : `Copied a share link (${n} characters). Whoever opens it gets this tank as a new, unsaved copy.`)
-      + (sceneImageIds(G()).length ? ' Background pictures are too big for a link, so it goes without them; Save as… keeps them in the file.' : ''));
+    status(fileOps.shareCopiedMessage(G(), url.length));
   };
   async function copyText(text: Promise<string>) {
     try { // the clipboard item takes the text as a promise, so the gesture is not used up while the link is compressed
@@ -466,27 +443,25 @@ Cancel, then change the name, to keep both.`)) return;
   async function openShared(hash: string) {
     let parsed: Awaited<ReturnType<typeof readShare>>;
     try { parsed = await readShare(hash); } catch (e) {
-      status(e instanceof SceneError ? e.message : 'Could not open that share link.', true); return;
+      status(fileOps.shareFailMessage(e), true); return;
     }
     const { scene, warnings } = parsed;
     if (!await confirmStart(G(), savedText())) return; // DX5: a link is a different project: ask first
     whileOpening(scene.name, () => {
       try { store.replace(scene); } catch { status('Could not open that share link.', true); return false; }
       setLibId(null);
-      status(`Opened the shared tank "${scene.name}". Undo brings your previous tank back; Save keeps your own copy.` +
-        (warnings.length ? ' ' + warnings.join(' ') : ''), warnings.length > 0);
+      status(fileOps.sharedMessage(scene.name, warnings), warnings.length > 0);
       return true;
     });
   }
   /** One tank of a split on its own, as an ordinary single-tank file (Nathan 2026-10-08). */
   const saveTank = (i: number) => {
-    const g = G(), t = g.tanks[i]; if (!t) return;
-    const name = `${g.name} - Tank ${'AB'[i]}`.slice(0, 80);
-    saveFile({ ...g, name, tanks: [structuredClone(t)], active: 0, camLock: true });
-    status(`Downloaded Tank ${'AB'[i]} on its own as "${name}".`);
+    const one = fileOps.singleTank(G(), i); if (!one) return;
+    saveFile(one.scene);
+    status(one.message);
   };
   $('sceneName').onchange = () => {
-    const v = $('sceneName').value.trim().slice(0, 80) || 'My tank';
+    const v = fileOps.sceneNameOf($('sceneName').value);
     store.update(s => { s.name = v; });
   };
 
