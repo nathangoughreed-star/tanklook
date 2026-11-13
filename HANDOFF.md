@@ -156,6 +156,10 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 - Auto check (item 4): `causGap` kept averaging frame gaps through load / reveal / build, so a long build stall could leave the gap average above CAUS_SLOW_MS (10 ms) and trip the back-off before any input. Fixed: while `reveal` or `needsBuild`, gap and step counters are zeroed. viewer.ts touched: that line, `causRetry()`.
 - Tests: test/gfx-prefs.test.ts. Full vitest: 3199 pass; test/ab1 "about 3 s" timing failed under machine load (6.4 s), dq2 failed in the full run only and passed alone: both unrelated.
 
+## Coordinator 23 handoff (2026-11-12 evening)
+- Next coordinator brief: `prompts/coordinator-24.md`: running lanes BG1, VF-C2 (shadow + litter), CB1 (HOB vs backdrop) and SV1 (split overlays); what waits on Nathan; the new verify-before-done rule; how a push cancels the deploy in progress.
+- Audit of today's requests: `research/audit-2026-11-12.md` (AU1, plus FX1's column). Live check script: `scripts/coord-live-shot.mjs`.
+
 ## DQ6: Discover redesign evaluation, Keep / Like / Dislike plan (2026-11-12; Coordinator 23; pushed)
 - Nathan proposed replacing the A/B Discovery with iterative generation inside the editor (Keep this / Like / Dislike; Discover at any time; Guided vs Sandbox as the two manual modes): `research/design/discover-redesign-proposal-2026-11-12.md`.
 - DQ6 evaluated it against the code: `research/design/discover-redesign-evaluation-2026-11-12.md`. The old lock-aware delta engine (`scene/discover.ts propose`, `scene/locks.ts`) already does keep-and-regenerate as one undo step, so the work is mostly removing the A/B layer.
