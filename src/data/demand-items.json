@@ -826,6 +826,20 @@
    "unit": "one resin arch ornament; $3.99-$16.99",
    "url": "https://www.liveaquaria.com/products/liveqquaria-12inch-striated-stone-arch"
   },
+  "hard:shipwreck": {
+   "lo": 15,
+   "mode": 36,
+   "hi": 70,
+   "unit": "one resin pirate or sunken ship ornament, medium, about 10 in; $14.99-$69.99",
+   "url": "https://www.chewy.com/penn-plax-pirate-treasure-ship-bow/dp/881446"
+  },
+  "hard:treasurechest": {
+   "lo": 8,
+   "mode": 16,
+   "hi": 28,
+   "unit": "one resin treasure chest ornament, about 4 in; $7.99-$27.99",
+   "url": "https://www.chewy.com/penn-plax-treasure-chest-aquarium/dp/344201"
+  },
   "hard:branch": {
    "lo": 15,
    "mode": 25,

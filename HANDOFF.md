@@ -940,3 +940,11 @@ Nathan: every tank defaults to 50 % roughness. `ROUGH_DEFAULT = 50` and `roughOf
 - `WATER_MOTION_SPEED = 2` in `src/render/fx.ts`, applied in `tickFx` to the running clock only. One clock (`uFxTime`) drives both the substrate caustic scroll (lighting.ts, incl. the `aqNoise` modulation) and the VF6 surface shimmer (build.ts), so both double. A frozen clock (`fxClock.frozen`, `__fx.time`) is used as given; `CAUS_FPS` 20, the CPU back-off and reduced-motion handling are untouched. No setting (Nathan: just double).
 - Smoothness: fastest caustic term 0.030 tex/s x 2 = 0.06 tex/s = 0.003 tex per 20 Hz step, about 0.5 mm of floor (tile 165 mm): no strobing.
 - Shots (planted4 ground, fx all, clock 7.3 / 8.3 / 9.3 s = old speed 1 s apart, then new speed 1 s apart) in `research/screens/VF8/`.
+
+## DS2: pirate-tank slice (2026-11-13, Nathan R21)
+- New item kind `ornament` ("Decor"): `shipwreck` (default 10 in, hint offers 6 / 10 / 15) and `treasurechest`; procedural three.js in `src/render/ornament3d.ts`. Size, yaw, pitch, roll, raise as every piece; new Left / right and Back / front sliders (decor only).
+- `themed-scene` is now `partial` (look `planted`, `Tweak` in `scene/recipes.ts`: natural gravel, `ornaments` per level: ship; + chest at balanced / full). Ornaments pick the spot with the least hardscape under them; ground plants under them are dropped. Printed background still missing (dep kept).
+- Prices: `hard:shipwreck` $15 / 36 / 70 (Penn-Plax medium ship, Chewy), `hard:treasurechest` $8 / 16 / 28 (Chewy). Shopping sheet and finish lines have a Decor section.
+- Feedback: ONE attribute `decor` (Like / Dislike, A/B rows), separate from `hardscape` (which now excludes ornaments); its A/B row is hidden when neither design has decor. ATTRS grew to 11 (ab7 test updated); buildable archetypes 45 -> 46 (rosters test).
+- Decision 6 rejected: caves unchanged, no entrapment check. Tests: `test/ds2-pirate.test.ts` (B, H, I, snapshot of every other archetype vs origin/main in `test/fixtures/ds2-looks-main.json`).
+- Pictures: `research/screens/DS2/` (stop1b-sheet, stop2-sheet / stop2-front / -34 / -close). Not done: second theme, coloured gravel, printed backdrop, flag; the chest can hide behind tall plants in a generated tank.

@@ -11,9 +11,9 @@ import type { CandidateFacts } from './discoveryTypes';
 import type { TankSetup } from './types';
 import { MAX_FEEDBACK, type Feedback } from './brief';
 
-export type AttrKey = 'tank' | 'stocking' | 'hardscape' | 'background' | 'substrate' | 'plants' | 'lighting' | 'filtration' | 'heating' | 'stand';
+export type AttrKey = 'tank' | 'stocking' | 'hardscape' | 'decor' | 'background' | 'substrate' | 'plants' | 'lighting' | 'filtration' | 'heating' | 'stand';
 export const ATTRS: readonly { key: AttrKey; label: string }[] = [
-  { key: 'tank', label: 'Tank size' }, { key: 'stocking', label: 'Stocking' }, { key: 'hardscape', label: 'Hardscape' }, { key: 'background', label: 'Background' }, { key: 'substrate', label: 'Substrate' },
+  { key: 'tank', label: 'Tank size' }, { key: 'stocking', label: 'Stocking' }, { key: 'hardscape', label: 'Hardscape' }, { key: 'decor', label: 'Decor' }, { key: 'background', label: 'Background' }, { key: 'substrate', label: 'Substrate' },
   { key: 'plants', label: 'Plants' }, { key: 'lighting', label: 'Lighting' }, { key: 'filtration', label: 'Filtration' }, { key: 'heating', label: 'Heating' },
   { key: 'stand', label: 'Stand color' },
 ];
@@ -30,12 +30,13 @@ const optLabel = (S: TankSetup, row: 'filter' | 'heater') => { try { const o = o
 
 /** The value of every attribute of one design, in the fixed ATTRS order. A dry build has no gallons; `facts` only supplies the names the screen already shows. */
 export function attrValues(S: TankSetup, facts: CandidateFacts): AttrValue[] {
-  const items = S.items.filter(i => i.uid), plantIt = items.filter(i => layerOf(i) === 'plant'), hardIt = items.filter(i => layerOf(i) !== 'plant');
+  const items = S.items.filter(i => i.uid), plantIt = items.filter(i => layerOf(i) === 'plant'), hardIt = items.filter(i => layerOf(i) !== 'plant' && i.kind !== 'ornament'), decorIt = items.filter(i => i.kind === 'ornament');
   const sub = facts.substrate.length ? facts.substrate : ['Substrate'];
   const out: Record<AttrKey, Omit<AttrValue, 'key' | 'label'>> = {
     tank: { text: facts.gallons == null ? `Dry build, ${Math.round(S.tank.L / 25.4)} x ${Math.round(S.tank.D / 25.4)} x ${Math.round(S.tank.H / 25.4)} in` : `${facts.gallons} gal`, elements: [facts.gallons == null ? `dry:${Math.round(S.tank.L / 25.4)}x${Math.round(S.tank.D / 25.4)}x${Math.round(S.tank.H / 25.4)}` : `gal:${facts.gallons}`], lock: { kind: 'tank' } },
     stocking: { text: facts.stocking.map(s => `${s.n} ${s.name}`).join(', ') || 'No animals', elements: uniq(facts.stocking.map(s => s.species)), lock: facts.stocking.length ? { kind: 'fish', species: facts.stocking.map(s => s.species) } : undefined },
     hardscape: { text: withN(hardIt.map(i => i.variant)) || 'None', elements: uniq(hardIt.map(i => i.variant)), lock: hardIt.length ? { kind: 'items', uids: hardIt.map(i => i.uid!) } : undefined },
+    decor: { text: withN(decorIt.map(i => i.variant)) || 'None', elements: uniq(decorIt.map(i => i.variant)), lock: decorIt.length ? { kind: 'items', uids: decorIt.map(i => i.uid!) } : undefined },
     background: { text: S.backdrop.kind === 'none' ? 'None' : (BACKDROPS[S.backdrop.kind] ?? S.backdrop.kind), elements: [`backdrop:${S.backdrop.kind}`], lock: { kind: 'backdrop' } },
     substrate: { text: sub.join(', '), elements: uniq(sub.map(x => 'sub:' + x)), lock: { kind: 'substrate' } },
     plants: { text: withN(plantIt.map(i => i.variant)) || 'None', elements: uniq(plantIt.map(i => i.variant)), lock: plantIt.length ? { kind: 'items', uids: plantIt.map(i => i.uid!) } : undefined },
@@ -146,7 +147,7 @@ export const COMBINE_ATTR_TAB: Partial<Record<AttrKey, 'tank' | 'animals' | 'pla
 
 /** The learner's tags an attribute can speak for (explore/aspects.ts vocabulary). An empty list = only the ranking nudge applies (no tag exists for it, and none is invented). */
 export const ATTR_TAGS: Record<AttrKey, readonly AspectTag[]> = {
-  tank: [], stocking: ['species', 'behavior', 'size', 'number', 'visibility'], hardscape: ['layout'], background: [], substrate: [], plants: ['plants', 'natural'], lighting: [], filtration: [], heating: [], stand: [],
+  tank: [], stocking: ['species', 'behavior', 'size', 'number', 'visibility'], hardscape: ['layout'], decor: ['look'], background: [], substrate: [], plants: ['plants', 'natural'], lighting: [], filtration: [], heating: [], stand: [],
 };
 
 /**

@@ -35,7 +35,7 @@ describe('attribute values', () => {
   it('lists every attribute, in order, with a value in words and a lock target', () => {
     const v = attrValues(A.snapshot, A.facts);
     expect(v.map(x => x.key)).toEqual(ATTRS.map(a => a.key));
-    expect(v.map(x => x.key)).toEqual(['tank', 'stocking', 'hardscape', 'background', 'substrate', 'plants', 'lighting', 'filtration', 'heating', 'stand']);
+    expect(v.map(x => x.key)).toEqual(['tank', 'stocking', 'hardscape', 'decor', 'background', 'substrate', 'plants', 'lighting', 'filtration', 'heating', 'stand']);
     for (const x of v) { expect(x.text.length).toBeGreaterThan(0); expect(x.elements.length).toBeGreaterThan(0); }
     expect(v[0].lock).toEqual({ kind: 'tank' });
     expect(sameValue(v[0], v[0])).toBe(true);

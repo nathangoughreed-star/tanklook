@@ -93,6 +93,8 @@ export function finishLines(S: TankSetup, style: Exclude<LayoutId, 'none'>): str
   if (g > 0.05) lines.push(`Substrate: ${S.substrate.type === 'custom' ? 'blended' : SUBSTRATES[S.substrate.type]?.label ?? S.substrate.type}, about ${Math.max(1, Math.round(g * LB_PER_L))} lb`);
   const hard = S.items.filter(i => i.kind === 'stone' || i.kind === 'wood' || i.kind === 'cave');
   if (hard.length) lines.push(`Hardscape: ${plural(hard.length, 'piece')} (${names(hard).join(', ').toLowerCase()})`);
+  const decor = S.items.filter(i => i.kind === 'ornament');
+  if (decor.length) lines.push(`Decor: ${plural(decor.length, 'piece')} (${names(decor).join(', ').toLowerCase()})`);
   const live = S.items.filter(i => i.kind === 'plant'), fake = S.items.filter(i => i.kind === 'artificial'), corals = S.items.filter(i => i.kind === 'coral');
   if (live.length) lines.push(`Plants: ${plural(live.length, 'live plant')} (${names(live).join(', ').toLowerCase()})${fake.length ? ` and ${plural(fake.length, 'artificial one')}` : ''}`);
   else if (fake.length) lines.push(`Plants: ${plural(fake.length, 'artificial plant')}, no light or feeding needed`);

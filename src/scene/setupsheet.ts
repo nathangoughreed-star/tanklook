@@ -131,6 +131,8 @@ export function buildSheet(scene: Scene, index = scene.active, opts: SheetOpts =
   };
   const hr = group(['stone', 'wood', 'cave']);
   sections.push({ title: 'Hardscape', rows: hr.length ? hr : [{ item: 'None', qty: '', detail: '' }] });
+  const dr = group(['ornament']); // lane DS2
+  if (dr.length) sections.push({ title: KINDS.ornament, rows: dr });
   const pr = group(['plant']);
   sections.push({ title: 'Plants', rows: pr.length ? [...pr, { item: 'Total', qty: String(S.items.filter(i => i.kind === 'plant').length), detail: '' }] : [{ item: 'None', qty: '', detail: '' }] });
   const cr = group(['coral']);
