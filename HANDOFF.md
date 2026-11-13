@@ -967,3 +967,11 @@ Nathan: every tank defaults to 50 % roughness. `ROUGH_DEFAULT = 50` and `roughOf
 
 ## UI1: inventory of today's UI (2026-11-13; lane UI1; Coordinator 24; request R27)
 Research only, no app code changed. Deliverable `research/design/ui1-inventory.md` (surface table, coupling, wiring, duplicates, jobs, DOM-tied tests, rebuild sizes) and 47 real-app shots `research/screens/UI1/` (planted 40 gal, 1600x900, one 390 px phone shot). Helper scripts `scripts/ui1-*.mjs` (headless Chrome driver, import graph, metrics). Headline facts: `panels.ts` is one 2,600-line closure with the only copy of many rules; about a quarter of `src/ui` (28 files, 3,845 lines: Guided setup, Visual Discovery, Explore, A/B `?ab=1`, coach, animal-first) has no live door; Quick Setup markup is hidden (`#quickHome`); limits / owned gear / room temperature have several editors. UI2 (design) reads the inventory next.
+
+## FA1: zebra danio colours (lane FA1, 2026-11-13, request R29)
+- Cause: the recipe only (`src/art/fishgen.ts` `danio`): stripes were 0.024 of body length wide on a cream base, so downsampled in the tank they read as faint lines. No shared shader / light setting involved; no other fish changed.
+- Fix: stripes 0.031 wide, blue-black `#1a2a58` at 0.97 alpha, from gill (u 0.17) to tail base; silvery-gold bands `#cdbb80`; olive-brown back / silvery-gold flank / pale belly shade; tail stripes four wide and dark. Body shape unchanged. Model v5, build 1959 (`model-versions.json`, `public/model-sheets/danio.jpg` regenerated).
+- Real fish reference: Danio rerio has 4-5 sharp dark blue horizontal stripes from gill into the tail, silver-gold between (Wikipedia / Seriously Fish descriptions; I did not open photos, written from the known pattern).
+- Proof: `research/screens/FA1/` before-/after- {default,dim,strong}-{normal,close}.png, `*-crop-dim-default-strong.png`, `after-model-sheet.jpg`. (`close` shots frame like `normal`; the crops are the zoom.) Script `scripts/fa1-shots.mjs`.
+- NOT done: `public/gallery/danio.webp` (bake is a manual all-animal console run; the gallery stays on the old still until someone bakes). Anal fin still pale, no stripes (recipe has no anal finMarks hook that I checked).
+- Other patterned fish (cpd, rasboras) not inspected closely; none changed.
