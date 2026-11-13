@@ -8,7 +8,7 @@ import { GRAIN_ORDER, LECA, SUBSTRATES, blendTile, blendZone, grain3D } from '..
 import { litterMeshes, type GroundAt } from './scatter';
 import { patchHighlight, patchMeshes, patchSel } from './brushmesh';
 import { applyGrainUV, woodTexture, type Grain } from './woodGrain';
-import { contactKey, contactObjects } from './contact';
+import { bermRise, contactKey, contactObjects } from './contact';
 import { FX } from './fx';
 import { glassGrains, grainLook, grainMeshes, grainPatchy, grainTop, groundTint } from './grains';
 import { snailAspect } from '../art/snails';
@@ -1526,15 +1526,18 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
   // the plant meshes, for animals that sit on leaves (anchors `leaf`); an animal on a plant is rebuilt when any plant changes
   const leaves = b.itemMeshes.filter(m => m.userData.plant); for (const m of leaves) m.updateMatrixWorld(true);
   // contact shadows and the grains at the hardscape's foot (plan VF4, render/contact.ts; fx contact / ground)
-  if (!bare) { const key = contactKey(S.items), gnd = (sc.userData.groundAt as GroundAt | undefined) ?? ((x: number, d: number): [number, number, number] => [x, groundHeight(S, T, x, d), -d]);
-    b.itemParts.push(take(key) ?? part(key, contactObjects(S, T, S.items.flatMap((it, i) => { const m = b.itemParts[i]?.meshes[0]; return m ? [{ it, m }] : []; }), gnd, sc.userData.groundSkin, sc.userData.groundSurface), [])); }
+  const gnd = (sc.userData.groundAt as GroundAt | undefined) ?? ((x: number, d: number): [number, number, number] => [x, groundHeight(S, T, x, d), -d]);
+  const placed = bare ? [] : S.items.flatMap((it, i) => { const m = b.itemParts[i]?.meshes[0]; return m ? [{ it, m }] : []; });
+  if (!bare) { const key = contactKey(S.items); b.itemParts.push(take(key) ?? part(key, contactObjects(S, T, placed, gnd, sc.userData.groundSkin, sc.userData.groundSurface), [])); }
+  // BD2: the embed berm lifts the floor round each rock; animals, snails and leaf patches rest on it (baked once per build)
+  const rise = bare ? () => 0 : bermRise(S, T, placed, gnd, sc.userData.groundSkin);
   const hardKey = hard.join('|'), leafKey = leaves.map(m => m.uuid + m.geometry.uuid).join('|');
   // glass climbers sit on the 3D wall where it covers the pane
   const wallKey = JSON.stringify([S.backdrop, S.render.rim, S.render.bgSides]);
   // where animals rest and cling (scene/anchors.ts): the top of the solid piece (stone, wood, cave) under (x, depth) for
   // animals on the hardscape, else the ground; the glass, or the 3D wall where it covers the pane
   const rests = solids.filter(m => !m.userData.coral); // animals rest on rock, wood and caves, never on coral
-  const A = anchors(S, T, { down: solidProbe(T, rests), leaf: leafProbe(T, leaves, (x, d) => groundHeight(S, T, x, d)), under: underProbe(leaves, rests, (x, d) => groundHeight(S, T, x, d)), wall: (at, out, head, w) => onWall(S, T, at, out, head, w) });
+  const A = anchors(S, T, { rise, down: solidProbe(T, rests), leaf: leafProbe(T, leaves, (x, d) => groundHeight(S, T, x, d)), under: underProbe(leaves, rests, (x, d) => groundHeight(S, T, x, d)), wall: (at, out, head, w) => onWall(S, T, at, out, head, w) });
   const top = (x: number, depth: number, hard: boolean, lv = 0) => A.rest(x, depth, hard, lv).p[1];
   // painted scatter patches (lane SB, render/brushmesh.ts): lying on the ground or the piece under each point; rebuilt only when
   // the patch, the solid pieces or the ground change
@@ -1546,8 +1549,8 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
       // sank into a hump (Nathan 2026-11-13): on bare ground a patch rests on the drawn surface (SURF), on a solid piece as before
       const surf = sc.userData.groundSurface as ((x: number, d: number) => number[]) | undefined;
       const gnd = (x: number, d: number): [number, number, number] => {
-        const r = A.rest(x, d).p[1], ys = surf?.(x, d)[1];
-        return [x, (ys != null && r <= groundHeight(S, T, x, d) + 0.5 ? ys : r) + gt, -d];
+        const r = A.rest(x, d).p[1], ys = surf?.(x, d)[1], rs = rise(x, d);
+        return [x, (ys != null && r <= groundHeight(S, T, x, d) + rs + 0.5 ? ys + rs : r) + gt, -d];
       };
       const pp = take(key) ?? part(key, patchMeshes(S, T, gnd, p), []), on = patchSel.ids.has(p.id);
       for (const o of pp.objs) o.userData.focus = on; // the viewer fades everything but these while a patch is being edited
@@ -1642,7 +1645,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     const register = (m: THREE.Mesh, w: number, h: number) => { if (isHerp3D(sp.art) && !isSnake(sp.art) && (f.surface ?? 'floor') === 'floor') pullIn(m); register0(m, w, h); };
     if (sp.kind === 'snail') {
       for (const [m, w, h] of snailMeshes(S, T, f, sp, base(f), A)) register(m, w, h);
-      if ((f.surface ?? 'floor') === 'floor') { const w = fishTL(f, sp); add(contactShadow(S, T, f.x, f.depth, groundHeight(S, T, f.x, f.depth), w, w * 0.45, f.yaw)); }
+      if ((f.surface ?? 'floor') === 'floor') { const w = fishTL(f, sp); add(contactShadow(S, T, f.x, f.depth, groundHeight(S, T, f.x, f.depth) + rise(f.x, f.depth), w, w * 0.45, f.yaw)); }
       return;
     }
     if (!S.water.on && needsWater(sp)) return; // dry tank: fish stay in the scene data, hidden until the water is back
