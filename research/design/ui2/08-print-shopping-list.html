@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>UI2 mockup: Print section, Shopping list</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  .app { display: grid; height: 100vh; grid-template-columns: var(--rail-w) var(--panel-w) 1fr; grid-template-rows: var(--header-h) 1fr; grid-template-areas: "head head view" "rail panel view"; }
+  .app > header { grid-area: head; } .app > .rail { grid-area: rail; } .app > .panel { grid-area: panel; }
+  .desk { grid-area: view; background: #3a3f48; overflow: hidden; display: grid; justify-items: center; padding-top: 22px; }
+  .presets { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s2); }
+  .preset { padding: var(--s2) var(--s3); }
+  .tick { display: flex; align-items: center; gap: var(--s2); min-height: 30px; }
+  .box { width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid var(--text-3); display: inline-grid; place-items: center; font-size: 11px; }
+  .box.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .foot { display: flex; gap: var(--s2); padding: var(--s3) var(--s4); border-top: 1px solid var(--line); }
+  /* paper */
+  .page { width: 660px; height: 854px; background: var(--paper); color: var(--paper-ink); box-shadow: 0 10px 40px rgba(0,0,0,.5); padding: 40px 46px; font-size: 11.5px; line-height: 1.35; overflow: hidden; }
+  .page h1 { font-size: 20px; margin: 0; } .page .sub { color: #666; margin: 2px 0 14px; }
+  .page h3 { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: #555; margin: 14px 0 4px; border-bottom: 1px solid #ccc; padding-bottom: 3px; display: flex; }
+  .page h3 span { margin-left: auto; color: #222; }
+  .page table { width: 100%; border-collapse: collapse; }
+  .page td { padding: 2.5px 0; vertical-align: top; } .page td.q { width: 34px; color: #555; } .page td.p { text-align: right; width: 70px; font-variant-numeric: tabular-nums; } .page td.w { color: #777; width: 120px; }
+  .page .own h3 { color: #2f7d5a; border-color: #9cd3b8; }
+  .page .own td { color: #444; } .page .own td.p { color: #2f7d5a; }
+  .page .tot { margin-top: 14px; border-top: 2px solid #222; padding-top: 6px; display: grid; grid-template-columns: 1fr auto; gap: 2px 0; font-weight: 600; }
+  .page .tot .n { font-weight: 400; color: #666; }
+  .page .yours { font-size: 9.5px; color: #7a5b00; background: #fff3c4; border-radius: 3px; padding: 0 4px; margin-left: 4px; }
+</style></head>
+<body>
+<script src="icons.js"></script><script src="shell.js"></script>
+<div class="app" id="app"></div>
+<script>
+const tk = (on, l, h = '') => `<div class="tick"><span class="box ${on ? 'on' : ''}">${on ? '&#10003;' : ''}</span>${l}${h ? ` <span class="hint">${h}</span>` : ''}</div>`;
+const r = (q, n, w, p) => `<tr><td class="q">${q}</td><td>${n}</td><td class="w">${w}</td><td class="p">${p}</td></tr>`;
+document.getElementById('app').innerHTML = apphead() + rail('print', {animals: '!'}) + `
+<section class="panel">
+  <div class="sec-head"><h2>Print</h2><span class="hint">one page builder, four presets</span></div>
+  <div class="sec-body">
+    <div class="cap">What to print</div>
+    <div class="presets">
+      <div class="card preset sel"><div class="t">Shopping list</div><div class="m">what to buy, what you have</div></div>
+      <div class="card preset"><div class="t">Setup sheet</div><div class="m">steps, bags, rock, layout</div></div>
+      <div class="card preset"><div class="t">Full report</div><div class="m">picture, checks, costs, notes</div></div>
+      <div class="card preset"><div class="t">Build plan</div><div class="m">order of work, by week</div></div>
+    </div>
+    <div class="group open"><div class="gh">Parts <span class="sum">7 of 9</span></div><div class="gb">
+      ${tk(1, 'Tank and stand')}${tk(1, 'Equipment')}${tk(1, 'Substrate and rock', 'bag size 20 lb')}${tk(1, 'Plants')}${tk(1, 'Animals')}
+      ${tk(1, 'Already owned', 'listed apart, $0')}${tk(1, 'Prices and totals')}${tk(0, 'Where to buy', 'retailer and link')}${tk(0, 'Picture of the tank')}
+    </div></div>
+    <div class="hint">Presets only pick which parts are ticked; change any tick and the preview follows.</div>
+  </div>
+  <div class="foot"><button class="btn primary" style="flex:1">${I('print')} Print</button><button class="btn">.txt</button><button class="btn">.csv</button></div>
+</section>
+<div class="desk"><div class="page">
+  <h1>Shopping list</h1>
+  <div class="sub">Planted community &middot; Aqueon 40 gal breeder, 36 &times; 18 &times; 16 in &middot; November 13, 2026</div>
+  <h3>Tank and stand <span>$319</span></h3>
+  <table>${r('1', 'Aqueon 40 gal breeder', 'tank', '$139')}${r('1', 'Cabinet stand, black, 30 in', 'stand', '$180')}</table>
+  <h3>Equipment <span>$162</span></h3>
+  <table>${r('1', 'AquaClear 50 hang-on filter', 'filter', '$45')}${r('1', 'LED bar, full length, 36 in', 'light', '$89')}${r('1', 'Liquid carbon, 500 mL', 'CO2', '$16')}${r('1', 'Water conditioner, 250 mL', 'care', '$12')}</table>
+  <h3>Substrate and rock <span>$96</span></h3>
+  <table>${r('3', 'Black gravel, 20 lb bag', 'about 2.5 in deep', '$54')}${r('2', 'River stone, 2-4 lb', 'hardscape', '$42')}</table>
+  <h3>Plants <span>$118</span></h3>
+  <table>${r('3', 'Ludwigia repens, bunch', 'stem', '$27')}${r('2', 'Vallisneria, pot', 'background', '$16')}${r('2', 'Cryptocoryne wendtii, pot', 'midground', '$18')}${r('1', 'Monte Carlo, tissue cup', 'carpet', '$12')}${r('5', 'Other plants (5 kinds)', '', '$45')}</table>
+  <h3>Animals <span>$164</span></h3>
+  <table>${r('12', 'Neon tetra', 'school', '$36')}${r('8', 'Harlequin rasbora', 'school', '$32')}${r('6', 'Bronze corydoras', 'bottom', '$30')}${r('2', 'Honey gourami', 'pair', '$18')}${r('6', 'Amano shrimp', 'cleanup', '$30')}${r('4', 'Otocinclus', 'algae', '$18')}</table>
+  <div class="own"><h3>Already owned <span>$0</span></h3>
+  <table>${r('1', 'Eheim Jager 100 W heater', 'heater &middot; in use', '$0')}${r('1', 'Glass lid, 36 &times; 18 in', 'lid', '$0')}${r('1', 'Gravel vacuum and bucket', 'care', '$0')}</table></div>
+  <div class="tot"><span>To buy</span><span>$859</span><span class="n">Already owned (not counted)</span><span class="n">3 items</span><span class="n">Monthly upkeep</span><span class="n">$51/mo</span></div>
+</div></div>`;
+</script>
+<div style="position:absolute;inset:0;pointer-events:none">
+  <div class="note" data-n="1" style="top:100px;left:452px;max-width:200px">&#9664; One Print section replaces Report, Setup sheet, Plan sheet and Build plan sheet (four pages, five buttons today)</div>
+  <div class="note" data-n="2" style="top:330px;left:452px;max-width:200px">&#9664; A preset just ticks parts; any tick can change</div>
+  <div class="note" data-n="3" style="top:690px;right:20px;max-width:200px">Already owned: its own group at $0, not in the total (shot 05's owned heater)</div>
+  <div class="note" data-n="4" style="top:40px;right:20px;max-width:200px">Live paper preview where the tank view was; numbers are mockup figures</div>
+</div>
+</body></html>
