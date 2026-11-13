@@ -1,7 +1,7 @@
 {
  "lane": "CL1",
  "date": "2026-11-13",
- "status": "pilot: 10 of ~24 aquarium plants, first pass, unverified",
+ "status": "24 aquarium / riparium plants, verifier-checked on weak rows; estimates",
  "items": [
   {
    "id": "anubias",
@@ -118,7 +118,28 @@
     }
    ],
    "confidence": "medium",
-   "reason": "Labels split 3/2/2 but all reasons need strong light + CO2 + rich substrate for HC; Monte Carlo is easier (closer to 2). Flip Aquatics 429, Petco/2Hr Aquarist 403."
+   "reason": "Labels split 3/2/2 but all reasons need strong light + CO2 + rich substrate for HC; Monte Carlo is easier (closer to 2). Flip Aquatics 429, Petco/2Hr Aquarist 403.",
+   "firstPass": 3,
+   "verify": {
+    "verdict": "confirmed",
+    "reason": "Applies to HC; Monte Carlo is easier but the kind is represented by the demanding carpet.",
+    "newSources": [
+     {
+      "site": "Flowgrow",
+      "url": "https://www.flowgrow.de/db/aquaticplants/hemianthus-callitrichoides-cuba",
+      "label": "difficult",
+      "verdict": "3",
+      "why": "high light, CO2 recommended 20-40 mg/l, much healthier with it"
+     },
+     {
+      "site": "Aquarium Co-Op (PAR guide)",
+      "url": "https://www.aquariumcoop.com/blogs/aquarium/par-for-planted-tanks",
+      "label": null,
+      "verdict": "3",
+      "why": "carpeting plants do best under high light, which typically needs CO2 and a rigid fertilizer schedule"
+     }
+    ]
+   }
   },
   {
    "id": "moss",
@@ -291,6 +312,461 @@
    ],
    "confidence": "medium",
    "reason": "Easy as long as only roots are wet and leaves stay dry; two sources, no disagreement but both hobby/retail sites."
+  },
+  {
+   "id": "fern",
+   "name": "Java fern (Microsorum pteropus)",
+   "kind": "plant",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Aquasabi",
+     "url": "https://www.aquasabi.de/Microsorum-pteropus_1",
+     "label": "Easy (product text: very easy)",
+     "verdict": "1",
+     "why": "low light, no CO2 or fertiliser, slow growth; rhizome must not be buried"
+    },
+    {
+     "site": "Buce Plant",
+     "url": "https://buceplant.com/blogs/aquascaping-guides-and-tips/microsorum-java-fern-care-guide-black-spot-causes-solutions",
+     "label": "Care Level: Easy",
+     "verdict": "1",
+     "why": "only issues are buried rhizome rot and black spots from excess light or poor water"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/java-fern",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "low light, no CO2; rhizome rot if buried, melt from too much light"
+    },
+    {
+     "site": "Guidarium",
+     "url": "https://guidarium.com/plants/java-fern",
+     "label": "Beginner",
+     "verdict": "1",
+     "why": "low light, low nutrient demand, tie to wood or stone"
+    }
+   ],
+   "confidence": "high",
+   "reason": "4 sources agree; only failure mode is burying the rhizome"
+  },
+  {
+   "id": "grass",
+   "name": "Vallisneria (tape grass)",
+   "kind": "plant",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/vallisneria",
+     "label": "beginner-friendly (no formal label)",
+     "verdict": "1",
+     "why": "hardy; moderate-high light, CO2 optional; melt after planting or CO2 swings, buried crown rots"
+    },
+    {
+     "site": "Aquariadise",
+     "url": "https://www.aquariadise.com/growing-vallisneria/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "no CO2 needed; inconsistent liquid carbon melts it, soft acidic water stunts it"
+    },
+    {
+     "site": "Gensou",
+     "url": "https://gensou.sg/vallisneria-care-guide/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "20-40 PAR enough; melt after planting normal, sensitive to liquid carbon, needs iron root tabs"
+    }
+   ],
+   "confidence": "high",
+   "reason": "3 sources agree; main risks are liquid carbon and soft water"
+  },
+  {
+   "id": "stem",
+   "name": "Generic easy stem plant (Hygrophila / Bacopa / Water wisteria)",
+   "kind": "plant",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Gensou",
+     "url": "https://gensou.sg/hygrophila-care-guide/",
+     "label": "Very easy (H. polysperma, H. difformis); Easy (corymbosa)",
+     "verdict": "1",
+     "why": "no CO2, low to high light; leggy if dim; H. pinnatifida is moderate"
+    },
+    {
+     "site": "Guidarium",
+     "url": "https://guidarium.com/plants/water-wisteria",
+     "label": "Beginner (but notes high upkeep)",
+     "verdict": "1",
+     "why": "moderate light, no CO2; fast growth needs frequent trimming, variegated form is intermediate"
+    },
+    {
+     "site": "Buce Plant",
+     "url": "https://buceplant.com/blogs/aquascaping-guides-and-tips/6-top-stem-plants-for-your-aquarium",
+     "label": "'super low maintenance' (Hygrophila), 'perfect for beginners' (Bacopa)",
+     "verdict": "1",
+     "why": "little attention needed"
+    }
+   ],
+   "confidence": "high",
+   "reason": "3 sources agree for the plain green species; trimming workload is the main cost"
+  },
+  {
+   "id": "buce",
+   "name": "Bucephalandra",
+   "kind": "plant",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/bucephalandra",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "low-medium light, CO2 and fertiliser optional; algae on slow leaves, melt after change"
+    },
+    {
+     "site": "Aquariadise",
+     "url": "https://aquariadise.com/growing-bucephalandra/",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "slow growth; melt after purchase, rhizome rot if buried, algae under high light"
+    },
+    {
+     "site": "Gensou",
+     "url": "https://gensou.sg/?p=19499",
+     "label": "Beginner-friendly",
+     "verdict": "1",
+     "why": "low light, no CO2; algae on persistent leaves, attach to hardscape"
+    }
+   ],
+   "confidence": "high",
+   "reason": "3 sources agree; expect slow growth, algae-prone leaves, and costly specimens that melt"
+  },
+  {
+   "id": "ludwigia",
+   "name": "Ludwigia (repens / arcuata)",
+   "kind": "plant",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Aquasabi",
+     "url": "https://www.aquasabi.de/Ludwigia-repens-x-arcuata",
+     "label": "Easy (L. repens x arcuata)",
+     "verdict": "1",
+     "why": "no CO2; medium to strong light gives red colour; nutrient-rich substrate helps"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/ludwigia-repens",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "low-medium light, no CO2; trimming, melt after planting; 'super red' needs brighter light"
+    },
+    {
+     "site": "Guidarium",
+     "url": "https://guidarium.com/plants/creeping-ludwigia",
+     "label": "Beginner (FAQ: 'somewhere in the middle'; Rubin cultivar intermediate)",
+     "verdict": "1",
+     "why": "moderate light, CO2 optional, consistent feeding; red cultivars need high light and CO2"
+    }
+   ],
+   "confidence": "medium",
+   "reason": "plain L. repens is easy; red cultivars and L. arcuata want high light and CO2 (Guidarium rates Rubin intermediate)"
+  },
+  {
+   "id": "balansae",
+   "name": "Cryptocoryne balansae",
+   "kind": "plant",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Guidarium",
+     "url": "https://guidarium.com/plants/balansae",
+     "label": "Beginner (listed as C. crispatula 'Balansae')",
+     "verdict": "1",
+     "why": "moderate light, no CO2, root feeder"
+    },
+    {
+     "site": "Gensou",
+     "url": "https://gensou.sg/cryptocoryne-balansae-care-guide/",
+     "label": "Easy to moderate",
+     "verdict": "1",
+     "why": "medium light, no CO2; crypt melt after planting, needs root tabs"
+    },
+    {
+     "site": "Buce Plant",
+     "url": "https://buceplant.com/blogs/news/cryptocoryne-melt",
+     "label": null,
+     "verdict": "1",
+     "why": "crypts 'relatively easy' but sensitive to change; melt from moving, nitrate spikes, chemistry or light changes"
+    }
+   ],
+   "confidence": "medium",
+   "reason": "easy once rooted, but all sources flag melt after planting or any change, so a beginner may see a scary melt phase"
+  },
+  {
+   "id": "ozelot",
+   "name": "Echinodorus 'Ozelot' (sword)",
+   "kind": "plant",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Aquasabi",
+     "url": "https://www.aquasabi.de/Echinodorus-Ozelot_1",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "medium light, no CO2, fast growth; nutrient-rich substrate helps"
+    },
+    {
+     "site": "Gensou",
+     "url": "https://gensou.sg/?p=25091",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "30-50 PAR, CO2 optional, heavy root feeder needs root tabs and iron; spotting fades in low light"
+    },
+    {
+     "site": "Fish Laboratory",
+     "url": "https://www.fishlaboratory.com/?p=4881",
+     "label": "Easy",
+     "verdict": "1",
+     "why": "moderate-high light, no CO2; too much light scorches; large size"
+    }
+   ],
+   "confidence": "high",
+   "reason": "3 sources agree; needs root tabs in inert substrate and space for its size"
+  },
+  {
+   "id": "sagittaria",
+   "name": "dwarf sagittaria (Sagittaria subulata)",
+   "kind": "plant",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/dwarf-sagittaria",
+     "label": "Care Level: Easy",
+     "verdict": "1",
+     "why": "moderate light ideal; nutrient-rich substrate and iron; melt after transplant, crown rot if planted deep"
+    },
+    {
+     "site": "Guidarium",
+     "url": "https://guidarium.com/plants/dwarf-sagittaria-vs-water-hawthorn",
+     "label": "Beginner",
+     "verdict": "1",
+     "why": "low light, no CO2; fast growth, moderate maintenance"
+    },
+    {
+     "site": "Aquasabi",
+     "url": "https://www.aquasabi.de/Sagittaria-subulata_1",
+     "label": "Difficulty Easy (table: very easy)",
+     "verdict": "1",
+     "why": "no CO2 needed, CO2 speeds growth; fast runners"
+    }
+   ],
+   "confidence": "high",
+   "reason": "3 sources say easy; only issues are iron and melt after transplant"
+  },
+  {
+   "id": "redroot",
+   "name": "red root floater (Phyllanthus fluitans)",
+   "kind": "plant",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Buce Plant",
+     "url": "https://buceplant.com/blogs/news/plant-profile-red-root-floaters",
+     "label": null,
+     "verdict": "1",
+     "why": "described as extremely easy; no CO2; dislikes surface agitation; can take over surface"
+    },
+    {
+     "site": "Biotope Aquarium Project",
+     "url": "https://biotopeaquariumproject.com/plant/phyllanthus-fluitans-nkhardina/",
+     "label": "Beginner-friendly level",
+     "verdict": "1",
+     "why": "tolerates low to high light, no CO2; needs calm water, regular pruning"
+    },
+    {
+     "site": "Aquasabi",
+     "url": "https://www.aquasabi.de/Phyllanthus-fluitans_1",
+     "label": "Difficulty Medium",
+     "verdict": "2",
+     "why": "extremely sensitive in transport; reacts poorly to condensation from covers"
+    }
+   ],
+   "confidence": "medium",
+   "reason": "2 easy, Aquasabi medium mainly for shipping/condensation fragility; kept 1 once established"
+  },
+  {
+   "id": "salvinia",
+   "name": "Salvinia (floating fern)",
+   "kind": "plant",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Guidarium",
+     "url": "https://guidarium.com/plants/giant-salvinia",
+     "label": "Beginner (FAQ: not the easiest starter plant)",
+     "verdict": "1",
+     "why": "moderate light, no CO2; high maintenance scooping, fast growth shades others"
+    },
+    {
+     "site": "Aquasabi",
+     "url": "https://www.aquasabi.de/aquascaping-wiki-en_aquatic-plants_floating-plants",
+     "label": "Difficulty: easy",
+     "verdict": "1",
+     "why": "very fast growth (S. auriculata)"
+    },
+    {
+     "site": "Practical Fishkeeping",
+     "url": "https://www.practicalfishkeeping.co.uk/features/floating-plants-benefits-care-tips-and-our-top-species/",
+     "label": null,
+     "verdict": "1",
+     "why": "S. minima easy to care for, tolerates lower light; floaters dislike being wet"
+    }
+   ],
+   "confidence": "high",
+   "reason": "all say easy; only chore is frequent thinning"
+  },
+  {
+   "id": "lettuce",
+   "name": "water lettuce (Pistia)",
+   "kind": "plant",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Aquarium Tidings",
+     "url": "https://aquariumtidings.com/water-lettuce-care",
+     "label": "Care Level: Moderately Difficult",
+     "verdict": "2",
+     "why": "needs humidity/lid, gradual light acclimation to avoid scorch, overgrowth, current"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://fishkeepingworld.com/water-lettuce",
+     "label": null,
+     "verdict": "1",
+     "why": "called a good low-hassle plant; moderate to high light; overgrowth blocks surface air exchange"
+    },
+    {
+     "site": "Aquariadise",
+     "url": "https://www.aquariadise.com/dwarf-water-lettuce/",
+     "label": null,
+     "verdict": "2",
+     "why": "needs humid air (lid), gentle light, root shedding after shipping, poor in cold or hard water"
+    }
+   ],
+   "confidence": "medium",
+   "reason": "split; plant is hardy but open-top tanks and bright light cause leaf burn/decline, so a beginner often gets poor results",
+   "firstPass": 2,
+   "verify": {
+    "verdict": "contradicted",
+    "reason": "Two of the first-pass sources are 2, but PF and Fishkeeping World read it as easy; the only catch is dry leaves and growth control.",
+    "newSources": [
+     {
+      "site": "Practical Fishkeeping",
+      "url": "https://www.practicalfishkeeping.co.uk/features/floating-plants-benefits-care-tips-and-our-top-species/",
+      "label": "floating plants one of the easier plants",
+      "verdict": "1",
+      "why": "bright light, standard LED works; keep leaf tops dry or they rot; long roots suit larger tanks"
+     }
+    ]
+   }
+  },
+  {
+   "id": "lotus",
+   "name": "tiger lotus (Nymphaea zenkeri)",
+   "kind": "plant",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Aquarium Co-Op",
+     "url": "https://aquariumcoop.com/blogs/aquarium/tiger-lotus-care",
+     "label": null,
+     "verdict": "1",
+     "why": "relatively simple; root tabs and fertilizer; small sprouts melt, do not bury bulb, trim floating pads"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/tiger-lotus",
+     "label": null,
+     "verdict": "1",
+     "why": "ideal for beginners; nutrient-rich substrate; bulb rot if buried; leaf burn near surface"
+    },
+    {
+     "site": "Aquasabi",
+     "url": "https://www.aquasabi.de/Nymphaea-lotus_1",
+     "label": "Difficulty Medium",
+     "verdict": "2",
+     "why": "medium light, CO2 yes; needs well-lit spot, floating leaves shade it"
+    }
+   ],
+   "confidence": "medium",
+   "reason": "2 easy, Aquasabi medium; explainable split (size, root feeding, bulb handling)"
+  },
+  {
+   "id": "hornwort",
+   "name": "hornwort (Ceratophyllum)",
+   "kind": "plant",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Aquarium Co-Op",
+     "url": "https://www.aquariumcoop.com/blogs/aquarium/hornwort-care",
+     "label": null,
+     "verdict": "1",
+     "why": "low to high light, no CO2; sheds needles after parameter change; needs pruning"
+    },
+    {
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/hornwort",
+     "label": "Care Level: Easy",
+     "verdict": "1",
+     "why": "overgrowth, shading, shedding if too warm"
+    },
+    {
+     "site": "Guidarium",
+     "url": "https://guidarium.com/plants/hornwort",
+     "label": "Beginner (FAQ: middle ground)",
+     "verdict": "1",
+     "why": "low light, no CO2; needle shed, overgrowth, rots if buried"
+    }
+   ],
+   "confidence": "high",
+   "reason": "3 sources easy; main cost is trimming and needle shed"
+  },
+  {
+   "id": "anacharis",
+   "name": "Anacharis / Elodea / Egeria densa",
+   "kind": "plant",
+   "level": 1,
+   "sources": [
+    {
+     "site": "Aquasabi",
+     "url": "https://www.aquasabi.de/Egeria-densa_1",
+     "label": "Difficulty Easy (table: very easy)",
+     "verdict": "1",
+     "why": "medium light, no CO2, very fast growth"
+    },
+    {
+     "site": "Flowgrow",
+     "url": "https://www.flowgrow.de/db/aquaticplants/egeria-densa",
+     "label": "Difficulty: very easy",
+     "verdict": "1",
+     "why": "medium to high light, CO2 not needed; heat tolerated only briefly; trimming"
+    },
+    {
+     "site": "Aquarium Source",
+     "url": "https://www.aquariumsource.com/anacharis/",
+     "label": null,
+     "verdict": "1",
+     "why": "beginner-friendly, foolproof; moderate light; algae if overlit; uprooted by diggers"
+    }
+   ],
+   "confidence": "high",
+   "reason": "3 sources easy; warm tanks and diggers are the only cautions"
   }
  ]
 }
