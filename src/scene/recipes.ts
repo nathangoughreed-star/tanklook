@@ -7,14 +7,15 @@
 // numbers: the scene is the look's starter set through scapes.ts `scapeSetup`, as Create a look draws it. Archetypes
 // without a mapped look stay coming-soon (no recipe).
 import { emptyBuild, buildsFor, type Build } from './builds';
-import { itemDims, layerOf, makeItem, seatHook, STYLES } from './items';
+import { itemDims, layerOf, LIBRARY, makeItem, seatHook, STYLES } from './items';
 import { GARDEN_SEED as SPROUT_SEED, isGardenPiece, isOpenTop } from './openTop';
 import { waterY } from './physics';
 import { groundHeight } from './terrain';
 
 import { getSpecies } from '../data/species';
 import { groupMinimum } from './groupMin';
-import { scapeSetup, type PlantMode } from './scapes';
+import { scapeSetup, tintFakes, type PlantMode } from './scapes';
+import { withChoice } from './tech';
 import { pieceKg } from './setupsheet';
 import { catalogueSizes, fitIn, type AnimalCount } from './tankfit';
 import { archetype as archetypeById, type Archetype, type Density } from './archetypes';
@@ -70,12 +71,19 @@ interface Tweak {
   openTop?: boolean;
   /** Decor pieces per level (lane DS2): ornament variants placed along the tank, ship first. */
   ornaments?: Record<Density, string[]>;
+  /** Artificial plants dyed (pink, red, blue, purple, orange) and an air stone bubbling (lane DS3): the colourful decorative look. */
+  tint?: boolean; air?: boolean;
+  /** Artificial stems and rosettes kept per level on a 36 in-long tank (scaled by length; moss mats dropped): the decorative look steps up by plants, not only by pieces. */
+  fakes?: Record<Density, number>;
   ground?: 'bare' | { type: SubstrateType; custom?: SubstrateBlend }; flat?: boolean; rocks?: Record<Density, number[]>; wood?: Record<Density, number>; caves?: Record<Density, number>; plantsOnly?: string[];
 }
 const TWEAKS: Record<string, Tweak> = {
   // Themed Scene (lane DS2, 2026-11-13): a sunken pirate ship and a treasure chest on natural gravel, the plants of the planted look around them
   'themed-scene': { seed: 1, ground: { type: 'gravel' },
     ornaments: { open: ['shipwreck'], balanced: ['shipwreck', 'treasurechest'], full: ['shipwreck', 'treasurechest'] } },
+  // Castle & Coloured Gravel (lane DS3, 2026-11-13): a resin castle on mixed colour gravel, dyed plastic / silk plants, a bubbling air stone
+  'castle-coloured-gravel': { seed: 1, ground: { type: 'clown' }, tint: true, air: true, fakes: { open: 4, balanced: 9, full: 16 }, dens: t([-1, 0.15], [-1, 0.6], [-1, 1.2]), rocks: { open: [], balanced: [], full: [] }, wood: { open: 0, balanced: 0, full: 0 },
+    ornaments: { open: ['castle'], balanced: ['castle'], full: ['castle', 'treasurechest'] } },
   // Overflowing Garden: a calm hardscape-forward nature aquascape under an open top; the plant stop sets only how many rim planters and houseplants grow above it (lane OG2)
   'overgrown-garden': { openTop: true, seed: 1, dens: t([1.6, 0.4], [2, 0.9], [2.2, 1.4]) },
   // reef siblings (one 'reef' look): the shape of the rock is the archetype
@@ -236,10 +244,17 @@ function clean(a: Archetype, d: Density, S: TankSetup): void {
       return true;
     });
   }
+  if (tw.fakes) {
+    const keep = Math.max(3, Math.round(tw.fakes[d] * S.tank.L / 914)), all = S.items.filter(it => it.kind === 'artificial' && LIBRARY[it.variant]?.fake?.form !== 'mat').sort((x, y) => x.x - y.x);
+    const out = new Set(all.filter((_, i) => Math.floor((i + 0.5) * keep / all.length) === Math.floor((i - 0.5 + 1e-9) * keep / all.length) && keep < all.length));
+    S.items = S.items.filter(it => (it.kind !== 'artificial') || (LIBRARY[it.variant]?.fake?.form !== 'mat' && !out.has(it)));
+  }
+  if (tw.tint) tintFakes(S);
+  if (tw.air) S.tech = withChoice(S, 'air', 'airstone');
   if (tw.ornaments) {
     const T = S.tank, list = tw.ornaments[d], ship = Math.round(Math.max(150, Math.min(381, T.L * 0.28)));
     list.forEach((v, i) => {
-      const id = 1 + Math.max(0, ...S.items.map(x => x.id)), chest = v === 'treasurechest', yaw = chest ? -14 : 18, size = chest ? Math.round(ship * 0.5) : ship;
+      const id = 1 + Math.max(0, ...S.items.map(x => x.id)), chest = v === 'treasurechest', yaw = chest ? -14 : v === 'castle' ? 0 : 18, size = chest ? Math.round(ship * 0.5) : ship;
       // the spot with the least hardscape under it (the ship leans toward the left-centre, the chest toward the right)
       let best: Item | null = null, bestHit = Infinity;
       for (const fx of chest ? [0.66, 0.74, 0.58, 0.82] : [0.38, 0.3, 0.46, 0.54, 0.22]) for (const fd of chest ? [0.45, 0.35, 0.55, 0.28] : [0.5, 0.42, 0.6, 0.34]) {
@@ -250,10 +265,11 @@ function clean(a: Archetype, d: Density, S: TankSetup): void {
         if (hit + lane < bestHit) { best = o; bestHit = hit + lane; }
       }
       const o = best!, [w, , dp] = itemDims(o);
-      S.items = S.items.filter(it => it.kind !== 'plant' || it.lift > 1 || Math.abs(it.x - o.x) > w / 2 + 15 || Math.abs(it.depth - o.depth) > dp / 2 + 15); // no plant grows through the piece
+      const plantish = (it: Item) => it.kind === 'plant' || it.kind === 'artificial';
+      S.items = S.items.filter(it => !plantish(it) || it.lift > 1 || Math.abs(it.x - o.x) > w / 2 + 15 || Math.abs(it.depth - o.depth) > dp / 2 + 15); // no plant grows through the piece
       // the front lane stays clear: no plant taller than the piece stands between it and the front glass (depth grows toward the BACK wall, so the front lane is the smaller depths)
       const hh = itemDims(o)[1], half = Math.max(w, dp) / 2 + 10;
-      S.items = S.items.filter(it => it.kind !== 'plant' || it.depth >= o.depth || Math.abs(it.x - o.x) > half + itemDims(it)[0] / 2 + 0.6 * (o.depth - it.depth) || itemDims(it)[1] <= hh); // (a wedge that widens toward the glass, so a 3/4 view is clear too)
+      S.items = S.items.filter(it => !plantish(it) || it.depth >= o.depth || Math.abs(it.x - o.x) > half + itemDims(it)[0] / 2 + 0.6 * (o.depth - it.depth) || itemDims(it)[1] <= hh); // (a wedge that widens toward the glass, so a 3/4 view is clear too)
       S.items.push(o);
     });
   }

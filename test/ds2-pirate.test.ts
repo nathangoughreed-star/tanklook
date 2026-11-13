@@ -88,7 +88,7 @@ describe('I: every ornament is priced', () => {
 describe('the six existing looks are unchanged', () => {
   const snap = () => {
     const out: Record<string, unknown> = {};
-    for (const a of ARCHETYPES.filter(x => x.recipe.looks.length && x.id !== 'themed-scene')) for (const d of ['open', 'balanced', 'full'] as const) {
+    for (const a of ARCHETYPES.filter(x => x.recipe.looks.length && x.id !== 'themed-scene' && x.id !== 'castle-coloured-gravel')) for (const d of ['open', 'balanced', 'full'] as const) {
       const S = recipeScene(a, d, model, undefined, NOW); if (!S) continue;
       const ax = designAxes(S), key = JSON.stringify(S.items.map(i => [i.kind, i.variant, Math.round(i.size), Math.round(i.x), Math.round(i.depth), Math.round(i.yaw)]));
       let h = 2166136261; for (let k = 0; k < key.length; k++) h = Math.imul(h ^ key.charCodeAt(k), 16777619);

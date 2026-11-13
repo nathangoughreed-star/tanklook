@@ -134,7 +134,9 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   else if (lidRow) add('lid', noHood ? 'Lid (glass: no hood sold for this size)' : `Lid (${S.lid})`, 'gear', { setup: price(scale3(lidRow, lidK)) });
   else if (lid && r3(lid)!.mode > 0) add('lid', `Lid (${lidKind})`, 'gear', { setup: price(r3(lid)!) });
   const gv = S.substrate.show ? groundVolume(S, 24).litres : 0;
-  if (gv > 0) add('substrate', 'Substrate', 'gear', { setup: price(scale3(pick(G.substrateUsdPerL), gv * 1.1)) });
+  // coloured (dyed / coated) gravel runs dearer than natural: Estes' Marina and Spectrastone bags about $1.80 a lb against about $1 for natural gravel (lane DS3)
+  const dyed = S.substrate.show && (S.substrate.type === 'clown' || S.substrate.type === 'blue' || S.substrate.type === 'onyx');
+  if (gv > 0) add('substrate', dyed ? 'Substrate (coloured gravel)' : 'Substrate', 'gear', { setup: price(scale3(pick(G.substrateUsdPerL), gv * 1.1 * (dyed ? 1.6 : 1))) });
   const watts = wattsOf(S);
   if (watts > 0 && !(hood && hoodsLight)) {
     const inch = S.tank.L / 25.4, rowL = salt ? rowPrice('gear:led-reef-24') && scale3(rowPrice('gear:led-reef-24')!, Math.max(0.6, inch / 24)) : interp('gear:led-planted-', [24, 48], inch);

@@ -42,11 +42,13 @@ export function designAxes(S: TankSetup): DesignAxes {
   const mass = plantIt.reduce((t, i) => t + plantWeight(i), 0), massPerSqFt = mass / floorSqFt;
   const lush = plantIt.length ? clamp(Math.log2(Math.max(massPerSqFt, 0.01) / 6) / 2) : -1;   // log scale: 6 per sq ft = 0, about 1.5 = sparse (-1), 24 = overgrown (+1)
   // colour: accent share of the planting, plus bold ground
-  const accent = plantIt.filter(i => i.kind === 'coral' ? !DULL_CORALS.has(i.variant) : i.kind === 'plant' && ACCENT_PLANTS.has(i.variant)).length;
-  const accentShare = plantIt.length ? accent / plantIt.length : 0, boldGround = S.substrate.show && BOLD_GROUND.has(S.substrate.type) ? 0.3 : 0;
+  // (lane DS3: a dyed artificial plant is a colour accent, and an ornament is a bold coloured piece of the scene)
+  const orn = hardIt.filter(i => i.kind === 'ornament').length;
+  const accent = plantIt.filter(i => i.kind === 'coral' ? !DULL_CORALS.has(i.variant) : i.kind === 'artificial' ? !!LIBRARY[i.variant]?.fake?.tint : i.kind === 'plant' && ACCENT_PLANTS.has(i.variant)).length + orn;
+  const accentShare = plantIt.length ? Math.min(1, accent / (plantIt.length + orn)) : 0, boldGround = S.substrate.show && BOLD_GROUND.has(S.substrate.type) ? 0.3 : 0;
   const colourful = clamp((accentShare + boldGround - 0.3) / 0.4);
   // natural: artificial share of the planting plus unnatural ground
-  const artificialShare = plantIt.length ? art / plantIt.length : 0, natural = clamp(1 - 2 * Math.min(1, artificialShare * 0.85 + boldGround * 0.5));
+  const artificialShare = plantIt.length ? art / plantIt.length : 0, natural = clamp(1 - 2 * Math.min(1, artificialShare * 0.85 + boldGround * 0.5 + Math.min(0.25, 0.12 * orn)));
   // ordered: regular spacing among the pieces (low spread of nearest-neighbour distances), aligned pieces (low turning), few kinds
   const regularity = regularityOf(S.items);
   const kinds = new Set(S.items.map(i => i.variant)).size, kindsOrder = clamp(1 - (kinds - 3) / 6, 0, 1);
@@ -54,7 +56,6 @@ export function designAxes(S: TankSetup): DesignAxes {
   const ordered = S.items.length < 3 ? 0 : clamp(((regularity + kindsOrder + (1 - turned)) / 3 - 0.5) * 3);
   const stone = hardIt.filter(i => i.kind === 'stone').length, wood = hardIt.filter(i => i.kind === 'wood').length;
   const rockWood = stone + wood ? (stone - wood) / (stone + wood) : 0;
-  void LIBRARY;
   return { natural, lush, colourful, ordered, rockWood, plantMode, raw: { massPerSqFt, accentShare, artificialShare, regularity, pieces: S.items.length } };
 }
 /** 0 (scattered) .. 1 (evenly spaced): one minus the coefficient of variation of each piece's nearest-neighbour distance. */

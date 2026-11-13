@@ -106,6 +106,21 @@ export function fakeFor(variant: string, silk: boolean): string | undefined {
   return undefined;
 }
 
+/** The dyed artificial plants each (material, form) is sold in (lane DS3), the green one last so a tank is not all one colour. */
+const TINTED: Record<string, string[]> = {
+  'silk|stem': ['silkstempink', 'silkstemred', 'silkstem'], 'plastic|stem': ['plasticstemblue', 'plasticstemred', 'plasticstem'],
+  'silk|rosette': ['silkswordorange', 'silksword'], 'plastic|rosette': ['plasticswordpurple', 'plasticsword'],
+};
+/** Artificial plants as a look of their own (G16): every stem and rosette is turned into a dyed one in rotation (pink, red, blue, purple, orange, a green now and then); moss mats stay green. */
+export function tintFakes(S: TankSetup): void {
+  let n = 0;
+  for (const it of S.items) {
+    const f = it.kind === 'artificial' ? LIBRARY[it.variant]?.fake : undefined;
+    if (!f || f.form === 'mat') continue;
+    const list = TINTED[`${f.mat}|${f.form}`]; if (list) it.variant = list[n++ % list.length];
+  }
+}
+
 /** Whether a live plant item is swapped for an artificial one in this mode: artificial swaps every aquarium plant, mixed only the demanding ones (strong light, CO2 or both). */
 const swapped = (it: Item, mode: PlantMode): boolean => {
   if (it.kind !== 'plant' || mode === 'live') return false;

@@ -109,6 +109,8 @@ export const LIBRARY: Record<string, Variant> = {
   silkstemred: { kind: 'artificial', label: 'Red silk plant', hint: 'Artificial: soft fabric leaves in red up wired stems, on a weighted base. A colourful decoration; never grows, needs no light; safe for long-finned fish.', size: 200, min: 80, max: 600, fake: { mat: 'silk', form: 'stem', tint: 'red' } },
   plasticswordpurple: { kind: 'artificial', label: 'Purple plastic sword plant', hint: 'Artificial: a stiff rosette of glossy purple moulded sword leaves, on a weighted base. Never grows, needs no light.', size: 200, min: 80, max: 600, fake: { mat: 'plastic', form: 'rosette', tint: 'purple' } },
   plasticstemblue: { kind: 'artificial', label: 'Blue plastic plant', hint: 'Artificial: stiff moulded stems in whorls of glossy blue leaves, on a weighted base. Never grows, needs no light; hard edges can tear long fins.', size: 200, min: 80, max: 600, fake: { mat: 'plastic', form: 'stem', tint: 'blue' } },
+  silkswordorange: { kind: 'artificial', label: 'Orange silk sword plant', hint: 'Artificial: a rosette of long orange fabric sword leaves that arch over, on a weighted base. Never grows, needs no light.', size: 200, min: 80, max: 600, fake: { mat: 'silk', form: 'rosette', tint: 'orange' } },
+  plasticstemred: { kind: 'artificial', label: 'Red plastic plant', hint: 'Artificial: stiff moulded stems in whorls of glossy red leaves, on a weighted base. Never grows, needs no light; hard edges can tear long fins.', size: 200, min: 80, max: 600, fake: { mat: 'plastic', form: 'stem', tint: 'red' } },
   plasticmoss: { kind: 'artificial', label: 'Plastic moss mat', hint: 'Artificial: a flat mat bristling with short stiff plastic blades. Lay it on the ground or raise it onto wood or rock. Size = width.', size: 180, min: 40, max: 300, fake: { mat: 'plastic', form: 'mat' } },
   // corals (2026-10-14): size = width
   acropora: { kind: 'coral', label: 'Branching coral', hint: 'An Acropora-style colony of branches with pale tips. Size = width.', size: 160, min: 40, max: 500, salt: true },
@@ -339,7 +341,7 @@ export function spreadMax(T: Tank, x?: number, depth?: number) {
 }
 
 /** Bounding box of each ornament per unit size (x length, y height, z depth), measured from the built shape (test/ds2-ornament.test.ts keeps it honest). */
-export const ORNAMENT_ASPECT: Record<string, [number, number, number]> = { shipwreck: [1.11, 0.745, 0.4], treasurechest: [1.02, 0.9, 1], castle: [1.04, 0.95, 0.7] };
+export const ORNAMENT_ASPECT: Record<string, [number, number, number]> = { shipwreck: [1.11, 0.745, 0.4], treasurechest: [1.02, 0.9, 1], castle: [1.05, 1.073, 0.715] };
 export function itemDims(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size' | 'spread' | 'growth'>): V3 {
   const s = it.kind === 'plant' ? grownSize(it.variant as PlantType, it.size, it.growth) : it.size; // a plant at its growth
   if (it.kind === 'stone') return stoneDims(it.variant, it.seed, s);

@@ -30,9 +30,9 @@ beforeAll(() => {
 const stocked = () => rows.filter(r => r.plan.roster.length);
 
 describe('rule 1: every animal suits the look\'s world and habitat', () => {
-  it('there are 46 buildable archetypes in 136 candidates, and brackish has no roster (Q3)', () => {
-    expect(new Set(rows.map(r => r.a.id)).size).toBe(46);
-    expect(rows.length).toBe(136);
+  it('there are 47 buildable archetypes in 139 candidates, and brackish has no roster (Q3)', () => {
+    expect(new Set(rows.map(r => r.a.id)).size).toBe(47);
+    expect(rows.length).toBe(139);
     for (const r of rows.filter(x => worldOf(x.a) === 'BK')) { expect(r.plan.roster).toEqual([]); expect(r.plan.why).toMatch(/brackish/i); }
   });
   it('an aquarium holds only water animals of its own water (salt matching the water)', () => {
