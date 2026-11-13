@@ -4,6 +4,7 @@
 // stocking suggestion. Everything is optional ("Continue to Make It Your Own" works with none) and nothing here sets stocking from the look: the
 // density never changes it, and the engine's welfare checks (animalfit.ts, tankfit.ts) stay the authority, so an animal is only offered when it passes
 // them on its own and together with the ones already added. Pure: no DOM, tested in test/discoveryanimals.test.ts.
+import { scopeSpecies } from '../../scope';
 import type { Archetype } from '../../scene/archetypes';
 import { SPECIES, type Species } from '../../data/species';
 import { CARE, EXPERTISE_NAME } from '../../data/care';
@@ -69,7 +70,7 @@ export function suitableAnimals(a: Archetype, tank: TankModel, chosen: readonly 
   const pool = lookPool(a, tank), mates = chosen.length ? new Map(rankTankmates(chosen.map((c): Pk => ({ id: c.species, n: c.n, ...(c.f ? { f: c.f } : {}) })), tank).filter(m => m.fits).map(m => [m.sp.id, m.score])) : undefined;
   const have = present(chosen), taken = new Set(chosen.map(c => c.species)), out: { s: Suggestion; rank: number }[] = [];
   let tooBig = 0;
-  for (const sp of SPECIES) {
+  for (const sp of scopeSpecies(SPECIES)) {
     if (taken.has(sp.id) || !CARE[sp.id] || !belongsIn(a, sp) || !suits(a, sp)) continue;
     if (have.length && whyAnimal(sp, Infinity, 3, have)) continue;
     const add = animalsOf([startPick(sp.id)])[0], here = fitIn([...chosen, add], tank);
@@ -153,7 +154,7 @@ function buildPlan(a: Archetype, tank: TankModel, kinds: number, exclude?: Reado
   if (!focal.length) { const named = namedHeadliner(a); if (named) return none(`${named} is what this look is for, and it needs a bigger enclosure than this.`); }
   const kindsOf = new Set<string>([...pool, ...focal.map(c => c.species)].flatMap(id => SPECIES.find(s => s.id === id)?.cat ?? []));
   // the look's own animals first (their order shuffled per archetype by a fixed hash, so looks that share a pool do not all share a roster), then the easiest of the world
-  const ranked = SPECIES.flatMap(sp => {
+  const ranked = scopeSpecies(SPECIES).flatMap(sp => {
     if (exclude?.has(sp.id) || !CARE[sp.id] || !worldHas(a, sp, kindsOf) || !suits(a, sp)) return [];
     const at = pool.indexOf(sp.id), c = CARE[sp.id], j = jitter(`${a.id}|${sp.id}`);
     return [{ sp, rank: at >= 0 ? (focal.some(f => f.species === sp.id) ? -100 : at / 2 + j * Math.max(6, pool.length) - 50) : c.care * 10 + c.temper * 6 + (invert(sp) ? 15 : 0) + j * 8 }];

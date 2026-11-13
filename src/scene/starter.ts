@@ -4,7 +4,7 @@
 import { IDEAL_MAX, floorPerAnimal, litresPerAnimal, stockingOf } from './stocking';
 import { rng } from '../art/paint';
 import { getSpecies, type Species } from '../data/species';
-import { DEFAULT_DENS, EPIPHYTES, STYLES, STYLE_KIND, clampItem, isLandStyle, isSwampy, layerOf, perch, seatHook, starterItems, type Layer } from './items';
+import { DEFAULT_DENS, EPIPHYTES, STYLES, STYLE_KIND, styleInScope, clampItem, isLandStyle, isSwampy, layerOf, perch, seatHook, starterItems, type Layer } from './items';
 import { CARE } from '../data/care';
 import { fightsOverCount, mostFor, mostMalesFor } from '../data/groups';
 import { volume } from './physics';
@@ -197,7 +197,7 @@ export function regenerate(s: TankSetup, what: Layer | 'all', firstFishId: numbe
 export function randomStyle(s: TankSetup, roll: () => number): Exclude<LayoutId, 'none'> {
   const cur = s.layout.id, land = !s.water.on || isLandStyle(cur) || isSwampy(cur), salt = !land && !!s.water.salt;
   const ids = (Object.keys(STYLES) as Exclude<LayoutId, 'none'>[]).filter(id => land ? isLandStyle(id) || isSwampy(id) : salt ? STYLE_KIND[id] === 'salt' : STYLE_KIND[id] !== 'salt' && STYLE_KIND[id] !== 'land' && !isSwampy(id));
-  const pool = ids.filter(id => id !== cur);
+  const pool = ids.filter(id => id !== cur && styleInScope(id));
   return (pool.length ? pool : ids)[Math.floor(roll() * (pool.length || ids.length))];
 }
 

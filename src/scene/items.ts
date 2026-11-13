@@ -1,6 +1,7 @@
 // Aquascape items (scene v9): the library of placeable rocks, wood, caves and plants, the pure shape skeletons the
 // renderer builds them from (so placement code can find a branch to tie a fern to without three.js), and the starter
 // sets that replace the old fixed layouts. All sizes physical (mm): a bigger tank gets more pieces, not bigger ones.
+import { aquariumOnly } from '../scope';
 import { drawnUids, itemKey } from './uid';
 import { rng } from '../art/paint';
 import { PLANT3D, PLANT_ASPECT, grownSize, growthLen, growthOf, isCarpet, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
@@ -164,13 +165,21 @@ export const isLandStyle = (id: LayoutId) => STYLE_KIND[id] === 'land';
 /** Styles with pools and land in one tank (the swamp's terrain). */
 export const isSwampy = (id: LayoutId) => id === 'swamp' || id === 'paludarium';
 export const isReefy = (id: LayoutId) => STYLE_KIND[id] === 'salt';
+/** AQ1 (src/scope.ts): library pieces only a terrarium / herp enclosure uses (land plants and succulents, the climbing branch, the half-log hide, the water dish). */
+const LAND_ONLY: ReadonlySet<string> = new Set(['climb', 'halflog', 'dish', 'stonedish']);
+export const variantInScope = (id: string): boolean => !aquariumOnly() || !(LAND_ONLY.has(id) || (LIBRARY[id]?.hint ?? '').startsWith('Terrarium:'));
+/** A style (layout) offered in this scope: no terrarium styles and no swamp / paludarium while only aquariums are in scope. */
+export const styleInScope = (id: LayoutId): boolean => !aquariumOnly() || !(isLandStyle(id) || isSwampy(id));
 /** The picker's groups, in order. */
-export const STYLE_GROUPS: { label: string; ids: LayoutId[] }[] = [
+export const ALL_STYLE_GROUPS: { label: string; ids: LayoutId[] }[] = [
   { label: 'Freshwater', ids: ['stones', 'driftwood', 'planted', 'iwagumi', 'nature', 'dutch', 'jungle', 'forest'] },
   { label: 'Freshwater biotopes', ids: ['blackwater', 'malawi', 'stream', 'hillstream'] },
   { label: 'Marine', ids: ['reef', 'softreef', 'spsreef', 'clownnano'] },
   { label: 'Terrarium', ids: ['rainforest', 'arid', 'jumper', 'python', 'burrow', 'frogs', 'swamp', 'paludarium'] },
 ];
+/** The groups offered in this scope (no Terrarium group, no swamp / paludarium). */
+export const styleGroups = (): { label: string; ids: LayoutId[] }[] => ALL_STYLE_GROUPS.map(g => ({ ...g, ids: g.ids.filter(styleInScope) })).filter(g => g.ids.length);
+export const STYLE_GROUPS = ALL_STYLE_GROUPS;
 /** The Composition picker (lane SS, 2026-10-15): where the weight of any style sits. */
 export const COMPS: Record<CompId, { label: string; hint: string }> = {
   any: { label: 'Any', hint: 'Shuffle picks where the groups go.' },

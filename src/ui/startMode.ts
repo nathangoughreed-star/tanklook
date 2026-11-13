@@ -12,7 +12,7 @@ import { showQuickPrefs } from './quickPrefs';
 import { labelOf, getBrief, editBrief, onBrief, rangeOf } from './setupBrief';
 import { demandOf } from '../demand';
 import { setOff, against } from '../scene/brief';
-import { STEP_TITLE, HABITAT_CHOICES, canClose, backOf, routeChoice, type StartStep, type StartChoice } from './startScreenLogic';
+import { STEP_TITLE, habitatChoices, canClose, backOf, routeChoice, type StartStep, type StartChoice } from './startScreenLogic';
 import { summaryOf, LEVEL_WORD, type StockSummary } from './stockSummary';
 
 export const NOT_VALID_TRADEOFF = 'not a valid tradeoff';
@@ -68,7 +68,7 @@ export function attachStartMode(store: Store, host: StartModeHost) {
   const fillPics = (root: HTMLElement) => { for (const p of root.querySelectorAll<HTMLElement>('.mode-pic[data-art]:not(:has(img))')) { const i = document.createElement('img'); i.alt = ''; i.decoding = 'async'; i.onload = () => i.classList.add('ok'); i.onerror = () => i.remove(); i.src = `${base}art/${p.dataset.art}.webp`; p.append(i); } };
   /** The project started (or a tank opened): the screen closes and stays closable from now on. */
   const done = () => { first = false; if (dlg.open) dlg.close(); };
-  kindList.replaceChildren(...HABITAT_CHOICES.map(({ id, label, tip }) => {
+  kindList.replaceChildren(...habitatChoices().map(({ id, label, tip }) => {
     const b = document.createElement('button'); b.type = 'button'; b.dataset.habitat = id; b.className = 'start-mode-card habitat-card';
     b.innerHTML = `<div class="mode-pic habitat-pic">${HABITAT_PICS[id]}</div><b>${esc(label)}</b><span class="hint">${esc(tip)}</span>`;
     // the quick-preferences screen (with the intro text) shows on every NEW project (spec 2.2, AB6); done() first so the start screen is gone behind it

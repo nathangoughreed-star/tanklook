@@ -1,6 +1,7 @@
 // Swap suggestions (lane KK): "what drives this bar and which swap lowers it". A swap replaces every animal of one species (or
 // every plant of one kind) with a cheaper / easier one that suits the tank, and reports the effect on all three bars. Means only
 // (no Monte Carlo), so it is cheap enough to try every candidate when a bar is clicked.
+import { scopeSpecies } from '../scope';
 import { CARE } from '../data/care';
 import { SPECIES, getSpecies } from '../data/species';
 import { hasCorals, whyAnimal } from '../scene/animalfit';
@@ -36,7 +37,7 @@ export function swapsFor(S: TankSetup, P: UserProfile, key: string, bar: Bar, op
     const rm = label('nothing', diff(totals({ ...S, fish: S.fish.filter(f => f.species !== id) }, P, opts), base));
     if (rm) out.push(rm);
     const present = [...new Set(S.fish.filter(f => f.species !== id).map(f => getSpecies(f.species)!).filter(Boolean))];
-    for (const c of SPECIES) {
+    for (const c of scopeSpecies(SPECIES)) {
       if (c.id === id || c.cat !== sp.cat || !CARE[c.id] || (CARE[c.id].care > (CARE[id]?.care ?? 3))) continue;
       if (whyAnimal(c, litres, 3, present, { corals: hasCorals(S.items), fit: minFit(S) })) continue;
       const d = diff(totals({ ...S, fish: S.fish.map(f => (f.species === id ? { ...f, species: c.id, tl: undefined } : f)) }, P, opts), base);

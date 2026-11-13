@@ -3,6 +3,7 @@
 // three proposals, each pictured in 3D in its own tank with the numbers the engines give and every enabled guardrail's state. Pick one and it opens
 // in the editor with those guardrails set (Undo brings the old tank back). Logic is demand/suggest.ts (pure, tested); this file draws it. When no
 // setup passes every enabled guardrail and the husbandry checks it says exactly "No available suggestions satisfy all your enabled guardrails".
+import { kindInScope } from '../scope';
 import { getSpecies } from '../data/species';
 import { demandOf } from '../demand/engine';
 import { pinTank } from '../demand/pinned';
@@ -81,7 +82,7 @@ export function attachSuggest(store: Store, viewer: Viewer, status: (m: string, 
     if (hide && app && !app.classList.contains('collapsed')) { app.classList.add('collapsed'); stepped = true; viewer.invalidate(); }
     else if (!hide && stepped && app) { app.classList.remove('collapsed'); stepped = false; viewer.invalidate(); }
   };
-  let f: Fields = { startup: '', monthly: '', time: '', spaceOn: false, w: '', d: '', needStand: true, owned: {}, kinds: KINDS.map(k => k.id), groups: DRY_GROUPS.map(g => g.id) };
+  let f: Fields = { startup: '', monthly: '', time: '', spaceOn: false, w: '', d: '', needStand: true, owned: {}, kinds: KINDS.filter(k => kindInScope(k.id)).map(k => k.id), groups: DRY_GROUPS.map(g => g.id) };
   let tags = new Set<Tag>(), res: Suggestions | undefined, pics: string[] = [], note = '';
   /** refinement chips (lane U6): what the last chip did, and one tradeoff line per card */
   let refineLine = '', cardLines: string[] = [];
@@ -175,7 +176,7 @@ ${res.note ? `<p class="spWarn sgNote">${esc(res.note)}</p>` : ''}${futureHtml(g
     el.innerHTML = `<div class="spHead"><h2>Fill in what I left open</h2><button type="button" data-act="close" aria-label="Close">âœ•</button></div>
 <p class="spNote">Your setup brief (the bar above) already holds what you told us; fill in or change the rest here. Tick the limits that matter to you and we propose setups that fit them, each checked against all of them and against what the animals need. Leave a box empty to keep that limit off.</p>
 <div class="sgCard">
-<fieldset class="sgKinds"><legend>What kind of setup?</legend>${KINDS.map(k => `<label><input class="sgKind" type="checkbox" value="${k.id}" ${f.kinds.includes(k.id) ? 'checked' : ''}> ${k.label} <span class="spNote">${k.blurb}</span></label>`).join('')}
+<fieldset class="sgKinds"><legend>What kind of setup?</legend>${KINDS.filter(k => kindInScope(k.id)).map(k => `<label><input class="sgKind" type="checkbox" value="${k.id}" ${f.kinds.includes(k.id) ? 'checked' : ''}> ${k.label} <span class="spNote">${k.blurb}</span></label>`).join('')}
 ${asksDryGroups(f.kinds) ? `<div class="sgSub" role="group" aria-label="Terrarium and vivarium animals"><span class="spNote">For a terrarium or vivarium, which animals?</span>${DRY_GROUPS.map(g => `<label><input class="sgGroup" type="checkbox" value="${g.id}" ${f.groups.includes(g.id) ? 'checked' : ''}> ${g.label}</label>`).join('')}</div>` : ''}
 ${f.kinds.length ? '' : '<div class="spWarn">Tick at least one kind.</div>'}</fieldset>
 ${lockedStock(getBrief()).length ? `<div class="spNote sgLocked">Locked animals: ${lockedStock(getBrief()).map(a => `${a.n} ${esc(speciesOf(a.species)?.name ?? a.species)}`).join(', ')}. They stay as you chose them; the limits below are checked against them.</div>` : ''}

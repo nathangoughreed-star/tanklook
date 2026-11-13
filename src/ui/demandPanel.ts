@@ -1,6 +1,7 @@
 // The demand panel (lane KK phase 4): three live readouts for the current tank (money, time, risk), in Quick Setup. Each is an
 // one expected number per bar; limits turn a bar red; a click lists what drives it and which swap lowers it.
 // Computed when the scene settles (debounced), never per frame. The profile (skill, water, kWh rate, limits) is an app pref.
+import { aquariumOnly } from '../scope';
 import { defaultProfile, demandOf, drivers, limitState, type LimitState, type UserProfile } from '../demand';
 import { swapsFor, type Bar } from '../demand/swaps';
 import type { Demand } from '../demand';
@@ -313,7 +314,7 @@ Relative to your stated experience (see Your situation).`;
     lim.querySelectorAll('input,select').forEach(e => e.addEventListener('change', change));
   }
   function situation() {
-    sit.innerHTML = DOMAIN_LABEL.map(([k, name]) => `<label>${name} <select data-sk="${k}">${SKILL.map((s, i) => `<option value="${i}" ${P.skill[k] === i ? 'selected' : ''}>${s}</option>`).join('')}</select></label>`).join('')
+    sit.innerHTML = DOMAIN_LABEL.filter(([k]) => !(aquariumOnly() && k === 'terrarium')).map(([k, name]) => `<label>${name} <select data-sk="${k}">${SKILL.map((s, i) => `<option value="${i}" ${P.skill[k] === i ? 'selected' : ''}>${s}</option>`).join('')}</select></label>`).join('')
       + `<label>Water for changes <select id="dmWater">${(['tap', 'well', 'bought-ro', 'own-ro'] as const).map(w => `<option value="${w}" ${P.waterSource === w ? 'selected' : ''}>${{ tap: 'Tap', well: 'Well', 'bought-ro': 'Bought RO water', 'own-ro': 'My own RO unit' }[w]}</option>`).join('')}</select></label>
       <label>Electricity <input type="number" id="dmKwh" min="0" step="0.01" placeholder="US average" value="${P.kwhUsd ?? ''}"> $ per kWh</label>
       <div class="hint">Left alone, you count as new to everything. Each answer changes the difficulty and money figures.</div>`;

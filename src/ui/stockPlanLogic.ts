@@ -1,5 +1,6 @@
 // Pure logic for the stocking screen and the fork card (lane P5, 2026-10-20): picks and counts, tankmate ranking, the tank the picks need,
 // fork options. No DOM; src/ui/stockPlan.ts draws it. Reads CARE (with the P1 group data merged in) and the P2 engine (scene/tankfit.ts).
+import { scopeSpecies } from '../scope';
 import { IDEAL_MAX } from '../scene/stocking';
 import { CARE, EXPERTISE_NAME } from '../data/care';
 import { rosterTiers, type CostTiers } from '../demand/tiers';
@@ -244,7 +245,7 @@ export function rankTankmates(picks: Pk[], tank?: TankModel, us?: boolean): Mate
   const animals = animalsOf(picks);
   const taken = new Set(have.map(s => s.id)), zones = new Set(have.map(zoneOf));
   const out: Mate[] = [];
-  for (const sp of SPECIES) {
+  for (const sp of scopeSpecies(SPECIES)) {
     if (taken.has(sp.id) || !countsAgainstWater(sp)) continue;
     const c = CARE[sp.id]; if (!c) continue;
     const salty = have.find(o => !!o.salt !== !!sp.salt);
@@ -410,7 +411,7 @@ export function forkOptions(animals: AnimalCount[], limit: SpaceLimit, current?:
       const from = getSpecies(a.species)!, mine = CARE[a.species]?.appeal ?? [], rest = animals.filter(x => x.species !== a.species);
       const present = rest.map(x => getSpecies(x.species)!).filter(Boolean);
       const cands: SwapOption[] = [];
-      for (const sp of SPECIES) {
+      for (const sp of scopeSpecies(SPECIES)) {
         if (sp.id === a.species || !!sp.salt !== salt || !countsAgainstWater(sp) || animals.some(x => x.species === sp.id)) continue;
         const shared = (CARE[sp.id]?.appeal ?? []).filter(t => mine.includes(t));
         if (!shared.length || (present.length && whyAnimal(sp, litres, 3, present))) continue;

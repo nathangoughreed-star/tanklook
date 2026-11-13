@@ -6,6 +6,7 @@
 // A known roster or tank prunes (spec 05 "User already selected an animal"): environment / water the roster answers are skipped, an
 // archetype whose tags cannot hold the animals is hidden, and a step left with one choice is answered for the person. Nothing hard-gates:
 // when pruning would leave a step empty, every choice comes back with a warning instead (`loose`).
+import { aquariumOnly, envInScope } from '../../scope';
 import { ARCHETYPES, ENVIRONMENTS, WATERS, archetype, archetypesOf, family, familiesOf, type Archetype, type Card, type Density, type Env, type Family, type Water } from '../../scene/archetypes';
 import type { Vision, VisionRecipe } from '../../scene/brief';
 import { getSpecies } from '../../data/species';
@@ -107,8 +108,8 @@ const familyFits = (f: Family, k: Known) => archetypesOf(f.id).some(a => fits(a,
 
 /** The World cards. `open`: add "Open to anything" (the animals already answering the world leave nothing to defer, and once it was picked it is not offered again). */
 export function envChoices(k: Known, open = true): Choices<Card> {
-  const c = prune(ENVIRONMENTS, c => (!k.env || c.id === k.env) && ARCHETYPES.some(a => a.env === c.id && fits(a, k)));
-  return k.env || !open ? c : { ...c, items: [...c.items, ANY_CARD] };
+  const c = prune(ENVIRONMENTS.filter(e => envInScope(e.id)), c => (!k.env || c.id === k.env) && ARCHETYPES.some(a => a.env === c.id && fits(a, k)));
+  return k.env || !open || aquariumOnly() ? c : { ...c, items: [...c.items, ANY_CARD] };
 }
 export function waterChoices(k: Known): Choices<Card> {
   return prune(WATERS, c => (!k.water || c.id === k.water) && ARCHETYPES.some(a => a.env === 'aquarium' && a.water === c.id && fits(a, k)));

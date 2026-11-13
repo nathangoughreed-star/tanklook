@@ -6,6 +6,7 @@
 // about 100 kB gzip of the first load. The single-file build inlines both again (lane SF's pass).
 // Shapes and stands (Nathan 2026-10-14): rectangles (planted, iwagumi), bowl (betta), cylinder (paludarium), corner pie
 // (terrarium), 72 gal bowfront (reef); every one on a stand.
+import { aquariumOnly } from '../scope';
 import plantedPic from './planted.jpg?url';
 import iwagumiPic from './iwagumi.jpg?url';
 import bettaPic from './betta-bowl.jpg?url';
@@ -33,6 +34,10 @@ export const EXAMPLES: Example[] = [
   { id: 'blackwater', name: 'Amazon blackwater', hint: 'Tea-stained water, tangled roots, leaf litter and floating plants; cardinals, rummynoses and more.', thumb: blackwaterPic },
   { id: 'clownnano', name: 'Clownfish and anemone nano', hint: 'A small live rock stack with a bubble-tip anemone for the clownfish pair, and a few corals.', thumb: clownnanoPic },
 ];
+
+/** AQ1: the terrarium, paludarium and herp examples that aquarium scope hides (src/scope.ts). */
+const LAND_EXAMPLES = new Set(['paludarium', 'terrarium', 'rainforest', 'arid', 'python']);
+export const examplesInScope = (): Example[] => aquariumOnly() ? EXAMPLES.filter(x => !LAND_EXAMPLES.has(x.id)) : EXAMPLES;
 
 let scenes: Promise<Record<string, string>> | undefined;
 /** The scene files by example id; the first call starts the download, later calls share it (a failed load is retried). */

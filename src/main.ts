@@ -17,6 +17,8 @@ import { attachAR } from './render/ar';
 import { attachSetupSheet } from './ui/setupsheet';
 import { attachReport } from './ui/report';
 import { isShareHash } from './scene/share';
+import { applyScopeToDom } from './ui/scopeDom';
+applyScopeToDom();   // AQ1: aquarium-only wording (src/scope.ts)
 
 function webglAvailable() {
   try { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); }

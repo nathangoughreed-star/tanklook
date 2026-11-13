@@ -4,6 +4,7 @@
 // build). Rules kept here: the same tank for every tile of a step (`tankChoice`), a tank the person does not have yet is only ever a labelled
 // suggestion, and a scene is built once per (archetype, tank, roster) and drawn once per density, then cached. Pure apart from the `shot` callback
 // (the viewer, see panels.ts): no DOM here, so the tank choice and the scenes are tested without WebGL.
+import { envInScope } from '../../scope';
 import type { Archetype, Density } from '../../scene/archetypes';
 import { recipeBase, recipeDensAt, recipeLook, minTank, sceneAt, stopScene, withBg, DENSITIES } from '../../scene/recipes';
 import { scapeSetup } from '../../scene/scapes';
@@ -31,7 +32,7 @@ export interface TankChoice {
 }
 
 const land = (arches: readonly Archetype[]) => arches.length > 0 && arches.every(a => a.env === 'terrarium');
-const isBuildable = (a: Archetype) => a.support !== 'coming-soon' && !!recipeLook(a);
+const isBuildable = (a: Archetype) => a.support !== 'coming-soon' && !!recipeLook(a) && envInScope(a.env);
 
 /** The tank every tile of a step is drawn in. The person's own tank when the brief names one; else a suggestion: the smallest catalogue tank that
  *  holds every drawn archetype of the step (the largest `minGallons`), their gallon floor (the brief's tank-size minimum) and any known animals

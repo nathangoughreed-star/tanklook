@@ -3,6 +3,7 @@
 // catalogue, then run through the demand generator's own gates by `evaluateCandidate` (demand/suggest.ts) ON THE SCENE THAT WILL OPEN (the recipe's balanced scene), so a card's numbers describe exactly the
 // scene the editor receives. The pool is PURE and renders nothing: a cheap screen on the bare build first (a firm limit already broken there cannot be saved by plants: they only add), the recipe scene
 // only for what survives. Every candidate resolves to a real world and water; ponds, brackish (Q3) and coming-soon looks never enter.
+import { envInScope } from '../scope';
 import { catalogueSizes, fitIn, type AnimalCount } from '../scene/tankfit';
 import { ARCHETYPES, type Archetype as VdArchetype, type Env, type Water } from '../scene/archetypes';
 import { minTank, recipeBase, recipeLook } from '../scene/recipes';
@@ -50,7 +51,7 @@ export interface PoolResult { candidates: Candidate[]; eligible: Candidate[]; pr
 export interface PoolOptions { /** stocking per size tier (lane AB5): the roster for look `a` in `tank`, `tier` 0 = the smallest tried size; default `rosterPlan` */ stock?: (a: VdArchetype, tank: TankModel, tier: number) => ReturnType<typeof rosterPlan>; /** only these registry looks (tests, measurements); default every buildable look */ only?: readonly string[]; /** catalogue sizes tried per look (default the smallest plus one per SIZE_MULTIPLES; the Available tank is always one more) */ sizes?: number; /** skip the generator's verified alternatives when nothing is eligible (they take a second or two) */ explain?: boolean }
 
 const KIND_OF = (a: VdArchetype): Kind => a.env === 'terrarium' ? 'terrarium' : a.env === 'paludarium' ? 'vivarium' : a.water === 'saltwater' ? 'saltwater' : 'freshwater';
-export const isBuildable = (a: VdArchetype) => a.support !== 'coming-soon' && !!recipeLook(a);
+export const isBuildable = (a: VdArchetype) => a.support !== 'coming-soon' && !!recipeLook(a) && envInScope(a.env);   // AQ1: aquarium scope never draws a terrarium or paludarium look
 const rosterKey = (r: AnimalCount[]) => r.map(x => `${x.species}${x.n}`).sort().join(',');
 export const candidateKey = (a: VdArchetype, tank: TankModel, roster: AnimalCount[]) => `${a.id}|${tank.id}|${rosterKey(roster)}`;
 export function identityOf(a: VdArchetype): Identity {
