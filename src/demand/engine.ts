@@ -124,7 +124,7 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   if (S.stand.show && S.stand.style !== 'table') add('stand', tStand ? 'Stand (terrarium)' : 'Stand', 'gear', { setup: price(tStand ? scale3(tStand, terrariumStandK(S.tank)) : stand ? scale3(stand, gal > 55 ? Math.pow(gal / 55, 0.8) : 1) : add3(pick(G.stand.base), scale3(pick(G.stand.perGal), gal))) });
   // HD1: a hood is one product with its light built in; no product for this tank = priced as the glass lid (the scene keeps its hood; the user is told)
   const noHood = S.lid === 'hood' && !hood, lidKind = noHood ? 'glass' : S.lid;
-  if (noHood) warnings.push(NO_HOOD_NOTE);
+  if (noHood && !opts.kit) warnings.push(NO_HOOD_NOTE); // a kit's own hood is the kit's (its price replaces these rows), so no note for a bundle
   const lidRow = lidKind === 'open' ? undefined : rowPrice(`gear:lid-${lidKind === 'glass' ? 'glass' : lidKind === 'mesh' ? 'mesh' : 'hood'}`), lidK = Math.min(2.5, Math.max(0.6, Math.sqrt(gal / 25)));
   const lid = (G.lid as Record<string, Rangeish>)[lidKind];
   if (hood) { // one line: the hood with its light; its watts are the light's power draw (no separate light row below unless a light was chosen as well)
