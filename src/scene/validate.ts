@@ -8,11 +8,12 @@ import { MH_BULBS, TECH_IDS, fitFixture } from './lightout';
 import { clearTopGear } from './topgear';
 import { lightProduct } from '../data/gearCatalog';
 import { normTank } from './shape';
+import { migrateCustomRef } from './customTankName';
 import { TABLE_MAX, fitTable } from './table';
 import { GROW_RATE_MAX } from './growtime';
 import { keepInWater } from './water';
 import { pieSize, radialSize, sameGrid, sampleTerrain, swampTerrain, type Ground } from './terrain';
-import { SCENE_VERSION, type BgImage, type BgSide, type Fish, type Item, type LightTech, type Scene, type Tank, type TankSetup } from './types';
+import { SCENE_VERSION, type BgImage, type BgSide, type Fish, type Item, type LightTech, type Scene, type Tank, type CustomTankRef, type TankSetup } from './types';
 import { adoptImages, sidesTouch } from './images';
 import { ownParse, parseTech } from './tech';
 import { pairRule } from '../data/groups';
@@ -186,6 +187,29 @@ function parseBgImages(v: unknown): BgImage[] {
   return out;
 }
 
+/** A tank's shape and dimensions from untrusted JSON (also the custom tank library's: scene/customTanks.ts). */
+export function parseTank(v: unknown, def: Tank): Tank {
+  const num = (x: unknown, d: number, lo = -Infinity, hi = Infinity) => typeof x === 'number' && Number.isFinite(x) ? clamp(x, lo, hi) : d;
+  const o = isObj(v) ? v : {};
+  const T: Tank = { L: num(o.L, def.L, LIMITS.tankMin, LIMITS.tankMax), H: num(o.H, def.H, LIMITS.tankMin, LIMITS.tankMax), D: num(o.D, def.D, LIMITS.tankMin, LIMITS.tankMax) };
+  const shape = (['rect', 'bow', 'round', 'poly', 'bowl', 'pie', 'arch'] as const).find(k => k === o.shape) ?? 'rect'; // v8; older files: rect
+  if (shape === 'rect') return T;
+  return normTank({ ...T, shape, ...(shape === 'poly' ? { sides: num(o.sides, 6) } : {}), ...(shape === 'bow' ? { bowMin: num(o.bowMin, T.D * 0.75, 0, T.D) } : {}),
+    ...(shape === 'bowl' ? { bowlFloor: num(o.bowlFloor, T.L * 0.6, 0, T.L), bowlTop: num(o.bowlTop, T.L * 0.6, 0, T.L) } : {}),
+    ...(shape === 'pie' ? { pieDeg: num(o.pieDeg, 90, 45, 180) } : {}), ...(shape === 'arch' ? { frontBulge: num(o.frontBulge, T.D * 0.08, 0, T.D) } : {}) });
+}
+
+/** P9: a saved `customTank` ref; anything unusable = none. */
+export function parseCustomRef(v: unknown): CustomTankRef | undefined {
+  if (!isObj(v)) return undefined;
+  const name = typeof v.name === 'string' ? v.name.trim().slice(0, 80) : '';
+  if (!name) return undefined;
+  return { name, ...(typeof v.id === 'string' && v.id ? { id: v.id.slice(0, 64) } : {}),
+    ...(typeof v.version === 'number' && Number.isInteger(v.version) && v.version >= 1 ? { version: v.version } : {}),
+    ...(typeof v.priceUsd === 'number' && Number.isFinite(v.priceUsd) && v.priceUsd >= 0 ? { priceUsd: Math.round(Math.min(v.priceUsd, 1e7) * 100) / 100 } : {}),
+    ...(v.owned === true ? { owned: true } : {}) };
+}
+
 /** One tank's setup from untrusted JSON. `pre` prefixes warnings (which tank). */
 function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetup {
   const d = defaultSetup(), warn = (m: string) => warn0(pre + m);
@@ -196,15 +220,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
   const pick = <T extends string>(v: unknown, opts: readonly T[], def: T): T =>
     (typeof v === 'string' && (opts as readonly string[]).includes(v) ? (v as T) : def);
   const sub = (k: string) => (isObj(raw[k]) ? raw[k] as Obj : {});
-  const tank = (v: unknown, def: Tank): Tank => {
-    const o = isObj(v) ? v : {};
-    const T: Tank = { L: num(o.L, def.L, LIMITS.tankMin, LIMITS.tankMax), H: num(o.H, def.H, LIMITS.tankMin, LIMITS.tankMax), D: num(o.D, def.D, LIMITS.tankMin, LIMITS.tankMax) };
-    const shape = pick(o.shape, ['rect', 'bow', 'round', 'poly', 'bowl', 'pie', 'arch'] as const, 'rect'); // v8; older files: rect
-    if (shape === 'rect') return T;
-    return normTank({ ...T, shape, ...(shape === 'poly' ? { sides: num(o.sides, 6) } : {}), ...(shape === 'bow' ? { bowMin: num(o.bowMin, T.D * 0.75, 0, T.D) } : {}),
-      ...(shape === 'bowl' ? { bowlFloor: num(o.bowlFloor, T.L * 0.6, 0, T.L), bowlTop: num(o.bowlTop, T.L * 0.6, 0, T.L) } : {}),
-      ...(shape === 'pie' ? { pieDeg: num(o.pieDeg, 90, 45, 180) } : {}), ...(shape === 'arch' ? { frontBulge: num(o.frontBulge, T.D * 0.08, 0, T.D) } : {}) });
-  };
+  const tank = parseTank;
 
   const tankA = tank(raw.tank, d.tank);
   const c = sub('camera'), r = sub('render'), l = sub('light'), s = sub('substrate'), lay = sub('layout');
@@ -378,6 +394,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
   { const pt = parsePatches(raw.patches); if (pt) setup.patches = pt; } // lane SB 2026-10-16: painted scatter, absent = none
   { const ig = parseIntegrated(raw.integrated); if (ig) setup.integrated = ig; } // 2026-10-20: an integrated kit (an all-in-one run on its own gear)
   { const pd = parseProduct(raw.product); if (pd) setup.product = pd; } // 2026-10-26: the library product the tank is (absent = a custom size)
+  { const ct = parseCustomRef(raw.customTank) ?? migrateCustomRef(setup); if (ct) setup.customTank = ct; } // P9 2026-11-13: a custom tank's name / library id / own price; an old hand-edited or product-less tank becomes a named custom copy
   { const tc = parseTech(raw.tech); if (tc) setup.tech = tc; } // lane TM 2026-10-19: tech level, absent = inferred gear
   if (raw.feeding === 'light' || raw.feeding === 'heavy') setup.feeding = raw.feeding; // lane SE2 2026-10-20, absent = normal
   if (raw.stockFirst === true) setup.stockFirst = true; // 2026-10-21: path 1 tank, no filter drawn until one is added
