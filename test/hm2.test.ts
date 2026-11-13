@@ -24,7 +24,7 @@ describe('HM2 view toolbar', () => {
   it('HM3: no Map / Save / Discover on the viewer; undo state drives the panel pair', () => {
     expect(html).not.toContain('id="mapShow"');
     expect(html).toContain('id="mapOn"');   // the View menu's Map checkbox
-    expect(html).toContain('id="hm3Discover"');
+    expect(html).not.toContain('id="hm3Discover"');
     expect(panels).toMatch(/\['undo'\]\)[^\n]*disabled = !store\.canUndo/);
     expect(panels).toMatch(/\['redo'\]\)[^\n]*disabled = !store\.canRedo/);
   });
