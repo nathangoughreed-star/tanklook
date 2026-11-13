@@ -1,6 +1,6 @@
 # UI1: inventory of today's UI (lane UI1, 2026-11-13, request R27; Coordinator 24)
 
-Facts only, no design. Source: origin/main at build 1922 (commit f8132097), read from the code and from the real app (aquarium scope, Chrome, 1600x900). Screenshots are in `research/screens/UI1/` (named `NN-surface.png`; the "Shot" column below). The test tank in the shots is the "Planted community" starter (40 breeder, 40 animals, plants, hardscape) with the `midplanted` equipment preset (hang-on filter, heater, liquid CO2). Scripts used (not app code): `scripts/ui1-*.mjs`.
+Facts only, no design. **Describes build 1922** (commit f8132097); origin/main has since moved to build 1929, and lane CP1 (merged after this was written) splits the "Constraints and preferences" menu section into two sections, "Preferences" and the brief / limits one, so today's menu has 9 sections where this doc counts 8. Source: origin/main at build 1922, read from the code and from the real app (aquarium scope, Chrome, 1600x900). Screenshots are in `research/screens/UI1/` (named `NN-surface.png`; the "Shot" column below). The test tank in the shots is the "Planted community" starter (40 breeder, 40 animals, plants, hardscape) with the `midplanted` equipment preset (hang-on filter, heater, liquid CO2). Scripts used (not app code): `scripts/ui1-*.mjs`.
 
 ## 0. Summary for Nathan (read this, then stop if you like)
 
