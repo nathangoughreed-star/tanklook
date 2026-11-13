@@ -143,7 +143,7 @@ export function patchMeshes(S: TankSetup, T: Tank, ground: GroundAt, p: Patch): 
   const kinds = b === 'leaf' ? leafKinds(p.leaf ?? 'mixed') : kindsFor(b);
   const pal = b === 'leaf' ? undefined : PALETTE[b].map(c => c.clone().multiplyScalar(DIM[b]));
   return scatter(T, ground, {
-    seed: p.seed, count: at.length, at, kinds, lift: f.lift, liftK: f.liftK, pile: f.pile, tilt: f.tilt, slope: b === 'leaf' ? 0.55 : 0.4, clump: 0, drape: b === 'leaf',
+    seed: p.seed, count: at.length, at, kinds, lift: f.lift, liftK: f.liftK, pile: f.pile, tilt: f.tilt, slope: b === 'leaf' ? 0.55 : 0.4, clump: 0, drape: b === 'leaf', ...(b === 'leaf' ? { flat: 0.17, maxLift: 3 } : {}), // flat / maxLift: lie on rippled sand (render/scatter.ts)
     ...(pal ? { palette: pal } : {}),
     shade: y => (y < wy ? (b === 'leaf' ? 0.55 : 0.9) : 1),
   });

@@ -1,0 +1,22 @@
+{
+ "commit": "3775e922",
+ "build": 1881,
+ "dirty": true,
+ "when": "2026-11-13T12:54:55.685Z",
+ "size": [
+  1050,
+  850
+ ],
+ "fx": [
+  "aces,caustics,contact,ground,variety,embed"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "nathan-2026-11-13": {
+   "shots": [
+    "nathan-2026-11-13-front-aces-caustics-contact-ground-variety-embed.png"
+   ],
+   "ab": {}
+  }
+ }
+}
