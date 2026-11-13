@@ -30,6 +30,7 @@ Rules:
 | R24 | 11-13 | Turn off automatic quality changes (keep the code) | Coordinator 24 (AUTO_QUALITY = false, render/perf.ts; caustics back-off off; a self-lowered saved level is restored; Auto checkbox hidden) | - | pending push | - | Nathan: quality and moving caustics stay on |
 | R25 | 11-13 | Suction-cup gear sticks only to glass (moves off a 3D background to a side pane); drop checker away from the CO2 diffuser | GM8 | - | - | - | brief prompts/lane-GM8-suction-mounts.md; picture research/screens/GM8/nathan-before.webp |
 | R26 | 11-13 | Split the left menu's "Constraints and preferences" into two sections: Preferences and Constraints | CP1 | - | - | - | brief prompts/lane-CP1-split-constraints-prefs.md |
+| R27 | 11-13 | UI rebuild: keep the engine, design a new UI on paper, new shell beside the old behind a switch. Step 1 inventory (UI1, Sonnet), step 2 screen-map proposal with mockups for Nathan (UI2, Opus, starts when UI1 reports) | UI1 then UI2 | - | - | - | Nathan 11-13 "I would like you to start that, yes"; brief prompts/lane-UI1-ui-inventory.md. UI requests to the OLD shell should pause once UI2 is approved |
 
 ## Closed (seen on live)
 
