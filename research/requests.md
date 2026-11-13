@@ -15,8 +15,8 @@ Rules:
 
 | # | Asked (date) | Nathan's ask (short) | Chat | Branch / sha | Merged (build) = expected live by | Live check | Next step |
 |---|---|---|---|---|---|---|---|
-| R2 | 11-12 | Hard angular dark shadow patches on sand (images/7.png) | VF-C2 | claude/confident-sutherland-a9c8ce 6a19630e | 1879 | **FAIL on Nathan's tank** (11-13, images/3.png: pale/dark angular patches still on the sand, seen from above) | VF-C3 31b23ba4 (contact grid 21 + depth offset) in build 1884: live shot from his tank's camera after deploy |
-| R3 | 11-12 | Leaf litter standing up and hovering (images/8.webp) | VF-C2 | same | 1879 | **FAIL on Nathan's tank** (11-13, images/3.png: leaves on the right stand steep / hang) | VF-C3 31b23ba4 (leaf brush rests on the drawn sand, 10 deg / 3 mm) in build 1884: live shot after deploy |
+| R2 | 11-12 | Hard angular dark shadow patches on sand (images/7.png) | VF-C2 | claude/confident-sutherland-a9c8ce 6a19630e | 1879 | **FAIL on Nathan's tank** (11-13, images/3.png: pale/dark angular patches still on the sand, seen from above) | VF-C3 31b23ba4 in 1884 | LIVE 1884 from his camera (az -87, el 32): angular shards gone (C24 leaf-his-view.png, 11-13); close after Nathan's own look |
+| R3 | 11-12 | Leaf litter standing up and hovering (images/8.webp) | VF-C2 | same | 1879 | **FAIL on Nathan's tank** (11-13, images/3.png: leaves on the right stand steep / hang) | VF-C3 31b23ba4 in 1884 | LIVE 1884 FAIL at low angle (el 4): pile leaves still rise 40-50 deg off other leaves (C24 R3-live-1884-still-steep.png) | back to VF-C2: cap tilt for leaves resting on leaves |
 | R7 | 11-12 | Name for the Habitat check tile (alternatives: Animal wellbeing, Welfare) | - | - | - | - | waits on Nathan |
 | R8 | 11-12 | Hoses enter the cabinet through the back panel (audit #31) | CB1 | 22352e75 | yes | 11-13 wall hidden, from behind (sw-R8-behind.png): canister hoses run down OUTSIDE the back panel nearly to the floor, no visible entry hole | ask Nathan; likely back to CB |
 | R9 | 11-12 | Weird substrate bug round rock bases, in HIS tank (audit #3) | VF-C2 | 1bfbc99f, fc1412f4 | yes | PARTIAL: test scenes fine, his own tank not available | ask Nathan for the scene (Scene data JSON) or recheck his screenshot case |
@@ -28,6 +28,7 @@ Rules:
 | R15 | 11-13 | Split view: shared controls (View, Another moment) in one cluster top-middle between the views | HM3 | - | - | - | lane started |
 | R16 | 11-13 | Split view: a "Notes" section per side with that tank's warnings | HM3 | - | - | - | lane started |
 | R18 | 11-13 | Rolling water shadows (caustics) and surface ripples about twice as fast; maybe a setting | VF8 | - | - | - | lane started; no setting (Nathan 11-13: "Just double it") |
+| R19 | 11-13 | Aquarium-only live site: hide terrarium / paludarium / herp features (code kept, one switch) | AQ1 | - | - | - | lane started |
 
 ## Closed (seen on live)
 

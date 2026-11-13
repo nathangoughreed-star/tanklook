@@ -53,9 +53,12 @@ export const FXU = {
 };
 /** A fixed caustic time (s) for repeatable pictures and A/B frames, or null to let it run. */
 export const fxClock = { frozen: null as number | null };
+/** How fast the water light moves (VF8, Nathan 2026-11-13: "approximately double"): scales the running clock, which drives both the
+ *  caustic scroll (lighting.ts) and the surface shimmer (build.ts). 1 = the VF5 / VF6 speed. A frozen clock is used as given. */
+export const WATER_MOTION_SPEED = 2;
 /** Advance the caustic clock to `ms` (performance.now) unless frozen; true when the value changed. */
 export function tickFx(ms: number) {
-  const t = fxClock.frozen ?? ms / 1000;
+  const t = fxClock.frozen ?? (ms / 1000) * WATER_MOTION_SPEED;
   if (t === FXU.uFxTime.value) return false;
   FXU.uFxTime.value = t; return true;
 }

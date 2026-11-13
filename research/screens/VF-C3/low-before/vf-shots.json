@@ -1,0 +1,40 @@
+{
+ "commit": "d64c36cd",
+ "build": 1892,
+ "dirty": false,
+ "when": "2026-11-13T13:28:55.921Z",
+ "size": [
+  1050,
+  850
+ ],
+ "fx": [
+  "aces,caustics,contact,ground,variety,embed"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "nathan-nlow4": {
+   "shots": [
+    "nathan-nlow4-front-aces-caustics-contact-ground-variety-embed.png"
+   ],
+   "ab": {}
+  },
+  "nathan-nlow6": {
+   "shots": [
+    "nathan-nlow6-front-aces-caustics-contact-ground-variety-embed.png"
+   ],
+   "ab": {}
+  },
+  "nathan-nlow3": {
+   "shots": [
+    "nathan-nlow3-front-aces-caustics-contact-ground-variety-embed.png"
+   ],
+   "ab": {}
+  },
+  "nathan-2026-11-13": {
+   "shots": [
+    "nathan-2026-11-13-front-aces-caustics-contact-ground-variety-embed.png"
+   ],
+   "ab": {}
+  }
+ }
+}
