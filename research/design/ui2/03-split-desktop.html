@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>UI2 mockup: split view, desktop</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  .app { display: grid; height: 100vh; grid-template-columns: var(--rail-w) var(--panel-w) 1fr; grid-template-rows: var(--header-h) 1fr; grid-template-areas: "head head view" "rail panel view"; }
+  .app > header { grid-area: head; } .app > .rail { grid-area: rail; } .app > .panel { grid-area: panel; } .app > .views { grid-area: view; }
+  .views { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: var(--bg-app); }
+  .views .viewer { background: url(tank-render.jpg) 50% 42% / 118% auto no-repeat, linear-gradient(#e9e4da 0 55%, #1d1d20 55%); }
+  .views .viewer.b { filter: saturate(.85); }
+  .vtab { display: flex; align-items: center; gap: var(--s2); padding: var(--s1) var(--s3) var(--s1) var(--s1); }
+  .vtab .ab { width: 24px; height: 24px; border-radius: 6px; display: grid; place-items: center; font-weight: 700; background: var(--bg-hover); }
+  .vtab.edit { box-shadow: 0 0 0 2px var(--accent); } .vtab.edit .ab { background: var(--accent); color: #fff; }
+  .editing { display: flex; align-items: center; gap: var(--s2); padding: var(--s2) var(--s4); border-bottom: 1px solid var(--line); background: var(--accent-weak); }
+</style></head>
+<body>
+<script src="icons.js"></script><script src="shell.js"></script>
+<div class="app" id="app"></div>
+<script>
+const sp = (n, m, c, x = '') => `<div class="card media"><div class="thumb" style="background-image:url(tank-render.jpg);background-size:600%;background-position:${x}"></div><div><div class="t">${n}</div><div class="m">${m}</div></div><div style="display:flex;align-items:center;gap:4px"><button class="btn icon sm">${I('minus')}</button><span class="val" style="min-width:20px;text-align:center">${c}</span><button class="btn icon sm">${I('plus')}</button></div></div>`;
+document.getElementById('app').innerHTML = apphead() + rail('animals', {animals: '!'}) + `
+<section class="panel">
+  <div class="editing"><span class="cap" style="color:var(--text-2)">Editing</span><div class="seg"><button>A</button><button class="on">B</button><button>Both</button></div><span class="hint">changes go to Tank B only</span></div>
+  <div class="sec-head"><h2>Animals</h2><button class="btn sm ghost">${I('ideas')} Ideas for animals</button></div>
+  <div class="sec-body">
+    <div style="display:flex;gap:6px"><div class="input" style="flex:1;display:flex;align-items:center;gap:6px;color:var(--text-3)">${I('search')} Search 412 species</div><button class="btn">Add&hellip;</button></div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="chip on">Fits this tank</span><span class="chip">Fish</span><span class="chip">Shrimp</span><span class="chip">Snails</span><span class="chip">Bottom</span></div>
+    <div class="cap">In Tank B &middot; 40 animals</div>
+    ${sp('Neon tetra', 'school &middot; 1.2 in &middot; <span style="color:var(--ok)">fits</span>', 12, '70% 30%')}
+    ${sp('Harlequin rasbora', 'school &middot; 1.8 in &middot; <span style="color:var(--ok)">fits</span>', 8, '30% 40%')}
+    ${sp('Bronze corydoras', 'bottom &middot; 2.6 in &middot; <span style="color:var(--ok)">fits</span>', 6, '50% 70%')}
+    ${sp('Honey gourami', 'pair &middot; 2 in &middot; <span style="color:var(--warn)">tight with 2</span>', 2, '65% 15%')}
+    ${sp('Amano shrimp', 'cleanup &middot; 2 in &middot; <span style="color:var(--ok)">fits</span>', 6, '40% 80%')}
+    ${sp('Otocinclus', 'algae &middot; 1.6 in &middot; <span style="color:var(--ok)">fits</span>', 4, '20% 60%')}
+    <div class="group"><div class="gh">Water <span class="sum">clear &middot; level 1 in below rim</span></div></div>
+  </div>
+</section>
+<div class="views">
+  <main class="viewer a">
+    <div class="ov" style="top:62px;left:12px"><div class="vtab glass"><span class="ab">A</span> Planted community <span class="pill">as designed</span></div></div>
+    <div class="ov" style="bottom:14px;left:50%;transform:translateX(-50%)">${checkbar()}</div>
+  </main>
+  <main class="viewer b">
+    <div class="ov" style="top:62px;right:12px"><div class="vtab glass edit"><span class="ab">B</span> Budget build <span class="pill accent">editing</span> <span class="pill">4 diffs</span></div></div>
+    <div class="ov" style="bottom:14px;left:50%;transform:translateX(-50%)">${checkbar({cost: '$1,174', welfare: ['ok', 'Good']})}</div>
+  </main>
+  <div class="ov" style="top:12px;left:50%;transform:translateX(-50%)">${toolbar(`<button class="btn sm">${I('lock')} Views linked</button><button class="btn sm">${I('x')} End compare</button>`)}</div>
+</div>`;
+</script>
+<div style="position:absolute;inset:0;pointer-events:none">
+  <div class="note" data-n="1" style="top:112px;left:452px;max-width:230px">&#9664; One "Editing A / B / Both" switch at the top of the panel replaces the Edit ticks on each tab</div>
+  <div class="note" data-n="2" style="top:62px;left:900px;max-width:200px">Shared controls in one cluster, top middle, over the seam (R15)</div>
+  <div class="note" data-n="3" style="bottom:66px;left:600px;max-width:220px">Each tank keeps its own check bar (R6); each opens the drawer for that tank</div>
+  <div class="note" data-n="4" style="top:110px;right:16px;max-width:210px">Tab: which tank, what it is, differences on hover (R17)</div>
+</div>
+</body></html>

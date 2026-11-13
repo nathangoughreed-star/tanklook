@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>UI2 mockup: Constraints section open, cost drawer</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  .app { display: grid; height: 100vh; grid-template-columns: var(--rail-w) var(--panel-w) 1fr var(--drawer-w); grid-template-rows: var(--header-h) 1fr; grid-template-areas: "head head view drawer" "rail panel view drawer"; }
+  .app > header { grid-area: head; } .app > .rail { grid-area: rail; } .app > .panel { grid-area: panel; } .app > .viewer { grid-area: view; } .app > .drawer { grid-area: drawer; }
+  .lim { display: grid; grid-template-columns: 34px 92px minmax(0,1fr) auto; align-items: center; gap: var(--s2); min-height: var(--row-h); }
+  .lim .lbl { color: var(--text-2); }
+  .meter { display: grid; gap: 4px; padding: var(--s2) 0; }
+  .meter .top { display: flex; align-items: baseline; gap: var(--s2); }
+  .meter .top .lim-t { margin-left: auto; color: var(--text-2); font-size: var(--fs-sm); }
+</style></head>
+<body>
+<script src="icons.js"></script><script src="shell.js"></script>
+<div class="app" id="app"></div>
+<script>
+const lim = (on, label, ctl, val) => `<div class="lim"><span class="toggle ${on ? 'on' : ''}" title="Check against this limit"></span><span class="lbl">${label}</span>${ctl}<span class="val">${val}</span></div>`;
+document.getElementById('app').innerHTML = apphead() + rail('limits', {animals: '!'}) + `
+<section class="panel">
+  <div class="sec-head"><h2>Constraints</h2><span class="hint">the one place each limit is set</span></div>
+  <div class="sec-body">
+    <div class="group open"><div class="gh">Money and time <span class="sum">3 of 3 checked</span></div><div class="gb">
+      ${lim(1, 'Set-up budget', '<input class="slider" type="range" value="62">', '$1,500')}
+      ${lim(1, 'Upkeep', '<input class="slider" type="range" value="40">', '$60/mo')}
+      ${lim(1, 'Time', '<input class="slider" type="range" value="45">', '60 min/wk')}
+      <div class="hint">Switch on = TankLook checks the tank against it (today's Guardrails).</div>
+    </div></div>
+    <div class="group open"><div class="gh">Space <span class="sum">48 &times; 20 in, 60 in tall</span></div><div class="gb">
+      <div class="row"><span class="lbl">Width &times; depth</span><div style="display:flex;gap:6px;align-items:center"><input class="input num" value="48"><span class="unit">in</span> &times; <input class="input num" value="20"><span class="unit">in</span></div><span></span></div>
+      <div class="row"><span class="lbl">Height to top</span><div><input class="input num" value="60"><span class="unit">in</span></div><span></span></div>
+    </div></div>
+    <div class="group open"><div class="gh">Experience <span class="sum">Some</span></div><div class="gb">
+      <div class="seg full"><button>New to it</button><button class="on">Some</button><button>Experienced</button></div>
+      <div class="hint">One answer. The four "Your situation" questions fold in here as "more detail".</div>
+    </div></div>
+    <div class="group open"><div class="gh">Your home <span class="sum">facts, not limits</span></div><div class="gb">
+      <div class="row"><span class="lbl">Room temp</span><input class="slider" type="range" value="50"><span class="val">70 &deg;F</span></div>
+      <div class="row"><span class="lbl">Water from</span><div class="seg"><button class="on">Tap</button><button>RO / DI</button><button>Well</button></div><span></span></div>
+      <div class="row"><span class="lbl">Tap hardness</span><select class="select"><option>Moderate (8 dGH), pH 7.4</option></select><span></span></div>
+      <div class="row"><span class="lbl">Electricity</span><div><input class="input num" value="0.16"><span class="unit">$/kWh</span></div><span></span></div>
+    </div></div>
+    <div class="group"><div class="gh">If it does not all fit <span class="sum">Ask me</span></div></div>
+    <div class="card" style="grid-template-columns:1fr auto;align-items:center"><div><div class="t">Fill in what I left open</div><div class="m">Suggests whole setups inside these limits</div></div><button class="btn primary sm">Suggest&hellip;</button></div>
+  </div>
+</section>
+<main class="viewer">
+  <div class="ov" style="top:12px;left:50%;transform:translateX(-50%)">${toolbar()}</div>
+  <div class="ov" style="bottom:14px;left:50%;transform:translateX(-50%)">${checkbar({on: 'cost'})}</div>
+</main>
+<aside class="drawer">
+  <div class="sec-head"><h2>Cost and time</h2><button class="btn icon ghost">${I('x')}</button></div>
+  <div class="sec-body">
+    <div class="meter"><div class="top"><span class="cap">To set up</span><span class="lim-t">limit $1,500</span></div><div class="big">$1,264</div><div class="bar"><i style="width:76%"></i><span class="lim" style="left:90%"></span></div></div>
+    <div class="meter"><div class="top"><span class="cap">Upkeep</span><span class="lim-t">limit $60/mo</span></div><div class="big">$51<span style="font-size:var(--fs-md);color:var(--text-2)">/mo</span></div><div class="bar"><i style="width:72%"></i><span class="lim" style="left:85%"></span></div></div>
+    <div class="meter"><div class="top"><span class="cap">Time</span><span class="lim-t">limit 60 min/wk</span></div><div class="big">57<span style="font-size:var(--fs-md);color:var(--text-2)"> min/wk</span></div><div class="bar"><i class="warn" style="width:93%"></i><span class="lim" style="left:98%"></span></div>
+      <div class="hint">0.5 min daily + 19 min weekly + 15 min monthly; can be left 3 days</div></div>
+    <div class="row" style="grid-template-columns:auto 1fr"><span class="lbl">Difficulty</span><span><span class="pill warn">8.3 / 10 demanding</span></span></div>
+    <div class="group open"><div class="gh">Same look, three builds</div><div class="gb">
+      <div class="card media" style="grid-template-columns:1fr auto"><div><div class="t">Budget</div><div class="m">$1,174 &middot; lava rock</div></div><button class="btn sm">Compare</button></div>
+      <div class="card media sel" style="grid-template-columns:1fr auto"><div><div class="t">As designed</div><div class="m">$1,226</div></div><span class="pill accent">this tank</span></div>
+      <div class="card media" style="grid-template-columns:1fr auto"><div><div class="t">Luxury</div><div class="m">$1,326 &middot; dragon stone</div></div><button class="btn sm">Compare</button></div>
+    </div></div>
+    <div class="group"><div class="gh">Swap for a kit or sale <span class="sum">saves about $44</span></div></div>
+    <div class="hint">Limits are set in <span class="link">Constraints</span>; this drawer only shows them.</div>
+  </div>
+</aside>`;
+</script>
+<div style="position:absolute;inset:0;pointer-events:none">
+  <div class="note" data-n="1" style="top:120px;left:452px;max-width:230px">&#9664; Every limit has ONE home, here. Budget, upkeep, time, space, experience, room temp and water were edited in 3-5 places</div>
+  <div class="note" data-n="2" style="top:250px;left:452px;max-width:230px">&#9664; Room temperature: one field (today two: Equipment and the brief)</div>
+  <div class="note" data-n="3" style="top:120px;right:352px;max-width:220px">Drawer &#9654; shows the limit as a line on each bar, read-only, with a link back</div>
+  <div class="note" data-n="4" style="bottom:66px;left:780px;max-width:240px">The cost check is lit: its drawer is open</div>
+</div>
+</body></html>
