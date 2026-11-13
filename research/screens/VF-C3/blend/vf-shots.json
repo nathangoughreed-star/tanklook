@@ -1,0 +1,24 @@
+{
+ "commit": "a4e0700b",
+ "build": 1880,
+ "dirty": false,
+ "when": "2026-11-13T12:45:44.406Z",
+ "size": [
+  1050,
+  850
+ ],
+ "fx": [
+  "aces,caustics,contact,ground,variety",
+  "aces,caustics,contact,ground,variety,embed"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "vfc3-blend": {
+   "shots": [
+    "vfc3-blend-front-aces-caustics-contact-ground-variety.png",
+    "vfc3-blend-front-aces-caustics-contact-ground-variety-embed.png"
+   ],
+   "ab": {}
+  }
+ }
+}
