@@ -249,7 +249,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .cmplayer { position: absolute; inset: 0; display: flex; pointer-events: none; z-index: var(--z-overlay); }
 .cmpside { position: relative; flex: 1 1 50%; min-width: 0; }
 .cmpside > * { pointer-events: auto; }
-.cmptab { position: absolute; top: var(--s3); display: flex; align-items: center; gap: var(--s2); padding: 5px var(--s2); max-width: calc(100% - var(--s5)); font-size: var(--fs-sm); }
+.cmptab { position: absolute; top: 58px; display: flex; align-items: center; gap: var(--s2); padding: 5px var(--s2); max-width: calc(100% - var(--s5)); font-size: var(--fs-sm); }
 .cmpside.s0 .cmptab { left: var(--s3); } .cmpside.s1 .cmptab { right: var(--s3); }
 .cmptab.editing { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), var(--shadow); }
 .cmptab .letter, .cmpcol .letter { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 5px; background: var(--bg-raised); color: var(--text); font-size: 12px; flex: none; }
@@ -283,5 +283,5 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .cmpstrip .checkbar { flex: 1; min-width: 0; background: transparent; border: 0; box-shadow: none; backdrop-filter: none; padding: 0; }
 .cmpstrip .check { background: var(--bg-raised); flex: none; }
 .cmpstrip .vsep { display: none; }
-.ui2app.phone .cmptab { top: var(--s1); padding: 3px var(--s1); gap: 4px; } .ui2app.phone .cmpside.s0 .cmptab { left: var(--s1); } .ui2app.phone .cmpside.s1 .cmptab { right: var(--s1); }
+.ui2app.phone .cmptab { top: 46px; padding: 3px var(--s1); gap: 4px; } .ui2app.phone .cmpside.s0 .cmptab { left: var(--s1); } .ui2app.phone .cmpside.s1 .cmptab { right: var(--s1); }
 .ui2app.phone .cmptab .pill { font-size: 10px; padding: 0 6px; }
