@@ -22,6 +22,7 @@ import {
 } from './brief';
 
 import { mmToIn, inToMm } from '../units';
+import { reconcileGear } from './gearOwn';
 import { spaceFit } from './space';
 import { stockingGroupMinimum } from './groupMin';
 import { catalogueSizes } from './tankfit';
@@ -144,14 +145,14 @@ export function setEquipment(b: Brief, key: EquipKey, d: { use?: Use; pick?: str
   const { scratch: _s, ...rest } = unskip(x, 'equipment');
   x = { ...rest, use: { ...(x.use ?? {}), [key]: use } };
   if (key === 'tank') { const { tankDims: _t, ...r2 } = x; x = !d.model && d.dimsIn ? { ...r2, tankDims: d.dimsIn } : r2; }
-  return setProjectExtras(out, x);
+  return reconcileGear(setProjectExtras(out, x));
 }
 /** Required <-> Available for one owned thing. Required tank -> `existingTank` locked (as before); Available tank -> a plain preference, NOT locked. */
 export function setOwnedUse(b: Brief, key: EquipKey, use: Use): Brief {
   if (!equipmentOf(b).items.some(i => i.key === key)) return b;
   const x = projectExtras(b);
   const out = setProjectExtras(b, { ...x, use: { ...(x.use ?? {}), [key]: use } });
-  return key === 'tank' ? setStatus(out, 'constraints.existingTank', use === 'required' ? 'locked' : 'preference') : out;
+  return reconcileGear(key === 'tank' ? setStatus(out, 'constraints.existingTank', use === 'required' ? 'locked' : 'preference') : out);
 }
 export const setEquipmentUse = setOwnedUse;
 /** "No new equipment" on or off (lane DX3). */
@@ -164,7 +165,7 @@ export function removeEquipment(b: Brief, key: EquipKey): Brief {
   let out = b; const x = projectExtras(b), { [key]: _u, ...use } = x.use ?? {}, { tankDims: _t, ...rest } = x;
   if (key === 'tank') out = clearItem(out, 'constraints.existingTank');
   else { const { [key]: _o, ...owned } = valueOf(out, 'constraints.owned') ?? {}; out = Object.keys(owned).length ? setItem(out, 'constraints.owned', owned, 'preference') : clearItem(out, 'constraints.owned'); }
-  return setProjectExtras(out, { ...(key === 'tank' ? rest : x), ...(Object.keys(use).length ? { use } : { use: undefined }) });
+  return reconcileGear(setProjectExtras(out, { ...(key === 'tank' ? rest : x), ...(Object.keys(use).length ? { use } : { use: undefined }) }));
 }
 /** "Starting from scratch": the person owns nothing. Clears anything listed (a stated answer replaces it). */
 export function setScratch(b: Brief): Brief {

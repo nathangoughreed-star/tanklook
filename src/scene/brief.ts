@@ -9,6 +9,7 @@
 // An item with `off: true` is switched off but keeps its value (the Guardrails "on" toggle); it counts as not specified.
 import type { HabitatDirection } from './discoveryTypes';
 import { getTankModel } from '../data/tanks';
+import { parseGear, gearWants, type GearModel } from './gearOwn';
 import type { DryGroup, Kind, OwnedKey, OwnedMap, Tag, Wants } from '../demand/suggest';
 import type { Cap, Constraints, Effort } from './constraints';
 import type { PlantMode } from './scapes';
@@ -158,6 +159,8 @@ export interface ProjectExtras {
   scratch?: true; skipped?: SkipStep[];
   /** Required / Available per owned thing; a thing with no entry reads as the older saves meant it (the tank Required, everything else Available) */
   use?: Partial<Record<EquipKey, Use>>;
+  /** P8: the gear model (scene/gearOwn.ts): per category the owned list, the item in use and the "use this one for sure" locks; absent = derived from the older fields */
+  gear?: GearModel;
   /** an owned tank measured by hand rather than picked from the catalogue (`constraints.existingTank` carries the catalogue pick) */
   tankDims?: DimsIn;
   /** the person insisted on no lid (lane LB1): every generated setup comes with one unless this is set; withdrawing it brings the lid back */
@@ -467,6 +470,7 @@ export function parseProject(raw: unknown): ProjectExtras | undefined {
     for (const k of ['tank', ...OWNED_KEYS] as EquipKey[]) { const v = (r.use as Record<string, unknown>)[k]; if (USES.includes(v as Use)) u[k] = v as Use; }
     if (Object.keys(u).length) p.use = u;
   }
+  const gear = parseGear(r.gear); if (gear) p.gear = gear;
   const d = r.tankDims as Record<string, unknown> | undefined;
   if (d && typeof d === 'object' && dimOk(d.L) && dimOk(d.D) && dimOk(d.H)) p.tankDims = { L: Math.round(d.L * 10) / 10, D: Math.round(d.D * 10) / 10, H: Math.round(d.H * 10) / 10 };
   return Object.keys(p).length ? p : undefined;
@@ -542,6 +546,7 @@ export function briefToWants(b: Brief): Wants {
   // lane GA1 hooks (suggest.ts reads them): the Available tank, the owned gear marked Required, and which limits are flexible (the same rule as project.ts constraintOf: kind 'flexible' = status not hard, or flex)
   if (model && equipUseOf(b, 'tank') === 'available') w.availTank = model;
   const req = owned ? OWNED_KEYS.filter(k => k in owned.value && equipUseOf(b, k) === 'required') : []; if (req.length) w.requiredOwned = req;
+  if (b.project?.gear) { const gw = gearWants(b); if (gw.requiredOwned.length) w.requiredOwned = gw.requiredOwned as OwnedKey[]; else delete w.requiredOwned; if (Object.keys(gw.lockedGear).length) w.lockedGear = gw.lockedGear as OwnedMap; }   // P8: the gear model's locks (an unowned locked item is kept too)
   const flexLim = (id: ItemId) => { const it = b.items[id]; return !!it && !it.off && (it.status !== 'hard' || !!it.flex); };
   const fl: NonNullable<Wants['flexLimits']> = {};
   if (flexLim('constraints.budget')) fl.startupUsd = true; if (flexLim('constraints.monthly')) fl.monthlyUsd = true; if (flexLim('constraints.careMin')) fl.minPerWeek = true;

@@ -135,12 +135,14 @@ export function ownedAssess(b: Build, owned: OwnedMap, needStand: boolean, P: Us
     o.rows.forEach(x => rows.add(x));
     notes.push({ kind: 'credit', text: pick === PICK_CARE ? `Your ${o.label.toLowerCase()}: $0 (the setup's spec is assumed to suit it).` : `Your ${o.products?.().find(x => x.id === pick)?.label ?? o.label}: $0, ${r.tech ? "and used in the tank" : "checked against this tank"}.` });
   }
+  // P8: a locked item the person does not own is used in the tank but never credited (it is bought)
+  for (const o of OWNED) { const lp = opts.locked?.[o.id]; if (!lp || owned[o.id]) continue; const r = o.check?.(b, lp) ?? {}; if (r.tech) tech = r.tech; notes.push({ kind: 'ask', text: `Locked: ${o.products?.().find(x => x.id === lp)?.label ?? o.label}. Used in every design, priced as bought.` }); }
   const list = D.totals.setupUsd, k = list > 0 ? b.setupUsd / list : 1, worth = (keep: (key: string) => boolean) => Math.min(b.setupUsd, Math.round(D.items.filter(i => keep(i.key) && i.setup).reduce((t, i) => t + mean3(i.setup!), 0) * k));
   const saved = worth(key => rows.has(key));
   return { saved, tankSaved: ownTank ? worth(key => key === 'tank') : 0, ...(tech ? { tech } : {}), notes, rows: [...rows] };
 }
 /** Guided Setup Rev 03 (lane GA1): `tankUse` words the tank credit; `required` = the owned items marked Required (kept, with a warning, when they do not suit); every other owned item is Available (replaced, with the reason, when it does not suit). */
-export interface OwnedOpts { tankUse?: 'required' | 'available'; required?: readonly OwnedKey[] }
+export interface OwnedOpts { tankUse?: 'required' | 'available'; required?: readonly OwnedKey[]; /** P8: locked, not owned: the product goes into the tank, no credit */ locked?: OwnedMap }
 
 /** The sub-choice (reptiles & amphibians / arthropods) applies when Terrarium OR Vivarium is ticked. */
 export const asksDryGroups = (kinds: readonly Kind[]) => kinds.includes('terrarium') || kinds.includes('vivarium');
@@ -172,6 +174,8 @@ export interface Wants {
   availTank?: TankModel;
   /** the owned items (keys of `owned`) marked REQUIRED: kept in every design, with a warning when one does not suit, never swapped. Every other owned item is Available (credited when it suits, replaced with a reason when it does not). brief: equipUseOf(b, key) === 'required'. */
   requiredOwned?: OwnedKey[];
+  /** P8: items locked "use this one for sure" that the person does NOT own: kept in every design (the tank's tech takes the product) and priced as bought */
+  lockedGear?: OwnedMap;
   /** limits the person made FLEXIBLE (a target, not a rule): they rank and warn instead of filtering; a limit not named here is hard and filters. An unset limit is unknown: neither filters nor ranks. brief: the limit's kind (constraintOf: status 'preference' or flex). */
   flexLimits?: FlexLimits;
   /** sales tax, percent of the set-up purchase (default 0, editable); the all-in total and the budget ceiling both include it */
@@ -503,7 +507,7 @@ function conceptMaker(w: Wants, P0: UserProfile, units: Units, now: number) {
   const ownedMap = w.owned ?? {};
   // lane GA1: the tank the person owns, Required (the only tank) or Available (one tank among others); owned gear marked Required is kept, the rest is Available
   const ownIs = (t: TankModel) => !!w.ownTank || (!!w.availTank && w.availTank.id === t.id);
-  const oOpts: OwnedOpts = { tankUse: w.ownTank ? 'required' : 'available', ...(w.requiredOwned?.length ? { required: w.requiredOwned } : {}) };
+  const oOpts: OwnedOpts = { tankUse: w.ownTank ? 'required' : 'available', ...(w.requiredOwned?.length ? { required: w.requiredOwned } : {}), ...(w.lockedGear ? { locked: w.lockedGear } : {}) };
   // lane GA1: a FLEXIBLE limit does not filter. `hard` is the scene as the filters see it (flexible caps switched off); the proposal's own scene keeps every cap, so the card still shows where it stands against them.
   const fx = w.flexLimits ?? {}, hasFlex = Object.values(fx).some(Boolean), off = <T extends { on: boolean }>(x: T | undefined, f: boolean | undefined) => x && f ? { ...x, on: false } : x;
   const Ch: Constraints = hasFlex ? { ...C, ...(C.startupUsd ? { startupUsd: off(C.startupUsd, fx.startupUsd) } : {}), ...(C.monthlyUsd ? { monthlyUsd: off(C.monthlyUsd, fx.monthlyUsd) } : {}), ...(C.minutesPerWeek ? { minutesPerWeek: off(C.minutesPerWeek, fx.minPerWeek) } : {}), ...(fx.space ? { space: { on: false } } : {}) } : C;
