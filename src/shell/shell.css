@@ -291,7 +291,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .pieced .m { font-weight: 400; color: var(--text-2); font-size: var(--fs-sm); }
 .hint.warnline { color: var(--warn); }
 .growask { background: var(--accent-weak); }
-.scapebars { top: var(--s3); left: 50%; transform: translateX(-50%); display: grid; gap: var(--s2); justify-items: center; max-width: calc(100% - 24px); }
+.scapebars { top: 64px; left: 50%; transform: translateX(-50%); display: grid; gap: var(--s2); justify-items: center; max-width: calc(100% - 24px); }
 .bar2 { display: flex; align-items: center; gap: var(--s2); flex-wrap: wrap; justify-content: center; padding: var(--s2) var(--s3); border-radius: var(--r-card); }
 .bar2 .mini { display: inline-flex; align-items: center; gap: var(--s1); font-size: var(--fs-sm); color: var(--text-2); }
 .bar2 .mini .slider { width: 90px; }
