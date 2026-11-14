@@ -1,0 +1,19 @@
+{
+ "facts": {
+  "sidesAfterCompare": 2,
+  "diffMarks": 6,
+  "camBefore": "[[12,8],[12,8]]",
+  "camLinked": "[[35,12],[35,12]]",
+  "linkWord": "View ▾|Views independent|End compare|Another moment",
+  "edit": "Both",
+  "afterUse": "{\"tanks\":1,\"fish\":20}",
+  "afterUndo": 2,
+  "afterEnd": 1,
+  "oldSplit": {
+   "ui2": false,
+   "sv": true,
+   "lock": "Views linked"
+  }
+ },
+ "errors": []
+}
