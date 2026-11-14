@@ -311,3 +311,29 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .cmpstrip .vsep { display: none; }
 .ui2app.phone .cmptab { top: 46px; padding: 3px var(--s1); gap: 4px; } .ui2app.phone .cmpside.s0 .cmptab { left: var(--s1); } .ui2app.phone .cmpside.s1 .cmptab { right: var(--s1); }
 .ui2app.phone .cmptab .pill { font-size: 10px; padding: 0 6px; }
+/* step 7 (lane S7): Scape and Plants sections, the piece editor, the brush / group bars */
+.scape, .plants { display: grid; gap: var(--s2); }
+.scape .cap .n, .plants .cap .n { color: var(--text-3); font-weight: 400; }
+.libRow { display: grid; gap: var(--s1); margin-bottom: var(--s2); }
+.gatedList { display: grid; gap: 2px; }
+.gatedRow { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--s2); align-items: center; }
+.chip.gated { color: var(--text-2); border-style: dashed; opacity: .8; }
+.placed, .pg .prs { display: grid; gap: 2px; }
+.pg .prs { padding-left: var(--s3); }
+.pr, .pg > .pn { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--s1); border-radius: var(--r-ctl); }
+.pr.open { background: var(--accent-weak); }
+.pr .pn, .pg > .pn { display: flex; align-items: center; gap: var(--s1); border: 0; background: transparent; color: inherit; text-align: left; padding: var(--s1); cursor: pointer; min-width: 0; }
+.pn .nm { font-weight: 600; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pn .gw { color: var(--text-2); font-size: var(--fs-sm); white-space: nowrap; }
+.pn .car { width: 12px; color: var(--text-3); }
+.pieced .btns, .growask .btns { display: flex; gap: var(--s2); flex-wrap: wrap; }
+.pieced .nudge { display: flex; gap: var(--s1); flex-wrap: wrap; }
+.pieced .m { font-weight: 400; color: var(--text-2); font-size: var(--fs-sm); }
+.hint.warnline { color: var(--warn); }
+.growask { background: var(--accent-weak); }
+.scapebars { top: var(--s3); left: 50%; transform: translateX(-50%); display: grid; gap: var(--s2); justify-items: center; max-width: calc(100% - 24px); }
+.bar2 { display: flex; align-items: center; gap: var(--s2); flex-wrap: wrap; justify-content: center; padding: var(--s2) var(--s3); border-radius: var(--r-card); }
+.bar2 .mini { display: inline-flex; align-items: center; gap: var(--s1); font-size: var(--fs-sm); color: var(--text-2); }
+.bar2 .mini .slider { width: 90px; }
+.btn.danger { color: var(--bad); }
+.btn.on { border-color: var(--accent); background: var(--accent-weak); }

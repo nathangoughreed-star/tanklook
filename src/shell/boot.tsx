@@ -15,6 +15,8 @@ import { startMode } from './logic/files';
 import { isShareHash } from '../scene/share';
 import { applyViewPrefs } from './view';
 import { pickable } from './animals';
+import { pickItems } from './scape';
+import { scapeSec } from './logic/scape';
 
 export function bootShell() {
   // the old shell off: its markup removed (no old id stays in the page), its stylesheet disabled (kept in place so dev HMR has a node to update)
@@ -49,7 +51,7 @@ export function bootShell() {
 
   viewer = new Viewer(canvas, viewHost, store);
   applyViewPrefs(viewer, viewHost);
-  attachPointer(viewer, store, what => what === 'fish' && pickable.fish); // animals only, while Animals is open (step 4); the other pieces come with their sections
+  attachPointer(viewer, store, (what, kind) => (what === 'fish' && pickable.fish) || (what === 'items' && pickItems.sec != null && scapeSec(kind ?? 'stone') === pickItems.sec)); // animals only, while Animals is open (step 4); the other pieces come with their sections
   // a share link (#tank=...) opens its tank; the hash is dropped so a reload keeps the visitor's edits (as the old shell does)
   const openLink = () => {
     if (!isShareHash(location.hash)) return false;

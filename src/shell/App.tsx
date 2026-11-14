@@ -17,6 +17,8 @@ import { ViewCluster } from './view';
 import { SettingsSection } from './settings';
 import { PrintSection, PrintPaper } from './print';
 import { AnimalsSection, SelectionDrawer, pickable } from './animals';
+import { ScapeSection, ScapeBars, pickItems } from './scape';
+import { PlantsSection } from './plants';
 import { Icon, Pill } from './ui';
 import { ProjectName, FileMenu, FileLayer, type Files } from './files';
 import { DiscoverSection, IdeasButton, AnimalDoor } from './discover';
@@ -125,6 +127,12 @@ function Panel({ id, more, onPick, onClose, tank, s8, disc }: { id: SectionId | 
       <div class="sec-body"><AnimalsSection store={s8.store} /></div>
     </section>
   );
+  if (id === 'scape' || id === 'plants') return (
+    <section class="panel" aria-label={s.title}>
+      <div class="sec-head"><h2>{s.title}</h2><button type="button" class="btn icon ghost" title="Fold the panel (Esc)" aria-label="Fold the panel" onClick={onClose}><Icon name="x" /></button></div>
+      <div class="sec-body">{id === 'scape' ? <ScapeSection store={s8.store} getViewer={s8.getViewer} /> : <PlantsSection store={s8.store} getViewer={s8.getViewer} />}</div>
+    </section>
+  );
   if (id === 'print' || id === 'settings') return (
     <section class={`panel${id === 'print' ? ' printpanel' : ''}`} aria-label={s.title}>
       <div class="sec-head"><h2>{s.title}</h2>{id === 'print' ? <span class="hint printsub">one page builder, three presets</span> : null}<button type="button" class="btn icon ghost" title="Fold the panel (Esc)" aria-label="Fold the panel" onClick={onClose}><Icon name="x" /></button></div>
@@ -185,6 +193,8 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
   useEffect(() => { if (!maker) viewRef.current?.prepend(viewHost); }, [viewHost, maker]);
   // step 4: animals can be picked in the view while Animals is open; picking one opens the Selection drawer, clearing it closes it
   useEffect(() => { pickable.fish = section === 'animals'; if (section !== 'animals') store.select(null); }, [section, store]);
+  // step 7: pieces can be picked in the view while Scape (hardscape, decor) or Plants (plants, corals) is open
+  useEffect(() => { pickItems.sec = section === 'scape' ? 'hardscape' : section === 'plants' ? 'plants' : null; if (section !== 'scape' && section !== 'plants') { store.select(null); store.setBrush({ on: false, target: null }); } }, [section, store]);
   useEffect(() => store.subscribe(kind => {
     if (kind !== 'select') return;
     if (store.selId != null) { setDrawer('selection'); if (phone) { setSection(null); setMore(false); } } else setDrawer(d => (d === 'selection' ? null : d));
@@ -225,6 +235,7 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
         <ViewCluster store={store} getViewer={viewer} phone={phone} compare={<CompareButtons store={store} phone={phone} say={files.say} />} />
         {split ? <CompareLayer store={store} models={models} drawer={cmpDrawer} onPick={check} phone={phone} say={files.say} /> : null}
         <GetStarted tank={store.tank} open={section} onOpen={pick} onAnimal={() => setDoor(true)} phone={phone} />
+        <ScapeBars store={store} getViewer={viewer} />
         {phone || split ? null : <CheckBar m={model} on={drawer === 'selection' ? null : drawer} onPick={check} />}
       </main>
       {phone ? <div class="checkstrip">{split ? <CompareStrip store={store} models={models} side={cmpSide} setSide={setCmpSide} drawer={cmpDrawer} onPick={check} /> : <CheckBar m={model} on={drawer === 'selection' ? null : drawer} onPick={check} />}</div> : null}
