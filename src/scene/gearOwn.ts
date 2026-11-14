@@ -166,7 +166,7 @@ export function gearItemOf(S: TankSetup, part: 'light' | 'filter' | 'heater'): s
 }
 const tankGear = (T: TankSetup) => gearOf(T.brief ?? { v: BRIEF_VERSION, items: {} }, T);
 const writeGear = (T: TankSetup, g: GearModel) => { T.brief = setGear(T.brief ?? { v: BRIEF_VERSION, items: {} }, g); };
-/** Discover's Keep on a gear part IS the model's lock on the item in use (`item`, the candidate's when it differs from the design's). Writes the brief on the tank in place. */
+/** The Equipment screen's "Use this one for sure" on the item in use: a DESIGN edit (the caller wraps it in store.edit, with undo). Discover's Keep never calls this: it writes only `T.locks` (PS1). */
 export function keepGear(T: TankSetup, part: 'light' | 'filter' | 'heater', item: string): void {
   let g = tankGear(T); if (g[part]?.use !== item) g = setInUse(g, part, item);
   writeGear(T, lockItem(g, part, item));
@@ -180,3 +180,11 @@ export function unkeepGear(T: TankSetup, part: string): void {
 export const isGearKept = (T: TankSetup, part: string): boolean => !!T.locks?.objects.some(o => o.target === part) || lockedGearParts(tankGear(T)).includes(part as 'light');
 /** The lock targets the model holds that the scene's lock list does not name yet (what `locksOf` adds, so Discover and its checks honor a lock set from the Equipment screen). */
 export const modelLockTargets = (T: TankSetup): ('light' | 'filter' | 'heater')[] => T.brief?.project?.gear ? lockedGearParts(T.brief.project.gear).filter(p => !T.locks?.objects.some(o => o.target === p)) : [];
+
+/** What must be used for a category on this tank, from BOTH stores through one read: the brief's lock (Equipment screen, a design edit) and Discover's Keep (`T.locks`, PS1: persistent, never a design write; it holds the item in use). */
+export function mustUseOf(T: TankSetup, cat: string): { item: string; owned: boolean; by: 'equipment' | 'discover' } | undefined {
+  const m = mustUse(T.brief?.project?.gear ?? migrateGear(T.brief ?? { v: BRIEF_VERSION, items: {} }, T), cat);
+  if (m && T.brief?.project?.gear) return { ...m, by: 'equipment' };
+  if ((cat === 'light' || cat === 'filter' || cat === 'heater') && T.locks?.objects.some(o => o.target === cat)) { const item = gearItemOf(T, cat); return { item, owned: !!T.brief?.project?.gear?.[cat]?.owned.includes(item), by: 'discover' }; }
+  return m ? { ...m, by: 'equipment' } : undefined;
+}
