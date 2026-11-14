@@ -68,3 +68,7 @@ Extra proof:
 - clicking a dimension box to edit it.
 
 Extra tests: polygon closure / refusal, the pie 360 = round volume, and loading an old `round` file.
+
+## Part 3 (added 2026-11-14; request R39): no timer on "preview in my setup"
+Nathan: "when 'previewing in my setup' dont put it on timer, just keep the 'back now' button."
+8. The maker's in-setup preview (`inSetup` in `src/shell/maker.tsx`) stays on until the user clicks "Back now" (or closes the maker). Remove the auto-return timer and any countdown text. Proof: a shot of the preview after 30 s still showing, with the Back now button.
