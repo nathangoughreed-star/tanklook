@@ -244,3 +244,45 @@ export const setSex = (store: SelStore, sex?: Sex) => editSel(store, (f, s) => {
 });
 export const setPair = (store: SelStore, st: Pairing) => { const f = store.tank.fish.find(q => q.id === store.selId); if (f) store.edit(s => setPairing(s, f.species, st)); };
 export const setGender = (store: SelStore, g?: 'm' | 'f') => editSel(store, f => { if (g) f.gender = g; else delete f.gender; });
+
+// ---------- SC: new-animal size, life stages, Copies, drop into the tank ----------
+import { lifeStages } from '../../data/lifestages';
+import { COPY_DEFAULTS, copyGroup, groupSize, MAX_COPIES, type Group } from '../../scene/duplicate';
+import { MAX_ITEMS } from '../../scene/items';
+
+const clampN = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
+/** The "New animal size" slider: % of adult length (100 = adult, stored as no override), 15-130. */
+export const sizePct = (raw: number) => clampN(Math.round(raw || 100), 15, 130);
+/** Each new animal varies around this size like real ones (audit #39). */
+export const sizeText = (pct: number, sp: Species | undefined, units: Units) => pct === 100 ? 'Adult ±10 %' : `${pct}%${sp ? ' · ' + fmtLen(sp.tl * pct / 100, units) : ''} ±10 %`;
+/** Life-stage buttons (reptiles, arachnids): each sets the slider to that stage's length. null = this species has none. */
+export function stagesOf(sp: Species | undefined, units: Units, cur: number): { name: string; pct: number; text: string; on: boolean }[] | null {
+  const st = sp && lifeStages(sp); if (!st || !sp) return null;
+  return st.map(([name, mm]) => { const pct = sizePct(mm / sp.tl * 100); return { name, pct, text: `${name}: ${fmtLen(mm, units)}`, on: pct === cur }; });
+}
+
+/** A species dropped into the tank: its start count gathered round the drop point, or one more there if it is already listed. */
+export function dropSpecies(store: StockStore & Pick<Store, 'seal'>, sp: Species, sex: Sex | undefined, at: Parameters<typeof stockEdit.applyCount>[4]['at'], pct = 100): EditResult {
+  const r = setCount(store, sp, k => stockEdit.dropTarget(k, startCount(sp)), sex, pct, at);
+  if (r.ok) store.seal();
+  return r;
+}
+
+export interface CopyOpt { n: number; angle: number; scale: number; spacing: number; reshape: boolean }
+export const COPY_START: CopyOpt = { n: 5, angle: 20, scale: 10, spacing: 30, reshape: false };
+export const COPY_RANGE = { n: [1, MAX_COPIES], angle: [0, 90], scale: [0, 40], spacing: [0, 100] } as const;
+/** "Copies...": N copies of the selection with a little random variation (a school). The copies become the selection. */
+export function copySelection(store: Pick<Store, 'edit' | 'nextId' | 'nextItemId' | 'tank' | 'group' | 'selectGroup'>, o: CopyOpt, seed = 1 + Math.floor(Math.random() * 1e9), support?: (t: TankSetup, x: number, d: number, skip: Set<number>) => number): { ok: true; made: number } | { ok: false; why: string } {
+  const g = store.group; if (!groupSize(g)) return { ok: false, why: 'Nothing selected.' };
+  const T = store.tank;
+  if ((g.fish.length && T.fish.length >= LIMITS.maxFish) || (g.items.length && T.items.length >= MAX_ITEMS)) return { ok: false, why: `A tank holds at most ${LIMITS.maxFish} animals and ${MAX_ITEMS} pieces.` };
+  const ids = { fish: store.nextId(), item: store.nextItemId() };
+  let made: Group = { fish: [], items: [], patches: [] };
+  store.edit(t => {
+    const m = copyGroup(t, g, { ...COPY_DEFAULTS, ...o, n: clampN(Math.round(o.n), 1, MAX_COPIES), seed, ...(support ? { support: (x: number, d: number, skip: Set<number>) => support(t, x, d, skip) } : {}) } as never, ids);
+    if (!groupSize(made)) made = m;
+  });
+  if (!groupSize(made)) return { ok: false, why: 'Nothing to copy.' };
+  store.selectGroup(made);
+  return { ok: true, made: made.fish.length + made.items.length };
+}

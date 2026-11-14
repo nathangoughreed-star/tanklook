@@ -9,9 +9,11 @@ import { LIMITS } from '../scene/validate';
 import { createFitter } from '../ui/logic/animalPicker';
 import {
   DEFAULT_QUERY, pickView, stockView, waterLook, selectionView, addSpecies, setCount, removeMisfits, applyPreset, setLevel, setTint, setColor,
-  flip, del, dup, setSex, setPair, setGender, findSpecies, rowKeyOf, type PickQuery, type PickRow,
+  flip, del, dup, setSex, sizePct, sizeText, stagesOf, dropSpecies, copySelection, COPY_START, COPY_RANGE, type CopyOpt, setPair, setGender, findSpecies, rowKeyOf, type PickQuery, type PickRow,
 } from './logic/animals';
 import { Group, Icon, Pill } from './ui';
+import { dragOut } from './drag';
+import { aqView, aqCheck, onAq } from './logic/aq';
 
 const FITS_KEY = 'tanklook.ui2.fits';
 const loadFits = () => { try { return localStorage.getItem(FITS_KEY) !== '0'; } catch { return true; } };
@@ -22,13 +24,17 @@ export const pickable = { fish: false };
 
 const tone = (l: PickRow['level']) => (l === 'problem' ? 'bad' : 'warn');
 
-export function AnimalsSection({ store }: { store: Store }) {
+export function AnimalsSection({ store, getViewer }: { store: Store; getViewer?: () => Viewer | undefined }) {
   const S = store.tank, units = store.scene.units, rules = rulesOf(S.brief ?? emptyBrief());
   const fitter = useRef(createFitter()).current;
   const [, setN] = useState(0);
   const [query, setQuery] = useState<PickQuery>({ ...DEFAULT_QUERY, fitsOnly: loadFits() });
   const [note, setNote] = useState<{ text: string; bad: boolean } | null>(null);
   const [open, setOpen] = useState({ water: false });
+  const [pct, setPct] = useState(100);
+  const [pvId, setPvId] = useState<string | null>(null);
+  useEffect(() => onAq(() => setN(n => n + 1)), []);
+  const aq = aqView(S);
   const timer = useRef(0);
   const say = (text: string, bad = false) => { setNote({ text, bad }); clearTimeout(timer.current); timer.current = window.setTimeout(() => setNote(null), bad ? 9000 : 4000); };
   useEffect(() => () => clearTimeout(timer.current), []);
@@ -59,17 +65,24 @@ export function AnimalsSection({ store }: { store: Store }) {
                 {r.reason ? <small class={`why ${tone(r.level)}`}>{r.off ? '✕ ' : ''}{r.reason}{r.more.length ? ` (+${r.more.length} more)` : ''}</small> : null}
               </button>
               <button type="button" class="btn icon sm" aria-label={`One fewer ${r.name}`} title="One fewer (the last one takes it off the list)"
-                onClick={() => { const sp = getSpecies(r.id)!; report(setCount(store, sp, k => k - 1, r.sex)); }}>−</button>
+                onClick={() => { const sp = getSpecies(r.id)!; report(setCount(store, sp, k => k - 1, r.sex, pct)); }}>−</button>
               <input class="input num" type="number" min={0} max={LIMITS.maxFish} value={r.n} aria-label={`How many ${r.name}`}
                 onChange={e => { const t = e.target as HTMLInputElement, v = Math.round(+t.value), sp = getSpecies(r.id)!; if (Number.isFinite(v) && t.value !== '') report(setCount(store, sp, () => Math.max(0, v), r.sex)); else t.value = String(r.n); }} />
               <button type="button" class="btn icon sm" aria-label={`One more ${r.name}`} title="One more" disabled={sv.atLimit}
-                onClick={() => { const sp = getSpecies(r.id)!; report(setCount(store, sp, k => k + 1, r.sex)); }}>+</button>
+                onClick={() => { const sp = getSpecies(r.id)!; report(setCount(store, sp, k => k + 1, r.sex, pct)); }}>+</button>
               <button type="button" class="btn icon sm ghost" aria-label={`Remove ${r.name}`} title="Take it off the list"
                 onClick={() => { const sp = getSpecies(r.id)!; report(setCount(store, sp, () => 0, r.sex)); }}><Icon name="x" /></button>
             </div>
           ))}
         </div>
       ) : <div class="hint">{sv.empty}</div>}
+      {aq.show ? (
+        <div class="aqrow"><span class="lbl">AqAdvisor</span>
+          {aq.canCheck ? <button type="button" class="btn sm" disabled={aq.busy} title="Ask AqAdvisor for this tank's stocking level (one request; only when the site is up)" onClick={() => void aqCheck(S)}>Check</button> : null}
+          <span class={aq.bad ? 'bad' : ''} role="status">{aq.text}</span>
+          <a href={aq.url} target="_blank" rel="noopener" title="Open this tank and stocking in AqAdvisor's calculator for the full report">AqAdvisor ↗</a>
+          {aq.note ? <div class="hint">{aq.note}</div> : null}</div>
+      ) : aq.note ? <div class="hint">{aq.note}</div> : null}
       {sv.misfits ? (
         <div class="misnote"><span>{sv.misfitText} <span class="hint">{sv.misfitNames}.</span></span>
           <button type="button" class="btn sm" title="Take off the animals that do not live in this water (Ctrl+Z brings them back)" onClick={() => report(removeMisfits(store))}>Remove misfits ({sv.misfits})</button></div>
@@ -90,6 +103,13 @@ export function AnimalsSection({ store }: { store: Store }) {
       </Group>
 
       <div class="cap">Add animals</div>
+      {(() => { const sp = pvId ? getSpecies(pvId) : undefined, st = stagesOf(sp, units, pct); return (<>
+        <div class="row"><span class="lbl">New animal size</span>
+          <input class="slider" type="range" min={15} max={130} step={1} value={pct} aria-label="New animal size" onInput={e => setPct(sizePct(+(e.target as HTMLInputElement).value))} />
+          <span class="val">{sizeText(pct, sp, units)}</span></div>
+        {st ? <div class="row"><span class="lbl">Life stage</span><div class="seg" role="group" aria-label="Life stage">{st.map(b => <button type="button" class={b.on ? 'on' : ''} aria-pressed={b.on} title={b.text} onClick={() => setPct(b.pct)}>{b.name}</button>)}</div></div>
+          : sp ? null : <div class="hint">Click an animal below to see its life stages.</div>}
+      </>); })()}
       <label class="search"><Icon name="search" /><input class="input" type="search" placeholder={pv.placeholder} value={query.q} aria-label="Search animals" onInput={e => set({ q: (e.target as HTMLInputElement).value })} /></label>
       <button type="button" class="tglrow" role="switch" aria-checked={query.fitsOnly} onClick={flipFits}>
         <span class={`toggle${query.fitsOnly ? ' on' : ''}`} />Fits this tank{pv.hidden ? <span class="hint"> · {pv.hidden} held back</span> : null}
@@ -102,12 +122,13 @@ export function AnimalsSection({ store }: { store: Store }) {
           {g.rows.map(r => {
             const sp = getSpecies(r.id)!;
             return (
-              <div class={`prow${r.level !== 'ok' ? ' gated' : ''}`} title={r.level !== 'ok' ? [r.reason, ...r.more, 'Still addable: Add anyway.'].join('; ') : sp.note ?? ''}>
+              <div class={`prow${r.level !== 'ok' ? ' gated' : ''}${pvId === r.id ? ' pv' : ''}`} onClick={() => setPvId(r.id)}
+                onPointerDown={e => { if (!getViewer || (e.target as HTMLElement).closest('button')) return; setPvId(r.id); dragOut(e, sp.name, getViewer, store, at => { if (at) report(dropSpecies(store, sp, undefined, at, pct)); }); }} title={r.level !== 'ok' ? [r.reason, ...r.more, 'Still addable: Add anyway.'].join('; ') : sp.note ?? ''}>
                 <div class="pi"><span class="t">{r.name}{r.tag ? <b class="tag">{r.tag}</b> : null}</span><span class="m">{r.size} · <i>{r.sci}</i></span>
                   {r.reason ? <small class={`why ${tone(r.level)}`}>{r.reason}{r.more.length ? ` (+${r.more.length} more)` : ''}</small> : null}</div>
                 {r.inTank ? <Pill tone="neutral">{r.inTank} in</Pill> : null}
                 <button type="button" class={`btn sm${r.level === 'ok' ? '' : ' ghost'}`} title={sp.female ? 'Adds the males; use the Selection box to switch one to a female' : `Add ${r.startCount > 1 ? r.startCount : 'one'}`}
-                  onClick={() => report(addSpecies(store, sp))}>{r.level === 'ok' ? `Add${r.startCount > 1 ? ' ' + r.startCount : ''}` : 'Add anyway'}</button>
+                  onClick={() => report(addSpecies(store, sp, undefined, pct))}>{r.level === 'ok' ? `Add${r.startCount > 1 ? ' ' + r.startCount : ''}` : 'Add anyway'}</button>
               </div>
             );
           })}
@@ -117,9 +138,23 @@ export function AnimalsSection({ store }: { store: Store }) {
   );
 }
 
+function CopiesBox({ store, say }: { store: Store; say: (s: string) => void }) {
+  const [o, setO] = useState<CopyOpt>(COPY_START);
+  const row = (k: 'n' | 'angle' | 'scale' | 'spacing', label: string, unit: string) => (
+    <div class="row"><span class="lbl">{label}</span><input class="slider" type="range" min={COPY_RANGE[k][0]} max={COPY_RANGE[k][1]} value={o[k]} aria-label={label} onInput={e => setO({ ...o, [k]: +(e.target as HTMLInputElement).value })} /><span class="val">{k === 'n' ? '×' : ''}{o[k]}{unit}</span></div>
+  );
+  return (
+    <div class="copybox">
+      {row('n', 'Copies', '')}{row('angle', 'Turn ±', '°')}{row('scale', 'Size ±', '%')}{row('spacing', 'Spacing ±', '%')}
+      <button type="button" class="btn sm" onClick={() => { const r = copySelection(store, o); say(r.ok ? `Made ${r.made}. Ctrl+Z takes them back.` : r.why); }}>Make copies</button>
+    </div>
+  );
+}
+
 export function SelectionDrawer({ store, getViewer, onClose }: { store: Store; getViewer: () => Viewer | undefined; onClose: () => void }) {
   const v = selectionView(store.tank, store.selId, store.scene.units, f => getViewer()?.measure(f) ?? null, store.group.fish.length - 1);
   useEffect(() => { if (!v) onClose(); }, [!v]);
+  const [copies, setCopies] = useState(false), [msg, setMsg] = useState('');
   if (!v) return null;
   const seg = <T extends string>(on: T, opts: [T, string][], pick: (k: T) => void, label: string) => (
     <div class="seg full" role="group" aria-label={label}>{opts.map(([k, t]) => <button type="button" class={on === k ? 'on' : ''} aria-pressed={on === k} onClick={() => pick(k)}>{t}</button>)}</div>
@@ -138,8 +173,11 @@ export function SelectionDrawer({ store, getViewer, onClose }: { store: Store; g
         <div class="btns">
           <button type="button" class="btn sm" onClick={() => flip(store)} title="Turn it round (F)">Flip</button>
           <button type="button" class="btn sm" onClick={() => dup(store)} title="Another one beside it (Ctrl+D)">Duplicate</button>
+          <button type="button" class="btn sm" aria-expanded={copies} onClick={() => setCopies(!copies)} title="Several copies with a little random variation: a school">Copies…</button>
           <button type="button" class="btn sm danger" onClick={() => del(store)}>Delete</button>
         </div>
+        {copies ? <CopiesBox store={store} say={setMsg} /> : null}
+        {msg ? <div class="hint" role="status">{msg}</div> : null}
         <div class="hint">Position and pose are random: "Another moment" (view bar) rolls them again.</div>
       </div>
     </aside>

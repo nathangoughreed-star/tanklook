@@ -129,7 +129,7 @@ function Panel({ id, more, onPick, onClose, tank, s8, disc, s5 }: { id: SectionI
   if (id === 'animals') return (
     <section class="panel" aria-label="Animals">
       <div class="sec-head"><h2>Animals</h2><button type="button" class="btn icon ghost" title="Fold the panel (Esc)" aria-label="Fold the panel" onClick={onClose}><Icon name="x" /></button></div>
-      <div class="sec-body"><AnimalsSection store={s8.store} /></div>
+      <div class="sec-body"><AnimalsSection store={s8.store} getViewer={s8.getViewer} /></div>
     </section>
   );
   if (id === 'scape' || id === 'plants') return (
