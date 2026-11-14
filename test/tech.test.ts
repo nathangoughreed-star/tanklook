@@ -141,7 +141,8 @@ describe('tech menu model (lane TM step 1)', () => {
     expect(parseTech({ rows: { filter: 'hob' }, roomC: 99, place: { filter: { wall: 'ceiling' } } })).toEqual({ rows: { filter: 'hob' }, roomC: 40 });
     const scene = parseScene(SCENES.planted).scene;
     scene.tanks[0].tech = t;
-    expect(parseScene(JSON.parse(JSON.stringify(scene))).scene.tanks[0].tech).toEqual(t);
+    { const { roomC, ...rest } = t, back = parseScene(JSON.parse(JSON.stringify(scene))).scene.tanks[0]; // P5: the room is stored once, in the brief: a saved tech.roomC moves there at load
+      expect(back.tech).toEqual(rest); expect(back.brief?.items['constraints.roomTempC']?.value).toBe(roomC); }
     expect(inferTech({ ...S, water: { ...S.water, on: false } }).rows).toEqual({ heatlamp: 'none', thermostat: 'none', uvb: 'none', gauge: 'yes', mist: 'none', timer: 'none' }); // planted's fish want no basking spot
   });
 });

@@ -3,7 +3,10 @@
 // Computed when the scene settles (debounced), never per frame. The profile (skill, water, kWh rate, limits) is an app pref.
 import { onExperience, getExperience, experienceOn, profileSkill, setAllLevels, setAreaLevel, setExperienceOn, type Area, type Level } from '../demand/experience';
 import { aquariumOnly } from '../scope';
-import { defaultProfile, demandOf, drivers, limitState, type LimitState, type UserProfile } from '../demand';
+import { profileOf } from '../demand/limitsHome';
+import { getBrief } from './setupBrief';
+import { setHome, withCaps, capsOf, type Brief, type Home } from '../scene/brief';
+import { demandOf, drivers, limitState, type LimitState, type UserProfile } from '../demand';
 import { swapsFor, type Bar } from '../demand/swaps';
 import type { Demand } from '../demand';
 import type { Store } from '../scene/store';
@@ -23,7 +26,6 @@ import { findSolutions, type Option, type Solutions } from '../demand/makefit';
 import { lidAdvice, type LidAdvice } from '../demand/lid';
 import { rhythmNote, rhythmOf } from '../demand/rhythm';
 
-const KEY = 'tanklook.demand';
 const DOMAIN_LABEL: [keyof UserProfile['skill'], string][] = [['fundamentals', 'Keeping a tank at all'], ['fish', 'Freshwater fish'], ['planted', 'Planted tanks'], ['salt', 'Saltwater'], ['terrarium', 'Terrariums']];
 const SKILL = ['New to it', 'Some experience', 'Experienced'];
 const BARS: { bar: Bar; title: string; tip: string }[] = [
@@ -35,23 +37,21 @@ const BARS: { bar: Bar; title: string; tip: string }[] = [
 const usd = (v: number) => '$' + Math.round(v).toLocaleString();
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
-export { load as loadProfile };
-function load(): UserProfile {
-  const d = defaultProfile(); d.skill = profileSkill(); // P10: experience lives in demand/experience.ts (off = an average keeper, 'Some')
-  try { const j = JSON.parse(localStorage.getItem(KEY) ?? 'null') as Partial<UserProfile> | null; if (j) { const { budgetMode: _old, ...limits } = (j.limits ?? {}) as Partial<UserProfile['limits']> & { budgetMode?: string }; return { ...d, ...j, skill: d.skill, limits }; } } catch { /* ignore */ } // an old save's budgetMode is dropped, the number kept
-  return d;
-}
+/** P5: the profile is the brief's (demand/limitsHome.ts); `loadProfile()` = the setup on screen, `load(brief)` = one tank's. */
+export const loadProfile = (): UserProfile => load(getBrief());
+function load(b: Brief | undefined): UserProfile { return profileOf(b, profileSkill()); } // P10: experience lives in demand/experience.ts (off = an average keeper, 'Some')
 
 /** SV1: `side` = a copy for one side of a split view (its `store` is a sideStore): its open / closed state is its own and is not remembered, it re-reads the shared profile before each calculation, and `gate` says whether it is in use now (nothing is calculated while it is not). */
 export interface DemandOpts { side?: boolean; gate?: () => boolean }
 export function attachDemandPanel(store: Store, mount: HTMLElement, opts: DemandOpts = {}) {
   const gate = opts.gate ?? (() => true);
-  let sol: Solutions | null = null, P = load(), D: Demand | null = null, B: Demand | null = null, lid: (LidAdvice & { usd: number }) | null = null, open: Bar | null = null, timer = 0;
+  let sol: Solutions | null = null, P = load(store.tank.brief), D: Demand | null = null, B: Demand | null = null, lid: (LidAdvice & { usd: number }) | null = null, open: Bar | null = null, timer = 0;
   /** What the last edit moved each bar by, shown as a chip for a few seconds so a change is seen as it happens. */
   let prev: Record<Bar, number> | null = null, chips: Partial<Record<Bar, { d: number; until: number }>> = {}, chipTimer = 0;
   /** The profile with this tank's guardrails in place of its limits (a tank with none keeps the browser profile's limits). */
   const Pe = (): UserProfile => ({ ...P, limits: effectiveLimits(store.tank, P.limits) });
-  const save = () => { try { const { skill: _s, ...rest } = P; localStorage.setItem(KEY, JSON.stringify(rest)); } catch { /* ignore */ } };
+  /** P5: the profile's own fields live in this tank's brief (the caps are written by `limits()`), not in the browser. */
+  const saveHome = (h: Partial<Record<keyof Home, Home[keyof Home] | undefined>>) => store.edit(t => { t.brief = setHome(t.brief, h); }, { coalesce: 'home' });
   const OPEN_KEY = 'tanklook.demandOpen';
   let shown = (() => { if (opts.side) return false; try { const v = localStorage.getItem(OPEN_KEY); if (v !== null) return v === '1'; } catch { /* ignore */ } return false; })(); /* minimized until opened (UI3) */
   mount.innerHTML = `<div class="dm"><button type="button" class="dmtog" aria-expanded="true" title="Show or hide what this tank costs and asks of you; it updates as you edit"><span class="dmhead">What this tank asks of you</span><span class="dmsum"></span><span class="dmflag" hidden></span><span class="dmcaret" aria-hidden="true">▾</span></button>
@@ -70,7 +70,7 @@ export function attachDemandPanel(store: Store, mount: HTMLElement, opts: Demand
 
   function recompute() {
     if (!gate()) { D = null; return; }
-    if (opts.side) P = load(); // the profile is shared: the other copy may have changed it
+    if (opts.side) P = load(store.tank.brief); // the profile is shared: the other copy may have changed it
     const S = store.tank;
     sol = null; // a result is for the scene it was found on
     const kit = pinnedKit(S, store.scene.active, P);
@@ -308,10 +308,12 @@ Relative to your stated experience (see Your situation).`;
       const ef = (q('#dmEffort') as HTMLSelectElement).value, ex = (q('#dmExp') as HTMLSelectElement).value;
       if (ef) c.effort = ef as Constraints['effort'];
       setAllLevels(ex === '' ? undefined : +ex as Level); P.skill = profileSkill(); // P10: the old control = one answer for every area; 'not said' = the constraint off
-      P.limits = { ...P.limits, risk: (q('#dmRisk') as HTMLSelectElement).value as UserProfile['limits']['risk'] };
+      const risk = (q('#dmRisk') as HTMLSelectElement).value as NonNullable<UserProfile['limits']['risk']>;
       const out = parseConstraints(c) ?? {}; // an empty set is still "this tank has guardrails, all off"
-      store.edit(t2 => { t2.constraints = out; }, { coalesce: 'guardrails' });
-      rememberLastUsed(out); save(); limits(); render();
+      // P5: the brief holds the caps, the space switch, the effort and the difficulty limit; the tank's guardrails stay the engine's copy of them
+      store.edit(t2 => { t2.constraints = out; t2.brief = setHome(withCaps(t2.brief, out), { risk: risk === 'any' ? undefined : risk }); }, { coalesce: 'guardrails' });
+      P = load(store.tank.brief);
+      rememberLastUsed(out); limits(); render();
     };
     lim.querySelectorAll('input,select').forEach(e => e.addEventListener('change', change));
   }
@@ -321,12 +323,12 @@ Relative to your stated experience (see Your situation).`;
       <label>Electricity <input type="number" id="dmKwh" min="0" step="0.01" placeholder="US average" value="${P.kwhUsd ?? ''}"> $ per kWh</label>
       <div class="hint">Left off, figures are for an average keeper (some experience). On, each answer changes the difficulty and money figures and grays animals, plants and gear that are beyond it.</div>`;
     const change = () => {
+      const water = (q('#dmWater') as HTMLSelectElement).value as Home['water'], kwh = (q('#dmKwh') as HTMLInputElement).value; // read first: setAreaLevel below can re-render this form from the old profile
       const wasOn = getExperience().on, nowOn = (q('#dmExpOn') as HTMLInputElement).checked;
       if (wasOn !== nowOn) setExperienceOn(nowOn); else sit.querySelectorAll<HTMLSelectElement>('select[data-sk]').forEach(s => setAreaLevel(s.dataset.sk as Area, +s.value as Level));
       P.skill = profileSkill();
-      P.waterSource = (q('#dmWater') as HTMLSelectElement).value as UserProfile['waterSource'];
-      const k = (q('#dmKwh') as HTMLInputElement).value; P.kwhUsd = k === '' ? undefined : +k;
-      save(); situation(); recompute();
+      saveHome({ water, kwhUsd: kwh === '' ? undefined : +kwh });
+      P = load(store.tank.brief); situation(); recompute();
     };
     sit.querySelectorAll('input,select').forEach(e => e.addEventListener('change', change));
   }
@@ -335,7 +337,13 @@ Relative to your stated experience (see Your situation).`;
   recompute();
   /** Set some limits from outside (the care slider's shortcut): saved, the form and the bars follow. */
   const setLimits = (l: Partial<UserProfile['limits']>) => {
-    P.limits = { ...P.limits, ...l }; save();
+    const { upkeep: up0, minPerWeek: mpw0, risk: rk0 } = l, c0 = constraintsFromLimits({ upkeep: up0, minPerWeek: mpw0 });
+    store.edit(t => { // P5: a shortcut is a brief edit
+      let b = t.brief; if (rk0 !== undefined) b = setHome(b, { risk: rk0 === 'any' ? undefined : rk0 });
+      if (mpw0 !== undefined || up0 !== undefined) { const k = capsOf(b); b = withCaps(b, { ...k, ...(mpw0 !== undefined ? { minutesPerWeek: c0.minutesPerWeek ?? { on: false, value: k.minutesPerWeek?.value ?? 0 } } : {}), ...(up0 !== undefined ? { monthlyUsd: c0.monthlyUsd ?? { on: false, value: k.monthlyUsd?.value ?? 0 } } : {}) }); }
+      t.brief = b;
+    }, { coalesce: 'guardrails' });
+    P = load(store.tank.brief);
     if (store.tank.constraints) { // this tank has guardrails: the shortcut moves its time and upkeep caps too
       const { upkeep, minPerWeek } = l, c = constraintsFromLimits({ upkeep, minPerWeek });
       store.edit(t => { const k = { ...t.constraints }; if (minPerWeek !== undefined) k.minutesPerWeek = c.minutesPerWeek ?? { on: false, value: k.minutesPerWeek?.value ?? 0 }; if (upkeep !== undefined) k.monthlyUsd = c.monthlyUsd ?? { on: false, value: k.monthlyUsd?.value ?? 0 }; t.constraints = k; }, { coalesce: 'guardrails' });

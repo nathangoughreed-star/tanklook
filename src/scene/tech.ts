@@ -20,7 +20,7 @@ import { filterProduct, genericHeaterW, heaterProduct, listedPrice, pumpProduct,
 import { footprint } from './shape';
 import { NEEDS, isCoralNeed, isLand, type PlantNeed } from './lightneeds';
 import { isFloat } from '../art/plants';
-import { valueOf } from './brief';
+import { roomTempC } from './brief';
 import { getTankModel, TANK_MODELS, tankFromModel, type TankModel } from '../data/tanks';
 import type { GrowFeed, TankSetup } from './types';
 import type { TempEvidence } from './temprange';
@@ -199,7 +199,7 @@ export function needFeed(S: TankSetup): GrowFeed {
 }
 /** The room the water is judged against: the Tech menu's, else the brief's (deg C; shown in deg F), else the usual 70 deg F (ROOM_C); `set` = the owner gave one. */
 export function roomOf(S: TankSetup): { c: number; set: boolean } {
-  const c = S.tech?.roomC ?? (S.brief ? valueOf(S.brief, 'constraints.roomTempC') : undefined);
+  const c = S.tech?.roomC ?? roomTempC(S.brief); // P5: the brief is the ONE stored room; a `tech.roomC` is only an unmigrated in-memory value (validate.ts moves it at load)
   return c === undefined ? { c: ROOM_C, set: false } : { c, set: true };
 }
 /** The water animals whose comfortable range starts above the room (a heater is needed to keep them), each species once. */
@@ -325,7 +325,9 @@ export function keepSet(S: TankSetup, next: TechSetup): TechSetup {
   const preset = next.preset && next.preset !== 'custom' ? PRESETS.find(p => p.id === next.preset) : undefined;
   const rows: Record<string, string> = {};
   for (const [r, o] of Object.entries(next.rows)) if (own.has(r) || preset?.rows[r] !== undefined || sig(next, r) !== sig(was, r)) rows[r] = o;
-  return { ...next, rows };
+  // P5: the room is the brief's; a copy of it that techOf filled in is never stored
+  const { roomC, ...rest } = next, br = roomTempC(S.brief);
+  return { ...rest, ...(roomC !== undefined && roomC !== br ? { roomC } : {}), rows };
 }
 
 /** One row changed by hand: the tech is now custom. Choosing an option that needs another row's option sets that too. */

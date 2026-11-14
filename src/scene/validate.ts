@@ -19,7 +19,7 @@ import { ownParse, parseTech } from './tech';
 import { pairRule } from '../data/groups';
 import { prunePairs } from './pairs';
 import { parseConstraints } from './constraints';
-import { parseBrief, type Brief } from './brief';
+import { parseBrief, roomTempC, withRoomTempC, type Brief } from './brief';
 import { parseLocks, rosterLocksFromBrief } from './locks';
 import { parseDiscoverOn } from './discoverScope';
 import { mirrorSpace } from './spaceStore';
@@ -401,6 +401,10 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
   if (raw.stockFirst === true) setup.stockFirst = true; // 2026-10-21: path 1 tank, no filter drawn until one is added
   { const cn = parseConstraints(raw.constraints); if (cn) setup.constraints = cn; } // lane C1 2026-10-27: Guardrails, absent = none set
   { const br = parseBrief(raw.brief); if (br) setup.brief = br; } // lane U1 2026-10-28: the setup brief, absent = none yet
+  if (setup.tech?.roomC !== undefined) { // P5 2026-11-14: the room temperature is stored once, in the brief; an old save's tech.roomC moves there when the brief has none
+    if (roomTempC(setup.brief) === undefined) setup.brief = withRoomTempC(setup.brief, setup.tech.roomC);
+    const { roomC: _r, ...rest } = setup.tech, tc2 = parseTech(rest); if (tc2) setup.tech = tc2; else delete setup.tech; // a tech that held only the room is gone
+  }
   { const dp = parseDealPin(raw.dealPin); if (dp) (setup as TankSetup & { dealPin?: typeof dp }).dealPin = dp; } // lane GV9 2026-10-30: the bundle the tank is priced as (demand/pinned.ts), absent = none
   { const pr = parsePairs(raw.pairs, setup.fish); if (pr) setup.pairs = pr; } // 2026-10-22: pairing per pair species, absent = unknown
   { const lk = parseLocks(raw.locks); if (lk) setup.locks = lk; } // DX0 2026-11-09: persistent locks, absent = none
