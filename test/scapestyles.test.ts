@@ -177,10 +177,13 @@ describe('Quick Setup: shuffle with parts kept, ground relief, care-gated stocki
   it('stocking by the care gates leaves out animals above the care level', async () => {
     const { starterAnimals } = await import('../src/scene/starter');
     const { CARE } = await import('../src/data/care');
+    const X = await import('../src/demand/experience');
+    const m = new Map<string, string>(); X.useStorage({ getItem: k => m.get(k) ?? null, setItem: (k, v) => { m.set(k, v); } }); X.setAllLevels(0); // P10: the level lives in the experience store
     for (let seed = 1; seed <= 12; seed++) {
-      const s = setup('planted', seed, undefined, { hard: 2, plant: 2, animal: 4 }); s.layout.gateStock = true; s.layout.expertise = 1;
+      const s = setup('planted', seed, undefined, { hard: 2, plant: 2, animal: 4 }); s.layout.gateStock = true;
       for (const f of starterAnimals(s, 1)) expect(CARE[f.species]?.care ?? 1).toBeLessThanOrEqual(1);
     }
+    X.useStorage();
   });
 });
 

@@ -4,10 +4,14 @@
 import { isSalt } from '../../scene/stockEdit';
 import { lightOutCached, wattsOf } from '../../scene/lightout';
 import { CARE_NAME, FIT_PAR, whyNot } from '../../scene/plantfit';
+import { careGate, plantGated } from '../../demand/experience';
 import type { TankSetup } from '../../scene/types';
 
-/** Has the owner chosen a care level? The one place the gate reads it (P10 swaps this for experienceOf(area)). */
+/** Has the owner chosen a care level for the plants? That is the plant GROW tier (layout.careSet), a different thing from the experience
+ *  constraint (P10): experience gates which plants are offered, this reads how much care the plants get. */
 export const careChosen = (s: TankSetup): boolean => !!s.layout.careSet;
+/** P10: when the experience constraint is on, plants rated harder than the planted level are grayed too, with a one-line why. Null = no gate. */
+export const experienceGate = (variant: string, planted: 1 | 2 | 3 | null = careGate('planted')): string | null => planted === null ? null : plantGated(variant, planted);
 
 export interface GateView {
   on: boolean;
@@ -32,12 +36,12 @@ export function gateView(s: TankSetup, chosen: boolean = careChosen(s)): GateVie
 }
 /** Of these library chips (variant id + whether it is a coral / live rock chip), which the gate grays, each with its
  *  reason. A salt-only chip in a fresh tank is never listed (it is hidden there). */
-export function gatedChips(v: GateView, s: TankSetup, chips: { variant: string; salt: boolean }[]): { variant: string; why: string }[] {
+export function gatedChips(v: GateView, s: TankSetup, chips: { variant: string; salt: boolean }[], planted: 1 | 2 | 3 | null = careGate('planted')): { variant: string; why: string }[] {
   if (!v.active) return [];
   const out: { variant: string; why: string }[] = [];
   for (const c of chips) {
-    const w = whyNot(c.variant, v.par!, s.grow.feed);
-    if (w && !(c.salt && !v.salt)) out.push({ variant: c.variant, why: w.text });
+    const w = whyNot(c.variant, v.par!, s.grow.feed), x = experienceGate(c.variant, planted);
+    if ((w || x) && !(c.salt && !v.salt)) out.push({ variant: c.variant, why: [w?.text, x].filter(Boolean).join('; ') });
   }
   return out;
 }

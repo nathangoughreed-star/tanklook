@@ -123,17 +123,18 @@ describe('P2 fit vs gate', () => {
     expect(SPECIES.every(x => fit(x).level === 'ok')).toBe(true);
   });
   it('the gate reads the care level and gives reasons per species', () => {
-    const s = empty(); s.layout.gateStock = true; s.layout.gateAnimals = true; s.layout.expertise = 1;
-    const v = P.gateView(s);
+    const s = empty(); s.layout.gateStock = true; s.layout.gateAnimals = true;
+    const v = P.gateView(s, 1); // P10: the experience is the one parameter (1 beginner .. 3 expert, null = constraint off)
     expect(v).toMatchObject({ stock: true, on: true, ex: 1, animals: true });
     expect(v.care).toBe(P.CARE_LEVEL[1]); expect(v.hint).toContain('Grayed in the list');
-    const g = P.animalGate(s, 'in')!;
+    const g = P.animalGate(s, 'in', 1)!;
     const reasons = SPECIES.map(x => g(x)).filter(Boolean);
     expect(reasons.length).toBeGreaterThan(0);
     expect(reasons[0]).toHaveProperty('block');
-    expect(P.experienceIn(s)).toBe(1);
-    s.layout.expertise = 3; expect(P.gateView(s).ex).toBe(3); expect(P.gateView(s).care).toBe(P.CARE_LEVEL[3]);
-    delete s.layout.gateAnimals; expect(P.gateView(s)).toMatchObject({ on: false, hint: '' });
+    expect(P.experienceIn(s)).toBeNull(); // the switch is off in this test: no gate
+    expect(P.gateView(s, 3).ex).toBe(3); expect(P.gateView(s, 3).care).toBe(P.CARE_LEVEL[3]);
+    expect(P.gateView(s, null)).toMatchObject({ on: false, hint: '' }); expect(P.animalGate(s, 'in', null)).toBeNull();
+    delete s.layout.gateAnimals; expect(P.gateView(s, 1)).toMatchObject({ on: false, hint: '' });
   });
   it('the memo key follows what the fit depends on', () => {
     const a = empty(), b = empty(); b.fish.push({ ...defaultSetup().fish[0] });

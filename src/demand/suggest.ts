@@ -12,6 +12,7 @@
 // or auto-water-changer time savings: the build's own gear and the engine's own totals decide), costs and minutes are estimates, and when nothing
 // qualifies the answer is exactly NO_SUGGESTION, never "impossible", with the closest misses (what limit to raise) listed apart, never as fits.
 // Deterministic: fixed archetype order, scores, ties by id. Only the guardrails are filters; appeal tags only rank.
+import { experienceOf } from './experience';
 import { kindInScope } from '../scope';
 import data from '../data/archetypes.json';
 import { getSpecies } from '../data/species';
@@ -572,7 +573,7 @@ function conceptMaker(w: Wants, P0: UserProfile, units: Units, now: number) {
   /** Score and word a found concept as strategy `id`'s card (`ceiling`: the top size is the animals' limit, not the money's). */
   const finalize = (found: NonNullable<Out['p']>, id: StrategyId, isLocked: boolean, ceiling: boolean): Proposal => {
     const sd = STRATEGIES.find(x => x.id === id)!;
-    const { levelOf, needStand, ...p } = found, t = p.totals, L = effectiveLimits(p.scene, P0.limits), cx = complexityOf(p.build, p.scene), exp = C.experience;
+    const { levelOf, needStand, ...p } = found, t = p.totals, L = effectiveLimits(p.scene, P0.limits), cx = complexityOf(p.build, p.scene), exp = experienceOf('fundamentals') ?? undefined; // P10: the one store; undefined while the constraint is off
     // climb (the old target behaviour): a card that stops short because the animals' needs cap it (the biggest tank they gain from, at the fullest finish) is as good a use of the money as the animals allow
     const limited = !!(w.climb && ceiling && L.setupUsd && t.startupUsd < USES_BUDGET * L.setupUsd && levelOf === 3 && id === 'size');
     // experience shapes how hands-on concepts RANK (a gentle push), never whether one is offered

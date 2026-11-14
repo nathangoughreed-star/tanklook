@@ -1,5 +1,6 @@
 // Sidebar wiring. Inputs write through store.update(); one sync() pulls every control back from the scene,
 // so undo/redo, file open and pointer drags all refresh the panels the same way.
+import { adoptLegacy, experienceOn, getExperience, onExperience, setAllLevels } from '../demand/experience';
 import { aquariumOnly, kindInScope, PAUSED_NOTE, scopeSpecies } from '../scope';
 import { FOCUS_SECS, type FocusSec } from '../render/menuFocus';
 import { projectExtras, rulesOf } from '../scene/brief';
@@ -13,7 +14,7 @@ import { defaultLid, lidFreeProsCons, openTopProblem, setLidFree } from '../data
 import { standMisfit } from '../scene/standspace';
 import { renderFeaturedDeals } from './featuredDeals';
 import { attachWelcome } from './welcome';
-import { bindBriefStore, editBrief, experienceOf, getBrief, onBrief as onBriefEdit, setTank as briefTank } from './setupBrief';
+import { bindBriefStore, editBrief, experienceOf, getBrief, onBrief as onBriefEdit, setExperience as setExperienceBrief, setTank as briefTank } from './setupBrief';
 import { attachStartMode } from './startMode';
 import { stepForMenu, kindOfDirection, libraryState, EMPTY_LIBRARY, type StartStep } from './startScreenLogic';
 import { openDiscovery } from './discover/entry';
@@ -312,7 +313,22 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // At first launch the tank on screen is already a fresh one, so Sandbox just closes the Welcome screen.
   bindBriefStore(store); // lane U3: the setup brief lives in the active tank (TankSetup.brief)
   // lane GW2: Your limits (Experience) is the one home of the care level; the scene's gate level follows it (beginner 1, some experience 2, experienced 3), no undo step
-  onBriefEdit(b => { const x = experienceOf(b); if (x !== undefined && store.tank.layout.expertise !== x + 1) store.update(s => { s.tanks[s.active].layout.expertise = (x + 1) as 1 | 2 | 3; }, { history: false }); });
+  // lane P10: experience is ONE store per browser (demand/experience.ts). The old controls keep working: the brief's Experience answer
+  // (one answer for every area) writes the store, the store's level is mirrored back into the tank's brief; a scene or share link that
+  // carries a level is only a fallback, adopted while this browser has not decided (one release).
+  {
+    let lastX: number | undefined, lastTank = -1, mirroring = false;
+    const mirror = () => { const st = getExperience(), want = st.on ? st.levels.fundamentals : undefined; if (experienceOf(getBrief()) === want) return; mirroring = true; try { editBrief(b => setExperienceBrief(b, want as 0 | 1 | 2 | undefined)); } finally { mirroring = false; } };
+    onBriefEdit(b => {
+      if (mirroring) return;
+      const x = experienceOf(b), same = store.scene.active === lastTank; lastTank = store.scene.active;
+      if (x === lastX && same) return; lastX = x;
+      if (x !== undefined && same) setAllLevels(x as 0 | 1 | 2); // the person changed it in this tank's Your limits
+      else adoptLegacy({ briefExperience: x as number | undefined, layoutExpertise: store.tank.layout.expertise });
+      mirror();
+    });
+    onExperience(mirror);
+  }
   let welcomeFirst = false;
   let suggestPanel: { open(): void } | undefined;
   const welcome = attachWelcome(store, { // lane VD5: Guided = Visual Discovery (ui/discovery/)
@@ -1479,7 +1495,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
   };
   $('gateStock').onchange = e => {
     const on = (e.target as HTMLInputElement).checked;
-    restock(() => { $<HTMLInputElement>('gateStock').checked = !!S().layout.gateStock; }, s => { if (on) { s.layout.gateStock = true; s.layout.expertise ??= 1; } else delete s.layout.gateStock; }, on ? 'Stocking now keeps to animals that suit the care level.' : 'Care gates off: stocking is free again.');
+    if (on && !experienceOn()) setAllLevels(0); // the old gate asks for a care level: while unset it was Beginner, so the switch turns on at New to it
+    restock(() => { $<HTMLInputElement>('gateStock').checked = !!S().layout.gateStock; }, s => { if (on) { s.layout.gateStock = true; } else delete s.layout.gateStock; }, on ? 'Stocking now keeps to animals that suit the care level.' : 'Care gates off: stocking is free again.');
   };
   // lane GW2: the care level is the Experience answer in Your limits (one home); Quick Setup shows it and opens the dialog
   $('expertiseOpen').onclick = () => openLimits();
@@ -2116,7 +2133,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
       $('wMisfit').textContent = `Not ${isSalt(s) ? 'saltwater' : 'freshwater'} animals: ${[...by].map(([nm, n]) => `${n} ${nm}`).join(', ')}.`;
       $('wMisfitDel').textContent = `Remove ${mis.length}`;
     }
-    const wk = `${tankKind(s)}|${s.layout.gateStock ? 1 : 0}${s.layout.gateAnimals ? 1 : 0}${s.layout.expertise ?? 1}|${Math.round(volume(s.tank).litres)}${[...new Set(s.fish.map(f => f.species))].join()}|${s.tech ? JSON.stringify(s.tech) : ''}`; if (wk !== waterKind) { waterKind = wk; renderResults(); } // the species list follows the water
+    const wk = `${tankKind(s)}|${s.layout.gateStock ? 1 : 0}${s.layout.gateAnimals ? 1 : 0}${animalPicker.experienceIn(s) ?? 0}|${Math.round(volume(s.tank).litres)}${[...new Set(s.fish.map(f => f.species))].join()}|${s.tech ? JSON.stringify(s.tech) : ''}`; if (wk !== waterKind) { waterKind = wk; renderResults(); } // the species list follows the water
     setVal('wLevel', wa.level); setOut('oLevel', wa.level >= 1 ? 'Full' : `${fmt(waterY(A, wa.level))} high`);
     const cl = s.condition.level; setVal('cond', Math.round(cl * 100)); setOut('oCond', cl <= 0 ? 'Pristine' : cl < 0.35 ? 'A few weeks' : cl < 0.7 ? 'Overdue' : 'Neglected');
     setVal('wOpac', wa.opacity); setOut('oOpac', wa.opacity < 0.01 ? 'Clear' : Math.round(wa.opacity * 100) + '%'); setVal('wColor', wa.color);

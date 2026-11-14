@@ -1,3 +1,4 @@
+// Lane P10: the experience input is experienceOf('fish' | 'salt' | 'terrarium') via `experienceIn`; null = switch off = no gate.
 // Lane P2 (UI2 §7 P2): the animal picker's fit / gate / readout logic moved out of ui/panels.ts. No DOM, no store:
 // the caller passes the tank, the units and the rule set. Lane P10 will replace the experience input (`ex`, read from
 // `layout.expertise` in ONE place: `experienceIn`) with one experienceOf(area).
@@ -10,11 +11,13 @@ import { tempEvidence } from '../../scene/tech';
 import { minFit } from '../../scene/tankMin';
 import { volume, fmtLen } from '../../scene/physics';
 import type { Fish, TankSetup, Units } from '../../scene/types';
+import { careGate, animalArea } from '../../demand/experience';
+import { tankKind } from '../../scene/pickerKind';
 import { pickerReader } from '../pickerStrict';
 import type { Viewer } from '../../render/viewer';
 
-/** The one place the gate reads the keeper's experience (1 / 2 / 3). P10 swaps this for experienceOf(area). */
-export const experienceIn = (s: TankSetup): 1 | 2 | 3 => (s.layout.expertise ?? 1) as 1 | 2 | 3;
+/** The one place the gate reads the keeper's experience: the care level 1 / 2 / 3 for this tank's area, or null while the experience constraint is off (no gate). */
+export const experienceIn = (s: TankSetup, ex: 1 | 2 | 3 | null = careGate(animalArea(tankKind(s)))): 1 | 2 | 3 | null => ex;
 
 /** What each care level asks of the keeper: rough, typical aquarium / vivarium practice, not a rule. */
 export const CARE_LEVEL: Record<1 | 2 | 3, string> = {
@@ -24,7 +27,7 @@ export const CARE_LEVEL: Record<1 | 2 | 3, string> = {
 };
 
 /** What the picker's fit reading depends on (the memo key): any change here redraws the list from scratch. */
-export const stockKey = (s: TankSetup, units: Units, rules: Rules) => JSON.stringify([s.tank, s.water, s.tech, s.fish.map(f => [f.species, f.sex, f.gender, f.tl]), s.items.map(it => [it.kind, it.variant]), s.layout.gateStock, s.layout.gateAnimals, s.layout.expertise, s.constraints, s.stand, s.lid, units, rules]);
+export const stockKey = (s: TankSetup, units: Units, rules: Rules, exp: 1 | 2 | 3 | null = experienceIn(s)) => JSON.stringify([s.tank, s.water, s.tech, s.fish.map(f => [f.species, f.sex, f.gender, f.tl]), s.items.map(it => [it.kind, it.variant]), s.layout.gateStock, s.layout.gateAnimals, exp, s.constraints, s.stand, s.lid, units, rules]);
 
 /** The tank's environment as the fit rules see it: its target, or with no heater the room it follows. */
 const envOf = (s: TankSetup, units: Units) => ({ corals: hasCorals(s.items), water: s.tech ? tempEvidence(s, undefined, units === 'in') : undefined, fit: minFit(s) });
@@ -32,8 +35,8 @@ const envOf = (s: TankSetup, units: Units) => ({ corals: hasCorals(s.items), wat
 const presentOf = (s: TankSetup) => [...new Set(s.fish.map(f => f.species))].map(getSpecies).filter((x): x is Species => !!x);
 
 /** The care gates' state for the Quick Setup box: shown while "Stock by care gates" is on; the list is grayed by them when its own box is ticked too. */
-export function gateView(s: TankSetup) {
-  const stock = !!s.layout.gateStock, on = stock && !!s.layout.gateAnimals, ex = experienceIn(s);
+export function gateView(s: TankSetup, exp: 1 | 2 | 3 | null = experienceIn(s)) {
+  const ex = exp ?? 1, stock = !!s.layout.gateStock, on = stock && !!s.layout.gateAnimals && exp !== null;
   return {
     stock, on, ex, animals: !!s.layout.gateAnimals, name: EXPERTISE_NAME[ex], care: CARE_LEVEL[ex],
     hint: on ? 'Grayed in the list: does not suit this tank, the care level or the animals already in it. They can still be added.' : '',
@@ -42,9 +45,9 @@ export function gateView(s: TankSetup) {
 /** The gate reader: per species, the main blocking reason and how many other concerns stand under it (all of them in the tooltip);
  *  with no blocker the first concern is the visible message (a note, the item not grayed), so an advisory never hides behind a
  *  clean-looking row. Null while the gates are off. */
-export function animalGate(s: TankSetup, units: Units): ((sp: Species) => (AnimalWhy & { more: string[]; block: boolean }) | null) | null {
-  if (!gateView(s).on) return null;
-  const litres = volume(s.tank).litres, present = presentOf(s), ex = experienceIn(s), env = envOf(s, units);
+export function animalGate(s: TankSetup, units: Units, exp: 1 | 2 | 3 | null = experienceIn(s)): ((sp: Species) => (AnimalWhy & { more: string[]; block: boolean }) | null) | null {
+  if (!gateView(s, exp).on) return null;
+  const ex = exp!, litres = volume(s.tank).litres, present = presentOf(s), env = envOf(s, units);
   return sp => gateOf(whysAnimal(sp, litres, ex, present, env));
 }
 
@@ -53,9 +56,9 @@ export function animalGate(s: TankSetup, units: Units): ((sp: Species) => (Anima
  *  first paint, kept per stock signature (the picker opens often), and replaces the cheap one as it arrives. */
 export function createFitter() {
   let fitKey = '', fitMemo = new Map<string, Fit>(), exact = new Map<string, Fit>(), exactRead: ((sp: Species) => Fit) | undefined, gen = 0, refining = -1;
-  function fitsFor(s: TankSetup, units: Units, rules: Rules): (sp: Species) => Fit {
-    const gated = !!s.layout.gateStock && !!s.layout.gateAnimals, ex = experienceIn(s), present = [...new Set(s.fish.map(f => f.species))].sort();
-    const key = stockKey(s, units, rules);
+  function fitsFor(s: TankSetup, units: Units, rules: Rules, exp: 1 | 2 | 3 | null = experienceIn(s)): (sp: Species) => Fit {
+    const gated = !!s.layout.gateStock && !!s.layout.gateAnimals && exp !== null, ex = exp ?? 1, present = [...new Set(s.fish.map(f => f.species))].sort();
+    const key = stockKey(s, units, rules, exp);
     if (key !== fitKey) {
       fitKey = key; fitMemo = new Map(); exact = new Map(); gen++; refining = -1;
       const litres = volume(s.tank).litres, have = present.map(getSpecies).filter((x): x is Species => !!x);
