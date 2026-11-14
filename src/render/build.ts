@@ -380,7 +380,10 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
     });
     // the eurobrace of a rimless box tank (lane CT1): glass strips glued flat inside the top of the walls, same glass and edge tint
     if (R.brace && !R.rim && fp.walls.length === 4 && !arch) for (const k of braceBoxes(T, R.brace)) {
-      add(new THREE.BoxGeometry(k.x1 - k.x0, k.y1 - k.y0, k.d1 - k.d0).translate((k.x0 + k.x1) / 2, (k.y0 + k.y1) / 2, -(k.d0 + k.d1) / 2), 6);
+      // a box has six material groups: the two big flat faces (top / bottom) are the clear face material, the four thin sides the tinted edge
+      const g = new THREE.BoxGeometry(k.x1 - k.x0, k.y1 - k.y0, k.d1 - k.d0).translate((k.x0 + k.x1) / 2, (k.y0 + k.y1) / 2, -(k.d0 + k.d1) / 2);
+      g.clearGroups(); [1, 1, 0, 0, 1, 1].forEach((m, i) => g.addGroup(i * 6, 6, m));
+      add(g, 6);
     }
     // interior outline: top and bottom loops, and the vertical corners where panes meet
     const box: number[] = [...ringLines(fp.ring, 0), ...ringLines(fp.ring, H)];
