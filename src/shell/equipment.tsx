@@ -9,13 +9,15 @@ import {
 } from './logic/equipment';
 import { LightingGroup } from './lighting';
 import { Group, Icon, Pill } from './ui';
+import { openSection } from './open';
+import type { SectionId } from './logic/sections';
 
 const CAT_KEY = 'tanklook.ui2.equipCat';
 const loadCat = () => { try { return localStorage.getItem(CAT_KEY) ?? 'filter'; } catch { return 'filter'; } };
 const saveCat = (c: string) => { try { localStorage.setItem(CAT_KEY, c); } catch { /* private window: not remembered */ } };
 
 /** Opens another section's group (Constraints > Your home): App listens to this window event (detail: { section, group }). */
-export const gotoSection = (section: string, group?: string) => dispatchEvent(new CustomEvent('ui2:goto', { detail: { section, group } }));
+const gotoSection = (section: SectionId, group?: string) => openSection(section, group);
 
 function Row({ r, store, cat }: { r: GearRow; store: Store; cat: CatId }) {
   const use = () => store.edit(s => useItem(s, cat, r.item));

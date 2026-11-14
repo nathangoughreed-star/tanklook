@@ -33,3 +33,8 @@ export function escape(s: { drawer: string | null; section: SectionId | null }):
 
 /** Which step of the migration fills each section (screen map §7), shown in the empty placeholder. */
 export const COMES_IN: Record<SectionId, number> = { tank: 3, scape: 7, plants: 7, animals: 4, equipment: 6, preferences: 5, constraints: 5, discover: 10, print: 8, settings: 8 };
+
+/** One "open this section (at this group)" ask, shared by every limit line / link in the shell (SC). The section reads it with takeOpen when it mounts or hears `ui2:open`. */
+let pending: { section: SectionId; group?: string } | undefined;
+export const askOpen = (section: SectionId, group?: string) => { pending = { section, group }; };
+export const takeOpen = (section: SectionId): string | undefined => { if (!pending || pending.section !== section) return undefined; const g = pending.group; pending = undefined; return g; };

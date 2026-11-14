@@ -26,6 +26,7 @@ import { GetStarted } from './checklist';
 import { ConstraintsSection } from './constraints';
 import { PreferencesSection } from './prefs';
 import { EquipmentSection } from './equipment';
+import { OPEN_EVENT } from './open';
 import { scopeOf } from './logic/discover';
 import type { Tab } from '../scene/scope';
 import { CompareButtons, CompareLayer, CompareStrip, CompareDrawer, EditingBar } from './compare';
@@ -231,11 +232,9 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
     addEventListener('keydown', onKey); return () => removeEventListener('keydown', onKey);
   }, [drawer, section, store, files, maker, picker]);
 
-  // S5: a limit line elsewhere ("room 70 deg F, edit") asks Constraints to open at a group (constraints.openLimit)
-  useEffect(() => { const f = (e: Event) => { const d = (e as CustomEvent<{ section?: SectionId }>).detail; if (d?.section) { setMore(false); setPicker(false); setSection(d.section); } }; addEventListener('ui2:open', f); return () => removeEventListener('ui2:open', f); }, []);
+  // SC: the one "open a section (at a group)" event, sent by openSection (limit lines, Cost drawer, Equipment)
+  useEffect(() => { const f = (e: Event) => { const d = (e as CustomEvent<{ section?: SectionId }>).detail; if (d?.section) { setMore(false); setPicker(false); setSection(d.section); if (phone) setDrawer(null); } }; addEventListener(OPEN_EVENT, f); return () => removeEventListener(OPEN_EVENT, f); }, [phone]);
 
-  // S6: another section asks to open a section (and a group inside it): the Heater row's "Edit the room" link
-  useEffect(() => { const f = (e: Event) => { const d = (e as CustomEvent<{ section?: SectionId }>).detail; if (d?.section) { setMore(false); setPicker(false); setSection(d.section); if (phone) setDrawer(null); } }; addEventListener('ui2:goto', f); return () => removeEventListener('ui2:goto', f); }, [phone]);
   const pick = (id: SectionId) => { setMore(false); setPicker(false); if (id === 'discover' && section !== 'discover') setScope(undefined); setSection(railClick(section, id)); if (phone) setDrawer(null); };
   const ideas = (id: SectionId) => { setScope(scopeOf(id)); setMore(false); setPicker(false); setSection('discover'); if (phone) setDrawer(null); };
   const tab = (id: SectionId | 'more') => { if (id === 'more') { setSection(null); setMore(!more); setDrawer(null); } else pick(id); };

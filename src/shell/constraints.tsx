@@ -12,6 +12,8 @@ import {
   limitsModel, setCap, setCapOn, setNoNew, setSpaceDims, setSpaceOn, setRoomF, setWater, setKwh, setRisk, WATER_LABEL, RISK_OPTS, WATERS, usd,
   type CapKey, type LimitGroup,
 } from './logic/constraints';
+import { openSection } from './open';
+import { takeOpen } from './logic/sections';
 import { runFit, type FitRun } from './logic/fit';
 
 const KEY = 'tanklook.ui2.constraints';
@@ -19,9 +21,8 @@ const ORDER: LimitGroup[] = ['money', 'space', 'experience', 'home', 'fit'];
 const loadOpen = (): Record<string, boolean> => { try { return { money: true, space: false, experience: true, home: false, fit: false, ...JSON.parse(localStorage.getItem(KEY) ?? '{}') }; } catch { return { money: true, space: false, experience: true, home: false, fit: false }; } };
 
 /** A limit line elsewhere in the shell asks Constraints to open at a group: `openLimit('home')` (App opens the section; this reads the ask). */
-let ask: LimitGroup | undefined;
-export const openLimit = (group: LimitGroup) => { ask = group; dispatchEvent(new CustomEvent('ui2:open', { detail: { section: 'constraints', group } })); };
-export const takeAsk = (): LimitGroup | undefined => { const g = ask; ask = undefined; return g; };
+export const openLimit = (group: LimitGroup) => openSection('constraints', group);
+const takeAsk = (): LimitGroup | undefined => takeOpen('constraints') as LimitGroup | undefined;
 
 const num = (v: string): number | undefined => { const n = parseFloat(v); return Number.isFinite(n) ? n : undefined; };
 
