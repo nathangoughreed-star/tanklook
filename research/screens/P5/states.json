@@ -1,0 +1,5 @@
+{
+ "after_full_flow(5987)": {"techRoomC": null, "briefRoomC": 20, "briefBudget": {"status":"hard","value":300}, "home": {"water":"own-ro","kwhUsd":0.21,"risk":"moderate"}, "localStorage tanklook.demand": null, "after reload": {"setup":"300","water":"own-ro","kwh":"0.21","risk":"moderate","tRoom":"68"}},
+ "before(5988) same clicks": {"techRoomC": 20, "localStorage tanklook.demand": {"waterSource":"tap","limits":{"risk":"moderate"}}, "note": "water / kWh did not stick before either (setAreaLevel re-rendered the form from the old profile before it was read); fixed here by reading first", "bars": "set-up $238, upkeep $8, 29 min, difficulty 1.3"},
+ "after same clicks, no water/kWh": {"bars": "set-up $224, upkeep $7, 29 min, difficulty 0.6", "cause": "the old room box created S.tech = {rows:{}, roomC}; demand/tech.ts prices gear rows only when S.tech exists (+$14). The room now lives in the brief and creates no tech."}
+}

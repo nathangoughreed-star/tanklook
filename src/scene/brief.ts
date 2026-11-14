@@ -164,6 +164,8 @@ export interface ProjectExtras {
   lidFree?: true;
   /** "No new equipment" (lane DX3): nothing may be bought beyond what is owned; a must-use item that falls short then makes the design infeasible */
   noNewEquipment?: true;
+  /** P5 (one home per setting): what the per-browser cost profile (`tanklook.demand`) used to hold, now with the setup: the water for changes, the electricity rate, the difficulty limit */
+  home?: Home;
   /** AB4: the broad habitat answered at Start New (spec 2.1). A SOFT preference, not a lock; absent on projects started elsewhere */
   direction?: HabitatDirection;
   /** the guide (ui/coach, lane GW1): where the walk through the menus stopped, so it resumes; absent = not started or finished */
@@ -177,6 +179,11 @@ export interface ProjectExtras {
   lean?: { upfront?: { n: number; ref: number }; ongoing?: { n: number; ref: number } };
   quick?: { size?: 'small' | 'medium' | 'large'; /** where on the size slider (0..1) the person left the thumb; the band it falls in is `size` */ sizeAt?: number; /** SZ1: the size range is a firm filter (Firm toggle), not a soft preference */ sizeFirm?: boolean; look?: string[]; plants?: 'definitely' | 'prefer' | 'prefer-not' | 'not'; /** QP1: archetype card states by catalogue key (scene/quickArchetypes.ts); `look` / `plants` are the pre-QP1 answers, kept only until the next write migrates them */ arch?: Record<string, 'interested' | 'avoid'>; avoid?: string[] };
 }
+/** P5: the home costs and the difficulty limit of one setup (absent field = never said). */
+export type HomeWater = 'tap' | 'well' | 'bought-ro' | 'own-ro';
+export const HOME_WATERS: readonly HomeWater[] = ['tap', 'well', 'bought-ro', 'own-ro'];
+export type RiskLimit = 'safe' | 'moderate' | 'any';
+export interface Home { water?: HomeWater; kwhUsd?: number; risk?: RiskLimit }
 /** DQ8: one Like / Dislike. v: 1 like, -1 dislike (taking one back deletes the entry). `elements` are the value's parts (variants, species, 'layout:<id>', feature keys for a whole design). `at` orders entries: newest wins, oldest fall off (FIFO). */
 export interface Feedback { v: 1 | -1; level: 'design' | 'category' | 'item' | 'attr'; cat?: string; target?: string; attr?: 'identity' | 'count' | 'placement' | 'material' | 'size' | 'style'; elements?: string[]; at: number }
 export const MAX_FEEDBACK = 60;
@@ -417,6 +424,13 @@ export function parseProject(raw: unknown): ProjectExtras | undefined {
   if (r.rules === 'sandbox') p.rules = 'sandbox';   // DQ9: 'guided' / anything else is the default and is not stored
   if (r.lidFree === true) p.lidFree = true;
   if (r.noNewEquipment === true) p.noNewEquipment = true;
+  { const h = r.home as Record<string, unknown> | undefined, o: Home = {};
+    if (h && typeof h === 'object') {
+      if (HOME_WATERS.includes(h.water as HomeWater)) o.water = h.water as HomeWater;
+      if (typeof h.kwhUsd === 'number' && Number.isFinite(h.kwhUsd) && h.kwhUsd >= 0 && h.kwhUsd <= 10) o.kwhUsd = h.kwhUsd;
+      if (h.risk === 'safe' || h.risk === 'moderate' || h.risk === 'any') o.risk = h.risk;
+      if (Object.keys(o).length) p.home = o;
+    } }
   if (DIRECTIONS.includes(r.direction as HabitatDirection)) p.direction = r.direction as HabitatDirection;
   const q = r.quick as Record<string, unknown> | undefined;
   if (q && typeof q === 'object') {
@@ -565,3 +579,35 @@ export function briefToWants(b: Brief): Wants {
   if (wi?.includes('larger-tank')) w.larger = true;
   return w;
 }
+
+
+// ---- P5: one home per setting (Nathan, UI2 decision 3). The cost profile lives in the brief; these are its only accessors. ----
+/** The home costs / difficulty limit this setup said (empty when none). */
+export const homeOf = (b: Brief | undefined): Home => b?.project?.home ?? {};
+/** Change some home values (undefined clears one); the brief stays valid and an empty home is removed. */
+export function setHome(b: Brief | undefined, patch: Partial<Record<keyof Home, Home[keyof Home] | undefined>>): Brief {
+  const base = b ?? emptyBrief(), merged: Record<string, unknown> = { ...homeOf(base) };
+  for (const [k, v] of Object.entries(patch)) { if (v === undefined) delete merged[k]; else merged[k] = v; }
+  const pj: ProjectExtras = { ...(base.project ?? {}) }; delete pj.home;
+  if (Object.keys(merged).length) pj.home = merged as Home;
+  return setProjectExtras(base, pj);
+}
+/** Room temperature, deg C: the ONE stored value (the Tech menu's old `tech.roomC` migrates here at load). */
+export const roomTempC = (b: Brief | undefined): number | undefined => b ? valueOf(b, 'constraints.roomTempC') : undefined;
+export const withRoomTempC = (b: Brief | undefined, c: number | undefined): Brief => c === undefined ? clearItem(b ?? emptyBrief(), 'constraints.roomTempC') : setItem(b ?? emptyBrief(), 'constraints.roomTempC', c);
+/** The three money / time caps as the Guardrails form states them, written into the brief (a cap kept with its status; undefined removes it). */
+export function withCaps(b: Brief | undefined, c: Constraints): Brief {
+  let out = b ?? emptyBrief();
+  const put = (id: 'constraints.budget' | 'constraints.monthly' | 'constraints.careMin', cap: Cap | undefined) => {
+    if (!cap) { out = clearItem(out, id); return; }
+    const old = getItem(out, id), it: LimitItem<number> = { ...(old ?? { status: 'hard' as Status }), value: cap.value };
+    if (cap.on) delete it.off; else it.off = true;
+    out = { ...out, items: { ...out.items, [id]: it } };
+  };
+  put('constraints.budget', c.startupUsd); put('constraints.monthly', c.monthlyUsd); put('constraints.careMin', c.minutesPerWeek);
+  if (c.space) out = setItem(out, 'constraints.spaceGate', c.space.on, 'hard');
+  out = c.effort ? setItem(out, 'preferences.effort', c.effort) : clearItem(out, 'preferences.effort');
+  return out;
+}
+/** The brief's caps, space switch and effort as a Constraints (the Guardrails shape). */
+export const capsOf = (b: Brief | undefined): Constraints => briefToWants(b ?? emptyBrief()).constraints;

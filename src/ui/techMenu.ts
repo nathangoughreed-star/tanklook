@@ -7,6 +7,7 @@
 // Heating and Filtration (Nathan 2026-10-20) list the units the tank has, one card each (its name first; a bundle's own
 // with its price crossed out), and an Add button: a heater (generic, its watts editable, or any catalogued one), a filter
 // (its type, then generic or a catalogued one of that type). Removing the last shows "No heater" / "None (Walstad)".
+import { withRoomTempC } from '../scene/brief';
 import { standMisfit } from '../scene/standspace';
 import { FACTORS, demandOf } from '../demand/engine';
 import { pinnedKit } from '../demand/pinned';
@@ -578,7 +579,8 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     }
     if (el.id !== 'tRoom' || !isFinite(+el.value) || el.value === '') return;
     const c = Math.min(40, Math.max(0, fahr() ? fromF(+el.value) : +el.value));
-    edit(s => ({ ...techOf(s), roomC: c }));
+    // P5: the room is stored once, in the brief; any old tech.roomC of this tank goes with it
+    store.edit(s => { s.brief = withRoomTempC(s.brief, c); if (s.tech?.roomC !== undefined) { const { roomC: _r, ...rest } = s.tech; s.tech = rest; } });
   });
   // ---- Lighting (2026-10-20, Nathan: the best-selling lights modelled as the real products): a catalogued light that fits
   // the tank's length (its brackets' range), or the generic fixture set by the controls below. A product sets the fixture,
