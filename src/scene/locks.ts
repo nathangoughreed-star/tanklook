@@ -5,6 +5,7 @@
 //   substrate     one whole lock: settings + terrain grid + painted patches
 import type { Fish, HeldValue, Item, Locks, ObjectLock, RosterLock, RosterMode, TankSetup } from './types';
 import type { Brief } from './brief';
+import { modelLockTargets } from './gearOwn';
 
 /** Property groups per kind of object: the fields each one covers (id and uid are identity, never a property). */
 export const ITEM_PROPS: Record<string, readonly string[]> = {
@@ -57,7 +58,11 @@ export function copyGear(into: TankSetup, from: TankSetup, part: GearLock): void
 }
 
 export const emptyLocks = (): Locks => ({ objects: [], roster: [] });
-export const locksOf = (t: TankSetup): Locks => t.locks ?? emptyLocks();
+/** The tank's locks. P8: a gear part locked in the gear model (scene/gearOwn.ts, the Equipment screen's "use this one for sure") counts as a Discover lock on that part, held whole as the design has it. */
+export const locksOf = (t: TankSetup): Locks => {
+  const add = modelLockTargets(t);
+  return add.length ? { ...(t.locks ?? emptyLocks()), objects: [...(t.locks?.objects ?? []), ...add.map(target => ({ target }))] } : t.locks ?? emptyLocks();
+};
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
 
 /** The groups of `table` whose fields differ between a and b (a field no group names counts as 'other' when the table has one, else 'look'). */
@@ -118,7 +123,7 @@ export type ViolationKind = 'removed' | 'changed' | 'roster' | 'substrate' | 'ta
 export interface Violation { kind: ViolationKind; target: string; props?: string[]; detail: string }
 
 /** Every way `after` breaks a lock that `before` did not (a lock the user's own edits already broke is not charged to the proposal): a held object removed or its held properties changed, the tank or the substrate changed, a roster floor crossed. Pure. */
-export function lockViolations(before: TankSetup, after: TankSetup, locks: Locks | undefined = before.locks): Violation[] {
+export function lockViolations(before: TankSetup, after: TankSetup, locks: Locks | undefined = modelLockTargets(before).length ? locksOf(before) : before.locks): Violation[] {
   const out: Violation[] = [];
   if (!locks) return out;
   const pool = (t: TankSetup): Map<string, Item | Fish>[] => [new Map(t.items.filter(i => i.uid).map(i => [i.uid!, i])), new Map(t.fish.filter(f => f.uid).map(f => [f.uid!, f]))];
