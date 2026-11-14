@@ -11,7 +11,11 @@ import { startSpec, specOfEntry } from './logic/tank';
 import type { UserProfile } from '../demand';
 import { checksModel, CHECKS, type CheckId, type ChecksModel } from './logic/checks';
 import { SECTIONS, PHONE_TABS, MORE, COMES_IN, sectionOf, railClick, escape, type SectionId } from './logic/sections';
+import type { Viewer } from '../render/viewer';
 import { Drawer } from './drawers';
+import { ViewCluster } from './view';
+import { SettingsSection } from './settings';
+import { PrintSection, PrintPaper } from './print';
 import { Icon, Pill } from './ui';
 
 export interface AppProps {
@@ -22,6 +26,8 @@ export interface AppProps {
   save: () => void;
   /** the viewer's view-only preview (picker rows, the maker's scratch tank); null = the scene itself */
   preview: (S: TankSetup | null) => void;
+  /** the viewer (built after the first render, so read on demand) */
+  viewer: () => Viewer | undefined;
 }
 
 /** Re-render on every store change; `slow` (the engines) only once the scene settles, as the old cost panel does. */
@@ -94,7 +100,8 @@ function TabBar({ open, onPick }: { open: SectionId | 'more' | null; onPick: (id
 }
 
 interface TankHost { store: Store; picker: boolean; setPicker: (on: boolean) => void; maker: (h: MakerHow) => void; preview: (S: TankSetup | null) => void; libN: number }
-function Panel({ id, more, onPick, onClose, tank }: { id: SectionId | null; more: boolean; onPick: (id: SectionId) => void; onClose: () => void; tank: TankHost }) {
+interface S8Host { store: Store; profile: () => UserProfile; getViewer: () => Viewer | undefined; phone: boolean }
+function Panel({ id, more, onPick, onClose, tank, s8 }: { id: SectionId | null; more: boolean; onPick: (id: SectionId) => void; onClose: () => void; tank: TankHost; s8: S8Host }) {
   if (more) return (
     <section class="panel" aria-label="More sections">
       <div class="sec-head"><h2>More</h2><button type="button" class="btn icon ghost" aria-label="Close" onClick={onClose}><Icon name="x" /></button></div>
@@ -110,22 +117,17 @@ function Panel({ id, more, onPick, onClose, tank }: { id: SectionId | null; more
       <div class="sec-body"><TankSection store={tank.store} onPicker={() => tank.setPicker(true)} onMaker={tank.maker} libN={tank.libN} /></div>
     </section>
   );
+  if (id === 'print' || id === 'settings') return (
+    <section class={`panel${id === 'print' ? ' printpanel' : ''}`} aria-label={s.title}>
+      <div class="sec-head"><h2>{s.title}</h2>{id === 'print' ? <span class="hint printsub">one page builder, three presets</span> : null}<button type="button" class="btn icon ghost" title="Fold the panel (Esc)" aria-label="Fold the panel" onClick={onClose}><Icon name="x" /></button></div>
+      <div class="sec-body">{id === 'print' ? <PrintSection {...s8} /> : <SettingsSection store={s8.store} getViewer={s8.getViewer} />}</div>
+    </section>
+  );
   return (
     <section class="panel" aria-label={s.title}>
       <div class="sec-head"><h2>{s.title}</h2><button type="button" class="btn icon ghost" title="Fold the panel (Esc)" aria-label="Fold the panel" onClick={onClose}><Icon name="x" /></button></div>
       <div class="sec-body"><div class="empty"><Icon name={s.icon} /><div>{s.title} moves here in shell step {COMES_IN[id]}.</div><div class="hint">Until then the current app (without <code>?ui=2</code>) has it.</div></div></div>
     </section>
-  );
-}
-
-function Cluster({ phone }: { phone: boolean }) {
-  const soon = 'Comes in a later shell step';
-  return (
-    <div class="ov cluster"><div class="toolbar glass">
-      <button type="button" class="btn sm" disabled title={soon}><Icon name="eye" /> View{phone ? '' : ' ▾'}</button>
-      <button type="button" class="btn sm" disabled title={soon}><Icon name="shuffle" /> {phone ? 'Moment' : 'Another moment'}</button>
-      <button type="button" class={`btn sm${phone ? ' icon' : ''}`} disabled title={phone ? `Compare: ${soon.toLowerCase()}` : soon} aria-label="Compare"><Icon name="split" />{phone ? null : ' Compare'}</button>
-    </div></div>
   );
 }
 
@@ -143,7 +145,7 @@ function CheckBar({ m, on, onPick }: { m: ChecksModel; on: CheckId | null; onPic
   );
 }
 
-export function App({ store, viewHost, profile, save, preview }: AppProps) {
+export function App({ store, viewHost, profile, save, preview, viewer }: AppProps) {
   const slow = useStore(store);
   const phone = usePhone();
   const [section, setSection] = useState<SectionId | null>(phone ? null : 'tank');
@@ -188,9 +190,10 @@ export function App({ store, viewHost, profile, save, preview }: AppProps) {
     <div class={cls}>
       <Header store={store} save={save} saved={saved} phone={phone} />
       {phone ? null : <Rail open={section} onPick={pick} />}
-      <Panel id={section} more={more} onPick={pick} onClose={() => { setSection(null); setMore(false); setPicker(false); }} tank={{ store, picker, setPicker, maker: openMaker, preview, libN }} />
+      <Panel id={section} more={more} onPick={pick} onClose={() => { setSection(null); setMore(false); setPicker(false); }} tank={{ store, picker, setPicker, maker: openMaker, preview, libN }} s8={{ store, profile, getViewer: viewer, phone }} />
       <main class="viewer" ref={viewRef}>
-        <Cluster phone={phone} />
+        {section === 'print' && !phone ? <PrintPaper store={store} profile={profile} getViewer={viewer} /> : null}
+        <ViewCluster store={store} getViewer={viewer} phone={phone} />
         {phone ? null : <CheckBar m={model} on={drawer} onPick={check} />}
       </main>
       {phone ? <div class="checkstrip"><CheckBar m={model} on={drawer} onPick={check} /></div> : null}

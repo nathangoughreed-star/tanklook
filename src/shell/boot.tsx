@@ -10,6 +10,7 @@ import { applySavedFx } from '../render/fxPrefs';
 import { attachPointer } from '../interact/pointer';
 import { loadProfile } from '../ui/demandPanel';
 import { App } from './App';
+import { applyViewPrefs } from './view';
 
 export function bootShell() {
   // the old shell off: its markup removed (no old id stays in the page), its stylesheet disabled (kept in place so dev HMR has a node to update)
@@ -37,9 +38,10 @@ export function bootShell() {
   const root = document.createElement('div'); root.id = 'ui2'; document.body.append(root);
   let viewer: Viewer | undefined;
   const preview = (S: Parameters<Viewer['setPreview']>[0]) => viewer?.setPreview(S);
-  render(<App store={store} viewHost={viewHost} profile={loadProfile} save={save} preview={preview} />, root);
+  render(<App store={store} viewHost={viewHost} profile={loadProfile} save={save} preview={preview} viewer={() => viewer} />, root);
 
   viewer = new Viewer(canvas, viewHost, store);
+  applyViewPrefs(viewer, viewHost);
   attachPointer(viewer, store, () => false); // camera only: picking and moving things come with their sections
   if (import.meta.env.DEV) Object.assign(window, { __gb: { store, viewer } });
   document.body.dataset.ui2 = 'ready';
