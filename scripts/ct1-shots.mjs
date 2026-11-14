@@ -58,6 +58,13 @@ await setSel('Brace strip thickness', 0.375 * 25.4); await sleep(500);
 await click('.mform .btn', 'Optimize'); await sleep(6000);
 await click('.mhead .btn', 'Save and use in this setup'); await sleep(8000);
 await shot('05-room-view-with-braces', 3000);
+await orbit(-250, 160); await sleep(1500); await shot('05b-room-3-4-top-angle', 2500);
+await orbit(250, -160);
+// preview in my setup stays until Back now (R39)
+await newMaker(); await dims(48, 18, 20); await click('.mhead .btn', 'Preview in my setup'); await sleep(30000);
+await shot('05c-preview-in-setup-after-30s', 500);
+facts.previewAfter30s = await ev(`!!document.querySelector('.mbanner')`);
+await click('.mbanner .btn', 'Back now'); await sleep(1500); await click('.mhead .btn', 'Cancel').catch(() => {}); await sleep(500); await ev(`[...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Cancel')?.click(); true`).catch(() => {});
 // the name following the size
 await newMaker(); await dims(36, 10, 10);
 await shot('06-name-follows-36x10x10', 1500);

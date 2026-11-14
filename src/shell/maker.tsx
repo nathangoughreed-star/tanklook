@@ -71,12 +71,11 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
   useEffect(() => { preview(inSetup ? previewSpec(store.tank, spec, shownBrace) : makerSetup(spec, store.tank, shownBrace)); }, [spec, inSetup, braceKey]);
   // a new size is framed again once it settles (the person can still orbit and zoom in between)
   useEffect(() => { if (inSetup) return; const t = setTimeout(() => store.update(s => { s.tanks[s.active].camera = { ...s.tanks[s.active].camera, zoom: MAKER_CAM(cam0.current, spec.tank).zoom }; }, { kind: 'view', history: false }), 400); return () => clearTimeout(t); }, [spec.tank.L, spec.tank.D, spec.tank.H]);
-  // "Preview in my setup" shows it in the room for a moment, then comes back (§2a)
+  // "Preview in my setup" shows it in the room until the person clicks Back now (no timer; Nathan 2026-11-14, R39)
   useEffect(() => {
     if (!inSetup) return;
     store.update(s => { s.tanks[s.active].camera = cam0.current; }, { kind: 'view', history: false });
-    const t = setTimeout(() => setInSetup(false), 5000);
-    return () => { clearTimeout(t); store.update(s => { s.tanks[s.active].camera = MAKER_CAM(cam0.current, spec.tank); }, { kind: 'view', history: false }); };
+    return () => { store.update(s => { s.tanks[s.active].camera = MAKER_CAM(cam0.current, spec.tank); }, { kind: 'view', history: false }); };
   }, [inSetup]);
   // the glass solver runs after edits settle (a box tank: about half a second with the brace optimizer)
   useEffect(() => { setPanel(null); const t = setTimeout(() => { const p = glassPanel(spec.tank, spec.rim, choice, u); setPanel(p); setShownBrace(p.braceNow); }, 250); return () => clearTimeout(t); }, [spec.tank, spec.rim, choice, u]);
@@ -133,7 +132,7 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
         <b class="mtitle">Custom tank maker</b>
         <span class="hint msub">Your setup "{name}" is not touched until you save</span>
         <span class="grow" />
-        <button type="button" class={`btn ghost${inSetup ? ' on' : ''}`} aria-pressed={inSetup} onClick={() => setInSetup(!inSetup)} title="Shows it in your room for a moment, then comes back here"><Icon name="eye" /> {inSetup ? 'Back to the maker' : 'Preview in my setup'}</button>
+        <button type="button" class={`btn ghost${inSetup ? ' on' : ''}`} aria-pressed={inSetup} onClick={() => setInSetup(!inSetup)} title="Shows it in your room until you click Back now"><Icon name="eye" /> {inSetup ? 'Back to the maker' : 'Preview in my setup'}</button>
         <button type="button" class="btn" onClick={cancel}>Cancel</button>
         <button type="button" class="btn" onClick={() => save(false)}>Save to my tanks</button>
         <button type="button" class="btn primary" onClick={() => save(true)}>Save and use in this setup</button>
@@ -182,7 +181,7 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
         <Toggle on={!!spec.owned} label="I own this tank" onFlip={on => setSpec({ ...spec, owned: on })} />
       </aside>
       <main class="mview" ref={viewRef}>
-        {inSetup ? <div class="ov mbanner glass">Your setup with this tank, for a moment. <button type="button" class="btn sm" onClick={() => setInSetup(false)}>Back now</button></div> : <>
+        {inSetup ? <div class="ov mbanner glass">Your setup with this tank. <button type="button" class="btn sm" onClick={() => setInSetup(false)}>Back now</button></div> : <>
           <EdgeLabels store={store} getViewer={getViewer} T={spec.tank} texts={{ L: facts.L, D: facts.D, H: facts.H }} />
           <div class="ov dims glass" aria-label="Dimensions"><span><b>{facts.L}</b> {shape === 'round' || shape === 'bowl' ? 'across' : 'length'}</span><span><b>{facts.D}</b> {shape === 'bow' ? 'depth at centre' : 'depth'}</span><span><b>{facts.H}</b> height</span>{facts.bow ? <span><b>{facts.bow}</b> bow</span> : null}</div>
         </>}
