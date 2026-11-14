@@ -13,6 +13,7 @@ import { checksModel, CHECKS, type CheckId, type ChecksModel } from './logic/che
 import { SECTIONS, PHONE_TABS, MORE, COMES_IN, sectionOf, railClick, escape, type SectionId } from './logic/sections';
 import { Drawer } from './drawers';
 import { Icon, Pill } from './ui';
+import { ProjectName, FileMenu, FileLayer, type Files } from './files';
 
 export interface AppProps {
   store: Store;
@@ -22,6 +23,8 @@ export interface AppProps {
   save: () => void;
   /** the viewer's view-only preview (picker rows, the maker's scratch tank); null = the scene itself */
   preview: (S: TankSetup | null) => void;
+  /** the file menu's controller (files.tsx), built by boot.tsx */
+  files: Files;
 }
 
 /** Re-render on every store change; `slow` (the engines) only once the scene settles, as the old cost panel does. */
@@ -47,24 +50,16 @@ function usePhone() {
   return m;
 }
 
-function Header({ store, save, saved, phone }: { store: Store; save: () => void; saved: boolean; phone: boolean }) {
-  const [menu, setMenu] = useState(false);
+function Header({ store, files, saved, phone }: { store: Store; files: Files; saved: boolean; phone: boolean }) {
   return (
     <header class="apphead">
       {phone ? null : <span class="brand">TankLook</span>}
-      <span class="proj" title={store.scene.name}><span class="pname">{phone ? '' : '· '}{store.scene.name || 'Untitled'}</span>
-        <span class={`dot${saved ? '' : ' off'}`} title={saved ? 'Saved in this browser' : 'Saving…'} /></span>
+      <ProjectName store={store} files={files} saved={saved} phone={phone} />
       <span class="grow" />
       <button type="button" class="btn icon ghost" title="Undo (Ctrl+Z)" aria-label="Undo" disabled={!store.canUndo} onClick={() => store.undo()}><Icon name="undo" /></button>
       <button type="button" class="btn icon ghost" title="Redo (Ctrl+Y)" aria-label="Redo" disabled={!store.canRedo} onClick={() => store.redo()}><Icon name="redo" /></button>
-      <button type="button" class="btn sm" title="Save in this browser (Ctrl+S)" onClick={save}><Icon name="save" />{phone ? null : ' Save'}</button>
-      <span class="menuwrap">
-        <button type="button" class="btn icon ghost" title="New, Open, Save as, Share link, Download" aria-label="More" aria-expanded={menu} onClick={() => setMenu(!menu)}><Icon name="more" /></button>
-        {menu ? <div class="pop menu" role="menu" onClick={() => setMenu(false)}>
-          {['New', 'Open…', 'Save as…', 'Share link', 'Download'].map(t => <button type="button" class="btn ghost" role="menuitem" disabled title="Comes in shell step 2">{t}</button>)}
-          <div class="hint">These come in shell step 2.</div>
-        </div> : null}
-      </span>
+      <button type="button" class="btn sm" title="Save in this browser (Ctrl+S)" onClick={() => files.save()}><Icon name="save" />{phone ? null : ' Save'}</button>
+      <FileMenu files={files} />
     </header>
   );
 }
@@ -143,7 +138,7 @@ function CheckBar({ m, on, onPick }: { m: ChecksModel; on: CheckId | null; onPic
   );
 }
 
-export function App({ store, viewHost, profile, save, preview }: AppProps) {
+export function App({ store, viewHost, profile, preview, files }: AppProps) {
   const slow = useStore(store);
   const phone = usePhone();
   const [section, setSection] = useState<SectionId | null>(phone ? null : 'tank');
@@ -173,10 +168,10 @@ export function App({ store, viewHost, profile, save, preview }: AppProps) {
       if (e.key === 'Escape') { const n = escape({ drawer, section }); setDrawer(n.drawer as CheckId | null); setSection(n.section); setMore(false); return; }
       if (typing || !(e.ctrlKey || e.metaKey)) return;
       const k = e.key.toLowerCase();
-      if (k === 'z' && !e.shiftKey) { e.preventDefault(); store.undo(); } else if (k === 'y' || (k === 'z' && e.shiftKey)) { e.preventDefault(); store.redo(); } else if (k === 's') { e.preventDefault(); save(); }
+      if (k === 'z' && !e.shiftKey) { e.preventDefault(); store.undo(); } else if (k === 'y' || (k === 'z' && e.shiftKey)) { e.preventDefault(); store.redo(); } else if (k === 's') { e.preventDefault(); files.save(); }
     };
     addEventListener('keydown', onKey); return () => removeEventListener('keydown', onKey);
-  }, [drawer, section, store, save, maker, picker]);
+  }, [drawer, section, store, files, maker, picker]);
 
   const pick = (id: SectionId) => { setMore(false); setPicker(false); setSection(railClick(section, id)); if (phone) setDrawer(null); };
   const tab = (id: SectionId | 'more') => { if (id === 'more') { setSection(null); setMore(!more); setDrawer(null); } else pick(id); };
@@ -186,7 +181,7 @@ export function App({ store, viewHost, profile, save, preview }: AppProps) {
 
   return (
     <div class={cls}>
-      <Header store={store} save={save} saved={saved} phone={phone} />
+      <Header store={store} files={files} saved={saved} phone={phone} />
       {phone ? null : <Rail open={section} onPick={pick} />}
       <Panel id={section} more={more} onPick={pick} onClose={() => { setSection(null); setMore(false); setPicker(false); }} tank={{ store, picker, setPicker, maker: openMaker, preview, libN }} />
       <main class="viewer" ref={viewRef}>
@@ -196,6 +191,7 @@ export function App({ store, viewHost, profile, save, preview }: AppProps) {
       {phone ? <div class="checkstrip"><CheckBar m={model} on={drawer} onPick={check} /></div> : null}
       {drawer ? <Drawer id={drawer} model={model} onClose={() => setDrawer(null)} /> : null}
       {phone ? <TabBar open={more ? 'more' : section} onPick={tab} /> : null}
+      <FileLayer store={store} files={files} />
       {maker ? <Maker store={store} init={maker} viewHost={viewHost} preview={preview} onEnd={() => { setMaker(null); setLibN(n => n + 1); }} /> : null}
     </div>
   );

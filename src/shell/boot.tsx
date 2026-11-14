@@ -10,6 +10,9 @@ import { applySavedFx } from '../render/fxPrefs';
 import { attachPointer } from '../interact/pointer';
 import { loadProfile } from '../ui/demandPanel';
 import { App } from './App';
+import { createFiles } from './files';
+import { startMode } from './logic/files';
+import { isShareHash } from '../scene/share';
 
 export function bootShell() {
   // the old shell off: its markup removed (no old id stays in the page), its stylesheet disabled (kept in place so dev HMR has a node to update)
@@ -19,7 +22,8 @@ export function bootShell() {
   document.body.className = 'ui2';
   document.title = 'TankLook (new UI preview)';
 
-  const { scene: restored } = Store.loadLocalChecked(); // a first visit opens an empty tank; Start / Open come in shell step 2
+  const { scene: restored, error: saveError } = Store.loadLocalChecked(); // a return visit resumes the autosave; a first visit opens an empty tank (shell step 2)
+  const start = startMode(restored, saveError);
   applySavedFx();
   const store = new Store(restored ?? undefined);
 
@@ -37,10 +41,20 @@ export function bootShell() {
   const root = document.createElement('div'); root.id = 'ui2'; document.body.append(root);
   let viewer: Viewer | undefined;
   const preview = (S: Parameters<Viewer['setPreview']>[0]) => viewer?.setPreview(S);
-  render(<App store={store} viewHost={viewHost} profile={loadProfile} save={save} preview={preview} />, root);
+  // the file menu (step 2): every operation is P7's src/ui/logic/files.ts; the thumbnail comes from the viewer, built just below
+  const files = createFiles(store, () => viewer!.thumbnail());
+  render(<App store={store} viewHost={viewHost} profile={loadProfile} save={save} preview={preview} files={files} />, root);
 
   viewer = new Viewer(canvas, viewHost, store);
   attachPointer(viewer, store, () => false); // camera only: picking and moving things come with their sections
+  // a share link (#tank=...) opens its tank; the hash is dropped so a reload keeps the visitor's edits (as the old shell does)
+  const openLink = () => {
+    if (!isShareHash(location.hash)) return false;
+    const h = location.hash; history.replaceState(null, '', location.pathname + location.search);
+    void files.openShared(h); return true;
+  };
+  addEventListener('hashchange', openLink);
+  if (!openLink() && start.message) files.say(start.message, true);
   if (import.meta.env.DEV) Object.assign(window, { __gb: { store, viewer } });
   document.body.dataset.ui2 = 'ready';
 }
