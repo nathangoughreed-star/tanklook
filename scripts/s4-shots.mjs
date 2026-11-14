@@ -61,7 +61,7 @@ await click('.group .gh', 'Water look');
 await click('.tglrow', 'Fits this tank'); await type('Search animals', 'oscar'); phase = 'greyed';
 await scrollTo('.animals .cap', 'Add animals');
 await shot('04-animals-greyed-with-reason', 2500);
-facts.greyed = await ev(`[...document.querySelectorAll('.prow')].map(r => r.innerText.replace(/\n/g, ' | '))`);
+facts.greyed = await ev(`[...document.querySelectorAll('.prow')].map(r => r.innerText.split(String.fromCharCode(10)).join(' | '))`);
 await click('.tglrow', 'Fits this tank'); await type('Search animals', '');
 facts.fitsBackOn = await ev(`document.querySelector('.tglrow').getAttribute('aria-checked')`);
 
@@ -72,7 +72,7 @@ facts.selection = await ev(`document.querySelector('.drawer')?.innerText`);
 facts.rowHighlighted = await ev(`!!document.querySelector('.sr.sel')`);
 
 // a stocking made here: add a betta, wait for the autosave, read the saved scene
-await click('.drawer .btn[aria-label="Close"]', ''); await type('Search animals', 'betta');
+await click('.drawer .btn[aria-label="Close"]', ''); await type('Search animals', 'pygmy');
 await click('.prow .btn', 'Add'); await sleep(1500);
 await shot('06-added-an-animal', 2000);
 await sleep(800);
