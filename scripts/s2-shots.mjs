@@ -51,7 +51,7 @@ await click('.menuwrap .btn', ''); await click('.pop.menu .btn', 'Open'); await 
 facts.openRows = await ev(`[...document.querySelectorAll('.dlg .libcard .t')].map(e => e.textContent)`);
 await click('.dlg .seg button', 'Examples'); await shot('04-open-examples', 1500);
 await click('.dlg .seg button', 'File or link'); await shot('05-open-file-or-link', 800);
-await click('.dlg .btn', ''); await ev(`document.querySelector('.dlg [aria-label=Close]').click(); true`);
+await ev(`document.querySelector('.dlg [aria-label=Close]').click(); true`);
 // Save as
 await click('.menuwrap .btn', ''); await click('.pop.menu .btn', 'Save as'); await shot('06-save-as', 800);
 await ev(`document.querySelector('.dlg [aria-label=Close]').click(); true`);
