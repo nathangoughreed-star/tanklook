@@ -56,6 +56,9 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R38 | 11-14 | Custom tank: pie slice by angle / radius / height up to 360 deg (absorbs round); polygon any side count with independently editable sides (impossible shapes refused); dimensions editable by clicking the on-screen dimension boxes | CT1 | - | - | - | brief prompts/lane-CT1-maker-braces.md Part 2 |
 | R39 | 11-14 | Custom tank maker: "preview in my setup" has no timer; stays until Back now | CT1 | - | - | - | brief prompts/lane-CT1-maker-braces.md Part 3 |
 | R40 | 11-14 | New UI (?ui=2): click a thing in the view opens its section at its options (worked in old UI only) | CM2 | - | - | - | brief prompts/lane-CM2-click-open-shell.md; cause: clickMenu.ts openMenuFor looks for old-UI DOM |
+| R41 | 11-14 | New UI: Water look moves from Animals to the Tank tab | AT1 | - | - | - | brief prompts/lane-AT1-animals-tab.md (sent via CT1) |
+| R42 | 11-14 | New UI: no size setting when adding animals; adjust % of adult size on an existing fish | AT1 | - | - | - | same brief |
+| R43 | 11-14 | New UI: "Fits this tank" hides schooling species (black molly, cardinal, cherry barb, chili rasbora) on an empty tank (group / sex rules judged on one fish) | AT1 | - | - | - | same brief |
 | R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
 | R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
