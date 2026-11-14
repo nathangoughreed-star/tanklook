@@ -8,7 +8,7 @@ import { hoodExists, hoodOf, hoodsFor, NO_HOOD_NOTE } from '../data/hoods';
 import { attachDemandPanel, loadProfile } from './demandPanel';
 import { fitToLimits, hasLimits } from '../demand/fit';
 import { attachTechMenu } from './techMenu';
-import { SUMP_MODELS, sumpFromModel, tempEvidence, heatLoss } from '../scene/tech';
+import { SUMP_MODELS, sumpFromModel, heatLoss } from '../scene/tech';
 import { defaultLid, lidFreeProsCons, openTopProblem, setLidFree } from '../data/lidNeed';
 import { standMisfit } from '../scene/standspace';
 import { renderFeaturedDeals } from './featuredDeals';
@@ -24,6 +24,8 @@ import { roomOf, setRoomAuto, setRoomByHand } from '../scene/roomlight';
 import { putOnFloor, putOnMyFurniture, putOnStand, placementOf, minTop, type Placement } from '../scene/placement';
 import { confirmNew } from './newTank';
 import * as fileOps from './logic/files';
+import * as animalPicker from './logic/animalPicker';
+import * as stockEdit from '../scene/stockEdit';
 import { startProject, confirmStart, setProjectAsker, regenerateKeepingLocks, hasLocks } from './projectStart';
 import { startDeals, visibleTabs, pickTab, sortDeals, DEFAULT_SORT, type DealSort, type StartTab } from './startEntries';
 import { DEALS_AS_OF, DEAL_NOTE, NOT_SPONSORED } from '../data/deals';
@@ -34,17 +36,15 @@ import { lifeStages } from '../data/lifestages';
 import { rng } from '../art/paint';
 import { GRAIN_LOOK, SUBSTRATES, drawFishCard } from '../art/placeholder';
 import { drawSnailCard } from '../art/snails';
-import { SPECIES, fishTL, getSpecies, needsWater, searchSpecies, speciesOf, speciesTag, type Sex, type Species } from '../data/species';
+import { SPECIES, fishTL, getSpecies, searchSpecies, speciesOf, speciesTag, type Sex, type Species } from '../data/species';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { BACKDROPS } from '../render/backdrop';
 import { gearShown, setGearShown } from '../render/gear3d';
 import { MAP_DIV, MAP_STEP, emitters, mapStepOf } from '../render/lighting';
 import { darkOf, darkStats } from '../render/lightShells';
-import { gateOf, hasCorals, whysAnimal, type AnimalWhy } from '../scene/animalfit';
-import { minFit } from '../scene/tankMin';
-import { startCount, pickerReader } from './pickerStrict';
-import { OK_FIT, ROLES, SETUP_KINDS, setupKinds, applyKind, fitFrom, groupPicker, offeredIn, roleOf, rolesFor, tankKind, type Fit, type Role, type SetupKind } from '../scene/pickerKind';
-import { CARE, EXPERTISE_NAME } from '../data/care';
+import { startCount } from './pickerStrict';
+import { ROLES, SETUP_KINDS, setupKinds, applyKind, groupPicker, offeredIn, roleOf, rolesFor, tankKind, type Fit, type Role, type SetupKind } from '../scene/pickerKind';
+import { CARE } from '../data/care';
 import { CARE_NAME, FIT_PAR, fitCaption, whyNot, type FitLight } from '../scene/plantfit';
 import { itemLights, tankSummary } from '../scene/lightcheck';
 import { topGearReach, TOP_GEAR_GAP } from '../scene/topgear';
@@ -71,7 +71,7 @@ import {
   CEILING_MAX, CEILING_MIN, IN, backdropDepth, ceilingH, clamp, clampFish, fmtLen, glassThickness, toUnit, volume, WALL_GAP_MAX, waterY,
 } from '../scene/physics';
 import type { Store } from '../scene/store';
-import { NEW_POOL, SWAMP_LEVEL, groundHeight, nearestLand, sampleTerrain } from '../scene/terrain';
+import { NEW_POOL, SWAMP_LEVEL, groundHeight, sampleTerrain } from '../scene/terrain';
 
 /** Arrow keys move the selected piece: [axis, direction] (depth grows toward the back). */
 const ARROWS: Record<string, [string, number]> = { ArrowLeft: ['x', -1], ArrowRight: ['x', 1], ArrowUp: ['d', 1], ArrowDown: ['d', -1], PageUp: ['y', 1], PageDown: ['y', -1] };
@@ -79,7 +79,7 @@ import { climateHtml, climateOf } from '../data/climate';
 import { growthCheck } from '../scene/growcheck';
 import { herpCheck } from '../scene/herpcheck';
 import { HERP } from '../data/herpstock';
-import { placeNew, randomPose, randomSize, shuffleFish } from '../scene/scatter';
+import { shuffleFish } from '../scene/scatter';
 import { fitFish, keepInWater, setWaterLevel } from '../scene/water';
 import { tankWeight } from '../scene/weight';
 import { isOver, stockingDetail, stockingLine, stockingMemo } from '../scene/stocking';
@@ -728,12 +728,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // ---------- Species search & adding animals ----------
   /** Clear water for each type (2026-10-13): marine clear is bluer than the fresh default. */
   const BLACKWATER: [string, number] = ['#6b3d14', 0.42]; // blackwater's tea tint (lane SS2)
-  /** A saltwater tank: salt set and water on (a dry tank lists the freshwater and land animals). */
-  const isSalt = (s: TankSetup) => s.water.on && !!s.water.salt;
-  /** Does this species belong in this tank? Species without `salt` are freshwater (or land). */
-  const fitsWater = (sp: Species, s: TankSetup) => !!sp.salt === isSalt(s);
-  /** Animals in this tank that do not fit its water (offered for removal in the Water section). */
-  const misfits = (s: TankSetup) => s.fish.filter(f => { const sp = getSpecies(f.species); return !!sp && !fitsWater(sp, s); });
+  const { isSalt, fitsWater, misfits } = stockEdit;
   let pickId = 'neon';
   const search = $('spSearch'), results = $<HTMLDivElement>('spResults');
   // role groups (lane S252, 2026-10-27): the picker offers what this kind of setup keeps (freshwater, saltwater, terrarium,
@@ -746,36 +741,11 @@ export function attachPanels(store: Store, viewer: Viewer) {
   /** How each species sits in this tank. Two readings (lane S254): the cheap per-species one (animalfit.ts) is drawn at once; the exact one is the
    *  Suggest rule (pickerStrict.ts: would the stocking summary word a new Caution / Problem with it added?), worked out a slice at a time after the
    *  first paint, kept per stock signature (the picker opens often), and replaces the cheap one as it arrives. */
-  let fitKey = '', fitMemo = new Map<string, Fit>(), exact = new Map<string, Fit>(), exactRead: ((sp: Species) => Fit) | undefined, gen = 0, refining = -1;
-  const stockKey = (s: TankSetup) => JSON.stringify([s.tank, s.water, s.tech, s.fish.map(f => [f.species, f.sex, f.gender, f.tl]), s.items.map(it => [it.kind, it.variant]), s.layout.gateStock, s.layout.gateAnimals, s.layout.expertise, s.constraints, s.stand, s.lid, store.scene.units, rulesOf(getBrief())]);
-  function fitsFor(s: TankSetup): (sp: Species) => Fit {
-    const gated = !!s.layout.gateStock && !!s.layout.gateAnimals, ex = (s.layout.expertise ?? 1) as 1 | 2 | 3, present = [...new Set(s.fish.map(f => f.species))].sort();
-    const key = stockKey(s);
-    if (key !== fitKey) {
-      fitKey = key; fitMemo = new Map(); exact = new Map(); gen++; refining = -1;
-      const litres = volume(s.tank).litres, have = present.map(getSpecies).filter((x): x is Species => !!x);
-      const env = { corals: hasCorals(s.items), water: s.tech ? tempEvidence(s, undefined, store.scene.units === 'in') : undefined, fit: minFit(s) };
-      const sandbox = rulesOf(getBrief()) === 'sandbox';   // DQ9: Sandbox grays nothing
-      for (const sp of SPECIES) fitMemo.set(sp.id, sandbox ? OK_FIT : fitFrom(whysAnimal(sp, litres, ex, have, env), gated));
-      exactRead = pickerReader(rulesOf(getBrief()), s, store.scene.units, sp => fitMemo.get(sp.id) ?? OK_FIT);
-    }
-    return sp => exact.get(sp.id) ?? fitMemo.get(sp.id) ?? OK_FIT;
-  }
-  /** The exact reading of one species now (the picked one: Add anyway must read what the summary will say). */
-  const exactNow = (sp: Species): Fit => { fitsFor(S()); let f = exact.get(sp.id); if (!f && exactRead) exact.set(sp.id, f = exactRead(sp)); return f ?? OK_FIT; };
-  /** Works the exact reading through the species the picker lists (the open group first) in ~20 ms slices, then redraws once. */
-  function refineFits(list: Species[]) {
-    fitsFor(S()); const mine = gen, todo = list.filter(sp => !exact.has(sp.id));
-    if (!todo.length || !exactRead || refining === mine) return;
-    refining = mine;
-    const step = () => {
-      if (gen !== mine || !exactRead) return;
-      const t0 = performance.now();
-      while (todo.length && performance.now() - t0 < 20) { const sp = todo.shift()!; if (!exact.has(sp.id)) exact.set(sp.id, exactRead(sp)); }
-      if (todo.length) setTimeout(step, 0); else { refining = -1; renderResults(); }
-    };
-    setTimeout(step, 0);
-  }
+  const fitter = animalPicker.createFitter();
+  const picker = () => [S(), store.scene.units, rulesOf(getBrief())] as const;
+  const fitsFor = (s: TankSetup) => fitter.fitsFor(s, store.scene.units, rulesOf(getBrief()));
+  const exactNow = (sp: Species): Fit => fitter.exactNow(...picker(), sp);
+  const refineFits = (list: Species[]) => fitter.refineFits(...picker(), list, renderResults);
   const setKind = (k: SetupKind) => {
     if (tankKind(S()) === k) return;
     store.edit(s => applySetupKind(s, k)); // scene/tankEdit.ts: the other type's clear water and layout style follow
@@ -783,25 +753,14 @@ export function attachPanels(store: Store, viewer: Viewer) {
     status(`${SETUP_KINDS.find(x => x[0] === k)![1]}: the Animals list shows what suits it.${n ? ` ${n} animal${n > 1 ? 's' : ''} here ${n > 1 ? 'do' : 'does'} not fit the water: they are marked in the stocking list.` : ''}`);
   };
   kinds.replaceChildren(...setupKinds().map(([k, label, tip]) => { const b = document.createElement('button'); b.dataset.kind = k; b.textContent = label; b.title = tip; b.onclick = () => setKind(k); return b; }));
-  /** What each care level asks of the keeper: rough, typical aquarium / vivarium practice, not a rule. */
-  const CARE_LEVEL: Record<1 | 2 | 3, string> = {
-    1: 'Hardy, forgiving animals that take small mistakes: a basic filter or a simple setup, a weekly water change of about a quarter, and 15 to 30 minutes of care a week.',
-    2: 'Animals that are fussier about temperature, water chemistry or food: stable, tested water, steady routines, a tuned or planted setup, and about an hour a week.',
-    3: 'Demanding or delicate animals: tight water parameters with frequent tests and changes, special foods, quarantine for new arrivals, and several hours a week plus a daily check.',
-  };
-  /** The care gates (Quick Setup): the box is shown while "Stock by care gates" is on; the list is grayed by them when its own box is ticked too. Null while off. */
-  function animalGate(s: TankSetup): ((sp: Species) => (AnimalWhy & { more: string[]; block: boolean }) | null) | null {
-    const stock = !!s.layout.gateStock, on = stock && !!s.layout.gateAnimals, ex = (s.layout.expertise ?? 1) as 1 | 2 | 3, hint = $('gateAnimalsHint');
-    $<HTMLInputElement>('gateStock').checked = stock; $('gateBox').hidden = !stock;
-    $<HTMLInputElement>('gateAnimals').checked = !!s.layout.gateAnimals;
-    $('oExpertise').textContent = EXPERTISE_NAME[ex]; $('expertiseHint').textContent = CARE_LEVEL[ex];
-    hint.hidden = !on; hint.textContent = on ? 'Grayed in the list: does not suit this tank, the care level or the animals already in it. They can still be added.' : '';
-    if (!on) return null;
-    const litres = volume(s.tank).litres, present = [...new Set(s.fish.map(f => f.species))].map(getSpecies).filter((x): x is Species => !!x);
-    const env = { corals: hasCorals(s.items), water: s.tech ? tempEvidence(s, undefined, store.scene.units === 'in') : undefined, fit: minFit(s) }; // the tank's target, or with no heater the room it follows
-    // the main blocking reason, and how many other material concerns stand under it (all of them in the tooltip); with no blocker the
-    // first concern is the visible message (a note, the item not grayed), so an advisory never hides behind a clean-looking row
-    return sp => gateOf(whysAnimal(sp, litres, ex, present, env));
+  /** The care gates (Quick Setup): the box is shown while "Stock by care gates" is on; the list is grayed by them when its own box is ticked too. */
+  function animalGate(s: TankSetup) {
+    const g = animalPicker.gateView(s), hint = $('gateAnimalsHint');
+    $<HTMLInputElement>('gateStock').checked = g.stock; $('gateBox').hidden = !g.stock;
+    $<HTMLInputElement>('gateAnimals').checked = g.animals;
+    $('oExpertise').textContent = g.name; $('expertiseHint').textContent = g.care;
+    hint.hidden = !g.on; hint.textContent = g.hint;
+    return animalPicker.animalGate(s, store.scene.units);
   }
   $('gateAnimals').onchange = e => store.edit(s => { if ((e.target as HTMLInputElement).checked) s.layout.gateAnimals = true; else delete s.layout.gateAnimals; });
   function renderResults() {
@@ -900,55 +859,17 @@ export function attachPanels(store: Store, viewer: Viewer) {
       return b;
     }));
   }
-  /** Water surface for placement: the water line, or -1 in a dry tank (all ground counts as land). */
-  const surfaceY = (s: TankSetup) => (s.water.on ? waterY(s.tank, s.water.level) : -1);
-  /** Why this species cannot be added right now ('' = it can). */
-  function blocked(sp: Species): string {
-    const s = S();
-    if (!s.water.on && needsWater(sp)) return 'Fish need water: turn Water on (Water section).';
-    if (sp.habitat === 'land' && !nearestLand(s, s.tank, surfaceY(s), 0, 0))
-      return 'Land animals need ground above the water: lower the water, or use the Swamp layout or Custom terrain.';
-    return '';
-  }
+  const blocked = (sp: Species) => stockEdit.blocked(S(), sp);
   /** Default count when a species joins the list: a group for schooling / shoaling fish, else one. */
-  /** Is this fish in the species' list row? A dimorphic species has a row per sex. */
-  const inRow = (f: Fish, sp: Species, sex?: Sex) => f.species === sp.id && (!sp.female || (f.sex === 'f') === (sex === 'f'));
-  /** Set how many of a species each edited tank holds (`to` gets the tank's current count). New animals take the
-   *  species' sizes from "New fish size"; only they are placed (joining their species' school if it is already in the
-   *  tank, else by the shuffle rules), everyone else stays put (Nathan 2026-10-13). 0 takes the species off the list.
+  const { inRow, rowName } = stockEdit;
+  /** Set how many of a species each edited tank holds (`to` gets the tank's current count); see scene/stockEdit.ts.
    *  One undo step per burst of clicks. */
   function setCount(sp: Species, to: (n: number) => number, sex?: Sex, at?: PlaceAt) {
-    const want = Math.round(to(S().fish.filter(f => inRow(f, sp, sex)).length));
-    if (want > 0) { const why = blocked(sp); if (why) { status(why, true); renderResults(); return; } }
-    const have = S().fish.filter(f => inRow(f, sp, sex)).length;
-    if (want > have && S().fish.length >= LIMITS.maxFish) { status(`A tank holds at most ${LIMITS.maxFish} animals.`, true); sync(); return; } // audit #36
-    const first = store.nextId(), seed = Math.random() * 1e9;
-    store.edit(s => {
-      const r = rng(seed), mine = s.fish.filter(f => inRow(f, sp, sex)), added = new Set<number>();
-      const n = clamp(Math.round(to(mine.length)), 0, mine.length + LIMITS.maxFish - s.fish.length);
-      if (n === mine.length) return;
-      if (n < mine.length) { const drop = new Set(mine.slice(n).map(f => f.id)); s.fish = s.fish.filter(f => !drop.has(f.id)); return; }
-      for (let id = first; mine.length < n; id++) {
-        const f: Fish = { id, species: sp.id, x: s.tank.L / 2, y: 0, depth: s.tank.D / 2, ...randomPose(sp, r, 0), ...(sex && sp.female ? { sex } : {}) };
-        randomSize(f, sp, addPct(), r);
-        mine.push(f); s.fish.push(f); added.add(id);
-      }
-      placeNew(s, r, added);
-      // dropped into the tank: the newcomers, placed as above, move over together so they gather round the drop point,
-      // each at its height above the ground there, and off the front and back glass (seen from the front, the ground
-      // under the pointer is right behind the glass); the glass and land animals keep the spots their rules gave them
-      if (at && sp.habitat === 'water') {
-        const fs = s.fish.filter(f => added.has(f.id) && f.surface !== 'glass'), T = s.tank, g = (x: number, d: number) => groundHeight(s, T, x, d);
-        const top = s.water.on ? waterY(T, s.water.level) : T.H, wb = backdropDepth(s.backdrop, T);
-        const dx = at.x - fs.reduce((a, f) => a + f.x, 0) / (fs.length || 1), dd = clamp(at.depth, T.D * 0.25, T.D * 0.75) - fs.reduce((a, f) => a + f.depth, 0) / (fs.length || 1);
-        for (const f of fs) {
-          const up = f.y - g(f.x, f.depth);
-          f.x += dx; f.depth += dd; clampFish(f, T, wb, s.render.bgSides);
-          f.y = clamp(g(f.x, f.depth) + up, 0, top);
-          clampFish(f, T, wb, s.render.bgSides);
-        }
-      }
-    }, { coalesce: `count:${sp.id}:${sex ?? ''}` });
+    const plan = stockEdit.planCount(S(), sp, to, sex);
+    if (plan.kind === 'blocked') { status(plan.why, true); renderResults(); return; }
+    if (plan.kind === 'full') { status(plan.message, true); sync(); return; }
+    const first = store.nextId(), seed = Math.random() * 1e9, pct = addPct();
+    store.edit(s => stockEdit.applyCount(s, sp, to, sex, { first, seed, pct, at }), { coalesce: stockEdit.countKey(sp, sex) });
     if (store.selId != null && !S().fish.some(f => f.id === store.selId)) store.select(null);
   }
   /** Add a species at its start count, of the sex the preview tile has highlighted (dimorphic species). */
@@ -961,11 +882,9 @@ export function attachPanels(store: Store, viewer: Viewer) {
    *  in the list. In a split view, the tank it was dropped in becomes the one the panel shows. */
   function dropSpecies(sp: Species, sex: Sex | undefined, at: PlaceAt) {
     if (at.vi !== store.scene.active) store.setActive(at.vi);
-    setCount(sp, k => k + (k ? 1 : startCount(sp)), sex, at);
+    setCount(sp, k => stockEdit.dropTarget(k, startCount(sp)), sex, at);
     store.seal();
   }
-  /** Stocking name: "Betta (male)" / "Betta (female)" for a dimorphic species, else the name. */
-  const rowName = (sp: Species, sex?: Sex) => sp.name + (sp.female ? (sex ? ' (female)' : ' (male)') : '');
   $('addFish').onclick = () => { const sp = getSpecies(pickId); if (sp) addOne(sp); };
   $('addFish').onpointerdown = e => { const sp = getSpecies(pickId); if (sp && !$<HTMLButtonElement>('addFish').disabled) dragOut(e, sp.name, { drop: at => at && dropSpecies(sp, sp.female ? previewSex : undefined, at) }); };
   let climateOpen = false;
@@ -1157,10 +1076,10 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $('wMisfitDel').onclick = () => removeMisfits();
   $('lMapSub').onclick = () => { openSec('substrate'); $('subType').focus(); };
   function removeMisfits() {
-    const out = new Set(misfits(S()).map(f => f.id)); if (!out.size) return;
-    store.edit(s => { s.fish = s.fish.filter(f => !out.has(f.id)); });
+    const out = stockEdit.misfitIds(S()); if (!out.size) return;
+    store.edit(s => stockEdit.removeFish(s, out));
     if (store.selId != null && out.has(store.selId)) store.select(null);
-    status(`${out.size} animal${out.size > 1 ? 's' : ''} removed. Ctrl+Z brings them back.`);
+    status(stockEdit.misfitNote(out.size));
   }
 
   // ---------- Lighting ----------
@@ -2489,21 +2408,8 @@ export function attachPanels(store: Store, viewer: Viewer) {
     store.closeTank(i); status(`Tank ${'AB'[i]} deleted. Ctrl+Z brings it back.`);
   });
   function readout() {
-    const f = sel(), ro = $<HTMLDivElement>('ro');
-    const m = f && viewer.measure(f), sp = f && speciesOf(f);
-    if (!f || !m || !sp) { ro.innerHTML = '<span class="hint">Select a fish to see its size on screen.</span>'; return; }
-    const a = m.sideAngle, cls = a < 40 ? 'ok' : a < 55 ? 'warn' : 'bad';
-    const txt = a < 40 ? 'reads fine' : a < 55 ? 'marginal' : 'too thin: card looks flat';
-    let html = `<div><span><b>${esc(sp.name)}${sp.sex === 'f' ? ' ♀' : getSpecies(f.species)!.female ? ' ♂' : ''}</b> <i>${esc(sp.sci)}</i></span><span>${f.tl ? `${fmt(f.tl)} (adult ${fmt(sp.tl)})` : `adult ${fmt(sp.tl)}`}</span></div>
-      <div><span>Depth behind glass</span><span>${fmt(f.depth)}</span></div>
-      <div><span>Looks, vs. at the front glass</span><span>${Math.round(100 * m.len / m.ref)} % as big</span></div>`;
-    // calibration readouts only with ?debug in the URL (Muse feedback 2026-10-09: cryptic for normal users)
-    if (DEBUG) html += `<div><span>On screen</span><span>${m.len.toFixed(0)} px</span></div>
-      <div><span>Same pose at the front glass</span><span>${m.ref.toFixed(0)} px</span></div>
-      <div><span>Measured ratio</span><span>×${(m.len / m.ref).toFixed(3)}</span></div>
-      <div><span>Straight-on formula d ÷ (d + z)</span><span>×${m.formula.toFixed(3)}</span></div>
-      <div><span>Angle off side-on</span><span class="${cls}">${a.toFixed(0)}°: ${txt}</span></div>`;
-    ro.innerHTML = html;
+    const f = sel();
+    $<HTMLDivElement>('ro').innerHTML = animalPicker.readoutHtml(f, f && speciesOf(f), f ? viewer.measure(f) : null, G().units, DEBUG);
   }
 
   // ---------- autosave ----------

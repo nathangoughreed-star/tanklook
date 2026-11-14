@@ -1,0 +1,68 @@
+{
+ "1-animals-gated": {
+  "counts": {},
+  "status": "",
+  "picks": [
+   "Pygmy corydoras bottom1.0″Corydoras pygmaeus|Often hovers in mid-water shoals; females to about 3 cm.",
+   "White cloud mountain minnow 1.6″Tanichthys albonubes|Cool water, about 18-22 °C; no heater needed in most rooms.",
+   "Black molly 3.3″Poecilia sphenopsBlack molly: Kept 1 male to 3 females: Keep more females than males so one female is not hounded. Your mix is short on females|Black molly: Kept 1 male to 3 females: Keep more females than males so one female is not hounded. Your mix is short on females; Still selectable: Add anyway.",
+   "Cardinal tetra 1.8″Paracheirodon axelrodiCardinal tetra: group of 6: Usually kept in shoals of 8 or more; fewer may get shy and stressed|Cardinal tetra: group of 6: Usually kept in shoals of 8 or more; fewer may get shy and stressed; Still selectable: Add anyway.",
+   "Cherry barb 2.2″Rohanella (Puntius) titteyaCherry barb: Kept 1 male to 2 females: At least two females per male so rival-male chasing is spread out. Your mix is short on females|Cherry barb: Kept 1 male to 2 females: At least two females per male so rival-male chasing is spread out. Your mix is short on females; Still selectable: Add anyway.",
+   "Chili rasbora 0.9″Boraras brigittaeChili rasbora: group of 6: Tiny and shy; a big group usually shows more colour|Chili rasbora: group of 6: Tiny and shy; a big group usually shows more colour; Still selectable: Add anyway.",
+   "Dwarf pencilfish 1.4″Nannostomus marginatusDwarf pencilfish: group of 6: Timid; small groups may hide and squabble|Dwarf pencilfish: group of 6: Timid; small groups may hide and squabble; Still selectable: Add anyway.",
+   "Dwarf spotted rasbora 1.2″Boraras maculatusDwarf spotted rasbora: group of 6: Timid; Seriously Fish advises at least 8-10 or they may hide|Dwarf spotted rasbora: group of 6: Timid; Seriously Fish advises at least 8-10 or they may hide; Still selectable: Add anyway.",
+   "Ember tetra 0.9″Hyphessobrycon amandaeEmber tetra: group of 6: Embers may get shy in small groups; 8 or more usually keeps them out and about|Ember tetra: group of 6: Embers may get shy in small groups; 8 or more usually keeps them out and about; Still selectable: Add anyway.",
+   "Exclamation point rasbora 0.7″Boraras urophthalmoidesExclamation point rasbora: group of 6: Timid; Seriously Fish advises at least 8-10 or they may hide|Exclamation point rasbora: group of 6: Timid; Seriously Fish advises at least 8-10 or they may hide; Still selectable: Add anyway.",
+   "Green neon tetra 1.2″Paracheirodon simulansGreen neon tetra: group of 6: May be shy and stressed in small groups; Seriously Fish advises 8-10 or more|Green neon tetra: group of 6: May be shy and stressed in small groups; Seriously Fish advises 8-10 or more; Still selectable: Add anyway.",
+   "Guppy 1.5″Poecilia reticulataGuppy: Kept 1 male to 2 females: 1 male to 2-3 females; males chase females nonstop. Mixed groups breed fast. Your mix is short on females|Guppy: Kept 1 male to 2 females: 1 male to 2-3 females; males chase females nonstop. Mixed groups breed fast. Your mix is short on females; Still selectable: Add anyway."
+  ],
+  "list": []
+ },
+ "2-search-discus-greyed": {
+  "counts": {},
+  "status": "",
+  "picks": [
+   "Discus 5.9″Symphysodon aequifasciatus6 Discus: estimated from a gallon figure (Fishkeeping World: 60 gal, the smallest such tank is a 60 gal breeder): wants about 48\" long, this one is 24\" long (+2 more)|6 Discus: estimated from a gallon figure (Fishkeeping World: 60 gal, the smallest such tank is a 60 gal breeder): wants about 48\" long, this one is 24\" long; Water changes cannot hold nitrate near 40 ppm for this stock (see the nitrate line); 290% of the swimming room: too many for this tank; Still selectable: Add anyway."
+  ],
+  "list": []
+ },
+ "3-add-cherry-barb": {
+  "counts": {
+   "cherrybarb": 6
+  },
+  "status": "",
+  "picks": [
+   "Cherry barb 2.2″Rohanella (Puntius) titteya|",
+   "Cherry shrimp bottom1.2″Neocaridina davidiCherry shrimp: group of 6: Too few: wants at least 10|Cherry shrimp: group of 6: Too few: wants at least 10; Still selectable: Add anyway."
+  ],
+  "list": [
+   "Cherry barb (male)−+Keep thisLikeDislike"
+  ]
+ },
+ "4-plus-twice": {
+  "counts": {
+   "cherrybarb": 8
+  },
+  "status": "",
+  "picks": [
+   "Cherry barb 2.2″Rohanella (Puntius) titteya|",
+   "Cherry shrimp bottom1.2″Neocaridina davidiCherry shrimp: group of 6: Too few: wants at least 10|Cherry shrimp: group of 6: Too few: wants at least 10; Still selectable: Add anyway."
+  ],
+  "list": [
+   "Cherry barb (male)−+Keep thisLikeDislike"
+  ]
+ },
+ "5-minus-once": {
+  "counts": {
+   "cherrybarb": 7
+  },
+  "status": "",
+  "picks": [
+   "Cherry barb 2.2″Rohanella (Puntius) titteya|",
+   "Cherry shrimp bottom1.2″Neocaridina davidiCherry shrimp: group of 6: Too few: wants at least 10|Cherry shrimp: group of 6: Too few: wants at least 10; Still selectable: Add anyway."
+  ],
+  "list": [
+   "Cherry barb (male)−+Keep thisLikeDislike"
+  ]
+ }
+}
