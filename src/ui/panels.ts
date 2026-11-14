@@ -34,6 +34,9 @@ import { FX, FX_DEFAULT, onFx } from '../render/fx';
 import { FX_KEYS, TONE_NAMES, causticStatus, chooseFx, fxLabel, FX_LABELS, levelReason, lockedByUrl, restoreFxDefaults } from '../render/fxPrefs';
 import { lifeStages } from '../data/lifestages';
 import { rng } from '../art/paint';
+import * as IE from '../scene/itemEdit';
+import { scapeSec, type ScapeSec } from '../scene/itemEdit';
+import { gateView, gatedChips, setGate } from './logic/plantGate';
 import { GRAIN_LOOK, SUBSTRATES, drawFishCard } from '../art/placeholder';
 import { drawSnailCard } from '../art/snails';
 import { SPECIES, fishTL, getSpecies, searchSpecies, speciesOf, speciesTag, type Sex, type Species } from '../data/species';
@@ -45,7 +48,7 @@ import { darkOf, darkStats } from '../render/lightShells';
 import { startCount } from './pickerStrict';
 import { ROLES, SETUP_KINDS, setupKinds, applyKind, groupPicker, offeredIn, roleOf, rolesFor, tankKind, type Fit, type Role, type SetupKind } from '../scene/pickerKind';
 import { CARE } from '../data/care';
-import { CARE_NAME, FIT_PAR, fitCaption, whyNot, type FitLight } from '../scene/plantfit';
+import { fitCaption, type FitLight } from '../scene/plantfit';
 import { itemLights, tankSummary } from '../scene/lightcheck';
 import { topGearReach, TOP_GEAR_GAP } from '../scene/topgear';
 import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeLayout, tubeOf, TUBE_SP_MAX, bestPos, ledBarDepth, posMax, wattsOf, type Fixture } from '../scene/lightout';
@@ -56,7 +59,7 @@ import { BANDS, TANK_MODELS, dimsInches, modelOfVariant, soleProduct, saleLive, 
 import { pinPreset } from '../demand/pinned';
 import { applyTankPick, unholdBtn } from './tankPick';
 import { CUSTOM_LABEL, includesNote, locksOf, lockNote, mayChange, productLabel, type Held } from '../scene/integrated';
-import { COMPS, DEFAULT_DENS, styleGroups, variantInScope, STYLE_KIND, isLandStyle, EPIPHYTES, KINDS, perch, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, makeItem, spreadMax, type Layer } from '../scene/items';
+import { COMPS, DEFAULT_DENS, styleGroups, variantInScope, STYLE_KIND, isLandStyle, KINDS, densName, LAYOUTS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, spreadMax, type Layer } from '../scene/items';
 import { handEdits, randomStyle, shuffleHard } from '../scene/starter';
 import { styleGround } from '../scene/scapeground';
 import { growthOf, isClump, isFloat, isPatch, type PlantType } from '../art/plants';
@@ -71,7 +74,7 @@ import {
   CEILING_MAX, CEILING_MIN, IN, backdropDepth, ceilingH, clamp, clampFish, fmtLen, glassThickness, toUnit, volume, WALL_GAP_MAX, waterY,
 } from '../scene/physics';
 import type { Store } from '../scene/store';
-import { NEW_POOL, SWAMP_LEVEL, groundHeight, sampleTerrain } from '../scene/terrain';
+import { NEW_POOL, SWAMP_LEVEL, sampleTerrain } from '../scene/terrain';
 
 /** Arrow keys move the selected piece: [axis, direction] (depth grows toward the back). */
 const ARROWS: Record<string, [string, number]> = { ArrowLeft: ['x', -1], ArrowRight: ['x', 1], ArrowUp: ['d', 1], ArrowDown: ['d', -1], PageUp: ['y', 1], PageDown: ['y', -1] };
@@ -90,7 +93,7 @@ import type { BgFit, BgSide, CompId, Fish, Pairing, GrowFeed, GrowMode, Item, It
 import { standAsked, roughOf } from '../scene/types';
 import { pairRule } from '../data/groups';
 import { pairingIn, setPairing } from '../scene/pairs';
-import { FEED_NAMES, beginGrow, endGrow, setGrowTime, setPlantGrowth, timeChanges } from '../scene/growtime';
+import { FEED_NAMES, beginGrow, endGrow, setGrowTime, timeChanges } from '../scene/growtime';
 import { syncBroods } from '../scene/propagate';
 import { GLASS_CHOICES, LIMITS, parseScene } from '../scene/validate';
 import { listLib } from '../scene/library';
@@ -106,8 +109,7 @@ const DEBUG = new URLSearchParams(location.search).has('debug');
 const esc = (s: string) => s.replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 
 /** The menu a kind of piece lives in: stones, wood and caves under Hardscape, plants and corals under Plants. */
-export type ScapeSec = 'hardscape' | 'plants';
-export const scapeSec = (k: ItemKind): ScapeSec => k === 'plant' || k === 'coral' || k === 'artificial' ? 'plants' : 'hardscape';
+export { scapeSec, type ScapeSec } from '../scene/itemEdit';
 
 /** A plant's growth in words (the Growth slider's readout). */
 export const growthWord = (g: number) => `${Math.round(g * 100)} % ${g < 0.1 ? 'just planted' : g < 0.35 ? 'growing in' : g < 0.65 ? 'established' : g < 0.9 ? 'grown' : 'overgrown'}`;
@@ -1492,47 +1494,33 @@ export function attachPanels(store: Store, viewer: Viewer) {
    *  care sink below their row, grayed, each with its reason. Needs a light level (Plants fit, or the fixture's Power set) and a
    *  care level (Care menu); until both are chosen the toggle only says so. Advice: grayed ones can still be added. */
   function renderPlantGate(s: TankSetup) {
-    const on = !!s.layout.gatePlants, tog = $<HTMLInputElement>('gatePlants'), hint = $('gatePlantsHint');
-    tog.checked = on;
-    const lo = lightOutCached(s), salt = isSalt(s);
-    const par = s.layout.fit ? FIT_PAR[salt ? 'reef' : 'fresh'][s.layout.fit] : lo && wattsOf(s) > 0 ? lo.mean : null;
-    const missing = [par == null && 'a light level (Plants fit above, or set the fixture Power in Lighting)', !s.layout.careSet && 'a care level (Care above)'].filter(Boolean);
-    const active = on && !missing.length;
-    hint.hidden = !on; hint.textContent = on && missing.length ? `Choose ${missing.join(' and ')} first, then this list can be filtered to what suits the tank.` : on ? `Grayed: does not suit ${Math.round(par!)} PAR at ${CARE_NAME[s.grow.feed]} care. They can still be added.` : '';
+    const gv = gateView(s), tog = $<HTMLInputElement>('gatePlants'), hint = $('gatePlantsHint');
+    tog.checked = gv.on;
+    hint.hidden = !gv.on; hint.textContent = gv.hint;
     for (const row of document.querySelectorAll<HTMLElement>('#libPlant .libRow')) {
       const chips = row.querySelector<HTMLElement>('.chips')!;
       if (row.nextElementSibling?.classList.contains('gatedList')) row.nextElementSibling.remove();
       chips.querySelectorAll('button').forEach(b => { b.classList.remove('gated'); (chips.querySelector('.gateKept') ?? chips).append(b); });
-      if (!active) continue;
-      const bad = [...chips.querySelectorAll<HTMLButtonElement>('button')].map(b => ({ b, why: whyNot(b.dataset.lib!, par!, s.grow.feed) })).filter(x => x.why && !(x.b.dataset.salt !== undefined && !salt));
+      if (!gv.active) continue;
+      const btns = [...chips.querySelectorAll<HTMLButtonElement>('button')];
+      const why = new Map(gatedChips(gv, s, btns.map(b => ({ variant: b.dataset.lib!, salt: b.dataset.salt !== undefined }))).map(x => [x.variant, x.why]));
+      const bad = btns.filter(b => why.has(b.dataset.lib!)).map(b => ({ b, why: why.get(b.dataset.lib!)! }));
       if (!bad.length) continue;
       const list = document.createElement('div'); list.className = 'gatedList';
       for (const { b, why } of bad) {
         b.classList.add('gated');
         const r = document.createElement('div'); r.className = 'gatedRow'; r.append(b);
-        const t = document.createElement('span'); t.className = 'hint'; t.textContent = why!.text; r.append(t); list.append(r);
+        const t = document.createElement('span'); t.className = 'hint'; t.textContent = why; r.append(t); list.append(r);
       }
       row.after(list);
     }
   }
-  $('gatePlants').onchange = e => store.edit(s => { if ((e.target as HTMLInputElement).checked) s.layout.gatePlants = true; else delete s.layout.gatePlants; });
+  $('gatePlants').onchange = e => store.edit(s => setGate(s, (e.target as HTMLInputElement).checked));
   /** Add a piece at an open spot (the candidate farthest from every other piece, front-middle preferred). Same id and
    *  seed in every tank being edited. */
   const addItem = (variant: string) => {
-    const id = store.nextItemId(), seed = 1 + Math.floor(Math.random() * 1e9), r = rng(seed);
-    store.edit(s => {
-      const T = s.tank, it = makeItem(T, variant, id, seed, T.L / 2, T.D / 2, { yaw: LIBRARY[variant].kind === 'plant' ? 0 : Math.round((r() - 0.5) * 60) }, s);
-      let best = -1;
-      for (let k = 0; k < 16; k++) {
-        const x = T.L * (0.15 + r() * 0.7), d = T.D * (0.2 + r() * 0.6);
-        const gap = Math.min(...s.items.filter(q => q.kind !== 'plant' || !isPatch(q.variant)).map(q => Math.hypot(q.x - x, q.depth - d)), 1e6) - Math.abs(x - T.L / 2) * 0.15;
-        if (gap > best) { best = gap; it.x = x; it.depth = d; }
-      }
-      // a fern, anubias, buce or moss goes on the stone or wood nearest that open spot (on the floor if there is none)
-      const at = EPIPHYTES.has(variant) ? perch(s, it.x, it.depth, r) : null;
-      if (at) Object.assign(it, at);
-      clampItem(it, T, s); s.items.push(it);
-    });
+    const id = store.nextItemId(), seed = 1 + Math.floor(Math.random() * 1e9);
+    store.edit(s => { IE.addItem(s, variant, id, seed); });
     store.selectItem(id); openSec(scapeSec(LIBRARY[variant].kind));
   };
   /** A chip dragged into the tank: the piece appears under the pointer as soon as it is over a tank's floor and follows
@@ -1540,25 +1528,25 @@ export function attachPanels(store: Store, viewer: Viewer) {
    *  back out. One undo step. */
   const dragItem = (e: PointerEvent, variant: string) => {
     let id: number | null = null, vi = -1;
-    const key = `place:${Math.random()}`, yaw = LIBRARY[variant].kind === 'plant' ? 0 : Math.round((Math.random() - 0.5) * 60);
+    const key = `place:${Math.random()}`, yaw = IE.dragYaw(variant, Math.random);
     const put = (at: PlaceAt) => {
       if (id == null) {
         if (at.vi !== store.scene.active) store.setActive(at.vi);
         id = store.nextItemId(); vi = at.vi;
         const nid = id, seed = 1 + Math.floor(Math.random() * 1e9);
-        store.edit(s => { const it = makeItem(s.tank, variant, nid, seed, at.x, at.depth, { yaw }, s); it.lift = at.lift; clampItem(it, s.tank, s); s.items.push(it); }, { coalesce: key });
+        store.edit(s => { IE.placeAt(s, variant, nid, seed, at, yaw); }, { coalesce: key });
         store.selectItem(nid); return;
       }
       if (at.vi !== vi) return;
       const nid = id;
-      store.edit(s => { const it = s.items.find(q => q.id === nid); if (!it) return; it.x = at.x; it.depth = at.depth; it.lift = at.lift; clampItem(it, s.tank, s); }, { coalesce: key });
+      store.edit(s => { IE.moveTo(s, nid, at); }, { coalesce: key });
     };
     dragOut(e, LIBRARY[variant].label, {
       skip: () => new Set(id == null ? [] : [id]),
       move: at => { if (at) put(at); },
       drop: at => {
         if (at) put(at);
-        else if (id != null) { const nid = id; store.edit(s => { s.items = s.items.filter(q => q.id !== nid); }, { coalesce: key }); store.selectItem(null); }
+        else if (id != null) { const nid = id; store.edit(s => { IE.removeItem(s, nid); }, { coalesce: key }); store.selectItem(null); }
         store.seal();
       },
     });
@@ -1566,10 +1554,10 @@ export function attachPanels(store: Store, viewer: Viewer) {
   document.querySelectorAll<HTMLButtonElement>('[data-lib]').forEach(b => { b.onclick = () => addItem(b.dataset.lib!); b.onpointerdown = e => dragItem(e, b.dataset.lib!); });
   const editItem = (fn: (it: Item, s: TankSetup) => void, coalesce?: string) => {
     const id = store.selItem; if (id == null) return;
-    store.edit(s => { const it = s.items.find(q => q.id === id); if (it) { fn(it, s); clampItem(it, s.tank, s); } }, { coalesce });
+    store.edit(s => { IE.editItem(s, id, fn); }, { coalesce });
   };
-  $('iSize').oninput = e => editItem(it => { it.size = +(e.target as HTMLInputElement).value; }, 'iSize');
-  $('iGrowth').oninput = e => editItem((it, s) => setPlantGrowth(it, +(e.target as HTMLInputElement).value / 100, s), 'iGrowth');
+  $('iSize').oninput = e => editItem((it, s) => IE.ITEM_FIELDS.iSize(it, +(e.target as HTMLInputElement).value, s), 'iSize');
+  $('iGrowth').oninput = e => editItem((it, s) => IE.ITEM_FIELDS.iGrowth(it, +(e.target as HTMLInputElement).value, s), 'iGrowth');
   // the tank's growth Time and feeding (lane GR3): every plant grows from its planted growth. A growth step costs no
   // geometry (the plant material's shader reveals it, lane GR4); a plant's first growth needs its full growth built (and
   // lain over at the water, or a carpet set on the ground, at its place), which the worker does ahead of time
@@ -1644,29 +1632,20 @@ export function attachPanels(store: Store, viewer: Viewer) {
   };
   $('growTime').oninput = e => { growHeld = true; growTo(+(e.target as HTMLInputElement).value / 100, growGoal?.feed ?? store.tank.grow.feed); };
   $('growTime').onchange = () => { growHeld = false; sync(false); };
-  // a floater's spread is the patch fully grown: one not grown yet is shown fully grown once it has one, so the patch
-  // covers what the slider says
-  const fullFloat = (it: Item, s: TankSetup) => { if (isFloat(it.variant) && it.growth == null) setPlantGrowth(it, 1, s); };
-  $('iSpread').oninput = e => editItem((it, s) => { it.spread = +(e.target as HTMLInputElement).value; fullFloat(it, s); }, 'iSpread');
-  $('iDens').oninput = e => editItem((it, s) => { it.dens = +(e.target as HTMLInputElement).value / 100; fullFloat(it, s); }, 'iDens');
-  $('iStems').oninput = e => editItem(it => { it.stems = +(e.target as HTMLInputElement).value; }, 'iStems');
-  $('iYaw').oninput = e => editItem(it => { it.yaw = +(e.target as HTMLInputElement).value; }, 'iYaw');
-  $('iPitch').oninput = e => editItem(it => { it.pitch = +(e.target as HTMLInputElement).value; }, 'iPitch');
-  $('iTilt').oninput = e => editItem(it => { it.tilt = +(e.target as HTMLInputElement).value; }, 'iTilt');
-  $('iX').oninput = e => editItem(it => { it.x = +(e.target as HTMLInputElement).value; }, 'iX');
-  $('iDepth').oninput = e => editItem(it => { it.depth = +(e.target as HTMLInputElement).value; }, 'iDepth');
-  $('iLift').oninput = e => editItem(it => { it.lift = +(e.target as HTMLInputElement).value; }, 'iLift');
-  $('iReshape').onclick = () => { const seed = 1 + Math.floor(Math.random() * 1e9); editItem(it => { it.seed = seed; }); };
-  $('iDrop').onclick = () => editItem(it => { it.lift = 0; });
+  $('iSpread').oninput = e => editItem((it, s) => IE.ITEM_FIELDS.iSpread(it, +(e.target as HTMLInputElement).value, s), 'iSpread');
+  $('iDens').oninput = e => editItem((it, s) => IE.ITEM_FIELDS.iDens(it, +(e.target as HTMLInputElement).value, s), 'iDens');
+  $('iStems').oninput = e => editItem((it, s) => IE.ITEM_FIELDS.iStems(it, +(e.target as HTMLInputElement).value, s), 'iStems');
+  $('iYaw').oninput = e => editItem((it, s) => IE.ITEM_FIELDS.iYaw(it, +(e.target as HTMLInputElement).value, s), 'iYaw');
+  $('iPitch').oninput = e => editItem((it, s) => IE.ITEM_FIELDS.iPitch(it, +(e.target as HTMLInputElement).value, s), 'iPitch');
+  $('iTilt').oninput = e => editItem((it, s) => IE.ITEM_FIELDS.iTilt(it, +(e.target as HTMLInputElement).value, s), 'iTilt');
+  $('iX').oninput = e => editItem((it, s) => IE.ITEM_FIELDS.iX(it, +(e.target as HTMLInputElement).value, s), 'iX');
+  $('iDepth').oninput = e => editItem((it, s) => IE.ITEM_FIELDS.iDepth(it, +(e.target as HTMLInputElement).value, s), 'iDepth');
+  $('iLift').oninput = e => editItem((it, s) => IE.ITEM_FIELDS.iLift(it, +(e.target as HTMLInputElement).value, s), 'iLift');
+  $('iReshape').onclick = () => { const seed = 1 + Math.floor(Math.random() * 1e9); editItem(it => IE.reshape(it, seed)); };
+  $('iDrop').onclick = () => editItem(it => IE.dropToGround(it));
   // free placement (Nathan 2026-10-12): step the piece along x, height or depth; pieces may pass through each other, and a
   // sideways step keeps its height in the tank (not above the ground, which may slope under it)
-  const nudge = (axis: string, dir: number, step: number) => editItem((it, s) => {
-    if (axis === 'y') { it.lift += dir * step; return; }
-    const y = groundHeight(s, s.tank, it.x, it.depth) + it.lift;
-    if (axis === 'x') it.x += dir * step; else it.depth += dir * step;
-    clampItem(it, s.tank, s);
-    it.lift = y - groundHeight(s, s.tank, it.x, it.depth);
-  }, 'nudge');
+  const nudge = (axis: string, dir: number, step: number) => editItem((it, s) => IE.nudge(it, s, axis, dir, step), 'nudge');
   document.querySelectorAll<HTMLButtonElement>('[data-nudge]').forEach(b => {
     const axis = b.dataset.nudge![0], dir = +b.dataset.nudge!.slice(1);
     let timer = 0;
@@ -1681,17 +1660,13 @@ export function attachPanels(store: Store, viewer: Viewer) {
   });
   const itemDel = () => {
     const id = store.selItem; if (id == null) return;
-    store.edit(s => { s.items = s.items.filter(q => q.id !== id); });
+    store.edit(s => { IE.removeItem(s, id); });
     store.selectItem(null);
   };
   const itemDup = () => {
     const src = store.selItem; if (src == null) return;
     const id = store.nextItemId();
-    store.edit(s => {
-      const it = s.items.find(q => q.id === src); if (!it) return;
-      const n: Item = { ...it, id, x: it.x + Math.max(20, itemDims(it)[0] * 0.8), yaw: it.yaw + 25 };
-      clampItem(n, s.tank, s); s.items.push(n);
-    });
+    store.edit(s => { IE.duplicateItem(s, src, id); });
     store.selectItem(id);
   };
   $('iDup').onclick = itemDup; $('iDel').onclick = itemDel;
@@ -1702,7 +1677,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
       const b = $<HTMLButtonElement>(btn);
       if (!arm) { b.textContent = 'Sure? Click again'; b.classList.add('on'); arm = window.setTimeout(() => { arm = 0; b.textContent = 'Remove all'; b.classList.remove('on'); }, 3000); return; }
       clearTimeout(arm); arm = 0; b.textContent = 'Remove all'; b.classList.remove('on');
-      store.selectItem(null); store.edit(s => { s.items = s.items.filter(q => scapeSec(q.kind) !== sec); });
+      store.selectItem(null); store.edit(s => { IE.clearSection(s, sec); });
       status(`${done} Ctrl+Z brings them back.`);
     };
   };
@@ -1786,7 +1761,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
         row.innerHTML = `<button class="pn" aria-expanded="${open}" title="${open ? 'Close its settings' : 'Select it and open its settings: growth, spread, stems, turn, raise'}"><span class="car">${open ? '▾' : '▸'}</span><span class="nm">${name}</span><span class="gw"></span></button><button class="px" title="Remove it" aria-label="Remove ${name}">×</button>`;
         const id = it.id;
         row.querySelector<HTMLButtonElement>('.pn')!.onclick = () => store.selectItem(store.selectedItem?.id === id ? null : id);
-        row.querySelector<HTMLButtonElement>('.px')!.onclick = () => { store.edit(t => { t.items = t.items.filter(q => q.id !== id); }); if (store.selectedItem?.id === id) store.selectItem(null); };
+        row.querySelector<HTMLButtonElement>('.px')!.onclick = () => { store.edit(t => { IE.removeItem(t, id); }); if (store.selectedItem?.id === id) store.selectItem(null); };
         into.append(row);
         if (open) row.append(box);
       };
