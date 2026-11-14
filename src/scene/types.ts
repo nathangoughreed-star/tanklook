@@ -134,6 +134,8 @@ export interface RenderSettings {
   bgImages: BgImage[];
   glass: 'auto' | number; // mm, or auto by interior height
   glassType: GlassType;
+  /** Eurobrace of a rimless box tank (lane CT1, 2026-11-14; mm, GS1's BraceSpec): drawn inside the top of the walls. Absent = none. */
+  brace?: { width: number; thickness: number; cross?: number; crossWidth?: number };
 }
 
 export interface LightSettings {

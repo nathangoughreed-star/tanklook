@@ -415,3 +415,5 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .ui2app.phone .checkstrip .check .dim { display: none; }
 .ui2app.phone .ov.cluster { max-width: calc(100% - var(--s3)); }
 @media (max-width: 699px) { .mfacts { bottom: var(--s2); gap: 4px; } .fchip { padding: 2px var(--s2); font-size: var(--fs-xs); } .mview .ov.dims { top: var(--s2); left: var(--s2); padding: 4px var(--s2); gap: var(--s2); } }
+.lockbox { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--muted, #8a949c); white-space: nowrap; }
+.mform .hint.bad { color: var(--bad, #d9534f); }

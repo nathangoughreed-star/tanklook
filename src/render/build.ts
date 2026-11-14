@@ -33,6 +33,7 @@ import { addBackdrop, backdropGeometry } from './backdrop';
 import { drapedCard, fish3d, fishBody, hullMaterial } from './fish3d';
 import { herpBody, herpFloatTop, isHerp3D } from './herp3d';
 import { isLizard } from './lizard3d';
+import { braceBoxes } from '../scene/braceGeometry';
 import { isShrimp3D } from './shrimp3d';
 import { isSpider } from './spider3d';
 import { isSnake, settleSnake, snakeBody, snakeContacts, type LimbPath } from './snake3d';
@@ -377,6 +378,10 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
         const mesh = new THREE.Mesh(g, sm); mesh.renderOrder = 7; sc.add(mesh);
       }
     });
+    // the eurobrace of a rimless box tank (lane CT1): glass strips glued flat inside the top of the walls, same glass and edge tint
+    if (R.brace && !R.rim && fp.walls.length === 4 && !arch) for (const k of braceBoxes(T, R.brace)) {
+      add(new THREE.BoxGeometry(k.x1 - k.x0, k.y1 - k.y0, k.d1 - k.d0).translate((k.x0 + k.x1) / 2, (k.y0 + k.y1) / 2, -(k.d0 + k.d1) / 2), 6);
+    }
     // interior outline: top and bottom loops, and the vertical corners where panes meet
     const box: number[] = [...ringLines(fp.ring, 0), ...ringLines(fp.ring, H)];
     if (fp.walls.length > 1) fp.walls.forEach((w, i) => { if (!arch || i > 1) box.push(...at(w.pts[0], 0), ...at(w.pts[0], H)); });

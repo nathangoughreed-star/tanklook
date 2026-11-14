@@ -8,7 +8,8 @@ import { getTankModel, modelOfVariant, outerOf, pickRimless, saleLive, soleProdu
 import { dockGroups, optKey, previewSetup, rangeText, isBundle, type DockOpt } from '../../ui/tankDockLogic';
 import { applyTankPick } from '../../ui/tankPick';
 import { applyTankEdit, flatEnds } from '../../scene/tankEdit';
-import { autoName, refOf, specOfSetup, newerVersion, libraryLost, type CustomTank, type CustomTankSpec } from '../../scene/customTanks';
+import type { BraceSpec } from '../../scene/glassSolver';
+import { autoName, setRenderBrace, refOf, specOfSetup, newerVersion, libraryLost, type CustomTank, type CustomTankSpec } from '../../scene/customTanks';
 import { productOf, productName, locksOf as kitLocks } from '../../scene/integrated';
 import { isLocked } from '../../scene/locks';
 import { placementOf } from '../../scene/placement';
@@ -193,10 +194,10 @@ export function previewRow(base: TankSetup, r: PickRow): TankSetup {
   return r.opt ? previewSetup(base, r.opt) : previewSpec(base, r.custom!);
 }
 /** The setup with a custom tank spec in it, on a COPY: the picker's custom rows and the maker's "Preview in my setup". */
-export function previewSpec(base: TankSetup, e: CustomTankSpec): TankSetup {
+export function previewSpec(base: TankSetup, e: CustomTankSpec, brace: BraceSpec | null = e.glassBuild?.brace ?? null): TankSetup {
   const p = structuredClone(base);
   if (p.fish.length || p.items.length) adaptToTank(p, structuredClone(e.tank), { thin: false }); else p.tank = structuredClone(e.tank);
-  p.render.glass = e.glass; p.render.glassType = e.glassType; p.render.rim = e.rim; delete p.product; delete p.integrated;
+  p.render.glass = e.glass; p.render.glassType = e.glassType; p.render.rim = e.rim; setRenderBrace(p.render, e, brace); delete p.product; delete p.integrated;
   return p;
 }
 
@@ -217,7 +218,7 @@ export function chooseCommercial(s: TankSetup, o: DockOpt): void {
 export function chooseCustom(s: TankSetup, e: CustomTank): void {
   applyTankEdit(s, () => structuredClone(e.tank), {
     // useCustomTank's fields, without the tank itself: applyTankEdit moves the fish and pieces from the old tank to the new one
-    also: t => { t.render.glass = e.glass; t.render.glassType = e.glassType; t.render.rim = e.rim; t.customTank = refOf(e); delete t.product; delete t.integrated; },
+    also: t => { t.render.glass = e.glass; t.render.glassType = e.glassType; t.render.rim = e.rim; setRenderBrace(t.render, e); t.customTank = refOf(e); delete t.product; delete t.integrated; },
     thin: true,
   });
   if (!flatEnds(s.tank) && s.lid === 'hood') s.lid = 'glass';
@@ -243,10 +244,11 @@ export function makerFacts(spec: CustomTankSpec, u: Units): MakerFacts {
 
 /** The maker's own scratch setup: the tank on a plain floor, empty (no water, ground, stand, gear, scape, wall or person). Drawn as a
  *  view-only preview; the setup itself is never edited while the maker is open. */
-export function makerSetup(spec: CustomTankSpec, base?: TankSetup): TankSetup {
+export function makerSetup(spec: CustomTankSpec, base?: TankSetup, brace: BraceSpec | null = spec.glassBuild?.brace ?? null): TankSetup {
   const S = structuredClone(base ?? defaultSetup());
   S.tank = structuredClone(spec.tank);
   S.render = { ...S.render, glass: spec.glass, glassType: spec.glassType, rim: spec.rim, bg: 'none', bgSides: [], bgImages: [] };
+  setRenderBrace(S.render, spec, brace);
   S.fish = []; S.items = []; delete S.patches; S.terrain = { ...S.terrain, on: false, h: [], pools: [] };
   S.substrate = { ...S.substrate, show: false };
   S.water = { ...S.water, on: true, level: 0 };
@@ -270,7 +272,7 @@ export function startSpec(S: TankSetup, how: 'edit' | 'copy' | 'new', lib: reado
   if (how === 'copy') return { spec: { ...base, name: `${autoName(S.tank)} (from ${productName(S)})`, owned: false, priceUsd: undefined } };
   // a new custom tank starts as what people usually have built: a glass box, rimless, at the setup's length / depth / height (Nathan 2026-11-13)
   const tank: Tank = { L: S.tank.L, D: S.tank.D, H: S.tank.H };
-  return { spec: { name: autoName(tank), tank, glass: 'auto', glassType: base.glassType, rim: false } };
+  return { spec: { name: '', tank, glass: 'auto', glassType: base.glassType, rim: false } }; // no name: it follows the size (dimName, lane CT1)
 }
 export const specOfEntry = (e: CustomTank): CustomTankSpec => { const { id: _i, version: _v, updated: _u, ...s } = e; return structuredClone(s); };
 

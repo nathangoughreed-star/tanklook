@@ -5,12 +5,12 @@
 import { defaultSetup } from './defaults';
 import { parseTank, parseCustomRef } from './validate';
 import { newUid } from './uid';
-import { autoName } from './customTankName';
+import { autoName, dimName } from './customTankName';
 import { PANES, type GlassBuild } from './glassSolver';
 import type { CustomTankRef, GlassType, Tank, TankSetup } from './types';
 
 export const CUSTOM_KEY = 'tanklook.customTanks';
-export { autoName };
+export { autoName, dimName };
 
 export interface CustomTankSpec {
   name: string;
@@ -123,13 +123,18 @@ export function specOfSetup(S: Pick<TankSetup, 'tank' | 'render' | 'customTank'>
     ...(c?.priceUsd !== undefined ? { priceUsd: c.priceUsd } : {}), ...(c?.owned ? { owned: true } : {}) };
 }
 
+/** The brace a spec draws: only a rimless tank's saved build carries one (lane CT1). Sets / clears `render.brace`. */
+export function setRenderBrace(render: TankSetup['render'], e: Pick<CustomTankSpec, 'rim' | 'glassBuild'>, brace = e.glassBuild?.brace ?? null): void {
+  if (brace && !e.rim) render.brace = { ...brace }; else delete render.brace;
+}
+
 export const refOf = (e: CustomTank): CustomTankRef =>
   ({ name: e.name, id: e.id, version: e.version, ...(e.priceUsd !== undefined ? { priceUsd: e.priceUsd } : {}), ...(e.owned ? { owned: true } : {}) });
 
 /** Put a library tank on a setup as the setup's own copy (tank, glass, rim, ref); a commercial product or kit is released. The caller regrids terrain / refits the scene as it does for any tank change. */
 export function useCustomTank(S: TankSetup, e: CustomTank): void {
   S.tank = structuredClone(e.tank);
-  S.render.glass = e.glass; S.render.glassType = e.glassType; S.render.rim = e.rim;
+  S.render.glass = e.glass; S.render.glassType = e.glassType; S.render.rim = e.rim; setRenderBrace(S.render, e);
   S.customTank = refOf(e);
   delete S.product; delete S.integrated;
 }
