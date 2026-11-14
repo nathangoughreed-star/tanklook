@@ -10,7 +10,7 @@ export const SIDE_LETTERS = ['A', 'B'] as const;
 export type Side = 0 | 1;
 /** Which tank(s) the panel edits: the "Editing A / B / Both" switch (screen map §2a, decision 8). `none` = no box ticked. */
 export type EditMode = 'A' | 'B' | 'Both' | 'none';
-export const EDIT_MODES: EditMode[] = ['A', 'B', 'Both'];
+export const EDIT_MODES: Exclude<EditMode, 'none'>[] = ['A', 'B', 'Both'];
 
 export const letterOf = (i: number) => SIDE_LETTERS[i] ?? 'A';
 export const isSplit = (store: Pick<Store, 'scene'>) => store.scene.tanks.length > 1;

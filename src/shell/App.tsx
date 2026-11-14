@@ -23,6 +23,7 @@ import { DiscoverSection, IdeasButton, AnimalDoor } from './discover';
 import { GetStarted } from './checklist';
 import { scopeOf } from './logic/discover';
 import type { Tab } from '../scene/scope';
+import { CompareButtons, CompareLayer, CompareStrip, CompareDrawer, EditingBar } from './compare';
 
 export interface AppProps {
   store: Store;
@@ -176,6 +177,9 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
     else setMaker(startSpec(store.tank, h.how, lib));
   };
   const viewRef = useRef<HTMLElement>(null);
+  // step 9: Compare = the Store's two tanks; each side gets its own checks (phone: one side's at a time)
+  const split = store.scene.tanks.length > 1, [cmpSide, setCmpSide] = useState(0);
+  const models = useMemo(() => split ? [0, 1].map(i => checksModel(store.scene.tanks[i], i, store.scene.units, profile())) : [], [slow, store, split]);
   const model = useMemo(() => checksModel(store.tank, store.scene.active, store.scene.units, profile()), [slow, store]);
 
   useEffect(() => { if (!maker) viewRef.current?.prepend(viewHost); }, [viewHost, maker]);
@@ -206,7 +210,8 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
   const tab = (id: SectionId | 'more') => { if (id === 'more') { setSection(null); setMore(!more); setDrawer(null); } else pick(id); };
   const check = (id: CheckId) => { if (drawer === 'selection') store.select(null); setDrawer(drawer === id ? null : id); if (phone) { setSection(null); setMore(false); } };
   const panelOpen = !!section || more;
-  const cls = ['ui2app', panelOpen ? 'panel-on' : 'panel-off', drawer ? 'drawer-on' : '', phone ? 'phone' : ''].filter(Boolean).join(' ');
+  const cmpDrawer = drawer === 'selection' ? null : drawer;
+  const cls = ['ui2app', panelOpen ? 'panel-on' : 'panel-off', drawer ? 'drawer-on' : '', phone ? 'phone' : '', split ? 'split' : ''].filter(Boolean).join(' ');
 
   return (
     <div class={cls}>
@@ -214,14 +219,16 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
       {phone ? null : <Rail open={section} onPick={pick} />}
       <Panel id={section} more={more} onPick={pick} onClose={() => { setSection(null); setMore(false); setPicker(false); }} tank={{ store, picker, setPicker, maker: openMaker, preview, libN }} s8={{ store, profile, getViewer: viewer, phone }} disc={{ scope, onScope: setScope, say: files.say }} />
       <IdeasButton section={more ? null : section} onIdeas={ideas} />
+      {split && panelOpen && !phone ? <EditingBar store={store} /> : null}
       <main class="viewer" ref={viewRef}>
         {section === 'print' && !phone ? <PrintPaper store={store} profile={profile} getViewer={viewer} /> : null}
-        <ViewCluster store={store} getViewer={viewer} phone={phone} />
+        <ViewCluster store={store} getViewer={viewer} phone={phone} compare={<CompareButtons store={store} phone={phone} say={files.say} />} />
+        {split ? <CompareLayer store={store} models={models} drawer={cmpDrawer} onPick={check} phone={phone} say={files.say} /> : null}
         <GetStarted tank={store.tank} open={section} onOpen={pick} onAnimal={() => setDoor(true)} phone={phone} />
-        {phone ? null : <CheckBar m={model} on={drawer === 'selection' ? null : drawer} onPick={check} />}
+        {phone || split ? null : <CheckBar m={model} on={drawer === 'selection' ? null : drawer} onPick={check} />}
       </main>
-      {phone ? <div class="checkstrip"><CheckBar m={model} on={drawer === 'selection' ? null : drawer} onPick={check} /></div> : null}
-      {drawer === 'selection' ? <SelectionDrawer store={store} getViewer={viewer} onClose={() => setDrawer(d => (d === 'selection' ? null : d))} /> : drawer ? <Drawer id={drawer} model={model} onClose={() => setDrawer(null)} /> : null}
+      {phone ? <div class="checkstrip">{split ? <CompareStrip store={store} models={models} side={cmpSide} setSide={setCmpSide} drawer={cmpDrawer} onPick={check} /> : <CheckBar m={model} on={drawer === 'selection' ? null : drawer} onPick={check} />}</div> : null}
+      {drawer === 'selection' ? <SelectionDrawer store={store} getViewer={viewer} onClose={() => setDrawer(d => (d === 'selection' ? null : d))} /> : drawer && split ? <CompareDrawer id={drawer} models={models} onClose={() => setDrawer(null)} /> : drawer ? <Drawer id={drawer} model={model} onClose={() => setDrawer(null)} /> : null}
       {phone ? <TabBar open={more ? 'more' : section} onPick={tab} /> : null}
       <FileLayer store={store} files={files} />
       {door ? <AnimalDoor store={store} say={files.say} onClose={() => setDoor(false)} /> : null}
