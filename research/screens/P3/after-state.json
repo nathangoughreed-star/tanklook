@@ -1,0 +1,360 @@
+{
+ "1-plants-gate-greyed": {
+  "items": [],
+  "gate": true,
+  "hint": "Grayed: does not suit 25 PAR at low-tech care. They can still be added.",
+  "gated": [
+   "Stem plantlight level: needs 30+ PAR, this tank gives about 25",
+   "Red stem plantlight level: needs 40+ PAR, this tank gives about 25",
+   "Rotalalight level: needs 35+ PAR, this tank gives about 25",
+   "Ludwigialight level: needs 30+ PAR, this tank gives about 25",
+   "Carpet patchlight level: needs 50+ PAR, this tank gives about 25",
+   "Dwarf hairgrasslight level: needs 30+ PAR, this tank gives about 25"
+  ],
+  "plist": [],
+  "status": "",
+  "brush": false
+ },
+ "2-add-plant": {
+  "items": [
+   [
+    1,
+    "fern",
+    291.16,
+    138.7,
+    0,
+    0,
+    150,
+    58950771
+   ]
+  ],
+  "gate": true,
+  "hint": "Grayed: does not suit 25 PAR at low-tech care. They can still be added.",
+  "gated": [
+   "Stem plantlight level: needs 30+ PAR, this tank gives about 25",
+   "Red stem plantlight level: needs 40+ PAR, this tank gives about 25",
+   "Rotalalight level: needs 35+ PAR, this tank gives about 25",
+   "Ludwigialight level: needs 30+ PAR, this tank gives about 25",
+   "Carpet patchlight level: needs 50+ PAR, this tank gives about 25",
+   "Dwarf hairgrasslight level: needs 30+ PAR, this tank gives about 25"
+  ],
+  "plist": [
+   "▾Java fern 157 % established×Keep thisLikeDislike\n    Java fern 4.5″ × 5.9″ high × 4.5″\n    \n    Height5.9″\n    Growth57 % established\n    Spread\n    Stems\n    Density\n    Yaw0°\n    Pitch0°\n    Roll0°\n    RaiseOn the ground\n    Left / right11.5″\n    Front / back5.5″\n    \n      Move\n      ◀ LeftRight ▶\n      ▲ UpDown ▼\n      ForwardBack\n    \n    New shapeDropDuplicateCopies…Delete\n  Keep thisLikeDislike"
+  ],
+  "status": "",
+  "brush": false
+ },
+ "3-two-more-yaw": {
+  "items": [
+   [
+    1,
+    "fern",
+    291.16,
+    138.7,
+    0,
+    0,
+    150,
+    58950771
+   ],
+   [
+    2,
+    "fern",
+    512.58,
+    210.13,
+    0,
+    0,
+    150,
+    962832449
+   ],
+   [
+    3,
+    "fern",
+    572.98,
+    210.13,
+    0,
+    40,
+    150,
+    962832449
+   ]
+  ],
+  "gate": true,
+  "hint": "Grayed: does not suit 25 PAR at low-tech care. They can still be added.",
+  "gated": [
+   "Stem plantlight level: needs 30+ PAR, this tank gives about 25",
+   "Red stem plantlight level: needs 40+ PAR, this tank gives about 25",
+   "Rotalalight level: needs 35+ PAR, this tank gives about 25",
+   "Ludwigialight level: needs 30+ PAR, this tank gives about 25",
+   "Carpet patchlight level: needs 50+ PAR, this tank gives about 25",
+   "Dwarf hairgrasslight level: needs 30+ PAR, this tank gives about 25"
+  ],
+  "plist": [
+   "▾Java fern×3▸Java fern 157 % established×Keep thisLikeDislike▸Java fern 257 % established×Keep thisLikeDislike▾Java fern 357 % established×Keep thisLikeDislike\n    Java fern 4.5″ × 5.9″ high × 4.5″\n    \n    Height5.9″\n    Growth57 % established\n    Spread\n    Stems\n    Density\n    Yaw40°\n    Pitch0°\n    Roll0°\n    RaiseOn the ground\n    Left / right22.6″\n    Front / back8.3″\n    \n      Move\n      ◀ LeftRight ▶\n      ▲ UpDown ▼\n      ForwardBack\n    \n    New shapeDropDuplicateCopies…Delete\n  Keep thisLikeDislikeKeep thisLikeDislike",
+   "▸Java fern 157 % established×Keep thisLikeDislike",
+   "▸Java fern 257 % established×Keep thisLikeDislike",
+   "▾Java fern 357 % established×Keep thisLikeDislike\n    Java fern 4.5″ × 5.9″ high × 4.5″\n    \n    Height5.9″\n    Growth57 % established\n    Spread\n    Stems\n    Density\n    Yaw40°\n    Pitch0°\n    Roll0°\n    RaiseOn the ground\n    Left / right22.6″\n    Front / back8.3″\n    \n      Move\n      ◀ LeftRight ▶\n      ▲ UpDown ▼\n      ForwardBack\n    \n    New shapeDropDuplicateCopies…Delete\n  Keep thisLikeDislike"
+  ],
+  "status": "",
+  "brush": false
+ },
+ "4-remove-one": {
+  "items": [
+   [
+    2,
+    "fern",
+    512.58,
+    210.13,
+    0,
+    0,
+    150,
+    962832449
+   ],
+   [
+    3,
+    "fern",
+    572.98,
+    210.13,
+    0,
+    40,
+    150,
+    962832449
+   ]
+  ],
+  "gate": true,
+  "hint": "Grayed: does not suit 25 PAR at low-tech care. They can still be added.",
+  "gated": [
+   "Stem plantlight level: needs 30+ PAR, this tank gives about 25",
+   "Red stem plantlight level: needs 40+ PAR, this tank gives about 25",
+   "Rotalalight level: needs 35+ PAR, this tank gives about 25",
+   "Ludwigialight level: needs 30+ PAR, this tank gives about 25",
+   "Carpet patchlight level: needs 50+ PAR, this tank gives about 25",
+   "Dwarf hairgrasslight level: needs 30+ PAR, this tank gives about 25"
+  ],
+  "plist": [
+   "▾Java fern×2▸Java fern 157 % established×Keep thisLikeDislike▾Java fern 257 % established×Keep thisLikeDislike\n    Java fern 4.5″ × 5.9″ high × 4.5″\n    \n    Height5.9″\n    Growth57 % established\n    Spread\n    Stems\n    Density\n    Yaw40°\n    Pitch0°\n    Roll0°\n    RaiseOn the ground\n    Left / right22.6″\n    Front / back8.3″\n    \n      Move\n      ◀ LeftRight ▶\n      ▲ UpDown ▼\n      ForwardBack\n    \n    New shapeDropDuplicateCopies…Delete\n  Keep thisLikeDislikeKeep thisLikeDislike",
+   "▸Java fern 157 % established×Keep thisLikeDislike",
+   "▾Java fern 257 % established×Keep thisLikeDislike\n    Java fern 4.5″ × 5.9″ high × 4.5″\n    \n    Height5.9″\n    Growth57 % established\n    Spread\n    Stems\n    Density\n    Yaw40°\n    Pitch0°\n    Roll0°\n    RaiseOn the ground\n    Left / right22.6″\n    Front / back8.3″\n    \n      Move\n      ◀ LeftRight ▶\n      ▲ UpDown ▼\n      ForwardBack\n    \n    New shapeDropDuplicateCopies…Delete\n  Keep thisLikeDislike"
+  ],
+  "status": "",
+  "brush": false
+ },
+ "5-gate-off": {
+  "items": [
+   [
+    2,
+    "fern",
+    512.58,
+    210.13,
+    0,
+    0,
+    150,
+    962832449
+   ],
+   [
+    3,
+    "fern",
+    572.98,
+    210.13,
+    0,
+    40,
+    150,
+    962832449
+   ]
+  ],
+  "gate": false,
+  "hint": "",
+  "gated": [],
+  "plist": [
+   "▾Java fern×2▸Java fern 157 % established×Keep thisLikeDislike▾Java fern 257 % established×Keep thisLikeDislike\n    Java fern 4.5″ × 5.9″ high × 4.5″\n    \n    Height5.9″\n    Growth57 % established\n    Spread\n    Stems\n    Density\n    Yaw40°\n    Pitch0°\n    Roll0°\n    RaiseOn the ground\n    Left / right22.6″\n    Front / back8.3″\n    \n      Move\n      ◀ LeftRight ▶\n      ▲ UpDown ▼\n      ForwardBack\n    \n    New shapeDropDuplicateCopies…Delete\n  Keep thisLikeDislikeKeep thisLikeDislike",
+   "▸Java fern 157 % established×Keep thisLikeDislike",
+   "▾Java fern 257 % established×Keep thisLikeDislike\n    Java fern 4.5″ × 5.9″ high × 4.5″\n    \n    Height5.9″\n    Growth57 % established\n    Spread\n    Stems\n    Density\n    Yaw40°\n    Pitch0°\n    Roll0°\n    RaiseOn the ground\n    Left / right22.6″\n    Front / back8.3″\n    \n      Move\n      ◀ LeftRight ▶\n      ▲ UpDown ▼\n      ForwardBack\n    \n    New shapeDropDuplicateCopies…Delete\n  Keep thisLikeDislike"
+  ],
+  "status": "",
+  "brush": false
+ },
+ "6-scape-add-piece": {
+  "items": [
+   [
+    2,
+    "fern",
+    512.58,
+    210.13,
+    0,
+    0,
+    150,
+    962832449
+   ],
+   [
+    3,
+    "fern",
+    572.98,
+    210.13,
+    0,
+    40,
+    150,
+    962832449
+   ],
+   [
+    4,
+    "river",
+    119.35,
+    65.36,
+    0,
+    22,
+    110,
+    452693763
+   ]
+  ],
+  "gate": false,
+  "hint": "",
+  "gated": [],
+  "plist": [
+   "▾Java fern×2▸Java fern 157 % established×Keep thisLikeDislike▸Java fern 257 % established×Keep thisLikeDislikeKeep thisLikeDislike",
+   "▸Java fern 157 % established×Keep thisLikeDislike",
+   "▸Java fern 257 % established×Keep thisLikeDislike"
+  ],
+  "status": "",
+  "brush": false
+ },
+ "7-scape-nudge-dup": {
+  "items": [
+   [
+    2,
+    "fern",
+    512.58,
+    210.13,
+    0,
+    0,
+    150,
+    962832449
+   ],
+   [
+    3,
+    "fern",
+    572.98,
+    210.13,
+    0,
+    40,
+    150,
+    962832449
+   ],
+   [
+    4,
+    "river",
+    124.35,
+    60.36,
+    5,
+    22,
+    110,
+    452693763
+   ],
+   [
+    5,
+    "river",
+    212.35,
+    60.36,
+    5,
+    47,
+    110,
+    452693763
+   ]
+  ],
+  "gate": false,
+  "hint": "",
+  "gated": [],
+  "plist": [
+   "▾Java fern×2▸Java fern 157 % established×Keep thisLikeDislike▸Java fern 257 % established×Keep thisLikeDislikeKeep thisLikeDislike",
+   "▸Java fern 157 % established×Keep thisLikeDislike",
+   "▸Java fern 257 % established×Keep thisLikeDislike"
+  ],
+  "status": "",
+  "brush": false
+ },
+ "8-scape-brush-bar": {
+  "items": [
+   [
+    2,
+    "fern",
+    512.58,
+    210.13,
+    0,
+    0,
+    150,
+    962832449
+   ],
+   [
+    3,
+    "fern",
+    572.98,
+    210.13,
+    0,
+    40,
+    150,
+    962832449
+   ],
+   [
+    4,
+    "river",
+    124.35,
+    60.36,
+    5,
+    22,
+    110,
+    452693763
+   ],
+   [
+    5,
+    "river",
+    212.35,
+    60.36,
+    5,
+    47,
+    110,
+    452693763
+   ]
+  ],
+  "gate": false,
+  "hint": "",
+  "gated": [],
+  "plist": [
+   "▾Java fern×2▸Java fern 157 % established×Keep thisLikeDislike▸Java fern 257 % established×Keep thisLikeDislikeKeep thisLikeDislike",
+   "▸Java fern 157 % established×Keep thisLikeDislike",
+   "▸Java fern 257 % established×Keep thisLikeDislike"
+  ],
+  "status": "",
+  "brush": true
+ },
+ "9-scape-remove-all": {
+  "items": [
+   [
+    2,
+    "fern",
+    512.58,
+    210.13,
+    0,
+    0,
+    150,
+    962832449
+   ],
+   [
+    3,
+    "fern",
+    572.98,
+    210.13,
+    0,
+    40,
+    150,
+    962832449
+   ]
+  ],
+  "gate": false,
+  "hint": "",
+  "gated": [],
+  "plist": [
+   "▾Java fern×2▸Java fern 157 % established×Keep thisLikeDislike▸Java fern 257 % established×Keep thisLikeDislikeKeep thisLikeDislike",
+   "▸Java fern 157 % established×Keep thisLikeDislike",
+   "▸Java fern 257 % established×Keep thisLikeDislike"
+  ],
+  "status": "Every rock, piece of wood and cave removed. Ctrl+Z brings them back.",
+  "brush": false
+ }
+}
