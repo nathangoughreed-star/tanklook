@@ -5,7 +5,7 @@
 import * as THREE from 'three';
 import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../art/paint';
-import { GRAIN_LOOK, GRAIN_ORDER, SUBSTRATES, blendWeights, blendZone, grain3D, shadesOf } from '../art/placeholder';
+import { GRAIN_LOOK, SUBSTRATES, blendRatio, blendZone, grain3D, shadesOf } from '../art/placeholder';
 import { waterY } from '../scene/physics';
 import { footprint } from '../scene/shape';
 import type { Grain, Tank, TankSetup } from '../scene/types';
@@ -27,13 +27,10 @@ export function grainLooks(sub: TankSetup['substrate']): GrainLook[] {
       return { shape: 'stone', size: [G.size[0] * 2, G.size[1] * 2], round: G.round, colors: shadesOf(color, 10, rng(5)), speckle: true, wet: false, at };
     };
     if (b.grain2 === 'none') return grain3D(b.grain) ? [look(b.grain, b.color)] : [];
-    const z = blendZone(b), p2 = b.share / 100, w = (x: number, d: number) => blendWeights(b, x, d, z);
-    // the same grain in two colours: each stone one or the other
-    if (b.grain === b.grain2) return grain3D(b.grain) ? [look(b.grain, b.color, (x, d) => { const [a, , m] = w(x, d); return a + m * (1 - p2); }), look(b.grain, b.color2, (x, d) => { const [, bb, m] = w(x, d); return bb + m * p2; })] : [];
-    // mixed ground: the finer grain the bed, the coarser covering its share of it
-    const second = GRAIN_ORDER.indexOf(b.grain2) > GRAIN_ORDER.indexOf(b.grain), out: GrainLook[] = [];
-    if (grain3D(b.grain)) out.push(look(b.grain, b.color, (x, d) => { const [a, , m] = w(x, d); return a + m * (second ? 1 : 1 - p2); }));
-    if (grain3D(b.grain2)) out.push(look(b.grain2, b.color2, (x, d) => { const [, bb, m] = w(x, d); return bb + m * (second ? p2 : 1); }));
+    // one ratio field r of the second grain (art/placeholder `blendRatio`), the same the ground shader paints
+    const z = blendZone(b), r2 = (x: number, d: number) => blendRatio(b, x, d, z), r1 = (x: number, d: number) => 1 - r2(x, d), out: GrainLook[] = [];
+    if (grain3D(b.grain)) out.push(look(b.grain, b.color, r1));
+    if (grain3D(b.grain2)) out.push(look(b.grain2, b.color2, r2));
     return out;
   }
   const t = SUBSTRATES[sub.type];

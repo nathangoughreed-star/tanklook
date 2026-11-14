@@ -465,55 +465,85 @@ export function drawBlendTile(ctx: Ctx, W: number, b: SubstrateBlend, which: 'a'
 }
 
 /**
- * Where the two grains lie on the floor: a seamless 256x256 noise field (three octaves, 0-1) and its sorted values, so
- * a share of the floor maps to a threshold exactly (`maskQuantile`).
+ * SM1 (Nathan 2026-11-14): a two-grain blend is one continuous local ratio r(x, depth) of grain 2 (0-1), not three looks.
+ * `substrateField`: a seamless 256x256 map of two standardized noises (mean 0, sd 1, bytes 128 + 40 z): R broad drifts
+ * (3 and 6 cells per repeat), G local pockets (7 and 14 cells).
  */
-let maskCache: { data: Uint8Array<ArrayBuffer>; sorted: Float32Array } | undefined;
-export function substrateMask() {
-  if (maskCache) return maskCache;
-  const N = 256, r = rng(29), f = new Float32Array(N * N);
-  for (const [cells, amp] of [[4, 1], [8, 0.5], [16, 0.25]] as const) {
-    const g = Array.from({ length: cells * cells }, () => r());
-    const at = (i: number, j: number) => g[(j % cells) * cells + (i % cells)];
-    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
-      const u = x / N * cells, v = y / N * cells, i = Math.floor(u), j = Math.floor(v), s = u - i, t = v - j;
-      const S = s * s * (3 - 2 * s), T = t * t * (3 - 2 * t);
-      f[y * N + x] += amp * ((at(i, j) * (1 - S) + at(i + 1, j) * S) * (1 - T) + (at(i, j + 1) * (1 - S) + at(i + 1, j + 1) * S) * T);
+const FIELD_N = 256;
+let fieldCache: Uint8Array<ArrayBuffer> | undefined;
+export function substrateField() {
+  if (fieldCache) return fieldCache;
+  const N = FIELD_N, r = rng(29), data = new Uint8Array(N * N * 4);
+  [[[3, 1], [6, 0.5]], [[7, 1], [14, 0.3]]].forEach((octs, ch) => {
+    const f = new Float32Array(N * N);
+    for (const [cells, amp] of octs) {
+      const g = Array.from({ length: cells * cells }, () => r());
+      const at = (i: number, j: number) => g[(j % cells) * cells + (i % cells)];
+      for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+        const u = x / N * cells, v = y / N * cells, i = Math.floor(u), j = Math.floor(v), s = u - i, t = v - j;
+        const S = s * s * (3 - 2 * s), T = t * t * (3 - 2 * t);
+        f[y * N + x] += amp * ((at(i, j) * (1 - S) + at(i + 1, j) * S) * (1 - T) + (at(i, j + 1) * (1 - S) + at(i + 1, j + 1) * S) * T);
+      }
     }
-  }
-  let lo = Infinity, hi = -Infinity; for (const v of f) { lo = Math.min(lo, v); hi = Math.max(hi, v); }
-  const data = new Uint8Array(N * N * 4);
-  for (let k = 0; k < N * N; k++) { const v = Math.round((f[k] - lo) / (hi - lo) * 255); data[k * 4] = data[k * 4 + 1] = data[k * 4 + 2] = v; data[k * 4 + 3] = 255; }
-  const sorted = Float32Array.from({ length: N * N }, (_, k) => data[k * 4] / 255).sort();
-  return (maskCache = { data, sorted });
+    let m = 0; for (const v of f) m += v; m /= f.length;
+    let sd = 0; for (const v of f) sd += (v - m) ** 2; sd = Math.sqrt(sd / f.length) || 1;
+    for (let k = 0; k < N * N; k++) data[k * 4 + ch] = Math.max(0, Math.min(255, Math.round(128 + 40 * (f[k] - m) / sd)));
+  });
+  for (let k = 0; k < N * N; k++) { data[k * 4 + 2] = 0; data[k * 4 + 3] = 255; }
+  return (fieldCache = data);
 }
-/** The mask value below which `p` (0-1) of the floor lies. */
-export function maskQuantile(p: number) {
-  const s = substrateMask().sorted;
-  if (p <= 0) return -0.01;
-  if (p >= 1) return 1.01;
-  return s[Math.min(s.length - 1, Math.floor(p * s.length))];
+/** The grain-by-grain threshold noise: uniform 0-1 (rank-equalized, so a ratio r puts grain 2 on a share r of the grains),
+ *  smooth over 4 texels = one grain, seamless, 256x256, 64 grains per repeat. */
+let fineCache: Uint8Array<ArrayBuffer> | undefined;
+export function substrateFine() {
+  if (fineCache) return fineCache;
+  const N = FIELD_N, cells = 64, r = rng(53), g = Array.from({ length: cells * cells }, () => r()), f = new Float32Array(N * N);
+  const at = (i: number, j: number) => g[(j % cells) * cells + (i % cells)];
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+    const u = x / N * cells, v = y / N * cells, i = Math.floor(u), j = Math.floor(v), s = u - i, t = v - j;
+    const S = s * s * (3 - 2 * s), T = t * t * (3 - 2 * t);
+    f[y * N + x] = (at(i, j) * (1 - S) + at(i + 1, j) * S) * (1 - T) + (at(i, j + 1) * (1 - S) + at(i + 1, j + 1) * S) * T;
+  }
+  const order = Array.from(f.keys()).sort((a, b) => f[a] - f[b]), data = new Uint8Array(N * N * 4);
+  order.forEach((k, rank) => { const v = Math.round(rank / (N * N - 1) * 255); data[k * 4] = data[k * 4 + 1] = data[k * 4 + 2] = v; data[k * 4 + 3] = 255; });
+  return (fineCache = data);
 }
 /** Grains coarse enough to be drawn as 3D stones (render/grains.ts). */
 export const grain3D = (g: Grain | 'none') => g === 'gravel' || g === 'pebble';
 /**
- * Where a two-grain blend's patches lie (render/build.ts `blendGrains` draws them; render/grains.ts puts its 3D stones on
- * the same patches): mask thresholds `lo` / `hi`, mask repeats per texture tile `scale`, edge softness `w`, and the
- * mask's start `off`, a hash of the blend's own values, so every blend lays its patches out differently.
+ * The blend's ratio field parameters (render/build.ts `blendGrains` draws it, render/grains.ts puts its 3D stones on it):
+ * r = sigmoid(bias + amp * z), z the standardized drift + pocket noise of `substrateField`. `mix` sets how uneven r is
+ * (1 = nearly even, 0 = strong drifts and pockets); `bias` is found so the floor-wide mean of r is exactly the share.
+ * `scale`: field repeats per texture tile, `fine`: threshold-noise repeats per tile (one noise cell = one grain of the
+ * coarser kind), `off`: the fields' starts, a hash of the blend's own values so every blend lays out differently.
  */
+const ZD = 0.8, ZP = 0.6; // drift and pocket weights (sd 1 together)
+const sig = (x: number) => 1 / (1 + Math.exp(-x));
+const biasCache = new Map<string, number>();
 export function blendZone(b: SubstrateBlend) {
-  const p2 = b.share / 100, k = 1 - b.mix, period = 900 - 650 * b.mix; // mm per mask repeat
+  const p2 = Math.min(1, Math.max(0, b.share / 100)), amp = 0.2 + 3.6 * (1 - b.mix), key = `${p2}:${amp}`;
+  let bias = biasCache.get(key);
+  if (bias === undefined) {
+    if (p2 <= 0.002) bias = -14; else if (p2 >= 0.998) bias = 14;
+    else {
+      const F = substrateField(), zs: number[] = []; for (let k = 0; k < FIELD_N * FIELD_N; k += 7) zs.push(((F[k * 4] - 128) * ZD + (F[k * 4 + 1] - 128) * ZP) / 40);
+      let lo = -16, hi = 16;
+      for (let it = 0; it < 40; it++) { const m = (lo + hi) / 2; let s = 0; for (const z of zs) s += sig(m + amp * z); if (s / zs.length < p2) lo = m; else hi = m; }
+      bias = (lo + hi) / 2;
+    }
+    biasCache.set(key, bias);
+  }
+  const cell = Math.max(0.5, Math.max(...[b.grain, b.grain2].filter(g => g !== 'none').map(g => GRAIN_LOOK[g as Grain].size[0] + GRAIN_LOOK[g as Grain].size[1])) * 0.9); // mm: mean diameter ~ r0 + r1
   let h = 2166136261; for (const c of `${b.color}${b.color2}${b.share}${b.mix}`) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
-  return { lo: maskQuantile((1 - p2) * k), hi: maskQuantile(1 - p2 * k), scale: blendTile(b) / period, w: 0.012, off: [((h >>> 0) % 1000) / 1000, ((h >>> 10) % 1000) / 1000] };
+  const t = blendTile(b), off = [((h >>> 0) % 1000) / 1000, ((h >>> 10) % 1000) / 1000, ((h >>> 5) % 1000) / 1000, ((h >>> 15) % 1000) / 1000];
+  return { bias, amp, scale: t / 1000, fine: t / (64 * cell), off };
 }
-/** The blend's patch weights at floor point (x, depth) mm, as the ground shader finds them: [first grain alone, second
- *  alone, mixed], summing to 1. The mask sampled bilinearly with wrap, like the GPU's linear filter. */
-export function blendWeights(b: SubstrateBlend, x: number, d: number, z = blendZone(b)): [number, number, number] {
-  const N = 256, M = substrateMask().data, t = blendTile(b);
+/** The blend's ratio of the second grain, 0-1, at floor point (x, depth) mm, as the ground shader finds it (the field
+ *  sampled bilinearly with wrap, like the GPU's linear filter). */
+export function blendRatio(b: SubstrateBlend, x: number, d: number, z = blendZone(b)): number {
+  const N = FIELD_N, M = substrateField(), t = blendTile(b);
   const u = ((x / t) * z.scale + z.off[0]) * N - 0.5, v = ((d / t) * z.scale + z.off[1]) * N - 0.5, i = Math.floor(u), j = Math.floor(v), fu = u - i, fv = v - j;
-  const at = (a: number, c: number) => M[((((c % N) + N) % N) * N + (((a % N) + N) % N)) * 4] / 255;
-  const n = (at(i, j) * (1 - fu) + at(i + 1, j) * fu) * (1 - fv) + (at(i, j + 1) * (1 - fu) + at(i + 1, j + 1) * fu) * fv;
-  const ss = (e0: number, e1: number) => { const s = Math.min(1, Math.max(0, (n - e0) / (e1 - e0))); return s * s * (3 - 2 * s); };
-  const a = 1 - ss(z.lo - z.w, z.lo + z.w), bb = ss(z.hi - z.w, z.hi + z.w);
-  return [a, bb, Math.max(0, 1 - a - bb)];
+  const at = (a: number, c: number, ch: number) => M[((((c % N) + N) % N) * N + (((a % N) + N) % N)) * 4 + ch];
+  const smp = (ch: number) => (at(i, j, ch) * (1 - fu) + at(i + 1, j, ch) * fu) * (1 - fv) + (at(i, j + 1, ch) * (1 - fu) + at(i + 1, j + 1, ch) * fu) * fv;
+  return sig(z.bias + z.amp * (((smp(0) - 128) * ZD + (smp(1) - 128) * ZP) / 40));
 }
