@@ -1,5 +1,6 @@
 // UI2 shell step 1: the four check drawers, READ-ONLY (screen map §2a "Drawers"). They draw the view-models of logic/checks.ts;
 // editing (Set my space, feeding, limits) comes with the sections that own those settings (§3: one home per setting).
+import { openLimit } from './constraints';
 import type { ChecksModel, CheckId, HabitatView, CostView, WaterView, NotesView } from './logic/checks';
 import { CHECKS } from './logic/checks';
 import { Icon, Meter, Pill } from './ui';
@@ -40,7 +41,8 @@ function Cost({ v }: { v: CostView | null }) {
         <div><div class="cap">Time</div><div class="big">{v.minutes}</div></div>
       </div>
       <div class="drow"><span>Relative difficulty</span><span><b>{v.risk}</b> / 10 · {v.riskWord}</span></div>
-      <div class="hint">Difficulty is for the experience saved in this browser (new to it unless set); it becomes the optional Experience constraint in a later step.</div>
+      <div class="hint">Difficulty uses your Experience constraint (off means an average keeper). <button type="button" class="spLink" onClick={() => openLimit('experience')}>Edit in Constraints</button></div>
+      <div class="hint">Budget, monthly limit and time per week live in <button type="button" class="spLink" onClick={() => openLimit('money')}>Constraints</button>.</div>
       <div class="cap">Costs most to set up</div>
       <ul class="dlist money">{v.rows.map(r => <li><span>{r.label}</span><b>{r.setup}</b></li>)}</ul>
     </>
