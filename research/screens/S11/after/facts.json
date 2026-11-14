@@ -1,6 +1,6 @@
 {
  "facts": {
-  "phone390": {
+  "phone360": {
    "00-home": {
     "pageX": 0,
     "out": [],
@@ -10,11 +10,8 @@
    "01-tank": {
     "pageX": 0,
     "out": [],
-    "small": 2,
-    "smallEx": [
-     "Freshwater 162x38",
-     "Saltwater 162x38"
-    ]
+    "small": 0,
+    "smallEx": []
    },
    "02-picker": {
     "pageX": 0,
@@ -58,32 +55,20 @@
    "07-equipment": {
     "pageX": 0,
     "out": [],
-    "small": 3,
-    "smallEx": [
-     "CO2 41x44",
-     "Air 33x44",
-     "UV 34x44"
-    ]
+    "small": 0,
+    "smallEx": []
    },
    "08-equip-heater": {
     "pageX": 0,
     "out": [],
-    "small": 3,
-    "smallEx": [
-     "CO2 41x44",
-     "Air 33x44",
-     "UV 34x44"
-    ]
+    "small": 0,
+    "smallEx": []
    },
    "09-equip-light": {
     "pageX": 0,
     "out": [],
-    "small": 3,
-    "smallEx": [
-     "CO2 41x44",
-     "Air 33x44",
-     "UV 34x44"
-    ]
+    "small": 0,
+    "smallEx": []
    },
    "10-preferences": {
     "pageX": 0,
@@ -112,11 +97,8 @@
    "14-discover-thisorthat": {
     "pageX": 0,
     "out": [],
-    "small": 2,
-    "smallEx": [
-     "A 175x38",
-     "B 175x38"
-    ]
+    "small": 0,
+    "smallEx": []
    },
    "15-print": {
     "pageX": 0,
@@ -127,13 +109,242 @@
    "16-settings": {
     "pageX": 0,
     "out": [],
-    "small": 4,
+    "small": 0,
+    "smallEx": []
+   },
+   "17-check-water": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "18-check-cost": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "19-file-menu": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "20-compare": {
+    "pageX": 0,
+    "out": [
+     "btn sm useone:Use"
+    ],
+    "small": 0,
+    "smallEx": []
+   }
+  },
+  "tabP": {
+   "00-home": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "01-tank": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "02-picker": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "03-maker": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "04-scape": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "05-plants": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "06-animals": {
+    "pageX": 0,
+    "out": [],
+    "small": 8,
     "smallEx": [
-     "US 175x38",
-     "Metric 175x38",
-     "Guided 175x38",
-     "Sandbox 175x38"
+     "Neon tetra 8x44",
+     "Harlequin rasbora 8x44",
+     "Honey gourami (male) 8x44",
+     "Bronze corydoras 8x44",
+     "Otocinclus 8x44",
+     "Amano shrimp 8x44",
+     "Malaysian trumpet snai 8x44",
+     "AqAdvisor ↗ 72x18"
     ]
+   },
+   "07-equipment": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "08-equip-heater": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "09-equip-light": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "10-preferences": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "11-constraints": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "12-discover": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "13-discover-explore": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   }
+  },
+  "tabL": {
+   "00-home": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "01-tank": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "02-picker": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "03-maker": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "04-scape": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "05-plants": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "06-animals": {
+    "pageX": 0,
+    "out": [],
+    "small": 8,
+    "smallEx": [
+     "Neon tetra 8x44",
+     "Harlequin rasbora 8x44",
+     "Honey gourami (male) 8x44",
+     "Bronze corydoras 8x44",
+     "Otocinclus 8x44",
+     "Amano shrimp 8x44",
+     "Malaysian trumpet snai 8x44",
+     "AqAdvisor ↗ 72x18"
+    ]
+   },
+   "07-equipment": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "08-equip-heater": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "09-equip-light": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "10-preferences": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "11-constraints": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "12-discover": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "13-discover-explore": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "14-discover-thisorthat": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "15-print": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "16-settings": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
    },
    "17-check-water": {
     "pageX": 0,
@@ -156,11 +367,264 @@
    "20-compare": {
     "pageX": 0,
     "out": [],
-    "small": 2,
-    "smallEx": [
-     "Tank A 55x38",
-     "Tank B 53x38"
-    ]
+    "small": 0,
+    "smallEx": []
+   }
+  },
+  "d1600": {
+   "00-home": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "01-tank": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "02-picker": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "03-maker": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "04-scape": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "05-plants": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "06-animals": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "07-equipment": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "08-equip-heater": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "09-equip-light": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "10-preferences": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "11-constraints": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "12-discover": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "13-discover-explore": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "14-discover-thisorthat": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "15-print": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "16-settings": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "17-check-water": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "18-check-cost": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "19-file-menu": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "20-compare": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   }
+  },
+  "d1280": {
+   "00-home": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "01-tank": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "02-picker": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "03-maker": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "04-scape": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "05-plants": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "06-animals": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "07-equipment": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "08-equip-heater": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "09-equip-light": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "10-preferences": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "11-constraints": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "12-discover": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "13-discover-explore": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "14-discover-thisorthat": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "15-print": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "16-settings": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "17-check-water": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "18-check-cost": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "19-file-menu": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "20-compare": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
    }
   }
  },

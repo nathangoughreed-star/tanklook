@@ -15,7 +15,7 @@ const send = (method, params = {}) => new Promise(r => { const i = ++id; pend.se
 const ev = async expr => { const r = await send('Runtime.evaluate', { expression: expr, awaitPromise: true, returnByValue: true }); if (r.result.exceptionDetails) throw new Error(expr.slice(0, 90) + ' :: ' + JSON.stringify(r.result.exceptionDetails).slice(0, 250)); return r.result.result.value; };
 const click = (css, text = '') => ev(`(() => { const e = [...document.querySelectorAll(${JSON.stringify(css)})].find(b => b.textContent.includes(${JSON.stringify(text)}) || b.getAttribute('aria-label')?.includes(${JSON.stringify(text)})); if (!e) throw new Error('no ' + ${JSON.stringify(css + ' ' + text)}); e.click(); return true })()`);
 const seed = readFileSync('src/examples/planted.json', 'utf8');
-const facts = {}, errors = [], fails = []; let phase = 'start', dev = '', OUT = '';
+const prevF = (() => { try { return JSON.parse(readFileSync(`research/screens/S11/${PHASE}/facts.json`, 'utf8')); } catch { return {}; } })(); const facts = prevF.facts ?? {}, errors = [], fails = []; let phase = 'start', dev = '', OUT = '';
 await send('Runtime.enable'); ws.addEventListener('message', m => { const d = JSON.parse(m.data); if (d.method === 'Runtime.exceptionThrown') errors.push(dev + '/' + phase + ': ' + d.params.exceptionDetails.exception?.description?.slice(0, 200)); });
 const save = () => writeFileSync(`research/screens/S11/${PHASE}/facts.json`, JSON.stringify({ facts, fails, errors }, null, 1));
 const waitFor = async (expr, ms = 120000) => { const t = Date.now(); while (Date.now() - t < ms) { if (await ev(expr).catch(() => false)) return true; await sleep(700); } return false; };
