@@ -1,5 +1,6 @@
 // UI2 shell step 8 (lane S8, 2026-11-13): the viewer cluster's View popover and Another moment (screen map §2a). Draws logic/view.ts; the viewer
 // itself is the unchanged render/viewer.ts. Compare comes in step 9 (its button is left out).
+import type { ComponentChildren } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { Store } from '../scene/store';
 import type { Viewer } from '../render/viewer';
@@ -37,7 +38,7 @@ export function applyViewPrefs(viewer: Viewer, host: HTMLElement) {
   viewer.invalidate();
 }
 
-export function ViewCluster({ store, getViewer, phone }: { store: Store; getViewer: () => Viewer | undefined; phone: boolean }) {
+export function ViewCluster({ store, getViewer, phone, compare }: { store: Store; getViewer: () => Viewer | undefined; phone: boolean; /** step 9: the Compare / Views linked / End compare buttons (compare.tsx) */ compare?: ComponentChildren }) {
   const [open, setOpen] = useState(false);
   const [note, setNote] = useState('');
   const [, bump] = useState(0);
@@ -71,6 +72,7 @@ export function ViewCluster({ store, getViewer, phone }: { store: Store; getView
     <div class="ov cluster" ref={wrap}>
       <div class="toolbar glass">
         <button type="button" class={`btn sm${open ? ' on' : ''}`} aria-haspopup="dialog" aria-expanded={open} title="Camera, what is shown, viewpoint map, export a picture" onClick={() => setOpen(!open)}><Icon name="eye" /> View{phone ? '' : ' ▾'}</button>
+        {compare}
         <button type="button" class="btn sm" disabled={!store.tank.fish.length} title={store.tank.fish.length ? 'Every animal in a new spot, as if the tank were photographed a little later. Plants and scape stay.' : 'Add an animal first'} onClick={moment}><Icon name="shuffle" /> {phone ? 'Moment' : 'Another moment'}</button>
       </div>
       {note ? <div class="viewnote glass" role="status">{note}</div> : null}
