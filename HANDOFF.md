@@ -209,6 +209,7 @@ Not the 2026-11-12 "GS1: Graphics settings" section below (same ID, different la
 - Tests: `test/gs1-glass.test.ts` (16). `physics.ts glassThickness()` unchanged; no UI (custom tank maker = shell step 3).
 
 ## UI1 / UI2: UI rebuild, inventory and design (2026-11-13; request R27; Coordinator 24)
+- **2026-11-14, Nathan:** likes the new UI more than the old one and wants to keep it (still needs work). He is dogfooding `?ui=2` on live. Do NOT switch the default yet: step 12 (default flip, old UI at `?ui=1`) waits for his word.
 Decision (Nathan 11-13): keep the engine; design a new UI on paper; build a new shell beside the old one behind `?ui=2`; move features one at a time; then flip and delete the old UI. UI1 inventory: `research/design/ui1-inventory.md` (47 shots `research/screens/UI1/`). UI2 design: `research/design/ui2-screen-map.md`, mockups `research/design/ui2/`, PNGs `research/screens/UI2/`. Status 2026-11-13: design APPROVED (all 16 decisions answered; doc `research/design/ui2-screen-map.md`). BUILD STARTED with lanes P1 (tank edit rules), S1 (habitat helpers + shell skeleton behind `?ui=2`, Preact) and P9 (custom tank library). **Old-shell freeze from 2026-11-13:** no new UI features in the old shell (`index.html`, `panels.ts`, old `style.css`); bug fixes and engine / render / art / data work continue. New UI requests go into the new shell plan.
 
 ## DS1: visual styles audit (2026-11-13; lane DS1; request R20; Coordinator 24; branch claude/charming-moser-0fbf65)
