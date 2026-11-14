@@ -25,6 +25,7 @@ import { DiscoverSection, IdeasButton, AnimalDoor } from './discover';
 import { GetStarted } from './checklist';
 import { ConstraintsSection } from './constraints';
 import { PreferencesSection } from './prefs';
+import { EquipmentSection } from './equipment';
 import { scopeOf } from './logic/discover';
 import type { Tab } from '../scene/scope';
 import { CompareButtons, CompareLayer, CompareStrip, CompareDrawer, EditingBar } from './compare';
@@ -136,6 +137,12 @@ function Panel({ id, more, onPick, onClose, tank, s8, disc, s5 }: { id: SectionI
       <div class="sec-body">{id === 'scape' ? <ScapeSection store={s8.store} getViewer={s8.getViewer} /> : <PlantsSection store={s8.store} getViewer={s8.getViewer} />}</div>
     </section>
   );
+  if (id === 'equipment') return (
+    <section class="panel" aria-label="Equipment">
+      <div class="sec-head"><h2>Equipment</h2><button type="button" class="btn icon ghost" title="Fold the panel (Esc)" aria-label="Fold the panel" onClick={onClose}><Icon name="x" /></button></div>
+      <div class="sec-body"><EquipmentSection store={s8.store} units={s8.store.scene.units} /></div>
+    </section>
+  );
   if (id === 'print' || id === 'settings') return (
     <section class={`panel${id === 'print' ? ' printpanel' : ''}`} aria-label={s.title}>
       <div class="sec-head"><h2>{s.title}</h2>{id === 'print' ? <span class="hint printsub">one page builder, three presets</span> : null}<button type="button" class="btn icon ghost" title="Fold the panel (Esc)" aria-label="Fold the panel" onClick={onClose}><Icon name="x" /></button></div>
@@ -227,6 +234,8 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
   // S5: a limit line elsewhere ("room 70 deg F, edit") asks Constraints to open at a group (constraints.openLimit)
   useEffect(() => { const f = (e: Event) => { const d = (e as CustomEvent<{ section?: SectionId }>).detail; if (d?.section) { setMore(false); setPicker(false); setSection(d.section); } }; addEventListener('ui2:open', f); return () => removeEventListener('ui2:open', f); }, []);
 
+  // S6: another section asks to open a section (and a group inside it): the Heater row's "Edit the room" link
+  useEffect(() => { const f = (e: Event) => { const d = (e as CustomEvent<{ section?: SectionId }>).detail; if (d?.section) { setMore(false); setPicker(false); setSection(d.section); if (phone) setDrawer(null); } }; addEventListener('ui2:goto', f); return () => removeEventListener('ui2:goto', f); }, [phone]);
   const pick = (id: SectionId) => { setMore(false); setPicker(false); if (id === 'discover' && section !== 'discover') setScope(undefined); setSection(railClick(section, id)); if (phone) setDrawer(null); };
   const ideas = (id: SectionId) => { setScope(scopeOf(id)); setMore(false); setPicker(false); setSection('discover'); if (phone) setDrawer(null); };
   const tab = (id: SectionId | 'more') => { if (id === 'more') { setSection(null); setMore(!more); setDrawer(null); } else pick(id); };
