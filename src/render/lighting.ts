@@ -293,7 +293,7 @@ const AQ_FRAG = `
 uniform vec4 uEm[${AQ_MAX}]; uniform int uEmN; uniform float uMode, uAmb, uBright, uNorm, uBeamM, uRef, uCard, uSub, uFish, uPane; uniform vec3 uLCol;
 float aqSpec = 0.0;
 uniform float uFxTone, uFxCaus, uFxTime, uFxDepth, uFxLine; uniform sampler2D uCausTex; uniform vec4 uCausK; uniform float uCausOff;
-uniform float uRoomMat, uRoomK, uSpillR, uTankRound, uAlgH; uniform vec3 uSpill, uTankMin, uTankMax; uniform vec4 uWater, uWTint; uniform vec3 uWCol; uniform float uPop, uFishCard;
+uniform float uFishCap; uniform float uRoomMat, uRoomK, uSpillR, uTankRound, uAlgH; uniform vec3 uSpill, uTankMin, uTankMax; uniform vec4 uWater, uWTint; uniform vec3 uWCol; uniform float uPop, uFishCard;
 varying vec3 vAqP; varying vec3 vAqN;
 ${BOW_GLSL}
 ${WATER_FILTER_GLSL}
@@ -532,16 +532,22 @@ function CAUS() {
  *  and the share of the tank's depth before it starts (Nathan 2026-11-12: 15 % from the front glass washed the whole tank out; back half only). */
 export const DEPTH_MAX = 0.08, DEPTH_HUE = 0.5, DEPTH_FROM = 0.5, DEPTH_SAT = 0.08; // DEPTH_SAT: saturation lift on all underwater colour, so the depth reads as distance, not a duller tank
 
+/** Fish-only light cap (lane FA2): 1 = a fish's light gain never exceeds 1 and its highlight shoulder starts at 0.82; 0 = the old lift (A/B in the dev page: window.__fishCap). */
+export const FISH_CAP = { value: 1 };
+if (import.meta.env?.DEV && typeof window !== 'undefined') (window as unknown as { __fishCap: unknown }).__fishCap = FISH_CAP;
 function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithUniforms) {
   this.userData.pre?.(shader); // the material's own patch (hardscape: glass clip and grit) still applies under the lighting
-  Object.assign(shader.uniforms, LU, AU, FXU, CAUS(), { uAlgH: { value: this.userData.solid ? 1 : 0 }, uCard: { value: this.userData.card ? 1 : 0 }, uSub: { value: this.userData.sub ? 1 : 0 }, uFish: { value: this.userData.fish ? 1 : 0 }, uPane: { value: this.userData.pane ? 1 : 0 }, uRoomMat: { value: this.userData.room ? 1 : 0 }, uFishCard: { value: this.userData.fishCard ? 1 : 0 } });
+  Object.assign(shader.uniforms, LU, AU, FXU, CAUS(), { uAlgH: { value: this.userData.solid ? 1 : 0 }, uCard: { value: this.userData.card ? 1 : 0 }, uSub: { value: this.userData.sub ? 1 : 0 }, uFish: { value: this.userData.fish ? 1 : 0 }, uPane: { value: this.userData.pane ? 1 : 0 }, uRoomMat: { value: this.userData.room ? 1 : 0 }, uFishCard: { value: this.userData.fishCard ? 1 : 0 }, uFishCap: FISH_CAP });
   shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\n' + AQ_VERT)
     // an instanced mesh (leaf litter, render/scatter.ts) places each copy by its instance matrix too
     .replace('#include <begin_vertex>', '#include <begin_vertex>\n#ifdef USE_INSTANCING\nvAqP = (modelMatrix * instanceMatrix * vec4(transformed, 1.0)).xyz; vAqN = normalize(mat3(modelMatrix) * mat3(instanceMatrix) * normal);\n#else\nvAqP = (modelMatrix * vec4(transformed, 1.0)).xyz; vAqN = normalize(mat3(modelMatrix) * normal);\n#endif');
   shader.fragmentShader = shader.fragmentShader.replace('#include <common>', '#include <common>\n' + AQ_FRAG + AQ_TONE_GLSL)
     .replace('#include <opaque_fragment>', 'vec3 aqLt = aqLight();\n' +
       // caustics (plan VF5): the fixture's share of the light, redistributed into the focused net
-      'aqLt += max(aqLt - vec3(uAmb), 0.0) * aqCaus(normalize(vAqN)); outgoingLight *= aqLt;\n' + ALGAE_STEP +
+      'aqLt += max(aqLt - vec3(uAmb), 0.0) * aqCaus(normalize(vAqN));\n' +
+      // fish only (lane FA2): the light may dim a fish but never lift it past its painted colour (a gain above 1 plus the low shoulder flattened pale flanks toward white)
+      'if (max(uFish, uFishCard) > 0.5 && uFishCap > 0.5) aqLt /= max(dot(aqLt, vec3(0.2126, 0.7152, 0.0722)), 1.0);\n' +
+      '  outgoingLight *= aqLt;\n' + ALGAE_STEP +
       'if (uCard > 0.5) { float aqL = dot(outgoingLight, vec3(0.2126, 0.7152, 0.0722)); outgoingLight = max(mix(vec3(aqL), outgoingLight, 1.35 + 0.35 * uPop * uFishCard), 0.0) * (1.0 + 0.2 * uPop * uFishCard); }\n' +
       'float aqM = max(max(outgoingLight.r, outgoingLight.g), outgoingLight.b);\n' +
       // 3D fish body: the card's saturation, then a shoulder instead of the hard clamp (which flattens the form shading
@@ -550,7 +556,7 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
       'if (uFish > 0.5) {\n' +
       '  float aqS = dot(outgoingLight, vec3(0.2126, 0.7152, 0.0722)); outgoingLight = max(mix(vec3(aqS), outgoingLight, 1.35 + 0.35 * uPop), 0.0) * (1.0 + 0.2 * uPop);\n' +
       '  aqM = max(max(outgoingLight.r, outgoingLight.g), outgoingLight.b);\n' +
-      '  if (aqM > 0.6) outgoingLight *= (0.6 + 0.4 * (1.0 - exp(-(aqM - 0.6) / 0.4))) / aqM;\n' +
+      '  float aqKn = uFishCap > 0.5 ? 0.82 : 0.6; if (aqM > aqKn) outgoingLight *= (aqKn + (1.0 - aqKn) * (1.0 - exp(-(aqM - aqKn) / (1.0 - aqKn)))) / aqM;\n' +
       '  vec3 aqV = normalize(cameraPosition - vAqP); float aqRim = pow(1.0 - abs(dot(normalize(vAqN), aqV)), 3.0);\n' +
       '  outgoingLight += uLCol * (uBright * uNorm * aqSpec * 0.16) + vec3(0.03, 0.04, 0.045) * aqRim * min(dot(aqLt, vec3(0.333)), 1.5);\n' +
       // fish stand out (render.pop): the outline darkens where the body turns edge-on, so it reads against sand or leaves
