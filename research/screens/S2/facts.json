@@ -1,0 +1,34 @@
+{
+ "facts": {
+  "menu": [
+   "New",
+   "Open…",
+   "Save as…",
+   "Share link",
+   "Download"
+  ],
+  "renamed": "Kitchen planted 40",
+  "afterSave": {
+   "lib": [
+    "Kitchen planted 40"
+   ],
+   "cur": "mwfo330g4fay"
+  },
+  "openRows": [
+   "Kitchen planted 40"
+  ],
+  "share": "prompt:true",
+  "resumed": "Kitchen planted 40",
+  "autosave": "Kitchen planted 40",
+  "old": {
+   "ui2": false,
+   "app": true,
+   "name": "Kitchen planted 40",
+   "lib": [
+    "Kitchen planted 40"
+   ]
+  },
+  "newName": "New tank"
+ },
+ "errors": []
+}
