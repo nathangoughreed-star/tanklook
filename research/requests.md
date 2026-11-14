@@ -50,6 +50,7 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 |---|---|---|---|
 | R2 | Sand shards around the wood (Nathan's tank) | 1901 | C24 leaf-1896-his.png (live 1901, his camera) |
 | R3 | Leaf litter / leaf-brush pile lies flat (Nathan's tank) | 1901 | C24 leaf-1896-low.png (live 1901, el 4 deg) + leaf-1896-his.png |
+| R35 | 11-14 | Fish trend toward a flat white body (pygmy cory and others): find the shared cause and fix it for all fish, not per species | FA2 | - | - | - | brief prompts/lane-FA2-fish-washout.md; Nathan 11-14 "id rather find a blanket fix"; shots research/screens/FA2/nathan-* |
 | R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
 | R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
