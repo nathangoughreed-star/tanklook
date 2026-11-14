@@ -19,6 +19,7 @@ import { spaceFit } from '../../scene/space';
 import { tankWeight } from '../../scene/weight';
 import { adaptToTank } from '../../scene/reeval';
 import { bareTech } from '../../scene/tech';
+import { gearOfTank, isOwned } from '../../scene/gearOwn';
 import type { Scene, Tank, TankSetup, TankShape } from '../../scene/types';
 
 export type Units = Scene['units'];
@@ -175,7 +176,7 @@ export function commercialRows(S: TankSetup, _u: Units, o: { q?: string; chips?:
     const price = x.usd == null ? undefined : `${x.typical ? '~' : ''}${usd(x.usd)}${x.v && saleLive(x.v) ? ' sale' : ''}`;
     return { key: x.key, name: x.v ? x.name : `${x.m.name}${x.typical ? ' (any maker)' : ''}`, meta: `${x.dims.replace(/×/g, ' × ')} in · ${rim}${kit}`,
       ...(price ? { price } : {}), ...(x.range ? { range: rangeText(x.range) } : {}),
-      inUse: x.key === inUse, owned: false, locked: x.key === inUse && isLocked(S, 'tank'), opt: x };
+      inUse: x.key === inUse, owned: isOwned(gearOfTank(S), 'tank', x.m.id), locked: x.key === inUse && isLocked(S, 'tank'), opt: x };
   });
   return { rows, total: all.length, noSpace: !space };
 }
