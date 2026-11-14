@@ -1,0 +1,61 @@
+{
+ "facts": {
+  "emptyTank": {
+   "stock": "No animals yet. Pick one below to add it.",
+   "fits": "true",
+   "rows": 11
+  },
+  "stocked": [
+   "Neon tetra x14",
+   "Harlequin rasbora x9",
+   "Honey gourami (male) x2",
+   "Bronze corydoras x6",
+   "Otocinclus x3",
+   "Amano shrimp x4",
+   "Malaysian trumpet snail x2"
+  ],
+  "water": "Level\nFull\nTint\nClear\nColour\nClear\nBlackwater\nGreen\nTint is how much of the colour shows through 12 in of water, so a deeper tank looks more tinted. The water numbers (temperature) are in the Water check.",
+  "greyed": [
+   "Oscar | 11.8″ · Astronotus ocellatus | 1 Oscar: wants a tank at least 59.1\" long (Seriously Fish), this one is 36\" long (+9 more) | Add anyway"
+  ],
+  "fitsBackOn": "true",
+  "selection": "Selection\nNeon tetra\nParacheirodon innesi\nLength\nadult 1.5″\nDepth behind glass\n5.6″\nLooks, vs. at the front glass\n96 % as big\nFlip\nDuplicate\nDelete\nPosition and pose are random: \"Another moment\" (view bar) rolls them again.",
+  "rowHighlighted": true,
+  "ui2List": [
+   "Neon tetra x14",
+   "Harlequin rasbora x9",
+   "Honey gourami (male) x2",
+   "Bronze corydoras x6",
+   "Otocinclus x3",
+   "Amano shrimp x4",
+   "Malaysian trumpet snail x2",
+   "Pygmy corydoras x6"
+  ],
+  "savedCounts": {
+   "neon": 14,
+   "harlequin": 9,
+   "honeygourami": 2,
+   "bronzecory": 6,
+   "oto": 3,
+   "amano": 4,
+   "trumpet": 2,
+   "pygmycory": 6
+  },
+  "misfit": "46 animals do not live in saltwater. 14 Neon tetra, 9 Harlequin rasbora, 2 Honey gourami, 6 Bronze corydoras, 3 Otocinclus, 4 Amano shrimp, 2 Malaysian trumpet snail, 6 Pygmy corydoras.\nRemove misfits (46)",
+  "oldList": [
+   "Neon tetra x14",
+   "Harlequin rasbora x9",
+   "Honey gourami (male) x2",
+   "Bronze corydoras x6",
+   "Otocinclus x3",
+   "Amano shrimp x4",
+   "Malaysian trumpet snail x2",
+   "Pygmy corydoras x6"
+  ],
+  "oldShell": {
+   "ui2": false,
+   "app": true
+  }
+ },
+ "errors": []
+}
