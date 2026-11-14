@@ -18,6 +18,10 @@ import { SettingsSection } from './settings';
 import { PrintSection, PrintPaper } from './print';
 import { Icon, Pill } from './ui';
 import { ProjectName, FileMenu, FileLayer, type Files } from './files';
+import { DiscoverSection, IdeasButton, AnimalDoor } from './discover';
+import { GetStarted } from './checklist';
+import { scopeOf } from './logic/discover';
+import type { Tab } from '../scene/scope';
 
 export interface AppProps {
   store: Store;
@@ -96,7 +100,8 @@ function TabBar({ open, onPick }: { open: SectionId | 'more' | null; onPick: (id
 
 interface TankHost { store: Store; picker: boolean; setPicker: (on: boolean) => void; maker: (h: MakerHow) => void; preview: (S: TankSetup | null) => void; libN: number }
 interface S8Host { store: Store; profile: () => UserProfile; getViewer: () => Viewer | undefined; phone: boolean }
-function Panel({ id, more, onPick, onClose, tank, s8 }: { id: SectionId | null; more: boolean; onPick: (id: SectionId) => void; onClose: () => void; tank: TankHost; s8: S8Host }) {
+interface DiscHost { scope: Tab[] | undefined; onScope: (t: Tab[] | undefined) => void; say: (t: string, bad?: boolean) => void }
+function Panel({ id, more, onPick, onClose, tank, s8, disc }: { id: SectionId | null; more: boolean; onPick: (id: SectionId) => void; onClose: () => void; tank: TankHost; s8: S8Host; disc: DiscHost }) {
   if (more) return (
     <section class="panel" aria-label="More sections">
       <div class="sec-head"><h2>More</h2><button type="button" class="btn icon ghost" aria-label="Close" onClick={onClose}><Icon name="x" /></button></div>
@@ -116,6 +121,12 @@ function Panel({ id, more, onPick, onClose, tank, s8 }: { id: SectionId | null; 
     <section class={`panel${id === 'print' ? ' printpanel' : ''}`} aria-label={s.title}>
       <div class="sec-head"><h2>{s.title}</h2>{id === 'print' ? <span class="hint printsub">one page builder, three presets</span> : null}<button type="button" class="btn icon ghost" title="Fold the panel (Esc)" aria-label="Fold the panel" onClick={onClose}><Icon name="x" /></button></div>
       <div class="sec-body">{id === 'print' ? <PrintSection {...s8} /> : <SettingsSection store={s8.store} getViewer={s8.getViewer} />}</div>
+    </section>
+  );
+  if (id === 'discover') return (
+    <section class="panel" aria-label="Discover">
+      <div class="sec-head"><h2>Discover</h2><button type="button" class="btn icon ghost" title="Fold the panel (Esc)" aria-label="Fold the panel" onClick={onClose}><Icon name="x" /></button></div>
+      <div class="sec-body"><DiscoverSection store={s8.store} getViewer={s8.getViewer} profile={s8.profile} phone={s8.phone} {...disc} /></div>
     </section>
   );
   return (
@@ -150,6 +161,8 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
   const [picker, setPicker] = useState(false);
   const [maker, setMaker] = useState<MakerInit | null>(null);
   const [libN, setLibN] = useState(0);
+  const [scope, setScope] = useState<Tab[] | undefined>(undefined);   // S10: "Ideas for Plants" scopes Discover
+  const [door, setDoor] = useState(false);   // S10: the start door "From an animal I want"
   const openMaker = (h: MakerHow) => {
     const lib = loadLibrary();
     if (h.how === 'lib') { const e = lib.find(x => x.id === h.id); if (e) setMaker({ spec: specOfEntry(e), libId: e.id }); }
@@ -175,7 +188,8 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
     addEventListener('keydown', onKey); return () => removeEventListener('keydown', onKey);
   }, [drawer, section, store, files, maker, picker]);
 
-  const pick = (id: SectionId) => { setMore(false); setPicker(false); setSection(railClick(section, id)); if (phone) setDrawer(null); };
+  const pick = (id: SectionId) => { setMore(false); setPicker(false); if (id === 'discover' && section !== 'discover') setScope(undefined); setSection(railClick(section, id)); if (phone) setDrawer(null); };
+  const ideas = (id: SectionId) => { setScope(scopeOf(id)); setMore(false); setPicker(false); setSection('discover'); if (phone) setDrawer(null); };
   const tab = (id: SectionId | 'more') => { if (id === 'more') { setSection(null); setMore(!more); setDrawer(null); } else pick(id); };
   const check = (id: CheckId) => { setDrawer(drawer === id ? null : id); if (phone) { setSection(null); setMore(false); } };
   const panelOpen = !!section || more;
@@ -185,16 +199,19 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
     <div class={cls}>
       <Header store={store} files={files} saved={saved} phone={phone} />
       {phone ? null : <Rail open={section} onPick={pick} />}
-      <Panel id={section} more={more} onPick={pick} onClose={() => { setSection(null); setMore(false); setPicker(false); }} tank={{ store, picker, setPicker, maker: openMaker, preview, libN }} s8={{ store, profile, getViewer: viewer, phone }} />
+      <Panel id={section} more={more} onPick={pick} onClose={() => { setSection(null); setMore(false); setPicker(false); }} tank={{ store, picker, setPicker, maker: openMaker, preview, libN }} s8={{ store, profile, getViewer: viewer, phone }} disc={{ scope, onScope: setScope, say: files.say }} />
+      <IdeasButton section={more ? null : section} onIdeas={ideas} />
       <main class="viewer" ref={viewRef}>
         {section === 'print' && !phone ? <PrintPaper store={store} profile={profile} getViewer={viewer} /> : null}
         <ViewCluster store={store} getViewer={viewer} phone={phone} />
+        <GetStarted tank={store.tank} open={section} onOpen={pick} onAnimal={() => setDoor(true)} phone={phone} />
         {phone ? null : <CheckBar m={model} on={drawer} onPick={check} />}
       </main>
       {phone ? <div class="checkstrip"><CheckBar m={model} on={drawer} onPick={check} /></div> : null}
       {drawer ? <Drawer id={drawer} model={model} onClose={() => setDrawer(null)} /> : null}
       {phone ? <TabBar open={more ? 'more' : section} onPick={tab} /> : null}
       <FileLayer store={store} files={files} />
+      {door ? <AnimalDoor store={store} say={files.say} onClose={() => setDoor(false)} /> : null}
       {maker ? <Maker store={store} init={maker} viewHost={viewHost} preview={preview} onEnd={() => { setMaker(null); setLibN(n => n + 1); }} /> : null}
     </div>
   );

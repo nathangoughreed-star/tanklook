@@ -1,0 +1,44 @@
+{
+ "facts": {
+  "modes": [
+   "Explore",
+   "Remix",
+   "Refine",
+   "Fill only the gaps",
+   "Whole tank",
+   "This or that"
+  ],
+  "Explore": true,
+  "ExploreRows": "Freshwater tank: Cardinal tetra\nAdds animals: 12 Cardinal tetra, 10 Panda corydoras, 10 Strawberry rasbora\nRemoves animals: 14 Neon tetra, 9 Harlequin rasbora, 2 Honey gourami, 6 Bronze corydoras, 3 Otocinclus, 4 Amano shrimp, 2 Malaysian trumpet snail\nChanges Equipment and settings that go with it\n4 designs fit",
+  "Remix": true,
+  "RemixRows": "Freshwater tank: Cardinal tetra\nAdds animals: 12 Cardinal tetra, 10 Panda corydoras, 10 Strawberry rasbora\nRemoves animals: 14 Neon tetra, 9 Harlequin rasbora, 2 Honey gourami, 6 Bronze corydoras, 3 Otocinclus, 4 Amano shrimp, 2 Malaysian trumpet snail\nChanges Equipment and settings that go with it\n4 designs fit",
+  "applyUndo": {
+   "changedByApply": false,
+   "note": "exact restore is checked in s10-undo.mjs (dev build, store JSON)"
+  },
+  "Refine": true,
+  "RefineRows": "Freshwater tank: Cardinal tetra\nAdds animals: 12 Cardinal tetra, 10 Panda corydoras, 10 Strawberry rasbora\nRemoves animals: 14 Neon tetra, 9 Harlequin rasbora, 2 Honey gourami, 6 Bronze corydoras, 3 Otocinclus, 4 Amano shrimp, 2 Malaysian trumpet snail\nChanges Equipment and settings that go with it\n7 designs fit",
+  "gapChips": [
+   "Fill Animals"
+  ],
+  "gapRows": "Freshwater tank: Cardinal tetra\nAdds animals: 12 Cardinal tetra, 10 Panda corydoras, 10 Strawberry rasbora\nChanges Equipment and settings that go with it\n4 designs fit",
+  "gallery": true,
+  "galleryN": 3,
+  "pair": true,
+  "pairText": "A · First pair\nDutch Garden\nabout $740 to $1,310 · about $20 a month · about 55 to 90 min a week\nPrefer A\nUse A\nB · First pair\nIwagumi Stone Garden\nabout $460 to $850 · about $15 a month · about 30 to 65 min a week\nPrefer B\nUse B",
+  "ideasBtn": " Ideas for Plants",
+  "scoped": "Looking at Plants only · 0 kept, 54 open\nWhole design",
+  "scopedRows": "Freshwater tank: Neon tetra\nAdds plants: 24 Red stem plant, 7 Stem plant, 7 Java fern, Anubias\nRemoves plants: 14 Red stem plant, 15 Stem plant, 7 Java fern, 6 Anubias, 12 Carpet patch\nChanges Equipment and settings that go with it\n4 designs fit",
+  "checklist": "Get started · 0 of 5\nPick a tank\nA real model or your own size\nto do\nShape the scape\nRocks, wood and substrate\nto do\nAdd plants\nOr skip them for a bare look\nto do\nChoose animals\nWho lives here\nto do\nCheck the equipment\nLight, filter, heater\nto do\nOr start from an animal I want",
+  "door": "10 gal · 11 gal\nSmallest real tank that holds the group.",
+  "afterDoor": {
+   "name": "TankLook\n·\nMy animal tank\nSave",
+   "card": true
+  },
+  "oldShell": {
+   "ui2": false,
+   "app": true
+  }
+ },
+ "errors": []
+}
