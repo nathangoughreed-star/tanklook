@@ -1,0 +1,80 @@
+{
+ "facts": {
+  "empty": "Nothing placed yet. Pick one below to add it.",
+  "brush": {
+   "bar": "Pebbles\nPaint\nOne\nErase\nSize\n2.4″\nDensity\n60%\nDone"
+  },
+  "substrate": "Type\nBare bottom (no substrate)\nNatural gravel\nPea gravel\nMixed colour gravel\nBlue gravel\nBlack gravel\nBlack sand\nWhite sand\nAragonite sand (marine)\nCrushed coral (marine)\nCustom grain and colour\nGrain\nMud\nSand\nGravel\nPebbles\nSecond grain\nNothing (one grain)\nMud\nSand\nGravel\nPebbles\nRoughness\n50 %\nSL",
+  "terrain": "Custom terrain\nOff: the ground follows the slopes above. On: a grid of heights you shape by dragging its points in the tank.\nGrid\n7 points across\nDone editingFlatten\nPOOLS\nAdd a pool",
+  "library": [
+   "Stones 9: 9",
+   "Caves 1: 1"
+  ],
+  "editor": {
+   "name": "Seiryu 5.1″ × 5.0″ high × 2.9″",
+   "sliders": [
+    "Length",
+    "Turn",
+    "Tip",
+    "Roll",
+    "Raise"
+   ],
+   "keepPressed": " Kept",
+   "placedBefore": 1,
+   "placedAfter": 2
+  },
+  "plants": {
+   "placed": "PLACED 54 PLANTS",
+   "rows": [
+    "Red stem plant cluster",
+    "Stem plant cluster",
+    "Java fern",
+    "Anubias",
+    "Carpet patch"
+   ],
+   "gate": "false"
+  },
+  "growth": {
+   "hint": "53 of 99 plants overgrown",
+   "ask": "Keep these plants at this growth?\nKeep\nUndo",
+   "sum": "70 % · 53 of 99 overgrown"
+  },
+  "growthUndone": "0 % · 0 of 54 overgrown",
+  "greyed": {
+   "toggle": "Show only plants that suit the tank\n· 6 greyed",
+   "hint": [
+    "Grayed: does not suit 25 PAR at low-tech care. They can still be added. Care: low-tech."
+   ],
+   "greyed": [
+    "Stem plant | light level: needs 30+ PAR, this tank gives about 25",
+    "Red stem plant | light level: needs 40+ PAR, this tank gives about 25",
+    "Rotala | light level: needs 35+ PAR, this tank gives about 25",
+    "Ludwigia | light level: needs 30+ PAR, this tank gives about 25",
+    "Carpet patch | light level: needs 50+ PAR, this tank gives about 25",
+    "Dwarf hairgrass | light level: needs 30+ PAR, this tank gives about 25"
+   ]
+  },
+  "saved": {
+   "n": 3,
+   "subs": "pea/true",
+   "kept": 1,
+   "variants": "anubias,grass,seiryu"
+  },
+  "oldUi": {
+   "hard": "1 stone",
+   "plant": "2 plants",
+   "sub": "pea"
+  },
+  "oldUiSaved": {
+   "n": 3,
+   "subs": "pea/true",
+   "kept": 1,
+   "variants": "anubias,grass,seiryu"
+  },
+  "oldShell": {
+   "ui2": false,
+   "app": true
+  }
+ },
+ "errors": []
+}
