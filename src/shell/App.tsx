@@ -140,7 +140,7 @@ function CheckBar({ m, on, onPick }: { m: ChecksModel; on: CheckId | null; onPic
   );
 }
 
-export function App({ store, viewHost, profile, save, preview, files, viewer }: AppProps) {
+export function App({ store, viewHost, profile, preview, files, viewer }: AppProps) {
   const slow = useStore(store);
   const phone = usePhone();
   const [section, setSection] = useState<SectionId | null>(phone ? null : 'tank');
