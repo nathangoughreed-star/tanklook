@@ -8,7 +8,11 @@ import { emptyScene } from '../src/scene/defaults';
 import { defaultProfile } from '../src/demand/types';
 import { ownedAssess, suggestSetups } from '../src/demand/suggest';
 import { buildsFor } from '../src/scene/builds';
-import { HEATER_PRODUCTS } from '../src/data/gearCatalog';
+import { HEATER_PRODUCTS, LIGHT_PRODUCTS } from '../src/data/gearCatalog';
+import { GENERIC as SHEET_GENERIC, applyOwned, emptyOwned, ownedStateOf, syncEquipment } from '../src/ui/ownedGear';
+import { confine } from '../src/scene/discover';
+import { lockViolations, locksOf } from '../src/scene/locks';
+import { gearItemOf, isGearKept, keepGear, unkeepGear } from '../src/scene/gearOwn';
 
 const P = defaultProfile(), NOW = Date.parse('2026-11-02'), cap = (value: number) => ({ on: true, value });
 
@@ -117,5 +121,55 @@ describe('Suggest reads the model', () => {
     const w = briefToWants(setGear(emptyBrief(), lockItem(emptyGear(), 'heater', big.id)));
     const r = suggestSetups({ ...w, constraints: { ...w.constraints, startupUsd: cap(5000) }, animals: [{ species: 'betta', n: 1 }] }, P, 'in', NOW);
     expect(r.proposals.length).toBeGreaterThan(0);
+  });
+});
+
+describe("Discover's Keep and the gear model are one lock", () => {
+  const [L1, L2] = [LIGHT_PRODUCTS[0].id, LIGHT_PRODUCTS[1].id];
+  const base = () => { const t = structuredClone(emptyScene().tanks[0]); t.light.product = L1; return t; };
+  it('keepGear writes the model lock (and the model lock reads back as a Discover lock)', () => {
+    const T = base(); expect(isGearKept(T, 'light')).toBe(false);
+    keepGear(T, 'light', gearItemOf(T, 'light'));
+    expect(mustUse(gearOf(T.brief!), 'light')).toEqual({ item: L1, owned: false });
+    expect(isGearKept(T, 'light')).toBe(true); expect(locksOf(T).objects.map(o => o.target)).toContain('light');
+    unkeepGear(T, 'light'); expect(isGearKept(T, 'light')).toBe(false); expect(locksOf(T).objects).toEqual([]);
+  });
+  it('a locked, UNOWNED item set only in the model survives a Discover candidate that changes it', () => {
+    const orig = base(), cand = structuredClone(orig); cand.light.product = L2;
+    orig.brief = setGear(emptyBrief(), lockItem(setInUse(emptyGear(), 'light', L1), 'light', L1));   // no scene lock at all
+    expect(orig.locks).toBeUndefined();
+    expect(confine(orig, cand, ['tank', 'animals', 'plants', 'hardscape', 'substrate'])!.light.product).toBe(L1);
+    expect(lockViolations(orig, cand).some(v => v.target === 'light')).toBe(true);
+    const free = base(); expect(confine(free, cand, ['tank', 'animals', 'plants', 'hardscape', 'substrate'])!.light.product).toBe(L2);   // no lock: unchanged behavior
+  });
+  it('an old scene lock migrates into the model and back (scene -> model -> same part held)', () => {
+    const S = base(); S.locks = { objects: [{ target: 'light' }], roster: [] };
+    const g = migrateGear(emptyBrief(), S); expect(lockedGearParts(g)).toEqual(['light']);
+    const again = JSON.parse(JSON.stringify({ ...S, brief: setGear(emptyBrief(), g) }));   // share link / save round trip
+    expect(lockedGearParts(gearOf(again.brief, again))).toEqual(['light']);
+  });
+});
+
+describe('the My equipment sheet and the scene flags fold into the model', () => {
+  const H = HEATER_PRODUCTS[0].id;
+  it('a sheet (heater product, generic filter) -> brief -> model -> older fields -> sheet, unchanged', () => {
+    const st = emptyOwned(); st.on.add('heater'); st.on.add('filter'); st.heater = H; st.filter = SHEET_GENERIC; st.filterKind = 'hob';
+    const b = syncEquipment(emptyBrief(), st), g = migrateGear(b);
+    expect(g.heater).toEqual({ owned: [H], locked: [], use: H }); expect(g.filter.owned).toEqual(['care']);
+    const b2 = JSON.parse(JSON.stringify(setGear(b, g)));                           // save / share link
+    const re = ownedStateOf(b2);
+    expect([...re.on].sort()).toEqual(['filter', 'heater']); expect(re.heater).toBe(H);
+    expect(migrateGear(b2)).toEqual(g);
+  });
+  it('gear the sheet applied to the scene (owned flags) migrates into the model', () => {
+    const S = emptyScene().tanks[0], st = emptyOwned(); st.on.add('heater'); st.heater = H;
+    applyOwned(S, st);
+    expect(migrateGear(emptyBrief(), S).heater).toEqual({ owned: [H], locked: [], use: H });
+  });
+  it('an old save with no gear field loads with the same wants as before and after setGear(gearOf)', () => {
+    let b = setEquipment(emptyBrief(), 'heater', { pick: H, use: 'required' });
+    b = setEquipment(b, 'light', { pick: 'care' });
+    const a = briefToWants(b), c = briefToWants(setGear(b, gearOf(b)));
+    expect(c.owned).toEqual(a.owned); expect(c.requiredOwned).toEqual(a.requiredOwned);
   });
 });
