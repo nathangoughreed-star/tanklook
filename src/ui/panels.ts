@@ -317,7 +317,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // (one answer for every area) writes the store, the store's level is mirrored back into the tank's brief; a scene or share link that
   // carries a level is only a fallback, adopted while this browser has not decided (one release).
   {
-    let lastX: number | undefined, lastTank = -1, mirroring = false;
+    let lastX = experienceOf(getBrief()) as number | undefined, lastTank = store.scene.active, mirroring = false;
     const mirror = () => { const st = getExperience(), want = st.on ? st.levels.fundamentals : undefined; if (experienceOf(getBrief()) === want) return; mirroring = true; try { editBrief(b => setExperienceBrief(b, want as 0 | 1 | 2 | undefined)); } finally { mirroring = false; } };
     onBriefEdit(b => {
       if (mirroring) return;
@@ -327,6 +327,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
       else adoptLegacy({ briefExperience: x as number | undefined, layoutExpertise: store.tank.layout.expertise });
       mirror();
     });
+    adoptLegacy({ briefExperience: lastX, layoutExpertise: store.tank.layout.expertise }); // the scene on screen at start-up (fallback only)
     onExperience(mirror);
   }
   let welcomeFirst = false;
