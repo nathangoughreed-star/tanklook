@@ -13,6 +13,7 @@ import { App } from './App';
 import { createFiles } from './files';
 import { startMode } from './logic/files';
 import { isShareHash } from '../scene/share';
+import { applyViewPrefs } from './view';
 
 export function bootShell() {
   // the old shell off: its markup removed (no old id stays in the page), its stylesheet disabled (kept in place so dev HMR has a node to update)
@@ -43,9 +44,10 @@ export function bootShell() {
   const preview = (S: Parameters<Viewer['setPreview']>[0]) => viewer?.setPreview(S);
   // the file menu (step 2): every operation is P7's src/ui/logic/files.ts; the thumbnail comes from the viewer, built just below
   const files = createFiles(store, () => viewer!.thumbnail());
-  render(<App store={store} viewHost={viewHost} profile={loadProfile} save={save} preview={preview} files={files} />, root);
+  render(<App store={store} viewHost={viewHost} profile={loadProfile} save={save} preview={preview} files={files} viewer={() => viewer} />, root);
 
   viewer = new Viewer(canvas, viewHost, store);
+  applyViewPrefs(viewer, viewHost);
   attachPointer(viewer, store, () => false); // camera only: picking and moving things come with their sections
   // a share link (#tank=...) opens its tank; the hash is dropped so a reload keeps the visitor's edits (as the old shell does)
   const openLink = () => {

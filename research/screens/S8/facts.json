@@ -1,0 +1,40 @@
+{
+ "facts": {
+  "mapDefaultBefore": "on",
+  "momentNote": "Another moment in the tank. Ctrl+Z brings the last one back.",
+  "gfxRows": [
+   "Caustics (default)",
+   "Water depth tint (default)",
+   "Contact shadows (default)",
+   "Substrate patterning (default)",
+   "Plant variety (default)",
+   "Water-surface band (default)",
+   "Rocks and wood sunk into the substrate (default)",
+   "Mixed grain sizes (default)",
+   "Sand detail texture (default)",
+   "Plants sway in the current",
+   "Hide the light fixture when looking down from above it",
+   "Grid on back wall and floor (2″)"
+  ],
+  "unitsMetric": "Metric",
+  "shopping": {
+   "ticks": "7 of 9",
+   "to": "To buy\n$1,203\nAlready owned (not counted)\n0 items\nMonthly upkeep\n$52/mo\n\nPrices vary between stores: the set-up cost in the Cost check adds about $62 to these listed prices.",
+   "groups": [
+    "TANK AND STAND\n$229",
+    "EQUIPMENT\n$303",
+    "SUBSTRATE AND ROCK\n$49",
+    "PLANTS\n$429",
+    "ANIMALS\n$193",
+    "ALREADY OWNED"
+   ]
+  },
+  "csv": "Print\n.txt\n.csv",
+  "oldShell": {
+   "ui2": false,
+   "app": true,
+   "viewBtn": true
+  }
+ },
+ "errors": []
+}
