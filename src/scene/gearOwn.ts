@@ -165,6 +165,7 @@ export function gearItemOf(S: TankSetup, part: 'light' | 'filter' | 'heater'): s
   return u?.product ?? GENERIC;
 }
 const tankGear = (T: TankSetup) => gearOf(T.brief ?? { v: BRIEF_VERSION, items: {} }, T);
+export const gearOfTank = tankGear;
 const writeGear = (T: TankSetup, g: GearModel) => { T.brief = setGear(T.brief ?? { v: BRIEF_VERSION, items: {} }, g); };
 /** The Equipment screen's "Use this one for sure" on the item in use: a DESIGN edit (the caller wraps it in store.edit, with undo). Discover's Keep never calls this: it writes only `T.locks` (PS1). */
 export function keepGear(T: TankSetup, part: 'light' | 'filter' | 'heater', item: string): void {
@@ -188,3 +189,6 @@ export function mustUseOf(T: TankSetup, cat: string): { item: string; owned: boo
   if ((cat === 'light' || cat === 'filter' || cat === 'heater') && T.locks?.objects.some(o => o.target === cat)) { const item = gearItemOf(T, cat); return { item, owned: !!T.brief?.project?.gear?.[cat]?.owned.includes(item), by: 'discover' }; }
   return m ? { ...m, by: 'equipment' } : undefined;
 }
+
+/** Change the design's gear model (S6, the Equipment screen's own / in use / lock buttons): the caller wraps it in store.edit, so it is one undo step. */
+export function editGear(T: TankSetup, fn: (g: GearModel) => GearModel): void { writeGear(T, fn(tankGear(T))); }

@@ -311,3 +311,24 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .cmpstrip .vsep { display: none; }
 .ui2app.phone .cmptab { top: 46px; padding: 3px var(--s1); gap: 4px; } .ui2app.phone .cmpside.s0 .cmptab { left: var(--s1); } .ui2app.phone .cmpside.s1 .cmptab { right: var(--s1); }
 .ui2app.phone .cmptab .pill { font-size: 10px; padding: 0 6px; }
+
+/* ---- step 6 (lane S6): Equipment and Lighting */
+.equip { display: grid; gap: var(--s3); }
+.equip .ladder { display: flex; gap: var(--s1); overflow-x: auto; padding-bottom: 2px; }
+.equip .ladder .chip { flex: none; }
+.equip .cats { display: flex; flex-wrap: wrap; gap: var(--s1); }
+.equip .cats .chip .mk { color: var(--text-3); font-weight: 400; }
+.equip .catnote { color: var(--text-2); font-size: var(--fs-sm); }
+.equip .linkbtn { color: var(--accent); background: none; border: 0; padding: 0; cursor: pointer; font: inherit; text-decoration: underline; }
+.erow { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; gap: var(--s2); padding: var(--s2); border: 1px solid var(--line); border-radius: var(--r-ctl); background: var(--surface); }
+.erow.inuse { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.erow .thumb { width: 40px; height: 32px; display: grid; place-items: center; color: var(--text-3); }
+.erow .eb { display: grid; min-width: 0; gap: 2px; }
+.erow .eb .t { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.erow .eb .m { color: var(--text-2); font-size: var(--fs-sm); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.erow .eb .pills { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s1); }
+.erow .acts { display: flex; align-items: center; gap: var(--s1); }
+.erow .acts .own { font-size: var(--fs-sm); }
+.equip .addrow { background: none; border: 0; color: var(--text-2); text-align: left; cursor: pointer; padding: var(--s1); font: inherit; }
+.lightmap .row { display: grid; grid-template-columns: 90px 1fr auto; align-items: center; gap: var(--s2); }
+@media (max-width: 699px) { .erow { grid-template-columns: minmax(0, 1fr) auto; } .erow .thumb { display: none; } .erow .acts { flex-wrap: wrap; justify-content: flex-end; } }
