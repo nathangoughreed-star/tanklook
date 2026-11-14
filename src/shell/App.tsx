@@ -16,6 +16,7 @@ import { Drawer } from './drawers';
 import { ViewCluster } from './view';
 import { SettingsSection } from './settings';
 import { PrintSection, PrintPaper } from './print';
+import { AnimalsSection, SelectionDrawer, pickable } from './animals';
 import { Icon, Pill } from './ui';
 import { ProjectName, FileMenu, FileLayer, type Files } from './files';
 
@@ -112,6 +113,12 @@ function Panel({ id, more, onPick, onClose, tank, s8 }: { id: SectionId | null; 
       <div class="sec-body"><TankSection store={tank.store} onPicker={() => tank.setPicker(true)} onMaker={tank.maker} libN={tank.libN} /></div>
     </section>
   );
+  if (id === 'animals') return (
+    <section class="panel" aria-label="Animals">
+      <div class="sec-head"><h2>Animals</h2><button type="button" class="btn icon ghost" title="Fold the panel (Esc)" aria-label="Fold the panel" onClick={onClose}><Icon name="x" /></button></div>
+      <div class="sec-body"><AnimalsSection store={s8.store} /></div>
+    </section>
+  );
   if (id === 'print' || id === 'settings') return (
     <section class={`panel${id === 'print' ? ' printpanel' : ''}`} aria-label={s.title}>
       <div class="sec-head"><h2>{s.title}</h2>{id === 'print' ? <span class="hint printsub">one page builder, three presets</span> : null}<button type="button" class="btn icon ghost" title="Fold the panel (Esc)" aria-label="Fold the panel" onClick={onClose}><Icon name="x" /></button></div>
@@ -145,7 +152,7 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
   const phone = usePhone();
   const [section, setSection] = useState<SectionId | null>(phone ? null : 'tank');
   const [more, setMore] = useState(false);
-  const [drawer, setDrawer] = useState<CheckId | null>(null);
+  const [drawer, setDrawer] = useState<CheckId | 'selection' | null>(null);
   const [saved, setSaved] = useState(true);
   const [picker, setPicker] = useState(false);
   const [maker, setMaker] = useState<MakerInit | null>(null);
@@ -159,6 +166,12 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
   const model = useMemo(() => checksModel(store.tank, store.scene.active, store.scene.units, profile()), [slow, store]);
 
   useEffect(() => { if (!maker) viewRef.current?.prepend(viewHost); }, [viewHost, maker]);
+  // step 4: animals can be picked in the view while Animals is open; picking one opens the Selection drawer, clearing it closes it
+  useEffect(() => { pickable.fish = section === 'animals'; if (section !== 'animals') store.select(null); }, [section, store]);
+  useEffect(() => store.subscribe(kind => {
+    if (kind !== 'select') return;
+    if (store.selId != null) { setDrawer('selection'); if (phone) { setSection(null); setMore(false); } } else setDrawer(d => (d === 'selection' ? null : d));
+  }), [store, phone]);
   // the saved dot: off from an edit until its autosave (boot.ts) lands
   useEffect(() => store.subscribe(kind => { if (kind !== 'select') setSaved(false); }), [store]);
   useEffect(() => { const f = () => setSaved(true); addEventListener('ui2:saved', f); return () => removeEventListener('ui2:saved', f); }, []);
@@ -167,7 +180,7 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
       const typing = (e.target as HTMLElement | null)?.closest?.('input, textarea, select');
       if (maker) return; // the maker handles its own Esc (Cancel)
       if (e.key === 'Escape' && picker && section === 'tank') { setPicker(false); return; }
-      if (e.key === 'Escape') { const n = escape({ drawer, section }); setDrawer(n.drawer as CheckId | null); setSection(n.section); setMore(false); return; }
+      if (e.key === 'Escape') { const n = escape({ drawer, section }); setDrawer(n.drawer as CheckId | 'selection' | null); if (drawer === 'selection') store.select(null); setSection(n.section); setMore(false); return; }
       if (typing || !(e.ctrlKey || e.metaKey)) return;
       const k = e.key.toLowerCase();
       if (k === 'z' && !e.shiftKey) { e.preventDefault(); store.undo(); } else if (k === 'y' || (k === 'z' && e.shiftKey)) { e.preventDefault(); store.redo(); } else if (k === 's') { e.preventDefault(); files.save(); }
@@ -177,7 +190,7 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
 
   const pick = (id: SectionId) => { setMore(false); setPicker(false); setSection(railClick(section, id)); if (phone) setDrawer(null); };
   const tab = (id: SectionId | 'more') => { if (id === 'more') { setSection(null); setMore(!more); setDrawer(null); } else pick(id); };
-  const check = (id: CheckId) => { setDrawer(drawer === id ? null : id); if (phone) { setSection(null); setMore(false); } };
+  const check = (id: CheckId) => { if (drawer === 'selection') store.select(null); setDrawer(drawer === id ? null : id); if (phone) { setSection(null); setMore(false); } };
   const panelOpen = !!section || more;
   const cls = ['ui2app', panelOpen ? 'panel-on' : 'panel-off', drawer ? 'drawer-on' : '', phone ? 'phone' : ''].filter(Boolean).join(' ');
 
@@ -189,10 +202,10 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
       <main class="viewer" ref={viewRef}>
         {section === 'print' && !phone ? <PrintPaper store={store} profile={profile} getViewer={viewer} /> : null}
         <ViewCluster store={store} getViewer={viewer} phone={phone} />
-        {phone ? null : <CheckBar m={model} on={drawer} onPick={check} />}
+        {phone ? null : <CheckBar m={model} on={drawer === 'selection' ? null : drawer} onPick={check} />}
       </main>
-      {phone ? <div class="checkstrip"><CheckBar m={model} on={drawer} onPick={check} /></div> : null}
-      {drawer ? <Drawer id={drawer} model={model} onClose={() => setDrawer(null)} /> : null}
+      {phone ? <div class="checkstrip"><CheckBar m={model} on={drawer === 'selection' ? null : drawer} onPick={check} /></div> : null}
+      {drawer === 'selection' ? <SelectionDrawer store={store} getViewer={viewer} onClose={() => setDrawer(d => (d === 'selection' ? null : d))} /> : drawer ? <Drawer id={drawer} model={model} onClose={() => setDrawer(null)} /> : null}
       {phone ? <TabBar open={more ? 'more' : section} onPick={tab} /> : null}
       <FileLayer store={store} files={files} />
       {maker ? <Maker store={store} init={maker} viewHost={viewHost} preview={preview} onEnd={() => { setMaker(null); setLibN(n => n + 1); }} /> : null}
