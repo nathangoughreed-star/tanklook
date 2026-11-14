@@ -21,6 +21,7 @@ import { adaptToTank } from '../../scene/reeval';
 import { bareTech } from '../../scene/tech';
 import { gearOfTank, isOwned } from '../../scene/gearOwn';
 import type { Scene, Tank, TankSetup, TankShape } from '../../scene/types';
+import type { Store } from '../../scene/store';
 
 export type Units = Scene['units'];
 const KG_LB = 2.20462;
@@ -303,3 +304,34 @@ export function loadGroups(store: KV | undefined = ls()): Record<TankGroup, bool
   try { const j = JSON.parse(store?.getItem(GROUP_KEY) ?? '{}'); const out = { ...GROUP_DEFAULT }; for (const k of Object.keys(out) as TankGroup[]) if (typeof j[k] === 'boolean') out[k] = j[k]; return out; } catch { return { ...GROUP_DEFAULT }; }
 }
 export function saveGroups(g: Record<TankGroup, boolean>, store: KV | undefined = ls()): void { try { store?.setItem(GROUP_KEY, JSON.stringify(g)); } catch { /* blocked storage: forget */ } }
+
+// ---------- SC: the Kind control (fresh / salt / terrarium / vivarium, as the scope allows) ----------
+import { setupKinds, SETUP_KINDS } from '../../scene/pickerKind';
+import { applySetupKind } from '../../scene/tankEdit';
+import { misfits } from '../../scene/stockEdit';
+
+export interface KindView { on: SetupKind; opts: [SetupKind, string, string][] }
+export const kindView = (S: TankSetup): KindView => ({ on: tankKind(S), opts: setupKinds() });
+/** Switch the setup's kind (one undo step). The other type's clear water and layout style follow (engine); returns the sentence to show. */
+export function setKind(store: Pick<Store, 'edit' | 'tank'>, k: SetupKind): string {
+  if (tankKind(store.tank) === k) return '';
+  store.edit(s => applySetupKind(s, k));
+  const n = misfits(store.tank).length;
+  return `${SETUP_KINDS.find(x => x[0] === k)![1]}: the Animals list shows what suits it.${n ? ` ${n} animal${n > 1 ? 's' : ''} here ${n > 1 ? 'do' : 'does'} not fit the water: they are marked in the stocking list.` : ''}`;
+}
+
+// ---------- SC: dimension labels pinned to the tank's edges (custom tank maker) ----------
+export interface DimLabel { id: 'L' | 'D' | 'H'; x: number; y: number; text: string }
+/** Where the length, depth and height labels sit: the middle of the front-bottom edge, the right-bottom edge and the right-front vertical edge, each
+ *  pushed outward a few px so it clears the glass. `project` maps a world point (x 0..L, y up 0..H, z -D..0) to view px; null when behind the eye. */
+export function dimLabels(T: { L: number; D: number; H: number }, texts: { L: string; D: string; H: string }, project: (x: number, y: number, z: number) => [number, number] | null, pad = 14): DimLabel[] {
+  const at = (id: DimLabel['id'], a: [number, number, number], b: [number, number, number], out: [number, number]): DimLabel | null => {
+    const p = project(a[0], a[1], a[2]), q = project(b[0], b[1], b[2]); if (!p || !q) return null;
+    return { id, x: (p[0] + q[0]) / 2 + out[0] * pad, y: (p[1] + q[1]) / 2 + out[1] * pad, text: texts[id] };
+  };
+  return [
+    at('L', [0, 0, 0], [T.L, 0, 0], [0, 1]),
+    at('D', [T.L, 0, 0], [T.L, 0, -T.D], [1, 0.6]),
+    at('H', [T.L, 0, 0], [T.L, T.H, 0], [1, 0]),
+  ].filter((x): x is DimLabel => !!x);
+}
