@@ -38,3 +38,33 @@ Tests:
 - the name rule.
 
 Add a dated HANDOFF.md section "CT1".
+
+## Part 2 (added 2026-11-14; request R38): shapes and on-screen dimensions
+Nathan: "I still want the pie slice with angle, radius, and height (this absorbs 'round' which would just be 360 degrees) as an option for the custom tank. and allow whatever number for the polygon. Make the dimensions editable on screen by clicking on the dimension box. Allow polygon side lengths to be independently edited unless it makes an impossible shape."
+
+Today:
+- `src/scene/shape.ts` has `pie` with `pieDeg` 45-180 deg, D = radius, L = the chord.
+- `round` is a separate shape.
+- `poly` allows `POLY_SIDES` = 3, 5 or 6 regular sides.
+- In the maker (`src/shell/maker.tsx` ~125-133), pie shows Width + Radius + Angle.
+
+5. **Pie:** angle, radius and height are the only inputs. The angle runs 30-360 deg, and the width (chord) is derived and shown read-only.
+   - 360 deg is a full cylinder and draws exactly like today's `round`. The maker's shape list drops "Round" (files saved as `round` still load, mapped to pie 360 or kept as-is internally, your call, with a test).
+   - Check the render / glass / volume / footprint paths for angles over 180 deg: the two flat back panes fold inward, and at 360 there are no flat panes.
+   - The glass solver: a curved wall is outside the Levy plate model. Say so in the UI, as GS1 does for non-rect shapes today if it does; don't fake a number.
+6. **Polygon, any number of sides:** a number input from 3 sides up to a sensible maximum (e.g. 24; above that it is effectively round).
+   - **Side lengths independently editable:** a per-side list, plus clicking a side's dimension on screen.
+   - Edits that make an impossible shape are refused: the shape must stay closed, convex (or at least simple), with every side length positive.
+   - A side is solved for closure: show which side or angle is derived and refuse impossible values with a one-line reason.
+   - "Regular" is the default; with all sides equal it behaves as today.
+   - Volume, footprint, glass area, substrate and the 3D tank follow the real polygon.
+7. **Dimensions on screen:** the maker's preview shows dimension boxes (length / width / height / radius / angle / side lengths, in US units, inches with fractions as the rest of the app does).
+   - Clicking a box turns it into an input; Enter or blur applies the value through the same validation as the side panel, and Esc cancels.
+   - This works on desktop and at 375 px (tap).
+
+Extra proof:
+- pie at 90, 180, 270 and 360 deg;
+- 8-sided regular and irregular polygons, plus a refused impossible edit;
+- clicking a dimension box to edit it.
+
+Extra tests: polygon closure / refusal, the pie 360 = round volume, and loading an old `round` file.

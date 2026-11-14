@@ -53,6 +53,7 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R35 | 11-14 | Fish trend toward a flat white body (pygmy cory and others): find the shared cause and fix it for all fish, not per species | FA2 | - | - | - | brief prompts/lane-FA2-fish-washout.md; Nathan 11-14 "id rather find a blanket fix"; shots research/screens/FA2/nathan-*; merged build 2039 (Nathan "Merge as is": 12 recipes + fish-only light cap); live check pending |
 | R36 | 11-14 | Blended substrate: no binary between pure patches and fully mixed ground; fluid transitions and local pockets mixed more than others | SM1 | - | - | - | brief prompts/lane-SM1-substrate-mix-gradient.md; picture research/screens/SM1/nathan-before.webp |
 | R37 | 11-14 | Custom tank maker: braces modeled in 3D; custom brace fields + Optimize button (least glass at the target SF); unnamed tank named "Custom LxWxH" | CT1 | - | - | - | brief prompts/lane-CT1-maker-braces.md |
+| R38 | 11-14 | Custom tank: pie slice by angle / radius / height up to 360 deg (absorbs round); polygon any side count with independently editable sides (impossible shapes refused); dimensions editable by clicking the on-screen dimension boxes | CT1 | - | - | - | brief prompts/lane-CT1-maker-braces.md Part 2 |
 | R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
 | R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
