@@ -20,7 +20,8 @@ import {
   clearItem, equipUseOf, getItem, projectExtras, rangeOf, setFlex, setItem, setProjectExtras, setRange, setStatus, setVision, valueOf, visionOf,
   type Brief, type DimsIn, type EquipKey, type NumLimitId, type ProjectExtras, type Range, type Route, type OnboardingStep, type SkipStep, type Stocked, type Use, type Vision, type World,
 } from './brief';
-import { IN } from './physics';
+
+import { mmToIn, inToMm } from '../units';
 import { spaceFit } from './space';
 import { stockingGroupMinimum } from './groupMin';
 import { catalogueSizes } from './tankfit';
@@ -50,7 +51,7 @@ export const CONSTRAINT_LABEL: Record<ConstraintId, string> = { space: 'Space', 
 /** Where each constraint lives in the brief. space is a footprint; experience a level; the rest are range limits. */
 const ITEM_OF = { space: 'constraints.maxSpace', startup: 'constraints.budget', ongoing: 'constraints.monthly', setup: 'constraints.setupHours', care: 'constraints.careMin', experience: 'preferences.experience' } as const;
 const NUM_OF: Partial<Record<ConstraintId, NumLimitId>> = { startup: 'constraints.budget', ongoing: 'constraints.monthly', setup: 'constraints.setupHours', care: 'constraints.careMin' };
-const toIn = (mm: number) => Math.round(mm / IN * 10) / 10, toMm = (inch: number) => Math.round(inch * IN);
+const toIn = mmToIn, toMm = inToMm;
 
 /** One constraint as the state holds it. */
 export function constraintOf(b: Brief, id: ConstraintId): Constraint {

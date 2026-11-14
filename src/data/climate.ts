@@ -6,6 +6,7 @@
 // how much compromise is left, for whom, and whether it is fine long term. A tolerable band that has not been researched yet
 // is estimated from the comfortable one (marked `est`).
 import { CARE } from './care';
+import { cToFHalf } from '../units';
 import { AIRDATA } from './climatedata';
 import { getSpecies } from './species';
 import type { LayoutId, TankSetup } from '../scene/types';
@@ -171,7 +172,7 @@ export function climateOf(S: TankSetup): Climate[] {
   return rows;
 }
 /** °C to °F, to the nearest 0.5 °F (23.5 °C reads 74.5 °F). */
-const toF = (c: number) => Math.round((c * 9 / 5 + 32) * 2) / 2;
+const toF = cToFHalf;
 const deg = (c: number, us?: boolean) => us ? `${toF(c)} °F` : `${c} °C`;
 const band = (r: R, us?: boolean) => us ? `${toF(r[0])}-${toF(r[1])} °F` : `${r[0]}-${r[1]} °C`;
 /** The collapsed line: "Set to 24 °C" (or °F with US units), the warm spot and humidity where there are some, and the agreement score. */

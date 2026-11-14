@@ -4,6 +4,7 @@
 // Rules (Nathan): a check with no data for a species does not fire (counted in `noData`, a small line, not a warning);
 // "Not enough information" only where a requirement truly cannot be assessed (care needs the tool cannot check, temperature with no range).
 import { CARE } from '../data/care';
+import { toUnits, fmtLenShort, fmtArea, fmtVol } from '../units';
 import { needsOf } from '../data/careNeeds';
 import { openTopProblem } from '../data/lidNeed';
 import { grazerLevel, grazerShort } from '../data/grazers';
@@ -169,9 +170,8 @@ export function stockSummary(S: TankSetup, r: Stocking, mins: MinWarn[], units: 
 }
 
 /** mm in the scene's units: whole cm, or inches to a tenth. */
-export const toUnits = (mm: number, u: Units) => u === 'in' ? Math.round(mm / 25.4 * 10) / 10 : Math.round(mm / 10);
-export const fmtOf = (units: Units) => ({ len: (mm: number) => `${toUnits(mm, units)}${units === 'in' ? '"' : ' cm'}`, area: (cm2: number) => units === 'in' ? `${Math.round(cm2 / 6.4516)} sq in` : `${Math.round(cm2)} cm²`,
-  vol: (l: number) => units === 'in' ? `${Math.round(l / 3.785 * 10) / 10} gal` : `${Math.round(l)} L` });
+export { toUnits };
+export const fmtOf = (units: Units) => ({ len: (mm: number) => fmtLenShort(mm, units), area: (cm2: number) => fmtArea(cm2, units), vol: (l: number) => fmtVol(l, units) });
 
 /**
  * The tank-minimum lines under the bar (Nathan 2026-10-21): a red line per species below its minimum (or that cannot be assessed),
