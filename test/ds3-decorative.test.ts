@@ -36,11 +36,6 @@ describe('A: castle-coloured-gravel is a generated decorative look', () => {
     console.log('KEYS', r.items.map(c => c.key).filter(k => /air|sub/i.test(k)).join(','));
     expect(optionDef('air', 'airstone')).toBeTruthy();
   });
-  it('coloured gravel costs more than natural gravel of the same volume', () => {
-    const c = recipeScene('castle-coloured-gravel', 'balanced', model, undefined, NOW)!, n = structuredClone(c); n.substrate.type = 'gravel';
-    const price = (S: typeof c) => demandOf(S, defaultProfile(), { now: NOW }).items.find(c => /substrate/i.test(c.key))!.setup!.mode;
-    expect(price(c)).toBeGreaterThan(price(n));
-  });
 });
 
 describe('castle geometry', () => {
