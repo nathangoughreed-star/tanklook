@@ -1,0 +1,323 @@
+{
+ "facts": {
+  "phone390": {
+   "00-home": {
+    "pageX": 0,
+    "out": [],
+    "small": 12,
+    "smallEx": [
+     "Planted community 119x18",
+     "Undo 30x30",
+     "Redo 30x30",
+     "Save in this browser ( 34x24",
+     "File menu 30x30",
+     "View 63x24",
+     "Compare 86x24",
+     "Moment 83x24"
+    ]
+   },
+   "01-tank": {
+    "pageX": 0,
+    "out": [],
+    "small": 22,
+    "smallEx": [
+     "Planted community 119x18",
+     "Undo 30x30",
+     "Redo 30x30",
+     "Save in this browser ( 34x24",
+     "File menu 30x30",
+     "Ideas for Tank 115x24",
+     "Fold the panel 30x30",
+     "Tank modelCustom · 45  356x38"
+    ]
+   },
+   "02-picker": {
+    "pageX": 0,
+    "out": [],
+    "small": 18,
+    "smallEx": [
+     "Planted community 119x18",
+     "Undo 30x30",
+     "Redo 30x30",
+     "Save in this browser ( 34x24",
+     "File menu 30x30",
+     "Ideas for Tank 115x24",
+     "◂ 17x30",
+     "Search tanks 312x30"
+    ]
+   },
+   "03-maker": {
+    "pageX": 0,
+    "out": [],
+    "small": 34,
+    "smallEx": [
+     "Planted community 119x18",
+     "Undo 30x30",
+     "Redo 30x30",
+     "Save in this browser ( 34x24",
+     "File menu 30x30",
+     "Ideas for Tank 115x24",
+     "◂ 17x30",
+     "Search tanks 312x30"
+    ]
+   },
+   "04-scape": {
+    "pageX": 0,
+    "out": [],
+    "small": 36,
+    "smallEx": [
+     "Planted community 119x18",
+     "Undo 30x30",
+     "Redo 30x30",
+     "Save in this browser ( 34x24",
+     "File menu 30x30",
+     "Ideas for Scape 123x24",
+     "Fold the panel 30x30",
+     "▸Dragon stone×2 123x26"
+    ]
+   },
+   "05-plants": {
+    "pageX": 0,
+    "out": [],
+    "small": 24,
+    "smallEx": [
+     "Planted community 119x18",
+     "Undo 30x30",
+     "Redo 30x30",
+     "Save in this browser ( 34x24",
+     "File menu 30x30",
+     "Ideas for Plants 123x24",
+     "Fold the panel 30x30",
+     "▸Red stem plant cluste 180x26"
+    ]
+   },
+   "06-animals": {
+    "pageX": 0,
+    "out": [],
+    "small": 61,
+    "smallEx": [
+     "Planted community 119x18",
+     "Undo 30x30",
+     "Redo 30x30",
+     "Save in this browser ( 34x24",
+     "File menu 30x30",
+     "Ideas for Animals 133x24",
+     "Fold the panel 30x30",
+     "Neon tetra 8x22"
+    ]
+   },
+   "07-equipment": {
+    "pageX": 0,
+    "out": [],
+    "small": 37,
+    "smallEx": [
+     "Planted community 119x18",
+     "Undo 30x30",
+     "Redo 30x30",
+     "Save in this browser ( 34x24",
+     "File menu 30x30",
+     "Fold the panel 30x30",
+     "Walstad 60x24",
+     "Low-tech 67x24"
+    ]
+   },
+   "08-equip-heater": {
+    "pageX": 0,
+    "out": [],
+    "small": 38,
+    "smallEx": [
+     "Planted community 119x18",
+     "Undo 30x30",
+     "Redo 30x30",
+     "Save in this browser ( 34x24",
+     "File menu 30x30",
+     "Fold the panel 30x30",
+     "Walstad 60x24",
+     "Low-tech 67x24"
+    ]
+   },
+   "09-equip-light": {
+    "pageX": 0,
+    "out": [],
+    "small": 37,
+    "smallEx": [
+     "Planted community 119x18",
+     "Undo 30x30",
+     "Redo 30x30",
+     "Save in this browser ( 34x24",
+     "File menu 30x30",
+     "Fold the panel 30x30",
+     "Walstad 60x24",
+     "Low-tech 67x24"
+    ]
+   },
+   "10-preferences": {
+    "pageX": 0,
+    "out": [],
+    "small": 14,
+    "smallEx": [
+     "Planted community 119x18",
+     "Undo 30x30",
+     "Redo 30x30",
+     "Save in this browser ( 34x24",
+     "File menu 30x30",
+     "Fold the panel 30x30",
+     "Looks 356x38",
+     "View 63x24"
+    ]
+   },
+   "11-constraints": {
+    "pageX": 0,
+    "out": [],
+    "small": 22,
+    "smallEx": [
+     "Planted community 119x18",
+     "Undo 30x30",
+     "Redo 30x30",
+     "Save in this browser ( 34x24",
+     "File menu 30x30",
+     "Fold the panel 30x30",
+     "Money and time 356x38",
+     "Set-up budget ($) 96x30"
+    ]
+   },
+   "12-discover": {
+    "pageX": 0,
+    "out": [],
+    "small": 13,
+    "smallEx": [
+     "Planted community 119x18",
+     "Undo 30x30",
+     "Redo 30x30",
+     "Save in this browser ( 34x24",
+     "File menu 30x30",
+     "Fold the panel 30x30",
+     "View 63x24",
+     "Compare 86x24"
+    ]
+   },
+   "13-discover-explore": {
+    "pageX": 0,
+    "out": [],
+    "small": 15,
+    "smallEx": [
+     "Planted community 119x18",
+     "Undo 30x30",
+     "Redo 30x30",
+     "Save in this browser ( 34x24",
+     "File menu 30x30",
+     "Fold the panel 30x30",
+     "All modes 95x24",
+     "Show me an idea 127x30"
+    ]
+   },
+   "14-discover-thisorthat": {
+    "pageX": 0,
+    "out": [],
+    "small": 20,
+    "smallEx": [
+     "Planted community 119x18",
+     "Undo 30x30",
+     "Redo 30x30",
+     "Save in this browser ( 34x24",
+     "File menu 30x30",
+     "Fold the panel 30x30",
+     "All modes 95x24",
+     "A 175x24"
+    ]
+   },
+   "15-print": {
+    "pageX": 0,
+    "out": [],
+    "small": 16,
+    "smallEx": [
+     "Planted community 119x18",
+     "Undo 30x30",
+     "Redo 30x30",
+     "Save in this browser ( 34x24",
+     "File menu 30x30",
+     "Fold the panel 30x30",
+     "Print 252x30",
+     ".txt 44x30"
+    ]
+   },
+   "16-settings": {
+    "pageX": 0,
+    "out": [],
+    "small": 20,
+    "smallEx": [
+     "Planted community 119x18",
+     "Undo 30x30",
+     "Redo 30x30",
+     "Save in this browser ( 34x24",
+     "File menu 30x30",
+     "Fold the panel 30x30",
+     "US 175x24",
+     "Metric 175x24"
+    ]
+   },
+   "17-check-water": {
+    "pageX": 0,
+    "out": [],
+    "small": 13,
+    "smallEx": [
+     "Planted community 119x18",
+     "Undo 30x30",
+     "Redo 30x30",
+     "Save in this browser ( 34x24",
+     "File menu 30x30",
+     "View 63x24",
+     "Compare 86x24",
+     "Moment 83x24"
+    ]
+   },
+   "18-check-cost": {
+    "pageX": 0,
+    "out": [],
+    "small": 15,
+    "smallEx": [
+     "Planted community 119x18",
+     "Undo 30x30",
+     "Redo 30x30",
+     "Save in this browser ( 34x24",
+     "File menu 30x30",
+     "View 63x24",
+     "Compare 86x24",
+     "Moment 83x24"
+    ]
+   },
+   "19-file-menu": {
+    "pageX": 0,
+    "out": [],
+    "small": 17,
+    "smallEx": [
+     "Planted community 119x18",
+     "Undo 30x30",
+     "Redo 30x30",
+     "Save in this browser ( 34x24",
+     "File menu 30x30",
+     "New 170x30",
+     "Open… 170x30",
+     "Save as… 170x30"
+    ]
+   },
+   "20-compare": {
+    "pageX": 0,
+    "out": [],
+    "small": 22,
+    "smallEx": [
+     "Planted community 119x18",
+     "Undo 30x30",
+     "Redo 30x30",
+     "Save in this browser ( 34x24",
+     "File menu 30x30",
+     "New 170x30",
+     "Open… 170x30",
+     "Save as… 170x30"
+    ]
+   }
+  }
+ },
+ "fails": [],
+ "errors": []
+}

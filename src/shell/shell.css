@@ -395,7 +395,10 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 @media (max-width: 1099px), (pointer: coarse) {
   .btn, .btn.sm, .input, .select, .chip, .check, .tglrow, .tick, .segsel { min-height: 44px; }
   .btn.icon, .btn.sm.icon { min-width: 44px; width: 44px; }
-  .seg button { min-height: 38px; min-width: 44px; }
+  .seg { height: auto; min-height: 44px; } .seg button { height: auto; min-height: 44px; min-width: 44px; }
+  .btn, .chip { min-width: 44px; justify-content: center; }
+  .panel button:not(.btn):not(.chip):not(.seg *):not(.linkbtn), .drawer button:not(.btn):not(.chip):not(.linkbtn), .dlg button:not(.btn):not(.chip) { min-height: 44px; }
+  .panel button.pn, .panel button.row, .panel .linkbtn, .drawer .linkbtn { display: inline-flex; align-items: center; }
   .chip { height: auto; padding-top: 0; padding-bottom: 0; }
   .group > .gh, .card.pick, .card.preset, .morerow { min-height: 44px; }
   .input[type="number"], input.input { min-width: 44px; }
@@ -411,3 +414,4 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .ui2app.phone .checkstrip .check { padding: 0 var(--s2); white-space: nowrap; flex: 1 0 auto; justify-content: center; }
 .ui2app.phone .checkstrip .check .dim { display: none; }
 .ui2app.phone .ov.cluster { max-width: calc(100% - var(--s3)); }
+@media (max-width: 699px) { .mfacts { bottom: var(--s2); gap: 4px; } .fchip { padding: 2px var(--s2); font-size: var(--fs-xs); } .mview .ov.dims { top: var(--s2); left: var(--s2); padding: 4px var(--s2); gap: var(--s2); } }
