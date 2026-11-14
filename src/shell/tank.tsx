@@ -11,7 +11,7 @@ import { setLid, lidLocked, setDoors, doorLocked, type DoorKind } from '../scene
 import { lockNote } from '../scene/integrated';
 import { lockObject, unlockObject, isLocked } from '../scene/locks';
 import { placementOf, putOnFloor, putOnStand, putOnMyFurniture, putOnFurniture, minTop, type Placement } from '../scene/placement';
-import { tankKind } from '../scene/pickerKind';
+import { tankKind, type SetupKind } from '../scene/pickerKind';
 import { keepInWater } from '../scene/water';
 import { clampItem } from '../scene/items';
 import { loadLibrary, type CustomTank } from '../scene/customTanks';
@@ -19,7 +19,7 @@ import { pinPreset } from '../demand/pinned';
 import { soleProduct } from '../data/tanks';
 import {
   modelCard, sitsOnSummary, lidSummary, bgSummary, roomSummary, heightText, len, LIDS, lidHeld, customRows, customLine, commercialRows, commercialLine,
-  previewRow, chooseCommercial, chooseCustom, saleOf, SIZE_CHIPS, loadGroups, saveGroups, type PickRow, type SizeChip, type TankGroup, type Units,
+  previewRow, chooseCommercial, chooseCustom, saleOf, SIZE_CHIPS, loadGroups, saveGroups, type PickRow, type SizeChip, type TankGroup, type Units, kindView, setKind,
 } from './logic/tank';
 import { Group, Icon, Pill } from './ui';
 
@@ -59,6 +59,16 @@ function useGroups() {
 
 // ---------------------------------------------------------------- Tank section
 
+function KindRow({ store, S }: { store: Store; S: TankSetup }) {
+  const k = kindView(S), [said, setSaid] = useState('');
+  if (k.opts.length < 2) return null;
+  return (
+    <div class="field"><div class="cap" title="What the setup is: the Animals list and the clear-water colour follow">Kind</div>
+      <Seg<SetupKind> label="Kind" value={k.on} opts={k.opts.map(([id, t]) => [id, t] as [SetupKind, string])} onPick={v => setSaid(setKind(store, v))} />
+      {said ? <div class="hint" role="status">{said}</div> : null}</div>
+  );
+}
+
 export function TankSection({ store, onPicker, onMaker, libN }: { store: Store; onPicker: () => void; onMaker: (h: MakerHow) => void; libN: number }) {
   const S = store.tank, u = store.scene.units;
   const lib = useMemo(() => loadLibrary(), [libN]);
@@ -67,6 +77,7 @@ export function TankSection({ store, onPicker, onMaker, libN }: { store: Store; 
   return (
     <>
       <Group title="Tank model" sum={card.sum} open={g.model} onToggle={() => flip('model')}>
+        <KindRow store={store} S={S} />
         <div class="card media sel tankcard">
           <span class="thumb tthumb"><Icon name="tank" /></span>
           <span><div class="t">{card.title}</div><div class="m">{card.sub}</div></span>

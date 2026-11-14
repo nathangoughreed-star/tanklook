@@ -10,10 +10,12 @@ import { STOCK_US, STOCK_METRIC } from '../scene/glassSolver';
 import { LIMITS } from '../scene/validate';
 import { glassThickness, IN } from '../scene/physics';
 import { POLY_SIDES, shapeOf } from '../scene/shape';
-import { makerSetup, makerFacts, previewSpec, priceView, chooseCustom, glassText, galText, usd, SHAPE_WORD, SHAPE_MAIN, SHAPE_MORE, SIDE_RANGE, specChanged, type Units } from './logic/tank';
+import { makerSetup, makerFacts, dimLabels, previewSpec, priceView, chooseCustom, glassText, galText, usd, SHAPE_WORD, SHAPE_MAIN, SHAPE_MORE, SIDE_RANGE, specChanged, type Units } from './logic/tank';
 import { glassPanel, defaultChoice, DISCLAIMER, type GlassChoice, type GlassPanel } from './logic/tankGlass';
 import { LenRow, Seg, Toggle } from './tank';
 import { Group, Icon, Pill } from './ui';
+import type { Viewer } from '../render/viewer';
+import { Vector3 } from 'three';
 
 export interface MakerInit { spec: CustomTankSpec; libId?: string }
 export type MakerEnd = 'cancel' | 'saved' | 'used';
@@ -23,7 +25,26 @@ export type MakerEnd = 'cancel' | 'saved' | 'used';
 // drawn size goes as span x zoom^2.15, so this frames every size about as a 24 in tank fills the view at 0.75
 const MAKER_CAM = (c: CameraSettings, T: Tank): CameraSettings => ({ ...c, az: -24, el: 14, zoom: Math.max(0.08, Math.min(2.5, 0.75 * (652 / Math.max(T.L, T.H * 1.5, T.D * 1.4)) ** (1 / 2.15))) });
 
-export function Maker({ store, init, viewHost, preview, onEnd }: { store: Store; init: MakerInit; viewHost: HTMLElement; preview: (S: TankSetup | null) => void; onEnd: (e: MakerEnd) => void }) {
+/** The three sizes written ON the tank's edges: the length along the front-bottom edge, the depth and the height at the right-hand corner; redrawn each frame. */
+function EdgeLabels({ store, getViewer, T, texts }: { store: Store; getViewer?: () => Viewer | undefined; T: Tank; texts: { L: string; D: string; H: string } }) {
+  const [labels, setLabels] = useState<ReturnType<typeof dimLabels>>([]);
+  useEffect(() => {
+    const v = getViewer?.(); if (!v) return;
+    let alive = true;
+    const tick = () => {
+      const vp = v.vps[store.scene.active]; if (!alive || !vp) return;
+      vp.cam.updateMatrixWorld();
+      const p = new Vector3();
+      const next = dimLabels(T, texts, (x, y, z) => { p.set(x, y, z).project(vp.cam); return p.z > 1 ? null : [(p.x + 1) / 2 * vp.w, (1 - p.y) / 2 * vp.h]; });
+      setLabels(prev => prev.length === next.length && prev.every((l, i) => Math.abs(l.x - next[i].x) < 0.5 && Math.abs(l.y - next[i].y) < 0.5 && l.text === next[i].text) ? prev : next);
+    };
+    tick(); v.onDrawn(tick); v.invalidate();
+    return () => { alive = false; };
+  }, [T.L, T.D, T.H, texts.L, texts.D, texts.H]);
+  return <>{labels.map(l => <span class="ov edgelab glass" style={{ left: `${l.x}px`, top: `${l.y}px` }} aria-hidden="true">{l.text}</span>)}</>;
+}
+
+export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { store: Store; init: MakerInit; viewHost: HTMLElement; getViewer?: () => Viewer | undefined; preview: (S: TankSetup | null) => void; onEnd: (e: MakerEnd) => void }) {
   const u: Units = store.scene.units;
   const [spec, setSpec] = useState<CustomTankSpec>(() => structuredClone(init.spec));
   const [choice, setChoice] = useState<GlassChoice>(defaultChoice);
@@ -137,6 +158,7 @@ export function Maker({ store, init, viewHost, preview, onEnd }: { store: Store;
       </aside>
       <main class="mview" ref={viewRef}>
         {inSetup ? <div class="ov mbanner glass">Your setup with this tank, for a moment. <button type="button" class="btn sm" onClick={() => setInSetup(false)}>Back now</button></div> : <>
+          <EdgeLabels store={store} getViewer={getViewer} T={spec.tank} texts={{ L: facts.L, D: facts.D, H: facts.H }} />
           <div class="ov dims glass" aria-label="Dimensions"><span><b>{facts.L}</b> {shape === 'round' || shape === 'bowl' ? 'across' : 'length'}</span><span><b>{facts.D}</b> {shape === 'bow' ? 'depth at centre' : 'depth'}</span><span><b>{facts.H}</b> height</span>{facts.bow ? <span><b>{facts.bow}</b> bow</span> : null}</div>
         </>}
         <div class="ov mfacts">

@@ -263,7 +263,7 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
       {phone ? <TabBar open={more ? 'more' : section} onPick={tab} /> : null}
       <FileLayer store={store} files={files} />
       {door ? <AnimalDoor store={store} say={files.say} onClose={() => setDoor(false)} /> : null}
-      {maker ? <Maker store={store} init={maker} viewHost={viewHost} preview={preview} onEnd={() => { setMaker(null); setLibN(n => n + 1); }} /> : null}
+      {maker ? <Maker store={store} init={maker} viewHost={viewHost} getViewer={viewer} preview={preview} onEnd={() => { setMaker(null); setLibN(n => n + 1); }} /> : null}
     </div>
   );
 }
