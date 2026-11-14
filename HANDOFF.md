@@ -77,6 +77,13 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
+## S6: Equipment section, Lighting + light map, Owned pill behind ?ui=2 (2026-11-14; lane S6; UI2 §7 step 6; request R27; Coordinator 24; branch claude/s6-equipment, base = P8 merged in)
+
+- Files: `src/shell/equipment.tsx` (ladder, category chips, I own / Buy groups, Use / I own it / lock per row), `src/shell/lighting.tsx` (Light map group, closed by default), `src/shell/logic/equipment.ts`, `logic/lighting.ts` (view-models and edits; one `store.edit` each), `logic/tank.ts` (Owned pill on commercial rows), `shell.css`, `App.tsx` (Panel branch + `ui2:goto` listener), `scene/gearOwn.ts` (+`gearOfTank`, `editGear`), `test/s6-equipment.test.ts` (11 tests), `scripts/s6-shots.mjs`.
+- Engine access only through P4 techEdit, P8 gearOwn, units. In use is read from the scene and mirrored into the gear model; a hood is a light product with the light built in (`lid='hood'`), a light product puts the hood away.
+- Gaps: `ui2:goto` carries `{section, group}` but App ignores `group` (S5 must listen to open Constraints > Your home); only categories with catalogue products get a sub-menu; "Add one I own (any brand)" records Generic with no product behind it.
+- Shots: `research/screens/S6/` (see facts.json when present). The tank-picker Owned-pill shot is covered by the unit test; the script could not open the picker reliably.
+
 ## S4: Animals section, Water look, Selection drawer behind ?ui=2 (2026-11-14; lane S4; UI2 §7 step 4; request R27; Coordinator 24; branch claude/s4-animals-5f5da2)
 - **Files:** `src/shell/animals.tsx` (AnimalsSection, SelectionDrawer, `pickable`), `src/shell/logic/animals.ts` (pure view-models + edits); App.tsx (Panel branch, `drawer` may be 'selection', pick effects), boot.tsx (`attachPointer` picks animals only while Animals is open), shell.css (S4 block). No old UI file, no engine file touched: every engine call is P2's `stockEdit` / `animalPicker`.
 - **Animals:** "Your animals" list (+ / - / typed count / remove, a row per sex for dimorphic species, wrong-water mark, the engine's one-line reason on greyed rows), "Remove misfits (n)", Water look group (level, tint, colour, presets by water type), search + role chips + "Fits this tank" (ON by default, remembered in `tanklook.ui2.fits`), rows with Add N / Add anyway. The exact fit reading refines after first paint (P2 `refineFits`). Experience: the fitter reads it from the scene in the one P2 place (`experienceIn`); `experienceNow` re-exports it for P10.

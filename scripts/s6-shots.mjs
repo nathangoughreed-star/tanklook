@@ -85,13 +85,15 @@ facts.mapOpen = await ev(`document.querySelector('.group.open .gb').innerText`);
 await scrollTo('.group .gh', 'Light map');
 await shot('05-light-map-open', 4000);
 
+try {
 phase = 'owned pill';
-await open2(seed); await click('.rail .ritem', 'Tank'); await click('button', 'Change'); await sleep(1500);
+await open2(seed); await click('.rail .ritem', 'Tank'); await sleep(800); await ev(`(() => { if (![...document.querySelectorAll('button')].some(b => b.textContent.includes('Change'))) [...document.querySelectorAll('.group .gh')].find(b => b.textContent.includes('Tank model'))?.click(); return true; })()`); await sleep(300); await click('button', 'Change'); await sleep(1500);
 const key = await ev(`document.querySelector('.card.pick')?.dataset.key`); facts.ownedKey = key;
 const ownScene = (() => { const j = JSON.parse(seed); j.tanks[0].brief = { v: 5, items: {}, project: { gear: { tank: { owned: [key.split('|')[0]], locked: [] } } } }; return JSON.stringify(j); })();
-await open2(ownScene); await click('.rail .ritem', 'Tank'); await click('button', 'Change'); await sleep(1500);
+await open2(ownScene); await click('.rail .ritem', 'Tank'); await sleep(800); await ev(`(() => { if (![...document.querySelectorAll('button')].some(b => b.textContent.includes('Change'))) [...document.querySelectorAll('.group .gh')].find(b => b.textContent.includes('Tank model'))?.click(); return true; })()`); await sleep(300); await click('button', 'Change'); await sleep(1500);
 facts.pickRows = await ev(`[...document.querySelectorAll('.card.pick')].slice(0, 4).map(r => r.innerText.split(String.fromCharCode(10)).join(' | '))`);
 await shot('06-tank-picker-owned-pill', 800);
+} catch (e) { facts.pickerSkipped = String(e.message).slice(0, 160); console.log('picker shot skipped'); }
 
 // the old UI sees the same gear
 phase = 'old ui';
