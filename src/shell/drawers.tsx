@@ -76,6 +76,11 @@ function Notes({ v }: { v: NotesView }) {
   );
 }
 
+/** One check's read-only content (also drawn once per tank by Compare's drawer). */
+export function DrawerBody({ id, model }: { id: CheckId; model: ChecksModel }) {
+  return id === 'habitat' ? <Habitat v={model.habitat} /> : id === 'cost' ? <Cost v={model.cost} /> : id === 'water' ? <Water v={model.water} /> : <Notes v={model.notes} />;
+}
+
 export function Drawer({ id, model, onClose }: { id: CheckId; model: ChecksModel; onClose: () => void }) {
   const title = CHECKS.find(c => c.id === id)!.title;
   return (
