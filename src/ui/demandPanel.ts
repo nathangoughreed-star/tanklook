@@ -1,6 +1,7 @@
 // The demand panel (lane KK phase 4): three live readouts for the current tank (money, time, risk), in Quick Setup. Each is an
 // one expected number per bar; limits turn a bar red; a click lists what drives it and which swap lowers it.
 // Computed when the scene settles (debounced), never per frame. The profile (skill, water, kWh rate, limits) is an app pref.
+import { onExperience, getExperience, experienceOn, profileSkill, setAllLevels, setAreaLevel, setExperienceOn, type Area, type Level } from '../demand/experience';
 import { aquariumOnly } from '../scope';
 import { defaultProfile, demandOf, drivers, limitState, type LimitState, type UserProfile } from '../demand';
 import { swapsFor, type Bar } from '../demand/swaps';
@@ -36,8 +37,8 @@ const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;
 
 export { load as loadProfile };
 function load(): UserProfile {
-  const d = defaultProfile();
-  try { const j = JSON.parse(localStorage.getItem(KEY) ?? 'null') as Partial<UserProfile> | null; if (j) { const { budgetMode: _old, ...limits } = (j.limits ?? {}) as Partial<UserProfile['limits']> & { budgetMode?: string }; return { ...d, ...j, skill: { ...d.skill, ...j.skill }, limits }; } } catch { /* ignore */ } // an old save's budgetMode is dropped, the number kept
+  const d = defaultProfile(); d.skill = profileSkill(); // P10: experience lives in demand/experience.ts (off = an average keeper, 'Some')
+  try { const j = JSON.parse(localStorage.getItem(KEY) ?? 'null') as Partial<UserProfile> | null; if (j) { const { budgetMode: _old, ...limits } = (j.limits ?? {}) as Partial<UserProfile['limits']> & { budgetMode?: string }; return { ...d, ...j, skill: d.skill, limits }; } } catch { /* ignore */ } // an old save's budgetMode is dropped, the number kept
   return d;
 }
 
@@ -50,7 +51,7 @@ export function attachDemandPanel(store: Store, mount: HTMLElement, opts: Demand
   let prev: Record<Bar, number> | null = null, chips: Partial<Record<Bar, { d: number; until: number }>> = {}, chipTimer = 0;
   /** The profile with this tank's guardrails in place of its limits (a tank with none keeps the browser profile's limits). */
   const Pe = (): UserProfile => ({ ...P, limits: effectiveLimits(store.tank, P.limits) });
-  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(P)); } catch { /* ignore */ } };
+  const save = () => { try { const { skill: _s, ...rest } = P; localStorage.setItem(KEY, JSON.stringify(rest)); } catch { /* ignore */ } };
   const OPEN_KEY = 'tanklook.demandOpen';
   let shown = (() => { if (opts.side) return false; try { const v = localStorage.getItem(OPEN_KEY); if (v !== null) return v === '1'; } catch { /* ignore */ } return false; })(); /* minimized until opened (UI3) */
   mount.innerHTML = `<div class="dm"><button type="button" class="dmtog" aria-expanded="true" title="Show or hide what this tank costs and asks of you; it updates as you edit"><span class="dmhead">What this tank asks of you</span><span class="dmsum"></span><span class="dmflag" hidden></span><span class="dmcaret" aria-hidden="true">▾</span></button>
@@ -294,7 +295,7 @@ Relative to your stated experience (see Your situation).`;
       <label>Difficulty <select id="dmRisk"><option value="any">no limit</option><option value="moderate">moderate at most</option><option value="safe">easy only</option></select></label>
       <label>Care effort (advice only) <select id="dmEffort"><option value="">any</option><option value="low">low</option><option value="medium">medium</option><option value="high">high</option></select></label>
       <label>Experience (advice only) <select id="dmExp"><option value="">not said</option>${SKILL.map((t, i) => `<option value="${i}">${t}</option>`).join('')}</select></label>`;
-    (q('#dmRisk') as HTMLSelectElement).value = L.risk ?? 'any'; (q('#dmEffort') as HTMLSelectElement).value = C.effort ?? ''; (q('#dmExp') as HTMLSelectElement).value = C.experience === undefined ? '' : String(C.experience);
+    (q('#dmRisk') as HTMLSelectElement).value = L.risk ?? 'any'; (q('#dmEffort') as HTMLSelectElement).value = C.effort ?? ''; (q('#dmExp') as HTMLSelectElement).value = experienceOn() ? String(getExperience().levels.fundamentals) : '';
     const START: Record<string, number> = { dmSetup: 300, dmMonthly: 40, dmMin: 60 }; // what a newly switched-on limit starts at
     const cap = (id: string, prev?: Cap): Cap | undefined => {
       const on = (q(`#${id}On`) as HTMLInputElement).checked, v = (q('#' + id) as HTMLInputElement).value;
@@ -305,7 +306,8 @@ Relative to your stated experience (see Your situation).`;
       if (s) c.startupUsd = s; if (m) c.monthlyUsd = m; if (t) c.minutesPerWeek = t;
       if (sp || C.space) c.space = { on: (q('#dmSpaceOn') as HTMLInputElement).checked };
       const ef = (q('#dmEffort') as HTMLSelectElement).value, ex = (q('#dmExp') as HTMLSelectElement).value;
-      if (ef) c.effort = ef as Constraints['effort']; if (ex !== '') c.experience = +ex as Constraints['experience'];
+      if (ef) c.effort = ef as Constraints['effort'];
+      setAllLevels(ex === '' ? undefined : +ex as Level); P.skill = profileSkill(); // P10: the old control = one answer for every area; 'not said' = the constraint off
       P.limits = { ...P.limits, risk: (q('#dmRisk') as HTMLSelectElement).value as UserProfile['limits']['risk'] };
       const out = parseConstraints(c) ?? {}; // an empty set is still "this tank has guardrails, all off"
       store.edit(t2 => { t2.constraints = out; }, { coalesce: 'guardrails' });
@@ -314,19 +316,22 @@ Relative to your stated experience (see Your situation).`;
     lim.querySelectorAll('input,select').forEach(e => e.addEventListener('change', change));
   }
   function situation() {
-    sit.innerHTML = DOMAIN_LABEL.filter(([k]) => !(aquariumOnly() && k === 'terrarium')).map(([k, name]) => `<label>${name} <select data-sk="${k}">${SKILL.map((s, i) => `<option value="${i}" ${P.skill[k] === i ? 'selected' : ''}>${s}</option>`).join('')}</select></label>`).join('')
+    sit.innerHTML = `<label><input type="checkbox" id="dmExpOn" ${getExperience().on ? 'checked' : ''}> Count my experience <i>(off: figures are for an average keeper, and nothing is grayed for it)</i></label>` + DOMAIN_LABEL.filter(([k]) => !(aquariumOnly() && k === 'terrarium')).map(([k, name]) => `<label>${name} <select data-sk="${k}" ${getExperience().on ? '' : 'disabled'}>${SKILL.map((s, i) => `<option value="${i}" ${getExperience().levels[k] === i ? 'selected' : ''}>${s}</option>`).join('')}</select></label>`).join('')
       + `<label>Water for changes <select id="dmWater">${(['tap', 'well', 'bought-ro', 'own-ro'] as const).map(w => `<option value="${w}" ${P.waterSource === w ? 'selected' : ''}>${{ tap: 'Tap', well: 'Well', 'bought-ro': 'Bought RO water', 'own-ro': 'My own RO unit' }[w]}</option>`).join('')}</select></label>
       <label>Electricity <input type="number" id="dmKwh" min="0" step="0.01" placeholder="US average" value="${P.kwhUsd ?? ''}"> $ per kWh</label>
-      <div class="hint">Left alone, you count as new to everything. Each answer changes the difficulty and money figures.</div>`;
+      <div class="hint">Left off, figures are for an average keeper (some experience). On, each answer changes the difficulty and money figures and grays animals, plants and gear that are beyond it.</div>`;
     const change = () => {
-      sit.querySelectorAll<HTMLSelectElement>('select[data-sk]').forEach(s => { P.skill[s.dataset.sk as keyof UserProfile['skill']] = +s.value as 0 | 1 | 2; });
+      const wasOn = getExperience().on, nowOn = (q('#dmExpOn') as HTMLInputElement).checked;
+      if (wasOn !== nowOn) setExperienceOn(nowOn); else sit.querySelectorAll<HTMLSelectElement>('select[data-sk]').forEach(s => setAreaLevel(s.dataset.sk as Area, +s.value as Level));
+      P.skill = profileSkill();
       P.waterSource = (q('#dmWater') as HTMLSelectElement).value as UserProfile['waterSource'];
       const k = (q('#dmKwh') as HTMLInputElement).value; P.kwhUsd = k === '' ? undefined : +k;
-      save(); recompute();
+      save(); situation(); recompute();
     };
     sit.querySelectorAll('input,select').forEach(e => e.addEventListener('change', change));
   }
   limits(); situation(); limitsReady = true;
+  onExperience(() => { P.skill = profileSkill(); if (limitsReady) { situation(); recompute(); } }); // the other experience controls write the same store
   recompute();
   /** Set some limits from outside (the care slider's shortcut): saved, the form and the bars follow. */
   const setLimits = (l: Partial<UserProfile['limits']>) => {

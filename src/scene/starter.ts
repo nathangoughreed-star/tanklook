@@ -1,6 +1,7 @@
 // Starter sets, layer by layer (lane SD, 2026-10-15): the hardscape and plants come from scene/items.ts
 // `starterItems`; this adds the animal layer and the regenerate the density sliders and Shuffle call. Each layer draws
 // from its own random stream (seed x layer), so redrawing one leaves the layers it does not feed exactly as they were.
+import { careGate, animalArea } from '../demand/experience';
 import { IDEAL_MAX, floorPerAnimal, litresPerAnimal, stockingOf } from './stocking';
 import { rng } from '../art/paint';
 import { getSpecies, type Species } from '../data/species';
@@ -9,6 +10,7 @@ import { CARE } from '../data/care';
 import { fightsOverCount, mostFor, mostMalesFor } from '../data/groups';
 import { volume } from './physics';
 import { hasCorals, whyAnimal } from './animalfit';
+import { tankKind } from './pickerKind';
 import { floorOf, minFit } from './tankMin';
 import { groundEdited } from './scapeground';
 import { placeNew, randomPose, randomSize } from './scatter';
@@ -95,8 +97,9 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
   // shuffled, with a schooling or shoaling swimmer up front (one whose group fits the tank) so there is a group to
   // watch; the same order at every stop, so a fuller stop adds to the tank rather than swapping its species
   for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
-  if (s.layout.gateStock) { // stock by the care gates (Quick Setup): only animals that suit the care level, the tank and each other
-    const ex = s.layout.expertise ?? 1, litres = volume(T).litres, kept: Species[] = [];
+  const gateEx = careGate(animalArea(tankKind(s))); // P10: null while the experience constraint is off (no gate)
+  if (s.layout.gateStock && gateEx !== null) { // stock by the care gates (Quick Setup): only animals that suit the care level, the tank and each other
+    const ex = gateEx, litres = volume(T).litres, kept: Species[] = [];
     for (const sp of pool) if (!whyAnimal(sp, litres, ex, kept, { corals: hasCorals(s.items), fit: minFit(s) })) kept.push(sp);
     pool.splice(0, pool.length, ...kept);
   }
