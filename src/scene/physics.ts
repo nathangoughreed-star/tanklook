@@ -3,7 +3,8 @@ import { BG_DIRS, archBulge, bowlRadius, clampIn, frontAt, footprint, glassAt, i
 import type { Hardscape } from './items';
 import type { BackdropSettings, BgSide, Fish, RenderSettings, StandSettings, SubstrateSettings, Surface, Tank, TankSetup, Units } from './types';
 
-export const IN = 25.4;
+import { IN, unitMM, toUnit, fromUnit, fmtLen } from '../units';
+export { IN, unitMM, toUnit, fromUnit, fmtLen };
 export const D2R = Math.PI / 180;
 export const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
 
@@ -153,18 +154,12 @@ export function clampFish(f: Fish, A: Tank, back = 0, sides?: readonly BgSide[])
 }
 
 // ---------- Units & formatting ----------
-export const unitMM = (u: Units) => (u === 'in' ? IN : 10);
-export function fmtLen(mm: number, u: Units, digits = 1) {
-  return u === 'in' ? (mm / IN).toFixed(digits) + '″' : (mm / 10).toFixed(digits) + ' cm';
-}
 export function fmtDims(T: Tank, u: Units) {
   const k = unitMM(u), suf = u === 'in' ? '″' : ' cm';
   const dims = `${+(T.L / k).toFixed(1)} × ${+(T.H / k).toFixed(1)} × ${+(T.D / k).toFixed(1)}${suf} (L×H×D)`;
   const sh = T.shape ?? 'rect';
   return sh === 'rect' ? dims : `${sh === 'bow' ? 'bowfront' : sh === 'round' ? 'round' : sh === 'bowl' ? 'bowl' : sh === 'arch' ? 'curved-front' : sh === 'pie' ? `${T.pieDeg}° pie slice` : `${T.sides}-sided`} ${dims}`;
 }
-export const toUnit = (mm: number, u: Units) => +(mm / unitMM(u)).toFixed(2);
-export const fromUnit = (v: number, u: Units) => v * unitMM(u);
 
 /** Dimensions, then capacity and interior floor area: `24 × 12 × 12″, 15 gallons, 288 in² floor` (the panel's footprint is outside the glass). */
 export function fmtSize(T: Tank, u: Units, wet = true) {

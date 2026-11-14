@@ -5,6 +5,7 @@
 // demand engine always inferred (inferTech), so its numbers do not move. grow.feed is derived from the CO2 + ferts rows
 // (feedOf); the Plant care slider sets those rows (setFeed).
 import { fitsInStand } from './standspace';
+import { deltaCToF } from '../units';
 import { dryInferred } from './drygear';
 import data from '../data/tech.json';
 import { CARE } from '../data/care';
@@ -877,7 +878,7 @@ export function assumedFilter(S: TankSetup): string | undefined {
 // ---- checks on the picked reef / planted products (lane GX): the under-sized warnings, one line each
 
 export interface ReefCheck { row: string; level: 'warn' | 'note'; text: string }
-const toF = (k: number) => Math.round(k * 9 / 5);
+const toF = deltaCToF;
 /** What the tank's picked skimmers, UV, CO2, ATO and chiller products say about it: too small for the water, a fan that cannot hold the
  *  room, one ATO sensor, a regulator with no cylinder. The same texts in the Tech menu and the plan sheet. */
 export function reefChecks(S: TankSetup, t: TechSetup = techOf(S)): ReefCheck[] {

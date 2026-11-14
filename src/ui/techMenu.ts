@@ -17,20 +17,23 @@ import { FEED_NAMES, GROW_RATE } from '../scene/growtime';
 import type { Store } from '../scene/store';
 import {
   ROOM_C, applyPreset, feedFor, feedOf, filterFor, filterUnits, heatLoss, offerChiller,
-  optionCost, optionDef, presetsFor, pumpFor, REEF_FLOW_X, reefFeedOf, rowsFor, setFeed, singleFilter, stockCapacity, techOf, tempEvidence, unitCosts, walstadGaps, withChoice,
-  withUnits, withoutUnit, keepSet, ownKeep, reefChecks, rowProduct, sumpDefault, sumpFromModel, sumpLitres, sumpName, sumpOf, SUMP_FILL, sumpDrainDown, sumpTooSmall, type FilterUnit, type SumpSize, type HeaterUnit, type OptionCost, type TechSetup,
+  optionCost, optionDef, presetsFor, pumpFor, REEF_FLOW_X, reefFeedOf, rowsFor, singleFilter, stockCapacity, techOf, tempEvidence, unitCosts, walstadGaps, withChoice,
+  reefChecks, rowProduct, sumpLitres, sumpName, sumpOf, SUMP_FILL, sumpDrainDown, sumpTooSmall, type FilterUnit, type SumpSize, type OptionCost, type TechSetup,
 } from '../scene/tech';
-import { FILTER_PRODUCTS, HEATER_PRODUCTS, reefOptionProducts, genericHeaterW, lightProduct, lightsFor, productName, pumpRatedFor, pumpsFor, type FilterProduct, type HeaterProduct, type LightProduct, type PumpProduct, type ReefProduct } from '../data/gearCatalog';
-import { applyLightProduct, lightProductNote, productOn } from '../scene/lightproduct';
+import { FILTER_PRODUCTS, HEATER_PRODUCTS, reefOptionProducts, lightsFor, productName, pumpRatedFor, pumpsFor, type FilterProduct, type HeaterProduct, type LightProduct, type PumpProduct, type ReefProduct } from '../data/gearCatalog';
+import { lightProductNote, productOn } from '../scene/lightproduct';
 import { TECHS, fixtureOf, lightOutCached, wattsOf } from '../scene/lightout';
 import { integratedKit, lockNote, locksOf } from '../scene/integrated';
 import { unholdBtn } from './tankPick';
-import { FILTER_MODELS, type FilterKind } from '../demand/gear';
+import { type FilterKind } from '../demand/gear';
 import { gearCard, defaultTab, ownItemOf, flowText, galText, lenText, wattText, type GearCardSpec, type GearSwapRow, type GearSlider, type GearStat, type GearTab } from './gearCard';
 import { GEAR_LIMITS } from '../scene/gearSpec';
 import { genericPanel, genericSet } from './genericGearCard';
 import { asLibraryGroups, lightGroups, ratedGroups, type GearGroup } from './gearGroups';
 import { volume } from '../scene/physics';
+import { cToF, fToC, toUnitsTenth } from '../units';
+import * as TE from '../scene/techEdit';
+import { commitTech, withTech, nextHeaterW, filterModels } from '../scene/techEdit';
 import type { TankSetup } from '../scene/types';
 import { getSpecies } from '../data/species';
 import { holdCheck, measuredCheck, operatingCheck, sharedRange } from '../scene/temprange';
@@ -39,8 +42,7 @@ import type { TankModel } from '../data/tanks';
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
 const usd = (v: number) => v >= 100 ? `$${Math.round(v / 5) * 5}` : v >= 10 ? `$${Math.round(v)}` : `$${v.toFixed(v < 1 ? 2 : 1)}`;
 const REEF_NAME: Record<string, string> = { low: 'soft corals and mushrooms', ferts: 'up to LPS', co2: 'up to SPS and clams' };
-const toF = (c: number) => Math.round(c * 9 / 5 + 32);
-const fromF = (f: number) => Math.round((f - 32) * 5 / 9 * 2) / 2;
+const toF = cToF, fromF = fToC;
 const KIND_NAME: Record<string, string> = { sponge: 'sponge filter', internal: 'internal filter', hob: 'hang-on-back filter', canister: 'canister filter', sump: 'sump' };
 const BUNDLE_PARTS = ['tank', 'stand', 'lid', 'light', 'filter', 'heater'];
 type UnitRow = 'heater' | 'filter';
@@ -63,22 +65,20 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
   const kwhUsd = () => P().kwhUsd ?? (FACTORS.kwhUsd.lo + FACTORS.kwhUsd.mode + FACTORS.kwhUsd.hi) / 3;
   const fahr = () => store.scene.units === 'in';
   const totals = (S: TankSetup): Totals => { const t = demandOf(S, P(), { kit: pinnedKit(S, store.scene.active, P()) }).totals; return { setup: t.setupUsd, upkeep: t.upkeepUsdMo, minutes: t.minPerWeek, risk: t.risk }; };
-  /** The tank priced with its tech made explicit (an older file's inferred gear becomes rows), the base for previews. */
-  const withTech = (S: TankSetup, t: TechSetup): TankSetup => { const x = { ...S, tech: t }; return { ...x, grow: { ...S.grow, feed: feedFor(x) } }; };
   const baseOf = (S: TankSetup) => {
     const k = JSON.stringify([S.tech, S.tank, S.fish.length, S.items.length, S.grow.feed, S.lid, S.water, P()]);
     if (k !== baseKey || !base) { base = totals(withTech(S, techOf(S))); baseKey = k; }
     return base;
   };
 
-  const edit = (fn: (s: TankSetup) => TechSetup) => store.edit(s => { s.tech = keepSet(s, fn(s)); if (s.water.on) s.grow.feed = feedFor(s); }); // lane GV9: rows never touched stay inferred
+  const edit = (fn: (s: TankSetup) => TechSetup) => store.edit(s => commitTech(s, fn)); // lane GV9: rows never touched stay inferred (scene/techEdit.ts)
 
   // the Plant care slider and the Feeding select write grow.feed: carry it into the CO2 + ferts rows (one source of truth)
   store.subscribe(kind => {
     if (kind === 'view') return;
     const S = store.tank;
     if (S.tech && S.water.on && feedFor(S) !== S.grow.feed)
-      queueMicrotask(() => { const s = store.tank; if (s.tech && s.water.on && feedFor(s) !== s.grow.feed) store.edit(x => { x.tech = keepSet(x, setFeed(techOf(x), x.grow.feed, !!x.water.salt)); }, { history: false }); });
+      queueMicrotask(() => { const s = store.tank; if (s.tech && s.water.on && feedFor(s) !== s.grow.feed) store.edit(x => TE.syncFeed(x), { history: false }); });
     render(); renderLight();
   });
   /** One expected value per figure (Nathan 2026-10-19: no ranges or percentiles shown): the mean of each lo / mode / hi. */
@@ -136,8 +136,6 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     if (!k.some(Boolean)) return 0;
     return unitCosts(S, row, { tech: t, kwhUsd: kwhUsd() }).reduce((a, c, i) => a + (k[i] ? mean(c.setup) : 0), 0);
   };
-  /** The heaters as saved units, each at the size it has now (a heater sized to the need keeps that size once another is added). */
-  const heatersNow = (S: TankSetup, t: TechSetup): HeaterUnit[] => heatLoss(S, t).units.map(u => ({ ...(u.product ? { product: u.product.id } : { w: u.watts }), ...(u.kit ? { kit: true } : {}), ...ownKeep(u) }));
   const filterLabel = (S: TankSetup, u: FilterUnit) => {
     if (u.kind === 'sump') return `Sump · ${sumpTitle(sumpOf(S, true)!)}`;
     const kind = optionDef('filter', u.kind)?.kind;
@@ -145,17 +143,15 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     const f = filterFor(S, kind, u.model, u.product), n = f.n > 1 ? ` × ${f.n}` : '';
     return f.product ? `${productName(f.product)}${f.product.gph ? ` · ${f.product.gph} gph` : ''}${n}` : `Generic ${KIND_NAME[u.kind]} · ${f.model.label.replace(/^.*\((.*)\)$/, '$1')} ${f.model.gph} gph${n}`;
   };
-  /** The generic heater to add: the size still missing for a cold night, else a full-size backup. */
-  const nextHeaterW = (S: TankSetup, t: TechSetup) => { const h = heatLoss(S, t), more = h.needW - h.totalW; return genericHeaterW(Math.max(more > 0.5 ? more : h.needW, 1)); };
   /** What a tech-changing button does to the tank's tech ('|'-separated: verb, row or kind, index or product). */
   const candidate = (act: string, S: TankSetup): TechSetup | undefined => {
-    const [a, b, c] = act.split('|'), t = techOf(S);
-    if (a === 'del') return b === 'heater' ? withoutUnit({ ...t, heaters: heatersNow(S, t) }, 'heater', +c) : withoutUnit(t, 'filter', +c);
-    if (a === 'addh') return withUnits(t, 'heater', [...heatersNow(S, t), b ? { product: b } : { w: nextHeaterW(S, t) }]);
-    if (a === 'addf') return withUnits(t, 'filter', [...filterUnits(t), { kind: b, ...(c ? { product: c } : {}) }]);
-    if (a === 'sump' && b === 'add') return { ...withUnits(t, 'filter', [...filterUnits(t), { kind: 'sump' }]), sump: t.sump ?? sumpDefault(S) };
-    if (a === 'sump' && b === 'del') return withoutUnit(t, 'filter', filterUnits(t).findIndex(u => u.kind === 'sump'));
-    if (a === 'fm') return withUnits(t, 'filter', filterUnits(t).map((u, i) => i === +b ? { ...u, model: c } : u));
+    const [a, b, c] = act.split('|');
+    if (a === 'del') return b === 'heater' ? TE.removeHeater(S, +c) : TE.removeFilter(S, +c);
+    if (a === 'addh') return TE.addHeater(S, b || undefined);
+    if (a === 'addf') return TE.addFilter(S, b, c || undefined);
+    if (a === 'sump' && b === 'add') return TE.addSump(S);
+    if (a === 'sump' && b === 'del') return TE.removeSump(S);
+    if (a === 'fm') return TE.setFilterModel(S, +b, c);
     return undefined;
   };
   const card = (name: string, c: OptionCost | undefined, kit: boolean, del: string, body = '') =>
@@ -217,7 +213,6 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
       library: { groups: asLibraryGroups(ratedGroups(HEATER_PRODUCTS, volume(store.tank.tank).gallons, heaterOrder), opt), current: prod?.id, stats, notes: prod ? pop(prod.popularity) : [], link: prod?.url, swaps: swapsOf('heater', i) },
     };
   };
-  const filterModels = (kind: FilterKind) => FILTER_MODELS.filter(m => m.kind === kind).sort((a, b) => a.gph - b.gph);
   const filterSpec = (S: TankSetup, i: number, u: FilterUnit): GearCardSpec => {
     const key = `filter|${i}`, kind = optionDef('filter', u.kind)?.kind, prod = FILTER_PRODUCTS.find(p => p.id === u.product && p.kind === u.kind), gal = volume(S.tank).gallons;
     const pool = kind ? filterModels(kind) : [], f = kind ? filterFor(S, kind, u.model, u.product) : undefined, idx = f ? Math.max(0, pool.findIndex(m => m.id === f.model.id)) : 0;
@@ -317,7 +312,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
   };
 
   // ---- the sump (lane SU, Nathan 2026-10-22): a second tank under the display, sized from the tank presets or a custom size
-  const lenIn = (mm: number) => fahr() ? `${Math.round(mm / 25.4 * 10) / 10}` : `${Math.round(mm / 10 * 10) / 10}`;
+  const lenIn = (mm: number) => `${toUnitsTenth(mm, fahr() ? 'in' : 'cm')}`;
   /** "20 gal high tank, 39 L of water"; a custom size in the viewer's units. */
   const sumpTitle = (z: SumpSize) => z.model ? sumpName(z) : `${lenIn(z.L)} × ${lenIn(z.D)} × ${lenIn(z.H)} ${fahr() ? 'in' : 'cm'} tank, ${Math.round(z.L * z.D * z.H / 1e6 * SUMP_FILL)} L of water`;
   const sumpRow = (S: TankSetup, t: TechSetup): string => {
@@ -479,7 +474,7 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
   mount.addEventListener('click', e => {
     const el = e.target as HTMLElement, rowEl = el.closest<HTMLElement>('[data-row]'), row = rowEl?.dataset.row;
     const pre = el.closest<HTMLElement>('[data-pre]');
-    if (pre) { edit(s => applyPreset(s, pre.dataset.pre!)); return; }
+    if (pre) { edit(s => TE.pickPreset(s, pre.dataset.pre!)); return; }
     const lk = locksOf(store.tank);
     if (el.closest('.thead') && row && ((row === 'filter' && lk?.filter) || (row === 'heater' && lk?.heater))) return;
     if (el.closest('.thead') && row) { open = open === row ? null : row; adding = null; render(); return; }
@@ -497,21 +492,21 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
       if (a === 'del') shiftCards(b, +c);
       if (a === 'adding') { adding = b ? { row: b as UnitRow, ...(c ? { kind: c } : {}) } : null; render(); return; }
       if (a === 'addh' || a === 'addf') adding = null;
-      if (a === 'sump' && b === 'pick') { o.pickSump?.(m => edit(s => ({ ...techOf(s), sump: sumpFromModel(m) }))); return; }
+      if (a === 'sump' && b === 'pick') { o.pickSump?.(m => edit(s => TE.pickSump(s, m))); return; }
       if (a === 'sump' && b === 'add') { open = 'sump'; adding = null; }
       if (candidate(act, store.tank)) edit(s => candidate(act, s)!);
       return;
     }
     const op = el.closest<HTMLElement>('[data-opt]');
-    if (op && row) { edit(s => withChoice(s, row, op.dataset.opt!)); return; }
+    if (op && row) { edit(s => TE.pickRowOption(s, row, op.dataset.opt!)); return; }
   });
   /** A library product chosen for the piece at card `key` (the select, or a swap button): its owned mark stays. */
   const pickProduct = (key: string, id: string) => {
     const [row, n] = key.split('|'), i = +n;
     tabs.set(key, 'library');
-    if (row === 'heater') edit(s => { const t = techOf(s); return withUnits(t, 'heater', heatersNow(s, t).map((u, k) => k === i ? { product: id, ...(u.kit ? { kit: true } : {}), ...ownKeep(u) } : u)); });
-    else if (row === 'filter') edit(s => { const t = techOf(s); return withUnits(t, 'filter', filterUnits(t).map((u, k) => k === i ? { kind: u.kind, product: id, ...(u.kit ? { kit: true } : {}), ...ownKeep(u) } : u)); });
-    else if (row === 'light') { lightKey = ''; store.edit(s => applyLightProduct(s.light, s.tank, lightProduct(id))); }
+    if (row === 'heater') edit(s => TE.pickHeaterProduct(s, i, id));
+    else if (row === 'filter') edit(s => TE.pickFilterProduct(s, i, id));
+    else if (row === 'light') { lightKey = ''; store.edit(s => TE.pickLightProduct(s, id)); }
   };
   /** A gear card control changed (heater, filter or light): true when it was one. */
   const gearChange = (el: HTMLInputElement): boolean => {
@@ -520,9 +515,9 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
       const [row, n] = el.dataset.gc.split('|'), i = +n, v = +el.value, stat = el.dataset.gcStat;
       if (el.value === '' || !isFinite(v)) return true;
       if (genericSet(el.dataset.gc, stat!, v)) { render(); return true; }
-      if (row === 'heater' && stat === 'watts') edit(s => { const t = techOf(s); return withUnits(t, 'heater', heatersNow(s, t).map((u, k) => k === i ? { ...u, w: Math.min(2000, Math.max(5, Math.round(v))) } : u)); });
-      else if (row === 'filter' && stat === 'model') edit(s => { const t = techOf(s), us = filterUnits(t), kind = optionDef('filter', us[i]?.kind ?? '')?.kind, m = kind ? filterModels(kind)[Math.round(v)] : undefined; return m ? withUnits(t, 'filter', us.map((u, k) => k === i ? { kind: u.kind, model: m.id, ...(u.kit ? { kit: true } : {}), ...ownKeep(u) } : u)) : t; });
-      else if (row === 'light' && stat === 'watts') { lightKey = ''; store.edit(s => { s.light.watts = Math.min(1000, Math.max(1, Math.round(v))); }); }
+      if (row === 'heater' && stat === 'watts') edit(s => TE.setHeaterWatts(s, i, v));
+      else if (row === 'filter' && stat === 'model') edit(s => TE.setFilterSize(s, i, v));
+      else if (row === 'light' && stat === 'watts') { lightKey = ''; store.edit(s => TE.setLightWatts(s, v)); }
       return true;
     }
     return false;
@@ -531,14 +526,9 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
   const tuneAsGeneric = (key: string) => {
     const [row, n] = key.split('|'), i = +n;
     tabs.set(key, 'generic');
-    if (row === 'heater') edit(s => { const t = techOf(s), us = heatersNow(s, t), p = HEATER_PRODUCTS.find(x => x.id === us[i]?.product); return p ? withUnits(t, 'heater', us.map((u, k) => k === i ? { w: p.watts, ...(u.kit ? { kit: true } : {}), ...ownKeep(u) } : u)) : t; });
-    else if (row === 'filter') edit(s => {
-      const t = techOf(s), us = filterUnits(t), p = FILTER_PRODUCTS.find(x => x.id === us[i]?.product);
-      if (!p) return t;
-      const near = filterModels(p.kind as FilterKind).sort((a, b) => Math.abs(Math.log(a.gph / (p.gph ?? a.gph))) - Math.abs(Math.log(b.gph / (p.gph ?? b.gph))))[0];
-      return withUnits(t, 'filter', us.map((x, k) => k === i ? { kind: x.kind, ...(near ? { model: near.id } : {}), ...(x.kit ? { kit: true } : {}), ...ownKeep(x) } : x));
-    });
-    else if (row === 'light') { store.edit(s => { delete s.light.product; }); lightKey = ''; }
+    if (row === 'heater') edit(s => TE.tuneHeater(s, i));
+    else if (row === 'filter') edit(s => TE.tuneFilter(s, i));
+    else if (row === 'light') { store.edit(s => TE.tuneLight(s)); lightKey = ''; }
     render(); renderLight();
   };
   const slideLabel = (e: Event) => { // a gear card slider: the label follows the thumb; the edit lands on release (change)
@@ -553,32 +543,31 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     if (gearChange(el)) return;
     if (el.dataset.pump) { // a pump product (or generic: empty)
       const gear = el.dataset.pump, id = (el as unknown as HTMLSelectElement).value;
-      edit(s => { const t = { ...techOf(s) }, pumps = { ...t.pumps }; if (id) pumps[gear] = id; else delete pumps[gear]; if (Object.keys(pumps).length) t.pumps = pumps; else delete t.pumps; return t; });
+      edit(s => TE.setPump(s, gear, id));
       return;
     }
     if (el.dataset.prod) { // a catalogue product for a reef / planted row (lane GX); empty = the generic part
       const row = el.dataset.prod, id = el.value;
-      edit(s => { const t = { ...techOf(s) }, products = { ...t.products }; if (id) products[row] = id; else delete products[row]; if (Object.keys(products).length) t.products = products; else delete t.products; return t; });
+      edit(s => TE.setRowProduct(s, row, id));
       return;
     }
     if (el.dataset.hw !== undefined) { // a generic heater's watts
       const i = +el.dataset.hw, w = Math.round(+el.value);
-      if (el.value !== '' && isFinite(w)) edit(s => { const t = techOf(s); return withUnits(t, 'heater', heatersNow(s, t).map((u, k) => k === i ? { ...u, w: Math.min(2000, Math.max(5, w)) } : u)); });
+      if (el.value !== '' && isFinite(w)) edit(s => TE.setHeaterWatts(s, i, w));
       return;
     }
     if (el.dataset.sz) { // a custom sump size, in the viewer's units
       const v = +el.value, k = el.dataset.sz as 'L' | 'D' | 'H';
-      if (el.value !== '' && isFinite(v) && v > 0) edit(s => { const t = techOf(s), z = sumpOf(s, true)!, mm = Math.min(3000, Math.max(50, Math.round(v * (fahr() ? 25.4 : 10)))); return { ...t, sump: { L: z.L, D: z.D, H: z.H, [k]: mm } }; });
+      if (el.value !== '' && isFinite(v) && v > 0) edit(s => TE.setSumpSide(s, k, v, fahr() ? 'in' : 'cm'));
       return;
     }
     if ((el.id === 'tTarget' || el.id === 'tMeasured') && (el.value === '' || isFinite(+el.value))) { // empty clears it
       const key = el.id === 'tTarget' ? 'targetC' : 'measuredC';
-      edit(s => { const t = { ...techOf(s) }; if (el.value === '') delete t[key]; else t[key] = Math.min(40, Math.max(0, fahr() ? fromF(+el.value) : +el.value)); return t; });
+      edit(s => TE.setWaterTemp(s, key, el.value, fahr(), fromF));
       return;
     }
     if (el.id !== 'tRoom' || !isFinite(+el.value) || el.value === '') return;
-    const c = Math.min(40, Math.max(0, fahr() ? fromF(+el.value) : +el.value));
-    edit(s => ({ ...techOf(s), roomC: c }));
+    edit(s => TE.setRoomTemp(s, +el.value, fahr(), fromF));
   });
   // ---- Lighting (2026-10-20, Nathan: the best-selling lights modelled as the real products): a catalogued light that fits
   // the tank's length (its brackets' range), or the generic fixture set by the controls below. A product sets the fixture,

@@ -19,6 +19,7 @@
 // The recorded range is what the sources support as bounds. It does not mean equal comfort throughout, so nothing here calls a value
 // inside it ideal or optimal; this file infers no comfort rating.
 import { CARE } from '../data/care';
+import { cToF } from '../units';
 import type { Species } from '../data/species';
 
 type R = [number, number];
@@ -39,7 +40,7 @@ export interface SharedRange {
 }
 
 const aquatic = (s: Species) => s.habitat !== 'land';
-const toF = (c: number) => Math.round(c * 9 / 5 + 32);
+const toF = cToF;
 /** One temperature as text: °C, or °F when `us`. */
 export const fmtT = (c: number, us?: boolean) => us ? `${toF(c)} °F` : `${c} °C`;
 /** A range as text: °C, or °F when `us` (US units). */

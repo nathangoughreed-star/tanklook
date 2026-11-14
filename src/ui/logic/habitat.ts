@@ -9,7 +9,8 @@ import { NO3_TO_N, PLANT_SHARE_FILTERLESS, PLANT_SHARE_MAX, type Nitrogen } from
 import { filterState, type FilterState } from '../../scene/tech';
 import dd from '../../data/demand-defaults.json';
 import type { SpaceLimit, TankSetup, Units } from '../../scene/types';
-import { minWarnings, toUnits, fmtOf, type MinWarn } from '../stockSummary';
+import { minWarnings, fmtOf, type MinWarn } from '../stockSummary';
+import { toUnits, fromUnits, fmtLenShort } from '../../units';
 const ROUTINE_FLOOR = dd.time.waterChangeFraction.floor;
 
 /** A bar at or over this reads "caution" (amber, past ideal); over 100 is over (red). */
@@ -132,8 +133,8 @@ export function waterChangeText(n: Nitrogen): { value: string; note: string } {
 /** The fork card is due when an edit takes the tank from inside the space to past it (not every frame it stays past). */
 export const forkDue = (was: boolean | undefined, fits: boolean | undefined) => was === true && fits === false;
 
-export const fromUnits = (v: number, u: Units) => Math.round(u === 'in' ? v * 25.4 : v * 10);
-export const fmtLen = (mm: number, u: Units) => `${toUnits(mm, u)}${u === 'in' ? '"' : ' cm'}`;
+export { fromUnits };
+export const fmtLen = fmtLenShort;
 export const fmtBox = (w: number, d: number, u: Units) => `${toUnits(w, u)} × ${toUnits(d, u)}${u === 'in' ? ' in' : ' cm'}`;
 
 /** One line on what goes past the space: "14 cm too long and 5 cm too deep for your space." */
