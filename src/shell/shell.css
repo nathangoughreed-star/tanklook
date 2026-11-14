@@ -244,3 +244,29 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .colorbox { width: 44px; height: var(--ctl-h-sm); border: 1px solid var(--line); border-radius: var(--r-ctl); background: transparent; padding: 0; }
 .drawer .field { display: grid; gap: var(--s1); }
 .drawer .btns { display: flex; gap: var(--s2); flex-wrap: wrap; }
+/* step 10 (lane S10): Discover modes, "Ideas for ..." button, Get started card, the animal door */
+.discover { display: grid; gap: var(--s3); align-content: start; }
+.dscope { display: flex; align-items: center; justify-content: space-between; gap: var(--s2); flex-wrap: wrap; }
+.modes { display: grid; gap: var(--s2); }
+.card.mode { text-align: left; cursor: pointer; width: 100%; grid-template-columns: 32px minmax(0, 1fr) auto; align-items: center; }
+.card.mode .mbody { display: grid; gap: 2px; min-width: 0; } .card.mode .m { color: var(--text-3); font-size: 12px; }
+.dback { display: flex; align-items: center; gap: var(--s2); } .dback .i { transform: rotate(180deg); }
+.dacts, .discover .acts { display: flex; gap: var(--s2); flex-wrap: wrap; align-items: center; }
+.card.preview ul, .card.pair ul { margin: var(--s1) 0; padding-left: 18px; display: grid; gap: 2px; } .card.preview .t { display: block; }
+.gallery { display: grid; gap: var(--s2); } .card.gal { text-align: left; cursor: pointer; display: grid; gap: 2px; width: 100%; } .card.gal .m { color: var(--text-3); font-size: 12px; }
+.card.dnote { display: grid; gap: 2px; } .card.dnote .m, .card.doorplan .m { color: var(--text-3); font-size: 12px; } .card.doorplan { display: grid; gap: 2px; } .card.doorplan.bad { border-color: var(--bad, #c0392b); }
+.pairs { display: grid; gap: var(--s2); } .card.pair { display: grid; gap: var(--s1); } .card.pair .m { color: var(--text-3); font-size: 12px; }
+.discover .hint.bad { color: var(--bad, #e5645a); }
+.ideasslot { margin-left: auto; margin-right: var(--s2); display: inline-flex; } .ideasslot + .btn.icon { margin-left: 0; } .btn.ideas { white-space: nowrap; }
+.sec-head .ideasslot ~ .printsub { display: none; }
+.ov.getstarted { left: var(--s3); top: var(--s3); width: 260px; padding: var(--s2) var(--s3); display: grid; gap: var(--s2); z-index: calc(var(--z-overlay) + 2); border-radius: var(--r-card); }
+.getstarted .gshead { display: flex; align-items: center; justify-content: space-between; } .getstarted .gstitle { background: none; border: 0; color: var(--text); cursor: pointer; padding: 0; font: inherit; text-align: left; }
+.getstarted .dim { color: var(--text-3); }
+.gslist { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; } .gslist button { width: 100%; display: flex; align-items: center; gap: var(--s2); background: none; border: 0; border-radius: 6px; padding: 4px; cursor: pointer; color: var(--text); text-align: left; font: inherit; }
+.gslist button:hover, .gslist button.on { background: var(--bg-hover); }
+.gslist .tick { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--text-3); display: grid; place-items: center; flex: none; } .gslist .done .tick { background: var(--accent); border-color: var(--accent); color: #fff; } .gslist .tick .i { width: 12px; height: 12px; }
+.gslist .done .gst b { color: var(--text-3); text-decoration: line-through; } .gst { display: grid; gap: 0; min-width: 0; } .gst .dim { font-size: 11px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.gsanimal { justify-self: start; font-size: 12px; }
+.animalfound { display: grid; gap: var(--s1); } .card.picked { display: flex; align-items: center; justify-content: space-between; gap: var(--s2); } .card.picked .val { min-width: 24px; text-align: center; } .dlgfoot { justify-content: flex-end; display: flex; gap: var(--s2); }
+@media (max-width: 699px) { .ov.getstarted { left: var(--s2); right: var(--s2); top: var(--s2); width: auto; } .ov.getstarted.folded { right: auto; } }
