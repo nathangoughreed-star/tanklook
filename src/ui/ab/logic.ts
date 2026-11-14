@@ -8,6 +8,7 @@
 //   makePlan / acceptPlan  Make It Yours: preview diff, conflicts, then applyProposal (one undo step, never locks)
 //   adaptToLocks           a design that honours the current locks, or a refusal (the record it came from is never touched)
 import { TABS, type Tab } from '../../scene/scope';
+import { gearItemOf, isGearKept, keepGear, unkeepGear } from '../../scene/gearOwn';
 import { SUBSTRATE_KEYS, HARDSCAPE_KEYS, lockObject, lockRoster, unlockObject, unlockRoster, lockViolations, locksOf, isLocked, gearPart, type GearLock } from '../../scene/locks';
 import { foreignPieces, type AttrLock } from '../../scene/attrs';
 import { applyProposal, checkProposal, deltaBetween, type Proposal } from '../../scene/proposal';
@@ -120,7 +121,7 @@ export function keepFromRecord(store: Store, rec: CandidateRecord, t: KeepTarget
     const keys: readonly (keyof TankSetup)[] = t.kind === 'backdrop' ? HARDSCAPE_KEYS : t.part === 'light' ? ['light'] : t.part === 'stand' ? ['stand'] : ['tech'];
     const copy = t.kind === 'backdrop' ? differs(HARDSCAPE_KEYS) : JSON.stringify(gearOf(W, t.part)) !== JSON.stringify(gearOf(S, t.part));
     const target = t.kind === 'backdrop' ? 'backdrop' : t.part;
-    store.update(s => { lockObject(s.tanks[s.active], target, undefined, copy ? { patch: pick(keys) } : undefined); }, { history: false });
+    store.update(s => { const T = s.tanks[s.active]; lockObject(T, target, undefined, copy ? { patch: pick(keys) } : undefined); if (t.kind === 'gear' && t.part !== 'stand') keepGear(T, t.part, gearItemOf(S, t.part)); }, { history: false });   // P8: one lock, written to the gear model too
     return { ok: true, message: `${describeKeep(t)[0].toUpperCase()}${describeKeep(t).slice(1)} kept${copy ? ' for Discovery; your design only changes if you choose Make It Yours' : ''}.` };
   }
   const copy = t.kind === 'substrate' ? differs(SUBSTRATE_KEYS) : differs(['tank']);
@@ -132,7 +133,7 @@ export function keepFromRecord(store: Store, rec: CandidateRecord, t: KeepTarget
   return { ok: true, message: `${t.kind === 'substrate' ? 'Substrate' : 'Tank size'} kept${copy ? ' for Discovery; your design only changes if you choose Make It Yours' : ''}.` };
 }
 export const isKept = (tank: TankSetup, t: KeepTarget): boolean =>
-  t.kind === 'fish' ? locksOf(tank).roster.some(r => r.species === t.species) : t.kind === 'item' ? isLocked(tank, t.uid) : t.kind === 'gear' ? isLocked(tank, t.part) : isLocked(tank, t.kind);
+  t.kind === 'fish' ? locksOf(tank).roster.some(r => r.species === t.species) : t.kind === 'item' ? isLocked(tank, t.uid) : t.kind === 'gear' ? isLocked(tank, t.part) || isGearKept(tank, t.part) : isLocked(tank, t.kind);
 
 const gearOf = (t: TankSetup, part: GearLock) => gearPart(t, part);
 /** Lock a whole ATTRIBUTE of a card (AB7): the same locks as every Keep (every species exactly as shown, every piece, the tank, the substrate, the background, a gear part). Pieces and gear that are not in the working design yet are copied in first (one undo step). Never touches the record. */
@@ -162,7 +163,7 @@ export function releaseAttr(store: Store, l: AttrLock): void {
     const T = s.tanks[s.active];
     if (l.kind === 'fish') for (const sp of new Set(l.species)) unlockRoster(T, sp);
     else if (l.kind === 'items') for (const u of l.uids) unlockObject(T, u);
-    else unlockObject(T, l.kind === 'gear' ? l.part : l.kind);
+    else { unlockObject(T, l.kind === 'gear' ? l.part : l.kind); if (l.kind === 'gear') unkeepGear(T, l.part); }
   }, { history: false });
 }
 
