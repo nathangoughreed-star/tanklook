@@ -379,3 +379,12 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .equip .addrow { background: none; border: 0; color: var(--text-2); text-align: left; cursor: pointer; padding: var(--s1); font: inherit; }
 .lightmap .row { display: grid; grid-template-columns: 90px 1fr auto; align-items: center; gap: var(--s2); }
 @media (max-width: 699px) { .erow { grid-template-columns: minmax(0, 1fr) auto; } .erow .thumb { display: none; } .erow .acts { flex-wrap: wrap; justify-content: flex-end; } }
+
+/* SC: drag a species into the tank, AqAdvisor row, copies box, new-animal size */
+.dragGhost { position: fixed; left: 0; top: 0; z-index: 1000; pointer-events: none; background: var(--chip, #fff); border: 1px dashed var(--line, #999); border-radius: 6px; padding: 3px 8px; font-size: 12px; opacity: .85; white-space: nowrap }
+.dragGhost.ok { border-style: solid; opacity: 1 }
+body.placing, body.placing * { cursor: copy !important; user-select: none }
+.prow.pv { outline: 1px solid var(--accent, #2a7); outline-offset: -1px }
+.aqrow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 6px 0 }
+.aqrow .bad { color: var(--bad, #c33) }
+.copybox { border: 1px solid var(--line, #ccc); border-radius: 8px; padding: 8px; margin: 6px 0 }
