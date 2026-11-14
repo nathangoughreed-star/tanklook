@@ -5,7 +5,7 @@ import { useState } from 'preact/hooks';
 import type { Store } from '../scene/store';
 import { GENERIC } from '../scene/gearOwn';
 import {
-  categories, categoryView, presetLadder, applyPresetEdit, useItem, setOwned, setLock, marks, ownSum, type CatId, type GearRow,
+  categories, categoryView, presetLadder, applyPresetEdit, useItem, setOwned, setLock, marks, ownSum, addOwnAny, specOf, type CatId, type GearRow,
 } from './logic/equipment';
 import { LightingGroup } from './lighting';
 import { Group, Icon, Pill } from './ui';
@@ -45,6 +45,27 @@ function Row({ r, store, cat }: { r: GearRow; store: Store; cat: CatId }) {
   );
 }
 
+function AddOwn({ store, cat }: { store: Store; cat: CatId }) {
+  const [open, setOpen] = useState(false), [name, setName] = useState(''), [w, setW] = useState(''), [bad, setBad] = useState('');
+  const sp = specOf(cat);
+  if (!open) return <button type="button" class="addrow" onClick={() => setOpen(true)}><Icon name="plus" /> Add one I own (any brand)</button>;
+  const save = () => {
+    const watts = w === '' ? undefined : +w;
+    if (!name.trim()) { setBad('Give it a name.'); return; }
+    if (sp && (watts === undefined || !(watts >= sp.min && watts <= sp.max))) { setBad(`${sp.label} is needed, ${sp.min}-${sp.max} ${sp.unit}.`); return; }
+    let ok = false; store.edit(s => { ok = addOwnAny(s, cat, name, watts); });
+    if (ok) { setOpen(false); setName(''); setW(''); setBad(''); }
+  };
+  return (
+    <div class="addown">
+      <div class="row"><span class="lbl">Name</span><input class="input" value={name} placeholder="Brand and model" aria-label="Name" maxLength={50} onInput={e => setName((e.target as HTMLInputElement).value)} /><span /></div>
+      {sp ? <div class="row"><span class="lbl">{sp.label}</span><span class="val"><input class="input num" type="number" min={sp.min} max={sp.max} value={w} aria-label={`${sp.label} (${sp.unit})`} onInput={e => setW((e.target as HTMLInputElement).value)} /><span class="unit">{sp.unit}</span></span></div> : null}
+      {bad ? <div class="hint bad" role="alert">{bad}</div> : null}
+      <div class="btns"><button type="button" class="btn sm primary" onClick={save}>Add to I own</button><button type="button" class="btn sm ghost" onClick={() => { setOpen(false); setBad(''); }}>Cancel</button></div>
+    </div>
+  );
+}
+
 export function EquipmentSection({ store, units }: { store: Store; units: 'in' | 'cm' }) {
   const S = store.tank, cats = categories(S), [sel, setSel] = useState(loadCat());
   const [open, setOpen] = useState({ own: true, buy: true, all: false });
@@ -61,7 +82,7 @@ export function EquipmentSection({ store, units }: { store: Store; units: 'in' |
 
       <Group title="I own" sum={v.owned.length ? `${v.owned.length} · ${ownSum(v.owned.length)}` : ownSum(0)} open={open.own} onToggle={() => setOpen({ ...open, own: !open.own })}>
         {v.owned.map(r => <Row r={r} store={store} cat={cat} />)}
-        <button type="button" class="addrow" onClick={() => store.edit(s => setOwned(s, cat, GENERIC, true))}><Icon name="plus" /> Add one I own (any brand)</button>
+        <AddOwn store={store} cat={cat} key={cat} />
         <div class="hint">Owning is not the same as using: the plan prefers what you own, at $0, when it fits.</div>
       </Group>
 

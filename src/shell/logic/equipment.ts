@@ -2,7 +2,7 @@
 // Per category two groups: "I own" (the owned list, $0, not necessarily in use) and "Buy" (catalogue products that fit this tank), the item
 // in use marked, and an independent "Use this one for sure" lock per item. Pure: no DOM. Engine calls go only through scene/techEdit.ts (P4),
 // scene/gearOwn.ts (P8) and src/units.ts; the catalogue lists are read from data/gearCatalog.ts and data/hoods.ts.
-import { commitTech, withTech, addHeater, pickHeaterProduct, tuneHeater, addFilter, pickFilterProduct, tuneFilter, setPump, setRowProduct, pickLightProduct, tuneLight, pickPreset } from '../../scene/techEdit';
+import { commitTech, withTech, addHeater, pickHeaterProduct, tuneHeater, addFilter, pickFilterProduct, tuneFilter, setPump, setRowProduct, pickLightProduct, tuneLight, pickPreset, setHeaterWatts, setLightWatts } from '../../scene/techEdit';
 import { editGear, gearOfTank, GENERIC, isLockedItem, isOwned, lockItem, ownItem, ownedFor, setInUse, unlockItem, unownItem, type GearModel } from '../../scene/gearOwn';
 import { filterUnits, heatLoss, heaterUnits, presetsFor, roomOf, rowsFor, techOf, withChoice } from '../../scene/tech';
 import {
@@ -25,10 +25,10 @@ const galText = (g: number) => `${g < 10 ? +g.toFixed(1) : Math.round(g)} gal`;
 // ---------------------------------------------------------------- categories
 
 /** The category ids the screen offers, in chip order. Light, filter and heater always; the rest when the tank's tech rows have them and the catalogue holds products. */
-const ORDER = ['filter', 'heater', 'light', 'co2', 'air', 'uv', 'skimmer', 'chiller', 'ato', 'flow', 'surfskim'] as const;
+const ORDER = ['filter', 'heater', 'light', 'co2', 'air', 'uv', 'skimmer', 'chiller', 'ato', 'flow', 'surfskim', 'ferts', 'conditioner', 'rodi', 'wcmethod', 'feeder', 'dosing', 'salinity', 'saltmix', 'heatlamp', 'thermostat', 'uvb', 'gauge', 'mist', 'timer'] as const;
 export type CatId = (typeof ORDER)[number];
-const LABEL: Record<CatId, string> = { filter: 'Filter', heater: 'Heater', light: 'Light', co2: 'CO2', air: 'Air', uv: 'UV', skimmer: 'Skimmer', chiller: 'Chiller', ato: 'Top-off', flow: 'Flow', surfskim: 'Surface skimmer' };
-const SINGULAR: Record<CatId, string> = { filter: 'filter', heater: 'heater', light: 'light', co2: 'CO2 kit', air: 'air pump', uv: 'UV sterilizer', skimmer: 'skimmer', chiller: 'chiller', ato: 'auto top-off', flow: 'powerhead', surfskim: 'surface skimmer' };
+const LABEL: Record<CatId, string> = { filter: 'Filter', heater: 'Heater', light: 'Light', co2: 'CO2', air: 'Air', uv: 'UV', skimmer: 'Skimmer', chiller: 'Chiller', ato: 'Top-off', flow: 'Flow', surfskim: 'Surface skimmer', ferts: 'Fertilizer', conditioner: 'Conditioner', rodi: 'RO/DI', wcmethod: 'Water changes', feeder: 'Feeder', dosing: 'Dosing', salinity: 'Salinity', saltmix: 'Salt mix', heatlamp: 'Heat lamp', thermostat: 'Thermostat', uvb: 'UVB', gauge: 'Gauge', mist: 'Misting', timer: 'Timer' };
+const SINGULAR: Record<CatId, string> = { filter: 'filter', heater: 'heater', light: 'light', co2: 'CO2 kit', air: 'air pump', uv: 'UV sterilizer', skimmer: 'skimmer', chiller: 'chiller', ato: 'auto top-off', flow: 'powerhead', surfskim: 'surface skimmer', ferts: 'fertilizer', conditioner: 'water conditioner', rodi: 'RO/DI unit', wcmethod: 'water-change tool', feeder: 'auto feeder', dosing: 'dosing setup', salinity: 'salinity tester', saltmix: 'salt mix', heatlamp: 'heat lamp', thermostat: 'thermostat', uvb: 'UVB lamp', gauge: 'gauge', mist: 'misting setup', timer: 'timer' };
 export const catLabel = (c: string) => LABEL[c as CatId] ?? c;
 export const isCat = (c: string): c is CatId => (ORDER as readonly string[]).includes(c);
 
@@ -46,6 +46,32 @@ export function presetLadder(S: TankSetup): PresetChip[] {
   return presetsFor(S).map(p => ({ id: p.id, label: p.label, on: Object.entries(p.rows).every(([r, o]) => (t.rows[r] ?? 'none') === o) }));
 }
 export const applyPresetEdit = (S: TankSetup, id: string): void => commitTech(S, s => pickPreset(s, id));
+
+// ---------------------------------------------------------------- "Add one I own (any brand)"
+
+/** An owned item of any brand is stored as the id `own:<name>` or `own:<name>|<watts>`: the gear model holds strings, and the name is all a person knows. */
+export const isCustom = (item: string) => item.startsWith('own:');
+const CUSTOM_MAX = 70;
+/** Where the engine needs a number to size the thing: a heater's and a light's watts. */
+export const specOf = (cat: string): { label: string; unit: string; min: number; max: number } | undefined =>
+  cat === 'heater' ? { label: 'Wattage', unit: 'W', min: 5, max: 2000 } : cat === 'light' ? { label: 'Wattage', unit: 'W', min: 1, max: 1000 } : undefined;
+export function customItem(cat: string, name: string, watts?: number): string | undefined {
+  const n = name.replace(/[|]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, CUSTOM_MAX - 12);
+  if (!n) return undefined;
+  const sp = specOf(cat);
+  if (sp) { if (watts === undefined || !Number.isFinite(watts) || watts < sp.min || watts > sp.max) return undefined; return `own:${n}|${Math.round(watts)}`; }
+  return `own:${n}`;
+}
+export function customOf(item: string): { name: string; watts?: number } | undefined {
+  if (!isCustom(item)) return undefined;
+  const [name, w] = item.slice(4).split('|'); const watts = w ? +w : undefined;
+  return { name, ...(watts && Number.isFinite(watts) ? { watts } : {}) };
+}
+/** "Add one I own (any brand)": the owned list gains the named item (one store.edit by the caller). false = the form was not complete. */
+export function addOwnAny(S: TankSetup, cat: CatId, name: string, watts?: number): boolean {
+  const item = customItem(cat, name, watts); if (!item) return false;
+  setOwned(S, cat, item, true); return true;
+}
 
 // ---------------------------------------------------------------- what is in use
 
@@ -129,6 +155,7 @@ function catalogue(S: TankSetup, cat: CatId, units: Units): Entry[] {
 /** A name for any item id a category can hold: a product's, "Generic <thing>", or the id itself (an owned-sheet answer). */
 export function itemName(cat: string, item: string): string {
   if (item === GENERIC) return `Generic ${SINGULAR[cat as CatId] ?? cat}`;
+  const c = customOf(item); if (c) return c.name;
   const p = filterProduct(item) ?? heaterProduct(item) ?? lightProduct(item) ?? pumpProduct(item) ?? reefProduct(cat, item) ?? hoodProduct(item);
   return p ? productName(p) : item;
 }
@@ -148,9 +175,11 @@ export interface CategoryView {
 const priceText = (e: Pick<Entry, 'usd' | 'est'> | undefined) => !e || e.usd === undefined ? '' : `${e.est ? '~' : ''}${usd(e.usd)}`;
 
 export function categoryView(S: TankSetup, cat: CatId, units: Units, o: { showAll?: boolean; limit?: number } = {}): CategoryView {
-  const g = gearOfTank(S), inUse = inUseItem(S, cat), list = catalogue(S, cat, units);
+  const g = gearOfTank(S), scene = inUseItem(S, cat), list = catalogue(S, cat, units), mu = g[cat]?.use;
+  // a brand we do not list is on the design as the generic one: the model remembers which of the owned ones it is
+  const inUse = scene === GENERIC && mu && isCustom(mu) ? mu : scene;
   const row = (item: string, e: Entry | undefined, own: boolean): GearRow => ({
-    cat, item, name: e?.name ?? itemName(cat, item), sub: e?.sub ?? (item === GENERIC ? 'any brand' : ''),
+    cat, item, name: e?.name ?? itemName(cat, item), sub: e?.sub ?? (item === GENERIC ? 'any brand' : customOf(item) ? `your own${customOf(item)!.watts ? ` · ${customOf(item)!.watts} W` : ''}` : ''),
     price: own ? 'Owned · $0' : priceText(e), fit: e?.fit ?? null, owned: own, inUse: inUse === item, locked: isLockedItem(g, cat, item), ...(e?.hood ? { hood: true } : {}),
   });
   const ownedRows = ownedFor(g, cat).map(it => row(it, list.find(x => x.item === it), true));
@@ -160,23 +189,26 @@ export function categoryView(S: TankSetup, cat: CatId, units: Units, o: { showAl
   const pinned = sorted.filter(e => e.item === inUse || isLockedItem(g, cat, e.item));
   const limit = o.limit ?? 4, shown = o.showAll ? sorted : [...pinned, ...sorted.filter(e => !pinned.includes(e))].slice(0, Math.max(limit, pinned.length));
   const buy = shown.map(e => row(e.item, e, false));
-  if (cat === 'heater' || cat === 'filter' || cat === 'light') buy.push(row(GENERIC, undefined, false));
+  if (cat === 'heater' || cat === 'filter' || cat === 'light' || !list.length) buy.push(row(GENERIC, undefined, false));
   let note = '';
   if (cat === 'heater') {
     const h = heatLoss(S), r = roomOf(S);
     note = `${galText(galOf(S))} at ${fmtTempHalf(h.targetC, units)}, room ${fmtTempHalf(r.c, units)}${r.set ? '' : ' (assumed)'}: needs about ${Math.round(h.needW)} W.`;
   } else if (cat === 'light') note = S.lid === 'hood' ? 'The hood holds its own light: pick a hood to change it, or a light product to put the hood away.' : `${list.filter(e => !e.hood).length} lights fit a ${units === 'in' ? Math.round(S.tank.L / 25.4) + ' in' : Math.round(S.tank.L / 10) + ' cm'} tank.`;
-  return { id: cat, label: LABEL[cat], singular: SINGULAR[cat], note, owned: ownedRows, buy, buyTotal: sorted.length + (cat === 'heater' || cat === 'filter' || cat === 'light' ? 1 : 0), roomLink: cat === 'heater', inUse };
+  return { id: cat, label: LABEL[cat], singular: SINGULAR[cat], note, owned: ownedRows, buy, buyTotal: sorted.length + (cat === 'heater' || cat === 'filter' || cat === 'light' || !list.length ? 1 : 0), roomLink: cat === 'heater', inUse };
 }
 
 // ---------------------------------------------------------------- edits (the caller wraps each in store.edit: one undo step)
 
 /** "Use": put the item on the design, and record it as the category's item in use. */
 export function useItem(S: TankSetup, cat: CatId, item: string): void {
+  const own = customOf(item), orig = item;
+  if (own) item = GENERIC;   // a brand we do not list is put on the design as the generic one, sized by its watts where the engine needs them
   const hood = hoodProduct(item);
   switch (cat) {
     case 'heater':
       commitTech(S, s => item === GENERIC ? (heaterUnits(techOf(s)).length ? tuneHeater(s, 0) : addHeater(s)) : heaterUnits(techOf(s)).length ? pickHeaterProduct(s, 0, item) : addHeater(s, item));
+      if (own?.watts) commitTech(S, s => setHeaterWatts(s, 0, own.watts!));
       break;
     case 'filter': {
       const p = filterProduct(item);
@@ -188,6 +220,7 @@ export function useItem(S: TankSetup, cat: CatId, item: string): void {
       else {
         if (S.lid === 'hood') S.lid = 'glass';   // a hood holds its own lamps (HD1): a separate light means no hood
         if (item === GENERIC) tuneLight(S); else pickLightProduct(S, item);
+        if (own?.watts) setLightWatts(S, own.watts);
       }
       break;
     case 'air': case 'flow': {
@@ -198,9 +231,10 @@ export function useItem(S: TankSetup, cat: CatId, item: string): void {
     default: {
       const opt = optionFor(cat, item);
       if (opt) commitTech(S, s => { const t = withChoice(s, cat, opt); return setRowProduct(withTech(s, t), cat, item); });
+      else if (item === GENERIC) { const first = rowsFor(S).find(r => r.id === cat)?.options.find(o => o.id !== 'none'); if (first && (techOf(S).rows[cat] ?? 'none') === 'none') commitTech(S, s => withChoice(s, cat, first.id)); }
     }
   }
-  editGear(S, g => setInUse(g, cat, item));
+  editGear(S, g => setInUse(g, cat, orig));
 }
 /** The Tech option a reef / planted product belongs to (the row it fills when "Use" turns the row on). */
 function optionFor(row: string, id: string): string | undefined {
