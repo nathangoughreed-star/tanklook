@@ -8,7 +8,7 @@
 //   makePlan / acceptPlan  Make It Yours: preview diff, conflicts, then applyProposal (one undo step, never locks)
 //   adaptToLocks           a design that honours the current locks, or a refusal (the record it came from is never touched)
 import { TABS, type Tab } from '../../scene/scope';
-import { gearItemOf, isGearKept, keepGear, unkeepGear } from '../../scene/gearOwn';
+import { isGearKept } from '../../scene/gearOwn';
 import { SUBSTRATE_KEYS, HARDSCAPE_KEYS, lockObject, lockRoster, unlockObject, unlockRoster, lockViolations, locksOf, isLocked, gearPart, type GearLock } from '../../scene/locks';
 import { foreignPieces, type AttrLock } from '../../scene/attrs';
 import { applyProposal, checkProposal, deltaBetween, type Proposal } from '../../scene/proposal';
@@ -121,7 +121,7 @@ export function keepFromRecord(store: Store, rec: CandidateRecord, t: KeepTarget
     const keys: readonly (keyof TankSetup)[] = t.kind === 'backdrop' ? HARDSCAPE_KEYS : t.part === 'light' ? ['light'] : t.part === 'stand' ? ['stand'] : ['tech'];
     const copy = t.kind === 'backdrop' ? differs(HARDSCAPE_KEYS) : JSON.stringify(gearOf(W, t.part)) !== JSON.stringify(gearOf(S, t.part));
     const target = t.kind === 'backdrop' ? 'backdrop' : t.part;
-    store.update(s => { const T = s.tanks[s.active]; lockObject(T, target, undefined, copy ? { patch: pick(keys) } : undefined); if (t.kind === 'gear' && t.part !== 'stand') keepGear(T, t.part, gearItemOf(S, t.part)); }, { history: false });   // P8: one lock, written to the gear model too
+    store.update(s => { const T = s.tanks[s.active]; lockObject(T, target, undefined, copy ? { patch: pick(keys) } : undefined); }, { history: false });   // PS1: Discover writes only its own lock store (T.locks), never the design / brief
     return { ok: true, message: `${describeKeep(t)[0].toUpperCase()}${describeKeep(t).slice(1)} kept${copy ? ' for Discovery; your design only changes if you choose Make It Yours' : ''}.` };
   }
   const copy = t.kind === 'substrate' ? differs(SUBSTRATE_KEYS) : differs(['tank']);
@@ -163,7 +163,7 @@ export function releaseAttr(store: Store, l: AttrLock): void {
     const T = s.tanks[s.active];
     if (l.kind === 'fish') for (const sp of new Set(l.species)) unlockRoster(T, sp);
     else if (l.kind === 'items') for (const u of l.uids) unlockObject(T, u);
-    else { unlockObject(T, l.kind === 'gear' ? l.part : l.kind); if (l.kind === 'gear') unkeepGear(T, l.part); }
+    else unlockObject(T, l.kind === 'gear' ? l.part : l.kind);
   }, { history: false });
 }
 

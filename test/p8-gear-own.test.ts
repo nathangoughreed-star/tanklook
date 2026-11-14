@@ -12,7 +12,7 @@ import { HEATER_PRODUCTS, LIGHT_PRODUCTS } from '../src/data/gearCatalog';
 import { GENERIC as SHEET_GENERIC, applyOwned, emptyOwned, ownedStateOf, syncEquipment } from '../src/ui/ownedGear';
 import { confine } from '../src/scene/discover';
 import { lockViolations, locksOf } from '../src/scene/locks';
-import { gearItemOf, isGearKept, keepGear, unkeepGear } from '../src/scene/gearOwn';
+import { gearItemOf, isGearKept, keepGear, mustUseOf, unkeepGear } from '../src/scene/gearOwn';
 
 const P = defaultProfile(), NOW = Date.parse('2026-11-02'), cap = (value: number) => ({ on: true, value });
 
@@ -133,6 +133,12 @@ describe("Discover's Keep and the gear model are one lock", () => {
     expect(mustUse(gearOf(T.brief!), 'light')).toEqual({ item: L1, owned: false });
     expect(isGearKept(T, 'light')).toBe(true); expect(locksOf(T).objects.map(o => o.target)).toContain('light');
     unkeepGear(T, 'light'); expect(isGearKept(T, 'light')).toBe(false); expect(locksOf(T).objects).toEqual([]);
+  });
+  it("Discover's Keep (T.locks only) never touches the brief, and mustUseOf reads both stores", () => {
+    const T = base(); lockObject(T, 'light');
+    expect(T.brief).toBeUndefined();
+    expect(mustUseOf(T, 'light')).toEqual({ item: L1, owned: false, by: 'discover' });
+    const E = base(); keepGear(E, 'light', L1); expect(mustUseOf(E, 'light')).toEqual({ item: L1, owned: false, by: 'equipment' }); expect(E.locks).toBeUndefined();
   });
   it('a locked, UNOWNED item set only in the model survives a Discover candidate that changes it', () => {
     const orig = base(), cand = structuredClone(orig); cand.light.product = L2;
