@@ -13,6 +13,12 @@ export function autoName(T: Tank): string {
   return `Custom ${SHAPE_WORD[s] ?? ''}${inch(T.L)} x ${inch(T.D)} x ${inch(T.H)} in`;
 }
 
+/** The maker's default name while the person has typed none (lane CT1): "Custom 36x10x10", L x D x H in whole inches, with the shape word for a non-rectangle. */
+export function dimName(T: Tank): string {
+  const w = (mm: number) => Math.round(mm / IN);
+  return `Custom ${SHAPE_WORD[shapeOf(T)] ?? ''}${w(T.L)}x${w(T.D)}x${w(T.H)}`;
+}
+
 /**
  * A saved scene with no `customTank`: a tank that is a catalogue product keeps being one, anything else (no product, or a product whose
  * size or shape was hand-edited since it was picked, which `product.sig` records) becomes a named custom copy. Nothing about the tank,

@@ -5,13 +5,13 @@ import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { Store } from '../scene/store';
 import type { Tank, TankSetup, TankShape, CameraSettings } from '../scene/types';
 import { applyTankEdit, reshape, shapeMemory, setGlass, setRim } from '../scene/tankEdit';
-import { addCustomTank, editCustomTank, loadLibrary, saveLibrary, type CustomTankSpec } from '../scene/customTanks';
-import { STOCK_US, STOCK_METRIC } from '../scene/glassSolver';
+import { addCustomTank, dimName, editCustomTank, loadLibrary, saveLibrary, type CustomTankSpec } from '../scene/customTanks';
+import { STOCK_US, STOCK_METRIC, IN_MM, type BraceLocks, type BraceSpec } from '../scene/glassSolver';
 import { LIMITS } from '../scene/validate';
 import { glassThickness, IN } from '../scene/physics';
 import { POLY_SIDES, shapeOf } from '../scene/shape';
 import { makerSetup, makerFacts, dimLabels, previewSpec, priceView, chooseCustom, glassText, galText, usd, SHAPE_WORD, SHAPE_MAIN, SHAPE_MORE, SIDE_RANGE, specChanged, type Units } from './logic/tank';
-import { glassPanel, defaultChoice, DISCLAIMER, type GlassChoice, type GlassPanel } from './logic/tankGlass';
+import { glassPanel, defaultChoice, optimizeChoice, startBrace, DISCLAIMER, type GlassChoice, type GlassPanel } from './logic/tankGlass';
 import { LenRow, Seg, Toggle } from './tank';
 import { Group, Icon, Pill } from './ui';
 import type { Viewer } from '../render/viewer';
@@ -50,6 +50,10 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
   const [choice, setChoice] = useState<GlassChoice>(defaultChoice);
   const [panel, setPanel] = useState<GlassPanel | null>(null);
   const [inSetup, setInSetup] = useState(false);
+  const [shownBrace, setShownBrace] = useState<BraceSpec | null>(null); // the last worked-out brace: drawn while the panel recomputes
+  const [locks, setLocks] = useState<Record<BraceField, boolean>>({ width: false, thickness: false, cross: false, crossWidth: false });
+  const [opt, setOpt] = useState<{ text: string; key: string } | null>(null);
+  const [busy, setBusy] = useState(false);
   const mem = useRef(shapeMemory());
   const viewRef = useRef<HTMLElement>(null);
   const cam0 = useRef<CameraSettings>(structuredClone(store.tank.camera));
@@ -62,7 +66,9 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
     set(MAKER_CAM(cam0.current, spec.tank));
     return () => { preview(null); set(cam0.current); };
   }, []);
-  useEffect(() => { preview(inSetup ? previewSpec(store.tank, spec) : makerSetup(spec, store.tank)); }, [spec, inSetup]);
+  // the brace in the panel is drawn at once (before "Use this glass" writes it into the spec)
+  const braceKey = JSON.stringify(shownBrace);
+  useEffect(() => { preview(inSetup ? previewSpec(store.tank, spec, shownBrace) : makerSetup(spec, store.tank, shownBrace)); }, [spec, inSetup, braceKey]);
   // a new size is framed again once it settles (the person can still orbit and zoom in between)
   useEffect(() => { if (inSetup) return; const t = setTimeout(() => store.update(s => { s.tanks[s.active].camera = { ...s.tanks[s.active].camera, zoom: MAKER_CAM(cam0.current, spec.tank).zoom }; }, { kind: 'view', history: false }), 400); return () => clearTimeout(t); }, [spec.tank.L, spec.tank.D, spec.tank.H]);
   // "Preview in my setup" shows it in the room for a moment, then comes back (§2a)
@@ -73,7 +79,7 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
     return () => { clearTimeout(t); store.update(s => { s.tanks[s.active].camera = MAKER_CAM(cam0.current, spec.tank); }, { kind: 'view', history: false }); };
   }, [inSetup]);
   // the glass solver runs after edits settle (a box tank: about half a second with the brace optimizer)
-  useEffect(() => { setPanel(null); const t = setTimeout(() => setPanel(glassPanel(spec.tank, spec.rim, choice, u)), 250); return () => clearTimeout(t); }, [spec.tank, spec.rim, choice, u]);
+  useEffect(() => { setPanel(null); const t = setTimeout(() => { const p = glassPanel(spec.tank, spec.rim, choice, u); setPanel(p); setShownBrace(p.braceNow); }, 250); return () => clearTimeout(t); }, [spec.tank, spec.rim, choice, u]);
 
   /** Every tank edit runs P1's rules on a scratch setup and reads the spec back; a size / glass change drops a glass build that no longer fits. */
   const edit = (fn: (s: TankSetup) => void, keepBuild = false) => setSpec(sp => {
@@ -87,9 +93,28 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
   const stock = u === 'in' ? STOCK_US : STOCK_METRIC, gNow = glassThickness(T, spec.glass);
   const changed = specChanged(spec, init.spec);
 
+  const key = () => JSON.stringify([spec.tank, choice]);
+  /** The Optimize button: fills the unlocked brace fields with the least glass that meets the safety factor. */
+  const optimize = () => {
+    setBusy(true);
+    setTimeout(() => {
+      const nb = panel?.braceNow ?? startBrace(u), lk: BraceLocks = {};
+      if (locks.width) lk.width = nb.width;
+      if (locks.thickness) lk.thickness = nb.thickness;
+      if (locks.cross) lk.cross = nb.cross ?? 0;
+      if (locks.crossWidth && (nb.cross ?? 0) > 0) lk.crossWidth = nb.crossWidth ?? nb.width;
+      const r = optimizeChoice(T, choice, u, lk);
+      const next: GlassChoice = r.ok ? { ...choice, brace: r.brace ? ((r.brace.cross ?? 0) > 0 ? 'cross' : 'perimeter') : 'none', custom: r.brace ?? undefined } : choice;
+      setChoice(next); setOpt({ text: r.line, key: JSON.stringify([spec.tank, next]) }); setBusy(false);
+    }, 30);
+  };
+  const setBrace = (b: BraceSpec) => setChoice({ ...choice, custom: b });
+
   const save = (use: boolean) => {
     const lib = loadLibrary();
-    const r = init.libId && lib.some(e => e.id === init.libId) ? editCustomTank(lib, init.libId, spec) : addCustomTank(lib, spec);
+    // a brace in the panel is part of the tank: saving writes its glass build (the brace would be dropped otherwise)
+    const out: CustomTankSpec = { ...spec, name: spec.name.trim() || dimName(spec.tank), ...(!spec.rim && panel?.braceNow && panel.use ? { glass: panel.use.glass, glassBuild: panel.use.build } : {}) };
+    const r = init.libId && lib.some(e => e.id === init.libId) ? editCustomTank(lib, init.libId, out) : addCustomTank(lib, out);
     if (!saveLibrary(r.lib)) { alert('Could not save in this browser (storage is blocked or full).'); return; }
     if (use && r.entry) { const e = r.entry; store.edit(s => chooseCustom(s, e)); }
     onEnd(use ? 'used' : 'saved');
@@ -114,7 +139,7 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
         <button type="button" class="btn primary" onClick={() => save(true)}>Save and use in this setup</button>
       </header>
       <aside class="mform">
-        <div class="row"><span class="lbl">Name</span><input class="input" value={spec.name} aria-label="Name" maxLength={76} onInput={e => setSpec({ ...spec, name: (e.target as HTMLInputElement).value })} /><span /></div>
+        <div class="row"><span class="lbl">Name</span><input class="input" value={spec.name} placeholder={dimName(T)} title="Leave it empty and the name follows the size" aria-label="Name" maxLength={76} onInput={e => setSpec({ ...spec, name: (e.target as HTMLInputElement).value })} /><span /></div>
         <Group title="Shape" sum={SHAPE_WORD[shape]} open={open.shape} onToggle={fold('shape')}>
           <div class="seg full" role="group" aria-label="Shape">
             {SHAPE_MAIN.map(sh => <button type="button" class={shape === sh ? 'on' : ''} aria-pressed={shape === sh} onClick={() => size(reshape(mem.current, T, sh))}>{SHAPE_WORD[sh]}</button>)}
@@ -145,7 +170,7 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
             </select><span /></div>
           <div class="row"><span class="lbl">Rim</span><Seg label="Rim" value={spec.rim ? 'y' : 'n'} opts={[['y', 'Rimmed'], ['n', 'Rimless']]} onPick={v => edit(s => setRim(s, v === 'y'))} /><span /></div>
         </Group>
-        <GlassGroup panel={panel} choice={choice} setChoice={setChoice} rim={spec.rim} u={u} glassNow={gNow} build={!!spec.glassBuild} open={open.solver} onToggle={fold('solver')}
+        <GlassGroup panel={panel} choice={choice} setChoice={setChoice} locks={locks} setLocks={setLocks} onOptimize={optimize} busy={busy} optLine={opt && opt.key === key() ? opt.text : ''} setBrace={setBrace} rim={spec.rim} u={u} glassNow={gNow} build={!!spec.glassBuild} open={open.solver} onToggle={fold('solver')}
           onUse={() => panel?.use && setSpec({ ...spec, glass: panel.use.glass, glassBuild: panel.use.build })} />
         <Group title="Price" sum={spec.priceUsd != null ? `${usd(spec.priceUsd)} yours` : price.estimate != null ? `about ${usd(price.estimate)}` : 'no estimate'} open={open.price} onToggle={fold('price')}>
           <div class="drow"><span>Our estimate</span><b>{price.estimate != null ? usd(price.estimate) : '-'}</b></div>
@@ -171,8 +196,8 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
   );
 }
 
-function GlassGroup({ panel, choice, setChoice, rim, u, glassNow, build, open, onToggle, onUse }: {
-  panel: GlassPanel | null; choice: GlassChoice; setChoice: (c: GlassChoice) => void; rim: boolean; u: Units; glassNow: number; build: boolean; open: boolean; onToggle: () => void; onUse: () => void;
+function GlassGroup({ panel, choice, setChoice, locks, setLocks, onOptimize, busy, optLine, setBrace, rim, u, glassNow, build, open, onToggle, onUse }: {
+  panel: GlassPanel | null; choice: GlassChoice; setChoice: (c: GlassChoice) => void; locks: Record<BraceField, boolean>; setLocks: (l: Record<BraceField, boolean>) => void; onOptimize: () => void; busy: boolean; optLine: string; setBrace: (b: BraceSpec) => void; rim: boolean; u: Units; glassNow: number; build: boolean; open: boolean; onToggle: () => void; onUse: () => void;
 }) {
   const sum = !panel ? 'working it out…' : !panel.supported ? 'box tanks only' : `${panel.panes[0].thickness} front · SF ${panel.sfAchieved}`;
   return (
@@ -181,7 +206,8 @@ function GlassGroup({ panel, choice, setChoice, rim, u, glassNow, build, open, o
         <div class="row"><span class="lbl">Safety factor</span><input class="slider" type="range" min={2} max={6} step={0.1} value={choice.sf} aria-label="Safety factor" onInput={e => setChoice({ ...choice, sf: +(e.target as HTMLInputElement).value })} />
           <span class="val"><input class="input num" type="number" min={1.5} max={8} step={0.1} value={choice.sf} aria-label="Safety factor value" onChange={e => { const v = parseFloat((e.target as HTMLInputElement).value); if (Number.isFinite(v) && v >= 1.5 && v <= 8) setChoice({ ...choice, sf: v }); }} /></span></div>
         <Seg label="Thickness" value={choice.mode} opts={[['uniform', 'One thickness'], ['perPane', 'Per pane']]} onPick={m => setChoice({ ...choice, mode: m })} />
-        {!rim ? <Seg label="Brace" value={choice.brace} opts={[['none', 'No brace'], ['perimeter', 'Perimeter'], ['cross', 'Perimeter + cross']]} onPick={b => setChoice({ ...choice, brace: b })} /> : null}
+        {!rim ? <Seg label="Brace" value={panel ? (panel.braceNow ? ((panel.braceNow.cross ?? 0) > 0 ? 'cross' : 'perimeter') : 'none') : choice.brace} opts={[['none', 'No brace'], ['perimeter', 'Perimeter'], ['cross', 'Perimeter + cross']]} onPick={b => setChoice({ ...choice, brace: b, custom: undefined })} /> : null}
+        {!rim && panel ? <BraceFields b={panel.braceNow} u={u} locks={locks} setLocks={setLocks} setBrace={setBrace} onOptimize={onOptimize} busy={busy} optLine={optLine} note={panel.braceNote} stock={u === 'in' ? STOCK_US : STOCK_METRIC} /> : null}
         {!panel ? <div class="hint">Working out the glass…</div> : <>
           <div class="hint">{panel.topLine}</div>
           {!rim && panel.braces.length ? <table class="gtable" aria-label="Brace options">
@@ -193,6 +219,8 @@ function GlassGroup({ panel, choice, setChoice, rim, u, glassNow, build, open, o
             <tbody>{panel.panes.map(p => <tr><td>{p.label}</td><td><b>{p.thickness}</b></td><td class={p.ok ? '' : 'bad'}>{p.sf}</td><td class="hint">{p.governs}</td></tr>)}</tbody>
           </table>
           <div class="drow"><span>Safety factor achieved</span><Pill tone={panel.sfOk ? 'ok' : 'bad'}>{panel.sfAchieved}</Pill></div>
+          <div class={`hint${panel.sfOk ? '' : ' bad'}`} aria-live="polite">{panel.verdict}</div>
+          <div class="hint">{panel.volume}</div>
           {panel.joints.length ? <><div class="cap">Silicone joints</div>{panel.joints.map(j => <div class="drow"><span>{j.label}</span><Pill tone={j.ok ? 'ok' : 'bad'}>{j.use}</Pill></div>)}</> : null}
           {panel.notes.map(n => <div class="dwarn warn">{n}</div>)}
           <div class="drow"><span class="hint">{panel.weight}</span>
@@ -202,4 +230,36 @@ function GlassGroup({ panel, choice, setChoice, rim, u, glassNow, build, open, o
       </>}
     </Group>
   );
+}
+
+type BraceField = 'width' | 'thickness' | 'cross' | 'crossWidth';
+
+/** The brace fields (lane CT1): widths, strip thickness and cross count, each lockable, and the Optimize button. */
+function BraceFields({ b, u, locks, setLocks, setBrace, onOptimize, busy, optLine, note, stock }: {
+  b: BraceSpec | null; u: Units; locks: Record<BraceField, boolean>; setLocks: (l: Record<BraceField, boolean>) => void; setBrace: (b: BraceSpec) => void;
+  onOptimize: () => void; busy: boolean; optLine: string; note: string; stock: number[];
+}) {
+  const cur = b ?? startBrace(u), cross = cur.cross ?? 0, cw = cur.crossWidth ?? cur.width;
+  const conv = u === 'in' ? IN_MM : 10, unit = u === 'in' ? 'in' : 'cm', step = u === 'in' ? 0.25 : 0.5;
+  const show = (mm: number) => +(mm / conv).toFixed(2);
+  const lock = (k: BraceField) => <label class="lockbox" title="Optimize leaves a locked field as it is"><input type="checkbox" checked={locks[k]} aria-label={`Lock ${k}`} onChange={() => setLocks({ ...locks, [k]: !locks[k] })} /> lock</label>;
+  const num = (k: 'width' | 'crossWidth', v: number, label: string) => <div class="row"><span class="lbl">{label}</span>
+    <span class="val"><input class="input num" type="number" min={0.5} step={step} value={show(v)} aria-label={label} onChange={e => { const x = parseFloat((e.target as HTMLInputElement).value); if (Number.isFinite(x) && x >= 0.5 * (u === 'in' ? 1 : 2.54)) setBrace({ ...cur, [k]: x * conv }); }} /><span class="unit">{unit}</span></span>{lock(k)}</div>;
+  return <>
+    {b ? <>
+      {num('width', cur.width, 'Perimeter width')}
+      <div class="row"><span class="lbl">Strip thickness</span>
+        <select class="select" aria-label="Brace strip thickness" value={String(cur.thickness)} onChange={e => setBrace({ ...cur, thickness: +(e.target as HTMLSelectElement).value })}>
+          {[...new Set([...stock, cur.thickness])].sort((x, y) => x - y).map(t => <option value={String(t)}>{glassText(t, u)}</option>)}
+        </select>{lock('thickness')}</div>
+      <div class="row"><span class="lbl">Cross braces</span>
+        <select class="select" aria-label="Number of cross braces" value={String(cross)} onChange={e => setBrace({ ...cur, cross: +(e.target as HTMLSelectElement).value })}>
+          {[0, 1, 2, 3].map(n => <option value={String(n)}>{n === 0 ? 'none' : n}</option>)}
+        </select>{lock('cross')}</div>
+      {cross > 0 ? num('crossWidth', cw, 'Cross width') : null}
+    </> : <div class="hint">Pick a brace above to set its strips yourself, or let Optimize choose.</div>}
+    <div class="drow"><button type="button" class="btn sm primary" disabled={busy} onClick={onOptimize} title="Least total glass that still meets the safety factor, joints included">{busy ? 'Optimizing…' : 'Optimize'}</button><span class="hint">least glass at your safety factor</span></div>
+    {optLine ? <div class="hint" role="status">{optLine}</div> : null}
+    {note ? <div class="hint">{note}</div> : null}
+  </>;
 }

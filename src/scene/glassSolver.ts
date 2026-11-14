@@ -583,6 +583,62 @@ export function optimizeBrace(spec: GlassTankSpec, opts: OptimizeOpts = {}): { o
 
 const fmtIn = (mm: number) => `${+(mm / IN_MM).toFixed(2)} in`;
 
+// ---------------------------------------------------------------- custom brace: finer search with locked fields (lane CT1, 2026-11-14)
+
+/** Brace fields the person fixed; the search leaves them as given and looks over the rest. */
+export interface BraceLocks { width?: number; thickness?: number; cross?: number; crossWidth?: number }
+export interface CustomOptimizeOpts extends OptimizeOpts {
+  locked?: BraceLocks;
+  /** Perimeter width step (mm) between 2 and 4 in; default 1/4 in. */
+  widthStep?: number;
+  /** Fewest / most cross braces to try (default 0 / 3); a locked `cross` wins. */
+  minCross?: number;
+  /** Allow "no brace" as an answer (default true). */
+  allowNone?: boolean;
+}
+/** The perimeter widths the custom search tries (mm). */
+export const customWidths = (step = IN_MM / 4): number[] => { const out: number[] = []; for (let w = 2 * IN_MM; w <= 4 * IN_MM + 1e-9; w += step) out.push(+w.toFixed(3)); return out; };
+
+/**
+ * The brace with the least total glass (walls + bottom + strips, volume) that still meets the safety factor, silicone joints included.
+ * Exhaustive over: perimeter width (1/4 in steps from 2 to 4 in), strip thickness (stock sizes up to the thickest unbraced wall), cross braces
+ * (0..3) with the clear opening kept at `minOpening` (6 in). Cross width follows the perimeter width unless locked. `best` is null when no
+ * brace meets it. Pure; one solve per candidate, so the full grid is a second or two: call it from a button, not live.
+ */
+export function optimizeBraceCustom(spec: GlassTankSpec, opts: CustomOptimizeOpts = {}): { best: BraceOption | null; none: BraceOption; tried: number } {
+  const lk = opts.locked ?? {}, minOpen = opts.minOpening ?? 6 * IN_MM;
+  const widths = lk.width != null ? [lk.width] : opts.widths ?? customWidths(opts.widthStep);
+  const stock = [...(opts.stock ?? (opts.units === 'metric' ? STOCK_METRIC : STOCK_US))].sort((x, y) => x - y);
+  const none = solveGlass(spec, { ...opts, brace: null });
+  const base = none.volumeIn3 || 1;
+  const row = (brace: BraceSpec | null, s: GlassSolution): BraceOption => ({
+    label: brace ? `Perimeter ${fmtIn(brace.width)}${brace.cross ? ` + ${brace.cross} cross` : ''}` : 'No brace', brace, solution: s, costIndex: 100 * s.volumeIn3 / base,
+    opening: brace ? { depth: spec.D - 2 * brace.width, length: (spec.L - 2 * brace.width - (brace.cross ?? 0) * (brace.crossWidth ?? brace.width)) / ((brace.cross ?? 0) + 1) } : { depth: spec.D, length: spec.L },
+  });
+  const noneRow = row(null, none);
+  const better = (a: BraceOption, b: BraceOption | null) => !b || a.costIndex < b.costIndex - 1e-9 || (Math.abs(a.costIndex - b.costIndex) < 1e-9 && a.opening.depth > b.opening.depth);
+  let best: BraceOption | null = none.ok && opts.allowNone !== false && lk.cross == null && (opts.minCross ?? 0) === 0 && lk.width == null && lk.thickness == null ? noneRow : null;
+  const wallCap = Math.max(...PANES.map(p => none.panes[p].thickness ?? stock[stock.length - 1]));
+  const crossList = lk.cross != null ? [lk.cross] : Array.from({ length: (opts.maxCross ?? 3) - (opts.minCross ?? 0) + 1 }, (_, i) => (opts.minCross ?? 0) + i);
+  let tried = 0;
+  for (const cross of crossList) for (const w of widths) {
+    const cw = cross ? lk.crossWidth ?? w : undefined;
+    if (spec.D - 2 * w < minOpen) continue;
+    if (cross && (spec.L - 2 * w - cross * (cw ?? w)) / (cross + 1) < minOpen) continue;
+    for (const tb of lk.thickness != null ? [lk.thickness] : stock) {
+      if (lk.thickness == null && tb > wallCap + 1e-9) break;
+      const brace: BraceSpec = { width: w, thickness: tb, cross, ...(cw != null ? { crossWidth: cw } : {}) };
+      tried++;
+      const s = solveGlass(spec, { ...opts, brace, continuous: false });
+      if (!s.ok || !s.braceJointsOk) continue;
+      const o = row(brace, s);
+      if (better(o, best)) best = o;
+      if (lk.thickness == null && s.panes.front.thickness === stock[0] && s.panes.left.thickness === stock[0]) break; // thicker strips only add glass
+    }
+  }
+  return { best, none: noneRow, tried };
+}
+
 // ---------------------------------------------------------------- reference: the hobby-calculator formula
 
 /**
