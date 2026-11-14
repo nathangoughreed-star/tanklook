@@ -503,7 +503,7 @@ export const PLANS: Record<string, Plan> = {
       { k: 'band', u0: 0.22, u1: 0.74, v0: -0.105, v1: -0.076, c: '#a34524', a: 0.25, f: 0.014 }, // darkened back line
     ],
     eye: { r: 0.031, u: 0.905, dv: -0.02, iris: ['#f2c889', '#60301c'] } },
-  rummynose: { gape: 0.022, gapeDrop: 0.005, thick: 0.42, depth: 0.21, pedU: 0.2, ped: 0.028, peak: 0.66, snout: 0.45, shade: ['#8b927f', '#c9cdc2', '#e2e1da'], tail: { type: 'fork', h: 0.14 }, fin: '#c8ccc5',
+  rummynose: { gape: 0.022, gapeDrop: 0.005, thick: 0.42, depth: 0.21, pedU: 0.2, ped: 0.028, peak: 0.66, snout: 0.45, shade: ['#8b927f', '#b6bbae', '#e2e1da'], tail: { type: 'fork', h: 0.14 }, fin: '#c8ccc5',
     dorsal: { at: 0.61, len: 0.06, h: 0.09, rake: 0.12, taper: 0.4, lead: 0.6, tip: 'point', trail: 0.05, drop: 0.2 }, anal: { at: 0.47, len: 0.21, h: 0.045, rake: 0.05, lead: 0.9, drop: 0.5, trail: 0.01 }, adipose: true, pelvic: { u: 0.62, len: 0.05 },
     marks: [{ k: 'blob', u: 0.93, v: -0.01, ru: 0.09, rv: 0.08, c: '#c4303a', a: 0.95 }],
     finMarks: [{ k: 'bars', us: [0.04, 0.12], w: 0.035, c: '#1e1e20', a: 0.85 }, { k: 'band', u0: 0, u1: 0.2, v0: -0.012, v1: 0.012, c: '#1e1e20', a: 0.85, f: 0.005 }],
@@ -550,7 +550,7 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { at: 0.64, len: 0.15, h: 0.17, rake: 0.15, lead: 0.6, tip: 'point', trail: 0.06, drop: 0.25, tint: '#1f1f1f', a: 0.85, edge: '#c23a28' }, anal: { at: 0.44, len: 0.13, h: 0.1, rake: 0.2, lead: 0.7, tip: 'point', trail: 0.04, drop: 0.3 }, pelvic: { u: 0.6, len: 0.11, w: 1.5, tint: '#c4442e' }, pec: { s: 1.3 },
     marks: [{ k: 'bars', us: [0.9, 0.67, 0.45, 0.24], w: 0.06, c: '#1c1c1e', a: 0.92 }], eye: { r: 0.032, iris: ['#cf6a3a', '#4a2010'] } },
   // male: the anal fin is a gonopodium; small upturned mouth
-  guppy: { finFade: 0.35, shimmer: 0.5, shimmerRgb: '210,235,255', gillLine: 0.25, gape: 0.035, gapeDrop: 0.008, thick: 0.45, depth: 0.2, pedU: 0.4, ped: 0.04, peak: 0.45, snout: 0.4, mouth: -0.03, shade: ['#7c8476', '#bfc4b8', '#ddddd2'], tail: { type: 'notch', h: 0.27, tint: '#e0782e', a: 0.85 }, fin: '#c6a37a',
+  guppy: { finFade: 0.35, shimmer: 0.5, shimmerRgb: '210,235,255', gillLine: 0.25, gape: 0.035, gapeDrop: 0.008, thick: 0.45, depth: 0.2, pedU: 0.4, ped: 0.04, peak: 0.45, snout: 0.4, mouth: -0.03, shade: ['#5a6450', '#98a088', '#c8cbb8'], tail: { type: 'notch', h: 0.27, tint: '#e0782e', a: 0.85 }, fin: '#c6a37a',
     dorsal: { u0: 0.42, u1: 0.58, h: 0.09, tint: '#7fa6c6' }, gono: { at: 0.57, len: 0.11 }, pelvic: { u: 0.65, len: 0.04 },
     marks: [{ k: 'blob', u: 0.55, v: 0, ru: 0.06, rv: 0.05, c: '#2d6fb0', a: 0.8 }, { k: 'blob', u: 0.47, v: 0.01, ru: 0.03, rv: 0.03, c: '#1a1a1a', a: 0.8 }, { k: 'blob', u: 0.68, v: 0.02, ru: 0.06, rv: 0.04, c: '#e0884a', a: 0.7 }],
     finMarks: [{ k: 'band', u0: 0, u1: 0.2, v0: -0.3, v1: 0.3, c: '#3a6ab8', a: 0.55, f: 0.08 }, { k: 'spots', n: 26, u0: 0.04, u1: 0.38, v0: -0.24, v1: 0.24, r: 0.014, c: '#2a2a40', a: 0.6 }],
@@ -607,13 +607,13 @@ export const PLANS: Record<string, Plan> = {
       { k: 'blob', u: 0.62, v: -0.04, ru: 0.05, rv: 0.06, c: '#1a1a1e', a: 0.75 }, { k: 'spots', n: 70, u0: 0.25, u1: 0.8, v0: -0.15, v1: 0.15, r: 0.012, c: '#5aa0d8', a: 0.75 }],
     finMarks: [{ k: 'spots', n: 50, u0: 0, u1: 0.65, v0: -0.4, v1: 0.4, r: 0.01, c: '#5aa0d8', a: 0.55 }, { k: 'band', u0: 0.66, u1: 0.8, v0: -0.6, v1: -0.2, c: '#1a1a1e', a: 0.85, f: 0.02 }],
     eye: { r: 0.032, iris: ['#c8443a', '#4a1210'] } },
-  bolivianram: { shimmer: 0.5, shimmerRgb: '200,225,255', gillLine: 0.25, finFade: 0.3, thick: 0.36, depth: 0.38, pedU: 0.22, ped: 0.055, peak: 0.5, snout: 0.5, shade: ['#6a6450', '#b8ae8a', '#d8cfb0'], tail: { type: 'lyre', h: 0.17, tint: '#c2a890', cut: 0.42 }, fin: '#c2ac94',
+  bolivianram: { shimmer: 0.5, shimmerRgb: '200,225,255', gillLine: 0.25, finFade: 0.3, thick: 0.36, depth: 0.38, pedU: 0.22, ped: 0.055, peak: 0.5, snout: 0.5, shade: ['#56503e', '#a5986b', '#d3c080'], tail: { type: 'lyre', h: 0.17, tint: '#c2a890', cut: 0.42 }, fin: '#c2ac94',
     // raised front spines, soft rear to a point; a shallow tail fork with the outer rays drawn out; long pelvics
     dorsal: { at: 0.8, len: 0.54, h: 0.11, spines: 0.55, nSp: 9, spineH: [0.15, 0.075], tip: 'point', trail: 0.06, edge: '#c8443a' },
     anal: { at: 0.5, len: 0.26, h: 0.1, spines: 0.25, nSp: 3, spineH: [0.04, 0.07], tip: 'point', trail: 0.05 }, pelvic: { u: 0.67, len: 0.11, ext: 0.08, tint: '#d26a52' },
     marks: [{ k: 'blob', u: 0.58, v: -0.01, ru: 0.04, rv: 0.04, c: '#1a1a1e', a: 0.8 }, { k: 'bars', us: [0.87], w: 0.03, c: '#2a2a2c', a: 0.7 }, { k: 'blob', u: 0.8, v: 0.1, ru: 0.12, rv: 0.06, c: '#e8a868', a: 0.5 }],
     eye: { r: 0.03, iris: ['#c8443a', '#4a1210'] } },
-  kribensis: { shimmer: 0.5, shimmerRgb: '235,205,255', gillLine: 0.25, finFade: 0.3, thick: 0.45, belly: 0.2, depth: 0.27, pedU: 0.2, ped: 0.05, peak: 0.55, snout: 0.45, shade: ['#5c5848', '#b3aa90', '#d8b8a8'], tail: { type: 'notch', h: 0.15, tint: '#c8ac6a' }, fin: '#c0a674',
+  kribensis: { shimmer: 0.5, shimmerRgb: '235,205,255', gillLine: 0.25, finFade: 0.3, thick: 0.45, belly: 0.2, depth: 0.27, pedU: 0.2, ped: 0.05, peak: 0.55, snout: 0.45, shade: ['#4c4634', '#9c8c62', '#d0aa9d'], tail: { type: 'notch', h: 0.15, tint: '#c8ac6a' }, fin: '#c0a674',
     // dorsal over the gill cover to the peduncle, low spiny front; the male's soft dorsal and anal drawn out to points
     dorsal: { at: 0.8, len: 0.56, h: 0.09, spines: 0.6, nSp: 9, spineH: [0.05, 0.065], notch: 0.25, tip: 'point', trail: 0.09, rake: 0.6, edge: '#c8443a' },
     anal: { at: 0.5, len: 0.27, h: 0.09, spines: 0.25, nSp: 3, spineH: [0.035, 0.06], tip: 'point', trail: 0.08 }, pelvic: { u: 0.66, len: 0.1, ext: 0.03, tint: '#7a4ca0' },
@@ -629,7 +629,7 @@ export const PLANS: Record<string, Plan> = {
       ...Array.from({ length: 15 }, (_, i) => ({ k: 'band' as const, u0: 0.12, u1: 0.98, v0: -0.34 + i * 0.045, v1: -0.34 + i * 0.045 + 0.013, c: i % 2 ? '#2f9ab8' : '#6adbe0', a: 0.75, wave: 0.014 })),
       ...Array.from({ length: 14 }, (_, i) => ({ k: 'band' as const, u0: 0.12, u1: 0.98, v0: -0.318 + i * 0.045, v1: -0.318 + i * 0.045 + 0.01, c: '#7a4a38', a: 0.3, wave: 0.016 }))],
     eye: { r: 0.03, iris: ['#d04a2a', '#4a1208'] }, rim: 0.03 },
-  angel: { shimmer: 0.5, shimmerRgb: '235,242,255', gillLine: 0.25, finFade: 0.4, thick: 0.2, angular: 0.8, depth: 0.78, pedU: 0.2, ped: 0.045, peak: 0.375, snout: 0.25, shade: ['#9a998e', '#d0cec2', '#e4e1d7'], tail: { type: 'notch', h: 0.24, tint: '#c3c4bc' }, fin: '#c3c4bc',
+  angel: { shimmer: 0.5, shimmerRgb: '235,242,255', gillLine: 0.25, finFade: 0.4, thick: 0.2, angular: 0.8, depth: 0.78, pedU: 0.2, ped: 0.045, peak: 0.375, snout: 0.25, shade: ['#9a998e', '#c0beb2', '#e4e1d7'], tail: { type: 'notch', h: 0.24, tint: '#c3c4bc' }, fin: '#c3c4bc',
     // dorsal and anal: long bases, the spines stepping up the leading edge, the soft rays sweeping back to high trailing tips
     dorsal: { at: 0.68, len: 0.42, h: 0.42, spines: 0.3, nSp: 5, spineH: [0.04, 0.11], notch: 0.12, rake: 0.9, tip: 'point', trail: 0.13, drop: 1 },
     anal: { at: 0.66, len: 0.4, h: 0.4, spines: 0.25, nSp: 4, spineH: [0.04, 0.1], notch: 0.12, rake: 0.9, tip: 'point', trail: 0.13, drop: 1 }, pelvic: { u: 0.74, len: 0.45, thread: true, tint: '#e2ddcc', angle: 68 },
@@ -652,7 +652,7 @@ export const PLANS: Record<string, Plan> = {
     marks: [{ k: 'blob', u: 0.65, v: -0.08, ru: 0.2, rv: 0.14, c: '#ffffff', a: 0.12 }], eye: { r: 0.035, iris: ['#2a2420', '#0a0806'] } },
   // marbled hatchetfish: straight back, deep keel of a belly (most of the depth under the centre line), upturned mouth,
   // big high eye, small dorsal set far back over a long anal fin; silvery with dark marbled bands slanting across the keel
-  hatchet: { pec: { s: 2.3, v: 0.3 }, thick: 0.3, depth: 0.42, pedU: 0.2, ped: 0.035, peak: 0.6, back: 0.2, snout: 0.3, mouth: -0.05, shade: ['#6e7258', '#c8c6b2', '#e6e2d4'], tail: { type: 'fork', h: 0.13 }, fin: N,
+  hatchet: { pec: { s: 2.3, v: 0.3 }, thick: 0.3, depth: 0.42, pedU: 0.2, ped: 0.035, peak: 0.6, back: 0.2, snout: 0.3, mouth: -0.05, shade: ['#6e7258', '#adad97', '#e6e2d4'], tail: { type: 'fork', h: 0.13 }, fin: N,
     dorsal: { at: 0.38, len: 0.08, h: 0.07, rake: 0.4 }, anal: { at: 0.52, len: 0.3, h: 0.05, rake: 0.2, trail: 0.02, drop: 0.7 }, adipose: true, pelvic: { u: 0.5, len: 0.03 },
     marks: [{ k: 'band', u0: 0.2, u1: 0.84, v0: -0.035, v1: -0.018, c: '#2a2a22', a: 0.8, f: 0.006 },
       ...[0.26, 0.38, 0.5, 0.62].map(u => ({ k: 'poly' as const, pts: [[u, -0.01], [u + 0.03, -0.01], [u + 0.2, 0.34], [u + 0.165, 0.34]] as [number, number][], c: '#3a3426', a: 0.7 }))],
@@ -714,7 +714,7 @@ export const PLANS: Record<string, Plan> = {
     marks: [{ k: 'band', u0: 0.1, u1: 0.42, v0: -1, v1: 1, c: '#e0522a', a: 0.95, f: 0.08 }, { k: 'band', u0: 0.1, u1: 0.25, v0: -1, v1: 1, c: '#8a1a14', a: 0.6, f: 0.04 }, { k: 'blob', u: 0.94, v: -0.02, ru: 0.08, rv: 0.08, c: '#f2c83a', a: 0.85 }],
     finMarks: [{ k: 'band', u0: 0, u1: 0.4, v0: -1, v1: 1, c: '#d84a28', a: 0.8, f: 0.05 }], eye: { r: 0.034, iris: ['#c8b890', '#2a2010'] } },
   // banggai cardinal: silver with three black bars, white dots, tall dorsals, long pelvics, a deeply forked streamer tail
-  banggai: { thick: 0.38, depth: 0.42, pedU: 0.24, ped: 0.05, peak: 0.5, snout: 0.45, shade: ['#8a8a84', '#c8c8c0', '#e2e0dc'], tail: { type: 'fork', h: 0.22, tint: '#b8b8b0', edge: '#1a1a1a' }, fin: '#9a9a94',
+  banggai: { thick: 0.38, depth: 0.42, pedU: 0.24, ped: 0.05, peak: 0.5, snout: 0.45, shade: ['#8a8a84', '#b5b5ae', '#e2e0dc'], tail: { type: 'fork', h: 0.22, tint: '#b8b8b0', edge: '#1a1a1a' }, fin: '#9a9a94',
     // spiny first dorsal; second dorsal and anal with long front rays sweeping back to trailing tips; big pelvics
     dorsal: { at: 0.72, len: 0.1, h: 0.18, spines: 1, nSp: 6, spineH: [0.32, 0.16], notch: 0.35 }, dorsal2: { at: 0.57, len: 0.2, h: 0.27, rake: 0.05, tip: 'point', trail: 0.14, drop: 0.55 },
     anal: { at: 0.55, len: 0.2, h: 0.27, spines: 0.12, nSp: 2, spineH: [0.06, 0.1], rake: 0.08, tip: 'point', trail: 0.13, drop: 0.55 }, pelvic: { u: 0.68, len: 0.2, ext: 0.07, w: 1.3, tint: '#1e1e1e' },
@@ -730,7 +730,7 @@ export const PLANS: Record<string, Plan> = {
       { k: 'blob', u: 0.21, v: -0.035, ru: 0.016, rv: 0.016, c: '#141418', a: 0.9 }],
     eye: { r: 0.028, iris: ['#c8a040', '#2a1a08'] } },
   // blue-green chromis: iridescent pale blue-green, deeply forked tail, long spiny dorsal
-  chromis: { pec: { s: 1.3 }, gape: 0.02, gapeDrop: 0.002, thick: 0.38, depth: 0.33, pedU: 0.22, ped: 0.042, peak: 0.55, snout: 0.45, shade: ['#4a9a9a', '#8ad0c8', '#c8ece4'], tail: { type: 'lyre', h: 0.19, tint: '#a8dcd4', a: 0.7, cut: 0.75 }, fin: '#a8dcd4',
+  chromis: { pec: { s: 1.3 }, gape: 0.02, gapeDrop: 0.002, thick: 0.38, depth: 0.33, pedU: 0.22, ped: 0.042, peak: 0.55, snout: 0.45, shade: ['#2f8888', '#5cb8b0', '#a8d8d0'], tail: { type: 'lyre', h: 0.19, tint: '#a8dcd4', a: 0.7, cut: 0.75 }, fin: '#a8dcd4',
     // dorsal from over the gill cover, spiny front then a soft rear to a point; anal from behind the vent
     dorsal: { at: 0.77, len: 0.54, h: 0.1, spines: 0.6, nSp: 12, spineH: [0.06, 0.085], notch: 0.1, rake: 0.5, tip: 'point', trail: 0.04, drop: 0.7, a: 0.7 },
     anal: { at: 0.5, len: 0.28, h: 0.09, spines: 0.15, nSp: 2, spineH: [0.04, 0.07], notch: 0.1, rake: 0.4, tip: 'point', trail: 0.04, drop: 0.7, a: 0.7 }, pelvic: { u: 0.68, len: 0.1 },
@@ -782,7 +782,7 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { at: 0.66, len: 0.26, h: 0.17, spines: 0.1, nSp: 1, spineH: 0.19, rake: 0.25, drop: 0.7, a: 0.85 }, anal: { u0: 0.3, u1: 0.36, h: 0.04 }, adipose: true, pelvic: { u: 0.58, len: 0.15, w: 1.4 },
     marks: [{ k: 'spots', n: 70, u0: 0.16, u1: 0.95, v0: -0.18, v1: 0.05, r: 0.008, c: '#c8c0a0', a: 0.6 }],
     finMarks: [{ k: 'spots', n: 40, u0: 0, u1: 0.7, v0: -0.4, v1: 0.2, r: 0.008, c: '#c8c0a0', a: 0.5 }], bristles: true, eye: { r: 0.022, iris: ['#6a6040', '#1a1610'], dv: -0.12, up: 0.7 } },
-  oto: { pec: { s: 1.7, v: 0.85 }, plates: true, thick: 0.95, belly: 0.8, wide: 0.4, noseW: 0.5, depth: 0.19, pedU: 0.17, ped: 0.035, peak: 0.65, back: 0.62, snout: 0.6, mouth: 0.03, shade: ['#6a6a50', '#a8a280', '#e0dcc8'], tail: { type: 'fork', h: 0.11 }, fin: '#c0bba4',
+  oto: { pec: { s: 1.7, v: 0.85 }, plates: true, thick: 0.95, belly: 0.8, wide: 0.4, noseW: 0.5, depth: 0.19, pedU: 0.17, ped: 0.035, peak: 0.65, back: 0.62, snout: 0.6, mouth: 0.03, shade: ['#4b4a39', '#8a8463', '#cdc7ad'], tail: { type: 'fork', h: 0.11 }, fin: '#c0bba4',
     dorsal: { at: 0.63, len: 0.12, h: 0.1, spines: 0.12, nSp: 1, spineH: 0.12, rake: 0.12, drop: 0.35 }, anal: { u0: 0.33, u1: 0.4, h: 0.04 }, pelvic: { u: 0.58, len: 0.07, w: 1.2 },
     marks: [{ k: 'band', u0: 0.18, u1: 0.98, v0: -0.015, v1: 0.012, c: '#2a2820', a: 0.85, f: 0.008 }], finMarks: [{ k: 'blob', u: 0.08, v: 0, ru: 0.04, rv: 0.025, c: '#2a2820', a: 0.7 }],
     eye: { r: 0.024, iris: ['#b0a070', '#2a2418'], dv: -0.08, up: 0.3 } },
@@ -795,7 +795,7 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { at: 0.64, len: 0.16, h: 0.13, rake: 0.25, drop: 0.55 }, anal: { at: 0.4, len: 0.1, h: 0.085, rake: 0.4, drop: 0.6 }, pelvic: { u: 0.56, len: 0.1, w: 1.3 },
     marks: [{ k: 'bars', us: [0.86, 0.6, 0.3], w: 0.08, c: '#1c1a18', a: 0.92 }], finMarks: [{ k: 'bars', us: [0.57], w: 0.04, c: '#1c1a18', a: 0.9 }], barbels: 0.02,
     eye: { r: 0.022, iris: ['#c8a050', '#3a2a10'] } },
-  sae: { pec: { s: 1.2 }, gape: 0.02, gapeDrop: 0.006, thick: 0.55, belly: 0.3, depth: 0.2, pedU: 0.2, ped: 0.04, peak: 0.58, back: 0.58, snout: 0.5, mouth: 0.03, shade: ['#7a7258', '#bdb498', '#e0dccc'], tail: { type: 'fork', h: 0.13 }, fin: '#c8c2ae',
+  sae: { pec: { s: 1.2 }, gape: 0.02, gapeDrop: 0.006, thick: 0.55, belly: 0.3, depth: 0.2, pedU: 0.2, ped: 0.04, peak: 0.58, back: 0.58, snout: 0.5, mouth: 0.03, shade: ['#635c42', '#a4986e', '#d6d0b2'], tail: { type: 'fork', h: 0.13 }, fin: '#c8c2ae',
     dorsal: { at: 0.63, len: 0.13, h: 0.11, rake: 0.12, tip: 'point', drop: 0.35 }, anal: { at: 0.37, len: 0.08, h: 0.055, rake: 0.3, drop: 0.5 }, pelvic: { u: 0.55, len: 0.07, w: 1.1 },
     marks: [{ k: 'band', u0: 0.18, u1: 0.99, v0: -0.02, v1: 0.02, c: '#1c1a18', a: 0.92, f: 0.008 }], finMarks: [{ k: 'band', u0: 0.08, u1: 0.22, v0: -0.02, v1: 0.02, c: '#1c1a18', a: 0.85, f: 0.006 }], barbels: 0.012,
     eye: { r: 0.022, iris: ['#c8b890', '#3a3020'] } },
@@ -816,7 +816,7 @@ export const PLANS: Record<string, Plan> = {
     finMarks: [{ k: 'bars', us: [0.025, 0.055, 0.085, 0.115, 0.145, 0.175], w: 0.008, c: '#262828', a: 0.75 },
       { k: 'spots', n: 40, u0: 0.58, u1: 0.72, v0: -0.4, v1: -0.15, r: 0.007, c: '#262828', a: 0.7 }],
     barbels: 0.035, eye: { r: 0.032, iris: ['#cdbd95', '#2a2418'], dv: -0.05 } },
-  pygmycory: { shimmer: 0.6, shimmerRgb: '215,232,245', gillLine: 0.25, pec: { s: 1.7, v: 0.85 }, plates: true, thick: 0.7, belly: 0.8, wide: 0.45, pedT: 0.3, step: 0.15, noseW: 0.35, depth: 0.27, pedU: 0.18, ped: 0.05, peak: 0.6, back: 0.64, snout: 0.62, mouth: 0.05, shade: ['#6a6e66', '#b4b6ac', '#e4e2d8'], tail: { type: 'fork', h: 0.14, a: 0.6 }, fin: '#d0cec4',
+  pygmycory: { shimmer: 0.6, shimmerRgb: '215,232,245', gillLine: 0.25, pec: { s: 1.7, v: 0.85 }, plates: true, thick: 0.7, belly: 0.8, wide: 0.45, pedT: 0.3, step: 0.15, noseW: 0.35, depth: 0.27, pedU: 0.18, ped: 0.05, peak: 0.6, back: 0.64, snout: 0.62, mouth: 0.05, shade: ['#49493c', '#959078', '#d1ccb5'], tail: { type: 'fork', h: 0.14, a: 0.6 }, fin: '#d0cec4',
     dorsal: { at: 0.66, len: 0.12, h: 0.14, spines: 0.12, nSp: 1, spineH: 0.16, rake: 0.1, drop: 0.3, a: 0.65 }, anal: { u0: 0.32, u1: 0.4, h: 0.05, a: 0.6 }, adipose: true, pelvic: { u: 0.55, len: 0.08, w: 1.2 },
     marks: [{ k: 'band', u0: 0.15, u1: 0.97, v0: -0.006, v1: 0.02, c: '#1c1c1a', a: 0.9, f: 0.008 }, { k: 'band', u0: 0.22, u1: 0.9, v0: -0.03, v1: -0.017, c: '#f2f0e6', a: 0.45, f: 0.006 },
       { k: 'band', u0: 0.18, u1: 0.95, v0: -1, v1: -0.06, c: '#4e504a', a: 0.35, f: 0.03 }], barbels: 0.028, eye: { r: 0.034, iris: ['#c8c0a8', '#2a2a24'], dv: -0.05 } },
@@ -1000,7 +1000,7 @@ Object.assign(PLANS, {
 // Seriously Fish's descriptions (recorded as model v1 on the review page)
 Object.assign(PLANS, {
   // green neon tetra (Paracheirodon simulans): a blue-green stripe from the eye to the tail base, a silvery-white belly, clear forked tail, no red band
-  greenneon: her('tetra', { depth: 0.2, shade: ['#4e5e4a', '#a2b0a0', '#e8eae2'], tail: { type: 'fork', h: 0.14, tint: '#c4ccc8', a: 0.7 }, fin: '#c4ccc8',
+  greenneon: her('tetra', { depth: 0.2, shade: ['#3e5238', '#8a9c80', '#d6dccc'], tail: { type: 'fork', h: 0.14, tint: '#c4ccc8', a: 0.7 }, fin: '#c4ccc8',
     marks: [
       { k: 'band', u0: 0.22, u1: 0.93, v0: 0.04, v1: 0.17, c: '#f4f6f2', a: 0.5, f: 0.03 },    // silver translucent belly
       { k: 'band', u0: 0.2, u1: 0.8, v0: -0.115, v1: -0.07, c: '#2f3f2b', a: 0.35, f: 0.016 },
