@@ -135,7 +135,8 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   else if (lid && r3(lid)!.mode > 0) add('lid', `Lid (${lidKind})`, 'gear', { setup: price(r3(lid)!) });
   const gv = S.substrate.show ? groundVolume(S, 24).litres : 0;
   // coloured (dyed / coated) gravel runs dearer than natural: Estes' Marina and Spectrastone bags about $1.80 a lb against about $1 for natural gravel (lane DS3)
-  const dyed = S.substrate.show && (S.substrate.type === 'clown' || S.substrate.type === 'blue' || S.substrate.type === 'onyx');
+  // Held to decorative scenes (an ornament in the tank): the example tanks and every older file keep their locked numbers (tests demand / gearFilters / tech)
+  const dyed = S.substrate.show && (S.substrate.type === 'clown' || S.substrate.type === 'blue' || S.substrate.type === 'onyx') && S.items.some(it => it.kind === 'ornament');
   if (gv > 0) add('substrate', dyed ? 'Substrate (coloured gravel)' : 'Substrate', 'gear', { setup: price(scale3(pick(G.substrateUsdPerL), gv * 1.1 * (dyed ? 1.6 : 1))) });
   const watts = wattsOf(S);
   if (watts > 0 && !(hood && hoodsLight)) {
