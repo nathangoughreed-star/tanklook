@@ -6,7 +6,7 @@
 // plus any extra the Equipment screen adds (co2, air, uv).
 // Storage: `brief.project.gear` (additive, no version bump). Older saves have none: `gearOf` then derives the model from what they do have (`constraints.owned`, `existingTank`,
 // `project.use`, the scene's owned flags and Discover's gear locks) via `migrateGear`, and `legacyOf` projects the model back into those fields, so every older reader keeps working.
-import type { Brief } from './brief';
+import { BRIEF_VERSION, type Brief } from './brief';
 import type { TankSetup } from './types';
 import { filterUnits, heaterUnits } from './tech';
 
@@ -156,3 +156,27 @@ export function reconcileGear(b: Brief): Brief {
   }
   return { ...b, project: { ...b.project, ...(Object.keys(g).length ? { gear: g } : { gear: undefined }) } };
 }
+
+// ------------------------------------------------------------------------------------------------ Discover's one lock
+/** The item of a gear part as the design holds it right now: the product id, or GENERIC. */
+export function gearItemOf(S: TankSetup, part: 'light' | 'filter' | 'heater'): string {
+  if (part === 'light') return S.light.product ?? GENERIC;
+  const u = S.tech ? (part === 'heater' ? heaterUnits(S.tech) : filterUnits(S.tech))[0] : undefined;
+  return u?.product ?? GENERIC;
+}
+const tankGear = (T: TankSetup) => gearOf(T.brief ?? { v: BRIEF_VERSION, items: {} }, T);
+const writeGear = (T: TankSetup, g: GearModel) => { T.brief = setGear(T.brief ?? { v: BRIEF_VERSION, items: {} }, g); };
+/** Discover's Keep on a gear part IS the model's lock on the item in use (`item`, the candidate's when it differs from the design's). Writes the brief on the tank in place. */
+export function keepGear(T: TankSetup, part: 'light' | 'filter' | 'heater', item: string): void {
+  let g = tankGear(T); if (g[part]?.use !== item) g = setInUse(g, part, item);
+  writeGear(T, lockItem(g, part, item));
+}
+/** Take the Keep off a gear part: every lock on that category goes. */
+export function unkeepGear(T: TankSetup, part: string): void {
+  let g = tankGear(T); for (const it of [...(g[part]?.locked ?? [])]) g = unlockItem(g, part, it);
+  if (g !== tankGear(T) || T.brief?.project?.gear) writeGear(T, g);
+}
+/** Is the gear part held, by Discover's Keep or by the Equipment screen's lock? One answer. */
+export const isGearKept = (T: TankSetup, part: string): boolean => !!T.locks?.objects.some(o => o.target === part) || lockedGearParts(tankGear(T)).includes(part as 'light');
+/** The lock targets the model holds that the scene's lock list does not name yet (what `locksOf` adds, so Discover and its checks honor a lock set from the Equipment screen). */
+export const modelLockTargets = (T: TankSetup): ('light' | 'filter' | 'heater')[] => T.brief?.project?.gear ? lockedGearParts(T.brief.project.gear).filter(p => !T.locks?.objects.some(o => o.target === p)) : [];
