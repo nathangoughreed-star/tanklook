@@ -1,0 +1,74 @@
+{
+ "expOff": "Off: the difficulty bar uses an average keeper, and nothing is left out for being hard.",
+ "budgetRead": [
+  "300",
+  "25",
+  "60"
+ ],
+ "homeRead": [
+  "70",
+  "well",
+  "0.15",
+  ""
+ ],
+ "stored": {
+  "budget": {
+   "status": "hard",
+   "value": 300
+  },
+  "room": {
+   "value": 21.1,
+   "status": "preference"
+  },
+  "home": {
+   "water": "well",
+   "kwhUsd": 0.15
+  },
+  "tc": {
+   "startupUsd": {
+    "on": true,
+    "value": 300
+   },
+   "monthlyUsd": {
+    "on": true,
+    "value": 25
+   },
+   "minutesPerWeek": {
+    "on": true,
+    "value": 60
+   }
+  }
+ },
+ "linkOpened": [
+  "Constraints",
+  true
+ ],
+ "suggest": true,
+ "suggestCards": [
+  "A betta in its own tank\n10 gal: 1 Betta\n$275 set-up · $11/mo · 41 min/wk\nSet-up cost: $275 / $300 · Upkeep: $11 / $25 a month\nI like this one",
+  "Ember tetra nano school\n10 gal: 12 Ember tetra\n$297 set-up · $16/mo · 39 min/wk\nSet-up cost: $297 / $300 · Upkeep: $16 / $25 a month\nI like this one",
+  "A betta in its own tank\n8 gal cube: 1 Betta\n$120 set-up · $9/mo · 33 min/wk\nSet-up cost: $120 / $300 · Upkeep: $9 / $25 a month\nI like this one"
+ ],
+ "cardStates": [
+  "Nature / River: Not chosen",
+  "Jungle / Lush planted: Not chosen",
+  "Iwagumi / Stone-focused: Interested",
+  "Dutch / Planted garden: Not chosen",
+  "Blackwater / Rooted: Not chosen",
+  "Clean & minimal: Not chosen",
+  "Colorful decorative: Interested",
+  "Themed centrepiece: Avoid"
+ ],
+ "gallery": false,
+ "galleryText": "",
+ "oldLimits": {
+  "inputs": [],
+  "noNew": true,
+  "text": ""
+ },
+ "oldShell": {
+  "ui2": false,
+  "app": true
+ },
+ "errors": []
+}

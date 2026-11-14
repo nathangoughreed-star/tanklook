@@ -85,7 +85,7 @@ await click('.rail .ritem', 'Discover'); await sleep(500);
 await click('.card.mode', 'Whole tank'); await click('.discover .btn.primary', '');
 facts.gallery = await waitFor(`document.querySelectorAll('.card.gal').length >= 1 && !document.querySelector('.discover .hint[role=status]')`, 240000);
 await sleep(2500); await shot('10-discover-experience-new', 800);
-facts.galleryText = await ev(`[...document.querySelectorAll('.card.gal')].map(e => e.innerText).join('\n---\n')`);
+facts.galleryText = await ev(`[...document.querySelectorAll('.card.gal')].map(e => e.innerText).join(' --- ')`);
 phase = 'phone';
 await size(390, 844, true);
 await openWith(BASE + '?ui=2', seed);
