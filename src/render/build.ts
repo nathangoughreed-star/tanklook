@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { tankView } from './tankView';
 import { STAND_PANEL } from '../scene/standspace';
 import { addLidClips, clipLid, LID_CLIP_DROP, LID_SHORT, LID_T } from './lidClips';
-import { GRAIN_ORDER, LECA, SUBSTRATES, blendTile, blendZone, grain3D } from '../art/placeholder';
+import { LECA, SUBSTRATES, blendTile, blendZone, grain3D } from '../art/placeholder';
 import { litterMeshes, type GroundAt } from './scatter';
 import { patchHighlight, patchMeshes, patchSel } from './brushmesh';
 import { applyGrainUV, woodTexture, type Grain } from './woodGrain';
@@ -39,7 +39,7 @@ import { isSnake, settleSnake, snakeBody, snakeContacts, type LimbPath } from '.
 import { isTarantula } from './tarantula3d';
 import { sagShell, snailBody } from './snail3d';
 import type { BgScene } from '../art/bgscenes';
-import { type BgGradient, sceneTexture, blendTexture, lecaTexture, meshTexture, cardMaterial, pictureTexture, fishBodyTexture, fishTexture, gradientTexture, personTexture, substrateMaskTexture, substrateTexture } from './textures';
+import { type BgGradient, sceneTexture, blendTexture, lecaTexture, meshTexture, cardMaterial, pictureTexture, fishBodyTexture, fishTexture, gradientTexture, personTexture, substrateFieldTexture, substrateFineTexture, substrateTexture } from './textures';
 
 /** Back-wall options; color null = no background (back glass only); light = use dark grid lines. */
 export const BACKGROUNDS: Record<Background, { label: string; color: number | null; gradient?: BgGradient; scene?: BgScene; light?: boolean; frost?: boolean }> = {
@@ -1214,20 +1214,21 @@ if (vAqWet > 0.01) { vec3 aqH = normalize(normalize(vec3(-0.2, 1.0, 0.35)) + nor
 }
 
 /**
- * Custom substrate with a second grain (Nathan 2026-10-13): a floor-wide noise mask (`substrateMask`) splits the floor
- * into the first grain alone (map), the second alone and the two mixed grain by grain. In mask-share terms the pure
- * patches take (1 - mix) of each grain's share and the mixed ground the rest, so the shares hold at any mix: mix 0 =
- * separate patches with a sharp edge, 1 = mixed everywhere. Patches shrink as the mix rises (big drifts to small clumps).
+ * Custom substrate with a second grain (Nathan 2026-10-13; SM1 2026-11-14: one continuous mix, no patches). A local ratio
+ * r of the second grain (`blendRatio`: broad drifts and smaller pockets, its floor-wide mean the share, its unevenness
+ * set by the mix) is compared with a fine threshold noise one grain across: where the noise is under r that grain is
+ * the second, otherwise the first. So 20 % reads as sparse flecks, 60 % as dense, and the change between is gradual.
+ * Far away (many grains per pixel) the comparison softens to a straight blend, so the share holds at any distance.
  */
-/** The mask shader's uniforms for a two-grain blend; with `u`, its values are updated in place (patchLook). `uDark`:
- *  each tile's shade (first alone, second alone, mixed), dark where 3D stones lie on it (the gaps between them). */
-interface BlendUniforms { uMapB: { value: THREE.Texture }; uMapM: { value: THREE.Texture }; uMask: { value: THREE.Texture }; uZone: { value: THREE.Vector4 }; uOff: { value: THREE.Vector2 }; uDark: { value: THREE.Vector3 } }
+/** The shader's uniforms for a two-grain blend; with `u`, its values are updated in place (patchLook). `uDark`: each
+ *  grain's tile shade (x first, y second), dark where 3D stones lie on it (the gaps between them). `uF`: field repeats per
+ *  tile, grain-noise repeats per tile, bias, amp; `uOff`: the two fields' starts. */
+interface BlendUniforms { uMapB: { value: THREE.Texture }; uField: { value: THREE.Texture }; uFine: { value: THREE.Texture }; uF: { value: THREE.Vector4 }; uOff: { value: THREE.Vector4 }; uDark: { value: THREE.Vector3 } }
 function blendUniforms(b: TankSetup['substrate']['custom'], u?: BlendUniforms): BlendUniforms {
-  const z = blendZone(b), zone = new THREE.Vector4(z.lo, z.hi, z.scale, z.w), off = new THREE.Vector2(z.off[0], z.off[1]);
-  const fineIs3D = b.grain === b.grain2 || GRAIN_ORDER.indexOf(b.grain2 as (typeof GRAIN_ORDER)[number]) > GRAIN_ORDER.indexOf(b.grain) ? grain3D(b.grain) : grain3D(b.grain2);
-  const k = (on: boolean) => (on ? GAPS : 1), dark = new THREE.Vector3(k(grain3D(b.grain)), k(grain3D(b.grain2)), fineIs3D ? GAPS : grain3D(b.grain) || grain3D(b.grain2) ? 0.85 : 1);
-  if (u) { u.uMapB.value = blendTexture(b, 'b'); u.uMapM.value = blendTexture(b, 'm'); u.uZone.value.copy(zone); u.uOff.value.copy(off); u.uDark.value.copy(dark); return u; }
-  return { uMapB: { value: blendTexture(b, 'b') }, uMapM: { value: blendTexture(b, 'm') }, uMask: { value: substrateMaskTexture() }, uZone: { value: zone }, uOff: { value: off }, uDark: { value: dark } };
+  const z = blendZone(b), f = new THREE.Vector4(z.scale, z.fine, z.bias, z.amp), off = new THREE.Vector4(z.off[0], z.off[1], z.off[2], z.off[3]);
+  const k = (on: boolean) => (on ? GAPS : 1), dark = new THREE.Vector3(k(grain3D(b.grain)), k(grain3D(b.grain2)), 1);
+  if (u) { u.uMapB.value = blendTexture(b, 'b'); u.uF.value.copy(f); u.uOff.value.copy(off); u.uDark.value.copy(dark); return u; }
+  return { uMapB: { value: blendTexture(b, 'b') }, uField: { value: substrateFieldTexture() }, uFine: { value: substrateFineTexture() }, uF: { value: f }, uOff: { value: off }, uDark: { value: dark } };
 }
 /** The painted ground under 3D stones, darkened to the shadowed gaps between them (a single grain: the material colour). */
 const GAPS = 0.45;
@@ -1240,12 +1241,15 @@ function blendGrains(m: THREE.MeshBasicMaterial, b: TankSetup['substrate']['cust
     // its steeper cells and the skirt each project their uv differently, and patches broke into a line where they met
     sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nattribute vec2 aMk; varying vec2 vAqMk;')
       .replace('#include <begin_vertex>', '#include <begin_vertex>\nvAqMk = aMk;');
-    sh.fragmentShader = sh.fragmentShader.replace('void main() {', `uniform sampler2D uMapB, uMapM, uMask; uniform vec4 uZone; uniform vec2 uOff; uniform vec3 uDark; varying vec2 vAqMk;
+    sh.fragmentShader = sh.fragmentShader.replace('void main() {', `uniform sampler2D uMapB, uField, uFine; uniform vec4 uF, uOff; uniform vec3 uDark; varying vec2 vAqMk;
 vec4 aqBlend(vec2 uv) {
-  float n = texture2D(uMask, vAqMk * uZone.z + uOff).r;
-  float a = 1.0 - smoothstep(uZone.x - uZone.w, uZone.x + uZone.w, n), b = smoothstep(uZone.y - uZone.w, uZone.y + uZone.w, n);
-  vec4 c = texture2D(map, uv) * a * uDark.x + texture2D(uMapB, uv) * b * uDark.y + texture2D(uMapM, uv) * max(1.0 - a - b, 0.0) * uDark.z;
-  return vec4(c.rgb, a + b + max(1.0 - a - b, 0.0));
+  vec2 cz = texture2D(uField, vAqMk * uF.x + uOff.xy).rg * 255.0 - 128.0;
+  float r = 1.0 / (1.0 + exp(-(uF.z + uF.w * (cz.x * 0.8 + cz.y * 0.6) / 40.0)));
+  vec2 fp = vAqMk * uF.y + uOff.zw;
+  float px = max(length(dFdx(fp)), length(dFdy(fp))) * 256.0; // noise texels per pixel (4 = one grain)
+  float w = clamp(0.04 + 0.06 * px, 0.04, 0.5);
+  float b = clamp((r - texture2D(uFine, fp).r) / (2.0 * w) + 0.5, 0.0, 1.0);
+  return mix(texture2D(map, uv) * uDark.x, texture2D(uMapB, uv) * uDark.y, b);
 }
 void main() {`).replace('texture2D(map, vMapUv);', 'aqBlend(vMapUv);').replace('texture2D(map, uv2)', 'aqBlend(uv2)');
   };

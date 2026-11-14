@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { LECA, drawBlendTile, drawFishCard, drawLook, drawPerson, drawSubstrate, substrateMask, type PresetSubstrate } from '../art/placeholder';
+import { LECA, drawBlendTile, drawFishCard, drawLook, drawPerson, drawSubstrate, substrateField, substrateFine, type PresetSubstrate } from '../art/placeholder';
 import { drawPairedFin, type PairedFin } from '../art/fishgen';
 import { drawScene, type BgScene } from '../art/bgscenes';
 import { FX } from './fx';
@@ -118,13 +118,19 @@ export function blendTexture(b: SubstrateBlend, which: 'a' | 'b' | 'm') {
   if (blendTex.size > 18) { const [k0, t0] = blendTex.entries().next().value!; blendTex.delete(k0); t0.dispose(); }
   return t;
 }
-/** Where each grain of a custom blend lies (see placeholder `substrateMask`). */
-let maskTex: THREE.DataTexture | undefined;
-export function substrateMaskTexture() {
-  if (maskTex) return maskTex;
-  const t = new THREE.DataTexture(substrateMask().data, 256, 256);
+/** The blend's ratio field (R drifts, G pockets; see placeholder `substrateField`) and its grain-by-grain threshold noise. */
+let fieldTex: THREE.DataTexture | undefined, fineTex: THREE.DataTexture | undefined;
+export function substrateFieldTexture() {
+  if (fieldTex) return fieldTex;
+  const t = new THREE.DataTexture(substrateField(), 256, 256);
   t.wrapS = t.wrapT = THREE.RepeatWrapping; t.magFilter = t.minFilter = THREE.LinearFilter; t.needsUpdate = true; t.userData.keep = true;
-  return (maskTex = t);
+  return (fieldTex = t);
+}
+export function substrateFineTexture() {
+  if (fineTex) return fineTex;
+  const t = new THREE.DataTexture(substrateFine(), 256, 256);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.magFilter = THREE.LinearFilter; t.minFilter = THREE.LinearMipmapLinearFilter; t.generateMipmaps = true; t.needsUpdate = true; t.userData.keep = true;
+  return (fineTex = t);
 }
 export const personTexture = () => cached('person', () => {
   const c = document.createElement('canvas'); c.height = 1536; c.width = Math.round(1536 * 0.34);
