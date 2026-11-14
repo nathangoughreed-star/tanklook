@@ -390,3 +390,24 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .copybox { border: 1px solid var(--line, #ccc); border-radius: 8px; padding: 8px; margin: 6px 0 }
 
 .edgelab { position: absolute; transform: translate(-50%, -50%); padding: 1px 7px; font-size: 12px; font-weight: 600; pointer-events: none; white-space: nowrap }
+/* ---------- lane S11 (2026-11-14): phone and tablet pass ---------- */
+/* Touch sizes: every control is at least 44 px on a phone, a tablet width, or any touch screen; desktop (mouse, >= 1100 px) is untouched. */
+@media (max-width: 1099px), (pointer: coarse) {
+  .btn, .btn.sm, .input, .select, .chip, .check, .tglrow, .tick, .segsel { min-height: 44px; }
+  .btn.icon, .btn.sm.icon { min-width: 44px; width: 44px; }
+  .seg button { min-height: 38px; min-width: 44px; }
+  .chip { height: auto; padding-top: 0; padding-bottom: 0; }
+  .group > .gh, .card.pick, .card.preset, .morerow { min-height: 44px; }
+  .input[type="number"], input.input { min-width: 44px; }
+  .rail .ritem { min-height: 56px; }
+  .pname, .pnamebtn { min-height: 44px; }
+  .pop.menu .btn { min-height: 44px; }
+  .linkbtn { min-height: 44px; display: inline-flex; align-items: center; }
+  .vmapHide { min-width: 32px; min-height: 32px; }
+  .apphead { gap: var(--s1); }
+}
+/* the check strip on a phone: every check reachable. Short cost text, checks share the width, and the strip scrolls sideways as a last resort. */
+.ui2app.phone .checkstrip .checkbar { overflow-x: auto; gap: var(--s1); padding: 4px var(--s2); }
+.ui2app.phone .checkstrip .check { padding: 0 var(--s2); white-space: nowrap; flex: 1 0 auto; justify-content: center; }
+.ui2app.phone .checkstrip .check .dim { display: none; }
+.ui2app.phone .ov.cluster { max-width: calc(100% - var(--s3)); }

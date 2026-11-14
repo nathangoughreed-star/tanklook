@@ -123,7 +123,7 @@ export function AnimalsSection({ store, getViewer }: { store: Store; getViewer?:
             const sp = getSpecies(r.id)!;
             return (
               <div class={`prow${r.level !== 'ok' ? ' gated' : ''}${pvId === r.id ? ' pv' : ''}`} onClick={() => setPvId(r.id)}
-                onPointerDown={e => { if (!getViewer || (e.target as HTMLElement).closest('button')) return; setPvId(r.id); dragOut(e, sp.name, getViewer, store, at => { if (at) report(dropSpecies(store, sp, undefined, at, pct)); }); }} title={r.level !== 'ok' ? [r.reason, ...r.more, 'Still addable: Add anyway.'].join('; ') : sp.note ?? ''}>
+                onPointerDown={e => { if (!getViewer || (e.target as HTMLElement).closest('button')) return; setPvId(r.id); dragOut(e, sp.name, getViewer, store, (at, overView) => { if (at || overView) report(dropSpecies(store, sp, undefined, at ?? undefined, pct)); }); }} title={r.level !== 'ok' ? [r.reason, ...r.more, 'Still addable: Add anyway.'].join('; ') : sp.note ?? ''}>
                 <div class="pi"><span class="t">{r.name}{r.tag ? <b class="tag">{r.tag}</b> : null}</span><span class="m">{r.size} · <i>{r.sci}</i></span>
                   {r.reason ? <small class={`why ${tone(r.level)}`}>{r.reason}{r.more.length ? ` (+${r.more.length} more)` : ''}</small> : null}</div>
                 {r.inTank ? <Pill tone="neutral">{r.inTank} in</Pill> : null}
