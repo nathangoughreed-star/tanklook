@@ -16,6 +16,7 @@ import { layerOf, DEFAULT_DENS } from './items';
 import { regenerate, shuffleHard } from './starter';
 import { adaptToTank, handOff } from './reeval';
 import { applySwap, type Swap } from '../demand/swaps';
+import { gateReason } from './experienceGate';
 import { equipPlan, noNewEquipment, type BuyLine } from './equipPlan';
 import { equipmentOf } from './project';
 import type { Range3 } from '../demand/types';
@@ -221,6 +222,8 @@ export function propose(project: Store | TankSetup, brief: Brief, request: Disco
     const newBuys = plan.toBuy.filter(l => !plan0.toBuy.some(o => o.key === l.key && o.usd >= l.usd));
     const eqWhy = plan.infeasible ? plan.infeasible : noNewEquipment(brief) && (gearChange.length || newBuys.length) ? `${c.source}: needs new equipment (${[...gearChange, ...newBuys.map(l => l.label)].join(', ')}), and the project allows none` : must.has('tank') && chk.touches.tank.includes('dimensions') ? `${c.source}: resizes the tank you marked Must use` : '';
     if (eqWhy) { rejected.push({ why: [], issues: [{ id: 'equip:rule', tab: 'equipment', uids: [], text: eqWhy, relax: noNewEquipment(brief) && !plan.infeasible ? 'Allow new equipment for this run' : 'Mark the item Have available instead of Must use' }], text: c.source }); continue; }
+    const gated = gateReason(chk.after, orig);   // S5: experience on -> leave out plants / gear rated harder than the keeper said
+    if (gated) { rejected.push({ why: [], issues: [], text: `${c.source}: ${gated}` }); continue; }
     const v = verdictOf(chk.after, brief, opts), bad = (opts.rules ? blockingIssues(v, opts.rules) : [...v.gates, ...v.hard]).filter(i => !baseIds.has(i.id));
     const sig = JSON.stringify(delta); if (seen.has(sig)) continue; seen.add(sig);
     if (bad.length || (request.objective === 'solve' && !v.feasible)) { rejected.push({ why: [], issues: bad.length ? bad : [...v.gates, ...v.hard], text: c.source }); continue; }

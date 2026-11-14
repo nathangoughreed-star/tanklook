@@ -13,6 +13,7 @@
 // qualifies the answer is exactly NO_SUGGESTION, never "impossible", with the closest misses (what limit to raise) listed apart, never as fits.
 // Deterministic: fixed archetype order, scores, ties by id. Only the guardrails are filters; appeal tags only rank.
 import { experienceOf } from './experience';
+import { gateReason } from '../scene/experienceGate';
 import { kindInScope } from '../scope';
 import data from '../data/archetypes.json';
 import { getSpecies } from '../data/species';
@@ -541,6 +542,7 @@ function conceptMaker(w: Wants, P0: UserProfile, units: Units, now: number) {
       // husbandry is never traded for money or time: the strict rule (Nathan 2026-10-27) = nothing the stocking screen words as a Problem OR a Caution in any of its five categories. Only "not enough information" passes, and it is shown.
       if (style && planted && !b.setup.items.some(i => i.kind === 'plant' || i.kind === 'artificial' || i.kind === 'coral')) continue; // another look is still a planted (or reefed) tank, never a pile of stones
       if (wordsOf(sm.cats)) { welfare = true; continue; }
+      if (gateReason(scene)) continue;   // S5: experience on -> no plant or gear rated harder than the keeper said (a plainer finish may still fit)
       if (w.setupHours !== undefined && !fx.setupHours && setupHoursOf(b, P0) > w.setupHours) continue; // the person's set-up time is a max (lane NG3b): a lighter finish of the same build may still fit
       if (lows?.setupHours !== undefined && setupHoursOf(b, P0) < lows.setupHours) { st.below.push(`set-up time of at least ${lows.setupHours} h`); belowMin = true; continue; } // lane GV8: a lower bound
       if (w.hightech && (b.finish?.level ?? 0) < 2) continue; // a stated high-tech approach is never silently swapped for a plainer one

@@ -23,6 +23,8 @@ import { Icon, Pill } from './ui';
 import { ProjectName, FileMenu, FileLayer, type Files } from './files';
 import { DiscoverSection, IdeasButton, AnimalDoor } from './discover';
 import { GetStarted } from './checklist';
+import { ConstraintsSection } from './constraints';
+import { PreferencesSection } from './prefs';
 import { scopeOf } from './logic/discover';
 import type { Tab } from '../scene/scope';
 import { CompareButtons, CompareLayer, CompareStrip, CompareDrawer, EditingBar } from './compare';
@@ -104,8 +106,9 @@ function TabBar({ open, onPick }: { open: SectionId | 'more' | null; onPick: (id
 
 interface TankHost { store: Store; picker: boolean; setPicker: (on: boolean) => void; maker: (h: MakerHow) => void; preview: (S: TankSetup | null) => void; libN: number }
 interface S8Host { store: Store; profile: () => UserProfile; getViewer: () => Viewer | undefined; phone: boolean }
+interface S5Host { onSurprise: () => void }
 interface DiscHost { scope: Tab[] | undefined; onScope: (t: Tab[] | undefined) => void; say: (t: string, bad?: boolean) => void }
-function Panel({ id, more, onPick, onClose, tank, s8, disc }: { id: SectionId | null; more: boolean; onPick: (id: SectionId) => void; onClose: () => void; tank: TankHost; s8: S8Host; disc: DiscHost }) {
+function Panel({ id, more, onPick, onClose, tank, s8, disc, s5 }: { id: SectionId | null; more: boolean; onPick: (id: SectionId) => void; onClose: () => void; tank: TankHost; s8: S8Host; disc: DiscHost; s5: S5Host }) {
   if (more) return (
     <section class="panel" aria-label="More sections">
       <div class="sec-head"><h2>More</h2><button type="button" class="btn icon ghost" aria-label="Close" onClick={onClose}><Icon name="x" /></button></div>
@@ -137,6 +140,12 @@ function Panel({ id, more, onPick, onClose, tank, s8, disc }: { id: SectionId | 
     <section class={`panel${id === 'print' ? ' printpanel' : ''}`} aria-label={s.title}>
       <div class="sec-head"><h2>{s.title}</h2>{id === 'print' ? <span class="hint printsub">one page builder, three presets</span> : null}<button type="button" class="btn icon ghost" title="Fold the panel (Esc)" aria-label="Fold the panel" onClick={onClose}><Icon name="x" /></button></div>
       <div class="sec-body">{id === 'print' ? <PrintSection {...s8} /> : <SettingsSection store={s8.store} getViewer={s8.getViewer} />}</div>
+    </section>
+  );
+  if (id === 'constraints' || id === 'preferences') return (
+    <section class="panel" aria-label={s.title}>
+      <div class="sec-head"><h2>{s.title}</h2><button type="button" class="btn icon ghost" title="Fold the panel (Esc)" aria-label="Fold the panel" onClick={onClose}><Icon name="x" /></button></div>
+      <div class="sec-body">{id === 'constraints' ? <ConstraintsSection store={s8.store} profile={s8.profile} /> : <PreferencesSection store={s8.store} onSurprise={s5.onSurprise} />}</div>
     </section>
   );
   if (id === 'discover') return (
@@ -215,6 +224,9 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
     addEventListener('keydown', onKey); return () => removeEventListener('keydown', onKey);
   }, [drawer, section, store, files, maker, picker]);
 
+  // S5: a limit line elsewhere ("room 70 deg F, edit") asks Constraints to open at a group (constraints.openLimit)
+  useEffect(() => { const f = (e: Event) => { const d = (e as CustomEvent<{ section?: SectionId }>).detail; if (d?.section) { setMore(false); setPicker(false); setSection(d.section); } }; addEventListener('ui2:open', f); return () => removeEventListener('ui2:open', f); }, []);
+
   const pick = (id: SectionId) => { setMore(false); setPicker(false); if (id === 'discover' && section !== 'discover') setScope(undefined); setSection(railClick(section, id)); if (phone) setDrawer(null); };
   const ideas = (id: SectionId) => { setScope(scopeOf(id)); setMore(false); setPicker(false); setSection('discover'); if (phone) setDrawer(null); };
   const tab = (id: SectionId | 'more') => { if (id === 'more') { setSection(null); setMore(!more); setDrawer(null); } else pick(id); };
@@ -227,7 +239,7 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
     <div class={cls}>
       <Header store={store} files={files} saved={saved} phone={phone} />
       {phone ? null : <Rail open={section} onPick={pick} />}
-      <Panel id={section} more={more} onPick={pick} onClose={() => { setSection(null); setMore(false); setPicker(false); }} tank={{ store, picker, setPicker, maker: openMaker, preview, libN }} s8={{ store, profile, getViewer: viewer, phone }} disc={{ scope, onScope: setScope, say: files.say }} />
+      <Panel id={section} more={more} onPick={pick} onClose={() => { setSection(null); setMore(false); setPicker(false); }} tank={{ store, picker, setPicker, maker: openMaker, preview, libN }} s8={{ store, profile, getViewer: viewer, phone }} disc={{ scope, onScope: setScope, say: files.say }} s5={{ onSurprise: () => { setScope(undefined); setSection('discover'); } }} />
       <IdeasButton section={more ? null : section} onIdeas={ideas} />
       {split && panelOpen && !phone ? <EditingBar store={store} /> : null}
       <main class="viewer" ref={viewRef}>

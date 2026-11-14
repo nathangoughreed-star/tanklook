@@ -5,6 +5,7 @@
 // Equipment is never shuffled: it is derived from each design by equipPlan. Candidates are cached per (project rev, session, scope, freezes, direction, pair type) so later challengers cost almost nothing.
 import { TABS, type Tab } from './scope';
 import { discoverTabs } from './discoverScope';
+import { gateReason } from './experienceGate';
 import { confine, propose, type DiscoveryProposal, type Objective, type Focus } from './discover';
 import { gatherPool } from './candidates';
 import { checkProposal, deltaBetween, previewProposal } from './proposal';
@@ -224,6 +225,8 @@ export function ingest(c: Ctx, scene: TankSetup, label: string, source: Pending[
   const newBuys = plan.toBuy.filter(l => !plan0.toBuy.some(o => o.key === l.key && o.usd >= l.usd));
   const eqWhy = plan.infeasible ? plan.infeasible : noNewEquipment(brief) && (gearChange.length || newBuys.length) ? `${label}: needs new equipment (${[...gearChange, ...newBuys.map(l => l.label)].join(', ')}), and the project allows none` : must.has('tank') && chk.touches.tank.includes('dimensions') ? `${label}: resizes the tank you marked Must use` : '';
   if (eqWhy) return drop(c, eqWhy, [{ id: 'equip:rule', tab: 'equipment', uids: [], text: eqWhy, relax: noNewEquipment(brief) && !plan.infeasible ? 'Allow new equipment for this run' : 'Mark the item Have available instead of Must use' }], ['Allow new equipment, or mark the item Have available instead of Must use']);
+  const gated = gateReason(after, orig);   // S5: experience on -> a plant or gear rated harder than the keeper said is left out
+  if (gated) return drop(c, `${label}: ${gated}`, [], ['Turn experience off in Constraints, or raise it']);
   const v0 = verdictOf(after, brief, { units: c.units });
   const bad0 = blockers(c, v0); if (bad0.length) return drop(c, label, bad0, bad0.map(i => i.relax ?? `Relax: ${i.text}`));
   const sc = scoreScene(after, brief, c.w, c.P, c.now), blocked = sc.gate.reasons.filter(r => r.severity === 'blocked');
