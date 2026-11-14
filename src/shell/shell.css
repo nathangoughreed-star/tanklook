@@ -244,3 +244,44 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .colorbox { width: 44px; height: var(--ctl-h-sm); border: 1px solid var(--line); border-radius: var(--r-ctl); background: transparent; padding: 0; }
 .drawer .field { display: grid; gap: var(--s1); }
 .drawer .btns { display: flex; gap: var(--s2); flex-wrap: wrap; }
+
+/* Compare (step 9, lane S9): two halves over the viewer, each with its own tab and check bar; "Editing A / B / Both" over the panel */
+.cmplayer { position: absolute; inset: 0; display: flex; pointer-events: none; z-index: var(--z-overlay); }
+.cmpside { position: relative; flex: 1 1 50%; min-width: 0; }
+.cmpside > * { pointer-events: auto; }
+.cmptab { position: absolute; top: var(--s3); display: flex; align-items: center; gap: var(--s2); padding: 5px var(--s2); max-width: calc(100% - var(--s5)); font-size: var(--fs-sm); }
+.cmpside.s0 .cmptab { left: var(--s3); } .cmpside.s1 .cmptab { right: var(--s3); }
+.cmptab.editing { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), var(--shadow); }
+.cmptab .letter, .cmpcol .letter { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 5px; background: var(--bg-raised); color: var(--text); font-size: 12px; flex: none; }
+.cmptab.editing .letter { background: var(--accent); color: #fff; }
+.cmptab .tsize { color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cmptab .tdes { white-space: nowrap; }
+.cmptab .useone { margin-left: var(--s1); flex: none; }
+.diffs { position: relative; display: inline-flex; outline-offset: 2px; }
+.difflist { display: none; position: absolute; top: calc(100% + 6px); left: 0; z-index: var(--z-pop); min-width: 260px; padding: var(--s2) var(--s3); gap: var(--s1); font-size: var(--fs-sm); }
+.cmpside.s1 .difflist { left: auto; right: 0; }
+.diffs:hover .difflist, .diffs:focus .difflist, .diffs:focus-within .difflist { display: grid; }
+.difflist .drow2 { display: grid; grid-template-columns: 1fr auto 1fr; gap: var(--s2); }
+.cmpside .ov.checkwrap.side { bottom: 14px; left: 50%; transform: translateX(-50%); max-width: calc(100% - var(--s4)); }
+.check.differs { position: relative; }
+.dmark { display: inline-block; width: 7px; height: 7px; margin-left: 6px; border-radius: 50%; background: var(--warn); flex: none; vertical-align: middle; }
+.btn.on { border-color: var(--accent); background: var(--accent-weak); }
+.ui2app > .editbar { grid-area: panel; align-self: start; z-index: calc(var(--z-panel) + 1); height: 46px; display: flex; align-items: center; gap: var(--s2); padding: 0 var(--s3); background: var(--accent-weak); border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); min-width: 0; }
+.editbar .cap { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-2); }
+.editbar .hint { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.ui2app.split.panel-on:not(.phone) > .panel { padding-top: 46px; box-sizing: border-box; }
+.cmpdrawer .sec-head .hint { margin-left: var(--s2); flex: 1; }
+.cmpsum { display: grid; gap: 2px; padding: var(--s2) var(--s3); }
+.cmprow { display: grid; grid-template-columns: 1.1fr 1fr 1fr 34px; gap: var(--s2); align-items: center; padding: 4px 0; font-size: var(--fs-sm); border-bottom: 1px solid var(--line); }
+.cmprow:last-child { border-bottom: 0; } .cmprow.head { color: var(--text-2); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+.cmprow .k { color: var(--text-2); } .cmprow.cur .k { color: var(--text); font-weight: 600; }
+.cmprow.differs .a, .cmprow.differs .b { color: var(--warn); font-weight: 600; }
+.cmpcol { display: grid; gap: var(--s2); }
+.cmpcol h3 { display: flex; align-items: center; gap: var(--s2); margin: 0; font-size: var(--fs-md, 15px); padding-top: var(--s2); border-top: 1px solid var(--line); }
+.cmpstrip { display: flex; align-items: center; gap: var(--s2); padding: 6px var(--s2); min-width: 0; }
+.cmpstrip .seg { flex: none; }
+.cmpstrip .checkbar { flex: 1; min-width: 0; background: transparent; border: 0; box-shadow: none; backdrop-filter: none; padding: 0; }
+.cmpstrip .check { background: var(--bg-raised); flex: none; }
+.cmpstrip .vsep { display: none; }
+.ui2app.phone .cmptab { top: var(--s1); padding: 3px var(--s1); gap: 4px; } .ui2app.phone .cmpside.s0 .cmptab { left: var(--s1); } .ui2app.phone .cmpside.s1 .cmptab { right: var(--s1); }
+.ui2app.phone .cmptab .pill { font-size: 10px; padding: 0 6px; }
