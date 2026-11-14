@@ -1,0 +1,47 @@
+{
+ "facts": {
+  "ownedPills": "Lifegard 2 Gallon Nano Cube Low Iron (1.8 gal inside, rated 2) (any maker), Lifegard 2 Gallon Nano Cube Low Iron, Vibrant Life Life Betta View Aquarium Starter Kit, 1.5 Gallon",
+  "drag": {
+   "before": 40,
+   "after": 40
+  },
+  "experienceRows": [
+   "Freshwater tank: Cardinal tetra\nAdds animals: 12 Cardinal tetra, 10 Panda corydoras, 10 Strawberry rasbora\nRemoves animals: 14 Neon tetra, 9 Harlequin rasbora, 2 Honey gourami, 6 Bronze corydoras, 3 Otocinclus, 4 Amano shrimp, 2 Malaysian trumpet snail\nChanges Equipment and settings that go with it\n4 designs fit",
+   "Freshwater tank: Cardinal tetra\nAdds animals: 12 Cardinal tetra, 10 Panda corydoras, 10 Strawberry rasbora\nRemoves animals: 14 Neon tetra, 9 Harlequin rasbora, 2 Honey gourami, 6 Bronze corydoras, 3 Otocinclus, 4 Amano shrimp, 2 Malaysian trumpet snail\nChanges Equipment and settings that go with it\n4 designs fit"
+  ],
+  "experienceLeaksCarpetOrPressurized": false,
+  "gate": {
+   "gatedInCurrentDesign": [
+    "stemred",
+    "carpet"
+   ],
+   "kinds": [
+    "lightbasic"
+   ]
+  },
+  "decorativeImgOk": [
+   "freshwater-decorative:320",
+   "freshwater-themed:320"
+  ],
+  "terrariumCats": [
+   "Filter",
+   "Heater",
+   "Light",
+   "Heat lamp",
+   "Thermostat",
+   "UVB",
+   "Gauge",
+   "Misting",
+   "Timer"
+  ],
+  "genericRows": [
+   "Generic heat lamp"
+  ],
+  "oldUiHeater": [
+   null
+  ],
+  "oldSiteHasShell": false
+ },
+ "fails": [],
+ "errors": []
+}
