@@ -1,0 +1,99 @@
+{
+ "equipment-menu": {
+  "tech": {
+   "rows": {
+    "filter": "hob",
+    "heater": "one",
+    "chiller": "none",
+    "air": "none",
+    "uv": "none",
+    "conditioner": "yes",
+    "rodi": "none",
+    "ato": "none",
+    "co2": "liquid",
+    "ferts": "aio"
+   },
+   "preset": "midplanted"
+  },
+  "light": {
+   "type": "flat",
+   "count": 2,
+   "rows": 1,
+   "pattern": "grid",
+   "spacing": 0,
+   "cone": 52,
+   "bright": 1,
+   "kelvin": 6500,
+   "room": 0.15,
+   "roomAuto": true,
+   "height": 50
+  },
+  "owned": null,
+  "equip": "Nothing listed yet: everything is priced as still to buy."
+ },
+ "my-equipment": {
+  "tech": {
+   "rows": {
+    "filter": "hob",
+    "heater": "one",
+    "chiller": "none",
+    "air": "none",
+    "uv": "none",
+    "conditioner": "yes",
+    "rodi": "none",
+    "ato": "none",
+    "co2": "liquid",
+    "ferts": "aio"
+   },
+   "preset": "midplanted"
+  },
+  "light": {
+   "type": "flat",
+   "count": 2,
+   "rows": 1,
+   "pattern": "grid",
+   "spacing": 0,
+   "cone": 52,
+   "bright": 1,
+   "kelvin": 6500,
+   "room": 0.15,
+   "roomAuto": true,
+   "height": 50
+  },
+  "owned": null,
+  "equip": "Nothing listed yet: everything is priced as still to buy."
+ },
+ "discover": {
+  "tech": {
+   "rows": {
+    "filter": "hob",
+    "heater": "one",
+    "chiller": "none",
+    "air": "none",
+    "uv": "none",
+    "conditioner": "yes",
+    "rodi": "none",
+    "ato": "none",
+    "co2": "liquid",
+    "ferts": "aio"
+   },
+   "preset": "midplanted"
+  },
+  "light": {
+   "type": "flat",
+   "count": 2,
+   "rows": 1,
+   "pattern": "grid",
+   "spacing": 0,
+   "cone": 52,
+   "bright": 1,
+   "kelvin": 6500,
+   "room": 0.15,
+   "roomAuto": true,
+   "height": 50
+  },
+  "owned": null,
+  "equip": "Nothing listed yet: everything is priced as still to buy."
+ },
+ "discoverText": ""
+}
