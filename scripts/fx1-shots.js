@@ -34,3 +34,26 @@ export async function strip(species = 'danio', { tl = 90, frames = 8, step = 0.0
   return [W, H, c.width, c.height];
 }
 const row0 = o => o[0][0];
+
+/** GPU time (ms) of one frame with the swim on vs off, alternating frame by frame (the shared machine's timings drift), by the GPU's own timer. `n` danios + tetras in one tank. */
+export async function perf(n = 40, frames = 60) {
+  const g = await import('/scripts/ground-shots.js'); await g.ex('terrarium');
+  const { store, viewer } = window.__gb, { SWIM } = await import('/src/render/swim.ts');
+  store.edit(t => {
+    t.tank = { L: 900, D: 400, H: 450 }; t.items = []; t.layout = { id: 'none', seed: 1 }; t.terrain.on = false; t.water.on = true; t.water.level = 100;
+    t.fish = Array.from({ length: n }, (_, i) => ({ id: i + 1, species: i % 2 ? 'danio' : 'oscar', x: 80 + (i * 53) % 740, y: 120 + (i * 37) % 250, depth: 60 + (i * 71) % 280, yaw: (i * 47) % 360 - 180, pitch: 0, roll: 0, bend: 0 }));
+  });
+  await wait(900); await viewer.buildNow?.();
+  const vp = viewer.vps[0], r = viewer.renderer, gl = r.getContext(), ext = gl.getExtension('EXT_disjoint_timer_query_webgl2');
+  if (!ext) return 'no timer query';
+  const t = { on: [], off: [] };
+  for (let i = 0; i < frames * 2; i++) {
+    const on = i % 2 === 0; SWIM.uSwim.value.set(i * 0.033, on ? 1 : 0);
+    const q = gl.createQuery(); gl.beginQuery(ext.TIME_ELAPSED_EXT, q); r.render(vp.scene, vp.cam); gl.endQuery(ext.TIME_ELAPSED_EXT);
+    let k = 0; while (!gl.getQueryParameter(q, gl.QUERY_RESULT_AVAILABLE) && k++ < 200) await wait(5);
+    if (!gl.getParameter(ext.GPU_DISJOINT_EXT)) (on ? t.on : t.off).push(gl.getQueryParameter(q, gl.QUERY_RESULT) / 1e6);
+    gl.deleteQuery(q);
+  }
+  const med = a => a.sort((x, y) => x - y)[a.length >> 1];
+  return { fish: n, on_ms: med(t.on), off_ms: med(t.off), samples: [t.on.length, t.off.length] };
+}
