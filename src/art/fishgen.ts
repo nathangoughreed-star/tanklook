@@ -1064,6 +1064,29 @@ for (const r of albinoSpecies.species as { albino?: string; art: string; female?
 }
 
 export const bodyPlan = (art: string): Plan | undefined => PLANS[art] ?? SHRIMP_PLANS[art];
+/**
+ * Fin posture (lane FE1): 0 = median fins folded flat along the back and belly .. 1 = held fully erect (the drawn card).
+ * `lo`..`hi` is the range a shuffle draws from, `def` what a fish without a value of its own shows. A sensible default
+ * for the family plus overrides for the species that are known for it (bristlenose fold the dorsal at rest, tangs and
+ * bettas flare, tetras hold theirs about the same all the time).
+ */
+export interface FinRange { lo: number; hi: number; def: number }
+const FIN_FAMILY: FinRange = { lo: 0.45, hi: 1, def: 0.8 };
+const FIN_TETRA: FinRange = { lo: 0.7, hi: 0.9, def: 0.8 };
+const FIN_CICHLID: FinRange = { lo: 0.4, hi: 1, def: 0.8 };
+const FIN_TANG: FinRange = { lo: 0.2, hi: 1, def: 0.7 };
+const FIN_RANGE: Record<string, FinRange> = {
+  bristlenose: { lo: 0.1, hi: 0.9, def: 0.35 }, betta: { lo: 0.7, hi: 1, def: 0.9 }, angel: { lo: 0.6, hi: 1, def: 0.85 },
+  yellowtang: FIN_TANG, bluetang: FIN_TANG,
+  cardinal: FIN_TETRA, tetra: FIN_TETRA, ember: FIN_TETRA, rummynose: FIN_TETRA, dwarfpencil: FIN_TETRA, harlequin: FIN_TETRA, chili: FIN_TETRA,
+  kribensis: FIN_CICHLID, discus: FIN_CICHLID, oscar: FIN_CICHLID, bolivianram: FIN_CICHLID, cockatoo: FIN_CICHLID, peacock: FIN_CICHLID,
+  demasoni: FIN_CICHLID, kadango: FIN_CICHLID, livingstonii: FIN_CICHLID, afra: FIN_CICHLID, auratus: FIN_CICHLID,
+};
+/** The fin range of a drawing, or undefined when it has no median fin to fold (shrimp, herps, plans without dorsal or anal). */
+export function finRange(art: string): FinRange | undefined {
+  const p = PLANS[art]; if (!p || !(p.dorsal || p.dorsal2 || p.anal)) return undefined;
+  return FIN_RANGE[art] ?? FIN_FAMILY;
+}
 /** Card aspect / resting offset for the shrimp drawing. */
 export const SHRIMP_META = { aspect: 0.4, rest: 0.16 };
 

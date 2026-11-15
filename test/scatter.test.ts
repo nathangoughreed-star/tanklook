@@ -124,3 +124,28 @@ describe('shuffle', () => {
     expect(all).toBe(false);
   });
 });
+
+describe('fin posture (lane FE1)', () => {
+  it('shuffle rerolls fin within the species range, the same for the same seed, and it saves and loads', async () => {
+    const { finRange } = await import('../src/art/fishgen');
+    const { speciesOf } = await import('../src/data/species');
+    const a = stocked(), b = stocked();
+    shuffleFish(a, rng(5)); shuffleFish(b, rng(5));
+    expect(a.fish.map(f => f.fin)).toEqual(b.fish.map(f => f.fin));
+    for (const f of a.fish) {
+      const fr = finRange(speciesOf(f)!.art);
+      if (!fr) { expect(f.fin).toBeUndefined(); continue; }
+      expect(f.fin).toBeGreaterThanOrEqual(fr.lo - 0.005); expect(f.fin).toBeLessThanOrEqual(fr.hi + 0.005);
+    }
+    const before = a.fish.map(f => f.fin); shuffleFish(a, rng(6));
+    expect(a.fish.map(f => f.fin)).not.toEqual(before);
+    const betta = a.fish.find(f => f.species === 'betta')!, fin = betta.fin;
+    const sc = defaultScene(); sc.tanks[0] = a;
+    const back = parseScene(JSON.parse(JSON.stringify(sc))).scene.tanks[0].fish.find(f => f.species === 'betta')!;
+    expect(back.fin).toBe(fin);
+  });
+  it('an old file without fin loads without one', () => {
+    const sc = defaultScene(), s = sc.tanks[0]; s.fish.push({ id: 1, species: 'betta', x: 100, y: 100, depth: 100, yaw: 0, pitch: 0, roll: 0, bend: 0 });
+    expect(parseScene(JSON.parse(JSON.stringify(sc))).scene.tanks[0].fish[0].fin).toBeUndefined();
+  });
+});

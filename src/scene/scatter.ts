@@ -4,6 +4,7 @@
 // favoured band of the water column ('level'), groups of 3+ of a 'school' species in a tight aligned school and of a
 // 'shoal' species in a loose group, everyone else spread apart.
 import { rng } from '../art/paint';
+import { finRange } from '../art/fishgen';
 import { snakeFoot, snakeStageFor } from '../art/snakes';
 import { clingsTo, fishTL, getSpecies, onLeaves, speciesOf, type Species } from '../data/species';
 import { backdropDepth, clamp, clampFish, spawnSnail, waterY } from './physics';
@@ -199,6 +200,15 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
     const n = fish.length, tight = sp.group === 'school';
     const cut = n >= (tight ? 14 : 6) && r() < (tight ? 0.35 : 0.5) ? Math.round(n * (0.4 + r() * 0.2)) : n;
     for (const part of cut < n ? [fish.slice(0, cut), fish.slice(cut)] : [fish]) school(sp, part, tight);
+  }
+
+  // fin posture (lane FE1): re-rolled with the position, from its own stream seeded by where the animal ended up (so the
+  // shuffle's own draws, and with them every placement, stay as they were; the same seed gives the same pose)
+  for (const f of s.fish) {
+    if (only && (typeof only === 'string' ? f.species !== only : !only(f))) continue;
+    const fr = speciesOf(f) && finRange(speciesOf(f)!.art); if (!fr) continue;
+    const q = rng(Math.abs(Math.round(f.x * 7 + f.depth * 13 + f.y * 3 + f.id * 101)) + 17); q(); q();
+    f.fin = Math.round((fr.lo + q() * (fr.hi - fr.lo)) * 100) / 100;
   }
 
   function school(sp: Species, fish: Fish[], tight: boolean) {

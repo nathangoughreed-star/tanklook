@@ -86,6 +86,8 @@ export interface Fish {
   pitch: number;
   roll: number;
   bend: number; // -1..1, body curve
+  /** Fin posture, 0 (median fins folded flat) .. 1 (fully erect), lane FE1. Absent = the species default (fishgen finRange). */
+  fin?: number;
   /** Custom total length, mm (juveniles, or a big individual). Absent = the species' adult length. */
   tl?: number;
   /** Dimorphic species only (species `female`): 'f' = drawn and sized as a female. Absent = male. */

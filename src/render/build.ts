@@ -13,6 +13,7 @@ import { FX } from './fx';
 import { glassGrains, grainLook, grainMeshes, grainPatchy, grainTop, groundTint } from './grains';
 import { snailAspect } from '../art/snails';
 import { fishTL, leafUp, needsWater, speciesOf, type Species } from '../data/species';
+import { finRange } from '../art/fishgen';
 import { PERCHES, anchors, limbPaths, type Anchor, type Anchors, type V3 } from '../scene/anchors';
 import { glassBand, restsOnGround } from '../scene/water';
 import { backdropDepth, D2R, IN, ceilingH, clamp, floorY, glassThickness, HOOD_H, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
@@ -1666,17 +1667,17 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     }
     if (!S.water.on && needsWater(sp)) return; // dry tank: fish stay in the scene data, hidden until the water is back
     const w = fishTL(f, sp), h = w * sp.aspect;
-    const herp = isHerp3D(sp.art);
+    const herp = isHerp3D(sp.art), fin = f.fin ?? finRange(sp.art)?.def ?? 1; // fin posture, lane FE1
     const hang = f.surface === 'under' ? A.under(f.x, f.depth, f.y, sitsOnLeaves(f)) : null; // hanging under a leaf (null: no leaf there, it rests on the ground)
     // a lizard's Shuffle spot on a limb is an estimate a few cm off the rendered limb: it takes the solid top nearest the height it was given (lane GS)
     const on = f.surface === 'hardscape' ? (isLizard(sp.art) ? A.restNear(f.x, f.depth, f.y, LIZARD_SNAP, LIZARD_SNAP_TOL, true, sitsOnLeaves(f)) : A.rest(f.x, f.depth, true, sitsOnLeaves(f))) : null, perch = on && PERCHES.has(on.kind) ? on : null;
     const snapped = on && isLizard(sp.art) && (on.p[0] !== f.x || on.p[2] !== f.depth);
     const p: Fish = snapped ? { ...f, x: on.p[0], depth: on.p[2] } : f; // where it stands: the spot, or the limb found beside it
-    const m = new THREE.Mesh(drapedCard(sp.art, w, h, f.bend) || cardGeometry(w, h, isArachnid(sp.art) ? 0 : f.bend), herp ? HIDDEN : cardMaterial(`fish:${sp.look}:${fish3d.fade}`, fishTexture(sp, S.render.edge, true, fish3d.fade), S.render.edge));
+    const m = new THREE.Mesh(drapedCard(sp.art, w, h, f.bend, fin) || cardGeometry(w, h, isArachnid(sp.art) ? 0 : f.bend), herp ? HIDDEN : cardMaterial(`fish:${sp.look}:${fish3d.fade}`, fishTexture(sp, S.render.edge, true, fish3d.fade), S.render.edge));
     if (!herp) (m.material as THREE.Material).userData.fishCard = true; // fish stand out (render.pop) lifts the card too
     const snakeLimb = herp && isSnake(sp.art) && !!perch?.limb; // a snake on a limb follows its curve: built once the card is placed on it (below)
     if (snakeLimb) { /* added below */ } else if (herp) m.add(herpBody(sp.art, w, perch?.limb ? 'perch' : f.surface, perch?.limb?.r, isArachnid(sp.art) ? f.bend : isLizard(sp.art) && f.sex !== 'f' && f.id % 4 === 0 ? 1 : 0)); // a quarter of the male anoles display the dewlap (by id, so it survives save / load and Shuffle) // the card stays as the invisible picking target
-    else m.add(fishBody(sp.art, sp.aspect, w, f.bend, fishBodyTexture(sp), S.render.edge, f.surface === 'glass' || !!hang)); // solid body + paired fins; the card keeps the median fins
+    else m.add(fishBody(sp.art, sp.aspect, w, f.bend, fishBodyTexture(sp), S.render.edge, f.surface === 'glass' || !!hang, fin)); // solid body + paired fins; the card keeps the median fins
     if (f.surface === 'glass') { onGlass(S, T, f, sp, m, w, A); register(m, w, h); return; }
     if (hang) { hangOn(f, m, sp.rest * w + PANE_GAP, hang); register(m, w, h); return; }
     // floating at the water surface (dwarf frog): the pose's `top` line just under the water line, wherever it is

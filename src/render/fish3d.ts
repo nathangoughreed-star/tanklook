@@ -4,7 +4,7 @@
 // card stays as the fins (thin membranes); its painted body sits inside the solid. Nose and tail tips are unchanged,
 // so nose-to-tail stays adult TL.
 import * as THREE from 'three';
-import { analBox, bodyPlan, drawAnal, drawTail, eyeSpot, pairedFins, profile, tailBox, type Plan } from '../art/fishgen';
+import { analBox, bodyPlan, finRange, drawAnal, drawTail, eyeSpot, pairedFins, profile, tailBox, type Plan } from '../art/fishgen';
 import { FIN_A, FIN_A2C, rng, style } from '../art/paint';
 import type { EdgeMode } from '../scene/types';
 import { cardMaterial, pairedFinTexture } from './textures';
@@ -385,7 +385,7 @@ const SPLAY = { pelvic: 1.4, pectoral: 1.3 };
  * Pectoral and pelvic fins as thin membranes on both flanks, rooted on the body surface and swung out from it
  * (pelvic about the body axis, pectoral about a vertical base), painted like the card's fins.
  */
-function finMeshes(art: string, p: Plan, bend: number, edge: EdgeMode, cling = false) {
+function finMeshes(art: string, p: Plan, bend: number, edge: EdgeMode, cling = false, fin = 1) {
   const out: THREE.Mesh[] = [];
   for (const f of pairedFins(p)) {
     const us = f.pts.map(q => q[0]), vs = f.pts.map(q => q[1]), m = 0.01;
@@ -400,7 +400,7 @@ function finMeshes(art: string, p: Plan, bend: number, edge: EdgeMode, cling = f
     const mat = cardMaterial(key, pairedFinTexture(art, f, box, edge), edge); mat.userData.fishCard = true; // outlined by fish stand out
     for (const side of [1, -1]) {
       // flat (plan option, off by default): held out flat like a fish on the glass all the time (hillstream loach)
-      const flat = cling || !!(f.kind === 'pelvic' ? p.pelvic?.flat : p.pec?.flat), mesh = new THREE.Mesh(g, mat), a = f.spread ?? (flat ? SPLAY : SPREAD)[f.kind];
+      const flat = cling || !!(f.kind === 'pelvic' ? p.pelvic?.flat : p.pec?.flat), mesh = new THREE.Mesh(g, mat), a = (f.spread ?? (flat ? SPLAY : SPREAD)[f.kind]) * (finRange(art) && !cling ? 0.3 + 0.7 * Math.min(1, Math.max(0, fin)) : 1); // a folded fish holds its paired fins close too
       // root slightly inside the surface so the base never shows a gap
       const s = surfaceAt(p, f.root[0], f.root[1], side, bend), z0 = bendZ(bend, s.x);
       mesh.position.set(s.x, s.y, z0 + (s.z - z0) * 0.85);
@@ -623,7 +623,7 @@ const fishMat = (key: string, make: () => THREE.MeshBasicMaterial) => {
  * texture (painted without eye, gill and mouth). Geometry is shared per species + bend. `cling` = on the glass: the
  * paired fins pressed out flat.
  */
-export function fishBody(art: string, aspect: number, w: number, bend: number, map: THREE.Texture, edge: EdgeMode, cling = false) {
+export function fishBody(art: string, aspect: number, w: number, bend: number, map: THREE.Texture, edge: EdgeMode, cling = false, fin = 1) {
   if (isShrimp3D(art)) return shrimpBody(art, w); // shrimp: their own body plan (shrimp3d.ts)
   const p = shaped(bodyPlan(art)!), b = Math.round(bend * 20) / 20, key = `${art}|${aspect}|${b}|${fish3d.fade}`;
   let g = geoCache.get(key); if (!g) { g = bodyGeometry(p, aspect, b); geoCache.set(key, g); }
@@ -641,7 +641,7 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
   const belly = bellyPlate(art, p, b); if (belly) grp.add(belly);
   if (p.tail.split) for (const m of splitTail(art, p, b, edge)) grp.add(m);
   if (p.analSplit && p.anal && !p.gono) for (const m of splitAnal(art, p, b, edge)) grp.add(m);
-  for (const f of finMeshes(art, p, b, edge, cling)) grp.add(f);
+  for (const f of finMeshes(art, p, b, edge, cling, fin)) grp.add(f);
   if (p.limbs) {
     const mat = (c?: string) => fishMat(`limb:${art}:${c ?? ''}`, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(c ?? p.shade[0]).multiplyScalar(0.9) })); // own colour (cleaner shrimp's white antennae) or the back's
     for (const m of limbMeshes(art, p, b, mat)) grp.add(m);
@@ -720,17 +720,32 @@ function bakeMerge(parts: THREE.Mesh[]) {
 }
 
 /**
- * The fish card's plane, subdivided and rippled for plans with `drape` (betta): the median fins (the part of the card
- * outside the body) wave out of the plane, more toward the tail, so seen edge-on they read as a fin and not a board.
- * Null for plans without it (the plain card geometry is used).
+ * The fish card's plane, subdivided for plans with `drape` (betta: the median fins, the part of the card outside the body,
+ * wave out of the plane, more toward the tail, so seen edge-on they read as a fin and not a board) and for fish whose fin
+ * posture `fin` (lane FE1: 0 folded .. 1 erect, the drawn card) is below 1. Folding turns each point of the dorsal and anal
+ * fins about its own base on the back or belly line, back toward the tail by (1 - fin) x 77 degrees, so the rays lie down
+ * along the body and the fan closes on itself (it is a rotation, not a squash: the rays keep their length, the fin's height
+ * above the body shrinks by the cosine). The fin ends on the body's outline there (never inside the solid), and the tail
+ * fin and the body itself stay. Null for plans with neither (the plain card geometry is used).
  */
-export function drapedCard(art: string, w: number, h: number, bend: number): THREE.BufferGeometry | null {
-  const p = bodyPlan(art); if (!p?.drape) return null;
-  const prof = profile(p), g = new THREE.PlaneGeometry(w, h, 40, 16), pos = g.attributes.position;
+export const FOLD_MAX = 1.35;
+export function drapedCard(art: string, w: number, h: number, bend: number, fin = 1): THREE.BufferGeometry | null {
+  const p = bodyPlan(art), fold = p && finRange(art) ? (1 - Math.min(1, Math.max(0, fin))) * FOLD_MAX : 0;
+  if (!p || !(p.drape || fold > 0.01)) return null;
+  const prof = profile(p), g = new THREE.PlaneGeometry(w, h, fold ? 120 : 40, fold ? 64 : 16), pos = g.attributes.position, sa = Math.sin(fold), ca = Math.cos(fold);
   for (let i = 0; i < pos.count; i++) {
-    const x = pos.getX(i), u = x / w + 0.5, v = -pos.getY(i) / w, [t, b] = prof(Math.max(u, p.pedU));
-    const out = Math.max(0, t - v, v - b), ramp = smooth(0.01, 0.14, out), tailer = 1 + 1.5 * smooth(p.pedU + 0.1, 0, u);
-    pos.setZ(i, bendZ(bend, x / w) * w + p.drape * w * ramp * tailer * Math.sin(u * 10 + 0.7));
+    let x = pos.getX(i), y = pos.getY(i), z = 0;
+    const u = x / w + 0.5, v = -y / w, [t, b] = prof(Math.max(u, p.pedU));
+    if (p.drape) { const out = Math.max(0, t - v, v - b), ramp = smooth(0.01, 0.14, out), tailer = 1 + 1.5 * smooth(p.pedU + 0.1, 0, u); z = p.drape * w * ramp * tailer * Math.sin(u * 10 + 0.7); }
+    if (fold && u > p.pedU) {
+      const up = t - v, dn = v - b;
+      if (up > 0 || dn > 0) {
+        const out = Math.max(up, dn), u2 = Math.max(0.02, u - out * sa * 0.55), [t2, b2] = prof(Math.max(u2, p.pedU));
+        const v2 = up > 0 ? t2 - out * ca - 0.003 * sa : b2 + out * ca + 0.003 * sa;
+        x = (u2 - 0.5) * w; y = -v2 * w;
+      }
+    }
+    pos.setXYZ(i, x, y, bendZ(bend, x / w) * w + z);
   }
   g.computeVertexNormals(); g.computeBoundingSphere();
   return g;

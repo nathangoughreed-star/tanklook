@@ -247,6 +247,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       yaw: num(f.yaw, 0, ...LIMITS.yaw), pitch: num(f.pitch, 0, ...LIMITS.tilt), roll: num(f.roll, 0, ...LIMITS.tilt),
       bend: num(f.bend, 0, ...LIMITS.bend),
       ...(getSpecies(f.species)!.surfaces ? { surface: pick(f.surface, getSpecies(f.species)!.surfaces!, 'floor') } : {}),
+      ...(typeof f.fin === 'number' && Number.isFinite(f.fin) ? { fin: Math.round(Math.min(1, Math.max(0, f.fin)) * 100) / 100 } : {}),
       ...(tl !== adult ? { tl } : {}),
       ...(sex ? { sex } : {}),
       ...(f.gender === 'm' || f.gender === 'f' ? { gender: f.gender } : {}),

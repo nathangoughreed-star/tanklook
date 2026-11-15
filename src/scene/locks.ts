@@ -17,7 +17,7 @@ export const ITEM_PROPS: Record<string, readonly string[]> = {
 };
 export const FISH_PROPS: Record<string, readonly string[]> = {
   species: ['species'],
-  position: ['x', 'y', 'depth', 'yaw', 'pitch', 'roll', 'bend', 'surface'],
+  position: ['x', 'y', 'depth', 'yaw', 'pitch', 'roll', 'bend', 'fin', 'surface'],
   size: ['tl'],
   sex: ['sex', 'gender'],
 };
