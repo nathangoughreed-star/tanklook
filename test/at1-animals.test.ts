@@ -126,3 +126,25 @@ describe('R51: a species already in the tank leaves the tiles', () => {
     expect(v.none).not.toMatch(/other kinds/);
   });
 });
+
+import { addPick as addP, bumpPick, doorPlan, animalScene } from '../src/shell/logic/discover';
+import { totalOf } from '../src/ui/stockPlanLogic';
+describe('R54: the start door plans a tank for a whole list', () => {
+  it('two species with counts give one plan and one tank holding both', () => {
+    let picks = addP([], 'neon'); picks = addP(picks, 'cardinal'); picks = bumpPick(picks, 'neon', 4);
+    expect(picks.length).toBe(2);
+    const p = doorPlan(picks); expect(p.ok).toBe(true);
+    const sc = animalScene(picks, 'in')!, fish = sc.tanks[0].fish;
+    expect(fish.filter(f => f.species === 'neon').length).toBe(totalOf(picks[0]));
+    expect(fish.filter(f => f.species === 'cardinal').length).toBe(totalOf(picks[1]));
+    expect(sc.tanks.length).toBe(1);
+  });
+  it('the picker in list mode judges nothing against a tank and drops the listed species', () => {
+    const st = new Store(), f = createFitter(), q = { ...DEFAULT_QUERY, q: 'oscar' };
+    const v = pickView(st.tank, 'in', 'guided', f, q, { free: true, held: new Set(), heldWord: 'your list' });
+    expect(v.groups.flatMap(g => g.rows).every(r => r.level === 'ok')).toBe(true);
+    const sp = one('oscar'), w = pickView(st.tank, 'in', 'guided', f, q, { free: true, held: new Set([sp.id]), heldWord: 'your list' });
+    expect(w.groups.flatMap(g => g.rows.map(r => r.id))).not.toContain(sp.id);
+    expect(w.none).toMatch(/already in your list \(above\)/);
+  });
+});

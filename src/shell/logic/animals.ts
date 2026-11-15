@@ -8,7 +8,7 @@ import { pairingIn, setPairing } from '../../scene/pairs';
 import { FRESH_CLEAR, SALT_CLEAR } from '../../scene/tankEdit';
 import { fitFish, setWaterLevel } from '../../scene/water';
 import { backdropDepth, clampFish, fmtLen, waterY } from '../../scene/physics';
-import { ROLES, groupPicker, offeredIn, roleOf, rolesFor, tankKind, type Fit, type Role, type SetupKind } from '../../scene/pickerKind';
+import { ROLES, groupPicker, offeredIn, roleOf, rolesFor, tankKind, OK_FIT, type Fit, type Role, type SetupKind } from '../../scene/pickerKind';
 import * as stockEdit from '../../scene/stockEdit';
 import { experienceIn, fitsThisTank, type createFitter } from '../../ui/logic/animalPicker';
 import { startGroup } from '../../ui/pickerStrict';
@@ -54,17 +54,19 @@ export const DEFAULT_QUERY: PickQuery = { q: '', role: undefined, fitsOnly: true
 /** The species this kind of tank offers that match the search and the chosen group. */
 export const findSpecies = (S: TankSetup, q: string, role?: Role) => { const k = tankKind(S); return searchSpecies(q).filter(sp => offeredIn(sp, k) && (!role || roleOf(sp) === role)); };
 
-export function pickView(S: TankSetup, units: Units, rules: Rules, fitter: Fitter, query: PickQuery): PickView {
+/** AT1 (R54): the start door reuses the picker with no tank behind it: `held` = species already on its list (they leave the tiles, as in-tank species do), `free` = nothing is judged against a tank. */
+export interface PickOpts { held?: ReadonlySet<string>; free?: boolean; heldWord?: string }
+export function pickView(S: TankSetup, units: Units, rules: Rules, fitter: Fitter, query: PickQuery, opt: PickOpts = {}): PickView {
   const kind = tankKind(S), salt = kind === 'saltwater';
-  const fitOf = fitter.fitsFor(S, units, rules);
+  const fitOf = opt.free ? () => OK_FIT : fitter.fitsFor(S, units, rules);
   const counts = new Map<Role, number>();
-  const inTank = new Set(S.fish.map(f => f.species));   // AT1 (R51): a species already in the tank is in the stock rows, not in the tiles
+  const inTank = new Set([...S.fish.map(f => f.species), ...(opt.held ?? [])]);   // AT1 (R51): a species already in the tank is in the stock rows, not in the tiles
   for (const sp of scopeSpecies(SPECIES)) if (offeredIn(sp, kind) && !inTank.has(sp.id)) counts.set(roleOf(sp), (counts.get(roleOf(sp)) ?? 0) + 1);
   const total = [...counts.values()].reduce((a, n) => a + n, 0);
   const chips = [{ role: undefined as Role | undefined, label: 'All', n: total }, ...rolesFor(kind).filter(r => counts.has(r)).map(r => ({ role: r as Role | undefined, label: ROLES.find(x => x[0] === r)![1], n: counts.get(r)! }))];
   const role = query.role && counts.has(query.role) ? query.role : undefined;
   const found = findSpecies(S, query.q, role), all = found.filter(sp => !inTank.has(sp.id)), already = found.filter(sp => inTank.has(sp.id));
-  const list = query.fitsOnly ? fitsThisTank(all, fitOf) : all;
+  const list = query.fitsOnly && !opt.free ? fitsThisTank(all, fitOf) : all;
   const groups: PickGroup[] = groupPicker(list, kind, fitOf).map(g => ({
     role: g.role, label: g.label,
     rows: g.rows.map(({ sp, fit }) => pickRow(S, sp, fit, units)),
@@ -73,7 +75,7 @@ export function pickView(S: TankSetup, units: Units, rules: Rules, fitter: Fitte
   const hidden = all.length - list.length;
   const none = list.length ? ''
     : all.length ? `Nothing here fits this tank${query.q.trim() ? ' for that search' : ''}: ${hidden} more ${hidden > 1 ? 'are' : 'is'} held back. Switch off "Fits this tank" to see them.`
-    : already.length ? `${already.length > 2 ? `${already.length} matches are` : `${already.map(sp => sp.name).join(' and ')} ${already.length > 1 ? 'are' : 'is'}`} already in your tank (above).`
+    : already.length ? `${already.length > 2 ? `${already.length} matches are` : `${already.map(sp => sp.name).join(' and ')} ${already.length > 1 ? 'are' : 'is'}`} already in ${opt.heldWord ?? 'your tank'} (above).`
     : query.q.trim() ? `Nothing for a ${kind} setup matches${other ? ` (${other} in other kinds: change the kind in the Tank section)` : ''}.` : 'No animals for this kind of setup yet.';
   const rn = role ? ROLES.find(r => r[0] === role)![1].toLowerCase() : '';
   return { kind, chips, groups, shown: list.length, hidden, none, placeholder: role ? `Search ${rn}` : `Search ${salt ? 'marine ' : ''}species (common or scientific name)` };

@@ -92,6 +92,24 @@ for (dev of ['desk1280', 'phone390']) {
     facts[dev + ' size after 60'] = await ev(`document.querySelector('[aria-label="Size, percent of adult size"]')?.closest('.field')?.querySelector('.val')?.textContent`);
     await shot('09-selection-size-60', 600);
   });
+  await tryStep('10-door', async () => {   // R54: the start door is the tile picker on a pending list
+    await ev(`localStorage.removeItem('tanklook.scene'); true`); await send('Page.navigate', { url: BASE + '?ui=2' });
+    await waitFor(`document.body.dataset.ui2 === 'ready' && !!window.__gb`); await sleep(5000);
+    await ev(`document.querySelector('.gsanimal')?.click(); true`); await sleep(1200);
+    facts[dev + ' door open'] = await ev(`!!document.querySelector('.dlg.tall')`); if (!facts[dev + ' door open']) throw new Error('door did not open (.gsanimal missing)');
+    facts[dev + ' door tiles'] = await ev(`document.querySelectorAll('.dlg .ptile').length`);
+    await shot('10a-door-picker', 800);
+    await ev(`(${tile('Neon')})?.querySelector('.btn')?.click(); true`); await sleep(500);
+    await ev(`(${tile('Cardinal')})?.querySelector('.btn')?.click(); true`); await sleep(500);
+    await ev(`document.querySelector('.dlg [aria-label^="One more"]')?.click(); true`); await sleep(500);
+    facts[dev + ' door list'] = await ev(`[...document.querySelectorAll('.dlg .srow')].map(r => r.textContent.replace(/\s+/g, ' ').trim()).join(' | ')`);
+    facts[dev + ' door plan'] = await ev(`document.querySelector('.dlg .doorplan')?.textContent`);
+    facts[dev + ' door plan button'] = await ev(`(() => { const b = document.querySelector('.dlg .btn.primary'); const r = b?.getBoundingClientRect(); return b ? b.textContent + ' bottom=' + Math.round(r.bottom) + ' of ' + innerHeight : null; })()`);
+    facts[dev + ' door neon tile left on list (must be false)'] = await ev(`!!(${tile('Neon')})`);
+    await shot('10b-door-list-and-plan', 800);
+    await ev(`(${tile('Cardinal')} || ${tile('Neon')} || document.querySelector('.dlg .ptile'))?.querySelector('.info')?.click(); true`); await sleep(500);
+    await shot('10c-door-detail', 800);
+  });
   save();
 }
 save(); ws.close(); ch.kill(); console.log(JSON.stringify({ fails, errors: errors.slice(0, 5) }, null, 1)); process.exit(0);
