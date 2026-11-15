@@ -100,6 +100,13 @@
    "unit": "each; Dan's Fish $8.99; lo/mode judgement",
    "url": "https://dansfish.com/product.detail/3682/Bronze-Cory-(Corydoras-aeneus)"
   },
+  "animal:pepperedcory": {
+   "lo": 4,
+   "mode": 7,
+   "hi": 10,
+   "unit": "each; Flip Aquatics $9.99; lo/mode judgement",
+   "url": "https://reach.dog/shop/flip-aquatics/products/paleatus-cory"
+  },
   "animal:cardinal": {
    "lo": 3,
    "mode": 6,

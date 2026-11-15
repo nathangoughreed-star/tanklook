@@ -47,6 +47,7 @@ export const SPACE_FACTOR: Record<string, [number, string]> = {
   ramshorn: [0.39, 'invert body; one-species tank: AqAdvisor 16% vs ours 41% with 20'],
   trumpet: [0.61, 'invert body; one-species tank: AqAdvisor 20% vs ours 33% with 20'],
   adf: [0.56, 'amphibian body; one-species tank: AqAdvisor 38% vs ours 68% with 20'],
+  pepperedcory: [0.63, 'same body and size class as the bronze cory, so its factor (no AqAdvisor row for the peppered cory to calibrate against yet)'],
   pygmycory: [1.43, 'tiny body; one-species tank: AqAdvisor 34% vs ours 24% with 20'],
   yellowlab: [1.12, 'mid body; one-species tank: AqAdvisor 115% vs ours 102% with 15'],
   boesemani: [0.82, 'mid body; one-species tank: AqAdvisor 106% vs ours 129% with 16'],

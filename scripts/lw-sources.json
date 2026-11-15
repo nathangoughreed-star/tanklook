@@ -211,6 +211,11 @@
   "b": 3.07,
   "src": "fishbase-bayes"
  },
+ "pepperedcory": {
+  "a": 0.02344,
+  "b": 2.97,
+  "src": "fishbase-bayes"
+ },
  "pandacory": {
   "a": 0.00741,
   "b": 3.14,

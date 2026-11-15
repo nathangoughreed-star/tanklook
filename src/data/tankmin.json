@@ -198,6 +198,26 @@
    },
    "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
   },
+  "pepperedcory": {
+   "red": {
+    "L": 600,
+    "W": 300,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "The Aquarium Guide",
+    "url": "https://theaquariumguide.com/articles/peppered-cory",
+    "states": "15 gal recommended; a 20 gal long gives more floor",
+    "from": "volume",
+    "ref": "g15"
+   },
+   "vol": {
+    "gal": 15,
+    "mark": "sourced",
+    "site": "The Aquarium Guide",
+    "url": "https://theaquariumguide.com/articles/peppered-cory"
+   },
+   "why": "one care page's gallon figure; the footprint follows from it"
+  },
   "kuhli": {
    "red": {
     "L": 600,

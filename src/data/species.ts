@@ -113,8 +113,11 @@ export const speciesTag = (sp: Species) => sp.kind === 'snail' ? 'snail' : sp.zo
 /** Case- and accent-insensitive search over common and scientific names; prefix matches rank first. */
 /** The Animals categories offered in this scope. */
 export const categoriesInScope = () => CATEGORIES.filter(([k]) => speciesInScope({ cat: k, habitat: 'water' }));
-export function searchSpecies(q: string, cat?: Category): Species[] {
-  const pool = scopeSpecies(cat ? SPECIES.filter(s => s.cat === cat) : SPECIES);   // AQ1: aquarium scope hides herps (src/scope.ts)
+/** AL1 part 3: does the search ask for the albino form ("albino cory", "albino pleco", just "albino")? Such a search lists the species sold in that form. */
+export const wantsAlbino = (q: string) => /\balbinos?\b/i.test(q);
+export function searchSpecies(q0: string, cat?: Category): Species[] {
+  const albino = wantsAlbino(q0), q = albino ? q0.replace(/\balbinos?\b/gi, ' ') : q0;
+  const pool = scopeSpecies((cat ? SPECIES.filter(s => s.cat === cat) : SPECIES).filter(s => !albino || s.albino));   // AQ1: aquarium scope hides herps (src/scope.ts)
   const norm = (s: string) => s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
   const terms = norm(q).split(/\s+/).filter(Boolean);
   if (!terms.length) return [...pool].sort((a, b) => a.name.localeCompare(b.name));

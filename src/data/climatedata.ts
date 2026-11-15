@@ -63,6 +63,7 @@ export const WATER: Record<string, { ok: R; tol: R; est?: true }> = {
   goldfish: { ok: [20,24], tol: [12,28] },
   bronzecory: { ok: [22,26], tol: [20,28] },
   pandacory: { ok: [21,25], tol: [17,27] },
+  pepperedcory: { ok: [18,24], tol: [15,26] },
   pygmycory: { ok: [22,26], tol: [20,28] },
   bristlenose: { ok: [22,27], tol: [17,30] },
   oto: { ok: [21,26], tol: [19,28] },

@@ -41,7 +41,7 @@ export const CHEM: Record<string, { ph: R; gh?: R; phOk?: R; ghOk?: R }> = {
   kadango: { ph: [7.6, 8.6], gh: [10, 20] }, syno: { ph: [7.5, 8.5], gh: [10, 25] }, labeo: { ph: [7.6, 8.6], gh: [10, 20] },
   auratus: { ph: [7.6, 8.6], gh: [10, 20] }, livingstonii: { ph: [7.6, 8.6], gh: [10, 20] }, afra: { ph: [7.6, 8.6], gh: [10, 20] },
   angel: { ph: [6.0, 7.5], gh: [0, 15] }, discus: { ph: [5.0, 7.0], gh: [1, 8] }, oscar: { ph: [6.0, 8.0], gh: [5, 20] }, goldfish: { ph: [6, 8], gh: [5, 19] }, comet: { ph: [6, 8], gh: [5, 19] },
-  bronzecory: { ph: [6.0, 8.0], gh: [2, 15] }, pandacory: { ph: [6.0, 7.5], gh: [1, 12] }, pygmycory: { ph: [6.4, 7.4], gh: [2, 15] }, bristlenose: { ph: [6.0, 8.0], gh: [1, 15] },
+  bronzecory: { ph: [6.0, 8.0], gh: [2, 15] }, pandacory: { ph: [6.0, 7.5], gh: [1, 12] }, pepperedcory: { ph: [6.0, 8.0], gh: [2, 15] }, pygmycory: { ph: [6.4, 7.4], gh: [2, 15] }, bristlenose: { ph: [6.0, 8.0], gh: [1, 15] },
   // kuhli: wild water is pH 5.5-6.5, very soft (FishBase); farmed stock is kept to pH 7.5, GH 10 (common aquarium practice), so that is its
   // acceptable range, the preferred one stays soft and acidic (Nathan 2026-10-26)
   oto: { ph: [6.0, 7.5], gh: [5, 19] }, kuhli: { ph: [5.5, 7.0], gh: [1, 6], phOk: [5.5, 7.5], ghOk: [1, 10] }, clownloach: { ph: [5, 7.5], gh: [1, 12] }, sae: { ph: [6.5, 8], gh: [1, 15] },
@@ -60,6 +60,6 @@ export const MARINE_PH: R = [8.0, 8.4];
 /** The smallest group a shoaling or schooling species is kept in (fewer = stressed, shy or nippy). Advice only. */
 export const GROUP: Record<string, number> = {
   neon: 8, cardinal: 8, ember: 8, rummynose: 10, harlequin: 8, chili: 8, danio: 8, whitecloud: 6, cpd: 6, hatchet: 6,
-  greenneon: 8, merah: 8, exclamation: 8, dwarfrasbora: 8, asellus: 10, thaicrab: 5, cherrybarb: 6, tigerbarb: 8, boesemani: 6, bronzecory: 4, sterbai: 6, dwarfpencil: 8, pandacory: 6, pygmycory: 6, oto: 6, kuhli: 5,
+  greenneon: 8, merah: 8, exclamation: 8, dwarfrasbora: 8, asellus: 10, thaicrab: 5, cherrybarb: 6, tigerbarb: 8, boesemani: 6, bronzecory: 4, sterbai: 6, dwarfpencil: 8, pandacory: 6, pepperedcory: 6, pygmycory: 6, oto: 6, kuhli: 5,
   clownloach: 5, cherryshrimp: 10, amano: 6, chromis: 6,
 };

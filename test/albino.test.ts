@@ -7,13 +7,17 @@ import { emptyScene } from '../src/scene/defaults';
 import { Store } from '../src/scene/store';
 import { selectionView, setAlbino, speciesDetail } from '../src/shell/logic/animals';
 import { carryAnimals } from '../src/scene/carry';
+import { searchSpecies, wantsAlbino } from '../src/data/species';
+import { addSpecies } from '../src/shell/logic/animals';
+import { addPick } from '../src/shell/logic/discover';
+import { reconcileFish } from '../src/scene/reeval';
 
 const ALBINO = SPECIES.filter(s => s.albino);
 const fish = (id: string, extra: object = {}) => ({ id: 1, species: id, x: 100, y: 100, depth: 100, yaw: 0, pitch: 0, roll: 0, bend: 0, ...extra });
 
 describe('AL1 albino forms', () => {
   it('only some species carry the flag, each with one https source', () => {
-    expect(ALBINO.map(s => s.id).sort()).toEqual(['angel', 'bristlenose', 'bronzecory', 'oscar', 'tigerbarb']);
+    expect(ALBINO.map(s => s.id).sort()).toEqual(['angel', 'bristlenose', 'bronzecory', 'oscar', 'pepperedcory', 'tigerbarb']);
     for (const s of ALBINO) { expect(s.albino).toMatch(/^https:\/\//); expect(s.albinoForm?.art).toBe(s.art + '~albino'); expect(PLANS[s.art + '~albino']).toBeTruthy(); expect(artMeta(s.art + '~albino')).toEqual(artMeta(s.art)); }
     expect(getSpecies('neon')!.albino).toBeUndefined();
   });
@@ -54,5 +58,22 @@ describe('AL1 albino forms', () => {
     expect(d.rows.some(r => r[0] === 'Albino form')).toBe(true);
     const a = { fish: [fish('oscar', { albino: true })] }, b = { fish: [fish('oscar')] };
     carryAnimals(a as never, b as never); expect((b.fish[0] as { albino?: boolean }).albino).toBe(true);
+  });
+  it('AL3: an albino search finds the base species, and Add puts them in albino', () => {
+    const ids = (q: string) => searchSpecies(q).map(s => s.id).sort();
+    expect(wantsAlbino('Albino cory')).toBe(true); expect(wantsAlbino('albinotic')).toBe(false);
+    expect(ids('albino cory')).toEqual(['bronzecory', 'pepperedcory']);
+    expect(ids('albino pleco')).toEqual(['bristlenose']);
+    expect(ids('albino bristlenose')).toEqual(['bristlenose']);
+    expect(ids('oscar albino')).toEqual(['oscar']);
+    expect(ids('albino')).toEqual(ALBINO.map(s => s.id).sort());
+    expect(ids('cory')).toContain('pandacory');
+    const st = new Store(); const r = addSpecies(st, getSpecies('pepperedcory')!, undefined, 100, true);
+    expect(r.ok).toBe(true); expect(st.tank.fish.length).toBeGreaterThanOrEqual(6); expect(st.tank.fish.every(f => f.albino)).toBe(true);
+    const st2 = new Store(); addSpecies(st2, getSpecies('bronzecory')!); expect(st2.tank.fish.some(f => f.albino)).toBe(false);
+    // the door: the pick carries the flag and the scene's animals come out albino
+    const picks = addPick([], 'bronzecory', true); expect(picks[0].albino).toBe(true);
+    expect(addPick([], 'neon', true)[0].albino).toBeUndefined();
+    const T = { fish: [], pairs: undefined } as never; reconcileFish(T, picks); expect((T as { fish: { albino?: boolean }[] }).fish.every(f => f.albino)).toBe(true);
   });
 });

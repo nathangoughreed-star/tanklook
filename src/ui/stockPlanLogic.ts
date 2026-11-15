@@ -25,7 +25,7 @@ import type { Fish, Pairing, SpaceLimit, Tank, TankSetup, Units } from '../scene
 export type { Pairing };
 /** One species on the list. Sex and pairing are separate inputs (lane RF): species usually kept by sex (CARE.sexed) carry males in `n`,
  *  females in `f` and unsexed animals in `u`; the rest just `n`. `pair` = the pairing status (only asked where pairRule holds). */
-export interface Pk { id: string; n: number; f?: number; u?: number; pair?: Pairing; /** S228: the animals' current length, mm (the stage picked); absent = adult */ tl?: number }
+export interface Pk { id: string; n: number; f?: number; u?: number; pair?: Pairing; /** S228: the animals' current length, mm (the stage picked); absent = adult */ tl?: number; /** AL1: added from an albino search: its animals are drawn albino (species sold in that form only) */ albino?: true }
 export const isSexed = (id: string) => !!CARE[id]?.sexed;
 /** Sex-mix advice and verdicts apply only where the species is commonly sold by sex (DA4, data/soldSex.ts); species with no sex rule are unaffected. */
 export const ratioAdvised = (id: string) => soldBySex(id);
@@ -47,16 +47,17 @@ export function sexFish(have: Fish[], p: Pk): void {
     const female = sexed && i >= p.n && i < p.n + (p.f ?? 0), unsexed = sexed && i >= p.n + (p.f ?? 0);
     if (sp?.female) { if (female) f.sex = 'f'; else delete f.sex; }
     if (sexed) { if (unsexed) delete f.gender; else f.gender = female ? 'f' : 'm'; }
+    if (p.albino && sp?.albino) f.albino = true;   // never removed here: an Albino switched off in the editor stays off
   });
 }
 /** A pick as the brief keeps it (lane GS7): the total, and the split a revisit needs (females, unsexed, the pairing of exactly two, the stage picked). */
 export function stockedOf(p: Pk): Stocked {
-  return { species: p.id, count: totalOf(p), ...(p.f ? { f: p.f } : {}), ...(p.u ? { u: p.u } : {}), ...(asksPairing(p) && p.pair && p.pair !== 'unknown' ? { pair: p.pair } : {}), ...(p.tl ? { tl: p.tl } : {}) };
+  return { species: p.id, count: totalOf(p), ...(p.f ? { f: p.f } : {}), ...(p.u ? { u: p.u } : {}), ...(asksPairing(p) && p.pair && p.pair !== 'unknown' ? { pair: p.pair } : {}), ...(p.tl ? { tl: p.tl } : {}), ...(p.albino ? { albino: true as const } : {}) };
 }
 /** The pick a brief entry stands for; an entry without a split (an older brief, a generator's) is all males, as before. */
 export function pickOfStock(s: Stocked): Pk {
   const f = isSexed(s.species) ? s.f ?? 0 : 0, u = isSexed(s.species) ? s.u ?? 0 : 0;
-  return { id: s.species, n: Math.max(0, s.count - f - u), ...(f ? { f } : {}), ...(u ? { u } : {}), ...(s.pair && s.count === 2 ? { pair: s.pair } : {}), ...(s.tl ? { tl: s.tl } : {}) };
+  return { id: s.species, n: Math.max(0, s.count - f - u), ...(f ? { f } : {}), ...(u ? { u } : {}), ...(s.pair && s.count === 2 ? { pair: s.pair } : {}), ...(s.tl ? { tl: s.tl } : {}), ...(s.albino ? { albino: true as const } : {}) };
 }
 /** The picks a tank holds, read back from its animals (the editor's view of the stocking screen's inputs): species kept by sex count
  *  males, females and unsexed from the tracked sex alone (absent = unsexed); pair species carry the tank's pairing.
@@ -74,6 +75,7 @@ export function picksFromTank(T: Pick<TankSetup, 'fish' | 'pairs'>): Pk[] {
     else p.u = (p.u ?? 0) + 1;
     out.set(f.species, p);
   }
+  for (const p of out.values()) if (T.fish.filter(f => f.species === p.id).every(f => f.albino)) p.albino = true;
   return [...out.values()].map(p => (asksPairing(p) ? { ...p, pair: pairingIn(T, p.id) } : p));
 }
 /** The pairing question is asked: a pair species with exactly two animals on the list. */

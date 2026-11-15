@@ -59,7 +59,7 @@ export function scopedStore(store: Store, tabs: readonly Tab[] | undefined): Sto
 
 // ---------------------------------------------------------------------------------------------------------------- "From an animal I want"
 /** The pick list of the door: one row per species, the species' own starting count (sexed groups in their ratio). */
-export function addPick(picks: Pk[], id: string): Pk[] { return picks.some(p => p.id === id) || !getSpecies(id) ? picks : [...picks, startPick(id)]; }
+export function addPick(picks: Pk[], id: string, albino = false): Pk[] { return picks.some(p => p.id === id) || !getSpecies(id) ? picks : [...picks, { ...startPick(id), ...(albino && getSpecies(id)?.albino ? { albino: true as const } : {}) }]; }
 export const removePick = (picks: Pk[], id: string): Pk[] => picks.filter(p => p.id !== id);
 export const bumpPick = (picks: Pk[], id: string, d: number): Pk[] => picks.map(p => p.id === id ? bump(p, 'n', d) : p);
 export interface DoorPlan { plan: Plan; tankName?: string; gallons?: number; problem?: string; ok: boolean }

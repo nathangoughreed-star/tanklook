@@ -5,7 +5,7 @@
 // Conflicts are explained with viable adjustments the person applies; no animal is dropped and no incompatible group is called fine (GS6 invariant 5).
 import { scopeSpecies } from '../../scope';
 import { CARE } from '../../data/care';
-import { categoriesInScope, SPECIES, getSpecies, searchSpecies, type Category, type Species } from '../../data/species';
+import { categoriesInScope, SPECIES, getSpecies, searchSpecies, wantsAlbino, type Category, type Species } from '../../data/species';
 import { minOf, valueOf } from '../../scene/brief';
 import { envOf } from '../../scene/project';
 import type { TankModel } from '../../data/tanks';
@@ -42,7 +42,7 @@ export const animalsFirst: AnimalsEntry = c => {
     const list = pool();
     if (!list.length) return `<p class="spNote">${q.trim() ? 'No animal by that name' + (everything ? '' : ' in this world') + '.' : 'Nothing more to add here.'}</p>`;
     const cut = q.trim() || cat !== 'all' ? list.slice(0, 60) : list.slice(0, SHOWN);
-    return `<ul class="spRes afRes">${cut.map(s => `<li><button type="button" data-act="add" data-id="${s.id}"><b>${esc(s.name)}</b><i>${esc(s.sci)}</i><span>${CARE[s.id]?.group ? `group of ${CARE[s.id].bands?.ok ?? CARE[s.id].group}+` : ''}</span></button></li>`).join('')}</ul>${list.length > cut.length ? `<p class="spNote">${list.length - cut.length} more: search by name or pick a group.</p>` : ''}`;
+    return `<ul class="spRes afRes">${cut.map(s => `<li><button type="button" data-act="add" data-id="${s.id}"${wantsAlbino(q) && s.albino ? ' data-albino="1"' : ''}><b>${esc(s.name)}</b>${wantsAlbino(q) && s.albino ? ' <em class="tag albino">Albino</em>' : ''}<i>${esc(s.sci)}</i><span>${CARE[s.id]?.group ? `group of ${CARE[s.id].bands?.ok ?? CARE[s.id].group}+` : ''}</span></button></li>`).join('')}</ul>${list.length > cut.length ? `<p class="spNote">${list.length - cut.length} more: search by name or pick a group.</p>` : ''}`;
   };
   const rosterLimits = () => { const b = getBrief(); return { maxUsd: valueOf(b, 'constraints.budget'), minUsd: minOf(b, 'constraints.budget') }; };
   // the project's own water conflict already says fresh and salt cannot share a tank (with both ways out), so the per-animal lines saying the same thing are not repeated
@@ -121,7 +121,7 @@ ${!req ? `<p><button type="button" class="spLink" data-act="sizes">${sizes ? 'Hi
     switch (t.dataset.act) {
       case 'cat': cat = (t.dataset.cat as Category | 'all'); draw(); break;
       case 'all': everything = !everything; draw(); break;
-      case 'add': if (i < 0 && getSpecies(id)) { picks.push(startPick(id)); q = ''; undo = undefined; change(); } break;
+      case 'add': if (i < 0 && getSpecies(id)) { picks.push({ ...startPick(id), ...(t.dataset.albino && getSpecies(id)?.albino ? { albino: true as const } : {}) }); q = ''; undo = undefined; change(); } break;
       case 'del': if (i >= 0) { picks.splice(i, 1); change(); } break;
       case 'inc': case 'dec': if (i >= 0) { picks[i] = bump(picks[i], t.dataset.w as 'n' | 'f' | 'u', t.dataset.act === 'inc' ? 1 : -1); if (!totalOf(picks[i])) picks.splice(i, 1); change(); } break;
       case 'stage': if (i >= 0) { const mm = +(t.dataset.mm ?? 0), { tl: _was, ...rest } = picks[i]; picks[i] = mm > 0 ? { ...rest, tl: mm } : rest; change(); } break;

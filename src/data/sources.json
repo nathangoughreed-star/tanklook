@@ -260,7 +260,15 @@
    "kind": "consensus",
    "note": "per-value page url and verbatim quote in research/sourcing/<batch>.json, checked by scripts/verify-quotes.mjs"
   },
-  "aquariadise.com": {
+  "theaquariumguide.com": {
+   "title": "The Aquarium Guide: peppered cory care guide",
+   "by": "The Aquarium Guide",
+   "url": "https://theaquariumguide.com/articles/peppered-cory",
+   "accessed": "2026-11-15",
+   "kind": "reference",
+   "note": "opened 2026-11-15 (AL1 part 3): peppered cory size, group, tank and temperature"
+  },
+ "aquariadise.com": {
    "title": "Aquariadise care sheets (Thai micro crab, dwarf crayfish)",
    "by": "Aquariadise",
    "url": "https://www.aquariadise.com",

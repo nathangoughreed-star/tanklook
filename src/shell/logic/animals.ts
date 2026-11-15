@@ -142,13 +142,21 @@ export function setCount(store: StockStore, sp: Species, to: (n: number) => numb
 }
 
 /** Add a species at its start count (a group for schooling fish, else one). Already listed: say so, change nothing. */
-export function addSpecies(store: StockStore, sp: Species, sex?: Sex, pct = 100): EditResult {
+export function addSpecies(store: StockStore, sp: Species, sex?: Sex, pct = 100, albino = false): EditResult {
   const sx = sp.female ? sex : undefined;
   if (store.tank.fish.some(f => stockEdit.inRow(f, sp, sx))) return { ok: false, why: `${stockEdit.rowName(sp, sx)} is already in the stocking list: use + or type a number.` };
   const g = startGroup(sp), before = new Set(store.tank.fish.map(f => f.id));
   const r = setCount(store, sp, () => g.total, sx, pct);
   if (r.ok) sexNew(store, sp, g, before, sx);
+  if (r.ok && albino) albinoNew(store, sp, before);
   return r.ok ? { ok: true, note: `${g.total} ${sp.name} added${g.f ? ` (${g.n} male${g.n === 1 ? '' : 's'}, ${g.f} female${g.f === 1 ? '' : 's'})` : ''}.` } : r;
+}
+
+/** AL1: the animals just added from an albino search come in with the albino form on (species sold in it only). */
+function albinoNew(store: StockStore, sp: Species, before: Set<number>) {
+  if (!sp.albino) return;
+  const ids = new Set(store.tank.fish.filter(f => !before.has(f.id) && f.species === sp.id).map(f => f.id));
+  if (ids.size) store.edit(s => { for (const f of s.fish) if (ids.has(f.id)) f.albino = true; });
 }
 
 /** The animals just added get the start group's mix of sexes (males, then females), in the same undo step as the add. */
@@ -300,10 +308,10 @@ export function stagesOf(sp: Species | undefined, units: Units, cur: number): { 
 }
 
 /** A species dropped into the tank: its start count gathered round the drop point, or one more there if it is already listed. */
-export function dropSpecies(store: StockStore & Pick<Store, 'seal'>, sp: Species, sex: Sex | undefined, at: Parameters<typeof stockEdit.applyCount>[4]['at'], pct = 100): EditResult {
+export function dropSpecies(store: StockStore & Pick<Store, 'seal'>, sp: Species, sex: Sex | undefined, at: Parameters<typeof stockEdit.applyCount>[4]['at'], pct = 100, albino = false): EditResult {
   const g = startGroup(sp), before = new Set(store.tank.fish.map(f => f.id));
   const r = setCount(store, sp, k => stockEdit.dropTarget(k, g.total), sex, pct, at);
-  if (r.ok) { if (!store.tank.fish.some(f => f.species === sp.id && before.has(f.id))) sexNew(store, sp, g, before, sex); store.seal(); }
+  if (r.ok) { if (!store.tank.fish.some(f => f.species === sp.id && before.has(f.id))) sexNew(store, sp, g, before, sex); if (albino) albinoNew(store, sp, before); store.seal(); }
   return r;
 }
 

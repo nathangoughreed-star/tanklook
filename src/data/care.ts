@@ -74,7 +74,7 @@ export const CARE: Record<string, AnimalCare> = {
   labeo: A(2, 200, 2, [24, 28]), auratus: A(2, 205, 2, [24, 28]), livingstonii: A(2, 470, 2, [24, 28], { prey: { mm: 80 } }), afra: A(2, 200, 2, [24, 28]),
   angel: A(1, 200, 1, [24, 28], { prey: { mm: 30, inverts: 'shrimp' }, slow: true, guard: 2400 }), discus: A(3, 250, 0, [26, 30], { slow: true, tol: [26, 30] }),
   oscar: A(2, 540, 1, [22, 28], { prey: { mm: 100 } }), goldfish: A(1, 75, 0, [16, 23]), comet: A(1, 300, 0, [18, 22], { tol: [15.6, 26.7] }),
-  bronzecory: A(1, 72, 0, [22, 26]), sterbai: A(1, 41, 0, [24, 28]), pandacory: A(1, 41, 0, [20, 24]), pygmycory: A(1, 38, 0, [22, 26]), bristlenose: A(1, 80, 0, [22, 27]),
+  bronzecory: A(1, 72, 0, [22, 26]), sterbai: A(1, 41, 0, [24, 28]), pandacory: A(1, 41, 0, [20, 24]), pepperedcory: A(1, 72, 0, [18, 24]), pygmycory: A(1, 38, 0, [22, 26]), bristlenose: A(1, 80, 0, [22, 27]),
   oto: A(2, 40, 0, [22, 26]), kuhli: A(1, 80, 0, [24, 28]), clownloach: A(2, 284, 0, [24, 28], { prey: { mm: 30, cats: ['fw-invert'] } }),
   sae: A(1, 93, 0, [22, 26]), hillstream: A(2, 60, 0, [18, 24]), peapuffer: A(2, 20, 2, [24, 28], { prey: { mm: 45, cats: ['fw-invert'] }, nip: true, alone: true, cover: 'plants' }),
   greenneon: A(2, 41, 0, [24, 27]), merah: A(2, 41, 0, [22, 27]), exclamation: A(2, 41, 0, [22, 27]), dwarfrasbora: A(2, 41, 0, [22, 27]),

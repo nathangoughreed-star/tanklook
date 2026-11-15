@@ -786,6 +786,17 @@ export const PLANS: Record<string, Plan> = {
       { k: 'blob', u: 0.88, v: 0.03, ru: 0.1, rv: 0.09, c: '#e6a07c', a: 0.4 },              // peach blush on the head and gill
       { k: 'band', u0: 0.3, u1: 0.9, v0: 0.07, v1: 0.18, c: '#f3e6c2', a: 0.4, f: 0.03 }],   // pale cream belly
     barbels: 0.03, eye: { r: 0.032, iris: ['#d8c8a0', '#2a2418'], dv: -0.05 } },
+  // peppered cory (C. paleatus): olive-grey back and flanks peppered with dark irregular blotches, a dark patch at the dorsal base, pale cream belly, spotted fins
+  pepperedcory: { shimmer: 0.35, shimmerRgb: '205,215,150', gillLine: 0.3, pec: { s: 1.9, v: 0.85 }, plates: true, thick: 0.72, belly: 0.9, wide: 0.5, pedT: 0.28, step: 0.18, noseW: 0.4, depth: 0.35, pedU: 0.18, ped: 0.06, peak: 0.6, back: 0.68, snout: 0.6, mouth: 0.06, shade: ['#4a4934', '#8c8564', '#e8dfbe'], tail: { type: 'fork', h: 0.15, a: 0.6 }, fin: '#cbc3a0',
+    dorsal: { at: 0.68, len: 0.13, h: 0.17, spines: 0.12, nSp: 1, spineH: 0.2, rake: 0.1, drop: 0.3 }, anal: { u0: 0.32, u1: 0.4, h: 0.06 }, adipose: true, pelvic: { u: 0.55, len: 0.09, w: 1.3 },
+    marks: [{ k: 'blob', u: 0.56, v: -0.04, ru: 0.3, rv: 0.09, c: '#8a8a52', a: 0.5 },
+      { k: 'blob', u: 0.62, v: -0.1, ru: 0.12, rv: 0.05, c: '#2a2920', a: 0.7 },
+      { k: 'spots', n: 95, u0: 0.18, u1: 0.88, v0: -0.1, v1: 0.09, r: 0.013, c: '#2a2920', a: 0.78 },
+      { k: 'spots', n: 22, u0: 0.2, u1: 0.8, v0: -0.09, v1: 0.07, r: 0.028, c: '#35341f', a: 0.6 },
+      { k: 'blob', u: 0.9, v: -0.02, ru: 0.08, rv: 0.06, c: '#6c6a46', a: 0.5 },
+      { k: 'band', u0: 0.3, u1: 0.9, v0: 0.075, v1: 0.19, c: '#f1e6c4', a: 0.5, f: 0.03 }],
+    finMarks: [{ k: 'spots', n: 26, u0: 0, u1: 0.7, v0: -0.4, v1: 0.2, r: 0.007, c: '#3a392a', a: 0.7 }],
+    barbels: 0.03, eye: { r: 0.032, iris: ['#cdbd8f', '#2a2418'], dv: -0.05 } },
   pandacory: { shimmer: 0.4, shimmerRgb: '255,225,205', gillLine: 0.25, pec: { s: 1.9, v: 0.85 }, plates: true, thick: 0.72, belly: 0.9, wide: 0.5, pedT: 0.28, step: 0.18, noseW: 0.4, depth: 0.35, pedU: 0.18, ped: 0.06, peak: 0.6, back: 0.68, snout: 0.6, mouth: 0.06, shade: ['#c8c0b0', '#e8e0d0', '#f0ebe0'], tail: { type: 'fork', h: 0.15 }, fin: '#d8d2c4',
     dorsal: { at: 0.68, len: 0.13, h: 0.17, spines: 0.12, nSp: 1, spineH: 0.2, rake: 0.1, drop: 0.3, tint: '#2a2a2a', a: 0.85 }, anal: { u0: 0.32, u1: 0.4, h: 0.06 }, adipose: true, pelvic: { u: 0.55, len: 0.09, w: 1.3 },
     marks: [{ k: 'blob', u: 0.62, v: 0.02, ru: 0.3, rv: 0.1, c: '#f0b890', a: 0.35 }, { k: 'bars', us: [0.885], w: 0.06, c: '#1c1c1c', a: 0.95 }, { k: 'blob', u: 0.24, v: -0.02, ru: 0.06, rv: 0.06, c: '#1c1c1c', a: 0.9 }], barbels: 0.03,

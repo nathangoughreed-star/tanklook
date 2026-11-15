@@ -37,7 +37,7 @@ export type Wish = 'larger-tank' | 'more-planted' | 'less-maintenance' | 'cheape
 export const WISHES: readonly Wish[] = ['larger-tank', 'more-planted', 'less-maintenance', 'cheaper'];
 /** One species of the roster. `count` is the total. Optional split, kept so a revisit shows what the person chose (lane GS7): `f` females and `u` unsexed (the rest of a sexed species are males),
  *  `pair` the pairing status of exactly two animals of a pair species, `tl` the length picked for young animals, mm. An old (v5) brief has none of them and loads unchanged. */
-export interface Stocked { species: string; count: number; f?: number; u?: number; pair?: 'established' | 'unconfirmed' | 'unknown'; tl?: number }
+export interface Stocked { species: string; count: number; f?: number; u?: number; pair?: 'established' | 'unconfirmed' | 'unknown'; tl?: number; albino?: true }
 const PAIRS = ['established', 'unconfirmed', 'unknown'] as const;
 function stockedOf(x: unknown): Stocked | undefined {
   const a = x as Stocked | null;
@@ -47,6 +47,7 @@ function stockedOf(x: unknown): Stocked | undefined {
   if (f + u <= count) { if (f) out.f = f; if (u) out.u = u; }
   if (PAIRS.includes(a.pair as never) && a.pair !== 'unknown' && count === 2) out.pair = a.pair;
   if (num(a.tl, 1, 1e4)) out.tl = Math.round(a.tl!);
+  if (a.albino === true) out.albino = true;
   return out;
 }
 

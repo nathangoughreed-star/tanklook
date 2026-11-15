@@ -47,6 +47,7 @@
   {"id": "goldfish", "name": "Fancy goldfish", "sci": "Carassius auratus", "tl": 203, "group": "shoal", "art": "goldfish"},
   {"id": "comet", "name": "Comet goldfish", "sci": "Carassius auratus", "tl": 250, "group": "shoal", "art": "comet", "note": "Single-tailed goldfish; grows to 30 cm, best in a pond or a very large tank."},
   {"id": "bronzecory", "albino": "https://thetropicaltank.co.uk/Fishindx/cory-aen.htm", "name": "Bronze corydoras", "sci": "Corydoras aeneus", "tl": 65, "zone": "bottom", "group": "shoal", "art": "bronzecory"},
+  {"id": "pepperedcory", "albino": "https://www.tropco.co.uk/-p-7184.html", "name": "Peppered corydoras", "sci": "Corydoras paleatus", "tl": 70, "zone": "bottom", "group": "shoal", "art": "pepperedcory", "note": "Tolerates cooler water than most tropical fish, about 64-75 °F; females to about 3 in, males smaller."},
   {"id": "pandacory", "name": "Panda corydoras", "sci": "Corydoras panda", "tl": 46, "zone": "bottom", "group": "shoal", "art": "pandacory"},
   {"id": "pygmycory", "name": "Pygmy corydoras", "sci": "Corydoras pygmaeus", "tl": 25, "zone": "bottom", "group": "shoal", "art": "pygmycory", "note": "Often hovers in mid-water shoals; females to about 3 cm."},
   {"id": "sterbai", "name": "Sterba's corydoras", "sci": "Corydoras sterbai", "tl": 65, "zone": "bottom", "group": "shoal", "art": "sterbai", "note": "A warm-water cory, about 24-28 °C (Seriously Fish): a usual bottom companion for rams."},

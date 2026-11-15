@@ -14,6 +14,7 @@ import {
   DEFAULT_QUERY, pickView, stockView, selectionView, addSpecies, setCount, removeMisfits,
   flip, del, dup, setSex, setSize, setAlbino, dropSpecies, copySelection, COPY_START, COPY_RANGE, type CopyOpt, setPair, setGender, findSpecies, rowKeyOf, speciesDetail, noteIn, type PickQuery, type PickRow,
 } from './logic/animals';
+import { wantsAlbino } from '../data/species';
 import { Icon } from './ui';
 import { dragOut } from './drag';
 import { aqView, aqCheck, onAq } from './logic/aq';
@@ -58,6 +59,7 @@ export function AnimalsSection({ store, getViewer, pending }: { store: Store; ge
   const [query, setQuery] = useState<PickQuery>({ ...DEFAULT_QUERY, fitsOnly: loadFits() });
   const [note, setNote] = useState<{ text: string; bad: boolean } | null>(null);
   const [pvId, setPvId] = useState<string | null>(null);
+  const albinoSearch = wantsAlbino(query.q);   // AL1 part 3: "albino cory": Add from the card puts the fish in with the albino form on
   const pct = 100;   // AT1 (R42): new animals come in at the default size; a placed one is resized in the Selection drawer
   useEffect(() => onAq(() => setN(n => n + 1)), []);
   const aq = aqView(S);
@@ -75,7 +77,7 @@ export function AnimalsSection({ store, getViewer, pending }: { store: Store; ge
   const set = (q: Partial<PickQuery>) => setQuery({ ...query, ...q });
   const flipFits = () => { saveFits(!query.fitsOnly); set({ fitsOnly: !query.fitsOnly }); };
   const report = (r: ReturnType<typeof addSpecies>) => { if (!r.ok) say(r.why, true); else if (r.note) say(r.note); };
-  const add = (sp: NonNullable<ReturnType<typeof getSpecies>>) => { if (pending) { pending.set(addPick(pending.picks, sp.id)); setPvId(null); } else report(addSpecies(store, sp, undefined, pct)); };
+  const add = (sp: NonNullable<ReturnType<typeof getSpecies>>) => { if (pending) { pending.set(addPick(pending.picks, sp.id, albinoSearch && !!sp.albino)); setPvId(null); } else report(addSpecies(store, sp, undefined, pct, albinoSearch && !!sp.albino)); };
   const pick = (id: string) => { const f = store.tank.fish.find(x => rowKeyOf(x) === id); if (f) store.select(f.id); };
 
   return (
@@ -160,9 +162,9 @@ export function AnimalsSection({ store, getViewer, pending }: { store: Store; ge
             const sp = getSpecies(r.id)!;
             return (
               <div class={`ptile${r.level !== 'ok' ? ' gated' : ''}`}
-                onPointerDown={e => { if (!getViewer || (e.target as HTMLElement).closest('button')) return; dragOut(e, sp.name, getViewer, store, (at, overView) => { if (at || overView) report(dropSpecies(store, sp, undefined, at ?? undefined, pct)); }); }} title={r.level !== 'ok' ? [r.reason, ...r.more, 'Still addable: Add anyway.'].join('; ') : noteIn(sp.note ?? '', units)}>
+                onPointerDown={e => { if (!getViewer || (e.target as HTMLElement).closest('button')) return; dragOut(e, sp.name, getViewer, store, (at, overView) => { if (at || overView) report(dropSpecies(store, sp, undefined, at ?? undefined, pct, albinoSearch && !!sp.albino)); }); }} title={r.level !== 'ok' ? [r.reason, ...r.more, 'Still addable: Add anyway.'].join('; ') : noteIn(sp.note ?? '', units)}>
                 <div class="tart"><FishArt id={r.id} look={r.look} /><button type="button" class="info" aria-label={`${r.name}: details`} title="Details" onClick={() => setPvId(r.id)}>i</button></div>
-                <div class="tname">{r.name}{r.tag ? <b class="tag">{r.tag}</b> : null}</div>
+                <div class="tname">{r.name}{r.tag ? <b class="tag">{r.tag}</b> : null}{albinoSearch && sp.albino ? <b class="tag albino" title="Add puts it in with the albino form on">Albino</b> : null}</div>
                 <div class="tmeta"><span>{r.size}</span>{r.care ? <span class="care">{r.care}</span> : null}</div>
                 {r.reason ? <small class={`why ${tone(r.level)}`}>{r.reason}{r.more.length ? ` (+${r.more.length} more)` : ''}</small> : null}
                 <button type="button" class={`btn sm${r.level === 'ok' ? '' : ' ghost'}`} title={sp.female ? 'Adds the males and females in the proportion the species is kept' : `Add ${r.startCount > 1 ? r.startCount : 'one'}`}
