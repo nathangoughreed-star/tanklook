@@ -42,6 +42,8 @@ NAMES = {
     'oto': 'Oto (Otocinclus vittatus)',
     'kuhli': 'Kuhli Loach (Pangio kuhlii)',
     'clownloach': 'Clown Loach (Chromobotia macracanthus)',
+    'balashark': 'Bala Shark (Balantiocheilos melanopterus)',  # added 2026-11-15 (FS1)
+    'redtailshark': 'Red Tailed Black Shark (Epalzeorhynchos bicolor)',  # added 2026-11-15 (FS1)
     'sae': 'Siamese Algae Eater (Crossocheilus siamensis)',
     'peapuffer': 'Dwarf Puffer (Carinotetraodon travancoricus)',
     'cpd': 'Celestial Pearl Danio (Danio margaritatus)',

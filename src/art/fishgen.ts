@@ -822,6 +822,18 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { at: 0.63, len: 0.13, h: 0.11, rake: 0.12, tip: 'point', drop: 0.35 }, anal: { at: 0.37, len: 0.08, h: 0.055, rake: 0.3, drop: 0.5 }, pelvic: { u: 0.55, len: 0.07, w: 1.1 },
     marks: [{ k: 'band', u0: 0.18, u1: 0.99, v0: -0.02, v1: 0.02, c: '#1c1a18', a: 0.92, f: 0.008 }], finMarks: [{ k: 'band', u0: 0.08, u1: 0.22, v0: -0.02, v1: 0.02, c: '#1c1a18', a: 0.85, f: 0.006 }], barbels: 0.012,
     eye: { r: 0.022, iris: ['#c8b890', '#3a3020'] } },
+  // ---------- lane FS1 (2026-11-15): the two "sharks" (really minnows), from Commons photos ----------
+  // bala shark: silver, large scales, big dark eye; tall swept dorsal and a deeply forked tail, every fin edged in black with a cream inner stripe
+  balashark: { shimmer: 0.55, shimmerRgb: '235,225,190', gillLine: 0.3, gape: 0.026, gapeDrop: 0.01, thick: 0.4, depth: 0.225, pedU: 0.25, ped: 0.032, peak: 0.58, snout: 0.55, mouth: 0.012, scale: 0.036, shade: ['#7d8280', '#bdc0b8', '#e8e6da'], tail: { type: 'fork', h: 0.19, tint: '#17160f', a: 0.97, edge: '#0e0d0a' }, fin: '#17160f',
+    dorsal: { at: 0.67, len: 0.14, h: 0.15, rake: 0.0, lead: 0.2, tip: 'point', trail: 0.12, drop: 0.0, tint: '#17160f', a: 0.97, edge: '#0e0d0a' }, anal: { at: 0.4, len: 0.1, h: 0.075, rake: 0.2, lead: 0.5, tip: 'point', trail: 0.05, drop: 0.2, tint: '#17160f', a: 0.97 },
+    pelvic: { u: 0.6, len: 0.11, w: 1.3, tint: '#16150f' }, pec: { s: 1.1, tint: '#9a9a86' },
+    finMarks: [{ k: 'poly', pts: [[0.235, -0.01, 'c'], [0.055, -0.15, 'c'], [0.075, -0.11], [0.2, 0.0, 'c']], c: '#d9d3b0', a: 0.95 }, { k: 'poly', pts: [[0.235, 0.01, 'c'], [0.055, 0.15, 'c'], [0.075, 0.11], [0.2, 0.0, 'c']], c: '#d9d3b0', a: 0.95 }],
+    eye: { r: 0.036, u: 0.9, iris: ['#9a8650', '#2a2418'], pupil: '#050505' } },
+  // red-tail shark: velvet black, a bright red forked tail, tall swept dorsal, black paired fins, small barbels
+  redtailshark: { gape: 0.02, gapeDrop: 0.012, thick: 0.52, belly: 0.3, depth: 0.215, pedU: 0.22, ped: 0.042, peak: 0.62, back: 0.54, snout: 0.5, mouth: 0.02, barbels: 0.014, scale: 0.02, shade: ['#141619', '#23262a', '#34373c'], tail: { type: 'fork', h: 0.15, tint: '#dc4218', a: 0.97, edge: '#a82810' }, fin: '#1c1e22',
+    dorsal: { at: 0.7, len: 0.2, h: 0.19, rake: 0.0, lead: 0.15, tip: 'point', trail: 0.13, drop: 0.0, tint: '#181a1d', a: 0.97 }, anal: { at: 0.42, len: 0.09, h: 0.08, rake: 0.2, tip: 'point', trail: 0.03, drop: 0.3, tint: '#181a1d', a: 0.97 },
+    pelvic: { u: 0.6, len: 0.12, w: 1.4, tint: '#1a1c1f' }, pec: { s: 1.1, tint: '#33363a' },
+    eye: { r: 0.02, iris: ['#6a4a2a', '#1a1008'], pupil: '#050505' } },
   // ---------- aquatic roster (lane T4, 2026-10-16): new silhouettes, scales and habitats ----------
   // pygmy corydoras: a miniature, slimmer cory; silver-grey with a black stripe snout to tail root, a pale line above it
   // Sterba's corydoras (Corydoras sterbai): dark grey-black, the head and front of the body covered in cream dots that run together
@@ -1092,6 +1104,7 @@ const FIN_RANGE: Record<string, FinRange> = {
   bristlenose: { lo: 0.1, hi: 0.9, def: 0.35 }, betta: { lo: 0.7, hi: 1, def: 1 }, angel: { lo: 0.85, hi: 1, def: 1 },
   yellowtang: FIN_TANG, bluetang: FIN_TANG,
   cardinal: FIN_TETRA, tetra: FIN_TETRA, ember: FIN_TETRA, rummynose: FIN_TETRA, dwarfpencil: FIN_TETRA, harlequin: FIN_TETRA, chili: FIN_TETRA,
+  balashark: { lo: 0.8, hi: 1, def: 1 }, redtailshark: { lo: 0.6, hi: 1, def: 1 },
   kribensis: FIN_CICHLID, discus: FIN_CICHLID, oscar: FIN_CICHLID, bolivianram: FIN_CICHLID, cockatoo: FIN_CICHLID, peacock: FIN_CICHLID,
   demasoni: FIN_CICHLID, kadango: FIN_CICHLID, livingstonii: FIN_CICHLID, afra: FIN_CICHLID, auratus: FIN_CICHLID,
 };

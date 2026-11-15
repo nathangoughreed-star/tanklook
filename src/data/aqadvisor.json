@@ -127,6 +127,14 @@
   "aq": "200909300045",
   "name": "Clown Loach (Chromobotia macracanthus)"
  },
+ "balashark": {
+  "aq": "200909300012",
+  "name": "Bala Shark (Balantiocheilos melanopterus)"
+ },
+ "redtailshark": {
+  "aq": "200909300186",
+  "name": "Red Tailed Black Shark (Epalzeorhynchos bicolor)"
+ },
  "sae": {
   "aq": "200909300207",
   "name": "Siamese Algae Eater (Crossocheilus siamensis)"

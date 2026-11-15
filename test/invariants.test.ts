@@ -263,7 +263,7 @@ describe('invariant 6: an unsuitable temperature cannot be rescued by excess spa
       const v = tempVerdict([{ species: ALLF[i].id, n: 1 }, { species: ALLF[j].id, n: 1 }]).level; if (v === 'compromise') comp++; else none++;
     }
     expect(comp + none).toBeGreaterThan(0);
-    expect({ comp, none }).toEqual({ comp: 183, none: 55 }) // S245: 238 disjoint-comfortable freshwater pairs of 2485; the 55 are refused, the 183 fit with a caution;
+    expect({ comp, none }).toEqual({ comp: 184, none: 57 }) // FS1 2026-11-15: +bala shark and red-tail shark (was 183 / 55 before them). S245: 238 disjoint-comfortable freshwater pairs of 2485; the 55 are refused, the 183 fit with a caution;
   });
 });
 

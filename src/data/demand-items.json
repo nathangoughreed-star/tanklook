@@ -506,6 +506,20 @@
    "unit": "each; AU $9.99, Nuaqua $6.99; lo judged",
    "url": "https://aquaticsunlimited.com/product/tetra-rummynose-hemigrammus-rhodostomus/"
   },
+  "animal:balashark": {
+   "lo": 6,
+   "mode": 9,
+   "hi": 25,
+   "unit": "each; Aquatic Arts tank-bred $5.99, PetSmart $5.99-11.99 by size, Quinn's Fins $8.99+; lo/hi judgement",
+   "url": "https://aquaticarts.com/products/bala-shark-balantiocheilos-melanopterus-tank-bred"
+  },
+  "animal:redtailshark": {
+   "lo": 7,
+   "mode": 8,
+   "hi": 15,
+   "unit": "each; PetSmart $7.99, Aquatics Unlimited from $7.99, Quinn's Fins from $7; hi judgement",
+   "url": "https://www.petsmart.com/fish/live-fish/goldfish-betta-and-more/red-tailed-shark-15294.html"
+  },
   "animal:sae": {
    "lo": 3.99,
    "mode": 5.99,

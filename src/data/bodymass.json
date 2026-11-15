@@ -318,6 +318,18 @@
    "model": 1.96,
    "flag": true
   },
+  "balashark": {
+   "a": 0.00646,
+   "b": 3.09,
+   "src": "fishbase-bayes",
+   "model": 0.72
+  },
+  "redtailshark": {
+   "a": 0.00871,
+   "b": 3.09,
+   "src": "fishbase-bayes",
+   "model": 0.78
+  },
   "sae": {
    "a": 0.00813,
    "b": 3.05,

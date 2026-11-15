@@ -27,6 +27,7 @@ const REQUIRED: Record<string, SpeciesLid> = {
   betta: req('bettas jump, and they breathe the air above the water, so a lid also keeps that air warm'),
   kuhli: req('kuhli loaches find and squeeze through any gap in the top'),
   hillstream: req('hillstream loaches climb the glass and flow out of the water'),
+  balashark: req('bala sharks are known to jump and have a powerful leap; Seriously Fish advises a heavy, tight lid'),
   sae: req('Siamese algae eaters leap when startled'),
   firefish: req('firefish are famous jumpers; an open top loses them overnight'),
   royalgramma: req('royal grammas jump out of open tanks'),

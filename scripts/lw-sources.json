@@ -246,6 +246,16 @@
   "b": 2.97,
   "src": "fishbase-bayes"
  },
+ "balashark": {
+  "a": 0.00646,
+  "b": 3.09,
+  "src": "fishbase-bayes"
+ },
+ "redtailshark": {
+  "a": 0.00871,
+  "b": 3.09,
+  "src": "fishbase-bayes"
+ },
  "sae": {
   "a": 0.00813,
   "b": 3.05,

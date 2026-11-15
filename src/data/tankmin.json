@@ -1135,6 +1135,30 @@
    },
    "why": "2 geometry pages: lowest stated minimum"
   },
+  "balashark": {
+   "red": {
+    "L": 2400,
+    "W": 600,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/balantiocheilos-melanopterus/",
+    "states": "240 × 60 cm base (about 864 litres), the smallest considered to house a group of adults",
+    "from": "footprint"
+   },
+   "why": "one geometry page: Seriously Fish's smallest tank for a group of adults; FishBase advises a tank over 150 cm for 5+"
+  },
+  "redtailshark": {
+   "red": {
+    "L": 1200,
+    "W": 450,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/epalzeorhynchos-bicolor/",
+    "states": "120 × 45 cm (48 × 18 in)",
+    "from": "footprint"
+   },
+   "why": "one geometry page: the smallest Seriously Fish considers, for a single fish"
+  },
   "sae": {
    "red": {
     "L": 765,
