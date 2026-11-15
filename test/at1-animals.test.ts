@@ -50,3 +50,44 @@ describe('the selected animal size (R42)', () => {
     setSize(st, 100); expect(st.tank.fish.find(f => f.id === f0.id)!.tl).toBeUndefined();
   });
 });
+
+import { stockView, speciesDetail } from '../src/shell/logic/animals';
+import { getSpecies } from '../src/data/species';
+
+// vitest turns a ?raw css import into '', so read the file with Node's own fs
+const css: string = (globalThis as unknown as { process: { getBuiltinModule(n: string): { readFileSync(p: string, e: string): string } } }).process.getBuiltinModule('fs').readFileSync('src/shell/shell.css', 'utf8');
+
+describe('R47: every animal in the tank shows a stocking row', () => {
+  it('rows add up to the animals: added through the picker, plus old-file fish with no sex or tracked sex', () => {
+    const st = new Store(); st.edit(s => { s.fish = []; });
+    expect(addSpecies(st, one('white cloud')).ok).toBe(true);
+    expect(addSpecies(st, one('black molly')).ok).toBe(true);
+    st.edit(s => { const id = s.fish.reduce((m, f) => Math.max(m, f.id), 0) + 1; s.fish.push({ ...s.fish[0], id, species: one('cardinal tetra').id }, { ...s.fish[0], id: id + 1, species: 'no-such-species' }); });
+    const v = stockView(st.tank, 'guided', 'in', createFitter());
+    expect(v.rows.reduce((n, r) => n + r.n, 0)).toBe(st.tank.fish.filter(f => getSpecies(f.species)).length);
+    expect(v.rows.every(r => r.n > 0 && r.name)).toBe(true);
+  });
+  it('the stock row class is not the screen-reader-only class (.sr hid every row at 1 px)', () => {
+    const hidden = [...css.matchAll(/([^{}]+)\{[^}]*clip: rect\(0 0 0 0\)[^}]*\}/g)].map(m => m[1].trim());
+    expect(css.length, 'css loaded').toBeGreaterThan(1000); expect(hidden.length).toBeGreaterThan(0);
+    for (const sel of hidden) expect(sel.split(',').map(x => x.trim())).not.toContain('.srow');
+    expect(css).toMatch(/\.srow \{ display: grid/);
+  });
+});
+
+describe('R48: the species detail model', () => {
+  it('has care level, size, tank in gallons, group, temperament, water in deg F and the fit; leaves out what the catalogue lacks', () => {
+    const S = emptyTank(), sp = one('white cloud'), f = createFitter();
+    const d = speciesDetail(S, sp, f.exactNow(S, 'in', 'guided', sp), 'in'), k = d.rows.map(r => r[0]);
+    for (const need of ['Care level', 'Adult size', 'Smallest tank', 'Group', 'Temperament', 'Water temperature', 'Swims in']) expect(k, need).toContain(need);
+    expect(d.rows.find(r => r[0] === 'Smallest tank')![1]).toMatch(/gal/);
+    expect(d.rows.find(r => r[0] === 'Water temperature')![1]).toMatch(/°F/);
+    expect(d.rows.find(r => r[0] === 'Adult size')![1]).toMatch(/″/);
+    expect(d.startCount).toBeGreaterThanOrEqual(6); expect(d.look).toBe(sp.look);
+  });
+  it('a held-back species says why', () => {
+    const S = emptyTank(); S.tank = { ...S.tank, L: 406, H: 254, D: 203 };
+    const sp = one('oscar'), d = speciesDetail(S, sp, createFitter().exactNow(S, 'in', 'guided', sp), 'in');
+    expect(d.fit.level).not.toBe('ok'); expect(d.fit.text.length).toBeGreaterThan(5);
+  });
+});

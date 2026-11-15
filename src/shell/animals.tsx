@@ -7,11 +7,13 @@ import { getSpecies, type Sex } from '../data/species';
 import { emptyBrief, rulesOf } from '../scene/brief';
 import { LIMITS } from '../scene/validate';
 import { createFitter } from '../ui/logic/animalPicker';
+import { drawFishCard } from '../art/placeholder';
+import { drawSnailCard } from '../art/snails';
 import {
   DEFAULT_QUERY, pickView, stockView, selectionView, addSpecies, setCount, removeMisfits,
-  flip, del, dup, setSex, setSize, dropSpecies, copySelection, COPY_START, COPY_RANGE, type CopyOpt, setPair, setGender, findSpecies, rowKeyOf, type PickQuery, type PickRow,
+  flip, del, dup, setSex, setSize, dropSpecies, copySelection, COPY_START, COPY_RANGE, type CopyOpt, setPair, setGender, findSpecies, rowKeyOf, speciesDetail, type PickQuery, type PickRow,
 } from './logic/animals';
-import { Icon, Pill } from './ui';
+import { Icon } from './ui';
 import { dragOut } from './drag';
 import { aqView, aqCheck, onAq } from './logic/aq';
 
@@ -24,12 +26,27 @@ export const pickable = { fish: false };
 
 const tone = (l: PickRow['level']) => (l === 'problem' ? 'bad' : 'warn');
 
+/** The species picture: the baked still (public/gallery/<look>.webp), else the painted card, else nothing. */
+const paint = new Map<string, string>();
+function FishArt({ id, look, big }: { id: string; look: string; big?: boolean }) {
+  const baked = `${import.meta.env.BASE_URL}gallery/${encodeURIComponent(look)}.webp`;
+  const [src, setSrc] = useState(baked);
+  useEffect(() => { setSrc(baked); }, [baked]);
+  const fallback = () => {
+    let u = paint.get(look);
+    if (u === undefined) { try { const sp = getSpecies(id)!; u = (sp.kind === 'snail' ? drawSnailCard(sp.art, 'side', 480) : drawFishCard(sp.art, sp.aspect, 480)).toDataURL(); } catch { u = ''; } paint.set(look, u); }
+    if (u && u !== src) setSrc(u);
+  };
+  return <img class={`fishart${big ? ' big' : ''}`} src={src} alt="" loading={big ? 'eager' : 'lazy'} draggable={false} onError={fallback} />;
+}
+
 export function AnimalsSection({ store, getViewer }: { store: Store; getViewer?: () => Viewer | undefined }) {
   const S = store.tank, units = store.scene.units, rules = rulesOf(S.brief ?? emptyBrief());
   const fitter = useRef(createFitter()).current;
   const [, setN] = useState(0);
   const [query, setQuery] = useState<PickQuery>({ ...DEFAULT_QUERY, fitsOnly: loadFits() });
   const [note, setNote] = useState<{ text: string; bad: boolean } | null>(null);
+  const [pvId, setPvId] = useState<string | null>(null);
   const pct = 100;   // AT1 (R42): new animals come in at the default size; a placed one is resized in the Selection drawer
   useEffect(() => onAq(() => setN(n => n + 1)), []);
   const aq = aqView(S);
@@ -40,6 +57,7 @@ export function AnimalsSection({ store, getViewer }: { store: Store; getViewer?:
   const pv = pickView(S, units, rules, fitter, query);
   const sv = stockView(S, rules, units, fitter);
   // the exact fit reading is worked out a slice at a time after the first paint, then redraws the list
+  const detSp = pvId ? getSpecies(pvId) : undefined, det = detSp ? speciesDetail(S, detSp, fitter.exactNow(S, units, rules, detSp), units) : null;
   const list = useMemo(() => findSpecies(S, query.q, query.role), [S, query.q, query.role]);
   useEffect(() => { fitter.refineFits(S, units, rules, list, () => setN(n => n + 1)); });
 
@@ -56,7 +74,7 @@ export function AnimalsSection({ store, getViewer }: { store: Store; getViewer?:
       {sv.rows.length ? (
         <div class="stock" aria-label="Stocking">
           {sv.rows.map(r => (
-            <div class={`sr${r.off ? ' misfit' : ''}${r.level !== 'ok' ? ' gated' : ''}${store.selected && rowKeyOf(store.selected) === r.key ? ' sel' : ''}`} data-sp={r.key}>
+            <div class={`srow${r.off ? ' misfit' : ''}${r.level !== 'ok' ? ' gated' : ''}${store.selected && rowKeyOf(store.selected) === r.key ? ' sel' : ''}`} data-sp={r.key}>
               <button type="button" class="nm" title={`${r.sci}${r.more.length ? ' · ' + r.more.join('; ') : ''}`} onClick={() => pick(r.key)}>
                 <span class="t">{r.name}</span>
                 {r.reason ? <small class={`why ${tone(r.level)}`}>{r.off ? '✕ ' : ''}{r.reason}{r.more.length ? ` (+${r.more.length} more)` : ''}</small> : null}
@@ -85,6 +103,19 @@ export function AnimalsSection({ store, getViewer }: { store: Store; getViewer?:
           <button type="button" class="btn sm" title="Take off the animals that do not live in this water (Ctrl+Z brings them back)" onClick={() => report(removeMisfits(store))}>Remove misfits ({sv.misfits})</button></div>
       ) : null}
 
+      {det ? (
+        <div class="detail">
+          <button type="button" class="btn sm ghost back" onClick={() => setPvId(null)}>← Back to the list</button>
+          <div class="dart"><FishArt id={det.id} look={det.look} big /></div>
+          <div class="dname">{det.name}{det.tag ? <b class="tag">{det.tag}</b> : null}</div>
+          <div class="m"><i>{det.sci}</i></div>
+          {det.note ? <div class="hint">{det.note}</div> : null}
+          <div class="rundown">{det.rows.map(([k, v]) => <div class="drow"><span>{k}</span><b>{v}</b></div>)}</div>
+          <div class={`fitbox ${det.fit.level}`}><b>{det.fit.level === 'ok' ? 'Fits' : det.fit.level === 'problem' ? 'Held back' : 'Caution'}</b> {det.fit.text}{det.fit.more.length ? <ul>{det.fit.more.map(m => <li>{m}</li>)}</ul> : null}{det.fit.inTank ? <div class="hint">{det.fit.inTank} already in the tank.</div> : null}</div>
+          <div class="acts-row"><button type="button" class={`btn${det.fit.level === 'ok' ? ' primary' : ' ghost'}`} title={det.dimorphic ? 'Adds the males and females in the proportion the species is kept' : ''}
+            onClick={() => report(addSpecies(store, detSp!, undefined, pct))}>{det.fit.level === 'ok' ? `Add ${det.start}` : `Add ${det.start} anyway`}</button></div>
+        </div>
+      ) : (<>
       <div class="cap">Add animals</div>
       <label class="search"><Icon name="search" /><input class="input" type="search" placeholder={pv.placeholder} value={query.q} aria-label="Search animals" onInput={e => set({ q: (e.target as HTMLInputElement).value })} /></label>
       <button type="button" class="tglrow" role="switch" aria-checked={query.fitsOnly} onClick={flipFits}>
@@ -95,21 +126,27 @@ export function AnimalsSection({ store, getViewer }: { store: Store; getViewer?:
       {pv.groups.map(g => (
         <div class="pgroup">
           {query.role ? null : <div class="cap">{g.label} <span class="n">{g.rows.length}</span></div>}
+          <div class="pgrid">
           {g.rows.map(r => {
             const sp = getSpecies(r.id)!;
             return (
-              <div class={`prow${r.level !== 'ok' ? ' gated' : ''}`}
+              <div class={`ptile${r.level !== 'ok' ? ' gated' : ''}`} role="button" tabIndex={0} aria-label={`${r.name}: details`} onClick={e => { if (!(e.target as HTMLElement).closest('button')) setPvId(r.id); }}
+                onKeyDown={e => { if (e.key === 'Enter' && e.target === e.currentTarget) setPvId(r.id); }}
                 onPointerDown={e => { if (!getViewer || (e.target as HTMLElement).closest('button')) return; dragOut(e, sp.name, getViewer, store, (at, overView) => { if (at || overView) report(dropSpecies(store, sp, undefined, at ?? undefined, pct)); }); }} title={r.level !== 'ok' ? [r.reason, ...r.more, 'Still addable: Add anyway.'].join('; ') : sp.note ?? ''}>
-                <div class="pi"><span class="t">{r.name}{r.tag ? <b class="tag">{r.tag}</b> : null}</span><span class="m">{r.size} · <i>{r.sci}</i></span>
-                  {r.reason ? <small class={`why ${tone(r.level)}`}>{r.reason}{r.more.length ? ` (+${r.more.length} more)` : ''}</small> : null}</div>
-                {r.inTank ? <Pill tone="neutral">{r.inTank} in</Pill> : null}
-                <button type="button" class={`btn sm${r.level === 'ok' ? '' : ' ghost'}`} title={sp.female ? 'Adds the males; use the Selection box to switch one to a female' : `Add ${r.startCount > 1 ? r.startCount : 'one'}`}
+                <div class="tart"><FishArt id={r.id} look={r.look} />{r.inTank ? <span class="tin">{r.inTank} in</span> : null}</div>
+                <div class="tname">{r.name}{r.tag ? <b class="tag">{r.tag}</b> : null}</div>
+                <div class="tmeta"><span>{r.size}</span>{r.care ? <span class="care">{r.care}</span> : null}</div>
+                {r.reason ? <small class={`why ${tone(r.level)}`}>{r.reason}{r.more.length ? ` (+${r.more.length} more)` : ''}</small> : null}
+                <button type="button" class={`btn sm${r.level === 'ok' ? '' : ' ghost'}`} title={sp.female ? 'Adds the males and females in the proportion the species is kept' : `Add ${r.startCount > 1 ? r.startCount : 'one'}`}
                   onClick={() => report(addSpecies(store, sp, undefined, pct))}>{r.level === 'ok' ? `Add${r.startCount > 1 ? ' ' + r.startCount : ''}` : 'Add anyway'}</button>
               </div>
             );
           })}
+          </div>
         </div>
       ))}
+      {pv.shown ? <div class="endnote hint">{pv.shown} {pv.shown === 1 ? 'animal' : 'animals'} shown{pv.hidden ? `, ${pv.hidden} held back by "Fits this tank"` : ''}.</div> : null}
+      </>)}
     </div>
   );
 }
