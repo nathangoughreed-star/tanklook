@@ -1,0 +1,22 @@
+{
+ "commit": "7cd5802b",
+ "build": 2150,
+ "dirty": false,
+ "when": "2026-11-15T20:42:56.434Z",
+ "size": [
+  1600,
+  900
+ ],
+ "fx": [
+  "caustics,depth,contact,ground,variety,waterline,embed,tonemap:aces"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "nathan-white-cloud-13g-2026-11-15": {
+   "shots": [
+    "nathan-white-cloud-13g-2026-11-15-front-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces.png"
+   ],
+   "ab": {}
+  }
+ }
+}
