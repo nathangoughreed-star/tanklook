@@ -177,10 +177,11 @@ const LIGHT = new THREE.Vector3(-0.35, 1, 0.55).normalize();
 const cache = new Map<string, THREE.BufferGeometry>();
 
 /** The wall's geometry for one tank (cached by tank and settings: the scene rebuilds on every edit). */
-export function backdropGeometry(T: Tank, b: BackdropSettings, rim = false, sides: readonly BgSide[] = ['back']): THREE.BufferGeometry | null {
+export interface BackdropNotch { x0: number; x1: number; yMin: number }
+export function backdropGeometry(T: Tank, b: BackdropSettings, rim = false, sides: readonly BgSide[] = ['back'], notches: readonly BackdropNotch[] = []): THREE.BufferGeometry | null {
   const depth = backdropDepth(b, T);
   if (!depth || !sides.length) return null;
-  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.sideLens}|${T.bowMin}|${T.pieDeg}|${T.frontBulge}|${b.kind}|${depth}|${b.seed}|${rim}|${[...sides].sort()}`;
+  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.sideLens}|${T.bowMin}|${T.pieDeg}|${T.frontBulge}|${b.kind}|${depth}|${b.seed}|${rim}|${[...sides].sort()}|${notches.map(n => `${n.x0.toFixed(1)},${n.x1.toFixed(1)},${n.yMin.toFixed(1)}`).join(';')}`;
   const hit = cache.get(key);
   if (hit) return hit;
   const f = field(b.kind, b.seed), col = new THREE.Color(), gap = 1.5;
@@ -235,7 +236,9 @@ export function backdropGeometry(T: Tank, b: BackdropSettings, rim = false, side
       for (let j = 0; j < ny; j++) {
         const y = Math.min(top, j * step), h = sat(f(s, y, col));
         col.multiplyScalar(0.5 + 0.5 * h); // hollows in shadow
-        vert(p, n, gap + h * (depth - gap), y, col);
+        // a notch for gear over the glass (lane HC1): on the back wall the relief is cut down to the glass between x0 and x1, from yMin up
+        const cut = Math.abs(n[1]) > 0.9 && notches.some(q => p[0] >= q.x0 && p[0] <= q.x1 && y >= q.yMin);
+        vert(p, n, cut ? gap : gap + h * (depth - gap), y, col);
       }
     }
     for (let i = 0; i < nu - 1; i++) for (let j = 0; j < ny - 1; j++) {
@@ -283,11 +286,12 @@ export function backdropGeometry(T: Tank, b: BackdropSettings, rim = false, side
 }
 
 /** Add the wall to a tank's scene on `sides` (nothing when off, no sides, or in a bowl). */
-export function addBackdrop(sc: THREE.Scene, b: BackdropSettings | undefined, T: Tank, rim = false, sides: readonly BgSide[] = ['back']) {
+export function addBackdrop(sc: THREE.Scene, b: BackdropSettings | undefined, T: Tank, rim = false, sides: readonly BgSide[] = ['back'], notches: readonly BackdropNotch[] = []) {
   if (!b) return;
-  const g = backdropGeometry(T, b, rim, sides);
+  const g = backdropGeometry(T, b, rim, sides, notches);
   if (!g) return;
   const m = new THREE.Mesh(g, solidMaterial(T));
   m.userData.backdrop = true;
   sc.add(m);
+  return m;
 }

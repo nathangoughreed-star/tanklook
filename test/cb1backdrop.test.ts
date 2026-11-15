@@ -23,8 +23,9 @@ function inSlab(S: TankSetup) {
   const T = S.tank, z0 = -T.D, z1 = -T.D + S.backdrop.depth, v = new THREE.Vector3(); let n = 0;
   for (const m of buildGear(S, T, [])) {
     if (m.renderOrder === 3.5) continue; // the water-flow overlay at the waterline, not a part
+    const ns: { x0: number; x1: number; yMin: number }[] = m.userData.backdropNotches ?? []; // a hang-on-back filter's parts in the slab sit in notches cut for them (lane HC1)
     const a = m.geometry.attributes.position;
-    for (let i = 0; i < a.count; i++) { v.fromBufferAttribute(a, i).applyMatrix4(m.matrixWorld); if (v.y > 0 && v.y < T.H - 8 && v.z > z0 + 2 && v.z < z1 - 6) n++; }
+    for (let i = 0; i < a.count; i++) { v.fromBufferAttribute(a, i).applyMatrix4(m.matrixWorld); if (v.y > 0 && v.y < T.H - 8 && v.z > z0 + 2 && v.z < z1 - 6 && !ns.some(q => v.x >= q.x0 && v.x <= q.x1 && v.y >= q.yMin)) n++; }
   }
   return n;
 }

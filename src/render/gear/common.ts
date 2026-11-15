@@ -54,6 +54,8 @@ export class Kit {
   cups: { wall: GearWall; p: THREE.Vector3 }[] = [];
   /** Each hose / cord run through a cabinet's back panel (lane CB2): its points, for the cut-out test. */
   hoseRoutes: THREE.Vector3[][] = [];
+  /** Notches the gear needs cut in the 3D background (lane HC1): tank x range and the height they reach down to. */
+  backdropNotches: { x0: number; x1: number; yMin: number }[] = [];
   /** Add `geo` (consumed) in colour `color` (clear parts: `base` = face-on opacity), moved by `m`. */
   put(b: Bucket, geo: THREE.BufferGeometry, color: number, m?: THREE.Matrix4, base = 0.06, shade = 0) {
     let g = geo.index ? geo.toNonIndexed() : geo; if (g !== geo) geo.dispose();
@@ -102,6 +104,7 @@ export class Kit {
       const g = mergeGeometries(ps); for (const p of ps) p.dispose();
       if (!g) continue;
       const m = new THREE.Mesh(g, mats[k]);
+      if (this.backdropNotches.length) m.userData.backdropNotches = this.backdropNotches;
       m.userData.gear = true;
       if (k === 'room') { m.userData.room = true; m.userData.hoseRoutes = this.hoseRoutes; }
       if (k === 'glow' || k === 'clear') m.userData.nolight = true;

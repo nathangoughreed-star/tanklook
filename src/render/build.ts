@@ -1539,6 +1539,12 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
   b.itemMeshes = b.itemParts.flatMap(p => p.meshes);
   const solids = b.itemMeshes.filter(m => !m.userData.plant); for (const m of solids) m.updateMatrixWorld(true);
   if (!bare) { const key = gearKey(S, hard); b.itemParts.push(take(key) ?? part(key, buildGear(S, T, solidBoxes(solids)), [])); } // the tech gear (lane TG)
+  // the gear that hangs over the glass (a hang-on-back filter) gets a notch in the 3D background (lane HC1); set every time, so a removed filter leaves none
+  const bdMesh = b.scene.children.find(o => o.userData.backdrop) as THREE.Mesh | undefined;
+  if (bdMesh && S.backdrop && !bare) {
+    const ns = b.itemParts.at(-1)?.meshes.find(m => m.userData.backdropNotches)?.userData.backdropNotches ?? [], g = backdropGeometry(T, S.backdrop, S.render.rim, S.render.bgSides, ns);
+    if (g) bdMesh.geometry = g;
+  }
   { const key = outlineKey(S, T); b.itemParts.push(take(key) ?? part(key, spaceOutline(S, T), [])); } // the owner's space, dashed (lane P3)
   // the plant meshes, for animals that sit on leaves (anchors `leaf`); an animal on a plant is rebuilt when any plant changes
   const leaves = b.itemMeshes.filter(m => m.userData.plant); for (const m of leaves) m.updateMatrixWorld(true);
