@@ -15,15 +15,14 @@ import { conflictCardHtml } from '../ui/infeasibleCard';
 import { discoverTabs } from '../scene/discoverScope';
 import { createRealEngine } from '../ui/ab/real';
 import { acceptPlan, metricsOf, ROLE_LABEL, roleOf } from '../ui/ab/logic';
-import { searchSpecies } from '../data/species';
-import { getSpecies } from '../data/species';
 import { totalOf, type Pk } from '../ui/stockPlanLogic';
 import { startProject } from '../ui/projectStart';
 import * as P7 from '../ui/logic/files';
 import type { Outcome, PairResult } from '../scene/discoveryTypes';
-import { MODES, modeOf, presetOfMode, scopedStore, scopeName, gapsIn, ideasLabel, addPick, removePick, bumpPick, doorPlan, animalScene, type ModeId } from './logic/discover';
+import { MODES, modeOf, presetOfMode, scopedStore, scopeName, gapsIn, ideasLabel, addPick, doorPlan, animalScene, type ModeId } from './logic/discover';
 import type { SectionId } from './logic/sections';
 import { Icon, Pill } from './ui';
+import { AnimalsSection } from './animals';
 
 const VERB = { add: 'Adds', remove: 'Removes', change: 'Changes' } as const;
 const rowText = (r: Preview['rows'][number]) => `${VERB[r.verb]} ${r.tab === 'gear' ? '' : TAB_LABEL[r.tab as Tab].toLowerCase() + ': '}${r.text}`;
@@ -220,10 +219,9 @@ export function IdeasButton({ section, onIdeas }: { section: SectionId | null; o
 
 // ---------------------------------------------------------------------------------------------------------------- the start door "From an animal I want"
 export function AnimalDoor({ store, onClose, say, initial }: { store: Store; onClose: () => void; say: (t: string, bad?: boolean) => void; initial?: string }) {
-  const [q, setQ] = useState('');
   const [picks, setPicks] = useState<Pk[]>(() => initial ? addPick([], initial) : []);
-  const found = q.trim() ? searchSpecies(q).filter(s => !picks.some(p => p.id === s.id)).slice(0, 8) : [];
   const dp = useMemo(() => doorPlan(picks), [picks]);
+  const animals = picks.reduce((n, p) => n + totalOf(p), 0);
   const make = async () => {
     const sc = animalScene(picks, store.scene.units, store.tank.camera); if (!sc) return;
     if (await startProject(store, sc, P7.savedText())) { say('New tank planned around your animals. Undo brings the previous project back.'); onClose(); }
@@ -231,18 +229,15 @@ export function AnimalDoor({ store, onClose, say, initial }: { store: Store; onC
   useEffect(() => { const f = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); onClose(); } }; addEventListener('keydown', f, true); return () => removeEventListener('keydown', f, true); }, [onClose]);
   return (
     <div class="scrim" onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
-      <div class="dlg" role="dialog" aria-modal="true" aria-label="From an animal I want">
-        <div class="sec-head"><h2>From an animal I want</h2><button type="button" class="btn icon ghost" aria-label="Close" onClick={onClose}><Icon name="x" /></button></div>
+      <div class="dlg wide tall" role="dialog" aria-modal="true" aria-label="From an animal I want">
+        <div class="sec-head"><h2>From the animals I want</h2><button type="button" class="btn icon ghost" aria-label="Close" onClick={onClose}><Icon name="x" /></button></div>
         <div class="dlgbody">
-          <p class="hint">Name an animal. We pick the smallest real tank that holds the group, and build the tank around it.</p>
-          <input class="input" autofocus aria-label="Search animals" placeholder="Search animals, e.g. neon tetra" value={q} onInput={e => setQ((e.target as HTMLInputElement).value)} />
-          {found.length ? <div class="animalfound">{found.map(s => <button type="button" class="card pick" onClick={() => { setPicks(addPick(picks, s.id)); setQ(''); }}><span /><span class="pbody"><b class="t">{s.name}</b><span class="m">{s.sci}</span></span><Icon name="plus" /></button>)}</div> : null}
-          {picks.map(p => (
-            <div class="card picked"><b class="t">{getSpecies(p.id)?.name ?? p.id}</b>
-              <span class="acts"><button type="button" class="btn sm icon" aria-label="Fewer" disabled={totalOf(p) <= 1} onClick={() => setPicks(bumpPick(picks, p.id, -1))}>−</button><b class="val">{totalOf(p)}</b><button type="button" class="btn sm icon" aria-label="More" onClick={() => setPicks(bumpPick(picks, p.id, 1))}>+</button>
-                <button type="button" class="btn sm ghost" onClick={() => setPicks(removePick(picks, p.id))}>Remove</button></span></div>))}
-          {picks.length ? <div class={`card doorplan${dp.ok ? '' : ' bad'}`} role="status"><b class="t">{dp.tankName ? (/gal/i.test(dp.tankName) ? dp.tankName : `${dp.tankName} · ${dp.gallons} gal`) : 'No tank holds this group'}</b>{dp.problem ? <span class="m">{dp.problem}</span> : <span class="m">Smallest real tank that holds the group.</span>}</div> : null}
-          <div class="dlgfoot acts"><button type="button" class="btn ghost" onClick={onClose}>Cancel</button><button type="button" class="btn primary" disabled={!dp.ok} onClick={() => void make()}>Plan this tank</button></div>
+          <p class="hint">Pick the animals you want, as many as you like. We plan the smallest real tank that holds the whole list, and build it around them.</p>
+          <AnimalsSection store={store} pending={{ picks, set: setPicks }} />
+        </div>
+        <div class="dlgfoot sticky">
+          {picks.length ? <div class={`doorplan${dp.ok ? '' : ' bad'}`} role="status"><b class="t">{dp.tankName ? (/gal/i.test(dp.tankName) ? dp.tankName : `${dp.tankName} · ${dp.gallons} gal`) : 'No tank holds this group'}</b>{dp.problem ? <span class="m">{dp.problem}</span> : <span class="m">Smallest real tank that holds the list.</span>}</div> : null}
+          <div class="acts"><button type="button" class="btn ghost" onClick={onClose}>Cancel</button><button type="button" class="btn primary" disabled={!dp.ok} onClick={() => void make()}>Plan a tank for these ({animals})</button></div>
         </div>
       </div>
     </div>

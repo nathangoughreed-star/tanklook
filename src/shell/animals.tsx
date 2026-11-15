@@ -7,6 +7,7 @@ import { getSpecies, type Sex } from '../data/species';
 import { emptyBrief, rulesOf } from '../scene/brief';
 import { LIMITS } from '../scene/validate';
 import { createFitter } from '../ui/logic/animalPicker';
+import { OK_FIT } from '../scene/pickerKind';
 import { drawFishCard } from '../art/placeholder';
 import { drawSnailCard } from '../art/snails';
 import {
@@ -16,6 +17,10 @@ import {
 import { Icon } from './ui';
 import { dragOut } from './drag';
 import { aqView, aqCheck, onAq } from './logic/aq';
+import { emptyScene } from '../scene/defaults';
+import { applyKind } from '../scene/pickerKind';
+import { totalOf, type Pk } from '../ui/stockPlanLogic';
+import { addPick, bumpPick, removePick } from './logic/discover';
 
 const FITS_KEY = 'tanklook.ui2.fits';
 const loadFits = () => { try { return localStorage.getItem(FITS_KEY) !== '0'; } catch { return true; } };
@@ -40,8 +45,14 @@ function FishArt({ id, look, big }: { id: string; look: string; big?: boolean })
   return <img class={`fishart${big ? ' big' : ''}`} src={src} alt="" loading={big ? 'eager' : 'lazy'} draggable={false} onError={fallback} />;
 }
 
-export function AnimalsSection({ store, getViewer }: { store: Store; getViewer?: () => Viewer | undefined }) {
-  const S = store.tank, units = store.scene.units, rules = rulesOf(S.brief ?? emptyBrief());
+/** AT1 (R54): the start door's mode of this section: a pending list (nothing written to the design), no tank to judge against. */
+export interface PendingList { picks: Pk[]; set: (p: Pk[]) => void }
+const KINDS = [['freshwater', 'Freshwater'], ['saltwater', 'Saltwater'], ['terrarium', 'Land']] as const;
+
+export function AnimalsSection({ store, getViewer, pending }: { store: Store; getViewer?: () => Viewer | undefined; pending?: PendingList }) {
+  const [kind, setKind] = useState<(typeof KINDS)[number][0]>('freshwater');
+  const scratch = useMemo(() => { const T = emptyScene().tanks[0]; applyKind(T, kind); return T; }, [kind]);
+  const S = pending ? scratch : store.tank, units = store.scene.units, rules = rulesOf(S.brief ?? emptyBrief());
   const fitter = useRef(createFitter()).current;
   const [, setN] = useState(0);
   const [query, setQuery] = useState<PickQuery>({ ...DEFAULT_QUERY, fitsOnly: loadFits() });
@@ -54,55 +65,73 @@ export function AnimalsSection({ store, getViewer }: { store: Store; getViewer?:
   const say = (text: string, bad = false) => { setNote({ text, bad }); clearTimeout(timer.current); timer.current = window.setTimeout(() => setNote(null), bad ? 9000 : 4000); };
   useEffect(() => () => clearTimeout(timer.current), []);
 
-  const pv = pickView(S, units, rules, fitter, query);
+  const pv = pickView(S, units, rules, fitter, query, pending ? { held: new Set(pending.picks.map(p => p.id)), free: true, heldWord: 'your list' } : {});
   const sv = stockView(S, rules, units, fitter);
   // the exact fit reading is worked out a slice at a time after the first paint, then redraws the list
-  const detSp = pvId ? getSpecies(pvId) : undefined, det = detSp ? speciesDetail(S, detSp, fitter.exactNow(S, units, rules, detSp), units) : null;
+  const detSp = pvId ? getSpecies(pvId) : undefined, det = detSp ? speciesDetail(S, detSp, pending ? OK_FIT : fitter.exactNow(S, units, rules, detSp), units) : null;
   const list = useMemo(() => findSpecies(S, query.q, query.role), [S, query.q, query.role]);
-  useEffect(() => { fitter.refineFits(S, units, rules, list, () => setN(n => n + 1)); });
+  useEffect(() => { if (!pending) fitter.refineFits(S, units, rules, list, () => setN(n => n + 1)); });
 
   const set = (q: Partial<PickQuery>) => setQuery({ ...query, ...q });
   const flipFits = () => { saveFits(!query.fitsOnly); set({ fitsOnly: !query.fitsOnly }); };
   const report = (r: ReturnType<typeof addSpecies>) => { if (!r.ok) say(r.why, true); else if (r.note) say(r.note); };
+  const add = (sp: NonNullable<ReturnType<typeof getSpecies>>) => { if (pending) { pending.set(addPick(pending.picks, sp.id)); setPvId(null); } else report(addSpecies(store, sp, undefined, pct)); };
   const pick = (id: string) => { const f = store.tank.fish.find(x => rowKeyOf(x) === id); if (f) store.select(f.id); };
 
   return (
     <div class="animals">
       {note ? <div class={`note${note.bad ? ' bad' : ''}`} role="status">{note.text}</div> : null}
 
+      {pending ? (<>
+        <div class="cap">Your list {pending.picks.length ? <span class="n">{pending.picks.reduce((n, p) => n + totalOf(p), 0)}</span> : null}</div>
+        {pending.picks.length ? (
+          <div class="stock" aria-label="Stocking list">
+            {pending.picks.map(p => { const sp = getSpecies(p.id); const nm = sp?.name ?? p.id; return (
+              <div class="srow" data-sp={p.id}>
+                <span class="nm"><span class="t">{nm}</span></span>
+                <button type="button" class="btn icon sm" aria-label={`One fewer ${nm}`} title="One fewer" disabled={totalOf(p) <= 1} onClick={() => pending.set(bumpPick(pending.picks, p.id, -1))}>−</button>
+                <b class="val">{totalOf(p)}</b>
+                <button type="button" class="btn icon sm" aria-label={`One more ${nm}`} title="One more" onClick={() => pending.set(bumpPick(pending.picks, p.id, 1))}>+</button>
+                <button type="button" class="btn icon sm ghost" aria-label={`Remove ${nm}`} title="Take it off the list" onClick={() => pending.set(removePick(pending.picks, p.id))}><Icon name="x" /></button>
+              </div>); })}
+          </div>
+        ) : <div class="hint">Nothing yet. Pick the animals you want below; you can tell them by their pictures.</div>}
+        <div class="chips" role="group" aria-label="Kind of animal">{KINDS.map(([k, l]) => <button type="button" class={`chip${kind === k ? ' on' : ''}`} aria-pressed={kind === k} onClick={() => setKind(k)}>{l}</button>)}</div>
+      </>) : (<>
       <div class="cap">Your animals {sv.total ? <span class="n">{sv.total}</span> : null}</div>
-      {sv.rows.length ? (
-        <div class="stock" aria-label="Stocking">
-          {sv.rows.map(r => (
-            <div class={`srow${r.off ? ' misfit' : ''}${r.level !== 'ok' ? ' gated' : ''}${store.selected && rowKeyOf(store.selected) === r.key ? ' sel' : ''}`} data-sp={r.key}>
-              <button type="button" class="nm" title={`${r.sci}${r.more.length ? ' · ' + r.more.join('; ') : ''}`} onClick={() => pick(r.key)}>
-                <span class="t">{r.name}</span>
-                {r.reason ? <small class={`why ${tone(r.level)}`}>{r.off ? '✕ ' : ''}{r.reason}{r.more.length ? ` (+${r.more.length} more)` : ''}</small> : null}
-              </button>
-              <button type="button" class="btn icon sm" aria-label={`One fewer ${r.name}`} title="One fewer (the last one takes it off the list)"
-                onClick={() => { const sp = getSpecies(r.id)!; report(setCount(store, sp, k => k - 1, r.sex, pct)); }}>−</button>
-              <input class="input num" type="number" min={0} max={LIMITS.maxFish} value={r.n} aria-label={`How many ${r.name}`}
-                onChange={e => { const t = e.target as HTMLInputElement, v = Math.round(+t.value), sp = getSpecies(r.id)!; if (Number.isFinite(v) && t.value !== '') report(setCount(store, sp, () => Math.max(0, v), r.sex)); else t.value = String(r.n); }} />
-              <button type="button" class="btn icon sm" aria-label={`One more ${r.name}`} title="One more" disabled={sv.atLimit}
-                onClick={() => { const sp = getSpecies(r.id)!; report(setCount(store, sp, k => k + 1, r.sex, pct)); }}>+</button>
-              <button type="button" class="btn icon sm ghost" aria-label={`Remove ${r.name}`} title="Take it off the list"
-                onClick={() => { const sp = getSpecies(r.id)!; report(setCount(store, sp, () => 0, r.sex)); }}><Icon name="x" /></button>
-            </div>
-          ))}
-        </div>
-      ) : <div class="hint">{sv.empty}</div>}
-      {aq.show ? (
-        <div class="aqrow"><span class="lbl">AqAdvisor</span>
-          {aq.canCheck ? <button type="button" class="btn sm" disabled={aq.busy} title="Ask AqAdvisor for this tank's stocking level (one request; only when the site is up)" onClick={() => void aqCheck(S)}>Check</button> : null}
-          <span class={aq.bad ? 'bad' : ''} role="status">{aq.text}</span>
-          <a href={aq.url} target="_blank" rel="noopener" title="Open this tank and stocking in AqAdvisor's calculator for the full report">AqAdvisor ↗</a>
-          {aq.note ? <div class="hint">{aq.note}</div> : null}</div>
-      ) : aq.note ? <div class="hint">{aq.note}</div> : null}
-      {sv.misfits ? (
-        <div class="misnote"><span>{sv.misfitText} <span class="hint">{sv.misfitNames}.</span></span>
-          <button type="button" class="btn sm" title="Take off the animals that do not live in this water (Ctrl+Z brings them back)" onClick={() => report(removeMisfits(store))}>Remove misfits ({sv.misfits})</button></div>
-      ) : null}
-
+        {sv.rows.length ? (
+          <div class="stock" aria-label="Stocking">
+            {sv.rows.map(r => (
+              <div class={`srow${r.off ? ' misfit' : ''}${r.level !== 'ok' ? ' gated' : ''}${store.selected && rowKeyOf(store.selected) === r.key ? ' sel' : ''}`} data-sp={r.key}>
+                <button type="button" class="nm" title={`${r.sci}${r.more.length ? ' · ' + r.more.join('; ') : ''}`} onClick={() => pick(r.key)}>
+                  <span class="t">{r.name}</span>
+                  {r.reason ? <small class={`why ${tone(r.level)}`}>{r.off ? '✕ ' : ''}{r.reason}{r.more.length ? ` (+${r.more.length} more)` : ''}</small> : null}
+                </button>
+                <button type="button" class="btn icon sm" aria-label={`One fewer ${r.name}`} title="One fewer (the last one takes it off the list)"
+                  onClick={() => { const sp = getSpecies(r.id)!; report(setCount(store, sp, k => k - 1, r.sex, pct)); }}>−</button>
+                <input class="input num" type="number" min={0} max={LIMITS.maxFish} value={r.n} aria-label={`How many ${r.name}`}
+                  onChange={e => { const t = e.target as HTMLInputElement, v = Math.round(+t.value), sp = getSpecies(r.id)!; if (Number.isFinite(v) && t.value !== '') report(setCount(store, sp, () => Math.max(0, v), r.sex)); else t.value = String(r.n); }} />
+                <button type="button" class="btn icon sm" aria-label={`One more ${r.name}`} title="One more" disabled={sv.atLimit}
+                  onClick={() => { const sp = getSpecies(r.id)!; report(setCount(store, sp, k => k + 1, r.sex, pct)); }}>+</button>
+                <button type="button" class="btn icon sm ghost" aria-label={`Remove ${r.name}`} title="Take it off the list"
+                  onClick={() => { const sp = getSpecies(r.id)!; report(setCount(store, sp, () => 0, r.sex)); }}><Icon name="x" /></button>
+              </div>
+            ))}
+          </div>
+        ) : <div class="hint">{sv.empty}</div>}
+        {aq.show ? (
+          <div class="aqrow"><span class="lbl">AqAdvisor</span>
+            {aq.canCheck ? <button type="button" class="btn sm" disabled={aq.busy} title="Ask AqAdvisor for this tank's stocking level (one request; only when the site is up)" onClick={() => void aqCheck(S)}>Check</button> : null}
+            <span class={aq.bad ? 'bad' : ''} role="status">{aq.text}</span>
+            <a href={aq.url} target="_blank" rel="noopener" title="Open this tank and stocking in AqAdvisor's calculator for the full report">AqAdvisor ↗</a>
+            {aq.note ? <div class="hint">{aq.note}</div> : null}</div>
+        ) : aq.note ? <div class="hint">{aq.note}</div> : null}
+        {sv.misfits ? (
+          <div class="misnote"><span>{sv.misfitText} <span class="hint">{sv.misfitNames}.</span></span>
+            <button type="button" class="btn sm" title="Take off the animals that do not live in this water (Ctrl+Z brings them back)" onClick={() => report(removeMisfits(store))}>Remove misfits ({sv.misfits})</button></div>
+        ) : null}
+  
+      </>)}
       {det ? (
         <div class="detail">
           <button type="button" class="btn sm ghost back" onClick={() => setPvId(null)}>← Back to the list</button>
@@ -111,16 +140,16 @@ export function AnimalsSection({ store, getViewer }: { store: Store; getViewer?:
           <div class="m"><i>{det.sci}</i></div>
           {det.note ? <div class="hint">{det.note}</div> : null}
           <div class="rundown">{det.rows.map(([k, v]) => <div class="drow"><span>{k}</span><b>{v}</b></div>)}</div>
-          <div class={`fitbox ${det.fit.level}`}><b>{det.fit.level === 'ok' ? 'Fits' : det.fit.level === 'problem' ? 'Held back' : 'Caution'}</b> {det.fit.text}{det.fit.more.length ? <ul>{det.fit.more.map(m => <li>{m}</li>)}</ul> : null}{det.fit.inTank ? <div class="hint">{det.fit.inTank} already in the tank.</div> : null}</div>
+          {pending ? null : <div class={`fitbox ${det.fit.level}`}><b>{det.fit.level === 'ok' ? 'Fits' : det.fit.level === 'problem' ? 'Held back' : 'Caution'}</b> {det.fit.text}{det.fit.more.length ? <ul>{det.fit.more.map(m => <li>{m}</li>)}</ul> : null}{det.fit.inTank ? <div class="hint">{det.fit.inTank} already in the tank.</div> : null}</div>}
           <div class="acts-row"><button type="button" class={`btn${det.fit.level === 'ok' ? ' primary' : ' ghost'}`} title={det.dimorphic ? 'Adds the males and females in the proportion the species is kept' : ''}
-            onClick={() => report(addSpecies(store, detSp!, undefined, pct))}>{det.fit.level === 'ok' ? `Add ${det.start}` : `Add ${det.start} anyway`}</button></div>
+            onClick={() => add(detSp!)}>{det.fit.level === 'ok' ? `Add ${det.start}` : `Add ${det.start} anyway`}</button></div>
         </div>
       ) : (<>
       <div class="cap">Add animals</div>
       <label class="search"><Icon name="search" /><input class="input" type="search" placeholder={pv.placeholder} value={query.q} aria-label="Search animals" onInput={e => set({ q: (e.target as HTMLInputElement).value })} /></label>
-      <button type="button" class="tglrow" role="switch" aria-checked={query.fitsOnly} onClick={flipFits}>
+      {pending ? null : <button type="button" class="tglrow" role="switch" aria-checked={query.fitsOnly} onClick={flipFits}>
         <span class={`toggle${query.fitsOnly ? ' on' : ''}`} />Fits this tank{pv.hidden ? <span class="hint"> · {pv.hidden} held back</span> : null}
-      </button>
+      </button>}
       <div class="chips">{pv.chips.map(c => <button type="button" class={`chip${(query.role ?? undefined) === c.role ? ' on' : ''}`} aria-pressed={(query.role ?? undefined) === c.role} onClick={() => set({ role: c.role })}>{c.label} <span class="n">{c.n}</span></button>)}</div>
       {pv.none ? <div class="hint">{pv.none}</div> : null}
       {pv.groups.map(g => (
@@ -137,7 +166,7 @@ export function AnimalsSection({ store, getViewer }: { store: Store; getViewer?:
                 <div class="tmeta"><span>{r.size}</span>{r.care ? <span class="care">{r.care}</span> : null}</div>
                 {r.reason ? <small class={`why ${tone(r.level)}`}>{r.reason}{r.more.length ? ` (+${r.more.length} more)` : ''}</small> : null}
                 <button type="button" class={`btn sm${r.level === 'ok' ? '' : ' ghost'}`} title={sp.female ? 'Adds the males and females in the proportion the species is kept' : `Add ${r.startCount > 1 ? r.startCount : 'one'}`}
-                  onClick={() => report(addSpecies(store, sp, undefined, pct))}>{r.level === 'ok' ? `Add${r.startCount > 1 ? ' ' + r.startCount : ''}` : 'Add anyway'}</button>
+                  onClick={() => add(sp)}>{r.level === 'ok' ? `Add${r.startCount > 1 ? ' ' + r.startCount : ''}` : 'Add anyway'}</button>
               </div>
             );
           })}
