@@ -10,6 +10,7 @@ import { Maker, type MakerInit } from './maker';
 import { startSpec, specOfEntry } from './logic/tank';
 import type { UserProfile } from '../demand';
 import { checksModel, CHECKS, type CheckId, type ChecksModel } from './logic/checks';
+import { closeLightMap } from './logic/lighting';
 import { SECTIONS, PHONE_TABS, MORE, COMES_IN, sectionOf, railClick, escape, type SectionId } from './logic/sections';
 import type { Viewer } from '../render/viewer';
 import { Drawer } from './drawers';
@@ -216,6 +217,7 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
 
   useEffect(() => { if (!maker) viewRef.current?.prepend(viewHost); }, [viewHost, maker]);
   // step 4: animals can be picked in the view while Animals is open; picking one opens the Selection drawer, clearing it closes it
+  useEffect(() => { if (section !== 'equipment') closeLightMap(store); }, [section, store]); // the light map lives in Equipment (R86)
   useEffect(() => { pickable.fish = section === 'animals'; if (section !== 'animals' && !keepingSelection() && !(phone && section === null && store.selId != null)) store.select(null); }, [section, store]);
   // step 7: pieces can be picked in the view while Scape (hardscape, decor) or Plants (plants, corals) is open
   useEffect(() => { pickItems.sec = section === 'scape' ? 'hardscape' : section === 'plants' ? 'plants' : null; if (section !== 'scape' && section !== 'plants') { if (!keepingSelection() && !(phone && section === null && store.selId != null)) store.select(null); store.setBrush({ on: false, target: null }); } }, [section, store]);

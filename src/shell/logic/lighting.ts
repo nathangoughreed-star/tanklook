@@ -4,6 +4,7 @@ import { lightOutCached, wattsOf } from '../../scene/lightout';
 import { withHoodLight, hoodOf } from '../../data/hoods';
 import { productOn } from '../../scene/lightproduct';
 import { productName } from '../../data/gearCatalog';
+import type { Store } from '../../scene/store';
 import type { TankSetup } from '../../scene/types';
 
 export interface LightView {
@@ -43,6 +44,13 @@ export function mapView(S: TankSetup): MapView {
     slice: l.mapSlice ?? 0,
     note: S.render.beams && S.light.type !== 'flat' && !S.substrate.show ? 'The map needs a floor to draw on: turn the substrate on.' : 'The map draws the light on the substrate and hides plants, hardscape and animals while it is on.',
   };
+}
+/** R86 (Nathan 2026-11-15): the map belongs to the Equipment section; leaving it (another section opens, or the panel closes) puts the normal view back.
+ *  It is not restored on return: the map hides plants, hardscape and animals, so coming back to a switch that reads off is the honest state, and a save
+ *  or a report never carries a map that was left on by accident. Every tank (split view), not undoable, only when something is on. */
+export function closeLightMap(store: Store): void {
+  if (!store.scene.tanks.some(t => t.render.beams)) return;
+  store.update(sc => { for (const t of sc.tanks) t.render.beams = false; }, { history: false });
 }
 export const setMapOn = (S: TankSetup, on: boolean): void => { S.render.beams = on; };
 export const setMapUnit = (S: TankSetup, u: MapUnit): void => { S.light.mapUnit = u; };
