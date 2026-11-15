@@ -54,8 +54,11 @@ export interface Tank {
    * bowl: a sphere of diameter L = D cut flat at the floor and at the opening; H is derived from the three diameters.
    */
   shape?: TankShape;
-  /** poly only: 3, 5 or 6 sides, a flat face toward the viewer. */
+  /** poly only: 3 to 24 sides, a flat face toward the viewer. */
   sides?: number;
+  /** poly only (lane CT1, 2026-11-14; no version bump): the side lengths in mm, side 0 along the front, when they are not all equal. The corners lie on a circle, so the
+   *  lengths fix the shape (scene/shape.ts cyclicPolygon). Absent = a regular polygon of width L. Any 3 to 24 sides. */
+  sideLens?: number[];
   /** bow only: depth at the ends (mm); the front is a circular arc from the ends to the full depth D at the centre. */
   bowMin?: number;
   /** bowl only: diameters (mm) of the flat floor and of the opening at the top, both less than L. */
@@ -134,6 +137,8 @@ export interface RenderSettings {
   bgImages: BgImage[];
   glass: 'auto' | number; // mm, or auto by interior height
   glassType: GlassType;
+  /** Eurobrace of a rimless box tank (lane CT1, 2026-11-14; mm, GS1's BraceSpec): drawn inside the top of the walls. Absent = none. */
+  brace?: { width: number; thickness: number; cross?: number; crossWidth?: number };
 }
 
 export interface LightSettings {

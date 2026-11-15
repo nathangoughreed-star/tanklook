@@ -1,0 +1,35 @@
+{
+ "facts": {
+  "perimeter": "on\nThickness\nTypical for the height (5/16 in)\n1/4 in\n5/16 in\n3/8 in\n1/2 in\n5/8 in\n3/4 in\n1 in\nRim\nRimmed\nRimless\nGlass check\n3/8 in front · SF 4.4\nSafety factor\nOne thickness\nPer pane\nNo brace\nPerimeter\nPerimeter + cross\nPerimeter width\nin\nlock\nStrip thickness\n1/4 in\n5/16 in\n3/8 in\n1/2 in\n5/8 in\n3/4 in\n1 in\nlock\nCross braces\nnone\n1\n2\n3\nlock\nOptimize\nleast glass at your safety factor\nOpening left: 10 in front to back × 40 in between strips. Hang-on gear and lids rest on the glass edge: check they clear the strips.\nRimless with a eurobrace: the brace stiffens the top edge.\nBrace\tWalls (front / ends)\tGlass\nNo brace\nfully open\n\t1/2\" / 1/2\"\t100\nPerimeter 4 in\n10 in × 40 in open\n\t3/8\" / 3/8\"\t83\nPerimeter 2 in + 1 cross\n14 in × 21 in open\n\t3/8\" / 3/8\"\t79\nPane\tGlass\tSF\tSet by\nFront and back\t3/8 in\t4.4\tstrength\nEnds\t3/8 in\t10.8\tstrength\nBottom\t3/8 in\ton stand\tmatched to walls\nSafety factor achieved\n4.4\nMeets the safety factor of 3.8.\n1,459 cu in (0.84 cu ft) of glass, 132 lb\nSILICONE JOINTS\nWalls on the bottom\n62 % of design stress\nCorners\n65 % of design stress\nBrace to wall\n32 % of design stress\n132 lb of glass\nUse this glass (3/8 in)\nThese thicknesses are an estimate from a standard engineering model (an elastic plate under water pressure, with the safety factor you chose). They are not an engineering approval. Real tanks also depend on glass quality, edge finish, silicone work, the stand, and loads this model does not include. Have a qualified builder or engineer check any tank before you fill it.\nPrice\nabout $424\nOur estimate\n$424\nHow we got this: the typical price of a stock 75 gal tank. Not counted yet: glass thickness, rimless.\nUse my own price\ne.g. a glass shop quote or your DIY cost. Used everywhere (cost bar, shopping list, Print), marked \"your figure\".\nI own this tank",
+  "optimize": [
+   "least glass at your safety factor",
+   "2 in perimeter, 1 cross, 1/4 in strips, walls 3/8 in: 21% less glass than unbraced.",
+   "Opening left: 14 in front to back × 21 in between strips. Hang-on gear and lids rest on the glass edge: check they clear the strips.",
+   "1,383 cu in (0.80 cu ft) of glass, 125 lb",
+   "125 lb of glass",
+   "These thicknesses are an estimate from a standard engineering model (an elastic plate under water pressure, with the safety factor you chose). They are not an engineering approval. Real tanks also depend on glass quality, edge finish, silicone work, the stand, and loads this model does not include. Have a qualified builder or engineer check any tank before you fill it.",
+   "How we got this: the typical price of a stock 75 gal tank. Not counted yet: glass thickness, rimless.",
+   "e.g. a glass shop quote or your DIY cost. Used everywhere (cost bar, shopping list, Print), marked \"your figure\"."
+  ],
+  "name": {
+   "value": "",
+   "placeholder": "Custom 36x10x10"
+  },
+  "lib": [
+   {
+    "name": "Custom 48x18x20",
+    "brace": {
+     "width": 50.8,
+     "thickness": 6.35,
+     "cross": 1,
+     "crossWidth": 50.8
+    }
+   },
+   {
+    "name": "Custom 36x10x10",
+    "brace": null
+   }
+  ]
+ },
+ "errors": []
+}

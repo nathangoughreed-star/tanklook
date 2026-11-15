@@ -10,7 +10,7 @@
 // cyano sheets, bubble algae; coralline spots on the glass instead of green spot algae.
 import * as THREE from 'three';
 import type { ConditionSettings, Tank } from '../scene/types';
-import { bowlDims, footprint, offsetRing, shapeOf } from '../scene/shape';
+import { bowlDims, footprint, triangulate, offsetRing, shapeOf } from '../scene/shape';
 import { clamp } from '../scene/physics';
 
 export type Amounts = Record<'glass' | 'hard' | 'sub' | 'surface' | 'leaf', number>;
@@ -248,7 +248,7 @@ void main() {
 /** Scum on the water surface: a faint oily film along the glass, patchy. */
 function surfaceScum(T: Tank, wy: number, lu: LightU) {
   const ring = footprint(T).ring, pos: number[] = [];
-  for (let i = 1; i < ring.length - 1; i++) for (const p of [ring[0], ring[i], ring[i + 1]]) pos.push(p[0], wy + 0.3, -p[1]);
+  for (const [i, j, k] of triangulate(ring)) for (const p of [ring[i], ring[j], ring[k]]) pos.push(p[0], wy + 0.3, -p[1]);
   const g = new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   const m = new THREE.ShaderMaterial({
     uniforms: { ...lu, uAlg: AU.uAlg, uAlgSalt: AU.uAlgSalt },

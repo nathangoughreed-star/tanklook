@@ -1,0 +1,11 @@
+{
+ "facts": {
+  "heightAfter": "20",
+  "lengthAfter60": "60",
+  "heightAfter9999": "48",
+  "depthBefore": "18",
+  "depthAfterEsc": "18",
+  "stillInMaker": true
+ },
+ "errors": []
+}

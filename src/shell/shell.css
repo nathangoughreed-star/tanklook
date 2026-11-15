@@ -12,7 +12,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .ui2app { display: grid; height: 100vh; height: 100dvh;
   grid-template-columns: var(--rail-w) var(--panel-w) minmax(0, 1fr) 0;
   grid-template-rows: var(--header-h) minmax(0, 1fr);
-  grid-template-areas: "head head view drawer" "rail panel view drawer"; }
+  grid-template-areas: "head head head head" "rail panel view drawer"; }
 .ui2app.drawer-on { grid-template-columns: var(--rail-w) var(--panel-w) minmax(0, 1fr) var(--drawer-w); }
 /* the panel folded: rail + viewer; the header then spans the top (it holds Undo / Redo / Save, which must stay in reach) */
 .ui2app.panel-off { grid-template-columns: var(--rail-w) 0 minmax(0, 1fr) 0; grid-template-areas: "head head head head" "rail panel view drawer"; }
@@ -240,7 +240,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .prow.gated { background: transparent; opacity: .85; }
 .prow .pi { display: grid; min-width: 0; }
 .prow .m { color: var(--text-2); font-size: var(--fs-sm); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.prow .tag { margin-left: var(--s1); font-size: 10px; font-weight: 600; color: var(--accent); }
+.prow .tag, .tname .tag { margin-left: var(--s1); font-size: 10px; font-weight: 600; color: var(--accent); }
 .colorbox { width: 44px; height: var(--ctl-h-sm); border: 1px solid var(--line); border-radius: var(--r-ctl); background: transparent; padding: 0; }
 .drawer .field { display: grid; gap: var(--s1); }
 .drawer .btns { display: flex; gap: var(--s2); flex-wrap: wrap; }

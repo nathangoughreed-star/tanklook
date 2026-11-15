@@ -56,3 +56,8 @@ Extra proof:
 - the detail view for a white cloud and a held-back species.
 
 Extra tests: the stock rows for added fish, and the detail model fields.
+
+## Part 3 (Nathan 2026-11-15, picture research/screens/AT1/nathan-tiles-2026-11-15.png)
+1. **Info button, not whole-card click (R50).** Each species tile gets a standard info button (an "i" in a circle, top-left corner of the art so it doesn't clash with the "6 in" length chip on the right; aria-label "<name>: details", title "Details"). Only that button opens the larger card + rundown. Clicking anywhere else on the tile does NOT open it (drag-out to the view and the Add button keep working). Keyboard: the info button is focusable; drop the tile's role=button/tabIndex/Enter handler.
+2. **Species already in the tank leave the picker (R51).** A species with any count in this tank is not shown in the species tiles (it's already in the stock rows above with − / +). The category counts (Schooling fish 24 ...) and the "N animals shown" note count only what's shown; if it's removed from the tank (count to 0) it comes back. Remove the "N in" badge on tiles (no longer reachable).
+Checks: build + the shell animals tests; update any test that expects the tile click or in-tank tiles. Desktop 1280 and phone 390 shots of the Animals tab with a stocked tank, the info button, and the opened detail. Commit on your branch and send me the sha.

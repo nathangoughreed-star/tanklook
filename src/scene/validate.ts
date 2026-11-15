@@ -194,9 +194,9 @@ export function parseTank(v: unknown, def: Tank): Tank {
   const T: Tank = { L: num(o.L, def.L, LIMITS.tankMin, LIMITS.tankMax), H: num(o.H, def.H, LIMITS.tankMin, LIMITS.tankMax), D: num(o.D, def.D, LIMITS.tankMin, LIMITS.tankMax) };
   const shape = (['rect', 'bow', 'round', 'poly', 'bowl', 'pie', 'arch'] as const).find(k => k === o.shape) ?? 'rect'; // v8; older files: rect
   if (shape === 'rect') return T;
-  return normTank({ ...T, shape, ...(shape === 'poly' ? { sides: num(o.sides, 6) } : {}), ...(shape === 'bow' ? { bowMin: num(o.bowMin, T.D * 0.75, 0, T.D) } : {}),
+  return normTank({ ...T, shape, ...(shape === 'poly' ? { sides: Math.round(num(o.sides, 6, 3, 24)), ...(Array.isArray(o.sideLens) && o.sideLens.length === Math.round(num(o.sides, 6, 3, 24)) && o.sideLens.every(x => typeof x === 'number' && Number.isFinite(x) && x > 0 && x < 1e5) ? { sideLens: o.sideLens as number[] } : {}) } : {}), ...(shape === 'bow' ? { bowMin: num(o.bowMin, T.D * 0.75, 0, T.D) } : {}),
     ...(shape === 'bowl' ? { bowlFloor: num(o.bowlFloor, T.L * 0.6, 0, T.L), bowlTop: num(o.bowlTop, T.L * 0.6, 0, T.L) } : {}),
-    ...(shape === 'pie' ? { pieDeg: num(o.pieDeg, 90, 45, 180) } : {}), ...(shape === 'arch' ? { frontBulge: num(o.frontBulge, T.D * 0.08, 0, T.D) } : {}) });
+    ...(shape === 'pie' ? { pieDeg: num(o.pieDeg, 90, 30, 360) } : {}), ...(shape === 'arch' ? { frontBulge: num(o.frontBulge, T.D * 0.08, 0, T.D) } : {}) });
 }
 
 /** P9: a saved `customTank` ref; anything unusable = none. */
@@ -272,6 +272,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       bgArc: Math.round(num(r.bgArc, 145, ...LIMITS.bgArc)),
       bgImages: parseBgImages(r.bgImages), // added 2026-10-14 (no version bump); older files: none
       glassType: pick(r.glassType, ['standard', 'lowiron'] as const, 'standard'),
+      ...parseRenderBrace(r.brace), // added 2026-11-14 (lane CT1, no version bump): kept only when valid
     },
     light: {
       type: pick(l.type, ['flat', 'spot', 'tube', 'led'] as const, 'flat'), count: Math.round(num(l.count, 2, ...LIMITS.count)), rows: Math.round(num(l.rows, 1, ...LIMITS.rows)),
@@ -450,3 +451,11 @@ function parseItems(raw: unknown[], T: Tank, warn: (m: string) => void, g: Groun
 }
 
 export const nextFishId = (s: TankSetup) => s.fish.reduce((m, f) => Math.max(m, f.id), 0) + 1;
+
+/** The brace of a saved scene's render settings (lane CT1), as spread-able fields; nothing when absent or out of range. */
+function parseRenderBrace(raw: unknown): { brace?: NonNullable<TankSetup['render']['brace']> } {
+  if (!raw || typeof raw !== 'object') return {};
+  const b = raw as Record<string, unknown>, ok = (v: unknown, lo: number, hi: number): v is number => typeof v === 'number' && Number.isFinite(v) && v >= lo && v <= hi;
+  if (!ok(b.width, 10, 400) || !ok(b.thickness, 2, 60)) return {};
+  return { brace: { width: b.width, thickness: b.thickness, ...(ok(b.cross, 1, 6) ? { cross: Math.round(b.cross) } : {}), ...(ok(b.crossWidth, 10, 400) ? { crossWidth: b.crossWidth } : {}) } };
+}

@@ -1,0 +1,33 @@
+{
+ "facts": {
+  "phone390-01-home": {
+   "headH": 48,
+   "headScroll": 0,
+   "past": 0,
+   "pageX": 0,
+   "canvasTop": 48
+  },
+  "phone390-02-check-open": {
+   "headH": 48,
+   "headScroll": 0,
+   "past": 0,
+   "pageX": 0,
+   "canvasTop": 48
+  },
+  "phone390-03-view-menu": {
+   "headH": 48,
+   "headScroll": 0,
+   "past": 0,
+   "pageX": 0,
+   "canvasTop": 48
+  },
+  "phone390-04-compare": {
+   "headH": 48,
+   "headScroll": 0,
+   "past": 0,
+   "pageX": 0,
+   "canvasTop": 48
+  }
+ },
+ "fails": []
+}

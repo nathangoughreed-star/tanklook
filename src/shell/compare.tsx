@@ -13,13 +13,13 @@ import { Icon, Pill } from './ui';
 /** The cluster's Compare buttons (slotted into view.tsx's toolbar): Compare, or, while split, Views linked + End compare. */
 export function CompareButtons({ store, phone, say }: { store: Store; phone: boolean; say: (m: string) => void }) {
   if (store.scene.tanks.length < 2) return (
-    <button type="button" class="btn sm" title="Two setups side by side: tank B starts as a copy of tank A" onClick={() => { if (startCompare(store)) say('Compare: tank B is a copy you can change freely. Pick which tank the panel edits at its top.'); }}><Icon name="split" /> Compare</button>
+    <button type="button" class="btn sm" title="Two setups side by side: tank B starts as a copy of tank A" onClick={() => { if (startCompare(store)) say('Compare: tank B is a copy you can change freely. Pick which tank the panel edits at its top.'); }}><Icon name="split" /><span class="lb"> Compare</span></button>
   );
   const linked = linkedOf(store);
   return (
     <>
-      <button type="button" class={`btn sm${linked ? ' on' : ''}`} aria-pressed={linked} title={linkTitle(linked)} onClick={() => setLinked(store, !linked)}><Icon name="lock" /> {phone ? (linked ? 'Linked' : 'Free') : linkWord(linked)}</button>
-      <button type="button" class="btn sm" title="Back to one tank: keeps the tank the panel shows (Ctrl+Z brings the other back)" onClick={() => endCompare(store)}><Icon name="x" /> {phone ? 'End' : 'End compare'}</button>
+      <button type="button" class={`btn sm${linked ? ' on' : ''}`} aria-pressed={linked} title={linkTitle(linked)} onClick={() => setLinked(store, !linked)}><Icon name="lock" /><span class="lb"> {phone ? (linked ? 'Linked' : 'Free') : linkWord(linked)}</span></button>
+      <button type="button" class="btn sm" title="Back to one tank: keeps the tank the panel shows (Ctrl+Z brings the other back)" onClick={() => endCompare(store)}><Icon name="x" /><span class="lb"> {phone ? 'End' : 'End compare'}</span></button>
     </>
   );
 }

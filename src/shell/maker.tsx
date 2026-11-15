@@ -5,13 +5,13 @@ import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { Store } from '../scene/store';
 import type { Tank, TankSetup, TankShape, CameraSettings } from '../scene/types';
 import { applyTankEdit, reshape, shapeMemory, setGlass, setRim } from '../scene/tankEdit';
-import { addCustomTank, editCustomTank, loadLibrary, saveLibrary, type CustomTankSpec } from '../scene/customTanks';
-import { STOCK_US, STOCK_METRIC } from '../scene/glassSolver';
+import { addCustomTank, dimName, editCustomTank, loadLibrary, saveLibrary, type CustomTankSpec } from '../scene/customTanks';
+import { STOCK_US, STOCK_METRIC, IN_MM, type BraceLocks, type BraceSpec } from '../scene/glassSolver';
 import { LIMITS } from '../scene/validate';
 import { glassThickness, IN } from '../scene/physics';
-import { POLY_SIDES, shapeOf } from '../scene/shape';
-import { makerSetup, makerFacts, dimLabels, previewSpec, priceView, chooseCustom, glassText, galText, usd, SHAPE_WORD, SHAPE_MAIN, SHAPE_MORE, SIDE_RANGE, specChanged, type Units } from './logic/tank';
-import { glassPanel, defaultChoice, DISCLAIMER, type GlassChoice, type GlassPanel } from './logic/tankGlass';
+import { POLY_MAX, POLY_MIN, pieRadius, pieDepth, polySides, PIE_MIN, PIE_MAX, shapeOf } from '../scene/shape';
+import { makerSetup, makerFacts, dimAnchors, placeDims, applyDim, parseLen, setPieAngle, setPolySide, makeRegular, setPolyCount, roundAsPie, type PlacedDim, previewSpec, priceView, chooseCustom, glassText, galText, usd, SHAPE_WORD, SHAPE_MAIN, SHAPE_MORE, SIDE_RANGE, specChanged, type Units } from './logic/tank';
+import { glassPanel, defaultChoice, optimizeChoice, startBrace, DISCLAIMER, type GlassChoice, type GlassPanel } from './logic/tankGlass';
 import { LenRow, Seg, Toggle } from './tank';
 import { Group, Icon, Pill } from './ui';
 import type { Viewer } from '../render/viewer';
@@ -25,9 +25,13 @@ export type MakerEnd = 'cancel' | 'saved' | 'used';
 // drawn size goes as span x zoom^2.15, so this frames every size about as a 24 in tank fills the view at 0.75
 const MAKER_CAM = (c: CameraSettings, T: Tank): CameraSettings => ({ ...c, az: -24, el: 14, zoom: Math.max(0.08, Math.min(2.5, 0.75 * (652 / Math.max(T.L, T.H * 1.5, T.D * 1.4)) ** (1 / 2.15))) });
 
-/** The three sizes written ON the tank's edges: the length along the front-bottom edge, the depth and the height at the right-hand corner; redrawn each frame. */
-function EdgeLabels({ store, getViewer, T, texts }: { store: Store; getViewer?: () => Viewer | undefined; T: Tank; texts: { L: string; D: string; H: string } }) {
-  const [labels, setLabels] = useState<ReturnType<typeof dimLabels>>([]);
+/** The sizes written ON the tank's edges (length / depth / height, or radius / angle / height, or every side of a polygon); redrawn each frame. Click one
+ *  to type a new value: Enter or leaving the box applies it (through the same ranges as the side panel), Esc cancels. `onCommit` returns a refusal or null. */
+function EdgeLabels({ store, getViewer, T, u, onCommit }: { store: Store; getViewer?: () => Viewer | undefined; T: Tank; u: Units; onCommit: (id: string, raw: string) => string | null }) {
+  const [labels, setLabels] = useState<PlacedDim[]>([]);
+  const [editing, setEditing] = useState<{ id: string; text: string } | null>(null);
+  const [err, setErr] = useState<{ id: string; msg: string } | null>(null);
+  const key = JSON.stringify([T.L, T.D, T.H, T.sides, T.sideLens, T.pieDeg, T.shape, u]);
   useEffect(() => {
     const v = getViewer?.(); if (!v) return;
     let alive = true;
@@ -35,21 +39,41 @@ function EdgeLabels({ store, getViewer, T, texts }: { store: Store; getViewer?: 
       const vp = v.vps[store.scene.active]; if (!alive || !vp) return;
       vp.cam.updateMatrixWorld();
       const p = new Vector3();
-      const next = dimLabels(T, texts, (x, y, z) => { p.set(x, y, z).project(vp.cam); return p.z > 1 ? null : [(p.x + 1) / 2 * vp.w, (1 - p.y) / 2 * vp.h]; });
-      setLabels(prev => prev.length === next.length && prev.every((l, i) => Math.abs(l.x - next[i].x) < 0.5 && Math.abs(l.y - next[i].y) < 0.5 && l.text === next[i].text) ? prev : next);
+      const next = placeDims(dimAnchors(T, u), (x, y, z) => { p.set(x, y, z).project(vp.cam); return p.z > 1 ? null : [(p.x + 1) / 2 * vp.w, (1 - p.y) / 2 * vp.h]; });
+      setLabels(prev => prev.length === next.length && prev.every((l, i) => l.id === next[i].id && Math.abs(l.x - next[i].x) < 0.5 && Math.abs(l.y - next[i].y) < 0.5 && l.text === next[i].text) ? prev : next);
     };
     tick(); v.onDrawn(tick); v.invalidate();
     return () => { alive = false; };
-  }, [T.L, T.D, T.H, texts.L, texts.D, texts.H]);
-  return <>{labels.map(l => <span class="ov edgelab glass" style={{ left: `${l.x}px`, top: `${l.y}px` }} aria-hidden="true">{l.text}</span>)}</>;
+  }, [key]);
+  const live = useRef(false); // one end per edit: Enter / Esc unmount the input, whose blur must not end it a second time
+  const done = (apply: boolean) => {
+    const e = editing; if (!e || !live.current) return;
+    live.current = false;
+    setEditing(null);
+    if (!apply) { setErr(null); return; }
+    const msg = onCommit(e.id, e.text); setErr(msg ? { id: e.id, msg } : null);
+  };
+  return <>{labels.map(l => editing?.id === l.id
+    ? <input key={l.id} class="ov edgelab edgeinput glass" style={{ left: `${l.x}px`, top: `${l.y}px` }} value={editing.text} aria-label={`Edit ${l.id}`} autoFocus
+        onInput={e => setEditing({ id: l.id, text: (e.target as HTMLInputElement).value })}
+        onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); done(true); } else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); done(false); } }}
+        onBlur={() => done(true)} ref={el => { if (el && document.activeElement !== el) { el.focus(); el.select(); } }} />
+    : <button key={l.id} type="button" class="ov edgelab glass editable" style={{ left: `${l.x}px`, top: `${l.y}px` }} title="Click to type a new size" aria-label={`${l.id} ${l.text}, click to edit`}
+        onClick={() => { setErr(null); live.current = true; setEditing({ id: l.id, text: l.text.replace(/ (in|cm)$/, '') }); }}>{l.text}</button>)}
+    {err ? <div class="ov mrefuse glass" role="alert">{err.msg}</div> : null}</>;
 }
 
 export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { store: Store; init: MakerInit; viewHost: HTMLElement; getViewer?: () => Viewer | undefined; preview: (S: TankSetup | null) => void; onEnd: (e: MakerEnd) => void }) {
   const u: Units = store.scene.units;
-  const [spec, setSpec] = useState<CustomTankSpec>(() => structuredClone(init.spec));
+  const [spec, setSpec] = useState<CustomTankSpec>(() => { const sp = structuredClone(init.spec); sp.tank = roundAsPie(sp.tank); return sp; });
+  const [refuse, setRefuse] = useState('');
   const [choice, setChoice] = useState<GlassChoice>(defaultChoice);
   const [panel, setPanel] = useState<GlassPanel | null>(null);
   const [inSetup, setInSetup] = useState(false);
+  const [shownBrace, setShownBrace] = useState<BraceSpec | null>(null); // the last worked-out brace: drawn while the panel recomputes
+  const [locks, setLocks] = useState<Record<BraceField, boolean>>({ width: false, thickness: false, cross: false, crossWidth: false });
+  const [opt, setOpt] = useState<{ text: string; key: string } | null>(null);
+  const [busy, setBusy] = useState(false);
   const mem = useRef(shapeMemory());
   const viewRef = useRef<HTMLElement>(null);
   const cam0 = useRef<CameraSettings>(structuredClone(store.tank.camera));
@@ -62,18 +86,19 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
     set(MAKER_CAM(cam0.current, spec.tank));
     return () => { preview(null); set(cam0.current); };
   }, []);
-  useEffect(() => { preview(inSetup ? previewSpec(store.tank, spec) : makerSetup(spec, store.tank)); }, [spec, inSetup]);
+  // the brace in the panel is drawn at once (before "Use this glass" writes it into the spec)
+  const braceKey = JSON.stringify(shownBrace);
+  useEffect(() => { preview(inSetup ? previewSpec(store.tank, spec, shownBrace) : makerSetup(spec, store.tank, shownBrace)); }, [spec, inSetup, braceKey]);
   // a new size is framed again once it settles (the person can still orbit and zoom in between)
   useEffect(() => { if (inSetup) return; const t = setTimeout(() => store.update(s => { s.tanks[s.active].camera = { ...s.tanks[s.active].camera, zoom: MAKER_CAM(cam0.current, spec.tank).zoom }; }, { kind: 'view', history: false }), 400); return () => clearTimeout(t); }, [spec.tank.L, spec.tank.D, spec.tank.H]);
-  // "Preview in my setup" shows it in the room for a moment, then comes back (§2a)
+  // "Preview in my setup" shows it in the room until the person clicks Back now (no timer; Nathan 2026-11-14, R39)
   useEffect(() => {
     if (!inSetup) return;
     store.update(s => { s.tanks[s.active].camera = cam0.current; }, { kind: 'view', history: false });
-    const t = setTimeout(() => setInSetup(false), 5000);
-    return () => { clearTimeout(t); store.update(s => { s.tanks[s.active].camera = MAKER_CAM(cam0.current, spec.tank); }, { kind: 'view', history: false }); };
+    return () => { store.update(s => { s.tanks[s.active].camera = MAKER_CAM(cam0.current, spec.tank); }, { kind: 'view', history: false }); };
   }, [inSetup]);
   // the glass solver runs after edits settle (a box tank: about half a second with the brace optimizer)
-  useEffect(() => { setPanel(null); const t = setTimeout(() => setPanel(glassPanel(spec.tank, spec.rim, choice, u)), 250); return () => clearTimeout(t); }, [spec.tank, spec.rim, choice, u]);
+  useEffect(() => { setPanel(null); const t = setTimeout(() => { const p = glassPanel(spec.tank, spec.rim, choice, u); setPanel(p); setShownBrace(p.braceNow); }, 250); return () => clearTimeout(t); }, [spec.tank, spec.rim, choice, u]);
 
   /** Every tank edit runs P1's rules on a scratch setup and reads the spec back; a size / glass change drops a glass build that no longer fits. */
   const edit = (fn: (s: TankSetup) => void, keepBuild = false) => setSpec(sp => {
@@ -83,20 +108,48 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
     return next;
   });
   const size = (next: (T: Tank) => Tank) => edit(s => applyTankEdit(s, next, { thin: false }));
+  /** A box on the preview was edited: parsed in the scene's units, then through the same ranges as the side panel; returns a refusal (or null). */
+  const commitDim = (id: string, raw: string): string | null => {
+    const deg = id === 'A' ? parseFloat(raw) : undefined, mm = id === 'A' ? 1 : parseLen(raw, u);
+    if (mm == null) return `"${raw.trim()}" is not a length${u === 'in' ? ' (inches, like 36 or 3 1/2)' : ' (centimeters)'}.`;
+    const r = applyDim(spec.tank, id, mm, deg);
+    if ('error' in r) { setRefuse(r.error); return r.error; }
+    size(r.edit); setRefuse(r.note ?? ''); return null;
+  };
   const T = spec.tank, shape = shapeOf(T), facts = useMemo(() => makerFacts(spec, u), [spec, u]), price = priceView(spec);
   const stock = u === 'in' ? STOCK_US : STOCK_METRIC, gNow = glassThickness(T, spec.glass);
   const changed = specChanged(spec, init.spec);
 
+  const key = () => JSON.stringify([spec.tank, choice]);
+  /** The Optimize button: fills the unlocked brace fields with the least glass that meets the safety factor. */
+  const optimize = () => {
+    setBusy(true);
+    setTimeout(() => {
+      const nb = panel?.braceNow ?? startBrace(u), lk: BraceLocks = {};
+      if (locks.width) lk.width = nb.width;
+      if (locks.thickness) lk.thickness = nb.thickness;
+      if (locks.cross) lk.cross = nb.cross ?? 0;
+      if (locks.crossWidth && (nb.cross ?? 0) > 0) lk.crossWidth = nb.crossWidth ?? nb.width;
+      const r = optimizeChoice(T, choice, u, lk);
+      const next: GlassChoice = r.ok ? { ...choice, brace: r.brace ? ((r.brace.cross ?? 0) > 0 ? 'cross' : 'perimeter') : 'none', custom: r.brace ?? undefined } : choice;
+      setChoice(next); setOpt({ text: r.line, key: JSON.stringify([spec.tank, next]) }); setBusy(false);
+    }, 30);
+  };
+  const setBrace = (b: BraceSpec) => setChoice({ ...choice, custom: b });
+
   const save = (use: boolean) => {
     const lib = loadLibrary();
-    const r = init.libId && lib.some(e => e.id === init.libId) ? editCustomTank(lib, init.libId, spec) : addCustomTank(lib, spec);
+    // a brace in the panel is part of the tank: saving writes its glass build (the brace would be dropped otherwise)
+    const out: CustomTankSpec = { ...spec, name: spec.name.trim() || dimName(spec.tank), ...(!spec.rim && panel?.braceNow && panel.use ? { glass: panel.use.glass, glassBuild: panel.use.build } : {}) };
+    const r = init.libId && lib.some(e => e.id === init.libId) ? editCustomTank(lib, init.libId, out) : addCustomTank(lib, out);
     if (!saveLibrary(r.lib)) { alert('Could not save in this browser (storage is blocked or full).'); return; }
     if (use && r.entry) { const e = r.entry; store.edit(s => chooseCustom(s, e)); }
     onEnd(use ? 'used' : 'saved');
   };
   const cancel = () => { if (!changed || confirm('Leave the custom tank maker without saving? Your setup stays as it was.')) onEnd('cancel'); };
+  // a dimension box being edited takes its own Esc (cancels the edit, not the maker)
   useEffect(() => {
-    const k = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); if (inSetup) setInSetup(false); else cancel(); } };
+    const k = (e: KeyboardEvent) => { if (e.key === 'Escape' && !(e.target as HTMLElement | null)?.classList?.contains('edgeinput')) { e.preventDefault(); e.stopImmediatePropagation(); if (inSetup) setInSetup(false); else cancel(); } };
     addEventListener('keydown', k, true); return () => removeEventListener('keydown', k, true);
   });
 
@@ -108,13 +161,13 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
         <b class="mtitle">Custom tank maker</b>
         <span class="hint msub">Your setup "{name}" is not touched until you save</span>
         <span class="grow" />
-        <button type="button" class={`btn ghost${inSetup ? ' on' : ''}`} aria-pressed={inSetup} onClick={() => setInSetup(!inSetup)} title="Shows it in your room for a moment, then comes back here"><Icon name="eye" /> {inSetup ? 'Back to the maker' : 'Preview in my setup'}</button>
+        <button type="button" class={`btn ghost${inSetup ? ' on' : ''}`} aria-pressed={inSetup} onClick={() => setInSetup(!inSetup)} title="Shows it in your room until you click Back now"><Icon name="eye" /> {inSetup ? 'Back to the maker' : 'Preview in my setup'}</button>
         <button type="button" class="btn" onClick={cancel}>Cancel</button>
         <button type="button" class="btn" onClick={() => save(false)}>Save to my tanks</button>
         <button type="button" class="btn primary" onClick={() => save(true)}>Save and use in this setup</button>
       </header>
       <aside class="mform">
-        <div class="row"><span class="lbl">Name</span><input class="input" value={spec.name} aria-label="Name" maxLength={76} onInput={e => setSpec({ ...spec, name: (e.target as HTMLInputElement).value })} /><span /></div>
+        <div class="row"><span class="lbl">Name</span><input class="input" value={spec.name} placeholder={dimName(T)} title="Leave it empty and the name follows the size" aria-label="Name" maxLength={76} onInput={e => setSpec({ ...spec, name: (e.target as HTMLInputElement).value })} /><span /></div>
         <Group title="Shape" sum={SHAPE_WORD[shape]} open={open.shape} onToggle={fold('shape')}>
           <div class="seg full" role="group" aria-label="Shape">
             {SHAPE_MAIN.map(sh => <button type="button" class={shape === sh ? 'on' : ''} aria-pressed={shape === sh} onClick={() => size(reshape(mem.current, T, sh))}>{SHAPE_WORD[sh]}</button>)}
@@ -122,15 +175,18 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
               <option value="">More ▾</option>{SHAPE_MORE.map(sh => <option value={sh}>{SHAPE_WORD[sh]}</option>)}
             </select>
           </div>
-          {shape === 'poly' ? <Seg label="Sides" value={String(T.sides ?? 6)} opts={POLY_SIDES.map(n => [String(n), `${n} sides`] as [string, string])} onPick={n => size(t => ({ ...t, sides: +n }))} /> : null}
+          {shape === 'poly' ? <div class="row"><span class="lbl">Sides</span><input class="input num" type="number" min={POLY_MIN} max={POLY_MAX} step={1} value={T.sides ?? 6} aria-label="Number of sides" onChange={e => { const v = parseInt((e.target as HTMLInputElement).value, 10); if (Number.isFinite(v) && v >= POLY_MIN && v <= POLY_MAX) { setRefuse(''); size(t => setPolyCount(t, v)); } else setRefuse(`A polygon has ${POLY_MIN} to ${POLY_MAX} sides.`); }} /><span class="unit">{POLY_MIN}-{POLY_MAX}</span></div> : null}
           {shape === 'rect' ? <button type="button" class="btn sm" onClick={() => size(t => ({ ...t, D: t.L, H: t.L }))}>Make it a cube</button> : null}
         </Group>
         <Group title="Size" sum={galText(facts.gross)} open={open.size} onToggle={fold('size')}>
-          <LenRow label={shape === 'round' || shape === 'bowl' ? 'Diameter' : shape === 'pie' ? 'Width' : 'Length'} mm={T.L} min={Math.max(LIMITS.tankMin, SIDE_RANGE.L[0])} max={SIDE_RANGE.L[1]} u={u} onMm={mm => size(t => ({ ...t, L: mm }))} />
-          {shape !== 'round' && shape !== 'bowl' && shape !== 'poly' ? <LenRow label={shape === 'pie' ? 'Radius' : shape === 'bow' ? 'Depth at centre' : 'Depth'} mm={T.D} min={SIDE_RANGE.D[0]} max={SIDE_RANGE.D[1]} u={u} onMm={mm => size(t => ({ ...t, D: mm }))} /> : null}
+          {shape === 'bowl' || (shape === 'poly' && !T.sideLens) || shape === 'rect' || shape === 'bow' || shape === 'arch' ? <LenRow label={shape === 'bowl' ? 'Diameter' : shape === 'poly' ? 'Width' : 'Length'} mm={T.L} min={Math.max(LIMITS.tankMin, SIDE_RANGE.L[0])} max={SIDE_RANGE.L[1]} u={u} onMm={mm => { setRefuse(''); size(t => ({ ...t, L: mm })); }} /> : null}
+          {shape === 'poly' ? <PolySides T={T} u={u} refuse={refuse} onSide={(i, mm) => { const r = setPolySide(T, i, mm); if ('error' in r) { setRefuse(r.error); return false; } setRefuse(''); size(r.edit); return true; }} onRegular={() => { setRefuse(''); size(makeRegular); }} /> : null}
+          {shape === 'pie' ? <LenRow label="Radius" mm={pieRadius(T)} min={SIDE_RANGE.D[0]} max={SIDE_RANGE.D[1]} u={u} onMm={mm => size(t => ({ ...t, D: pieDepth(mm, t.pieDeg ?? 90) }))} /> : null}
+          {shape === 'rect' || shape === 'bow' || shape === 'arch' ? <LenRow label={shape === 'bow' ? 'Depth at centre' : 'Depth'} mm={T.D} min={SIDE_RANGE.D[0]} max={SIDE_RANGE.D[1]} u={u} onMm={mm => size(t => ({ ...t, D: mm }))} /> : null}
           {shape !== 'bowl' ? <LenRow label="Height" mm={T.H} min={SIDE_RANGE.H[0]} max={SIDE_RANGE.H[1]} u={u} onMm={mm => size(t => ({ ...t, H: mm }))} /> : null}
           {shape === 'bow' ? <LenRow label="Bow depth" mm={T.D - (T.bowMin ?? T.D * 0.7)} min={0.5 * IN} max={T.D * 0.6} u={u} onMm={mm => size(t => ({ ...t, bowMin: Math.max(t.D * 0.4, t.D - mm) }))} /> : null}
-          {shape === 'pie' ? <div class="row"><span class="lbl">Angle</span><input class="slider" type="range" min={45} max={180} step={5} value={T.pieDeg ?? 90} aria-label="Angle" onInput={e => size(t => ({ ...t, pieDeg: +(e.target as HTMLInputElement).value }))} /><span class="val">{T.pieDeg ?? 90}°</span></div> : null}
+          {shape === 'pie' ? <div class="row"><span class="lbl">Angle</span><input class="slider" type="range" min={PIE_MIN} max={PIE_MAX} step={5} value={T.pieDeg ?? 90} aria-label="Angle" onInput={e => size(t => setPieAngle(t, +(e.target as HTMLInputElement).value))} /><span class="val"><input class="input num" type="number" min={PIE_MIN} max={PIE_MAX} step={1} value={T.pieDeg ?? 90} aria-label="Angle value" onChange={e => { const v = parseFloat((e.target as HTMLInputElement).value); if (Number.isFinite(v)) size(t => setPieAngle(t, v)); }} /><span class="unit">°</span></span></div> : null}
+          {shape === 'pie' ? <div class="hint">Width {facts.L} across (worked out from the angle and radius){(T.pieDeg ?? 90) >= 360 ? '. 360° is a full round tank.' : ''}</div> : null}
           {shape === 'bowl' ? <>
             <LenRow label="Floor" mm={T.bowlFloor ?? T.L * 0.5} min={T.L * 0.2} max={T.L * 0.95} u={u} onMm={mm => size(t => ({ ...t, bowlFloor: mm }))} />
             <LenRow label="Opening" mm={T.bowlTop ?? T.L * 0.5} min={T.L * 0.2} max={T.L * 0.95} u={u} onMm={mm => size(t => ({ ...t, bowlTop: mm }))} />
@@ -145,7 +201,7 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
             </select><span /></div>
           <div class="row"><span class="lbl">Rim</span><Seg label="Rim" value={spec.rim ? 'y' : 'n'} opts={[['y', 'Rimmed'], ['n', 'Rimless']]} onPick={v => edit(s => setRim(s, v === 'y'))} /><span /></div>
         </Group>
-        <GlassGroup panel={panel} choice={choice} setChoice={setChoice} rim={spec.rim} u={u} glassNow={gNow} build={!!spec.glassBuild} open={open.solver} onToggle={fold('solver')}
+        <GlassGroup panel={panel} choice={choice} setChoice={setChoice} locks={locks} setLocks={setLocks} onOptimize={optimize} busy={busy} optLine={opt && opt.key === key() ? opt.text : ''} setBrace={setBrace} rim={spec.rim} u={u} glassNow={gNow} build={!!spec.glassBuild} open={open.solver} onToggle={fold('solver')}
           onUse={() => panel?.use && setSpec({ ...spec, glass: panel.use.glass, glassBuild: panel.use.build })} />
         <Group title="Price" sum={spec.priceUsd != null ? `${usd(spec.priceUsd)} yours` : price.estimate != null ? `about ${usd(price.estimate)}` : 'no estimate'} open={open.price} onToggle={fold('price')}>
           <div class="drow"><span>Our estimate</span><b>{price.estimate != null ? usd(price.estimate) : '-'}</b></div>
@@ -157,8 +213,8 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
         <Toggle on={!!spec.owned} label="I own this tank" onFlip={on => setSpec({ ...spec, owned: on })} />
       </aside>
       <main class="mview" ref={viewRef}>
-        {inSetup ? <div class="ov mbanner glass">Your setup with this tank, for a moment. <button type="button" class="btn sm" onClick={() => setInSetup(false)}>Back now</button></div> : <>
-          <EdgeLabels store={store} getViewer={getViewer} T={spec.tank} texts={{ L: facts.L, D: facts.D, H: facts.H }} />
+        {inSetup ? <div class="ov mbanner glass">Your setup with this tank. <button type="button" class="btn sm" onClick={() => setInSetup(false)}>Back now</button></div> : <>
+          <EdgeLabels store={store} getViewer={getViewer} T={spec.tank} u={u} onCommit={commitDim} />
           <div class="ov dims glass" aria-label="Dimensions"><span><b>{facts.L}</b> {shape === 'round' || shape === 'bowl' ? 'across' : 'length'}</span><span><b>{facts.D}</b> {shape === 'bow' ? 'depth at centre' : 'depth'}</span><span><b>{facts.H}</b> height</span>{facts.bow ? <span><b>{facts.bow}</b> bow</span> : null}</div>
         </>}
         <div class="ov mfacts">
@@ -171,8 +227,8 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
   );
 }
 
-function GlassGroup({ panel, choice, setChoice, rim, u, glassNow, build, open, onToggle, onUse }: {
-  panel: GlassPanel | null; choice: GlassChoice; setChoice: (c: GlassChoice) => void; rim: boolean; u: Units; glassNow: number; build: boolean; open: boolean; onToggle: () => void; onUse: () => void;
+function GlassGroup({ panel, choice, setChoice, locks, setLocks, onOptimize, busy, optLine, setBrace, rim, u, glassNow, build, open, onToggle, onUse }: {
+  panel: GlassPanel | null; choice: GlassChoice; setChoice: (c: GlassChoice) => void; locks: Record<BraceField, boolean>; setLocks: (l: Record<BraceField, boolean>) => void; onOptimize: () => void; busy: boolean; optLine: string; setBrace: (b: BraceSpec) => void; rim: boolean; u: Units; glassNow: number; build: boolean; open: boolean; onToggle: () => void; onUse: () => void;
 }) {
   const sum = !panel ? 'working it out…' : !panel.supported ? 'box tanks only' : `${panel.panes[0].thickness} front · SF ${panel.sfAchieved}`;
   return (
@@ -181,7 +237,8 @@ function GlassGroup({ panel, choice, setChoice, rim, u, glassNow, build, open, o
         <div class="row"><span class="lbl">Safety factor</span><input class="slider" type="range" min={2} max={6} step={0.1} value={choice.sf} aria-label="Safety factor" onInput={e => setChoice({ ...choice, sf: +(e.target as HTMLInputElement).value })} />
           <span class="val"><input class="input num" type="number" min={1.5} max={8} step={0.1} value={choice.sf} aria-label="Safety factor value" onChange={e => { const v = parseFloat((e.target as HTMLInputElement).value); if (Number.isFinite(v) && v >= 1.5 && v <= 8) setChoice({ ...choice, sf: v }); }} /></span></div>
         <Seg label="Thickness" value={choice.mode} opts={[['uniform', 'One thickness'], ['perPane', 'Per pane']]} onPick={m => setChoice({ ...choice, mode: m })} />
-        {!rim ? <Seg label="Brace" value={choice.brace} opts={[['none', 'No brace'], ['perimeter', 'Perimeter'], ['cross', 'Perimeter + cross']]} onPick={b => setChoice({ ...choice, brace: b })} /> : null}
+        {!rim ? <Seg label="Brace" value={panel ? (panel.braceNow ? ((panel.braceNow.cross ?? 0) > 0 ? 'cross' : 'perimeter') : 'none') : choice.brace} opts={[['none', 'No brace'], ['perimeter', 'Perimeter'], ['cross', 'Perimeter + cross']]} onPick={b => setChoice({ ...choice, brace: b, custom: undefined })} /> : null}
+        {!rim && panel ? <BraceFields b={panel.braceNow} u={u} locks={locks} setLocks={setLocks} setBrace={setBrace} onOptimize={onOptimize} busy={busy} optLine={optLine} note={panel.braceNote} stock={u === 'in' ? STOCK_US : STOCK_METRIC} /> : null}
         {!panel ? <div class="hint">Working out the glass…</div> : <>
           <div class="hint">{panel.topLine}</div>
           {!rim && panel.braces.length ? <table class="gtable" aria-label="Brace options">
@@ -193,6 +250,8 @@ function GlassGroup({ panel, choice, setChoice, rim, u, glassNow, build, open, o
             <tbody>{panel.panes.map(p => <tr><td>{p.label}</td><td><b>{p.thickness}</b></td><td class={p.ok ? '' : 'bad'}>{p.sf}</td><td class="hint">{p.governs}</td></tr>)}</tbody>
           </table>
           <div class="drow"><span>Safety factor achieved</span><Pill tone={panel.sfOk ? 'ok' : 'bad'}>{panel.sfAchieved}</Pill></div>
+          <div class={`hint${panel.sfOk ? '' : ' bad'}`} aria-live="polite">{panel.verdict}</div>
+          <div class="hint">{panel.volume}</div>
           {panel.joints.length ? <><div class="cap">Silicone joints</div>{panel.joints.map(j => <div class="drow"><span>{j.label}</span><Pill tone={j.ok ? 'ok' : 'bad'}>{j.use}</Pill></div>)}</> : null}
           {panel.notes.map(n => <div class="dwarn warn">{n}</div>)}
           <div class="drow"><span class="hint">{panel.weight}</span>
@@ -202,4 +261,51 @@ function GlassGroup({ panel, choice, setChoice, rim, u, glassNow, build, open, o
       </>}
     </Group>
   );
+}
+
+type BraceField = 'width' | 'thickness' | 'cross' | 'crossWidth';
+
+/** The brace fields (lane CT1): widths, strip thickness and cross count, each lockable, and the Optimize button. */
+function BraceFields({ b, u, locks, setLocks, setBrace, onOptimize, busy, optLine, note, stock }: {
+  b: BraceSpec | null; u: Units; locks: Record<BraceField, boolean>; setLocks: (l: Record<BraceField, boolean>) => void; setBrace: (b: BraceSpec) => void;
+  onOptimize: () => void; busy: boolean; optLine: string; note: string; stock: number[];
+}) {
+  const cur = b ?? startBrace(u), cross = cur.cross ?? 0, cw = cur.crossWidth ?? cur.width;
+  const conv = u === 'in' ? IN_MM : 10, unit = u === 'in' ? 'in' : 'cm', step = u === 'in' ? 0.25 : 0.5;
+  const show = (mm: number) => +(mm / conv).toFixed(2);
+  const lock = (k: BraceField) => <label class="lockbox" title="Optimize leaves a locked field as it is"><input type="checkbox" checked={locks[k]} aria-label={`Lock ${k}`} onChange={() => setLocks({ ...locks, [k]: !locks[k] })} /> lock</label>;
+  const num = (k: 'width' | 'crossWidth', v: number, label: string) => <div class="row"><span class="lbl">{label}</span>
+    <span class="val"><input class="input num" type="number" min={0.5} step={step} value={show(v)} aria-label={label} onChange={e => { const x = parseFloat((e.target as HTMLInputElement).value); if (Number.isFinite(x) && x >= 0.5 * (u === 'in' ? 1 : 2.54)) setBrace({ ...cur, [k]: x * conv }); }} /><span class="unit">{unit}</span></span>{lock(k)}</div>;
+  return <>
+    {b ? <>
+      {num('width', cur.width, 'Perimeter width')}
+      <div class="row"><span class="lbl">Strip thickness</span>
+        <select class="select" aria-label="Brace strip thickness" value={String(cur.thickness)} onChange={e => setBrace({ ...cur, thickness: +(e.target as HTMLSelectElement).value })}>
+          {[...new Set([...stock, cur.thickness])].sort((x, y) => x - y).map(t => <option value={String(t)}>{glassText(t, u)}</option>)}
+        </select>{lock('thickness')}</div>
+      <div class="row"><span class="lbl">Cross braces</span>
+        <select class="select" aria-label="Number of cross braces" value={String(cross)} onChange={e => setBrace({ ...cur, cross: +(e.target as HTMLSelectElement).value })}>
+          {[0, 1, 2, 3].map(n => <option value={String(n)}>{n === 0 ? 'none' : n}</option>)}
+        </select>{lock('cross')}</div>
+      {cross > 0 ? num('crossWidth', cw, 'Cross width') : null}
+    </> : <div class="hint">Pick a brace above to set its strips yourself, or let Optimize choose.</div>}
+    <div class="drow"><button type="button" class="btn sm primary" disabled={busy} onClick={onOptimize} title="Least total glass that still meets the safety factor, joints included">{busy ? 'Optimizing…' : 'Optimize'}</button><span class="hint">least glass at your safety factor</span></div>
+    {optLine ? <div class="hint" role="status">{optLine}</div> : null}
+    {note ? <div class="hint">{note}</div> : null}
+  </>;
+}
+
+
+/** A polygon's sides, each its own length (lane CT1, R38): the corners stay on one circle, so any side can change as long as the shape still closes. */
+function PolySides({ T, u, refuse, onSide, onRegular }: { T: Tank; u: Units; refuse: string; onSide: (i: number, mm: number) => boolean; onRegular: () => void }) {
+  const lens = polySides(T), conv = u === 'in' ? IN_MM : 10, show = (mm: number) => +(mm / conv).toFixed(2);
+  return <div class="polysides">
+    <div class="cap">Sides ({T.sideLens ? 'each its own length' : 'all equal'})</div>
+    <div class="sidegrid">{lens.map((mm, i) => <label class="sidecell"><span>{i + 1}</span>
+      <input class="input num" type="text" inputMode="decimal" value={String(show(mm))} aria-label={`Side ${i + 1} length (${u})`}
+        onChange={e => { const el = e.target as HTMLInputElement, v = parseLen(el.value, u); if (v == null || !onSide(i, v)) el.value = String(show(mm)); }} /></label>)}</div>
+    {T.sideLens ? <button type="button" class="btn sm" onClick={onRegular}>Make all sides equal</button> : null}
+    <div class="hint">Corners lie on one circle, so the sides alone fix the shape. The longest side must be shorter than the others together.</div>
+    {refuse ? <div class="dwarn warn" role="alert">{refuse}</div> : null}
+  </div>;
 }

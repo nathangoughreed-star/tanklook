@@ -23,6 +23,7 @@ import { Icon, Pill } from './ui';
 import { ProjectName, FileMenu, FileLayer, type Files } from './files';
 import { DiscoverSection, IdeasButton, AnimalDoor } from './discover';
 import { GetStarted } from './checklist';
+import { resetChecklist } from './logic/checklist';
 import { ConstraintsSection } from './constraints';
 import { PreferencesSection } from './prefs';
 import { EquipmentSection } from './equipment';
@@ -54,6 +55,7 @@ function useStore(store: Store) {
     let t = 0;
     const off = store.subscribe(kind => {
       setN(n => n + 1);
+      if (kind === 'load' && store.loadedBy === 'replace') resetChecklist();   // NT1: a New or opened project shows the Get started card again
       if (kind === 'view' || kind === 'select') return;
       clearTimeout(t); t = window.setTimeout(() => setSlowN(n => n + 1), 150);
     });
@@ -69,15 +71,18 @@ function usePhone() {
   return m;
 }
 
-function Header({ store, files, saved, phone }: { store: Store; files: Files; saved: boolean; phone: boolean }) {
+function Header({ store, files, saved, phone, checks, view }: { store: Store; files: Files; saved: boolean; phone: boolean; /** HB1: the check bar's items, then the View cluster, live in the header row */ checks?: ComponentChildren; view?: ComponentChildren }) {
   return (
     <header class="apphead">
       {phone ? null : <span class="brand">TankLook</span>}
       <ProjectName store={store} files={files} saved={saved} phone={phone} />
       <span class="grow" />
+      {checks}
+      <span class="grow" />
+      {view}
       <button type="button" class="btn icon ghost" title="Undo (Ctrl+Z)" aria-label="Undo" disabled={!store.canUndo} onClick={() => store.undo()}><Icon name="undo" /></button>
       <button type="button" class="btn icon ghost" title="Redo (Ctrl+Y)" aria-label="Redo" disabled={!store.canRedo} onClick={() => store.redo()}><Icon name="redo" /></button>
-      <button type="button" class="btn sm" title="Save in this browser (Ctrl+S)" onClick={() => files.save()}><Icon name="save" />{phone ? null : ' Save'}</button>
+      <button type="button" class="btn sm" title="Save in this browser (Ctrl+S)" onClick={() => files.save()}><Icon name="save" />{phone ? null : <span class="lb"> Save</span>}</button>
       <FileMenu files={files} />
     </header>
   );
@@ -171,18 +176,19 @@ function Panel({ id, more, onPick, onClose, tank, s8, disc, s5 }: { id: SectionI
   );
 }
 
-function CheckBar({ m, on, onPick }: { m: ChecksModel; on: CheckId | null; onPick: (id: CheckId) => void }) {
+function CheckBar({ m, on, onPick, head }: { m: ChecksModel; on: CheckId | null; onPick: (id: CheckId) => void; head?: boolean }) {
   const c = (id: CheckId, body: ComponentChildren) => (
     <button type="button" class={`check${on === id ? ' on' : ''}`} aria-pressed={on === id} title={CHECKS.find(x => x.id === id)!.title} onClick={() => onPick(id)}>{body}</button>
   );
-  return (
-    <div class="ov checkwrap"><div class="checkbar glass" role="toolbar" aria-label="Checks">
-      {c('habitat', <>Habitat <Pill tone={m.habitat.pill.tone}>{m.habitat.pill.word}</Pill></>)}<div class="vsep" />
+  const bar = (
+    <div class={`checkbar${head ? ' head' : ' glass'}`} role="toolbar" aria-label="Checks">
+      {c('habitat', <><span class="lb">Habitat </span><Pill tone={m.habitat.pill.tone}>{m.habitat.pill.word}</Pill></>)}<div class="vsep" />
       {c('cost', m.cost ? <><b>{m.cost.setup}</b><span class="dim"> · {m.cost.monthly} · {m.cost.minutes}</span></> : <span class="dim">No price yet</span>)}<div class="vsep" />
       {c('water', <><Icon name="drop" /> {m.water.temp} <Pill tone={m.water.pill.tone}>{m.water.pill.word}</Pill></>)}<div class="vsep" />
-      {c('notes', <><Icon name="note" /> Notes <Pill tone={m.notes.tone}>{m.notes.count}</Pill></>)}
-    </div></div>
+      {c('notes', <><Icon name="note" /><span class="lb"> Notes</span> <Pill tone={m.notes.tone}>{m.notes.count}</Pill></>)}
+    </div>
   );
+  return head ? bar : <div class="ov checkwrap">{bar}</div>;
 }
 
 export function App({ store, viewHost, profile, preview, files, viewer }: AppProps) {
@@ -246,18 +252,18 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
 
   return (
     <div class={cls}>
-      <Header store={store} files={files} saved={saved} phone={phone} />
+      <Header store={store} files={files} saved={saved} phone={phone}
+        checks={phone || split ? null : <CheckBar head m={model} on={drawer === 'selection' ? null : drawer} onPick={check} />}
+        view={<ViewCluster store={store} getViewer={viewer} phone={phone} compare={<CompareButtons store={store} phone={phone} say={files.say} />} />} />
       {phone ? null : <Rail open={section} onPick={pick} />}
       <Panel id={section} more={more} onPick={pick} onClose={() => { setSection(null); setMore(false); setPicker(false); }} tank={{ store, picker, setPicker, maker: openMaker, preview, libN }} s8={{ store, profile, getViewer: viewer, phone }} disc={{ scope, onScope: setScope, say: files.say }} s5={{ onSurprise: () => { setScope(undefined); setSection('discover'); } }} />
       <IdeasButton section={more ? null : section} onIdeas={ideas} />
       {split && panelOpen && !phone ? <EditingBar store={store} /> : null}
       <main class="viewer" ref={viewRef}>
         {section === 'print' && !phone ? <PrintPaper store={store} profile={profile} getViewer={viewer} /> : null}
-        <ViewCluster store={store} getViewer={viewer} phone={phone} compare={<CompareButtons store={store} phone={phone} say={files.say} />} />
         {split ? <CompareLayer store={store} models={models} drawer={cmpDrawer} onPick={check} phone={phone} say={files.say} /> : null}
         <GetStarted tank={store.tank} open={section} onOpen={pick} onAnimal={() => setDoor(true)} phone={phone} />
         <ScapeBars store={store} getViewer={viewer} />
-        {phone || split ? null : <CheckBar m={model} on={drawer === 'selection' ? null : drawer} onPick={check} />}
       </main>
       {phone ? <div class="checkstrip">{split ? <CompareStrip store={store} models={models} side={cmpSide} setSide={setCmpSide} drawer={cmpDrawer} onPick={check} /> : <CheckBar m={model} on={drawer === 'selection' ? null : drawer} onPick={check} />}</div> : null}
       {drawer === 'selection' ? <SelectionDrawer store={store} getViewer={viewer} onClose={() => setDrawer(d => (d === 'selection' ? null : d))} /> : drawer && split ? <CompareDrawer id={drawer} models={models} onClose={() => setDrawer(null)} /> : drawer ? <Drawer id={drawer} model={model} onClose={() => setDrawer(null)} /> : null}
