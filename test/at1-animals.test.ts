@@ -103,3 +103,19 @@ describe('species notes in US units', () => {
     expect(d.note).not.toMatch(/°C/);
   });
 });
+
+describe('R51: a species already in the tank leaves the tiles', () => {
+  it('drops out with its counts, and comes back when removed', () => {
+    const st = new Store(); st.edit(s => { s.fish = []; });
+    const f = createFitter(), sp = one('white cloud'), ids = (S: TankSetup) => pickView(S, 'in', 'guided', f, { ...DEFAULT_QUERY, fitsOnly: false });
+    const before = ids(st.tank);
+    expect(before.groups.flatMap(g => g.rows.map(r => r.id))).toContain(sp.id);
+    expect(addSpecies(st, sp).ok).toBe(true);
+    const after = ids(st.tank);
+    expect(after.groups.flatMap(g => g.rows.map(r => r.id))).not.toContain(sp.id);
+    expect(after.shown).toBe(before.shown - 1);
+    expect(after.chips[0].n).toBe(before.chips[0].n - 1);
+    st.edit(s => { s.fish = s.fish.filter(x => x.species !== sp.id); });
+    expect(ids(st.tank).shown).toBe(before.shown);
+  });
+});

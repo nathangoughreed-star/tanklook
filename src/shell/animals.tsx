@@ -130,10 +130,9 @@ export function AnimalsSection({ store, getViewer }: { store: Store; getViewer?:
           {g.rows.map(r => {
             const sp = getSpecies(r.id)!;
             return (
-              <div class={`ptile${r.level !== 'ok' ? ' gated' : ''}`} role="button" tabIndex={0} aria-label={`${r.name}: details`} onClick={e => { if (!(e.target as HTMLElement).closest('button')) setPvId(r.id); }}
-                onKeyDown={e => { if (e.key === 'Enter' && e.target === e.currentTarget) setPvId(r.id); }}
+              <div class={`ptile${r.level !== 'ok' ? ' gated' : ''}`}
                 onPointerDown={e => { if (!getViewer || (e.target as HTMLElement).closest('button')) return; dragOut(e, sp.name, getViewer, store, (at, overView) => { if (at || overView) report(dropSpecies(store, sp, undefined, at ?? undefined, pct)); }); }} title={r.level !== 'ok' ? [r.reason, ...r.more, 'Still addable: Add anyway.'].join('; ') : noteIn(sp.note ?? '', units)}>
-                <div class="tart"><FishArt id={r.id} look={r.look} />{r.inTank ? <span class="tin">{r.inTank} in</span> : null}</div>
+                <div class="tart"><FishArt id={r.id} look={r.look} /><button type="button" class="info" aria-label={`${r.name}: details`} title="Details" onClick={() => setPvId(r.id)}>i</button></div>
                 <div class="tname">{r.name}{r.tag ? <b class="tag">{r.tag}</b> : null}</div>
                 <div class="tmeta"><span>{r.size}</span>{r.care ? <span class="care">{r.care}</span> : null}</div>
                 {r.reason ? <small class={`why ${tone(r.level)}`}>{r.reason}{r.more.length ? ` (+${r.more.length} more)` : ''}</small> : null}
