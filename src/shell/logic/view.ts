@@ -3,6 +3,7 @@
 import type { CameraSettings, Scene } from '../../scene/types';
 import type { Store } from '../../scene/store';
 import { LIMITS } from '../../scene/validate';
+import { ROOM_MAX, roomOf, setRoomAuto, setRoomByHand } from '../../scene/roomlight';
 import { shuffleFish } from '../../scene/scatter';
 import { rng } from '../../art/paint';
 
@@ -69,3 +70,16 @@ export function anotherMoment(store: Store, seed = Math.random() * 1e9, addPct =
   store.edit(s => shuffleFish(s, rng(seed), undefined, addPct));
   return true;
 }
+
+// HB1 part 2 (R62): the room (ambient) light, the old UI's sun slider (ui/panels.ts) in the View popover.
+export { ROOM_MAX };
+export const ROOM_HINT = 'Auto: bright until the tank has a light';
+/** The slider's value and its word (Dark / Dim / Bright), and whether the room still follows the tank. */
+export function roomRead(store: Store): { value: number; word: string; auto: boolean } {
+  const l = store.tank.light, v = roomOf(l), f = v / ROOM_MAX;
+  return { value: v, word: f < 0.2 ? 'Dark' : f < 0.75 ? 'Dim' : 'Bright', auto: !!l.roomAuto };
+}
+/** The slider moved: the person's value from now on; one undo step while dragging. */
+export function roomByHand(store: Store, v: number) { store.edit(t => { setRoomByHand(t.light, v); }, { coalesce: 'vRoom' }); }
+/** "Auto": the room follows the tank again. */
+export function roomAuto(store: Store) { store.edit(t => { setRoomAuto(t.light); }); }

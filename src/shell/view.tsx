@@ -8,7 +8,7 @@ import { setGearShown, gearShown } from '../render/gear3d';
 import { Icon } from './ui';
 import { Toggle } from './tank';
 import {
-  CAM_PRESETS, CAM_SLIDERS, SHOWS, PNG_SIZES, camReadout, presetNow, presetOf, loadHidden, saveHidden, loadMap, saveMap, pngName, pngTitle, anotherMoment, KEYS,
+  CAM_PRESETS, CAM_SLIDERS, SHOWS, PNG_SIZES, camReadout, roomRead, roomByHand, roomAuto, ROOM_MAX, ROOM_HINT, presetNow, presetOf, loadHidden, saveHidden, loadMap, saveMap, pngName, pngTitle, anotherMoment, KEYS,
   type ShowId,
 } from './logic/view';
 
@@ -63,7 +63,7 @@ export function ViewCluster({ store, getViewer, phone, compare }: { store: Store
   const mapOn = () => (document.getElementById('mapOn') as HTMLInputElement | null)?.checked ?? false;
   const setMap = (on: boolean) => { const cb = document.getElementById('mapOn') as HTMLInputElement | null; if (cb) cb.checked = on; saveMap(on); v?.invalidate(); bump(n => n + 1); };
   const sheetOf = (k: keyof typeof cam, val: number) => store.cam(c => { (c as unknown as Record<string, number>)[k] = val; });
-  const on = presetNow(cam);
+  const on = presetNow(cam), room = roomRead(store);
   const png = async (m: number) => { try { download(await v!.exportPNG(m), pngName(store.scene.name, m)); } catch (e) { setNote((e as Error).message); } };
   const moment = () => { if (anotherMoment(store)) setNote('Another moment in the tank. Ctrl+Z brings the last one back.'); };
   const px = (m: number) => { const h = v?.host; return h ? pngTitle(h.clientWidth, h.clientHeight, devicePixelRatio || 1, m) : ''; };
@@ -87,6 +87,12 @@ export function ViewCluster({ store, getViewer, phone, compare }: { store: Store
               <div class="row"><span class="lbl">{s.label}</span>
                 <input class="slider" type="range" min={s.min} max={s.max} step={s.step} value={cam[s.key]} aria-label={s.label} onInput={e => sheetOf(s.key, +(e.target as HTMLInputElement).value)} onChange={() => store.seal()} />
                 <span class="val">{camReadout(s.key, cam[s.key], u)}</span></div>))}
+          </div>
+          <div class="vsec"><h3>Room light</h3>
+            <div class="row"><span class="lbl"><Icon name="sun" /></span>
+              <input class="slider" type="range" min={0} max={ROOM_MAX} step={0.01} value={room.value} aria-label="Room light" onInput={e => roomByHand(store, +(e.target as HTMLInputElement).value)} onChange={() => store.seal()} />
+              <span class="val">{room.word}</span></div>
+            <div class="hint">{room.auto ? ROOM_HINT : <><button type="button" class="btn sm chip" title="Let the room light follow the tank again (bright with no light, dim with one)" onClick={() => roomAuto(store)}>Auto</button> · {ROOM_HINT}</>}</div>
           </div>
           <div class="vsec"><h3>Show</h3>
             {SHOWS.map(s => <span title={s.title}><Toggle on={shown(s.id)} label={s.label} onFlip={on2 => setShow(s.id, on2)} /></span>)}
