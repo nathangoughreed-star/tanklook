@@ -70,6 +70,8 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R52 | 11-15 | New UI Cost and time drawer: breakdown of where upkeep ($/mo) and time (min/wk) go, plus difficulty; port the old demand panel drivers | DB1 | on main | 2099 | - | lane-DB1-demand-breakdown.md |
 | R53 | 11-15 | New UI Plants: picture cards like Animals (type groups with chips, baked plant stills, info detail, in-tank hidden) | PC1 | on main | 2106 | - | lane-PC1-plant-cards.md |
 | R54 | 11-15 | New UI "start from an animal I want": open the tile-card animal picker and build a stocking list, then plan the tank for the whole list | AT1 | on main | 2106 | - | AT1 brief Part 4 |
+| R55 | 11-15 | Bristlenose pleco rebuilt to match real photos (flat head, eyes on top, tentacles, sail dorsal, cream spots) | BP1 | on main | 2111 | - | started from PC1 chat |
+| R56 | 11-15 | Albino forms as an option for species commonly sold albino (flag, toggle on a stocked species, pale recolour with pink eyes) | AL1 | - | - | - | lane-AL1-albino-forms.md |
 | R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
 | R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
