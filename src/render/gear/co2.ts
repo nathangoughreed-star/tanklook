@@ -2,7 +2,7 @@
 import * as THREE from 'three';
 import { backdropDepth, clamp } from '../../scene/physics';
 import { cabinetGear } from '../../scene/cabinetGear';
-import { GearPick, V, along, hash, C, DROP_COLOURS, Frame, GearWall, Spot, lerp, sucker, line, overRim, behind } from './common';
+import { GearPick, V, along, hash, C, DROP_COLOURS, Frame, GearWall, Spot, lerp, sucker, line, overRim, behind, lineCutout, cutoutY } from './common';
 
 /** `f` is the wall the diffuser hangs on; `fr` gives the frame of any wall (the drop checker picks its own glass, far from the diffuser; the line and cylinder run from the back frame). */
 export function co2(f: Frame, sp: Spot, level: GearPick['co2'], fr: (w: GearWall) => Frame) {
@@ -46,9 +46,9 @@ export function co2(f: Frame, sp: Spot, level: GearPick['co2'], fr: (w: GearWall
   // down the back of the tank, then (in a cabinet) in through a grommeted hole in its back panel to the regulator (lane CB1)
   const b0 = bc.clone().add(V(0, -60, 0)), st = f.S.stand, cab = inStand && (st.style === 'cabinet' || st.style === 'custom');
   if (cab) {
-    const hy = f.top - 250, ox = b0.x, zOf = (a: number) => behind(bk, 0, 0, a).z, o = V(ox, hy, zOf(-10)), inn = V(ox, hy, zOf(50));
-    kit.rod('room', V(ox, hy, zOf(-2)), V(ox, hy, zOf(20)), 12, C.black, { seg: 16 }); // the grommet in the panel's hole
-    line(f, [b0, b0.clone().add(V(0, -40, -6)), V(ox, f.top + 30, o.z), V(ox, hy + 40, o.z), o, inn, V(rg.x, hy - 30, inn.z + 25), rg.clone().add(V(0, 40, 30))], 0xc9d6d8);
+    const ub = (b0.x - bk.P(0, 0, 0).x) * bk.along.x, uh = lineCutout(bk, ub), hy = cutoutY(f), o = behind(bk, uh, hy, -12), inn = behind(bk, uh, hy, 50); // a cut-out in the back panel for the line (lane CB3)
+    const pts = [b0, b0.clone().add(V(0, -40, -6)), behind(bk, ub, (f.H - 140 + hy) / 2, -12), behind(bk, uh, hy + 40, -12), o, inn, V(rg.x, hy - 30, inn.z + 25), rg.clone().add(V(0, 40, 30))];
+    kit.hoseRoutes.push(pts); line(f, pts, 0xc9d6d8);
   } else {
     const low = V(b0.x, f.top - 60, b0.z - 10);
     line(f, [b0, b0.clone().add(V(0, -40, -6)), V(b0.x, f.top + 30, b0.z - 10), low, V(rg.x, f.top - 80, low.z + 40), rg.clone().add(V(0, 40, 30))], 0xc9d6d8);

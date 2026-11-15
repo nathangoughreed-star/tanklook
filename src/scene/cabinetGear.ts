@@ -9,12 +9,12 @@ import { sumpOf, techParts, filterState } from './tech';
 import { standInside, STAND_PANEL } from './standspace';
 import type { TankSetup } from './types';
 
-export const CO2_CYL_R = 68, CO2_CYL_H = 430, CAN_GAP = 30; // mm: the cylinder's radius and its tallest body; clear space between pieces
+export const CO2_CYL_R = 68, CO2_CYL_H = 430, CAN_GAP = 30, PUMP_W = 80, PUMP_H = 60, UV_W = 70, UV_H = 330; // mm: the cylinder's radius and its tallest body; clear space between pieces
 
 export interface CabinetGear {
   /** Centre x (world mm, tank x 0..L) of each piece inside the cabinet; undefined = not in the cabinet (the sump: none; the others: beside it). */
-  canisterX?: number; co2X?: number; sumpX?: number;
-  canisterBeside: boolean; co2Beside: boolean;
+  canisterX?: number; co2X?: number; sumpX?: number; pumpX?: number; uvX?: number;
+  canisterBeside: boolean; co2Beside: boolean; pumpBeside: boolean; uvBeside: boolean;
   /** Plain-language flags for the Checks strip. */
   notes: string[];
 }
@@ -28,6 +28,14 @@ export function canisterBody(S: TankSetup): { r: number; h: number } | undefined
   return { r: pr ? pr.bodyMm.w / 2 : 95 * s, h: pr?.bodyMm.h ?? 380 * s };
 }
 
+/** The air pump is in the tech list (render/gear/pump.ts airPump stands it on the floor beside the tank; in a cabinet it goes inside, lane CB3). */
+const hasPump = (S: TankSetup) => techParts(S).some(p => p.gear === 'airpump');
+/** An inline UV steriliser stands in the stand (render/gear/reef.ts uv): beside a canister or a sump, or with no filter; a HOB's UV is a submersible one on the glass. */
+function hasInlineUv(S: TankSetup, sump: boolean) {
+  const parts = techParts(S); if (!parts.some(p => p.gear === 'uv')) return false;
+  const f = parts.find(p => p.gear === 'filter' && p.model), kind = f && FILTER_MODELS.find(m => m.id === f.model)?.kind;
+  return sump || !kind || kind === 'canister';
+}
 const hasCo2 = (S: TankSetup) => techParts(S).some(p => p.gear === 'co2kit' || p.gear === 'diyco2' || p.gear === 'co2cart');
 
 /** The gear's places in a cabinet stand (style 'cabinet'); undefined for no stand or another style, which keep their own layout. */
@@ -36,21 +44,27 @@ export function cabinetGear(S: TankSetup): CabinetGear | undefined {
   const T = S.tank, t = glassThickness(T, S.render.glass), x0 = -t + STAND_PANEL, notes: string[] = [];
   const can = canisterBody(S), sump = S.water.on ? sumpOf(S) : undefined, co2 = hasCo2(S);
   const canFits = !can || (can.h + 60 <= room.H && 2 * can.r + 20 <= room.L);
-  const items: { k: 'can' | 'sump' | 'co2'; w: number }[] = [];
+  const items: { k: 'can' | 'sump' | 'co2' | 'uv' | 'pump'; w: number }[] = [];
   if (can && canFits) items.push({ k: 'can', w: 2 * can.r });
   if (sump) items.push({ k: 'sump', w: sump.L });
+  if (hasInlineUv(S, !!sump) && UV_H + 20 <= room.H) items.push({ k: 'uv', w: UV_W });
+  if (hasPump(S)) items.push({ k: 'pump', w: PUMP_W });
   if (co2) items.push({ k: 'co2', w: 2 * CO2_CYL_R });
   const row = (list: typeof items) => list.reduce((a, i) => a + i.w, 0) + CAN_GAP * Math.max(0, list.length - 1);
-  let canisterBeside = !!can && !canFits, co2Beside = false;
+  let canisterBeside = !!can && !canFits, co2Beside = false, pumpBeside = false, uvBeside = hasInlineUv(S, !!sump) && UV_H + 20 > room.H;
   // too long for the inside: the canister goes out first, then the cylinder
   if (row(items) > room.L && items.some(i => i.k === 'can')) { items.splice(items.findIndex(i => i.k === 'can'), 1); canisterBeside = true; }
   if (row(items) > room.L && items.some(i => i.k === 'co2')) { items.splice(items.findIndex(i => i.k === 'co2'), 1); co2Beside = true; }
+  if (row(items) > room.L && items.some(i => i.k === 'uv')) { items.splice(items.findIndex(i => i.k === 'uv'), 1); uvBeside = true; }
+  if (row(items) > room.L && items.some(i => i.k === 'pump')) { items.splice(items.findIndex(i => i.k === 'pump'), 1); pumpBeside = true; }
   // spread the row over the inside with equal gaps at both ends and between
-  const free = Math.max(0, room.L - items.reduce((a, i) => a + i.w, 0)), gap = free / (items.length + 1), out: CabinetGear = { canisterBeside, co2Beside, notes };
+  const free = Math.max(0, room.L - items.reduce((a, i) => a + i.w, 0)), gap = free / (items.length + 1), out: CabinetGear = { canisterBeside, co2Beside, pumpBeside, uvBeside, notes };
   let x = x0 + gap;
   // order: canister, sump, cylinder (the canister's hoses on the left, as before)
-  for (const i of items) { const c = x + i.w / 2; if (i.k === 'can') out.canisterX = c; else if (i.k === 'sump') out.sumpX = c; else out.co2X = c; x += i.w + gap; }
+  for (const i of items) { const c = x + i.w / 2; if (i.k === 'can') out.canisterX = c; else if (i.k === 'sump') out.sumpX = c; else if (i.k === 'co2') out.co2X = c; else if (i.k === 'pump') out.pumpX = c; else out.uvX = c; x += i.w + gap; }
   if (canisterBeside) notes.push('The canister filter does not fit in the stand with the rest of the gear, so it stands beside the stand.');
   if (co2Beside) notes.push('The CO2 cylinder does not fit in the stand with the rest of the gear, so it stands beside the stand.');
+  if (uvBeside) notes.push('The UV steriliser does not fit in the stand with the rest of the gear, so it stands beside the stand.');
+  if (pumpBeside) notes.push('The air pump does not fit in the stand with the rest of the gear, so it stands beside the stand.');
   return out;
 }
