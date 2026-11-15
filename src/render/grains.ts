@@ -28,7 +28,7 @@ export function grainLooks(sub: TankSetup['substrate']): GrainLook[] {
     };
     if (b.grain2 === 'none') return grain3D(b.grain) ? [look(b.grain, b.color)] : [];
     // one ratio field r of the second grain (art/placeholder `blendRatio`), the same the ground shader paints
-    const z = blendZone(b), r2 = (x: number, d: number) => blendRatio(b, x, d, z), r1 = (x: number, d: number) => 1 - r2(x, d), out: GrainLook[] = [];
+    const z = blendZone(b), r2 = (x: number, d: number) => cover(blendRatio(b, x, d, z)), r1 = (x: number, d: number) => cover(1 - blendRatio(b, x, d, z)), out: GrainLook[] = [];
     if (grain3D(b.grain)) out.push(look(b.grain, b.color, r1));
     if (grain3D(b.grain2)) out.push(look(b.grain2, b.color2, r2));
     return out;
@@ -38,6 +38,10 @@ export function grainLooks(sub: TankSetup['substrate']): GrainLook[] {
   const mmPx = t.tile * 2 / 512; // tile px -> mm
   return [{ shape: 'stone', size: [t.size[0] * 2 * mmPx, t.size[1] * 2 * mmPx], round: t.round ?? 0.8, colors: t.shades, speckle: !!t.speckle, wet: !!t.terra }];
 }
+/** Stones to keep so that a share `r` of the floor is covered (the layer is 1.25 stone-covers thick, so chance covers
+ *  1 - exp(-K p): keeping r of them would show well over r of the floor as stone). */
+const COVER_K = 1.6;
+const cover = (r: number) => Math.min(1, -Math.log(1 - Math.min(r, 0.999)) / COVER_K);
 /** The ground's coarsest 3D grain, or null for a ground drawn as a surface only. */
 export function grainLook(sub: TankSetup['substrate']): GrainLook | null {
   const gs = grainLooks(sub); return gs.length ? gs.reduce((a, g) => (g.size[1] > a.size[1] ? g : a)) : null;
