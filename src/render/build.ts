@@ -341,8 +341,8 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
   // >= 1 px. Thin black lines on every glass edge, inside and out (Nathan 2026-10-12)
   const edgeLine = glassLine();
   // outline: line segments to draw instead of the geometry's own edges (a bowl's shell halves: the cut between them is not an edge)
-  const add = (geo: THREE.BufferGeometry, ro: number, outline?: number[]) => {
-    const g = new THREE.Mesh(geo, [faceM, edgeM]); g.renderOrder = ro; sc.add(g);
+  const add = (geo: THREE.BufferGeometry, ro: number, outline?: number[], face: THREE.Material = faceM) => {
+    const g = new THREE.Mesh(geo, [face, edgeM]); g.renderOrder = ro; sc.add(g);
     if (!R.edges) return;
     const eg = outline ? new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(outline, 3)) : new THREE.EdgesGeometry(geo, 20);
     const o = new THREE.LineSegments(eg, edgeLine); o.renderOrder = ro + 1; sc.add(o); // 20°: no seams between a curved shell's facets
@@ -380,11 +380,14 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
       }
     });
     // the eurobrace of a rimless box tank (lane CT1): glass strips glued flat inside the top of the walls, same glass and edge tint
+    // (R66: Nathan, "they should look identical to normal glass: a slight tint and the edges outlined a bit": the strips use the walls' own glass faces, edge tint and
+    // outline; a thin strip seen from above is nearly all face, so its faces carry a slight tint of the same edge colour, or a 2 in band would vanish)
+    const stripM = !R.brace || R.rim ? faceM : glassFx(basic(lowIron ? 0xa9d3da : 0x6fb59c, { transparent: true, opacity: 0.2, depthWrite: false }));
     if (R.brace && !R.rim && fp.walls.length === 4 && !arch) for (const k of braceBoxes(T, R.brace)) {
       // a box has six material groups: the two big flat faces (top / bottom) are the clear face material, the four thin sides the tinted edge
       const g = new THREE.BoxGeometry(k.x1 - k.x0, k.y1 - k.y0, k.d1 - k.d0).translate((k.x0 + k.x1) / 2, (k.y0 + k.y1) / 2, -(k.d0 + k.d1) / 2);
       g.clearGroups(); [1, 1, 0, 0, 1, 1].forEach((m, i) => g.addGroup(i * 6, 6, m));
-      add(g, 6);
+      add(g, 6, undefined, stripM);
     }
     // interior outline: top and bottom loops, and the vertical corners where panes meet
     const box: number[] = [...ringLines(fp.ring, 0), ...ringLines(fp.ring, H)];
