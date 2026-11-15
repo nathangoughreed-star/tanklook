@@ -50,7 +50,7 @@ function Graphics({ store, getViewer }: { store: Store; getViewer: () => Viewer 
           onInput={e => store.update(s => { for (const t of s.tanks) t.render.pop = +(e.target as HTMLInputElement).value / 100; })} onChange={() => store.seal()} />
         <span class="val">{Math.round(render.pop * 100)}</span></div>
       <Toggle on={!!v?.sway} label="Plants sway in the current" onFlip={on => { v?.setSway(on); bump(n => n + 1); }} />
-      <Toggle on={!!v?.swim && !v?.swimAuto} label={v?.swimAuto ? 'Fish swim in place (paused: this machine is too slow)' : 'Fish swim in place'} onFlip={on => { v?.setSwim(on); bump(n => n + 1); }} />
+      <Toggle on={!!v?.swim && !v?.swimAuto} label={v?.swimAuto ? 'Fish swim and drift (paused: this machine is too slow)' : 'Fish swim and drift'} onFlip={on => { v?.setSwim(on); bump(n => n + 1); }} />
       <Toggle on={!!v?.hideOverhead} label="Hide the light fixture when looking down from above it" onFlip={on => {
         if (v) { v.hideOverhead = on; v.invalidate(); } try { localStorage.setItem(KEYS.hideLight, on ? 'on' : 'off'); } catch { /* lasts this visit */ } bump(n => n + 1); }} />
       <Toggle on={render.grid} label={`Grid on back wall and floor (${store.scene.units === 'in' ? '2″' : '5 cm'})`} onFlip={on => store.edit(s => { s.render.grid = on; })} />

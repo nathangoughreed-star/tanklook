@@ -21,7 +21,7 @@ import { placeShells } from './lightShells';
 import { onPictureLoad, setMaxAnisotropy } from './textures';
 import { OUTLINE } from './fish3d';
 import { SWAY } from './plant3d';
-import { SWIM } from './swim';
+import { SWIM, applyDrift } from './swim';
 import { capping, rimHeadroom } from './items';
 import { PERSON_BODY, PERSON_HEAD } from '../art/placeholder';
 import { inFocus, type FocusSec } from './menuFocus';
@@ -293,11 +293,19 @@ export class Viewer {
   private swayT = 0;
   private swayCost = 8;
   private swayFrame = false;
+  private drifters: THREE.Object3D[] = [];
+  /** What can move: plants that sway, fish that swim (and the free swimmers among them that drift). Redone after every rebuild. */
+  private scanMovers() {
+    if (!this.swayScan) return;
+    this.swayScan = false; let pl = false, fi = false; const dr: THREE.Object3D[] = [];
+    for (const vp of this.vps) vp.scene?.traverse(o => { if (o.userData.sway) pl = true; if (o.userData.swimmer) fi = true; if (o.userData.drift) dr.push(o); });
+    this.swayAny = pl; this.swimAny = fi; this.drifters = dr;
+  }
   private swayDue() {
     if (!(this.sway || this.swim) || this.reveal || this.needsBuild || perf.level > 0 || fxClock.frozen != null) { this.swayAt = 0; return false; }
     const now = performance.now();
     if (now - this.lastInput > CAUS_IDLE_MS) { this.swayAt = 0; return false; }
-    if (this.swayScan) { this.swayScan = false; let pl = false, fi = false; for (const vp of this.vps) vp.scene?.traverse(o => { if (o.userData.sway) pl = true; if (o.userData.swimmer) fi = true; }); this.swayAny = pl; this.swimAny = fi; }
+    this.scanMovers();
     if (!((this.sway && this.swayAny) || (this.swim && !this.swimAuto && this.swimAny)) || now - this.swayAt < Math.min(200, Math.max(33, 3 * this.swayCost))) return false;
     this.swayT += this.swayAt ? Math.min(now - this.swayAt, 200) : 0; this.swayAt = now;
     return true;
@@ -780,7 +788,9 @@ export class Viewer {
   private dim?: { sc: THREE.Scene; m: THREE.Mesh; cam: THREE.OrthographicCamera };
   draw() {
     if (this.needsBuild) this.build();
-    SWIM.uSwim.value.set(this.swayT / 1000, this.swim && !this.swimAuto && !this.exporting ? 1 : 0);
+    this.scanMovers();
+    const swimOn = this.swim && !this.swimAuto && !this.exporting;
+    SWIM.uSwim.value.set(this.swayT / 1000, swimOn ? 1 : 0); applyDrift(this.drifters, this.swayT / 1000, swimOn);
     SWAY.uSway.value.set(this.swayT / 1000, this.sway && !this.exporting ? PLANT_SWAY_AMP : 0);
     const sc = this.store.scene, w = this.host.clientWidth, h = Math.max(60, this.host.clientHeight - this.reserve), r = this.renderer;
     this.canvas.style.height = this.reserve ? h + 'px' : ''; this.host.style.setProperty('--reserve', this.reserve + 'px');

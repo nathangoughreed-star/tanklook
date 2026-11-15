@@ -1714,6 +1714,10 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
       const hard = f.surface === 'hardscape', st = settleSnake(snakeContacts(sp.art, w, f.bend), m.quaternion, { x: p.x, z: -p.depth }, (x, z) => top(x, -z, hard, 0), Math.min(MAX_TILT, 30 * D2R), hard ? undefined : (x, z) => top(x, -z, true, 0) > top(x, -z, false, 0) + 3);
       m.quaternion.premultiply(st.rot); m.position.set(st.x, st.y, st.z);
     } else if (rests) restOn(p, m, w, sp.rest * w - (isArachnid(sp.art) ? 0 : 1));
+    if (swim && !rests) { // a floating free swimmer wanders a little round its spot (swim.ts applyDrift): the tank less its reach, round the spot
+      const r = 0.6 * w, top = waterY(T, S.water.level) - r * 0.5 - 2, flo = groundHeight(S, T, p.x, p.depth) + rise(p.x, p.depth) + 0.3 * h;
+      m.userData.drift = { len: w, lo: [r, flo, -(T.D - r)], hi: [T.L - r, top, -r] };
+    }
     register(m, w, h);
     if (f.surface === 'hardscape' || f.surface === 'under') return;
     add(contactShadow(S, T, p.x, p.depth, y - h / 2, w, h, f.yaw));
