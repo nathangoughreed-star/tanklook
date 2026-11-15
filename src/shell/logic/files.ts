@@ -19,9 +19,9 @@ export const FILE_MENU: readonly { id: FileAction; label: string; hint: string }
   { id: 'download', label: 'Download', hint: 'Save a file you can back up or send' },
 ];
 
-/** A fresh project: one empty tank of the given water type, the current units and camera. */
-export function newProject(units: Scene['units'], kind: Parameters<typeof applyKind>[1], camera: Scene['tanks'][number]['camera']): Scene {
-  const s = freshScene(); s.name = 'New tank'; applyKind(s.tanks[0], kind); s.tanks[0].camera = { ...camera }; s.units = units;
+/** A fresh project: one empty tank of the given water type, the current units (the camera is freshScene's). */
+export function newProject(units: Scene['units'], kind: Parameters<typeof applyKind>[1], _camera?: Scene['tanks'][number]['camera']): Scene {
+  const s = freshScene(); s.name = 'New tank'; applyKind(s.tanks[0], kind); s.units = units;   // the camera stays freshScene's: it frames the tank and the person
   return s;
 }
 

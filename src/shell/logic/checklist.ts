@@ -2,6 +2,7 @@
 // each opens the real section. Shown on a new tank until dismissed for good (kept per browser).
 import { layerOf } from '../../scene/items';
 import { bareSetup } from '../../scene/defaults';
+import { filterState } from '../../scene/tech';
 import type { TankSetup } from '../../scene/types';
 import type { SectionId } from './sections';
 
@@ -12,13 +13,14 @@ const sameBox = (a: TankSetup['tank'], b: TankSetup['tank']) => a.L === b.L && a
 /** The ticks, from the design alone (nothing is stored per step). */
 export function checklistOf(T: TankSetup): Checklist {
   const plants = T.items.some(i => layerOf(i) === 'plant'), hard = T.items.some(i => layerOf(i) !== 'plant');
-  const gear = !!(T.light?.product || T.light?.owned || T.tech?.heaters?.length || T.tech?.filters?.length);
+  const light = !!(T.light?.product || T.light?.owned), filter = filterState(T) !== 'unset';
+  const missing = [light ? '' : 'a light', filter ? '' : 'a filter'].filter(Boolean);
   const steps: Step[] = [
     { id: 'tank', label: 'Pick a tank', hint: 'A real model or your own size', section: 'tank', done: !!T.product || !sameBox(T.tank, bareSetup().tank) },
     { id: 'scape', label: 'Shape the scape', hint: 'Rocks, wood and substrate', section: 'scape', done: hard },
     { id: 'plants', label: 'Add plants', hint: 'Or skip them for a bare look', section: 'plants', done: plants },
     { id: 'animals', label: 'Choose animals', hint: 'Who lives here', section: 'animals', done: T.fish.length > 0 },
-    { id: 'equipment', label: 'Check the equipment', hint: 'Light, filter, heater', section: 'equipment', done: gear },
+    { id: 'equipment', label: 'Check the equipment', hint: missing.length ? `Needs ${missing.join(' and ')}` : 'Light and filter chosen', section: 'equipment', done: missing.length === 0 },
   ];
   const done = steps.filter(s => s.done).length;
   return { steps, done, all: done === steps.length };

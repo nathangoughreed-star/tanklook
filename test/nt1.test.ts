@@ -11,7 +11,7 @@ describe('NT1 freshScene', () => {
   it('is an empty tank on the floor with the wall and person on, and no heater or filter', () => {
     const T = freshScene().tanks[0];
     expect(T.stand.show).toBe(false);
-    expect(T.wall.show).toBe(true); expect(T.person.show).toBe(true);
+    expect(T.wall.show).toBe(true); expect(T.person.show).toBe(true); expect(T.person.side).toBe('right');
     expect(T.items.length).toBe(0); expect(T.fish.length).toBe(0);
     expect(techOf(T).rows.heater).toBe('none'); expect(techOf(T).rows.filter).toBe('none');
     expect(T.tech?.heaters?.length).toBe(0); expect(T.tech?.filters?.length).toBe(0);
@@ -24,6 +24,13 @@ describe('NT1 freshScene', () => {
     expect(defaultScene().tanks[0].fish.length).toBeGreaterThan(0);
     const N = newProject('in', 'freshwater', freshScene().tanks[0].camera).tanks[0];
     expect(N.stand.show).toBe(false); expect(N.person.show).toBe(true); expect(techOf(N).rows.heater).toBe('none');
+  });
+  it('equipment ticks only with a light and a filter, and names what is missing', () => {
+    const T = freshScene().tanks[0], step = () => checklistOf(T).steps.find(x => x.id === 'equipment')!;
+    expect(step().done).toBe(false); expect(step().hint).toBe('Needs a light and a filter');
+    T.tech = { rows: { heater: 'one', filter: 'none' }, heaters: [{}], filters: [] }; expect(step().done).toBe(false);   // a heater alone does not tick it
+    T.light.product = 'L1'; expect(step().hint).toBe('Needs a filter');
+    T.tech = { rows: { heater: 'none', filter: 'hob' }, heaters: [], filters: [{ kind: 'hob' }] }; expect(step().done).toBe(true);
   });
   it('survives a save / load round trip', () => {
     const T = ensureUids(structuredClone(freshScene().tanks[0]));

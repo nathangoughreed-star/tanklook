@@ -9,6 +9,8 @@ import type { Scene } from './types';
 export function freshScene(): Scene {
   const s = emptyScene(), T = s.tanks[0];
   withDefaultEnvironment(T); putOnFloor(T);
+  T.person.side = 'right';                                   // away from the Get started card (top left)
+  T.camera = { ...T.camera, az: 15, el: 8, zoom: 0.15 };   // the tank on the floor and the whole person, head to feet
   T.tech = { rows: { heater: 'none', filter: 'none' }, heaters: [], filters: [] };   // nothing chosen: the checks list them as to-do (filterState 'unset'), never an error
   return s;
 }
