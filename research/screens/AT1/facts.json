@@ -1,0 +1,107 @@
+{
+ "facts": {
+  "desk1280": {
+   "01-water-look-in-tank": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "02-animals-without-water-look": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "03-picker-no-size-control": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "04-empty-tank-fits-on-list": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "05-selection-size-control": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "06-selection-size-60": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   }
+  },
+  "desk1280-animals-has-water-look": false,
+  "desk1280-animals-has-size-slider": false,
+  "desk1280 listed Black molly": true,
+  "desk1280 listed Cardinal tetra": true,
+  "desk1280 listed Cherry barb": true,
+  "desk1280 listed Chili rasbora": true,
+  "desk1280 rows": 40,
+  "desk1280 search molly rows": "Black molly",
+  "desk1280 search cardinal rows": "Cardinal tetra",
+  "desk1280 search cherry barb rows": "Cherry barb",
+  "desk1280 search chili rows": "Chili rasbora",
+  "desk1280 stock rows": 1,
+  "desk1280 stock text": "Cardinal tetra−+",
+  "desk1280 drawer size": "98 | 98% of adult · 1.7″",
+  "desk1280 drawer size after 60": "60% of adult · 1.1″",
+  "phone390": {
+   "01-water-look-in-tank": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "02-animals-without-water-look": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "03-picker-no-size-control": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "04-empty-tank-fits-on-list": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "05-selection-size-control": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   }
+  },
+  "phone390-animals-has-water-look": false,
+  "phone390-animals-has-size-slider": false,
+  "phone390 listed Black molly": true,
+  "phone390 listed Cardinal tetra": true,
+  "phone390 listed Cherry barb": true,
+  "phone390 listed Chili rasbora": true,
+  "phone390 rows": 40,
+  "phone390 search molly rows": "Black molly",
+  "phone390 search cardinal rows": "Cardinal tetra",
+  "phone390 search cherry barb rows": "Cherry barb",
+  "phone390 search chili rows": "Chili rasbora",
+  "phone390 stock rows": 1,
+  "phone390 stock text": "Cardinal tetra−+",
+  "phone390 drawer size": "93 | 93% of adult · 1.7″"
+ },
+ "fails": [
+  "phone390 05-selection-size: (() => { const s = document.querySelector('.drawer [aria-label=\"Size, percent of adult siz :: {\"exceptionId\":1,\"text\":\"Uncaught\",\"lineNumber\":0,\"columnNumber\":1"
+ ],
+ "errors": []
+}
