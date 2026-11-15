@@ -88,7 +88,7 @@ export function stockSummary(S: TankSetup, r: Stocking, mins: MinWarn[], units: 
   const by: Record<CatId, CatItem[]> = { minimums: [], social: [], environment: [], behaviour: [], fullness: [] };
   const add = (c: CatId, level: CatItem['level'], text: string, also?: string, pct?: number) => by[c].push({ level, text, ...(also ? { also } : {}), ...(pct !== undefined ? { pct } : {}) });
   const count = new Map<string, number>(), fem = new Map<string, number>();
-  for (const f of S.fish) { const sp = getSpecies(f.species); if (!sp || !countsAgainstWater(sp)) continue; count.set(sp.id, (count.get(sp.id) ?? 0) + 1); if (f.sex === 'f') fem.set(sp.id, (fem.get(sp.id) ?? 0) + 1); }
+  for (const f of S.fish) { const sp = getSpecies(f.species); if (!sp || !countsAgainstWater(sp)) continue; count.set(sp.id, (count.get(sp.id) ?? 0) + 1); if (f.sex === 'f' || f.gender === 'f') fem.set(sp.id, (fem.get(sp.id) ?? 0) + 1); }
   const sp = [...count.keys()].map(id => getSpecies(id)!) as Species[];
   const noData = new Map<string, Set<string>>(); // species name -> checks that did not fire
   const none = (s: Species, check: string) => { if (!noData.has(s.name)) noData.set(s.name, new Set()); noData.get(s.name)!.add(check); };
@@ -99,7 +99,7 @@ export function stockSummary(S: TankSetup, r: Stocking, mins: MinWarn[], units: 
 
   // (b) social: group band, sex ratio, pairs
   for (const s of sp) {
-    const n = count.get(s.id)!, f = fem.get(s.id) ?? 0, nt = notesOf({ id: s.id, n, f, pair: pairingIn(S, s.id) }, 'in');
+    const n = count.get(s.id)!, f = fem.get(s.id) ?? 0, nt = notesOf({ id: s.id, n: n - f, f, pair: pairingIn(S, s.id) }, 'in');   // `n` counts everyone: notesOf wants the males apart from the females (AT1: it used to count the females twice)
     if (nt.band === 'avoid') add('social', 'caution', `${s.name}: ${nt.line.replace(/^Group size: /, `group of ${n}: `)}`);
     if (nt.ratio && /Your mix (has|is short)/.test(nt.ratio)) add('social', 'caution', `${s.name}: ${nt.ratio}`);
   }

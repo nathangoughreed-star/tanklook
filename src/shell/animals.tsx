@@ -1,5 +1,5 @@
 // UI2 shell step 4 (lane S4, 2026-11-14): the Animals section (search, filters, stocking list, greyed animals with a reason, remove
-// misfits), Water look (level, tint) and the Selection drawer. Components only draw logic/animals.ts and call its edits.
+// misfits), and the Selection drawer (Water look moved to the Tank section, lane AT1). Components only draw logic/animals.ts and call its edits.
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { Store } from '../scene/store';
 import type { Viewer } from '../render/viewer';
@@ -8,10 +8,10 @@ import { emptyBrief, rulesOf } from '../scene/brief';
 import { LIMITS } from '../scene/validate';
 import { createFitter } from '../ui/logic/animalPicker';
 import {
-  DEFAULT_QUERY, pickView, stockView, waterLook, selectionView, addSpecies, setCount, removeMisfits, applyPreset, setLevel, setTint, setColor,
-  flip, del, dup, setSex, sizePct, sizeText, stagesOf, dropSpecies, copySelection, COPY_START, COPY_RANGE, type CopyOpt, setPair, setGender, findSpecies, rowKeyOf, type PickQuery, type PickRow,
+  DEFAULT_QUERY, pickView, stockView, selectionView, addSpecies, setCount, removeMisfits,
+  flip, del, dup, setSex, setSize, dropSpecies, copySelection, COPY_START, COPY_RANGE, type CopyOpt, setPair, setGender, findSpecies, rowKeyOf, type PickQuery, type PickRow,
 } from './logic/animals';
-import { Group, Icon, Pill } from './ui';
+import { Icon, Pill } from './ui';
 import { dragOut } from './drag';
 import { aqView, aqCheck, onAq } from './logic/aq';
 
@@ -30,9 +30,7 @@ export function AnimalsSection({ store, getViewer }: { store: Store; getViewer?:
   const [, setN] = useState(0);
   const [query, setQuery] = useState<PickQuery>({ ...DEFAULT_QUERY, fitsOnly: loadFits() });
   const [note, setNote] = useState<{ text: string; bad: boolean } | null>(null);
-  const [open, setOpen] = useState({ water: false });
-  const [pct, setPct] = useState(100);
-  const [pvId, setPvId] = useState<string | null>(null);
+  const pct = 100;   // AT1 (R42): new animals come in at the default size; a placed one is resized in the Selection drawer
   useEffect(() => onAq(() => setN(n => n + 1)), []);
   const aq = aqView(S);
   const timer = useRef(0);
@@ -41,7 +39,6 @@ export function AnimalsSection({ store, getViewer }: { store: Store; getViewer?:
 
   const pv = pickView(S, units, rules, fitter, query);
   const sv = stockView(S, rules, units, fitter);
-  const wl = waterLook(S, units);
   // the exact fit reading is worked out a slice at a time after the first paint, then redraws the list
   const list = useMemo(() => findSpecies(S, query.q, query.role), [S, query.q, query.role]);
   useEffect(() => { fitter.refineFits(S, units, rules, list, () => setN(n => n + 1)); });
@@ -88,28 +85,7 @@ export function AnimalsSection({ store, getViewer }: { store: Store; getViewer?:
           <button type="button" class="btn sm" title="Take off the animals that do not live in this water (Ctrl+Z brings them back)" onClick={() => report(removeMisfits(store))}>Remove misfits ({sv.misfits})</button></div>
       ) : null}
 
-      <Group title="Water look" sum={wl.on ? `${wl.levelText} · ${wl.tintText}` : 'off'} open={open.water} onToggle={() => setOpen({ ...open, water: !open.water })}>
-        {wl.off ? <div class="hint">{wl.off}</div> : null}
-        <div class="row"><span class="lbl">Level</span>
-          <input class="slider" type="range" min={0.1} max={1} step={0.01} value={wl.level} disabled={!wl.on} aria-label="Water level" onInput={e => setLevel(store, +(e.target as HTMLInputElement).value)} />
-          <span class="val">{wl.levelText}</span></div>
-        <div class="row"><span class="lbl">Tint</span>
-          <input class="slider" type="range" min={0} max={0.95} step={0.01} value={wl.opacity} disabled={!wl.on} aria-label="Water tint" onInput={e => setTint(store, +(e.target as HTMLInputElement).value)} />
-          <span class="val">{wl.tintText}</span></div>
-        <div class="row"><span class="lbl">Colour</span>
-          <input type="color" class="colorbox" value={wl.color} disabled={!wl.on} aria-label="Water colour" onInput={e => setColor(store, (e.target as HTMLInputElement).value)} /><span /></div>
-        <div class="chips">{wl.presets.map(p => <button type="button" class={`chip${wl.current === p.id ? ' on' : ''}`} disabled={!wl.on} onClick={() => applyPreset(store, p)}>{p.label}</button>)}</div>
-        <div class="hint">Tint is how much of the colour shows through 12 in of water, so a deeper tank looks more tinted. The water numbers (temperature) are in the Water check.</div>
-      </Group>
-
       <div class="cap">Add animals</div>
-      {(() => { const sp = pvId ? getSpecies(pvId) : undefined, st = stagesOf(sp, units, pct); return (<>
-        <div class="row"><span class="lbl">New animal size</span>
-          <input class="slider" type="range" min={15} max={130} step={1} value={pct} aria-label="New animal size" onInput={e => setPct(sizePct(+(e.target as HTMLInputElement).value))} />
-          <span class="val">{sizeText(pct, sp, units)}</span></div>
-        {st ? <div class="row"><span class="lbl">Life stage</span><div class="seg" role="group" aria-label="Life stage">{st.map(b => <button type="button" class={b.on ? 'on' : ''} aria-pressed={b.on} title={b.text} onClick={() => setPct(b.pct)}>{b.name}</button>)}</div></div>
-          : sp ? null : <div class="hint">Click an animal below to see its life stages.</div>}
-      </>); })()}
       <label class="search"><Icon name="search" /><input class="input" type="search" placeholder={pv.placeholder} value={query.q} aria-label="Search animals" onInput={e => set({ q: (e.target as HTMLInputElement).value })} /></label>
       <button type="button" class="tglrow" role="switch" aria-checked={query.fitsOnly} onClick={flipFits}>
         <span class={`toggle${query.fitsOnly ? ' on' : ''}`} />Fits this tank{pv.hidden ? <span class="hint"> · {pv.hidden} held back</span> : null}
@@ -122,8 +98,8 @@ export function AnimalsSection({ store, getViewer }: { store: Store; getViewer?:
           {g.rows.map(r => {
             const sp = getSpecies(r.id)!;
             return (
-              <div class={`prow${r.level !== 'ok' ? ' gated' : ''}${pvId === r.id ? ' pv' : ''}`} onClick={() => setPvId(r.id)}
-                onPointerDown={e => { if (!getViewer || (e.target as HTMLElement).closest('button')) return; setPvId(r.id); dragOut(e, sp.name, getViewer, store, (at, overView) => { if (at || overView) report(dropSpecies(store, sp, undefined, at ?? undefined, pct)); }); }} title={r.level !== 'ok' ? [r.reason, ...r.more, 'Still addable: Add anyway.'].join('; ') : sp.note ?? ''}>
+              <div class={`prow${r.level !== 'ok' ? ' gated' : ''}`}
+                onPointerDown={e => { if (!getViewer || (e.target as HTMLElement).closest('button')) return; dragOut(e, sp.name, getViewer, store, (at, overView) => { if (at || overView) report(dropSpecies(store, sp, undefined, at ?? undefined, pct)); }); }} title={r.level !== 'ok' ? [r.reason, ...r.more, 'Still addable: Add anyway.'].join('; ') : sp.note ?? ''}>
                 <div class="pi"><span class="t">{r.name}{r.tag ? <b class="tag">{r.tag}</b> : null}</span><span class="m">{r.size} · <i>{r.sci}</i></span>
                   {r.reason ? <small class={`why ${tone(r.level)}`}>{r.reason}{r.more.length ? ` (+${r.more.length} more)` : ''}</small> : null}</div>
                 {r.inTank ? <Pill tone="neutral">{r.inTank} in</Pill> : null}
@@ -166,6 +142,9 @@ export function SelectionDrawer({ store, getViewer, onClose }: { store: Store; g
         <div class="card"><div class="t">{v.name}{v.sexMark}</div><div class="m"><i>{v.sci}</i></div></div>
         {v.extra > 0 ? <div class="hint">{v.extra} more selected with it: the buttons below act on this one.</div> : null}
         {v.lines.map(([k, t]) => <div class="drow"><span>{k}</span><b>{t}</b></div>)}
+        <div class="field"><div class="cap" title="Adult is 100%. Drag, or pick a life stage where the species has them">Size, % of adult</div>
+          <div class="row"><input class="slider" type="range" min={15} max={130} step={1} value={v.size.pct} aria-label="Size, percent of adult size" onInput={e => setSize(store, +(e.target as HTMLInputElement).value)} /><span class="val">{v.size.text}</span></div>
+          {v.size.stages ? <div class="seg" role="group" aria-label="Life stage">{v.size.stages.map(b => <button type="button" class={b.on ? 'on' : ''} aria-pressed={b.on} title={b.text} onClick={() => setSize(store, b.pct)}>{b.name}</button>)}</div> : null}</div>
         {v.sex ? <div class="field"><div class="cap">Sex</div>{seg(v.sex.on, [['m', '♂ Male'], ['f', '♀ Female']] as ['m' | 'f', string][], k => setSex(store, k === 'f' ? ('f' as Sex) : undefined), 'Sex')}</div> : null}
         {v.pair ? <div class="field"><div class="cap" title="Two of a pair-forming species are judged as a pair only once you say they are one">Pair</div>{seg(v.pair.on, v.pair.choices, k => setPair(store, k), 'Pair')}</div> : null}
         {v.gender ? <div class="field"><div class="cap" title="Tracked for the stocking check; the drawing does not change">Sex (tracked)</div>
