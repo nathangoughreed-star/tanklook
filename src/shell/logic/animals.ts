@@ -14,7 +14,10 @@ import { experienceIn, fitsThisTank, type createFitter } from '../../ui/logic/an
 import { startGroup } from '../../ui/pickerStrict';
 import { sexFish } from '../../ui/stockPlanLogic';
 import { scopeSpecies } from '../../scope';
-import { CARE } from '../../data/care';
+import { CARE, EXPERTISE_NAME } from '../../data/care';
+import { CHEM } from '../../data/waterchem';
+import { zoneOf, recommendedMin } from '../../scene/zone';
+import { fmtTemp, fmtVol } from '../../units';
 import type { Rules } from '../../scene/brief';
 import { LIMITS } from '../../scene/validate';
 import type { Fish, Pairing, TankSetup, Units } from '../../scene/types';
@@ -29,7 +32,7 @@ export type Fitter = ReturnType<typeof createFitter>;
 /** The kind names the picker says: "freshwater" / "saltwater" / ... */
 export const KIND_WORD: Record<SetupKind, string> = { freshwater: 'freshwater', saltwater: 'saltwater', terrarium: 'terrarium', vivarium: 'vivarium' };
 
-export interface PickRow { id: string; name: string; sci: string; size: string; tag: string; level: Fit['level']; /** one line why it is greyed ('' when it fits) */ reason: string; more: string[]; /** every row of this species already in the tank, summed */ inTank: number; dimorphic: boolean; startCount: number }
+export interface PickRow { id: string; name: string; sci: string; size: string; tag: string; level: Fit['level']; /** one line why it is greyed ('' when it fits) */ reason: string; more: string[]; /** every row of this species already in the tank, summed */ inTank: number; dimorphic: boolean; startCount: number; /** care level badge: 'Beginner' / 'Intermediate' / 'Expert' ('' = no care data) */ care: string; /** which look the picture is baked under */ look: string }
 export interface PickGroup { role: Role; label: string; rows: PickRow[] }
 export interface PickView {
   kind: SetupKind;
@@ -78,7 +81,7 @@ function pickRow(S: TankSetup, sp: Species, fit: Fit, units: Units): PickRow {
   return {
     id: sp.id, name: sp.name, sci: sp.sci, size: fmtLen(sp.tl, units), tag: speciesTag(sp) ?? '',
     level: fit.level, reason: fit.level === 'ok' ? '' : fit.text, more: fit.level === 'ok' ? [] : fit.more,
-    inTank: S.fish.filter(f => f.species === sp.id).length, dimorphic: !!sp.female, startCount: startGroup(sp).total,
+    inTank: S.fish.filter(f => f.species === sp.id).length, dimorphic: !!sp.female, startCount: startGroup(sp).total, care: CARE[sp.id] ? EXPERTISE_NAME[CARE[sp.id].care] : '', look: sp.look,
   };
 }
 
@@ -307,4 +310,37 @@ export function copySelection(store: Pick<Store, 'edit' | 'nextId' | 'nextItemId
   if (!groupSize(made)) return { ok: false, why: 'Nothing to copy.' };
   store.selectGroup(made);
   return { ok: true, made: made.fish.length + made.items.length };
+}
+
+
+// ---------- AT1 (R48): the species detail view (only fields the catalogue has) ----------
+
+export interface SpeciesDetail {
+  id: string; name: string; sci: string; look: string; tag: string; note: string;
+  /** label, value rows in reading order; a row is left out when the catalogue lacks the field */
+  rows: [string, string][];
+  /** how it sits with this tank and its current stock */
+  fit: { level: Fit['level']; text: string; more: string[]; inTank: number };
+  startCount: number; start: string; dimorphic: boolean;
+}
+const TEMPER = ['Peaceful', 'Territorial or pushy: can harass slow, long-finned or shy tankmates', 'Aggressive: bullies most tankmates'];
+const SWIM: Record<string, string> = { top: 'Top of the tank', middle: 'Middle of the tank', bottom: 'Bottom of the tank', all: 'All through the tank' };
+const rng = (r: [number, number], f: (n: number) => string) => (r[0] === r[1] ? f(r[0]) : `${f(r[0])} to ${f(r[1])}`);
+
+export function speciesDetail(S: TankSetup, sp: Species, fit: Fit, units: Units): SpeciesDetail {
+  const c = CARE[sp.id], chem = CHEM[sp.id], g = startGroup(sp), rows: [string, string][] = [];
+  if (c) rows.push(['Care level', `${EXPERTISE_NAME[c.care]} (level ${c.care} of 3)`]);
+  rows.push(['Adult size', sp.female ? `${fmtLen(sp.tl, units)} male, ${fmtLen(sp.female.tl, units)} female` : fmtLen(sp.tl, units)]);
+  if (c) rows.push(['Smallest tank', fmtVol(c.minL, units)]);
+  const min = recommendedMin(sp.id);
+  rows.push(['Group', sp.pair ? 'Kept as a pair' : min > 1 ? `Best in a group of ${min} or more${g.f ? ` (${g.n} male${g.n === 1 ? '' : 's'}, ${g.f} female${g.f === 1 ? '' : 's'} to start)` : ''}` : c?.solo ? 'One per tank' : 'Fine on its own']);
+  if (c) rows.push(['Temperament', TEMPER[c.temper]]);
+  if (c?.temp) rows.push(['Water temperature', rng(c.temp, n => fmtTemp(n, units === 'in'))]);
+  if (chem) { rows.push(['pH', rng(chem.ph, n => String(n))]); if (chem.gh) rows.push(['Hardness (dGH)', rng(chem.gh, n => String(n))]); }
+  if (c) rows.push(['Swims in', SWIM[zoneOf(sp)] ?? '']);
+  return {
+    id: sp.id, name: sp.name, sci: sp.sci, look: sp.look, tag: speciesTag(sp) ?? '', note: sp.note ?? '', rows,
+    fit: { level: fit.level, text: fit.level === 'ok' ? (S.fish.length ? 'Gets along with what is in the tank now, and suits this tank.' : 'Suits this tank.') : fit.text, more: fit.level === 'ok' ? [] : fit.more, inTank: S.fish.filter(f => f.species === sp.id).length },
+    startCount: g.total, start: g.f ? `${g.total} (${g.n} male${g.n === 1 ? '' : 's'}, ${g.f} female${g.f === 1 ? '' : 's'})` : String(g.total), dimorphic: !!sp.female,
+  };
 }

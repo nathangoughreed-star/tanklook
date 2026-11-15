@@ -47,34 +47,49 @@ const section = async (title) => { // phone: tab bar or More; others: rail
 };
 mkdirSync('research/screens/AT1', { recursive: true });
 const sel = async (css, text) => ev(`!![...document.querySelectorAll(${JSON.stringify(css)})].find(b => b.textContent.includes(${JSON.stringify(text)}))`);
+const search = async q => { await ev(`(() => { const i = document.querySelector('.search input'); i.value = ${JSON.stringify(q)}; i.dispatchEvent(new Event('input', { bubbles: true })); return true; })()`); await sleep(1500); };
+const tile = (name) => `[...document.querySelectorAll('.ptile')].find(e => e.querySelector('.tname')?.textContent.startsWith(${JSON.stringify(name)}))`;
 for (dev of ['desk1280', 'phone390']) {
   const [w, h, mobile] = DEVICES[dev]; OUT = `research/screens/AT1/${dev}`; mkdirSync(OUT, { recursive: true });
   await open2(w, h, mobile);
   await tryStep('01-water-look-in-tank', async () => { await section('Tank'); await click('.panel .gh', 'Water look'); await sleep(500); await ev(`document.querySelector('.panel .group.open .gb')?.scrollIntoView({block:'center'}); true`); await shot('01-water-look-in-tank', 500); });
   await tryStep('02-animals-without-water-look', async () => { await section('Animals'); facts[dev + '-animals-has-water-look'] = await sel('.panel .gh', 'Water look'); facts[dev + '-animals-has-size-slider'] = await ev(`!!document.querySelector('[aria-label="New animal size"]')`); await shot('02-animals-without-water-look'); });
-  await tryStep('03-picker-no-size-control', async () => { await ev(`document.querySelector('.panel .cap')?.scrollIntoView(); document.querySelector('.panel .search')?.scrollIntoView({block:'start'}); true`); await shot('03-picker-no-size-control', 500); });
-  await tryStep('04-empty-tank-fits-on', async () => {
+  await tryStep('03-card-grid', async () => {
     const on = await ev(`document.querySelector('.tglrow')?.getAttribute('aria-checked')`); if (on !== 'true') await click('.tglrow', 'Fits');
-    await sleep(2500);
-    for (const q of ['Black molly', 'Cardinal tetra', 'Cherry barb', 'Chili rasbora']) facts[dev + ' listed ' + q] = await ev(`[...document.querySelectorAll('.prow .t')].some(e => e.textContent.startsWith(${JSON.stringify(q)}))`);
-    facts[dev + ' rows'] = await ev(`document.querySelectorAll('.prow').length`);
-    await ev(`(() => { const r = [...document.querySelectorAll('.prow')].find(e => e.textContent.startsWith('Black molly')); r?.scrollIntoView({block:'center'}); return true; })()`);
-    await shot('04-empty-tank-fits-on-list', 500);
-    // narrow to the four with a search so all of them are in one picture
-    for (const q of ['molly', 'cardinal', 'cherry barb', 'chili']) { await ev(`(() => { const i = document.querySelector('.search input'); i.value = ${JSON.stringify(q)}; i.dispatchEvent(new Event('input', { bubbles: true })); return true; })()`); await sleep(1500); facts[dev + ' search ' + q + ' rows'] = await ev(`[...document.querySelectorAll('.prow .t')].map(e => e.textContent).join(' | ')`); }
-    await ev(`(() => { const i = document.querySelector('.search input'); i.value = ''; i.dispatchEvent(new Event('input', { bubbles: true })); return true; })()`);
+    await sleep(2500); await ev(`document.querySelector('.search')?.scrollIntoView({block:'start'}); true`);
+    facts[dev + ' tiles'] = await ev(`document.querySelectorAll('.ptile').length`);
+    facts[dev + ' tile columns'] = await ev(`new Set([...document.querySelectorAll('.ptile')].slice(0, 12).map(e => Math.round(e.getBoundingClientRect().left))).size`);
+    for (const q of ['Black molly', 'Cardinal tetra', 'Cherry barb', 'Chili rasbora']) facts[dev + ' listed ' + q] = await ev(`!!(${tile(q)})`);
+    facts[dev + ' tiles with a loaded picture'] = await ev(`[...document.querySelectorAll('.ptile img')].filter(i => i.complete && i.naturalWidth > 0).length`);
+    await shot('03-card-grid', 1200);
+    await ev(`window.scrollTo(0, 0); document.querySelector('.panel')?.scrollBy(0, 420); true`); await shot('03b-card-grid-scrolled', 800);
   });
-  await tryStep('05-selection-size', async () => {
-    await ev(`(() => { const i = document.querySelector('.search input'); i.value = 'cardinal'; i.dispatchEvent(new Event('input', { bubbles: true })); return true; })()`); await sleep(1500);
-    await click('.prow .btn', 'Add'); await sleep(1200);
-    facts[dev + ' stock rows'] = await ev(`document.querySelectorAll('.sr').length`);
-    facts[dev + ' stock text'] = await ev(`document.querySelector('.stock')?.textContent`);
-    await click('.sr .nm', 'Cardinal'); await sleep(1200);
-    facts[dev + ' drawer size'] = await ev(`document.querySelector('.drawer [aria-label="Size, percent of adult size"]')?.value + ' | ' + document.querySelector('.drawer .val')?.textContent`);
-    await shot('05-selection-size-control', 800);
-    await ev(`(() => { const s = document.querySelector('.drawer [aria-label="Size, percent of adult size"]'); s.value = 60; s.dispatchEvent(new Event('input', { bubbles: true })); return true; })()`); await sleep(900);
-    facts[dev + ' drawer size after 60'] = await ev(`document.querySelector('.drawer .field .val')?.textContent`);
-    await shot('06-selection-size-60', 600);
+  await tryStep('04-short-list', async () => { await search('chili'); facts[dev + ' short list'] = await ev(`document.querySelector('.endnote')?.textContent`); await shot('04-short-list-one-result', 600); await search(''); });
+  await tryStep('05-detail-white-cloud', async () => { await search('white cloud'); await ev(`(${tile('White cloud')})?.click(); true`); await sleep(1200); facts[dev + ' detail rows'] = await ev(`[...document.querySelectorAll('.rundown .drow')].map(r => r.textContent).join(' | ')`); await shot('05-detail-white-cloud', 600); await ev(`document.querySelector('.panel')?.scrollBy(0, 900); true`); await shot('05b-detail-white-cloud-lower', 600); });
+  await tryStep('06-rows-and-plus-minus', async () => {
+    await click('.detail .btn', 'Add'); await sleep(1200); await click('.detail .back', 'Back'); await sleep(600); await ev(`document.querySelector('.panel')?.scrollTo(0, 0); true`);
+    facts[dev + ' stock rows'] = await ev(`document.querySelectorAll('.srow').length`);
+    facts[dev + ' stock row box'] = await ev(`JSON.stringify(document.querySelector('.srow')?.getBoundingClientRect())`);
+    facts[dev + ' plus/minus'] = await ev(`!!document.querySelector('.srow [aria-label^="One more"]') && !!document.querySelector('.srow [aria-label^="One fewer"]')`);
+    await shot('06-stock-rows-with-plus-minus', 600);
+    await ev(`document.querySelector('.srow [aria-label^="One more"]')?.click(); true`); await sleep(800);
+    facts[dev + ' count after +'] = await ev(`document.querySelector('.srow input')?.value`);
+  });
+  await tryStep('07-detail-held-back', async () => {
+    const off = await ev(`document.querySelector('.tglrow')?.getAttribute('aria-checked')`); if (off === 'true') await click('.tglrow', 'Fits'); await sleep(1500);
+    await search('oscar'); await ev(`(${tile('Oscar')})?.click(); true`); await sleep(1200);
+    facts[dev + ' held-back fit box'] = await ev(`document.querySelector('.fitbox')?.textContent`);
+    await shot('07-detail-held-back', 600); await ev(`document.querySelector('.panel')?.scrollBy(0, 900); true`); await shot('07b-detail-held-back-lower', 600);
+    await click('.detail .back', 'Back'); await sleep(400);
+  });
+  await tryStep('08-selection-size', async () => {
+    await click('.srow .nm', ''); await sleep(1200);
+    facts[dev + ' drawer size'] = await ev(`document.querySelector('[aria-label="Size, percent of adult size"]')?.value`);
+    await shot('08-selection-size-control', 800);
+    if (!facts[dev + ' drawer size']) { facts[dev + ' drawer opened'] = false; throw new Error('selection drawer did not stay open (phone: App.tsx closes the selection when the Animals section closes)'); }
+    await ev(`(() => { const s = document.querySelector('[aria-label="Size, percent of adult size"]'); s.value = 60; s.dispatchEvent(new Event('input', { bubbles: true })); return true; })()`); await sleep(900);
+    facts[dev + ' size after 60'] = await ev(`document.querySelector('[aria-label="Size, percent of adult size"]')?.closest('.field')?.querySelector('.val')?.textContent`);
+    await shot('09-selection-size-60', 600);
   });
   save();
 }

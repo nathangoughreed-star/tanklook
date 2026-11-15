@@ -13,25 +13,61 @@
     "small": 0,
     "smallEx": []
    },
-   "03-picker-no-size-control": {
+   "03-card-grid": {
     "pageX": 0,
     "out": [],
     "small": 0,
     "smallEx": []
    },
-   "04-empty-tank-fits-on-list": {
+   "03b-card-grid-scrolled": {
     "pageX": 0,
     "out": [],
     "small": 0,
     "smallEx": []
    },
-   "05-selection-size-control": {
+   "04-short-list-one-result": {
     "pageX": 0,
     "out": [],
     "small": 0,
     "smallEx": []
    },
-   "06-selection-size-60": {
+   "05-detail-white-cloud": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "05b-detail-white-cloud-lower": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "06-stock-rows-with-plus-minus": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "07-detail-held-back": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "07b-detail-held-back-lower": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "08-selection-size-control": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "09-selection-size-60": {
     "pageX": 0,
     "out": [],
     "small": 0,
@@ -40,19 +76,22 @@
   },
   "desk1280-animals-has-water-look": false,
   "desk1280-animals-has-size-slider": false,
+  "desk1280 tiles": 40,
+  "desk1280 tile columns": 2,
   "desk1280 listed Black molly": true,
   "desk1280 listed Cardinal tetra": true,
   "desk1280 listed Cherry barb": true,
   "desk1280 listed Chili rasbora": true,
-  "desk1280 rows": 40,
-  "desk1280 search molly rows": "Black molly",
-  "desk1280 search cardinal rows": "Cardinal tetra",
-  "desk1280 search cherry barb rows": "Cherry barb",
-  "desk1280 search chili rows": "Chili rasbora",
+  "desk1280 tiles with a loaded picture": 18,
+  "desk1280 short list": "1 animal shown.",
+  "desk1280 detail rows": "Care levelBeginner (level 1 of 3) | Adult size1.6″ | Smallest tank14.3 gal | GroupBest in a group of 6 or more | TemperamentPeaceful | Water temperature61 °F to 72 °F | pH6 to 8.3 | Hardness (dGH)5 to 20 | Swims inAll through the tank",
   "desk1280 stock rows": 1,
-  "desk1280 stock text": "Cardinal tetra−+",
-  "desk1280 drawer size": "98 | 98% of adult · 1.7″",
-  "desk1280 drawer size after 60": "60% of adult · 1.1″",
+  "desk1280 stock row box": "{\"x\":80,\"y\":179.1875,\"width\":347,\"height\":34,\"top\":179.1875,\"right\":427,\"bottom\":213.1875,\"left\":80}",
+  "desk1280 plus/minus": true,
+  "desk1280 count after +": "7",
+  "desk1280 held-back fit box": "Held back 1 Oscar: not assessed: 10.2\" of water is shallower than its own length (11.8\"), and no source states a minimum water depthTemperature: No suitable shared temperature identified. White cloud mountain minnow (61–72 °F) and Oscar (73–81 °F) have no recorded range in commonOscar with White cloud mountain minnow: would eat it135% of the swimming room: too many for this tankHigh water-change maintenance to hold nitrate near 40 ppm (see the nitrate line)",
+  "desk1280 drawer size": "105",
+  "desk1280 size after 60": "60% of adult · 0.9″",
   "phone390": {
    "01-water-look-in-tank": {
     "pageX": 0,
@@ -66,19 +105,61 @@
     "small": 0,
     "smallEx": []
    },
-   "03-picker-no-size-control": {
+   "03-card-grid": {
     "pageX": 0,
     "out": [],
     "small": 0,
     "smallEx": []
    },
-   "04-empty-tank-fits-on-list": {
+   "03b-card-grid-scrolled": {
     "pageX": 0,
     "out": [],
     "small": 0,
     "smallEx": []
    },
-   "05-selection-size-control": {
+   "04-short-list-one-result": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "05-detail-white-cloud": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "05b-detail-white-cloud-lower": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "06-stock-rows-with-plus-minus": {
+    "pageX": 0,
+    "out": [],
+    "small": 1,
+    "smallEx": [
+     "AqAdvisor ↗ 72x18"
+    ]
+   },
+   "07-detail-held-back": {
+    "pageX": 0,
+    "out": [],
+    "small": 1,
+    "smallEx": [
+     "AqAdvisor ↗ 72x18"
+    ]
+   },
+   "07b-detail-held-back-lower": {
+    "pageX": 0,
+    "out": [],
+    "small": 1,
+    "smallEx": [
+     "AqAdvisor ↗ 72x18"
+    ]
+   },
+   "08-selection-size-control": {
     "pageX": 0,
     "out": [],
     "small": 0,
@@ -87,21 +168,21 @@
   },
   "phone390-animals-has-water-look": false,
   "phone390-animals-has-size-slider": false,
+  "phone390 tiles": 40,
+  "phone390 tile columns": 2,
   "phone390 listed Black molly": true,
   "phone390 listed Cardinal tetra": true,
   "phone390 listed Cherry barb": true,
   "phone390 listed Chili rasbora": true,
-  "phone390 rows": 40,
-  "phone390 search molly rows": "Black molly",
-  "phone390 search cardinal rows": "Cardinal tetra",
-  "phone390 search cherry barb rows": "Cherry barb",
-  "phone390 search chili rows": "Chili rasbora",
+  "phone390 tiles with a loaded picture": 12,
+  "phone390 short list": "1 animal shown.",
+  "phone390 detail rows": "Care levelBeginner (level 1 of 3) | Adult size1.6″ | Smallest tank14.3 gal | GroupBest in a group of 6 or more | TemperamentPeaceful | Water temperature61 °F to 72 °F | pH6 to 8.3 | Hardness (dGH)5 to 20 | Swims inAll through the tank",
   "phone390 stock rows": 1,
-  "phone390 stock text": "Cardinal tetra−+",
-  "phone390 drawer size": "93 | 93% of adult · 1.7″"
+  "phone390 stock row box": "{\"x\":16,\"y\":457.578125,\"width\":358,\"height\":48,\"top\":457.578125,\"right\":374,\"bottom\":505.578125,\"left\":16}",
+  "phone390 plus/minus": true,
+  "phone390 count after +": "7",
+  "phone390 held-back fit box": "Held back 1 Oscar: not assessed: 10.2\" of water is shallower than its own length (11.8\"), and no source states a minimum water depthTemperature: No suitable shared temperature identified. White cloud mountain minnow (61–72 °F) and Oscar (73–81 °F) have no recorded range in commonOscar with White cloud mountain minnow: would eat it134% of the swimming room: too many for this tankHigh water-change maintenance to hold nitrate near 40 ppm (see the nitrate line)"
  },
- "fails": [
-  "phone390 05-selection-size: (() => { const s = document.querySelector('.drawer [aria-label=\"Size, percent of adult siz :: {\"exceptionId\":1,\"text\":\"Uncaught\",\"lineNumber\":0,\"columnNumber\":1"
- ],
+ "fails": [],
  "errors": []
 }
