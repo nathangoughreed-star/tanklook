@@ -1247,3 +1247,5 @@ Research only, no app code changed. Deliverable `research/design/ui1-inventory.m
 ## HB1 part 2: Room light in the View menu (2026-11-15; request R62)
 - View popover (src/shell/view.tsx) gets "Room light" between Camera and Show: sun icon, slider 0..ROOM_MAX, readout Dark / Dim / Bright, "Auto" button (only once moved) and the hint "Auto: bright until the tank has a light". Logic in `shell/logic/view.ts` (`roomRead`, `roomByHand`, `roomAuto`) over scene/roomlight.ts; drag = one undo step (coalesce 'vRoom'). Same menu on phone.
 - Test: test/hb1-roomlight.test.ts. Shots: research/screens/HB1/room/ (1280 + 390; script scripts/hb1-room-shots.mjs).
+### CT1 part 4 (2026-11-15; R66): brace strips as glass
+The strips were already built with the walls' `add()` (same face material, tinted edge faces, edge outline, low-iron vs standard). Their wide faces now carry a slight tint of the same edge colour (`stripM`, 0.2 opacity, `glassFx` like the walls), because a 2 in strip seen from above is nearly all face and read as nothing. Shots: `research/screens/CT1/part4-before|after-room-3-4-from-above-1280.jpg` and `-closeup-1280.jpg` (`scripts/ct1-shots5.mjs`).
