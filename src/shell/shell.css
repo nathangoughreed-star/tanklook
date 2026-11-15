@@ -240,7 +240,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .prow.gated { background: transparent; opacity: .85; }
 .prow .pi { display: grid; min-width: 0; }
 .prow .m { color: var(--text-2); font-size: var(--fs-sm); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.prow .tag { margin-left: var(--s1); font-size: 10px; font-weight: 600; color: var(--accent); }
+.prow .tag, .tname .tag { margin-left: var(--s1); font-size: 10px; font-weight: 600; color: var(--accent); }
 .colorbox { width: 44px; height: var(--ctl-h-sm); border: 1px solid var(--line); border-radius: var(--r-ctl); background: transparent; padding: 0; }
 .drawer .field { display: grid; gap: var(--s1); }
 .drawer .btns { display: flex; gap: var(--s2); flex-wrap: wrap; }

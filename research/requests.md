@@ -64,6 +64,7 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R46 | 11-14 | Get started checklist (S10): shows on every new tank, x hides for this tank only, can be brought back from the menu | NT1 | - | - | - | same brief; today x is permanent (tanklook.ui2.checklist=off) |
 | R47 | 11-14 | New UI Animals: "Your animals 6" shows no rows (no - / + buttons) | AT1 | - | - | - | AT1 brief Part 2; picture research/screens/AT1/nathan-picker-2026-11-14.png |
 | R48 | 11-14 | New UI Animals: species picker as tile cards; click a species for a larger card + rundown (difficulty, size, tank, group, water, temperament) | AT1 | - | - | - | AT1 brief Part 2 |
+| R49 | 11-15 | New UI Animals cards: the habitat tag ran into the name ("Pygmy corydorasbottom"); tag style was scoped to list rows only | C24 (one-line CSS) | - | - | - | shell.css .tname .tag |
 | R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
 | R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
