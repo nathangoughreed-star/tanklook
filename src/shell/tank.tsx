@@ -108,11 +108,12 @@ export function TankSection({ store, onPicker, onMaker, libN }: { store: Store; 
             onClick={() => store.edit(s => { s.locks = isLocked(s, 'tank') ? unlockObject(s, 'tank') : lockObject(s, 'tank'); })}><Icon name="lock" /> {card.locked ? 'Used for sure' : 'Use this one for sure'}</button>
         </div>
       </Group>
+
+      <WaterLook store={store} open={g.water} onToggle={() => flip('water')} />
       <SitsOn store={store} S={S} u={u} open={g.sits} onToggle={() => flip('sits')} />
       <LidTop store={store} S={S} open={g.lid} onToggle={() => flip('lid')} />
       <Background store={store} S={S} open={g.bg} onToggle={() => flip('bg')} />
       <Room store={store} S={S} u={u} open={g.room} onToggle={() => flip('room')} />
-      <WaterLook store={store} open={g.water} onToggle={() => flip('water')} />
     </>
   );
 }
