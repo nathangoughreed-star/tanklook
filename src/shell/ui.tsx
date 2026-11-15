@@ -19,9 +19,9 @@ export const Meter = ({ fill, tone, label }: { fill: number; tone: Tone; label: 
 );
 
 /** A group that folds to a one-line summary (§5 "Panel, section head, group"). */
-export function Group({ title, sum, open, onToggle, children }: { title: string; sum?: string; open: boolean; onToggle: () => void; children: ComponentChildren }) {
+export function Group({ title, sum, open, onToggle, children, id }: { id?: string; title: string; sum?: string; open: boolean; onToggle: () => void; children: ComponentChildren }) {
   return (
-    <div class={`group${open ? ' open' : ''}`}>
+    <div class={`group${open ? ' open' : ''}`} data-group={id}>
       <button type="button" class="gh" aria-expanded={open} onClick={onToggle}>{title}{sum ? <span class="sum">{sum}</span> : null}</button>
       {open ? <div class="gb">{children}</div> : null}
     </div>
