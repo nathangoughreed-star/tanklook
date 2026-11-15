@@ -11,7 +11,7 @@ import { drawFishCard } from '../art/placeholder';
 import { drawSnailCard } from '../art/snails';
 import {
   DEFAULT_QUERY, pickView, stockView, selectionView, addSpecies, setCount, removeMisfits,
-  flip, del, dup, setSex, setSize, dropSpecies, copySelection, COPY_START, COPY_RANGE, type CopyOpt, setPair, setGender, findSpecies, rowKeyOf, speciesDetail, type PickQuery, type PickRow,
+  flip, del, dup, setSex, setSize, dropSpecies, copySelection, COPY_START, COPY_RANGE, type CopyOpt, setPair, setGender, findSpecies, rowKeyOf, speciesDetail, noteIn, type PickQuery, type PickRow,
 } from './logic/animals';
 import { Icon } from './ui';
 import { dragOut } from './drag';
@@ -132,7 +132,7 @@ export function AnimalsSection({ store, getViewer }: { store: Store; getViewer?:
             return (
               <div class={`ptile${r.level !== 'ok' ? ' gated' : ''}`} role="button" tabIndex={0} aria-label={`${r.name}: details`} onClick={e => { if (!(e.target as HTMLElement).closest('button')) setPvId(r.id); }}
                 onKeyDown={e => { if (e.key === 'Enter' && e.target === e.currentTarget) setPvId(r.id); }}
-                onPointerDown={e => { if (!getViewer || (e.target as HTMLElement).closest('button')) return; dragOut(e, sp.name, getViewer, store, (at, overView) => { if (at || overView) report(dropSpecies(store, sp, undefined, at ?? undefined, pct)); }); }} title={r.level !== 'ok' ? [r.reason, ...r.more, 'Still addable: Add anyway.'].join('; ') : sp.note ?? ''}>
+                onPointerDown={e => { if (!getViewer || (e.target as HTMLElement).closest('button')) return; dragOut(e, sp.name, getViewer, store, (at, overView) => { if (at || overView) report(dropSpecies(store, sp, undefined, at ?? undefined, pct)); }); }} title={r.level !== 'ok' ? [r.reason, ...r.more, 'Still addable: Add anyway.'].join('; ') : noteIn(sp.note ?? '', units)}>
                 <div class="tart"><FishArt id={r.id} look={r.look} />{r.inTank ? <span class="tin">{r.inTank} in</span> : null}</div>
                 <div class="tname">{r.name}{r.tag ? <b class="tag">{r.tag}</b> : null}</div>
                 <div class="tmeta"><span>{r.size}</span>{r.care ? <span class="care">{r.care}</span> : null}</div>

@@ -210,9 +210,9 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
 
   useEffect(() => { if (!maker) viewRef.current?.prepend(viewHost); }, [viewHost, maker]);
   // step 4: animals can be picked in the view while Animals is open; picking one opens the Selection drawer, clearing it closes it
-  useEffect(() => { pickable.fish = section === 'animals'; if (section !== 'animals' && !keepingSelection()) store.select(null); }, [section, store]);
+  useEffect(() => { pickable.fish = section === 'animals'; if (section !== 'animals' && !keepingSelection() && !(phone && section === null && store.selId != null)) store.select(null); }, [section, store]);
   // step 7: pieces can be picked in the view while Scape (hardscape, decor) or Plants (plants, corals) is open
-  useEffect(() => { pickItems.sec = section === 'scape' ? 'hardscape' : section === 'plants' ? 'plants' : null; if (section !== 'scape' && section !== 'plants') { if (!keepingSelection()) store.select(null); store.setBrush({ on: false, target: null }); } }, [section, store]);
+  useEffect(() => { pickItems.sec = section === 'scape' ? 'hardscape' : section === 'plants' ? 'plants' : null; if (section !== 'scape' && section !== 'plants') { if (!keepingSelection() && !(phone && section === null && store.selId != null)) store.select(null); store.setBrush({ on: false, target: null }); } }, [section, store]);
   useEffect(() => store.subscribe(kind => {
     if (kind !== 'select') return;
     if (store.selId != null) { setDrawer('selection'); if (phone) { setSection(null); setMore(false); } } else setDrawer(d => (d === 'selection' ? null : d));
