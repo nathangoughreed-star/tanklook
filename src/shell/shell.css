@@ -440,8 +440,8 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .fitbox ul { margin: 4px 0 0 16px; padding: 0; }
 
 /* AT1 (R54): the start door is the Animals picker on a pending list */
-.dlg.tall { grid-template-rows: auto minmax(0, 1fr) auto; height: min(760px, 100%); }
+.dlg.tall { grid-template-rows: auto minmax(0, 1fr) auto; height: min(760px, calc(100dvh - 2 * var(--s3))); max-height: none; }
 .dlgfoot.sticky { display: grid; gap: var(--s2); padding: var(--s3) var(--s4); border-top: 1px solid var(--line); background: var(--bg-panel); }
 .dlgfoot.sticky .acts { display: flex; justify-content: flex-end; gap: var(--s2); }
 .dlgfoot .doorplan { display: grid; gap: 2px; } .dlgfoot .doorplan .m { color: var(--text-3); font-size: 12px; } .dlgfoot .doorplan.bad .t { color: var(--bad, #c0392b); }
-@media (max-width: 640px) { .scrim:has(.dlg.tall) { padding: 0; } .dlg.tall { height: 100%; max-height: 100%; border-radius: 0; } }
+@media (max-width: 640px) { .scrim:has(.dlg.tall) { padding: 0; } .dlg.tall { height: 100dvh; border-radius: 0; } }

@@ -93,8 +93,8 @@ for (dev of ['desk1280', 'phone390']) {
     await shot('09-selection-size-60', 600);
   });
   await tryStep('10-door', async () => {   // R54: the start door is the tile picker on a pending list
-    await ev(`localStorage.removeItem('tanklook.scene'); true`); await send('Page.navigate', { url: BASE + '?ui=2' });
-    await waitFor(`document.body.dataset.ui2 === 'ready' && !!window.__gb`); await sleep(5000);
+    await ev(`__gb.store.edit(s => { s.fish = []; s.items = []; }); true`); await sleep(1500);
+    if (!(await sel('.gsanimal', 'animal'))) { await ev(`document.querySelector('.gstitle')?.click(); true`); await sleep(600); }
     await ev(`document.querySelector('.gsanimal')?.click(); true`); await sleep(1200);
     facts[dev + ' door open'] = await ev(`!!document.querySelector('.dlg.tall')`); if (!facts[dev + ' door open']) throw new Error('door did not open (.gsanimal missing)');
     facts[dev + ' door tiles'] = await ev(`document.querySelectorAll('.dlg .ptile').length`);
