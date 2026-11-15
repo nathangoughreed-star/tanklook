@@ -9,6 +9,7 @@ import * as THREE from 'three';
 import { ALGAE_GLSL, ALGAE_STEP, AU, setAlgaeUniforms } from './algae';
 import { WATER_FILTER_GLSL, waterHue } from './waterTint';
 import { FXU } from './fx';
+import { SWIM, SWIM_DECL, SWIM_VERT } from './swim';
 import { CAUS_DARK, CAUS_MEAN, CAUS_PEAK, CAUS_OFF, causticTexture } from './caustics';
 import { clamp } from '../scene/physics';
 import type { ConditionSettings, LightSettings, Tank, WaterSettings } from '../scene/types';
@@ -541,6 +542,10 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
   shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\n' + AQ_VERT)
     // an instanced mesh (leaf litter, render/scatter.ts) places each copy by its instance matrix too
     .replace('#include <begin_vertex>', '#include <begin_vertex>\n#ifdef USE_INSTANCING\nvAqP = (modelMatrix * instanceMatrix * vec4(transformed, 1.0)).xyz; vAqN = normalize(mat3(modelMatrix) * mat3(instanceMatrix) * normal);\n#else\nvAqP = (modelMatrix * vec4(transformed, 1.0)).xyz; vAqN = normalize(mat3(modelMatrix) * normal);\n#endif');
+  if (this.userData.swim) { // swim in place (lane FX1, swim.ts): the card and the solid body of a fish that swims move as one; before vAqP reads the position
+    Object.assign(shader.uniforms, SWIM);
+    shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\n' + SWIM_DECL).replace('#include <begin_vertex>', '#include <begin_vertex>\n' + SWIM_VERT);
+  }
   shader.fragmentShader = shader.fragmentShader.replace('#include <common>', '#include <common>\n' + AQ_FRAG + AQ_TONE_GLSL)
     .replace('#include <opaque_fragment>', 'vec3 aqLt = aqLight();\n' +
       // caustics (plan VF5): the fixture's share of the light, redistributed into the focused net
@@ -608,7 +613,7 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
   }
 }
 // one cache key per material kind keeps one compiled program per kind
-const progKey = function (this: THREE.Material) { return 'aq' + (this.userData.card ? 'c' : '') + (this.userData.sub ? 's' : '') + (this.userData.room ? 'r' : '') + (this.userData.fish ? 'f' : '') + (this.userData.plain ? 'p' : '') + (this.userData.frost ? 'F' : '') + (this.userData.solid ? 'h' : '') + (this.userData.post ? 'b' : '') + (this.userData.fishCard ? 'k' : '') + (this.userData.plantClip ? 'g' : '') + (this.userData.pane ? 'w' : '') + (this.userData.fake ? 'z' + this.userData.fake : ''); };
+const progKey = function (this: THREE.Material) { return 'aq' + (this.userData.card ? 'c' : '') + (this.userData.sub ? 's' : '') + (this.userData.room ? 'r' : '') + (this.userData.fish ? 'f' : '') + (this.userData.plain ? 'p' : '') + (this.userData.frost ? 'F' : '') + (this.userData.solid ? 'h' : '') + (this.userData.post ? 'b' : '') + (this.userData.fishCard ? 'k' : '') + (this.userData.plantClip ? 'g' : '') + (this.userData.pane ? 'w' : '') + (this.userData.swim ? 'm' : '') + (this.userData.fake ? 'z' + this.userData.fake : ''); };
 
 /** Light every opaque surface inside the tank (substrate, background, fish, plant); glass, rim, lines and the fixture stay unlit. */
 export function applyLighting(sc: THREE.Scene) {

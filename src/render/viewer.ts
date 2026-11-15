@@ -21,6 +21,7 @@ import { placeShells } from './lightShells';
 import { onPictureLoad, setMaxAnisotropy } from './textures';
 import { OUTLINE } from './fish3d';
 import { SWAY } from './plant3d';
+import { SWIM } from './swim';
 import { capping, rimHeadroom } from './items';
 import { PERSON_BODY, PERSON_HEAD } from '../art/placeholder';
 import { inFocus, type FocusSec } from './menuFocus';
@@ -184,7 +185,14 @@ function restoreRange(this: THREE.Object3D, _r: THREE.WebGLRenderer, _s: THREE.S
 /** Plant sway amplitude (1 = the first sway, 30b0943a). Nathan 2026-11-13: "more subtle, like half the amplitude". */
 const PLANT_SWAY_AMP = 0.5;
 const CAUS_FPS = 20, CAUS_IDLE_MS = 60_000, CAUS_SLOW_MS = 10;
-const SWAY_KEY = 'tanklook.sway';
+/** A swim redraw that takes longer than this (ms; 20 fps) counts as slow; a dozen more slow than fast turn the fish off. */
+const SWIM_SLOW_MS = 50;
+const SWAY_KEY = 'tanklook.sway', SWIM_KEY = 'tanklook.swim';
+/** Fish swim in place unless turned off here before, or the system asks for reduced motion (lane FX1). */
+function loadSwim() {
+  try { const v = localStorage.getItem(SWIM_KEY); if (v != null) return v === '1'; } catch { /* private mode */ }
+  return !matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
 /** Sway on unless turned off here before, or the system asks for reduced motion. */
 function loadSway() {
   try { const v = localStorage.getItem(SWAY_KEY); if (v != null) return v === '1'; } catch { /* private mode */ }
@@ -269,6 +277,16 @@ export class Viewer {
    */
   sway = loadSway();
   setSway(on: boolean) { this.sway = on; try { localStorage.setItem(SWAY_KEY, on ? '1' : '0'); } catch { /* private mode */ } this.dirty = true; }
+  /**
+   * Fish swim in place (lane FX1, swim.ts): a tail beat and body wave in the same loop as the sway, with its own switch
+   * (default on). It turns itself off for the visit (`swimAuto`, and the Settings toggle says so) when its redraws keep
+   * costing more than SWIM_SLOW_MS: a machine that cannot keep up gets the still pose back instead of a slow tank.
+   */
+  swim = loadSwim();
+  swimAuto = false;
+  private swimSlow = 0;
+  setSwim(on: boolean) { this.swim = on; this.swimAuto = false; this.swimSlow = 0; try { localStorage.setItem(SWIM_KEY, on ? '1' : '0'); } catch { /* private mode */ } this.dirty = true; }
+  private swimAny = false;
   private swayScan = true;
   private swayAny = false;
   private swayAt = 0;
@@ -276,11 +294,11 @@ export class Viewer {
   private swayCost = 8;
   private swayFrame = false;
   private swayDue() {
-    if (!this.sway || this.reveal || this.needsBuild || perf.level > 0 || fxClock.frozen != null) { this.swayAt = 0; return false; }
+    if (!(this.sway || this.swim) || this.reveal || this.needsBuild || perf.level > 0 || fxClock.frozen != null) { this.swayAt = 0; return false; }
     const now = performance.now();
     if (now - this.lastInput > CAUS_IDLE_MS) { this.swayAt = 0; return false; }
-    if (this.swayScan) { this.swayScan = false; this.swayAny = this.vps.some(vp => { let f = false; vp.scene?.traverse(o => { if (o.userData.sway) f = true; }); return f; }); }
-    if (!this.swayAny || now - this.swayAt < Math.min(200, Math.max(33, 3 * this.swayCost))) return false;
+    if (this.swayScan) { this.swayScan = false; let pl = false, fi = false; for (const vp of this.vps) vp.scene?.traverse(o => { if (o.userData.sway) pl = true; if (o.userData.swimmer) fi = true; }); this.swayAny = pl; this.swimAny = fi; }
+    if (!((this.sway && this.swayAny) || (this.swim && !this.swimAuto && this.swimAny)) || now - this.swayAt < Math.min(200, Math.max(33, 3 * this.swayCost))) return false;
     this.swayT += this.swayAt ? Math.min(now - this.swayAt, 200) : 0; this.swayAt = now;
     return true;
   }
@@ -288,7 +306,12 @@ export class Viewer {
     const t0 = performance.now();
     this.swayFrame = true;
     try { this.draw(); } finally { this.swayFrame = false; }
-    this.swayCost = 0.8 * this.swayCost + 0.2 * (performance.now() - t0);
+    const cost = performance.now() - t0;
+    this.swayCost = 0.8 * this.swayCost + 0.2 * cost;
+    if (this.swim && !this.swimAuto && this.swimAny) { // a run of slow redraws: hold the fish still for this visit
+      this.swimSlow = cost > SWIM_SLOW_MS ? this.swimSlow + 1 : Math.max(0, this.swimSlow - 2);
+      if (this.swimSlow >= 12) { this.swimAuto = true; this.dirty = true; }
+    }
   }
   private govStep(scale: number) { this.govScale = scale; this.govSlow = this.govFast = 0; this.govGap = 0; this.govSkip = 6; this.dirty = true; }
   /** Nothing drawn for GOV_REST ms: the camera has stopped, so give the full picture back. */
@@ -757,6 +780,7 @@ export class Viewer {
   private dim?: { sc: THREE.Scene; m: THREE.Mesh; cam: THREE.OrthographicCamera };
   draw() {
     if (this.needsBuild) this.build();
+    SWIM.uSwim.value.set(this.swayT / 1000, this.swim && !this.swimAuto && !this.exporting ? 1 : 0);
     SWAY.uSway.value.set(this.swayT / 1000, this.sway && !this.exporting ? PLANT_SWAY_AMP : 0);
     const sc = this.store.scene, w = this.host.clientWidth, h = Math.max(60, this.host.clientHeight - this.reserve), r = this.renderer;
     this.canvas.style.height = this.reserve ? h + 'px' : ''; this.host.style.setProperty('--reserve', this.reserve + 'px');

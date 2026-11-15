@@ -11,6 +11,7 @@ import { cardMaterial, pairedFinTexture } from './textures';
 import { isShrimp3D, shrimpBody } from './shrimp3d';
 
 /** Switches for before/after pictures (every species is drawn in 3D; the flat whole-fish card was removed 2026-10-15). `fade` = the session-10 fixes (turned-away paint fades, card body cut out, body-shape fields, barbels); off = session 9, for pictures. `wrap` = the turned-away paint is smeared lengthwise (bars and spots don't close into hoops over the back and throat); off = session 11's round blur. `merge` = a fish's parts that share a material are one mesh (lane FM: fewer draw calls, same picture); off = one mesh per part, for A/B timing. */
+import { SWIM, SWIM_DECL, SWIM_VERT } from './swim';
 export const fish3d = { fade: true, wrap: true, merge: true };
 
 const STATIONS = 40, RING = 28, EXP = 2.4; // superellipse exponent: slightly boxy flanks
@@ -62,7 +63,7 @@ function thetaAt(sec: Section, v: number) {
  * Unit body (card width 1, centred like the card plane: x = u - 0.5, y = -v), bent like `cardGeometry`.
  * UVs are the side projection of the card texture: (u, 0.5 - v / aspect).
  */
-function bodyGeometry(p: Plan, aspect: number, bend: number) {
+function bodyGeometry(p: Plan, aspect: number, bend: number, swim = false) {
   const ring = sections(p), pos: number[] = [], uv: number[] = [], idx: number[] = [];
   for (let i = 0; i < STATIONS; i++) {
     const k = i / (STATIONS - 1), u = p.pedU + (1 - p.pedU) * (1 - Math.cos(k * Math.PI / 2) ** 1.5); // denser at the nose
@@ -96,6 +97,7 @@ function bodyGeometry(p: Plan, aspect: number, bend: number) {
     col.push(k, k, k);
   }
   g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  g.setAttribute('aSwL', new THREE.Float32BufferAttribute(new Array(n.count).fill(swim ? 1 : 0), 1)); // swim in place (swim.ts): 1 = the unit body moves, 0 = holds still
   // how squarely the surface faces the side (1 = flank, 0 = edge-on to the projection): where the paint is reliable
   g.setAttribute('aSide', new THREE.Float32BufferAttribute(Array.from({ length: n.count }, (_, i) => Math.abs(n.getZ(i))), 1));
   g.userData.keep = true; // shared across rebuilds
@@ -594,12 +596,14 @@ export const OUTLINE = { uPop: { value: 0 }, uVpH: { value: 1 } };
  * screen; may use uPop), in `color`. `gated`: hidden while render.pop is 0 (the fish body's); the furniture's (build.ts
  * `ink`) is always drawn.
  */
-export function hullMaterial(px: string, color: THREE.Color, gated = true) {
+export function hullMaterial(px: string, color: THREE.Color, gated = true, swim = false) {
   const m = new THREE.ShaderMaterial({
-    uniforms: { ...OUTLINE, uCol: { value: color } }, side: THREE.BackSide,
-    vertexShader: `uniform float uPop, uVpH;
+    uniforms: { ...OUTLINE, ...(swim ? SWIM : {}), uCol: { value: color } }, side: THREE.BackSide,
+    vertexShader: `${swim ? SWIM_DECL + ' ' : ''}uniform float uPop, uVpH;
 void main() {
-  vec4 p = modelMatrix * vec4(position, 1.0); vec3 n = normalize(mat3(modelMatrix) * normal);
+  vec3 transformed = position;
+  ${swim ? SWIM_VERT : ''}
+  vec4 p = modelMatrix * vec4(transformed, 1.0); vec3 n = normalize(mat3(modelMatrix) * normal);
   float d = max(-(viewMatrix * p).z, 1.0);
   p.xyz += n * (${px}) * 2.0 * d / (projectionMatrix[1][1] * uVpH);
   gl_Position = projectionMatrix * viewMatrix * p;
@@ -610,7 +614,7 @@ void main() {
   return m;
 }
 // the line thins on a fish that is small on screen (a 40 px ember wore a 2.5 px ring: ~4 % of its size, at most): d is the vertex depth, modelMatrix[0] the fish's width
-const outlineMat = hullMaterial('clamp(length(modelMatrix[0].xyz) * projectionMatrix[1][1] * uVpH / (2.0 * d) * 0.04, 1.0, max(2.5 * uPop, 1.0))', new THREE.Color(0.05, 0.04, 0.035));
+const outlineMat = hullMaterial('clamp(length(modelMatrix[0].xyz) * projectionMatrix[1][1] * uVpH / (2.0 * d) * 0.04, 1.0, max(2.5 * uPop, 1.0))', new THREE.Color(0.05, 0.04, 0.035), true, true);
 
 const fishMat = (key: string, make: () => THREE.MeshBasicMaterial) => {
   let m = matCache.get(key);
@@ -623,13 +627,13 @@ const fishMat = (key: string, make: () => THREE.MeshBasicMaterial) => {
  * texture (painted without eye, gill and mouth). Geometry is shared per species + bend. `cling` = on the glass: the
  * paired fins pressed out flat.
  */
-export function fishBody(art: string, aspect: number, w: number, bend: number, map: THREE.Texture, edge: EdgeMode, cling = false, fin = 1) {
+export function fishBody(art: string, aspect: number, w: number, bend: number, map: THREE.Texture, edge: EdgeMode, cling = false, fin = 1, swim = false) {
   if (isShrimp3D(art)) return shrimpBody(art, w); // shrimp: their own body plan (shrimp3d.ts)
-  const p = shaped(bodyPlan(art)!), b = Math.round(bend * 20) / 20, key = `${art}|${aspect}|${b}|${fish3d.fade}`;
-  let g = geoCache.get(key); if (!g) { g = bodyGeometry(p, aspect, b); geoCache.set(key, g); }
+  const p = shaped(bodyPlan(art)!), b = Math.round(bend * 20) / 20, key = `${art}|${aspect}|${b}|${fish3d.fade}|${swim ? 's' : ''}`;
+  let g = geoCache.get(key); if (!g) { g = bodyGeometry(p, aspect, b, swim); geoCache.set(key, g); }
   const grp = new THREE.Group(); grp.scale.setScalar(w);
   grp.add(new THREE.Mesh(g, fishMat(`body:${map.uuid}:${fish3d.fade}:${fish3d.wrap}`, () => {
-    const t = bledTexture(map), m = new THREE.MeshBasicMaterial({ map: t.map, vertexColors: true }); if (fish3d.fade) { m.userData.plain = p.sharp ? t.map : t.plain; m.userData.side = p.sharp ? SIDE_SHARP : fish3d.wrap ? SIDE : new THREE.Vector2(0.3, 0.75); } return m;
+    const t = bledTexture(map), m = new THREE.MeshBasicMaterial({ map: t.map, vertexColors: true }); m.userData.swim = true; if (fish3d.fade) { m.userData.plain = p.sharp ? t.map : t.plain; m.userData.side = p.sharp ? SIDE_SHARP : fish3d.wrap ? SIDE : new THREE.Vector2(0.3, 0.75); } return m;
   })));
   { const o = new THREE.Mesh(g, outlineMat); o.userData.nolight = true; grp.add(o); }
   for (const e of eyePlacements(p, b)) {
@@ -729,6 +733,8 @@ function bakeMerge(parts: THREE.Mesh[]) {
  * fin and the body itself stay. Null for plans with neither (the plain card geometry is used).
  */
 export const FOLD_MAX = 1.35;
+/** Whether this body plan can swim in place (swim.ts): the plain one-tail fish. A doubled tail or anal (fantail goldfish) is built from separate pieces that would not follow the body: still for now. */
+export const swims = (art: string) => { const p = bodyPlan(art); return !!p && !isShrimp3D(art) && !p.tail.split && !p.analSplit && !p.limbs; };
 export function drapedCard(art: string, w: number, h: number, bend: number, fin = 1): THREE.BufferGeometry | null {
   const p = bodyPlan(art), fold = p && finRange(art) ? (1 - Math.min(1, Math.max(0, fin))) * FOLD_MAX : 0;
   if (!p || !(p.drape || fold > 0.01)) return null;
