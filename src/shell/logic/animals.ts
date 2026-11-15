@@ -11,7 +11,8 @@ import { backdropDepth, clampFish, fmtLen, waterY } from '../../scene/physics';
 import { ROLES, groupPicker, offeredIn, roleOf, rolesFor, tankKind, type Fit, type Role, type SetupKind } from '../../scene/pickerKind';
 import * as stockEdit from '../../scene/stockEdit';
 import { experienceIn, fitsThisTank, type createFitter } from '../../ui/logic/animalPicker';
-import { startCount } from '../../ui/pickerStrict';
+import { startGroup } from '../../ui/pickerStrict';
+import { sexFish } from '../../ui/stockPlanLogic';
 import { scopeSpecies } from '../../scope';
 import { CARE } from '../../data/care';
 import type { Rules } from '../../scene/brief';
@@ -77,7 +78,7 @@ function pickRow(S: TankSetup, sp: Species, fit: Fit, units: Units): PickRow {
   return {
     id: sp.id, name: sp.name, sci: sp.sci, size: fmtLen(sp.tl, units), tag: speciesTag(sp) ?? '',
     level: fit.level, reason: fit.level === 'ok' ? '' : fit.text, more: fit.level === 'ok' ? [] : fit.more,
-    inTank: S.fish.filter(f => f.species === sp.id).length, dimorphic: !!sp.female, startCount: startCount(sp),
+    inTank: S.fish.filter(f => f.species === sp.id).length, dimorphic: !!sp.female, startCount: startGroup(sp).total,
   };
 }
 
@@ -137,8 +138,17 @@ export function setCount(store: StockStore, sp: Species, to: (n: number) => numb
 export function addSpecies(store: StockStore, sp: Species, sex?: Sex, pct = 100): EditResult {
   const sx = sp.female ? sex : undefined;
   if (store.tank.fish.some(f => stockEdit.inRow(f, sp, sx))) return { ok: false, why: `${stockEdit.rowName(sp, sx)} is already in the stocking list: use + or type a number.` };
-  const r = setCount(store, sp, () => startCount(sp), sx, pct);
-  return r.ok ? { ok: true, note: `${startCount(sp)} ${sp.name} added.` } : r;
+  const g = startGroup(sp), before = new Set(store.tank.fish.map(f => f.id));
+  const r = setCount(store, sp, () => g.total, sx, pct);
+  if (r.ok) sexNew(store, sp, g, before, sx);
+  return r.ok ? { ok: true, note: `${g.total} ${sp.name} added${g.f ? ` (${g.n} male${g.n === 1 ? '' : 's'}, ${g.f} female${g.f === 1 ? '' : 's'})` : ''}.` } : r;
+}
+
+/** The animals just added get the start group's mix of sexes (males, then females), in the same undo step as the add. */
+function sexNew(store: StockStore, sp: Species, g: ReturnType<typeof startGroup>, before: Set<number>, sex: Sex | undefined) {
+  if (!g.f) return;
+  const ids = store.tank.fish.filter(f => !before.has(f.id) && f.species === sp.id).map(f => f.id);
+  store.edit(s => sexFish(ids.map(id => s.fish.find(f => f.id === id)!).filter(Boolean), g), { coalesce: stockEdit.countKey(sp, sex) });
 }
 
 /** "Remove misfits" after a tank change (Ctrl+Z brings them back). */
@@ -187,6 +197,8 @@ export interface SelectionView {
   pair: { on: Pairing; choices: [Pairing, string][] } | null;
   /** the tracked sex of a reptile / amphibian */
   gender: { on: '' | 'm' | 'f'; how: string } | null;
+  /** this animal's size as a share of its adult length (the length itself is in `lines`) */
+  size: { pct: number; text: string; stages: { name: string; pct: number; text: string; on: boolean }[] | null };
   /** more animals selected with it */
   extra: number;
 }
@@ -207,6 +219,7 @@ export function selectionView(S: TankSetup, id: number | null | undefined, units
     sex: sp.female ? { on: f.sex === 'f' ? 'f' : 'm' } : null,
     pair: two ? { on: pairingIn(S, f.species), choices: PAIR_CHOICES } : null,
     gender: hr ? { on: f.gender ?? '', how: hr.sexing.how } : null,
+    size: (() => { const adult = fishTL({ sex: f.sex }, sp), pct = clampN(Math.round(fishTL(f, sp) / adult * 100), 15, 130); return { pct, text: `${pct}% of adult · ${fmt(fishTL(f, sp))}`, stages: stagesOf(sp, units, pct) }; })(),
     extra,
   };
 }
@@ -245,6 +258,14 @@ export const setSex = (store: SelStore, sex?: Sex) => editSel(store, (f, s) => {
 export const setPair = (store: SelStore, st: Pairing) => { const f = store.tank.fish.find(q => q.id === store.selId); if (f) store.edit(s => setPairing(s, f.species, st)); };
 export const setGender = (store: SelStore, g?: 'm' | 'f') => editSel(store, f => { if (g) f.gender = g; else delete f.gender; });
 
+/** AT1 (R42): the selected animal's size as % of its adult length (100 = adult, stored as no override). */
+export const setSize = (store: SelStore, raw: number) => editSel(store, (f, s) => {
+  const sp = getSpecies(f.species); if (!sp) return;
+  const adult = fishTL({ sex: f.sex }, sp), tl = Math.round(adult * sizePct(raw) / 100);
+  if (tl === adult) delete f.tl; else f.tl = tl;
+  fitFish(f, s);
+}, 'selSize');
+
 // ---------- SC: new-animal size, life stages, Copies, drop into the tank ----------
 import { lifeStages } from '../../data/lifestages';
 import { COPY_DEFAULTS, copyGroup, groupSize, MAX_COPIES, type Group } from '../../scene/duplicate';
@@ -263,8 +284,9 @@ export function stagesOf(sp: Species | undefined, units: Units, cur: number): { 
 
 /** A species dropped into the tank: its start count gathered round the drop point, or one more there if it is already listed. */
 export function dropSpecies(store: StockStore & Pick<Store, 'seal'>, sp: Species, sex: Sex | undefined, at: Parameters<typeof stockEdit.applyCount>[4]['at'], pct = 100): EditResult {
-  const r = setCount(store, sp, k => stockEdit.dropTarget(k, startCount(sp)), sex, pct, at);
-  if (r.ok) store.seal();
+  const g = startGroup(sp), before = new Set(store.tank.fish.map(f => f.id));
+  const r = setCount(store, sp, k => stockEdit.dropTarget(k, g.total), sex, pct, at);
+  if (r.ok) { if (!store.tank.fish.some(f => f.species === sp.id && before.has(f.id))) sexNew(store, sp, g, before, sex); store.seal(); }
   return r;
 }
 

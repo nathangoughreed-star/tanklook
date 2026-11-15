@@ -24,6 +24,7 @@ import {
   previewRow, chooseCommercial, chooseCustom, saleOf, SIZE_CHIPS, loadGroups, saveGroups, GROUP_DEFAULT, type PickRow, type SizeChip, type TankGroup, type Units, kindView, setKind,
 } from './logic/tank';
 import { Group, Icon, Pill } from './ui';
+import { waterLook, setLevel, setTint, setColor, applyPreset } from './logic/animals';
 
 export type MakerHow = { how: 'new' | 'copy' | 'edit' } | { how: 'lib'; id: string };
 
@@ -111,7 +112,28 @@ export function TankSection({ store, onPicker, onMaker, libN }: { store: Store; 
       <LidTop store={store} S={S} open={g.lid} onToggle={() => flip('lid')} />
       <Background store={store} S={S} open={g.bg} onToggle={() => flip('bg')} />
       <Room store={store} S={S} u={u} open={g.room} onToggle={() => flip('room')} />
+      <WaterLook store={store} open={g.water} onToggle={() => flip('water')} />
     </>
+  );
+}
+
+/** AT1 (R41): Water look (level, tint, colour, presets) lives with the tank, not with the animals. Same edits as before. */
+function WaterLook({ store, open, onToggle }: { store: Store; open: boolean; onToggle: () => void }) {
+  const wl = waterLook(store.tank, store.scene.units);
+  return (
+    <Group title="Water look" sum={wl.on ? `${wl.levelText} · ${wl.tintText}` : 'off'} open={open} onToggle={onToggle}>
+      {wl.off ? <div class="hint">{wl.off}</div> : null}
+      <div class="row"><span class="lbl">Level</span>
+        <input class="slider" type="range" min={0.1} max={1} step={0.01} value={wl.level} disabled={!wl.on} aria-label="Water level" onInput={e => setLevel(store, +(e.target as HTMLInputElement).value)} />
+        <span class="val">{wl.levelText}</span></div>
+      <div class="row"><span class="lbl">Tint</span>
+        <input class="slider" type="range" min={0} max={0.95} step={0.01} value={wl.opacity} disabled={!wl.on} aria-label="Water tint" onInput={e => setTint(store, +(e.target as HTMLInputElement).value)} />
+        <span class="val">{wl.tintText}</span></div>
+      <div class="row"><span class="lbl">Colour</span>
+        <input type="color" class="colorbox" value={wl.color} disabled={!wl.on} aria-label="Water colour" onInput={e => setColor(store, (e.target as HTMLInputElement).value)} /><span /></div>
+      <div class="chips">{wl.presets.map(p => <button type="button" class={`chip${wl.current === p.id ? ' on' : ''}`} disabled={!wl.on} onClick={() => applyPreset(store, p)}>{p.label}</button>)}</div>
+      <div class="hint">Tint is how much of the colour shows through 12 in of water, so a deeper tank looks more tinted. The water numbers (temperature) are in the Water check.</div>
+    </Group>
   );
 }
 

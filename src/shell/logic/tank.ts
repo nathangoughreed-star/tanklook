@@ -294,10 +294,10 @@ export const entryTank = (e: CustomTank): Tank => structuredClone(e.tank);
 
 // ---------------------------------------------------------------- groups remember open / closed per browser (§1a.3)
 
-export type TankGroup = 'model' | 'sits' | 'lid' | 'bg' | 'room' | 'custom' | 'commercial';
+export type TankGroup = 'model' | 'sits' | 'lid' | 'bg' | 'room' | 'water' | 'custom' | 'commercial';
 const GROUP_KEY = 'tanklook.ui2.groups';
 /** Tank model open, the rest closed (mockup 01); the picker's two groups both closed (Nathan 11-13). */
-export const GROUP_DEFAULT: Record<TankGroup, boolean> = { model: true, sits: false, lid: false, bg: false, room: false, custom: false, commercial: false };
+export const GROUP_DEFAULT: Record<TankGroup, boolean> = { model: true, sits: false, lid: false, bg: false, room: false, water: false, custom: false, commercial: false };
 type KV = { getItem(k: string): string | null; setItem(k: string, v: string): void };
 const ls = (): KV | undefined => { try { return (globalThis as { localStorage?: KV }).localStorage; } catch { return undefined; } };
 export function loadGroups(store: KV | undefined = ls()): Record<TankGroup, boolean> {
