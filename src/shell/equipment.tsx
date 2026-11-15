@@ -1,15 +1,16 @@
 // UI2 shell step 6 (lane S6, 2026-11-14): the Equipment section. The presets ladder, one sub-menu per category, and in each category an
 // "I own" group and a "Buy" group with the item in use marked and an independent "Use this one for sure" lock on every row (screen map §2a).
 // Components only draw logic/equipment.ts and call its edits, each as one store.edit (one undo step).
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import type { Store } from '../scene/store';
 import { GENERIC } from '../scene/gearOwn';
 import {
-  categories, categoryView, presetLadder, applyPresetEdit, useItem, setOwned, setLock, marks, ownSum, addOwnAny, specOf, type CatId, type GearRow,
+  categories, categoryView, presetLadder, applyPresetEdit, useItem, setOwned, setLock, marks, ownSum, addOwnAny, specOf, isCat, type CatId, type GearRow,
 } from './logic/equipment';
 import { LightingGroup } from './lighting';
 import { Group, Icon, Pill } from './ui';
-import { openSection } from './open';
+import { openSection, OPEN_EVENT } from './open';
+import { takeOpen } from './logic/sections';
 import type { SectionId } from './logic/sections';
 
 const CAT_KEY = 'tanklook.ui2.equipCat';
@@ -67,7 +68,8 @@ function AddOwn({ store, cat }: { store: Store; cat: CatId }) {
 }
 
 export function EquipmentSection({ store, units }: { store: Store; units: 'in' | 'cm' }) {
-  const S = store.tank, cats = categories(S), [sel, setSel] = useState(loadCat());
+  const S = store.tank, cats = categories(S), [sel, setSel] = useState(() => { const g = takeOpen('equipment'); if (g && isCat(g)) { saveCat(g); return g; } return loadCat(); }); // CM2: a click on a piece of gear asks for its category
+  useEffect(() => { const f = () => { const g = takeOpen('equipment'); if (g && isCat(g)) { setSel(g); saveCat(g); } }; addEventListener(OPEN_EVENT, f); return () => removeEventListener(OPEN_EVENT, f); }, []);
   const [open, setOpen] = useState({ own: true, buy: true, all: false });
   const cat = (cats.find(c => c.id === sel) ?? cats[0]).id as CatId;
   const v = categoryView(S, cat, units, { showAll: open.all }), ladder = presetLadder(S), mk = marks(S);

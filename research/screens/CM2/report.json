@@ -1,0 +1,19 @@
+{
+ "desktop-fish": "{\"section\":\"Animals\",\"sel\":[3,null],\"openGroups\":[],\"drawer\":true,\"bars\":false}",
+ "desktop-rock": "{\"section\":\"Scape\",\"sel\":[null,101],\"openGroups\":[\"Substrate\"],\"drawer\":false,\"bars\":false}",
+ "desktop-plant": "{\"section\":\"Plants\",\"sel\":[null,103],\"openGroups\":[\"Growth over time\"],\"drawer\":false,\"bars\":false}",
+ "desktop-heater": "{\"section\":\"Equipment\",\"sel\":[null,null],\"chip\":\"Heater\",\"openGroups\":[\"I own\",\"Buy\"],\"drawer\":false,\"bars\":false}",
+ "desktop-filter": "{\"section\":\"Equipment\",\"sel\":[null,null],\"chip\":\"Filter\",\"openGroups\":[\"I own\",\"Buy\"],\"drawer\":false,\"bars\":false}",
+ "desktop-light": "{\"section\":\"Equipment\",\"sel\":[null,null],\"chip\":\"Light\",\"openGroups\":[\"I own\",\"Buy\"],\"drawer\":false,\"bars\":false}",
+ "desktop-stand": "{\"section\":\"Tank\",\"sel\":[null,null],\"openGroups\":[\"Tank model\",\"Sits on\"],\"drawer\":false,\"bars\":false}",
+ "desktop-lid": "{\"section\":\"Tank\",\"sel\":[null,null],\"openGroups\":[\"Tank model\",\"Sits on\",\"Lid and top\"],\"drawer\":false,\"bars\":false}",
+ "phone-fish": "{\"sel\":[3,null],\"openGroups\":[],\"drawer\":true,\"bars\":false}",
+ "phone-rock": "{\"section\":\"Scape\",\"sel\":[null,101],\"openGroups\":[\"Substrate\"],\"drawer\":false,\"bars\":false}",
+ "phone-plant": "{\"section\":\"Plants\",\"sel\":[null,103],\"openGroups\":[\"Growth over time\"],\"drawer\":false,\"bars\":false}",
+ "phone-heater": "{\"section\":\"Equipment\",\"sel\":[null,null],\"chip\":\"Heater\",\"openGroups\":[\"I own\",\"Buy\"],\"drawer\":false,\"bars\":false}",
+ "phone-filter": "{\"section\":\"Equipment\",\"sel\":[null,null],\"chip\":\"Filter\",\"openGroups\":[\"I own\",\"Buy\"],\"drawer\":false,\"bars\":false}",
+ "phone-light": "{\"section\":\"Equipment\",\"sel\":[null,null],\"chip\":\"Light\",\"openGroups\":[\"I own\",\"Buy\"],\"drawer\":false,\"bars\":false}",
+ "phone-stand": "{\"section\":\"Tank\",\"sel\":[null,null],\"openGroups\":[\"Tank model\",\"Sits on\",\"Lid and top\"],\"drawer\":false,\"bars\":false}",
+ "phone-lid": "{\"section\":\"Tank\",\"sel\":[null,null],\"openGroups\":[\"Tank model\",\"Sits on\",\"Lid and top\"],\"drawer\":false,\"bars\":false}",
+ "old-fish": true
+}

@@ -2,6 +2,8 @@
 // Components only draw logic/tank.ts and call its edits; the custom tank maker is its own workspace (maker.tsx).
 import type { ComponentChildren } from 'preact';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { OPEN_EVENT } from './open';
+import { takeOpen } from './logic/sections';
 import type { Store } from '../scene/store';
 import type { TankSetup } from '../scene/types';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
@@ -19,7 +21,7 @@ import { pinPreset } from '../demand/pinned';
 import { soleProduct } from '../data/tanks';
 import {
   modelCard, sitsOnSummary, lidSummary, bgSummary, roomSummary, heightText, len, LIDS, lidHeld, customRows, customLine, commercialRows, commercialLine,
-  previewRow, chooseCommercial, chooseCustom, saleOf, SIZE_CHIPS, loadGroups, saveGroups, type PickRow, type SizeChip, type TankGroup, type Units, kindView, setKind,
+  previewRow, chooseCommercial, chooseCustom, saleOf, SIZE_CHIPS, loadGroups, saveGroups, GROUP_DEFAULT, type PickRow, type SizeChip, type TankGroup, type Units, kindView, setKind,
 } from './logic/tank';
 import { Group, Icon, Pill } from './ui';
 
@@ -54,6 +56,15 @@ export const Toggle = ({ on, label, onFlip }: { on: boolean; label: ComponentChi
 function useGroups() {
   const [g, setG] = useState(loadGroups);
   const flip = (k: TankGroup) => { const n = { ...g, [k]: !g[k] }; setG(n); saveGroups(n); };
+  // CM2: a click on the stand / lid in the view asks for its group (open.ts): open it and bring it into view
+  useEffect(() => {
+    const take = () => {
+      const k = takeOpen('tank') as TankGroup | undefined; if (!k || !(k in GROUP_DEFAULT)) return;
+      setG(p => { const n = { ...p, [k]: true }; saveGroups(n); return n; });
+      setTimeout(() => document.querySelector(`[data-group="${k}"]`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 80);
+    };
+    take(); addEventListener(OPEN_EVENT, take); return () => removeEventListener(OPEN_EVENT, take);
+  }, []);
   return [g, flip] as const;
 }
 
@@ -76,7 +87,7 @@ export function TankSection({ store, onPicker, onMaker, libN }: { store: Store; 
   const card = modelCard(S, u, lib);
   return (
     <>
-      <Group title="Tank model" sum={card.sum} open={g.model} onToggle={() => flip('model')}>
+      <Group id="model" title="Tank model" sum={card.sum} open={g.model} onToggle={() => flip('model')}>
         <KindRow store={store} S={S} />
         <div class="card media sel tankcard">
           <span class="thumb tthumb"><Icon name="tank" /></span>
@@ -111,7 +122,7 @@ function SitsOn({ store, S, u, open, onToggle }: { store: Store; S: TankSetup; u
     store.edit(s => { const t = s.stand.table; putOnFurniture(s, { shape: t.shape, L: t.L, D: t.D, height: s.stand.height, ...o }); }, c ? { coalesce: c } : {});
   const min = p === 'furniture' ? minTop(S, tb.shape) : null;
   return (
-    <Group title="Sits on" sum={sitsOnSummary(S, u)} open={open} onToggle={onToggle}>
+    <Group id="sits" title="Sits on" sum={sitsOnSummary(S, u)} open={open} onToggle={onToggle}>
       <Seg label="Sits on" value={(S.stand.need === 'ask' && !S.stand.show ? '' : p) as Placement} opts={[['floor', 'Floor'], ['stand', 'Stand'], ['furniture', 'My own furniture']]} onPick={place} />
       {S.stand.need === 'ask' && !S.stand.show ? <div class="hint">Not chosen yet: the budget counts a typical stand until you pick.</div> : null}
       {p === 'stand' ? <>
@@ -137,7 +148,7 @@ function LidTop({ store, S, open, onToggle }: { store: Store; S: TankSetup; open
   const held = lidHeld(S), k = tankKind(S), dry = k === 'terrarium' || k === 'vivarium';
   const lidWhy = (l: TankSetup['lid']) => lidLocked(S.tank, held.lid, l) && l !== S.lid ? (held.lid ? lockNote(S, 'lid') : 'A hood fits box, bow and curved-front tanks only') : false;
   return (
-    <Group title="Lid and top" sum={lidSummary(S)} open={open} onToggle={onToggle}>
+    <Group id="lid" title="Lid and top" sum={lidSummary(S)} open={open} onToggle={onToggle}>
       <Seg label="Lid" value={S.lid} opts={LIDS} disabled={lidWhy} onPick={l => store.edit(s => setLid(s, l))} />
       {held.lid ? <div class="hint">{lockNote(S, 'lid')}</div> : null}
       {dry ? <div class="row"><span class="lbl">Front doors</span>
