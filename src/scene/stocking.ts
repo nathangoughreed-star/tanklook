@@ -49,7 +49,7 @@ export const MET_CLASS = { messy: 1.5, active: 1.2, normal: 1, sedentary: 0.7, g
 export type MetClass = keyof typeof MET_CLASS;
 const MET_BY_ID: Record<string, MetClass> = {
   goldfish: 'messy', comet: 'messy', oscar: 'messy', clownloach: 'active',
-  danio: 'active', balashark: 'active', redtailshark: 'active', cpd: 'active', tigerbarb: 'active', hatchet: 'active', boesemani: 'active', labeo: 'active', auratus: 'active', demasoni: 'active',
+  danio: 'active', balashark: 'active', redtailshark: 'active', rainbowshark: 'active', cpd: 'active', tigerbarb: 'active', hatchet: 'active', boesemani: 'active', labeo: 'active', auratus: 'active', demasoni: 'active',
   yellowtang: 'active', bluetang: 'active', chromis: 'active', sae: 'active', swordtail: 'active',
   cpo: 'sedentary', cajundwarf: 'sedentary', rswcrayfish: 'active', redclaw: 'active', thaicrab: 'sedentary', asellus: 'sedentary',
   bronzecory: 'sedentary', sterbai: 'sedentary', pandacory: 'sedentary', pepperedcory: 'sedentary', pygmycory: 'sedentary', betta: 'sedentary', bristlenose: 'grazer', oto: 'grazer', hillstream: 'grazer', mandarin: 'sedentary', banggai: 'sedentary', royalgramma: 'sedentary',

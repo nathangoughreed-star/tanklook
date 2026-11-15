@@ -43,6 +43,7 @@ NAMES = {
     'kuhli': 'Kuhli Loach (Pangio kuhlii)',
     'clownloach': 'Clown Loach (Chromobotia macracanthus)',
     'balashark': 'Bala Shark (Balantiocheilos melanopterus)',  # added 2026-11-15 (FS1)
+    'rainbowshark': 'Rainbow Shark (Epalzeorhynchos frenatum)',  # added 2026-11-15 (FS1 part 2)
     'redtailshark': 'Red Tailed Black Shark (Epalzeorhynchos bicolor)',  # added 2026-11-15 (FS1)
     'sae': 'Siamese Algae Eater (Crossocheilus siamensis)',
     'peapuffer': 'Dwarf Puffer (Carinotetraodon travancoricus)',

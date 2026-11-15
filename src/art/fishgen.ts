@@ -829,6 +829,12 @@ export const PLANS: Record<string, Plan> = {
     pelvic: { u: 0.6, len: 0.11, w: 1.3, tint: '#16150f' }, pec: { s: 1.1, tint: '#9a9a86' },
     finMarks: [{ k: 'poly', pts: [[0.235, -0.01, 'c'], [0.055, -0.15, 'c'], [0.075, -0.11], [0.2, 0.0, 'c']], c: '#d9d3b0', a: 0.95 }, { k: 'poly', pts: [[0.235, 0.01, 'c'], [0.055, 0.15, 'c'], [0.075, 0.11], [0.2, 0.0, 'c']], c: '#d9d3b0', a: 0.95 }],
     eye: { r: 0.036, u: 0.9, iris: ['#9a8650', '#2a2418'], pupil: '#050505' } },
+  // rainbow shark: slate grey-blue body, red-orange fins all round (dorsal, tail, paired and anal), a dark blotch at the tail root, small barbels
+  rainbowshark: { gape: 0.02, gapeDrop: 0.012, thick: 0.52, belly: 0.3, depth: 0.2, pedU: 0.22, ped: 0.04, peak: 0.6, back: 0.54, snout: 0.5, mouth: 0.02, barbels: 0.014, scale: 0.02, shimmer: 0.25, shimmerRgb: '190,205,225', shade: ['#3f4a53', '#5a666f', '#7d868b'], tail: { type: 'fork', h: 0.15, tint: '#d8461c', a: 0.97, edge: '#a82810' }, fin: '#d9501f',
+    dorsal: { at: 0.7, len: 0.18, h: 0.115, rake: 0.0, lead: 0.2, tip: 'point', trail: 0.1, drop: 0.0, tint: '#d8461c', a: 0.97 }, anal: { at: 0.4, len: 0.09, h: 0.08, rake: 0.2, tip: 'point', trail: 0.03, drop: 0.3, tint: '#dc4a1e', a: 0.97 },
+    pelvic: { u: 0.58, len: 0.11, w: 1.3, tint: '#d9501f' }, pec: { s: 1.0, tint: '#d9501f' },
+    marks: [{ k: 'blob', u: 0.235, v: 0.0, ru: 0.03, rv: 0.04, c: '#1a1d22', a: 0.95 }],
+    eye: { r: 0.022, iris: ['#b08a40', '#2a1c0c'], pupil: '#050505' } },
   // red-tail shark: velvet black, a bright red forked tail, tall swept dorsal, black paired fins, small barbels
   redtailshark: { gape: 0.02, gapeDrop: 0.012, thick: 0.52, belly: 0.3, depth: 0.215, pedU: 0.22, ped: 0.042, peak: 0.62, back: 0.54, snout: 0.5, mouth: 0.02, barbels: 0.014, scale: 0.02, shade: ['#141619', '#23262a', '#34373c'], tail: { type: 'fork', h: 0.15, tint: '#dc4218', a: 0.97, edge: '#a82810' }, fin: '#1c1e22',
     dorsal: { at: 0.7, len: 0.2, h: 0.19, rake: 0.0, lead: 0.15, tip: 'point', trail: 0.13, drop: 0.0, tint: '#181a1d', a: 0.97 }, anal: { at: 0.42, len: 0.09, h: 0.08, rake: 0.2, tip: 'point', trail: 0.03, drop: 0.3, tint: '#181a1d', a: 0.97 },
@@ -1104,7 +1110,7 @@ const FIN_RANGE: Record<string, FinRange> = {
   bristlenose: { lo: 0.1, hi: 0.9, def: 0.35 }, betta: { lo: 0.7, hi: 1, def: 1 }, angel: { lo: 0.85, hi: 1, def: 1 },
   yellowtang: FIN_TANG, bluetang: FIN_TANG,
   cardinal: FIN_TETRA, tetra: FIN_TETRA, ember: FIN_TETRA, rummynose: FIN_TETRA, dwarfpencil: FIN_TETRA, harlequin: FIN_TETRA, chili: FIN_TETRA,
-  balashark: { lo: 0.8, hi: 1, def: 1 }, redtailshark: { lo: 0.6, hi: 1, def: 1 },
+  balashark: { lo: 0.8, hi: 1, def: 1 }, redtailshark: { lo: 0.6, hi: 1, def: 1 }, rainbowshark: { lo: 0.6, hi: 1, def: 1 },
   kribensis: FIN_CICHLID, discus: FIN_CICHLID, oscar: FIN_CICHLID, bolivianram: FIN_CICHLID, cockatoo: FIN_CICHLID, peacock: FIN_CICHLID,
   demasoni: FIN_CICHLID, kadango: FIN_CICHLID, livingstonii: FIN_CICHLID, afra: FIN_CICHLID, auratus: FIN_CICHLID,
 };

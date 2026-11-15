@@ -1147,6 +1147,18 @@
    },
    "why": "one geometry page: Seriously Fish's smallest tank for a group of adults; FishBase advises a tank over 150 cm for 5+"
   },
+  "rainbowshark": {
+   "red": {
+    "L": 1200,
+    "W": 450,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/epalzeorhynchos-frenatum/",
+    "states": "120 × 45 cm (48 × 18 in), the smallest considered for a single specimen",
+    "from": "footprint"
+   },
+   "why": "one geometry page: the smallest Seriously Fish considers, for a single fish"
+  },
   "redtailshark": {
    "red": {
     "L": 1200,

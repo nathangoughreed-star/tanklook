@@ -8,3 +8,7 @@ Models were matched side by side to Wikimedia Commons photos (not committed; vie
 
 Files: `fs1_*_views.jpg` (model from five angles), `fs1_*_tank.png` (in-tank at 1280), `card-still-*.png` (the baked card pictures, composited on grey),
 `picker-*` (the Animals picker, new UI, with the honest tank messages).
+
+## Part 2 (R79): rainbow shark
+Reference: Commons "Epalzeorhynchos frenatum.jpg" (slate grey body, orange-red dorsal, tail and paired fins, black blotch at the tail root, dark eye) and
+"Albino rainbow shark .JPG" (cream-peach body, pink eye, same red-orange fins). Files: `fs1_rainbow_views.jpg`, `fs1_rainbow_tank.png` (normal and albino in a 4 ft tank), `card-still-rainbowshark.png`.

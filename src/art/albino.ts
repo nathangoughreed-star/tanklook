@@ -69,6 +69,15 @@ const TUNE: Record<string, (q: Plan) => void> = {
   },
   // Albino bronze cory: pink-white with a peach flush, clear fins, red eyes
   bronzecory(q) { q.shade = ['#eec6b0', '#f5d8c6', '#fbeadc']; },
+  // Albino rainbow shark: cream-peach to white-pink body, the fins keep their full red-orange (carotenoid), pink eye with a red pupil, no tail-root blotch
+  rainbowshark(q) {
+    q.shade = ['#ecc9ae', '#f4dcc6', '#fbece0'];
+    q.fin = '#e8541e'; if (q.tail) q.tail = { ...q.tail, tint: '#e8541e', edge: '#c8401a' };
+    if (q.dorsal) q.dorsal = { ...q.dorsal, tint: '#e65a22' };
+    if (q.anal) q.anal = { ...q.anal, tint: '#e8602a' };
+    if (q.pec) q.pec = { ...q.pec, tint: '#ec7a3c' };
+    if (q.pelvic) q.pelvic = { ...q.pelvic, tint: '#ec7a3c' };
+  },
   // Albino tiger barb: orange-cream body, the stripes gone, orange fins
   tigerbarb(q) {
     q.shade = ['#ea9a56', '#f3b97e', '#f8dcb4'];

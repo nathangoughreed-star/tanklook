@@ -513,6 +513,13 @@
    "unit": "each; Aquatic Arts tank-bred $5.99, PetSmart $5.99-11.99 by size, Quinn's Fins $8.99+; lo/hi judgement",
    "url": "https://aquaticarts.com/products/bala-shark-balantiocheilos-melanopterus-tank-bred"
   },
+  "animal:rainbowshark": {
+   "lo": 8,
+   "mode": 10,
+   "hi": 20,
+   "unit": "each; Aquatics Unlimited $8.99-19.99 (albino and normal); lo/hi judgement",
+   "url": "https://aquaticsunlimited.com/product/shark-rainbow-epalzeorhynchos-frenatum/"
+  },
   "animal:redtailshark": {
    "lo": 7,
    "mode": 8,

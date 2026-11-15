@@ -251,6 +251,11 @@
   "b": 3.09,
   "src": "fishbase-bayes"
  },
+ "rainbowshark": {
+  "a": 0.00794,
+  "b": 3.02,
+  "src": "fishbase-bayes"
+ },
  "redtailshark": {
   "a": 0.00871,
   "b": 3.09,

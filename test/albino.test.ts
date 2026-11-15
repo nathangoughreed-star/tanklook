@@ -17,7 +17,7 @@ const fish = (id: string, extra: object = {}) => ({ id: 1, species: id, x: 100, 
 
 describe('AL1 albino forms', () => {
   it('only some species carry the flag, each with one https source', () => {
-    expect(ALBINO.map(s => s.id).sort()).toEqual(['angel', 'bristlenose', 'bronzecory', 'oscar', 'pepperedcory', 'tigerbarb']);
+    expect(ALBINO.map(s => s.id).sort()).toEqual(['angel', 'bristlenose', 'bronzecory', 'oscar', 'pepperedcory', 'rainbowshark', 'tigerbarb']);
     for (const s of ALBINO) { expect(s.albino).toMatch(/^https:\/\//); expect(s.albinoForm?.art).toBe(s.art + '~albino'); expect(PLANS[s.art + '~albino']).toBeTruthy(); expect(artMeta(s.art + '~albino')).toEqual(artMeta(s.art)); }
     expect(getSpecies('neon')!.albino).toBeUndefined();
   });

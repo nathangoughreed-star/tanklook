@@ -71,6 +71,7 @@ export const WATER: Record<string, { ok: R; tol: R; est?: true }> = {
   clownloach: { ok: [25,29], tol: [23,31] },
   sae: { ok: [22,26], tol: [20,28] },
   balashark: { ok: [22,28], tol: [20,28] },
+  rainbowshark: { ok: [22,26], tol: [20,28] },
   redtailshark: { ok: [22,26], tol: [20,28] },
   hillstream: { ok: [20,25], tol: [18,27] },
   peapuffer: { ok: [24,28], tol: [22,30] },
