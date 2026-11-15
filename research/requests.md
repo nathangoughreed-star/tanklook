@@ -87,17 +87,17 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R69 | 11-15 | Discuss: Discover six modes into three (Ideas / Fill the gaps / This or that) | DM1 | - | - | - | discussion chat |
 | R70 | 11-15 | Discuss: Start screen for the new UI (old four doors, first-run preferences) | SS1 | - | - | - | discussion chat |
 | R71 | 11-15 | Discuss: deals and bundles in the new UI | DL1 | - | - | - | discussion chat |
-| R72 | 11-15 | Discuss: saltwater PAR chart, light-map hover and contour labels | PG1 | - | - | - | discussion chat |
-| R73 | 11-15 | Discuss: drag rocks and plants in from the library | LD1 | - | - | - | discussion chat |
+| R72 | 11-15 | Discuss: saltwater PAR chart, light-map hover and contour labels | PG1 | on main | 2164 | - | discussion chat |
+| R73 | 11-15 | Discuss: drag rocks and plants in from the library | LD1 | on main | 2164 | - | discussion chat |
 | R74 | 11-15 | Discuss: Compare match buttons | CP2 | - | - | - | discussion chat |
 | R75 | 11-15 | Discuss: Budget / As designed / Luxury cost comparison, Show as Tank B | BL1 | - | - | - | discussion chat |
 | R76 | 11-15 | Discuss: animating the fish (idle life, local drift, real swimming and schooling, behaviors) | FX1 | - | - | - | discussion chat |
-| R77 | 11-15 | Add bala shark and red-tail shark (pygmy cory already in) | FS1 | - | - | - | lane-FS1-sharks.md |
-| R78 | 11-15 | Albino search ("albino cory" finds bronze / peppered with albino on) + peppered cory added with albino form | AL1 | - | - | - | AL1 brief Part 3 |
-| R79 | 11-15 | Rainbow shark added too (with albino form; excludes red-tail) | FS1 | - | - | - | FS1 brief Part 2 |
-| R80 | 11-15 | Bug: a custom fish size reset on Another moment (shuffle re-rolled every size); now sizes stay, only spots and poses change | C24 | - | - | - | view.ts anotherMoment, panels.ts |
+| R77 | 11-15 | Add bala shark and red-tail shark (pygmy cory already in) | FS1 | on main | 2164 | - | lane-FS1-sharks.md |
+| R78 | 11-15 | Albino search ("albino cory" finds bronze / peppered with albino on) + peppered cory added with albino form | AL1 | on main | 2164 | - | AL1 brief Part 3 |
+| R79 | 11-15 | Rainbow shark added too (with albino form; excludes red-tail) | FS1 | on main | 2164 | - | FS1 brief Part 2 |
+| R80 | 11-15 | Bug: a custom fish size reset on Another moment (shuffle re-rolled every size); now sizes stay, only spots and poses change | C24 | on main | 2153 | - | view.ts anotherMoment, panels.ts |
 | R81 | 11-15 | "Open a tank: the menu that comes up is too low" (first asked in PC1 chat ~16:44, never logged = lost); which menu TBD with Nathan | C24 | - | - | - | waiting on Nathan screenshot |
-| R82 | 11-15 | A flat shadow sheet projects outside the tank at substrate height, beside the side glass (white cloud 13.3 gal scene, hillstream terrain) | VF9 | - | - | - | scene research/visual/vf0/scenes/nathan-white-cloud-13g-2026-11-15.json |
+| R82 | 11-15 | A flat shadow sheet projects outside the tank at substrate height, beside the side glass (white cloud 13.3 gal scene, hillstream terrain) | VF9 | on main | 2164 | - | scene research/visual/vf0/scenes/nathan-white-cloud-13g-2026-11-15.json |
 | R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
 | R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
