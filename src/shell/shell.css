@@ -417,3 +417,10 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 @media (max-width: 699px) { .mfacts { bottom: var(--s2); gap: 4px; } .fchip { padding: 2px var(--s2); font-size: var(--fs-xs); } .mview .ov.dims { top: var(--s2); left: var(--s2); padding: 4px var(--s2); gap: var(--s2); } }
 .lockbox { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--muted, #8a949c); white-space: nowrap; }
 .mform .hint.bad { color: var(--bad, #d9534f); }
+.edgelab.editable { pointer-events: auto; cursor: text; border: 1px solid transparent; font: inherit; font-size: 12px; font-weight: 600; color: inherit; }
+.edgelab.editable:hover, .edgelab.editable:focus-visible { border-color: var(--accent, #4c8dff); }
+.edgelab.edgeinput { pointer-events: auto; width: 74px; text-align: center; font-size: 12px; font-weight: 600; border: 1px solid var(--accent, #4c8dff); color: inherit; }
+.mrefuse { position: absolute; left: 50%; top: 64px; transform: translateX(-50%); padding: 6px 12px; font-size: 12px; color: var(--bad, #ffb4a8); max-width: 80%; }
+.polysides .sidegrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 6px; margin: 6px 0; }
+.polysides .sidecell { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--muted, #8a949c); }
+.polysides .sidecell .input { width: 100%; min-width: 0; padding: 3px 5px; }

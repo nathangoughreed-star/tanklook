@@ -5,7 +5,7 @@
 // height is ever read from a seed (Nathan 2026-10-16: nothing generated that the manual mode could not recreate exactly).
 import { rng } from '../art/paint';
 import { clamp, substrateHeight } from './physics';
-import { PIE_DEFAULT, bowlDims, bowlRadius, clampIn, inside, insideBy, shapeOf } from './shape';
+import { PIE_DEFAULT, pieRadius, bowlDims, bowlRadius, clampIn, inside, insideBy, shapeOf } from './shape';
 import type { BackdropSettings, BgSide, LayoutSettings, SubstrateSettings, Tank, TerrainPool, TerrainSettings } from './types';
 
 export interface Ground { substrate: SubstrateSettings; layout: LayoutSettings; terrain?: TerrainSettings; backdrop?: BackdropSettings; render?: { bgSides: BgSide[] } }
@@ -153,14 +153,14 @@ export const sameGrid = (t: TerrainSettings, T: Tank) => { const g = terrainGrid
  * A spot as (rho, angle) round the pie apex: rho in slice radii, angle from straight ahead (toward the front glass),
  * positive to the right. Exact in a pie slice of that arc; in another shape (Tank B) the slice stretched to L x D.
  */
-function piePolar(T: Tank, arc: number, x: number, depth: number) {
-  const h = arc * Math.PI / 360, X = (x - T.L / 2) / (T.L / 2) * Math.sin(h), Y = (T.D - depth) / T.D;
+function piePolar(T: Tank, _arc: number, x: number, depth: number) {
+  const r = pieRadius(T), X = (x - T.L / 2) / r, Y = (r - depth) / r; // past 180 deg the box is deeper than the radius (shape.ts pieRadius)
   return { rho: Math.hypot(X, Y), a: Math.atan2(X, Y) };
 }
 /** Floor-plan spot at (rho, angle) round the pie apex (inverse of piePolar). */
-function piePoint(T: Tank, arc: number, rho: number, a: number) {
-  const h = arc * Math.PI / 360;
-  return { x: T.L / 2 + rho * Math.sin(a) * (T.L / 2) / Math.sin(h), depth: T.D - rho * Math.cos(a) * T.D };
+function piePoint(T: Tank, _arc: number, rho: number, a: number) {
+  const r = pieRadius(T);
+  return { x: T.L / 2 + rho * Math.sin(a) * r, depth: r - rho * Math.cos(a) * r };
 }
 /** Pie grid: Catmull-Rom along each arc at the angle (ends held), then across the arcs at the radius. */
 function pieHeight(t: TerrainSettings, T: Tank, x: number, depth: number): number {

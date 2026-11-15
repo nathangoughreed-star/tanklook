@@ -16,7 +16,7 @@ import { fishTL, leafUp, needsWater, speciesOf, type Species } from '../data/spe
 import { PERCHES, anchors, limbPaths, type Anchor, type Anchors, type V3 } from '../scene/anchors';
 import { glassBand, restsOnGround } from '../scene/water';
 import { backdropDepth, D2R, IN, ceilingH, clamp, floorY, glassThickness, HOOD_H, RIM_DROP, RIM_H, tankUnderside, waterY } from '../scene/physics';
-import { alongRun, archBulge, backgroundRuns, bowlDims, bowlRadius, chord, circleRing, clipToFootprint, facingRuns, footprint, frontAt, frontSlope, halfWidth, inside, levelRing, nearestGlass, offsetRing, offsetWalls, runLength, shapeOf, subRun, type P } from '../scene/shape';
+import { triangulate, alongRun, archBulge, backgroundRuns, bowlDims, bowlRadius, chord, circleRing, clipToFootprint, facingRuns, footprint, frontAt, frontSlope, halfWidth, inside, levelRing, nearestGlass, offsetRing, offsetWalls, runLength, shapeOf, subRun, type P } from '../scene/shape';
 import { TABLE_TOP, cornerWalls, wallGap, tableCentre, tableOn, tableRing, wallPlane } from '../scene/table';
 import { groundHeight, pieSegs, poolHandles, poolWet, terrainDisc, terrainPoints, type PoolPart } from '../scene/terrain';
 import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
@@ -129,7 +129,7 @@ function wallGeometry(inner: P[], outer: P[], y0: number, y1: number, closed = f
 /** A solid prism over a convex ring from y0 to y1: group 0 = top and bottom, group 1 = the sides. */
 function prismGeometry(ring: P[], y0: number, y1: number) {
   const t = new Tris(), n = ring.length;
-  for (let i = 1; i < n - 1; i++) { t.tri(at(ring[0], y1), at(ring[i], y1), at(ring[i + 1], y1), 0); t.tri(at(ring[0], y0), at(ring[i + 1], y0), at(ring[i], y0), 0); }
+  for (const [i, j, k] of triangulate(ring)) { t.tri(at(ring[i], y1), at(ring[j], y1), at(ring[k], y1), 0); t.tri(at(ring[i], y0), at(ring[k], y0), at(ring[j], y0), 0); } // any simple ring: a pie past 180 deg is concave
   for (let i = 0; i < n; i++) { const a = ring[i], b = ring[(i + 1) % n]; t.quad(at(a, y0), at(b, y0), at(b, y1), at(a, y1), 1); }
   return t.geometry();
 }
@@ -137,7 +137,7 @@ function prismGeometry(ring: P[], y0: number, y1: number) {
 /** A flat convex polygon at height y (floor backing, water surface). */
 function flatGeometry(ring: P[], y: number) {
   const t = new Tris();
-  for (let i = 1; i < ring.length - 1; i++) t.tri(at(ring[0], y), at(ring[i], y), at(ring[i + 1], y));
+  for (const [i, j, k] of triangulate(ring)) t.tri(at(ring[i], y), at(ring[j], y), at(ring[k], y));
   return t.geometry();
 }
 

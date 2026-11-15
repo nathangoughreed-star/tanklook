@@ -19,13 +19,15 @@ export type P = [number, number];
 export interface Wall { pts: P[]; curved: boolean }
 
 interface Edge { a: P; b: P; n: P; len: number; s0: number; wall: number }
-export interface Footprint { walls: Wall[]; ring: P[]; edges: Edge[]; area: number; perimeter: number }
+export interface Footprint { walls: Wall[]; ring: P[]; edges: Edge[]; area: number; perimeter: number; /** false for a pie slice past 180 deg: the apex notch makes the outline concave */ convex: boolean }
 
 /** Segments in a full circle and in the bowfront arc. */
 const ROUND_SEG = 64, BOW_SEG = 32;
 
 export const SHAPES: Record<TankShape, string> = { rect: 'Rectangle', bow: 'Bowfront', round: 'Round (cylinder)', poly: 'Polygon', bowl: 'Bowl (sphere)', pie: 'Pie slice (corner / half round)', arch: 'Curved front (top to bottom)' };
 export const POLY_SIDES = [3, 5, 6] as const;
+/** The custom tank maker takes any number of sides from 3 to 24 (above that a polygon is a round tank for every purpose). */
+export const POLY_MIN = 3, POLY_MAX = 24, POLY_SIDE_MIN = 25.4;
 export const shapeOf = (T: Tank): TankShape => T.shape ?? 'rect';
 
 /** Unit regular n-gon with a flat face toward the viewer (front edge centred on x = 0), as [x, depth] points. */
@@ -39,11 +41,61 @@ export function polyRatio(n: number) {
   return (Math.max(...ds) - Math.min(...ds)) / (Math.max(...xs) - Math.min(...xs));
 }
 
-/** Pie slice: the angle (degrees) between its two flat panes. Up to a half circle, so the outline stays convex. */
-export const PIE_MIN = 45, PIE_MAX = 180, PIE_DEFAULT = 90;
+/**
+ * An irregular polygon from its side lengths (mm, in order round the tank, side 0 along the front). The corners lie on one circle (a cyclic
+ * polygon), which is what makes the lengths alone fix the shape: any lengths close up into exactly one convex polygon, as long as the longest side
+ * is shorter than all the others added together. Returns the corners ([x, depth], side i runs from corner i to corner i + 1, left to right across the
+ * front, counter-clockwise) with the front-left corner at depth 0 and the box starting at x = 0, or a one-line reason when the sides cannot close.
+ */
+export function cyclicPolygon(lens: readonly number[]): { pts: P[]; L: number; D: number } | string {
+  const n = lens.length, inch = (v: number) => `${+(v / 25.4).toFixed(2)} in`;
+  if (n < POLY_MIN || n > POLY_MAX) return `A polygon has ${POLY_MIN} to ${POLY_MAX} sides.`;
+  const bad = lens.findIndex(v => !Number.isFinite(v) || v < POLY_SIDE_MIN - 1e-6);
+  if (bad >= 0) return `Side ${bad + 1} must be at least ${inch(POLY_SIDE_MIN)}.`;
+  const m = lens.indexOf(Math.max(...lens)), total = lens.reduce((a, b) => a + b, 0), rest = total - lens[m];
+  if (lens[m] >= rest - 1e-6) return `Side ${m + 1} (${inch(lens[m])}) has to be shorter than the other sides together (${inch(rest)}), or the shape cannot close.`;
+  const half = (s: number, R: number) => Math.asin(Math.min(1, s / (2 * R)));
+  const others = lens.filter((_, i) => i !== m), Rmin = lens[m] / 2;
+  // the circle's radius: all central angles add to 2 pi when the centre is inside; else the others together span the longest side's arc
+  const f = (R: number) => lens.reduce((a, s) => a + half(s, R), 0) - Math.PI;
+  const g = (R: number) => others.reduce((a, s) => a + half(s, R), 0) - half(lens[m], R);
+  const inside = f(Rmin) >= 0, h = inside ? f : g;
+  let lo = Rmin, hi = Math.max(total, 1);
+  if (inside) { while (h(hi) > 0 && hi < 1e9) hi *= 2; for (let k = 0; k < 100; k++) { const mid = (lo + hi) / 2; if (h(mid) > 0) lo = mid; else hi = mid; } } // f falls from >= 0 to -pi
+  else { while (h(hi) <= 0 && hi < 1e9) hi *= 2; for (let k = 0; k < 100; k++) { const mid = (lo + hi) / 2; if (h(mid) > 0) hi = mid; else lo = mid; } } // g rises from < 0 to > 0
+  const R = (lo + hi) / 2, order = Array.from({ length: n }, (_, j) => (m + 1 + j) % n); // the longest side last
+  const V: P[] = [[R, 0]]; let a = 0;
+  order.forEach((i, j) => {
+    const step = 2 * half(lens[i], R) * (!inside && i === m ? -1 : 1);
+    a += step; if (j < n - 1) V.push([R * Math.cos(a), R * Math.sin(a)]);
+  });
+  const start = new Map<number, P>(order.map((i, j) => [i, V[j]]));
+  const pts = Array.from({ length: n }, (_, i) => start.get(i)!);
+  const dx = pts[1][0] - pts[0][0], dy = pts[1][1] - pts[0][1], ang = Math.atan2(dy, dx), c = Math.cos(-ang), s = Math.sin(-ang);
+  const rot = pts.map(p => [p[0] * c - p[1] * s, p[0] * s + p[1] * c] as P);
+  const x0 = Math.min(...rot.map(p => p[0])), y0 = Math.min(...rot.map(p => p[1]));
+  const out = rot.map(p => [p[0] - x0, p[1] - y0] as P);
+  return { pts: out, L: Math.max(...out.map(p => p[0])), D: Math.max(...out.map(p => p[1])) };
+}
+
+/** The side lengths (mm) of a polygon tank, regular or not. */
+export function polySides(T: Tank): number[] {
+  if (T.sideLens?.length === (T.sides ?? 6)) return [...T.sideLens];
+  const n = clamp(Math.round(T.sides ?? 6), POLY_MIN, POLY_MAX), u = unitPoly(n), w = Math.max(...u.map(q => q[0])) - Math.min(...u.map(q => q[0]));
+  return Array(n).fill(T.L / w * 2 * Math.sin(Math.PI / n));
+}
+/** The width (box L) of a regular polygon whose sides are each `s` mm. */
+export function regularWidth(n: number, s: number) { const u = unitPoly(n); return s / (2 * Math.sin(Math.PI / n)) * (Math.max(...u.map(q => q[0])) - Math.min(...u.map(q => q[0]))); }
+
+/** Pie slice: the angle (degrees) of the arc, 30 to 360 (lane CT1, R38: 360 is a full cylinder, so "round" is a pie). Past 180 the two flat back panes fold inward and the outline is no longer convex. */
+export const PIE_MIN = 30, PIE_MAX = 360, PIE_DEFAULT = 90;
 const pieHalf = (T: Tank) => (clamp(T.pieDeg ?? PIE_DEFAULT, PIE_MIN, PIE_MAX) * Math.PI) / 360;
 /** Width of a pie slice of radius r: the chord between the arc's ends (2r at a half circle). */
-export const pieWidth = (r: number, deg: number) => 2 * r * Math.sin((clamp(deg, PIE_MIN, PIE_MAX) * Math.PI) / 360);
+export const pieWidth = (r: number, deg: number) => 2 * r * Math.sin(Math.min(Math.PI / 2, (clamp(deg, PIE_MIN, PIE_MAX) * Math.PI) / 360));
+/** Depth of the box round a pie slice of radius r: r up to a half circle, more past it (the arc runs back beyond the apex). The tank's D is this. */
+export const pieDepth = (r: number, deg: number) => r * (1 - Math.cos(Math.max(Math.PI / 2, (clamp(deg, PIE_MIN, PIE_MAX) * Math.PI) / 360)));
+/** The radius of a pie tank (the arc's circle), from its box depth D. */
+export const pieRadius = (T: Tank) => T.D / (1 - Math.cos(Math.max(Math.PI / 2, pieHalf(T))));
 
 /** Floor and opening diameters of a bowl, as fractions of its diameter L. */
 export const BOWL_MIN = 0.2, BOWL_MAX = 0.95, BOWL_DEFAULT = 0.6;
@@ -131,11 +183,15 @@ export function normTank(T: Tank): Tank {
     const B: Tank = { L: T.L, H: T.H, D: T.L, shape: 'bowl', bowlFloor: f, bowlTop: t };
     return { ...B, H: +bowlDims(B).H.toFixed(1) };
   }
-  if (s === 'pie') { const deg = Math.round(clamp(T.pieDeg ?? PIE_DEFAULT, PIE_MIN, PIE_MAX)); return { L: +pieWidth(T.D, deg).toFixed(1), H: T.H, D: T.D, shape: 'pie', pieDeg: deg }; }
+  if (s === 'pie') { const deg = Math.round(clamp(T.pieDeg ?? PIE_DEFAULT, PIE_MIN, PIE_MAX)), r = T.D / (1 - Math.cos(Math.max(Math.PI / 2, deg * Math.PI / 360))); return { L: +pieWidth(r, deg).toFixed(1), H: T.H, D: T.D, shape: 'pie', pieDeg: deg }; }
   if (s === 'arch') return { L: T.L, H: T.H, D: T.D, shape: 'arch', frontBulge: +archBulge(T).toFixed(1) };
-  T = { ...T, bowlFloor: undefined, bowlTop: undefined, pieDeg: undefined, frontBulge: undefined };
+  T = { ...T, bowlFloor: undefined, bowlTop: undefined, pieDeg: undefined, frontBulge: undefined, ...(s === 'poly' ? {} : { sideLens: undefined }) };
   if (s === 'round') return { ...T, D: T.L, sides: undefined, bowMin: undefined };
-  if (s === 'poly') { const n = (POLY_SIDES as readonly number[]).includes(T.sides ?? 0) ? T.sides! : 6; return { ...T, sides: n, D: +(T.L * polyRatio(n)).toFixed(1), bowMin: undefined }; }
+  if (s === 'poly') {
+    const n = clamp(Math.round(T.sides ?? 6), POLY_MIN, POLY_MAX), lens = T.sideLens?.length === n ? T.sideLens : undefined, g = lens ? cyclicPolygon(lens) : undefined;
+    if (lens && g && typeof g !== 'string' && Math.max(...lens) - Math.min(...lens) > 0.05) return { ...T, sides: n, sideLens: lens.map(v => +v.toFixed(1)), L: +g.L.toFixed(1), D: +g.D.toFixed(1), bowMin: undefined };
+    return { ...T, sides: n, sideLens: undefined, D: +(T.L * polyRatio(n)).toFixed(1), bowMin: undefined };
+  }
   const lo = bowMinLimit(T), b = T.bowMin ?? T.D * 0.75;
   return { ...T, sides: undefined, bowMin: +clamp(b, Math.min(T.D, Math.max(lo, 20)), T.D).toFixed(1) };
 }
@@ -150,15 +206,17 @@ function makeWalls(T: Tank): Wall[] {
   if (s === 'pie') {
     // apex at the back centre (depth D = radius), the arc toward the viewer, then the right pane back to the apex and
     // the left pane out to the arc's start: a corner tank (90°) points its corner away, a half round has a flat back
-    const r = D, h = pieHalf(T), n = Math.max(8, Math.ceil(ROUND_SEG * h / Math.PI)), pts: P[] = [];
+    const r = pieRadius(T), h = pieHalf(T), n = Math.max(8, Math.ceil(ROUND_SEG * h / Math.PI)), pts: P[] = [];
     for (let i = 0; i <= n; i++) { const a = -h + 2 * h * i / n; pts.push([L / 2 + r * Math.sin(a), r - r * Math.cos(a)]); }
-    if (h > Math.PI / 2 - 1e-6) return [{ pts, curved: true }, { pts: [pts[n], pts[0]], curved: false }]; // half round: one flat back pane
+    if (h > Math.PI - 1e-6) return [{ pts, curved: true }]; // 360 deg: a full cylinder, no flat panes (exactly a round tank)
+    if (Math.abs(h - Math.PI / 2) < 1e-6) return [{ pts, curved: true }, { pts: [pts[n], pts[0]], curved: false }]; // half round: one flat back pane
     const apex: P = [L / 2, r];
     return [{ pts, curved: true }, { pts: [pts[n], apex], curved: false }, { pts: [apex, pts[0]], curved: false }];
   }
   if (s === 'poly') {
+    const g = T.sideLens ? cyclicPolygon(T.sideLens) : undefined;
     const u = unitPoly(T.sides ?? 6), x0 = Math.min(...u.map(q => q[0])), x1 = Math.max(...u.map(q => q[0])), d0 = Math.min(...u.map(q => q[1]));
-    const k = L / (x1 - x0), v = u.map(q => [(q[0] - x0) * k, (q[1] - d0) * k] as P);
+    const k = L / (x1 - x0), v = g && typeof g !== 'string' ? g.pts : u.map(q => [(q[0] - x0) * k, (q[1] - d0) * k] as P);
     return v.map((p, i) => ({ pts: [p, v[(i + 1) % v.length]], curved: false }));
   }
   if (s === 'arch') { // the flat rectangle behind the frame line; the front pane's curve is in height (frontAt)
@@ -180,7 +238,7 @@ function makeWalls(T: Tank): Wall[] {
 const cache = new Map<string, Footprint>();
 /** The footprint of tank T (cached by its shape parameters). */
 export function footprint(T: Tank): Footprint {
-  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.pieDeg}|${T.frontBulge}`;
+  const key = `${shapeOf(T)}|${T.L}|${T.D}|${T.sides}|${T.sideLens}|${T.sideLens}|${T.bowMin}|${T.bowlFloor}|${T.pieDeg}|${T.frontBulge}`;
   let f = cache.get(key);
   if (f) return f;
   const walls = makeWalls(T), ring: P[] = [], edges: Edge[] = [];
@@ -194,15 +252,27 @@ export function footprint(T: Tank): Footprint {
   });
   let area = 0;
   for (let i = 0; i < ring.length; i++) { const p = ring[i], q = ring[(i + 1) % ring.length]; area += p[0] * q[1] - q[0] * p[1]; }
-  f = { walls, ring, edges, area: Math.abs(area) / 2, perimeter: s };
+  let convex = true;
+  for (let i = 0; i < edges.length; i++) { const a = edges[i], b = edges[(i + 1) % edges.length]; if ((a.b[0] - a.a[0]) * (b.b[1] - b.a[1]) - (a.b[1] - a.a[1]) * (b.b[0] - b.a[0]) < -1e-6) { convex = false; break; } }
+  f = { walls, ring, edges, area: Math.abs(area) / 2, perimeter: s, convex };
   cache.set(key, f); if (cache.size > 32) cache.delete(cache.keys().next().value!);
   return f;
 }
 
 /** Signed distance (mm) from (x, depth) to the outline: positive inside. Exact for convex outlines away from corners. */
 export function insideBy(T: Tank, x: number, d: number): number {
+  const f = footprint(T);
+  if (!f.convex) { // a concave outline (a pie past 180 deg): inside by winding, distance to the nearest glass
+    let m = Infinity, wind = 0;
+    for (const e of f.edges) {
+      const dx = e.b[0] - e.a[0], dd = e.b[1] - e.a[1], t = clamp(((x - e.a[0]) * dx + (d - e.a[1]) * dd) / (e.len * e.len), 0, 1);
+      m = Math.min(m, Math.hypot(e.a[0] + dx * t - x, e.a[1] + dd * t - d));
+      if ((e.a[1] <= d) !== (e.b[1] <= d) && x < e.a[0] + (d - e.a[1]) / dd * dx) wind += dd > 0 ? 1 : -1;
+    }
+    return wind !== 0 ? m : -m;
+  }
   let m = Infinity;
-  for (const e of footprint(T).edges) m = Math.min(m, -((x - e.a[0]) * e.n[0] + (d - e.a[1]) * e.n[1]));
+  for (const e of f.edges) m = Math.min(m, -((x - e.a[0]) * e.n[0] + (d - e.a[1]) * e.n[1]));
   return m;
 }
 
@@ -211,7 +281,12 @@ export const inside = (T: Tank, x: number, d: number, inset = 0) => insideBy(T, 
 
 /** The nearest spot at least `inset` mm inside the glass (unchanged if it already is). Too big an inset: the middle. */
 export function clampIn(T: Tank, x: number, d: number, inset = 0): { x: number; depth: number } {
-  const { edges } = footprint(T);
+  const { edges, convex } = footprint(T);
+  if (!convex) { // concave: step in from the nearest glass
+    if (inside(T, x, d, inset)) return { x, depth: d };
+    const g = nearestGlass(T, x, d), px = g.x - g.n[0] * inset, pd = g.depth - g.n[1] * inset;
+    return inside(T, px, pd, inset * 0.5) ? { x: px, depth: pd } : { x: T.L / 2, depth: Math.min(T.D / 2, pieRadius(T) * 0.5) };
+  }
   for (let k = 0; k < 12; k++) {
     let worst = Infinity, n: P = [0, 0];
     for (const e of edges) { const v = -((x - e.a[0]) * e.n[0] + (d - e.a[1]) * e.n[1]); if (v < worst) { worst = v; n = e.n; } }
@@ -312,6 +387,7 @@ export function ringArea(r: P[]) {
 /** Clip a convex polygon (cell of a floor grid) to the footprint; [] if it lies outside. */
 export function clipToFootprint(T: Tank, poly: P[]): P[] {
   if (shapeOf(T) === 'rect' || poly.every(p => inside(T, p[0], p[1]))) return poly;
+  if (!footprint(T).convex) { const c = poly.reduce((a, p) => [a[0] + p[0] / poly.length, a[1] + p[1] / poly.length], [0, 0]); return inside(T, c[0], c[1]) ? poly : []; } // concave: a cell is kept whole or dropped
   let out = poly;
   for (const e of footprint(T).edges) {
     const din = (p: P) => -((p[0] - e.a[0]) * e.n[0] + (p[1] - e.a[1]) * e.n[1]), next: P[] = [];
@@ -327,6 +403,14 @@ export function clipToFootprint(T: Tank, poly: P[]): P[] {
 
 /** The part of the line x = const (axis 0) or depth = const (axis 1) inside the footprint: [lo, hi] or null. */
 export function chord(T: Tank, axis: 0 | 1, v: number): [number, number] | null {
+  if (!footprint(T).convex) { // concave: the outer span of where the line crosses the outline (the notch is not left out)
+    const xs: number[] = [];
+    for (const e of footprint(T).edges) {
+      const a = axis === 0 ? e.a : [e.a[1], e.a[0]], b = axis === 0 ? e.b : [e.b[1], e.b[0]];
+      if ((a[0] <= v) !== (b[0] <= v)) xs.push(a[1] + (v - a[0]) / (b[0] - a[0]) * (b[1] - a[1]));
+    }
+    return xs.length < 2 ? null : [Math.min(...xs), Math.max(...xs)];
+  }
   let lo = -Infinity, hi = Infinity;
   for (const e of footprint(T).edges) {
     // inside: (p - a) . n <= 0 with p = (v, w) or (w, v); linear in w
@@ -415,5 +499,27 @@ export function subRun(r: P[], s0: number, s1: number): P[] {
     if (acc > s0 && acc < s1) out.push(r[i]);
   }
   out.push(alongRun(r, s1));
+  return out;
+}
+
+/** Triangles (index triples into `ring`) of a simple polygon, convex or not (ear clipping): what a flat floor or water surface is drawn with. */
+export function triangulate(ring: readonly P[]): [number, number, number][] {
+  const n = ring.length, out: [number, number, number][] = [];
+  if (n < 3) return out;
+  let area = 0; for (let i = 0; i < n; i++) { const p = ring[i], q = ring[(i + 1) % n]; area += p[0] * q[1] - q[0] * p[1]; }
+  const idx = Array.from({ length: n }, (_, i) => i); if (area < 0) idx.reverse();
+  const cross = (a: P, b: P, c: P) => (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
+  let guard = n * n;
+  while (idx.length > 3 && guard-- > 0) {
+    let cut = false;
+    for (let k = 0; k < idx.length; k++) {
+      const i0 = idx[(k + idx.length - 1) % idx.length], i1 = idx[k], i2 = idx[(k + 1) % idx.length], a = ring[i0], b = ring[i1], c = ring[i2];
+      if (cross(a, b, c) <= 1e-9) continue;
+      if (idx.some(j => j !== i0 && j !== i1 && j !== i2 && cross(a, b, ring[j]) >= -1e-9 && cross(b, c, ring[j]) >= -1e-9 && cross(c, a, ring[j]) >= -1e-9)) continue;
+      out.push([i0, i1, i2]); idx.splice(k, 1); cut = true; break;
+    }
+    if (!cut) break;
+  }
+  if (idx.length === 3) out.push([idx[0], idx[1], idx[2]]);
   return out;
 }
