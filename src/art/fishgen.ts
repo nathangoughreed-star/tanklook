@@ -64,8 +64,8 @@ export interface Plan {
   analSplit?: number;
   // ext: the leading ray runs on past the membrane by this much (widths); w: membrane width x the default
   // flat (3D, pelvic and pec, off by default): the fins held out flat to the sides all the time, as on the glass (hillstream loach)
-  pelvic?: { u: number; len: number; tint?: string; thread?: boolean; angle?: number; ext?: number; w?: number; flat?: boolean }; // angle: degrees below horizontal (thread)
-  pec?: { s?: number; v?: number; u?: number; flat?: boolean; w?: number; tint?: string }; // pectoral: size x the default, root height (0 top .. 1 belly, default 0.62), root u (default behind the gill), w: fan width x the default, tint: own colour (default: fin mixed with the flank)
+  pelvic?: { u: number; len: number; tint?: string; thread?: boolean; angle?: number; ext?: number; w?: number; flat?: boolean; spread?: number; edge?: string; spots?: string }; // angle: degrees below horizontal (thread)
+  pec?: { s?: number; v?: number; u?: number; flat?: boolean; w?: number; tint?: string; spread?: number; edge?: string; spots?: string }; // pectoral: size x the default, root height (0 top .. 1 belly, default 0.62), root u (default behind the gill), w: fan width x the default, tint: own colour (default: fin mixed with the flank)
   fin: string;        // default membrane tint
   ray?: string;
   marks?: Mark[];     // painted inside the body
@@ -76,6 +76,8 @@ export interface Plan {
   barbels?: number;   // barbel length (widths); bottom fish
   barbelR?: number;   // 3D: barbel root radius (widths, default 0.004); fine cylindrical barbels on slim fish (kuhli)
   bristles?: boolean; // bristlenose snout
+  headW?: number;     // 3D: the head (from the gill cover forward) this much wider than the trunk tapering to the tail (pleco: broad flat head)
+  keel?: string;      // 3D: a raised row of bony scutes along each flank in this colour (armoured catfish)
   rim?: number;
   thick?: number;     // 3D: max body thickness / max body depth (laterally compressed < 0.5 < rounder)
   sectionExp?: number; // 3D: cross-section exponent (2 = elliptical; >2 = boxier); default 2.4
@@ -294,22 +296,30 @@ function paintMarks(c: Ctx, P: Proj, W: number, marks: Mark[] | undefined, seed:
 }
 
 const mixHex = (a: string, b: string, k: number) => '#' + [1, 3, 5].map(i => Math.round(parseInt(a.slice(i, i + 2), 16) * (1 - k) + parseInt(b.slice(i, i + 2), 16) * k).toString(16).padStart(2, '0')).join('');
-export interface PairedFin { kind: 'pelvic' | 'pectoral'; pts: Pt[]; root: [number, number]; tint: string; a?: number; rays: number }
+export interface PairedFin { kind: 'pelvic' | 'pectoral'; pts: Pt[]; root: [number, number]; tint: string; a?: number; rays: number; edge?: string; spots?: string; spread?: number }
 /** The paired fins (pelvic if the plan has one, then the pectoral), in card coordinates. */
 export function pairedFins(p: Plan): PairedFin[] {
   const g = geometry(p), out: PairedFin[] = [];
-  if (g.pelvic) out.push({ kind: 'pelvic', pts: g.pelvic, root: [p.pelvic!.u, g.prof(p.pelvic!.u)[1]], tint: p.pelvic!.tint ?? p.fin, a: p.pelvic!.thread ? 0.85 : undefined, rays: p.pelvic!.thread ? 0 : 5 });
+  if (g.pelvic) out.push({ kind: 'pelvic', pts: g.pelvic, root: [p.pelvic!.u, g.prof(p.pelvic!.u)[1]], tint: p.pelvic!.tint ?? p.fin, a: p.pelvic!.thread || p.pelvic!.edge ? 0.85 : undefined, rays: p.pelvic!.thread ? 0 : 5, edge: p.pelvic!.edge, spots: p.pelvic!.spots, spread: p.pelvic!.spread });
   if (p.pectoral === false) return out;
   const pu = p.pec?.u ?? 1 - (1 - p.pedU) * 0.24, [pt, pb] = g.prof(pu), pm = pt + (pb - pt) * (p.pec?.v ?? 0.62), pl = Math.min((1 - p.pedU) * 0.17, p.depth * 0.75) * (p.pec?.s ?? 1); // slender fish (loaches) keep small pectorals
   // w (off by default): a broad fan, the trailing edge this many times deeper (hillstream loach)
   const w = p.pec?.w ?? 1, pts: Pt[] = w === 1 ? [[pu, pm - 0.01], [pu - pl, pm + pl * 0.3, 'c'], [pu - pl * 0.7, pm + pl * 0.55], [pu + 0.005, pm + 0.015]]
     : [[pu, pm - 0.01], [pu - pl, pm + pl * 0.3, 'c'], [pu - pl * 0.8, pm + pl * (0.3 + 0.25 * w)], [pu - pl * 0.4, pm + pl * 0.3 * w], [pu + 0.005, pm + 0.015 * w]];
-  out.push({ kind: 'pectoral', pts, root: [pu, pm], tint: p.pec?.tint ?? mixHex(p.fin, p.shade[1], 0.35), a: p.pec?.tint ? 0.8 : 0.45, rays: 5 }); // pectoral takes on some flank colour: it lies against the body
+  out.push({ kind: 'pectoral', pts, root: [pu, pm], tint: p.pec?.tint ?? mixHex(p.fin, p.shade[1], 0.35), a: p.pec?.tint ? 0.8 : 0.45, rays: 5, edge: p.pec?.edge, spots: p.pec?.spots, spread: p.pec?.spread }); // pectoral takes on some flank colour: it lies against the body
   return out;
 }
 export function drawPairedFin(f: PairedFin, ctx: Ctx, P: Proj, W: number, ray = '#7d7a70') {
-  fin(ctx, P, W, f.pts, f.root, f.tint, ray, { a: f.a, rays: f.rays });
-  if (f.kind === 'pectoral' && f.a !== undefined) return; // the card's faint fan over the flank gets no spine
+  const extra = f.spots ? (c: Ctx) => { // pale dots in rows along the rays
+    const r = rng(f.kind === 'pectoral' ? 31 : 32), [rx, ry] = P(f.root[0], f.root[1]); c.fillStyle = hexA(f.spots!, 0.55);
+    for (let i = 0; i < 70; i++) {
+      const t = r() * (f.pts.length - 1), k = Math.min(f.pts.length - 2, Math.floor(t)), q = t - k, a = f.pts[k], b = f.pts[k + 1], [ex, ey] = P(a[0] + (b[0] - a[0]) * q, a[1] + (b[1] - a[1]) * q), d = 0.25 + r() * 0.75;
+      c.beginPath(); c.arc(rx + (ex - rx) * d, ry + (ey - ry) * d, 0.0032 * W * (0.7 + r() * 0.6), 0, Math.PI * 2); c.fill();
+    }
+  } : undefined;
+  fin(ctx, P, W, f.pts, f.root, f.tint, ray, { a: f.a, rays: f.rays, extra });
+  if (f.edge) { ctx.save(); shape(ctx, P, f.pts); ctx.strokeStyle = hexA(f.edge, 0.7); ctx.lineWidth = 0.007 * W; ctx.stroke(); ctx.restore(); }
+  if (f.kind === 'pectoral' && f.a !== undefined && !f.edge) return; // the card's faint fan over the flank gets no spine
   // leading spine / first ray: the stiff front edge that gives a fin its structure
   const tip = f.pts.find(q => q[2] === 'c') ?? f.pts[1], [x0, y0] = P(f.root[0], f.root[1]), [x1, y1] = P(tip[0], tip[1]);
   ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.strokeStyle = hexA(ray, f.kind === 'pectoral' ? 0.45 : 0.75); ctx.lineWidth = 0.006 * W; ctx.stroke();
@@ -778,10 +788,10 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { at: 0.68, len: 0.13, h: 0.17, spines: 0.12, nSp: 1, spineH: 0.2, rake: 0.1, drop: 0.3, tint: '#2a2a2a', a: 0.85 }, anal: { u0: 0.32, u1: 0.4, h: 0.06 }, adipose: true, pelvic: { u: 0.55, len: 0.09, w: 1.3 },
     marks: [{ k: 'blob', u: 0.62, v: 0.02, ru: 0.3, rv: 0.1, c: '#f0b890', a: 0.35 }, { k: 'bars', us: [0.885], w: 0.06, c: '#1c1c1c', a: 0.95 }, { k: 'blob', u: 0.24, v: -0.02, ru: 0.06, rv: 0.06, c: '#1c1c1c', a: 0.9 }], barbels: 0.03,
     eye: { r: 0.032, iris: ['#4a4040', '#0c0a0a'], dv: -0.05 } },
-  bristlenose: { pec: { s: 2.1, v: 0.85 }, plates: true, thick: 1.3, belly: 1, wide: 0.6, noseW: 0.9, depth: 0.23, pedU: 0.16, ped: 0.05, peak: 0.6, back: 0.72, snout: 0.6, mouth: 0.05, shade: ['#3a3a30', '#5a5444', '#8a826a'], tail: { type: 'notch', h: 0.11, tint: '#4a4638', a: 0.85 }, fin: '#4a4638',
-    dorsal: { at: 0.66, len: 0.26, h: 0.17, spines: 0.1, nSp: 1, spineH: 0.19, rake: 0.25, drop: 0.7, a: 0.85 }, anal: { u0: 0.3, u1: 0.36, h: 0.04 }, adipose: true, pelvic: { u: 0.58, len: 0.15, w: 1.4 },
-    marks: [{ k: 'spots', n: 70, u0: 0.16, u1: 0.95, v0: -0.18, v1: 0.05, r: 0.008, c: '#c8c0a0', a: 0.6 }],
-    finMarks: [{ k: 'spots', n: 40, u0: 0, u1: 0.7, v0: -0.4, v1: 0.2, r: 0.008, c: '#c8c0a0', a: 0.5 }], bristles: true, eye: { r: 0.022, iris: ['#6a6040', '#1a1610'], dv: -0.12, up: 0.7 } },
+  bristlenose: { pec: { s: 2.7, v: 0.86, w: 1.5, flat: true, spread: 1.3, edge: '#d4cdae', spots: '#cfc7a4', tint: '#3a3426' }, plates: true, thick: 1.15, belly: 1, wide: 0.6, headW: 0.7, pedT: 0.3, noseW: 0.9, depth: 0.2, pedU: 0.16, ped: 0.04, peak: 0.6, back: 0.74, snout: 0.45, mouth: 0.06, keel: '#3a3424', shade: ['#16140e', '#2e2a1e', '#74694e'], tail: { type: 'fork', h: 0.115, tint: '#322d20', a: 0.9, edge: '#d4cdae' }, fin: '#322d20',
+    dorsal: { at: 0.66, len: 0.27, h: 0.25, spines: 0.1, nSp: 1, spineH: 0.22, rake: 0.3, drop: 0.55, tint: '#2e2a1e', a: 0.9, edge: '#d4cdae' }, anal: { u0: 0.3, u1: 0.36, h: 0.04 }, adipose: true, pelvic: { u: 0.58, len: 0.16, w: 1.5, spread: 0.95, edge: '#d4cdae', spots: '#cfc7a4', tint: '#322d20' },
+    marks: [{ k: 'spots', n: 260, u0: 0.16, u1: 0.97, v0: -0.2, v1: 0.07, r: 0.0042, c: '#e0d8b6', a: 0.8 }],
+    finMarks: [{ k: 'spots', n: 70, u0: 0, u1: 0.7, v0: -0.4, v1: 0.2, r: 0.005, c: '#d4cdae', a: 0.6 }], bristles: true, eye: { r: 0.02, iris: ['#9a7a3a', '#1a1208'], dv: -0.12, up: 1, bulge: 0.5 } },
   oto: { pec: { s: 1.7, v: 0.85 }, plates: true, thick: 0.95, belly: 0.8, wide: 0.4, noseW: 0.5, depth: 0.19, pedU: 0.17, ped: 0.035, peak: 0.65, back: 0.62, snout: 0.6, mouth: 0.03, shade: ['#54533f', '#9b9576', '#cdc7ad'], tail: { type: 'fork', h: 0.11 }, fin: '#c0bba4',
     dorsal: { at: 0.63, len: 0.12, h: 0.1, spines: 0.12, nSp: 1, spineH: 0.12, rake: 0.12, drop: 0.35 }, anal: { u0: 0.33, u1: 0.4, h: 0.04 }, pelvic: { u: 0.58, len: 0.07, w: 1.2 },
     marks: [{ k: 'band', u0: 0.18, u1: 0.98, v0: -0.015, v1: 0.012, c: '#2a2820', a: 0.85, f: 0.008 }], finMarks: [{ k: 'blob', u: 0.08, v: 0, ru: 0.04, rv: 0.025, c: '#2a2820', a: 0.7 }],

@@ -31,6 +31,7 @@ function sections(p: Plan) {
     const [a, b] = prof(u), s = (u - p.pedU) / (1 - p.pedU), vc = (a + b) / 2, hv = Math.max(0, (b - a) / 2 - INSET);
     // thickness follows depth but stays fuller toward the head (fish are widest behind the gills)
     let t = thick * (0.35 * hv + 0.65 * maxHv * Math.sin(Math.min(1, hv / maxHv) * Math.PI / 2)) * (pedT + (1 - pedT) * Math.sqrt(s));
+    if (p.headW) t *= 1 + p.headW * smooth(0.5, 0.82, s); // a broad flat head (pleco), the trunk tapering behind it
     // armoured heads sit a step narrower than the trunk; a flat snout keeps its width to the tip (shovel)
     if (p.step) t *= 1 - p.step * smooth(gu - 0.015, gu + 0.02, u);
     if (p.noseW) {
@@ -198,6 +199,80 @@ function gapeMeshes(art: string, p: Plan, bend: number, mat: THREE.Material) {
   return out;
 }
 
+/**
+ * Bristlenose tentacles (`p.bristles`): fleshy, forked feelers along each side of the snout rim, growing forward, up and
+ * out, the longest at the tip. Tubes tapering from the surface, each with two short branches.
+ */
+function tentacleMeshes(art: string, p: Plan, bend: number, mat: THREE.Material) {
+  const out: THREE.Mesh[] = [];
+  for (const side of [1, -1]) {
+    const key = `tent:${art}:${bend}:${side}`;
+    let g = geoCache.get(key);
+    if (!g) {
+      const parts: THREE.BufferGeometry[] = [];
+      // [u on the head, section angle (pi/2 = the widest point), length, lean outward]
+      const ROOTS: [number, number, number, number][] = [[0.992, 1.95, 0.045, 0.15], [0.975, 1.78, 0.052, 0.3], [0.955, 1.7, 0.044, 0.42], [0.934, 1.68, 0.034, 0.5], [0.995, 2.4, 0.022, 0.0]];
+      ROOTS.forEach(([u, th, len, lean], i) => {
+        const r0 = pointAt(p, u, th, side, bend), n = normalAtTh(p, u, th, side, bend);
+        const dir = new THREE.Vector3(1, 0.35, side * lean).add(n.clone().multiplyScalar(0.6)).normalize();
+        const end = r0.clone().addScaledVector(dir, len), mid = r0.clone().addScaledVector(dir, len * 0.5).add(new THREE.Vector3(0, 0.006 + i * 0.001, 0));
+        parts.push(taperTube(new THREE.QuadraticBezierCurve3(r0.clone().addScaledVector(n, -0.003), mid, end), 0.0068, 8, 6));
+        for (const sgn of [-1, 1]) { // two short forks near the tip
+          const b0 = mid.clone().lerp(end, 0.55), side2 = new THREE.Vector3(0, 0.45, sgn * 0.55 * (side || 1)).normalize();
+          const bend2 = b0.clone().addScaledVector(dir, len * 0.3).addScaledVector(side2, len * 0.28);
+          parts.push(taperTube(new THREE.QuadraticBezierCurve3(b0, b0.clone().addScaledVector(dir, len * 0.18), bend2), 0.0036, 5, 5));
+        }
+      });
+      g = mergeGeoms(parts); g.userData.keep = true; geoCache.set(key, g);
+    }
+    out.push(new THREE.Mesh(g, mat));
+  }
+  return out;
+}
+/** Plain concatenation of indexed geometries sharing position / normal / uv attributes. */
+function mergeGeoms(parts: THREE.BufferGeometry[]) {
+  const pos: number[] = [], nor: number[] = [], uv: number[] = [], idx: number[] = []; let base = 0;
+  for (const g of parts) {
+    const a = g.attributes; pos.push(...a.position.array as ArrayLike<number> as number[]); nor.push(...a.normal.array as ArrayLike<number> as number[]); uv.push(...a.uv.array as ArrayLike<number> as number[]);
+    for (let i = 0; i < g.index!.count; i++) idx.push(base + g.index!.getX(i));
+    base += a.position.count; g.dispose();
+  }
+  const o = new THREE.BufferGeometry();
+  o.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); o.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3)); o.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); o.setIndex(idx);
+  return o;
+}
+
+/**
+ * Armour scutes (`p.keel`): a row of small raised bony plates down each flank (the lateral keel of an armoured catfish),
+ * overlapping and pointing back, so the flank reads as plate and not a smooth tube.
+ */
+function scuteMeshes(art: string, p: Plan, bend: number, mat: THREE.Material) {
+  const out: THREE.Mesh[] = [];
+  for (const side of [1, -1]) {
+    const key = `scute:${art}:${bend}:${side}`;
+    let g = geoCache.get(key);
+    if (!g) {
+      const parts: THREE.BufferGeometry[] = [];
+      for (let i = 0; i < 17; i++) {
+        const u = p.pedU + 0.04 + (0.8 - p.pedU - 0.04) * i / 16, [t, b] = profile(p)(u);
+        for (const row of [0.4, 0.6]) {
+          const v = t + (b - t) * row, th = thetaAt(sections(p)(u), v), pt = pointAt(p, u, th, side, bend), n = normalAtTh(p, u, th, side, bend);
+          const len = 0.02 * (0.7 + 0.5 * (u - p.pedU)), up = new THREE.Vector3(0, (b - t) * 0.045, 0);
+          const a = pt.clone().addScaledVector(n, 0.0012), tip = pt.clone().addScaledVector(n, 0.0022).add(new THREE.Vector3(-len, 0, 0));
+          const tri = new THREE.BufferGeometry();
+          tri.setAttribute('position', new THREE.Float32BufferAttribute([...a.clone().add(up), ...a.clone().sub(up), ...tip], 3));
+          tri.setAttribute('normal', new THREE.Float32BufferAttribute([...n, ...n, ...n], 3)); tri.setAttribute('uv', new THREE.Float32BufferAttribute([0, 0, 0, 0, 0, 0], 2));
+          tri.setIndex(side > 0 ? [0, 1, 2] : [1, 0, 2]);
+          parts.push(tri);
+        }
+      }
+      g = mergeGeoms(parts); g.userData.keep = true; geoCache.set(key, g);
+    }
+    out.push(new THREE.Mesh(g, mat));
+  }
+  return out;
+}
+
 /** Paired-fin spread from the body (radians): pelvics hang down and out, pectorals swing out behind the gill cover. */
 /** A tube along `curve` from radius r at its start, tapering to a third at its end (limbs, tentacles). */
 export function taperTube(curve: THREE.Curve<THREE.Vector3>, r: number, N = 12, R = 5) {
@@ -325,7 +400,7 @@ function finMeshes(art: string, p: Plan, bend: number, edge: EdgeMode, cling = f
     const mat = cardMaterial(key, pairedFinTexture(art, f, box, edge), edge); mat.userData.fishCard = true; // outlined by fish stand out
     for (const side of [1, -1]) {
       // flat (plan option, off by default): held out flat like a fish on the glass all the time (hillstream loach)
-      const flat = cling || !!(f.kind === 'pelvic' ? p.pelvic?.flat : p.pec?.flat), mesh = new THREE.Mesh(g, mat), a = (flat ? SPLAY : SPREAD)[f.kind];
+      const flat = cling || !!(f.kind === 'pelvic' ? p.pelvic?.flat : p.pec?.flat), mesh = new THREE.Mesh(g, mat), a = f.spread ?? (flat ? SPLAY : SPREAD)[f.kind];
       // root slightly inside the surface so the base never shows a gap
       const s = surfaceAt(p, f.root[0], f.root[1], side, bend), z0 = bendZ(bend, s.x);
       mesh.position.set(s.x, s.y, z0 + (s.z - z0) * 0.85);
@@ -575,6 +650,14 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
   if (p.gillLine) {
     const mat = fishMat('gill:' + art, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(p.shade[0]).multiplyScalar(0.5), transparent: true, opacity: p.gillLine, depthWrite: false }));
     for (const m of gillMeshes(art, p, b, mat)) grp.add(m);
+  }
+  if (p.bristles) {
+    const mat = fishMat('tent:' + art, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(p.shade[1]).lerp(new THREE.Color(p.shade[2]), 0.3).multiplyScalar(0.95) }));
+    for (const m of tentacleMeshes(art, p, b, mat)) grp.add(m);
+  }
+  if (p.keel) {
+    const mat = fishMat('scute:' + art, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(p.keel), side: THREE.DoubleSide }));
+    for (const m of scuteMeshes(art, p, b, mat)) grp.add(m);
   }
   if (p.barbels) {
     const mat = fishMat('barbel:' + art, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(p.shade[2]).multiplyScalar(0.85) }));

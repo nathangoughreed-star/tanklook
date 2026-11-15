@@ -41,7 +41,7 @@ export const pairedFinTexture = (art: string, f: PairedFin, box: { u0: number; v
     const R = 1024, c = document.createElement('canvas'); c.width = Math.ceil(box.w * R); c.height = Math.ceil(box.h * R);
     const ctx = c.getContext('2d')!; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
     style.finA = edge === 'a2c' ? FIN_A2C : FIN_A;
-    drawPairedFin({ ...f, a: f.kind === 'pectoral' ? undefined : f.a }, ctx, (u, v) => [(u - box.u0) * R, (v - box.v0) * R], R);
+    drawPairedFin({ ...f, a: f.kind === 'pectoral' && !f.edge ? undefined : f.a }, ctx, (u, v) => [(u - box.u0) * R, (v - box.v0) * R], R);
     style.finA = FIN_A;
     return finish(c);
   });
