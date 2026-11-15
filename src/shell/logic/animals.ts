@@ -63,16 +63,17 @@ export function pickView(S: TankSetup, units: Units, rules: Rules, fitter: Fitte
   const total = [...counts.values()].reduce((a, n) => a + n, 0);
   const chips = [{ role: undefined as Role | undefined, label: 'All', n: total }, ...rolesFor(kind).filter(r => counts.has(r)).map(r => ({ role: r as Role | undefined, label: ROLES.find(x => x[0] === r)![1], n: counts.get(r)! }))];
   const role = query.role && counts.has(query.role) ? query.role : undefined;
-  const all = findSpecies(S, query.q, role).filter(sp => !inTank.has(sp.id));
+  const found = findSpecies(S, query.q, role), all = found.filter(sp => !inTank.has(sp.id)), already = found.filter(sp => inTank.has(sp.id));
   const list = query.fitsOnly ? fitsThisTank(all, fitOf) : all;
   const groups: PickGroup[] = groupPicker(list, kind, fitOf).map(g => ({
     role: g.role, label: g.label,
     rows: g.rows.map(({ sp, fit }) => pickRow(S, sp, fit, units)),
   }));
-  const other = query.q.trim() ? searchSpecies(query.q).length : 0;
+  const other = query.q.trim() ? searchSpecies(query.q).filter(sp => !inTank.has(sp.id)).length : 0;
   const hidden = all.length - list.length;
   const none = list.length ? ''
     : all.length ? `Nothing here fits this tank${query.q.trim() ? ' for that search' : ''}: ${hidden} more ${hidden > 1 ? 'are' : 'is'} held back. Switch off "Fits this tank" to see them.`
+    : already.length ? `${already.length > 2 ? `${already.length} matches are` : `${already.map(sp => sp.name).join(' and ')} ${already.length > 1 ? 'are' : 'is'}`} already in your tank (above).`
     : query.q.trim() ? `Nothing for a ${kind} setup matches${other ? ` (${other} in other kinds: change the kind in the Tank section)` : ''}.` : 'No animals for this kind of setup yet.';
   const rn = role ? ROLES.find(r => r[0] === role)![1].toLowerCase() : '';
   return { kind, chips, groups, shown: list.length, hidden, none, placeholder: role ? `Search ${rn}` : `Search ${salt ? 'marine ' : ''}species (common or scientific name)` };

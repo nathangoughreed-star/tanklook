@@ -118,4 +118,11 @@ describe('R51: a species already in the tank leaves the tiles', () => {
     st.edit(s => { s.fish = s.fish.filter(x => x.species !== sp.id); });
     expect(ids(st.tank).shown).toBe(before.shown);
   });
+  it('a search whose only matches are in the tank says so, not "other kinds"', () => {
+    const st = new Store(); st.edit(s => { s.fish = []; });
+    const sp = one('white cloud'); addSpecies(st, sp);
+    const v = pickView(st.tank, 'in', 'guided', createFitter(), { ...DEFAULT_QUERY, q: 'white cloud' });
+    expect(v.none).toBe(`${sp.name} is already in your tank (above).`);
+    expect(v.none).not.toMatch(/other kinds/);
+  });
 });
