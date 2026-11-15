@@ -5,7 +5,7 @@ import { type FilterProduct } from '../../data/gearCatalog';
 import { backdropDepth, clamp } from '../../scene/physics';
 import { standInside } from '../../scene/standspace';
 import { cabinetGear } from '../../scene/cabinetGear';
-import { Bucket, V, hash, C, flowScale, hexOr, partOf, Frame, Spot, lerp, sucker, overRim, behind, backCutout } from './common';
+import { Bucket, V, hash, C, flowScale, hexOr, partOf, Frame, Spot, lerp, sucker, overRim, behind, backCutout, cutoutY, CUT_R } from './common';
 import { airPump, bubbles } from './pump';
 
 /** Clear room kept between a hang-on-back body and the end of the wall it hangs on, mm. */
@@ -174,13 +174,13 @@ export function canister(f: Frame, m: FilterModel, sp: Spot, prod?: FilterProduc
   const cu = f.T.L >= 2 * r + 40 ? clamp(f.T.L * 0.25, r + 20, f.T.L - r - 20) : f.T.L / 2, cb = f.T.D * 0.45;
   const c0 = beside ? V(f.side === 'left' ? -f.t - r - 90 : f.T.L + f.t + r + 90, f.floor, -f.T.D * 0.3) : cg?.canisterX != null ? V(cg.canisterX, f.floor, f.P(cu, f.floor, cb).z) : f.P(cu, f.floor, cb); // cabinet: the gear row's place (scene/cabinetGear.ts)
   const valve = (k: number) => c0.clone().add(V(k * 12, ch + 40, 0));
-  const hy = f.top - 68; // the cut-outs' centre height in the cabinet's back panel, just under its top (lane CB2) (its outer face = the glass's, behind any backdrop: behind())
+  const hy = cutoutY(f); // the cut-outs' centre height in the cabinet's back panel, just under its top (lane CB2) (its outer face = the glass's, behind any backdrop: behind())
   for (const [uu, p, k] of [[uI, intake[0], -1], [uO, out[0], 1]] as [number, THREE.Vector3, number][]) {
     kit.rod('room', p, p.clone().add(V(0, -40, 0)), pr + 4, C.charcoal, { seg: 12 }); // the hose clamp / connector
     const s0 = p.clone().add(V(0, -40, 0)), v = valve(k);
     if (cab && !beside) {
       const o = behind(f, uu, hy, -14), inside = behind(f, uu, hy, 55);
-      backCutout(f, uu, hy); // the opening the hose passes through
+      backCutout(f, uu, hy); kit.cutouts.push({ u: uu, y: hy, r: CUT_R }); // the opening the hose passes through
       const route = [s0, behind(f, uu, (hy + s0.y) / 2, -14), behind(f, uu, hy + 40, -14), o, inside, V(v.x, hy - 40, inside.z + 20), V(v.x, v.y + 50, c0.z), v];
       kit.hoseRoutes.push(route); kit.tube('room', route, 10, hoseC, 0, 10);
     } else if (beside) {

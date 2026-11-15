@@ -78,7 +78,8 @@ export function uv(f: Frame, sp: Spot, filter: FilterModel | undefined, pk?: Gea
   if (filter && filter.kind === 'canister' || !filter) {
     // inline on the outlet hose: in the stand beside the canister (behind the tank there is rarely room before the
     // wall), else behind the tank: a white tube with grey end caps and a blue indicator window
-    const c = f.S.stand.show ? f.P(clamp(f.T.L * 0.25, 140, f.T.L - 140) + 190, f.floor + 170, f.T.D * 0.45) : f.P(u0, (f.floor + f.H) / 2, -t - 34);
+    const cg = cabinetGear(f.S), kick = Math.min(70, f.S.stand.height * 0.12); // a cabinet's gear row gives the place: inside, on the cabinet floor (lane CB3); too tall: beside the stand
+    const c = cg?.uvX != null ? V(cg.uvX, f.floor + kick + 2 + 160, -f.T.D * 0.5) : cg?.uvBeside ? V(f.side === 'left' ? -f.t - 70 : f.T.L + f.t + 70, f.floor + 170, -f.T.D * 0.3) : f.S.stand.show ? f.P(clamp(f.T.L * 0.25, 140, f.T.L - 140) + 190, f.floor + 170, f.T.D * 0.45) : f.P(u0, (f.floor + f.H) / 2, -t - 34);
     kit.rod('room', c.clone().add(V(0, -140, 0)), c.clone().add(V(0, 140, 0)), 30, tube, { seg: 28 });
     for (const k of [-1, 1]) kit.rod('room', c.clone().add(V(0, k * 140, 0)), c.clone().add(V(0, k * 160, 0)), 32, C.grey, { seg: 28 });
     kit.box('glow', c.clone().add(V(0, 100, 30.2)), 8, 24, 1, C.uvBlue);

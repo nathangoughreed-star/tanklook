@@ -58,6 +58,8 @@ export class Kit {
   cups: { wall: GearWall; p: THREE.Vector3 }[] = [];
   /** Each hose / cord run through a cabinet's back panel (lane CB2): its points, for the cut-out test. */
   hoseRoutes: THREE.Vector3[][] = [];
+  /** The back-panel cut-outs drawn so far (lane CB3): position along the back frame, height and radius, so a later line reuses or steps clear of one. */
+  cutouts: { u: number; y: number; r: number }[] = [];
   /** Notches the gear needs cut in the 3D background (lane HC1): tank x range and the height they reach down to. */
   backdropNotches: { x0: number; x1: number; yMin: number }[] = [];
   /** Parts that are only a line (a tube, a thin rod): left out of a piece's selection box (lane GD1: the box holds the body, not the whole hose). */
@@ -249,6 +251,17 @@ export function backCutout(f: Frame, u: number, y: number, r = CUT_R) {
   const a = (d: number) => behind(f, u, y, d);
   f.kit.rod('room', a(-2), a(-0.2), r + 6, C.grey, { seg: 32 });
   f.kit.rod('room', a(-2.5), a(-1.9), r, 0x050607, { seg: 32 });
+}
+
+/** The cut-out's height in the cabinet's back panel: centred just under its top rail. */
+export const cutoutY = (f: Frame) => f.top - 68;
+/** A cut-out for a line (airline, CO2 line) near `u`: drawn at the nearest spot clear of the ones already there (1/3 in apart); returns its u. */
+export function lineCutout(f: Frame, u: number, r = 26) {
+  const cs = f.kit.cutouts, y = cutoutY(f), clash = (v: number) => cs.find(c => Math.abs(c.u - v) < c.r + r + 8);
+  let uu = clamp(u, r + 8, f.len - r - 8);
+  for (let i = 0; i < 12; i++) { const c = clash(uu); if (!c) break; uu = uu >= c.u ? c.u + c.r + r + 8 : c.u - c.r - r - 8; if (uu > f.len - r - 8) uu = c.u - c.r - r - 8; }
+  cs.push({ u: uu, y, r }); backCutout(f, uu, y, r);
+  return uu;
 }
 
 /** Thin clear airline (or CO2 line) along the points. */

@@ -2,10 +2,12 @@
 import * as THREE from 'three';
 import { type PumpProduct } from '../../data/gearCatalog';
 import { clamp } from '../../scene/physics';
-import { UP, V, along, hash, C, hexOr, Frame, Spot, lerp, line, overRim } from './common';
+import { UP, V, along, hash, C, hexOr, Frame, Spot, lerp, line, overRim, behind, lineCutout, cutoutY } from './common';
+import { cabinetGear, PUMP_H } from '../../scene/cabinetGear';
 
 export function airPump(f: Frame, u: number, to: THREE.Vector3, bIn: number) {
-  const { kit, t } = f, pu = -60, pb = 50;
+  const { kit, t } = f, pu = -60, pb = 50, cg = cabinetGear(f.S);
+  if (cg?.pumpX != null) { cabinetPump(f, u, to, bIn, cg.pumpX); return; } // in a cabinet: on its floor, the line in through a cut-out in the back panel (lane CB3)
   // on the floor at the back corner, beside the tank (a check valve on its line)
   const xs = f.side === 'left' ? -f.t - 90 : f.T.L + f.t + 90, z = f.P(0, 0, 0).z + pb;
   const pc = V(xs, f.floor + 30, z);
@@ -18,6 +20,20 @@ export function airPump(f: Frame, u: number, to: THREE.Vector3, bIn: number) {
   line(f, [...route, last.clone().add(V(0, -80, -10)), V(xs, f.floor + 80, z - 40), nip.clone().add(V(0, 6, 0))]);
   const cv = route[5]; kit.rod('room', cv.clone().add(V(0, -14, 0)), cv.clone().add(V(0, 14, 0)), 5, C.lightGrey); // check valve
   void pu;
+}
+
+/** The pump on the floor of the cabinet at x, its airline down the back of the tank and in through a small cut-out in the back panel. */
+function cabinetPump(f: Frame, u: number, to: THREE.Vector3, bIn: number, x: number) {
+  const { kit, t } = f, kick = Math.min(70, f.S.stand.height * 0.12), z = -f.T.D * 0.5, pc = V(x, f.floor + kick + 2 + PUMP_H / 2, z);
+  kit.box('room', pc, 80, PUMP_H, 130, C.charcoal, 14);
+  for (const k of [-1, 1]) for (const j of [-1, 1]) kit.box('room', pc.clone().add(V(j * 26, -PUMP_H / 2 - 1, k * 50)), 14, 4, 14, C.black, 4);
+  const nip = pc.clone().add(V(0, PUMP_H / 2, -50));
+  kit.rod('room', nip, nip.clone().add(V(0, 6, 0)), 3, C.grey);
+  const route = overRim(f, u, to, bIn, f.H - 80, -t - 10), uh = lineCutout(f, u), hy = cutoutY(f);
+  const o = behind(f, uh, hy, -12), inside = behind(f, uh, hy, 50);
+  const pts = [...route, behind(f, u, (f.H - 80 + hy) / 2, -12), behind(f, uh, hy + 40, -12), o, inside, V(nip.x, nip.y + 30, inside.z + 20), nip.clone().add(V(0, 6, 0))];
+  kit.hoseRoutes.push(pts); line(f, pts);
+  const cv = route[5]; kit.rod('room', cv.clone().add(V(0, -14, 0)), cv.clone().add(V(0, 14, 0)), 5, C.lightGrey); // check valve
 }
 
 export function airstone(f: Frame, sp: Spot) {
