@@ -72,3 +72,6 @@ Extra tests: polygon closure / refusal, the pie 360 = round volume, and loading 
 ## Part 3 (added 2026-11-14; request R39): no timer on "preview in my setup"
 Nathan: "when 'previewing in my setup' dont put it on timer, just keep the 'back now' button."
 8. The maker's in-setup preview (`inSetup` in `src/shell/maker.tsx`) stays on until the user clicks "Back now" (or closes the maker). Remove the auto-return timer and any countdown text. Proof: a shot of the preview after 30 s still showing, with the Back now button.
+
+## Part 4 (Nathan 2026-11-15) - R66
+Asked whether to tint the brace strips so they show in the room view: "they should look identical to normal glass right? Like a slight tint and edges outlined a bit?" Yes: draw the perimeter and cross braces with the same material as the tank's glass panes (the same tint, transparency and edge outline, including the low-iron vs standard tint if the tank has it), not a separate flat colour. Their cut edges get the same edge line as the glass. Check them in the room view and close up. Shots before/after at 1280 (room view, 3/4 from above). Commit on a fresh branch from origin/main and send me the sha.
