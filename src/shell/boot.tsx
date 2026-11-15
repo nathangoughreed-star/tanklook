@@ -8,6 +8,8 @@ import { Store } from '../scene/store';
 import { freshScene } from '../scene/freshScene';
 import { Viewer } from '../render/viewer';
 import { applySavedFx } from '../render/fxPrefs';
+import { attachLightHover } from '../ui/lightHover';
+import { attachLightContours } from '../ui/lightContours';
 import { attachPointer } from '../interact/pointer';
 import { loadProfile } from '../ui/demandPanel';
 import { App } from './App';
@@ -55,6 +57,8 @@ export function bootShell() {
   applyViewPrefs(viewer, viewHost);
   attachPointer(viewer, store, (what, kind) => what === 'gear' || (what === 'fish' && pickable.fish) || (what === 'items' && pickItems.sec != null && scapeSec(kind ?? 'stone') === pickItems.sec),
     t => openClicked(t, store, scapeSec)); // animals only, while Animals is open (step 4); the other pieces come with their sections; a click on a thing opens it (CM2)
+  attachLightHover(viewer, store); // light map: the value under the pointer (PG1, ported from the old shell)
+  attachLightContours(viewer); // light map: numbers on the contour lines
   // a share link (#tank=...) opens its tank; the hash is dropped so a reload keeps the visitor's edits (as the old shell does)
   const openLink = () => {
     if (!isShareHash(location.hash)) return false;

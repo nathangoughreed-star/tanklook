@@ -524,3 +524,25 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .pinfo::after { content: ""; position: absolute; inset: -8px; }
 @media (max-width: 699px) { .pinfo { width: 30px; height: 30px; font-size: 15px; } }
 @media (max-width: 699px) { .equip .erow .efacts { flex-basis: 150px; } }
+
+/* PG1: the Light map key and the PAR guide (markup from ui/parGuide.ts parGuideHtml) */
+.mapkey { margin: var(--s2) 0; font-size: var(--fs-xs); color: var(--text-2) }
+.mapkey .ramp { height: 10px; border-radius: 2px }
+.mapkey .ticks, .mapkey .bands { position: relative; height: 14px; margin-top: 2px }
+.mapkey .ticks span, .mapkey .bands span { position: absolute; white-space: nowrap }
+.mapkey .bands span { border-left: 1px solid currentColor; text-align: center; overflow: hidden; padding: 0 1px; box-sizing: border-box }
+.parcue { font-size: var(--fs-sm); text-align: left }
+.parguide { font-size: var(--fs-sm); color: var(--text-2) }
+.parguide p { margin: 6px 0 }
+.parguide h3 { margin: 8px 0 2px; font-size: var(--fs-md); color: var(--text) }
+.parguide .parScale { position: relative; height: 34px; margin: 6px 0 14px }
+.parguide .parScale .seg { position: absolute; top: 0; height: 16px; border-radius: 3px; display: flex; align-items: center; justify-content: center; padding: 0 3px; box-sizing: border-box; font-size: 10.5px; color: #fff; overflow: hidden; white-space: nowrap; text-overflow: ellipsis }
+.parguide .parScale .tick { position: absolute; top: 19px; font-size: 10.5px; color: var(--text-3); transform: translateX(-50%) }
+.parguide .parTier { border: 1px solid var(--line); border-left-width: 5px; border-radius: 6px; padding: 6px 10px; margin: 0 0 8px }
+.parguide .parTier h4 { margin: 0 0 4px; font-size: var(--fs-md); color: var(--text) }
+.parguide .parTier h4 span { font-weight: normal; color: var(--text-3) }
+.parguide .parTier dl { display: grid; grid-template-columns: 5.5em 1fr; gap: 2px 8px; margin: 0 }
+.parguide .parTier dt { color: var(--text-3) }
+.parguide .parTier dd { margin: 0 }
+.parguide .hint { color: var(--text-3) }
+@media (max-width: 480px) { .parguide .parTier dl { grid-template-columns: 1fr } .parguide .parTier dd { margin-bottom: 4px } }

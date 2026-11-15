@@ -110,6 +110,14 @@ function tierCards(tiers: Tier[], cols: string[]) {
     t.rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl></div>`).join('');
 }
 
+/** The guide for one water type as an HTML string (the new shell's Lighting group renders it; the old banner builds the same markup). */
+export function parGuideHtml(salt: boolean): string {
+  const reefBars = REEF.map((t, i) => (i === 1 ? { ...t, hi: 75 } : t));
+  return salt
+    ? `${ABOUT}<h3>Reef (saltwater)</h3>${scale(reefBars, REEF_COL, 400, [0, 25, 50, 75, 150, 250, 400])}${tierCards(REEF, REEF_COL)}${REEF_NOTE}`
+    : `${ABOUT}<h3>Planted freshwater</h3>${scale(FRESH, FRESH_COL, 150, [0, 15, 30, 50, 80, 150])}${tierCards(FRESH, FRESH_COL)}${FRESH_NOTE}`;
+}
+
 let current = false, apply: (salt: boolean) => void = () => {};
 /** The Light map banner follows the tank: planted-freshwater classes, or the reef ones for a saltwater tank. */
 export const setParGuideSalt = (salt: boolean) => { if (salt !== current) { current = salt; apply(salt); } };
