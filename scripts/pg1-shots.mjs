@@ -52,6 +52,7 @@ try {
     await ev(`[...document.querySelectorAll('.parcue')].forEach(b => b.click())`); await sleep(400);
     await ev(`(() => { document.querySelectorAll('button[aria-label*="lose"]').forEach(b => b.closest('.gs, .checklist, [class*=started]') && b.click()); const g = document.querySelector('.lightmap'); g && g.scrollIntoView({ block: 'start' }); })()`); await sleep(500);
     await shot('new-lighting');
+    await ev(`document.querySelector('.parScale')?.scrollIntoView({ block: 'center' })`); await sleep(400); await shot('new-bands');
     const pos = JSON.parse(await ev(`(() => { const r = document.querySelector('canvas').getBoundingClientRect(); return JSON.stringify([r.left + r.width * 0.55, r.top + r.height * 0.7]); })()`));
     await ev(`window.__gb.store.cam(c => { c.az = 12; c.el = 14; c.zoom = 2.2; })`); await sleep(1200);
     if (W < 500) {
