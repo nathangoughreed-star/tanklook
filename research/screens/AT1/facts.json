@@ -89,8 +89,8 @@
   "desk1280 stock row box": "{\"x\":80,\"y\":179.1875,\"width\":347,\"height\":34,\"top\":179.1875,\"right\":427,\"bottom\":213.1875,\"left\":80}",
   "desk1280 plus/minus": true,
   "desk1280 count after +": "7",
-  "desk1280 held-back fit box": "Held back 1 Oscar: not assessed: 10.2\" of water is shallower than its own length (11.8\"), and no source states a minimum water depthTemperature: No suitable shared temperature identified. White cloud mountain minnow (61–72 °F) and Oscar (73–81 °F) have no recorded range in commonOscar with White cloud mountain minnow: would eat it135% of the swimming room: too many for this tankHigh water-change maintenance to hold nitrate near 40 ppm (see the nitrate line)",
-  "desk1280 drawer size": "105",
+  "desk1280 held-back fit box": "Held back 1 Oscar: not assessed: 10.2\" of water is shallower than its own length (11.8\"), and no source states a minimum water depthTemperature: No suitable shared temperature identified. White cloud mountain minnow (61–72 °F) and Oscar (73–81 °F) have no recorded range in commonOscar with White cloud mountain minnow: would eat it134% of the swimming room: too many for this tankHigh water-change maintenance to hold nitrate near 40 ppm (see the nitrate line)",
+  "desk1280 drawer size": "102",
   "desk1280 size after 60": "60% of adult · 0.9″",
   "phone390": {
    "01-water-look-in-tank": {
@@ -181,8 +181,11 @@
   "phone390 stock row box": "{\"x\":16,\"y\":457.578125,\"width\":358,\"height\":48,\"top\":457.578125,\"right\":374,\"bottom\":505.578125,\"left\":16}",
   "phone390 plus/minus": true,
   "phone390 count after +": "7",
-  "phone390 held-back fit box": "Held back 1 Oscar: not assessed: 10.2\" of water is shallower than its own length (11.8\"), and no source states a minimum water depthTemperature: No suitable shared temperature identified. White cloud mountain minnow (61–72 °F) and Oscar (73–81 °F) have no recorded range in commonOscar with White cloud mountain minnow: would eat it134% of the swimming room: too many for this tankHigh water-change maintenance to hold nitrate near 40 ppm (see the nitrate line)"
+  "phone390 held-back fit box": "Held back 1 Oscar: not assessed: 10.2\" of water is shallower than its own length (11.8\"), and no source states a minimum water depthTemperature: No suitable shared temperature identified. White cloud mountain minnow (61–72 °F) and Oscar (73–81 °F) have no recorded range in commonOscar with White cloud mountain minnow: would eat it134% of the swimming room: too many for this tankHigh water-change maintenance to hold nitrate near 40 ppm (see the nitrate line)",
+  "phone390 drawer opened": false
  },
- "fails": [],
+ "fails": [
+  "phone390 08-selection-size: selection drawer did not stay open (phone: App.tsx closes the selection when the Animals section closes)"
+ ],
  "errors": []
 }
