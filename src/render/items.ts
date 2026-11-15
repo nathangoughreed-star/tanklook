@@ -527,7 +527,7 @@ export function rimHeadroom(S: TankSetup): number {
   }
   return Math.min(top, T.H);
 }
-const glassKey = (T: Tank) => `${shapeOf(T)}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}|${T.frontBulge}`;
+const glassKey = (T: Tank) => `${shapeOf(T)}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.sideLens}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}|${T.frontBulge}`;
 /** The clipping planes and the bowl's sphere cut (a shader patch adding vGlassW) for one tank outline; `vary` alone
  *  declares what the cut needs without cutting (the cap's count passes). */
 function glassClip(T: Tank) {
@@ -903,7 +903,7 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
   // a carpet hugs the ground under each leaflet: its key carries the spot (rebuilt only while it moves); the rest key on
   // the exact height they are built with (a rounded one let two near-equal plants share the first one's mesh)
   // (a carpet's ground: everything groundHeight reads, lane E2 #2: a terrain or substrate edit left it on the old ground)
-  const k = carpet ? `${type}|${it.seed}|${it.size}|${h}|${it.x}|${it.depth}|${it.yaw}|${it.lift}|${T.shape}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}|${groundKey(S)}` : `${type}|${it.seed}|${it.size}|${h}|${it.spread ?? ''}|${it.stems ?? ''}|${it.dens ?? ''}|${clip.join(',')}${vine ? `|d${drop}|L${limbs.length ? hashNums(limbs) : ''}` : ''}`;
+  const k = carpet ? `${type}|${it.seed}|${it.size}|${h}|${it.x}|${it.depth}|${it.yaw}|${it.lift}|${T.shape}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.sideLens}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}|${groundKey(S)}` : `${type}|${it.seed}|${it.size}|${h}|${it.spread ?? ''}|${it.stems ?? ''}|${it.dens ?? ''}|${clip.join(',')}${vine ? `|d${drop}|L${limbs.length ? hashNums(limbs) : ''}` : ''}`;
   // near the glass a leaflet is cut down to the width it has room for, so the carpet runs right up to the glass without
   // poking through; a leaflet past the edge line is mirrored back in by as much (keeping the edge thick), and one more
   // than half a leaflet past it is left out

@@ -194,9 +194,9 @@ export function parseTank(v: unknown, def: Tank): Tank {
   const T: Tank = { L: num(o.L, def.L, LIMITS.tankMin, LIMITS.tankMax), H: num(o.H, def.H, LIMITS.tankMin, LIMITS.tankMax), D: num(o.D, def.D, LIMITS.tankMin, LIMITS.tankMax) };
   const shape = (['rect', 'bow', 'round', 'poly', 'bowl', 'pie', 'arch'] as const).find(k => k === o.shape) ?? 'rect'; // v8; older files: rect
   if (shape === 'rect') return T;
-  return normTank({ ...T, shape, ...(shape === 'poly' ? { sides: num(o.sides, 6) } : {}), ...(shape === 'bow' ? { bowMin: num(o.bowMin, T.D * 0.75, 0, T.D) } : {}),
+  return normTank({ ...T, shape, ...(shape === 'poly' ? { sides: Math.round(num(o.sides, 6, 3, 24)), ...(Array.isArray(o.sideLens) && o.sideLens.length === Math.round(num(o.sides, 6, 3, 24)) && o.sideLens.every(x => typeof x === 'number' && Number.isFinite(x) && x > 0 && x < 1e5) ? { sideLens: o.sideLens as number[] } : {}) } : {}), ...(shape === 'bow' ? { bowMin: num(o.bowMin, T.D * 0.75, 0, T.D) } : {}),
     ...(shape === 'bowl' ? { bowlFloor: num(o.bowlFloor, T.L * 0.6, 0, T.L), bowlTop: num(o.bowlTop, T.L * 0.6, 0, T.L) } : {}),
-    ...(shape === 'pie' ? { pieDeg: num(o.pieDeg, 90, 45, 180) } : {}), ...(shape === 'arch' ? { frontBulge: num(o.frontBulge, T.D * 0.08, 0, T.D) } : {}) });
+    ...(shape === 'pie' ? { pieDeg: num(o.pieDeg, 90, 30, 360) } : {}), ...(shape === 'arch' ? { frontBulge: num(o.frontBulge, T.D * 0.08, 0, T.D) } : {}) });
 }
 
 /** P9: a saved `customTank` ref; anything unusable = none. */

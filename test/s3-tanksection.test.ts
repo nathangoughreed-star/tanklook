@@ -125,7 +125,7 @@ describe('custom tank maker', () => {
     expect(fresh.spec.tank.shape).toBeUndefined(); // a box
     const B = defaultSetup(); B.tank = { ...B.tank, shape: 'bow', bowMin: B.tank.D * 0.7 };
     expect(startSpec(B, 'new', []).spec.tank.shape).toBeUndefined();
-    expect(SHAPE_MAIN).toEqual(['rect', 'pie', 'round']); expect(SHAPE_MORE[0]).toBe('bow');
+    expect(SHAPE_MAIN).toEqual(['rect', 'pie']); expect(SHAPE_MORE[0]).toBe('bow'); // Round is a pie of 360 degrees (CT1, R38)
     const { lib, entry } = addCustomTank([], spec(), 1), T = defaultSetup();
     chooseCustom(T, entry);
     expect(startSpec(T, 'edit', lib)).toMatchObject({ libId: entry.id, spec: { name: 'Den 40' } });

@@ -189,8 +189,8 @@ describe('pie slice', () => {
     expect(inside(T, 20, 295)).toBe(true);
     expect(insideBy(T, 300, 150)).toBeCloseTo(150, 0);
   });
-  it('angle is clamped to 45-180 and survives a file round trip', () => {
-    expect(normTank({ L: 1, H: 400, D: 300, shape: 'pie', pieDeg: 300 }).pieDeg).toBe(180);
-    expect(normTank({ L: 1, H: 400, D: 300, shape: 'pie', pieDeg: 10 }).pieDeg).toBe(45);
+  it('angle is clamped to 30-360 (CT1, R38) and survives a file round trip', () => {
+    expect(normTank({ L: 1, H: 400, D: 300, shape: 'pie', pieDeg: 500 }).pieDeg).toBe(360);
+    expect(normTank({ L: 1, H: 400, D: 300, shape: 'pie', pieDeg: 10 }).pieDeg).toBe(30);
   });
 });

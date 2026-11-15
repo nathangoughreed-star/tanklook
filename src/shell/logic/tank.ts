@@ -15,7 +15,8 @@ import { isLocked } from '../../scene/locks';
 import { placementOf } from '../../scene/placement';
 import { tankKind, type SetupKind } from '../../scene/pickerKind';
 import { glassThickness, volume, waterY, ceilingH, IN } from '../../scene/physics';
-import { SHAPES, shapeOf, volumeBetween } from '../../scene/shape';
+import { SHAPES, shapeOf, volumeBetween, footprint, cyclicPolygon, polySides, regularWidth, pieRadius, pieDepth, PIE_MIN, PIE_MAX, POLY_MAX, POLY_MIN } from '../../scene/shape';
+import { LIMITS } from '../../scene/validate';
 import { spaceFit } from '../../scene/space';
 import { tankWeight } from '../../scene/weight';
 import { adaptToTank } from '../../scene/reeval';
@@ -47,8 +48,8 @@ export function glassText(mm: number, u: Units): string {
 
 /** The shape words of the new shell. Box / Corner / Round up front; Bow and the rarer shapes under More (Nathan 2026-11-13: few people
  *  build a bowfront, but old saves and owned tanks still need it, so it stays one click away). */
-export const SHAPE_WORD: Record<TankShape, string> = { rect: 'Box', bow: 'Bow', pie: 'Corner', round: 'Round', poly: 'Polygon', bowl: 'Bowl', arch: 'Curved front' };
-export const SHAPE_MAIN: TankShape[] = ['rect', 'pie', 'round'];
+export const SHAPE_WORD: Record<TankShape, string> = { rect: 'Box', bow: 'Bow', pie: 'Pie / round', round: 'Round', poly: 'Polygon', bowl: 'Bowl', arch: 'Curved front' };
+export const SHAPE_MAIN: TankShape[] = ['rect', 'pie'];
 export const SHAPE_MORE: TankShape[] = ['bow', 'poly', 'bowl', 'arch'];
 export const shapeLong = (s: TankShape) => SHAPES[s];
 
@@ -337,3 +338,104 @@ export function dimLabels(T: { L: number; D: number; H: number }, texts: { L: st
     at('H', [T.L, 0, 0], [T.L, T.H, 0], [1, 0]),
   ].filter((x): x is DimLabel => !!x);
 }
+
+// ---------------------------------------------------------------- on-screen dimensions (lane CT1, R38): boxes on the preview you click to edit
+
+/** A length typed by a person, in the scene's units, to mm: "36", "36.5", "3 1/2", "1/2", with an optional unit word. null when it is not a length. */
+export function parseLen(text: string, u: Units): number | null {
+  const t = text.trim().toLowerCase().replace(/(inches|inch|in|"|″|cm|centimeters|centimeter)$/, '').trim();
+  if (!t) return null;
+  const m = /^(\d+(?:\.\d+)?)?(?:\s+)?(?:(\d+)\s*\/\s*(\d+))?$/.exec(t);
+  if (!m || (m[1] == null && m[2] == null)) return null;
+  const v = (m[1] ? parseFloat(m[1]) : 0) + (m[2] ? parseInt(m[2], 10) / parseInt(m[3], 10) : 0);
+  return Number.isFinite(v) && v > 0 ? (u === 'in' ? v * IN : v * 10) : null;
+}
+
+export interface DimAnchor { id: string; text: string; a: [number, number, number]; b: [number, number, number]; /** screen push, in label heights */ out?: [number, number]; /** or a horizontal world direction [x, z] to push along */ n?: [number, number] }
+export interface PlacedDim { id: string; x: number; y: number; text: string }
+
+/** The dimension boxes of a tank shape, as the two world points each sits between (world: x 0..L, y up, z = -depth): length / depth / height for a box, the
+ *  diameter and height for a round tank, radius / angle / height for a pie slice, every side and the height for a polygon. */
+export function dimAnchors(T: Tank, u: Units): DimAnchor[] {
+  const s = shapeOf(T), f = (mm: number) => len(mm, u), H: DimAnchor = { id: 'H', text: f(T.H), a: [T.L, 0, 0], b: [T.L, T.H, 0], out: [1, 0] };
+  if (s === 'round') return [{ id: 'L', text: f(T.L), a: [0, 0, 0], b: [T.L, 0, 0], out: [0, 1] }, H];
+  if (s === 'bowl') return [{ id: 'L', text: f(T.L), a: [0, 0, 0], b: [T.L, 0, 0], out: [0, 1] }];
+  if (s === 'pie') {
+    const deg = T.pieDeg ?? 90, h = deg * Math.PI / 360, r = pieRadius(T), ex = T.L / 2 + r * Math.sin(h), ed = r - r * Math.cos(h);
+    return [
+      { id: 'R', text: f(r), a: [T.L / 2, 0, -r], b: [ex, 0, -ed], n: [Math.cos(h), Math.sin(h)] },
+      { id: 'A', text: `${deg}°`, a: [T.L / 2, 0, -r], b: [T.L / 2, 0, -r], out: [0, -1] },
+      { id: 'H', text: f(T.H), a: [ex, 0, -ed], b: [ex, T.H, -ed], out: [1, 0] },
+    ];
+  }
+  if (s === 'poly') {
+    const ring = footprint(T).ring, n = ring.length;
+    return [...ring.map((p, i) => {
+      const q = ring[(i + 1) % n], dx = q[0] - p[0], dd = q[1] - p[1], l = Math.hypot(dx, dd) || 1;
+      return { id: `s${i}`, text: f(l), a: [p[0], 0, -p[1]] as [number, number, number], b: [q[0], 0, -q[1]] as [number, number, number], n: [dd / l, dx / l] as [number, number] }; // outward: (dd, -dx) in (x, depth) = (dd, dx) in (x, z)
+    }), { ...H, a: [ring[1][0], 0, -ring[1][1]], b: [ring[1][0], T.H, -ring[1][1]] }];
+  }
+  return [{ id: 'L', text: f(T.L), a: [0, 0, 0], b: [T.L, 0, 0], out: [0, 1] }, { id: 'D', text: f(T.D), a: [T.L, 0, 0], b: [T.L, 0, -T.D], out: [1, 0.6] }, H];
+}
+
+/** Screen positions of the dimension boxes. `project` maps a world point to view px (null when behind the eye). */
+export function placeDims(anchors: readonly DimAnchor[], project: (x: number, y: number, z: number) => [number, number] | null, pad = 14): PlacedDim[] {
+  const out: PlacedDim[] = [];
+  for (const d of anchors) {
+    const p = project(...d.a), q = project(...d.b); if (!p || !q) continue;
+    const mx = (p[0] + q[0]) / 2, my = (p[1] + q[1]) / 2;
+    let ox = (d.out?.[0] ?? 0) * pad, oy = (d.out?.[1] ?? 0) * pad;
+    if (d.n) { // push along the world direction, as seen on screen
+      const m: [number, number, number] = [(d.a[0] + d.b[0]) / 2, (d.a[1] + d.b[1]) / 2, (d.a[2] + d.b[2]) / 2], r = project(m[0] + d.n[0] * 100, m[1], m[2] + d.n[1] * 100) ?? [mx, my];
+      const vx = r[0] - mx, vy = r[1] - my, l = Math.hypot(vx, vy) || 1; ox = vx / l * pad * 1.4; oy = vy / l * pad * 1.4;
+    }
+    out.push({ id: d.id, x: mx + ox, y: my + oy, text: d.text });
+  }
+  return out;
+}
+
+/** What typing a value into a dimension box does: the tank edit (the same one the side panel makes, held to the same ranges), or a one-line refusal. */
+export function applyDim(T: Tank, id: string, mm: number, deg?: number): { edit: (t: Tank) => Tank; note?: string } | { error: string } {
+  const range = (k: 'L' | 'D' | 'H', v: number) => { const [lo, hi] = SIDE_RANGE[k], c = Math.min(hi, Math.max(lo, v)); return { v: c, note: c !== v ? `Held to ${len(c, 'in')} (the range is ${len(lo, 'in')} to ${len(hi, 'in')}).` : undefined }; };
+  if (id === 'L' || id === 'D' || id === 'H') { const r = range(id, mm); return { edit: t => ({ ...t, [id]: r.v }), note: r.note }; }
+  if (id === 'R') { const r = range('D', mm); return { edit: t => ({ ...t, D: pieDepth(r.v, t.pieDeg ?? 90) }), note: r.note }; }
+  if (id === 'A') {
+    if (deg == null || !Number.isFinite(deg)) return { error: 'Type the angle in degrees.' };
+    const d = Math.round(Math.min(PIE_MAX, Math.max(PIE_MIN, deg)));
+    return { edit: t => setPieAngle(t, d), note: d !== Math.round(deg) ? `Held to ${PIE_MIN}-${PIE_MAX}°.` : undefined };
+  }
+  const m = /^s(\d+)$/.exec(id);
+  if (m) return setPolySide(T, +m[1], mm);
+  return { error: 'Not a dimension.' };
+}
+
+/** Set one side of a polygon tank, solved for closure (the corners stay on one circle, so the other sides keep their lengths and the shape closes up
+ *  round them); refused with a reason when the sides could not close, or the result is outside the allowed tank size. */
+export function setPolySide(T: Tank, i: number, mm: number): { edit: (t: Tank) => Tank; note?: string } | { error: string } {
+  const lens = polySides(T);
+  if (!(i >= 0 && i < lens.length)) return { error: 'No such side.' };
+  const next = lens.map((v, k) => (k === i ? mm : v)), g = cyclicPolygon(next);
+  if (typeof g === 'string') return { error: g };
+  const [lo] = SIDE_RANGE.L, hi = LIMITS.tankMax;
+  if (g.L < lo * 0.5 || g.D < lo * 0.5 || g.L > hi || g.D > hi) return { error: `That makes the tank ${len(g.L, 'in')} by ${len(g.D, 'in')}: too ${g.L > hi || g.D > hi ? 'big' : 'small'}.` };
+  const equal = Math.max(...next) - Math.min(...next) < 0.05;
+  return { edit: t => (equal ? { ...t, sideLens: undefined, L: regularWidth(next.length, next[0]) } : { ...t, sideLens: next }) };
+}
+/** Every side the same again (the average, so the size stays about as it was). */
+export function makeRegular(T: Tank): Tank {
+  const lens = polySides(T), avg = lens.reduce((a, b) => a + b, 0) / lens.length;
+  return { ...T, sideLens: undefined, L: regularWidth(lens.length, avg) };
+}
+/** A new side count: a regular polygon again at about the same size around. */
+export function setPolyCount(T: Tank, n: number): Tank {
+  const k = Math.min(POLY_MAX, Math.max(POLY_MIN, Math.round(n))), lens = polySides(T), perim = lens.reduce((a, b) => a + b, 0);
+  return { ...T, sides: k, sideLens: undefined, L: regularWidth(k, perim / k) };
+}
+
+/** A new pie angle (degrees), the radius kept: the box depth follows (past 180 degrees the box is deeper than the radius). */
+export function setPieAngle(T: Tank, deg: number): Tank {
+  const d = Math.round(Math.min(PIE_MAX, Math.max(PIE_MIN, deg)));
+  return { ...T, pieDeg: d, D: pieDepth(pieRadius(T), d) };
+}
+/** An old round tank as the maker shows it: a pie slice of 360 degrees (the same cylinder). */
+export const roundAsPie = (T: Tank): Tank => shapeOf(T) === 'round' ? { L: T.L, H: T.H, D: T.L, shape: 'pie', pieDeg: 360 } : T;
