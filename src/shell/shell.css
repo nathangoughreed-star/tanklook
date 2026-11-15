@@ -418,14 +418,14 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 
 /* AT1 (R47/R48): the species picker as tile cards, the detail view */
 .pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: var(--s2); }
-.ptile { display: grid; grid-template-rows: auto auto auto 1fr auto; gap: var(--s1); padding: var(--s2); border: 1px solid var(--line); border-radius: var(--r-card); background: var(--bg-raised); cursor: pointer; min-width: 0; }
-.ptile:hover, .ptile:focus-visible { border-color: var(--accent); outline: 0; }
+.ptile { display: grid; grid-template-rows: auto auto auto 1fr auto; gap: var(--s1); padding: var(--s2); border: 1px solid var(--line); border-radius: var(--r-card); background: var(--bg-raised); min-width: 0; }
 .ptile.gated { background: transparent; opacity: .88; }
 .ptile .btn { justify-self: stretch; align-self: end; }
 .tart { position: relative; height: 84px; display: grid; place-items: center; border-radius: var(--r-ctl); background: color-mix(in srgb, var(--accent) 7%, transparent); overflow: hidden; }
 .fishart { max-width: 100%; max-height: 100%; object-fit: contain; display: block; user-select: none; }
 .fishart.big { max-height: 210px; }
-.tin { position: absolute; top: 4px; right: 4px; font-size: 10px; padding: 1px 6px; border-radius: var(--r-pill); background: var(--bg-raised); color: var(--text-2); }
+.info { position: absolute; top: 4px; left: 4px; width: 22px; height: 22px; padding: 0; border-radius: 50%; border: 1px solid var(--accent); background: var(--bg-raised); color: var(--accent); font: italic 700 13px/1 serif; cursor: pointer; }
+.info:hover, .info:focus-visible { background: var(--accent); color: var(--bg-raised); outline: 0; }
 .tname { font-weight: 600; line-height: 1.2; overflow-wrap: anywhere; }
 .tmeta { display: flex; align-items: center; justify-content: space-between; gap: var(--s1); color: var(--text-2); font-size: var(--fs-sm); flex-wrap: wrap; }
 .tmeta .care { font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: var(--r-pill); background: var(--accent-weak); color: var(--accent); }

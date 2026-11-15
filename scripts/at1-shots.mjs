@@ -65,19 +65,20 @@ for (dev of ['desk1280', 'phone390']) {
     await ev(`window.scrollTo(0, 0); document.querySelector('.panel')?.scrollBy(0, 420); true`); await shot('03b-card-grid-scrolled', 800);
   });
   await tryStep('04-short-list', async () => { await search('chili'); facts[dev + ' short list'] = await ev(`document.querySelector('.endnote')?.textContent`); await shot('04-short-list-one-result', 600); await search(''); });
-  await tryStep('05-detail-white-cloud', async () => { await search('white cloud'); await ev(`(${tile('White cloud')})?.click(); true`); await sleep(1200); facts[dev + ' detail rows'] = await ev(`[...document.querySelectorAll('.rundown .drow')].map(r => r.textContent).join(' | ')`); await shot('05-detail-white-cloud', 600); await ev(`document.querySelector('.panel')?.scrollBy(0, 900); true`); await shot('05b-detail-white-cloud-lower', 600); });
+  await tryStep('05-detail-white-cloud', async () => { await search('white cloud'); await ev(`(${tile('White cloud')})?.querySelector('.tname')?.click(); true`); await sleep(400); facts[dev + ' tile click opens detail (must be false)'] = await ev(`!!document.querySelector('.detail')`); facts[dev + ' info button'] = await ev(`JSON.stringify(document.querySelector('.ptile .info')?.getBoundingClientRect())`); await ev(`(${tile('White cloud')})?.querySelector('.info')?.click(); true`); await sleep(1200); facts[dev + ' detail rows'] = await ev(`[...document.querySelectorAll('.rundown .drow')].map(r => r.textContent).join(' | ')`); await shot('05-detail-white-cloud', 600); await ev(`document.querySelector('.panel')?.scrollBy(0, 900); true`); await shot('05b-detail-white-cloud-lower', 600); });
   await tryStep('06-rows-and-plus-minus', async () => {
     await click('.detail .btn', 'Add'); await sleep(1200); await click('.detail .back', 'Back'); await sleep(600); await ev(`document.querySelector('.panel')?.scrollTo(0, 0); true`);
     facts[dev + ' stock rows'] = await ev(`document.querySelectorAll('.srow').length`);
     facts[dev + ' stock row box'] = await ev(`JSON.stringify(document.querySelector('.srow')?.getBoundingClientRect())`);
     facts[dev + ' plus/minus'] = await ev(`!!document.querySelector('.srow [aria-label^="One more"]') && !!document.querySelector('.srow [aria-label^="One fewer"]')`);
+    facts[dev + ' white cloud tile still listed after Add (must be false)'] = await ev(`!!(${tile('White cloud')})`); facts[dev + ' shown note'] = await ev(`document.querySelector('.endnote')?.textContent`);
     await shot('06-stock-rows-with-plus-minus', 600);
     await ev(`document.querySelector('.srow [aria-label^="One more"]')?.click(); true`); await sleep(800);
     facts[dev + ' count after +'] = await ev(`document.querySelector('.srow input')?.value`);
   });
   await tryStep('07-detail-held-back', async () => {
     const off = await ev(`document.querySelector('.tglrow')?.getAttribute('aria-checked')`); if (off === 'true') await click('.tglrow', 'Fits'); await sleep(1500);
-    await search('oscar'); await ev(`(${tile('Oscar')})?.click(); true`); await sleep(1200);
+    await search('oscar'); await ev(`(${tile('Oscar')})?.querySelector('.info')?.click(); true`); await sleep(1200);
     facts[dev + ' held-back fit box'] = await ev(`document.querySelector('.fitbox')?.textContent`);
     await shot('07-detail-held-back', 600); await ev(`document.querySelector('.panel')?.scrollBy(0, 900); true`); await shot('07b-detail-held-back-lower', 600);
     await click('.detail .back', 'Back'); await sleep(400);

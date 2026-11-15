@@ -58,11 +58,12 @@ export function pickView(S: TankSetup, units: Units, rules: Rules, fitter: Fitte
   const kind = tankKind(S), salt = kind === 'saltwater';
   const fitOf = fitter.fitsFor(S, units, rules);
   const counts = new Map<Role, number>();
-  for (const sp of scopeSpecies(SPECIES)) if (offeredIn(sp, kind)) counts.set(roleOf(sp), (counts.get(roleOf(sp)) ?? 0) + 1);
+  const inTank = new Set(S.fish.map(f => f.species));   // AT1 (R51): a species already in the tank is in the stock rows, not in the tiles
+  for (const sp of scopeSpecies(SPECIES)) if (offeredIn(sp, kind) && !inTank.has(sp.id)) counts.set(roleOf(sp), (counts.get(roleOf(sp)) ?? 0) + 1);
   const total = [...counts.values()].reduce((a, n) => a + n, 0);
   const chips = [{ role: undefined as Role | undefined, label: 'All', n: total }, ...rolesFor(kind).filter(r => counts.has(r)).map(r => ({ role: r as Role | undefined, label: ROLES.find(x => x[0] === r)![1], n: counts.get(r)! }))];
   const role = query.role && counts.has(query.role) ? query.role : undefined;
-  const all = findSpecies(S, query.q, role);
+  const all = findSpecies(S, query.q, role).filter(sp => !inTank.has(sp.id));
   const list = query.fitsOnly ? fitsThisTank(all, fitOf) : all;
   const groups: PickGroup[] = groupPicker(list, kind, fitOf).map(g => ({
     role: g.role, label: g.label,
