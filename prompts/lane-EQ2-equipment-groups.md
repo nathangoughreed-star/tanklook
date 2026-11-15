@@ -31,3 +31,8 @@ Nathan 2026-11-15. Pictures: `research/screens/EQ2/nathan-before.png` (today's n
 - A new test: every catalog product lands in exactly one category / type / band, and the tank's band sorts first.
 - Shots at 1280 and 390: the category list, Filter opened with type and band groups, Heater opened. Save them in `research/screens/EQ2/` and look at them yourself.
 - Commit on your branch and send the coordinator (C24) the sha. Do not push to main.
+
+## Part 2 (Nathan 2026-11-15, picture research/screens/EQ2/nathan-rows-2026-11-15.png)
+1. **Row layout (R60, red):** the full product name gets line 1 at the full row width, with no buttons beside it. Line 2 holds the type, rated range, price and the "fits N gal" pill, with Use / I own it / lock right-aligned on that same line. Wrap the name rather than truncate it. Phone 390: if line 2 can't fit everything, the buttons drop to line 3, but they never squeeze the name.
+2. **Pictures instead of the blank icon (R61, blue):** each product row shows a picture of that product. Bake a still from the product's own 3D model in its real per-part colours (the catalog already draws products in true colours: filters, heaters, lights ...), the same way `scripts/bake-gallery.mjs` bakes fish and PC1 baked plants. Write them to `public/gallery/gear/<id>.webp`, with a live-render fallback. Products that share a generic model share a picture. Use no retailer photos (copyright). A small square thumbnail on the row; a larger one if a row gets a detail view.
+Checks: the same as Part 1, plus shots of Filter and Heater lists at 1280 and 390 with pictures and full names. Commit on top of 8162de67 on your branch and send me the sha.

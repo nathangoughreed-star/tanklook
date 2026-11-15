@@ -75,6 +75,8 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R57 | 11-15 | Fins erect vs folded as a per-fish 0..1 value, per-species range, rerolled on shuffle (bristlenose, tangs, bettas, angels, cichlids) | FE1 | - | - | - | lane-FE1-fin-erect.md |
 | R58 | 11-15 | New UI Equipment: five categories (Filtration, Temperature, Lighting, Aeration and CO2, Maintenance), then type (HOB / canister / sponge, heater / chiller ...), then size band (rated up to 20 gal, 30-40 gal ...) | EQ2 | - | - | - | lane-EQ2-equipment-groups.md |
 | R59 | 11-15 | HOB filter: tank moves out from the wall by the HOB clearance (no clipping); with the 3D background the HOB stays one piece and the background gets a spout-sized notch | CB2 (HC1 brief) | - | - | - | lane-HC1-hob-clearance.md |
+| R60 | 11-15 | Equipment rows: full product name on line 1; Use / I own it / lock on line 2 beside price and fit | EQ2 | - | - | - | EQ2 brief Part 2 |
+| R61 | 11-15 | Equipment rows: a picture of each product (baked from its 3D model in real colours) instead of the blank icon | EQ2 | - | - | - | EQ2 brief Part 2 |
 | R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
 | R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
