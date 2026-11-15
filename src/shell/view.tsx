@@ -69,15 +69,17 @@ export function ViewCluster({ store, getViewer, phone, compare }: { store: Store
   const px = (m: number) => { const h = v?.host; return h ? pngTitle(h.clientWidth, h.clientHeight, devicePixelRatio || 1, m) : ''; };
 
   return (
-    <div class="ov cluster" ref={wrap}>
-      <div class="toolbar glass">
-        <button type="button" class={`btn sm${open ? ' on' : ''}`} aria-haspopup="dialog" aria-expanded={open} title="Camera, what is shown, viewpoint map, export a picture" onClick={() => setOpen(!open)}><Icon name="eye" /> View{phone ? '' : ' ▾'}</button>
-        {compare}
-        <button type="button" class="btn sm" disabled={!store.tank.fish.length} title={store.tank.fish.length ? 'Every animal in a new spot, as if the tank were photographed a little later. Plants and scape stay.' : 'Add an animal first'} onClick={moment}><Icon name="shuffle" /> {phone ? 'Moment' : 'Another moment'}</button>
+    <div class="cluster inhead" ref={wrap}>
+      <div class="toolbar">
+        <button type="button" class={`btn sm${open ? ' on' : ''}`} aria-haspopup="dialog" aria-expanded={open} title="Camera, what is shown, viewpoint map, export a picture" onClick={() => setOpen(!open)}><Icon name="eye" /><span class="lb"> View{phone ? '' : ' ▾'}</span></button>
+        {phone ? null : <>{compare}
+        <button type="button" class="btn sm" disabled={!store.tank.fish.length} title={store.tank.fish.length ? 'Every animal in a new spot, as if the tank were photographed a little later. Plants and scape stay.' : 'Add an animal first'} onClick={moment}><Icon name="shuffle" /><span class="lb"> {phone ? 'Moment' : 'Another moment'}</span></button></>}
       </div>
       {note ? <div class="viewnote glass" role="status">{note}</div> : null}
       {open ? (
         <div class="pop viewpop" role="dialog" aria-label="View">
+          {phone ? <div class="vsec phoneacts" onClick={() => setOpen(false)}><h3>Actions</h3><div class="chips">{compare}
+        <button type="button" class="btn sm chip" disabled={!store.tank.fish.length} title={store.tank.fish.length ? 'Every animal in a new spot, as if the tank were photographed a little later. Plants and scape stay.' : 'Add an animal first'} onClick={moment}><Icon name="shuffle" /><span class="lb"> {phone ? 'Moment' : 'Another moment'}</span></button></div></div> : null}
           <div class="vsec"><h3>Camera</h3>
             <div class="chips">{CAM_PRESETS.map(p => <button type="button" class={`btn sm chip${on === p.id ? ' on' : ''}`} aria-pressed={on === p.id} onClick={() => store.cam(c => Object.assign(c, presetOf(p.id)!.cam))}>{p.label}</button>)}
               <button type="button" class="btn sm chip" title="Re-centre the panned view (Home)" onClick={() => v?.resetPan()}>⌖ Re-centre</button></div>
