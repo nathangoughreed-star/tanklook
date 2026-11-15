@@ -99,9 +99,9 @@ function Band({ label, count, open, onToggle, tank, children }: { label: string;
   );
 }
 
-const ORIENTS: { id: Orient; label: string }[] = [{ id: 'vertical', label: 'Vertical' }, { id: 'horizontal', label: 'Horizontal' }, { id: 'angled', label: 'Angled' }];
+const ORIENTS: { id: Orient; label: string }[] = [{ id: 'vertical', label: 'Vertical' }, { id: 'horizontal', label: 'Horizontal' }];
 
-/** GD1: where the piece picked in the view sits. A heater gets its orientation on the glass face it is on (Vertical / Horizontal / Angled 45 deg);
+/** GD1: where the piece picked in the view sits. A heater gets its orientation on the glass face it is on (Vertical / Horizontal);
  *  every piece says how to move it. Reads the view's pick (render/gearSel.ts), so it follows a click in the tank. */
 function PlacementGroup({ store }: { store: Store }) {
   const [, tick] = useState(0);
@@ -117,7 +117,7 @@ function PlacementGroup({ store }: { store: Store }) {
   const where = g.mount === 'rim' ? 'slides along the top rim' : g.mount === 'glass' ? 'drags on the inside glass' : g.mount === 'floor' ? 'drags on the substrate' : 'moves on the top';
   return (
     <Group title="Placement" sum={`${g.row.split('.')[0]} picked`} open={open} onToggle={() => setOpen(!open)}>
-      {isHeater && place?.wall === 'floor' ? <div class="hint">Lying on the substrate. Drag it onto a glass face to stand it up or angle it.</div> : isHeater ? <div class="row"><span class="lbl">Orientation</span><span class="chips" role="group" aria-label="Heater orientation">{ORIENTS.map(o => <button type="button" class={`chip${cur === o.id ? ' on' : ''}`} aria-pressed={cur === o.id} data-orient={o.id} onClick={() => set(o.id)}>{o.label}</button>)}</span><span /></div> : null}
+      {isHeater && place?.wall === 'floor' ? <div class="hint">Lying on the substrate. Drag it onto a glass face to stand it up.</div> : isHeater ? <div class="row"><span class="lbl">Orientation</span><span class="chips" role="group" aria-label="Heater orientation">{ORIENTS.map(o => <button type="button" class={`chip${cur === o.id ? ' on' : ''}`} aria-pressed={cur === o.id} data-orient={o.id} onClick={() => set(o.id)}>{o.label}</button>)}</span><span /></div> : null}
       {g.mount === 'rim' ? <div class="row"><span class="lbl">Hangs on</span><span class="chips" role="group" aria-label="Rim edge">{walls.map(([w, label]) => <button type="button" class={`chip${rimWall === w ? ' on' : ''}`} aria-pressed={rimWall === w} disabled={peninsula(w)} title={peninsula(w) ? 'That end is against the room wall' : undefined} data-rimwall={w} onClick={() => hang(w)}>{label}</button>)}</span><span /></div> : null}
       <div class="hint">This one {where}. Arrow keys nudge it 0.25 in; Esc lets go.</div>
     </Group>

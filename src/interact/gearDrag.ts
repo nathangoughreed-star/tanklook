@@ -87,7 +87,7 @@ export function placeFor(S: TankSetup, ray: THREE.Ray, mount: GearMount, prev?: 
   if (mount === 'glass') {
     const g = groundHeight(S, T, clamp(out.x, 1, T.L - 1), clamp(-out.z, 1, T.D - 1)), wy = waterY(T, S.water.level);
     place.y = clamp((out.y - g) / Math.max(1, wy - g), 0, 1);
-    if (lean != null) place.lean = snapLean(lean); // upright, flat or the owner's Angled; nothing in between (GM8b, GD1)
+    if (lean != null) place.lean = snapLean(lean); // upright or flat, never diagonal (GM8b)
   }
   return place;
 }
@@ -125,11 +125,11 @@ export function gearLean(viewer: Viewer, store: Store, clientX: number, clientY:
 
 // ---------- GD1: picking, orientation, nudging ----------
 
-/** A lean snapped to the three the menu offers: 0 Vertical, +-45 Angled, +-90 Horizontal. */
-export function snapLean(lean: number): number { const a = Math.abs(lean), g = Math.sign(lean) || 1; return a >= 67.5 ? g * 90 : a >= 22.5 ? g * 45 : 0; }
-export type Orient = 'vertical' | 'horizontal' | 'angled';
-export const orientOf = (lean: number | undefined): Orient => { const l = Math.abs(snapLean(lean ?? 0)); return l === 90 ? 'horizontal' : l === 45 ? 'angled' : 'vertical'; };
-const LEAN: Record<Orient, number> = { vertical: 0, horizontal: 90, angled: 45 };
+/** A lean snapped to upright or flat (GM8b: never a diagonal): 0 Vertical, +-90 Horizontal. */
+export function snapLean(lean: number): number { return Math.abs(lean) >= 45 ? (Math.sign(lean) || 1) * 90 : 0; }
+export type Orient = 'vertical' | 'horizontal';
+export const orientOf = (lean: number | undefined): Orient => Math.abs(snapLean(lean ?? 0)) === 90 ? 'horizontal' : 'vertical';
+const LEAN: Record<Orient, number> = { vertical: 0, horizontal: 90 };
 /** The spot with its heater's orientation set (the glass face and place along it stay). */
 export const withOrient = (p: GearPlace, o: Orient): GearPlace => ({ ...p, lean: LEAN[o] });
 

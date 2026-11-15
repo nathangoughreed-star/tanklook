@@ -14,26 +14,26 @@ const pieces = (S: TankSetup) => buildGear(S, S.tank, [])[0].userData.gearPieces
 
 describe('heater orientation', () => {
   it('snaps to the three the menu offers and reads them back', () => {
-    expect([0, 10, 30, 45, 60, 70, 90, -50, -90].map(snapLean)).toEqual([0, 0, 45, 45, 45, 90, 90, -45, -90]);
-    expect(orientOf(undefined)).toBe('vertical'); expect(orientOf(90)).toBe('horizontal'); expect(orientOf(45)).toBe('angled');
-    expect(withOrient({ wall: 'left', at: 0.4, y: 0.5 }, 'angled')).toEqual({ wall: 'left', at: 0.4, y: 0.5, lean: 45 });
+    expect([0, 10, 30, 45, 60, 90, -50, -30, -90].map(snapLean)).toEqual([0, 0, 0, 90, 90, 90, -90, 0, -90]);
+    expect(orientOf(undefined)).toBe('vertical'); expect(orientOf(90)).toBe('horizontal'); expect(orientOf(50)).toBe('horizontal');
+    expect(withOrient({ wall: 'left', at: 0.4, y: 0.5 }, 'horizontal')).toEqual({ wall: 'left', at: 0.4, y: 0.5, lean: 90 });
   });
   it('a dragged heater keeps the orientation the owner chose', () => {
     const S = ex('planted'), T = S.tank;
-    const p = placeFor(S, new THREE.Ray(new THREE.Vector3(T.L * 0.5, T.H * 0.5, 2000), new THREE.Vector3(0, 0, -1)), 'glass', { wall: 'back', at: 0.5, lean: 45 })!;
-    expect(p.lean).toBe(45);
+    const p = placeFor(S, new THREE.Ray(new THREE.Vector3(T.L * 0.5, T.H * 0.5, 2000), new THREE.Vector3(0, 0, -1)), 'glass', { wall: 'back', at: 0.5, lean: 90 })!;
+    expect(p.lean).toBe(90);
   });
-  it('the three orientations draw the heater upright, at 45 degrees and flat, on the same glass', () => {
+  it('the two orientations draw the heater upright and flat on the same glass, a saved diagonal snaps', () => {
     const base = Object.keys(SCENES).map(ex).find(S => S.tank.H > 450 && S.tank.L > 800 && gearPicks(S).some(p => p.row?.split('.')[0] === 'heater'))!; const row = gearPicks(base).find(p => p.row?.split('.')[0] === 'heater')!.row!;
     const tilt = (lean: number) => {
       const S = { ...base, tech: withPlace(base, row, { wall: 'back', at: 0.5, y: 0.5, lean }) };
       const kit = buildGear(S, S.tank, []); const ax = kit[0].userData.heaterAxes as THREE.Vector3[];
       return Math.acos(Math.min(1, Math.abs(ax[0].y))) * 180 / Math.PI;
     };
-    expect(tilt(0)).toBeLessThan(5); expect(tilt(45)).toBeGreaterThan(35); expect(tilt(45)).toBeLessThan(55); expect(tilt(90)).toBeGreaterThan(85);
+    expect(tilt(0)).toBeLessThan(5); expect(tilt(90)).toBeGreaterThan(85); expect(tilt(-30)).toBeLessThan(5); expect(tilt(50)).toBeGreaterThan(85);
   });
-  it('an angled spot survives save and load', () => {
-    expect(parseTech({ rows: {}, place: { heater: { wall: 'left', at: 0.3, y: 0.6, lean: 45 } } })!.place).toEqual({ heater: { wall: 'left', at: 0.3, y: 0.6, lean: 45 } });
+  it('a heater spot survives save and load', () => {
+    expect(parseTech({ rows: {}, place: { heater: { wall: 'left', at: 0.3, y: 0.6, lean: 90 } } })!.place).toEqual({ heater: { wall: 'left', at: 0.3, y: 0.6, lean: 90 } });
   });
 });
 

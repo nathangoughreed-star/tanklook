@@ -46,7 +46,7 @@ if (h) {
   await drag(h, to, () => shot('1b-heater-mid-drag')); await shot('1c-heater-on-left-glass');
   console.log('place', await ev(`JSON.stringify(window.__gb.store.tank.tech?.place)`));
   await ev(`document.querySelector('[data-orient="horizontal"]')?.click(); true`); await shot('1d-heater-horizontal');
-  await ev(`document.querySelector('[data-orient="angled"]')?.click(); true`); await shot('1e-heater-angled');
+  await ev(`document.querySelector('[data-orient="angled-removed"]')?.click(); true`); await shot('1e-heater-angled');
   await ev(`document.querySelector('[data-orient="vertical"]')?.click(); true`); await shot('1f-heater-vertical');
 }
 // 2. HOB along the rim
