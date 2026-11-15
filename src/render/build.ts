@@ -32,6 +32,7 @@ import { rootsKey, rootsMesh } from './roots';
 import { outlineKey, spaceOutline } from './spaceOutline';
 import { addBackdrop, backdropGeometry } from './backdrop';
 import { drapedCard, fish3d, fishBody, hullMaterial, swims } from './fish3d';
+import { BANDS } from '../scene/scatter';
 import { herpBody, herpFloatTop, isHerp3D } from './herp3d';
 import { isLizard } from './lizard3d';
 import { braceBoxes } from '../scene/braceGeometry';
@@ -1682,7 +1683,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     const on = f.surface === 'hardscape' ? (isLizard(sp.art) ? A.restNear(f.x, f.depth, f.y, LIZARD_SNAP, LIZARD_SNAP_TOL, true, sitsOnLeaves(f)) : A.rest(f.x, f.depth, true, sitsOnLeaves(f))) : null, perch = on && PERCHES.has(on.kind) ? on : null;
     const snapped = on && isLizard(sp.art) && (on.p[0] !== f.x || on.p[2] !== f.depth);
     const p: Fish = snapped ? { ...f, x: on.p[0], depth: on.p[2] } : f; // where it stands: the spot, or the limb found beside it
-    const swim = !herp && sp.zone !== 'bottom' && !hang && f.surface !== 'glass' && swims(sp.art); // swims in place (swim.ts): not a bottom dweller, not clinging to glass or hanging under a leaf
+    const swim = !herp && !hang && f.surface !== 'glass' && swims(sp.art); // swims in place (swim.ts): not a bottom dweller, not clinging to glass or hanging under a leaf
     const cardGeo = drapedCard(sp.art, w, h, f.bend, fin) || cardGeometry(w, h, isArachnid(sp.art) ? 0 : f.bend);
     if (!herp) cardGeo.setAttribute('aSwL', new THREE.Float32BufferAttribute(new Array(cardGeo.attributes.position.count).fill(swim ? w : 0), 1));
     const m = new THREE.Mesh(cardGeo, herp ? HIDDEN : cardMaterial(`fish:${sp.look}:${fish3d.fade}`, fishTexture(sp, S.render.edge, true, fish3d.fade), S.render.edge));
@@ -1714,13 +1715,15 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
       const hard = f.surface === 'hardscape', st = settleSnake(snakeContacts(sp.art, w, f.bend), m.quaternion, { x: p.x, z: -p.depth }, (x, z) => top(x, -z, hard, 0), Math.min(MAX_TILT, 30 * D2R), hard ? undefined : (x, z) => top(x, -z, true, 0) > top(x, -z, false, 0) + 3);
       m.quaternion.premultiply(st.rot); m.position.set(st.x, st.y, st.z);
     } else if (rests) restOn(p, m, w, sp.rest * w - (isArachnid(sp.art) ? 0 : 1));
-    if (swim && !rests) { // a floating free swimmer wanders a little round its spot (swim.ts applyDrift): the tank less its reach, round the spot
-      const r = 0.6 * w, top = waterY(T, S.water.level) - r * 0.5 - 2, flo = groundHeight(S, T, p.x, p.depth) + rise(p.x, p.depth) + 0.3 * h;
-      m.userData.drift = { len: w, lo: [r, flo, -(T.D - r)], hi: [T.L - r, top, -r] };
+    if (swim) { // free roam (render/roam.ts): the sim moves this mesh from the spot it was placed at, which is its Reset pose
+      const e = new THREE.Euler().setFromQuaternion(m.quaternion, 'YXZ'), R2D = 180 / Math.PI;
+      m.userData.roam = { spec: { id: f.id, len: w, zone: sp.zone === 'bottom' ? 'bottom' : 'water', band: [...BANDS[sp.level ?? 'mid']] as [number, number], group: sp.group ? { key: sp.id, tight: sp.group === 'school' } : undefined,
+        home: { x: m.position.x, y: m.position.y, z: m.position.z, yaw: e.y * R2D, pitch: e.z * R2D, roll: e.x * R2D } }, world: { S, T, rise } };
     }
     register(m, w, h);
     if (f.surface === 'hardscape' || f.surface === 'under') return;
-    add(contactShadow(S, T, p.x, p.depth, y - h / 2, w, h, f.yaw));
+    const shadow = contactShadow(S, T, p.x, p.depth, y - h / 2, w, h, f.yaw); add(shadow);
+    if (shadow && swim) m.userData.shadow = shadow; // follows the fish as it roams
   };
   const fishPart = (f: Fish, key: string) => {
     const objs: THREE.Object3D[] = [], meshes: THREE.Mesh[] = [];

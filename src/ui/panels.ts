@@ -1231,6 +1231,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // plants swaying in the flow: a per-viewer display preference too (the viewer keeps it in browser storage)
   { const sw = $('swayOn') as HTMLInputElement; sw.checked = viewer.sway; sw.onchange = () => viewer.setSway(sw.checked); }
   { const sm = $('swimOn') as HTMLInputElement; sm.checked = viewer.swim; sm.onchange = () => viewer.setSwim(sm.checked); }
+  ($('swimReset') as HTMLButtonElement).onclick = () => viewer.resetRoam();
   // hide the fixture from above it: a per-viewer display preference too; off unless chosen, so the light always shows (Nathan 2026-10-14)
   const hideCb = $('hideLightAbove'), setHide = (on: boolean) => { hideCb.checked = viewer.hideOverhead = on; viewer.invalidate(); };
   try { setHide(localStorage.getItem('tanklook.hidelight') === 'on'); } catch { setHide(false); }

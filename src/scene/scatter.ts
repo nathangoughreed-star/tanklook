@@ -38,7 +38,7 @@ export const FLOAT_FROG = 1 / 3;
 const PERCH_DWARF = 0.4;
 
 /** Part of the water column (0 = just above the ground, 1 = just under the surface) each level favours. */
-const BANDS = { top: [0.65, 0.98], mid: [0.2, 0.8], low: [0.02, 0.4] } as const;
+export const BANDS = { top: [0.65, 0.98], mid: [0.2, 0.8], low: [0.02, 0.4] } as const;
 
 /** Put a land or amphibious animal on a random spot of land (amphibians: half the time in the water if there is any). */
 export function placeOnLand(s: TankSetup, sp: Species, f: Fish, r: () => number) {
