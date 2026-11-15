@@ -1060,7 +1060,7 @@ const SHRIMP_PLANS = Object.fromEntries(Object.entries(SHRIMP).map(([k, s]) => [
 // AL1: each species sold in an albino form also has its plan recoloured under `<art>~albino` (a female's too)
 for (const r of albinoSpecies.species as { albino?: string; art: string; female?: { art: string } }[]) {
   if (!r.albino) continue;
-  for (const a of [r.art, r.female?.art]) if (a && PLANS[a]) PLANS[a + '~albino'] = albinoPlan(PLANS[a]);
+  for (const a of [r.art, r.female?.art]) if (a && PLANS[a]) PLANS[a + '~albino'] = albinoPlan(PLANS[a], a);
 }
 
 export const bodyPlan = (art: string): Plan | undefined => PLANS[art] ?? SHRIMP_PLANS[art];

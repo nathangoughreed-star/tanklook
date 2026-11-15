@@ -40,7 +40,44 @@ const mapColours = (v: unknown, key = ''): unknown => {
   return v;
 };
 
-export function albinoPlan(p: Plan): Plan {
+/** Hand-tuned albino looks, where the generic recolour is not enough (matched to trade photos, 2026-11-15). Keyed by art. */
+const TUNE: Record<string, (q: Plan) => void> = {
+  // Albino tiger oscar: white-cream body and head, pale blue-white fins, big strong red-orange marbling over the flanks and back, gold-ringed eye with a dark red pupil
+  oscar(q) {
+    q.shade = ['#ece6d6', '#f1ebdf', '#f4dcb6'];
+    q.fin = '#d3dedf'; q.tail = { ...q.tail, tint: '#dbe3e1', a: 0.85 };
+    q.marks = [
+      { k: 'blob', u: 0.84, v: 0.07, ru: 0.15, rv: 0.1, c: '#f3d9c4', a: 0.7 },
+      { k: 'blob', u: 0.5, v: -0.06, ru: 0.3, rv: 0.17, c: '#ee7a2a', a: 0.72 },
+      { k: 'blob', u: 0.34, v: 0.04, ru: 0.2, rv: 0.16, c: '#e8602a', a: 0.8 },
+      { k: 'blob', u: 0.6, v: 0.09, ru: 0.2, rv: 0.1, c: '#f08a30', a: 0.78 },
+      { k: 'blob', u: 0.2, v: 0.0, ru: 0.1, rv: 0.13, c: '#e4602a', a: 0.85 },
+      { k: 'blob', u: 0.42, v: 0.12, ru: 0.14, rv: 0.07, c: '#f0983a', a: 0.7 },
+      { k: 'spots', n: 110, u0: 0.14, u1: 0.8, v0: -0.12, v1: 0.17, r: 0.012, c: '#e8602a', a: 0.9 },
+      { k: 'spots', n: 22, u0: 0.18, u1: 0.74, v0: -0.1, v1: 0.14, r: 0.026, c: '#dc4c1c', a: 0.85 },
+      { k: 'blob', u: 0.24, v: -0.02, ru: 0.045, rv: 0.045, c: '#f0a040', a: 0.95 },
+    ];
+    q.eye = { ...q.eye, iris: ['#f3d68e', '#d98c3c'], pupil: '#8a1428' };
+  },
+  // Albino bristlenose: a uniform golden-yellow to orange-yellow body (no brown), lighter mottling, amber fins edged cream, pink-red eyes
+  bristlenose(q) {
+    q.shade = ['#e08a28', '#ea9e3a', '#f2c880']; q.keel = '#ea9e3a';
+    q.fin = '#eeb050'; if (q.tail) q.tail = { ...q.tail, tint: '#eca848' };
+    if (q.dorsal) q.dorsal = { ...q.dorsal, tint: '#e8a040' };
+    if (q.pec) q.pec = { ...q.pec, tint: '#eeb050' };
+    if (q.pelvic) q.pelvic = { ...q.pelvic, tint: '#eeb050' };
+  },
+  // Albino bronze cory: pink-white with a peach flush, clear fins, red eyes
+  bronzecory(q) { q.shade = ['#eec6b0', '#f5d8c6', '#fbeadc']; },
+  // Albino tiger barb: orange-cream body, the stripes gone, orange fins
+  tigerbarb(q) {
+    q.shade = ['#ea9a56', '#f3b97e', '#f8dcb4'];
+    q.fin = '#f09a50'; if (q.tail) q.tail = { ...q.tail, tint: '#f08a48', edge: '#e8703a' };
+    if (q.dorsal) q.dorsal = { ...q.dorsal, tint: '#f0a258' };
+  },
+};
+
+export function albinoPlan(p: Plan, art = ''): Plan {
   const keep = <T extends { c: string }>(ms?: T[]) => ms?.filter(m => !melanic(m.c));
   const q = mapColours({ ...p, marks: keep(p.marks as { c: string }[]), finMarks: keep(p.finMarks as { c: string }[]) }) as Plan;
   if (!q.marks?.length) delete q.marks;
@@ -49,5 +86,6 @@ export function albinoPlan(p: Plan): Plan {
   q.eye = { ...p.eye, iris: ['#f0a0b4', '#b8405c'], pupil: '#7c1428' };
   if (p.shimmerRgb) q.shimmerRgb = '255,225,215';
   if (p.shimmer) q.shimmer = p.shimmer * 0.7;
+  TUNE[art]?.(q);
   return q;
 }
