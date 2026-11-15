@@ -1249,7 +1249,11 @@ vec4 aqBlend(vec2 uv) {
   float px = max(length(dFdx(fp)), length(dFdy(fp))) * 256.0; // noise texels per pixel (4 = one grain)
   float w = clamp(0.04 + 0.06 * px, 0.04, 0.5);
   float b = clamp((r - texture2D(uFine, fp).r) / (2.0 * w) + 0.5, 0.0, 1.0);
-  return mix(texture2D(map, uv) * uDark.x, texture2D(uMapB, uv) * uDark.y, b);
+  // a grain drawn as 3D stones darkens its painted tile (the gaps between stones) and shows as paint only where its stones
+  // are dense: in sparse areas the ground is the other grain (no ink-like blobs where a stone is missing)
+  float s1 = mix(1.0, smoothstep(0.3, 0.7, 1.0 - r), step(uDark.x, 0.99)), s2 = mix(1.0, smoothstep(0.3, 0.7, r), step(uDark.y, 0.99));
+  float w2 = (1.0 - (1.0 - b) * s1) * s2;
+  return texture2D(map, uv) * mix(1.0, uDark.x, s1) * (1.0 - w2) + texture2D(uMapB, uv) * mix(1.0, uDark.y, s2) * w2;
 }
 void main() {`).replace('texture2D(map, vMapUv);', 'aqBlend(vMapUv);').replace('texture2D(map, uv2)', 'aqBlend(uv2)');
   };
