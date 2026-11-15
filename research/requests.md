@@ -60,6 +60,8 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R42 | 11-14 | New UI: no size setting when adding animals; adjust % of adult size on an existing fish | AT1 | - | - | - | same brief |
 | R43 | 11-14 | New UI: "Fits this tank" hides schooling species (black molly, cardinal, cherry barb, chili rasbora) on an empty tank (group / sex rules judged on one fish) | AT1 | - | - | - | same brief |
 | R44 | 11-14 | New UI: header is empty and blocks the view; move the View/Compare cluster and the check bar into it (nothing floating over the view) | HB1 | - | - | - | brief prompts/lane-HB1-header-bars.md; picture research/screens/HB1/nathan-before.png |
+| R45 | 11-14 | New tank starts fresh (no stand, heater, filter); wall and person on by default | NT1 | - | - | - | brief prompts/lane-NT1-new-tank-fresh.md |
+| R46 | 11-14 | Get started checklist (S10): shows on every new tank, x hides for this tank only, can be brought back from the menu | NT1 | - | - | - | same brief; today x is permanent (tanklook.ui2.checklist=off) |
 | R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
 | R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
