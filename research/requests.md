@@ -78,6 +78,8 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R60 | 11-15 | Equipment rows: full product name on line 1; Use / I own it / lock on line 2 beside price and fit | EQ2 | - | - | - | EQ2 brief Part 2 |
 | R61 | 11-15 | Equipment rows: a picture of each product (baked from its 3D model in real colours) instead of the blank icon | EQ2 | - | - | - | EQ2 brief Part 2 |
 | R62 | 11-15 | New UI View menu: room (ambient) light slider with Auto (the old UI sun slider; the new UI had none) | HB1 | - | - | - | HB1 brief Part 2 |
+| R63 | 11-15 | New UI Tank: Water look group right below Tank model (before Sits on) | C24 (one-line reorder) | - | - | - | tank.tsx TankSection |
+| R64 | 11-15 | Equipment direct manipulation: click selects with hitbox; heater drags on any glass face (vertical / horizontal in its menu); HOB slides along the rim; suction gear and CO2 tubes drag on glass with tubes following | GD1 | - | - | - | lane-GD1-gear-drag.md |
 | R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
 | R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
