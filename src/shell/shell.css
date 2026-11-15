@@ -12,7 +12,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .ui2app { display: grid; height: 100vh; height: 100dvh;
   grid-template-columns: var(--rail-w) var(--panel-w) minmax(0, 1fr) 0;
   grid-template-rows: var(--header-h) minmax(0, 1fr);
-  grid-template-areas: "head head view drawer" "rail panel view drawer"; }
+  grid-template-areas: "head head head head" "rail panel view drawer"; }
 .ui2app.drawer-on { grid-template-columns: var(--rail-w) var(--panel-w) minmax(0, 1fr) var(--drawer-w); }
 /* the panel folded: rail + viewer; the header then spans the top (it holds Undo / Redo / Save, which must stay in reach) */
 .ui2app.panel-off { grid-template-columns: var(--rail-w) 0 minmax(0, 1fr) 0; grid-template-areas: "head head head head" "rail panel view drawer"; }
@@ -425,3 +425,21 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .polysides .sidecell { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--muted, #8a949c); }
 .polysides .sidecell .input { width: 100%; min-width: 0; padding: 3px 5px; }
 .edgelab.editable, .edgelab.edgeinput { z-index: 6; }
+
+/* HB1 (lane HB1, 2026-11-14): the check bar's items and the View cluster live in the header row; nothing floats over the view. */
+.ui2app > .apphead { position: relative; z-index: calc(var(--z-panel) + 3); }
+.apphead .checkbar.head { padding: 0; gap: 2px; min-width: 0; overflow: hidden; flex: 0 1 auto; }
+.apphead .checkbar.head .vsep { height: 18px; align-self: center; }
+.apphead .check { height: 32px; padding: 0 var(--s2); }
+.apphead .cluster.inhead { position: relative; flex: none; }
+.apphead .cluster .toolbar { padding: 0; gap: 2px; }
+.apphead .cluster .viewpop { left: auto; right: 0; transform: none; top: calc(100% + 8px); }
+.apphead .cluster .viewnote { left: auto; right: 0; transform: none; top: calc(100% + 8px); }
+.apphead .brand { flex: none; } .apphead .proj { min-width: 0; flex: 0 1 auto; }
+.apphead .grow { min-width: 0; }
+@media (max-width: 1439px) { .apphead .cluster .btn:not(:first-child) .lb { display: none; } }
+@media (max-width: 1279px) { .apphead .check .dim { display: none; } }
+@media (max-width: 1099px) { .apphead .lb { display: none; } .apphead .checkbar.head .check .lb { display: none; } }
+@media (max-width: 699px) { .ui2app.phone .cluster .viewpop { position: fixed; top: calc(var(--header-h) + 4px); left: var(--s2); right: var(--s2); width: auto; } }
+.apphead .viewpop .lb { display: inline !important; }
+.viewpop .phoneacts .chips .btn { flex: 1 1 auto; }

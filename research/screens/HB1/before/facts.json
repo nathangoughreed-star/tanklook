@@ -1,0 +1,122 @@
+{
+ "facts": {
+  "d1280-01-home": {
+   "headH": 48,
+   "headScroll": 0,
+   "past": 0,
+   "pageX": 0,
+   "canvasTop": 48
+  },
+  "d1280-02-check-open": {
+   "headH": 48,
+   "headScroll": 0,
+   "past": 0,
+   "pageX": 0,
+   "canvasTop": 48
+  },
+  "d1280-03-view-menu": {
+   "headH": 48,
+   "headScroll": 0,
+   "past": 0,
+   "pageX": 0,
+   "canvasTop": 48
+  },
+  "d1280-04-compare": {
+   "headH": 48,
+   "headScroll": 0,
+   "past": 0,
+   "pageX": 0,
+   "canvasTop": 48
+  },
+  "tab1024-01-home": {
+   "headH": 48,
+   "headScroll": 0,
+   "past": 0,
+   "pageX": 0,
+   "canvasTop": 48
+  },
+  "tab1024-02-check-open": {
+   "headH": 48,
+   "headScroll": 0,
+   "past": 0,
+   "pageX": 0,
+   "canvasTop": 48
+  },
+  "tab1024-03-view-menu": {
+   "headH": 48,
+   "headScroll": 0,
+   "past": 0,
+   "pageX": 0,
+   "canvasTop": 48
+  },
+  "tab1024-04-compare": {
+   "headH": 48,
+   "headScroll": 0,
+   "past": 0,
+   "pageX": 0,
+   "canvasTop": 48
+  },
+  "tab768-01-home": {
+   "headH": 48,
+   "headScroll": 0,
+   "past": 0,
+   "pageX": 0,
+   "canvasTop": 48
+  },
+  "tab768-02-check-open": {
+   "headH": 48,
+   "headScroll": 0,
+   "past": 0,
+   "pageX": 0,
+   "canvasTop": 48
+  },
+  "tab768-03-view-menu": {
+   "headH": 48,
+   "headScroll": 0,
+   "past": 0,
+   "pageX": 0,
+   "canvasTop": 48
+  },
+  "tab768-04-compare": {
+   "headH": 48,
+   "headScroll": 0,
+   "past": 0,
+   "pageX": 0,
+   "canvasTop": 48
+  },
+  "phone390-01-home": {
+   "headH": 48,
+   "headScroll": 0,
+   "past": 0,
+   "pageX": 0,
+   "canvasTop": 48
+  },
+  "phone390-02-check-open": {
+   "headH": 48,
+   "headScroll": 0,
+   "past": 0,
+   "pageX": 0,
+   "canvasTop": 48
+  },
+  "phone390-03-view-menu": {
+   "headH": 48,
+   "headScroll": 0,
+   "past": 0,
+   "pageX": 0,
+   "canvasTop": 48
+  },
+  "phone390-04-compare": {
+   "headH": 48,
+   "headScroll": 0,
+   "past": 0,
+   "pageX": 0,
+   "canvasTop": 48
+  }
+ },
+ "fails": [
+  "d1920 home: (() => { const hd = document.querySelector('.apphead'); const r = hd.getBoundingClientRect :: {\"exceptionId\":3,\"text\":\"Uncaught\",\"lineNumber\":0,\"colum",
+  "d1920 check: (() => { const e = [...document.querySelectorAll(\".check\")].find(b => b.textContent.includ :: {\"exceptionId\":5,\"text\":\"Uncaught\",\"lineNumber\":0,\"colum",
+  "d1920 view: (() => { const e = [...document.querySelectorAll(\".cluster .btn\")].find(b => b.textContent :: {\"exceptionId\":7,\"text\":\"Uncaught\",\"lineNumber\":0,\"colum",
+  "d1920 compare: (() => { const e = [...document.querySelectorAll(\".cluster .btn\")].find(b => b.textContent :: {\"exceptionId\":9,\"text\":\"Uncaught\",\"lineNumber\":0,\"colum"
+ ]
+}
