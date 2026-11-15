@@ -212,7 +212,7 @@ function Room({ store, S, u, open, onToggle }: { store: Store; S: TankSetup; u: 
     <Group title="Room" sum={roomSummary(S, u)} open={open} onToggle={onToggle}>
       <Toggle on={S.wall.show} label="A wall near the tank" onFlip={on => store.edit(s => { s.wall.show = on; })} />
       {S.wall.show ? <>
-        <Seg label="Wall" value={S.wall.side} opts={[['back', 'Behind'], ['left', 'Left end'], ['right', 'Right end'], ['corner', 'Corner']]} onPick={wallSide} />
+        <Seg label="Wall" value={S.wall.side} opts={[['back', 'Behind'], ['left', 'Peninsula (left end)'], ['right', 'Peninsula (right end)'], ['corner', 'Corner']]} onPick={wallSide} />
         <LenRow label="Ceiling" mm={ceilingH(S.wall)} min={CEILING_MIN} max={CEILING_MAX} u={u} step={u === 'in' ? 1 : 1} onMm={(mm, done) => store.edit(s => { s.wall.height = mm; }, done ? {} : { coalesce: 'ceilH' })} />
         <div class="row"><span class="lbl">Wall colour</span><input type="color" aria-label="Wall colour" value={S.wall.color} onInput={e => store.edit(s => { s.wall.color = (e.target as HTMLInputElement).value; }, { coalesce: 'wallColor' })} /><span /></div>
       </> : null}
