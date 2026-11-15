@@ -282,10 +282,7 @@ function bermObjects(S: TankSetup, T: Tank, list: Blob[], ground: GroundAt, skin
   if (!list.length) return [];
   // over 3D grains (gravel) a painted berm hides real stones under a flat dark smear (Nathan's blind test 2026-11-12: nano wood base):
   // the berm there is only its spilled grains, denser and a little damp-toned
-  // VF9: a custom blend (sand + gravel) is drawn by the grain-blend shader over its 'a' tile, which the berm's flat painted tile cannot match:
-  // the berm came out paler than the sand round it, with a hard rim (pale streaks and slivers under and by the wood, Nathan 2026-11-15)
-  const blend = S.substrate.type === 'custom' && S.substrate.custom.grain2 !== 'none';
-  if (skin.color !== 0xffffff || blend) return spillGrains(S, T, list, ground, 0.8, true);
+  if (skin.color !== 0xffffff) return spillGrains(S, T, list, ground, 0.8, true);
   const NA = 28, NR = 7, nv = (NR + 1) * NA, pos = new Float32Array(list.length * nv * 3), col = new Float32Array(list.length * nv * 3), uv = new Float32Array(list.length * nv * 2), idx: number[] = [];
   const keep = clampInside(T), scale = skin.color === 0xffffff ? 1 : 0.5; // over 3D grains the berm is lower: the spilled grains make up the rest
   list.forEach((b, bi) => {
