@@ -91,3 +91,15 @@ describe('R48: the species detail model', () => {
     expect(d.fit.level).not.toBe('ok'); expect(d.fit.text.length).toBeGreaterThan(5);
   });
 });
+
+import { noteIn } from '../src/shell/logic/animals';
+describe('species notes in US units', () => {
+  it('converts deg C ranges and single values in the text to deg F, leaves metric alone', () => {
+    expect(noteIn('Cool water, about 18-22 °C; no heater needed', 'in')).toBe('Cool water, about 64-72 °F; no heater needed');
+    expect(noteIn('A warm-water cory, about 24-28 °C (Seriously Fish): a', 'in')).toContain('75-82 °F');
+    expect(noteIn('keep at 25 °C', 'in')).toBe('keep at 77 °F');
+    expect(noteIn('about 18-22 °C', 'cm')).toBe('about 18-22 °C');
+    const sp = one('white cloud'), S = emptyTank(), d = speciesDetail(S, sp, createFitter().exactNow(S, 'in', 'guided', sp), 'in');
+    expect(d.note).not.toMatch(/°C/);
+  });
+});

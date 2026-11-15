@@ -315,6 +315,13 @@ export function copySelection(store: Pick<Store, 'edit' | 'nextId' | 'nextItemId
 
 // ---------- AT1 (R48): the species detail view (only fields the catalogue has) ----------
 
+/** AT1: a species note is written in deg C ("about 18-22 °C"); US users read deg F. Converts the ranges and single values in the text. */
+export function noteIn(note: string, units: Units): string {
+  if (units !== 'in') return note;
+  const F = (c: string) => Math.round(+c * 9 / 5 + 32);
+  return note.replace(/(\d+(?:\.\d+)?)\s*(?:-|–|to)\s*(\d+(?:\.\d+)?)\s*°\s*C/g, (_m, a, b) => `${F(a)}-${F(b)} °F`).replace(/(\d+(?:\.\d+)?)\s*°\s*C/g, (_m, a) => `${F(a)} °F`);
+}
+
 export interface SpeciesDetail {
   id: string; name: string; sci: string; look: string; tag: string; note: string;
   /** label, value rows in reading order; a row is left out when the catalogue lacks the field */
@@ -339,7 +346,7 @@ export function speciesDetail(S: TankSetup, sp: Species, fit: Fit, units: Units)
   if (chem) { rows.push(['pH', rng(chem.ph, n => String(n))]); if (chem.gh) rows.push(['Hardness (dGH)', rng(chem.gh, n => String(n))]); }
   if (c) rows.push(['Swims in', SWIM[zoneOf(sp)] ?? '']);
   return {
-    id: sp.id, name: sp.name, sci: sp.sci, look: sp.look, tag: speciesTag(sp) ?? '', note: sp.note ?? '', rows,
+    id: sp.id, name: sp.name, sci: sp.sci, look: sp.look, tag: speciesTag(sp) ?? '', note: noteIn(sp.note ?? '', units), rows,
     fit: { level: fit.level, text: fit.level === 'ok' ? (S.fish.length ? 'Gets along with what is in the tank now, and suits this tank.' : 'Suits this tank.') : fit.text, more: fit.level === 'ok' ? [] : fit.more, inTank: S.fish.filter(f => f.species === sp.id).length },
     startCount: g.total, start: g.f ? `${g.total} (${g.n} male${g.n === 1 ? '' : 's'}, ${g.f} female${g.f === 1 ? '' : 's'})` : String(g.total), dimorphic: !!sp.female,
   };
