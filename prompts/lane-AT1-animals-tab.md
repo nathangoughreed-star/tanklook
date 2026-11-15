@@ -61,3 +61,13 @@ Extra tests: the stock rows for added fish, and the detail model fields.
 1. **Info button, not whole-card click (R50).** Each species tile gets a standard info button (an "i" in a circle, top-left corner of the art so it doesn't clash with the "6 in" length chip on the right; aria-label "<name>: details", title "Details"). Only that button opens the larger card + rundown. Clicking anywhere else on the tile does NOT open it (drag-out to the view and the Add button keep working). Keyboard: the info button is focusable; drop the tile's role=button/tabIndex/Enter handler.
 2. **Species already in the tank leave the picker (R51).** A species with any count in this tank is not shown in the species tiles (it's already in the stock rows above with − / +). The category counts (Schooling fish 24 ...) and the "N animals shown" note count only what's shown; if it's removed from the tank (count to 0) it comes back. Remove the "N in" badge on tiles (no longer reachable).
 Checks: build + the shell animals tests; update any test that expects the tile click or in-tank tiles. Desktop 1280 and phone 390 shots of the Animals tab with a stocked tank, the info button, and the opened detail. Commit on your branch and send me the sha.
+
+## Part 4 (Nathan 2026-11-15, picture research/screens/AT1/nathan-door-2026-11-15.png) - R54
+"when starting from an animal (or really a stocking list), just pull up the normal animal picker with the tile cards. maybe they only know the one(s) they want by look."
+Today "Or start from an animal I want" (Get started checklist; `src/shell/discover.tsx` door, `doorPlan` / `animalScene` in `src/shell/logic/discover.ts`) opens a small dialog with a text search for ONE animal.
+Do:
+1. The door opens the SAME tile-card picker as the Animals section (categories, cards, (i) detail, search). Reuse the component; no second picker.
+2. In this mode you build a stocking LIST: Add puts the species on a pending list with − / + counts (default start counts as in Animals), shown at the top like the stock rows. Nothing is written to the design yet. "Fits this tank" is off or hidden here, since there is no tank yet.
+3. A primary button "Plan a tank for these (N)" runs the existing door planner on the whole list (smallest real tank that holds the group; check `doorPlan` takes several species, and extend it if it takes only one), then builds the tank as the door does today. One undo step. Cancel leaves everything as it was.
+4. Phone 390: the picker fills the drawer and the plan button stays visible.
+Checks: build, the discover and door tests, plus a new test that two species with counts give one plan holding both. Shots at 1280 and 390. Commit on your branch (on top of e2428567) and send me the sha.
