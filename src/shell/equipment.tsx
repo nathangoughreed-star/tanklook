@@ -9,6 +9,7 @@ import {
   categoryGroups, groupOfKind, buyTree, categoryView, presetLadder, applyPresetEdit, useItem, setOwned, setLock, ownSum, addOwnAny, specOf, isCat, type CatId, type GearRow,
 } from './logic/equipment';
 import { LightingGroup } from './lighting';
+import { artOf } from './logic/gearArt';
 import { Group, Icon, Pill } from './ui';
 import { openSection, OPEN_EVENT } from './open';
 import { takeOpen } from './logic/sections';
@@ -21,27 +22,45 @@ const saveCat = (c: string) => { try { localStorage.setItem(CAT_KEY, c); } catch
 /** Opens another section's group (Constraints > Your home): App listens to this window event (detail: { section, group }). */
 const gotoSection = (section: SectionId, group?: string) => openSection(section, group);
 
+/** The product's picture: the baked still (public/gallery/gear/<stem>.webp), else drawn live from its 3D model, else the plain icon (R61). */
+const liveArt = new Map<string, string>();
+function GearArt({ cat, item }: { cat: string; item: string }) {
+  const art = artOf(cat, item), baked = art ? `${import.meta.env.BASE_URL}gallery/gear/${art.stem}.webp` : '';
+  const [src, setSrc] = useState(baked), [dead, setDead] = useState(false);
+  useEffect(() => { setSrc(baked); setDead(false); }, [baked]);
+  if (!art || dead) return <Icon name="gear" />;
+  const fallback = () => {
+    if (liveArt.has(art.stem)) { const u = liveArt.get(art.stem)!; if (u && u !== src) setSrc(u); else if (!u) setDead(true); return; }
+    void import('../render/gearStill').then(m => { let u = ''; try { u = m.gearStill(art.spec) ?? ''; } catch { /* no WebGL */ } liveArt.set(art.stem, u); if (u) setSrc(u); else setDead(true); });
+  };
+  return <img class="gearart" src={src} alt="" loading="lazy" draggable={false} onError={fallback} />;
+}
+
 function Row({ r, store, cat }: { r: GearRow; store: Store; cat: CatId }) {
   const use = () => store.edit(s => useItem(s, cat, r.item));
   const lock = () => store.edit(s => setLock(s, cat, r.item, !r.locked));
   const own = () => store.edit(s => setOwned(s, cat, r.item, !r.owned));
   return (
     <div class={`erow${r.inUse ? ' inuse' : ''}`} data-item={r.item}>
-      <span class="thumb"><Icon name="gear" /></span>
+      <span class="thumb"><GearArt cat={cat} item={r.item} /></span>
       <span class="eb">
         <span class="t" title={r.name}>{r.name}</span>
-        <span class="m">{r.sub}</span>
-        <span class="pills">
-          {r.owned ? <Pill tone="ok">Owned · $0</Pill> : r.price ? <span class="m">{r.price}</span> : null}
-          {r.inUse ? <Pill tone="accent">In use</Pill> : null}
-          {r.fit ? <Pill tone={r.fit.tone}>{r.fit.text}</Pill> : null}
+        <span class="eline">
+          <span class="efacts">
+            <span class="m">{r.sub}</span>
+            <span class="pills">
+              {r.owned ? <Pill tone="ok">Owned · $0</Pill> : r.price ? <span class="m">{r.price}</span> : null}
+              {r.inUse ? <Pill tone="accent">In use</Pill> : null}
+              {r.fit ? <Pill tone={r.fit.tone}>{r.fit.text}</Pill> : null}
+            </span>
+          </span>
+          <span class="acts">
+            {r.inUse ? null : <button type="button" class="btn sm" title={r.owned ? 'Use the one you own' : 'Put this on the design'} onClick={use}>Use</button>}
+            {r.item === GENERIC && !r.owned ? null : <button type="button" class="btn sm ghost own" title={r.owned ? 'You no longer have it (it leaves the I own list)' : 'You have this one: it costs $0'} onClick={own}>{r.owned ? 'Not mine' : 'I own it'}</button>}
+            <button type="button" class={`btn icon sm ghost lockbtn${r.locked ? ' on' : ''}`} aria-pressed={r.locked} aria-label={r.locked ? `Release ${r.name}` : `Use ${r.name} for sure`}
+              title={r.locked ? 'Used for sure: Discover and Suggest keep this. Click to release.' : 'Use this one for sure (owned or not, in use or not)'} onClick={lock}><Icon name="lock" /></button>
+          </span>
         </span>
-      </span>
-      <span class="acts">
-        {r.inUse ? null : <button type="button" class="btn sm" title={r.owned ? 'Use the one you own' : 'Put this on the design'} onClick={use}>Use</button>}
-        {r.item === GENERIC && !r.owned ? null : <button type="button" class="btn sm ghost own" title={r.owned ? 'You no longer have it (it leaves the I own list)' : 'You have this one: it costs $0'} onClick={own}>{r.owned ? 'Not mine' : 'I own it'}</button>}
-        <button type="button" class={`btn icon sm ghost lockbtn${r.locked ? ' on' : ''}`} aria-pressed={r.locked} aria-label={r.locked ? `Release ${r.name}` : `Use ${r.name} for sure`}
-          title={r.locked ? 'Used for sure: Discover and Suggest keep this. Click to release.' : 'Use this one for sure (owned or not, in use or not)'} onClick={lock}><Icon name="lock" /></button>
       </span>
     </div>
   );

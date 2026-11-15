@@ -5,12 +5,14 @@
 //   3. Ctrl+C here, commit public/gallery
 // Plants (lane PC1): paste BAKE_PLANTS (also printed below) the same way; it writes public/gallery/plants/<id>.webp from the real 3D plant
 // models (src/render/plantStill.ts). A plant with no file is drawn live by the Plants picker.
+// Gear (lane EQ2): paste BAKE_GEAR the same way; it writes public/gallery/gear/<stem>.webp from the products' own 3D models (src/render/gearStill.ts,
+// the list from src/shell/logic/gearArt.ts). A product with no file is drawn live on its Equipment row.
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 
 const OUT = path.resolve(import.meta.dirname, '../public/gallery');
-fs.mkdirSync(OUT, { recursive: true }); fs.mkdirSync(path.join(OUT, 'plants'), { recursive: true });
+fs.mkdirSync(OUT, { recursive: true }); fs.mkdirSync(path.join(OUT, 'plants'), { recursive: true }); fs.mkdirSync(path.join(OUT, 'gear'), { recursive: true });
 
 const BAKE = `(async () => {
   const { SPECIES } = await import('/src/data/species.ts'), { SpeciesPreview } = await import('/src/render/preview3d.ts');
@@ -55,11 +57,32 @@ const BAKE_PLANTS = `(async () => {
   console.log('baked plants', n);
 })()`;
 
+const BAKE_GEAR = `(async () => {
+  const { allArt } = await import('/src/shell/logic/gearArt.ts'), { gearStill } = await import('/src/render/gearStill.ts');
+  let n = 0;
+  for (const [stem, spec] of allArt()) {
+    const url = gearStill(spec, 640, 400); if (!url) { console.warn('no still', stem); continue; }
+    const img = new Image(); img.src = url; await img.decode();
+    const w = img.width, h = img.height, c = document.createElement('canvas'); c.width = w; c.height = h;
+    const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0);
+    const a = g.getImageData(0, 0, w, h).data; let x0 = w, x1 = -1, y0 = h, y1 = -1;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (a[(y * w + x) * 4 + 3] > 12) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    if (x1 < 0) { console.warn('empty still', stem); continue; }
+    const pad = Math.round(Math.max(x1 - x0, y1 - y0) * 0.05);
+    x0 = Math.max(0, x0 - pad); y0 = Math.max(0, y0 - pad); x1 = Math.min(w - 1, x1 + pad); y1 = Math.min(h - 1, y1 + pad);
+    const o = document.createElement('canvas'), cw = x1 - x0 + 1, ch = y1 - y0 + 1, side = Math.max(cw, ch); o.width = side; o.height = side; // square, product centred
+    o.getContext('2d').drawImage(c, x0, y0, cw, ch, (side - cw) / 2, (side - ch) / 2, cw, ch);
+    const blob = await new Promise(r => o.toBlob(r, 'image/webp', 0.88));
+    await fetch('http://127.0.0.1:8799/gear/' + encodeURIComponent(stem) + '.webp', { method: 'POST', body: blob }); n++;
+  }
+  console.log('baked gear', n);
+})()`;
+
 http.createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*'); res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS'); res.setHeader('Access-Control-Allow-Headers', '*'); res.setHeader('Access-Control-Allow-Private-Network', 'true');
   if (req.method === 'OPTIONS') return res.writeHead(204).end();
-  const rel = decodeURIComponent((req.url ?? '').replace(/^\//, '')), name = rel.replace(/^plants\//, '');
-  if (req.method !== 'POST' || !/^(plants\/)?[\w~.@-]+\.webp$/.test(rel)) return res.writeHead(400).end();
+  const rel = decodeURIComponent((req.url ?? '').replace(/^\//, '')), name = rel.replace(/^(plants|gear)\//, '');
+  if (req.method !== 'POST' || !/^((plants|gear)\/)?[\w~.@-]+\.webp$/.test(rel)) return res.writeHead(400).end();
   const parts = []; req.on('data', d => parts.push(d));
-  req.on('end', () => { fs.writeFileSync(path.join(OUT, rel.startsWith('plants/') ? 'plants' : '.', name), Buffer.concat(parts)); res.writeHead(200).end(); });
+  req.on('end', () => { fs.writeFileSync(path.join(OUT, rel.startsWith('plants/') ? 'plants' : rel.startsWith('gear/') ? 'gear' : '.', name), Buffer.concat(parts)); res.writeHead(200).end(); });
 }).listen(8799, '127.0.0.1', () => console.log(`Writing to ${OUT}. Paste into the browser console:\n\n${BAKE}\n`));

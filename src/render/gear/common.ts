@@ -47,6 +47,10 @@ export const V = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z)
 
 /** Collects a set of gear's parts, each in its bucket, and merges each bucket into one mesh. */
 export class Kit {
+  /** EQ2 stills (render/gearStill.ts): leave out tubes (cords, hoses, wires), so the picture frames the product's body, not the cord's loop. */
+  static noTubes = false;
+  /** EQ2 stills: every part's box (mm, before the model is re-centred), so the still can frame the product's body and leave a far-off pump or hose out. */
+  static log: { box: THREE.Box3; bucket: Bucket }[] | null = null;
   parts: Record<Bucket, THREE.BufferGeometry[]> = { wet: [], room: [], clear: [], glow: [] };
   /** Every suction cup: the wall it sits on and its point on that glass's inner face (lane GM8: the cups must be on glass). */
   /** Each heater's axis (unit vector, cap end up), for the no-diagonal test (lane GM8b). */
@@ -69,6 +73,7 @@ export class Kit {
       col[i * 3] = c.r * k; col[i * 3 + 1] = c.g * k; col[i * 3 + 2] = c.b * k;
     }
     g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    if (Kit.log) { g.computeBoundingBox(); Kit.log.push({ box: g.boundingBox!.clone(), bucket: b }); }
     if (b === 'clear') g.setAttribute('aBase', new THREE.BufferAttribute(new Float32Array(n).fill(base), 1));
     this.parts[b].push(g);
   }
@@ -80,6 +85,7 @@ export class Kit {
   }
   /** A tube of radius r along the points (a smooth curve through them). */
   tube(bk: Bucket, pts: THREE.Vector3[], r: number, color: number, base = 0.06, seg = 10) {
+    if (Kit.noTubes) return;
     const c = new THREE.CatmullRomCurve3(pts, false, 'centripetal'), n = Math.max(8, Math.round(c.getLength() / 8));
     this.put(bk, new THREE.TubeGeometry(c, n, r, seg, false), color, undefined, base);
   }

@@ -376,9 +376,15 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .erow .eb .pills { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s1); }
 .erow .acts { display: flex; align-items: center; gap: var(--s1); }
 .erow .acts .own { font-size: var(--fs-sm); }
-.equip .erow { grid-template-columns: 40px minmax(0, 1fr); align-items: start; }
-.equip .erow .acts { grid-column: 2; flex-wrap: wrap; }
-.equip .erow .eb .m { white-space: normal; overflow-wrap: anywhere; }
+.equip .erow { grid-template-columns: 48px minmax(0, 1fr); align-items: start; }
+.equip .erow .thumb { display: grid; place-items: center; width: 48px; height: 48px; background: var(--surface-2, transparent); border-radius: var(--r-ctl); }
+.equip .erow .thumb .gearart { width: 100%; height: 100%; object-fit: contain; }
+.equip .erow .eb { gap: var(--s1); }
+.equip .erow .eline { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--s1) var(--s2); }
+.equip .erow .efacts { display: flex; flex-wrap: wrap; align-items: center; gap: 2px var(--s2); min-width: 0; flex: 1 1 96px; }
+.equip .erow .efacts .pill { height: auto; min-height: var(--ctl-h-sm); padding-top: 2px; padding-bottom: 2px; white-space: normal; max-width: 100%; }
+.equip .erow .efacts .m { white-space: normal; overflow-wrap: anywhere; }
+.equip .erow .acts { margin-left: auto; flex: none; }
 .equip .kind { border-top: 1px solid var(--line); }
 .equip .kind:first-child { border-top: 0; }
 .equip .kh, .equip .bh { display: flex; align-items: center; gap: var(--s1); width: 100%; text-align: left; background: none; border: 0; color: var(--text); font: inherit; cursor: pointer; padding: var(--s2) 0; min-height: 36px; }
@@ -398,7 +404,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .equip [aria-expanded="true"] > svg { transform: rotate(90deg); }
 .equip .addrow { background: none; border: 0; color: var(--text-2); text-align: left; cursor: pointer; padding: var(--s1); font: inherit; }
 .lightmap .row { display: grid; grid-template-columns: 90px 1fr auto; align-items: center; gap: var(--s2); }
-@media (max-width: 699px) { .erow { grid-template-columns: minmax(0, 1fr) auto; } .equip .erow { grid-template-columns: minmax(0, 1fr); } .equip .erow .acts { grid-column: 1; justify-content: flex-start; } .erow .thumb { display: none; } .erow .acts { flex-wrap: wrap; justify-content: flex-end; } }
+@media (max-width: 699px) { .erow { grid-template-columns: minmax(0, 1fr) auto; } .erow .thumb { display: none; } .erow .acts { flex-wrap: wrap; justify-content: flex-end; } }
 
 /* SC: drag a species into the tank, AqAdvisor row, copies box, new-animal size */
 .dragGhost { position: fixed; left: 0; top: 0; z-index: 1000; pointer-events: none; background: var(--chip, #fff); border: 1px dashed var(--line, #999); border-radius: 6px; padding: 3px 8px; font-size: 12px; opacity: .85; white-space: nowrap }
@@ -514,3 +520,4 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .pinfo { min-height: 0 !important; min-width: 0 !important; }
 .pinfo::after { content: ""; position: absolute; inset: -8px; }
 @media (max-width: 699px) { .pinfo { width: 30px; height: 30px; font-size: 15px; } }
+@media (max-width: 699px) { .equip .erow .efacts { flex-basis: 150px; } }
