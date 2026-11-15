@@ -424,3 +424,4 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .polysides .sidegrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 6px; margin: 6px 0; }
 .polysides .sidecell { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--muted, #8a949c); }
 .polysides .sidecell .input { width: 100%; min-width: 0; padding: 3px 5px; }
+.edgelab.editable, .edgelab.edgeinput { z-index: 6; }
