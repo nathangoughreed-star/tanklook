@@ -110,7 +110,7 @@ export function contactObjects(S: TankSetup, T: Tank, items: { it: Item; m: THRE
   // lighter than the shaded sand round it (a pale cloud round every rock, Nathan 2026-11-12): over a painted berm the blob follows its surface
   const drape = surface ?? ground; // blobs and berms lie on the drawn mesh's own triangles (render/build.ts SURF)
   const berms = FX.embed && skin && skin.color === 0xffffff ? list.filter(b => b.grains && b.berm) : [];
-  if (FX.contact && list.length) out.push(blobMesh(list, berms.length ? onBerm(berms, drape) : drape, surface ? 0.4 * roughOf(S.substrate) : roughOf(S.substrate)));
+  if (FX.contact && list.length) out.push(blobMesh(T, list, berms.length ? onBerm(berms, drape) : drape, surface ? 0.4 * roughOf(S.substrate) : roughOf(S.substrate)));
   if (FX.ground) out.push(...footGrains(S, T, list.filter(b => b.grains), ground));
   if (FX.mix) out.push(...coarseFeet(S, T, list.filter(b => b.grains && b.fx), ground));
   if (FX.embed && skin) out.push(...bermObjects(S, T, list.filter(b => b.grains && b.berm), drape, skin));
@@ -157,14 +157,14 @@ export function bermRise(S: TankSetup, T: Tank, items: { it: Item; m: THREE.Mesh
  * 0.8 mm lift the ridges stood through the blob as pale hard-edged shards and the blob's triangles cut it into dark
  * polygons ("weird shadows", Nathan 2026-11-12). The lift grows with the roughness (about 2.6 mm at 50 %).
  */
-function blobMesh(list: Blob[], ground: GroundAt, rough = 0) {
-  const lift = 0.8 + 0.035 * rough;
+function blobMesh(T: Tank, list: Blob[], ground: GroundAt, rough = 0) {
+  const lift = 0.8 + 0.035 * rough, keep = clampInside(T); // VF9c: a blob reaches 1.9 radii out, so a piece by a pane put its dark sheet outside the glass (Nathan 2026-11-15): vertices are pulled back inside
   const nv = GRID * GRID, pos = new Float32Array(list.length * nv * 3), col = new Float32Array(list.length * nv * 3), idx: number[] = [];
   list.forEach((b, bi) => {
     const o = bi * nv;
     for (let i = 0; i < GRID; i++) for (let j = 0; j < GRID; j++) {
       const u = (i / (GRID - 1)) * 2 - 1, w = (j / (GRID - 1)) * 2 - 1, R = 1.9; // the grid reaches well past the footprint: the fade
-      const lx = u * R * b.rx, ld = w * R * b.rd, x = b.x + lx * b.ux - ld * b.ud, d = b.d + lx * b.ud + ld * b.ux;
+      const lx = u * R * b.rx, ld = w * R * b.rd, [x, d] = keep(b.x + lx * b.ux - ld * b.ud, b.d + lx * b.ud + ld * b.ux);
       const g = ground(x, d), p = (o + i * GRID + j) * 3;
       pos[p] = g[0]; pos[p + 1] = g[1] + lift; pos[p + 2] = g[2];
       const rho = Math.hypot(u, w) * R, f = rho >= R ? 0 : Math.exp(-rho * rho * 0.6) * (1 - (rho / R) ** 4), a = lin(b.dark * f);
