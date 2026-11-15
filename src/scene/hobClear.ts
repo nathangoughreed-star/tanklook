@@ -14,6 +14,7 @@ export function hobReach(S: TankSetup): number {
   let reach = 0;
   for (const p of techParts(S)) {
     if (p.gear !== 'filter' || !p.model) continue;
+    if (p.place && p.place.wall !== 'back') continue; // GD1: a filter the owner hung on an end glass does not reach behind the back
     const m = FILTER_MODELS.find(x => x.id === p.model); if (m?.kind !== 'hob') continue;
     const pr = filterProduct(p.product), s = pr?.gph ? Math.cbrt(pr.gph / 100) : Math.cbrt(m.gph / 100), D = pr?.bodyMm.d ?? 105 * s;
     reach = Math.max(reach, HOB_OFF_GLASS + D + (pr?.colors?.accent && /wheel/i.test(pr.colors.accent.where) ? 6 : 0));

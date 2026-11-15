@@ -1,7 +1,7 @@
 // The piece of gear picked in the view (lane GD1, Nathan 2026-11-15: "a click on it, it highlights with its hitbox"). View state only:
 // the viewer draws its box, the shell's Placement group reads it, the arrow keys nudge it. Not saved, no undo step.
 import type { GearPlace } from '../scene/tech';
-import type { GearMount } from './gear3d';
+import type { GearMount, GearPiece } from './gear3d';
 
 export interface GearSelection {
   vi: number; row: string; mount: GearMount;
@@ -20,3 +20,8 @@ export function onGearSel(f: () => void): () => void { subs.add(f); return () =>
 
 /** Click-cycling (lane GD1): a second click at the same spot, with an animal or piece behind the gear, picks what is behind; a third returns to the gear. */
 export const cycle: { last: { x: number; y: number; t: number; vi: number; what: 'gear' | 'under' } | null; skip: boolean } = { last: null, skip: false };
+
+/** The drawn gear pieces of tank `vi` (the viewer sets this; the menu and the drag read it). */
+let source: (vi: number) => GearPiece[] = () => [];
+export const piecesOf = (vi: number): GearPiece[] => source(vi);
+export const setPieceSource = (f: (vi: number) => GearPiece[]) => { source = f; };

@@ -25,7 +25,7 @@ import type { ItemKind, Tank, TankSetup } from '../scene/types';
 import type { Viewer, Viewport } from '../render/viewer';
 import { LIMITS } from '../scene/validate';
 import { groupSize, moveGroup, settleFish, turnGroup, type Group } from '../scene/duplicate';
-import { gearGrab, gearLean, gearMove, pickGear, pickRow, nudgePlace, drawnPlace, withPlace, cycleSkip, cycleNote, type GearDrag } from './gearDrag';
+import { gearGrab, gearLean, gearMove, pickGear, pickRow, nudgePlace, drawnPlace, withPlace, cycleSkip, cycleNote, rimFor, type GearDrag } from './gearDrag';
 import { cycle, gearSel, setGearSel } from '../render/gearSel';
 import { clickTarget, type ClickTarget } from './clickMenu';
 import { MAX_PATCHES, addArea, placeSingle, erasable, erasePatches, extendPath, newPatch, patchAt } from '../scene/brush';
@@ -459,7 +459,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
     const piece = viewer.vps[g.vi]?.scene?.children.flatMap(o => (o.userData.gearPieces ?? []) as import('../render/gear3d').GearPiece[]).find(p => p.row === g.row);
     const from = S.tech?.place?.[g.row] ?? g.from ?? (piece ? drawnPlace(S, piece) : null); if (!from) return;
     e.preventDefault();
-    const p = nudgePlace(S, from, g.mount, k[0] * 6.35, k[1] * 6.35);
+    const p = nudgePlace(S, from, g.mount, k[0] * 6.35, k[1] * 6.35, g.mount === 'rim' ? rimFor(S, g.vi, g.row, from.wall) : undefined);
     store.editTank(g.vi, t => { t.tech = withPlace(t, g.row, p); }); store.seal();
   });
   canvas.addEventListener('pointerup', end);

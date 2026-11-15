@@ -12,7 +12,7 @@ import type { Store } from '../scene/store';
 import type { TankSetup } from '../scene/types';
 import type { Viewer, Viewport } from '../render/viewer';
 import { gearShown, lidTop, onTop, type GearMount, type GearPiece } from '../render/gear3d';
-import { cycle, type GearSelection } from '../render/gearSel';
+import { cycle, piecesOf, type GearSelection } from '../render/gearSel';
 
 /** A piece being dragged: its tank, tech row and mount, whether it has moved, and its half size along x and depth (mm;
  *  what keeps a piece on the top inside the tank's footprint). */
@@ -43,7 +43,7 @@ export function gearGrab(hit: Hit): GearDrag | null {
 }
 
 /** Where the pointer's ray puts a piece with this mount in tank S (shares as TechSetup.place keeps them), or null. */
-export function placeFor(S: TankSetup, ray: THREE.Ray, mount: GearMount, prev?: GearPlace, half: [number, number] = [0, 0], heater = false): GearPlace | null {
+export function placeFor(S: TankSetup, ray: THREE.Ray, mount: GearMount, prev?: GearPlace, half: [number, number] = [0, 0], heater = false, rim?: RimLimits): GearPlace | null {
   const T = S.tank, Db = T.D - backdropDepth(S.backdrop, T), lean = prev?.lean;
   if (mount === 'fixed') return null;
   if (mount === 'lid') {
@@ -59,6 +59,12 @@ export function placeFor(S: TankSetup, ray: THREE.Ray, mount: GearMount, prev?: 
     const y0 = groundHeight(S, T, T.L / 2, T.D / 2), p = ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), -y0), new THREE.Vector3());
     if (!p) return null;
     return { wall: 'floor', at: clamp(p.x / T.L, 0.04, 0.96), y: clamp(-p.z / T.D, 0.06, 0.94) };
+  }
+  if (mount === 'rim' && rim) {
+    // lane GD1: rim gear slides along the rim of the wall it hangs on (back unless the owner moved it): the pointer's ray meets that wall's plane, and the spot is held clear
+    const wall = rim.wall, pl = wall === 'back' ? new THREE.Plane(new THREE.Vector3(0, 0, 1), Db) : new THREE.Plane(new THREE.Vector3(1, 0, 0), wall === 'left' ? 0 : -T.L);
+    const p = ray.intersectPlane(pl, new THREE.Vector3());
+    if (p) { const len = wall === 'back' ? T.L : Db, c = clearSpot(wall === 'back' ? p.x : -p.z, rim); return { wall, at: clamp(c / len, 0, 1) }; }
   }
   // the glass the eye looks at through the tank: where the ray leaves the water's box
   const box = new THREE.Box3(new THREE.Vector3(0, 0, -Db), new THREE.Vector3(T.L, T.H, 0)), far = ray.at(1e5, new THREE.Vector3());
@@ -89,7 +95,7 @@ export function placeFor(S: TankSetup, ray: THREE.Ray, mount: GearMount, prev?: 
 /** Follow the pointer: write the piece's new spot (coalesced into one undo step per drag). */
 export function gearMove(viewer: Viewer, store: Store, g: GearDrag, clientX: number, clientY: number) {
   const hit = viewer.hitTest(clientX, clientY); if (!hit || hit.vp.i !== g.vi) return;
-  const S = store.scene.tanks[g.vi], p = placeFor(S, hit.ray, g.mount, S.tech?.place?.[g.row], g.half, g.row.split('.')[0] === 'heater'); if (!p) return;
+  const S = store.scene.tanks[g.vi], p = placeFor(S, hit.ray, g.mount, S.tech?.place?.[g.row], g.half, g.row.split('.')[0] === 'heater', g.mount === 'rim' ? rimFor(S, g.vi, g.row, S.tech?.place?.[g.row]?.wall) : undefined); if (!p) return;
   if (JSON.stringify(p) === JSON.stringify(S.tech?.place?.[g.row])) return;
   store.editTank(g.vi, t => { t.tech = withPlace(t, g.row, p); }, { coalesce: 'gear-drag' });
   g.moved = true;
@@ -143,13 +149,14 @@ export function pickGear(hit: Hit, S: TankSetup): GearSelection | null {
 
 /** `p` moved `dx` mm along its surface (right / toward the back) and `dy` mm up (a glass mount) or toward the back (floor, top);
  *  a rim piece slides along its wall only. Shares stay inside the same limits placeFor holds. */
-export function nudgePlace(S: TankSetup, p: GearPlace, mount: GearMount, dx: number, dy: number): GearPlace {
+export function nudgePlace(S: TankSetup, p: GearPlace, mount: GearMount, dx: number, dy: number, rim?: RimLimits): GearPlace {
   const T = S.tank, Db = T.D - backdropDepth(S.backdrop, T), q: GearPlace = { ...p };
   if (p.wall === 'floor') { q.at = clamp((p.at ?? 0.5) + dx / T.L, 0.04, 0.96); q.y = clamp((p.y ?? 0.8) - dy / T.D, 0.06, 0.94); return q; }
   if (p.wall === 'lid') { q.at = clamp((p.at ?? 0.5) + dx / T.L, 0, 1); q.y = clamp((p.y ?? 0.5) - dy / T.D, 0, 1); return q; }
   // along a wall: the back runs left to right, a side runs front to back (at 0 = front)
   q.at = clamp((p.at ?? 0) + (p.wall === 'back' || p.wall === 'front' ? dx / T.L : p.wall === 'left' ? dx / Db : -dx / Db), 0, 1);
   if (mount === 'glass') { const wy = waterY(T, S.water.level); q.y = clamp((p.y ?? 0.5) + dy / Math.max(1, wy), 0, 1); }
+  if (mount === 'rim' && rim && rim.wall === p.wall) { const len = p.wall === 'back' ? T.L : Db; q.at = clamp(clearSpot(q.at * len, rim) / len, 0, 1); } // held clear of the corners, braces and other rim gear
   return q;
 }
 
@@ -166,4 +173,49 @@ export function pickRow(viewer: Viewer, store: Store, vi: number, row: string): 
   const piece = pieces.find(p => p.row === row) ?? pieces.find(p => p.row.startsWith(row + '.')); if (!piece || !S) return null;
   const from = S.tech?.place?.[piece.row] ?? drawnPlace(S, piece) ?? undefined;
   return { vi, row: piece.row, mount: piece.mount, ...(from ? { from } : {}) };
+}
+
+// ---------- GD1: the rim ----------
+
+/** Where rim gear may sit along the wall it hangs on (mm along the wall: x on the back, depth from the front on an end): `lo`..`hi` clear of the corners
+ *  (and an eurobrace's end strips), `blocked` = spans the centre must keep a body half-width `hw` off (the brace's cross strips, other rim gear). */
+export interface RimLimits { wall: 'back' | 'left' | 'right'; lo: number; hi: number; hw: number; blocked: [number, number][] }
+
+/** The nearest centre to `c` that fits: inside the limits and off every blocked span; `c` held inside the limits when nothing is free. */
+export function clearSpot(c: number, r: Pick<RimLimits, 'lo' | 'hi' | 'hw' | 'blocked'>): number {
+  const ok = (x: number) => x - r.hw >= r.lo - 1e-6 && x + r.hw <= r.hi + 1e-6 && !r.blocked.some(([a, b]) => x + r.hw > a && x - r.hw < b);
+  const cl = clamp(c, r.lo + r.hw, Math.max(r.lo + r.hw, r.hi - r.hw));
+  if (ok(cl)) return cl;
+  const cands = [r.lo + r.hw, r.hi - r.hw, ...r.blocked.flatMap(([a, b]) => [a - r.hw, b + r.hw])].filter(ok);
+  return cands.length ? cands.reduce((m, x) => Math.abs(x - cl) < Math.abs(m - cl) ? x : m) : cl;
+}
+
+const RIM_GAP = 10;
+/** The limits for `row` on `wall` of tank `vi`, read from the gear as drawn now (the other rim pieces) and the tank's brace. */
+export function rimFor(S: TankSetup, vi: number, row: string, wall: GearPlace['wall'] | undefined): RimLimits {
+  const T = S.tank, w: RimLimits['wall'] = wall === 'left' || wall === 'right' ? wall : 'back', Db = T.D - backdropDepth(S.backdrop, T), len = w === 'back' ? T.L : Db;
+  const pieces = piecesOf(vi), mine = pieces.find(p => p.row === row);
+  const spanOn = (b: THREE.Box3, on: string): [number, number] => on === 'back' ? [b.min.x, b.max.x] : [-b.max.z, -b.min.z], span = (b: THREE.Box3) => spanOn(b, w);
+  const here = S.tech?.place?.[row]?.wall ?? 'back'; // the piece is measured on the wall it hangs on now: its width is what must fit the wall it is going to
+  // the body: the core's width over the lip's share of it (hob() draws the lip 0.8 of the body wide)
+  const c = mine ? spanOn(mine.core ?? mine.box, here) : [0, 0], hw = mine?.core ? Math.max(30, (c[1] - c[0]) / 2 / 0.8) : Math.max(30, (c[1] - c[0]) / 2);
+  const br = S.render.brace && !S.render.rim ? S.render.brace : undefined, margin = Math.max(10, br ? br.width + 4 : 0), blocked: [number, number][] = [];
+  if (br && w === 'back') {
+    const n = Math.round(br.cross ?? 0), cw = br.crossWidth ?? br.width;
+    for (let i = 0; i < n; i++) { const m = T.L * (i + 1) / (n + 1), a = m - cw / 2 + 0.2 * hw, b = m + cw / 2 - 0.2 * hw; blocked.push([Math.min(a, m - 1), Math.max(b, m + 1)]); } // the lip (0.8 of the body) is what meets a strip
+  }
+  for (const p of pieces) {
+    if (p.row === row || p.mount !== 'rim') continue;
+    if ((S.tech?.place?.[p.row]?.wall ?? 'back') !== w) continue;
+    const [a, b] = span(p.core ?? p.box); blocked.push([a - RIM_GAP, b + RIM_GAP]);
+  }
+  return { wall: w, lo: margin, hi: len - margin, hw, blocked };
+}
+
+/** A rim piece moved to another wall's rim, centred as far as it can be (the menu's "Hangs on"). Null when it cannot hang there. */
+export function hangOn(S: TankSetup, vi: number, row: string, wall: 'back' | 'left' | 'right'): GearPlace | null {
+  const r = rimFor(S, vi, row, wall), T = S.tank, len = wall === 'back' ? T.L : T.D - backdropDepth(S.backdrop, T);
+  if (r.hi - r.lo < 2 * r.hw) return null;
+  const c = clearSpot(len / 2, r);
+  return { wall, at: clamp(c / len, 0, 1) };
 }

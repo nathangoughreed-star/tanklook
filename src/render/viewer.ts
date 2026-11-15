@@ -24,7 +24,7 @@ import { SWAY } from './plant3d';
 import { capping, rimHeadroom } from './items';
 import { PERSON_BODY, PERSON_HEAD } from '../art/placeholder';
 import { inFocus, type FocusSec } from './menuFocus';
-import { gearSel, onGearSel } from './gearSel';
+import { gearSel, onGearSel, setPieceSource } from './gearSel';
 import type { GearPiece } from './gear3d';
 /** How far the rest of the view fades toward the room while a menu focuses it (the painted-patch fade is 0.68). */
 const MENU_FADE = 0.55;
@@ -387,6 +387,7 @@ export class Viewer {
     onPerf(() => { if (perf.level !== shownLevel) { shownLevel = perf.level; this.applyLevel(); this.causReset(); } });
     store.subscribe(kind => { if (kind !== 'view') this.needsBuild = true; if (kind === 'load') this.revealNext = true; this.dirty = true; });
     onGearSel(() => { this.syncGearSel(); this.dirty = true; });
+    setPieceSource(vi => this.vps[vi]?.scene?.children.flatMap(o => (o.userData.gearPieces ?? []) as GearPiece[]) ?? []);
     // visual-fidelity switches (render/fx.ts): shader ones are uniforms (a redraw), build-time ones (contact, variety) rebuild
     onFx((_, ch) => { if (ch.includes('caustics')) this.causReset(); if (ch.some(k => k === 'contact' || k === 'ground' || k === 'variety' || k === 'embed' || k === 'mix' || k === 'sand')) this.rebuild(); else this.invalidate(); });
     for (const ev of ['pointermove', 'pointerdown', 'wheel', 'keydown'] as const) window.addEventListener(ev, () => this.noteInput(), { passive: true });

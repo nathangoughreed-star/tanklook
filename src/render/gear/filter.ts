@@ -44,7 +44,7 @@ export function hob(f: Frame, m: FilterModel, sp: Spot, pr?: FilterProduct) {
   const at = (k: number, side: number) => Pg(uL + side * w2, lipY - drop * k, lipB + 10 * Math.sqrt(k) * s).toArray();
   for (let i = 0; i < n; i++) { const a0 = i / n, a1 = (i + 1) / n; pos.push(...at(a0, -1), ...at(a0, 1), ...at(a1, 1), ...at(a0, -1), ...at(a1, 1), ...at(a1, -1)); }
   sg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); sg.computeVertexNormals();
-  kit.put('clear', sg, C.water, undefined, 0.2);
+  kit.put('clear', sg, C.water, undefined, 0.2); kit.lines.add(kit.parts.clear[kit.parts.clear.length - 1]); // (the falling water is not the body: GD1's outline and rim limits leave it out)
   // the flow's ripples on the surface where the sheet lands
   // (kept inside the glass: the rings shrink to the room the tank has either side of the lip and in front of it)
   const rk = Math.min(1, (Math.min(uL, f.len - uL) - 8) / (W * 0.9), (f.T.D - lipB - 20) / (W * 0.4));
@@ -52,7 +52,7 @@ export function hob(f: Frame, m: FilterModel, sp: Spot, pr?: FilterProduct) {
     const rr = W * 0.36 * k * Math.max(0.1, rk), ring = new THREE.RingGeometry(rr, rr + 1.6, 40, 1, 0, Math.PI);
     ring.rotateX(-Math.PI / 2); ring.scale(1, 1, 0.45); ring.rotateY(f.wall === 'left' ? -Math.PI / 2 : f.wall === 'right' ? Math.PI / 2 : 0);
     const c = Pg(uL, f.wy + 0.6, lipB + 10);
-    kit.put('clear', ring, C.water, new THREE.Matrix4().makeTranslation(c.x, c.y, c.z), 0.18 * w);
+    kit.put('clear', ring, C.water, new THREE.Matrix4().makeTranslation(c.x, c.y, c.z), 0.18 * w); kit.lines.add(kit.parts.clear[kit.parts.clear.length - 1]);
   }
   // intake: a smoky tube from the box over the glass and down, its slotted strainer at the foot
   const ib = 22;

@@ -11,7 +11,7 @@ import {
 import { LightingGroup } from './lighting';
 import { artOf } from './logic/gearArt';
 import { gearSel, onGearSel } from '../render/gearSel';
-import { orientOf, withOrient, type Orient } from '../interact/gearDrag';
+import { orientOf, withOrient, hangOn, type Orient } from '../interact/gearDrag';
 import { Group, Icon, Pill } from './ui';
 import { openSection, OPEN_EVENT } from './open';
 import { takeOpen } from './logic/sections';
@@ -111,10 +111,14 @@ function PlacementGroup({ store }: { store: Store }) {
   if (!g || !S) return <Group title="Placement" sum="click a piece in the tank" open={open} onToggle={() => setOpen(!open)}><div class="hint">Click a piece of equipment in the tank to pick it. Drag it along where it can mount; the arrow keys nudge it 0.25 in; Esc lets go.</div></Group>;
   const place = S.tech?.place?.[g.row] ?? g.from, cur = orientOf(place?.lean);
   const set = (o: Orient) => { if (!place) return; store.editTank(g.vi, t => { const tech = t.tech ?? { rows: {} }; t.tech = { ...tech, place: { ...tech.place, [g.row]: withOrient(place, o) } }; }); store.seal(); };
+  const rimWall = (S.tech?.place?.[g.row]?.wall ?? 'back') as string, walls = [['back', 'Back'], ['left', 'Left end'], ['right', 'Right end']] as const;
+  const peninsula = (w: string) => S.wall.show && S.wall.side === w; // that end is against the room wall
+  const hang = (w: 'back' | 'left' | 'right') => { const p = hangOn(S, g.vi, g.row, w); if (!p) return; store.editTank(g.vi, t => { const tech = t.tech ?? { rows: {} }; t.tech = { ...tech, place: { ...tech.place, [g.row]: p } }; }); store.seal(); };
   const where = g.mount === 'rim' ? 'slides along the top rim' : g.mount === 'glass' ? 'drags on the inside glass' : g.mount === 'floor' ? 'drags on the substrate' : 'moves on the top';
   return (
     <Group title="Placement" sum={`${g.row.split('.')[0]} picked`} open={open} onToggle={() => setOpen(!open)}>
       {isHeater && place?.wall === 'floor' ? <div class="hint">Lying on the substrate. Drag it onto a glass face to stand it up or angle it.</div> : isHeater ? <div class="row"><span class="lbl">Orientation</span><span class="chips" role="group" aria-label="Heater orientation">{ORIENTS.map(o => <button type="button" class={`chip${cur === o.id ? ' on' : ''}`} aria-pressed={cur === o.id} data-orient={o.id} onClick={() => set(o.id)}>{o.label}</button>)}</span><span /></div> : null}
+      {g.mount === 'rim' ? <div class="row"><span class="lbl">Hangs on</span><span class="chips" role="group" aria-label="Rim edge">{walls.map(([w, label]) => <button type="button" class={`chip${rimWall === w ? ' on' : ''}`} aria-pressed={rimWall === w} disabled={peninsula(w)} title={peninsula(w) ? 'That end is against the room wall' : undefined} data-rimwall={w} onClick={() => hang(w)}>{label}</button>)}</span><span /></div> : null}
       <div class="hint">This one {where}. Arrow keys nudge it 0.25 in; Esc lets go.</div>
     </Group>
   );

@@ -118,3 +118,37 @@ describe('click cycle and tight boxes', () => {
     expect(all.some(p => p.core && vol(p.core) < vol(p.box) * 0.9)).toBe(true);
   });
 });
+
+describe('rim gear: corners, braces, other gear, which edge', () => {
+  it('clearSpot holds a body inside the limits and off blocked spans, taking the nearest free spot', async () => {
+    const { clearSpot } = await import('../src/interact/gearDrag');
+    const r = { lo: 10, hi: 610, hw: 60, blocked: [[290, 310]] as [number, number][] };
+    expect(clearSpot(5, r)).toBe(70); expect(clearSpot(9999, r)).toBe(550); // corners
+    expect(clearSpot(150, r)).toBe(150);
+    expect(clearSpot(300, r)).toBe(230); // off the strip at 290..310 on the near side...
+    expect(clearSpot(330, r)).toBe(370); // ...or the far side, whichever is nearer
+    expect(clearSpot(300, { ...r, hi: 130 })).toBe(70); // no room: held inside
+  });
+  it('a HOB clamps clear of a cross brace strip and another piece on the same rim', async () => {
+    const { rimFor, clearSpot } = await import('../src/interact/gearDrag');
+    const { setPieceSource } = await import('../src/render/gearSel');
+    const S = ex('planted'); S.render = { ...S.render, rim: false, brace: { width: 40, thickness: 6, cross: 1, crossWidth: 40 } };
+    const T = S.tank, mk = (row: string, x0: number, x1: number) => ({ row, id: row, mount: 'rim' as const, box: new THREE.Box3(new THREE.Vector3(x0, 0, -T.D - 60), new THREE.Vector3(x1, 100, -T.D)) });
+    setPieceSource(() => [mk('filter', 100, 200), mk('skimmer', 400, 440)]);
+    const r = rimFor(S, 0, 'filter', 'back');
+    expect(r.lo).toBeGreaterThanOrEqual(44); expect(r.blocked.length).toBe(2);
+    const c = clearSpot(T.L / 2, r), strip = [T.L / 2 - 20, T.L / 2 + 20];
+    expect(c + r.hw <= strip[0] + 0.2 * r.hw + 1e-6 || c - r.hw >= strip[1] - 0.2 * r.hw - 1e-6).toBe(true);
+    setPieceSource(() => []);
+  });
+  it('a HOB hung on an end glass is drawn there, and no longer pushes the back wall out', async () => {
+    const { hobWallGap } = await import('../src/scene/hobClear');
+    const base = ex('planted'); delete base.tech; base.wall = { ...base.wall, show: true, side: 'back' };
+    const hob = { ...base, tech: { rows: { ...techOfRows(base), filter: 'hob' } } } as TankSetup;
+    const g0 = hobWallGap(hob);
+    const side = { ...hob, tech: withPlace(hob, 'filter', { wall: 'left', at: 0.5 }) };
+    expect(hobWallGap(side)).toBeLessThan(g0 || 1);
+    const pc = pieces(side).find(p => p.row === 'filter')!; expect(pc.box.getCenter(new THREE.Vector3()).x).toBeLessThan(hob.tank.L * 0.2); // against the left glass
+  });
+});
+function techOfRows(S: TankSetup) { return (S.tech?.rows ?? {}) as Record<string, string>; }
