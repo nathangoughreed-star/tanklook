@@ -47,7 +47,7 @@ describe('Animals picker view', () => {
     const b = addSpecies(st, sp('neon'));
     expect(b).toMatchObject({ ok: false });
     expect((b as { why: string }).why).toMatch(/already in the stocking list/);
-    expect(pickView(st.tank, 'in', 'sandbox', fitter(), { q: 'neon', fitsOnly: false }).groups.flatMap(g => g.rows).find(r => r.id === 'neon')!.inTank).toBe(n);
+    expect(pickView(st.tank, 'in', 'sandbox', fitter(), { q: 'neon', fitsOnly: false }).groups.flatMap(g => g.rows).find(r => r.id === 'neon')).toBeUndefined(); // R51: in-tank species leave the tiles; their count lives in the stock rows
   });
 });
 
