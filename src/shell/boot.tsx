@@ -53,7 +53,7 @@ export function bootShell() {
 
   viewer = new Viewer(canvas, viewHost, store);
   applyViewPrefs(viewer, viewHost);
-  attachPointer(viewer, store, (what, kind) => (what === 'fish' && pickable.fish) || (what === 'items' && pickItems.sec != null && scapeSec(kind ?? 'stone') === pickItems.sec),
+  attachPointer(viewer, store, (what, kind) => what === 'gear' || (what === 'fish' && pickable.fish) || (what === 'items' && pickItems.sec != null && scapeSec(kind ?? 'stone') === pickItems.sec),
     t => openClicked(t, store, scapeSec)); // animals only, while Animals is open (step 4); the other pieces come with their sections; a click on a thing opens it (CM2)
   // a share link (#tank=...) opens its tank; the hash is dropped so a reload keeps the visitor's edits (as the old shell does)
   const openLink = () => {

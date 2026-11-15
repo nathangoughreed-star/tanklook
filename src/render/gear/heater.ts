@@ -25,8 +25,11 @@ export function heater(f: Frame, watts: number, sp: Spot, product?: string) {
   // of the two and a generic tube is cut to it. An owner's lean snaps to the nearer of the two (still vertical / flat when only one fits).
   const room2 = Math.max(0, f.len - 52 - 2 * r - 6), len = hp ? Math.max(40, hp.lengthMm - cl - fe) : Math.max(60, Math.min(heaterLength(watts), Math.max(room, room2) - cl));
   const vfits = len + cl <= room, hfits = len + cl <= room2;
-  const flat = sp.lean != null && Math.abs(sp.lean) >= 45 ? hfits || !vfits : !vfits && (hfits || room2 >= room);
-  const tilt = flat ? Math.PI / 2 : 0, sgn = (sp.lean ?? 1) < 0 ? -1 : 1, span = (len + cl) * Math.sin(tilt); // along the glass, cap included
+  // lane GD1 (Nathan 2026-11-15): the owner may ask for Angled (a lean of 45 degrees) from the menu; it stays only when asked, never the default
+  const angled = sp.lean != null && Math.abs(sp.lean) >= 22.5 && Math.abs(sp.lean) < 67.5;
+  const ownerFlat = len + cl <= Math.max(0, f.len - 2 * r - 16); // Horizontal asked for by name: it only needs to clear both end glasses, not the full corner margin
+  const flat = !angled && (sp.lean != null && Math.abs(sp.lean) >= 45 ? hfits || ownerFlat || !vfits : !vfits && (hfits || room2 >= room));
+  const tilt = flat ? Math.PI / 2 : angled ? Math.PI / 4 : 0, sgn = (sp.lean ?? 1) < 0 ? -1 : 1, span = (len + cl) * Math.sin(tilt); // along the glass, cap included
   const wH = 2 * r + 6 + span, u = clamp(f.slot(sp.fixed ? u0 : u0 + span / 2, wH, g0, f.wy, 0, 2 * r + 12, sp.fixed), wH / 2 + 8, Math.max(wH / 2 + 8, f.len - wH / 2 - 8)); // never through an end glass
   // the cap's top: at most 15 mm under the water line, at least the heater's height off the ground (the owner's height
   // share between; default: high when upright, low when lying flat)

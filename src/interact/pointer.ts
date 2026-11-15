@@ -25,7 +25,8 @@ import type { ItemKind, Tank, TankSetup } from '../scene/types';
 import type { Viewer, Viewport } from '../render/viewer';
 import { LIMITS } from '../scene/validate';
 import { groupSize, moveGroup, settleFish, turnGroup, type Group } from '../scene/duplicate';
-import { gearGrab, gearLean, gearMove, type GearDrag } from './gearDrag';
+import { gearGrab, gearLean, gearMove, pickGear, nudgePlace, drawnPlace, withPlace, type GearDrag } from './gearDrag';
+import { gearSel, setGearSel } from '../render/gearSel';
 import { clickTarget, type ClickTarget } from './clickMenu';
 import { MAX_PATCHES, addArea, placeSingle, erasable, erasePatches, extendPath, newPatch, patchAt } from '../scene/brush';
 
@@ -238,7 +239,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       viewer.terrainEdit.hot = hit.dot; viewer.rebuild();
       return;
     }
-    if (editable && hit.dot == null && !hit.pool && canPick('gear') && (gear = gearGrab(hit))) return; // gear moves only while Tech is open (Nathan 2026-10-20)
+    if (editable && hit.dot == null && !hit.pool && canPick('gear') && (gear = gearGrab(hit))) { store.select(null); setGearSel(pickGear(hit, store.scene.tanks[vi])); return; } // GD1: the piece is picked and its box drawn // gear moves only while Tech is open (Nathan 2026-10-20)
     if (editable && hit.itemId != null && hit.mesh && (canPick('items', store.scene.tanks[vi].items.find(q => q.id === hit!.itemId)?.kind ?? 'stone') || (store.groupCount > 1 && store.inGroup('item', hit.itemId)))) {
       const inGroup = store.groupCount > 1 && store.inGroup('item', hit.itemId);
       if (inGroup) store.lead('item', hit.itemId); else store.selectItem(hit.itemId);
@@ -421,8 +422,8 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
     if (orbit && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) {
       const hit = focus ? viewer.hitTest(e.clientX, e.clientY) : null, t = hit && store.isEditing(hit.vp.i) ? clickTarget(viewer, store, hit) : null;
       if (viewer.handleAt(e.clientX, e.clientY) && viewer.standAt(e.clientX, e.clientY) && (!t || t.kind === 'stand')) { tankView.standOpen = !tankView.standOpen; viewer.rebuild(); } // only from the handle box (CB1); the stand's options open on any other click
-      else if (t) focus!(t);
-      else if (patchPick != null) store.selectPatch(patchPick); else store.select(null);
+      else if (t) { if (t.kind !== 'gear') setGearSel(null); focus!(t); }
+      else { setGearSel(null); if (patchPick != null) store.selectPatch(patchPick); else store.select(null); }
     }
     else if (e.type === 'pointerup' && store.groupCount <= 1) { // a click (no drag) on a piece / animal whose menu is open: show its editor
       if (move && !move.moved) focus?.({ kind: 'item', id: move.id, item: store.scene.tanks[move.vp.i].items.find(q => q.id === move!.id)?.kind ?? 'stone' });
@@ -433,6 +434,20 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
     if (pool) { viewer.terrainEdit.poolHot = null; viewer.rebuild(); }
     drag = orbit = lift = move = pool = null; viewer.unpinOrbit(); canvas.classList.remove('dragging');
   };
+  // GD1: a picked piece of gear is nudged 0.25 in by the arrow keys along its surface (Up / Down: its height on glass, its depth on the floor or top); Esc lets go
+  store.subscribe(k => { if (k === 'select' && (store.selId != null || store.selItem != null)) setGearSel(null); });
+  addEventListener('keydown', e => {
+    const g = gearSel(); if (!g || e.ctrlKey || e.metaKey || e.altKey) return;
+    const el = e.target as HTMLElement | null; if (el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName))) return;
+    if (e.key === 'Escape') { setGearSel(null); return; }
+    const k = ({ ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] } as Record<string, [number, number]>)[e.key]; if (!k) return;
+    const S = store.scene.tanks[g.vi]; if (!S) return;
+    const piece = viewer.vps[g.vi]?.scene?.children.flatMap(o => (o.userData.gearPieces ?? []) as import('../render/gear3d').GearPiece[]).find(p => p.row === g.row);
+    const from = S.tech?.place?.[g.row] ?? g.from ?? (piece ? drawnPlace(S, piece) : null); if (!from) return;
+    e.preventDefault();
+    const p = nudgePlace(S, from, g.mount, k[0] * 6.35, k[1] * 6.35);
+    store.editTank(g.vi, t => { t.tech = withPlace(t, g.row, p); }); store.seal();
+  });
   canvas.addEventListener('pointerup', end);
   canvas.addEventListener('pointercancel', end);
 

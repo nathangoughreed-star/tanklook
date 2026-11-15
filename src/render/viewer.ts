@@ -24,6 +24,8 @@ import { SWAY } from './plant3d';
 import { capping, rimHeadroom } from './items';
 import { PERSON_BODY, PERSON_HEAD } from '../art/placeholder';
 import { inFocus, type FocusSec } from './menuFocus';
+import { gearSel, onGearSel } from './gearSel';
+import type { GearPiece } from './gear3d';
 /** How far the rest of the view fades toward the room while a menu focuses it (the painted-patch fade is 0.68). */
 const MENU_FADE = 0.55;
 
@@ -384,6 +386,7 @@ export class Viewer {
     let shownLevel = perf.level;
     onPerf(() => { if (perf.level !== shownLevel) { shownLevel = perf.level; this.applyLevel(); this.causReset(); } });
     store.subscribe(kind => { if (kind !== 'view') this.needsBuild = true; if (kind === 'load') this.revealNext = true; this.dirty = true; });
+    onGearSel(() => { this.syncGearSel(); this.dirty = true; });
     // visual-fidelity switches (render/fx.ts): shader ones are uniforms (a redraw), build-time ones (contact, variety) rebuild
     onFx((_, ch) => { if (ch.includes('caustics')) this.causReset(); if (ch.some(k => k === 'contact' || k === 'ground' || k === 'variety' || k === 'embed' || k === 'mix' || k === 'sand')) this.rebuild(); else this.invalidate(); });
     for (const ev of ['pointermove', 'pointerdown', 'wheel', 'keydown'] as const) window.addEventListener(ev, () => this.noteInput(), { passive: true });
@@ -607,6 +610,18 @@ export class Viewer {
 
   onDrawn(fn: () => void) { this.drawnListeners.add(fn); }
   invalidate() { this.dirty = true; }
+  /** GD1: the picked gear piece's box, drawn over everything in the tank's own scene (re-found after every build: the gear is rebuilt when it moves). */
+  private syncGearSel() {
+    const sel = gearSel();
+    for (const vp of this.vps) {
+      const sc = vp.scene; if (!sc) continue;
+      for (const o of sc.children.filter(c => c.userData.gearSelBox)) { sc.remove(o); (o as THREE.LineSegments).geometry.dispose(); }
+      if (!sel || sel.vi !== vp.i || !this.store.isEditing(vp.i)) continue;
+      const piece = sc.children.flatMap(o => (o.userData.gearPieces ?? []) as GearPiece[]).find(p => p.row === sel.row); if (!piece) continue;
+      const box = piece.box.clone().expandByScalar(3), h = new THREE.Box3Helper(box, new THREE.Color(0xffc83d));
+      const m = h.material as THREE.LineBasicMaterial; m.depthTest = false; m.transparent = true; h.renderOrder = 20; h.userData.gearSelBox = true; sc.add(h);
+    }
+  }
   /** Rebuild on the next frame (UI-only state that changes the scene, like terrain editing). */
   rebuild() { this.needsBuild = this.dirty = true; this.built = []; } // always a full build (textures loaded, terrain dots)
   /** Apply pending store edits to the scenes now, without drawing (an AR session draws itself: render/ar.ts). */
@@ -707,6 +722,7 @@ export class Viewer {
       }
       this.built[vp.i] = { env, look };
     }
+    this.syncGearSel();
     this.setFrostPlain(levelOf().frostPlain); // a rebuilt film takes the level's look before its programs are linked
     this.needsBuild = false;
   }
@@ -843,7 +859,7 @@ export class Viewer {
       // the Show boxes (Animals / Plants / Hardscape; Equipment is gear3d's own setGearShown): unticked ones are left out, exports too
       if (this.hidden.size) for (const o of vp.scene!.children) if (o.visible && this.isHidden(o)) { o.visible = false; held.push(o); }
       // the owner's dashed space outline is a planning aid: never in a PNG export or a thumbnail (Nathan 2026-10-21)
-      if (this.exporting) vp.scene!.traverse(o => { if (o.visible && o.userData.spaceOutline) { o.visible = false; held.push(o); } });
+      if (this.exporting) vp.scene!.traverse(o => { if (o.visible && (o.userData.spaceOutline || o.userData.gearSelBox)) { o.visible = false; held.push(o); } });
       // a painted patch being edited (render/brushmesh.ts): the rest of the tank is drawn, faded toward the room, then the patch over it
       let focus = vp.scene!.children.filter(o => o.userData.focus && o.visible), fade = 0.68;
       // menu focus (render/menuFocus.ts): the open Tech / Animals / Hardscape / Plants menu's parts, the rest faded; never in an export

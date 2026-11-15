@@ -12,6 +12,7 @@ import type { Store } from '../scene/store';
 import type { TankSetup } from '../scene/types';
 import type { Viewer, Viewport } from '../render/viewer';
 import { gearShown, lidTop, onTop, type GearMount, type GearPiece } from '../render/gear3d';
+import type { GearSelection } from '../render/gearSel';
 
 /** A piece being dragged: its tank, tech row and mount, whether it has moved, and its half size along x and depth (mm;
  *  what keeps a piece on the top inside the tank's footprint). */
@@ -73,7 +74,7 @@ export function placeFor(S: TankSetup, ray: THREE.Ray, mount: GearMount, prev?: 
   if (mount === 'glass') {
     const g = groundHeight(S, T, clamp(out.x, 1, T.L - 1), clamp(-out.z, 1, T.D - 1)), wy = waterY(T, S.water.level);
     place.y = clamp((out.y - g) / Math.max(1, wy - g), 0, 1);
-    if (lean != null) place.lean = Math.abs(lean) >= 45 ? Math.sign(lean) * 90 : 0; // upright or flat, never diagonal (GM8b)
+    if (lean != null) place.lean = snapLean(lean); // upright, flat or the owner's Angled; nothing in between (GM8b, GD1)
   }
   return place;
 }
@@ -107,4 +108,40 @@ export function gearLean(viewer: Viewer, store: Store, clientX: number, clientY:
   const now = from.lean ?? (piece.box.getSize(new THREE.Vector3()).y < 60 ? 90 : 0), lean = Math.abs(now) >= 45 ? 0 : 90; // Shift + wheel toggles upright / flat (GM8b: no diagonals)
   store.editTank(g.vi, t => { t.tech = withPlace(t, g.row, { ...from, lean }); }, { coalesce: 'gear-lean' });
   return true;
+}
+
+// ---------- GD1: picking, orientation, nudging ----------
+
+/** A lean snapped to the three the menu offers: 0 Vertical, +-45 Angled, +-90 Horizontal. */
+export function snapLean(lean: number): number { const a = Math.abs(lean), g = Math.sign(lean) || 1; return a >= 67.5 ? g * 90 : a >= 22.5 ? g * 45 : 0; }
+export type Orient = 'vertical' | 'horizontal' | 'angled';
+export const orientOf = (lean: number | undefined): Orient => { const l = Math.abs(snapLean(lean ?? 0)); return l === 90 ? 'horizontal' : l === 45 ? 'angled' : 'vertical'; };
+const LEAN: Record<Orient, number> = { vertical: 0, horizontal: 90, angled: 45 };
+/** The spot with its heater's orientation set (the glass face and place along it stay). */
+export const withOrient = (p: GearPlace, o: Orient): GearPlace => ({ ...p, lean: LEAN[o] });
+
+/** Where a piece is drawn now as a spot (its box's middle put back on its mount), for a piece the file has no spot for yet. */
+export function drawnPlace(S: TankSetup, piece: GearPiece): GearPlace | null {
+  const c = piece.box.getCenter(new THREE.Vector3());
+  return placeFor(S, new THREE.Ray(new THREE.Vector3(c.x, c.y, 5000), new THREE.Vector3(0, 0, -1)), piece.mount === 'rim' || piece.mount === 'glass' ? 'glass' : piece.mount);
+}
+
+/** The picked gear in the view: the piece under `hit`, with its spot as drawn. */
+export function pickGear(hit: Hit, S: TankSetup): GearSelection | null {
+  const g = gearGrab(hit); if (!g) return null;
+  const piece = hit.vp.scene!.children.flatMap(o => (o.userData.gearPieces ?? []) as GearPiece[]).find(p => p.row === g.row);
+  const from = S.tech?.place?.[g.row] ?? (piece ? drawnPlace(S, piece) ?? undefined : undefined);
+  return { vi: g.vi, row: g.row, mount: g.mount, ...(from ? { from } : {}) };
+}
+
+/** `p` moved `dx` mm along its surface (right / toward the back) and `dy` mm up (a glass mount) or toward the back (floor, top);
+ *  a rim piece slides along its wall only. Shares stay inside the same limits placeFor holds. */
+export function nudgePlace(S: TankSetup, p: GearPlace, mount: GearMount, dx: number, dy: number): GearPlace {
+  const T = S.tank, Db = T.D - backdropDepth(S.backdrop, T), q: GearPlace = { ...p };
+  if (p.wall === 'floor') { q.at = clamp((p.at ?? 0.5) + dx / T.L, 0.04, 0.96); q.y = clamp((p.y ?? 0.8) - dy / T.D, 0.06, 0.94); return q; }
+  if (p.wall === 'lid') { q.at = clamp((p.at ?? 0.5) + dx / T.L, 0, 1); q.y = clamp((p.y ?? 0.5) - dy / T.D, 0, 1); return q; }
+  // along a wall: the back runs left to right, a side runs front to back (at 0 = front)
+  q.at = clamp((p.at ?? 0) + (p.wall === 'back' ? dx / T.L : p.wall === 'left' ? dx / Db : -dx / Db), 0, 1);
+  if (mount === 'glass') { const wy = waterY(T, S.water.level); q.y = clamp((p.y ?? 0.5) + dy / Math.max(1, wy), 0, 1); }
+  return q;
 }
