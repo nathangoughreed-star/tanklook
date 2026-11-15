@@ -2,6 +2,7 @@
 // the tank placed anywhere on it. The room (wall, scale person) then sits relative to the table's edge (answer 5).
 // Footprint coordinates as in shape.ts: (x, depth), depth growing toward the back.
 import { WALL_GAP, clamp, glassThickness } from './physics';
+import { hobWallGap } from './hobClear';
 import { bulge, offsetRing, type P } from './shape';
 import type { Tank, TableSettings, TankSetup } from './types';
 
@@ -106,7 +107,11 @@ export function cornerWalls(S: TankSetup, T: Tank) {
  * Distance (mm) from the tank (or table) to the room wall, whichever way it stands; older files: WALL_GAP. At least 1 mm,
  * so a background film (0.5 mm outside the glass) stays in front of the wall.
  */
-export const wallGap = (S: TankSetup) => Math.max(1, S.wall.gap ?? WALL_GAP);
+export const wallGap = (S: TankSetup) => Math.max(1, S.wall.gap ?? WALL_GAP, hobGap(S)); // never closer than the person set; a hang-on-back filter pushes it out (lane HC1)
+/** The gap a hang-on-back filter needs; none on a table (the wall stands off the table's edge, which is behind the tank). */
+const hobGap = (S: TankSetup) => (tableOn(S) ? 0 : hobWallGap(S));
+/** Words for the Distance-to-wall readout when a hang-on-back filter has moved the wall out past the person's own setting; '' otherwise. */
+export const wallGapNote = (S: TankSetup) => (hobGap(S) > Math.max(1, S.wall.gap ?? WALL_GAP) ? 'moved out for the HOB filter' : '');
 
 /** Where the room wall stands, in world coordinates: back = its z; ends = its x. */
 export function wallPlane(S: TankSetup, T: Tank) {

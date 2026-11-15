@@ -14,6 +14,8 @@ const HOB_MARGIN = 10;
 export function hob(f: Frame, m: FilterModel, sp: Spot, pr?: FilterProduct) {
   const { kit, t } = f, s = pr?.gph ? Math.cbrt(pr.gph / 100) : flowScale(m, 100), yTop = f.H + 28;
   // the body fits the glass it hangs on (lane FL2, 2026-11-06): never wider than the wall less a margin each end, and its motor never lower than the floor
+  // with a 3D background the parts over and inside the glass keep their place against the glass (not the background's front face), so the body, lip and intake stay one rigid piece; the background gets a notch for them
+  const bd = f.wall === 'back' ? backdropDepth(f.S.backdrop, f.T) : 0, Pg = (u: number, y: number, b: number) => f.P(u, y, 0).addScaledVector(f.inward, b - bd);
   const M = HOB_MARGIN, W = Math.min(pr?.bodyMm.w ?? 150 * s, Math.max(60, f.len - 2 * M)), D = pr?.bodyMm.d ?? 105 * s, Hb = Math.max(60, Math.min(pr?.bodyMm.h ?? 170 * s, yTop - 40 - f.floor));
   // a real product (lane TG step 3): its own colours part by part; an intake shorter than the tank leaves the strainer up in the water
   const L = pr?.colors, body = partOf(L?.body, C.charcoal, 'room'), lid = partOf(L?.lid, C.grey, 'room'), motor = hexOr(L?.motor?.hex, C.black);
@@ -35,29 +37,34 @@ export function hob(f: Frame, m: FilterModel, sp: Spot, pr?: FilterProduct) {
   if (L?.accent && !/wheel|window/i.test(L.accent.where)) f.box('room', f.P(u - W * 0.3, yTop + 8.5, bF - D * 0.25), W * 0.22, 2, D * 0.18, hexOr(L.accent.hex, C.grey), 1); // a coloured latch / tab on top (Seachem blue)
   if (L?.accent && /wheel/i.test(L.accent.where)) kit.rod('room', f.P(u + W * 0.3, yTop - Hb * 0.35, bF - D), f.P(u + W * 0.3, yTop - Hb * 0.35, bF - D - 6), Hb * 0.3, hexOr(L.accent.hex, C.grey), { seg: 28 }); // a Bio-Wheel at the back
   // hanger over the glass and the spillway lip into the tank, with the sheet of water falling off it
-  f.box(lip.bk, f.P(u + W * 0.08, f.H + 14, (24 - t) / 2), W * 0.8, 6, 24 + t + 8, lip.c, 2, lip.base);
+  f.box(lip.bk, Pg(u + W * 0.08, f.H + 14, (24 - t) / 2), W * 0.8, 6, 24 + t + 8, lip.c, 2, lip.base);
   const lipB = 30 * s, lipY = f.H + 10, uL = u + W * 0.08;
-  f.box(lip.bk, f.P(uL, lipY, lipB / 2), W * 0.7, 4, lipB, lip.c, 1.5, lip.base);
+  f.box(lip.bk, Pg(uL, lipY, lipB / 2), W * 0.7, 4, lipB, lip.c, 1.5, lip.base);
   const n = 8, drop = lipY - f.wy, w2 = W * 0.33, pos: number[] = [], sg = new THREE.BufferGeometry();
-  const at = (k: number, side: number) => f.P(uL + side * w2, lipY - drop * k, lipB + 10 * Math.sqrt(k) * s).toArray();
+  const at = (k: number, side: number) => Pg(uL + side * w2, lipY - drop * k, lipB + 10 * Math.sqrt(k) * s).toArray();
   for (let i = 0; i < n; i++) { const a0 = i / n, a1 = (i + 1) / n; pos.push(...at(a0, -1), ...at(a0, 1), ...at(a1, 1), ...at(a0, -1), ...at(a1, 1), ...at(a1, -1)); }
   sg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); sg.computeVertexNormals();
   kit.put('clear', sg, C.water, undefined, 0.2);
   // the flow's ripples on the surface where the sheet lands
   // (kept inside the glass: the rings shrink to the room the tank has either side of the lip and in front of it)
-  const rk = Math.min(1, (Math.min(uL, f.len - uL) - 8) / (W * 0.9), (f.T.D - backdropDepth(f.S.backdrop, f.T) - lipB - 20) / (W * 0.4));
+  const rk = Math.min(1, (Math.min(uL, f.len - uL) - 8) / (W * 0.9), (f.T.D - lipB - 20) / (W * 0.4));
   for (const [k, w] of [[1, 0.9], [1.7, 0.7], [2.5, 0.5]]) {
     const rr = W * 0.36 * k * Math.max(0.1, rk), ring = new THREE.RingGeometry(rr, rr + 1.6, 40, 1, 0, Math.PI);
     ring.rotateX(-Math.PI / 2); ring.scale(1, 1, 0.45); ring.rotateY(f.wall === 'left' ? -Math.PI / 2 : f.wall === 'right' ? Math.PI / 2 : 0);
-    const c = f.P(uL, f.wy + 0.6, lipB + 10);
+    const c = Pg(uL, f.wy + 0.6, lipB + 10);
     kit.put('clear', ring, C.water, new THREE.Matrix4().makeTranslation(c.x, c.y, c.z), 0.18 * w);
   }
   // intake: a smoky tube from the box over the glass and down, its slotted strainer at the foot
   const ib = 22;
-  kit.tube(inC.bk, [f.P(uI, yTop - 30, bF - 24), f.P(uI, f.H + 16, bF - 6), f.P(uI, f.H + 16, ib * 0.5), f.P(uI, f.H - 8, ib), f.P(uI, stY + sh + 20, ib)], it, inC.c, inC.bk === 'clear' ? inC.base : 0, 12);
-  kit.rod(inC.bk, f.P(uI, stY + sh + 20, ib), f.P(uI, stY + sh, ib), it, inC.c, { r2: it + 3, base: inC.base });
-  strainer(f, f.P(uI, stY, ib), sh, it + 4, stC);
-  f.kit.rod('wet', f.P(uI, stY - 2, ib), f.P(uI, stY, ib), it + 4, C.black, { seg: 16 });
+  kit.tube(inC.bk, [f.P(uI, yTop - 30, bF - 24), f.P(uI, f.H + 16, bF - 6), Pg(uI, f.H + 16, ib * 0.5), Pg(uI, f.H - 8, ib), Pg(uI, stY + sh + 20, ib)], it, inC.c, inC.bk === 'clear' ? inC.base : 0, 12);
+  kit.rod(inC.bk, Pg(uI, stY + sh + 20, ib), Pg(uI, stY + sh, ib), it, inC.c, { r2: it + 3, base: inC.base });
+  strainer(f, Pg(uI, stY, ib), sh, it + 4, stC);
+  f.kit.rod('wet', Pg(uI, stY - 2, ib), Pg(uI, stY, ib), it + 4, C.black, { seg: 16 });
+  // the notches in a 3D background: the spout and the water falling from it (to just under the surface), and the intake tube down to its strainer, each a little wider than the part (1/4 in a side)
+  if (bd > 0) {
+    const x = (v: number) => f.P(v, 0, 0).x, mk = (c: number, hw: number, yMin: number) => kit.backdropNotches.push({ x0: Math.min(x(c - hw), x(c + hw)), x1: Math.max(x(c - hw), x(c + hw)), yMin });
+    mk(uL, W * 0.35 + 6.35, f.wy - 6); mk(uI, it + 4 + 6.35, stY - 4);
+  }
   void D;
 }
 

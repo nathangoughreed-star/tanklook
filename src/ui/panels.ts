@@ -90,7 +90,7 @@ import { tankWeight } from '../scene/weight';
 import { isOver, stockingDetail, stockingLine, stockingMemo } from '../scene/stocking';
 import { AQ_PROXY, aqAdvisorUrl, aqKey, aqQuery, aqWaitS, fetchAqHealth, fetchStocking, type AqHealth } from '../data/aqadvisor';
 import { BOWL_DEFAULT, BOWL_MAX, BOWL_MIN, PIE_DEFAULT, POLY_SIDES, SHAPES, bowMinLimit, offsetRing, ringArea, shapeOf } from '../scene/shape';
-import { TABLE_MAX, tableOn, tableRange, wallGap } from '../scene/table';
+import { TABLE_MAX, tableOn, tableRange, wallGap, wallGapNote } from '../scene/table';
 import type { BgFit, BgSide, CompId, Fish, Pairing, GrowFeed, GrowMode, Item, ItemKind, LayoutId, LightTech, Scene, TableSettings, Tank, TankSetup, TankShape } from '../scene/types';
 import { standAsked, roughOf } from '../scene/types';
 import { pairRule } from '../data/groups';
@@ -2024,7 +2024,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     for (const [id, side] of [['wallBack', 'back'], ['wallLeft', 'left'], ['wallRight', 'right'], ['wallCorner', 'corner']] as const)
       $(id).classList.toggle('on', s.wall.show && s.wall.side === side);
 
-    setVal('wallGap', wallGap(s)); setOut('oWallGap', fmt(wallGap(s)));
+    setVal('wallGap', wallGap(s)); setOut('oWallGap', fmt(wallGap(s)) + (wallGapNote(s) ? ` (${wallGapNote(s)})` : ''));
     setVal('ceilH', ceilingH(s.wall)); setOut('oCeilH', fmtHeight(ceilingH(s.wall), u));
     $('personOn').checked = s.person.show; setVal('personH', s.person.height); setOut('oPersonH', fmtHeight(s.person.height, u));
     for (const [id, side] of PSIDES) $(id).classList.toggle('on', s.person.show && s.person.side === side);
