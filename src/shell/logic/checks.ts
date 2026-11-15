@@ -9,7 +9,9 @@ import { checksNote } from '../../scene/rules';
 import { stockingMemo, plural, type Stocking } from '../../scene/stocking';
 import { tileState, topBy, tankSizeLine, type Bar, type TileState, type TopRow } from '../../ui/logic/habitat';
 import { stockSummary, type StockSummary, type CatLevel } from '../../ui/stockSummary';
-import { demandOf, type Demand, type UserProfile } from '../../demand';
+import { demandOf, drivers, type Demand, type UserProfile } from '../../demand';
+import { swapsFor, type Bar as DBar, type Delta, type Swap } from '../../demand/swaps';
+import { rhythmOf, rhythmNote } from '../../demand/rhythm';
 import { pinnedKit } from '../../demand/pinned';
 import { gearParts } from '../../demand/gearDeals';
 import { plantBundleOpt } from '../../demand/plantBundles';
@@ -72,15 +74,44 @@ export interface CostView {
   risk: number; riskWord: string;
   /** what costs most to set up, biggest first */
   rows: { label: string; setup: string }[];
+  /** the breakdown behind one figure, built on demand from the same `drivers` / `swapsFor` / `rhythmOf` the old panel uses */
+  detail: (bar: DBar) => Breakdown;
+}
+export interface Breakdown {
+  title: string;
+  rows: { label: string; value: string; swaps: string[] }[];
+  /** Time only: the minutes as a rhythm, and how long the tank can be left */
+  rhythm?: { text: string; away?: string; note: string };
+  /** Difficulty only: the plan's problems */
+  warnings: string[];
+  empty: string;
+}
+const BREAK_TITLE: Record<DBar, string> = { setup: 'Costs most to set up', upkeep: 'Where the upkeep goes', minutes: 'Where the time goes', risk: 'What makes it harder' };
+const sgn = (v: number, f: (n: number) => string) => (f(Math.abs(v)).replace(/[^0-9.]/g, '').replace(/^0+(\.0+)?$/, '') === '' ? 'same' : (v < 0 ? '−' : '+') + f(Math.abs(v)));
+/** one swap's effect, as the old panel words it (US units) */
+export const swapEffect = (d: Delta) => [`set-up ${sgn(d.setup, usd)}`, `upkeep ${sgn(d.upkeep, usd)}/mo`, `time ${sgn(d.minutes, v => `${Math.round(v)} min`)}`, `risk ${sgn(d.risk, v => v.toFixed(1))}`].join(' · ');
+export const swapLine = (s: Swap) => `${s.kind === 'remove' ? 'Leave them out' : `Swap for ${s.to}`}: ${swapEffect(s.delta)}`;
+/** The breakdown of one bar: the old panel's fillDrill + rhythmLine, same functions, same numbers. */
+export function breakdownOf(D: Demand, S: TankSetup, P: UserProfile, bar: DBar): Breakdown {
+  const unit = bar === 'setup' || bar === 'upkeep' ? usd : (v: number) => (bar === 'risk' ? v.toFixed(1) : `${Math.round(v)} min/wk`);
+  const rows = drivers(D, P, bar, 6).map(r => {
+    let swaps: string[] = [];
+    if (r.key.startsWith('animal:') || r.key.startsWith('plant:')) { try { swaps = swapsFor(S, P, r.key, bar, {}, 2).map(swapLine); } catch { /* no swap to offer */ } }
+    return { label: r.n > 1 ? `${r.label} × ${r.n}` : r.label, value: unit(r.mean), swaps };
+  });
+  const out: Breakdown = { title: BREAK_TITLE[bar], rows, warnings: bar === 'risk' ? D.warnings.slice(0, 8) : [], empty: 'Nothing in this tank adds to it.' };
+  if (bar === 'minutes') { const r = rhythmOf(D, S); out.rhythm = { text: r.text, ...(r.awayText ? { away: r.awayText } : {}), note: rhythmNote(r) }; }
+  return out;
 }
 export const riskWord = (r: number) => r < 3 ? 'Easy' : r < 6 ? 'Moderate' : 'Demanding';
-export function costView(D: Demand, k = 8): CostView {
+export function costView(D: Demand, k = 8, ctx?: { S: TankSetup; P: UserProfile }): CostView {
   const t = D.totals;
   return {
     setup: usd(t.setupUsd), monthly: `${usd(t.upkeepUsdMo)}/mo`, minutes: `${Math.round(t.minPerWeek)} min/wk`,
     risk: Math.round(t.risk * 10) / 10, riskWord: riskWord(t.risk),
     rows: D.items.filter(i => (i.setup?.mode ?? 0) >= 0.5).sort((a, b) => b.setup!.mode - a.setup!.mode).slice(0, k)
       .map(i => ({ label: i.n && i.n > 1 ? `${i.label} × ${i.n}` : i.label, setup: usd(i.setup!.mode) })),
+    detail: (bar: DBar) => ctx ? breakdownOf(D, ctx.S, ctx.P, bar) : { title: BREAK_TITLE[bar], rows: [], warnings: [], empty: 'Nothing in this tank adds to it.' },
   };
 }
 
@@ -127,5 +158,5 @@ export function checksModel(S: TankSetup, active: number, units: Units, P: UserP
   try { notes = notesView(verdictOf(S, brief, { units, limits: P.limits, ...(D ? { totals: D.totals } : {}) }), brief); } catch { /* nothing to judge */ }
   let water: WaterView = { temp: '-', pill: { tone: 'neutral', word: 'none' }, rows: [] };
   try { water = waterView(S, units); } catch { /* ignore */ }
-  return { habitat: habitatView(S, units), cost: D ? costView(D) : null, water, notes };
+  return { habitat: habitatView(S, units), cost: D ? costView(D, 8, { S, P }) : null, water, notes };
 }

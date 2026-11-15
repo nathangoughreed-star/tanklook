@@ -1,5 +1,6 @@
 // UI2 shell step 1: the four check drawers, READ-ONLY (screen map §2a "Drawers"). They draw the view-models of logic/checks.ts;
 // editing (Set my space, feeding, limits) comes with the sections that own those settings (§3: one home per setting).
+import { useState } from 'preact/hooks';
 import { openLimit } from './constraints';
 import type { ChecksModel, CheckId, HabitatView, CostView, WaterView, NotesView } from './logic/checks';
 import { CHECKS } from './logic/checks';
@@ -31,20 +32,42 @@ function Habitat({ v }: { v: HabitatView }) {
   );
 }
 
+type Fig = 'setup' | 'upkeep' | 'minutes' | 'risk';
 function Cost({ v }: { v: CostView | null }) {
+  const [sel, setSel] = useState<Fig>('setup');
   if (!v) return <div class="hint">No price yet: choose a tank first.</div>;
+  const d = sel === 'setup' ? null : v.detail(sel);
+  const fig = (id: Fig, cap: string, big: string) => (
+    <button type="button" class={'dfig' + (sel === id ? ' on' : '')} aria-pressed={sel === id} onClick={() => setSel(id)}>
+      <span class="cap">{cap}</span><span class="big">{big}</span>
+    </button>
+  );
   return (
     <>
       <div class="dnums">
-        <div><div class="cap">To set up</div><div class="big">{v.setup}</div></div>
-        <div><div class="cap">Upkeep</div><div class="big">{v.monthly}</div></div>
-        <div><div class="cap">Time</div><div class="big">{v.minutes}</div></div>
+        {fig('setup', 'To set up', v.setup)}{fig('upkeep', 'Upkeep', v.monthly)}{fig('minutes', 'Time', v.minutes)}
       </div>
-      <div class="drow"><span>Relative difficulty</span><span><b>{v.risk}</b> / 10 · {v.riskWord}</span></div>
+      {fig('risk', 'Relative difficulty', `${v.risk} / 10 · ${v.riskWord}`)}
       <div class="hint">Difficulty uses your Experience constraint (off means an average keeper). <button type="button" class="spLink" onClick={() => openLimit('experience')}>Edit in Constraints</button></div>
       <div class="hint">Budget, monthly limit and time per week live in <button type="button" class="spLink" onClick={() => openLimit('money')}>Constraints</button>.</div>
-      <div class="cap">Costs most to set up</div>
-      <ul class="dlist money">{v.rows.map(r => <li><span>{r.label}</span><b>{r.setup}</b></li>)}</ul>
+      <div class="cap">{d ? d.title : 'Costs most to set up'}</div>
+      {d ? (
+        <>
+          {d.rhythm ? <div class="hint" title={d.rhythm.note}>Rhythm: {d.rhythm.text} <em>(estimate)</em>{d.rhythm.away ? <><br />Can be left: {d.rhythm.away}</> : null}</div> : null}
+          {d.rows.length ? <ul class="dlist money">{d.rows.map(r => (
+            <li class="dbrk"><span>{r.label}</span><b>{r.value}</b>{r.swaps.map(s => <div class="hint dswap">{s}</div>)}</li>
+          ))}</ul> : <div class="hint">{d.empty}</div>}
+          {d.warnings.length ? <><div class="cap">Why</div>{d.warnings.map(w => <div class="dwarn warn">{w}</div>)}</> : null}
+        </>
+      ) : (
+        <>
+          <ul class="dlist money">{v.rows.map(r => <li><span>{r.label}</span><b>{r.setup}</b></li>)}</ul>
+          {v.detail('setup').rows.some(r => r.swaps.length) ? <div class="cap">Swaps that lower it</div> : null}
+          <ul class="dlist money">{v.detail('setup').rows.filter(r => r.swaps.length).map(r => (
+            <li class="dbrk"><span>{r.label}</span><b>{r.value}</b>{r.swaps.map(x => <div class="hint dswap">{x}</div>)}</li>
+          ))}</ul>
+        </>
+      )}
     </>
   );
 }

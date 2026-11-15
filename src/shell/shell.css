@@ -466,3 +466,12 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .rundown .drow { align-items: flex-start; padding: 4px 0; border-bottom: 1px solid var(--line); } .rundown .drow b { text-align: right; font-weight: 600; max-width: 62%; }
 .fitbox { padding: var(--s2); border-radius: var(--r-ctl); font-size: var(--fs-sm); background: var(--ok-weak); } .fitbox.caution { background: var(--warn-weak); } .fitbox.problem { background: var(--bad-weak); }
 .fitbox ul { margin: 4px 0 0 16px; padding: 0; }
+
+/* DB1: selectable figures in the Cost and time drawer */
+.dfig { display: flex; flex-direction: column; gap: 2px; text-align: left; background: var(--surface, transparent); border: 1px solid var(--line, #8884); border-radius: 8px; padding: 6px 8px; color: inherit; font: inherit; cursor: pointer; min-width: 0; }
+.dfig.on { border-color: var(--accent, #2a7); box-shadow: inset 0 0 0 1px var(--accent, #2a7); }
+.dnums + .dfig { margin-top: var(--s2); }
+.dbrk { flex-wrap: wrap; }
+.dbrk .dswap { flex-basis: 100%; margin: 0; }
+@media (max-width: 480px) { .dnums .big { font-size: var(--fs-md, 16px); } }
+.dfig .big { line-height: 1.25; }

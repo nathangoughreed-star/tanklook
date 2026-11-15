@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import { SCENES } from '../src/examples/scenes';
 import { parseScene } from '../src/scene/validate';
-import { defaultProfile, demandOf } from '../src/demand';
+import { defaultProfile, demandOf, drivers } from '../src/demand';
 import { stockingOf } from '../src/scene/stocking';
 import { checksModel, costView, demandFor, fmtTemp, habitatView, notesView, riskWord, usd, waterView } from '../src/shell/logic/checks';
 import { SECTIONS, PHONE_TABS, MORE, railClick, escape, COMES_IN } from '../src/shell/logic/sections';
@@ -24,6 +24,21 @@ describe('habitat check', () => {
   it('no animals: a neutral "No animals", no bars', () => {
     const S = withFish(), v = habitatView({ ...S, fish: [] }, 'in');
     expect(v).toMatchObject({ empty: true, pill: { tone: 'neutral', word: 'No animals' }, bars: [], cats: [] });
+  });
+});
+
+describe('cost and time breakdowns (DB1)', () => {
+  it('upkeep and minutes lines are the old panel drivers; lines add up to the totals', () => {
+    const S = withFish(), P = defaultProfile(), D = demandFor(S, 0, P), v = costView(D, 8, { S, P });
+    for (const bar of ['upkeep', 'minutes', 'risk'] as const) {
+      const dr = drivers(D, P, bar, 6), b = v.detail(bar);
+      expect(b.rows.map(r => r.label.replace(' × ', ' x '))).toEqual(dr.map(r => r.n > 1 ? `${r.label} x ${r.n}` : r.label));
+    }
+    expect(v.detail('minutes').rhythm?.text).toBeTruthy();
+    const all = drivers(D, P, 'upkeep', 999).reduce((a, r) => a + r.mean, 0);
+    expect(Math.abs(all - D.totals.upkeepUsdMo)).toBeLessThan(Math.max(2, D.totals.upkeepUsdMo * 0.05));
+    const mins = drivers(D, P, 'minutes', 999).reduce((a, r) => a + r.mean, 0);
+    expect(Math.abs(mins - D.totals.minPerWeek)).toBeLessThan(Math.max(2, D.totals.minPerWeek * 0.05));
   });
 });
 
