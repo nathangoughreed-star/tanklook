@@ -22,3 +22,6 @@ Nathan 2026-11-15: "can we add pygmy corys and bala sharks, as well as redtail s
 - Add a test that a 20 gal planted tank with a bala school is flagged as too small, and that two red-tail sharks are flagged.
 - Side-by-side shots (model next to a description of the reference photo) at 1280, one in-tank shot each, and the picker cards. Save them in `research/screens/FS1/` and look at them yourself.
 - Commit on your branch and send the coordinator (C24) the sha. Do not push to main.
+
+## Part 2 (Nathan 2026-11-15) - R79
+Also add the **rainbow shark** (*Epalzeorhynchos frenatum*): about 6 in, solitary and territorial (one per tank, and not with red-tail sharks), bottom-to-mid near cover. The body is grey-blue to olive with red-orange fins on all fins, and a dark eye stripe in some. It IS sold as albino (white-pink body with the same red fins), so give it the albino flag with a source and a matching recolour (lane AL1's `src/art/albino.ts` TUNE table). Compat: red-tail and rainbow exclude each other.
