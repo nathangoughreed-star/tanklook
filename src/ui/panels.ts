@@ -52,7 +52,8 @@ import { CARE } from '../data/care';
 import { fitCaption, type FitLight } from '../scene/plantfit';
 import { itemLights, tankSummary } from '../scene/lightcheck';
 import { topGearReach, TOP_GEAR_GAP } from '../scene/topgear';
-import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixtureOf, mountOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeLayout, tubeOf, TUBE_SP_MAX, bestPos, ledBarDepth, posMax, wattsOf, type Fixture } from '../scene/lightout';
+import { countMax, optimizePos, setBulb, setFixture, setHoodLed, setLightField, setMount, setPattern, setTech } from './logic/lightLayout';
+import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fixtureOf, mountOf, powerRange, lightOutCached, readout as lightReadout, techOf, techsFor, tubeLayout, tubeOf, TUBE_SP_MAX, bestPos, ledBarDepth, posMax, wattsOf, type Fixture } from '../scene/lightout';
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene } from '../scene/defaults';
@@ -69,7 +70,7 @@ import { clumpAuto } from '../render/plant3d';
 import { canPrebuild, plantWarm, prebuildHooks, prebuildPlants } from '../render/items';
 import { placeAt, type PlaceAt } from '../interact/pointer';
 import { adaptForEdit } from './briefFeasibility';
-import { FRESH_CLEAR, SALT_CLEAR, applySetupKind, applyTankEdit, doorLocked, editTable as tableEdit, fitK, inchStep, lidLocked, reshape, setDoors, setGlass, setLid, setRim, shapeMemory, sideFromInput, sideWallLocked, tableLength, tableRound, unhold } from '../scene/tankEdit';
+import { FRESH_CLEAR, SALT_CLEAR, applySetupKind, applyTankEdit, doorLocked, editTable as tableEdit, inchStep, lidLocked, reshape, setDoors, setGlass, setLid, setRim, shapeMemory, sideFromInput, sideWallLocked, tableLength, tableRound, unhold } from '../scene/tankEdit';
 import { tankDiff } from './diff';
 import { attachTypeIns, parseLen, plainNum, tidy, type TypeIn } from './typein';
 import {
@@ -1107,26 +1108,19 @@ export function attachPanels(store: Store, viewer: Viewer) {
   // spacing below a bulb's width (tubes: 20 mm) snaps to 0 = auto (fill the tank)
   // while the power is set the Brightness slider is Exposure, in stops (bright = 2^v)
   const expo = () => wattsOf(S()) > 0;
-  for (const [id, k] of Object.entries(lKeys)) $(id).oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; s.light[k] = k === 'spacing' && v < (s.light.type === 'tube' ? 20 : 80) ? 0 : k === 'bright' && wattsOf(s) > 0 ? +(2 ** v).toFixed(3) : v; }, { coalesce: id });
+  for (const [id, k] of Object.entries(lKeys)) $(id).oninput = e => store.edit(s => setLightField(s, k, +(e.target as HTMLInputElement).value), { coalesce: id }); // ui/logic/lightLayout.ts (shared with the new shell, R87)
   // up to 12 bulbs when placed to fit the tank (no rows to multiply them), 6 otherwise
   /** A colour outside the lamp's usual range moves to its usual one (on a lamp or fixture change only; the slider goes past). */
-  const countMax = (l: TankSetup['light']) => FIX_SPEC[fixtureOf(l)]?.maxCount ?? (l.type === 'spot' && l.pattern === 'fit' ? 12 : 6);
-  const capCount = (l: TankSetup['light']) => { l.count = Math.min(l.count, countMax(l)); };
-  $('lPosOpt').onclick = () => store.edit(s => { const b = bestPos(s.tank, s.light); if (b != null) s.light.pos = b; });
-  $<HTMLSelectElement>('lMount').onchange = e => store.edit(s => { s.light.mount = (e.target as HTMLSelectElement).value as 'legs' | 'hang'; });
-  $<HTMLSelectElement>('lHoodLed').onchange = e => store.edit(s => { if ((e.target as HTMLSelectElement).value === 'bar') s.light.hoodLed = 'bar'; else delete s.light.hoodLed; });
-  $<HTMLSelectElement>('lPat').onchange = e => store.edit(s => { s.light.pattern = (e.target as HTMLSelectElement).value as TankSetup['light']['pattern']; capCount(s.light); });
+  // countMax / capCount / optimizePos and the fixture edits below live in ui/logic/lightLayout.ts
+  $('lPosOpt').onclick = () => store.edit(optimizePos);
+  $<HTMLSelectElement>('lMount').onchange = e => store.edit(s => setMount(s, (e.target as HTMLSelectElement).value as 'legs' | 'hang'));
+  $<HTMLSelectElement>('lHoodLed').onchange = e => store.edit(s => setHoodLed(s, (e.target as HTMLSelectElement).value as 'bar' | 'strips'));
+  $<HTMLSelectElement>('lPat').onchange = e => store.edit(s => setPattern(s, (e.target as HTMLSelectElement).value as TankSetup['light']['pattern']));
   // Fixture (Nathan 2026-10-15): the style sets the geometry and which lamps fit; a lamp it does not come in becomes its
   // first, and a colour outside the new lamp's usual range its usual one
-  $<HTMLSelectElement>('lType').onchange = e => store.edit(s => {
-    const f = (e.target as HTMLSelectElement).value as Fixture, l = s.light;
-    l.type = FIXTURES[f].type; delete l.product; // a fixture picked by hand: the generic one (the catalogued light is the Tech menu's)
-    if (f !== 'flat' && !(l.tech && TECHS[l.tech].on.includes(f))) l.tech = techsFor(f)[0];
-    if (f !== 'flat') fitK(l);
-    capCount(l); fitFixture(l, s.tank, true); // the style's usual height, beam and power
-  });
+  $<HTMLSelectElement>('lType').onchange = e => store.edit(s => setFixture(s, (e.target as HTMLSelectElement).value as Fixture));
   $<HTMLSelectElement>('lBulb').replaceChildren(...MH_BULBS.map(w => new Option(`${w} W`, String(w))));
-  $<HTMLSelectElement>('lBulb').onchange = e => store.edit(s => { s.light.bulbW = +(e.target as HTMLSelectElement).value; });
+  $<HTMLSelectElement>('lBulb').onchange = e => store.edit(s => setBulb(s, +(e.target as HTMLSelectElement).value));
   $('lBeams').onchange = e => store.edit(s => { s.render.beams = (e.target as HTMLInputElement).checked; });
   $('lSlice').oninput = e => store.edit(s => { const v = +(e.target as HTMLInputElement).value; if (v > 0) s.light.mapSlice = v; else delete s.light.mapSlice; }, { coalesce: 'lSlice' });
   $('lShade').onchange = e => store.edit(s => { if ((e.target as HTMLInputElement).checked) s.light.mapShade = true; else delete s.light.mapShade; });
@@ -1161,10 +1155,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
       : 'Lux at the substrate, from the power and light type: a colour step per doubling. Water takes red first, so lux and PAR fall off at different rates.';
   };
   // a screw-in lamp change also takes that lamp's usual power (a 50 W halogen is a 10 W LED bulb)
-  $<HTMLSelectElement>('lTech').onchange = e => store.edit(s => {
-    const l = s.light; l.tech = (e.target as HTMLSelectElement).value as LightTech; fitK(l); delete l.product;
-    if (fixtureOf(l) === 'bulb') delete l.watts;
-  });
+  $<HTMLSelectElement>('lTech').onchange = e => store.edit(s => setTech(s, (e.target as HTMLSelectElement).value as LightTech));
   let techFor = ''; // the fixture the Lamp list was built for
 
   // ---------- Viewer (camera): saved with the scene, but not undoable ----------

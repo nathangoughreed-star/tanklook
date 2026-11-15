@@ -8,7 +8,7 @@ import { GENERIC } from '../scene/gearOwn';
 import {
   categoryGroups, groupOfKind, buyTree, categoryView, presetLadder, applyPresetEdit, useItem, setOwned, setLock, ownSum, addOwnAny, specOf, isCat, type CatId, type GearRow,
 } from './logic/equipment';
-import { LightingGroup } from './lighting';
+import { LightingGroup, LightLayoutGroup } from './lighting';
 import { artOf } from './logic/gearArt';
 import { gearSel, onGearSel } from '../render/gearSel';
 import { orientOf, withOrient, hangOn, type Orient } from '../interact/gearDrag';
@@ -146,7 +146,7 @@ function KindBody({ store, units, cat }: { store: Store; units: 'in' | 'cm'; cat
           })}
         </div>
       ))}
-      {cat === 'light' ? <LightingGroup store={store} /> : null}
+      {cat === 'light' ? <><LightLayoutGroup store={store} /><LightingGroup store={store} /></> : null}
     </div>
   );
 }

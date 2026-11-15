@@ -546,3 +546,9 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .parguide .parTier dd { margin: 0 }
 .parguide .hint { color: var(--text-3) }
 @media (max-width: 480px) { .parguide .parTier dl { grid-template-columns: 1fr } .parguide .parTier dd { margin-bottom: 4px } }
+
+/* R87: the light layout rows (same grid as the light map's) */
+.lightlayout { display: grid; gap: var(--s2) }
+.lightlayout .row { display: grid; grid-template-columns: 90px 1fr auto; align-items: center; gap: var(--s2) }
+.lightlayout .row .val.wide { grid-column: 2 / 4 }
+.lightlayout .select { min-width: 0; width: 100% }
