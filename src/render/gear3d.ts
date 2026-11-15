@@ -73,7 +73,7 @@ export function spotOf(S: TankSetup, p?: GearPlace): GearSpot | undefined {
   const T = S.tank, Db = T.D - backdropDepth(S.backdrop, T), extra = { ...(q.y != null ? { y: clamp(q.y, 0, 1) } : {}), ...(q.lean != null ? { lean: clamp(q.lean, -90, 90) } : {}) };
   if (wall === 'floor') return { wall, u: at * T.L, d: clamp(q.y ?? 0.8, 0, 1) * T.D };
   if (wall === 'lid') return { wall, u: at * T.L, d: clamp(q.y ?? 0.5, 0, 1) * T.D };
-  if (wall === 'back') return { wall, u: at * T.L, ...extra };
+  if (wall === 'back' || wall === 'front') return { wall, u: at * T.L, ...extra };
   return { wall, u: (1 - at) * Db, ...extra }; // side walls: at 0 = front end
 }
 /** How a piece mounts, which gates where the owner may drag it: on any glass (free height), on a rim (slides along it),
@@ -117,7 +117,8 @@ const isFilter = (id: string) => FILTER_MODELS.find(m => m.id === id);
 const isHeater = (id: string) => HEATER_MODELS.find(m => m.id === id);
 
 /** A piece the owner can grab: its tech row, id, how it mounts and its box (in the tank, not the parts in the stand). */
-export interface GearPiece { row: string; id: string; mount: GearMount; box: THREE.Box3 }
+/** `box` = everything of the piece in the water (what a click grabs); `core` = its body without tubes and thin rods (what the selection outline draws). */
+export interface GearPiece { row: string; id: string; mount: GearMount; box: THREE.Box3; core?: THREE.Box3 }
 
 /** Build the gear for `picks` (default: gearPicks(S)) in tank S, clear of the solid pieces `solids` (world boxes). The
  *  first mesh carries the grabbable pieces (userData.gearPieces). */
@@ -136,6 +137,7 @@ export function buildGear(S: TankSetup, T: Tank, solids: THREE.Box3[], picks = g
     if (!q || q.wall === 'lid') return { f: back, sp: { u } as Spot };
     if (q.wall === 'floor') { const x = q.u; return { f: back, sp: { u: dflt === 'left' ? x : T.L - x, fixed: true, b: T.D - backdropDepth(S.backdrop, T) - (q.d ?? 0) } }; }
     if (q.wall === 'back') return { f: back, sp: { u: dflt === 'left' ? q.u : T.L - q.u, fixed: true, y: q.y, lean: q.lean } };
+    if (q.wall === 'front') return { f: fr('front'), sp: { u: q.u, fixed: true, y: q.y, lean: q.lean } };
     return { f: fr(q.wall), sp: { u: q.u, fixed: true, y: q.y, lean: q.lean } };
   };
   // each piece's box: what the kit gained while building it, above the stand
@@ -147,7 +149,12 @@ export function buildGear(S: TankSetup, T: Tank, solids: THREE.Box3[], picks = g
       (Object.keys(kit.parts) as Bucket[]).forEach((k, i) => { if (only.includes(k)) for (const g of kit.parts[k].slice(n0[i])) { const a = g.attributes.position; for (let j = 0; j < a.count; j += 3) { v.fromBufferAttribute(a, j); if (v.y > -25) box.expandByPoint(v); } } });
       if (!box.isEmpty()) break;
     }
-    if (!box.isEmpty() && p.row) pieces.push({ row: p.row, id: p.id, mount: mountOf(p.id), box });
+    // the body alone for the outline: no tubes or thin rods, nothing outside the water, nothing under the stand
+    const core = new THREE.Box3();
+    for (const k of ['wet', 'clear', 'glow'] as Bucket[]) for (const g of kit.parts[k].slice(n0[(['wet', 'room', 'clear', 'glow'] as Bucket[]).indexOf(k)])) {
+      if (kit.lines.has(g)) continue; const a = g.attributes.position; for (let j = 0; j < a.count; j += 3) { v.fromBufferAttribute(a, j); if (v.y > -25 && v.x > -25 && v.x < T.L + 25 && v.z > -T.D - 60 && v.z < 40 && v.y < T.H + 80) core.expandByPoint(v); }
+    }
+    if (!box.isEmpty() && p.row) pieces.push({ row: p.row, id: p.id, mount: mountOf(p.id), box, ...(core.isEmpty() ? {} : { core }) });
   };
   const get = (id: string) => picks.find(p => p.id === id), has = (id: string) => !!get(id);
   // every heater and every filter (Nathan 2026-10-20: as many as the owner adds); the first filter feeds the UV and CO2

@@ -32,7 +32,7 @@ import type { TempEvidence } from './temprange';
 export interface GearPlace {
   /** 'floor' (lane TG 2026-10-19): gear that stands on the ground (sponge filter, airstone); 'lid' (2026-10-21): a dry
    *  tank's lamps and misting nozzle, anywhere on the top (mesh, glass or hood; with no lid, on the rim) */
-  wall: 'back' | 'left' | 'right' | 'floor' | 'lid';
+  wall: 'back' | 'left' | 'right' | 'front' | 'floor' | 'lid';
   /** floor and lid: the x share, 0 = left .. 1 = right */
   at?: number;
   /** glass mounts: height share from the ground (0) to the water line (1); floor and lid: depth share, 0 = front .. 1 = back */
@@ -805,7 +805,7 @@ export function techParts(S: TankSetup): TechPiece[] {
 
 // ---- file
 
-const WALLS = new Set(['back', 'left', 'right', 'floor', 'lid']);
+const WALLS = new Set(['back', 'left', 'right', 'front', 'floor', 'lid']);
 /** A saved sump: a catalogue size by its id (its size re-read from the catalogue), else a custom size, each side 50-3000 mm. */
 function parseSump(raw: unknown): SumpSize | undefined {
   if (!raw || typeof raw !== 'object') return undefined;

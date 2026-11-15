@@ -60,6 +60,8 @@ export class Kit {
   hoseRoutes: THREE.Vector3[][] = [];
   /** Notches the gear needs cut in the 3D background (lane HC1): tank x range and the height they reach down to. */
   backdropNotches: { x0: number; x1: number; yMin: number }[] = [];
+  /** Parts that are only a line (a tube, a thin rod): left out of a piece's selection box (lane GD1: the box holds the body, not the whole hose). */
+  lines = new WeakSet<THREE.BufferGeometry>();
   /** Add `geo` (consumed) in colour `color` (clear parts: `base` = face-on opacity), moved by `m`. */
   put(b: Bucket, geo: THREE.BufferGeometry, color: number, m?: THREE.Matrix4, base = 0.06, shade = 0) {
     let g = geo.index ? geo.toNonIndexed() : geo; if (g !== geo) geo.dispose();
@@ -84,12 +86,14 @@ export class Kit {
     const d = b.clone().sub(a), len = d.length(); if (len < 1e-3) return;
     const g = new THREE.CylinderGeometry(o.r2 ?? r, r, len, o.seg ?? 16, 1, o.open ?? false);
     this.put(bk, g, color, along(a, d.normalize(), len / 2), o.base, o.shade);
+    if (Math.max(r, o.r2 ?? r) <= 3) this.lines.add(this.parts[bk][this.parts[bk].length - 1]);
   }
   /** A tube of radius r along the points (a smooth curve through them). */
   tube(bk: Bucket, pts: THREE.Vector3[], r: number, color: number, base = 0.06, seg = 10) {
     if (Kit.noTubes) return;
     const c = new THREE.CatmullRomCurve3(pts, false, 'centripetal'), n = Math.max(8, Math.round(c.getLength() / 8));
     this.put(bk, new THREE.TubeGeometry(c, n, r, seg, false), color, undefined, base);
+    this.lines.add(this.parts[bk][this.parts[bk].length - 1]);
   }
   box(bk: Bucket, c: THREE.Vector3, w: number, h: number, d: number, color: number, r = 0, yaw = 0, base = 0.06) {
     const g = r > 0 ? roundedBox(w, h, d, r) : new THREE.BoxGeometry(w, h, d);
@@ -156,7 +160,9 @@ export const hexOr = (h: string | undefined, d: number) => (h && /^#[0-9a-f]{6}$
 export const partOf = (c: PartColour | undefined, d: number, wet: Bucket = 'wet') => ({ c: hexOr(c?.hex, d), bk: (c?.translucent ? 'clear' : wet) as Bucket, base: c?.translucent ? 0.5 : 0.06 });
 
 /** A wall the gear hangs on: the back glass (u from the `side` corner) or a side glass (u from the back corner forward). */
-export type GearWall = 'back' | 'left' | 'right';
+export type GearWall = 'back' | 'left' | 'right' | 'front';
+/** Turn of a box that sits square to a wall (the back glass 0; the front faces the other way; the sides a quarter turn). */
+export const wallYaw = (w: GearWall) => w === 'back' ? 0 : w === 'front' ? Math.PI : Math.PI / 2;
 export interface Frame {
   S: TankSetup; T: Tank; kit: Kit; side: GearSide; wall: GearWall;
   /** Turn of a box that sits square to this wall (0 on the back glass). */ yaw: number;
@@ -186,6 +192,12 @@ export function frame(S: TankSetup, T: Tank, kit: Kit, side: GearSide, solids: T
     P = (u, y, b) => { const x = xOf(u); return V(x, y, -(backD(x) - (b < 0 ? b - bd : b))); };
     ground = (u, b) => { const x = xOf(u); return groundHeight(S, T, x, backD(x) - b); };
     along = V(ix, 0, 0); inward = V(0, 0, 1); len = T.L;
+  } else if (wall === 'front') {
+    // lane GD1: the front glass, seen from behind or through it; u = x from the left end, b into the tank (toward the back)
+    const frontD = (x: number) => chord(T, 0, clamp(x, 1, T.L - 1))?.[0] ?? 0;
+    P = (u, y, b) => V(u, y, -(frontD(u) + b));
+    ground = (u, b) => groundHeight(S, T, u, frontD(u) + b);
+    along = V(1, 0, 0); inward = V(0, 0, -1); len = T.L;
   } else {
     // a side glass: u runs from the back corner toward the front, b into the tank
     const k = wall === 'left' ? 1 : -1, xAt = (d: number) => { const c = chord(T, 1, clamp(d, 1, T.D - 1)); return wall === 'left' ? c?.[0] ?? 0 : c?.[1] ?? T.L; };
@@ -194,8 +206,8 @@ export function frame(S: TankSetup, T: Tank, kit: Kit, side: GearSide, solids: T
     along = V(0, 0, 1); inward = V(k, 0, 0); len = Db;
   }
   const f: Frame = {
-    S, T, kit, side: wall === 'back' ? side : wall, wall, along, inward, len, yaw: wall === 'back' ? 0 : Math.PI / 2,
-    box: (bk, c, w, h, d, color, r = 0, base) => kit.box(bk, c, w, h, d, color, r, wall === 'back' ? 0 : Math.PI / 2, base),
+    S, T, kit, side: wall === 'back' || wall === 'front' ? side : wall, wall, along, inward, len, yaw: wallYaw(wall),
+    box: (bk, c, w, h, d, color, r = 0, base) => kit.box(bk, c, w, h, d, color, r, wallYaw(wall), base),
     wy: waterY(T, S.water.level), H: T.H, t, top: tankUnderside(T, S.render), floor: floorY(T, S.render, S.stand),
     P, ground, taken: [],
     slot(u0, w, y0, y1, b0, b1, fixed = false) {

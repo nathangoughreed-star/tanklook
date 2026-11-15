@@ -19,12 +19,15 @@ export function co2(f: Frame, sp: Spot, level: GearPick['co2'], fr: (w: GearWall
     const h = hash(i, 9, 1) ** 1.6 * (f.wy - y - 20), dr = 4 + h * 0.18;
     kit.ball('clear', c.clone().add(V((hash(i, 2, 3) - 0.5) * dr * 2, 12 + h, (hash(i, 4, 5) - 0.5) * dr)), 0.7 + 0.5 * hash(i, 6, 7), C.water, 0.1, 0);
   }
+  const skipBox = (bk: 'clear' | 'wet', n: number) => kit.parts[bk].slice(-n).forEach(g => kit.lines.add(g)); // parts that are not the diffuser: the selection box leaves them out (lane GD1)
+  skipBox('clear', 60); // the mist
   // the line up out of the tank, the bubble counter outside the rim, down to the cylinder
   const route = overRim(f, u, f.P(u, y + 30, 6), 6, f.H - 60, -t - 18);
   line(f, route, 0xc9d6d8);
   const bc = route[route.length - 1];
   kit.rod('clear', bc.clone().add(V(0, -60, 0)), bc.clone(), 10, C.glass, { base: 0.1, seg: 18 });
   kit.rod('clear', bc.clone().add(V(0, -58, 0)), bc.clone().add(V(0, -22, 0)), 8.5, 0xcfe8ee, { base: 0.35, seg: 18 });
+  skipBox('clear', 2); // the bubble counter, outside the rim
   kit.rod('room', bc, bc.clone().add(V(0, 6, 0)), 10.5, C.black, { seg: 18 });
   const cg = cabinetGear(f.S), inStand = f.S.stand.show && !cg?.co2Beside; // a cabinet's gear row decides the place (scene/cabinetGear.ts)
   const cyl = inStand ? V(cg?.co2X ?? bk.P(clamp(bk.T.L * 0.7, 80, bk.T.L - 80), 0, 0).x, f.floor, -f.T.D * 0.5) : V(f.side === 'left' ? -f.t - 110 : f.T.L + f.t + 110, f.floor, -f.T.D + 100);
@@ -65,5 +68,7 @@ export function co2(f: Frame, sp: Spot, level: GearPick['co2'], fr: (w: GearWall
   kit.lathe('clear', [[0, 30], [8, 29], [13, 22], [15, 10], [15, 0], [14, -1]], pd, V(0, 1, 0), C.glass, 0.1, 24);
   kit.lathe('clear', [[0, 2], [13.5, 2], [13.5, 8], [10, 12], [0, 12]], pd, V(0, 1, 0), DROP_COLOURS[level ?? 'ok'], 0.62, 24);
   kit.tube('clear', [pd.clone().add(V(0, 30, 0)), pd.clone().add(V(0, 44, 0).addScaledVector(cf.inward, -6)), cf.P(ud, yd + 44, 6)], 2.5, C.glass, 0.12, 8);
+  skipBox('clear', 3);
   sucker(cf, ud, yd + 44, 6);
+  skipBox('clear', 1);
 }

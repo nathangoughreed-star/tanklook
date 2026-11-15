@@ -6,6 +6,7 @@
 // targets (a click there clears the selection, as before).
 import * as THREE from 'three';
 import { gearShown, type GearPiece } from '../render/gear3d';
+import { cycle } from '../render/gearSel';
 import type { Store } from '../scene/store';
 import type { Viewer, Viewport } from '../render/viewer';
 import type { ItemKind } from '../scene/types';
@@ -59,7 +60,7 @@ export function clickTarget(viewer: Viewer, store: Store, hit: Hit): ClickTarget
   if (it && !hit.mesh?.userData.plant) return { kind: 'item', id: it.id, item: it.kind };
   if (hit.fishId != null) return { kind: 'fish', id: hit.fishId };
   // gear (every mount, fixed pieces too: a click only opens their row); a plant wins unless the gear is nearer
-  if (gearShown() && hit.vp.scene) {
+  if (gearShown() && hit.vp.scene && !cycle.skip) { // (cycle.skip: the second click of a cycle takes what is behind the gear)
     const g = gearAt(hit);
     const plantD = it && hit.mesh ? new THREE.Raycaster(hit.ray.origin, hit.ray.direction).intersectObject(hit.mesh, false)[0]?.distance : undefined;
     if (g && (!it || (plantD != null && g.d < plantD - 5))) return { kind: 'gear', row: g.row };

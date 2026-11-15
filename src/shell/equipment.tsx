@@ -114,7 +114,7 @@ function PlacementGroup({ store }: { store: Store }) {
   const where = g.mount === 'rim' ? 'slides along the top rim' : g.mount === 'glass' ? 'drags on the inside glass' : g.mount === 'floor' ? 'drags on the substrate' : 'moves on the top';
   return (
     <Group title="Placement" sum={`${g.row.split('.')[0]} picked`} open={open} onToggle={() => setOpen(!open)}>
-      {isHeater ? <div class="row"><span class="lbl">Orientation</span><span class="chips" role="group" aria-label="Heater orientation">{ORIENTS.map(o => <button type="button" class={`chip${cur === o.id ? ' on' : ''}`} aria-pressed={cur === o.id} data-orient={o.id} onClick={() => set(o.id)}>{o.label}</button>)}</span><span /></div> : null}
+      {isHeater && place?.wall === 'floor' ? <div class="hint">Lying on the substrate. Drag it onto a glass face to stand it up or angle it.</div> : isHeater ? <div class="row"><span class="lbl">Orientation</span><span class="chips" role="group" aria-label="Heater orientation">{ORIENTS.map(o => <button type="button" class={`chip${cur === o.id ? ' on' : ''}`} aria-pressed={cur === o.id} data-orient={o.id} onClick={() => set(o.id)}>{o.label}</button>)}</span><span /></div> : null}
       <div class="hint">This one {where}. Arrow keys nudge it 0.25 in; Esc lets go.</div>
     </Group>
   );

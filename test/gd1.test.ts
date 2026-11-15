@@ -75,3 +75,46 @@ describe('the picked piece', () => {
     setGearSel(null); expect(gearSel()).toBeNull(); expect(n).toBe(2); off();
   });
 });
+
+describe('heater faces: front glass and the bottom', () => {
+  const base = () => Object.keys(SCENES).map(ex).find(S => S.tank.H > 450 && S.tank.L > 800 && gearPicks(S).some(p => p.row?.startsWith('heater')))!;
+  it('a ray from behind lands on the front glass; one that leaves through the floor lays a heater on the substrate', () => {
+    const S = base(), T = S.tank;
+    const behind = placeFor(S, new THREE.Ray(new THREE.Vector3(T.L * 0.4, T.H * 0.5, -3000), new THREE.Vector3(0, 0, 1)), 'glass', undefined, [0, 0], true)!;
+    expect(behind.wall).toBe('front'); expect(behind.at).toBeCloseTo(0.4, 2);
+    const down = new THREE.Ray(new THREE.Vector3(T.L * 0.3, 3000, -T.D / 2), new THREE.Vector3(0, -1, 0));
+    const fl = placeFor(S, down, 'glass', undefined, [0, 0], true)!; expect(fl.wall).toBe('floor');
+    // a non-heater on glass never takes the floor
+    expect(placeFor(S, down, 'glass')!.wall).not.toBe('floor');
+  });
+  it('a front-glass heater and a floor heater are drawn: inside the tank, in front of / on the ground', () => {
+    const b = base(), row = gearPicks(b).find(p => p.row?.startsWith('heater'))!.row!, T = b.tank;
+    const box = (place: Parameters<typeof withPlace>[2]) => { const S = { ...b, tech: withPlace(b, row, place) }; return pieces(S).find(p => p.row === row)!.box; };
+    const fr = box({ wall: 'front', at: 0.5, y: 0.5 }); expect(fr.min.z).toBeGreaterThan(-60); expect(fr.max.z).toBeLessThan(40); expect(fr.getCenter(new THREE.Vector3()).x).toBeCloseTo(T.L / 2, -2);
+    const fl = box({ wall: 'floor', at: 0.5, y: 0.5 }), sz = fl.getSize(new THREE.Vector3());
+    expect(sz.x).toBeGreaterThan(sz.y * 2); // lying flat
+    expect(-fl.getCenter(new THREE.Vector3()).z).toBeCloseTo(T.D / 2, -2);
+  });
+  it('front-glass spots save and load; arrows slide along the front', () => {
+    expect(parseTech({ rows: {}, place: { heater: { wall: 'front', at: 0.3, y: 0.5 } } })!.place!.heater.wall).toBe('front');
+    expect(nudgePlace(base(), { wall: 'front', at: 0.5, y: 0.5 }, 'glass', 6.35, 0).at).toBeGreaterThan(0.5);
+  });
+});
+
+describe('click cycle and tight boxes', () => {
+  it('the second click at one spot with something behind skips the gear; a third returns; elsewhere or later does not', async () => {
+    const { cycleSkip, cycleNote } = await import('../src/interact/gearDrag');
+    const hit = (behind: boolean) => ({ vp: { i: 0 } as never, itemId: behind ? 5 : null, fishId: null });
+    cycleNote(0, 100, 100, 'gear');
+    expect(cycleSkip(hit(true), 102, 99)).toBe(true);
+    expect(cycleSkip(hit(false), 100, 100)).toBe(false); // nothing behind: the gear stays picked
+    expect(cycleSkip(hit(true), 140, 100)).toBe(false);
+    cycleNote(0, 100, 100, 'under'); expect(cycleSkip(hit(true), 100, 100)).toBe(false); // third click: the gear again
+  });
+  it('the outline box is the body: smaller than the grab box for the CO2 set and the HOB', () => {
+    const S = ex('planted'), all = pieces({ ...S, tech: { ...(S.tech ?? { rows: {} }), rows: { ...(S.tech?.rows ?? {}), filter: 'hob' } } });
+    const vol = (b: THREE.Box3) => { const s = b.getSize(new THREE.Vector3()); return s.x * s.y * s.z; };
+    for (const p of all) if (p.core) expect(vol(p.core)).toBeLessThanOrEqual(vol(p.box) + 1);
+    expect(all.some(p => p.core && vol(p.core) < vol(p.box) * 0.9)).toBe(true);
+  });
+});

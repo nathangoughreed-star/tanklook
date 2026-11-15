@@ -618,7 +618,7 @@ export class Viewer {
       for (const o of sc.children.filter(c => c.userData.gearSelBox)) { sc.remove(o); (o as THREE.LineSegments).geometry.dispose(); }
       if (!sel || sel.vi !== vp.i || !this.store.isEditing(vp.i)) continue;
       const piece = sc.children.flatMap(o => (o.userData.gearPieces ?? []) as GearPiece[]).find(p => p.row === sel.row); if (!piece) continue;
-      const box = piece.box.clone().expandByScalar(3), h = new THREE.Box3Helper(box, new THREE.Color(0xffc83d));
+      const box = (piece.core ?? piece.box).clone().expandByScalar(3), h = new THREE.Box3Helper(box, new THREE.Color(0xffc83d));
       const m = h.material as THREE.LineBasicMaterial; m.depthTest = false; m.transparent = true; h.renderOrder = 20; h.userData.gearSelBox = true; sc.add(h);
     }
   }

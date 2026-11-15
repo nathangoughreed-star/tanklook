@@ -2,7 +2,7 @@
 import * as THREE from 'three';
 import { heaterProduct } from '../../data/gearCatalog';
 import { clamp } from '../../scene/physics';
-import { UP, V, along, roundedBox, C, Frame, Spot, lerp, sucker, overRim } from './common';
+import { UP, V, along, roundedBox, C, Frame, Spot, lerp, sucker, overRim, wallYaw } from './common';
 
 // ---------- the frame the gear is placed in ----------
 
@@ -17,7 +17,7 @@ export function heater(f: Frame, watts: number, sp: Spot, product?: string) {
   // a real product at its own size (overall length = cap + tube + foot), else the generic tube for the rating; the cap is
   // 44 mm (36 grip + 8 dial) and the foot 24 mm past the tube, both shrunk on a short heater (a 105 mm mini is not mostly cap)
   const hp = heaterProduct(product), cl = hp ? Math.min(44, Math.round(hp.lengthMm * 0.22)) : 44, fl = cl * 24 / 44, fe = hp?.colors?.foot ? fl : 0;
-  const { kit } = f, r = hp ? hp.diaMm / 2 : watts >= 500 ? 14 : 11, b = r + 9, u0 = sp.u;
+  const { kit } = f, r = hp ? hp.diaMm / 2 : watts >= 500 ? 14 : 11, onFloor = sp.b != null, b = onFloor ? sp.b! : r + 9, u0 = sp.u; // GD1: a spot with b is the owner's heater lying on the substrate
   // a heater stands about 10 mm off the gravel with its cap just under the surface (fully submersible)
   const g0 = Math.max(f.ground(u0, b), 0) + 10, room = f.wy - 5 - g0;
   // lane GM8b (Nathan 2026-11-13: "no weird angles"): a heater is vertical or horizontal, never diagonal. Vertical when it fits under the
@@ -26,9 +26,9 @@ export function heater(f: Frame, watts: number, sp: Spot, product?: string) {
   const room2 = Math.max(0, f.len - 52 - 2 * r - 6), len = hp ? Math.max(40, hp.lengthMm - cl - fe) : Math.max(60, Math.min(heaterLength(watts), Math.max(room, room2) - cl));
   const vfits = len + cl <= room, hfits = len + cl <= room2;
   // lane GD1 (Nathan 2026-11-15): the owner may ask for Angled (a lean of 45 degrees) from the menu; it stays only when asked, never the default
-  const angled = sp.lean != null && Math.abs(sp.lean) >= 22.5 && Math.abs(sp.lean) < 67.5;
+  const angled = !onFloor && sp.lean != null && Math.abs(sp.lean) >= 22.5 && Math.abs(sp.lean) < 67.5;
   const ownerFlat = len + cl <= Math.max(0, f.len - 2 * r - 16); // Horizontal asked for by name: it only needs to clear both end glasses, not the full corner margin
-  const flat = !angled && (sp.lean != null && Math.abs(sp.lean) >= 45 ? hfits || ownerFlat || !vfits : !vfits && (hfits || room2 >= room));
+  const flat = onFloor || !angled && (sp.lean != null && Math.abs(sp.lean) >= 45 ? hfits || ownerFlat || !vfits : !vfits && (hfits || room2 >= room));
   const tilt = flat ? Math.PI / 2 : angled ? Math.PI / 4 : 0, sgn = (sp.lean ?? 1) < 0 ? -1 : 1, span = (len + cl) * Math.sin(tilt); // along the glass, cap included
   const wH = 2 * r + 6 + span, u = clamp(f.slot(sp.fixed ? u0 : u0 + span / 2, wH, g0, f.wy, 0, 2 * r + 12, sp.fixed), wH / 2 + 8, Math.max(wH / 2 + 8, f.len - wH / 2 - 8)); // never through an end glass
   // the cap's top: at most 15 mm under the water line, at least the heater's height off the ground (the owner's height
@@ -89,7 +89,7 @@ export function heater(f: Frame, watts: number, sp: Spot, product?: string) {
   kit.rod('wet', top.clone().addScaledVector(dir, cg), top.clone().addScaledVector(dir, cl), r - 1, L?.cap.dial === false ? capC : new THREE.Color(capC).multiplyScalar(0.8).getHex(), { seg: 20 });
   if (L?.foot) { const fc = hx(L.foot.hex, capC), f0 = bot.clone().addScaledVector(dir, -fl); kit.rod('wet', f0, bot.clone().addScaledVector(dir, 4), r + 1, fc, { seg: 20 }); if (L.foot.ribbed) ribs(f0, fl + 4, r + 2, fc); }
   else if (L?.shape !== 'flat') kit.ball('wet', bot.clone().addScaledVector(dir, 2), r * 0.98, guard ? guardC : capC, 0, 1);
-  if (L?.cap.display) kit.put('glow', new THREE.PlaneGeometry(r * 1.1, 14), hx(L.cap.display, 0x66ccff), along(top.clone().addScaledVector(dir, cl * 20 / 44).addScaledVector(f.inward, r + 2.1), dir, 0).multiply(new THREE.Matrix4().makeRotationY(f.wall === 'back' ? 0 : Math.PI / 2)));
+  if (L?.cap.display) kit.put('glow', new THREE.PlaneGeometry(r * 1.1, 14), hx(L.cap.display, 0x66ccff), along(top.clone().addScaledVector(dir, cl * 20 / 44).addScaledVector(f.inward, r + 2.1), dir, 0).multiply(new THREE.Matrix4().makeRotationY(wallYaw(f.wall))));
   if (!L || L.cap.led) kit.ball('glow', top.clone().addScaledVector(dir, cl / 2).addScaledVector(f.inward, r + 1.5), 2.2, hx(L?.cap.led, C.amber));
   // the cord up out of the water and over the rim, and two clips with suction cups
   const capTop = top.clone().addScaledVector(dir, cl);
@@ -105,7 +105,7 @@ export function heater(f: Frame, watts: number, sp: Spot, product?: string) {
     if (ct.display) kit.put('glow', new THREE.PlaneGeometry(ct.wMm * 0.6, ct.hMm * 0.25), hx(ct.display, 0xff3030), along(cc.clone().addScaledVector(f.inward, -ct.dMm / 2 - 0.3).setY(cy + ct.hMm * 0.18), UP, 0).multiply(new THREE.Matrix4().makeRotationY(Math.atan2(-f.inward.x, -f.inward.z))));
   }
   const cups = L?.cups ?? 'clear';
-  for (const k of [0.25, 0.72]) {
+  for (const k of onFloor ? [] : [0.25, 0.72]) {
     const p = bot.clone().lerp(top, k);
     kit.put('wet', new THREE.TorusGeometry(r + 1.6, 1.6, 6, 20), capC, along(p, dir, 0).multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2)));
     const pu = u + p.clone().sub(f.P(u, 0, 0)).dot(f.along);

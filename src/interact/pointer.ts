@@ -25,8 +25,8 @@ import type { ItemKind, Tank, TankSetup } from '../scene/types';
 import type { Viewer, Viewport } from '../render/viewer';
 import { LIMITS } from '../scene/validate';
 import { groupSize, moveGroup, settleFish, turnGroup, type Group } from '../scene/duplicate';
-import { gearGrab, gearLean, gearMove, pickGear, nudgePlace, drawnPlace, withPlace, type GearDrag } from './gearDrag';
-import { gearSel, setGearSel } from '../render/gearSel';
+import { gearGrab, gearLean, gearMove, pickGear, pickRow, nudgePlace, drawnPlace, withPlace, cycleSkip, cycleNote, type GearDrag } from './gearDrag';
+import { cycle, gearSel, setGearSel } from '../render/gearSel';
 import { clickTarget, type ClickTarget } from './clickMenu';
 import { MAX_PATCHES, addArea, placeSingle, erasable, erasePatches, extendPath, newPatch, patchAt } from '../scene/brush';
 
@@ -132,6 +132,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
   let move: { vp: Viewport; id: number; grab: THREE.Vector3; riders: Rider[]; fishRiders: FishRider[]; skip: Set<number>; float: THREE.Plane | null; wall: THREE.Plane | null; coral: boolean; moved: boolean } | null = null;
   let drag: { vp: Viewport; plane: THREE.Plane; mode: DragMode; off: THREE.Vector3; moved: boolean } | null = null;
   let orbit: { i: number; x: number; y: number; az: number; el: number } | null = null;
+  let lp: { x: number; y: number; timer: ReturnType<typeof setTimeout> } | null = null; // a finger held on gear, waiting to pick it up (GD1)
   let gear: GearDrag | null = null; // a piece of tech gear being dragged along what it mounts on (lane TG, interact/gearDrag.ts)
   // custom terrain: dragging a grid dot up/down; the height follows the pointer at the dot's on-screen scale
   let lift: { i: number; k: number; y0: number; h0: number; mmPerPx: number; moved: boolean } | null = null;
@@ -239,7 +240,17 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       viewer.terrainEdit.hot = hit.dot; viewer.rebuild();
       return;
     }
-    if (editable && hit.dot == null && !hit.pool && canPick('gear') && (gear = gearGrab(hit))) { store.select(null); setGearSel(pickGear(hit, store.scene.tanks[vi])); return; } // GD1: the piece is picked and its box drawn // gear moves only while Tech is open (Nathan 2026-10-20)
+    // GD1: the second click at one spot with something behind the gear takes what is behind (cycle); a finger must hold 0.45 s to pick gear up (else it turns the view)
+    cycle.skip = editable && cycleSkip(hit, e.clientX, e.clientY);
+    if (cycle.skip) cycleNote(vi, e.clientX, e.clientY, 'under');
+    else if (editable && hit.dot == null && !hit.pool && canPick('gear') && e.pointerType === 'touch' && gearGrab(hit)) {
+      const x0 = e.clientX, y0 = e.clientY; if (lp) clearTimeout(lp.timer);
+      lp = { x: x0, y: y0, timer: setTimeout(() => {
+        const h = viewer.hitTest(x0, y0), g = h && gearGrab(h); lp = null; if (!h || !g) return;
+        orbit = null; viewer.unpinOrbit(); gear = g; store.select(null); setGearSel(pickGear(h, store.scene.tanks[h.vp.i])); canvas.classList.add('dragging'); navigator.vibrate?.(15);
+      }, 450) };
+    }
+    else if (editable && hit.dot == null && !hit.pool && canPick('gear') && (gear = gearGrab(hit))) { store.select(null); setGearSel(pickGear(hit, store.scene.tanks[vi])); cycleNote(vi, e.clientX, e.clientY, 'gear'); return; } // the piece is picked and its box drawn // gear moves only while Tech is open (Nathan 2026-10-20)
     if (editable && hit.itemId != null && hit.mesh && (canPick('items', store.scene.tanks[vi].items.find(q => q.id === hit!.itemId)?.kind ?? 'stone') || (store.groupCount > 1 && store.inGroup('item', hit.itemId)))) {
       const inGroup = store.groupCount > 1 && store.inGroup('item', hit.itemId);
       if (inGroup) store.lead('item', hit.itemId); else store.selectItem(hit.itemId);
@@ -287,6 +298,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
   });
 
   canvas.addEventListener('pointermove', e => {
+    if (lp && Math.hypot(e.clientX - lp.x, e.clientY - lp.y) > 8) { clearTimeout(lp.timer); lp = null; }
     if (touches.has(e.pointerId)) touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (pinch) {
       if (touches.size < 2) return;
@@ -402,6 +414,8 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
   });
 
   const end = (e: PointerEvent) => {
+    if (lp) { clearTimeout(lp.timer); lp = null; }
+    queueMicrotask(() => { cycle.skip = false; }); // after this handler's click lookup
     if (e.pointerType === 'touch') {
       touches.delete(e.pointerId);
       if (pinch) { if (!touches.size) { pinch = null; first = null; } return; } // lifting the last finger ends it
@@ -422,7 +436,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
     if (orbit && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) {
       const hit = focus ? viewer.hitTest(e.clientX, e.clientY) : null, t = hit && store.isEditing(hit.vp.i) ? clickTarget(viewer, store, hit) : null;
       if (viewer.handleAt(e.clientX, e.clientY) && viewer.standAt(e.clientX, e.clientY) && (!t || t.kind === 'stand')) { tankView.standOpen = !tankView.standOpen; viewer.rebuild(); } // only from the handle box (CB1); the stand's options open on any other click
-      else if (t) { if (t.kind !== 'gear') setGearSel(null); focus!(t); }
+      else if (t) { if (t.kind === 'gear') { const gs = hit && pickRow(viewer, store, hit.vp.i, t.row); if (gs) setGearSel(gs); } else setGearSel(null); focus!(t); }
       else { setGearSel(null); if (patchPick != null) store.selectPatch(patchPick); else store.select(null); }
     }
     else if (e.type === 'pointerup' && store.groupCount <= 1) { // a click (no drag) on a piece / animal whose menu is open: show its editor

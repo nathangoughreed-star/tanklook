@@ -12,7 +12,7 @@ import type { Store } from '../scene/store';
 import type { TankSetup } from '../scene/types';
 import type { Viewer, Viewport } from '../render/viewer';
 import { gearShown, lidTop, onTop, type GearMount, type GearPiece } from '../render/gear3d';
-import type { GearSelection } from '../render/gearSel';
+import { cycle, type GearSelection } from '../render/gearSel';
 
 /** A piece being dragged: its tank, tech row and mount, whether it has moved, and its half size along x and depth (mm;
  *  what keeps a piece on the top inside the tank's footprint). */
@@ -43,7 +43,7 @@ export function gearGrab(hit: Hit): GearDrag | null {
 }
 
 /** Where the pointer's ray puts a piece with this mount in tank S (shares as TechSetup.place keeps them), or null. */
-export function placeFor(S: TankSetup, ray: THREE.Ray, mount: GearMount, prev?: GearPlace, half: [number, number] = [0, 0]): GearPlace | null {
+export function placeFor(S: TankSetup, ray: THREE.Ray, mount: GearMount, prev?: GearPlace, half: [number, number] = [0, 0], heater = false): GearPlace | null {
   const T = S.tank, Db = T.D - backdropDepth(S.backdrop, T), lean = prev?.lean;
   if (mount === 'fixed') return null;
   if (mount === 'lid') {
@@ -64,6 +64,13 @@ export function placeFor(S: TankSetup, ray: THREE.Ray, mount: GearMount, prev?: 
   const box = new THREE.Box3(new THREE.Vector3(0, 0, -Db), new THREE.Vector3(T.L, T.H, 0)), far = ray.at(1e5, new THREE.Vector3());
   const out = new THREE.Ray(far, ray.direction.clone().negate()).intersectBox(box, new THREE.Vector3());
   if (!out) return null;
+  // lane GD1: the ray leaves the water through the floor (a heater lies on the substrate there) or through the front glass (seen from behind)
+  if (mount === 'glass' && heater && out.y < 0.5 && T.shape !== 'bowl') return { wall: 'floor', at: clamp(out.x / T.L, 0.04, 0.96), y: clamp(-out.z / T.D, 0.06, 0.94) };
+  if (mount === 'glass' && Math.abs(out.z) < 0.5 && out.y > 0.5) {
+    const g = groundHeight(S, T, clamp(out.x, 1, T.L - 1), 1), wy = waterY(T, S.water.level), place: GearPlace = { wall: 'front', at: clamp(out.x / T.L, 0, 1), y: clamp((out.y - g) / Math.max(1, wy - g), 0, 1) };
+    if (prev?.lean != null) place.lean = snapLean(prev.lean);
+    return place;
+  }
   // the floor or the front (a ray down through the water, or past the side): the nearest of the three walls it can hang on
   const dist = { back: Math.abs(out.z + Db), left: Math.abs(out.x), right: Math.abs(out.x - T.L) };
   // suction cups hold on glass only: with a 3D backdrop covering the back, glass gear snaps to a side glass (lane GM8)
@@ -82,7 +89,7 @@ export function placeFor(S: TankSetup, ray: THREE.Ray, mount: GearMount, prev?: 
 /** Follow the pointer: write the piece's new spot (coalesced into one undo step per drag). */
 export function gearMove(viewer: Viewer, store: Store, g: GearDrag, clientX: number, clientY: number) {
   const hit = viewer.hitTest(clientX, clientY); if (!hit || hit.vp.i !== g.vi) return;
-  const S = store.scene.tanks[g.vi], p = placeFor(S, hit.ray, g.mount, S.tech?.place?.[g.row], g.half); if (!p) return;
+  const S = store.scene.tanks[g.vi], p = placeFor(S, hit.ray, g.mount, S.tech?.place?.[g.row], g.half, g.row.split('.')[0] === 'heater'); if (!p) return;
   if (JSON.stringify(p) === JSON.stringify(S.tech?.place?.[g.row])) return;
   store.editTank(g.vi, t => { t.tech = withPlace(t, g.row, p); }, { coalesce: 'gear-drag' });
   g.moved = true;
@@ -141,7 +148,22 @@ export function nudgePlace(S: TankSetup, p: GearPlace, mount: GearMount, dx: num
   if (p.wall === 'floor') { q.at = clamp((p.at ?? 0.5) + dx / T.L, 0.04, 0.96); q.y = clamp((p.y ?? 0.8) - dy / T.D, 0.06, 0.94); return q; }
   if (p.wall === 'lid') { q.at = clamp((p.at ?? 0.5) + dx / T.L, 0, 1); q.y = clamp((p.y ?? 0.5) - dy / T.D, 0, 1); return q; }
   // along a wall: the back runs left to right, a side runs front to back (at 0 = front)
-  q.at = clamp((p.at ?? 0) + (p.wall === 'back' ? dx / T.L : p.wall === 'left' ? dx / Db : -dx / Db), 0, 1);
+  q.at = clamp((p.at ?? 0) + (p.wall === 'back' || p.wall === 'front' ? dx / T.L : p.wall === 'left' ? dx / Db : -dx / Db), 0, 1);
   if (mount === 'glass') { const wy = waterY(T, S.water.level); q.y = clamp((p.y ?? 0.5) + dy / Math.max(1, wy), 0, 1); }
   return q;
+}
+
+/** Whether this press should skip the gear and take what is behind it (the second click of a cycle). */
+export function cycleSkip(hit: { vp: Viewport; itemId: number | null; fishId: number | null }, x: number, y: number): boolean {
+  const l = cycle.last;
+  return !!l && l.what === 'gear' && l.vi === hit.vp.i && performance.now() - l.t < 3000 && Math.hypot(x - l.x, y - l.y) < 6 && (hit.itemId != null || hit.fishId != null);
+}
+export const cycleNote = (vi: number, x: number, y: number, what: 'gear' | 'under') => { cycle.last = { x, y, t: performance.now(), vi, what }; };
+
+/** The selection for a tapped row (a click target names the row without its number): the first matching piece, as drawn. */
+export function pickRow(viewer: Viewer, store: Store, vi: number, row: string): GearSelection | null {
+  const S = store.scene.tanks[vi], pieces = viewer.vps[vi]?.scene?.children.flatMap(o => (o.userData.gearPieces ?? []) as GearPiece[]) ?? [];
+  const piece = pieces.find(p => p.row === row) ?? pieces.find(p => p.row.startsWith(row + '.')); if (!piece || !S) return null;
+  const from = S.tech?.place?.[piece.row] ?? drawnPlace(S, piece) ?? undefined;
+  return { vi, row: piece.row, mount: piece.mount, ...(from ? { from } : {}) };
 }

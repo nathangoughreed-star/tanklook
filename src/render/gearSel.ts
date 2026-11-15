@@ -17,3 +17,6 @@ export function setGearSel(s: GearSelection | null) {
 }
 /** Run `f` on every change; returns the way to stop. */
 export function onGearSel(f: () => void): () => void { subs.add(f); return () => { subs.delete(f); }; }
+
+/** Click-cycling (lane GD1): a second click at the same spot, with an animal or piece behind the gear, picks what is behind; a third returns to the gear. */
+export const cycle: { last: { x: number; y: number; t: number; vi: number; what: 'gear' | 'under' } | null; skip: boolean } = { last: null, skip: false };
