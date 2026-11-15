@@ -10,6 +10,7 @@ import { Placed, PieceEditor, Search, SliderRow, sealer } from './scape';
 import { plantPick, plantDetail, type PlantGroup } from './logic/plantcards';
 import { addPiece } from './logic/scape';
 import { Group } from './ui';
+import { dragPiece } from './drag';
 
 /** The plant's picture: the baked still (public/gallery/plants/<id>.webp), else drawn live from the 3D model, else nothing. */
 const live = new Map<string, string>();
@@ -97,7 +98,7 @@ export function PlantsSection({ store, getViewer }: { store: Store; getViewer: (
           {role ? null : <div class="cap">{g.label} <span class="n">{g.cards.length}</span></div>}
           <div class="pgrid">
             {g.cards.map(c => (
-              <div class={`ptile${c.why ? ' gated' : ''}`} data-plant={c.id} title={c.why ? `${c.why}. Still addable: Add anyway.` : c.hint}>
+              <div class={`ptile${c.why ? ' gated' : ''}`} data-plant={c.id} title={c.why ? `${c.why}. Still addable: Add anyway.` : c.hint} onPointerDown={e => { if (!(e.target as HTMLElement).closest('button')) dragPiece(e, c.id, getViewer, store); }}>
                 <div class="tart"><PlantArt id={c.id} /><button type="button" class="pinfo" aria-label={`${c.label}: details`} title="Details" onClick={() => setPvId(c.id)}>i</button></div>
                 <div class="tname">{c.label}</div>
                 <div class="tmeta"><span>{c.size}</span>{c.care ? <span class="care">{c.care}</span> : null}</div>

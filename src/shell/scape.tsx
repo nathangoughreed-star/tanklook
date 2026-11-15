@@ -12,6 +12,7 @@ import {
   brushOn, pickBrush, groupTurn, groupSizeBy, groupDelete, groupDuplicate, GRAINS, LEAVES, KEEP_PROPS,
 } from './logic/scape';
 import { Group, Icon } from './ui';
+import { dragPiece } from './drag';
 
 /** Pieces can be picked and dragged in the view only while their section is open (as the old shell: its menu open). Boot's attachPointer reads this. */
 export const pickItems: { sec: ScapeSec | null } = { sec: null };
@@ -30,16 +31,16 @@ export function SliderRow({ label, title, min, max, step = 1, value, text, onInp
 }
 
 /** One library: a search box is the caller's; chips add a piece, a greyed chip says why on its own line and can still be added. */
-export function Library({ lib, onAdd }: { lib: LibraryView; onAdd: (id: string) => void }) {
+export function Library({ lib, onAdd, onDrag }: { lib: LibraryView; onAdd: (id: string) => void; onDrag?: (e: PointerEvent, id: string) => void }) {
   return (
     <div class="lib">
       {lib.none ? <div class="hint">{lib.none}</div> : null}
       {lib.rows.map(r => (
         <div class="libRow"><div class="cap">{r.label} <span class="n">{r.chips.length}</span></div>
-          <div class="chips">{r.chips.filter(c => !c.why).map(c => <button type="button" class="chip" title={`Add: ${c.hint}`} onClick={() => onAdd(c.id)}>{c.label}</button>)}</div>
+          <div class="chips">{r.chips.filter(c => !c.why).map(c => <button type="button" class="chip" title={`Add: ${c.hint}${onDrag ? ' (or drag it into the tank)' : ''}`} onClick={() => onAdd(c.id)} onPointerDown={e => onDrag?.(e, c.id)}>{c.label}</button>)}</div>
           {r.chips.some(c => c.why) ? (
             <div class="gatedList">{r.chips.filter(c => c.why).map(c => (
-              <div class="gatedRow"><button type="button" class="chip gated" title={`Add anyway: ${c.hint}`} onClick={() => onAdd(c.id)}>{c.label}</button><span class="why warn">{c.why}</span></div>
+              <div class="gatedRow"><button type="button" class="chip gated" title={`Add anyway: ${c.hint}`} onClick={() => onAdd(c.id)} onPointerDown={e => onDrag?.(e, c.id)}>{c.label}</button><span class="why warn">{c.why}</span></div>
             ))}</div>
           ) : null}
         </div>
@@ -148,7 +149,7 @@ export function ScapeSection({ store, getViewer }: { store: Store; getViewer: ()
 
       <div class="cap">Add hardscape and decor</div>
       <Search q={q} onQ={setQ} placeholder="Search stones, wood, caves, decor" />
-      <Library lib={lib} onAdd={id => addPiece(store, id)} />
+      <Library lib={lib} onAdd={id => addPiece(store, id)} onDrag={(e, id) => dragPiece(e, id, getViewer, store)} />
 
       <Group title="Substrate" sum={sv.summary} open={open.sub} onToggle={() => flip('sub')}>
         <div class="row"><span class="lbl">Type</span>
