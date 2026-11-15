@@ -75,7 +75,7 @@ function KindRow({ store, S }: { store: Store; S: TankSetup }) {
   const k = kindView(S), [said, setSaid] = useState('');
   if (k.opts.length < 2) return null;
   return (
-    <div class="field"><div class="cap" title="What the setup is: the Animals list and the clear-water colour follow">Kind</div>
+    <div class="field"><div class="cap" title="What the setup is: the Animals list and the clear-water colour follow">Type</div>
       <Seg<SetupKind> label="Kind" value={k.on} opts={k.opts.map(([id, t]) => [id, t] as [SetupKind, string])} onPick={v => setSaid(setKind(store, v))} />
       {said ? <div class="hint" role="status">{said}</div> : null}</div>
   );
@@ -89,7 +89,6 @@ export function TankSection({ store, onPicker, onMaker, libN }: { store: Store; 
   return (
     <>
       <Group id="model" title="Tank model" sum={card.sum} open={g.model} onToggle={() => flip('model')}>
-        <KindRow store={store} S={S} />
         <div class="card media sel tankcard">
           <span class="thumb tthumb"><Icon name="tank" /></span>
           <span><div class="t">{card.title}</div><div class="m">{card.sub}</div></span>
@@ -118,11 +117,12 @@ export function TankSection({ store, onPicker, onMaker, libN }: { store: Store; 
   );
 }
 
-/** AT1 (R41): Water look (level, tint, colour, presets) lives with the tank, not with the animals. Same edits as before. */
+/** AT1 (R41): Water look (level, tint, colour, presets) lives with the tank, not with the animals. R84 (Nathan 2026-11-15): the group is "Water" and holds the water type (fresh / salt) on top. */
 function WaterLook({ store, open, onToggle }: { store: Store; open: boolean; onToggle: () => void }) {
-  const wl = waterLook(store.tank, store.scene.units);
+  const wl = waterLook(store.tank, store.scene.units), kv = kindView(store.tank), kt = kv.opts.find(([id]) => id === kv.on)?.[1];
   return (
-    <Group title="Water look" sum={wl.on ? `${wl.levelText} · ${wl.tintText}` : 'off'} open={open} onToggle={onToggle}>
+    <Group title="Water" sum={[kt, wl.on ? `${wl.levelText} · ${wl.tintText}` : 'off'].filter(Boolean).join(' · ')} open={open} onToggle={onToggle}>
+      <KindRow store={store} S={store.tank} />
       {wl.off ? <div class="hint">{wl.off}</div> : null}
       <div class="row"><span class="lbl">Level</span>
         <input class="slider" type="range" min={0.1} max={1} step={0.01} value={wl.level} disabled={!wl.on} aria-label="Water level" onInput={e => setLevel(store, +(e.target as HTMLInputElement).value)} />
