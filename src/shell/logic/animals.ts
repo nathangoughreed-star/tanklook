@@ -202,6 +202,8 @@ export interface SelectionView {
   sex: { on: 'm' | 'f' } | null;
   /** pair status, asked while exactly two of a pair species are in the tank */
   pair: { on: Pairing; choices: [Pairing, string][] } | null;
+  /** AL1: the albino switch, for a species sold in that form; n = how many of the species it turns */
+  albino: { on: boolean; src: string; n: number } | null;
   /** the tracked sex of a reptile / amphibian */
   gender: { on: '' | 'm' | 'f'; how: string } | null;
   /** this animal's size as a share of its adult length (the length itself is in `lines`) */
@@ -225,6 +227,7 @@ export function selectionView(S: TankSetup, id: number | null | undefined, units
     id: f.id, name: sp.name, sci: sp.sci, sexMark: sp.female ? (f.sex === 'f' ? ' ♀' : ' ♂') : '', lines,
     sex: sp.female ? { on: f.sex === 'f' ? 'f' : 'm' } : null,
     pair: two ? { on: pairingIn(S, f.species), choices: PAIR_CHOICES } : null,
+    albino: sp.albino ? { on: !!f.albino, src: sp.albino, n: S.fish.filter(x => x.species === f.species).length } : null,
     gender: hr ? { on: f.gender ?? '', how: hr.sexing.how } : null,
     size: (() => { const adult = fishTL({ sex: f.sex }, sp), pct = clampN(Math.round(fishTL(f, sp) / adult * 100), 15, 130); return { pct, text: `${pct}% of adult · ${fmt(fishTL(f, sp))}`, stages: stagesOf(sp, units, pct) }; })(),
     extra,
@@ -264,6 +267,13 @@ export const setSex = (store: SelStore, sex?: Sex) => editSel(store, (f, s) => {
 });
 export const setPair = (store: SelStore, st: Pairing) => { const f = store.tank.fish.find(q => q.id === store.selId); if (f) store.edit(s => setPairing(s, f.species, st)); };
 export const setGender = (store: SelStore, g?: 'm' | 'f') => editSel(store, f => { if (g) f.gender = g; else delete f.gender; });
+
+/** AL1: the albino form for every animal of the selected one's species (a group looks alike); only species sold in that form. */
+export const setAlbino = (store: SelStore, on: boolean) => {
+  const id = store.selId, sel = id == null ? undefined : store.tank.fish.find(q => q.id === id), sp = sel && getSpecies(sel.species);
+  if (!sel || !sp?.albino) return;
+  store.edit(s => { for (const f of s.fish) if (f.species === sel.species) { if (on) f.albino = true; else delete f.albino; } });
+};
 
 /** AT1 (R42): the selected animal's size as % of its adult length (100 = adult, stored as no override). */
 export const setSize = (store: SelStore, raw: number) => editSel(store, (f, s) => {
@@ -341,6 +351,7 @@ const rng = (r: [number, number], f: (n: number) => string) => (r[0] === r[1] ? 
 export function speciesDetail(S: TankSetup, sp: Species, fit: Fit, units: Units): SpeciesDetail {
   const c = CARE[sp.id], chem = CHEM[sp.id], g = startGroup(sp), rows: [string, string][] = [];
   if (c) rows.push(['Care level', `${EXPERTISE_NAME[c.care]} (level ${c.care} of 3)`]);
+  if (sp.albino) rows.push(['Albino form', 'Sold in an albino form: switch it on in the Selection drawer once it is in the tank']);
   rows.push(['Adult size', sp.female ? `${fmtLen(sp.tl, units)} male, ${fmtLen(sp.female.tl, units)} female` : fmtLen(sp.tl, units)]);
   if (c) rows.push(['Smallest tank', fmtVol(c.minL, units)]);
   const min = recommendedMin(sp.id);

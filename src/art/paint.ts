@@ -139,7 +139,7 @@ export function gill(ctx: Ctx, P: Proj, W: number, u: number, v0: number, v1: nu
  * Small realistic eye: shaded socket blending into the head, iris (light top to dark rim), dark pupil set forward, a
  * faint rim and a dim catchlight (a bright ringed eye is the strongest cartoon cue).
  */
-export function eye(ctx: Ctx, P: Proj, W: number, u: number, v: number, r: number, iris: [string, string]) {
+export function eye(ctx: Ctx, P: Proj, W: number, u: number, v: number, r: number, iris: [string, string], pupil = '#0b0c0d') {
   const [x, y] = P(u, v), R = r * W;
   const s = ctx.createRadialGradient(x, y, R * 0.9, x, y, R * 1.9);
   s.addColorStop(0, 'rgba(16,18,14,0.28)'); s.addColorStop(1, 'rgba(16,18,14,0)');
@@ -148,7 +148,7 @@ export function eye(ctx: Ctx, P: Proj, W: number, u: number, v: number, r: numbe
   g.addColorStop(0, iris[0]); g.addColorStop(1, iris[1]);
   ctx.beginPath(); ctx.arc(x, y, R, 0, 7); ctx.fillStyle = g; ctx.fill();
   ctx.lineWidth = R * 0.08; ctx.strokeStyle = 'rgba(18,18,16,0.25)'; ctx.stroke();
-  ctx.beginPath(); ctx.arc(x + R * 0.08, y, R * 0.56, 0, 7); ctx.fillStyle = '#0b0c0d'; ctx.fill();
+  ctx.beginPath(); ctx.arc(x + R * 0.08, y, R * 0.56, 0, 7); ctx.fillStyle = pupil; ctx.fill();
   ctx.beginPath(); ctx.ellipse(x - R * 0.1, y - R * 0.28, R * 0.16, R * 0.08, -0.4, 0, 7); ctx.fillStyle = 'rgba(255,255,255,0.28)'; ctx.fill();
 }
 

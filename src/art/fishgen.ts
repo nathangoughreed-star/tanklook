@@ -2,6 +2,8 @@
 // (see placeholder.ts), so the species list can grow without hand-drawing each fish. Same unit frame as the
 // hand-drawn art: u = 0 (tail tip) .. 1 (nose tip) across the card width W (== adult TL), v = offset in widths
 // from the card's centre line, + down. Tail and nose tips are sharp corners at u = 0 and u = 1 exactly.
+import { albinoPlan } from './albino';
+import albinoSpecies from '../data/species.json';
 import { type Ctx, type Proj, type Pt, blob, body, eye, fin, gill, hexA, rng, scales, shimmer, shape, soft, style, wavyBand } from './paint';
 
 type Tail = 'fork' | 'notch' | 'round' | 'veil' | 'lyre' | 'double' | 'sword';
@@ -70,7 +72,7 @@ export interface Plan {
   ray?: string;
   marks?: Mark[];     // painted inside the body
   finMarks?: Mark[];  // painted inside the dorsal, anal and tail fins
-  eye: { r: number; iris: [string, string]; u?: number; dv?: number; up?: number; bulge?: number }; // up (3D): 0 on the flank .. 1 on top of the head; bulge (3D): the dome's height, share of r (default 0.38)
+  eye: { r: number; iris: [string, string]; pupil?: string; u?: number; dv?: number; up?: number; bulge?: number }; // up (3D): 0 on the flank .. 1 on top of the head; bulge (3D): the dome's height, share of r (default 0.38)
   gape?: number;      // 3D: a mouth line this long (u) back from the snout tip on each flank (the body texture has no mouth)
   gapeDrop?: number;  // 3D: how far the mouth line curves down at its rear end (widths, default 0.02; 0 = straight)
   barbels?: number;   // barbel length (widths); bottom fish
@@ -328,7 +330,7 @@ export function drawPairedFin(f: PairedFin, ctx: Ctx, P: Proj, W: number, ray = 
 /** Eye centre (u, v), radius and iris colours. */
 export function eyeSpot(p: Plan) {
   const u = p.eye.u ?? 1 - (1 - p.pedU) * 0.09, [et, eb] = profile(p)(u);
-  return { u, v: et + (eb - et) * (0.38 + (p.eye.dv ?? 0)), r: p.eye.r, iris: p.eye.iris };
+  return { u, v: et + (eb - et) * (0.38 + (p.eye.dv ?? 0)), r: p.eye.r, iris: p.eye.iris, pupil: p.eye.pupil };
 }
 
 /** Draws one median fin or the tail in the plan's fin style (fin marks, edge). */
@@ -405,7 +407,7 @@ export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
     }
   }
   const e = eyeSpot(p);
-  if (style.features) eye(ctx, P, W, e.u, e.v, e.r, e.iris);
+  if (style.features) eye(ctx, P, W, e.u, e.v, e.r, e.iris, e.pupil);
 }
 
 // ---------- Shrimp (custom: segmented, rostrum forward, legs below, antennae swept back) ----------
@@ -1055,6 +1057,12 @@ const shrimpPlan = (s: ShrimpSpec): Plan => ({
 });
 const SHRIMP_PLANS = Object.fromEntries(Object.entries(SHRIMP).map(([k, s]) => [k, shrimpPlan(s)]));
 /** The body plan the 3D loft and the card cut-out use: a fish plan, or a drawn body's (shrimp). */
+// AL1: each species sold in an albino form also has its plan recoloured under `<art>~albino` (a female's too)
+for (const r of albinoSpecies.species as { albino?: string; art: string; female?: { art: string } }[]) {
+  if (!r.albino) continue;
+  for (const a of [r.art, r.female?.art]) if (a && PLANS[a]) PLANS[a + '~albino'] = albinoPlan(PLANS[a]);
+}
+
 export const bodyPlan = (art: string): Plan | undefined => PLANS[art] ?? SHRIMP_PLANS[art];
 /** Card aspect / resting offset for the shrimp drawing. */
 export const SHRIMP_META = { aspect: 0.4, rest: 0.16 };

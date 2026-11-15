@@ -50,11 +50,15 @@ export interface Species {
   /** Sexually dimorphic species: the female look (own drawing, adult length, card aspect). The species itself is the male. */
   female?: Species;
   sex?: Sex;
+  /** AL1: sold in an albino (amelanistic) form; the value is the source for that. Absent = no albino form. */
+  albino?: string;
+  /** AL1: the albino look of this same model (art `<art>~albino`, look `<look>~a`). Set only where `albino` is. */
+  albinoForm?: Species;
 }
 /** 'f' = female; absent = male (or a species drawn the same either way). */
 export type Sex = 'f';
 
-interface RawSpecies { id: string; cat?: string; name: string; sci: string; tl: number; art: string; aspect?: number; zone?: string; kind?: string; group?: string; pair?: boolean; level?: string; habitat?: string; cling?: string; note?: string; body?: string; female?: { art: string; tl: number } }
+interface RawSpecies { albino?: string; id: string; cat?: string; name: string; sci: string; tl: number; art: string; aspect?: number; zone?: string; kind?: string; group?: string; pair?: boolean; level?: string; habitat?: string; cling?: string; note?: string; body?: string; female?: { art: string; tl: number } }
 
 function resolve(r: RawSpecies): Species {
   const kind = r.kind === 'snail' ? 'snail' as const : undefined, zone = r.zone === 'bottom' ? 'bottom' as const : undefined;
@@ -71,6 +75,12 @@ function resolve(r: RawSpecies): Species {
     const m = (artMeta(r.female.art) ?? herpMeta(r.female.art))!;
     sp.female = { ...sp, art: r.female.art, tl: r.female.tl, aspect: m.aspect, rest: m.rest, look: r.id + '~f', sex: 'f', female: undefined };
   }
+  if (typeof r.albino === 'string' && !kind) {
+    const al = (s: Species): Species => ({ ...s, art: s.art + '~albino', look: s.look + '~a', albinoForm: undefined, female: undefined });
+    sp.albino = r.albino;
+    sp.albinoForm = al(sp);
+    if (sp.female) { sp.female.albino = r.albino; sp.female.albinoForm = al(sp.female); }
+  }
   return sp;
 }
 
@@ -80,7 +90,10 @@ const byId = new Map(SPECIES.map(s => [s.id, s]));
 export const getSpecies = (id: string) => byId.get(id);
 export const hasSpecies = (id: string) => byId.has(id);
 /** The look a fish is drawn and sized with: the species, or its female for a female of a dimorphic species. */
-export const speciesOf = (f: { species: string; sex?: Sex }) => { const sp = byId.get(f.species); return sp && f.sex === 'f' && sp.female ? sp.female : sp; };
+export const speciesOf = (f: { species: string; sex?: Sex; albino?: boolean }) => {
+  const sp = byId.get(f.species), s = sp && f.sex === 'f' && sp.female ? sp.female : sp;
+  return s && f.albino && s.albinoForm ? s.albinoForm : s;   // AL1: the albino look of the same model
+};
 /** This fish's total length (mm): its custom size if set, else the adult length of its sex. */
 export const fishTL = (f: { tl?: number; sex?: Sex }, sp: Species) => f.tl ?? (f.sex === 'f' && sp.female ? sp.female.tl : sp.tl);
 /** Always rests on the ground or hardscape (bottom dwellers, land animals and snails not on glass); 'both' animals depend on the water at their spot. */

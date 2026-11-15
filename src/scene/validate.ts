@@ -250,6 +250,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       ...(tl !== adult ? { tl } : {}),
       ...(sex ? { sex } : {}),
       ...(f.gender === 'm' || f.gender === 'f' ? { gender: f.gender } : {}),
+      ...(f.albino === true && base.albino ? { albino: true as const } : {}),
     });
   }
   if (unknown) warn(`${unknown} fish of unknown species were skipped.`);

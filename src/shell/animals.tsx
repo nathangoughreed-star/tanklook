@@ -12,7 +12,7 @@ import { drawFishCard } from '../art/placeholder';
 import { drawSnailCard } from '../art/snails';
 import {
   DEFAULT_QUERY, pickView, stockView, selectionView, addSpecies, setCount, removeMisfits,
-  flip, del, dup, setSex, setSize, dropSpecies, copySelection, COPY_START, COPY_RANGE, type CopyOpt, setPair, setGender, findSpecies, rowKeyOf, speciesDetail, noteIn, type PickQuery, type PickRow,
+  flip, del, dup, setSex, setSize, setAlbino, dropSpecies, copySelection, COPY_START, COPY_RANGE, type CopyOpt, setPair, setGender, findSpecies, rowKeyOf, speciesDetail, noteIn, type PickQuery, type PickRow,
 } from './logic/animals';
 import { Icon } from './ui';
 import { dragOut } from './drag';
@@ -210,6 +210,7 @@ export function SelectionDrawer({ store, getViewer, onClose }: { store: Store; g
         <div class="field"><div class="cap" title="Adult is 100%. Drag, or pick a life stage where the species has them">Size, % of adult</div>
           <div class="row"><input class="slider" type="range" min={15} max={130} step={1} value={v.size.pct} aria-label="Size, percent of adult size" onInput={e => setSize(store, +(e.target as HTMLInputElement).value)} /><span class="val">{v.size.text}</span></div>
           {v.size.stages ? <div class="seg" role="group" aria-label="Life stage">{v.size.stages.map(b => <button type="button" class={b.on ? 'on' : ''} aria-pressed={b.on} title={b.text} onClick={() => setSize(store, b.pct)}>{b.name}</button>)}</div> : null}</div>
+        {v.albino ? <div class="field"><button type="button" class="tglrow" role="switch" aria-checked={v.albino.on} title={`Albino form (no melanin: pale body, pink eyes). Applies to all ${v.albino.n} of this species. Source: ${v.albino.src}`} onClick={() => setAlbino(store, !v.albino!.on)}><span class={`toggle${v.albino.on ? ' on' : ''}`} />Albino{v.albino.n > 1 ? <span class="hint"> · all {v.albino.n}</span> : null}</button></div> : null}
         {v.sex ? <div class="field"><div class="cap">Sex</div>{seg(v.sex.on, [['m', '♂ Male'], ['f', '♀ Female']] as ['m' | 'f', string][], k => setSex(store, k === 'f' ? ('f' as Sex) : undefined), 'Sex')}</div> : null}
         {v.pair ? <div class="field"><div class="cap" title="Two of a pair-forming species are judged as a pair only once you say they are one">Pair</div>{seg(v.pair.on, v.pair.choices, k => setPair(store, k), 'Pair')}</div> : null}
         {v.gender ? <div class="field"><div class="cap" title="Tracked for the stocking check; the drawing does not change">Sex (tracked)</div>

@@ -93,6 +93,8 @@ export interface Fish {
   /** The animal's tracked sex, for the stocking checks (drawing is `sex`'s job): reptiles and amphibians, and since 2026-10-22 every
    *  species kept by sex (CARE.sexed). Absent = not sexed (never inferred from the drawing or a pairing). */
   gender?: 'm' | 'f';
+  /** AL1: drawn in the albino (amelanistic) form; only species sold in one (`Species.albino`). Absent = normal colour. */
+  albino?: true;
   /** Clinging animals only (species `surfaces`): the surface it clings to. On glass, (x, depth) is a point on the glass and
    * yaw its heading there; on hardscape it sits on top of the solid piece under (x, depth) (the floor if none is). */
   surface?: Surface;
