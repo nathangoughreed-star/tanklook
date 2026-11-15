@@ -72,6 +72,24 @@
     "out": [],
     "small": 0,
     "smallEx": []
+   },
+   "10a-door-picker": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "10b-door-list-and-plan": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "10c-door-detail": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
    }
   },
   "desk1280-animals-has-water-look": false,
@@ -178,6 +196,35 @@
     "out": [],
     "small": 0,
     "smallEx": []
+   },
+   "10a-door-picker": {
+    "pageX": 0,
+    "out": [],
+    "small": 6,
+    "smallEx": [
+     "Get started · 1 of 5 111x18",
+     "Or start from an anima 175x23",
+     "i 22x44"
+    ]
+   },
+   "10b-door-list-and-plan": {
+    "pageX": 0,
+    "out": [],
+    "small": 4,
+    "smallEx": [
+     "Get started · 1 of 5 111x18",
+     "Or start from an anima 175x23",
+     "i 22x44"
+    ]
+   },
+   "10c-door-detail": {
+    "pageX": 0,
+    "out": [],
+    "small": 2,
+    "smallEx": [
+     "Get started · 1 of 5 111x18",
+     "Or start from an anima 175x23"
+    ]
    }
   },
   "phone390-animals-has-water-look": false,
@@ -197,14 +244,26 @@
   "phone390 count after +": "7",
   "phone390 held-back fit box": "Held back 1 Oscar: not assessed: 10.2\" of water is shallower than its own length (11.8\"), and no source states a minimum water depthTemperature: No suitable shared temperature identified. White cloud mountain minnow (61–72 °F) and Oscar (73–81 °F) have no recorded range in commonOscar with White cloud mountain minnow: would eat it134% of the swimming room: too many for this tankHigh water-change maintenance to hold nitrate near 40 ppm (see the nitrate line)",
   "phone390 drawer opened": false,
-  "phone390 drawer size": "98",
+  "phone390 drawer size": "105",
   "phone390 size after 60": "60% of adult · 0.9″",
   "desk1280 tile click opens detail (must be false)": false,
   "desk1280 info button": "{\"x\":93,\"y\":407.15625,\"width\":22,\"height\":22,\"top\":407.15625,\"right\":115,\"bottom\":429.15625,\"left\":93}",
   "desk1280 white cloud tile still listed after Add (must be false)": false,
   "phone390 tile click opens detail (must be false)": false,
   "phone390 info button": "{\"x\":29,\"y\":797.359375,\"width\":22,\"height\":44,\"top\":797.359375,\"right\":51,\"bottom\":841.359375,\"left\":29}",
-  "phone390 white cloud tile still listed after Add (must be false)": false
+  "phone390 white cloud tile still listed after Add (must be false)": false,
+  "desk1280 door open": true,
+  "desk1280 door tiles": 69,
+  "desk1280 door list": "Neon tetra−9+ | Cardinal tetra−8+",
+  "desk1280 door plan": "15 galSmallest real tank that holds the list.",
+  "desk1280 door plan button": "Plan a tank for these (17) bottom=767 of 800",
+  "desk1280 door neon tile left on list (must be false)": false,
+  "phone390 door open": true,
+  "phone390 door tiles": 69,
+  "phone390 door list": "Neon tetra−9+ | Cardinal tetra−8+",
+  "phone390 door plan": "15 galSmallest real tank that holds the list.",
+  "phone390 door plan button": "Plan a tank for these (17) bottom=831 of 844",
+  "phone390 door neon tile left on list (must be false)": false
  },
  "fails": [],
  "errors": []
