@@ -145,8 +145,9 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
     onEnd(use ? 'used' : 'saved');
   };
   const cancel = () => { if (!changed || confirm('Leave the custom tank maker without saving? Your setup stays as it was.')) onEnd('cancel'); };
+  // a dimension box being edited takes its own Esc (cancels the edit, not the maker)
   useEffect(() => {
-    const k = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); if (inSetup) setInSetup(false); else cancel(); } };
+    const k = (e: KeyboardEvent) => { if (e.key === 'Escape' && !(e.target as HTMLElement | null)?.classList?.contains('edgeinput')) { e.preventDefault(); e.stopImmediatePropagation(); if (inSetup) setInSetup(false); else cancel(); } };
     addEventListener('keydown', k, true); return () => removeEventListener('keydown', k, true);
   });
 

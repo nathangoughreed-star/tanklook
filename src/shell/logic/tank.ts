@@ -370,7 +370,7 @@ export function dimAnchors(T: Tank, u: Units): DimAnchor[] {
   }
   if (s === 'poly') {
     const ring = footprint(T).ring, n = ring.length;
-    return [...ring.map((p, i) => {
+    return [...ring.slice(0, n <= 12 ? n : 1).map((p, i) => { // past 12 sides only the front one is boxed (the panel lists the rest)
       const q = ring[(i + 1) % n], dx = q[0] - p[0], dd = q[1] - p[1], l = Math.hypot(dx, dd) || 1;
       return { id: `s${i}`, text: f(l), a: [p[0], 0, -p[1]] as [number, number, number], b: [q[0], 0, -q[1]] as [number, number, number], n: [dd / l, dx / l] as [number, number] }; // outward: (dd, -dx) in (x, depth) = (dd, dx) in (x, z)
     }), { ...H, a: [ring[1][0], 0, -ring[1][1]], b: [ring[1][0], T.H, -ring[1][1]] }];
