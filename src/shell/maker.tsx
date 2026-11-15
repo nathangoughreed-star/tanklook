@@ -45,8 +45,10 @@ function EdgeLabels({ store, getViewer, T, u, onCommit }: { store: Store; getVie
     tick(); v.onDrawn(tick); v.invalidate();
     return () => { alive = false; };
   }, [key]);
+  const live = useRef(false); // one end per edit: Enter / Esc unmount the input, whose blur must not end it a second time
   const done = (apply: boolean) => {
-    const e = editing; if (!e) return;
+    const e = editing; if (!e || !live.current) return;
+    live.current = false;
     setEditing(null);
     if (!apply) { setErr(null); return; }
     const msg = onCommit(e.id, e.text); setErr(msg ? { id: e.id, msg } : null);
@@ -57,7 +59,7 @@ function EdgeLabels({ store, getViewer, T, u, onCommit }: { store: Store; getVie
         onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); done(true); } else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); done(false); } }}
         onBlur={() => done(true)} ref={el => { if (el && document.activeElement !== el) { el.focus(); el.select(); } }} />
     : <button key={l.id} type="button" class="ov edgelab glass editable" style={{ left: `${l.x}px`, top: `${l.y}px` }} title="Click to type a new size" aria-label={`${l.id} ${l.text}, click to edit`}
-        onClick={() => { setErr(null); setEditing({ id: l.id, text: l.text.replace(/ (in|cm)$/, '') }); }}>{l.text}</button>)}
+        onClick={() => { setErr(null); live.current = true; setEditing({ id: l.id, text: l.text.replace(/ (in|cm)$/, '') }); }}>{l.text}</button>)}
     {err ? <div class="ov mrefuse glass" role="alert">{err.msg}</div> : null}</>;
 }
 
