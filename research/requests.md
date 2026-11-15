@@ -95,6 +95,7 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R77 | 11-15 | Add bala shark and red-tail shark (pygmy cory already in) | FS1 | - | - | - | lane-FS1-sharks.md |
 | R78 | 11-15 | Albino search ("albino cory" finds bronze / peppered with albino on) + peppered cory added with albino form | AL1 | - | - | - | AL1 brief Part 3 |
 | R79 | 11-15 | Rainbow shark added too (with albino form; excludes red-tail) | FS1 | - | - | - | FS1 brief Part 2 |
+| R80 | 11-15 | Bug: a custom fish size reset on Another moment (shuffle re-rolled every size); now sizes stay, only spots and poses change | C24 | - | - | - | view.ts anotherMoment, panels.ts |
 | R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
 | R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |

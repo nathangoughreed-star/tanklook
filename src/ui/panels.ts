@@ -914,7 +914,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   const anotherMoment = () => {
     if (!S().fish.length) return;
     const seed = Math.random() * 1e9;
-    store.edit(s => shuffleFish(s, rng(seed), undefined, addPct()));
+    store.edit(s => shuffleFish(s, rng(seed)));
     status('Another moment in the tank. Ctrl+Z brings the last one back.');
   };
   $('shuffle').onclick = anotherMoment;

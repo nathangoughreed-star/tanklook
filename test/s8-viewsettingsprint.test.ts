@@ -46,6 +46,8 @@ describe('View', () => {
     const st = new Store(scene('planted')), pos = () => JSON.stringify(st.tank.fish.map(f => [f.x, f.y, f.depth])), before = pos();
     expect(anotherMoment(st, 12345)).toBe(true); expect(pos()).not.toBe(before);
     st.undo(); expect(pos()).toBe(before);
+    const sized = new Store(scene('planted')); sized.edit(s => { s.fish[0].tl = 7; }); const tls = () => JSON.stringify(sized.tank.fish.map(f => f.tl ?? null));
+    const t0 = tls(); anotherMoment(sized, 777); expect(tls()).toBe(t0); // a custom size survives Another moment (Nathan 2026-11-15)
     const bare = new Store(scene('planted')); bare.edit(s => { s.fish = []; }); expect(anotherMoment(bare, 1)).toBe(false);
   });
 });

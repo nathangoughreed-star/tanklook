@@ -65,9 +65,9 @@ export const pngTitle = (w: number, h: number, ratio: number, mult: number) => `
 
 // ---------- Another moment ----------
 /** Every animal in a new spot (plants and scape stay). False when there are no animals. One undo step, as the old button. */
-export function anotherMoment(store: Store, seed = Math.random() * 1e9, addPct = 100): boolean {
+export function anotherMoment(store: Store, seed = Math.random() * 1e9): boolean { // sizes stay as set (Nathan 2026-11-15: a custom size reset on Another moment)
   if (!store.tank.fish.length) return false;
-  store.edit(s => shuffleFish(s, rng(seed), undefined, addPct));
+  store.edit(s => shuffleFish(s, rng(seed)));
   return true;
 }
 
