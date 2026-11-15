@@ -6,7 +6,7 @@ import { Group } from './ui';
 import { MAP_DIV } from '../render/lighting';
 import { parGuideHtml } from '../ui/parGuide';
 
-/** The colour ramp under the map toggle: a label at each doubling, as the old Light map key had (PG1). */
+/** The color ramp under the map toggle: a label at each doubling, as the old Light map key had (PG1). */
 const RAMP = 'linear-gradient(90deg,#0d0d40 0%,#1a40d9 14.3%,#00b3e6 28.6%,#26cc40 42.9%,#f2e61a 57.1%,#ff8c0d 71.4%,#e61a1a 85.7%,#ffe6e6 100%)';
 const TICKS: Record<'par' | 'lux', [number, string][]> = {
   par: [[5, '5'], [10, '10'], [20, '20'], [40, '40'], [80, '80'], [160, '160'], [320, '320']],

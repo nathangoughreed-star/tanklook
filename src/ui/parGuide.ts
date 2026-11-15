@@ -1,5 +1,5 @@
 // PAR guide (Nathan 2026-10-14): a reference chart opened from the Lighting menu. What PAR is, the usual levels for
-// planted tanks and for reefs, what grows at each, and whether CO2 / fertiliser (fresh) or dosing (reef) goes with it.
+// planted tanks and for reefs, what grows at each, and whether CO2 / fertilizer (fresh) or dosing (reef) goes with it.
 // Self-contained: builds its own dialog and styles, so the only hooks are a button in index.html and one call in main.ts.
 
 import { FRESH_TIERS, REEF_TIERS, type Tier as TierNums } from '../scene/lightneeds';
@@ -13,31 +13,31 @@ const FRESH: Tier[] = withRows(FRESH_TIERS, [
     ['Grows', 'Anubias, Java fern, Bucephalandra, Java moss, marimo balls, floating plants near the surface'],
     ['Struggles', 'Almost all stem plants, any carpet; red plants stay green or brown'],
     ['CO2', 'No'],
-    ['Fertiliser', 'Very little: fish waste is often enough; an occasional dose of an all-in-one liquid'],
+    ['Fertilizer', 'Very little: fish waste is often enough; an occasional dose of an all-in-one liquid'],
   ],
   [
     ['Grows', 'The above, plus Cryptocoryne, Amazon sword, Vallisneria, Sagittaria, water sprite, Hygrophila, Ludwigia repens, Rotala rotundifolia (green, slow)'],
     ['Struggles', 'Carpets (Monte Carlo, HC Cuba) thin out or melt; reds stay pale'],
     ['CO2', 'Not needed. A liquid carbon product is optional'],
-    ['Fertiliser', 'Lean all-in-one liquid weekly; root tabs under swords and crypts'],
+    ['Fertilizer', 'Lean all-in-one liquid weekly; root tabs under swords and crypts'],
   ],
   [
     ['Grows', 'Most stem plants grow well; red tints start (Ludwigia, Rotala); dwarf hairgrass and Monte Carlo spread slowly'],
     ['Struggles', 'Deep reds and dense carpets without CO2; algae if nutrients run short'],
     ['CO2', 'Recommended. Without it, keep the light on 6–7 h a day and dose lightly'],
-    ['Fertiliser', 'Full liquid dosing (macro + micro) several times a week, plus root tabs'],
+    ['Fertilizer', 'Full liquid dosing (macro + micro) several times a week, plus root tabs'],
   ],
   [
     ['Grows', 'Carpets (HC Cuba, Monte Carlo, Glossostigma), deep reds (Rotala macrandra, Alternanthera reineckii), fast compact growth'],
     ['Struggles', 'Shade plants: Anubias and Java fern collect algae on their leaves unless shaded'],
     ['CO2', 'Required: injected, about 30 ppm (drop checker lime green)'],
-    ['Fertiliser', 'Heavy: full macro + micro dosing (e.g. EI), weekly big water changes, frequent trimming'],
+    ['Fertilizer', 'Heavy: full macro + micro dosing (e.g. EI), weekly big water changes, frequent trimming'],
   ],
   [
     ['Grows', 'Competition / Dutch style; the most demanding species, grown fast and dense'],
     ['Struggles', 'Any imbalance shows as algae within days; more light than most plants can use'],
     ['CO2', 'Essential, closely controlled'],
-    ['Fertiliser', 'Heavy and exact; most hobbyists never need this level'],
+    ['Fertilizer', 'Heavy and exact; most hobbyists never need this level'],
   ],
 ]);
 
@@ -64,7 +64,7 @@ const REEF: Tier[] = withRows(REEF_TIERS, [
 ]);
 
 const ABOUT = `<p><b>PAR</b> is the light plants and corals can use: the photons between 400 and 700 nm landing on a
-square metre each second (µmol/m²/s). It is not the same as brightness. Lux counts what the eye sees, mostly green and
+square meter each second (µmol/m²/s). It is not the same as brightness. Lux counts what the eye sees, mostly green and
 yellow, so a blue reef light can look dim and still deliver high PAR.</p>
 <p>The numbers below are PAR <b>where it matters</b>: at the substrate for plants, at the coral for a reef. PAR falls
 fast with distance, so the top of a tall tank can get 3–4x what the bottom gets.</p>`;
