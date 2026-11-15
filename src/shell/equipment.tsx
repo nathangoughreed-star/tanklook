@@ -2,10 +2,11 @@
 // "I own" group and a "Buy" group with the item in use marked and an independent "Use this one for sure" lock on every row (screen map §2a).
 // Components only draw logic/equipment.ts and call its edits, each as one store.edit (one undo step).
 import { useEffect, useState } from 'preact/hooks';
+import type { ComponentChildren } from 'preact';
 import type { Store } from '../scene/store';
 import { GENERIC } from '../scene/gearOwn';
 import {
-  categories, categoryView, presetLadder, applyPresetEdit, useItem, setOwned, setLock, marks, ownSum, addOwnAny, specOf, isCat, type CatId, type GearRow,
+  categoryGroups, groupOfKind, buyTree, categoryView, presetLadder, applyPresetEdit, useItem, setOwned, setLock, ownSum, addOwnAny, specOf, isCat, type CatId, type GearRow,
 } from './logic/equipment';
 import { LightingGroup } from './lighting';
 import { Group, Icon, Pill } from './ui';
@@ -67,33 +68,70 @@ function AddOwn({ store, cat }: { store: Store; cat: CatId }) {
   );
 }
 
-export function EquipmentSection({ store, units }: { store: Store; units: 'in' | 'cm' }) {
-  const S = store.tank, cats = categories(S), [sel, setSel] = useState(() => { const g = takeOpen('equipment'); if (g && isCat(g)) { saveCat(g); return g; } return loadCat(); }); // CM2: a click on a piece of gear asks for its category
-  useEffect(() => { const f = () => { const g = takeOpen('equipment'); if (g && isCat(g)) { setSel(g); saveCat(g); } }; addEventListener(OPEN_EVENT, f); return () => removeEventListener(OPEN_EVENT, f); }, []);
-  const [open, setOpen] = useState({ own: true, buy: true, all: false });
-  const cat = (cats.find(c => c.id === sel) ?? cats[0]).id as CatId;
-  const v = categoryView(S, cat, units, { showAll: open.all }), ladder = presetLadder(S), mk = marks(S);
-  const pick = (id: string) => { setSel(id); saveCat(id); setOpen({ ...open, all: false }); };
+/** One size band of a type: the band holding this tank is open, the others collapsed with their counts. */
+function Band({ label, count, open, onToggle, tank, children }: { label: string; count: number; open: boolean; onToggle: () => void; tank: boolean; children: ComponentChildren }) {
   return (
-    <div class="equip">
-      {ladder.length ? <div class="ladder" role="group" aria-label="Setup level">{ladder.map(p => <button type="button" class={`chip${p.on ? ' on' : ''}`} aria-pressed={p.on} title="Set every row to this level" onClick={() => store.edit(s => applyPresetEdit(s, p.id))}>{p.label}</button>)}</div> : null}
-      <div class="cats" role="tablist" aria-label="Equipment categories">
-        {cats.map(c => { const m = mk[c.id]; return <button type="button" role="tab" class={`chip${c.id === cat ? ' on' : ''}`} aria-selected={c.id === cat} onClick={() => pick(c.id)}>{c.label}{m?.owned ? <span class="mk">· {m.owned} own</span> : null}{m?.locked ? <Icon name="lock" /> : null}</button>; })}
-      </div>
-      {v.note ? <div class="catnote">{v.note}{v.roomLink ? <> <button type="button" class="linkbtn" onClick={() => gotoSection('constraints', 'home')}>Edit the room in Constraints</button></> : null}</div> : null}
+    <div class={`band${open ? ' open' : ''}`}>
+      <button type="button" class="bh" aria-expanded={open} onClick={onToggle}><Icon name="chev" />{label}{tank ? <span class="tk">this tank</span> : null}<span class="n">{count}</span></button>
+      {open ? <div class="bb">{children}</div> : null}
+    </div>
+  );
+}
 
-      <Group title="I own" sum={v.owned.length ? `${v.owned.length} · ${ownSum(v.owned.length)}` : ownSum(0)} open={open.own} onToggle={() => setOpen({ ...open, own: !open.own })}>
+function KindBody({ store, units, cat }: { store: Store; units: 'in' | 'cm'; cat: CatId }) {
+  const [own, setOwn] = useState(true), [bands, setBands] = useState<Record<string, boolean>>({});
+  const S = store.tank, v = categoryView(S, cat, units, { showAll: true }), tree = buyTree(S, cat, units), multiType = tree.length > 1;
+  return (
+    <div class="kb">
+      {v.note ? <div class="catnote">{v.note}{v.roomLink ? <> <button type="button" class="linkbtn" onClick={() => gotoSection('constraints', 'home')}>Edit the room in Constraints</button></> : null}</div> : null}
+      <Group title="I own" sum={v.owned.length ? `${v.owned.length} · ${ownSum(v.owned.length)}` : ownSum(0)} open={own} onToggle={() => setOwn(!own)}>
         {v.owned.map(r => <Row r={r} store={store} cat={cat} />)}
         <AddOwn store={store} cat={cat} key={cat} />
         <div class="hint">Owning is not the same as using: the plan prefers what you own, at $0, when it fits.</div>
       </Group>
-
-      <Group title="Buy" sum={`${v.buyTotal} · fits this tank, price`} open={open.buy} onToggle={() => setOpen({ ...open, buy: !open.buy })}>
-        {v.buy.map(r => <Row r={r} store={store} cat={cat} />)}
-        {v.buyTotal > v.buy.length || open.all ? <button type="button" class="addrow" onClick={() => setOpen({ ...open, all: !open.all })}>{open.all ? 'Show fewer' : `Show all ${v.buyTotal}`}</button> : null}
-      </Group>
-
+      <div class="buyhead"><span>Buy</span><span class="sum">{v.buyTotal} · fits this tank, price</span></div>
+      {tree.map(t => (
+        <div class="type" data-type={t.label}>
+          {multiType ? <div class="th">{t.label}<span class="n">{t.count}</span></div> : null}
+          {t.bands.map(b => {
+            const k = `${t.label}|${b.label}`, open = bands[k] ?? b.hasTank;
+            return t.bands.length === 1 ? <div class="bb">{b.rows.map(r => <Row r={r} store={store} cat={cat} />)}</div>
+              : <Band label={b.label} count={b.rows.length} tank={b.hasTank} open={open} onToggle={() => setBands({ ...bands, [k]: !open })}>{b.rows.map(r => <Row r={r} store={store} cat={cat} />)}</Band>;
+          })}
+        </div>
+      ))}
       {cat === 'light' ? <LightingGroup store={store} /> : null}
+    </div>
+  );
+}
+
+export function EquipmentSection({ store, units }: { store: Store; units: 'in' | 'cm' }) {
+  const S = store.tank, groups = categoryGroups(S), ladder = presetLadder(S);
+  // CM2: a click on a piece of gear asks for its category: its group and its kind open
+  const [sel] = useState(() => { const g = takeOpen('equipment'); if (g && isCat(g)) { saveCat(g); return g; } return loadCat(); });
+  const [openG, setOpenG] = useState<Record<string, boolean>>(() => ({ [groupOfKind(S, sel) ?? 'filtration']: true }));
+  const [openK, setOpenK] = useState<string | null>(sel);
+  useEffect(() => { const f = () => { const g = takeOpen('equipment'); if (g && isCat(g)) { saveCat(g); setOpenK(g); const gid = groupOfKind(store.tank, g); if (gid) setOpenG(o => ({ ...o, [gid]: true })); } }; addEventListener(OPEN_EVENT, f); return () => removeEventListener(OPEN_EVENT, f); }, []);
+  const pickKind = (id: string) => { const on = openK === id ? null : id; setOpenK(on); if (on) saveCat(on); };
+  return (
+    <div class="equip">
+      {ladder.length ? <div class="ladder" role="group" aria-label="Setup level">{ladder.map(p => <button type="button" class={`chip${p.on ? ' on' : ''}`} aria-pressed={p.on} title="Set every row to this level" onClick={() => store.edit(s => applyPresetEdit(s, p.id))}>{p.label}</button>)}</div> : null}
+      {groups.map(g => {
+        const open = !!openG[g.id];
+        return (
+          <Group id={g.id} title={g.label} sum={open ? undefined : g.kinds.map(k => `${k.label}: ${k.status}`).join(' · ')} open={open} onToggle={() => setOpenG({ ...openG, [g.id]: !open })}>
+            {g.kinds.map(k => {
+              const on = openK === k.id;
+              return (
+                <div class={`kind${on ? ' open' : ''}`} data-kind={k.id}>
+                  <button type="button" class="kh" aria-expanded={on} onClick={() => pickKind(k.id)}><Icon name="chev" /><span class="kn">{k.label}</span><span class="ks">{k.owned ? `${k.status} · ${k.owned} own` : k.status}</span></button>
+                  {on ? <KindBody store={store} units={units} cat={k.id} /> : null}
+                </div>
+              );
+            })}
+          </Group>
+        );
+      })}
     </div>
   );
 }

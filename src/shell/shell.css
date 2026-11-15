@@ -371,14 +371,34 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .erow.inuse { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
 .erow .thumb { width: 40px; height: 32px; display: grid; place-items: center; color: var(--text-3); }
 .erow .eb { display: grid; min-width: 0; gap: 2px; }
-.erow .eb .t { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.erow .eb .t { font-weight: 600; overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
 .erow .eb .m { color: var(--text-2); font-size: var(--fs-sm); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .erow .eb .pills { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s1); }
 .erow .acts { display: flex; align-items: center; gap: var(--s1); }
 .erow .acts .own { font-size: var(--fs-sm); }
+.equip .erow { grid-template-columns: 40px minmax(0, 1fr); align-items: start; }
+.equip .erow .acts { grid-column: 2; flex-wrap: wrap; }
+.equip .erow .eb .m { white-space: normal; overflow-wrap: anywhere; }
+.equip .kind { border-top: 1px solid var(--line); }
+.equip .kind:first-child { border-top: 0; }
+.equip .kh, .equip .bh { display: flex; align-items: center; gap: var(--s1); width: 100%; text-align: left; background: none; border: 0; color: var(--text); font: inherit; cursor: pointer; padding: var(--s2) 0; min-height: 36px; }
+.equip .kh .kn { font-weight: 600; flex: none; }
+.equip .kh .ks { color: var(--text-2); font-size: var(--fs-sm); margin-left: auto; text-align: right; min-width: 0; overflow-wrap: anywhere; }
+.equip .kb { display: grid; gap: var(--s2); padding-bottom: var(--s2); }
+.equip .buyhead { display: flex; justify-content: space-between; gap: var(--s2); font-weight: 600; padding-top: var(--s1); }
+.equip .buyhead .sum, .equip .th .n, .equip .bh .n { color: var(--text-3); font-weight: 400; font-size: var(--fs-sm); }
+.equip .type { display: grid; gap: var(--s1); }
+.equip .th { font-weight: 600; color: var(--text-2); font-size: var(--fs-sm); text-transform: uppercase; letter-spacing: .04em; padding-top: var(--s1); }
+.equip .th .n { margin-left: var(--s1); }
+.equip .bh { font-size: var(--fs-sm); padding: var(--s1) 0; min-height: 32px; }
+.equip .bh .n { margin-left: auto; }
+.equip .bh .tk { color: var(--accent); margin-left: var(--s1); }
+.equip .bb { display: grid; gap: var(--s1); }
+.equip .kh svg, .equip .bh svg { flex: none; width: 14px; height: 14px; transition: transform .12s; }
+.equip [aria-expanded="true"] > svg { transform: rotate(90deg); }
 .equip .addrow { background: none; border: 0; color: var(--text-2); text-align: left; cursor: pointer; padding: var(--s1); font: inherit; }
 .lightmap .row { display: grid; grid-template-columns: 90px 1fr auto; align-items: center; gap: var(--s2); }
-@media (max-width: 699px) { .erow { grid-template-columns: minmax(0, 1fr) auto; } .erow .thumb { display: none; } .erow .acts { flex-wrap: wrap; justify-content: flex-end; } }
+@media (max-width: 699px) { .erow { grid-template-columns: minmax(0, 1fr) auto; } .equip .erow { grid-template-columns: minmax(0, 1fr); } .equip .erow .acts { grid-column: 1; justify-content: flex-start; } .erow .thumb { display: none; } .erow .acts { flex-wrap: wrap; justify-content: flex-end; } }
 
 /* SC: drag a species into the tank, AqAdvisor row, copies box, new-animal size */
 .dragGhost { position: fixed; left: 0; top: 0; z-index: 1000; pointer-events: none; background: var(--chip, #fff); border: 1px dashed var(--line, #999); border-radius: 6px; padding: 3px 8px; font-size: 12px; opacity: .85; white-space: nowrap }

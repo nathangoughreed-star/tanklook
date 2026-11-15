@@ -101,8 +101,10 @@ export interface GearRow {
   owned: boolean; inUse: boolean; locked: boolean;
   /** hoods are products of the Light category with their light built in (HD1) */
   hood?: boolean;
+  /** EQ2: the type within the kind ("Canister", "Glass tube") and the size band ("20-40 gal") the Buy tree files the product under */
+  type?: string; band?: string;
 }
-interface Entry { item: string; name: string; sub: string; usd?: number; est?: boolean; fit: Fit | null; rank: number; hood?: boolean }
+interface Entry { item: string; name: string; sub: string; usd?: number; est?: boolean; fit: Fit | null; rank: number; hood?: boolean; ty: string; sz?: number }
 
 const ratedFit = (gal: number, lo?: number, hi?: number): Fit | null => {
   if (lo === undefined && hi === undefined) return null;
@@ -115,6 +117,9 @@ const price = (p: { priceUsd?: number; est?: string[] }): Pick<Entry, 'usd' | 'e
   return lp !== undefined ? { usd: lp } : p.priceUsd ? { usd: p.priceUsd, est: true } : {};
 };
 const kindWord: Record<string, string> = { hob: 'hang-on-back', canister: 'canister', internal: 'internal', sponge: 'sponge', sump: 'in-sump', surface: 'surface', fan: 'fan', compressor: 'compressor', inline: 'inline', regulator: 'regulator', cartridge: 'cartridge kit', diy: 'DIY yeast', air: 'air pump', powerhead: 'powerhead', wavemaker: 'wavemaker' };
+const kindType = (k: string) => { const w = kindWord[k] ?? k; return w.charAt(0).toUpperCase() + w.slice(1); };
+const HEAT_TYPE: Record<string, string> = { glass: 'Glass tube', shroud: 'Guarded (plastic shroud)', titanium: 'Titanium' };
+const LIGHT_TYPE: Record<string, string> = { bar: 'LED bar', 'rim-legs': 'LED bar on legs', gooseneck: 'Clamp-on', hanging: 'Hanging', submersible: 'Submersible' };
 const rank = (f: Fit | null) => (f?.tone === 'ok' ? 0 : f ? 1 : 0.5);
 
 /** Every catalogue entry of a category worth offering for this tank (the "Buy" group before it is sorted). Hoods ride in Light. */
@@ -127,18 +132,18 @@ function catalogue(S: TankSetup, cat: CatId, units: Units): Entry[] {
       return HEATER_PRODUCTS.map(h => {
         const small = h.watts < need * 0.85, big = h.watts > need * 2.6;
         const fit: Fit = small ? { tone: 'warn', text: `too small for ${galText(gal)}` } : h.galMax !== undefined && gal > h.galMax * 1.15 ? { tone: 'warn', text: `rated for ${h.galMax} gal` } : big ? { tone: 'neutral', text: 'more than this tank needs' } : { tone: 'ok', text: `about right (needs ${Math.round(need)} W)` };
-        return { item: h.id, name: productName(h), sub: `${h.watts} W · ${h.look} · ${cm(h.lengthMm)}`, ...price(h), fit, rank: rank(fit) + Math.abs(Math.log(h.watts / Math.max(need, 1))) * 0.1 };
+        return { item: h.id, name: productName(h), sub: `${h.watts} W · ${h.look} · ${cm(h.lengthMm)}`, ty: HEAT_TYPE[h.look] ?? 'Other', sz: h.watts, ...price(h), fit, rank: rank(fit) + Math.abs(Math.log(h.watts / Math.max(need, 1))) * 0.1 };
       });
     }
     case 'filter':
-      return FILTER_PRODUCTS.map(f => { const fit = ratedFit(gal, f.galMin, f.galMax); return { item: f.id, name: productName(f), sub: `${kindWord[f.kind]}${f.gph ? ` · ${f.gph} gph` : ''}${f.galMin !== undefined || f.galMax !== undefined ? ` · ${f.galMin ?? '?'}-${f.galMax ?? '?'} gal` : ''}`, ...price(f), fit, rank: rank(fit) }; });
+      return FILTER_PRODUCTS.map(f => { const fit = ratedFit(gal, f.galMin, f.galMax); return { item: f.id, name: productName(f), sub: `${kindWord[f.kind]}${f.gph ? ` · ${f.gph} gph` : ''}${f.galMin !== undefined || f.galMax !== undefined ? ` · ${f.galMin ?? '?'}-${f.galMax ?? '?'} gal` : ''}`, ty: kindType(f.kind), sz: f.galMax ?? f.galMin, ...price(f), fit, rank: rank(fit) }; });
     case 'light': {
-      const lights = lightsFor(L).map((p): Entry => ({ item: p.id, name: productName(p), sub: `${p.watts} W · ${p.tech.replace('led-', 'LED ')} · ${p.mount === 'bar' ? 'bar' : p.mount === 'rim-legs' ? 'on legs' : p.mount === 'gooseneck' ? 'clamp-on' : p.mount === 'hanging' ? 'hanging' : 'submersible'}`, ...price(p), fit: { tone: 'ok', text: `fits a ${cm(L)} tank` }, rank: 0.2 }));
-      const hoods = hoodsFor(S.tank).map((h): Entry => ({ item: h.id, name: productName(h), sub: `hood · ${h.light.watts} W ${h.light.type === 'led' ? 'LED' : h.light.tech} built in`, usd: h.priceUsd, est: h.est.includes('priceUsd'), fit: { tone: 'ok', text: 'light included, one price' }, rank: 0, hood: true }));
+      const lights = lightsFor(L).map((p): Entry => ({ item: p.id, name: productName(p), sub: `${p.watts} W · ${p.tech.replace('led-', 'LED ')} · ${p.mount === 'bar' ? 'bar' : p.mount === 'rim-legs' ? 'on legs' : p.mount === 'gooseneck' ? 'clamp-on' : p.mount === 'hanging' ? 'hanging' : 'submersible'}`, ...price(p), fit: { tone: 'ok', text: `fits a ${cm(L)} tank` }, rank: 0.2, ty: LIGHT_TYPE[p.mount] ?? 'Other', sz: p.lengthMm / 25.4 }));
+      const hoods = hoodsFor(S.tank).map((h): Entry => ({ item: h.id, name: productName(h), sub: `hood · ${h.light.watts} W ${h.light.type === 'led' ? 'LED' : h.light.tech} built in`, usd: h.priceUsd, est: h.est.includes('priceUsd'), fit: { tone: 'ok', text: 'light included, one price' }, rank: 0, hood: true, ty: 'Hood with light', sz: h.lengthIn }));
       return [...hoods, ...lights];
     }
     case 'air': case 'flow':
-      return pumpsFor(cat === 'air' ? 'airpump' : 'powerhead', gal).map(p => { const r = pumpRatedFor(p, gal); const fit: Fit | null = r === undefined ? null : r ? { tone: 'ok', text: `rated for ${galText(gal)}` } : { tone: 'warn', text: `not rated for ${galText(gal)}` }; return { item: p.id, name: productName(p), sub: `${kindWord[p.kind]}${p.gph ? ` · ${p.gph} gph` : p.airGph ? ` · ${p.airGph} gph air` : ''} · ${p.watts} W`, ...price(p), fit, rank: rank(fit) }; });
+      return pumpsFor(cat === 'air' ? 'airpump' : 'powerhead', gal).map(p => { const r = pumpRatedFor(p, gal); const fit: Fit | null = r === undefined ? null : r ? { tone: 'ok', text: `rated for ${galText(gal)}` } : { tone: 'warn', text: `not rated for ${galText(gal)}` }; return { item: p.id, name: productName(p), sub: `${kindWord[p.kind]}${p.gph ? ` · ${p.gph} gph` : p.airGph ? ` · ${p.airGph} gph air` : ''} · ${p.watts} W`, ty: kindType(p.kind), sz: p.galMax ?? p.galMin, ...price(p), fit, rank: rank(fit) }; });
     default:
       return (REEF_ROWS[cat] ?? []).map(p => {
         const k = (p as { kind?: string }).kind;
@@ -147,7 +152,8 @@ function catalogue(S: TankSetup, cat: CatId, units: Units): Entry[] {
         else if (cat === 'chiller') { const s = (p as ChillerProduct).suitsGal ?? (p as ChillerProduct).ratedGal; fit = s === undefined ? null : s >= gal * 0.85 ? { tone: 'ok', text: `suits ${galText(gal)}` } : { tone: 'warn', text: `too small for ${galText(gal)}` }; }
         else if (cat === 'uv') fit = ratedFit(gal, (p as UvProduct).galMin, (p as UvProduct).galMax);
         if (p.watts) facts += `${facts ? ' · ' : ''}${p.watts} W`;
-        return { item: p.id, name: productName(p), sub: facts || 'catalogue product', ...price(p), fit, rank: rank(fit) };
+        const q = p as { ratedGal?: number; suitsGal?: number; galMax?: number; galMin?: number };
+        return { item: p.id, name: productName(p), sub: facts || 'catalogue product', ty: k ? kindType(k) : 'Standard', sz: cat === 'skimmer' || cat === 'surfskim' ? skimmerSuitsGal(p as SkimmerProduct) : q.suitsGal ?? q.ratedGal ?? q.galMax ?? q.galMin, ...price(p), fit, rank: rank(fit) };
       });
   }
 }
@@ -178,7 +184,9 @@ export function categoryView(S: TankSetup, cat: CatId, units: Units, o: { showAl
   const g = gearOfTank(S), scene = inUseItem(S, cat), list = catalogue(S, cat, units), mu = g[cat]?.use;
   // a brand we do not list is on the design as the generic one: the model remembers which of the owned ones it is
   const inUse = scene === GENERIC && mu && isCustom(mu) ? mu : scene;
+  const bs = bandSpec(S, cat, units);
   const row = (item: string, e: Entry | undefined, own: boolean): GearRow => ({
+    type: e ? e.ty : 'Any brand', band: e ? bs.labelOf(e.sz) : bs.labels[0],
     cat, item, name: e?.name ?? itemName(cat, item), sub: e?.sub ?? (item === GENERIC ? 'any brand' : customOf(item) ? `your own${customOf(item)!.watts ? ` · ${customOf(item)!.watts} W` : ''}` : ''),
     price: own ? 'Owned · $0' : priceText(e), fit: e?.fit ?? null, owned: own, inUse: inUse === item, locked: isLockedItem(g, cat, item), ...(e?.hood ? { hood: true } : {}),
   });
@@ -196,6 +204,61 @@ export function categoryView(S: TankSetup, cat: CatId, units: Units, o: { showAl
     note = `${galText(galOf(S))} at ${fmtTempHalf(h.targetC, units)}, room ${fmtTempHalf(r.c, units)}${r.set ? '' : ' (assumed)'}: needs about ${Math.round(h.needW)} W.`;
   } else if (cat === 'light') note = S.lid === 'hood' ? 'The hood holds its own light: pick a hood to change it, or a light product to put the hood away.' : `${list.filter(e => !e.hood).length} lights fit a ${units === 'in' ? Math.round(S.tank.L / 25.4) + ' in' : Math.round(S.tank.L / 10) + ' cm'} tank.`;
   return { id: cat, label: LABEL[cat], singular: SINGULAR[cat], note, owned: ownedRows, buy, buyTotal: sorted.length + (cat === 'heater' || cat === 'filter' || cat === 'light' || !list.length ? 1 : 0), roomLink: cat === 'heater', inUse };
+}
+
+// ---------------------------------------------------------------- EQ2: kinds in five categories, then type, then size band
+
+export interface KindStatus { id: CatId; label: string; status: string; owned: number }
+export interface CategoryGroup { id: string; label: string; kinds: KindStatus[] }
+const GROUPS: { id: string; label: string; kinds: CatId[] }[] = [
+  { id: 'filtration', label: 'Filtration & Water Clarity', kinds: ['filter', 'surfskim', 'uv'] },
+  { id: 'temperature', label: 'Temperature Control', kinds: ['heater', 'chiller'] },
+  { id: 'lighting', label: 'Lighting', kinds: ['light'] },
+  { id: 'aeration', label: 'Aeration & CO₂', kinds: ['air', 'co2'] },
+  { id: 'maintenance', label: 'Maintenance & Water Care', kinds: ['ato', 'wcmethod', 'rodi', 'conditioner', 'ferts', 'feeder'] },
+];
+const FIVE = new Set<string>(GROUPS.flatMap(g => g.kinds));
+/** Nathan's five categories (and "More equipment" for reef / reptile kinds he did not list), each with its kinds and a one-line status: what is chosen, or "none". */
+export function categoryGroups(S: TankSetup): CategoryGroup[] {
+  const have = categories(S).map(c => c.id), g = gearOfTank(S);
+  const status = (id: CatId): KindStatus => { const u = inUseItem(S, id); return { id, label: LABEL[id], status: u ? itemName(id, u) : 'none', owned: g[id]?.owned.length ?? 0 }; };
+  const groups = [...GROUPS, { id: 'more', label: 'More equipment', kinds: have.filter(c => !FIVE.has(c)) }];
+  return groups.map(x => ({ id: x.id, label: x.label, kinds: x.kinds.filter(k => have.includes(k)).map(status) })).filter(x => x.kinds.length);
+}
+export const groupOfKind = (S: TankSetup, kind: string): string | undefined => categoryGroups(S).find(g => g.kinds.some(k => k.id === kind))?.id;
+
+interface BandSpec { labels: string[]; tank: number; labelOf: (v: number | undefined) => string }
+/** Size bands per kind: gallons of rating (filters, UV, pumps, skimmers, chillers), watts (heaters), inches of length (lights). The band the tank falls in is `tank`. */
+function bandSpec(S: TankSetup, cat: CatId, units: Units): BandSpec {
+  const none = 'Rating not listed';
+  const make = (edges: number[], unit: string, tankV: number, text?: (lo: number | undefined, hi: number | undefined) => string): BandSpec => {
+    const labels = edges.map((hi, i) => text ? text(edges[i - 1], hi) : i === 0 ? `Rated up to ${hi} ${unit}` : `${edges[i - 1]}-${hi} ${unit}`);
+    labels.push(text ? text(edges[edges.length - 1], undefined) : `${edges[edges.length - 1]}+ ${unit}`, none);
+    const idx = (v: number | undefined) => v === undefined || !Number.isFinite(v) ? labels.length - 1 : (() => { const i = edges.findIndex(e => v <= e); return i < 0 ? edges.length : i; })();
+    return { labels, tank: idx(tankV), labelOf: v => labels[idx(v)] };
+  };
+  if (cat === 'heater') return make([50, 100, 200, 300], 'W', heatLoss(S).needW);
+  if (cat === 'light') {
+    const us = units === 'in', f = us ? 1 : 2.54;
+    return make([20, 30, 40, 48].map(n => Math.round(n * f)), us ? 'in' : 'cm', S.tank.L / (us ? 25.4 : 10));
+  }
+  if (['filter', 'uv', 'air', 'flow', 'skimmer', 'surfskim', 'chiller'].includes(cat)) return make([20, 40, 75, 125], 'gal', galOf(S));
+  return { labels: ['All sizes'], tank: 0, labelOf: () => 'All sizes' };
+}
+export interface BandView { label: string; rows: GearRow[]; hasTank: boolean }
+export interface TypeView { label: string; count: number; bands: BandView[] }
+/** The Buy list of a kind as Type -> Size band -> rows, every product once. Types: the one holding a product that fits the tank first; bands: the tank's band first, the rest by size, "Rating not listed" last. */
+export function buyTree(S: TankSetup, cat: CatId, units: Units): TypeView[] {
+  const rows = categoryView(S, cat, units, { showAll: true }).buy, bs = bandSpec(S, cat, units);
+  const order = [bs.tank, ...bs.labels.map((_, i) => i).filter(i => i !== bs.tank)];
+  const types = new Map<string, GearRow[]>();
+  for (const r of rows) { const t = r.type ?? 'Other'; (types.get(t) ?? types.set(t, []).get(t)!).push(r); }
+  const bestRank = (rs: GearRow[]) => Math.min(...rs.map(r => r.fit?.tone === 'ok' ? 0 : r.fit ? 1 : 0.5));
+  return [...types.entries()].sort((a, b) => (a[0] === 'Any brand' ? 1 : 0) - (b[0] === 'Any brand' ? 1 : 0) || bestRank(a[1]) - bestRank(b[1]) || b[1].length - a[1].length)
+    .map(([label, rs]) => ({
+      label, count: rs.length,
+      bands: order.map(i => ({ label: bs.labels[i], hasTank: i === bs.tank, rows: rs.filter(r => r.band === bs.labels[i]) })).filter(b => b.rows.length),
+    }));
 }
 
 // ---------------------------------------------------------------- edits (the caller wraps each in store.edit: one undo step)
