@@ -15,11 +15,11 @@ describe('S2 file menu', () => {
   it('lists the five items of screen map 2a in order', () => {
     expect(FILE_MENU.map(m => m.id)).toEqual(['new', 'open', 'saveas', 'share', 'download']);
   });
-  it('New makes an empty tank of the chosen water, keeping units and camera', () => {
+  it('New makes an empty tank of the chosen water, keeping units (the camera is the fresh one: NT1)', () => {
     const cam = defaultScene().tanks[0].camera;
     const s = newProject('cm', 'saltwater', { ...cam, az: 33 });
     expect(s.name).toBe('New tank'); expect(s.units).toBe('cm'); expect(s.tanks).toHaveLength(1);
-    expect(s.tanks[0].water.salt).toBeTruthy(); expect(s.tanks[0].camera.az).toBe(33);
+    expect(s.tanks[0].water.salt).toBeTruthy(); expect(s.tanks[0].camera.az).toBe(15);   // NT1: New frames the tank and the person (freshScene's camera), not the camera passed in
     expect(hasWork(s)).toBe(false);                       // nothing to lose, so no replace question
     expect(newProject('in', 'freshwater', cam).tanks[0].water.salt).toBeFalsy();
   });
