@@ -1071,12 +1071,14 @@ export const bodyPlan = (art: string): Plan | undefined => PLANS[art] ?? SHRIMP_
  * bettas flare, tetras hold theirs about the same all the time).
  */
 export interface FinRange { lo: number; hi: number; def: number }
-const FIN_FAMILY: FinRange = { lo: 0.45, hi: 1, def: 0.8 };
-const FIN_TETRA: FinRange = { lo: 0.7, hi: 0.9, def: 0.8 };
-const FIN_CICHLID: FinRange = { lo: 0.4, hi: 1, def: 0.8 };
-const FIN_TANG: FinRange = { lo: 0.2, hi: 1, def: 0.7 };
+// def is 1 (the drawn card, today's pose) for all but the bristlenose, so an unshuffled tank looks as it always has
+const FIN_FAMILY: FinRange = { lo: 0.45, hi: 1, def: 1 };
+const FIN_TETRA: FinRange = { lo: 0.7, hi: 0.9, def: 1 };
+const FIN_CICHLID: FinRange = { lo: 0.4, hi: 1, def: 1 };
+const FIN_TANG: FinRange = { lo: 0.2, hi: 1, def: 1 };
+// angel: narrowed to 0.85..1 until the fold of its tall swept sails lies back as one clean sheet (follow-up; below ~0.7 it breaks into shards)
 const FIN_RANGE: Record<string, FinRange> = {
-  bristlenose: { lo: 0.1, hi: 0.9, def: 0.35 }, betta: { lo: 0.7, hi: 1, def: 0.9 }, angel: { lo: 0.6, hi: 1, def: 0.85 },
+  bristlenose: { lo: 0.1, hi: 0.9, def: 0.35 }, betta: { lo: 0.7, hi: 1, def: 1 }, angel: { lo: 0.85, hi: 1, def: 1 },
   yellowtang: FIN_TANG, bluetang: FIN_TANG,
   cardinal: FIN_TETRA, tetra: FIN_TETRA, ember: FIN_TETRA, rummynose: FIN_TETRA, dwarfpencil: FIN_TETRA, harlequin: FIN_TETRA, chili: FIN_TETRA,
   kribensis: FIN_CICHLID, discus: FIN_CICHLID, oscar: FIN_CICHLID, bolivianram: FIN_CICHLID, cockatoo: FIN_CICHLID, peacock: FIN_CICHLID,

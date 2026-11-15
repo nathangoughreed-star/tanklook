@@ -741,7 +741,7 @@ export function drapedCard(art: string, w: number, h: number, bend: number, fin 
       const up = t - v, dn = v - b;
       if (up > 0 || dn > 0) {
         const out = Math.max(up, dn), u2 = Math.max(0.02, u - out * sa * 0.55), [t2, b2] = prof(Math.max(u2, p.pedU));
-        const v2 = up > 0 ? t2 - out * ca - 0.003 * sa : b2 + out * ca + 0.003 * sa;
+        const v2 = up > 0 ? Math.min(t - out * ca, t2 - 0.003) : Math.max(b + out * ca, b2 + 0.003); // lifted by its own base, never below the outline it lies over (continuous: no shards over a body's apex)
         x = (u2 - 0.5) * w; y = -v2 * w;
       }
     }
