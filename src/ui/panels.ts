@@ -56,6 +56,7 @@ import { EXP_MAX, EXP_MIN, FIXTURES, FIX_SPEC, MH_BULBS, TECHS, fitFixture, fixt
 import { SpeciesPreview } from '../render/preview3d';
 import type { Viewer } from '../render/viewer';
 import { emptyScene } from '../scene/defaults';
+import { freshScene } from '../scene/freshScene';
 import { BANDS, TANK_MODELS, dimsInches, modelOfVariant, soleProduct, saleLive, tankFromModel, tankSaleFor, variantUsd, type TankModel, type TankVariant } from '../data/tanks';
 import { pinPreset } from '../demand/pinned';
 import { applyTankPick, unholdBtn } from './tankPick';
@@ -191,7 +192,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
   /** An empty tank and an empty brief (lane NW1). Warns first when the current tank has something to lose and is not saved: Save / Start new / Cancel (false = cancelled). Undo brings it back. */
   const newEmptyTank = async (newKind: SetupKind = 'freshwater', room = false) => { // the Sandbox card's Tank type (lane S252): applied to the empty tank it starts
     // room (lane ST1): the Sandbox starts as an empty room with the person (the default environment, its own camera); the tank picker puts the tank in
-    const s = room ? sandboxRoomScene(newKind) : emptyScene(); s.name = 'New tank'; if (!room) { applyKind(s.tanks[0], newKind); s.tanks[0].camera = { ...S().camera }; } // the water type is settled when the tank is made
+    const s = room ? sandboxRoomScene(newKind) : freshScene(); s.name = 'New tank'; if (!room) { applyKind(s.tanks[0], newKind); s.tanks[0].camera = { ...S().camera }; } // the water type is settled when the tank is made
     s.units = G().units;
     if (!await startProject(store, s, savedText())) return false; // DX5: asks first (Save copy / Replace / Cancel) when the project holds unsaved work or locks
     setLibId(null); status('New project. Undo brings the previous one back.');

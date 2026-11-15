@@ -5,6 +5,7 @@ import { render } from 'preact';
 import tokens from './tokens.css?inline';
 import layout from './shell.css?inline';
 import { Store } from '../scene/store';
+import { freshScene } from '../scene/freshScene';
 import { Viewer } from '../render/viewer';
 import { applySavedFx } from '../render/fxPrefs';
 import { attachPointer } from '../interact/pointer';
@@ -30,7 +31,7 @@ export function bootShell() {
   const { scene: restored, error: saveError } = Store.loadLocalChecked(); // a return visit resumes the autosave; a first visit opens an empty tank (shell step 2)
   const start = startMode(restored, saveError);
   applySavedFx();
-  const store = new Store(restored ?? undefined);
+  const store = new Store(restored ?? freshScene());
 
   // the existing viewer, unchanged: a host with its canvas, moved into the view area by App
   const viewHost = document.createElement('div'); viewHost.className = 'vhost';

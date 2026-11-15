@@ -23,6 +23,7 @@ import { Icon, Pill } from './ui';
 import { ProjectName, FileMenu, FileLayer, type Files } from './files';
 import { DiscoverSection, IdeasButton, AnimalDoor } from './discover';
 import { GetStarted } from './checklist';
+import { resetChecklist } from './logic/checklist';
 import { ConstraintsSection } from './constraints';
 import { PreferencesSection } from './prefs';
 import { EquipmentSection } from './equipment';
@@ -54,6 +55,7 @@ function useStore(store: Store) {
     let t = 0;
     const off = store.subscribe(kind => {
       setN(n => n + 1);
+      if (kind === 'load' && store.loadedBy === 'replace') resetChecklist();   // NT1: a New or opened project shows the Get started card again
       if (kind === 'view' || kind === 'select') return;
       clearTimeout(t); t = window.setTimeout(() => setSlowN(n => n + 1), 150);
     });

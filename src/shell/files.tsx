@@ -8,6 +8,7 @@ import { listLib } from '../scene/library';
 import { readShare, shareUrl } from '../scene/share';
 import { parseScene } from '../scene/validate';
 import { EXAMPLES, examplesInScope, exampleScenes } from '../examples';
+import { restoreChecklist } from './logic/checklist';
 import { setProjectAsker, confirmStart, startProject } from '../ui/projectStart';
 import * as P7 from '../ui/logic/files';
 import { FILE_MENU, EMPTY_LIBRARY, newProject, libraryRows, savedLine, saveAsView, hashOf, type FileAction } from './logic/files';
@@ -152,6 +153,7 @@ export function FileMenu({ files }: { files: Files }) {
       <button type="button" class="btn icon ghost" title="New, Open, Save as, Share link, Download" aria-label="File menu" aria-expanded={menu} onClick={() => setMenu(!menu)}><Icon name="more" /></button>
       {menu ? <div class="pop menu" role="menu" onClick={() => setMenu(false)}>
         {FILE_MENU.map(m => <button type="button" class="btn ghost" role="menuitem" title={m.hint} onClick={() => files.run(m.id)}>{m.label}</button>)}
+        <button type="button" class="btn ghost" role="menuitem" title="Show the Get started checklist on this tank" onClick={restoreChecklist}>Get started checklist</button>
       </div> : null}
     </span>
   );
