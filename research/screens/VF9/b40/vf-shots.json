@@ -1,0 +1,32 @@
+{
+ "commit": "14a793c1",
+ "build": 1986,
+ "dirty": false,
+ "when": "2026-11-15T16:33:46.113Z",
+ "size": [
+  1600,
+  900
+ ],
+ "fx": [
+  "caustics,depth,contact,ground,variety,waterline,embed,tonemap:aces",
+  "caustics,depth,contact,ground,variety,waterline,embed,tonemap:aces,-contact",
+  "caustics,depth,contact,ground,variety,waterline,embed,tonemap:aces,-embed"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "nathan-40g-breeder-2026-11-15": {
+   "shots": [
+    "nathan-40g-breeder-2026-11-15-front-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces.png",
+    "nathan-40g-breeder-2026-11-15-rock-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces.png",
+    "nathan-40g-breeder-2026-11-15-ground-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces.png",
+    "nathan-40g-breeder-2026-11-15-front-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces-no-contact.png",
+    "nathan-40g-breeder-2026-11-15-rock-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces-no-contact.png",
+    "nathan-40g-breeder-2026-11-15-ground-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces-no-contact.png",
+    "nathan-40g-breeder-2026-11-15-front-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces-no-embed.png",
+    "nathan-40g-breeder-2026-11-15-rock-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces-no-embed.png",
+    "nathan-40g-breeder-2026-11-15-ground-caustics-depth-contact-ground-variety-waterline-embed-tonemap-aces-no-embed.png"
+   ],
+   "ab": {}
+  }
+ }
+}
