@@ -99,7 +99,7 @@ async function cold(d, view) {
     // first start is already this example and nothing has warmed the program cache
     await br.s('Page.navigate', { url: d.base + '__none' }); await sleep(300);
     await br.ev(`localStorage.setItem('tanklook.scene', ${JSON.stringify(readFileSync(view.endsWith('.json') ? view : `src/examples/${view}.json`, 'utf8'))}); 1`);
-    await br.s('Page.navigate', { url: d.base });
+    await br.s('Page.navigate', { url: d.base + '?ui=1' });
     for (let i = 0; i < +opt('wait', 1500); i++) {
       // done once nothing has linked for 4 s after the first frame: 'settled' = the end of the last WebGL call over 20 ms
       // (a program link), i.e. when the whole picture is up even if the app draws in steps
@@ -110,7 +110,7 @@ async function cold(d, view) {
         if (SHOTS) writeFileSync(`${SHOTS}/${basename(view, '.json')}-${d.name}.png`, Buffer.from((await br.s('Page.captureScreenshot', { format: 'png' })).data, 'base64'));
         if (WARM) r.warm = [];
         for (let k = 0; k < WARM; k++) {
-          await br.s('Page.navigate', { url: d.base });
+          await br.s('Page.navigate', { url: d.base + '?ui=1' });
           for (let j = 0; j < 600; j++) {
             await sleep(50);
             const f = await br.ev('window.__perf && window.__perf.firstFrame').catch(() => null);

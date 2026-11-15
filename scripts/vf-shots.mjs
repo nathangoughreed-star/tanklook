@@ -192,13 +192,13 @@ const save = (file, url) => writeFileSync(join(OUT, file), Buffer.from(url.split
 try {
   for (const file of SCENES) {
     const name = basename(file, '.json'); log(name);
-    await br.s('Page.navigate', { url: BASE });
+    await br.s('Page.navigate', { url: BASE + '?ui=1' });
     for (let i = 0; i < 300 && !(await br.ev('document.readyState === "complete"').catch(() => false)); i++) await sleep(100);
     await br.ev(`localStorage.setItem('tanklook.scene', ${JSON.stringify(readFileSync(file, 'utf8'))}); 1`);
     // Performance setting back to Full quality, held (auto off): an automatic step-down in one tank's throttled orbit would
     // otherwise carry into the next tank (it is saved in the browser) and stop the caustics there
     await br.ev(`localStorage.setItem('tanklook.perf', '{"level":0,"auto":false}'); 1`);
-    await br.s('Page.navigate', { url: BASE });
+    await br.s('Page.navigate', { url: BASE + '?ui=1' });
     for (let i = 0; i < 1200 && !(await br.ev('!!(window.__gb && window.__fx && __gb.viewer)').catch(() => false)); i++) await sleep(100);
     await br.ev(`window.__vf = (${KIT})(); 1`);
     await br.ev('__vf.settle(2500)');

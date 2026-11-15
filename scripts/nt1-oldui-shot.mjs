@@ -16,7 +16,7 @@ const shot = async name => { await sleep(1200); const r = await send('Page.captu
 const edit = body => ev(`(async () => { const { store } = window.__gb; const IE = await import('/src/scene/itemEdit.ts'), L = await import('/src/scene/items.ts'), T = await import('/src/scene/tech.ts'); store.edit((t, s) => { ${body} }); return true })()`);
 await send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false });
 await send('Storage.clearDataForOrigin', { origin: new URL(BASE).origin, storageTypes: 'all' });
-await send('Page.navigate', { url: BASE + '?r=' + Date.now() }); await sleep(30000);
+await send('Page.navigate', { url: BASE + '?ui=1&r=' + Date.now() }); await sleep(30000);
 await send('Page.captureScreenshot', { format: 'jpeg', quality: 80 }).then(r => writeFileSync(`${OUT}/oldui-first-visit-new.jpg`, Buffer.from(r.result.data, 'base64')));
 console.log(await ev(`JSON.stringify({stand: __gb.store.tank.stand.show, wall: __gb.store.tank.wall.show, person: __gb.store.tank.person.show})`));
 ch.kill(); process.exit(0);

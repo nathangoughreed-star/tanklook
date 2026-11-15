@@ -2,7 +2,7 @@
 // Start Chrome once:  node scripts/ui1-lib.mjs start   (headless, port 9551, 1600x900)
 import { spawn } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
-export const PORT = 9551, URL = process.env.URL ?? 'http://localhost:5173/';
+export const PORT = 9551, URL = process.env.URL ?? 'http://localhost:5173/?ui=1';
 export const sleep = ms => new Promise(r => setTimeout(r, ms));
 export async function connect() {
   const tabs = await (await fetch(`http://127.0.0.1:${PORT}/json`)).json();

@@ -82,7 +82,7 @@ try {
   await s('Page.enable'); await s('Runtime.enable');
   await s('Emulation.setDeviceMetricsOverride', { width: 1280, height: 800, deviceScaleFactor: 1, mobile: false });
   const ev = async expression => { const r = await s('Runtime.evaluate', { expression, awaitPromise: true, returnByValue: true, timeout: 900_000 }); if (r.exceptionDetails) throw new Error('page: ' + (r.exceptionDetails.exception?.description ?? r.exceptionDetails.text)); return r.result.value; };
-  await s('Page.navigate', { url: `http://localhost:${PORT}/` });
+  await s('Page.navigate', { url: `http://localhost:${PORT}/?ui=1` });
   for (let i = 0; i < 300; i++) { if (await ev('!!window.__gb && !!window.__gb.viewer').catch(() => false)) break; await sleep(200); }
   await ev(`document.querySelectorAll('dialog[open]').forEach(d => d.close())`);
   const out = await ev(PAGE); let total = 0;

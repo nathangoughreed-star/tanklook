@@ -4,7 +4,7 @@
 // Every step is asserted; the process exits 1 on the first failed assertion after printing which. Screenshots: research/screens/ab5/journey-*. Run: URL=http://localhost:5195/ node scripts/ab-journey.mjs
 import { spawn } from 'node:child_process';
 import { writeFileSync, mkdirSync } from 'node:fs';
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe', URL = process.env.URL ?? 'http://localhost:5195/', PORT = 9381;
+const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe', URL = process.env.URL ?? 'http://localhost:5195/?ui=1', PORT = 9381;
 mkdirSync('research/screens/ab5', { recursive: true });
 const ch = spawn(CHROME, ['--headless=new', `--remote-debugging-port=${PORT}`, '--window-size=1400,900', '--user-data-dir=' + (process.env.TEMP + '/abj-chrome-' + Date.now()), '--no-first-run', '--enable-unsafe-swiftshader', '--use-gl=angle', '--use-angle=swiftshader'], { stdio: 'ignore' });
 const sleep = ms => new Promise(r => setTimeout(r, ms));

@@ -1,0 +1,14 @@
+{
+ "d1280-plain": "{\"ui2\":\"ready\",\"title\":\"TankLook: Vivarium Visualizer\"}",
+ "d1280-ui1": "{\"ui2\":null,\"oldApp\":true}",
+ "d1280-ui2": "ready",
+ "d1280-settingsLink": "/?ui=1",
+ "d1280-menuLink": "/?ui=1",
+ "d1280-afterClick": "{\"url\":\"?ui=1\",\"oldApp\":true,\"ui2\":null}",
+ "p390-plain": "{\"ui2\":\"ready\",\"title\":\"TankLook: Vivarium Visualizer\"}",
+ "p390-ui1": "{\"ui2\":null,\"oldApp\":true}",
+ "p390-ui2": "ready",
+ "p390-settingsLink": "/?ui=1",
+ "p390-menuLink": "/?ui=1",
+ "p390-afterClick": "{\"url\":\"?ui=1\",\"oldApp\":true,\"ui2\":null}"
+}

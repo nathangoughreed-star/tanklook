@@ -10,7 +10,7 @@ tanks.
 
 ```bash
 npm install
-npm run dev        # http://localhost:5173
+npm run dev        # http://localhost:5173  (new UI; http://localhost:5173/?ui=1 = old UI, until ~2026-11-29)
 npm test           # unit tests (perspective rule, physics, scene validation, undo/redo)
 npm run build      # typecheck + production build into dist/
 npm run build:single  # one self-contained file: dist-single/tanklook.html (opens from disk, emailable)

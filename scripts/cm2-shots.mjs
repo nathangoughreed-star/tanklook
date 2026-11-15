@@ -56,9 +56,9 @@ for (const [w, h, mobile, tag] of [[1400, 900, false, 'desktop'], [390, 844, tru
     await shot(`${tag}-click-${name}`);
   }
 }
-// the old UI, unchanged: click a fish at ?ui=1 (default)
+// the old UI, unchanged: click a fish at ?ui=1 (UF1: no longer the default)
 await send('Emulation.setDeviceMetricsOverride', { width: 1400, height: 900, deviceScaleFactor: 1, mobile: false });
-await send('Page.navigate', { url: BASE }); await sleep(3000);
+await send('Page.navigate', { url: BASE + '?ui=1' }); await sleep(3000);
 for (let i = 0; i < 60; i++) { if (await ev(`!!window.__gb`).catch(() => false)) break; await sleep(1000); }
 await sleep(2500);
 const old = await ev(FIND.replace(`canvas.vcanvas`, `#c`)); const of = JSON.parse(old).fish;

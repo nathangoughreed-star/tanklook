@@ -1,4 +1,4 @@
-// UI2 shell entry (lane S1, 2026-11-13; screen map §7 step 1). Loaded ONLY with ?ui=2, as its own lazy chunk (src/main.ts).
+// UI2 shell entry (lane S1, 2026-11-13; screen map §7 step 1). The default interface since UF1 (2026-11-15; ?ui=1 opens the old one), loaded as its own lazy chunk (src/main.ts).
 // It takes the page over from the old shell: the old markup and stylesheet are switched off (nothing of panels.ts runs), and the
 // same Store, Viewer and engines are built here. Its own stylesheet (shell.css, the UI2 tokens) is injected inline.
 import { render } from 'preact';
@@ -26,7 +26,7 @@ export function bootShell() {
   for (const n of document.head.querySelectorAll('link[rel="stylesheet"], style')) n.setAttribute('media', 'not all');
   const st = document.createElement('style'); st.id = 'ui2css'; st.textContent = `${tokens}\n${layout}`; document.head.append(st);
   document.body.className = 'ui2';
-  document.title = 'TankLook (new UI preview)';
+  document.title = 'TankLook: Vivarium Visualizer';
 
   const { scene: restored, error: saveError } = Store.loadLocalChecked(); // a return visit resumes the autosave; a first visit opens an empty tank (shell step 2)
   const start = startMode(restored, saveError);

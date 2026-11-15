@@ -290,13 +290,13 @@ const result = {
 
 /** Open `view` on a fresh page (its scene put in localStorage first, as a returning visitor's autosave). */
 async function open(base, view, needHandle = true) {
-  await br.s('Page.navigate', { url: base });
+  await br.s('Page.navigate', { url: base + '?ui=1' });
   await br.ev(`localStorage.setItem(${JSON.stringify(STORAGE_KEY)}, ${JSON.stringify(sceneText(view))}); 1`);
   if (view === 'split') { // the split scene is planted + store.splitTank(), saved and reopened so the page starts with it
-    await br.s('Page.navigate', { url: base }); await waitUp(true);
+    await br.s('Page.navigate', { url: base + '?ui=1' }); await waitUp(true);
     await br.ev('__gb.store.splitTank(); __gb.store.saveLocal(); 1');
   }
-  await br.s('Page.navigate', { url: base });
+  await br.s('Page.navigate', { url: base + '?ui=1' });
   return waitUp(needHandle);
 }
 async function waitUp(needHandle) {

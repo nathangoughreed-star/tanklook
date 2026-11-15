@@ -1,6 +1,6 @@
 // AU1 audit helper: talks to a long-running headless Chrome on port 9411 (start with scripts/au1-chrome.ps1 style command below).
 import { writeFileSync, mkdirSync } from 'node:fs';
-export const URL = process.env.URL ?? 'http://localhost:5199/';
+export const URL = process.env.URL ?? 'http://localhost:5199/?ui=1';
 const PORT = 9411;
 export const sleep = ms => new Promise(r => setTimeout(r, ms));
 export async function connect() {

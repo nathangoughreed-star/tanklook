@@ -62,9 +62,9 @@ const PAGE = `(() => {
 })()`;
 const results = [];
 for (const sp of SPECIES) for (const n of COUNTS) {
-  await s('Page.navigate', { url: URL_ });
+  await s('Page.navigate', { url: URL_ + '?ui=1' });
   await ev(`localStorage.setItem('tanklook.scene', ${JSON.stringify(scene(sp, n))}); 1`);
-  await s('Page.navigate', { url: URL_ });
+  await s('Page.navigate', { url: URL_ + '?ui=1' });
   for (let i = 0; i < 300; i++) { if (await ev('!!window.__gb && !!__gb.viewer && __gb.viewer.active.length > 0').catch(() => false)) break; await sleep(200); }
   await sleep(6000); await ev(`window.__pb = ${PAGE}; 1`);
   const stats = await ev('__pb.stats()'); const ab = await ev(`__pb.ab(${PAIRS})`);

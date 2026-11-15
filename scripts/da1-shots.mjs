@@ -8,7 +8,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 const argv = process.argv.slice(2), opt = (k, d) => { const i = argv.indexOf('--' + k); return i < 0 ? d : argv[i + 1]; };
-const URL_ = opt('url', 'http://localhost:6106/'), OUT = opt('out', 'shots/da1'), [W, H] = opt('size', '1100x780').split('x').map(Number);
+const URL_ = opt('url', 'http://localhost:6106/?ui=1'), OUT = opt('out', 'shots/da1'), [W, H] = opt('size', '1100x780').split('x').map(Number);
 const STEPS = JSON.parse(readFileSync(opt('steps', 'scripts/da1-steps.json'), 'utf8'));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 mkdirSync(OUT, { recursive: true });

@@ -8,6 +8,7 @@ import { listLib } from '../scene/library';
 import { readShare, shareUrl } from '../scene/share';
 import { parseScene } from '../scene/validate';
 import { EXAMPLES, examplesInScope, exampleScenes } from '../examples';
+import { oldUiHref } from '../uiChoice';
 import { restoreChecklist } from './logic/checklist';
 import { setProjectAsker, confirmStart, startProject } from '../ui/projectStart';
 import * as P7 from '../ui/logic/files';
@@ -154,6 +155,7 @@ export function FileMenu({ files }: { files: Files }) {
       {menu ? <div class="pop menu" role="menu" onClick={() => setMenu(false)}>
         {FILE_MENU.map(m => <button type="button" class="btn ghost" role="menuitem" title={m.hint} onClick={() => files.run(m.id)}>{m.label}</button>)}
         <button type="button" class="btn ghost" role="menuitem" title="Show the Get started checklist on this tank" onClick={restoreChecklist}>Get started checklist</button>
+        <a class="btn ghost" role="menuitem" href={oldUiHref(location)} title="Open this page in the old interface (kept for two weeks)">Use the old interface</a>
       </div> : null}
     </span>
   );
