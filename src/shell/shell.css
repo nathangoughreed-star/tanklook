@@ -481,3 +481,16 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .dlgfoot.sticky .acts { display: flex; justify-content: flex-end; gap: var(--s2); }
 .dlgfoot .doorplan { display: grid; gap: 2px; } .dlgfoot .doorplan .m { color: var(--text-3); font-size: 12px; } .dlgfoot .doorplan.bad .t { color: var(--bad, #c0392b); }
 @media (max-width: 640px) { .scrim:has(.dlg.tall) { padding: 0; } .dlg.tall { height: 100dvh; border-radius: 0; } }
+/* PC1 (R53): the Plants picker's cards share AT1's tile look; a click on the rest of a card does nothing, the (i) opens the detail */
+.plants .ptile { cursor: default; }
+.plants .ptile:hover { border-color: var(--line); }
+.pinfo { position: absolute; top: 4px; left: 4px; width: 22px; height: 22px; padding: 0; border-radius: 50%; border: 1px solid var(--accent); background: var(--bg-raised); color: var(--accent); font: italic 700 13px/1 serif; cursor: pointer; }
+.pinfo:hover, .pinfo:focus-visible { background: var(--accent); color: var(--bg-raised); outline: 0; }
+.plants .ptile { display: flex; flex-direction: column; }
+.plants .ptile .btn { margin-top: auto; }
+.plants .tart { height: 104px; padding: 4px; }
+.plants .tart .plantart { width: 100%; height: 100%; max-height: none; object-fit: contain; }
+.plants .dart .plantart.big { width: 100%; height: 200px; max-height: none; object-fit: contain; }
+.pinfo { min-height: 0 !important; min-width: 0 !important; }
+.pinfo::after { content: ""; position: absolute; inset: -8px; }
+@media (max-width: 699px) { .pinfo { width: 30px; height: 30px; font-size: 15px; } }

@@ -6,14 +6,30 @@ import type { Viewer } from '../render/viewer';
 import { canPrebuild, plantWarm, prebuildHooks, prebuildPlants } from '../render/items';
 import { placedView } from './logic/scape';
 import { plantLibrary, setPlantsGate, growthView, createGrowth, type Growth } from './logic/plants';
-import { Library, Placed, PieceEditor, Search, SliderRow, sealer } from './scape';
+import { Placed, PieceEditor, Search, SliderRow, sealer } from './scape';
+import { plantPick, plantDetail, type PlantGroup } from './logic/plantcards';
 import { addPiece } from './logic/scape';
 import { Group } from './ui';
+
+/** The plant's picture: the baked still (public/gallery/plants/<id>.webp), else drawn live from the 3D model, else nothing. */
+const live = new Map<string, string>();
+function PlantArt({ id, big }: { id: string; big?: boolean }) {
+  const baked = `${import.meta.env.BASE_URL}gallery/plants/${id}.webp`;
+  const [src, setSrc] = useState(baked);
+  useEffect(() => { setSrc(baked); }, [baked]);
+  const fallback = () => {
+    if (live.has(id)) { const u = live.get(id)!; if (u && u !== src) setSrc(u); return; }
+    void import('../render/plantStill').then(m => { let u = ''; try { u = m.plantStill(id) ?? ''; } catch { /* no WebGL */ } live.set(id, u); if (u) setSrc(u); });
+  };
+  return <img class={`fishart plantart${big ? ' big' : ''}`} src={src} alt="" loading={big ? 'eager' : 'lazy'} draggable={false} onError={fallback} />;
+}
 
 export function PlantsSection({ store, getViewer }: { store: Store; getViewer: () => Viewer | undefined }) {
   sealer.store = store;
   const S = store.tank;
   const [q, setQ] = useState('');
+  const [role, setRole] = useState<PlantGroup | null>(null);
+  const [pvId, setPvId] = useState<string | null>(null);
   const [, setN] = useState(0);
   const [open, setOpen] = useState({ growth: true });
   const grow = useRef<Growth | null>(null);
@@ -28,9 +44,10 @@ export function PlantsSection({ store, getViewer }: { store: Store; getViewer: (
     return () => { clearTimeout(t); off(); };
   }, [store]);
 
-  const lib = plantLibrary(S, q), gv = growthView(S, g.state);
+  const units = store.scene.units, lib = plantLibrary(S, q), pick = plantPick(S, q, units, role), gv = growthView(S, g.state);
   const placed = placedView(S, 'plants', null, new Set());
   const gate = lib.gate;
+  const detail = pvId ? plantDetail(S, pvId, units, lib.rows.flatMap(r => r.chips).find(c => c.id === pvId)?.why ?? '') : null;
 
   return (
     <div class="plants">
@@ -56,13 +73,44 @@ export function PlantsSection({ store, getViewer }: { store: Store; getViewer: (
         ) : null}
       </Group>
 
+      {pvId && detail ? (
+        <div class="detail">
+          <button type="button" class="btn sm ghost back" onClick={() => setPvId(null)}>← Back to the list</button>
+          <div class="dart"><PlantArt id={detail.id} big /></div>
+          <div class="dname">{detail.label}{detail.fake ? <b class="tag">Artificial</b> : null}</div>
+          <div class="hint">{detail.hint}</div>
+          <div class="rundown">{detail.rows.map(([k, v]) => <div class="drow"><span>{k}</span><b>{v}</b></div>)}</div>
+          {detail.why ? <div class="fitbox caution"><b>Caution</b> {detail.why}</div> : null}
+          <div class="acts-row"><button type="button" class={`btn${detail.why ? ' ghost' : ' primary'}`} onClick={() => addPiece(store, detail.id)}>{detail.why ? 'Add anyway' : 'Add one'}</button></div>
+        </div>
+      ) : (<>
       <div class="cap">Add plants</div>
       <Search q={q} onQ={setQ} placeholder="Search plants" />
       <button type="button" class="tglrow" role="switch" aria-checked={gate.on} onClick={() => setPlantsGate(store, !gate.on)}>
         <span class={`toggle${gate.on ? ' on' : ''}`} />Show only plants that suit the tank{lib.greyed ? <span class="hint"> · {lib.greyed} greyed</span> : null}
       </button>
       {gate.on ? <div class="hint">{gate.hint} <span class="dim">{gate.careLine}.</span></div> : <div class="hint">Greyed plants do not suit the tank's light and care, each with its reason. They can still be added.</div>}
-      <Library lib={lib} onAdd={id => addPiece(store, id)} />
+      <div class="chips">{pick.chips.map(c => <button type="button" class={`chip${role === c.id ? ' on' : ''}`} aria-pressed={role === c.id} onClick={() => setRole(c.id)}>{c.label} <span class="n">{c.n}</span></button>)}</div>
+      {pick.none ? <div class="hint">{pick.none}</div> : null}
+      {pick.groups.map(g => (
+        <div class="pgroup">
+          {role ? null : <div class="cap">{g.label} <span class="n">{g.cards.length}</span></div>}
+          <div class="pgrid">
+            {g.cards.map(c => (
+              <div class={`ptile${c.why ? ' gated' : ''}`} data-plant={c.id} title={c.why ? `${c.why}. Still addable: Add anyway.` : c.hint}>
+                <div class="tart"><PlantArt id={c.id} /><button type="button" class="pinfo" aria-label={`${c.label}: details`} title="Details" onClick={() => setPvId(c.id)}>i</button></div>
+                <div class="tname">{c.label}</div>
+                <div class="tmeta"><span>{c.size}</span>{c.care ? <span class="care">{c.care}</span> : null}</div>
+                {c.light ? <div class="tmeta"><span>{c.light}</span></div> : null}
+                {c.why ? <small class="why warn">{c.why}</small> : null}
+                <button type="button" class={`btn sm${c.why ? ' ghost' : ''}`} onClick={() => addPiece(store, c.id)}>{c.why ? 'Add anyway' : 'Add'}</button>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+      {pick.shown ? <div class="endnote hint">{pick.shown} {pick.shown === 1 ? 'plant' : 'plants'} shown{pick.inTank ? `, ${pick.inTank} already in the tank` : ''}.</div> : null}
+      </>)}
     </div>
   );
 }

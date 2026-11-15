@@ -1,0 +1,194 @@
+{
+ "facts": {
+  "desk1280 grid": {
+   "tiles": 39,
+   "loaded": 12,
+   "cols": 2,
+   "chips": [
+    "All 39",
+    "Foreground and carpet 2",
+    "Midground 2",
+    "Background and stems 8",
+    "On wood and rock 3",
+    "Floating 4",
+    "Emersed and houseplants 8",
+    "Artificial 12"
+   ],
+   "caps": [
+    "Foreground and carpet 2",
+    "Midground 2",
+    "Background and stems 8",
+    "On wood and rock 3",
+    "Floating 4",
+    "Emersed and houseplants 8",
+    "Artificial 12"
+   ]
+  },
+  "desk1280": {
+   "01-grid": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "01b-grid-scrolled": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "02-detail-sword": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "04-artificial": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "05-stocked-top": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "05b-stocked-grid": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   }
+  },
+  "desk1280 detail rows": "Height, grown23.6″ | Spread, grown21.5″ | PlacementBackground | GrowthMedium | LightMedium light | CO2not needed | Fertilizerhelps | CareBeginner",
+  "desk1280 detail after tile body click": false,
+  "desk1280 artificial": {
+   "tiles": 12,
+   "loaded": 12,
+   "cols": 2,
+   "chips": [
+    "All 39",
+    "Foreground and carpet 2",
+    "Midground 2",
+    "Background and stems 8",
+    "On wood and rock 3",
+    "Floating 4",
+    "Emersed and houseplants 8",
+    "Artificial 12"
+   ],
+   "caps": []
+  },
+  "desk1280 tiles before/after 3 adds": [
+   39,
+   36
+  ],
+  "desk1280 hidden now": null,
+  "desk1280 placed rows": 3,
+  "desk1280 search anubias": "Time 0: the tank as it is now",
+  "desk1280 search none": [
+   "\"anubias\" only matches plants that are already in the tank."
+  ],
+  "phone390 grid": {
+   "tiles": 39,
+   "loaded": 6,
+   "cols": 2,
+   "chips": [
+    "All 39",
+    "Foreground and carpet 2",
+    "Midground 2",
+    "Background and stems 8",
+    "On wood and rock 3",
+    "Floating 4",
+    "Emersed and houseplants 8",
+    "Artificial 12"
+   ],
+   "caps": [
+    "Foreground and carpet 2",
+    "Midground 2",
+    "Background and stems 8",
+    "On wood and rock 3",
+    "Floating 4",
+    "Emersed and houseplants 8",
+    "Artificial 12"
+   ]
+  },
+  "phone390": {
+   "01-grid": {
+    "pageX": 0,
+    "out": [],
+    "small": 2,
+    "smallEx": [
+     "i 30x30"
+    ]
+   },
+   "01b-grid-scrolled": {
+    "pageX": 0,
+    "out": [],
+    "small": 2,
+    "smallEx": [
+     "i 30x30"
+    ]
+   },
+   "02-detail-sword": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "04-artificial": {
+    "pageX": 0,
+    "out": [],
+    "small": 2,
+    "smallEx": [
+     "i 30x30"
+    ]
+   },
+   "05-stocked-top": {
+    "pageX": 0,
+    "out": [],
+    "small": 0,
+    "smallEx": []
+   },
+   "05b-stocked-grid": {
+    "pageX": 0,
+    "out": [],
+    "small": 2,
+    "smallEx": [
+     "i 30x30"
+    ]
+   }
+  },
+  "phone390 detail rows": "Height, grown23.6″ | Spread, grown21.5″ | PlacementBackground | GrowthMedium | LightMedium light | CO2not needed | Fertilizerhelps | CareBeginner",
+  "phone390 detail after tile body click": false,
+  "phone390 artificial": {
+   "tiles": 12,
+   "loaded": 12,
+   "cols": 2,
+   "chips": [
+    "All 39",
+    "Foreground and carpet 2",
+    "Midground 2",
+    "Background and stems 8",
+    "On wood and rock 3",
+    "Floating 4",
+    "Emersed and houseplants 8",
+    "Artificial 12"
+   ],
+   "caps": []
+  },
+  "phone390 tiles before/after 3 adds": [
+   39,
+   36
+  ],
+  "phone390 hidden now": null,
+  "phone390 placed rows": 3,
+  "phone390 search anubias": "Time 0: the tank as it is now",
+  "phone390 search none": [
+   "\"anubias\" only matches plants that are already in the tank."
+  ]
+ },
+ "fails": [],
+ "errors": []
+}
