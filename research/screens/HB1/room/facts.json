@@ -1,0 +1,33 @@
+{
+ "facts": {
+  "phone390-05-room-menu-auto": {
+   "headH": 48,
+   "headScroll": 0,
+   "past": 0,
+   "pageX": 0,
+   "canvasTop": 48
+  },
+  "phone390-06-room-menu-dim-hand": {
+   "headH": 48,
+   "headScroll": 0,
+   "past": 0,
+   "pageX": 0,
+   "canvasTop": 48
+  },
+  "phone390-07-view-dim": {
+   "headH": 48,
+   "headScroll": 0,
+   "past": 0,
+   "pageX": 0,
+   "canvasTop": 48
+  },
+  "phone390-08-view-bright": {
+   "headH": 48,
+   "headScroll": 0,
+   "past": 0,
+   "pageX": 0,
+   "canvasTop": 48
+  }
+ },
+ "fails": []
+}
