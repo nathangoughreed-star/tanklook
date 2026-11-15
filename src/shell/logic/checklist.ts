@@ -26,10 +26,25 @@ export function checklistOf(T: TankSetup): Checklist {
 /** A "new tank": nothing has been designed yet beyond the tank itself. */
 export const isNewTank = (T: TankSetup): boolean => T.items.length === 0 && T.fish.length === 0;
 
+/** The old permanent switch (`off`, before NT1): read once, then dropped; it counts as "hidden on the tank that was open". */
 export const KEY = 'tanklook.ui2.checklist';
-type Mem = Pick<Storage, 'getItem' | 'setItem'>;
+type Mem = Pick<Storage, 'getItem' | 'removeItem'>;
 const ls = (): Mem | undefined => { try { return localStorage; } catch { return undefined; } };
-export const dismissed = (m: Mem | undefined = ls()): boolean => { try { return m?.getItem(KEY) === 'off'; } catch { return false; } };
-export const dismiss = (m: Mem | undefined = ls()): void => { try { m?.setItem(KEY, 'off'); } catch { /* private window: it comes back next visit */ } };
-/** Shown on a new tank, and from then on until every tick is done or the person dismisses it (`started`: it was already showing, so the first piece placed does not make it vanish). A tank that already has a design never shows it. */
-export const showChecklist = (T: TankSetup, off: boolean, started = false): boolean => !off && (started || isNewTank(T)) && !checklistOf(T).all;
+export function migrateOldOff(m: Mem | undefined = ls()): boolean {
+  try { if (m?.getItem(KEY) !== 'off') return false; m.removeItem(KEY); return true; } catch { return false; }
+}
+
+/** Whether the card is hidden for THIS tank (NT1, Nathan 2026-11-14): the × hides it for the tank that is open; a New or opened project shows it again; the header menu brings it back.
+ *  `forced` = brought back by hand, so it shows even on a tank that already has pieces. Session state, not saved. */
+export interface Hide { hidden: boolean; forced: boolean; epoch: number }
+let hide: Hide = { hidden: migrateOldOff(), forced: false, epoch: 0 };
+const subs = new Set<() => void>();
+const set = (h: Hide) => { hide = h; for (const f of subs) f(); };
+export const hideState = (): Hide => hide;
+export const subscribeHide = (f: () => void) => { subs.add(f); return () => { subs.delete(f); }; };
+export const hideChecklist = () => set({ ...hide, hidden: true, forced: false });
+export const restoreChecklist = () => set({ ...hide, hidden: false, forced: true });
+/** A different project is open (New, Open, an example): the card starts over. */
+export const resetChecklist = () => set({ hidden: false, forced: false, epoch: hide.epoch + 1 });
+/** Shown on a new tank, and from then on until every tick is done or the person hides it (`started`: it was already showing, so the first piece placed does not make it vanish; `forced`: brought back from the menu). */
+export const showChecklist = (T: TankSetup, off: boolean, started = false, forced = false): boolean => !off && (forced || started || isNewTank(T)) && !checklistOf(T).all;

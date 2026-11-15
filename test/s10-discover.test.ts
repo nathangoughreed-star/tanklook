@@ -10,14 +10,10 @@ import { clearPairCache } from '../src/scene/pairGen';
 import { createInline, applyCard } from '../src/ui/discover/logic';
 import { discoverTabs } from '../src/scene/discoverScope';
 import { MODES, modeOf, presetOfMode, ideasLabel, scopeOf, scopeName, scopedStore, gapsIn, addPick, removePick, bumpPick, doorPlan, animalScene } from '../src/shell/logic/discover';
-import { checklistOf, isNewTank, showChecklist, dismiss, dismissed, KEY } from '../src/shell/logic/checklist';
+import { checklistOf, isNewTank, showChecklist } from '../src/shell/logic/checklist';
 import type { DiscoveryProposal } from '../src/scene/discover';
 import type { TankSetup } from '../src/scene/types';
 
-function mem(): Storage {
-  const m = new Map<string, string>();
-  return { get length() { return m.size; }, clear: () => m.clear(), key: i => [...m.keys()][i] ?? null, getItem: k => m.get(k) ?? null, removeItem: k => { m.delete(k); }, setItem: (k, v) => { m.set(k, String(v)); } } as Storage;
-}
 function project(): TankSetup {
   const t = structuredClone(defaultSetup());
   t.tank = { ...t.tank, L: 36 * IN, D: 18 * IN, H: 16 * IN };
@@ -105,7 +101,7 @@ describe('S10 Get started checklist', () => {
     expect(c.steps.map(x => x.id)).toEqual(['tank', 'scape', 'plants', 'animals', 'equipment']);
     expect(c.done).toBe(0); expect(isNewTank(T)).toBe(true); expect(showChecklist(T, false)).toBe(true);
   });
-  it('a built example ticks animals and plants; dismissing hides it for good', () => {
+  it('a built example ticks animals and plants; hiding it hides it', () => {
     const T = project(); const c = checklistOf(T);
     expect(c.steps.find(x => x.id === 'animals')!.done).toBe(true);
     expect(c.steps.find(x => x.id === 'plants')!.done).toBe(true);
@@ -115,7 +111,6 @@ describe('S10 Get started checklist', () => {
     expect(showChecklist(blank, false)).toBe(true); expect(showChecklist(blank, true)).toBe(false);
     blank.fish = T.fish.slice(0, 1);                      // first piece placed: it stays once it was showing
     expect(showChecklist(blank, false, true)).toBe(true); expect(showChecklist(blank, false, false)).toBe(false);
-    const m = mem(); expect(dismissed(m)).toBe(false); dismiss(m); expect(m.getItem(KEY)).toBe('off'); expect(dismissed(m)).toBe(true);
   });
   it('picking a catalogue tank ticks the tank step', () => {
     const T = emptyScene().tanks[0]; T.product = { model: 'x' };

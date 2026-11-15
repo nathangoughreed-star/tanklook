@@ -3,7 +3,7 @@
 import type { Scene } from '../../scene/types';
 import type { LibEntry } from '../../scene/library';
 import { listLib } from '../../scene/library';
-import { emptyScene } from '../../scene/defaults';
+import { freshScene } from '../../scene/freshScene';
 import { applyKind } from '../../scene/pickerKind';
 import { SHARE_PREFIX } from '../../scene/share';
 import { cleanName, libId, sceneNameOf, renameFor, when, savedText, planSave } from '../../ui/logic/files';
@@ -21,7 +21,7 @@ export const FILE_MENU: readonly { id: FileAction; label: string; hint: string }
 
 /** A fresh project: one empty tank of the given water type, the current units and camera. */
 export function newProject(units: Scene['units'], kind: Parameters<typeof applyKind>[1], camera: Scene['tanks'][number]['camera']): Scene {
-  const s = emptyScene(); s.name = 'New tank'; applyKind(s.tanks[0], kind); s.tanks[0].camera = { ...camera }; s.units = units;
+  const s = freshScene(); s.name = 'New tank'; applyKind(s.tanks[0], kind); s.tanks[0].camera = { ...camera }; s.units = units;
   return s;
 }
 
