@@ -72,6 +72,7 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R54 | 11-15 | New UI "start from an animal I want": open the tile-card animal picker and build a stocking list, then plan the tank for the whole list | AT1 | on main | 2106 | - | AT1 brief Part 4 |
 | R55 | 11-15 | Bristlenose pleco rebuilt to match real photos (flat head, eyes on top, tentacles, sail dorsal, cream spots) | BP1 | on main | 2111 | - | started from PC1 chat |
 | R56 | 11-15 | Albino forms as an option for species commonly sold albino (flag, toggle on a stocked species, pale recolour with pink eyes) | AL1 | - | - | - | lane-AL1-albino-forms.md |
+| R57 | 11-15 | Fins erect vs folded as a per-fish 0..1 value, per-species range, rerolled on shuffle (bristlenose, tangs, bettas, angels, cichlids) | FE1 | - | - | - | lane-FE1-fin-erect.md |
 | R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
 | R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
