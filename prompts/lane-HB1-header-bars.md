@@ -30,3 +30,8 @@ Add a dated HANDOFF.md section "HB1".
 
 ## Coordination
 Lanes CM2 (click-to-open, `src/shell/open.ts` / selection) and AT1 (Animals / Tank sections) are working in the shell now. Keep to App.tsx `Header` / `CheckBar`, `view.tsx` and shell CSS, and rebase on origin/main before your final commit.
+
+## Part 2 (Nathan 2026-11-15, picture research/screens/HB1/nathan-viewmenu-room-light.png) - R62
+"shouldnt the rooms ambient light slider be in this menu?" Yes. The old UI had a little sun slider on the main view (lane UI4; `src/scene/roomlight.ts`: `roomOf`, `ROOM_MAX`, `roomAuto`; the old UI wires it in `src/ui/tankDockLogic.ts`). The new UI has no room light control at all.
+Do: in the View menu (`src/shell/view.tsx`), add a "Room light" slider between CAMERA and SHOW, with a sun icon. It runs 0..ROOM_MAX, and the readout is Dark / Dim / Bright or a %. The first move drops `roomAuto`, exactly as the old slider does (one undo step, coalesced while dragging). Add an "Auto" link that brings `roomAuto` back, with the hint "Auto: bright until the tank has a light". Same on the phone View menu.
+Checks: build; the roomlight and view-menu tests, plus a new test that the slider writes `light.room`, clears `roomAuto`, and Auto restores it. Shots at 1280 and 390 of the menu and of the view at dim and bright. Commit on a fresh branch from origin/main and send me the sha.
