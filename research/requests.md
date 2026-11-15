@@ -98,6 +98,7 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R80 | 11-15 | Bug: a custom fish size reset on Another moment (shuffle re-rolled every size); now sizes stay, only spots and poses change | C24 | on main | 2153 | - | view.ts anotherMoment, panels.ts |
 | R81 | 11-15 | "Open a tank: the menu that comes up is too low" (first asked in PC1 chat ~16:44, never logged = lost); which menu TBD with Nathan | C24 | - | - | - | waiting on Nathan screenshot |
 | R82 | 11-15 | A flat shadow sheet projects outside the tank at substrate height, beside the side glass (white cloud 13.3 gal scene, hillstream terrain) | VF9 | on main | 2164 | - | scene research/visual/vf0/scenes/nathan-white-cloud-13g-2026-11-15.json |
+| R83 | 11-15 | Air pump (and other under-tank gear: CO2 cylinder, ATO reservoir, canister, external chiller/UV) sits INSIDE the cabinet when the stand has one, tube through the back cut-out; it was on the floor beside the stand | CB2 | - | - | - | picture research/screens/CB2/nathan-airpump-outside-2026-11-15.png |
 | R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
 | R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
