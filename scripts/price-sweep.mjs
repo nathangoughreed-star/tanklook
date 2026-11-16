@@ -10,7 +10,8 @@
 //
 // New library entries are picked up on their own: the sweep walks tanks.json, so any variant with a url is swept. Hosts with no
 // rule below get the generic JSON-LD / meta-tag read; if that finds no price the variant goes to the browser queue.
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { execFileSync } from 'node:child_process';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -179,7 +180,10 @@ function cmdCommit() {
   const report = join(dir, 'report.md');
   execFileSync('git', ['add', FILE, report], { cwd: ROOT });
   const body = [`Price sweep ${day}: ${rep.changed.length} price changes, ${rep.sales.length} sales, ${rep.saleEnded.length} sales ended, ${rep.dead.length} dead links`, '', ...lines.slice(2)].join('\n');
-  execFileSync('git', ['commit', '-m', body + '\n\nCo-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>'], { cwd: ROOT, stdio: 'inherit' });
+  // -F, not -m: the whole report as one argument overflows the Windows command line (spawnSync ENAMETOOLONG, 2026-11-16)
+  const msg = join(tmpdir(), `price-sweep-${day}-msg.txt`);
+  writeFileSync(msg, body + '\n\nCo-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>\n');
+  try { execFileSync('git', ['commit', '-F', msg], { cwd: ROOT, stdio: 'inherit' }); } finally { rmSync(msg, { force: true }); }
   console.log('committed (not pushed):', rel(report));
 }
 
