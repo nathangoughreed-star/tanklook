@@ -43,3 +43,6 @@ Known oddities left alone: soft corals have no PAR band on the reef scale; metri
 Lost-request guard: CLAUDE.md says every chat forwards Nathan's out-of-scope asks to you. On every "check", run `python scripts/request_audit.py` (extracts everything Nathan typed in Glass Box chats) and compare with research/requests.md; also compare live build vs main.
 
 House rules: end every reply with "Build N"; US units; screen questions come with pictures; verify visually before "done"; no polling or waiting turns; hand off at ~12 % context or ~120 turns.
+
+## Update at handoff: price sweep NOT pushed
+C24's suite on the price sweep (57b0b92b = cherry-pick of 6f414929) failed: test/demand.test.ts "expected value equals the old Monte Carlo mean" (planted/0 off by 5.1 %, limit 1 %), test/gearFilters.test.ts and test/tech.test.ts locked example numbers (planted setup moves, e.g. 1294.416 -> 1360.518), plus ab1 (timing). The new tank prices move the pinned example setups. C24 sent it back to the sweep chat (local_494fcc9b-fe5a-47cd-a856-45ad14a4d0a1) to re-pin with reasons and run the FULL vitest; merge its new sha when it reports. Note SP1 also re-pins planted / blackwater, so merge sweep first, then SP1 and re-pin once more if needed.
