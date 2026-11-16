@@ -135,7 +135,7 @@ function frame(g: THREE.Group, look: StandLook, sp: StandSpace, mk: Mk) {
   const levels = look.shelfAt ?? [look.shelf && look.shelf !== 'none' ? 0.3 : 0];
   for (const lv of levels) {
     const ly = y0 + foot + sp.h * lv + (lv ? 0 : s / 2 + 2);
-    if (look.shelf === 'solid') put(g, mk(W - 2 * s, 8, D - 2 * s, shelfC), 0, ly, 0);
+    if (look.shelf === 'solid') { put(g, mk(W - 2 * s, 8, D - 2 * s, shelfC), 0, ly, 0); if (look.shelfRails) { for (const z of zs) rail(W - 2 * s, 0, ly, z, true); for (const x of xs) rail(D - 2 * s, x, ly, 0, false); } }
     else if (look.shelf === 'mesh') { put(g, mk(W - 2 * s, 5, D - 2 * s, shade(shelfC, 1.25)), 0, ly, 0); for (const z of zs) rail(W - 2 * s, 0, ly - 6, z, true); }
     else { for (const z of zs) rail(W - 2 * s, 0, ly, z, true); for (const x of xs) rail(D - 2 * s, x, ly, 0, false); }
   }
@@ -143,8 +143,8 @@ function frame(g: THREE.Group, look: StandLook, sp: StandSpace, mk: Mk) {
     const bl = Math.hypot(W - 2 * s, sp.h * 0.6), ang = Math.atan2(sp.h * 0.6, W - 2 * s);
     for (const a of [ang, -ang]) { const b = mk(bl, 5, 5, sc2); b.rotation.z = a; put(g, b, 0, y0 + sp.h * 0.55, zs[0]); }
   } else if (look.brace === 'xside') { // X braces in the end frames
-    const bl = Math.hypot(D - 2 * s, sp.h * 0.5), ang = Math.atan2(sp.h * 0.5, D - 2 * s);
-    for (const x of xs) for (const a of [ang, -ang]) { const b = mk(5, 5, bl, sc2); b.rotation.x = a; put(g, b, x, y0 + sp.h * 0.5, 0); }
+    const [lo, hi] = look.braceSpan ?? [0.25, 0.75], span = sp.h * (hi - lo), bl = Math.hypot(D - 2 * s, span), ang = Math.atan2(span, D - 2 * s);
+    for (const x of xs) for (const a of [ang, -ang]) { const b = mk(5, 5, bl, sc2); b.rotation.x = a; put(g, b, x, y0 + sp.h * (lo + hi) / 2, 0); }
   } else if (look.brace === 'window') { // a cross in each end frame: a mid rail with a mullion above and below it
     for (const x of xs) { rail(D - 2 * s, x, y0 + sp.h * 0.5, 0, false); put(g, mk(s * 0.7, sp.h * 0.5 - s, s * 0.7, sc2), x, y0 + sp.h * 0.75 - s / 2, 0); put(g, mk(s * 0.7, sp.h * 0.4, s * 0.7, sc2), x, y0 + sp.h * 0.3, 0); }
     for (const z of zs) rail(W - 2 * s, 0, y0 + sp.h * 0.5, z, true);
@@ -157,6 +157,13 @@ function frame(g: THREE.Group, look: StandLook, sp: StandSpace, mk: Mk) {
       for (const dy of [0.25, -0.25]) put(g, mk(aw * 0.5 - 6, look.apron / 2 - 8, 12, ac), aw * 0.25, ay + dy * look.apron, D / 2 - s - 6);
       for (const [x, y] of [[-aw * 0.05, ay], [aw * 0.25, ay + look.apron * 0.25], [aw * 0.25, ay - look.apron * 0.25]]) put(g, mk(18, 18, 14, 0x2a2a2a), x, y, D / 2 - s + 2);
     } else put(g, mk(aw, look.apron, 12, ac), 0, ay, D / 2 - s - 6);
+    if (look.motif) { // the square scroll cut-out at both ends of the apron: a square frame with a smaller one inside
+      const q = Math.min(look.apron * 0.8, 90), mc = shade(c, 1.5);
+      for (const sx of [-1, 1]) {
+        const mx = sx * (aw / 2 - q * 0.75), mz = D / 2 - s + 2;
+        for (const [w2, h2, dx, dy] of [[q, 7, 0, q / 2], [q, 7, 0, -q / 2], [7, q, -q / 2, 0], [7, q, q / 2, 0], [q * 0.45, 7, 0, 0], [7, q * 0.5, q * 0.22, q * 0.2]] as [number, number, number, number][]) put(g, mk(w2, h2, 6, mc), mx + dx, ay + dy, mz);
+      }
+    }
   }
   if (look.feetMm) for (const x of xs) for (const z of zs) put(g, mk(s * 1.35, look.feetMm, s * 1.35, shade(c, 0.9)), x, y0 + look.feetMm / 2, z); // square foot blocks
 }

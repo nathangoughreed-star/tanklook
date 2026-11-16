@@ -122,20 +122,25 @@
   "url": "https://woodartsupply.com/collections/fish-tank-stands/products/aqueon-metal-20-gallon-long-29-gallon-high-fish-tank-aquarium-stand-30-l-x-12-w-x-28-25-h",
   "asOf": "2026-11-16",
   "est": [],
-  "note": "Top shelf 30 x 12 in.",
+  "note": "Top shelf 30 x 12 in. R96: the retailer listings for this size reuse the 10 gal Forge photos, so the model is the Forge design drawn at 30 x 12.",
   "look": {
    "tube": "#262627",
-   "tubeMm": 20,
+   "tubeMm": 22,
    "shelf": "solid",
    "brace": "none",
-   "apron": 110,
+   "apron": 105,
    "front": "#2a2a2b",
    "sheen": "satin",
-   "splayDeg": 4,
+   "splayDeg": 1.5,
    "shelfAt": [
-    0.17
+    0.25
    ],
-   "shelfHex": "#2a2a2b"
+   "shelfHex": "#2c2724",
+   "shelfRails": true,
+   "motif": true,
+   "est": [
+    "photo: the Aqueon Forge 10 gal (same design); no separate 30 x 12 photo found"
+   ]
   }
  },
  {
@@ -413,12 +418,16 @@
    "shelf": "solid",
    "shelfHex": "#202020",
    "brace": "xside",
-   "apron": 240,
+   "apron": 285,
    "front": "#202020",
    "sheen": "satin",
    "drawers": true,
    "shelfAt": [
-    0.1
+    0.22
+   ],
+   "braceSpan": [
+    0.22,
+    0.64
    ]
   }
  },
@@ -678,17 +687,19 @@
   "note": "20 x 10 x 28.25 in per the Amazon title; bottom shelf; panels reversible black or light brown.",
   "look": {
    "tube": "#312d2b",
-   "tubeMm": 20,
+   "tubeMm": 22,
    "shelf": "solid",
    "brace": "none",
-   "apron": 90,
+   "apron": 105,
    "front": "#322e2c",
    "sheen": "satin",
-   "splayDeg": 4,
+   "splayDeg": 1.5,
    "shelfAt": [
-    0.17
+    0.25
    ],
-   "shelfHex": "#2a2a2b"
+   "shelfHex": "#2c2724",
+   "shelfRails": true,
+   "motif": true
   }
  },
  {

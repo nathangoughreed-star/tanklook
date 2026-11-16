@@ -32,3 +32,5 @@
 | helloreef-15 | helloreef-15-1.jpg, helloreef-15-2.jpg | https://www.chewy.com/helloreef-aquarium-stand-15-gal-black/dp/1642134 | image.chewy.com (_AC_SS1800_V1_ gallery images) |
 
 Photo variants: PetSmart pages list a finish per SKU (Top Fin 20-37 photos are the Pale Oak SKU 5309117, 55-75 is Raven Oak 5309135, 10 gal is 5309115); the Brooklyn 10 gal has no photo of its own and is modelled from the 29 gal Brooklyn. No photo found: af-10-metal, marineland-modern-48, seapora-monarch-48x18 (their looks are estimates, flagged in stands.json `look.est`).
+
+Aqueon Forge (R96 fix): `aqueon-metal-10` (Amazon B00SZ5EQN4) and `aqueon-forge-30` (Woodart Supply) show the same Forge photos, and those photos are the 10 gal stand (a 20 x 10 tank on it). No separate 30 x 12 Forge photo was found (Blue Fish / Target / Chewy pages dead or absent), so `aqueon-forge-30` is the Forge design drawn at 30 x 12, flagged in `look.est`.

@@ -23,6 +23,6 @@ for s in json.load(open('src/data/gear/stands.json')):
         p = Image.new('RGB', (520, H), (245, 245, 245)); ImageDraw.Draw(p).text((150, 250), 'no product photo found', fill=(120, 0, 0))
     p = p.resize((int(p.width * H / p.height), H)); model = model.resize((int(model.width * H / model.height), H))
     c = Image.new('RGB', (p.width + model.width + 30, H + 24), 'white'); c.paste(p, (0, 24)); c.paste(model, (p.width + 30, 24))
-    ImageDraw.Draw(c).text((4, 6), f'{i}   photo (left) vs our model (right)' + ('   [hidden stand: footprint unknown]' if s.get('hidden') else ''), fill=(0, 0, 0))
+    ImageDraw.Draw(c).text((4, 6), f'{i}   photo (left) vs our model (right)' + ('   [hidden stand: footprint unknown]' if s.get('hidden') else '') + (('   [' + s['look']['est'][0] + ']') if s.get('look',{}).get('est') and s['look']['est'][0].startswith('photo') else ''), fill=(0, 0, 0))
     c.save(f'research/screens/SP1/compare/{i}.jpg', quality=88)
     print(i, c.size)

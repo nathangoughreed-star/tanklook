@@ -24,7 +24,7 @@ export interface StandLook {
   /** frames: tube colour and side (mm), lower shelf, bracing, a front apron panel height (mm) */
   tube?: string; tubeMm?: number; shelf?: 'none' | 'solid' | 'mesh'; shelfHex?: string; brace?: 'none' | 'x' | 'xside' | 'window' | 'rails'; apron?: number; drawers?: boolean;
   /** frames: shelf heights as fractions of the height, leg lean (degrees), foot blocks (mm) */
-  shelfAt?: number[]; splayDeg?: number; feetMm?: number;
+  shelfAt?: number[]; splayDeg?: number; feetMm?: number; shelfRails?: boolean; braceSpan?: [number, number]; motif?: boolean;
   /** which fields are estimates (no photo, or not readable from it) */
   est?: string[];
 }
