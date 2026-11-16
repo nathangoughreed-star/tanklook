@@ -31,8 +31,10 @@
    "doorStyle": "flat",
    "handle": "bar",
    "handleHex": "#b9bdc2",
-   "base": "feet",
-   "overhangMm": 10
+   "base": "block",
+   "overhangMm": 12,
+   "baseMm": 95,
+   "topMm": 22
   }
  },
  {
@@ -59,10 +61,13 @@
    "tube": "#222222",
    "tubeMm": 20,
    "shelf": "mesh",
-   "brace": "x",
+   "brace": "xside",
    "sheen": "satin",
    "est": [
     "all (no photo found)"
+   ],
+   "shelfAt": [
+    0.1
    ]
   }
  },
@@ -92,7 +97,10 @@
    "shelf": "mesh",
    "shelfHex": "#2c2d30",
    "brace": "x",
-   "sheen": "satin"
+   "sheen": "satin",
+   "shelfAt": [
+    0.1
+   ]
   }
  },
  {
@@ -117,12 +125,17 @@
   "note": "Top shelf 30 x 12 in.",
   "look": {
    "tube": "#262627",
-   "tubeMm": 22,
-   "shelf": "none",
-   "brace": "rails",
+   "tubeMm": 20,
+   "shelf": "solid",
+   "brace": "none",
    "apron": 110,
    "front": "#2a2a2b",
-   "sheen": "satin"
+   "sheen": "satin",
+   "splayDeg": 4,
+   "shelfAt": [
+    0.17
+   ],
+   "shelfHex": "#2a2a2b"
   }
  },
  {
@@ -154,7 +167,11 @@
    "doorStyle": "plank",
    "handle": "none",
    "base": "plinth",
-   "overhangMm": 22
+   "overhangMm": 18,
+   "plinthOver": 24,
+   "baseMm": 60,
+   "planks": 7,
+   "topMm": 32
   }
  },
  {
@@ -210,15 +227,18 @@
   ],
   "note": "Height not confirmed.",
   "look": {
-   "front": "#1f1b1a",
-   "top": "#24201d",
-   "sheen": "satin",
+   "front": "#251b17",
+   "top": "#271c18",
+   "sheen": "matte",
    "grain": "none",
    "doors": 2,
    "doorStyle": "flat",
    "handle": "none",
-   "base": "feet",
-   "overhangMm": 6
+   "base": "recessed",
+   "overhangMm": 0,
+   "baseMm": 72,
+   "caps": true,
+   "topMm": 18
   }
  },
  {
@@ -256,8 +276,9 @@
    "doorStyle": "louver",
    "handle": "bar",
    "handleHex": "#25252a",
-   "base": "feet",
-   "overhangMm": 14
+   "base": "block",
+   "overhangMm": 14,
+   "baseMm": 70
   }
  },
  {
@@ -283,16 +304,18 @@
   ],
   "note": "For 30 / 40 breeder; height not confirmed.",
   "look": {
-   "front": "#292a30",
-   "top": "#25272b",
+   "front": "#212327",
+   "top": "#202226",
    "sheen": "satin",
    "grain": "none",
-   "open": "center",
+   "open": "half",
    "doors": 1,
    "handle": "none",
    "base": "poles",
    "baseHex": "#b9bdc2",
-   "overhangMm": 6
+   "overhangMm": 6,
+   "plate": 18,
+   "plateOver": 22
   }
  },
  {
@@ -318,13 +341,16 @@
   "look": {
    "front": "#303030",
    "top": "#2e2e2e",
-   "sheen": "satin",
-   "grain": "laminate",
+   "sheen": "matte",
+   "grain": "none",
    "doors": 3,
    "doorStyle": "flat",
    "handle": "none",
    "base": "plinth",
-   "overhangMm": 14
+   "overhangMm": 18,
+   "plinthOver": 30,
+   "baseMm": 62,
+   "topMm": 24
   }
  },
  {
@@ -349,11 +375,14 @@
   "note": "36.5 x 18.5 x 29.5 in; sale price, list $75.99 (white version exists).",
   "look": {
    "tube": "#e6e6e2",
-   "tubeMm": 30,
+   "tubeMm": 34,
    "shelf": "solid",
    "shelfHex": "#e9e9e5",
    "brace": "rails",
-   "sheen": "satin"
+   "sheen": "satin",
+   "shelfAt": [
+    0.42
+   ]
   }
  },
  {
@@ -383,10 +412,14 @@
    "tubeMm": 26,
    "shelf": "solid",
    "shelfHex": "#202020",
-   "brace": "x",
+   "brace": "xside",
    "apron": 240,
    "front": "#202020",
-   "sheen": "satin"
+   "sheen": "satin",
+   "drawers": true,
+   "shelfAt": [
+    0.1
+   ]
   }
  },
  {
@@ -412,17 +445,20 @@
   ],
   "note": "Height not confirmed.",
   "look": {
-   "front": "#33373a",
-   "top": "#2d3133",
+   "front": "#222527",
+   "top": "#1f2224",
    "sheen": "satin",
-   "grain": "laminate",
+   "grain": "none",
    "open": "center",
    "doors": 2,
    "handle": "bar",
    "handleHex": "#b9bdc2",
    "base": "feet",
    "baseHex": "#161616",
-   "overhangMm": 8
+   "overhangMm": 14,
+   "plate": 14,
+   "plateOver": 6,
+   "topMm": 24
   }
  },
  {
@@ -451,16 +487,17 @@
    "front": "#2b2b2d",
    "top": "#2b2b2d",
    "sheen": "satin",
-   "grain": "laminate",
+   "grain": "none",
    "doors": 2,
    "doorStyle": "flat",
    "handle": "bar",
    "handleHex": "#b9bdc2",
    "base": "plinth",
-   "overhangMm": 10,
+   "overhangMm": 12,
    "est": [
     "all (no photo found; listing says black or grey)"
-   ]
+   ],
+   "topMm": 26
   }
  },
  {
@@ -486,17 +523,20 @@
   ],
   "note": "In-store pickup only; a reviewer calls it flimsy.",
   "look": {
-   "front": "#252b2a",
-   "top": "#1f2423",
+   "front": "#1c2120",
+   "top": "#1a1f1e",
    "sheen": "satin",
-   "grain": "laminate",
+   "grain": "none",
    "open": "center",
    "doors": 2,
    "handle": "bar",
    "handleHex": "#b9bdc2",
    "base": "feet",
    "baseHex": "#161616",
-   "overhangMm": 8
+   "overhangMm": 14,
+   "plate": 14,
+   "plateOver": 6,
+   "topMm": 24
   }
  },
  {
@@ -522,20 +562,23 @@
   ],
   "note": "For 75 / 90 / 110.",
   "look": {
-   "front": "#252b2a",
-   "top": "#1f2423",
+   "front": "#1c2120",
+   "top": "#1a1f1e",
    "sheen": "satin",
-   "grain": "laminate",
+   "grain": "none",
    "open": "center",
    "doors": 2,
    "handle": "bar",
    "handleHex": "#b9bdc2",
    "base": "feet",
    "baseHex": "#161616",
-   "overhangMm": 8,
+   "overhangMm": 14,
    "est": [
     "all (no photo found; drawn like the Empress)"
-   ]
+   ],
+   "plate": 14,
+   "plateOver": 6,
+   "topMm": 24
   }
  },
  {
@@ -575,7 +618,9 @@
    "handle": "bar",
    "handleHex": "#2a2a2e",
    "base": "block",
-   "overhangMm": 14
+   "overhangMm": 16,
+   "baseMm": 100,
+   "topMm": 28
   }
  },
  {
@@ -601,10 +646,14 @@
   "look": {
    "tube": "#272826",
    "tubeMm": 18,
-   "shelf": "mesh",
+   "shelf": "solid",
    "shelfHex": "#2a2b2a",
-   "brace": "x",
-   "sheen": "satin"
+   "brace": "xside",
+   "sheen": "satin",
+   "shelfAt": [
+    0.1,
+    0.5
+   ]
   }
  },
  {
@@ -630,11 +679,16 @@
   "look": {
    "tube": "#312d2b",
    "tubeMm": 20,
-   "shelf": "none",
-   "brace": "rails",
+   "shelf": "solid",
+   "brace": "none",
    "apron": 90,
    "front": "#322e2c",
-   "sheen": "satin"
+   "sheen": "satin",
+   "splayDeg": 4,
+   "shelfAt": [
+    0.17
+   ],
+   "shelfHex": "#2a2a2b"
   }
  },
  {
@@ -659,11 +713,14 @@
   "note": "36.5 x 18.5 x 29.5 in per the Amazon title.",
   "look": {
    "tube": "#232323",
-   "tubeMm": 38,
+   "tubeMm": 40,
    "shelf": "solid",
    "shelfHex": "#262626",
    "brace": "window",
-   "sheen": "satin"
+   "sheen": "satin",
+   "shelfAt": [
+    0.42
+   ]
   }
  },
  {
@@ -861,7 +918,8 @@
    "open": "arch",
    "doors": 0,
    "base": "plinth",
-   "overhangMm": 14
+   "overhangMm": 16,
+   "topMm": 28
   }
  },
  {
@@ -889,10 +947,14 @@
   "note": "Chewy $74.99 (list $106.99), 30 reviews, 2026-11-16; seven sizes sold, this is the 10 gal. No dimensions printed.",
   "look": {
    "tube": "#191919",
-   "tubeMm": 24,
+   "tubeMm": 22,
    "shelf": "none",
-   "brace": "rails",
-   "sheen": "satin"
+   "brace": "none",
+   "sheen": "satin",
+   "shelfAt": [
+    0.08
+   ],
+   "feetMm": 24
   }
  },
  {

@@ -13,14 +13,18 @@ export interface StandLook {
   sheen?: 'matte' | 'satin' | 'gloss';
   /** 'oak' = visible wood grain (any wood colour), 'laminate' = plain printed finish, 'none' = paint / powder coat */
   grain?: 'none' | 'oak' | 'laminate';
-  doors?: number; doorStyle?: 'flat' | 'louver' | 'plank' | 'raised' | 'bead';
+  planks?: number; doors?: number; doorStyle?: 'flat' | 'louver' | 'plank' | 'raised' | 'bead';
   /** 'center' = two end doors with an open middle shelf; 'arch' = open front between two side panels */
-  open?: 'none' | 'center' | 'arch';
+  open?: 'none' | 'center' | 'arch' | 'half';
   handle?: 'none' | 'bar' | 'knob'; handleHex?: string;
-  base?: 'plinth' | 'feet' | 'tapered' | 'poles' | 'block'; baseHex?: string;
+  base?: 'plinth' | 'recessed' | 'feet' | 'tapered' | 'poles' | 'block'; baseHex?: string;
+  /** top slab thickness, base height, a thin base plate (mm, and how far it overhangs), plinth overhang, screw caps on a recessed plinth */
+  topMm?: number; baseMm?: number; plate?: number; plateOver?: number; plinthOver?: number; caps?: boolean;
   overhangMm?: number;
   /** frames: tube colour and side (mm), lower shelf, bracing, a front apron panel height (mm) */
-  tube?: string; tubeMm?: number; shelf?: 'none' | 'solid' | 'mesh'; shelfHex?: string; brace?: 'none' | 'x' | 'window' | 'rails'; apron?: number;
+  tube?: string; tubeMm?: number; shelf?: 'none' | 'solid' | 'mesh'; shelfHex?: string; brace?: 'none' | 'x' | 'xside' | 'window' | 'rails'; apron?: number; drawers?: boolean;
+  /** frames: shelf heights as fractions of the height, leg lean (degrees), foot blocks (mm) */
+  shelfAt?: number[]; splayDeg?: number; feetMm?: number;
   /** which fields are estimates (no photo, or not readable from it) */
   est?: string[];
 }
