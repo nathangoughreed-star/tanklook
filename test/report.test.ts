@@ -38,8 +38,8 @@ describe('report', () => {
     expect(after.have.map(h => h.usd)).toEqual(after.have.map(() => 0));
     expect(after.have.some(h => /^light/i.test(h.label))).toBe(true);
     expect(after.have.some(h => /^tank/i.test(h.label))).toBe(true);
-    const stand = before.buyFirst.find(l => l.label === 'Stand')!;
-    expect(after.have.some(h => h.label === 'Stand')).toBe(true);
+    const stand = before.buyFirst.find(l => /^Stand/.test(l.label))!;
+    expect(after.have.some(h => /^Stand/.test(h.label))).toBe(true);
     expect(after.tiers.ideal.setupUsd).toBeLessThan(before.tiers.ideal.setupUsd - tank.usd - stand.usd + 1);
     expect(html).toContain('$0 you have');
   });

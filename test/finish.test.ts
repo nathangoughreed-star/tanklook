@@ -114,12 +114,12 @@ describe('finished builds', () => {
       expect(p.costLines.reduce((t, l) => t + l.usd, 0)).toBe(Math.round(p.totals.startupUsd));
       for (const label of ['Animals', 'Substrate, hardscape and plants']) expect(p.costLines.some(l => l.label === label && l.usd > 0)).toBe(true);
       expect(p.costLines.some(l => (l.label === 'Tank' || l.label.startsWith('Starter kit')) && l.usd > 0)).toBe(true); // lane U5: a kit's one price is its own line
-      expect(p.costLines.some(l => l.label === 'Stand' && l.usd > 0)).toBe(true);
+      expect(p.costLines.some(l => /^Stand/.test(l.label) && l.usd > 0)).toBe(true);
     }
     for (const p of run({ owned: { filter: 'care' }, needStand: false })) {
       expect(p.costLines.reduce((t, l) => t + l.usd, 0)).toBe(Math.round(p.totals.startupUsd));
       expect(p.costLines.some(l => l.usd === 0 && l.note === 'you have' && /filter/i.test(l.label))).toBe(true);
-      expect(p.costLines.some(l => l.usd === 0 && l.note === 'not needed' && l.label === 'Stand')).toBe(true);
+      expect(p.costLines.some(l => l.usd === 0 && l.note === 'not needed' && /^Stand/.test(l.label))).toBe(true);
       expect(p.costLines.every(l => l.usd >= 0)).toBe(true);
     }
   }, 300000);

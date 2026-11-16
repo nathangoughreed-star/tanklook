@@ -89,6 +89,6 @@ describe('one gear model for a dry tank', () => {
     expect(b.setup!.mode).toBeGreaterThan(170); expect(b.setup!.mode).toBeLessThan(260);
     expect(s2.setup!.mode).toBeLessThan(b.setup!.mode * 0.6);
     expect(stand({ ...big, stand: { ...big.stand, show: false, need: 'none' } })).toBeUndefined(); // my own furniture: $0
-    const A = ex('planted'); expect(stand({ ...A, stand: { ...A.stand, show: true } })!.label).toBe('Stand');
+    const A = ex('planted'); expect(stand({ ...A, stand: { ...A.stand, show: true } })!.label).toMatch(/^Stand/); // SP1: 'Stand: brand line' when a product fits, 'Stand (typical, estimate)' otherwise
   });
 });
