@@ -57,11 +57,11 @@ BLOCKER: the auto-mode classifier DENIED the deals re-check sweep session, so Na
 - The same deals.json edit also sits uncommitted in the shared folder `C:/Users/nreed/Glass Box`; once merged, tell that chat it's on main (don't revert by hand).
 
 ## GS3 READY (R103 glass units + W13, 11-16, chat GS2 local_f2fddbff-3cb1-4a66-9aaf-1351179afb90)
-- Branch `gs3-units-auto` @ 2efdd046 (9b7a2ecf + 2efdd046), not pushed. Every glass size is pickable in both unit systems; defaults land on a stocked size in the user's unit (metric 12 / 15 mm).
+- Branch `gs3-units-auto` @ ac803325 (9b7a2ecf + 2efdd046 + ac803325; take the tip: edge finish is now ONE whole-tank setting `CustomTankSpec.edge`, Nathan's answer), not pushed. Every glass size is pickable in both unit systems; defaults land on a stocked size in the user's unit (metric 12 / 15 mm).
 - A custom tank's 'auto' glass = the solver's thinnest answer (`src/scene/autoGlass.ts`); commercial tanks keep their product glass_mm.
 - The thickness list is grouped Hardware store / Glass shop / Special order; the solver never picks special order.
 - NEW edge finish (Raw / Ground / Polish / Bevel, whole tank or per pane group): recorded and warned about only, not drawn, priced or used in the safety factor.
 - parseSpec now accepts 2-25 mm glass.
 - Full vitest: the 5 failures were load only; all 5 pass alone.
 - Check `research/screens/GS3/` (1280 + 390, thickness list + edge finish) before merging.
-- Open with Nathan (GS2 asked him in its chat): per-pane vs whole-tank edges (both built), and whether the structural check should use the ASTM minimum thickness instead of nominal.
+- Nathan answered: one edge setting for the whole tank; tiered list confirmed. ASTM minimum thickness is a later separate step (not requested yet).
