@@ -6,15 +6,18 @@ import type { Store } from '../scene/store';
 import type { Tank, TankSetup, TankShape, CameraSettings } from '../scene/types';
 import { applyTankEdit, reshape, shapeMemory, setGlass, setRim } from '../scene/tankEdit';
 import { addCustomTank, dimName, editCustomTank, loadLibrary, saveLibrary, type CustomTankSpec } from '../scene/customTanks';
-import { stockAll, IN_MM, type BraceLocks, type BraceSpec } from '../scene/glassSolver';
+import { IN_MM, type BraceLocks, type BraceSpec } from '../scene/glassSolver';
 import { customGlass } from '../scene/autoGlass';
 import { braceFor, type BraceLevel } from '../scene/glassEnvelope';
+import { GlassOptions } from './glassOptions';
+import { EDGE_HELP, EDGE_OPTS, EDGE_PANES, edgeSummary, edgeWarnings, edgesOf, sameEdge } from './logic/edges';
+import type { EdgeFinish, EdgeSpec } from '../scene/customTanks';
 import { SizeMode, SfMode, WideView, type SolveMode } from './glassSolve';
 import type { SizeCell, SolveInputs } from './logic/tankEnvelope';
 import { LIMITS } from '../scene/validate';
 import { IN } from '../scene/physics';
 import { POLY_MAX, POLY_MIN, pieRadius, pieDepth, polySides, PIE_MIN, PIE_MAX, shapeOf } from '../scene/shape';
-import { makerSetup, makerFacts, dimAnchors, placeDims, applyDim, parseLen, setPieAngle, setPolySide, makeRegular, setPolyCount, roundAsPie, type PlacedDim, previewSpec, priceView, chooseCustom, glassText, glassOption, galText, usd, SHAPE_WORD, SHAPE_MAIN, SHAPE_MORE, SIDE_RANGE, specChanged, type Units } from './logic/tank';
+import { makerSetup, makerFacts, dimAnchors, placeDims, applyDim, parseLen, setPieAngle, setPolySide, makeRegular, setPolyCount, roundAsPie, type PlacedDim, previewSpec, priceView, chooseCustom, glassText, galText, usd, SHAPE_WORD, SHAPE_MAIN, SHAPE_MORE, SIDE_RANGE, specChanged, type Units } from './logic/tank';
 import { glassPanel, defaultChoice, optimizeChoice, startBrace, DISCLAIMER, type GlassChoice, type GlassPanel } from './logic/tankGlass';
 import { LenRow, Seg, Toggle } from './tank';
 import { Group, Icon, Pill } from './ui';
@@ -126,7 +129,7 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
     size(r.edit); setRefuse(r.note ?? ''); return null;
   };
   const T = spec.tank, shape = shapeOf(T), facts = useMemo(() => makerFacts(spec, u), [spec, u]), price = priceView(spec);
-  const stock = stockAll(u), gNow = customGlass(spec.glass, T, spec.rim);
+  const gNow = customGlass(spec.glass, T, spec.rim);
   const changed = specChanged(spec, init.spec);
 
   const key = () => JSON.stringify([spec.tank, choice]);
@@ -207,14 +210,15 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
             <LenRow label="Opening" mm={T.bowlTop ?? T.L * 0.5} min={T.L * 0.2} max={T.L * 0.95} u={u} onMm={mm => size(t => ({ ...t, bowlTop: mm }))} />
           </> : null}
         </Group>
-        <Group title="Glass and rim" sum={`${spec.glassType === 'lowiron' ? 'low-iron' : 'float'} · ${spec.rim ? 'rimmed' : 'rimless'}`} open={open.glass} onToggle={fold('glass')}>
+        <Group title="Glass and rim" sum={`${spec.glassType === 'lowiron' ? 'low-iron' : 'float'} · ${spec.rim ? 'rimmed' : 'rimless'} · ${edgeSummary(edgesOf(spec.edges, spec.rim))}`} open={open.glass} onToggle={fold('glass')}>
           <div class="row"><span class="lbl">Glass</span><Seg label="Glass" value={spec.glassType} opts={[['standard', 'Float'], ['lowiron', 'Low-iron']]} onPick={v => edit(s => { s.render.glassType = v; }, true)} /><span /></div>
           <div class="row"><span class="lbl">Thickness</span>
             <select class="select" aria-label="Glass thickness" value={spec.glass === 'auto' ? 'auto' : String(spec.glass)} onChange={e => edit(s => setGlass(s, (e.target as HTMLSelectElement).value))}>
               <option value="auto">Typical for the height ({glassText(customGlass('auto', T, spec.rim), u)})</option>
-              {[...new Set([...stock, ...(spec.glass === 'auto' ? [] : [spec.glass])])].sort((a, b) => a - b).map(t => <option value={String(t)}>{glassOption(t, u)}</option>)}
+              <GlassOptions u={u} extras={spec.glass === 'auto' ? [] : [spec.glass]} />
             </select><span /></div>
           <div class="row"><span class="lbl">Rim</span><Seg label="Rim" value={spec.rim ? 'y' : 'n'} opts={[['y', 'Rimmed'], ['n', 'Rimless']]} onPick={v => edit(s => setRim(s, v === 'y'))} /><span /></div>
+          <EdgeRows spec={spec} setEdges={e => setSpec(sp => ({ ...sp, edges: e }))} glassMm={gNow} />
         </Group>
         <GlassGroup solve={solve} setSolve={setSolve} sin={sin} setSin={setSin} level={level} setLevel={setLevel} T={T} loadCell={loadCell} openWide={() => setWide(true)} panel={panel} choice={choice} setChoice={setChoice} locks={locks} setLocks={setLocks} onOptimize={optimize} busy={busy} optLine={opt && opt.key === key() ? opt.text : ''} setBrace={setBrace} rim={spec.rim} u={u} glassNow={gNow} build={!!spec.glassBuild} open={open.solver} onToggle={fold('solver')}
           onUse={() => panel?.use && setSpec({ ...spec, glass: panel.use.glass, glassBuild: panel.use.build })} />
@@ -259,7 +263,7 @@ function GlassGroup({ solve, setSolve, sin, setSin, level, setLevel, T, loadCell
         {solve !== 'glass' ? null : <>
         <Seg label="Thickness" value={choice.mode} opts={[['uniform', 'One thickness'], ['perPane', 'Per pane']]} onPick={m => setChoice({ ...choice, mode: m })} />
         {!rim ? <Seg label="Brace" value={panel ? (panel.braceNow ? ((panel.braceNow.cross ?? 0) > 0 ? 'cross' : 'perimeter') : 'none') : choice.brace} opts={[['none', 'No brace'], ['perimeter', 'Perimeter'], ['cross', 'Perimeter + cross']]} onPick={b => setChoice({ ...choice, brace: b, custom: undefined })} /> : null}
-        {!rim && panel ? <BraceFields b={panel.braceNow} u={u} locks={locks} setLocks={setLocks} setBrace={setBrace} onOptimize={onOptimize} busy={busy} optLine={optLine} note={panel.braceNote} stock={stockAll(u)} /> : null}
+        {!rim && panel ? <BraceFields b={panel.braceNow} u={u} locks={locks} setLocks={setLocks} setBrace={setBrace} onOptimize={onOptimize} busy={busy} optLine={optLine} note={panel.braceNote} /> : null}
         {!panel ? <div class="hint">Working out the glass…</div> : <>
           <div class="hint">{panel.topLine}</div>
           {!rim && panel.braces.length ? <table class="gtable" aria-label="Brace options">
@@ -284,12 +288,27 @@ function GlassGroup({ solve, setSolve, sin, setSin, level, setLevel, T, loadCell
   );
 }
 
+/** Edge finish (GS3): one choice for every edge, or per pane group. Recorded with the tank; the glass check does not change with it. */
+function EdgeRows({ spec, setEdges, glassMm }: { spec: CustomTankSpec; setEdges: (e: EdgeSpec) => void; glassMm: number }) {
+  const e = edgesOf(spec.edges, spec.rim), all = sameEdge(e), [per, setPer] = useState(all == null);
+  const warns = edgeWarnings(e, glassMm, spec.rim);
+  return <>
+    <div class="row"><span class="lbl">Edges</span><Seg label="Edge finish" value={(all ?? '') as EdgeFinish} opts={EDGE_OPTS} onPick={f => setEdges({ front: f, ends: f, bottom: f })} /><span /></div>
+    {all ? <div class="hint">{EDGE_HELP[all]}.</div> : null}
+    <button type="button" class="btn sm" aria-expanded={per} onClick={() => setPer(!per)}>{per ? 'One finish for all' : 'Set per pane'}</button>
+    {per ? EDGE_PANES.map(([k, label]) => <div class="row"><span class="lbl">{label}</span>
+      <select class="select" aria-label={`${label} edge finish`} value={e[k]} onChange={ev => setEdges({ ...e, [k]: (ev.target as HTMLSelectElement).value as EdgeFinish })}>{EDGE_OPTS.map(([v, t]) => <option value={v}>{t}</option>)}</select><span /></div>) : null}
+    {warns.map(w => <div class="dwarn warn">{w}</div>)}
+    <div class="hint">Edge finish is recorded with the tank and goes on the quote to the glass shop. It does not change the safety factor: there is no independent strength data for raw, ground, polished and beveled edges on annealed glass.</div>
+  </>;
+}
+
 type BraceField = 'width' | 'thickness' | 'cross' | 'crossWidth';
 
 /** The brace fields (lane CT1): widths, strip thickness and cross count, each lockable, and the Optimize button. */
-function BraceFields({ b, u, locks, setLocks, setBrace, onOptimize, busy, optLine, note, stock }: {
+function BraceFields({ b, u, locks, setLocks, setBrace, onOptimize, busy, optLine, note }: {
   b: BraceSpec | null; u: Units; locks: Record<BraceField, boolean>; setLocks: (l: Record<BraceField, boolean>) => void; setBrace: (b: BraceSpec) => void;
-  onOptimize: () => void; busy: boolean; optLine: string; note: string; stock: number[];
+  onOptimize: () => void; busy: boolean; optLine: string; note: string;
 }) {
   const cur = b ?? startBrace(u), cross = cur.cross ?? 0, cw = cur.crossWidth ?? cur.width;
   const conv = u === 'in' ? IN_MM : 10, unit = u === 'in' ? 'in' : 'cm', step = u === 'in' ? 0.25 : 0.5;
@@ -302,7 +321,7 @@ function BraceFields({ b, u, locks, setLocks, setBrace, onOptimize, busy, optLin
       {num('width', cur.width, 'Perimeter width')}
       <div class="row"><span class="lbl">Strip thickness</span>
         <select class="select" aria-label="Brace strip thickness" value={String(cur.thickness)} onChange={e => setBrace({ ...cur, thickness: +(e.target as HTMLSelectElement).value })}>
-          {[...new Set([...stock, cur.thickness])].sort((x, y) => x - y).map(t => <option value={String(t)}>{glassOption(t, u)}</option>)}
+          <GlassOptions u={u} extras={[cur.thickness]} />
         </select>{lock('thickness')}</div>
       <div class="row"><span class="lbl">Cross braces</span>
         <select class="select" aria-label="Number of cross braces" value={String(cross)} onChange={e => setBrace({ ...cur, cross: +(e.target as HTMLSelectElement).value })}>

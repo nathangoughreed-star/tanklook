@@ -3,7 +3,7 @@
 //   npx vite build && npx vite preview --port 6333 --strictPort   (another shell), then
 import { spawn } from 'node:child_process';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe', BASE = process.env.URL ?? 'http://localhost:5175/', PORT = 9473, OUT = 'research/screens/GS2';
+const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe', BASE = process.env.URL ?? 'http://localhost:5175/', PORT = 9473, OUT = process.env.OUT ?? 'research/screens/GS2';
 mkdirSync(OUT, { recursive: true });
 const ch = spawn(CHROME, ['--headless=new', `--remote-debugging-port=${PORT}`, '--window-size=1600,900', '--user-data-dir=' + (process.env.TEMP + '/gs2-chrome-' + Date.now()), '--no-first-run', '--enable-unsafe-swiftshader', '--use-angle=swiftshader'], { stdio: 'ignore' });
 const sleep = ms => new Promise(r => setTimeout(r, ms));

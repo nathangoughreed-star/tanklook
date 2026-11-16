@@ -10,7 +10,7 @@ import { dockGroups, optKey, previewSetup, rangeText, isBundle, type DockOpt } f
 import { applyTankPick } from '../../ui/tankPick';
 import { applyTankEdit, flatEnds } from '../../scene/tankEdit';
 import { customGlass } from '../../scene/autoGlass';
-import { SHOP_NAME_US, SHOP_NAME_METRIC, STOCK_METRIC, type BraceSpec } from '../../scene/glassSolver';
+import { GLASS_SIZES, STOCK_METRIC, type BraceSpec } from '../../scene/glassSolver';
 import { autoName, setRenderBrace, refOf, specOfSetup, newerVersion, libraryLost, type CustomTank, type CustomTankSpec } from '../../scene/customTanks';
 import { productOf, productName, locksOf as kitLocks } from '../../scene/integrated';
 import { isLocked } from '../../scene/locks';
@@ -52,11 +52,11 @@ export function glassText(mm: number, u: Units): string {
   return near != null ? `${near} mm` : Math.abs(mm - Math.round(mm)) < 0.15 ? `${Math.round(mm)} mm` : `${+mm.toFixed(1)} mm`;
 }
 
-/** Picker label: the size plus the shop's name for it where there is one ("1/8 in (double strength)"). */
+/** Picker label: the size with both names ("1/8 in (3 mm), double strength"); a value that is on neither list is just written out. */
 export function glassOption(mm: number, u: Units): string {
-  const us = Math.abs(mm / IN * 32 - Math.round(mm / IN * 32)) < 0.16 && !STOCK_METRIC.some(t => Math.abs(t - mm) < 0.01);
-  const name = us ? SHOP_NAME_US[Math.round(mm / IN * 32)] : SHOP_NAME_METRIC[Math.round(mm)];
-  return name ? `${glassText(mm, u)} (${name})` : glassText(mm, u);
+  const g = GLASS_SIZES.find(x => Math.abs(x.us - mm) < 0.02 || Math.abs(x.metric - mm) < 0.02);
+  if (!g) return glassText(mm, u);
+  return `${u === 'in' ? `${g.usLabel} in (${g.mmLabel})` : `${g.mmLabel} (${g.usLabel} in)`}${g.name ? `, ${g.name}` : ''}`;
 }
 
 /** The shape words of the new shell. Box / Corner / Round up front; Bow and the rarer shapes under More (Nathan 2026-11-13: few people

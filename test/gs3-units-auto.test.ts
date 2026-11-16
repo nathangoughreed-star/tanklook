@@ -1,7 +1,7 @@
 // GS3 (2026-11-16; Nathan via C25): both unit systems' glass sizes are always selectable, defaults and solver answers follow the unit setting,
 // and a CUSTOM tank's 'auto' glass is solved (W13): rimless draws thicker than rimmed, commercial / other tanks keep the height table.
 import { afterEach, describe, expect, it } from 'vitest';
-import { IN_MM, STOCK_METRIC, STOCK_US, stockAll, solveGlass } from '../src/scene/glassSolver';
+import { GLASS_SIZES, IN_MM, STOCK_METRIC, STOCK_US, glassChoices, stockAll, solveGlass } from '../src/scene/glassSolver';
 import { customGlass, solvedGlass } from '../src/scene/autoGlass';
 import { glassThickness, setGlassUnits, IN } from '../src/scene/physics';
 import { glassOption, glassText } from '../src/shell/logic/tank';
@@ -23,7 +23,7 @@ describe('GS3 both unit systems are always on the list', () => {
     for (const u of ['in', 'cm'] as const) {
       expect(glassText(4, u)).toBe('4 mm'); expect(glassText(1 / 8 * IN_MM, u)).toBe('1/8 in'); expect(glassText(10, u)).toBe('10 mm'); expect(glassText(3 / 8 * IN_MM, u)).toBe('3/8 in'); expect(glassText(5, u)).toBe('5 mm');
     }
-    expect(glassOption(4, 'in')).toBe('4 mm'); expect(glassOption(1 / 8 * IN_MM, 'cm')).toBe('1/8 in (double strength)'); expect(glassOption(3, 'in')).toBe('3 mm (double strength)');
+    expect(glassOption(4, 'in')).toBe('5/32 in (4 mm)'); expect(glassOption(1 / 8 * IN_MM, 'cm')).toBe('3 mm (1/8 in), double strength'); expect(glassOption(3, 'in')).toBe('1/8 in (3 mm), double strength');
   });
 });
 
@@ -59,5 +59,20 @@ describe('GS3 W13: a custom tank draws the solver glass', () => {
     const bowl = { L: 300, D: 300, H: 300, shape: 'bowl' } as unknown as Tank;
     expect(solvedGlass(bowl, true, 'in')).toBeNull();
     expect(customGlass('auto', bowl, true, 'in')).toBe(glassThickness(bowl, 'auto'));
+  });
+});
+
+describe('GS3 one tiered list with both names (Nathan: all readily available sizes)', () => {
+  it('every size once, grouped by where it is sold, 5/16 / 5/8 / 1 in special order, values in the unit setting', () => {
+    for (const u of ['in', 'cm'] as const) {
+      const g = glassChoices(u), flat = g.flatMap(x => x.items);
+      expect(flat.length).toBe(11);
+      expect(g.map(x => x.tier)).toEqual(['hardware', 'shop', 'special']);
+      expect(g[0].items.length).toBe(2); expect(g[2].items.length).toBe(3);
+      expect(flat.map(i => i.mm).every(v => (u === 'in' ? STOCK_US : STOCK_METRIC).some(t => Math.abs(t - v) < 1e-9))).toBe(true);
+    }
+    expect(glassChoices('in')[0].items.map(i => i.label)).toEqual(['3/32 in (2.5 mm), single strength', '1/8 in (3 mm), double strength']);
+    expect(glassChoices('cm')[1].items.some(i => i.label === '6 mm (1/4 in)')).toBe(true);
+    expect(GLASS_SIZES.filter(g => g.tier === 'special').map(g => g.usLabel)).toEqual(['5/16', '5/8', '1']);
   });
 });

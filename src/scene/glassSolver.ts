@@ -32,9 +32,9 @@ export const GAMMA_FRESH = 9.81e-6, GAMMA_SALT = 1.025 * 9.81e-6;
  * Sources: General Glass standard inventory list (clear float 3/32, 1/8, 3/16, 1/4, 3/8); Glaztech flat glass availability (3/32 = 2.5 mm, 1/8 = 3 mm,
  * 5/32 = 4 mm, 3/16 = 5 mm, 1/4 = 6 mm; heavy float 3/8, 1/2, 3/4); Woodsmith "Choosing the right glass" (3/32 up to 1 in); Guardian retail SSB 3/32 / DSB 1/8.
  * 5/16 (8 mm) is in NO distributor list found: it is a special order at most shops, so it stays selectable but is labelled "special order".
- * 5/8 and 1 in are heavy plate usually quoted per job; kept as before. Metric: 2, 3, 4, 5, 6, 8, 10, 12, 15, 19, 25 mm (ISO / EN 572 float).
+ * 5/8 and 1 in are heavy plate usually quoted per job; kept as before. Metric: 2.5, 3, 4, 5, 6, 8, 10, 12, 15, 19, 25 mm (Glaztech lists 3/32 = 2.5 mm).
  */
-export const STOCK_METRIC = [2, 3, 4, 5, 6, 8, 10, 12, 15, 19, 25];
+export const STOCK_METRIC = [2.5, 3, 4, 5, 6, 8, 10, 12, 15, 19, 25];
 export const STOCK_US = [3 / 32, 1 / 8, 5 / 32, 3 / 16, 1 / 4, 5 / 16, 3 / 8, 1 / 2, 5 / 8, 3 / 4, 1].map(t => t * IN_MM);
 /** What the solver, Optimize and the strips choose from: stocked sizes only. 5/16 stays in STOCK_US (selectable by hand, "special order") but is never picked
  *  (C24, R94). Every metric size is a standard EN 572 float thickness, so STOCK_METRIC is used whole. */
@@ -47,9 +47,27 @@ export function stockAll(u: 'in' | 'cm'): number[] {
   return [...own, ...other.filter(o => !own.some(t => Math.abs(t - o) < 0.01))].sort((a, b) => a - b);
 }
 const US_LABEL = ['3/32"', '1/8"', '5/32"', '3/16"', '1/4"', '5/16"', '3/8"', '1/2"', '5/8"', '3/4"', '1"'];
+const US_LABEL_IN = ['3/32', '1/8', '5/32', '3/16', '1/4', '5/16', '3/8', '1/2', '5/8', '3/4', '1'];
 /** Shop names for the pickers (US inches, by 1/32 in; metric by whole mm). */
 export const SHOP_NAME_US: Record<number, string> = { 3: 'single strength', 4: 'double strength', 10: 'special order' };
 export const SHOP_NAME_METRIC: Record<number, string> = { 2: 'single strength', 3: 'double strength', 8: 'special order' };
+
+/** Where a size can be bought (Nathan 2026-11-16: "all readily available sizes"). Sources in the STOCK comment above; the big boxes (Home Depot, Lowe's)
+ *  sell 3/32 clear sheet and, at the true-value / do-it-best end, 1/8 double strength; a glass shop or distributor cuts 5/32 to 3/4 (float and heavy float);
+ *  5/16, 5/8 and 1 in are special order. */
+export type StockTier = 'hardware' | 'shop' | 'special';
+export const TIER_LABEL: Record<StockTier, string> = { hardware: "Hardware store (Home Depot, Lowe's)", shop: 'Glass shop, cut to size', special: 'Special order (quote)' };
+/** One real piece of glass with its two names: the US size and the metric twin (same index in STOCK_US / STOCK_METRIC). */
+export interface GlassSize { us: number; metric: number; usLabel: string; mmLabel: string; tier: StockTier; name?: string }
+const TIERS: StockTier[] = ['hardware', 'hardware', 'shop', 'shop', 'shop', 'special', 'shop', 'shop', 'special', 'shop', 'special'];
+export const GLASS_SIZES: GlassSize[] = STOCK_US.map((us, i) => ({ us, metric: STOCK_METRIC[i], usLabel: US_LABEL_IN[i], mmLabel: `${STOCK_METRIC[i]} mm`, tier: TIERS[i], ...(i === 0 ? { name: 'single strength' } : i === 1 ? { name: 'double strength' } : {}) }));
+/** The picker list for a unit setting: each size once, the person's own value (US inches or metric) as its value, grouped by where it is sold. */
+export function glassChoices(u: 'in' | 'cm'): { tier: StockTier; items: { mm: number; label: string }[] }[] {
+  return (['hardware', 'shop', 'special'] as StockTier[]).map(tier => ({ tier, items: GLASS_SIZES.filter(g => g.tier === tier).map(g => ({
+    mm: u === 'in' ? g.us : g.metric,
+    label: `${u === 'in' ? `${g.usLabel} in (${g.mmLabel})` : `${g.mmLabel} (${g.usLabel} in)`}${g.name ? `, ${g.name}` : ''}`,
+  })) }));
+}
 
 /** Display label of a stock thickness. */
 export function thicknessLabel(mm: number): string {
