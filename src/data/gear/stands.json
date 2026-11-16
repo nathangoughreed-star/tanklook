@@ -195,7 +195,7 @@
    ]
   ],
   "heightIn": 30,
-  "priceUsd": 180.0,
+  "priceUsd": 180,
   "seller": "Chewy",
   "url": "https://www.chewy.com/seapora-roman-cabinet-aquarium-stand/dp/1722534",
   "asOf": "2026-11-16",
@@ -387,5 +387,262 @@
    "heightIn"
   ],
   "note": "48.2 x 18.8 in footprint."
+ },
+ {
+  "id": "snughome-10",
+  "brand": "Snughome",
+  "line": "10 gal 3-tier metal stand",
+  "kind": "frame",
+  "finish": "black",
+  "color": "black steel",
+  "fits": [
+   [
+    20,
+    10
+   ]
+  ],
+  "heightIn": 30.91,
+  "priceUsd": 46.89,
+  "seller": "Amazon",
+  "url": "https://www.amazon.com/dp/B0DCGBXJGC",
+  "asOf": "2026-11-16",
+  "est": [],
+  "note": "20.47 x 11.42 x 30.91 in per the Amazon title; 3 tiers. Read from the page 2026-11-16."
+ },
+ {
+  "id": "aqueon-metal-10",
+  "brand": "Aqueon",
+  "line": "Metal 10 gal stand",
+  "kind": "frame",
+  "finish": "black",
+  "color": "black or light brown reversible panels",
+  "fits": [
+   [
+    20,
+    10
+   ]
+  ],
+  "heightIn": 28.25,
+  "priceUsd": 89.89,
+  "seller": "Amazon",
+  "url": "https://www.amazon.com/dp/B00SZ5EQN4",
+  "asOf": "2026-11-16",
+  "est": [],
+  "note": "20 x 10 x 28.25 in per the Amazon title; bottom shelf; panels reversible black or light brown."
+ },
+ {
+  "id": "likeem-40",
+  "brand": "Likeem",
+  "line": "40 gal metal stand",
+  "kind": "frame",
+  "finish": "black",
+  "color": "black steel",
+  "fits": [
+   [
+    36,
+    18
+   ]
+  ],
+  "heightIn": 29.5,
+  "priceUsd": 69.99,
+  "seller": "Amazon",
+  "url": "https://www.amazon.com/dp/B0BGL671TT",
+  "asOf": "2026-11-16",
+  "est": [],
+  "note": "36.5 x 18.5 x 29.5 in per the Amazon title."
+ },
+ {
+  "id": "imagitarium-brooklyn-10",
+  "brand": "Imagitarium",
+  "line": "Brooklyn metal stand 10 gal",
+  "kind": "frame",
+  "finish": "black",
+  "color": "black steel",
+  "fits": [
+   [
+    20,
+    10
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 69.99,
+  "seller": "Petco",
+  "url": "https://www.petco.com/shop/en/petcostore/product/imagitarium-brooklyn-metal-tank-stand-10-gallons",
+  "asOf": "2026-11-16",
+  "est": [
+   "heightIn",
+   "color"
+  ],
+  "note": "Price read from the Petco category list 2026-11-16 (165 reviews). Petco prints no dimensions: height and colour are estimates; footprint from the 10 gal size named."
+ },
+ {
+  "id": "imagitarium-brooklyn-29",
+  "brand": "Imagitarium",
+  "line": "Brooklyn metal stand 29 gal",
+  "kind": "frame",
+  "finish": "black",
+  "color": "black steel",
+  "fits": [
+   [
+    30,
+    12
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 99.99,
+  "seller": "Petco",
+  "url": "https://www.petco.com/shop/en/petcostore/product/imagitarium-brooklyn-metal-tank-stand-29-gallons",
+  "asOf": "2026-11-16",
+  "est": [
+   "heightIn",
+   "color"
+  ],
+  "note": "Price read from the Petco category list 2026-11-16 (516 reviews; Amazon lists the same stand at $174.99). Dimensions not printed: height and colour estimated; footprint from the 29 gal size named."
+ },
+ {
+  "id": "imagitarium-brooklyn-40",
+  "brand": "Imagitarium",
+  "line": "Brooklyn metal stand 40 gal breeder",
+  "kind": "frame",
+  "finish": "black",
+  "color": "black steel",
+  "fits": [
+   [
+    36,
+    18
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 119.99,
+  "seller": "Petco",
+  "url": "https://www.petco.com/shop/en/petcostore/product/imagitarium-brooklyn-metal-tank-stand-40-gallons",
+  "asOf": "2026-11-16",
+  "est": [
+   "heightIn",
+   "color"
+  ],
+  "note": "Petco product page 2026-11-16: 660 lb limit, 32.15 lb, 835 reviews; a reviewer says it fits a 40 breeder. Dimensions not printed: height and colour estimated."
+ },
+ {
+  "id": "imagitarium-brooklyn-55",
+  "brand": "Imagitarium",
+  "line": "Brooklyn metal stand 55 gal",
+  "kind": "frame",
+  "finish": "black",
+  "color": "black steel",
+  "fits": [
+   [
+    48,
+    13
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 129.99,
+  "seller": "Petco",
+  "url": "https://www.petco.com/shop/en/petcostore/product/imagitarium-brooklyn-metal-tank-stand-55-gallons",
+  "asOf": "2026-11-16",
+  "est": [
+   "heightIn",
+   "color"
+  ],
+  "note": "Price read from the Petco category list 2026-11-16 (454 reviews). Dimensions not printed: height and colour estimated; footprint from the 55 gal size named."
+ },
+ {
+  "id": "imagitarium-winston-29",
+  "brand": "Imagitarium",
+  "line": "Preferred Winston stand 29 gal",
+  "kind": "cabinet",
+  "finish": "black",
+  "color": "not read",
+  "fits": [
+   [
+    30,
+    12
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 112.49,
+  "seller": "Petco",
+  "url": "https://www.petco.com/shop/en/petcostore/product/imagitarium-preferred-winston-tank-stand-29-gallons",
+  "asOf": "2026-11-16",
+  "est": [
+   "heightIn",
+   "kind",
+   "color"
+  ],
+  "note": "Petco clearance $112.49 (was $149.99) 2026-11-16, 207 reviews. Style, colour and height not read from the page."
+ },
+ {
+  "id": "tetra-wood-5-10",
+  "brand": "Tetra",
+  "line": "Water-resistant wood stand 5 to 10 gal",
+  "kind": "cabinet",
+  "finish": "white",
+  "color": "white",
+  "fits": [
+   [
+    20,
+    10
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 129.99,
+  "seller": "Chewy",
+  "url": "https://www.chewy.com/tetra-water-resistant-wood-fish-tank/dp/4520742",
+  "asOf": "2026-11-16",
+  "est": [
+   "heightIn",
+   "kind"
+  ],
+  "note": "Chewy list price 2026-11-16; Chewy prints no dimensions. Footprint from the 10 gal size named."
+ },
+ {
+  "id": "caitec-titaneze-10",
+  "brand": "Caitec",
+  "line": "Titaneze stand 10 gal",
+  "kind": "frame",
+  "finish": "black",
+  "color": "black",
+  "fits": [
+   [
+    20,
+    10
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 74.99,
+  "seller": "Chewy",
+  "url": "https://www.chewy.com/caitec-tank-fish-stand-black-10-gal-1/dp/785374",
+  "asOf": "2026-11-16",
+  "est": [
+   "heightIn",
+   "kind"
+  ],
+  "note": "Chewy $74.99 (list $106.99), 30 reviews, 2026-11-16; seven sizes sold, this is the 10 gal. No dimensions printed."
+ },
+ {
+  "id": "helloreef-15",
+  "brand": "HelloReef",
+  "line": "15 gal stand",
+  "kind": "cabinet",
+  "finish": "black",
+  "color": "black",
+  "fits": [
+   [
+    24,
+    12
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 176.14,
+  "seller": "Chewy",
+  "url": "https://www.chewy.com/helloreef-aquarium-stand-15-gal-black/dp/1642134",
+  "asOf": "2026-11-16",
+  "est": [
+   "heightIn",
+   "kind",
+   "fits"
+  ],
+  "note": "Chewy 2026-11-16: black $176.14, white $13.27/gal; custom fit to the HelloReef 15 gal tank, whose footprint is not printed (24 x 12 assumed), with a cord cutout and compartments."
  }
 ]
