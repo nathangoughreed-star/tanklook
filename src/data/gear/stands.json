@@ -445,14 +445,14 @@
    ]
   ],
   "heightIn": 30,
-  "priceUsd": 169.99,
+  "priceUsd": 185.99,
   "seller": "That Pet Place",
   "url": "https://www.thatpetplace.com/empress-cabinet-stand-black-48-in-x-12-in",
   "asOf": "2026-11-16",
   "est": [
    "heightIn"
   ],
-  "note": "Height not confirmed.",
+  "note": "Height not confirmed. Was $169.99 (That Pet Place); TPP sale $185.99 (list $204.59) 2026-11-16; Chewy $197.00.",
   "look": {
    "front": "#222527",
    "top": "#1f2224",
@@ -523,14 +523,14 @@
    ]
   ],
   "heightIn": 30,
-  "priceUsd": 224.99,
+  "priceUsd": 239.99,
   "seller": "That Pet Place",
   "url": "https://www.thatpetplace.com/empress-cabinet-stand-black-48-in-x-18-in",
   "asOf": "2026-11-16",
   "est": [
    "heightIn"
   ],
-  "note": "In-store pickup only; a reviewer calls it flimsy.",
+  "note": "In-store pickup only; a reviewer calls it flimsy. Was $224.99 (That Pet Place); TPP sale $239.99 (list $263.99) 2026-11-16.",
   "look": {
    "front": "#1c2120",
    "top": "#1a1f1e",
@@ -1004,5 +1004,215 @@
    "overhangMm": 6
   },
   "hidden": true
+ },
+ {
+  "id": "seapora-empress-24x12",
+  "brand": "Seapora",
+  "line": "Empress cabinet stand 24 x 12",
+  "kind": "cabinet",
+  "finish": "black",
+  "color": "black",
+  "fits": [
+   [
+    24,
+    12
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 129.99,
+  "seller": "That Pet Place",
+  "url": "https://www.thatpetplace.com/empress-cabinet-stand-black-24-x-12",
+  "asOf": "2026-11-16",
+  "est": [
+   "heightIn"
+  ],
+  "note": "TPP list $142.99, sale $129.99. Height not printed (30 in assumed like the other Empress stands). Fills the 15 / 20 high gap."
+ },
+ {
+  "id": "seapora-empress-30x12",
+  "brand": "Seapora",
+  "line": "Empress cabinet stand 30 x 12",
+  "kind": "cabinet",
+  "finish": "black",
+  "color": "black",
+  "fits": [
+   [
+    30,
+    12
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 139.99,
+  "seller": "That Pet Place",
+  "url": "https://www.thatpetplace.com/empress-cabinet-stand-black-30-x-12",
+  "asOf": "2026-11-16",
+  "est": [
+   "heightIn"
+  ],
+  "note": "TPP list $153.99, sale $139.99. Height not printed."
+ },
+ {
+  "id": "seapora-monarch-oak-30x12",
+  "brand": "Seapora",
+  "line": "Monarch cabinet stand oak 30 x 12",
+  "kind": "cabinet",
+  "finish": "oak",
+  "color": "oak",
+  "fits": [
+   [
+    30,
+    12
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 185.99,
+  "seller": "That Pet Place",
+  "url": "https://www.thatpetplace.com/seapora-monarch-cabinet-stand-oak-30x12-in",
+  "asOf": "2026-11-16",
+  "est": [
+   "heightIn"
+  ],
+  "note": "TPP list $204.59, sale $185.99. Height not printed."
+ },
+ {
+  "id": "seapora-empress-36x18",
+  "brand": "Seapora",
+  "line": "Empress cabinet stand 36 x 18",
+  "kind": "cabinet",
+  "finish": "black",
+  "color": "black",
+  "fits": [
+   [
+    36,
+    18
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 205.99,
+  "seller": "That Pet Place",
+  "url": "https://www.thatpetplace.com/seapora-empress-cabinet-stand-black-36x18-in",
+  "asOf": "2026-11-16",
+  "est": [
+   "heightIn"
+  ],
+  "note": "TPP list $226.59, sale $205.99. Height not printed."
+ },
+ {
+  "id": "aquatop-forza-21",
+  "brand": "Aquatop",
+  "line": "Forza open cabinet 21 x 10",
+  "kind": "cabinet",
+  "finish": "black",
+  "color": "black",
+  "fits": [
+   [
+    20,
+    10
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 120.99,
+  "seller": "That Pet Place",
+  "url": "https://www.thatpetplace.com/aquatop-forza-aquarium-stand-21x10x30-in",
+  "asOf": "2026-11-16",
+  "est": [
+   "kind"
+  ],
+  "note": "21 x 10 x 30 in per the TPP title (Chewy lists the Forza Premier as an open cabinet, out of stock there). Style from Chewy, not confirmed on TPP."
+ },
+ {
+  "id": "aquatop-forza-30",
+  "brand": "Aquatop",
+  "line": "Forza stand 30 x 13",
+  "kind": "cabinet",
+  "finish": "black",
+  "color": "black",
+  "fits": [
+   [
+    30,
+    12
+   ]
+  ],
+  "heightIn": 31,
+  "priceUsd": 209.99,
+  "seller": "That Pet Place",
+  "url": "https://www.thatpetplace.com/aquatop-forza-aquarium-stand-30x13x31-in",
+  "asOf": "2026-11-16",
+  "est": [
+   "kind"
+  ],
+  "note": "30 x 13 x 31 in per the TPP title. Style not confirmed."
+ },
+ {
+  "id": "aquatlantis-platinum-36",
+  "brand": "Aquatlantis",
+  "line": "Platinum stand 36 x 18",
+  "kind": "cabinet",
+  "finish": "black",
+  "color": "not read",
+  "fits": [
+   [
+    36,
+    18
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 349.99,
+  "seller": "That Pet Place",
+  "url": "https://www.thatpetplace.com/aquatlantis-platinum-stand-36x18-in",
+  "asOf": "2026-11-16",
+  "est": [
+   "heightIn",
+   "kind",
+   "finish",
+   "color"
+  ],
+  "note": "TPP list $384.99, sale $349.99. Only the footprint is printed."
+ },
+ {
+  "id": "vibrant-life-walnut-20",
+  "brand": "Vibrant Life",
+  "line": "Aquarium stand, warm walnut, up to 20 gal",
+  "kind": "cabinet",
+  "finish": "oak",
+  "color": "warm walnut finish",
+  "fits": [
+   [
+    24,
+    12
+   ]
+  ],
+  "heightIn": 28.03,
+  "priceUsd": 61,
+  "seller": "Walmart",
+  "url": "https://www.walmart.com/ip/Vibrant-Life-Aquarium-Stand-Warm-Walnut-Finish-25-75-L-x-14-76-W-x-28-03-H/15259816883",
+  "asOf": "2026-11-16",
+  "est": [
+   "kind"
+  ],
+  "note": "25.75 x 14.76 x 28.03 in, \"for up to 20 gallon tanks\" (Walmart house brand); a 25.75 in top only carries the 24 x 12 (20 high). Open or closed style not read."
+ },
+ {
+  "id": "vibrant-life-black-29",
+  "brand": "Vibrant Life",
+  "line": "Aquarium stand, black, up to 29 gal",
+  "kind": "cabinet",
+  "finish": "black",
+  "color": "black",
+  "fits": [
+   [
+    30,
+    12
+   ]
+  ],
+  "heightIn": 27.75,
+  "priceUsd": 99,
+  "seller": "Walmart",
+  "url": "https://www.walmart.com/ip/Vibrant-Life-Aquarium-Stand-Black-14-5-L-x-31-W-x-27-75-H/15394202241",
+  "asOf": "2026-11-16",
+  "est": [
+   "kind"
+  ],
+  "note": "31 x 14.5 x 27.75 in, \"for up to 29 gallon tanks\" (Walmart house brand). Price from the Walmart search list. Style not read."
  }
 ]
