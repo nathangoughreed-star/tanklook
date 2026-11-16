@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PV1 mockup 1: HOB planted 20 long</title><style>
+:root{--bg-app:#14181f;--bg-panel:#1b2029;--bg-raised:#242a35;--bg-hover:#2c3340;--bg-sunken:#11151b;--line:#2f3644;--text:#e8ebf1;--text-2:#a4adbd;--text-3:#6e7789;--accent:#4f8cff;--accent-weak:#4f8cff26;--ok:#3fb68b;--warn:#e3a33a;--bad:#e5565b;--ok-weak:#3fb68b22;--warn-weak:#e3a33a26;--glass:rgba(20,24,31,.86);
+--font:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;--fs-xs:11px;--fs-sm:12px;--fs-md:13px;--s1:4px;--s2:8px;--s3:12px;--s4:16px;--ctl-h-sm:24px;--rail-w:64px;--header-h:48px;--r-ctl:6px;--r-pill:999px}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{background:var(--bg-app);color:var(--text);font:var(--fs-md)/1.4 var(--font);overflow:hidden}
+button{font:inherit;color:inherit}
+.app{display:grid;height:100vh;grid-template-columns:var(--rail-w) minmax(0,1fr);grid-template-rows:var(--header-h) minmax(0,1fr);grid-template-areas:"head head" "rail view"}
+.head{grid-area:head;display:flex;align-items:center;gap:var(--s2);padding:0 var(--s4);background:var(--bg-panel);border-bottom:1px solid var(--line)}
+.brand{font-weight:700;letter-spacing:.02em;margin-right:var(--s3)}.pname{color:var(--text-2)}.grow{flex:1}
+.btn{height:var(--ctl-h-sm);padding:0 var(--s2);font-size:var(--fs-sm);border-radius:var(--r-ctl);border:1px solid var(--line);background:var(--bg-raised);display:inline-flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap}
+.btn:hover{background:var(--bg-hover)}.btn.on{border-color:var(--accent);background:var(--accent-weak)}.btn.ghost{background:transparent;border-color:transparent;color:var(--text-2)}
+.pill{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:var(--r-pill);font-size:var(--fs-xs);font-weight:600}
+.pill.ok{background:var(--ok-weak);color:var(--ok)}.pill.warn{background:var(--warn-weak);color:var(--warn)}
+.check{display:inline-flex;align-items:center;gap:8px;padding:0 10px;height:var(--ctl-h-sm);border-radius:var(--r-ctl);background:var(--bg-raised);border:1px solid var(--line);font-size:var(--fs-sm);font-weight:600}
+.rail{grid-area:rail;background:var(--bg-panel);border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding:var(--s2) 0;gap:2px}
+.ritem{width:56px;padding:6px 0;display:grid;justify-items:center;gap:3px;font-size:10.5px;color:var(--text-2);border-radius:8px}
+.ritem i,.tabbar i{width:20px;height:20px;border:1.6px solid currentColor;border-radius:5px;opacity:.8}.ritem.sep{margin-top:10px}
+.view{grid-area:view;position:relative;overflow:hidden;background:radial-gradient(1200px 700px at 50% 40%,#1a2029 0,#12161c 100%)}
+.glass{background:var(--glass);border:1px solid var(--line);border-radius:var(--r-ctl);backdrop-filter:blur(6px)}
+.seg{display:inline-flex;background:var(--bg-sunken);border:1px solid var(--line);border-radius:var(--r-ctl);padding:2px;gap:2px}
+.seg button{height:24px;padding:0 var(--s3);border:0;border-radius:4px;background:transparent;color:var(--text-2);cursor:pointer;font-size:var(--fs-sm)}
+.seg button.on{background:var(--bg-hover);color:var(--text);font-weight:600;box-shadow:inset 0 0 0 1px var(--accent)}
+.vtop{position:absolute;top:var(--s3);left:var(--s3);right:var(--s3);display:flex;gap:var(--s2);align-items:flex-start;flex-wrap:wrap;z-index:3}
+.chips{display:flex;gap:var(--s2);flex-wrap:wrap;margin-left:auto;justify-content:flex-end}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:4px 10px;font-size:var(--fs-sm);color:var(--text-2)}.chip b{color:var(--text);font-weight:600}
+.vbot{position:absolute;left:var(--s3);right:var(--s3);bottom:var(--s3);display:flex;justify-content:space-between;align-items:flex-end;gap:var(--s2);z-index:3;flex-wrap:wrap}
+.legend{display:flex;gap:6px 14px;flex-wrap:wrap;padding:6px 10px;font-size:var(--fs-sm);color:var(--text-2);max-width:780px}
+.legend span{display:inline-flex;align-items:center;gap:6px}.legend u{display:inline-block;width:22px;height:0;border-top:3px dashed;text-decoration:none}.legend u.dot{border-top-style:dotted;border-top-width:4px}
+.ctl{display:flex;gap:var(--s2)}
+svg.diag{position:absolute;inset:0;width:100%;height:100%;padding:56px 8px 64px}
+.box{fill:var(--bg-raised);stroke:var(--line);stroke-width:1.2}.box.dash{fill:none;stroke-dasharray:5 4;stroke:var(--text-3)}
+.t1{font:600 13px var(--font);fill:var(--text)}.t2{font:11.5px var(--font);fill:var(--text-2)}.t3{font:11px var(--font);fill:var(--text-3)}
+.tg{font:600 11.5px var(--font);fill:#34d57f}.th{font:600 11.5px var(--font);fill:#ff5b52}.tc{font:600 11.5px var(--font);fill:#47a3ff}.td{font:600 11.5px var(--font);fill:#8aa3c3}
+.glassw{fill:none;stroke:#3fb68b;stroke-opacity:.75;stroke-width:2.5}.plant{fill:none;stroke:#5f8a52;stroke-width:3;stroke-linecap:round}
+.sub{fill:#8e7b58;opacity:.8}.stand{fill:#1c212b;stroke:var(--line)}
+.trk{fill:none;opacity:.2;stroke-linecap:round;stroke-linejoin:round}
+.flow{fill:none;stroke-dasharray:7 7;stroke-linejoin:round;animation:dash 1.2s linear infinite}
+.flow.dots{stroke-dasharray:.1 14;stroke-linecap:round}
+@keyframes dash{from{stroke-dashoffset:var(--o,0px)}to{stroke-dashoffset:calc(var(--o,0px) - 14px)}}
+.faint{opacity:.5}
+.loss{display:none}body.losses .loss{display:inline}
+body.paused .flow{animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){.flow{animation:none}}
+.tabbar{display:none}.port{display:none}
+@media (max-width:699px){
+ .app{grid-template-columns:1fr;grid-template-rows:var(--header-h) minmax(0,1fr) 60px;grid-template-areas:"head" "view" "tabs"}
+ .rail,.brand,.pname,.lbl,.ok-l{display:none}.head{padding:0 var(--s2)}
+ .tabbar{grid-area:tabs;display:grid;grid-template-columns:repeat(5,1fr);background:var(--bg-panel);border-top:1px solid var(--line)}
+ .tabbar div{display:grid;justify-items:center;align-content:center;gap:2px;font-size:10.5px;color:var(--text-2)}
+ .vtop{top:var(--s2);left:var(--s2);right:var(--s2)}.chips{margin-left:0;justify-content:flex-start}.chip{font-size:11px;padding:3px 8px}
+ .vbot{left:var(--s2);right:var(--s2);bottom:var(--s2)}.legend{font-size:11px;gap:4px 10px;padding:5px 8px}
+ .hasport{display:none}.port{display:block}
+ svg.diag{padding:108px 2px 112px}
+}</style></head>
+<body>
+<div class="app">
+ <header class="head"><span class="brand">TankLook</span><span class="pname">Planted 20 long</span><span class="grow"></span>
+  <span class="check"><span class="ok-l">Habitat check</span><span class="pill ok">Compatible</span></span><span class="grow"></span>
+  <button class="btn" type="button">◐ <span class="lbl">View ▾</span></button><button class="btn ghost" type="button">↶</button><button class="btn ghost" type="button">↷</button><button class="btn" type="button">Save</button></header>
+ <nav class="rail" aria-label="Sections"><div class="ritem"><i></i>Tank</div><div class="ritem"><i></i>Scape</div><div class="ritem"><i></i>Plants</div><div class="ritem"><i></i>Animals</div><div class="ritem"><i></i>Equipment</div><div class="ritem sep"><i></i>Preferences</div><div class="ritem"><i></i>Constraints</div><div class="ritem sep"><i></i>Discover</div><div class="ritem"><i></i>Print</div></nav>
+ <main class="view">
+  <div class="vtop"><div class="seg glass" role="tablist" aria-label="View"><button type="button" role="tab">Tank</button><button type="button" role="tab" class="on" aria-selected="true">Plumbing</button></div>
+   <div class="chips"><span class="chip glass"><b>Turnover</b> 200 GPH ÷ 18 gal = 11×/hr <span class="pill ok">planted 4–12×</span></span><span class="chip glass"><b>Heater</b> 50 W ≈ 2.8 W/gal <span class="pill ok">ok</span></span></div></div>
+  <svg class="diag" viewBox="0 90 860 450" role="img" aria-label="Plumbing: HOB filter on a 20 gallon long"><defs>
+  <linearGradient id="water" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a6fc0" stop-opacity=".34"/><stop offset="1" stop-color="#1c4c86" stop-opacity=".18"/></linearGradient>
+  <marker id="a-clean" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#47a3ff"/></marker><marker id="a-dirty" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6f88a8"/></marker><marker id="a-co2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#34d57f"/></marker><marker id="a-heat" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#ff5b52"/></marker><marker id="a-cold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6fe0e8"/></marker><marker id="a-waste" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b8935f"/></marker>
+</defs>
+ <rect x="100" y="414" width="600" height="110" rx="4" class="stand"/><line x1="400" y1="414" x2="400" y2="524" stroke="#2f3644"/><text x="112" y="438" class="t3" text-anchor="start">stand</text>
+ <rect x="122" y="222" width="556" height="192" fill="url(#water)"/><rect x="122" y="388" width="556" height="26" class="sub"/>
+ <path d="M470 390 q-9 -29 0 -58 M476 390 q8 -19.333333333333332 2 -40.599999999999994" class="plant"/><path d="M505 390 q9 -39 0 -78 M511 390 q-8 -26 2 -54.599999999999994" class="plant"/><path d="M540 390 q-9 -24 0 -48 M546 390 q8 -16 2 -33.599999999999994" class="plant"/><path d="M575 390 q9 -35 0 -70 M581 390 q-8 -23.333333333333332 2 -49" class="plant"/><path d="M610 390 q-9 -27 0 -54 M616 390 q8 -18 2 -37.8" class="plant"/><path d="M145 390 q-9 -22 0 -44 M151 390 q8 -14.666666666666666 2 -30.799999999999997" class="plant"/><path d="M168 390 q9 -30 0 -60 M174 390 q-8 -20 2 -42" class="plant"/>
+ <path d="M122 222 H678" stroke="#47a3ff" stroke-opacity=".5"/>
+ <rect x="120" y="190" width="560" height="224" rx="3" class="glassw"/>
+ <text x="128" y="182" class="t2" text-anchor="start">30 × 12 × 12 in · 20 gal long (≈ 18 gal net)</text>
+ <g class=""><path d="M665 384 L665 132 Q665 116 683 116 L722 116 L722 154" class="trk" stroke="#6f88a8" stroke-width="9"/><path d="M665 384 L665 132 Q665 116 683 116 L722 116 L722 154" class="flow" stroke="#6f88a8" stroke-width="3" style="--o:0px" marker-end="url(#a-dirty)"/></g>
+ <g><rect x="700" y="104" width="134" height="112" rx="8" class="box"/><text x="710" y="123" class="t1" text-anchor="start">AquaClear 50</text><text x="710" y="139" class="t2" text-anchor="start">200 GPH rated · 9 W</text></g>
+ <rect x="712" y="154" width="110" height="50" rx="4" fill="#11151b" stroke="#2f3644"/><text x="767" y="174" class="t3" text-anchor="middle">sponge · carbon</text><text x="767" y="190" class="t3" text-anchor="middle">bio media</text>
+ <g class=""><path d="M740 196 L612 196 L612 226" class="trk" stroke="#47a3ff" stroke-width="9"/><path d="M740 196 L612 196 L612 226" class="flow" stroke="#47a3ff" stroke-width="3" style="--o:0px" marker-end="url(#a-clean)"/></g>
+ <g class=""><path d="M612 236 Q575 272 480 272 L260 272" class="trk" stroke="#47a3ff" stroke-width="7"/><path d="M612 236 Q575 272 480 272 L260 272" class="flow" stroke="#47a3ff" stroke-width="2.5" style="--o:0px"/></g>
+ <g class=""><path d="M260 272 Q165 272 165 322 Q165 372 240 374 L650 386" class="trk" stroke="#6f88a8" stroke-width="7"/><path d="M260 272 Q165 272 165 322 Q165 372 240 374 L650 386" class="flow" stroke="#6f88a8" stroke-width="2.5" style="--o:0px" marker-end="url(#a-dirty)"/></g>
+ <rect x="300" y="322" width="120" height="12" rx="6" fill="#3a1d1f" stroke="#ff5b52" stroke-width="1.5"/>
+ <g class=""><path d="M330 316 L330 288" class="trk" stroke="#ff5b52" stroke-width="6"/><path d="M330 316 L330 288" class="flow" stroke="#ff5b52" stroke-width="2.5" style="--o:0px" marker-end="url(#a-heat)"/></g><g class=""><path d="M360 316 L360 288" class="trk" stroke="#ff5b52" stroke-width="6"/><path d="M360 316 L360 288" class="flow" stroke="#ff5b52" stroke-width="2.5" style="--o:5px" marker-end="url(#a-heat)"/></g><g class=""><path d="M390 316 L390 288" class="trk" stroke="#ff5b52" stroke-width="6"/><path d="M390 316 L390 288" class="flow" stroke="#ff5b52" stroke-width="2.5" style="--o:10px" marker-end="url(#a-heat)"/></g>
+ <text x="300" y="352" class="th" text-anchor="start">Eheim Jäger 50 W · in tank</text>
+ <text x="560" y="252" class="tc" text-anchor="start">outflow lip</text><text x="640" y="404" class="td" text-anchor="end">intake</text><text x="690" y="150" class="td" text-anchor="end">intake tube</text>
+ <g class="loss faint"><path d="M200 218 L200 190" class="flow" stroke="#ff5b52" stroke-width="2" style="--o:0px" marker-end="url(#a-heat)"/></g><g class="loss faint"><path d="M270 218 L270 190" class="flow" stroke="#ff5b52" stroke-width="2" style="--o:0px" marker-end="url(#a-heat)"/></g><g class="loss faint"><path d="M340 218 L340 190" class="flow" stroke="#ff5b52" stroke-width="2" style="--o:0px" marker-end="url(#a-heat)"/></g><g class="loss faint"><path d="M410 218 L410 190" class="flow" stroke="#ff5b52" stroke-width="2" style="--o:0px" marker-end="url(#a-heat)"/></g><g class="loss faint"><path d="M480 218 L480 190" class="flow" stroke="#ff5b52" stroke-width="2" style="--o:0px" marker-end="url(#a-heat)"/></g><g class="loss faint"><path d="M550 218 L550 190" class="flow" stroke="#ff5b52" stroke-width="2" style="--o:0px" marker-end="url(#a-heat)"/></g><g class="loss faint"><path d="M118 250 L84 250" class="flow" stroke="#ff5b52" stroke-width="2" style="--o:0px" marker-end="url(#a-heat)"/></g><g class="loss faint"><path d="M118 305 L84 305" class="flow" stroke="#ff5b52" stroke-width="2" style="--o:0px" marker-end="url(#a-heat)"/></g><g class="loss faint"><path d="M118 360 L84 360" class="flow" stroke="#ff5b52" stroke-width="2" style="--o:0px" marker-end="url(#a-heat)"/></g>
+ <g class="loss"><text x="30" y="384" class="t3" text-anchor="start">heat lost through</text><text x="30" y="398" class="t3" text-anchor="start">the glass</text><text x="205" y="176" class="t3" text-anchor="start">heat lost at the surface</text></g>
+</svg>
+  <div class="vbot"><div class="legend glass"><span><u class="" style="border-color:#47a3ff"></u>clean water</span><span><u class="" style="border-color:#6f88a8"></u>dirty water to the filter</span><span><u class="dot" style="border-color:#ff5b52"></u>heat in at the heater (losses faint, toggle)</span></div>
+   <div class="ctl"><button class="btn glass" id="pz" type="button">❚❚ Pause</button><button class="btn glass" id="ls" type="button">☐ Show losses</button></div></div>
+ </main>
+ <nav class="tabbar" aria-label="Sections"><div><i></i>Tank</div><div><i></i>Scape</div><div><i></i>Plants</div><div><i></i>Animals</div><div><i></i>More</div></nav>
+</div>
+<script>
+const b=document.body,pz=document.getElementById('pz'),ls=document.getElementById('ls');
+const set=()=>{pz.textContent=b.classList.contains('paused')?'▶ Play':'❚❚ Pause';ls.textContent=(b.classList.contains('losses')?'☑':'☐')+' Show losses';ls.classList.toggle('on',b.classList.contains('losses'))};
+if(matchMedia('(prefers-reduced-motion:reduce)').matches)b.classList.add('paused');
+if(location.hash.includes('losses'))b.classList.add('losses');if(location.hash.includes('pause'))b.classList.add('paused');
+pz.onclick=()=>{b.classList.toggle('paused');set()};ls.onclick=()=>{b.classList.toggle('losses');set()};set();
+</script></body></html>
