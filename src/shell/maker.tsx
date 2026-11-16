@@ -10,8 +10,8 @@ import { IN_MM, type BraceLocks, type BraceSpec } from '../scene/glassSolver';
 import { customGlass } from '../scene/autoGlass';
 import { braceFor, type BraceLevel } from '../scene/glassEnvelope';
 import { GlassOptions } from './glassOptions';
-import { EDGE_HELP, EDGE_OPTS, EDGE_PANES, edgeSummary, edgeWarnings, edgesOf, sameEdge } from './logic/edges';
-import type { EdgeFinish, EdgeSpec } from '../scene/customTanks';
+import { EDGE_HELP, EDGE_OPTS, edgeSummary, edgeWarnings, edgeOf } from './logic/edges';
+import type { EdgeFinish } from '../scene/customTanks';
 import { SizeMode, SfMode, WideView, type SolveMode } from './glassSolve';
 import type { SizeCell, SolveInputs } from './logic/tankEnvelope';
 import { LIMITS } from '../scene/validate';
@@ -210,7 +210,7 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
             <LenRow label="Opening" mm={T.bowlTop ?? T.L * 0.5} min={T.L * 0.2} max={T.L * 0.95} u={u} onMm={mm => size(t => ({ ...t, bowlTop: mm }))} />
           </> : null}
         </Group>
-        <Group title="Glass and rim" sum={`${spec.glassType === 'lowiron' ? 'low-iron' : 'float'} · ${spec.rim ? 'rimmed' : 'rimless'} · ${edgeSummary(edgesOf(spec.edges, spec.rim))}`} open={open.glass} onToggle={fold('glass')}>
+        <Group title="Glass and rim" sum={`${spec.glassType === 'lowiron' ? 'low-iron' : 'float'} · ${spec.rim ? 'rimmed' : 'rimless'} · ${edgeSummary(edgeOf(spec.edge, spec.rim))}`} open={open.glass} onToggle={fold('glass')}>
           <div class="row"><span class="lbl">Glass</span><Seg label="Glass" value={spec.glassType} opts={[['standard', 'Float'], ['lowiron', 'Low-iron']]} onPick={v => edit(s => { s.render.glassType = v; }, true)} /><span /></div>
           <div class="row"><span class="lbl">Thickness</span>
             <select class="select" aria-label="Glass thickness" value={spec.glass === 'auto' ? 'auto' : String(spec.glass)} onChange={e => edit(s => setGlass(s, (e.target as HTMLSelectElement).value))}>
@@ -218,7 +218,7 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
               <GlassOptions u={u} extras={spec.glass === 'auto' ? [] : [spec.glass]} />
             </select><span /></div>
           <div class="row"><span class="lbl">Rim</span><Seg label="Rim" value={spec.rim ? 'y' : 'n'} opts={[['y', 'Rimmed'], ['n', 'Rimless']]} onPick={v => edit(s => setRim(s, v === 'y'))} /><span /></div>
-          <EdgeRows spec={spec} setEdges={e => setSpec(sp => ({ ...sp, edges: e }))} glassMm={gNow} />
+          <EdgeRows spec={spec} setEdge={e => setSpec(sp => ({ ...sp, edge: e }))} glassMm={gNow} />
         </Group>
         <GlassGroup solve={solve} setSolve={setSolve} sin={sin} setSin={setSin} level={level} setLevel={setLevel} T={T} loadCell={loadCell} openWide={() => setWide(true)} panel={panel} choice={choice} setChoice={setChoice} locks={locks} setLocks={setLocks} onOptimize={optimize} busy={busy} optLine={opt && opt.key === key() ? opt.text : ''} setBrace={setBrace} rim={spec.rim} u={u} glassNow={gNow} build={!!spec.glassBuild} open={open.solver} onToggle={fold('solver')}
           onUse={() => panel?.use && setSpec({ ...spec, glass: panel.use.glass, glassBuild: panel.use.build })} />
@@ -288,16 +288,12 @@ function GlassGroup({ solve, setSolve, sin, setSin, level, setLevel, T, loadCell
   );
 }
 
-/** Edge finish (GS3): one choice for every edge, or per pane group. Recorded with the tank; the glass check does not change with it. */
-function EdgeRows({ spec, setEdges, glassMm }: { spec: CustomTankSpec; setEdges: (e: EdgeSpec) => void; glassMm: number }) {
-  const e = edgesOf(spec.edges, spec.rim), all = sameEdge(e), [per, setPer] = useState(all == null);
-  const warns = edgeWarnings(e, glassMm, spec.rim);
+/** Edge finish (GS3): one finish for the whole tank, recorded with it; the glass check does not change with it. */
+function EdgeRows({ spec, setEdge, glassMm }: { spec: CustomTankSpec; setEdge: (e: EdgeFinish) => void; glassMm: number }) {
+  const e = edgeOf(spec.edge, spec.rim), warns = edgeWarnings(e, glassMm, spec.rim);
   return <>
-    <div class="row"><span class="lbl">Edges</span><Seg label="Edge finish" value={(all ?? '') as EdgeFinish} opts={EDGE_OPTS} onPick={f => setEdges({ front: f, ends: f, bottom: f })} /><span /></div>
-    {all ? <div class="hint">{EDGE_HELP[all]}.</div> : null}
-    <button type="button" class="btn sm" aria-expanded={per} onClick={() => setPer(!per)}>{per ? 'One finish for all' : 'Set per pane'}</button>
-    {per ? EDGE_PANES.map(([k, label]) => <div class="row"><span class="lbl">{label}</span>
-      <select class="select" aria-label={`${label} edge finish`} value={e[k]} onChange={ev => setEdges({ ...e, [k]: (ev.target as HTMLSelectElement).value as EdgeFinish })}>{EDGE_OPTS.map(([v, t]) => <option value={v}>{t}</option>)}</select><span /></div>) : null}
+    <div class="row"><span class="lbl">Edges</span><Seg label="Edge finish" value={e} opts={EDGE_OPTS} onPick={setEdge} /><span /></div>
+    <div class="hint">{EDGE_HELP[e]}.</div>
     {warns.map(w => <div class="dwarn warn">{w}</div>)}
     <div class="hint">Edge finish is recorded with the tank and goes on the quote to the glass shop. It does not change the safety factor: there is no independent strength data for raw, ground, polished and beveled edges on annealed glass.</div>
   </>;

@@ -13,15 +13,10 @@ import type { CustomTankRef, GlassType, Tank, TankSetup } from './types';
 export const CUSTOM_KEY = 'tanklook.customTanks';
 export { autoName, dimName };
 
-/** How the glass edges are finished (GS3, 2026-11-16): per pane group. Absent = the default for the rim (src/shell/logic/edges.ts). */
+/** How the glass edges are finished (GS3, 2026-11-16): one finish for the whole tank. Absent = the default for the rim (src/shell/logic/edges.ts). */
 export type EdgeFinish = 'raw' | 'ground' | 'polish' | 'bevel';
-export interface EdgeSpec { front: EdgeFinish; ends: EdgeFinish; bottom: EdgeFinish }
 const EDGE_FINISHES: EdgeFinish[] = ['raw', 'ground', 'polish', 'bevel'];
-export function parseEdges(raw: unknown): EdgeSpec | undefined {
-  if (!raw || typeof raw !== 'object') return undefined;
-  const o = raw as Record<string, unknown>, ok = (v: unknown): v is EdgeFinish => EDGE_FINISHES.includes(v as EdgeFinish);
-  return ok(o.front) && ok(o.ends) && ok(o.bottom) ? { front: o.front, ends: o.ends, bottom: o.bottom } : undefined;
-}
+export const parseEdge = (raw: unknown): EdgeFinish | undefined => EDGE_FINISHES.includes(raw as EdgeFinish) ? raw as EdgeFinish : undefined;
 
 export interface CustomTankSpec {
   name: string;
@@ -36,8 +31,8 @@ export interface CustomTankSpec {
   /** The glass the custom tank maker's glass panel chose (GS1 solver; lane S3, 2026-11-13): per-pane thickness (mm), the brace and the
    *  safety factor. Absent = not worked out; `glass` alone then says how thick the glass is drawn. */
   glassBuild?: GlassBuild;
-  /** Edge finish per pane group (GS3); absent = the default for the rim. Recorded only: it does not change the glass check. */
-  edges?: EdgeSpec;
+  /** Edge finish of the whole tank (GS3); absent = the default for the rim. Recorded only: it does not change the glass check. */
+  edge?: EdgeFinish;
 }
 export interface CustomTank extends CustomTankSpec { id: string; version: number; updated: number }
 export interface Store { getItem(k: string): string | null; setItem(k: string, v: string): void }
@@ -59,7 +54,7 @@ export function parseSpec(raw: unknown): CustomTankSpec | undefined {
     ...(ref.priceUsd !== undefined ? { priceUsd: ref.priceUsd } : {}),
     ...(ref.owned ? { owned: true } : {}),
     ...(parseBuild(o.glassBuild) ? { glassBuild: parseBuild(o.glassBuild)! } : {}),
-    ...(parseEdges(o.edges) ? { edges: parseEdges(o.edges)! } : {}),
+    ...(parseEdge(o.edge) ? { edge: parseEdge(o.edge)! } : {}),
   };
 }
 
@@ -110,7 +105,7 @@ export function addCustomTank(lib: readonly CustomTank[], spec: CustomTankSpec, 
   return { lib: [...lib, entry], entry };
 }
 const sameTankSpec = (a: CustomTankSpec, b: CustomTankSpec) =>
-  JSON.stringify([a.tank, a.glass, a.glassType, a.rim, a.priceUsd ?? null, a.glassBuild ?? null, a.edges ?? null]) === JSON.stringify([b.tank, b.glass, b.glassType, b.rim, b.priceUsd ?? null, b.glassBuild ?? null, b.edges ?? null]);
+  JSON.stringify([a.tank, a.glass, a.glassType, a.rim, a.priceUsd ?? null, a.glassBuild ?? null, a.edge ?? null]) === JSON.stringify([b.tank, b.glass, b.glassType, b.rim, b.priceUsd ?? null, b.glassBuild ?? null, b.edge ?? null]);
 /** Edit: the version goes up by one when the tank (size, shape, glass, rim, glass build) or the price changes; a rename or the owned flag alone does not bump it. `priceUsd: undefined` in the patch clears the own price. */
 export function editCustomTank(lib: readonly CustomTank[], id: string, patch: Partial<CustomTankSpec>, now = Date.now()): { lib: CustomTank[]; entry?: CustomTank } {
   const cur = find(lib, id);
