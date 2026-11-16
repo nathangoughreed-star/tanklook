@@ -42,7 +42,7 @@ describe('swimSim', () => {
     for (let s = 0; s < 600; s++) { a.step(1 / 30); b.step(1 / 30); }
     for (const f of fish) expect(a.pose(f.id)).toEqual(b.pose(f.id));
     a.reset([fish[0].id]);
-    expect(a.pose(fish[0].id)).toEqual({ x: fish[0].home.x, y: fish[0].home.y, z: fish[0].home.z, yaw: 20, pitch: 0, roll: 0 });
+    expect(a.pose(fish[0].id)).toMatchObject({ x: fish[0].home.x, y: fish[0].home.y, z: fish[0].home.z, yaw: 20, pitch: 0, roll: 0 });
     expect(a.pose(999)).toBeNull();
     a.reset();
     for (const f of fish) expect(a.pose(f.id)!.x).toBe(f.home.x);

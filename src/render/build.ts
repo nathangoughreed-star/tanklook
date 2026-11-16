@@ -1,6 +1,10 @@
 // Builds a three.js scene for one tank from scene data. Rebuilt on every content change (cheap at this scale);
 // textures and card materials are cached across rebuilds.
 import { swimPace } from '../scene/swimPace';
+import { DIG, HOVER, digGrainK } from '../scene/fishBehavior';
+import { bedOf } from '../scene/substrateCheck';
+import { hasTankLight } from '../scene/roomlight';
+import { hookCalm } from './swim';
 import * as THREE from 'three';
 import { tankView } from './tankView';
 import { crawlPace } from '../scene/crawlPace';
@@ -1758,8 +1762,9 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     } else if (rests) restOn(p, m, w, sp.rest * w - (isArachnid(sp.art) ? 0 : 1));
     if (swim) { // free roam (render/roam.ts): the sim moves this mesh from the spot it was placed at, which is its Reset pose
       const e = new THREE.Euler().setFromQuaternion(m.quaternion, 'YXZ'), R2D = 180 / Math.PI;
-      m.userData.roam = { spec: { id: f.id, len: w, zone: sp.zone === 'bottom' ? 'bottom' : 'water', pace: swimPace(sp.id), band: [...BANDS[sp.level ?? 'mid']] as [number, number], group: sp.group ? { key: sp.id, tight: sp.group === 'school' } : undefined,
+      m.userData.roam = { spec: { id: f.id, len: w, zone: sp.zone === 'bottom' ? 'bottom' : 'water', pace: swimPace(sp.id), hover: HOVER[sp.id], dig: sp.zone === 'bottom' && DIG[sp.id] ? { ...DIG[sp.id], k: digGrainK(DIG[sp.id], bedOf(S)?.grain), dark: hasTankLight(S.light) ? 0 : 1, rest: sp.rest * w } : undefined, band: [...BANDS[sp.level ?? 'mid']] as [number, number], group: sp.group ? { key: sp.id, tight: sp.group === 'school' } : undefined,
         home: { x: m.position.x, y: m.position.y, z: m.position.z, yaw: e.y * R2D, pitch: e.z * R2D, roll: e.x * R2D } }, world: { S, T, rise } };
+      hookCalm(m); // the tail beat is set per fish while it hovers or digs (render/swim.ts)
     }
     if (clinger && f.surface !== 'hardscape') markCling(m, f, w, sp, false);
     const cp = rests && (!herp || sp.id === 'adf') && f.surface !== 'hardscape' && f.surface !== 'under' ? crawlPace(sp.id) : undefined; // shrimp, crabs, crayfish: crawl the ground (render/crawl.ts)

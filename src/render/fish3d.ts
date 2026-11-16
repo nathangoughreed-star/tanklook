@@ -409,6 +409,7 @@ function finMeshes(art: string, p: Plan, bend: number, edge: EdgeMode, cling = f
       if (f.kind === 'pelvic') mesh.rotation.x = -side * a;
       else if (flat) mesh.rotation.set(-side * a, side * 0.35, 0, 'YXZ');
       else mesh.rotation.set(-side * 0.25, side * a, 0, 'YXZ');
+      if (f.kind === 'pectoral' && !flat) mesh.userData.pec = { side, a, rx: -side * 0.25 }; // fanned by the swim sim (render/roam.ts)
       out.push(mesh);
     }
   }

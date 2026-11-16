@@ -32,6 +32,10 @@ export interface SwimmerSpec {
   band: [number, number];
   /** Cruise-speed multiplier (default 1); below 1 also means longer hovers and shorter, calmer trips (labyrinth fish, see swimPace.ts). */
   pace?: number;
+  /** FB1: hovering habit (fishBehavior.ts HOVER): w = how much of its time, pec = how wide the pectorals fan, caudal = share of the tail beat kept while hovering. Absent = the old rest (no fanning). */
+  hover?: { w: number; pec: number; caudal: number };
+  /** FB1: digging / hiding habit (fishBehavior.ts DIG) already resolved for this tank: `k` = how well the bed suits it (0 = no dig, hides still), `dark` 0..1 = the tank is dark (more digging), `rest` = height of the body centre above the ground when it lies (mm). Bottom dwellers only. */
+  dig?: { rate: number; depth: number; pitch: number; hold: [number, number]; hide: number; hideT: [number, number]; k: number; dark: number; rest: number };
   /** Same school / shoal = same key (species id + split index); undefined = loner. `tight` = a school (aligned), else a shoal (loose). */
   group?: { key: string; tight: boolean };
   /** Where it was placed: its Reset pose. yaw/pitch/roll in degrees as in the scene's Fish. */
@@ -39,7 +43,9 @@ export interface SwimmerSpec {
 }
 
 /** One animal's pose this frame, same conventions as the scene (position mm; yaw about y, pitch about z, roll about x, degrees; applied 'YXZ' order roll, yaw, pitch as the build does). */
-export interface SwimPose { x: number; y: number; z: number; yaw: number; pitch: number; roll: number }
+export interface SwimPose { x: number; y: number; z: number; yaw: number; pitch: number; roll: number;
+  /** FB1: pectoral fanning 0..1 (0 = folded, for swimming), tail-beat strength (1 = the usual beat, near 0 = still, above 1 = a wriggle) and how deep the body is sunk into the bed (mm, already taken off `y`). Absent = 0, 1, 0. */
+  fan?: number; calm?: number; dig?: number }
 
 export interface SwimSim {
   /** Advance by dt seconds (the caller clamps dt to about 0.1). Writes into the poses returned by `pose`. */
