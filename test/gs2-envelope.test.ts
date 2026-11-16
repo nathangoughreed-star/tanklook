@@ -31,7 +31,7 @@ describe('GS2 solve for size (glass + SF given)', () => {
   });
   it('is monotone: thicker glass, thicker strips and more bracing never lower the answer; longer tanks never raise it', () => {
     const L = 48 * IN_MM, h = (o: Partial<EnvelopeBase>, lv: BraceLevel = 'cross1') => maxHeight(L, lv, base(o)).value;
-    expect(h({ glass: STOCK_US[1] })).toBeGreaterThanOrEqual(h({}));
+    expect(h({ glass: (5 / 16) * IN_MM })).toBeGreaterThanOrEqual(h({}));
     expect(h({ glass: STOCK_US[2] })).toBeGreaterThanOrEqual(h({ glass: STOCK_US[1] }));
     expect(h({ strip: 0.5 * IN_MM * 1 })).toBeGreaterThanOrEqual(h({ strip: T14 }) - 1e-9);
     expect(h({ sf: 3 })).toBeGreaterThan(h({ sf: 4 }));
